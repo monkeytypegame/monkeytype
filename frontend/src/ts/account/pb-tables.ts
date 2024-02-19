@@ -94,8 +94,18 @@ export function update(
   $(`.page${source} .profile .pbsTime`).html("");
   $(`.page${source} .profile .pbsWords`).html("");
 
-  const timeMode2s: SharedTypes.Mode2<"time">[] = ["15", "30", "60", "120"];
-  const wordMode2s: SharedTypes.Mode2<"words">[] = ["10", "25", "50", "100"];
+  const timeMode2s: SharedTypes.Config.Mode2<"time">[] = [
+    "15",
+    "30",
+    "60",
+    "120",
+  ];
+  const wordMode2s: SharedTypes.Config.Mode2<"words">[] = [
+    "10",
+    "25",
+    "50",
+    "100",
+  ];
 
   timeMode2s.forEach((mode2) => {
     text += buildPbHtml(personalBests, "time", mode2);

@@ -44,7 +44,7 @@ describe("LeaderboardsDal", () => {
         "15",
         "english",
         0
-      )) as MonkeyTypes.LeaderboardEntry[];
+      )) as SharedTypes.LeaderboardEntry[];
 
       //THEN
       const lb = result.map((it) => _.omit(it, ["_id"]));
@@ -70,7 +70,7 @@ describe("LeaderboardsDal", () => {
         "60",
         "english",
         0
-      )) as MonkeyTypes.LeaderboardEntry[];
+      )) as SharedTypes.LeaderboardEntry[];
 
       //THEN
       const lb = result.map((it) => _.omit(it, ["_id"]));
@@ -81,6 +81,48 @@ describe("LeaderboardsDal", () => {
         expectedLbEntry(3, rank3, "60"),
         expectedLbEntry(4, rank4, "60"),
       ]);
+    });
+    it("should not include discord properties for users without discord connection", async () => {
+      //GIVEN
+      const rank1 = await createUser(lbBests(pb(90), pb(100, 90, 2)), {
+        discordId: undefined,
+        discordAvatar: undefined,
+      });
+
+      //WHEN
+      await LeaderboardsDal.update("time", "60", "english");
+      const lb = (await LeaderboardsDal.get(
+        "time",
+        "60",
+        "english",
+        0
+      )) as SharedTypes.LeaderboardEntry[];
+
+      //THEN
+      expect(lb[0]).not.toHaveProperty("discordId");
+      expect(lb[0]).not.toHaveProperty("discordAvatar");
+    });
+
+    it("should remove consistency from results if null", async () => {
+      //GIVEN
+      const stats = pb(100, 90, 2);
+      //@ts-ignore
+      stats["consistency"] = undefined;
+
+      await createUser(lbBests(stats));
+
+      //WHEN
+      //WHEN
+      await LeaderboardsDal.update("time", "15", "english");
+      const lb = (await LeaderboardsDal.get(
+        "time",
+        "15",
+        "english",
+        0
+      )) as SharedTypes.LeaderboardEntry[];
+
+      //THEN
+      expect(lb[0]).not.toHaveProperty("consistency");
     });
 
     it("should update public speedHistogram for time english 15", async () => {

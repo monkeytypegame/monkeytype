@@ -9,7 +9,7 @@ import {
 } from "bullmq";
 
 export class MonkeyQueue<T> {
-  private jobQueue: Queue;
+  private jobQueue: Queue | undefined;
   private _queueScheduler: QueueScheduler;
   public readonly queueName: string;
   private queueOpts: QueueOptions;
@@ -20,7 +20,7 @@ export class MonkeyQueue<T> {
   }
 
   init(redisConnection?: IORedis.Redis): void {
-    if (this.jobQueue || !redisConnection) {
+    if (this.jobQueue !== undefined || !redisConnection) {
       return;
     }
 
@@ -35,17 +35,15 @@ export class MonkeyQueue<T> {
   }
 
   async add(taskName: string, task: T, jobOpts?: JobsOptions): Promise<void> {
-    if (!this.jobQueue) {
+    if (this.jobQueue === undefined) {
       return;
     }
 
     await this.jobQueue.add(taskName, task, jobOpts);
   }
 
-  async getJobCounts(): Promise<{
-    [index: string]: number;
-  }> {
-    if (!this.jobQueue) {
+  async getJobCounts(): Promise<Record<string, number>> {
+    if (this.jobQueue === undefined) {
       return {};
     }
 
@@ -55,7 +53,7 @@ export class MonkeyQueue<T> {
   async addBulk(
     tasks: { name: string; data: T; opts?: BulkJobOptions }[]
   ): Promise<void> {
-    if (!this.jobQueue) {
+    if (this.jobQueue === undefined) {
       return;
     }
 

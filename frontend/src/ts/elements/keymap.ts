@@ -327,7 +327,7 @@ export async function refresh(
 
 ConfigEvent.subscribe((eventKey, newValue) => {
   if (eventKey === "layout" && Config.keymapLayout === "overrideSync") {
-    refresh(Config.keymapLayout);
+    void refresh(Config.keymapLayout);
   }
   if (
     eventKey === "keymapLayout" ||
@@ -335,7 +335,7 @@ ConfigEvent.subscribe((eventKey, newValue) => {
     eventKey === "keymapShowTopRow" ||
     eventKey === "keymapMode"
   ) {
-    refresh();
+    void refresh();
   }
   if (eventKey === "keymapMode") {
     newValue === "off" ? hide() : show();
@@ -347,6 +347,6 @@ KeymapEvent.subscribe((mode, key, correct) => {
     highlightKey(key);
   }
   if (mode === "flash") {
-    flashKey(key, correct);
+    void flashKey(key, correct);
   }
 });

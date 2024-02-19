@@ -24,7 +24,7 @@ import * as LayoutfluidFunboxTimer from "./layoutfluid-funbox-timer";
 const prefixSize = 2;
 
 class CharDistribution {
-  public chars: { [char: string]: number };
+  public chars: Record<string, number>;
   public count: number;
   constructor() {
     this.chars = {};
@@ -55,7 +55,7 @@ class CharDistribution {
 }
 
 class PseudolangWordGenerator extends Wordset {
-  public ngrams: { [prefix: string]: CharDistribution } = {};
+  public ngrams: Record<string, CharDistribution> = {};
   constructor(words: string[]) {
     super(words);
     // Can generate an unbounded number of words in theory.
@@ -120,7 +120,7 @@ FunboxList.setFunboxFunctions("tts", {
       Notifications.add("Failed to load text-to-speech script", -1);
       return;
     }
-    if (params[0]) TTSEvent.dispatch(params[0]);
+    if (params[0] !== undefined) void TTSEvent.dispatch(params[0]);
   },
 });
 
@@ -260,8 +260,8 @@ FunboxList.setFunboxFunctions("layoutfluid", {
       const mod =
         wordsPerLayout - ((TestWords.words.currentIndex + 1) % wordsPerLayout);
 
-      if (layouts[index]) {
-        if (mod <= 3 && layouts[index + 1]) {
+      if (layouts[index] as string) {
+        if (mod <= 3 && (layouts[index + 1] as string)) {
           LayoutfluidFunboxTimer.show();
           LayoutfluidFunboxTimer.updateWords(mod, layouts[index + 1] as string);
         } else {
@@ -278,7 +278,7 @@ FunboxList.setFunboxFunctions("layoutfluid", {
         LayoutfluidFunboxTimer.hide();
       }
       setTimeout(() => {
-        KeymapEvent.highlight(
+        void KeymapEvent.highlight(
           TestWords.words
             .getCurrent()
             .charAt(TestInput.input.current.length)
@@ -293,7 +293,7 @@ FunboxList.setFunboxFunctions("layoutfluid", {
   restart(): void {
     if (this.applyConfig) this.applyConfig();
     setTimeout(() => {
-      KeymapEvent.highlight(
+      void KeymapEvent.highlight(
         TestWords.words
           .getCurrent()
           .substring(
@@ -430,7 +430,7 @@ FunboxList.setFunboxFunctions("poetry", {
 
 FunboxList.setFunboxFunctions("wikipedia", {
   async pullSection(lang?: string): Promise<Misc.Section | false> {
-    return getSection(lang ? lang : "english");
+    return getSection((lang ?? "") || "english");
   },
 });
 
@@ -556,7 +556,7 @@ export async function clear(): Promise<boolean> {
       ?.attr("class")
       ?.split(/\s+/)
       ?.filter((it) => !it.startsWith("fb-"))
-      ?.join(" ") || ""
+      ?.join(" ") ?? ""
   );
 
   $("#funBoxTheme").removeAttr("href");
@@ -635,11 +635,13 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
       configValue,
       Config.funbox
     );
-    if (check.result === true) continue;
-    if (check.result === false) {
+    if (check.result) continue;
+    if (!check.result) {
       if (check.forcedConfigs && check.forcedConfigs.length > 0) {
         if (configKey === "mode") {
-          UpdateConfig.setMode(check.forcedConfigs[0] as SharedTypes.Mode);
+          UpdateConfig.setMode(
+            check.forcedConfigs[0] as SharedTypes.Config.Mode
+          );
         }
         if (configKey === "words") {
           UpdateConfig.setWordCount(check.forcedConfigs[0] as number);
@@ -655,7 +657,7 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
         }
         if (configKey === "highlightMode") {
           UpdateConfig.setHighlightMode(
-            check.forcedConfigs[0] as MonkeyTypes.HighlightMode
+            check.forcedConfigs[0] as SharedTypes.Config.HighlightMode
           );
         }
       } else {
@@ -748,7 +750,7 @@ async function setFunboxBodyClasses(): Promise<boolean> {
     $body
       ?.attr("class")
       ?.split(/\s+/)
-      ?.filter((it) => !it.startsWith("fb-")) || [];
+      ?.filter((it) => !it.startsWith("fb-")) ?? [];
 
   $body.attr("class", [...currentClasses, ...activeFbClasses].join(" "));
 
@@ -768,7 +770,7 @@ async function applyFunboxCSS(): Promise<boolean> {
       ? "funbox/" + activeFunboxWithTheme.name + ".css"
       : "";
 
-  const currentTheme = $theme.attr("href") || null;
+  const currentTheme = ($theme.attr("href") ?? "") || null;
 
   if (activeTheme != currentTheme) {
     $theme.attr("href", activeTheme);

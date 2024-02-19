@@ -10,7 +10,10 @@ import { flattenObjectDeep, isToday, isYesterday } from "../utils/misc";
 
 const SECONDS_PER_HOUR = 3600;
 
-type Result = Omit<SharedTypes.DBResult<SharedTypes.Mode>, "_id" | "name">;
+type Result = Omit<
+  SharedTypes.DBResult<SharedTypes.Config.Mode>,
+  "_id" | "name"
+>;
 
 // Export for use in tests
 export const getUsersCollection = (): Collection<WithId<MonkeyTypes.User>> =>
@@ -385,8 +388,8 @@ export async function removeTagPb(uid: string, _id: string): Promise<void> {
 
 export async function updateLbMemory(
   uid: string,
-  mode: SharedTypes.Mode,
-  mode2: SharedTypes.Mode2<SharedTypes.Mode>,
+  mode: SharedTypes.Config.Mode,
+  mode2: SharedTypes.Config.Mode2<SharedTypes.Config.Mode>,
   language: string,
   rank: number
 ): Promise<void> {
@@ -681,7 +684,7 @@ export async function getPersonalBests(
 ): Promise<SharedTypes.PersonalBest> {
   const user = await getUser(uid, "get personal bests");
 
-  if (mode2) {
+  if (mode2 !== undefined) {
     return user.personalBests?.[mode]?.[mode2];
   }
 
@@ -690,7 +693,7 @@ export async function getPersonalBests(
 
 export async function getStats(
   uid: string
-): Promise<{ [key: string]: number | undefined }> {
+): Promise<Record<string, number | undefined>> {
   const user = await getUser(uid, "get stats");
 
   return {
@@ -717,10 +720,7 @@ export async function addFavoriteQuote(
   const user = await getUser(uid, "add favorite quote");
 
   if (user.favoriteQuotes) {
-    if (
-      user.favoriteQuotes[language] &&
-      user.favoriteQuotes[language]?.includes(quoteId)
-    ) {
+    if (user.favoriteQuotes[language]?.includes(quoteId)) {
       return;
     }
 
@@ -755,11 +755,7 @@ export async function removeFavoriteQuote(
 ): Promise<void> {
   const user = await getUser(uid, "remove favorite quote");
 
-  if (
-    !user.favoriteQuotes ||
-    !user.favoriteQuotes[language] ||
-    !user.favoriteQuotes[language]?.includes(quoteId)
-  ) {
+  if (!user.favoriteQuotes?.[language]?.includes(quoteId)) {
     return;
   }
 
@@ -804,7 +800,11 @@ export async function recordAutoBanEvent(
   }
 
   await getUsersCollection().updateOne({ uid }, { $set: updateObj });
-  Logger.logToDb("user_auto_banned", { autoBanTimestamps, banningUser }, uid);
+  void Logger.logToDb(
+    "user_auto_banned",
+    { autoBanTimestamps, banningUser },
+    uid
+  );
   return ret;
 }
 
@@ -842,10 +842,10 @@ export async function getInbox(
   return user.inbox ?? [];
 }
 
-interface AddToInboxBulkEntry {
+type AddToInboxBulkEntry = {
   uid: string;
   mail: MonkeyTypes.MonkeyMail[];
-}
+};
 
 export async function addToInboxBulk(
   entries: AddToInboxBulkEntry[],
@@ -998,7 +998,7 @@ export async function updateStreak(
   if (isYesterday(streak.lastResultTimestamp, streak.hourOffset ?? 0)) {
     streak.length += 1;
   } else if (!isToday(streak.lastResultTimestamp, streak.hourOffset ?? 0)) {
-    Logger.logToDb("streak_lost", JSON.parse(JSON.stringify(streak)), uid);
+    void Logger.logToDb("streak_lost", JSON.parse(JSON.stringify(streak)), uid);
     streak.length = 1;
   }
 

@@ -1,5 +1,9 @@
 // this file should be concatenated at the top of the legacy ts files
 
+import "jquery";
+import "jquery-color";
+import "jquery.easing";
+
 import "../styles/index.scss";
 import "./firebase";
 
@@ -40,6 +44,7 @@ import "./states/connection";
 import "./test/tts";
 import "./elements/fps-counter";
 import "./controllers/profile-search-controller";
+import { isDevEnvironment } from "./utils/misc";
 
 type ExtendedGlobal = typeof globalThis & MonkeyTypes.Global;
 
@@ -66,3 +71,8 @@ extendedGlobal.toggleUnsmoothedRaw = Result.toggleUnsmoothedRaw;
 extendedGlobal.egVideoListener = egVideoListener;
 
 extendedGlobal.toggleDebugLogs = Logger.toggleDebugLogs;
+
+if (isDevEnvironment()) {
+  //@ts-expect-error
+  extendedGlobal.$ = $;
+}

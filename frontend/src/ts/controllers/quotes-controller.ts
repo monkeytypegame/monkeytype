@@ -1,27 +1,31 @@
-import { randomElementFromArray, shuffle } from "../utils/misc";
+import {
+  randomElementFromArray,
+  removeLanguageSize,
+  shuffle,
+} from "../utils/misc";
 import { subscribe } from "../observables/config-event";
 import * as DB from "../db";
 
-interface JsonQuote {
+type JsonQuote = {
   text: string;
   britishText?: string;
   source: string;
   length: number;
   id: number;
-}
+};
 
-interface QuoteData {
+type QuoteData = {
   language: string;
   quotes: JsonQuote[];
   groups: [number, number][];
-}
+};
 
-interface QuoteCollection {
+type QuoteCollection = {
   quotes: MonkeyTypes.Quote[];
   length: number;
   language: string | null;
   groups: MonkeyTypes.Quote[][];
-}
+};
 
 const defaultQuoteCollection: QuoteCollection = {
   quotes: [],
@@ -29,10 +33,6 @@ const defaultQuoteCollection: QuoteCollection = {
   language: null,
   groups: [],
 };
-
-function normalizeLanguage(language: string): string {
-  return language.replace(/_\d*k$/g, "");
-}
 
 class QuotesController {
   private quoteCollection: QuoteCollection = defaultQuoteCollection;
@@ -44,7 +44,7 @@ class QuotesController {
     language: string,
     quoteLengths?: number[]
   ): Promise<QuoteCollection> {
-    const normalizedLanguage = normalizeLanguage(language);
+    const normalizedLanguage = removeLanguageSize(language);
 
     if (this.quoteCollection.language !== normalizedLanguage) {
       try {
@@ -160,12 +160,12 @@ class QuotesController {
       return null;
     }
 
-    const normalizedLanguage = normalizeLanguage(language);
+    const normalizedLanguage = removeLanguageSize(language);
     const quoteIds: string[] = [];
     const { favoriteQuotes } = snapshot;
 
     Object.keys(favoriteQuotes).forEach((language) => {
-      if (normalizeLanguage(language) !== normalizedLanguage) {
+      if (removeLanguageSize(language) !== normalizedLanguage) {
         return;
       }
 
@@ -190,10 +190,10 @@ class QuotesController {
 
     const { favoriteQuotes } = snapshot;
 
-    const normalizedQuoteLanguage = normalizeLanguage(quoteLanguage);
+    const normalizedQuoteLanguage = removeLanguageSize(quoteLanguage);
 
     const matchedLanguage = Object.keys(favoriteQuotes).find((language) => {
-      if (normalizedQuoteLanguage !== normalizeLanguage(language)) {
+      if (normalizedQuoteLanguage !== removeLanguageSize(language)) {
         return false;
       }
       return (favoriteQuotes[language] ?? []).includes(id.toString());

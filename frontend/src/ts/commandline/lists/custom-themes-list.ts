@@ -1,5 +1,5 @@
 import * as UpdateConfig from "../../config";
-import { Auth } from "../../firebase";
+import { isAuthenticated } from "../../firebase";
 import * as DB from "../../db";
 import * as ThemeController from "../../controllers/theme-controller";
 
@@ -17,13 +17,13 @@ const commands: MonkeyTypes.Command[] = [
     icon: "fa-palette",
     subgroup,
     available: (): boolean => {
-      return !!Auth?.currentUser;
+      return isAuthenticated();
     },
   },
 ];
 
 export function update(): void {
-  if (!Auth?.currentUser) {
+  if (!isAuthenticated()) {
     return;
   }
 

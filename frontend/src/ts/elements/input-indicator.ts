@@ -1,18 +1,18 @@
-interface InputIndicatorOption {
+type InputIndicatorOption = {
   icon: string;
   spinIcon?: true;
   message?: string;
   level: -1 | 0 | 1;
-}
+};
 
 export class InputIndicator {
-  private inputElement: JQuery<HTMLElement>;
-  private parentElement: JQuery<HTMLElement>;
+  private inputElement: JQuery;
+  private parentElement: JQuery;
   private options: Record<string, InputIndicatorOption>;
   private currentStatus: keyof typeof this.options | null;
 
   constructor(
-    inputElement: JQuery<HTMLElement>,
+    inputElement: JQuery,
     options: Record<string, InputIndicatorOption>
   ) {
     this.inputElement = inputElement;
@@ -35,7 +35,7 @@ export class InputIndicator {
             : ""
         }
         data-balloon-pos="up"
-        ${option.message ? `aria-label="${option.message}"` : ""}
+        ${option.message ?? "" ? `aria-label="${option.message}"` : ""}
       >
         <i class="fas fa-fw ${option.icon} ${
         option.spinIcon ? "fa-spin" : ""
@@ -64,7 +64,7 @@ export class InputIndicator {
 
     indicator.removeClass("hidden");
 
-    if (messageOverride) {
+    if (messageOverride !== undefined && messageOverride !== "") {
       if (messageOverride.length > 20) {
         indicator.attr("data-balloon-length", "large");
       } else {

@@ -78,7 +78,7 @@ function save(): void {
 
 export async function load(): Promise<void> {
   try {
-    const newResultFilters = window.localStorage.getItem("resultFilters");
+    const newResultFilters = window.localStorage.getItem("resultFilters") ?? "";
 
     if (!newResultFilters) {
       filters = defaultResultFilters;
@@ -87,7 +87,7 @@ export async function load(): Promise<void> {
 
       let reset = false;
       for (const key of Object.keys(defaultResultFilters)) {
-        if (reset === true) break;
+        if (reset) break;
         if (newFiltersObject[key] === undefined) {
           reset = true;
           break;
@@ -116,9 +116,7 @@ export async function load(): Promise<void> {
       }
     }
 
-    const newTags: {
-      [tag: string]: boolean;
-    } = { none: false };
+    const newTags: Record<string, boolean> = { none: false };
 
     Object.keys(defaultResultFilters.tags).forEach((tag) => {
       if (filters.tags[tag] !== undefined) {
@@ -220,7 +218,7 @@ async function createFilterPresetCallback(name: string): Promise<void> {
   Loader.hide();
   if (result.status === 200) {
     addFilterPresetToSnapshot({ ...filters, name, _id: result.data });
-    updateFilterPresets();
+    void updateFilterPresets();
     Notifications.add("Filter preset created", 1);
   } else {
     Notifications.add("Error creating filter preset: " + result.message, -1);
@@ -254,7 +252,7 @@ async function deleteFilterPreset(id: string): Promise<void> {
   Loader.hide();
   if (result.status === 200) {
     removeFilterPresetFromSnapshot(id);
-    updateFilterPresets();
+    void updateFilterPresets();
     reset();
     Notifications.add("Filter preset deleted", 1);
   } else {
@@ -318,10 +316,11 @@ type AboveChartDisplay = Partial<
 
 export function updateActive(): void {
   const aboveChartDisplay: AboveChartDisplay = {};
-  Misc.typedKeys(getFilters()).forEach((group) => {
+
+  for (const group of Misc.typedKeys(getFilters())) {
     // id and name field do not correspond to any ui elements, no need to update
     if (group === "_id" || group === "name") {
-      return;
+      continue;
     }
 
     aboveChartDisplay[group] = {
@@ -329,16 +328,17 @@ export function updateActive(): void {
       array: [],
     };
 
-    Misc.typedKeys(getGroup(group)).forEach((filter) => {
+    for (const filter of Misc.typedKeys(getGroup(group))) {
       const groupAboveChartDisplay = aboveChartDisplay[group];
 
-      if (groupAboveChartDisplay === undefined) return;
+      if (groupAboveChartDisplay === undefined) continue;
 
-      if (getFilter(group, filter)) {
-        groupAboveChartDisplay["array"]?.push(filter);
+      const filterValue = getFilter(group, filter);
+      if (filterValue === true) {
+        groupAboveChartDisplay.array?.push(filter);
       } else {
-        if (groupAboveChartDisplay["all"] !== undefined) {
-          groupAboveChartDisplay["all"] = false;
+        if (groupAboveChartDisplay.all !== undefined) {
+          groupAboveChartDisplay.all = false;
         }
       }
       let buttonEl;
@@ -351,13 +351,13 @@ export function updateActive(): void {
           `.pageAccount .group.filterButtons .filterGroup[group="${group}"] button[filter="${filter}"]`
         );
       }
-      if (getFilter(group, filter)) {
+      if (filterValue === true) {
         buttonEl.addClass("active");
       } else {
         buttonEl.removeClass("active");
       }
-    });
-  });
+    }
+  }
 
   function addText(group: keyof SharedTypes.ResultFilters): string {
     let ret = "";
@@ -468,10 +468,10 @@ function toggle<G extends keyof SharedTypes.ResultFilters>(
     if (group === "date") {
       setAllFilters("date", false);
     }
-    const newValue = !filters[group][
-      filter
-    ] as unknown as SharedTypes.ResultFilters[G][MonkeyTypes.Filter<G>];
-    filters[group][filter] = newValue;
+    const currentValue = filters[group][filter] as unknown as boolean;
+    const newValue = !currentValue;
+    filters[group][filter] =
+      newValue as unknown as SharedTypes.ResultFilters[G][MonkeyTypes.Filter<G>];
     save();
   } catch (e) {
     Notifications.add(
@@ -502,7 +502,7 @@ $(
       setAllFilters(group, true);
     });
     setAllFilters("date", false);
-    filters["date"]["all"] = true;
+    filters.date.all = true;
   } else if ($(e.target).hasClass("noFilters")) {
     Misc.typedKeys(getFilters()).forEach((group) => {
       // id and name field do not correspond to any ui elements, no need to update
@@ -543,7 +543,7 @@ $(".pageAccount .topFilters button.allFilters").on("click", () => {
     setAllFilters(group, true);
   });
   setAllFilters("date", false);
-  filters["date"]["all"] = true;
+  filters.date.all = true;
   updateActive();
   save();
 });
@@ -561,24 +561,24 @@ $(".pageAccount .topFilters button.currentConfigFilter").on("click", () => {
     setAllFilters(group, false);
   });
 
-  filters["pb"]["no"] = true;
-  filters["pb"]["yes"] = true;
+  filters.pb.no = true;
+  filters.pb.yes = true;
 
-  filters["difficulty"][Config.difficulty] = true;
-  filters["mode"][Config.mode] = true;
+  filters.difficulty[Config.difficulty] = true;
+  filters.mode[Config.mode] = true;
   if (Config.mode === "time") {
     if ([15, 30, 60, 120].includes(Config.time)) {
       const configTime = Config.time as MonkeyTypes.DefaultTimeModes;
-      filters["time"][configTime] = true;
+      filters.time[configTime] = true;
     } else {
-      filters["time"]["custom"] = true;
+      filters.time.custom = true;
     }
   } else if (Config.mode === "words") {
     if ([10, 25, 50, 100, 200].includes(Config.words)) {
       const configWords = Config.words as MonkeyTypes.DefaultWordsModes;
-      filters["words"][configWords] = true;
+      filters.words[configWords] = true;
     } else {
-      filters["words"]["custom"] = true;
+      filters.words.custom = true;
     }
   } else if (Config.mode === "quote") {
     const filterName: MonkeyTypes.Filter<"quoteLength">[] = [
@@ -588,27 +588,29 @@ $(".pageAccount .topFilters button.currentConfigFilter").on("click", () => {
       "thicc",
     ];
     filterName.forEach((ql, index) => {
-      if (Config.quoteLength.includes(index as MonkeyTypes.QuoteLength)) {
-        filters["quoteLength"][ql] = true;
+      if (
+        Config.quoteLength.includes(index as SharedTypes.Config.QuoteLength)
+      ) {
+        filters.quoteLength[ql] = true;
       } else {
-        filters["quoteLength"][ql] = false;
+        filters.quoteLength[ql] = false;
       }
     });
   }
   if (Config.punctuation) {
-    filters["punctuation"]["on"] = true;
+    filters.punctuation.on = true;
   } else {
-    filters["punctuation"]["off"] = true;
+    filters.punctuation.off = true;
   }
   if (Config.numbers) {
-    filters["numbers"]["on"] = true;
+    filters.numbers.on = true;
   } else {
-    filters["numbers"]["off"] = true;
+    filters.numbers.off = true;
   }
   if (Config.mode === "quote" && /english.*/.test(Config.language)) {
-    filters["language"]["english"] = true;
+    filters.language["english"] = true;
   } else {
-    filters["language"][Config.language] = true;
+    filters.language[Config.language] = true;
   }
 
   if (Config.funbox === "none") {
@@ -619,16 +621,16 @@ $(".pageAccount .topFilters button.currentConfigFilter").on("click", () => {
     }
   }
 
-  filters["tags"]["none"] = true;
+  filters.tags["none"] = true;
 
   DB.getSnapshot()?.tags?.forEach((tag) => {
     if (tag.active === true) {
-      filters["tags"]["none"] = false;
-      filters["tags"][tag._id] = true;
+      filters.tags["none"] = false;
+      filters.tags[tag._id] = true;
     }
   });
 
-  filters["date"]["all"] = true;
+  filters.date.all = true;
   updateActive();
   save();
 });
@@ -652,9 +654,8 @@ export async function appendButtons(): Promise<void> {
   if (languageList) {
     let html = "";
     for (const language of languageList) {
-      html += `<button filter="${language}">${language.replace(
-        "_",
-        " "
+      html += `<button filter="${language}">${Misc.getLanguageDisplayString(
+        language
       )}</button>`;
     }
     const el = document.querySelector(
@@ -709,7 +710,7 @@ export async function appendButtons(): Promise<void> {
     );
   }
 
-  updateFilterPresets();
+  void updateFilterPresets();
 }
 
 export function removeButtons(): void {
@@ -725,14 +726,14 @@ export function removeButtons(): void {
 }
 
 $(".pageAccount .topFilters button.createFilterPresetBtn").on("click", () => {
-  startCreateFilterPreset();
+  void startCreateFilterPreset();
 });
 
 $(".group.presetFilterButtons .filterBtns").on(
   "click",
   ".filterPresets .delete-filter-preset",
   (e) => {
-    deleteFilterPreset($(e.currentTarget).data("id"));
+    void deleteFilterPreset($(e.currentTarget).data("id"));
   }
 );
 

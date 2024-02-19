@@ -5,10 +5,10 @@ import * as Last10Average from "../elements/last-10-average";
 import Config from "../config";
 import * as TestWords from "../test/test-words";
 import * as ConfigEvent from "../observables/config-event";
-import { Auth } from "../firebase";
+import { isAuthenticated } from "../firebase";
 import * as CustomTextState from "../states/custom-text-name";
 import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
-import { roundTo2 } from "../utils/misc";
+import { getLanguageDisplayString, roundTo2 } from "../utils/misc";
 
 ConfigEvent.subscribe((eventKey) => {
   if (
@@ -24,9 +24,10 @@ ConfigEvent.subscribe((eventKey) => {
       "layout",
       "showAverage",
       "typingSpeedUnit",
+      "quickRestart",
     ].includes(eventKey)
   ) {
-    update();
+    void update();
   }
 });
 
@@ -50,9 +51,13 @@ export async function update(): Promise<void> {
       $(".pageTest #testModesNotice").append(
         `<div class="textButton noInteraction"><i class="fas fa-long-arrow-alt-right"></i>shift + tab to open commandline</div>`
       );
-    } else {
       $(".pageTest #testModesNotice").append(
-        `<div class="textButton noInteraction"><i class="fas fa-long-arrow-alt-right"></i>shift + tab to restart</div>`
+        `<div class="textButton noInteraction"><i class="fas fa-level-down-alt fa-rotate-90"></i>shift + esc to restart</div>`
+      );
+    }
+    if (Config.quickRestart === "tab") {
+      $(".pageTest #testModesNotice").append(
+        `<div class="textButton noInteraction"><i class="fas fa-level-down-alt fa-rotate-90"></i>shift + tab to restart</div>`
       );
     }
   }
@@ -85,9 +90,9 @@ export async function update(): Promise<void> {
 
   if (Config.mode !== "zen") {
     $(".pageTest #testModesNotice").append(
-      `<div class="textButton" commands="languages"><i class="fas fa-globe-americas"></i>${Config.language.replace(
-        /_/g,
-        " "
+      `<div class="textButton" commands="languages"><i class="fas fa-globe-americas"></i>${getLanguageDisplayString(
+        Config.language,
+        Config.mode === "quote"
       )}</div>`
     );
   }
@@ -150,7 +155,7 @@ export async function update(): Promise<void> {
       avgAcc = Math.round(avgAcc);
     }
 
-    if (Auth?.currentUser && avgWPM > 0) {
+    if (isAuthenticated() && avgWPM > 0) {
       const avgWPMText = ["speed", "both"].includes(Config.showAverage)
         ? getTypingSpeedUnit(Config.typingSpeedUnit).convertWithUnitSuffix(
             avgWPM,

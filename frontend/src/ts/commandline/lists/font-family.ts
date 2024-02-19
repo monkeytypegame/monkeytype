@@ -39,7 +39,7 @@ function update(fonts: MonkeyTypes.FontObject[]): void {
       UpdateConfig.previewFontFamily(Config.fontFamily);
     },
     exec: (name) => {
-      if (!name) return;
+      if (name === undefined || name === "") return;
       UpdateConfig.setFontFamily(name.replace(/\s/g, "_"));
       // Settings.groups.fontFamily.updateInput();
     },

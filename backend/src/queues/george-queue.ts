@@ -2,10 +2,10 @@ import { MonkeyQueue } from "./monkey-queue";
 
 const QUEUE_NAME = "george-tasks";
 
-interface GeorgeTask {
+type GeorgeTask = {
   name: string;
   args: any[];
-}
+};
 
 function buildGeorgeTask(taskName: string, taskArgs: any[]): GeorgeTask {
   return {

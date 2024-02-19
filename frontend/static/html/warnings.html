@@ -53,6 +53,7 @@
     z-index: 99999;
     padding: 6rem;
     box-sizing: border-box;
+    overflow-y: scroll;
   "
 >
   <style>
@@ -102,7 +103,7 @@
     "
   >
     <span style="font-size: 6rem; color: #e2b714">:(</span>
-    <span style="font-size: 2rem; color: #d1d0c5">
+    <span style="font-size: 1.5rem; color: #d1d0c5">
       It seems like the CSS failed to load. Please try clearing your cache to
       redownload the styles:
       <br />
@@ -159,9 +160,12 @@
       <span
         class="noCssReinstallServiceWorker"
         onclick="reinstallServiceWorker()"
+        style="margin-bottom: 1rem"
       >
         Reinstall
       </span>
+      <br />
+      Various dark mode extensions are also known to cause this issue.
     </span>
     <span>
       If that doesn't help contact support (support@monkeytype.com or

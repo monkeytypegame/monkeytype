@@ -55,7 +55,7 @@ const commands: MonkeyTypes.Command[] = [
           display: "custom...",
           input: true,
           exec: (input): void => {
-            if (!input) return;
+            if (input === undefined || input === "") return;
             UpdateConfig.setMode("time");
             UpdateConfig.setTimeConfig(parseInt(input));
             TestLogic.restart();

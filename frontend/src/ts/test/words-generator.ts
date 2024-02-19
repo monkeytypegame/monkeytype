@@ -322,9 +322,14 @@ async function applyBritishEnglishToWord(
   previousWord: string
 ): Promise<string> {
   if (!Config.britishEnglish) return word;
-  if (!/english/.test(Config.language)) return word;
-  if (Config.mode === "quote" && TestWords.randomQuote?.britishText)
+  if (!Config.language.includes("english")) return word;
+  if (
+    Config.mode === "quote" &&
+    TestWords.randomQuote?.britishText !== undefined &&
+    TestWords.randomQuote?.britishText !== ""
+  ) {
     return word;
+  }
 
   return await BritishEnglish.replace(word, previousWord);
 }
@@ -333,16 +338,17 @@ function applyLazyModeToWord(
   word: string,
   language: MonkeyTypes.LanguageObject
 ): string {
-  if (Config.lazyMode === true && !language.noLazyMode) {
+  if (Config.lazyMode && !language.noLazyMode) {
     word = LazyMode.replaceAccents(word, language.additionalAccents);
   }
   return word;
 }
 
 export function getQuoteOrCustomModeWordOrder(): MonkeyTypes.FunboxWordOrder {
-  const wordOrder = FunboxList.get(Config.funbox)
-    .find((f) => f.properties?.find((fp) => fp.startsWith("wordOrder")))
-    ?.properties?.find((fp) => fp.startsWith("wordOrder"));
+  const wordOrder =
+    FunboxList.get(Config.funbox)
+      .find((f) => f.properties?.find((fp) => fp.startsWith("wordOrder")))
+      ?.properties?.find((fp) => fp.startsWith("wordOrder")) ?? "";
 
   if (!wordOrder) {
     return "normal";
@@ -354,9 +360,10 @@ export function getQuoteOrCustomModeWordOrder(): MonkeyTypes.FunboxWordOrder {
 export function getWordsLimit(): number {
   let limit = 100;
 
-  const funboxToPush = FunboxList.get(Config.funbox)
-    .find((f) => f.properties?.find((fp) => fp.startsWith("toPush")))
-    ?.properties?.find((fp) => fp.startsWith("toPush:"));
+  const funboxToPush =
+    FunboxList.get(Config.funbox)
+      .find((f) => f.properties?.find((fp) => fp.startsWith("toPush")))
+      ?.properties?.find((fp) => fp.startsWith("toPush:")) ?? "";
 
   if (Config.showAllLines) {
     if (Config.mode === "custom") {
@@ -494,7 +501,7 @@ export async function generateWords(
   ) {
     let stop = false;
     let i = 0;
-    while (stop === false) {
+    while (!stop) {
       const nextWord = await getNextWord(
         wordset,
         i,
@@ -595,13 +602,17 @@ async function generateQuoteWords(
     rq = randomQuote;
   }
 
-  rq.language = Config.language.replace(/_\d*k$/g, "");
+  rq.language = Misc.removeLanguageSize(Config.language);
   rq.text = rq.text.replace(/ +/gm, " ");
   rq.text = rq.text.replace(/( *(\r\n|\r|\n) *)/g, "\n ");
   rq.text = rq.text.replace(/…/g, "...");
   rq.text = rq.text.trim();
 
-  if (rq.britishText && Config.britishEnglish) {
+  if (
+    rq.britishText !== undefined &&
+    rq.britishText !== "" &&
+    Config.britishEnglish
+  ) {
     rq.textSplit = rq.britishText.split(" ");
   } else {
     rq.textSplit = rq.text.split(" ");
@@ -773,7 +784,7 @@ export async function getNextWord(
 
   if (
     Config.punctuation &&
-    !language.originalPunctuation === true &&
+    !language.originalPunctuation &&
     !isCurrentlyUsingFunboxSection
   ) {
     randomWord = await punctuateWord(

@@ -7,7 +7,7 @@ import * as DB from "../db";
 import * as Loader from "../elements/loader";
 import * as Notifications from "../elements/notifications";
 import * as ThemeColors from "../elements/theme-colors";
-import { Auth } from "../firebase";
+import { isAuthenticated } from "../firebase";
 import * as QuoteRatePopup from "../popups/quote-rate-popup";
 import * as GlarsesMode from "../states/glarses-mode";
 import * as SlowTimer from "../states/slow-timer";
@@ -24,12 +24,13 @@ import * as ConfigEvent from "../observables/config-event";
 import * as Focus from "./focus";
 import * as CustomText from "./custom-text";
 import * as CustomTextState from "./../states/custom-text-name";
+import * as Funbox from "./funbox/funbox";
 
 import confetti from "canvas-confetti";
 import type { AnnotationOptions } from "chartjs-plugin-annotation";
 import Ape from "../ape";
 
-let result: SharedTypes.Result<SharedTypes.Mode>;
+let result: SharedTypes.Result<SharedTypes.Config.Mode>;
 let maxChartVal: number;
 
 let useUnsmoothedRaw = false;
@@ -178,11 +179,11 @@ export async function updateGraphPBLine(): Promise<void> {
     id: "lpb",
     scaleID: "wpm",
     value: chartlpb,
-    borderColor: themecolors["sub"],
+    borderColor: themecolors.sub,
     borderWidth: 1,
     borderDash: [2, 2],
     label: {
-      backgroundColor: themecolors["sub"],
+      backgroundColor: themecolors.sub,
       font: {
         family: Config.fontFamily.replace(/_/g, " "),
         size: 11,
@@ -190,7 +191,7 @@ export async function updateGraphPBLine(): Promise<void> {
         weight: Chart.defaults.font.weight as string,
         lineHeight: Chart.defaults.font.lineHeight as number,
       },
-      color: themecolors["bg"],
+      color: themecolors.bg,
       padding: 3,
       borderRadius: 3,
       position: "center",
@@ -378,14 +379,14 @@ export function showConfetti(): void {
   const duration = Date.now() + 125;
 
   (function f(): void {
-    confetti({
+    void confetti({
       particleCount: 5,
       angle: 60,
       spread: 75,
       origin: { x: 0 },
       colors: colors,
     });
-    confetti({
+    void confetti({
       particleCount: 5,
       angle: 120,
       spread: 75,
@@ -482,7 +483,7 @@ async function updateTags(dontSave: boolean): Promise<void> {
     ) {
       if (tpb < result.wpm) {
         //new pb for that tag
-        DB.saveLocalTagPB(
+        await DB.saveLocalTagPB(
           tag._id,
           Config.mode,
           result.mode2,
@@ -511,11 +512,11 @@ async function updateTags(dontSave: boolean): Promise<void> {
           id: "tpb",
           scaleID: "wpm",
           value: typingSpeedUnit.fromWpm(tpb),
-          borderColor: themecolors["sub"],
+          borderColor: themecolors.sub,
           borderWidth: 1,
           borderDash: [2, 2],
           label: {
-            backgroundColor: themecolors["sub"],
+            backgroundColor: themecolors.sub,
             font: {
               family: Config.fontFamily.replace(/_/g, " "),
               size: 11,
@@ -523,7 +524,7 @@ async function updateTags(dontSave: boolean): Promise<void> {
               weight: Chart.defaults.font.weight as string,
               lineHeight: Chart.defaults.font.lineHeight as number,
             },
-            color: themecolors["bg"],
+            color: themecolors.bg,
             padding: 3,
             borderRadius: 3,
             position: annotationSide,
@@ -565,7 +566,7 @@ function updateTestType(randomQuote: MonkeyTypes.Quote | null): void {
       f.properties?.includes("ignoresLanguage")
     ) !== undefined;
   if (Config.mode !== "custom" && !ignoresLanguage) {
-    testType += "<br>" + result.language.replace(/_/g, " ");
+    testType += "<br>" + Misc.getLanguageDisplayString(result.language);
   }
   if (Config.punctuation) {
     testType += "<br>punctuation";
@@ -669,22 +670,26 @@ export function updateRateQuote(randomQuote: MonkeyTypes.Quote | null): void {
         .removeClass("far")
         .addClass("fas");
     }
-    QuoteRatePopup.getQuoteStats(randomQuote).then((quoteStats) => {
-      $(".pageTest #result #rateQuoteButton .rating").text(
-        quoteStats?.average?.toFixed(1) ?? ""
-      );
-      $(".pageTest #result #rateQuoteButton")
-        .css({ opacity: 0 })
-        .removeClass("hidden")
-        .css({ opacity: 1 });
-    });
+    QuoteRatePopup.getQuoteStats(randomQuote)
+      .then((quoteStats) => {
+        $(".pageTest #result #rateQuoteButton .rating").text(
+          quoteStats?.average?.toFixed(1) ?? ""
+        );
+      })
+      .catch((e) => {
+        $(".pageTest #result #rateQuoteButton .rating").text("?");
+      });
+    $(".pageTest #result #rateQuoteButton")
+      .css({ opacity: 0 })
+      .removeClass("hidden")
+      .css({ opacity: 1 });
   }
 }
 
 function updateQuoteFavorite(randomQuote: MonkeyTypes.Quote | null): void {
   const icon = $(".pageTest #result #favoriteQuoteButton .icon");
 
-  if (Config.mode !== "quote" || Auth?.currentUser === null) {
+  if (Config.mode !== "quote" || !isAuthenticated()) {
     icon.parent().addClass("hidden");
     return;
   }
@@ -716,7 +721,7 @@ function updateQuoteSource(randomQuote: MonkeyTypes.Quote | null): void {
 }
 
 export async function update(
-  res: SharedTypes.Result<SharedTypes.Mode>,
+  res: SharedTypes.Result<SharedTypes.Config.Mode>,
   difficultyFailed: boolean,
   failReason: string,
   afkDetected: boolean,
@@ -739,7 +744,7 @@ export async function update(
   $("#words").removeClass("blurred");
   $("#wordsInput").trigger("blur");
   $("#result .stats .time .bottom .afk").text("");
-  if (Auth?.currentUser) {
+  if (isAuthenticated()) {
     $("#result .loginTip").addClass("hidden");
   } else {
     $("#result .loginTip").removeClass("hidden");
@@ -764,7 +769,7 @@ export async function update(
   ((ChartController.result.options as PluginChartOptions<"line" | "scatter">)
     .plugins.annotation.annotations as AnnotationOptions<"line">[]) =
     resultAnnotation;
-  ChartController.result.updateColors();
+  void ChartController.result.updateColors();
   ChartController.result.resize();
 
   if (
@@ -806,7 +811,7 @@ export async function update(
     $("main #result .stats").removeClass("hidden");
     $("main #result .chart").removeClass("hidden");
     // $("main #result #resultWordsHistory").removeClass("hidden");
-    if (!Auth?.currentUser) {
+    if (!isAuthenticated()) {
       $("main #result .loginTip").removeClass("hidden");
     }
     $("main #result #showWordHistoryButton").removeClass("hidden");
@@ -822,13 +827,13 @@ export async function update(
 
   TestConfig.hide();
 
-  Misc.swapElements(
+  void Misc.swapElements(
     $("#typingTest"),
     $("#result"),
     250,
     async () => {
       $("#result").trigger("focus");
-      AdController.renderResult();
+      void AdController.renderResult();
       TestUI.setResultCalculating(false);
       $("#words").empty();
       ChartController.result.resize();
@@ -860,6 +865,7 @@ export async function update(
         TestUI.toggleResultWords(true);
       }
       AdController.updateFooterAndVerticalAds(true);
+      void Funbox.clear();
     }
   );
 }
@@ -920,12 +926,12 @@ ConfigEvent.subscribe(async (eventKey) => {
     updateWpmAndAcc();
     await updateGraph();
     await updateGraphPBLine();
-    TestUI.applyBurstHeatmap();
+    void TestUI.applyBurstHeatmap();
 
     ((ChartController.result.options as PluginChartOptions<"line" | "scatter">)
       .plugins.annotation.annotations as AnnotationOptions<"line">[]) =
       resultAnnotation;
-    ChartController.result.updateColors();
+    void ChartController.result.updateColors();
     ChartController.result.resize();
   }
 });

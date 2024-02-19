@@ -2,7 +2,7 @@
   "hooks": {
     "before:init": [
       "npm run lint",
-      "npm run test-be",
+      "npm run test",
       "cd frontend && npx gulp build-production"
     ],
     "before:release": [

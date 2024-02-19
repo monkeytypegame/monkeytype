@@ -5,12 +5,13 @@ import * as Misc from "../utils/misc";
 import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
 import * as Notifications from "./notifications";
 import format from "date-fns/format";
-import { Auth } from "../firebase";
+import { isAuthenticated } from "../firebase";
 import differenceInSeconds from "date-fns/differenceInSeconds";
 import { getHTMLById as getBadgeHTMLbyId } from "../controllers/badge-controller";
 import * as ConnectionState from "../states/connection";
 import * as Skeleton from "../popups/skeleton";
 import { debounce } from "throttle-debounce";
+import SlimSelect from "slim-select";
 
 const wrapperId = "leaderboardsWrapper";
 
@@ -21,21 +22,14 @@ let showingYesterday = false;
 type LbKey = "15" | "60";
 
 let currentData: {
-  [key in LbKey]: MonkeyTypes.LeaderboardEntry[];
+  [key in LbKey]: SharedTypes.LeaderboardEntry[];
 } = {
   "15": [],
   "60": [],
 };
 
-interface GetRankResponse {
-  minWpm: number;
-  count: number;
-  rank: number | null;
-  entry: MonkeyTypes.LeaderboardEntry | null;
-}
-
 let currentRank: {
-  [key in LbKey]: GetRankResponse | Record<string, never>;
+  [key in LbKey]: Ape.Leaderboards.GetRank | Record<string, never>;
 } = {
   "15": {},
   "60": {},
@@ -150,7 +144,7 @@ function updateFooter(lb: LbKey): void {
     side = "right";
   }
 
-  if (!Auth?.currentUser) {
+  if (!isAuthenticated()) {
     $(`#leaderboardsWrapper table.${side} tfoot`).html(`
     <tr>
       <td colspan="6" style="text-align:center;"></>
@@ -197,12 +191,12 @@ function updateFooter(lb: LbKey): void {
     return;
   }
 
-  let toppercent;
-  if (currentTimeRange === "allTime" && lbRank && lbRank?.rank) {
+  let toppercent = "";
+  if (currentTimeRange === "allTime" && lbRank !== undefined && lbRank?.rank) {
     const num = Misc.roundTo2(
       (lbRank.rank / (currentRank[lb].count as number)) * 100
     );
-    if (currentRank[lb]["rank"] === 1) {
+    if (currentRank[lb].rank === 1) {
       toppercent = "GOAT";
     } else {
       toppercent = `Top ${num}%`;
@@ -221,9 +215,7 @@ function updateFooter(lb: LbKey): void {
     <div class="sub">${entry.acc.toFixed(2)}%</div></td>
     <td class="alignRight">${typingSpeedUnit.fromWpm(entry.raw).toFixed(2)}<br>
     <div class="sub">${
-      !entry.consistency || entry.consistency === "-"
-        ? "-"
-        : entry.consistency.toFixed(2) + "%"
+      entry.consistency === undefined ? "-" : entry.consistency.toFixed(2) + "%"
     }</div></td>
     <td class="alignRight">${format(date, "dd MMM yyyy")}<br>
     <div class='sub'>${format(date, "HH:mm")}</div></td>
@@ -260,7 +252,7 @@ function checkLbMemory(lb: LbKey): void {
   if (rank) {
     const difference = memory - rank;
     if (difference > 0) {
-      DB.updateLbMemory("time", lb, "english", rank, true);
+      void DB.updateLbMemory("time", lb, "english", rank, true);
       if (memory !== 0) {
         $(`#leaderboardsWrapper table.${side} tfoot tr td .top`).append(
           ` (<i class="fas fa-fw fa-angle-up"></i>${Math.abs(
@@ -269,7 +261,7 @@ function checkLbMemory(lb: LbKey): void {
         );
       }
     } else if (difference < 0) {
-      DB.updateLbMemory("time", lb, "english", rank, true);
+      void DB.updateLbMemory("time", lb, "english", rank, true);
       if (memory !== 0) {
         $(`#leaderboardsWrapper table.${side} tfoot tr td .top`).append(
           ` (<i class="fas fa-fw fa-angle-down"></i>${Math.abs(
@@ -288,7 +280,7 @@ function checkLbMemory(lb: LbKey): void {
 }
 
 async function fillTable(lb: LbKey): Promise<void> {
-  if (!currentData[lb]) {
+  if (currentData[lb] === undefined) {
     return;
   }
 
@@ -310,11 +302,10 @@ async function fillTable(lb: LbKey): Promise<void> {
 
   let html = "";
   for (let i = 0; i < currentData[lb].length; i++) {
-    const entry = currentData[lb][i] as MonkeyTypes.LeaderboardEntry;
-    if (!entry) {
+    const entry = currentData[lb][i];
+    if (entry === undefined) {
       break;
     }
-    if (entry.hidden) return;
     let meClassString = "";
     if (entry.name === loggedInUserName) {
       meClassString = ' class="me"';
@@ -327,7 +318,7 @@ async function fillTable(lb: LbKey): Promise<void> {
 
     let avatar = `<div class="avatarPlaceholder"><i class="fas fa-user-circle"></i></div>`;
 
-    if (entry.discordAvatar) {
+    if (entry.discordAvatar !== undefined) {
       avatar = `<div class="avatarPlaceholder"><i class="fas fa-circle-notch fa-spin"></i></div>`;
     }
 
@@ -349,9 +340,7 @@ async function fillTable(lb: LbKey): Promise<void> {
     <div class="sub">${entry.acc.toFixed(2)}%</div></td>
     <td class="alignRight">${typingSpeedUnit.fromWpm(entry.raw).toFixed(2)}<br>
     <div class="sub">${
-      !entry.consistency || entry.consistency === "-"
-        ? "-"
-        : entry.consistency.toFixed(2) + "%"
+      entry.consistency === undefined ? "-" : entry.consistency.toFixed(2) + "%"
     }</div></td>
     <td class="alignRight">${format(date, "dd MMM yyyy")}<br>
     <div class='sub'>${format(date, "HH:mm")}</div></td>
@@ -438,7 +427,7 @@ async function update(): Promise<void> {
 
   const timeModes = ["15", "60"];
 
-  const leaderboardRequests = timeModes.map(async (mode2) => {
+  const lbDataRequests = timeModes.map(async (mode2) => {
     return Ape.leaderboards.get({
       language: currentLanguage,
       mode: "time",
@@ -447,8 +436,11 @@ async function update(): Promise<void> {
     });
   });
 
-  if (Auth?.currentUser) {
-    leaderboardRequests.push(
+  const lbRankRequests: Promise<
+    Ape.HttpClientResponse<Ape.Leaderboards.GetRank>
+  >[] = [];
+  if (isAuthenticated()) {
+    lbRankRequests.push(
       ...timeModes.map(async (mode2) => {
         return Ape.leaderboards.getRank({
           language: currentLanguage,
@@ -460,37 +452,40 @@ async function update(): Promise<void> {
     );
   }
 
-  const responses = await Promise.all(leaderboardRequests);
+  const responses = await Promise.all(lbDataRequests);
+  const rankResponses = await Promise.all(lbRankRequests);
 
-  const failedResponse = responses.find((response) => response.status !== 200);
-  if (failedResponse) {
+  const failedResponses = [
+    ...(responses.filter((response) => response.status !== 200) ?? []),
+    ...(rankResponses.filter((response) => response.status !== 200) ?? []),
+  ];
+  if (failedResponses.length > 0) {
     hideLoader("15");
     hideLoader("60");
     return Notifications.add(
-      "Failed to load leaderboards: " + failedResponse.message,
+      "Failed to load leaderboards: " + failedResponses[0]?.message,
       -1
     );
   }
 
-  const [lb15Data, lb60Data, lb15Rank, lb60Rank] = responses.map(
-    (response) => response.data
-  );
+  const [lb15Data, lb60Data] = responses.map((response) => response.data);
+  const [lb15Rank, lb60Rank] = rankResponses.map((response) => response.data);
 
-  currentData["15"] = lb15Data;
-  currentData["60"] = lb60Data;
-  currentRank["15"] = lb15Rank;
-  currentRank["60"] = lb60Rank;
+  if (lb15Data !== undefined && lb15Data !== null) currentData["15"] = lb15Data;
+  if (lb60Data !== undefined && lb60Data !== null) currentData["60"] = lb60Data;
+  if (lb15Rank !== undefined && lb15Rank !== null) currentRank["15"] = lb15Rank;
+  if (lb60Rank !== undefined && lb60Rank !== null) currentRank["60"] = lb60Rank;
 
   const leaderboardKeys: LbKey[] = ["15", "60"];
 
-  leaderboardKeys.forEach((lbKey) => {
+  leaderboardKeys.forEach(async (lbKey) => {
     hideLoader(lbKey);
     clearBody(lbKey);
     updateFooter(lbKey);
     checkLbMemory(lbKey);
-    fillTable(lbKey);
+    await fillTable(lbKey);
 
-    getAvatarUrls(currentData[lbKey]).then((urls) => {
+    void getAvatarUrls(currentData[lbKey]).then((urls) => {
       currentAvatars[lbKey] = urls;
       fillAvatars(lbKey);
     });
@@ -535,9 +530,9 @@ async function requestMore(lb: LbKey, prepend = false): Promise<void> {
     limit: limitVal,
     ...getDailyLeaderboardQuery(),
   });
-  const data: MonkeyTypes.LeaderboardEntry[] = response.data;
+  const data = response.data;
 
-  if (response.status !== 200 || data.length === 0) {
+  if (response.status !== 200 || data === null || data.length === 0) {
     hideLoader(lb);
     requesting[lb] = false;
     return;
@@ -552,7 +547,7 @@ async function requestMore(lb: LbKey, prepend = false): Promise<void> {
   }
   await fillTable(lb);
 
-  getAvatarUrls(data).then((urls) => {
+  void getAvatarUrls(data).then((urls) => {
     if (prepend) {
       currentAvatars[lb].unshift(...urls);
     } else {
@@ -575,7 +570,7 @@ async function requestNew(lb: LbKey, skip: number): Promise<void> {
     skip,
     ...getDailyLeaderboardQuery(),
   });
-  const data: MonkeyTypes.LeaderboardEntry[] = response.data;
+  const data = response.data;
 
   if (response.status === 503) {
     Notifications.add(
@@ -588,14 +583,14 @@ async function requestNew(lb: LbKey, skip: number): Promise<void> {
   clearBody(lb);
   currentData[lb] = [];
   currentAvatars[lb] = [];
-  if (response.status !== 200 || data.length === 0) {
+  if (response.status !== 200 || data === null || data.length === 0) {
     hideLoader(lb);
     return;
   }
   currentData[lb] = data;
   await fillTable(lb);
 
-  getAvatarUrls(data).then((urls) => {
+  void getAvatarUrls(data).then((urls) => {
     currentAvatars[lb] = urls;
     fillAvatars(lb);
   });
@@ -604,7 +599,7 @@ async function requestNew(lb: LbKey, skip: number): Promise<void> {
 }
 
 async function getAvatarUrls(
-  data: MonkeyTypes.LeaderboardEntry[]
+  data: Ape.Leaderboards.GetLeaderboard
 ): Promise<(string | null)[]> {
   return Promise.allSettled(
     data.map(async (entry) =>
@@ -645,7 +640,7 @@ export function show(): void {
   }
   Skeleton.append(wrapperId);
   if (!Misc.isPopupVisible("leaderboardsWrapper")) {
-    if (Auth?.currentUser) {
+    if (isAuthenticated()) {
       $("#leaderboardsWrapper #leaderboards .rightTableJumpToMe").removeClass(
         "disabled"
       );
@@ -673,7 +668,7 @@ export function show(): void {
         },
         125,
         () => {
-          update();
+          void update();
           startTimer();
         }
       );
@@ -686,52 +681,57 @@ $("#leaderboardsWrapper").on("click", (e) => {
   }
 });
 
-const languageSelector = $(
-  "#leaderboardsWrapper #leaderboards .leaderboardsTop .buttonGroup.timeRange .languageSelect"
-).select2({
-  placeholder: "select a language",
-  width: "100%",
+const languageSelector = new SlimSelect({
+  select:
+    "#leaderboardsWrapper #leaderboards .leaderboardsTop .buttonGroup.timeRange .languageSelect",
+  settings: {
+    showSearch: false,
+    contentLocation: document.querySelector(
+      "#leaderboardsWrapper"
+    ) as HTMLElement,
+  },
   data: [
     {
-      id: "english",
+      value: "english",
       text: "english",
       selected: true,
     },
     {
-      id: "spanish",
+      value: "spanish",
       text: "spanish",
     },
     {
-      id: "german",
+      value: "german",
       text: "german",
     },
     {
-      id: "french",
+      value: "french",
       text: "french",
     },
     {
-      id: "portuguese",
+      value: "portuguese",
       text: "portuguese",
     },
     {
-      id: "indonesian",
+      value: "indonesian",
       text: "indonesian",
     },
     {
-      id: "italian",
+      value: "italian",
       text: "italian",
     },
     {
-      id: "russian",
+      value: "russian",
       text: "russian",
     },
   ],
-});
-
-languageSelector.on("select2:select", (e) => {
-  currentLanguage = e.params.data.id;
-  updateTitle();
-  update();
+  events: {
+    afterChange: (newVal): void => {
+      currentLanguage = newVal[0]?.value as string;
+      updateTitle();
+      void update();
+    },
+  },
 });
 
 let leftScrollEnabled = true;
@@ -740,7 +740,7 @@ $("#leaderboardsWrapper #leaderboards .leftTableWrapper").on("scroll", (e) => {
   if (!leftScrollEnabled) return;
   const elem = $(e.currentTarget);
   if (Math.round(elem.scrollTop() as number) <= 50) {
-    debouncedRequestMore("15", true);
+    void debouncedRequestMore("15", true);
   }
 });
 
@@ -748,13 +748,13 @@ const debouncedRequestMore = debounce(500, requestMore);
 
 $("#leaderboardsWrapper #leaderboards .leftTableWrapper").on("scroll", (e) => {
   if (!leftScrollEnabled) return;
-  const elem = $(e.currentTarget) as JQuery<HTMLElement>;
-  if (!elem || !elem[0]) return;
+  const elem = $(e.currentTarget);
+  if (elem === undefined || elem[0] === undefined) return;
   if (
     Math.round(elem[0].scrollHeight - (elem.scrollTop() as number)) <=
     Math.round(elem.outerHeight() as number) + 50
   ) {
-    debouncedRequestMore("15");
+    void debouncedRequestMore("15");
   }
 });
 
@@ -764,18 +764,18 @@ $("#leaderboardsWrapper #leaderboards .rightTableWrapper").on("scroll", (e) => {
   if (!rightScrollEnabled) return;
   const elem = $(e.currentTarget);
   if (Math.round(elem.scrollTop() as number) <= 50) {
-    debouncedRequestMore("60", true);
+    void debouncedRequestMore("60", true);
   }
 });
 
 $("#leaderboardsWrapper #leaderboards .rightTableWrapper").on("scroll", (e) => {
-  const elem = $(e.currentTarget) as JQuery<HTMLElement>;
-  if (!elem || !elem[0]) return;
+  const elem = $(e.currentTarget);
+  if (elem === undefined || elem[0] === undefined) return;
   if (
     Math.round(elem[0].scrollHeight - (elem.scrollTop() as number)) <=
     Math.round((elem.outerHeight() as number) + 50)
   ) {
-    debouncedRequestMore("60");
+    void debouncedRequestMore("60");
   }
 });
 
@@ -858,10 +858,9 @@ $(
 ).on("click", () => {
   currentTimeRange = "allTime";
   currentLanguage = "english";
-  languageSelector.prop("disabled", true);
-  languageSelector.val("english");
-  languageSelector.trigger("change");
-  update();
+  languageSelector.disable();
+  languageSelector.setSelected("english");
+  void update();
 });
 
 $(
@@ -869,13 +868,13 @@ $(
 ).on("click", () => {
   currentTimeRange = "daily";
   updateYesterdayButton();
-  languageSelector.prop("disabled", false);
-  update();
+  languageSelector.enable();
+  void update();
 });
 
 $("#leaderboardsWrapper .showYesterdayButton").on("click", () => {
   showingYesterday = !showingYesterday;
-  update();
+  void update();
 });
 
 $(document).on("keydown", (event) => {
