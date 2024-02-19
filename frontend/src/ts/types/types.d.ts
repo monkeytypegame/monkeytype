@@ -108,6 +108,20 @@ declare namespace MonkeyTypes {
     | "changesWordsFrequency"
     | `wordOrder:${FunboxWordOrder}`;
 
+  class Wordset {
+    public words: string[];
+    public length: number;
+    constructor(words: string[]);
+    randomWord(mode: MonkeyTypes.FunboxWordsFrequency): string;
+  }
+
+  class Section {
+    public title: string;
+    public author: string;
+    public words: string[];
+    constructor(title: string, author: string, words: string[]);
+  }
+
   type FunboxFunctions = {
     getWord?: (wordset?: Wordset, wordIndex?: number) => string;
     punctuateWord?: (word: string) => string;

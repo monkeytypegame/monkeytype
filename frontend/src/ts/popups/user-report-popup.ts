@@ -4,6 +4,7 @@ import * as Notifications from "../elements/notifications";
 import * as CaptchaController from "../controllers/captcha-controller";
 import * as Skeleton from "./skeleton";
 import { isPopupVisible } from "../utils/misc";
+import SlimSelect from "slim-select";
 
 const wrapperId = "userReportPopupWrapper";
 
@@ -23,6 +24,8 @@ type ShowOptions = {
   lbOptOut: boolean;
 };
 
+let select: SlimSelect | undefined = undefined;
+
 export async function show(options: ShowOptions): Promise<void> {
   Skeleton.append(wrapperId);
   if (!isPopupVisible(wrapperId)) {
@@ -39,9 +42,14 @@ export async function show(options: ShowOptions): Promise<void> {
     $("#userReportPopup .reason").val("Inappropriate name");
     $("#userReportPopup .comment").val("");
     $("#userReportPopup .characterCount").text("-");
-    $("#userReportPopup .reason").select2({
-      minimumResultsForSearch: Infinity,
+
+    select = new SlimSelect({
+      select: "#userReportPopup .reason",
+      settings: {
+        showSearch: false,
+      },
     });
+
     $("#userReportPopupWrapper")
       .stop(true, true)
       .css("opacity", 0)
@@ -63,6 +71,8 @@ async function hide(): Promise<void> {
         },
         125,
         () => {
+          select?.destroy();
+          select = undefined;
           CaptchaController.reset("userReportPopup");
           $("#userReportPopupWrapper").addClass("hidden");
           Skeleton.remove(wrapperId);

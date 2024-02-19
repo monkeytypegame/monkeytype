@@ -4,7 +4,7 @@ import { ObjectId, Filter, Collection, WithId } from "mongodb";
 
 const MAX_PRESETS = 10;
 
-type DBConfigPreset = SharedTypes.WithObjectId<SharedTypes.DBConfigPreset>;
+type DBConfigPreset = MonkeyTypes.WithObjectId<SharedTypes.DBConfigPreset>;
 
 function getPresetKeyFilter(
   uid: string,

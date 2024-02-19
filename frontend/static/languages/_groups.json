@@ -424,7 +424,15 @@
   },
   {
     "name": "belarusian",
-    "languages": ["belarusian", "belarusian_1k", "belarusian_5k", "belarusian_10k", "belarusian_25k", "belarusian_50k", "belarusian_100k"]
+    "languages": [
+      "belarusian",
+      "belarusian_1k",
+      "belarusian_5k",
+      "belarusian_10k",
+      "belarusian_25k",
+      "belarusian_50k",
+      "belarusian_100k"
+    ]
   },
   {
     "name": "belarusian_lacinka",
