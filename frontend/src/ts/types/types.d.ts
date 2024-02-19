@@ -474,7 +474,6 @@ declare namespace MonkeyTypes {
   type TypingSpeedUnitSettings = {
     fromWpm: (number: number) => number;
     toWpm: (number: number) => number;
-    convertWithUnitSuffix: (number: number, withDecimals: boolean) => string;
     fullUnitString: string;
     histogramDataBucketSize: number;
     historyStepSize: number;
