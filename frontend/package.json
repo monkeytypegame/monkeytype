@@ -69,6 +69,7 @@
     "ts-jest": "29.1.2",
     "ts-loader": "9.2.6",
     "ts-node-dev": "2.0.0",
+    "typescript": "5.3.3",
     "webpack": "5.72.0",
     "webpack-bundle-analyzer": "4.5.0",
     "webpack-cli": "4.10.0",
