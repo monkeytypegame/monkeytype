@@ -44,33 +44,27 @@ import "./controllers/profile-search-controller";
 import "./version";
 import { isDevEnvironment } from "./utils/misc";
 
-type ExtendedGlobal = typeof globalThis & MonkeyTypes.Global;
+function addToGlobal(items: Record<string, unknown>): void {
+  for (const [name, item] of Object.entries(items)) {
+    //@ts-expect-error
+    window[name] = item;
+  }
+}
 
-const extendedGlobal = global as ExtendedGlobal;
-
-extendedGlobal.snapshot = DB.getSnapshot;
-
-extendedGlobal.config = Config;
-
-extendedGlobal.toggleFilterDebug = Account.toggleFilterDebug;
-
-extendedGlobal.glarsesMode = enable;
-
-extendedGlobal.stats = TestStats.getStats;
-
-extendedGlobal.replay = Replay.getReplayExport;
-
-extendedGlobal.enableTimerDebug = TestTimer.enableTimerDebug;
-
-extendedGlobal.getTimerStats = TestTimer.getTimerStats;
-
-extendedGlobal.toggleUnsmoothedRaw = Result.toggleUnsmoothedRaw;
-
-extendedGlobal.egVideoListener = egVideoListener;
-
-extendedGlobal.toggleDebugLogs = Logger.toggleDebugLogs;
+addToGlobal({
+  snapshot: DB.getSnapshot,
+  config: Config,
+  toggleFilterDebug: Account.toggleFilterDebug,
+  glarsesMode: enable,
+  stats: TestStats.getStats,
+  replay: Replay.getReplayExport,
+  enableTimerDebug: TestTimer.enableTimerDebug,
+  getTimerStats: TestTimer.getTimerStats,
+  toggleUnsmoothedRaw: Result.toggleUnsmoothedRaw,
+  egVideoListener: egVideoListener,
+  toggleDebugLogs: Logger.toggleDebugLogs,
+});
 
 if (isDevEnvironment()) {
-  //@ts-expect-error
-  extendedGlobal.$ = $;
+  addToGlobal({ $: $ });
 }
