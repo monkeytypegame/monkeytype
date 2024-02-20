@@ -2,9 +2,9 @@
   "compilerOptions": {
     "target": "ES6",
     "lib": ["ESNext", "DOM", "DOM.Iterable"],
-    "module": "CommonJS",
+    "module": "ESNext",
     "moduleResolution": "node",
-    "types": ["node", "jest", "jquery"],
+    "types": ["vite/client", "node", "jest", "jquery"],
     "allowUmdGlobalAccess": true,
     "resolveJsonModule": true,
     "outDir": "./build",
