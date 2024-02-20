@@ -67,6 +67,7 @@ const BASE_CONFIG = {
       plugins: [autoprefixer({})],
     },
   },
+  envDir: "../",
   build: {
     emptyOutDir: true,
     outDir: "../dist",
