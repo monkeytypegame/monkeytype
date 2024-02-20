@@ -4,7 +4,7 @@ type Config = {
   clientVersion: string;
 };
 
-// @ts-expect-error
+//@ts-expect-error these get replaced by vite
 const backendUrl = BACKEND_URL;
 // @ts-expect-error
 const isDevelopment = IS_DEVELOPMENT;
