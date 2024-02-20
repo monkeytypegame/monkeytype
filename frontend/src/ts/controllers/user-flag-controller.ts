@@ -9,14 +9,22 @@ const flags: UserFlag[] = [
     name: "Banned",
     description: "This account is banned",
     icon: "fa-gavel",
-    color: " var(--error-color)",
+    color: "var(--error-color)",
     test: (it) => it.banned === true,
+  },
+  {
+    name: "Testing",
+    description: "This is for testing",
+    icon: "fa-bug",
+    color: "yellow",
+    test: (it) => it.name.length > 5,
   },
 ];
 
 type SupportsFlags = {
   isPremium?: boolean;
   banned?: boolean;
+  name: string; //TODO remove
 };
 
 type UserFlag = {
