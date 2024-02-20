@@ -45,7 +45,7 @@ const BASE_CONFIG = {
         root: path.resolve(__dirname, "./"),
       },
       eslint: {
-        lintCommand: `eslint "./ts/**/*.ts"`,
+        lintCommand: `eslint "${path.resolve(__dirname, "./src/ts/**/*.ts")}"`,
       },
       overlay: {
         initialIsOpen: false,
