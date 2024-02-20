@@ -72,7 +72,7 @@ const BASE_CONFIG = {
     outDir: "../dist",
     rollupOptions: {
       input: {
-        main: path.resolve(__dirname, "src/index.html"),
+        monkeytype: path.resolve(__dirname, "src/index.html"),
         email: path.resolve(__dirname, "src/email-handler.html"),
         privacy: path.resolve(__dirname, "src/privacy-policy.html"),
         security: path.resolve(__dirname, "src/security-policy.html"),
