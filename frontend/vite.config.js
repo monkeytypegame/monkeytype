@@ -8,6 +8,7 @@ import { VitePWA } from "vite-plugin-pwa";
 import replace from "vite-plugin-filter-replace";
 import Inspect from "vite-plugin-inspect";
 import autoprefixer from "autoprefixer";
+import "dotenv/config";
 
 function pad(numbers, maxLength, fillString) {
   return numbers.map((number) =>

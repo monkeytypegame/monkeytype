@@ -37,6 +37,7 @@
     "@types/object-hash": "2.2.1",
     "@types/throttle-debounce": "2.1.0",
     "autoprefixer": "10.4.14",
+    "dotenv": "16.4.5",
     "eslint": "8.43.0",
     "gulp": "4.0.2",
     "jest": "29.7.0",
