@@ -3,7 +3,7 @@
     "before:init": [
       "npm run lint",
       "npm run test",
-      "cd frontend && npm run validate-json && npm run build-live"
+      "cd frontend && npm run validate-json && npm run build"
     ],
     "before:release": [
       "sh ./bin/deployBackend.sh",

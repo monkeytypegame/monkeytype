@@ -3,7 +3,7 @@
     "before:init": [
       "npm run lint-fe",
       "npm run test-fe",
-      "cd frontend && npm run validate-json && npm run build-live"
+      "cd frontend && npm run validate-json && npm run build"
     ],
     "before:release": [
       "cd frontend && firebase deploy -P live --only hosting",
