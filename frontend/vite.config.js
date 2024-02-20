@@ -59,7 +59,7 @@ const BASE_CONFIG = {
   server: {
     open: true,
     port: 3000,
-    host: process.env.HOST === true,
+    host: process.env.BACKEND_URL !== undefined,
   },
   root: "src",
   publicDir: "../static",
