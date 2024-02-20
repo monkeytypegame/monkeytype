@@ -162,21 +162,9 @@
       </main>
     </div>
   </body>
-  <script
-    src="https://code.jquery.com/jquery-3.7.1.slim.min.js"
-    integrity="sha256-kmHvs0B+OpCW5GVHUNjv9rOmY0IvSIRcf7zGUDTDQM8="
-    crossorigin="anonymous"
-  ></script>
-  <script src="/__/firebase/8.4.2/firebase-app.js"></script>
+  <script type="module">
+    import { app as firebase } from "./ts/firebase";
 
-  <script src="/__/firebase/8.4.2/firebase-analytics.js"></script>
-  <script src="/__/firebase/8.4.2/firebase-auth.js"></script>
-  <script src="/__/firebase/8.4.2/firebase-firestore.js"></script>
-  <script src="/__/firebase/8.4.2/firebase-functions.js"></script>
-
-  <!-- Initialize Firebase -->
-  <script src="/__/firebase/init.js?useEmulator=true'"></script>
-  <script defer>
     function isPasswordStrong(password) {
       const hasCapital = !!password.match(/[A-Z]/);
       const hasNumber = !!password.match(/[\d]/);
