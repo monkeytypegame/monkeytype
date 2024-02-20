@@ -109,6 +109,10 @@
     color: var(--sub-color);
     line-height: 1rem;
     text-align: right;
+
+    .fas {
+      margin-right: 0.35em;
+    }
   }
 
   #timerNumber {

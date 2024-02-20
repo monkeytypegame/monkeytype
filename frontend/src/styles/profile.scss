@@ -355,13 +355,23 @@
           grid-column: 1/2;
         }
       }
-      .name {
-        // font-size: 3rem;
-        // line-height: 2.5rem;
+      .user {
+        display: flex;
+        flex-wrap: wrap;
         font-size: 1rem;
         line-height: 100%;
         width: max-content;
-        .bannedIcon {
+        .name {
+          margin-right: 0.35em;
+        }
+        .userFlags {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 0.35em;
+          font-size: 75%;
+          color: var(--sub-color);
+        }
+        .lbOptOutIcon {
           margin-left: 0.5em;
           display: inline-grid;
           font-size: 75%;

@@ -107,8 +107,19 @@ nav {
           }
         }
       }
-      &:hover .level {
-        background-color: var(--text-color);
+      .userFlags {
+        display: flex;
+        flex-wrap: wrap;
+        color: var(--sub-color);
+        gap: 0.25em;
+      }
+      &:hover {
+        .level {
+          background-color: var(--text-color);
+        }
+        .userFlags {
+          color: var(--text-color);
+        }
       }
     }
   }

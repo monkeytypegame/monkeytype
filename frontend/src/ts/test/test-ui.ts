@@ -23,6 +23,7 @@ import * as ResultWordHighlight from "../elements/result-word-highlight";
 import * as ActivePage from "../states/active-page";
 import Format from "../utils/format";
 import * as Loader from "../elements/loader";
+import { getHtmlByUserFlags } from "../controllers/user-flag-controller";
 
 async function gethtml2canvas(): Promise<typeof import("html2canvas").default> {
   return (await import("html2canvas")).default;
@@ -449,17 +450,16 @@ export async function screenshot(): Promise<void> {
   const dateNow = new Date(Date.now());
   $("#resultReplay").addClass("hidden");
   $(".pageTest .ssWatermark").removeClass("hidden");
-  $(".pageTest .ssWatermark").text(
-    format(dateNow, "dd MMM yyyy HH:mm") + " | monkeytype.com "
-  );
-  if (isAuthenticated()) {
-    $(".pageTest .ssWatermark").text(
-      DB.getSnapshot()?.name +
-        " | " +
-        format(dateNow, "dd MMM yyyy HH:mm") +
-        " | monkeytype.com  "
-    );
+
+  const snapshot = DB.getSnapshot();
+  const ssWatermark = [format(dateNow, "dd MMM yyyy HH:mm"), "monkeytype.com"];
+  if (snapshot?.name !== undefined) {
+    const userText = `${snapshot?.name} ${getHtmlByUserFlags(snapshot, {
+      iconsOnly: true,
+    })}`;
+    ssWatermark.unshift(userText);
   }
+  $(".pageTest .ssWatermark").html(ssWatermark.join(" | "));
   $(".pageTest .buttons").addClass("hidden");
   $("#notificationCenter").addClass("hidden");
   $("#commandLineMobileButton").addClass("hidden");

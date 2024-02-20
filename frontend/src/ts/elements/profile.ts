@@ -7,6 +7,7 @@ import { throttle } from "throttle-debounce";
 import * as EditProfilePopup from "../popups/edit-profile-popup";
 import * as ActivePage from "../states/active-page";
 import formatDistanceToNowStrict from "date-fns/formatDistanceToNowStrict";
+import { getHtmlByUserFlags } from "../controllers/user-flag-controller";
 
 type ProfileViewPaths = "profile" | "account";
 type UserProfileOrSnapshot = SharedTypes.UserProfile | MonkeyTypes.Snapshot;
@@ -78,20 +79,13 @@ export async function update(
   }
 
   details.find(".name").text(profile.name);
-
-  if (banned) {
-    details
-      .find(".name")
-      .append(
-        `<div class="bannedIcon" aria-label="This account is banned" data-balloon-pos="up"><i class="fas fa-gavel"></i></div>`
-      );
-  }
+  details.find(".userFlags").html(getHtmlByUserFlags(profile));
 
   if (lbOptOut) {
     details
       .find(".name")
       .append(
-        `<div class="bannedIcon" aria-label="This account has opted out of leaderboards" data-balloon-pos="up"><i class="fas fa-crown"></i></div>`
+        `<div class="lbOptOutIcon" aria-label="This account has opted out of leaderboards" data-balloon-pos="up"><i class="fas fa-crown"></i></div>`
       );
 
     if (where === "profile") {

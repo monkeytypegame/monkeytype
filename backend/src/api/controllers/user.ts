@@ -744,6 +744,7 @@ export async function getProfile(
     streak: streak?.length ?? 0,
     maxStreak: streak?.maxLength ?? 0,
     lbOptOut,
+    isPremium: await UserDAL.checkIfUserIsPremium(user.uid, user),
   };
 
   if (banned) {
