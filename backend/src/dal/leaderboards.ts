@@ -3,6 +3,7 @@ import Logger from "../utils/logger";
 import { performance } from "perf_hooks";
 import { setLeaderboard } from "../utils/prometheus";
 import { isDevEnvironment } from "../utils/misc";
+import { getCachedConfiguration } from "../init/configuration";
 
 const leaderboardUpdating: Record<string, boolean> = {};
 
@@ -27,6 +28,13 @@ export async function get(
       .skip(skip)
       .limit(limit)
       .toArray();
+
+    const premiumFeaturesEnabled = (await getCachedConfiguration(true)).users
+      .premium.enabled;
+
+    if (!premiumFeaturesEnabled) {
+      preset.forEach((it) => (it.isPremium = undefined));
+    }
     return preset;
   } catch (e) {
     if (e.error === 175) {
@@ -77,7 +85,6 @@ export async function update(
   const key = `lbPersonalBests.${mode}.${mode2}.${language}`;
   const lbCollectionName = `leaderboards.${language}.${mode}.${mode2}`;
   leaderboardUpdating[`${language}_${mode}_${mode2}`] = true;
-  const start1 = performance.now();
   const lb = db
     .collection<MonkeyTypes.DBUser>("users")
     .aggregate<SharedTypes.LeaderboardEntry>(
@@ -127,41 +134,43 @@ export async function update(
             discordId: 1,
             discordAvatar: 1,
             inventory: 1,
+            premium: 1,
           },
         },
 
         {
           $addFields: {
-            [`${key}.uid`]: "$uid",
-            [`${key}.name`]: "$name",
-            [`${key}.discordId`]: {
-              $ifNull: ["$discordId", "$$REMOVE"],
-            },
-            [`${key}.discordAvatar`]: {
-              $ifNull: ["$discordAvatar", "$$REMOVE"],
-            },
+            "user.uid": "$uid",
+            "user.name": "$name",
+            "user.discordId": { $ifNull: ["$discordId", "$$REMOVE"] },
+            "user.discordAvatar": { $ifNull: ["$discordAvatar", "$$REMOVE"] },
             [`${key}.consistency`]: {
               $ifNull: [`$${key}.consistency`, "$$REMOVE"],
             },
-            [`${key}.rank`]: {
+            calculated: {
               $function: {
-                body: "function() {try {row_number+= 1;} catch (e) {row_number= 1;}return row_number;}",
-                args: [],
                 lang: "js",
-              },
-            },
-            [`${key}.badgeId`]: {
-              $function: {
-                body: "function(badges) {if (!badges) return null; for(let i=0;i<badges.length;i++){ if(badges[i].selected) return badges[i].id;}return null;}",
-                args: ["$inventory.badges"],
-                lang: "js",
+                args: [
+                  "$premium.expirationTimestamp",
+                  "$$NOW",
+                  "$inventory.badges",
+                ],
+                body: `function(expiration, currentTime, badges) { 
+                        try {row_number+= 1;} catch (e) {row_number= 1;} 
+                        var badgeId = undefined;
+                        if(badges)for(let i=0; i<badges.length; i++){
+                            if(badges[i].selected){ badgeId = badges[i].id; break}
+                        }
+                        var isPremium = expiration !== undefined && (expiration === -1 || new Date(expiration)>currentTime) || undefined;
+                        return {rank:row_number,badgeId, isPremium};
+                      }`,
               },
             },
           },
         },
         {
-          $replaceRoot: {
-            newRoot: `$${key}`,
+          $replaceWith: {
+            $mergeObjects: [`$${key}`, "$user", "$calculated"],
           },
         },
         { $out: lbCollectionName },
@@ -169,6 +178,7 @@ export async function update(
       { allowDiskUse: true }
     );
 
+  const start1 = performance.now();
   await lb.toArray();
   const end1 = performance.now();
 
@@ -179,7 +189,6 @@ export async function update(
   const end2 = performance.now();
 
   //update speedStats
-  const start3 = performance.now();
   const boundaries = [...Array(32).keys()].map((it) => it * 10);
   const statsKey = `${language}_${mode}_${mode2}`;
   const src = await db.collection(lbCollectionName);
@@ -218,6 +227,7 @@ export async function update(
     ],
     { allowDiskUse: true }
   );
+  const start3 = performance.now();
   await histogram.toArray();
   const end3 = performance.now();
 
@@ -258,6 +268,7 @@ async function createIndex(key: string): Promise<void> {
     discordId: 1,
     discordAvatar: 1,
     inventory: 1,
+    premium: 1,
   };
   const partial = {
     partialFilterExpression: {
@@ -275,4 +286,10 @@ async function createIndex(key: string): Promise<void> {
 export async function createIndicies(): Promise<void> {
   await createIndex("lbPersonalBests.time.15.english");
   await createIndex("lbPersonalBests.time.60.english");
+
+  if (isDevEnvironment()) {
+    Logger.info("Updating leaderboards in dev mode...");
+    await update("time", "15", "english");
+    await update("time", "60", "english");
+  }
 }
