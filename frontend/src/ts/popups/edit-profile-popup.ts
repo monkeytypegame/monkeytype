@@ -76,7 +76,7 @@ function hydrateInputs(): void {
   websiteInput.val(socialProfiles?.website ?? "");
   badgeIdsSelect.html("");
 
-  badges?.forEach((badge: MonkeyTypes.Badge) => {
+  badges?.forEach((badge: SharedTypes.Badge) => {
     if (badge.selected) {
       currentSelectedBadgeId = badge.id;
     }
@@ -108,14 +108,14 @@ function hydrateInputs(): void {
   });
 }
 
-function buildUpdatesFromInputs(): MonkeyTypes.UserDetails {
+function buildUpdatesFromInputs(): SharedTypes.UserProfileDetails {
   const bio = (bioInput.val() ?? "") as string;
   const keyboard = (keyboardInput.val() ?? "") as string;
   const twitter = (twitterInput.val() ?? "") as string;
   const github = (githubInput.val() ?? "") as string;
   const website = (websiteInput.val() ?? "") as string;
 
-  const profileUpdates: MonkeyTypes.UserDetails = {
+  const profileUpdates: SharedTypes.UserProfileDetails = {
     bio,
     keyboard,
     socialProfiles: {

@@ -1,10 +1,10 @@
 import { v4 } from "uuid";
 
-type MonkeyMailOptions = Partial<Omit<MonkeyTypes.MonkeyMail, "id" | "read">>;
+type MonkeyMailOptions = Partial<Omit<SharedTypes.MonkeyMail, "id" | "read">>;
 
 export function buildMonkeyMail(
   options: MonkeyMailOptions
-): MonkeyTypes.MonkeyMail {
+): SharedTypes.MonkeyMail {
   return {
     id: v4(),
     subject: options.subject ?? "",

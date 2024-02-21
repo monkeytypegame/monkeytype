@@ -2,6 +2,8 @@ import * as DB from "../db";
 import format from "date-fns/format";
 import * as Skeleton from "./skeleton";
 import { getLanguageDisplayString, isPopupVisible } from "../utils/misc";
+import Config from "../config";
+import Format from "../utils/format";
 
 type PersonalBest = {
   mode2: SharedTypes.Config.Mode2<SharedTypes.Config.Mode>;
@@ -12,6 +14,9 @@ const wrapperId = "pbTablesPopupWrapper";
 function update(mode: SharedTypes.Config.Mode): void {
   $("#pbTablesPopup table tbody").empty();
   $($("#pbTablesPopup table thead tr td")[0] as HTMLElement).text(mode);
+  $($("#pbTablesPopup table thead tr td span.unit")[0] as HTMLElement).text(
+    Config.typingSpeedUnit
+  );
 
   const snapshot = DB.getSnapshot();
   if (!snapshot) return;
@@ -56,16 +61,14 @@ function update(mode: SharedTypes.Config.Mode): void {
       <tr>
         <td>${mode2memory === pb.mode2 ? "" : pb.mode2}</td>
         <td>
-          ${pb.wpm.toFixed(2)}
+          ${Format.typingSpeed(pb.wpm)}
           <br />
-          <span class="sub">${pb.acc ? pb.acc + "%" : "-"}</span>
+          <span class="sub">${Format.percentage(pb.acc)}</span>
         </td>
         <td>
-          ${pb.raw ? pb.raw : "-"}
+          ${Format.typingSpeed(pb.raw)}
           <br />
-          <span class="sub">${
-            pb.consistency ? pb.consistency + "%" : "-"
-          }</span>
+          <span class="sub">${Format.percentage(pb.consistency)}</span>
         </td>
         <td>${pb.difficulty}</td>
         <td>${pb.language ? getLanguageDisplayString(pb.language) : "-"}</td>

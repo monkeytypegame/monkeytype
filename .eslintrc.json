@@ -41,7 +41,13 @@
         "ignore": ["^./constants/firebase-config$"]
       }
     ],
-    "import/no-duplicates": "off"
+    "import/no-duplicates": "off",
+    "no-mixed-operators": [
+      "error",
+      {
+        "groups": [["+", "??"]]
+      }
+    ]
   },
   "settings": {
     "import/resolver": {

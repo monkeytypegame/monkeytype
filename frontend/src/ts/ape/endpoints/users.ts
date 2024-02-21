@@ -5,7 +5,7 @@ export default class Users {
     this.httpClient = httpClient;
   }
 
-  async getData(): Ape.EndpointResponse {
+  async getData(): Ape.EndpointResponse<Ape.Users.GetUser> {
     return await this.httpClient.get(BASE_PATH);
   }
 
@@ -14,7 +14,7 @@ export default class Users {
     captcha: string,
     email?: string,
     uid?: string
-  ): Ape.EndpointResponse {
+  ): Ape.EndpointResponse<null> {
     const payload = {
       email,
       name,
@@ -25,23 +25,23 @@ export default class Users {
     return await this.httpClient.post(`${BASE_PATH}/signup`, { payload });
   }
 
-  async getNameAvailability(name: string): Ape.EndpointResponse {
+  async getNameAvailability(name: string): Ape.EndpointResponse<null> {
     return await this.httpClient.get(`${BASE_PATH}/checkName/${name}`);
   }
 
-  async delete(): Ape.EndpointResponse {
+  async delete(): Ape.EndpointResponse<null> {
     return await this.httpClient.delete(BASE_PATH);
   }
 
-  async reset(): Ape.EndpointResponse {
+  async reset(): Ape.EndpointResponse<null> {
     return await this.httpClient.patch(`${BASE_PATH}/reset`);
   }
 
-  async optOutOfLeaderboards(): Ape.EndpointResponse {
+  async optOutOfLeaderboards(): Ape.EndpointResponse<null> {
     return await this.httpClient.post(`${BASE_PATH}/optOutOfLeaderboards`);
   }
 
-  async updateName(name: string): Ape.EndpointResponse {
+  async updateName(name: string): Ape.EndpointResponse<null> {
     return await this.httpClient.patch(`${BASE_PATH}/name`, {
       payload: { name },
     });
@@ -52,7 +52,7 @@ export default class Users {
     mode2: SharedTypes.Config.Mode2<M>,
     language: string,
     rank: number
-  ): Ape.EndpointResponse {
+  ): Ape.EndpointResponse<null> {
     const payload = {
       mode,
       mode2,
@@ -68,7 +68,7 @@ export default class Users {
   async updateEmail(
     newEmail: string,
     previousEmail: string
-  ): Ape.EndpointResponse {
+  ): Ape.EndpointResponse<null> {
     const payload = {
       newEmail,
       previousEmail,
@@ -77,31 +77,31 @@ export default class Users {
     return await this.httpClient.patch(`${BASE_PATH}/email`, { payload });
   }
 
-  async deletePersonalBests(): Ape.EndpointResponse {
+  async deletePersonalBests(): Ape.EndpointResponse<null> {
     return await this.httpClient.delete(`${BASE_PATH}/personalBests`);
   }
 
   async addResultFilterPreset(
     filter: SharedTypes.ResultFilters
-  ): Ape.EndpointResponse {
+  ): Ape.EndpointResponse<string> {
     return await this.httpClient.post(`${BASE_PATH}/resultFilterPresets`, {
       payload: filter,
     });
   }
 
-  async removeResultFilterPreset(id: string): Ape.EndpointResponse {
+  async removeResultFilterPreset(id: string): Ape.EndpointResponse<null> {
     return await this.httpClient.delete(
       `${BASE_PATH}/resultFilterPresets/${id}`
     );
   }
 
-  async createTag(tagName: string): Ape.EndpointResponse {
+  async createTag(tagName: string): Ape.EndpointResponse<SharedTypes.UserTag> {
     return await this.httpClient.post(`${BASE_PATH}/tags`, {
       payload: { tagName },
     });
   }
 
-  async editTag(tagId: string, newName: string): Ape.EndpointResponse {
+  async editTag(tagId: string, newName: string): Ape.EndpointResponse<null> {
     const payload = {
       tagId,
       newName,
@@ -110,24 +110,24 @@ export default class Users {
     return await this.httpClient.patch(`${BASE_PATH}/tags`, { payload });
   }
 
-  async deleteTag(tagId: string): Ape.EndpointResponse {
+  async deleteTag(tagId: string): Ape.EndpointResponse<null> {
     return await this.httpClient.delete(`${BASE_PATH}/tags/${tagId}`);
   }
 
-  async deleteTagPersonalBest(tagId: string): Ape.EndpointResponse {
+  async deleteTagPersonalBest(tagId: string): Ape.EndpointResponse<null> {
     return await this.httpClient.delete(
       `${BASE_PATH}/tags/${tagId}/personalBest`
     );
   }
 
-  async getCustomThemes(): Ape.EndpointResponse {
+  async getCustomThemes(): Ape.EndpointResponse<SharedTypes.CustomTheme[]> {
     return await this.httpClient.get(`${BASE_PATH}/customThemes`);
   }
 
   async editCustomTheme(
     themeId: string,
     newTheme: Partial<MonkeyTypes.CustomTheme>
-  ): Ape.EndpointResponse {
+  ): Ape.EndpointResponse<null> {
     const payload = {
       themeId: themeId,
       theme: {
@@ -140,7 +140,7 @@ export default class Users {
     });
   }
 
-  async deleteCustomTheme(themeId: string): Ape.EndpointResponse {
+  async deleteCustomTheme(themeId: string): Ape.EndpointResponse<null> {
     const payload = {
       themeId: themeId,
     };
@@ -151,12 +151,12 @@ export default class Users {
 
   async addCustomTheme(
     newTheme: Partial<MonkeyTypes.CustomTheme>
-  ): Ape.EndpointResponse {
+  ): Ape.EndpointResponse<SharedTypes.CustomTheme> {
     const payload = { name: newTheme.name, colors: newTheme.colors };
     return await this.httpClient.post(`${BASE_PATH}/customThemes`, { payload });
   }
 
-  async getOauthLink(): Ape.EndpointResponse {
+  async getOauthLink(): Ape.EndpointResponse<Ape.Users.GetOauthLink> {
     return await this.httpClient.get(`${BASE_PATH}/discord/oauth`);
   }
 
@@ -164,20 +164,20 @@ export default class Users {
     tokenType: string,
     accessToken: string,
     state: string
-  ): Ape.EndpointResponse {
+  ): Ape.EndpointResponse<Ape.Users.LinkDiscord> {
     return await this.httpClient.post(`${BASE_PATH}/discord/link`, {
       payload: { tokenType, accessToken, state },
     });
   }
 
-  async unlinkDiscord(): Ape.EndpointResponse {
+  async unlinkDiscord(): Ape.EndpointResponse<null> {
     return await this.httpClient.post(`${BASE_PATH}/discord/unlink`);
   }
 
   async addQuoteToFavorites(
     language: string,
     quoteId: string
-  ): Ape.EndpointResponse {
+  ): Ape.EndpointResponse<null> {
     const payload = { language, quoteId };
     return await this.httpClient.post(`${BASE_PATH}/favoriteQuotes`, {
       payload,
@@ -187,25 +187,29 @@ export default class Users {
   async removeQuoteFromFavorites(
     language: string,
     quoteId: string
-  ): Ape.EndpointResponse {
+  ): Ape.EndpointResponse<null> {
     const payload = { language, quoteId };
     return await this.httpClient.delete(`${BASE_PATH}/favoriteQuotes`, {
       payload,
     });
   }
 
-  async getProfileByUid(uid: string): Promise<Ape.EndpointResponse> {
+  async getProfileByUid(
+    uid: string
+  ): Ape.EndpointResponse<SharedTypes.UserProfile> {
     return await this.httpClient.get(`${BASE_PATH}/${uid}/profile?isUid`);
   }
 
-  async getProfileByName(name: string): Promise<Ape.EndpointResponse> {
+  async getProfileByName(
+    name: string
+  ): Ape.EndpointResponse<SharedTypes.UserProfile> {
     return await this.httpClient.get(`${BASE_PATH}/${name}/profile`);
   }
 
   async updateProfile(
-    profileUpdates: Partial<MonkeyTypes.UserDetails>,
+    profileUpdates: Partial<SharedTypes.UserProfileDetails>,
     selectedBadgeId?: number
-  ): Promise<Ape.EndpointResponse> {
+  ): Ape.EndpointResponse<null> {
     return await this.httpClient.patch(`${BASE_PATH}/profile`, {
       payload: {
         ...profileUpdates,
@@ -214,14 +218,14 @@ export default class Users {
     });
   }
 
-  async getInbox(): Promise<Ape.EndpointResponse> {
+  async getInbox(): Ape.EndpointResponse<Ape.Users.GetInbox> {
     return await this.httpClient.get(`${BASE_PATH}/inbox`);
   }
 
   async updateInbox(options: {
     mailIdsToDelete?: string[];
     mailIdsToMarkRead?: string[];
-  }): Promise<Ape.EndpointResponse> {
+  }): Ape.EndpointResponse<null> {
     const payload = {
       mailIdsToDelete: options.mailIdsToDelete,
       mailIdsToMarkRead: options.mailIdsToMarkRead,
@@ -234,7 +238,7 @@ export default class Users {
     reason: string,
     comment: string,
     captcha: string
-  ): Ape.EndpointResponse {
+  ): Ape.EndpointResponse<null> {
     const payload = {
       uid,
       reason,
@@ -245,23 +249,23 @@ export default class Users {
     return await this.httpClient.post(`${BASE_PATH}/report`, { payload });
   }
 
-  async verificationEmail(): Ape.EndpointResponse {
+  async verificationEmail(): Ape.EndpointResponse<null> {
     return await this.httpClient.get(`${BASE_PATH}/verificationEmail`);
   }
 
-  async forgotPasswordEmail(email: string): Ape.EndpointResponse {
+  async forgotPasswordEmail(email: string): Ape.EndpointResponse<null> {
     return await this.httpClient.post(`${BASE_PATH}/forgotPasswordEmail`, {
       payload: { email },
     });
   }
 
-  async setStreakHourOffset(hourOffset: number): Ape.EndpointResponse {
+  async setStreakHourOffset(hourOffset: number): Ape.EndpointResponse<null> {
     return await this.httpClient.post(`${BASE_PATH}/setStreakHourOffset`, {
       payload: { hourOffset },
     });
   }
 
-  async revokeAllTokens(): Ape.EndpointResponse {
+  async revokeAllTokens(): Ape.EndpointResponse<null> {
     return await this.httpClient.post(`${BASE_PATH}/revokeAllTokens`);
   }
 }

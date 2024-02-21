@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
-const { resolve, join } = require("path");
+const { resolve } = require("path");
 const webpack = require("webpack");
 const CopyPlugin = require("copy-webpack-plugin");
 const CircularDependencyPlugin = require("circular-dependency-plugin");
@@ -35,7 +35,13 @@ const BASE_CONFIG = {
   },
   module: {
     rules: [
-      { test: /\.tsx?$/, loader: "ts-loader" },
+      {
+        test: /\.tsx?$/,
+        loader: "ts-loader",
+        options: {
+          transpileOnly: true,
+        },
+      },
       {
         test: /\.s[ac]ss$/i,
         use: [
@@ -115,7 +121,6 @@ const BASE_CONFIG = {
       jQuery: "jquery",
       jQueryColor: "jquery-color",
       jQueryEasing: "jquery.easing",
-      select2: "select2",
     }),
     new HtmlWebpackPlugin({
       filename: "./index.html",
