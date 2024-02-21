@@ -107,9 +107,9 @@ const BASE_CONFIG = {
     IS_DEVELOPMENT: JSON.stringify(true),
     CLIENT_VERSION: JSON.stringify("DEVELOPMENT_CLIENT"),
   },
-  // optimizeDeps: {
-  //   include: ["jquery", "jquery-color", "jquery.easing"],
-  // },
+  optimizeDeps: {
+    include: ["jquery"],
+  },
 };
 
 /** @type {import("vite").UserConfig} */
