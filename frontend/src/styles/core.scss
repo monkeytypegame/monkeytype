@@ -104,11 +104,10 @@ body {
   background: var(--bg-color);
 }
 
-body:has(#popups div) {
+html:has(#popups div) {
   //prevent page to scroll if a popup is open
-  #contentWrapper {
-    position: fixed;
-  }
+  overflow-y: hidden;
+  padding-right: var(--scrollbar-width);
 }
 
 .customBackground {

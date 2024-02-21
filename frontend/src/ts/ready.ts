@@ -93,6 +93,11 @@ $(document).ready(() => {
   MonkeyPower.init();
 
   new Konami("https://keymash.io/");
+
+  document.documentElement.style.setProperty(
+    "--scrollbar-width",
+    window.innerWidth - document.documentElement.clientWidth + "px"
+  );
 });
 
 if ("serviceWorker" in navigator) {
