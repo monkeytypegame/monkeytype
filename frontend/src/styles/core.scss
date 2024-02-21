@@ -108,6 +108,11 @@ html:has(#popups div) {
   //prevent page to scroll if a popup is open
   overflow-y: hidden;
   padding-right: var(--scrollbar-width);
+
+  #bannerCenter,
+  #notificationCenter {
+    padding-right: var(--scrollbar-width);
+  }
 }
 
 .customBackground {
