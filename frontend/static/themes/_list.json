@@ -1181,5 +1181,12 @@
     "mainColor": "#363636",
     "subColor": "#4f4f4f",
     "textColor": "#1f1f1f"
+  },
+  {
+    "name": "macroblank",
+    "bgColor": "#b2d2c8",
+    "mainColor": "#c13117",
+    "subColor": "#717977",
+    "textColor": "#490909"
   }
 ]
