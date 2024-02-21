@@ -1,5 +1,4 @@
 import Config from "../config";
-import { Howler, Howl } from "howler";
 import * as ConfigEvent from "../observables/config-event";
 import {
   createErrorMessage,
@@ -9,6 +8,12 @@ import {
 import { leftState, rightState } from "../test/shift-tracker";
 import { capsState } from "../test/caps-warning";
 import * as Notifications from "../elements/notifications";
+
+import type { Howl } from "howler";
+
+async function gethowler(): Promise<typeof import("howler")> {
+  return await import("howler");
+}
 
 type ClickSounds = Record<
   string,
@@ -29,7 +34,8 @@ type ErrorSounds = Record<
 let errorSounds: ErrorSounds | null = null;
 let clickSounds: ClickSounds | null = null;
 
-function initErrorSound(): void {
+async function initErrorSound(): Promise<void> {
+  const Howl = (await gethowler()).Howl;
   if (errorSounds !== null) return;
   errorSounds = {
     1: [
@@ -78,7 +84,8 @@ function initErrorSound(): void {
   };
 }
 
-function init(): void {
+async function init(): Promise<void> {
+  const Howl = (await gethowler()).Howl;
   if (clickSounds !== null) return;
   clickSounds = {
     1: [
@@ -382,8 +389,8 @@ function init(): void {
   };
 }
 
-export function previewClick(val: string): void {
-  if (clickSounds === null) init();
+export async function previewClick(val: string): Promise<void> {
+  if (clickSounds === null) await init();
 
   const safeClickSounds = clickSounds as ClickSounds;
 
@@ -525,8 +532,8 @@ function createPreviewScale(scaleName: ValidScales): () => void {
     direction: 1,
   };
 
-  return () => {
-    if (clickSounds === null) init();
+  return async () => {
+    if (clickSounds === null) await init();
     playScale(scaleName, scale);
   };
 }
@@ -632,7 +639,7 @@ export function playNote(
   oscillatorNode.stop(audioCtx.currentTime + 0.5);
 }
 
-export function playClick(codeOverride?: string): void {
+export async function playClick(codeOverride?: string): Promise<void> {
   if (Config.playSoundOnClick === "off") return;
 
   if (Config.playSoundOnClick in scaleConfigurations) {
@@ -649,7 +656,7 @@ export function playClick(codeOverride?: string): void {
     return;
   }
 
-  if (clickSounds === null) init();
+  if (clickSounds === null) await init();
 
   const sounds = (clickSounds as ClickSounds)[Config.playSoundOnClick];
 
@@ -664,9 +671,9 @@ export function playClick(codeOverride?: string): void {
   soundToPlay.play();
 }
 
-export function playError(): void {
+export async function playError(): Promise<void> {
   if (Config.playSoundOnError === "off") return;
-  if (errorSounds === null) initErrorSound();
+  if (errorSounds === null) await initErrorSound();
 
   const sounds = (errorSounds as ErrorSounds)[Config.playSoundOnError];
   if (sounds === undefined) throw new Error("Invalid error sound ID");
@@ -685,6 +692,6 @@ function setVolume(val: number): void {
 }
 
 ConfigEvent.subscribe((eventKey, eventValue) => {
-  if (eventKey === "playSoundOnClick" && eventValue !== "off") init();
+  if (eventKey === "playSoundOnClick" && eventValue !== "off") void init();
   if (eventKey === "soundVolume") setVolume(parseFloat(eventValue as string));
 });
