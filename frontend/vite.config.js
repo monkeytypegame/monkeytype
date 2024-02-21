@@ -1,6 +1,5 @@
 import { defineConfig, splitVendorChunkPlugin, mergeConfig } from "vite";
 import path from "node:path";
-import inject from "@rollup/plugin-inject";
 import injectHTML from "vite-plugin-html-inject";
 import childProcess from "child_process";
 import { checker } from "vite-plugin-checker";
@@ -38,9 +37,25 @@ function buildClientVersion() {
 /** @type {import("vite").UserConfig} */
 const BASE_CONFIG = {
   plugins: [
-    inject({
-      $: "jquery",
-    }),
+    {
+      name: "simple-jquery-inject",
+      async transform(src, id) {
+        if (id.endsWith(".ts")) {
+          //check if file has a jQuery or $() call
+          if (/(?:jQuery|\$)\([^)]*\)/.test(src)) {
+            //if file has "use strict"; at the top, add it below that line, if not, add it at the very top
+            if (src.startsWith(`"use strict";`)) {
+              return src.replace(
+                /("use strict";)/,
+                `$1\nimport $ from "jquery";`
+              );
+            } else {
+              return `import $ from "jquery";\n${src}`;
+            }
+          }
+        }
+      },
+    },
     checker({
       typescript: {
         root: path.resolve(__dirname, "./"),

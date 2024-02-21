@@ -66,5 +66,7 @@ addToGlobal({
 });
 
 if (isDevEnvironment()) {
-  addToGlobal({ $: $ });
+  void import("jquery").then((jq) => {
+    addToGlobal({ $: jq.default });
+  });
 }
