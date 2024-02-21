@@ -107,7 +107,7 @@ jobs:
         run: npm run lint-fe
 
       - name: Build
-        run: npm run pr-check-ts
+        run: npm run pr-check-build-fe
 
       - name: Test
         run: npm run test-fe
