@@ -1,12 +1,12 @@
 :root {
   --bg-color: turquoise;
   --main-color: teal;
-  --caret-color: darkblue;
+  --caret-color: #26619C;
   --sub-color: teal;
-  --sub-alt-color: teal;
+  --sub-alt-color: aquamarine;
   --text-color: black;
   --error-color: coral;
-  --error-extra-color: coral;
+  --error-extra-color: #b75b39;
   --colorful-error-color: coral;
-  --colorful-error-extra-color: coral;
+  --colorful-error-extra-color: #b75b39;
 }
