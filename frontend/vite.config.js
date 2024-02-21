@@ -68,7 +68,6 @@ const BASE_CONFIG = {
       },
     }),
     injectHTML(),
-    splitVendorChunkPlugin(),
     Inspect(),
   ],
   server: {
@@ -130,6 +129,7 @@ const BASE_CONFIG = {
 /** @type {import("vite").UserConfig} */
 const BUILD_CONFIG = {
   plugins: [
+    splitVendorChunkPlugin(),
     VitePWA({
       registerType: "autoUpdate",
       manifest: {
