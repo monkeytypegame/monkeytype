@@ -82,6 +82,7 @@ async function initErrorSound(): Promise<void> {
       },
     ],
   };
+  Howler.volume(parseFloat(Config.soundVolume));
 }
 
 async function init(): Promise<void> {
@@ -387,6 +388,7 @@ async function init(): Promise<void> {
       },
     ],
   };
+  Howler.volume(parseFloat(Config.soundVolume));
 }
 
 export async function previewClick(val: string): Promise<void> {
@@ -688,7 +690,11 @@ export async function playError(): Promise<void> {
 }
 
 function setVolume(val: number): void {
-  Howler.volume(val);
+  try {
+    Howler.volume(val);
+  } catch (e) {
+    //
+  }
 }
 
 ConfigEvent.subscribe((eventKey, eventValue) => {
