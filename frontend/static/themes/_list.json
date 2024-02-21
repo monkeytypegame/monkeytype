@@ -1183,6 +1183,13 @@
     "textColor": "#1f1f1f"
   },
   {
+    "name": "tangerine",
+    "bgColor": "#ffede0",
+    "mainColor": "#fe5503",
+    "subColor": "#ff9562",
+    "textColor": "#3d1705"
+  },
+  {
     "name": "macroblank",
     "bgColor": "#b2d2c8",
     "mainColor": "#c13117",
