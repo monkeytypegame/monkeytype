@@ -2,7 +2,6 @@ import Ape from "../ape";
 import * as DB from "../db";
 import Config from "../config";
 import * as Misc from "../utils/misc";
-import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
 import * as Notifications from "./notifications";
 import format from "date-fns/format";
 import { isAuthenticated } from "../firebase";
@@ -11,6 +10,7 @@ import { getHTMLById as getBadgeHTMLbyId } from "../controllers/badge-controller
 import * as ConnectionState from "../states/connection";
 import * as Skeleton from "../popups/skeleton";
 import { debounce } from "throttle-debounce";
+import Format from "../utils/format";
 import SlimSelect from "slim-select";
 
 const wrapperId = "leaderboardsWrapper";
@@ -165,7 +165,6 @@ function updateFooter(lb: LbKey): void {
     return;
   }
 
-  const typingSpeedUnit = getTypingSpeedUnit(Config.typingSpeedUnit);
   if (DB.getSnapshot()?.lbOptOut === true) {
     $(`#leaderboardsWrapper table.${side} tfoot`).html(`
     <tr>
@@ -211,12 +210,18 @@ function updateFooter(lb: LbKey): void {
     <tr>
     <td>${lbRank.rank}</td>
     <td><span class="top">You</span>${toppercent ? toppercent : ""}</td>
-    <td class="alignRight">${typingSpeedUnit.fromWpm(entry.wpm).toFixed(2)}<br>
-    <div class="sub">${entry.acc.toFixed(2)}%</div></td>
-    <td class="alignRight">${typingSpeedUnit.fromWpm(entry.raw).toFixed(2)}<br>
-    <div class="sub">${
-      entry.consistency === undefined ? "-" : entry.consistency.toFixed(2) + "%"
-    }</div></td>
+    <td class="alignRight">${Format.typingSpeed(entry.wpm, {
+      showDecimalPlaces: true,
+    })}<br>
+    <div class="sub">${Format.percentage(entry.acc, {
+      showDecimalPlaces: true,
+    })}%</div></td>
+    <td class="alignRight">${Format.typingSpeed(entry.raw, {
+      showDecimalPlaces: true,
+    })}<br>
+    <div class="sub">${Format.percentage(entry.consistency, {
+      showDecimalPlaces: true,
+    })}</div></td>
     <td class="alignRight">${format(date, "dd MMM yyyy")}<br>
     <div class='sub'>${format(date, "HH:mm")}</div></td>
   </tr>
@@ -246,7 +251,7 @@ function checkLbMemory(lb: LbKey): void {
     side = "right";
   }
 
-  const memory = DB.getSnapshot()?.lbMemory?.time?.[lb]?.["english"] ?? 0;
+  const memory = DB.getSnapshot()?.lbMemory?.["time"]?.[lb]?.["english"] ?? 0;
 
   const rank = currentRank[lb]?.rank;
   if (rank) {
@@ -296,8 +301,6 @@ async function fillTable(lb: LbKey): Promise<void> {
       "<tr><td colspan='7'>No results found</td></tr>"
     );
   }
-
-  const typingSpeedUnit = getTypingSpeedUnit(Config.typingSpeedUnit);
   const loggedInUserName = DB.getSnapshot()?.name;
 
   let html = "";
@@ -336,12 +339,18 @@ async function fillTable(lb: LbKey): Promise<void> {
       ${entry.badgeId ? getBadgeHTMLbyId(entry.badgeId) : ""}
     </div>
     </td>
-    <td class="alignRight">${typingSpeedUnit.fromWpm(entry.wpm).toFixed(2)}<br>
-    <div class="sub">${entry.acc.toFixed(2)}%</div></td>
-    <td class="alignRight">${typingSpeedUnit.fromWpm(entry.raw).toFixed(2)}<br>
-    <div class="sub">${
-      entry.consistency === undefined ? "-" : entry.consistency.toFixed(2) + "%"
-    }</div></td>
+    <td class="alignRight">${Format.typingSpeed(entry.wpm, {
+      showDecimalPlaces: true,
+    })}<br>
+    <div class="sub">${Format.percentage(entry.acc, {
+      showDecimalPlaces: true,
+    })}</div></td>
+    <td class="alignRight">${Format.typingSpeed(entry.raw, {
+      showDecimalPlaces: true,
+    })}<br>
+    <div class="sub">${Format.percentage(entry.consistency, {
+      showDecimalPlaces: true,
+    })}</div></td>
     <td class="alignRight">${format(date, "dd MMM yyyy")}<br>
     <div class='sub'>${format(date, "HH:mm")}</div></td>
   </tr>

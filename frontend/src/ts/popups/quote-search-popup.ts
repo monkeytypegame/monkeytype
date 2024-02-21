@@ -230,7 +230,10 @@ export async function show(clearText = true): Promise<void> {
       $("#quoteSearchPopup #toggleShowFavorites").removeClass("hidden");
     }
 
-    if (DB.getSnapshot()?.quoteMod) {
+    const isQuoteMod =
+      DB.getSnapshot()?.quoteMod === true || DB.getSnapshot()?.quoteMod !== "";
+
+    if (isQuoteMod) {
       $("#quoteSearchPopup #goToApproveQuotes").removeClass("hidden");
     } else {
       $("#quoteSearchPopup #goToApproveQuotes").addClass("hidden");
@@ -431,10 +434,10 @@ $("#popups").on(
 
       if (response.status === 200) {
         $button.removeClass("fas").addClass("far");
-        const quoteIndex = dbSnapshot.favoriteQuotes[quoteLang]?.indexOf(
+        const quoteIndex = dbSnapshot.favoriteQuotes?.[quoteLang]?.indexOf(
           quoteId
         ) as number;
-        dbSnapshot.favoriteQuotes[quoteLang]?.splice(quoteIndex, 1);
+        dbSnapshot.favoriteQuotes?.[quoteLang]?.splice(quoteIndex, 1);
       }
     } else {
       // Add to favorites
@@ -446,6 +449,9 @@ $("#popups").on(
 
       if (response.status === 200) {
         $button.removeClass("far").addClass("fas");
+        if (dbSnapshot.favoriteQuotes === undefined) {
+          dbSnapshot.favoriteQuotes = {};
+        }
         if (!dbSnapshot.favoriteQuotes[quoteLang]) {
           dbSnapshot.favoriteQuotes[quoteLang] = [];
         }

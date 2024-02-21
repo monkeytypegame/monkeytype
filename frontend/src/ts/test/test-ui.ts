@@ -22,6 +22,7 @@ import { debounce } from "throttle-debounce";
 import * as ResultWordHighlight from "../elements/result-word-highlight";
 import * as ActivePage from "../states/active-page";
 import html2canvas from "html2canvas";
+import Format from "../utils/format";
 
 const debouncedZipfCheck = debounce(250, async () => {
   const supports = await Misc.checkIfLanguageSupportsZipf(Config.language);
@@ -1248,23 +1249,37 @@ $(".pageTest").on("click", "#saveScreenshotButton", () => {
 });
 
 $(".pageTest #copyWordsListButton").on("click", async () => {
+  let words;
+  if (Config.mode === "zen") {
+    words = TestInput.input.history.join(" ");
+  } else {
+    words = (TestWords.words.get() as string[])
+      .slice(0, TestInput.input.history.length)
+      .join(" ");
+  }
+  await copyToClipboard(words);
+});
+
+$(".pageTest #copyMissedWordsListButton").on("click", async () => {
+  let words;
+  if (Config.mode === "zen") {
+    words = TestInput.input.history.join(" ");
+  } else {
+    words = Object.keys(TestInput.missedWords ?? {}).join(" ");
+  }
+  await copyToClipboard(words);
+});
+
+async function copyToClipboard(content: string): Promise<void> {
   try {
-    let words;
-    if (Config.mode === "zen") {
-      words = TestInput.input.history.join(" ");
-    } else {
-      words = (TestWords.words.get() as string[])
-        .slice(0, TestInput.input.history.length)
-        .join(" ");
-    }
-    await navigator.clipboard.writeText(words);
+    await navigator.clipboard.writeText(content);
     Notifications.add("Copied to clipboard", 0, {
       duration: 2,
     });
   } catch (e) {
     Notifications.add("Could not copy to clipboard: " + e, -1);
   }
-});
+}
 
 $(".pageTest #toggleBurstHeatmap").on("click", async () => {
   UpdateConfig.setBurstHeatmap(!Config.burstHeatmap);
@@ -1299,9 +1314,8 @@ $(".pageTest #resultWordsHistory").on("mouseenter", ".words .word", (e) => {
             .replace(/>/g, "&gt")}
           </div>
           <div class="speed">
-          ${Math.round(
-            getTypingSpeedUnit(Config.typingSpeedUnit).fromWpm(burst)
-          )}${Config.typingSpeedUnit}
+          ${Format.typingSpeed(burst, { showDecimalPlaces: false })}
+          ${Config.typingSpeedUnit}
           </div>
           </div>`
       );

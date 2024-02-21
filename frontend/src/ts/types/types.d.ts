@@ -170,14 +170,6 @@ declare namespace MonkeyTypes {
     display: string;
   };
 
-  type Tag = {
-    _id: string;
-    name: string;
-    display: string;
-    personalBests: SharedTypes.PersonalBests;
-    active?: boolean;
-  };
-
   type RawCustomTheme = {
     name: string;
     colors: string[];
@@ -186,12 +178,6 @@ declare namespace MonkeyTypes {
   type CustomTheme = {
     _id: string;
   } & RawCustomTheme;
-
-  type TypingStats = {
-    timeTyping: number;
-    startedTests: number;
-    completedTests: number;
-  };
 
   type ConfigChanges = {
     tags?: string[];
@@ -211,59 +197,40 @@ declare namespace MonkeyTypes {
 
   type QuoteRatings = Record<string, Record<number, number>>;
 
-  type Snapshot = {
-    banned?: boolean;
-    emailVerified?: boolean;
-    quoteRatings?: QuoteRatings;
-    results?: SharedTypes.Result<SharedTypes.Config.Mode>[];
-    verified?: boolean;
-    personalBests: SharedTypes.PersonalBests;
-    name: string;
-    customThemes: CustomTheme[];
-    presets?: SnapshotPreset[];
-    tags: Tag[];
-    favouriteThemes?: string[];
-    lbMemory?: LeaderboardMemory;
-    typingStats?: TypingStats;
-    quoteMod?: boolean;
-    discordId?: string;
-    config?: SharedTypes.Config;
-    favoriteQuotes: FavoriteQuotes;
-    needsToChangeName?: boolean;
-    discordAvatar?: string;
-    details?: UserDetails;
-    inventory?: UserInventory;
-    addedAt: number;
-    filterPresets: SharedTypes.ResultFilters[];
-    xp: number;
+  type UserTag = SharedTypes.UserTag & {
+    active?: boolean;
+    display: string;
+  };
+
+  type Snapshot = Omit<
+    SharedTypes.User,
+    | "timeTyping"
+    | "startedTests"
+    | "completedTests"
+    | "profileDetails"
+    | "streak"
+    | "resultFilterPresets"
+    | "tags"
+    | "xp"
+  > & {
+    typingStats: {
+      timeTyping: number;
+      startedTests: number;
+      completedTests: number;
+    };
+    details?: SharedTypes.UserProfileDetails;
     inboxUnreadSize: number;
     streak: number;
     maxStreak: number;
+    filterPresets: SharedTypes.ResultFilters[];
+    isPremium: boolean;
     streakHourOffset?: number;
-    lbOptOut?: boolean;
-    isPremium?: boolean;
+    config: SharedTypes.Config;
+    tags: UserTag[];
+    presets: SnapshotPreset[];
+    results?: SharedTypes.Result<SharedTypes.Config.Mode>[];
+    xp: number;
   };
-
-  type UserDetails = {
-    bio?: string;
-    keyboard?: string;
-    socialProfiles: {
-      twitter?: string;
-      github?: string;
-      website?: string;
-    };
-  };
-
-  type UserInventory = {
-    badges: Badge[];
-  };
-
-  type Badge = {
-    id: number;
-    selected?: boolean;
-  };
-
-  type FavoriteQuotes = Record<string, string[]>;
 
   type Group<
     G extends keyof SharedTypes.ResultFilters = keyof SharedTypes.ResultFilters
@@ -466,15 +433,14 @@ declare namespace MonkeyTypes {
 
   type BadgeReward = {
     type: "badge";
-    item: Badge;
-  } & Reward<Badge>;
+    item: SharedTypes.Badge;
+  } & Reward<SharedTypes.Badge>;
 
   type AllRewards = XpReward | BadgeReward;
 
   type TypingSpeedUnitSettings = {
     fromWpm: (number: number) => number;
     toWpm: (number: number) => number;
-    convertWithUnitSuffix: (number: number, withDecimals: boolean) => string;
     fullUnitString: string;
     histogramDataBucketSize: number;
     historyStepSize: number;
