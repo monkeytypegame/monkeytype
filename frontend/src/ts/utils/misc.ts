@@ -701,6 +701,8 @@ export function getSpecials(): string {
   const randLen = randomIntFromRange(1, 7);
   let ret = "";
   const specials = [
+    "`",
+    "~",
     "!",
     "@",
     "#",

@@ -33,6 +33,13 @@ export async function linkDiscord(hashOverride: string): Promise<void> {
       );
     }
 
+    if (response.data === null) {
+      return Notifications.add(
+        "Failed to link Discord: data returned was null",
+        -1
+      );
+    }
+
     Notifications.add(response.message, 1);
 
     const snapshot = DB.getSnapshot();

@@ -3,7 +3,7 @@ import * as ModesNotice from "../../elements/modes-notice";
 import * as Settings from "../../pages/settings";
 import * as PresetController from "../../controllers/preset-controller";
 import * as EditPresetPopup from "../../popups/edit-preset-popup";
-import { Auth } from "../../firebase";
+import { isAuthenticated } from "../../firebase";
 
 const subgroup: MonkeyTypes.CommandsSubgroup = {
   title: "Presets...",
@@ -21,7 +21,7 @@ const commands: MonkeyTypes.Command[] = [
     icon: "fa-sliders-h",
     subgroup,
     available: (): boolean => {
-      return !!Auth?.currentUser;
+      return isAuthenticated();
     },
   },
 ];

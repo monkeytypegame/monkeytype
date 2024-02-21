@@ -176,6 +176,10 @@ class QuotesController {
     const quoteIds: string[] = [];
     const { favoriteQuotes } = snapshot;
 
+    if (favoriteQuotes === undefined) {
+      return null;
+    }
+
     Object.keys(favoriteQuotes).forEach((language) => {
       if (removeLanguageSize(language) !== normalizedLanguage) {
         return;
@@ -201,6 +205,10 @@ class QuotesController {
     }
 
     const { favoriteQuotes } = snapshot;
+
+    if (favoriteQuotes === undefined) {
+      return false;
+    }
 
     const normalizedQuoteLanguage = removeLanguageSize(quoteLanguage);
 

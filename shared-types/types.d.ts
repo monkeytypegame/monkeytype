@@ -189,52 +189,46 @@ declare namespace SharedTypes {
     textLen?: number;
   }
 
-  type WithObjectId<T extends { _id: string }> = Omit<T, "_id"> & {
-    _id: ObjectId;
+  type DBResult<T extends SharedTypes.Config.Mode> = Omit<
+    SharedTypes.Result<T>,
+    | "bailedOut"
+    | "blindMode"
+    | "lazyMode"
+    | "difficulty"
+    | "funbox"
+    | "language"
+    | "numbers"
+    | "punctuation"
+    | "restartCount"
+    | "incompleteTestSeconds"
+    | "afkDuration"
+    | "tags"
+    | "incompleteTests"
+    | "customText"
+    | "quoteLength"
+    | "isPb"
+  > & {
+    correctChars?: number; // --------------
+    incorrectChars?: number; // legacy results
+    // --------------
+    name: string;
+    // -------------- fields that might be removed to save space
+    bailedOut?: boolean;
+    blindMode?: boolean;
+    lazyMode?: boolean;
+    difficulty?: SharedTypes.Config.Difficulty;
+    funbox?: string;
+    language?: string;
+    numbers?: boolean;
+    punctuation?: boolean;
+    restartCount?: number;
+    incompleteTestSeconds?: number;
+    afkDuration?: number;
+    tags?: string[];
+    customText?: CustomText;
+    quoteLength?: number;
+    isPb?: boolean;
   };
-
-  type DBResult<T extends SharedTypes.Config.Mode> = WithObjectId<
-    Omit<
-      SharedTypes.Result<T>,
-      | "bailedOut"
-      | "blindMode"
-      | "lazyMode"
-      | "difficulty"
-      | "funbox"
-      | "language"
-      | "numbers"
-      | "punctuation"
-      | "restartCount"
-      | "incompleteTestSeconds"
-      | "afkDuration"
-      | "tags"
-      | "incompleteTests"
-      | "customText"
-      | "quoteLength"
-      | "isPb"
-    > & {
-      correctChars?: number; // --------------
-      incorrectChars?: number; // legacy results
-      // --------------
-      name: string;
-      // -------------- fields that might be removed to save space
-      bailedOut?: boolean;
-      blindMode?: boolean;
-      lazyMode?: boolean;
-      difficulty?: SharedTypes.Config.Difficulty;
-      funbox?: string;
-      language?: string;
-      numbers?: boolean;
-      punctuation?: boolean;
-      restartCount?: number;
-      incompleteTestSeconds?: number;
-      afkDuration?: number;
-      tags?: string[];
-      customText?: CustomText;
-      quoteLength?: number;
-      isPb?: boolean;
-    }
-  >;
 
   interface CompletedEvent extends Result<SharedTypes.Config.Mode> {
     keySpacing: number[] | "toolong";
@@ -447,7 +441,7 @@ declare namespace SharedTypes {
     acc: number;
     timestamp: number;
     raw: number;
-    consistency: number | "-";
+    consistency?: number;
     uid: string;
     name: string;
     discordId?: string;
@@ -466,5 +460,143 @@ declare namespace SharedTypes {
     dailyXpBonus: boolean;
     xpBreakdown: Record<string, number>;
     streak: number;
+  };
+
+  type UserStreak = {
+    lastResultTimestamp: number;
+    length: number;
+    maxLength: number;
+    hourOffset?: number;
+  };
+
+  type UserTag = {
+    _id: string;
+    name: string;
+    personalBests: PersonalBests;
+  };
+
+  type UserProfileDetails = {
+    bio?: string;
+    keyboard?: string;
+    socialProfiles: {
+      twitter?: string;
+      github?: string;
+      website?: string;
+    };
+  };
+
+  type CustomTheme = {
+    _id: string;
+    name: string;
+    colors: string[];
+  };
+
+  type PremiumInfo = {
+    startTimestamp: number;
+    expirationTimestamp: number;
+  };
+
+  type UserQuoteRatings = Record<string, Record<string, number>>;
+
+  type UserLbMemory = Record<string, Record<string, Record<string, number>>>;
+
+  type UserInventory = {
+    badges: Badge[];
+  };
+
+  type Badge = {
+    id: number;
+    selected?: boolean;
+  };
+
+  type User = {
+    name: string;
+    email: string;
+    uid: string;
+    addedAt: number;
+    personalBests: PersonalBests;
+    lastReultHashes?: string[]; //todo: fix typo (its in the db too)
+    completedTests?: number;
+    startedTests?: number;
+    timeTyping?: number;
+    streak?: UserStreak;
+    xp?: number;
+    discordId?: string;
+    discordAvatar?: string;
+    tags?: UserTag[];
+    profileDetails?: UserProfileDetails;
+    customThemes?: CustomTheme[];
+    premium?: PremiumInfo;
+    quoteRatings?: UserQuoteRatings;
+    favoriteQuotes?: Record<string, string[]>;
+    lbMemory?: UserLbMemory;
+    inventory?: UserInventory;
+    banned?: boolean;
+    lbOptOut?: boolean;
+    verified?: boolean;
+    needsToChangeName?: boolean;
+    quoteMod?: boolean | string;
+    resultFilterPresets?: ResultFilters[];
+  };
+
+  type Reward<T> = {
+    type: string;
+    item: T;
+  };
+
+  type XpReward = {
+    type: "xp";
+    item: number;
+  } & Reward<number>;
+
+  type BadgeReward = {
+    type: "badge";
+    item: SharedTypes.Badge;
+  } & Reward<SharedTypes.Badge>;
+
+  type AllRewards = XpReward | BadgeReward;
+
+  type MonkeyMail = {
+    id: string;
+    subject: string;
+    body: string;
+    timestamp: number;
+    read: boolean;
+    rewards: AllRewards[];
+  };
+
+  type UserProfile = Pick<
+    User,
+    | "name"
+    | "banned"
+    | "addedAt"
+    | "discordId"
+    | "discordAvatar"
+    | "xp"
+    | "lbOptOut"
+    | "inventory"
+    | "uid"
+  > & {
+    typingStats: {
+      completedTests: User["completedTests"];
+      startedTests: User["startedTests"];
+      timeTyping: User["timeTyping"];
+    };
+    streak: UserStreak["length"];
+    maxStreak: UserStreak["maxLength"];
+    details: UserProfileDetails;
+    allTimeLbs: {
+      time: Record<string, Record<string, number | null>>;
+    };
+    personalBests: {
+      time: Pick<
+        Record<`${number}`, SharedTypes.PersonalBest[]>,
+        "15" | "30" | "60" | "120"
+      >;
+      words: Pick<
+        Record<`${number}`, SharedTypes.PersonalBest[]>,
+        "10" | "25" | "50" | "100"
+      >;
+    };
   };
 }

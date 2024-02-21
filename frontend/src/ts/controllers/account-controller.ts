@@ -32,7 +32,7 @@ import {
   User as UserType,
   Unsubscribe,
 } from "firebase/auth";
-import { Auth } from "../firebase";
+import { Auth, getAuthenticatedUser, isAuthenticated } from "../firebase";
 import { dispatch as dispatchSignUpEvent } from "../observables/google-sign-up-event";
 import {
   hideFavoriteQuoteLength,
@@ -153,10 +153,7 @@ async function getDataAndInit(): Promise<boolean> {
   const areConfigsEqual =
     JSON.stringify(Config) === JSON.stringify(snapshot.config);
 
-  if (
-    snapshot.config &&
-    (UpdateConfig.localStorageConfig === undefined || !areConfigsEqual)
-  ) {
+  if (UpdateConfig.localStorageConfig === undefined || !areConfigsEqual) {
     console.log(
       "no local config or local and db configs are different - applying db"
     );
@@ -412,8 +409,8 @@ async function addGoogleAuth(): Promise<void> {
     return;
   }
   Loader.show();
-  if (Auth.currentUser === null) return;
-  linkWithPopup(Auth.currentUser, gmailProvider)
+  if (!isAuthenticated()) return;
+  linkWithPopup(getAuthenticatedUser(), gmailProvider)
     .then(function () {
       Loader.hide();
       Notifications.add("Google authentication added", 1);
@@ -435,7 +432,7 @@ export function signOut(): void {
     });
     return;
   }
-  if (!Auth.currentUser) return;
+  if (!isAuthenticated()) return;
   Auth.signOut()
     .then(function () {
       Notifications.add("Signed out", 0, {
@@ -629,7 +626,7 @@ $("header .signInOut").on("click", () => {
     });
     return;
   }
-  if (Auth.currentUser) {
+  if (isAuthenticated()) {
     signOut();
     signedOutThisSession = true;
   } else {

@@ -3,7 +3,7 @@ import * as TribeState from "../tribe/tribe-state";
 import * as Leaderboards from "../elements/leaderboards";
 import * as TestUI from "../test/test-ui";
 import * as PageTransition from "../states/page-transition";
-import { Auth } from "../firebase";
+import { Auth, isAuthenticated } from "../firebase";
 import tribeSocket from "../tribe/tribe-socket";
 import { setAutoJoin } from "../tribe/tribe";
 
@@ -109,7 +109,7 @@ const routes: Route[] = [
         navigate("/");
         return;
       }
-      if (Auth.currentUser) {
+      if (isAuthenticated()) {
         navigate("/account");
         return;
       }

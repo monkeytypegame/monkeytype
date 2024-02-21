@@ -2,7 +2,9 @@ import * as ResultDal from "../../src/dal/result";
 import { ObjectId } from "mongodb";
 import * as UserDal from "../../src/dal/user";
 
-type MonkeyTypesResult = SharedTypes.DBResult<SharedTypes.Config.Mode>;
+type MonkeyTypesResult = MonkeyTypes.WithObjectId<
+  SharedTypes.DBResult<SharedTypes.Config.Mode>
+>;
 
 let uid: string = "";
 const timestamp = Date.now() - 60000;
@@ -13,7 +15,8 @@ async function createDummyData(
   timestamp: number,
   tag?: string
 ): Promise<void> {
-  const dummyUser: MonkeyTypes.User = {
+  const dummyUser: MonkeyTypes.DBUser = {
+    _id: new ObjectId(),
     uid,
     addedAt: 0,
     email: "test@example.com",

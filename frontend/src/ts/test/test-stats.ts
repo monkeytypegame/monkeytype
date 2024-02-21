@@ -60,6 +60,8 @@ export function getStats(): unknown {
     accuracy: TestInput.accuracy,
     keypressTimings: TestInput.keypressTimings,
     keyOverlap: TestInput.keyOverlap,
+    wordsHistory: TestWords.words.list.slice(0, TestInput.input.history.length),
+    inputHistory: TestInput.input.history,
   };
 
   try {

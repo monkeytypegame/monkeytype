@@ -9,7 +9,7 @@ import * as AnalyticsController from "../controllers/analytics-controller";
 import * as PageTransition from "../states/page-transition";
 import * as TestWords from "../test/test-words";
 import * as ActivePage from "../states/active-page";
-import { Auth } from "../firebase";
+import { isAuthenticated } from "../firebase";
 import {
   isAnyPopupVisible,
   isElementVisible,
@@ -502,7 +502,7 @@ $(document).ready(() => {
       } else {
         hide();
       }
-      UpdateConfig.setFontFamily(Config.fontFamily, true);
+      UpdateConfig.previewFontFamily(Config.fontFamily);
       return;
     }
     if (
@@ -621,7 +621,7 @@ $("#commandLineWrapper #commandLine").on(
 $("#commandLineWrapper").on("mousedown", (e) => {
   if ($(e.target).attr("id") === "commandLineWrapper") {
     hide();
-    UpdateConfig.setFontFamily(Config.fontFamily, true);
+    UpdateConfig.previewFontFamily(Config.fontFamily);
     // if (Config.customTheme === true) {
     //   applyCustomThemeColors();
     // } else {
@@ -850,8 +850,8 @@ $(".pageTribe").on(
 $("footer").on("click", ".leftright .right .current-theme", (e) => {
   if (e.shiftKey) {
     if (!Config.customTheme) {
-      if (Auth?.currentUser) {
-        if ((DB.getSnapshot()?.customThemes.length ?? 0) < 1) {
+      if (isAuthenticated()) {
+        if ((DB.getSnapshot()?.customThemes?.length ?? 0) < 1) {
           Notifications.add("No custom themes!", 0);
           UpdateConfig.setCustomTheme(false);
           // UpdateConfig.setCustomThemeId("");

@@ -1,3 +1,4 @@
+//TODO: use Format
 import { Chart, type PluginChartOptions } from "chart.js";
 import Config from "../config";
 import * as AdController from "../controllers/ad-controller";
@@ -7,7 +8,7 @@ import * as DB from "../db";
 import * as Loader from "../elements/loader";
 import * as Notifications from "../elements/notifications";
 import * as ThemeColors from "../elements/theme-colors";
-import { Auth } from "../firebase";
+import { isAuthenticated } from "../firebase";
 import * as QuoteRatePopup from "../popups/quote-rate-popup";
 import * as GlarsesMode from "../states/glarses-mode";
 import * as SlowTimer from "../states/slow-timer";
@@ -32,6 +33,7 @@ import * as Focus from "./focus";
 import * as CustomText from "./custom-text";
 import * as CustomTextState from "./../states/custom-text-name";
 import * as Funbox from "./funbox/funbox";
+import Format from "../utils/format";
 
 import confetti from "canvas-confetti";
 import type { AnnotationOptions } from "chartjs-plugin-annotation";
@@ -219,24 +221,23 @@ export async function updateGraphPBLine(): Promise<void> {
 
 function updateWpmAndAcc(): void {
   let inf = false;
-  const typingSpeedUnit = getTypingSpeedUnit(Config.typingSpeedUnit);
   if (result.wpm >= 1000) {
     inf = true;
   }
 
-  if (Config.alwaysShowDecimalPlaces) {
-    $("#result .stats .wpm .top .text").text(Config.typingSpeedUnit);
-    if (inf) {
-      $("#result .stats .wpm .bottom").text("Infinite");
-    } else {
-      $("#result .stats .wpm .bottom").text(
-        Misc.roundTo2(typingSpeedUnit.fromWpm(result.wpm)).toFixed(2)
-      );
-    }
-    $("#result .stats .raw .bottom").text(
-      Misc.roundTo2(typingSpeedUnit.fromWpm(result.rawWpm)).toFixed(2)
-    );
+  $("#result .stats .wpm .top .text").text(Config.typingSpeedUnit);
 
+  if (inf) {
+    $("#result .stats .wpm .bottom").text("Infinite");
+  } else {
+    $("#result .stats .wpm .bottom").text(Format.typingSpeed(result.wpm));
+  }
+  $("#result .stats .raw .bottom").text(Format.typingSpeed(result.rawWpm));
+  $("#result .stats .acc .bottom").text(
+    result.acc === 100 ? "100%" : Format.percentage(result.acc)
+  );
+
+  if (Config.alwaysShowDecimalPlaces) {
     if (Config.typingSpeedUnit != "wpm") {
       $("#result .stats .wpm .bottom").attr(
         "aria-label",
@@ -251,9 +252,6 @@ function updateWpmAndAcc(): void {
       $("#result .stats .raw .bottom").removeAttr("aria-label");
     }
 
-    $("#result .stats .acc .bottom").text(
-      result.acc === 100 ? "100%" : Misc.roundTo2(result.acc).toFixed(2) + "%"
-    );
     let time = Misc.roundTo2(result.testDuration).toFixed(2) + "s";
     if (result.testDuration > 61) {
       time = Misc.secondsToString(Misc.roundTo2(result.testDuration));
@@ -267,53 +265,47 @@ function updateWpmAndAcc(): void {
     );
   } else {
     //not showing decimal places
-    let wpmHover = typingSpeedUnit.convertWithUnitSuffix(result.wpm, true);
-    let rawWpmHover = typingSpeedUnit.convertWithUnitSuffix(
-      result.rawWpm,
-      true
-    );
+    const decimalsAndSuffix = {
+      showDecimalPlaces: true,
+      suffix: ` ${Config.typingSpeedUnit}`,
+    };
+    let wpmHover = Format.typingSpeed(result.wpm, decimalsAndSuffix);
+    let rawWpmHover = Format.typingSpeed(result.rawWpm, decimalsAndSuffix);
+
     if (Config.typingSpeedUnit != "wpm") {
       wpmHover += " (" + result.wpm.toFixed(2) + " wpm)";
       rawWpmHover += " (" + result.rawWpm.toFixed(2) + " wpm)";
     }
 
-    $("#result .stats .wpm .top .text").text(Config.typingSpeedUnit);
     $("#result .stats .wpm .bottom").attr("aria-label", wpmHover);
-    if (inf) {
-      $("#result .stats .wpm .bottom").text("Infinite");
-    } else {
-      $("#result .stats .wpm .bottom").text(
-        Math.round(typingSpeedUnit.fromWpm(result.wpm))
-      );
-    }
-    $("#result .stats .raw .bottom").text(
-      Math.round(typingSpeedUnit.fromWpm(result.rawWpm))
-    );
     $("#result .stats .raw .bottom").attr("aria-label", rawWpmHover);
 
-    $("#result .stats .acc .bottom").text(Math.floor(result.acc) + "%");
     $("#result .stats .acc .bottom").attr(
       "aria-label",
-      `${result.acc === 100 ? "100" : Misc.roundTo2(result.acc).toFixed(2)}% (${
-        TestInput.accuracy.correct
-      } correct / ${TestInput.accuracy.incorrect} incorrect)`
+      `${
+        result.acc === 100
+          ? "100"
+          : Format.percentage(result.acc, { showDecimalPlaces: true })
+      } (${TestInput.accuracy.correct} correct / ${
+        TestInput.accuracy.incorrect
+      } incorrect)`
     );
   }
 }
 
 function updateConsistency(): void {
+  $("#result .stats .consistency .bottom").text(
+    Format.percentage(result.consistency)
+  );
   if (Config.alwaysShowDecimalPlaces) {
-    $("#result .stats .consistency .bottom").text(
-      Misc.roundTo2(result.consistency).toFixed(2) + "%"
-    );
     $("#result .stats .consistency .bottom").attr(
       "aria-label",
-      `${result.keyConsistency.toFixed(2)}% key`
+      Format.percentage(result.keyConsistency, {
+        showDecimalPlaces: true,
+        suffix: " key",
+      })
     );
   } else {
-    $("#result .stats .consistency .bottom").text(
-      Math.round(result.consistency) + "%"
-    );
     $("#result .stats .consistency .bottom").attr(
       "aria-label",
       `${result.consistency}% (${result.keyConsistency}% key)`
@@ -333,6 +325,7 @@ function updateTime(): void {
     "aria-label",
     `${result.afkDuration}s afk ${afkSecondsPercent}%`
   );
+
   if (Config.alwaysShowDecimalPlaces) {
     let time = Misc.roundTo2(result.testDuration).toFixed(2) + "s";
     if (result.testDuration > 61) {
@@ -422,16 +415,15 @@ export async function updateCrown(): Promise<void> {
     Config.lazyMode,
     Config.funbox
   );
-  const typingSpeedUnit = getTypingSpeedUnit(Config.typingSpeedUnit);
   pbDiff = Math.abs(result.wpm - lpb);
   $("#result .stats .wpm .crown").attr(
     "aria-label",
-    "+" + Misc.roundTo2(typingSpeedUnit.fromWpm(pbDiff))
+    "+" + Format.typingSpeed(pbDiff, { showDecimalPlaces: true })
   );
 }
 
 async function updateTags(dontSave: boolean): Promise<void> {
-  const activeTags: MonkeyTypes.Tag[] = [];
+  const activeTags: MonkeyTypes.UserTag[] = [];
   const userTagsCount = DB.getSnapshot()?.tags?.length ?? 0;
   try {
     DB.getSnapshot()?.tags?.forEach((tag) => {
@@ -695,7 +687,7 @@ export function updateRateQuote(randomQuote: MonkeyTypes.Quote | null): void {
 function updateQuoteFavorite(randomQuote: MonkeyTypes.Quote | null): void {
   const icon = $(".pageTest #result #favoriteQuoteButton .icon");
 
-  if (Config.mode !== "quote" || Auth?.currentUser === null) {
+  if (Config.mode !== "quote" || !isAuthenticated()) {
     icon.parent().addClass("hidden");
     return;
   }
@@ -750,7 +742,7 @@ export async function update(
   $("#words").removeClass("blurred");
   $("#wordsInput").trigger("blur");
   $("#result .stats .time .bottom .afk").text("");
-  if (Auth?.currentUser) {
+  if (isAuthenticated()) {
     $("#result .loginTip").addClass("hidden");
   } else {
     $("#result .loginTip").removeClass("hidden");
@@ -817,7 +809,7 @@ export async function update(
     $("main #result .stats").removeClass("hidden");
     $("main #result .chart").removeClass("hidden");
     // $("main #result #resultWordsHistory").removeClass("hidden");
-    if (!Auth?.currentUser) {
+    if (!isAuthenticated()) {
       $("main #result .loginTip").removeClass("hidden");
     }
     $("main #result #showWordHistoryButton").removeClass("hidden");
@@ -933,10 +925,10 @@ $(".pageTest #favoriteQuoteButton").on("click", async () => {
 
     if (response.status === 200) {
       $button.removeClass("fas").addClass("far");
-      const quoteIndex = dbSnapshot.favoriteQuotes[quoteLang]?.indexOf(
+      const quoteIndex = dbSnapshot.favoriteQuotes?.[quoteLang]?.indexOf(
         quoteId
       ) as number;
-      dbSnapshot.favoriteQuotes[quoteLang]?.splice(quoteIndex, 1);
+      dbSnapshot.favoriteQuotes?.[quoteLang]?.splice(quoteIndex, 1);
     }
   } else {
     // Add to favorites
@@ -948,6 +940,9 @@ $(".pageTest #favoriteQuoteButton").on("click", async () => {
 
     if (response.status === 200) {
       $button.removeClass("far").addClass("fas");
+      if (dbSnapshot.favoriteQuotes === undefined) {
+        dbSnapshot.favoriteQuotes = {};
+      }
       if (!dbSnapshot.favoriteQuotes[quoteLang]) {
         dbSnapshot.favoriteQuotes[quoteLang] = [];
       }
