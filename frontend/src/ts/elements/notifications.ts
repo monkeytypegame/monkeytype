@@ -316,3 +316,12 @@ $("#notificationCenter .clearAll").on("click", () => {
   visibleStickyNotifications = 0;
   updateClearAllButton();
 });
+
+$("#commandLineWrapper").on("scroll touchmove mousewheel", (e) => {
+  if (e.target.id === "commandLineWrapper") {
+    e.preventDefault();
+    e.stopPropagation();
+    return false;
+  }
+  return true;
+});
