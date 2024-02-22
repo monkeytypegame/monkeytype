@@ -101,11 +101,12 @@ describe("Pb Utils", () => {
 
       expect(run.isPb).toBe(true);
 
-      const nonNumerPb = run.personalBests?.["time"]?.["15"]?.find((pb) => {
-        return pb.numbers === false;
-      });
-
-      expect(nonNumerPb?.wpm).toBe(100);
+      expect(run.personalBests?.["time"]?.["15"]).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({ numbers: false, wpm: 100 }),
+          expect.objectContaining({ numbers: true, wpm: 110 }),
+        ])
+      );
     });
   });
 });
