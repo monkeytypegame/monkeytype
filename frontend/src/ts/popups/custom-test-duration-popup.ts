@@ -11,7 +11,7 @@ function parseInput(input: string): number {
   const re = /((-\s*)?\d+(\.\d+)?\s*[hms]?)/g;
   const seconds = [...input.toLowerCase().matchAll(re)]
     .map((match) => {
-      const part = match[0];
+      const part = match[0] as string;
       const duration = parseFloat(part.replace(/\s+/g, ""));
 
       if (part.includes("h")) {
@@ -108,7 +108,7 @@ function apply(): void {
   const val = parseInput($("#customTestDurationPopup input").val() as string);
 
   if (val !== null && !isNaN(val) && val >= 0 && isFinite(val)) {
-    UpdateConfig.setTimeConfig(val as MonkeyTypes.TimeModes);
+    UpdateConfig.setTimeConfig(val);
     ManualRestart.set();
     TestLogic.restart();
     if (val >= 1800) {

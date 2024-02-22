@@ -1,28 +1,31 @@
 type SetFunction<T> = (param: T, nosave?: boolean) => boolean;
 
-type SettingsMemory<T> = {
-  [key: string]: {
-    value: T;
-    setFunction: SetFunction<T>;
-  };
+type ValueAndSetFunction<T> = {
+  value: T;
+  setFunction: SetFunction<T>;
 };
 
-let settingsMemory: SettingsMemory<MonkeyTypes.ConfigValues> = {};
+type SettingsMemory<T> = Record<string, ValueAndSetFunction<T>>;
 
-export function save<T extends MonkeyTypes.ConfigValues>(
+let settingsMemory: SettingsMemory<SharedTypes.ConfigValue> = {};
+
+export function save<T extends SharedTypes.ConfigValue>(
   settingName: string,
   value: T,
   setFunction: SetFunction<T>
 ): void {
   settingsMemory[settingName] ??= {
     value,
-    setFunction: setFunction as SetFunction<MonkeyTypes.ConfigValues>,
+    setFunction: setFunction as SetFunction<SharedTypes.ConfigValue>,
   };
 }
 
 export function load(): void {
   Object.keys(settingsMemory).forEach((setting) => {
-    settingsMemory[setting].setFunction(settingsMemory[setting].value, true);
+    const memory = settingsMemory[
+      setting
+    ] as ValueAndSetFunction<SharedTypes.ConfigValue>;
+    memory.setFunction(memory.value, true);
   });
   settingsMemory = {};
 }

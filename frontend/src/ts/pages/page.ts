@@ -1,7 +1,7 @@
-interface Options<T> {
+type Options<T> = {
   params?: Record<string, string>;
   data?: T;
-}
+};
 
 export default class Page<T> {
   public name: MonkeyTypes.PageName;

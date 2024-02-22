@@ -12,7 +12,7 @@ const wordSamples = 20;
 // Score penatly (in milliseconds) for getting a letter wrong.
 const incorrectPenalty = 5000;
 
-const scores: { [char: string]: Score } = {};
+const scores: Record<string, Score> = {};
 
 class Score {
   public average: number;
@@ -37,14 +37,14 @@ export function updateScore(char: string, isCorrect: boolean): void {
   if (timings.length === 0 || typeof timings === "string") {
     return;
   }
-  let score = timings[timings.length - 1];
+  let score = timings[timings.length - 1] as number;
   if (!isCorrect) {
     score += incorrectPenalty;
   }
   if (!(char in scores)) {
     scores[char] = new Score();
   }
-  scores[char].update(score);
+  scores[char]?.update(score);
 }
 
 function score(word: string): number {
@@ -52,7 +52,7 @@ function score(word: string): number {
   let numChars = 0;
   for (const c of word) {
     if (c in scores) {
-      total += scores[c].average;
+      total += (scores[c] as Score).average;
       numChars++;
     }
   }

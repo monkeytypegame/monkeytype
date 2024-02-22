@@ -1,7 +1,7 @@
 name: Monkey CI
 
 env:
-  NODE_VERSION: "18.17.1"
+  NODE_VERSION: "18.19.1"
 
 permissions:
   contents: read
@@ -20,6 +20,7 @@ concurrency:
 
 jobs:
   pre-ci:
+    if: github.event.pull_request.draft == false
     name: pre-ci
     runs-on: ubuntu-latest
     outputs:
@@ -94,7 +95,7 @@ jobs:
 
       - name: Create stub firebase config
         working-directory: ./frontend/src/ts/constants
-        run: mv ./firebase-config-example.ts ./firebase-config-live.ts
+        run: mv ./firebase-config-example.ts ./firebase-config.ts && cp ./firebase-config.ts ./firebase-config-live.ts
 
       - name: Install dependencies
         run: npm ci & cd frontend && npm ci
@@ -106,7 +107,10 @@ jobs:
         run: npm run lint-fe
 
       - name: Build
-        run: npm run pr-check-ts
+        run: npm run pr-check-build-fe
+
+      - name: Test
+        run: npm run test-fe
 
   ci-assets:
     name: ci-assets

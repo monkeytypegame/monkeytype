@@ -6,7 +6,7 @@ import * as TestWords from "./test-words";
 import * as FunboxList from "./funbox/funbox-list";
 import * as TestState from "./test-state";
 
-interface CharCount {
+type CharCount = {
   spaces: number;
   correctWordChars: number;
   allCorrectChars: number;
@@ -14,9 +14,9 @@ interface CharCount {
   extraChars: number;
   missedChars: number;
   correctSpaces: number;
-}
+};
 
-interface Stats {
+type Stats = {
   wpm: number;
   wpmRaw: number;
   acc: number;
@@ -28,17 +28,17 @@ interface Stats {
   time: number;
   spaces: number;
   correctSpaces: number;
-}
+};
 
 export let invalid = false;
 export let start: number, end: number;
 export let start2: number, end2: number;
 export let lastSecondNotRound = false;
 
-export let lastResult: MonkeyTypes.Result<MonkeyTypes.Mode>;
+export let lastResult: SharedTypes.Result<SharedTypes.Config.Mode>;
 
 export function setLastResult(
-  result: MonkeyTypes.Result<MonkeyTypes.Mode>
+  result: SharedTypes.Result<SharedTypes.Config.Mode>
 ): void {
   lastResult = result;
 }
@@ -60,16 +60,18 @@ export function getStats(): unknown {
     accuracy: TestInput.accuracy,
     keypressTimings: TestInput.keypressTimings,
     keyOverlap: TestInput.keyOverlap,
+    wordsHistory: TestWords.words.list.slice(0, TestInput.input.history.length),
+    inputHistory: TestInput.input.history,
   };
 
   try {
-    // @ts-ignore
+    // @ts-expect-error
     ret.keypressTimings.spacing.average =
       (TestInput.keypressTimings.spacing.array as number[]).reduce(
         (previous, current) => (current += previous)
       ) / TestInput.keypressTimings.spacing.array.length;
 
-    // @ts-ignore
+    // @ts-expect-error
     ret.keypressTimings.spacing.sd = Misc.stdDev(
       TestInput.keypressTimings.spacing.array as number[]
     );
@@ -77,13 +79,13 @@ export function getStats(): unknown {
     //
   }
   try {
-    // @ts-ignore
+    // @ts-expect-error
     ret.keypressTimings.duration.average =
       (TestInput.keypressTimings.duration.array as number[]).reduce(
         (previous, current) => (current += previous)
       ) / TestInput.keypressTimings.duration.array.length;
 
-    // @ts-ignore
+    // @ts-expect-error
     ret.keypressTimings.duration.sd = Misc.stdDev(
       TestInput.keypressTimings.duration.array as number[]
     );
@@ -104,7 +106,7 @@ export function restart(): void {
 export let restartCount = 0;
 export let incompleteSeconds = 0;
 
-export let incompleteTests: MonkeyTypes.IncompleteTest[] = [];
+export let incompleteTests: SharedTypes.IncompleteTest[] = [];
 
 export function incrementRestartCount(): void {
   restartCount++;
@@ -187,7 +189,7 @@ export function calculateAfkSeconds(testSeconds: number): number {
     //   `gonna add extra ${extraAfk} seconds of afk because of no keypress data`
     // );
   }
-  const ret = TestInput.afkHistory.filter((afk) => afk === true).length;
+  const ret = TestInput.afkHistory.filter((afk) => afk).length;
   return ret + extraAfk;
 }
 
@@ -229,6 +231,44 @@ export function removeAfkData(): void {
   TestInput.rawHistory.splice(testSeconds);
 }
 
+function getInputWords(): string[] {
+  const containsKorean = TestInput.input.getKoreanStatus();
+
+  let inputWords = [...TestInput.input.history];
+
+  if (TestState.isActive) {
+    inputWords.push(TestInput.input.current);
+  }
+
+  if (containsKorean) {
+    inputWords = inputWords.map((w) => Hangul.disassemble(w).join(""));
+  }
+
+  return inputWords;
+}
+
+function getTargetWords(): string[] {
+  const containsKorean = TestInput.input.getKoreanStatus();
+
+  let targetWords = [
+    ...(Config.mode === "zen" ? TestInput.input.history : TestWords.words.list),
+  ];
+
+  if (TestState.isActive) {
+    targetWords.push(
+      Config.mode === "zen"
+        ? TestInput.input.current
+        : TestWords.words.getCurrent()
+    );
+  }
+
+  if (containsKorean) {
+    targetWords = targetWords.map((w) => Hangul.disassemble(w).join(""));
+  }
+
+  return targetWords;
+}
+
 function countChars(): CharCount {
   let correctWordChars = 0;
   let correctChars = 0;
@@ -238,46 +278,29 @@ function countChars(): CharCount {
   let spaces = 0;
   let correctspaces = 0;
 
-  const containsKorean = TestInput.input.getKoreanStatus();
-  const currTestInput = !containsKorean
-    ? TestInput.input.current
-    : Hangul.disassemble(TestInput.input.current);
+  const inputWords = getInputWords();
+  const targetWords = getTargetWords();
 
-  for (let i = 0; i < TestInput.input.history.length; i++) {
-    const word: string = !containsKorean
-      ? //english
-        Config.mode === "zen"
-        ? (TestInput.input.getHistory(i) as string)
-        : TestWords.words.get(i)
-      : //korean
-      Config.mode === "zen"
-      ? Hangul.disassemble(TestInput.input.getHistory(i) as string).join("")
-      : Hangul.disassemble(TestWords.words.get(i)).join("");
+  for (let i = 0; i < inputWords.length; i++) {
+    const inputWord = inputWords[i] as string;
+    const targetWord = targetWords[i] as string;
 
-    if (TestInput.input.getHistory(i) === "") {
-      //last word that was not started
-      continue;
-    }
-    const historyWord: string = !containsKorean
-      ? (TestInput.input.getHistory(i) as string)
-      : Hangul.disassemble(TestInput.input.getHistory(i) as string).join("");
-
-    if (historyWord === word) {
+    if (inputWord === targetWord) {
       //the word is correct
-      correctWordChars += word.length;
-      correctChars += word.length;
+      correctWordChars += targetWord.length;
+      correctChars += targetWord.length;
       if (
-        i < TestInput.input.history.length - 1 &&
-        Misc.getLastChar(historyWord as string) !== "\n"
+        i < inputWords.length - 1 &&
+        Misc.getLastChar(inputWord as string) !== "\n"
       ) {
         correctspaces++;
       }
-    } else if (historyWord.length >= word.length) {
+    } else if (inputWord.length >= targetWord.length) {
       //too many chars
-      for (let c = 0; c < historyWord.length; c++) {
-        if (c < word.length) {
+      for (let c = 0; c < inputWord.length; c++) {
+        if (c < targetWord.length) {
           //on char that still has a word list pair
-          if (historyWord[c] === word[c]) {
+          if (inputWord[c] === targetWord[c]) {
             correctChars++;
           } else {
             incorrectChars++;
@@ -294,10 +317,10 @@ function countChars(): CharCount {
         incorrect: 0,
         missed: 0,
       };
-      for (let c = 0; c < word.length; c++) {
-        if (c < historyWord.length) {
+      for (let c = 0; c < targetWord.length; c++) {
+        if (c < inputWord.length) {
           //on char that still has a word list pair
-          if (historyWord[c] === word[c]) {
+          if (inputWord[c] === targetWord[c]) {
             toAdd.correct++;
           } else {
             toAdd.incorrect++;
@@ -309,49 +332,15 @@ function countChars(): CharCount {
       }
       correctChars += toAdd.correct;
       incorrectChars += toAdd.incorrect;
-      if (i === TestInput.input.history.length - 1 && Config.mode === "time") {
+      if (i === inputWords.length - 1 && Config.mode === "time") {
         //last word - check if it was all correct - add to correct word chars
         if (toAdd.incorrect === 0) correctWordChars += toAdd.correct;
       } else {
         missedChars += toAdd.missed;
       }
     }
-    if (i < TestInput.input.history.length - 1) {
+    if (i < inputWords.length - 1) {
       spaces++;
-    }
-  }
-  if (currTestInput !== "") {
-    const word =
-      Config.mode === "zen"
-        ? currTestInput
-        : !containsKorean
-        ? TestWords.words.getCurrent()
-        : Hangul.disassemble(TestWords.words.getCurrent() ?? "");
-    //check whats currently typed
-    const toAdd = {
-      correct: 0,
-      incorrect: 0,
-      missed: 0,
-    };
-    for (let c = 0; c < word.length; c++) {
-      if (c < currTestInput.length) {
-        //on char that still has a word list pair
-        if (currTestInput[c] === word[c]) {
-          toAdd.correct++;
-        } else {
-          toAdd.incorrect++;
-        }
-      } else {
-        //on char that is extra
-        toAdd.missed++;
-      }
-    }
-    correctChars += toAdd.correct;
-    incorrectChars += toAdd.incorrect;
-    missedChars += toAdd.missed;
-    if (toAdd.incorrect === 0) {
-      //word is correct so far, add chars
-      correctWordChars += toAdd.correct;
     }
   }
   if (

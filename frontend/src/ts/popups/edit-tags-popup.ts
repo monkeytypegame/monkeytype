@@ -25,20 +25,20 @@ export function show(action: string, id?: string, name?: string): void {
     $("#tagsWrapper #tagsEdit button").html(`add`);
     $("#tagsWrapper #tagsEdit input").val("");
     $("#tagsWrapper #tagsEdit input").removeClass("hidden");
-  } else if (action === "edit" && id && name) {
+  } else if (action === "edit" && id !== undefined && name !== undefined) {
     $("#tagsWrapper #tagsEdit").attr("action", "edit");
     $("#tagsWrapper #tagsEdit").attr("tagid", id);
     $("#tagsWrapper #tagsEdit .title").html("Edit tag name");
     $("#tagsWrapper #tagsEdit button").html(`save`);
     $("#tagsWrapper #tagsEdit input").val(name);
     $("#tagsWrapper #tagsEdit input").removeClass("hidden");
-  } else if (action === "remove" && id && name) {
+  } else if (action === "remove" && id !== undefined && name !== undefined) {
     $("#tagsWrapper #tagsEdit").attr("action", "remove");
     $("#tagsWrapper #tagsEdit").attr("tagid", id);
     $("#tagsWrapper #tagsEdit .title").html("Delete tag " + name);
     $("#tagsWrapper #tagsEdit button").html(`delete`);
     $("#tagsWrapper #tagsEdit input").addClass("hidden");
-  } else if (action === "clearPb" && id && name) {
+  } else if (action === "clearPb" && id !== undefined && name !== undefined) {
     $("#tagsWrapper #tagsEdit").attr("action", "clearPb");
     $("#tagsWrapper #tagsEdit").attr("tagid", id);
     $("#tagsWrapper #tagsEdit .title").html("Clear PB for tag " + name);
@@ -100,6 +100,12 @@ async function apply(): Promise<void> {
         -1
       );
     } else {
+      if (response.data === null) {
+        Notifications.add("Tag was added but data returned was null", -1);
+        Loader.hide();
+        return;
+      }
+
       Notifications.add("Tag added", 1);
       DB.getSnapshot()?.tags?.push({
         display: propTagName,
@@ -113,7 +119,7 @@ async function apply(): Promise<void> {
           custom: {},
         },
       });
-      Settings.update();
+      void Settings.update();
     }
   } else if (action === "edit") {
     const response = await Ape.users.editTag(tagId, tagName);
@@ -128,7 +134,7 @@ async function apply(): Promise<void> {
           tag.display = propTagName;
         }
       });
-      Settings.update();
+      void Settings.update();
     }
   } else if (action === "remove") {
     const response = await Ape.users.deleteTag(tagId);
@@ -142,7 +148,7 @@ async function apply(): Promise<void> {
           DB.getSnapshot()?.tags?.splice(index, 1);
         }
       });
-      Settings.update();
+      void Settings.update();
     }
   } else if (action === "clearPb") {
     const response = await Ape.users.deleteTagPersonalBest(tagId);
@@ -162,7 +168,7 @@ async function apply(): Promise<void> {
           };
         }
       });
-      Settings.update();
+      void Settings.update();
     }
   }
   Loader.hide();
@@ -176,7 +182,7 @@ $("#tagsWrapper").on("click", (e) => {
 
 $("#tagsWrapper #tagsEdit form").on("submit", (e) => {
   e.preventDefault();
-  apply();
+  void apply();
 });
 
 $(".pageSettings .section.tags").on("click", ".addTagButton", () => {

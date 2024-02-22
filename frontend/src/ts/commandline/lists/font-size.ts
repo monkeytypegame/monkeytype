@@ -10,7 +10,7 @@ const commands: MonkeyTypes.Command[] = [
       return Config.fontSize.toString();
     },
     exec: (input): void => {
-      if (!input) return;
+      if (input === undefined || input === "") return;
       UpdateConfig.setFontSize(parseFloat(input));
     },
   },

@@ -11,7 +11,7 @@ const subgroup: MonkeyTypes.CommandsSubgroup = {
       configValue: "0.1",
       exec: (): void => {
         UpdateConfig.setSoundVolume("0.1");
-        SoundController.playClick();
+        void SoundController.playClick();
       },
     },
     {
@@ -20,7 +20,7 @@ const subgroup: MonkeyTypes.CommandsSubgroup = {
       configValue: "0.5",
       exec: (): void => {
         UpdateConfig.setSoundVolume("0.5");
-        SoundController.playClick();
+        void SoundController.playClick();
       },
     },
     {
@@ -29,7 +29,7 @@ const subgroup: MonkeyTypes.CommandsSubgroup = {
       configValue: "1.0",
       exec: (): void => {
         UpdateConfig.setSoundVolume("1.0");
-        SoundController.playClick();
+        void SoundController.playClick();
       },
     },
   ],

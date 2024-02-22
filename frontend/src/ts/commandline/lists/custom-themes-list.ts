@@ -1,5 +1,5 @@
 import * as UpdateConfig from "../../config";
-import { Auth } from "../../firebase";
+import { isAuthenticated } from "../../firebase";
 import * as DB from "../../db";
 import * as ThemeController from "../../controllers/theme-controller";
 
@@ -17,13 +17,13 @@ const commands: MonkeyTypes.Command[] = [
     icon: "fa-palette",
     subgroup,
     available: (): boolean => {
-      return !!Auth?.currentUser;
+      return isAuthenticated();
     },
   },
 ];
 
 export function update(): void {
-  if (!Auth?.currentUser) {
+  if (!isAuthenticated()) {
     return;
   }
 
@@ -33,7 +33,11 @@ export function update(): void {
 
   if (!snapshot) return;
 
-  if (snapshot.customThemes.length === 0) {
+  if (snapshot.customThemes === undefined) {
+    return;
+  }
+
+  if (snapshot.customThemes?.length === 0) {
     return;
   }
   snapshot.customThemes.forEach((theme) => {

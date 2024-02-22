@@ -1,0 +1,28 @@
+{
+  "folders": [
+    {
+      "name": "backend",
+      "path": "backend"
+    },
+    {
+      "name": "frontend",
+      "path": "frontend"
+    },
+    {
+      "name": "shared-types",
+      "path": "shared-types"
+    },
+    {
+      "name": "root",
+      "path": "./"
+    }
+  ],
+  "settings": {
+    "files.exclude": {
+      "frontend": true,
+      "backend": true,
+      "shared-types": true
+    },
+    "jest.disabledWorkspaceFolders": ["root", "shared-types"]
+  }
+}

@@ -26,8 +26,8 @@ import {
 } from "express";
 import { isDevEnvironment } from "../../utils/misc";
 
-const pathOverride = process.env.API_PATH_OVERRIDE;
-const BASE_ROUTE = pathOverride ? `/${pathOverride}` : "";
+const pathOverride = process.env["API_PATH_OVERRIDE"];
+const BASE_ROUTE = pathOverride !== undefined ? `/${pathOverride}` : "";
 const APP_START_TIME = Date.now();
 
 const API_ROUTE_MAP = {
@@ -59,6 +59,12 @@ function addApiRoutes(app: Application): void {
       return next();
     });
     app.use("/configure", expressStatic(join(__dirname, "../../../private")));
+
+    //simulate delay for all requests
+    // app.use(async (req, res, next) => {
+    //   await new Promise((resolve) => setTimeout(resolve, 1000));
+    //   next();
+    // });
   }
 
   addSwaggerMiddlewares(app);
@@ -66,7 +72,8 @@ function addApiRoutes(app: Application): void {
   app.use(
     (req: MonkeyTypes.Request, res: Response, next: NextFunction): void => {
       const inMaintenance =
-        process.env.MAINTENANCE === "true" || req.ctx.configuration.maintenance;
+        process.env["MAINTENANCE"] === "true" ||
+        req.ctx.configuration.maintenance;
 
       if (inMaintenance) {
         res.status(503).json({ message: "Server is down for maintenance" });
@@ -75,7 +82,8 @@ function addApiRoutes(app: Application): void {
 
       if (req.path === "/psas") {
         const clientVersion =
-          req.headers["x-client-version"] || req.headers["client-version"];
+          (req.headers["x-client-version"] as string) ||
+          req.headers["client-version"];
         recordClientVersion(clientVersion?.toString() ?? "unknown");
       }
 

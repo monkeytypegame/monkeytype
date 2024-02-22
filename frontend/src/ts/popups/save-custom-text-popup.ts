@@ -75,6 +75,11 @@ function save(): boolean {
     return false;
   }
 
+  if (text.length === 0) {
+    Notifications.add("Custom text can't be empty", 0);
+    return false;
+  }
+
   text = text.replace(/( *(\r\n|\r|\n) *)/g, "\n ");
 
   CustomText.setCustomText(name, text, checkbox);
@@ -84,7 +89,7 @@ function save(): boolean {
 }
 
 $("#popups").on("click", `#saveCustomTextPopupWrapper .button.save`, () => {
-  if (save() === true) hide(true);
+  if (save()) hide(true);
 });
 
 $("#saveCustomTextPopupWrapper").on("mousedown", (e) => {

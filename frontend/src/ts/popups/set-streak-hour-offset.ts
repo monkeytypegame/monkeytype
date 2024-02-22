@@ -123,12 +123,12 @@ $(`#${wrapperId}`).on("mousedown", (e) => {
 });
 
 $(`#${wrapperId} .button`).on("click", () => {
-  apply();
+  void apply();
 });
 
 $(`#${wrapperId} input`).on("keypress", (e) => {
   if (e.key === "Enter") {
-    apply();
+    void apply();
   }
 });
 

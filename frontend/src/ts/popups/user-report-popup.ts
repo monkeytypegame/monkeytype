@@ -4,21 +4,27 @@ import * as Notifications from "../elements/notifications";
 import * as CaptchaController from "../controllers/captcha-controller";
 import * as Skeleton from "./skeleton";
 import { isPopupVisible } from "../utils/misc";
+import SlimSelect from "slim-select";
 
 const wrapperId = "userReportPopupWrapper";
 
-interface State {
+type State = {
   userUid?: string;
-}
+  lbOptOut?: boolean;
+};
 
 const state: State = {
   userUid: undefined,
+  lbOptOut: undefined,
 };
 
-interface ShowOptions {
+type ShowOptions = {
   uid: string;
   name: string;
-}
+  lbOptOut: boolean;
+};
+
+let select: SlimSelect | undefined = undefined;
 
 export async function show(options: ShowOptions): Promise<void> {
   Skeleton.append(wrapperId);
@@ -30,14 +36,20 @@ export async function show(options: ShowOptions): Promise<void> {
 
     const { name } = options;
     state.userUid = options.uid;
+    state.lbOptOut = options.lbOptOut;
 
     $("#userReportPopup .user").text(name);
     $("#userReportPopup .reason").val("Inappropriate name");
     $("#userReportPopup .comment").val("");
     $("#userReportPopup .characterCount").text("-");
-    $("#userReportPopup .reason").select2({
-      minimumResultsForSearch: Infinity,
+
+    select = new SlimSelect({
+      select: "#userReportPopup .reason",
+      settings: {
+        showSearch: false,
+      },
     });
+
     $("#userReportPopupWrapper")
       .stop(true, true)
       .css("opacity", 0)
@@ -59,6 +71,8 @@ async function hide(): Promise<void> {
         },
         125,
         () => {
+          select?.destroy();
+          select = undefined;
           CaptchaController.reset("userReportPopup");
           $("#userReportPopupWrapper").addClass("hidden");
           Skeleton.remove(wrapperId);
@@ -85,6 +99,16 @@ async function submitReport(): Promise<void> {
     return Notifications.add("Please provide a comment");
   }
 
+  if (reason === "Suspected cheating" && state.lbOptOut) {
+    return Notifications.add(
+      "You cannot report this user for suspected cheating as they have opted out of the leaderboards.",
+      0,
+      {
+        duration: 10,
+      }
+    );
+  }
+
   const characterDifference = comment.length - 250;
   if (characterDifference > 0) {
     return Notifications.add(
@@ -106,12 +130,12 @@ async function submitReport(): Promise<void> {
   }
 
   Notifications.add("Report submitted. Thank you!", 1);
-  hide();
+  void hide();
 }
 
 $("#userReportPopupWrapper").on("mousedown", (e) => {
   if ($(e.target).attr("id") === "userReportPopupWrapper") {
-    hide();
+    void hide();
   }
 });
 

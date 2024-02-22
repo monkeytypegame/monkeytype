@@ -276,6 +276,12 @@
       "source": "Monkeytype Sourcecode",
       "length": 159,
       "id": 45
+    },
+    {
+      "text": "function swap(arr, xp, yp) {\n\tvar temp = arr[xp];\n\tarr[xp] = arr[yp];\n\tarr[yp] = temp;\n}\n\nfunction selectionSort(arr, n) {\n\tvar i , j, min_idx;\n\n\tfor(i = 0; i < n -1; i++){\n\t\tmin_idx = i;\n\n\t\tfor(j = i + 1; j < n; j++)\n\t\tif(arr[j] < arr[min_idx])\n\t\t\tmin_idx = j;\n\n\t\tswap(arr, min_idx, i)\n\t}\n}\n\nfunction printArray(arr, size) {\n\tvar i;\n\tvar result = \"\";\n\tfor(i = 0; i < size; i++)\n\tresult += arr[i] + \" \";\n\tdocument.write(`Sorted array: ${result}`);\n\treturn console.log(`Sorted array: ${result}`);\t\t\n}",
+      "source": "Selection Sort",
+      "length": 499,
+      "id": 46
     }
   ]
 }

@@ -126,7 +126,7 @@ Misc.getLanguageList()
 Misc.getFunboxList()
   .then((funboxes) => {
     updateFunboxCommands(funboxes);
-    if (FunboxCommands[0].subgroup) {
+    if (FunboxCommands[0]?.subgroup) {
       FunboxCommands[0].subgroup.beforeList = (): void => {
         updateFunboxCommands(funboxes);
       };
@@ -195,7 +195,7 @@ export const commands: MonkeyTypes.CommandsSubgroup = {
       icon: "fa-search",
       exec: (): void => {
         UpdateConfig.setMode("quote");
-        QuoteSearchPopup.show();
+        void QuoteSearchPopup.show();
       },
       shouldFocusTestUI: false,
     },
@@ -237,7 +237,7 @@ export const commands: MonkeyTypes.CommandsSubgroup = {
       icon: "fa-tint",
       exec: (input): void => {
         if (input === undefined) return;
-        UpdateConfig.setCustomLayoutfluid(
+        void UpdateConfig.setCustomLayoutfluid(
           input as MonkeyTypes.CustomLayoutFluidSpaces
         );
       },
@@ -303,8 +303,7 @@ export const commands: MonkeyTypes.CommandsSubgroup = {
       },
       input: true,
       exec: (input): void => {
-        if (!input) input = "";
-        UpdateConfig.setCustomBackground(input);
+        UpdateConfig.setCustomBackground(input ?? "");
       },
     },
     ...CustomBackgroundSizeCommands,
@@ -352,7 +351,7 @@ export const commands: MonkeyTypes.CommandsSubgroup = {
       alias: "support donate",
       icon: "fa-ad",
       exec: (): void => {
-        VideoAdPopup.show();
+        void VideoAdPopup.show();
       },
     },
     {
@@ -361,12 +360,12 @@ export const commands: MonkeyTypes.CommandsSubgroup = {
       icon: "fa-cog",
       alias: "import config",
       input: true,
-      exec: (input): void => {
-        if (!input) return;
+      exec: async (input): Promise<void> => {
+        if (input === undefined || input === "") return;
         try {
-          UpdateConfig.apply(JSON.parse(input));
+          await UpdateConfig.apply(JSON.parse(input));
           UpdateConfig.saveFullConfigToLocalStorage();
-          Settings.update();
+          void Settings.update();
           Notifications.add("Done", 1);
         } catch (e) {
           Notifications.add(
@@ -469,27 +468,27 @@ export const commands: MonkeyTypes.CommandsSubgroup = {
 };
 
 const lists = {
-  keymapLayouts: KeymapLayoutsCommands[0].subgroup,
-  enableAds: EnableAdsCommands[0].subgroup,
-  customThemesList: CustomThemesListCommands[0].subgroup,
-  themes: ThemesCommands[0].subgroup,
-  loadChallenge: LoadChallengeCommands[0].subgroup,
-  languages: LanguagesCommands[0].subgroup,
-  difficulty: DifficultyCommands[0].subgroup,
-  lazyMode: LazyModeCommands[0].subgroup,
-  paceCaretMode: PaceCaretModeCommands[0].subgroup,
-  showAverage: ShowAverageCommands[0].subgroup,
-  minWpm: MinWpmCommands[0].subgroup,
-  minAcc: MinAccCommands[0].subgroup,
-  minBurst: MinBurstCommands[0].subgroup,
-  funbox: FunboxCommands[0].subgroup,
-  confidenceMode: ConfidenceModeCommands[0].subgroup,
-  stopOnError: StopOnErrorCommands[0].subgroup,
-  layouts: LayoutsCommands[0].subgroup,
-  oppositeShiftMode: OppositeShiftModeCommands[0].subgroup,
-  tags: TagsCommands[0].subgroup,
-  resultSaving: ResultSavingCommands[0].subgroup,
-  blindMode: BlindModeCommands[0].subgroup,
+  keymapLayouts: KeymapLayoutsCommands[0]?.subgroup,
+  enableAds: EnableAdsCommands[0]?.subgroup,
+  customThemesList: CustomThemesListCommands[0]?.subgroup,
+  themes: ThemesCommands[0]?.subgroup,
+  loadChallenge: LoadChallengeCommands[0]?.subgroup,
+  languages: LanguagesCommands[0]?.subgroup,
+  difficulty: DifficultyCommands[0]?.subgroup,
+  lazyMode: LazyModeCommands[0]?.subgroup,
+  paceCaretMode: PaceCaretModeCommands[0]?.subgroup,
+  showAverage: ShowAverageCommands[0]?.subgroup,
+  minWpm: MinWpmCommands[0]?.subgroup,
+  minAcc: MinAccCommands[0]?.subgroup,
+  minBurst: MinBurstCommands[0]?.subgroup,
+  funbox: FunboxCommands[0]?.subgroup,
+  confidenceMode: ConfidenceModeCommands[0]?.subgroup,
+  stopOnError: StopOnErrorCommands[0]?.subgroup,
+  layouts: LayoutsCommands[0]?.subgroup,
+  oppositeShiftMode: OppositeShiftModeCommands[0]?.subgroup,
+  tags: TagsCommands[0]?.subgroup,
+  resultSaving: ResultSavingCommands[0]?.subgroup,
+  blindMode: BlindModeCommands[0]?.subgroup,
 };
 
 export function getList(
@@ -515,4 +514,8 @@ export function setCurrent(val: MonkeyTypes.CommandsSubgroup[]): void {
 
 export function pushCurrent(val: MonkeyTypes.CommandsSubgroup): void {
   current.push(val);
+}
+
+export function getCurrent(): MonkeyTypes.CommandsSubgroup {
+  return current[current.length - 1] as MonkeyTypes.CommandsSubgroup;
 }

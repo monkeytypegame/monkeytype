@@ -1,0 +1,311 @@
+{
+  "language": "belarusian_lacinka",
+  "groups": [
+    [0, 100],
+    [101, 300],
+    [301, 600],
+    [601, 9999]
+  ],
+  "quotes": [
+    {
+      "id": 1,
+      "source": "Ivan Mielež - Ludzi na bałocie.",
+      "text": "Pry ŭźleskach amal usiudy stajali kalosy, zavichalisia ludzi. Niamała ludziej było i na bałocie - užo dzie-nidzie kasili.",
+      "length": 121
+    },
+    {
+      "id": 2,
+      "source": "Ivan Mielež - Ludzi na bałocie.",
+      "text": "Vasil pasłuchaŭsia, ale biez achvoty. Jon prynios ad svajho voza paŭkaravaja chleba, brusok sała i žmieniu zialonaj cybuli, pakłaŭ pierad Hannaj na chustku.",
+      "length": 156
+    },
+    {
+      "id": 3,
+      "source": "Ivan Mielež - Ludzi na bałocie.",
+      "text": "Šumiać, šapočuć hrušy. Niedzie zajšoŭsia brecham sabaka, jamu padsabiŭ druhi. Sabaki chutka ŭcichajuć, i ŭžo znoŭ tolki hrušy šumiać...",
+      "length": 135
+    },
+    {
+      "id": 4,
+      "source": "Ivan Mielež - Ludzi na bałocie.",
+      "text": "Znoŭ ciahuča, pa-voŭčy zavyŭ sabaka. \"Praŭdu Hanna kazała. By na chaŭtury. Jak čuła ŭsio roŭna...\"",
+      "length": 98
+    },
+    {
+      "id": 5,
+      "source": "Ivan Mielež - Ludzi na bałocie.",
+      "text": "Kali jon pavaliŭsia ŭ travu kala voza, nachiliłasia, piaščotna pahładziła pa hałavie.",
+      "length": 85
+    },
+    {
+      "id": 6,
+      "source": "Ivan Mielež - Ludzi na bałocie.",
+      "text": "- U nas je zapałka, - radasna paviedamiŭ Chviedźka, zabiahajučy napierad Vasila.",
+      "length": 80
+    },
+    {
+      "id": 7,
+      "source": "Ivan Mielež - Ludzi na bałocie.",
+      "text": "- Idzi!.. Nie brašy! - pačuŭ Vasil jaje adkaz. Hanna raptam zaśmiajałasia.",
+      "length": 74
+    },
+    {
+      "id": 8,
+      "source": "Ivan Mielež - Ludzi na bałocie.",
+      "text": "Vasil zaŭvažyŭ: pavitaŭšysia, Čarnuška adrazu ŭhledzieŭ, vyłučyŭ z usich jaho.",
+      "length": 78
+    },
+    {
+      "id": 9,
+      "source": "Ivan Mielež - Ludzi na bałocie.",
+      "text": "- Kaniešnie!.. Taki kavaler!.. Tolki - vočy ŭ jaje, kažuć, u roznyja baki hladziać. Praŭda?",
+      "length": 91
+    },
+    {
+      "id": 10,
+      "source": "Ivan Mielež - Ludzi na bałocie.",
+      "text": "- Kazu! Kazu pradaju! Kamu kazu treba? - kryčaŭ niechta.",
+      "length": 56
+    },
+    {
+      "id": 11,
+      "source": "Ivan Mielež - Ludzi na bałocie.",
+      "text": "Abudziŭšysia ŭranku ad šturška, Vasil ubačyŭ nad saboju Jaŭchima Karča, jaki, musić, viartaŭsia z načnoj uciechi.",
+      "length": 113
+    },
+    {
+      "id": 12,
+      "source": "Ivan Mielež - Ludzi na bałocie.",
+      "text": "Choć adrazu stała cicha, Dubadzieł nie śpiašaŭsia havaryć.",
+      "length": 58
+    },
+    {
+      "id": 13,
+      "source": "Ivan Mielež - Ludzi na bałocie.",
+      "text": "- Upuściŭ! - Vasil raptam uskipieŭ. - Nu, upuściŭ! Što vam!",
+      "length": 59
+    },
+    {
+      "id": 14,
+      "source": "Uładzimir Karatkievič - Dzikaje palavańnie karala Stacha.",
+      "text": "Ja končyŭ paśla himnazii ŭniviersitet i staŭ vučonym-falkłarystam. Sprava hetaja ŭ toj čas tolki pačynałasia i ličyłasia siarod uładu majučych niebiaśpiečnaj dla isnujučaha paradku.",
+      "length": 181
+    },
+    {
+      "id": 15,
+      "source": "Uładzimir Karatkievič - Dzikaje palavańnie karala Stacha.",
+      "text": "Ja pabyvaŭ i tam, u mianie byli maładyja nohi i maładaja praha. I čaho mnie tolki nie davodziłasia bačyć!",
+      "length": 105
+    },
+    {
+      "id": 16,
+      "source": "Uładzimir Karatkievič - Dzikaje palavańnie karala Stacha.",
+      "text": "Kali ja apuściŭ ruku, u vačach hetaj dziaŭčyny - nie, navat dzicionka - zjaviłasia niešta lichamankavaje, balučaje, dziŭnaje.",
+      "length": 125
+    },
+    {
+      "id": 17,
+      "source": "Uładzimir Karatkievič - Dzikaje palavańnie karala Stacha.",
+      "text": "Jana tak skazała «apošniaja z Janoŭskich», hetaja vasiemnaccacihadovaja dziaŭčynka, što mnie čamuści až pa sercy razanuła žalem.",
+      "length": 128
+    },
+    {
+      "id": 18,
+      "source": "Uładzimir Karatkievič - Dzikaje palavańnie karala Stacha.",
+      "text": "Tamu ja navioŭ razmovu na dzikaje palavańnie. U Biermana vusny skłalisia, jak kurynaja dupka.",
+      "length": 93
+    },
+    {
+      "id": 19,
+      "source": "Uładzimir Karatkievič - Dzikaje palavańnie karala Stacha.",
+      "text": "Vializnaja tuša Dubatoŭka vyprastałasia, jon chmyknuŭ i ŭziaŭ Janoŭskuju ščopańniu źvierchu za prazrystuju kiść levaj ruki.",
+      "length": 123
+    },
+    {
+      "id": 20,
+      "source": "Uładzimir Karatkievič - Dzikaje palavańnie karala Stacha.",
+      "text": "Biazhučna skakała pa vierasie dzikaje palavańnie karala Stacha, imčali šeryja, tumannyja, nachilenyja napierad postaci.",
+      "length": 119
+    },
+    {
+      "id": 21,
+      "source": "Uładzimir Karatkievič - Dzikaje palavańnie karala Stacha.",
+      "text": "Ja viarnuŭsia ŭ pakoj i, nie zapalvajučy śviečki, sieŭ na łožak. Mianie kałaciła ad choładu, a čerap prosta razłomvaŭsia ad roznych supiarečlivych dumak.",
+      "length": 153
+    },
+    {
+      "id": 22,
+      "source": "Uładzimir Karatkievič - Dzikaje palavańnie karala Stacha.",
+      "text": "- Pryznajusia vam, takija dumki ŭ mianie byli. Mahčyma, ja navat daŭ by im volu, kab nie viedaŭ, što Varona lažyć paranieny.",
+      "length": 124
+    },
+    {
+      "id": 23,
+      "source": "Uładzimir Karatkievič - Dzikaje palavańnie karala Stacha.",
+      "text": "Na tvary hetaj poskudzi było stolki bojazi, što ja moh by zmoŭknuć, ale nie moh. Ja zhubiŭ usiakuju razvažlivaść.",
+      "length": 113
+    },
+    {
+      "id": 24,
+      "source": "Uładzimir Karatkievič - Dzikaje palavańnie karala Stacha.",
+      "text": "Vyrašyli, što Ryhor budzie siońniašniaj nočču siadzieć u Chałodnaj łahčynie, adtul niedaloka da chaty, u jakoj žyŭ Svieciłovič, jaho stary «brat-słuha» i kucharka. U vypadku patreby my zmožam jaho tam adšukać.",
+      "length": 209
+    },
+    {
+      "id": 25,
+      "source": "Uładzimir Karatkievič - Dzikaje palavańnie karala Stacha.",
+      "text": "Ja kryknuŭ dzikim hołasam, i, jak byccam u adkaz na moj kryk, cišyniu nočy razdzior šalony tupat konskich kapytoŭ.",
+      "length": 114
+    },
+    {
+      "id": 26,
+      "source": "Uładzimir Karatkievič - Dzikaje palavańnie karala Stacha.",
+      "text": "Na tvary stanavoha błukała pamiarkoŭnaja ŭśmieška, jon prychlobvaŭ čajok.",
+      "length": 73
+    },
+    {
+      "id": 27,
+      "source": "Uładzimir Karatkievič - Dzikaje palavańnie karala Stacha.",
+      "text": "Pradraŭšysia tak-siak praz park Bałotnych Jalin, ja vybiŭsia na ściežku i ŭžo amal padychodziŭ da kryža Ramana.",
+      "length": 111
+    },
+    {
+      "id": 28,
+      "source": "Uładzimir Karatkievič - Dzikaje palavańnie karala Stacha.",
+      "text": "U vačach maich paciamnieła, i kali ja ačuniaŭ, to pabačyŭ, što końnikaŭ užo nie było.",
+      "length": 85
+    },
+    {
+      "id": 29,
+      "source": "Uładzimir Karatkievič - Dzikaje palavańnie karala Stacha.",
+      "text": "Unačy Bierman zavodziŭ jaho ŭ chady, i toj kročyŭ pa načnych pierachodach, abudžajučy ŭ słuchaŭkach huki, jakija čuli žychary doma.",
+      "length": 131
+    },
+    {
+      "id": 30,
+      "source": "Uładzimir Karatkievič - Dzikaje palavańnie karala Stacha.",
+      "text": "- A-ach, - prarypieŭ zubami Ryhor. - Zabyli, što ŭ lisicy ŭ nary zaŭždy druhi chod jość.",
+      "length": 88
+    },
+    {
+      "id": 31,
+      "source": "Uładzimir Karatkievič - Dzikaje palavańnie karala Stacha.",
+      "text": "I my vielmi lohka ŭzdychnuli, kali pałac źnik za pavarotkaj alei. Z kašmaram było skončana.",
+      "length": 91
+    },
+    {
+      "id": 32,
+      "source": "Ivan Šamiakin - Serca na dałoni.",
+      "text": "Heta byŭ pieršy hon pryviezienych z horada na daču hałuboŭ, i baćka z synam mocna pieražyvali - ci viernucca jany?",
+      "length": 114
+    },
+    {
+      "id": 33,
+      "source": "Ivan Šamiakin - Serca na dałoni.",
+      "text": "Na hety raz praskočyć nieprykmietna nie ŭdałosia: u prachadnoj zatrymała kałhaśnica z trochhadovym synam. Chłopčyku pry naradžeńni niaŭmiełaja akušerka vyvichnuła nožki. Jaraš tut ža na łavačcy ŭ skvieryku pahladzieŭ małoha.",
+      "length": 224
+    },
+    {
+      "id": 34,
+      "source": "Ivan Šamiakin - Serca na dałoni.",
+      "text": "Ale, prakansultavaŭšy kolki chvorych, Jaraš znoŭ adčuŭ siabie stomlenym. Z im redka heta zdarałasia.",
+      "length": 100
+    },
+    {
+      "id": 35,
+      "source": "Ivan Šamiakin - Serca na dałoni.",
+      "text": "Tarasa zdziviła i naściarožyła takaja niečakanaja samakrytyčnaść. Ščyra heta ci znoŭ paziorstva?",
+      "length": 96
+    },
+    {
+      "id": 36,
+      "source": "Ivan Šamiakin - Serca na dałoni.",
+      "text": "Tarasu spadabałasia takaja padziaka za pačastunak, i jon viesieła zaśmiajaŭsia. Usio-taki jon cikavy chłopiec, hety Słavik. Ale ŭ hałavie jaho - kuča śmiećcia.",
+      "length": 159
+    },
+    {
+      "id": 37,
+      "source": "Ivan Šamiakin - Serca na dałoni.",
+      "text": "Pracu svaju małady Šykovič lubiŭ. Ale paśla taho jak vyśmiejaŭ svajo asistenctva pierad Tarasam, pasada sapraŭdy zdałasia jamu mizernaj i śmiešnaj. Padvypiŭšy, jon vyrašyŭ na rabotu nie iści. Adbudziecca pieradača i biez jaho.",
+      "length": 226
+    },
+    {
+      "id": 38,
+      "source": "Ivan Šamiakin - Serca na dałoni.",
+      "text": "- Čamu ržacie, jak šatłandskija žarabcy? Čerci ryžyja! Špijonić pryjechali? Kudy atamnuju bombu skinuć? Dyk my na vas dziesiać skiniem! I ad vašaha zadrypanaha vostrava nie zastaniecca mokraha miesca!",
+      "length": 200
+    },
+    {
+      "id": 39,
+      "source": "Ivan Šamiakin - Serca na dałoni.",
+      "text": "Syrakvaška ŭziaŭ papku, pračytaŭ napisanaje i lohka śvisnuŭ, jon adrazu zrazumieŭ, čamu Šykoviča zacikaviła hetaja maleńkaja papierka.",
+      "length": 134
+    },
+    {
+      "id": 40,
+      "source": "Ivan Šamiakin - Serca na dałoni.",
+      "text": "\"Alošu ŭraziła maja novaja jakaść - umieńnie vykidvać z kabinieta durniaŭ\", - padumaŭ viesieła.",
+      "length": 95
+    },
+    {
+      "id": 41,
+      "source": "Ivan Šamiakin - Serca na dałoni.",
+      "text": "- ...Kaniešnie, kali baćka budzie vykidvać z kabinieta ludziej, to synu jość z kaho ŭziać prykład... Kali baćka sabie dazvalaje...",
+      "length": 130
+    },
+    {
+      "id": 42,
+      "source": "Ivan Šamiakin - Serca na dałoni.",
+      "text": "\"Nie źviartajcie ŭvahi. Naznačeńni jaho sam budu praviarać. Vam raju: aścierahajciesia hetaha čałavieka. Ničoha nie vykazvajcie pry im\".",
+      "length": 136
+    },
+    {
+      "id": 43,
+      "source": "Ivan Šamiakin - Serca na dałoni.",
+      "text": "Kładoŭka dla bializny była na haryščy treciaha korpusa, dzie raźmiaščalisia izalatary.",
+      "length": 86
+    },
+    {
+      "id": 44,
+      "source": "Ivan Šamiakin - Serca na dałoni.",
+      "text": "Razhružany kran viartaŭsia z lohkim hułam. Jon lacieŭ pa doŭhim pralocie cecha z chutkaściu ciahnika. Zvinieli šyby i drynčali niezamacavanyja detali i klučy na stanku.",
+      "length": 168
+    },
+    {
+      "id": 45,
+      "source": "Ivan Šamiakin - Serca na dałoni.",
+      "text": "- Och, libierał! - I paviarnułasia da Tarasa: - Dakład karotki. Ja patrabuju, kab hetaha tvajho pižona Šykoviča vyciahnuli na kamitet.",
+      "length": 134
+    },
+    {
+      "id": 46,
+      "source": "Ivan Šamiakin - Serca na dałoni.",
+      "text": "Zvaniła Ira. Jaje zvajšli na instytuckim bale, kab paviedamić pra niaščaście z bratam. Paznała maci, zapłakała: što sa Słavikam?",
+      "length": 128
+    },
+    {
+      "id": 47,
+      "source": "Ivan Šamiakin - Serca na dałoni.",
+      "text": "Da aŭtobusnaj supynki išli moŭčki. Sviaciła maroznaje sonca, jakoje, zdavałasia, pramianiła nie ciapło, a choład. Snieh pad nahami ŭ prachožych źvinieŭ na sotni ładoŭ.",
+      "length": 167
+    },
+    {
+      "id": 48,
+      "source": "Ivan Šamiakin - Serca na dałoni.",
+      "text": "Mnoha i druhich dumak roiłasia ŭ hałavie, pakul Anton Kuźmič, užo adzin, išoŭ ad aŭtobusa da svajho doma pa cichaj vulicy, dzie śnieh nie ačyščaŭsia z pačatku zimy.",
+      "length": 164
+    },
+    {
+      "id": 49,
+      "source": "Ivan Šamiakin - Serca na dałoni.",
+      "text": "Jon raspranuŭsia i, pamyŭšy ŭ vannaj ruki, zahlanuŭ na kuchniu, viesieła i śmiešna paciahnuŭ nosam pavietra.",
+      "length": 108
+    },
+    {
+      "id": 50,
+      "source": "Ivan Šamiakin - Serca na dałoni.",
+      "text": "Jon nie zaŭvažyŭ, jak jana źnikała i zjaŭlałasia znoŭ. Niekali jon lubavaŭsia jaje sprytnaściu ŭ damašniaj rabocie: usio hareła pad jaje rukami. Ciapier jon dumaŭ pra inšaje, nie zadumvajučysia, adkazvaŭ joj.",
+      "length": 208
+    }
+  ]
+}

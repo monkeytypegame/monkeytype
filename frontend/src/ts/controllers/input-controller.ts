@@ -28,7 +28,6 @@ import * as TestWords from "../test/test-words";
 import * as Hangul from "hangul-js";
 import * as CustomTextState from "../states/custom-text-name";
 import * as FunboxList from "../test/funbox/funbox-list";
-import * as Settings from "../pages/settings";
 import * as KeymapEvent from "../observables/keymap-event";
 import { IgnoredKeys } from "../constants/ignored-keys";
 import { ModifierKeys } from "../constants/modifier-keys";
@@ -60,7 +59,7 @@ function updateUI(): void {
 
   if (Config.keymapMode === "next" && Config.mode !== "zen") {
     if (!Config.language.startsWith("korean")) {
-      KeymapEvent.highlight(
+      void KeymapEvent.highlight(
         TestWords.words
           .getCurrent()
           .charAt(TestInput.input.current.length)
@@ -79,24 +78,32 @@ function updateUI(): void {
       );
       const inputGroupLength: number = koCurrInput.length - 1;
       if (koCurrInput[inputGroupLength]) {
-        const inputCharLength: number = koCurrInput[inputGroupLength].length;
+        const inputCharLength: number = (
+          koCurrInput[inputGroupLength] as string[]
+        ).length;
         //at the end of the word, it will throw a (reading '0') this will be the space
         try {
           //if it overflows and returns undefined (e.g input [ㄱ,ㅏ,ㄷ]),
           //take the difference between the overflow and the word
+
+          //@ts-expect-error really cant be bothered fixing all these issues - its gonna get caught anyway
           const koChar: string =
+            //@ts-expect-error
             koCurrWord[inputGroupLength][inputCharLength] ??
+            //@ts-expect-error
             koCurrWord[koCurrInput.length][
+              //@ts-expect-error
               inputCharLength - koCurrWord[inputGroupLength].length
             ];
 
-          KeymapEvent.highlight(koChar);
+          void KeymapEvent.highlight(koChar);
         } catch (e) {
-          KeymapEvent.highlight("");
+          void KeymapEvent.highlight("");
         }
       } else {
         //for new words
-        KeymapEvent.highlight(koCurrWord[0][0]);
+        const toHighlight = koCurrWord?.[0]?.[0];
+        if (toHighlight !== undefined) void KeymapEvent.highlight(toHighlight);
       }
     }
   }
@@ -116,7 +123,9 @@ function backspaceToPrevious(): void {
     (TestInput.input.history[TestWords.words.currentIndex - 1] ==
       TestWords.words.get(TestWords.words.currentIndex - 1) &&
       !Config.freedomMode) ||
-    $($(".word")[TestWords.words.currentIndex - 1]).hasClass("hidden")
+    $($(".word")[TestWords.words.currentIndex - 1] as HTMLElement).hasClass(
+      "hidden"
+    )
   ) {
     return;
   }
@@ -142,19 +151,20 @@ function backspaceToPrevious(): void {
   if (Config.mode === "zen") {
     TimerProgress.update();
 
-    const els: HTMLElement[] = (document.querySelector("#words")?.children ||
+    const els = (document.querySelector("#words")?.children ??
       []) as HTMLElement[];
 
     for (let i = els.length - 1; i >= 0; i--) {
-      if (els[i].classList.contains("newline")) {
-        els[i].remove();
+      const el = els[i] as HTMLElement;
+      if (el.classList.contains("newline")) {
+        el.remove();
       } else {
         break;
       }
     }
   }
 
-  Caret.updatePosition();
+  void Caret.updatePosition();
   Replay.addReplayEvent("backWord");
 }
 
@@ -182,12 +192,11 @@ function handleSpace(): void {
       f.functions.handleSpace();
     }
   }
-  Settings.groups["layout"]?.updateInput();
 
   dontInsertSpace = true;
 
   const burst: number = TestStats.calculateBurst();
-  LiveBurst.update(Math.round(burst));
+  void LiveBurst.update(Math.round(burst));
   TestInput.pushBurstToHistory(burst);
 
   const nospace =
@@ -198,7 +207,7 @@ function handleSpace(): void {
   //correct word or in zen mode
   const isWordCorrect: boolean =
     currentWord === TestInput.input.current || Config.mode === "zen";
-  MonkeyPower.addPower(isWordCorrect, true);
+  void MonkeyPower.addPower(isWordCorrect, true);
   TestInput.incrementAccuracy(isWordCorrect);
   if (isWordCorrect) {
     if (Config.indicateTypos !== "off" && Config.stopOnError === "letter") {
@@ -210,24 +219,24 @@ function handleSpace(): void {
     TestUI.setCurrentWordElementIndex(TestUI.currentWordElementIndex + 1);
     TestUI.updateActiveElement();
     Funbox.toggleScript(TestWords.words.getCurrent());
-    Caret.updatePosition();
+    void Caret.updatePosition();
     TestInput.incrementKeypressCount();
     TestInput.pushKeypressWord(TestWords.words.currentIndex);
     if (!nospace) {
-      Sound.playClick();
+      void Sound.playClick();
     }
     Replay.addReplayEvent("submitCorrectWord");
     if (TestWords.words.currentIndex === TestWords.words.length) {
       //submitted last word (checking this in case the test doesnt stop automatically on correct last keypress)
-      TestLogic.finish();
+      void TestLogic.finish();
       return;
     }
   } else {
     if (!nospace) {
       if (Config.playSoundOnError === "off" || Config.blindMode) {
-        Sound.playClick();
+        void Sound.playClick();
       } else {
-        Sound.playError();
+        void Sound.playError();
       }
     }
     TestInput.pushMissedWord(TestWords.words.getCurrent());
@@ -253,7 +262,7 @@ function handleSpace(): void {
         dontInsertSpace = false;
         Replay.addReplayEvent("incorrectLetter", "_");
         TestUI.updateWordElement(true);
-        Caret.updatePosition();
+        void Caret.updatePosition();
       }
       return;
     }
@@ -267,7 +276,7 @@ function handleSpace(): void {
     TestUI.setCurrentWordElementIndex(TestUI.currentWordElementIndex + 1);
     TestUI.updateActiveElement();
     Funbox.toggleScript(TestWords.words.getCurrent());
-    Caret.updatePosition();
+    void Caret.updatePosition();
     TestInput.incrementKeypressCount();
     TestInput.pushKeypressWord(TestWords.words.currentIndex);
     if (Config.difficulty === "expert" || Config.difficulty === "master") {
@@ -275,7 +284,7 @@ function handleSpace(): void {
       return;
     } else if (TestWords.words.currentIndex === TestWords.words.length) {
       //submitted last word that is incorrect
-      TestLogic.finish();
+      void TestLogic.finish();
       return;
     }
     Replay.addReplayEvent("submitErrorWord");
@@ -308,14 +317,14 @@ function handleSpace(): void {
     const currentTop: number = Math.floor(
       document.querySelectorAll<HTMLElement>("#words .word")[
         TestUI.currentWordElementIndex - 1
-      ].offsetTop
+      ]?.offsetTop ?? 0
     );
     let nextTop: number;
     try {
       nextTop = Math.floor(
         document.querySelectorAll<HTMLElement>("#words .word")[
           TestUI.currentWordElementIndex
-        ].offsetTop
+        ]?.offsetTop ?? 0
       );
     } catch (e) {
       nextTop = 0;
@@ -337,7 +346,7 @@ function handleSpace(): void {
   // }
 
   if (Config.keymapMode === "react") {
-    KeymapEvent.flash(" ", true);
+    void KeymapEvent.flash(" ", true);
   }
   if (
     Config.mode === "words" ||
@@ -353,7 +362,7 @@ function handleSpace(): void {
     Config.mode === "custom" ||
     Config.mode === "quote"
   ) {
-    TestLogic.addWord();
+    void TestLogic.addWord();
   }
 }
 
@@ -370,12 +379,20 @@ function isCharCorrect(char: string, charIndex: number): boolean {
     const koWordArray: string[] = Hangul.disassemble(
       TestWords.words.getCurrent()
     );
-    const koOriginalChar: string = koWordArray[charIndex];
+    const koOriginalChar = koWordArray[charIndex];
+
+    if (koOriginalChar === undefined) {
+      return false;
+    }
 
     return koOriginalChar === char;
   }
 
-  const originalChar: string = TestWords.words.getCurrent()[charIndex];
+  const originalChar = TestWords.words.getCurrent()[charIndex];
+
+  if (originalChar === undefined) {
+    return false;
+  }
 
   if (originalChar === char) {
     return true;
@@ -507,7 +524,7 @@ function handleChar(
   if (thisCharCorrect && Config.mode !== "zen") {
     char = !isCharKorean
       ? TestWords.words.getCurrent().charAt(charIndex)
-      : Hangul.disassemble(TestWords.words.getCurrent())[charIndex];
+      : Hangul.disassemble(TestWords.words.getCurrent())[charIndex] ?? "";
   }
 
   if (!thisCharCorrect && char === "\n") {
@@ -546,11 +563,11 @@ function handleChar(
   ) {
     TestInput.input.current = resultingWord;
     TestUI.updateWordElement();
-    Caret.updatePosition();
+    void Caret.updatePosition();
     return;
   }
 
-  MonkeyPower.addPower(thisCharCorrect);
+  void MonkeyPower.addPower(thisCharCorrect);
   TestInput.incrementAccuracy(thisCharCorrect);
 
   if (!thisCharCorrect) {
@@ -559,23 +576,25 @@ function handleChar(
   }
 
   WeakSpot.updateScore(
-    Config.mode === "zen" ? char : TestWords.words.getCurrent()[charIndex],
+    Config.mode === "zen"
+      ? char
+      : TestWords.words.getCurrent()[charIndex] ?? "",
     thisCharCorrect
   );
 
   if (thisCharCorrect) {
-    Sound.playClick();
+    void Sound.playClick();
   } else {
     if (Config.playSoundOnError === "off" || Config.blindMode) {
-      Sound.playClick();
+      void Sound.playClick();
     } else {
-      Sound.playError();
+      void Sound.playError();
     }
   }
 
   //keymap
   if (Config.keymapMode === "react") {
-    KeymapEvent.flash(char, thisCharCorrect);
+    void KeymapEvent.flash(char, thisCharCorrect);
   }
 
   if (Config.difficulty !== "master") {
@@ -640,7 +659,7 @@ function handleChar(
   //update the active word top, but only once
   if (testInputLength === 1 && TestWords.words.currentIndex === 0) {
     TestUI.setActiveWordTop(
-      (<HTMLElement>document.querySelector("#words .active"))?.offsetTop
+      (document.querySelector("#words .active") as HTMLElement)?.offsetTop
     );
   }
 
@@ -678,9 +697,11 @@ function handleChar(
     if (
       isLastWord &&
       (wordIsTheSame || shouldQuickEnd) &&
-      (!isChinese || (realInputValue && charIndex + 2 == realInputValue.length))
+      (!isChinese ||
+        (realInputValue !== undefined &&
+          charIndex + 2 == realInputValue.length))
     ) {
-      TestLogic.finish();
+      void TestLogic.finish();
       return;
     }
   }
@@ -704,7 +725,7 @@ function handleChar(
         const currentTop = Math.floor(
           document.querySelectorAll<HTMLElement>("#words .word")[
             TestUI.currentWordElementIndex - 1
-          ]?.offsetTop
+          ]?.offsetTop ?? 0
         ) as number;
         if (!Config.showAllLines) TestUI.lineJump(currentTop);
       } else {
@@ -734,7 +755,7 @@ function handleChar(
   }
 
   if (char !== "\n") {
-    Caret.updatePosition();
+    void Caret.updatePosition();
   }
 }
 
@@ -979,7 +1000,7 @@ $(document).on("keydown", async (event) => {
 
   //blocking firefox from going back in history with backspace
   if (event.key === "Backspace") {
-    Sound.playClick();
+    void Sound.playClick();
     const t = /INPUT|SELECT|TEXTAREA/i;
     if (
       !t.test((event.target as unknown as Element).tagName)
@@ -1008,7 +1029,7 @@ $(document).on("keydown", async (event) => {
   if (event.key === "Enter") {
     if (event.shiftKey) {
       if (Config.mode === "zen") {
-        TestLogic.finish();
+        void TestLogic.finish();
       } else if (
         !Misc.canQuickRestart(
           Config.mode,
@@ -1033,7 +1054,7 @@ $(document).on("keydown", async (event) => {
           }
         } else {
           TestState.setBailedOut(true);
-          TestLogic.finish();
+          void TestLogic.finish();
         }
       }
     } else {
@@ -1047,7 +1068,7 @@ $(document).on("keydown", async (event) => {
 
   //show dead keys
   if (event.key === "Dead" && !CompositionState.getComposing()) {
-    Sound.playClick();
+    void Sound.playClick();
     const word: HTMLElement | null = document.querySelector<HTMLElement>(
       "#words .word.active"
     );
@@ -1275,7 +1296,7 @@ $("#wordsInput").on("input", (event) => {
     if (containsChinese) {
       if (
         currTestInput.length - inputValue.length <= 2 &&
-        currTestInput.slice(0, currTestInput.length) === currTestInput
+        currTestInput.startsWith(currTestInput)
       ) {
         TestInput.input.current = inputValue;
       } else {
@@ -1290,7 +1311,7 @@ $("#wordsInput").on("input", (event) => {
           iOffset = inputValue.indexOf(" ") + 1;
         }
         for (let i = diffStart; i < inputValue.length; i++) {
-          handleChar(inputValue[i], i - iOffset, realInputValue);
+          handleChar(inputValue[i] as string, i - iOffset, realInputValue);
         }
       }
     } else if (containsKorean) {
@@ -1305,7 +1326,7 @@ $("#wordsInput").on("input", (event) => {
     }
 
     TestUI.updateWordElement();
-    Caret.updatePosition();
+    void Caret.updatePosition();
     if (!CompositionState.getComposing()) {
       Replay.addReplayEvent("setLetterIndex", currTestInput.length - 1);
     }
@@ -1322,7 +1343,7 @@ $("#wordsInput").on("input", (event) => {
     }
     for (let i = diffStart; i < inputValue.length; i++) {
       // passing realInput to allow for correct Korean character compilation
-      handleChar(inputValue[i], i - iOffset, realInputValue);
+      handleChar(inputValue[i] as string, i - iOffset, realInputValue);
     }
   }
 

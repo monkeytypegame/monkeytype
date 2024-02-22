@@ -29,7 +29,7 @@ function show(credential: UserCredential): void {
   if (!isPopupVisible(wrapperId)) {
     CaptchaController.reset("googleSignUpPopup");
     CaptchaController.render(
-      $("#googleSignUpPopupWrapper .captcha")[0],
+      $("#googleSignUpPopupWrapper .captcha")[0] as HTMLElement,
       "googleSignUpPopup"
     );
     enableInput();
@@ -48,14 +48,14 @@ function show(credential: UserCredential): void {
 async function hide(): Promise<void> {
   if (isPopupVisible(wrapperId)) {
     if (signedInUser !== undefined) {
-      Notifications.add("Sign up process canceled", 0, {
+      Notifications.add("Sign up process cancelled", 0, {
         duration: 5,
       });
       LoginPage.hidePreloader();
       LoginPage.enableInputs();
-      if (signedInUser && getAdditionalUserInfo(signedInUser)?.isNewUser) {
-        Ape.users.delete();
-        signedInUser.user.delete();
+      if (getAdditionalUserInfo(signedInUser)?.isNewUser) {
+        await Ape.users.delete();
+        await signedInUser.user.delete();
       }
       AccountController.signOut();
       signedInUser = undefined;
@@ -100,7 +100,7 @@ async function apply(): Promise<void> {
     if (name.length === 0) throw new Error("Name cannot be empty");
     const response = await Ape.users.create(name, captcha);
     if (response.status !== 200) {
-      throw response;
+      throw new Error(`Failed to create user: ${response.message}`);
     }
 
     if (response.status === 200) {
@@ -132,7 +132,7 @@ async function apply(): Promise<void> {
       }
       signedInUser = undefined;
       Loader.hide();
-      hide();
+      void hide();
     }
   } catch (e) {
     console.log(e);
@@ -147,7 +147,7 @@ async function apply(): Promise<void> {
     }
     AccountController.signOut();
     signedInUser = undefined;
-    hide();
+    void hide();
     Loader.hide();
     return;
   }
@@ -171,7 +171,7 @@ function disableInput(): void {
 
 $("#googleSignUpPopupWrapper").on("mousedown", (e) => {
   if ($(e.target).attr("id") === "googleSignUpPopupWrapper") {
-    hide();
+    void hide();
   }
 });
 
@@ -233,30 +233,30 @@ $("#googleSignUpPopupWrapper input").on("input", () => {
       return nameIndicator.hide();
     } else {
       nameIndicator.show("checking");
-      checkNameDebounced();
+      void checkNameDebounced();
     }
   }, 1);
 });
 
 $("#googleSignUpPopupWrapper input").on("keypress", (e) => {
   if (e.key === "Enter") {
-    apply();
+    void apply();
   }
 });
 
 $("#googleSignUpPopupWrapper .button").on("click", () => {
-  apply();
+  void apply();
 });
 
 $(document).on("keydown", (event) => {
   if (event.key === "Escape" && isPopupVisible(wrapperId)) {
-    hide();
+    void hide();
     event.preventDefault();
   }
 });
 
 subscribeToSignUpEvent((signedInUser, isNewUser) => {
-  if (signedInUser && isNewUser) {
+  if (signedInUser !== undefined && isNewUser) {
     show(signedInUser);
   }
 });

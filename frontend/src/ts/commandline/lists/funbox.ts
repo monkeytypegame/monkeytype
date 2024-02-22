@@ -67,25 +67,25 @@ function update(funboxes: MonkeyTypes.FunboxMetadata[]): void {
         ManualRestart.set();
         TestLogic.restart();
 
-        for (let i = 0; i < funboxes.length; i++) {
+        for (const funbox of funboxes) {
           // subgroup.list[i].visible = Funbox.isFunboxCompatible(funboxes[i].name, funboxes[i].type);
 
-          let txt = funboxes[i].name.replace(/_/g, " ");
-          if (Config.funbox.includes(funboxes[i].name)) {
+          let txt = funbox.name.replace(/_/g, " ");
+          if (Config.funbox.includes(funbox.name)) {
             txt = '<i class="fas fa-fw fa-check"></i>' + txt;
           } else {
             txt = '<i class="fas fa-fw"></i>' + txt;
           }
           if ($("#commandLine").hasClass("allCommands")) {
             $(
-              `#commandLine .suggestions .entry[command='changeFunbox${funboxes[i].name}']`
+              `#commandLine .suggestions .entry[command='changeFunbox${funbox.name}']`
             ).html(
               `<div class="icon"><i class="fas fa-fw fa-gamepad"></i></div><div>Funbox  > ` +
                 txt
             );
           } else {
             $(
-              `#commandLine .suggestions .entry[command='changeFunbox${funboxes[i].name}']`
+              `#commandLine .suggestions .entry[command='changeFunbox${funbox.name}']`
             ).html(txt);
           }
         }

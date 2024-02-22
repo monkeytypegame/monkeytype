@@ -6,7 +6,7 @@ import Ape from "../ape/index";
 import * as Loader from "../elements/loader";
 import { showNewResultFilterPresetPopup } from "../popups/new-result-filter-preset-popup";
 
-export const defaultResultFilters: MonkeyTypes.ResultFilters = {
+export const defaultResultFilters: SharedTypes.ResultFilters = {
   _id: "default-result-filters-id",
   name: "default result filters",
   pb: {
@@ -78,7 +78,7 @@ function save(): void {
 
 export async function load(): Promise<void> {
   try {
-    const newResultFilters = window.localStorage.getItem("resultFilters");
+    const newResultFilters = window.localStorage.getItem("resultFilters") ?? "";
 
     if (!newResultFilters) {
       filters = defaultResultFilters;
@@ -87,7 +87,7 @@ export async function load(): Promise<void> {
 
       let reset = false;
       for (const key of Object.keys(defaultResultFilters)) {
-        if (reset === true) break;
+        if (reset) break;
         if (newFiltersObject[key] === undefined) {
           reset = true;
           break;
@@ -116,13 +116,11 @@ export async function load(): Promise<void> {
       }
     }
 
-    const newTags: {
-      [tag: string]: boolean;
-    } = { none: false };
+    const newTags: Record<string, boolean> = { none: false };
 
     Object.keys(defaultResultFilters.tags).forEach((tag) => {
       if (filters.tags[tag] !== undefined) {
-        newTags[tag] = filters.tags[tag];
+        newTags[tag] = filters.tags[tag] as boolean;
       } else {
         newTags[tag] = true;
       }
@@ -198,12 +196,12 @@ export async function setFilterPreset(id: string): Promise<void> {
 }
 
 function deepCopyFilter(
-  filter: MonkeyTypes.ResultFilters
-): MonkeyTypes.ResultFilters {
+  filter: SharedTypes.ResultFilters
+): SharedTypes.ResultFilters {
   return JSON.parse(JSON.stringify(filter));
 }
 
-function addFilterPresetToSnapshot(filter: MonkeyTypes.ResultFilters): void {
+function addFilterPresetToSnapshot(filter: SharedTypes.ResultFilters): void {
   const snapshot = DB.getSnapshot();
   if (!snapshot) return;
   DB.setSnapshot({
@@ -219,8 +217,8 @@ async function createFilterPresetCallback(name: string): Promise<void> {
   const result = await Ape.users.addResultFilterPreset({ ...filters, name });
   Loader.hide();
   if (result.status === 200) {
-    addFilterPresetToSnapshot({ ...filters, name, _id: result.data });
-    updateFilterPresets();
+    addFilterPresetToSnapshot({ ...filters, name, _id: result.data as string });
+    void updateFilterPresets();
     Notifications.add("Filter preset created", 1);
   } else {
     Notifications.add("Error creating filter preset: " + result.message, -1);
@@ -254,7 +252,7 @@ async function deleteFilterPreset(id: string): Promise<void> {
   Loader.hide();
   if (result.status === 200) {
     removeFilterPresetFromSnapshot(id);
-    updateFilterPresets();
+    void updateFilterPresets();
     reset();
     Notifications.add("Filter preset deleted", 1);
   } else {
@@ -270,13 +268,13 @@ function deSelectFilterPreset(): void {
   ).removeClass("active");
 }
 
-function getFilters(): MonkeyTypes.ResultFilters {
+function getFilters(): SharedTypes.ResultFilters {
   return filters;
 }
 
-function getGroup<G extends keyof MonkeyTypes.ResultFilters>(
+function getGroup<G extends keyof SharedTypes.ResultFilters>(
   group: G
-): MonkeyTypes.ResultFilters[G] {
+): SharedTypes.ResultFilters[G] {
   return filters[group];
 }
 
@@ -284,15 +282,15 @@ function getGroup<G extends keyof MonkeyTypes.ResultFilters>(
 //   filters[group][filter] = value;
 // }
 
-export function getFilter<G extends keyof MonkeyTypes.ResultFilters>(
+export function getFilter<G extends keyof SharedTypes.ResultFilters>(
   group: G,
   filter: MonkeyTypes.Filter<G>
-): MonkeyTypes.ResultFilters[G][MonkeyTypes.Filter<G>] {
+): SharedTypes.ResultFilters[G][MonkeyTypes.Filter<G>] {
   return filters[group][filter];
 }
 
 function setAllFilters(
-  group: keyof MonkeyTypes.ResultFilters,
+  group: keyof SharedTypes.ResultFilters,
   value: boolean
 ): void {
   Object.keys(getGroup(group)).forEach((filter) => {
@@ -301,7 +299,7 @@ function setAllFilters(
   });
 }
 
-export function loadTags(tags: MonkeyTypes.Tag[]): void {
+export function loadTags(tags: MonkeyTypes.UserTag[]): void {
   tags.forEach((tag) => {
     defaultResultFilters.tags[tag._id] = true;
   });
@@ -313,15 +311,16 @@ export function reset(): void {
 }
 
 type AboveChartDisplay = Partial<
-  Record<keyof MonkeyTypes.ResultFilters, { all: boolean; array?: string[] }>
+  Record<keyof SharedTypes.ResultFilters, { all: boolean; array?: string[] }>
 >;
 
 export function updateActive(): void {
   const aboveChartDisplay: AboveChartDisplay = {};
-  Misc.typedKeys(getFilters()).forEach((group) => {
+
+  for (const group of Misc.typedKeys(getFilters())) {
     // id and name field do not correspond to any ui elements, no need to update
     if (group === "_id" || group === "name") {
-      return;
+      continue;
     }
 
     aboveChartDisplay[group] = {
@@ -329,16 +328,17 @@ export function updateActive(): void {
       array: [],
     };
 
-    Misc.typedKeys(getGroup(group)).forEach((filter) => {
+    for (const filter of Misc.typedKeys(getGroup(group))) {
       const groupAboveChartDisplay = aboveChartDisplay[group];
 
-      if (groupAboveChartDisplay === undefined) return;
+      if (groupAboveChartDisplay === undefined) continue;
 
-      if (getFilter(group, filter)) {
-        groupAboveChartDisplay["array"]?.push(filter);
+      const filterValue = getFilter(group, filter);
+      if (filterValue === true) {
+        groupAboveChartDisplay.array?.push(filter);
       } else {
-        if (groupAboveChartDisplay["all"] !== undefined) {
-          groupAboveChartDisplay["all"] = false;
+        if (groupAboveChartDisplay.all !== undefined) {
+          groupAboveChartDisplay.all = false;
         }
       }
       let buttonEl;
@@ -351,15 +351,15 @@ export function updateActive(): void {
           `.pageAccount .group.filterButtons .filterGroup[group="${group}"] button[filter="${filter}"]`
         );
       }
-      if (getFilter(group, filter)) {
+      if (filterValue === true) {
         buttonEl.addClass("active");
       } else {
         buttonEl.removeClass("active");
       }
-    });
-  });
+    }
+  }
 
-  function addText(group: keyof MonkeyTypes.ResultFilters): string {
+  function addText(group: keyof SharedTypes.ResultFilters): string {
     let ret = "";
     ret += "<div class='group'>";
     if (group === "difficulty") {
@@ -394,7 +394,7 @@ export function updateActive(): void {
             if (snapshot === undefined) return id;
             const name = snapshot.tags?.filter((t) => t._id === id)[0];
             if (name !== undefined) {
-              return snapshot.tags?.filter((t) => t._id === id)[0].display;
+              return snapshot.tags?.filter((t) => t._id === id)[0]?.display;
             }
             return name;
           })
@@ -457,7 +457,7 @@ export function updateActive(): void {
   }, 0);
 }
 
-function toggle<G extends keyof MonkeyTypes.ResultFilters>(
+function toggle<G extends keyof SharedTypes.ResultFilters>(
   group: G,
   filter: MonkeyTypes.Filter<G>
 ): void {
@@ -468,10 +468,10 @@ function toggle<G extends keyof MonkeyTypes.ResultFilters>(
     if (group === "date") {
       setAllFilters("date", false);
     }
-    const newValue = !filters[group][
-      filter
-    ] as unknown as MonkeyTypes.ResultFilters[G][MonkeyTypes.Filter<G>];
-    filters[group][filter] = newValue;
+    const currentValue = filters[group][filter] as unknown as boolean;
+    const newValue = !currentValue;
+    filters[group][filter] =
+      newValue as unknown as SharedTypes.ResultFilters[G][MonkeyTypes.Filter<G>];
     save();
   } catch (e) {
     Notifications.add(
@@ -490,7 +490,7 @@ $(
 ).on("click", "button", (e) => {
   const group = $(e.target)
     .parents(".buttons")
-    .attr("group") as keyof MonkeyTypes.ResultFilters;
+    .attr("group") as keyof SharedTypes.ResultFilters;
   const filter = $(e.target).attr("filter") as MonkeyTypes.Filter<typeof group>;
   if ($(e.target).hasClass("allFilters")) {
     Misc.typedKeys(getFilters()).forEach((group) => {
@@ -502,7 +502,7 @@ $(
       setAllFilters(group, true);
     });
     setAllFilters("date", false);
-    filters["date"]["all"] = true;
+    filters.date.all = true;
   } else if ($(e.target).hasClass("noFilters")) {
     Misc.typedKeys(getFilters()).forEach((group) => {
       // id and name field do not correspond to any ui elements, no need to update
@@ -543,7 +543,7 @@ $(".pageAccount .topFilters button.allFilters").on("click", () => {
     setAllFilters(group, true);
   });
   setAllFilters("date", false);
-  filters["date"]["all"] = true;
+  filters.date.all = true;
   updateActive();
   save();
 });
@@ -561,24 +561,24 @@ $(".pageAccount .topFilters button.currentConfigFilter").on("click", () => {
     setAllFilters(group, false);
   });
 
-  filters["pb"]["no"] = true;
-  filters["pb"]["yes"] = true;
+  filters.pb.no = true;
+  filters.pb.yes = true;
 
-  filters["difficulty"][Config.difficulty] = true;
-  filters["mode"][Config.mode] = true;
+  filters.difficulty[Config.difficulty] = true;
+  filters.mode[Config.mode] = true;
   if (Config.mode === "time") {
     if ([15, 30, 60, 120].includes(Config.time)) {
       const configTime = Config.time as MonkeyTypes.DefaultTimeModes;
-      filters["time"][configTime] = true;
+      filters.time[configTime] = true;
     } else {
-      filters["time"]["custom"] = true;
+      filters.time.custom = true;
     }
   } else if (Config.mode === "words") {
     if ([10, 25, 50, 100, 200].includes(Config.words)) {
       const configWords = Config.words as MonkeyTypes.DefaultWordsModes;
-      filters["words"][configWords] = true;
+      filters.words[configWords] = true;
     } else {
-      filters["words"]["custom"] = true;
+      filters.words.custom = true;
     }
   } else if (Config.mode === "quote") {
     const filterName: MonkeyTypes.Filter<"quoteLength">[] = [
@@ -588,27 +588,29 @@ $(".pageAccount .topFilters button.currentConfigFilter").on("click", () => {
       "thicc",
     ];
     filterName.forEach((ql, index) => {
-      if (Config.quoteLength.includes(index as MonkeyTypes.QuoteLength)) {
-        filters["quoteLength"][ql] = true;
+      if (
+        Config.quoteLength.includes(index as SharedTypes.Config.QuoteLength)
+      ) {
+        filters.quoteLength[ql] = true;
       } else {
-        filters["quoteLength"][ql] = false;
+        filters.quoteLength[ql] = false;
       }
     });
   }
   if (Config.punctuation) {
-    filters["punctuation"]["on"] = true;
+    filters.punctuation.on = true;
   } else {
-    filters["punctuation"]["off"] = true;
+    filters.punctuation.off = true;
   }
   if (Config.numbers) {
-    filters["numbers"]["on"] = true;
+    filters.numbers.on = true;
   } else {
-    filters["numbers"]["off"] = true;
+    filters.numbers.off = true;
   }
   if (Config.mode === "quote" && /english.*/.test(Config.language)) {
-    filters["language"]["english"] = true;
+    filters.language["english"] = true;
   } else {
-    filters["language"][Config.language] = true;
+    filters.language[Config.language] = true;
   }
 
   if (Config.funbox === "none") {
@@ -619,16 +621,16 @@ $(".pageAccount .topFilters button.currentConfigFilter").on("click", () => {
     }
   }
 
-  filters["tags"]["none"] = true;
+  filters.tags["none"] = true;
 
   DB.getSnapshot()?.tags?.forEach((tag) => {
     if (tag.active === true) {
-      filters["tags"]["none"] = false;
-      filters["tags"][tag._id] = true;
+      filters.tags["none"] = false;
+      filters.tags[tag._id] = true;
     }
   });
 
-  filters["date"]["all"] = true;
+  filters.date.all = true;
   updateActive();
   save();
 });
@@ -652,9 +654,8 @@ export async function appendButtons(): Promise<void> {
   if (languageList) {
     let html = "";
     for (const language of languageList) {
-      html += `<button filter="${language}">${language.replace(
-        "_",
-        " "
+      html += `<button filter="${language}">${Misc.getLanguageDisplayString(
+        language
       )}</button>`;
     }
     const el = document.querySelector(
@@ -709,7 +710,7 @@ export async function appendButtons(): Promise<void> {
     );
   }
 
-  updateFilterPresets();
+  void updateFilterPresets();
 }
 
 export function removeButtons(): void {
@@ -725,23 +726,23 @@ export function removeButtons(): void {
 }
 
 $(".pageAccount .topFilters button.createFilterPresetBtn").on("click", () => {
-  startCreateFilterPreset();
+  void startCreateFilterPreset();
 });
 
 $(".group.presetFilterButtons .filterBtns").on(
   "click",
   ".filterPresets .delete-filter-preset",
   (e) => {
-    deleteFilterPreset($(e.currentTarget).data("id"));
+    void deleteFilterPreset($(e.currentTarget).data("id"));
   }
 );
 
 function verifyResultFiltersStructure(
-  filterIn: MonkeyTypes.ResultFilters
-): MonkeyTypes.ResultFilters {
+  filterIn: SharedTypes.ResultFilters
+): SharedTypes.ResultFilters {
   const filter = deepCopyFilter(filterIn);
   Object.entries(defaultResultFilters).forEach((entry) => {
-    const key = entry[0] as keyof MonkeyTypes.ResultFilters;
+    const key = entry[0] as keyof SharedTypes.ResultFilters;
     const value = entry[1];
     if (filter[key] === undefined) {
       filter[key] = value;

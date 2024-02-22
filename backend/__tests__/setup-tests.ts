@@ -1,6 +1,6 @@
 import { Collection, Db, MongoClient, WithId } from "mongodb";
 
-process.env.MODE = "dev";
+process.env["MODE"] = "dev";
 
 jest.mock("../src/init/db", () => ({
   __esModule: true,
@@ -28,9 +28,9 @@ jest.mock("swagger-stats", () => ({
     },
 }));
 
-if (!process.env.REDIS_URI) {
+if (!process.env["REDIS_URI"]) {
   // use mock if not set
-  process.env.REDIS_URI = "redis://mock";
+  process.env["REDIS_URI"] = "redis://mock";
   jest.mock("ioredis", () => require("ioredis-mock"));
 }
 

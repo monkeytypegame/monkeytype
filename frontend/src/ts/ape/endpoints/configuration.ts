@@ -3,7 +3,7 @@ export default class Root {
     this.httpClient = httpClient;
   }
 
-  async get(): Ape.EndpointResponse {
+  async get(): Ape.EndpointResponse<SharedTypes.Configuration> {
     return await this.httpClient.get("/configuration");
   }
 }

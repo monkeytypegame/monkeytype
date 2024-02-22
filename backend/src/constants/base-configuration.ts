@@ -3,7 +3,7 @@
  * To add a new configuration. Simply add it to this object.
  * When changing this template, please follow the principle of "Secure by default" (https://en.wikipedia.org/wiki/Secure_by_default).
  */
-export const BASE_CONFIGURATION: MonkeyTypes.Configuration = {
+export const BASE_CONFIGURATION: SharedTypes.Configuration = {
   maintenance: false,
   results: {
     savingEnabled: false,
@@ -99,33 +99,33 @@ export const BASE_CONFIGURATION: MonkeyTypes.Configuration = {
   },
 };
 
-interface BaseSchema {
+type BaseSchema = {
   type: string;
   label?: string;
   hint?: string;
-}
+};
 
-interface NumberSchema extends BaseSchema {
+type NumberSchema = {
   type: "number";
   min?: number;
-}
+} & BaseSchema;
 
-interface BooleanSchema extends BaseSchema {
+type BooleanSchema = {
   type: "boolean";
-}
+} & BaseSchema;
 
-interface StringSchema extends BaseSchema {
+type StringSchema = {
   type: "string";
-}
-interface ArraySchema<T extends any[]> extends BaseSchema {
+} & BaseSchema;
+type ArraySchema<T extends any[]> = {
   type: "array";
   items: Schema<T>[number];
-}
+} & BaseSchema;
 
-interface ObjectSchema<T> extends BaseSchema {
+type ObjectSchema<T> = {
   type: "object";
   fields: Schema<T>;
-}
+} & BaseSchema;
 
 type Schema<T> = {
   [P in keyof T]: T[P] extends any[]
@@ -141,7 +141,7 @@ type Schema<T> = {
     : never;
 };
 
-export const CONFIGURATION_FORM_SCHEMA: ObjectSchema<MonkeyTypes.Configuration> =
+export const CONFIGURATION_FORM_SCHEMA: ObjectSchema<SharedTypes.Configuration> =
   {
     type: "object",
     label: "Server Configuration",
