@@ -114,9 +114,9 @@ export async function loadStyle(name: string): Promise<void> {
       resolve();
     };
     if (name === "custom") {
-      link.href = `/./themes/serika_dark.css`;
+      link.href = `/themes/serika_dark.css`;
     } else {
-      link.href = `/./themes/${name}.css`;
+      link.href = `/themes/${name}.css`;
     }
 
     if (headScript === null) {

@@ -270,7 +270,7 @@ async function initGroups(): Promise<void> {
     UpdateConfig.setPlaySoundOnError,
     "button",
     () => {
-      if (Config.playSoundOnError !== "off") Sound.playError();
+      if (Config.playSoundOnError !== "off") void Sound.playError();
     }
   ) as SettingsGroup<SharedTypes.ConfigValue>;
   groups["playSoundOnClick"] = new SettingsGroup(
@@ -278,7 +278,7 @@ async function initGroups(): Promise<void> {
     UpdateConfig.setPlaySoundOnClick,
     "button",
     () => {
-      if (Config.playSoundOnClick !== "off") Sound.playClick("KeyQ");
+      if (Config.playSoundOnClick !== "off") void Sound.playClick("KeyQ");
     }
   ) as SettingsGroup<SharedTypes.ConfigValue>;
   groups["showAllLines"] = new SettingsGroup(

@@ -255,3 +255,15 @@ export async function update(): Promise<void> {
     }
   } catch {}
 }
+
+if (import.meta.hot !== undefined) {
+  import.meta.hot.dispose(() => {
+    //
+  });
+  import.meta.hot.accept(() => {
+    //
+  });
+  import.meta.hot.on("vite:afterUpdate", () => {
+    void update();
+  });
+}
