@@ -30,7 +30,39 @@ export function hide(): void {
   caret.classList.add("hidden");
 }
 
-export async function updatePosition(): Promise<void> {
+function getTargetPositionLeft(
+  fullWidthCaret: boolean,
+  isLanguageRightToLeft: boolean,
+  currentLetter: HTMLElement | undefined,
+  previousLetter: HTMLElement | undefined
+): number {
+  let result = 0;
+
+  if (isLanguageRightToLeft) {
+    const fullWidthOffset = fullWidthCaret
+      ? 0
+      : currentLetter?.offsetWidth ?? previousLetter?.offsetWidth ?? 0;
+    if (currentLetter !== undefined) {
+      result = currentLetter.offsetLeft + fullWidthOffset;
+    } else if (previousLetter !== undefined) {
+      result =
+        previousLetter.offsetLeft -
+        previousLetter.offsetWidth +
+        fullWidthOffset;
+    }
+  } else {
+    if (currentLetter !== undefined) {
+      result = currentLetter.offsetLeft;
+    } else if (previousLetter !== undefined) {
+      result = previousLetter.offsetLeft + previousLetter.offsetWidth;
+    }
+  }
+
+  return result;
+}
+
+export async function updatePosition(noAnim = false): Promise<void> {
+  console.trace();
   const caretWidth = Math.round(
     document.querySelector("#caret")?.getBoundingClientRect().width ?? 0
   );
@@ -63,22 +95,26 @@ export async function updatePosition(): Promise<void> {
 
   const currentLanguage = await Misc.getCurrentLanguage(Config.language);
   const isLanguageRightToLeft = currentLanguage.rightToLeft;
-  const letterPosLeft =
-    (currentLetter !== undefined
-      ? currentLetter.offsetLeft
-      : previousLetter.offsetLeft + previousLetter.offsetWidth) +
-    (!isLanguageRightToLeft
-      ? 0
-      : currentLetter
-      ? currentLetter.offsetWidth
-      : -previousLetter.offsetWidth);
+  const letterPosLeft = getTargetPositionLeft(
+    fullWidthCaret,
+    isLanguageRightToLeft,
+    currentLetter,
+    previousLetter
+  );
 
   const letterPosTop = currentLetter
     ? currentLetter.offsetTop
     : previousLetter.offsetTop;
 
-  const newTop =
-    letterPosTop - Config.fontSize * Misc.convertRemToPixels(1) * 0.1;
+  const letterHeight =
+    currentLetter?.offsetHeight ??
+    previousLetter?.offsetHeight ??
+    Config.fontSize * Misc.convertRemToPixels(1);
+
+  const diff = letterHeight - caret.offsetHeight;
+
+  const newTop = letterPosTop + diff / 2;
+
   let newLeft = letterPosLeft - (fullWidthCaret ? 0 : caretWidth / 2);
 
   const wordsWrapperWidth =
@@ -139,7 +175,7 @@ export async function updatePosition(): Promise<void> {
 
   jqcaret
     .stop(true, false)
-    .animate(animation, !SlowTimer.get() ? smoothCaretSpeed : 0);
+    .animate(animation, SlowTimer.get() || noAnim ? 0 : smoothCaretSpeed);
 
   if (Config.showAllLines) {
     const browserHeight = window.innerHeight;
@@ -164,10 +200,8 @@ export async function updatePosition(): Promise<void> {
   }
 }
 
-export function show(): void {
-  if ($("#result").hasClass("hidden")) {
-    caret.classList.remove("hidden");
-    void updatePosition();
-    startAnimation();
-  }
+export function show(noAnim = false): void {
+  caret.classList.remove("hidden");
+  void updatePosition(noAnim);
+  startAnimation();
 }
