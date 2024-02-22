@@ -429,16 +429,20 @@ export function median(arr: number[]): number {
 }
 
 export async function getLatestReleaseFromGitHub(): Promise<string> {
-  const releases = await $.getJSON(
+  type releaseType = { name: string };
+  const releases = await cachedFetchJson<releaseType[]>(
     "https://api.github.com/repos/monkeytypegame/monkeytype/releases?per_page=1"
   );
+  if (releases[0] === undefined || releases[0].name === undefined) {
+    throw new Error("No release found");
+  }
   return releases[0].name;
 }
 
 export async function getReleasesFromGitHub(): Promise<
   MonkeyTypes.GithubRelease[]
 > {
-  return $.getJSON(
+  return cachedFetchJson(
     "https://api.github.com/repos/monkeytypegame/monkeytype/releases?per_page=5"
   );
 }
