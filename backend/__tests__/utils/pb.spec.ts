@@ -105,11 +105,7 @@ describe("Pb Utils", () => {
         return pb.numbers === false;
       });
 
-      if (!nonNumerPb) {
-        throw new Error("No non number pb found");
-      }
-
-      expect(nonNumerPb.wpm).toBe(100);
+      expect(nonNumerPb?.wpm).toBe(100);
     });
   });
 });
