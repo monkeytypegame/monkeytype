@@ -100,7 +100,16 @@ describe("Pb Utils", () => {
       const run = pb.checkAndUpdatePb(userPbs, undefined, result);
 
       expect(run.isPb).toBe(true);
-      expect(run.personalBests?.["time"]?.["15"]?.[0]?.wpm).toBe(100);
+
+      const nonNumerPb = run.personalBests?.["time"]?.["15"]?.find((pb) => {
+        return pb.numbers === false;
+      });
+
+      if (!nonNumerPb) {
+        throw new Error("No non number pb found");
+      }
+
+      expect(nonNumerPb.wpm).toBe(100);
     });
   });
 });
