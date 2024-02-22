@@ -1,6 +1,7 @@
 import Config from "../config";
 import { capitalizeFirstLetterOfEachWord } from "../utils/misc";
 import * as CustomText from "../test/custom-text";
+import $ from "jquery";
 
 type BritishEnglishReplacement = {
   0: string;
