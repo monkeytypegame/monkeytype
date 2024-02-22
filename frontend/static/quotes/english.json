@@ -38658,6 +38658,30 @@
       "source": "Ralph Waldo Emerson",
       "length": 68,
       "id": 7032
+    },
+    {
+      "text": "If you can't fly, then run. If you can't run, then walk, If you can't walk, then crawl, but whatever you do, you have to keep moving forward.",
+      "source": "Martin Luther King Jr.",
+      "length": 141,
+      "id": 7033
+    },
+    {
+      "text": "In this life we cannot do great things. We can only do small things with great love.",
+      "source": "Mother Teresa",
+      "length": 84,
+      "id": 7034
+    },
+    {
+      "text": "Life is never fair, and perhaps it is a good thing for most of us that it is not.",
+      "source": "Oscar Wilde",
+      "length": 81,
+      "id": 7035
+    },
+    {
+      "text": "Go confidently in the direction of your dreams! Live the life you've imagined.",
+      "source": "Henry David Thoreau",
+      "length": 78,
+      "id": 7036
     }
   ]
 }
