@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Email Handler | Monkeytype</title>
     <!-- <link rel="stylesheet" href="css/fa.css" /> -->
-    <link rel="stylesheet" href="css/balloon.css" />
+    <link rel="stylesheet" href="css/balloon.min.css" />
     <link rel="stylesheet" href="themes/serika_dark.css" id="currentTheme" />
     <link rel="stylesheet" href="" id="funBoxTheme" />
     <link id="favicon" rel="shortcut icon" href="images/fav.png" />
@@ -17,9 +17,7 @@
       crossorigin="anonymous"
       referrerpolicy="no-referrer"
     />
-    <% for (var css in htmlWebpackPlugin.files.css) { %>
-    <link rel="stylesheet" href="<%= htmlWebpackPlugin.files.css[css] %>" />
-    <% } %>
+    <link rel="stylesheet" href="styles/index.scss" />
     <meta name="name" content="Monkeytype" />
     <meta name="image" content="https://monkeytype.com/mtsocial.png" />
     <meta
@@ -164,21 +162,10 @@
       </main>
     </div>
   </body>
-  <script
-    src="https://code.jquery.com/jquery-3.7.1.slim.min.js"
-    integrity="sha256-kmHvs0B+OpCW5GVHUNjv9rOmY0IvSIRcf7zGUDTDQM8="
-    crossorigin="anonymous"
-  ></script>
-  <script src="/__/firebase/8.4.2/firebase-app.js"></script>
+  <script type="module">
+    import $ from "jquery";
+    import { app as firebase } from "./ts/firebase";
 
-  <script src="/__/firebase/8.4.2/firebase-analytics.js"></script>
-  <script src="/__/firebase/8.4.2/firebase-auth.js"></script>
-  <script src="/__/firebase/8.4.2/firebase-firestore.js"></script>
-  <script src="/__/firebase/8.4.2/firebase-functions.js"></script>
-
-  <!-- Initialize Firebase -->
-  <script src="/__/firebase/init.js?useEmulator=true'"></script>
-  <script defer>
     function isPasswordStrong(password) {
       const hasCapital = !!password.match(/[A-Z]/);
       const hasNumber = !!password.match(/[\d]/);
