@@ -648,6 +648,7 @@ export async function saveLocalPB<M extends SharedTypes.Config.Mode>(
   mode: M,
   mode2: SharedTypes.Config.Mode2<M>,
   punctuation: boolean,
+  numbers: boolean,
   language: string,
   difficulty: SharedTypes.Config.Difficulty,
   lazyMode: boolean,
@@ -683,10 +684,11 @@ export async function saveLocalPB<M extends SharedTypes.Config.Mode>(
       ] as unknown as SharedTypes.PersonalBest[]
     ).forEach((pb) => {
       if (
-        pb.punctuation === punctuation &&
+        (pb.punctuation ?? false) === punctuation &&
+        (pb.numbers ?? false) === numbers &&
         pb.difficulty === difficulty &&
         pb.language === language &&
-        (pb.lazyMode === lazyMode || (pb.lazyMode === undefined && !lazyMode))
+        (pb.lazyMode ?? false) === lazyMode
       ) {
         found = true;
         pb.wpm = wpm;
@@ -713,6 +715,7 @@ export async function saveLocalPB<M extends SharedTypes.Config.Mode>(
         raw,
         timestamp: Date.now(),
         consistency,
+        numbers,
       });
     }
   }

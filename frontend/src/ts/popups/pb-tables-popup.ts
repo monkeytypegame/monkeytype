@@ -73,6 +73,7 @@ function update(mode: SharedTypes.Config.Mode): void {
         <td>${pb.difficulty}</td>
         <td>${pb.language ? getLanguageDisplayString(pb.language) : "-"}</td>
         <td>${pb.punctuation ? '<i class="fas fa-check"></i>' : ""}</td>
+        <td>${pb.numbers ? '<i class="fas fa-check"></i>' : ""}</td>
         <td>${pb.lazyMode ? '<i class="fas fa-check"></i>' : ""}</td>
         <td>${dateText}</td>
       </tr>

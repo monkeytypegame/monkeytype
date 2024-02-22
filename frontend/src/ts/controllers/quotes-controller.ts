@@ -5,6 +5,7 @@ import {
 } from "../utils/misc";
 import { subscribe } from "../observables/config-event";
 import * as DB from "../db";
+import $ from "jquery";
 
 type JsonQuote = {
   text: string;
@@ -47,57 +48,59 @@ class QuotesController {
     const normalizedLanguage = removeLanguageSize(language);
 
     if (this.quoteCollection.language !== normalizedLanguage) {
-      try {
-        const data: QuoteData = await $.getJSON(
-          `quotes/${normalizedLanguage}.json`
-        );
+      // try {
+      const data: QuoteData = await $.getJSON(
+        `quotes/${normalizedLanguage}.json`
+      );
 
-        if (data.quotes === undefined || data.quotes.length === 0) {
-          return defaultQuoteCollection;
-        }
-
-        this.quoteCollection = {
-          quotes: [],
-          length: data.quotes.length,
-          groups: [],
-          language: data.language,
-        };
-
-        // Transform JSON Quote schema to MonkeyTypes Quote schema
-        data.quotes.forEach((quote: JsonQuote) => {
-          const monkeyTypeQuote: MonkeyTypes.Quote = {
-            text: quote.text,
-            britishText: quote.britishText,
-            source: quote.source,
-            length: quote.length,
-            id: quote.id,
-            language: data.language,
-            group: 0,
-          };
-
-          this.quoteCollection.quotes.push(monkeyTypeQuote);
-        });
-
-        data.groups.forEach((quoteGroup, groupIndex) => {
-          const lower = quoteGroup[0];
-          const upper = quoteGroup[1];
-
-          this.quoteCollection.groups[groupIndex] =
-            this.quoteCollection.quotes.filter((quote) => {
-              if (quote.length >= lower && quote.length <= upper) {
-                quote.group = groupIndex;
-                return true;
-              }
-              return false;
-            });
-        });
-
-        if (quoteLengths !== undefined) {
-          this.updateQuoteQueue(quoteLengths);
-        }
-      } catch {
+      if (data.quotes === undefined || data.quotes.length === 0) {
         return defaultQuoteCollection;
       }
+
+      this.quoteCollection = {
+        quotes: [],
+        length: data.quotes.length,
+        groups: [],
+        language: data.language,
+      };
+
+      // Transform JSON Quote schema to MonkeyTypes Quote schema
+      data.quotes.forEach((quote: JsonQuote) => {
+        const monkeyTypeQuote: MonkeyTypes.Quote = {
+          text: quote.text,
+          britishText: quote.britishText,
+          source: quote.source,
+          length: quote.length,
+          id: quote.id,
+          language: data.language,
+          group: 0,
+        };
+
+        this.quoteCollection.quotes.push(monkeyTypeQuote);
+      });
+
+      data.groups.forEach((quoteGroup, groupIndex) => {
+        const lower = quoteGroup[0];
+        const upper = quoteGroup[1];
+
+        this.quoteCollection.groups[groupIndex] =
+          this.quoteCollection.quotes.filter((quote) => {
+            if (quote.length >= lower && quote.length <= upper) {
+              quote.group = groupIndex;
+              return true;
+            }
+            return false;
+          });
+      });
+
+      if (quoteLengths !== undefined) {
+        this.updateQuoteQueue(quoteLengths);
+      }
+      // } catch (e) {
+      //   console.error(e);
+      //   throw new Error("Failed to parse quotes: " + e.message);
+      //   return defaultQuoteCollection;
+      // }
     }
 
     return this.quoteCollection;
