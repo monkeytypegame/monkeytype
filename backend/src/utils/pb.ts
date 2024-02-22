@@ -80,12 +80,13 @@ function matchesPersonalBest(
   }
 
   const sameLazyMode =
-    result.lazyMode === personalBest.lazyMode ||
-    (!result.lazyMode && !personalBest.lazyMode);
-  const samePunctuation = result.punctuation === personalBest.punctuation;
+    (result.lazyMode ?? false) === (personalBest.lazyMode ?? false);
+  const samePunctuation =
+    (result.punctuation ?? false) === (personalBest.punctuation ?? false);
   const sameDifficulty = result.difficulty === personalBest.difficulty;
   const sameLanguage = result.language === personalBest.language;
-  const sameNumbers = result.numbers === (personalBest.numbers ?? false);
+  const sameNumbers =
+    (result.numbers ?? false) === (personalBest.numbers ?? false);
 
   return (
     sameLazyMode &&
