@@ -684,11 +684,11 @@ export async function saveLocalPB<M extends SharedTypes.Config.Mode>(
       ] as unknown as SharedTypes.PersonalBest[]
     ).forEach((pb) => {
       if (
-        pb.punctuation === punctuation &&
+        (pb.punctuation ?? false) === punctuation &&
         (pb.numbers ?? false) === numbers &&
         pb.difficulty === difficulty &&
         pb.language === language &&
-        (pb.lazyMode === lazyMode || (pb.lazyMode === undefined && !lazyMode))
+        (pb.lazyMode ?? false) === lazyMode
       ) {
         found = true;
         pb.wpm = wpm;
