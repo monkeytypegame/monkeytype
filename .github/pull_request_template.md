@@ -4,10 +4,12 @@
 
 ### Checks
 
+- [ ] Adding quotes?
+  - [ ] Make sure to include translations for the quotes in the description (or another comment) so we can verify their content.
 - [ ] Adding a language or a theme?
-    - [ ] If is a language, did you edit `_list.json`, `_groups.json` and add `languages.json`?
-    - [ ] If is a theme, did you add the theme.css?
-        - Also please add a screenshot of the theme, it would be extra awesome if you do so!
+  - [ ] If is a language, did you edit `_list.json`, `_groups.json` and add `languages.json`?
+  - [ ] If is a theme, did you add the theme.css?
+    - Also please add a screenshot of the theme, it would be extra awesome if you do so!
 - [ ] Check if any open issues are related to this PR; if so, be sure to tag them below.
 - [ ] Make sure the PR title follows the Conventional Commits standard. (https://www.conventionalcommits.org for more info)
 - [ ] Make sure to include your GitHub username inside parentheses at the end of the PR title

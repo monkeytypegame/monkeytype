@@ -1,8 +1,5 @@
-import {
-  Chart,
-  type PluginChartOptions,
-  type ScaleChartOptions,
-} from "chart.js";
+//TODO: use Format
+import { Chart, type PluginChartOptions } from "chart.js";
 import Config from "../config";
 import * as AdController from "../controllers/ad-controller";
 import * as ChartController from "../controllers/chart-controller";
@@ -11,7 +8,7 @@ import * as DB from "../db";
 import * as Loader from "../elements/loader";
 import * as Notifications from "../elements/notifications";
 import * as ThemeColors from "../elements/theme-colors";
-import { Auth } from "../firebase";
+import { isAuthenticated } from "../firebase";
 import * as QuoteRatePopup from "../popups/quote-rate-popup";
 import * as GlarsesMode from "../states/glarses-mode";
 import * as SlowTimer from "../states/slow-timer";
@@ -28,12 +25,14 @@ import * as ConfigEvent from "../observables/config-event";
 import * as Focus from "./focus";
 import * as CustomText from "./custom-text";
 import * as CustomTextState from "./../states/custom-text-name";
+import * as Funbox from "./funbox/funbox";
+import Format from "../utils/format";
 
 import confetti from "canvas-confetti";
 import type { AnnotationOptions } from "chartjs-plugin-annotation";
 import Ape from "../ape";
 
-let result: MonkeyTypes.Result<MonkeyTypes.Mode>;
+let result: SharedTypes.Result<SharedTypes.Config.Mode>;
 let maxChartVal: number;
 
 let useUnsmoothedRaw = false;
@@ -47,9 +46,6 @@ export function toggleUnsmoothedRaw(): void {
 }
 
 let resultAnnotation: AnnotationOptions<"line">[] = [];
-let resultScaleOptions = (
-  ChartController.result.options as ScaleChartOptions<"line" | "scatter">
-).scales;
 
 async function updateGraph(): Promise<void> {
   const typingSpeedUnit = getTypingSpeedUnit(Config.typingSpeedUnit);
@@ -62,7 +58,9 @@ async function updateGraph(): Promise<void> {
       labels.push(i.toString());
     }
   }
-  resultScaleOptions["wpm"].title.text = typingSpeedUnit.fullUnitString;
+
+  ChartController.result.getScale("wpm").title.text =
+    typingSpeedUnit.fullUnitString;
 
   const chartData1 = [
     ...TestInput.wpmHistory.map((a) =>
@@ -95,9 +93,9 @@ async function updateGraph(): Promise<void> {
   }
 
   ChartController.result.data.labels = labels;
-  ChartController.result.data.datasets[0].data = chartData1;
-  ChartController.result.data.datasets[1].data = smoothedRawData;
-  ChartController.result.data.datasets[0].label = Config.typingSpeedUnit;
+  ChartController.result.getDataset("wpm").data = chartData1;
+  ChartController.result.getDataset("wpm").label = Config.typingSpeedUnit;
+  ChartController.result.getDataset("raw").data = smoothedRawData;
 
   maxChartVal = Math.max(
     ...[Math.max(...smoothedRawData), Math.max(...chartData1)]
@@ -107,14 +105,15 @@ async function updateGraph(): Promise<void> {
     const minChartVal = Math.min(
       ...[Math.min(...smoothedRawData), Math.min(...chartData1)]
     );
-    resultScaleOptions["wpm"].min = minChartVal;
-    resultScaleOptions["raw"].min = minChartVal;
+
+    ChartController.result.getScale("wpm").min = minChartVal;
+    ChartController.result.getScale("raw").min = minChartVal;
   } else {
-    resultScaleOptions["wpm"].min = 0;
-    resultScaleOptions["raw"].min = 0;
+    ChartController.result.getScale("wpm").min = 0;
+    ChartController.result.getScale("raw").min = 0;
   }
 
-  ChartController.result.data.datasets[2].data = result.chartData.err;
+  ChartController.result.getDataset("error").data = result.chartData.err;
 
   const fc = await ThemeColors.get("sub");
   if (Config.funbox !== "none") {
@@ -132,7 +131,7 @@ async function updateGraph(): Promise<void> {
       id: "funbox-label",
       type: "line",
       scaleID: "wpm",
-      value: resultScaleOptions["wpm"].min,
+      value: ChartController.result.getScale("wpm").min,
       borderColor: "transparent",
       borderWidth: 1,
       borderDash: [2, 2],
@@ -155,9 +154,11 @@ async function updateGraph(): Promise<void> {
     });
   }
 
-  resultScaleOptions["wpm"].max = maxChartVal;
-  resultScaleOptions["raw"].max = maxChartVal;
-  resultScaleOptions["error"].max = Math.max(...result.chartData.err);
+  ChartController.result.getScale("wpm").max = maxChartVal;
+  ChartController.result.getScale("raw").max = maxChartVal;
+  ChartController.result.getScale("error").max = Math.max(
+    ...result.chartData.err
+  );
 }
 
 export async function updateGraphPBLine(): Promise<void> {
@@ -180,11 +181,11 @@ export async function updateGraphPBLine(): Promise<void> {
     id: "lpb",
     scaleID: "wpm",
     value: chartlpb,
-    borderColor: themecolors["sub"],
+    borderColor: themecolors.sub,
     borderWidth: 1,
     borderDash: [2, 2],
     label: {
-      backgroundColor: themecolors["sub"],
+      backgroundColor: themecolors.sub,
       font: {
         family: Config.fontFamily.replace(/_/g, " "),
         size: 11,
@@ -192,7 +193,7 @@ export async function updateGraphPBLine(): Promise<void> {
         weight: Chart.defaults.font.weight as string,
         lineHeight: Chart.defaults.font.lineHeight as number,
       },
-      color: themecolors["bg"],
+      color: themecolors.bg,
       padding: 3,
       borderRadius: 3,
       position: "center",
@@ -207,30 +208,30 @@ export async function updateGraphPBLine(): Promise<void> {
   ) {
     maxChartVal = Math.round(parseFloat(chartlpb) + lpbRange);
   }
-  resultScaleOptions["wpm"].max = maxChartVal;
-  resultScaleOptions["raw"].max = maxChartVal;
+
+  ChartController.result.getScale("wpm").max = maxChartVal;
+  ChartController.result.getScale("raw").max = maxChartVal;
 }
 
 function updateWpmAndAcc(): void {
   let inf = false;
-  const typingSpeedUnit = getTypingSpeedUnit(Config.typingSpeedUnit);
   if (result.wpm >= 1000) {
     inf = true;
   }
 
-  if (Config.alwaysShowDecimalPlaces) {
-    $("#result .stats .wpm .top .text").text(Config.typingSpeedUnit);
-    if (inf) {
-      $("#result .stats .wpm .bottom").text("Infinite");
-    } else {
-      $("#result .stats .wpm .bottom").text(
-        Misc.roundTo2(typingSpeedUnit.fromWpm(result.wpm)).toFixed(2)
-      );
-    }
-    $("#result .stats .raw .bottom").text(
-      Misc.roundTo2(typingSpeedUnit.fromWpm(result.rawWpm)).toFixed(2)
-    );
+  $("#result .stats .wpm .top .text").text(Config.typingSpeedUnit);
 
+  if (inf) {
+    $("#result .stats .wpm .bottom").text("Infinite");
+  } else {
+    $("#result .stats .wpm .bottom").text(Format.typingSpeed(result.wpm));
+  }
+  $("#result .stats .raw .bottom").text(Format.typingSpeed(result.rawWpm));
+  $("#result .stats .acc .bottom").text(
+    result.acc === 100 ? "100%" : Format.percentage(result.acc)
+  );
+
+  if (Config.alwaysShowDecimalPlaces) {
     if (Config.typingSpeedUnit != "wpm") {
       $("#result .stats .wpm .bottom").attr(
         "aria-label",
@@ -245,9 +246,6 @@ function updateWpmAndAcc(): void {
       $("#result .stats .raw .bottom").removeAttr("aria-label");
     }
 
-    $("#result .stats .acc .bottom").text(
-      result.acc === 100 ? "100%" : Misc.roundTo2(result.acc).toFixed(2) + "%"
-    );
     let time = Misc.roundTo2(result.testDuration).toFixed(2) + "s";
     if (result.testDuration > 61) {
       time = Misc.secondsToString(Misc.roundTo2(result.testDuration));
@@ -261,53 +259,47 @@ function updateWpmAndAcc(): void {
     );
   } else {
     //not showing decimal places
-    let wpmHover = typingSpeedUnit.convertWithUnitSuffix(result.wpm, true);
-    let rawWpmHover = typingSpeedUnit.convertWithUnitSuffix(
-      result.rawWpm,
-      true
-    );
+    const decimalsAndSuffix = {
+      showDecimalPlaces: true,
+      suffix: ` ${Config.typingSpeedUnit}`,
+    };
+    let wpmHover = Format.typingSpeed(result.wpm, decimalsAndSuffix);
+    let rawWpmHover = Format.typingSpeed(result.rawWpm, decimalsAndSuffix);
+
     if (Config.typingSpeedUnit != "wpm") {
       wpmHover += " (" + result.wpm.toFixed(2) + " wpm)";
       rawWpmHover += " (" + result.rawWpm.toFixed(2) + " wpm)";
     }
 
-    $("#result .stats .wpm .top .text").text(Config.typingSpeedUnit);
     $("#result .stats .wpm .bottom").attr("aria-label", wpmHover);
-    if (inf) {
-      $("#result .stats .wpm .bottom").text("Infinite");
-    } else {
-      $("#result .stats .wpm .bottom").text(
-        Math.round(typingSpeedUnit.fromWpm(result.wpm))
-      );
-    }
-    $("#result .stats .raw .bottom").text(
-      Math.round(typingSpeedUnit.fromWpm(result.rawWpm))
-    );
     $("#result .stats .raw .bottom").attr("aria-label", rawWpmHover);
 
-    $("#result .stats .acc .bottom").text(Math.floor(result.acc) + "%");
     $("#result .stats .acc .bottom").attr(
       "aria-label",
-      `${result.acc === 100 ? "100" : Misc.roundTo2(result.acc).toFixed(2)}% (${
-        TestInput.accuracy.correct
-      } correct / ${TestInput.accuracy.incorrect} incorrect)`
+      `${
+        result.acc === 100
+          ? "100"
+          : Format.percentage(result.acc, { showDecimalPlaces: true })
+      } (${TestInput.accuracy.correct} correct / ${
+        TestInput.accuracy.incorrect
+      } incorrect)`
     );
   }
 }
 
 function updateConsistency(): void {
+  $("#result .stats .consistency .bottom").text(
+    Format.percentage(result.consistency)
+  );
   if (Config.alwaysShowDecimalPlaces) {
-    $("#result .stats .consistency .bottom").text(
-      Misc.roundTo2(result.consistency).toFixed(2) + "%"
-    );
     $("#result .stats .consistency .bottom").attr(
       "aria-label",
-      `${result.keyConsistency.toFixed(2)}% key`
+      Format.percentage(result.keyConsistency, {
+        showDecimalPlaces: true,
+        suffix: " key",
+      })
     );
   } else {
-    $("#result .stats .consistency .bottom").text(
-      Math.round(result.consistency) + "%"
-    );
     $("#result .stats .consistency .bottom").attr(
       "aria-label",
       `${result.consistency}% (${result.keyConsistency}% key)`
@@ -327,6 +319,7 @@ function updateTime(): void {
     "aria-label",
     `${result.afkDuration}s afk ${afkSecondsPercent}%`
   );
+
   if (Config.alwaysShowDecimalPlaces) {
     let time = Misc.roundTo2(result.testDuration).toFixed(2) + "s";
     if (result.testDuration > 61) {
@@ -379,14 +372,14 @@ export function showConfetti(): void {
   const duration = Date.now() + 125;
 
   (function f(): void {
-    confetti({
+    void confetti({
       particleCount: 5,
       angle: 60,
       spread: 75,
       origin: { x: 0 },
       colors: colors,
     });
-    confetti({
+    void confetti({
       particleCount: 5,
       angle: 120,
       spread: 75,
@@ -416,16 +409,15 @@ export async function updateCrown(): Promise<void> {
     Config.lazyMode,
     Config.funbox
   );
-  const typingSpeedUnit = getTypingSpeedUnit(Config.typingSpeedUnit);
   pbDiff = Math.abs(result.wpm - lpb);
   $("#result .stats .wpm .crown").attr(
     "aria-label",
-    "+" + Misc.roundTo2(typingSpeedUnit.fromWpm(pbDiff))
+    "+" + Format.typingSpeed(pbDiff, { showDecimalPlaces: true })
   );
 }
 
 async function updateTags(dontSave: boolean): Promise<void> {
-  const activeTags: MonkeyTypes.Tag[] = [];
+  const activeTags: MonkeyTypes.UserTag[] = [];
   const userTagsCount = DB.getSnapshot()?.tags?.length ?? 0;
   try {
     DB.getSnapshot()?.tags?.forEach((tag) => {
@@ -483,7 +475,7 @@ async function updateTags(dontSave: boolean): Promise<void> {
     ) {
       if (tpb < result.wpm) {
         //new pb for that tag
-        DB.saveLocalTagPB(
+        await DB.saveLocalTagPB(
           tag._id,
           Config.mode,
           result.mode2,
@@ -512,11 +504,11 @@ async function updateTags(dontSave: boolean): Promise<void> {
           id: "tpb",
           scaleID: "wpm",
           value: typingSpeedUnit.fromWpm(tpb),
-          borderColor: themecolors["sub"],
+          borderColor: themecolors.sub,
           borderWidth: 1,
           borderDash: [2, 2],
           label: {
-            backgroundColor: themecolors["sub"],
+            backgroundColor: themecolors.sub,
             font: {
               family: Config.fontFamily.replace(/_/g, " "),
               size: 11,
@@ -524,7 +516,7 @@ async function updateTags(dontSave: boolean): Promise<void> {
               weight: Chart.defaults.font.weight as string,
               lineHeight: Chart.defaults.font.lineHeight as number,
             },
-            color: themecolors["bg"],
+            color: themecolors.bg,
             padding: 3,
             borderRadius: 3,
             position: annotationSide,
@@ -547,7 +539,7 @@ async function updateTags(dontSave: boolean): Promise<void> {
   });
 }
 
-function updateTestType(randomQuote: MonkeyTypes.Quote): void {
+function updateTestType(randomQuote: MonkeyTypes.Quote | null): void {
   let testType = "";
 
   testType += Config.mode;
@@ -557,7 +549,7 @@ function updateTestType(randomQuote: MonkeyTypes.Quote): void {
   } else if (Config.mode === "words") {
     testType += " " + Config.words;
   } else if (Config.mode === "quote") {
-    if (randomQuote.group !== undefined) {
+    if (randomQuote?.group !== undefined) {
       testType += " " + ["short", "medium", "long", "thicc"][randomQuote.group];
     }
   }
@@ -566,7 +558,7 @@ function updateTestType(randomQuote: MonkeyTypes.Quote): void {
       f.properties?.includes("ignoresLanguage")
     ) !== undefined;
   if (Config.mode !== "custom" && !ignoresLanguage) {
-    testType += "<br>" + result.language.replace(/_/g, " ");
+    testType += "<br>" + Misc.getLanguageDisplayString(result.language);
   }
   if (Config.punctuation) {
     testType += "<br>punctuation";
@@ -654,8 +646,15 @@ function updateOther(
   }
 }
 
-export function updateRateQuote(randomQuote: MonkeyTypes.Quote): void {
+export function updateRateQuote(randomQuote: MonkeyTypes.Quote | null): void {
   if (Config.mode === "quote") {
+    if (randomQuote === null) {
+      console.error(
+        "Failed to update quote rating button: randomQuote is null"
+      );
+      return;
+    }
+
     const userqr =
       DB.getSnapshot()?.quoteRatings?.[randomQuote.language]?.[randomQuote.id];
     if (userqr) {
@@ -663,56 +662,66 @@ export function updateRateQuote(randomQuote: MonkeyTypes.Quote): void {
         .removeClass("far")
         .addClass("fas");
     }
-    QuoteRatePopup.getQuoteStats(randomQuote).then((quoteStats) => {
-      $(".pageTest #result #rateQuoteButton .rating").text(
-        quoteStats?.average?.toFixed(1) ?? ""
-      );
-      $(".pageTest #result #rateQuoteButton")
-        .css({ opacity: 0 })
-        .removeClass("hidden")
-        .css({ opacity: 1 });
-    });
+    QuoteRatePopup.getQuoteStats(randomQuote)
+      .then((quoteStats) => {
+        $(".pageTest #result #rateQuoteButton .rating").text(
+          quoteStats?.average?.toFixed(1) ?? ""
+        );
+      })
+      .catch((e) => {
+        $(".pageTest #result #rateQuoteButton .rating").text("?");
+      });
+    $(".pageTest #result #rateQuoteButton")
+      .css({ opacity: 0 })
+      .removeClass("hidden")
+      .css({ opacity: 1 });
   }
 }
 
-function updateQuoteFavorite(randomQuote: MonkeyTypes.Quote): void {
+function updateQuoteFavorite(randomQuote: MonkeyTypes.Quote | null): void {
+  const icon = $(".pageTest #result #favoriteQuoteButton .icon");
+
+  if (Config.mode !== "quote" || !isAuthenticated()) {
+    icon.parent().addClass("hidden");
+    return;
+  }
+
+  if (randomQuote === null) {
+    console.error(
+      "Failed to update quote favorite button: randomQuote is null"
+    );
+    return;
+  }
+
   quoteLang = Config.mode === "quote" ? randomQuote.language : "";
   quoteId = Config.mode === "quote" ? randomQuote.id.toString() : "";
 
-  const icon = $(".pageTest #result #favoriteQuoteButton .icon");
-
-  if (Config.mode === "quote" && Auth?.currentUser) {
-    const userFav = QuotesController.isQuoteFavorite(randomQuote);
-
-    icon.removeClass(userFav ? "far" : "fas").addClass(userFav ? "fas" : "far");
-    icon.parent().removeClass("hidden");
-  } else {
-    icon.parent().addClass("hidden");
-  }
+  const userFav = QuotesController.isQuoteFavorite(randomQuote);
+  icon.removeClass(userFav ? "far" : "fas").addClass(userFav ? "fas" : "far");
+  icon.parent().removeClass("hidden");
 }
 
-function updateQuoteSource(randomQuote: MonkeyTypes.Quote): void {
+function updateQuoteSource(randomQuote: MonkeyTypes.Quote | null): void {
   if (Config.mode === "quote") {
     $("#result .stats .source").removeClass("hidden");
-    $("#result .stats .source .bottom").html(randomQuote.source);
+    $("#result .stats .source .bottom").html(
+      randomQuote?.source ?? "Error: Source unknown"
+    );
   } else {
     $("#result .stats .source").addClass("hidden");
   }
 }
 
 export async function update(
-  res: MonkeyTypes.Result<MonkeyTypes.Mode>,
+  res: SharedTypes.Result<SharedTypes.Config.Mode>,
   difficultyFailed: boolean,
   failReason: string,
   afkDetected: boolean,
   isRepeated: boolean,
   tooShort: boolean,
-  randomQuote: MonkeyTypes.Quote,
+  randomQuote: MonkeyTypes.Quote | null,
   dontSave: boolean
 ): Promise<void> {
-  resultScaleOptions = (
-    ChartController.result.options as ScaleChartOptions<"line" | "scatter">
-  ).scales;
   resultAnnotation = [];
   result = Object.assign({}, res);
   hideCrown();
@@ -727,7 +736,7 @@ export async function update(
   $("#words").removeClass("blurred");
   $("#wordsInput").trigger("blur");
   $("#result .stats .time .bottom .afk").text("");
-  if (Auth?.currentUser) {
+  if (isAuthenticated()) {
     $("#result .loginTip").addClass("hidden");
   } else {
     $("#result .loginTip").removeClass("hidden");
@@ -752,7 +761,7 @@ export async function update(
   ((ChartController.result.options as PluginChartOptions<"line" | "scatter">)
     .plugins.annotation.annotations as AnnotationOptions<"line">[]) =
     resultAnnotation;
-  ChartController.result.updateColors();
+  void ChartController.result.updateColors();
   ChartController.result.resize();
 
   if (
@@ -794,7 +803,7 @@ export async function update(
     $("main #result .stats").removeClass("hidden");
     $("main #result .chart").removeClass("hidden");
     // $("main #result #resultWordsHistory").removeClass("hidden");
-    if (!Auth?.currentUser) {
+    if (!isAuthenticated()) {
       $("main #result .loginTip").removeClass("hidden");
     }
     $("main #result #showWordHistoryButton").removeClass("hidden");
@@ -810,13 +819,13 @@ export async function update(
 
   TestConfig.hide();
 
-  Misc.swapElements(
+  void Misc.swapElements(
     $("#typingTest"),
     $("#result"),
     250,
     async () => {
       $("#result").trigger("focus");
-      AdController.renderResult();
+      void AdController.renderResult();
       TestUI.setResultCalculating(false);
       $("#words").empty();
       ChartController.result.resize();
@@ -848,6 +857,7 @@ export async function update(
         TestUI.toggleResultWords(true);
       }
       AdController.updateFooterAndVerticalAds(true);
+      void Funbox.clear();
     }
   );
 }
@@ -875,8 +885,10 @@ $(".pageTest #favoriteQuoteButton").on("click", async () => {
 
     if (response.status === 200) {
       $button.removeClass("fas").addClass("far");
-      const quoteIndex = dbSnapshot.favoriteQuotes[quoteLang]?.indexOf(quoteId);
-      dbSnapshot.favoriteQuotes[quoteLang]?.splice(quoteIndex, 1);
+      const quoteIndex = dbSnapshot.favoriteQuotes?.[quoteLang]?.indexOf(
+        quoteId
+      ) as number;
+      dbSnapshot.favoriteQuotes?.[quoteLang]?.splice(quoteIndex, 1);
     }
   } else {
     // Add to favorites
@@ -888,6 +900,9 @@ $(".pageTest #favoriteQuoteButton").on("click", async () => {
 
     if (response.status === 200) {
       $button.removeClass("far").addClass("fas");
+      if (dbSnapshot.favoriteQuotes === undefined) {
+        dbSnapshot.favoriteQuotes = {};
+      }
       if (!dbSnapshot.favoriteQuotes[quoteLang]) {
         dbSnapshot.favoriteQuotes[quoteLang] = [];
       }
@@ -897,21 +912,21 @@ $(".pageTest #favoriteQuoteButton").on("click", async () => {
 });
 
 ConfigEvent.subscribe(async (eventKey) => {
-  if (eventKey === "typingSpeedUnit" && TestUI.resultVisible) {
-    resultScaleOptions = (
-      ChartController.result.options as ScaleChartOptions<"line" | "scatter">
-    ).scales;
+  if (
+    ["typingSpeedUnit", "startGraphsAtZero"].includes(eventKey) &&
+    TestUI.resultVisible
+  ) {
     resultAnnotation = [];
 
     updateWpmAndAcc();
     await updateGraph();
     await updateGraphPBLine();
-    TestUI.applyBurstHeatmap();
+    void TestUI.applyBurstHeatmap();
 
     ((ChartController.result.options as PluginChartOptions<"line" | "scatter">)
       .plugins.annotation.annotations as AnnotationOptions<"line">[]) =
       resultAnnotation;
-    ChartController.result.updateColors();
+    void ChartController.result.updateColors();
     ChartController.result.resize();
   }
 });

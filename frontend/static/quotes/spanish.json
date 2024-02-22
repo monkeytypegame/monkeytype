@@ -884,9 +884,9 @@
       "id": 153
     },
     {
-      "text": "La vida es como montar en bicicleta. Para mantener el equilibrio tienes que avanza.",
+      "text": "La vida es como montar en bicicleta. Para mantener el equilibrio tienes que avanzar.",
       "source": "Albert Einstein",
-      "length": 83,
+      "length": 84,
       "id": 154
     },
     {
@@ -936,6 +936,18 @@
       "source": "Eduardo Gómez - Cosas Que Nunca Te Dije",
       "length": 241,
       "id": 162
+    },
+    {
+      "text": "La familia es como las ramas de un árbol, todos crecemos en direcciones diferentes pero nuestras raíces siguen siendo las mismas.",
+      "source": "Anónimo",
+      "length": 129,
+      "id": 163
+    },
+    {
+      "text": "El amor de una familia es el mayor regalo que uno puede tener.",
+      "source": "Anónimo",
+      "length": 62,
+      "id": 164
     }
   ]
 }

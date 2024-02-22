@@ -10,13 +10,13 @@ const wrapperId = "quoteRatePopupWrapper";
 
 let rating = 0;
 
-interface QuoteStats {
+type QuoteStats = {
   average?: number;
   ratings?: number;
   totalRating?: number;
   quoteId?: number;
   language?: string;
-}
+};
 
 let quoteStats: QuoteStats | null | Record<string, never> = null;
 let currentQuote: MonkeyTypes.Quote | null = null;
@@ -54,12 +54,12 @@ export async function getQuoteStats(
     return;
   }
 
-  if (!response.data) {
+  if (response.data === null) {
     return {} as QuoteStats;
   }
 
   quoteStats = response.data as QuoteStats;
-  if (quoteStats && !quoteStats.average) {
+  if (quoteStats !== undefined && !quoteStats.average) {
     quoteStats.average = getRatingAverage(quoteStats);
   }
 
@@ -98,7 +98,7 @@ function updateData(): void {
   $(`#quoteRatePopup .quote .source .val`).text(currentQuote.source);
   $(`#quoteRatePopup .quote .id .val`).text(currentQuote.id);
   $(`#quoteRatePopup .quote .length .val`).text(lengthDesc as string);
-  updateRatingStats();
+  void updateRatingStats();
 }
 
 function show(quote: MonkeyTypes.Quote, shouldReset = true): void {
@@ -175,10 +175,14 @@ async function submit(): Promise<void> {
   if (!snapshot) return;
   const quoteRatings = snapshot.quoteRatings ?? {};
 
-  if (quoteRatings?.[currentQuote.language]?.[currentQuote.id]) {
-    const oldRating = quoteRatings[currentQuote.language][currentQuote.id];
+  const languageRatings = quoteRatings?.[currentQuote.language] ?? {};
+
+  if (languageRatings?.[currentQuote.id]) {
+    const oldRating = quoteRatings[currentQuote.language]?.[
+      currentQuote.id
+    ] as number;
     const diff = rating - oldRating;
-    quoteRatings[currentQuote.language][currentQuote.id] = rating;
+    languageRatings[currentQuote.id] = rating;
     quoteStats = {
       ratings: quoteStats?.ratings,
       totalRating: isNaN(quoteStats?.totalRating as number)
@@ -189,10 +193,7 @@ async function submit(): Promise<void> {
     } as QuoteStats;
     Notifications.add("Rating updated", 1);
   } else {
-    if (!quoteRatings[currentQuote.language]) {
-      quoteRatings[currentQuote.language] = {};
-    }
-    quoteRatings[currentQuote.language][currentQuote.id] = rating;
+    languageRatings[currentQuote.id] = rating;
     if (quoteStats?.ratings && quoteStats.totalRating) {
       quoteStats.ratings++;
       quoteStats.totalRating += rating;
@@ -240,10 +241,14 @@ $("#quoteRatePopupWrapper .stars .star").on("mouseout", () => {
 });
 
 $("#quoteRatePopupWrapper .submitButton").on("click", () => {
-  submit();
+  void submit();
 });
 
 $(".pageTest #rateQuoteButton").on("click", async () => {
+  if (TestWords.randomQuote === null) {
+    Notifications.add("Failed to show quote rating popup: no quote", -1);
+    return;
+  }
   show(TestWords.randomQuote);
 });
 

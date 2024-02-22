@@ -2,9 +2,9 @@
   "compilerOptions": {
     "target": "ES6",
     "lib": ["ESNext", "DOM", "DOM.Iterable"],
-    "module": "CommonJS",
+    "module": "ESNext",
     "moduleResolution": "node",
-    "types": ["jquery", "select2", "node", "jest"],
+    "types": ["vite/client", "node", "jest", "jquery"],
     "allowUmdGlobalAccess": true,
     "resolveJsonModule": true,
     "outDir": "./build",
@@ -12,6 +12,7 @@
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "strict": true,
+    "noEmit": true,
     "noImplicitAny": true,
     "strictNullChecks": true,
     "strictFunctionTypes": true,
@@ -25,7 +26,7 @@
     "exactOptionalPropertyTypes": false,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
-    "noUncheckedIndexedAccess": false,
+    "noUncheckedIndexedAccess": true,
     "noImplicitOverride": true,
     "noPropertyAccessFromIndexSignature": true,
     "allowUnusedLabels": false,
@@ -35,7 +36,6 @@
       "@backend/*": ["../backend/src/*"]
     }
   },
-  "include": ["./src/**/*.ts"],
-  "files": ["src/ts/modules.d.ts"],
+  "include": ["./src/**/*.ts", "../shared-types/**/*.d.ts"],
   "exclude": ["node_modules", "build", "setup-tests.ts", "**/*.spec.ts"]
 }

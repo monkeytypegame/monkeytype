@@ -149,29 +149,31 @@ function reset(): void {
       </div><div class="lbOptOutReminder hidden"></div>`);
 }
 
-interface UpdateOptions {
+type UpdateOptions = {
   uidOrName?: string;
-  data?: undefined | Profile.ProfileData;
-}
+  data?: undefined | SharedTypes.UserProfile;
+};
 
 async function update(options: UpdateOptions): Promise<void> {
   const getParamExists = checkIfGetParameterExists("isUid");
   if (options.data) {
     $(".page.pageProfile .preloader").addClass("hidden");
-    Profile.update("profile", options.data);
-    PbTables.update(options.data.personalBests, true);
-  } else if (options.uidOrName) {
-    const response =
-      getParamExists === true
-        ? await Ape.users.getProfileByUid(options.uidOrName)
-        : await Ape.users.getProfileByName(options.uidOrName);
+    await Profile.update("profile", options.data);
+    PbTables.update(
+      // this cast is fine because pb tables can handle the partial data inside user profiles
+      options.data.personalBests as unknown as SharedTypes.PersonalBests,
+      true
+    );
+  } else if (options.uidOrName !== undefined && options.uidOrName !== "") {
+    const response = getParamExists
+      ? await Ape.users.getProfileByUid(options.uidOrName)
+      : await Ape.users.getProfileByName(options.uidOrName);
     $(".page.pageProfile .preloader").addClass("hidden");
 
-    if (response.status === 404) {
-      const message =
-        getParamExists === true
-          ? "User not found"
-          : `User ${options.uidOrName} not found`;
+    if (response.status === 404 || response.data === null) {
+      const message = getParamExists
+        ? "User not found"
+        : `User ${options.uidOrName} not found`;
       $(".page.pageProfile .preloader").addClass("hidden");
       $(".page.pageProfile .error").removeClass("hidden");
       $(".page.pageProfile .error .message").text(message);
@@ -183,10 +185,13 @@ async function update(options: UpdateOptions): Promise<void> {
       );
     } else {
       window.history.replaceState(null, "", `/profile/${response.data.name}`);
+      await Profile.update("profile", response.data);
+      // this cast is fine because pb tables can handle the partial data inside user profiles
+      PbTables.update(
+        response.data.personalBests as unknown as SharedTypes.PersonalBests,
+        true
+      );
     }
-
-    Profile.update("profile", response.data);
-    PbTables.update(response.data.personalBests, true);
   } else {
     Notifications.add("Missing update parameter!", -1);
   }
@@ -195,11 +200,13 @@ async function update(options: UpdateOptions): Promise<void> {
 $(".page.pageProfile").on("click", ".profile .userReportButton", () => {
   const uid = $(".page.pageProfile .profile").attr("uid") ?? "";
   const name = $(".page.pageProfile .profile").attr("name") ?? "";
+  const lbOptOut =
+    ($(".page.pageProfile .profile").attr("lbOptOut") ?? "false") === "true";
 
-  UserReportPopup.show({ uid, name });
+  void UserReportPopup.show({ uid, name, lbOptOut });
 });
 
-export const page = new Page<undefined | Profile.ProfileData>(
+export const page = new Page<undefined | SharedTypes.UserProfile>(
   "profile",
   $(".page.pageProfile"),
   "/profile",
@@ -212,13 +219,13 @@ export const page = new Page<undefined | Profile.ProfileData>(
   },
   async (options) => {
     Skeleton.append("pageProfile", "main");
-    const uidOrName = options?.params?.["uidOrName"];
+    const uidOrName = options?.params?.["uidOrName"] ?? "";
     if (uidOrName) {
       $(".page.pageProfile .preloader").removeClass("hidden");
       $(".page.pageProfile .search").addClass("hidden");
       $(".page.pageProfile .content").removeClass("hidden");
       reset();
-      update({
+      void update({
         uidOrName,
         data: options?.data,
       });

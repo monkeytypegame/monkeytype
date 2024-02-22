@@ -1,0 +1,77 @@
+{
+  "language": "code_kotlin",
+  "groups": [
+    [0, 100],
+    [101, 300],
+    [301, 600],
+    [601, 9999]
+  ],
+  "quotes": [
+    {
+      "text": "fun main(args : Array<String>) {\n\tprintln(\"Hello, World!\")\n}",
+      "source": "Programiz - Kotlin Hello World",
+      "id": 1,
+      "length": 60
+    },
+    {
+      "text": "fun main() {\n\tvar name = \"John\"\n\tval birthyear = 1975\n\tprintln(name)\n\tprintln(birthyear)\n}",
+      "source": "W3Schools - Kotlin Variables",
+      "id": 2,
+      "length": 90
+    },
+    {
+      "text": "fun bubbleSort(array: IntArray) {\n\tval n = array.size\n\tfor (i in 0 until n - 1) {\n\t\tfor (j in 0 until n - i - 1) {\n\t\t\tif (array[j] > array[j + 1]) {\n\t\t\t\tval temp = array[j]\n\t\t\t\tarray[j] = array[j + 1]\n\t\t\t\tarray[j + 1] = temp\n\t\t\t}\n\t\t}\n\t}\n}",
+      "source": "ChatGPT - Kotlin BubbleSort",
+      "id": 3,
+      "length": 238
+    },
+    {
+      "text": "val numbers = listOf(1, 2, 3, 4, 5)\nval doubled = numbers.map { it * 2 }",
+      "source": " ChatGPT - List Manipulation",
+      "id": 4,
+      "length": 72
+    },
+    {
+      "text": "val x = 10\nif (x > 5) {\n\tprintln(\"x is greater than 5\")\n} else {\n\tprintln(\"x is not greater than 5\")\n}",
+      "source": "ChatGPT - Conditional Statement",
+      "id": 5,
+      "length": 102
+    },
+    {
+      "text": "val day = 4\n\nval result = when (day) {\n\t1 -> \"Monday\"\n\t2 -> \"Tuesday\"\n\t3 -> \"Wednesday\"\n\t4 -> \"Thursday\"\n\t5 -> \"Friday\"\n\t6 -> \"Saturday\"\n\t7 -> \"Sunday\"\n\telse -> \"Invalid day.\"\n}\nprintln(result)",
+      "source": "W3Schools - When Statement",
+      "id": 6,
+      "length": 193
+    },
+    {
+      "text": "val cars = arrayOf(\"Volvo\", \"BMW\", \"Ford\", \"Mazda\")\nfor (x in cars) {\n\tprintln(x)\n}",
+      "source": "W3Schools - For Loop",
+      "id": 7,
+      "length": 83
+    },
+    {
+      "text": "fun fibonacci(n: Int): Long {\n\treturn if (n <= 1) {\n\t\tn.toLong()\n\t} else {\n\t\tvar a = 0L\n\t\tvar b = 1L\n\t\tvar result = 0L\n\n\t\tfor (i in 2..n) {\n\t\t\tresult = a + b\n\t\t\ta = b\n\t\t\tb = result\n\t\t}\n\n\t\tresult\n\t\t}\n\t}",
+      "source": "ChatGPT - Fibonacci",
+      "id": 8,
+      "length": 201
+    },
+    {
+      "text": "fun <T : Comparable<T>> isSorted(arr: Array<T>): Boolean {\n\tfor (i in 0 until arr.size - 1) {\n\t\tif (arr[i] > arr[i + 1]) {\n\t\t\treturn false\n\t\t}\n\t}\n\treturn true\n}\n\nfun <T> bogosort(arr: Array<T>) {\n\twhile (!isSorted(arr)) {\n\t\tarr.shuffle()\n\t}\n}",
+      "source": "ChatGPT - BogoSort",
+      "id": 9,
+      "length": 242
+    },
+    {
+      "text": "fun insertionSort(arr: IntArray) {\n\tval n = arr.size\n\tfor (i in 1 until n) {\n\t\tval key = arr[i]\b\t\tvar j = i - 1\n\t\twhile (j >= 0 && arr[j] > key) {\n\t\t\tarr[j + 1] = arr[j]\n\t\t\tj--\n\t\t}\n\t\tarr[j + 1] = key\n\t}\n}",
+      "source": "bealdung.com - InsertionSort",
+      "id": 10,
+      "length": 204
+    },
+    {
+      "text": "fun main() {\n\tprint(\"Enter Something:\")\n\tval input = readLine()\n\tprintln(\"You entered: $input\")\n}",
+      "source": "ChatGPT - Read from console",
+      "id": 11,
+      "length": 97
+    }
+  ]
+}

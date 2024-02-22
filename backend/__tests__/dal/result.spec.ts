@@ -2,7 +2,9 @@ import * as ResultDal from "../../src/dal/result";
 import { ObjectId } from "mongodb";
 import * as UserDal from "../../src/dal/user";
 
-type MonkeyTypesResult = MonkeyTypes.Result<MonkeyTypes.Mode>;
+type MonkeyTypesResult = MonkeyTypes.WithObjectId<
+  SharedTypes.DBResult<SharedTypes.Config.Mode>
+>;
 
 let uid: string = "";
 const timestamp = Date.now() - 60000;
@@ -13,7 +15,8 @@ async function createDummyData(
   timestamp: number,
   tag?: string
 ): Promise<void> {
-  const dummyUser: MonkeyTypes.User = {
+  const dummyUser: MonkeyTypes.DBUser = {
+    _id: new ObjectId(),
     uid,
     addedAt: 0,
     email: "test@example.com",
@@ -35,7 +38,7 @@ async function createDummyData(
       _id: new ObjectId(),
       wpm: i,
       rawWpm: i,
-      charStats: [],
+      charStats: [0, 0, 0, 0],
       acc: 0,
       mode: "time",
       mode2: "10" as never,
@@ -55,6 +58,8 @@ async function createDummyData(
       keyDurationStats: { average: 0, sd: 0 },
       difficulty: "normal",
       language: "english",
+      isPb: false,
+      name: "Test",
     } as MonkeyTypesResult);
   }
 }
@@ -77,7 +82,7 @@ describe("ResultDal", () => {
 
       //THEN
       expect(results).toHaveLength(10);
-      let last = results[0].timestamp;
+      let last = results[0]?.timestamp as number;
       results.forEach((it) => {
         expect(it.tags).toContain("current");
         expect(it.timestamp).toBeGreaterThanOrEqual(last);

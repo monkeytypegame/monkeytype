@@ -13,12 +13,13 @@ import {
 } from "../utils/search-service";
 import { splitByAndKeep } from "../utils/strings";
 import QuotesController from "../controllers/quotes-controller";
-import { Auth } from "../firebase";
+import { isAuthenticated } from "../firebase";
 import { debounce } from "throttle-debounce";
 import Ape from "../ape";
 import * as Loader from "../elements/loader";
 import * as Skeleton from "./skeleton";
 import { isPopupVisible } from "../utils/misc";
+import SlimSelect from "slim-select";
 
 const wrapperId = "quoteSearchPopupWrapper";
 
@@ -56,9 +57,10 @@ function highlightMatches(text: string, matchedText: string[]): string {
   const words = splitByAndKeep(text, `.,"/#!$%^&*;:{}=-_\`~() `.split(""));
 
   const normalizedWords = words.map((word) => {
-    const shouldHighlight = matchedText.find((match) => {
-      return word.startsWith(match);
-    });
+    const shouldHighlight =
+      matchedText.find((match) => {
+        return word.startsWith(match);
+      }) !== undefined;
     return shouldHighlight ? `<span class="highlight">${word}</span>` : word;
   });
 
@@ -116,7 +118,7 @@ function buildQuoteSearchResult(
     lengthDesc = "thicc";
   }
 
-  const loggedOut = !Auth?.currentUser;
+  const loggedOut = !isAuthenticated();
   const isFav = !loggedOut && QuotesController.isQuoteFavorite(quote);
 
   return `
@@ -208,6 +210,8 @@ async function updateResults(searchText: string): Promise<void> {
   });
 }
 
+let lengthSelect: SlimSelect | undefined = undefined;
+
 export async function show(clearText = true): Promise<void> {
   Skeleton.append(wrapperId);
 
@@ -218,7 +222,7 @@ export async function show(clearText = true): Promise<void> {
 
     const quoteSearchInputValue = $("#quoteSearchPopup input").val() as string;
 
-    if (!Auth?.currentUser) {
+    if (!isAuthenticated()) {
       $("#quoteSearchPopup #gotoSubmitQuoteButton").addClass("hidden");
       $("#quoteSearchPopup #toggleShowFavorites").addClass("hidden");
     } else {
@@ -226,37 +230,37 @@ export async function show(clearText = true): Promise<void> {
       $("#quoteSearchPopup #toggleShowFavorites").removeClass("hidden");
     }
 
-    if (DB.getSnapshot()?.quoteMod) {
+    const isQuoteMod =
+      DB.getSnapshot()?.quoteMod === true || DB.getSnapshot()?.quoteMod !== "";
+
+    if (isQuoteMod) {
       $("#quoteSearchPopup #goToApproveQuotes").removeClass("hidden");
     } else {
       $("#quoteSearchPopup #goToApproveQuotes").addClass("hidden");
     }
 
-    $("#quoteSearchPopup .quoteLengthFilter").select2({
-      placeholder: "Filter by length",
-      maximumSelectionLength: Infinity,
-      multiple: true,
-      width: "100%",
+    lengthSelect = new SlimSelect({
+      select: "#quoteSearchPopup .quoteLengthFilter",
+      settings: {
+        showSearch: false,
+        placeholderText: "Filter by length",
+      },
       data: [
         {
-          id: 0,
           text: "short",
-          selected: false,
+          value: "0",
         },
         {
-          id: 1,
           text: "medium",
-          selected: false,
+          value: "1",
         },
         {
-          id: 2,
           text: "long",
-          selected: false,
+          value: "2",
         },
         {
-          id: 3,
           text: "thicc",
-          selected: false,
+          value: "3",
         },
       ],
     });
@@ -270,7 +274,7 @@ export async function show(clearText = true): Promise<void> {
           $("#quoteSearchPopup input").trigger("focus").trigger("select");
         }
         currentPageNumber = 1;
-        updateResults(quoteSearchInputValue);
+        void updateResults(quoteSearchInputValue);
       });
   }
 }
@@ -288,6 +292,9 @@ function hide(noAnim = false, focusWords = true): void {
         () => {
           $("#quoteSearchPopupWrapper").addClass("hidden");
 
+          lengthSelect?.destroy();
+          lengthSelect = undefined;
+
           if (focusWords) {
             TestUI.focusWords();
             $("#quoteSearchPopup .quoteLengthFilter").val([]);
@@ -302,12 +309,12 @@ function hide(noAnim = false, focusWords = true): void {
 export function apply(val: number): boolean {
   if (isNaN(val)) {
     val = parseInt(
-      (<HTMLInputElement>document.getElementById("searchBox")).value as string
+      (document.getElementById("searchBox") as HTMLInputElement).value as string
     );
   }
   let ret;
   if (val !== null && !isNaN(val) && val >= 0) {
-    UpdateConfig.setQuoteLength(-2 as MonkeyTypes.QuoteLength, false);
+    UpdateConfig.setQuoteLength(-2 as SharedTypes.Config.QuoteLength, false);
     selectedId = val;
     ManualRestart.set();
     ret = true;
@@ -320,10 +327,10 @@ export function apply(val: number): boolean {
 }
 
 const searchForQuotes = debounce(250, (): void => {
-  const searchText = (<HTMLInputElement>document.getElementById("searchBox"))
+  const searchText = (document.getElementById("searchBox") as HTMLInputElement)
     .value;
   currentPageNumber = 1;
-  updateResults(searchText);
+  void updateResults(searchText);
 });
 
 $("#quoteSearchPopupWrapper .searchBox").on("keyup", (e) => {
@@ -336,7 +343,7 @@ $("#quoteSearchPopupWrapper .quoteLengthFilter").on("change", searchForQuotes);
 $(
   "#quoteSearchPageNavigator .nextPage, #quoteSearchPageNavigator .prevPage"
 ).on("click", function () {
-  const searchText = (<HTMLInputElement>document.getElementById("searchBox"))
+  const searchText = (document.getElementById("searchBox") as HTMLInputElement)
     .value;
 
   if ($(this).hasClass("nextPage")) {
@@ -345,7 +352,7 @@ $(
     currentPageNumber--;
   }
 
-  updateResults(searchText);
+  void updateResults(searchText);
 });
 
 $("#quoteSearchPopupWrapper").on("mousedown", (e) => {
@@ -359,8 +366,8 @@ $("#popups").on(
   "#quoteSearchPopup #gotoSubmitQuoteButton",
   async () => {
     Loader.show();
-    const isSubmissionEnabled = (await Ape.quotes.isSubmissionEnabled()).data
-      .isEnabled;
+    const isSubmissionEnabled =
+      (await Ape.quotes.isSubmissionEnabled()).data?.isEnabled ?? false;
     Loader.hide();
     if (!isSubmissionEnabled) {
       Notifications.add(
@@ -373,13 +380,13 @@ $("#popups").on(
       return;
     }
     hide();
-    QuoteSubmitPopup.show(true);
+    void QuoteSubmitPopup.show(true);
   }
 );
 
 $("#popups").on("click", "#quoteSearchPopup #goToApproveQuotes", () => {
   hide();
-  QuoteApprovePopup.show(true);
+  void QuoteApprovePopup.show(true);
 });
 
 $("#popups").on("click", "#quoteSearchPopup .report", async (e) => {
@@ -387,11 +394,11 @@ $("#popups").on("click", "#quoteSearchPopup .report", async (e) => {
   const quoteIdSelectedForReport = parseInt(quoteId);
 
   hide(true, false);
-  QuoteReportPopup.show({
+  void QuoteReportPopup.show({
     quoteId: quoteIdSelectedForReport,
     noAnim: true,
     previousPopupShowCallback: () => {
-      show(false);
+      void show(false);
     },
   });
 });
@@ -427,9 +434,10 @@ $("#popups").on(
 
       if (response.status === 200) {
         $button.removeClass("fas").addClass("far");
-        const quoteIndex =
-          dbSnapshot.favoriteQuotes[quoteLang]?.indexOf(quoteId);
-        dbSnapshot.favoriteQuotes[quoteLang]?.splice(quoteIndex, 1);
+        const quoteIndex = dbSnapshot.favoriteQuotes?.[quoteLang]?.indexOf(
+          quoteId
+        ) as number;
+        dbSnapshot.favoriteQuotes?.[quoteLang]?.splice(quoteIndex, 1);
       }
     } else {
       // Add to favorites
@@ -441,6 +449,9 @@ $("#popups").on(
 
       if (response.status === 200) {
         $button.removeClass("far").addClass("fas");
+        if (dbSnapshot.favoriteQuotes === undefined) {
+          dbSnapshot.favoriteQuotes = {};
+        }
         if (!dbSnapshot.favoriteQuotes[quoteLang]) {
           dbSnapshot.favoriteQuotes[quoteLang] = [];
         }
@@ -452,7 +463,7 @@ $("#popups").on(
 );
 
 $("#popups").on("click", "#quoteSearchPopup #toggleShowFavorites", (e) => {
-  if (!Auth?.currentUser) {
+  if (!isAuthenticated()) {
     // Notifications.add("You need to be logged in to use this feature!", 0);
     return;
   }
@@ -464,7 +475,7 @@ $("#popups").on("click", "#quoteSearchPopup #toggleShowFavorites", (e) => {
 $(".pageTest").on("click", "#testConfig .quoteLength .textButton", (e) => {
   const len = parseInt($(e.currentTarget).attr("quoteLength") ?? "0");
   if (len === -2) {
-    show();
+    void show();
   }
 });
 

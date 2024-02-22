@@ -42,7 +42,7 @@ const accents: [string, string][] = [
   ["þ", "th"],
 ];
 
-const accentsMap: Map<string, string> = new Map(
+const accentsMap = new Map<string, string>(
   accents.flatMap((rule) => [...rule[0]].map((accent) => [accent, rule[1]]))
 );
 
@@ -67,7 +67,7 @@ export function replaceAccents(
   const newWordArray: string[] = [];
 
   for (let i = 0; i < word.length; i++) {
-    const char = word[i];
+    const char = word[i] as string;
     const isUpperCase = cases[i];
     const accent = findAccent(char, additionalAccents);
 

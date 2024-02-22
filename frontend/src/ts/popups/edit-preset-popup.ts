@@ -26,7 +26,7 @@ export function show(action: string, id?: string, name?: string): void {
     $("#presetWrapper #presetEdit input.text").val("");
     $("#presetWrapper #presetEdit input.text").removeClass("hidden");
     $("#presetWrapper #presetEdit label").addClass("hidden");
-  } else if (action === "edit" && id && name) {
+  } else if (action === "edit" && id !== undefined && name !== undefined) {
     $("#presetWrapper #presetEdit").attr("action", "edit");
     $("#presetWrapper #presetEdit").attr("presetid", id);
     $("#presetWrapper #presetEdit .title").html("Edit preset");
@@ -35,7 +35,7 @@ export function show(action: string, id?: string, name?: string): void {
     $("#presetWrapper #presetEdit input.text").removeClass("hidden");
     $("#presetWrapper #presetEdit label input").prop("checked", false);
     $("#presetWrapper #presetEdit label").removeClass("hidden");
-  } else if (action === "remove" && id) {
+  } else if (action === "remove" && id !== undefined && name !== undefined) {
     $("#presetWrapper #presetEdit").attr("action", "remove");
     $("#presetWrapper #presetEdit").attr("presetid", id);
     $("#presetWrapper #presetEdit .title").html("Delete preset " + name);
@@ -98,8 +98,8 @@ async function apply(): Promise<void> {
     const tags = DB.getSnapshot()?.tags ?? [];
 
     const activeTagIds: string[] = tags
-      .filter((tag: MonkeyTypes.Tag) => tag.active)
-      .map((tag: MonkeyTypes.Tag) => tag._id);
+      .filter((tag: MonkeyTypes.UserTag) => tag.active)
+      .map((tag: MonkeyTypes.UserTag) => tag._id);
     configChanges.tags = activeTagIds;
   }
 
@@ -112,7 +112,7 @@ async function apply(): Promise<void> {
   if (action === "add") {
     const response = await Ape.presets.add(presetName, configChanges);
 
-    if (response.status !== 200) {
+    if (response.status !== 200 || response.data === null) {
       Notifications.add(
         "Failed to add preset: " +
           response.message.replace(presetName, propPresetName),
@@ -127,7 +127,7 @@ async function apply(): Promise<void> {
         config: configChanges,
         display: propPresetName,
         _id: response.data.presetId,
-      });
+      } as MonkeyTypes.SnapshotPreset);
     }
   } else if (action === "edit") {
     const response = await Ape.presets.edit(
@@ -140,9 +140,9 @@ async function apply(): Promise<void> {
       Notifications.add("Failed to edit preset: " + response.message, -1);
     } else {
       Notifications.add("Preset updated", 1);
-      const preset: MonkeyTypes.Preset = snapshotPresets.filter(
-        (preset: MonkeyTypes.Preset) => preset._id === presetId
-      )[0];
+      const preset = snapshotPresets.filter(
+        (preset: MonkeyTypes.SnapshotPreset) => preset._id === presetId
+      )[0] as MonkeyTypes.SnapshotPreset;
       preset.name = presetName;
       preset.display = presetName.replace(/_/g, " ");
       if (updateConfig) {
@@ -156,15 +156,17 @@ async function apply(): Promise<void> {
       Notifications.add("Failed to remove preset: " + response.message, -1);
     } else {
       Notifications.add("Preset removed", 1);
-      snapshotPresets.forEach((preset: MonkeyTypes.Preset, index: number) => {
-        if (preset._id === presetId) {
-          snapshotPresets.splice(index, 1);
+      snapshotPresets.forEach(
+        (preset: MonkeyTypes.SnapshotPreset, index: number) => {
+          if (preset._id === presetId) {
+            snapshotPresets.splice(index, 1);
+          }
         }
-      });
+      );
     }
   }
 
-  Settings.update();
+  void Settings.update();
   Loader.hide();
 }
 
@@ -176,7 +178,7 @@ $("#presetWrapper").on("click", (e) => {
 
 $("#presetWrapper #presetEdit form").on("submit", (e) => {
   e.preventDefault();
-  apply();
+  void apply();
 });
 
 $(".pageSettings .section.presets").on("click", ".addPresetButton", () => {

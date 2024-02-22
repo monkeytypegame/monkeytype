@@ -22,7 +22,6 @@ const stream = conventionalChangelog(
 
 const header =
   "Thank you to all the contributors who made this release possible!";
-const footer = `\n### Other\n\n- Various style, documentation, refactoring, performance, or build improvements`;
 
 let log = "";
 for await (const chunk of stream) {
@@ -118,10 +117,53 @@ function buildSection(type, allItems) {
   return ret;
 }
 
-async function main() {
-  let logString = await getLog();
-  logString = logString.split("\n");
+function buildFooter(logs) {
+  const styleLogs = logs.filter((item) => item.type === "style");
+  const docLogs = logs.filter((item) => item.type === "docs");
+  const refactorLogs = logs.filter((item) => item.type === "refactor");
+  const perfLogs = logs.filter((item) => item.type === "perf");
+  const ciLogs = logs.filter((item) => item.type === "ci");
+  const testLogs = logs.filter((item) => item.type === "test");
+  const buildLogs = logs.filter((item) => item.type === "build");
 
+  const otherStrings = [];
+
+  if (styleLogs.length > 0) {
+    otherStrings.push("style");
+  }
+  if (docLogs.length > 0) {
+    otherStrings.push("documentation");
+  }
+  if (refactorLogs.length > 0) {
+    otherStrings.push("refactoring");
+  }
+  if (perfLogs.length > 0) {
+    otherStrings.push("performance");
+  }
+  if (ciLogs.length > 0) {
+    otherStrings.push("CI");
+  }
+  if (testLogs.length > 0) {
+    otherStrings.push("testing");
+  }
+  if (buildLogs.length > 0) {
+    otherStrings.push("build");
+  }
+
+  if (otherStrings.length === 0) {
+    return "";
+  }
+
+  //build a string where otherStrings are joined by commas and the last one is joined by "and"
+  const finalString =
+    otherStrings.length > 1
+      ? otherStrings.slice(0, -1).join(", ") + " and " + otherStrings.slice(-1)
+      : otherStrings[0];
+
+  return `\n### Other\n\n- Various ${finalString} changes`;
+}
+
+function convertStringToLog(logString) {
   let log = [];
   for (let line of logString) {
     //split line based on the format: d2739e4f193137db4d86450f0d50b3489d75c106 d2739e4f1 style: adjusted testConfig and modesNotice.
@@ -165,6 +207,56 @@ async function main() {
       console.warn("skipping line due to invalid format: " + line);
     }
   }
+  return log;
+}
+
+async function main() {
+  let logString = await getLog();
+  logString = logString.split("\n");
+
+  //test commits
+  // const logString = [
+  //   "d2739e4f193137db4d86450f0d50b3489d75c106 d2739e4f1 build: add new feature (miodec, someone) (#1234)",
+  //   "d2739e4f193137db4d86450f0d50b3489d75c106 d2739e4f1 build(scope): add new feature (#1234)",
+  //   "d2739e4f193137db4d86450f0d50b3489d75c106 d2739e4f1 chore: add new feature (#1234)",
+  //   "d2739e4f193137db4d86450f0d50b3489d75c106 d2739e4f1 chore(scope): add new feature (#1234)",
+  //   "d2739e4f193137db4d86450f0d50b3489d75c106 d2739e4f1 ci: add new feature (#1234)",
+  //   "d2739e4f193137db4d86450f0d50b3489d75c106 d2739e4f1 ci(scope): add new feature (#1234)",
+  //   "d2739e4f193137db4d86450f0d50b3489d75c106 d2739e4f1 docs: add new feature (#1234)",
+  //   "d2739e4f193137db4d86450f0d50b3489d75c106 d2739e4f1 docs(scope): add new feature (#1234)",
+  //   "d2739e4f193137db4d86450f0d50b3489d75c106 d2739e4f1 feat: add new feature (#1234)",
+  //   "d2739e4f193137db4d86450f0d50b3489d75c106 d2739e4f1 feat(scope): add new feature (#1234)",
+  //   "d2739e4f193137db4d86450f0d50b3489d75c106 d2739e4f1 impr: add new feature (#1234)",
+  //   "d2739e4f193137db4d86450f0d50b3489d75c106 d2739e4f1 impr(scope): add new feature (#1234)",
+  //   "d2739e4f193137db4d86450f0d50b3489d75c106 d2739e4f1 fix: add new feature (#1234)",
+  //   "d2739e4f193137db4d86450f0d50b3489d75c106 d2739e4f1 fix(score): add new feature (#1234)",
+  //   "d2739e4f193137db4d86450f0d50b3489d75c106 d2739e4f1 perf: add new feature (#1234)",
+  //   "d2739e4f193137db4d86450f0d50b3489d75c106 d2739e4f1 perf(scope): add new feature (#1234)",
+  //   "d2739e4f193137db4d86450f0d50b3489d75c106 d2739e4f1 refactor: add new feature (#1234)",
+  //   "d2739e4f193137db4d86450f0d50b3489d75c106 d2739e4f1 refactor(scope): add new feature (#1234)",
+  //   "d2739e4f193137db4d86450f0d50b3489d75c106 d2739e4f1 revert: add new feature (#1234)",
+  //   "d2739e4f193137db4d86450f0d50b3489d75c106 d2739e4f1 revert(scope): add new feature (#1234)",
+  //   "d2739e4f193137db4d86450f0d50b3489d75c106 d2739e4f1 style: add new feature (#1234)",
+  //   "d2739e4f193137db4d86450f0d50b3489d75c106 d2739e4f1 style(scope): add new feature (#1234)",
+  //   "d2739e4f193137db4d86450f0d50b3489d75c106 d2739e4f1 test: add new feature (#1234)",
+  //   "d2739e4f193137db4d86450f0d50b3489d75c106 d2739e4f1 test(scope): add new feature (#1234)",
+  // ];
+
+  let log = convertStringToLog(logString);
+
+  const contributorCount = log
+    .map((l) => {
+      const filtered = l.usernames.filter((u) => {
+        const lowerCased = u.toLowerCase();
+        return (
+          lowerCased !== "monkeytype-bot" &&
+          lowerCased !== "dependabot" &&
+          lowerCased !== "miodec"
+        );
+      });
+      return filtered;
+    })
+    .flat().length;
 
   let quoteAddCommits = log.filter((item) => itemIsAddingQuotes(item));
   log = log.filter((item) => !itemIsAddingQuotes(item));
@@ -198,7 +290,9 @@ async function main() {
 
   let final = "";
 
-  final += header + "\n\n\n";
+  if (contributorCount > 0) {
+    final += header + "\n\n\n";
+  }
 
   const sections = [];
   for (const type of Object.keys(titles)) {
@@ -210,7 +304,10 @@ async function main() {
 
   final += sections.join("\n\n");
 
-  final += "\n" + footer;
+  const footer = buildFooter(log);
+  if (footer) {
+    final += "\n" + footer;
+  }
 
   console.log(final);
 }

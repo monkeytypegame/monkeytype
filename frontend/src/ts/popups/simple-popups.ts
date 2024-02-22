@@ -11,7 +11,7 @@ import * as CustomText from "../test/custom-text";
 import * as SavedTextsPopup from "./saved-texts-popup";
 import * as AccountButton from "../elements/account-button";
 import { FirebaseError } from "firebase/app";
-import { Auth } from "../firebase";
+import { Auth, isAuthenticated, getAuthenticatedUser } from "../firebase";
 import * as ConnectionState from "../states/connection";
 import {
   EmailAuthProvider,
@@ -35,26 +35,79 @@ import * as ThemeController from "../controllers/theme-controller";
 
 const wrapperId = "simplePopupWrapper";
 
-interface Input {
+type Input = {
   placeholder?: string;
   type?: string;
   initVal: string;
   hidden?: boolean;
   disabled?: boolean;
   label?: string;
-}
+};
 
 let activePopup: SimplePopup | null = null;
 
-interface ExecReturn {
+type ExecReturn = {
   status: 1 | 0 | -1;
   message: string;
   showNotification?: false;
   notificationOptions?: MonkeyTypes.AddNotificationOptions;
   afterHide?: () => void;
-}
+};
 
-const list: { [key: string]: SimplePopup } = {};
+type PopupKey =
+  | "updateEmail"
+  | "updateName"
+  | "updatePassword"
+  | "removeGoogleAuth"
+  | "addPasswordAuth"
+  | "deleteAccount"
+  | "resetAccount"
+  | "clearTagPb"
+  | "optOutOfLeaderboards"
+  | "clearTagPb"
+  | "applyCustomFont"
+  | "resetPersonalBests"
+  | "resetSettings"
+  | "revokeAllTokens"
+  | "unlinkDiscord"
+  | "generateApeKey"
+  | "viewApeKey"
+  | "deleteApeKey"
+  | "editApeKey"
+  | "deleteCustomText"
+  | "deleteCustomTextLong"
+  | "resetProgressCustomTextLong"
+  | "updateCustomTheme"
+  | "deleteCustomTheme"
+  | "forgotPassword";
+
+const list: Record<PopupKey, SimplePopup | undefined> = {
+  updateEmail: undefined,
+  updateName: undefined,
+  updatePassword: undefined,
+  removeGoogleAuth: undefined,
+  addPasswordAuth: undefined,
+  deleteAccount: undefined,
+  resetAccount: undefined,
+  clearTagPb: undefined,
+  optOutOfLeaderboards: undefined,
+  applyCustomFont: undefined,
+  resetPersonalBests: undefined,
+  resetSettings: undefined,
+  revokeAllTokens: undefined,
+  unlinkDiscord: undefined,
+  generateApeKey: undefined,
+  viewApeKey: undefined,
+  deleteApeKey: undefined,
+  editApeKey: undefined,
+  deleteCustomText: undefined,
+  deleteCustomTextLong: undefined,
+  resetProgressCustomTextLong: undefined,
+  updateCustomTheme: undefined,
+  deleteCustomTheme: undefined,
+  forgotPassword: undefined,
+};
+
 class SimplePopup {
   parameters: string[];
   wrapper: JQuery;
@@ -154,7 +207,7 @@ class SimplePopup {
         });
       } else if (this.type === "text") {
         this.inputs.forEach((input) => {
-          if (input.type) {
+          if (input.type !== undefined && input.type !== "") {
             if (input.type === "textarea") {
               el.find(".inputs").append(`
                 <textarea
@@ -209,7 +262,7 @@ class SimplePopup {
   exec(): void {
     if (!this.canClose) return;
     const vals: string[] = [];
-    $.each($("#simplePopup input"), (_, el) => {
+    $.each($("#simplePopup input, #simplePopup textarea"), (_, el) => {
       if ($(el).is(":checkbox")) {
         vals.push($(el).is(":checked") ? "true" : "false");
       } else {
@@ -233,20 +286,22 @@ class SimplePopup {
 
     this.disableInputs();
     Loader.show();
-    this.execFn(this, ...vals).then((res) => {
+    void this.execFn(this, ...vals).then((res) => {
       Loader.hide();
       if (res.showNotification ?? true) {
         Notifications.add(res.message, res.status, res.notificationOptions);
       }
       if (res.status === 1) {
-        this.hide().then(() => {
+        void this.hide().then(() => {
           if (res.afterHide) {
             res.afterHide();
           }
         });
       } else {
         this.enableInputs();
-        $($("#simplePopup").find("input")[0]).trigger("focus");
+        $($("#simplePopup").find("input")[0] as HTMLInputElement).trigger(
+          "focus"
+        );
       }
     });
   }
@@ -279,7 +334,9 @@ class SimplePopup {
       .removeClass("hidden")
       .animate({ opacity: 1 }, noAnimation ? 0 : 125, () => {
         if (this.inputs.length > 0) {
-          $($("#simplePopup").find("input")[0]).trigger("focus");
+          $($("#simplePopup").find("input")[0] as HTMLInputElement).trigger(
+            "focus"
+          );
         } else {
           $("#simplePopup button").trigger("focus");
         }
@@ -310,7 +367,7 @@ class SimplePopup {
 
 function hide(): void {
   if (activePopup) {
-    activePopup.hide();
+    void activePopup.hide();
     return;
   }
   $("#simplePopupWrapper")
@@ -325,7 +382,7 @@ function hide(): void {
 $("#simplePopupWrapper").on("mousedown", (e) => {
   if ($(e.target).attr("id") === "simplePopupWrapper") {
     if (activePopup) {
-      activePopup.hide();
+      void activePopup.hide();
       return;
     }
     $("#simplePopupWrapper")
@@ -340,40 +397,41 @@ $("#simplePopupWrapper").on("mousedown", (e) => {
 
 $("#popups").on("submit", "#simplePopupWrapper form", (e) => {
   e.preventDefault();
-  const id = $("#simplePopup").attr("popupId") ?? "";
-  list[id].exec();
+  const id = $("#simplePopup").attr("popupId") as PopupKey;
+  (list[id] as SimplePopup).exec();
 });
 
 type ReauthMethod = "passwordOnly" | "passwordFirst";
 
-interface ReauthSuccess {
+type ReauthSuccess = {
   status: 1;
   message: string;
   user: User;
-}
+};
 
-interface ReauthFailed {
+type ReauthFailed = {
   status: -1 | 0;
   message: string;
-}
+};
 
 async function reauthenticate(
   method: ReauthMethod,
   password: string
 ): Promise<ReauthSuccess | ReauthFailed> {
-  if (!Auth) {
+  if (Auth === undefined) {
     return {
       status: -1,
       message: "Authentication is not initialized",
     };
   }
-  const user = Auth.currentUser;
-  if (!user) {
+
+  if (!isAuthenticated()) {
     return {
       status: -1,
       message: "User is not signed in",
     };
   }
+  const user = getAuthenticatedUser();
 
   try {
     const passwordAuthEnabled = user.providerData.some(
@@ -415,13 +473,13 @@ async function reauthenticate(
         status: -1,
         message:
           "Failed to reauthenticate: " +
-          (typedError?.message || JSON.stringify(e)),
+          (typedError?.message ?? JSON.stringify(e)),
       };
     }
   }
 }
 
-list["updateEmail"] = new SimplePopup(
+list.updateEmail = new SimplePopup(
   "updateEmail",
   "text",
   "Update Email",
@@ -478,9 +536,8 @@ list["updateEmail"] = new SimplePopup(
     };
   },
   (thisPopup) => {
-    const user = Auth?.currentUser;
-    if (!user) return;
-    if (!user.providerData.find((p) => p?.providerId === "password")) {
+    if (!isAuthenticated()) return;
+    if (!isUsingPasswordAuthentication()) {
       thisPopup.inputs = [];
       thisPopup.buttonText = "";
       thisPopup.text = "Password authentication is not enabled";
@@ -491,7 +548,7 @@ list["updateEmail"] = new SimplePopup(
   }
 );
 
-list["removeGoogleAuth"] = new SimplePopup(
+list.removeGoogleAuth = new SimplePopup(
   "removeGoogleAuth",
   "text",
   "Remove Google Authentication",
@@ -532,9 +589,8 @@ list["removeGoogleAuth"] = new SimplePopup(
     };
   },
   (thisPopup) => {
-    const user = Auth?.currentUser;
-    if (!user) return;
-    if (!user.providerData.find((p) => p?.providerId === "password")) {
+    if (!isAuthenticated()) return;
+    if (!isUsingPasswordAuthentication()) {
       thisPopup.inputs = [];
       thisPopup.buttonText = "";
       thisPopup.text = "Password authentication is not enabled";
@@ -545,7 +601,7 @@ list["removeGoogleAuth"] = new SimplePopup(
   }
 );
 
-list["updateName"] = new SimplePopup(
+list.updateName = new SimplePopup(
   "updateName",
   "text",
   "Update Name",
@@ -609,11 +665,11 @@ list["updateName"] = new SimplePopup(
     };
   },
   (thisPopup) => {
-    const user = Auth?.currentUser;
+    if (!isAuthenticated()) return;
     const snapshot = DB.getSnapshot();
-    if (!user || !snapshot) return;
-    if (!user.providerData.find((p) => p?.providerId === "password")) {
-      thisPopup.inputs[0].hidden = true;
+    if (!snapshot) return;
+    if (!isUsingPasswordAuthentication()) {
+      (thisPopup.inputs[0] as Input).hidden = true;
       thisPopup.buttonText = "Reauthenticate to update";
     }
     if (snapshot.needsToChangeName === true) {
@@ -626,7 +682,7 @@ list["updateName"] = new SimplePopup(
   }
 );
 
-list["updatePassword"] = new SimplePopup(
+list.updatePassword = new SimplePopup(
   "updatePassword",
   "text",
   "Update Password",
@@ -698,9 +754,8 @@ list["updatePassword"] = new SimplePopup(
     };
   },
   (thisPopup) => {
-    const user = Auth?.currentUser;
-    if (!user) return;
-    if (!user.providerData.find((p) => p?.providerId === "password")) {
+    if (!isAuthenticated()) return;
+    if (!isUsingPasswordAuthentication()) {
       thisPopup.inputs = [];
       thisPopup.buttonText = "";
       thisPopup.text = "Password authentication is not enabled";
@@ -711,7 +766,7 @@ list["updatePassword"] = new SimplePopup(
   }
 );
 
-list["addPasswordAuth"] = new SimplePopup(
+list.addPasswordAuth = new SimplePopup(
   "addPasswordAuth",
   "text",
   "Add Password Authentication",
@@ -803,7 +858,7 @@ list["addPasswordAuth"] = new SimplePopup(
   }
 );
 
-list["deleteAccount"] = new SimplePopup(
+list.deleteAccount = new SimplePopup(
   "deleteAccount",
   "text",
   "Delete Account",
@@ -864,9 +919,8 @@ list["deleteAccount"] = new SimplePopup(
     };
   },
   (thisPopup) => {
-    const user = Auth?.currentUser;
-    if (!user) return;
-    if (!user.providerData.find((p) => p?.providerId === "password")) {
+    if (!isAuthenticated()) return;
+    if (!isUsingPasswordAuthentication()) {
       thisPopup.inputs = [];
       thisPopup.buttonText = "Reauthenticate to delete";
     }
@@ -876,7 +930,7 @@ list["deleteAccount"] = new SimplePopup(
   }
 );
 
-list["resetAccount"] = new SimplePopup(
+list.resetAccount = new SimplePopup(
   "resetAccount",
   "text",
   "Reset Account",
@@ -899,7 +953,7 @@ list["resetAccount"] = new SimplePopup(
     }
 
     Notifications.add("Resetting settings...", 0);
-    UpdateConfig.reset();
+    await UpdateConfig.reset();
 
     Notifications.add("Resetting account...", 0);
     const response = await Ape.users.reset();
@@ -918,9 +972,8 @@ list["resetAccount"] = new SimplePopup(
     };
   },
   (thisPopup) => {
-    const user = Auth?.currentUser;
-    if (!user) return;
-    if (!user.providerData.find((p) => p?.providerId === "password")) {
+    if (!isAuthenticated()) return;
+    if (!isUsingPasswordAuthentication()) {
       thisPopup.inputs = [];
       thisPopup.buttonText = "Reauthenticate to reset";
     }
@@ -930,7 +983,7 @@ list["resetAccount"] = new SimplePopup(
   }
 );
 
-list["optOutOfLeaderboards"] = new SimplePopup(
+list.optOutOfLeaderboards = new SimplePopup(
   "optOutOfLeaderboards",
   "text",
   "Opt out of leaderboards",
@@ -968,9 +1021,8 @@ list["optOutOfLeaderboards"] = new SimplePopup(
     };
   },
   (thisPopup) => {
-    const user = Auth?.currentUser;
-    if (!user) return;
-    if (!user.providerData.find((p) => p?.providerId === "password")) {
+    if (!isAuthenticated()) return;
+    if (!isUsingPasswordAuthentication()) {
       thisPopup.inputs = [];
       thisPopup.buttonText = "Reauthenticate to reset";
     }
@@ -980,7 +1032,7 @@ list["optOutOfLeaderboards"] = new SimplePopup(
   }
 );
 
-list["clearTagPb"] = new SimplePopup(
+list.clearTagPb = new SimplePopup(
   "clearTagPb",
   "text",
   "Clear Tag PB",
@@ -988,7 +1040,7 @@ list["clearTagPb"] = new SimplePopup(
   `Are you sure you want to clear this tags PB?`,
   "Clear",
   async (thisPopup) => {
-    const tagId = thisPopup.parameters[0];
+    const tagId = thisPopup.parameters[0] as string;
     const response = await Ape.users.deleteTagPersonalBest(tagId);
     if (response.status !== 200) {
       return {
@@ -997,35 +1049,28 @@ list["clearTagPb"] = new SimplePopup(
       };
     }
 
-    if (response.data.resultCode === 1) {
-      const tag = DB.getSnapshot()?.tags?.filter((t) => t._id === tagId)[0];
+    const tag = DB.getSnapshot()?.tags?.filter((t) => t._id === tagId)[0];
 
-      if (tag === undefined) {
-        return {
-          status: -1,
-          message: "Tag not found",
-        };
-      }
-      tag.personalBests = {
-        time: {},
-        words: {},
-        quote: {},
-        zen: {},
-        custom: {},
-      };
-      $(
-        `.pageSettings .section.tags .tagsList .tag[id="${tagId}"] .clearPbButton`
-      ).attr("aria-label", "No PB found");
-      return {
-        status: 1,
-        message: "Tag PB cleared",
-      };
-    } else {
+    if (tag === undefined) {
       return {
         status: -1,
-        message: "Failed to clear tag PB: " + response.data.message,
+        message: "Tag not found",
       };
     }
+    tag.personalBests = {
+      time: {},
+      words: {},
+      quote: {},
+      zen: {},
+      custom: {},
+    };
+    $(
+      `.pageSettings .section.tags .tagsList .tag[id="${tagId}"] .clearPbButton`
+    ).attr("aria-label", "No PB found");
+    return {
+      status: 1,
+      message: "Tag PB cleared",
+    };
   },
   (thisPopup) => {
     thisPopup.text = `Are you sure you want to clear PB for tag ${thisPopup.parameters[1]}?`;
@@ -1035,7 +1080,7 @@ list["clearTagPb"] = new SimplePopup(
   }
 );
 
-list["applyCustomFont"] = new SimplePopup(
+list.applyCustomFont = new SimplePopup(
   "applyCustomFont",
   "text",
   "Custom font",
@@ -1058,7 +1103,7 @@ list["applyCustomFont"] = new SimplePopup(
   }
 );
 
-list["resetPersonalBests"] = new SimplePopup(
+list.resetPersonalBests = new SimplePopup(
   "resetPersonalBests",
   "text",
   "Reset Personal Bests",
@@ -1110,9 +1155,8 @@ list["resetPersonalBests"] = new SimplePopup(
     };
   },
   (thisPopup) => {
-    const user = Auth?.currentUser;
-    if (!user) return;
-    if (!user.providerData.find((p) => p?.providerId === "password")) {
+    if (!isAuthenticated()) return;
+    if (!isUsingPasswordAuthentication()) {
       thisPopup.inputs = [];
       thisPopup.buttonText = "Reauthenticate to reset";
     }
@@ -1122,7 +1166,7 @@ list["resetPersonalBests"] = new SimplePopup(
   }
 );
 
-list["resetSettings"] = new SimplePopup(
+list.resetSettings = new SimplePopup(
   "resetSettings",
   "text",
   "Reset Settings",
@@ -1130,7 +1174,7 @@ list["resetSettings"] = new SimplePopup(
   "Are you sure you want to reset all your settings?",
   "Reset",
   async () => {
-    UpdateConfig.reset();
+    await UpdateConfig.reset();
     return {
       status: 1,
       message: "Settings reset",
@@ -1144,7 +1188,7 @@ list["resetSettings"] = new SimplePopup(
   }
 );
 
-list["revokeAllTokens"] = new SimplePopup(
+list.revokeAllTokens = new SimplePopup(
   "revokeAllTokens",
   "text",
   "Revoke All Tokens",
@@ -1182,11 +1226,11 @@ list["revokeAllTokens"] = new SimplePopup(
     };
   },
   (thisPopup) => {
-    const user = Auth?.currentUser;
+    if (!isAuthenticated()) return;
     const snapshot = DB.getSnapshot();
-    if (!user || !snapshot) return;
-    if (!user.providerData.find((p) => p?.providerId === "password")) {
-      thisPopup.inputs[0].hidden = true;
+    if (!snapshot) return;
+    if (!isUsingPasswordAuthentication()) {
+      (thisPopup.inputs[0] as Input).hidden = true;
       thisPopup.buttonText = "reauthenticate to revoke all tokens";
     }
   },
@@ -1195,7 +1239,7 @@ list["revokeAllTokens"] = new SimplePopup(
   }
 );
 
-list["unlinkDiscord"] = new SimplePopup(
+list.unlinkDiscord = new SimplePopup(
   "unlinkDiscord",
   "text",
   "Unlink Discord",
@@ -1221,7 +1265,7 @@ list["unlinkDiscord"] = new SimplePopup(
 
     snap.discordAvatar = undefined;
     snap.discordId = undefined;
-    AccountButton.update();
+    void AccountButton.update();
     DB.setSnapshot(snap);
     Settings.updateDiscordSection();
 
@@ -1238,7 +1282,7 @@ list["unlinkDiscord"] = new SimplePopup(
   }
 );
 
-list["generateApeKey"] = new SimplePopup(
+list.generateApeKey = new SimplePopup(
   "generateApeKey",
   "text",
   "Generate new key",
@@ -1259,13 +1303,14 @@ list["generateApeKey"] = new SimplePopup(
       };
     }
 
-    const data = response.data;
+    //if response is 200 data is guaranteed to not be null
+    const data = response.data as Ape.ApeKeys.GenerateApeKey;
 
     return {
       status: 1,
       message: "Key generated",
       afterHide: (): void => {
-        list["viewApeKey"].show([data.apeKey]);
+        showPopup("viewApeKey", [data.apeKey]);
       },
     };
   },
@@ -1277,7 +1322,7 @@ list["generateApeKey"] = new SimplePopup(
   }
 );
 
-list["viewApeKey"] = new SimplePopup(
+list.viewApeKey = new SimplePopup(
   "viewApeKey",
   "text",
   "Ape Key",
@@ -1292,27 +1337,28 @@ list["viewApeKey"] = new SimplePopup(
   "This is your new Ape Key. Please keep it safe. You will only see it once!",
   "Close",
   async (_thisPopup) => {
-    ApeKeysPopup.show();
+    void ApeKeysPopup.show();
     return {
       status: 1,
       message: "Key generated",
     };
   },
   (_thisPopup) => {
-    _thisPopup.inputs[0].initVal = _thisPopup.parameters[0];
+    (_thisPopup.inputs[0] as Input).initVal = _thisPopup
+      .parameters[0] as string;
   },
   (_thisPopup) => {
     _thisPopup.canClose = false;
     $("#simplePopup textarea").css("height", "110px");
-    $("#simplePopup .button").addClass("hidden");
+    $("#simplePopup .submitButton").addClass("hidden");
     setTimeout(() => {
       _thisPopup.canClose = true;
-      $("#simplePopup .button").removeClass("hidden");
+      $("#simplePopup .submitButton").removeClass("hidden");
     }, 5000);
   }
 );
 
-list["deleteApeKey"] = new SimplePopup(
+list.deleteApeKey = new SimplePopup(
   "deleteApeKey",
   "text",
   "Delete Ape Key",
@@ -1320,7 +1366,7 @@ list["deleteApeKey"] = new SimplePopup(
   "Are you sure?",
   "Delete",
   async (_thisPopup) => {
-    const response = await Ape.apeKeys.delete(_thisPopup.parameters[0]);
+    const response = await Ape.apeKeys.delete(_thisPopup.parameters[0] ?? "");
     if (response.status !== 200) {
       return {
         status: -1,
@@ -1328,7 +1374,7 @@ list["deleteApeKey"] = new SimplePopup(
       };
     }
 
-    ApeKeysPopup.show();
+    void ApeKeysPopup.show();
 
     return {
       status: 1,
@@ -1343,7 +1389,7 @@ list["deleteApeKey"] = new SimplePopup(
   }
 );
 
-list["editApeKey"] = new SimplePopup(
+list.editApeKey = new SimplePopup(
   "editApeKey",
   "text",
   "Edit Ape Key",
@@ -1356,7 +1402,7 @@ list["editApeKey"] = new SimplePopup(
   "",
   "Edit",
   async (_thisPopup, input) => {
-    const response = await Ape.apeKeys.update(_thisPopup.parameters[0], {
+    const response = await Ape.apeKeys.update(_thisPopup.parameters[0] ?? "", {
       name: input,
     });
     if (response.status !== 200) {
@@ -1366,7 +1412,7 @@ list["editApeKey"] = new SimplePopup(
       };
     }
 
-    ApeKeysPopup.show();
+    void ApeKeysPopup.show();
 
     return {
       status: 1,
@@ -1381,7 +1427,7 @@ list["editApeKey"] = new SimplePopup(
   }
 );
 
-list["deleteCustomText"] = new SimplePopup(
+list.deleteCustomText = new SimplePopup(
   "deleteCustomText",
   "text",
   "Delete custom text",
@@ -1389,9 +1435,9 @@ list["deleteCustomText"] = new SimplePopup(
   "Are you sure?",
   "Delete",
   async (_thisPopup) => {
-    CustomText.deleteCustomText(_thisPopup.parameters[0]);
+    CustomText.deleteCustomText(_thisPopup.parameters[0] as string, false);
     CustomTextState.setCustomTextName("", undefined);
-    SavedTextsPopup.show(true);
+    void SavedTextsPopup.show(true);
 
     return {
       status: 1,
@@ -1406,7 +1452,7 @@ list["deleteCustomText"] = new SimplePopup(
   }
 );
 
-list["deleteCustomTextLong"] = new SimplePopup(
+list.deleteCustomTextLong = new SimplePopup(
   "deleteCustomTextLong",
   "text",
   "Delete custom text",
@@ -1414,9 +1460,9 @@ list["deleteCustomTextLong"] = new SimplePopup(
   "Are you sure?",
   "Delete",
   async (_thisPopup) => {
-    CustomText.deleteCustomText(_thisPopup.parameters[0], true);
+    CustomText.deleteCustomText(_thisPopup.parameters[0] as string, true);
     CustomTextState.setCustomTextName("", undefined);
-    SavedTextsPopup.show(true);
+    void SavedTextsPopup.show(true);
 
     return {
       status: 1,
@@ -1431,7 +1477,7 @@ list["deleteCustomTextLong"] = new SimplePopup(
   }
 );
 
-list["resetProgressCustomTextLong"] = new SimplePopup(
+list.resetProgressCustomTextLong = new SimplePopup(
   "resetProgressCustomTextLong",
   "text",
   "Reset progress for custom text",
@@ -1439,10 +1485,12 @@ list["resetProgressCustomTextLong"] = new SimplePopup(
   "Are you sure?",
   "Reset",
   async (_thisPopup) => {
-    CustomText.setCustomTextLongProgress(_thisPopup.parameters[0], 0);
-    SavedTextsPopup.show(true);
+    CustomText.setCustomTextLongProgress(_thisPopup.parameters[0] as string, 0);
+    void SavedTextsPopup.show(true);
     CustomText.setPopupTextareaState(
-      CustomText.getCustomText(_thisPopup.parameters[0], true).join(" ")
+      CustomText.getCustomText(_thisPopup.parameters[0] as string, true).join(
+        " "
+      )
     );
     return {
       status: 1,
@@ -1457,7 +1505,7 @@ list["resetProgressCustomTextLong"] = new SimplePopup(
   }
 );
 
-list["updateCustomTheme"] = new SimplePopup(
+list.updateCustomTheme = new SimplePopup(
   "updateCustomTheme",
   "text",
   "Update custom theme",
@@ -1484,7 +1532,7 @@ list["updateCustomTheme"] = new SimplePopup(
       };
     }
 
-    const customTheme = snapshot.customThemes.find(
+    const customTheme = snapshot.customThemes?.find(
       (t) => t._id === _thisPopup.parameters[0]
     );
     if (customTheme === undefined) {
@@ -1519,7 +1567,7 @@ list["updateCustomTheme"] = new SimplePopup(
       };
     }
     UpdateConfig.setCustomThemeColors(newColors);
-    ThemePicker.refreshButtons();
+    void ThemePicker.refreshButtons();
 
     return {
       status: 1,
@@ -1530,18 +1578,18 @@ list["updateCustomTheme"] = new SimplePopup(
     const snapshot = DB.getSnapshot();
     if (!snapshot) return;
 
-    const customTheme = snapshot.customThemes.find(
+    const customTheme = snapshot.customThemes?.find(
       (t) => t._id === _thisPopup.parameters[0]
     );
     if (!customTheme) return;
-    _thisPopup.inputs[0].initVal = customTheme.name;
+    (_thisPopup.inputs[0] as Input).initVal = customTheme.name;
   },
   (_thisPopup) => {
     //
   }
 );
 
-list["deleteCustomTheme"] = new SimplePopup(
+list.deleteCustomTheme = new SimplePopup(
   "deleteCustomTheme",
   "text",
   "Delete Custom Theme",
@@ -1549,8 +1597,8 @@ list["deleteCustomTheme"] = new SimplePopup(
   "Are you sure?",
   "Delete",
   async (_thisPopup) => {
-    await DB.deleteCustomTheme(_thisPopup.parameters[0]);
-    ThemePicker.refreshButtons();
+    await DB.deleteCustomTheme(_thisPopup.parameters[0] as string);
+    void ThemePicker.refreshButtons();
 
     return {
       status: 1,
@@ -1565,7 +1613,7 @@ list["deleteCustomTheme"] = new SimplePopup(
   }
 );
 
-list["forgotPassword"] = new SimplePopup(
+list.forgotPassword = new SimplePopup(
   "forgotPassword",
   "text",
   "Forgot Password",
@@ -1589,7 +1637,10 @@ list["forgotPassword"] = new SimplePopup(
 
     return {
       status: 1,
-      message: "Password reset email sent",
+      message: result.message,
+      notificationOptions: {
+        duration: 8,
+      },
     };
   },
   (thisPopup) => {
@@ -1597,9 +1648,9 @@ list["forgotPassword"] = new SimplePopup(
       `.pageLogin .login input[name="current-email"]`
     ).val() as string;
     if (inputValue) {
-      thisPopup.inputs[0].initVal = inputValue;
+      (thisPopup.inputs[0] as Input).initVal = inputValue;
       setTimeout(() => {
-        $("#simplePopup").find("input")[0].select();
+        ($("#simplePopup").find("input")[0] as HTMLInputElement).select();
       }, 1);
     }
   },
@@ -1608,8 +1659,21 @@ list["forgotPassword"] = new SimplePopup(
   }
 );
 
+function showPopup(
+  key: PopupKey,
+  showParams = [] as string[],
+  noAnimation = false
+): void {
+  const popup = list[key];
+  if (popup === undefined) {
+    Notifications.add("Failed to show popup - popup is not defined", -1);
+    return;
+  }
+  popup.show(showParams, noAnimation);
+}
+
 $(".pageLogin #forgotPasswordButton").on("click", () => {
-  list["forgotPassword"].show();
+  showPopup("forgotPassword");
 });
 
 $(".pageSettings .section.discordIntegration #unlinkDiscordButton").on(
@@ -1619,7 +1683,7 @@ $(".pageSettings .section.discordIntegration #unlinkDiscordButton").on(
       Notifications.add("You are offline", 0, { duration: 2 });
       return;
     }
-    list["unlinkDiscord"].show();
+    showPopup("unlinkDiscord");
   }
 );
 
@@ -1628,7 +1692,7 @@ $(".pageSettings #removeGoogleAuth").on("click", () => {
     Notifications.add("You are offline", 0, { duration: 2 });
     return;
   }
-  list["removeGoogleAuth"].show();
+  showPopup("removeGoogleAuth");
 });
 
 $("#resetSettingsButton").on("click", () => {
@@ -1636,7 +1700,7 @@ $("#resetSettingsButton").on("click", () => {
     Notifications.add("You are offline", 0, { duration: 2 });
     return;
   }
-  list["resetSettings"].show();
+  showPopup("resetSettings");
 });
 
 $("#revokeAllTokens").on("click", () => {
@@ -1644,7 +1708,7 @@ $("#revokeAllTokens").on("click", () => {
     Notifications.add("You are offline", 0, { duration: 2 });
     return;
   }
-  list["revokeAllTokens"].show();
+  showPopup("revokeAllTokens");
 });
 
 $(".pageSettings #resetPersonalBestsButton").on("click", () => {
@@ -1652,7 +1716,7 @@ $(".pageSettings #resetPersonalBestsButton").on("click", () => {
     Notifications.add("You are offline", 0, { duration: 2 });
     return;
   }
-  list["resetPersonalBests"].show();
+  showPopup("resetPersonalBests");
 });
 
 $(".pageSettings #updateAccountName").on("click", () => {
@@ -1660,7 +1724,7 @@ $(".pageSettings #updateAccountName").on("click", () => {
     Notifications.add("You are offline", 0, { duration: 2 });
     return;
   }
-  list["updateName"].show();
+  showPopup("updateName");
 });
 
 $("#bannerCenter").on("click", ".banner .text .openNameChange", () => {
@@ -1668,7 +1732,7 @@ $("#bannerCenter").on("click", ".banner .text .openNameChange", () => {
     Notifications.add("You are offline", 0, { duration: 2 });
     return;
   }
-  list["updateName"].show();
+  showPopup("updateName");
 });
 
 $(".pageSettings #addPasswordAuth").on("click", () => {
@@ -1676,7 +1740,7 @@ $(".pageSettings #addPasswordAuth").on("click", () => {
     Notifications.add("You are offline", 0, { duration: 2 });
     return;
   }
-  list["addPasswordAuth"].show();
+  showPopup("addPasswordAuth");
 });
 
 $(".pageSettings #emailPasswordAuth").on("click", () => {
@@ -1684,7 +1748,7 @@ $(".pageSettings #emailPasswordAuth").on("click", () => {
     Notifications.add("You are offline", 0, { duration: 2 });
     return;
   }
-  list["updateEmail"].show();
+  showPopup("updateEmail");
 });
 
 $(".pageSettings #passPasswordAuth").on("click", () => {
@@ -1692,7 +1756,7 @@ $(".pageSettings #passPasswordAuth").on("click", () => {
     Notifications.add("You are offline", 0, { duration: 2 });
     return;
   }
-  list["updatePassword"].show();
+  showPopup("updatePassword");
 });
 
 $(".pageSettings #deleteAccount").on("click", () => {
@@ -1700,7 +1764,7 @@ $(".pageSettings #deleteAccount").on("click", () => {
     Notifications.add("You are offline", 0, { duration: 2 });
     return;
   }
-  list["deleteAccount"].show();
+  showPopup("deleteAccount");
 });
 
 $(".pageSettings #resetAccount").on("click", () => {
@@ -1708,7 +1772,7 @@ $(".pageSettings #resetAccount").on("click", () => {
     Notifications.add("You are offline", 0, { duration: 2 });
     return;
   }
-  list["resetAccount"].show();
+  showPopup("resetAccount");
 });
 
 $(".pageSettings #optOutOfLeaderboardsButton").on("click", () => {
@@ -1716,7 +1780,7 @@ $(".pageSettings #optOutOfLeaderboardsButton").on("click", () => {
     Notifications.add("You are offline", 0, { duration: 2 });
     return;
   }
-  list["optOutOfLeaderboards"].show();
+  showPopup("optOutOfLeaderboards");
 });
 
 $("#popups").on("click", "#apeKeysPopup .generateApeKey", () => {
@@ -1724,7 +1788,7 @@ $("#popups").on("click", "#apeKeysPopup .generateApeKey", () => {
     Notifications.add("You are offline", 0, { duration: 2 });
     return;
   }
-  list["generateApeKey"].show();
+  showPopup("generateApeKey");
 });
 
 $(".pageSettings").on(
@@ -1737,7 +1801,7 @@ $(".pageSettings").on(
     }
     const $parentElement = $(e.currentTarget).parent(".customTheme.button");
     const customThemeId = $parentElement.attr("customThemeId") as string;
-    list["deleteCustomTheme"].show([customThemeId]);
+    showPopup("deleteCustomTheme", [customThemeId]);
   }
 );
 
@@ -1751,7 +1815,7 @@ $(".pageSettings").on(
     }
     const $parentElement = $(e.currentTarget).parent(".customTheme.button");
     const customThemeId = $parentElement.attr("customThemeId") as string;
-    list["updateCustomTheme"].show([customThemeId]);
+    showPopup("updateCustomTheme", [customThemeId]);
   }
 );
 
@@ -1760,7 +1824,7 @@ $("#popups").on(
   `#savedTextsPopupWrapper .list .savedText .button.delete`,
   (e) => {
     const name = $(e.target).siblings(".button.name").text();
-    list["deleteCustomText"].show([name], true);
+    showPopup("deleteCustomText", [name], true);
   }
 );
 
@@ -1769,7 +1833,7 @@ $("#popups").on(
   `#savedTextsPopupWrapper .listLong .savedText .button.delete`,
   (e) => {
     const name = $(e.target).siblings(".button.name").text();
-    list["deleteCustomTextLong"].show([name], true);
+    showPopup("deleteCustomTextLong", [name], true);
   }
 );
 
@@ -1778,7 +1842,7 @@ $("#popups").on(
   `#savedTextsPopupWrapper .listLong .savedText .button.resetProgress`,
   (e) => {
     const name = $(e.target).siblings(".button.name").text();
-    list["resetProgressCustomTextLong"].show([name], true);
+    showPopup("resetProgressCustomTextLong", [name], true);
   }
 );
 
@@ -1788,7 +1852,7 @@ $("#popups").on("click", "#apeKeysPopup table tbody tr .button.delete", (e) => {
     return;
   }
   const keyId = $(e.target).closest("tr").attr("keyId") as string;
-  list["deleteApeKey"].show([keyId]);
+  showPopup("deleteApeKey", [keyId]);
 });
 
 $("#popups").on("click", "#apeKeysPopup table tbody tr .button.edit", (e) => {
@@ -1797,12 +1861,16 @@ $("#popups").on("click", "#apeKeysPopup table tbody tr .button.edit", (e) => {
     return;
   }
   const keyId = $(e.target).closest("tr").attr("keyId") as string;
-  list["editApeKey"].show([keyId]);
+  showPopup("editApeKey", [keyId]);
 });
 
-$(".pageSettings").on("click", ".section.fontFamily .button.custom", () => {
-  list["applyCustomFont"].show([]);
-});
+$(".pageSettings").on(
+  "click",
+  ".section[data-config-name='fontFamily'] button[data-config-value='custom']",
+  () => {
+    showPopup("applyCustomFont", []);
+  }
+);
 
 $(document).on("keydown", (event) => {
   if (event.key === "Escape" && isElementVisible("#simplePopupWrapper")) {
@@ -1814,3 +1882,11 @@ $(document).on("keydown", (event) => {
 Skeleton.save(wrapperId);
 
 console.log(list);
+
+function isUsingPasswordAuthentication(): boolean {
+  return (
+    Auth?.currentUser?.providerData.find(
+      (p) => p?.providerId === "password"
+    ) !== undefined
+  );
+}

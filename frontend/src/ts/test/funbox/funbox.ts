@@ -24,7 +24,7 @@ import * as LayoutfluidFunboxTimer from "./layoutfluid-funbox-timer";
 const prefixSize = 2;
 
 class CharDistribution {
-  public chars: { [char: string]: number };
+  public chars: Record<string, number>;
   public count: number;
   constructor() {
     this.chars = {};
@@ -50,12 +50,12 @@ class CharDistribution {
       }
     }
 
-    return Object.keys(this.chars)[0];
+    return Object.keys(this.chars)[0] as string;
   }
 }
 
 class PseudolangWordGenerator extends Wordset {
-  public ngrams: { [prefix: string]: CharDistribution } = {};
+  public ngrams: Record<string, CharDistribution> = {};
   constructor(words: string[]) {
     super(words);
     // Can generate an unbounded number of words in theory.
@@ -70,7 +70,7 @@ class PseudolangWordGenerator extends Wordset {
         if (!(prefix in this.ngrams)) {
           this.ngrams[prefix] = new CharDistribution();
         }
-        this.ngrams[prefix].addChar(c);
+        (this.ngrams[prefix] as CharDistribution).addChar(c);
         prefix = (prefix + c).slice(-prefixSize);
       }
     }
@@ -120,7 +120,7 @@ FunboxList.setFunboxFunctions("tts", {
       Notifications.add("Failed to load text-to-speech script", -1);
       return;
     }
-    TTSEvent.dispatch(params[0]);
+    if (params[0] !== undefined) void TTSEvent.dispatch(params[0]);
   },
 });
 
@@ -206,12 +206,15 @@ FunboxList.setFunboxFunctions("arrows", {
 
 FunboxList.setFunboxFunctions("rAnDoMcAsE", {
   alterText(word: string): string {
-    let randomcaseword = word[0];
+    let randomcaseword = word[0] as string;
     for (let i = 1; i < word.length; i++) {
-      if (randomcaseword[i - 1] === randomcaseword[i - 1].toUpperCase()) {
-        randomcaseword += word[i].toLowerCase();
+      if (
+        randomcaseword[i - 1] ===
+        (randomcaseword[i - 1] as string).toUpperCase()
+      ) {
+        randomcaseword += (word[i] as string).toLowerCase();
       } else {
-        randomcaseword += word[i].toUpperCase();
+        randomcaseword += (word[i] as string).toUpperCase();
       }
     }
     return randomcaseword;
@@ -232,18 +235,10 @@ FunboxList.setFunboxFunctions("capitals", {
 
 FunboxList.setFunboxFunctions("layoutfluid", {
   applyConfig(): void {
-    UpdateConfig.setLayout(
-      Config.customLayoutfluid.split("#")[0]
-        ? Config.customLayoutfluid.split("#")[0]
-        : "qwerty",
-      true
-    );
-    UpdateConfig.setKeymapLayout(
-      Config.customLayoutfluid.split("#")[0]
-        ? Config.customLayoutfluid.split("#")[0]
-        : "qwerty",
-      true
-    );
+    const layout = Config.customLayoutfluid.split("#")[0] ?? "qwerty";
+
+    UpdateConfig.setLayout(layout, true);
+    UpdateConfig.setKeymapLayout(layout, true);
   },
   rememberSettings(): void {
     save("keymapMode", Config.keymapMode, UpdateConfig.setKeymapMode);
@@ -265,16 +260,16 @@ FunboxList.setFunboxFunctions("layoutfluid", {
       const mod =
         wordsPerLayout - ((TestWords.words.currentIndex + 1) % wordsPerLayout);
 
-      if (layouts[index]) {
-        if (mod <= 3 && layouts[index + 1]) {
+      if (layouts[index] as string) {
+        if (mod <= 3 && (layouts[index + 1] as string)) {
           LayoutfluidFunboxTimer.show();
-          LayoutfluidFunboxTimer.updateWords(mod, layouts[index + 1]);
+          LayoutfluidFunboxTimer.updateWords(mod, layouts[index + 1] as string);
         } else {
           LayoutfluidFunboxTimer.hide();
         }
         if (mod === wordsPerLayout) {
-          UpdateConfig.setLayout(layouts[index]);
-          UpdateConfig.setKeymapLayout(layouts[index]);
+          UpdateConfig.setLayout(layouts[index] as string);
+          UpdateConfig.setKeymapLayout(layouts[index] as string);
           if (mod > 3) {
             LayoutfluidFunboxTimer.hide();
           }
@@ -283,7 +278,7 @@ FunboxList.setFunboxFunctions("layoutfluid", {
         LayoutfluidFunboxTimer.hide();
       }
       setTimeout(() => {
-        KeymapEvent.highlight(
+        void KeymapEvent.highlight(
           TestWords.words
             .getCurrent()
             .charAt(TestInput.input.current.length)
@@ -298,7 +293,7 @@ FunboxList.setFunboxFunctions("layoutfluid", {
   restart(): void {
     if (this.applyConfig) this.applyConfig();
     setTimeout(() => {
-      KeymapEvent.highlight(
+      void KeymapEvent.highlight(
         TestWords.words
           .getCurrent()
           .substring(
@@ -435,7 +430,7 @@ FunboxList.setFunboxFunctions("poetry", {
 
 FunboxList.setFunboxFunctions("wikipedia", {
   async pullSection(lang?: string): Promise<Misc.Section | false> {
-    return getSection(lang ? lang : "english");
+    return getSection((lang ?? "") || "english");
   },
 });
 
@@ -561,7 +556,7 @@ export async function clear(): Promise<boolean> {
       ?.attr("class")
       ?.split(/\s+/)
       ?.filter((it) => !it.startsWith("fb-"))
-      ?.join(" ") || ""
+      ?.join(" ") ?? ""
   );
 
   $("#funBoxTheme").removeAttr("href");
@@ -640,11 +635,13 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
       configValue,
       Config.funbox
     );
-    if (check.result === true) continue;
-    if (check.result === false) {
+    if (check.result) continue;
+    if (!check.result) {
       if (check.forcedConfigs && check.forcedConfigs.length > 0) {
         if (configKey === "mode") {
-          UpdateConfig.setMode(check.forcedConfigs[0] as MonkeyTypes.Mode);
+          UpdateConfig.setMode(
+            check.forcedConfigs[0] as SharedTypes.Config.Mode
+          );
         }
         if (configKey === "words") {
           UpdateConfig.setWordCount(check.forcedConfigs[0] as number);
@@ -660,7 +657,7 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
         }
         if (configKey === "highlightMode") {
           UpdateConfig.setHighlightMode(
-            check.forcedConfigs[0] as MonkeyTypes.HighlightMode
+            check.forcedConfigs[0] as SharedTypes.Config.HighlightMode
           );
         }
       } else {
@@ -715,9 +712,10 @@ FunboxList.setFunboxFunctions("crt", {
       const versionMatch = navigator.userAgent.match(
         /.*Version\/([0-9]*)\.([0-9]*).*/
       );
-      const mainVersion = versionMatch !== null ? parseInt(versionMatch[1]) : 0;
+      const mainVersion =
+        versionMatch !== null ? parseInt(versionMatch[1] ?? "0") : 0;
       const minorVersion =
-        versionMatch !== null ? parseInt(versionMatch[2]) : 0;
+        versionMatch !== null ? parseInt(versionMatch[2] ?? "0") : 0;
       if (mainVersion <= 16 && minorVersion <= 5) {
         Notifications.add(
           "CRT is not available on Safari 16.5 or earlier.",
@@ -752,7 +750,7 @@ async function setFunboxBodyClasses(): Promise<boolean> {
     $body
       ?.attr("class")
       ?.split(/\s+/)
-      ?.filter((it) => !it.startsWith("fb-")) || [];
+      ?.filter((it) => !it.startsWith("fb-")) ?? [];
 
   $body.attr("class", [...currentClasses, ...activeFbClasses].join(" "));
 
@@ -772,7 +770,7 @@ async function applyFunboxCSS(): Promise<boolean> {
       ? "funbox/" + activeFunboxWithTheme.name + ".css"
       : "";
 
-  const currentTheme = $theme.attr("href") || null;
+  const currentTheme = ($theme.attr("href") ?? "") || null;
 
   if (activeTheme != currentTheme) {
     $theme.attr("href", activeTheme);

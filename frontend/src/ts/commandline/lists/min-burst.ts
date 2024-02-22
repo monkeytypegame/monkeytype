@@ -19,7 +19,7 @@ const subgroup: MonkeyTypes.CommandsSubgroup = {
       configValue: "fixed",
       input: true,
       exec: (input): void => {
-        if (!input) return;
+        if (input === undefined || input === "") return;
         UpdateConfig.setMinBurst("fixed");
         const newVal = getTypingSpeedUnit(Config.typingSpeedUnit).toWpm(
           parseInt(input)
@@ -33,7 +33,7 @@ const subgroup: MonkeyTypes.CommandsSubgroup = {
       configValue: "flex",
       input: true,
       exec: (input): void => {
-        if (!input) return;
+        if (input === undefined || input === "") return;
         UpdateConfig.setMinBurst("flex");
         const newVal = getTypingSpeedUnit(Config.typingSpeedUnit).toWpm(
           parseInt(input)

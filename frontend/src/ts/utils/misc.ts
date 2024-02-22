@@ -2,6 +2,8 @@ import * as Loader from "../elements/loader";
 import { normal as normalBlend } from "color-blend";
 import { envConfig } from "../constants/env-config";
 
+//todo split this file into smaller util files (grouped by functionality)
+
 async function fetchJson<T>(url: string): Promise<T> {
   try {
     if (!url) throw new Error("No URL");
@@ -24,7 +26,7 @@ export const cachedFetchJson = memoizeAsync<string, typeof fetchJson>(
 export async function getLayoutsList(): Promise<MonkeyTypes.Layouts> {
   try {
     const layoutsList = await cachedFetchJson<MonkeyTypes.Layouts>(
-      "/./layouts/_list.json"
+      "/layouts/_list.json"
     );
     return layoutsList;
   } catch (e) {
@@ -50,7 +52,7 @@ let themesList: MonkeyTypes.Theme[] | undefined;
 export async function getThemesList(): Promise<MonkeyTypes.Theme[]> {
   if (!themesList) {
     let themes = await cachedFetchJson<MonkeyTypes.Theme[]>(
-      "/./themes/_list.json"
+      "/themes/_list.json"
     );
 
     themes = themes.sort(function (a: MonkeyTypes.Theme, b: MonkeyTypes.Theme) {
@@ -92,7 +94,7 @@ export async function getSortedThemesList(): Promise<MonkeyTypes.Theme[]> {
 export async function getLanguageList(): Promise<string[]> {
   try {
     const languageList = await cachedFetchJson<string[]>(
-      "/./languages/_list.json"
+      "/languages/_list.json"
     );
     return languageList;
   } catch (e) {
@@ -106,7 +108,7 @@ export async function getLanguageGroups(): Promise<
   try {
     const languageGroupList = await cachedFetchJson<
       MonkeyTypes.LanguageGroup[]
-    >("/./languages/_groups.json");
+    >("/languages/_groups.json");
     return languageGroupList;
   } catch (e) {
     throw new Error("Language groups JSON fetch failed");
@@ -120,7 +122,7 @@ export async function getLanguage(
   // try {
   if (currentLanguage === undefined || currentLanguage.name !== lang) {
     currentLanguage = await cachedFetchJson<MonkeyTypes.LanguageObject>(
-      `/./languages/${lang}.json`
+      `/languages/${lang}.json`
     );
   }
   return currentLanguage;
@@ -128,7 +130,7 @@ export async function getLanguage(
   //   console.error(`error getting language`);
   //   console.error(e);
   //   currentLanguage = await cachedFetchJson<MonkeyTypes.LanguageObject>(
-  //     `/./language/english.json`
+  //     `/language/english.json`
   //   );
   //   return currentLanguage;
   // }
@@ -159,7 +161,7 @@ let funboxList: MonkeyTypes.FunboxMetadata[] | undefined;
 export async function getFunboxList(): Promise<MonkeyTypes.FunboxMetadata[]> {
   if (!funboxList) {
     let list = await cachedFetchJson<MonkeyTypes.FunboxMetadata[]>(
-      "/./funbox/_list.json"
+      "/funbox/_list.json"
     );
     list = list.sort(function (
       a: MonkeyTypes.FunboxMetadata,
@@ -191,7 +193,7 @@ let fontsList: MonkeyTypes.FontObject[] | undefined;
 export async function getFontsList(): Promise<MonkeyTypes.FontObject[]> {
   if (!fontsList) {
     let list = await cachedFetchJson<MonkeyTypes.FontObject[]>(
-      "/./fonts/_list.json"
+      "/fonts/_list.json"
     );
     list = list.sort(function (
       a: MonkeyTypes.FontObject,
@@ -213,7 +215,7 @@ export async function getFontsList(): Promise<MonkeyTypes.FontObject[]> {
 export async function getChallengeList(): Promise<MonkeyTypes.Challenge[]> {
   try {
     const data = await cachedFetchJson<MonkeyTypes.Challenge[]>(
-      "/./challenges/_list.json"
+      "/challenges/_list.json"
     );
     return data;
   } catch (e) {
@@ -223,7 +225,7 @@ export async function getChallengeList(): Promise<MonkeyTypes.Challenge[]> {
 
 export async function getSupportersList(): Promise<string[]> {
   try {
-    const data = await cachedFetchJson<string[]>("/./about/supporters.json");
+    const data = await cachedFetchJson<string[]>("/about/supporters.json");
     return data;
   } catch (e) {
     throw new Error("Supporters list JSON fetch failed");
@@ -232,7 +234,7 @@ export async function getSupportersList(): Promise<string[]> {
 
 export async function getContributorsList(): Promise<string[]> {
   try {
-    const data = await cachedFetchJson<string[]>("/./about/contributors.json");
+    const data = await cachedFetchJson<string[]>("/about/contributors.json");
     return data;
   } catch (e) {
     throw new Error("Contributors list JSON fetch failed");
@@ -381,7 +383,7 @@ export function smooth(
     let count = 0;
     let sum = 0;
     for (let j = from; j < to && j < arr.length; j += 1) {
-      sum += get(arr[j]);
+      sum += get(arr[j] as number);
       count += 1;
     }
 
@@ -418,7 +420,9 @@ export function median(arr: number[]): number {
   try {
     const mid = Math.floor(arr.length / 2),
       nums = [...arr].sort((a, b) => a - b);
-    return arr.length % 2 !== 0 ? nums[mid] : (nums[mid - 1] + nums[mid]) / 2;
+    return arr.length % 2 !== 0
+      ? (nums[mid] as number)
+      : ((nums[mid - 1] as number) + (nums[mid] as number)) / 2;
   } catch (e) {
     return 0;
   }
@@ -492,7 +496,9 @@ export function roundTo2(num: number): number {
   return Math.round((num + Number.EPSILON) * 100) / 100;
 }
 
-export function findLineByLeastSquares(values_y: number[]): number[][] {
+export function findLineByLeastSquares(
+  values_y: number[]
+): [[number, number], [number, number]] | null {
   let sum_x = 0;
   let sum_y = 0;
   let sum_xy = 0;
@@ -510,7 +516,7 @@ export function findLineByLeastSquares(values_y: number[]): number[][] {
    * Nothing to do.
    */
   if (values_length === 0) {
-    return [[], []];
+    return null;
   }
 
   /*
@@ -518,7 +524,7 @@ export function findLineByLeastSquares(values_y: number[]): number[][] {
    */
   for (let v = 0; v < values_length; v++) {
     x = v + 1;
-    y = values_y[v];
+    y = values_y[v] as number;
     sum_x += x;
     sum_y += y;
     sum_xx += x * x;
@@ -533,8 +539,11 @@ export function findLineByLeastSquares(values_y: number[]): number[][] {
   const m = (count * sum_xy - sum_x * sum_y) / (count * sum_xx - sum_x * sum_x);
   const b = sum_y / count - (m * sum_x) / count;
 
-  const returnpoint1 = [1, 1 * m + b];
-  const returnpoint2 = [values_length, values_length * m + b];
+  const returnpoint1 = [1, 1 * m + b] as [number, number];
+  const returnpoint2 = [values_length, values_length * m + b] as [
+    number,
+    number
+  ];
   return [returnpoint1, returnpoint2];
 }
 
@@ -661,8 +670,8 @@ export function getNumbers(len: number): string {
 export function convertNumberToArabic(numString: string): string {
   const arabicIndic = "٠١٢٣٤٥٦٧٨٩";
   let ret = "";
-  for (let i = 0; i < numString.length; i++) {
-    ret += arabicIndic[parseInt(numString[i])];
+  for (const char of numString) {
+    ret += arabicIndic[parseInt(char)];
   }
   return ret;
 }
@@ -670,8 +679,8 @@ export function convertNumberToArabic(numString: string): string {
 export function convertNumberToNepali(numString: string): string {
   const nepaliIndic = "०१२३४५६७८९";
   let ret = "";
-  for (let i = 0; i < numString.length; i++) {
-    ret += nepaliIndic[parseInt(numString[i])];
+  for (const char of numString) {
+    ret += nepaliIndic[parseInt(char)];
   }
   return ret;
 }
@@ -680,6 +689,8 @@ export function getSpecials(): string {
   const randLen = randomIntFromRange(1, 7);
   let ret = "";
   const specials = [
+    "`",
+    "~",
     "!",
     "@",
     "#",
@@ -811,7 +822,7 @@ export function findGetParameter(
   let tmp = [];
 
   let search = location.search;
-  if (getOverride) {
+  if (getOverride !== undefined && getOverride !== "") {
     search = getOverride;
   }
 
@@ -820,7 +831,8 @@ export function findGetParameter(
     .split("&")
     .forEach(function (item) {
       tmp = item.split("=");
-      if (tmp[0] === parameterName) result = decodeURIComponent(tmp[1]);
+      if (tmp[0] === parameterName)
+        result = decodeURIComponent(tmp[1] as string);
     });
   return result;
 }
@@ -833,7 +845,7 @@ export function checkIfGetParameterExists(
   let tmp = [];
 
   let search = location.search;
-  if (getOverride) {
+  if (getOverride !== undefined && getOverride !== "") {
     search = getOverride;
   }
 
@@ -863,6 +875,8 @@ export function objectToQueryString<T extends string | number | boolean>(
 }
 
 declare global {
+  // type gets a "Duplicate identifier" error
+  // eslint-disable-next-line @typescript-eslint/consistent-type-definitions
   interface Document {
     mozCancelFullScreen?: () => Promise<void>;
     msRequestFullscreen?: () => Promise<void>;
@@ -872,6 +886,7 @@ declare global {
     msFullscreenElement?: Element;
     webkitFullscreenElement?: Element;
   }
+  // eslint-disable-next-line @typescript-eslint/consistent-type-definitions
   interface HTMLElement {
     msRequestFullscreen?: () => Promise<void>;
     mozRequestFullScreen?: () => Promise<void>;
@@ -887,25 +902,25 @@ export function toggleFullscreen(): void {
     !document.webkitFullscreenElement &&
     !document.msFullscreenElement
   ) {
-    if (elem.requestFullscreen) {
-      elem.requestFullscreen();
+    if (elem.requestFullscreen !== undefined) {
+      void elem.requestFullscreen();
     } else if (elem.msRequestFullscreen) {
-      elem.msRequestFullscreen();
+      void elem.msRequestFullscreen();
     } else if (elem.mozRequestFullScreen) {
-      elem.mozRequestFullScreen();
+      void elem.mozRequestFullScreen();
     } else if (elem.webkitRequestFullscreen) {
-      // @ts-ignore
-      elem.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
+      // @ts-expect-error
+      void elem.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
     }
   } else {
-    if (document.exitFullscreen) {
-      document.exitFullscreen();
+    if (document.exitFullscreen !== undefined) {
+      void document.exitFullscreen();
     } else if (document.msExitFullscreen) {
-      document.msExitFullscreen();
+      void document.msExitFullscreen();
     } else if (document.mozCancelFullScreen) {
-      document.mozCancelFullScreen();
+      void document.mozCancelFullScreen();
     } else if (document.webkitExitFullscreen) {
-      document.webkitExitFullscreen();
+      void document.webkitExitFullscreen();
     }
   }
 }
@@ -969,8 +984,8 @@ export function cleanTypographySymbols(textToClean: string): string {
 
 export function isUsernameValid(name: string): boolean {
   if (name === null || name === undefined || name === "") return false;
-  if (/miodec/.test(name.toLowerCase())) return false;
-  if (/bitly/.test(name.toLowerCase())) return false;
+  if (name.toLowerCase().includes("miodec")) return false;
+  if (name.toLowerCase().includes("bitly")) return false;
   if (name.length > 14) return false;
   if (/^\..*/.test(name.toLowerCase())) return false;
   return /^[0-9a-zA-Z_.-]+$/.test(name);
@@ -1005,12 +1020,12 @@ export function canQuickRestart(
   mode: string,
   words: number,
   time: number,
-  CustomText: MonkeyTypes.CustomText,
+  CustomText: SharedTypes.CustomText,
   customTextIsLong: boolean
 ): boolean {
   const wordsLong = mode === "words" && (words >= 1000 || words === 0);
   const timeLong = mode === "time" && (time >= 900 || time === 0);
-  const customTextLong = mode === "custom" && customTextIsLong === true;
+  const customTextLong = mode === "custom" && customTextIsLong;
   const customTextRandomWordsLong =
     mode === "custom" && CustomText.isWordRandom && CustomText.word >= 1000;
   const customTextRandomTimeLong =
@@ -1070,18 +1085,23 @@ export function convertRGBtoHEX(rgb: string): string | undefined {
 
     return ("0" + parseInt(i).toString(16)).slice(-2);
   }
-  return "#" + hexCode(match[1]) + hexCode(match[2]) + hexCode(match[3]);
+  return (
+    "#" +
+    hexCode(match[1] as string) +
+    hexCode(match[2] as string) +
+    hexCode(match[3] as string)
+  );
 }
 
-interface LastIndex extends String {
+type LastIndex = {
   lastIndexOfRegex(regex: RegExp): number;
-}
+} & string;
 
 (String.prototype as LastIndex).lastIndexOfRegex = function (
   regex: RegExp
 ): number {
   const match = this.match(regex);
-  return match ? this.lastIndexOf(match[match.length - 1]) : -1;
+  return match ? this.lastIndexOf(match[match.length - 1] as string) : -1;
 };
 
 export const trailingComposeChars = /[\u02B0-\u02FF`´^¨~]+$|⎄.*$/;
@@ -1131,8 +1151,8 @@ export async function swapElements(
                 opacity: 1,
               },
               totalDuration / 2,
-              () => {
-                callback();
+              async () => {
+                await callback();
               }
             );
         }
@@ -1160,10 +1180,10 @@ export async function swapElements(
   return;
 }
 
-export function getMode2<M extends keyof MonkeyTypes.PersonalBests>(
-  config: MonkeyTypes.Config,
-  randomQuote: MonkeyTypes.Quote
-): MonkeyTypes.Mode2<M> {
+export function getMode2<M extends keyof SharedTypes.PersonalBests>(
+  config: SharedTypes.Config,
+  randomQuote: MonkeyTypes.Quote | null
+): SharedTypes.Config.Mode2<M> {
   const mode = config.mode;
   let retVal: string;
 
@@ -1176,16 +1196,16 @@ export function getMode2<M extends keyof MonkeyTypes.PersonalBests>(
   } else if (mode === "zen") {
     retVal = "zen";
   } else if (mode === "quote") {
-    retVal = randomQuote.id.toString();
+    retVal = `${randomQuote?.id ?? -1}`;
   } else {
     throw new Error("Invalid mode");
   }
 
-  return retVal as MonkeyTypes.Mode2<M>;
+  return retVal as SharedTypes.Config.Mode2<M>;
 }
 
 export async function downloadResultsCSV(
-  array: MonkeyTypes.Result<MonkeyTypes.Mode>[]
+  array: SharedTypes.Result<SharedTypes.Config.Mode>[]
 ): Promise<void> {
   Loader.show();
   const csvString = [
@@ -1215,7 +1235,7 @@ export async function downloadResultsCSV(
       "tags",
       "timestamp",
     ],
-    ...array.map((item: MonkeyTypes.Result<MonkeyTypes.Mode>) => [
+    ...array.map((item: SharedTypes.Result<SharedTypes.Config.Mode>) => [
       item._id,
       item.isPb,
       item.wpm,
@@ -1280,13 +1300,13 @@ export function shuffle<T>(elements: T[]): void {
   for (let i = elements.length - 1; i > 0; --i) {
     const j = randomIntFromRange(0, i);
     const temp = elements[j];
-    elements[j] = elements[i];
-    elements[i] = temp;
+    elements[j] = elements[i] as T;
+    elements[i] = temp as T;
   }
 }
 
 export function randomElementFromArray<T>(array: T[]): T {
-  return array[randomIntFromRange(0, array.length - 1)];
+  return array[randomIntFromRange(0, array.length - 1)] as T;
 }
 
 export function nthElementFromArray<T>(
@@ -1310,7 +1330,7 @@ export function createErrorMessage(error: unknown, message: string): string {
 
   const objectWithMessage = error as { message?: string };
 
-  if (objectWithMessage?.message) {
+  if (objectWithMessage?.message !== undefined) {
     return `${message}: ${objectWithMessage.message}`;
   }
 
@@ -1347,10 +1367,14 @@ export async function getDiscordAvatarUrl(
   discordAvatar?: string,
   discordAvatarSize = 32
 ): Promise<string | null> {
-  if (!discordId || !discordAvatar) {
+  if (
+    discordId === undefined ||
+    discordId === "" ||
+    discordAvatar === undefined ||
+    discordAvatar === ""
+  ) {
     return null;
   }
-
   // An invalid request to this URL will return a 404.
   try {
     const avatarUrl = `https://cdn.discordapp.com/avatars/${discordId}/${discordAvatar}.png?size=${discordAvatarSize}`;
@@ -1377,7 +1401,7 @@ export function getXpForLevel(level: number): number {
 }
 
 export async function promiseAnimation(
-  el: JQuery<HTMLElement>,
+  el: JQuery,
   animation: Record<string, string>,
   duration: number,
   easing: string
@@ -1409,7 +1433,7 @@ export function memoizeAsync<P, T extends <B>(...args: P[]) => Promise<B>>(
   const cache = new Map<P, Promise<ReturnType<T>>>();
 
   return (async (...args: Parameters<T>): Promise<ReturnType<T>> => {
-    const key = getKey ? getKey.apply(args) : args[0];
+    const key = getKey ? getKey.apply(args) : (args[0] as P);
 
     if (cache.has(key)) {
       const ret = await cache.get(key);
@@ -1458,7 +1482,7 @@ export function intersect<T>(a: T[], b: T[], removeDuplicates = false): T[] {
   let t;
   if (b.length > a.length) (t = b), (b = a), (a = t); // indexOf to loop over shorter
   const filtered = a.filter(function (e) {
-    return b.indexOf(e) > -1;
+    return b.includes(e);
   });
   return removeDuplicates ? [...new Set(filtered)] : filtered;
 }
@@ -1466,7 +1490,7 @@ export function intersect<T>(a: T[], b: T[], removeDuplicates = false): T[] {
 export function htmlToText(html: string): string {
   const el = document.createElement("div");
   el.innerHTML = html;
-  return el.textContent || el.innerText || "";
+  return (el.textContent as string) || el.innerText || "";
 }
 
 export function camelCaseToWords(str: string): string {
@@ -1481,10 +1505,17 @@ export function loadCSS(href: string, prepend = false): void {
   link.type = "text/css";
   link.rel = "stylesheet";
   link.href = href;
+
+  const head = document.getElementsByTagName("head")[0];
+
+  if (head === undefined) {
+    throw new Error("Could not load CSS - head is undefined");
+  }
+
   if (prepend) {
-    document.getElementsByTagName("head")[0].prepend(link);
+    head.prepend(link);
   } else {
-    document.getElementsByTagName("head")[0].appendChild(link);
+    head.appendChild(link);
   }
 }
 
@@ -1592,7 +1623,7 @@ export function getBoundingRectOfElements(elements: HTMLElement[]): DOMRect {
   };
 }
 export function convertToMorse(word: string): string {
-  const morseCode: { [id: string]: string } = {
+  const morseCode: Record<string, string> = {
     a: ".-",
     b: "-...",
     c: "-.-.",
@@ -1652,10 +1683,9 @@ export function convertToMorse(word: string): string {
   let morseWord = "";
 
   const deAccentedWord = replaceSpecialChars(word);
-  console.log(deAccentedWord);
   for (let i = 0; i < deAccentedWord.length; i++) {
-    const letter = morseCode[deAccentedWord.toLowerCase()[i]];
-    morseWord += letter ? letter + "/" : "";
+    const letter = morseCode[deAccentedWord.toLowerCase()[i] as string];
+    morseWord += letter !== undefined ? letter + "/" : "";
   }
   return morseWord;
 }
@@ -1680,7 +1710,7 @@ export function reloadAfter(seconds: number): void {
 export function updateTitle(title?: string): void {
   const local = isDevEnvironment() ? "localhost - " : "";
 
-  if (!title) {
+  if (title === undefined || title === "") {
     document.title =
       local + "Monkeytype | A minimalistic, customizable typing test";
   } else {
@@ -1701,6 +1731,11 @@ export function getNumberWithMagnitude(num: number): {
     "trillion",
     "quadrillion",
     "quintillion",
+    "sextillion",
+    "septillion",
+    "octillion",
+    "nonillion",
+    "decillion",
   ];
   let unitIndex = 0;
   let roundedNum = num;
@@ -1710,7 +1745,7 @@ export function getNumberWithMagnitude(num: number): {
     unitIndex++;
   }
 
-  const unit = units[unitIndex];
+  const unit = units[unitIndex] ?? "unknown";
 
   return {
     rounded: Math.round(roundedNum),
@@ -1721,6 +1756,27 @@ export function getNumberWithMagnitude(num: number): {
 
 export function numberWithSpaces(x: number): string {
   return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+}
+
+export function lastElementFromArray<T>(array: T[]): T | undefined {
+  return array[array.length - 1];
+}
+
+export function getLanguageDisplayString(
+  language: string,
+  noSizeString = false
+): string {
+  let out = "";
+  if (noSizeString) {
+    out = removeLanguageSize(language);
+  } else {
+    out = language;
+  }
+  return out.replace(/_/g, " ");
+}
+
+export function removeLanguageSize(language: string): string {
+  return language.replace(/_\d*k$/g, "");
 }
 
 // DO NOT ALTER GLOBAL OBJECTSONSTRUCTOR, IT WILL BREAK RESULT HASHES

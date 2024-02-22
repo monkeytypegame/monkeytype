@@ -9,15 +9,13 @@ import * as ActivePage from "../states/active-page";
 import formatDistanceToNowStrict from "date-fns/formatDistanceToNowStrict";
 
 type ProfileViewPaths = "profile" | "account";
+type UserProfileOrSnapshot = SharedTypes.UserProfile | MonkeyTypes.Snapshot;
 
-export interface ProfileData extends MonkeyTypes.Snapshot {
-  allTimeLbs: MonkeyTypes.LeaderboardMemory;
-  uid: string;
-}
+//this is probably the dirtiest code ive ever written
 
 export async function update(
   where: ProfileViewPaths,
-  profile: Partial<ProfileData>
+  profile: UserProfileOrSnapshot
 ): Promise<void> {
   const elementClass = where.charAt(0).toUpperCase() + where.slice(1);
   const profileElement = $(`.page${elementClass} .profile`);
@@ -25,6 +23,7 @@ export async function update(
 
   profileElement.attr("uid", profile.uid ?? "");
   profileElement.attr("name", profile.name ?? "");
+  profileElement.attr("lbOptOut", `${profile.lbOptOut ?? false}`);
 
   // ============================================================================
   // DO FREAKING NOT USE .HTML OR .APPEND HERE - USER INPUT!!!!!!
@@ -34,16 +33,26 @@ export async function update(
 
   const lbOptOut = profile.lbOptOut === true;
 
-  if (!details || !profile || !profile.name || !profile.addedAt) return;
+  if (
+    details === undefined ||
+    profile === undefined ||
+    profile.name === undefined ||
+    profile.addedAt === undefined
+  )
+    return;
 
   details.find(".placeholderAvatar").removeClass("hidden");
-  if (profile.discordAvatar && profile.discordId && !banned) {
-    Misc.getDiscordAvatarUrl(
+  if (
+    profile.discordAvatar !== undefined &&
+    profile.discordId !== undefined &&
+    !banned
+  ) {
+    void Misc.getDiscordAvatarUrl(
       profile.discordId,
       profile.discordAvatar,
       256
     ).then((avatarUrl) => {
-      if (avatarUrl) {
+      if (avatarUrl !== null) {
         details.find(".placeholderAvatar").addClass("hidden");
         details.find(".avatar").css("background-image", `url(${avatarUrl})`);
       }
@@ -129,10 +138,11 @@ export async function update(
     const results = DB.getSnapshot()?.results;
     const lastResult = results?.[0];
 
+    const streakOffset = (profile as MonkeyTypes.Snapshot).streakHourOffset;
+
     const dayInMilis = 1000 * 60 * 60 * 24;
 
-    let target =
-      Misc.getCurrentDayTimestamp(profile.streakHourOffset) + dayInMilis;
+    let target = Misc.getCurrentDayTimestamp(streakOffset) + dayInMilis;
     if (target < Date.now()) {
       target += dayInMilis;
     }
@@ -143,9 +153,7 @@ export async function update(
     console.debug("dayInMilis", dayInMilis);
     console.debug(
       "difTarget",
-      new Date(
-        Misc.getCurrentDayTimestamp(profile.streakHourOffset) + dayInMilis
-      )
+      new Date(Misc.getCurrentDayTimestamp(streakOffset) + dayInMilis)
     );
     console.debug("timeDif", timeDif);
     console.debug(
@@ -153,18 +161,12 @@ export async function update(
       Misc.getCurrentDayTimestamp(),
       new Date(Misc.getCurrentDayTimestamp())
     );
-    console.debug("profile.streakHourOffset", profile.streakHourOffset);
+    console.debug("profile.streakHourOffset", streakOffset);
 
     if (lastResult) {
       //check if the last result is from today
-      const isToday = Misc.isToday(
-        lastResult.timestamp,
-        profile.streakHourOffset
-      );
-      const isYesterday = Misc.isYesterday(
-        lastResult.timestamp,
-        profile.streakHourOffset
-      );
+      const isToday = Misc.isToday(lastResult.timestamp, streakOffset);
+      const isYesterday = Misc.isYesterday(lastResult.timestamp, streakOffset);
 
       console.debug(
         "lastResult.timestamp",
@@ -174,10 +176,8 @@ export async function update(
       console.debug("isToday", isToday);
       console.debug("isYesterday", isYesterday);
 
-      const offsetString = profile.streakHourOffset
-        ? `(${profile.streakHourOffset > 0 ? "+" : ""}${
-            profile.streakHourOffset
-          } offset)`
+      const offsetString = streakOffset
+        ? `(${streakOffset > 0 ? "+" : ""}${streakOffset} offset)`
         : "";
 
       if (isToday) {
@@ -190,7 +190,7 @@ export async function update(
 
       console.debug(hoverText);
 
-      if (profile.streakHourOffset === undefined) {
+      if (streakOffset === undefined) {
         hoverText += `\n\nIf the streak reset time doesn't line up with your timezone, you can change it in Settings > Danger zone > Update streak hour offset.`;
       }
     }
@@ -223,22 +223,22 @@ export async function update(
   let socials = false;
 
   if (!banned) {
-    bio = profile.details?.bio ? true : false;
+    bio = profile.details?.bio ?? "" ? true : false;
     details.find(".bio .value").text(profile.details?.bio ?? "");
 
-    keyboard = profile.details?.keyboard ? true : false;
+    keyboard = profile.details?.keyboard ?? "" ? true : false;
     details.find(".keyboard .value").text(profile.details?.keyboard ?? "");
 
     if (
-      profile.details?.socialProfiles.github ||
-      profile.details?.socialProfiles.twitter ||
-      profile.details?.socialProfiles.website
+      profile.details?.socialProfiles.github !== undefined ||
+      profile.details?.socialProfiles.twitter !== undefined ||
+      profile.details?.socialProfiles.website !== undefined
     ) {
       socials = true;
       const socialsEl = details.find(".socials .value");
       socialsEl.empty();
 
-      const git = profile.details?.socialProfiles.github;
+      const git = profile.details?.socialProfiles.github ?? "";
       if (git) {
         socialsEl.append(
           `<a href='https://github.com/${Misc.escapeHTML(
@@ -249,7 +249,7 @@ export async function update(
         );
       }
 
-      const twitter = profile.details?.socialProfiles.twitter;
+      const twitter = profile.details?.socialProfiles.twitter ?? "";
       if (twitter) {
         socialsEl.append(
           `<a href='https://twitter.com/${Misc.escapeHTML(
@@ -260,7 +260,7 @@ export async function update(
         );
       }
 
-      const website = profile.details?.socialProfiles.website;
+      const website = profile.details?.socialProfiles.website ?? "";
 
       //regular expression to get website name from url
       const regex = /^https?:\/\/(?:www\.)?([^/]+)/;
@@ -311,7 +311,10 @@ export async function update(
   } else {
     profileElement.find(".leaderboardsPositions").removeClass("hidden");
 
-    const lbPos = where === "profile" ? profile.allTimeLbs : profile.lbMemory;
+    const lbPos =
+      where === "profile"
+        ? (profile as SharedTypes.UserProfile).allTimeLbs
+        : (profile as MonkeyTypes.Snapshot).lbMemory;
 
     const t15 = lbPos?.time?.["15"]?.["english"];
     const t60 = lbPos?.time?.["60"]?.["english"];
@@ -394,6 +397,8 @@ export function updateNameFontSize(where: ProfileViewPaths): void {
   const nameField = nameFieldjQ[0];
   const upperLimit = Misc.convertRemToPixels(2);
 
+  if (!nameField || !nameFieldParent) return;
+
   nameField.style.fontSize = `10px`;
   const parentWidth = nameFieldParent.clientWidth;
   const widthAt10 = nameField.clientWidth;
@@ -407,7 +412,7 @@ $(".details .editProfileButton").on("click", () => {
   const snapshot = DB.getSnapshot();
   if (!snapshot) return;
   EditProfilePopup.show(() => {
-    update("account", snapshot);
+    void update("account", snapshot);
   });
 });
 

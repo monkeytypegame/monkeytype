@@ -10,7 +10,7 @@ const subgroup: MonkeyTypes.CommandsSubgroup = {
       alias: "disabled incognito",
       exec: (): void => {
         TestState.setSaving(false);
-        ModesNotice.update();
+        void ModesNotice.update();
       },
     },
     {
@@ -19,7 +19,7 @@ const subgroup: MonkeyTypes.CommandsSubgroup = {
       alias: "enabled incognito",
       exec: (): void => {
         TestState.setSaving(true);
-        ModesNotice.update();
+        void ModesNotice.update();
       },
     },
   ],

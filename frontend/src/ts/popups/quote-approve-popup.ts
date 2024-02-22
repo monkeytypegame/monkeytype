@@ -7,15 +7,7 @@ import { isPopupVisible } from "../utils/misc";
 
 const wrapperId = "quoteApprovePopupWrapper";
 
-interface Quote {
-  _id: string;
-  text: string;
-  source: string;
-  language: string;
-  timestamp: number;
-}
-
-let quotes: Quote[] = [];
+let quotes: Ape.Quotes.Quote[] = [];
 
 function updateList(): void {
   $("#quoteApprovePopupWrapper .quotes").empty();
@@ -74,7 +66,7 @@ async function getQuotes(): Promise<void> {
     );
   }
 
-  quotes = response.data;
+  quotes = response.data ?? [];
   updateList();
 }
 
@@ -83,7 +75,7 @@ export async function show(noAnim = false): Promise<void> {
 
   if (!isPopupVisible(wrapperId)) {
     quotes = [];
-    getQuotes();
+    await getQuotes();
     $("#quoteApprovePopupWrapper")
       .stop(true, true)
       .css("opacity", 0)
@@ -126,13 +118,17 @@ $("#quoteApprovePopupWrapper").on("mousedown", (e) => {
 
 $("#quoteApprovePopupWrapper .button.refreshList").on("click", () => {
   $("#quoteApprovePopupWrapper .quotes").empty();
-  getQuotes();
+  void getQuotes();
 });
 
 $("#popups").on("click", "#quoteApprovePopup .quote .undo", async (e) => {
   const index = parseInt($(e.target).closest(".quote").attr("id") as string);
-  $(`#quoteApprovePopup .quote[id=${index}] .text`).val(quotes[index].text);
-  $(`#quoteApprovePopup .quote[id=${index}] .source`).val(quotes[index].source);
+  $(`#quoteApprovePopup .quote[id=${index}] .text`).val(
+    quotes[index]?.text ?? ""
+  );
+  $(`#quoteApprovePopup .quote[id=${index}] .source`).val(
+    quotes[index]?.source ?? ""
+  );
   $(`#quoteApprovePopup .quote[id=${index}] .undo`).addClass("disabled");
   $(`#quoteApprovePopup .quote[id=${index}] .approve`).removeClass("hidden");
   $(`#quoteApprovePopup .quote[id=${index}] .edit`).addClass("hidden");
@@ -160,7 +156,7 @@ $("#popups").on("click", "#quoteApprovePopup .quote .approve", async (e) => {
     );
   }
 
-  Notifications.add("Quote approved. " + response.message ?? "", 1);
+  Notifications.add(`Quote approved. ${response.message ?? ""}`, 1);
   quotes.splice(index, 1);
   updateList();
 });
@@ -219,7 +215,7 @@ $("#popups").on("click", "#quoteApprovePopup .quote .edit", async (e) => {
     );
   }
 
-  Notifications.add("Quote edited and approved. " + response.message ?? "", 1);
+  Notifications.add(`Quote edited and approved. ${response.message ?? ""}`, 1);
   quotes.splice(index, 1);
   updateList();
 });

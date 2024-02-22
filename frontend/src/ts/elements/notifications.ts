@@ -41,7 +41,7 @@ class Notification {
     this.type = type;
     this.message = allowHTML ? message : Misc.escapeHTML(message);
     this.level = level;
-    this.important = important || false;
+    this.important = important ?? false;
     if (type === "banner") {
       this.duration = duration as number;
     } else {
@@ -311,7 +311,7 @@ $(window).on("resize", () => {
 
 $("#notificationCenter .clearAll").on("click", () => {
   $("#notificationCenter .notif.bad").each((_, element) => {
-    $(element)[0].click();
+    $(element)[0]?.click();
   });
   visibleStickyNotifications = 0;
   updateClearAllButton();

@@ -23,6 +23,7 @@ import * as ActivePage from "../states/active-page";
 import { Auth } from "../firebase";
 import * as Loader from "../elements/loader";
 import * as ResultBatches from "../elements/result-batches";
+import Format from "../utils/format";
 
 let filterDebug = false;
 //toggle filterdebug
@@ -33,12 +34,11 @@ export function toggleFilterDebug(): void {
   }
 }
 
-let filteredResults: MonkeyTypes.Result<MonkeyTypes.Mode>[] = [];
+let filteredResults: SharedTypes.Result<SharedTypes.Config.Mode>[] = [];
 let visibleTableLines = 0;
 
 function loadMoreLines(lineIndex?: number): void {
-  const typingSpeedUnit = getTypingSpeedUnit(Config.typingSpeedUnit);
-  if (!filteredResults || filteredResults.length === 0) return;
+  if (filteredResults === undefined || filteredResults.length === 0) return;
   let newVisibleLines;
   if (lineIndex && lineIndex > visibleTableLines) {
     newVisibleLines = Math.ceil(lineIndex / 10) * 10;
@@ -51,16 +51,6 @@ function loadMoreLines(lineIndex?: number): void {
     let diff = result.difficulty;
     if (diff === undefined) {
       diff = "normal";
-    }
-
-    let raw;
-    try {
-      raw = typingSpeedUnit.fromWpm(result.rawWpm).toFixed(2);
-      if (raw === undefined) {
-        raw = "-";
-      }
-    } catch (e) {
-      raw = "-";
     }
 
     let icons = `<span aria-label="${result.language?.replace(
@@ -139,34 +129,25 @@ function loadMoreLines(lineIndex?: number): void {
       }
     }
 
-    let consistency = "-";
-
-    if (result.consistency) {
-      consistency = result.consistency.toFixed(2) + "%";
-    }
-
-    let pb = result.isPb?.toString();
-    if (pb) {
+    let pb = "";
+    if (result.isPb) {
       pb = '<i class="fas fa-fw fa-crown"></i>';
     } else {
       pb = "";
     }
 
-    let charStats = "-";
-    if (result.charStats) {
-      charStats = result.charStats.join("/");
-    } else {
-      charStats = result.correctChars + "/" + result.incorrectChars + "/-/-";
-    }
+    const charStats = result.charStats.join("/");
 
     const date = new Date(result.timestamp);
     $(".pageAccount .history table tbody").append(`
     <tr class="resultRow" id="result-${i}">
     <td>${pb}</td>
-    <td>${typingSpeedUnit.fromWpm(result.wpm).toFixed(2)}</td>
-    <td>${raw}</td>
-    <td>${result.acc.toFixed(2)}%</td>
-    <td>${consistency}</td>
+    <td>${Format.typingSpeed(result.wpm, { showDecimalPlaces: true })}</td>
+    <td>${Format.typingSpeed(result.rawWpm, { showDecimalPlaces: true })}</td>
+    <td>${Format.percentage(result.acc, { showDecimalPlaces: true })}</td>
+    <td>${Format.percentage(result.consistency, {
+      showDecimalPlaces: true,
+    })}</td>
     <td>${charStats}</td>
     <td>${result.mode} ${result.mode2}</td>
     <td class="infoIcons">${icons}</td>
@@ -185,26 +166,27 @@ function loadMoreLines(lineIndex?: number): void {
 }
 
 async function updateChartColors(): Promise<void> {
-  ChartController.accountHistory.updateColors();
+  await ChartController.accountHistory.updateColors();
   await Misc.sleep(0);
-  ChartController.accountActivity.updateColors();
+  await ChartController.accountActivity.updateColors();
   await Misc.sleep(0);
-  ChartController.accountHistogram.updateColors();
+  await ChartController.accountHistogram.updateColors();
   await Misc.sleep(0);
 }
 
 function reset(): void {
   $(".pageAccount .history table tbody").empty();
-  ChartController.accountHistogram.data.datasets[0].data = [];
-  ChartController.accountActivity.data.datasets[0].data = [];
-  ChartController.accountActivity.data.datasets[1].data = [];
-  ChartController.accountHistory.data.datasets[0].data = [];
-  ChartController.accountHistory.data.datasets[1].data = [];
-  ChartController.accountHistory.data.datasets[2].data = [];
-  ChartController.accountHistory.data.datasets[3].data = [];
-  ChartController.accountHistory.data.datasets[4].data = [];
-  ChartController.accountHistory.data.datasets[5].data = [];
-  ChartController.accountHistory.data.datasets[6].data = [];
+
+  ChartController.accountHistogram.getDataset("count").data = [];
+  ChartController.accountActivity.getDataset("count").data = [];
+  ChartController.accountActivity.getDataset("avgWpm").data = [];
+  ChartController.accountHistory.getDataset("wpm").data = [];
+  ChartController.accountHistory.getDataset("pb").data = [];
+  ChartController.accountHistory.getDataset("acc").data = [];
+  ChartController.accountHistory.getDataset("wpmAvgTen").data = [];
+  ChartController.accountHistory.getDataset("accAvgTen").data = [];
+  ChartController.accountHistory.getDataset("wpmAvgHundred").data = [];
+  ChartController.accountHistory.getDataset("accAvgHundred").data = [];
 }
 
 let totalSecondsFiltered = 0;
@@ -222,9 +204,9 @@ async function fillContent(): Promise<void> {
   if (!snapshot) return;
 
   PbTables.update(snapshot.personalBests);
-  Profile.update("account", snapshot);
+  void Profile.update("account", snapshot);
 
-  ResultBatches.update();
+  void ResultBatches.update();
 
   chartData = [];
   accChartData = [];
@@ -262,13 +244,14 @@ async function fillContent(): Promise<void> {
   let totalCons10 = 0;
   let consCount = 0;
 
-  interface ActivityChartData {
-    [key: number]: {
+  type ActivityChartData = Record<
+    number,
+    {
       amount: number;
       time: number;
       totalWpm: number;
-    };
-  }
+    }
+  >;
 
   const activityChartData: ActivityChartData = {};
   const histogramChartData: number[] = [];
@@ -278,14 +261,12 @@ async function fillContent(): Promise<void> {
   $(".pageAccount .history table tbody").empty();
 
   DB.getSnapshot()?.results?.forEach(
-    (result: MonkeyTypes.Result<MonkeyTypes.Mode>) => {
+    (result: SharedTypes.Result<SharedTypes.Config.Mode>) => {
       // totalSeconds += tt;
 
       //apply filters
       try {
-        if (
-          !ResultFilters.getFilter("pb", result.isPb === true ? "yes" : "no")
-        ) {
+        if (!ResultFilters.getFilter("pb", result.isPb ? "yes" : "no")) {
           if (filterDebug) {
             console.log(`skipping result due to pb filter`, result);
           }
@@ -310,7 +291,8 @@ async function fillContent(): Promise<void> {
         }
 
         if (result.mode === "time") {
-          let timefilter: MonkeyTypes.Mode2<"time"> | "custom" = "custom";
+          let timefilter: SharedTypes.Config.Mode2<"time"> | "custom" =
+            "custom";
           if (
             ["15", "30", "60", "120"].includes(
               `${result.mode2}` //legacy results could have a number in mode2
@@ -330,7 +312,7 @@ async function fillContent(): Promise<void> {
             return;
           }
         } else if (result.mode === "words") {
-          let wordfilter: MonkeyTypes.Mode2Custom<"words"> = "custom";
+          let wordfilter: SharedTypes.Config.Mode2Custom<"words"> = "custom";
           if (
             ["10", "25", "50", "100", "200"].includes(
               `${result.mode2}` //legacy results could have a number in mode2
@@ -506,7 +488,8 @@ async function fillContent(): Promise<void> {
         console.error(e);
         ResultFilters.reset();
         ResultFilters.updateActive();
-        update();
+        void update();
+        return;
       }
       //filters done
       //=======================================
@@ -522,13 +505,15 @@ async function fillContent(): Promise<void> {
       resultDate.setMilliseconds(0);
       const resultTimestamp = resultDate.getTime();
 
-      if (Object.keys(activityChartData).includes(String(resultTimestamp))) {
-        activityChartData[resultTimestamp].amount++;
-        activityChartData[resultTimestamp].time +=
+      const dataForTimestamp = activityChartData[resultTimestamp];
+
+      if (dataForTimestamp !== undefined) {
+        dataForTimestamp.amount++;
+        dataForTimestamp.time +=
           result.testDuration +
           result.incompleteTestSeconds -
           (result.afkDuration ?? 0);
-        activityChartData[resultTimestamp].totalWpm += result.wpm;
+        dataForTimestamp.totalWpm += result.wpm;
       } else {
         activityChartData[resultTimestamp] = {
           amount: 1,
@@ -542,7 +527,7 @@ async function fillContent(): Promise<void> {
 
       const bucketSize = typingSpeedUnit.histogramDataBucketSize;
       const bucket = Math.floor(
-        typingSpeedUnit.fromWpm(result.wpm) / bucketSize
+        Math.round(typingSpeedUnit.fromWpm(result.wpm)) / bucketSize
       );
 
       //grow array if needed
@@ -669,32 +654,31 @@ async function fillContent(): Promise<void> {
   loadMoreLines();
   ////////
 
-  const activityChartData_amount: MonkeyTypes.ActivityChartDataPoint[] = [];
-  const activityChartData_time: MonkeyTypes.ActivityChartDataPoint[] = [];
+  const activityChartData_timeAndAmount: MonkeyTypes.ActivityChartDataPoint[] =
+    [];
   const activityChartData_avgWpm: MonkeyTypes.ActivityChartDataPoint[] = [];
   const wpmStepSize = typingSpeedUnit.historyStepSize;
 
   // let lastTimestamp = 0;
-  Object.keys(activityChartData).forEach((date) => {
+  for (const date of Object.keys(activityChartData)) {
     const dateInt = parseInt(date);
-    activityChartData_amount.push({
+    const dataPoint = activityChartData[dateInt];
+
+    if (dataPoint === undefined) continue;
+
+    activityChartData_timeAndAmount.push({
       x: dateInt,
-      y: activityChartData[dateInt].amount,
-    });
-    activityChartData_time.push({
-      x: dateInt,
-      y: activityChartData[dateInt].time / 60,
-      amount: activityChartData[dateInt].amount,
+      y: dataPoint.time / 60,
+      amount: dataPoint.amount,
     });
     activityChartData_avgWpm.push({
       x: dateInt,
       y: Misc.roundTo2(
-        typingSpeedUnit.fromWpm(activityChartData[dateInt].totalWpm) /
-          activityChartData[dateInt].amount
+        typingSpeedUnit.fromWpm(dataPoint.totalWpm) / dataPoint.amount
       ),
     });
     // lastTimestamp = date;
-  });
+  }
 
   const accountActivityScaleOptions = (
     ChartController.accountActivity.options as ScaleChartOptions<"bar" | "line">
@@ -707,9 +691,9 @@ async function fillContent(): Promise<void> {
   accountActivityAvgWpmOptions.title.text = "Average " + Config.typingSpeedUnit;
   accountActivityAvgWpmOptions.ticks.stepSize = wpmStepSize;
 
-  ChartController.accountActivity.data.datasets[0].data =
-    activityChartData_time;
-  ChartController.accountActivity.data.datasets[1].data =
+  ChartController.accountActivity.getDataset("count").data =
+    activityChartData_timeAndAmount;
+  ChartController.accountActivity.getDataset("avgWpm").data =
     activityChartData_avgWpm;
 
   const histogramChartDataBucketed: { x: number; y: number }[] = [];
@@ -728,7 +712,7 @@ async function fillContent(): Promise<void> {
   });
 
   ChartController.accountHistogram.data.labels = labels;
-  ChartController.accountHistogram.data.datasets[0].data =
+  ChartController.accountHistogram.getDataset("count").data =
     histogramChartDataBucketed;
 
   const accountHistoryScaleOptions = (
@@ -746,7 +730,7 @@ async function fillContent(): Promise<void> {
     const pb: { x: number; y: number }[] = [];
 
     for (let i = chartData.length - 1; i >= 0; i--) {
-      const a = chartData[i];
+      const a = chartData[i] as MonkeyTypes.HistoryChartData;
       if (a.y > currentPb) {
         currentPb = a.y;
         pb.push(a);
@@ -756,7 +740,7 @@ async function fillContent(): Promise<void> {
     // add last point to pb
     pb.push({
       x: 1,
-      y: pb[pb.length - 1].y,
+      y: Misc.lastElementFromArray(pb)?.y as number,
     });
 
     const avgTen = [];
@@ -788,15 +772,17 @@ async function fillContent(): Promise<void> {
       avgHundredAcc.push({ x: i + 1, y: accAvgHundredValue });
     }
 
-    ChartController.accountHistory.data.datasets[0].data = chartData;
-    ChartController.accountHistory.data.datasets[1].data = pb;
-    ChartController.accountHistory.data.datasets[2].data = accChartData;
-    ChartController.accountHistory.data.datasets[3].data = avgTen;
-    ChartController.accountHistory.data.datasets[4].data = avgTenAcc;
-    ChartController.accountHistory.data.datasets[5].data = avgHundred;
-    ChartController.accountHistory.data.datasets[6].data = avgHundredAcc;
+    ChartController.accountHistory.getDataset("wpm").data = chartData;
+    ChartController.accountHistory.getDataset("pb").data = pb;
+    ChartController.accountHistory.getDataset("acc").data = accChartData;
+    ChartController.accountHistory.getDataset("wpmAvgTen").data = avgTen;
+    ChartController.accountHistory.getDataset("accAvgTen").data = avgTenAcc;
+    ChartController.accountHistory.getDataset("wpmAvgHundred").data =
+      avgHundred;
+    ChartController.accountHistory.getDataset("accAvgHundred").data =
+      avgHundredAcc;
 
-    accountHistoryScaleOptions["x"].max = chartData.length + 1;
+    ChartController.accountHistory.getScale("x").max = chartData.length + 1;
   }
 
   const wpms = chartData.map((r) => r.y);
@@ -813,26 +799,30 @@ async function fillContent(): Promise<void> {
 
   accountHistoryWpmOptions.ticks.stepSize = wpmStepSize;
 
-  accountHistoryScaleOptions["pb"].max = maxWpmChartValWithBuffer;
-  accountHistoryScaleOptions["wpmAvgTen"].max = maxWpmChartValWithBuffer;
-  accountHistoryScaleOptions["wpmAvgHundred"].max = maxWpmChartValWithBuffer;
+  ChartController.accountHistory.getScale("pb").max = maxWpmChartValWithBuffer;
+  ChartController.accountHistory.getScale("wpmAvgTen").max =
+    maxWpmChartValWithBuffer;
+  ChartController.accountHistory.getScale("wpmAvgHundred").max =
+    maxWpmChartValWithBuffer;
 
   if (!Config.startGraphsAtZero) {
     const minWpmChartValFloor =
       Math.floor(minWpmChartVal / wpmStepSize) * wpmStepSize;
 
-    accountHistoryWpmOptions.min = minWpmChartValFloor;
-    accountHistoryScaleOptions["pb"].min = minWpmChartValFloor;
-    accountHistoryScaleOptions["wpmAvgTen"].min = minWpmChartValFloor;
-    accountHistoryScaleOptions["wpmAvgHundred"].min = minWpmChartValFloor;
+    ChartController.accountHistory.getScale("wpm").min = minWpmChartValFloor;
+    ChartController.accountHistory.getScale("pb").min = minWpmChartValFloor;
+    ChartController.accountHistory.getScale("wpmAvgTen").min =
+      minWpmChartValFloor;
+    ChartController.accountHistory.getScale("wpmAvgHundred").min =
+      minWpmChartValFloor;
   } else {
-    accountHistoryWpmOptions.min = 0;
-    accountHistoryScaleOptions["pb"].min = 0;
-    accountHistoryScaleOptions["wpmAvgTen"].min = 0;
-    accountHistoryScaleOptions["wpmAvgHundred"].min = 0;
+    ChartController.accountHistory.getScale("wpm").min = 0;
+    ChartController.accountHistory.getScale("pb").min = 0;
+    ChartController.accountHistory.getScale("wpmAvgTen").min = 0;
+    ChartController.accountHistory.getScale("wpmAvgHundred").min = 0;
   }
 
-  if (!chartData || chartData.length === 0) {
+  if (chartData === undefined || chartData.length === 0) {
     $(".pageAccount .group.noDataError").removeClass("hidden");
     $(".pageAccount .group.chart").addClass("hidden");
     $(".pageAccount .group.dailyActivityChart").addClass("hidden");
@@ -856,144 +846,58 @@ async function fillContent(): Promise<void> {
     Misc.secondsToString(Math.round(totalSecondsFiltered), true, true)
   );
 
-  let highestSpeed: number | string = typingSpeedUnit.fromWpm(topWpm);
-
-  if (Config.alwaysShowDecimalPlaces) {
-    highestSpeed = Misc.roundTo2(highestSpeed).toFixed(2);
-  } else {
-    highestSpeed = Math.round(highestSpeed);
-  }
-
   const speedUnit = Config.typingSpeedUnit;
 
   $(".pageAccount .highestWpm .title").text(`highest ${speedUnit}`);
-  $(".pageAccount .highestWpm .val").text(highestSpeed);
-
-  let averageSpeed: number | string = typingSpeedUnit.fromWpm(totalWpm);
-  if (Config.alwaysShowDecimalPlaces) {
-    averageSpeed = Misc.roundTo2(averageSpeed / testCount).toFixed(2);
-  } else {
-    averageSpeed = Math.round(averageSpeed / testCount);
-  }
+  $(".pageAccount .highestWpm .val").text(Format.typingSpeed(topWpm));
 
   $(".pageAccount .averageWpm .title").text(`average ${speedUnit}`);
-  $(".pageAccount .averageWpm .val").text(averageSpeed);
-
-  let averageSpeedLast10: number | string =
-    typingSpeedUnit.fromWpm(wpmLast10total);
-  if (Config.alwaysShowDecimalPlaces) {
-    averageSpeedLast10 = Misc.roundTo2(averageSpeedLast10 / last10).toFixed(2);
-  } else {
-    averageSpeedLast10 = Math.round(averageSpeedLast10 / last10);
-  }
+  $(".pageAccount .averageWpm .val").text(
+    Format.typingSpeed(totalWpm / testCount)
+  );
 
   $(".pageAccount .averageWpm10 .title").text(
     `average ${speedUnit} (last 10 tests)`
   );
-  $(".pageAccount .averageWpm10 .val").text(averageSpeedLast10);
-
-  let highestRawSpeed: number | string = typingSpeedUnit.fromWpm(rawWpm.max);
-  if (Config.alwaysShowDecimalPlaces) {
-    highestRawSpeed = Misc.roundTo2(highestRawSpeed).toFixed(2);
-  } else {
-    highestRawSpeed = Math.round(highestRawSpeed);
-  }
+  $(".pageAccount .averageWpm10 .val").text(
+    Format.typingSpeed(wpmLast10total / last10)
+  );
 
   $(".pageAccount .highestRaw .title").text(`highest raw ${speedUnit}`);
-  $(".pageAccount .highestRaw .val").text(highestRawSpeed);
-
-  let averageRawSpeed: number | string = typingSpeedUnit.fromWpm(rawWpm.total);
-  if (Config.alwaysShowDecimalPlaces) {
-    averageRawSpeed = Misc.roundTo2(averageRawSpeed / rawWpm.count).toFixed(2);
-  } else {
-    averageRawSpeed = Math.round(averageRawSpeed / rawWpm.count);
-  }
+  $(".pageAccount .highestRaw .val").text(Format.typingSpeed(rawWpm.max));
 
   $(".pageAccount .averageRaw .title").text(`average raw ${speedUnit}`);
-  $(".pageAccount .averageRaw .val").text(averageRawSpeed);
-
-  let averageRawSpeedLast10: number | string = typingSpeedUnit.fromWpm(
-    rawWpm.last10Total
+  $(".pageAccount .averageRaw .val").text(
+    Format.typingSpeed(rawWpm.total / rawWpm.count)
   );
-  if (Config.alwaysShowDecimalPlaces) {
-    averageRawSpeedLast10 = Misc.roundTo2(
-      averageRawSpeedLast10 / rawWpm.last10Count
-    ).toFixed(2);
-  } else {
-    averageRawSpeedLast10 = Math.round(
-      averageRawSpeedLast10 / rawWpm.last10Count
-    );
-  }
 
   $(".pageAccount .averageRaw10 .title").text(
     `average raw ${speedUnit} (last 10 tests)`
   );
-  $(".pageAccount .averageRaw10 .val").text(averageRawSpeedLast10);
+  $(".pageAccount .averageRaw10 .val").text(
+    Format.typingSpeed(rawWpm.last10Total / rawWpm.last10Count)
+  );
 
   $(".pageAccount .highestWpm .mode").html(topMode);
   $(".pageAccount .testsTaken .val").text(testCount);
 
-  let highestAcc: string | number = topAcc;
-  if (Config.alwaysShowDecimalPlaces) {
-    highestAcc = Misc.roundTo2(highestAcc).toFixed(2);
-  } else {
-    highestAcc = Math.floor(highestAcc);
-  }
-
-  $(".pageAccount .highestAcc .val").text(highestAcc + "%");
-
-  let averageAcc: number | string = totalAcc;
-  if (Config.alwaysShowDecimalPlaces) {
-    averageAcc = Misc.roundTo2(averageAcc / testCount);
-  } else {
-    averageAcc = Math.floor(averageAcc / testCount);
-  }
-
-  $(".pageAccount .avgAcc .val").text(averageAcc + "%");
-
-  let averageAccLast10: number | string = totalAcc10;
-  if (Config.alwaysShowDecimalPlaces) {
-    averageAccLast10 = Misc.roundTo2(averageAccLast10 / last10);
-  } else {
-    averageAccLast10 = Math.floor(averageAccLast10 / last10);
-  }
-
-  $(".pageAccount .avgAcc10 .val").text(averageAccLast10 + "%");
+  $(".pageAccount .highestAcc .val").text(Format.percentage(topAcc));
+  $(".pageAccount .avgAcc .val").text(Format.percentage(totalAcc / testCount));
+  $(".pageAccount .avgAcc10 .val").text(Format.percentage(totalAcc10 / last10));
 
   if (totalCons === 0 || totalCons === undefined) {
     $(".pageAccount .avgCons .val").text("-");
     $(".pageAccount .avgCons10 .val").text("-");
   } else {
-    let highestCons: number | string = topCons;
-    if (Config.alwaysShowDecimalPlaces) {
-      highestCons = Misc.roundTo2(highestCons).toFixed(2);
-    } else {
-      highestCons = Math.round(highestCons);
-    }
+    $(".pageAccount .highestCons .val").text(Format.percentage(topCons));
 
-    $(".pageAccount .highestCons .val").text(highestCons + "%");
+    $(".pageAccount .avgCons .val").text(
+      Format.percentage(totalCons / consCount)
+    );
 
-    let averageCons: number | string = totalCons;
-    if (Config.alwaysShowDecimalPlaces) {
-      averageCons = Misc.roundTo2(averageCons / consCount).toFixed(2);
-    } else {
-      averageCons = Math.round(averageCons / consCount);
-    }
-
-    $(".pageAccount .avgCons .val").text(averageCons + "%");
-
-    let averageConsLast10: number | string = totalCons10;
-    if (Config.alwaysShowDecimalPlaces) {
-      averageConsLast10 = Misc.roundTo2(
-        averageConsLast10 / Math.min(last10, consCount)
-      ).toFixed(2);
-    } else {
-      averageConsLast10 = Math.round(
-        averageConsLast10 / Math.min(last10, consCount)
-      );
-    }
-
-    $(".pageAccount .avgCons10 .val").text(averageConsLast10 + "%");
+    $(".pageAccount .avgCons10 .val").text(
+      Format.percentage(totalCons10 / Math.min(last10, consCount))
+    );
   }
 
   $(".pageAccount .testsStarted .val").text(`${testCount + testRestarts}`);
@@ -1010,19 +914,16 @@ async function fillContent(): Promise<void> {
   const wpmPoints = filteredResults.map((r) => r.wpm).reverse();
 
   const trend = Misc.findLineByLeastSquares(wpmPoints);
-
-  const wpmChange = trend[1][1] - trend[0][1];
-
-  const wpmChangePerHour = wpmChange * (3600 / totalSecondsFiltered);
-
-  const plus = wpmChangePerHour > 0 ? "+" : "";
-
-  $(".pageAccount .group.chart .below .text").text(
-    `Speed change per hour spent typing: ${
-      plus + Misc.roundTo2(typingSpeedUnit.fromWpm(wpmChangePerHour))
-    } ${Config.typingSpeedUnit}`
-  );
-
+  if (trend) {
+    const wpmChange = trend[1][1] - trend[0][1];
+    const wpmChangePerHour = wpmChange * (3600 / totalSecondsFiltered);
+    const plus = wpmChangePerHour > 0 ? "+" : "";
+    $(".pageAccount .group.chart .below .text").text(
+      `Speed change per hour spent typing: ${
+        plus + Format.typingSpeed(wpmChangePerHour, { showDecimalPlaces: true })
+      } ${Config.typingSpeedUnit}`
+    );
+  }
   $(".pageAccount .estimatedWordsTyped .val").text(totalEstimatedWords);
 
   if (chartData.length || accChartData.length) {
@@ -1036,7 +937,7 @@ async function fillContent(): Promise<void> {
   ChartController.accountHistogram.update();
   LoadingPage.updateBar(100, true);
   Focus.set(false);
-  Misc.swapElements(
+  void Misc.swapElements(
     $(".pageAccount .preloader"),
     $(".pageAccount .content"),
     250,
@@ -1053,7 +954,7 @@ async function fillContent(): Promise<void> {
 
 export async function downloadResults(offset?: number): Promise<void> {
   const results = await DB.getUserResults(offset);
-  if (results === false && !ConnectionState.get()) {
+  if (!results && !ConnectionState.get()) {
     Notifications.add("Could not get results - you are offline", -1, {
       duration: 5,
     });
@@ -1101,7 +1002,7 @@ function sortAndRefreshHistory(
   // This allows to reverse the sorting order when clicking multiple times on the table header
   let descending = true;
   if (forceDescending !== null) {
-    if (forceDescending === true) {
+    if (forceDescending) {
       $(headerClass).append(
         '<i class="fas fa-sort-down" aria-hidden="true"></i>'
       );
@@ -1112,8 +1013,8 @@ function sortAndRefreshHistory(
       );
     }
   } else if (
-    parseInt(filteredResults[0][key] as string) <=
-    parseInt(filteredResults[filteredResults.length - 1][key] as string)
+    parseInt(filteredResults?.[0]?.[key] as string) <=
+    parseInt(filteredResults?.[filteredResults.length - 1]?.[key] as string)
   ) {
     descending = true;
     $(headerClass).append(
@@ -1132,22 +1033,17 @@ function sortAndRefreshHistory(
     let highest = -1;
     let idx = -1;
 
-    for (let i = 0; i < filteredResults.length; i++) {
+    // for (let i = 0; i < filteredResults.length; i++) {
+    for (const [i, result] of filteredResults.entries()) {
       //find the lowest wpm with index not already parsed
       if (!descending) {
-        if (
-          (filteredResults[i][key] as number) <= lowest &&
-          !parsedIndexes.includes(i)
-        ) {
-          lowest = filteredResults[i][key] as number;
+        if ((result[key] as number) <= lowest && !parsedIndexes.includes(i)) {
+          lowest = result[key] as number;
           idx = i;
         }
       } else {
-        if (
-          (filteredResults[i][key] as number) >= highest &&
-          !parsedIndexes.includes(i)
-        ) {
-          highest = filteredResults[i][key] as number;
+        if ((result[key] as number) >= highest && !parsedIndexes.includes(i)) {
+          highest = result[key] as number;
           idx = i;
         }
       }
@@ -1156,7 +1052,9 @@ function sortAndRefreshHistory(
     temp.push(filteredResults[idx]);
     parsedIndexes.push(idx);
   }
-  filteredResults = temp;
+  filteredResults = temp as SharedTypes.Result<
+    keyof SharedTypes.PersonalBests
+  >[];
 
   $(".pageAccount .history table tbody").empty();
   visibleTableLines = 0;
@@ -1186,7 +1084,7 @@ $(".pageAccount .loadMoreButton").on("click", () => {
 $(".pageAccount #accountHistoryChart").on("click", () => {
   const index: number = ChartController.accountHistoryActiveIndex;
   loadMoreLines(index);
-  if (!window) return;
+  if (window === undefined) return;
   const windowHeight = $(window).height() ?? 0;
   const offset = $(`#result-${index}`).offset()?.top ?? 0;
   const scrollTo = offset - windowHeight / 2;
@@ -1205,7 +1103,7 @@ $(".pageAccount").on("click", ".miniResultChartButton", (event) => {
   const filteredId = $(event.currentTarget).attr("filteredResultsId");
   if (filteredId === undefined) return;
   MiniResultChart.updateData(
-    filteredResults[parseInt(filteredId)].chartData as MonkeyTypes.ChartData
+    filteredResults[parseInt(filteredId)]?.chartData as SharedTypes.ChartData
   );
   MiniResultChart.show();
   MiniResultChart.updatePosition(
@@ -1269,7 +1167,7 @@ $(".pageAccount .group.topFilters, .pageAccount .filterButtons").on(
   "button",
   () => {
     setTimeout(() => {
-      update();
+      void update();
     }, 0);
   }
 );
@@ -1277,14 +1175,14 @@ $(".pageAccount .group.topFilters, .pageAccount .filterButtons").on(
 $(".pageAccount .group.presetFilterButtons").on(
   "click",
   ".filterBtns .filterPresets .select-filter-preset",
-  (e) => {
-    ResultFilters.setFilterPreset($(e.target).data("id"));
-    update();
+  async (e) => {
+    await ResultFilters.setFilterPreset($(e.target).data("id"));
+    void update();
   }
 );
 
 $(".pageAccount .content .group.aboveHistory .exportCSV").on("click", () => {
-  Misc.downloadResultsCSV(filteredResults);
+  void Misc.downloadResultsCSV(filteredResults);
 });
 
 $(".pageAccount .profile").on("click", ".details .copyLink", () => {
@@ -1304,7 +1202,7 @@ $(".pageAccount .profile").on("click", ".details .copyLink", () => {
 });
 
 $(".pageAccount button.loadMoreResults").on("click", async () => {
-  const offset = DB.getSnapshot()?.results?.length || 0;
+  const offset = DB.getSnapshot()?.results?.length ?? 0;
 
   Loader.show();
   ResultBatches.disableButton();
@@ -1316,7 +1214,7 @@ $(".pageAccount button.loadMoreResults").on("click", async () => {
 
 ConfigEvent.subscribe((eventKey) => {
   if (ActivePage.get() === "account" && eventKey === "typingSpeedUnit") {
-    update();
+    void update();
   }
 });
 
@@ -1334,26 +1232,26 @@ export const page = new Page(
   },
   async () => {
     Skeleton.append("pageAccount", "main");
-    await ResultFilters.appendButtons();
-    ResultFilters.updateActive();
-    await Misc.sleep(0);
     if (DB.getSnapshot()?.results === undefined) {
       $(".pageLoading .fill, .pageAccount .fill").css("width", "0%");
       $(".pageAccount .content").addClass("hidden");
       $(".pageAccount .preloader").removeClass("hidden");
+      await LoadingPage.showBar();
     }
-
-    await update();
+    await ResultFilters.appendButtons();
+    ResultFilters.updateActive();
     await Misc.sleep(0);
-    updateChartColors();
-    $(".pageAccount .content p.accountVerificatinNotice").remove();
-    if (Auth?.currentUser?.emailVerified === false) {
-      $(".pageAccount .content").prepend(
-        `<p class="accountVerificatinNotice" style="text-align:center">Your account is not verified - <button class="sendVerificationEmail">send the verification email again</button>`
-      );
-    }
 
-    ResultBatches.showOrHideIfNeeded();
+    void update().then(() => {
+      void updateChartColors();
+      $(".pageAccount .content p.accountVerificatinNotice").remove();
+      if (Auth?.currentUser?.emailVerified === false) {
+        $(".pageAccount .content").prepend(
+          `<p class="accountVerificatinNotice" style="text-align:center">Your account is not verified - <button class="sendVerificationEmail">send the verification email again</button>`
+        );
+      }
+      ResultBatches.showOrHideIfNeeded();
+    });
   },
   async () => {
     //

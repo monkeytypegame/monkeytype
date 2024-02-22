@@ -14,13 +14,13 @@ function getCheckboxValue(checkbox: string): boolean {
 }
 
 type SharedTestSettings = [
-  MonkeyTypes.Mode | null,
-  MonkeyTypes.Mode2<MonkeyTypes.Mode> | null,
-  MonkeyTypes.CustomText | null,
+  SharedTypes.Config.Mode | null,
+  SharedTypes.Config.Mode2<SharedTypes.Config.Mode> | null,
+  SharedTypes.CustomText | null,
   boolean | null,
   boolean | null,
   string | null,
-  MonkeyTypes.Difficulty | null,
+  SharedTypes.Config.Difficulty | null,
   string | null
 ];
 
@@ -45,7 +45,7 @@ function updateURL(): void {
     settings[1] = getMode2(
       Config,
       randomQuote
-    ) as MonkeyTypes.Mode2<MonkeyTypes.Mode>;
+    ) as SharedTypes.Config.Mode2<SharedTypes.Config.Mode>;
   }
 
   if (getCheckboxValue("customText")) {
@@ -140,13 +140,13 @@ $("#shareTestSettingsPopupWrapper textarea.url").on("click", () => {
 
 $("#shareTestSettingsPopupWrapper").on("mousedown", (e) => {
   if ($(e.target).attr("id") === "shareTestSettingsPopupWrapper") {
-    hide();
+    void hide();
   }
 });
 
 $(document).on("keydown", (event) => {
   if (event.key === "Escape" && isPopupVisible(wrapperId)) {
-    hide();
+    void hide();
     event.preventDefault();
   }
 });

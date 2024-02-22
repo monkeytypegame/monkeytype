@@ -68,8 +68,10 @@ import * as Misc from "../utils/misc";
 class ChartWithUpdateColors<
   TType extends ChartType = ChartType,
   TData = DefaultDataPoint<TType>,
-  TLabel = unknown
+  TLabel = unknown,
+  DatasetIds = never
 > extends Chart<TType, TData, TLabel> {
+  // eslint-disable-next-line @typescript-eslint/no-useless-constructor
   constructor(
     item: ChartItem,
     config: ChartConfiguration<TType, TData, TLabel>
@@ -77,182 +79,205 @@ class ChartWithUpdateColors<
     super(item, config);
   }
 
-  updateColors(): void {
-    updateColors(this);
+  async updateColors(): Promise<void> {
+    await updateColors(this);
+  }
+
+  getDataset(id: DatasetIds): ChartDataset<TType, TData> {
+    //@ts-expect-error
+    return this.data.datasets?.find((x) => x.yAxisID === id);
+  }
+
+  getScale(
+    id: DatasetIds extends never ? never : "x" | DatasetIds
+  ): DatasetIds extends never ? never : CartesianScaleOptions {
+    //@ts-expect-error
+    return this.options.scales[id];
   }
 }
 
 let prevTi: TooltipItem<"line" | "scatter"> | undefined;
-export const result: ChartWithUpdateColors<
+export const result = new ChartWithUpdateColors<
   "line" | "scatter",
   number[],
-  string
-> = new ChartWithUpdateColors(
-  document.querySelector("#wpmChart") as HTMLCanvasElement,
-  {
-    type: "line",
-    data: {
-      labels: [],
-      datasets: [
-        {
-          //@ts-ignore the type is defined incorrectly, have to ingore the error
-          clip: false,
-          label: "wpm",
-          data: [],
-          borderColor: "rgba(125, 125, 125, 1)",
-          borderWidth: 3,
-          yAxisID: "wpm",
-          order: 2,
-          pointRadius: 1,
+  string,
+  "wpm" | "raw" | "error"
+>(document.querySelector("#wpmChart") as HTMLCanvasElement, {
+  type: "line",
+  data: {
+    labels: [],
+    datasets: [
+      {
+        //@ts-expect-error the type is defined incorrectly, have to ingore the error
+        clip: false,
+        label: "wpm",
+        data: [],
+        borderColor: "rgba(125, 125, 125, 1)",
+        borderWidth: 3,
+        yAxisID: "wpm",
+        order: 2,
+        pointRadius: 1,
+      },
+      {
+        //@ts-expect-error the type is defined incorrectly, have to ingore the error
+        clip: false,
+        label: "raw",
+        data: [],
+        borderColor: "rgba(125, 125, 125, 1)",
+        borderWidth: 3,
+        yAxisID: "raw",
+        order: 3,
+        pointRadius: 1,
+      },
+      {
+        //@ts-expect-error the type is defined incorrectly, have to ingore the error
+        clip: false,
+        label: "errors",
+        data: [],
+        borderColor: "rgba(255, 125, 125, 1)",
+        pointBackgroundColor: "rgba(255, 125, 125, 1)",
+        borderWidth: 2,
+        order: 1,
+        yAxisID: "error",
+        type: "scatter",
+        pointStyle: "crossRot",
+        pointRadius: function (context): number {
+          const index = context.dataIndex;
+          const value = context.dataset.data[index] as number;
+          return (value ?? 0) <= 0 ? 0 : 3;
         },
-        {
-          //@ts-ignore the type is defined incorrectly, have to ingore the error
-          clip: false,
-          label: "raw",
-          data: [],
-          borderColor: "rgba(125, 125, 125, 1)",
-          borderWidth: 3,
-          yAxisID: "raw",
-          order: 3,
-          pointRadius: 1,
+        pointHoverRadius: function (context): number {
+          const index = context.dataIndex;
+          const value = context.dataset.data[index] as number;
+          return (value ?? 0) <= 0 ? 0 : 5;
         },
-        {
-          //@ts-ignore the type is defined incorrectly, have to ingore the error
-          clip: false,
-          label: "errors",
-          data: [],
-          borderColor: "rgba(255, 125, 125, 1)",
-          pointBackgroundColor: "rgba(255, 125, 125, 1)",
-          borderWidth: 2,
-          order: 1,
-          yAxisID: "error",
-          type: "scatter",
-          pointStyle: "crossRot",
-          pointRadius: function (context): number {
-            const index = context.dataIndex;
-            const value = context.dataset.data[index] as number;
-            return (value ?? 0) <= 0 ? 0 : 3;
-          },
-          pointHoverRadius: function (context): number {
-            const index = context.dataIndex;
-            const value = context.dataset.data[index] as number;
-            return (value ?? 0) <= 0 ? 0 : 5;
-          },
+      },
+    ],
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    scales: {
+      x: {
+        axis: "x",
+        ticks: {
+          autoSkip: true,
+          autoSkipPadding: 20,
         },
-      ],
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      scales: {
-        x: {
-          axis: "x",
-          ticks: {
-            autoSkip: true,
-            autoSkipPadding: 20,
-          },
-          display: true,
-          title: {
-            display: false,
-            text: "Seconds",
-          },
-        },
-        wpm: {
-          axis: "y",
-          display: true,
-          title: {
-            display: true,
-            text: "Words per Minute",
-          },
-          beginAtZero: true,
-          min: 0,
-          ticks: {
-            autoSkip: true,
-            autoSkipPadding: 20,
-          },
-          grid: {
-            display: true,
-          },
-        },
-        raw: {
-          axis: "y",
+        display: true,
+        title: {
           display: false,
-          title: {
-            display: true,
-            text: "Raw Words per Minute",
-          },
-          beginAtZero: true,
-          min: 0,
-          ticks: {
-            autoSkip: true,
-            autoSkipPadding: 20,
-          },
-          grid: {
-            display: false,
-          },
-        },
-        error: {
-          axis: "y",
-          display: true,
-          position: "right",
-          title: {
-            display: true,
-            text: "Errors",
-          },
-          beginAtZero: true,
-          ticks: {
-            precision: 0,
-            autoSkip: true,
-            autoSkipPadding: 20,
-          },
-          grid: {
-            display: false,
-          },
+          text: "Seconds",
         },
       },
-      plugins: {
-        annotation: {
-          annotations: [],
+      wpm: {
+        axis: "y",
+        display: true,
+        title: {
+          display: true,
+          text: "Words per Minute",
         },
-        tooltip: {
-          animation: { duration: 250 },
-          mode: "index",
-          intersect: false,
-          callbacks: {
-            afterLabel: function (ti): string {
-              if (prevTi === ti) return "";
-              prevTi = ti;
-              try {
-                const keypressIndex = Math.round(parseFloat(ti.label)) - 1;
-                const wordsToHighlight =
-                  TestInput.errorHistory[keypressIndex].words;
+        beginAtZero: true,
+        min: 0,
+        ticks: {
+          autoSkip: true,
+          autoSkipPadding: 20,
+        },
+        grid: {
+          display: true,
+        },
+      },
+      raw: {
+        axis: "y",
+        display: false,
+        title: {
+          display: true,
+          text: "Raw Words per Minute",
+        },
+        beginAtZero: true,
+        min: 0,
+        ticks: {
+          autoSkip: true,
+          autoSkipPadding: 20,
+        },
+        grid: {
+          display: false,
+        },
+      },
+      error: {
+        axis: "y",
+        display: true,
+        position: "right",
+        title: {
+          display: true,
+          text: "Errors",
+        },
+        beginAtZero: true,
+        ticks: {
+          precision: 0,
+          autoSkip: true,
+          autoSkipPadding: 20,
+        },
+        grid: {
+          display: false,
+        },
+      },
+    },
+    plugins: {
+      annotation: {
+        annotations: [],
+      },
+      tooltip: {
+        animation: { duration: 250 },
+        mode: "index",
+        intersect: false,
+        callbacks: {
+          afterLabel: function (ti): string {
+            if (prevTi === ti) return "";
+            prevTi = ti;
+            try {
+              const keypressIndex = Math.round(parseFloat(ti.label)) - 1;
+              const wordsToHighlight =
+                TestInput.errorHistory[keypressIndex]?.words;
 
-                const unique = [...new Set(wordsToHighlight)];
-                const firstHighlightWordIndex = unique[0];
-                const lastHighlightWordIndex = unique[unique.length - 1];
-                ResultWordHighlight.highlightWordsInRange(
-                  firstHighlightWordIndex,
-                  lastHighlightWordIndex
-                );
-              } catch {}
-              return "";
-            },
+              const unique = [...new Set(wordsToHighlight)];
+              const firstHighlightWordIndex = unique[0];
+              const lastHighlightWordIndex = unique[unique.length - 1];
+              if (
+                firstHighlightWordIndex === undefined ||
+                lastHighlightWordIndex === undefined
+              ) {
+                return "";
+              }
+              void ResultWordHighlight.highlightWordsInRange(
+                firstHighlightWordIndex,
+                lastHighlightWordIndex
+              );
+            } catch {}
+            return "";
           },
         },
       },
     },
-  }
-);
+  },
+});
 
 export let accountHistoryActiveIndex: number;
 
-export const accountHistory: ChartWithUpdateColors<
+export const accountHistory = new ChartWithUpdateColors<
   "line",
   | MonkeyTypes.HistoryChartData[]
   | MonkeyTypes.AccChartData[]
   | MonkeyTypes.OtherChartData[],
-  string
-> = new ChartWithUpdateColors(
+  string,
+  | "wpm"
+  | "pb"
+  | "acc"
+  | "wpmAvgTen"
+  | "accAvgTen"
+  | "wpmAvgHundred"
+  | "accAvgHundred"
+>(
   document.querySelector(
     ".pageAccount #accountHistoryChart"
   ) as HTMLCanvasElement,
@@ -449,7 +474,7 @@ export const accountHistory: ChartWithUpdateColors<
 
           intersect: false,
           external: function (ctx): void {
-            if (!ctx) return;
+            if (ctx === undefined) return;
             ctx.tooltip.options.displayColors = false;
           },
           filter: function (tooltipItem): boolean {
@@ -527,11 +552,12 @@ export const accountHistory: ChartWithUpdateColors<
   }
 );
 
-export const accountActivity: ChartWithUpdateColors<
+export const accountActivity = new ChartWithUpdateColors<
   "bar" | "line",
   MonkeyTypes.ActivityChartDataPoint[],
-  string
-> = new ChartWithUpdateColors(
+  string,
+  "count" | "avgWpm"
+>(
   document.querySelector(
     ".pageAccount #accountActivityChart"
   ) as HTMLCanvasElement,
@@ -636,8 +662,9 @@ export const accountActivity: ChartWithUpdateColors<
           mode: "index",
           callbacks: {
             title: function (tooltipItem): string {
-              const resultData = tooltipItem[0].dataset.data[
-                tooltipItem[0].dataIndex
+              const firstItem = tooltipItem[0] as TooltipItem<"bar" | "line">;
+              const resultData = firstItem.dataset.data[
+                firstItem.dataIndex
               ] as MonkeyTypes.ActivityChartDataPoint;
               return format(new Date(resultData.x), "dd MMM yyyy");
             },
@@ -670,11 +697,12 @@ export const accountActivity: ChartWithUpdateColors<
   }
 );
 
-export const accountHistogram: ChartWithUpdateColors<
+export const accountHistogram = new ChartWithUpdateColors<
   "bar",
   MonkeyTypes.ActivityChartDataPoint[],
-  string
-> = new ChartWithUpdateColors(
+  string,
+  "count"
+>(
   document.querySelector(
     ".pageAccount #accountHistogramChart"
   ) as HTMLCanvasElement,
@@ -772,11 +800,12 @@ export const accountHistogram: ChartWithUpdateColors<
   }
 );
 
-export const globalSpeedHistogram: ChartWithUpdateColors<
+export const globalSpeedHistogram = new ChartWithUpdateColors<
   "bar",
   MonkeyTypes.ActivityChartDataPoint[],
-  string
-> = new ChartWithUpdateColors(
+  string,
+  "count"
+>(
   document.querySelector(
     ".pageAbout #publicStatsHistogramChart"
   ) as HTMLCanvasElement,
@@ -840,11 +869,12 @@ export const globalSpeedHistogram: ChartWithUpdateColors<
   }
 );
 
-export const miniResult: ChartWithUpdateColors<
+export const miniResult = new ChartWithUpdateColors<
   "line" | "scatter",
   number[],
-  string
-> = new ChartWithUpdateColors(
+  string,
+  "wpm" | "raw" | "error"
+>(
   document.querySelector(".pageAccount #miniResultChart") as HTMLCanvasElement,
   {
     type: "line",
@@ -1000,47 +1030,41 @@ function updateResults(updateChart = true): void {
   const resultsOn = Config.accountChart[0] === "on";
   updateAccountChartButton(resultsOn, ".toggleResultsOnChart");
 
-  accountHistory.data.datasets[0].hidden = !resultsOn;
-  accountHistory.data.datasets[3].hidden = !resultsOn;
-  accountHistory.data.datasets[5].hidden = !resultsOn;
-  accountHistory.data.datasets[1].hidden = !resultsOn;
+  accountHistory.getDataset("wpm").hidden = !resultsOn;
+  accountHistory.getDataset("pb").hidden = !resultsOn;
+  accountHistory.getDataset("wpmAvgTen").hidden = !resultsOn;
+  accountHistory.getDataset("wpmAvgHundred").hidden = !resultsOn;
+  accountHistory.getScale("wpm").display = resultsOn;
 
-  (accountHistory.options as ScaleChartOptions<"line">).scales["wpm"].display =
-    resultsOn;
-  if (updateChart) accountHistory.updateColors();
+  if (updateChart) void accountHistory.updateColors();
 }
 
 function updateAccuracy(updateChart = true): void {
-  const accountHistoryOptions =
-    accountHistory.options as ScaleChartOptions<"line">;
   const resultsOn = Config.accountChart[0] === "on";
   const accOn = Config.accountChart[1] === "on";
   updateAccountChartButton(accOn, ".toggleAccuracyOnChart");
 
-  accountHistory.data.datasets[2].hidden = !accOn;
-  accountHistory.data.datasets[4].hidden = !accOn;
-  accountHistory.data.datasets[6].hidden = !accOn;
-
-  accountHistoryOptions.scales["acc"].display = accOn;
+  accountHistory.getDataset("acc").hidden = !accOn;
+  accountHistory.getDataset("accAvgTen").hidden = !accOn;
+  accountHistory.getDataset("accAvgHundred").hidden = !accOn;
+  accountHistory.getScale("acc").display = accOn;
 
   if (resultsOn) {
-    accountHistoryOptions.scales["acc"].min = 0;
-    accountHistoryOptions.scales["accAvgTen"].min = 0;
-    accountHistoryOptions.scales["accAvgHundred"].min = 0;
+    accountHistory.getScale("acc").min = 0;
+    accountHistory.getScale("accAvgTen").min = 0;
+    accountHistory.getScale("accAvgHundred").min = 0;
   } else {
     const minAccRoundedTo10 =
       Math.floor(
-        Math.min(...accountHistory.data.datasets[2].data.map((x) => x.y)) / 10
+        Math.min(...accountHistory.getDataset("acc").data.map((x) => x.y)) / 10
       ) * 10;
 
-    console.log(accountHistory.data.datasets);
-
-    accountHistoryOptions.scales["acc"].min = minAccRoundedTo10;
-    accountHistoryOptions.scales["accAvgTen"].min = minAccRoundedTo10;
-    accountHistoryOptions.scales["accAvgHundred"].min = minAccRoundedTo10;
+    accountHistory.getScale("acc").min = minAccRoundedTo10;
+    accountHistory.getScale("accAvgTen").min = minAccRoundedTo10;
+    accountHistory.getScale("accAvgHundred").min = minAccRoundedTo10;
   }
 
-  if (updateChart) accountHistory.updateColors();
+  if (updateChart) void accountHistory.updateColors();
 }
 
 function updateAverage10(updateChart = true): void {
@@ -1050,12 +1074,12 @@ function updateAverage10(updateChart = true): void {
   updateAccountChartButton(avg10On, ".toggleAverage10OnChart");
 
   if (accOn) {
-    accountHistory.data.datasets[4].hidden = !avg10On;
+    accountHistory.getDataset("accAvgTen").hidden = !avg10On;
   }
   if (resultsOn) {
-    accountHistory.data.datasets[3].hidden = !avg10On;
+    accountHistory.getDataset("wpmAvgTen").hidden = !avg10On;
   }
-  if (updateChart) accountHistory.updateColors();
+  if (updateChart) void accountHistory.updateColors();
 }
 
 function updateAverage100(updateChart = true): void {
@@ -1065,12 +1089,12 @@ function updateAverage100(updateChart = true): void {
   updateAccountChartButton(avg100On, ".toggleAverage100OnChart");
 
   if (accOn) {
-    accountHistory.data.datasets[6].hidden = !avg100On;
+    accountHistory.getDataset("accAvgHundred").hidden = !avg100On;
   }
   if (resultsOn) {
-    accountHistory.data.datasets[5].hidden = !avg100On;
+    accountHistory.getDataset("wpmAvgHundred").hidden = !avg100On;
   }
-  if (updateChart) accountHistory.updateColors();
+  if (updateChart) void accountHistory.updateColors();
 }
 
 async function updateColors<
@@ -1091,9 +1115,9 @@ async function updateColors<
 
   const gridcolor = Misc.blendTwoHexColors(bgcolor, subaltcolor, 0.75);
 
-  //@ts-ignore
+  //@ts-expect-error
   chart.data.datasets[0].borderColor = (ctx): string => {
-    const isPb = ctx.raw?.["isPb"];
+    const isPb = ctx.raw?.isPb as boolean;
     const color = isPb ? textcolor : maincolor;
     return color;
   };
@@ -1105,52 +1129,53 @@ async function updateColors<
     chart.data.datasets[2].borderColor = errorcolor;
   }
 
-  if (chart.data.datasets[0].type === undefined) {
+  const dataset0 = (
+    chart.data.datasets as ChartDataset<"line", TData>[]
+  )[0] as ChartDataset<"line", TData>;
+
+  if (chart?.data?.datasets[0]?.type === undefined) {
     if (chart.config.type === "line") {
-      (
-        chart.data.datasets as ChartDataset<"line", TData>[]
-      )[0].pointBackgroundColor = (ctx): string => {
-        //@ts-ignore
-        const isPb = ctx.raw?.["isPb"];
+      dataset0.pointBackgroundColor = (ctx): string => {
+        //@ts-expect-error
+        const isPb = ctx.raw?.isPb as boolean;
         const color = isPb ? textcolor : maincolor;
         return color;
       };
     } else if (chart.config.type === "bar") {
-      chart.data.datasets[0].backgroundColor = maincolor;
+      dataset0.backgroundColor = maincolor;
     }
   } else if (chart.data.datasets[0].type === "bar") {
     chart.data.datasets[0].backgroundColor = maincolor;
   } else if (chart.data.datasets[0].type === "line") {
-    (
-      chart.data.datasets as ChartDataset<"line", TData>[]
-    )[0].pointBackgroundColor = maincolor;
+    dataset0.pointBackgroundColor = maincolor;
   }
-  if (chart.data.datasets[1]) {
-    if (chart.data.datasets[1].type === undefined) {
+
+  const dataset1 = chart.data.datasets[1] as ChartDataset<"line", TData>;
+
+  if (dataset1 !== undefined) {
+    if (dataset1.type === undefined) {
       if (chart.config.type === "line") {
-        (
-          chart.data.datasets as ChartDataset<"line", TData>[]
-        )[1].pointBackgroundColor = subcolor;
+        dataset1.pointBackgroundColor = subcolor;
       } else if (chart.config.type === "bar") {
-        chart.data.datasets[1].backgroundColor = subcolor;
+        dataset1.backgroundColor = subcolor;
       }
-    } else if (chart.data.datasets[1].type === "bar") {
-      chart.data.datasets[1].backgroundColor = subcolor;
-    } else if (chart.data.datasets[1].type === "line") {
-      (
-        chart.data.datasets as ChartDataset<"line", TData>[]
-      )[1].pointBackgroundColor = subcolor;
+    } else if ((dataset1?.type as "bar" | "line") === "bar") {
+      dataset1.backgroundColor = subcolor;
+    } else if (dataset1.type === "line") {
+      dataset1.pointBackgroundColor = subcolor;
     }
   }
   if (chart.data.datasets.length === 2) {
-    chart.data.datasets[1].borderColor = (): string => {
+    dataset1.borderColor = (): string => {
       const color = subcolor;
       return color;
     };
   }
 
+  const dataset2 = chart.data.datasets[2] as ChartDataset<"line", TData>;
+
   if (chart.data.datasets.length === 7) {
-    chart.data.datasets[2].borderColor = (): string => {
+    dataset2.borderColor = (): string => {
       const color = subcolor;
       return color;
     };
@@ -1173,6 +1198,17 @@ async function updateColors<
       ao100wpmDataset,
       ao100accDataset,
     ] = chart.data.datasets as ChartDataset<"line", TData>[];
+
+    if (
+      wpmDataset === undefined ||
+      pbDataset === undefined ||
+      accDataset === undefined ||
+      ao10wpmDataset === undefined ||
+      ao10accDataset === undefined ||
+      ao100wpmDataset === undefined ||
+      ao100accDataset === undefined
+    )
+      return;
 
     if (avg10On && avg100On) {
       wpmDataset.pointBackgroundColor = main02;
@@ -1209,8 +1245,7 @@ async function updateColors<
 
   try {
     (
-      chart.data.datasets[0]
-        .trendlineLinear as TrendlineLinearPlugin.TrendlineLinearOptions
+      dataset0.trendlineLinear as TrendlineLinearPlugin.TrendlineLinearOptions
     ).style = subcolor;
   } catch {}
 
@@ -1234,12 +1269,12 @@ function setDefaultFontFamily(font: string): void {
 
 export function updateAllChartColors(): void {
   ThemeColors.update();
-  accountHistory.updateColors();
-  accountHistogram.updateColors();
-  globalSpeedHistogram.updateColors();
-  result.updateColors();
-  accountActivity.updateColors();
-  miniResult.updateColors();
+  void accountHistory.updateColors();
+  void accountHistogram.updateColors();
+  void globalSpeedHistogram.updateColors();
+  void result.updateColors();
+  void accountActivity.updateColors();
+  void miniResult.updateColors();
 }
 
 ConfigEvent.subscribe((eventKey, eventValue) => {

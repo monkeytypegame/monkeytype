@@ -22,8 +22,8 @@ export async function getCharFromEvent(
       isCapitalized = !event.shiftKey;
     }
 
-    const altVersion = keyVariants[(isCapitalized ? 1 : 0) + altGrIndex];
-    const nonAltVersion = keyVariants[isCapitalized ? 1 : 0];
+    const altVersion = keyVariants[(isCapitalized ? 1 : 0) + altGrIndex] ?? "";
+    const nonAltVersion = keyVariants[isCapitalized ? 1 : 0] ?? "";
     const defaultVersion = keyVariants[0];
 
     return altVersion || nonAltVersion || defaultVersion;
@@ -204,11 +204,11 @@ export async function getCharFromEvent(
 
   const layoutKeys = layout.keys;
 
-  const layoutMap = layoutKeys["row1"]
-    .concat(layoutKeys["row2"])
-    .concat(layoutKeys["row3"])
-    .concat(layoutKeys["row4"])
-    .concat(layoutKeys["row5"]);
+  const layoutMap = layoutKeys.row1
+    .concat(layoutKeys.row2)
+    .concat(layoutKeys.row3)
+    .concat(layoutKeys.row4)
+    .concat(layoutKeys.row5);
 
   const mapIndex = keyEventCodes.indexOf(event.code);
   if (mapIndex === -1) {
@@ -218,7 +218,10 @@ export async function getCharFromEvent(
       return null;
     }
   }
-  const charVariant = emulatedLayoutGetVariant(event, layoutMap[mapIndex]);
+  const charVariant = emulatedLayoutGetVariant(
+    event,
+    layoutMap[mapIndex] ?? ""
+  );
   if (charVariant !== undefined) {
     return charVariant;
   } else {

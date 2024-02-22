@@ -10,20 +10,20 @@ import { isPopupVisible } from "../utils/misc";
 
 const wrapperId = "practiseWordsPopupWrapper";
 
-interface BeforeCustomText {
+type BeforeCustomText = {
   text: string[];
   isTimeRandom: boolean;
   isWordRandom: boolean;
   time: number;
   word: number;
-}
+};
 
-interface Before {
-  mode: MonkeyTypes.Mode | null;
+type Before = {
+  mode: SharedTypes.Config.Mode | null;
   punctuation: boolean | null;
   numbers: boolean | null;
   customText: BeforeCustomText | null;
-}
+};
 
 export const before: Before = {
   mode: null,
@@ -46,7 +46,10 @@ export function init(missed: boolean, slow: boolean): boolean {
   let sortableMissedWords: [string, number][] = [];
   if (missed) {
     Object.keys(TestInput.missedWords).forEach((missedWord) => {
-      sortableMissedWords.push([missedWord, TestInput.missedWords[missedWord]]);
+      const missedWordCount = TestInput.missedWords[missedWord];
+      if (missedWordCount !== undefined) {
+        sortableMissedWords.push([missedWord, missedWordCount]);
+      }
     });
     sortableMissedWords.sort((a, b) => {
       return b[1] - a[1];
@@ -61,10 +64,9 @@ export function init(missed: boolean, slow: boolean): boolean {
 
   let sortableSlowWords: [string, number][] = [];
   if (slow) {
-    sortableSlowWords = (TestWords.words.get() as string[]).map((e, i) => [
-      e,
-      TestInput.burstHistory[i],
-    ]);
+    sortableSlowWords = TestWords.words
+      .get()
+      .map((e, i) => [e, TestInput.burstHistory[i] ?? 0]);
     sortableSlowWords.sort((a, b) => {
       return a[1] - b[1];
     });
