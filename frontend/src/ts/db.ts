@@ -685,7 +685,7 @@ export async function saveLocalPB<M extends SharedTypes.Config.Mode>(
     ).forEach((pb) => {
       if (
         pb.punctuation === punctuation &&
-        !!pb.numbers === numbers &&
+        (pb.numbers ?? false) === numbers &&
         pb.difficulty === difficulty &&
         pb.language === language &&
         (pb.lazyMode === lazyMode || (pb.lazyMode === undefined && !lazyMode))

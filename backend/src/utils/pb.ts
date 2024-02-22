@@ -85,7 +85,7 @@ function matchesPersonalBest(
   const samePunctuation = result.punctuation === personalBest.punctuation;
   const sameDifficulty = result.difficulty === personalBest.difficulty;
   const sameLanguage = result.language === personalBest.language;
-  const sameNumbers = result.numbers === !!personalBest.numbers;
+  const sameNumbers = result.numbers === (personalBest.numbers ?? false);
 
   return (
     sameLazyMode &&
