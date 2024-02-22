@@ -6,49 +6,49 @@
 
 <div id="alertsPopupWrapper" class="popupWrapper hidden">
   <div id="alertsPopup">
-    <div class="button mobileClose">
+    <div role="button" class="button mobileClose">
       <i class="fas fa-times"></i>
       Close
     </div>
     <div class="scrollWrapper">
       <div class="accountAlerts">
-        <div class="title">
-          <div class="left">
+        <h3 class="title">
+          <span class="left">
             <i class="fas fa-inbox"></i>
             Inbox
-          </div>
+          </span>
           <div class="right"></div>
-        </div>
-        <div class="button claimAll hidden">
+        </h3>
+        <div role="button" class="button claimAll hidden">
           <i class="fas fa-fw fa-gift"></i>
           Claim all
         </div>
-        <div class="button deleteAll hidden">
+        <div role="button" class="button deleteAll hidden">
           <i class="fas fa-fw fa-trash"></i>
           Delete all
         </div>
         <div class="list">
-          <div class="nothing">Nothing to show</div>
+          <p class="nothing">Nothing to show</p>
         </div>
       </div>
       <div class="separator accountSeparator"></div>
       <div class="psas">
-        <div class="title">
+        <p class="title">
           <i class="fas fa-bullhorn"></i>
           Announcements
-        </div>
+        </p>
         <div class="list">
-          <div class="nothing">Nothing to show</div>
+          <p class="nothing">Nothing to show</p>
         </div>
       </div>
       <div class="separator"></div>
       <div class="notificationHistory">
-        <div class="title">
+        <p class="title">
           <i class="fas fa-comment-alt"></i>
           Notifications
-        </div>
+        </p>
         <div class="list">
-          <div class="nothing">Nothing to show</div>
+          <p class="nothing">Nothing to show</p>
         </div>
       </div>
     </div>
@@ -64,32 +64,32 @@
   class="cookie-popup-wrapper cookiePopupWrapper popupWrapper hidden"
   tabindex="-1"
 >
-  <div class="extensionMessage">
+  <p class="extensionMessage">
     If you see this text, that means an extension is blocking a cookie consent
     popup. This will cause the website to incorrectly assume its still visible
     and stop you from enjoying Monkeytype. Please disable any extensions that
     block cookie popups and refresh the page.
-  </div>
+  </p>
   <div id="cookiePopup">
-    <div class="title">
+    <p class="title">
       <i class="fas far fa-cookie-bite"></i>
       We use cookies by the way
-    </div>
+    </p>
     <div class="main">
-      <div class="text">
+      <p class="text">
         Cookies enhance your experience and help us improve our website.
-      </div>
+      </p>
       <div class="buttons">
-        <button class="active acceptAll">accept all</button>
-        <button class="rejectAll">reject non-essential</button>
-        <button class="openSettings">more options</button>
+        <button type="button" class="active acceptAll">accept all</button>
+        <button type="button" class="rejectAll">reject non-essential</button>
+        <button type="button" class="openSettings">more options</button>
       </div>
     </div>
     <div class="settings hidden">
       <div class="cookie security">
         <label class="checkbox">
-          <div class="title">security</div>
-          <div class="description">
+          <span class="title">security</span>
+          <span class="description">
             We use Cloudflare cookies to improve security and performance of our
             site.
             <br />
@@ -97,40 +97,42 @@
             They
             <b>do not</b>
             store any personal information and are required.
-          </div>
+          </span>
           <input type="checkbox" checked disabled />
         </label>
       </div>
       <div class="cookie analytics">
         <label class="checkbox">
-          <div class="title">analytics</div>
-          <div class="description">
+          <span class="title">analytics</span>
+          <span class="description">
             We use Google Analytics cookies to check how users interact with our
             website and use this data to improve our site design.
-          </div>
+          </span>
           <input type="checkbox" />
         </label>
       </div>
       <div class="cookie ads">
         <label class="checkbox">
-          <div class="title">advertising</div>
-          <div class="description">
+          <span class="title">advertising</span>
+          <span class="description">
             Our advertising partner may use cookies to deliver ads that are more
             relevant to you.
-          </div>
-          <div class="textButton">
+          </span>
+          <div role="button" class="textButton">
             Click to change your preferences on ad related cookies
           </div>
         </label>
       </div>
-      <button class="active acceptSelected">accept selected</button>
+      <button type="button" class="active acceptSelected">
+        accept selected
+      </button>
     </div>
   </div>
 </div>
 
 <div id="shareTestSettingsPopupWrapper" class="popupWrapper hidden">
   <div id="shareTestSettingsPopup">
-    <div class="title">Share test settings</div>
+    <h3 class="title">Share test settings</h3>
     <label class="checkboxWithSub mode">
       <input type="checkbox" setting="mode" />
       <div>Mode</div>
@@ -177,52 +179,54 @@
       value="monkeytype.com"
       readonly
     ></textarea>
-    <div class="tooLongWarning hidden">
+    <p class="tooLongWarning hidden">
       <i class="fas fa-fw fa-exclamation-triangle"></i>
       <span>The URL is over 2000 characters long - it might not work</span>
-    </div>
+    </p>
   </div>
 </div>
 
 <div id="mobileTestConfigPopupWrapper" class="popupWrapper hidden">
   <div id="mobileTestConfigPopup">
     <div class="group">
-      <button class="punctuation">punctuation</button>
-      <button class="numbers">numbers</button>
+      <button type="button" class="punctuation">punctuation</button>
+      <button type="button" class="numbers">numbers</button>
     </div>
     <div class="spacer"></div>
     <div class="group modeGroup">
-      <button data-mode="time">time</button>
-      <button class="active" data-mode="words">words</button>
-      <button data-mode="quote">quote</button>
-      <button data-mode="zen">zen</button>
-      <button data-mode="custom">custom</button>
+      <button type="button" data-mode="time">time</button>
+      <button type="button" class="active" data-mode="words">words</button>
+      <button type="button" data-mode="quote">quote</button>
+      <button type="button" data-mode="zen">zen</button>
+      <button type="button" data-mode="custom">custom</button>
     </div>
     <div class="spacer"></div>
     <div class="group timeGroup">
-      <button data-time="15">15</button>
-      <button class="button active" data-time="30">30</button>
-      <button data-time="60">60</button>
-      <button data-time="120">120</button>
-      <button data-time="custom">custom</button>
+      <button type="button" data-time="15">15</button>
+      <button type="button" class="button active" data-time="30">30</button>
+      <button type="button" data-time="60">60</button>
+      <button type="button" data-time="120">120</button>
+      <button type="button" data-time="custom">custom</button>
     </div>
     <div class="group wordsGroup hidden">
-      <button data-words="10">10</button>
-      <button data-words="25">25</button>
-      <button data-words="50">50</button>
-      <button data-words="100">100</button>
-      <button data-words="custom">custom</button>
+      <button type="button" data-words="10">10</button>
+      <button type="button" data-words="25">25</button>
+      <button type="button" data-words="50">50</button>
+      <button type="button" data-words="100">100</button>
+      <button type="button" data-words="custom">custom</button>
     </div>
     <div class="group quoteGroup hidden">
-      <button data-quoteLength="-1">all</button>
-      <button data-quoteLength="0">short</button>
-      <button data-quoteLength="1">medium</button>
-      <button data-quoteLength="2">long</button>
-      <button data-quoteLength="3">thicc</button>
-      <button id="quote-search-button" data-quoteLength="-2">search</button>
+      <button type="button" data-quoteLength="-1">all</button>
+      <button type="button" data-quoteLength="0">short</button>
+      <button type="button" data-quoteLength="1">medium</button>
+      <button type="button" data-quoteLength="2">long</button>
+      <button type="button" data-quoteLength="3">thicc</button>
+      <button type="button" id="quote-search-button" data-quoteLength="-2">
+        search
+      </button>
     </div>
     <div class="group customGroup hidden">
-      <button class="customChange">change</button>
+      <button type="button" class="customChange">change</button>
     </div>
   </div>
 </div>
@@ -238,7 +242,7 @@
 
 <div id="pbTablesPopupWrapper" class="popupWrapper hidden">
   <div id="pbTablesPopup">
-    <!-- <div class="title">All words personal bests</div> -->
+    <!-- <h3 class="title">All words personal bests</h3> -->
     <table>
       <thead>
         <tr>
@@ -266,28 +270,28 @@
 </div>
 
 <div id="practiseWordsPopupWrapper" class="popupWrapper hidden" tabindex="-1">
-  <div id="practiseWordsPopup" action="">
-    <div class="title">Practice words</div>
-    <div class="text">
+  <section id="practiseWordsPopup" action="">
+    <h3 class="title">Practice words</h3>
+    <p class="text">
       This will start a new test in custom mode. Words that you mistyped more
       often or words that you typed much slower will be weighted higher and
       appear more often.
-    </div>
-    <div class="button missed" tabindex="1">Practice missed</div>
-    <div class="button slow" tabindex="1">Practice slow</div>
-    <div class="button both" tabindex="1">Practice both</div>
-  </div>
+    </p>
+    <div role="button" class="button missed" tabindex="1">Practice missed</div>
+    <div role="button" class="button slow" tabindex="1">Practice slow</div>
+    <div role="button" class="button both" tabindex="1">Practice both</div>
+  </section>
 </div>
 
 <div id="quoteRatePopupWrapper" class="popupWrapper hidden">
   <div id="quoteRatePopup" quoteId="">
-    <div class="warning">
+    <p class="warning">
       If you find a grammatical error, think the quote has inappropriate
       language or feel like it's low quality -
       <span>don't give it a low rating!</span>
       Please report it instead. You can do so by closing this popup and clicking
       the "Flag" icon.
-    </div>
+    </p>
     <div class="quote">
       <div class="text">-</div>
       <div class="id">
@@ -335,54 +339,51 @@
         </div>
       </div>
     </div>
-    <!-- <div class="button rate1">
+    <!-- <div role="button" class="button rate1">
             <i class="fas fa-star"></i>
             <i class="far fa-star"></i>
             <i class="far fa-star"></i>
           </div>
-          <div class="button rate2">
+          <div role="button" class="button rate2">
             <i class="fas fa-star"></i>
             <i class="fas fa-star"></i>
             <i class="far fa-star"></i>
           </div>
-          <div class="button rate3">
+          <div role="button" class="button rate3">
             <i class="fas fa-star"></i>
             <i class="fas fa-star"></i>
             <i class="fas fa-star"></i>
           </div> -->
-    <span
-      aria-label="Submit review"
-      data-balloon-pos="up"
-      style="display: grid"
-    >
-      <div class="textButton submitButton">
+    <div aria-label="Submit review" data-balloon-pos="up" style="display: grid">
+      <div role="button" class="textButton submitButton">
         <i class="fas fa-chevron-right"></i>
       </div>
-    </span>
+    </div>
   </div>
 </div>
 
 <div id="settingsImportWrapper" class="popupWrapper hidden">
   <div id="settingsImport" action="">
     <input type="text" title="import settings" />
-    <div class="button">import settings</div>
+    <div role="button" class="button">import settings</div>
   </div>
 </div>
 
 <div id="customThemeShareWrapper" class="popupWrapper hidden">
   <div id="customThemeShare" action="">
     <input type="text" title="custom theme" />
-    <div class="button">ok</div>
+    <div role="button" class="button">ok</div>
   </div>
 </div>
+
 <div id="customTextPopupWrapper" class="popupWrapper hidden">
   <div id="customTextPopup" action="">
     <div class="buttonsTop">
-      <div class="button saveCustomText">
+      <div role="button" class="button saveCustomText">
         <i class="fas fa-save"></i>
         Save
       </div>
-      <div class="button showSavedTexts">
+      <div role="button" class="button showSavedTexts">
         <i class="fas fa-folder"></i>
         Show saved texts
       </div>
@@ -391,13 +392,13 @@
         <i class="fas fa-file-import"></i>
         Open file
       </label>
-      <div class="button wordfilter">
+      <div role="button" class="button wordfilter">
         <i class="fas fa-filter"></i>
         Words filter
       </div>
     </div>
     <div class="savedTexts hidden" style="display: none">
-      <div class="title">saved texts</div>
+      <p class="title">saved texts</p>
       <div class="buttons"></div>
     </div>
     <div class="textAreaWrapper" style="position: relative">
@@ -405,7 +406,7 @@
         <div class="textAndButton">
           A long custom text is currently loaded. Editing the text will disable
           progress tracking.
-          <div class="button">Got it</div>
+          <div role="button" class="button">Got it</div>
         </div>
       </div>
       <textarea class="textarea"></textarea>
@@ -413,10 +414,10 @@
     <div class="inputs">
       <label class="checkboxWithSub randomWordsCheckbox">
         <input type="checkbox" />
-        <div>Random</div>
-        <div class="sub">
+        <span>Random</span>
+        <span class="sub">
           Randomize the above words, and control how many words are generated.
-        </div>
+        </span>
       </label>
       <div class="randomInputFields disabled">
         <label class="wordcount">
@@ -436,88 +437,91 @@
       </div>
       <label class="checkboxWithSub typographyCheck">
         <input type="checkbox" checked />
-        <div>Remove fancy typography</div>
-        <div class="sub">
+        <span>Remove fancy typography</span>
+        <span class="sub">
           Standardises typography symbols (for example “ and ” become ")
-        </div>
+        </span>
       </label>
       <label class="checkboxWithSub replaceControlCharacters">
         <input type="checkbox" checked />
-        <div>Replace control characters</div>
-        <div class="sub">
+        <span>Replace control characters</span>
+        <span class="sub">
           Replace control characters (\n becomes a new line and \t becomes a
           tab)
-        </div>
+        </span>
       </label>
       <label class="checkboxWithSub delimiterCheck">
         <input type="checkbox" />
-        <div>Pipe delimiter</div>
-        <div class="sub">
+        <span>Pipe delimiter</span>
+        <span class="sub">
           Change how words are separated. Using the pipe delimiter allows you to
           randomize groups of words.
-        </div>
+        </span>
       </label>
       <label class="checkboxWithSub replaceNewlineWithSpace">
         <input type="checkbox" />
-        <div>Replace new lines with spaces</div>
-        <div class="sub">
+        <span>Replace new lines with spaces</span>
+        <span class="sub">
           Replace all new line characters with spaces. Can automatically add
           periods to the end of lines if you wish.
-        </div>
+        </span>
       </label>
       <div class="replaceNewLinesButtons">
         <div class="buttonGroup">
-          <div class="button active noPeriods">no periods</div>
-          <div class="button periods">periods</div>
+          <div role="button" class="button active noPeriods">no periods</div>
+          <div role="button" class="button periods">periods</div>
         </div>
       </div>
     </div>
-    <div class="button apply">ok</div>
+    <div role="button" class="button apply">ok</div>
   </div>
 </div>
+
 <div id="savedTextsPopupWrapper" class="popupWrapper hidden">
   <div id="savedTextsPopup">
-    <div class="title">Saved texts</div>
+    <h3 class="title">Saved texts</h3>
     <div class="list"></div>
-    <div class="title">Saved long texts</div>
+    <h3 class="title">Saved long texts</h3>
     <div class="listLong"></div>
   </div>
 </div>
+
 <div id="saveCustomTextPopupWrapper" class="popupWrapper hidden">
   <div id="saveCustomTextPopup">
-    <div class="title">Save custom text</div>
+    <h3 class="title">Save custom text</h3>
     <input class="textName" type="text" placeholder="name" />
     <div>
       <label class="checkboxWithSub">
         <input type="checkbox" class="isLongText" />
-        <div>Long text (book mode)</div>
-        <div class="sub">
+        <span>Long text (book mode)</span>
+        <span class="sub">
           Disables editing this text but allows you to save progress by pressing
           shift + enter or bailing out. You can then load this text again to
           continue where you left off.
-        </div>
+        </span>
       </label>
     </div>
-    <div class="button save">save</div>
+    <div role="button" class="button save">save</div>
   </div>
 </div>
+
 <div id="wordFilterPopupWrapper" class="popupWrapper hidden">
   <div id="wordFilterPopup">
     <div class="top">
       <div class="group">
-        <div class="title">language</div>
+        <h3 class="title">language</h3>
         <select class="languageInput" title="language"></select>
       </div>
-      <div class="tip">
+      <p class="tip">
         You can manually filter words by length, words or characters (separated
         by spaces) on the left side. On the right side you can generate filters
         based on a preset and selected layout.
-      </div>
+      </p>
     </div>
     <div class="leftSide">
       <div class="group lengthgrid">
-        <div class="title">min length</div>
-        <div class="title">max length</div>
+        <p class="title">min length</p>
+        <p class="title">max length</p>
 
         <input
           class="wordLength wordMinInput"
@@ -533,7 +537,7 @@
         />
       </div>
       <div class="group">
-        <div class="title">include</div>
+        <p class="title">include</p>
         <input
           class="wordIncludeInput"
           id="wordIncludeInput"
@@ -542,7 +546,7 @@
         />
       </div>
       <div class="group">
-        <div class="title">exclude</div>
+        <p class="title">exclude</p>
         <input
           class="wordExcludeInput"
           id="wordExcludeInput"
@@ -560,70 +564,74 @@
 
     <div class="rightSide">
       <div class="group">
-        <div class="title">presets</div>
+        <p class="title">presets</p>
         <select class="presetInput"></select>
       </div>
       <div class="group">
-        <div class="title">layout</div>
+        <p class="title">layout</p>
         <select class="layoutInput"></select>
       </div>
       <!-- <div class="tip">Use the dropdowns above to generate presets</div> -->
-      <div class="button generateButton">generate</div>
+      <div role="button" class="button generateButton">generate</div>
     </div>
 
     <div class="bottom">
-      <div class="tip">
+      <p class="tip">
         "Set" replaces the current custom word list with the filter result,
         "Add" appends the filter result to the current custom word list
-      </div>
+      </p>
       <i class="fas fa-fw fa-spin fa-circle-notch hidden loadingIndicator"></i>
-      <div class="button setButton">set</div>
-      <div class="button addButton">add</div>
+      <div role="button" class="button setButton">set</div>
+      <div role="button" class="button addButton">add</div>
     </div>
   </div>
 </div>
+
 <div id="googleSignUpPopupWrapper" class="popupWrapper hidden">
   <div id="googleSignUpPopup">
-    <div class="title">Account name</div>
-    <div class="text">You need to choose a username before continuing</div>
+    <h3 class="title">Account name</h3>
+    <p class="text">You need to choose a username before continuing</p>
     <input type="text" placeholder="username" />
     <div class="captcha"></div>
-    <div class="button disabled">Sign up</div>
+    <div role="button" class="button disabled">Sign up</div>
   </div>
 </div>
+
 <div id="customWordAmountPopupWrapper" class="popupWrapper hidden">
   <div id="customWordAmountPopup">
-    <div class="title">Word amount</div>
+    <h3 class="title">Word amount</h3>
     <input type="number" value="1" min="1" max="10000" />
-    <div class="tip">
+    <p class="tip">
       You can start an infinite test by inputting 0. Then, to stop the test, use
       the Bail Out feature (esc or ctrl/cmd + shift + p > Bail Out)
-    </div>
-    <button>ok</button>
+    </p>
+    <button type="button">ok</button>
   </div>
 </div>
+
 <div id="customTestDurationPopupWrapper" class="popupWrapper hidden">
   <div id="customTestDurationPopup">
-    <div class="title">Test duration</div>
+    <h3 class="title">Test duration</h3>
     <div class="preview"></div>
     <input value="1" title="test duration" />
-    <div class="tip">
+    <p class="tip">
       You can start an infinite test by inputting 0. Then, to stop the test, use
       the Bail Out feature (esc or ctrl/cmd + shift + p > Bail Out)
-    </div>
-    <button>ok</button>
+    </p>
+    <button type="button">ok</button>
   </div>
 </div>
+
 <div id="quoteSearchPopupWrapper" class="popupWrapper hidden">
   <div id="quoteSearchPopup" mode="">
     <div id="quoteSearchTop">
-      <div class="title">Quote Search</div>
+      <h3 class="title">Quote Search</h3>
       <div class="buttons">
-        <div id="gotoSubmitQuoteButton" class="button">
+        <div role="button" id="gotoSubmitQuoteButton" class="button">
           <i class="fas fa-plus"></i>
           Submit a quote
         </div>
-        <div id="goToApproveQuotes" class="button">
+        <div role="button" id="goToApproveQuotes" class="button">
           <i class="fas fa-check"></i>
           Approve quotes
         </div>
@@ -639,23 +647,26 @@
         placeholder="Filter by text"
       />
       <select class="quoteLengthFilter"></select>
-      <div id="toggleShowFavorites" class="button">Favorites Only</div>
+      <div role="button" id="toggleShowFavorites" class="button">
+        Favorites Only
+      </div>
     </div>
     <div id="quoteSearchResults" class="quoteSearchResults"></div>
     <div id="quoteSearchPageNavigator">
-      <div class="button prevPage disabled">
+      <div role="button" class="button prevPage disabled">
         <i class="fas fa-fw fa-chevron-left"></i>
       </div>
       <div id="pageInfo">No search results</div>
-      <div class="button nextPage disabled">
+      <div role="button" class="button nextPage disabled">
         <i class="fas fa-fw fa-chevron-right"></i>
       </div>
     </div>
   </div>
 </div>
+
 <div id="quoteSubmitPopupWrapper" class="popupWrapper hidden">
   <div id="quoteSubmitPopup" mode="">
-    <div class="title">Submit a Quote</div>
+    <h3 class="title">Submit a Quote</h3>
     <ul>
       <li>
         Do not include content that contains any libelous or otherwise unlawful,
@@ -687,14 +698,15 @@
     <label>Language</label>
     <select name="language" id="submitQuoteLanguage"></select>
     <div class="g-recaptcha"></div>
-    <div id="submitQuoteButton" class="button">Submit</div>
+    <div role="button" id="submitQuoteButton" class="button">Submit</div>
   </div>
 </div>
+
 <div id="apeKeysPopupWrapper" class="hidden popupWrapper">
   <div id="apeKeysPopup" mode="">
     <div class="top">
-      <div class="title">Ape Keys</div>
-      <div class="button generateApeKey">
+      <h3 class="title">Ape Keys</h3>
+      <div role="button" class="button generateApeKey">
         <i class="fas fa-plus"></i>
         Generate new key
       </div>
@@ -714,16 +726,17 @@
     </table>
   </div>
 </div>
+
 <div id="quoteReportPopupWrapper" class="popupWrapper hidden">
   <div id="quoteReportPopup" mode="">
-    <div class="title">Report a Quote</div>
-    <div class="text">
+    <h3 class="title">Report a Quote</h3>
+    <p class="text">
       Please report quotes responsibly - misuse may result in you losing access
       to this feature.
       <br />
       <br />
       <span class="red">Please add comments in English only.</span>
-    </div>
+    </p>
     <label>quote</label>
     <div class="quote"></div>
     <label>reason</label>
@@ -742,16 +755,17 @@
       class="g-recaptcha"
       data-sitekey="6Lc-V8McAAAAAJ7s6LGNe7MBZnRiwbsbiWts87aj"
     ></div>
-    <div class="button submit">report</div>
+    <div role="button" class="button submit">report</div>
   </div>
 </div>
+
 <div id="userReportPopupWrapper" class="popupWrapper hidden">
   <div id="userReportPopup" mode="">
-    <div class="title">Report a User</div>
-    <div class="text">
+    <h3 class="title">Report a User</h3>
+    <p class="text">
       Please report users responsibly. Please add comments in English only.
       Misuse may result in you losing access to this feature.
-    </div>
+    </p>
     <label>user</label>
     <div class="user"></div>
     <label>reason</label>
@@ -772,14 +786,15 @@
       class="g-recaptcha"
       data-sitekey="6Lc-V8McAAAAAJ7s6LGNe7MBZnRiwbsbiWts87aj"
     ></div>
-    <div class="button submit">Report</div>
+    <div role="button" class="button submit">Report</div>
   </div>
 </div>
+
 <div id="quoteApprovePopupWrapper" class="popupWrapper hidden">
   <div id="quoteApprovePopup" mode="">
     <div class="top">
-      <div class="title">Approve Quotes</div>
-      <div class="button refreshList">
+      <h3 class="title">Approve Quotes</h3>
+      <div role="button" class="button refreshList">
         <i class="fas fa-sync-alt"></i>
         Refresh list
       </div>
@@ -787,19 +802,21 @@
     <div class="quotes"></div>
   </div>
 </div>
+
 <div id="tagsWrapper" class="popupWrapper hidden" tabindex="-1">
   <div id="tagsEdit" action="" tagid="">
     <form>
-      <div class="title"></div>
+      <h3 class="title"></h3>
       <input type="text" title="tag" />
       <button type="submit"></button>
     </form>
   </div>
 </div>
+
 <div id="streakHourOffsetPopupWrapper" class="popupWrapper hidden">
   <div id="streakHourOffsetPopup">
-    <div class="title">Set Streak Hour Offset</div>
-    <div class="text">
+    <h3 class="title">Set Streak Hour Offset</h3>
+    <p class="text">
       Streaks reset at midnight UTC by default. If this is not convenient for
       you (for example if it means that streaks reset in the middle of the day),
       you can change the hour offset here.
@@ -809,22 +826,26 @@
       <br />
       <br />
       <span class="red">You can only do this once!</span>
-    </div>
+    </p>
     <input type="number" min="-11" max="12" value="0" />
     <div class="preview"></div>
-    <div class="button">set</div>
+    <div role="button" class="button">set</div>
   </div>
 </div>
+
 <div id="resultEditTagsPanelWrapper" class="popupWrapper hidden">
   <div id="resultEditTagsPanel" resultid="">
     <div class="buttons"></div>
-    <div class="button confirmButton"><i class="fas fa-check"></i></div>
+    <div role="button" class="button confirmButton">
+      <i class="fas fa-check"></i>
+    </div>
   </div>
 </div>
+
 <div id="presetWrapper" class="popupWrapper hidden" tabindex="-1">
   <div id="presetEdit" action="" presetid="">
     <form>
-      <div class="title"></div>
+      <h3 class="title"></h3>
       <input type="text" class="text" title="presets" />
       <label class="checkbox">
         <input type="checkbox" />
@@ -834,29 +855,31 @@
     </form>
   </div>
 </div>
+
 <div id="shareCustomThemeWrapper" class="popupWrapper hidden">
   <div id="shareCustomThemeEdit" action="">
-    <div class="title">Share Custom Theme</div>
+    <h3 class="title">Share Custom Theme</h3>
     <label class="checkbox">
       <input type="checkbox" id="includeBackground" />
       Include background information
     </label>
-    <div class="button copy-button">copy link to clipboard</div>
+    <div role="button" class="button copy-button">copy link to clipboard</div>
   </div>
 </div>
+
 <div id="leaderboardsWrapper" class="popupWrapper hidden">
   <div id="leaderboards">
     <div class="leaderboardsTop">
-      <div class="mainTitle">All-Time English Leaderboards</div>
-      <div class="subTitle">Next update in: --:--</div>
-      <div class="textButton showYesterdayButton hidden">
+      <h3 class="mainTitle">All-Time English Leaderboards</h3>
+      <p class="subTitle">Next update in: --:--</p>
+      <div role="button" class="textButton showYesterdayButton hidden">
         <i class="fas fa-calendar-day"></i>
-        <div class="text">Show yesterday</div>
+        <span class="text">Show yesterday</span>
       </div>
       <div class="buttons">
         <div class="buttonGroup timeRange">
-          <div class="button allTime">all-time</div>
-          <div class="button daily">daily</div>
+          <div role="button" class="button allTime">all-time</div>
+          <div role="button" class="button daily">daily</div>
           <select class="languageSelect" disabled></select>
         </div>
       </div>
@@ -864,18 +887,18 @@
     <div class="tables">
       <div class="titleAndTable">
         <div class="titleAndButtons">
-          <div class="title">
+          <h4 class="title">
             Time 15
             <i
               class="hidden leftTableLoader fas fa-fw fa-spin fa-circle-notch"
             ></i>
-          </div>
+          </h4>
           <div class="buttons">
-            <div class="button leftTableJumpToTop">
+            <div role="button" class="button leftTableJumpToTop">
               <i class="fas fa-fw fas fa-crown"></i>
               <!-- Top -->
             </div>
-            <div class="button leftTableJumpToMe">
+            <div role="button" class="button leftTableJumpToMe">
               <i class="fas fa-fw fas fa-user"></i>
               <!-- Me -->
             </div>
@@ -907,18 +930,18 @@
       </div>
       <div class="titleAndTable">
         <div class="titleAndButtons">
-          <div class="title">
+          <h4 class="title">
             Time 60
             <i
               class="hidden rightTableLoader fas fa-fw fa-spin fa-circle-notch"
             ></i>
-          </div>
+          </h4>
           <div class="buttons">
-            <div class="button rightTableJumpToTop">
+            <div role="button" class="button rightTableJumpToTop">
               <i class="fas fa-fw fas fa-crown"></i>
               <!-- Top -->
             </div>
-            <div class="button rightTableJumpToMe">
+            <div role="button" class="button rightTableJumpToMe">
               <i class="fas fa-fw fas fa-user"></i>
               <!-- Me -->
             </div>
@@ -951,29 +974,31 @@
     </div>
   </div>
 </div>
+
 <div id="versionHistoryWrapper" class="popupWrapper hidden">
   <div id="versionHistory"></div>
 </div>
+
 <div id="supportMeWrapper" class="popupWrapper hidden" tabindex="-1">
   <div id="supportMe">
-    <div class="title">Support Monkeytype</div>
-    <div class="text">
+    <h3 class="title">Support Monkeytype</h3>
+    <p class="text">
       Thank you so much for thinking about supporting this project. It would not
       be possible without you and your continued support.
       <i class="fas fa-heart"></i>
-    </div>
+    </p>
     <div class="buttons">
-      <button class="ads">
-        <div class="icon"><i class="fas fa-fw fa-ad"></i></div>
-        <div class="text">Enable Ads</div>
+      <button type="button" class="ads">
+        <span class="icon"><i class="fas fa-fw fa-ad"></i></span>
+        <span class="text">Enable Ads</span>
       </button>
-      <!-- <div class="button watchVideoAd">
-        <div class="icon"><i class="fas fa-fw fa-ad"></i></div>
-        <div class="text">
+      <!-- <div role="button" class="button watchVideoAd">
+        <span class="icon"><i class="fas fa-fw fa-ad"></i></span>
+        <span class="text">
           Watch
           <br />
           a Video Ad
-        </div>
+        </span>
       </div> -->
       <a
         class="button"
@@ -981,8 +1006,8 @@
         target="_blank"
         rel="noreferrer noopener"
       >
-        <div class="icon"><i class="fas fa-fw fa-donate"></i></div>
-        <div class="text">Donate</div>
+        <span class="icon"><i class="fas fa-fw fa-donate"></i></span>
+        <span class="text">Donate</span>
       </a>
       <a
         class="button"
@@ -990,8 +1015,8 @@
         target="_blank"
         rel="noreferrer noopener"
       >
-        <div class="icon"><i class="fab fa-fw fa-patreon"></i></div>
-        <div class="text">Join Patreon</div>
+        <span class="icon"><i class="fab fa-fw fa-patreon"></i></span>
+        <span class="text">Join Patreon</span>
       </a>
       <a
         class="button"
@@ -999,16 +1024,17 @@
         target="_blank"
         rel="noreferrer noopener"
       >
-        <div class="icon"><i class="fas fa-fw fa-tshirt"></i></div>
-        <div class="text">Buy Merch</div>
+        <span class="icon"><i class="fas fa-fw fa-tshirt"></i></span>
+        <span class="text">Buy Merch</span>
       </a>
     </div>
   </div>
 </div>
+
 <div id="contactPopupWrapper" class="popupWrapper hidden">
   <div id="contactPopup">
-    <div class="title">Contact</div>
-    <div class="text">
+    <h3 class="title">Contact</h3>
+    <p class="text">
       Feel free to send an email to contact@monkeytype.com. For business
       inquiries, email jack@monkeytype.com (the buttons below will open the
       default mail client).
@@ -1018,7 +1044,7 @@
       <span>do not send</span>
       requests to delete account, update email, update name or clear personal
       bests - you can do that in the settings page.
-    </div>
+    </p>
     <div class="buttons">
       <a
         class="button"
@@ -1026,11 +1052,11 @@
         href="mailto:contact@monkeytype.com?subject=[Question] "
         rel="noopener"
       >
-        <div class="icon"><i class="fas fa-question-circle"></i></div>
-        <div class="textGroup">
-          <div class="text">Question</div>
-          <!-- <div class="subtext">Confused about something?</div> -->
-        </div>
+        <span class="icon"><i class="fas fa-question-circle"></i></span>
+        <span class="textGroup">
+          <span class="text">Question</span>
+          <!-- <span class="subtext">Confused about something?</span> -->
+        </span>
       </a>
       <a
         class="button"
@@ -1038,11 +1064,11 @@
         href="mailto:contact@monkeytype.com?subject=[Feedback] "
         rel="noopener"
       >
-        <div class="icon"><i class="fas fa-comment-dots"></i></div>
-        <div class="textGroup">
-          <div class="text">Feedback</div>
-          <!-- <div class="subtext">Feel like the website could be improved?</div> -->
-        </div>
+        <span class="icon"><i class="fas fa-comment-dots"></i></span>
+        <span class="textGroup">
+          <span class="text">Feedback</span>
+          <!-- <span class="subtext">Feel like the website could be improved?</span> -->
+        </span>
       </a>
       <a
         class="button"
@@ -1050,11 +1076,11 @@
         href="mailto:support@monkeytype.com?subject=[Bug] "
         rel="noopener"
       >
-        <div class="icon"><i class="fas fa-bug"></i></div>
-        <div class="textGroup">
-          <div class="text">Bug Report</div>
-          <!-- <div class="subtext">Report any bugs you found. You can also open a new issue on GitHub.</div> -->
-        </div>
+        <span class="icon"><i class="fas fa-bug"></i></span>
+        <span class="textGroup">
+          <span class="text">Bug Report</span>
+          <!-- <span class="subtext">Report any bugs you found. You can also open a new issue on GitHub.</span> -->
+        </span>
       </a>
       <a
         class="button"
@@ -1062,11 +1088,11 @@
         href="mailto:support@monkeytype.com?subject=[Account] "
         rel="noopener"
       >
-        <div class="icon"><i class="fas fa-user-circle"></i></div>
-        <div class="textGroup">
-          <div class="text">Account Help</div>
-          <!-- <div class="subtext">Report any problems with your account like login issues.</div> -->
-        </div>
+        <span class="icon"><i class="fas fa-user-circle"></i></span>
+        <span class="textGroup">
+          <span class="text">Account Help</span>
+          <!-- <span class="subtext">Report any problems with your account like login issues.</span> -->
+        </span>
       </a>
       <a
         class="button"
@@ -1074,11 +1100,11 @@
         href="mailto:jack@monkeytype.com?subject=[Business] "
         rel="noopener"
       >
-        <div class="icon"><i class="fas fa-briefcase"></i></div>
-        <div class="textGroup">
-          <div class="text">Business Inquiry</div>
-          <!-- <div class="subtext">Let's work together.</div> -->
-        </div>
+        <span class="icon"><i class="fas fa-briefcase"></i></span>
+        <span class="textGroup">
+          <span class="text">Business Inquiry</span>
+          <!-- <span class="subtext">Let's work together.</span> -->
+        </span>
       </a>
       <a
         class="button"
@@ -1086,15 +1112,16 @@
         href="mailto:contact@monkeytype.com?subject=[Other] "
         rel="noopener"
       >
-        <div class="icon"><i class="fas fa-ellipsis-h"></i></div>
-        <div class="textGroup">
-          <div class="text">Other</div>
-          <!-- <div class="subtext">We will try to help.</div> -->
-        </div>
+        <span class="icon"><i class="fas fa-ellipsis-h"></i></span>
+        <span class="textGroup">
+          <span class="text">Other</span>
+          <!-- <span class="subtext">We will try to help.</span> -->
+        </span>
       </a>
     </div>
   </div>
 </div>
+
 <div id="commandLineWrapper" class="hidden">
   <div id="commandLine">
     <div
@@ -1110,30 +1137,31 @@
       <input type="text" class="input" placeholder="Type to search" />
     </div>
     <div class="separator hidden"></div>
-    <div class="listTitle">Title</div>
+    <p class="listTitle">Title</p>
     <div class="suggestions"></div>
   </div>
   <div id="commandInput" class="hidden">
     <input type="text" class="input" placeholder="input" />
   </div>
 </div>
+
 <div id="newResultFilterPresetPopupWrapper" class="popupWrapper hidden">
   <div id="newResultFilterPresetPopup">
-    <div class="title">Add new filter preset</div>
+    <h3 class="title">Add new filter preset</h3>
     <input type="text" value="new preset" />
-    <div class="button">add</div>
+    <div role="button" class="button">add</div>
   </div>
 </div>
 
 <div id="editProfilePopupWrapper" class="popupWrapper hidden" tabindex="-1">
   <form id="editProfilePopup">
-    <div class="title">Edit Profile</div>
+    <h3 class="title">Edit Profile</h3>
     <div>
       <label>avatar</label>
-      <div>
+      <p>
         To update your avatar make sure your Discord account is linked, then go
         to Settings > Account > Discord Integration and click "Update Avatar"
-      </div>
+      </p>
     </div>
     <div>
       <label>bio</label>

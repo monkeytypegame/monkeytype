@@ -1,3 +1,10 @@
+h3,
+h4,
+p {
+  margin: 0;
+  font-weight: unset;
+}
+
 .popupWrapper {
   width: 100%;
   height: 100%;
@@ -488,6 +495,8 @@
     width: 400px;
 
     .title {
+      margin: 0;
+      font-weight: unset;
       font-size: 1.5rem;
       color: var(--sub-color);
     }
@@ -498,6 +507,7 @@
     }
 
     .text {
+      margin: 0;
       font-size: 1rem;
       color: var(--text-color);
     }
@@ -588,6 +598,7 @@
     padding: 1rem;
     width: 465px;
     font-size: 0.75rem;
+    margin: 0;
   }
   #cookiePopup {
     position: fixed;
