@@ -23,6 +23,14 @@
       "backend": true,
       "shared-types": true
     },
-    "jest.disabledWorkspaceFolders": ["root", "shared-types"]
+    "search.exclude": {
+      "**/node_modules": true,
+      "**/bower_components": true,
+      "**/*.code-search": true,
+      "**/build/**": true,
+      "**/public/**": true,
+      "**/coverage/**": true
+    },
+    "jest.disabledWorkspaceFolders": ["root", "shared-types", "frontend"]
   }
 }
