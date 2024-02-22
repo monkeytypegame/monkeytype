@@ -1340,7 +1340,7 @@ $("#wordsInput").on("focus", () => {
   if (!resultVisible && Config.showOutOfFocusWarning) {
     OutOfFocus.hide();
   }
-  Caret.show();
+  Caret.show(true);
 });
 
 $("#wordsInput").on("focusout", () => {

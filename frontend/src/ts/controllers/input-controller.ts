@@ -744,14 +744,18 @@ function handleChar(
     handleSpace();
   }
 
+  const currentWord = TestWords.words.getCurrent();
+  const doesCurrentWordHaveTab = /^\t+/.test(TestWords.words.getCurrent());
+  const isCurrentCharTab = currentWord[TestInput.input.current.length] === "\t";
+
   if (
     thisCharCorrect &&
     Config.language.startsWith("code") &&
-    /^\t+/.test(TestWords.words.getCurrent()) &&
-    TestWords.words.getCurrent()[TestInput.input.current.length] === "\t"
+    doesCurrentWordHaveTab &&
+    isCurrentCharTab
   ) {
-    // handleChar("\t", TestInput.input.current.length);
-    $("#wordsInput").trigger($.Event("keydown", { key: "Tab", code: "Tab" }));
+    const tabEvent = new KeyboardEvent("keydown", { key: "Tab", code: "Tab" });
+    document.dispatchEvent(tabEvent);
   }
 
   if (char !== "\n") {

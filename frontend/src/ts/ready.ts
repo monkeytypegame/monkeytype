@@ -92,6 +92,16 @@ $(document).ready(() => {
   MonkeyPower.init();
 
   new Konami("https://keymash.io/");
+
+  if (Misc.isDevEnvironment()) {
+    void navigator.serviceWorker
+      .getRegistrations()
+      .then(function (registrations) {
+        for (const registration of registrations) {
+          void registration.unregister();
+        }
+      });
+  }
 });
 
 window.onerror = function (message, url, line, column, error): void {
