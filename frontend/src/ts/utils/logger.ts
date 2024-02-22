@@ -4,7 +4,7 @@ const nativeLog = console.log;
 const nativeWarn = console.warn;
 const nativeError = console.error;
 
-let debugLogs = localStorage.getItem("debugLogs") === "true" ?? false;
+let debugLogs = localStorage.getItem("debugLogs") === "true";
 
 if (isDevEnvironment()) {
   debugLogs = true;
