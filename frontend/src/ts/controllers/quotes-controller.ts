@@ -48,7 +48,7 @@ class QuotesController {
     const normalizedLanguage = removeLanguageSize(language);
 
     if (this.quoteCollection.language !== normalizedLanguage) {
-      const data: QuoteData = await cachedFetchJson(
+      const data = await cachedFetchJson<QuoteData>(
         `quotes/${normalizedLanguage}.json`
       );
 
