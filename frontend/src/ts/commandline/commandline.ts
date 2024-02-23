@@ -303,7 +303,7 @@ input.addEventListener("keydown", (e) => {
     runActiveCommand();
   }
   if (e.key === "Escape") {
-    goBackOrHide();
+    void goBackOrHide();
   }
 });
 
