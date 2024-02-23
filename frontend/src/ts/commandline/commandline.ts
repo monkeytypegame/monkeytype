@@ -26,6 +26,7 @@ function show(): void {
   attachEventHandlers();
   filterCommands();
   showCommands();
+  updateActiveCommand();
 
   $("#commandLineWrapper")
     .stop(true, true)
@@ -68,6 +69,7 @@ function filterCommands(): void {
   const newList = [];
 
   for (const command of list.list) {
+    if (!(command.available?.() ?? true)) continue;
     let foundCount = 0;
     for (const input of inputSplit) {
       const escaped = input.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
@@ -85,7 +87,6 @@ function filterCommands(): void {
       newList.push(command);
     }
   }
-
   filteredCommands = newList;
 }
 
@@ -95,10 +96,55 @@ function showCommands(): void {
     throw new Error("Commandline element not found");
   }
   let html = "";
+  let index = 0;
   for (const command of filteredCommands) {
-    html += `<div class="suggestion">${command.display}</div>`;
+    let icon = command.icon ?? "fa-chevron-right";
+    const faIcon = icon.startsWith("fa-");
+    if (!faIcon) {
+      icon = `<div class="textIcon">${icon}</div>`;
+    } else {
+      icon = `<i class="fas fa-fw ${icon}"></i>`;
+    }
+    let iconHTML = `<div class="icon">${icon}</div>`;
+    if (command.noIcon && usingSingleList) {
+      iconHTML = "";
+    }
+    let customStyle = "";
+    if (command.customStyle !== undefined && command.customStyle !== "") {
+      customStyle = command.customStyle;
+    }
+
+    if (command.id.startsWith("changeTheme") && command.customData) {
+      html += `<div class="entry withThemeBubbles" command="${command.id}" index="${index}" style="${customStyle}">
+      ${iconHTML}<div>${command.display}</div>
+      <div class="themeBubbles" style="background: ${command.customData["bgColor"]};outline: 0.25rem solid ${command.customData["bgColor"]};">
+        <div class="themeBubble" style="background: ${command.customData["mainColor"]}"></div>
+        <div class="themeBubble" style="background: ${command.customData["subColor"]}"></div>
+        <div class="themeBubble" style="background: ${command.customData["textColor"]}"></div>
+      </div>
+      </div>`;
+    } else {
+      html += `<div class="entry" command="${command.id}" index="${index}" style="${customStyle}">${iconHTML}<div>${command.display}</div></div>`;
+    }
+    index++;
   }
   element.innerHTML = html;
+}
+
+function updateActiveCommand(): void {
+  const elements = [
+    ...document.querySelectorAll("#commandLine .suggestions .entry"),
+  ];
+
+  for (const element of elements) {
+    element.classList.remove("active");
+  }
+
+  const element = elements[activeIndex];
+  if (element === undefined) {
+    return;
+  }
+  element.classList.add("active");
 }
 
 export function toggle(): void {
@@ -106,6 +152,24 @@ export function toggle(): void {
     hide();
   } else {
     show();
+  }
+}
+
+function keepActiveCommandInView(): void {
+  try {
+    const scroll =
+      Math.abs(
+        ($(".suggestions").offset()?.top as number) -
+          ($(".entry.active").offset()?.top as number) -
+          ($(".suggestions").scrollTop() as number)
+      ) -
+      ($(".suggestions").outerHeight() as number) / 2 +
+      ($($(".entry")[0] as HTMLElement).outerHeight() as number);
+    $(".suggestions").scrollTop(scroll);
+  } catch (e) {
+    if (e instanceof Error) {
+      console.log("could not scroll suggestions: " + e.message);
+    }
   }
 }
 
@@ -120,6 +184,22 @@ function updateInput(): void {
   element.value = inputValue;
 }
 
+function incrementActiveIndex(): void {
+  activeIndex++;
+  if (activeIndex >= filteredCommands.length) {
+    activeIndex = 0;
+  }
+  updateActiveCommand();
+}
+
+function decrementActiveIndex(): void {
+  activeIndex--;
+  if (activeIndex < 0) {
+    activeIndex = filteredCommands.length - 1;
+  }
+  updateActiveCommand();
+}
+
 function attachEventHandlers(): void {
   const element: HTMLInputElement | null =
     document.querySelector("#commandLine input");
@@ -130,8 +210,23 @@ function attachEventHandlers(): void {
 
   element.addEventListener("input", (e) => {
     inputValue = (e.target as HTMLInputElement).value;
+    activeIndex = 0;
     filterCommands();
     showCommands();
+    updateActiveCommand();
+  });
+
+  element.addEventListener("keydown", (e) => {
+    if (e.key === "ArrowUp") {
+      e.preventDefault();
+      decrementActiveIndex();
+      keepActiveCommandInView();
+    }
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      incrementActiveIndex();
+      keepActiveCommandInView();
+    }
   });
 }
 
