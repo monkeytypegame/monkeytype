@@ -306,6 +306,7 @@ declare namespace MonkeyTypes {
     visible?: boolean;
     customStyle?: string;
     defaultValue?: () => string;
+    configKey?: keyof SharedTypes.Config;
     configValue?: string | number | boolean | number[];
     configValueMode?: string;
     exec?: (input?: string) => void;
