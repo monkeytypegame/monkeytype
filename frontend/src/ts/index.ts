@@ -34,7 +34,7 @@ import "./popups/google-sign-up-popup";
 import "./popups/result-tags-popup";
 import * as Account from "./pages/account";
 import "./elements/leaderboards";
-import "./commandline/index";
+// import "./commandline/index";
 import "./elements/no-css";
 import { egVideoListener } from "./popups/video-ad-popup";
 import "./states/connection";
@@ -43,6 +43,7 @@ import "./elements/fps-counter";
 import "./controllers/profile-search-controller";
 import "./version";
 import { isDevEnvironment } from "./utils/misc";
+import "./global-events";
 
 function addToGlobal(items: Record<string, unknown>): void {
   for (const [name, item] of Object.entries(items)) {
