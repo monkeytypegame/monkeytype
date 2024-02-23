@@ -2,6 +2,10 @@ import * as Skeleton from "../popups/skeleton";
 import * as Focus from "../test/focus";
 import * as CommandlineLists from "./commands";
 import Config, * as UpdateConfig from "../config";
+import * as TestUI from "../test/test-ui";
+import * as AnalyticsController from "../controllers/analytics-controller";
+import * as ThemeController from "../controllers/theme-controller";
+import { sleep } from "../utils/misc";
 
 const wrapperId = "commandLineWrapper";
 
@@ -11,7 +15,21 @@ let usingSingleList = false;
 let inputValue = "";
 let filteredCommands: MonkeyTypes.Command[] = [];
 
-function show(): void {
+function removeCommandlineBackground(): void {
+  $("#commandLineWrapper").addClass("noBackground");
+  if (Config.showOutOfFocusWarning) {
+    $("#words").removeClass("blurred");
+  }
+}
+
+function addCommandlineBackground(): void {
+  $("#commandLineWrapper").removeClass("noBackground");
+  if (Config.showOutOfFocusWarning) {
+    $("#words").addClass("blurred");
+  }
+}
+
+export function show(): void {
   if (visible) {
     return;
   }
@@ -22,8 +40,8 @@ function show(): void {
   usingSingleList = Config.singleListCommandLine === "on";
   Focus.set(false);
   Skeleton.append(wrapperId);
+  CommandlineLists.setStackToDefault();
   updateInput();
-  attachEventHandlers();
   filterCommands();
   showCommands();
   updateActiveCommand();
@@ -43,7 +61,7 @@ function show(): void {
     );
 }
 
-function hide(): void {
+function hide(focusTestUI = false): void {
   if (!visible) {
     return;
   }
@@ -59,12 +77,28 @@ function hide(): void {
       () => {
         $("#commandLineWrapper").addClass("hidden");
         Skeleton.remove(wrapperId);
+        if (focusTestUI) {
+          TestUI.focusWords();
+        }
       }
     );
 }
 
+async function goBackOrHide(): Promise<void> {
+  await sleep(0);
+  if (CommandlineLists.getStackLength() > 1) {
+    CommandlineLists.popFromStack();
+    inputValue = "";
+    filterCommands();
+    showCommands();
+    updateActiveCommand();
+  } else {
+    hide();
+  }
+}
+
 function filterCommands(): void {
-  const list = CommandlineLists.getCurrent();
+  const list = CommandlineLists.getTopOfStack();
   const inputSplit = inputValue.toLowerCase().trim().split(" ");
   const newList = [];
 
@@ -141,17 +175,60 @@ function updateActiveCommand(): void {
   }
 
   const element = elements[activeIndex];
-  if (element === undefined) {
+  const command = filteredCommands[activeIndex];
+  if (element === undefined || command === undefined) {
     return;
   }
   element.classList.add("active");
+
+  command.hover?.();
+
+  if (/changeTheme.+/gi.test(command.id)) {
+    removeCommandlineBackground();
+  } else {
+    addCommandlineBackground();
+  }
+  if (
+    (!/theme/gi.test(command.id) || command.id === "toggleCustomTheme") &&
+    !(ThemeController.randomTheme ?? "")
+  ) {
+    void ThemeController.clearPreview();
+  }
 }
 
-export function toggle(): void {
-  if (visible) {
-    hide();
+function runActiveCommand(): void {
+  if (filteredCommands.length === 0) return;
+
+  const command = filteredCommands[activeIndex];
+  if (command === undefined) {
+    throw new Error("Tried to run active command, but it was undefined");
+  }
+
+  if (command.input) {
+    throw new Error("TODO");
+    // const escaped = command.display.split("</i>")[1] ?? command.display;
+    // showInput(
+    //   command.id,
+    //   escaped,
+    //   command.defaultValue ? command.defaultValue() : ""
+    // );
+  } else if (command.subgroup) {
+    if (command.subgroup.beforeList) {
+      command.subgroup.beforeList();
+    }
+    CommandlineLists.pushToStack(
+      command.subgroup as MonkeyTypes.CommandsSubgroup
+    );
+    inputValue = "";
+    filterCommands();
+    showCommands();
+    updateActiveCommand();
   } else {
-    show();
+    command.exec?.();
+    if (!(command.sticky ?? false)) {
+      void AnalyticsController.log("usedCommandLine", { command: command.id });
+      hide(command.shouldFocusTestUI ?? false);
+    }
   }
 }
 
@@ -200,34 +277,34 @@ function decrementActiveIndex(): void {
   updateActiveCommand();
 }
 
-function attachEventHandlers(): void {
-  const element: HTMLInputElement | null =
-    document.querySelector("#commandLine input");
+const input = document.querySelector("#commandLine input") as HTMLInputElement;
 
-  if (element === null) {
-    throw new Error("Commandline element not found");
+input.addEventListener("input", (e) => {
+  inputValue = (e.target as HTMLInputElement).value;
+  activeIndex = 0;
+  filterCommands();
+  showCommands();
+  updateActiveCommand();
+});
+
+input.addEventListener("keydown", (e) => {
+  if (e.key === "ArrowUp") {
+    e.preventDefault();
+    decrementActiveIndex();
+    keepActiveCommandInView();
   }
-
-  element.addEventListener("input", (e) => {
-    inputValue = (e.target as HTMLInputElement).value;
-    activeIndex = 0;
-    filterCommands();
-    showCommands();
-    updateActiveCommand();
-  });
-
-  element.addEventListener("keydown", (e) => {
-    if (e.key === "ArrowUp") {
-      e.preventDefault();
-      decrementActiveIndex();
-      keepActiveCommandInView();
-    }
-    if (e.key === "ArrowDown") {
-      e.preventDefault();
-      incrementActiveIndex();
-      keepActiveCommandInView();
-    }
-  });
-}
+  if (e.key === "ArrowDown") {
+    e.preventDefault();
+    incrementActiveIndex();
+    keepActiveCommandInView();
+  }
+  if (e.key === "Enter") {
+    e.preventDefault();
+    runActiveCommand();
+  }
+  if (e.key === "Escape") {
+    goBackOrHide();
+  }
+});
 
 Skeleton.save(wrapperId);
