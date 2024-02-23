@@ -43,12 +43,12 @@ function update(mode: SharedTypes.Mode): void {
   let mode2memory: SharedTypes.Mode2<SharedTypes.Mode>;
 
   list.forEach((pb) => {
-    let dateText = `-<br><span class="sub">-</span>`;
+    let dateText = `-<br/><span class="sub">-</span>`;
     const date = new Date(pb.timestamp);
     if (pb.timestamp) {
       dateText =
         format(date, "dd MMM yyyy") +
-        "<br><div class='sub'>" +
+        "<br/><div class='sub'>" +
         format(date, "HH:mm") +
         "</div>";
     }

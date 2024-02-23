@@ -122,34 +122,34 @@ function buildQuoteSearchResult(
   return `
   <div class="searchResult" id="${quote.id}">
 
-    <div class="text">
+    <p class="text">
       ${highlightMatches(quote.text, matchedSearchTerms)}
-    </div>
+    </p>
 
     <div class="id">
-      <div class="sub">id</div>
+      <p class="sub">id</p>
       <span class="quote-id">
         ${highlightMatches(quote.id.toString(), matchedSearchTerms)}
       </span>
     </div>
 
     <div class="length">
-      <div class="sub">length</div>
-      ${lengthDesc}
+      <p class="sub">length</p>
+      <span>${lengthDesc}</span>
     </div>
 
     <div class="source">
-      <div class="sub">source</div>
-      ${highlightMatches(quote.source, matchedSearchTerms)}
+      <p class="sub">source</p>
+      <span>${highlightMatches(quote.source, matchedSearchTerms)}</span>
     </div>
 
-    <div class="textButton report ${
+    <div role="button" class="textButton report ${
       loggedOut && "hidden"
     }" aria-label="Report quote" data-balloon-pos="left">
       <i class="fas fa-flag report"></i>
     </div>
 
-    <div class="textButton favorite ${
+    <div role="button" class="textButton favorite ${
       loggedOut && "hidden"
     }" aria-label="Favorite quote" data-balloon-pos="left">
       <i class="${isFav ? "fas" : "far"} fa-heart favorite"></i>

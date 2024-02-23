@@ -94,7 +94,7 @@ function hydrateInputs(): void {
     }" selection-id=${-1}>
       <div class="badge">
         <i class="fas fa-frown-open"></i>
-        <div class="text">none</div>
+        <p class="text">none</p>
       </div>
     </div>`
   );

@@ -19,20 +19,20 @@ function updateList(): void {
           quote.source
         }">
         <div class="buttons">
-          <div class="textButton disabled undo" aria-label="Undo changes" data-balloon-pos="left"><i class="fas fa-fw fa-undo-alt"></i></div>
-          <div class="textButton refuse" aria-label="Refuse quote" data-balloon-pos="left"><i class="fas fa-fw fa-times"></i></div>
-          <div class="textButton approve" aria-label="Approve quote" data-balloon-pos="left"><i class="fas fa-fw fa-check"></i></div>
-          <div class="textButton edit hidden" aria-label="Edit and approve quote" data-balloon-pos="left"><i class="fas fa-fw fa-pen"></i></div>
+          <div role="button" class="textButton disabled undo" aria-label="Undo changes" data-balloon-pos="left"><i class="fas fa-fw fa-undo-alt"></i></div>
+          <div role="button" class="textButton refuse" aria-label="Refuse quote" data-balloon-pos="left"><i class="fas fa-fw fa-times"></i></div>
+          <div role="button" class="textButton approve" aria-label="Approve quote" data-balloon-pos="left"><i class="fas fa-fw fa-check"></i></div>
+          <div role="button" class="textButton edit hidden" aria-label="Edit and approve quote" data-balloon-pos="left"><i class="fas fa-fw fa-pen"></i></div>
         </div>
         <div class="bottom">
-          <div class="length ${
+          <p class="length ${
             quote.text.length < 60 ? "red" : ""
-          }">Quote length: ${quote.text.length}</div>
-          <div class="language">Language: ${quote.language}</div>
-          <div class="timestamp">Submitted on: ${format(
+          }">Quote length: ${quote.text.length}</p>
+          <p class="language">Language: ${quote.language}</p>
+          <p class="timestamp">Submitted on: ${format(
             new Date(quote.timestamp),
             "dd MMM yyyy HH:mm"
-          )}</div>
+          )}</p>
         </div>
       </div>
     `);

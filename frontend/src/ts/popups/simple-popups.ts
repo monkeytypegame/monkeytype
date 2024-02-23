@@ -155,9 +155,9 @@ class SimplePopup {
   reset(): void {
     this.element.html(`
     <form>
-    <div class="title"></div>
+    <h3 class="title"></h3>
     <div class="inputs"></div>
-    <div class="text"></div>
+    <p class="text"></p>
     <button type="submit" class="submitButton"></button>
     </form>`);
   }
@@ -222,7 +222,7 @@ class SimplePopup {
               el.find(".inputs").append(`
               <label class="checkbox">
                 <input type="checkbox" checked="">
-                <div>${input.label}</div>
+                <span>${input.label}</span>
               </label>
               `);
             } else {

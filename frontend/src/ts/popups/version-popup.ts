@@ -33,11 +33,11 @@ function show(): void {
 
         $("#versionHistory .releases").append(`
         <div class="release">
-          <div class="title">${release.name}</div>
-          <div class="date">${format(
+          <h3 class="title">${release.name}</h3>
+          <p class="date">${format(
             new Date(release.published_at),
             "dd MMM yyyy"
-          )}</div>
+          )}</p>
           <div class="body">${body}</div>
         </div>
       `);
