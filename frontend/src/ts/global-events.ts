@@ -1,7 +1,7 @@
 import * as Commandline from "./commandline/commandline";
 
 function handleEscape(e: KeyboardEvent): void {
-  Commandline.toggle();
+  Commandline.show();
 }
 
 document.addEventListener("keydown", (e) => {
