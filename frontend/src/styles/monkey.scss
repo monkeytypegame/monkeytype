@@ -9,29 +9,29 @@
     position: fixed;
   }
   .up {
-    background-image: url("../images/monkey/m3.png");
+    background-image: url("/images/monkey/m3.png");
   }
   .left {
-    background-image: url("../images/monkey/m1.png");
+    background-image: url("/images/monkey/m1.png");
   }
   .right {
-    background-image: url("../images/monkey/m2.png");
+    background-image: url("/images/monkey/m2.png");
   }
   .both {
-    background-image: url("../images/monkey/m4.png");
+    background-image: url("/images/monkey/m4.png");
   }
   .fast {
     .up {
-      background-image: url("../images/monkey/m3_fast.png");
+      background-image: url("/images/monkey/m3_fast.png");
     }
     .left {
-      background-image: url("../images/monkey/m1_fast.png");
+      background-image: url("/images/monkey/m1_fast.png");
     }
     .right {
-      background-image: url("../images/monkey/m2_fast.png");
+      background-image: url("/images/monkey/m2_fast.png");
     }
     .both {
-      background-image: url("../images/monkey/m4_fast.png");
+      background-image: url("/images/monkey/m4_fast.png");
     }
   }
 }
