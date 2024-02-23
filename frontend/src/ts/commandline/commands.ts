@@ -531,3 +531,78 @@ export function popFromStack(): void {
 export function getTopOfStack(): MonkeyTypes.CommandsSubgroup {
   return stack[stack.length - 1] as MonkeyTypes.CommandsSubgroup;
 }
+
+let singleList: MonkeyTypes.Command[] | undefined;
+export function getSingleList(): MonkeyTypes.Command[] {
+  if (singleList) return singleList;
+
+  const allCommands: MonkeyTypes.Command[] = [];
+  for (const command of commands.list) {
+    allCommands.push(...buildSingleListCommands(command));
+  }
+  singleList = allCommands;
+  return allCommands;
+}
+
+function buildSingleListCommands(
+  command: MonkeyTypes.Command,
+  parentCommand?: MonkeyTypes.Command
+): MonkeyTypes.Command[] {
+  const ret: MonkeyTypes.Command[] = [];
+  if (command.subgroup) {
+    const currentCommand = {
+      ...command,
+      subgroup: {
+        ...command.subgroup,
+        list: [],
+      },
+    };
+    command.subgroup.beforeList?.();
+    for (const cmd of command.subgroup.list) {
+      ret.push(...buildSingleListCommands(cmd, currentCommand));
+    }
+  } else {
+    if (parentCommand) {
+      const parentCommandDisplay = parentCommand.display.replace(
+        /\s?\.\.\.$/g,
+        ""
+      );
+      let configIcon = "";
+      const parentKey = parentCommand.subgroup?.configKey;
+      const currentValue = command.configValue;
+      if (parentKey !== undefined && currentValue !== undefined) {
+        if (
+          (command.configValueMode === "include" &&
+            (Config[parentKey] as unknown[]).includes(currentValue)) ||
+          Config[parentKey] === currentValue
+        ) {
+          configIcon = `<i class="fas fa-fw fa-check"></i>`;
+        } else {
+          configIcon = `<i class="fas fa-fw"></i>`;
+        }
+      }
+      const displayString =
+        parentCommandDisplay +
+        " > " +
+        (command.noIcon ? "" : configIcon) +
+        command.display;
+      const newCommand = {
+        ...command,
+        display: displayString,
+        icon: parentCommand.icon,
+        alias: (parentCommand.alias ?? "") + " " + (command.alias ?? ""),
+        visible: (parentCommand.visible ?? true) && (command.visible ?? true),
+        available: (): boolean => {
+          return (
+            (parentCommand?.available?.() ?? true) &&
+            (command?.available?.() ?? true)
+          );
+        },
+      };
+      ret.push(newCommand);
+    } else {
+      ret.push(command);
+    }
+  }
+  return ret;
+}
