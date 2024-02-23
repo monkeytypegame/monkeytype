@@ -57,6 +57,7 @@ function hide(): void {
       125,
       () => {
         $("#commandLineWrapper").addClass("hidden");
+        Skeleton.remove(wrapperId);
       }
     );
 }
