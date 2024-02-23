@@ -341,7 +341,7 @@ $(".pageSettings").on("click", " .section.themes .customTheme.button", (e) => {
   if ($(e.target).hasClass("delButton")) return;
   if ($(e.target).hasClass("editButton")) return;
   const customThemeId = $(e.currentTarget).attr("customThemeId") ?? "";
-  const theme = DB.getSnapshot()?.customThemes.find(
+  const theme = DB.getSnapshot()?.customThemes?.find(
     (e) => e._id === customThemeId
   );
 

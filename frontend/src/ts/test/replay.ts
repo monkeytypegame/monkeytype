@@ -88,12 +88,12 @@ export function pauseReplay(): void {
 function playSound(error = false): void {
   if (error) {
     if (config.playSoundOnError !== "off") {
-      Sound.playError();
+      void Sound.playError();
     } else {
-      Sound.playClick();
+      void Sound.playClick();
     }
   } else {
-    Sound.playClick();
+    void Sound.playClick();
   }
 }
 

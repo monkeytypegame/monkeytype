@@ -18,6 +18,7 @@ import { getAuthenticatedUser, isAuthenticated } from "../firebase";
 import Ape from "../ape";
 import { areFunboxesCompatible } from "../test/funbox/funbox-validation";
 import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
+import SlimSelect from "slim-select";
 
 import * as Skeleton from "../popups/skeleton";
 import * as CustomBackgroundFilter from "../elements/custom-background-filter";
@@ -269,7 +270,7 @@ async function initGroups(): Promise<void> {
     UpdateConfig.setPlaySoundOnError,
     "button",
     () => {
-      if (Config.playSoundOnError !== "off") Sound.playError();
+      if (Config.playSoundOnError !== "off") void Sound.playError();
     }
   ) as SettingsGroup<SharedTypes.ConfigValue>;
   groups["playSoundOnClick"] = new SettingsGroup(
@@ -277,7 +278,7 @@ async function initGroups(): Promise<void> {
     UpdateConfig.setPlaySoundOnClick,
     "button",
     () => {
-      if (Config.playSoundOnClick !== "off") Sound.playClick("KeyQ");
+      if (Config.playSoundOnClick !== "off") void Sound.playClick("KeyQ");
     }
   ) as SettingsGroup<SharedTypes.ConfigValue>;
   groups["showAllLines"] = new SettingsGroup(
@@ -421,10 +422,12 @@ function reset(): void {
   $(".pageSettings .section.themes .favThemes.buttons").empty();
   $(".pageSettings .section.themes .allThemes.buttons").empty();
   $(".pageSettings .section.themes .allCustomThemes.buttons").empty();
-  $(".pageSettings .section.languageGroups .buttons").empty();
-  $(".pageSettings select").empty().select2("destroy");
   $(".pageSettings .section[data-config-name='funbox'] .buttons").empty();
   $(".pageSettings .section[data-config-name='fontFamily'] .buttons").empty();
+  for (const select of document.querySelectorAll(".pageSettings select")) {
+    //@ts-expect-error
+    select?.slim?.destroy?.();
+  }
 }
 
 let groupsInitialized = false;
@@ -436,11 +439,6 @@ async function fillSettingsPage(): Promise<void> {
   }
 
   // Language Selection Combobox
-  const languageEl = document.querySelector(
-    ".pageSettings .section[data-config-name='language'] select"
-  ) as HTMLSelectElement;
-  languageEl.innerHTML = "";
-  let languageElHTML = "";
 
   let languageGroups;
   try {
@@ -454,36 +452,29 @@ async function fillSettingsPage(): Promise<void> {
     );
   }
 
+  const element = document.querySelector(
+    ".pageSettings .section[data-config-name='language'] select"
+  ) as Element;
+
+  let html = "";
   if (languageGroups) {
     for (const group of languageGroups) {
-      let langComboBox = `<optgroup label="${group.name}">`;
-      group.languages.forEach((language: string) => {
-        langComboBox += `<option value="${language}">
-        ${Misc.getLanguageDisplayString(language)}
-      </option>`;
-      });
-      langComboBox += `</optgroup>`;
-      languageElHTML += langComboBox;
+      html += `<optgroup label="${group.name}">`;
+      for (const language of group.languages) {
+        const selected = language === Config.language ? "selected" : "";
+        const text = Misc.getLanguageDisplayString(language);
+        html += `<option value="${language}" ${selected}>${text}</option>`;
+      }
+      html += `</optgroup>`;
     }
-    languageEl.innerHTML = languageElHTML;
   }
-  $(languageEl).select2({
-    width: "100%",
+  element.innerHTML = html;
+  new SlimSelect({
+    select: element,
+    settings: {
+      searchPlaceholder: "search",
+    },
   });
-
-  await Misc.sleep(0);
-
-  const layoutEl = document.querySelector(
-    ".pageSettings .section[data-config-name='layout'] select"
-  ) as HTMLSelectElement;
-  layoutEl.innerHTML = `<option value='default'>off</option>`;
-  let layoutElHTML = "";
-
-  const keymapEl = document.querySelector(
-    ".pageSettings .section[data-config-name='keymapLayout'] select"
-  ) as HTMLSelectElement;
-  keymapEl.innerHTML = `<option value='overrideSync'>emulator sync</option>`;
-  let keymapElHTML = "";
 
   let layoutsList;
   try {
@@ -492,44 +483,41 @@ async function fillSettingsPage(): Promise<void> {
     console.error(Misc.createErrorMessage(e, "Failed to refresh keymap"));
   }
 
+  const layoutSelectElement = document.querySelector(
+    ".pageSettings .section[data-config-name='layout'] select"
+  ) as Element;
+  const keymapLayoutSelectElement = document.querySelector(
+    ".pageSettings .section[data-config-name='keymapLayout'] select"
+  ) as Element;
+
+  let layoutHtml = '<option value="default">off</option>';
+  let keymapLayoutHtml = '<option value="overrideSync">emulator sync</option>';
+
   if (layoutsList) {
     for (const layout of Object.keys(layoutsList)) {
+      const optionHtml = `<option value="${layout}">${layout.replace(
+        /_/g,
+        " "
+      )}</option>`;
       if (layout.toString() !== "korean") {
-        layoutElHTML += `<option value='${layout}'>${layout.replace(
-          /_/g,
-          " "
-        )}</option>`;
+        layoutHtml += optionHtml;
       }
       if (layout.toString() !== "default") {
-        keymapElHTML += `<option value='${layout}'>${layout.replace(
-          /_/g,
-          " "
-        )}</option>`;
+        keymapLayoutHtml += optionHtml;
       }
     }
-    layoutEl.innerHTML += layoutElHTML;
-    keymapEl.innerHTML += keymapElHTML;
   }
-  $(layoutEl).select2({
-    width: "100%",
+
+  layoutSelectElement.innerHTML = layoutHtml;
+  keymapLayoutSelectElement.innerHTML = keymapLayoutHtml;
+
+  new SlimSelect({
+    select: layoutSelectElement,
   });
-  $(keymapEl).select2({
-    width: "100%",
+
+  new SlimSelect({
+    select: keymapLayoutSelectElement,
   });
-
-  await Misc.sleep(0);
-
-  const themeEl1 = document.querySelector(
-    ".pageSettings .section[data-config-name='autoSwitchThemeInputs'] select.light"
-  ) as HTMLSelectElement;
-  themeEl1.innerHTML = "";
-  let themeEl1HTML = "";
-
-  const themeEl2 = document.querySelector(
-    ".pageSettings .section[data-config-name='autoSwitchThemeInputs'] select.dark"
-  ) as HTMLSelectElement;
-  themeEl2.innerHTML = "";
-  let themeEl2HTML = "";
 
   let themes;
   try {
@@ -540,39 +528,50 @@ async function fillSettingsPage(): Promise<void> {
     );
   }
 
+  const themeSelectLightElement = document.querySelector(
+    ".pageSettings .section[data-config-name='autoSwitchThemeInputs'] select.light"
+  ) as Element;
+  const themeSelectDarkElement = document.querySelector(
+    ".pageSettings .section[data-config-name='autoSwitchThemeInputs'] select.dark"
+  ) as Element;
+
+  let themeSelectLightHtml = "";
+  let themeSelectDarkHtml = "";
+
   if (themes) {
     for (const theme of themes) {
-      themeEl1HTML += `<option value='${theme.name}'>${theme.name.replace(
-        /_/g,
-        " "
-      )}</option>`;
-      themeEl2HTML += `<option value='${theme.name}'>${theme.name.replace(
-        /_/g,
-        " "
-      )}</option>`;
+      const optionHtml = `<option value="${theme.name}" ${
+        theme.name === Config.themeLight ? "selected" : ""
+      }>${theme.name.replace(/_/g, " ")}</option>`;
+      themeSelectLightHtml += optionHtml;
+
+      const optionDarkHtml = `<option value="${theme.name}" ${
+        theme.name === Config.themeDark ? "selected" : ""
+      }>${theme.name.replace(/_/g, " ")}</option>`;
+      themeSelectDarkHtml += optionDarkHtml;
     }
-    themeEl1.innerHTML = themeEl1HTML;
-    themeEl2.innerHTML = themeEl2HTML;
   }
-  $(themeEl1).select2({
-    width: "100%",
-  });
-  $(themeEl2).select2({
-    width: "100%",
+
+  themeSelectLightElement.innerHTML = themeSelectLightHtml;
+  themeSelectDarkElement.innerHTML = themeSelectDarkHtml;
+
+  new SlimSelect({
+    select: themeSelectLightElement,
+    events: {
+      afterChange: (newVal): void => {
+        UpdateConfig.setThemeLight(newVal[0]?.value as string);
+      },
+    },
   });
 
-  await Misc.sleep(0);
-
-  $(
-    `.pageSettings .section[data-config-name='autoSwitchThemeInputs'] select.light`
-  )
-    .val(Config.themeLight)
-    .trigger("change.select2");
-  $(
-    `.pageSettings .section[data-config-name='autoSwitchThemeInputs'] select.dark`
-  )
-    .val(Config.themeDark)
-    .trigger("change.select2");
+  new SlimSelect({
+    select: themeSelectDarkElement,
+    events: {
+      afterChange: (newVal): void => {
+        UpdateConfig.setThemeDark(newVal[0]?.value as string);
+      },
+    },
+  });
 
   const funboxEl = document.querySelector(
     ".pageSettings .section[data-config-name='funbox'] .buttons"
@@ -620,8 +619,6 @@ async function fillSettingsPage(): Promise<void> {
     }
     funboxEl.innerHTML = funboxElHTML;
   }
-
-  await Misc.sleep(0);
 
   let isCustomFont = true;
   const fontsEl = document.querySelector(
@@ -674,7 +671,6 @@ async function fillSettingsPage(): Promise<void> {
     Config.customLayoutfluid.replace(/#/g, " ")
   );
 
-  await Misc.sleep(0);
   setEventDisabled(true);
   if (!groupsInitialized) {
     await initGroups();
@@ -685,7 +681,6 @@ async function fillSettingsPage(): Promise<void> {
     }
   }
   setEventDisabled(false);
-  await Misc.sleep(0);
   await ThemePicker.refreshButtons();
   await UpdateConfig.loadPromise;
 }
@@ -1257,35 +1252,11 @@ $(".pageSettings .section.updateCookiePreferences button").on("click", () => {
   CookiePopup.showSettings();
 });
 
-$(".pageSettings .section[data-config-name='autoSwitchThemeInputs']").on(
-  "change",
-  `select.light`,
-  (e) => {
-    const target = $(e.currentTarget);
-    if (target.hasClass("disabled") || target.hasClass("no-auto-handle")) {
-      return;
-    }
-    UpdateConfig.setThemeLight(target.val() as string);
-  }
-);
-
-$(".pageSettings .section[data-config-name='autoSwitchThemeInputs']").on(
-  "change",
-  `select.dark`,
-  (e) => {
-    const target = $(e.currentTarget);
-    if (target.hasClass("disabled") || target.hasClass("no-auto-handle")) {
-      return;
-    }
-    UpdateConfig.setThemeDark(target.val() as string);
-  }
-);
-
 $(".pageSettings .section.discordIntegration .getLinkAndGoToOauth").on(
   "click",
   () => {
     void Ape.users.getOauthLink().then((res) => {
-      window.open(res.data.url, "_self");
+      window.open(res.data?.url as string, "_self");
     });
   }
 );
@@ -1314,8 +1285,8 @@ export const page = new Page(
     //
   },
   async () => {
-    Skeleton.remove("pageSettings");
     reset();
+    Skeleton.remove("pageSettings");
   },
   async () => {
     Skeleton.append("pageSettings", "main");

@@ -21,7 +21,12 @@ import * as FunboxList from "./funbox/funbox-list";
 import { debounce } from "throttle-debounce";
 import * as ResultWordHighlight from "../elements/result-word-highlight";
 import * as ActivePage from "../states/active-page";
-import html2canvas from "html2canvas";
+import Format from "../utils/format";
+import * as Loader from "../elements/loader";
+
+async function gethtml2canvas(): Promise<typeof import("html2canvas").default> {
+  return (await import("html2canvas")).default;
+}
 
 const debouncedZipfCheck = debounce(250, async () => {
   const supports = await Misc.checkIfLanguageSupportsZipf(Config.language);
@@ -397,6 +402,7 @@ export function colorful(tc: boolean): void {
 
 let firefoxClipboardNotificatoinShown = false;
 export async function screenshot(): Promise<void> {
+  Loader.show();
   let revealReplay = false;
 
   let revertCookie = false;
@@ -408,6 +414,7 @@ export async function screenshot(): Promise<void> {
   }
 
   function revertScreenshot(): void {
+    Loader.hide();
     $("#ad-result-wrapper").removeClass("hidden");
     $("#ad-result-small-wrapper").removeClass("hidden");
     $("#testConfig").removeClass("hidden");
@@ -487,7 +494,10 @@ export async function screenshot(): Promise<void> {
   try {
     const paddingX = Misc.convertRemToPixels(2);
     const paddingY = Misc.convertRemToPixels(2);
-    const canvas = await html2canvas(document.body, {
+
+    const canvas = await (
+      await gethtml2canvas()
+    )(document.body, {
       backgroundColor: await ThemeColors.get("bg"),
       width: sourceWidth + paddingX * 2,
       height: sourceHeight + paddingY * 2,
@@ -1248,23 +1258,37 @@ $(".pageTest").on("click", "#saveScreenshotButton", () => {
 });
 
 $(".pageTest #copyWordsListButton").on("click", async () => {
+  let words;
+  if (Config.mode === "zen") {
+    words = TestInput.input.history.join(" ");
+  } else {
+    words = (TestWords.words.get() as string[])
+      .slice(0, TestInput.input.history.length)
+      .join(" ");
+  }
+  await copyToClipboard(words);
+});
+
+$(".pageTest #copyMissedWordsListButton").on("click", async () => {
+  let words;
+  if (Config.mode === "zen") {
+    words = TestInput.input.history.join(" ");
+  } else {
+    words = Object.keys(TestInput.missedWords ?? {}).join(" ");
+  }
+  await copyToClipboard(words);
+});
+
+async function copyToClipboard(content: string): Promise<void> {
   try {
-    let words;
-    if (Config.mode === "zen") {
-      words = TestInput.input.history.join(" ");
-    } else {
-      words = (TestWords.words.get() as string[])
-        .slice(0, TestInput.input.history.length)
-        .join(" ");
-    }
-    await navigator.clipboard.writeText(words);
+    await navigator.clipboard.writeText(content);
     Notifications.add("Copied to clipboard", 0, {
       duration: 2,
     });
   } catch (e) {
     Notifications.add("Could not copy to clipboard: " + e, -1);
   }
-});
+}
 
 $(".pageTest #toggleBurstHeatmap").on("click", async () => {
   UpdateConfig.setBurstHeatmap(!Config.burstHeatmap);
@@ -1299,9 +1323,8 @@ $(".pageTest #resultWordsHistory").on("mouseenter", ".words .word", (e) => {
             .replace(/>/g, "&gt")}
           </div>
           <div class="speed">
-          ${Math.round(
-            getTypingSpeedUnit(Config.typingSpeedUnit).fromWpm(burst)
-          )}${Config.typingSpeedUnit}
+          ${Format.typingSpeed(burst, { showDecimalPlaces: false })}
+          ${Config.typingSpeedUnit}
           </div>
           </div>`
       );
@@ -1317,7 +1340,7 @@ $("#wordsInput").on("focus", () => {
   if (!resultVisible && Config.showOutOfFocusWarning) {
     OutOfFocus.hide();
   }
-  Caret.show();
+  Caret.show(true);
 });
 
 $("#wordsInput").on("focusout", () => {
