@@ -31,6 +31,9 @@
       "**/public/**": true,
       "**/coverage/**": true
     },
-    "jest.disabledWorkspaceFolders": ["root", "shared-types", "frontend"]
+    "jest.disabledWorkspaceFolders": ["root", "shared-types", "frontend"],
+    "vitest.enable": true,
+    "vitest.watchOnStartup": true,
+    "coverage-gutters.coverageBaseDir": "**/coverage"
   }
 }
