@@ -24,16 +24,22 @@
       "shared-types": true
     },
     "search.exclude": {
+      //defaults
       "**/node_modules": true,
       "**/bower_components": true,
       "**/*.code-search": true,
+      //exclude generated directories
       "**/build/**": true,
+      "**/dist/**": true,
       "**/public/**": true,
       "**/coverage/**": true
     },
     "jest.disabledWorkspaceFolders": ["root", "shared-types", "frontend"],
     "vitest.enable": true,
     "vitest.watchOnStartup": true,
-    "coverage-gutters.coverageBaseDir": "**/coverage"
+    "coverage-gutters.coverageBaseDir": "**/coverage",
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSaveMode": "modifications",
+    "editor.formatOnSave": true
   }
 }
