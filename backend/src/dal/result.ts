@@ -5,13 +5,15 @@ import * as db from "../init/db";
 
 import { getUser, getTags } from "./user";
 
-type DBResult = SharedTypes.DBResult<SharedTypes.Config.Mode>;
+type DBResult = MonkeyTypes.WithObjectId<
+  SharedTypes.DBResult<SharedTypes.Config.Mode>
+>;
 
 export async function addResult(
   uid: string,
   result: DBResult
 ): Promise<{ insertedId: ObjectId }> {
-  let user: MonkeyTypes.User | null = null;
+  let user: MonkeyTypes.DBUser | null = null;
   try {
     user = await getUser(uid, "add result");
   } catch (e) {
@@ -81,11 +83,11 @@ export async function getResultByTimestamp(
   return await db.collection<DBResult>("results").findOne({ uid, timestamp });
 }
 
-interface GetResultsOpts {
+type GetResultsOpts = {
   onOrAfterTimestamp?: number;
   limit?: number;
   offset?: number;
-}
+};
 
 export async function getResults(
   uid: string,

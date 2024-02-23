@@ -7,10 +7,10 @@ import { getUser } from "../dal/user";
 import { isAdmin } from "../dal/admin-uids";
 import { isDevEnvironment } from "../utils/misc";
 
-interface ValidationOptions<T> {
+type ValidationOptions<T> = {
   criteria: (data: T) => boolean;
   invalidMessage?: string;
-}
+};
 
 const emptyMiddleware = (
   _req: MonkeyTypes.Request,
@@ -72,7 +72,7 @@ function checkIfUserIsAdmin(): RequestHandler {
  * Note that this middleware must be used after authentication in the middleware stack.
  */
 function checkUserPermissions(
-  options: ValidationOptions<MonkeyTypes.User>
+  options: ValidationOptions<MonkeyTypes.DBUser>
 ): RequestHandler {
   const { criteria, invalidMessage = "You don't have permission to do this." } =
     options;
@@ -125,20 +125,20 @@ function asyncHandler(handler: AsyncHandler): RequestHandler {
   };
 }
 
-interface ValidationSchema {
+type ValidationSchema = {
   body?: object;
   query?: object;
   params?: object;
   headers?: object;
-}
+};
 
-interface ValidationSchemaOption {
+type ValidationSchemaOption = {
   allowUnknown?: boolean;
-}
+};
 
-interface ValidationHandlingOptions {
+type ValidationHandlingOptions = {
   validationErrorMessage?: string;
-}
+};
 
 type ValidationSchemaOptions = {
   [schema in keyof ValidationSchema]?: ValidationSchemaOption;

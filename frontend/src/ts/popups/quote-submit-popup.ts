@@ -5,6 +5,7 @@ import * as CaptchaController from "../controllers/captcha-controller";
 import * as Misc from "../utils/misc";
 import Config from "../config";
 import * as Skeleton from "./skeleton";
+import SlimSelect from "slim-select";
 
 const wrapperId = "quoteSubmitPopupWrapper";
 
@@ -18,9 +19,10 @@ async function initDropdown(): Promise<void> {
       `<option value="${group.name}">${group.name.replace(/_/g, " ")}</option>`
     );
   }
-  $("#quoteSubmitPopup #submitQuoteLanguage").select2();
   dropdownReady = true;
 }
+
+let select: SlimSelect | undefined = undefined;
 
 async function submitQuote(): Promise<void> {
   const text = $("#quoteSubmitPopup #submitQuoteText").val() as string;
@@ -57,6 +59,11 @@ export async function show(noAnim = false): Promise<void> {
       "submitQuote"
     );
     await initDropdown();
+
+    select = new SlimSelect({
+      select: "#quoteSubmitPopup #submitQuoteLanguage",
+    });
+
     $("#quoteSubmitPopup #submitQuoteLanguage").val(
       Misc.removeLanguageSize(Config.language)
     );
@@ -86,6 +93,8 @@ function hide(): void {
           $("#quoteSubmitPopupWrapper").addClass("hidden");
           CaptchaController.reset("submitQuote");
           Skeleton.remove(wrapperId);
+          select?.destroy();
+          select = undefined;
         }
       );
   }

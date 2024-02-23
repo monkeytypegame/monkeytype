@@ -2,16 +2,16 @@ import * as PageController from "./page-controller";
 import * as Leaderboards from "../elements/leaderboards";
 import * as TestUI from "../test/test-ui";
 import * as PageTransition from "../states/page-transition";
-import { Auth } from "../firebase";
+import { Auth, isAuthenticated } from "../firebase";
 
 //source: https://www.youtube.com/watch?v=OstALBk-jTc
 // https://www.youtube.com/watch?v=OstALBk-jTc
 
 //this will be used in tribe
-interface NavigateOptions {
+type NavigateOptions = {
   empty?: boolean;
   data?: unknown;
-}
+};
 
 function pathToRegex(path: string): RegExp {
   return new RegExp(
@@ -19,9 +19,10 @@ function pathToRegex(path: string): RegExp {
   );
 }
 
-function getParams(match: { route: Route; result: RegExpMatchArray }): {
-  [key: string]: string;
-} {
+function getParams(match: {
+  route: Route;
+  result: RegExpMatchArray;
+}): Record<string, string> {
   const values = match.result.slice(1);
   const keys = Array.from(match.route.path.matchAll(/:(\w+)/g)).map(
     (result) => result[1]
@@ -30,13 +31,13 @@ function getParams(match: { route: Route; result: RegExpMatchArray }): {
   return Object.fromEntries(keys.map((key, index) => [key, values[index]]));
 }
 
-interface Route {
+type Route = {
   path: string;
   load: (
-    params: { [key: string]: string },
+    params: Record<string, string>,
     navigateOptions: NavigateOptions
   ) => void;
-}
+};
 
 const route404: Route = {
   path: "404",
@@ -86,7 +87,7 @@ const routes: Route[] = [
         navigate("/");
         return;
       }
-      if (Auth.currentUser) {
+      if (isAuthenticated()) {
         navigate("/account");
         return;
       }

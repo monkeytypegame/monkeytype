@@ -26,7 +26,7 @@ export const cachedFetchJson = memoizeAsync<string, typeof fetchJson>(
 export async function getLayoutsList(): Promise<MonkeyTypes.Layouts> {
   try {
     const layoutsList = await cachedFetchJson<MonkeyTypes.Layouts>(
-      "/./layouts/_list.json"
+      "/layouts/_list.json"
     );
     return layoutsList;
   } catch (e) {
@@ -52,7 +52,7 @@ let themesList: MonkeyTypes.Theme[] | undefined;
 export async function getThemesList(): Promise<MonkeyTypes.Theme[]> {
   if (!themesList) {
     let themes = await cachedFetchJson<MonkeyTypes.Theme[]>(
-      "/./themes/_list.json"
+      "/themes/_list.json"
     );
 
     themes = themes.sort(function (a: MonkeyTypes.Theme, b: MonkeyTypes.Theme) {
@@ -94,7 +94,7 @@ export async function getSortedThemesList(): Promise<MonkeyTypes.Theme[]> {
 export async function getLanguageList(): Promise<string[]> {
   try {
     const languageList = await cachedFetchJson<string[]>(
-      "/./languages/_list.json"
+      "/languages/_list.json"
     );
     return languageList;
   } catch (e) {
@@ -108,7 +108,7 @@ export async function getLanguageGroups(): Promise<
   try {
     const languageGroupList = await cachedFetchJson<
       MonkeyTypes.LanguageGroup[]
-    >("/./languages/_groups.json");
+    >("/languages/_groups.json");
     return languageGroupList;
   } catch (e) {
     throw new Error("Language groups JSON fetch failed");
@@ -122,7 +122,7 @@ export async function getLanguage(
   // try {
   if (currentLanguage === undefined || currentLanguage.name !== lang) {
     currentLanguage = await cachedFetchJson<MonkeyTypes.LanguageObject>(
-      `/./languages/${lang}.json`
+      `/languages/${lang}.json`
     );
   }
   return currentLanguage;
@@ -130,7 +130,7 @@ export async function getLanguage(
   //   console.error(`error getting language`);
   //   console.error(e);
   //   currentLanguage = await cachedFetchJson<MonkeyTypes.LanguageObject>(
-  //     `/./language/english.json`
+  //     `/language/english.json`
   //   );
   //   return currentLanguage;
   // }
@@ -161,7 +161,7 @@ let funboxList: MonkeyTypes.FunboxMetadata[] | undefined;
 export async function getFunboxList(): Promise<MonkeyTypes.FunboxMetadata[]> {
   if (!funboxList) {
     let list = await cachedFetchJson<MonkeyTypes.FunboxMetadata[]>(
-      "/./funbox/_list.json"
+      "/funbox/_list.json"
     );
     list = list.sort(function (
       a: MonkeyTypes.FunboxMetadata,
@@ -193,7 +193,7 @@ let fontsList: MonkeyTypes.FontObject[] | undefined;
 export async function getFontsList(): Promise<MonkeyTypes.FontObject[]> {
   if (!fontsList) {
     let list = await cachedFetchJson<MonkeyTypes.FontObject[]>(
-      "/./fonts/_list.json"
+      "/fonts/_list.json"
     );
     list = list.sort(function (
       a: MonkeyTypes.FontObject,
@@ -215,7 +215,7 @@ export async function getFontsList(): Promise<MonkeyTypes.FontObject[]> {
 export async function getChallengeList(): Promise<MonkeyTypes.Challenge[]> {
   try {
     const data = await cachedFetchJson<MonkeyTypes.Challenge[]>(
-      "/./challenges/_list.json"
+      "/challenges/_list.json"
     );
     return data;
   } catch (e) {
@@ -225,7 +225,7 @@ export async function getChallengeList(): Promise<MonkeyTypes.Challenge[]> {
 
 export async function getSupportersList(): Promise<string[]> {
   try {
-    const data = await cachedFetchJson<string[]>("/./about/supporters.json");
+    const data = await cachedFetchJson<string[]>("/about/supporters.json");
     return data;
   } catch (e) {
     throw new Error("Supporters list JSON fetch failed");
@@ -234,7 +234,7 @@ export async function getSupportersList(): Promise<string[]> {
 
 export async function getContributorsList(): Promise<string[]> {
   try {
-    const data = await cachedFetchJson<string[]>("/./about/contributors.json");
+    const data = await cachedFetchJson<string[]>("/about/contributors.json");
     return data;
   } catch (e) {
     throw new Error("Contributors list JSON fetch failed");
@@ -429,16 +429,20 @@ export function median(arr: number[]): number {
 }
 
 export async function getLatestReleaseFromGitHub(): Promise<string> {
-  const releases = await $.getJSON(
+  type releaseType = { name: string };
+  const releases = await cachedFetchJson<releaseType[]>(
     "https://api.github.com/repos/monkeytypegame/monkeytype/releases?per_page=1"
   );
+  if (releases[0] === undefined || releases[0].name === undefined) {
+    throw new Error("No release found");
+  }
   return releases[0].name;
 }
 
 export async function getReleasesFromGitHub(): Promise<
   MonkeyTypes.GithubRelease[]
 > {
-  return $.getJSON(
+  return cachedFetchJson(
     "https://api.github.com/repos/monkeytypegame/monkeytype/releases?per_page=5"
   );
 }
@@ -670,8 +674,8 @@ export function getNumbers(len: number): string {
 export function convertNumberToArabic(numString: string): string {
   const arabicIndic = "٠١٢٣٤٥٦٧٨٩";
   let ret = "";
-  for (let i = 0; i < numString.length; i++) {
-    ret += arabicIndic[parseInt(numString[i] as string)];
+  for (const char of numString) {
+    ret += arabicIndic[parseInt(char)];
   }
   return ret;
 }
@@ -679,8 +683,8 @@ export function convertNumberToArabic(numString: string): string {
 export function convertNumberToNepali(numString: string): string {
   const nepaliIndic = "०१२३४५६७८९";
   let ret = "";
-  for (let i = 0; i < numString.length; i++) {
-    ret += nepaliIndic[parseInt(numString[i] as string)];
+  for (const char of numString) {
+    ret += nepaliIndic[parseInt(char)];
   }
   return ret;
 }
@@ -689,6 +693,8 @@ export function getSpecials(): string {
   const randLen = randomIntFromRange(1, 7);
   let ret = "";
   const specials = [
+    "`",
+    "~",
     "!",
     "@",
     "#",
@@ -873,6 +879,8 @@ export function objectToQueryString<T extends string | number | boolean>(
 }
 
 declare global {
+  // type gets a "Duplicate identifier" error
+  // eslint-disable-next-line @typescript-eslint/consistent-type-definitions
   interface Document {
     mozCancelFullScreen?: () => Promise<void>;
     msRequestFullscreen?: () => Promise<void>;
@@ -882,6 +890,7 @@ declare global {
     msFullscreenElement?: Element;
     webkitFullscreenElement?: Element;
   }
+  // eslint-disable-next-line @typescript-eslint/consistent-type-definitions
   interface HTMLElement {
     msRequestFullscreen?: () => Promise<void>;
     mozRequestFullScreen?: () => Promise<void>;
@@ -904,7 +913,7 @@ export function toggleFullscreen(): void {
     } else if (elem.mozRequestFullScreen) {
       void elem.mozRequestFullScreen();
     } else if (elem.webkitRequestFullscreen) {
-      // @ts-ignore
+      // @ts-expect-error
       void elem.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
     }
   } else {
@@ -979,8 +988,8 @@ export function cleanTypographySymbols(textToClean: string): string {
 
 export function isUsernameValid(name: string): boolean {
   if (name === null || name === undefined || name === "") return false;
-  if (/miodec/.test(name.toLowerCase())) return false;
-  if (/bitly/.test(name.toLowerCase())) return false;
+  if (name.toLowerCase().includes("miodec")) return false;
+  if (name.toLowerCase().includes("bitly")) return false;
   if (name.length > 14) return false;
   if (/^\..*/.test(name.toLowerCase())) return false;
   return /^[0-9a-zA-Z_.-]+$/.test(name);
@@ -1020,7 +1029,7 @@ export function canQuickRestart(
 ): boolean {
   const wordsLong = mode === "words" && (words >= 1000 || words === 0);
   const timeLong = mode === "time" && (time >= 900 || time === 0);
-  const customTextLong = mode === "custom" && customTextIsLong === true;
+  const customTextLong = mode === "custom" && customTextIsLong;
   const customTextRandomWordsLong =
     mode === "custom" && CustomText.isWordRandom && CustomText.word >= 1000;
   const customTextRandomTimeLong =
@@ -1088,9 +1097,9 @@ export function convertRGBtoHEX(rgb: string): string | undefined {
   );
 }
 
-interface LastIndex extends String {
+type LastIndex = {
   lastIndexOfRegex(regex: RegExp): number;
-}
+} & string;
 
 (String.prototype as LastIndex).lastIndexOfRegex = function (
   regex: RegExp
@@ -1364,10 +1373,8 @@ export async function getDiscordAvatarUrl(
 ): Promise<string | null> {
   if (
     discordId === undefined ||
-    discordId === null ||
     discordId === "" ||
     discordAvatar === undefined ||
-    discordAvatar === null ||
     discordAvatar === ""
   ) {
     return null;
@@ -1398,7 +1405,7 @@ export function getXpForLevel(level: number): number {
 }
 
 export async function promiseAnimation(
-  el: JQuery<HTMLElement>,
+  el: JQuery,
   animation: Record<string, string>,
   duration: number,
   easing: string
@@ -1479,7 +1486,7 @@ export function intersect<T>(a: T[], b: T[], removeDuplicates = false): T[] {
   let t;
   if (b.length > a.length) (t = b), (b = a), (a = t); // indexOf to loop over shorter
   const filtered = a.filter(function (e) {
-    return b.indexOf(e) > -1;
+    return b.includes(e);
   });
   return removeDuplicates ? [...new Set(filtered)] : filtered;
 }
@@ -1620,7 +1627,7 @@ export function getBoundingRectOfElements(elements: HTMLElement[]): DOMRect {
   };
 }
 export function convertToMorse(word: string): string {
-  const morseCode: { [id: string]: string } = {
+  const morseCode: Record<string, string> = {
     a: ".-",
     b: "-...",
     c: "-.-.",

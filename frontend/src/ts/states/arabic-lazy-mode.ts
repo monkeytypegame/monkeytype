@@ -3,8 +3,5 @@ export function get(): boolean {
 }
 
 export function set(value: boolean): void {
-  localStorage.setItem(
-    "prefersArabicLazyMode",
-    value === true ? "true" : "false"
-  );
+  localStorage.setItem("prefersArabicLazyMode", value ? "true" : "false");
 }

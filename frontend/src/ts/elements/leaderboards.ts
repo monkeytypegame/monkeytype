@@ -2,15 +2,16 @@ import Ape from "../ape";
 import * as DB from "../db";
 import Config from "../config";
 import * as Misc from "../utils/misc";
-import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
 import * as Notifications from "./notifications";
 import format from "date-fns/format";
-import { Auth } from "../firebase";
+import { isAuthenticated } from "../firebase";
 import differenceInSeconds from "date-fns/differenceInSeconds";
 import { getHTMLById as getBadgeHTMLbyId } from "../controllers/badge-controller";
 import * as ConnectionState from "../states/connection";
 import * as Skeleton from "../popups/skeleton";
 import { debounce } from "throttle-debounce";
+import Format from "../utils/format";
+import SlimSelect from "slim-select";
 
 const wrapperId = "leaderboardsWrapper";
 
@@ -143,7 +144,7 @@ function updateFooter(lb: LbKey): void {
     side = "right";
   }
 
-  if (!Auth?.currentUser) {
+  if (!isAuthenticated()) {
     $(`#leaderboardsWrapper table.${side} tfoot`).html(`
     <tr>
       <td colspan="6" style="text-align:center;"></>
@@ -164,7 +165,6 @@ function updateFooter(lb: LbKey): void {
     return;
   }
 
-  const typingSpeedUnit = getTypingSpeedUnit(Config.typingSpeedUnit);
   if (DB.getSnapshot()?.lbOptOut === true) {
     $(`#leaderboardsWrapper table.${side} tfoot`).html(`
     <tr>
@@ -195,7 +195,7 @@ function updateFooter(lb: LbKey): void {
     const num = Misc.roundTo2(
       (lbRank.rank / (currentRank[lb].count as number)) * 100
     );
-    if (currentRank[lb]["rank"] === 1) {
+    if (currentRank[lb].rank === 1) {
       toppercent = "GOAT";
     } else {
       toppercent = `Top ${num}%`;
@@ -210,14 +210,18 @@ function updateFooter(lb: LbKey): void {
     <tr>
     <td>${lbRank.rank}</td>
     <td><span class="top">You</span>${toppercent ? toppercent : ""}</td>
-    <td class="alignRight">${typingSpeedUnit.fromWpm(entry.wpm).toFixed(2)}<br>
-    <div class="sub">${entry.acc.toFixed(2)}%</div></td>
-    <td class="alignRight">${typingSpeedUnit.fromWpm(entry.raw).toFixed(2)}<br>
-    <div class="sub">${
-      entry.consistency === undefined || entry.consistency === "-"
-        ? "-"
-        : entry.consistency.toFixed(2) + "%"
-    }</div></td>
+    <td class="alignRight">${Format.typingSpeed(entry.wpm, {
+      showDecimalPlaces: true,
+    })}<br>
+    <div class="sub">${Format.percentage(entry.acc, {
+      showDecimalPlaces: true,
+    })}%</div></td>
+    <td class="alignRight">${Format.typingSpeed(entry.raw, {
+      showDecimalPlaces: true,
+    })}<br>
+    <div class="sub">${Format.percentage(entry.consistency, {
+      showDecimalPlaces: true,
+    })}</div></td>
     <td class="alignRight">${format(date, "dd MMM yyyy")}<br>
     <div class='sub'>${format(date, "HH:mm")}</div></td>
   </tr>
@@ -247,7 +251,7 @@ function checkLbMemory(lb: LbKey): void {
     side = "right";
   }
 
-  const memory = DB.getSnapshot()?.lbMemory?.time?.[lb]?.["english"] ?? 0;
+  const memory = DB.getSnapshot()?.lbMemory?.["time"]?.[lb]?.["english"] ?? 0;
 
   const rank = currentRank[lb]?.rank;
   if (rank) {
@@ -297,8 +301,6 @@ async function fillTable(lb: LbKey): Promise<void> {
       "<tr><td colspan='7'>No results found</td></tr>"
     );
   }
-
-  const typingSpeedUnit = getTypingSpeedUnit(Config.typingSpeedUnit);
   const loggedInUserName = DB.getSnapshot()?.name;
 
   let html = "";
@@ -307,7 +309,6 @@ async function fillTable(lb: LbKey): Promise<void> {
     if (entry === undefined) {
       break;
     }
-    if (entry.hidden) return;
     let meClassString = "";
     if (entry.name === loggedInUserName) {
       meClassString = ' class="me"';
@@ -338,14 +339,18 @@ async function fillTable(lb: LbKey): Promise<void> {
       ${entry.badgeId ? getBadgeHTMLbyId(entry.badgeId) : ""}
     </div>
     </td>
-    <td class="alignRight">${typingSpeedUnit.fromWpm(entry.wpm).toFixed(2)}<br>
-    <div class="sub">${entry.acc.toFixed(2)}%</div></td>
-    <td class="alignRight">${typingSpeedUnit.fromWpm(entry.raw).toFixed(2)}<br>
-    <div class="sub">${
-      entry.consistency === undefined || entry.consistency === "-"
-        ? "-"
-        : entry.consistency.toFixed(2) + "%"
-    }</div></td>
+    <td class="alignRight">${Format.typingSpeed(entry.wpm, {
+      showDecimalPlaces: true,
+    })}<br>
+    <div class="sub">${Format.percentage(entry.acc, {
+      showDecimalPlaces: true,
+    })}</div></td>
+    <td class="alignRight">${Format.typingSpeed(entry.raw, {
+      showDecimalPlaces: true,
+    })}<br>
+    <div class="sub">${Format.percentage(entry.consistency, {
+      showDecimalPlaces: true,
+    })}</div></td>
     <td class="alignRight">${format(date, "dd MMM yyyy")}<br>
     <div class='sub'>${format(date, "HH:mm")}</div></td>
   </tr>
@@ -443,7 +448,7 @@ async function update(): Promise<void> {
   const lbRankRequests: Promise<
     Ape.HttpClientResponse<Ape.Leaderboards.GetRank>
   >[] = [];
-  if (Auth?.currentUser) {
+  if (isAuthenticated()) {
     lbRankRequests.push(
       ...timeModes.map(async (mode2) => {
         return Ape.leaderboards.getRank({
@@ -459,14 +464,15 @@ async function update(): Promise<void> {
   const responses = await Promise.all(lbDataRequests);
   const rankResponses = await Promise.all(lbRankRequests);
 
-  const atLeastOneFailed =
-    responses.find((response) => response.status !== 200) ||
-    rankResponses.find((response) => response.status !== 200);
-  if (atLeastOneFailed) {
+  const failedResponses = [
+    ...(responses.filter((response) => response.status !== 200) ?? []),
+    ...(rankResponses.filter((response) => response.status !== 200) ?? []),
+  ];
+  if (failedResponses.length > 0) {
     hideLoader("15");
     hideLoader("60");
     return Notifications.add(
-      "Failed to load leaderboards: " + atLeastOneFailed.message,
+      "Failed to load leaderboards: " + failedResponses[0]?.message,
       -1
     );
   }
@@ -606,10 +612,7 @@ async function getAvatarUrls(
 ): Promise<(string | null)[]> {
   return Promise.allSettled(
     data.map(async (entry) =>
-      Misc.getDiscordAvatarUrl(
-        entry.discordId ?? undefined,
-        entry.discordAvatar ?? undefined
-      )
+      Misc.getDiscordAvatarUrl(entry.discordId, entry.discordAvatar)
     )
   ).then((promises) => {
     return promises.map((promise) => {
@@ -646,7 +649,7 @@ export function show(): void {
   }
   Skeleton.append(wrapperId);
   if (!Misc.isPopupVisible("leaderboardsWrapper")) {
-    if (Auth?.currentUser) {
+    if (isAuthenticated()) {
       $("#leaderboardsWrapper #leaderboards .rightTableJumpToMe").removeClass(
         "disabled"
       );
@@ -687,52 +690,57 @@ $("#leaderboardsWrapper").on("click", (e) => {
   }
 });
 
-const languageSelector = $(
-  "#leaderboardsWrapper #leaderboards .leaderboardsTop .buttonGroup.timeRange .languageSelect"
-).select2({
-  placeholder: "select a language",
-  width: "100%",
+const languageSelector = new SlimSelect({
+  select:
+    "#leaderboardsWrapper #leaderboards .leaderboardsTop .buttonGroup.timeRange .languageSelect",
+  settings: {
+    showSearch: false,
+    contentLocation: document.querySelector(
+      "#leaderboardsWrapper"
+    ) as HTMLElement,
+  },
   data: [
     {
-      id: "english",
+      value: "english",
       text: "english",
       selected: true,
     },
     {
-      id: "spanish",
+      value: "spanish",
       text: "spanish",
     },
     {
-      id: "german",
+      value: "german",
       text: "german",
     },
     {
-      id: "french",
+      value: "french",
       text: "french",
     },
     {
-      id: "portuguese",
+      value: "portuguese",
       text: "portuguese",
     },
     {
-      id: "indonesian",
+      value: "indonesian",
       text: "indonesian",
     },
     {
-      id: "italian",
+      value: "italian",
       text: "italian",
     },
     {
-      id: "russian",
+      value: "russian",
       text: "russian",
     },
   ],
-});
-
-languageSelector.on("select2:select", (e) => {
-  currentLanguage = e.params.data.id;
-  updateTitle();
-  void update();
+  events: {
+    afterChange: (newVal): void => {
+      currentLanguage = newVal[0]?.value as string;
+      updateTitle();
+      void update();
+    },
+  },
 });
 
 let leftScrollEnabled = true;
@@ -859,9 +867,8 @@ $(
 ).on("click", () => {
   currentTimeRange = "allTime";
   currentLanguage = "english";
-  languageSelector.prop("disabled", true);
-  languageSelector.val("english");
-  languageSelector.trigger("change");
+  languageSelector.disable();
+  languageSelector.setSelected("english");
   void update();
 });
 
@@ -870,7 +877,7 @@ $(
 ).on("click", () => {
   currentTimeRange = "daily";
   updateYesterdayButton();
-  languageSelector.prop("disabled", false);
+  languageSelector.enable();
   void update();
 });
 

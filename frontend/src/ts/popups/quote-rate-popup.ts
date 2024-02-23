@@ -10,13 +10,13 @@ const wrapperId = "quoteRatePopupWrapper";
 
 let rating = 0;
 
-interface QuoteStats {
+type QuoteStats = {
   average?: number;
   ratings?: number;
   totalRating?: number;
   quoteId?: number;
   language?: string;
-}
+};
 
 let quoteStats: QuoteStats | null | Record<string, never> = null;
 let currentQuote: MonkeyTypes.Quote | null = null;
@@ -54,7 +54,7 @@ export async function getQuoteStats(
     return;
   }
 
-  if (response.data === undefined) {
+  if (response.data === null) {
     return {} as QuoteStats;
   }
 

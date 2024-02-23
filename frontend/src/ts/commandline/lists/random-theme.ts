@@ -1,5 +1,5 @@
 import * as UpdateConfig from "../../config";
-import { Auth } from "../../firebase";
+import { isAuthenticated } from "../../firebase";
 import * as Notifications from "../../elements/notifications";
 
 const subgroup: MonkeyTypes.CommandsSubgroup = {
@@ -51,7 +51,7 @@ const subgroup: MonkeyTypes.CommandsSubgroup = {
       display: "custom",
       configValue: "custom",
       exec: (): void => {
-        if (!Auth?.currentUser) {
+        if (!isAuthenticated()) {
           Notifications.add(
             "Multiple custom themes are available to logged in users only",
             0

@@ -122,10 +122,10 @@ $(`${popup} .delimiterCheck input`).on("change", () => {
   CustomText.setDelimiter(delimiter);
 });
 
-interface HideOptions {
+type HideOptions = {
   noAnim?: boolean | undefined;
   resetState?: boolean | undefined;
-}
+};
 
 function hide(options = {} as HideOptions): void {
   if (options.noAnim === undefined) options.noAnim = false;
@@ -143,7 +143,7 @@ function hide(options = {} as HideOptions): void {
         () => {
           if (options.resetState) {
             const newText = CustomText.text.map((word) => {
-              if (word[word.length - 1] === "|") {
+              if (word.endsWith("|")) {
                 word = word.slice(0, -1);
               }
               return word;

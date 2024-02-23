@@ -28,7 +28,6 @@ import * as TestWords from "../test/test-words";
 import * as Hangul from "hangul-js";
 import * as CustomTextState from "../states/custom-text-name";
 import * as FunboxList from "../test/funbox/funbox-list";
-import * as Settings from "../pages/settings";
 import * as KeymapEvent from "../observables/keymap-event";
 import { IgnoredKeys } from "../constants/ignored-keys";
 import { ModifierKeys } from "../constants/modifier-keys";
@@ -152,7 +151,7 @@ function backspaceToPrevious(): void {
   if (Config.mode === "zen") {
     TimerProgress.update();
 
-    const els: HTMLElement[] = (document.querySelector("#words")?.children ||
+    const els = (document.querySelector("#words")?.children ??
       []) as HTMLElement[];
 
     for (let i = els.length - 1; i >= 0; i--) {
@@ -193,7 +192,6 @@ function handleSpace(): void {
       f.functions.handleSpace();
     }
   }
-  Settings.groups["layout"]?.updateInput();
 
   dontInsertSpace = true;
 
@@ -225,7 +223,7 @@ function handleSpace(): void {
     TestInput.incrementKeypressCount();
     TestInput.pushKeypressWord(TestWords.words.currentIndex);
     if (!nospace) {
-      Sound.playClick();
+      void Sound.playClick();
     }
     Replay.addReplayEvent("submitCorrectWord");
     if (TestWords.words.currentIndex === TestWords.words.length) {
@@ -236,9 +234,9 @@ function handleSpace(): void {
   } else {
     if (!nospace) {
       if (Config.playSoundOnError === "off" || Config.blindMode) {
-        Sound.playClick();
+        void Sound.playClick();
       } else {
-        Sound.playError();
+        void Sound.playError();
       }
     }
     TestInput.pushMissedWord(TestWords.words.getCurrent());
@@ -585,12 +583,12 @@ function handleChar(
   );
 
   if (thisCharCorrect) {
-    Sound.playClick();
+    void Sound.playClick();
   } else {
     if (Config.playSoundOnError === "off" || Config.blindMode) {
-      Sound.playClick();
+      void Sound.playClick();
     } else {
-      Sound.playError();
+      void Sound.playError();
     }
   }
 
@@ -661,7 +659,7 @@ function handleChar(
   //update the active word top, but only once
   if (testInputLength === 1 && TestWords.words.currentIndex === 0) {
     TestUI.setActiveWordTop(
-      (<HTMLElement>document.querySelector("#words .active"))?.offsetTop
+      (document.querySelector("#words .active") as HTMLElement)?.offsetTop
     );
   }
 
@@ -746,14 +744,18 @@ function handleChar(
     handleSpace();
   }
 
+  const currentWord = TestWords.words.getCurrent();
+  const doesCurrentWordHaveTab = /^\t+/.test(TestWords.words.getCurrent());
+  const isCurrentCharTab = currentWord[TestInput.input.current.length] === "\t";
+
   if (
     thisCharCorrect &&
     Config.language.startsWith("code") &&
-    /^\t+/.test(TestWords.words.getCurrent()) &&
-    TestWords.words.getCurrent()[TestInput.input.current.length] === "\t"
+    doesCurrentWordHaveTab &&
+    isCurrentCharTab
   ) {
-    // handleChar("\t", TestInput.input.current.length);
-    $("#wordsInput").trigger($.Event("keydown", { key: "Tab", code: "Tab" }));
+    const tabEvent = new KeyboardEvent("keydown", { key: "Tab", code: "Tab" });
+    document.dispatchEvent(tabEvent);
   }
 
   if (char !== "\n") {
@@ -1002,7 +1004,7 @@ $(document).on("keydown", async (event) => {
 
   //blocking firefox from going back in history with backspace
   if (event.key === "Backspace") {
-    Sound.playClick();
+    void Sound.playClick();
     const t = /INPUT|SELECT|TEXTAREA/i;
     if (
       !t.test((event.target as unknown as Element).tagName)
@@ -1070,7 +1072,7 @@ $(document).on("keydown", async (event) => {
 
   //show dead keys
   if (event.key === "Dead" && !CompositionState.getComposing()) {
-    Sound.playClick();
+    void Sound.playClick();
     const word: HTMLElement | null = document.querySelector<HTMLElement>(
       "#words .word.active"
     );
@@ -1298,7 +1300,7 @@ $("#wordsInput").on("input", (event) => {
     if (containsChinese) {
       if (
         currTestInput.length - inputValue.length <= 2 &&
-        currTestInput.slice(0, currTestInput.length) === currTestInput
+        currTestInput.startsWith(currTestInput)
       ) {
         TestInput.input.current = inputValue;
       } else {

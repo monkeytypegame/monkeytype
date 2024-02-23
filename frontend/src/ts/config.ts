@@ -7,7 +7,7 @@ import {
 } from "./config-validation";
 import * as ConfigEvent from "./observables/config-event";
 import DefaultConfig from "./constants/default-config";
-import { Auth } from "./firebase";
+import { isAuthenticated } from "./firebase";
 import * as AnalyticsController from "./controllers/analytics-controller";
 import * as AccountButton from "./elements/account-button";
 import { debounce } from "throttle-debounce";
@@ -49,7 +49,7 @@ function saveToLocalStorage(
   window.localStorage.setItem("config", localToSaveStringified);
   if (!noDbCheck) {
     (configToSend[key] as typeof config[typeof key]) = config[key];
-    void saveToDatabase();
+    saveToDatabase();
   }
   ConfigEvent.dispatch("saveToLocalStorage", localToSaveStringified);
 }
@@ -466,7 +466,7 @@ export function setPaceCaret(
   }
 
   if (document.readyState === "complete") {
-    if (val === "pb" && !Auth?.currentUser) {
+    if (val === "pb" && !isAuthenticated()) {
       Notifications.add("PB pace caret is unavailable without an account", 0);
       return false;
     }
@@ -956,7 +956,7 @@ export function setTapeMode(
     return false;
   }
 
-  if (mode !== "off" && config.showAllLines === true) {
+  if (mode !== "off" && config.showAllLines) {
     setShowAllLines(false, true);
   }
 
@@ -1362,7 +1362,7 @@ export function setTheme(name: string, nosave?: boolean): boolean {
   if (!isConfigValueValid("theme", name, ["string"])) return false;
 
   config.theme = name;
-  if (config.customTheme === true) setCustomTheme(false);
+  if (config.customTheme) setCustomTheme(false);
   saveToLocalStorage("theme", nosave);
   ConfigEvent.dispatch("theme", config.theme);
 
@@ -1435,12 +1435,12 @@ export function setRandomTheme(
   }
 
   if (val === "custom") {
-    if (!Auth?.currentUser) {
+    if (!isAuthenticated()) {
       config.randomTheme = val;
       return false;
     }
     if (!DB.getSnapshot()) return true;
-    if (DB.getSnapshot()?.customThemes.length === 0) {
+    if (DB.getSnapshot()?.customThemes?.length === 0) {
       Notifications.add("You need to create a custom theme first", 0);
       config.randomTheme = "off";
       return false;
@@ -1850,6 +1850,7 @@ export async function apply(
     }
   );
   if (configObj !== undefined && configObj !== null) {
+    setAds(configObj.ads, true);
     setThemeLight(configObj.themeLight, true);
     setThemeDark(configObj.themeDark, true);
     setThemes(
@@ -1937,7 +1938,6 @@ export async function apply(
     setLazyMode(configObj.lazyMode, true);
     setShowAverage(configObj.showAverage, true);
     setTapeMode(configObj.tapeMode, true);
-    setAds(configObj.ads, true);
 
     ConfigEvent.dispatch(
       "configApplied",
@@ -1984,7 +1984,7 @@ function replaceLegacyValues(
 ): SharedTypes.Config | MonkeyTypes.ConfigChanges {
   const configObj = configToApply as SharedTypes.Config;
 
-  //@ts-ignore
+  //@ts-expect-error
   if (configObj.quickTab === true) {
     configObj.quickRestart = "tab";
   }
@@ -1993,17 +1993,17 @@ function replaceLegacyValues(
     configObj.smoothCaret = configObj.smoothCaret ? "medium" : "off";
   }
 
-  //@ts-ignore
+  //@ts-expect-error
   if (configObj.swapEscAndTab === true) {
     configObj.quickRestart = "esc";
   }
 
-  //@ts-ignore
+  //@ts-expect-error
   if (configObj.alwaysShowCPM === true) {
     configObj.typingSpeedUnit = "cpm";
   }
 
-  //@ts-ignore
+  //@ts-expect-error
   if (configObj.showAverage === "wpm") {
     configObj.showAverage = "speed";
   }

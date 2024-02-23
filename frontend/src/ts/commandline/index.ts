@@ -9,7 +9,7 @@ import * as AnalyticsController from "../controllers/analytics-controller";
 import * as PageTransition from "../states/page-transition";
 import * as TestWords from "../test/test-words";
 import * as ActivePage from "../states/active-page";
-import { Auth } from "../firebase";
+import { isAuthenticated } from "../firebase";
 import {
   isAnyPopupVisible,
   isElementVisible,
@@ -79,7 +79,7 @@ function showFound(): void {
   $.each(list.list, (_index, obj) => {
     if (obj.found && (obj.available !== undefined ? obj.available() : true)) {
       let icon = obj.icon ?? "fa-chevron-right";
-      const faIcon = /^fa-/g.test(icon);
+      const faIcon = icon.startsWith("fa-");
       if (!faIcon) {
         icon = `<div class="textIcon">${icon}</div>`;
       } else {
@@ -189,7 +189,7 @@ function updateSuggested(): void {
     return;
   }
   //ignore the preceeding ">"s in the command line input
-  if (inputVal[0] !== undefined && inputVal[0][0] === ">") {
+  if (inputVal[0]?.startsWith(">")) {
     inputVal[0] = inputVal[0].replace(/^>+/, "");
   }
   if (inputVal[0] === "" && inputVal.length === 1) {
@@ -500,7 +500,7 @@ $(document).ready(() => {
       } else {
         hide();
       }
-      UpdateConfig.setFontFamily(Config.fontFamily, true);
+      UpdateConfig.previewFontFamily(Config.fontFamily);
       return;
     }
     if (
@@ -619,7 +619,7 @@ $("#commandLineWrapper #commandLine").on(
 $("#commandLineWrapper").on("mousedown", (e) => {
   if ($(e.target).attr("id") === "commandLineWrapper") {
     hide();
-    UpdateConfig.setFontFamily(Config.fontFamily, true);
+    UpdateConfig.previewFontFamily(Config.fontFamily);
     // if (Config.customTheme === true) {
     //   applyCustomThemeColors();
     // } else {
@@ -689,7 +689,7 @@ $(document).on("keydown", (e) => {
         if (
           Config.singleListCommandLine === "manual" &&
           isSingleListCommandLineActive() &&
-          inputVal[0] !== ">"
+          !inputVal.startsWith(">")
         ) {
           restoreOldCommandLine(false);
           updateSuggested();
@@ -804,8 +804,8 @@ $(".pageTest").on("click", "#testModesNotice .textButton", (event) => {
 $("footer").on("click", ".leftright .right .current-theme", (e) => {
   if (e.shiftKey) {
     if (!Config.customTheme) {
-      if (Auth?.currentUser) {
-        if ((DB.getSnapshot()?.customThemes.length ?? 0) < 1) {
+      if (isAuthenticated()) {
+        if ((DB.getSnapshot()?.customThemes?.length ?? 0) < 1) {
           Notifications.add("No custom themes!", 0);
           UpdateConfig.setCustomTheme(false);
           // UpdateConfig.setCustomThemeId("");

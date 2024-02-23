@@ -40,7 +40,7 @@ async function hide(): Promise<void> {
       } catch (e) {
         Notifications.add("Failed to import settings: " + e, -1);
       }
-      void UpdateConfig.saveFullConfigToLocalStorage();
+      UpdateConfig.saveFullConfigToLocalStorage();
     }
     $("#settingsImportWrapper")
       .stop(true, true)

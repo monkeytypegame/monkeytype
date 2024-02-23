@@ -87,7 +87,7 @@ export async function load(): Promise<void> {
 
       let reset = false;
       for (const key of Object.keys(defaultResultFilters)) {
-        if (reset === true) break;
+        if (reset) break;
         if (newFiltersObject[key] === undefined) {
           reset = true;
           break;
@@ -116,9 +116,7 @@ export async function load(): Promise<void> {
       }
     }
 
-    const newTags: {
-      [tag: string]: boolean;
-    } = { none: false };
+    const newTags: Record<string, boolean> = { none: false };
 
     Object.keys(defaultResultFilters.tags).forEach((tag) => {
       if (filters.tags[tag] !== undefined) {
@@ -219,7 +217,7 @@ async function createFilterPresetCallback(name: string): Promise<void> {
   const result = await Ape.users.addResultFilterPreset({ ...filters, name });
   Loader.hide();
   if (result.status === 200) {
-    addFilterPresetToSnapshot({ ...filters, name, _id: result.data });
+    addFilterPresetToSnapshot({ ...filters, name, _id: result.data as string });
     void updateFilterPresets();
     Notifications.add("Filter preset created", 1);
   } else {
@@ -301,7 +299,7 @@ function setAllFilters(
   });
 }
 
-export function loadTags(tags: MonkeyTypes.Tag[]): void {
+export function loadTags(tags: MonkeyTypes.UserTag[]): void {
   tags.forEach((tag) => {
     defaultResultFilters.tags[tag._id] = true;
   });
@@ -337,10 +335,10 @@ export function updateActive(): void {
 
       const filterValue = getFilter(group, filter);
       if (filterValue === true) {
-        groupAboveChartDisplay["array"]?.push(filter);
+        groupAboveChartDisplay.array?.push(filter);
       } else {
-        if (groupAboveChartDisplay["all"] !== undefined) {
-          groupAboveChartDisplay["all"] = false;
+        if (groupAboveChartDisplay.all !== undefined) {
+          groupAboveChartDisplay.all = false;
         }
       }
       let buttonEl;
@@ -504,7 +502,7 @@ $(
       setAllFilters(group, true);
     });
     setAllFilters("date", false);
-    filters["date"]["all"] = true;
+    filters.date.all = true;
   } else if ($(e.target).hasClass("noFilters")) {
     Misc.typedKeys(getFilters()).forEach((group) => {
       // id and name field do not correspond to any ui elements, no need to update
@@ -545,7 +543,7 @@ $(".pageAccount .topFilters button.allFilters").on("click", () => {
     setAllFilters(group, true);
   });
   setAllFilters("date", false);
-  filters["date"]["all"] = true;
+  filters.date.all = true;
   updateActive();
   save();
 });
@@ -563,24 +561,24 @@ $(".pageAccount .topFilters button.currentConfigFilter").on("click", () => {
     setAllFilters(group, false);
   });
 
-  filters["pb"]["no"] = true;
-  filters["pb"]["yes"] = true;
+  filters.pb.no = true;
+  filters.pb.yes = true;
 
-  filters["difficulty"][Config.difficulty] = true;
-  filters["mode"][Config.mode] = true;
+  filters.difficulty[Config.difficulty] = true;
+  filters.mode[Config.mode] = true;
   if (Config.mode === "time") {
     if ([15, 30, 60, 120].includes(Config.time)) {
       const configTime = Config.time as MonkeyTypes.DefaultTimeModes;
-      filters["time"][configTime] = true;
+      filters.time[configTime] = true;
     } else {
-      filters["time"]["custom"] = true;
+      filters.time.custom = true;
     }
   } else if (Config.mode === "words") {
     if ([10, 25, 50, 100, 200].includes(Config.words)) {
       const configWords = Config.words as MonkeyTypes.DefaultWordsModes;
-      filters["words"][configWords] = true;
+      filters.words[configWords] = true;
     } else {
-      filters["words"]["custom"] = true;
+      filters.words.custom = true;
     }
   } else if (Config.mode === "quote") {
     const filterName: MonkeyTypes.Filter<"quoteLength">[] = [
@@ -593,26 +591,26 @@ $(".pageAccount .topFilters button.currentConfigFilter").on("click", () => {
       if (
         Config.quoteLength.includes(index as SharedTypes.Config.QuoteLength)
       ) {
-        filters["quoteLength"][ql] = true;
+        filters.quoteLength[ql] = true;
       } else {
-        filters["quoteLength"][ql] = false;
+        filters.quoteLength[ql] = false;
       }
     });
   }
   if (Config.punctuation) {
-    filters["punctuation"]["on"] = true;
+    filters.punctuation.on = true;
   } else {
-    filters["punctuation"]["off"] = true;
+    filters.punctuation.off = true;
   }
   if (Config.numbers) {
-    filters["numbers"]["on"] = true;
+    filters.numbers.on = true;
   } else {
-    filters["numbers"]["off"] = true;
+    filters.numbers.off = true;
   }
   if (Config.mode === "quote" && /english.*/.test(Config.language)) {
-    filters["language"]["english"] = true;
+    filters.language["english"] = true;
   } else {
-    filters["language"][Config.language] = true;
+    filters.language[Config.language] = true;
   }
 
   if (Config.funbox === "none") {
@@ -623,16 +621,16 @@ $(".pageAccount .topFilters button.currentConfigFilter").on("click", () => {
     }
   }
 
-  filters["tags"]["none"] = true;
+  filters.tags["none"] = true;
 
   DB.getSnapshot()?.tags?.forEach((tag) => {
     if (tag.active === true) {
-      filters["tags"]["none"] = false;
-      filters["tags"][tag._id] = true;
+      filters.tags["none"] = false;
+      filters.tags[tag._id] = true;
     }
   });
 
-  filters["date"]["all"] = true;
+  filters.date.all = true;
   updateActive();
   save();
 });

@@ -344,6 +344,11 @@ export const page = new Page(
   },
   async () => {
     $(".pageLogin input").val("");
+    nameIndicator.hide();
+    emailIndicator.hide();
+    verifyEmailIndicator.hide();
+    passwordIndicator.hide();
+    verifyPasswordIndicator.hide();
     Skeleton.remove("pageLogin");
   },
   async () => {

@@ -1,11 +1,11 @@
 import _ from "lodash";
 import FunboxList from "../constants/funbox-list";
 
-interface CheckAndUpdatePbResult {
+type CheckAndUpdatePbResult = {
   isPb: boolean;
   personalBests: SharedTypes.PersonalBests;
   lbPersonalBests?: MonkeyTypes.LbPersonalBests;
-}
+};
 
 type Result = Omit<
   SharedTypes.DBResult<SharedTypes.Config.Mode>,
@@ -73,19 +73,28 @@ function matchesPersonalBest(
     result.difficulty === undefined ||
     result.language === undefined ||
     result.punctuation === undefined ||
-    result.lazyMode === undefined
+    result.lazyMode === undefined ||
+    result.numbers === undefined
   ) {
     throw new Error("Missing result data (matchesPersonalBest)");
   }
 
   const sameLazyMode =
-    result.lazyMode === personalBest.lazyMode ||
-    (!result.lazyMode && !personalBest.lazyMode);
-  const samePunctuation = result.punctuation === personalBest.punctuation;
+    (result.lazyMode ?? false) === (personalBest.lazyMode ?? false);
+  const samePunctuation =
+    (result.punctuation ?? false) === (personalBest.punctuation ?? false);
   const sameDifficulty = result.difficulty === personalBest.difficulty;
   const sameLanguage = result.language === personalBest.language;
+  const sameNumbers =
+    (result.numbers ?? false) === (personalBest.numbers ?? false);
 
-  return sameLazyMode && samePunctuation && sameDifficulty && sameLanguage;
+  return (
+    sameLazyMode &&
+    samePunctuation &&
+    sameDifficulty &&
+    sameLanguage &&
+    sameNumbers
+  );
 }
 
 function updatePersonalBest(
@@ -104,7 +113,8 @@ function updatePersonalBest(
     result.acc === undefined ||
     result.consistency === undefined ||
     result.rawWpm === undefined ||
-    result.wpm === undefined
+    result.wpm === undefined ||
+    result.numbers === undefined
   ) {
     throw new Error("Missing result data (updatePersonalBest)");
   }
@@ -117,6 +127,7 @@ function updatePersonalBest(
   personalBest.consistency = result.consistency;
   personalBest.raw = result.rawWpm;
   personalBest.wpm = result.wpm;
+  personalBest.numbers = result.numbers;
   personalBest.timestamp = Date.now();
 
   return true;
@@ -131,7 +142,8 @@ function buildPersonalBest(result: Result): SharedTypes.PersonalBest {
     result.acc === undefined ||
     result.consistency === undefined ||
     result.rawWpm === undefined ||
-    result.wpm === undefined
+    result.wpm === undefined ||
+    result.numbers === undefined
   ) {
     throw new Error("Missing result data (buildPersonalBest)");
   }
@@ -144,6 +156,7 @@ function buildPersonalBest(result: Result): SharedTypes.PersonalBest {
     punctuation: result.punctuation,
     raw: result.rawWpm,
     wpm: result.wpm,
+    numbers: result.numbers,
     timestamp: Date.now(),
   };
 }

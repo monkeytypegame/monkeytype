@@ -32,6 +32,13 @@ export async function linkDiscord(hashOverride: string): Promise<void> {
       );
     }
 
+    if (response.data === null) {
+      return Notifications.add(
+        "Failed to link Discord: data returned was null",
+        -1
+      );
+    }
+
     Notifications.add(response.message, 1);
 
     const snapshot = DB.getSnapshot();
@@ -117,7 +124,7 @@ export function loadTestSettingsFromUrl(getOverride?: string): void {
 
   const de: SharedTestSettings = JSON.parse(decompressFromURI(getValue) ?? "");
 
-  const applied: { [key: string]: string } = {};
+  const applied: Record<string, string> = {};
 
   if (de[0] !== null) {
     UpdateConfig.setMode(de[0], true);
@@ -140,18 +147,18 @@ export function loadTestSettingsFromUrl(getOverride?: string): void {
   if (de[2] !== null) {
     const customTextSettings = de[2];
     CustomText.setPopupTextareaState(
-      customTextSettings["text"].join(customTextSettings["delimiter"])
+      customTextSettings.text.join(customTextSettings.delimiter)
     );
-    CustomText.setText(customTextSettings["text"]);
-    CustomText.setIsTimeRandom(customTextSettings["isTimeRandom"]);
-    CustomText.setIsWordRandom(customTextSettings["isWordRandom"]);
-    if (customTextSettings["isTimeRandom"]) {
-      CustomText.setTime(customTextSettings["time"]);
+    CustomText.setText(customTextSettings.text);
+    CustomText.setIsTimeRandom(customTextSettings.isTimeRandom);
+    CustomText.setIsWordRandom(customTextSettings.isWordRandom);
+    if (customTextSettings.isTimeRandom) {
+      CustomText.setTime(customTextSettings.time);
     }
-    if (customTextSettings["isWordRandom"]) {
-      CustomText.setWord(customTextSettings["word"]);
+    if (customTextSettings.isWordRandom) {
+      CustomText.setWord(customTextSettings.word);
     }
-    CustomText.setDelimiter(customTextSettings["delimiter"]);
+    CustomText.setDelimiter(customTextSettings.delimiter);
     applied["custom text settings"] = "";
   }
 

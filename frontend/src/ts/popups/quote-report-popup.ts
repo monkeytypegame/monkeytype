@@ -7,19 +7,20 @@ import QuotesController from "../controllers/quotes-controller";
 import * as CaptchaController from "../controllers/captcha-controller";
 import * as Skeleton from "./skeleton";
 import { isPopupVisible, removeLanguageSize } from "../utils/misc";
+import SlimSelect from "slim-select";
 
 const wrapperId = "quoteReportPopupWrapper";
 
-interface State {
+type State = {
   previousPopupShowCallback?: () => void;
   quoteToReport?: MonkeyTypes.Quote;
-}
+};
 
-interface Options {
+type Options = {
   quoteId: number;
   previousPopupShowCallback?: () => void;
   noAnim: boolean;
-}
+};
 
 const state: State = {
   previousPopupShowCallback: undefined,
@@ -33,6 +34,8 @@ const defaultOptions: Options = {
   },
   noAnim: false,
 };
+
+let reasonSelect: SlimSelect | undefined = undefined;
 
 export async function show(options = defaultOptions): Promise<void> {
   Skeleton.append(wrapperId);
@@ -59,9 +62,14 @@ export async function show(options = defaultOptions): Promise<void> {
     $("#quoteReportPopup .reason").val("Grammatical error");
     $("#quoteReportPopup .comment").val("");
     $("#quoteReportPopup .characterCount").text("-");
-    $("#quoteReportPopup .reason").select2({
-      minimumResultsForSearch: Infinity,
+
+    reasonSelect = new SlimSelect({
+      select: "#quoteReportPopup .reason",
+      settings: {
+        showSearch: false,
+      },
     });
+
     $("#quoteReportPopupWrapper")
       .stop(true, true)
       .css("opacity", 0)
@@ -90,6 +98,8 @@ async function hide(): Promise<void> {
           if (state.previousPopupShowCallback) {
             state.previousPopupShowCallback();
           }
+          reasonSelect?.destroy();
+          reasonSelect = undefined;
           Skeleton.remove(wrapperId);
         }
       );

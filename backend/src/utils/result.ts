@@ -1,6 +1,8 @@
 import { ObjectId } from "mongodb";
 
-type Result = SharedTypes.DBResult<SharedTypes.Config.Mode>;
+type Result = MonkeyTypes.WithObjectId<
+  SharedTypes.DBResult<SharedTypes.Config.Mode>
+>;
 
 export function buildDbResult(
   completedEvent: SharedTypes.CompletedEvent,
@@ -41,14 +43,14 @@ export function buildDbResult(
     name: userName,
   };
 
-  if (ce.bailedOut === false) delete res.bailedOut;
-  if (ce.blindMode === false) delete res.blindMode;
-  if (ce.lazyMode === false) delete res.lazyMode;
+  if (!ce.bailedOut) delete res.bailedOut;
+  if (!ce.blindMode) delete res.blindMode;
+  if (!ce.lazyMode) delete res.lazyMode;
   if (ce.difficulty === "normal") delete res.difficulty;
   if (ce.funbox === "none") delete res.funbox;
   if (ce.language === "english") delete res.language;
-  if (ce.numbers === false) delete res.numbers;
-  if (ce.punctuation === false) delete res.punctuation;
+  if (!ce.numbers) delete res.numbers;
+  if (!ce.punctuation) delete res.punctuation;
   if (ce.mode !== "custom") delete res.customText;
   if (ce.mode !== "quote") delete res.quoteLength;
   if (ce.restartCount === 0) delete res.restartCount;

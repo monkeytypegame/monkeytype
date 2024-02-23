@@ -32,7 +32,7 @@ import {
   User as UserType,
   Unsubscribe,
 } from "firebase/auth";
-import { Auth } from "../firebase";
+import { Auth, getAuthenticatedUser, isAuthenticated } from "../firebase";
 import { dispatch as dispatchSignUpEvent } from "../observables/google-sign-up-event";
 import {
   hideFavoriteQuoteLength,
@@ -99,8 +99,9 @@ async function getDataAndInit(): Promise<boolean> {
         }
       );
     }
-    const msg = e.message || e;
+    const msg = e.message || "Unknown error";
     Notifications.add("Failed to get user data: " + msg, -1);
+    console.error(e);
 
     $("header nav .account").css("opacity", 1);
     return false;
@@ -152,10 +153,7 @@ async function getDataAndInit(): Promise<boolean> {
   const areConfigsEqual =
     JSON.stringify(Config) === JSON.stringify(snapshot.config);
 
-  if (
-    snapshot.config &&
-    (UpdateConfig.localStorageConfig === undefined || !areConfigsEqual)
-  ) {
+  if (UpdateConfig.localStorageConfig === undefined || !areConfigsEqual) {
     console.log(
       "no local config or local and db configs are different - applying db"
     );
@@ -180,7 +178,7 @@ export async function loadUser(user: UserType): Promise<void> {
   // User is signed in.
   PageTransition.set(false);
   AccountButton.loading(true);
-  if ((await getDataAndInit()) === false) {
+  if (!(await getDataAndInit())) {
     signOut();
   }
   const { discordId, discordAvatar, xp, inboxUnreadSize } =
@@ -335,6 +333,7 @@ async function signIn(): Promise<void> {
       await loadUser(e.user);
     })
     .catch(function (error) {
+      console.error(error);
       let message = error.message;
       if (error.code === "auth/wrong-password") {
         message = "Incorrect password";
@@ -343,6 +342,9 @@ async function signIn(): Promise<void> {
       } else if (error.code === "auth/invalid-email") {
         message =
           "Invalid email format (make sure you are using your email to login - not your username)";
+      } else if (error.code === "auth/invalid-credential") {
+        message =
+          "Email/password is incorrect or your account does not have password authentication enabled.";
       }
       Notifications.add(message, -1);
       LoginPage.hidePreloader();
@@ -394,7 +396,11 @@ async function signInWithGoogle(): Promise<void> {
         message =
           "Invalid email format (make sure you are using your email to login - not your username)";
       } else if (error.code === "auth/popup-closed-by-user") {
-        message = "Popup closed by user";
+        // message = "Popup closed by user";
+        return;
+      } else if (error.code === "auth/user-cancelled") {
+        // message = "User refused to sign in";
+        return;
       }
       Notifications.add(message, -1);
       LoginPage.hidePreloader();
@@ -411,8 +417,8 @@ async function addGoogleAuth(): Promise<void> {
     return;
   }
   Loader.show();
-  if (Auth.currentUser === null) return;
-  linkWithPopup(Auth.currentUser, gmailProvider)
+  if (!isAuthenticated()) return;
+  linkWithPopup(getAuthenticatedUser(), gmailProvider)
     .then(function () {
       Loader.hide();
       Notifications.add("Google authentication added", 1);
@@ -434,7 +440,7 @@ export function signOut(): void {
     });
     return;
   }
-  if (!Auth.currentUser) return;
+  if (!isAuthenticated()) return;
   Auth.signOut()
     .then(function () {
       Notifications.add("Signed out", 0, {
@@ -557,7 +563,7 @@ async function signUp(): Promise<void> {
       createdAuthUser.user.uid
     );
     if (signInResponse.status !== 200) {
-      throw signInResponse;
+      throw new Error(`Failed to sign in: ${signInResponse.message}`);
     }
 
     await updateProfile(createdAuthUser.user, { displayName: nname });
@@ -628,7 +634,7 @@ $("header .signInOut").on("click", () => {
     });
     return;
   }
-  if (Auth.currentUser) {
+  if (isAuthenticated()) {
     signOut();
     signedOutThisSession = true;
   } else {

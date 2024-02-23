@@ -4,7 +4,7 @@ import { performance } from "perf_hooks";
 import { setLeaderboard } from "../utils/prometheus";
 import { isDevEnvironment } from "../utils/misc";
 
-const leaderboardUpdating: { [key: string]: boolean } = {};
+const leaderboardUpdating: Record<string, boolean> = {};
 
 export async function get(
   mode: string,
@@ -13,26 +13,35 @@ export async function get(
   skip: number,
   limit = 50
 ): Promise<SharedTypes.LeaderboardEntry[] | false> {
-  if (leaderboardUpdating[`${language}_${mode}_${mode2}`]) return false;
+  //if (leaderboardUpdating[`${language}_${mode}_${mode2}`]) return false;
+
   if (limit > 50 || limit <= 0) limit = 50;
   if (skip < 0) skip = 0;
-  const preset = await db
-    .collection<SharedTypes.LeaderboardEntry>(
-      `leaderboards.${language}.${mode}.${mode2}`
-    )
-    .find()
-    .sort({ rank: 1 })
-    .skip(skip)
-    .limit(limit)
-    .toArray();
-  return preset;
+  try {
+    const preset = await db
+      .collection<SharedTypes.LeaderboardEntry>(
+        `leaderboards.${language}.${mode}.${mode2}`
+      )
+      .find()
+      .sort({ rank: 1 })
+      .skip(skip)
+      .limit(limit)
+      .toArray();
+    return preset;
+  } catch (e) {
+    if (e.error === 175) {
+      //QueryPlanKilled, collection was removed during the query
+      return false;
+    }
+    throw e;
+  }
 }
 
-interface GetRankResponse {
+type GetRankResponse = {
   count: number;
   rank: number | null;
   entry: SharedTypes.LeaderboardEntry | null;
-}
+};
 
 export async function getRank(
   mode: string,
@@ -70,7 +79,7 @@ export async function update(
   leaderboardUpdating[`${language}_${mode}_${mode2}`] = true;
   const start1 = performance.now();
   const lb = db
-    .collection<MonkeyTypes.User>("users")
+    .collection<MonkeyTypes.DBUser>("users")
     .aggregate<SharedTypes.LeaderboardEntry>(
       [
         {
@@ -125,8 +134,15 @@ export async function update(
           $addFields: {
             [`${key}.uid`]: "$uid",
             [`${key}.name`]: "$name",
-            [`${key}.discordId`]: "$discordId",
-            [`${key}.discordAvatar`]: "$discordAvatar",
+            [`${key}.discordId`]: {
+              $ifNull: ["$discordId", "$$REMOVE"],
+            },
+            [`${key}.discordAvatar`]: {
+              $ifNull: ["$discordAvatar", "$$REMOVE"],
+            },
+            [`${key}.consistency`]: {
+              $ifNull: [`$${key}.consistency`, "$$REMOVE"],
+            },
             [`${key}.rank`]: {
               $function: {
                 body: "function() {try {row_number+= 1;} catch (e) {row_number= 1;}return row_number;}",

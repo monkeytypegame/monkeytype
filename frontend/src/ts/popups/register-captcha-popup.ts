@@ -6,7 +6,7 @@ const wrapperId = "registerCaptchaPopupWrapper";
 
 let resolvePromise: (token?: string) => void;
 
-export let promise: Promise<string | undefined> = new Promise((resolve) => {
+export let promise = new Promise<string | undefined>((resolve) => {
   resolvePromise = resolve;
 });
 

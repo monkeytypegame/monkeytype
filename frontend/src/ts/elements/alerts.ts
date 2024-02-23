@@ -1,6 +1,6 @@
 import formatDistanceToNowStrict from "date-fns/formatDistanceToNowStrict";
 import Ape from "../ape";
-import { Auth } from "../firebase";
+import { isAuthenticated } from "../firebase";
 import * as AccountButton from "../elements/account-button";
 import * as DB from "../db";
 import * as NotificationEvent from "../observables/notification-event";
@@ -17,10 +17,10 @@ let maxMail = 0;
 let mailToMarkRead: string[] = [];
 let mailToDelete: string[] = [];
 
-interface State {
+type State = {
   notifications: { message: string; level: number; customTitle?: string }[];
   psas: { message: string; level: number }[];
-}
+};
 
 const state: State = {
   notifications: [],
@@ -133,7 +133,7 @@ async function show(): Promise<void> {
       "easeOutCubic"
     );
 
-    if (Auth?.currentUser) {
+    if (isAuthenticated()) {
       $("#alertsPopup .accountAlerts").removeClass("hidden");
       $("#alertsPopup .separator.accountSeparator").removeClass("hidden");
       $("#alertsPopup .accountAlerts .list").html(`
@@ -160,7 +160,7 @@ async function show(): Promise<void> {
         },
         100,
         () => {
-          if (Auth?.currentUser) {
+          if (isAuthenticated()) {
             void getAccountAlerts();
           }
         }
@@ -226,7 +226,7 @@ async function getAccountAlerts(): Promise<void> {
 
     let rewardsString = "";
 
-    if (ie.rewards.length > 0 && ie.read === false) {
+    if (ie.rewards.length > 0 && !ie.read) {
       rewardsString = `<div class="rewards">
         <i class="fas fa-fw fa-gift"></i>
         <span>${ie.rewards.length}</span>
@@ -246,13 +246,12 @@ async function getAccountAlerts(): Promise<void> {
         </div>
         <div class="buttons">
           ${
-            ie.rewards.length > 0 && ie.read === false
+            ie.rewards.length > 0 && !ie.read
               ? `<div class="markReadAlert textButton" aria-label="Claim" data-balloon-pos="left"><i class="fas fa-gift"></i></div>`
               : ``
           }
           ${
-            (ie.rewards.length > 0 && ie.read === true) ||
-            ie.rewards.length === 0
+            (ie.rewards.length > 0 && ie.read) || ie.rewards.length === 0
               ? `<div class="deleteAlert textButton" aria-label="Delete" data-balloon-pos="left"><i class="fas fa-trash"></i></div>`
               : ``
           }
@@ -264,21 +263,21 @@ async function getAccountAlerts(): Promise<void> {
 }
 
 export function addPSA(message: string, level: number): void {
-  state["psas"].push({
+  state.psas.push({
     message,
     level,
   });
 }
 
 function fillPSAs(): void {
-  if (state["psas"].length === 0) {
+  if (state.psas.length === 0) {
     $("#alertsPopup .psas .list").html(
       `<div class="nothing">Nothing to show</div>`
     );
   } else {
     $("#alertsPopup .psas .list").empty();
 
-    for (const p of state["psas"]) {
+    for (const p of state.psas) {
       const { message, level } = p;
       let levelClass = "";
       if (level === -1) {
@@ -301,14 +300,14 @@ function fillPSAs(): void {
 }
 
 function fillNotifications(): void {
-  if (state["notifications"].length === 0) {
+  if (state.notifications.length === 0) {
     $("#alertsPopup .notificationHistory .list").html(
       `<div class="nothing">Nothing to show</div>`
     );
   } else {
     $("#alertsPopup .notificationHistory .list").empty();
 
-    for (const n of state["notifications"]) {
+    for (const n of state.notifications) {
       const { message, level, customTitle } = n;
       let title = "Notice";
       let levelClass = "sub";
@@ -400,7 +399,7 @@ function updateClaimDeleteAllButton(): void {
   if (accountAlerts.length > 0) {
     let rewardsCount = 0;
     for (const ie of accountAlerts) {
-      if (ie.read === false && !mailToMarkRead.includes(ie.id)) {
+      if (!ie.read && !mailToMarkRead.includes(ie.id)) {
         rewardsCount += ie.rewards.length;
       }
     }
@@ -418,7 +417,7 @@ function updateClaimDeleteAllButton(): void {
 
 $("#alertsPopupWrapper .accountAlerts").on("click", ".claimAll", () => {
   for (const ie of accountAlerts) {
-    if (ie.read === false && !mailToMarkRead.includes(ie.id)) {
+    if (!ie.read && !mailToMarkRead.includes(ie.id)) {
       markReadAlert(ie.id);
     }
   }
@@ -471,13 +470,13 @@ $(document).on("keydown", (e) => {
 });
 
 NotificationEvent.subscribe((message, level, customTitle) => {
-  state["notifications"].push({
+  state.notifications.push({
     message,
     level,
     customTitle,
   });
-  if (state["notifications"].length > 25) {
-    state["notifications"].shift();
+  if (state.notifications.length > 25) {
+    state.notifications.shift();
   }
 });
 

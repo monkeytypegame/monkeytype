@@ -99,33 +99,33 @@ export const BASE_CONFIGURATION: SharedTypes.Configuration = {
   },
 };
 
-interface BaseSchema {
+type BaseSchema = {
   type: string;
   label?: string;
   hint?: string;
-}
+};
 
-interface NumberSchema extends BaseSchema {
+type NumberSchema = {
   type: "number";
   min?: number;
-}
+} & BaseSchema;
 
-interface BooleanSchema extends BaseSchema {
+type BooleanSchema = {
   type: "boolean";
-}
+} & BaseSchema;
 
-interface StringSchema extends BaseSchema {
+type StringSchema = {
   type: "string";
-}
-interface ArraySchema<T extends any[]> extends BaseSchema {
+} & BaseSchema;
+type ArraySchema<T extends any[]> = {
   type: "array";
   items: Schema<T>[number];
-}
+} & BaseSchema;
 
-interface ObjectSchema<T> extends BaseSchema {
+type ObjectSchema<T> = {
   type: "object";
   fields: Schema<T>;
-}
+} & BaseSchema;
 
 type Schema<T> = {
   [P in keyof T]: T[P] extends any[]

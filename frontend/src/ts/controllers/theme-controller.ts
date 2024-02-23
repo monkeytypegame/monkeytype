@@ -114,9 +114,9 @@ export async function loadStyle(name: string): Promise<void> {
       resolve();
     };
     if (name === "custom") {
-      link.href = `/./themes/serika_dark.css`;
+      link.href = `/themes/serika_dark.css`;
     } else {
-      link.href = `/./themes/${name}.css`;
+      link.href = `/themes/${name}.css`;
     }
 
     if (headScript === null) {
@@ -262,7 +262,7 @@ async function changeThemeList(): Promise<void> {
       return t.name;
     });
   } else if (Config.randomTheme === "custom" && DB.getSnapshot()) {
-    themesList = DB.getSnapshot()?.customThemes.map((ct) => ct._id) ?? [];
+    themesList = DB.getSnapshot()?.customThemes?.map((ct) => ct._id) ?? [];
   }
   Misc.shuffle(themesList);
   randomThemeIndex = 0;
@@ -284,7 +284,7 @@ export async function randomizeTheme(): Promise<void> {
   let colorsOverride: string[] | undefined;
 
   if (Config.randomTheme === "custom") {
-    const theme = DB.getSnapshot()?.customThemes.find(
+    const theme = DB.getSnapshot()?.customThemes?.find(
       (ct) => ct._id === randomTheme
     );
     colorsOverride = theme?.colors;
@@ -297,7 +297,7 @@ export async function randomizeTheme(): Promise<void> {
     let name = randomTheme.replace(/_/g, " ");
     if (Config.randomTheme === "custom") {
       name = (
-        DB.getSnapshot()?.customThemes.find((ct) => ct._id === randomTheme)
+        DB.getSnapshot()?.customThemes?.find((ct) => ct._id === randomTheme)
           ?.name ?? "custom"
       ).replace(/_/g, " ");
     }
@@ -377,10 +377,7 @@ ConfigEvent.subscribe(async (eventKey, eventValue, nosave) => {
   if (eventKey === "setThemes") {
     await clearPreview(false);
     if (Config.autoSwitchTheme) {
-      if (
-        window.matchMedia !== undefined &&
-        window.matchMedia("(prefers-color-scheme: dark)").matches
-      ) {
+      if (window.matchMedia?.("(prefers-color-scheme: dark)").matches) {
         await set(Config.themeDark, true);
       } else {
         await set(Config.themeLight, true);
@@ -398,10 +395,7 @@ ConfigEvent.subscribe(async (eventKey, eventValue, nosave) => {
   if (eventKey === "customBackgroundSize") applyCustomBackgroundSize();
   if (eventKey === "autoSwitchTheme") {
     if (eventValue as boolean) {
-      if (
-        window.matchMedia !== undefined &&
-        window.matchMedia("(prefers-color-scheme: dark)").matches
-      ) {
+      if (window.matchMedia?.("(prefers-color-scheme: dark)").matches) {
         await set(Config.themeDark, true);
       } else {
         await set(Config.themeLight, true);
@@ -413,10 +407,7 @@ ConfigEvent.subscribe(async (eventKey, eventValue, nosave) => {
   if (
     eventKey === "themeLight" &&
     Config.autoSwitchTheme &&
-    !(
-      window.matchMedia !== undefined &&
-      window.matchMedia("(prefers-color-scheme: dark)").matches
-    ) &&
+    !window.matchMedia?.("(prefers-color-scheme: dark)").matches &&
     !nosave
   ) {
     await set(Config.themeLight, true);

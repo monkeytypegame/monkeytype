@@ -14,7 +14,10 @@ const router = Router();
 
 const checkIfUserIsQuoteMod = checkUserPermissions({
   criteria: (user) => {
-    return !!user.quoteMod;
+    return (
+      user.quoteMod === true ||
+      (typeof user.quoteMod === "string" && user.quoteMod !== "")
+    );
   },
 });
 
