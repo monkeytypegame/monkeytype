@@ -62,7 +62,6 @@ function getTargetPositionLeft(
 }
 
 export async function updatePosition(noAnim = false): Promise<void> {
-  console.trace();
   const caretWidth = Math.round(
     document.querySelector("#caret")?.getBoundingClientRect().width ?? 0
   );
