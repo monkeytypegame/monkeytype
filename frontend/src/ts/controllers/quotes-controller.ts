@@ -1,11 +1,11 @@
 import {
+  cachedFetchJson,
   randomElementFromArray,
   removeLanguageSize,
   shuffle,
 } from "../utils/misc";
 import { subscribe } from "../observables/config-event";
 import * as DB from "../db";
-import $ from "jquery";
 
 type JsonQuote = {
   text: string;
@@ -48,8 +48,7 @@ class QuotesController {
     const normalizedLanguage = removeLanguageSize(language);
 
     if (this.quoteCollection.language !== normalizedLanguage) {
-      // try {
-      const data: QuoteData = await $.getJSON(
+      const data = await cachedFetchJson<QuoteData>(
         `quotes/${normalizedLanguage}.json`
       );
 
@@ -96,11 +95,6 @@ class QuotesController {
       if (quoteLengths !== undefined) {
         this.updateQuoteQueue(quoteLengths);
       }
-      // } catch (e) {
-      //   console.error(e);
-      //   throw new Error("Failed to parse quotes: " + e.message);
-      //   return defaultQuoteCollection;
-      // }
     }
 
     return this.quoteCollection;

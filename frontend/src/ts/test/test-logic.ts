@@ -471,7 +471,8 @@ export async function init(): Promise<void> {
     UpdateConfig.setTapeMode("off");
   }
 
-  if (Config.lazyMode && language.noLazyMode) {
+  const allowLazyMode = !language.noLazyMode || Config.mode === "custom";
+  if (Config.lazyMode && !allowLazyMode) {
     rememberLazyMode = true;
     Notifications.add("This language does not support lazy mode.", 0, {
       important: true,
