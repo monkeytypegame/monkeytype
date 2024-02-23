@@ -502,20 +502,32 @@ export function getList(
   return list;
 }
 
-export let current: MonkeyTypes.CommandsSubgroup[] = [];
+let stack: MonkeyTypes.CommandsSubgroup[] = [];
 
-current = [commands];
+stack = [commands];
+
+export function getStackLength(): number {
+  return stack.length;
+}
 
 export type ListsObjectKeys = keyof typeof lists;
 
-export function setCurrent(val: MonkeyTypes.CommandsSubgroup[]): void {
-  current = val;
+export function setStackToDefault(): void {
+  setStack([commands]);
 }
 
-export function pushCurrent(val: MonkeyTypes.CommandsSubgroup): void {
-  current.push(val);
+export function setStack(val: MonkeyTypes.CommandsSubgroup[]): void {
+  stack = val;
 }
 
-export function getCurrent(): MonkeyTypes.CommandsSubgroup {
-  return current[current.length - 1] as MonkeyTypes.CommandsSubgroup;
+export function pushToStack(val: MonkeyTypes.CommandsSubgroup): void {
+  stack.push(val);
+}
+
+export function popFromStack(): void {
+  stack.pop();
+}
+
+export function getTopOfStack(): MonkeyTypes.CommandsSubgroup {
+  return stack[stack.length - 1] as MonkeyTypes.CommandsSubgroup;
 }

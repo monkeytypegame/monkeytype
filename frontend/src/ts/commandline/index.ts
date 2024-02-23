@@ -73,7 +73,7 @@ function addCommandlineBackground(): void {
 function showFound(): void {
   $("#commandLine .suggestions").empty();
   let commandsHTML = "";
-  const list = CommandlineLists.getCurrent();
+  const list = CommandlineLists.getTopOfStack();
 
   let index = 0;
   $.each(list.list, (_index, obj) => {
@@ -173,7 +173,7 @@ function updateSuggested(): void {
     .toLowerCase()
     .split(" ")
     .filter((s, i) => s || i === 0); //remove empty entries after first
-  const list = CommandlineLists.getCurrent();
+  const list = CommandlineLists.getTopOfStack();
 
   if (list.beforeList) list.beforeList();
 
@@ -304,7 +304,7 @@ function trigger(command: string): void {
   let subgroup = false;
   let input = false;
   let shouldFocusTestUI = true;
-  const list = CommandlineLists.getCurrent();
+  const list = CommandlineLists.getTopOfStack();
   let sticky = false;
 
   ManualRestart.set();
@@ -424,7 +424,7 @@ function useSingleListCommandLine(sshow = true): void {
   // if (Config.singleListCommandLine === "manual") {
   // CommandlineLists.pushCurrent(allCommands);
   // } else if (Config.singleListCommandLine === "on") {
-  CommandlineLists.setCurrent([allCommands]);
+  CommandlineLists.setStack([allCommands]);
   // }
   if (Config.singleListCommandLine != "manual") {
     state.usingSingleList = true;
@@ -437,11 +437,11 @@ function restoreOldCommandLine(sshow = true): void {
   if (isSingleListCommandLineActive()) {
     state.usingSingleList = false;
     $("#commandLine").removeClass("allCommands");
-    CommandlineLists.setCurrent(
+    CommandlineLists.setStack(
       CommandlineLists.current.filter((l) => l.title != "All Commands")
     );
     if (CommandlineLists.current.length < 1) {
-      CommandlineLists.setCurrent([CommandlineLists.commands]);
+      CommandlineLists.setStack([CommandlineLists.commands]);
     }
   }
   if (sshow) show();
@@ -531,7 +531,7 @@ $(document).ready(() => {
       if (Config.singleListCommandLine === "on") {
         useSingleListCommandLine(false);
       } else {
-        CommandlineLists.setCurrent([CommandlineLists.commands]);
+        CommandlineLists.setStack([CommandlineLists.commands]);
       }
       show();
     }
@@ -544,7 +544,7 @@ $("#commandInput input").on("keydown", (e) => {
     e.preventDefault();
     const command = $("#commandInput input").attr("command");
     const value = $("#commandInput input").val() as string;
-    const list = CommandlineLists.getCurrent();
+    const list = CommandlineLists.getTopOfStack();
     $.each(list.list, (_index, obj) => {
       if (obj.id === command) {
         if (obj.exec) obj.exec(value);
@@ -584,7 +584,7 @@ $("#commandLineWrapper #commandLine .suggestions").on("mouseover", (e) => {
   if (!commandLineMouseMode) return;
   const hoverId = $(e.target).attr("command");
   try {
-    const list = CommandlineLists.getCurrent();
+    const list = CommandlineLists.getTopOfStack();
     $.each(list.list, (_index, obj) => {
       if (obj.id === hoverId) {
         if (/changeTheme.+/gi.test(obj.id)) {
@@ -745,7 +745,7 @@ $(document).on("keydown", (e) => {
       updateActiveEntry();
       keepActiveEntryInView();
       try {
-        const list = CommandlineLists.getCurrent();
+        const list = CommandlineLists.getTopOfStack();
         const activeCommandId = $(
           "#commandLineWrapper #commandLine .suggestions .entry.active"
         ).attr("command");
@@ -779,13 +779,13 @@ $("#commandLineMobileButton").on("click", () => {
   if (Config.singleListCommandLine === "on") {
     useSingleListCommandLine(false);
   } else {
-    CommandlineLists.setCurrent([CommandlineLists.commands]);
+    CommandlineLists.setStack([CommandlineLists.commands]);
   }
   show();
 });
 
 $("#keymap").on("click", ".r5 .keySpace", () => {
-  CommandlineLists.setCurrent([CommandlineLists.getList("keymapLayouts")]);
+  CommandlineLists.setStack([CommandlineLists.getList("keymapLayouts")]);
   show();
 });
 
@@ -796,7 +796,7 @@ $(".pageTest").on("click", "#testModesNotice .textButton", (event) => {
   if (attr === undefined) return;
   const commands = CommandlineLists.getList(attr);
   if (commands !== undefined) {
-    CommandlineLists.pushCurrent(commands);
+    CommandlineLists.pushToStack(commands);
     show();
   }
 });
@@ -821,7 +821,7 @@ $("footer").on("click", ".leftright .right .current-theme", (e) => {
     } else UpdateConfig.setCustomTheme(false);
   } else {
     if (Config.customTheme) updateCustomThemesList();
-    CommandlineLists.setCurrent([
+    CommandlineLists.setStack([
       Config.customTheme
         ? CommandlineLists.getList("customThemesList")
         : CommandlineLists.getList("themes"),
@@ -831,12 +831,12 @@ $("footer").on("click", ".leftright .right .current-theme", (e) => {
 });
 
 $(".supportButtons button.ads").on("click", () => {
-  CommandlineLists.pushCurrent(CommandlineLists.getList("enableAds"));
+  CommandlineLists.pushToStack(CommandlineLists.getList("enableAds"));
   show();
 });
 
 $(document.body).on("click", "#supportMeWrapper button.ads", () => {
-  CommandlineLists.pushCurrent(CommandlineLists.getList("enableAds"));
+  CommandlineLists.pushToStack(CommandlineLists.getList("enableAds"));
   show();
 });
 
