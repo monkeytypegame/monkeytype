@@ -1,11 +1,11 @@
 import * as Skeleton from "../popups/skeleton";
 import * as Focus from "../test/focus";
 import * as CommandlineLists from "./commands";
-import Config, * as UpdateConfig from "../config";
+import Config from "../config";
 import * as TestUI from "../test/test-ui";
 import * as AnalyticsController from "../controllers/analytics-controller";
 import * as ThemeController from "../controllers/theme-controller";
-import { sleep } from "../utils/misc";
+import { clearFontPreview } from "../ui";
 
 const wrapperId = "commandLineWrapper";
 
@@ -14,6 +14,7 @@ let activeIndex = 0;
 let usingSingleList = false;
 let inputValue = "";
 let filteredCommands: MonkeyTypes.Command[] = [];
+let mouseMode = false;
 
 function removeCommandlineBackground(): void {
   $("#commandLineWrapper").addClass("noBackground");
@@ -33,7 +34,7 @@ export function show(): void {
   if (visible) {
     return;
   }
-  //take last element of array
+  mouseMode = false;
   visible = true;
   inputValue = "";
   activeIndex = 0;
@@ -65,6 +66,9 @@ function hide(focusTestUI = false): void {
   if (!visible) {
     return;
   }
+  clearFontPreview();
+  addCommandlineBackground();
+  void ThemeController.clearPreview();
   $("#commandLineWrapper")
     .stop(true, true)
     .css("opacity", 1)
@@ -97,11 +101,17 @@ function goBackOrHide(): void {
 }
 
 function filterCommands(): void {
-  const list = CommandlineLists.getTopOfStack();
+  const configKey = usingSingleList
+    ? undefined
+    : CommandlineLists.getTopOfStack().configKey;
+  const list = usingSingleList
+    ? CommandlineLists.getSingleList()
+    : CommandlineLists.getTopOfStack().list;
+
   const inputSplit = inputValue.toLowerCase().trim().split(" ");
   const newList = [];
 
-  for (const command of list.list) {
+  for (const command of list) {
     if (!(command.available?.() ?? true)) continue;
     let foundCount = 0;
     for (const input of inputSplit) {
@@ -117,7 +127,10 @@ function filterCommands(): void {
       }
     }
     if (foundCount === inputSplit.length) {
-      newList.push(command);
+      newList.push({
+        configKey: configKey,
+        ...command,
+      });
     }
   }
   filteredCommands = newList;
@@ -128,6 +141,12 @@ function showCommands(): void {
   if (element === null) {
     throw new Error("Commandline element not found");
   }
+
+  if (inputValue === "" && usingSingleList) {
+    element.innerHTML = "";
+    return;
+  }
+
   let html = "";
   let index = 0;
   for (const command of filteredCommands) {
@@ -137,6 +156,26 @@ function showCommands(): void {
       icon = `<div class="textIcon">${icon}</div>`;
     } else {
       icon = `<i class="fas fa-fw ${icon}"></i>`;
+    }
+    if (command.configKey !== undefined) {
+      if (
+        (command.configValueMode !== undefined &&
+          command.configValueMode === "include" &&
+          (
+            Config[command.configKey] as (
+              | string
+              | number
+              | boolean
+              | number[]
+              | undefined
+            )[]
+          ).includes(command.configValue)) ||
+        Config[command.configKey] === command.configValue
+      ) {
+        icon = `<i class="fas fa-fw fa-check"></i>`;
+      } else {
+        icon = `<i class="fas fa-fw"></i>`;
+      }
     }
     let iconHTML = `<div class="icon">${icon}</div>`;
     if (command.noIcon && usingSingleList) {
@@ -162,6 +201,23 @@ function showCommands(): void {
     index++;
   }
   element.innerHTML = html;
+
+  for (const entry of element.querySelectorAll(".entry")) {
+    entry.addEventListener("mouseenter", () => {
+      if (!mouseMode) return;
+      activeIndex = parseInt(entry.getAttribute("index") ?? "0");
+      updateActiveCommand();
+    });
+    entry.addEventListener("mouseleave", () => {
+      if (!mouseMode) return;
+      activeIndex = parseInt(entry.getAttribute("index") ?? "0");
+      updateActiveCommand();
+    });
+    entry.addEventListener("click", () => {
+      activeIndex = parseInt(entry.getAttribute("index") ?? "0");
+      runActiveCommand();
+    });
+  }
 }
 
 function updateActiveCommand(): void {
@@ -180,8 +236,7 @@ function updateActiveCommand(): void {
   }
   element.classList.add("active");
 
-  command.hover?.();
-
+  clearFontPreview();
   if (/changeTheme.+/gi.test(command.id)) {
     removeCommandlineBackground();
   } else {
@@ -193,6 +248,7 @@ function updateActiveCommand(): void {
   ) {
     void ThemeController.clearPreview();
   }
+  command.hover?.();
 }
 
 function runActiveCommand(): void {
@@ -218,7 +274,7 @@ function runActiveCommand(): void {
     CommandlineLists.pushToStack(
       command.subgroup as MonkeyTypes.CommandsSubgroup
     );
-    inputValue = "";
+    updateInput("");
     filterCommands();
     showCommands();
     updateActiveCommand();
@@ -249,12 +305,16 @@ function keepActiveCommandInView(): void {
   }
 }
 
-function updateInput(): void {
+function updateInput(setInput?: string): void {
   const element: HTMLInputElement | null =
     document.querySelector("#commandLine input");
 
   if (element === null) {
     throw new Error("Commandline element not found");
+  }
+
+  if (setInput !== undefined) {
+    inputValue = setInput;
   }
 
   element.value = inputValue;
@@ -279,6 +339,7 @@ function decrementActiveIndex(): void {
 const input = document.querySelector("#commandLine input") as HTMLInputElement;
 
 input.addEventListener("input", (e) => {
+  mouseMode = false;
   inputValue = (e.target as HTMLInputElement).value;
   activeIndex = 0;
   filterCommands();
@@ -287,6 +348,7 @@ input.addEventListener("input", (e) => {
 });
 
 input.addEventListener("keydown", (e) => {
+  mouseMode = false;
   if (e.key === "ArrowUp") {
     e.preventDefault();
     decrementActiveIndex();
@@ -304,6 +366,23 @@ input.addEventListener("keydown", (e) => {
   if (e.key === "Escape") {
     goBackOrHide();
   }
+  if (e.key === "Tab") {
+    e.preventDefault();
+  }
+});
+
+const wrapper = document.querySelector("#commandLineWrapper") as HTMLElement;
+
+wrapper.addEventListener("click", (e) => {
+  if (e.target === wrapper) {
+    hide();
+  }
+});
+
+const commandLine = document.querySelector("#commandLine") as HTMLElement;
+
+commandLine.addEventListener("mousemove", (e) => {
+  mouseMode = true;
 });
 
 Skeleton.save(wrapperId);
