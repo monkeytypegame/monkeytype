@@ -65,7 +65,6 @@ function hide(focusTestUI = false): void {
   if (!visible) {
     return;
   }
-  visible = false;
   $("#commandLineWrapper")
     .stop(true, true)
     .css("opacity", 1)
@@ -75,6 +74,7 @@ function hide(focusTestUI = false): void {
       },
       125,
       () => {
+        visible = false;
         $("#commandLineWrapper").addClass("hidden");
         Skeleton.remove(wrapperId);
         if (focusTestUI) {
@@ -84,8 +84,7 @@ function hide(focusTestUI = false): void {
     );
 }
 
-async function goBackOrHide(): Promise<void> {
-  await sleep(0);
+function goBackOrHide(): void {
   if (CommandlineLists.getStackLength() > 1) {
     CommandlineLists.popFromStack();
     inputValue = "";
@@ -303,7 +302,7 @@ input.addEventListener("keydown", (e) => {
     runActiveCommand();
   }
   if (e.key === "Escape") {
-    void goBackOrHide();
+    goBackOrHide();
   }
 });
 
