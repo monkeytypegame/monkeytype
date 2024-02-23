@@ -142,7 +142,7 @@ function showFound(): void {
   const entries = $("#commandLine .suggestions .entry");
   if (entries.length > 0) {
     try {
-      $.each(list.list, (_index, obj) => {
+      for (const obj of list.list) {
         if (obj.found) {
           if (/changeTheme.+/gi.test(obj.id)) {
             removeCommandlineBackground();
@@ -158,12 +158,12 @@ function showFound(): void {
           if (!/font/gi.test(obj.id)) {
             UpdateConfig.previewFontFamily(Config.fontFamily);
           }
-          if (obj.hover) obj.hover();
-          return false;
-        } else {
-          return true;
+          if (obj.hover) {
+            obj.hover();
+            return;
+          }
         }
-      });
+      }
     } catch (e) {}
   }
   $("#commandLine .listTitle").remove();
@@ -183,9 +183,9 @@ function updateSuggested(): void {
     Config.singleListCommandLine === "on" &&
     CommandlineLists.current.length === 1
   ) {
-    $.each(list.list, (_index, obj) => {
+    for (const obj of list.list) {
       obj.found = false;
-    });
+    }
     showFound();
     return;
   }
@@ -194,13 +194,13 @@ function updateSuggested(): void {
     inputVal[0] = inputVal[0].replace(/^>+/, "");
   }
   if (inputVal[0] === "" && inputVal.length === 1) {
-    $.each(list.list, (_index, obj) => {
+    for (const obj of list.list) {
       if (obj.visible !== false) obj.found = true;
-    });
+    }
   } else {
-    $.each(list.list, (_index, obj) => {
+    for (const obj of list.list) {
       let foundcount = 0;
-      $.each(inputVal, (_index2, obj2) => {
+      for (const obj2 of inputVal) {
         if (obj2 === "") return;
         const escaped = obj2.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
         const re = new RegExp("\\b" + escaped, "g");
@@ -215,13 +215,13 @@ function updateSuggested(): void {
         } else {
           foundcount--;
         }
-      });
+      }
       if (foundcount > inputVal.length - 1) {
         obj.found = true;
       } else {
         obj.found = false;
       }
-    });
+    }
   }
   showFound();
 
@@ -310,7 +310,7 @@ function trigger(command: string): void {
 
   ManualRestart.set();
 
-  $.each(list.list, (_index, obj) => {
+  for (const obj of list.list) {
     if (obj.id === command) {
       if (obj.shouldFocusTestUI !== undefined) {
         shouldFocusTestUI = obj.shouldFocusTestUI;
@@ -335,7 +335,7 @@ function trigger(command: string): void {
         }
       }
     }
-  });
+  }
   if (!subgroup && !input && !sticky) {
     void AnalyticsController.log("usedCommandLine", { command });
     hide(shouldFocusTestUI);
@@ -546,11 +546,11 @@ $("#commandInput input").on("keydown", (e) => {
     const command = $("#commandInput input").attr("command");
     const value = $("#commandInput input").val() as string;
     const list = CommandlineLists.getCurrent();
-    $.each(list.list, (_index, obj) => {
+    for (const obj of list.list) {
       if (obj.id === command) {
         if (obj.exec) obj.exec(value);
       }
-    });
+    }
     void AnalyticsController.log("usedCommandLine", { command: command ?? "" });
     hide();
   }
@@ -586,7 +586,7 @@ $("#commandLineWrapper #commandLine .suggestions").on("mouseover", (e) => {
   const hoverId = $(e.target).attr("command");
   try {
     const list = CommandlineLists.getCurrent();
-    $.each(list.list, (_index, obj) => {
+    for (const obj of list.list) {
       if (obj.id === hoverId) {
         if (/changeTheme.+/gi.test(obj.id)) {
           removeCommandlineBackground();
@@ -604,7 +604,7 @@ $("#commandLineWrapper #commandLine .suggestions").on("mouseover", (e) => {
         }
         if (obj.hover && !themeChosen) obj.hover();
       }
-    });
+    }
   } catch (e) {}
 });
 
@@ -750,7 +750,7 @@ $(document).on("keydown", (e) => {
         const activeCommandId = $(
           "#commandLineWrapper #commandLine .suggestions .entry.active"
         ).attr("command");
-        $.each(list.list, (_index, obj) => {
+        for (const obj of list.list) {
           if (obj.id === activeCommandId) {
             if (/changeTheme.+/gi.test(obj.id)) {
               removeCommandlineBackground();
@@ -768,7 +768,7 @@ $(document).on("keydown", (e) => {
             }
             if (obj.hover) obj.hover();
           }
-        });
+        }
       } catch (e) {}
       return false;
     }

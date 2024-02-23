@@ -61,14 +61,14 @@ function updateButtons(): void {
 
 function updateActiveButtons(active: string[]): void {
   if (active.length === 0) return;
-  $.each($("#resultEditTagsPanel .buttons .button"), (_, obj) => {
+  for (const obj of $("#resultEditTagsPanel .buttons .button")) {
     const tagid: string = $(obj).attr("tagid") ?? "";
     if (active.includes(tagid)) {
       $(obj).addClass("active");
     } else {
       $(obj).removeClass("active");
     }
-  });
+  }
 }
 
 $(".pageAccount").on("click", ".group.history #resultEditTags", (f) => {
@@ -122,12 +122,12 @@ $("#resultEditTagsPanelWrapper .confirmButton").on("click", async () => {
   const resultId = state["resultId"] as string;
 
   const newTags: string[] = [];
-  $.each($("#resultEditTagsPanel .buttons .button"), (_, obj) => {
+  for (const obj of $("#resultEditTagsPanel .buttons .button")) {
     const tagid = $(obj).attr("tagid") ?? "";
     if ($(obj).hasClass("active")) {
       newTags.push(tagid);
     }
-  });
+  }
 
   const currentTags = JSON.parse(state["tags"] as string);
 
