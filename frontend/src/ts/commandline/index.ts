@@ -76,7 +76,7 @@ function showFound(): void {
   const list = CommandlineLists.getCurrent();
 
   let index = 0;
-  $.each(list.list, (_index, obj) => {
+  for (const obj of list.list) {
     if (obj.found && (obj.available !== undefined ? obj.available() : true)) {
       let icon = obj.icon ?? "fa-chevron-right";
       const faIcon = icon.startsWith("fa-");
@@ -128,7 +128,8 @@ function showFound(): void {
       }
       index++;
     }
-  });
+  }
+
   $("#commandLine .suggestions").html(commandsHTML);
   if ($("#commandLine .suggestions .entry").length === 0) {
     $("#commandLine .separator").css({ height: 0, margin: 0 });
