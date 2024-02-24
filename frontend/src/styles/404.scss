@@ -9,7 +9,7 @@
   display: grid;
   grid-auto-flow: column;
   gap: 4rem;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Responsive grid columns */
+  grid-template-columns: 300px 300px;
 }
 
 .page404 .image {
