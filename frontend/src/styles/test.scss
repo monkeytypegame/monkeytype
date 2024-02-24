@@ -1,3 +1,7 @@
+p {
+  margin: 0;
+}
+
 @mixin highlightMode($color) {
   &.highlight-next-word {
     .word.active,

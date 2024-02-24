@@ -2,11 +2,11 @@
   <div id="testConfig">
     <div class="row">
       <div class="puncAndNum">
-        <div class="textButton punctuationMode">
+        <div role="button" class="textButton punctuationMode">
           <i class="fas fa-fw fa-at"></i>
           punctuation
         </div>
-        <div class="textButton numbersMode">
+        <div role="button" class="textButton numbersMode">
           <i class="fas fa-fw fa-hashtag"></i>
           numbers
         </div>
@@ -15,23 +15,23 @@
       <div class="spacer leftSpacer"></div>
 
       <div class="mode">
-        <div class="textButton" mode="time">
+        <div role="button" class="textButton" mode="time">
           <i class="fas fa-fw fa-clock"></i>
           time
         </div>
-        <div class="textButton" mode="words">
+        <div role="button" class="textButton" mode="words">
           <i class="fas fa-fw fa-font"></i>
           words
         </div>
-        <div class="textButton" mode="quote">
+        <div role="button" class="textButton" mode="quote">
           <i class="fas fa-fw fa-quote-left"></i>
           quote
         </div>
-        <div class="textButton" mode="zen">
+        <div role="button" class="textButton" mode="zen">
           <i class="fas fa-fw fa-mountain"></i>
           zen
         </div>
-        <div class="textButton" mode="custom">
+        <div role="button" class="textButton" mode="custom">
           <i class="fas fa-fw fa-wrench"></i>
           custom
         </div>
@@ -40,41 +40,58 @@
       <div class="spacer rightSpacer"></div>
 
       <div class="time">
-        <div class="textButton" timeConfig="15"><span>15</span></div>
-        <div class="textButton" timeConfig="30"><span>30</span></div>
-        <div class="textButton" timeConfig="60"><span>60</span></div>
-        <div class="textButton" timeConfig="120"><span>120</span></div>
-        <div class="textButton" timeConfig="custom">
+        <div role="button" class="textButton" timeConfig="15">
+          <span>15</span>
+        </div>
+        <div role="button" class="textButton" timeConfig="30">
+          <span>30</span>
+        </div>
+        <div role="button" class="textButton" timeConfig="60">
+          <span>60</span>
+        </div>
+        <div role="button" class="textButton" timeConfig="120">
+          <span>120</span>
+        </div>
+        <div role="button" class="textButton" timeConfig="custom">
           <i class="fas fa-fw fa-tools"></i>
         </div>
       </div>
 
       <div class="wordCount">
-        <div class="textButton" wordCount="10"><span>10</span></div>
-        <div class="textButton" wordCount="25"><span>25</span></div>
-        <div class="textButton" wordCount="50"><span>50</span></div>
-        <div class="textButton" wordCount="100"><span>100</span></div>
-        <div class="textButton" wordCount="custom">
+        <div role="button" class="textButton" wordCount="10">
+          <span>10</span>
+        </div>
+        <div role="button" class="textButton" wordCount="25">
+          <span>25</span>
+        </div>
+        <div role="button" class="textButton" wordCount="50">
+          <span>50</span>
+        </div>
+        <div role="button" class="textButton" wordCount="100">
+          <span>100</span>
+        </div>
+        <div role="button" class="textButton" wordCount="custom">
           <i class="fas fa-fw fa-tools"></i>
         </div>
       </div>
 
       <div class="quoteLength">
-        <div class="textButton" quotelength="-1">all</div>
-        <div class="textButton" quotelength="0">short</div>
-        <div class="textButton" quotelength="1">medium</div>
-        <div class="textButton" quotelength="2">long</div>
-        <div class="textButton" quotelength="3">thicc</div>
-        <div class="textButton favorite hidden" quotelength="-3">
+        <div role="button" class="textButton" quotelength="-1">all</div>
+        <div role="button" class="textButton" quotelength="0">short</div>
+        <div role="button" class="textButton" quotelength="1">medium</div>
+        <div role="button" class="textButton" quotelength="2">long</div>
+        <div role="button" class="textButton" quotelength="3">thicc</div>
+        <div role="button" class="textButton favorite hidden" quotelength="-3">
           <i class="fas fa-heart"></i>
         </div>
-        <div class="textButton" quotelength="-2">
+        <div role="button" class="textButton" quotelength="-2">
           <i class="fas fa-search"></i>
         </div>
       </div>
 
       <div class="zen">
         <div
+          role="button"
           class="textButton"
           style="width: 0; padding-left: 0; padding-right: 0"
         >
@@ -83,12 +100,12 @@
       </div>
 
       <div class="customText">
-        <div class="textButton">change</div>
+        <div role="button" class="textButton">change</div>
       </div>
     </div>
   </div>
   <div id="mobileTestConfig">
-    <div class="textButton">
+    <div role="button" class="textButton">
       <i class="fas fa-fw fa-cog"></i>
       Test Settings
     </div>
@@ -110,10 +127,10 @@
       <div class="acc hidden">100%</div>
       <div class="burst hidden">1</div>
     </div>
-    <div class="outOfFocusWarning hidden">
+    <p class="outOfFocusWarning hidden">
       <i class="fas fa-mouse-pointer"></i>
       Click here or start typing to focus
-    </div>
+    </p>
     <input
       id="wordsInput"
       class=""
@@ -141,6 +158,7 @@
     <div id="keymap" class="hidden"></div>
 
     <button
+      type="button"
       id="restartTestButton"
       aria-label="Restart Test"
       data-balloon-pos="down"
@@ -195,6 +213,7 @@
           <div class="top">
             tags
             <div
+              role="button"
               class="textButton editTagsButton"
               result-id=""
               active-tag-ids=""
@@ -258,6 +277,7 @@
         <div class="top">
           source
           <span
+            role="button"
             id="reportQuoteButton"
             class="textButton hidden"
             aria-label="Report quote"
@@ -267,6 +287,7 @@
             <i class="icon fas fa-flag"></i>
           </span>
           <span
+            role="button"
             id="favoriteQuoteButton"
             class="textButton hidden"
             aria-label="Favorite quote"
@@ -276,6 +297,7 @@
             <i class="icon far fa-heart"></i>
           </span>
           <span
+            role="button"
             id="rateQuoteButton"
             class="textButton hidden"
             aria-label="Rate quote"
@@ -297,6 +319,7 @@
         <div class="title">
           <span>input history</span>
           <span
+            role="button"
             id="copyWordsListButton"
             class="textButton"
             aria-label="Copy words list"
@@ -306,6 +329,7 @@
             <i class="fas fa-fw fa-copy"></i>
           </span>
           <span
+            role="button"
             id="toggleBurstHeatmap"
             class="textButton"
             aria-label="Toggle burst heatmap"
@@ -330,6 +354,7 @@
         <div class="title">
           watch replay
           <span
+            role="button"
             id="playpauseReplayButton"
             class="textButton"
             aria-label="Start replay"
@@ -345,6 +370,7 @@
         </div>
       </div>
       <button
+        type="button"
         id="retrySavingResultButton"
         class="danger hidden"
         onclick="this.blur();"
@@ -354,6 +380,7 @@
       </button>
       <div class="buttons">
         <button
+          type="button"
           class="text"
           id="nextTestButton"
           aria-label="Next test"
@@ -364,6 +391,7 @@
           <i class="fas fa-fw fa-chevron-right"></i>
         </button>
         <button
+          type="button"
           class="text"
           id="restartTestButtonWithSameWordset"
           aria-label="Repeat test"
@@ -374,6 +402,7 @@
           <i class="fas fa-fw fa-sync-alt"></i>
         </button>
         <button
+          type="button"
           class="text"
           id="practiseWordsButton"
           aria-label="Practice words"
@@ -384,6 +413,7 @@
           <i class="fas fa-fw fa-exclamation-triangle"></i>
         </button>
         <button
+          type="button"
           class="text"
           id="showWordHistoryButton"
           aria-label="Toggle words history"
@@ -394,6 +424,7 @@
           <i class="fas fa-fw fa-align-left"></i>
         </button>
         <button
+          type="button"
           class="text"
           id="watchReplayButton"
           aria-label="Watch replay"
@@ -404,6 +435,7 @@
           <i class="fas fa-fw fa-backward"></i>
         </button>
         <button
+          type="button"
           class="text"
           id="saveScreenshotButton"
           aria-label="Copy screenshot to clipboard"
@@ -414,6 +446,7 @@
           <i class="far fa-fw fa-image"></i>
         </button>
         <!-- <button
+          type="button"
           class="text"
           id="watchVideoAdButton"
           aria-label="Watch video ad"
@@ -425,10 +458,10 @@
         </button> -->
       </div>
     </div>
-    <div class="loginTip">
+    <p class="loginTip">
       <a href="/login" router-link>Sign in</a>
       to save your result
-    </div>
+    </p>
     <div style="grid-column: span 2">
       <div id="ad-result-wrapper" class="ad advertisement ad-h">
         <div class="iconAndText">
@@ -442,7 +475,7 @@
         <div id="ad-result-small"></div>
       </div>
     </div>
-    <div class="ssWatermark hidden">monkeytype.com</div>
+    <p class="ssWatermark hidden">monkeytype.com</p>
   </div>
   <div></div>
 </div>
