@@ -19,6 +19,22 @@ services:
     volumes:
       - mongo-data:/data/db
 
+  api-server:
+    container_name: monkeytype-api-server
+    image: node:18.19.1
+    restart: on-failure
+    depends_on:
+      - redis
+      - mongodb
+    environment:
+      - DB_URI=mongodb://mongodb:27017
+    ports:
+      - "${DOCKER_SERVER_PORT:-5005}:${DOCKER_SERVER_PORT:-5005}"
+    volumes:
+      - ../:/monkeytype
+      - /monkeytype/backend/node_modules
+    entrypoint: 'bash -c "cd /monkeytype/backend && npm install && npm run dev"'
+
 volumes:
   mongo-data:
   redis-data:
