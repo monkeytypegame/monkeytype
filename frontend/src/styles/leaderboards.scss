@@ -29,7 +29,7 @@
         grid-area: buttons;
         .timeRange {
           grid-template-columns: 1fr 1fr;
-          .select2 {
+          .languageSelect {
             grid-column: span 2;
           }
         }

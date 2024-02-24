@@ -1,17 +1,20 @@
 import _ from "lodash";
 import FunboxList from "../constants/funbox-list";
 
-interface CheckAndUpdatePbResult {
+type CheckAndUpdatePbResult = {
   isPb: boolean;
   personalBests: SharedTypes.PersonalBests;
   lbPersonalBests?: MonkeyTypes.LbPersonalBests;
-}
+};
 
-type Result = Omit<SharedTypes.DBResult<SharedTypes.Mode>, "_id" | "name">;
+type Result = Omit<
+  SharedTypes.DBResult<SharedTypes.Config.Mode>,
+  "_id" | "name"
+>;
 
 export function canFunboxGetPb(result: Result): boolean {
   const funbox = result.funbox;
-  if (!funbox || funbox === "none") return true;
+  if (funbox === undefined || funbox === "" || funbox === "none") return true;
 
   let ret = true;
   const resultFunboxes = funbox.split("#");
@@ -32,15 +35,15 @@ export function checkAndUpdatePb(
   result: Result
 ): CheckAndUpdatePbResult {
   const mode = result.mode;
-  const mode2 = result.mode2 as SharedTypes.Mode2<"time">;
+  const mode2 = result.mode2 as SharedTypes.Config.Mode2<"time">;
 
   const userPb = userPersonalBests ?? {};
   userPb[mode] ??= {};
   userPb[mode][mode2] ??= [];
 
-  const personalBestMatch = userPb[mode][mode2].find(
-    (pb: SharedTypes.PersonalBest) => matchesPersonalBest(result, pb)
-  );
+  const personalBestMatch = (
+    userPb[mode][mode2] as SharedTypes.PersonalBest[]
+  ).find((pb) => matchesPersonalBest(result, pb));
 
   let isPb = true;
 
@@ -70,19 +73,28 @@ function matchesPersonalBest(
     result.difficulty === undefined ||
     result.language === undefined ||
     result.punctuation === undefined ||
-    result.lazyMode === undefined
+    result.lazyMode === undefined ||
+    result.numbers === undefined
   ) {
     throw new Error("Missing result data (matchesPersonalBest)");
   }
 
   const sameLazyMode =
-    result.lazyMode === personalBest.lazyMode ||
-    (!result.lazyMode && !personalBest.lazyMode);
-  const samePunctuation = result.punctuation === personalBest.punctuation;
+    (result.lazyMode ?? false) === (personalBest.lazyMode ?? false);
+  const samePunctuation =
+    (result.punctuation ?? false) === (personalBest.punctuation ?? false);
   const sameDifficulty = result.difficulty === personalBest.difficulty;
   const sameLanguage = result.language === personalBest.language;
+  const sameNumbers =
+    (result.numbers ?? false) === (personalBest.numbers ?? false);
 
-  return sameLazyMode && samePunctuation && sameDifficulty && sameLanguage;
+  return (
+    sameLazyMode &&
+    samePunctuation &&
+    sameDifficulty &&
+    sameLanguage &&
+    sameNumbers
+  );
 }
 
 function updatePersonalBest(
@@ -101,7 +113,8 @@ function updatePersonalBest(
     result.acc === undefined ||
     result.consistency === undefined ||
     result.rawWpm === undefined ||
-    result.wpm === undefined
+    result.wpm === undefined ||
+    result.numbers === undefined
   ) {
     throw new Error("Missing result data (updatePersonalBest)");
   }
@@ -114,6 +127,7 @@ function updatePersonalBest(
   personalBest.consistency = result.consistency;
   personalBest.raw = result.rawWpm;
   personalBest.wpm = result.wpm;
+  personalBest.numbers = result.numbers;
   personalBest.timestamp = Date.now();
 
   return true;
@@ -128,7 +142,8 @@ function buildPersonalBest(result: Result): SharedTypes.PersonalBest {
     result.acc === undefined ||
     result.consistency === undefined ||
     result.rawWpm === undefined ||
-    result.wpm === undefined
+    result.wpm === undefined ||
+    result.numbers === undefined
   ) {
     throw new Error("Missing result data (buildPersonalBest)");
   }
@@ -141,6 +156,7 @@ function buildPersonalBest(result: Result): SharedTypes.PersonalBest {
     punctuation: result.punctuation,
     raw: result.rawWpm,
     wpm: result.wpm,
+    numbers: result.numbers,
     timestamp: Date.now(),
   };
 }
@@ -155,11 +171,11 @@ function updateLeaderboardPersonalBests(
   }
 
   const mode = result.mode;
-  const mode2 = result.mode2 as SharedTypes.Mode2<"time">;
+  const mode2 = result.mode2 as SharedTypes.Config.Mode2<"time">;
 
   lbPersonalBests[mode] = lbPersonalBests[mode] ?? {};
-  const lbMode2 = lbPersonalBests[mode][mode2];
-  if (!lbMode2 || Array.isArray(lbMode2)) {
+  const lbMode2 = lbPersonalBests[mode][mode2] as MonkeyTypes.LbPersonalBests;
+  if (lbMode2 === undefined || Array.isArray(lbMode2)) {
     lbPersonalBests[mode][mode2] = {};
   }
 
@@ -168,7 +184,7 @@ function updateLeaderboardPersonalBests(
   userPersonalBests[mode][mode2].forEach((pb: SharedTypes.PersonalBest) => {
     const language = pb.language;
     if (
-      !bestForEveryLanguage[language] ||
+      bestForEveryLanguage[language] === undefined ||
       bestForEveryLanguage[language].wpm < pb.wpm
     ) {
       bestForEveryLanguage[language] = pb;
@@ -178,7 +194,8 @@ function updateLeaderboardPersonalBests(
   _.each(
     bestForEveryLanguage,
     (pb: SharedTypes.PersonalBest, language: string) => {
-      const languageDoesNotExist = !lbPersonalBests[mode][mode2][language];
+      const languageDoesNotExist =
+        lbPersonalBests[mode][mode2][language] === undefined;
 
       if (
         languageDoesNotExist ||

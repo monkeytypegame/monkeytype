@@ -8,10 +8,10 @@ import { recordEmail } from "../utils/prometheus";
 import { EmailTaskContexts, EmailType } from "../queues/email-queue";
 import { isDevEnvironment } from "../utils/misc";
 
-interface EmailMetadata {
+type EmailMetadata = {
   subject: string;
   templateName: string;
-}
+};
 
 const templates: Record<EmailType, EmailMetadata> = {
   verify: {
@@ -38,7 +38,7 @@ export async function init(): Promise<void> {
 
   const { EMAIL_HOST, EMAIL_USER, EMAIL_PASS, EMAIL_PORT } = process.env;
 
-  if (!EMAIL_HOST || !EMAIL_USER || !EMAIL_PASS) {
+  if (!(EMAIL_HOST ?? "") || !(EMAIL_USER ?? "") || !(EMAIL_PASS ?? "")) {
     if (isDevEnvironment()) {
       Logger.warning(
         "No email client configuration provided. Running without email."
@@ -63,7 +63,7 @@ export async function init(): Promise<void> {
     Logger.info("Verifying email client configuration...");
     const result = await transporter.verify();
 
-    if (result !== true) {
+    if (!result) {
       throw new Error(
         `Could not verify email client configuration: ` + JSON.stringify(result)
       );
@@ -77,10 +77,10 @@ export async function init(): Promise<void> {
   }
 }
 
-interface MailResult {
+type MailResult = {
   success: boolean;
   message: string;
-}
+};
 
 export async function sendEmail<M extends EmailType>(
   templateName: EmailType,
@@ -128,7 +128,7 @@ const cachedTemplates: Record<string, string> = {};
 
 async function getTemplate(name: string): Promise<string> {
   const cachedTemp = cachedTemplates[name];
-  if (cachedTemp) {
+  if (cachedTemp !== undefined) {
     return cachedTemp;
   }
 

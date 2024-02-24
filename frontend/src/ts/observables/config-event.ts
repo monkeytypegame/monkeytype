@@ -1,9 +1,9 @@
 type SubscribeFunction = (
   key: string,
-  newValue?: MonkeyTypes.ConfigValues,
+  newValue?: SharedTypes.ConfigValue,
   nosave?: boolean,
-  previousValue?: MonkeyTypes.ConfigValues,
-  fullConfig?: MonkeyTypes.Config
+  previousValue?: SharedTypes.ConfigValue,
+  fullConfig?: SharedTypes.Config
 ) => void;
 
 const subscribers: SubscribeFunction[] = [];
@@ -14,10 +14,10 @@ export function subscribe(fn: SubscribeFunction): void {
 
 export function dispatch(
   key: string,
-  newValue?: MonkeyTypes.ConfigValues,
+  newValue?: SharedTypes.ConfigValue,
   nosave?: boolean,
-  previousValue?: MonkeyTypes.ConfigValues,
-  fullConfig?: MonkeyTypes.Config
+  previousValue?: SharedTypes.ConfigValue,
+  fullConfig?: SharedTypes.Config
 ): void {
   subscribers.forEach((fn) => {
     try {

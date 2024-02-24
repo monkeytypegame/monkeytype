@@ -18,11 +18,11 @@ const subgroup: MonkeyTypes.CommandsSubgroup = {
       display: "click",
       configValue: "1",
       hover: (): void => {
-        SoundController.previewClick("1");
+        void SoundController.previewClick("1");
       },
       exec: (): void => {
         UpdateConfig.setPlaySoundOnClick("1");
-        SoundController.playClick();
+        void SoundController.playClick();
       },
     },
     {
@@ -30,11 +30,11 @@ const subgroup: MonkeyTypes.CommandsSubgroup = {
       display: "beep",
       configValue: "2",
       hover: (): void => {
-        SoundController.previewClick("2");
+        void SoundController.previewClick("2");
       },
       exec: (): void => {
         UpdateConfig.setPlaySoundOnClick("2");
-        SoundController.playClick();
+        void SoundController.playClick();
       },
     },
     {
@@ -42,11 +42,11 @@ const subgroup: MonkeyTypes.CommandsSubgroup = {
       display: "pop",
       configValue: "3",
       hover: (): void => {
-        SoundController.previewClick("3");
+        void SoundController.previewClick("3");
       },
       exec: (): void => {
         UpdateConfig.setPlaySoundOnClick("3");
-        SoundController.playClick();
+        void SoundController.playClick();
       },
     },
     {
@@ -54,11 +54,11 @@ const subgroup: MonkeyTypes.CommandsSubgroup = {
       display: "nk creams",
       configValue: "4",
       hover: (): void => {
-        SoundController.previewClick("4");
+        void SoundController.previewClick("4");
       },
       exec: (): void => {
         UpdateConfig.setPlaySoundOnClick("4");
-        SoundController.playClick();
+        void SoundController.playClick();
       },
     },
     {
@@ -66,11 +66,11 @@ const subgroup: MonkeyTypes.CommandsSubgroup = {
       display: "typewriter",
       configValue: "5",
       hover: (): void => {
-        SoundController.previewClick("5");
+        void SoundController.previewClick("5");
       },
       exec: (): void => {
         UpdateConfig.setPlaySoundOnClick("5");
-        SoundController.playClick();
+        void SoundController.playClick();
       },
     },
     {
@@ -78,11 +78,11 @@ const subgroup: MonkeyTypes.CommandsSubgroup = {
       display: "osu",
       configValue: "6",
       hover: (): void => {
-        SoundController.previewClick("6");
+        void SoundController.previewClick("6");
       },
       exec: (): void => {
         UpdateConfig.setPlaySoundOnClick("6");
-        SoundController.playClick();
+        void SoundController.playClick();
       },
     },
     {
@@ -90,11 +90,11 @@ const subgroup: MonkeyTypes.CommandsSubgroup = {
       display: "hitmarker",
       configValue: "7",
       hover: (): void => {
-        SoundController.previewClick("7");
+        void SoundController.previewClick("7");
       },
       exec: (): void => {
         UpdateConfig.setPlaySoundOnClick("7");
-        SoundController.playClick();
+        void SoundController.playClick();
       },
     },
     {
@@ -167,6 +167,30 @@ const subgroup: MonkeyTypes.CommandsSubgroup = {
       exec: (): void => {
         UpdateConfig.setPlaySoundOnClick("13");
         SoundController.scaleConfigurations["13"].preview();
+      },
+    },
+    {
+      id: "setSoundOnClick14",
+      display: "fist fight",
+      configValue: "14",
+      hover: (): void => {
+        void SoundController.previewClick("14");
+      },
+      exec: (): void => {
+        UpdateConfig.setPlaySoundOnClick("14");
+        void SoundController.playClick();
+      },
+    },
+    {
+      id: "setSoundOnClick15",
+      display: "rubber keys",
+      configValue: "15",
+      hover: (): void => {
+        void SoundController.previewClick("15");
+      },
+      exec: (): void => {
+        UpdateConfig.setPlaySoundOnClick("15");
+        void SoundController.playClick();
       },
     },
   ],

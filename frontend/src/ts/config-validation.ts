@@ -9,6 +9,7 @@ type PossibleType =
   | "undefined"
   | "null"
   | "stringArray"
+  | "layoutfluid"
   | string[]
   | number[];
 
@@ -90,7 +91,7 @@ export function isConfigValueValid(
 
       default:
         if (isArray(possibleType)) {
-          if (possibleType.includes(<never>val)) isValid = true;
+          if (possibleType.includes(val as never)) isValid = true;
         }
         break;
     }

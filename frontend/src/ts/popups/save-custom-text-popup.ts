@@ -89,7 +89,7 @@ function save(): boolean {
 }
 
 $("#popups").on("click", `#saveCustomTextPopupWrapper .button.save`, () => {
-  if (save() === true) hide(true);
+  if (save()) hide(true);
 });
 
 $("#saveCustomTextPopupWrapper").on("mousedown", (e) => {

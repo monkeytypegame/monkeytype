@@ -92,7 +92,7 @@ $(".pageAccount").on("click", ".group.history #resultEditTags", (f) => {
 });
 
 $(".pageTest").on("click", ".tags .editTagsButton", () => {
-  if (DB.getSnapshot()?.tags?.length ?? 0 > 0) {
+  if ((DB.getSnapshot()?.tags?.length ?? 0) > 0) {
     const resultid = $(".pageTest .tags .editTagsButton").attr(
       "result-id"
     ) as string;
@@ -149,13 +149,14 @@ $("#resultEditTagsPanelWrapper .confirmButton").on("click", async () => {
     );
   }
 
-  const responseTagPbs = response.data.tagPbs;
+  //can do this because the response will not be null if the status is 200
+  const responseTagPbs = response.data?.tagPbs ?? [];
 
   Notifications.add("Tags updated", 1, {
     duration: 2,
   });
   DB.getSnapshot()?.results?.forEach(
-    (result: SharedTypes.Result<SharedTypes.Mode>) => {
+    (result: SharedTypes.Result<SharedTypes.Config.Mode>) => {
       if (result._id === resultId) {
         result.tags = newTags;
       }
@@ -230,7 +231,7 @@ $("#resultEditTagsPanelWrapper .confirmButton").on("click", async () => {
 
       newTags.forEach((tag, index) => {
         if (checked.includes(tag)) return;
-        if (responseTagPbs.includes(tag)) {
+        if (responseTagPbs.includes(tag) as boolean) {
           html += `<div tagid="${tag}" data-balloon-pos="up">${tagNames[index]}<i class="fas fa-crown"></i></div>`;
         } else {
           html += `<div tagid="${tag}">${tagNames[index]}</div>`;

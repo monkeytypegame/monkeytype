@@ -11,6 +11,7 @@ export function render(
     return;
   }
 
+  //@ts-expect-error
   const widgetId = grecaptcha.render(element, {
     sitekey: siteKey,
     callback,
@@ -24,6 +25,7 @@ export function reset(id: string): void {
     return;
   }
 
+  //@ts-expect-error
   grecaptcha.reset(captchas[id]);
 }
 
@@ -32,5 +34,6 @@ export function getResponse(id: string): string {
     return "";
   }
 
+  //@ts-expect-error
   return grecaptcha.getResponse(captchas[id]);
 }

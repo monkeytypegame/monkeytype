@@ -12,7 +12,7 @@ const wordSamples = 20;
 // Score penatly (in milliseconds) for getting a letter wrong.
 const incorrectPenalty = 5000;
 
-const scores: { [char: string]: Score } = {};
+const scores: Record<string, Score> = {};
 
 class Score {
   public average: number;

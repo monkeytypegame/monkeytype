@@ -11,7 +11,7 @@ let analytics: AnalyticsType;
 
 export async function log(
   eventName: string,
-  params?: { [key: string]: string }
+  params?: Record<string, string>
 ): Promise<void> {
   try {
     logEvent(analytics, eventName, params);
@@ -25,14 +25,14 @@ let acceptedCookies: {
   security: boolean;
   analytics: boolean;
 } | null;
-if (lsString) {
+if (lsString !== undefined && lsString !== null && lsString !== "") {
   acceptedCookies = JSON.parse(lsString);
 } else {
   acceptedCookies = null;
 }
 
 if (acceptedCookies !== null) {
-  if (acceptedCookies["analytics"] === true) {
+  if (acceptedCookies.analytics) {
     activateAnalytics();
   }
 }

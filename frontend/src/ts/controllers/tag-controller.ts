@@ -25,7 +25,7 @@ export function clear(nosave = false): void {
   });
 
   DB.setSnapshot(snapshot);
-  ModesNotice.update();
+  void ModesNotice.update();
   if (!nosave) saveActiveToLocalStorage();
 }
 
@@ -42,7 +42,7 @@ export function set(tagid: string, state: boolean, nosave = false): void {
   });
 
   DB.setSnapshot(snapshot);
-  ModesNotice.update();
+  void ModesNotice.update();
   if (!nosave) saveActiveToLocalStorage();
 }
 
@@ -56,7 +56,7 @@ export function toggle(tagid: string, nosave = false): void {
       }
     }
   });
-  ModesNotice.update();
+  void ModesNotice.update();
   if (!nosave) saveActiveToLocalStorage();
 }
 

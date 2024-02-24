@@ -11,27 +11,28 @@ function show(): void {
       <i class="fas fa-fw fa-spin fa-circle-notch"></i>
     </div
   `);
-  getReleasesFromGitHub().then((releases) => {
-    $("#versionHistory").html(`<div class="releases"></div`);
-    releases.forEach((release: MonkeyTypes.GithubRelease) => {
-      if (!release.draft && !release.prerelease) {
-        let body = release.body;
+  getReleasesFromGitHub()
+    .then((releases) => {
+      $("#versionHistory").html(`<div class="releases"></div`);
+      releases.forEach((release: MonkeyTypes.GithubRelease) => {
+        if (!release.draft && !release.prerelease) {
+          let body = release.body;
 
-        body = body.replace(/\r\n/g, "<br>");
-        //replace ### title with h3 title h3
-        body = body.replace(/### (.*?)<br>/g, "<h3>$1</h3>");
-        body = body.replace(/<\/h3><br>/gi, "</h3>");
-        //remove - at the start of a line
-        body = body.replace(/^- /gm, "");
-        //replace **bold** with bold
-        body = body.replace(/\*\*(.*?)\*\*/g, "<b>$1</b>");
-        //replace links with a tags
-        body = body.replace(
-          /\[(.*?)\]\((.*?)\)/g,
-          '<a href="$2" target="_blank">$1</a>'
-        );
+          body = body.replace(/\r\n/g, "<br>");
+          //replace ### title with h3 title h3
+          body = body.replace(/### (.*?)<br>/g, "<h3>$1</h3>");
+          body = body.replace(/<\/h3><br>/gi, "</h3>");
+          //remove - at the start of a line
+          body = body.replace(/^- /gm, "");
+          //replace **bold** with bold
+          body = body.replace(/\*\*(.*?)\*\*/g, "<b>$1</b>");
+          //replace links with a tags
+          body = body.replace(
+            /\[(.*?)\]\((.*?)\)/g,
+            '<a href="$2" target="_blank">$1</a>'
+          );
 
-        $("#versionHistory .releases").append(`
+          $("#versionHistory .releases").append(`
         <div class="release">
           <div class="title">${release.name}</div>
           <div class="date">${format(
@@ -41,9 +42,14 @@ function show(): void {
           <div class="body">${body}</div>
         </div>
       `);
-      }
+        }
+      });
+    })
+    .catch((e) => {
+      $("#versionHistory").html(
+        `<div class="releases">Failed to fetch version history:<br>${e.message}</div`
+      );
     });
-  });
   $("#versionHistoryWrapper")
     .css("opacity", 0)
     .removeClass("hidden")
