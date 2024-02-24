@@ -119,7 +119,7 @@ const commands: MonkeyTypes.Command[] = [
     alias: "save",
     exec: (): void => {
       setTimeout(() => {
-        TestUI.screenshot();
+        void TestUI.screenshot();
       }, 500);
     },
     available: (): boolean => {

@@ -162,7 +162,7 @@
     "strncpy",
     "strcat",
     "strncat",
-    "strlenstrnlen_s",
+    "strlen",
     "strcmp",
     "strncmp",
     "strcoll",

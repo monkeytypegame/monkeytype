@@ -1,24 +1,23 @@
 import Config from "../config";
-import { capitalizeFirstLetterOfEachWord } from "../utils/misc";
+import {
+  cachedFetchJson,
+  capitalizeFirstLetterOfEachWord,
+} from "../utils/misc";
 import * as CustomText from "../test/custom-text";
 
-interface BritishEnglishReplacement {
+type BritishEnglishReplacement = {
   0: string;
   1: string;
   2?: string[];
-}
+};
 
 let list: BritishEnglishReplacement[] = [];
 
 export async function getList(): Promise<BritishEnglishReplacement[]> {
   if (list.length === 0) {
-    return $.getJSON("languages/britishenglish.json", function (data) {
-      list = data;
-      return list;
-    });
-  } else {
-    return list;
+    list = await cachedFetchJson("languages/britishenglish.json");
   }
+  return list;
 }
 
 export async function replace(

@@ -143,8 +143,10 @@ export function init(): void {
   headOfDocument.appendChild(rampScript);
 
   window._pwGA4PageviewId = "".concat(Date.now());
+  // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
   window.dataLayer = window.dataLayer || [];
   window.gtag =
+    // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
     window.gtag ||
     function (): void {
       // eslint-disable-next-line prefer-rest-params

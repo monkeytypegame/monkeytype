@@ -1,9 +1,3 @@
-h2,
-h3,
-p {
-  margin: 0;
-}
-
 .signOut {
   font-size: 1rem;
   line-height: 1rem;
@@ -29,8 +23,18 @@ p {
 .pageAccount {
   height: 100%;
 
+  h3,
+  h4,
+  p {
+    margin: 0;
+    font-weight: unset;
+  }
+
   .preloader {
     align-self: center;
+    text-align: center;
+    align-items: center;
+    height: 100%;
   }
 
   .content {

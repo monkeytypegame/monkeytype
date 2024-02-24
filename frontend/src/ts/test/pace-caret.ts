@@ -7,16 +7,16 @@ import * as Misc from "../utils/misc";
 import * as TestState from "./test-state";
 import * as ConfigEvent from "../observables/config-event";
 
-interface Settings {
+type Settings = {
   wpm: number;
   cps: number;
   spc: number;
   correction: number;
   currentWordIndex: number;
   currentLetterIndex: number;
-  wordsStatus: { [key: number]: true | undefined };
+  wordsStatus: Record<number, true | undefined>;
   timeout: NodeJS.Timeout | null;
-}
+};
 
 export let settings: Settings | null = null;
 
@@ -39,9 +39,9 @@ function resetCaretPosition(): void {
   if (Config.mode === "zen") return;
 
   const caret = $("#paceCaret");
-  const firstLetter = <HTMLElement>(
-    document?.querySelector("#words .word")?.querySelector("letter")
-  );
+  const firstLetter = document
+    ?.querySelector("#words .word")
+    ?.querySelector("letter") as HTMLElement;
 
   const firstLetterHeight = $(firstLetter).height();
 
@@ -62,7 +62,7 @@ export async function init(): Promise<void> {
   const mode2 = Misc.getMode2(
     Config,
     TestWords.randomQuote
-  ) as SharedTypes.Mode2<typeof Config.mode>;
+  ) as SharedTypes.Config.Mode2<typeof Config.mode>;
   let wpm;
   if (Config.paceCaret === "pb") {
     wpm = await DB.getLocalPB(
@@ -96,7 +96,7 @@ export async function init(): Promise<void> {
     wpm = Math.round(wpm);
   } else if (Config.paceCaret === "custom") {
     wpm = Config.paceCaretCustomSpeed;
-  } else if (Config.paceCaret === "last" || TestState.isPaceRepeat === true) {
+  } else if (Config.paceCaret === "last" || TestState.isPaceRepeat) {
     wpm = lastTestWpm;
   }
   if (wpm === undefined || wpm < 1 || Number.isNaN(wpm)) {
@@ -186,11 +186,11 @@ export function update(expectedStepEnd: number): void {
         newIndex
       ] as HTMLElement;
       if (settings.currentLetterIndex === -1) {
-        currentLetter = <HTMLElement>word.querySelectorAll("letter")[0];
+        currentLetter = word.querySelectorAll("letter")[0] as HTMLElement;
       } else {
-        currentLetter = <HTMLElement>(
-          word.querySelectorAll("letter")[settings.currentLetterIndex]
-        );
+        currentLetter = word.querySelectorAll("letter")[
+          settings.currentLetterIndex
+        ] as HTMLElement;
       }
 
       const currentLetterHeight = $(currentLetter).height(),
@@ -202,7 +202,9 @@ export function update(expectedStepEnd: number): void {
         currentLetterWidth === undefined ||
         caretWidth === undefined
       ) {
-        throw ``;
+        throw new Error(
+          "Undefined current letter height, width or caret width."
+        );
       }
 
       newTop =
@@ -262,7 +264,7 @@ export function update(expectedStepEnd: number): void {
 }
 
 export function reset(): void {
-  if (settings !== null && settings.timeout !== null) {
+  if (settings?.timeout != null) {
     clearTimeout(settings.timeout);
   }
   settings = null;
@@ -295,5 +297,5 @@ export function start(): void {
 }
 
 ConfigEvent.subscribe((eventKey) => {
-  if (eventKey === "paceCaret") init();
+  if (eventKey === "paceCaret") void init();
 });

@@ -7,7 +7,7 @@ import { isPopupVisible } from "../utils/misc";
 
 const wrapperId = "quoteApprovePopupWrapper";
 
-let quotes: QuotesApe.Quote[] = [];
+let quotes: Ape.Quotes.Quote[] = [];
 
 function updateList(): void {
   $("#quoteApprovePopupWrapper .quotes").empty();
@@ -75,7 +75,7 @@ export async function show(noAnim = false): Promise<void> {
 
   if (!isPopupVisible(wrapperId)) {
     quotes = [];
-    getQuotes();
+    await getQuotes();
     $("#quoteApprovePopupWrapper")
       .stop(true, true)
       .css("opacity", 0)
@@ -118,7 +118,7 @@ $("#quoteApprovePopupWrapper").on("mousedown", (e) => {
 
 $("#quoteApprovePopupWrapper .button.refreshList").on("click", () => {
   $("#quoteApprovePopupWrapper .quotes").empty();
-  getQuotes();
+  void getQuotes();
 });
 
 $("#popups").on("click", "#quoteApprovePopup .quote .undo", async (e) => {
@@ -156,7 +156,7 @@ $("#popups").on("click", "#quoteApprovePopup .quote .approve", async (e) => {
     );
   }
 
-  Notifications.add("Quote approved. " + response.message ?? "", 1);
+  Notifications.add(`Quote approved. ${response.message ?? ""}`, 1);
   quotes.splice(index, 1);
   updateList();
 });
@@ -215,7 +215,7 @@ $("#popups").on("click", "#quoteApprovePopup .quote .edit", async (e) => {
     );
   }
 
-  Notifications.add("Quote edited and approved. " + response.message ?? "", 1);
+  Notifications.add(`Quote edited and approved. ${response.message ?? ""}`, 1);
   quotes.splice(index, 1);
   updateList();
 });

@@ -74,7 +74,7 @@ export async function getLiveConfiguration(): Promise<SharedTypes.Configuration>
       ) as SharedTypes.Configuration;
       mergeConfigurations(baseConfiguration, liveConfigurationWithoutId);
 
-      pushConfiguration(baseConfiguration);
+      await pushConfiguration(baseConfiguration);
       configuration = baseConfiguration;
     } else {
       await configurationCollection.insertOne({
@@ -83,7 +83,7 @@ export async function getLiveConfiguration(): Promise<SharedTypes.Configuration>
       }); // Seed the base configuration.
     }
   } catch (error) {
-    Logger.logToDb(
+    void Logger.logToDb(
       "fetch_configuration_failure",
       `Could not fetch configuration: ${error.message}`
     );
@@ -103,7 +103,7 @@ async function pushConfiguration(
     await db.collection("configuration").replaceOne({}, configuration);
     serverConfigurationUpdated = true;
   } catch (error) {
-    Logger.logToDb(
+    void Logger.logToDb(
       "push_configuration_failure",
       `Could not push configuration: ${error.message}`
     );
@@ -123,7 +123,7 @@ export async function patchConfiguration(
 
     await getLiveConfiguration();
   } catch (error) {
-    Logger.logToDb(
+    void Logger.logToDb(
       "patch_configuration_failure",
       `Could not patch configuration: ${error.message}`
     );

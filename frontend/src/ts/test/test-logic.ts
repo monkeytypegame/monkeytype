@@ -46,7 +46,7 @@ import * as Last10Average from "../elements/last-10-average";
 import * as Monkey from "./monkey";
 import objectHash from "object-hash";
 import * as AnalyticsController from "../controllers/analytics-controller";
-import { Auth } from "../firebase";
+import { Auth, isAuthenticated } from "../firebase";
 import * as AdController from "../controllers/ad-controller";
 import * as TestConfig from "./test-config";
 import * as ConnectionState from "../states/connection";
@@ -78,10 +78,10 @@ export function startTest(now: number): boolean {
     return false;
   }
 
-  if (Auth?.currentUser) {
-    AnalyticsController.log("testStarted");
+  if (isAuthenticated()) {
+    void AnalyticsController.log("testStarted");
   } else {
-    AnalyticsController.log("testStartedNoLogin");
+    void AnalyticsController.log("testStartedNoLogin");
   }
 
   TestState.setActive(true);
@@ -112,17 +112,17 @@ export function startTest(now: number): boolean {
   } catch (e) {}
   //use a recursive self-adjusting timer to avoid time drift
   TestStats.setStart(now);
-  TestTimer.start();
+  void TestTimer.start();
   return true;
 }
 
-interface RestartOptions {
+type RestartOptions = {
   withSameWordset?: boolean;
   nosave?: boolean;
   event?: JQuery.KeyDownEvent;
   practiseMissed?: boolean;
   noAnim?: boolean;
-}
+};
 
 // withSameWordset = false,
 // _?: boolean, // this is nosave and should be renamed to nosave when needed
@@ -178,9 +178,10 @@ export function restart(options = {} as RestartOptions): void {
   }
 
   if (options.withSameWordset) {
-    const funboxToPush = FunboxList.get(Config.funbox)
-      .find((f) => f.properties?.find((fp) => fp.startsWith("toPush")))
-      ?.properties?.find((fp) => fp.startsWith("toPush:"));
+    const funboxToPush =
+      FunboxList.get(Config.funbox)
+        .find((f) => f.properties?.find((fp) => fp.startsWith("toPush")))
+        ?.properties?.find((fp) => fp.startsWith("toPush:")) ?? "";
     if (funboxToPush) {
       Notifications.add(
         "You can't repeat a test with currently active funboxes",
@@ -215,7 +216,7 @@ export function restart(options = {} as RestartOptions): void {
 
   if (
     Config.mode === "quote" &&
-    TestWords.randomQuote &&
+    TestWords.randomQuote !== null &&
     Config.language.startsWith(TestWords.randomQuote.language) &&
     Config.repeatQuotes === "typing" &&
     (TestState.isActive || failReason !== "")
@@ -276,7 +277,7 @@ export function restart(options = {} as RestartOptions): void {
 
   if (TestUI.resultVisible) {
     if (Config.randomTheme !== "off") {
-      ThemeController.randomizeTheme();
+      void ThemeController.randomizeTheme();
     }
     AccountButton.skipXpBreakdown();
   }
@@ -338,6 +339,7 @@ export function restart(options = {} as RestartOptions): void {
         await init();
         await PaceCaret.init();
       } else {
+        await Funbox.activate();
         TestState.setRepeated(true);
         TestState.setPaceRepeat(repeatWithPace);
         Replay.stopReplayRecording();
@@ -345,7 +347,7 @@ export function restart(options = {} as RestartOptions): void {
         TestInput.input.reset();
         TestUI.showWords();
         if (Config.keymapMode === "next" && Config.mode !== "zen") {
-          KeymapEvent.highlight(
+          void KeymapEvent.highlight(
             Misc.nthElementFromArray(
               [...TestWords.words.getCurrent()],
               0
@@ -365,11 +367,11 @@ export function restart(options = {} as RestartOptions): void {
       }
 
       if (Config.showAverage !== "off") {
-        Last10Average.update().then(() => {
-          ModesNotice.update();
+        Last10Average.update().finally(() => {
+          void ModesNotice.update();
         });
       } else {
-        ModesNotice.update();
+        void ModesNotice.update();
       }
 
       $("#typingTest")
@@ -382,19 +384,22 @@ export function restart(options = {} as RestartOptions): void {
           },
           options.noAnim ? 0 : 125,
           () => {
-            (<HTMLElement>(
-              document.querySelector("#miniTimerAndLiveWpm .wpm")
-            )).innerHTML = "0";
-            (<HTMLElement>(
-              document.querySelector("#miniTimerAndLiveWpm .acc")
-            )).innerHTML = "100%";
-            (<HTMLElement>(
-              document.querySelector("#miniTimerAndLiveWpm .burst")
-            )).innerHTML = "0";
-            (<HTMLElement>document.querySelector("#liveWpm")).innerHTML = "0";
-            (<HTMLElement>document.querySelector("#liveAcc")).innerHTML =
+            (
+              document.querySelector("#miniTimerAndLiveWpm .wpm") as HTMLElement
+            ).innerHTML = "0";
+            (
+              document.querySelector("#miniTimerAndLiveWpm .acc") as HTMLElement
+            ).innerHTML = "100%";
+            (
+              document.querySelector(
+                "#miniTimerAndLiveWpm .burst"
+              ) as HTMLElement
+            ).innerHTML = "0";
+            (document.querySelector("#liveWpm") as HTMLElement).innerHTML = "0";
+            (document.querySelector("#liveAcc") as HTMLElement).innerHTML =
               "100%";
-            (<HTMLElement>document.querySelector("#liveBurst")).innerHTML = "0";
+            (document.querySelector("#liveBurst") as HTMLElement).innerHTML =
+              "0";
 
             TestUI.setTestRestarting(false);
             TestUI.focusWords();
@@ -411,7 +416,6 @@ export function restart(options = {} as RestartOptions): void {
 
 let rememberLazyMode: boolean;
 let testReinitCount = 0;
-let languageBeforeQuoteMode: string | undefined;
 export async function init(): Promise<void> {
   console.debug("Initializing test");
   testReinitCount++;
@@ -444,7 +448,7 @@ export async function init(): Promise<void> {
     );
   }
 
-  if (!language || (language && language.name !== Config.language)) {
+  if (!language || language.name !== Config.language) {
     UpdateConfig.setLanguage("english");
     await init();
     return;
@@ -455,57 +459,30 @@ export async function init(): Promise<void> {
   }
 
   if (Config.mode === "quote") {
-    if (Config.quoteLength.includes(-3) && !Auth?.currentUser) {
+    if (Config.quoteLength.includes(-3) && !isAuthenticated()) {
       UpdateConfig.setQuoteLength(-1);
-    }
-    let group;
-    try {
-      group = await Misc.findCurrentGroup(Config.language);
-    } catch (e) {
-      console.error(
-        Misc.createErrorMessage(e, "Failed to find current language group")
-      );
-      return;
-    }
-    if (
-      group &&
-      group.name !== "code" &&
-      group.name !== "other" &&
-      group.name !== Config.language
-    ) {
-      languageBeforeQuoteMode = Config.language;
-      UpdateConfig.setLanguage(group.name);
-    }
-  } else {
-    if (
-      languageBeforeQuoteMode &&
-      Config.language === languageBeforeQuoteMode.split("_")[0]
-    ) {
-      UpdateConfig.setLanguage(languageBeforeQuoteMode);
-      languageBeforeQuoteMode = undefined;
-      await init();
-      return;
     }
   }
 
-  if (Config.tapeMode !== "off" && language.rightToLeft === true) {
+  if (Config.tapeMode !== "off" && language.rightToLeft) {
     Notifications.add("This language does not support tape mode.", 0, {
       important: true,
     });
     UpdateConfig.setTapeMode("off");
   }
 
-  if (Config.lazyMode === true && language.noLazyMode) {
+  const allowLazyMode = !language.noLazyMode || Config.mode === "custom";
+  if (Config.lazyMode && !allowLazyMode) {
     rememberLazyMode = true;
     Notifications.add("This language does not support lazy mode.", 0, {
       important: true,
     });
     UpdateConfig.setLazyMode(false, true);
-  } else if (rememberLazyMode === true && !language.noLazyMode) {
+  } else if (rememberLazyMode && !language.noLazyMode) {
     UpdateConfig.setLazyMode(true, true);
   }
 
-  if (Config.lazyMode === false && !language.noLazyMode) {
+  if (!Config.lazyMode && !language.noLazyMode) {
     rememberLazyMode = false;
   }
 
@@ -558,7 +535,7 @@ export async function init(): Promise<void> {
   TestWords.setHasNewline(hasNewline);
 
   if (beforeHasNumbers !== hasNumbers) {
-    Keymap.refresh();
+    void Keymap.refresh();
   }
 
   for (let i = 0; i < generatedWords.length; i++) {
@@ -569,7 +546,7 @@ export async function init(): Promise<void> {
   }
 
   if (Config.keymapMode === "next" && Config.mode !== "zen") {
-    KeymapEvent.highlight(
+    void KeymapEvent.highlight(
       Misc.nthElementFromArray([...TestWords.words.getCurrent()], 0) as string
     );
   }
@@ -590,8 +567,8 @@ export async function addWord(): Promise<void> {
   const funboxToPush = FunboxList.get(Config.funbox)
     .find((f) => f.properties?.find((fp) => fp.startsWith("toPush")))
     ?.properties?.find((fp) => fp.startsWith("toPush:"));
-  const toPushCount: string | undefined = funboxToPush?.split(":")[1];
-  if (toPushCount) bound = +toPushCount - 1;
+  const toPushCount = funboxToPush?.split(":")[1];
+  if (toPushCount !== undefined) bound = +toPushCount - 1;
   if (
     TestWords.words.length - TestInput.input.history.length > bound ||
     (Config.mode === "words" &&
@@ -641,7 +618,7 @@ export async function addWord(): Promise<void> {
 
       let wordCount = 0;
       for (let i = 0; i < section.words.length; i++) {
-        const word = section.words[i];
+        const word = section.words[i] as string;
         if (wordCount >= Config.words && Config.mode === "words") {
           break;
         }
@@ -675,10 +652,10 @@ export async function addWord(): Promise<void> {
   TestUI.addWord(randomWord.word);
 }
 
-interface RetrySaving {
+type RetrySaving = {
   completedEvent: SharedTypes.CompletedEvent | null;
   canRetry: boolean;
-}
+};
 
 const retrySaving: RetrySaving = {
   completedEvent: null,
@@ -712,7 +689,7 @@ export async function retrySavingResult(): Promise<void> {
 
   Notifications.add("Retrying to save...");
 
-  saveResult(completedEvent, true);
+  await saveResult(completedEvent, true);
 }
 
 function buildCompletedEvent(
@@ -793,8 +770,8 @@ function buildCompletedEvent(
   }
 
   const chartErr = [];
-  for (let i = 0; i < TestInput.errorHistory.length; i++) {
-    chartErr.push(TestInput.errorHistory[i]?.count ?? 0);
+  for (const error of TestInput.errorHistory) {
+    chartErr.push(error.count ?? 0);
   }
 
   const chartData = {
@@ -811,7 +788,7 @@ function buildCompletedEvent(
 
   let customText: SharedTypes.CustomText | null = null;
   if (Config.mode === "custom") {
-    customText = <SharedTypes.CustomText>{};
+    customText = {} as SharedTypes.CustomText;
     customText.textLen = CustomText.text.length;
     customText.isWordRandom = CustomText.isWordRandom;
     customText.isTimeRandom = CustomText.isTimeRandom;
@@ -831,7 +808,7 @@ function buildCompletedEvent(
   const afkDuration = TestStats.calculateAfkSeconds(duration);
   let language = Config.language;
   if (Config.mode === "quote") {
-    language = Config.language.replace(/_\d*k$/g, "");
+    language = Misc.removeLanguageSize(Config.language);
   }
 
   const quoteLength = TestWords.randomQuote?.group ?? -1;
@@ -916,9 +893,8 @@ export async function finish(difficultyFailed = false): Promise<void> {
   TimerProgress.hide();
   OutOfFocus.hide();
   TestTimer.clear();
-  Funbox.clear();
   Monkey.hide();
-  ModesNotice.update();
+  void ModesNotice.update();
 
   //need one more calculation for the last word if test auto ended
   if (TestInput.burstHistory.length !== TestInput.input.getHistory()?.length) {
@@ -965,7 +941,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
 
   //afk check
   const kps = TestInput.afkHistory.slice(-5);
-  let afkDetected = kps.every((afk) => afk === true);
+  let afkDetected = kps.every((afk) => afk);
   if (TestState.bailedOut) afkDetected = false;
 
   const mode2Number = parseInt(completedEvent.mode2);
@@ -1111,10 +1087,10 @@ export async function finish(difficultyFailed = false): Promise<void> {
     Result.updateTodayTracker();
   }
 
-  if (!Auth?.currentUser) {
+  if (!isAuthenticated()) {
     $(".pageTest #result #rateQuoteButton").addClass("hidden");
     $(".pageTest #result #reportQuoteButton").addClass("hidden");
-    AnalyticsController.log("testCompletedNoLogin");
+    void AnalyticsController.log("testCompletedNoLogin");
     if (!dontSave) notSignedInLastResult = completedEvent;
     dontSave = true;
   } else {
@@ -1151,7 +1127,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
   }
 
   if (dontSave) {
-    AnalyticsController.log("testCompletedInvalid");
+    void AnalyticsController.log("testCompletedInvalid");
     return;
   }
 
@@ -1171,7 +1147,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
 
   completedEvent.hash = objectHash(completedEvent);
 
-  saveResult(completedEvent, false);
+  await saveResult(completedEvent, false);
 }
 
 async function saveResult(
@@ -1226,13 +1202,13 @@ async function saveResult(
 
   $("#result .stats .tags .editTagsButton").attr(
     "result-id",
-    response.data.insertedId
+    response.data?.insertedId as string //if status is 200 then response.data is not null or undefined
   );
   $("#result .stats .tags .editTagsButton").removeClass("invisible");
 
-  if (response?.data?.xp) {
+  if (response?.data?.xp !== undefined) {
     const snapxp = DB.getSnapshot()?.xp ?? 0;
-    AccountButton.updateXpBar(
+    void AccountButton.updateXpBar(
       snapxp,
       response.data.xp,
       response.data.xpBreakdown
@@ -1240,13 +1216,13 @@ async function saveResult(
     DB.addXp(response.data.xp);
   }
 
-  if (response?.data?.streak) {
+  if (response?.data?.streak !== undefined) {
     DB.setStreak(response.data.streak);
   }
 
-  if (response?.data?.insertedId) {
+  if (response?.data?.insertedId !== undefined) {
     completedEvent._id = response.data.insertedId;
-    if (response?.data?.isPb) {
+    if (response?.data?.isPb !== undefined && response.data.isPb) {
       completedEvent.isPb = true;
     }
     DB.saveLocalResult(completedEvent);
@@ -1258,22 +1234,24 @@ async function saveResult(
     );
   }
 
-  AnalyticsController.log("testCompleted");
+  void AnalyticsController.log("testCompleted");
 
-  if (response?.data?.isPb) {
+  if (response?.data?.isPb !== undefined && response.data.isPb) {
     //new pb
     if (
       //@ts-expect-error TODO fix this
+      // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
       DB.getSnapshot()?.personalBests?.[Config.mode]?.[completedEvent.mode2]
     ) {
       Result.showConfetti();
     }
     Result.showCrown();
     await Result.updateCrown();
-    DB.saveLocalPB(
+    await DB.saveLocalPB(
       Config.mode,
       completedEvent.mode2,
       Config.punctuation,
+      Config.numbers,
       Config.language,
       Config.difficulty,
       Config.lazyMode,
@@ -1295,7 +1273,7 @@ async function saveResult(
   //   );
   // }
 
-  if (!response?.data?.dailyLeaderboardRank) {
+  if (response?.data?.dailyLeaderboardRank === undefined) {
     $("#result .stats .dailyLeaderboard").addClass("hidden");
   } else {
     $("#result .stats .dailyLeaderboard")
@@ -1329,7 +1307,7 @@ export function fail(reason: string): void {
   TestInput.pushKeypressesToHistory();
   TestInput.pushErrorToHistory();
   TestInput.pushAfkToHistory();
-  finish(true);
+  void finish(true);
   if (!TestState.savingEnabled) return;
   const testSeconds = TestStats.calculateTestSeconds(performance.now());
   const afkseconds = TestStats.calculateAfkSeconds(testSeconds);
@@ -1382,7 +1360,8 @@ $(".pageTest").on("click", "#restartTestButtonWithSameWordset", () => {
 $(".pageTest").on("click", "#testConfig .mode .textButton", (e) => {
   if (TestUI.testRestarting) return;
   if ($(e.currentTarget).hasClass("active")) return;
-  const mode = ($(e.currentTarget).attr("mode") ?? "time") as SharedTypes.Mode;
+  const mode = ($(e.currentTarget).attr("mode") ??
+    "time") as SharedTypes.Config.Mode;
   if (mode === undefined) return;
   UpdateConfig.setMode(mode);
   ManualRestart.set();
@@ -1411,9 +1390,10 @@ $(".pageTest").on("click", "#testConfig .time .textButton", (e) => {
 
 $(".pageTest").on("click", "#testConfig .quoteLength .textButton", (e) => {
   if (TestUI.testRestarting) return;
-  let len: MonkeyTypes.QuoteLength | MonkeyTypes.QuoteLength[] = <
-    MonkeyTypes.QuoteLength
-  >parseInt($(e.currentTarget).attr("quoteLength") ?? "1");
+  let len: SharedTypes.Config.QuoteLength | SharedTypes.Config.QuoteLength[] =
+    parseInt(
+      $(e.currentTarget).attr("quoteLength") ?? "1"
+    ) as SharedTypes.Config.QuoteLength;
   if (len !== -2) {
     if (len === -1) {
       len = [0, 1, 2, 3];
@@ -1470,14 +1450,14 @@ $("#popups").on(
   "#quoteSearchPopup #quoteSearchResults .searchResult",
   (e) => {
     if (
-      e.target.classList.contains("report") ||
-      e.target.classList.contains("favorite")
+      (e.target.classList.contains("report") as boolean) ||
+      (e.target.classList.contains("favorite") as boolean)
     ) {
       return;
     }
     const sid = parseInt($(e.currentTarget).attr("id") ?? "");
     QuoteSearchPopup.setSelectedId(sid);
-    if (QuoteSearchPopup.apply(sid) === true) restart();
+    if (QuoteSearchPopup.apply(sid)) restart();
   }
 );
 
@@ -1515,7 +1495,7 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
       Config.mode !== "zen"
     ) {
       setTimeout(() => {
-        KeymapEvent.highlight(
+        void KeymapEvent.highlight(
           Misc.nthElementFromArray(
             [...TestWords.words.getCurrent()],
             0
@@ -1536,5 +1516,5 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
 
 TimerEvent.subscribe((eventKey, eventValue) => {
   if (eventKey === "fail" && eventValue !== undefined) fail(eventValue);
-  if (eventKey === "finish") finish();
+  if (eventKey === "finish") void finish();
 });

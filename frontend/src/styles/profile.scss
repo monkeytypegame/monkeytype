@@ -1,14 +1,15 @@
-h2,
-h3,
-p {
-  margin: 0;
-  font-weight: unset;
-}
-
 .pageProfileSearch {
   align-content: center;
   height: 100%;
   display: grid;
+
+  h2,
+  h3,
+  p {
+    margin: 0;
+    font-weight: unset;
+  }
+
   .search {
     justify-self: center;
     max-width: 400px;

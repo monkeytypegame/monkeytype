@@ -36,7 +36,7 @@ export function show(callbackOnHide: () => void): void {
 
 function hide(): void {
   if (isPopupVisible(wrapperId)) {
-    callbackFuncOnHide && callbackFuncOnHide();
+    callbackFuncOnHide?.();
     $("#editProfilePopupWrapper")
       .stop(true, true)
       .css("opacity", 1)
@@ -76,7 +76,7 @@ function hydrateInputs(): void {
   websiteInput.val(socialProfiles?.website ?? "");
   badgeIdsSelect.html("");
 
-  badges?.forEach((badge: MonkeyTypes.Badge) => {
+  badges?.forEach((badge: SharedTypes.Badge) => {
     if (badge.selected) {
       currentSelectedBadgeId = badge.id;
     }
@@ -108,14 +108,14 @@ function hydrateInputs(): void {
   });
 }
 
-function buildUpdatesFromInputs(): MonkeyTypes.UserDetails {
+function buildUpdatesFromInputs(): SharedTypes.UserProfileDetails {
   const bio = (bioInput.val() ?? "") as string;
   const keyboard = (keyboardInput.val() ?? "") as string;
   const twitter = (twitterInput.val() ?? "") as string;
   const github = (githubInput.val() ?? "") as string;
   const website = (websiteInput.val() ?? "") as string;
 
-  const profileUpdates: MonkeyTypes.UserDetails = {
+  const profileUpdates: SharedTypes.UserProfileDetails = {
     bio,
     keyboard,
     socialProfiles: {
@@ -136,7 +136,7 @@ async function updateProfile(): Promise<void> {
   // check for length resctrictions before sending server requests
   const githubLengthLimit = 39;
   if (
-    updates.socialProfiles.github &&
+    updates.socialProfiles.github !== undefined &&
     updates.socialProfiles.github.length > githubLengthLimit
   ) {
     Notifications.add(
@@ -148,7 +148,7 @@ async function updateProfile(): Promise<void> {
 
   const twitterLengthLimit = 20;
   if (
-    updates.socialProfiles.twitter &&
+    updates.socialProfiles.twitter !== undefined &&
     updates.socialProfiles.twitter.length > twitterLengthLimit
   ) {
     Notifications.add(

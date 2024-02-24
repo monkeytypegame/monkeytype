@@ -1,11 +1,11 @@
 import _ from "lodash";
 
-interface Status {
+type Status = {
   code: number;
   message: string;
-}
+};
 
-interface Statuses {
+type Statuses = {
   TEST_TOO_SHORT: Status;
   RESULT_HASH_INVALID: Status;
   RESULT_DATA_INVALID: Status;
@@ -18,7 +18,7 @@ interface Statuses {
   APE_KEY_INACTIVE: Status;
   APE_KEY_MALFORMED: Status;
   APE_KEY_RATE_LIMIT_EXCEEDED: Status;
-}
+};
 
 const statuses: Statuses = {
   TEST_TOO_SHORT: {

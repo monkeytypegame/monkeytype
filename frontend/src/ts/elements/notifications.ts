@@ -41,7 +41,7 @@ class Notification {
     this.type = type;
     this.message = allowHTML ? message : Misc.escapeHTML(message);
     this.level = level;
-    this.important = important || false;
+    this.important = important ?? false;
     if (type === "banner") {
       this.duration = duration as number;
     } else {

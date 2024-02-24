@@ -42,7 +42,7 @@ function apply(): void {
   const val = parseInt($("#customWordAmountPopup input").val() as string);
 
   if (val !== null && !isNaN(val) && val >= 0 && isFinite(val)) {
-    if (UpdateConfig.setWordCount(val as MonkeyTypes.WordsModes)) {
+    if (UpdateConfig.setWordCount(val)) {
       ManualRestart.set();
       TestLogic.restart();
       if (val > 2000) {

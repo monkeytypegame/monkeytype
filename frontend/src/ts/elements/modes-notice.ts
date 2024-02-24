@@ -5,10 +5,10 @@ import * as Last10Average from "../elements/last-10-average";
 import Config from "../config";
 import * as TestWords from "../test/test-words";
 import * as ConfigEvent from "../observables/config-event";
-import { Auth } from "../firebase";
+import { isAuthenticated } from "../firebase";
 import * as CustomTextState from "../states/custom-text-name";
-import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
-import { roundTo2 } from "../utils/misc";
+import { getLanguageDisplayString } from "../utils/misc";
+import Format from "../utils/format";
 
 ConfigEvent.subscribe((eventKey) => {
   if (
@@ -24,9 +24,10 @@ ConfigEvent.subscribe((eventKey) => {
       "layout",
       "showAverage",
       "typingSpeedUnit",
+      "quickRestart",
     ].includes(eventKey)
   ) {
-    update();
+    void update();
   }
 });
 
@@ -50,9 +51,13 @@ export async function update(): Promise<void> {
       $(".pageTest #testModesNotice").append(
         `<div role="button" class="textButton noInteraction"><i class="fas fa-long-arrow-alt-right"></i>shift + tab to open commandline</div>`
       );
-    } else {
       $(".pageTest #testModesNotice").append(
-        `<div role="button" class="textButton noInteraction"><i class="fas fa-long-arrow-alt-right"></i>shift + tab to restart</div>`
+        `<div role="button" class="textButton noInteraction"><i class="fas fa-level-down-alt fa-rotate-90"></i>shift + esc to restart</div>`
+      );
+    }
+    if (Config.quickRestart === "tab") {
+      $(".pageTest #testModesNotice").append(
+        `<div role="button" class="textButton noInteraction"><i class="fas fa-level-down-alt fa-rotate-90"></i>shift + tab to restart</div>`
       );
     }
   }
@@ -85,9 +90,9 @@ export async function update(): Promise<void> {
 
   if (Config.mode !== "zen") {
     $(".pageTest #testModesNotice").append(
-      `<div role="button" class="textButton" commands="languages"><i class="fas fa-globe-americas"></i>${Config.language.replace(
-        /_/g,
-        " "
+      `<div role="button" class="textButton" commands="languages"><i class="fas fa-globe-americas"></i>${getLanguageDisplayString(
+        Config.language,
+        Config.mode === "quote"
       )}</div>`
     );
   }
@@ -118,14 +123,11 @@ export async function update(): Promise<void> {
     Config.paceCaret !== "off" ||
     (Config.repeatedPace && TestState.isPaceRepeat)
   ) {
-    let speed = "";
-    try {
-      speed = ` (${roundTo2(
-        getTypingSpeedUnit(Config.typingSpeedUnit).fromWpm(
-          PaceCaret.settings?.wpm ?? 0
-        )
-      )} ${Config.typingSpeedUnit})`;
-    } catch {}
+    const speed = Format.typingSpeed(PaceCaret.settings?.wpm ?? 0, {
+      showDecimalPlaces: true,
+      suffix: ` ${Config.typingSpeedUnit}`,
+    });
+
     $(".pageTest #testModesNotice").append(
       `<div role="button" class="textButton" commands="paceCaretMode"><i class="fas fa-tachometer-alt"></i>${
         Config.paceCaret === "average"
@@ -137,7 +139,7 @@ export async function update(): Promise<void> {
           : Config.paceCaret === "daily"
           ? "daily"
           : "custom"
-      } pace${speed}</div>`
+      } pace ${speed}</div>`
     );
   }
 
@@ -150,16 +152,13 @@ export async function update(): Promise<void> {
       avgAcc = Math.round(avgAcc);
     }
 
-    if (Auth?.currentUser && avgWPM > 0) {
+    if (isAuthenticated() && avgWPM > 0) {
       const avgWPMText = ["speed", "both"].includes(Config.showAverage)
-        ? getTypingSpeedUnit(Config.typingSpeedUnit).convertWithUnitSuffix(
-            avgWPM,
-            Config.alwaysShowDecimalPlaces
-          )
+        ? Format.typingSpeed(avgWPM, { suffix: ` ${Config.typingSpeedUnit}` })
         : "";
 
       const avgAccText = ["acc", "both"].includes(Config.showAverage)
-        ? `${avgAcc}% acc`
+        ? Format.percentage(avgAcc, { suffix: " acc" })
         : "";
 
       const text = `${avgWPMText} ${avgAccText}`.trim();
@@ -172,11 +171,10 @@ export async function update(): Promise<void> {
 
   if (Config.minWpm !== "off") {
     $(".pageTest #testModesNotice").append(
-      `<div role="button" class="textButton" commands="minWpm"><i class="fas fa-bomb"></i>min ${roundTo2(
-        getTypingSpeedUnit(Config.typingSpeedUnit).fromWpm(
-          Config.minWpmCustomSpeed
-        )
-      )} ${Config.typingSpeedUnit}</div>`
+      `<div role="button" class="textButton" commands="minWpm"><i class="fas fa-bomb"></i>min ${Format.typingSpeed(
+        Config.minWpmCustomSpeed,
+        { showDecimalPlaces: true, suffix: ` ${Config.typingSpeedUnit}` }
+      )}</div>`
     );
   }
 
@@ -188,10 +186,9 @@ export async function update(): Promise<void> {
 
   if (Config.minBurst !== "off") {
     $(".pageTest #testModesNotice").append(
-      `<div role="button" class="textButton" commands="minBurst"><i class="fas fa-bomb"></i>min ${roundTo2(
-        getTypingSpeedUnit(Config.typingSpeedUnit).fromWpm(
-          Config.minBurstCustomSpeed
-        )
+      `<div role="button" class="textButton" commands="minBurst"><i class="fas fa-bomb"></i>min ${Format.typingSpeed(
+        Config.minBurstCustomSpeed,
+        { showDecimalPlaces: true }
       )} ${Config.typingSpeedUnit} burst ${
         Config.minBurst === "flex" ? "(flex)" : ""
       }</div>`
@@ -257,4 +254,16 @@ export async function update(): Promise<void> {
       );
     }
   } catch {}
+}
+
+if (import.meta.hot !== undefined) {
+  import.meta.hot.dispose(() => {
+    //
+  });
+  import.meta.hot.accept(() => {
+    //
+  });
+  import.meta.hot.on("vite:afterUpdate", () => {
+    void update();
+  });
 }

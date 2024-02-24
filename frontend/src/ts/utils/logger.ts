@@ -4,7 +4,7 @@ const nativeLog = console.log;
 const nativeWarn = console.warn;
 const nativeError = console.error;
 
-let debugLogs = localStorage.getItem("debugLogs") === "true" ?? false;
+let debugLogs = localStorage.getItem("debugLogs") === "true";
 
 if (isDevEnvironment()) {
   debugLogs = true;
@@ -21,7 +21,6 @@ function info(...args: unknown[]): void {
   nativeLog(
     "%cINFO",
     "background:#4CAF50;color: #111;padding:0 5px;border-radius:10px",
-    //@ts-ignore
     ...args
   );
 }
