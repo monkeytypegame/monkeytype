@@ -21,7 +21,7 @@ services:
 
   api-server:
     container_name: monkeytype-api-server
-    image: node:18.17.1
+    image: node:18.19.1
     restart: on-failure
     depends_on:
       - redis

@@ -2,7 +2,7 @@ name: monkeytype
 services:
   frontend:
     container_name: monkeytype-frontend
-    image: node:18.17.1
+    image: node:18.19.1
     restart: on-failure
     ports:
       - "3000:3000"
