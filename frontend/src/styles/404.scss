@@ -12,7 +12,7 @@
   grid-template-columns: 300px 300px;
 }
 
-.page404 .image {
+.page404 .content .image {
   width: 100%;
   align-self: center;
   background-image: url("/images/monkeymeme.jpg");
@@ -21,27 +21,29 @@
   border-radius: var(--roundness);
 }
 
-.page404 .title {
+.page404 .content .title {
   font-size: 5rem;
   line-height: 4rem;
+  /* margin: -3rem; */
   color: var(--main-color);
   align-self: center;
 }
 
-.page404 .side {
+.page404 .content .side {
   justify-items: center;
   display: grid;
   gap: 1rem;
+  /* width: min-content; */
   text-align: center;
 }
 
-.page404 .big {
+.page404 .content .side .big {
   font-size: 10rem;
   line-height: 10rem;
   color: var(--sub-color);
 }
 
-.page404 .button {
+.page404 .content .side .button {
   padding: 1rem 2rem;
   width: max-content;
 }
