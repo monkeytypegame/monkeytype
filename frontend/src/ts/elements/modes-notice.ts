@@ -158,7 +158,7 @@ export async function update(): Promise<void> {
         : "";
 
       const avgAccText = ["acc", "both"].includes(Config.showAverage)
-        ? Format.percentage(avgAcc, { suffix: " acc" })
+        ? Format.percentage(avgAcc, { suffix: " acc", rounding: Math.floor })
         : "";
 
       const text = `${avgWPMText} ${avgAccText}`.trim();

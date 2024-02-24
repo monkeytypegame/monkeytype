@@ -6,12 +6,14 @@ export type FormatOptions = {
   showDecimalPlaces?: boolean;
   suffix?: string;
   fallback?: string;
+  rounding?: (val: number) => number;
 };
 
 const FORMAT_DEFAULT_OPTIONS: FormatOptions = {
   suffix: "",
   fallback: "-",
   showDecimalPlaces: undefined,
+  rounding: Math.round,
 };
 
 export class Formatting {
@@ -60,7 +62,7 @@ export class Formatting {
     ) {
       return Misc.roundTo2(value).toFixed(2) + suffix;
     }
-    return Math.round(value).toString() + suffix;
+    return (formatOptions.rounding ?? Math.round)(value).toString() + suffix;
   }
 }
 

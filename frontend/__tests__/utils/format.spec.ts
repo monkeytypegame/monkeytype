@@ -86,6 +86,13 @@ describe("format.ts", () => {
       expect(format.typingSpeed(null, { suffix: " raw" })).toEqual("-");
       expect(format.typingSpeed(undefined, { suffix: " raw" })).toEqual("-");
     });
+
+    it("should format with rounding", () => {
+      const format = getInstance({ alwaysShowDecimalPlaces: false });
+      expect(format.typingSpeed(80.25)).toEqual("80");
+      expect(format.typingSpeed(80.25, { rounding: Math.ceil })).toEqual("81");
+      expect(format.typingSpeed(80.75, { rounding: Math.floor })).toEqual("80");
+    });
   });
   describe("percentage", () => {
     it("should format with decimalPlaces from configuration", () => {
@@ -138,6 +145,13 @@ describe("format.ts", () => {
       expect(format.percentage(null, { suffix: " raw" })).toEqual("-");
       expect(format.percentage(undefined, { suffix: " raw" })).toEqual("-");
     });
+
+    it("should format with rounding", () => {
+      const format = getInstance({ alwaysShowDecimalPlaces: false });
+      expect(format.percentage(80.25)).toEqual("80%");
+      expect(format.percentage(80.25, { rounding: Math.ceil })).toEqual("81%");
+      expect(format.percentage(80.75, { rounding: Math.floor })).toEqual("80%");
+    });
   });
   describe("decimals", () => {
     it("should format with decimalPlaces from configuration", () => {
@@ -187,6 +201,13 @@ describe("format.ts", () => {
       expect(format.decimals(0, { suffix: " raw" })).toEqual("0 raw");
       expect(format.decimals(null, { suffix: " raw" })).toEqual("-");
       expect(format.decimals(undefined, { suffix: " raw" })).toEqual("-");
+    });
+
+    it("should format with rounding", () => {
+      const format = getInstance({ alwaysShowDecimalPlaces: false });
+      expect(format.decimals(80.25)).toEqual("80");
+      expect(format.decimals(80.25, { rounding: Math.ceil })).toEqual("81");
+      expect(format.decimals(80.75, { rounding: Math.floor })).toEqual("80");
     });
   });
 });

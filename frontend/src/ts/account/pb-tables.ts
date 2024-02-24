@@ -156,6 +156,7 @@ function buildPbHtml(
       })}</div>
       <div class="acc">${Format.percentage(pbData.acc, {
         showDecimalPlaces: false,
+        rounding: Math.floor,
       })}</div>
     </div>
     <div class="fullTest">
@@ -164,7 +165,10 @@ function buildPbHtml(
         suffix: ` ${speedUnit}`,
       })}</div>
       <div>${Format.typingSpeed(pbData.raw, { suffix: " raw" })}</div>
-      <div>${Format.percentage(pbData.acc, { suffix: " acc" })}</div>
+      <div>${Format.percentage(pbData.acc, {
+        suffix: " acc",
+        rounding: Math.floor,
+      })}</div>
       <div>${Format.percentage(pbData.consistency, {
         suffix: " con",
       })}</div>
