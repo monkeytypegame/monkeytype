@@ -127,7 +127,18 @@ export function reset(): void {
 }
 
 export function focusWords(): void {
-  if (!$("#wordsWrapper").hasClass("hidden")) {
+  const popupVisible = Misc.isAnyPopupVisible();
+  const miniResultPopupVisible = Misc.isElementVisible(
+    ".pageAccount .miniResultChartWrapper"
+  );
+  const commandlineVisible = Misc.isElementVisible("#commandLineWrapper");
+  const wordsVisible = Misc.isElementVisible("#wordsWrapper");
+  if (
+    !popupVisible &&
+    !miniResultPopupVisible &&
+    !commandlineVisible &&
+    wordsVisible
+  ) {
     $("#wordsInput").trigger("focus");
   }
 }
