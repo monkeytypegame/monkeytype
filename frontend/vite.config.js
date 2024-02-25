@@ -160,14 +160,8 @@ const BUILD_CONFIG = {
         clientsClaim: true,
         cleanupOutdatedCaches: true,
         globIgnores: ["**/.*"],
-        globPatterns: [
-          "index.html",
-          "404.html",
-          "email-handler.html",
-          "privacy-policy.html",
-          "security-policy.html",
-          "terms-of-service.html",
-        ],
+        globPatterns: [],
+        navigateFallback: "",
         runtimeCaching: [
           {
             urlPattern: ({ request, url }) => {
