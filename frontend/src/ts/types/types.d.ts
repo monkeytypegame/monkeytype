@@ -299,7 +299,6 @@ declare namespace MonkeyTypes {
     subgroup?: CommandsSubgroup;
     found?: boolean;
     icon?: string;
-    noIcon?: boolean;
     sticky?: boolean;
     alias?: string;
     input?: boolean;

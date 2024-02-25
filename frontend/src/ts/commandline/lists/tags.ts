@@ -77,8 +77,7 @@ function update(): void {
 
     subgroup.list.push({
       id: "toggleTag" + tag._id,
-      noIcon: true,
-      display: dis,
+      display: tag.display,
       sticky: true,
       exec: async (): Promise<void> => {
         TagController.toggle(tag._id);
