@@ -567,24 +567,9 @@ function buildSingleListCommands(
         /\s?\.\.\.$/g,
         ""
       );
-      let configIcon = "";
-      const parentKey = parentCommand.subgroup?.configKey;
-      const currentValue = command.configValue;
-      if (parentKey !== undefined && currentValue !== undefined) {
-        if (
-          (command.configValueMode === "include" &&
-            (Config[parentKey] as unknown[]).includes(currentValue)) ||
-          Config[parentKey] === currentValue
-        ) {
-          configIcon = `<i class="fas fa-fw fa-check"></i>`;
-        } else {
-          configIcon = `<i class="fas fa-fw"></i>`;
-        }
-      }
       const displayString =
         parentCommandDisplay +
-        " > " +
-        (command.noIcon ? "" : configIcon) +
+        '<i class="fas fa-fw fa-chevron-right chevronIcon"></i>' +
         command.display;
       const newCommand = {
         ...command,
