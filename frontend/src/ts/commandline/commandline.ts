@@ -145,7 +145,11 @@ function filterSubgroup(): void {
     : CommandlineLists.getTopOfStack().configKey;
   const list = getList();
 
-  const inputSplit = inputValue.toLowerCase().trim().split(" ");
+  const inputSplit = inputValue
+    .replace(/^>/gi, "")
+    .toLowerCase()
+    .trim()
+    .split(" ");
 
   for (const command of list) {
     const isAvailable = command.available?.() ?? true;
@@ -206,7 +210,7 @@ function showCommands(): void {
     throw new Error("Commandline element not found");
   }
 
-  if (inputValue === "" && usingSingleList) {
+  if (inputValue.replace(/^>/gi, "") === "" && usingSingleList) {
     element.innerHTML = "";
     return;
   }
@@ -454,6 +458,7 @@ const input = document.querySelector("#commandLine input") as HTMLInputElement;
 
 input.addEventListener("input", (e) => {
   inputValue = (e.target as HTMLInputElement).value;
+  usingSingleList = inputValue.startsWith(">");
   if (mode !== "search") return;
   mouseMode = false;
   activeIndex = 0;
