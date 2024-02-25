@@ -94,6 +94,7 @@ const BASE_CONFIG = {
         privacy: path.resolve(__dirname, "src/privacy-policy.html"),
         security: path.resolve(__dirname, "src/security-policy.html"),
         terms: path.resolve(__dirname, "src/terms-of-service.html"),
+        404: path.resolve(__dirname, "src/404.html"),
       },
       output: {
         assetFileNames: (assetInfo) => {
@@ -159,7 +160,14 @@ const BUILD_CONFIG = {
         clientsClaim: true,
         cleanupOutdatedCaches: true,
         globIgnores: ["**/.*"],
-        globPatterns: ["index.html"],
+        globPatterns: [
+          "index.html",
+          "404.html",
+          "email-handler.html",
+          "privacy-policy.html",
+          "security-policy.html",
+          "terms-of-service.html",
+        ],
         runtimeCaching: [
           {
             urlPattern: ({ request, url }) => {
