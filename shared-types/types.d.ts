@@ -112,11 +112,12 @@ declare namespace SharedTypes {
 
   interface PersonalBest {
     acc: number;
-    consistency: number;
+    consistency?: number;
     difficulty: SharedTypes.Config.Difficulty;
-    lazyMode: boolean;
+    lazyMode?: boolean;
     language: string;
-    punctuation: boolean;
+    punctuation?: boolean;
+    numbers?: boolean;
     raw: number;
     wpm: number;
     timestamp: number;

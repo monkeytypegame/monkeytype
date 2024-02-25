@@ -692,7 +692,7 @@
   .title {
     color: var(--text-color);
   }
-  min-width: 50rem;
+  width: 100%;
   max-height: calc(100vh - 10rem);
   overflow-y: scroll;
   table {

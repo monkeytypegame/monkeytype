@@ -48,7 +48,7 @@ function show(credential: UserCredential): void {
 async function hide(): Promise<void> {
   if (isPopupVisible(wrapperId)) {
     if (signedInUser !== undefined) {
-      Notifications.add("Sign up process canceled", 0, {
+      Notifications.add("Sign up process cancelled", 0, {
         duration: 5,
       });
       LoginPage.hidePreloader();
