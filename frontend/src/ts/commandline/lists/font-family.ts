@@ -1,4 +1,4 @@
-import Config, * as UpdateConfig from "../../config";
+import * as UpdateConfig from "../../config";
 import * as UI from "../../ui";
 
 const subgroup: MonkeyTypes.CommandsSubgroup = {
