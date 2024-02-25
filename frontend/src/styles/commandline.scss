@@ -102,6 +102,10 @@
         display: grid;
         grid-template-columns: auto 1fr;
 
+        .chevronIcon {
+          margin: 0 0.5rem;
+        }
+
         div {
           pointer-events: none;
         }
