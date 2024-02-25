@@ -247,7 +247,7 @@ function showCommands(): void {
       }
     }
     const iconHTML = `<div class="icon">${
-      usingSingleList ? icon : configIcon
+      usingSingleList || configIcon === "" ? icon : configIcon
     }</div>`;
     let customStyle = "";
     if (command.customStyle !== undefined && command.customStyle !== "") {
