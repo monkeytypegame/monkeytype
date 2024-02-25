@@ -62,10 +62,9 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
     void debouncedZipfCheck();
   }
   if (eventKey === "fontSize" && !nosave) {
-    setTimeout(() => {
-      updateWordsHeight(true);
-      updateWordsInputPosition(true);
-    }, 0);
+    OutOfFocus.hide();
+    updateWordsHeight(true);
+    updateWordsInputPosition(true);
   }
 
   if (eventKey === "theme") void applyBurstHeatmap();
