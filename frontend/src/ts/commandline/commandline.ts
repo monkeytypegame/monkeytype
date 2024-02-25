@@ -135,7 +135,7 @@ function goBackOrHide(): void {
     showCommands();
     updateActiveCommand();
   } else {
-    hide();
+    hide(true);
   }
 }
 
@@ -375,7 +375,7 @@ function runActiveCommand(): void {
     const isSticky = command.sticky ?? false;
     if (!isSticky) {
       void AnalyticsController.log("usedCommandLine", { command: command.id });
-      hide(command.shouldFocusTestUI ?? false);
+      hide(command.shouldFocusTestUI ?? true);
     } else {
       beforeList();
       filterSubgroup();
@@ -501,7 +501,7 @@ const wrapper = document.querySelector("#commandLineWrapper") as HTMLElement;
 
 wrapper.addEventListener("click", (e) => {
   if (e.target === wrapper) {
-    hide();
+    hide(true);
   }
 });
 
