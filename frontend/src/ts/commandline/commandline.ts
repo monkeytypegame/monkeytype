@@ -266,7 +266,7 @@ function showCommands(): void {
     }
 
     if (command.id.startsWith("changeTheme") && command.customData) {
-      html += `<div class="command withThemeBubbles" command="${command.id}" index="${index}" style="${customStyle}">
+      html += `<div class="command withThemeBubbles" command="${command.id}" data-index="${index}" style="${customStyle}">
       ${iconHTML}<div>${display}</div>
       <div class="themeBubbles" style="background: ${command.customData["bgColor"]};outline: 0.25rem solid ${command.customData["bgColor"]};">
         <div class="themeBubble" style="background: ${command.customData["mainColor"]}"></div>
@@ -275,7 +275,7 @@ function showCommands(): void {
       </div>
       </div>`;
     } else {
-      html += `<div class="command" command="${command.id}" index="${index}" style="${customStyle}">${iconHTML}<div>${display}</div></div>`;
+      html += `<div class="command" command="${command.id}" data-index="${index}" style="${customStyle}">${iconHTML}<div>${display}</div></div>`;
     }
     index++;
   }
@@ -284,16 +284,16 @@ function showCommands(): void {
   for (const command of element.querySelectorAll(".command")) {
     command.addEventListener("mouseenter", () => {
       if (!mouseMode) return;
-      activeIndex = parseInt(command.getAttribute("index") ?? "0");
+      activeIndex = parseInt(command.getAttribute("data-index") ?? "0");
       updateActiveCommand();
     });
     command.addEventListener("mouseleave", () => {
       if (!mouseMode) return;
-      activeIndex = parseInt(command.getAttribute("index") ?? "0");
+      activeIndex = parseInt(command.getAttribute("data-index") ?? "0");
       updateActiveCommand();
     });
     command.addEventListener("click", () => {
-      activeIndex = parseInt(command.getAttribute("index") ?? "0");
+      activeIndex = parseInt(command.getAttribute("data-index") ?? "0");
       runActiveCommand();
     });
   }
