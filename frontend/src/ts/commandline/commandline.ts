@@ -346,7 +346,8 @@ function runActiveCommand(): void {
     updateActiveCommand();
   } else {
     command.exec?.();
-    if (!(command.sticky ?? false)) {
+    const isSticky = command.sticky ?? false;
+    if (!isSticky) {
       void AnalyticsController.log("usedCommandLine", { command: command.id });
       hide(command.shouldFocusTestUI ?? false);
     }
