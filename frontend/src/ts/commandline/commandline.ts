@@ -9,12 +9,27 @@ import { clearFontPreview } from "../ui";
 
 const wrapperId = "commandLineWrapper";
 
+type CommandlineMode = "search" | "input";
+type InputModeParams = {
+  command: MonkeyTypes.Command | null;
+  placeholder: string | null;
+  value: string | null;
+  icon: string | null;
+};
+
 let visible = false;
 let activeIndex = 0;
 let usingSingleList = false;
 let inputValue = "";
 let filteredCommands: MonkeyTypes.Command[] = [];
 let mouseMode = false;
+let mode: CommandlineMode = "search";
+let inputModeParams: InputModeParams = {
+  command: null,
+  placeholder: "",
+  value: "",
+  icon: "",
+};
 
 function removeCommandlineBackground(): void {
   $("#commandLineWrapper").addClass("noBackground");
@@ -38,6 +53,13 @@ export function show(): void {
   visible = true;
   inputValue = "";
   activeIndex = 0;
+  mode = "search";
+  inputModeParams = {
+    command: null,
+    placeholder: null,
+    value: null,
+    icon: null,
+  };
   usingSingleList = Config.singleListCommandLine === "on";
   Focus.set(false);
   Skeleton.append(wrapperId);
@@ -89,9 +111,24 @@ function hide(focusTestUI = false): void {
 }
 
 function goBackOrHide(): void {
+  if (mode === "input") {
+    mode = "search";
+    inputModeParams = {
+      command: null,
+      placeholder: null,
+      value: null,
+      icon: null,
+    };
+    updateInput("");
+    filterCommands();
+    showCommands();
+    updateActiveCommand();
+    return;
+  }
+
   if (CommandlineLists.getStackLength() > 1) {
     CommandlineLists.popFromStack();
-    inputValue = "";
+    updateInput("");
     filterCommands();
     showCommands();
     updateActiveCommand();
@@ -135,6 +172,14 @@ function filterCommands(): void {
     }
   }
   filteredCommands = newList;
+}
+
+function hideCommands(): void {
+  const element = document.querySelector("#commandLine .suggestions");
+  if (element === null) {
+    throw new Error("Commandline element not found");
+  }
+  element.innerHTML = "";
 }
 
 function showCommands(): void {
@@ -252,6 +297,18 @@ function updateActiveCommand(): void {
   command.hover?.();
 }
 
+function handleInputSubmit(): void {
+  if (inputModeParams.command === null) {
+    throw new Error("Can't handle input submit - command is null");
+  }
+  const value = inputValue;
+  inputModeParams.command.exec?.(value);
+  void AnalyticsController.log("usedCommandLine", {
+    command: inputModeParams.command.id,
+  });
+  hide(inputModeParams.command.shouldFocusTestUI ?? false);
+}
+
 function runActiveCommand(): void {
   if (filteredCommands.length === 0) return;
 
@@ -261,13 +318,21 @@ function runActiveCommand(): void {
   }
 
   if (command.input) {
-    throw new Error("TODO");
-    // const escaped = command.display.split("</i>")[1] ?? command.display;
+    const escaped = command.display.split("</i>")[1] ?? command.display;
     // showInput(
     //   command.id,
     //   escaped,
     //   command.defaultValue ? command.defaultValue() : ""
     // );
+    mode = "input";
+    inputModeParams = {
+      command: command,
+      placeholder: escaped,
+      value: command.defaultValue?.() ?? "",
+      icon: command.icon ?? "fa-chevron-right",
+    };
+    updateInput(inputModeParams.value as string);
+    hideCommands();
   } else if (command.subgroup) {
     if (command.subgroup.beforeList) {
       command.subgroup.beforeList();
@@ -307,11 +372,14 @@ function keepActiveCommandInView(): void {
 }
 
 function updateInput(setInput?: string): void {
+  const iconElement: HTMLElement | null = document.querySelector(
+    "#commandLine .searchicon"
+  );
   const element: HTMLInputElement | null =
     document.querySelector("#commandLine input");
 
-  if (element === null) {
-    throw new Error("Commandline element not found");
+  if (element === null || iconElement === null) {
+    throw new Error("Commandline element or icon element not found");
   }
 
   if (setInput !== undefined) {
@@ -319,6 +387,23 @@ function updateInput(setInput?: string): void {
   }
 
   element.value = inputValue;
+
+  if (mode === "input") {
+    if (inputModeParams.icon !== null) {
+      iconElement.innerHTML = `<i class="fas fa-fw ${inputModeParams.icon}"></i>`;
+    }
+    if (inputModeParams.placeholder !== null) {
+      element.placeholder = inputModeParams.placeholder;
+    }
+    if (inputModeParams.value !== null) {
+      element.value = inputModeParams.value;
+      //select the text inside
+      element.setSelectionRange(0, element.value.length);
+    }
+  } else {
+    iconElement.innerHTML = '<i class="fas fa-search"></i>';
+    element.placeholder = "Search...";
+  }
 }
 
 function incrementActiveIndex(): void {
@@ -340,8 +425,9 @@ function decrementActiveIndex(): void {
 const input = document.querySelector("#commandLine input") as HTMLInputElement;
 
 input.addEventListener("input", (e) => {
-  mouseMode = false;
   inputValue = (e.target as HTMLInputElement).value;
+  if (mode !== "search") return;
+  mouseMode = false;
   activeIndex = 0;
   filterCommands();
   showCommands();
@@ -362,7 +448,13 @@ input.addEventListener("keydown", (e) => {
   }
   if (e.key === "Enter") {
     e.preventDefault();
-    runActiveCommand();
+    if (mode === "search") {
+      runActiveCommand();
+    } else if (mode === "input") {
+      handleInputSubmit();
+    } else {
+      throw new Error("Unknown mode, can't handle enter press");
+    }
   }
   if (e.key === "Escape") {
     goBackOrHide();
