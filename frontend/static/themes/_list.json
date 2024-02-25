@@ -1195,5 +1195,12 @@
     "mainColor": "#c13117",
     "subColor": "#717977",
     "textColor": "#490909"
+  },
+  {
+    "name": "blissful_bloom",
+    "bgColor": "#a3de83",
+    "mainColor": "#085f63",
+    "subColor": "#8a4f7d",
+    "textColor": "#fdffe4"
   }
 ]
