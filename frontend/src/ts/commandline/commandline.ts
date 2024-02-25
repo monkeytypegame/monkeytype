@@ -227,20 +227,19 @@ function showCommands(): void {
     }
     let configIcon = "";
     if (command.configKey !== undefined) {
-      if (
-        (command.configValueMode !== undefined &&
-          command.configValueMode === "include" &&
-          (
-            Config[command.configKey] as (
-              | string
-              | number
-              | boolean
-              | number[]
-              | undefined
-            )[]
-          ).includes(command.configValue)) ||
-        Config[command.configKey] === command.configValue
-      ) {
+      const valueIsIncluded =
+        command.configValueMode === "include" &&
+        (
+          Config[command.configKey] as (
+            | string
+            | number
+            | boolean
+            | number[]
+            | undefined
+          )[]
+        ).includes(command.configValue);
+      const valueIsTheSame = Config[command.configKey] === command.configValue;
+      if (valueIsIncluded || valueIsTheSame) {
         configIcon = `<i class="fas fa-fw fa-check"></i>`;
       } else {
         configIcon = `<i class="fas fa-fw"></i>`;
