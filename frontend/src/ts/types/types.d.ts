@@ -311,7 +311,7 @@ declare namespace MonkeyTypes {
     configValueMode?: string;
     exec?: (input?: string) => void;
     hover?: () => void;
-    available?: () => void;
+    available?: () => boolean;
     shouldFocusTestUI?: boolean;
     customData?: Record<string, string>;
   };
