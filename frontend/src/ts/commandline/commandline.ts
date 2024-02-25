@@ -210,7 +210,7 @@ function showCommands(): void {
     throw new Error("Commandline element not found");
   }
 
-  if (inputValue.replace(/^>/gi, "") === "" && usingSingleList) {
+  if (inputValue === "" && usingSingleList) {
     element.innerHTML = "";
     return;
   }
