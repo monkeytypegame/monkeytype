@@ -1,37 +1,63 @@
 #monkey {
   width: 308px;
-  height: 0;
+  height: 200px; /* Adjusted height to match the div */
   margin: 0 auto;
-  animation: shake 0s infinite;
+  position: relative; /* Changed from fixed to relative */
+  animation: shake 0.1s infinite; /* Adjusted animation duration for smoother motion */
+  
   div {
-    height: 200px;
-    width: 308px;
-    position: fixed;
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    background-repeat: no-repeat;
+    background-position: center;
   }
+  
   .up {
     background-image: url("/images/monkey/m3.png");
   }
+  
   .left {
     background-image: url("/images/monkey/m1.png");
   }
+  
   .right {
     background-image: url("/images/monkey/m2.png");
   }
+  
   .both {
     background-image: url("/images/monkey/m4.png");
   }
+  
   .fast {
     .up {
       background-image: url("/images/monkey/m3_fast.png");
     }
+    
     .left {
       background-image: url("/images/monkey/m1_fast.png");
     }
+    
     .right {
       background-image: url("/images/monkey/m2_fast.png");
     }
+    
     .both {
       background-image: url("/images/monkey/m4_fast.png");
     }
+  }
+}
+
+@keyframes shake {
+  0% {
+    transform: translateX(-3px) translateY(0);
+  }
+  50% {
+    transform: translateX(3px) translateY(0);
+  }
+  100% {
+    transform: translateX(-3px) translateY(0);
   }
 }
