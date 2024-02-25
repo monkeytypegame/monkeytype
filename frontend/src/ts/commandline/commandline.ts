@@ -21,7 +21,7 @@ let visible = false;
 let activeIndex = 0;
 let usingSingleList = false;
 let inputValue = "";
-let filteredCommands: MonkeyTypes.Command[] = [];
+let activeCommand: MonkeyTypes.Command | null = null;
 let mouseMode = false;
 let mode: CommandlineMode = "search";
 let inputModeParams: InputModeParams = {
@@ -60,12 +60,14 @@ export function show(): void {
     value: null,
     icon: null,
   };
+  activeCommand = null;
   usingSingleList = Config.singleListCommandLine === "on";
   Focus.set(false);
   Skeleton.append(wrapperId);
   CommandlineLists.setStackToDefault();
+  beforeList();
   updateInput();
-  filterCommands();
+  filterSubgroup();
   showCommands();
   updateActiveCommand();
 
@@ -120,7 +122,7 @@ function goBackOrHide(): void {
       icon: null,
     };
     updateInput("");
-    filterCommands();
+    filterSubgroup();
     showCommands();
     updateActiveCommand();
     return;
@@ -129,7 +131,7 @@ function goBackOrHide(): void {
   if (CommandlineLists.getStackLength() > 1) {
     CommandlineLists.popFromStack();
     updateInput("");
-    filterCommands();
+    filterSubgroup();
     showCommands();
     updateActiveCommand();
   } else {
@@ -137,20 +139,20 @@ function goBackOrHide(): void {
   }
 }
 
-function filterCommands(): void {
+function filterSubgroup(): void {
   const configKey = usingSingleList
     ? undefined
     : CommandlineLists.getTopOfStack().configKey;
-  const list = usingSingleList
-    ? CommandlineLists.getSingleList()
-    : CommandlineLists.getTopOfStack().list;
+  const list = getList();
 
   const inputSplit = inputValue.toLowerCase().trim().split(" ");
-  const newList = [];
 
   for (const command of list) {
     const isAvailable = command.available?.() ?? true;
-    if (!isAvailable) continue;
+    if (!isAvailable) {
+      command.found = false;
+      continue;
+    }
     let foundCount = 0;
     for (const input of inputSplit) {
       const escaped = input.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
@@ -165,13 +167,14 @@ function filterCommands(): void {
       }
     }
     if (foundCount === inputSplit.length) {
-      newList.push({
-        configKey: configKey,
-        ...command,
-      });
+      if (configKey !== undefined) {
+        command.configKey = configKey;
+      }
+      command.found = true;
+    } else {
+      command.found = false;
     }
   }
-  filteredCommands = newList;
 }
 
 function hideCommands(): void {
@@ -180,6 +183,21 @@ function hideCommands(): void {
     throw new Error("Commandline element not found");
   }
   element.innerHTML = "";
+}
+
+function getList(): MonkeyTypes.Command[] {
+  const subgroup = usingSingleList
+    ? CommandlineLists.getSingleSubgroup()
+    : CommandlineLists.getTopOfStack();
+
+  return subgroup.list;
+}
+
+function beforeList(): void {
+  const subgroup = usingSingleList
+    ? CommandlineLists.getSingleSubgroup()
+    : CommandlineLists.getTopOfStack();
+  subgroup.beforeList?.();
 }
 
 function showCommands(): void {
@@ -193,9 +211,13 @@ function showCommands(): void {
     return;
   }
 
+  const list = getList().filter((c) => c.found === true);
+
   let html = "";
   let index = 0;
-  for (const command of filteredCommands) {
+
+  for (const command of list) {
+    if (command.found !== true) continue;
     let icon = command.icon ?? "fa-chevron-right";
     const faIcon = icon.startsWith("fa-");
     if (!faIcon) {
@@ -203,6 +225,7 @@ function showCommands(): void {
     } else {
       icon = `<i class="fas fa-fw ${icon}"></i>`;
     }
+    let configIcon = "";
     if (command.configKey !== undefined) {
       if (
         (command.configValueMode !== undefined &&
@@ -218,23 +241,30 @@ function showCommands(): void {
           ).includes(command.configValue)) ||
         Config[command.configKey] === command.configValue
       ) {
-        icon = `<i class="fas fa-fw fa-check"></i>`;
+        configIcon = `<i class="fas fa-fw fa-check"></i>`;
       } else {
-        icon = `<i class="fas fa-fw"></i>`;
+        configIcon = `<i class="fas fa-fw"></i>`;
       }
     }
-    let iconHTML = `<div class="icon">${icon}</div>`;
-    if (command.noIcon && usingSingleList) {
-      iconHTML = "";
-    }
+    const iconHTML = `<div class="icon">${
+      usingSingleList ? icon : configIcon
+    }</div>`;
     let customStyle = "";
     if (command.customStyle !== undefined && command.customStyle !== "") {
       customStyle = command.customStyle;
     }
 
+    let display = command.display;
+    if (usingSingleList) {
+      display = display.replace(
+        `<i class="fas fa-fw fa-chevron-right chevronIcon"></i>`,
+        `<i class="fas fa-fw fa-chevron-right chevronIcon"></i>` + configIcon
+      );
+    }
+
     if (command.id.startsWith("changeTheme") && command.customData) {
       html += `<div class="entry withThemeBubbles" command="${command.id}" index="${index}" style="${customStyle}">
-      ${iconHTML}<div>${command.display}</div>
+      ${iconHTML}<div>${display}</div>
       <div class="themeBubbles" style="background: ${command.customData["bgColor"]};outline: 0.25rem solid ${command.customData["bgColor"]};">
         <div class="themeBubble" style="background: ${command.customData["mainColor"]}"></div>
         <div class="themeBubble" style="background: ${command.customData["subColor"]}"></div>
@@ -242,7 +272,7 @@ function showCommands(): void {
       </div>
       </div>`;
     } else {
-      html += `<div class="entry" command="${command.id}" index="${index}" style="${customStyle}">${iconHTML}<div>${command.display}</div></div>`;
+      html += `<div class="entry" command="${command.id}" index="${index}" style="${customStyle}">${iconHTML}<div>${display}</div></div>`;
     }
     index++;
   }
@@ -276,7 +306,8 @@ function updateActiveCommand(): void {
   }
 
   const element = elements[activeIndex];
-  const command = filteredCommands[activeIndex];
+  const command = getList().filter((c) => c.found)[activeIndex];
+  activeCommand = command ?? null;
   if (element === undefined || command === undefined) {
     return;
   }
@@ -310,13 +341,8 @@ function handleInputSubmit(): void {
 }
 
 function runActiveCommand(): void {
-  if (filteredCommands.length === 0) return;
-
-  const command = filteredCommands[activeIndex];
-  if (command === undefined) {
-    throw new Error("Tried to run active command, but it was undefined");
-  }
-
+  if (activeCommand === null) return;
+  const command = activeCommand;
   if (command.input) {
     const escaped = command.display.split("</i>")[1] ?? command.display;
     // showInput(
@@ -340,8 +366,9 @@ function runActiveCommand(): void {
     CommandlineLists.pushToStack(
       command.subgroup as MonkeyTypes.CommandsSubgroup
     );
+    beforeList();
     updateInput("");
-    filterCommands();
+    filterSubgroup();
     showCommands();
     updateActiveCommand();
   } else {
@@ -350,6 +377,11 @@ function runActiveCommand(): void {
     if (!isSticky) {
       void AnalyticsController.log("usedCommandLine", { command: command.id });
       hide(command.shouldFocusTestUI ?? false);
+    } else {
+      beforeList();
+      filterSubgroup();
+      showCommands();
+      updateActiveCommand();
     }
   }
 }
@@ -409,7 +441,7 @@ function updateInput(setInput?: string): void {
 
 function incrementActiveIndex(): void {
   activeIndex++;
-  if (activeIndex >= filteredCommands.length) {
+  if (activeIndex >= getList().filter((c) => c.found).length) {
     activeIndex = 0;
   }
   updateActiveCommand();
@@ -418,7 +450,7 @@ function incrementActiveIndex(): void {
 function decrementActiveIndex(): void {
   activeIndex--;
   if (activeIndex < 0) {
-    activeIndex = filteredCommands.length - 1;
+    activeIndex = getList().filter((c) => c.found).length - 1;
   }
   updateActiveCommand();
 }
@@ -430,7 +462,7 @@ input.addEventListener("input", (e) => {
   if (mode !== "search") return;
   mouseMode = false;
   activeIndex = 0;
-  filterCommands();
+  filterSubgroup();
   showCommands();
   updateActiveCommand();
 });

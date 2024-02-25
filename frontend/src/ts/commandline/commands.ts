@@ -532,23 +532,43 @@ export function getTopOfStack(): MonkeyTypes.CommandsSubgroup {
   return stack[stack.length - 1] as MonkeyTypes.CommandsSubgroup;
 }
 
-let singleList: MonkeyTypes.Command[] | undefined;
-export function getSingleList(): MonkeyTypes.Command[] {
+let singleList: MonkeyTypes.CommandsSubgroup | undefined;
+export function getSingleSubgroup(): MonkeyTypes.CommandsSubgroup {
   if (singleList) return singleList;
 
-  const allCommands: MonkeyTypes.Command[] = [];
+  // const
+
+  const singleCommands: MonkeyTypes.Command[] = [];
+  const beforeListFunctions: (() => void)[] = [];
   for (const command of commands.list) {
-    allCommands.push(...buildSingleListCommands(command));
+    const ret = buildSingleListCommands(command);
+    singleCommands.push(...ret.commands);
+    beforeListFunctions.push(...ret.beforeListFunctions);
   }
-  singleList = allCommands;
-  return allCommands;
+
+  singleList = {
+    title: "All commands",
+    list: singleCommands,
+    beforeList: (): void => {
+      for (const func of beforeListFunctions) {
+        func();
+      }
+    },
+  };
+  return singleList;
 }
+
+type SingleList = {
+  commands: MonkeyTypes.Command[];
+  beforeListFunctions: (() => void)[];
+};
 
 function buildSingleListCommands(
   command: MonkeyTypes.Command,
   parentCommand?: MonkeyTypes.Command
-): MonkeyTypes.Command[] {
-  const ret: MonkeyTypes.Command[] = [];
+): SingleList {
+  const commands: MonkeyTypes.Command[] = [];
+  const beforeListFunctions: (() => void)[] = [];
   if (command.subgroup) {
     const currentCommand = {
       ...command,
@@ -557,9 +577,11 @@ function buildSingleListCommands(
         list: [],
       },
     };
-    command.subgroup.beforeList?.();
+    if (command.subgroup.beforeList) {
+      beforeListFunctions.push(command.subgroup.beforeList);
+    }
     for (const cmd of command.subgroup.list) {
-      ret.push(...buildSingleListCommands(cmd, currentCommand));
+      commands.push(...buildSingleListCommands(cmd, currentCommand).commands);
     }
   } else {
     if (parentCommand) {
@@ -571,9 +593,18 @@ function buildSingleListCommands(
         parentCommandDisplay +
         '<i class="fas fa-fw fa-chevron-right chevronIcon"></i>' +
         command.display;
+
+      if (command.id.includes("arrows")) {
+        console.log("command", command);
+        console.log("parentCommand", parentCommand);
+        console.log("subgroup", parentCommand.subgroup);
+        console.log("configKey", parentCommand.subgroup?.configKey);
+      }
+
       const newCommand = {
         ...command,
         display: displayString,
+        configKey: parentCommand.subgroup?.configKey,
         icon: parentCommand.icon,
         alias: (parentCommand.alias ?? "") + " " + (command.alias ?? ""),
         visible: (parentCommand.visible ?? true) && (command.visible ?? true),
@@ -584,10 +615,19 @@ function buildSingleListCommands(
           );
         },
       };
-      ret.push(newCommand);
+
+      if (command.id.includes("arrows")) {
+        console.log("pushign new command", newCommand);
+        console.log("pushign new command", newCommand.configKey);
+        console.log("configKey", parentCommand.subgroup?.configKey);
+      }
+      commands.push(newCommand);
     } else {
-      ret.push(command);
+      commands.push(command);
     }
   }
-  return ret;
+  return {
+    commands,
+    beforeListFunctions,
+  };
 }
