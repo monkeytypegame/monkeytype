@@ -266,7 +266,7 @@ function showCommands(): void {
     }
 
     if (command.id.startsWith("changeTheme") && command.customData) {
-      html += `<div class="entry withThemeBubbles" command="${command.id}" index="${index}" style="${customStyle}">
+      html += `<div class="command withThemeBubbles" command="${command.id}" index="${index}" style="${customStyle}">
       ${iconHTML}<div>${display}</div>
       <div class="themeBubbles" style="background: ${command.customData["bgColor"]};outline: 0.25rem solid ${command.customData["bgColor"]};">
         <div class="themeBubble" style="background: ${command.customData["mainColor"]}"></div>
@@ -275,25 +275,25 @@ function showCommands(): void {
       </div>
       </div>`;
     } else {
-      html += `<div class="entry" command="${command.id}" index="${index}" style="${customStyle}">${iconHTML}<div>${display}</div></div>`;
+      html += `<div class="command" command="${command.id}" index="${index}" style="${customStyle}">${iconHTML}<div>${display}</div></div>`;
     }
     index++;
   }
   element.innerHTML = html;
 
-  for (const entry of element.querySelectorAll(".entry")) {
-    entry.addEventListener("mouseenter", () => {
+  for (const command of element.querySelectorAll(".command")) {
+    command.addEventListener("mouseenter", () => {
       if (!mouseMode) return;
-      activeIndex = parseInt(entry.getAttribute("index") ?? "0");
+      activeIndex = parseInt(command.getAttribute("index") ?? "0");
       updateActiveCommand();
     });
-    entry.addEventListener("mouseleave", () => {
+    command.addEventListener("mouseleave", () => {
       if (!mouseMode) return;
-      activeIndex = parseInt(entry.getAttribute("index") ?? "0");
+      activeIndex = parseInt(command.getAttribute("index") ?? "0");
       updateActiveCommand();
     });
-    entry.addEventListener("click", () => {
-      activeIndex = parseInt(entry.getAttribute("index") ?? "0");
+    command.addEventListener("click", () => {
+      activeIndex = parseInt(command.getAttribute("index") ?? "0");
       runActiveCommand();
     });
   }
@@ -301,7 +301,7 @@ function showCommands(): void {
 
 function updateActiveCommand(): void {
   const elements = [
-    ...document.querySelectorAll("#commandLine .suggestions .entry"),
+    ...document.querySelectorAll("#commandLine .suggestions .command"),
   ];
 
   for (const element of elements) {
@@ -390,11 +390,11 @@ function keepActiveCommandInView(): void {
     const scroll =
       Math.abs(
         ($(".suggestions").offset()?.top as number) -
-          ($(".entry.active").offset()?.top as number) -
+          ($(".command.active").offset()?.top as number) -
           ($(".suggestions").scrollTop() as number)
       ) -
       ($(".suggestions").outerHeight() as number) / 2 +
-      ($($(".entry")[0] as HTMLElement).outerHeight() as number);
+      ($($(".command")[0] as HTMLElement).outerHeight() as number);
     $(".suggestions").scrollTop(scroll);
   } catch (e) {
     if (e instanceof Error) {
