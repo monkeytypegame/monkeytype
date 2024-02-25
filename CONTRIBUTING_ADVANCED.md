@@ -2,15 +2,20 @@
 
 ## **Table of Contents**
 
-- [Prerequisites](#prerequisites)
-  - [Git](#git)
-  - [NodeJS and NPM](#nodejs-and-npm)
-  - [Firebase](#firebase)
-  - [Docker (Recommended but Optional)](#docker-recommended-but-optional)
-  - [Backend (optional)](#backend-optional)
-- [Building and Running Monkeytype](#building-and-running-monkeytype)
-- [Standards and Guidelines](#standards-and-guidelines)
-- [Questions](#questions)
+- [Contributing - Advanced](#contributing---advanced)
+  - [**Table of Contents**](#table-of-contents)
+  - [Prerequisites](#prerequisites)
+    - [Git](#git)
+    - [NodeJS and NPM](#nodejs-and-npm)
+    - [Docker (Recommended but Optional)](#docker-recommended-but-optional)
+    - [Firebase (optional)](#firebase-optional)
+    - [Config file](#config-file)
+    - [Backend (optional)](#backend-optional)
+  - [Building and Running Monkeytype](#building-and-running-monkeytype)
+    - [Using Docker:](#using-docker)
+    - [**_Without_** Docker:](#without-docker)
+  - [Standards and Guidelines](#standards-and-guidelines)
+  - [Questions](#questions)
 
 ## Prerequisites
 
@@ -98,9 +103,9 @@ Follow these steps if you want to work on anything involving the database/accoun
 
 2. Setup the database server
 
-| Local Server                                                                                                                                             | Docker (recommended)                                                                                                                                                                                                   |
-| -------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| <ol><li>Install [MongoDB Community Edition](https://docs.mongodb.com/manual/administration/install-community/)</li><li>Make sure it is running</li></ol> | <ol><li>Install [Docker](http://www.docker.io/gettingstarted/#h_installation) on your machine</li><li>Run `docker compose up` from the `./backend` directory (this is also how you start the backend server)</li></ol> |
+| Local Server                                                                                                                                             | Docker (recommended)                                                                                                                                                   |
+| -------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| <ol><li>Install [MongoDB Community Edition](https://docs.mongodb.com/manual/administration/install-community/)</li><li>Make sure it is running</li></ol> | <ol><li>Install [Docker](http://www.docker.io/gettingstarted/#h_installation) on your machine</li><li>Run `docker compose up` from the `./backend` directory</li></ol> |
 
 3. (Optional) Install [MongoDB-compass](https://www.mongodb.com/try/download/compass?tck=docs_compass). This tool can be used to see and manipulate your database visually.
    - To connect, type `mongodb://localhost:27017` in the connection string box and press connect. The Monkeytype database will be created and shown after the server is started.
@@ -119,8 +124,13 @@ Follow these steps if you want to work on anything involving the database/accoun
   cd frontend && docker compose up
   ```
 - Backend (in another terminal window):
+
   ```
+  # to start only the databases (redis & mongodb)
   cd backend && docker compose up
+
+  # to start the API server & databases (redis & mongodb)
+  cd backend && docker compose -f docker-compose.server.yml up
   ```
 
 ### **_Without_** Docker:
