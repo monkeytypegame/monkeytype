@@ -13,35 +13,6 @@
   grid-template-columns: 1fr;
   transition: background 0.125s;
 
-  #commandInput {
-    max-width: 600px;
-    width: 100%;
-    background: var(--bg-color);
-    border-radius: var(--roundness);
-
-    input {
-      background: var(--bg-color);
-      padding: 1rem;
-      color: var(--main-color);
-      border: none;
-      outline: none;
-      font-size: 1rem;
-      width: 100%;
-      border-radius: var(--roundness);
-      &:focus-visible {
-        box-shadow: none;
-      }
-    }
-
-    .shiftEnter {
-      padding: 0.5rem 1rem;
-      font-size: 0.75rem;
-      line-height: 0.75rem;
-      color: var(--sub-color);
-      text-align: center;
-    }
-  }
-
   #commandLine {
     max-width: 600px;
     width: 100%;
@@ -68,20 +39,6 @@
       &:focus-visible {
         box-shadow: none;
       }
-    }
-
-    .separator {
-      background: black;
-      width: 100%;
-      height: 1px;
-      margin-bottom: 0.5rem;
-    }
-
-    .listTitle {
-      color: var(--text-color);
-      padding: 0.5rem 1rem;
-      font-size: 0.75rem;
-      line-height: 0.75rem;
     }
 
     .suggestions {
