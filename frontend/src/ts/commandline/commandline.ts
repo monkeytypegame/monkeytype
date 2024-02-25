@@ -305,6 +305,10 @@ function updateActiveCommand(): void {
     element.classList.remove("active");
   }
 
+  clearFontPreview();
+  addCommandlineBackground();
+  void ThemeController.clearPreview();
+
   const element = elements[activeIndex];
   const command = getList().filter((c) => c.found)[activeIndex];
   activeCommand = command ?? null;
@@ -313,18 +317,10 @@ function updateActiveCommand(): void {
   }
   element.classList.add("active");
 
-  clearFontPreview();
   if (/changeTheme.+/gi.test(command.id)) {
     removeCommandlineBackground();
-  } else {
-    addCommandlineBackground();
   }
-  if (
-    (!/theme/gi.test(command.id) || command.id === "toggleCustomTheme") &&
-    !(ThemeController.randomTheme ?? "")
-  ) {
-    void ThemeController.clearPreview();
-  }
+
   command.hover?.();
 }
 
