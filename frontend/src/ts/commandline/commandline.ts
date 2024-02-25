@@ -266,7 +266,7 @@ function showCommands(): void {
     }
 
     if (command.id.startsWith("changeTheme") && command.customData) {
-      html += `<div class="command withThemeBubbles" command="${command.id}" data-index="${index}" style="${customStyle}">
+      html += `<div class="command withThemeBubbles" data-command-id="${command.id}" data-index="${index}" style="${customStyle}">
       ${iconHTML}<div>${display}</div>
       <div class="themeBubbles" style="background: ${command.customData["bgColor"]};outline: 0.25rem solid ${command.customData["bgColor"]};">
         <div class="themeBubble" style="background: ${command.customData["mainColor"]}"></div>
@@ -275,7 +275,7 @@ function showCommands(): void {
       </div>
       </div>`;
     } else {
-      html += `<div class="command" command="${command.id}" data-index="${index}" style="${customStyle}">${iconHTML}<div>${display}</div></div>`;
+      html += `<div class="command" data-command-id="${command.id}" data-index="${index}" style="${customStyle}">${iconHTML}<div>${display}</div></div>`;
     }
     index++;
   }
@@ -344,11 +344,6 @@ function runActiveCommand(): void {
   const command = activeCommand;
   if (command.input) {
     const escaped = command.display.split("</i>")[1] ?? command.display;
-    // showInput(
-    //   command.id,
-    //   escaped,
-    //   command.defaultValue ? command.defaultValue() : ""
-    // );
     mode = "input";
     inputModeParams = {
       command: command,
