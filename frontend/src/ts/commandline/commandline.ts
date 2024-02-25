@@ -336,7 +336,7 @@ function handleInputSubmit(): void {
   void AnalyticsController.log("usedCommandLine", {
     command: inputModeParams.command.id,
   });
-  hide(inputModeParams.command.shouldFocusTestUI ?? false);
+  hide(inputModeParams.command.shouldFocusTestUI ?? true);
 }
 
 function runActiveCommand(): void {
