@@ -112,7 +112,8 @@ function filterCommands(): void {
   const newList = [];
 
   for (const command of list) {
-    if (!(command.available?.() ?? true)) continue;
+    const isAvailable = command.available?.() ?? true;
+    if (!isAvailable) continue;
     let foundCount = 0;
     for (const input of inputSplit) {
       const escaped = input.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
