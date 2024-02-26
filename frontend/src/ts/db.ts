@@ -602,20 +602,20 @@ export async function getLocalPB<M extends SharedTypes.Config.Mode>(
   }
   if (dbSnapshot === null || dbSnapshot?.personalBests === null) return 0;
 
-  const personalBests = dbSnapshot?.personalBests[mode][
+  const bestsByMode = dbSnapshot?.personalBests[mode][
     mode2
   ] as SharedTypes.PersonalBest[];
 
-  if (personalBests === undefined) return 0;
+  if (bestsByMode === undefined) return 0;
 
   return (
-    personalBests.find(
+    bestsByMode.find(
       (pb) =>
         (pb.punctuation ?? false) === punctuation &&
         (pb.numbers ?? false) === numbers &&
         pb.difficulty === difficulty &&
         pb.language === language &&
-        (pb.lazyMode === lazyMode || (pb.lazyMode === undefined && !lazyMode))
+        (pb.lazyMode ?? false) === lazyMode
     )?.wpm ?? 0
   );
 }
