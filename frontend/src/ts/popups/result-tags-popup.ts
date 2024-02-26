@@ -78,8 +78,8 @@ $(".pageAccount").on("click", ".group.history #resultEditTags", (f) => {
     state["resultId"] = resultid;
     state["tags"] = tags;
     state["source"] = "accountPage";
-    updateActiveButtons(JSON.parse(tags));
     show();
+    updateActiveButtons(JSON.parse(tags));
   } else {
     Notifications.add(
       "You haven't created any tags. You can do it in the settings page",
