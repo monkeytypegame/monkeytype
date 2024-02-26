@@ -8,16 +8,23 @@ type CaptchaData = {
   "error-codes"?: string[];
 };
 
+const recaptchaSecret = process.env["RECAPTCHA_SECRET"] ?? null;
+
 export async function verify(captcha: string): Promise<boolean> {
   if (isDevEnvironment()) {
     return true;
   }
+
+  if (recaptchaSecret === null) {
+    throw new Error("RECAPTCHA_SECRET is not defined");
+  }
+
   const response = await fetch(
     `https://www.google.com/recaptcha/api/siteverify`,
     {
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: `secret=${process.env["RECAPTCHA_SECRET"]}&response=${captcha}`,
+      body: `secret=${recaptchaSecret}&response=${captcha}`,
     }
   );
 
