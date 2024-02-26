@@ -81,12 +81,13 @@ export function show(settings?: ShowSettings): void {
   updateInput();
   filterSubgroup();
   showCommands();
+  updateActiveCommand();
 
   const el = $("#commandLineWrapper")
     .stop(true, true)
     .css("opacity", 0)
     .removeClass("hidden");
-  updateActiveCommand();
+  keepActiveCommandInView();
   el.animate(
     {
       opacity: 1,
