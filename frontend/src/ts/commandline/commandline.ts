@@ -221,6 +221,8 @@ function showCommands(): void {
   let html = "";
   let index = 0;
 
+  let firstActive: null | number = null;
+
   for (const command of list) {
     if (command.found !== true) continue;
     let icon = command.icon ?? "fa-chevron-right";
@@ -245,6 +247,7 @@ function showCommands(): void {
         ).includes(command.configValue);
       const valueIsTheSame = Config[command.configKey] === command.configValue;
       if (valueIsIncluded || valueIsTheSame) {
+        firstActive = firstActive ?? index;
         configIcon = `<i class="fas fa-fw fa-check"></i>`;
       } else {
         configIcon = `<i class="fas fa-fw"></i>`;
@@ -279,6 +282,9 @@ function showCommands(): void {
       html += `<div class="command" data-command-id="${command.id}" data-index="${index}" style="${customStyle}">${iconHTML}<div>${display}</div></div>`;
     }
     index++;
+  }
+  if (firstActive !== null) {
+    activeIndex = firstActive;
   }
   element.innerHTML = html;
 
@@ -320,6 +326,7 @@ function updateActiveCommand(): void {
     return;
   }
   element.classList.add("active");
+  keepActiveCommandInView();
 
   if (/changeTheme.+/gi.test(command.id)) {
     removeCommandlineBackground();
@@ -468,12 +475,10 @@ input.addEventListener("keydown", (e) => {
   if (e.key === "ArrowUp") {
     e.preventDefault();
     decrementActiveIndex();
-    keepActiveCommandInView();
   }
   if (e.key === "ArrowDown") {
     e.preventDefault();
     incrementActiveIndex();
-    keepActiveCommandInView();
   }
   if (e.key === "Enter") {
     e.preventDefault();
