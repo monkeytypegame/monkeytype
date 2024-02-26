@@ -594,13 +594,6 @@ function buildSingleListCommands(
         '<i class="fas fa-fw fa-chevron-right chevronIcon"></i>' +
         command.display;
 
-      if (command.id.includes("arrows")) {
-        console.log("command", command);
-        console.log("parentCommand", parentCommand);
-        console.log("subgroup", parentCommand.subgroup);
-        console.log("configKey", parentCommand.subgroup?.configKey);
-      }
-
       const newCommand = {
         ...command,
         display: displayString,
@@ -615,15 +608,7 @@ function buildSingleListCommands(
           );
         },
       };
-
-      if (command.id.includes("arrows")) {
-        console.log("pushign new command", newCommand);
-        console.log("pushign new command", newCommand.configKey);
-        console.log("configKey", parentCommand.subgroup?.configKey);
-      }
       commands.push(newCommand);
-    } else {
-      commands.push(command);
     }
   }
   return {
