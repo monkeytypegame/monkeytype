@@ -30,6 +30,7 @@ let inputModeParams: InputModeParams = {
   value: "",
   icon: "",
 };
+let subgroupOverride: MonkeyTypes.CommandsSubgroup | null = null;
 
 function removeCommandlineBackground(): void {
   $("#commandLineWrapper").addClass("noBackground");
@@ -45,7 +46,11 @@ function addCommandlineBackground(): void {
   }
 }
 
-export function show(): void {
+type ShowSettings = {
+  subgroupOverride?: MonkeyTypes.CommandsSubgroup;
+};
+
+export function show(settings?: ShowSettings): void {
   if (visible) {
     return;
   }
@@ -60,8 +65,15 @@ export function show(): void {
     value: null,
     icon: null,
   };
+
+  if (settings?.subgroupOverride) {
+    subgroupOverride = settings.subgroupOverride;
+    usingSingleList = false;
+  } else {
+    subgroupOverride = null;
+    usingSingleList = Config.singleListCommandLine === "on";
+  }
   activeCommand = null;
-  usingSingleList = Config.singleListCommandLine === "on";
   Focus.set(false);
   Skeleton.append(wrapperId);
   CommandlineLists.setStackToDefault();
@@ -190,19 +202,24 @@ function hideCommands(): void {
   element.innerHTML = "";
 }
 
-function getList(): MonkeyTypes.Command[] {
-  const subgroup = usingSingleList
-    ? CommandlineLists.getSingleSubgroup()
-    : CommandlineLists.getTopOfStack();
+function getSubgroup(): MonkeyTypes.CommandsSubgroup {
+  if (subgroupOverride !== null) {
+    return subgroupOverride;
+  }
 
-  return subgroup.list;
+  if (usingSingleList) {
+    return CommandlineLists.getSingleSubgroup();
+  }
+
+  return CommandlineLists.getTopOfStack();
+}
+
+function getList(): MonkeyTypes.Command[] {
+  return getSubgroup().list;
 }
 
 function beforeList(): void {
-  const subgroup = usingSingleList
-    ? CommandlineLists.getSingleSubgroup()
-    : CommandlineLists.getTopOfStack();
-  subgroup.beforeList?.();
+  getSubgroup().beforeList?.();
 }
 
 function showCommands(): void {
@@ -283,7 +300,7 @@ function showCommands(): void {
     }
     index++;
   }
-  if (firstActive !== null) {
+  if (firstActive !== null && !usingSingleList) {
     activeIndex = firstActive;
   }
   element.innerHTML = html;
@@ -389,6 +406,7 @@ function runActiveCommand(): void {
 }
 
 function keepActiveCommandInView(): void {
+  if (mouseMode) return;
   try {
     const scroll =
       Math.abs(
@@ -461,10 +479,12 @@ const input = document.querySelector("#commandLine input") as HTMLInputElement;
 
 input.addEventListener("input", (e) => {
   inputValue = (e.target as HTMLInputElement).value;
-  if (Config.singleListCommandLine === "on") {
-    usingSingleList = true;
-  } else {
-    usingSingleList = inputValue.startsWith(">");
+  if (subgroupOverride === null) {
+    if (Config.singleListCommandLine === "on") {
+      usingSingleList = true;
+    } else {
+      usingSingleList = inputValue.startsWith(">");
+    }
   }
   if (mode !== "search") return;
   mouseMode = false;
