@@ -130,6 +130,7 @@ function goBackOrHide(): void {
 
   if (CommandlineLists.getStackLength() > 1) {
     CommandlineLists.popFromStack();
+    activeIndex = 0;
     updateInput("");
     filterSubgroup();
     showCommands();
