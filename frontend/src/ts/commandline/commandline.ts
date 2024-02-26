@@ -103,7 +103,6 @@ function hide(focusTestUI = false): void {
     return;
   }
   clearFontPreview();
-  addCommandlineBackground();
   void ThemeController.clearPreview();
   $("#commandLineWrapper")
     .stop(true, true)
@@ -114,6 +113,7 @@ function hide(focusTestUI = false): void {
       },
       125,
       () => {
+        addCommandlineBackground();
         visible = false;
         $("#commandLineWrapper").addClass("hidden");
         Skeleton.remove(wrapperId);
