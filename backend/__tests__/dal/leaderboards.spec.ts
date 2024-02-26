@@ -103,6 +103,28 @@ describe("LeaderboardsDal", () => {
       expect(lb[0]).not.toHaveProperty("discordAvatar");
     });
 
+    it("should remove consistency from results if null", async () => {
+      //GIVEN
+      const stats = pb(100, 90, 2);
+      //@ts-ignore
+      stats["consistency"] = undefined;
+
+      await createUser(lbBests(stats));
+
+      //WHEN
+      //WHEN
+      await LeaderboardsDal.update("time", "15", "english");
+      const lb = (await LeaderboardsDal.get(
+        "time",
+        "15",
+        "english",
+        0
+      )) as SharedTypes.LeaderboardEntry[];
+
+      //THEN
+      expect(lb[0]).not.toHaveProperty("consistency");
+    });
+
     it("should update public speedHistogram for time english 15", async () => {
       //GIVEN
       const rank1 = await createUser(lbBests(pb(10), pb(60)));
@@ -135,7 +157,7 @@ describe("LeaderboardsDal", () => {
   });
 });
 
-function expectedLbEntry(rank: number, user: MonkeyTypes.User, time: string) {
+function expectedLbEntry(rank: number, user: MonkeyTypes.DBUser, time: string) {
   const lbBest: SharedTypes.PersonalBest =
     user.lbPersonalBests?.time[time].english;
 
@@ -156,13 +178,13 @@ function expectedLbEntry(rank: number, user: MonkeyTypes.User, time: string) {
 
 async function createUser(
   lbPersonalBests?: MonkeyTypes.LbPersonalBests,
-  userProperties?: Partial<MonkeyTypes.User>
-): Promise<MonkeyTypes.User> {
+  userProperties?: Partial<MonkeyTypes.DBUser>
+): Promise<MonkeyTypes.DBUser> {
   const uid = new ObjectId().toHexString();
   await UserDal.addUser("User " + uid, uid + "@example.com", uid);
 
   await DB.getDb()
-    ?.collection<MonkeyTypes.User>("users")
+    ?.collection<MonkeyTypes.DBUser>("users")
     .updateOne(
       { uid },
       {

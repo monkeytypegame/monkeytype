@@ -11,7 +11,7 @@ import * as CustomText from "../test/custom-text";
 import * as SavedTextsPopup from "./saved-texts-popup";
 import * as AccountButton from "../elements/account-button";
 import { FirebaseError } from "firebase/app";
-import { Auth } from "../firebase";
+import { Auth, isAuthenticated, getAuthenticatedUser } from "../firebase";
 import * as ConnectionState from "../states/connection";
 import {
   EmailAuthProvider,
@@ -262,13 +262,13 @@ class SimplePopup {
   exec(): void {
     if (!this.canClose) return;
     const vals: string[] = [];
-    $.each($("#simplePopup input, #simplePopup textarea"), (_, el) => {
+    for (const el of $("#simplePopup input, #simplePopup textarea")) {
       if ($(el).is(":checkbox")) {
         vals.push($(el).is(":checked") ? "true" : "false");
       } else {
         vals.push($(el).val() as string);
       }
-    });
+    }
 
     const inputsWithCurrentValue = [];
     for (let i = 0; i < this.inputs.length; i++) {
@@ -418,19 +418,20 @@ async function reauthenticate(
   method: ReauthMethod,
   password: string
 ): Promise<ReauthSuccess | ReauthFailed> {
-  if (!Auth) {
+  if (Auth === undefined) {
     return {
       status: -1,
       message: "Authentication is not initialized",
     };
   }
-  const user = Auth.currentUser;
-  if (!user) {
+
+  if (!isAuthenticated()) {
     return {
       status: -1,
       message: "User is not signed in",
     };
   }
+  const user = getAuthenticatedUser();
 
   try {
     const passwordAuthEnabled = user.providerData.some(
@@ -472,7 +473,7 @@ async function reauthenticate(
         status: -1,
         message:
           "Failed to reauthenticate: " +
-          (typedError?.message || JSON.stringify(e)),
+          (typedError?.message ?? JSON.stringify(e)),
       };
     }
   }
@@ -535,9 +536,8 @@ list.updateEmail = new SimplePopup(
     };
   },
   (thisPopup) => {
-    const user = Auth?.currentUser;
-    if (!user) return;
-    if (!user.providerData.find((p) => p?.providerId === "password")) {
+    if (!isAuthenticated()) return;
+    if (!isUsingPasswordAuthentication()) {
       thisPopup.inputs = [];
       thisPopup.buttonText = "";
       thisPopup.text = "Password authentication is not enabled";
@@ -589,9 +589,8 @@ list.removeGoogleAuth = new SimplePopup(
     };
   },
   (thisPopup) => {
-    const user = Auth?.currentUser;
-    if (!user) return;
-    if (!user.providerData.find((p) => p?.providerId === "password")) {
+    if (!isAuthenticated()) return;
+    if (!isUsingPasswordAuthentication()) {
       thisPopup.inputs = [];
       thisPopup.buttonText = "";
       thisPopup.text = "Password authentication is not enabled";
@@ -666,10 +665,10 @@ list.updateName = new SimplePopup(
     };
   },
   (thisPopup) => {
-    const user = Auth?.currentUser;
+    if (!isAuthenticated()) return;
     const snapshot = DB.getSnapshot();
-    if (!user || !snapshot) return;
-    if (!user.providerData.find((p) => p?.providerId === "password")) {
+    if (!snapshot) return;
+    if (!isUsingPasswordAuthentication()) {
       (thisPopup.inputs[0] as Input).hidden = true;
       thisPopup.buttonText = "Reauthenticate to update";
     }
@@ -755,9 +754,8 @@ list.updatePassword = new SimplePopup(
     };
   },
   (thisPopup) => {
-    const user = Auth?.currentUser;
-    if (!user) return;
-    if (!user.providerData.find((p) => p?.providerId === "password")) {
+    if (!isAuthenticated()) return;
+    if (!isUsingPasswordAuthentication()) {
       thisPopup.inputs = [];
       thisPopup.buttonText = "";
       thisPopup.text = "Password authentication is not enabled";
@@ -921,9 +919,8 @@ list.deleteAccount = new SimplePopup(
     };
   },
   (thisPopup) => {
-    const user = Auth?.currentUser;
-    if (!user) return;
-    if (!user.providerData.find((p) => p?.providerId === "password")) {
+    if (!isAuthenticated()) return;
+    if (!isUsingPasswordAuthentication()) {
       thisPopup.inputs = [];
       thisPopup.buttonText = "Reauthenticate to delete";
     }
@@ -975,9 +972,8 @@ list.resetAccount = new SimplePopup(
     };
   },
   (thisPopup) => {
-    const user = Auth?.currentUser;
-    if (!user) return;
-    if (!user.providerData.find((p) => p?.providerId === "password")) {
+    if (!isAuthenticated()) return;
+    if (!isUsingPasswordAuthentication()) {
       thisPopup.inputs = [];
       thisPopup.buttonText = "Reauthenticate to reset";
     }
@@ -1025,9 +1021,8 @@ list.optOutOfLeaderboards = new SimplePopup(
     };
   },
   (thisPopup) => {
-    const user = Auth?.currentUser;
-    if (!user) return;
-    if (!user.providerData.find((p) => p?.providerId === "password")) {
+    if (!isAuthenticated()) return;
+    if (!isUsingPasswordAuthentication()) {
       thisPopup.inputs = [];
       thisPopup.buttonText = "Reauthenticate to reset";
     }
@@ -1054,35 +1049,28 @@ list.clearTagPb = new SimplePopup(
       };
     }
 
-    if (response.data.resultCode === 1) {
-      const tag = DB.getSnapshot()?.tags?.filter((t) => t._id === tagId)[0];
+    const tag = DB.getSnapshot()?.tags?.filter((t) => t._id === tagId)[0];
 
-      if (tag === undefined) {
-        return {
-          status: -1,
-          message: "Tag not found",
-        };
-      }
-      tag.personalBests = {
-        time: {},
-        words: {},
-        quote: {},
-        zen: {},
-        custom: {},
-      };
-      $(
-        `.pageSettings .section.tags .tagsList .tag[id="${tagId}"] .clearPbButton`
-      ).attr("aria-label", "No PB found");
-      return {
-        status: 1,
-        message: "Tag PB cleared",
-      };
-    } else {
+    if (tag === undefined) {
       return {
         status: -1,
-        message: "Failed to clear tag PB: " + response.data.message,
+        message: "Tag not found",
       };
     }
+    tag.personalBests = {
+      time: {},
+      words: {},
+      quote: {},
+      zen: {},
+      custom: {},
+    };
+    $(
+      `.pageSettings .section.tags .tagsList .tag[id="${tagId}"] .clearPbButton`
+    ).attr("aria-label", "No PB found");
+    return {
+      status: 1,
+      message: "Tag PB cleared",
+    };
   },
   (thisPopup) => {
     thisPopup.text = `Are you sure you want to clear PB for tag ${thisPopup.parameters[1]}?`;
@@ -1167,9 +1155,8 @@ list.resetPersonalBests = new SimplePopup(
     };
   },
   (thisPopup) => {
-    const user = Auth?.currentUser;
-    if (!user) return;
-    if (!user.providerData.find((p) => p?.providerId === "password")) {
+    if (!isAuthenticated()) return;
+    if (!isUsingPasswordAuthentication()) {
       thisPopup.inputs = [];
       thisPopup.buttonText = "Reauthenticate to reset";
     }
@@ -1239,10 +1226,10 @@ list.revokeAllTokens = new SimplePopup(
     };
   },
   (thisPopup) => {
-    const user = Auth?.currentUser;
+    if (!isAuthenticated()) return;
     const snapshot = DB.getSnapshot();
-    if (!user || !snapshot) return;
-    if (!user.providerData.find((p) => p?.providerId === "password")) {
+    if (!snapshot) return;
+    if (!isUsingPasswordAuthentication()) {
       (thisPopup.inputs[0] as Input).hidden = true;
       thisPopup.buttonText = "reauthenticate to revoke all tokens";
     }
@@ -1545,7 +1532,7 @@ list.updateCustomTheme = new SimplePopup(
       };
     }
 
-    const customTheme = snapshot.customThemes.find(
+    const customTheme = snapshot.customThemes?.find(
       (t) => t._id === _thisPopup.parameters[0]
     );
     if (customTheme === undefined) {
@@ -1591,7 +1578,7 @@ list.updateCustomTheme = new SimplePopup(
     const snapshot = DB.getSnapshot();
     if (!snapshot) return;
 
-    const customTheme = snapshot.customThemes.find(
+    const customTheme = snapshot.customThemes?.find(
       (t) => t._id === _thisPopup.parameters[0]
     );
     if (!customTheme) return;
@@ -1877,9 +1864,13 @@ $("#popups").on("click", "#apeKeysPopup table tbody tr .button.edit", (e) => {
   showPopup("editApeKey", [keyId]);
 });
 
-$(".pageSettings").on("click", ".section.fontFamily .button.custom", () => {
-  showPopup("applyCustomFont", []);
-});
+$(".pageSettings").on(
+  "click",
+  ".section[data-config-name='fontFamily'] button[data-config-value='custom']",
+  () => {
+    showPopup("applyCustomFont", []);
+  }
+);
 
 $(document).on("keydown", (event) => {
   if (event.key === "Escape" && isElementVisible("#simplePopupWrapper")) {
@@ -1891,3 +1882,11 @@ $(document).on("keydown", (event) => {
 Skeleton.save(wrapperId);
 
 console.log(list);
+
+function isUsingPasswordAuthentication(): boolean {
+  return (
+    Auth?.currentUser?.providerData.find(
+      (p) => p?.providerId === "password"
+    ) !== undefined
+  );
+}

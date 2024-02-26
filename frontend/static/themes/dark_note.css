@@ -77,6 +77,10 @@ body::before {
   color: var(--current-color);
 }
 
+#words .word.error letter:not(.correct):not(.incorrect)::after {
+  background: var(--sub-color);
+}
+
 #words .word letter.incorrect,
 #words.colorfulMode .word letter.incorrect {
   text-decoration: line-through;

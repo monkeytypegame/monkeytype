@@ -98,8 +98,8 @@ async function apply(): Promise<void> {
     const tags = DB.getSnapshot()?.tags ?? [];
 
     const activeTagIds: string[] = tags
-      .filter((tag: MonkeyTypes.Tag) => tag.active)
-      .map((tag: MonkeyTypes.Tag) => tag._id);
+      .filter((tag: MonkeyTypes.UserTag) => tag.active)
+      .map((tag: MonkeyTypes.UserTag) => tag._id);
     configChanges.tags = activeTagIds;
   }
 

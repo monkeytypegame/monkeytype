@@ -13,19 +13,28 @@ export async function get(
   skip: number,
   limit = 50
 ): Promise<SharedTypes.LeaderboardEntry[] | false> {
-  if (leaderboardUpdating[`${language}_${mode}_${mode2}`]) return false;
+  //if (leaderboardUpdating[`${language}_${mode}_${mode2}`]) return false;
+
   if (limit > 50 || limit <= 0) limit = 50;
   if (skip < 0) skip = 0;
-  const preset = await db
-    .collection<SharedTypes.LeaderboardEntry>(
-      `leaderboards.${language}.${mode}.${mode2}`
-    )
-    .find()
-    .sort({ rank: 1 })
-    .skip(skip)
-    .limit(limit)
-    .toArray();
-  return preset;
+  try {
+    const preset = await db
+      .collection<SharedTypes.LeaderboardEntry>(
+        `leaderboards.${language}.${mode}.${mode2}`
+      )
+      .find()
+      .sort({ rank: 1 })
+      .skip(skip)
+      .limit(limit)
+      .toArray();
+    return preset;
+  } catch (e) {
+    if (e.error === 175) {
+      //QueryPlanKilled, collection was removed during the query
+      return false;
+    }
+    throw e;
+  }
 }
 
 type GetRankResponse = {
@@ -70,7 +79,7 @@ export async function update(
   leaderboardUpdating[`${language}_${mode}_${mode2}`] = true;
   const start1 = performance.now();
   const lb = db
-    .collection<MonkeyTypes.User>("users")
+    .collection<MonkeyTypes.DBUser>("users")
     .aggregate<SharedTypes.LeaderboardEntry>(
       [
         {
@@ -130,6 +139,9 @@ export async function update(
             },
             [`${key}.discordAvatar`]: {
               $ifNull: ["$discordAvatar", "$$REMOVE"],
+            },
+            [`${key}.consistency`]: {
+              $ifNull: [`$${key}.consistency`, "$$REMOVE"],
             },
             [`${key}.rank`]: {
               $function: {

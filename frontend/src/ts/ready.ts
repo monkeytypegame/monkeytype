@@ -8,7 +8,6 @@ import * as Focus from "./test/focus";
 import * as CookiePopup from "./popups/cookie-popup";
 import * as PSA from "./elements/psa";
 import * as ConnectionState from "./states/connection";
-import { Workbox } from "workbox-window";
 import * as FunboxList from "./test/funbox/funbox-list";
 //@ts-expect-error
 import Konami from "konami";
@@ -37,9 +36,9 @@ void UpdateConfig.loadFromLocalStorage();
 Focus.set(true, true);
 
 $(document).ready(() => {
-  Misc.loadCSS("/./css/select2.min.css", true);
-  Misc.loadCSS("/./css/balloon.min.css", true);
-  Misc.loadCSS("/./css/fa.min.css", true);
+  Misc.loadCSS("/css/slimselect.min.css", true);
+  Misc.loadCSS("/css/balloon.min.css", true);
+  Misc.loadCSS("/css/fa.min.css", true);
 
   CookiePopup.check();
 
@@ -93,76 +92,37 @@ $(document).ready(() => {
   MonkeyPower.init();
 
   new Konami("https://keymash.io/");
+
+  if (Misc.isDevEnvironment()) {
+    void navigator.serviceWorker
+      .getRegistrations()
+      .then(function (registrations) {
+        for (const registration of registrations) {
+          void registration.unregister();
+        }
+      });
+  }
 });
 
-if ("serviceWorker" in navigator) {
-  window.addEventListener("load", () => {
-    // disabling service workers on localhost - they dont really work well with local development
-    // and cause issues with hot reloading
-    if (Misc.isDevEnvironment()) {
-      void navigator.serviceWorker
-        .getRegistrations()
-        .then(function (registrations) {
-          for (const registration of registrations) {
-            // if (registration.scope !== "https://monkeytype.com/")
-            void registration.unregister();
-          }
-        });
-    } else {
-      const wb = new Workbox("/service-worker.js");
-
-      let updateBannerId: number;
-
-      // Add an event listener to detect when the registered
-      // service worker has installed but is waiting to activate.
-      wb.addEventListener("waiting", (event) => {
-        // set up a listener that will show a banner as soon as
-        // the previously waiting service worker has taken control.
-        wb.addEventListener("controlling", (event2) => {
-          if (
-            (event.isUpdate || event2.isUpdate) &&
-            updateBannerId === undefined
-          ) {
-            // updateBannerId = Notifications.addBanner(
-            //   "Update ready - please refresh",
-            //   1,
-            //   "gift",
-            //   true
-            // );
-          }
-        });
-
-        wb.messageSkipWaiting();
-      });
-
-      wb.register()
-        .then((registration) => {
-          // if (registration?.waiting) {
-          //   //@ts-ignore
-          //   registration?.onupdatefound = (): void => {
-          //     Notifications.add("Downloading update...", 1, 0, "Update");
-          //   };
-          // }
-          console.log("Service worker registration succeeded:", registration);
-
-          setInterval(() => {
-            void wb.update(); //check for updates every 15 minutes
-          }, 900000);
-        })
-        .catch((e) => {
-          console.log("Service worker registration failed:", e);
-        });
-    }
-  });
-}
-
 window.onerror = function (message, url, line, column, error): void {
+  if (Misc.isDevEnvironment()) {
+    Notifications.add(error?.message ?? "Undefined message", -1, {
+      customTitle: "DEV: Unhandled error",
+      duration: 5,
+    });
+  }
   void log("error", {
     error: error?.stack ?? "",
   });
 };
 
 window.onunhandledrejection = function (e): void {
+  if (Misc.isDevEnvironment()) {
+    Notifications.add(e.reason.message, -1, {
+      customTitle: "DEV: Unhandled rejection",
+      duration: 5,
+    });
+  }
   void log("error", {
     error: e.reason.stack ?? "",
   });

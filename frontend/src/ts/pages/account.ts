@@ -23,6 +23,7 @@ import * as ActivePage from "../states/active-page";
 import { Auth } from "../firebase";
 import * as Loader from "../elements/loader";
 import * as ResultBatches from "../elements/result-batches";
+import Format from "../utils/format";
 
 let filterDebug = false;
 //toggle filterdebug
@@ -37,7 +38,6 @@ let filteredResults: SharedTypes.Result<SharedTypes.Config.Mode>[] = [];
 let visibleTableLines = 0;
 
 function loadMoreLines(lineIndex?: number): void {
-  const typingSpeedUnit = getTypingSpeedUnit(Config.typingSpeedUnit);
   if (filteredResults === undefined || filteredResults.length === 0) return;
   let newVisibleLines;
   if (lineIndex && lineIndex > visibleTableLines) {
@@ -51,16 +51,6 @@ function loadMoreLines(lineIndex?: number): void {
     let diff = result.difficulty;
     if (diff === undefined) {
       diff = "normal";
-    }
-
-    let raw;
-    try {
-      raw = typingSpeedUnit.fromWpm(result.rawWpm).toFixed(2);
-      if (raw === undefined) {
-        raw = "-";
-      }
-    } catch (e) {
-      raw = "-";
     }
 
     let icons = `<span aria-label="${result.language?.replace(
@@ -139,12 +129,6 @@ function loadMoreLines(lineIndex?: number): void {
       }
     }
 
-    let consistency = "-";
-
-    if (result.consistency) {
-      consistency = result.consistency.toFixed(2) + "%";
-    }
-
     let pb = "";
     if (result.isPb) {
       pb = '<i class="fas fa-fw fa-crown"></i>';
@@ -158,10 +142,12 @@ function loadMoreLines(lineIndex?: number): void {
     $(".pageAccount .history table tbody").append(`
     <tr class="resultRow" id="result-${i}">
     <td>${pb}</td>
-    <td>${typingSpeedUnit.fromWpm(result.wpm).toFixed(2)}</td>
-    <td>${raw}</td>
-    <td>${result.acc.toFixed(2)}%</td>
-    <td>${consistency}</td>
+    <td>${Format.typingSpeed(result.wpm, { showDecimalPlaces: true })}</td>
+    <td>${Format.typingSpeed(result.rawWpm, { showDecimalPlaces: true })}</td>
+    <td>${Format.percentage(result.acc, { showDecimalPlaces: true })}</td>
+    <td>${Format.percentage(result.consistency, {
+      showDecimalPlaces: true,
+    })}</td>
     <td>${charStats}</td>
     <td>${result.mode} ${result.mode2}</td>
     <td class="infoIcons">${icons}</td>
@@ -860,144 +846,58 @@ async function fillContent(): Promise<void> {
     Misc.secondsToString(Math.round(totalSecondsFiltered), true, true)
   );
 
-  let highestSpeed: number | string = typingSpeedUnit.fromWpm(topWpm);
-
-  if (Config.alwaysShowDecimalPlaces) {
-    highestSpeed = Misc.roundTo2(highestSpeed).toFixed(2);
-  } else {
-    highestSpeed = Math.round(highestSpeed);
-  }
-
   const speedUnit = Config.typingSpeedUnit;
 
   $(".pageAccount .highestWpm .title").text(`highest ${speedUnit}`);
-  $(".pageAccount .highestWpm .val").text(highestSpeed);
-
-  let averageSpeed: number | string = typingSpeedUnit.fromWpm(totalWpm);
-  if (Config.alwaysShowDecimalPlaces) {
-    averageSpeed = Misc.roundTo2(averageSpeed / testCount).toFixed(2);
-  } else {
-    averageSpeed = Math.round(averageSpeed / testCount);
-  }
+  $(".pageAccount .highestWpm .val").text(Format.typingSpeed(topWpm));
 
   $(".pageAccount .averageWpm .title").text(`average ${speedUnit}`);
-  $(".pageAccount .averageWpm .val").text(averageSpeed);
-
-  let averageSpeedLast10: number | string =
-    typingSpeedUnit.fromWpm(wpmLast10total);
-  if (Config.alwaysShowDecimalPlaces) {
-    averageSpeedLast10 = Misc.roundTo2(averageSpeedLast10 / last10).toFixed(2);
-  } else {
-    averageSpeedLast10 = Math.round(averageSpeedLast10 / last10);
-  }
+  $(".pageAccount .averageWpm .val").text(
+    Format.typingSpeed(totalWpm / testCount)
+  );
 
   $(".pageAccount .averageWpm10 .title").text(
     `average ${speedUnit} (last 10 tests)`
   );
-  $(".pageAccount .averageWpm10 .val").text(averageSpeedLast10);
-
-  let highestRawSpeed: number | string = typingSpeedUnit.fromWpm(rawWpm.max);
-  if (Config.alwaysShowDecimalPlaces) {
-    highestRawSpeed = Misc.roundTo2(highestRawSpeed).toFixed(2);
-  } else {
-    highestRawSpeed = Math.round(highestRawSpeed);
-  }
+  $(".pageAccount .averageWpm10 .val").text(
+    Format.typingSpeed(wpmLast10total / last10)
+  );
 
   $(".pageAccount .highestRaw .title").text(`highest raw ${speedUnit}`);
-  $(".pageAccount .highestRaw .val").text(highestRawSpeed);
-
-  let averageRawSpeed: number | string = typingSpeedUnit.fromWpm(rawWpm.total);
-  if (Config.alwaysShowDecimalPlaces) {
-    averageRawSpeed = Misc.roundTo2(averageRawSpeed / rawWpm.count).toFixed(2);
-  } else {
-    averageRawSpeed = Math.round(averageRawSpeed / rawWpm.count);
-  }
+  $(".pageAccount .highestRaw .val").text(Format.typingSpeed(rawWpm.max));
 
   $(".pageAccount .averageRaw .title").text(`average raw ${speedUnit}`);
-  $(".pageAccount .averageRaw .val").text(averageRawSpeed);
-
-  let averageRawSpeedLast10: number | string = typingSpeedUnit.fromWpm(
-    rawWpm.last10Total
+  $(".pageAccount .averageRaw .val").text(
+    Format.typingSpeed(rawWpm.total / rawWpm.count)
   );
-  if (Config.alwaysShowDecimalPlaces) {
-    averageRawSpeedLast10 = Misc.roundTo2(
-      averageRawSpeedLast10 / rawWpm.last10Count
-    ).toFixed(2);
-  } else {
-    averageRawSpeedLast10 = Math.round(
-      averageRawSpeedLast10 / rawWpm.last10Count
-    );
-  }
 
   $(".pageAccount .averageRaw10 .title").text(
     `average raw ${speedUnit} (last 10 tests)`
   );
-  $(".pageAccount .averageRaw10 .val").text(averageRawSpeedLast10);
+  $(".pageAccount .averageRaw10 .val").text(
+    Format.typingSpeed(rawWpm.last10Total / rawWpm.last10Count)
+  );
 
   $(".pageAccount .highestWpm .mode").html(topMode);
   $(".pageAccount .testsTaken .val").text(testCount);
 
-  let highestAcc: string | number = topAcc;
-  if (Config.alwaysShowDecimalPlaces) {
-    highestAcc = Misc.roundTo2(highestAcc).toFixed(2);
-  } else {
-    highestAcc = Math.floor(highestAcc);
-  }
-
-  $(".pageAccount .highestAcc .val").text(highestAcc + "%");
-
-  let averageAcc: number | string = totalAcc;
-  if (Config.alwaysShowDecimalPlaces) {
-    averageAcc = Misc.roundTo2(averageAcc / testCount);
-  } else {
-    averageAcc = Math.floor(averageAcc / testCount);
-  }
-
-  $(".pageAccount .avgAcc .val").text(averageAcc + "%");
-
-  let averageAccLast10: number | string = totalAcc10;
-  if (Config.alwaysShowDecimalPlaces) {
-    averageAccLast10 = Misc.roundTo2(averageAccLast10 / last10);
-  } else {
-    averageAccLast10 = Math.floor(averageAccLast10 / last10);
-  }
-
-  $(".pageAccount .avgAcc10 .val").text(averageAccLast10 + "%");
+  $(".pageAccount .highestAcc .val").text(Format.percentage(topAcc));
+  $(".pageAccount .avgAcc .val").text(Format.percentage(totalAcc / testCount));
+  $(".pageAccount .avgAcc10 .val").text(Format.percentage(totalAcc10 / last10));
 
   if (totalCons === 0 || totalCons === undefined) {
     $(".pageAccount .avgCons .val").text("-");
     $(".pageAccount .avgCons10 .val").text("-");
   } else {
-    let highestCons: number | string = topCons;
-    if (Config.alwaysShowDecimalPlaces) {
-      highestCons = Misc.roundTo2(highestCons).toFixed(2);
-    } else {
-      highestCons = Math.round(highestCons);
-    }
+    $(".pageAccount .highestCons .val").text(Format.percentage(topCons));
 
-    $(".pageAccount .highestCons .val").text(highestCons + "%");
+    $(".pageAccount .avgCons .val").text(
+      Format.percentage(totalCons / consCount)
+    );
 
-    let averageCons: number | string = totalCons;
-    if (Config.alwaysShowDecimalPlaces) {
-      averageCons = Misc.roundTo2(averageCons / consCount).toFixed(2);
-    } else {
-      averageCons = Math.round(averageCons / consCount);
-    }
-
-    $(".pageAccount .avgCons .val").text(averageCons + "%");
-
-    let averageConsLast10: number | string = totalCons10;
-    if (Config.alwaysShowDecimalPlaces) {
-      averageConsLast10 = Misc.roundTo2(
-        averageConsLast10 / Math.min(last10, consCount)
-      ).toFixed(2);
-    } else {
-      averageConsLast10 = Math.round(
-        averageConsLast10 / Math.min(last10, consCount)
-      );
-    }
-
-    $(".pageAccount .avgCons10 .val").text(averageConsLast10 + "%");
+    $(".pageAccount .avgCons10 .val").text(
+      Format.percentage(totalCons10 / Math.min(last10, consCount))
+    );
   }
 
   $(".pageAccount .testsStarted .val").text(`${testCount + testRestarts}`);
@@ -1020,7 +920,7 @@ async function fillContent(): Promise<void> {
     const plus = wpmChangePerHour > 0 ? "+" : "";
     $(".pageAccount .group.chart .below .text").text(
       `Speed change per hour spent typing: ${
-        plus + Misc.roundTo2(typingSpeedUnit.fromWpm(wpmChangePerHour))
+        plus + Format.typingSpeed(wpmChangePerHour, { showDecimalPlaces: true })
       } ${Config.typingSpeedUnit}`
     );
   }

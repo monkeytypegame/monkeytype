@@ -7,7 +7,7 @@ import {
 } from "./config-validation";
 import * as ConfigEvent from "./observables/config-event";
 import DefaultConfig from "./constants/default-config";
-import { Auth } from "./firebase";
+import { isAuthenticated } from "./firebase";
 import * as AnalyticsController from "./controllers/analytics-controller";
 import * as AccountButton from "./elements/account-button";
 import { debounce } from "throttle-debounce";
@@ -466,7 +466,7 @@ export function setPaceCaret(
   }
 
   if (document.readyState === "complete") {
-    if (val === "pb" && !Auth?.currentUser) {
+    if (val === "pb" && !isAuthenticated()) {
       Notifications.add("PB pace caret is unavailable without an account", 0);
       return false;
     }
@@ -1435,12 +1435,12 @@ export function setRandomTheme(
   }
 
   if (val === "custom") {
-    if (!Auth?.currentUser) {
+    if (!isAuthenticated()) {
       config.randomTheme = val;
       return false;
     }
     if (!DB.getSnapshot()) return true;
-    if (DB.getSnapshot()?.customThemes.length === 0) {
+    if (DB.getSnapshot()?.customThemes?.length === 0) {
       Notifications.add("You need to create a custom theme first", 0);
       config.randomTheme = "off";
       return false;

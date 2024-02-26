@@ -1,4 +1,4 @@
-import { CLIENT_VERSION } from "../version";
+import { envConfig } from "../constants/env-config";
 
 $("#nocss .requestedStylesheets").html(
   "Requested stylesheets:<br>" +
@@ -19,7 +19,7 @@ $("#nocss .requestedJs").html(
       .filter((l) => /(\/js\/mon|\/js\/vendor)/gi.test(l))
       .join("<br>") +
     "<br><br>Client version:<br>" +
-    CLIENT_VERSION
+    envConfig.clientVersion
 );
 
 if (window.navigator.userAgent.toLowerCase().includes("mac")) {

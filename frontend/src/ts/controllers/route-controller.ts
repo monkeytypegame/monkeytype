@@ -2,7 +2,7 @@ import * as PageController from "./page-controller";
 import * as Leaderboards from "../elements/leaderboards";
 import * as TestUI from "../test/test-ui";
 import * as PageTransition from "../states/page-transition";
-import { Auth } from "../firebase";
+import { Auth, isAuthenticated } from "../firebase";
 
 //source: https://www.youtube.com/watch?v=OstALBk-jTc
 // https://www.youtube.com/watch?v=OstALBk-jTc
@@ -87,7 +87,7 @@ const routes: Route[] = [
         navigate("/");
         return;
       }
-      if (Auth.currentUser) {
+      if (isAuthenticated()) {
         navigate("/account");
         return;
       }

@@ -46,7 +46,7 @@ import * as Last10Average from "../elements/last-10-average";
 import * as Monkey from "./monkey";
 import objectHash from "object-hash";
 import * as AnalyticsController from "../controllers/analytics-controller";
-import { Auth } from "../firebase";
+import { Auth, isAuthenticated } from "../firebase";
 import * as AdController from "../controllers/ad-controller";
 import * as TestConfig from "./test-config";
 import * as ConnectionState from "../states/connection";
@@ -78,7 +78,7 @@ export function startTest(now: number): boolean {
     return false;
   }
 
-  if (Auth?.currentUser) {
+  if (isAuthenticated()) {
     void AnalyticsController.log("testStarted");
   } else {
     void AnalyticsController.log("testStartedNoLogin");
@@ -459,7 +459,7 @@ export async function init(): Promise<void> {
   }
 
   if (Config.mode === "quote") {
-    if (Config.quoteLength.includes(-3) && !Auth?.currentUser) {
+    if (Config.quoteLength.includes(-3) && !isAuthenticated()) {
       UpdateConfig.setQuoteLength(-1);
     }
   }
@@ -471,7 +471,8 @@ export async function init(): Promise<void> {
     UpdateConfig.setTapeMode("off");
   }
 
-  if (Config.lazyMode && language.noLazyMode) {
+  const allowLazyMode = !language.noLazyMode || Config.mode === "custom";
+  if (Config.lazyMode && !allowLazyMode) {
     rememberLazyMode = true;
     Notifications.add("This language does not support lazy mode.", 0, {
       important: true,
@@ -617,7 +618,7 @@ export async function addWord(): Promise<void> {
 
       let wordCount = 0;
       for (let i = 0; i < section.words.length; i++) {
-        const word = section.words[i];
+        const word = section.words[i] as string;
         if (wordCount >= Config.words && Config.mode === "words") {
           break;
         }
@@ -1086,7 +1087,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
     Result.updateTodayTracker();
   }
 
-  if (!Auth?.currentUser) {
+  if (!isAuthenticated()) {
     $(".pageTest #result #rateQuoteButton").addClass("hidden");
     $(".pageTest #result #reportQuoteButton").addClass("hidden");
     void AnalyticsController.log("testCompletedNoLogin");
@@ -1250,6 +1251,7 @@ async function saveResult(
       Config.mode,
       completedEvent.mode2,
       Config.punctuation,
+      Config.numbers,
       Config.language,
       Config.difficulty,
       Config.lazyMode,
