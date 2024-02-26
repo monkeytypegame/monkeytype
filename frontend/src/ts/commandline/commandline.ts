@@ -330,21 +330,24 @@ function updateActiveCommand(): void {
     element.classList.remove("active");
   }
 
-  clearFontPreview();
-  addCommandlineBackground();
-  void ThemeController.clearPreview();
-
   const element = elements[activeIndex];
   const command = getList().filter((c) => c.found)[activeIndex];
   activeCommand = command ?? null;
   if (element === undefined || command === undefined) {
+    clearFontPreview();
+    void ThemeController.clearPreview();
+    addCommandlineBackground();
     return;
   }
   element.classList.add("active");
   keepActiveCommandInView();
 
+  clearFontPreview();
   if (/changeTheme.+/gi.test(command.id)) {
     removeCommandlineBackground();
+  } else {
+    void ThemeController.clearPreview();
+    addCommandlineBackground();
   }
 
   command.hover?.();
