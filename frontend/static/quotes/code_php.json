@@ -1,0 +1,35 @@
+{
+    "language": "code_php",
+    "groups": [
+        [0, 100],
+        [101, 300],
+        [301, 600],
+        [601, 9999]
+    ],
+    "quotes": [
+        {
+            "text": "<?php\nfunction selection_sort(&$arr, $n) {\n\n\tfor($i = 0; $i < $n; $i++) {\n\t\t$low = $i;\n\n\t\tfor($j = $i + 1; $j < $n; $j++) {\n\t\t\tif ($arr[$j] < $arr[$low]) {\n\t\t\t\t$low = $j;\n\t\t\t}\n\t\t}\n\n\t\tif($arr[$i] > $arr[$low]) {\n\t\t\t$tmp = $arr[$i];\n\t\t\t$arr[$i] = $arr[$low];\n\t\t\t$arr[$low] = $tmp;\n\t\t}\n\t}\n}\n?>",
+            "source": "Selection Sort",
+            "id": 1,
+            "length": 290
+        },
+        {
+            "text": "<?php\n$array = [1, 2, 3, 4, 5];\n$sum = 0;\nforeach ($array as $value){\n\t$sum += $value;\n}\n\necho \"Sum: $sum\"\n?>",
+            "source": "Sum of an array",
+            "id": 2,
+            "length": 109
+        },
+        {
+            "text": "<?php\nfunction bubbleSort(&$arr) {\n\t$n = sizeof($arr);\n\n\tfor($i = 0; $i < $n; $i++){\n\t\t$swapped = False;\n\t\tfor($j = 0; $j < $n - $i - 1; $j++){\n\t\t\tif ($arr[$j] > $arr[$j + 1]){\n\t\t\t\t$t = $arr[$j];\n\t\t\t\t$arr[$j] = $arr[$j + 1];\n\t\t\t\t$arr[$j + 1] = $t;\n\t\t\t\t$swapped = True;\n\t\t\t}\n\t\t}\n\t\tif($swapped == False)\n\t\t\tbreak;\n\t}\n}\n?>",
+            "source": "Bubble Sort",
+            "id": 3,
+            "length": 319
+        },
+        {
+            "text": "<?php\nfunction findMax($arr) {\n\t$max = $arr[0];\n\tfor($i = 1; $i < count($arr); $i++){\n\t\tif($arr[$i] > $max){\n\t\t\t$max = $arr[$i];\n\t\t}\n\t}\n\techo \"The maximum number in the array is: $max\";\n};\n?>",
+            "source": "Maximum number of an array",
+            "id": 4,
+            "length": 191
+        }
+    ]
+}
