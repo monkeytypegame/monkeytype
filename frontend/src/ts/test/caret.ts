@@ -62,7 +62,6 @@ function getTargetPositionLeft(
 }
 
 export async function updatePosition(noAnim = false): Promise<void> {
-  console.trace();
   const caretWidth = Math.round(
     document.querySelector("#caret")?.getBoundingClientRect().width ?? 0
   );
@@ -113,7 +112,11 @@ export async function updatePosition(noAnim = false): Promise<void> {
 
   const diff = letterHeight - caret.offsetHeight;
 
-  const newTop = letterPosTop + diff / 2;
+  let newTop = letterPosTop + diff / 2;
+
+  if (Config.caretStyle === "underline") {
+    newTop = letterPosTop - caret.offsetHeight / 2;
+  }
 
   let newLeft = letterPosLeft - (fullWidthCaret ? 0 : caretWidth / 2);
 
