@@ -1,5 +1,5 @@
 import * as Commandline from "../commandline/commandline";
-import * as CommandlineLists from "../commandline/commands";
+import * as CommandlineLists from "../commandline/lists";
 import Config, * as UpdateConfig from "../config";
 import { isAuthenticated } from "../firebase";
 import * as DB from "../db";

@@ -1,6 +1,6 @@
 import * as Skeleton from "../popups/skeleton";
 import * as Focus from "../test/focus";
-import * as CommandlineLists from "./commands";
+import * as CommandlineLists from "./lists";
 import Config from "../config";
 import * as TestUI from "../test/test-ui";
 import * as AnalyticsController from "../controllers/analytics-controller";
