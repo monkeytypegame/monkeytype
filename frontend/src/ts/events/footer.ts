@@ -23,14 +23,8 @@ document
           if ((DB.getSnapshot()?.customThemes?.length ?? 0) < 1) {
             Notifications.add("No custom themes!", 0);
             UpdateConfig.setCustomTheme(false);
-            // UpdateConfig.setCustomThemeId("");
             return;
           }
-          // if (!DB.getCustomThemeById(Config.customThemeId)) {
-          //   // Turn on the first custom theme
-          //   const firstCustomThemeId = DB.getSnapshot().customThemes[0]._id;
-          //   UpdateConfig.setCustomThemeId(firstCustomThemeId);
-          // }
         }
         UpdateConfig.setCustomTheme(true);
       } else UpdateConfig.setCustomTheme(false);
