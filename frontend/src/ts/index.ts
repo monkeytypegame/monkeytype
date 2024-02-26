@@ -46,6 +46,7 @@ import { isDevEnvironment } from "./utils/misc";
 import "./events/global";
 import "./events/footer";
 import "./events/keymap";
+import "./events/test";
 
 function addToGlobal(items: Record<string, unknown>): void {
   for (const [name, item] of Object.entries(items)) {
