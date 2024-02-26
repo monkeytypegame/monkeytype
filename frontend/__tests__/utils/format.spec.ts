@@ -1,11 +1,7 @@
 import { Formatting } from "../../src/ts/utils/format";
-import * as MockConfig from "../../src/ts/config";
 import DefaultConfig from "../../src/ts/constants/default-config";
 
 describe("format.ts", () => {
-  afterEach(() => {
-    jest.resetAllMocks();
-  });
   describe("typingsSpeed", () => {
     it("should format with typing speed and decimalPlaces from configuration", () => {
       //wpm, no decimals

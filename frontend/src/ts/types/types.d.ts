@@ -249,23 +249,6 @@ declare namespace MonkeyTypes {
     nextDelay: number;
   };
 
-  type Global = {
-    snapshot(): Snapshot | undefined;
-    config: SharedTypes.Config;
-    toggleFilterDebug(): void;
-    glarsesMode(): void;
-    stats(): void;
-    replay(): string;
-    enableTimerDebug(): void;
-    getTimerStats(): TimerStats[];
-    toggleUnsmoothedRaw(): void;
-    enableSpacingDebug(): void;
-    noGoogleNoMo(): void;
-    egVideoListener(options: Record<string, string>): void;
-    wpmCalculationDebug(): void;
-    toggleDebugLogs(): void;
-  };
-
   type GithubRelease = {
     url: string;
     assets_url: string;

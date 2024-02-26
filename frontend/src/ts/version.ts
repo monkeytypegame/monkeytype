@@ -1,7 +1,7 @@
-export const CLIENT_VERSION = "DEVELOPMENT-CLIENT";
+import { envConfig } from "./constants/env-config";
 
 $(document.body).on("click", ".currentVersion", (e) => {
   if (e.shiftKey) {
-    alert(CLIENT_VERSION);
+    alert(envConfig.clientVersion);
   }
 });

@@ -24,8 +24,12 @@ import { debounce } from "throttle-debounce";
 import * as ResultWordHighlight from "../elements/result-word-highlight";
 import * as PractiseWords from "./practise-words";
 import * as ActivePage from "../states/active-page";
-import html2canvas from "html2canvas";
 import Format from "../utils/format";
+import * as Loader from "../elements/loader";
+
+async function gethtml2canvas(): Promise<typeof import("html2canvas").default> {
+  return (await import("html2canvas")).default;
+}
 
 const debouncedZipfCheck = debounce(250, async () => {
   const supports = await Misc.checkIfLanguageSupportsZipf(Config.language);
@@ -406,6 +410,7 @@ export function colorful(tc: boolean): void {
 
 let firefoxClipboardNotificatoinShown = false;
 export async function screenshot(): Promise<void> {
+  Loader.show();
   let revealReplay = false;
 
   let revertCookie = false;
@@ -417,6 +422,7 @@ export async function screenshot(): Promise<void> {
   }
 
   function revertScreenshot(): void {
+    Loader.hide();
     $("#ad-result-wrapper").removeClass("hidden");
     $("#ad-result-small-wrapper").removeClass("hidden");
     $("#testConfig").removeClass("hidden");
@@ -501,7 +507,10 @@ export async function screenshot(): Promise<void> {
   try {
     const paddingX = Misc.convertRemToPixels(2);
     const paddingY = Misc.convertRemToPixels(2);
-    const canvas = await html2canvas(document.body, {
+
+    const canvas = await (
+      await gethtml2canvas()
+    )(document.body, {
       backgroundColor: await ThemeColors.get("bg"),
       width: sourceWidth + paddingX * 2,
       height: sourceHeight + paddingY * 2,
@@ -1345,7 +1354,7 @@ $("#wordsInput").on("focus", () => {
   if (!resultVisible && Config.showOutOfFocusWarning) {
     OutOfFocus.hide();
   }
-  Caret.show();
+  Caret.show(true);
 });
 
 $("#wordsInput").on("focusout", () => {

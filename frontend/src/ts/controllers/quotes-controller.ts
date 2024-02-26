@@ -1,4 +1,5 @@
 import {
+  cachedFetchJson,
   randomElementFromArray,
   removeLanguageSize,
   shuffle,
@@ -49,56 +50,61 @@ class QuotesController {
     const normalizedLanguage = removeLanguageSize(language);
 
     if (this.quoteCollection.language !== normalizedLanguage || reshuffle) {
+      let data: QuoteData;
       try {
-        const data: QuoteData = await $.getJSON(
+        data = await cachedFetchJson<QuoteData>(
           `quotes/${normalizedLanguage}.json`
         );
-
-        if (data.quotes === undefined || data.quotes.length === 0) {
+      } catch (e) {
+        if (e instanceof Error && e?.message?.includes("404")) {
           return defaultQuoteCollection;
+        } else {
+          throw e;
         }
+      }
 
-        this.quoteCollection = {
-          quotes: [],
-          length: data.quotes.length,
-          groups: [],
+      if (data.quotes === undefined || data.quotes.length === 0) {
+        return defaultQuoteCollection;
+      }
+
+      this.quoteCollection = {
+        quotes: [],
+        length: data.quotes.length,
+        groups: [],
+        language: data.language,
+      };
+
+      // Transform JSON Quote schema to MonkeyTypes Quote schema
+      data.quotes.forEach((quote: JsonQuote) => {
+        const monkeyTypeQuote: MonkeyTypes.Quote = {
+          text: quote.text,
+          britishText: quote.britishText,
+          source: quote.source,
+          length: quote.length,
+          id: quote.id,
           language: data.language,
+          group: 0,
         };
 
-        // Transform JSON Quote schema to MonkeyTypes Quote schema
-        data.quotes.forEach((quote: JsonQuote) => {
-          const monkeyTypeQuote: MonkeyTypes.Quote = {
-            text: quote.text,
-            britishText: quote.britishText,
-            source: quote.source,
-            length: quote.length,
-            id: quote.id,
-            language: data.language,
-            group: 0,
-          };
+        this.quoteCollection.quotes.push(monkeyTypeQuote);
+      });
 
-          this.quoteCollection.quotes.push(monkeyTypeQuote);
-        });
+      data.groups.forEach((quoteGroup, groupIndex) => {
+        const lower = quoteGroup[0];
+        const upper = quoteGroup[1];
 
-        data.groups.forEach((quoteGroup, groupIndex) => {
-          const lower = quoteGroup[0];
-          const upper = quoteGroup[1];
+        this.quoteCollection.groups[groupIndex] =
+          this.quoteCollection.quotes.filter((quote) => {
+            if (quote.length >= lower && quote.length <= upper) {
+              quote.group = groupIndex;
+              return true;
+            }
+            return false;
+          });
+      });
 
-          this.quoteCollection.groups[groupIndex] =
-            this.quoteCollection.quotes.filter((quote) => {
-              if (quote.length >= lower && quote.length <= upper) {
-                quote.group = groupIndex;
-                return true;
-              }
-              return false;
-            });
-        });
-
-        if (quoteLengths !== undefined) {
-          this.updateQuoteQueue(quoteLengths);
-        }
-      } catch {
-        return defaultQuoteCollection;
+      if (quoteLengths !== undefined) {
+        this.updateQuoteQueue(quoteLengths);
       }
     }
 

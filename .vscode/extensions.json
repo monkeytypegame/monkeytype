@@ -1,0 +1,8 @@
+{
+  "recommendations": [
+    "esbenp.prettier-vscode",
+    "Orta.vscode-jest",
+    "vitest.explorer",
+    "ryanluker.vscode-coverage-gutters"
+  ]
+}
