@@ -67,7 +67,7 @@ export async function init(): Promise<void> {
   if (Config.paceCaret === "pb") {
     wpm = await DB.getLocalPB(
       Config.mode,
-      mode2,
+
       Config.punctuation,
       Config.lazyMode,
       Config.funbox
