@@ -124,7 +124,7 @@ export async function update(): Promise<void> {
     (Config.repeatedPace && TestState.isPaceRepeat)
   ) {
     const speed = Format.typingSpeed(PaceCaret.settings?.wpm ?? 0, {
-      showDecimalPlaces: true,
+      showDecimalPlaces: false,
       suffix: ` ${Config.typingSpeedUnit}`,
     });
 
@@ -149,11 +149,14 @@ export async function update(): Promise<void> {
 
     if (isAuthenticated() && avgWPM > 0) {
       const avgWPMText = ["speed", "both"].includes(Config.showAverage)
-        ? Format.typingSpeed(avgWPM, { suffix: ` ${Config.typingSpeedUnit}` })
+        ? Format.typingSpeed(avgWPM, {
+            suffix: ` ${Config.typingSpeedUnit}`,
+            showDecimalPlaces: false,
+          })
         : "";
 
       const avgAccText = ["acc", "both"].includes(Config.showAverage)
-        ? Format.accuracy(avgAcc, { suffix: " acc" })
+        ? Format.accuracy(avgAcc, { suffix: " acc", showDecimalPlaces: false })
         : "";
 
       const text = `${avgWPMText} ${avgAccText}`.trim();
@@ -168,7 +171,7 @@ export async function update(): Promise<void> {
     $(".pageTest #testModesNotice").append(
       `<div class="textButton" commands="minWpm"><i class="fas fa-bomb"></i>min ${Format.typingSpeed(
         Config.minWpmCustomSpeed,
-        { showDecimalPlaces: true, suffix: ` ${Config.typingSpeedUnit}` }
+        { showDecimalPlaces: false, suffix: ` ${Config.typingSpeedUnit}` }
       )}</div>`
     );
   }
@@ -183,7 +186,7 @@ export async function update(): Promise<void> {
     $(".pageTest #testModesNotice").append(
       `<div class="textButton" commands="minBurst"><i class="fas fa-bomb"></i>min ${Format.typingSpeed(
         Config.minBurstCustomSpeed,
-        { showDecimalPlaces: true }
+        { showDecimalPlaces: false }
       )} ${Config.typingSpeedUnit} burst ${
         Config.minBurst === "flex" ? "(flex)" : ""
       }</div>`
