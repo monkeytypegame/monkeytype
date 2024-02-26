@@ -18,16 +18,19 @@ document
   ?.addEventListener("click", (event) => {
     const e = event as MouseEvent;
     if (e.shiftKey) {
-      if (!Config.customTheme) {
-        if (isAuthenticated()) {
-          if ((DB.getSnapshot()?.customThemes?.length ?? 0) < 1) {
-            Notifications.add("No custom themes!", 0);
-            UpdateConfig.setCustomTheme(false);
-            return;
-          }
-        }
-        UpdateConfig.setCustomTheme(true);
-      } else UpdateConfig.setCustomTheme(false);
+      if (Config.customTheme) {
+        UpdateConfig.setCustomTheme(false);
+        return;
+      }
+      if (
+        isAuthenticated() &&
+        (DB.getSnapshot()?.customThemes?.length ?? 0) < 1
+      ) {
+        Notifications.add("No custom themes!", 0);
+        UpdateConfig.setCustomTheme(false);
+        return;
+      }
+      UpdateConfig.setCustomTheme(true);
     } else {
       const subgroup = Config.customTheme
         ? CommandlineLists.getList("customThemesList")
