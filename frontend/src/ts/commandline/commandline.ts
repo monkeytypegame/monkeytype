@@ -461,7 +461,11 @@ const input = document.querySelector("#commandLine input") as HTMLInputElement;
 
 input.addEventListener("input", (e) => {
   inputValue = (e.target as HTMLInputElement).value;
-  usingSingleList = inputValue.startsWith(">");
+  if (Config.singleListCommandLine === "on") {
+    usingSingleList = true;
+  } else {
+    usingSingleList = inputValue.startsWith(">");
+  }
   if (mode !== "search") return;
   mouseMode = false;
   activeIndex = 0;
