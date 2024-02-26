@@ -153,9 +153,7 @@ function goBackOrHide(): void {
 }
 
 function filterSubgroup(): void {
-  const configKey = usingSingleList
-    ? undefined
-    : CommandlineLists.getTopOfStack().configKey;
+  const configKey = getSubgroup().configKey;
   const list = getList();
 
   const inputSplit = inputValue
