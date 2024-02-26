@@ -48,9 +48,18 @@ class QuotesController {
     const normalizedLanguage = removeLanguageSize(language);
 
     if (this.quoteCollection.language !== normalizedLanguage) {
-      const data = await cachedFetchJson<QuoteData>(
-        `quotes/${normalizedLanguage}.json`
-      );
+      let data: QuoteData;
+      try {
+        data = await cachedFetchJson<QuoteData>(
+          `quotes/${normalizedLanguage}.json`
+        );
+      } catch (e) {
+        if (e instanceof Error && e?.message?.includes("404")) {
+          return defaultQuoteCollection;
+        } else {
+          throw e;
+        }
+      }
 
       if (data.quotes === undefined || data.quotes.length === 0) {
         return defaultQuoteCollection;

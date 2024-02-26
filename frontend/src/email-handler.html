@@ -171,6 +171,7 @@
       confirmPasswordReset,
       checkActionCode,
       sendPasswordResetEmail,
+      signInWithEmailAndPassword,
     } from "firebase/auth";
 
     function isPasswordStrong(password) {
@@ -249,9 +250,7 @@
               $("main .preloader .text").text(`Your password has been changed`);
               $("main .preloader .subText").text(`You can now close this tab`);
 
-              firebase
-                .auth()
-                .signInWithEmailAndPassword(accountEmail, newPassword);
+              signInWithEmailAndPassword(Auth, accountEmail, newPassword);
             })
             .catch((error) => {
               $("main .preloader .icon").html(
