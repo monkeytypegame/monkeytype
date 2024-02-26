@@ -158,10 +158,8 @@ function showFound(): void {
           if (!/font/gi.test(obj.id)) {
             UpdateConfig.previewFontFamily(Config.fontFamily);
           }
-          if (obj.hover) {
-            obj.hover();
-            return;
-          }
+          if (obj.hover) obj.hover();
+          return;
         }
       }
     } catch (e) {}
