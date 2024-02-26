@@ -1,8 +1,8 @@
-import * as Commandline from "./commandline/commandline";
-import * as Misc from "./utils/misc";
-import * as PageTransition from "./states/page-transition";
-import Config from "./config";
-import * as TestWords from "./test/test-words";
+import * as Commandline from "../commandline/commandline";
+import * as Misc from "../utils/misc";
+import * as PageTransition from "../states/page-transition";
+import Config from "../config";
+import * as TestWords from "../test/test-words";
 
 document.addEventListener("keydown", (e) => {
   if (PageTransition.get()) return;
