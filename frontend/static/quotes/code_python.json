@@ -450,6 +450,12 @@
       "source": "Python 3.11.0 documentation - Python HOWTOs",
       "id": 74,
       "length": 372
+    },
+    {
+      "text": "class Graph():\n\ndef __init__(self, vertices):\nself.V = vertices\nself.graph = [[0 for column in range(vertices)]\nfor row in range(vertices)]\n\ndef printSolution(self, dist):\nprint('Vertex \t Distance from Source')\nfor node in range(self.V):\nprint(node, '\t\t', dist[node])\n\ndef minDistance(self, dist, sptSet):\nmin = 1e7\n\nfor v in range(self.V):\nif dist[v] < min and sptSet[v] == False:\nmin = dist[v]\nmin_index = v\n\nreturn min_index\n\ndef dijkstra(self, src):\n\ndist = [1e7] * self.V\ndist[src] = 0\nsptSet = [False] * self.V\n\nfor cout in range(self.V):\n\nu = self.minDistance(dist, sptSet)\n\nsptSet[u] = True\n\nfor v in range(self.V):\nif (self.graph[u][v] > 0 and\nsptSet[v] == False and\ndist[v] > dist[u] + self.graph[u][v]):\ndist[v] = dist[u] + self.graph[u][v]\n\nself.printSolution(dist)",
+      "source": "https://www.geeksforgeeks.org/python-program-for-dijkstras-shortest-path-algorithm-greedy-algo-7/",
+      "id": 75,
+      "length": 820
     }
   ]
 }
