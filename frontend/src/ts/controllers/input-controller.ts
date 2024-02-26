@@ -1332,7 +1332,12 @@ $("#wordsInput").on("input", (event) => {
     TestUI.updateWordElement();
     void Caret.updatePosition();
     if (!CompositionState.getComposing()) {
-      Replay.addReplayEvent("setLetterIndex", currTestInput.length - 1);
+      const keyStroke = event?.originalEvent as InputEvent;
+      if (keyStroke.inputType === "deleteWordBackward") {
+        Replay.addReplayEvent("setLetterIndex", 0); // Letter index will be 0 on CTRL + Backspace Event
+      } else {
+        Replay.addReplayEvent("setLetterIndex", currTestInput.length - 1);
+      }
     }
   }
   if (inputValue !== currTestInput) {
