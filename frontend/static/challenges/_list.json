@@ -729,4 +729,10 @@
     "type": "customTime",
     "parameters": [3600]
   }
+  ,{
+    "name": "thaandeng",
+    "display": "TH & EN",
+    "type": "script",
+    "parameters": ["thaandeng.txt",null,"nospace"]
+  }
 ]
