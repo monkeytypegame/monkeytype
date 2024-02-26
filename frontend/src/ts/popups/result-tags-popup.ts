@@ -61,12 +61,12 @@ function updateButtons(): void {
 
 function updateActiveButtons(active: string[]): void {
   if (active.length === 0) return;
-  for (const obj of $("#resultEditTagsPanel .buttons .button")) {
-    const tagid: string = $(obj).attr("tagid") ?? "";
+  for (const button of $("#resultEditTagsPanel .buttons .button")) {
+    const tagid: string = $(button).attr("tagid") ?? "";
     if (active.includes(tagid)) {
-      $(obj).addClass("active");
+      $(button).addClass("active");
     } else {
-      $(obj).removeClass("active");
+      $(button).removeClass("active");
     }
   }
 }
@@ -122,9 +122,9 @@ $("#resultEditTagsPanelWrapper .confirmButton").on("click", async () => {
   const resultId = state["resultId"] as string;
 
   const newTags: string[] = [];
-  for (const obj of $("#resultEditTagsPanel .buttons .button")) {
-    const tagid = $(obj).attr("tagid") ?? "";
-    if ($(obj).hasClass("active")) {
+  for (const button of $("#resultEditTagsPanel .buttons .button")) {
+    const tagid = $(button).attr("tagid") ?? "";
+    if ($(button).hasClass("active")) {
       newTags.push(tagid);
     }
   }
