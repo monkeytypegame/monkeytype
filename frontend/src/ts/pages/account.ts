@@ -881,15 +881,9 @@ async function fillContent(): Promise<void> {
   $(".pageAccount .highestWpm .mode").html(topMode);
   $(".pageAccount .testsTaken .val").text(testCount);
 
-  $(".pageAccount .highestAcc .val").text(
-    Format.percentage(topAcc, { rounding: Math.floor })
-  );
-  $(".pageAccount .avgAcc .val").text(
-    Format.percentage(totalAcc / testCount, { rounding: Math.floor })
-  );
-  $(".pageAccount .avgAcc10 .val").text(
-    Format.percentage(totalAcc10 / last10, { rounding: Math.floor })
-  );
+  $(".pageAccount .highestAcc .val").text(Format.accuracy(topAcc));
+  $(".pageAccount .avgAcc .val").text(Format.accuracy(totalAcc / testCount));
+  $(".pageAccount .avgAcc10 .val").text(Format.accuracy(totalAcc10 / last10));
 
   if (totalCons === 0 || totalCons === undefined) {
     $(".pageAccount .avgCons .val").text("-");

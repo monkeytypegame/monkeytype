@@ -94,6 +94,7 @@ describe("format.ts", () => {
       expect(format.typingSpeed(80.75, { rounding: Math.floor })).toEqual("80");
     });
   });
+
   describe("percentage", () => {
     it("should format with decimalPlaces from configuration", () => {
       //no decimals
@@ -153,6 +154,25 @@ describe("format.ts", () => {
       expect(format.percentage(80.75, { rounding: Math.floor })).toEqual("80%");
     });
   });
+
+  describe("accuracy", () => {
+    it("should floor decimals by default", () => {
+      //no decimals
+      const noDecimals = getInstance({ alwaysShowDecimalPlaces: false });
+      expect(noDecimals.accuracy(12.75)).toEqual("12%");
+      //with decimals
+      const withDecimals = getInstance({ alwaysShowDecimalPlaces: true });
+      expect(withDecimals.accuracy(12.75)).toEqual("12.75%");
+    });
+
+    it("should format with rounding", () => {
+      const format = getInstance({ alwaysShowDecimalPlaces: false });
+      expect(format.accuracy(80.5)).toEqual("80%");
+      expect(format.accuracy(80.25, { rounding: Math.ceil })).toEqual("81%");
+      expect(format.accuracy(80.75, { rounding: Math.floor })).toEqual("80%");
+    });
+  });
+
   describe("decimals", () => {
     it("should format with decimalPlaces from configuration", () => {
       //no decimals

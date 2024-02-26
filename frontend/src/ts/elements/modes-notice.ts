@@ -144,13 +144,8 @@ export async function update(): Promise<void> {
   }
 
   if (Config.showAverage !== "off") {
-    let avgWPM = Last10Average.getWPM();
-    let avgAcc = Last10Average.getAcc();
-
-    if (!Config.alwaysShowDecimalPlaces) {
-      avgWPM = Math.round(avgWPM);
-      avgAcc = Math.round(avgAcc);
-    }
+    const avgWPM = Last10Average.getWPM();
+    const avgAcc = Last10Average.getAcc();
 
     if (isAuthenticated() && avgWPM > 0) {
       const avgWPMText = ["speed", "both"].includes(Config.showAverage)
@@ -158,7 +153,7 @@ export async function update(): Promise<void> {
         : "";
 
       const avgAccText = ["acc", "both"].includes(Config.showAverage)
-        ? Format.percentage(avgAcc, { suffix: " acc", rounding: Math.floor })
+        ? Format.accuracy(avgAcc, { suffix: " acc" })
         : "";
 
       const text = `${avgWPMText} ${avgAccText}`.trim();
