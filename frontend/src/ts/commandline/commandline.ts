@@ -81,21 +81,21 @@ export function show(settings?: ShowSettings): void {
   updateInput();
   filterSubgroup();
   showCommands();
-  updateActiveCommand();
 
-  $("#commandLineWrapper")
+  const el = $("#commandLineWrapper")
     .stop(true, true)
     .css("opacity", 0)
-    .removeClass("hidden")
-    .animate(
-      {
-        opacity: 1,
-      },
-      125,
-      () => {
-        $("#commandLine input").trigger("focus");
-      }
-    );
+    .removeClass("hidden");
+  updateActiveCommand();
+  el.animate(
+    {
+      opacity: 1,
+    },
+    125,
+    () => {
+      $("#commandLine input").trigger("focus");
+    }
+  );
 }
 
 function hide(focusTestUI = false): void {
