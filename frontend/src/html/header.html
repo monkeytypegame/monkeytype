@@ -39,7 +39,7 @@
       </svg>
     </div>
     <h1 class="text">
-      <div class="top">monkey see</div>
+      <span class="top">monkey see</span>
       monkeytype
     </h1>
   </a>
@@ -52,18 +52,19 @@
       router-link
       title="start test"
     >
-      <div class="icon">
+      <span class="icon">
         <i class="fas fa-fw fa-keyboard"></i>
-      </div>
+      </span>
     </a>
     <button
+      type="button"
       class="textButton leaderboards view-leaderboards"
       onclick="this.blur();"
       title="leaderboard"
     >
-      <div class="icon">
+      <span class="icon">
         <i class="fas fa-fw fa-crown"></i>
-      </div>
+      </span>
     </button>
     <a
       class="textButton view-about"
@@ -72,9 +73,9 @@
       router-link
       title="about"
     >
-      <div class="icon">
+      <span class="icon">
         <i class="fas fa-fw fa-info"></i>
-      </div>
+      </span>
     </a>
     <!-- <a
       class="textButton discord"
@@ -83,9 +84,9 @@
       target="_blank"
       style="text-decoration: none;"
     >
-      <div class="icon">
+      <span class="icon">
         <i class="fab fa-discord"></i>
-      </div>
+      </span>
     </a> -->
     <a
       class="textButton view-settings"
@@ -94,9 +95,9 @@
       router-link
       title="settings"
     >
-      <div class="icon">
+      <span class="icon">
         <i class="fas fa-fw fa-cog"></i>
-      </div>
+      </span>
     </a>
     <div></div>
     <a
@@ -122,13 +123,13 @@
         </div>
       </div>
     </a>
-    <button class="text showAlerts" onclick="this.blur();">
+    <button type="button" class="text showAlerts" onclick="this.blur();">
       <div class="icon">
         <i class="fas fa-fw fa-bell"></i>
       </div>
       <div class="notificationBubble hidden">5</div>
     </button>
-    <button class="text signInOut" onclick="this.blur();">
+    <button type="button" class="text signInOut" onclick="this.blur();">
       <div class="icon">
         <i class="fas fa-fw fa-sign-in-alt"></i>
       </div>

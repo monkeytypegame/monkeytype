@@ -18,12 +18,23 @@
       width: 15rem;
     }
 
+    &.register {
+      .title {
+        margin: 0;
+        font-size: unset;
+        font-weight: unset;
+      }
+    }
+
     &.login {
       grid-template-areas:
         "title forgotButton"
         "form form";
 
       .title {
+        margin: 0;
+        font-size: unset;
+        font-weight: unset;
         grid-area: title;
       }
 
@@ -32,6 +43,7 @@
         font-size: 0.75rem;
         line-height: 0.75rem;
         margin-bottom: -0.5em;
+        align-self: center;
       }
 
       form {

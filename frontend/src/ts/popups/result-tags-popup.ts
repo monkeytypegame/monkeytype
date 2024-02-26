@@ -54,7 +54,7 @@ function updateButtons(): void {
   $("#resultEditTagsPanel .buttons").empty();
   DB.getSnapshot()?.tags?.forEach((tag) => {
     $("#resultEditTagsPanel .buttons").append(
-      `<div class="button tag" tagid="${tag._id}">${tag.display}</div>`
+      `<div role="button" class="button tag" tagid="${tag._id}">${tag.display}</div>`
     );
   });
 }

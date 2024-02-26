@@ -57,6 +57,7 @@
         color: var(--main-color);
         font-size: 2rem;
         margin-top: 3rem;
+        margin-bottom: 1.34rem;
       }
 
       body {
@@ -157,7 +158,7 @@
             type="password"
             placeholder="Confirm new password"
           />
-          <div class="button">Change</div>
+          <div role="button" class="button">Change</div>
         </div>
       </main>
     </div>
@@ -295,7 +296,7 @@
           `);
           $("main .preloader").append(`
           <br>
-          <div class="button" onclick="sendPasswordReset('${restoredEmail}')">Send Password Reset Email</div>
+          <div role="button" class="button" onclick="sendPasswordReset('${restoredEmail}')">Send Password Reset Email</div>
           `);
 
           // Account email reverted to restoredEmail

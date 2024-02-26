@@ -40,7 +40,7 @@ function refreshList(): void {
     table.append(`
       <tr keyId="${apeKeyId}">
         <td>
-          <div class="textButton">
+          <div role="button" class="textButton">
             ${
               key.enabled
                 ? `<i class="fas fa-fw fa-check-square"></i>`
@@ -58,10 +58,10 @@ function refreshList(): void {
         }</td>
         <td>
           <div class="keyButtons">
-            <div class="button edit">
+            <div role="button" class="button edit">
               <i class="fas fa-fw fa-pen"></i>
             </div>
-            <div class="button delete">
+            <div role="button" class="button delete">
               <i class="fas fa-fw fa-trash-alt"></i>
             </div>
           </div>

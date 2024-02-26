@@ -23,6 +23,13 @@
 .pageAccount {
   height: 100%;
 
+  h3,
+  h4,
+  p {
+    margin: 0;
+    font-weight: unset;
+  }
+
   .preloader {
     align-self: center;
     text-align: center;

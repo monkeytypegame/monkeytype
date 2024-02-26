@@ -14,8 +14,8 @@ function fill(): void {
   } else {
     for (const name of names) {
       list += `<div class="savedText">
-      <div class="button name">${escapeHTML(name)}</div>
-      <div class="button delete">
+      <div role="button" class="button name">${escapeHTML(name)}</div>
+      <div role="button" class="button delete">
       <i class="fas fa-fw fa-trash"></i>
       </div>
       </div>`;
@@ -31,11 +31,11 @@ function fill(): void {
   } else {
     for (const name of longNames) {
       longList += `<div class="savedText">
-      <div class="button name">${escapeHTML(name)}</div>
-      <div class="button ${
+      <div role="button" class="button name">${escapeHTML(name)}</div>
+      <div role="button" class="button ${
         CustomText.getCustomTextLongProgress(name) <= 0 ? "disabled" : ""
       } resetProgress">reset</div>
-      <div class="button delete">
+      <div role="button" class="button delete">
       <i class="fas fa-fw fa-trash"></i>
       </div>
       </div>`;

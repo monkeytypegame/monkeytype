@@ -20,10 +20,15 @@
 
     .title {
       font-size: 5rem;
+      font-weight: unset;
       line-height: 4rem;
-      /* margin: -3rem; */
+      margin: 0;
       color: var(--main-color);
       align-self: center;
+    }
+
+    .message {
+      margin: 0;
     }
 
     .side {

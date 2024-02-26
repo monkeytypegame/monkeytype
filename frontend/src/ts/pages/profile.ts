@@ -19,55 +19,56 @@ function reset(): void {
             <div class="avatar"></div>
           </div>
           <div>
-            <div class="name">-</div>
+            <h2 class="name">-</h2>
             <div class="badges"></div>
             <div class="allBadges"></div>
-            <div class="joined" data-balloon-pos="up">-</div>
-	          <div class="streak" data-balloon-pos="up">-</div>
+            <p class="joined" data-balloon-pos="up">-</p>
+	          <p class="streak" data-balloon-pos="up">-</p>
           </div>
           <div class="levelAndBar">
-            <div class="level">-</div>
+            <h3 class="level">-</h3>
             <div class="xpBar">
               <div class="bar" style="width: 0%;"></div>
             </div>
-            <div class="xp" data-balloon-pos="up">-/-</div>
+            <p class="xp" data-balloon-pos="up">-/-</p>
           </div>
         </div>
         <div class="separator sep1"></div>
         <div class="typingStats vertical">
           <div class="started">
-            <div class="title">tests started</div>
-            <div class="value">-</div>
+            <h3 class="title">tests started</h3>
+            <p class="value">-</p>
           </div>
           <div class="completed">
-            <div class="title">tests completed</div>
-            <div class="value">-</div>
+            <h3 class="title">tests completed</h3>
+            <p class="value">-</p>
           </div>
           <div class="timeTyping">
-            <div class="title">time typing</div>
-            <div class="value">-</div>
+            <h3 class="title">time typing</h3>
+            <p class="value">-</p>
           </div>
         </div>
         <div class="separator sep2 hidden"></div>
 
         <div class="bioAndKeyboard vertical hidden">
           <div class="bio">
-            <div class="title">bio</div>
-            <div class="value">-</div>
+            <h3 class="title">bio</h3>
+            <p class="value">-</p>
           </div>
           <div class="keyboard hidden">
-            <div class="title">keyboard</div>
-            <div class="value">-</div>
+            <h3 class="title">keyboard</h3>
+            <p class="value">-</p>
           </div>
         </div>
         <div class="separator sep3 hidden"></div>
 
         <div class="socials big hidden">
-          <div class="title">socials</div>
-          <div class="value">-</div>
+          <h3 class="title">socials</h3>
+          <p class="value">-</p>
         </div>
         <div class="buttonGroup">
           <button
+            type="button"
             class="userReportButton"
             data-balloon-pos="left"
             aria-label="Report user"
@@ -77,73 +78,73 @@ function reset(): void {
         </div>
       </div>
       <div class="leaderboardsPositions">
-        <div class="title">All-Time English Leaderboards</div>
+        <h2 class="title">All-Time English Leaderboards</h2>
         <div class="group t15">
-          <div class="testType">15 seconds</div>
-          <div class="pos">-</div>
+          <h3 class="testType">15 seconds</h3>
+          <p class="pos">-</p>
         </div>
         <div class="group t60">
-          <div class="testType">60 seconds</div>
-          <div class="pos">-</div>
+          <h3 class="testType">60 seconds</h3>
+          <p class="pos">-</p>
         </div>
       </div>
       <div class="pbsWords">
         <div class="group">
           <div class="quick">
-            <div class="test">10 words</div>
-            <div class="wpm">-</div>
-            <div class="acc">-</div>
+            <h3 class="test">10 words</h3>
+            <p class="wpm">-</p>
+            <p class="acc">-</p>
           </div>
         </div>
         <div class="group">
           <div class="quick">
-            <div class="test">25 words</div>
-            <div class="wpm">-</div>
-            <div class="acc">-</div>
+            <h3 class="test">25 words</h3>
+            <p class="wpm">-</p>
+            <p class="acc">-</p>
           </div>
         </div>
         <div class="group">
           <div class="quick">
-            <div class="test">50 words</div>
-            <div class="wpm">-</div>
-            <div class="acc">-</div>
+            <h3 class="test">50 words</h3>
+            <p class="wpm">-</p>
+            <p class="acc">-</p>
           </div>
         </div>
         <div class="group">
           <div class="quick">
-            <div class="test">100 words</div>
-            <div class="wpm">-</div>
-            <div class="acc">-</div>
+            <h3 class="test">100 words</h3>
+            <p class="wpm">-</p>
+            <p class="acc">-</p>
           </div>
         </div>
       </div>
       <div class="pbsTime">
         <div class="group">
           <div class="quick">
-            <div class="test">15 seconds</div>
-            <div class="wpm">-</div>
-            <div class="acc">-</div>
+            <h3 class="test">15 seconds</h3>
+            <p class="wpm">-</p>
+            <p class="acc">-</p>
           </div>
         </div>
         <div class="group">
           <div class="quick">
-            <div class="test">30 seconds</div>
-            <div class="wpm">-</div>
-            <div class="acc">-</div>
+            <h3 class="test">30 seconds</h3>
+            <p class="wpm">-</p>
+            <p class="acc">-</p>
           </div>
         </div>
         <div class="group">
           <div class="quick">
-            <div class="test">60 seconds</div>
-            <div class="wpm">-</div>
-            <div class="acc">-</div>
+            <h3 class="test">60 seconds</h3>
+            <p class="wpm">-</p>
+            <p class="acc">-</p>
           </div>
         </div>
         <div class="group">
           <div class="quick">
-            <div class="test">120 seconds</div>
-            <div class="wpm">-</div>
-            <div class="acc">-</div>
+            <h3 class="test">120 seconds</h3>
+            <p class="wpm">-</p>
+            <p class="acc">-</p>
           </div>
         </div>
       </div><div class="lbOptOutReminder hidden"></div>`);
