@@ -1,0 +1,22 @@
+FROM  node:hydrogen-bookworm as builder
+WORKDIR /app
+
+ENV BACKEND_URL="###MONKEYTYPE_BACKENDURL###"
+
+COPY . .
+COPY docker/frontend/firebase-config-live.ts frontend/src/ts/constants/firebase-config.ts
+COPY docker/frontend/firebase-config-live.ts frontend/src/ts/constants/firebase-config-live.ts
+
+RUN npm i
+RUN cd frontend && npm i
+RUN cd frontend && npx vite build
+
+
+FROM nginx:latest
+COPY --from=builder /app/frontend/dist /usr/share/nginx/html
+
+COPY docker/frontend/entryPoint.sh .
+RUN chmod +x ./entryPoint.sh
+RUN cat ./entryPoint.sh
+
+CMD ["./entryPoint.sh"]
