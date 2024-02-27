@@ -273,6 +273,7 @@ export async function getUserResults(offset?: number): Promise<boolean> {
     }
     if (result.numbers === undefined) result.numbers = false;
     if (result.punctuation === undefined) result.punctuation = false;
+    if (result.numbers === undefined) result.numbers = false;
     if (result.quoteLength === undefined) result.quoteLength = -1;
     if (result.restartCount === undefined) result.restartCount = 0;
     if (result.incompleteTestSeconds === undefined) {
@@ -742,8 +743,8 @@ export async function getLocalTagPB<M extends SharedTypes.Config.Mode>(
   ret =
     personalBests.find(
       (pb) =>
-        pb.punctuation === punctuation &&
-        pb.numbers === numbers &&
+        (pb.punctuation ?? false) === punctuation &&
+        (pb.numbers ?? false) === numbers &&
         pb.difficulty === difficulty &&
         pb.language === language &&
         (pb.lazyMode === lazyMode || (pb.lazyMode === undefined && !lazyMode))
@@ -797,8 +798,8 @@ export async function saveLocalTagPB<M extends SharedTypes.Config.Mode>(
         ] as unknown as SharedTypes.PersonalBest[]
       ).forEach((pb) => {
         if (
-          pb.punctuation === punctuation &&
-          pb.numbers === numbers &&
+          (pb.punctuation ?? false) === punctuation &&
+          (pb.numbers ?? false) === numbers &&
           pb.difficulty === difficulty &&
           pb.language === language &&
           (pb.lazyMode === lazyMode || (pb.lazyMode === undefined && !lazyMode))
