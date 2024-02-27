@@ -12,7 +12,7 @@
     "dev": "ts-node-dev ./src/server.ts -- --inspect --transpileOnly",
     "knip": "knip",
     "docker-db-only": "docker-compose -f docker/compose.db-only.yml up",
-    "docker": "docker-compose -f docker/compose.dev.yml up"
+    "docker": "docker-compose -f docker/compose.yml up"
   },
   "engines": {
     "node": "18.19.1",
