@@ -10,10 +10,12 @@
     - [Docker (Recommended but Optional)](#docker-recommended-but-optional)
     - [Firebase (optional)](#firebase-optional)
     - [Config file](#config-file)
-    - [Backend (optional)](#backend-optional)
+    - [Databases (optional if running frontend only)](#databases-optional-if-running-frontend-only)
   - [Building and Running Monkeytype](#building-and-running-monkeytype)
-    - [Using Docker:](#using-docker)
-    - [**_Without_** Docker:](#without-docker)
+    - [Dependencies (if running manually)](#dependencies-if-running-manually)
+    - [Both Frontend and Backend](#both-frontend-and-backend)
+    - [Backend only](#backend-only)
+    - [Frontend only](#frontend-only)
   - [Standards and Guidelines](#standards-and-guidelines)
   - [Questions](#questions)
 
@@ -129,13 +131,13 @@ Manual:
 npm run dev
 ```
 
-### Backend
+### Backend only
 
 | Manual                      | Docker                         |
 | --------------------------- | ------------------------------ |
 | `cd backend && npm run dev` | `cd backend && npm run docker` |
 
-### Frontend
+### Frontend only
 
 | Manual                       | Docker                          |
 | ---------------------------- | ------------------------------- |
