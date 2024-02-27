@@ -31,8 +31,7 @@ services:
     ports:
       - "${DOCKER_SERVER_PORT:-5005}:${DOCKER_SERVER_PORT:-5005}"
     volumes:
-      - ../:/monkeytype
-      - /monkeytype/backend/node_modules
+      - ../../:/monkeytype
     entrypoint: 'bash -c "cd /monkeytype/backend && npm install && npm run dev"'
 
 volumes:
