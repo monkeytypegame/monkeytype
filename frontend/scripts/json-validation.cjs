@@ -1,6 +1,6 @@
 const fs = require("fs");
-const V = require("jsonschema").Validator;
-const JSONValidator = new V();
+const Ajv = require("ajv");
+const ajv = new Ajv();
 
 function escapeRegExp(str) {
   return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -42,8 +42,9 @@ function validateOthers() {
         required: ["name"],
       },
     };
-    const fontsValidator = JSONValidator.validate(fontsData, fontsSchema);
-    if (fontsValidator.valid) {
+    const fontsValidate = ajv.compile(fontsSchema);
+    const fontsValidator = fontsValidate(fontsData);
+    if (fontsValidator) {
       console.log("Fonts JSON schema is \u001b[32mvalid\u001b[0m");
     } else {
       console.log("Fonts JSON schema is \u001b[31minvalid\u001b[0m");
@@ -70,8 +71,9 @@ function validateOthers() {
         required: ["name", "info", "canGetPb"],
       },
     };
-    const funboxValidator = JSONValidator.validate(funboxData, funboxSchema);
-    if (funboxValidator.valid) {
+    const funboxValidate = ajv.compile(funboxSchema);
+    const funboxValidator = funboxValidate(funboxData);
+    if (funboxValidator) {
       console.log("Funbox JSON schema is \u001b[32mvalid\u001b[0m");
     } else {
       console.log("Funbox JSON schema is \u001b[31minvalid\u001b[0m");
@@ -97,8 +99,9 @@ function validateOthers() {
         required: ["name", "bgColor", "mainColor"],
       },
     };
-    const themesValidator = JSONValidator.validate(themesData, themesSchema);
-    if (themesValidator.valid) {
+    const themesValidate = ajv.compile(themesSchema);
+    const themesValidator = themesValidate(themesData);
+    if (themesValidator) {
       console.log("Themes JSON schema is \u001b[32mvalid\u001b[0m");
     } else {
       console.log("Themes JSON schema is \u001b[31minvalid\u001b[0m");
@@ -196,11 +199,9 @@ function validateOthers() {
         flag: "r",
       })
     );
-    const challengesValidator = JSONValidator.validate(
-      challengesData,
-      challengesSchema
-    );
-    if (challengesValidator.valid) {
+    const challengesValidate = ajv.compile(challengesSchema);
+    const challengesValidator = challengesValidate(challengesData);
+    if (challengesValidator) {
       console.log("Challenges list JSON schema is \u001b[32mvalid\u001b[0m");
     } else {
       console.log("Challenges list JSON schema is \u001b[31minvalid\u001b[0m");
@@ -316,11 +317,9 @@ function validateOthers() {
         layoutsAllGood = false;
         layoutsErrors = [msg];
       } else {
-        const layoutsValidator = JSONValidator.validate(
-          layoutData,
-          layoutsSchema[layoutData.type]
-        );
-        if (!layoutsValidator.valid) {
+        const layoutsValidate = ajv.compile(layoutsSchema[layoutData.type]);
+        const layoutsValidator = layoutsValidate(layoutData);
+        if (!layoutsValidator) {
           console.log(
             `Layout ${layoutName} JSON schema is \u001b[31minvalid\u001b[0m`
           );
@@ -397,8 +396,9 @@ function validateQuotes() {
       );
       quoteSchema.properties.language.pattern =
         "^" + escapeRegExp(quotefilename) + "$";
-      const quoteValidator = JSONValidator.validate(quoteData, quoteSchema);
-      if (!quoteValidator.valid) {
+      const quoteValidate = ajv.compile(quoteSchema);
+      const quoteValidator = quoteValidate(quoteData);
+      if (!quoteValidator) {
         console.log(
           `Quote ${quotefilename} JSON schema is \u001b[31minvalid\u001b[0m`
         );
@@ -406,11 +406,9 @@ function validateQuotes() {
         quoteFilesErrors = quoteValidator.errors;
       }
       const quoteIds = quoteData.quotes.map((quote) => quote.id);
-      const quoteIdsValidator = JSONValidator.validate(
-        quoteIds,
-        quoteIdsSchema
-      );
-      if (!quoteIdsValidator.valid) {
+      const quoteIdsValidate = ajv.compile(quoteIdsSchema);
+      const quoteIdsValidator = quoteIdsValidate(quoteIds);
+      if (!quoteIdsValidator) {
         console.log(
           `Quote ${quotefilename} IDs are \u001b[31mnot unique\u001b[0m`
         );
@@ -472,11 +470,9 @@ function validateLanguages() {
         type: "string",
       },
     };
-    const languagesValidator = JSONValidator.validate(
-      languagesData,
-      languagesSchema
-    );
-    if (languagesValidator.valid) {
+    const languagesValidate = ajv.compile(languagesSchema);
+    const languagesValidator = languagesValidate(languagesData);
+    if (languagesValidator) {
       console.log("Languages list JSON schema is \u001b[32mvalid\u001b[0m");
     } else {
       console.log("Languages list JSON schema is \u001b[31minvalid\u001b[0m");
@@ -506,11 +502,9 @@ function validateLanguages() {
         required: ["name", "languages"],
       },
     };
-    const languagesGroupValidator = JSONValidator.validate(
-      languagesGroupData,
-      languagesGroupSchema
-    );
-    if (languagesGroupValidator.valid) {
+    const languagesGroupValidate = ajv.compile(languagesGroupSchema);
+    const languagesGroupValidator = languagesGroupValidate(languagesGroupData);
+    if (languagesGroupValidator) {
       console.log("Languages groups JSON schema is \u001b[32mvalid\u001b[0m");
     } else {
       console.log("Languages groups JSON schema is \u001b[31minvalid\u001b[0m");
@@ -555,11 +549,9 @@ function validateLanguages() {
       );
       languageFileSchema.properties.name.pattern =
         "^" + escapeRegExp(language) + "$";
-      const languageFileValidator = JSONValidator.validate(
-        languageFileData,
-        languageFileSchema
-      );
-      if (!languageFileValidator.valid) {
+      const languageFileValidate = ajv.compile(languageFileSchema);
+      const languageFileValidator = languageFileValidate(languageFileData);
+      if (!languageFileValidator) {
         languageFilesAllGood = false;
         languageFilesErrors = languageFileValidator.errors;
         return;
