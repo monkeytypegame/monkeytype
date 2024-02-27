@@ -14,6 +14,7 @@ export async function update(): Promise<void> {
       Config.mode,
       mode2 as never,
       Config.punctuation,
+      Config.numbers,
       Config.language,
       Config.difficulty,
       Config.lazyMode
