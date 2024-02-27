@@ -28,6 +28,7 @@ services:
       - mongodb
     environment:
       - DB_URI=mongodb://mongodb:27017
+      - REDIS_URI=redis://redis:6379
     ports:
       - "${DOCKER_SERVER_PORT:-5005}:${DOCKER_SERVER_PORT:-5005}"
     volumes:
