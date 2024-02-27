@@ -4,7 +4,7 @@ services:
   redis:
     container_name: monkeytype-redis
     image: redis:6.2.6
-    restart: on-failure
+    # restart: on-failure
     ports:
       - "${DOCKER_REDIS_PORT:-6379}:${DOCKER_REDIS_PORT:-6379}"
     volumes:
@@ -13,7 +13,7 @@ services:
   mongodb:
     container_name: monkeytype-mongodb
     image: mongo:5.0.8
-    restart: on-failure
+    # restart: on-failure
     ports:
       - "${DOCKER_DB_PORT:-27017}:${DOCKER_DB_PORT:-27017}"
     volumes:
