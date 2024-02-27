@@ -600,37 +600,24 @@ export async function getLocalPB<M extends SharedTypes.Config.Mode>(
   if (!funboxes.every((f) => f.canGetPb)) {
     return 0;
   }
+  if (dbSnapshot === null || dbSnapshot?.personalBests === null) return 0;
 
-  function cont(): number {
-    let ret = 0;
-    try {
-      if (!dbSnapshot?.personalBests) return ret;
+  const bestsByMode = dbSnapshot?.personalBests[mode][
+    mode2
+  ] as SharedTypes.PersonalBest[];
 
-      (
-        dbSnapshot.personalBests[mode][
-          mode2
-        ] as unknown as SharedTypes.PersonalBest[]
-      ).forEach((pb) => {
-        if (
-          pb.punctuation === punctuation &&
-          pb.numbers === numbers &&
-          pb.difficulty === difficulty &&
-          pb.language === language &&
-          (pb.lazyMode === lazyMode || (pb.lazyMode === undefined && !lazyMode))
-        ) {
-          ret = pb.wpm;
-        }
-      });
+  if (bestsByMode === undefined) return 0;
 
-      return ret;
-    } catch (e) {
-      return ret;
-    }
-  }
-
-  const retval = dbSnapshot === null ? 0 : cont();
-
-  return retval;
+  return (
+    bestsByMode.find(
+      (pb) =>
+        (pb.punctuation ?? false) === punctuation &&
+        (pb.numbers ?? false) === numbers &&
+        pb.difficulty === difficulty &&
+        pb.language === language &&
+        (pb.lazyMode ?? false) === lazyMode
+    )?.wpm ?? 0
+  );
 }
 
 export async function saveLocalPB<M extends SharedTypes.Config.Mode>(

@@ -229,7 +229,7 @@ function updateWpmAndAcc(): void {
   }
   $("#result .stats .raw .bottom").text(Format.typingSpeed(result.rawWpm));
   $("#result .stats .acc .bottom").text(
-    result.acc === 100 ? "100%" : Format.percentage(result.acc)
+    result.acc === 100 ? "100%" : Format.accuracy(result.acc)
   );
 
   if (Config.alwaysShowDecimalPlaces) {
