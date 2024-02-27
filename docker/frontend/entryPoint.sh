@@ -12,6 +12,9 @@ sed -i "s/###FIREBASE_APPID###/${FIREBASE_APPID}/g" js/firebase.*.js
 echo "use backend url ${MONKEYTYPE_BACKENDURL}"
 sed -i "s/###MONKEYTYPE_BACKENDURL###/${MONKEYTYPE_BACKENDURL//\//\\/}/g" js/*.js
 
+echo "use recapture ${RECAPTCHA_SITE_KEY}"
+sed -i "s/###RECAPTCHA_SITE_KEY###/${RECAPTCHA_SITE_KEY//\//\\/}/g" js/*.js
+
 
 echo "run"
 nginx -g "daemon off;"

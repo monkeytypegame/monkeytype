@@ -1,22 +1,30 @@
 FROM  node:hydrogen-bookworm as builder
 WORKDIR /app
 
+#ENV
 ENV BACKEND_URL="###MONKEYTYPE_BACKENDURL###"
+ENV RECAPTCHA_SITE_KEY="###RECAPTCHA_SITE_KEY###"
 
-COPY . .
+#COPY
+COPY .eslintrc.json .eslintrc.json
+COPY package.json package.json
+COPY package-lock.json package-lock.json
+COPY shared-types shared-types
+COPY frontend frontend
 COPY docker/frontend/firebase-config-live.ts frontend/src/ts/constants/firebase-config.ts
 COPY docker/frontend/firebase-config-live.ts frontend/src/ts/constants/firebase-config-live.ts
 
-RUN npm i
-RUN cd frontend && npm i
+#BUILD
+RUN npm ci
+RUN cd frontend && npm ci
 RUN cd frontend && npx vite build
 
 
+# COPY to target
 FROM nginx:latest
 COPY --from=builder /app/frontend/dist /usr/share/nginx/html
-
 COPY docker/frontend/entryPoint.sh .
 RUN chmod +x ./entryPoint.sh
-RUN cat ./entryPoint.sh
 
+# entry
 CMD ["./entryPoint.sh"]

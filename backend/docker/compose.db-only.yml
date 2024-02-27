@@ -21,4 +21,6 @@ services:
 
 volumes:
   mongo-data:
+    name: monkeytype_mongo_data
   redis-data:
+    name: monkeytype_redis_data

@@ -367,7 +367,13 @@ export function restart(options = {} as RestartOptions): void {
       }
 
       if (Config.showAverage !== "off") {
+<<<<<<< HEAD
         void Last10Average.update().then(() => {
+||||||| parent of 7c75caf01 (backend image, some documentation)
+        Last10Average.update().finally(() => {
+=======
+        void Last10Average.update().finally(() => {
+>>>>>>> 7c75caf01 (backend image, some documentation)
           void ModesNotice.update();
         });
       } else {
