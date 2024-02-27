@@ -27,11 +27,15 @@ function buildClientVersion() {
   );
   const version = [versionPrefix, versionSuffix].join("_");
 
-  const commitHash = childProcess
-    .execSync("git rev-parse --short HEAD")
-    .toString();
+  try {
+    const commitHash = childProcess
+      .execSync("git rev-parse --short HEAD")
+      .toString();
 
-  return `${version}.${commitHash}`;
+    return `${version}.${commitHash}`;
+  } catch (e) {
+    return `${version}.unknown-hash`;
+  }
 }
 
 /** @type {import("vite").UserConfig} */
@@ -71,7 +75,7 @@ const BASE_CONFIG = {
     Inspect(),
   ],
   server: {
-    open: true,
+    open: process.env.SERVER_OPEN !== "false",
     port: 3000,
     host: process.env.BACKEND_URL !== undefined,
   },

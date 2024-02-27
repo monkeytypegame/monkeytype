@@ -16,7 +16,8 @@
     "deploy-preview": "npm run validate-json && npm run build && firebase hosting:channel:deploy preview -P live --expires 2h",
     "test": "jest --verbose --collect-coverage --runInBand",
     "tsc": "tsc",
-    "knip": "knip"
+    "knip": "knip",
+    "docker": "docker-compose -f docker/compose.dev.yml up"
   },
   "engines": {
     "node": "18.19.1",

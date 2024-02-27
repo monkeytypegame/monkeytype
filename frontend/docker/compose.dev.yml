@@ -3,10 +3,13 @@ services:
   frontend:
     container_name: monkeytype-frontend
     image: node:18.19.1
-    restart: on-failure
+    # restart: on-failure
+    environment:
+      - SERVER_OPEN=false
     ports:
       - "3000:3000"
     volumes:
       - ../:/monkeytype
     user: node
-    entrypoint: 'bash -c "cd /monkeytype && npm run dev-fe"'
+    entrypoint: 'bash -c "cd /monkeytype && npm i && npm run dev"'
+    # entrypoint: "tail -f /dev/null"
