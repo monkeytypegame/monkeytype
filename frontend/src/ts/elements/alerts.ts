@@ -463,8 +463,8 @@ $("#alertsPopupWrapper .accountAlerts .list").on(
   }
 );
 
-$(document).on("keydown", (e) => {
-  if (e.key === "Escape" && isPopupVisible(wrapperId)) {
+$(document).on("keydown", () => {
+  if (isPopupVisible(wrapperId)) {
     hide();
   }
 });
