@@ -9,7 +9,7 @@ services:
     ports:
       - "3000:3000"
     volumes:
-      - ../:/monkeytype
+      - ../../:/monkeytype
     user: node
-    entrypoint: 'bash -c "cd /monkeytype && npm i && npm run dev"'
+    entrypoint: 'bash -c "cd /monkeytype/frontend && npm i && npm run dev"'
     # entrypoint: "tail -f /dev/null"
