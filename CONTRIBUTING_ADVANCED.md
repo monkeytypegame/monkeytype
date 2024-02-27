@@ -95,7 +95,7 @@ If you want to access the frontend from other machines on your network create a 
 BACKEND_URL="http://<Your IP>:5005"
 ```
 
-### Backend (optional)
+### Databases (optional if running frontend only)
 
 Follow these steps if you want to work on anything involving the database/account system. Otherwise, you can skip this section.
 
@@ -103,48 +103,45 @@ Follow these steps if you want to work on anything involving the database/accoun
 
 2. Setup the database server
 
-| Local Server                                                                                                                                             | Docker (recommended)                                                                                                                                                   |
-| -------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| <ol><li>Install [MongoDB Community Edition](https://docs.mongodb.com/manual/administration/install-community/)</li><li>Make sure it is running</li></ol> | <ol><li>Install [Docker](http://www.docker.io/gettingstarted/#h_installation) on your machine</li><li>Run `docker compose up` from the `./backend` directory</li></ol> |
+| Manual                                                                                                                                                                                                                            | Docker (recommended)                                                                                                                                                        |
+| --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| <ol><li>Install [MongoDB Community Edition](https://docs.mongodb.com/manual/administration/install-community/)</li><li>Install [Redis](https://redis.io/docs/install/install-redis/)</li><li>Make sure both are running</li></ol> | <ol><li>Install [Docker](http://www.docker.io/gettingstarted/#h_installation) on your machine</li><li>Run `npm run docker-db-only` from the `./backend` directory</li></ol> |
 
 3. (Optional) Install [MongoDB-compass](https://www.mongodb.com/try/download/compass?tck=docs_compass). This tool can be used to see and manipulate your database visually.
    - To connect, type `mongodb://localhost:27017` in the connection string box and press connect. The Monkeytype database will be created and shown after the server is started.
 
 ## Building and Running Monkeytype
 
-- Run `npm run install-all` in the project root to install all dependencies.
-  - If you are on Windows, use `npm run install-windows`.
-  - If neither works, you will have to run `npm install` in root, frontend, and backend directories.
-    Now you are ready to build and run Monkeytype.
+Its time to run Monkeytype. Just like with the databases, you can run the frontend and backend manually or with Docker.
 
-### Using Docker:
+### Dependencies (if running manually)
 
-- Frontend:
-  ```
-  cd frontend && docker compose up
-  ```
-- Backend (in another terminal window):
+Run `npm run install-all` in the project root to install all dependencies.
 
-  ```
-  # to start only the databases (redis & mongodb)
-  cd backend && docker compose up
+- If you are on Windows, use `npm run install-windows`.
+- If neither works, you will have to run `npm install` in root, frontend, and backend directories.
 
-  # to start the API server & databases (redis & mongodb)
-  cd backend && docker compose -f docker-compose.server.yml up
-  ```
+### Both Frontend and Backend
 
-### **_Without_** Docker:
+Manual:
 
-- Frontend and backend
-  ```
-  npm run dev
-  ```
-- Only frontend (if you skipped the Backend section):
-  ```
-  npm run dev-fe
-  ```
+```
+npm run dev
+```
 
-These commands will start a local dev server on [port 3000](http://localhost:3000). It will watch for changes and rebuild when you edit files in `src/` or `public/` directories. Use <kbd>Ctrl+C</kbd> to stop it.
+### Backend
+
+| Manual                      | Docker                         |
+| --------------------------- | ------------------------------ |
+| `cd backend && npm run dev` | `cd backend && npm run docker` |
+
+### Frontend
+
+| Manual                       | Docker                          |
+| ---------------------------- | ------------------------------- |
+| `cd frontend && npm run dev` | `cd frontend && npm run docker` |
+
+These commands will start a local development website on [port 3000](http://localhost:3000) and a local development server on [port 5005](http://localhost:5005). They will automatically rebuild the website/server when you make changes in the `src/` directory. Use <kbd>Ctrl+C</kbd> to stop them.
 
 Note: Rebuilding doesn't happen instantaneously and depends on your machine, so be patient for changes to appear.
 
