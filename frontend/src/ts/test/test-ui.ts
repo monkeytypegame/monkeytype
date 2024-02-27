@@ -28,28 +28,51 @@ async function gethtml2canvas(): Promise<typeof import("html2canvas").default> {
   return (await import("html2canvas")).default;
 }
 
-function createHintsHtml(incorrectLtrIndices: number[][]): string {
+async function createHintsHtml(
+  incorrectLtrIndices: number[][]
+): Promise<string> {
+  const currentLanguage = await Misc.getCurrentLanguage(Config.language);
+  const isLanguageRightToLeft = currentLanguage.rightToLeft;
+  const isLanguageWithLigatures = currentLanguage.ligatures;
+
+  const incorrectLetters = document.querySelectorAll(
+    "#words > div.word.active > letter"
+  );
+
   let hintsHtml = "";
   for (const block of incorrectLtrIndices) {
-    let blockWidth = 0,
-      blockMinLeft = 999999;
-    let blockIndices = "",
-      blockChars = "",
-      blockStyle = "";
+    let blockWidth = 0;
+    let blockIndices = "";
+    let blockChars = "";
+
+    const leftmostLetter =
+      (isLanguageRightToLeft ? block[block.length - 1] : block[0]) ?? 0;
+    let blockLeft = (incorrectLetters[leftmostLetter] as HTMLElement)
+      .offsetLeft;
+
     for (const indx of block) {
-      const incorrectLetterElement = document.querySelectorAll(
-        "#words > div.word.active > letter"
-      )[indx] as HTMLElement;
-      blockWidth += incorrectLetterElement.offsetWidth;
-      blockMinLeft = Math.min(incorrectLetterElement.offsetLeft, blockMinLeft);
+      blockWidth += (incorrectLetters[indx] as HTMLElement).offsetWidth;
       blockIndices += `"${indx}",`;
       blockChars += TestInput.input.current[indx];
+
+      if (!isLanguageWithLigatures) {
+        blockLeft = (incorrectLetters[indx] as HTMLElement).offsetLeft;
+        blockIndices = "[" + blockIndices.slice(0, -1) + "]";
+        hintsHtml +=
+          `<hint data-length=1 data-chars-index=${blockIndices}` +
+          ` style=left:${blockLeft + blockWidth / 2}px;>${blockChars}</hint>`;
+
+        blockWidth = 0;
+        blockIndices = "";
+        blockChars = "";
+      }
     }
-    blockIndices = "[" + blockIndices.slice(0, -1) + "]";
-    blockStyle = `"left:${blockMinLeft + blockWidth / 2}px;"`;
-    hintsHtml +=
-      `<hint data-length=${block.length} data-chars-index=${blockIndices}` +
-      ` style=${blockStyle}>${blockChars}</hint>`;
+    if (isLanguageWithLigatures) {
+      blockIndices = "[" + blockIndices.slice(0, -1) + "]";
+      hintsHtml +=
+        `<hint data-length=${block.length} data-chars-index=${blockIndices}` +
+        ` style=left:${blockLeft + blockWidth / 2}px;>${blockChars}</hint>`;
+    }
   }
   hintsHtml = `<div class="hints">${hintsHtml}</div>`;
   return hintsHtml;
@@ -106,7 +129,7 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
   if (typeof eventValue !== "boolean") return;
   if (eventKey === "flipTestColors") flipColors(eventValue);
   if (eventKey === "colorfulMode") colorful(eventValue);
-  if (eventKey === "highlightMode") updateWordElement(eventValue);
+  if (eventKey === "highlightMode") void updateWordElement(eventValue);
   if (eventKey === "burstHeatmap") void applyBurstHeatmap();
 });
 
@@ -590,12 +613,14 @@ export async function screenshot(): Promise<void> {
   }, 3000);
 }
 
-export function updateWordElement(
+export async function updateWordElement(
   showError = !Config.blindMode,
   inputOverride?: string
-): void {
+): Promise<void> {
   const input = inputOverride ?? TestInput.input.current;
-  const wordAtIndex = document.querySelector("#words .word.active") as Element;
+  const wordAtIndex = document.querySelector(
+    "#words .word.active"
+  ) as HTMLElement;
   const currentWord = TestWords.words.getCurrent();
   if (!currentWord && Config.mode !== "zen") return;
   let ret = "";
@@ -771,7 +796,10 @@ export function updateWordElement(
   }
   wordAtIndex.innerHTML = ret;
   if (hintIndices?.length)
-    wordAtIndex.insertAdjacentHTML("beforeend", createHintsHtml(hintIndices));
+    wordAtIndex.insertAdjacentHTML(
+      "beforeend",
+      await createHintsHtml(hintIndices)
+    );
   if (newlineafter) $("#words").append("<div class='newline'></div>");
 }
 
