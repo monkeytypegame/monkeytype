@@ -69,9 +69,12 @@ node_modules_bak/
 .env
 
 #vs code
-.vscode
+.vscode/*
+.vscode/.*
+!.vscode/extensions.json
 *.code-workspace
 !monkeytype.code-workspace
+
 
 .idea
 

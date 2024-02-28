@@ -262,13 +262,13 @@ class SimplePopup {
   exec(): void {
     if (!this.canClose) return;
     const vals: string[] = [];
-    $.each($("#simplePopup input, #simplePopup textarea"), (_, el) => {
+    for (const el of $("#simplePopup input, #simplePopup textarea")) {
       if ($(el).is(":checkbox")) {
         vals.push($(el).is(":checked") ? "true" : "false");
       } else {
         vals.push($(el).val() as string);
       }
-    });
+    }
 
     const inputsWithCurrentValue = [];
     for (let i = 0; i < this.inputs.length; i++) {
