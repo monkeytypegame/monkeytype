@@ -21,10 +21,10 @@ RUN cd frontend && npx vite build
 
 
 # COPY to target
-FROM nginx:latest
+FROM nginx:mainline-alpine
 COPY --from=builder /app/frontend/dist /usr/share/nginx/html
-COPY docker/frontend/entryPoint.sh /docker-entrypoint.d/updateConfig.sh
-#RUN chmod +x ./entryPoint.sh
+COPY docker/frontend/updateConfig.sh /docker-entrypoint.d/updateConfig.sh
+RUN chmod +x  /docker-entrypoint.d/updateConfig.sh
 
 # entry
 #CMD ["./entryPoint.sh"]
