@@ -28,6 +28,33 @@ async function gethtml2canvas(): Promise<typeof import("html2canvas").default> {
   return (await import("html2canvas")).default;
 }
 
+function createHintsHtml(incorrectLtrIndices: number[][]): string {
+  let hintsHtml = "";
+  for (const block of incorrectLtrIndices) {
+    let blockWidth = 0,
+      blockMinLeft = 999999;
+    let blockIndices = "",
+      blockChars = "",
+      blockStyle = "";
+    for (const indx of block) {
+      const incorrectLetterElement = document.querySelectorAll(
+        "#words > div.word.active > letter"
+      )[indx] as HTMLElement;
+      blockWidth += incorrectLetterElement.offsetWidth;
+      blockMinLeft = Math.min(incorrectLetterElement.offsetLeft, blockMinLeft);
+      blockIndices += `"${indx}",`;
+      blockChars += TestInput.input.current[indx];
+    }
+    blockIndices = "[" + blockIndices.slice(0, -1) + "]";
+    blockStyle = `"left:${blockMinLeft + blockWidth / 2}px;"`;
+    hintsHtml +=
+      `<hint data-length=${block.length} data-chars-index=${blockIndices}` +
+      ` style=${blockStyle}>${blockChars}</hint>`;
+  }
+  hintsHtml = `<div class="hints">${hintsHtml}</div>`;
+  return hintsHtml;
+}
+
 const debouncedZipfCheck = debounce(250, async () => {
   const supports = await Misc.checkIfLanguageSupportsZipf(Config.language);
   if (supports === "no") {
@@ -572,6 +599,7 @@ export function updateWordElement(
   const currentWord = TestWords.words.getCurrent();
   if (!currentWord && Config.mode !== "zen") return;
   let ret = "";
+  const hintIndices: number[][] = [];
 
   let newlineafter = false;
 
@@ -704,8 +732,15 @@ export function updateWordElement(
               ? "_"
               : input[i]
             : currentLetter) +
-          (Config.indicateTypos === "below" ? `<hint>${input[i]}</hint>` : "") +
           "</letter>";
+        if (Config.indicateTypos === "below") {
+          if (!hintIndices?.length) hintIndices.push([i]);
+          else {
+            const lastblock = hintIndices[hintIndices.length - 1];
+            if (lastblock?.[lastblock.length - 1] === i - 1) lastblock.push(i);
+            else hintIndices.push([i]);
+          }
+        }
       }
     }
 
@@ -735,6 +770,8 @@ export function updateWordElement(
     }
   }
   wordAtIndex.innerHTML = ret;
+  if (hintIndices?.length)
+    wordAtIndex.insertAdjacentHTML("beforeend", createHintsHtml(hintIndices));
   if (newlineafter) $("#words").append("<div class='newline'></div>");
 }
 

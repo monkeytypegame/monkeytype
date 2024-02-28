@@ -211,14 +211,18 @@ export function update(expectedStepEnd: number): void {
       }
 
       newTop =
+        word.offsetTop +
         currentLetter.offsetTop -
         Config.fontSize * Misc.convertRemToPixels(1) * 0.1;
       newLeft;
       if (settings.currentLetterIndex === -1) {
-        newLeft = currentLetter.offsetLeft;
+        newLeft = word.offsetLeft + currentLetter.offsetLeft - caretWidth / 2;
       } else {
         newLeft =
-          currentLetter.offsetLeft + currentLetterWidth - caretWidth / 2;
+          word.offsetLeft +
+          currentLetter.offsetLeft +
+          currentLetterWidth -
+          caretWidth / 2;
       }
       caret.removeClass("hidden");
     } catch (e) {
