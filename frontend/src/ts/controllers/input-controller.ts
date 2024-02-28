@@ -867,6 +867,27 @@ function handleTab(event: JQuery.KeyDownEvent, popupVisible: boolean): void {
   }
 }
 
+$("#wordsInput").on("keydown", (event) => {
+  const pageTestActive: boolean = ActivePage.get() === "test";
+  const commandLineVisible = Misc.isPopupVisible("commandLineWrapper");
+  const leaderboardsVisible = Misc.isPopupVisible("leaderboardsWrapper");
+  const popupVisible: boolean = Misc.isAnyPopupVisible();
+  const cookiePopupVisible = CookiePopup.isVisible();
+
+  const allowTyping: boolean =
+    pageTestActive &&
+    !commandLineVisible &&
+    !leaderboardsVisible &&
+    !popupVisible &&
+    !TestUI.resultVisible &&
+    !cookiePopupVisible &&
+    event.key !== "Enter";
+
+  if (!allowTyping) {
+    event.preventDefault();
+  }
+});
+
 let lastBailoutAttempt = -1;
 
 $(document).on("keydown", async (event) => {
