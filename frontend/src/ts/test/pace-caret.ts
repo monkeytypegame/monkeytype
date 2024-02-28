@@ -80,6 +80,7 @@ export async function init(): Promise<void> {
       Config.mode,
       mode2,
       Config.punctuation,
+      Config.numbers,
       Config.language,
       Config.difficulty,
       Config.lazyMode
@@ -90,6 +91,7 @@ export async function init(): Promise<void> {
       Config.mode,
       mode2,
       Config.punctuation,
+      Config.numbers,
       Config.language,
       Config.difficulty,
       Config.lazyMode
