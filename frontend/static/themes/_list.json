@@ -1202,5 +1202,12 @@
     "mainColor": "#ffadad",
     "subColor": "#ff3d8b",
     "textColor": "#f1deef"
+  },
+  {
+    "name": "dragonfruit",
+    "bgColor": "#ffe0e0",
+    "mainColor": "#ff0000",
+    "subColor": "#c02020",
+    "textColor": "#300000"
   }
 ]
