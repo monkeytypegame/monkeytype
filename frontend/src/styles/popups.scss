@@ -1670,6 +1670,7 @@
       gap: 2rem;
       align-content: baseline;
       height: 100%;
+      grid-auto-columns: 100%;
     }
     .accountAlerts > .title,
     .notificationHistory > .title,
@@ -1691,6 +1692,7 @@
     .list {
       display: grid;
       gap: 1rem;
+      grid-template-columns: 100%;
       .nothing {
         width: 100%;
         color: var(--text-color);
@@ -1738,6 +1740,7 @@
           color: var(--text-color);
           transition: 0.125s;
           opacity: 1;
+          word-wrap: break-word;
         }
         .buttons {
           grid-area: buttons;
@@ -1769,14 +1772,14 @@
     }
     .psas .list .item {
       grid-template-areas: "indicator body";
-      grid-template-columns: 0.25rem auto;
+      grid-template-columns: 0.25rem calc(100% - 0.25rem);
       .body {
         opacity: 1;
       }
     }
     .notificationHistory .list .item {
       grid-template-areas: "indicator title" "indicator body";
-      grid-template-columns: 0.25rem auto;
+      grid-template-columns: 0.25rem calc(100% - 0.25rem);
       .title {
         font-size: 0.75rem;
         color: var(--sub-color);
