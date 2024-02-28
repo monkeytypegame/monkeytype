@@ -167,6 +167,7 @@ async function show(): Promise<void> {
         },
         100,
         () => {
+          wrapperDialog.focus();
           if (isAuthenticated()) {
             void getAccountAlerts();
           }
@@ -254,12 +255,12 @@ async function getAccountAlerts(): Promise<void> {
         <div class="buttons">
           ${
             ie.rewards.length > 0 && !ie.read
-              ? `<div class="markReadAlert textButton" aria-label="Claim" data-balloon-pos="left"><i class="fas fa-gift"></i></div>`
+              ? `<button class="markReadAlert textButton" aria-label="Claim" data-balloon-pos="left"><i class="fas fa-gift"></i></button>`
               : ``
           }
           ${
             (ie.rewards.length > 0 && ie.read) || ie.rewards.length === 0
-              ? `<div class="deleteAlert textButton" aria-label="Delete" data-balloon-pos="left"><i class="fas fa-trash"></i></div>`
+              ? `<button class="deleteAlert textButton" aria-label="Delete" data-balloon-pos="left"><i class="fas fa-trash"></i></button>`
               : ``
           }
         </div>
@@ -381,7 +382,7 @@ function markReadAlert(id: string): void {
   item
     .find(".buttons")
     .append(
-      `<div class="deleteAlert textButton" aria-label="Delete" data-balloon-pos="left"><i class="fas fa-trash"></i></div>`
+      `<button class="deleteAlert textButton" aria-label="Delete" data-balloon-pos="left"><i class="fas fa-trash"></i></button>`
     );
   item.find(".rewards").animate(
     {
