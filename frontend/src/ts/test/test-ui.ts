@@ -28,54 +28,79 @@ async function gethtml2canvas(): Promise<typeof import("html2canvas").default> {
   return (await import("html2canvas")).default;
 }
 
-async function createHintsHtml(
-  incorrectLtrIndices: number[][]
-): Promise<string> {
-  const currentLanguage = await Misc.getCurrentLanguage(Config.language);
-  const isLanguageRightToLeft = currentLanguage.rightToLeft;
-  const isLanguageWithLigatures = currentLanguage.ligatures;
-
-  const incorrectLetters = document.querySelectorAll(
-    "#words > div.word.active > letter"
-  );
-
+function createHintsHtml(
+  incorrectLtrIndices: number[][],
+  activeWordLetters: NodeListOf<Element>
+): string {
   let hintsHtml = "";
-  for (const block of incorrectLtrIndices) {
-    let blockWidth = 0;
-    let blockIndices = "";
-    let blockChars = "";
+  for (const adjacentLetters of incorrectLtrIndices) {
+    for (const indx of adjacentLetters) {
+      const blockLeft = (activeWordLetters[indx] as HTMLElement).offsetLeft;
+      const blockWidth = (activeWordLetters[indx] as HTMLElement).offsetWidth;
+      const blockIndices = `[${indx}]`;
+      const blockChars = TestInput.input.current[indx];
 
-    const leftmostLetter =
-      (isLanguageRightToLeft ? block[block.length - 1] : block[0]) ?? 0;
-    let blockLeft = (incorrectLetters[leftmostLetter] as HTMLElement)
-      .offsetLeft;
-
-    for (const indx of block) {
-      blockWidth += (incorrectLetters[indx] as HTMLElement).offsetWidth;
-      blockIndices += `"${indx}",`;
-      blockChars += TestInput.input.current[indx];
-
-      if (!isLanguageWithLigatures) {
-        blockLeft = (incorrectLetters[indx] as HTMLElement).offsetLeft;
-        blockIndices = "[" + blockIndices.slice(0, -1) + "]";
-        hintsHtml +=
-          `<hint data-length=1 data-chars-index=${blockIndices}` +
-          ` style=left:${blockLeft + blockWidth / 2}px;>${blockChars}</hint>`;
-
-        blockWidth = 0;
-        blockIndices = "";
-        blockChars = "";
-      }
-    }
-    if (isLanguageWithLigatures) {
-      blockIndices = "[" + blockIndices.slice(0, -1) + "]";
       hintsHtml +=
-        `<hint data-length=${block.length} data-chars-index=${blockIndices}` +
-        ` style=left:${blockLeft + blockWidth / 2}px;>${blockChars}</hint>`;
+        `<hint data-length=1 data-chars-index=${blockIndices}` +
+        ` style="left: ${blockLeft + blockWidth / 2}px;">${blockChars}</hint>`;
     }
   }
   hintsHtml = `<div class="hints">${hintsHtml}</div>`;
   return hintsHtml;
+}
+
+async function joinOverlappingHints(
+  incorrectLtrIndices: number[][],
+  activeWordLetters: NodeListOf<Element>,
+  hintElements: HTMLCollection
+): Promise<void> {
+  const currentLanguage = await Misc.getCurrentLanguage(Config.language);
+  const isLanguageRTL = currentLanguage.rightToLeft;
+
+  let i = 0;
+  for (const adjacentLetters of incorrectLtrIndices) {
+    for (let j = 0; j < adjacentLetters.length - 1; j++) {
+      const block1El = hintElements[i] as HTMLElement;
+      const block2El = hintElements[i + 1] as HTMLElement;
+
+      if (
+        (!isLanguageRTL &&
+          block1El.offsetLeft + block1El.offsetWidth / 2 >
+            block2El.offsetLeft - block2El.offsetWidth / 2) ||
+        (isLanguageRTL &&
+          block2El.offsetLeft + block2El.offsetWidth / 2 >
+            block1El.offsetLeft - block1El.offsetWidth / 2)
+      ) {
+        block1El.dataset["length"] = (
+          parseInt(block1El.dataset["length"] ?? "1") +
+          parseInt(block2El.dataset["length"] ?? "1")
+        ).toString();
+
+        const block1Indices = block1El.dataset["charsIndex"] ?? "[]";
+        const block2Indices = block2El.dataset["charsIndex"] ?? "[]";
+        block1El.dataset["charsIndex"] =
+          block1Indices.slice(0, -1) + "," + block2Indices.slice(1);
+
+        const letter1Index = adjacentLetters[j] ?? 0;
+        const newLeft =
+          (activeWordLetters[letter1Index] as HTMLElement).offsetLeft +
+          (isLanguageRTL
+            ? (activeWordLetters[letter1Index] as HTMLElement).offsetWidth
+            : 0) +
+          (block2El.offsetLeft - block1El.offsetLeft);
+        block1El.style.left = newLeft.toString() + "px";
+
+        block1El.insertAdjacentHTML("beforeend", block2El.innerHTML);
+
+        block2El.remove();
+        adjacentLetters.splice(j + 1, 1);
+        i -= j === 0 ? 1 : 2;
+        j -= j === 0 ? 1 : 2;
+      }
+      i++;
+    }
+    i++;
+  }
 }
 
 const debouncedZipfCheck = debounce(250, async () => {
@@ -795,11 +820,15 @@ export async function updateWordElement(
     }
   }
   wordAtIndex.innerHTML = ret;
-  if (hintIndices?.length)
+  if (hintIndices?.length) {
+    const activeWordLetters = wordAtIndex.querySelectorAll("letter");
     wordAtIndex.insertAdjacentHTML(
       "beforeend",
-      await createHintsHtml(hintIndices)
+      createHintsHtml(hintIndices, activeWordLetters)
     );
+    const hintElements = wordAtIndex.getElementsByTagName("hint");
+    await joinOverlappingHints(hintIndices, activeWordLetters, hintElements);
+  }
   if (newlineafter) $("#words").append("<div class='newline'></div>");
 }
 
