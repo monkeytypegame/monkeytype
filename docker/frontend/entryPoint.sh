@@ -14,7 +14,3 @@ sed -i "s/###MONKEYTYPE_BACKENDURL###/${MONKEYTYPE_BACKENDURL//\//\\/}/g" js/*.j
 
 echo "use recapture ${RECAPTCHA_SITE_KEY}"
 sed -i "s/###RECAPTCHA_SITE_KEY###/${RECAPTCHA_SITE_KEY//\//\\/}/g" js/*.js
-
-
-echo "run"
-nginx -g "daemon off;"

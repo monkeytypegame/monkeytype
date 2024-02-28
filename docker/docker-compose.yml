@@ -34,16 +34,22 @@ services:
       - DB_URI=mongodb://monkeytype-mongodb:${MONGO_PORT:-27017}
       - REDIS_URI=redis://monkeytype-redis:${REDIS_PORT:-6379}
       - FRONTEND_URL=${MONKEYTYPE_FRONTENDURL}
+    volumes:
+      - type: bind
+        source: ./serviceAccountKey.json
+        target: /src/credentials/serviceAccountKey.json
+        read_only: true
     depends_on:
       monkeytype-redis:
         condition: service_healthy
       monkeytype-mongodb:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:5005"]
-      interval: 30s
+      test: ["CMD", "nc", "-z", "-v", "localhost", "5005"]
+      interval: 5s
       timeout: 10s
-      retries: 5
+      retries: 15
+      start_period: 5s
   
   monkeytype-redis:
     container_name: monkeytype-redis
@@ -55,6 +61,10 @@ services:
       - redis-data:/data
     healthcheck:
       test: [ "CMD", "redis-cli", "--raw", "incr", "ping" ]
+      interval: 5s
+      timeout: 10s
+      retries: 15
+      start_period: 10s
 
   monkeytype-mongodb:
     container_name: monkeytype-mongodb
@@ -66,10 +76,10 @@ services:
       - "${MONGO_PORT:-27017}:27017"
     healthcheck:
       test: echo 'db.stats().ok' | mongo localhost:27017/test --quiet
-      interval: 10s
+      interval: 5s
       timeout: 10s
-      retries: 5
-      start_period: 40s
+      retries: 15
+      start_period: 10s
      
 
 volumes:

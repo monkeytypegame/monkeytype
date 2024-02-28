@@ -1,28 +1,40 @@
-FROM  node:hydrogen-bookworm 
-#as builder
+FROM node:hydrogen-alpine as builder
 WORKDIR /app
 
-#ENV BACKEND_URL="###MONKEYTYPE_BACKENDURL###"
-#ENV RECAPTCHA_SITE_KEY="###RECAPTCHA_SITE_KEY###"
-
-#COPY . .
+#copy
+COPY .eslintignore .eslintignore
+COPY .eslintrc.json .eslintrc.json
 COPY package.json package.json
 COPY package-lock.json package-lock.json
 COPY shared-types shared-types
 COPY backend backend
-RUN ls
 
-
+#build
 RUN npm ci
 RUN cd backend && npm ci
+RUN cd backend && npm run build
+
+# target
+FROM node:hydrogen-alpine
+WORKDIR /
+COPY backend/redis-scripts /redis-scripts
+
+WORKDIR /app
+COPY backend/package.json package.json
+COPY backend/package-lock.json package-lock.json
+COPY --from=builder /app/backend/build .
+
+#install deps (no dev-dependencies)
+RUN npm ci --omit=dev
+
+## logs 
+RUN mkdir logs
+
+#run in env mode (no anticheat)
+ENV MODE=dev
+
 
 EXPOSE 5005
+USER node
 
-#FROM nginx:latest
-#COPY --from=builder /app/frontend/dist /usr/share/nginx/html
-
-#COPY docker/frontend/entryPoint.sh .
-#RUN chmod +x ./entryPoint.sh
-#CMD ["./entryPoint.sh"]
-WORKDIR /app/backend
-CMD [ "npm", "run", "dev" ]
+CMD [ "node", "server.js" ]

@@ -1,4 +1,4 @@
-FROM  node:hydrogen-bookworm as builder
+FROM node:hydrogen-alpine as builder
 WORKDIR /app
 
 #ENV
@@ -23,8 +23,8 @@ RUN cd frontend && npx vite build
 # COPY to target
 FROM nginx:latest
 COPY --from=builder /app/frontend/dist /usr/share/nginx/html
-COPY docker/frontend/entryPoint.sh .
-RUN chmod +x ./entryPoint.sh
+COPY docker/frontend/entryPoint.sh /docker-entrypoint.d/updateConfig.sh
+#RUN chmod +x ./entryPoint.sh
 
 # entry
-CMD ["./entryPoint.sh"]
+#CMD ["./entryPoint.sh"]
