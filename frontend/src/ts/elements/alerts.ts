@@ -12,6 +12,10 @@ import * as Skeleton from "../popups/skeleton";
 
 const wrapperId = "alertsPopupWrapper";
 
+const wrapperDialog = document.querySelector(
+  "#" + wrapperId
+) as HTMLDialogElement;
+
 let accountAlerts: MonkeyTypes.MonkeyMail[] = [];
 let maxMail = 0;
 let mailToMarkRead: string[] = [];
@@ -116,6 +120,7 @@ function hide(): void {
           $("#alertsPopupWrapper").addClass("hidden");
           $("#alertsPopup .notificationHistory .list").empty();
           $("#alertsPopup .psas .list").empty();
+          wrapperDialog.close();
           Skeleton.remove(wrapperId);
         }
       );
@@ -125,6 +130,8 @@ function hide(): void {
 async function show(): Promise<void> {
   Skeleton.append(wrapperId);
   if (!isPopupVisible(wrapperId)) {
+    wrapperDialog.showModal();
+
     $("#alertsPopup").css("marginRight", "-10rem").animate(
       {
         marginRight: 0,
