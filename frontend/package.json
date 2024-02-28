@@ -18,7 +18,8 @@
     "test-coverage": "vitest run --coverage",
     "dev-test": "concurrently --kill-others \"vite dev\" \"vitest\"",
     "tsc": "tsc",
-    "knip": "knip"
+    "knip": "knip",
+    "docker": "docker-compose -f docker/compose.dev.yml up"
   },
   "engines": {
     "node": "18.19.1",
