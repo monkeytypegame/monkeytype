@@ -39,6 +39,10 @@ services:
         source: ./serviceAccountKey.json
         target: /src/credentials/serviceAccountKey.json
         read_only: true
+      - type: bind
+        source: ./backend-configuration.json
+        target: /app/backend-configuration.json
+        read_only: true
     depends_on:
       monkeytype-redis:
         condition: service_healthy

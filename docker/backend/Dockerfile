@@ -16,16 +16,20 @@ RUN cd backend && npm run build
 
 # target
 FROM node:hydrogen-alpine
+RUN apk add wget
 WORKDIR /
 COPY backend/redis-scripts /redis-scripts
 
 WORKDIR /app
 COPY backend/package.json package.json
 COPY backend/package-lock.json package-lock.json
+COPY docker/backend/entry-point.sh entry-point.sh
+COPY docker/backend/applyConfig.sh applyConfig.sh
 COPY --from=builder /app/backend/build .
 
 #install deps (no dev-dependencies)
 RUN npm ci --omit=dev
+
 
 ## logs 
 RUN mkdir logs
@@ -37,4 +41,4 @@ ENV MODE=dev
 EXPOSE 5005
 USER node
 
-CMD [ "node", "server.js" ]
+CMD [ "/bin/sh", "./entry-point.sh" ]
