@@ -880,34 +880,13 @@ list.deleteAccount = new SimplePopup(
       };
     }
 
-    Notifications.add("Deleting stats...", 0);
+    Notifications.add("Deleting user...", 0);
     const usersResponse = await Ape.users.delete();
 
     if (usersResponse.status !== 200) {
       return {
         status: -1,
         message: "Failed to delete user stats: " + usersResponse.message,
-      };
-    }
-
-    Notifications.add("Deleting results...", 0);
-    const resultsResponse = await Ape.results.deleteAll();
-
-    if (resultsResponse.status !== 200) {
-      return {
-        status: -1,
-        message: "Failed to delete results: " + resultsResponse.message,
-      };
-    }
-
-    Notifications.add("Deleting login information...", 0);
-    try {
-      await reauth.user.delete();
-    } catch (e) {
-      const message = createErrorMessage(e, "Failed to delete auth user");
-      return {
-        status: -1,
-        message,
       };
     }
 

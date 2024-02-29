@@ -11,7 +11,7 @@ import {
   sanitizeString,
 } from "../../utils/misc";
 import GeorgeQueue from "../../queues/george-queue";
-import admin, { FirebaseError, auth } from "firebase-admin";
+import admin, { FirebaseError } from "firebase-admin";
 import { deleteAllApeKeys } from "../../dal/ape-keys";
 import { deleteAllPresets } from "../../dal/preset";
 import { deleteAll as deleteAllResults } from "../../dal/result";
@@ -179,16 +179,22 @@ export async function deleteUser(
   const { uid } = req.ctx.decodedToken;
 
   const userInfo = await UserDAL.getUser(uid, "delete user");
+
+  //cleanup database
   await Promise.all([
     UserDAL.deleteUser(uid),
     deleteAllApeKeys(uid),
     deleteAllPresets(uid),
     deleteConfig(uid),
+    deleteAllResults(uid),
     purgeUserFromDailyLeaderboards(
       uid,
       req.ctx.configuration.dailyLeaderboards
     ),
   ]);
+
+  //delete user from
+  await firebaseDeleteUser(uid);
 
   void Logger.logToDb(
     "user_deleted",
