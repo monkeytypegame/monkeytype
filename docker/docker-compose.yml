@@ -31,8 +31,8 @@ services:
     restart: on-failure
     environment:
       - DB_NAME=monkeytype
-      - DB_URI=mongodb://monkeytype-mongodb:${MONGO_PORT:-27017}
-      - REDIS_URI=redis://monkeytype-redis:${REDIS_PORT:-6379}
+      - DB_URI=mongodb://monkeytype-mongodb:27017
+      - REDIS_URI=redis://monkeytype-redis:6379
       - FRONTEND_URL=${MONKEYTYPE_FRONTENDURL}
     volumes:
       - type: bind
