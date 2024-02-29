@@ -1,65 +1,61 @@
 import * as UpdateConfig from "../config";
 import * as Notifications from "../elements/notifications";
-import { isPopupVisible } from "../utils/misc";
-import * as Skeleton from "./skeleton";
+import { AnimatedModal } from "./animated-modal";
 
-const wrapperId = "settingsImportWrapper";
+type State = {
+  mode: "import" | "export";
+  value: string;
+};
 
-export function show(mode: string, config?: string): void {
-  Skeleton.append(wrapperId);
+const state: State = {
+  mode: "import",
+  value: "",
+};
 
-  if (!isPopupVisible(wrapperId)) {
-    $("#settingsImportWrapper").attr("mode", mode);
+export function show(mode: "import" | "export", config?: string): void {
+  state.mode = mode;
+  state.value = config ?? "";
 
-    if (mode === "export") {
-      $("#settingsImportWrapper .button").addClass("hidden");
-      $("#settingsImportWrapper input").val(config ?? "");
-    } else if (mode === "import") {
-      $("#settingsImportWrapper .button").removeClass("hidden");
-    }
-
-    $("#settingsImportWrapper")
-      .stop(true, true)
-      .css("opacity", 0)
-      .removeClass("hidden")
-      .animate({ opacity: 1 }, 125, () => {
-        $("#settingsImportWrapper input").trigger("focus");
-        $("#settingsImportWrapper input").trigger("select");
-        $("#settingsImportWrapper input").trigger("focus");
-      });
-  }
-}
-
-async function hide(): Promise<void> {
-  if (isPopupVisible(wrapperId)) {
-    if ($("#settingsImportWrapper input").val() !== "") {
-      try {
-        await UpdateConfig.apply(
-          JSON.parse($("#settingsImportWrapper input").val() as string)
-        );
-      } catch (e) {
-        Notifications.add("Failed to import settings: " + e, -1);
+  void modal.show({
+    beforeAnimation: async (modal) => {
+      (modal.querySelector("input") as HTMLInputElement).value = state.value;
+      if (state.mode === "export") {
+        modal.querySelector("button")?.classList.add("hidden");
+        modal.querySelector("input")?.setAttribute("readonly", "true");
+      } else if (state.mode === "import") {
+        modal.querySelector("button")?.classList.remove("hidden");
+        modal.querySelector("input")?.removeAttribute("readonly");
       }
-      UpdateConfig.saveFullConfigToLocalStorage();
-    }
-    $("#settingsImportWrapper")
-      .stop(true, true)
-      .css("opacity", 1)
-      .animate({ opacity: 0 }, 125, () => {
-        $("#settingsImportWrapper").addClass("hidden");
-        Skeleton.remove(wrapperId);
-      });
-  }
+    },
+    afterAnimation: async (modal) => {
+      const inputEl = modal.querySelector("input");
+      if (state.mode === "import") {
+        inputEl?.focus();
+      } else if (state.mode === "export") {
+        inputEl?.select();
+      }
+    },
+  });
 }
 
-$("#settingsImportWrapper .button").on("click", () => {
-  void hide();
+$("#settingsImportPopup input").on("input", (e) => {
+  state.value = (e.target as HTMLInputElement).value;
 });
 
-$("#settingsImportWrapper").on("click", (e) => {
-  if ($(e.target).attr("id") === "settingsImportWrapper") {
-    void hide();
+$("#settingsImportPopup form").on("submit", async (e) => {
+  e.preventDefault();
+  if (state.mode !== "import") return;
+  if (state.value === "") {
+    void modal.hide();
+    return;
   }
+  try {
+    await UpdateConfig.apply(JSON.parse(state.value));
+  } catch (e) {
+    Notifications.add("Failed to import settings: " + e, -1);
+  }
+  UpdateConfig.saveFullConfigToLocalStorage();
+  void modal.hide();
 });
 
-Skeleton.save(wrapperId);
+const modal = new AnimatedModal("settingsImportPopup");
