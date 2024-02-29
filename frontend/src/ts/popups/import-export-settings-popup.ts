@@ -2,8 +2,6 @@ import * as UpdateConfig from "../config";
 import * as Notifications from "../elements/notifications";
 import { AnimatedModal } from "./animated-modal";
 
-const wrapperId = "settingsImportPopup";
-
 type State = {
   mode: "import" | "export";
   value: string;
@@ -62,4 +60,4 @@ $("#settingsImportPopup form").on("submit", async (e) => {
   void modal.hide();
 });
 
-const modal = new AnimatedModal(wrapperId);
+const modal = new AnimatedModal("settingsImportPopup");
