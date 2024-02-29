@@ -53,14 +53,18 @@ export class AnimatedModal {
   private wrapperId: string;
   private open = false;
 
-  constructor(wrapperIdNoHash: string) {
-    const dialogElement = document.getElementById(wrapperIdNoHash);
+  constructor(wrapperId: string) {
+    if (wrapperId.startsWith("#")) {
+      wrapperId = wrapperId.slice(1);
+    }
+
+    const dialogElement = document.getElementById(wrapperId);
     const modalElement = document.querySelector(
-      `#${wrapperIdNoHash} > .modal`
+      `#${wrapperId} > .modal`
     ) as HTMLElement;
 
     if (dialogElement === null) {
-      throw new Error(`Dialog element with id ${wrapperIdNoHash} not found`);
+      throw new Error(`Dialog element with id ${wrapperId} not found`);
     }
 
     if (!(dialogElement instanceof HTMLDialogElement)) {
@@ -68,16 +72,16 @@ export class AnimatedModal {
     }
 
     if (dialogElement === null) {
-      throw new Error(`Dialog element with id ${wrapperIdNoHash} not found`);
+      throw new Error(`Dialog element with id ${wrapperId} not found`);
     }
 
     if (modalElement === null) {
       throw new Error(
-        `Div element inside #${wrapperIdNoHash} with class 'modal' not found`
+        `Div element inside #${wrapperId} with class 'modal' not found`
       );
     }
 
-    this.wrapperId = wrapperIdNoHash;
+    this.wrapperId = wrapperId;
     this.wrapperEl = dialogElement;
     this.modalEl = modalElement;
 
