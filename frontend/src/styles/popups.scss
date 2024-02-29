@@ -17,6 +17,9 @@
   &:focus-visible {
     outline: none;
   }
+  &::backdrop {
+    background: transparent;
+  }
 }
 
 #customTextPopupWrapper {
