@@ -1202,5 +1202,12 @@
     "mainColor": "#ffadad",
     "subColor": "#ff3d8b",
     "textColor": "#f1deef"
+  },
+  {
+    "name": "turquoise",
+    "bgColor": "turquoise",
+    "mainColor": "teal",
+    "subColor": "teal",
+    "textColor": "black"
   }
 ]
