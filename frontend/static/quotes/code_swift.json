@@ -7,6 +7,17 @@
     [601, 9999]
   ],
   "quotes": [
-
+    {
+      "text": "print(\"Hello, World!\")",
+      "source": "Programiz - Swift Hello World",
+      "id": 1,
+      "length": 22
+    },
+    {
+      "text": "func findSquare(num: Int) -> Int {\n\tvar result = num * num\n\treturn result\n}",
+      "source": "Programiz - Swift Functions",
+      "id": 2,
+      "length": 80
+    }
   ]
 }
