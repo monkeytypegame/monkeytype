@@ -223,7 +223,7 @@ function handleSpace(): void {
     TestInput.incrementKeypressCount();
     TestInput.pushKeypressWord(TestWords.words.currentIndex);
     if (!nospace) {
-      Sound.playClick();
+      void Sound.playClick();
     }
     Replay.addReplayEvent("submitCorrectWord");
     if (TestWords.words.currentIndex === TestWords.words.length) {
@@ -234,9 +234,9 @@ function handleSpace(): void {
   } else {
     if (!nospace) {
       if (Config.playSoundOnError === "off" || Config.blindMode) {
-        Sound.playClick();
+        void Sound.playClick();
       } else {
-        Sound.playError();
+        void Sound.playError();
       }
     }
     TestInput.pushMissedWord(TestWords.words.getCurrent());
@@ -583,12 +583,12 @@ function handleChar(
   );
 
   if (thisCharCorrect) {
-    Sound.playClick();
+    void Sound.playClick();
   } else {
     if (Config.playSoundOnError === "off" || Config.blindMode) {
-      Sound.playClick();
+      void Sound.playClick();
     } else {
-      Sound.playError();
+      void Sound.playError();
     }
   }
 
@@ -744,14 +744,18 @@ function handleChar(
     handleSpace();
   }
 
+  const currentWord = TestWords.words.getCurrent();
+  const doesCurrentWordHaveTab = /^\t+/.test(TestWords.words.getCurrent());
+  const isCurrentCharTab = currentWord[TestInput.input.current.length] === "\t";
+
   if (
     thisCharCorrect &&
     Config.language.startsWith("code") &&
-    /^\t+/.test(TestWords.words.getCurrent()) &&
-    TestWords.words.getCurrent()[TestInput.input.current.length] === "\t"
+    doesCurrentWordHaveTab &&
+    isCurrentCharTab
   ) {
-    // handleChar("\t", TestInput.input.current.length);
-    $("#wordsInput").trigger($.Event("keydown", { key: "Tab", code: "Tab" }));
+    const tabEvent = new KeyboardEvent("keydown", { key: "Tab", code: "Tab" });
+    document.dispatchEvent(tabEvent);
   }
 
   if (char !== "\n") {
@@ -862,6 +866,27 @@ function handleTab(event: JQuery.KeyDownEvent, popupVisible: boolean): void {
     $("#restartTestButton").trigger("focus");
   }
 }
+
+$("#wordsInput").on("keydown", (event) => {
+  const pageTestActive: boolean = ActivePage.get() === "test";
+  const commandLineVisible = Misc.isPopupVisible("commandLineWrapper");
+  const leaderboardsVisible = Misc.isPopupVisible("leaderboardsWrapper");
+  const popupVisible: boolean = Misc.isAnyPopupVisible();
+  const cookiePopupVisible = CookiePopup.isVisible();
+
+  const allowTyping: boolean =
+    pageTestActive &&
+    !commandLineVisible &&
+    !leaderboardsVisible &&
+    !popupVisible &&
+    !TestUI.resultVisible &&
+    !cookiePopupVisible &&
+    event.key !== "Enter";
+
+  if (!allowTyping) {
+    event.preventDefault();
+  }
+});
 
 let lastBailoutAttempt = -1;
 
@@ -1000,7 +1025,7 @@ $(document).on("keydown", async (event) => {
 
   //blocking firefox from going back in history with backspace
   if (event.key === "Backspace") {
-    Sound.playClick();
+    void Sound.playClick();
     const t = /INPUT|SELECT|TEXTAREA/i;
     if (
       !t.test((event.target as unknown as Element).tagName)
@@ -1068,7 +1093,7 @@ $(document).on("keydown", async (event) => {
 
   //show dead keys
   if (event.key === "Dead" && !CompositionState.getComposing()) {
-    Sound.playClick();
+    void Sound.playClick();
     const word: HTMLElement | null = document.querySelector<HTMLElement>(
       "#words .word.active"
     );
@@ -1328,7 +1353,12 @@ $("#wordsInput").on("input", (event) => {
     TestUI.updateWordElement();
     void Caret.updatePosition();
     if (!CompositionState.getComposing()) {
-      Replay.addReplayEvent("setLetterIndex", currTestInput.length - 1);
+      const keyStroke = event?.originalEvent as InputEvent;
+      if (keyStroke.inputType === "deleteWordBackward") {
+        Replay.addReplayEvent("setLetterIndex", 0); // Letter index will be 0 on CTRL + Backspace Event
+      } else {
+        Replay.addReplayEvent("setLetterIndex", currTestInput.length - 1);
+      }
     }
   }
   if (inputValue !== currTestInput) {

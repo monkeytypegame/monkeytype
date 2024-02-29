@@ -124,7 +124,7 @@ export async function update(): Promise<void> {
     (Config.repeatedPace && TestState.isPaceRepeat)
   ) {
     const speed = Format.typingSpeed(PaceCaret.settings?.wpm ?? 0, {
-      showDecimalPlaces: true,
+      showDecimalPlaces: false,
       suffix: ` ${Config.typingSpeedUnit}`,
     });
 
@@ -144,21 +144,19 @@ export async function update(): Promise<void> {
   }
 
   if (Config.showAverage !== "off") {
-    let avgWPM = Last10Average.getWPM();
-    let avgAcc = Last10Average.getAcc();
-
-    if (!Config.alwaysShowDecimalPlaces) {
-      avgWPM = Math.round(avgWPM);
-      avgAcc = Math.round(avgAcc);
-    }
+    const avgWPM = Last10Average.getWPM();
+    const avgAcc = Last10Average.getAcc();
 
     if (isAuthenticated() && avgWPM > 0) {
       const avgWPMText = ["speed", "both"].includes(Config.showAverage)
-        ? Format.typingSpeed(avgWPM, { suffix: ` ${Config.typingSpeedUnit}` })
+        ? Format.typingSpeed(avgWPM, {
+            suffix: ` ${Config.typingSpeedUnit}`,
+            showDecimalPlaces: false,
+          })
         : "";
 
       const avgAccText = ["acc", "both"].includes(Config.showAverage)
-        ? Format.percentage(avgAcc, { suffix: " acc" })
+        ? Format.accuracy(avgAcc, { suffix: " acc", showDecimalPlaces: false })
         : "";
 
       const text = `${avgWPMText} ${avgAccText}`.trim();
@@ -173,7 +171,7 @@ export async function update(): Promise<void> {
     $(".pageTest #testModesNotice").append(
       `<div class="textButton" commands="minWpm"><i class="fas fa-bomb"></i>min ${Format.typingSpeed(
         Config.minWpmCustomSpeed,
-        { showDecimalPlaces: true, suffix: ` ${Config.typingSpeedUnit}` }
+        { showDecimalPlaces: false, suffix: ` ${Config.typingSpeedUnit}` }
       )}</div>`
     );
   }
@@ -188,7 +186,7 @@ export async function update(): Promise<void> {
     $(".pageTest #testModesNotice").append(
       `<div class="textButton" commands="minBurst"><i class="fas fa-bomb"></i>min ${Format.typingSpeed(
         Config.minBurstCustomSpeed,
-        { showDecimalPlaces: true }
+        { showDecimalPlaces: false }
       )} ${Config.typingSpeedUnit} burst ${
         Config.minBurst === "flex" ? "(flex)" : ""
       }</div>`
@@ -254,4 +252,16 @@ export async function update(): Promise<void> {
       );
     }
   } catch {}
+}
+
+if (import.meta.hot !== undefined) {
+  import.meta.hot.dispose(() => {
+    //
+  });
+  import.meta.hot.accept(() => {
+    //
+  });
+  import.meta.hot.on("vite:afterUpdate", () => {
+    void update();
+  });
 }

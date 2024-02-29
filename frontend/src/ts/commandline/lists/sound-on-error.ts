@@ -19,7 +19,7 @@ const subgroup: MonkeyTypes.CommandsSubgroup = {
       configValue: "1",
       exec: (): void => {
         UpdateConfig.setPlaySoundOnError("1");
-        SoundController.playError();
+        void SoundController.playError();
       },
     },
     {
@@ -28,7 +28,7 @@ const subgroup: MonkeyTypes.CommandsSubgroup = {
       configValue: "2",
       exec: (): void => {
         UpdateConfig.setPlaySoundOnError("2");
-        SoundController.playError();
+        void SoundController.playError();
       },
     },
     {
@@ -37,7 +37,7 @@ const subgroup: MonkeyTypes.CommandsSubgroup = {
       configValue: "3",
       exec: (): void => {
         UpdateConfig.setPlaySoundOnError("3");
-        SoundController.playError();
+        void SoundController.playError();
       },
     },
     {
@@ -46,7 +46,7 @@ const subgroup: MonkeyTypes.CommandsSubgroup = {
       configValue: "4",
       exec: (): void => {
         UpdateConfig.setPlaySoundOnError("4");
-        SoundController.playError();
+        void SoundController.playError();
       },
     },
   ],

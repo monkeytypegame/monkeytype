@@ -182,23 +182,10 @@ export async function initSnapshot(): Promise<
     // snap.tags = userDataTags;
 
     snap.tags =
-      userData.tags?.map((tag) => {
-        const newTag = {
-          ...tag,
-          display: tag.name.replaceAll("_", " "),
-          personalBests: {
-            time: {},
-            words: {},
-            quote: {},
-            zen: {},
-            custom: {},
-          },
-        };
-        for (const mode of ["time", "words", "quote", "zen", "custom"]) {
-          newTag.personalBests[mode as keyof SharedTypes.PersonalBests] ??= {};
-        }
-        return newTag;
-      }) ?? [];
+      userData.tags?.map((tag) => ({
+        ...tag,
+        display: tag.name.replaceAll("_", " "),
+      })) ?? [];
 
     snap.tags = snap.tags?.sort((a, b) => {
       if (a.name > b.name) {
@@ -286,6 +273,7 @@ export async function getUserResults(offset?: number): Promise<boolean> {
     }
     if (result.numbers === undefined) result.numbers = false;
     if (result.punctuation === undefined) result.punctuation = false;
+    if (result.numbers === undefined) result.numbers = false;
     if (result.quoteLength === undefined) result.quoteLength = -1;
     if (result.restartCount === undefined) result.restartCount = 0;
     if (result.incompleteTestSeconds === undefined) {
@@ -416,44 +404,11 @@ export async function deleteCustomTheme(themeId: string): Promise<boolean> {
   return true;
 }
 
-async function _getUserHighestWpm<M extends SharedTypes.Config.Mode>(
-  mode: M,
-  mode2: SharedTypes.Config.Mode2<M>,
-  punctuation: boolean,
-  language: string,
-  difficulty: SharedTypes.Config.Difficulty,
-  lazyMode: boolean
-): Promise<number> {
-  function cont(): number {
-    let topWpm = 0;
-
-    dbSnapshot?.results?.forEach((result) => {
-      if (
-        result.mode === mode &&
-        `${result.mode2}` === `${mode2 as string | number}` && //using template strings here because legacy results can have numbers in mode2
-        result.punctuation === punctuation &&
-        result.language === language &&
-        result.difficulty === difficulty &&
-        (result.lazyMode === lazyMode ||
-          (result.lazyMode === undefined && !lazyMode))
-      ) {
-        if (result.wpm > topWpm) {
-          topWpm = result.wpm;
-        }
-      }
-    });
-    return topWpm;
-  }
-
-  const retval = !dbSnapshot || dbSnapshot.results === undefined ? 0 : cont();
-
-  return retval;
-}
-
 export async function getUserAverage10<M extends SharedTypes.Config.Mode>(
   mode: M,
   mode2: SharedTypes.Config.Mode2<M>,
   punctuation: boolean,
+  numbers: boolean,
   language: string,
   difficulty: SharedTypes.Config.Difficulty,
   lazyMode: boolean
@@ -481,7 +436,8 @@ export async function getUserAverage10<M extends SharedTypes.Config.Mode>(
       for (const result of snapshot.results) {
         if (
           result.mode === mode &&
-          result.punctuation === punctuation &&
+          (result.punctuation ?? false) === punctuation &&
+          (result.numbers ?? false) === numbers &&
           result.language === language &&
           result.difficulty === difficulty &&
           (result.lazyMode === lazyMode ||
@@ -537,6 +493,7 @@ export async function getUserDailyBest<M extends SharedTypes.Config.Mode>(
   mode: M,
   mode2: SharedTypes.Config.Mode2<M>,
   punctuation: boolean,
+  numbers: boolean,
   language: string,
   difficulty: SharedTypes.Config.Difficulty,
   lazyMode: boolean
@@ -559,7 +516,8 @@ export async function getUserDailyBest<M extends SharedTypes.Config.Mode>(
       for (const result of snapshot.results) {
         if (
           result.mode === mode &&
-          result.punctuation === punctuation &&
+          (result.punctuation ?? false) === punctuation &&
+          (result.numbers ?? false) === numbers &&
           result.language === language &&
           result.difficulty === difficulty &&
           (result.lazyMode === lazyMode ||
@@ -600,6 +558,7 @@ export async function getLocalPB<M extends SharedTypes.Config.Mode>(
   mode: M,
   mode2: SharedTypes.Config.Mode2<M>,
   punctuation: boolean,
+  numbers: boolean,
   language: string,
   difficulty: SharedTypes.Config.Difficulty,
   lazyMode: boolean,
@@ -612,42 +571,31 @@ export async function getLocalPB<M extends SharedTypes.Config.Mode>(
   if (!funboxes.every((f) => f.canGetPb)) {
     return 0;
   }
+  if (dbSnapshot === null || dbSnapshot?.personalBests === null) return 0;
 
-  function cont(): number {
-    let ret = 0;
-    try {
-      if (!dbSnapshot?.personalBests) return ret;
+  const bestsByMode = dbSnapshot?.personalBests[mode][
+    mode2
+  ] as SharedTypes.PersonalBest[];
 
-      (
-        dbSnapshot.personalBests[mode][
-          mode2
-        ] as unknown as SharedTypes.PersonalBest[]
-      ).forEach((pb) => {
-        if (
-          pb.punctuation === punctuation &&
-          pb.difficulty === difficulty &&
-          pb.language === language &&
-          (pb.lazyMode === lazyMode || (pb.lazyMode === undefined && !lazyMode))
-        ) {
-          ret = pb.wpm;
-        }
-      });
+  if (bestsByMode === undefined) return 0;
 
-      return ret;
-    } catch (e) {
-      return ret;
-    }
-  }
-
-  const retval = dbSnapshot === null ? 0 : cont();
-
-  return retval;
+  return (
+    bestsByMode.find(
+      (pb) =>
+        (pb.punctuation ?? false) === punctuation &&
+        (pb.numbers ?? false) === numbers &&
+        pb.difficulty === difficulty &&
+        pb.language === language &&
+        (pb.lazyMode ?? false) === lazyMode
+    )?.wpm ?? 0
+  );
 }
 
 export async function saveLocalPB<M extends SharedTypes.Config.Mode>(
   mode: M,
   mode2: SharedTypes.Config.Mode2<M>,
   punctuation: boolean,
+  numbers: boolean,
   language: string,
   difficulty: SharedTypes.Config.Difficulty,
   lazyMode: boolean,
@@ -683,10 +631,11 @@ export async function saveLocalPB<M extends SharedTypes.Config.Mode>(
       ] as unknown as SharedTypes.PersonalBest[]
     ).forEach((pb) => {
       if (
-        pb.punctuation === punctuation &&
+        (pb.punctuation ?? false) === punctuation &&
+        (pb.numbers ?? false) === numbers &&
         pb.difficulty === difficulty &&
         pb.language === language &&
-        (pb.lazyMode === lazyMode || (pb.lazyMode === undefined && !lazyMode))
+        (pb.lazyMode ?? false) === lazyMode
       ) {
         found = true;
         pb.wpm = wpm;
@@ -708,6 +657,7 @@ export async function saveLocalPB<M extends SharedTypes.Config.Mode>(
         difficulty,
         lazyMode,
         punctuation,
+        numbers,
         wpm,
         acc,
         raw,
@@ -727,52 +677,50 @@ export async function getLocalTagPB<M extends SharedTypes.Config.Mode>(
   mode: M,
   mode2: SharedTypes.Config.Mode2<M>,
   punctuation: boolean,
+  numbers: boolean,
   language: string,
   difficulty: SharedTypes.Config.Difficulty,
   lazyMode: boolean
 ): Promise<number> {
-  function cont(): number {
-    let ret = 0;
+  if (dbSnapshot === null) return 0;
 
-    const filteredtag = (getSnapshot()?.tags ?? []).filter(
-      (t) => t._id === tagId
-    )[0];
+  let ret = 0;
 
-    if (filteredtag === undefined) return ret;
+  const filteredtag = (getSnapshot()?.tags ?? []).filter(
+    (t) => t._id === tagId
+  )[0];
 
-    filteredtag.personalBests ??= {
-      time: {},
-      words: {},
-      quote: {},
-      zen: {},
-      custom: {},
-    };
+  if (filteredtag === undefined) return ret;
 
-    filteredtag.personalBests[mode] ??= {
-      [mode2]: [],
-    };
+  filteredtag.personalBests ??= {
+    time: {},
+    words: {},
+    quote: {},
+    zen: {},
+    custom: {},
+  };
 
-    filteredtag.personalBests[mode][mode2] ??=
-      [] as unknown as SharedTypes.PersonalBests[M][SharedTypes.Config.Mode2<M>];
+  filteredtag.personalBests[mode] ??= {
+    [mode2]: [],
+  };
 
-    const personalBests = (filteredtag.personalBests[mode][mode2] ??
-      []) as SharedTypes.PersonalBest[];
+  filteredtag.personalBests[mode][mode2] ??=
+    [] as unknown as SharedTypes.PersonalBests[M][SharedTypes.Config.Mode2<M>];
 
-    ret =
-      personalBests.find(
-        (pb) =>
-          pb.punctuation === punctuation &&
-          pb.difficulty === difficulty &&
-          pb.language === language &&
-          (pb.lazyMode === lazyMode || (pb.lazyMode === undefined && !lazyMode))
-      )?.wpm ?? 0;
+  const personalBests = (filteredtag.personalBests[mode][mode2] ??
+    []) as SharedTypes.PersonalBest[];
 
-    return ret;
-  }
+  ret =
+    personalBests.find(
+      (pb) =>
+        (pb.punctuation ?? false) === punctuation &&
+        (pb.numbers ?? false) === numbers &&
+        pb.difficulty === difficulty &&
+        pb.language === language &&
+        (pb.lazyMode === lazyMode || (pb.lazyMode === undefined && !lazyMode))
+    )?.wpm ?? 0;
 
-  const retval = dbSnapshot === null ? 0 : cont();
-
-  return retval;
+  return ret;
 }
 
 export async function saveLocalTagPB<M extends SharedTypes.Config.Mode>(
@@ -780,6 +728,7 @@ export async function saveLocalTagPB<M extends SharedTypes.Config.Mode>(
   mode: M,
   mode2: SharedTypes.Config.Mode2<M>,
   punctuation: boolean,
+  numbers: boolean,
   language: string,
   difficulty: SharedTypes.Config.Difficulty,
   lazyMode: boolean,
@@ -819,7 +768,8 @@ export async function saveLocalTagPB<M extends SharedTypes.Config.Mode>(
         ] as unknown as SharedTypes.PersonalBest[]
       ).forEach((pb) => {
         if (
-          pb.punctuation === punctuation &&
+          (pb.punctuation ?? false) === punctuation &&
+          (pb.numbers ?? false) === numbers &&
           pb.difficulty === difficulty &&
           pb.language === language &&
           (pb.lazyMode === lazyMode || (pb.lazyMode === undefined && !lazyMode))
@@ -844,6 +794,7 @@ export async function saveLocalTagPB<M extends SharedTypes.Config.Mode>(
           difficulty,
           lazyMode,
           punctuation,
+          numbers,
           wpm,
           acc,
           raw,
@@ -866,6 +817,7 @@ export async function saveLocalTagPB<M extends SharedTypes.Config.Mode>(
           difficulty: difficulty,
           lazyMode: lazyMode,
           punctuation: punctuation,
+          numbers: numbers,
           wpm: wpm,
           acc: acc,
           raw: raw,

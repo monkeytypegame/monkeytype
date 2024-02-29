@@ -26,7 +26,7 @@ export const cachedFetchJson = memoizeAsync<string, typeof fetchJson>(
 export async function getLayoutsList(): Promise<MonkeyTypes.Layouts> {
   try {
     const layoutsList = await cachedFetchJson<MonkeyTypes.Layouts>(
-      "/./layouts/_list.json"
+      "/layouts/_list.json"
     );
     return layoutsList;
   } catch (e) {
@@ -52,7 +52,7 @@ let themesList: MonkeyTypes.Theme[] | undefined;
 export async function getThemesList(): Promise<MonkeyTypes.Theme[]> {
   if (!themesList) {
     let themes = await cachedFetchJson<MonkeyTypes.Theme[]>(
-      "/./themes/_list.json"
+      "/themes/_list.json"
     );
 
     themes = themes.sort(function (a: MonkeyTypes.Theme, b: MonkeyTypes.Theme) {
@@ -94,7 +94,7 @@ export async function getSortedThemesList(): Promise<MonkeyTypes.Theme[]> {
 export async function getLanguageList(): Promise<string[]> {
   try {
     const languageList = await cachedFetchJson<string[]>(
-      "/./languages/_list.json"
+      "/languages/_list.json"
     );
     return languageList;
   } catch (e) {
@@ -108,7 +108,7 @@ export async function getLanguageGroups(): Promise<
   try {
     const languageGroupList = await cachedFetchJson<
       MonkeyTypes.LanguageGroup[]
-    >("/./languages/_groups.json");
+    >("/languages/_groups.json");
     return languageGroupList;
   } catch (e) {
     throw new Error("Language groups JSON fetch failed");
@@ -122,7 +122,7 @@ export async function getLanguage(
   // try {
   if (currentLanguage === undefined || currentLanguage.name !== lang) {
     currentLanguage = await cachedFetchJson<MonkeyTypes.LanguageObject>(
-      `/./languages/${lang}.json`
+      `/languages/${lang}.json`
     );
   }
   return currentLanguage;
@@ -130,7 +130,7 @@ export async function getLanguage(
   //   console.error(`error getting language`);
   //   console.error(e);
   //   currentLanguage = await cachedFetchJson<MonkeyTypes.LanguageObject>(
-  //     `/./language/english.json`
+  //     `/language/english.json`
   //   );
   //   return currentLanguage;
   // }
@@ -161,7 +161,7 @@ let funboxList: MonkeyTypes.FunboxMetadata[] | undefined;
 export async function getFunboxList(): Promise<MonkeyTypes.FunboxMetadata[]> {
   if (!funboxList) {
     let list = await cachedFetchJson<MonkeyTypes.FunboxMetadata[]>(
-      "/./funbox/_list.json"
+      "/funbox/_list.json"
     );
     list = list.sort(function (
       a: MonkeyTypes.FunboxMetadata,
@@ -193,7 +193,7 @@ let fontsList: MonkeyTypes.FontObject[] | undefined;
 export async function getFontsList(): Promise<MonkeyTypes.FontObject[]> {
   if (!fontsList) {
     let list = await cachedFetchJson<MonkeyTypes.FontObject[]>(
-      "/./fonts/_list.json"
+      "/fonts/_list.json"
     );
     list = list.sort(function (
       a: MonkeyTypes.FontObject,
@@ -215,7 +215,7 @@ export async function getFontsList(): Promise<MonkeyTypes.FontObject[]> {
 export async function getChallengeList(): Promise<MonkeyTypes.Challenge[]> {
   try {
     const data = await cachedFetchJson<MonkeyTypes.Challenge[]>(
-      "/./challenges/_list.json"
+      "/challenges/_list.json"
     );
     return data;
   } catch (e) {
@@ -225,7 +225,7 @@ export async function getChallengeList(): Promise<MonkeyTypes.Challenge[]> {
 
 export async function getSupportersList(): Promise<string[]> {
   try {
-    const data = await cachedFetchJson<string[]>("/./about/supporters.json");
+    const data = await cachedFetchJson<string[]>("/about/supporters.json");
     return data;
   } catch (e) {
     throw new Error("Supporters list JSON fetch failed");
@@ -234,7 +234,7 @@ export async function getSupportersList(): Promise<string[]> {
 
 export async function getContributorsList(): Promise<string[]> {
   try {
-    const data = await cachedFetchJson<string[]>("/./about/contributors.json");
+    const data = await cachedFetchJson<string[]>("/about/contributors.json");
     return data;
   } catch (e) {
     throw new Error("Contributors list JSON fetch failed");
@@ -429,16 +429,20 @@ export function median(arr: number[]): number {
 }
 
 export async function getLatestReleaseFromGitHub(): Promise<string> {
-  const releases = await $.getJSON(
+  type releaseType = { name: string };
+  const releases = await cachedFetchJson<releaseType[]>(
     "https://api.github.com/repos/monkeytypegame/monkeytype/releases?per_page=1"
   );
+  if (releases[0] === undefined || releases[0].name === undefined) {
+    throw new Error("No release found");
+  }
   return releases[0].name;
 }
 
 export async function getReleasesFromGitHub(): Promise<
   MonkeyTypes.GithubRelease[]
 > {
-  return $.getJSON(
+  return cachedFetchJson(
     "https://api.github.com/repos/monkeytypegame/monkeytype/releases?per_page=5"
   );
 }

@@ -1,6 +1,6 @@
 {
   "hosting": {
-    "public": "public",
+    "public": "dist",
     "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
     "rewrites": [
       {
@@ -20,7 +20,11 @@
         "destination": "/adtest.html"
       },
       {
-        "source": "**",
+        "source": "/test",
+        "destination": "/index.html"
+      },
+      {
+        "source": "!/@(js|about|challenges|css|fonts|funbox|images|languages|layouts|quotes|sound|themes|webfonts)/**",
         "destination": "/index.html"
       }
     ],

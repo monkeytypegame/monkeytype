@@ -1,7 +1,8 @@
 import { getAuthenticatedUser, isAuthenticated } from "../../firebase";
 import { getIdToken } from "firebase/auth";
 import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
-import { CLIENT_VERSION } from "../../version";
+import { envConfig } from "../../constants/env-config";
+import { createErrorMessage } from "../../utils/misc";
 
 type AxiosClientMethod = (
   endpoint: string,
@@ -29,7 +30,7 @@ async function adaptRequestOptions<TQuery, TPayload>(
       Accept: "application/json",
       "Content-Type": "application/json",
       ...(idToken && { Authorization: `Bearer ${idToken}` }),
-      "X-Client-Version": CLIENT_VERSION,
+      "X-Client-Version": envConfig.clientVersion,
     },
   };
 }
@@ -44,11 +45,34 @@ function apeifyClientMethod(
   ): Ape.EndpointResponse<TData> {
     let errorMessage = "";
 
+    let requestOptions: AxiosRequestConfig;
     try {
-      const requestOptions: AxiosRequestConfig = await adaptRequestOptions(
-        options
-      );
+      requestOptions = await adaptRequestOptions(options);
+    } catch (error) {
+      console.error("Failed to adapt request options");
+      console.error(error);
 
+      if ((error as Error).message.includes("auth/network-request-failed")) {
+        return {
+          status: 400,
+          message:
+            "Network error while trying to authenticate. Please try again.",
+          data: null,
+        };
+      }
+
+      const message = createErrorMessage(
+        error,
+        "Failed to adapt request options"
+      );
+      return {
+        status: 400,
+        message: message,
+        data: null,
+      };
+    }
+
+    try {
       let response;
       if (methodType === "get" || methodType === "delete") {
         response = await (clientMethod as AxiosClientMethod)(

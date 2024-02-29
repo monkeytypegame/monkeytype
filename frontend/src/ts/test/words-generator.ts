@@ -338,7 +338,8 @@ function applyLazyModeToWord(
   word: string,
   language: MonkeyTypes.LanguageObject
 ): string {
-  if (Config.lazyMode && !language.noLazyMode) {
+  const allowLazyMode = !language.noLazyMode || Config.mode === "custom";
+  if (Config.lazyMode && allowLazyMode) {
     word = LazyMode.replaceAccents(word, language.additionalAccents);
   }
   return word;
