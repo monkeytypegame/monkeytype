@@ -19,8 +19,8 @@ type ShowOptions = {
     };
   };
   callbacks?: {
-    beforeAnimation?: () => Promise<void>;
-    afterAnimation?: () => Promise<void>;
+    beforeAnimation?: (modal: HTMLElement) => Promise<void>;
+    afterAnimation?: (modal: HTMLElement) => Promise<void>;
   };
 };
 
@@ -42,8 +42,8 @@ type HideOptions = {
     };
   };
   callbacks?: {
-    beforeAnimation?: () => Promise<void>;
-    afterAnimation?: () => Promise<void>;
+    beforeAnimation?: (modal: HTMLElement) => Promise<void>;
+    afterAnimation?: (modal: HTMLElement) => Promise<void>;
   };
 };
 
@@ -117,7 +117,7 @@ export class AnimatedModal {
       this.open = true;
       this.wrapperEl.showModal();
 
-      await options?.callbacks?.beforeAnimation?.();
+      await options?.callbacks?.beforeAnimation?.(this.modalEl);
 
       const animationMode = options?.animation?.mode ?? "both";
       const animationDuration = options?.animation?.durationMs ?? 125;
@@ -149,7 +149,7 @@ export class AnimatedModal {
             options?.animation?.custom?.backdrop?.easing ?? "swing",
             async () => {
               this.wrapperEl.focus();
-              await options?.callbacks?.afterAnimation?.();
+              await options?.callbacks?.afterAnimation?.(this.modalEl);
               resolve();
             }
           );
@@ -167,7 +167,7 @@ export class AnimatedModal {
           options?.animation?.custom?.modal?.easing ?? "swing",
           async () => {
             this.wrapperEl.focus();
-            await options?.callbacks?.afterAnimation?.();
+            await options?.callbacks?.afterAnimation?.(this.modalEl);
             resolve();
           }
         );
@@ -180,7 +180,7 @@ export class AnimatedModal {
     return new Promise(async (resolve) => {
       if (!isPopupVisible(this.wrapperId)) return resolve();
 
-      await options?.callbacks?.beforeAnimation?.();
+      await options?.callbacks?.beforeAnimation?.(this.modalEl);
 
       const animationMode = options?.animation?.mode ?? "both";
       const animationDuration = options?.animation?.durationMs ?? 125;
@@ -214,7 +214,7 @@ export class AnimatedModal {
               this.wrapperEl.classList.add("hidden");
               Skeleton.remove(this.wrapperId);
               this.open = false;
-              await options?.callbacks?.afterAnimation?.();
+              await options?.callbacks?.afterAnimation?.(this.modalEl);
               resolve();
             }
           );
@@ -235,7 +235,7 @@ export class AnimatedModal {
             $(this.wrapperEl).addClass("hidden").css("opacity", "0");
             Skeleton.remove(this.wrapperId);
             this.open = false;
-            await options?.callbacks?.afterAnimation?.();
+            await options?.callbacks?.afterAnimation?.(this.modalEl);
             resolve();
           }
         );

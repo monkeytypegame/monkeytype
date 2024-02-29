@@ -20,20 +20,18 @@ export function show(mode: "import" | "export", config?: string): void {
 
   void modal.show({
     callbacks: {
-      beforeAnimation: async () => {
-        $("#settingsImportPopup input").val(state.value);
+      beforeAnimation: async (modal) => {
+        (modal.querySelector("input") as HTMLInputElement).value = state.value;
         if (state.mode === "export") {
-          $("#settingsImportPopup button").addClass("hidden");
-          $("#settingsImportPopup input").prop("readonly", true);
+          modal.querySelector("button")?.classList.add("hidden");
+          modal.querySelector("input")?.setAttribute("readonly", "true");
         } else if (state.mode === "import") {
-          $("#settingsImportPopup button").removeClass("hidden");
-          $("#settingsImportPopup input").prop("readonly", false);
+          modal.querySelector("button")?.classList.remove("hidden");
+          modal.querySelector("input")?.removeAttribute("readonly");
         }
       },
-      afterAnimation: async () => {
-        const inputEl = document.querySelector<HTMLInputElement>(
-          "#settingsImportPopup input"
-        );
+      afterAnimation: async (modal) => {
+        const inputEl = modal.querySelector("input");
         if (state.mode === "import") {
           inputEl?.focus();
         } else if (state.mode === "export") {
