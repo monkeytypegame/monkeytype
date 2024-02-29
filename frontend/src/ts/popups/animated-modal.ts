@@ -1,30 +1,7 @@
 import { isPopupVisible } from "../utils/misc";
 import * as Skeleton from "./skeleton";
 
-type ShowOptions = {
-  animation?: {
-    mode?: "none" | "both" | "popupOnly";
-    durationMs?: number;
-    custom?: {
-      wrapper?: {
-        from: Record<string, string>;
-        to: Record<string, string>;
-        easing?: string;
-      };
-      modal?: {
-        from: Record<string, string>;
-        to: Record<string, string>;
-        easing?: string;
-      };
-    };
-  };
-  callbacks?: {
-    beforeAnimation?: (modal: HTMLElement) => Promise<void>;
-    afterAnimation?: (modal: HTMLElement) => Promise<void>;
-  };
-};
-
-type HideOptions = {
+type ShowHideOptions = {
   animation?: {
     mode?: "none" | "both" | "popupOnly";
     durationMs?: number;
@@ -112,7 +89,7 @@ export class AnimatedModal {
     return this.open;
   }
 
-  async show(options?: ShowOptions): Promise<void> {
+  async show(options?: ShowHideOptions): Promise<void> {
     // eslint-disable-next-line no-async-promise-executor
     return new Promise(async (resolve) => {
       Skeleton.append(this.wrapperId);
@@ -179,7 +156,7 @@ export class AnimatedModal {
     });
   }
 
-  async hide(options?: HideOptions): Promise<void> {
+  async hide(options?: ShowHideOptions): Promise<void> {
     // eslint-disable-next-line no-async-promise-executor
     return new Promise(async (resolve) => {
       if (!isPopupVisible(this.wrapperId)) return resolve();
