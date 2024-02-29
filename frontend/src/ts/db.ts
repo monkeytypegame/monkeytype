@@ -84,10 +84,17 @@ export async function initSnapshot(): Promise<
       };
     }
 
+    const userData = userResponse.data;
     const configData = configResponse.data;
     const presetsData = presetsResponse.data;
 
-    const [userData] = [userResponse].map((response) => response.data);
+    if (userData === null) {
+      // eslint-disable-next-line @typescript-eslint/no-throw-literal
+      throw {
+        message: "Request was successful but user data is null",
+        responseCode: 200,
+      };
+    }
 
     snap.name = userData.name;
     snap.personalBests = userData.personalBests;
@@ -110,15 +117,13 @@ export async function initSnapshot(): Promise<
     snap.discordAvatar = userData.discordAvatar;
     snap.needsToChangeName = userData.needsToChangeName;
     snap.typingStats = {
-      timeTyping: userData.timeTyping,
-      startedTests: userData.startedTests,
-      completedTests: userData.completedTests,
+      timeTyping: userData.timeTyping ?? 0,
+      startedTests: userData.startedTests ?? 0,
+      completedTests: userData.completedTests ?? 0,
     };
     snap.quoteMod = userData.quoteMod;
     snap.favoriteQuotes = userData.favoriteQuotes ?? {};
     snap.quoteRatings = userData.quoteRatings;
-    snap.favouriteThemes =
-      userData.favouriteThemes === undefined ? [] : userData.favouriteThemes;
     snap.details = userData.profileDetails;
     snap.addedAt = userData.addedAt;
     snap.inventory = userData.inventory;
@@ -133,13 +138,7 @@ export async function initSnapshot(): Promise<
     snap.streakHourOffset =
       hourOffset === undefined || hourOffset === null ? undefined : hourOffset;
 
-    if (
-      userData.lbMemory?.time15 !== undefined ||
-      userData.lbMemory?.time60 !== undefined
-    ) {
-      //old memory format
-      snap.lbMemory = {} as MonkeyTypes.LeaderboardMemory;
-    } else if (userData.lbMemory !== undefined) {
+    if (userData.lbMemory !== undefined) {
       snap.lbMemory = userData.lbMemory;
     }
     // if (ActivePage.get() === "loading") {
@@ -163,24 +162,30 @@ export async function initSnapshot(): Promise<
     // LoadingPage.updateText("Downloading tags...");
     snap.customThemes = userData.customThemes ?? [];
 
-    const userDataTags: MonkeyTypes.Tag[] = userData.tags ?? [];
+    // const userDataTags: MonkeyTypes.UserTagWithDisplay[] = userData.tags ?? [];
 
-    userDataTags.forEach((tag) => {
-      tag.display = tag.name.replaceAll("_", " ");
-      tag.personalBests ??= {
-        time: {},
-        words: {},
-        quote: {},
-        zen: {},
-        custom: {},
-      };
+    // userDataTags.forEach((tag) => {
+    //   tag.display = tag.name.replaceAll("_", " ");
+    //   tag.personalBests ??= {
+    //     time: {},
+    //     words: {},
+    //     quote: {},
+    //     zen: {},
+    //     custom: {},
+    //   };
 
-      for (const mode of ["time", "words", "quote", "zen", "custom"]) {
-        tag.personalBests[mode as keyof SharedTypes.PersonalBests] ??= {};
-      }
-    });
+    //   for (const mode of ["time", "words", "quote", "zen", "custom"]) {
+    //     tag.personalBests[mode as keyof SharedTypes.PersonalBests] ??= {};
+    //   }
+    // });
 
-    snap.tags = userDataTags;
+    // snap.tags = userDataTags;
+
+    snap.tags =
+      userData.tags?.map((tag) => ({
+        ...tag,
+        display: tag.name.replaceAll("_", " "),
+      })) ?? [];
 
     snap.tags = snap.tags?.sort((a, b) => {
       if (a.name > b.name) {
@@ -268,6 +273,7 @@ export async function getUserResults(offset?: number): Promise<boolean> {
     }
     if (result.numbers === undefined) result.numbers = false;
     if (result.punctuation === undefined) result.punctuation = false;
+    if (result.numbers === undefined) result.numbers = false;
     if (result.quoteLength === undefined) result.quoteLength = -1;
     if (result.restartCount === undefined) result.restartCount = 0;
     if (result.incompleteTestSeconds === undefined) {
@@ -304,13 +310,17 @@ export async function getUserResults(offset?: number): Promise<boolean> {
 function _getCustomThemeById(
   themeID: string
 ): MonkeyTypes.CustomTheme | undefined {
-  return dbSnapshot?.customThemes.find((t) => t._id === themeID);
+  return dbSnapshot?.customThemes?.find((t) => t._id === themeID);
 }
 
 export async function addCustomTheme(
   theme: MonkeyTypes.RawCustomTheme
 ): Promise<boolean> {
   if (!dbSnapshot) return false;
+
+  if (dbSnapshot.customThemes === undefined) {
+    dbSnapshot.customThemes = [];
+  }
 
   if (dbSnapshot.customThemes.length >= 10) {
     Notifications.add("Too many custom themes!", 0);
@@ -323,9 +333,14 @@ export async function addCustomTheme(
     return false;
   }
 
+  if (response.data === null) {
+    Notifications.add("Error adding custom theme: No data returned", -1);
+    return false;
+  }
+
   const newCustomTheme: MonkeyTypes.CustomTheme = {
     ...theme,
-    _id: response.data.theme._id as string,
+    _id: response.data._id as string,
   };
 
   dbSnapshot.customThemes.push(newCustomTheme);
@@ -339,7 +354,11 @@ export async function editCustomTheme(
   if (!isAuthenticated()) return false;
   if (!dbSnapshot) return false;
 
-  const customTheme = dbSnapshot.customThemes.find((t) => t._id === themeId);
+  if (dbSnapshot.customThemes === undefined) {
+    dbSnapshot.customThemes = [];
+  }
+
+  const customTheme = dbSnapshot.customThemes?.find((t) => t._id === themeId);
   if (!customTheme) {
     Notifications.add(
       "Editing failed: Custom theme with id: " + themeId + " does not exist",
@@ -369,7 +388,7 @@ export async function deleteCustomTheme(themeId: string): Promise<boolean> {
   if (!isAuthenticated()) return false;
   if (!dbSnapshot) return false;
 
-  const customTheme = dbSnapshot.customThemes.find((t) => t._id === themeId);
+  const customTheme = dbSnapshot.customThemes?.find((t) => t._id === themeId);
   if (!customTheme) return false;
 
   const response = await Ape.users.deleteCustomTheme(themeId);
@@ -378,51 +397,18 @@ export async function deleteCustomTheme(themeId: string): Promise<boolean> {
     return false;
   }
 
-  dbSnapshot.customThemes = dbSnapshot.customThemes.filter(
+  dbSnapshot.customThemes = dbSnapshot.customThemes?.filter(
     (t) => t._id !== themeId
   );
 
   return true;
 }
 
-async function _getUserHighestWpm<M extends SharedTypes.Config.Mode>(
-  mode: M,
-  mode2: SharedTypes.Config.Mode2<M>,
-  punctuation: boolean,
-  language: string,
-  difficulty: SharedTypes.Config.Difficulty,
-  lazyMode: boolean
-): Promise<number> {
-  function cont(): number {
-    let topWpm = 0;
-
-    dbSnapshot?.results?.forEach((result) => {
-      if (
-        result.mode === mode &&
-        `${result.mode2}` === `${mode2 as string | number}` && //using template strings here because legacy results can have numbers in mode2
-        result.punctuation === punctuation &&
-        result.language === language &&
-        result.difficulty === difficulty &&
-        (result.lazyMode === lazyMode ||
-          (result.lazyMode === undefined && !lazyMode))
-      ) {
-        if (result.wpm > topWpm) {
-          topWpm = result.wpm;
-        }
-      }
-    });
-    return topWpm;
-  }
-
-  const retval = !dbSnapshot || dbSnapshot.results === undefined ? 0 : cont();
-
-  return retval;
-}
-
 export async function getUserAverage10<M extends SharedTypes.Config.Mode>(
   mode: M,
   mode2: SharedTypes.Config.Mode2<M>,
   punctuation: boolean,
+  numbers: boolean,
   language: string,
   difficulty: SharedTypes.Config.Difficulty,
   lazyMode: boolean
@@ -450,7 +436,8 @@ export async function getUserAverage10<M extends SharedTypes.Config.Mode>(
       for (const result of snapshot.results) {
         if (
           result.mode === mode &&
-          result.punctuation === punctuation &&
+          (result.punctuation ?? false) === punctuation &&
+          (result.numbers ?? false) === numbers &&
           result.language === language &&
           result.difficulty === difficulty &&
           (result.lazyMode === lazyMode ||
@@ -506,6 +493,7 @@ export async function getUserDailyBest<M extends SharedTypes.Config.Mode>(
   mode: M,
   mode2: SharedTypes.Config.Mode2<M>,
   punctuation: boolean,
+  numbers: boolean,
   language: string,
   difficulty: SharedTypes.Config.Difficulty,
   lazyMode: boolean
@@ -528,7 +516,8 @@ export async function getUserDailyBest<M extends SharedTypes.Config.Mode>(
       for (const result of snapshot.results) {
         if (
           result.mode === mode &&
-          result.punctuation === punctuation &&
+          (result.punctuation ?? false) === punctuation &&
+          (result.numbers ?? false) === numbers &&
           result.language === language &&
           result.difficulty === difficulty &&
           (result.lazyMode === lazyMode ||
@@ -569,6 +558,7 @@ export async function getLocalPB<M extends SharedTypes.Config.Mode>(
   mode: M,
   mode2: SharedTypes.Config.Mode2<M>,
   punctuation: boolean,
+  numbers: boolean,
   language: string,
   difficulty: SharedTypes.Config.Difficulty,
   lazyMode: boolean,
@@ -581,42 +571,31 @@ export async function getLocalPB<M extends SharedTypes.Config.Mode>(
   if (!funboxes.every((f) => f.canGetPb)) {
     return 0;
   }
+  if (dbSnapshot === null || dbSnapshot?.personalBests === null) return 0;
 
-  function cont(): number {
-    let ret = 0;
-    try {
-      if (!dbSnapshot?.personalBests) return ret;
+  const bestsByMode = dbSnapshot?.personalBests[mode][
+    mode2
+  ] as SharedTypes.PersonalBest[];
 
-      (
-        dbSnapshot.personalBests[mode][
-          mode2
-        ] as unknown as SharedTypes.PersonalBest[]
-      ).forEach((pb) => {
-        if (
-          pb.punctuation === punctuation &&
-          pb.difficulty === difficulty &&
-          pb.language === language &&
-          (pb.lazyMode === lazyMode || (pb.lazyMode === undefined && !lazyMode))
-        ) {
-          ret = pb.wpm;
-        }
-      });
+  if (bestsByMode === undefined) return 0;
 
-      return ret;
-    } catch (e) {
-      return ret;
-    }
-  }
-
-  const retval = dbSnapshot === null ? 0 : cont();
-
-  return retval;
+  return (
+    bestsByMode.find(
+      (pb) =>
+        (pb.punctuation ?? false) === punctuation &&
+        (pb.numbers ?? false) === numbers &&
+        pb.difficulty === difficulty &&
+        pb.language === language &&
+        (pb.lazyMode ?? false) === lazyMode
+    )?.wpm ?? 0
+  );
 }
 
 export async function saveLocalPB<M extends SharedTypes.Config.Mode>(
   mode: M,
   mode2: SharedTypes.Config.Mode2<M>,
   punctuation: boolean,
+  numbers: boolean,
   language: string,
   difficulty: SharedTypes.Config.Difficulty,
   lazyMode: boolean,
@@ -652,10 +631,11 @@ export async function saveLocalPB<M extends SharedTypes.Config.Mode>(
       ] as unknown as SharedTypes.PersonalBest[]
     ).forEach((pb) => {
       if (
-        pb.punctuation === punctuation &&
+        (pb.punctuation ?? false) === punctuation &&
+        (pb.numbers ?? false) === numbers &&
         pb.difficulty === difficulty &&
         pb.language === language &&
-        (pb.lazyMode === lazyMode || (pb.lazyMode === undefined && !lazyMode))
+        (pb.lazyMode ?? false) === lazyMode
       ) {
         found = true;
         pb.wpm = wpm;
@@ -677,6 +657,7 @@ export async function saveLocalPB<M extends SharedTypes.Config.Mode>(
         difficulty,
         lazyMode,
         punctuation,
+        numbers,
         wpm,
         acc,
         raw,
@@ -696,52 +677,50 @@ export async function getLocalTagPB<M extends SharedTypes.Config.Mode>(
   mode: M,
   mode2: SharedTypes.Config.Mode2<M>,
   punctuation: boolean,
+  numbers: boolean,
   language: string,
   difficulty: SharedTypes.Config.Difficulty,
   lazyMode: boolean
 ): Promise<number> {
-  function cont(): number {
-    let ret = 0;
+  if (dbSnapshot === null) return 0;
 
-    const filteredtag = (getSnapshot()?.tags ?? []).filter(
-      (t) => t._id === tagId
-    )[0];
+  let ret = 0;
 
-    if (filteredtag === undefined) return ret;
+  const filteredtag = (getSnapshot()?.tags ?? []).filter(
+    (t) => t._id === tagId
+  )[0];
 
-    filteredtag.personalBests ??= {
-      time: {},
-      words: {},
-      quote: {},
-      zen: {},
-      custom: {},
-    };
+  if (filteredtag === undefined) return ret;
 
-    filteredtag.personalBests[mode] ??= {
-      [mode2]: [],
-    };
+  filteredtag.personalBests ??= {
+    time: {},
+    words: {},
+    quote: {},
+    zen: {},
+    custom: {},
+  };
 
-    filteredtag.personalBests[mode][mode2] ??=
-      [] as unknown as SharedTypes.PersonalBests[M][SharedTypes.Config.Mode2<M>];
+  filteredtag.personalBests[mode] ??= {
+    [mode2]: [],
+  };
 
-    const personalBests = (filteredtag.personalBests[mode][mode2] ??
-      []) as SharedTypes.PersonalBest[];
+  filteredtag.personalBests[mode][mode2] ??=
+    [] as unknown as SharedTypes.PersonalBests[M][SharedTypes.Config.Mode2<M>];
 
-    ret =
-      personalBests.find(
-        (pb) =>
-          pb.punctuation === punctuation &&
-          pb.difficulty === difficulty &&
-          pb.language === language &&
-          (pb.lazyMode === lazyMode || (pb.lazyMode === undefined && !lazyMode))
-      )?.wpm ?? 0;
+  const personalBests = (filteredtag.personalBests[mode][mode2] ??
+    []) as SharedTypes.PersonalBest[];
 
-    return ret;
-  }
+  ret =
+    personalBests.find(
+      (pb) =>
+        (pb.punctuation ?? false) === punctuation &&
+        (pb.numbers ?? false) === numbers &&
+        pb.difficulty === difficulty &&
+        pb.language === language &&
+        (pb.lazyMode === lazyMode || (pb.lazyMode === undefined && !lazyMode))
+    )?.wpm ?? 0;
 
-  const retval = dbSnapshot === null ? 0 : cont();
-
-  return retval;
+  return ret;
 }
 
 export async function saveLocalTagPB<M extends SharedTypes.Config.Mode>(
@@ -749,6 +728,7 @@ export async function saveLocalTagPB<M extends SharedTypes.Config.Mode>(
   mode: M,
   mode2: SharedTypes.Config.Mode2<M>,
   punctuation: boolean,
+  numbers: boolean,
   language: string,
   difficulty: SharedTypes.Config.Difficulty,
   lazyMode: boolean,
@@ -762,7 +742,7 @@ export async function saveLocalTagPB<M extends SharedTypes.Config.Mode>(
   function cont(): void {
     const filteredtag = dbSnapshot?.tags?.filter(
       (t) => t._id === tagId
-    )[0] as MonkeyTypes.Tag;
+    )[0] as MonkeyTypes.UserTag;
 
     filteredtag.personalBests ??= {
       time: {},
@@ -788,7 +768,8 @@ export async function saveLocalTagPB<M extends SharedTypes.Config.Mode>(
         ] as unknown as SharedTypes.PersonalBest[]
       ).forEach((pb) => {
         if (
-          pb.punctuation === punctuation &&
+          (pb.punctuation ?? false) === punctuation &&
+          (pb.numbers ?? false) === numbers &&
           pb.difficulty === difficulty &&
           pb.language === language &&
           (pb.lazyMode === lazyMode || (pb.lazyMode === undefined && !lazyMode))
@@ -813,6 +794,7 @@ export async function saveLocalTagPB<M extends SharedTypes.Config.Mode>(
           difficulty,
           lazyMode,
           punctuation,
+          numbers,
           wpm,
           acc,
           raw,
@@ -835,6 +817,7 @@ export async function saveLocalTagPB<M extends SharedTypes.Config.Mode>(
           difficulty: difficulty,
           lazyMode: lazyMode,
           punctuation: punctuation,
+          numbers: numbers,
           wpm: wpm,
           acc: acc,
           raw: raw,
@@ -879,8 +862,14 @@ export async function updateLbMemory<M extends SharedTypes.Config.Mode>(
     if (snapshot.lbMemory[timeMode][timeMode2] === undefined) {
       snapshot.lbMemory[timeMode][timeMode2] = {};
     }
-    const current = snapshot.lbMemory[timeMode][timeMode2][language];
-    snapshot.lbMemory[timeMode][timeMode2][language] = rank;
+    const current = snapshot.lbMemory?.[timeMode]?.[timeMode2]?.[language];
+
+    //this is protected above so not sure why it would be undefined
+    const mem = snapshot.lbMemory[timeMode][timeMode2] as Record<
+      string,
+      number
+    >;
+    mem[language] = rank;
     if (api && current !== rank) {
       await Ape.users.updateLeaderboardMemory(mode, mode2, language, rank);
     }
@@ -914,25 +903,16 @@ export function updateLocalStats(started: number, time: number): void {
   const snapshot = getSnapshot();
   if (!snapshot) return;
   if (snapshot.typingStats === undefined) {
-    snapshot.typingStats = {} as MonkeyTypes.TypingStats;
+    snapshot.typingStats = {
+      timeTyping: 0,
+      startedTests: 0,
+      completedTests: 0,
+    };
   }
-  if (snapshot?.typingStats !== undefined) {
-    if (snapshot.typingStats.timeTyping === undefined) {
-      snapshot.typingStats.timeTyping = time;
-    } else {
-      snapshot.typingStats.timeTyping += time;
-    }
-    if (snapshot.typingStats.startedTests === undefined) {
-      snapshot.typingStats.startedTests = started;
-    } else {
-      snapshot.typingStats.startedTests += started;
-    }
-    if (snapshot.typingStats.completedTests === undefined) {
-      snapshot.typingStats.completedTests = 1;
-    } else {
-      snapshot.typingStats.completedTests += 1;
-    }
-  }
+
+  snapshot.typingStats.timeTyping += time;
+  snapshot.typingStats.startedTests += started;
+  snapshot.typingStats.completedTests += 1;
 
   setSnapshot(snapshot);
 }
@@ -948,7 +928,7 @@ export function addXp(xp: number): void {
   setSnapshot(snapshot);
 }
 
-export function addBadge(badge: MonkeyTypes.Badge): void {
+export function addBadge(badge: SharedTypes.Badge): void {
   const snapshot = getSnapshot();
   if (!snapshot) return;
 

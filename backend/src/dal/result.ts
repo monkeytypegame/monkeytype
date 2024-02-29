@@ -5,13 +5,15 @@ import * as db from "../init/db";
 
 import { getUser, getTags } from "./user";
 
-type DBResult = SharedTypes.DBResult<SharedTypes.Config.Mode>;
+type DBResult = MonkeyTypes.WithObjectId<
+  SharedTypes.DBResult<SharedTypes.Config.Mode>
+>;
 
 export async function addResult(
   uid: string,
   result: DBResult
 ): Promise<{ insertedId: ObjectId }> {
-  let user: MonkeyTypes.User | null = null;
+  let user: MonkeyTypes.DBUser | null = null;
   try {
     user = await getUser(uid, "add result");
   } catch (e) {

@@ -2,6 +2,7 @@ name: Monkey CI
 
 env:
   NODE_VERSION: "18.19.1"
+  RECAPTCHA_SITE_KEY: "6Lc-V8McAAAAAJ7s6LGNe7MBZnRiwbsbiWts87aj"
 
 permissions:
   contents: read
@@ -11,6 +12,7 @@ permissions:
 on:
   pull_request:
     branches: [master]
+    types: [opened, reopened, synchronize, ready_for_review]
   push:
     branches: [master]
 
@@ -95,7 +97,7 @@ jobs:
 
       - name: Create stub firebase config
         working-directory: ./frontend/src/ts/constants
-        run: mv ./firebase-config-example.ts ./firebase-config-live.ts
+        run: mv ./firebase-config-example.ts ./firebase-config.ts && cp ./firebase-config.ts ./firebase-config-live.ts
 
       - name: Install dependencies
         run: npm ci & cd frontend && npm ci
@@ -107,7 +109,7 @@ jobs:
         run: npm run lint-fe
 
       - name: Build
-        run: npm run pr-check-ts
+        run: npm run pr-check-build-fe
 
       - name: Test
         run: npm run test-fe

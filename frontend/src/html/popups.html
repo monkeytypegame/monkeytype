@@ -4,12 +4,12 @@
   </div>
 </div>
 
-<div id="alertsPopupWrapper" class="popupWrapper hidden">
+<dialog id="alertsPopupWrapper" class="popupWrapper hidden">
   <div id="alertsPopup">
-    <div class="button mobileClose">
+    <button class="mobileClose">
       <i class="fas fa-times"></i>
       Close
-    </div>
+    </button>
     <div class="scrollWrapper">
       <div class="accountAlerts">
         <div class="title">
@@ -19,14 +19,14 @@
           </div>
           <div class="right"></div>
         </div>
-        <div class="button claimAll hidden">
+        <button class="claimAll hidden">
           <i class="fas fa-fw fa-gift"></i>
           Claim all
-        </div>
-        <div class="button deleteAll hidden">
+        </button>
+        <button class="deleteAll hidden">
           <i class="fas fa-fw fa-trash"></i>
           Delete all
-        </div>
+        </button>
         <div class="list">
           <div class="nothing">Nothing to show</div>
         </div>
@@ -53,7 +53,7 @@
       </div>
     </div>
   </div>
-</div>
+</dialog>
 
 <div id="simplePopupWrapper" class="popupWrapper hidden">
   <div id="simplePopup" popupId=""></div>
@@ -244,7 +244,7 @@
         <tr>
           <td width="1%">words</td>
           <td>
-            wpm
+            <span class="unit">wpm</span>
             <br />
             <span class="sub">accuracy</span>
           </td>
@@ -256,6 +256,7 @@
           <td>difficulty</td>
           <td>language</td>
           <td>punctuation</td>
+          <td>numbers</td>
           <td>lazy mode</td>
           <td>date</td>
         </tr>
@@ -638,7 +639,7 @@
         autocomplete="off"
         placeholder="Filter by text"
       />
-      <select class="quoteLengthFilter"></select>
+      <select class="quoteLengthFilter" multiple></select>
       <div id="toggleShowFavorites" class="button">Favorites Only</div>
     </div>
     <div id="quoteSearchResults" class="quoteSearchResults"></div>
@@ -887,17 +888,17 @@
               <tr>
                 <td width="1%">#</td>
                 <td>name</td>
-                <td class="alignRight" width="15%">
+                <td class="alignRight" width="1%">
                   wpm
                   <br />
                   <div class="sub">accuracy</div>
                 </td>
-                <td class="alignRight" width="15%">
+                <td class="alignRight" width="1%">
                   raw
                   <br />
                   <div class="sub">consistency</div>
                 </td>
-                <td class="alignRight" width="22%">date</td>
+                <td class="alignRight" width="125px">date</td>
               </tr>
             </thead>
             <tbody></tbody>
@@ -940,7 +941,7 @@
                   <br />
                   <div class="sub">consistency</div>
                 </td>
-                <td class="alignRight" width="110px">date</td>
+                <td class="alignRight" width="120px">date</td>
               </tr>
             </thead>
             <tbody></tbody>
@@ -1110,7 +1111,6 @@
       <input type="text" class="input" placeholder="Type to search" />
     </div>
     <div class="separator hidden"></div>
-    <div class="listTitle">Title</div>
     <div class="suggestions"></div>
   </div>
   <div id="commandInput" class="hidden">

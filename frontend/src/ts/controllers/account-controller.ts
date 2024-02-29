@@ -153,10 +153,7 @@ async function getDataAndInit(): Promise<boolean> {
   const areConfigsEqual =
     JSON.stringify(Config) === JSON.stringify(snapshot.config);
 
-  if (
-    snapshot.config &&
-    (UpdateConfig.localStorageConfig === undefined || !areConfigsEqual)
-  ) {
+  if (UpdateConfig.localStorageConfig === undefined || !areConfigsEqual) {
     console.log(
       "no local config or local and db configs are different - applying db"
     );
@@ -336,6 +333,7 @@ async function signIn(): Promise<void> {
       await loadUser(e.user);
     })
     .catch(function (error) {
+      console.error(error);
       let message = error.message;
       if (error.code === "auth/wrong-password") {
         message = "Incorrect password";
@@ -344,6 +342,9 @@ async function signIn(): Promise<void> {
       } else if (error.code === "auth/invalid-email") {
         message =
           "Invalid email format (make sure you are using your email to login - not your username)";
+      } else if (error.code === "auth/invalid-credential") {
+        message =
+          "Email/password is incorrect or your account does not have password authentication enabled.";
       }
       Notifications.add(message, -1);
       LoginPage.hidePreloader();
@@ -395,7 +396,11 @@ async function signInWithGoogle(): Promise<void> {
         message =
           "Invalid email format (make sure you are using your email to login - not your username)";
       } else if (error.code === "auth/popup-closed-by-user") {
-        message = "Popup closed by user";
+        // message = "Popup closed by user";
+        return;
+      } else if (error.code === "auth/user-cancelled") {
+        // message = "User refused to sign in";
+        return;
       }
       Notifications.add(message, -1);
       LoginPage.hidePreloader();

@@ -69,9 +69,12 @@ node_modules_bak/
 .env
 
 #vs code
-.vscode
+.vscode/*
+.vscode/.*
+!.vscode/extensions.json
 *.code-workspace
 !monkeytype.code-workspace
+
 
 .idea
 
@@ -87,6 +90,7 @@ dist/
 frontend/public/
 backend/globalConfig.json
 backend/server.version
+vite-build/
 
 #cloudflare y
 .cloudflareKey.txt

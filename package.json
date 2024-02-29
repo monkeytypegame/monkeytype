@@ -14,7 +14,7 @@
     "test": "npm run test-be && npm run test-fe",
     "test-be": "cd backend && npm run test",
     "test-fe": "cd frontend && npm run test",
-    "dev": "concurrently --kill-others \"npm run dev-fe\" \"npm run dev-be\"",
+    "dev": "concurrently --kill-others \"wait-for-localhost 5005 && npm run dev-fe\" \"npm run dev-be\"",
     "dev-be": "cd backend && npm run dev",
     "dev-fe": "cd frontend && npm run dev",
     "live": "concurrently --kill-others \"cd frontend && npm run live\" \"cd backend && npm run start\"",
@@ -22,17 +22,17 @@
     "release": "release-it -c .release-it.json",
     "release-fe": "release-it -c .release-it-fe.json",
     "hotfix": "cd frontend && npm run deploy-live && cd .. && sh ./bin/purgeCfCache.sh",
-    "build-fe": "cd ./frontend && npm run build-live",
+    "build-fe": "cd ./frontend && npm run build",
     "pretty": "prettier --check \"./backend/**/*.{ts,json,js,css,html}\" \"./frontend/**/*.{ts,js,scss}\" \"./frontend/static/**/*.{json,html,css}\"",
     "pretty-code": "prettier --check \"./backend/**/*.{ts,js,json,css,html}\" \"./frontend/**/*.{ts,js}\" \"./frontend/src/**/*.scss\"",
     "pretty-code-be": "prettier --check \"./backend/**/*.{ts,js,json,css,html}\"",
     "pretty-code-fe": "prettier --check \"./frontend/**/*.{ts,js}\" \"./frontend/src/**/*.scss\"",
     "pretty-fix": "prettier --write \"./backend/**/*.{ts,json,js,css,html}\" \"./frontend/**/*.{ts,js,scss}\" \"./frontend/static/**/*.{json,html,css}\"",
-    "pr-check-lint-json": "cd frontend && npx gulp pr-check-lint-json",
+    "pr-check-lint-json": "cd frontend && eslint './static/**/*.json'",
     "pr-check-quote-json": "cd frontend && npx gulp pr-check-quote-json",
     "pr-check-language-json": "cd frontend && npx gulp pr-check-language-json",
     "pr-check-other-json": "cd frontend && npx gulp pr-check-other-json",
-    "pr-check-ts": "cd frontend && npx gulp pr-check-ts",
+    "pr-check-build-fe": "cd frontend && npm run build",
     "pr-check-build-be": "cd backend && npm run build"
   },
   "engines": {
@@ -59,7 +59,8 @@
     "lint-staged": "13.2.3",
     "prettier": "2.5.1",
     "release-it": "16.1.4",
-    "typescript": "5.3.3"
+    "typescript": "5.3.3",
+    "wait-for-localhost-cli": "3.1.0"
   },
   "lint-staged": {
     "*.{json,scss,css,html}": [
@@ -70,5 +71,5 @@
       "eslint"
     ]
   },
-  "version": "24.7.0"
+  "version": "24.9.0"
 }
