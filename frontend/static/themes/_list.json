@@ -1195,5 +1195,12 @@
     "mainColor": "#c13117",
     "subColor": "#717977",
     "textColor": "#490909"
+  },
+  {
+    "name": "anti_hero",
+    "bgColor": "#00002e",
+    "mainColor": "#ffadad",
+    "subColor": "#ff3d8b",
+    "textColor": "#f1deef"
   }
 ]

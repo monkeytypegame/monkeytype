@@ -92,15 +92,37 @@ $(document).ready(() => {
   MonkeyPower.init();
 
   new Konami("https://keymash.io/");
+
+  if (Misc.isDevEnvironment()) {
+    void navigator.serviceWorker
+      .getRegistrations()
+      .then(function (registrations) {
+        for (const registration of registrations) {
+          void registration.unregister();
+        }
+      });
+  }
 });
 
 window.onerror = function (message, url, line, column, error): void {
+  if (Misc.isDevEnvironment()) {
+    Notifications.add(error?.message ?? "Undefined message", -1, {
+      customTitle: "DEV: Unhandled error",
+      duration: 5,
+    });
+  }
   void log("error", {
     error: error?.stack ?? "",
   });
 };
 
 window.onunhandledrejection = function (e): void {
+  if (Misc.isDevEnvironment()) {
+    Notifications.add(e.reason.message, -1, {
+      customTitle: "DEV: Unhandled rejection",
+      duration: 5,
+    });
+  }
   void log("error", {
     error: e.reason.stack ?? "",
   });

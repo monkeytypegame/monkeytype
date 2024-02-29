@@ -164,7 +164,15 @@
   </body>
   <script type="module">
     import $ from "jquery";
-    import { app as firebase } from "./ts/firebase";
+    import { Auth } from "./ts/firebase";
+    import {
+      applyActionCode,
+      verifyPasswordResetCode,
+      confirmPasswordReset,
+      checkActionCode,
+      sendPasswordResetEmail,
+      signInWithEmailAndPassword,
+    } from "firebase/auth";
 
     function isPasswordStrong(password) {
       const hasCapital = !!password.match(/[A-Z]/);
@@ -178,9 +186,7 @@
     }
 
     function handleVerifyEmail(actionCode, continueUrl) {
-      firebase
-        .auth()
-        .applyActionCode(actionCode)
+      applyActionCode(Auth, actionCode)
         .then((resp) => {
           // Email address has been verified.
 
@@ -213,9 +219,7 @@
     function handleResetPassword(actionCode, continueUrl) {
       // Verify the password reset code is valid.
       hideResetPassword();
-      firebase
-        .auth()
-        .verifyPasswordResetCode(actionCode)
+      verifyPasswordResetCode(Auth, actionCode)
         .then((email) => {
           var accountEmail = email;
 
@@ -237,9 +241,7 @@
           }
 
           // Save the new password.
-          firebase
-            .auth()
-            .confirmPasswordReset(actionCode, newPassword)
+          confirmPasswordReset(Auth, actionCode, newPassword)
             .then((resp) => {
               // Password reset has been confirmed and new password updated.
               $("main .preloader .icon").html(
@@ -248,9 +250,7 @@
               $("main .preloader .text").text(`Your password has been changed`);
               $("main .preloader .subText").text(`You can now close this tab`);
 
-              firebase
-                .auth()
-                .signInWithEmailAndPassword(accountEmail, newPassword);
+              signInWithEmailAndPassword(Auth, accountEmail, newPassword);
             })
             .catch((error) => {
               $("main .preloader .icon").html(
@@ -276,15 +276,13 @@
       // parameter.
       var restoredEmail = null;
       // Confirm the action code is valid.
-      firebase
-        .auth()
-        .checkActionCode(actionCode)
+      checkActionCode(Auth, actionCode)
         .then((info) => {
           // Get the restored email address.
           restoredEmail = info["data"]["email"];
 
           // Revert to the old email.
-          return auth.applyActionCode(actionCode);
+          return applyActionCode(Auth, actionCode);
         })
         .then(() => {
           $("main .preloader .icon").html(`<i class="fas fa-fw fa-check"></i>`);
@@ -297,7 +295,7 @@
           `);
           $("main .preloader").append(`
           <br>
-          <div class="button" onclick="sendPasswordResetEmail('${restoredEmail}')">Send Password Reset Email</div>
+          <div class="button" onclick="sendPasswordReset('${restoredEmail}')">Send Password Reset Email</div>
           `);
 
           // Account email reverted to restoredEmail
@@ -313,9 +311,8 @@
         });
     }
 
-    function sendPasswordResetEmail(email) {
-      auth
-        .sendPasswordResetEmail(email)
+    function sendPasswordReset(email) {
+      sendPasswordResetEmail(Auth, email)
         .then(() => {
           $("main .preloader .icon").html(`<i class="fas fa-fw fa-check"></i>`);
           $("main .preloader .text").text(`Password reset email sent`);

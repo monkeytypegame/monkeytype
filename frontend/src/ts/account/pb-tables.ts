@@ -154,7 +154,7 @@ function buildPbHtml(
       <div class="wpm">${Format.typingSpeed(pbData.wpm, {
         showDecimalPlaces: false,
       })}</div>
-      <div class="acc">${Format.percentage(pbData.acc, {
+      <div class="acc">${Format.accuracy(pbData.acc, {
         showDecimalPlaces: false,
       })}</div>
     </div>
@@ -164,10 +164,8 @@ function buildPbHtml(
         suffix: ` ${speedUnit}`,
       })}</div>
       <div>${Format.typingSpeed(pbData.raw, { suffix: " raw" })}</div>
-      <div>${Format.percentage(pbData.acc, { suffix: " acc" })}</div>
-      <div>${Format.percentage(pbData.consistency, {
-        suffix: " con",
-      })}</div>
+      <div>${Format.accuracy(pbData.acc, { suffix: " acc" })}</div>
+      <div>${Format.percentage(pbData.consistency, { suffix: " con" })}</div>
       <div>${dateText}</div>
     </div>`;
   } catch (e) {

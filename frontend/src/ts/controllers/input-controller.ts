@@ -744,14 +744,18 @@ function handleChar(
     handleSpace();
   }
 
+  const currentWord = TestWords.words.getCurrent();
+  const doesCurrentWordHaveTab = /^\t+/.test(TestWords.words.getCurrent());
+  const isCurrentCharTab = currentWord[TestInput.input.current.length] === "\t";
+
   if (
     thisCharCorrect &&
     Config.language.startsWith("code") &&
-    /^\t+/.test(TestWords.words.getCurrent()) &&
-    TestWords.words.getCurrent()[TestInput.input.current.length] === "\t"
+    doesCurrentWordHaveTab &&
+    isCurrentCharTab
   ) {
-    // handleChar("\t", TestInput.input.current.length);
-    $("#wordsInput").trigger($.Event("keydown", { key: "Tab", code: "Tab" }));
+    const tabEvent = new KeyboardEvent("keydown", { key: "Tab", code: "Tab" });
+    document.dispatchEvent(tabEvent);
   }
 
   if (char !== "\n") {
@@ -862,6 +866,27 @@ function handleTab(event: JQuery.KeyDownEvent, popupVisible: boolean): void {
     $("#restartTestButton").trigger("focus");
   }
 }
+
+$("#wordsInput").on("keydown", (event) => {
+  const pageTestActive: boolean = ActivePage.get() === "test";
+  const commandLineVisible = Misc.isPopupVisible("commandLineWrapper");
+  const leaderboardsVisible = Misc.isPopupVisible("leaderboardsWrapper");
+  const popupVisible: boolean = Misc.isAnyPopupVisible();
+  const cookiePopupVisible = CookiePopup.isVisible();
+
+  const allowTyping: boolean =
+    pageTestActive &&
+    !commandLineVisible &&
+    !leaderboardsVisible &&
+    !popupVisible &&
+    !TestUI.resultVisible &&
+    !cookiePopupVisible &&
+    event.key !== "Enter";
+
+  if (!allowTyping) {
+    event.preventDefault();
+  }
+});
 
 let lastBailoutAttempt = -1;
 
@@ -1328,7 +1353,12 @@ $("#wordsInput").on("input", (event) => {
     TestUI.updateWordElement();
     void Caret.updatePosition();
     if (!CompositionState.getComposing()) {
-      Replay.addReplayEvent("setLetterIndex", currTestInput.length - 1);
+      const keyStroke = event?.originalEvent as InputEvent;
+      if (keyStroke.inputType === "deleteWordBackward") {
+        Replay.addReplayEvent("setLetterIndex", 0); // Letter index will be 0 on CTRL + Backspace Event
+      } else {
+        Replay.addReplayEvent("setLetterIndex", currTestInput.length - 1);
+      }
     }
   }
   if (inputValue !== currTestInput) {
