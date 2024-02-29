@@ -387,25 +387,69 @@ function updateWordsHeight(force = false): void {
 
 export function updateNewlineIndent(): void {
   const children = $("#words").children();
+
   let leftSize = 0;
   let hadNl = false;
   let foundWord = false;
+
   for (let i = 0; i < children.length; i++) {
-    if (!foundWord) {
-      if ($(children[i]).hasClass("word")) {
-        leftSize += $(children[i]).outerWidth(true) ?? 0;
-        foundWord = true;
+    const element = $(children[i] as Element);
+
+    if (Config.mode === "zen") {
+      $("#words").css("height", "fit-content");
+      $("#wordsWrapper").css("height", "");
+
+      if (!foundWord) {
+        if (element.hasClass("word")) {
+          leftSize += element.outerWidth(true) ?? 0;
+          foundWord = true;
+        } else {
+          element.remove();
+        }
       } else {
-        $(children[i]).remove();
+        if (element.hasClass("newline")) {
+          hadNl = true;
+        } else if (hadNl) {
+          element.css("margin-left", leftSize);
+          hadNl = false;
+        } else {
+          leftSize += element.outerWidth(true) ?? 0;
+        }
       }
     } else {
-      if ($(children[i]).hasClass("newline")) {
-        hadNl = true;
-      } else if (hadNl) {
-        $(children[i]).css("margin-left", leftSize);
-        hadNl = false;
-      } else {
-        leftSize += $(children[i]).outerWidth(true) ?? 0;
+      if (element.hasClass("word")) {
+        leftSize += element.outerWidth(true) ?? 0;
+      }
+
+      const afterNewlines = $(".after-newline").filter(function () {
+        return parseInt($(this).css("margin-left"), 10) !== 0;
+      });
+
+      const heightToApply =
+        (afterNewlines.outerHeight(true) as number) *
+        (afterNewlines.length + 1);
+
+      $("#words").css("height", heightToApply);
+      $("#wordsWrapper").css("height", heightToApply);
+
+      if (
+        element.hasClass("active") &&
+        $(children[i + 1] as Element).hasClass("newline") &&
+        $(children[i + 2] as Element).hasClass("after-newline") &&
+        parseInt($(children[i + 2] as Element).css("margin-left"), 10) === 0
+      ) {
+        $(children[i + 2] as Element).css("margin-left", leftSize);
+      } else if (
+        (element.hasClass("newline") || element.hasClass("after-newline")) &&
+        leftSize === 0
+      ) {
+        element.remove();
+      } else if (
+        element.hasClass("newline") &&
+        $(children[i + 1] as Element).hasClass("after-newline") &&
+        parseInt($(children[i + 1] as Element).css("margin-left"), 10) != 0
+      ) {
+        $(children[i + 1] as Element).css("margin-left", leftSize);
       }
     }
   }
@@ -816,10 +860,6 @@ export function scrollTape(): void {
   }
   const newMargin = wordsWrapperWidth / 2 - (fullWordsWidth + currentWordWidth);
   if (Config.smoothLineScroll) {
-    if (Config.mode === "zen") {
-      $("#words").css("height", "fit-content");
-      $("#wordsWrapper").css("height", "");
-    }
     $("#words")
       .stop(true, false)
       .animate(
