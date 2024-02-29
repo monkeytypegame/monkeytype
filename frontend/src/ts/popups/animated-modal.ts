@@ -96,11 +96,11 @@ export class AnimatedModal {
     Skeleton.save(this.wrapperId);
   }
 
-  getDialog(): HTMLDialogElement {
+  getWrapper(): HTMLDialogElement {
     return this.wrapperEl;
   }
 
-  getPopup(): HTMLElement {
+  getModal(): HTMLElement {
     return this.modalEl;
   }
 
