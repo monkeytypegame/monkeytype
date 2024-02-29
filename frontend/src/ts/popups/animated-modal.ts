@@ -3,7 +3,7 @@ import * as Skeleton from "./skeleton";
 
 type ShowHideOptions = {
   animation?: {
-    mode?: "none" | "both" | "popupOnly";
+    mode?: "none" | "both" | "modalOnly";
     durationMs?: number;
     custom?: {
       wrapper?: {
@@ -134,7 +134,7 @@ export class AnimatedModal {
               resolve();
             }
           );
-      } else if (animationMode === "popupOnly") {
+      } else if (animationMode === "modalOnly") {
         $(this.wrapperEl).removeClass("hidden").css("opacity", "1");
 
         if (options?.animation?.custom?.modal?.from) {
@@ -199,7 +199,7 @@ export class AnimatedModal {
               resolve();
             }
           );
-      } else if (animationMode === "popupOnly") {
+      } else if (animationMode === "modalOnly") {
         $(this.wrapperEl).removeClass("hidden").css("opacity", "1");
 
         if (options?.animation?.custom?.modal?.from) {
