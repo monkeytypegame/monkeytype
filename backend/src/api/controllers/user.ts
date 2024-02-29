@@ -11,7 +11,7 @@ import {
   sanitizeString,
 } from "../../utils/misc";
 import GeorgeQueue from "../../queues/george-queue";
-import admin, { FirebaseError } from "firebase-admin";
+import admin, { FirebaseError, auth } from "firebase-admin";
 import { deleteAllApeKeys } from "../../dal/ape-keys";
 import { deleteAllPresets } from "../../dal/preset";
 import { deleteAll as deleteAllResults } from "../../dal/result";
@@ -26,7 +26,10 @@ import { ObjectId } from "mongodb";
 import * as ReportDAL from "../../dal/report";
 import emailQueue from "../../queues/email-queue";
 import FirebaseAdmin from "../../init/firebase-admin";
-import { removeTokensFromCacheByUid } from "../../utils/auth";
+import {
+  removeTokensFromCacheByUid,
+  deleteUser as firebaseDeleteUser,
+} from "../../utils/auth";
 
 async function verifyCaptcha(captcha: string): Promise<void> {
   if (!(await verify(captcha))) {
@@ -44,7 +47,7 @@ export async function createNewUser(
     await verifyCaptcha(captcha);
   } catch (e) {
     try {
-      await FirebaseAdmin().auth().deleteUser(uid);
+      await firebaseDeleteUser(uid);
     } catch (e) {
       // user might be deleted on the frontend
     }
@@ -345,7 +348,7 @@ export async function getUser(
       //since there is no data in the database anyway, we can just delete the user from the auth system
       //and ask them to sign up again
       try {
-        await FirebaseAdmin().auth().deleteUser(uid);
+        await firebaseDeleteUser(uid);
         throw new MonkeyError(
           404,
           "User not found in the database, but found in the auth system. We have deleted the ghost user from the auth system. Please sign up again.",
