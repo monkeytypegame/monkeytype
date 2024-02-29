@@ -848,6 +848,8 @@ function handleTab(event: JQuery.KeyDownEvent, popupVisible: boolean): void {
     TestLogic.restart({ event });
   } else {
     //quick tab off
+    // dont do anything special
+    if (modalVisible) return;
 
     //only special handlig on the test page
     if (ActivePage.get() !== "test") return;
