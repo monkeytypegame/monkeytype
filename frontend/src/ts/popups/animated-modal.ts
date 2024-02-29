@@ -6,7 +6,7 @@ type ShowOptions = {
     mode?: "none" | "both" | "popupOnly";
     durationMs?: number;
     custom?: {
-      backdrop?: {
+      wrapper?: {
         from: Record<string, string>;
         to: Record<string, string>;
         easing?: string;
@@ -29,7 +29,7 @@ type HideOptions = {
     mode?: "none" | "both" | "popupOnly";
     durationMs?: number;
     custom?: {
-      backdrop?: {
+      wrapper?: {
         from: Record<string, string>;
         to: Record<string, string>;
         easing?: string;
@@ -137,16 +137,16 @@ export class AnimatedModal {
           $(this.modalEl).css("opacity", "1");
         }
 
-        if (options?.animation?.custom?.backdrop?.from) {
-          $(this.wrapperEl).css(options.animation.custom.backdrop.from);
+        if (options?.animation?.custom?.wrapper?.from) {
+          $(this.wrapperEl).css(options.animation.custom.wrapper.from);
         }
         $(this.wrapperEl)
           .removeClass("hidden")
           .css("opacity", "0")
           .animate(
-            options?.animation?.custom?.backdrop?.to ?? { opacity: 1 },
+            options?.animation?.custom?.wrapper?.to ?? { opacity: 1 },
             animationMode === "none" ? 0 : animationDuration,
-            options?.animation?.custom?.backdrop?.easing ?? "swing",
+            options?.animation?.custom?.wrapper?.easing ?? "swing",
             async () => {
               this.wrapperEl.focus();
               await options?.callbacks?.afterAnimation?.(this.modalEl);
@@ -200,15 +200,15 @@ export class AnimatedModal {
           $(this.modalEl).css("opacity", "0");
         }
 
-        if (options?.animation?.custom?.backdrop?.from) {
-          $(this.wrapperEl).css(options.animation.custom.backdrop.from);
+        if (options?.animation?.custom?.wrapper?.from) {
+          $(this.wrapperEl).css(options.animation.custom.wrapper.from);
         }
         $(this.wrapperEl)
           .css("opacity", "1")
           .animate(
-            options?.animation?.custom?.backdrop?.to ?? { opacity: 0 },
+            options?.animation?.custom?.wrapper?.to ?? { opacity: 0 },
             animationMode === "none" ? 0 : animationDuration,
-            options?.animation?.custom?.backdrop?.easing ?? "swing",
+            options?.animation?.custom?.wrapper?.easing ?? "swing",
             async () => {
               this.wrapperEl.close();
               this.wrapperEl.classList.add("hidden");
