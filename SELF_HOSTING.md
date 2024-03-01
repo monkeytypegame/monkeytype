@@ -2,15 +2,12 @@
 
 <!-- TOC ignore:true -->
 ## Table of contents
-
 <!-- TOC -->
 
-- [Self Hosting](#self-hosting)
-    - [Prerequisites](#prerequisites)
+- [Monkeytype Self Hosting](#monkeytype-self-hosting)
+    - [Prerequisitesss](#prerequisitesss)
     - [Quickstart](#quickstart)
-    - [Authenticationnd exits successfully you can access http://localhost:8080](#authenticationnd-exits-successfully-you-can-access-httplocalhost8080)
     - [Authentication](#authentication)
-    - [Leaderboardse recapture working](#leaderboardse-recapture-working)
     - [Leaderboards](#leaderboards)
     - [Configuration files](#configuration-files)
         - [env file](#env-file)
