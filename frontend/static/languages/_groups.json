@@ -12,7 +12,8 @@
       "english_contractions",
       "english_doubleletter",
       "english_shakespearean",
-      "english_old"
+      "english_old",
+      "english_medical"
     ]
   },
   {

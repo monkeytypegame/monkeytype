@@ -167,6 +167,7 @@ export async function updateGraphPBLine(): Promise<void> {
     result.mode,
     result.mode2,
     result.punctuation ?? false,
+    result.numbers ?? false,
     result.language,
     result.difficulty,
     result.lazyMode ?? false,
@@ -228,7 +229,7 @@ function updateWpmAndAcc(): void {
   }
   $("#result .stats .raw .bottom").text(Format.typingSpeed(result.rawWpm));
   $("#result .stats .acc .bottom").text(
-    result.acc === 100 ? "100%" : Format.percentage(result.acc)
+    result.acc === 100 ? "100%" : Format.accuracy(result.acc)
   );
 
   if (Config.alwaysShowDecimalPlaces) {
@@ -404,6 +405,7 @@ export async function updateCrown(): Promise<void> {
     Config.mode,
     result.mode2,
     Config.punctuation,
+    Config.numbers,
     Config.language,
     Config.difficulty,
     Config.lazyMode,
@@ -460,6 +462,7 @@ async function updateTags(dontSave: boolean): Promise<void> {
       Config.mode,
       result.mode2,
       Config.punctuation,
+      Config.numbers,
       Config.language,
       Config.difficulty,
       Config.lazyMode
@@ -480,6 +483,7 @@ async function updateTags(dontSave: boolean): Promise<void> {
           Config.mode,
           result.mode2,
           Config.punctuation,
+          Config.numbers,
           Config.language,
           Config.difficulty,
           Config.lazyMode,

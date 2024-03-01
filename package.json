@@ -14,7 +14,7 @@
     "test": "npm run test-be && npm run test-fe",
     "test-be": "cd backend && npm run test",
     "test-fe": "cd frontend && npm run test",
-    "dev": "concurrently --kill-others \"npm run dev-fe\" \"npm run dev-be\"",
+    "dev": "concurrently --kill-others \"wait-for-localhost 5005 && npm run dev-fe\" \"npm run dev-be\"",
     "dev-be": "cd backend && npm run dev",
     "dev-fe": "cd frontend && npm run dev",
     "live": "concurrently --kill-others \"cd frontend && npm run live\" \"cd backend && npm run start\"",
@@ -44,11 +44,11 @@
     "@commitlint/config-conventional": "17.7.0",
     "@csmith/release-it-calver-plugin": "2023.9.0",
     "@release-it/conventional-changelog": "7.0.0",
-    "@typescript-eslint/eslint-plugin": "5.59.11",
-    "@typescript-eslint/parser": "5.59.11",
+    "@typescript-eslint/eslint-plugin": "7.1.0",
+    "@typescript-eslint/parser": "7.1.0",
     "concurrently": "7.2.1",
     "conventional-changelog": "4.0.0",
-    "eslint": "8.42.0",
+    "eslint": "8.57.0",
     "eslint-config-prettier": "9.0.0",
     "eslint-import-resolver-typescript": "3.6.1",
     "eslint-plugin-import": "2.29.0",
@@ -59,7 +59,8 @@
     "lint-staged": "13.2.3",
     "prettier": "2.5.1",
     "release-it": "16.1.4",
-    "typescript": "5.3.3"
+    "typescript": "5.3.3",
+    "wait-for-localhost-cli": "3.1.0"
   },
   "lint-staged": {
     "*.{json,scss,css,html}": [
@@ -70,5 +71,5 @@
       "eslint"
     ]
   },
-  "version": "24.8.0"
+  "version": "24.9.0"
 }

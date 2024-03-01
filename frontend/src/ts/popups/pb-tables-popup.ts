@@ -63,7 +63,7 @@ function update(mode: SharedTypes.Config.Mode): void {
         <td>
           ${Format.typingSpeed(pb.wpm)}
           <br />
-          <span class="sub">${Format.percentage(pb.acc)}</span>
+          <span class="sub">${Format.accuracy(pb.acc)}</span>
         </td>
         <td>
           ${Format.typingSpeed(pb.raw)}

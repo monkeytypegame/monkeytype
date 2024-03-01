@@ -27,11 +27,15 @@ function buildClientVersion() {
   );
   const version = [versionPrefix, versionSuffix].join("_");
 
-  const commitHash = childProcess
-    .execSync("git rev-parse --short HEAD")
-    .toString();
+  try {
+    const commitHash = childProcess
+      .execSync("git rev-parse --short HEAD")
+      .toString();
 
-  return `${version}.${commitHash}`;
+    return `${version}.${commitHash}`;
+  } catch (e) {
+    return `${version}.unknown-hash`;
+  }
 }
 
 /** @type {import("vite").UserConfig} */
@@ -71,7 +75,7 @@ const BASE_CONFIG = {
     Inspect(),
   ],
   server: {
-    open: true,
+    open: process.env.SERVER_OPEN !== "false",
     port: 3000,
     host: process.env.BACKEND_URL !== undefined,
   },
@@ -121,6 +125,9 @@ const BASE_CONFIG = {
     ),
     IS_DEVELOPMENT: JSON.stringify(true),
     CLIENT_VERSION: JSON.stringify("DEVELOPMENT_CLIENT"),
+    RECAPTCHA_SITE_KEY: JSON.stringify(
+      "6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"
+    ),
   },
   optimizeDeps: {
     include: ["jquery"],
@@ -160,14 +167,8 @@ const BUILD_CONFIG = {
         clientsClaim: true,
         cleanupOutdatedCaches: true,
         globIgnores: ["**/.*"],
-        globPatterns: [
-          "index.html",
-          "404.html",
-          "email-handler.html",
-          "privacy-policy.html",
-          "security-policy.html",
-          "terms-of-service.html",
-        ],
+        globPatterns: [],
+        navigateFallback: "",
         runtimeCaching: [
           {
             urlPattern: ({ request, url }) => {
@@ -196,11 +197,15 @@ const BUILD_CONFIG = {
     BACKEND_URL: JSON.stringify("https://api.monkeytype.com"),
     IS_DEVELOPMENT: JSON.stringify(false),
     CLIENT_VERSION: JSON.stringify(buildClientVersion()),
+    RECAPTCHA_SITE_KEY: JSON.stringify(process.env.RECAPTCHA_SITE_KEY),
   },
 };
 
 export default defineConfig(({ command }) => {
   if (command === "build") {
+    if (process.env.RECAPTCHA_SITE_KEY === undefined) {
+      throw new Error(".env: RECAPTCHA_SITE_KEY is not defined");
+    }
     return mergeConfig(BASE_CONFIG, BUILD_CONFIG);
   } else {
     return BASE_CONFIG;
