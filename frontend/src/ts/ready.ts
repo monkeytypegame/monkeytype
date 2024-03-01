@@ -65,7 +65,7 @@ $(document).ready(() => {
     window.localStorage.getItem("plushieBannerClosed") === "true";
   if (!plushieBannerClosed) {
     Notifications.addBanner(
-      `George Plushie - available now for a limited time! <a target="_blank" rel="noopener" href="https://www.monkeytype.store/listing/george-plushie/">monkeytype.store</a>`,
+      `George Plushie - available now for a limited time! <a target="_blank" rel="noopener" href="https://mktp.co/plushie">monkeytype.store</a>`,
       1,
       "./images/plushiebanner.png",
       false,
