@@ -1,6 +1,11 @@
-.popupWrapper {
+.popupWrapper,
+.backdrop,
+.modalWrapper {
   width: 100%;
   height: 100%;
+  max-width: 100%;
+  max-height: 100%;
+  margin: 0;
   background: rgba(0, 0, 0, 0.75);
   position: fixed;
   left: 0;
@@ -8,11 +13,28 @@
   z-index: 1000;
   display: grid;
   justify-content: center;
+  justify-items: center;
   align-items: center;
-  padding: 2rem 0;
+  padding: 2rem;
+  border: none;
+  grid-template-columns: 100%;
   &:focus-visible {
     outline: none;
   }
+  &::backdrop {
+    background: transparent;
+  }
+}
+
+.modal {
+  background: var(--bg-color);
+  border-radius: var(--roundness);
+  padding: 2rem;
+  display: grid;
+  gap: 1rem;
+  width: 100%;
+  max-width: 300px;
+  color: var(--text-color);
 }
 
 #customTextPopupWrapper {
@@ -1627,12 +1649,13 @@
   }
 }
 
-#alertsPopupWrapper {
+#alertsPopup {
   padding: 0;
   justify-content: end;
   z-index: 99999999;
-  // padding: 2rem;
-  #alertsPopup {
+  overflow-x: hidden;
+  justify-items: end;
+  .modal {
     background: var(--bg-color);
     width: calc(350px + 2rem);
     right: 0;
@@ -1645,9 +1668,11 @@
     overflow: hidden;
     margin-right: -10rem;
     border-radius: var(--roundness) 0 0 var(--roundness);
+    display: block;
 
     .mobileClose {
-      margin: 0 1rem 2rem 1rem;
+      margin-bottom: 2rem;
+      width: 100%;
       display: none;
     }
 
@@ -1665,6 +1690,7 @@
       gap: 2rem;
       align-content: baseline;
       height: 100%;
+      grid-auto-columns: 100%;
     }
     .accountAlerts > .title,
     .notificationHistory > .title,
@@ -1679,6 +1705,7 @@
     .accountAlerts > .deleteAll {
       font-size: 0.75em;
       margin-bottom: 1rem;
+      width: 100%;
       .fas {
         margin-right: 0.25em;
       }
@@ -1686,6 +1713,7 @@
     .list {
       display: grid;
       gap: 1rem;
+      grid-template-columns: 100%;
       .nothing {
         width: 100%;
         color: var(--text-color);
@@ -1703,7 +1731,7 @@
       .item {
         display: grid;
         grid-template-areas: "indicator title buttons" "indicator body buttons";
-        grid-template-columns: 0.25rem auto 1rem;
+        grid-template-columns: 0.25rem auto max-content;
         gap: 0.25rem 0.5rem;
         .indicator {
           grid-area: indicator;
@@ -1733,6 +1761,7 @@
           color: var(--text-color);
           transition: 0.125s;
           opacity: 1;
+          word-wrap: break-word;
         }
         .buttons {
           grid-area: buttons;
@@ -1744,15 +1773,14 @@
           transition: 0.125s;
           align-items: center;
           align-content: center;
-          .button {
-            font-size: 0.75rem;
-            padding: 0.5em;
-            line-height: 1.25em;
+          button {
+            font-size: 0.8em;
             height: 100%;
             display: grid;
           }
         }
-        &:hover {
+        &:hover,
+        &:focus-within {
           .buttons {
             opacity: 1;
           }
@@ -1764,14 +1792,14 @@
     }
     .psas .list .item {
       grid-template-areas: "indicator body";
-      grid-template-columns: 0.25rem auto;
+      grid-template-columns: 0.25rem calc(100% - 0.25rem);
       .body {
         opacity: 1;
       }
     }
     .notificationHistory .list .item {
       grid-template-areas: "indicator title" "indicator body";
-      grid-template-columns: 0.25rem auto;
+      grid-template-columns: 0.25rem calc(100% - 0.25rem);
       .title {
         font-size: 0.75rem;
         color: var(--sub-color);

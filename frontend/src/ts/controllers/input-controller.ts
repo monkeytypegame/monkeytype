@@ -848,6 +848,8 @@ function handleTab(event: JQuery.KeyDownEvent, popupVisible: boolean): void {
     TestLogic.restart({ event });
   } else {
     //quick tab off
+    // dont do anything special
+    if (modalVisible) return;
 
     //only special handlig on the test page
     if (ActivePage.get() !== "test") return;
@@ -866,6 +868,27 @@ function handleTab(event: JQuery.KeyDownEvent, popupVisible: boolean): void {
     $("#restartTestButton").trigger("focus");
   }
 }
+
+$("#wordsInput").on("keydown", (event) => {
+  const pageTestActive: boolean = ActivePage.get() === "test";
+  const commandLineVisible = Misc.isPopupVisible("commandLineWrapper");
+  const leaderboardsVisible = Misc.isPopupVisible("leaderboardsWrapper");
+  const popupVisible: boolean = Misc.isAnyPopupVisible();
+  const cookiePopupVisible = CookiePopup.isVisible();
+
+  const allowTyping: boolean =
+    pageTestActive &&
+    !commandLineVisible &&
+    !leaderboardsVisible &&
+    !popupVisible &&
+    !TestUI.resultVisible &&
+    !cookiePopupVisible &&
+    event.key !== "Enter";
+
+  if (!allowTyping) {
+    event.preventDefault();
+  }
+});
 
 let lastBailoutAttempt = -1;
 
