@@ -1,4 +1,4 @@
-# Self Hosting
+# Monkeytype Self Hosting
 
 <!-- TOC ignore:true -->
 ## Table of contents
@@ -31,18 +31,13 @@
 - create an `serviceAccountKey.json` file. you can copy the content from the [serviceAccountKey-example.json](https://github.com/monkeytypegame/monkeytype/tree/master/docker/serviceAccountKey-example.json) and modify it. t.b.d.
 - download the [backend-configuration.json](https://github.com/monkeytypegame/monkeytype/tree/master/docker/backend-configuration.json)
 - run `docker compose up -d`
-
-## Authenticationnd exits successfully you can access [http://localhost:8080](http://localhost:8080)
+- After the command exits successfully you can access [http://localhost:8080](http://localhost:8080)
 
 
 ## Authentication
 
 - t.b.d
-- how to setup firebase and update the
-
-## Leaderboardse recapture working
-- configuration to be done on /configure/ backend
-
+- how to setup firebase and update the recapture working
 
 ## Leaderboards
 
