@@ -1649,12 +1649,13 @@
   }
 }
 
-#alertsPopupWrapper {
+#alertsPopup {
   padding: 0;
   justify-content: end;
   z-index: 99999999;
   overflow-x: hidden;
-  #alertsPopup {
+  justify-items: end;
+  .modal {
     background: var(--bg-color);
     width: calc(350px + 2rem);
     right: 0;
@@ -1667,6 +1668,7 @@
     overflow: hidden;
     margin-right: -10rem;
     border-radius: var(--roundness) 0 0 var(--roundness);
+    display: block;
 
     .mobileClose {
       margin-bottom: 2rem;

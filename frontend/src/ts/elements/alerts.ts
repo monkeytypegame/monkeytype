@@ -7,14 +7,8 @@ import * as NotificationEvent from "../observables/notification-event";
 import * as BadgeController from "../controllers/badge-controller";
 import * as Notifications from "../elements/notifications";
 import * as ConnectionState from "../states/connection";
-import { escapeHTML, isPopupVisible } from "../utils/misc";
-import * as Skeleton from "../popups/skeleton";
-
-const wrapperId = "alertsPopupWrapper";
-
-const wrapperDialog = document.querySelector(
-  "#" + wrapperId
-) as HTMLDialogElement;
+import { escapeHTML } from "../utils/misc";
+import AnimatedModal from "../popups/animated-modal";
 
 let accountAlerts: MonkeyTypes.MonkeyMail[] = [];
 let maxMail = 0;
@@ -32,148 +26,100 @@ const state: State = {
 };
 
 function hide(): void {
-  if (isPopupVisible(wrapperId)) {
-    setNotificationBubbleVisible(false);
+  setNotificationBubbleVisible(false);
+  void modal.hide({
+    afterAnimation: async () => {
+      $("#alertsPopup .notificationHistory .list").empty();
+      $("#alertsPopup .psas .list").empty();
 
-    let mailUpdatedPromiseResolve: (value?: unknown) => void;
-    const mailUpdatedPromise = new Promise((resolve) => {
-      mailUpdatedPromiseResolve = resolve;
-    });
+      const badgesClaimed: string[] = [];
+      let totalXpClaimed = 0;
 
-    const badgesClaimed: string[] = [];
-    let totalXpClaimed = 0;
-    if (mailToMarkRead.length > 0 || mailToDelete.length > 0) {
-      void Ape.users
-        .updateInbox({
-          mailIdsToMarkRead:
-            mailToMarkRead.length > 0 ? mailToMarkRead : undefined,
-          mailIdsToDelete: mailToDelete.length > 0 ? mailToDelete : undefined,
+      if (mailToMarkRead.length === 0 && mailToDelete.length === 0) return;
+
+      const updateResponse = await Ape.users.updateInbox({
+        mailIdsToMarkRead:
+          mailToMarkRead.length > 0 ? mailToMarkRead : undefined,
+        mailIdsToDelete: mailToDelete.length > 0 ? mailToDelete : undefined,
+      });
+
+      const status = updateResponse.status;
+      const message = updateResponse.message;
+      if (status !== 200) {
+        Notifications.add(`Failed to update inbox: ${message}`, -1);
+        return;
+      }
+
+      const rewardsClaimed = accountAlerts
+        .filter((ie) => {
+          return ie.rewards.length > 0 && mailToMarkRead.includes(ie.id);
         })
-        .then(async (updateResponse) => {
-          const status = (await updateResponse).status;
-          const message = (await updateResponse).message;
-          if (status !== 200) {
-            Notifications.add(`Failed to update inbox: ${message}`, -1);
-            return;
-          } else {
-            const rewardsClaimed = accountAlerts
-              .filter((ie) => {
-                return ie.rewards.length > 0 && mailToMarkRead.includes(ie.id);
-              })
-              .map((ie) => ie.rewards)
-              .reduce(function (a, b) {
-                return a.concat(b);
-              }, []);
+        .map((ie) => ie.rewards)
+        .reduce(function (a, b) {
+          return a.concat(b);
+        }, []);
 
-            for (const r of rewardsClaimed) {
-              if (r.type === "xp") {
-                totalXpClaimed += r.item as number;
-              } else if (r.type === "badge") {
-                const badge = BadgeController.getById(r.item.id);
-                if (badge) {
-                  badgesClaimed.push(badge.name);
-                  DB.addBadge(r.item);
-                }
-              }
-            }
+      for (const r of rewardsClaimed) {
+        if (r.type === "xp") {
+          totalXpClaimed += r.item as number;
+        } else if (r.type === "badge") {
+          const badge = BadgeController.getById(r.item.id);
+          if (badge) {
+            badgesClaimed.push(badge.name);
+            DB.addBadge(r.item);
           }
-          mailUpdatedPromiseResolve();
-        });
-    }
-
-    $("#alertsPopup").animate(
-      {
-        marginRight: "-10rem",
-      },
-      100,
-      "easeInCubic"
-    );
-    $("#alertsPopupWrapper")
-      .stop(true, true)
-      .css("opacity", 1)
-      .animate(
-        {
-          opacity: 0,
-        },
-        100,
-        () => {
-          void mailUpdatedPromise.then(() => {
-            if (badgesClaimed.length > 0) {
-              Notifications.add(
-                `New badge${
-                  badgesClaimed.length > 1 ? "s" : ""
-                } unlocked: ${badgesClaimed.join(", ")}`,
-                1,
-                {
-                  duration: 5,
-                  customTitle: "Reward",
-                  customIcon: "gift",
-                }
-              );
-            }
-            if (totalXpClaimed > 0) {
-              const snapxp = DB.getSnapshot()?.xp ?? 0;
-              void AccountButton.updateXpBar(snapxp, totalXpClaimed);
-              DB.addXp(totalXpClaimed);
-            }
-          });
-          $("#alertsPopupWrapper").addClass("hidden");
-          $("#alertsPopup .notificationHistory .list").empty();
-          $("#alertsPopup .psas .list").empty();
-          wrapperDialog.close();
-          Skeleton.remove(wrapperId);
         }
-      );
-  }
+      }
+
+      if (badgesClaimed.length > 0) {
+        Notifications.add(
+          `New badge${
+            badgesClaimed.length > 1 ? "s" : ""
+          } unlocked: ${badgesClaimed.join(", ")}`,
+          1,
+          {
+            duration: 5,
+            customTitle: "Reward",
+            customIcon: "gift",
+          }
+        );
+      }
+
+      if (totalXpClaimed > 0) {
+        const snapxp = DB.getSnapshot()?.xp ?? 0;
+        void AccountButton.updateXpBar(snapxp, totalXpClaimed);
+        DB.addXp(totalXpClaimed);
+      }
+    },
+  });
 }
 
 async function show(): Promise<void> {
-  Skeleton.append(wrapperId);
-  if (!isPopupVisible(wrapperId)) {
-    wrapperDialog.showModal();
+  void modal.show({
+    beforeAnimation: async () => {
+      if (isAuthenticated()) {
+        $("#alertsPopup .accountAlerts").removeClass("hidden");
+        $("#alertsPopup .separator.accountSeparator").removeClass("hidden");
+        $("#alertsPopup .accountAlerts .list").html(`
+          <div class="preloader"><i class="fas fa-fw fa-spin fa-circle-notch"></i></div>`);
+      } else {
+        $("#alertsPopup .accountAlerts").addClass("hidden");
+        $("#alertsPopup .separator.accountSeparator").addClass("hidden");
+      }
 
-    $("#alertsPopup").css("marginRight", "-10rem").animate(
-      {
-        marginRight: 0,
-      },
-      100,
-      "easeOutCubic"
-    );
+      accountAlerts = [];
+      mailToDelete = [];
+      mailToMarkRead = [];
 
-    if (isAuthenticated()) {
-      $("#alertsPopup .accountAlerts").removeClass("hidden");
-      $("#alertsPopup .separator.accountSeparator").removeClass("hidden");
-      $("#alertsPopup .accountAlerts .list").html(`
-        <div class="preloader"><i class="fas fa-fw fa-spin fa-circle-notch"></i></div>`);
-    } else {
-      $("#alertsPopup .accountAlerts").addClass("hidden");
-      $("#alertsPopup .separator.accountSeparator").addClass("hidden");
-    }
-
-    accountAlerts = [];
-    mailToDelete = [];
-    mailToMarkRead = [];
-
-    fillNotifications();
-    fillPSAs();
-
-    $("#alertsPopupWrapper")
-      .stop(true, true)
-      .css("opacity", 0)
-      .removeClass("hidden")
-      .animate(
-        {
-          opacity: 1,
-        },
-        100,
-        () => {
-          wrapperDialog.focus();
-          if (isAuthenticated()) {
-            void getAccountAlerts();
-          }
-        }
-      );
-  }
+      fillNotifications();
+      fillPSAs();
+    },
+    afterAnimation: async () => {
+      if (isAuthenticated()) {
+        void getAccountAlerts();
+      }
+    },
+  });
 }
 
 async function getAccountAlerts(): Promise<void> {
@@ -423,7 +369,7 @@ function updateClaimDeleteAllButton(): void {
   }
 }
 
-$("#alertsPopupWrapper .accountAlerts").on("click", ".claimAll", () => {
+$("#alertsPopup .accountAlerts").on("click", ".claimAll", () => {
   for (const ie of accountAlerts) {
     if (!ie.read && !mailToMarkRead.includes(ie.id)) {
       markReadAlert(ie.id);
@@ -431,7 +377,7 @@ $("#alertsPopupWrapper .accountAlerts").on("click", ".claimAll", () => {
   }
 });
 
-$("#alertsPopupWrapper .accountAlerts").on("click", ".deleteAll", () => {
+$("#alertsPopup .accountAlerts").on("click", ".deleteAll", () => {
   for (const ie of accountAlerts) {
     if (!mailToDelete.includes(ie.id)) {
       deleteAlert(ie.id);
@@ -443,17 +389,11 @@ $("header nav .showAlerts").on("click", () => {
   void show();
 });
 
-$("#alertsPopupWrapper").on("mousedown", (e) => {
-  if ($(e.target).attr("id") === "alertsPopupWrapper") {
-    hide();
-  }
-});
-
-$("#alertsPopupWrapper .mobileClose").on("click", () => {
+$("#alertsPopup .mobileClose").on("click", () => {
   hide();
 });
 
-$("#alertsPopupWrapper .accountAlerts .list").on(
+$("#alertsPopup .accountAlerts .list").on(
   "click",
   ".item .buttons .deleteAlert",
   (e) => {
@@ -462,7 +402,7 @@ $("#alertsPopupWrapper .accountAlerts .list").on(
   }
 );
 
-$("#alertsPopupWrapper .accountAlerts .list").on(
+$("#alertsPopup .accountAlerts .list").on(
   "click",
   ".item .buttons .markReadAlert",
   (e) => {
@@ -470,12 +410,6 @@ $("#alertsPopupWrapper .accountAlerts .list").on(
     markReadAlert(id);
   }
 );
-
-$(document).on("keydown", (e) => {
-  if (e.key === "Escape" && isPopupVisible(wrapperId)) {
-    hide();
-  }
-});
 
 NotificationEvent.subscribe((message, level, customTitle) => {
   state.notifications.push({
@@ -488,4 +422,36 @@ NotificationEvent.subscribe((message, level, customTitle) => {
   }
 });
 
-Skeleton.save(wrapperId);
+const modal = new AnimatedModal(
+  "alertsPopup",
+  {
+    show: {
+      modal: {
+        from: {
+          marginRight: "-10rem",
+        },
+        to: {
+          marginRight: "0",
+        },
+        easing: "easeOutCirc",
+      },
+    },
+    hide: {
+      modal: {
+        from: {
+          marginRight: "0",
+        },
+        to: {
+          marginRight: "-10rem",
+        },
+        easing: "easeInCirc",
+      },
+    },
+  },
+  () => {
+    hide();
+  },
+  () => {
+    hide();
+  }
+);

@@ -1,32 +1,46 @@
 import { isPopupVisible } from "../utils/misc";
 import * as Skeleton from "./skeleton";
 
+type CustomAnimation = {
+  from: Record<string, string>;
+  to: Record<string, string>;
+  easing?: string;
+  durationMs?: number;
+};
+
+type CustomWrapperAndModalAnimations = {
+  wrapper?: CustomAnimation;
+  modal?: CustomAnimation;
+};
+
+type ConstructorCustomAnimations = {
+  show?: CustomWrapperAndModalAnimations;
+  hide?: CustomWrapperAndModalAnimations;
+};
+
 type ShowHideOptions = {
   animationMode?: "none" | "both" | "modalOnly";
-  animationDurationMs?: number;
-  customAnimation?: {
-    wrapper?: {
-      from: Record<string, string>;
-      to: Record<string, string>;
-      easing?: string;
-    };
-    modal?: {
-      from: Record<string, string>;
-      to: Record<string, string>;
-      easing?: string;
-    };
-  };
+  customAnimation?: CustomWrapperAndModalAnimations;
   beforeAnimation?: (modal: HTMLElement) => Promise<void>;
   afterAnimation?: (modal: HTMLElement) => Promise<void>;
 };
 
-export class AnimatedModal {
+const DEFAULT_ANIMATION_DURATION = 125;
+
+export default class AnimatedModal {
   private wrapperEl: HTMLDialogElement;
   private modalEl: HTMLElement;
   private wrapperId: string;
   private open = false;
+  private customShowAnimations: CustomWrapperAndModalAnimations | undefined;
+  private customHideAnimations: CustomWrapperAndModalAnimations | undefined;
 
-  constructor(wrapperId: string) {
+  constructor(
+    wrapperId: string,
+    customAnimations?: ConstructorCustomAnimations,
+    customEscapeHandler?: (e: KeyboardEvent) => void,
+    customWrapperClickHandler?: (e: MouseEvent) => void
+  ) {
     if (wrapperId.startsWith("#")) {
       wrapperId = wrapperId.slice(1);
     }
@@ -57,16 +71,26 @@ export class AnimatedModal {
     this.wrapperId = wrapperId;
     this.wrapperEl = dialogElement;
     this.modalEl = modalElement;
+    this.customShowAnimations = customAnimations?.show;
+    this.customHideAnimations = customAnimations?.hide;
 
     this.wrapperEl.addEventListener("keydown", (e) => {
       if (e.key === "Escape" && isPopupVisible(this.wrapperId)) {
-        void this.hide();
+        if (customEscapeHandler) {
+          customEscapeHandler(e);
+        } else {
+          void this.hide();
+        }
       }
     });
 
     this.wrapperEl.addEventListener("mousedown", (e) => {
       if (e.target === this.wrapperEl) {
-        void this.hide();
+        if (customWrapperClickHandler) {
+          customWrapperClickHandler(e);
+        } else {
+          void this.hide();
+        }
       }
     });
 
@@ -96,34 +120,48 @@ export class AnimatedModal {
 
       await options?.beforeAnimation?.(this.modalEl);
 
+      const modalAnimation =
+        options?.customAnimation?.modal ?? this.customShowAnimations?.modal;
+      const modalAnimationDuration =
+        options?.customAnimation?.modal?.durationMs ??
+        this.customShowAnimations?.modal?.durationMs ??
+        DEFAULT_ANIMATION_DURATION;
+      const wrapperAnimation = options?.customAnimation?.wrapper ??
+        this.customShowAnimations?.wrapper ?? {
+          from: { opacity: "0" },
+          to: { opacity: "1" },
+          easing: "swing",
+        };
+      const wrapperAnimationDuration =
+        options?.customAnimation?.wrapper?.durationMs ??
+        this.customShowAnimations?.wrapper?.durationMs ??
+        DEFAULT_ANIMATION_DURATION;
+
       const animationMode = options?.animationMode ?? "both";
-      const animationDuration = options?.animationDurationMs ?? 125;
 
       $(this.modalEl).stop(true, false);
       $(this.wrapperEl).stop(true, false);
 
       if (animationMode === "both" || animationMode === "none") {
-        if (options?.customAnimation?.modal?.from) {
-          $(this.modalEl).css(options.customAnimation.modal.from);
+        if (modalAnimation?.from) {
+          $(this.modalEl).css(modalAnimation.from);
           $(this.modalEl).animate(
-            options.customAnimation.modal.to,
-            animationMode === "none" ? 0 : animationDuration,
-            options.customAnimation.modal.easing ?? "swing"
+            modalAnimation.to,
+            animationMode === "none" ? 0 : modalAnimationDuration,
+            modalAnimation.easing ?? "swing"
           );
         } else {
           $(this.modalEl).css("opacity", "1");
         }
 
-        if (options?.customAnimation?.wrapper?.from) {
-          $(this.wrapperEl).css(options.customAnimation.wrapper.from);
-        }
+        $(this.wrapperEl).css(wrapperAnimation.from);
         $(this.wrapperEl)
           .removeClass("hidden")
           .css("opacity", "0")
           .animate(
-            options?.customAnimation?.wrapper?.to ?? { opacity: 1 },
-            animationMode === "none" ? 0 : animationDuration,
-            options?.customAnimation?.wrapper?.easing ?? "swing",
+            wrapperAnimation.to ?? { opacity: 1 },
+            animationMode === "none" ? 0 : wrapperAnimationDuration,
+            wrapperAnimation.easing ?? "swing",
             async () => {
               this.wrapperEl.focus();
               await options?.afterAnimation?.(this.modalEl);
@@ -133,15 +171,15 @@ export class AnimatedModal {
       } else if (animationMode === "modalOnly") {
         $(this.wrapperEl).removeClass("hidden").css("opacity", "1");
 
-        if (options?.customAnimation?.modal?.from) {
-          $(this.modalEl).css(options.customAnimation.modal.from);
+        if (modalAnimation?.from) {
+          $(this.modalEl).css(modalAnimation.from);
         } else {
           $(this.modalEl).css("opacity", "0");
         }
         $(this.modalEl).animate(
-          options?.customAnimation?.modal?.to ?? { opacity: 1 },
-          animationDuration,
-          options?.customAnimation?.modal?.easing ?? "swing",
+          modalAnimation?.to ?? { opacity: 1 },
+          modalAnimationDuration,
+          modalAnimation?.easing ?? "swing",
           async () => {
             this.wrapperEl.focus();
             await options?.afterAnimation?.(this.modalEl);
@@ -159,33 +197,46 @@ export class AnimatedModal {
 
       await options?.beforeAnimation?.(this.modalEl);
 
+      const modalAnimation =
+        options?.customAnimation?.modal ?? this.customHideAnimations?.modal;
+      const modalAnimationDuration =
+        options?.customAnimation?.modal?.durationMs ??
+        this.customHideAnimations?.modal?.durationMs ??
+        DEFAULT_ANIMATION_DURATION;
+      const wrapperAnimation = options?.customAnimation?.wrapper ??
+        this.customHideAnimations?.wrapper ?? {
+          from: { opacity: "1" },
+          to: { opacity: "0" },
+          easing: "swing",
+        };
+      const wrapperAnimationDuration =
+        options?.customAnimation?.wrapper?.durationMs ??
+        this.customHideAnimations?.wrapper?.durationMs ??
+        DEFAULT_ANIMATION_DURATION;
       const animationMode = options?.animationMode ?? "both";
-      const animationDuration = options?.animationDurationMs ?? 125;
 
       $(this.modalEl).stop(true, false);
       $(this.wrapperEl).stop(true, false);
 
       if (animationMode === "both" || animationMode === "none") {
-        if (options?.customAnimation?.modal?.from) {
-          $(this.modalEl).css(options.customAnimation.modal.from);
+        if (modalAnimation?.from) {
+          $(this.modalEl).css(modalAnimation.from);
           $(this.modalEl).animate(
-            options.customAnimation.modal.to,
-            animationMode === "none" ? 0 : animationDuration,
-            options.customAnimation.modal.easing ?? "swing"
+            modalAnimation.to,
+            animationMode === "none" ? 0 : modalAnimationDuration,
+            modalAnimation.easing ?? "swing"
           );
         } else {
-          $(this.modalEl).css("opacity", "0");
+          $(this.modalEl).css("opacity", "1");
         }
 
-        if (options?.customAnimation?.wrapper?.from) {
-          $(this.wrapperEl).css(options.customAnimation.wrapper.from);
-        }
+        $(this.wrapperEl).css(wrapperAnimation.from);
         $(this.wrapperEl)
           .css("opacity", "1")
           .animate(
-            options?.customAnimation?.wrapper?.to ?? { opacity: 0 },
-            animationMode === "none" ? 0 : animationDuration,
-            options?.customAnimation?.wrapper?.easing ?? "swing",
+            wrapperAnimation?.to ?? { opacity: 0 },
+            animationMode === "none" ? 0 : wrapperAnimationDuration,
+            wrapperAnimation?.easing ?? "swing",
             async () => {
               this.wrapperEl.close();
               this.wrapperEl.classList.add("hidden");
@@ -198,15 +249,15 @@ export class AnimatedModal {
       } else if (animationMode === "modalOnly") {
         $(this.wrapperEl).removeClass("hidden").css("opacity", "1");
 
-        if (options?.customAnimation?.modal?.from) {
-          $(this.modalEl).css(options.customAnimation.modal.from);
+        if (modalAnimation?.from) {
+          $(this.modalEl).css(modalAnimation.from);
         } else {
           $(this.modalEl).css("opacity", "1");
         }
         $(this.modalEl).animate(
-          options?.customAnimation?.modal?.to ?? { opacity: 0 },
-          animationDuration,
-          options?.customAnimation?.modal?.easing ?? "swing",
+          modalAnimation?.to ?? { opacity: 0 },
+          modalAnimationDuration,
+          modalAnimation?.easing ?? "swing",
           async () => {
             this.wrapperEl.close();
             $(this.wrapperEl).addClass("hidden").css("opacity", "0");
