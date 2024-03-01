@@ -50,5 +50,5 @@ jobs:
           context: .
           file: ./docker/frontend/Dockerfile
           push: true
-          tags: fehmer/mt-frontend:latest,${{ steps.bemeta.outputs.tags }}
-          labels: ${{ steps.bemeta.outputs.labels }}
+          tags: fehmer/mt-frontend:latest,${{ steps.femeta.outputs.tags }}
+          labels: ${{ steps.femeta.outputs.labels }}
