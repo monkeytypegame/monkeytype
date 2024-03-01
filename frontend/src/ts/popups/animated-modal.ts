@@ -37,7 +37,9 @@ export default class AnimatedModal {
 
   constructor(
     wrapperId: string,
-    customAnimations?: ConstructorCustomAnimations
+    customAnimations?: ConstructorCustomAnimations,
+    customEscapeHandler?: (e: KeyboardEvent) => void,
+    customWrapperClickHandler?: (e: MouseEvent) => void
   ) {
     if (wrapperId.startsWith("#")) {
       wrapperId = wrapperId.slice(1);
@@ -74,13 +76,21 @@ export default class AnimatedModal {
 
     this.wrapperEl.addEventListener("keydown", (e) => {
       if (e.key === "Escape" && isPopupVisible(this.wrapperId)) {
-        void this.hide();
+        if (customEscapeHandler) {
+          customEscapeHandler(e);
+        } else {
+          void this.hide();
+        }
       }
     });
 
     this.wrapperEl.addEventListener("mousedown", (e) => {
       if (e.target === this.wrapperEl) {
-        void this.hide();
+        if (customWrapperClickHandler) {
+          customWrapperClickHandler(e);
+        } else {
+          void this.hide();
+        }
       }
     });
 

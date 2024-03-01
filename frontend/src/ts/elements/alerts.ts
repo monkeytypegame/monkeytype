@@ -422,27 +422,36 @@ NotificationEvent.subscribe((message, level, customTitle) => {
   }
 });
 
-const modal = new AnimatedModal("alertsPopup", {
-  show: {
-    modal: {
-      from: {
-        marginRight: "-10rem",
+const modal = new AnimatedModal(
+  "alertsPopup",
+  {
+    show: {
+      modal: {
+        from: {
+          marginRight: "-10rem",
+        },
+        to: {
+          marginRight: "0",
+        },
+        easing: "easeOutCirc",
       },
-      to: {
-        marginRight: "0",
+    },
+    hide: {
+      modal: {
+        from: {
+          marginRight: "0",
+        },
+        to: {
+          marginRight: "-10rem",
+        },
+        easing: "easeInCirc",
       },
-      easing: "easeOutCirc",
     },
   },
-  hide: {
-    modal: {
-      from: {
-        marginRight: "0",
-      },
-      to: {
-        marginRight: "-10rem",
-      },
-      easing: "easeInCirc",
-    },
+  () => {
+    hide();
   },
-});
+  () => {
+    hide();
+  }
+);
