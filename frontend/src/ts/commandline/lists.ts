@@ -609,6 +609,8 @@ function buildSingleListCommands(
         },
       };
       commands.push(newCommand);
+    } else {
+      commands.push(command);
     }
   }
   return {
