@@ -158,7 +158,7 @@ function showFound(): void {
           if (!/font/gi.test(obj.id)) {
             UpdateConfig.previewFontFamily(Config.fontFamily);
           }
-          if (obj.hover) obj.hover();
+          if (obj.hover && !obj.id.startsWith("changeTheme")) obj.hover();
           return;
         }
       }
