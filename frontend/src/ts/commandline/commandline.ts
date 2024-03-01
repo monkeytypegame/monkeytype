@@ -5,6 +5,7 @@ import * as AnalyticsController from "../controllers/analytics-controller";
 import * as ThemeController from "../controllers/theme-controller";
 import { clearFontPreview } from "../ui";
 import AnimatedModal from "../popups/animated-modal";
+import { escapeRegExp } from "../utils/misc";
 
 type CommandlineMode = "search" | "input";
 type InputModeParams = {
@@ -146,8 +147,7 @@ function filterSubgroup(): void {
     }
     let foundCount = 0;
     for (const input of inputSplit) {
-      const escaped = input.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
-      const re = new RegExp("\\b" + escaped, "g");
+      const re = new RegExp("\\b" + escapeRegExp(input), "g");
       const matchDisplay = command.display.toLowerCase().match(re);
       const matchAlias =
         command.alias !== undefined
