@@ -26,7 +26,7 @@ services:
   monkeytype-backend:
     container_name: monkeytype-backend
     image: monkeytype/backend:latest
-    ports: 
+    ports:
       - "${BACKEND_PORT:-5005}:5005"
     restart: on-failure
     environment:
@@ -54,12 +54,13 @@ services:
       timeout: 10s
       retries: 15
       start_period: 5s
-  
+
   monkeytype-redis:
     container_name: monkeytype-redis
     image: redis:6.2.6
-    ports:
-      - "${REDIS_PORT:-6379}:6379"
+    #uncomment if you want to expose the redis server
+    #ports:
+    #  - "${REDIS_PORT:-6379}:6379"
     restart: on-failure
     volumes:
       - redis-data:/data
@@ -76,15 +77,15 @@ services:
     restart: on-failure
     volumes:
       - mongo-data:/data/db
-    ports:
-      - "${MONGO_PORT:-27017}:27017"
+    #uncomment if you want to expose the mongodb server
+    #ports:
+    #  - "${MONGO_PORT:-27017}:27017"
     healthcheck:
       test: echo 'db.stats().ok' | mongo localhost:27017/test --quiet
       interval: 5s
       timeout: 10s
       retries: 15
       start_period: 10s
-     
 
 volumes:
   mongo-data:
