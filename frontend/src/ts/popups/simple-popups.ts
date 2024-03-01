@@ -880,13 +880,13 @@ list.deleteAccount = new SimplePopup(
       };
     }
 
-    Notifications.add("Deleting user...", 0);
+    Notifications.add("Deleting all data...", 0);
     const usersResponse = await Ape.users.delete();
 
     if (usersResponse.status !== 200) {
       return {
         status: -1,
-        message: "Failed to delete user stats: " + usersResponse.message,
+        message: "Failed to delete user data: " + usersResponse.message,
       };
     }
 
