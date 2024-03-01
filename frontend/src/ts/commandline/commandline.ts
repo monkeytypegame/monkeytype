@@ -254,6 +254,7 @@ function showCommands(): void {
 
     let display = command.display;
     if (usingSingleList) {
+      display = (command.singleListDisplay ?? "") || command.display;
       display = display.replace(
         `<i class="fas fa-fw fa-chevron-right chevronIcon"></i>`,
         `<i class="fas fa-fw fa-chevron-right chevronIcon"></i>` + configIcon

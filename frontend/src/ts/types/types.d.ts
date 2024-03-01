@@ -296,6 +296,8 @@ declare namespace MonkeyTypes {
   type Command = {
     id: string;
     display: string;
+    singleListDisplay?: string;
+    singleListDisplayNoIcon?: string;
     subgroup?: CommandsSubgroup;
     found?: boolean;
     icon?: string;

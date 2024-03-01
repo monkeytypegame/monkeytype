@@ -589,14 +589,18 @@ function buildSingleListCommands(
         /\s?\.\.\.$/g,
         ""
       );
-      const displayString =
+      const singleListDisplay =
         parentCommandDisplay +
         '<i class="fas fa-fw fa-chevron-right chevronIcon"></i>' +
         command.display;
 
+      const singleListDisplayNoIcon =
+        parentCommandDisplay + " " + command.display;
+
       const newCommand = {
         ...command,
-        display: displayString,
+        singleListDisplay,
+        singleListDisplayNoIcon,
         configKey: parentCommand.subgroup?.configKey,
         icon: parentCommand.icon,
         alias: (parentCommand.alias ?? "") + " " + (command.alias ?? ""),
