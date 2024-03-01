@@ -35,3 +35,20 @@ jobs:
           push: true
           tags: fehmer/mt-backend:latest,${{ steps.bemeta.outputs.tags }}
           labels: ${{ steps.bemeta.outputs.labels }}
+          
+      - name: Frontend extract metadata (tags, labels)
+        id: femeta
+        uses: docker/metadata-action@8e5442c4ef9f78752691e2d8f8d19755c6f78e81
+        with:
+          images: fehmer/mt-frontend
+          tags: |
+            type=semver,pattern={{version}}
+
+      - name: Frontend build and push Docker image
+        uses: docker/build-push-action@3b5e8027fcad23fda98b2e3ac259d8d67585f671
+        with:
+          context: .
+          file: ./docker/frontend/Dockerfile
+          push: true
+          tags: fehmer/mt-frontend:latest,${{ steps.bemeta.outputs.tags }}
+          labels: ${{ steps.bemeta.outputs.labels }}
