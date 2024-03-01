@@ -33,5 +33,5 @@ jobs:
           context: .
           file: ./docker/backend/Dockerfile
           push: true
-          tags: ${{ steps.bemeta.outputs.tags }}
+          tags: fehmer/mt-backend:latest,${{ steps.bemeta.outputs.tags }}
           labels: ${{ steps.bemeta.outputs.labels }}
