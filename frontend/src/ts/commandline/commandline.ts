@@ -1,13 +1,10 @@
-import * as Skeleton from "../popups/skeleton";
 import * as Focus from "../test/focus";
 import * as CommandlineLists from "./lists";
 import Config from "../config";
-import * as TestUI from "../test/test-ui";
 import * as AnalyticsController from "../controllers/analytics-controller";
 import * as ThemeController from "../controllers/theme-controller";
 import { clearFontPreview } from "../ui";
-
-const wrapperId = "commandLineWrapper";
+import AnimatedModal from "../popups/animated-modal";
 
 type CommandlineMode = "search" | "input";
 type InputModeParams = {
@@ -17,7 +14,6 @@ type InputModeParams = {
   icon: string | null;
 };
 
-let visible = false;
 let activeIndex = 0;
 let usingSingleList = false;
 let inputValue = "";
@@ -33,15 +29,16 @@ let inputModeParams: InputModeParams = {
 let subgroupOverride: MonkeyTypes.CommandsSubgroup | null = null;
 
 function removeCommandlineBackground(): void {
-  $("#commandLineWrapper").addClass("noBackground");
+  $("#commandLine").addClass("noBackground");
   if (Config.showOutOfFocusWarning) {
     $("#words").removeClass("blurred");
   }
 }
 
 function addCommandlineBackground(): void {
-  $("#commandLineWrapper").removeClass("noBackground");
-  if (Config.showOutOfFocusWarning) {
+  $("#commandLine").removeClass("noBackground");
+  const isWordsFocused = $("#wordsInput").is(":focus");
+  if (Config.showOutOfFocusWarning && !isWordsFocused) {
     $("#words").addClass("blurred");
   }
 }
@@ -51,78 +48,56 @@ type ShowSettings = {
 };
 
 export function show(settings?: ShowSettings): void {
-  if (visible) {
-    return;
-  }
-  mouseMode = false;
-  visible = true;
-  inputValue = "";
-  activeIndex = 0;
-  mode = "search";
-  inputModeParams = {
-    command: null,
-    placeholder: null,
-    value: null,
-    icon: null,
-  };
+  void modal.show({
+    beforeAnimation: async (modal) => {
+      mouseMode = false;
+      inputValue = "";
+      activeIndex = 0;
+      mode = "search";
+      inputModeParams = {
+        command: null,
+        placeholder: null,
+        value: null,
+        icon: null,
+      };
 
-  if (settings?.subgroupOverride) {
-    subgroupOverride = settings.subgroupOverride;
-    usingSingleList = false;
-  } else {
-    subgroupOverride = null;
-    usingSingleList = Config.singleListCommandLine === "on";
-  }
-  activeCommand = null;
-  Focus.set(false);
-  Skeleton.append(wrapperId);
-  CommandlineLists.setStackToDefault();
-  beforeList();
-  updateInput();
-  filterSubgroup();
-  showCommands();
-  updateActiveCommand();
-
-  const el = $("#commandLineWrapper")
-    .stop(true, true)
-    .css("opacity", 0)
-    .removeClass("hidden");
-  keepActiveCommandInView();
-  el.animate(
-    {
-      opacity: 1,
+      if (settings?.subgroupOverride) {
+        subgroupOverride = settings.subgroupOverride;
+        usingSingleList = false;
+      } else {
+        subgroupOverride = null;
+        usingSingleList = Config.singleListCommandLine === "on";
+      }
+      activeCommand = null;
+      Focus.set(false);
+      CommandlineLists.setStackToDefault();
+      beforeList();
+      updateInput();
+      filterSubgroup();
+      showCommands();
+      updateActiveCommand();
+      keepActiveCommandInView();
+      setTimeout(() => {
+        // instead of waiting for the animatino to finish,
+        // we focus just after it begins to increase responsivenes
+        // (you can type while the animation is running)
+        modal.querySelector("input")?.focus();
+      }, 0);
     },
-    125,
-    () => {
-      $("#commandLine input").trigger("focus");
-    }
-  );
+    afterAnimation: async (modal) => {
+      modal.querySelector("input")?.focus();
+    },
+  });
 }
 
-function hide(focusTestUI = false): void {
-  if (!visible) {
-    return;
-  }
+function hide(): void {
   clearFontPreview();
   void ThemeController.clearPreview();
-  $("#commandLineWrapper")
-    .stop(true, true)
-    .css("opacity", 1)
-    .animate(
-      {
-        opacity: 0,
-      },
-      125,
-      () => {
-        addCommandlineBackground();
-        visible = false;
-        $("#commandLineWrapper").addClass("hidden");
-        Skeleton.remove(wrapperId);
-        if (focusTestUI) {
-          TestUI.focusWords();
-        }
-      }
-    );
+  void modal.hide({
+    afterAnimation: async () => {
+      addCommandlineBackground();
+    },
+  });
 }
 
 function goBackOrHide(): void {
@@ -149,7 +124,7 @@ function goBackOrHide(): void {
     showCommands();
     updateActiveCommand();
   } else {
-    hide(true);
+    hide();
   }
 }
 
@@ -363,7 +338,7 @@ function handleInputSubmit(): void {
   void AnalyticsController.log("usedCommandLine", {
     command: inputModeParams.command.id,
   });
-  hide(inputModeParams.command.shouldFocusTestUI ?? true);
+  hide();
 }
 
 function runActiveCommand(): void {
@@ -397,7 +372,7 @@ function runActiveCommand(): void {
     const isSticky = command.sticky ?? false;
     if (!isSticky) {
       void AnalyticsController.log("usedCommandLine", { command: command.id });
-      hide(command.shouldFocusTestUI ?? true);
+      hide();
     } else {
       beforeList();
       filterSubgroup();
@@ -524,18 +499,10 @@ input.addEventListener("keydown", (e) => {
   }
 });
 
-const wrapper = document.querySelector("#commandLineWrapper") as HTMLElement;
-
-wrapper.addEventListener("click", (e) => {
-  if (e.target === wrapper) {
-    hide(true);
-  }
-});
-
 const commandLine = document.querySelector("#commandLine") as HTMLElement;
 
 commandLine.addEventListener("mousemove", (e) => {
   mouseMode = true;
 });
 
-Skeleton.save(wrapperId);
+const modal = new AnimatedModal("commandLine");

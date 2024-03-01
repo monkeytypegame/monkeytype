@@ -59,7 +59,7 @@ body::before {
   background: var(--theme-accent-stripe-color);
 }
 
-#commandLineWrapper #commandLine {
+#commandLine .modal {
   --roundness: 0; /* making command line sharp */
 }
 

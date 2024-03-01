@@ -1,4 +1,4 @@
-#commandLineWrapper {
+#commandLine {
   width: 100%;
   height: 100%;
   background: rgba(0, 0, 0, 0.75);
@@ -9,11 +9,12 @@
   display: grid;
   justify-items: center;
   align-items: start;
-  padding: 5rem 2rem;
+  padding: 6rem 2rem;
   grid-template-columns: 1fr;
   transition: background 0.125s;
+  overflow: hidden;
 
-  #commandLine {
+  .modal {
     max-width: 600px;
     width: 100%;
     background: var(--bg-color);
@@ -21,6 +22,8 @@
     // outline: 0.25rem solid transparent;
     box-shadow: 0 0 0 0.2em transparent;
     transition: outline 0.125s;
+    padding: 0;
+    display: block;
 
     .searchicon {
       color: var(--sub-color);
@@ -45,7 +48,7 @@
       display: block;
       @extend .ffscroll;
       overflow-y: scroll;
-      max-height: calc(100vh - 10rem - 3rem);
+      max-height: calc(100vh - 12rem - 3rem);
       display: grid;
       cursor: pointer;
       -webkit-user-select: none;
@@ -117,7 +120,7 @@
 
   &.noBackground {
     background: none;
-    #commandLine {
+    .modal {
       box-shadow: 0 0 0 0.2em var(--sub-alt-color);
       // outline: 0.25rem solid var(--sub-alt-color);
     }
