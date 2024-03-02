@@ -38,7 +38,7 @@
     "real()",
     "angle()",
     "ceil",
-    "longspace",
+    "logspace",
     "abs",
     "floor",
     "hold",
