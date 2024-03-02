@@ -24,7 +24,7 @@ const configLegacyProperties = [
 
 export async function saveConfig(
   uid: string,
-  config: object
+  config: SharedTypes.Config
 ): Promise<UpdateResult> {
   const configChanges = _.mapKeys(config, (_value, key) => `config.${key}`);
 
@@ -32,20 +32,23 @@ export async function saveConfig(
     _.map(configLegacyProperties, (key) => [`config.${key}`, ""])
   );
 
-  return await db
-    .collection<any>("configs")
-    .updateOne(
-      { uid },
-      { $set: configChanges, $unset: unset },
-      { upsert: true }
-    );
+  return await db.collection<SharedTypes.Config>("configs").updateOne(
+    { uid },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    { $set: configChanges, $unset: unset as any },
+    { upsert: true }
+  );
 }
 
-export async function getConfig(uid: string): Promise<any> {
-  const config = await db.collection<any>("configs").findOne({ uid });
+export async function getConfig(
+  uid: string
+): Promise<SharedTypes.Config | null> {
+  const config = await db
+    .collection<SharedTypes.Config>("configs")
+    .findOne({ uid });
   return config;
 }
 
-export async function deleteConfig(uid: string): Promise<any> {
-  return await db.collection<any>("configs").deleteOne({ uid });
+export async function deleteConfig(uid: string): Promise<void> {
+  await db.collection<SharedTypes.Config>("configs").deleteOne({ uid });
 }
