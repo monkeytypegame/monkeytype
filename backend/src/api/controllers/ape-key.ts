@@ -13,7 +13,7 @@ function cleanApeKey(apeKey: MonkeyTypes.ApeKeyDB): SharedTypes.ApeKey {
 
 export async function getApeKeys(
   req: MonkeyTypes.Request
-): Promise<MonkeyResponse> {
+): Promise<MonkeyResponse<SharedTypes.ApeKey[]>> {
   const { uid } = req.ctx.decodedToken;
 
   const apeKeys = await ApeKeysDAL.getApeKeys(uid);
@@ -24,7 +24,7 @@ export async function getApeKeys(
 
 export async function generateApeKey(
   req: MonkeyTypes.Request
-): Promise<MonkeyResponse> {
+): Promise<MonkeyResponse<unknown>> {
   const { name, enabled } = req.body;
   const { uid } = req.ctx.decodedToken;
   const { maxKeysPerUser, apeKeyBytes, apeKeySaltRounds } =

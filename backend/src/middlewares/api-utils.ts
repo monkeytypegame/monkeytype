@@ -99,10 +99,10 @@ function checkUserPermissions(
   };
 }
 
-type AsyncHandler = (
+type AsyncHandler<T> = (
   req: MonkeyTypes.Request,
   res?: Response
-) => Promise<MonkeyResponse>;
+) => Promise<MonkeyResponse<T>>;
 
 /**
  * This utility serves as an alternative to wrapping express handlers with try/catch statements.
@@ -110,7 +110,7 @@ type AsyncHandler = (
  * Without this, any errors thrown will not be caught by the error handling middleware, and
  * the app will hang!
  */
-function asyncHandler(handler: AsyncHandler): RequestHandler {
+function asyncHandler<T>(handler: AsyncHandler<T>): RequestHandler {
   return async (
     req: MonkeyTypes.Request,
     res: Response,

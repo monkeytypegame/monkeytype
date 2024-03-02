@@ -63,7 +63,7 @@ try {
 
 export async function getResults(
   req: MonkeyTypes.Request
-): Promise<MonkeyResponse> {
+): Promise<MonkeyResponse<SharedTypes.DBResult<SharedTypes.Config.Mode>[]>> {
   const { uid } = req.ctx.decodedToken;
   const premiumFeaturesEnabled = req.ctx.configuration.users.premium.enabled;
   const userHasPremium = await UserDAL.checkIfUserIsPremium(uid);
@@ -116,7 +116,7 @@ export async function getResults(
     },
     uid
   );
-  return new MonkeyResponse("Results retrieved", results);
+  return MonkeyResponse.unwrapArray("Results retrieved", results);
 }
 
 export async function getLastResult(

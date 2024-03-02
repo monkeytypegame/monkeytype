@@ -3,7 +3,7 @@ import { MonkeyResponse } from "../../utils/monkey-response";
 
 export async function getPublicSpeedHistogram(
   req: MonkeyTypes.Request
-): Promise<MonkeyResponse> {
+): Promise<MonkeyResponse<SharedTypes.SpeedHistogram>> {
   const { language, mode, mode2 } = req.query;
   const data = await PublicDAL.getSpeedHistogram(
     language as string,
@@ -15,7 +15,7 @@ export async function getPublicSpeedHistogram(
 
 export async function getPublicTypingStats(
   _req: MonkeyTypes.Request
-): Promise<MonkeyResponse> {
+): Promise<MonkeyResponse<SharedTypes.PublicTypingStats>> {
   const data = await PublicDAL.getTypingStats();
   return new MonkeyResponse("Public typing stats retrieved", data);
 }
