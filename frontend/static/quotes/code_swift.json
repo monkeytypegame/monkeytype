@@ -18,6 +18,15 @@
       "source": "Programiz - Swift Functions",
       "id": 2,
       "length": 80
+    },
+    {
+      "text": "var languages = [\"Swift\", \"Java\", \"C++\"]",
+      "source": "Programiz - Swift Arrays",
+      "id": 3,
+      "length": 40
+    },
+    {
+
     }
   ]
 }
