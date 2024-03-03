@@ -14,5 +14,9 @@ export async function sync(): Promise<void> {
     return;
   } else {
     config = response.data ?? undefined;
+    //show signIn button
+    if (config?.users.signUp) {
+      $(".signInOut").removeClass("hidden");
+    }
   }
 }
