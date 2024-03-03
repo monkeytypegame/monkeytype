@@ -5,7 +5,6 @@ import * as AnalyticsController from "../controllers/analytics-controller";
 import * as ThemeController from "../controllers/theme-controller";
 import { clearFontPreview } from "../ui";
 import AnimatedModal from "../popups/animated-modal";
-import { escapeRegExp } from "../utils/misc";
 
 type CommandlineMode = "search" | "input";
 type InputModeParams = {
