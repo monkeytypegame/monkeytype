@@ -130,8 +130,8 @@ function goBackOrHide(): void {
 }
 
 function filterSubgroup(): void {
+  // const configKey = getSubgroup().configKey;
   const list = getList();
-
   const inputNoQuickSingle = inputValue
     .replace(/^>/gi, "")
     .toLowerCase()
@@ -270,11 +270,12 @@ function showCommands(): void {
       icon = `<i class="fas fa-fw ${icon}"></i>`;
     }
     let configIcon = "";
-    if (command.configKey !== undefined) {
+    const configKey = command.configKey ?? getSubgroup().configKey;
+    if (configKey !== undefined) {
       const valueIsIncluded =
         command.configValueMode === "include" &&
         (
-          Config[command.configKey] as (
+          Config[configKey] as (
             | string
             | number
             | boolean
@@ -282,7 +283,7 @@ function showCommands(): void {
             | undefined
           )[]
         ).includes(command.configValue);
-      const valueIsTheSame = Config[command.configKey] === command.configValue;
+      const valueIsTheSame = Config[configKey] === command.configValue;
       if (valueIsIncluded || valueIsTheSame) {
         firstActive = firstActive ?? index;
         configIcon = `<i class="fas fa-fw fa-check"></i>`;
