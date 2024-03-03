@@ -32,14 +32,22 @@ export default class AnimatedModal {
   private modalEl: HTMLElement;
   private wrapperId: string;
   private open = false;
+  private setupRan = false;
   private customShowAnimations: CustomWrapperAndModalAnimations | undefined;
   private customHideAnimations: CustomWrapperAndModalAnimations | undefined;
+
+  private customEscapeHandler: ((e: KeyboardEvent) => void) | undefined;
+  private customWrapperClickHandler: ((e: MouseEvent) => void) | undefined;
+  private setup: ((modal: HTMLElement) => void) | undefined;
 
   constructor(
     wrapperId: string,
     customAnimations?: ConstructorCustomAnimations,
-    customEscapeHandler?: (e: KeyboardEvent) => void,
-    customWrapperClickHandler?: (e: MouseEvent) => void
+    functions?: {
+      customEscapeHandler?: (e: KeyboardEvent) => void;
+      customWrapperClickHandler?: (e: MouseEvent) => void;
+      setup?: (modal: HTMLElement) => void;
+    }
   ) {
     if (wrapperId.startsWith("#")) {
       wrapperId = wrapperId.slice(1);
@@ -74,10 +82,18 @@ export default class AnimatedModal {
     this.customShowAnimations = customAnimations?.show;
     this.customHideAnimations = customAnimations?.hide;
 
+    this.customEscapeHandler = functions?.customEscapeHandler;
+    this.customWrapperClickHandler = functions?.customWrapperClickHandler;
+    this.setup = functions?.setup;
+
+    Skeleton.save(this.wrapperId);
+  }
+
+  runSetup(): void {
     this.wrapperEl.addEventListener("keydown", (e) => {
       if (e.key === "Escape" && isPopupVisible(this.wrapperId)) {
-        if (customEscapeHandler) {
-          customEscapeHandler(e);
+        if (this.customEscapeHandler !== undefined) {
+          this.customEscapeHandler(e);
         } else {
           void this.hide();
         }
@@ -86,15 +102,17 @@ export default class AnimatedModal {
 
     this.wrapperEl.addEventListener("mousedown", (e) => {
       if (e.target === this.wrapperEl) {
-        if (customWrapperClickHandler) {
-          customWrapperClickHandler(e);
+        if (this.customWrapperClickHandler !== undefined) {
+          this.customWrapperClickHandler(e);
         } else {
           void this.hide();
         }
       }
     });
 
-    Skeleton.save(this.wrapperId);
+    if (this.setup !== undefined) {
+      this.setup(this.modalEl);
+    }
   }
 
   getWrapper(): HTMLDialogElement {
@@ -113,6 +131,12 @@ export default class AnimatedModal {
     // eslint-disable-next-line no-async-promise-executor
     return new Promise(async (resolve) => {
       Skeleton.append(this.wrapperId);
+
+      if (!this.setupRan) {
+        this.runSetup();
+        this.setupRan = true;
+      }
+
       if (isPopupVisible(this.wrapperId)) return resolve();
 
       this.open = true;
@@ -269,5 +293,12 @@ export default class AnimatedModal {
         );
       }
     });
+  }
+
+  destroy(): void {
+    this.wrapperEl.close();
+    this.wrapperEl.classList.add("hidden");
+    Skeleton.remove(this.wrapperId);
+    this.open = false;
   }
 }
