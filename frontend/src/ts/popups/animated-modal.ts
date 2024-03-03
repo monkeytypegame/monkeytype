@@ -53,6 +53,10 @@ export default class AnimatedModal {
       wrapperId = wrapperId.slice(1);
     }
 
+    if (Skeleton.has(wrapperId)) {
+      Skeleton.append(wrapperId);
+    }
+
     const dialogElement = document.getElementById(wrapperId);
     const modalElement = document.querySelector(
       `#${wrapperId} > .modal`

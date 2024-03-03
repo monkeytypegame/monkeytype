@@ -27,3 +27,7 @@ export function append(id: string, parentOverride?: ParentOverride): void {
     parent.append(popup);
   }
 }
+
+export function has(id: string): boolean {
+  return skeletons.has(id);
+}
