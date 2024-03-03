@@ -273,6 +273,7 @@ export async function getUserResults(offset?: number): Promise<boolean> {
     }
     if (result.numbers === undefined) result.numbers = false;
     if (result.punctuation === undefined) result.punctuation = false;
+    if (result.numbers === undefined) result.numbers = false;
     if (result.quoteLength === undefined) result.quoteLength = -1;
     if (result.restartCount === undefined) result.restartCount = 0;
     if (result.incompleteTestSeconds === undefined) {
@@ -403,44 +404,11 @@ export async function deleteCustomTheme(themeId: string): Promise<boolean> {
   return true;
 }
 
-async function _getUserHighestWpm<M extends SharedTypes.Config.Mode>(
-  mode: M,
-  mode2: SharedTypes.Config.Mode2<M>,
-  punctuation: boolean,
-  language: string,
-  difficulty: SharedTypes.Config.Difficulty,
-  lazyMode: boolean
-): Promise<number> {
-  function cont(): number {
-    let topWpm = 0;
-
-    dbSnapshot?.results?.forEach((result) => {
-      if (
-        result.mode === mode &&
-        `${result.mode2}` === `${mode2 as string | number}` && //using template strings here because legacy results can have numbers in mode2
-        result.punctuation === punctuation &&
-        result.language === language &&
-        result.difficulty === difficulty &&
-        (result.lazyMode === lazyMode ||
-          (result.lazyMode === undefined && !lazyMode))
-      ) {
-        if (result.wpm > topWpm) {
-          topWpm = result.wpm;
-        }
-      }
-    });
-    return topWpm;
-  }
-
-  const retval = !dbSnapshot || dbSnapshot.results === undefined ? 0 : cont();
-
-  return retval;
-}
-
 export async function getUserAverage10<M extends SharedTypes.Config.Mode>(
   mode: M,
   mode2: SharedTypes.Config.Mode2<M>,
   punctuation: boolean,
+  numbers: boolean,
   language: string,
   difficulty: SharedTypes.Config.Difficulty,
   lazyMode: boolean
@@ -468,7 +436,8 @@ export async function getUserAverage10<M extends SharedTypes.Config.Mode>(
       for (const result of snapshot.results) {
         if (
           result.mode === mode &&
-          result.punctuation === punctuation &&
+          (result.punctuation ?? false) === punctuation &&
+          (result.numbers ?? false) === numbers &&
           result.language === language &&
           result.difficulty === difficulty &&
           (result.lazyMode === lazyMode ||
@@ -524,6 +493,7 @@ export async function getUserDailyBest<M extends SharedTypes.Config.Mode>(
   mode: M,
   mode2: SharedTypes.Config.Mode2<M>,
   punctuation: boolean,
+  numbers: boolean,
   language: string,
   difficulty: SharedTypes.Config.Difficulty,
   lazyMode: boolean
@@ -546,7 +516,8 @@ export async function getUserDailyBest<M extends SharedTypes.Config.Mode>(
       for (const result of snapshot.results) {
         if (
           result.mode === mode &&
-          result.punctuation === punctuation &&
+          (result.punctuation ?? false) === punctuation &&
+          (result.numbers ?? false) === numbers &&
           result.language === language &&
           result.difficulty === difficulty &&
           (result.lazyMode === lazyMode ||
@@ -600,37 +571,24 @@ export async function getLocalPB<M extends SharedTypes.Config.Mode>(
   if (!funboxes.every((f) => f.canGetPb)) {
     return 0;
   }
+  if (dbSnapshot === null || dbSnapshot?.personalBests === null) return 0;
 
-  function cont(): number {
-    let ret = 0;
-    try {
-      if (!dbSnapshot?.personalBests) return ret;
+  const bestsByMode = dbSnapshot?.personalBests[mode][
+    mode2
+  ] as SharedTypes.PersonalBest[];
 
-      (
-        dbSnapshot.personalBests[mode][
-          mode2
-        ] as unknown as SharedTypes.PersonalBest[]
-      ).forEach((pb) => {
-        if (
-          pb.punctuation === punctuation &&
-          pb.numbers === numbers &&
-          pb.difficulty === difficulty &&
-          pb.language === language &&
-          (pb.lazyMode === lazyMode || (pb.lazyMode === undefined && !lazyMode))
-        ) {
-          ret = pb.wpm;
-        }
-      });
+  if (bestsByMode === undefined) return 0;
 
-      return ret;
-    } catch (e) {
-      return ret;
-    }
-  }
-
-  const retval = dbSnapshot === null ? 0 : cont();
-
-  return retval;
+  return (
+    bestsByMode.find(
+      (pb) =>
+        (pb.punctuation ?? false) === punctuation &&
+        (pb.numbers ?? false) === numbers &&
+        pb.difficulty === difficulty &&
+        pb.language === language &&
+        (pb.lazyMode ?? false) === lazyMode
+    )?.wpm ?? 0
+  );
 }
 
 export async function saveLocalPB<M extends SharedTypes.Config.Mode>(
@@ -755,8 +713,8 @@ export async function getLocalTagPB<M extends SharedTypes.Config.Mode>(
   ret =
     personalBests.find(
       (pb) =>
-        pb.punctuation === punctuation &&
-        pb.numbers === numbers &&
+        (pb.punctuation ?? false) === punctuation &&
+        (pb.numbers ?? false) === numbers &&
         pb.difficulty === difficulty &&
         pb.language === language &&
         (pb.lazyMode === lazyMode || (pb.lazyMode === undefined && !lazyMode))
@@ -810,8 +768,8 @@ export async function saveLocalTagPB<M extends SharedTypes.Config.Mode>(
         ] as unknown as SharedTypes.PersonalBest[]
       ).forEach((pb) => {
         if (
-          pb.punctuation === punctuation &&
-          pb.numbers === numbers &&
+          (pb.punctuation ?? false) === punctuation &&
+          (pb.numbers ?? false) === numbers &&
           pb.difficulty === difficulty &&
           pb.language === language &&
           (pb.lazyMode === lazyMode || (pb.lazyMode === undefined && !lazyMode))
