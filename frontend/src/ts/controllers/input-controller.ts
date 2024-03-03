@@ -32,7 +32,6 @@ import * as KeymapEvent from "../observables/keymap-event";
 import { IgnoredKeys } from "../constants/ignored-keys";
 import { ModifierKeys } from "../constants/modifier-keys";
 import { navigate } from "./route-controller";
-import * as CookiePopup from "../popups/cookie-popup";
 
 let dontInsertSpace = false;
 let correctShiftUsed = true;
@@ -874,15 +873,12 @@ $("#wordsInput").on("keydown", (event) => {
   const commandLineVisible = Misc.isPopupVisible("commandLineWrapper");
   const leaderboardsVisible = Misc.isPopupVisible("leaderboardsWrapper");
   const popupVisible: boolean = Misc.isAnyPopupVisible();
-  const cookiePopupVisible = CookiePopup.isVisible();
-
   const allowTyping: boolean =
     pageTestActive &&
     !commandLineVisible &&
     !leaderboardsVisible &&
     !popupVisible &&
     !TestUI.resultVisible &&
-    !cookiePopupVisible &&
     event.key !== "Enter";
 
   if (!allowTyping) {
@@ -912,13 +908,6 @@ $(document).on("keydown", async (event) => {
   const leaderboardsVisible = Misc.isPopupVisible("leaderboardsWrapper");
 
   const popupVisible: boolean = Misc.isAnyPopupVisible();
-
-  const cookiePopupVisible = CookiePopup.isVisible();
-
-  if (cookiePopupVisible) {
-    console.debug("Ignoring keydown event because cookie popup is visible.");
-    return;
-  }
 
   const allowTyping: boolean =
     pageTestActive &&

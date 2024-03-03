@@ -294,4 +294,11 @@ export default class AnimatedModal {
       }
     });
   }
+
+  destroy(): void {
+    this.wrapperEl.close();
+    this.wrapperEl.classList.add("hidden");
+    Skeleton.remove(this.wrapperId);
+    this.open = false;
+  }
 }
