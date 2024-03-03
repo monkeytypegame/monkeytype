@@ -215,7 +215,7 @@ function updateFooter(lb: LbKey): void {
     })}<br>
     <div class="sub">${Format.percentage(entry.acc, {
       showDecimalPlaces: true,
-    })}%</div></td>
+    })}</div></td>
     <td class="alignRight">${Format.typingSpeed(entry.raw, {
       showDecimalPlaces: true,
     })}<br>
