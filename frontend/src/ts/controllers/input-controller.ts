@@ -802,7 +802,7 @@ function handleTab(event: JQuery.KeyDownEvent, popupVisible: boolean): void {
   const modalVisible: boolean =
     Misc.isPopupVisible("commandLineWrapper") || popupVisible;
 
-  if (Config.quickRestart === "esc" || Config.quickRestart === "enter") {
+  if (Config.quickRestart === "esc") {
     // dont do anything special
     if (modalVisible) return;
 
@@ -863,9 +863,9 @@ function handleTab(event: JQuery.KeyDownEvent, popupVisible: boolean): void {
       return;
     }
 
-    //
-    event.preventDefault();
-    $("#restartTestButton").trigger("focus");
+    if (document.activeElement?.id !== "wordsInput") {
+      Focus.set(false);
+    }
   }
 }
 
@@ -931,7 +931,7 @@ $(document).on("keydown", async (event) => {
   if (
     allowTyping &&
     !wordsFocused &&
-    !["Enter", ...ModifierKeys].includes(event.key)
+    !["Enter", "Tab", ...ModifierKeys].includes(event.key)
   ) {
     TestUI.focusWords();
     if (Config.showOutOfFocusWarning) {
@@ -972,6 +972,17 @@ $(document).on("keydown", async (event) => {
 
   //enter
   if (event.key === "Enter" && Config.quickRestart === "enter") {
+    //check if active element is a button, anchor, or has class button, or textButton
+    const activeElement: HTMLElement | null =
+      document.activeElement as HTMLElement;
+    const activeElementIsButton: boolean =
+      activeElement?.tagName === "BUTTON" ||
+      activeElement?.tagName === "A" ||
+      activeElement?.classList.contains("button") ||
+      activeElement?.classList.contains("textButton");
+
+    if (activeElementIsButton) return;
+
     const modalVisible: boolean =
       Misc.isPopupVisible("commandLineWrapper") || popupVisible;
 
