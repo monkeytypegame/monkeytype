@@ -1,5 +1,4 @@
 import * as Commandline from "../commandline/commandline";
-import * as CommandlineLists from "../commandline/lists";
 import Config, * as UpdateConfig from "../config";
 import { isAuthenticated } from "../firebase";
 import * as DB from "../db";
@@ -9,7 +8,7 @@ document
   .querySelector("footer #commandLineButton")
   ?.addEventListener("click", () => {
     Commandline.show({
-      subgroupOverride: CommandlineLists.commands,
+      singleListOverride: false,
     });
   });
 
@@ -32,9 +31,7 @@ document
       }
       UpdateConfig.setCustomTheme(true);
     } else {
-      const subgroup = Config.customTheme
-        ? CommandlineLists.getList("customThemesList")
-        : CommandlineLists.getList("themes");
+      const subgroup = Config.customTheme ? "customThemesList" : "themes";
       Commandline.show({
         subgroupOverride: subgroup,
       });

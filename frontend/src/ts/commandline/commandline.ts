@@ -5,6 +5,7 @@ import * as AnalyticsController from "../controllers/analytics-controller";
 import * as ThemeController from "../controllers/theme-controller";
 import { clearFontPreview } from "../ui";
 import AnimatedModal from "../popups/animated-modal";
+import * as Notifications from "../elements/notifications";
 
 type CommandlineMode = "search" | "input";
 type InputModeParams = {
@@ -44,7 +45,8 @@ function addCommandlineBackground(): void {
 }
 
 type ShowSettings = {
-  subgroupOverride?: MonkeyTypes.CommandsSubgroup;
+  subgroupOverride?: MonkeyTypes.CommandsSubgroup | string;
+  singleListOverride?: boolean;
 };
 
 export function show(settings?: ShowSettings): void {
@@ -60,13 +62,33 @@ export function show(settings?: ShowSettings): void {
         value: null,
         icon: null,
       };
-
-      if (settings?.subgroupOverride) {
-        subgroupOverride = settings.subgroupOverride;
+      if (settings?.subgroupOverride !== undefined) {
+        if (typeof settings.subgroupOverride === "string") {
+          const exists = CommandlineLists.doesListExist(
+            settings.subgroupOverride
+          );
+          if (exists) {
+            subgroupOverride = CommandlineLists.getList(
+              settings.subgroupOverride as CommandlineLists.ListsObjectKeys
+            );
+          } else {
+            subgroupOverride = null;
+            usingSingleList = Config.singleListCommandLine === "on";
+            Notifications.add(
+              `Command list ${settings.subgroupOverride} not found`,
+              0
+            );
+          }
+        } else {
+          subgroupOverride = settings.subgroupOverride;
+        }
         usingSingleList = false;
       } else {
         subgroupOverride = null;
         usingSingleList = Config.singleListCommandLine === "on";
+      }
+      if (settings?.singleListOverride) {
+        usingSingleList = settings.singleListOverride;
       }
       activeCommand = null;
       Focus.set(false);

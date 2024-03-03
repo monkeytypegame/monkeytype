@@ -491,6 +491,10 @@ const lists = {
   blindMode: BlindModeCommands[0]?.subgroup,
 };
 
+export function doesListExist(listName: string): boolean {
+  return lists[listName as ListsObjectKeys] !== undefined;
+}
+
 export function getList(
   listName: ListsObjectKeys
 ): MonkeyTypes.CommandsSubgroup {
