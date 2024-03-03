@@ -4,24 +4,13 @@
       "savingEnabled": true
     },
     "users": {
-      "signUp": true
+      "signUp": false,
+      "profiles": {
+        "enabled": false
+      }
     },
     "dailyLeaderboards": {
-      "enabled": true,
-      "maxResults": 250,
-      "leaderboardExpirationTimeInDays": 1,
-      "validModeRules": [
-        {
-          "language": "english",
-          "mode": "time",
-          "mode2": "15"
-        },
-        {
-          "language": "english",
-          "mode": "time",
-          "mode2": "60"
-        }
-      ]
+      "enabled": false
     }
   }
 }
