@@ -553,4 +553,13 @@ commandLine.addEventListener("mousemove", (e) => {
   mouseMode = true;
 });
 
-const modal = new AnimatedModal("commandLine");
+const modal = new AnimatedModal(
+  "commandLine",
+  undefined,
+  () => {
+    hide();
+  },
+  () => {
+    hide();
+  }
+);
