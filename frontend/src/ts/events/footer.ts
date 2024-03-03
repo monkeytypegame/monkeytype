@@ -1,20 +1,25 @@
-import * as Commandline from "../commandline/commandline";
 import Config, * as UpdateConfig from "../config";
 import { isAuthenticated } from "../firebase";
 import * as DB from "../db";
 import * as Notifications from "../elements/notifications";
 
+async function getCommandline(): Promise<
+  typeof import("../commandline/commandline.ts")
+> {
+  return await import("../commandline/commandline");
+}
+
 document
   .querySelector("footer #commandLineButton")
-  ?.addEventListener("click", () => {
-    Commandline.show({
+  ?.addEventListener("click", async () => {
+    (await getCommandline()).show({
       singleListOverride: false,
     });
   });
 
 document
   .querySelector("footer .right .current-theme")
-  ?.addEventListener("click", (event) => {
+  ?.addEventListener("click", async (event) => {
     const e = event as MouseEvent;
     if (e.shiftKey) {
       if (Config.customTheme) {
@@ -32,8 +37,10 @@ document
       UpdateConfig.setCustomTheme(true);
     } else {
       const subgroup = Config.customTheme ? "customThemesList" : "themes";
-      Commandline.show({
+      (await getCommandline()).show({
         subgroupOverride: subgroup,
       });
     }
   });
+
+export {};

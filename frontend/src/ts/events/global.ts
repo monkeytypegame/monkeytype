@@ -1,10 +1,15 @@
-import * as Commandline from "../commandline/commandline";
 import * as Misc from "../utils/misc";
 import * as PageTransition from "../states/page-transition";
 import Config from "../config";
 import * as TestWords from "../test/test-words";
 
-document.addEventListener("keydown", (e) => {
+async function getCommandline(): Promise<
+  typeof import("../commandline/commandline")
+> {
+  return await import("../commandline/commandline");
+}
+
+document.addEventListener("keydown", async (e) => {
   if (PageTransition.get()) return;
 
   if (
@@ -24,7 +29,9 @@ document.addEventListener("keydown", (e) => {
       ".pageAccount .miniResultChartWrapper"
     );
     if (!popupVisible && !miniResultPopupVisible) {
-      Commandline.show();
+      (await getCommandline()).show();
     }
   }
 });
+
+export {};

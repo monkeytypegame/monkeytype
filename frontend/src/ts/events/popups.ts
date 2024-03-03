@@ -1,5 +1,11 @@
-import * as Commandline from "../commandline/commandline";
+async function getCommandline(): Promise<
+  typeof import("../commandline/commandline.ts")
+> {
+  return await import("../commandline/commandline");
+}
 
-$("#popups").on("click", "#supportMeWrapper button.ads", () => {
-  Commandline.show({ subgroupOverride: "enableAds" });
+$("#popups").on("click", "#supportMeWrapper button.ads", async () => {
+  (await getCommandline()).show({ subgroupOverride: "enableAds" });
 });
+
+export {};

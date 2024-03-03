@@ -1,7 +1,13 @@
-import * as Commandline from "../commandline/commandline";
+async function getCommandline(): Promise<
+  typeof import("../commandline/commandline.ts")
+> {
+  return await import("../commandline/commandline");
+}
 
-$(".pageTest").on("click", "#testModesNotice .textButton", (event) => {
+$(".pageTest").on("click", "#testModesNotice .textButton", async (event) => {
   const attr = $(event.currentTarget).attr("commands");
   if (attr === undefined) return;
-  Commandline.show({ subgroupOverride: attr });
+  (await getCommandline()).show({ subgroupOverride: attr });
 });
+
+export {};
