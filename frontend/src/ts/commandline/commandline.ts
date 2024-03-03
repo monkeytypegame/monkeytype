@@ -521,66 +521,63 @@ function decrementActiveIndex(): void {
   updateActiveCommand();
 }
 
-const input = document.querySelector("#commandLine input") as HTMLInputElement;
-
-input.addEventListener("input", (e) => {
-  inputValue = (e.target as HTMLInputElement).value;
-  if (subgroupOverride === null) {
-    if (Config.singleListCommandLine === "on") {
-      usingSingleList = true;
-    } else {
-      usingSingleList = inputValue.startsWith(">");
-    }
-  }
-  if (mode !== "search") return;
-  mouseMode = false;
-  activeIndex = 0;
-  filterSubgroup();
-  showCommands();
-  updateActiveCommand();
-});
-
-input.addEventListener("keydown", (e) => {
-  mouseMode = false;
-  if (e.key === "ArrowUp") {
-    e.preventDefault();
-    decrementActiveIndex();
-  }
-  if (e.key === "ArrowDown") {
-    e.preventDefault();
-    incrementActiveIndex();
-  }
-  if (e.key === "Enter") {
-    e.preventDefault();
-    if (mode === "search") {
-      runActiveCommand();
-    } else if (mode === "input") {
-      handleInputSubmit();
-    } else {
-      throw new Error("Unknown mode, can't handle enter press");
-    }
-  }
-  if (e.key === "Escape") {
-    goBackOrHide();
-  }
-  if (e.key === "Tab") {
-    e.preventDefault();
-  }
-});
-
-const commandLine = document.querySelector("#commandLine") as HTMLElement;
-
-commandLine.addEventListener("mousemove", (e) => {
-  mouseMode = true;
-});
-
-const modal = new AnimatedModal(
-  "commandLine",
-  undefined,
-  () => {
+const modal = new AnimatedModal("commandLine", undefined, {
+  customEscapeHandler: (): void => {
     hide();
   },
-  () => {
+  customWrapperClickHandler: (): void => {
     hide();
-  }
-);
+  },
+  setup: (modal): void => {
+    const input = modal.querySelector("input") as HTMLInputElement;
+
+    input.addEventListener("input", (e) => {
+      inputValue = (e.target as HTMLInputElement).value;
+      if (subgroupOverride === null) {
+        if (Config.singleListCommandLine === "on") {
+          usingSingleList = true;
+        } else {
+          usingSingleList = inputValue.startsWith(">");
+        }
+      }
+      if (mode !== "search") return;
+      mouseMode = false;
+      activeIndex = 0;
+      filterSubgroup();
+      showCommands();
+      updateActiveCommand();
+    });
+
+    input.addEventListener("keydown", (e) => {
+      mouseMode = false;
+      if (e.key === "ArrowUp") {
+        e.preventDefault();
+        decrementActiveIndex();
+      }
+      if (e.key === "ArrowDown") {
+        e.preventDefault();
+        incrementActiveIndex();
+      }
+      if (e.key === "Enter") {
+        e.preventDefault();
+        if (mode === "search") {
+          runActiveCommand();
+        } else if (mode === "input") {
+          handleInputSubmit();
+        } else {
+          throw new Error("Unknown mode, can't handle enter press");
+        }
+      }
+      if (e.key === "Escape") {
+        goBackOrHide();
+      }
+      if (e.key === "Tab") {
+        e.preventDefault();
+      }
+    });
+
+    modal.addEventListener("mousemove", (e) => {
+      mouseMode = true;
+    });
+  },
+});
