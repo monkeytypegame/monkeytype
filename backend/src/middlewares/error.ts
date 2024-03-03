@@ -56,6 +56,7 @@ async function errorHandlingMiddleware(
           `${monkeyResponse.status} ${errorId} ${error.message} ${error.stack}`,
           uid
         );
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         await db.collection<any>("errors").insertOne({
           _id: errorId,
           timestamp: Date.now(),
