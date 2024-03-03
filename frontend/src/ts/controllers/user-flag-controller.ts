@@ -12,19 +12,11 @@ const flags: UserFlag[] = [
     color: "var(--error-color)",
     test: (it) => it.banned === true,
   },
-  {
-    name: "Testing",
-    description: "This is for testing",
-    icon: "fa-bug",
-    color: "yellow",
-    test: (it) => it.name.length > 5,
-  },
 ];
 
 type SupportsFlags = {
   isPremium?: boolean;
   banned?: boolean;
-  name: string; //TODO remove
 };
 
 type UserFlag = {
