@@ -77,12 +77,12 @@ export function show(settings?: ShowSettings): void {
       filterSubgroup();
       showCommands();
       updateActiveCommand();
-      keepActiveCommandInView();
       setTimeout(() => {
-        // instead of waiting for the animatino to finish,
+        // instead of waiting for the animation to finish,
         // we focus just after it begins to increase responsivenes
         // (you can type while the animation is running)
         modal.querySelector("input")?.focus();
+        keepActiveCommandInView();
       }, 0);
     },
     afterAnimation: async (modal) => {
