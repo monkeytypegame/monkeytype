@@ -597,13 +597,21 @@ function buildSingleListCommands(
       const singleListDisplayNoIcon =
         parentCommandDisplay + " " + command.display;
 
+      let newAlias: string | undefined = undefined;
+
+      if ((parentCommand.alias ?? "") || (command.alias ?? "")) {
+        newAlias = [parentCommand.alias, command.alias]
+          .filter(Boolean)
+          .join(" ");
+      }
+
       const newCommand = {
         ...command,
         singleListDisplay,
         singleListDisplayNoIcon,
         configKey: parentCommand.subgroup?.configKey,
         icon: parentCommand.icon,
-        alias: (parentCommand.alias ?? "") + " " + (command.alias ?? ""),
+        alias: newAlias,
         visible: (parentCommand.visible ?? true) && (command.visible ?? true),
         available: (): boolean => {
           return (
