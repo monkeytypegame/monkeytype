@@ -34,7 +34,6 @@ import "./popups/google-sign-up-popup";
 import "./popups/result-tags-popup";
 import * as Account from "./pages/account";
 import "./elements/leaderboards";
-// import "./commandline/index";
 import "./elements/no-css";
 import { egVideoListener } from "./popups/video-ad-popup";
 import "./states/connection";
