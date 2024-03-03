@@ -14,6 +14,7 @@ import Konami from "konami";
 import { log } from "./controllers/analytics-controller";
 import { envConfig } from "./constants/env-config";
 import * as ServerConfiguration from "./ape/server-configuration";
+import * as Skeleton from "./popups/skeleton";
 
 if (Misc.isDevEnvironment()) {
   $("footer .currentVersion .text").text("localhost");
@@ -104,6 +105,8 @@ $(document).ready(() => {
         }
       });
   }
+
+  Skeleton.save("commandLine");
 });
 
 window.onerror = function (message, url, line, column, error): void {
