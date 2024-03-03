@@ -130,37 +130,83 @@ function goBackOrHide(): void {
 }
 
 function filterSubgroup(): void {
-  const configKey = getSubgroup().configKey;
   const list = getList();
 
-  const inputSplit = inputValue
+  const inputNoQuickSingle = inputValue
     .replace(/^>/gi, "")
     .toLowerCase()
-    .trim()
-    .split(" ");
+    .trim();
 
+  const inputSplit =
+    inputNoQuickSingle.length === 0 ? [] : inputNoQuickSingle.split(" ");
+
+  const displayMatchCounts: number[] = [];
+  const aliasMatchCounts: number[] = [];
   for (const command of list) {
     const isAvailable = command.available?.() ?? true;
     if (!isAvailable) {
-      command.found = false;
+      displayMatchCounts.push(-1);
+      aliasMatchCounts.push(-1);
       continue;
     }
-    let foundCount = 0;
-    for (const input of inputSplit) {
-      const re = new RegExp("\\b" + escapeRegExp(input), "g");
-      const matchDisplay = command.display.toLowerCase().match(re);
-      const matchAlias =
-        command.alias !== undefined
-          ? command.alias.toLowerCase().match(re)
-          : null;
-      if (matchDisplay !== null || matchAlias !== null) {
-        foundCount++;
+
+    if (inputNoQuickSingle.length === 0 || inputSplit.length === 0) {
+      displayMatchCounts.push(0);
+      aliasMatchCounts.push(0);
+      continue;
+    }
+
+    const displaySplit = (
+      usingSingleList
+        ? (command.singleListDisplayNoIcon ?? "") || command.display
+        : command.display
+    )
+      .toLowerCase()
+      .split(" ");
+    const displayMatchArray: (null | number)[] = displaySplit.map(() => null);
+    const aliasSplit = command.alias?.toLowerCase().split(" ") ?? [];
+    const aliasMatchArray: (null | number)[] = aliasSplit.map(() => null);
+
+    for (const [inputIndex, input] of inputSplit.entries()) {
+      for (const [displayIndex, display] of displaySplit.entries()) {
+        const matchedInputIndex = displayMatchArray[displayIndex] as
+          | null
+          | number;
+        if (
+          display.startsWith(input) &&
+          matchedInputIndex === null &&
+          !displayMatchArray.includes(inputIndex)
+        ) {
+          displayMatchArray[displayIndex] = inputIndex;
+        }
+      }
+      for (const [aliasIndex, alias] of aliasSplit.entries()) {
+        const matchedAliasIndex = aliasMatchArray[aliasIndex] as null | number;
+        if (
+          alias.startsWith(input) &&
+          matchedAliasIndex === null &&
+          !aliasMatchArray.includes(inputIndex)
+        ) {
+          aliasMatchArray[aliasIndex] = inputIndex;
+        }
       }
     }
-    if (foundCount === inputSplit.length) {
-      if (configKey !== undefined) {
-        command.configKey = configKey;
-      }
+
+    const displayMatchCount = displayMatchArray.filter(
+      (i) => i !== null
+    ).length;
+
+    const aliasMatchCount = aliasMatchArray.filter((i) => i !== null).length;
+
+    displayMatchCounts.push(displayMatchCount);
+    aliasMatchCounts.push(aliasMatchCount);
+  }
+
+  for (const [index, command] of list.entries()) {
+    if (
+      (displayMatchCounts[index] as number) >= inputSplit.length ||
+      (aliasMatchCounts[index] as number) >= inputSplit.length
+    ) {
       command.found = true;
     } else {
       command.found = false;
