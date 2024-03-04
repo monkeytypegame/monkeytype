@@ -126,20 +126,7 @@ export function reset(): void {
 }
 
 export function focusWords(): void {
-  const popupVisible = Misc.isAnyPopupVisible();
-  const miniResultPopupVisible = Misc.isElementVisible(
-    ".pageAccount .miniResultChartWrapper"
-  );
-  const commandlineVisible = Misc.isElementVisible("#commandLineWrapper");
-  const wordsVisible = Misc.isElementVisible("#wordsWrapper");
-  if (
-    !popupVisible &&
-    !miniResultPopupVisible &&
-    !commandlineVisible &&
-    wordsVisible
-  ) {
-    $("#wordsInput").trigger("focus");
-  }
+  $("#wordsInput").trigger("focus");
 }
 
 export function blurWords(): void {
