@@ -161,6 +161,9 @@ export async function updateTags(
   if (!result.punctuation) {
     result.punctuation = false;
   }
+  if (!result.numbers) {
+    result.numbers = false;
+  }
 
   const user = await getUser(uid, "update tags");
   const tagPbs = await checkIfTagPb(uid, user, result);

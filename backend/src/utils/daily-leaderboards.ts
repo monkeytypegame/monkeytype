@@ -24,7 +24,7 @@ type GetRankResponse = {
   entry: DailyLeaderboardEntry | null;
 };
 
-type LbEntryWithRank = {
+export type LbEntryWithRank = {
   rank: number;
 } & DailyLeaderboardEntry;
 

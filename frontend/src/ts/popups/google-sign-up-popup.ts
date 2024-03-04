@@ -17,14 +17,14 @@ import * as DB from "../db";
 import * as Loader from "../elements/loader";
 import { subscribe as subscribeToSignUpEvent } from "../observables/google-sign-up-event";
 import { InputIndicator } from "../elements/input-indicator";
-import * as Skeleton from "./skeleton";
+import * as Skeleton from "../utils/skeleton";
 
 const wrapperId = "googleSignUpPopupWrapper";
 
 let signedInUser: UserCredential | undefined = undefined;
 
 function show(credential: UserCredential): void {
-  Skeleton.append(wrapperId);
+  Skeleton.append(wrapperId, "popups");
 
   if (!isPopupVisible(wrapperId)) {
     CaptchaController.reset("googleSignUpPopup");
