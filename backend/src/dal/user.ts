@@ -4,7 +4,7 @@ import { updateUserEmail } from "../utils/auth";
 import { canFunboxGetPb, checkAndUpdatePb } from "../utils/pb";
 import * as db from "../init/db";
 import MonkeyError from "../utils/error";
-import { Collection, ObjectId, WithId, Long, UpdateFilter } from "mongodb";
+import { Collection, ObjectId, Long, UpdateFilter } from "mongodb";
 import Logger from "../utils/logger";
 import { flattenObjectDeep, isToday, isYesterday } from "../utils/misc";
 

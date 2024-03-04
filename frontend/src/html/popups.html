@@ -4,12 +4,12 @@
   </div>
 </div>
 
-<div id="alertsPopupWrapper" class="popupWrapper hidden">
-  <div id="alertsPopup">
-    <div class="button mobileClose">
+<dialog id="alertsPopup" class="modalWrapper hidden">
+  <div class="modal">
+    <button class="mobileClose">
       <i class="fas fa-times"></i>
       Close
-    </div>
+    </button>
     <div class="scrollWrapper">
       <div class="accountAlerts">
         <div class="title">
@@ -19,14 +19,14 @@
           </div>
           <div class="right"></div>
         </div>
-        <div class="button claimAll hidden">
+        <button class="claimAll hidden">
           <i class="fas fa-fw fa-gift"></i>
           Claim all
-        </div>
-        <div class="button deleteAll hidden">
+        </button>
+        <button class="deleteAll hidden">
           <i class="fas fa-fw fa-trash"></i>
           Delete all
-        </div>
+        </button>
         <div class="list">
           <div class="nothing">Nothing to show</div>
         </div>
@@ -53,16 +53,15 @@
       </div>
     </div>
   </div>
-</div>
+</dialog>
 
 <div id="simplePopupWrapper" class="popupWrapper hidden">
   <div id="simplePopup" popupId=""></div>
 </div>
 
-<div
-  id="cookiePopupWrapper"
-  class="cookie-popup-wrapper cookiePopupWrapper popupWrapper hidden"
-  tabindex="-1"
+<dialog
+  id="cookiePopup"
+  class="cookie-popup-wrapper cookiePopupWrapper modalWrapper hidden"
 >
   <div class="extensionMessage">
     If you see this text, that means an extension is blocking a cookie consent
@@ -70,7 +69,7 @@
     and stop you from enjoying Monkeytype. Please disable any extensions that
     block cookie popups and refresh the page.
   </div>
-  <div id="cookiePopup">
+  <div class="modal">
     <div class="title">
       <i class="fas far fa-cookie-bite"></i>
       We use cookies by the way
@@ -126,7 +125,7 @@
       <button class="active acceptSelected">accept selected</button>
     </div>
   </div>
-</div>
+</dialog>
 
 <div id="shareTestSettingsPopupWrapper" class="popupWrapper hidden">
   <div id="shareTestSettingsPopup">
@@ -363,12 +362,12 @@
   </div>
 </div>
 
-<div id="settingsImportWrapper" class="popupWrapper hidden">
-  <div id="settingsImport" action="">
+<dialog id="settingsImportPopup" class="modalWrapper hidden">
+  <form class="modal" data-mode="">
     <input type="text" title="import settings" />
-    <div class="button">import settings</div>
-  </div>
-</div>
+    <button>import settings</button>
+  </form>
+</dialog>
 
 <div id="customThemeShareWrapper" class="popupWrapper hidden">
   <div id="customThemeShare" action="">

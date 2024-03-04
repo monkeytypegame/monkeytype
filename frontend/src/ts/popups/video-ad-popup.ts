@@ -1,12 +1,12 @@
 import * as Notifications from "../elements/notifications";
 import * as AdController from "../controllers/ad-controller";
-import * as Skeleton from "./skeleton";
+import * as Skeleton from "../utils/skeleton";
 import { isPopupVisible } from "../utils/misc";
 
 const wrapperId = "videoAdPopupWrapper";
 
 export async function show(): Promise<void> {
-  Skeleton.append(wrapperId);
+  Skeleton.append(wrapperId, "popups");
   await AdController.checkAdblock();
   if (AdController.adBlock) {
     Notifications.add(

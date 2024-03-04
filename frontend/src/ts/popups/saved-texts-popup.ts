@@ -1,6 +1,6 @@
 import * as CustomText from "../test/custom-text";
 import * as CustomTextState from "../states/custom-text-name";
-import * as Skeleton from "./skeleton";
+import * as Skeleton from "../utils/skeleton";
 import { escapeHTML, isPopupVisible } from "../utils/misc";
 
 const wrapperId = "savedTextsPopupWrapper";
@@ -50,7 +50,7 @@ export async function show(
   noAnim = false,
   callbackOnHide?: () => void
 ): Promise<void> {
-  Skeleton.append(wrapperId);
+  Skeleton.append(wrapperId, "popups");
   if (!isPopupVisible(wrapperId)) {
     callbackFuncOnHide = callbackOnHide;
     fill();
