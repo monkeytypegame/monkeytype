@@ -201,13 +201,34 @@ export async function update(
     .attr("aria-label", hoverText)
     .attr("data-balloon-break", "");
 
+  let completedPercentage = "";
+  let restartRatio = "";
+  if (
+    profile.typingStats.completedTests !== undefined &&
+    profile.typingStats.startedTests !== undefined
+  ) {
+    completedPercentage = Math.floor(
+      (profile.typingStats.completedTests / profile.typingStats.startedTests) *
+        100
+    ).toString();
+    restartRatio = (
+      (profile.typingStats.startedTests - profile.typingStats.completedTests) /
+      profile.typingStats.completedTests
+    ).toFixed(1);
+  }
+
   const typingStatsEl = details.find(".typingStats");
   typingStatsEl
     .find(".started .value")
     .text(profile.typingStats?.startedTests ?? 0);
   typingStatsEl
     .find(".completed .value")
-    .text(profile.typingStats?.completedTests ?? 0);
+    .text(profile.typingStats?.completedTests ?? 0)
+    .attr("data-balloon-pos", "up")
+    .attr(
+      "aria-label",
+      `${completedPercentage}% (${restartRatio} restarts per completed test)`
+    );
   typingStatsEl
     .find(".timeTyping .value")
     .text(

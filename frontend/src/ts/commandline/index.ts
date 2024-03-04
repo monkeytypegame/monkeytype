@@ -16,7 +16,7 @@ import {
   isPopupVisible,
 } from "../utils/misc";
 import { update as updateCustomThemesList } from "./lists/custom-themes-list";
-import * as Skeleton from "../popups/skeleton";
+import * as Skeleton from "../utils/skeleton";
 import * as ManualRestart from "../test/manual-restart-tracker";
 
 const wrapperId = "commandLineWrapper";
@@ -264,7 +264,7 @@ function show(): void {
   //take last element of array
   if (isElementVisible(".page.pageLoading")) return;
   Focus.set(false);
-  Skeleton.append(wrapperId);
+  Skeleton.append(wrapperId, "popups");
   $("#commandLine").removeClass("hidden");
   $("#commandInput").addClass("hidden");
 

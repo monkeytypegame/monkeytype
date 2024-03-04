@@ -602,7 +602,7 @@
     color: var(--error-color);
   }
 }
-#cookiePopupWrapper {
+#cookiePopup {
   .extensionMessage {
     position: fixed;
     right: 2rem;
@@ -610,8 +610,9 @@
     padding: 1rem;
     width: 465px;
     font-size: 0.75rem;
+    color: var(--text-color);
   }
-  #cookiePopup {
+  .modal {
     position: fixed;
     right: 2rem;
     bottom: 2rem;
@@ -620,7 +621,7 @@
     padding: 2rem;
     display: grid;
     gap: 1rem;
-    width: 465px;
+    min-width: 465px;
     z-index: 100000001;
     // outline: 0.5rem solid var(--bg-color)
     -webkit-user-select: none;

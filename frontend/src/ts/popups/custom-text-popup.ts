@@ -9,7 +9,7 @@ import * as WordFilterPopup from "./word-filter-popup";
 import * as Notifications from "../elements/notifications";
 import * as SavedTextsPopup from "./saved-texts-popup";
 import * as SaveCustomTextPopup from "./save-custom-text-popup";
-import * as Skeleton from "./skeleton";
+import * as Skeleton from "../utils/skeleton";
 
 const skeletonId = "customTextPopupWrapper";
 
@@ -33,7 +33,7 @@ function updateLongTextWarning(): void {
 //todo: rewrite this file to use a state object instead of constantly directly accessing the DOM
 
 export function show(noAnim = false): void {
-  Skeleton.append(skeletonId);
+  Skeleton.append(skeletonId, "popups");
   if (!Misc.isElementVisible(wrapper)) {
     updateLongTextWarning();
 

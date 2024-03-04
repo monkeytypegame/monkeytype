@@ -5,7 +5,7 @@ import * as PbTables from "../account/pb-tables";
 import * as Notifications from "../elements/notifications";
 import { checkIfGetParameterExists } from "../utils/misc";
 import * as UserReportPopup from "../popups/user-report-popup";
-import * as Skeleton from "../popups/skeleton";
+import * as Skeleton from "../utils/skeleton";
 
 function reset(): void {
   $(".page.pageProfile .preloader").removeClass("hidden");
