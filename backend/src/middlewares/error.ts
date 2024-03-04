@@ -7,6 +7,19 @@ import { NextFunction, Response } from "express";
 import { MonkeyResponse, handleMonkeyResponse } from "../utils/monkey-response";
 import { recordClientErrorByVersion } from "../utils/prometheus";
 import { isDevEnvironment } from "../utils/misc";
+import { ObjectId } from "mongodb";
+
+type DBError = {
+  _id: ObjectId;
+  timestamp: number;
+  status: number;
+  uid: string;
+  message: string;
+  stack?: string;
+  endpoint: string;
+  method: string;
+  url: string;
+};
 
 async function errorHandlingMiddleware(
   error: Error,
@@ -56,8 +69,7 @@ async function errorHandlingMiddleware(
           `${monkeyResponse.status} ${errorId} ${error.message} ${error.stack}`,
           uid
         );
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        await db.collection<any>("errors").insertOne({
+        await db.collection<DBError>("errors").insertOne({
           _id: errorId,
           timestamp: Date.now(),
           status: monkeyResponse.status,
