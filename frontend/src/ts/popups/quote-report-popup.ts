@@ -5,7 +5,7 @@ import * as Loader from "../elements/loader";
 import * as Notifications from "../elements/notifications";
 import QuotesController from "../controllers/quotes-controller";
 import * as CaptchaController from "../controllers/captcha-controller";
-import * as Skeleton from "./skeleton";
+import * as Skeleton from "../utils/skeleton";
 import { isPopupVisible, removeLanguageSize } from "../utils/misc";
 import SlimSelect from "slim-select";
 
@@ -38,7 +38,7 @@ const defaultOptions: Options = {
 let reasonSelect: SlimSelect | undefined = undefined;
 
 export async function show(options = defaultOptions): Promise<void> {
-  Skeleton.append(wrapperId);
+  Skeleton.append(wrapperId, "popups");
 
   if (!isPopupVisible(wrapperId)) {
     CaptchaController.render(

@@ -2,7 +2,7 @@ import Ape from "../ape";
 import * as Loader from "../elements/loader";
 import * as Notifications from "../elements/notifications";
 import * as CaptchaController from "../controllers/captcha-controller";
-import * as Skeleton from "./skeleton";
+import * as Skeleton from "../utils/skeleton";
 import { isPopupVisible } from "../utils/misc";
 import SlimSelect from "slim-select";
 
@@ -27,7 +27,7 @@ type ShowOptions = {
 let select: SlimSelect | undefined = undefined;
 
 export async function show(options: ShowOptions): Promise<void> {
-  Skeleton.append(wrapperId);
+  Skeleton.append(wrapperId, "popups");
   if (!isPopupVisible(wrapperId)) {
     CaptchaController.render(
       document.querySelector("#userReportPopup .g-recaptcha") as HTMLElement,

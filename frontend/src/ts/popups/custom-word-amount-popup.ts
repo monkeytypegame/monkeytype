@@ -2,13 +2,13 @@ import * as UpdateConfig from "../config";
 import * as ManualRestart from "../test/manual-restart-tracker";
 import * as TestLogic from "../test/test-logic";
 import * as Notifications from "../elements/notifications";
-import * as Skeleton from "./skeleton";
+import * as Skeleton from "../utils/skeleton";
 import { isPopupVisible } from "../utils/misc";
 
 const wrapperId = "customWordAmountPopupWrapper";
 
 export function show(): void {
-  Skeleton.append(wrapperId);
+  Skeleton.append(wrapperId, "popups");
   if (!isPopupVisible(wrapperId)) {
     $("#customWordAmountPopupWrapper")
       .stop(true, true)

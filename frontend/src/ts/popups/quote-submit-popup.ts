@@ -4,7 +4,7 @@ import * as Notifications from "../elements/notifications";
 import * as CaptchaController from "../controllers/captcha-controller";
 import * as Misc from "../utils/misc";
 import Config from "../config";
-import * as Skeleton from "./skeleton";
+import * as Skeleton from "../utils/skeleton";
 import SlimSelect from "slim-select";
 
 const wrapperId = "quoteSubmitPopupWrapper";
@@ -51,7 +51,7 @@ async function submitQuote(): Promise<void> {
 }
 
 export async function show(noAnim = false): Promise<void> {
-  Skeleton.append(wrapperId);
+  Skeleton.append(wrapperId, "popups");
 
   if (!Misc.isPopupVisible(wrapperId)) {
     CaptchaController.render(
