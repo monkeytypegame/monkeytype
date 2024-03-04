@@ -386,6 +386,7 @@ NotificationEvent.subscribe((message, level, customTitle) => {
 
 const modal = new AnimatedModal(
   "alertsPopup",
+  "popups",
   {
     show: {
       modal: {

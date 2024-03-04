@@ -521,7 +521,7 @@ function decrementActiveIndex(): void {
   updateActiveCommand();
 }
 
-const modal = new AnimatedModal("commandLine", undefined, {
+const modal = new AnimatedModal("commandLine", "popups", undefined, {
   customEscapeHandler: (): void => {
     hide();
   },

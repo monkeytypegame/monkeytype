@@ -1,5 +1,5 @@
 import { isPopupVisible } from "../utils/misc";
-import * as Skeleton from "./skeleton";
+import * as Skeleton from "../utils/skeleton";
 
 type CustomAnimation = {
   from: Record<string, string>;
@@ -33,6 +33,7 @@ export default class AnimatedModal {
   private wrapperId: string;
   private open = false;
   private setupRan = false;
+  private skeletonAppendParent: Skeleton.SkeletonAppendParents;
   private customShowAnimations: CustomWrapperAndModalAnimations | undefined;
   private customHideAnimations: CustomWrapperAndModalAnimations | undefined;
 
@@ -42,6 +43,7 @@ export default class AnimatedModal {
 
   constructor(
     wrapperId: string,
+    appendTo: Skeleton.SkeletonAppendParents,
     customAnimations?: ConstructorCustomAnimations,
     functions?: {
       customEscapeHandler?: (e: KeyboardEvent) => void;
@@ -53,8 +55,9 @@ export default class AnimatedModal {
       wrapperId = wrapperId.slice(1);
     }
 
+    this.skeletonAppendParent = appendTo;
     if (Skeleton.has(wrapperId)) {
-      Skeleton.append(wrapperId);
+      Skeleton.append(wrapperId, this.skeletonAppendParent);
     }
 
     const dialogElement = document.getElementById(wrapperId);
@@ -134,7 +137,7 @@ export default class AnimatedModal {
   async show(options?: ShowHideOptions): Promise<void> {
     // eslint-disable-next-line no-async-promise-executor
     return new Promise(async (resolve) => {
-      Skeleton.append(this.wrapperId);
+      Skeleton.append(this.wrapperId, this.skeletonAppendParent);
 
       if (!this.setupRan) {
         this.runSetup();

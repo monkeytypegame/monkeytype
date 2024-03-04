@@ -14,7 +14,7 @@ import Konami from "konami";
 import { log } from "./controllers/analytics-controller";
 import { envConfig } from "./constants/env-config";
 import * as ServerConfiguration from "./ape/server-configuration";
-import * as Skeleton from "./popups/skeleton";
+import * as Skeleton from "./utils/skeleton";
 
 if (Misc.isDevEnvironment()) {
   $("footer .currentVersion .text").text("localhost");
