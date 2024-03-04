@@ -2,13 +2,13 @@ import * as ThemeController from "../controllers/theme-controller";
 import Config from "../config";
 import * as Notifications from "../elements/notifications";
 import * as CustomThemePopup from "./custom-theme-popup";
-import * as Skeleton from "./skeleton";
+import * as Skeleton from "../utils/skeleton";
 import { createErrorMessage, isPopupVisible } from "../utils/misc";
 
 const wrapperId = "shareCustomThemeWrapper";
 
 export function show(): void {
-  Skeleton.append(wrapperId);
+  Skeleton.append(wrapperId, "popups");
 
   if (!isPopupVisible(wrapperId)) {
     $(`#${wrapperId}`)

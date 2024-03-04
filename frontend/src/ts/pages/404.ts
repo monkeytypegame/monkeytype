@@ -1,5 +1,5 @@
 import Page from "./page";
-import * as Skeleton from "../popups/skeleton";
+import * as Skeleton from "../utils/skeleton";
 
 export const page = new Page(
   "404",

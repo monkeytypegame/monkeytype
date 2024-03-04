@@ -51,10 +51,10 @@ const BASE_CONFIG = {
             if (src.startsWith(`"use strict";`)) {
               return src.replace(
                 /("use strict";)/,
-                `$1\nimport $ from "jquery";`
+                `$1import $ from "jquery";`
               );
             } else {
-              return `import $ from "jquery";\n${src}`;
+              return `import $ from "jquery";${src}`;
             }
           }
         }

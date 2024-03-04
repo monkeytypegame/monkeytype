@@ -6,7 +6,7 @@ import * as CustomTestDurationPopup from "./custom-test-duration-popup";
 import * as QuoteSearchPopup from "./quote-search-popup";
 import * as CustomTextPopup from "./custom-text-popup";
 import * as ConfigEvent from "../observables/config-event";
-import * as Skeleton from "./skeleton";
+import * as Skeleton from "../utils/skeleton";
 import { isPopupVisible } from "../utils/misc";
 
 const wrapperId = "mobileTestConfigPopupWrapper";
@@ -63,7 +63,7 @@ function update(): void {
 }
 
 function showPopup(): void {
-  Skeleton.append(wrapperId);
+  Skeleton.append(wrapperId, "popups");
 
   if (!isPopupVisible(wrapperId)) {
     update();
