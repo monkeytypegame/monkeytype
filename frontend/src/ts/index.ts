@@ -42,11 +42,11 @@ import "./elements/fps-counter";
 import "./controllers/profile-search-controller";
 import "./version";
 import { isDevEnvironment } from "./utils/misc";
-import "./events/global";
-import "./events/footer";
-import "./events/keymap";
-import "./events/test";
-import "./events/popups";
+import "./event-handlers/global";
+import "./event-handlers/footer";
+import "./event-handlers/keymap";
+import "./event-handlers/test";
+import "./event-handlers/popups";
 
 function addToGlobal(items: Record<string, unknown>): void {
   for (const [name, item] of Object.entries(items)) {

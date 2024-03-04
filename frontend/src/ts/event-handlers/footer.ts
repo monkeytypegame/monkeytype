@@ -4,7 +4,7 @@ import * as DB from "../db";
 import * as Notifications from "../elements/notifications";
 
 async function getCommandline(): Promise<
-  typeof import("../commandline/commandline.ts")
+  typeof import("../commandline/commandline")
 > {
   return await import("../commandline/commandline");
 }

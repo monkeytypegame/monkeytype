@@ -1,7 +1,7 @@
 async function getCommandline(): Promise<
-  typeof import("../commandline/commandline.ts")
+  typeof import("../commandline/commandline.js")
 > {
-  return await import("../commandline/commandline");
+  return await import("../commandline/commandline.js");
 }
 
 $(".pageTest").on("click", "#testModesNotice .textButton", async (event) => {
