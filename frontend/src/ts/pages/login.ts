@@ -6,6 +6,7 @@ import { InputIndicator } from "../elements/input-indicator";
 import * as Skeleton from "../utils/skeleton";
 import * as Misc from "../utils/misc";
 import TypoList from "../utils/typo-list";
+import * as ServerConfiguration from "../ape/server-configuration";
 
 export function enableSignUpButton(): void {
   $(".page.pageLogin .register.side button").prop("disabled", false);
@@ -353,8 +354,14 @@ export const page = new Page(
   },
   async () => {
     Skeleton.append("pageLogin", "main");
-    enableInputs();
-    enableSignUpButton();
+    if (ServerConfiguration.get()?.users.signUp) {
+      enableInputs();
+      enableSignUpButton();
+
+      $(".register").removeClass("hidden");
+      $(".login").removeClass("hidden");
+      $(".disabledNotification").addClass("hidden");
+    }
   },
   async () => {
     //

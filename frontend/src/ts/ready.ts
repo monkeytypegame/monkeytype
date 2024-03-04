@@ -90,7 +90,11 @@ $(document).ready(() => {
     .animate({ opacity: 1 }, 250);
   if (ConnectionState.get()) {
     void PSA.show();
-    void ServerConfiguration.sync();
+    void ServerConfiguration.sync().then(() => {
+      if (ServerConfiguration.get()?.users.signUp) {
+        $(".signInOut").removeClass("hidden");
+      }
+    });
   }
   MonkeyPower.init();
 
