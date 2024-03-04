@@ -30,14 +30,15 @@ export async function saveConfig(
 
   const unset = _.fromPairs(
     _.map(configLegacyProperties, (key) => [`config.${key}`, ""])
-  );
+  ) as Record<string, "">;
 
-  return await db.collection<SharedTypes.Config>("configs").updateOne(
-    { uid },
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    { $set: configChanges, $unset: unset as any },
-    { upsert: true }
-  );
+  return await db
+    .collection<SharedTypes.Config>("configs")
+    .updateOne(
+      { uid },
+      { $set: configChanges, $unset: unset },
+      { upsert: true }
+    );
 }
 
 export async function getConfig(
