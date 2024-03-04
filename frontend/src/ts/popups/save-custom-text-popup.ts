@@ -3,7 +3,7 @@ import * as Notifications from "../elements/notifications";
 import * as CustomTextState from "../states/custom-text-name";
 import { InputIndicator } from "../elements/input-indicator";
 import { debounce } from "throttle-debounce";
-import * as Skeleton from "./skeleton";
+import * as Skeleton from "../utils/skeleton";
 import { isPopupVisible } from "../utils/misc";
 
 const wrapperId = "saveCustomTextPopupWrapper";
@@ -30,7 +30,7 @@ export async function show(
   noAnim = false,
   callbackOnHide: () => void | undefined
 ): Promise<void> {
-  Skeleton.append(wrapperId);
+  Skeleton.append(wrapperId, "popups");
   if (!isPopupVisible(wrapperId)) {
     callbackFuncOnHide = callbackOnHide;
 

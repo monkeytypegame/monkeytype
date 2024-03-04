@@ -3,7 +3,7 @@ import * as DB from "../db";
 import * as TestWords from "../test/test-words";
 import * as Loader from "../elements/loader";
 import * as Notifications from "../elements/notifications";
-import * as Skeleton from "./skeleton";
+import * as Skeleton from "../utils/skeleton";
 import { isPopupVisible } from "../utils/misc";
 
 const wrapperId = "quoteRatePopupWrapper";
@@ -102,7 +102,7 @@ function updateData(): void {
 }
 
 function show(quote: MonkeyTypes.Quote, shouldReset = true): void {
-  Skeleton.append(wrapperId);
+  Skeleton.append(wrapperId, "popups");
 
   if (!isPopupVisible(wrapperId)) {
     if (shouldReset) {

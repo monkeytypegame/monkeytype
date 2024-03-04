@@ -3,7 +3,7 @@ import Ape from "../ape";
 import Page from "./page";
 import * as Notifications from "../elements/notifications";
 import { InputIndicator } from "../elements/input-indicator";
-import * as Skeleton from "../popups/skeleton";
+import * as Skeleton from "../utils/skeleton";
 import * as Misc from "../utils/misc";
 import TypoList from "../utils/typo-list";
 

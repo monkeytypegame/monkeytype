@@ -30,7 +30,7 @@ import {
   reloadAfter,
 } from "../utils/misc";
 import * as CustomTextState from "../states/custom-text-name";
-import * as Skeleton from "./skeleton";
+import * as Skeleton from "../utils/skeleton";
 import * as ThemeController from "../controllers/theme-controller";
 
 const wrapperId = "simplePopupWrapper";
@@ -321,7 +321,7 @@ class SimplePopup {
   }
 
   show(parameters: string[] = [], noAnimation = false): void {
-    Skeleton.append(wrapperId);
+    Skeleton.append(wrapperId, "popups");
     activePopup = this;
     this.noAnimation = noAnimation;
     this.parameters = parameters;

@@ -3,7 +3,7 @@ import * as Loader from "../elements/loader";
 import * as Notifications from "../elements/notifications";
 import format from "date-fns/format";
 import * as ConnectionState from "../states/connection";
-import * as Skeleton from "./skeleton";
+import * as Skeleton from "../utils/skeleton";
 import { isPopupVisible } from "../utils/misc";
 
 let apeKeys: Ape.ApeKeys.GetApeKeys | null = {};
@@ -97,7 +97,7 @@ export async function show(): Promise<void> {
     });
     return;
   }
-  Skeleton.append(wrapperId);
+  Skeleton.append(wrapperId, "popups");
   if (!isPopupVisible(wrapperId)) {
     await getData();
     refreshList();
