@@ -12,8 +12,18 @@ export async function getCommandline(): Promise<
     return module;
   } catch (e) {
     Loader.hide();
-    const msg = createErrorMessage(e, "Failed to load commandline module");
-    Notifications.add(msg, -1);
+    if (
+      e instanceof Error &&
+      e.message.includes("Failed to fetch dynamically imported module")
+    ) {
+      Notifications.add(
+        "Failed to load commandline module: could not fetch",
+        -1
+      );
+    } else {
+      const msg = createErrorMessage(e, "Failed to load commandline module");
+      Notifications.add(msg, -1);
+    }
     throw e;
   }
 }
