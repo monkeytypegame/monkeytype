@@ -26,7 +26,10 @@
       "length": 40
     },
     {
-
+      "text": "func addNumbers(a: Int, b: Int) -> Int {\n\tvar sum = a + b\n\t return sum\n}",
+      "source": "Programiz - Swift Functions",
+      "id": 4,
+      "length": 67
     }
   ]
 }
