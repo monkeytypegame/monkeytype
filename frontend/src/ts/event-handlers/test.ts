@@ -1,8 +1,4 @@
-async function getCommandline(): Promise<
-  typeof import("../commandline/commandline.js")
-> {
-  return await import("../commandline/commandline.js");
-}
+import { getCommandline } from "../utils/async-modules";
 
 $(".pageTest").on("click", "#testModesNotice .textButton", async (event) => {
   const attr = $(event.currentTarget).attr("commands");

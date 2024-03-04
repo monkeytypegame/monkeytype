@@ -2,12 +2,7 @@ import Config, * as UpdateConfig from "../config";
 import { isAuthenticated } from "../firebase";
 import * as DB from "../db";
 import * as Notifications from "../elements/notifications";
-
-async function getCommandline(): Promise<
-  typeof import("../commandline/commandline")
-> {
-  return await import("../commandline/commandline");
-}
+import { getCommandline } from "../utils/async-modules";
 
 document
   .querySelector("footer #commandLineButton")
@@ -42,5 +37,3 @@ document
       });
     }
   });
-
-export {};

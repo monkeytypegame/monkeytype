@@ -2,12 +2,7 @@ import * as Misc from "../utils/misc";
 import * as PageTransition from "../states/page-transition";
 import Config from "../config";
 import * as TestWords from "../test/test-words";
-
-async function getCommandline(): Promise<
-  typeof import("../commandline/commandline")
-> {
-  return await import("../commandline/commandline");
-}
+import { getCommandline } from "../utils/async-modules";
 
 document.addEventListener("keydown", async (e) => {
   if (PageTransition.get()) return;
