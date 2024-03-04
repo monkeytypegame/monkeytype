@@ -102,7 +102,16 @@ User signup/login is disabled by default. To allow users to signup you'll need t
 
 ### Setup Recaptcha
 
-t.b.d.
+- [create](https://www.google.com/recaptcha/admin/create) a new recaptcha token
+    - label: monkeytype
+    - type: v2
+    - domain: the domain of the frontend 
+- update the `.env` file with the site key from the previous step
+    ```
+    RECAPTCHA_SITE_KEY="your site key"
+    RECAPTCHA_SECRET="your secret key"
+    ``` 
+
 
 
 ## Enable daily leaderboards
