@@ -102,7 +102,8 @@ import * as TestStats from "../test/test-stats";
 import * as QuoteSearchPopup from "../popups/quote-search-popup";
 import * as FPSCounter from "../elements/fps-counter";
 
-Misc.getLayoutsList()
+const layoutsPromise = Misc.getLayoutsList();
+layoutsPromise
   .then((layouts) => {
     updateLayoutsCommands(layouts);
     updateKeymapLayoutsCommands(layouts);
@@ -113,7 +114,8 @@ Misc.getLayoutsList()
     );
   });
 
-Misc.getLanguageList()
+const languagesPromise = Misc.getLanguageList();
+languagesPromise
   .then((languages) => {
     updateLanguagesCommands(languages);
   })
@@ -123,7 +125,8 @@ Misc.getLanguageList()
     );
   });
 
-Misc.getFunboxList()
+const funboxPromise = Misc.getFunboxList();
+funboxPromise
   .then((funboxes) => {
     updateFunboxCommands(funboxes);
     if (FunboxCommands[0]?.subgroup) {
@@ -138,7 +141,8 @@ Misc.getFunboxList()
     );
   });
 
-Misc.getFontsList()
+const fontsPromise = Misc.getFontsList();
+fontsPromise
   .then((fonts) => {
     updateFontFamilyCommands(fonts);
   })
@@ -148,7 +152,8 @@ Misc.getFontsList()
     );
   });
 
-Misc.getThemesList()
+const themesPromise = Misc.getThemesList();
+themesPromise
   .then((themes) => {
     updateThemesCommands(themes);
   })
@@ -158,7 +163,8 @@ Misc.getThemesList()
     );
   });
 
-Misc.getChallengeList()
+const challengesPromise = Misc.getChallengeList();
+challengesPromise
   .then((challenges) => {
     updateLoadChallengeCommands(challenges);
   })
@@ -537,7 +543,16 @@ export function getTopOfStack(): MonkeyTypes.CommandsSubgroup {
 }
 
 let singleList: MonkeyTypes.CommandsSubgroup | undefined;
-export function getSingleSubgroup(): MonkeyTypes.CommandsSubgroup {
+export async function getSingleSubgroup(): Promise<MonkeyTypes.CommandsSubgroup> {
+  await Promise.allSettled([
+    layoutsPromise,
+    languagesPromise,
+    funboxPromise,
+    fontsPromise,
+    themesPromise,
+    challengesPromise,
+  ]);
+
   if (singleList) return singleList;
 
   // const
