@@ -58,4 +58,4 @@ $("#settingsImportPopup form").on("submit", async (e) => {
   void modal.hide();
 });
 
-const modal = new AnimatedModal("settingsImportPopup");
+const modal = new AnimatedModal("settingsImportPopup", "popups");

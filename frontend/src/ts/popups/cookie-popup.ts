@@ -112,7 +112,7 @@ $("#cookiePopup .cookie.ads .textButton").on("click", () => {
   }
 });
 
-const modal = new AnimatedModal("cookiePopup", undefined, {
+const modal = new AnimatedModal("cookiePopup", "popups", undefined, {
   customEscapeHandler: (): void => {
     //
   },

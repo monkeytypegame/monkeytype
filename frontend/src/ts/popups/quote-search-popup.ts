@@ -17,7 +17,7 @@ import { isAuthenticated } from "../firebase";
 import { debounce } from "throttle-debounce";
 import Ape from "../ape";
 import * as Loader from "../elements/loader";
-import * as Skeleton from "./skeleton";
+import * as Skeleton from "../utils/skeleton";
 import { isPopupVisible } from "../utils/misc";
 import SlimSelect from "slim-select";
 
@@ -213,7 +213,7 @@ async function updateResults(searchText: string): Promise<void> {
 let lengthSelect: SlimSelect | undefined = undefined;
 
 export async function show(clearText = true): Promise<void> {
-  Skeleton.append(wrapperId);
+  Skeleton.append(wrapperId, "popups");
 
   if (!isPopupVisible(wrapperId)) {
     if (clearText) {
