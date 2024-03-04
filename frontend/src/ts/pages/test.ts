@@ -10,7 +10,6 @@ import * as ModesNotice from "../elements/modes-notice";
 import * as Keymap from "../elements/keymap";
 import * as TribeState from "../tribe/tribe-state";
 import * as TestConfig from "../test/test-config";
-import * as CookiePopup from "../popups/cookie-popup";
 
 export const page = new Page(
   "test",
@@ -46,11 +45,6 @@ export const page = new Page(
     void Keymap.refresh();
   },
   async () => {
-    if (CookiePopup.isVisible()) {
-      TestUI.blurWords();
-      $("#cookiePopupWrapper").trigger("focus");
-    } else {
-      TestUI.focusWords();
-    }
+    TestUI.focusWords();
   }
 );

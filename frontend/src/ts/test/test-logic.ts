@@ -395,7 +395,7 @@ export function restart(options = {} as RestartOptions): void {
       }
 
       if (Config.showAverage !== "off") {
-        Last10Average.update().finally(() => {
+        void Last10Average.update().then(() => {
           void ModesNotice.update();
         });
       } else {

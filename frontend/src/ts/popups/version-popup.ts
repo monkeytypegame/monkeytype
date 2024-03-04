@@ -1,11 +1,11 @@
 import format from "date-fns/format";
 import { getReleasesFromGitHub, isPopupVisible } from "../utils/misc";
-import * as Skeleton from "./skeleton";
+import * as Skeleton from "../utils/skeleton";
 
 const wrapperId = "versionHistoryWrapper";
 
 function show(): void {
-  Skeleton.append(wrapperId);
+  Skeleton.append(wrapperId, "popups");
   $("#versionHistory").html(`
     <div class="preloader">
       <i class="fas fa-fw fa-spin fa-circle-notch"></i>

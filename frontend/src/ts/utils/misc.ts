@@ -1363,7 +1363,9 @@ export function isPopupVisible(popupId: string): boolean {
 }
 
 export function isAnyPopupVisible(): boolean {
-  const popups = document.querySelectorAll("#popups .popupWrapper");
+  const popups = document.querySelectorAll(
+    "#popups .popupWrapper, #popups .backdrop, #popups .modalWrapper"
+  );
   let popupVisible = false;
   for (const popup of popups) {
     if (isPopupVisible(popup.id)) {

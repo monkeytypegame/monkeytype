@@ -5,7 +5,7 @@ import * as Loader from "../elements/loader";
 import * as Notifications from "../elements/notifications";
 import * as ConnectionState from "../states/connection";
 import { isPopupVisible } from "../utils/misc";
-import * as Skeleton from "./skeleton";
+import * as Skeleton from "../utils/skeleton";
 
 const wrapperId = "editProfilePopupWrapper";
 
@@ -18,7 +18,7 @@ export function show(callbackOnHide: () => void): void {
     });
     return;
   }
-  Skeleton.append(wrapperId);
+  Skeleton.append(wrapperId, "popups");
 
   if (!isPopupVisible(wrapperId)) {
     callbackFuncOnHide = callbackOnHide;

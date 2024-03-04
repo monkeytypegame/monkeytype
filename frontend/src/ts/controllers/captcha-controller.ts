@@ -1,4 +1,5 @@
-const siteKey = "6Lc-V8McAAAAAJ7s6LGNe7MBZnRiwbsbiWts87aj";
+import { envConfig } from "../constants/env-config";
+const siteKey = envConfig.recaptchaSiteKey;
 
 const captchas: Record<string, number> = {};
 

@@ -16,7 +16,7 @@ import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
 import * as Profile from "../elements/profile";
 import format from "date-fns/format";
 import * as ConnectionState from "../states/connection";
-import * as Skeleton from "../popups/skeleton";
+import * as Skeleton from "../utils/skeleton";
 import type { ScaleChartOptions, LinearScaleOptions } from "chart.js";
 import * as ConfigEvent from "../observables/config-event";
 import * as ActivePage from "../states/active-page";
@@ -881,9 +881,9 @@ async function fillContent(): Promise<void> {
   $(".pageAccount .highestWpm .mode").html(topMode);
   $(".pageAccount .testsTaken .val").text(testCount);
 
-  $(".pageAccount .highestAcc .val").text(Format.percentage(topAcc));
-  $(".pageAccount .avgAcc .val").text(Format.percentage(totalAcc / testCount));
-  $(".pageAccount .avgAcc10 .val").text(Format.percentage(totalAcc10 / last10));
+  $(".pageAccount .highestAcc .val").text(Format.accuracy(topAcc));
+  $(".pageAccount .avgAcc .val").text(Format.accuracy(totalAcc / testCount));
+  $(".pageAccount .avgAcc10 .val").text(Format.accuracy(totalAcc10 / last10));
 
   if (totalCons === 0 || totalCons === undefined) {
     $(".pageAccount .avgCons .val").text("-");

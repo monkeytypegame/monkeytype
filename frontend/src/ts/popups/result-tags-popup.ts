@@ -4,7 +4,7 @@ import * as Loader from "../elements/loader";
 import * as Notifications from "../elements/notifications";
 import * as ConnectionState from "../states/connection";
 import { areUnsortedArraysEqual, isPopupVisible } from "../utils/misc";
-import * as Skeleton from "./skeleton";
+import * as Skeleton from "../utils/skeleton";
 
 const wrapperId = "resultEditTagsPanelWrapper";
 
@@ -21,7 +21,7 @@ function show(): void {
     });
     return;
   }
-  Skeleton.append(wrapperId);
+  Skeleton.append(wrapperId, "popups");
   updateButtons();
   if (!isPopupVisible(wrapperId)) {
     $("#resultEditTagsPanelWrapper")
@@ -78,8 +78,8 @@ $(".pageAccount").on("click", ".group.history #resultEditTags", (f) => {
     state["resultId"] = resultid;
     state["tags"] = tags;
     state["source"] = "accountPage";
-    updateActiveButtons(JSON.parse(tags));
     show();
+    updateActiveButtons(JSON.parse(tags));
   } else {
     Notifications.add(
       "You haven't created any tags. You can do it in the settings page",

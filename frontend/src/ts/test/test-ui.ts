@@ -1101,7 +1101,7 @@ export function toggleResultWords(noAnimation = false): void {
         $("#words").html(
           `<div class="preloader"><i class="fas fa-fw fa-spin fa-circle-notch"></i></div>`
         );
-        loadWordsHistory().finally(() => {
+        void loadWordsHistory().then(() => {
           if (Config.burstHeatmap) {
             void applyBurstHeatmap();
           }

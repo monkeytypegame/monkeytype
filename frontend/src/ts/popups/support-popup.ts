@@ -1,10 +1,10 @@
 import { isPopupVisible } from "../utils/misc";
-import * as Skeleton from "./skeleton";
+import * as Skeleton from "../utils/skeleton";
 
 const wrapperId = "supportMeWrapper";
 
 function show(): void {
-  Skeleton.append(wrapperId);
+  Skeleton.append(wrapperId, "popups");
 
   $("#supportMeWrapper")
     .css("opacity", 0)

@@ -1,4 +1,3 @@
-const parent = document.getElementById("popups") as HTMLElement;
 const skeletons = new Map<string, HTMLElement>();
 
 export function save(id: string, removeAfter = true): void {
@@ -17,13 +16,14 @@ export function remove(id: string): void {
   }
 }
 
-type ParentOverride = "main";
+export type SkeletonAppendParents = keyof typeof parents;
 
-export function append(id: string, parentOverride?: ParentOverride): void {
+const parents = {
+  popups: document.getElementById("popups") as HTMLElement,
+  main: document.querySelector("main") as HTMLElement,
+};
+
+export function append(id: string, parent: SkeletonAppendParents): void {
   const popup = skeletons.get(id) as HTMLElement;
-  if (parentOverride) {
-    (document.querySelector(parentOverride) as HTMLElement).append(popup);
-  } else {
-    parent.append(popup);
-  }
+  parents[parent].append(popup);
 }

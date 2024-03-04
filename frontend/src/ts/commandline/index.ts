@@ -16,7 +16,7 @@ import {
   isPopupVisible,
 } from "../utils/misc";
 import { update as updateCustomThemesList } from "./lists/custom-themes-list";
-import * as Skeleton from "../popups/skeleton";
+import * as Skeleton from "../utils/skeleton";
 import * as ManualRestart from "../test/manual-restart-tracker";
 import * as TribeState from "../tribe/tribe-state";
 import * as CustomTextPopup from "../popups/custom-text-popup";
@@ -160,7 +160,7 @@ function showFound(): void {
           if (!/font/gi.test(obj.id)) {
             UpdateConfig.previewFontFamily(Config.fontFamily);
           }
-          if (obj.hover) obj.hover();
+          if (obj.hover && !obj.id.startsWith("changeTheme")) obj.hover();
           return;
         }
       }
@@ -170,7 +170,8 @@ function showFound(): void {
 }
 
 function updateSuggested(): void {
-  const inputVal = ($("#commandLine input").val() as string)
+  const rawInputStr = $("#commandLine input").val() as string;
+  const inputVal = rawInputStr
     .toLowerCase()
     .split(" ")
     .filter((s, i) => s || i === 0); //remove empty entries after first
@@ -189,6 +190,11 @@ function updateSuggested(): void {
     showFound();
     return;
   }
+
+  // -1 means that we can set the activeIndex as normal at the end
+  // otherwise, this is what to set activeIndex to
+  let setIndex = -1;
+
   //ignore the preceeding ">"s in the command line input
   if (inputVal[0]?.startsWith(">")) {
     inputVal[0] = inputVal[0].replace(/^>+/, "");
@@ -198,16 +204,24 @@ function updateSuggested(): void {
       if (obj.visible !== false) obj.found = true;
     }
   } else {
-    for (const obj of list.list) {
+    let shownItemsCount = 0;
+    for (const lItem of list.list) {
       let foundcount = 0;
+
       for (const obj2 of inputVal) {
         if (obj2 === "") return;
         const escaped = obj2.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
         const re = new RegExp("\\b" + escaped, "g");
-        const res = obj.display.toLowerCase().match(re);
+        const res = lItem.display.toLowerCase().match(re);
         const res2 =
-          obj.alias !== undefined ? obj.alias.toLowerCase().match(re) : null;
-        if (
+          lItem.alias !== undefined
+            ? lItem.alias.toLowerCase().match(re)
+            : null;
+        if (lItem.display === rawInputStr) {
+          setIndex = shownItemsCount;
+          foundcount = inputVal.length;
+          break;
+        } else if (
           (res != null && res.length > 0) ||
           (res2 != null && res2.length > 0)
         ) {
@@ -217,21 +231,27 @@ function updateSuggested(): void {
         }
       }
       if (foundcount > inputVal.length - 1) {
-        obj.found = true;
+        lItem.found = true;
+        shownItemsCount++;
       } else {
-        obj.found = false;
+        lItem.found = false;
       }
     }
   }
   showFound();
 
-  // display background hover effect for selected language
-  const scrollTarget = $(".suggestions .entry .icon i.fa-check");
-  const entryIndex = scrollTarget.parent().parent().attr("index");
-  if (entryIndex !== undefined) {
-    activeIndex = parseInt(entryIndex);
+  if (setIndex !== -1) {
+    activeIndex = setIndex;
   } else {
-    activeIndex = 0;
+    // display background hover effect for selected language
+    const scrollTarget = $(".suggestions .entry .icon i.fa-check");
+    const entryIndex = scrollTarget.parent().parent().attr("index");
+
+    if (entryIndex !== undefined) {
+      activeIndex = parseInt(entryIndex);
+    } else {
+      activeIndex = 0;
+    }
   }
 
   updateActiveEntry();
@@ -246,7 +266,7 @@ function show(): void {
   //take last element of array
   if (isElementVisible(".page.pageLoading")) return;
   Focus.set(false);
-  Skeleton.append(wrapperId);
+  Skeleton.append(wrapperId, "popups");
   $("#commandLine").removeClass("hidden");
   $("#commandInput").addClass("hidden");
 
