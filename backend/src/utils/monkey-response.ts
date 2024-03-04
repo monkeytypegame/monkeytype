@@ -1,6 +1,8 @@
 import { Response } from "express";
 import { isCustomCode } from "../constants/monkey-status-codes";
 
+//TODO FIX ANYS
+
 export class MonkeyResponse {
   message: string;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
