@@ -157,4 +157,36 @@ Contains your firebase config, only needed if you want to allow users to signup.
 
 Configuration of the backend. 
 
+If you don't want to update this file manually you can
+
+- open the backend url in your browser, e.g. `http://localhost:5005/configure/`
+- adjust the settings and click `Save Changes`
+- open the configuration in your browser, e.g. `http://localhost:5005/configuration`
+- copy everything from `data` into the `backend-configuration.json` file.
+
+Example output from `http://localhost:5005/configuration`:
+```json
+{
+    "message": "Configuration retrieved",
+    "data":
+    {
+        "maintenance": false,
+        "results": {},
+        ....
+    }
+}
+```
+
+Example content from `backend-configuration.json`:
+```
+{
+    "maintenance": false,
+    "results": {},
+    ....
+}
+```
+
+If you have the `curl` and `jq` installed you can also run `curl -wO- http://localhost:5005/configuration | jq ".data" > backend-configuration.json` to update the configuration file.
+
+
 _Note:_ The configuration is applied on container startup only. You have to restart the container for your changes to become active.
