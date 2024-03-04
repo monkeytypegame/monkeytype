@@ -5,5 +5,3 @@ $(".pageTest").on("click", "#testModesNotice .textButton", async (event) => {
   if (attr === undefined) return;
   (await getCommandline()).show({ subgroupOverride: attr });
 });
-
-export {};

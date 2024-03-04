@@ -28,5 +28,3 @@ document.addEventListener("keydown", async (e) => {
     }
   }
 });
-
-export {};
