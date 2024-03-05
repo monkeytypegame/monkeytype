@@ -2,8 +2,13 @@
 import "jquery-color";
 import "jquery.easing";
 
-import "./firebase";
+import "./event-handlers/global";
+import "./event-handlers/footer";
+import "./event-handlers/keymap";
+import "./event-handlers/test";
+import "./event-handlers/popups";
 
+import "./firebase";
 import * as Logger from "./utils/logger";
 import * as DB from "./db";
 import "./ui";
@@ -42,11 +47,6 @@ import "./elements/fps-counter";
 import "./controllers/profile-search-controller";
 import "./version";
 import { isDevEnvironment } from "./utils/misc";
-import "./event-handlers/global";
-import "./event-handlers/footer";
-import "./event-handlers/keymap";
-import "./event-handlers/test";
-import "./event-handlers/popups";
 
 function addToGlobal(items: Record<string, unknown>): void {
   for (const [name, item] of Object.entries(items)) {
