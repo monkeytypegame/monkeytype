@@ -66,19 +66,10 @@ function update(): void {
     },
   });
 
-  DB.getSnapshot()?.tags?.forEach((tag) => {
-    let dis = tag.display;
-
-    if (tag.active === true) {
-      dis = '<i class="fas fa-fw fa-check"></i>' + dis;
-    } else {
-      dis = '<i class="fas fa-fw"></i>' + dis;
-    }
-
+  for (const tag of snapshot.tags) {
     subgroup.list.push({
       id: "toggleTag" + tag._id,
-      noIcon: true,
-      display: dis,
+      display: tag.display,
       sticky: true,
       exec: async (): Promise<void> => {
         TagController.toggle(tag._id);
@@ -88,29 +79,9 @@ function update(): void {
           await PaceCaret.init();
           void ModesNotice.update();
         }
-
-        let txt = tag.display;
-
-        if (tag.active === true) {
-          txt = '<i class="fas fa-fw fa-check"></i>' + txt;
-        } else {
-          txt = '<i class="fas fa-fw"></i>' + txt;
-        }
-        if ($("#commandLine").hasClass("allCommands")) {
-          $(
-            `#commandLine .suggestions .entry[command='toggleTag${tag._id}']`
-          ).html(
-            `<div class="icon"><i class="fas fa-fw fa-tag"></i></div><div>Tags  > ` +
-              txt
-          );
-        } else {
-          $(
-            `#commandLine .suggestions .entry[command='toggleTag${tag._id}']`
-          ).html(txt);
-        }
       },
     });
-  });
+  }
   subgroup.list.push({
     id: "createTag",
     display: "Create tag",

@@ -56,6 +56,10 @@ export default class AnimatedModal {
     }
 
     this.skeletonAppendParent = appendTo;
+    if (Skeleton.has(wrapperId)) {
+      Skeleton.append(wrapperId, this.skeletonAppendParent);
+    }
+
     const dialogElement = document.getElementById(wrapperId);
     const modalElement = document.querySelector(
       `#${wrapperId} > .modal`
