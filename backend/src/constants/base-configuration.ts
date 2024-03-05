@@ -117,7 +117,8 @@ type BooleanSchema = {
 type StringSchema = {
   type: "string";
 } & BaseSchema;
-type ArraySchema<T extends any[]> = {
+
+type ArraySchema<T extends unknown[]> = {
   type: "array";
   items: Schema<T>[number];
 } & BaseSchema;
@@ -128,7 +129,7 @@ type ObjectSchema<T> = {
 } & BaseSchema;
 
 type Schema<T> = {
-  [P in keyof T]: T[P] extends any[]
+  [P in keyof T]: T[P] extends unknown[]
     ? ArraySchema<T[P]>
     : T[P] extends number
     ? NumberSchema

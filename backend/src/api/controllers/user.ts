@@ -26,7 +26,10 @@ import { ObjectId } from "mongodb";
 import * as ReportDAL from "../../dal/report";
 import emailQueue from "../../queues/email-queue";
 import FirebaseAdmin from "../../init/firebase-admin";
-import { removeTokensFromCacheByUid } from "../../utils/auth";
+import {
+  removeTokensFromCacheByUid,
+  deleteUser as firebaseDeleteUser,
+} from "../../utils/auth";
 
 async function verifyCaptcha(captcha: string): Promise<void> {
   if (!(await verify(captcha))) {
@@ -44,7 +47,7 @@ export async function createNewUser(
     await verifyCaptcha(captcha);
   } catch (e) {
     try {
-      await FirebaseAdmin().auth().deleteUser(uid);
+      await firebaseDeleteUser(uid);
     } catch (e) {
       // user might be deleted on the frontend
     }
@@ -176,16 +179,22 @@ export async function deleteUser(
   const { uid } = req.ctx.decodedToken;
 
   const userInfo = await UserDAL.getUser(uid, "delete user");
+
+  //cleanup database
   await Promise.all([
     UserDAL.deleteUser(uid),
     deleteAllApeKeys(uid),
     deleteAllPresets(uid),
     deleteConfig(uid),
+    deleteAllResults(uid),
     purgeUserFromDailyLeaderboards(
       uid,
       req.ctx.configuration.dailyLeaderboards
     ),
   ]);
+
+  //delete user from
+  await firebaseDeleteUser(uid);
 
   void Logger.logToDb(
     "user_deleted",
@@ -345,7 +354,7 @@ export async function getUser(
       //since there is no data in the database anyway, we can just delete the user from the auth system
       //and ask them to sign up again
       try {
-        await FirebaseAdmin().auth().deleteUser(uid);
+        await firebaseDeleteUser(uid);
         throw new MonkeyError(
           404,
           "User not found in the database, but found in the auth system. We have deleted the ghost user from the auth system. Please sign up again.",
@@ -744,6 +753,7 @@ export async function getProfile(
     streak: streak?.length ?? 0,
     maxStreak: streak?.maxLength ?? 0,
     lbOptOut,
+    isPremium: await UserDAL.checkIfUserIsPremium(user.uid, user),
   };
 
   if (banned) {

@@ -14,6 +14,7 @@ type DailyLeaderboardEntry = {
   discordAvatar?: string;
   discordId?: string;
   badgeId?: number;
+  isPremium?: boolean;
 };
 
 type GetRankResponse = {
@@ -23,7 +24,7 @@ type GetRankResponse = {
   entry: DailyLeaderboardEntry | null;
 };
 
-type LbEntryWithRank = {
+export type LbEntryWithRank = {
   rank: number;
 } & DailyLeaderboardEntry;
 
@@ -123,7 +124,8 @@ export class DailyLeaderboard {
   public async getResults(
     minRank: number,
     maxRank: number,
-    dailyLeaderboardsConfig: SharedTypes.Configuration["dailyLeaderboards"]
+    dailyLeaderboardsConfig: SharedTypes.Configuration["dailyLeaderboards"],
+    premiumFeaturesEnabled: boolean
   ): Promise<LbEntryWithRank[]> {
     const connection = RedisClient.getConnection();
     if (!connection || !dailyLeaderboardsConfig.enabled) {
@@ -155,6 +157,10 @@ export class DailyLeaderboard {
         rank: minRank + index + 1,
       })
     );
+
+    if (!premiumFeaturesEnabled) {
+      resultsWithRanks.forEach((it) => (it.isPremium = undefined));
+    }
 
     return resultsWithRanks;
   }

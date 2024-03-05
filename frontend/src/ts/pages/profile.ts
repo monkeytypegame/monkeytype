@@ -5,7 +5,7 @@ import * as PbTables from "../account/pb-tables";
 import * as Notifications from "../elements/notifications";
 import { checkIfGetParameterExists } from "../utils/misc";
 import * as UserReportPopup from "../popups/user-report-popup";
-import * as Skeleton from "../popups/skeleton";
+import * as Skeleton from "../utils/skeleton";
 
 function reset(): void {
   $(".page.pageProfile .preloader").removeClass("hidden");
@@ -19,7 +19,10 @@ function reset(): void {
             <div class="avatar"></div>
           </div>
           <div>
-            <div class="name">-</div>
+             <div class="user">
+              <div class="name">-</div>
+              <div class="userFlags"></div>
+            </div>
             <div class="badges"></div>
             <div class="allBadges"></div>
             <div class="joined" data-balloon-pos="up">-</div>

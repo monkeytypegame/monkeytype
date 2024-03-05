@@ -27,11 +27,15 @@ function buildClientVersion() {
   );
   const version = [versionPrefix, versionSuffix].join("_");
 
-  const commitHash = childProcess
-    .execSync("git rev-parse --short HEAD")
-    .toString();
+  try {
+    const commitHash = childProcess
+      .execSync("git rev-parse --short HEAD")
+      .toString();
 
-  return `${version}.${commitHash}`;
+    return `${version}.${commitHash}`;
+  } catch (e) {
+    return `${version}.unknown-hash`;
+  }
 }
 
 /** @type {import("vite").UserConfig} */
@@ -47,10 +51,10 @@ const BASE_CONFIG = {
             if (src.startsWith(`"use strict";`)) {
               return src.replace(
                 /("use strict";)/,
-                `$1\nimport $ from "jquery";`
+                `$1import $ from "jquery";`
               );
             } else {
-              return `import $ from "jquery";\n${src}`;
+              return `import $ from "jquery";${src}`;
             }
           }
         }
@@ -71,7 +75,7 @@ const BASE_CONFIG = {
     Inspect(),
   ],
   server: {
-    open: true,
+    open: process.env.SERVER_OPEN !== "false",
     port: 3000,
     host: process.env.BACKEND_URL !== undefined,
   },

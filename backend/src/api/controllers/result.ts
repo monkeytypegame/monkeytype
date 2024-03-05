@@ -161,6 +161,9 @@ export async function updateTags(
   if (!result.punctuation) {
     result.punctuation = false;
   }
+  if (!result.numbers) {
+    result.numbers = false;
+  }
 
   const user = await getUser(uid, "update tags");
   const tagPbs = await checkIfTagPb(uid, user, result);
@@ -486,6 +489,8 @@ export async function addResult(
     (isDevEnvironment() || (user.timeTyping ?? 0) > 7200);
 
   const selectedBadgeId = user.inventory?.badges?.find((b) => b.selected)?.id;
+  const isPremium =
+    (await UserDAL.checkIfUserIsPremium(user.uid, user)) || undefined;
 
   if (dailyLeaderboard && validResultCriteria) {
     incrementDailyLeaderboard(
@@ -505,6 +510,7 @@ export async function addResult(
         discordAvatar: user.discordAvatar,
         discordId: user.discordId,
         badgeId: selectedBadgeId,
+        isPremium,
       },
       dailyLeaderboardsConfig
     );

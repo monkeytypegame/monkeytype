@@ -1,0 +1,42 @@
+name: monkeytype
+version: "3.8"
+services:
+  redis:
+    container_name: monkeytype-redis
+    image: redis:6.2.6
+    restart: on-failure
+    ports:
+      - "${DOCKER_REDIS_PORT:-6379}:6379"
+    volumes:
+      - redis-data:/data
+
+  mongodb:
+    container_name: monkeytype-mongodb
+    image: mongo:5.0.8
+    restart: on-failure
+    ports:
+      - "${DOCKER_DB_PORT:-27017}:27017"
+    volumes:
+      - mongo-data:/data/db
+
+  api-server:
+    container_name: monkeytype-api-server
+    image: node:18.19.1
+    restart: on-failure
+    depends_on:
+      - redis
+      - mongodb
+    environment:
+      - DB_URI=mongodb://mongodb:27017
+      - REDIS_URI=redis://redis:6379
+    ports:
+      - "${DOCKER_SERVER_PORT:-5005}:5005"
+    volumes:
+      - be-modules:/monkeytype/backend/node_modules
+      - ../../:/monkeytype
+    entrypoint: 'bash -c "cd /monkeytype/backend && npm install && npm run dev"'
+
+volumes:
+  mongo-data:
+  redis-data:
+  be-modules:
