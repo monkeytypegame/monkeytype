@@ -107,11 +107,20 @@
   .ssWatermark {
     font-size: 1.25rem;
     color: var(--sub-color);
-    line-height: 1rem;
-    text-align: right;
+    display: flex;
+    justify-content: end;
+    gap: 0 1em;
+    flex-wrap: wrap;
 
     .fas {
-      margin-right: 0.35em;
+      margin-left: 0.25em;
+    }
+
+    .divider {
+      width: 0.1em;
+      background: var(--sub-color);
+      display: inline-block;
+      border-radius: var(--roundness);
     }
   }
 

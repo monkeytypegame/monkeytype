@@ -454,12 +454,16 @@ export async function screenshot(): Promise<void> {
   const snapshot = DB.getSnapshot();
   const ssWatermark = [format(dateNow, "dd MMM yyyy HH:mm"), "monkeytype.com"];
   if (snapshot?.name !== undefined) {
-    const userText = `${snapshot?.name} ${getHtmlByUserFlags(snapshot, {
+    const userText = `${snapshot?.name}${getHtmlByUserFlags(snapshot, {
       iconsOnly: true,
     })}`;
     ssWatermark.unshift(userText);
   }
-  $(".pageTest .ssWatermark").html(ssWatermark.join(" | "));
+  $(".pageTest .ssWatermark").html(
+    ssWatermark
+      .map((el) => `<span>${el}</span>`)
+      .join("<span class='pipe'>|</span>")
+  );
   $(".pageTest .buttons").addClass("hidden");
   $("#notificationCenter").addClass("hidden");
   $("#commandLineMobileButton").addClass("hidden");
