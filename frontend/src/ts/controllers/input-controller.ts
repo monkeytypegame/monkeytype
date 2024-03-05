@@ -985,7 +985,6 @@ $(document).on("keydown", async (event) => {
         event,
       });
     } else {
-      handleChar("\n", TestInput.input.current.length);
       setWordsInput(" " + TestInput.input.current);
       if (Config.tapeMode !== "off") {
         TestUI.scrollTape();
