@@ -115,8 +115,7 @@ async function getDataAndInit(): Promise<boolean> {
   LoadingPage.updateText("Applying settings...");
   const snapshot = DB.getSnapshot() as MonkeyTypes.Snapshot;
   $("nav .textButton.account > .text").text(snapshot.name);
-
-  $("nav .textButton.account > .userFlags").html(
+  $("nav .textButton.account > .text").append(
     getHtmlByUserFlags(snapshot, { iconsOnly: true })
   );
   showFavoriteQuoteLength();
