@@ -7,6 +7,7 @@ import { throttle } from "throttle-debounce";
 import * as EditProfilePopup from "../popups/edit-profile-popup";
 import * as ActivePage from "../states/active-page";
 import formatDistanceToNowStrict from "date-fns/formatDistanceToNowStrict";
+import { getHtmlByUserFlags } from "../controllers/user-flag-controller";
 
 type ProfileViewPaths = "profile" | "account";
 type UserProfileOrSnapshot = SharedTypes.UserProfile | MonkeyTypes.Snapshot;
@@ -23,15 +24,12 @@ export async function update(
 
   profileElement.attr("uid", profile.uid ?? "");
   profileElement.attr("name", profile.name ?? "");
-  profileElement.attr("lbOptOut", `${profile.lbOptOut ?? false}`);
 
   // ============================================================================
   // DO FREAKING NOT USE .HTML OR .APPEND HERE - USER INPUT!!!!!!
   // ============================================================================
 
   const banned = profile.banned === true;
-
-  const lbOptOut = profile.lbOptOut === true;
 
   if (
     details === undefined ||
@@ -78,22 +76,9 @@ export async function update(
   }
 
   details.find(".name").text(profile.name);
+  details.find(".userFlags").html(getHtmlByUserFlags(profile));
 
-  if (banned) {
-    details
-      .find(".name")
-      .append(
-        `<div class="bannedIcon" aria-label="This account is banned" data-balloon-pos="up"><i class="fas fa-gavel"></i></div>`
-      );
-  }
-
-  if (lbOptOut) {
-    details
-      .find(".name")
-      .append(
-        `<div class="bannedIcon" aria-label="This account has opted out of leaderboards" data-balloon-pos="up"><i class="fas fa-crown"></i></div>`
-      );
-
+  if (profile.lbOptOut === true) {
     if (where === "profile") {
       profileElement
         .find(".lbOptOutReminder")
@@ -413,7 +398,7 @@ export function updateNameFontSize(where: ProfileViewPaths): void {
     details = $(".pageProfile .profile .details");
   }
   if (!details) return;
-  const nameFieldjQ = details.find(".name");
+  const nameFieldjQ = details.find(".user");
   const nameFieldParent = nameFieldjQ.parent()[0];
   const nameField = nameFieldjQ[0];
   const upperLimit = Misc.convertRemToPixels(2);

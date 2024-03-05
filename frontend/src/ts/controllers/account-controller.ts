@@ -40,6 +40,7 @@ import {
 } from "../test/test-config";
 import * as ConnectionState from "../states/connection";
 import { navigate } from "./route-controller";
+import { getHtmlByUserFlags } from "./user-flag-controller";
 
 let signedOutThisSession = false;
 
@@ -114,6 +115,9 @@ async function getDataAndInit(): Promise<boolean> {
   LoadingPage.updateText("Applying settings...");
   const snapshot = DB.getSnapshot() as MonkeyTypes.Snapshot;
   $("nav .textButton.account > .text").text(snapshot.name);
+  $("nav .textButton.account > .text").append(
+    getHtmlByUserFlags(snapshot, { iconsOnly: true })
+  );
   showFavoriteQuoteLength();
 
   ResultFilters.loadTags(snapshot.tags);

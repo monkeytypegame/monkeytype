@@ -159,6 +159,12 @@
           .badge {
             font-size: 0.6rem;
           }
+          .flagsAndBadge {
+            display: flex;
+            gap: 0.5rem;
+            color: var(--sub-color);
+            place-items: center;
+          }
         }
 
         tr td:first-child {

@@ -107,8 +107,14 @@
   .ssWatermark {
     font-size: 1.25rem;
     color: var(--sub-color);
-    line-height: 1rem;
-    text-align: right;
+    display: flex;
+    justify-content: flex-end;
+    gap: 0 1em;
+    flex-wrap: wrap;
+
+    .fas {
+      margin-left: 0.33em;
+    }
   }
 
   #timerNumber {

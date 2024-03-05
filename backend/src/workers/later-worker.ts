@@ -31,7 +31,8 @@ async function handleDailyLeaderboardResults(
   const allResults = await dailyLeaderboard.getResults(
     0,
     -1,
-    dailyLeaderboardsConfig
+    dailyLeaderboardsConfig,
+    false
   );
 
   if (allResults.length === 0) {
