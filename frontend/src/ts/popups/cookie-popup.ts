@@ -52,7 +52,7 @@ function verifyVisible(): void {
   if (!modal.isOpen()) return;
   if (!isPopupVisible("cookiePopup")) {
     //removed by cookie popup blocking extension
-    void modal.destroy();
+    modal.destroy();
   }
 }
 
