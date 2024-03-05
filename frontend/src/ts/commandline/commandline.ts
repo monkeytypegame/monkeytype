@@ -558,6 +558,14 @@ const modal = new AnimatedModal("commandLine", "popups", undefined, {
         e.preventDefault();
         await incrementActiveIndex();
       }
+      if (e.key === "Tab") {
+        e.preventDefault();
+        if (e.shiftKey) {
+          await decrementActiveIndex();
+        } else {
+          await incrementActiveIndex();
+        }
+      }
       if (e.key === "Enter") {
         e.preventDefault();
         if (mode === "search") {
@@ -570,9 +578,6 @@ const modal = new AnimatedModal("commandLine", "popups", undefined, {
       }
       if (e.key === "Escape") {
         await goBackOrHide();
-      }
-      if (e.key === "Tab") {
-        e.preventDefault();
       }
     });
 
