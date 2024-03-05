@@ -141,20 +141,6 @@ function hide(options = {} as HideOptions): void {
         },
         options.noAnim ? 0 : 125,
         () => {
-          if (options.resetState) {
-            const newText = CustomText.text.map((word) => {
-              if (word.endsWith("|")) {
-                word = word.slice(0, -1);
-              }
-              return word;
-            });
-
-            CustomText.setPopupTextareaState(
-              // CustomText.text.join(CustomText.delimiter)
-              newText.join(CustomText.delimiter)
-            );
-          }
-
           $(wrapper).addClass("hidden");
           Skeleton.remove(skeletonId);
         }
@@ -245,15 +231,6 @@ function apply(): void {
   //replace zero width characters
   text = text.replace(/[\u200B-\u200D\u2060\uFEFF]/g, "");
 
-  if (
-    $(`${popup} .replaceControlCharacters input`).prop("checked") as boolean
-  ) {
-    text = text.replace(/([^\\]|^)\\t/gm, "$1\t");
-    text = text.replace(/([^\\]|^)\\n/gm, "$1\n");
-    text = text.replace(/\\\\t/gm, "\\t");
-    text = text.replace(/\\\\n/gm, "\\n");
-  }
-
   text = text.replace(/ +/gm, " ");
   text = text.replace(/( *(\r\n|\r|\n) *)/g, "\n ");
   if ($(`${popup} .typographyCheck input`).prop("checked") as boolean) {
@@ -277,6 +254,17 @@ function apply(): void {
       text = text.replace(/\n/gm, " ");
       text = text.replace(/ +/gm, " ");
     }
+  }
+
+  CustomText.setPopupTextareaState(text);
+
+  if (
+    $(`${popup} .replaceControlCharacters input`).prop("checked") as boolean
+  ) {
+    text = text.replace(/([^\\]|^)\\t/gm, "$1\t");
+    text = text.replace(/([^\\]|^)\\n/gm, "$1\n");
+    text = text.replace(/\\\\t/gm, "\\t");
+    text = text.replace(/\\\\n/gm, "\\n");
   }
 
   const words = text.split(CustomText.delimiter).filter((word) => word !== "");

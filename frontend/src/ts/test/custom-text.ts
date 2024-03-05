@@ -16,7 +16,7 @@ export let word = -1;
 export let time = -1;
 export let section = -1;
 export let delimiter = " ";
-export let popupTextareaState = "The quick brown fox jumps over the lazy dog";
+export let popupTextareaState = text.join(" ");
 
 export function setPopupTextareaState(value: string): void {
   popupTextareaState = value;
