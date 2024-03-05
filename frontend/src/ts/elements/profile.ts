@@ -24,15 +24,12 @@ export async function update(
 
   profileElement.attr("uid", profile.uid ?? "");
   profileElement.attr("name", profile.name ?? "");
-  profileElement.attr("lbOptOut", `${profile.lbOptOut ?? false}`);
 
   // ============================================================================
   // DO FREAKING NOT USE .HTML OR .APPEND HERE - USER INPUT!!!!!!
   // ============================================================================
 
   const banned = profile.banned === true;
-
-  const lbOptOut = profile.lbOptOut === true;
 
   if (
     details === undefined ||
@@ -81,13 +78,7 @@ export async function update(
   details.find(".name").text(profile.name);
   details.find(".userFlags").html(getHtmlByUserFlags(profile));
 
-  if (lbOptOut) {
-    details
-      .find(".name")
-      .append(
-        `<div class="lbOptOutIcon" aria-label="This account has opted out of leaderboards" data-balloon-pos="up"><i class="fas fa-crown"></i></div>`
-      );
-
+  if (profile.lbOptOut === true) {
     if (where === "profile") {
       profileElement
         .find(".lbOptOutReminder")

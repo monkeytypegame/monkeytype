@@ -12,11 +12,19 @@ const flags: UserFlag[] = [
     color: "var(--error-color)",
     test: (it) => it.banned === true,
   },
+  {
+    name: "LbOptOut",
+    description: "This account has opted out of leaderboards",
+    icon: "fa-crown",
+    color: "var(--error-color)",
+    test: (it) => it.lbOptOut === true,
+  },
 ];
 
 type SupportsFlags = {
   isPremium?: boolean;
   banned?: boolean;
+  lbOptOut?: boolean;
 };
 
 type UserFlag = {
