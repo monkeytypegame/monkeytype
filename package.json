@@ -44,11 +44,11 @@
     "@commitlint/config-conventional": "17.7.0",
     "@csmith/release-it-calver-plugin": "2023.9.0",
     "@release-it/conventional-changelog": "7.0.0",
-    "@typescript-eslint/eslint-plugin": "5.59.11",
-    "@typescript-eslint/parser": "5.59.11",
+    "@typescript-eslint/eslint-plugin": "7.1.0",
+    "@typescript-eslint/parser": "7.1.0",
     "concurrently": "7.2.1",
     "conventional-changelog": "4.0.0",
-    "eslint": "8.42.0",
+    "eslint": "8.57.0",
     "eslint-config-prettier": "9.0.0",
     "eslint-import-resolver-typescript": "3.6.1",
     "eslint-plugin-import": "2.29.0",
@@ -71,5 +71,5 @@
       "eslint"
     ]
   },
-  "version": "24.8.0"
+  "version": "24.9.1"
 }

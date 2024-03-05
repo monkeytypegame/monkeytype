@@ -1,5 +1,5 @@
 import { isPopupVisible } from "../utils/misc";
-import * as Skeleton from "./skeleton";
+import * as Skeleton from "../utils/skeleton";
 
 const wrapperId = "contactPopupWrapper";
 
@@ -24,7 +24,7 @@ $(document).on("keydown", (e) => {
 });
 
 function show(): void {
-  Skeleton.append(wrapperId);
+  Skeleton.append(wrapperId, "popups");
   if (!isPopupVisible(wrapperId)) {
     $("#contactPopupWrapper")
       .stop(true, true)

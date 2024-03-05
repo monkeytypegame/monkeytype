@@ -2,7 +2,7 @@ import Ape from "../ape";
 import * as Loader from "../elements/loader";
 import * as Notifications from "../elements/notifications";
 import format from "date-fns/format";
-import * as Skeleton from "./skeleton";
+import * as Skeleton from "../utils/skeleton";
 import { isPopupVisible } from "../utils/misc";
 
 const wrapperId = "quoteApprovePopupWrapper";
@@ -71,7 +71,7 @@ async function getQuotes(): Promise<void> {
 }
 
 export async function show(noAnim = false): Promise<void> {
-  Skeleton.append(wrapperId);
+  Skeleton.append(wrapperId, "popups");
 
   if (!isPopupVisible(wrapperId)) {
     quotes = [];

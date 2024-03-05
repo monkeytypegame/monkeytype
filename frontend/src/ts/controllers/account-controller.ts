@@ -548,9 +548,8 @@ async function signUp(): Promise<void> {
 
   authListener();
 
-  let createdAuthUser;
   try {
-    createdAuthUser = await createUserWithEmailAndPassword(
+    const createdAuthUser = await createUserWithEmailAndPassword(
       Auth,
       email,
       password
@@ -590,20 +589,6 @@ async function signUp(): Promise<void> {
     }
     Notifications.add("Account created", 1);
   } catch (e) {
-    //make sure to do clean up here
-    if (createdAuthUser) {
-      try {
-        await Ape.users.delete();
-      } catch (e) {
-        // account might already be deleted
-      }
-      try {
-        await createdAuthUser.user.delete();
-      } catch (e) {
-        // account might already be deleted
-      }
-    }
-    console.log(e);
     const message = Misc.createErrorMessage(e, "Failed to create account");
     Notifications.add(message, -1);
     LoginPage.hidePreloader();

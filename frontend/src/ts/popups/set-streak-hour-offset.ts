@@ -4,7 +4,7 @@ import * as Notifications from "../elements/notifications";
 import * as Loader from "../elements/loader";
 // import * as Settings from "../pages/settings";
 import * as ConnectionState from "../states/connection";
-import * as Skeleton from "./skeleton";
+import * as Skeleton from "../utils/skeleton";
 import { isPopupVisible } from "../utils/misc";
 import { getSnapshot, setSnapshot } from "../db";
 
@@ -18,7 +18,7 @@ function show(): void {
     return;
   }
 
-  Skeleton.append(wrapperId);
+  Skeleton.append(wrapperId, "popups");
   if (!isPopupVisible(wrapperId)) {
     if (getSnapshot()?.streakHourOffset !== undefined) {
       $(`#${wrapperId} .text`).html(

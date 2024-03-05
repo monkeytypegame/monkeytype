@@ -1,7 +1,7 @@
 import * as Misc from "../utils/misc";
 import * as CustomText from "../test/custom-text";
 import * as Notifications from "../elements/notifications";
-import * as Skeleton from "./skeleton";
+import * as Skeleton from "../utils/skeleton";
 import SlimSelect from "slim-select";
 
 const wrapperId = "wordFilterPopupWrapper";
@@ -164,7 +164,7 @@ export async function show(
   noAnim = false,
   callbackOnHide: () => void | undefined
 ): Promise<void> {
-  Skeleton.append(wrapperId);
+  Skeleton.append(wrapperId, "popups");
   if (!Misc.isPopupVisible(wrapperId)) {
     await init();
     callbackFuncOnHide = callbackOnHide;

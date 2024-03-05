@@ -8,7 +8,7 @@ import { isAuthenticated } from "../firebase";
 import differenceInSeconds from "date-fns/differenceInSeconds";
 import { getHTMLById as getBadgeHTMLbyId } from "../controllers/badge-controller";
 import * as ConnectionState from "../states/connection";
-import * as Skeleton from "../popups/skeleton";
+import * as Skeleton from "../utils/skeleton";
 import { debounce } from "throttle-debounce";
 import Format from "../utils/format";
 import SlimSelect from "slim-select";
@@ -215,7 +215,7 @@ function updateFooter(lb: LbKey): void {
     })}<br>
     <div class="sub">${Format.percentage(entry.acc, {
       showDecimalPlaces: true,
-    })}%</div></td>
+    })}</div></td>
     <td class="alignRight">${Format.typingSpeed(entry.raw, {
       showDecimalPlaces: true,
     })}<br>
@@ -647,7 +647,7 @@ export function show(): void {
     Notifications.add("You can't view leaderboards while offline", 0);
     return;
   }
-  Skeleton.append(wrapperId);
+  Skeleton.append(wrapperId, "popups");
   if (!Misc.isPopupVisible("leaderboardsWrapper")) {
     if (isAuthenticated()) {
       $("#leaderboardsWrapper #leaderboards .rightTableJumpToMe").removeClass(
