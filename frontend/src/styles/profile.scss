@@ -359,17 +359,16 @@
         display: flex;
         flex-wrap: wrap;
         font-size: 1rem;
-        line-height: 100%;
+        // line-height: 100%;
         width: max-content;
-        .name {
-          margin-right: 0.35em;
-        }
+        gap: 0.35rem;
         .userFlags {
           display: flex;
           flex-wrap: wrap;
-          gap: 0.35em;
-          font-size: 75%;
+          gap: 0.35rem;
+          // font-size: 0.75em;
           color: var(--sub-color);
+          place-items: center left;
         }
         .lbOptOutIcon {
           margin-left: 0.5em;
