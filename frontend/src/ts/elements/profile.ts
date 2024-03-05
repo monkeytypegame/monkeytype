@@ -407,7 +407,7 @@ export function updateNameFontSize(where: ProfileViewPaths): void {
     details = $(".pageProfile .profile .details");
   }
   if (!details) return;
-  const nameFieldjQ = details.find(".name");
+  const nameFieldjQ = details.find(".user");
   const nameFieldParent = nameFieldjQ.parent()[0];
   const nameField = nameFieldjQ[0];
   const upperLimit = Misc.convertRemToPixels(2);
