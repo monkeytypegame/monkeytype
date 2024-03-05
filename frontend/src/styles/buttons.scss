@@ -162,3 +162,11 @@ button.text,
     background: none;
   }
 }
+
+a.textButton,
+a.text,
+a.button {
+  &:focus-visible {
+    border-radius: var(--roundness);
+  }
+}

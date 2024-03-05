@@ -30,7 +30,7 @@ export function kogasa(cov: number): number {
   );
 }
 
-export function identity(value: any): string {
+export function identity(value: unknown): string {
   return Object.prototype.toString
     .call(value)
     .replace(/^\[object\s+([a-z]+)\]$/i, "$1")
@@ -122,10 +122,10 @@ export function kogascore(wpm: number, acc: number, timestamp: number): number {
 }
 
 export function flattenObjectDeep(
-  obj: Record<string, any>,
+  obj: Record<string, unknown>,
   prefix = ""
-): Record<string, any> {
-  const result: Record<string, any> = {};
+): Record<string, unknown> {
+  const result: Record<string, unknown> = {};
   const keys = Object.keys(obj);
 
   keys.forEach((key) => {
@@ -134,7 +134,7 @@ export function flattenObjectDeep(
     const newPrefix = prefix.length > 0 ? `${prefix}.${key}` : key;
 
     if (_.isPlainObject(value)) {
-      const flattened = flattenObjectDeep(value);
+      const flattened = flattenObjectDeep(value as Record<string, unknown>);
       const flattenedKeys = Object.keys(flattened);
 
       if (flattenedKeys.length === 0) {

@@ -1,5 +1,5 @@
 import { isPopupVisible } from "../utils/misc";
-import * as Skeleton from "./skeleton";
+import * as Skeleton from "../utils/skeleton";
 
 const wrapperId = "newResultFilterPresetPopupWrapper";
 
@@ -7,7 +7,7 @@ const wrapperId = "newResultFilterPresetPopupWrapper";
 let callbackFunc: ((name: string) => void) | null = null;
 
 function show(): void {
-  Skeleton.append(wrapperId);
+  Skeleton.append(wrapperId, "popups");
 
   if (!isPopupVisible(wrapperId)) {
     $("#newResultFilterPresetPopupWrapper")
