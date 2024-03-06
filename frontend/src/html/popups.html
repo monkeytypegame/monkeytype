@@ -59,10 +59,9 @@
   <div id="simplePopup" popupId=""></div>
 </div>
 
-<div
-  id="cookiePopupWrapper"
-  class="cookie-popup-wrapper cookiePopupWrapper popupWrapper hidden"
-  tabindex="-1"
+<dialog
+  id="cookiePopup"
+  class="cookie-popup-wrapper cookiePopupWrapper modalWrapper hidden"
 >
   <div class="extensionMessage">
     If you see this text, that means an extension is blocking a cookie consent
@@ -70,7 +69,7 @@
     and stop you from enjoying Monkeytype. Please disable any extensions that
     block cookie popups and refresh the page.
   </div>
-  <div id="cookiePopup">
+  <div class="modal">
     <div class="title">
       <i class="fas far fa-cookie-bite"></i>
       We use cookies by the way
@@ -126,7 +125,7 @@
       <button class="active acceptSelected">accept selected</button>
     </div>
   </div>
-</div>
+</dialog>
 
 <div id="shareTestSettingsPopupWrapper" class="popupWrapper hidden">
   <div id="shareTestSettingsPopup">
@@ -1096,8 +1095,8 @@
     </div>
   </div>
 </div>
-<div id="commandLineWrapper" class="hidden">
-  <div id="commandLine">
+<dialog id="commandLine" class="modalWrapper hidden">
+  <div class="modal">
     <div
       style="
         display: grid;
@@ -1106,17 +1105,14 @@
       "
     >
       <div class="searchicon">
-        <i class="fas fa-search"></i>
+        <i class="fas fa-fw fa-search"></i>
       </div>
       <input type="text" class="input" placeholder="Type to search" />
     </div>
-    <div class="separator hidden"></div>
     <div class="suggestions"></div>
   </div>
-  <div id="commandInput" class="hidden">
-    <input type="text" class="input" placeholder="input" />
-  </div>
-</div>
+</dialog>
+
 <div id="newResultFilterPresetPopupWrapper" class="popupWrapper hidden">
   <div id="newResultFilterPresetPopup">
     <div class="title">Add new filter preset</div>

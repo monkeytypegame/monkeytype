@@ -14,6 +14,7 @@ import Konami from "konami";
 import { log } from "./controllers/analytics-controller";
 import { envConfig } from "./constants/env-config";
 import * as ServerConfiguration from "./ape/server-configuration";
+import * as Skeleton from "./utils/skeleton";
 
 if (Misc.isDevEnvironment()) {
   $("footer .currentVersion .text").text("localhost");
@@ -65,7 +66,7 @@ $(document).ready(() => {
     window.localStorage.getItem("plushieBannerClosed") === "true";
   if (!plushieBannerClosed) {
     Notifications.addBanner(
-      `George Plushie - available now for a limited time! <a target="_blank" rel="noopener" href="https://www.monkeytype.store/listing/george-plushie/">monkeytype.store</a>`,
+      `George Plushie - available now for a limited time! <a target="_blank" rel="noopener" href="https://mktp.co/plushie">monkeytype.store</a>`,
       1,
       "./images/plushiebanner.png",
       false,
@@ -89,7 +90,11 @@ $(document).ready(() => {
     .animate({ opacity: 1 }, 250);
   if (ConnectionState.get()) {
     void PSA.show();
-    void ServerConfiguration.sync();
+    void ServerConfiguration.sync().then(() => {
+      if (ServerConfiguration.get()?.users.signUp) {
+        $(".signInOut").removeClass("hidden");
+      }
+    });
   }
   MonkeyPower.init();
 
@@ -104,6 +109,8 @@ $(document).ready(() => {
         }
       });
   }
+
+  Skeleton.save("commandLine");
 });
 
 window.onerror = function (message, url, line, column, error): void {
