@@ -1,4 +1,4 @@
-import AnimatedModal from "./animated-modal";
+import AnimatedModal from "../utils/animated-modal";
 import { getCommandline } from "../utils/async-modules";
 
 export function show(): void {

@@ -4,7 +4,7 @@ import Config from "../config";
 import * as AnalyticsController from "../controllers/analytics-controller";
 import * as ThemeController from "../controllers/theme-controller";
 import { clearFontPreview } from "../ui";
-import AnimatedModal, { ShowHideOptions } from "../popups/animated-modal";
+import AnimatedModal, { ShowHideOptions } from "../utils/animated-modal";
 import * as Notifications from "../elements/notifications";
 
 type CommandlineMode = "search" | "input";
