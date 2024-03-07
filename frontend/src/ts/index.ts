@@ -43,7 +43,6 @@ import "./states/connection";
 import "./test/tts";
 import "./elements/fps-counter";
 import "./controllers/profile-search-controller";
-import "./version";
 import { isDevEnvironment } from "./utils/misc";
 
 function addToGlobal(items: Record<string, unknown>): void {
