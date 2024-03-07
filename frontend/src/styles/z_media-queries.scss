@@ -708,6 +708,14 @@
     //   }
     // }
   }
+
+  .modalWrapper {
+    padding: 1rem;
+    .modal {
+      padding: 1rem;
+    }
+  }
+
   #commandLineWrapper {
     padding: 5rem 1rem;
   }
