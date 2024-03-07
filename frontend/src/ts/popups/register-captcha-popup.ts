@@ -1,6 +1,6 @@
 import * as CaptchaController from "../controllers/captcha-controller";
 import { isPopupVisible } from "../utils/misc";
-import * as Skeleton from "./skeleton";
+import * as Skeleton from "../utils/skeleton";
 
 const wrapperId = "registerCaptchaPopupWrapper";
 
@@ -11,7 +11,7 @@ export let promise = new Promise<string | undefined>((resolve) => {
 });
 
 export function show(): void {
-  Skeleton.append(wrapperId);
+  Skeleton.append(wrapperId, "popups");
   if (!isPopupVisible(wrapperId)) {
     promise = new Promise((resolve) => {
       resolvePromise = resolve;

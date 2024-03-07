@@ -14,6 +14,7 @@ import Konami from "konami";
 import { log } from "./controllers/analytics-controller";
 import { envConfig } from "./constants/env-config";
 import * as ServerConfiguration from "./ape/server-configuration";
+import * as Skeleton from "./utils/skeleton";
 
 if (Misc.isDevEnvironment()) {
   $("footer .currentVersion .text").text("localhost");
@@ -46,33 +47,35 @@ $(document).ready(() => {
   if (Config.quickRestart !== "off") {
     $("#restartTestButton").addClass("hidden");
   }
-  const merchBannerClosed =
-    window.localStorage.getItem("merchbannerclosed") === "true";
-  if (!merchBannerClosed) {
-    Notifications.addBanner(
-      `Check out our merchandise, available at <a target="_blank" rel="noopener" href="https://monkeytype.store/">monkeytype.store</a>`,
-      1,
-      "./images/merch2.png",
-      false,
-      () => {
-        window.localStorage.setItem("merchbannerclosed", "true");
-      },
-      true
-    );
-  }
-
-  // if (!window.localStorage.getItem("merchbannerclosed2")) {
+  // const merchBannerClosed =
+  //   window.localStorage.getItem("merchbannerclosed") === "true";
+  // if (!merchBannerClosed) {
   //   Notifications.addBanner(
-  //     `Three new merch designs, available at <a target="_blank" href="https://www.monkeytype.store/unisex-men-s-t-shirts/">monkeytype.store</a>`,
+  //     `Check out our merchandise, available at <a target="_blank" rel="noopener" href="https://monkeytype.store/">monkeytype.store</a>`,
   //     1,
-  //     "images/cutoutbanner.png",
+  //     "./images/merch2.png",
   //     false,
   //     () => {
-  //       window.localStorage.setItem("merchbannerclosed2", "true");
+  //       window.localStorage.setItem("merchbannerclosed", "true");
   //     },
   //     true
   //   );
   // }
+
+  const plushieBannerClosed =
+    window.localStorage.getItem("plushieBannerClosed") === "true";
+  if (!plushieBannerClosed) {
+    Notifications.addBanner(
+      `George Plushie - available now for a limited time! <a target="_blank" rel="noopener" href="https://mktp.co/plushie">monkeytype.store</a>`,
+      1,
+      "./images/plushiebanner.png",
+      false,
+      () => {
+        window.localStorage.setItem("plushieBannerClosed", "true");
+      },
+      true
+    );
+  }
 
   setTimeout(() => {
     FunboxList.get(Config.funbox).forEach((it) =>
@@ -87,7 +90,11 @@ $(document).ready(() => {
     .animate({ opacity: 1 }, 250);
   if (ConnectionState.get()) {
     void PSA.show();
-    void ServerConfiguration.sync();
+    void ServerConfiguration.sync().then(() => {
+      if (ServerConfiguration.get()?.users.signUp) {
+        $(".signInOut").removeClass("hidden");
+      }
+    });
   }
   MonkeyPower.init();
 
@@ -102,6 +109,8 @@ $(document).ready(() => {
         }
       });
   }
+
+  Skeleton.save("commandLine");
 });
 
 window.onerror = function (message, url, line, column, error): void {

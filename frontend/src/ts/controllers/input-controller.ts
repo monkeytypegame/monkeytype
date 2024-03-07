@@ -32,7 +32,6 @@ import * as KeymapEvent from "../observables/keymap-event";
 import { IgnoredKeys } from "../constants/ignored-keys";
 import { ModifierKeys } from "../constants/modifier-keys";
 import { navigate } from "./route-controller";
-import * as CookiePopup from "../popups/cookie-popup";
 
 let dontInsertSpace = false;
 let correctShiftUsed = true;
@@ -802,7 +801,7 @@ function handleTab(event: JQuery.KeyDownEvent, popupVisible: boolean): void {
   const modalVisible: boolean =
     Misc.isPopupVisible("commandLineWrapper") || popupVisible;
 
-  if (Config.quickRestart === "esc" || Config.quickRestart === "enter") {
+  if (Config.quickRestart === "esc") {
     // dont do anything special
     if (modalVisible) return;
 
@@ -863,9 +862,9 @@ function handleTab(event: JQuery.KeyDownEvent, popupVisible: boolean): void {
       return;
     }
 
-    //
-    event.preventDefault();
-    $("#restartTestButton").trigger("focus");
+    if (document.activeElement?.id !== "wordsInput") {
+      Focus.set(false);
+    }
   }
 }
 
@@ -874,15 +873,12 @@ $("#wordsInput").on("keydown", (event) => {
   const commandLineVisible = Misc.isPopupVisible("commandLineWrapper");
   const leaderboardsVisible = Misc.isPopupVisible("leaderboardsWrapper");
   const popupVisible: boolean = Misc.isAnyPopupVisible();
-  const cookiePopupVisible = CookiePopup.isVisible();
-
   const allowTyping: boolean =
     pageTestActive &&
     !commandLineVisible &&
     !leaderboardsVisible &&
     !popupVisible &&
     !TestUI.resultVisible &&
-    !cookiePopupVisible &&
     event.key !== "Enter";
 
   if (!allowTyping) {
@@ -913,13 +909,6 @@ $(document).on("keydown", async (event) => {
 
   const popupVisible: boolean = Misc.isAnyPopupVisible();
 
-  const cookiePopupVisible = CookiePopup.isVisible();
-
-  if (cookiePopupVisible) {
-    console.debug("Ignoring keydown event because cookie popup is visible.");
-    return;
-  }
-
   const allowTyping: boolean =
     pageTestActive &&
     !commandLineVisible &&
@@ -931,7 +920,7 @@ $(document).on("keydown", async (event) => {
   if (
     allowTyping &&
     !wordsFocused &&
-    !["Enter", ...ModifierKeys].includes(event.key)
+    !["Enter", "Tab", ...ModifierKeys].includes(event.key)
   ) {
     TestUI.focusWords();
     if (Config.showOutOfFocusWarning) {
@@ -972,6 +961,17 @@ $(document).on("keydown", async (event) => {
 
   //enter
   if (event.key === "Enter" && Config.quickRestart === "enter") {
+    //check if active element is a button, anchor, or has class button, or textButton
+    const activeElement: HTMLElement | null =
+      document.activeElement as HTMLElement;
+    const activeElementIsButton: boolean =
+      activeElement?.tagName === "BUTTON" ||
+      activeElement?.tagName === "A" ||
+      activeElement?.classList.contains("button") ||
+      activeElement?.classList.contains("textButton");
+
+    if (activeElementIsButton) return;
+
     const modalVisible: boolean =
       Misc.isPopupVisible("commandLineWrapper") || popupVisible;
 
@@ -1008,7 +1008,6 @@ $(document).on("keydown", async (event) => {
         event,
       });
     } else {
-      handleChar("\n", TestInput.input.current.length);
       setWordsInput(" " + TestInput.input.current);
       if (Config.tapeMode !== "off") {
         TestUI.scrollTape();

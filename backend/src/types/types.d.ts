@@ -20,7 +20,7 @@ declare namespace MonkeyTypes {
 
   type DBUser = Omit<
     SharedTypes.User,
-    "resultFilterPresets" | "tags" | "customThemes"
+    "resultFilterPresets" | "tags" | "customThemes" | "isPremium"
   > & {
     _id: ObjectId;
     resultFilterPresets?: WithObjectIdArray<SharedTypes.ResultFilters[]>;

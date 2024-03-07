@@ -34,7 +34,7 @@ export async function getPresets(uid: string): Promise<DBConfigPreset[]> {
 export async function addPreset(
   uid: string,
   name: string,
-  config: any
+  config: SharedTypes.ConfigPreset
 ): Promise<PresetCreationResult> {
   const presets = await getPresets(uid);
   if (presets.length >= MAX_PRESETS) {
@@ -56,7 +56,7 @@ export async function editPreset(
   uid: string,
   presetId: string,
   name: string,
-  config: any
+  config: SharedTypes.ConfigPreset
 ): Promise<void> {
   const presetUpdates =
     config !== undefined && config !== null && Object.keys(config).length > 0

@@ -1,6 +1,6 @@
 import * as DB from "../db";
 import format from "date-fns/format";
-import * as Skeleton from "./skeleton";
+import * as Skeleton from "../utils/skeleton";
 import { getLanguageDisplayString, isPopupVisible } from "../utils/misc";
 import Config from "../config";
 import Format from "../utils/format";
@@ -83,7 +83,7 @@ function update(mode: SharedTypes.Config.Mode): void {
 }
 
 function show(mode: SharedTypes.Config.Mode): void {
-  Skeleton.append(wrapperId);
+  Skeleton.append(wrapperId, "popups");
   if (!isPopupVisible(wrapperId)) {
     update(mode);
 

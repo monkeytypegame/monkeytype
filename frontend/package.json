@@ -19,7 +19,7 @@
     "dev-test": "concurrently --kill-others \"vite dev\" \"vitest\"",
     "tsc": "tsc",
     "knip": "knip",
-    "docker": "docker-compose -f docker/compose.dev.yml up"
+    "docker": "docker compose -f docker/compose.dev.yml up"
   },
   "engines": {
     "node": "18.19.1",
@@ -40,12 +40,11 @@
     "@vitest/coverage-istanbul": "1.3.1",
     "autoprefixer": "10.4.14",
     "dotenv": "16.4.5",
-    "eslint": "8.43.0",
     "gulp": "4.0.2",
     "gulp-eslint-new": "1.9.1",
     "happy-dom": "13.4.1",
     "jsonschema": "1.4.0",
-    "madge": "5.0.1",
+    "madge": "6.1.0",
     "normalize.css": "8.0.1",
     "postcss": "8.4.27",
     "sass": "1.70.0",
@@ -82,5 +81,10 @@
     "slim-select": "2.8.1",
     "stemmer": "2.0.0",
     "throttle-debounce": "3.0.1"
+  },
+  "overrides": {
+    "madge": {
+      "@typescript-eslint/typescript-estree": "7.1.0"
+    }
   }
 }

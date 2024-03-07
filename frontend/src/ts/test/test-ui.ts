@@ -23,6 +23,7 @@ import * as ResultWordHighlight from "../elements/result-word-highlight";
 import * as ActivePage from "../states/active-page";
 import Format from "../utils/format";
 import * as Loader from "../elements/loader";
+import { getHtmlByUserFlags } from "../controllers/user-flag-controller";
 
 async function gethtml2canvas(): Promise<typeof import("html2canvas").default> {
   return (await import("html2canvas")).default;
@@ -62,10 +63,9 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
     void debouncedZipfCheck();
   }
   if (eventKey === "fontSize" && !nosave) {
-    setTimeout(() => {
-      updateWordsHeight(true);
-      updateWordsInputPosition(true);
-    }, 0);
+    OutOfFocus.hide();
+    updateWordsHeight(true);
+    updateWordsInputPosition(true);
   }
 
   if (eventKey === "theme") void applyBurstHeatmap();
@@ -127,9 +127,7 @@ export function reset(): void {
 }
 
 export function focusWords(): void {
-  if (!$("#wordsWrapper").hasClass("hidden")) {
-    $("#wordsInput").trigger("focus");
-  }
+  $("#wordsInput").trigger("focus");
 }
 
 export function blurWords(): void {
@@ -524,17 +522,20 @@ export async function screenshot(): Promise<void> {
   const dateNow = new Date(Date.now());
   $("#resultReplay").addClass("hidden");
   $(".pageTest .ssWatermark").removeClass("hidden");
-  $(".pageTest .ssWatermark").text(
-    format(dateNow, "dd MMM yyyy HH:mm") + " | monkeytype.com "
-  );
-  if (isAuthenticated()) {
-    $(".pageTest .ssWatermark").text(
-      DB.getSnapshot()?.name +
-        " | " +
-        format(dateNow, "dd MMM yyyy HH:mm") +
-        " | monkeytype.com  "
-    );
+
+  const snapshot = DB.getSnapshot();
+  const ssWatermark = [format(dateNow, "dd MMM yyyy HH:mm"), "monkeytype.com"];
+  if (snapshot?.name !== undefined) {
+    const userText = `${snapshot?.name}${getHtmlByUserFlags(snapshot, {
+      iconsOnly: true,
+    })}`;
+    ssWatermark.unshift(userText);
   }
+  $(".pageTest .ssWatermark").html(
+    ssWatermark
+      .map((el) => `<span>${el}</span>`)
+      .join("<span class='pipe'>|</span>")
+  );
   $(".pageTest .buttons").addClass("hidden");
   $("#notificationCenter").addClass("hidden");
   $("#commandLineMobileButton").addClass("hidden");
@@ -1166,7 +1167,7 @@ export function toggleResultWords(noAnimation = false): void {
         $("#words").html(
           `<div class="preloader"><i class="fas fa-fw fa-spin fa-circle-notch"></i></div>`
         );
-        loadWordsHistory().finally(() => {
+        void loadWordsHistory().then(() => {
           if (Config.burstHeatmap) {
             void applyBurstHeatmap();
           }

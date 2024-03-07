@@ -446,7 +446,8 @@ declare namespace SharedTypes {
     discordId?: string;
     discordAvatar?: string;
     rank: number;
-    badgeId: number | null;
+    badgeId?: number;
+    isPremium?: boolean;
   }
 
   type PostResultResponse = {
@@ -526,6 +527,7 @@ declare namespace SharedTypes {
     profileDetails?: UserProfileDetails;
     customThemes?: CustomTheme[];
     premium?: PremiumInfo;
+    isPremium?: boolean;
     quoteRatings?: UserQuoteRatings;
     favoriteQuotes?: Record<string, string[]>;
     lbMemory?: UserLbMemory;
@@ -575,6 +577,7 @@ declare namespace SharedTypes {
     | "lbOptOut"
     | "inventory"
     | "uid"
+    | "isPremium"
   > & {
     typingStats: {
       completedTests: User["completedTests"];
