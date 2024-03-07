@@ -20,7 +20,6 @@ import * as Result from "./test/result";
 import "./controllers/account-controller";
 import { enable } from "./states/glarses-mode";
 import "./test/caps-warning";
-import "./popups/support-popup";
 import "./popups/contact-popup";
 import "./popups/version-popup";
 import "./popups/edit-preset-popup";
