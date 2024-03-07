@@ -225,9 +225,6 @@ export function showWords(): void {
   $("#words").html(wordsHTML);
 
   updateWordsHeight(true);
-  if (Config.tapeMode !== "off") {
-    updateNewlineIndent();
-  }
   updateActiveElement(undefined, true);
   void Caret.updatePosition();
   updateWordsInputPosition(true);
@@ -380,76 +377,6 @@ function updateWordsHeight(force = false): void {
 
   if (Config.mode === "zen") {
     $(document.querySelector(".word") as Element).remove();
-  }
-}
-
-export function updateNewlineIndent(): void {
-  const children = $("#words").children();
-
-  let leftSize = 0;
-  let hadNl = false;
-  let foundWord = false;
-
-  for (let i = 0; i < children.length; i++) {
-    const element = $(children[i] as Element);
-
-    if (Config.mode === "zen") {
-      $("#words").css("height", "fit-content");
-      $("#wordsWrapper").css("height", "");
-
-      if (!foundWord) {
-        if (element.hasClass("word")) {
-          leftSize += element.outerWidth(true) ?? 0;
-          foundWord = true;
-        } else {
-          element.remove();
-        }
-      } else {
-        if (element.hasClass("newline")) {
-          hadNl = true;
-        } else if (hadNl) {
-          element.css("margin-left", leftSize);
-          hadNl = false;
-        } else {
-          leftSize += element.outerWidth(true) ?? 0;
-        }
-      }
-    } else {
-      if (element.hasClass("word")) {
-        leftSize += element.outerWidth(true) ?? 0;
-      }
-
-      const afterNewlines = $(".after-newline").filter(function () {
-        return parseInt($(this).css("margin-left"), 10) !== 0;
-      });
-
-      const heightToApply =
-        (afterNewlines.outerHeight(true) as number) *
-        (afterNewlines.length + 1);
-
-      $("#words").css("height", heightToApply);
-      $("#wordsWrapper").css("height", heightToApply);
-
-      if (
-        element.hasClass("active") &&
-        $(children[i + 1] as Element).hasClass("newline") &&
-        $(children[i + 2] as Element).hasClass("after-newline") &&
-        parseInt($(children[i + 2] as Element).css("margin-left"), 10) === 0
-      ) {
-        $(children[i + 2] as Element).css("margin-left", leftSize);
-      } else if (
-        (element.hasClass("newline") || element.hasClass("after-newline")) &&
-        leftSize === 0
-      ) {
-        element.remove();
-      } else if (
-        element.hasClass("newline") &&
-        $(children[i + 1] as Element).hasClass("after-newline") &&
-        parseInt($(children[i + 1] as Element).css("margin-left"), 10) != 0
-      ) {
-        $(children[i + 1] as Element).css("margin-left", leftSize);
-      }
-    }
   }
 }
 
@@ -860,8 +787,88 @@ export function scrollTape(): void {
     }
   }
   const newMargin = wordsWrapperWidth / 2 - (fullWordsWidth + currentWordWidth);
+
+  if (Config.mode === "zen") {
+    const children = $("#words").children();
+
+    let leftSize = 0;
+    let hadNl = false;
+    let foundWord = false;
+
+    for (const element of children) {
+      if (!foundWord) {
+        if ($(element).hasClass("word")) {
+          leftSize += $(element).outerWidth(true) ?? 0;
+          foundWord = true;
+        } else {
+          $(element).remove();
+        }
+      } else {
+        if ($(element).hasClass("newline")) {
+          hadNl = true;
+        } else if (hadNl) {
+          $(element).css("margin-left", leftSize);
+          hadNl = false;
+        } else {
+          leftSize += $(element).outerWidth(true) ?? 0;
+        }
+      }
+    }
+  }
+
   if (Config.smoothLineScroll) {
+    $(".after-newline").each(function () {
+      let afterNewlineMargin = 0;
+      let foundActive = false;
+      let foundWord = false;
+
+      $(this)
+        .prevAll()
+        .each(function (index) {
+          const $prev = $(this);
+          if ($prev.hasClass("after-newline")) {
+            if (parseInt($prev.css("margin-left"), 10) !== 0) {
+              afterNewlineMargin += $prev.outerWidth(true) ?? 0;
+            }
+            return false;
+          }
+          if ($prev.hasClass("word")) {
+            afterNewlineMargin += $prev.outerWidth(true) ?? 0;
+            foundWord = true;
+            if ($prev.hasClass("active") && index <= 2) {
+              foundActive = true;
+            }
+          }
+          return;
+        });
+
+      if (!foundWord) {
+        afterNewlineMargin = 0;
+        $(this).prev(".newline").remove();
+        $(this).remove();
+      } else if (foundActive) {
+        $(this).css("margin-left", afterNewlineMargin);
+      }
+
+      if (parseInt($(this).css("margin-left"), 10) != 0) {
+        $(this).css("margin-left", afterNewlineMargin);
+      }
+    });
+
+    const activeWordHeight = $(".word.active").outerHeight(true) ?? 0;
+    const afterNewlineAmount =
+      $(".after-newline").filter(function () {
+        return parseInt($(this).css("margin-left"), 10) !== 0;
+      }).length + 1;
+
+    const newHeightToWords = Math.max(
+      activeWordHeight * afterNewlineAmount,
+      activeWordHeight
+    );
+
+    $("#wordsWrapper").css("height", newHeightToWords);
     $("#words")
+      .css("height", newHeightToWords)
       .stop(true, false)
       .animate(
         {
@@ -870,7 +877,55 @@ export function scrollTape(): void {
         SlowTimer.get() ? 0 : 125
       );
   } else {
-    $("#words").css("margin-left", `${newMargin}px`);
+    $(".after-newline").each(function () {
+      let afterNewlineMargin = 0;
+      let foundActive = false;
+      let foundWord = false;
+
+      $(this)
+        .prevAll()
+        .each(function () {
+          const $prev = $(this);
+          if ($prev.hasClass("after-newline")) {
+            return false;
+          }
+          if ($prev.hasClass("word")) {
+            foundWord = true;
+            if ($prev.hasClass("active")) {
+              foundActive = true;
+            }
+          }
+          if (foundActive) {
+            afterNewlineMargin += $prev.outerWidth(true) ?? 0;
+          }
+          return;
+        });
+
+      if (!foundWord) {
+        afterNewlineMargin = 0;
+        $(this).prev(".newline").remove();
+        $(this).remove();
+      } else if (foundActive) {
+        $(this).css("margin-left", afterNewlineMargin);
+      }
+    });
+
+    const activeWordHeight = $(".word.active").outerHeight(true) ?? 0;
+    const afterNewlineAmount =
+      $(".after-newline").filter(function () {
+        return parseInt($(this).css("margin-left"), 10) !== 0;
+      }).length + 1;
+
+    const newHeightToWords = Math.max(
+      activeWordHeight * afterNewlineAmount,
+      activeWordHeight
+    );
+
+    $("#wordsWrapper").css("height", newHeightToWords);
+    $("#words").css({
+      height: newHeightToWords,
+      "margin-left": `${newMargin}px`,
+    });
   }
 }
 
