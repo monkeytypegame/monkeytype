@@ -448,6 +448,7 @@ declare namespace SharedTypes {
     rank: number;
     badgeId?: number;
     isPremium?: boolean;
+    leaderboardTheme?: string;
   }
 
   type PostResultResponse = {
@@ -502,6 +503,7 @@ declare namespace SharedTypes {
 
   type UserInventory = {
     badges: Badge[];
+    leaderboardTheme?: string;
   };
 
   type Badge = {

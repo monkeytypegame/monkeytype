@@ -147,6 +147,9 @@ export async function update(
             [`${key}.consistency`]: {
               $ifNull: [`$${key}.consistency`, "$$REMOVE"],
             },
+            "user.leaderboardTheme": {
+              $ifNull: ["$inventory.leaderboardTheme", "$$REMOVE"],
+            },
             calculated: {
               $function: {
                 lang: "js",

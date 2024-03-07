@@ -1595,6 +1595,31 @@
       color: var(--sub-color);
     }
   }
+
+  .leaderboardThemeSelect .ss-list .ss-option {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    font-size: 0.75rem;
+    line-height: 0.75rem;
+    padding-right: 0.5rem;
+    .themeBubbles {
+      display: grid;
+      grid-auto-flow: column;
+      gap: 0.5em;
+      border-radius: 1em;
+      outline-width: 0.25rem;
+      outline-style: solid;
+      .themeBubble {
+        width: 1em;
+        height: 1em;
+        border-radius: 100%;
+      }
+    }
+  }
+  .leaderboardThemeSelect .ss-list .themeBubbles {
+    display: none;
+    outline-width: 0px;
+  }
 }
 
 #tagsEdit form,
