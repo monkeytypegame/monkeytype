@@ -1,50 +1,19 @@
-import { isPopupVisible } from "../utils/misc";
-import * as Skeleton from "../utils/skeleton";
+import AnimatedModal from "./animated-modal";
+import { getCommandline } from "../utils/async-modules";
 
-const wrapperId = "supportMeWrapper";
-
-function show(): void {
-  Skeleton.append(wrapperId, "popups");
-
-  $("#supportMeWrapper")
-    .css("opacity", 0)
-    .removeClass("hidden")
-    .animate({ opacity: 1 }, 125, () => {
-      $(`#${wrapperId}`).trigger("focus");
-    });
+export function show(): void {
+  void modal.show();
 }
 
-function hide(): void {
-  $("#supportMeWrapper")
-    .css("opacity", 1)
-    .animate({ opacity: 0 }, 125, () => {
-      $("#supportMeWrapper").addClass("hidden");
-      Skeleton.remove(wrapperId);
+const modal = new AnimatedModal("supportMePopup", "popups", undefined, {
+  setup: (modalEl): void => {
+    modalEl.querySelector("button.ads")?.addEventListener("click", async () => {
+      const commandline = await getCommandline();
+      await modal.hide({ animationMode: "modalOnly" });
+      commandline.show(
+        { subgroupOverride: "enableAds" },
+        { animationMode: "modalOnly" }
+      );
     });
-}
-
-$("#supportMeButton").on("click", () => {
-  show();
+  },
 });
-
-$("main").on("click", ".pageAbout #supportMeAboutButton", () => {
-  show();
-});
-
-$("#popups").on("click", "#supportMeWrapper", (e) => {
-  if ($(e.target).attr("id") === "supportMeWrapper") {
-    hide();
-  }
-});
-
-$("#popups").on("click", "#supportMeWrapper button", () => {
-  hide();
-});
-
-$(document).on("keydown", (e) => {
-  if (e.key === "Escape" && isPopupVisible(wrapperId)) {
-    hide();
-  }
-});
-
-Skeleton.save(wrapperId);

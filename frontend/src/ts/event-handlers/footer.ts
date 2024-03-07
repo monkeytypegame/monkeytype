@@ -3,6 +3,7 @@ import { isAuthenticated } from "../firebase";
 import * as DB from "../db";
 import * as Notifications from "../elements/notifications";
 import { getCommandline } from "../utils/async-modules";
+import * as SupportPopup from "../popups/support-popup";
 
 document
   .querySelector("footer #commandLineButton")
@@ -36,4 +37,10 @@ document
         subgroupOverride: subgroup,
       });
     }
+  });
+
+document
+  .querySelector("footer #supportMeButton")
+  ?.addEventListener("click", () => {
+    SupportPopup.show();
   });
