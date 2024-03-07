@@ -257,11 +257,64 @@ describe("LeaderboardsDal", () => {
       expect(result[0]?.isPremium).toBeUndefined();
     });
   });
+
+  it("should create leaderboard with user selected theme", async () => {
+    await enablePremiumFeatures(true);
+    //GIVEN
+    const noPremium = await createUser(lbBests(pb(4)));
+    const premiumNoTheme = await createUser(lbBests(pb(3)), premium(-1));
+    const premiumWithThemeDots = await createUser(lbBests(pb(3)), {
+      ...premium(-1),
+      inventory: { leaderboardTheme: "dots", badges: [] },
+    });
+    const premiumWithThemeDarling = await createUser(lbBests(pb(3)), {
+      ...premium(-1),
+      inventory: { leaderboardTheme: "darling", badges: [] },
+    });
+
+    //WHEN
+    await LeaderboardsDal.update("time", "15", "english");
+    const result = (await LeaderboardsDal.get(
+      "time",
+      "15",
+      "english",
+      0
+    )) as SharedTypes.LeaderboardEntry[];
+
+    //THEN
+    const lb = result.map((it) => _.omit(it, ["_id"]));
+
+    expect(lb).toEqual([
+      expectedLbEntry("15", {
+        rank: 1,
+        user: noPremium,
+        leaderboardTheme: undefined,
+      }),
+      expectedLbEntry("15", {
+        rank: 2,
+        user: premiumNoTheme,
+        leaderboardTheme: undefined,
+        isPremium: true,
+      }),
+      expectedLbEntry("15", {
+        rank: 3,
+        user: premiumWithThemeDots,
+        leaderboardTheme: "dots",
+        isPremium: true,
+      }),
+      expectedLbEntry("15", {
+        rank: 4,
+        user: premiumWithThemeDarling,
+        leaderboardTheme: "darling",
+        isPremium: true,
+      }),
+    ]);
+  });
 });
 
 function expectedLbEntry(
   time: string,
-  { rank, user, badgeId, isPremium }: ExpectedLbEntry
+  { rank, user, badgeId, isPremium, leaderboardTheme }: ExpectedLbEntry
 ) {
   const lbBest: SharedTypes.PersonalBest =
     user.lbPersonalBests?.time[time].english;
@@ -279,6 +332,7 @@ function expectedLbEntry(
     discordAvatar: user.discordAvatar,
     badgeId,
     isPremium,
+    leaderboardTheme,
   };
 }
 
@@ -352,6 +406,7 @@ interface ExpectedLbEntry {
   user: MonkeyTypes.DBUser;
   badgeId?: number;
   isPremium?: boolean;
+  leaderboardTheme?: string;
 }
 
 async function enablePremiumFeatures(premium: boolean): Promise<void> {

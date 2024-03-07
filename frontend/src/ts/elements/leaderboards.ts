@@ -307,6 +307,7 @@ async function fillTable(lb: LbKey): Promise<void> {
     );
   }
   const loggedInUserName = DB.getSnapshot()?.name;
+  const userTheme = themeByName.get(DB.getSnapshot()?.config.theme ?? "");
 
   let html = "";
   for (let i = 0; i < currentData[lb].length; i++) {
@@ -332,15 +333,15 @@ async function fillTable(lb: LbKey): Promise<void> {
 
     let styleString = "";
 
-    if (entry.isPremium === true /* && entry.theme !== undefined */) {
+    if (entry.isPremium === true && entry.leaderboardTheme !== undefined) {
       meClassString += " premium";
 
       const theme = themeByName.get(
-        //test data so far, need to fetch from user.profileTheme
-        entry.name === "premium2" ? "retrocast" : "norse"
+        entry.leaderboardTheme
       ) as MonkeyTypes.Theme;
 
       styleString = `style="
+        --user-bg:${userTheme?.bgColor};
         --main-color:${theme.mainColor};
         --text-color:${theme.textColor};
         --bg-color:${theme.bgColor};

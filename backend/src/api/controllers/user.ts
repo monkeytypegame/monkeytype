@@ -780,7 +780,13 @@ export async function updateProfile(
   req: MonkeyTypes.Request
 ): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
-  const { bio, keyboard, socialProfiles, selectedBadgeId } = req.body;
+  const {
+    bio,
+    keyboard,
+    socialProfiles,
+    selectedBadgeId,
+    selectedLeaderboardTheme,
+  } = req.body;
 
   const user = await UserDAL.getUser(uid, "update user profile");
 
@@ -795,6 +801,13 @@ export async function updateProfile(
       delete badge.selected;
     }
   });
+
+  if (selectedLeaderboardTheme !== undefined) {
+    user.inventory = {
+      ...user.inventory,
+      leaderboardTheme: selectedLeaderboardTheme,
+    } as SharedTypes.UserInventory;
+  }
 
   const profileDetailsUpdates: Partial<SharedTypes.UserProfileDetails> = {
     bio: sanitizeString(bio),

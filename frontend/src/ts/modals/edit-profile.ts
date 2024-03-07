@@ -6,6 +6,11 @@ import * as Notifications from "../elements/notifications";
 import * as ConnectionState from "../states/connection";
 import AnimatedModal from "../utils/animated-modal";
 import * as Profile from "../elements/profile";
+import { getSortedThemesList, isPopupVisible } from "../utils/misc";
+import * as Skeleton from "../utils/skeleton";
+import SlimSelect from "slim-select";
+import type { DataObjectPartial } from "slim-select/dist/store";
+
 
 export function show(): void {
   if (!ConnectionState.get()) {
@@ -40,6 +45,7 @@ const websiteInput = $("#editProfileModal .website");
 const badgeIdsSelect = $("#editProfileModal .badgeSelectionContainer");
 
 let currentSelectedBadgeId = -1;
+let currentSelectedLeaderBoardTheme = "";
 
 function hydrateInputs(): void {
   const snapshot = DB.getSnapshot();
@@ -140,7 +146,8 @@ async function updateProfile(): Promise<void> {
   Loader.show();
   const response = await Ape.users.updateProfile(
     updates,
-    currentSelectedBadgeId
+    currentSelectedBadgeId,
+    currentSelectedLeaderBoardTheme
   );
   Loader.hide();
 
@@ -157,6 +164,9 @@ async function updateProfile(): Promise<void> {
       delete badge.selected;
     }
   });
+  if (snapshot.inventory !== undefined) {
+    snapshot.inventory.leaderboardTheme = currentSelectedLeaderBoardTheme;
+  }
 
   Notifications.add("Profile updated", 1);
 
@@ -172,3 +182,44 @@ const modal = new AnimatedModal({
     });
   },
 });
+
+const leaderboardThemeSelector = new SlimSelect({
+  select: "#editProfilePopup .leaderboardThemeSelect",
+  settings: {
+    showSearch: false,
+    contentLocation: document.querySelector("#editProfilePopup") as HTMLElement,
+  },
+  events: {
+    afterChange: (newVal): void => {
+      const selected = newVal[0]?.value as string;
+      currentSelectedLeaderBoardTheme = selected;
+    },
+  },
+});
+
+export async function init(current?: string): Promise<void> {
+  currentSelectedLeaderBoardTheme = current ?? "";
+  const data = (await getSortedThemesList()).map(
+    (it) =>
+      ({
+        html: `
+      <div class="text">${it.name.replace(/_/g, " ")}</div>
+      <div class="themeBubbles" style="
+        background: ${it.bgColor};
+        color:${it.mainColor};
+        outline-color: ${it.bgColor};
+      ">
+        <div class="themeBubble" style="background: ${it.mainColor}"></div>
+        <div class="themeBubble" style="background: ${it.subColor}"></div>
+        <div class="themeBubble" style="background: ${it.textColor}"></div>
+      </div>`,
+        text: it.name.replaceAll("_", " "),
+        value: it.name,
+        selected: it.name === currentSelectedLeaderBoardTheme,
+      } as DataObjectPartial)
+  );
+
+  data.unshift({ text: "none", value: "" });
+
+  leaderboardThemeSelector.setData(data);
+}

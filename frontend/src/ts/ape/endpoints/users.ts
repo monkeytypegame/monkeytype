@@ -208,12 +208,14 @@ export default class Users {
 
   async updateProfile(
     profileUpdates: Partial<SharedTypes.UserProfileDetails>,
-    selectedBadgeId?: number
+    selectedBadgeId?: number,
+    selectedLeaderboardTheme?: string
   ): Ape.EndpointResponse<null> {
     return await this.httpClient.patch(`${BASE_PATH}/profile`, {
       payload: {
         ...profileUpdates,
         selectedBadgeId,
+        selectedLeaderboardTheme,
       },
     });
   }
