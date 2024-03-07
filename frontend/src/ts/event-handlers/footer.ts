@@ -3,7 +3,7 @@ import { isAuthenticated } from "../firebase";
 import * as DB from "../db";
 import * as Notifications from "../elements/notifications";
 import { getCommandline } from "../utils/async-modules";
-import * as SupportPopup from "../popups/support-popup";
+import * as SupportPopup from "../modals/support";
 
 document
   .querySelector("footer #commandLineButton")

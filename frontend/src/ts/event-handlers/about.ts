@@ -1,4 +1,4 @@
-import * as SupportPopup from "../popups/support-popup";
+import * as SupportPopup from "../modals/support";
 
 document
   .querySelector("#pageAbout #supportMeAboutButton")

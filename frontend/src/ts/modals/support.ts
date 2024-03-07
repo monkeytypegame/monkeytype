@@ -5,7 +5,7 @@ export function show(): void {
   void modal.show();
 }
 
-const modal = new AnimatedModal("supportMePopup", "popups", undefined, {
+const modal = new AnimatedModal("supportModal", "popups", undefined, {
   setup: (modalEl): void => {
     modalEl.querySelector("button.ads")?.addEventListener("click", async () => {
       const commandline = await getCommandline();
