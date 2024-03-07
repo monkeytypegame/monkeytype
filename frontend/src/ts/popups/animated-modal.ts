@@ -18,7 +18,7 @@ type ConstructorCustomAnimations = {
   hide?: CustomWrapperAndModalAnimations;
 };
 
-type ShowHideOptions = {
+export type ShowHideOptions = {
   animationMode?: "none" | "both" | "modalOnly";
   customAnimation?: CustomWrapperAndModalAnimations;
   beforeAnimation?: (modal: HTMLElement) => Promise<void>;
