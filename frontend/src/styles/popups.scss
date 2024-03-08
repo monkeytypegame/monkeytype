@@ -23,17 +23,17 @@
   &::backdrop {
     background: transparent;
   }
-}
-
-.modal {
-  background: var(--bg-color);
-  border-radius: var(--roundness);
-  padding: 2rem;
-  display: grid;
-  gap: 1rem;
-  width: 100%;
-  max-width: 300px;
-  color: var(--text-color);
+  .modal {
+    background: var(--bg-color);
+    border-radius: var(--roundness);
+    padding: 2rem;
+    display: grid;
+    gap: 1rem;
+    width: 100%;
+    max-height: 100%;
+    max-width: 300px;
+    color: var(--text-color);
+  }
 }
 
 #customTextPopupWrapper {
