@@ -7,6 +7,7 @@ import "./event-handlers/footer";
 import "./event-handlers/keymap";
 import "./event-handlers/test";
 import "./event-handlers/about";
+import "./event-handlers/settings";
 
 import "./firebase";
 import * as Logger from "./utils/logger";
