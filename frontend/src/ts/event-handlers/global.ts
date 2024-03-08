@@ -19,6 +19,7 @@ document.addEventListener("keydown", async (e) => {
       e.shiftKey) ||
     (e.key.toLowerCase() === "p" && (e.metaKey || e.ctrlKey) && e.shiftKey)
   ) {
+    e.preventDefault();
     const popupVisible = Misc.isAnyPopupVisible();
     const miniResultPopupVisible = Misc.isElementVisible(
       ".pageAccount .miniResultChartWrapper"
