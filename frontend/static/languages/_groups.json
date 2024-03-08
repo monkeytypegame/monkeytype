@@ -563,5 +563,9 @@
       "code_assembly",
       "code_v"
     ]
+  },
+  {
+    "name": "klingon",
+    "languages": ["klingon", "klingon_1k"]
   }
 ]

@@ -769,6 +769,7 @@ export async function getNextWord(
     !Config.language.startsWith("german") &&
     !Config.language.startsWith("swiss_german") &&
     !Config.language.startsWith("code") &&
+    !Config.language.startsWith("klingon") &&
     !isCurrentlyUsingFunboxSection
   ) {
     randomWord = randomWord.toLowerCase();
