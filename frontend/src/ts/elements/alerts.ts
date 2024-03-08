@@ -8,7 +8,7 @@ import * as BadgeController from "../controllers/badge-controller";
 import * as Notifications from "../elements/notifications";
 import * as ConnectionState from "../states/connection";
 import { escapeHTML } from "../utils/misc";
-import AnimatedModal from "../popups/animated-modal";
+import AnimatedModal from "../utils/animated-modal";
 
 let accountAlerts: MonkeyTypes.MonkeyMail[] = [];
 let maxMail = 0;

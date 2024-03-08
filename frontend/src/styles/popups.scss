@@ -1,5 +1,4 @@
 .popupWrapper,
-.backdrop,
 .modalWrapper {
   width: 100%;
   height: 100%;
@@ -1391,17 +1390,16 @@
   }
 }
 
-#supportMeWrapper {
-  #supportMe {
-    width: 900px;
+#supportModal {
+  .modal {
+    max-width: 900px;
+    width: 100%;
     // height: 400px;
     overflow-y: scroll;
     max-height: 100%;
     background: var(--bg-color);
     border-radius: var(--roundness);
-    padding: 2rem;
     display: grid;
-    grid-template-rows: auto auto auto;
     gap: 1rem;
     @extend .ffscroll;
 
@@ -1421,7 +1419,7 @@
 
     .buttons {
       display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
+      grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
       gap: 1rem;
 
       button,
