@@ -6,6 +6,7 @@ import "./event-handlers/global";
 import "./event-handlers/footer";
 import "./event-handlers/keymap";
 import "./event-handlers/test";
+import "./event-handlers/about";
 
 import "./firebase";
 import * as Logger from "./utils/logger";
