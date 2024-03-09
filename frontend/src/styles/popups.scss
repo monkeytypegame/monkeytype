@@ -23,17 +23,17 @@
   &::backdrop {
     background: transparent;
   }
-}
-
-.modal {
-  background: var(--bg-color);
-  border-radius: var(--roundness);
-  padding: 2rem;
-  display: grid;
-  gap: 1rem;
-  width: 100%;
-  max-width: 300px;
-  color: var(--text-color);
+  .modal {
+    background: var(--bg-color);
+    border-radius: var(--roundness);
+    padding: 2rem;
+    display: grid;
+    gap: 1rem;
+    width: 100%;
+    max-height: 100%;
+    max-width: 300px;
+    color: var(--text-color);
+  }
 }
 
 #customTextPopupWrapper {
@@ -1445,15 +1445,9 @@
     }
   }
 }
-#shareCustomThemeWrapper {
-  #shareCustomThemeEdit {
-    background: var(--bg-color);
-    border-radius: var(--roundness);
-    padding: 2rem;
-    display: grid;
-    gap: 1rem;
-    overflow-y: scroll;
-    width: 500px;
+#shareCustomThemeModal {
+  .modal {
+    max-width: 400px;
 
     .buttons {
       display: grid;
@@ -1463,24 +1457,17 @@
 
     .title {
       font-size: 1.5rem;
-      line-height: 2rem;
+      line-height: 1.5rem;
       color: var(--sub-color);
     }
   }
 }
-#contactPopupWrapper {
-  #contactPopup {
-    // height: 400px;
+#contactModal {
+  .modal {
     overflow-y: scroll;
-    max-height: 100%;
-    background: var(--bg-color);
-    border-radius: var(--roundness);
-    padding: 2rem;
     display: grid;
-    grid-template-rows: auto auto auto;
     gap: 1rem;
     @extend .ffscroll;
-    margin: 0 2rem;
     max-width: 900px;
 
     .title {
@@ -1496,25 +1483,15 @@
       }
     }
 
-    .subtext {
-      color: var(--sub-color);
-      font-size: 0.75rem;
-      grid-area: subtext;
-    }
-
     .buttons {
       display: grid;
       gap: 1rem;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
 
       .button {
-        display: block;
-        width: 100%;
-        height: 100%;
-        padding: 1rem 0;
+        padding: 1rem;
+        gap: 1rem;
         display: grid;
-        // gap: 0.5rem;
-        text-decoration: none;
         grid-template-areas: "icon textgroup";
         grid-template-columns: auto 1fr;
         text-align: left;
@@ -1525,7 +1502,7 @@
         .text {
           font-size: 1.5rem;
           line-height: 2rem;
-          transition: 0.25s;
+          transition: 0.125s;
         }
         &:hover .text {
           color: var(--bg-color);
@@ -1534,7 +1511,6 @@
           grid-area: icon;
           font-size: 2rem;
           line-height: 2rem;
-          padding: 0 1rem;
         }
       }
     }
