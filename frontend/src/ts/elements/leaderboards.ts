@@ -2,6 +2,7 @@ import Ape from "../ape";
 import * as DB from "../db";
 import Config from "../config";
 import * as Misc from "../utils/misc";
+import { getDiscordAvatarUrl } from "../utils/url-handler";
 import * as Notifications from "./notifications";
 import format from "date-fns/format";
 import { isAuthenticated } from "../firebase";
@@ -521,7 +522,7 @@ async function requestMore(lb: LbKey, prepend = false): Promise<void> {
   if (requesting[lb]) return;
   requesting[lb] = true;
   showLoader(lb);
-  let skipVal = currentData[lb][currentData[lb].length - 1]?.rank as number;
+  let skipVal = Misc.lastElementFromArray(currentData[lb])?.rank as number;
   if (prepend) {
     skipVal = (currentData[lb][0]?.rank ?? 0) - leaderboardSingleLimit;
   }
@@ -612,7 +613,7 @@ async function getAvatarUrls(
 ): Promise<(string | null)[]> {
   return Promise.allSettled(
     data.map(async (entry) =>
-      Misc.getDiscordAvatarUrl(entry.discordId, entry.discordAvatar)
+      getDiscordAvatarUrl(entry.discordId, entry.discordAvatar)
     )
   ).then((promises) => {
     return promises.map((promise) => {

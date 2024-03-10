@@ -83,7 +83,7 @@ function updateColors(
   }
 
   $(".colorConverter").css("color", color);
-  const hexColor: string | undefined = Misc.convertRGBtoHEX(
+  const hexColor: string | undefined = Misc.rgbStringtoHex(
     $(".colorConverter").css("color")
   );
   if (hexColor === undefined) {

@@ -249,7 +249,7 @@ export async function getSection(language: string): Promise<Section> {
 
   let currentLanguageGroup: MonkeyTypes.LanguageGroup | undefined;
   try {
-    currentLanguageGroup = await Misc.findCurrentGroup(language);
+    currentLanguageGroup = await Misc.getCurrentGroup(language);
   } catch (e) {
     console.error(
       Misc.createErrorMessage(e, "Failed to find current language group")

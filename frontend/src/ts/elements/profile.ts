@@ -2,6 +2,7 @@ import * as DB from "../db";
 import format from "date-fns/format";
 import differenceInDays from "date-fns/differenceInDays";
 import * as Misc from "../utils/misc";
+import { getDiscordAvatarUrl } from "../utils/url-handler";
 import { getHTMLById } from "../controllers/badge-controller";
 import { throttle } from "throttle-debounce";
 import * as EditProfilePopup from "../popups/edit-profile-popup";
@@ -47,7 +48,7 @@ export async function update(
     profile.discordId !== undefined &&
     !banned
   ) {
-    void Misc.getDiscordAvatarUrl(
+    void getDiscordAvatarUrl(
       profile.discordId,
       profile.discordAvatar,
       256

@@ -142,7 +142,7 @@ export async function getCurrentLanguage(
   return await getLanguage(languageName);
 }
 
-export async function findCurrentGroup(
+export async function getCurrentGroup(
   language: string
 ): Promise<MonkeyTypes.LanguageGroup | undefined> {
   let retgroup: MonkeyTypes.LanguageGroup | undefined;
@@ -1061,8 +1061,7 @@ export function clearTimeouts(timeouts: (number | NodeJS.Timeout)[]): void {
   });
 }
 
-//https://stackoverflow.com/questions/1431094/how-do-i-replace-a-character-at-a-particular-index-in-javascript
-export function setCharAt(str: string, index: number, chr: string): string {
+export function replaceCharAt(str: string, index: number, chr: string): string {
   if (index > str.length - 1) return str;
   return str.substring(0, index) + chr + str.substring(index + 1);
 }
@@ -1077,7 +1076,7 @@ export function regexIndexOf(
   return indexOf >= 0 ? indexOf + (startpos || 0) : indexOf;
 }
 
-export function convertRGBtoHEX(rgb: string): string | undefined {
+export function rgbStringtoHex(rgb: string): string | undefined {
   const match: RegExpMatchArray | null = rgb.match(
     /^rgb\((\d+), \s*(\d+), \s*(\d+)\)$/
   );
@@ -1105,7 +1104,7 @@ type LastIndex = {
   regex: RegExp
 ): number {
   const match = this.match(regex);
-  return match ? this.lastIndexOf(match[match.length - 1] as string) : -1;
+  return match ? this.lastIndexOf(lastElementFromArray(match) as string) : -1;
 };
 
 export const trailingComposeChars = /[\u02B0-\u02FF`´^¨~]+$|⎄.*$/;
@@ -1368,36 +1367,6 @@ export function isAnyPopupVisible(): boolean {
   return popupVisible;
 }
 
-export async function getDiscordAvatarUrl(
-  discordId?: string,
-  discordAvatar?: string,
-  discordAvatarSize = 32
-): Promise<string | null> {
-  if (
-    discordId === undefined ||
-    discordId === "" ||
-    discordAvatar === undefined ||
-    discordAvatar === ""
-  ) {
-    return null;
-  }
-  // An invalid request to this URL will return a 404.
-  try {
-    const avatarUrl = `https://cdn.discordapp.com/avatars/${discordId}/${discordAvatar}.png?size=${discordAvatarSize}`;
-
-    const response = await fetch(avatarUrl, {
-      method: "HEAD",
-    });
-    if (!response.ok) {
-      return null;
-    }
-
-    return avatarUrl;
-  } catch (error) {}
-
-  return null;
-}
-
 export function getLevel(xp: number): number {
   return (1 / 98) * (-151 + Math.sqrt(392 * xp + 22801)) + 1;
 }
@@ -1417,7 +1386,6 @@ export async function promiseAnimation(
   });
 }
 
-//abbreviateNumber
 export function abbreviateNumber(num: number, decimalPoints = 1): string {
   if (num < 1000) {
     return num.toString();
@@ -1628,7 +1596,7 @@ export function getBoundingRectOfElements(elements: HTMLElement[]): DOMRect {
     },
   };
 }
-export function convertToMorse(word: string): string {
+export function getMorse(word: string): string {
   const morseCode: Record<string, string> = {
     a: ".-",
     b: "-...",

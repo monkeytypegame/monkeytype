@@ -325,7 +325,7 @@ FunboxList.setFunboxFunctions("58008", {
   punctuateWord(word: string): string {
     if (word.length > 3) {
       if (Math.random() < 0.5) {
-        word = Misc.setCharAt(
+        word = Misc.replaceCharAt(
           word,
           Misc.randomIntFromRange(1, word.length - 2),
           "."
@@ -339,7 +339,7 @@ FunboxList.setFunboxFunctions("58008", {
           word[index + 1] !== "0"
         ) {
           const special = Misc.randomElementFromArray(["/", "*", "-", "+"]);
-          word = Misc.setCharAt(word, index, special);
+          word = Misc.replaceCharAt(word, index, special);
         }
       }
     }
@@ -700,7 +700,7 @@ export async function rememberSettings(): Promise<void> {
 
 FunboxList.setFunboxFunctions("morse", {
   alterText(word: string): string {
-    return Misc.convertToMorse(word);
+    return Misc.getMorse(word);
   },
 });
 

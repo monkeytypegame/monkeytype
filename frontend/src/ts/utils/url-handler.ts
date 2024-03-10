@@ -59,6 +59,36 @@ export async function linkDiscord(hashOverride: string): Promise<void> {
   }
 }
 
+export async function getDiscordAvatarUrl(
+  discordId?: string,
+  discordAvatar?: string,
+  discordAvatarSize = 32
+): Promise<string | null> {
+  if (
+    discordId === undefined ||
+    discordId === "" ||
+    discordAvatar === undefined ||
+    discordAvatar === ""
+  ) {
+    return null;
+  }
+  // An invalid request to this URL will return a 404.
+  try {
+    const avatarUrl = `https://cdn.discordapp.com/avatars/${discordId}/${discordAvatar}.png?size=${discordAvatarSize}`;
+
+    const response = await fetch(avatarUrl, {
+      method: "HEAD",
+    });
+    if (!response.ok) {
+      return null;
+    }
+
+    return avatarUrl;
+  } catch (error) {}
+
+  return null;
+}
+
 export function loadCustomThemeFromUrl(getOverride?: string): void {
   const getValue = Misc.findGetParameter("customTheme", getOverride);
   if (getValue === null) return;

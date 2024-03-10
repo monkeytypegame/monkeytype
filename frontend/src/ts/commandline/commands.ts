@@ -517,5 +517,5 @@ export function pushCurrent(val: MonkeyTypes.CommandsSubgroup): void {
 }
 
 export function getCurrent(): MonkeyTypes.CommandsSubgroup {
-  return current[current.length - 1] as MonkeyTypes.CommandsSubgroup;
+  return Misc.lastElementFromArray(current) as MonkeyTypes.CommandsSubgroup;
 }

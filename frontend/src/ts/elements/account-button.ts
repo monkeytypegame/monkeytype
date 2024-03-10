@@ -3,6 +3,7 @@ import { isAuthenticated } from "../firebase";
 import * as Misc from "../utils/misc";
 import { getAll } from "./theme-colors";
 import * as SlowTimer from "../states/slow-timer";
+import { getDiscordAvatarUrl } from "../utils/url-handler";
 
 let usingAvatar = false;
 
@@ -108,7 +109,7 @@ export async function update(
       });
     }
     if ((discordAvatar ?? "") && (discordId ?? "")) {
-      void Misc.getDiscordAvatarUrl(discordId, discordAvatar).then(
+      void getDiscordAvatarUrl(discordId, discordAvatar).then(
         (discordAvatarUrl) => {
           if (discordAvatarUrl !== null) {
             $("header nav .account .avatar").css(

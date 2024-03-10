@@ -242,7 +242,7 @@ export const result = new ChartWithUpdateColors<
 
               const unique = [...new Set(wordsToHighlight)];
               const firstHighlightWordIndex = unique[0];
-              const lastHighlightWordIndex = unique[unique.length - 1];
+              const lastHighlightWordIndex = Misc.lastElementFromArray(unique);
               if (
                 firstHighlightWordIndex === undefined ||
                 lastHighlightWordIndex === undefined
