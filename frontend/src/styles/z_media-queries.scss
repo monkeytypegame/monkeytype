@@ -83,18 +83,6 @@
     gap: 1rem;
     grid-template-rows: 1fr 1fr;
   }
-  #supportMe {
-    width: 90vw !important;
-    .buttons {
-      button,
-      .button {
-        .icon {
-          font-size: 3rem !important;
-          line-height: 3rem !important;
-        }
-      }
-    }
-  }
   #leaderboardsWrapper {
     #leaderboards {
       .leaderboardsTop {
@@ -384,10 +372,6 @@
     font-size: 0.75rem;
   }
 
-  #contactPopupWrapper #contactPopup .buttons {
-    grid-template-columns: 1fr;
-  }
-
   .page404 .content {
     grid-auto-flow: row;
     grid-template-columns: 300px;
@@ -649,23 +633,6 @@
       }
     }
   }
-
-  #supportMe {
-    width: 80vw !important;
-    .buttons {
-      grid-template-columns: none !important;
-      button,
-      .button {
-        grid-template-columns: auto 1fr;
-        align-items: center;
-        .icon {
-          font-size: 2rem !important;
-          line-height: 2rem !important;
-          margin-left: 2rem;
-        }
-      }
-    }
-  }
 }
 
 //600px
@@ -737,6 +704,14 @@
     //   }
     // }
   }
+
+  .modalWrapper {
+    padding: 1rem;
+    .modal {
+      padding: 1rem;
+    }
+  }
+
   #commandLineWrapper {
     padding: 5rem 1rem;
   }
@@ -811,16 +786,6 @@
     }
   }
 
-  #contactPopupWrapper #contactPopup .buttons .button .text {
-    font-size: 1rem;
-  }
-  #contactPopupWrapper #contactPopup .buttons .button .icon {
-    font-size: 1.5rem;
-    line-height: 1.5rem;
-  }
-  #contactPopupWrapper #contactPopup {
-    padding: 1rem;
-  }
   .pageAbout .section .supporters,
   .pageAbout .section .contributors {
     grid-template-columns: 1fr;

@@ -4,7 +4,7 @@ import * as Misc from "../utils/misc";
 import * as Notifications from "../elements/notifications";
 import * as ThemeColors from "../elements/theme-colors";
 import * as ChartController from "../controllers/chart-controller";
-import * as ShareCustomThemePopup from "../popups/share-custom-theme-popup";
+import * as ShareCustomThemePopup from "../modals/share-custom-theme";
 import * as Loader from "../elements/loader";
 import * as DB from "../db";
 import * as ConfigEvent from "../observables/config-event";

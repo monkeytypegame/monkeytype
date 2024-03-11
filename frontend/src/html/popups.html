@@ -59,10 +59,9 @@
   <div id="simplePopup" popupId=""></div>
 </div>
 
-<div
-  id="cookiePopupWrapper"
-  class="cookie-popup-wrapper cookiePopupWrapper popupWrapper hidden"
-  tabindex="-1"
+<dialog
+  id="cookiePopup"
+  class="cookie-popup-wrapper cookiePopupWrapper modalWrapper hidden"
 >
   <div class="extensionMessage">
     If you see this text, that means an extension is blocking a cookie consent
@@ -70,7 +69,7 @@
     and stop you from enjoying Monkeytype. Please disable any extensions that
     block cookie popups and refresh the page.
   </div>
-  <div id="cookiePopup">
+  <div class="modal">
     <div class="title">
       <i class="fas far fa-cookie-bite"></i>
       We use cookies by the way
@@ -126,7 +125,7 @@
       <button class="active acceptSelected">accept selected</button>
     </div>
   </div>
-</div>
+</dialog>
 
 <div id="shareTestSettingsPopupWrapper" class="popupWrapper hidden">
   <div id="shareTestSettingsPopup">
@@ -835,16 +834,16 @@
     </form>
   </div>
 </div>
-<div id="shareCustomThemeWrapper" class="popupWrapper hidden">
-  <div id="shareCustomThemeEdit" action="">
-    <div class="title">Share Custom Theme</div>
+<dialog id="shareCustomThemeModal" class="modalWrapper hidden">
+  <div class="modal">
+    <div class="title">Share custom theme</div>
     <label class="checkbox">
       <input type="checkbox" id="includeBackground" />
       Include background information
     </label>
-    <div class="button copy-button">copy link to clipboard</div>
+    <button>copy link to clipboard</button>
   </div>
-</div>
+</dialog>
 <div id="leaderboardsWrapper" class="popupWrapper hidden">
   <div id="leaderboards">
     <div class="leaderboardsTop">
@@ -955,8 +954,8 @@
 <div id="versionHistoryWrapper" class="popupWrapper hidden">
   <div id="versionHistory"></div>
 </div>
-<div id="supportMeWrapper" class="popupWrapper hidden" tabindex="-1">
-  <div id="supportMe">
+<dialog id="supportModal" class="modalWrapper hidden">
+  <div class="modal">
     <div class="title">Support Monkeytype</div>
     <div class="text">
       Thank you so much for thinking about supporting this project. It would not
@@ -1005,9 +1004,9 @@
       </a>
     </div>
   </div>
-</div>
-<div id="contactPopupWrapper" class="popupWrapper hidden">
-  <div id="contactPopup">
+</dialog>
+<dialog id="contactModal" class="modalWrapper hidden">
+  <div class="modal">
     <div class="title">Contact</div>
     <div class="text">
       Feel free to send an email to contact@monkeytype.com. For business
@@ -1095,9 +1094,9 @@
       </a>
     </div>
   </div>
-</div>
-<div id="commandLineWrapper" class="hidden">
-  <div id="commandLine">
+</dialog>
+<dialog id="commandLine" class="modalWrapper hidden">
+  <div class="modal">
     <div
       style="
         display: grid;
@@ -1106,17 +1105,14 @@
       "
     >
       <div class="searchicon">
-        <i class="fas fa-search"></i>
+        <i class="fas fa-fw fa-search"></i>
       </div>
       <input type="text" class="input" placeholder="Type to search" />
     </div>
-    <div class="separator hidden"></div>
     <div class="suggestions"></div>
   </div>
-  <div id="commandInput" class="hidden">
-    <input type="text" class="input" placeholder="input" />
-  </div>
-</div>
+</dialog>
+
 <div id="newResultFilterPresetPopupWrapper" class="popupWrapper hidden">
   <div id="newResultFilterPresetPopup">
     <div class="title">Add new filter preset</div>

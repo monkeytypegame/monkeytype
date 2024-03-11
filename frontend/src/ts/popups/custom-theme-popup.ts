@@ -1,10 +1,10 @@
 import { isPopupVisible } from "../utils/misc";
-import * as Skeleton from "./skeleton";
+import * as Skeleton from "../utils/skeleton";
 
 const wrapperId = "customThemeShareWrapper";
 
 export function show(value: string): void {
-  Skeleton.append(wrapperId);
+  Skeleton.append(wrapperId, "popups");
   if (!isPopupVisible(wrapperId)) {
     // let save = [];
     // $.each(

@@ -17,8 +17,11 @@ nav {
 
   .textButton {
     .text {
-      font-size: 0.65em;
+      font-size: 0.75em;
       align-self: center;
+      .fas {
+        margin-left: 0.33em;
+      }
     }
 
     .icon,
@@ -34,7 +37,7 @@ nav {
     &.account {
       position: relative;
       align-items: center;
-      gap: 0.25em;
+      gap: 0.33em;
       display: grid;
       grid-auto-flow: column;
       .loading,
@@ -107,8 +110,13 @@ nav {
           }
         }
       }
-      &:hover .level {
-        background-color: var(--text-color);
+      &:hover {
+        .level {
+          background-color: var(--text-color);
+        }
+        .userFlags {
+          color: var(--text-color);
+        }
       }
     }
   }

@@ -51,6 +51,9 @@ describe("user controller test", () => {
             enabled: false,
             maxMail: 0,
           },
+          premium: {
+            enabled: true,
+          },
         },
       } as any);
 

@@ -14,6 +14,7 @@ import Konami from "konami";
 import { log } from "./controllers/analytics-controller";
 import { envConfig } from "./constants/env-config";
 import * as ServerConfiguration from "./ape/server-configuration";
+import * as Skeleton from "./utils/skeleton";
 
 if (Misc.isDevEnvironment()) {
   $("footer .currentVersion .text").text("localhost");
@@ -89,7 +90,11 @@ $(document).ready(() => {
     .animate({ opacity: 1 }, 250);
   if (ConnectionState.get()) {
     void PSA.show();
-    void ServerConfiguration.sync();
+    void ServerConfiguration.sync().then(() => {
+      if (ServerConfiguration.get()?.users.signUp) {
+        $(".signInOut").removeClass("hidden");
+      }
+    });
   }
   MonkeyPower.init();
 
@@ -104,6 +109,8 @@ $(document).ready(() => {
         }
       });
   }
+
+  Skeleton.save("commandLine");
 });
 
 window.onerror = function (message, url, line, column, error): void {

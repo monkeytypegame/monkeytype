@@ -17,7 +17,7 @@ type Log = {
   timestamp: number;
   uid: string;
   event: string;
-  message: string;
+  message: string | Record<string, unknown>;
 };
 
 const customLevels = {
@@ -87,7 +87,7 @@ const logger = createLogger({
 
 const logToDb = async (
   event: string,
-  message: any,
+  message: string | Record<string, unknown>,
   uid?: string
 ): Promise<void> => {
   const logsCollection = db.collection<Log>("logs");
