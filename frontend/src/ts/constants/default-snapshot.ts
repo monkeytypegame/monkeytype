@@ -35,4 +35,5 @@ export const defaultSnap: MonkeyTypes.Snapshot = {
   streak: 0,
   maxStreak: 0,
   streakHourOffset: undefined,
+  allTimeLbs: { time: { 15: { english: 0 }, 60: { english: 0 } } },
 };
