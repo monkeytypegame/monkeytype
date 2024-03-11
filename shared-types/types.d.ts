@@ -602,6 +602,11 @@ declare namespace SharedTypes {
   };
 
   type AllTimeLbs = {
-    time: Record<string, Record<string, number | null>>;
+    time: Record<string, Record<string, RankAndCount | undefined>>;
+  };
+
+  type RankAndCount = {
+    rank?: number;
+    count: number;
   };
 }

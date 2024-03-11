@@ -324,13 +324,24 @@ export async function update(
     if (t15 === null && t60 === null) {
       profileElement.find(".leaderboardsPositions").addClass("hidden");
     } else {
-      profileElement
-        .find(".leaderboardsPositions .group.t15 .pos")
-        .text(Format.rank(t15));
+      if (t15 !== null) {
+        profileElement
+          .find(".leaderboardsPositions .group.t15 .pos")
+          .text(Format.rank(t15?.rank));
+        profileElement
+          .find(".leaderboardsPositions .group.t15 .topPercentage")
+          .text(formatTopPercentage(t15));
+      }
 
-      profileElement
-        .find(".leaderboardsPositions .group.t60 .pos")
-        .text(Format.rank(t60));
+      if (t60 !== null) {
+        profileElement
+          .find(".leaderboardsPositions .group.t60 .pos")
+          .text(Format.rank(t60?.rank));
+
+        profileElement
+          .find(".leaderboardsPositions .group.t60 .topPercentage")
+          .text(formatTopPercentage(t60));
+      }
     }
   }
 
@@ -427,3 +438,9 @@ const throttledEvent = throttle(1000, () => {
 $(window).on("resize", () => {
   throttledEvent();
 });
+
+function formatTopPercentage(lbRank: SharedTypes.RankAndCount): string {
+  if (lbRank.rank === undefined) return "-";
+  if (lbRank.rank === 1) return "GOAT";
+  return "Top " + Format.percentage((lbRank.rank / lbRank.count) * 100);
+}
