@@ -2,7 +2,6 @@ const fs = require("fs");
 const Ajv = require("ajv");
 const ajv = new Ajv();
 
-
 function findDuplicates(words) {
   const wordFrequencies = {};
   const duplicates = [];
@@ -396,7 +395,9 @@ function validateQuotes() {
           `Quote ${quotefilename} JSON schema is \u001b[31minvalid\u001b[0m`
         );
         quoteFilesAllGood = false;
-        quoteFilesErrors = quoteValidator.errors[0].message + ` (at static/quotes/${quotefilename}.json)`;
+        quoteFilesErrors =
+          quoteValidator.errors[0].message +
+          ` (at static/quotes/${quotefilename}.json)`;
       }
       const quoteIds = quoteData.quotes.map((quote) => quote.id);
       const quoteIdsValidator = ajv.compile(quoteIdsSchema);
@@ -405,7 +406,9 @@ function validateQuotes() {
           `Quote ${quotefilename} IDs are \u001b[31mnot unique\u001b[0m`
         );
         quoteIdsAllGood = false;
-        quoteIdsErrors = quoteIdsValidator.errors[0].message + ` (at static/quotes/${quotefilename}.json)`;
+        quoteIdsErrors =
+          quoteIdsValidator.errors[0].message +
+          ` (at static/quotes/${quotefilename}.json)`;
       }
       const incorrectQuoteLength = quoteData.quotes.filter(
         (quote) => quote.text.length !== quote.length
@@ -540,7 +543,9 @@ function validateLanguages() {
       const languageFileValidator = ajv.compile(languageFileSchema);
       if (!languageFileValidator(languageFileData)) {
         languageFilesAllGood = false;
-        languageFilesErrors = languageFileValidator.errors[0].message + ` (at static/languages/${language}.json`;
+        languageFilesErrors =
+          languageFileValidator.errors[0].message +
+          ` (at static/languages/${language}.json`;
         return;
       }
       if (languageFileData.name !== language) {
@@ -573,7 +578,7 @@ function validateLanguages() {
 
     if (languageWordListsAllGood) {
       console.log(
-        `Language word lists duplicate check is  \u001b[32mvalid\u001b[0m`
+        `Language word lists duplicate check is \u001b[32mvalid\u001b[0m`
       );
     } else {
       console.log(
