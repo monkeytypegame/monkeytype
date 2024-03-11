@@ -823,10 +823,8 @@ export async function updateWordElement(
   wordAtIndex.innerHTML = ret;
   if (hintIndices?.length) {
     const activeWordLetters = wordAtIndex.querySelectorAll("letter");
-    wordAtIndex.insertAdjacentHTML(
-      "beforeend",
-      createHintsHtml(hintIndices, activeWordLetters)
-    );
+    const hintsHtml = createHintsHtml(hintIndices, activeWordLetters);
+    wordAtIndex.insertAdjacentHTML("beforeend", hintsHtml);
     const hintElements = wordAtIndex.getElementsByTagName("hint");
     await joinOverlappingHints(hintIndices, activeWordLetters, hintElements);
   }
