@@ -542,10 +542,11 @@ function validateLanguages() {
       );
       const languageFileValidator = ajv.compile(languageFileSchema);
       if (!languageFileValidator(languageFileData)) {
+        console.log(
+          `Language ${language} JSON schema is \u001b[31minvalid\u001b[0m`
+        );
         languageFilesAllGood = false;
-        languageFilesErrors =
-          languageFileValidator.errors[0].message +
-          ` (at static/languages/${language}.json`;
+        languageFilesErrors = languageFileValidator.errors[0].message;
         return;
       }
       if (languageFileData.name !== language) {
