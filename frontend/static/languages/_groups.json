@@ -563,5 +563,9 @@
       "code_assembly",
       "code_v"
     ]
+  },
+  {
+    "name": "frisian",
+    "languages": ["frisian", "frisian_1k"]
   }
 ]
