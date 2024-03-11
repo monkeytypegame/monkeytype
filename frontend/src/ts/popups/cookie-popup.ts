@@ -2,7 +2,7 @@ import { activateAnalytics } from "../controllers/analytics-controller";
 import * as Notifications from "../elements/notifications";
 import { isPopupVisible } from "../utils/misc";
 import * as AdController from "../controllers/ad-controller";
-import AnimatedModal from "./animated-modal";
+import AnimatedModal from "../utils/animated-modal";
 
 type Accepted = {
   security: boolean;
