@@ -546,7 +546,9 @@ function validateLanguages() {
           `Language ${language} JSON schema is \u001b[31minvalid\u001b[0m`
         );
         languageFilesAllGood = false;
-        languageFilesErrors = languageFileValidator.errors[0].message;
+        languageFilesErrors =
+          languageFileValidator.errors[0].message +
+          ` (at static/languages/${language}.json`;
         return;
       }
       if (languageFileData.name !== language) {
