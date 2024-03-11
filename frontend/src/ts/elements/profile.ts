@@ -8,6 +8,7 @@ import * as EditProfilePopup from "../popups/edit-profile-popup";
 import * as ActivePage from "../states/active-page";
 import formatDistanceToNowStrict from "date-fns/formatDistanceToNowStrict";
 import { getHtmlByUserFlags } from "../controllers/user-flag-controller";
+import Format from "../utils/format";
 
 type ProfileViewPaths = "profile" | "account";
 type UserProfileOrSnapshot = SharedTypes.UserProfile | MonkeyTypes.Snapshot;
@@ -317,25 +318,19 @@ export async function update(
   } else {
     profileElement.find(".leaderboardsPositions").removeClass("hidden");
 
-    const lbPos =
-      where === "profile"
-        ? (profile as SharedTypes.UserProfile).allTimeLbs
-        : (profile as MonkeyTypes.Snapshot).lbMemory;
+    const t15 = profile.allTimeLbs.time?.["15"]?.["english"] ?? null;
+    const t60 = profile.allTimeLbs.time?.["60"]?.["english"] ?? null;
 
-    const t15 = lbPos?.time?.["15"]?.["english"];
-    const t60 = lbPos?.time?.["60"]?.["english"];
-
-    if (!t15 && !t60) {
+    if (t15 === null && t60 === null) {
       profileElement.find(".leaderboardsPositions").addClass("hidden");
     } else {
-      const t15string = t15 ? Misc.getPositionString(t15) : "-";
       profileElement
         .find(".leaderboardsPositions .group.t15 .pos")
-        .text(t15string);
-      const t60string = t60 ? Misc.getPositionString(t60) : "-";
+        .text(Format.rank(t15));
+
       profileElement
         .find(".leaderboardsPositions .group.t60 .pos")
-        .text(t60string);
+        .text(Format.rank(t60));
     }
   }
 

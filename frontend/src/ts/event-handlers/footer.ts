@@ -4,6 +4,7 @@ import * as DB from "../db";
 import * as Notifications from "../elements/notifications";
 import { getCommandline } from "../utils/async-modules";
 import * as SupportPopup from "../modals/support";
+import * as ContactModal from "../modals/contact";
 import { envConfig } from "../constants/env-config";
 
 document
@@ -53,4 +54,10 @@ document
   .querySelector("footer #supportMeButton")
   ?.addEventListener("click", () => {
     SupportPopup.show();
+  });
+
+document
+  .querySelector("footer #contactPopupButton")
+  ?.addEventListener("click", () => {
+    ContactModal.show();
   });
