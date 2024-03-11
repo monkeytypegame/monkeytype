@@ -2,8 +2,9 @@ import Ape from "../ape";
 import * as TestUI from "./test-ui";
 import * as ManualRestart from "./manual-restart-tracker";
 import Config, * as UpdateConfig from "../config";
-import * as Misc from "../utils/misc";
 
+import * as Misc from "../utils/misc";
+import * as Numbers from "../utils/numbers";
 import * as Notifications from "../elements/notifications";
 import * as CustomText from "./custom-text";
 import * as CustomTextState from "../states/custom-text-name";
@@ -205,11 +206,11 @@ export function restart(options = {} as RestartOptions): void {
       TestInput.pushAfkToHistory();
       const testSeconds = TestStats.calculateTestSeconds(performance.now());
       const afkseconds = TestStats.calculateAfkSeconds(testSeconds);
-      let tt = Misc.roundTo2(testSeconds - afkseconds);
+      let tt = Numbers.roundTo2(testSeconds - afkseconds);
       if (tt < 0) tt = 0;
       TestStats.incrementIncompleteSeconds(tt);
       TestStats.incrementRestartCount();
-      const acc = Misc.roundTo2(TestStats.calculateAccuracy());
+      const acc = Numbers.roundTo2(TestStats.calculateAccuracy());
       TestStats.pushIncompleteTest(acc, tt);
     }
   }
@@ -696,14 +697,14 @@ function buildCompletedEvent(
   difficultyFailed: boolean
 ): SharedTypes.CompletedEvent {
   //build completed event object
-  let stfk = Misc.roundTo2(
+  let stfk = Numbers.roundTo2(
     TestInput.keypressTimings.spacing.first - TestStats.start
   );
   if (stfk < 0 || Config.mode === "zen") {
     stfk = 0;
   }
 
-  let lkte = Misc.roundTo2(
+  let lkte = Numbers.roundTo2(
     TestStats.end - TestInput.keypressTimings.spacing.last
   );
   if (lkte < 0 || Config.mode === "zen") {
@@ -747,9 +748,9 @@ function buildCompletedEvent(
     );
   }
 
-  const stddev = Misc.stdDev(rawPerSecond);
-  const avg = Misc.mean(rawPerSecond);
-  let consistency = Misc.roundTo2(Misc.kogasa(stddev / avg));
+  const stddev = Numbers.stdDev(rawPerSecond);
+  const avg = Numbers.mean(rawPerSecond);
+  let consistency = Numbers.roundTo2(Misc.kogasa(stddev / avg));
   let keyConsistencyArray = TestInput.keypressTimings.spacing.array.slice();
   if (keyConsistencyArray.length > 0) {
     keyConsistencyArray = keyConsistencyArray.slice(
@@ -757,9 +758,9 @@ function buildCompletedEvent(
       keyConsistencyArray.length - 1
     );
   }
-  let keyConsistency = Misc.roundTo2(
+  let keyConsistency = Numbers.roundTo2(
     Misc.kogasa(
-      Misc.stdDev(keyConsistencyArray) / Misc.mean(keyConsistencyArray)
+      Numbers.stdDev(keyConsistencyArray) / Numbers.mean(keyConsistencyArray)
     )
   );
   if (!consistency || isNaN(consistency)) {
@@ -781,9 +782,9 @@ function buildCompletedEvent(
   };
 
   //wpm consistency
-  const stddev3 = Misc.stdDev(chartData.wpm ?? []);
-  const avg3 = Misc.mean(chartData.wpm ?? []);
-  const wpmCons = Misc.roundTo2(Misc.kogasa(stddev3 / avg3));
+  const stddev3 = Numbers.stdDev(chartData.wpm ?? []);
+  const avg3 = Numbers.mean(chartData.wpm ?? []);
+  const wpmCons = Numbers.roundTo2(Misc.kogasa(stddev3 / avg3));
   const wpmConsistency = isNaN(wpmCons) ? 0 : wpmCons;
 
   let customText: SharedTypes.CustomText | null = null;
@@ -837,13 +838,13 @@ function buildCompletedEvent(
     incompleteTestSeconds:
       TestStats.incompleteSeconds < 0
         ? 0
-        : Misc.roundTo2(TestStats.incompleteSeconds),
+        : Numbers.roundTo2(TestStats.incompleteSeconds),
     difficulty: Config.difficulty,
     blindMode: Config.blindMode,
     tags: activeTagsIds,
     keySpacing: TestInput.keypressTimings.spacing.array,
     keyDuration: TestInput.keypressTimings.duration.array,
-    keyOverlap: Misc.roundTo2(TestInput.keyOverlap.total),
+    keyOverlap: Numbers.roundTo2(TestInput.keyOverlap.total),
     lastKeyToEnd: lkte,
     startToFirstKey: stfk,
     consistency: consistency,
@@ -1033,7 +1034,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
   if (TestState.isRepeated) {
     const testSeconds = completedEvent.testDuration;
     const afkseconds = completedEvent.afkDuration;
-    let tt = Misc.roundTo2(testSeconds - afkseconds);
+    let tt = Numbers.roundTo2(testSeconds - afkseconds);
     if (tt < 0) tt = 0;
     const acc = completedEvent.acc;
     TestStats.incrementIncompleteSeconds(tt);
@@ -1081,7 +1082,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
       completedEvent.testDuration +
         (TestStats.incompleteSeconds < 0
           ? 0
-          : Misc.roundTo2(TestStats.incompleteSeconds)) -
+          : Numbers.roundTo2(TestStats.incompleteSeconds)) -
         completedEvent.afkDuration
     );
     Result.updateTodayTracker();
@@ -1311,11 +1312,11 @@ export function fail(reason: string): void {
   if (!TestState.savingEnabled) return;
   const testSeconds = TestStats.calculateTestSeconds(performance.now());
   const afkseconds = TestStats.calculateAfkSeconds(testSeconds);
-  let tt = Misc.roundTo2(testSeconds - afkseconds);
+  let tt = Numbers.roundTo2(testSeconds - afkseconds);
   if (tt < 0) tt = 0;
   TestStats.incrementIncompleteSeconds(tt);
   TestStats.incrementRestartCount();
-  const acc = Misc.roundTo2(TestStats.calculateAccuracy());
+  const acc = Numbers.roundTo2(TestStats.calculateAccuracy());
   TestStats.pushIncompleteTest(acc, tt);
 }
 

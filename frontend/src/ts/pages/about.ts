@@ -1,4 +1,5 @@
 import * as Misc from "../utils/misc";
+import * as Numbers from "../utils/numbers";
 import Page from "./page";
 import Ape from "../ape";
 import * as Notifications from "../elements/notifications";
@@ -44,10 +45,10 @@ function updateStatsAndHistogram(): void {
     $(".pageAbout #totalTimeTypingStat .valSmall").text("years");
     $(".pageAbout #totalTimeTypingStat").attr(
       "aria-label",
-      Misc.numberWithSpaces(Math.round(secondsRounded / 3600)) + " hours"
+      Numbers.numberWithSpaces(Math.round(secondsRounded / 3600)) + " hours"
     );
 
-    const startedWithMagnitude = Misc.getNumberWithMagnitude(
+    const startedWithMagnitude = Numbers.getNumberWithMagnitude(
       typingStatsResponseData.testsStarted
     );
 
@@ -61,10 +62,10 @@ function updateStatsAndHistogram(): void {
     );
     $(".pageAbout #totalStartedTestsStat").attr(
       "aria-label",
-      Misc.numberWithSpaces(typingStatsResponseData.testsStarted) + " tests"
+      Numbers.numberWithSpaces(typingStatsResponseData.testsStarted) + " tests"
     );
 
-    const completedWIthMagnitude = Misc.getNumberWithMagnitude(
+    const completedWIthMagnitude = Numbers.getNumberWithMagnitude(
       typingStatsResponseData.testsCompleted
     );
 
@@ -78,7 +79,8 @@ function updateStatsAndHistogram(): void {
     );
     $(".pageAbout #totalCompletedTestsStat").attr(
       "aria-label",
-      Misc.numberWithSpaces(typingStatsResponseData.testsCompleted) + " tests"
+      Numbers.numberWithSpaces(typingStatsResponseData.testsCompleted) +
+        " tests"
     );
   }
 }

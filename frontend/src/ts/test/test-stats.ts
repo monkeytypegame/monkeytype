@@ -5,6 +5,7 @@ import * as TestInput from "./test-input";
 import * as TestWords from "./test-words";
 import * as FunboxList from "./funbox/funbox-list";
 import * as TestState from "./test-state";
+import * as Numbers from "../utils/numbers";
 
 type CharCount = {
   spaces: number;
@@ -72,7 +73,7 @@ export function getStats(): unknown {
       ) / TestInput.keypressTimings.spacing.array.length;
 
     // @ts-expect-error
-    ret.keypressTimings.spacing.sd = Misc.stdDev(
+    ret.keypressTimings.spacing.sd = Numbers.stdDev(
       TestInput.keypressTimings.spacing.array as number[]
     );
   } catch (e) {
@@ -86,7 +87,7 @@ export function getStats(): unknown {
       ) / TestInput.keypressTimings.duration.array.length;
 
     // @ts-expect-error
-    ret.keypressTimings.duration.sd = Misc.stdDev(
+    ret.keypressTimings.duration.sd = Numbers.stdDev(
       TestInput.keypressTimings.duration.array as number[]
     );
   } catch (e) {
@@ -145,10 +146,10 @@ export function calculateWpmAndRaw(
     TestState.isActive ? performance.now() : end
   );
   const chars = countChars();
-  const wpm = Misc.roundTo2(
+  const wpm = Numbers.roundTo2(
     ((chars.correctWordChars + chars.correctSpaces) * (60 / testSeconds)) / 5
   );
-  const raw = Misc.roundTo2(
+  const raw = Numbers.roundTo2(
     ((chars.allCorrectChars +
       chars.spaces +
       chars.incorrectChars +
@@ -211,7 +212,7 @@ export function calculateBurst(): number {
           ?.length ?? 0;
   }
   if (wordLength === 0) return 0;
-  const speed = Misc.roundTo2((wordLength * (60 / timeToWrite)) / 5);
+  const speed = Numbers.roundTo2((wordLength * (60 / timeToWrite)) / 5);
   return Math.round(speed);
 }
 
@@ -372,7 +373,7 @@ export function calculateStats(): Stats {
     " (performance.now based)"
   );
   if (Config.mode !== "custom") {
-    testSeconds = Misc.roundTo2(testSeconds);
+    testSeconds = Numbers.roundTo2(testSeconds);
     console.debug(
       "Mode is not custom - rounding to 2. New time: ",
       testSeconds
@@ -380,7 +381,7 @@ export function calculateStats(): Stats {
   }
   const chars = countChars();
   const { wpm, raw } = calculateWpmAndRaw(true);
-  const acc = Misc.roundTo2(calculateAccuracy());
+  const acc = Numbers.roundTo2(calculateAccuracy());
   const ret = {
     wpm: isNaN(wpm) ? 0 : wpm,
     wpmRaw: isNaN(raw) ? 0 : raw,
@@ -394,7 +395,7 @@ export function calculateStats(): Stats {
       chars.spaces +
       chars.incorrectChars +
       chars.extraChars,
-    time: Misc.roundTo2(testSeconds),
+    time: Numbers.roundTo2(testSeconds),
     spaces: chars.spaces,
     correctSpaces: chars.correctSpaces,
   };

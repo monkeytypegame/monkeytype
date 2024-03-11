@@ -1,5 +1,6 @@
 import * as TestWords from "./test-words";
-import { lastElementFromArray, mean, roundTo2 } from "../utils/misc";
+import { lastElementFromArray } from "../utils/misc";
+import { mean, roundTo2 } from "../utils/numbers";
 
 const keysToTrack = [
   "NumpadMultiply",

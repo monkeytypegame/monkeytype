@@ -1,5 +1,6 @@
 import * as Notifications from "../../elements/notifications";
 import * as Misc from "../../utils/misc";
+import * as Numbers from "../../utils/numbers";
 import * as ManualRestart from "../manual-restart-tracker";
 import Config, * as UpdateConfig from "../../config";
 import * as MemoryTimer from "./memory-funbox-timer";
@@ -41,7 +42,7 @@ class CharDistribution {
   }
 
   public randomChar(): string {
-    const randomIndex = Misc.randomIntFromRange(0, this.count - 1);
+    const randomIndex = Numbers.randomIntFromRange(0, this.count - 1);
     let runningCount = 0;
     for (const [char, charCount] of Object.entries(this.chars)) {
       runningCount += charCount;
@@ -327,12 +328,12 @@ FunboxList.setFunboxFunctions("58008", {
       if (Math.random() < 0.5) {
         word = Misc.replaceCharAt(
           word,
-          Misc.randomIntFromRange(1, word.length - 2),
+          Numbers.randomIntFromRange(1, word.length - 2),
           "."
         );
       }
       if (Math.random() < 0.75) {
-        const index = Misc.randomIntFromRange(1, word.length - 2);
+        const index = Numbers.randomIntFromRange(1, word.length - 2);
         if (
           word[index - 1] !== "." &&
           word[index + 1] !== "." &&

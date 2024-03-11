@@ -2,7 +2,7 @@ import * as DB from "../db";
 import format from "date-fns/format";
 import differenceInDays from "date-fns/differenceInDays";
 import * as Misc from "../utils/misc";
-import { getDiscordAvatarUrl } from "../utils/url-handler";
+import { abbreviateNumber } from "../utils/numbers";
 import { getHTMLById } from "../controllers/badge-controller";
 import { throttle } from "throttle-debounce";
 import * as EditProfilePopup from "../popups/edit-profile-popup";
@@ -48,7 +48,7 @@ export async function update(
     profile.discordId !== undefined &&
     !banned
   ) {
-    void getDiscordAvatarUrl(
+    void Misc.getDiscordAvatarUrl(
       profile.discordId,
       profile.discordAvatar,
       256
@@ -308,14 +308,10 @@ export async function update(
   details
     .find(".level")
     .text(level)
-    .attr("aria-label", `${Misc.abbreviateNumber(xp)} total xp`);
+    .attr("aria-label", `${abbreviateNumber(xp)} total xp`);
   details
     .find(".xp")
-    .text(
-      `${Misc.abbreviateNumber(xpToDisplay)}/${Misc.abbreviateNumber(
-        xpForLevel
-      )}`
-    );
+    .text(`${abbreviateNumber(xpToDisplay)}/${abbreviateNumber(xpForLevel)}`);
   details
     .find(".xpBar .bar")
     .css("width", `${(xpToDisplay / xpForLevel) * 100}%`);
@@ -323,7 +319,7 @@ export async function update(
     .find(".xp")
     .attr(
       "aria-label",
-      `${Misc.abbreviateNumber(xpForLevel - xpToDisplay)} xp until next level`
+      `${abbreviateNumber(xpForLevel - xpToDisplay)} xp until next level`
     );
 
   //lbs

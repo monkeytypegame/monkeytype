@@ -1,8 +1,7 @@
 import * as Loader from "../elements/loader";
 import { envConfig } from "../constants/env-config";
 import { hexToHSL } from "./colors";
-
-//todo split this file into smaller util files (grouped by functionality)
+import { roundTo2, randomIntFromRange } from "./numbers";
 
 async function fetchJson<T>(url: string): Promise<T> {
   try {
@@ -241,67 +240,6 @@ export async function getContributorsList(): Promise<string[]> {
   }
 }
 
-export function smooth(
-  arr: number[],
-  windowSize: number,
-  getter = (value: number): number => value
-): number[] {
-  const get = getter;
-  const result = [];
-
-  for (let i = 0; i < arr.length; i += 1) {
-    const leftOffeset = i - windowSize;
-    const from = leftOffeset >= 0 ? leftOffeset : 0;
-    const to = i + windowSize + 1;
-
-    let count = 0;
-    let sum = 0;
-    for (let j = from; j < to && j < arr.length; j += 1) {
-      sum += get(arr[j] as number);
-      count += 1;
-    }
-
-    result[i] = sum / count;
-  }
-
-  return result;
-}
-
-export function stdDev(array: number[]): number {
-  try {
-    const n = array.length;
-    const mean = array.reduce((a, b) => a + b) / n;
-    return Math.sqrt(
-      array.map((x) => Math.pow(x - mean, 2)).reduce((a, b) => a + b) / n
-    );
-  } catch (e) {
-    return 0;
-  }
-}
-
-export function mean(array: number[]): number {
-  try {
-    return (
-      array.reduce((previous, current) => (current += previous)) / array.length
-    );
-  } catch (e) {
-    return 0;
-  }
-}
-
-//https://www.w3resource.com/javascript-exercises/fundamental/javascript-fundamental-exercise-88.php
-export function median(arr: number[]): number {
-  try {
-    const mid = Math.floor(arr.length / 2),
-      nums = [...arr].sort((a, b) => a - b);
-    return arr.length % 2 !== 0
-      ? (nums[mid] as number)
-      : ((nums[mid - 1] as number) + (nums[mid] as number)) / 2;
-  } catch (e) {
-    return 0;
-  }
-}
-
 export async function getLatestReleaseFromGitHub(): Promise<string> {
   type releaseType = { name: string };
   const releases = await cachedFetchJson<releaseType[]>(
@@ -368,61 +306,6 @@ export function whorf(speed: number, wordlen: number): number {
     speed,
     Math.floor(speed * Math.pow(1.03, -2 * (wordlen - 3)))
   );
-}
-
-export function roundTo2(num: number): number {
-  return Math.round((num + Number.EPSILON) * 100) / 100;
-}
-
-export function findLineByLeastSquares(
-  values_y: number[]
-): [[number, number], [number, number]] | null {
-  let sum_x = 0;
-  let sum_y = 0;
-  let sum_xy = 0;
-  let sum_xx = 0;
-  let count = 0;
-
-  /*
-   * We'll use those letiables for faster read/write access.
-   */
-  let x = 0;
-  let y = 0;
-  const values_length = values_y.length;
-
-  /*
-   * Nothing to do.
-   */
-  if (values_length === 0) {
-    return null;
-  }
-
-  /*
-   * Calculate the sum for each of the parts necessary.
-   */
-  for (let v = 0; v < values_length; v++) {
-    x = v + 1;
-    y = values_y[v] as number;
-    sum_x += x;
-    sum_y += y;
-    sum_xx += x * x;
-    sum_xy += x * y;
-    count++;
-  }
-
-  /*
-   * Calculate m and b for the formular:
-   * y = x * m + b
-   */
-  const m = (count * sum_xy - sum_x * sum_y) / (count * sum_xx - sum_x * sum_x);
-  const b = sum_y / count - (m * sum_x) / count;
-
-  const returnpoint1 = [1, 1 * m + b] as [number, number];
-  const returnpoint2 = [values_length, values_length * m + b] as [
-    number,
-    number
-  ];
-  return [returnpoint1, returnpoint2];
 }
 
 export function getGibberish(): string {
@@ -963,6 +846,36 @@ type LastIndex = {
 
 export const trailingComposeChars = /[\u02B0-\u02FF`´^¨~]+$|⎄.*$/;
 
+export async function getDiscordAvatarUrl(
+  discordId?: string,
+  discordAvatar?: string,
+  discordAvatarSize = 32
+): Promise<string | null> {
+  if (
+    discordId === undefined ||
+    discordId === "" ||
+    discordAvatar === undefined ||
+    discordAvatar === ""
+  ) {
+    return null;
+  }
+  // An invalid request to this URL will return a 404.
+  try {
+    const avatarUrl = `https://cdn.discordapp.com/avatars/${discordId}/${discordAvatar}.png?size=${discordAvatarSize}`;
+
+    const response = await fetch(avatarUrl, {
+      method: "HEAD",
+    });
+    if (!response.ok) {
+      return null;
+    }
+
+    return avatarUrl;
+  } catch (error) {}
+
+  return null;
+}
+
 //https://stackoverflow.com/questions/36532307/rem-px-in-javascript
 export function convertRemToPixels(rem: number): number {
   return rem * parseFloat(getComputedStyle(document.documentElement).fontSize);
@@ -1137,18 +1050,6 @@ export async function downloadResultsCSV(
 }
 
 /**
- * Gets an integer between min and max, both are inclusive.
- * @param min
- * @param max
- * @returns Random integer betwen min and max.
- */
-export function randomIntFromRange(min: number, max: number): number {
-  const minNorm = Math.ceil(min);
-  const maxNorm = Math.floor(max);
-  return Math.floor(Math.random() * (maxNorm - minNorm + 1) + minNorm);
-}
-
-/**
  * Shuffle an array of elements using the Fisher–Yates algorithm.
  * This function mutates the input array.
  * @param elements
@@ -1238,16 +1139,6 @@ export async function promiseAnimation(
   return new Promise((resolve) => {
     el.animate(animation, duration, easing, resolve);
   });
-}
-
-export function abbreviateNumber(num: number, decimalPoints = 1): string {
-  if (num < 1000) {
-    return num.toString();
-  }
-
-  const exp = Math.floor(Math.log(num) / Math.log(1000));
-  const pre = "kmbtqQsSond".charAt(exp - 1);
-  return (num / Math.pow(1000, exp)).toFixed(decimalPoints) + pre;
 }
 
 export async function sleep(ms: number): Promise<void> {
@@ -1544,46 +1435,6 @@ export function updateTitle(title?: string): void {
   } else {
     document.title = local + title;
   }
-}
-
-export function getNumberWithMagnitude(num: number): {
-  rounded: number;
-  roundedTo2: number;
-  orderOfMagnitude: string;
-} {
-  const units = [
-    "",
-    "thousand",
-    "million",
-    "billion",
-    "trillion",
-    "quadrillion",
-    "quintillion",
-    "sextillion",
-    "septillion",
-    "octillion",
-    "nonillion",
-    "decillion",
-  ];
-  let unitIndex = 0;
-  let roundedNum = num;
-
-  while (roundedNum >= 1000) {
-    roundedNum /= 1000;
-    unitIndex++;
-  }
-
-  const unit = units[unitIndex] ?? "unknown";
-
-  return {
-    rounded: Math.round(roundedNum),
-    roundedTo2: roundTo2(roundedNum),
-    orderOfMagnitude: unit,
-  };
-}
-
-export function numberWithSpaces(x: number): string {
-  return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
 }
 
 export function lastElementFromArray<T>(array: T[]): T | undefined {

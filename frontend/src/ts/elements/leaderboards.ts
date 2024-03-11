@@ -2,7 +2,7 @@ import Ape from "../ape";
 import * as DB from "../db";
 import Config from "../config";
 import * as Misc from "../utils/misc";
-import { getDiscordAvatarUrl } from "../utils/url-handler";
+import * as Numbers from "../utils/numbers";
 import * as Notifications from "./notifications";
 import format from "date-fns/format";
 import { isAuthenticated } from "../firebase";
@@ -193,7 +193,7 @@ function updateFooter(lb: LbKey): void {
 
   let toppercent = "";
   if (currentTimeRange === "allTime" && lbRank !== undefined && lbRank?.rank) {
-    const num = Misc.roundTo2(
+    const num = Numbers.roundTo2(
       (lbRank.rank / (currentRank[lb].count as number)) * 100
     );
     if (currentRank[lb].rank === 1) {
@@ -613,7 +613,7 @@ async function getAvatarUrls(
 ): Promise<(string | null)[]> {
   return Promise.allSettled(
     data.map(async (entry) =>
-      getDiscordAvatarUrl(entry.discordId, entry.discordAvatar)
+      Misc.getDiscordAvatarUrl(entry.discordId, entry.discordAvatar)
     )
   ).then((promises) => {
     return promises.map((promise) => {

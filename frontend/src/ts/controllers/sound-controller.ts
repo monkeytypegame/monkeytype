@@ -1,10 +1,7 @@
 import Config from "../config";
 import * as ConfigEvent from "../observables/config-event";
-import {
-  createErrorMessage,
-  randomElementFromArray,
-  randomIntFromRange,
-} from "../utils/misc";
+import { createErrorMessage, randomElementFromArray } from "../utils/misc";
+import { randomIntFromRange } from "../utils/numbers";
 import { leftState, rightState } from "../test/shift-tracker";
 import { capsState } from "../test/caps-warning";
 import * as Notifications from "../elements/notifications";

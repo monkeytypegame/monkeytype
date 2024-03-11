@@ -12,6 +12,7 @@ import * as TodayTracker from "../test/today-tracker";
 import * as Notifications from "../elements/notifications";
 import Page from "./page";
 import * as Misc from "../utils/misc";
+import * as Numbers from "../utils/numbers";
 import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
 import * as Profile from "../elements/profile";
 import format from "date-fns/format";
@@ -608,8 +609,8 @@ async function fillContent(): Promise<void> {
 
       chartData.push({
         x: filteredResults.length,
-        y: Misc.roundTo2(typingSpeedUnit.fromWpm(result.wpm)),
-        wpm: Misc.roundTo2(typingSpeedUnit.fromWpm(result.wpm)),
+        y: Numbers.roundTo2(typingSpeedUnit.fromWpm(result.wpm)),
+        wpm: Numbers.roundTo2(typingSpeedUnit.fromWpm(result.wpm)),
         acc: result.acc,
         mode: result.mode,
         mode2: result.mode2,
@@ -617,7 +618,7 @@ async function fillContent(): Promise<void> {
         language: result.language,
         timestamp: result.timestamp,
         difficulty: result.difficulty,
-        raw: Misc.roundTo2(typingSpeedUnit.fromWpm(result.rawWpm)),
+        raw: Numbers.roundTo2(typingSpeedUnit.fromWpm(result.rawWpm)),
         isPb: result.isPb ?? false,
       });
 
@@ -673,7 +674,7 @@ async function fillContent(): Promise<void> {
     });
     activityChartData_avgWpm.push({
       x: dateInt,
-      y: Misc.roundTo2(
+      y: Numbers.roundTo2(
         typingSpeedUnit.fromWpm(dataPoint.totalWpm) / dataPoint.amount
       ),
     });
@@ -913,7 +914,7 @@ async function fillContent(): Promise<void> {
 
   const wpmPoints = filteredResults.map((r) => r.wpm).reverse();
 
-  const trend = Misc.findLineByLeastSquares(wpmPoints);
+  const trend = Numbers.findLineByLeastSquares(wpmPoints);
   if (trend) {
     const wpmChange = trend[1][1] - trend[0][1];
     const wpmChangePerHour = wpmChange * (3600 / totalSecondsFiltered);

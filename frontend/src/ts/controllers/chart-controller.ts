@@ -64,6 +64,7 @@ import * as ThemeColors from "../elements/theme-colors";
 import * as ConfigEvent from "../observables/config-event";
 import * as TestInput from "../test/test-input";
 import * as Misc from "../utils/misc";
+import * as Numbers from "../utils/numbers";
 import { blendTwoHexColors } from "../utils/colors";
 
 class ChartWithUpdateColors<
@@ -497,9 +498,9 @@ export const accountHistory = new ChartWithUpdateColors<
                 const resultData = tooltipItem.dataset.data[
                   tooltipItem.dataIndex
                 ] as MonkeyTypes.AccChartData;
-                return `error rate: ${Misc.roundTo2(
+                return `error rate: ${Numbers.roundTo2(
                   resultData.errorRate
-                )}%\nacc: ${Misc.roundTo2(100 - resultData.errorRate)}%`;
+                )}%\nacc: ${Numbers.roundTo2(100 - resultData.errorRate)}%`;
               }
               const resultData = tooltipItem.dataset.data[
                 tooltipItem.dataIndex
@@ -681,7 +682,7 @@ export const accountActivity = new ChartWithUpdateColors<
                     true
                   )}\nTests Completed: ${resultData.amount}`;
                 case 1:
-                  return `Average ${Config.typingSpeedUnit}: ${Misc.roundTo2(
+                  return `Average ${Config.typingSpeedUnit}: ${Numbers.roundTo2(
                     resultData.y
                   )}`;
                 default:
@@ -786,7 +787,7 @@ export const accountHistogram = new ChartWithUpdateColors<
           //       case 1:
           //         return `Average ${
           //           Config.typingSpeedUnit
-          //         }: ${Misc.roundTo2(resultData.y)}`;
+          //         }: ${Numbers.roundTo2(resultData.y)}`;
           //       default:
           //         return "";
           //     }
