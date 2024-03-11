@@ -1,13 +1,7 @@
 const fs = require("fs");
-const V = require("jsonschema").Validator;
-const JSONValidator = new V();
-
-function escapeRegExp(str) {
-  return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-}
 
 function fixQuoteLengths() {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     const quotesFiles = fs.readdirSync("../static/quotes/");
     quotesFiles.forEach((quotefilename) => {
       quotefilename = quotefilename.split(".")[0];

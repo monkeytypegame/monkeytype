@@ -3,6 +3,9 @@ import { isAuthenticated } from "../firebase";
 import * as DB from "../db";
 import * as Notifications from "../elements/notifications";
 import { getCommandline } from "../utils/async-modules";
+import * as SupportPopup from "../modals/support";
+import * as ContactModal from "../modals/contact";
+import { envConfig } from "../constants/env-config";
 
 document
   .querySelector("footer #commandLineButton")
@@ -10,6 +13,15 @@ document
     (await getCommandline()).show({
       singleListOverride: false,
     });
+  });
+
+document
+  .querySelector("footer .currentVersion")
+  ?.addEventListener("click", (e) => {
+    const event = e as MouseEvent;
+    if (event.shiftKey) {
+      alert(envConfig.clientVersion);
+    }
   });
 
 document
@@ -36,4 +48,16 @@ document
         subgroupOverride: subgroup,
       });
     }
+  });
+
+document
+  .querySelector("footer #supportMeButton")
+  ?.addEventListener("click", () => {
+    SupportPopup.show();
+  });
+
+document
+  .querySelector("footer #contactPopupButton")
+  ?.addEventListener("click", () => {
+    ContactModal.show();
   });
