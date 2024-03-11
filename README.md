@@ -1,5 +1,4 @@
 [![](https://github.com/monkeytypegame/monkeytype/blob/master/frontend/static/images/githubbanner2.png?raw=true)](https://monkeytype.com/)
-<br />
 
 ![TypeScript](https://img.shields.io/badge/typescript-%23007ACC.svg?style=for-the-badge&logo=typescript&logoColor=white)
 ![SASS](https://img.shields.io/badge/SASS-hotpink.svg?style=for-the-badge&logo=SASS&logoColor=white)
@@ -7,46 +6,49 @@
 
 # About
 
-Monkeytype is a minimalistic and customizable [typing test](https://www.monkeytype.com). It features many test modes, an account system to save your typing speed history, and user-configurable features such as themes, sounds, a smooth caret, and more. Monkeytype attempts to emulate a natural typing experience during a typing test by unobtrusively presenting the text prompts and displaying typed characters in place, providing straightforward, real-time feedback on typos, speed, and accuracy.
+Monkeytype is a minimalistic and customizable [typing test](https://www.monkeytype.com). It offers various test modes, an account system to track typing speed history, and configurable features like themes, sounds, and a smooth caret. Monkeytype aims to simulate a natural typing experience, providing real-time feedback on typos, speed, and accuracy.
 
 # Features
 
-- minimalistic design, with optional advertisements and focus mode while typing
-- type what you see, see what you type
-- live errors, wpm, and accuracy displays
-- a variety of test lengths and languages
-- punctuation and numbers modes
-- quotes
-- themes
-- smooth caret
-- account system
-- challenges and just-for-fun test modifiers
-- and much more
+- Minimalistic design with optional advertisements and focus mode while typing.
+- Live error, WPM (Words Per Minute), and accuracy displays.
+- Multiple test lengths and languages.
+- Punctuation and numbers modes.
+- Quotes and themes.
+- Smooth caret and account system.
+- Challenges and just-for-fun test modifiers.
+- And much more.
 
-# Discord bot
+# Discord Bot
 
-On the [Monkeytype Discord server](https://www.discord.gg/monkeytype), we added a Discord bot to auto-assign optional roles based on typing performance and challenge completion. You can find its code over at https://github.com/monkeytypegame/monkeytype-bot.
+Join the [Monkeytype Discord server](https://www.discord.gg/monkeytype) to access the Discord bot. It automatically assigns optional roles based on typing performance and challenge completion. Check out its code on [GitHub](https://github.com/monkeytypegame/monkeytype-bot).
 
-# Bug report or Feature request
+# Bug Report or Feature Request
 
-If you encounter a bug or have a feature request, [send us an email](mailto:contact@monkeytype.com), [create an issue](https://github.com/monkeytypegame/monkeytype/issues), [create a discussion thread](https://github.com/monkeytypegame/monkeytype/discussions), or [join the Discord server](https://www.discord.gg/monkeytype).
+If you encounter a bug or have a feature request, feel free to:
+- [Send us an email](mailto:contact@monkeytype.com)
+- [Create an issue](https://github.com/monkeytypegame/monkeytype/issues)
+- [Start a discussion thread](https://github.com/monkeytypegame/monkeytype/discussions)
+- [Join the Discord server](https://www.discord.gg/monkeytype)
 
 # Want to Contribute?
 
-Refer to [CONTRIBUTING.md](./CONTRIBUTING.md).
+Please refer to [CONTRIBUTING.md](./CONTRIBUTING.md) for guidelines on contributing.
 
 # Code of Conduct
 
-Before contributing to this repository, please read the [code of conduct](./CODE_OF_CONDUCT.md).
+Before contributing, make sure to read our [code of conduct](./CODE_OF_CONDUCT.md).
 
 # Credits
 
-[Montydrei](https://www.reddit.com/user/montydrei) for the name suggestion.
-
-Everyone who provided valuable feedback on the [original Reddit post](https://www.reddit.com/r/MechanicalKeyboards/comments/gc6wx3/experimenting_with_a_completely_new_type_of/) for the prototype of this website.
-
-All of the [contributors](https://github.com/monkeytypegame/monkeytype/graphs/contributors) have helped implement various features, add themes, fix bugs, and more.
+Special thanks to:
+- [Montydrei](https://www.reddit.com/user/montydrei) for suggesting the name.
+- Contributors who provided valuable feedback on the [original Reddit post](https://www.reddit.com/r/MechanicalKeyboards/comments/gc6wx3/experimenting_with_a_completely_new_type_of/) for the prototype.
+- All [contributors](https://github.com/monkeytypegame/monkeytype/graphs/contributors) who helped implement features, add themes, fix bugs, and more.
 
 # Support
 
-If you wish to support further development and feel extra awesome, you can [donate](https://ko-fi.com/monkeytype), [become a Patron](https://www.patreon.com/monkeytype) or [buy a t-shirt](https://www.monkeytype.store/).
+If you'd like to support further development:
+- [Donate](https://ko-fi.com/monkeytype)
+- [Become a Patron](https://www.patreon.com/monkeytype)
+- [Buy a t-shirt](https://www.monkeytype.store/)
