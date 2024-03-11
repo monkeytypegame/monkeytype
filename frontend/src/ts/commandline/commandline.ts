@@ -4,7 +4,7 @@ import Config from "../config";
 import * as AnalyticsController from "../controllers/analytics-controller";
 import * as ThemeController from "../controllers/theme-controller";
 import { clearFontPreview } from "../ui";
-import AnimatedModal from "../popups/animated-modal";
+import AnimatedModal, { ShowHideOptions } from "../utils/animated-modal";
 import * as Notifications from "../elements/notifications";
 
 type CommandlineMode = "search" | "input";
@@ -49,8 +49,12 @@ type ShowSettings = {
   singleListOverride?: boolean;
 };
 
-export function show(settings?: ShowSettings): void {
+export function show(
+  settings?: ShowSettings,
+  modalShowSettings?: ShowHideOptions
+): void {
   void modal.show({
+    ...modalShowSettings,
     beforeAnimation: async (modal) => {
       mouseMode = false;
       inputValue = "";
