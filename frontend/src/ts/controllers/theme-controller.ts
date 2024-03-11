@@ -1,6 +1,7 @@
 import * as ThemeColors from "../elements/theme-colors";
 import * as ChartController from "./chart-controller";
 import * as Misc from "../utils/misc";
+import { isColorDark, isColorLight } from "../utils/colors";
 import Config, { setAutoSwitchTheme } from "../config";
 import * as BackgroundFilter from "../elements/custom-background-filter";
 import * as ConfigEvent from "../observables/config-event";
@@ -251,11 +252,11 @@ async function changeThemeList(): Promise<void> {
     themesList = Config.favThemes;
   } else if (Config.randomTheme === "light") {
     themesList = themes
-      .filter((t) => Misc.isColorLight(t.bgColor))
+      .filter((t) => isColorLight(t.bgColor))
       .map((t) => t.name);
   } else if (Config.randomTheme === "dark") {
     themesList = themes
-      .filter((t) => Misc.isColorDark(t.bgColor))
+      .filter((t) => isColorDark(t.bgColor))
       .map((t) => t.name);
   } else if (Config.randomTheme === "on") {
     themesList = themes.map((t) => {

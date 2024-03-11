@@ -9,6 +9,7 @@ import * as Caret from "./caret";
 import * as OutOfFocus from "./out-of-focus";
 import * as Replay from "./replay";
 import * as Misc from "../utils/misc";
+import { blendTwoHexColors } from "../utils/colors";
 import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
 import * as SlowTimer from "../states/slow-timer";
 import * as CompositionState from "../states/composition";
@@ -1137,9 +1138,9 @@ export async function applyBurstHeatmap(): Promise<void> {
 
     let colors = [
       themeColors.colorfulError,
-      Misc.blendTwoHexColors(themeColors.colorfulError, themeColors.text, 0.5),
+      blendTwoHexColors(themeColors.colorfulError, themeColors.text, 0.5),
       themeColors.text,
-      Misc.blendTwoHexColors(themeColors.main, themeColors.text, 0.5),
+      blendTwoHexColors(themeColors.main, themeColors.text, 0.5),
       themeColors.main,
     ];
     let unreachedColor = themeColors.sub;
@@ -1147,13 +1148,9 @@ export async function applyBurstHeatmap(): Promise<void> {
     if (themeColors.main === themeColors.text) {
       colors = [
         themeColors.colorfulError,
-        Misc.blendTwoHexColors(
-          themeColors.colorfulError,
-          themeColors.text,
-          0.5
-        ),
+        blendTwoHexColors(themeColors.colorfulError, themeColors.text, 0.5),
         themeColors.sub,
-        Misc.blendTwoHexColors(themeColors.sub, themeColors.text, 0.5),
+        blendTwoHexColors(themeColors.sub, themeColors.text, 0.5),
         themeColors.main,
       ];
       unreachedColor = themeColors.subAlt;

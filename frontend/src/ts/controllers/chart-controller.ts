@@ -64,6 +64,7 @@ import * as ThemeColors from "../elements/theme-colors";
 import * as ConfigEvent from "../observables/config-event";
 import * as TestInput from "../test/test-input";
 import * as Misc from "../utils/misc";
+import { blendTwoHexColors } from "../utils/colors";
 
 class ChartWithUpdateColors<
   TType extends ChartType = ChartType,
@@ -1113,7 +1114,7 @@ async function updateColors<
   const errorcolor = await ThemeColors.get("error");
   const textcolor = await ThemeColors.get("text");
 
-  const gridcolor = Misc.blendTwoHexColors(bgcolor, subaltcolor, 0.75);
+  const gridcolor = blendTwoHexColors(bgcolor, subaltcolor, 0.75);
 
   //@ts-expect-error
   chart.data.datasets[0].borderColor = (ctx): string => {
@@ -1182,12 +1183,12 @@ async function updateColors<
     const avg10On = Config.accountChart[2] === "on";
     const avg100On = Config.accountChart[3] === "on";
 
-    const text02 = Misc.blendTwoHexColors(bgcolor, textcolor, 0.2);
-    const main02 = Misc.blendTwoHexColors(bgcolor, maincolor, 0.2);
-    const main04 = Misc.blendTwoHexColors(bgcolor, maincolor, 0.4);
+    const text02 = blendTwoHexColors(bgcolor, textcolor, 0.2);
+    const main02 = blendTwoHexColors(bgcolor, maincolor, 0.2);
+    const main04 = blendTwoHexColors(bgcolor, maincolor, 0.4);
 
-    const sub02 = Misc.blendTwoHexColors(bgcolor, subcolor, 0.2);
-    const sub04 = Misc.blendTwoHexColors(bgcolor, subcolor, 0.4);
+    const sub02 = blendTwoHexColors(bgcolor, subcolor, 0.2);
+    const sub04 = blendTwoHexColors(bgcolor, subcolor, 0.4);
 
     const [
       wpmDataset,

@@ -1,6 +1,7 @@
 import Config, * as UpdateConfig from "../config";
 import * as ThemeController from "../controllers/theme-controller";
 import * as Misc from "../utils/misc";
+import * as Colors from "../utils/colors";
 import * as Notifications from "../elements/notifications";
 import * as ThemeColors from "../elements/theme-colors";
 import * as ChartController from "../controllers/chart-controller";
@@ -83,7 +84,7 @@ function updateColors(
   }
 
   $(".colorConverter").css("color", color);
-  const hexColor: string | undefined = Misc.rgbStringtoHex(
+  const hexColor: string | undefined = Colors.rgbStringtoHex(
     $(".colorConverter").css("color")
   );
   if (hexColor === undefined) {
