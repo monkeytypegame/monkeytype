@@ -6,6 +6,8 @@ import "./event-handlers/global";
 import "./event-handlers/footer";
 import "./event-handlers/keymap";
 import "./event-handlers/test";
+import "./event-handlers/about";
+import "./event-handlers/settings";
 
 import "./firebase";
 import * as Logger from "./utils/logger";
@@ -20,7 +22,6 @@ import * as Result from "./test/result";
 import "./controllers/account-controller";
 import { enable } from "./states/glarses-mode";
 import "./test/caps-warning";
-import "./popups/contact-popup";
 import "./popups/version-popup";
 import "./popups/edit-preset-popup";
 import "./popups/set-streak-hour-offset";
