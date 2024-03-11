@@ -9,6 +9,21 @@ import * as TestUI from "./test/test-ui";
 import { get as getActivePage } from "./states/active-page";
 import { isDevEnvironment } from "./utils/misc";
 
+let isPreviewingFont = false;
+export function previewFontFamily(font: string): void {
+  document.documentElement.style.setProperty(
+    "--font",
+    '"' + font.replace(/_/g, " ") + '", "Roboto Mono", "Vazirmatn"'
+  );
+  isPreviewingFont = true;
+}
+
+export function clearFontPreview(): void {
+  if (!isPreviewingFont) return;
+  previewFontFamily(Config.fontFamily);
+  isPreviewingFont = false;
+}
+
 function updateKeytips(): void {
   const modifierKey = window.navigator.userAgent.toLowerCase().includes("mac")
     ? "cmd"

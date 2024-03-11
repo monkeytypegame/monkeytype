@@ -2,8 +2,14 @@
 import "jquery-color";
 import "jquery.easing";
 
-import "./firebase";
+import "./event-handlers/global";
+import "./event-handlers/footer";
+import "./event-handlers/keymap";
+import "./event-handlers/test";
+import "./event-handlers/about";
+import "./event-handlers/settings";
 
+import "./firebase";
 import * as Logger from "./utils/logger";
 import * as DB from "./db";
 import "./ui";
@@ -16,8 +22,6 @@ import * as Result from "./test/result";
 import "./controllers/account-controller";
 import { enable } from "./states/glarses-mode";
 import "./test/caps-warning";
-import "./popups/support-popup";
-import "./popups/contact-popup";
 import "./popups/version-popup";
 import "./popups/edit-preset-popup";
 import "./popups/set-streak-hour-offset";
@@ -34,14 +38,12 @@ import "./popups/google-sign-up-popup";
 import "./popups/result-tags-popup";
 import * as Account from "./pages/account";
 import "./elements/leaderboards";
-import "./commandline/index";
 import "./elements/no-css";
 import { egVideoListener } from "./popups/video-ad-popup";
 import "./states/connection";
 import "./test/tts";
 import "./elements/fps-counter";
 import "./controllers/profile-search-controller";
-import "./version";
 import { isDevEnvironment } from "./utils/misc";
 
 function addToGlobal(items: Record<string, unknown>): void {

@@ -213,4 +213,6 @@ export const page = new Page(
   }
 );
 
-Skeleton.save("pageAbout");
+$(() => {
+  Skeleton.save("pageAbout");
+});

@@ -1232,19 +1232,6 @@ export function setQuickRestartMode(
   return true;
 }
 
-export function previewFontFamily(font: string): boolean {
-  if (!isConfigValueValid("preview font family", font, ["string"])) {
-    return false;
-  }
-
-  document.documentElement.style.setProperty(
-    "--font",
-    '"' + font.replace(/_/g, " ") + '", "Roboto Mono", "Vazirmatn"'
-  );
-
-  return true;
-}
-
 //font family
 export function setFontFamily(font: string, nosave?: boolean): boolean {
   if (!isConfigValueValid("font family", font, ["string"])) return false;

@@ -63,10 +63,9 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
     void debouncedZipfCheck();
   }
   if (eventKey === "fontSize" && !nosave) {
-    setTimeout(() => {
-      updateWordsHeight(true);
-      updateWordsInputPosition(true);
-    }, 0);
+    OutOfFocus.hide();
+    updateWordsHeight(true);
+    updateWordsInputPosition(true);
   }
 
   if (eventKey === "theme") void applyBurstHeatmap();
@@ -128,9 +127,7 @@ export function reset(): void {
 }
 
 export function focusWords(): void {
-  if (!$("#wordsWrapper").hasClass("hidden")) {
-    $("#wordsInput").trigger("focus");
-  }
+  $("#wordsInput").trigger("focus");
 }
 
 export function blurWords(): void {

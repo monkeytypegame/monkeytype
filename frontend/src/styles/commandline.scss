@@ -1,4 +1,4 @@
-#commandLineWrapper {
+#commandLine {
   width: 100%;
   height: 100%;
   background: rgba(0, 0, 0, 0.75);
@@ -9,40 +9,12 @@
   display: grid;
   justify-items: center;
   align-items: start;
-  padding: 5rem 2rem;
+  padding: 6rem 2rem;
   grid-template-columns: 1fr;
   transition: background 0.125s;
+  overflow: hidden;
 
-  #commandInput {
-    max-width: 600px;
-    width: 100%;
-    background: var(--bg-color);
-    border-radius: var(--roundness);
-
-    input {
-      background: var(--bg-color);
-      padding: 1rem;
-      color: var(--main-color);
-      border: none;
-      outline: none;
-      font-size: 1rem;
-      width: 100%;
-      border-radius: var(--roundness);
-      &:focus-visible {
-        box-shadow: none;
-      }
-    }
-
-    .shiftEnter {
-      padding: 0.5rem 1rem;
-      font-size: 0.75rem;
-      line-height: 0.75rem;
-      color: var(--sub-color);
-      text-align: center;
-    }
-  }
-
-  #commandLine {
+  .modal {
     max-width: 600px;
     width: 100%;
     background: var(--bg-color);
@@ -50,6 +22,8 @@
     // outline: 0.25rem solid transparent;
     box-shadow: 0 0 0 0.2em transparent;
     transition: outline 0.125s;
+    padding: 0;
+    display: block;
 
     .searchicon {
       color: var(--sub-color);
@@ -70,37 +44,27 @@
       }
     }
 
-    .separator {
-      background: black;
-      width: 100%;
-      height: 1px;
-      margin-bottom: 0.5rem;
-    }
-
-    .listTitle {
-      color: var(--text-color);
-      padding: 0.5rem 1rem;
-      font-size: 0.75rem;
-      line-height: 0.75rem;
-    }
-
     .suggestions {
       display: block;
       @extend .ffscroll;
       overflow-y: scroll;
-      max-height: calc(100vh - 10rem - 3rem);
+      max-height: calc(100vh - 12rem - 3rem);
       display: grid;
       cursor: pointer;
       -webkit-user-select: none;
       user-select: none;
 
-      .entry {
+      .command {
         padding: 0.5rem 1rem;
         font-size: 0.75rem;
         line-height: 0.75rem;
         color: var(--sub-color);
         display: grid;
         grid-template-columns: auto 1fr;
+
+        .chevronIcon {
+          margin: 0 0.5rem;
+        }
 
         div {
           pointer-events: none;
@@ -126,27 +90,6 @@
           border-radius: 0 0 var(--roundness) var(--roundness);
         }
 
-        &.activeMouse {
-          color: var(--bg-color) !important;
-          background: var(--text-color) !important;
-          cursor: pointer;
-          .fas,
-          .far,
-          .fab {
-            color: var(--bg-color);
-          }
-        }
-
-        &.activeKeyboard {
-          color: var(--bg-color) !important;
-          background: var(--text-color) !important;
-          .fas,
-          .far,
-          .fab {
-            color: var(--bg-color);
-          }
-        }
-
         &.active {
           color: var(--bg-color) !important;
           background: var(--text-color) !important;
@@ -156,12 +99,6 @@
             color: var(--bg-color);
           }
         }
-
-        // &:hover {
-        //   color: var(--text-color);
-        //   background: var(--sub-color);
-        //   cursor: pointer;
-        // }
 
         &.withThemeBubbles {
           grid-template-columns: auto 1fr auto;
@@ -183,7 +120,7 @@
 
   &.noBackground {
     background: none;
-    #commandLine {
+    .modal {
       box-shadow: 0 0 0 0.2em var(--sub-alt-color);
       // outline: 0.25rem solid var(--sub-alt-color);
     }
