@@ -51,10 +51,10 @@ const BASE_CONFIG = {
             if (src.startsWith(`"use strict";`)) {
               return src.replace(
                 /("use strict";)/,
-                `$1\nimport $ from "jquery";`
+                `$1import $ from "jquery";`
               );
             } else {
-              return `import $ from "jquery";\n${src}`;
+              return `import $ from "jquery";${src}`;
             }
           }
         }
@@ -171,11 +171,9 @@ const BUILD_CONFIG = {
         navigateFallback: "",
         runtimeCaching: [
           {
-            urlPattern: ({ request, url }) => {
-              const sameOrigin =
-                new URL(request.url).origin === new URL(url).origin;
-              const isApi = request.url.includes("api.monkeytype.com");
-              return sameOrigin && !isApi;
+            urlPattern: (options) => {
+              const isApi = options.url.hostname === "api.monkeytype.com";
+              return options.sameOrigin && !isApi;
             },
             handler: "NetworkFirst",
             options: {},

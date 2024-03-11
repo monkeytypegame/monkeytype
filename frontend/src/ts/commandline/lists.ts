@@ -102,7 +102,8 @@ import * as TestStats from "../test/test-stats";
 import * as QuoteSearchPopup from "../popups/quote-search-popup";
 import * as FPSCounter from "../elements/fps-counter";
 
-Misc.getLayoutsList()
+const layoutsPromise = Misc.getLayoutsList();
+layoutsPromise
   .then((layouts) => {
     updateLayoutsCommands(layouts);
     updateKeymapLayoutsCommands(layouts);
@@ -113,7 +114,8 @@ Misc.getLayoutsList()
     );
   });
 
-Misc.getLanguageList()
+const languagesPromise = Misc.getLanguageList();
+languagesPromise
   .then((languages) => {
     updateLanguagesCommands(languages);
   })
@@ -123,7 +125,8 @@ Misc.getLanguageList()
     );
   });
 
-Misc.getFunboxList()
+const funboxPromise = Misc.getFunboxList();
+funboxPromise
   .then((funboxes) => {
     updateFunboxCommands(funboxes);
     if (FunboxCommands[0]?.subgroup) {
@@ -138,7 +141,8 @@ Misc.getFunboxList()
     );
   });
 
-Misc.getFontsList()
+const fontsPromise = Misc.getFontsList();
+fontsPromise
   .then((fonts) => {
     updateFontFamilyCommands(fonts);
   })
@@ -148,7 +152,8 @@ Misc.getFontsList()
     );
   });
 
-Misc.getThemesList()
+const themesPromise = Misc.getThemesList();
+themesPromise
   .then((themes) => {
     updateThemesCommands(themes);
   })
@@ -158,7 +163,8 @@ Misc.getThemesList()
     );
   });
 
-Misc.getChallengeList()
+const challengesPromise = Misc.getChallengeList();
+challengesPromise
   .then((challenges) => {
     updateLoadChallengeCommands(challenges);
   })
@@ -491,6 +497,10 @@ const lists = {
   blindMode: BlindModeCommands[0]?.subgroup,
 };
 
+export function doesListExist(listName: string): boolean {
+  return lists[listName as ListsObjectKeys] !== undefined;
+}
+
 export function getList(
   listName: ListsObjectKeys
 ): MonkeyTypes.CommandsSubgroup {
@@ -502,20 +512,140 @@ export function getList(
   return list;
 }
 
-export let current: MonkeyTypes.CommandsSubgroup[] = [];
+let stack: MonkeyTypes.CommandsSubgroup[] = [];
 
-current = [commands];
+stack = [commands];
+
+export function getStackLength(): number {
+  return stack.length;
+}
 
 export type ListsObjectKeys = keyof typeof lists;
 
-export function setCurrent(val: MonkeyTypes.CommandsSubgroup[]): void {
-  current = val;
+export function setStackToDefault(): void {
+  setStack([commands]);
 }
 
-export function pushCurrent(val: MonkeyTypes.CommandsSubgroup): void {
-  current.push(val);
+export function setStack(val: MonkeyTypes.CommandsSubgroup[]): void {
+  stack = val;
 }
 
-export function getCurrent(): MonkeyTypes.CommandsSubgroup {
-  return current[current.length - 1] as MonkeyTypes.CommandsSubgroup;
+export function pushToStack(val: MonkeyTypes.CommandsSubgroup): void {
+  stack.push(val);
+}
+
+export function popFromStack(): void {
+  stack.pop();
+}
+
+export function getTopOfStack(): MonkeyTypes.CommandsSubgroup {
+  return stack[stack.length - 1] as MonkeyTypes.CommandsSubgroup;
+}
+
+let singleList: MonkeyTypes.CommandsSubgroup | undefined;
+export async function getSingleSubgroup(): Promise<MonkeyTypes.CommandsSubgroup> {
+  await Promise.allSettled([
+    layoutsPromise,
+    languagesPromise,
+    funboxPromise,
+    fontsPromise,
+    themesPromise,
+    challengesPromise,
+  ]);
+
+  if (singleList) return singleList;
+
+  // const
+
+  const singleCommands: MonkeyTypes.Command[] = [];
+  const beforeListFunctions: (() => void)[] = [];
+  for (const command of commands.list) {
+    const ret = buildSingleListCommands(command);
+    singleCommands.push(...ret.commands);
+    beforeListFunctions.push(...ret.beforeListFunctions);
+  }
+
+  singleList = {
+    title: "All commands",
+    list: singleCommands,
+    beforeList: (): void => {
+      for (const func of beforeListFunctions) {
+        func();
+      }
+    },
+  };
+  return singleList;
+}
+
+type SingleList = {
+  commands: MonkeyTypes.Command[];
+  beforeListFunctions: (() => void)[];
+};
+
+function buildSingleListCommands(
+  command: MonkeyTypes.Command,
+  parentCommand?: MonkeyTypes.Command
+): SingleList {
+  const commands: MonkeyTypes.Command[] = [];
+  const beforeListFunctions: (() => void)[] = [];
+  if (command.subgroup) {
+    const currentCommand = {
+      ...command,
+      subgroup: {
+        ...command.subgroup,
+        list: [],
+      },
+    };
+    if (command.subgroup.beforeList) {
+      beforeListFunctions.push(command.subgroup.beforeList);
+    }
+    for (const cmd of command.subgroup.list) {
+      commands.push(...buildSingleListCommands(cmd, currentCommand).commands);
+    }
+  } else {
+    if (parentCommand) {
+      const parentCommandDisplay = parentCommand.display.replace(
+        /\s?\.\.\.$/g,
+        ""
+      );
+      const singleListDisplay =
+        parentCommandDisplay +
+        '<i class="fas fa-fw fa-chevron-right chevronIcon"></i>' +
+        command.display;
+
+      const singleListDisplayNoIcon =
+        parentCommandDisplay + " " + command.display;
+
+      let newAlias: string | undefined = undefined;
+
+      if ((parentCommand.alias ?? "") || (command.alias ?? "")) {
+        newAlias = [parentCommand.alias, command.alias]
+          .filter(Boolean)
+          .join(" ");
+      }
+
+      const newCommand = {
+        ...command,
+        singleListDisplay,
+        singleListDisplayNoIcon,
+        configKey: parentCommand.subgroup?.configKey,
+        icon: parentCommand.icon,
+        alias: newAlias,
+        visible: (parentCommand.visible ?? true) && (command.visible ?? true),
+        available: (): boolean => {
+          return (
+            (parentCommand?.available?.() ?? true) &&
+            (command?.available?.() ?? true)
+          );
+        },
+      };
+      commands.push(newCommand);
+    } else {
+      commands.push(command);
+    }
+  }
+  return {
+    commands,
+    beforeListFunctions,
+  };
 }

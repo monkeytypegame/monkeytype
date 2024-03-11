@@ -296,21 +296,23 @@ declare namespace MonkeyTypes {
   type Command = {
     id: string;
     display: string;
+    singleListDisplay?: string;
+    singleListDisplayNoIcon?: string;
     subgroup?: CommandsSubgroup;
     found?: boolean;
     icon?: string;
-    noIcon?: boolean;
     sticky?: boolean;
     alias?: string;
     input?: boolean;
     visible?: boolean;
     customStyle?: string;
     defaultValue?: () => string;
+    configKey?: keyof SharedTypes.Config;
     configValue?: string | number | boolean | number[];
-    configValueMode?: string;
+    configValueMode?: "include";
     exec?: (input?: string) => void;
     hover?: () => void;
-    available?: () => void;
+    available?: () => boolean;
     shouldFocusTestUI?: boolean;
     customData?: Record<string, string>;
   };

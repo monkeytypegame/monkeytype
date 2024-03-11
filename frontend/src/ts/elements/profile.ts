@@ -7,6 +7,8 @@ import { throttle } from "throttle-debounce";
 import * as EditProfilePopup from "../popups/edit-profile-popup";
 import * as ActivePage from "../states/active-page";
 import formatDistanceToNowStrict from "date-fns/formatDistanceToNowStrict";
+import { getHtmlByUserFlags } from "../controllers/user-flag-controller";
+import Format from "../utils/format";
 
 type ProfileViewPaths = "profile" | "account";
 type UserProfileOrSnapshot = SharedTypes.UserProfile | MonkeyTypes.Snapshot;
@@ -23,15 +25,12 @@ export async function update(
 
   profileElement.attr("uid", profile.uid ?? "");
   profileElement.attr("name", profile.name ?? "");
-  profileElement.attr("lbOptOut", `${profile.lbOptOut ?? false}`);
 
   // ============================================================================
   // DO FREAKING NOT USE .HTML OR .APPEND HERE - USER INPUT!!!!!!
   // ============================================================================
 
   const banned = profile.banned === true;
-
-  const lbOptOut = profile.lbOptOut === true;
 
   if (
     details === undefined ||
@@ -78,22 +77,9 @@ export async function update(
   }
 
   details.find(".name").text(profile.name);
+  details.find(".userFlags").html(getHtmlByUserFlags(profile));
 
-  if (banned) {
-    details
-      .find(".name")
-      .append(
-        `<div class="bannedIcon" aria-label="This account is banned" data-balloon-pos="up"><i class="fas fa-gavel"></i></div>`
-      );
-  }
-
-  if (lbOptOut) {
-    details
-      .find(".name")
-      .append(
-        `<div class="bannedIcon" aria-label="This account has opted out of leaderboards" data-balloon-pos="up"><i class="fas fa-crown"></i></div>`
-      );
-
+  if (profile.lbOptOut === true) {
     if (where === "profile") {
       profileElement
         .find(".lbOptOutReminder")
@@ -201,13 +187,34 @@ export async function update(
     .attr("aria-label", hoverText)
     .attr("data-balloon-break", "");
 
+  let completedPercentage = "";
+  let restartRatio = "";
+  if (
+    profile.typingStats.completedTests !== undefined &&
+    profile.typingStats.startedTests !== undefined
+  ) {
+    completedPercentage = Math.floor(
+      (profile.typingStats.completedTests / profile.typingStats.startedTests) *
+        100
+    ).toString();
+    restartRatio = (
+      (profile.typingStats.startedTests - profile.typingStats.completedTests) /
+      profile.typingStats.completedTests
+    ).toFixed(1);
+  }
+
   const typingStatsEl = details.find(".typingStats");
   typingStatsEl
     .find(".started .value")
     .text(profile.typingStats?.startedTests ?? 0);
   typingStatsEl
     .find(".completed .value")
-    .text(profile.typingStats?.completedTests ?? 0);
+    .text(profile.typingStats?.completedTests ?? 0)
+    .attr("data-balloon-pos", "up")
+    .attr(
+      "aria-label",
+      `${completedPercentage}% (${restartRatio} restarts per completed test)`
+    );
   typingStatsEl
     .find(".timeTyping .value")
     .text(
@@ -311,25 +318,19 @@ export async function update(
   } else {
     profileElement.find(".leaderboardsPositions").removeClass("hidden");
 
-    const lbPos =
-      where === "profile"
-        ? (profile as SharedTypes.UserProfile).allTimeLbs
-        : (profile as MonkeyTypes.Snapshot).lbMemory;
+    const t15 = profile.allTimeLbs.time?.["15"]?.["english"] ?? null;
+    const t60 = profile.allTimeLbs.time?.["60"]?.["english"] ?? null;
 
-    const t15 = lbPos?.time?.["15"]?.["english"];
-    const t60 = lbPos?.time?.["60"]?.["english"];
-
-    if (!t15 && !t60) {
+    if (t15 === null && t60 === null) {
       profileElement.find(".leaderboardsPositions").addClass("hidden");
     } else {
-      const t15string = t15 ? Misc.getPositionString(t15) : "-";
       profileElement
         .find(".leaderboardsPositions .group.t15 .pos")
-        .text(t15string);
-      const t60string = t60 ? Misc.getPositionString(t60) : "-";
+        .text(Format.rank(t15));
+
       profileElement
         .find(".leaderboardsPositions .group.t60 .pos")
-        .text(t60string);
+        .text(Format.rank(t60));
     }
   }
 
@@ -392,7 +393,7 @@ export function updateNameFontSize(where: ProfileViewPaths): void {
     details = $(".pageProfile .profile .details");
   }
   if (!details) return;
-  const nameFieldjQ = details.find(".name");
+  const nameFieldjQ = details.find(".user");
   const nameFieldParent = nameFieldjQ.parent()[0];
   const nameField = nameFieldjQ[0];
   const upperLimit = Misc.convertRemToPixels(2);

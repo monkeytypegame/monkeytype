@@ -3,7 +3,7 @@ import { randomQuote } from "../test/test-words";
 import { getMode2, isPopupVisible } from "../utils/misc";
 import * as CustomText from "../test/custom-text";
 import { compressToURI } from "lz-ts";
-import * as Skeleton from "./skeleton";
+import * as Skeleton from "../utils/skeleton";
 
 const wrapperId = "shareTestSettingsPopupWrapper";
 
@@ -99,7 +99,7 @@ function updateSubgroups(): void {
 }
 
 export function show(): void {
-  Skeleton.append(wrapperId);
+  Skeleton.append(wrapperId, "popups");
   if (!isPopupVisible(wrapperId)) {
     updateURL();
     updateSubgroups();

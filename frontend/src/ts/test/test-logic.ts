@@ -56,6 +56,7 @@ import * as KeymapEvent from "../observables/keymap-event";
 import * as LayoutfluidFunboxTimer from "../test/funbox/layoutfluid-funbox-timer";
 import * as Wordset from "./wordset";
 import * as ArabicLazyMode from "../states/arabic-lazy-mode";
+import Format from "../utils/format";
 
 let failReason = "";
 const koInputVisual = document.getElementById("koInputVisual") as HTMLElement;
@@ -367,7 +368,7 @@ export function restart(options = {} as RestartOptions): void {
       }
 
       if (Config.showAverage !== "off") {
-        Last10Average.update().finally(() => {
+        void Last10Average.update().then(() => {
           void ModesNotice.update();
         });
       } else {
@@ -1290,7 +1291,7 @@ async function saveResult(
         500
       );
     $("#result .stats .dailyLeaderboard .bottom").html(
-      Misc.getPositionString(response.data.dailyLeaderboardRank)
+      Format.rank(response.data.dailyLeaderboardRank, { fallback: "" })
     );
   }
 
