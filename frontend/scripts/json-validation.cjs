@@ -398,6 +398,7 @@ function validateQuotes() {
         quoteFilesErrors =
           quoteValidator.errors[0].message +
           ` (at static/quotes/${quotefilename}.json)`;
+        return;
       }
       const quoteIds = quoteData.quotes.map((quote) => quote.id);
       const quoteIdsValidator = ajv.compile(quoteIdsSchema);
