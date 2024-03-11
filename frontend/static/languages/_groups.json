@@ -507,6 +507,10 @@
     "languages": ["euskera"]
   },
   {
+    "name": "klingon",
+    "languages": ["klingon", "klingon_1k"]
+  },
+  {
     "name": "lorem_ipsum",
     "languages": ["lorem_ipsum"]
   },
@@ -563,9 +567,5 @@
       "code_assembly",
       "code_v"
     ]
-  },
-  {
-    "name": "klingon",
-    "languages": ["klingon", "klingon_1k"]
   }
 ]
