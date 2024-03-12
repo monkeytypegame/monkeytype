@@ -20,6 +20,7 @@ type ConstructorCustomAnimations = {
 
 export type ShowHideOptions = {
   animationMode?: "none" | "both" | "modalOnly";
+  animationDurationMs?: number;
   customAnimation?: CustomWrapperAndModalAnimations;
   beforeAnimation?: (modal: HTMLElement) => Promise<void>;
   afterAnimation?: (modal: HTMLElement) => Promise<void>;
@@ -156,6 +157,7 @@ export default class AnimatedModal {
         options?.customAnimation?.modal ?? this.customShowAnimations?.modal;
       const modalAnimationDuration =
         options?.customAnimation?.modal?.durationMs ??
+        options?.animationDurationMs ??
         this.customShowAnimations?.modal?.durationMs ??
         DEFAULT_ANIMATION_DURATION;
       const wrapperAnimation = options?.customAnimation?.wrapper ??
@@ -233,6 +235,7 @@ export default class AnimatedModal {
         options?.customAnimation?.modal ?? this.customHideAnimations?.modal;
       const modalAnimationDuration =
         options?.customAnimation?.modal?.durationMs ??
+        options?.animationDurationMs ??
         this.customHideAnimations?.modal?.durationMs ??
         DEFAULT_ANIMATION_DURATION;
       const wrapperAnimation = options?.customAnimation?.wrapper ??

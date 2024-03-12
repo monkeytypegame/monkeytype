@@ -64,9 +64,11 @@ async function copy(): Promise<void> {
     );
     await modal.hide({
       animationMode: "modalOnly",
+      animationDurationMs: 62.5,
     });
     void urlModal.show({
       animationMode: "modalOnly",
+      animationDurationMs: 62.5,
       beforeAnimation: async (modal) => {
         const input = modal.querySelector("input") as HTMLInputElement;
         input.value = url;
