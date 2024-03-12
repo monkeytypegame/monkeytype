@@ -780,7 +780,7 @@ export async function getNextWord(
   randomWord = applyLazyModeToWord(randomWord, language);
   randomWord = await applyBritishEnglishToWord(randomWord, previousWordRaw);
 
-  if (Config.language === "swiss_german") {
+  if (Config.language.startsWith("swiss_german")) {
     randomWord = randomWord.replace(/ß/g, "ss");
   }
 
