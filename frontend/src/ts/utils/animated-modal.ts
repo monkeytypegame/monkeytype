@@ -137,6 +137,7 @@ export default class AnimatedModal {
   async show(options?: ShowHideOptions): Promise<void> {
     // eslint-disable-next-line no-async-promise-executor
     return new Promise(async (resolve) => {
+      if (this.open) return resolve();
       Skeleton.append(this.wrapperId, this.skeletonAppendParent);
 
       if (!this.setupRan) {
