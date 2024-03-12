@@ -607,26 +607,22 @@
     color: var(--error-color);
   }
 }
-#cookiePopup {
+#cookiesModal {
+  align-items: end;
+  justify-items: end;
   .extensionMessage {
-    position: fixed;
-    right: 2rem;
-    bottom: 2rem;
-    padding: 1rem;
-    width: 465px;
+    max-width: 465px;
+    width: 100%;
     font-size: 0.75rem;
     color: var(--text-color);
+    grid-column: 1/2;
+    grid-row: 1/2;
+    padding: 1rem;
   }
   .modal {
-    position: fixed;
-    right: 2rem;
-    bottom: 2rem;
-    background: var(--bg-color);
-    border-radius: var(--roundness);
-    padding: 2rem;
-    display: grid;
-    gap: 1rem;
-    min-width: 465px;
+    grid-column: 1/2;
+    grid-row: 1/2;
+    max-width: 465px;
     z-index: 100000001;
     // outline: 0.5rem solid var(--bg-color)
     -webkit-user-select: none;
