@@ -51,7 +51,6 @@ async function copy(): Promise<void> {
   const url = await generateUrl();
 
   try {
-    throw "a";
     await navigator.clipboard.writeText(url);
     Notifications.add("URL Copied to clipboard", 1);
     void modal.hide();
