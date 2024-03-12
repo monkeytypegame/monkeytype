@@ -270,7 +270,7 @@
   },
   {
     "name": "estonian",
-    "languages": ["estonian", "estonian_1k", "estonian_10k"]
+    "languages": ["estonian", "estonian_1k", "estonian_5k", "estonian_10k"]
   },
   {
     "name": "udmurt",
