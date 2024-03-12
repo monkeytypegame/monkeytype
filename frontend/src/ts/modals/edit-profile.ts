@@ -6,8 +6,7 @@ import * as Notifications from "../elements/notifications";
 import * as ConnectionState from "../states/connection";
 import AnimatedModal from "../utils/animated-modal";
 import * as Profile from "../elements/profile";
-import { getSortedThemesList, isPopupVisible } from "../utils/misc";
-import * as Skeleton from "../utils/skeleton";
+import { getSortedThemesList } from "../utils/misc";
 import SlimSelect from "slim-select";
 import type { DataObjectPartial } from "slim-select/dist/store";
 
@@ -164,8 +163,8 @@ async function updateProfile(): Promise<void> {
       delete badge.selected;
     }
   });
-  if (snapshot.inventory !== undefined) {
-    snapshot.inventory.leaderboardTheme = currentSelectedLeaderBoardTheme;
+  if (snapshot.premium !== undefined) {
+    snapshot.premium.leaderboardTheme = currentSelectedLeaderBoardTheme;
   }
 
   Notifications.add("Profile updated", 1);
@@ -220,6 +219,5 @@ export async function init(current?: string): Promise<void> {
   );
 
   data.unshift({ text: "none", value: "" });
-
   leaderboardThemeSelector.setData(data);
 }

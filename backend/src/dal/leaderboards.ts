@@ -33,7 +33,10 @@ export async function get(
       .premium.enabled;
 
     if (!premiumFeaturesEnabled) {
-      preset.forEach((it) => (it.isPremium = undefined));
+      preset.forEach((it) => {
+        it.isPremium = undefined;
+        it.leaderboardTheme = undefined;
+      });
     }
     return preset;
   } catch (e) {
@@ -147,25 +150,19 @@ export async function update(
             [`${key}.consistency`]: {
               $ifNull: [`$${key}.consistency`, "$$REMOVE"],
             },
-            "user.leaderboardTheme": {
-              $ifNull: ["$inventory.leaderboardTheme", "$$REMOVE"],
-            },
             calculated: {
               $function: {
                 lang: "js",
-                args: [
-                  "$premium.expirationTimestamp",
-                  "$$NOW",
-                  "$inventory.badges",
-                ],
-                body: `function(expiration, currentTime, badges) { 
+                args: ["$premium", "$$NOW", "$inventory.badges"],
+                body: `function(premium, currentTime, badges) { 
                         try {row_number+= 1;} catch (e) {row_number= 1;} 
                         var badgeId = undefined;
                         if(badges)for(let i=0; i<badges.length; i++){
                             if(badges[i].selected){ badgeId = badges[i].id; break}
                         }
-                        var isPremium = expiration !== undefined && (expiration === -1 || new Date(expiration)>currentTime) || undefined;
-                        return {rank:row_number,badgeId, isPremium};
+                        var isPremium = premium!==null && premium.expirationTimestamp !== undefined && (premium.expirationTimestamp === -1 || new Date(premium.expirationTimestamp)>currentTime) || undefined;
+                        var leaderboardTheme= isPremium ? (premium.leaderboardTheme || undefined) : undefined;
+                        return {rank:row_number,badgeId, isPremium, leaderboardTheme};
                       }`,
               },
             },

@@ -261,16 +261,23 @@ describe("LeaderboardsDal", () => {
   it("should create leaderboard with user selected theme", async () => {
     await enablePremiumFeatures(true);
     //GIVEN
-    const noPremium = await createUser(lbBests(pb(4)));
+    const noPremium = await createUser(lbBests(pb(5)));
+    const noPremiumWithTheme = await createUser(lbBests(pb(4)), {
+      premium: {
+        leaderboardTheme: "dots",
+        startTimestamp: 1000,
+        expirationTimestamp: 1000,
+      },
+    });
     const premiumNoTheme = await createUser(lbBests(pb(3)), premium(-1));
-    const premiumWithThemeDots = await createUser(lbBests(pb(3)), {
-      ...premium(-1),
-      inventory: { leaderboardTheme: "dots", badges: [] },
-    });
-    const premiumWithThemeDarling = await createUser(lbBests(pb(3)), {
-      ...premium(-1),
-      inventory: { leaderboardTheme: "darling", badges: [] },
-    });
+    const premiumWithThemeDots = await createUser(
+      lbBests(pb(2)),
+      premium(-1, "dots")
+    );
+    const premiumWithThemeDarling = await createUser(
+      lbBests(pb(1)),
+      premium(-1, "darling")
+    );
 
     //WHEN
     await LeaderboardsDal.update("time", "15", "english");
@@ -292,18 +299,23 @@ describe("LeaderboardsDal", () => {
       }),
       expectedLbEntry("15", {
         rank: 2,
+        user: noPremiumWithTheme,
+        leaderboardTheme: undefined,
+      }),
+      expectedLbEntry("15", {
+        rank: 3,
         user: premiumNoTheme,
         leaderboardTheme: undefined,
         isPremium: true,
       }),
       expectedLbEntry("15", {
-        rank: 3,
+        rank: 4,
         user: premiumWithThemeDots,
         leaderboardTheme: "dots",
         isPremium: true,
       }),
       expectedLbEntry("15", {
-        rank: 4,
+        rank: 5,
         user: premiumWithThemeDarling,
         leaderboardTheme: "darling",
         isPremium: true,
@@ -389,7 +401,7 @@ function pb(
   };
 }
 
-function premium(expirationDeltaSeconds) {
+function premium(expirationDeltaSeconds, theme?: string) {
   return {
     premium: {
       startTimestamp: 0,
@@ -397,6 +409,7 @@ function premium(expirationDeltaSeconds) {
         expirationDeltaSeconds === -1
           ? -1
           : Date.now() + expirationDeltaSeconds * 1000,
+      leaderboardTheme: theme,
     },
   };
 }

@@ -803,10 +803,10 @@ export async function updateProfile(
   });
 
   if (selectedLeaderboardTheme !== undefined) {
-    user.inventory = {
-      ...user.inventory,
+    user.premium = {
+      ...user.premium,
       leaderboardTheme: selectedLeaderboardTheme,
-    } as SharedTypes.UserInventory;
+    } as SharedTypes.PremiumInfo;
   }
 
   const profileDetailsUpdates: Partial<SharedTypes.UserProfileDetails> = {
@@ -818,7 +818,12 @@ export async function updateProfile(
     ) as SharedTypes.UserProfileDetails["socialProfiles"],
   };
 
-  await UserDAL.updateProfile(uid, profileDetailsUpdates, user.inventory);
+  await UserDAL.updateProfile(
+    uid,
+    profileDetailsUpdates,
+    user.inventory,
+    user.premium
+  );
 
   return new MonkeyResponse("Profile updated");
 }

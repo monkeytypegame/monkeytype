@@ -816,7 +816,8 @@ export async function recordAutoBanEvent(
 export async function updateProfile(
   uid: string,
   profileDetailUpdates: Partial<SharedTypes.UserProfileDetails>,
-  inventory?: SharedTypes.UserInventory
+  inventory?: SharedTypes.UserInventory,
+  premium?: SharedTypes.PremiumInfo
 ): Promise<void> {
   const profileUpdates = _.omitBy(
     flattenObjectDeep(profileDetailUpdates, "profileDetails"),
@@ -828,6 +829,7 @@ export async function updateProfile(
     $set: {
       ...profileUpdates,
       inventory,
+      premium,
     },
   };
   if (inventory === undefined) delete updates.$set.inventory;
