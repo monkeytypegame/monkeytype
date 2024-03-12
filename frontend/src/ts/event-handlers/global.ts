@@ -6,6 +6,7 @@ import { getCommandline } from "../utils/async-modules";
 
 document.addEventListener("keydown", async (e) => {
   if (PageTransition.get()) return;
+  if (e.key === undefined) return;
 
   if (
     (e.key === "Escape" && Config.quickRestart !== "esc") ||
