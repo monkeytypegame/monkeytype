@@ -507,6 +507,10 @@
     "languages": ["euskera"]
   },
   {
+    "name": "klingon",
+    "languages": ["klingon", "klingon_1k"]
+  },
+  {
     "name": "lorem_ipsum",
     "languages": ["lorem_ipsum"]
   },
