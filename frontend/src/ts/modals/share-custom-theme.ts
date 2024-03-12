@@ -1,8 +1,6 @@
 import * as ThemeController from "../controllers/theme-controller";
 import Config from "../config";
 import * as Notifications from "../elements/notifications";
-import * as CustomThemePopup from "../popups/custom-theme-popup";
-import { createErrorMessage } from "../utils/misc";
 import AnimatedModal from "../utils/animated-modal";
 
 type State = {
@@ -53,11 +51,11 @@ async function copy(): Promise<void> {
   const url = await generateUrl();
 
   try {
+    throw "a";
     await navigator.clipboard.writeText(url);
     Notifications.add("URL Copied to clipboard", 1);
     void modal.hide();
   } catch (e) {
-    Notifications.add(createErrorMessage(e, "Failed to copy to clipboard"), -1);
     Notifications.add(
       "Looks like we couldn't copy the link straight to your clipboard. Please copy it manually.",
       0,
@@ -65,8 +63,26 @@ async function copy(): Promise<void> {
         duration: 5,
       }
     );
-    void modal.hide();
-    CustomThemePopup.show(url);
+    await modal.hide({
+      animationMode: "modalOnly",
+    });
+    void urlModal.show({
+      animationMode: "modalOnly",
+      beforeAnimation: async (modal) => {
+        const input = modal.querySelector("input") as HTMLInputElement;
+        input.value = url;
+        //focus and select input
+        setTimeout(() => {
+          input.focus();
+          input.select();
+        }, 0);
+      },
+      afterAnimation: async (modal) => {
+        const input = modal.querySelector("input") as HTMLInputElement;
+        input.focus();
+        input.select();
+      },
+    });
   }
 }
 
@@ -80,3 +96,5 @@ const modal = new AnimatedModal("shareCustomThemeModal", "popups", undefined, {
       });
   },
 });
+
+const urlModal = new AnimatedModal("shareCustomThemeUrlModal", "popups");

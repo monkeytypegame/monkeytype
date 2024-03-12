@@ -762,18 +762,6 @@
   }
 }
 
-#customThemeShareWrapper {
-  #customThemeShare {
-    width: 50vw;
-    background: var(--bg-color);
-    border-radius: var(--roundness);
-    padding: 2rem;
-    display: grid;
-    gap: 1rem;
-    overflow-y: scroll;
-  }
-}
-
 #quoteSearchPopupWrapper {
   .highlight {
     color: var(--main-color);
@@ -1460,6 +1448,11 @@
       line-height: 1.5rem;
       color: var(--sub-color);
     }
+  }
+}
+#shareCustomThemeUrlModal {
+  .modal {
+    max-width: 900px;
   }
 }
 #contactModal {
