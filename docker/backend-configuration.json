@@ -1,0 +1,16 @@
+{
+  "configuration": {
+    "results": {
+      "savingEnabled": true
+    },
+    "users": {
+      "signUp": false,
+      "profiles": {
+        "enabled": false
+      }
+    },
+    "dailyLeaderboards": {
+      "enabled": false
+    }
+  }
+}
