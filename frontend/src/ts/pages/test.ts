@@ -1,5 +1,4 @@
 import * as TestStats from "../test/test-stats";
-import * as TestUI from "../test/test-ui";
 import * as ManualRestart from "../test/manual-restart-tracker";
 import * as TestLogic from "../test/test-logic";
 import * as Funbox from "../test/funbox/funbox";
