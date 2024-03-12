@@ -5,6 +5,7 @@ import * as Notifications from "../elements/notifications";
 import { getCommandline } from "../utils/async-modules";
 import * as SupportPopup from "../modals/support";
 import * as ContactModal from "../modals/contact";
+import * as VersionHistoryModal from "../modals/version-history";
 import { envConfig } from "../constants/env-config";
 
 document
@@ -21,6 +22,8 @@ document
     const event = e as MouseEvent;
     if (event.shiftKey) {
       alert(envConfig.clientVersion);
+    } else {
+      VersionHistoryModal.show();
     }
   });
 
@@ -60,4 +63,10 @@ document
   .querySelector("footer #contactPopupButton")
   ?.addEventListener("click", () => {
     ContactModal.show();
+  });
+
+document
+  .querySelector("footer #newVersionIndicator")
+  ?.addEventListener("click", () => {
+    document.querySelector("#newVersionIndicator")?.classList.add("hidden");
   });

@@ -1289,29 +1289,11 @@
   }
 }
 
-#versionHistoryWrapper {
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.75);
-  position: fixed;
-  left: 0;
-  top: 0;
-  z-index: 1000;
-  display: grid;
-  justify-content: center;
-  align-items: start;
-  padding: 5rem 0;
-
-  #versionHistory {
-    width: 75vw;
-    height: 100%;
-    background: var(--bg-color);
-    border-radius: var(--roundness);
-    padding: 2rem;
-    display: grid;
-    gap: 1rem;
+#versionHistoryModal {
+  .modal {
     @extend .ffscroll;
     overflow-y: scroll;
+    min-width: 800px;
 
     hr {
       background: var(--sub-alt-color);
