@@ -17,6 +17,13 @@ document
   });
 
 document
+  .querySelector("footer #newVersionIndicator")
+  ?.addEventListener("click", (e) => {
+    e.stopPropagation();
+    document.querySelector("#newVersionIndicator")?.classList.add("hidden");
+  });
+
+document
   .querySelector("footer .currentVersion")
   ?.addEventListener("click", (e) => {
     const event = e as MouseEvent;
@@ -63,10 +70,4 @@ document
   .querySelector("footer #contactPopupButton")
   ?.addEventListener("click", () => {
     ContactModal.show();
-  });
-
-document
-  .querySelector("footer #newVersionIndicator")
-  ?.addEventListener("click", () => {
-    document.querySelector("#newVersionIndicator")?.classList.add("hidden");
   });
