@@ -52,27 +52,22 @@ async function generateUrl(): Promise<string> {
 async function copy(): Promise<void> {
   const url = await generateUrl();
 
-  navigator.clipboard.writeText(url).then(
-    function () {
-      Notifications.add("URL Copied to clipboard", 1);
-      void modal.hide();
-    },
-    function (e) {
-      Notifications.add(
-        createErrorMessage(e, "Failed to copy to clipboard"),
-        -1
-      );
-      Notifications.add(
-        "Looks like we couldn't copy the link straight to your clipboard. Please copy it manually.",
-        0,
-        {
-          duration: 5,
-        }
-      );
-      void modal.hide();
-      CustomThemePopup.show(url);
-    }
-  );
+  try {
+    await navigator.clipboard.writeText(url);
+    Notifications.add("URL Copied to clipboard", 1);
+    void modal.hide();
+  } catch (e) {
+    Notifications.add(createErrorMessage(e, "Failed to copy to clipboard"), -1);
+    Notifications.add(
+      "Looks like we couldn't copy the link straight to your clipboard. Please copy it manually.",
+      0,
+      {
+        duration: 5,
+      }
+    );
+    void modal.hide();
+    CustomThemePopup.show(url);
+  }
 }
 
 const modal = new AnimatedModal("shareCustomThemeModal", "popups", undefined, {
