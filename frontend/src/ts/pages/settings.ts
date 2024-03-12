@@ -8,7 +8,7 @@ import * as TagController from "../controllers/tag-controller";
 import * as PresetController from "../controllers/preset-controller";
 import * as ThemePicker from "../settings/theme-picker";
 import * as Notifications from "../elements/notifications";
-import * as ImportExportSettingsPopup from "../popups/import-export-settings-popup";
+import * as ImportExportSettingsModal from "../modals/import-export-settings";
 import * as ConfigEvent from "../observables/config-event";
 import * as ActivePage from "../states/active-page";
 import * as ApeKeysPopup from "../popups/ape-keys-popup";
@@ -1128,7 +1128,7 @@ $(".pageSettings .section.presets").on(
 );
 
 $("#importSettingsButton").on("click", () => {
-  ImportExportSettingsPopup.show("import");
+  ImportExportSettingsModal.show("import");
 });
 
 $("#exportSettingsButton").on("click", () => {
@@ -1138,7 +1138,7 @@ $("#exportSettingsButton").on("click", () => {
       Notifications.add("JSON Copied to clipboard", 0);
     },
     function () {
-      ImportExportSettingsPopup.show("export");
+      ImportExportSettingsModal.show("export");
     }
   );
 });
