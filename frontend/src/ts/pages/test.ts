@@ -35,6 +35,6 @@ export const page = new Page(
     void Keymap.refresh();
   },
   async () => {
-    TestUI.focusWords();
+    //
   }
 );
