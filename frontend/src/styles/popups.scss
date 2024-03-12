@@ -36,6 +36,12 @@
   }
 }
 
+#registerCaptchaModal {
+  .modal {
+    box-sizing: unset;
+  }
+}
+
 #customTextPopupWrapper {
   #customTextPopup {
     background: var(--bg-color);
