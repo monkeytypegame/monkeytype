@@ -14,7 +14,7 @@ import * as LoadingPage from "../pages/loading";
 import * as LoginPage from "../pages/login";
 import * as ResultFilters from "../account/result-filters";
 import * as TagController from "./tag-controller";
-import * as RegisterCaptchaPopup from "../popups/register-captcha-popup";
+import * as RegisterCaptchaModal from "../modals/register-captcha";
 import * as URLHandler from "../utils/url-handler";
 import * as Account from "../pages/account";
 import * as Alerts from "../elements/alerts";
@@ -480,8 +480,8 @@ async function signUp(): Promise<void> {
     });
     return;
   }
-  RegisterCaptchaPopup.show();
-  const captchaToken = await RegisterCaptchaPopup.promise;
+  RegisterCaptchaModal.show();
+  const captchaToken = await RegisterCaptchaModal.promise;
   if (captchaToken === undefined || captchaToken === "") {
     Notifications.add("Please complete the captcha", -1);
     return;

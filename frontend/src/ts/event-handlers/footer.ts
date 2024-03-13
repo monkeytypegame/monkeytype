@@ -5,14 +5,22 @@ import * as Notifications from "../elements/notifications";
 import { getCommandline } from "../utils/async-modules";
 import * as SupportPopup from "../modals/support";
 import * as ContactModal from "../modals/contact";
+import * as VersionHistoryModal from "../modals/version-history";
 import { envConfig } from "../constants/env-config";
 
 document
-  .querySelector("footer #commandLineButton")
+  .querySelector("footer #commandLineMobileButton")
   ?.addEventListener("click", async () => {
     (await getCommandline()).show({
       singleListOverride: false,
     });
+  });
+
+document
+  .querySelector("footer #newVersionIndicator")
+  ?.addEventListener("click", (e) => {
+    e.stopPropagation();
+    document.querySelector("#newVersionIndicator")?.classList.add("hidden");
   });
 
 document
@@ -21,6 +29,8 @@ document
     const event = e as MouseEvent;
     if (event.shiftKey) {
       alert(envConfig.clientVersion);
+    } else {
+      VersionHistoryModal.show();
     }
   });
 

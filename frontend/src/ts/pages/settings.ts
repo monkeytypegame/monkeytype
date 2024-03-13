@@ -8,11 +8,10 @@ import * as TagController from "../controllers/tag-controller";
 import * as PresetController from "../controllers/preset-controller";
 import * as ThemePicker from "../settings/theme-picker";
 import * as Notifications from "../elements/notifications";
-import * as ImportExportSettingsPopup from "../popups/import-export-settings-popup";
+import * as ImportExportSettingsModal from "../modals/import-export-settings";
 import * as ConfigEvent from "../observables/config-event";
 import * as ActivePage from "../states/active-page";
 import * as ApeKeysPopup from "../popups/ape-keys-popup";
-import * as CookiePopup from "../popups/cookie-popup";
 import Page from "./page";
 import { getAuthenticatedUser, isAuthenticated } from "../firebase";
 import Ape from "../ape";
@@ -1128,7 +1127,7 @@ $(".pageSettings .section.presets").on(
 );
 
 $("#importSettingsButton").on("click", () => {
-  ImportExportSettingsPopup.show("import");
+  ImportExportSettingsModal.show("import");
 });
 
 $("#exportSettingsButton").on("click", () => {
@@ -1138,7 +1137,7 @@ $("#exportSettingsButton").on("click", () => {
       Notifications.add("JSON Copied to clipboard", 0);
     },
     function () {
-      ImportExportSettingsPopup.show("export");
+      ImportExportSettingsModal.show("export");
     }
   );
 });
@@ -1245,11 +1244,6 @@ $(".pageSettings .quickNav .links a").on("click", (e) => {
     "slideup"
   );
   isOpen && toggleSettingsGroup(settingsGroup);
-});
-
-$(".pageSettings .section.updateCookiePreferences button").on("click", () => {
-  CookiePopup.show();
-  CookiePopup.showSettings();
 });
 
 $(".pageSettings .section.discordIntegration .getLinkAndGoToOauth").on(

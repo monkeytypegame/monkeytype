@@ -759,14 +759,6 @@
       grid-template-areas: "title" "t15" "t60";
     }
   }
-  #cookiePopupWrapper {
-    #cookiePopup,
-    .extensionMessage {
-      right: 1rem;
-      bottom: 1rem;
-      width: calc(100vw - 2rem);
-    }
-  }
   #keymap {
     .row {
       height: 1.25rem;

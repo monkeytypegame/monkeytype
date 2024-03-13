@@ -1,8 +1,8 @@
-<div id="registerCaptchaPopupWrapper" class="popupWrapper hidden">
-  <div id="registerCaptchaPopup">
+<dialog id="registerCaptchaModal" class="modalWrapper hidden">
+  <div class="modal">
     <div class="g-recaptcha"></div>
   </div>
-</div>
+</dialog>
 
 <dialog id="alertsPopup" class="modalWrapper hidden">
   <div class="modal">
@@ -59,10 +59,7 @@
   <div id="simplePopup" popupId=""></div>
 </div>
 
-<dialog
-  id="cookiePopup"
-  class="cookie-popup-wrapper cookiePopupWrapper modalWrapper hidden"
->
+<dialog id="cookiesModal" class="modalWrapper hidden">
   <div class="extensionMessage">
     If you see this text, that means an extension is blocking a cookie consent
     popup. This will cause the website to incorrectly assume its still visible
@@ -235,9 +232,8 @@
   </div>
 </div>
 
-<div id="pbTablesPopupWrapper" class="popupWrapper hidden">
-  <div id="pbTablesPopup">
-    <!-- <div class="title">All words personal bests</div> -->
+<dialog id="pbTablesModal" class="modalWrapper hidden">
+  <div class="modal">
     <table>
       <thead>
         <tr>
@@ -263,7 +259,7 @@
       <tbody></tbody>
     </table>
   </div>
-</div>
+</dialog>
 
 <div id="practiseWordsPopupWrapper" class="popupWrapper hidden" tabindex="-1">
   <div id="practiseWordsPopup" action="">
@@ -362,19 +358,19 @@
   </div>
 </div>
 
-<dialog id="settingsImportPopup" class="modalWrapper hidden">
+<dialog id="importExportSettingsModal" class="modalWrapper hidden">
   <form class="modal" data-mode="">
     <input type="text" title="import settings" />
     <button>import settings</button>
   </form>
 </dialog>
 
-<div id="customThemeShareWrapper" class="popupWrapper hidden">
-  <div id="customThemeShare" action="">
+<dialog id="shareCustomThemeUrlModal" class="modalWrapper hidden">
+  <div class="modal">
     <input type="text" title="custom theme" />
     <div class="button">ok</div>
   </div>
-</div>
+</dialog>
 <div id="customTextPopupWrapper" class="popupWrapper hidden">
   <div id="customTextPopup" action="">
     <div class="buttonsTop">
@@ -591,17 +587,25 @@
     <div class="button disabled">Sign up</div>
   </div>
 </div>
-<div id="customWordAmountPopupWrapper" class="popupWrapper hidden">
-  <div id="customWordAmountPopup">
-    <div class="title">Word amount</div>
+<dialog id="customWordAmountModal" class="modalWrapper hidden">
+  <form class="modal">
+    <div class="title">Custom word amount</div>
     <input type="number" value="1" min="1" max="10000" />
     <div class="tip">
       You can start an infinite test by inputting 0. Then, to stop the test, use
-      the Bail Out feature (esc or ctrl/cmd + shift + p > Bail Out)
+      the Bail Out feature (
+      <key>esc</key>
+      or
+      <key>ctrl/cmd</key>
+      +
+      <key>shift</key>
+      +
+      <key>p</key>
+      > Bail Out)
     </div>
     <button>ok</button>
-  </div>
-</div>
+  </form>
+</dialog>
 <div id="customTestDurationPopupWrapper" class="popupWrapper hidden">
   <div id="customTestDurationPopup">
     <div class="title">Test duration</div>
@@ -796,9 +800,9 @@
     </form>
   </div>
 </div>
-<div id="streakHourOffsetPopupWrapper" class="popupWrapper hidden">
-  <div id="streakHourOffsetPopup">
-    <div class="title">Set Streak Hour Offset</div>
+<dialog id="streakHourOffsetModal" class="modalWrapper hidden">
+  <div class="modal">
+    <div class="title">Set streak hour offset</div>
     <div class="text">
       Streaks reset at midnight UTC by default. If this is not convenient for
       you (for example if it means that streaks reset in the middle of the day),
@@ -812,9 +816,9 @@
     </div>
     <input type="number" min="-11" max="12" value="0" />
     <div class="preview"></div>
-    <div class="button">set</div>
+    <button>set</button>
   </div>
-</div>
+</dialog>
 <div id="resultEditTagsPanelWrapper" class="popupWrapper hidden">
   <div id="resultEditTagsPanel" resultid="">
     <div class="buttons"></div>
@@ -951,9 +955,9 @@
     </div>
   </div>
 </div>
-<div id="versionHistoryWrapper" class="popupWrapper hidden">
-  <div id="versionHistory"></div>
-</div>
+<dialog id="versionHistoryModal" class="modalWrapper hidden">
+  <div class="modal"></div>
+</dialog>
 <dialog id="supportModal" class="modalWrapper hidden">
   <div class="modal">
     <div class="title">Support Monkeytype</div>

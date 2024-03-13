@@ -769,6 +769,7 @@ export async function getNextWord(
     !Config.language.startsWith("german") &&
     !Config.language.startsWith("swiss_german") &&
     !Config.language.startsWith("code") &&
+    !Config.language.startsWith("klingon") &&
     !isCurrentlyUsingFunboxSection
   ) {
     randomWord = randomWord.toLowerCase();
@@ -779,7 +780,7 @@ export async function getNextWord(
   randomWord = applyLazyModeToWord(randomWord, language);
   randomWord = await applyBritishEnglishToWord(randomWord, previousWordRaw);
 
-  if (Config.language === "swiss_german") {
+  if (Config.language.startsWith("swiss_german")) {
     randomWord = randomWord.replace(/ß/g, "ss");
   }
 
