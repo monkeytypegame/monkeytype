@@ -131,6 +131,7 @@ window.onunhandledrejection = function (e): void {
       customTitle: "DEV: Unhandled rejection",
       duration: 5,
     });
+    console.error(e);
   }
   void log("error", {
     error: e.reason.stack ?? "",
