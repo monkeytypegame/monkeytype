@@ -801,9 +801,9 @@
     </form>
   </div>
 </div>
-<div id="streakHourOffsetPopupWrapper" class="popupWrapper hidden">
-  <div id="streakHourOffsetPopup">
-    <div class="title">Set Streak Hour Offset</div>
+<dialog id="streakHourOffsetModal" class="modalWrapper hidden">
+  <div class="modal">
+    <div class="title">Set streak hour offset</div>
     <div class="text">
       Streaks reset at midnight UTC by default. If this is not convenient for
       you (for example if it means that streaks reset in the middle of the day),
@@ -817,9 +817,9 @@
     </div>
     <input type="number" min="-11" max="12" value="0" />
     <div class="preview"></div>
-    <div class="button">set</div>
+    <button>set</button>
   </div>
-</div>
+</dialog>
 <div id="resultEditTagsPanelWrapper" class="popupWrapper hidden">
   <div id="resultEditTagsPanel" resultid="">
     <div class="buttons"></div>

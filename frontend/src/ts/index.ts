@@ -23,7 +23,7 @@ import "./controllers/account-controller";
 import { enable } from "./states/glarses-mode";
 import "./test/caps-warning";
 import "./popups/edit-preset-popup";
-import "./popups/set-streak-hour-offset";
+import "./modals/streak-hour-offset";
 import "./popups/simple-popups";
 import "./controllers/input-controller";
 import "./ready";
