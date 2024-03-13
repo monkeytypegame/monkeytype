@@ -553,42 +553,28 @@ export async function getSingleSubgroup(): Promise<MonkeyTypes.CommandsSubgroup>
     challengesPromise,
   ]);
 
-  if (singleList) return singleList;
-
-  // const
-
   const singleCommands: MonkeyTypes.Command[] = [];
-  const beforeListFunctions: (() => void)[] = [];
   for (const command of commands.list) {
     const ret = buildSingleListCommands(command);
-    singleCommands.push(...ret.commands);
-    beforeListFunctions.push(...ret.beforeListFunctions);
+    singleCommands.push(...ret);
   }
 
   singleList = {
     title: "All commands",
     list: singleCommands,
-    beforeList: (): void => {
-      for (const func of beforeListFunctions) {
-        func();
-      }
-    },
   };
   return singleList;
 }
 
-type SingleList = {
-  commands: MonkeyTypes.Command[];
-  beforeListFunctions: (() => void)[];
-};
-
 function buildSingleListCommands(
   command: MonkeyTypes.Command,
   parentCommand?: MonkeyTypes.Command
-): SingleList {
+): MonkeyTypes.Command[] {
   const commands: MonkeyTypes.Command[] = [];
-  const beforeListFunctions: (() => void)[] = [];
   if (command.subgroup) {
+    if (command.subgroup.beforeList) {
+      command.subgroup.beforeList();
+    }
     const currentCommand = {
       ...command,
       subgroup: {
@@ -596,11 +582,8 @@ function buildSingleListCommands(
         list: [],
       },
     };
-    if (command.subgroup.beforeList) {
-      beforeListFunctions.push(command.subgroup.beforeList);
-    }
     for (const cmd of command.subgroup.list) {
-      commands.push(...buildSingleListCommands(cmd, currentCommand).commands);
+      commands.push(...buildSingleListCommands(cmd, currentCommand));
     }
   } else {
     if (parentCommand) {
@@ -644,8 +627,5 @@ function buildSingleListCommands(
       commands.push(command);
     }
   }
-  return {
-    commands,
-    beforeListFunctions,
-  };
+  return commands;
 }

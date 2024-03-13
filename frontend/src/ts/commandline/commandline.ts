@@ -60,6 +60,7 @@ export function show(
       inputValue = "";
       activeIndex = 0;
       mode = "search";
+      cachedSingleSubgroup = null;
       inputModeParams = {
         command: null,
         placeholder: null,
@@ -97,7 +98,6 @@ export function show(
       activeCommand = null;
       Focus.set(false);
       CommandlineLists.setStackToDefault();
-      await beforeList();
       updateInput();
       await filterSubgroup();
       await showCommands();
@@ -247,13 +247,19 @@ function hideCommands(): void {
   element.innerHTML = "";
 }
 
+let cachedSingleSubgroup: MonkeyTypes.CommandsSubgroup | null = null;
+
 async function getSubgroup(): Promise<MonkeyTypes.CommandsSubgroup> {
   if (subgroupOverride !== null) {
     return subgroupOverride;
   }
 
   if (usingSingleList) {
-    return CommandlineLists.getSingleSubgroup();
+    if (cachedSingleSubgroup === null) {
+      cachedSingleSubgroup = await CommandlineLists.getSingleSubgroup();
+    } else {
+      return cachedSingleSubgroup;
+    }
   }
 
   return CommandlineLists.getTopOfStack();
@@ -261,10 +267,6 @@ async function getSubgroup(): Promise<MonkeyTypes.CommandsSubgroup> {
 
 async function getList(): Promise<MonkeyTypes.Command[]> {
   return (await getSubgroup()).list;
-}
-
-async function beforeList(): Promise<void> {
-  (await getSubgroup()).beforeList?.();
 }
 
 async function showCommands(): Promise<void> {
@@ -442,7 +444,6 @@ async function runActiveCommand(): Promise<void> {
     CommandlineLists.pushToStack(
       command.subgroup as MonkeyTypes.CommandsSubgroup
     );
-    await beforeList();
     updateInput("");
     await filterSubgroup();
     await showCommands();
@@ -454,7 +455,6 @@ async function runActiveCommand(): Promise<void> {
       void AnalyticsController.log("usedCommandLine", { command: command.id });
       hide();
     } else {
-      await beforeList();
       await filterSubgroup();
       await showCommands();
       await updateActiveCommand();
