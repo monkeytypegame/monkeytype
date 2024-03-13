@@ -1,7 +1,7 @@
 import * as TestLogic from "../test/test-logic";
 import Config, * as UpdateConfig from "../config";
 import * as ManualRestart from "../test/manual-restart-tracker";
-import * as CustomWordAmountPopup from "./custom-word-amount-popup";
+import * as CustomWordAmountPopup from "../modals/custom-word-amount";
 import * as CustomTestDurationPopup from "./custom-test-duration-popup";
 import * as QuoteSearchPopup from "./quote-search-popup";
 import * as CustomTextPopup from "./custom-text-popup";

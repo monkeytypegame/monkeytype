@@ -499,11 +499,23 @@
   }
 }
 
-#customWordAmountPopupWrapper,
+#customWordAmountModal {
+  .modal {
+    max-width: 500px;
+    .title {
+      font-size: 1.5rem;
+      color: var(--sub-color);
+    }
+    .tip {
+      font-size: 0.75rem;
+      color: var(--text-color);
+    }
+  }
+}
+
 #customTestDurationPopupWrapper,
 #practiseWordsPopupWrapper,
 #pbTablesPopupWrapper {
-  #customWordAmountPopup,
   #customTestDurationPopup,
   #practiseWordsPopup,
   #pbTablesPopup {

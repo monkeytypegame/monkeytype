@@ -588,17 +588,25 @@
     <div class="button disabled">Sign up</div>
   </div>
 </div>
-<div id="customWordAmountPopupWrapper" class="popupWrapper hidden">
-  <div id="customWordAmountPopup">
-    <div class="title">Word amount</div>
+<dialog id="customWordAmountModal" class="modalWrapper hidden">
+  <form class="modal">
+    <div class="title">Custom word amount</div>
     <input type="number" value="1" min="1" max="10000" />
     <div class="tip">
       You can start an infinite test by inputting 0. Then, to stop the test, use
-      the Bail Out feature (esc or ctrl/cmd + shift + p > Bail Out)
+      the Bail Out feature (
+      <key>esc</key>
+      or
+      <key>ctrl/cmd</key>
+      +
+      <key>shift</key>
+      +
+      <key>p</key>
+      > Bail Out)
     </div>
     <button>ok</button>
-  </div>
-</div>
+  </form>
+</dialog>
 <div id="customTestDurationPopupWrapper" class="popupWrapper hidden">
   <div id="customTestDurationPopup">
     <div class="title">Test duration</div>
