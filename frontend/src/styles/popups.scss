@@ -514,11 +514,9 @@
 }
 
 #customTestDurationPopupWrapper,
-#practiseWordsPopupWrapper,
-#pbTablesPopupWrapper {
+#practiseWordsPopupWrapper {
   #customTestDurationPopup,
-  #practiseWordsPopup,
-  #pbTablesPopup {
+  #practiseWordsPopup {
     background: var(--bg-color);
     border-radius: var(--roundness);
     padding: 2rem;
@@ -724,54 +722,52 @@
   }
 }
 
-#pbTablesPopupWrapper #pbTablesPopup {
-  .title {
-    color: var(--text-color);
-  }
-  width: 100%;
-  max-height: calc(100vh - 10rem);
-  overflow-y: scroll;
-  table {
-    border-spacing: 0;
-    border-collapse: collapse;
-    color: var(--text-color);
+#pbTablesModal {
+  .modal {
+    max-width: 100%;
+    overflow-y: scroll;
+    table {
+      border-spacing: 0;
+      border-collapse: collapse;
+      color: var(--text-color);
 
-    td {
-      padding: 0.5rem 0.5rem;
-    }
-
-    thead {
-      color: var(--sub-color);
-      font-size: 0.75rem;
-    }
-
-    tbody tr:nth-child(odd) td {
-      background: var(--sub-alt-color);
-    }
-
-    td.infoIcons span {
-      margin: 0 0.1rem;
-    }
-    .miniResultChartButton {
-      opacity: 0.25;
-      transition: 0.25s;
-      cursor: pointer;
-      &:hover {
-        opacity: 1;
+      td {
+        padding: 0.5rem 0.5rem;
       }
-    }
-    .sub {
-      opacity: 0.5;
-    }
-    td {
-      text-align: right;
-    }
-    td:nth-child(6),
-    td:nth-child(7) {
-      text-align: center;
-    }
-    tbody td:nth-child(1) {
-      font-size: 1.5rem;
+
+      thead {
+        color: var(--sub-color);
+        font-size: 0.75rem;
+      }
+
+      tbody tr:nth-child(odd) td {
+        background: var(--sub-alt-color);
+      }
+
+      td.infoIcons span {
+        margin: 0 0.1rem;
+      }
+      .miniResultChartButton {
+        opacity: 0.25;
+        transition: 0.25s;
+        cursor: pointer;
+        &:hover {
+          opacity: 1;
+        }
+      }
+      .sub {
+        opacity: 0.5;
+      }
+      td {
+        text-align: right;
+      }
+      td:nth-child(6),
+      td:nth-child(7) {
+        text-align: center;
+      }
+      tbody td:nth-child(1) {
+        font-size: 1.5rem;
+      }
     }
   }
 }
