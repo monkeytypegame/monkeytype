@@ -63,14 +63,14 @@ async function joinOverlappingHints(
     for (let j = 0; j < adjacentLetters.length - 1; j++) {
       const block1El = hintElements[i] as HTMLElement;
       const block2El = hintElements[i + 1] as HTMLElement;
+      const leftBlock = isLanguageRTL ? block2El : block1El;
+      const rightBlock = isLanguageRTL ? block1El : block2El;
 
+      /** HintBlock.offsetLeft is at the center line of corresponding letters
+       * then "transform: translate(-50%)" aligns hints with letters */
       if (
-        (!isLanguageRTL &&
-          block1El.offsetLeft + block1El.offsetWidth / 2 >
-            block2El.offsetLeft - block2El.offsetWidth / 2) ||
-        (isLanguageRTL &&
-          block2El.offsetLeft + block2El.offsetWidth / 2 >
-            block1El.offsetLeft - block1El.offsetWidth / 2)
+        leftBlock.offsetLeft + leftBlock.offsetWidth / 2 >
+        rightBlock.offsetLeft - rightBlock.offsetWidth / 2
       ) {
         block1El.dataset["length"] = (
           parseInt(block1El.dataset["length"] ?? "1") +
@@ -142,6 +142,10 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
     updateWordsHeight(true);
     updateWordsInputPosition(true);
   }
+  if (eventKey === "fontSize" || eventKey === "fontFamily")
+    updateHintsPosition().catch((e) => {
+      console.error(e);
+    });
 
   if (eventKey === "theme") void applyBurstHeatmap();
 
@@ -240,6 +244,53 @@ export function updateActiveElement(
   } catch (e) {}
   if (!initial && shouldUpdateWordsInputPosition()) {
     updateWordsInputPosition();
+  }
+}
+
+async function updateHintsPosition(): Promise<void> {
+  if (
+    ActivePage.get() !== "test" ||
+    resultVisible ||
+    Config.indicateTypos !== "below"
+  )
+    return;
+
+  const currentLanguage = await Misc.getCurrentLanguage(Config.language);
+  const isLanguageRTL = currentLanguage.rightToLeft;
+
+  let wordEl: HTMLElement | undefined;
+  let letterElements: NodeListOf<Element> | undefined;
+
+  const hintElements = document
+    .getElementById("words")
+    ?.querySelectorAll("div.word > div.hints > hint");
+  for (let i = 0; i < (hintElements?.length ?? 0); i++) {
+    const hintEl = hintElements?.[i] as HTMLElement;
+
+    if (!wordEl || hintEl.parentElement?.parentElement !== wordEl) {
+      wordEl = hintEl.parentElement?.parentElement as HTMLElement;
+      letterElements = wordEl?.querySelectorAll("letter");
+    }
+
+    const letterIndices = hintEl.dataset["charsIndex"]
+      ?.slice(1, -1)
+      .split(",")
+      .map((indx) => parseInt(indx));
+    const leftmostIndx = isLanguageRTL
+      ? parseInt(hintEl.dataset["length"] ?? "1") - 1
+      : 0;
+    let newLeft = (
+      letterElements?.[letterIndices?.[leftmostIndx] ?? 0] as HTMLElement
+    ).offsetLeft;
+    const lettersWidth =
+      letterIndices?.reduce(
+        (accum, curr) =>
+          accum + (letterElements?.[curr] as HTMLElement).offsetWidth,
+        0
+      ) ?? 0;
+    newLeft += lettersWidth / 2;
+
+    hintEl.style.left = newLeft.toString() + "px";
   }
 }
 
@@ -820,7 +871,9 @@ export async function updateWordElement(
       }
     }
   }
+
   wordAtIndex.innerHTML = ret;
+
   if (hintIndices?.length) {
     const activeWordLetters = wordAtIndex.querySelectorAll("letter");
     const hintsHtml = createHintsHtml(hintIndices, activeWordLetters);
@@ -828,6 +881,7 @@ export async function updateWordElement(
     const hintElements = wordAtIndex.getElementsByTagName("hint");
     await joinOverlappingHints(hintIndices, activeWordLetters, hintElements);
   }
+
   if (newlineafter) $("#words").append("<div class='newline'></div>");
 }
 
