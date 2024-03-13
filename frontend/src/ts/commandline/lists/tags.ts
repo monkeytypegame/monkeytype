@@ -16,7 +16,6 @@ const subgroup: MonkeyTypes.CommandsSubgroup = {
 
 const commands: MonkeyTypes.Command[] = [
   {
-    visible: false,
     id: "changeTags",
     display: "Tags...",
     icon: "fa-tag",
@@ -50,6 +49,7 @@ function update(): void {
     id: "clearTags",
     display: `Clear tags`,
     icon: "fa-times",
+    sticky: true,
     exec: (): void => {
       const snapshot = DB.getSnapshot();
       if (!snapshot) return;
@@ -71,6 +71,12 @@ function update(): void {
       id: "toggleTag" + tag._id,
       display: tag.display,
       sticky: true,
+      active: () => {
+        return (
+          DB.getSnapshot()?.tags?.find((t) => t._id === tag._id)?.active ??
+          false
+        );
+      },
       exec: async (): Promise<void> => {
         TagController.toggle(tag._id);
         void ModesNotice.update();

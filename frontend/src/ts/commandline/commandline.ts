@@ -296,7 +296,14 @@ async function showCommands(): Promise<void> {
     }
     let configIcon = "";
     const configKey = command.configKey ?? (await getSubgroup()).configKey;
-    if (configKey !== undefined) {
+    if (command.active !== undefined) {
+      if (command.active()) {
+        firstActive = firstActive ?? index;
+        configIcon = `<i class="fas fa-fw fa-check"></i>`;
+      } else {
+        configIcon = `<i class="fas fa-fw"></i>`;
+      }
+    } else if (configKey !== undefined) {
       const valueIsIncluded =
         command.configValueMode === "include" &&
         (
