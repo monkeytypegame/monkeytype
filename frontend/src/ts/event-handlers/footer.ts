@@ -9,7 +9,7 @@ import * as VersionHistoryModal from "../modals/version-history";
 import { envConfig } from "../constants/env-config";
 
 document
-  .querySelector("footer #commandLineButton")
+  .querySelector("footer #commandLineMobileButton")
   ?.addEventListener("click", async () => {
     (await getCommandline()).show({
       singleListOverride: false,
