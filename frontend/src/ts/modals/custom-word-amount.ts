@@ -6,13 +6,11 @@ import AnimatedModal from "../utils/animated-modal";
 
 export function show(): void {
   void modal.show({
+    focusFirstInput: true,
     beforeAnimation: async (modalEl) => {
       (
         modalEl.querySelector("input") as HTMLInputElement
       ).value = `${Config.words}`;
-    },
-    afterAnimation: async (modalEl) => {
-      modalEl.querySelector("input")?.focus();
     },
   });
 }

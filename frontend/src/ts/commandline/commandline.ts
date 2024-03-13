@@ -55,7 +55,8 @@ export function show(
 ): void {
   void modal.show({
     ...modalShowSettings,
-    beforeAnimation: async (modal) => {
+    focusFirstInput: true,
+    beforeAnimation: async () => {
       mouseMode = false;
       inputValue = "";
       activeIndex = 0;
@@ -103,15 +104,8 @@ export function show(
       await showCommands();
       await updateActiveCommand();
       setTimeout(() => {
-        // instead of waiting for the animation to finish,
-        // we focus just after it begins to increase responsivenes
-        // (you can type while the animation is running)
-        modal.querySelector("input")?.focus();
         keepActiveCommandInView();
-      }, 0);
-    },
-    afterAnimation: async (modal) => {
-      modal.querySelector("input")?.focus();
+      }, 1);
     },
   });
 }

@@ -19,6 +19,7 @@ type ConstructorCustomAnimations = {
 };
 
 export type ShowHideOptions = {
+  focusFirstInput?: boolean;
   animationMode?: "none" | "both" | "modalOnly";
   animationDurationMs?: number;
   customAnimation?: CustomWrapperAndModalAnimations;
@@ -151,7 +152,15 @@ export default class AnimatedModal {
       this.open = true;
       this.wrapperEl.showModal();
 
-      await options?.beforeAnimation?.(this.modalEl);
+      //wait until the next event loop to allow the dialog to start animating
+      setTimeout(async () => {
+        if (options?.focusFirstInput) {
+          this.modalEl.querySelector("input")?.focus();
+        } else {
+          this.wrapperEl.focus();
+        }
+        await options?.beforeAnimation?.(this.modalEl);
+      }, 0);
 
       const modalAnimation =
         options?.customAnimation?.modal ?? this.customShowAnimations?.modal;
@@ -197,7 +206,6 @@ export default class AnimatedModal {
             animationMode === "none" ? 0 : wrapperAnimationDuration,
             wrapperAnimation.easing ?? "swing",
             async () => {
-              this.wrapperEl.focus();
               await options?.afterAnimation?.(this.modalEl);
               resolve();
             }
