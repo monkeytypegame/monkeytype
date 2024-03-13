@@ -1293,7 +1293,7 @@
   .modal {
     @extend .ffscroll;
     overflow-y: scroll;
-    min-width: 800px;
+    max-width: 800px;
 
     hr {
       background: var(--sub-alt-color);
