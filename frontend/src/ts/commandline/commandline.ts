@@ -527,7 +527,8 @@ async function decrementActiveIndex(): Promise<void> {
   await updateActiveCommand();
 }
 
-const modal = new AnimatedModal("commandLine", "popups", undefined, {
+const modal = new AnimatedModal({
+  dialogId: "commandLine",
   customEscapeHandler: (): void => {
     hide();
   },

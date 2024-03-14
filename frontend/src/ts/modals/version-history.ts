@@ -54,4 +54,6 @@ export function show(): void {
   });
 }
 
-const modal = new AnimatedModal("versionHistoryModal", "popups");
+const modal = new AnimatedModal({
+  dialogId: "versionHistoryModal",
+});

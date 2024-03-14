@@ -48,7 +48,8 @@ function apply(): void {
   hide();
 }
 
-const modal = new AnimatedModal("customWordAmountModal", "popups", undefined, {
+const modal = new AnimatedModal({
+  dialogId: "customWordAmountModal",
   setup: (modalEl): void => {
     modalEl.addEventListener("submit", (e) => {
       e.preventDefault();

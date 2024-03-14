@@ -121,7 +121,8 @@ async function submitReport(): Promise<void> {
   void hide();
 }
 
-const modal = new AnimatedModal("userReportModal", "popups", undefined, {
+const modal = new AnimatedModal({
+  dialogId: "userReportModal",
   setup: async (modalEl): Promise<void> => {
     modalEl.querySelector("button")?.addEventListener("click", () => {
       void submitReport();

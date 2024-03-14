@@ -384,10 +384,9 @@ NotificationEvent.subscribe((message, level, customTitle) => {
   }
 });
 
-const modal = new AnimatedModal(
-  "alertsPopup",
-  "popups",
-  {
+const modal = new AnimatedModal({
+  dialogId: "alertsPopup",
+  customAnimations: {
     show: {
       modal: {
         from: {
@@ -411,55 +410,53 @@ const modal = new AnimatedModal(
       },
     },
   },
-  {
-    customEscapeHandler: (): void => {
+  customEscapeHandler: (): void => {
+    hide();
+  },
+  customWrapperClickHandler: (): void => {
+    hide();
+  },
+  setup: (): void => {
+    $("#alertsPopup .accountAlerts").on("click", ".claimAll", () => {
+      for (const ie of accountAlerts) {
+        if (!ie.read && !mailToMarkRead.includes(ie.id)) {
+          markReadAlert(ie.id);
+        }
+      }
+    });
+
+    $("#alertsPopup .accountAlerts").on("click", ".deleteAll", () => {
+      for (const ie of accountAlerts) {
+        if (!mailToDelete.includes(ie.id)) {
+          deleteAlert(ie.id);
+        }
+      }
+    });
+
+    $("#alertsPopup .mobileClose").on("click", () => {
       hide();
-    },
-    customWrapperClickHandler: (): void => {
-      hide();
-    },
-    setup: (): void => {
-      $("#alertsPopup .accountAlerts").on("click", ".claimAll", () => {
-        for (const ie of accountAlerts) {
-          if (!ie.read && !mailToMarkRead.includes(ie.id)) {
-            markReadAlert(ie.id);
-          }
-        }
-      });
+    });
 
-      $("#alertsPopup .accountAlerts").on("click", ".deleteAll", () => {
-        for (const ie of accountAlerts) {
-          if (!mailToDelete.includes(ie.id)) {
-            deleteAlert(ie.id);
-          }
-        }
-      });
+    $("#alertsPopup .accountAlerts .list").on(
+      "click",
+      ".item .buttons .deleteAlert",
+      (e) => {
+        const id = $(e.currentTarget)
+          .closest(".item")
+          .attr("data-id") as string;
+        deleteAlert(id);
+      }
+    );
 
-      $("#alertsPopup .mobileClose").on("click", () => {
-        hide();
-      });
-
-      $("#alertsPopup .accountAlerts .list").on(
-        "click",
-        ".item .buttons .deleteAlert",
-        (e) => {
-          const id = $(e.currentTarget)
-            .closest(".item")
-            .attr("data-id") as string;
-          deleteAlert(id);
-        }
-      );
-
-      $("#alertsPopup .accountAlerts .list").on(
-        "click",
-        ".item .buttons .markReadAlert",
-        (e) => {
-          const id = $(e.currentTarget)
-            .closest(".item")
-            .attr("data-id") as string;
-          markReadAlert(id);
-        }
-      );
-    },
-  }
-);
+    $("#alertsPopup .accountAlerts .list").on(
+      "click",
+      ".item .buttons .markReadAlert",
+      (e) => {
+        const id = $(e.currentTarget)
+          .closest(".item")
+          .attr("data-id") as string;
+        markReadAlert(id);
+      }
+    );
+  },
+});

@@ -72,7 +72,8 @@ async function copy(): Promise<void> {
   }
 }
 
-const modal = new AnimatedModal("shareCustomThemeModal", "popups", undefined, {
+const modal = new AnimatedModal({
+  dialogId: "shareCustomThemeModal",
   setup: (modal): void => {
     modal.querySelector("button")?.addEventListener("click", copy);
     modal
@@ -83,20 +84,16 @@ const modal = new AnimatedModal("shareCustomThemeModal", "popups", undefined, {
   },
 });
 
-const urlModal = new AnimatedModal(
-  "shareCustomThemeUrlModal",
-  "popups",
-  undefined,
-  {
-    customEscapeHandler: async (): Promise<void> => {
-      await urlModal.hide({
-        clearModalChain: true,
-      });
-    },
-    customWrapperClickHandler: async (): Promise<void> => {
-      await urlModal.hide({
-        clearModalChain: true,
-      });
-    },
-  }
-);
+const urlModal = new AnimatedModal({
+  dialogId: "shareCustomThemeUrlModal",
+  customEscapeHandler: async (): Promise<void> => {
+    await urlModal.hide({
+      clearModalChain: true,
+    });
+  },
+  customWrapperClickHandler: async (): Promise<void> => {
+    await urlModal.hide({
+      clearModalChain: true,
+    });
+  },
+});

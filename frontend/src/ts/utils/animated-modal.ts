@@ -35,13 +35,22 @@ export type HideOptions = ShowHideOptions & {
   clearModalChain?: boolean;
 };
 
+type ConstructorParams = {
+  dialogId: string;
+  appendTo?: Skeleton.SkeletonAppendParents;
+  customAnimations?: ConstructorCustomAnimations;
+  customEscapeHandler?: (e: KeyboardEvent) => void;
+  customWrapperClickHandler?: (e: MouseEvent) => void;
+  setup?: (modal: HTMLElement) => void;
+};
+
 const DEFAULT_ANIMATION_DURATION = 125;
 const MODAL_ONLY_ANIMATION_MULTIPLIER = 0.75;
 
 export default class AnimatedModal {
   private wrapperEl: HTMLDialogElement;
   private modalEl: HTMLElement;
-  private wrapperId: string;
+  private dialogId: string;
   private open = false;
   private setupRan = false;
   private previousModalInChain: AnimatedModal | undefined;
@@ -53,32 +62,25 @@ export default class AnimatedModal {
   private customWrapperClickHandler: ((e: MouseEvent) => void) | undefined;
   private setup: ((modal: HTMLElement) => void) | undefined;
 
-  constructor(
-    wrapperId: string,
-    appendTo: Skeleton.SkeletonAppendParents,
-    customAnimations?: ConstructorCustomAnimations,
-    functions?: {
-      customEscapeHandler?: (e: KeyboardEvent) => void;
-      customWrapperClickHandler?: (e: MouseEvent) => void;
-      setup?: (modal: HTMLElement) => void;
-    }
-  ) {
-    if (wrapperId.startsWith("#")) {
-      wrapperId = wrapperId.slice(1);
+  constructor(constructorParams: ConstructorParams) {
+    if (constructorParams.dialogId.startsWith("#")) {
+      constructorParams.dialogId = constructorParams.dialogId.slice(1);
     }
 
-    this.skeletonAppendParent = appendTo;
-    if (Skeleton.has(wrapperId)) {
-      Skeleton.append(wrapperId, this.skeletonAppendParent);
+    this.skeletonAppendParent = constructorParams.appendTo ?? "popups";
+    if (Skeleton.has(constructorParams.dialogId)) {
+      Skeleton.append(constructorParams.dialogId, this.skeletonAppendParent);
     }
 
-    const dialogElement = document.getElementById(wrapperId);
+    const dialogElement = document.getElementById(constructorParams.dialogId);
     const modalElement = document.querySelector(
-      `#${wrapperId} > .modal`
+      `#${constructorParams.dialogId} > .modal`
     ) as HTMLElement;
 
     if (dialogElement === null) {
-      throw new Error(`Dialog element with id ${wrapperId} not found`);
+      throw new Error(
+        `Dialog element with id ${constructorParams.dialogId} not found`
+      );
     }
 
     if (!(dialogElement instanceof HTMLDialogElement)) {
@@ -86,32 +88,35 @@ export default class AnimatedModal {
     }
 
     if (dialogElement === null) {
-      throw new Error(`Dialog element with id ${wrapperId} not found`);
+      throw new Error(
+        `Dialog element with id ${constructorParams.dialogId} not found`
+      );
     }
 
     if (modalElement === null) {
       throw new Error(
-        `Div element inside #${wrapperId} with class 'modal' not found`
+        `Div element inside #${constructorParams.dialogId} with class 'modal' not found`
       );
     }
 
-    this.wrapperId = wrapperId;
+    this.dialogId = constructorParams.dialogId;
     this.wrapperEl = dialogElement;
     this.modalEl = modalElement;
-    this.customShowAnimations = customAnimations?.show;
-    this.customHideAnimations = customAnimations?.hide;
+    this.customShowAnimations = constructorParams.customAnimations?.show;
+    this.customHideAnimations = constructorParams.customAnimations?.hide;
     this.previousModalInChain = undefined;
 
-    this.customEscapeHandler = functions?.customEscapeHandler;
-    this.customWrapperClickHandler = functions?.customWrapperClickHandler;
-    this.setup = functions?.setup;
+    this.customEscapeHandler = constructorParams?.customEscapeHandler;
+    this.customWrapperClickHandler =
+      constructorParams?.customWrapperClickHandler;
+    this.setup = constructorParams?.setup;
 
-    Skeleton.save(this.wrapperId);
+    Skeleton.save(this.dialogId);
   }
 
   runSetup(): void {
     this.wrapperEl.addEventListener("keydown", (e) => {
-      if (e.key === "Escape" && isPopupVisible(this.wrapperId)) {
+      if (e.key === "Escape" && isPopupVisible(this.dialogId)) {
         if (this.customEscapeHandler !== undefined) {
           this.customEscapeHandler(e);
         } else {
@@ -133,6 +138,10 @@ export default class AnimatedModal {
     if (this.setup !== undefined) {
       this.setup(this.modalEl);
     }
+  }
+
+  getDialogId(): string {
+    return this.dialogId;
   }
 
   getWrapper(): HTMLDialogElement {
@@ -163,14 +172,14 @@ export default class AnimatedModal {
     // eslint-disable-next-line no-async-promise-executor
     return new Promise(async (resolve) => {
       if (this.open) return resolve();
-      Skeleton.append(this.wrapperId, this.skeletonAppendParent);
+      Skeleton.append(this.dialogId, this.skeletonAppendParent);
 
       if (!this.setupRan) {
         this.runSetup();
         this.setupRan = true;
       }
 
-      if (isPopupVisible(this.wrapperId)) return resolve();
+      if (isPopupVisible(this.dialogId)) return resolve();
 
       const modalAnimationDuration =
         (options?.customAnimation?.modal?.durationMs ??
@@ -270,7 +279,7 @@ export default class AnimatedModal {
   async hide(options?: HideOptions): Promise<void> {
     // eslint-disable-next-line no-async-promise-executor
     return new Promise(async (resolve) => {
-      if (!isPopupVisible(this.wrapperId)) return resolve();
+      if (!isPopupVisible(this.dialogId)) return resolve();
 
       if (options?.clearModalChain) {
         this.previousModalInChain = undefined;
@@ -328,7 +337,7 @@ export default class AnimatedModal {
             async () => {
               this.wrapperEl.close();
               this.wrapperEl.classList.add("hidden");
-              Skeleton.remove(this.wrapperId);
+              Skeleton.remove(this.dialogId);
               this.open = false;
               await options?.afterAnimation?.(this.modalEl);
 
@@ -359,7 +368,7 @@ export default class AnimatedModal {
           async () => {
             this.wrapperEl.close();
             $(this.wrapperEl).addClass("hidden").css("opacity", "0");
-            Skeleton.remove(this.wrapperId);
+            Skeleton.remove(this.dialogId);
             this.open = false;
             await options?.afterAnimation?.(this.modalEl);
 
@@ -382,7 +391,7 @@ export default class AnimatedModal {
   destroy(): void {
     this.wrapperEl.close();
     this.wrapperEl.classList.add("hidden");
-    Skeleton.remove(this.wrapperId);
+    Skeleton.remove(this.dialogId);
     this.open = false;
   }
 }

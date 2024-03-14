@@ -98,7 +98,8 @@ async function apply(): Promise<void> {
   }
 }
 
-const modal = new AnimatedModal("streakHourOffsetModal", "popups", undefined, {
+const modal = new AnimatedModal({
+  dialogId: "streakHourOffsetModal",
   setup: (modalEl): void => {
     modalEl.querySelector("input")?.addEventListener("input", () => {
       updatePreview();

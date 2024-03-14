@@ -31,30 +31,26 @@ export function show(mode: "import" | "export", config?: string): void {
   });
 }
 
-const modal = new AnimatedModal(
-  "importExportSettingsModal",
-  "popups",
-  undefined,
-  {
-    setup: async (modalEl): Promise<void> => {
-      modalEl.querySelector("input")?.addEventListener("input", (e) => {
-        state.value = (e.target as HTMLInputElement).value;
-      });
-      modalEl.querySelector("form")?.addEventListener("submit", async (e) => {
-        e.preventDefault();
-        if (state.mode !== "import") return;
-        if (state.value === "") {
-          void modal.hide();
-          return;
-        }
-        try {
-          await UpdateConfig.apply(JSON.parse(state.value));
-        } catch (e) {
-          Notifications.add("Failed to import settings: " + e, -1);
-        }
-        UpdateConfig.saveFullConfigToLocalStorage();
+const modal = new AnimatedModal({
+  dialogId: "importExportSettingsModal",
+  setup: async (modalEl): Promise<void> => {
+    modalEl.querySelector("input")?.addEventListener("input", (e) => {
+      state.value = (e.target as HTMLInputElement).value;
+    });
+    modalEl.querySelector("form")?.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      if (state.mode !== "import") return;
+      if (state.value === "") {
         void modal.hide();
-      });
-    },
-  }
-);
+        return;
+      }
+      try {
+        await UpdateConfig.apply(JSON.parse(state.value));
+      } catch (e) {
+        Notifications.add("Failed to import settings: " + e, -1);
+      }
+      UpdateConfig.saveFullConfigToLocalStorage();
+      void modal.hide();
+    });
+  },
+});

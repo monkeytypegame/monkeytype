@@ -4,4 +4,6 @@ export function show(): void {
   void modal.show();
 }
 
-const modal = new AnimatedModal("contactModal", "popups", undefined);
+const modal = new AnimatedModal({
+  dialogId: "contactModal",
+});

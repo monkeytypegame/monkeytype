@@ -32,7 +32,8 @@ function hide(resolveToUndefined = false): void {
   void modal.hide();
 }
 
-const modal = new AnimatedModal("registerCaptchaModal", "popups", undefined, {
+const modal = new AnimatedModal({
+  dialogId: "registerCaptchaModal",
   customEscapeHandler: async (): Promise<void> => {
     hide(true);
   },
