@@ -1610,7 +1610,7 @@
   justify-items: end;
   .modal {
     background: var(--bg-color);
-    width: calc(350px + 2rem);
+    max-width: calc(350px + 2rem);
     right: 0;
     // height: calc(100vh - 4rem);
     height: 100%;
