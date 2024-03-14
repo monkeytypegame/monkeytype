@@ -91,8 +91,11 @@ $(document).ready(() => {
   if (ConnectionState.get()) {
     void PSA.show();
     void ServerConfiguration.sync().then(() => {
-      if (ServerConfiguration.get()?.users.signUp) {
-        $(".signInOut").removeClass("hidden");
+      if (!ServerConfiguration.get()?.users.signUp) {
+        $(".signInOut").addClass("hidden");
+        $(".register").addClass("hidden");
+        $(".login").addClass("hidden");
+        $(".disabledNotification").removeClass("hidden");
       }
     });
   }
