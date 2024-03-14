@@ -25,6 +25,8 @@ import {
   static as expressStatic,
 } from "express";
 import { isDevEnvironment } from "../../utils/misc";
+import { getLiveConfiguration } from "../../init/configuration";
+import Logger from "../../utils/logger";
 
 const pathOverride = process.env["API_PATH_OVERRIDE"];
 const BASE_ROUTE = pathOverride !== undefined ? `/${pathOverride}` : "";
@@ -57,11 +59,14 @@ function addApiRoutes(app: Application): void {
     });
     app.use("/configure", expressStatic(join(__dirname, "../../../private")));
 
-    //simulate delay for all requests
-    // app.use(async (req, res, next) => {
-    //   await new Promise((resolve) => setTimeout(resolve, 1000));
-    //   next();
-    // });
+    app.use(async (req, res, next) => {
+      const slowdown = (await getLiveConfiguration()).dev.responseSlowdownMs;
+      if (slowdown > 0) {
+        Logger.info(`Simulating ${slowdown}ms delay for ${req.path}`);
+        await new Promise((resolve) => setTimeout(resolve, slowdown));
+      }
+      next();
+    });
   }
 
   // Cannot be added to the route map because it needs to be added before the maintenance handler
