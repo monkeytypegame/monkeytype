@@ -17,6 +17,7 @@ export function show(mode: "import" | "export", config?: string): void {
   state.value = config ?? "";
 
   void modal.show({
+    focusFirstInput: "focusAndSelect",
     beforeAnimation: async (modal) => {
       (modal.querySelector("input") as HTMLInputElement).value = state.value;
       if (state.mode === "export") {
@@ -25,14 +26,6 @@ export function show(mode: "import" | "export", config?: string): void {
       } else if (state.mode === "import") {
         modal.querySelector("button")?.classList.remove("hidden");
         modal.querySelector("input")?.removeAttribute("readonly");
-      }
-    },
-    afterAnimation: async (modal) => {
-      const inputEl = modal.querySelector("input");
-      if (state.mode === "import") {
-        inputEl?.focus();
-      } else if (state.mode === "export") {
-        inputEl?.select();
       }
     },
   });

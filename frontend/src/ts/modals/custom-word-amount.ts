@@ -6,7 +6,7 @@ import AnimatedModal from "../utils/animated-modal";
 
 export function show(): void {
   void modal.show({
-    focusFirstInput: true,
+    focusFirstInput: "focusAndSelect",
     beforeAnimation: async (modalEl) => {
       (
         modalEl.querySelector("input") as HTMLInputElement

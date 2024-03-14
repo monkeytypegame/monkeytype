@@ -27,7 +27,7 @@ type ShowHideOptions = {
 };
 
 export type ShowOptions = ShowHideOptions & {
-  focusFirstInput?: boolean;
+  focusFirstInput?: true | "focusAndSelect";
   modalChain?: AnimatedModal;
 };
 
@@ -146,6 +146,19 @@ export default class AnimatedModal {
   isOpen(): boolean {
     return this.open;
   }
+
+  focusFirstInput(setting: true | "focusAndSelect" | undefined): void {
+    if (setting === true) {
+      this.modalEl.querySelector("input")?.focus();
+    } else if (setting === "focusAndSelect") {
+      const input = this.modalEl.querySelector("input") as HTMLInputElement;
+      input.focus();
+      input.select();
+    } else {
+      this.wrapperEl.focus();
+    }
+  }
+
   async show(options?: ShowOptions): Promise<void> {
     // eslint-disable-next-line no-async-promise-executor
     return new Promise(async (resolve) => {
@@ -181,13 +194,9 @@ export default class AnimatedModal {
 
       //wait until the next event loop to allow the dialog to start animating
       setTimeout(async () => {
-        if (options?.focusFirstInput) {
-          this.modalEl.querySelector("input")?.focus();
-        } else {
-          this.wrapperEl.focus();
-        }
+        this.focusFirstInput(options?.focusFirstInput);
         await options?.beforeAnimation?.(this.modalEl);
-      }, 0);
+      }, 1);
 
       const modalAnimation =
         options?.customAnimation?.modal ?? this.customShowAnimations?.modal;
@@ -231,6 +240,7 @@ export default class AnimatedModal {
             animationMode === "none" ? 0 : wrapperAnimationDuration,
             wrapperAnimation.easing ?? "swing",
             async () => {
+              this.focusFirstInput(options?.focusFirstInput);
               await options?.afterAnimation?.(this.modalEl);
               resolve();
             }
@@ -248,7 +258,7 @@ export default class AnimatedModal {
           modalAnimationDuration,
           modalAnimation?.easing ?? "swing",
           async () => {
-            this.wrapperEl.focus();
+            this.focusFirstInput(options?.focusFirstInput);
             await options?.afterAnimation?.(this.modalEl);
             resolve();
           }

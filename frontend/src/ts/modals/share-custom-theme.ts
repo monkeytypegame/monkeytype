@@ -62,26 +62,11 @@ async function copy(): Promise<void> {
         duration: 5,
       }
     );
-    await modal.hide({
-      animationMode: "modalOnly",
-      animationDurationMs: 62.5,
-    });
     void urlModal.show({
-      animationMode: "modalOnly",
-      animationDurationMs: 62.5,
-      beforeAnimation: async (modal) => {
-        const input = modal.querySelector("input") as HTMLInputElement;
-        input.value = url;
-        //focus and select input
-        setTimeout(() => {
-          input.focus();
-          input.select();
-        }, 0);
-      },
-      afterAnimation: async (modal) => {
-        const input = modal.querySelector("input") as HTMLInputElement;
-        input.focus();
-        input.select();
+      modalChain: modal,
+      focusFirstInput: "focusAndSelect",
+      beforeAnimation: async (m) => {
+        (m.querySelector("input") as HTMLInputElement).value = url;
       },
     });
   }
@@ -98,4 +83,20 @@ const modal = new AnimatedModal("shareCustomThemeModal", "popups", undefined, {
   },
 });
 
-const urlModal = new AnimatedModal("shareCustomThemeUrlModal", "popups");
+const urlModal = new AnimatedModal(
+  "shareCustomThemeUrlModal",
+  "popups",
+  undefined,
+  {
+    customEscapeHandler: async (): Promise<void> => {
+      await urlModal.hide({
+        clearModalChain: true,
+      });
+    },
+    customWrapperClickHandler: async (): Promise<void> => {
+      await urlModal.hide({
+        clearModalChain: true,
+      });
+    },
+  }
+);
