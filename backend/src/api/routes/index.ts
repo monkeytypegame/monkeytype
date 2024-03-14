@@ -49,9 +49,6 @@ function addApiRoutes(app: Application): void {
     res.sendStatus(404);
   });
 
-  // Cannot be added to the route map because it needs to be added before the maintenance handler
-  app.use("/configuration", configuration);
-
   if (isDevEnvironment()) {
     //disable csp to allow assets to load from unsecured http
     app.use((req, res, next) => {
@@ -66,6 +63,9 @@ function addApiRoutes(app: Application): void {
     //   next();
     // });
   }
+
+  // Cannot be added to the route map because it needs to be added before the maintenance handler
+  app.use("/configuration", configuration);
 
   addSwaggerMiddlewares(app);
 
