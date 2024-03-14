@@ -27,6 +27,7 @@ type ShowHideOptions = {
 };
 
 export type ShowOptions = ShowHideOptions & {
+  mode?: "modal" | "dialog";
   focusFirstInput?: true | "focusAndSelect";
   modalChain?: AnimatedModal;
 };
@@ -199,7 +200,11 @@ export default class AnimatedModal {
       }
 
       this.open = true;
-      this.wrapperEl.showModal();
+      if (options?.mode === "dialog") {
+        this.wrapperEl.show();
+      } else if (options?.mode === "modal" || options?.mode === undefined) {
+        this.wrapperEl.showModal();
+      }
 
       //wait until the next event loop to allow the dialog to start animating
       setTimeout(async () => {

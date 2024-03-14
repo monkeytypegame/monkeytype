@@ -9,6 +9,7 @@ export let promise = new Promise<string | undefined>((resolve) => {
 
 export function show(): void {
   void modal.show({
+    mode: "dialog",
     beforeAnimation: async (modal) => {
       promise = new Promise((resolve) => {
         resolvePromise = resolve;
