@@ -749,12 +749,12 @@
     <div class="button submit">report</div>
   </div>
 </div>
-<div id="userReportPopupWrapper" class="popupWrapper hidden">
-  <div id="userReportPopup" mode="">
-    <div class="title">Report a User</div>
+<dialog id="userReportModal" class="modalWrapper hidden">
+  <div class="modal">
+    <div class="title">Report a user</div>
     <div class="text">
-      Please report users responsibly. Please add comments in English only.
-      Misuse may result in you losing access to this feature.
+      Please report users responsibly and add comments in English only. Misuse
+      may result in you losing access to this feature.
     </div>
     <label>user</label>
     <div class="user"></div>
@@ -776,9 +776,9 @@
       class="g-recaptcha"
       data-sitekey="6Lc-V8McAAAAAJ7s6LGNe7MBZnRiwbsbiWts87aj"
     ></div>
-    <div class="button submit">Report</div>
+    <button>Report</button>
   </div>
-</div>
+</dialog>
 <div id="quoteApprovePopupWrapper" class="popupWrapper hidden">
   <div id="quoteApprovePopup" mode="">
     <div class="top">
