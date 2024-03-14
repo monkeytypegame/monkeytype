@@ -4,7 +4,7 @@ import Config from "../config";
 import * as AnalyticsController from "../controllers/analytics-controller";
 import * as ThemeController from "../controllers/theme-controller";
 import { clearFontPreview } from "../ui";
-import AnimatedModal, { ShowHideOptions } from "../utils/animated-modal";
+import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
 import * as Notifications from "../elements/notifications";
 
 type CommandlineMode = "search" | "input";
@@ -51,7 +51,7 @@ type ShowSettings = {
 
 export function show(
   settings?: ShowSettings,
-  modalShowSettings?: ShowHideOptions
+  modalShowSettings?: ShowOptions
 ): void {
   void modal.show({
     ...modalShowSettings,
@@ -110,10 +110,11 @@ export function show(
   });
 }
 
-function hide(): void {
+function hide(clearModalChain = false): void {
   clearFontPreview();
   void ThemeController.clearPreview();
   void modal.hide({
+    clearModalChain,
     afterAnimation: async () => {
       addCommandlineBackground();
     },
@@ -447,7 +448,7 @@ async function runActiveCommand(): Promise<void> {
     const isSticky = command.sticky ?? false;
     if (!isSticky) {
       void AnalyticsController.log("usedCommandLine", { command: command.id });
-      hide();
+      hide(true);
     } else {
       await filterSubgroup();
       await showCommands();

@@ -18,8 +18,7 @@ type ConstructorCustomAnimations = {
   hide?: CustomWrapperAndModalAnimations;
 };
 
-export type ShowHideOptions = {
-  focusFirstInput?: boolean;
+type ShowHideOptions = {
   animationMode?: "none" | "both" | "modalOnly";
   animationDurationMs?: number;
   customAnimation?: CustomWrapperAndModalAnimations;
@@ -27,7 +26,17 @@ export type ShowHideOptions = {
   afterAnimation?: (modal: HTMLElement) => Promise<void>;
 };
 
+export type ShowOptions = ShowHideOptions & {
+  focusFirstInput?: boolean;
+  modalChain?: AnimatedModal;
+};
+
+export type HideOptions = ShowHideOptions & {
+  clearModalChain?: boolean;
+};
+
 const DEFAULT_ANIMATION_DURATION = 125;
+const MODAL_ONLY_ANIMATION_MULTIPLIER = 0.75;
 
 export default class AnimatedModal {
   private wrapperEl: HTMLDialogElement;
@@ -35,6 +44,7 @@ export default class AnimatedModal {
   private wrapperId: string;
   private open = false;
   private setupRan = false;
+  private previousModalInChain: AnimatedModal | undefined;
   private skeletonAppendParent: Skeleton.SkeletonAppendParents;
   private customShowAnimations: CustomWrapperAndModalAnimations | undefined;
   private customHideAnimations: CustomWrapperAndModalAnimations | undefined;
@@ -90,6 +100,7 @@ export default class AnimatedModal {
     this.modalEl = modalElement;
     this.customShowAnimations = customAnimations?.show;
     this.customHideAnimations = customAnimations?.hide;
+    this.previousModalInChain = undefined;
 
     this.customEscapeHandler = functions?.customEscapeHandler;
     this.customWrapperClickHandler = functions?.customWrapperClickHandler;
@@ -135,8 +146,7 @@ export default class AnimatedModal {
   isOpen(): boolean {
     return this.open;
   }
-
-  async show(options?: ShowHideOptions): Promise<void> {
+  async show(options?: ShowOptions): Promise<void> {
     // eslint-disable-next-line no-async-promise-executor
     return new Promise(async (resolve) => {
       if (this.open) return resolve();
@@ -148,6 +158,23 @@ export default class AnimatedModal {
       }
 
       if (isPopupVisible(this.wrapperId)) return resolve();
+
+      const modalAnimationDuration =
+        (options?.customAnimation?.modal?.durationMs ??
+          options?.animationDurationMs ??
+          this.customShowAnimations?.modal?.durationMs ??
+          DEFAULT_ANIMATION_DURATION) *
+        (options?.modalChain !== undefined
+          ? MODAL_ONLY_ANIMATION_MULTIPLIER
+          : 1);
+
+      if (options?.modalChain !== undefined) {
+        this.previousModalInChain = options.modalChain;
+        await this.previousModalInChain.hide({
+          animationMode: "modalOnly",
+          animationDurationMs: modalAnimationDuration,
+        });
+      }
 
       this.open = true;
       this.wrapperEl.showModal();
@@ -164,11 +191,6 @@ export default class AnimatedModal {
 
       const modalAnimation =
         options?.customAnimation?.modal ?? this.customShowAnimations?.modal;
-      const modalAnimationDuration =
-        options?.customAnimation?.modal?.durationMs ??
-        options?.animationDurationMs ??
-        this.customShowAnimations?.modal?.durationMs ??
-        DEFAULT_ANIMATION_DURATION;
       const wrapperAnimation = options?.customAnimation?.wrapper ??
         this.customShowAnimations?.wrapper ?? {
           from: { opacity: "0" },
@@ -180,7 +202,10 @@ export default class AnimatedModal {
         this.customShowAnimations?.wrapper?.durationMs ??
         DEFAULT_ANIMATION_DURATION;
 
-      const animationMode = options?.animationMode ?? "both";
+      const animationMode =
+        this.previousModalInChain !== undefined
+          ? "modalOnly"
+          : options?.animationMode ?? "both";
 
       $(this.modalEl).stop(true, false);
       $(this.wrapperEl).stop(true, false);
@@ -232,20 +257,27 @@ export default class AnimatedModal {
     });
   }
 
-  async hide(options?: ShowHideOptions): Promise<void> {
+  async hide(options?: HideOptions): Promise<void> {
     // eslint-disable-next-line no-async-promise-executor
     return new Promise(async (resolve) => {
       if (!isPopupVisible(this.wrapperId)) return resolve();
+
+      if (options?.clearModalChain) {
+        this.previousModalInChain = undefined;
+      }
 
       await options?.beforeAnimation?.(this.modalEl);
 
       const modalAnimation =
         options?.customAnimation?.modal ?? this.customHideAnimations?.modal;
       const modalAnimationDuration =
-        options?.customAnimation?.modal?.durationMs ??
-        options?.animationDurationMs ??
-        this.customHideAnimations?.modal?.durationMs ??
-        DEFAULT_ANIMATION_DURATION;
+        (options?.customAnimation?.modal?.durationMs ??
+          options?.animationDurationMs ??
+          this.customHideAnimations?.modal?.durationMs ??
+          DEFAULT_ANIMATION_DURATION) *
+        (this.previousModalInChain !== undefined
+          ? MODAL_ONLY_ANIMATION_MULTIPLIER
+          : 1);
       const wrapperAnimation = options?.customAnimation?.wrapper ??
         this.customHideAnimations?.wrapper ?? {
           from: { opacity: "1" },
@@ -256,7 +288,10 @@ export default class AnimatedModal {
         options?.customAnimation?.wrapper?.durationMs ??
         this.customHideAnimations?.wrapper?.durationMs ??
         DEFAULT_ANIMATION_DURATION;
-      const animationMode = options?.animationMode ?? "both";
+      const animationMode =
+        this.previousModalInChain !== undefined
+          ? "modalOnly"
+          : options?.animationMode ?? "both";
 
       $(this.modalEl).stop(true, false);
       $(this.wrapperEl).stop(true, false);
@@ -286,6 +321,16 @@ export default class AnimatedModal {
               Skeleton.remove(this.wrapperId);
               this.open = false;
               await options?.afterAnimation?.(this.modalEl);
+
+              if (this.previousModalInChain !== undefined) {
+                await this.previousModalInChain.show({
+                  animationMode: "modalOnly",
+                  animationDurationMs:
+                    modalAnimationDuration * MODAL_ONLY_ANIMATION_MULTIPLIER,
+                });
+                this.previousModalInChain = undefined;
+              }
+
               resolve();
             }
           );
@@ -307,6 +352,16 @@ export default class AnimatedModal {
             Skeleton.remove(this.wrapperId);
             this.open = false;
             await options?.afterAnimation?.(this.modalEl);
+
+            if (this.previousModalInChain !== undefined) {
+              await this.previousModalInChain.show({
+                animationMode: "modalOnly",
+                animationDurationMs:
+                  modalAnimationDuration * MODAL_ONLY_ANIMATION_MULTIPLIER,
+              });
+              this.previousModalInChain = undefined;
+            }
+
             resolve();
           }
         );
