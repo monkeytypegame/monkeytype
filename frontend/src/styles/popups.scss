@@ -35,6 +35,11 @@
     color: var(--text-color);
     overflow-y: scroll;
     @extend .ffscroll;
+
+    & > .title {
+      font-size: 1.5rem;
+      color: var(--sub-color);
+    }
   }
 }
 
@@ -504,10 +509,6 @@
 #customWordAmountModal {
   .modal {
     max-width: 500px;
-    .title {
-      font-size: 1.5rem;
-      color: var(--sub-color);
-    }
     .tip {
       font-size: 0.75rem;
       color: var(--text-color);
@@ -642,10 +643,6 @@
     .main {
       display: grid;
       gap: 1rem;
-    }
-    .title {
-      font-size: 1.5rem;
-      color: var(--sub-color);
     }
     .buttons {
       margin-top: 0.25rem;
@@ -1243,11 +1240,6 @@
       font-size: 1.5rem;
     }
 
-    .title {
-      font-size: 1.5rem;
-      color: var(--sub-color);
-    }
-
     textarea {
       resize: vertical;
       width: 100%;
@@ -1369,11 +1361,6 @@
     gap: 1rem;
     @extend .ffscroll;
 
-    .title {
-      font-size: 1.5rem;
-      color: var(--sub-color);
-    }
-
     .text {
       color: var(--text-color);
     }
@@ -1420,12 +1407,6 @@
       gap: 1rem;
       grid-template-columns: 1fr 1fr 1fr;
     }
-
-    .title {
-      font-size: 1.5rem;
-      line-height: 1.5rem;
-      color: var(--sub-color);
-    }
   }
 }
 #shareCustomThemeUrlModal {
@@ -1440,12 +1421,6 @@
     gap: 1rem;
     @extend .ffscroll;
     max-width: 900px;
-
-    .title {
-      font-size: 1.5rem;
-      line-height: 2rem;
-      color: var(--sub-color);
-    }
 
     .text {
       color: var(--text-color);
@@ -1491,19 +1466,11 @@
 #editPresetModal {
   .modal {
     max-width: 450px;
-    .title {
-      font-size: 1.5rem;
-      color: var(--sub-color);
-    }
   }
 }
 
 #streakHourOffsetModal {
   .modal {
-    .title {
-      font-size: 1.5rem;
-      color: var(--sub-color);
-    }
     max-width: 500px;
     .red {
       color: var(--error-color);
@@ -1554,10 +1521,6 @@
   .modal {
     max-width: 600px;
     max-height: 100%;
-    .title {
-      font-size: 1.5rem;
-      color: var(--sub-color);
-    }
     label {
       color: var(--sub-color);
       margin-bottom: 0.25em;
