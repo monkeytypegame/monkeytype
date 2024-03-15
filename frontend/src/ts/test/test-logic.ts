@@ -1457,7 +1457,7 @@ $("#popups").on(
       return;
     }
     const sid = parseInt($(e.currentTarget).attr("id") ?? "");
-    QuoteSearchPopup.setSelectedId(sid);
+    TestState.setSelectedQuoteId(sid);
     if (QuoteSearchPopup.apply(sid)) restart();
   }
 );

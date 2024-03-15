@@ -20,14 +20,9 @@ import * as Loader from "../elements/loader";
 import * as Skeleton from "../utils/skeleton";
 import { isPopupVisible } from "../utils/misc";
 import SlimSelect from "slim-select";
+import * as TestState from "../test/test-state";
 
 const wrapperId = "quoteSearchPopupWrapper";
-
-export let selectedId = 1;
-
-export function setSelectedId(val: number): void {
-  selectedId = val;
-}
 
 const searchServiceCache: Record<string, SearchService<MonkeyTypes.Quote>> = {};
 
@@ -298,7 +293,6 @@ function hide(noAnim = false, focusWords = true): void {
           if (focusWords) {
             TestUI.focusWords();
             $("#quoteSearchPopup .quoteLengthFilter").val([]);
-            $("#quoteSearchPopup .quoteLengthFilter").trigger("change");
             Skeleton.remove(wrapperId);
           }
         }
@@ -315,7 +309,7 @@ export function apply(val: number): boolean {
   let ret;
   if (val !== null && !isNaN(val) && val >= 0) {
     UpdateConfig.setQuoteLength(-2 as SharedTypes.Config.QuoteLength, false);
-    selectedId = val;
+    TestState.setSelectedQuoteId(val);
     ManualRestart.set();
     ret = true;
   } else {
