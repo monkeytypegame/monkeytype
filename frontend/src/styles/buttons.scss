@@ -10,6 +10,7 @@ button,
   .far,
   .fab {
     line-height: 1.25;
+    pointer-events: none;
   }
   &.fullWidth {
     width: 100%;
