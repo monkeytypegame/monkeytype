@@ -969,7 +969,8 @@ $(document).on("keydown", async (event) => {
       activeElement?.tagName === "A" ||
       activeElement?.classList.contains("button") ||
       activeElement?.classList.contains("textButton") ||
-      activeElement?.tagName === "INPUT";
+      (activeElement?.tagName === "INPUT" &&
+        activeElement?.id !== "wordsInput");
 
     if (activeElementIsButton) return;
 
