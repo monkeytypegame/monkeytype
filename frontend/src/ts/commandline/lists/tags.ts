@@ -39,8 +39,12 @@ function update(): void {
       display: "Create tag",
       icon: "fa-plus",
       shouldFocusTestUI: false,
-      exec: (): void => {
-        EditTagsPopup.show("add");
+        EditTagsPopup.show(
+          "add",
+          undefined,
+          undefined,
+          commandlineModal as AnimatedModal
+        );
       },
     });
     return;
@@ -93,8 +97,12 @@ function update(): void {
     display: "Create tag",
     icon: "fa-plus",
     shouldFocusTestUI: false,
-    exec: (): void => {
-      EditTagsPopup.show("add");
+      EditTagsPopup.show(
+        "add",
+        undefined,
+        undefined,
+        commandlineModal as AnimatedModal
+      );
     },
   });
 }

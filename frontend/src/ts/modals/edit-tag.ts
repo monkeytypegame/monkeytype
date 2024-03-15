@@ -6,7 +6,12 @@ import * as Settings from "../pages/settings";
 import * as ConnectionState from "../states/connection";
 import AnimatedModal from "../utils/animated-modal";
 
-export function show(action: string, id?: string, name?: string): void {
+export function show(
+  action: string,
+  id?: string,
+  name?: string,
+  modalChain?: AnimatedModal
+): void {
   if (!ConnectionState.get()) {
     Notifications.add("You are offline", 0, {
       duration: 2,
@@ -16,6 +21,7 @@ export function show(action: string, id?: string, name?: string): void {
 
   void modal.show({
     focusFirstInput: true,
+    modalChain,
     beforeAnimation: async () => {
       $("#editTagModal .modal .text").addClass("hidden");
       if (action === "add") {
@@ -64,8 +70,10 @@ export function show(action: string, id?: string, name?: string): void {
   });
 }
 
-function hide(): void {
-  void modal.hide();
+function hide(clearModalChain = false): void {
+  void modal.hide({
+    clearModalChain,
+  });
 }
 
 async function apply(): Promise<void> {
@@ -74,7 +82,7 @@ async function apply(): Promise<void> {
   const tagName = propTagName.replaceAll(" ", "_");
   const tagId = $("#editTagModal .modal").attr("data-tag-id") as string;
 
-  hide();
+  hide(true);
   Loader.show();
 
   if (action === "add") {
