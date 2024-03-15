@@ -923,7 +923,7 @@ $(document).on("keydown", async (event) => {
     !["Enter", "Tab", ...ModifierKeys].includes(event.key)
   ) {
     TestUI.focusWords();
-    if (Config.showOutOfFocusWarning) {
+    if (Config.showOutOfFocusWarning && !event.ctrlKey && !event.metaKey) {
       event.preventDefault();
     }
   }
