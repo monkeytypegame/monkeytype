@@ -1,5 +1,9 @@
 {
+  {
   "name": "xhosa",
+  "rightToLeft": false,
+  "ligatures": false,
+  "bcp47": "xh",
   "words": [
     "xa",
 		"mna",
