@@ -791,15 +791,14 @@
     <div class="quotes"></div>
   </div>
 </div>
-<div id="tagsWrapper" class="popupWrapper hidden" tabindex="-1">
-  <div id="tagsEdit" action="" tagid="">
-    <form>
-      <div class="title"></div>
-      <input type="text" title="tag" />
-      <button type="submit"></button>
-    </form>
-  </div>
-</div>
+<dialog id="editTagModal" class="modalWrapper hidden">
+  <form class="modal">
+    <div class="title"></div>
+    <input type="text" title="tag" />
+    <div class="text"></div>
+    <button type="submit"></button>
+  </form>
+</dialog>
 <dialog id="streakHourOffsetModal" class="modalWrapper hidden">
   <div class="modal">
     <div class="title">Set streak hour offset</div>

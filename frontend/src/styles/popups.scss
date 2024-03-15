@@ -1469,6 +1469,12 @@
   }
 }
 
+#editTagModal {
+  .modal {
+    max-width: 450px;
+  }
+}
+
 #streakHourOffsetModal {
   .modal {
     max-width: 500px;
@@ -1493,9 +1499,7 @@
   }
 }
 
-#tagsWrapper,
 #newResultFilterPresetPopupWrapper {
-  #tagsEdit,
   #newResultFilterPresetPopup {
     max-height: 90vh;
     background: var(--bg-color);
@@ -1509,12 +1513,6 @@
       color: var(--sub-color);
     }
   }
-}
-
-#tagsEdit form,
-#presetEdit form {
-  display: grid;
-  gap: 1rem;
 }
 
 #editProfileModal {

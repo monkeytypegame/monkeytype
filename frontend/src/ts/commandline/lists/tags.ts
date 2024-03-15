@@ -1,5 +1,5 @@
 import * as DB from "../../db";
-import * as EditTagsPopup from "../../popups/edit-tags-popup";
+import * as EditTagsPopup from "../../modals/edit-tag";
 import * as ModesNotice from "../../elements/modes-notice";
 import * as TagController from "../../controllers/tag-controller";
 import Config from "../../config";
