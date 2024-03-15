@@ -1532,11 +1532,9 @@
 }
 
 #tagsWrapper,
-#newResultFilterPresetPopupWrapper,
-#editProfilePopupWrapper {
+#newResultFilterPresetPopupWrapper {
   #tagsEdit,
-  #newResultFilterPresetPopup,
-  #editProfilePopup {
+  #newResultFilterPresetPopup {
     max-height: 90vh;
     background: var(--bg-color);
     border-radius: var(--roundness);
@@ -1557,50 +1555,60 @@
   gap: 1rem;
 }
 
-#editProfilePopup {
-  width: 100%;
-  max-width: 600px;
-  label {
-    color: var(--sub-color);
-  }
-  input {
-    width: 100%;
-  }
-  textarea {
-    resize: vertical;
-    width: 100%;
-    padding: 10px;
-    line-height: 1.2rem;
-    min-height: 5rem;
-    max-height: 10rem;
-  }
+#editProfileModal {
+  .modal {
+    max-width: 600px;
+    max-height: 100%;
+    .title {
+      font-size: 1.5rem;
+      color: var(--sub-color);
+    }
+    label {
+      color: var(--sub-color);
+      margin-bottom: 0.25em;
+      display: block;
+    }
+    input {
+      width: 100%;
+    }
+    textarea {
+      resize: vertical;
+      width: 100%;
+      padding: 10px;
+      line-height: 1.2rem;
+      min-height: 5rem;
+      max-height: 10rem;
+    }
 
-  .socialURL {
-    display: flex;
-  }
+    .socialURL {
+      display: flex;
+    }
 
-  .socialURL > p {
-    margin-block: 0.5rem;
-    margin-inline-end: 0.5rem;
-  }
+    .socialURL > p {
+      margin-block: 0.5rem;
+      margin-inline-end: 0.5rem;
+    }
 
-  .badgeSelectionContainer {
-    display: flex;
-    flex-wrap: wrap;
-  }
+    .badgeSelectionContainer {
+      display: flex;
+      flex-wrap: wrap;
+    }
 
-  .badgeSelectionItem {
-    margin-bottom: 0.5rem;
-    width: max-content;
-    opacity: 25%;
-    cursor: pointer;
-    margin-right: 0.5rem;
-    margin-bottom: 0.5rem;
-  }
+    .badgeSelectionItem {
+      margin-bottom: 0.5rem;
+      width: max-content;
+      opacity: 25%;
+      cursor: pointer;
+      margin-right: 0.5rem;
+      margin-bottom: 0.5rem;
+      padding: 0;
+      border-radius: calc(var(--roundness) / 2);
+    }
 
-  .badgeSelectionItem.selected,
-  .badgeSelectionItem:hover {
-    opacity: 100%;
+    .badgeSelectionItem.selected,
+    .badgeSelectionItem:hover {
+      opacity: 100%;
+    }
   }
 }
 
