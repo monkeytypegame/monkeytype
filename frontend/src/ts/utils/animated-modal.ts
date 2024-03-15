@@ -40,6 +40,7 @@ type ConstructorParams = {
   dialogId: string;
   appendTo?: Skeleton.SkeletonAppendParents;
   customAnimations?: ConstructorCustomAnimations;
+  showOptionsWhenInChain?: ShowOptions;
   customEscapeHandler?: (e: KeyboardEvent) => void;
   customWrapperClickHandler?: (e: MouseEvent) => void;
   setup?: (modal: HTMLElement) => void;
@@ -55,6 +56,7 @@ export default class AnimatedModal {
   private open = false;
   private setupRan = false;
   private previousModalInChain: AnimatedModal | undefined;
+  private showOptionsWhenInChain: ShowOptions | undefined;
   private skeletonAppendParent: Skeleton.SkeletonAppendParents;
   private customShowAnimations: CustomWrapperAndModalAnimations | undefined;
   private customHideAnimations: CustomWrapperAndModalAnimations | undefined;
@@ -106,6 +108,7 @@ export default class AnimatedModal {
     this.customShowAnimations = constructorParams.customAnimations?.show;
     this.customHideAnimations = constructorParams.customAnimations?.hide;
     this.previousModalInChain = undefined;
+    this.showOptionsWhenInChain = constructorParams.showOptionsWhenInChain;
 
     this.customEscapeHandler = constructorParams?.customEscapeHandler;
     this.customWrapperClickHandler =
@@ -359,6 +362,7 @@ export default class AnimatedModal {
                   animationMode: "modalOnly",
                   animationDurationMs:
                     modalAnimationDuration * MODAL_ONLY_ANIMATION_MULTIPLIER,
+                  ...this.previousModalInChain.showOptionsWhenInChain,
                 });
                 this.previousModalInChain = undefined;
               }
@@ -390,6 +394,7 @@ export default class AnimatedModal {
                 animationMode: "modalOnly",
                 animationDurationMs:
                   modalAnimationDuration * MODAL_ONLY_ANIMATION_MULTIPLIER,
+                ...this.previousModalInChain.showOptionsWhenInChain,
               });
               this.previousModalInChain = undefined;
             }

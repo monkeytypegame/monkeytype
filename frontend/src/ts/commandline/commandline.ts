@@ -535,6 +535,9 @@ const modal = new AnimatedModal({
   customWrapperClickHandler: (): void => {
     hide();
   },
+  showOptionsWhenInChain: {
+    focusFirstInput: true,
+  },
   setup: (modal): void => {
     const input = modal.querySelector("input") as HTMLInputElement;
 
