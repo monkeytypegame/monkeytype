@@ -5,6 +5,7 @@ import * as TagController from "../../controllers/tag-controller";
 import Config from "../../config";
 import * as PaceCaret from "../../test/pace-caret";
 import { isAuthenticated } from "../../firebase";
+import AnimatedModal from "../../utils/animated-modal";
 
 const subgroup: MonkeyTypes.CommandsSubgroup = {
   title: "Change tags...",
@@ -39,6 +40,7 @@ function update(): void {
       display: "Create tag",
       icon: "fa-plus",
       shouldFocusTestUI: false,
+      exec: ({ commandlineModal }): void => {
         EditTagsPopup.show(
           "add",
           undefined,
@@ -97,6 +99,8 @@ function update(): void {
     display: "Create tag",
     icon: "fa-plus",
     shouldFocusTestUI: false,
+    opensModal: true,
+    exec: ({ commandlineModal }): void => {
       EditTagsPopup.show(
         "add",
         undefined,

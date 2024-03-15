@@ -39,9 +39,9 @@ function update(fonts: MonkeyTypes.FontObject[]): void {
     hover: (): void => {
       UI.clearFontPreview();
     },
-    exec: (name) => {
-      if (name === undefined || name === "") return;
-      UpdateConfig.setFontFamily(name.replace(/\s/g, "_"));
+    exec: ({ input }) => {
+      if (input === undefined || input === "") return;
+      UpdateConfig.setFontFamily(input.replace(/\s/g, "_"));
       // Settings.groups.fontFamily.updateInput();
     },
   });
