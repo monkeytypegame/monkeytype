@@ -213,10 +213,11 @@ export default class AnimatedModal {
         this.wrapperEl.showModal();
       }
 
+      await options?.beforeAnimation?.(this.modalEl);
+
       //wait until the next event loop to allow the dialog to start animating
       setTimeout(async () => {
         this.focusFirstInput(options?.focusFirstInput);
-        await options?.beforeAnimation?.(this.modalEl);
       }, 1);
 
       const modalAnimation =
