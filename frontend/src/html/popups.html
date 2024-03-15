@@ -825,19 +825,18 @@
     <div class="button confirmButton"><i class="fas fa-check"></i></div>
   </div>
 </div>
-<div id="presetWrapper" class="popupWrapper hidden" tabindex="-1">
-  <div id="presetEdit" action="" presetid="">
-    <form>
-      <div class="title"></div>
-      <input type="text" class="text" title="presets" />
-      <label class="checkbox">
-        <input type="checkbox" />
-        Change preset to current settings
-      </label>
-      <button type="submit">add</button>
-    </form>
-  </div>
-</div>
+<dialog id="editPresetModal" class="modalWrapper hidden">
+  <form class="modal">
+    <div class="title"></div>
+    <input type="text" title="presets" />
+    <label class="checkbox">
+      <input type="checkbox" />
+      Change preset to current settings
+    </label>
+    <div class="text"></div>
+    <button type="submit">add</button>
+  </form>
+</dialog>
 <dialog id="shareCustomThemeModal" class="modalWrapper hidden">
   <div class="modal">
     <div class="title">Share custom theme</div>
