@@ -791,15 +791,14 @@
     <div class="quotes"></div>
   </div>
 </div>
-<div id="tagsWrapper" class="popupWrapper hidden" tabindex="-1">
-  <div id="tagsEdit" action="" tagid="">
-    <form>
-      <div class="title"></div>
-      <input type="text" title="tag" />
-      <button type="submit"></button>
-    </form>
-  </div>
-</div>
+<dialog id="editTagModal" class="modalWrapper hidden">
+  <form class="modal">
+    <div class="title"></div>
+    <input type="text" title="tag" />
+    <div class="text"></div>
+    <button type="submit"></button>
+  </form>
+</dialog>
 <dialog id="streakHourOffsetModal" class="modalWrapper hidden">
   <div class="modal">
     <div class="title">Set streak hour offset</div>
@@ -825,19 +824,18 @@
     <div class="button confirmButton"><i class="fas fa-check"></i></div>
   </div>
 </div>
-<div id="presetWrapper" class="popupWrapper hidden" tabindex="-1">
-  <div id="presetEdit" action="" presetid="">
-    <form>
-      <div class="title"></div>
-      <input type="text" class="text" title="presets" />
-      <label class="checkbox">
-        <input type="checkbox" />
-        Change preset to current settings
-      </label>
-      <button type="submit">add</button>
-    </form>
-  </div>
-</div>
+<dialog id="editPresetModal" class="modalWrapper hidden">
+  <form class="modal">
+    <div class="title"></div>
+    <input type="text" title="presets" />
+    <label class="checkbox">
+      <input type="checkbox" />
+      Change preset to current settings
+    </label>
+    <div class="text"></div>
+    <button type="submit">add</button>
+  </form>
+</dialog>
 <dialog id="shareCustomThemeModal" class="modalWrapper hidden">
   <div class="modal">
     <div class="title">Share custom theme</div>
@@ -1125,8 +1123,8 @@
   </div>
 </div>
 
-<div id="editProfilePopupWrapper" class="popupWrapper hidden" tabindex="-1">
-  <form id="editProfilePopup">
+<dialog id="editProfileModal" class="modalWrapper hidden">
+  <form class="modal">
     <div class="title">Edit Profile</div>
     <div>
       <label>avatar</label>
@@ -1167,4 +1165,4 @@
     </div>
     <button class="edit-profile-submit" type="submit">save</button>
   </form>
-</div>
+</dialog>

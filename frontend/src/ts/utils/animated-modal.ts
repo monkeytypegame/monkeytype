@@ -40,6 +40,7 @@ type ConstructorParams = {
   dialogId: string;
   appendTo?: Skeleton.SkeletonAppendParents;
   customAnimations?: ConstructorCustomAnimations;
+  showOptionsWhenInChain?: ShowOptions;
   customEscapeHandler?: (e: KeyboardEvent) => void;
   customWrapperClickHandler?: (e: MouseEvent) => void;
   setup?: (modal: HTMLElement) => void;
@@ -55,6 +56,7 @@ export default class AnimatedModal {
   private open = false;
   private setupRan = false;
   private previousModalInChain: AnimatedModal | undefined;
+  private showOptionsWhenInChain: ShowOptions | undefined;
   private skeletonAppendParent: Skeleton.SkeletonAppendParents;
   private customShowAnimations: CustomWrapperAndModalAnimations | undefined;
   private customHideAnimations: CustomWrapperAndModalAnimations | undefined;
@@ -106,6 +108,7 @@ export default class AnimatedModal {
     this.customShowAnimations = constructorParams.customAnimations?.show;
     this.customHideAnimations = constructorParams.customAnimations?.hide;
     this.previousModalInChain = undefined;
+    this.showOptionsWhenInChain = constructorParams.showOptionsWhenInChain;
 
     this.customEscapeHandler = constructorParams?.customEscapeHandler;
     this.customWrapperClickHandler =
@@ -158,12 +161,19 @@ export default class AnimatedModal {
   }
 
   focusFirstInput(setting: true | "focusAndSelect" | undefined): void {
-    if (setting === true) {
-      this.modalEl.querySelector("input")?.focus();
-    } else if (setting === "focusAndSelect") {
-      const input = this.modalEl.querySelector("input") as HTMLInputElement;
-      input.focus();
-      input.select();
+    const input = this.modalEl.querySelector("input");
+    if (input !== null) {
+      const isHidden = input.classList.contains("hidden");
+      if (isHidden) {
+        this.wrapperEl.focus();
+      } else {
+        if (setting === true) {
+          input.focus();
+        } else if (setting === "focusAndSelect") {
+          input.focus();
+          input.select();
+        }
+      }
     } else {
       this.wrapperEl.focus();
     }
@@ -206,10 +216,11 @@ export default class AnimatedModal {
         this.wrapperEl.showModal();
       }
 
+      await options?.beforeAnimation?.(this.modalEl);
+
       //wait until the next event loop to allow the dialog to start animating
       setTimeout(async () => {
         this.focusFirstInput(options?.focusFirstInput);
-        await options?.beforeAnimation?.(this.modalEl);
       }, 1);
 
       const modalAnimation =
@@ -351,6 +362,7 @@ export default class AnimatedModal {
                   animationMode: "modalOnly",
                   animationDurationMs:
                     modalAnimationDuration * MODAL_ONLY_ANIMATION_MULTIPLIER,
+                  ...this.previousModalInChain.showOptionsWhenInChain,
                 });
                 this.previousModalInChain = undefined;
               }
@@ -382,6 +394,7 @@ export default class AnimatedModal {
                 animationMode: "modalOnly",
                 animationDurationMs:
                   modalAnimationDuration * MODAL_ONLY_ANIMATION_MULTIPLIER,
+                ...this.previousModalInChain.showOptionsWhenInChain,
               });
               this.previousModalInChain = undefined;
             }

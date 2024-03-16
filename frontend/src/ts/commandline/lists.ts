@@ -241,7 +241,7 @@ export const commands: MonkeyTypes.CommandsSubgroup = {
       },
       input: true,
       icon: "fa-tint",
-      exec: (input): void => {
+      exec: ({ input }): void => {
         if (input === undefined) return;
         void UpdateConfig.setCustomLayoutfluid(
           input as MonkeyTypes.CustomLayoutFluidSpaces
@@ -308,7 +308,7 @@ export const commands: MonkeyTypes.CommandsSubgroup = {
         return Config.customBackground;
       },
       input: true,
-      exec: (input): void => {
+      exec: ({ input }): void => {
         UpdateConfig.setCustomBackground(input ?? "");
       },
     },
@@ -366,7 +366,7 @@ export const commands: MonkeyTypes.CommandsSubgroup = {
       icon: "fa-cog",
       alias: "import config",
       input: true,
-      exec: async (input): Promise<void> => {
+      exec: async ({ input }): Promise<void> => {
         if (input === undefined || input === "") return;
         try {
           await UpdateConfig.apply(JSON.parse(input));

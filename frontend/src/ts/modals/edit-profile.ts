@@ -4,61 +4,40 @@ import * as DB from "../db";
 import * as Loader from "../elements/loader";
 import * as Notifications from "../elements/notifications";
 import * as ConnectionState from "../states/connection";
-import { isPopupVisible } from "../utils/misc";
-import * as Skeleton from "../utils/skeleton";
+import AnimatedModal from "../utils/animated-modal";
+import * as Profile from "../elements/profile";
 
-const wrapperId = "editProfilePopupWrapper";
-
-let callbackFuncOnHide: (() => void) | null = null;
-
-export function show(callbackOnHide: () => void): void {
+export function show(): void {
   if (!ConnectionState.get()) {
     Notifications.add("You are offline", 0, {
       duration: 2,
     });
     return;
   }
-  Skeleton.append(wrapperId, "popups");
 
-  if (!isPopupVisible(wrapperId)) {
-    callbackFuncOnHide = callbackOnHide;
-
-    $("#editProfilePopupWrapper")
-      .stop(true, true)
-      .css("opacity", 0)
-      .removeClass("hidden")
-      .animate({ opacity: 1 }, 125, () => {
-        hydrateInputs();
-        $("#editProfilePopupWrapper").trigger("focus");
-      });
-  }
+  void modal.show({
+    beforeAnimation: async () => {
+      hydrateInputs();
+    },
+  });
 }
 
 function hide(): void {
-  if (isPopupVisible(wrapperId)) {
-    callbackFuncOnHide?.();
-    $("#editProfilePopupWrapper")
-      .stop(true, true)
-      .css("opacity", 1)
-      .animate(
-        {
-          opacity: 0,
-        },
-        125,
-        () => {
-          $("#editProfilePopupWrapper").addClass("hidden");
-          Skeleton.remove(wrapperId);
-        }
-      );
-  }
+  void modal.hide({
+    afterAnimation: async () => {
+      const snapshot = DB.getSnapshot();
+      if (!snapshot) return;
+      void Profile.update("account", snapshot);
+    },
+  });
 }
 
-const bioInput = $("#editProfilePopup .bio");
-const keyboardInput = $("#editProfilePopup .keyboard");
-const twitterInput = $("#editProfilePopup .twitter");
-const githubInput = $("#editProfilePopup .github");
-const websiteInput = $("#editProfilePopup .website");
-const badgeIdsSelect = $("#editProfilePopup .badgeSelectionContainer");
+const bioInput = $("#editProfileModal .bio");
+const keyboardInput = $("#editProfileModal .keyboard");
+const twitterInput = $("#editProfileModal .twitter");
+const githubInput = $("#editProfileModal .github");
+const websiteInput = $("#editProfileModal .website");
+const badgeIdsSelect = $("#editProfileModal .badgeSelectionContainer");
 
 let currentSelectedBadgeId = -1;
 
@@ -82,21 +61,21 @@ function hydrateInputs(): void {
     }
 
     const badgeOption = getHTMLById(badge.id, false, true);
-    const badgeWrapper = `<div class="badgeSelectionItem ${
+    const badgeWrapper = `<button type="button" class="badgeSelectionItem ${
       badge.selected ? "selected" : ""
-    }" selection-id=${badge.id}>${badgeOption}</div>`;
+    }" selection-id=${badge.id}>${badgeOption}</button>`;
     badgeIdsSelect.append(badgeWrapper);
   });
 
   badgeIdsSelect.prepend(
-    `<div class="badgeSelectionItem ${
+    `<button type="button" class="badgeSelectionItem ${
       currentSelectedBadgeId === -1 ? "selected" : ""
     }" selection-id=${-1}>
       <div class="badge">
         <i class="fas fa-frown-open"></i>
         <div class="text">none</div>
       </div>
-    </div>`
+    </button>`
   );
 
   $(".badgeSelectionItem").on("click", ({ currentTarget }) => {
@@ -184,22 +163,12 @@ async function updateProfile(): Promise<void> {
   hide();
 }
 
-$("#editProfilePopupWrapper").on("mousedown", (e) => {
-  if ($(e.target).attr("id") === "editProfilePopupWrapper") {
-    hide();
-  }
+const modal = new AnimatedModal({
+  dialogId: "editProfileModal",
+  setup: (modalEl): void => {
+    modalEl.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      await updateProfile();
+    });
+  },
 });
-
-$("#editProfilePopupWrapper #editProfilePopup").on("submit", async (e) => {
-  e.preventDefault();
-  await updateProfile();
-});
-
-$(document).on("keydown", (event) => {
-  if (event.key === "Escape" && isPopupVisible(wrapperId)) {
-    hide();
-    event.preventDefault();
-  }
-});
-
-Skeleton.save(wrapperId);

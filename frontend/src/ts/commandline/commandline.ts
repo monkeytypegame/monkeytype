@@ -410,8 +410,9 @@ function handleInputSubmit(): void {
   if (inputModeParams.command === null) {
     throw new Error("Can't handle input submit - command is null");
   }
-  const value = inputValue;
-  inputModeParams.command.exec?.(value);
+  inputModeParams.command.exec?.({
+    input: inputValue,
+  });
   void AnalyticsController.log("usedCommandLine", {
     command: inputModeParams.command.id,
   });
@@ -444,11 +445,15 @@ async function runActiveCommand(): Promise<void> {
     await showCommands();
     await updateActiveCommand();
   } else {
-    command.exec?.();
+    command.exec?.({
+      commandlineModal: modal,
+    });
     const isSticky = command.sticky ?? false;
     if (!isSticky) {
       void AnalyticsController.log("usedCommandLine", { command: command.id });
-      hide(true);
+      if (!command.opensModal) {
+        hide(true);
+      }
     } else {
       await filterSubgroup();
       await showCommands();
@@ -534,6 +539,9 @@ const modal = new AnimatedModal({
   },
   customWrapperClickHandler: (): void => {
     hide();
+  },
+  showOptionsWhenInChain: {
+    focusFirstInput: true,
   },
   setup: (modal): void => {
     const input = modal.querySelector("input") as HTMLInputElement;

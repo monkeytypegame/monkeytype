@@ -33,6 +33,13 @@
     max-height: 100%;
     max-width: 300px;
     color: var(--text-color);
+    overflow-y: scroll;
+    @extend .ffscroll;
+
+    & > .title {
+      font-size: 1.5rem;
+      color: var(--sub-color);
+    }
   }
 }
 
@@ -502,10 +509,6 @@
 #customWordAmountModal {
   .modal {
     max-width: 500px;
-    .title {
-      font-size: 1.5rem;
-      color: var(--sub-color);
-    }
     .tip {
       font-size: 0.75rem;
       color: var(--text-color);
@@ -640,10 +643,6 @@
     .main {
       display: grid;
       gap: 1rem;
-    }
-    .title {
-      font-size: 1.5rem;
-      color: var(--sub-color);
     }
     .buttons {
       margin-top: 0.25rem;
@@ -1241,11 +1240,6 @@
       font-size: 1.5rem;
     }
 
-    .title {
-      font-size: 1.5rem;
-      color: var(--sub-color);
-    }
-
     textarea {
       resize: vertical;
       width: 100%;
@@ -1367,11 +1361,6 @@
     gap: 1rem;
     @extend .ffscroll;
 
-    .title {
-      font-size: 1.5rem;
-      color: var(--sub-color);
-    }
-
     .text {
       color: var(--text-color);
     }
@@ -1418,12 +1407,6 @@
       gap: 1rem;
       grid-template-columns: 1fr 1fr 1fr;
     }
-
-    .title {
-      font-size: 1.5rem;
-      line-height: 1.5rem;
-      color: var(--sub-color);
-    }
   }
 }
 #shareCustomThemeUrlModal {
@@ -1438,12 +1421,6 @@
     gap: 1rem;
     @extend .ffscroll;
     max-width: 900px;
-
-    .title {
-      font-size: 1.5rem;
-      line-height: 2rem;
-      color: var(--sub-color);
-    }
 
     .text {
       color: var(--text-color);
@@ -1486,27 +1463,20 @@
   }
 }
 
-#presetWrapper {
-  #presetEdit {
-    .title {
-      font-size: 1.5rem;
-      color: var(--sub-color);
-    }
-    background: var(--bg-color);
-    border-radius: var(--roundness);
-    padding: 2rem;
-    display: grid;
-    gap: 1rem;
-    overflow-y: scroll;
+#editPresetModal {
+  .modal {
+    max-width: 450px;
+  }
+}
+
+#editTagModal {
+  .modal {
+    max-width: 450px;
   }
 }
 
 #streakHourOffsetModal {
   .modal {
-    .title {
-      font-size: 1.5rem;
-      color: var(--sub-color);
-    }
     max-width: 500px;
     .red {
       color: var(--error-color);
@@ -1529,12 +1499,8 @@
   }
 }
 
-#tagsWrapper,
-#newResultFilterPresetPopupWrapper,
-#editProfilePopupWrapper {
-  #tagsEdit,
-  #newResultFilterPresetPopup,
-  #editProfilePopup {
+#newResultFilterPresetPopupWrapper {
+  #newResultFilterPresetPopup {
     max-height: 90vh;
     background: var(--bg-color);
     border-radius: var(--roundness);
@@ -1549,56 +1515,56 @@
   }
 }
 
-#tagsEdit form,
-#presetEdit form {
-  display: grid;
-  gap: 1rem;
-}
+#editProfileModal {
+  .modal {
+    max-width: 600px;
+    max-height: 100%;
+    label {
+      color: var(--sub-color);
+      margin-bottom: 0.25em;
+      display: block;
+    }
+    input {
+      width: 100%;
+    }
+    textarea {
+      resize: vertical;
+      width: 100%;
+      padding: 10px;
+      line-height: 1.2rem;
+      min-height: 5rem;
+      max-height: 10rem;
+    }
 
-#editProfilePopup {
-  width: 100%;
-  max-width: 600px;
-  label {
-    color: var(--sub-color);
-  }
-  input {
-    width: 100%;
-  }
-  textarea {
-    resize: vertical;
-    width: 100%;
-    padding: 10px;
-    line-height: 1.2rem;
-    min-height: 5rem;
-    max-height: 10rem;
-  }
+    .socialURL {
+      display: flex;
+    }
 
-  .socialURL {
-    display: flex;
-  }
+    .socialURL > p {
+      margin-block: 0.5rem;
+      margin-inline-end: 0.5rem;
+    }
 
-  .socialURL > p {
-    margin-block: 0.5rem;
-    margin-inline-end: 0.5rem;
-  }
+    .badgeSelectionContainer {
+      display: flex;
+      flex-wrap: wrap;
+    }
 
-  .badgeSelectionContainer {
-    display: flex;
-    flex-wrap: wrap;
-  }
+    .badgeSelectionItem {
+      margin-bottom: 0.5rem;
+      width: max-content;
+      opacity: 25%;
+      cursor: pointer;
+      margin-right: 0.5rem;
+      margin-bottom: 0.5rem;
+      padding: 0;
+      border-radius: calc(var(--roundness) / 2);
+    }
 
-  .badgeSelectionItem {
-    margin-bottom: 0.5rem;
-    width: max-content;
-    opacity: 25%;
-    cursor: pointer;
-    margin-right: 0.5rem;
-    margin-bottom: 0.5rem;
-  }
-
-  .badgeSelectionItem.selected,
-  .badgeSelectionItem:hover {
-    opacity: 100%;
+    .badgeSelectionItem.selected,
+    .badgeSelectionItem:hover {
+      opacity: 100%;
+    }
   }
 }
 
