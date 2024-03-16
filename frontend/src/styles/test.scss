@@ -1091,9 +1091,10 @@
   .outOfFocusWarning {
     text-align: center;
     height: 0;
-    line-height: 150px;
+    font-size: 1rem;
     z-index: 999;
-    position: relative;
+    position: absolute;
+    width: 100%;
     -webkit-user-select: none;
     user-select: none;
     pointer-events: none;
