@@ -2,6 +2,7 @@ import { getCommandline } from "../utils/async-modules";
 import * as CustomWordAmount from "../modals/custom-word-amount";
 import * as DB from "../db";
 import * as EditResultTagsModal from "../modals/edit-result-tags";
+import * as MobileTestConfigModal from "../modals/mobile-test-config";
 
 $(".pageTest").on("click", "#testModesNotice .textButton", async (event) => {
   const attr = $(event.currentTarget).attr("commands");
@@ -27,4 +28,8 @@ $(".pageTest").on("click", ".tags .editTagsButton", () => {
     const tags = activeTagIds === "" ? [] : activeTagIds.split(",");
     EditResultTagsModal.show(resultid, tags, "resultPage");
   }
+});
+
+$(".pageTest").on("click", "#mobileTestConfigButton", () => {
+  MobileTestConfigModal.show();
 });

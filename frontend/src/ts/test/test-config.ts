@@ -4,12 +4,12 @@ import * as ActivePage from "../states/active-page";
 
 export function show(): void {
   $("#testConfig").removeClass("invisible");
-  $("#mobileTestConfig").removeClass("invisible");
+  $("#mobileTestConfigButton").removeClass("invisible");
 }
 
 export function hide(): void {
   $("#testConfig").addClass("invisible");
-  $("#mobileTestConfig").addClass("invisible");
+  $("#mobileTestConfigButton").addClass("invisible");
 }
 
 export async function instantUpdate(): Promise<void> {

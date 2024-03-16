@@ -946,17 +946,19 @@
   }
 }
 
-#mobileTestConfig {
-  font-size: 0.75rem;
-  padding: 0.25rem 1rem;
-  background: var(--sub-alt-color);
-  border-radius: var(--roundness);
-  width: max-content;
-  justify-self: center;
+#mobileTestConfigButton {
   display: none;
-  height: max-content;
+  justify-self: center;
   margin-bottom: 1rem;
-  transition: opacity 0.125s;
+  height: max-content;
+  button {
+    font-size: 0.75rem;
+    padding: 1em 2em;
+    color: var(--sub-color);
+    &:hover {
+      color: var(--bg-color);
+    }
+  }
 }
 
 #testConfig {
@@ -1198,7 +1200,7 @@ main.focus .pageTest {
   #testConfig {
     opacity: 0 !important;
   }
-  #mobileTestConfig {
+  #mobileTestConfigButton {
     opacity: 0 !important;
   }
 }

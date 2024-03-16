@@ -180,13 +180,12 @@
   </div>
 </div>
 
-<div id="mobileTestConfigPopupWrapper" class="popupWrapper hidden">
-  <div id="mobileTestConfigPopup">
+<dialog id="mobileTestConfigModal" class="modalWrapper hidden">
+  <div class="modal">
     <div class="group">
       <button class="punctuation">punctuation</button>
       <button class="numbers">numbers</button>
     </div>
-    <div class="spacer"></div>
     <div class="group modeGroup">
       <button data-mode="time">time</button>
       <button class="active" data-mode="words">words</button>
@@ -194,7 +193,6 @@
       <button data-mode="zen">zen</button>
       <button data-mode="custom">custom</button>
     </div>
-    <div class="spacer"></div>
     <div class="group timeGroup">
       <button data-time="15">15</button>
       <button class="button active" data-time="30">30</button>
@@ -221,7 +219,7 @@
       <button class="customChange">change</button>
     </div>
   </div>
-</div>
+</dialog>
 
 <div id="videoAdPopupWrapper" class="popupWrapper hidden">
   <div id="videoAdPopup">
