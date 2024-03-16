@@ -2,7 +2,7 @@ import * as TestLogic from "../test/test-logic";
 import Config, * as UpdateConfig from "../config";
 import * as ManualRestart from "../test/manual-restart-tracker";
 import * as CustomWordAmountPopup from "./custom-word-amount";
-import * as CustomTestDurationPopup from "../popups/custom-test-duration-popup";
+import * as CustomTestDurationPopup from "./custom-test-duration";
 import * as QuoteSearchPopup from "../popups/quote-search-popup";
 import * as CustomTextPopup from "../popups/custom-text-popup";
 import AnimatedModal from "../utils/animated-modal";
@@ -108,8 +108,9 @@ function setup(modalEl: HTMLElement): void {
       const time = target.getAttribute("data-time") as string;
 
       if (time === "custom") {
-        hide(); // use modal chaining here
-        CustomTestDurationPopup.show();
+        CustomTestDurationPopup.show({
+          modalChain: modal,
+        });
       } else if (time !== undefined) {
         const timeNum = parseInt(time);
         UpdateConfig.setTimeConfig(timeNum);

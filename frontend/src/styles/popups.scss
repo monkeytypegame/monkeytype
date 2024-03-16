@@ -494,9 +494,18 @@
   }
 }
 
-#customTestDurationPopupWrapper,
+#customTestDurationModal {
+  .modal {
+    max-width: 500px;
+    .tip,
+    .preview {
+      font-size: 0.75rem;
+      color: var(--text-color);
+    }
+  }
+}
+
 #practiseWordsPopupWrapper {
-  #customTestDurationPopup,
   #practiseWordsPopup {
     background: var(--bg-color);
     border-radius: var(--roundness);
@@ -518,13 +527,6 @@
     .text {
       font-size: 1rem;
       color: var(--text-color);
-    }
-  }
-
-  #customTestDurationPopup {
-    .preview {
-      font-size: 0.75rem;
-      color: var(--sub-color);
     }
   }
 }

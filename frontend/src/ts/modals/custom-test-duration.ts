@@ -1,11 +1,8 @@
-import * as UpdateConfig from "../config";
+import Config, * as UpdateConfig from "../config";
 import * as ManualRestart from "../test/manual-restart-tracker";
 import * as TestLogic from "../test/test-logic";
 import * as Notifications from "../elements/notifications";
-import * as Skeleton from "../utils/skeleton";
-import { isPopupVisible } from "../utils/misc";
-
-const wrapperId = "customTestDurationPopupWrapper";
+import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
 
 function parseInput(input: string): number {
   const re = /((-\s*)?\d+(\.\d+)?\s*[hms]?)/g;
@@ -56,56 +53,42 @@ function format(duration: number): string {
 }
 
 function previewDuration(): void {
-  const input = $("#customTestDurationPopup input").val() as string;
+  const input = $("#customTestDurationModal input").val() as string;
   const duration = parseInput(input);
   let formattedDuration = "";
 
   if (duration < 0) {
-    formattedDuration = "NEGATIVE TIME";
+    formattedDuration = "Negative time? Really?";
   } else if (duration === 0) {
     formattedDuration = "Infinite test";
   } else {
-    formattedDuration = "Total time: " + format(duration);
+    formattedDuration = format(duration);
   }
 
-  $("#customTestDurationPopup .preview").text(formattedDuration);
+  $("#customTestDurationModal .preview").text(formattedDuration);
 }
 
-export function show(): void {
-  Skeleton.append(wrapperId, "popups");
-  if (!isPopupVisible(wrapperId)) {
-    $("#customTestDurationPopupWrapper")
-      .stop(true, true)
-      .css("opacity", 0)
-      .removeClass("hidden")
-      .animate({ opacity: 1 }, 125, () => {
-        $("#customTestDurationPopup input").trigger("focus").trigger("select");
-      });
-  }
-
-  previewDuration();
+export function show(showOptions?: ShowOptions): void {
+  void modal.show({
+    ...showOptions,
+    focusFirstInput: "focusAndSelect",
+    beforeAnimation: async (modalEl) => {
+      (
+        modalEl.querySelector("input") as HTMLInputElement
+      ).value = `${Config.time}`;
+      previewDuration();
+    },
+  });
 }
 
-function hide(): void {
-  if (isPopupVisible(wrapperId)) {
-    $("#customTestDurationPopupWrapper")
-      .stop(true, true)
-      .css("opacity", 1)
-      .animate(
-        {
-          opacity: 0,
-        },
-        125,
-        () => {
-          $("#customTestDurationPopupWrapper").addClass("hidden");
-          Skeleton.remove(wrapperId);
-        }
-      );
-  }
+function hide(clearChain = false): void {
+  void modal.hide({
+    clearModalChain: clearChain,
+  });
 }
 
 function apply(): void {
-  const val = parseInput($("#customTestDurationPopup input").val() as string);
+  const val = parseInput($("#customTestDurationModal input").val() as string);
 
   if (val !== null && !isNaN(val) && val >= 0 && isFinite(val)) {
     UpdateConfig.setTimeConfig(val);
@@ -123,42 +106,24 @@ function apply(): void {
       );
     }
   } else {
-    Notifications.add("Custom time must be at least 1", 0);
+    Notifications.add("Custom time must be a positive number or zero", 0);
+    return;
   }
 
-  hide();
+  hide(true);
 }
 
-$("#customTestDurationPopupWrapper").on("click", (e) => {
-  if ($(e.target).attr("id") === "customTestDurationPopupWrapper") {
-    hide();
-  }
-});
-
-$("#customTestDurationPopupWrapper input").on("keyup", (e) => {
-  previewDuration();
-
-  if (e.key === "Enter") {
+function setup(modalEl: HTMLElement): void {
+  modalEl.addEventListener("submit", (e) => {
+    e.preventDefault();
     apply();
-  }
-});
+  });
+  modalEl.querySelector("input")?.addEventListener("input", (e) => {
+    previewDuration();
+  });
+}
 
-$("#customTestDurationPopupWrapper button").on("click", () => {
-  apply();
+const modal = new AnimatedModal({
+  dialogId: "customTestDurationModal",
+  setup,
 });
-
-$("#testConfig").on("click", ".time .textButton", (e) => {
-  const mode = $(e.currentTarget).attr("timeConfig");
-  if (mode === "custom") {
-    show();
-  }
-});
-
-$(document).on("keydown", (event) => {
-  if (event.key === "Escape" && isPopupVisible(wrapperId)) {
-    hide();
-    event.preventDefault();
-  }
-});
-
-Skeleton.save(wrapperId);
