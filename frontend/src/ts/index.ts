@@ -31,7 +31,6 @@ import "./pages/about";
 import "./elements/scroll-to-top";
 import "./popups/mobile-test-config-popup";
 import "./popups/google-sign-up-popup";
-import "./popups/result-tags-popup";
 import * as Account from "./pages/account";
 import "./elements/leaderboards";
 import "./elements/no-css";
