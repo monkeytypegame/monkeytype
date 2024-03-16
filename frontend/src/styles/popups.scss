@@ -33,7 +33,7 @@
     max-height: 100%;
     max-width: 300px;
     color: var(--text-color);
-    overflow-y: scroll;
+    overflow-y: auto;
     @extend .ffscroll;
 
     & > .title {
