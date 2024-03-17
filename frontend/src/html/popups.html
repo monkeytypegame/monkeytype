@@ -180,13 +180,12 @@
   </div>
 </div>
 
-<div id="mobileTestConfigPopupWrapper" class="popupWrapper hidden">
-  <div id="mobileTestConfigPopup">
+<dialog id="mobileTestConfigModal" class="modalWrapper hidden">
+  <div class="modal">
     <div class="group">
       <button class="punctuation">punctuation</button>
       <button class="numbers">numbers</button>
     </div>
-    <div class="spacer"></div>
     <div class="group modeGroup">
       <button data-mode="time">time</button>
       <button class="active" data-mode="words">words</button>
@@ -194,7 +193,6 @@
       <button data-mode="zen">zen</button>
       <button data-mode="custom">custom</button>
     </div>
-    <div class="spacer"></div>
     <div class="group timeGroup">
       <button data-time="15">15</button>
       <button class="button active" data-time="30">30</button>
@@ -221,7 +219,7 @@
       <button class="customChange">change</button>
     </div>
   </div>
-</div>
+</dialog>
 
 <div id="videoAdPopupWrapper" class="popupWrapper hidden">
   <div id="videoAdPopup">
@@ -606,18 +604,21 @@
     <button>ok</button>
   </form>
 </dialog>
-<div id="customTestDurationPopupWrapper" class="popupWrapper hidden">
-  <div id="customTestDurationPopup">
+<dialog id="customTestDurationModal" class="modalWrapper hidden">
+  <form class="modal">
     <div class="title">Test duration</div>
     <div class="preview"></div>
-    <input value="1" title="test duration" />
+    <input value="1" title="test duration" min="0" />
     <div class="tip">
+      You can use "h" for hours and "m" for minutes, for example "1h30m".
+      <br />
+      <br />
       You can start an infinite test by inputting 0. Then, to stop the test, use
       the Bail Out feature (esc or ctrl/cmd + shift + p > Bail Out)
     </div>
     <button>ok</button>
-  </div>
-</div>
+  </form>
+</dialog>
 <div id="quoteSearchPopupWrapper" class="popupWrapper hidden">
   <div id="quoteSearchPopup" mode="">
     <div id="quoteSearchTop">
@@ -818,12 +819,13 @@
     <button>set</button>
   </div>
 </dialog>
-<div id="resultEditTagsPanelWrapper" class="popupWrapper hidden">
-  <div id="resultEditTagsPanel" resultid="">
+<dialog id="editResultTagsModal" class="modalWrapper hidden">
+  <div class="modal">
+    <div class="title">Edit result tags</div>
     <div class="buttons"></div>
-    <div class="button confirmButton"><i class="fas fa-check"></i></div>
+    <button class="saveButton">save</button>
   </div>
-</div>
+</dialog>
 <dialog id="editPresetModal" class="modalWrapper hidden">
   <form class="modal">
     <div class="title"></div>

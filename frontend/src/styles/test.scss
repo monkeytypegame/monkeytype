@@ -528,9 +528,8 @@
   // "ssw ssw";
 
   .editTagsButton {
-    display: inline-block;
-    font-size: 0.75rem;
-    padding-bottom: 0;
+    padding: 0 0.25em;
+    margin-left: 0.5em;
   }
 
   &.noBalloons {
@@ -791,6 +790,8 @@
     .tags,
     .source {
       .top {
+        display: flex;
+        align-items: center;
         font-size: 1rem;
         line-height: 1rem;
       }
@@ -945,17 +946,19 @@
   }
 }
 
-#mobileTestConfig {
-  font-size: 0.75rem;
-  padding: 0.25rem 1rem;
-  background: var(--sub-alt-color);
-  border-radius: var(--roundness);
-  width: max-content;
-  justify-self: center;
+#mobileTestConfigButton {
   display: none;
-  height: max-content;
+  justify-self: center;
   margin-bottom: 1rem;
-  transition: opacity 0.125s;
+  height: max-content;
+  button {
+    font-size: 0.75rem;
+    padding: 1em 2em;
+    color: var(--sub-color);
+    &:hover {
+      color: var(--bg-color);
+    }
+  }
 }
 
 #testConfig {
@@ -1090,9 +1093,10 @@
   .outOfFocusWarning {
     text-align: center;
     height: 0;
-    line-height: 150px;
+    font-size: 1rem;
     z-index: 999;
-    position: relative;
+    position: absolute;
+    width: 100%;
     -webkit-user-select: none;
     user-select: none;
     pointer-events: none;
@@ -1196,7 +1200,7 @@ main.focus .pageTest {
   #testConfig {
     opacity: 0 !important;
   }
-  #mobileTestConfig {
+  #mobileTestConfigButton {
     opacity: 0 !important;
   }
 }

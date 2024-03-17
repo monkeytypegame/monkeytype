@@ -2,10 +2,11 @@ import Config, * as UpdateConfig from "../config";
 import * as ManualRestart from "../test/manual-restart-tracker";
 import * as TestLogic from "../test/test-logic";
 import * as Notifications from "../elements/notifications";
-import AnimatedModal from "../utils/animated-modal";
+import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
 
-export function show(): void {
+export function show(showOptions?: ShowOptions): void {
   void modal.show({
+    ...showOptions,
     focusFirstInput: "focusAndSelect",
     beforeAnimation: async (modalEl) => {
       (
@@ -15,8 +16,10 @@ export function show(): void {
   });
 }
 
-function hide(): void {
-  void modal.hide();
+function hide(clearChain = false): void {
+  void modal.hide({
+    clearModalChain: clearChain,
+  });
 }
 
 function apply(): void {
@@ -45,7 +48,7 @@ function apply(): void {
     Notifications.add("Custom word amount must be at least 1", 0);
   }
 
-  hide();
+  hide(true);
 }
 
 const modal = new AnimatedModal({
