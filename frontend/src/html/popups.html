@@ -658,9 +658,9 @@
     </div>
   </div>
 </div>
-<div id="quoteSubmitPopupWrapper" class="popupWrapper hidden">
-  <div id="quoteSubmitPopup" mode="">
-    <div class="title">Submit a Quote</div>
+<dialog id="quoteSubmitModal" class="modalWrapper hidden">
+  <div class="modal">
+    <div class="title">Submit a quote</div>
     <ul>
       <li>
         Do not include content that contains any libelous or otherwise unlawful,
@@ -677,24 +677,19 @@
         </b>
       </li>
     </ul>
-    <label>Quote</label>
+    <label>quote</label>
     <div style="position: relative">
-      <textarea
-        id="submitQuoteText"
-        class=""
-        type="text"
-        autocomplete="off"
-      ></textarea>
+      <textarea class="newQuoteText" type="text" autocomplete="off"></textarea>
       <div class="characterCount">-</div>
     </div>
-    <label>Source</label>
-    <input id="submitQuoteSource" class="" type="text" autocomplete="off" />
-    <label>Language</label>
-    <select name="language" id="submitQuoteLanguage"></select>
+    <label>source</label>
+    <input class="newQuoteSource" type="text" autocomplete="off" />
+    <label>language</label>
+    <select name="language" class="newQuoteLanguage"></select>
     <div class="g-recaptcha"></div>
-    <div id="submitQuoteButton" class="button">Submit</div>
+    <button>submit</button>
   </div>
-</div>
+</dialog>
 <div id="apeKeysPopupWrapper" class="hidden popupWrapper">
   <div id="apeKeysPopup" mode="">
     <div class="top">

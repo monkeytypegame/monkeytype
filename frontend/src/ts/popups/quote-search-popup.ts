@@ -3,7 +3,7 @@ import Config, * as UpdateConfig from "../config";
 import * as DB from "../db";
 import * as ManualRestart from "../test/manual-restart-tracker";
 import * as Notifications from "../elements/notifications";
-import * as QuoteSubmitPopup from "./quote-submit-popup";
+import * as QuoteSubmitPopup from "../modals/quote-submit";
 import * as QuoteApprovePopup from "./quote-approve-popup";
 import * as QuoteReportPopup from "./quote-report-popup";
 import {
@@ -374,7 +374,9 @@ $("#popups").on(
       return;
     }
     hide();
-    void QuoteSubmitPopup.show(true);
+    void QuoteSubmitPopup.show({
+      // modalChain: modal
+    });
   }
 );
 
