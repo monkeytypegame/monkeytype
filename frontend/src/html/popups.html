@@ -576,15 +576,15 @@
     </div>
   </div>
 </div>
-<div id="googleSignUpPopupWrapper" class="popupWrapper hidden">
-  <div id="googleSignUpPopup">
+<dialog id="googleSignUpModal" class="modalWrapper hidden">
+  <form class="modal">
     <div class="title">Account name</div>
-    <div class="text">You need to choose a username before continuing</div>
+    <div class="text">Please enter a username before continuing</div>
     <input type="text" placeholder="username" />
     <div class="captcha"></div>
-    <div class="button disabled">Sign up</div>
-  </div>
-</div>
+    <button>continue</button>
+  </form>
+</dialog>
 <dialog id="customWordAmountModal" class="modalWrapper hidden">
   <form class="modal">
     <div class="title">Custom word amount</div>

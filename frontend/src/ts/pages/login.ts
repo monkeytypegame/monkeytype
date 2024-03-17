@@ -171,7 +171,7 @@ const nameIndicator = new InputIndicator(
       level: -1,
     },
     taken: {
-      icon: "fa-times",
+      icon: "fa-user",
       level: -1,
     },
     checking: {
