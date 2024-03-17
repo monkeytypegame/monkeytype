@@ -3,7 +3,7 @@ import { randomQuote } from "../test/test-words";
 import { getMode2, isPopupVisible } from "../utils/misc";
 import * as CustomText from "../test/custom-text";
 import { compressToURI } from "lz-ts";
-import * as Skeleton from "./skeleton";
+import * as Skeleton from "../utils/skeleton";
 
 const wrapperId = "shareTestSettingsPopupWrapper";
 
@@ -14,13 +14,13 @@ function getCheckboxValue(checkbox: string): boolean {
 }
 
 type SharedTestSettings = [
-  SharedTypes.Mode | null,
-  SharedTypes.Mode2<SharedTypes.Mode> | null,
+  SharedTypes.Config.Mode | null,
+  SharedTypes.Config.Mode2<SharedTypes.Config.Mode> | null,
   SharedTypes.CustomText | null,
   boolean | null,
   boolean | null,
   string | null,
-  SharedTypes.Difficulty | null,
+  SharedTypes.Config.Difficulty | null,
   string | null
 ];
 
@@ -45,7 +45,7 @@ function updateURL(): void {
     settings[1] = getMode2(
       Config,
       randomQuote
-    ) as SharedTypes.Mode2<SharedTypes.Mode>;
+    ) as SharedTypes.Config.Mode2<SharedTypes.Config.Mode>;
   }
 
   if (getCheckboxValue("customText")) {
@@ -99,7 +99,7 @@ function updateSubgroups(): void {
 }
 
 export function show(): void {
-  Skeleton.append(wrapperId);
+  Skeleton.append(wrapperId, "popups");
   if (!isPopupVisible(wrapperId)) {
     updateURL();
     updateSubgroups();
@@ -140,13 +140,13 @@ $("#shareTestSettingsPopupWrapper textarea.url").on("click", () => {
 
 $("#shareTestSettingsPopupWrapper").on("mousedown", (e) => {
   if ($(e.target).attr("id") === "shareTestSettingsPopupWrapper") {
-    hide();
+    void hide();
   }
 });
 
 $(document).on("keydown", (event) => {
   if (event.key === "Escape" && isPopupVisible(wrapperId)) {
-    hide();
+    void hide();
     event.preventDefault();
   }
 });

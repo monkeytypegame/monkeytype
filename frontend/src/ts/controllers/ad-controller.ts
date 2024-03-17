@@ -44,9 +44,9 @@ function init(): void {
       return;
     }
     if (choice === "eg") {
-      EG.refreshVisible();
+      void EG.refreshVisible();
     } else {
-      PW.refreshVisible();
+      void PW.refreshVisible();
     }
   }, 60000);
 
@@ -142,7 +142,7 @@ export async function checkAdblock(): Promise<void> {
   return new Promise((resolve) => {
     if (choice === "eg") {
       if (adBlock === undefined) {
-        //@ts-ignore
+        //@ts-expect-error
         if (window.egAdPack === undefined) {
           adBlock = true;
         } else {
@@ -150,7 +150,7 @@ export async function checkAdblock(): Promise<void> {
         }
       }
     } else if (choice === "pw") {
-      //@ts-ignore
+      //@ts-expect-error
       if (window.ramp === undefined) {
         adBlock = true;
       }
@@ -168,15 +168,15 @@ export async function checkCookieblocker(): Promise<void> {
         return;
       }
 
-      //@ts-ignore
+      //@ts-expect-error
       if (window.__tcfapi === undefined) {
         cookieBlocker = true;
         resolve();
         return;
       }
-      //@ts-ignore
+      //@ts-expect-error
       window.__tcfapi("getTCData", 2, (tcData, success) => {
-        if (success) {
+        if (success as boolean) {
           if (tcData.eventStatus === "cmpuishown") {
             cookieBlocker = true;
           } else {
@@ -247,7 +247,7 @@ export async function renderResult(): Promise<void> {
   if (choice === "eg") {
     EG.renderResult(widerThanBreakpoint);
   } else {
-    PW.renderResult();
+    void PW.renderResult();
   }
 }
 
@@ -267,12 +267,12 @@ export function updateFooterAndVerticalAds(visible: boolean): void {
 
 export function showConsentPopup(): void {
   if (choice === "eg") {
-    //@ts-ignore
+    //@ts-expect-error
     window.__tcfapi("displayConsentUi", 2, function () {
       //
     });
   } else {
-    //@ts-ignore
+    //@ts-expect-error
     ramp.showCmpModal();
   }
 }
@@ -318,9 +318,9 @@ $(document).ready(() => {
 });
 
 window.onerror = function (error): void {
-  //@ts-ignore
+  //@ts-expect-error
   if (choice === "eg") {
-    if (typeof error === "string" && error.substring(0, 6) === "EG APS") {
+    if (typeof error === "string" && error.startsWith("EG APS")) {
       $("#ad-result-wrapper .iconAndText").addClass("withLeft");
     }
   }

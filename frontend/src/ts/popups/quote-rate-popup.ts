@@ -3,20 +3,20 @@ import * as DB from "../db";
 import * as TestWords from "../test/test-words";
 import * as Loader from "../elements/loader";
 import * as Notifications from "../elements/notifications";
-import * as Skeleton from "./skeleton";
+import * as Skeleton from "../utils/skeleton";
 import { isPopupVisible } from "../utils/misc";
 
 const wrapperId = "quoteRatePopupWrapper";
 
 let rating = 0;
 
-interface QuoteStats {
+type QuoteStats = {
   average?: number;
   ratings?: number;
   totalRating?: number;
   quoteId?: number;
   language?: string;
-}
+};
 
 let quoteStats: QuoteStats | null | Record<string, never> = null;
 let currentQuote: MonkeyTypes.Quote | null = null;
@@ -54,12 +54,12 @@ export async function getQuoteStats(
     return;
   }
 
-  if (!response.data) {
+  if (response.data === null) {
     return {} as QuoteStats;
   }
 
   quoteStats = response.data as QuoteStats;
-  if (quoteStats && !quoteStats.average) {
+  if (quoteStats !== undefined && !quoteStats.average) {
     quoteStats.average = getRatingAverage(quoteStats);
   }
 
@@ -98,11 +98,11 @@ function updateData(): void {
   $(`#quoteRatePopup .quote .source .val`).text(currentQuote.source);
   $(`#quoteRatePopup .quote .id .val`).text(currentQuote.id);
   $(`#quoteRatePopup .quote .length .val`).text(lengthDesc as string);
-  updateRatingStats();
+  void updateRatingStats();
 }
 
 function show(quote: MonkeyTypes.Quote, shouldReset = true): void {
-  Skeleton.append(wrapperId);
+  Skeleton.append(wrapperId, "popups");
 
   if (!isPopupVisible(wrapperId)) {
     if (shouldReset) {
@@ -241,7 +241,7 @@ $("#quoteRatePopupWrapper .stars .star").on("mouseout", () => {
 });
 
 $("#quoteRatePopupWrapper .submitButton").on("click", () => {
-  submit();
+  void submit();
 });
 
 $(".pageTest #rateQuoteButton").on("click", async () => {

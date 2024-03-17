@@ -9,8 +9,8 @@ const commands: MonkeyTypes.Command[] = [
     defaultValue: (): string => {
       return Config.fontSize.toString();
     },
-    exec: (input): void => {
-      if (!input) return;
+    exec: ({ input }): void => {
+      if (input === undefined || input === "") return;
       UpdateConfig.setFontSize(parseFloat(input));
     },
   },

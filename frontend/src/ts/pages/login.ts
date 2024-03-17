@@ -3,7 +3,7 @@ import Ape from "../ape";
 import Page from "./page";
 import * as Notifications from "../elements/notifications";
 import { InputIndicator } from "../elements/input-indicator";
-import * as Skeleton from "../popups/skeleton";
+import * as Skeleton from "../utils/skeleton";
 import * as Misc from "../utils/misc";
 import TypoList from "../utils/typo-list";
 
@@ -263,16 +263,20 @@ $(".page.pageLogin .register.side .usernameInput").on("input", () => {
       return nameIndicator.hide();
     } else {
       nameIndicator.show("checking");
-      checkNameDebounced();
+      void checkNameDebounced();
     }
   }, 1);
 });
 
 $(".page.pageLogin .register.side .emailInput").on("input", () => {
-  if (
-    !$(".page.pageLogin .register.side .emailInput").val() &&
-    !$(".page.pageLogin .register.side .verifyEmailInput").val()
-  ) {
+  const emailInputValue = $(
+    ".page.pageLogin .register.side .emailInput"
+  ).val() as string;
+  const verifyInputValue = $(
+    ".page.pageLogin .register.side .verifyEmailInput"
+  ).val() as string;
+
+  if (!emailInputValue && !verifyInputValue) {
     emailIndicator.hide();
     verifyEmailIndicator.hide();
     return;
@@ -282,10 +286,14 @@ $(".page.pageLogin .register.side .emailInput").on("input", () => {
 });
 
 $(".page.pageLogin .register.side .verifyEmailInput").on("input", () => {
-  if (
-    !$(".page.pageLogin .register.side .emailInput").val() &&
-    !$(".page.pageLogin .register.side .verifyEmailInput").val()
-  ) {
+  const emailInputValue = $(
+    ".page.pageLogin .register.side .emailInput"
+  ).val() as string;
+  const verifyInputValue = $(
+    ".page.pageLogin .register.side .verifyEmailInput"
+  ).val() as string;
+
+  if (!emailInputValue && !verifyInputValue) {
     emailIndicator.hide();
     verifyEmailIndicator.hide();
     return;
@@ -294,10 +302,14 @@ $(".page.pageLogin .register.side .verifyEmailInput").on("input", () => {
 });
 
 $(".page.pageLogin .register.side .passwordInput").on("input", () => {
-  if (
-    !$(".page.pageLogin .register.side .passwordInput").val() &&
-    !$(".page.pageLogin .register.side .verifyPasswordInput").val()
-  ) {
+  const passwordInputValue = $(
+    ".page.pageLogin .register.side .passwordInput"
+  ).val() as string;
+  const verifyPasswordInputValue = $(
+    ".page.pageLogin .register.side .verifyPasswordInput"
+  ).val() as string;
+
+  if (!passwordInputValue && !verifyPasswordInputValue) {
     passwordIndicator.hide();
     verifyPasswordIndicator.hide();
     return;
@@ -307,10 +319,14 @@ $(".page.pageLogin .register.side .passwordInput").on("input", () => {
 });
 
 $(".page.pageLogin .register.side .verifyPasswordInput").on("input", () => {
-  if (
-    !$(".page.pageLogin .register.side .passwordInput").val() &&
-    !$(".page.pageLogin .register.side .verifyPasswordInput").val()
-  ) {
+  const passwordInputValue = $(
+    ".page.pageLogin .register.side .passwordInput"
+  ).val() as string;
+  const verifyPasswordInputValue = $(
+    ".page.pageLogin .register.side .verifyPasswordInput"
+  ).val() as string;
+
+  if (!passwordInputValue && !verifyPasswordInputValue) {
     passwordIndicator.hide();
     verifyPasswordIndicator.hide();
     return;
@@ -328,12 +344,15 @@ export const page = new Page(
   },
   async () => {
     $(".pageLogin input").val("");
+    nameIndicator.hide();
+    emailIndicator.hide();
+    verifyEmailIndicator.hide();
+    passwordIndicator.hide();
+    verifyPasswordIndicator.hide();
     Skeleton.remove("pageLogin");
   },
   async () => {
     Skeleton.append("pageLogin", "main");
-    enableInputs();
-    enableSignUpButton();
   },
   async () => {
     //

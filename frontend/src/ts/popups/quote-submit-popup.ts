@@ -4,7 +4,8 @@ import * as Notifications from "../elements/notifications";
 import * as CaptchaController from "../controllers/captcha-controller";
 import * as Misc from "../utils/misc";
 import Config from "../config";
-import * as Skeleton from "./skeleton";
+import * as Skeleton from "../utils/skeleton";
+import SlimSelect from "slim-select";
 
 const wrapperId = "quoteSubmitPopupWrapper";
 
@@ -18,9 +19,10 @@ async function initDropdown(): Promise<void> {
       `<option value="${group.name}">${group.name.replace(/_/g, " ")}</option>`
     );
   }
-  $("#quoteSubmitPopup #submitQuoteLanguage").select2();
   dropdownReady = true;
 }
+
+let select: SlimSelect | undefined = undefined;
 
 async function submitQuote(): Promise<void> {
   const text = $("#quoteSubmitPopup #submitQuoteText").val() as string;
@@ -49,7 +51,7 @@ async function submitQuote(): Promise<void> {
 }
 
 export async function show(noAnim = false): Promise<void> {
-  Skeleton.append(wrapperId);
+  Skeleton.append(wrapperId, "popups");
 
   if (!Misc.isPopupVisible(wrapperId)) {
     CaptchaController.render(
@@ -57,8 +59,13 @@ export async function show(noAnim = false): Promise<void> {
       "submitQuote"
     );
     await initDropdown();
+
+    select = new SlimSelect({
+      select: "#quoteSubmitPopup #submitQuoteLanguage",
+    });
+
     $("#quoteSubmitPopup #submitQuoteLanguage").val(
-      Config.language.replace(/_\d*k$/g, "")
+      Misc.removeLanguageSize(Config.language)
     );
     $("#quoteSubmitPopup #submitQuoteLanguage").trigger("change");
     $("#quoteSubmitPopup input").val("");
@@ -86,6 +93,8 @@ function hide(): void {
           $("#quoteSubmitPopupWrapper").addClass("hidden");
           CaptchaController.reset("submitQuote");
           Skeleton.remove(wrapperId);
+          select?.destroy();
+          select = undefined;
         }
       );
   }
@@ -98,7 +107,7 @@ $("#quoteSubmitPopupWrapper").on("mousedown", (e) => {
 });
 
 $("#popups").on("click", "#quoteSubmitPopup #submitQuoteButton", () => {
-  submitQuote();
+  void submitQuote();
 });
 
 $("#quoteSubmitPopupWrapper textarea").on("input", () => {
@@ -115,7 +124,7 @@ $("#quoteSubmitPopupWrapper textarea").on("input", () => {
 
 $("#quoteSubmitPopupWrapper input").on("keydown", (e) => {
   if (e.key === "Enter") {
-    submitQuote();
+    void submitQuote();
   }
 });
 

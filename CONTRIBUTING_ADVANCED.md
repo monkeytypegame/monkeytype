@@ -2,19 +2,26 @@
 
 ## **Table of Contents**
 
-- [Prerequisites](#prerequisites)
-  - [Git](#git)
-  - [NodeJS and NPM](#nodejs-and-npm)
-  - [Firebase](#firebase)
-  - [Docker (Recommended but Optional)](#docker-recommended-but-optional)
-  - [Backend (optional)](#backend-optional)
-- [Building and Running Monkeytype](#building-and-running-monkeytype)
-- [Standards and Guidelines](#standards-and-guidelines)
-- [Questions](#questions)
+- [Contributing - Advanced](#contributing---advanced)
+  - [**Table of Contents**](#table-of-contents)
+  - [Prerequisites](#prerequisites)
+    - [Git](#git)
+    - [NodeJS and NPM](#nodejs-and-npm)
+    - [Docker (Recommended but Optional)](#docker-recommended-but-optional)
+    - [Firebase (optional)](#firebase-optional)
+    - [Config file](#config-file)
+    - [Databases (optional if running frontend only)](#databases-optional-if-running-frontend-only)
+  - [Building and Running Monkeytype](#building-and-running-monkeytype)
+    - [Dependencies (if running manually)](#dependencies-if-running-manually)
+    - [Both Frontend and Backend](#both-frontend-and-backend)
+    - [Backend only](#backend-only)
+    - [Frontend only](#frontend-only)
+  - [Standards and Guidelines](#standards-and-guidelines)
+  - [Questions](#questions)
 
 ## Prerequisites
 
-This contribution guide is for cases in which you need to test the functionality of your changes, or if you need to take screenshots of your changes. You will need a computer with a stable internet connection, a text editor, Git, and NodeJS with version 18.17.1. There are some additional requirements depending on what you're looking to contribute, such as Firebase for authentication, and Mongo and Docker for the backend. Read the below sections to understand how to set up each of these tools.
+This contribution guide is for cases in which you need to test the functionality of your changes, or if you need to take screenshots of your changes. You will need a computer with a stable internet connection, a text editor, Git, and NodeJS with version 18.19.1. There are some additional requirements depending on what you're looking to contribute, such as Firebase for authentication, and Mongo and Docker for the backend. Read the below sections to understand how to set up each of these tools.
 
 ### Git
 
@@ -24,9 +31,9 @@ Git is optional but we recommend you utilize it. Monkeytype uses the Git source 
 
 ### NodeJS and NPM
 
-Currently, the project is using version `18.17.1 LTS`.
+Currently, the project is using version `18.19.1 LTS`.
 
-If you use `nvm` (if you use Windows, use [nvm-windows](https://github.com/coreybutler/nvm-windows)) then you can run `nvm install` and `nvm use` (you might need to specify the exact version eg: `nvm install 18.17.1` then `nvm use 18.17.1`) to use the version of Node.js in the `.nvmrc` file.
+If you use `nvm` (if you use Windows, use [nvm-windows](https://github.com/coreybutler/nvm-windows)) then you can run `nvm install` and `nvm use` (you might need to specify the exact version eg: `nvm install 18.19.1` then `nvm use 18.19.1`) to use the version of Node.js in the `.nvmrc` file.
 
 Alternatively, you can navigate to the NodeJS [website](https://nodejs.org/en/) to download it from there.
 
@@ -46,7 +53,7 @@ The account system will not let you create an account without a Firebase project
 
 1. Enable Firebase Authentication
 
-   - In the Firebase console, go to `Authentication > Sign-in method`
+   - In the Firebase console, go to `Build > Authentication > Sign-in method`
    - Click on `Email/Password`, enable it, and save
    - Click on `Google`, add a support email, and save
 
@@ -90,7 +97,7 @@ If you want to access the frontend from other machines on your network create a 
 BACKEND_URL="http://<Your IP>:5005"
 ```
 
-### Backend (optional)
+### Databases (optional if running frontend only)
 
 Follow these steps if you want to work on anything involving the database/account system. Otherwise, you can skip this section.
 
@@ -98,43 +105,45 @@ Follow these steps if you want to work on anything involving the database/accoun
 
 2. Setup the database server
 
-| Local Server                                                                                                                                             | Docker (recommended)                                                                                                                                                                                                   |
-| -------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| <ol><li>Install [MongoDB Community Edition](https://docs.mongodb.com/manual/administration/install-community/)</li><li>Make sure it is running</li></ol> | <ol><li>Install [Docker](http://www.docker.io/gettingstarted/#h_installation) on your machine</li><li>Run `docker compose up` from the `./backend` directory (this is also how you start the backend server)</li></ol> |
+| Manual                                                                                                                                                                                                                            | Docker (recommended)                                                                                                                                                        |
+| --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| <ol><li>Install [MongoDB Community Edition](https://docs.mongodb.com/manual/administration/install-community/)</li><li>Install [Redis](https://redis.io/docs/install/install-redis/)</li><li>Make sure both are running</li></ol> | <ol><li>Install [Docker](http://www.docker.io/gettingstarted/#h_installation) on your machine</li><li>Run `npm run docker-db-only` from the `./backend` directory</li></ol> |
 
 3. (Optional) Install [MongoDB-compass](https://www.mongodb.com/try/download/compass?tck=docs_compass). This tool can be used to see and manipulate your database visually.
    - To connect, type `mongodb://localhost:27017` in the connection string box and press connect. The Monkeytype database will be created and shown after the server is started.
 
 ## Building and Running Monkeytype
 
-- Run `npm run install-all` in the project root to install all dependencies.
-  - If you are on Windows, use `npm run install-windows`.
-  - If neither works, you will have to run `npm install` in root, frontend, and backend directories.
-    Now you are ready to build and run Monkeytype.
+Its time to run Monkeytype. Just like with the databases, you can run the frontend and backend manually or with Docker.
 
-### Using Docker:
+### Dependencies (if running manually)
 
-- Frontend:
-  ```
-  cd frontend && docker compose up
-  ```
-- Backend (in another terminal window):
-  ```
-  cd backend && docker compose up
-  ```
+Run `npm run install-all` in the project root to install all dependencies.
 
-### **_Without_** Docker:
+- If you are on Windows, use `npm run install-windows`.
+- If neither works, you will have to run `npm install` in root, frontend, and backend directories.
 
-- Frontend and backend
-  ```
-  npm run dev
-  ```
-- Only frontend (if you skipped the Backend section):
-  ```
-  npm run dev-fe
-  ```
+### Both Frontend and Backend
 
-These commands will start a local dev server on [port 3000](http://localhost:3000). It will watch for changes and rebuild when you edit files in `src/` or `public/` directories. Use <kbd>Ctrl+C</kbd> to stop it.
+Manual:
+
+```
+npm run dev
+```
+
+### Backend only
+
+| Manual                      | Docker                         |
+| --------------------------- | ------------------------------ |
+| `cd backend && npm run dev` | `cd backend && npm run docker` |
+
+### Frontend only
+
+| Manual                       | Docker                          |
+| ---------------------------- | ------------------------------- |
+| `cd frontend && npm run dev` | `cd frontend && npm run docker` |
+
+These commands will start a local development website on [port 3000](http://localhost:3000) and a local development server on [port 5005](http://localhost:5005). They will automatically rebuild the website/server when you make changes in the `src/` directory. Use <kbd>Ctrl+C</kbd> to stop them.
 
 Note: Rebuilding doesn't happen instantaneously and depends on your machine, so be patient for changes to appear.
 

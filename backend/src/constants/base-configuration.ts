@@ -5,6 +5,9 @@
  */
 export const BASE_CONFIGURATION: SharedTypes.Configuration = {
   maintenance: false,
+  dev: {
+    responseSlowdownMs: 0,
+  },
   results: {
     savingEnabled: false,
     objectHashCheckEnabled: false,
@@ -99,36 +102,37 @@ export const BASE_CONFIGURATION: SharedTypes.Configuration = {
   },
 };
 
-interface BaseSchema {
+type BaseSchema = {
   type: string;
   label?: string;
   hint?: string;
-}
+};
 
-interface NumberSchema extends BaseSchema {
+type NumberSchema = {
   type: "number";
   min?: number;
-}
+} & BaseSchema;
 
-interface BooleanSchema extends BaseSchema {
+type BooleanSchema = {
   type: "boolean";
-}
+} & BaseSchema;
 
-interface StringSchema extends BaseSchema {
+type StringSchema = {
   type: "string";
-}
-interface ArraySchema<T extends any[]> extends BaseSchema {
+} & BaseSchema;
+
+type ArraySchema<T extends unknown[]> = {
   type: "array";
   items: Schema<T>[number];
-}
+} & BaseSchema;
 
-interface ObjectSchema<T> extends BaseSchema {
+type ObjectSchema<T> = {
   type: "object";
   fields: Schema<T>;
-}
+} & BaseSchema;
 
 type Schema<T> = {
-  [P in keyof T]: T[P] extends any[]
+  [P in keyof T]: T[P] extends unknown[]
     ? ArraySchema<T[P]>
     : T[P] extends number
     ? NumberSchema
@@ -149,6 +153,17 @@ export const CONFIGURATION_FORM_SCHEMA: ObjectSchema<SharedTypes.Configuration> 
       maintenance: {
         type: "boolean",
         label: "In Maintenance",
+      },
+      dev: {
+        type: "object",
+        label: "Development",
+        fields: {
+          responseSlowdownMs: {
+            type: "number",
+            label: "Response Slowdown (miliseconds)",
+            min: 0,
+          },
+        },
       },
       results: {
         type: "object",

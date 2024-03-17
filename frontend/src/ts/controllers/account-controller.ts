@@ -14,7 +14,7 @@ import * as LoadingPage from "../pages/loading";
 import * as LoginPage from "../pages/login";
 import * as ResultFilters from "../account/result-filters";
 import * as TagController from "./tag-controller";
-import * as RegisterCaptchaPopup from "../popups/register-captcha-popup";
+import * as RegisterCaptchaModal from "../modals/register-captcha";
 import * as URLHandler from "../utils/url-handler";
 import * as Account from "../pages/account";
 import * as Alerts from "../elements/alerts";
@@ -32,7 +32,7 @@ import {
   User as UserType,
   Unsubscribe,
 } from "firebase/auth";
-import { Auth } from "../firebase";
+import { Auth, getAuthenticatedUser, isAuthenticated } from "../firebase";
 import { dispatch as dispatchSignUpEvent } from "../observables/google-sign-up-event";
 import {
   hideFavoriteQuoteLength,
@@ -40,6 +40,7 @@ import {
 } from "../test/test-config";
 import * as ConnectionState from "../states/connection";
 import { navigate } from "./route-controller";
+import { getHtmlByUserFlags } from "./user-flag-controller";
 
 let signedOutThisSession = false;
 
@@ -99,8 +100,9 @@ async function getDataAndInit(): Promise<boolean> {
         }
       );
     }
-    const msg = e.message || e;
+    const msg = e.message || "Unknown error";
     Notifications.add("Failed to get user data: " + msg, -1);
+    console.error(e);
 
     $("header nav .account").css("opacity", 1);
     return false;
@@ -113,6 +115,9 @@ async function getDataAndInit(): Promise<boolean> {
   LoadingPage.updateText("Applying settings...");
   const snapshot = DB.getSnapshot() as MonkeyTypes.Snapshot;
   $("nav .textButton.account > .text").text(snapshot.name);
+  $("nav .textButton.account > .text").append(
+    getHtmlByUserFlags(snapshot, { iconsOnly: true })
+  );
   showFavoriteQuoteLength();
 
   ResultFilters.loadTags(snapshot.tags);
@@ -127,7 +132,7 @@ async function getDataAndInit(): Promise<boolean> {
         ResultFilters.defaultResultFilters.funbox[funbox.name] = true;
       });
       // filters = defaultResultFilters;
-      ResultFilters.load();
+      void ResultFilters.load();
     })
     .catch((e) => {
       console.log(
@@ -152,14 +157,11 @@ async function getDataAndInit(): Promise<boolean> {
   const areConfigsEqual =
     JSON.stringify(Config) === JSON.stringify(snapshot.config);
 
-  if (
-    snapshot.config &&
-    (!UpdateConfig.localStorageConfig || !areConfigsEqual)
-  ) {
+  if (UpdateConfig.localStorageConfig === undefined || !areConfigsEqual) {
     console.log(
       "no local config or local and db configs are different - applying db"
     );
-    UpdateConfig.apply(snapshot.config);
+    await UpdateConfig.apply(snapshot.config);
     UpdateConfig.saveFullConfigToLocalStorage(true);
   }
   AccountButton.loading(false);
@@ -180,12 +182,12 @@ export async function loadUser(user: UserType): Promise<void> {
   // User is signed in.
   PageTransition.set(false);
   AccountButton.loading(true);
-  if ((await getDataAndInit()) === false) {
+  if (!(await getDataAndInit())) {
     signOut();
   }
   const { discordId, discordAvatar, xp, inboxUnreadSize } =
     DB.getSnapshot() as MonkeyTypes.Snapshot;
-  AccountButton.update(xp, discordId, discordAvatar);
+  void AccountButton.update(xp, discordId, discordAvatar);
   Alerts.setNotificationBubbleVisible(inboxUnreadSize > 0);
   // var displayName = user.displayName;
   // var email = user.email;
@@ -247,7 +249,7 @@ if (Auth && ConnectionState.get()) {
 
     URLHandler.loadCustomThemeFromUrl(search);
     URLHandler.loadTestSettingsFromUrl(search);
-    URLHandler.linkDiscord(hash);
+    void URLHandler.linkDiscord(hash);
 
     if (/challenge_.+/g.test(window.location.pathname)) {
       Notifications.add(
@@ -281,7 +283,7 @@ if (Auth && ConnectionState.get()) {
 
     URLHandler.loadCustomThemeFromUrl(search);
     URLHandler.loadTestSettingsFromUrl(search);
-    URLHandler.linkDiscord(hash);
+    void URLHandler.linkDiscord(hash);
 
     if (/challenge_.+/g.test(window.location.pathname)) {
       Notifications.add(
@@ -323,7 +325,9 @@ async function signIn(): Promise<void> {
     return;
   }
 
-  const persistence = $(".pageLogin .login #rememberMe input").prop("checked")
+  const persistence = ($(".pageLogin .login #rememberMe input").prop(
+    "checked"
+  ) as boolean)
     ? browserLocalPersistence
     : browserSessionPersistence;
 
@@ -333,6 +337,7 @@ async function signIn(): Promise<void> {
       await loadUser(e.user);
     })
     .catch(function (error) {
+      console.error(error);
       let message = error.message;
       if (error.code === "auth/wrong-password") {
         message = "Incorrect password";
@@ -341,6 +346,9 @@ async function signIn(): Promise<void> {
       } else if (error.code === "auth/invalid-email") {
         message =
           "Invalid email format (make sure you are using your email to login - not your username)";
+      } else if (error.code === "auth/invalid-credential") {
+        message =
+          "Email/password is incorrect or your account does not have password authentication enabled.";
       }
       Notifications.add(message, -1);
       LoginPage.hidePreloader();
@@ -367,7 +375,9 @@ async function signInWithGoogle(): Promise<void> {
   LoginPage.disableInputs();
   LoginPage.disableSignUpButton();
   authListener();
-  const persistence = $(".pageLogin .login #rememberMe input").prop("checked")
+  const persistence = ($(".pageLogin .login #rememberMe input").prop(
+    "checked"
+  ) as boolean)
     ? browserLocalPersistence
     : browserSessionPersistence;
 
@@ -390,7 +400,11 @@ async function signInWithGoogle(): Promise<void> {
         message =
           "Invalid email format (make sure you are using your email to login - not your username)";
       } else if (error.code === "auth/popup-closed-by-user") {
-        message = "Popup closed by user";
+        // message = "Popup closed by user";
+        return;
+      } else if (error.code === "auth/user-cancelled") {
+        // message = "User refused to sign in";
+        return;
       }
       Notifications.add(message, -1);
       LoginPage.hidePreloader();
@@ -407,8 +421,8 @@ async function addGoogleAuth(): Promise<void> {
     return;
   }
   Loader.show();
-  if (Auth.currentUser === null) return;
-  linkWithPopup(Auth.currentUser, gmailProvider)
+  if (!isAuthenticated()) return;
+  linkWithPopup(getAuthenticatedUser(), gmailProvider)
     .then(function () {
       Loader.hide();
       Notifications.add("Google authentication added", 1);
@@ -430,7 +444,7 @@ export function signOut(): void {
     });
     return;
   }
-  if (!Auth.currentUser) return;
+  if (!isAuthenticated()) return;
   Auth.signOut()
     .then(function () {
       Notifications.add("Signed out", 0, {
@@ -438,7 +452,7 @@ export function signOut(): void {
       });
       AllTimeStats.clear();
       Settings.hideAccountSection();
-      AccountButton.update();
+      void AccountButton.update();
       navigate("/login");
       DB.setSnapshot(undefined);
       LoginPage.enableSignUpButton();
@@ -466,9 +480,9 @@ async function signUp(): Promise<void> {
     });
     return;
   }
-  RegisterCaptchaPopup.show();
-  const captchaToken = await RegisterCaptchaPopup.promise;
-  if (!captchaToken) {
+  RegisterCaptchaModal.show();
+  const captchaToken = await RegisterCaptchaModal.promise;
+  if (captchaToken === undefined || captchaToken === "") {
     Notifications.add("Please complete the captcha", -1);
     return;
   }
@@ -538,9 +552,8 @@ async function signUp(): Promise<void> {
 
   authListener();
 
-  let createdAuthUser;
   try {
-    createdAuthUser = await createUserWithEmailAndPassword(
+    const createdAuthUser = await createUserWithEmailAndPassword(
       Auth,
       email,
       password
@@ -553,7 +566,7 @@ async function signUp(): Promise<void> {
       createdAuthUser.user.uid
     );
     if (signInResponse.status !== 200) {
-      throw signInResponse;
+      throw new Error(`Failed to sign in: ${signInResponse.message}`);
     }
 
     await updateProfile(createdAuthUser.user, { displayName: nname });
@@ -580,20 +593,6 @@ async function signUp(): Promise<void> {
     }
     Notifications.add("Account created", 1);
   } catch (e) {
-    //make sure to do clean up here
-    if (createdAuthUser) {
-      try {
-        await Ape.users.delete();
-      } catch (e) {
-        // account might already be deleted
-      }
-      try {
-        await createdAuthUser.user.delete();
-      } catch (e) {
-        // account might already be deleted
-      }
-    }
-    console.log(e);
     const message = Misc.createErrorMessage(e, "Failed to create account");
     Notifications.add(message, -1);
     LoginPage.hidePreloader();
@@ -606,11 +605,11 @@ async function signUp(): Promise<void> {
 
 $(".pageLogin .login form").on("submit", (e) => {
   e.preventDefault();
-  signIn();
+  void signIn();
 });
 
 $(".pageLogin .login button.signInWithGoogle").on("click", () => {
-  signInWithGoogle();
+  void signInWithGoogle();
 });
 
 // $(".pageLogin .login .button.signInWithGitHub").on("click",(e) => {
@@ -624,7 +623,7 @@ $("header .signInOut").on("click", () => {
     });
     return;
   }
-  if (Auth.currentUser) {
+  if (isAuthenticated()) {
     signOut();
     signedOutThisSession = true;
   } else {
@@ -634,7 +633,7 @@ $("header .signInOut").on("click", () => {
 
 $(".pageLogin .register form").on("submit", (e) => {
   e.preventDefault();
-  signUp();
+  void signUp();
 });
 
 $(".pageSettings #addGoogleAuth").on("click", async () => {
@@ -644,7 +643,7 @@ $(".pageSettings #addGoogleAuth").on("click", async () => {
     });
     return;
   }
-  addGoogleAuth();
+  void addGoogleAuth();
 });
 
 $(".pageAccount").on("click", ".sendVerificationEmail", () => {
@@ -654,5 +653,5 @@ $(".pageAccount").on("click", ".sendVerificationEmail", () => {
     });
     return;
   }
-  sendVerificationEmail();
+  void sendVerificationEmail();
 });

@@ -1,0 +1,181 @@
+<noscript>
+  <div
+    style="
+      background: #333;
+      width: 100vw;
+      height: 100vh;
+      left: 0;
+      top: 0;
+      position: fixed;
+      display: grid;
+      justify-content: center;
+      align-content: center;
+      color: #646669;
+      font-size: 1rem;
+      font-family: Arial Rounded MT Bold;
+      z-index: 99999;
+      padding: 6rem;
+      box-sizing: border-box;
+    "
+  >
+    <div
+      style="
+        display: grid;
+        justify-content: center;
+        align-content: center;
+        max-width: 800px;
+        gap: 1rem;
+      "
+    >
+      <span style="font-size: 6rem; color: #e2b714">:(</span>
+      <span style="font-size: 2rem; color: #d1d0c5">
+        Looks like JavaScript is disabled. Please enable JavaScript in order to
+        use this website.
+      </span>
+    </div>
+  </div>
+</noscript>
+<div
+  id="nocss"
+  style="
+    background: #333;
+    width: 100vw;
+    height: 100vh;
+    left: 0;
+    top: 0;
+    position: fixed;
+    display: grid;
+    justify-content: center;
+    align-content: center;
+    color: #646669;
+    font-size: 1rem;
+    font-family: Arial Rounded MT Bold;
+    z-index: 99999;
+    padding: 6rem;
+    box-sizing: border-box;
+    overflow-y: scroll;
+  "
+>
+  <style>
+    .noCssReinstallServiceWorker {
+      margin-top: 1rem;
+      padding: 1rem;
+      display: inline-block;
+      border-radius: 1rem;
+      background: #2c2e31;
+      transition: 0.125s;
+    }
+    .noCssReinstallServiceWorker:hover {
+      background: #d1d0c5;
+      color: #333;
+      cursor: pointer;
+      -webkit-user-select: none;
+      user-select: none;
+    }
+    .noCssReinstallServiceWorker:active {
+      background: #646669;
+    }
+  </style>
+  <script>
+    function reinstallServiceWorker() {
+      navigator.serviceWorker.getRegistrations().then(function (registrations) {
+        for (let registration of registrations) {
+          registration.unregister();
+        }
+        caches.keys().then((cacheNames) => {
+          for (let cacheName of cacheNames) {
+            caches.delete(cacheName);
+          }
+        });
+      });
+      setTimeout(function () {
+        window.location.reload();
+      }, 500);
+    }
+  </script>
+  <div
+    style="
+      display: grid;
+      justify-content: center;
+      align-content: center;
+      max-width: 800px;
+      gap: 1rem;
+    "
+  >
+    <span style="font-size: 6rem; color: #e2b714">:(</span>
+    <span style="font-size: 1.5rem; color: #d1d0c5">
+      It seems like the CSS failed to load. Please try clearing your cache to
+      redownload the styles:
+      <br />
+      <span class="keys">
+        <span
+          style="
+            padding: 1rem;
+            display: inline-block;
+            border-radius: 1rem;
+            background: #2c2e31;
+            margin-top: 1rem;
+            margin-bottom: 1rem;
+          "
+        >
+          Ctrl
+        </span>
+        /
+        <span
+          style="
+            padding: 1rem;
+            display: inline-block;
+            border-radius: 1rem;
+            background: #2c2e31;
+          "
+        >
+          Cmd
+        </span>
+        +
+        <span
+          style="
+            padding: 1rem;
+            display: inline-block;
+            border-radius: 1rem;
+            background: #2c2e31;
+          "
+        >
+          Shift
+        </span>
+        +
+        <span
+          style="
+            padding: 1rem;
+            display: inline-block;
+            border-radius: 1rem;
+            background: #2c2e31;
+          "
+        >
+          R
+        </span>
+      </span>
+      <br />
+      You could also try to reinstall the service worker:
+      <br />
+      <span
+        class="noCssReinstallServiceWorker"
+        onclick="reinstallServiceWorker()"
+        style="margin-bottom: 1rem"
+      >
+        Reinstall
+      </span>
+      <br />
+      Various dark mode extensions are also known to cause this issue.
+    </span>
+    <span>
+      If that doesn't help contact support (support@monkeytype.com or
+      discord.gg/monkeytype)
+    </span>
+    <span class="requestedStylesheets">
+      If the website works for a bit but then this screen comes back, clear your
+      cache again and then on Monkeytype open the command line (esc) and search
+      for "Clear SW cache".
+    </span>
+    <span class="requestedJs"></span>
+  </div>
+</div>

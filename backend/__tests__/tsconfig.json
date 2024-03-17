@@ -18,5 +18,10 @@
   "ts-node": {
     "files": true
   },
-  "include": ["./**/*.spec.ts", "./setup-tests.ts"]
+  "files": ["../src/types/types.d.ts"],
+  "include": [
+    "./**/*.spec.ts",
+    "./setup-tests.ts",
+    "../../shared-types/**/*.d.ts"
+  ]
 }

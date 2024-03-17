@@ -17,8 +17,8 @@ const subgroup: MonkeyTypes.CommandsSubgroup = {
       display: "custom...",
       configValue: "custom",
       input: true,
-      exec: (input): void => {
-        if (!input) return;
+      exec: ({ input }): void => {
+        if (input === undefined || input === "") return;
         UpdateConfig.setMinAccCustom(parseInt(input));
         UpdateConfig.setMinAcc("custom");
       },

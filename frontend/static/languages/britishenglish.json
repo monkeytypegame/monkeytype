@@ -436,6 +436,7 @@
   ["hybridization", "hybridisation"],
   ["mechanize", "mechanise"],
   ["arbor", "arbour"],
+  ["arbors", "arbours"],
   ["licorice", "liquorice"],
   ["counselor", "counsellor"],
   ["orthopedic", "orthopaedic"],
@@ -630,5 +631,7 @@
   ["emphasizing", "emphasising"],
   ["fetus", "foetus"],
   ["fiber", "fibre"],
-  ["programs", "programmes"]
+  ["programs", "programmes"],
+  ["yogurt", "yoghurt"],
+  ["valor", "valour"]
 ]

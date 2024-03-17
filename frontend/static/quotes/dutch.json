@@ -362,9 +362,9 @@
       "id": 59
     },
     {
-      "text": "Vrijheid is de vrijheid om te zeggen dat twee plus twee vier is. Als dat wordt verleend, volgt al de rest.",
+      "text": "Vrijheid is de vrijheid om te zeggen dat twee plus twee vier is. Als dat wordt verleend, volgt de rest.",
       "source": "George Orwell",
-      "length": 106,
+      "length": 103,
       "id": 60
     },
     {
@@ -378,6 +378,24 @@
       "source": "Ton Lemaire",
       "length": 127,
       "id": 62
+    },
+    {
+      "text": "Als je een rockster wilt worden of gewoon beroemd wilt worden, en dan naakt over straat wilt rennen, dan haal je het nieuws of zoiets. Maar als je wilt dat muziek je levensonderhoud is, speel dan, speel, speel en speel! En uiteindelijk kom je waar je wilt zijn.",
+      "source": "Eddie Van Halen",
+      "length": 261,
+      "id": 63
+    },
+    {
+      "text": "Het belangrijkste aan een persoon is dat je weet wie je bent en wat je wilt. Je moet in staat zijn tot introspectie en jezelf evalueren.",
+      "source": "Louis van Gaal",
+      "length": 136,
+      "id": 64
+    },
+    {
+      "text": "Soms is het belangrijkste op een hele dag de rust die we nemen tussen twee keer diep ademhalen.",
+      "source": "Etty Hillesum",
+      "length": 95,
+      "id": 65
     }
   ]
 }

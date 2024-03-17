@@ -9,6 +9,21 @@ import * as TestUI from "./test/test-ui";
 import { get as getActivePage } from "./states/active-page";
 import { isDevEnvironment } from "./utils/misc";
 
+let isPreviewingFont = false;
+export function previewFontFamily(font: string): void {
+  document.documentElement.style.setProperty(
+    "--font",
+    '"' + font.replace(/_/g, " ") + '", "Roboto Mono", "Vazirmatn"'
+  );
+  isPreviewingFont = true;
+}
+
+export function clearFontPreview(): void {
+  if (!isPreviewingFont) return;
+  previewFontFamily(Config.fontFamily);
+  isPreviewingFont = false;
+}
+
 function updateKeytips(): void {
   const modifierKey = window.navigator.userAgent.toLowerCase().includes("mac")
     ? "cmd"
@@ -45,7 +60,7 @@ function updateKeytips(): void {
 
 if (isDevEnvironment()) {
   window.onerror = function (error): void {
-    Notifications.add(error.toString(), -1);
+    Notifications.add(JSON.stringify(error), -1);
   };
   $("header #logo .top").text("localhost");
   $("head title").text($("head title").text() + " (localhost)");
@@ -87,8 +102,8 @@ window.addEventListener("beforeunload", (event) => {
   }
 });
 
-const debouncedEvent = debounce(250, async () => {
-  Caret.updatePosition();
+const debouncedEvent = debounce(250, () => {
+  void Caret.updatePosition();
   if (getActivePage() === "test" && !TestUI.resultVisible) {
     if (Config.tapeMode !== "off") {
       TestUI.scrollTape();

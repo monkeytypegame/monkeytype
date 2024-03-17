@@ -3,13 +3,13 @@ import * as FunboxList from "./funbox/funbox-list";
 import * as CustomText from "./custom-text";
 import * as Wordset from "./wordset";
 import QuotesController from "../controllers/quotes-controller";
-import * as QuoteSearchPopup from "../popups/quote-search-popup";
 import * as TestWords from "./test-words";
 import * as BritishEnglish from "./british-english";
 import * as LazyMode from "./lazy-mode";
 import * as EnglishPunctuation from "./english-punctuation";
 import * as PractiseWords from "./practise-words";
 import * as Misc from "../utils/misc";
+import * as TestState from "../test/test-state";
 
 function shouldCapitalize(lastChar: string): boolean {
   return /[?!.؟]/.test(lastChar);
@@ -322,9 +322,14 @@ async function applyBritishEnglishToWord(
   previousWord: string
 ): Promise<string> {
   if (!Config.britishEnglish) return word;
-  if (!/english/.test(Config.language)) return word;
-  if (Config.mode === "quote" && TestWords.randomQuote?.britishText)
+  if (!Config.language.includes("english")) return word;
+  if (
+    Config.mode === "quote" &&
+    TestWords.randomQuote?.britishText !== undefined &&
+    TestWords.randomQuote?.britishText !== ""
+  ) {
     return word;
+  }
 
   return await BritishEnglish.replace(word, previousWord);
 }
@@ -333,16 +338,18 @@ function applyLazyModeToWord(
   word: string,
   language: MonkeyTypes.LanguageObject
 ): string {
-  if (Config.lazyMode === true && !language.noLazyMode) {
+  const allowLazyMode = !language.noLazyMode || Config.mode === "custom";
+  if (Config.lazyMode && allowLazyMode) {
     word = LazyMode.replaceAccents(word, language.additionalAccents);
   }
   return word;
 }
 
 export function getQuoteOrCustomModeWordOrder(): MonkeyTypes.FunboxWordOrder {
-  const wordOrder = FunboxList.get(Config.funbox)
-    .find((f) => f.properties?.find((fp) => fp.startsWith("wordOrder")))
-    ?.properties?.find((fp) => fp.startsWith("wordOrder"));
+  const wordOrder =
+    FunboxList.get(Config.funbox)
+      .find((f) => f.properties?.find((fp) => fp.startsWith("wordOrder")))
+      ?.properties?.find((fp) => fp.startsWith("wordOrder")) ?? "";
 
   if (!wordOrder) {
     return "normal";
@@ -354,9 +361,10 @@ export function getQuoteOrCustomModeWordOrder(): MonkeyTypes.FunboxWordOrder {
 export function getWordsLimit(): number {
   let limit = 100;
 
-  const funboxToPush = FunboxList.get(Config.funbox)
-    .find((f) => f.properties?.find((fp) => fp.startsWith("toPush")))
-    ?.properties?.find((fp) => fp.startsWith("toPush:"));
+  const funboxToPush =
+    FunboxList.get(Config.funbox)
+      .find((f) => f.properties?.find((fp) => fp.startsWith("toPush")))
+      ?.properties?.find((fp) => fp.startsWith("toPush:")) ?? "";
 
   if (Config.showAllLines) {
     if (Config.mode === "custom") {
@@ -494,7 +502,7 @@ export async function generateWords(
   ) {
     let stop = false;
     let i = 0;
-    while (stop === false) {
+    while (!stop) {
       const nextWord = await getNextWord(
         wordset,
         i,
@@ -568,12 +576,12 @@ async function generateQuoteWords(
   let rq: MonkeyTypes.Quote;
   if (Config.quoteLength.includes(-2) && Config.quoteLength.length === 1) {
     const targetQuote = QuotesController.getQuoteById(
-      QuoteSearchPopup.selectedId
+      TestState.selectedQuoteId
     );
     if (targetQuote === undefined) {
       UpdateConfig.setQuoteLength(-1);
       throw new WordGenError(
-        `Quote ${QuoteSearchPopup.selectedId} does not exist`
+        `Quote ${TestState.selectedQuoteId} does not exist`
       );
     }
     rq = targetQuote;
@@ -595,13 +603,17 @@ async function generateQuoteWords(
     rq = randomQuote;
   }
 
-  rq.language = Config.language.replace(/_\d*k$/g, "");
+  rq.language = Misc.removeLanguageSize(Config.language);
   rq.text = rq.text.replace(/ +/gm, " ");
   rq.text = rq.text.replace(/( *(\r\n|\r|\n) *)/g, "\n ");
   rq.text = rq.text.replace(/…/g, "...");
   rq.text = rq.text.trim();
 
-  if (rq.britishText && Config.britishEnglish) {
+  if (
+    rq.britishText !== undefined &&
+    rq.britishText !== "" &&
+    Config.britishEnglish
+  ) {
     rq.textSplit = rq.britishText.split(" ");
   } else {
     rq.textSplit = rq.text.split(" ");
@@ -757,6 +769,7 @@ export async function getNextWord(
     !Config.language.startsWith("german") &&
     !Config.language.startsWith("swiss_german") &&
     !Config.language.startsWith("code") &&
+    !Config.language.startsWith("klingon") &&
     !isCurrentlyUsingFunboxSection
   ) {
     randomWord = randomWord.toLowerCase();
@@ -767,13 +780,13 @@ export async function getNextWord(
   randomWord = applyLazyModeToWord(randomWord, language);
   randomWord = await applyBritishEnglishToWord(randomWord, previousWordRaw);
 
-  if (Config.language === "swiss_german") {
+  if (Config.language.startsWith("swiss_german")) {
     randomWord = randomWord.replace(/ß/g, "ss");
   }
 
   if (
     Config.punctuation &&
-    !language.originalPunctuation === true &&
+    !language.originalPunctuation &&
     !isCurrentlyUsingFunboxSection
   ) {
     randomWord = await punctuateWord(

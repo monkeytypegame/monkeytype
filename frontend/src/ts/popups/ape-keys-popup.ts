@@ -3,10 +3,10 @@ import * as Loader from "../elements/loader";
 import * as Notifications from "../elements/notifications";
 import format from "date-fns/format";
 import * as ConnectionState from "../states/connection";
-import * as Skeleton from "./skeleton";
+import * as Skeleton from "../utils/skeleton";
 import { isPopupVisible } from "../utils/misc";
 
-let apeKeys: MonkeyTypes.ApeKeys = {};
+let apeKeys: Ape.ApeKeys.GetApeKeys | null = {};
 
 const wrapperId = "apeKeysPopupWrapper";
 
@@ -20,12 +20,12 @@ async function getData(): Promise<void> {
     return undefined;
   }
 
-  apeKeys = response.data as MonkeyTypes.ApeKeys;
+  apeKeys = response.data;
 }
 
 function refreshList(): void {
   const data = apeKeys;
-  if (!data) return;
+  if (data === undefined || data === null) return;
   const table = $("#apeKeysPopupWrapper table tbody");
   table.empty();
   const apeKeyIds = Object.keys(data);
@@ -36,7 +36,7 @@ function refreshList(): void {
     return;
   }
   apeKeyIds.forEach((apeKeyId) => {
-    const key = data[apeKeyId] as MonkeyTypes.ApeKey;
+    const key = data[apeKeyId] as SharedTypes.ApeKey;
     table.append(`
       <tr keyId="${apeKeyId}">
         <td>
@@ -97,7 +97,7 @@ export async function show(): Promise<void> {
     });
     return;
   }
-  Skeleton.append(wrapperId);
+  Skeleton.append(wrapperId, "popups");
   if (!isPopupVisible(wrapperId)) {
     await getData();
     refreshList();
@@ -134,7 +134,7 @@ $("#popups").on("click", "#apeKeysPopup table .keyButtons .button", () => {
 $("#popups").on("click", "#apeKeysPopup table .textButton", async (e) => {
   const keyId = $(e.target).closest("tr").attr("keyId") as string;
   const key = apeKeys?.[keyId];
-  if (!key || !apeKeys) return;
+  if (!key || apeKeys === undefined) return;
   Loader.show();
   const response = await Ape.apeKeys.update(keyId, { enabled: !key.enabled });
   Loader.hide();

@@ -1,4 +1,4 @@
-import simpleGit from "simple-git";
+import { simpleGit } from "simple-git";
 import { ObjectId } from "mongodb";
 import path from "path";
 import { existsSync, writeFileSync } from "fs";
@@ -16,19 +16,19 @@ try {
   git = undefined;
 }
 
-interface AddQuoteReturn {
+type AddQuoteReturn = {
   languageError?: number;
   duplicateId?: number;
   similarityScore?: number;
-}
+};
 
 export async function add(
   text: string,
   source: string,
   language: string,
   uid: string
-): Promise<AddQuoteReturn | void> {
-  if (!git) throw new MonkeyError(500, "Git not available.");
+): Promise<AddQuoteReturn | undefined> {
+  if (git === undefined) throw new MonkeyError(500, "Git not available.");
   const quote = {
     _id: new ObjectId(),
     text: text,
@@ -79,10 +79,11 @@ export async function add(
     return { duplicateId, similarityScore };
   }
   await db.collection("new-quotes").insertOne(quote);
+  return undefined;
 }
 
 export async function get(language: string): Promise<MonkeyTypes.NewQuote[]> {
-  if (!git) throw new MonkeyError(500, "Git not available.");
+  if (git === undefined) throw new MonkeyError(500, "Git not available.");
   const where: {
     approved: boolean;
     language?: string;
@@ -105,18 +106,18 @@ export async function get(language: string): Promise<MonkeyTypes.NewQuote[]> {
     .toArray();
 }
 
-interface Quote {
+type Quote = {
   id?: number;
   text: string;
   source: string;
   length: number;
   approvedBy: string;
-}
+};
 
-interface ApproveReturn {
+type ApproveReturn = {
   quote: Quote;
   message: string;
-}
+};
 
 export async function approve(
   quoteId: string,
@@ -124,7 +125,7 @@ export async function approve(
   editSource: string,
   name: string
 ): Promise<ApproveReturn> {
-  if (!git) throw new MonkeyError(500, "Git not available.");
+  if (git === undefined) throw new MonkeyError(500, "Git not available.");
   //check mod status
   const targetQuote = await db
     .collection<MonkeyTypes.NewQuote>("new-quotes")
@@ -197,6 +198,6 @@ export async function approve(
 }
 
 export async function refuse(quoteId: string): Promise<void> {
-  if (!git) throw new MonkeyError(500, "Git not available.");
+  if (git === undefined) throw new MonkeyError(500, "Git not available.");
   await db.collection("new-quotes").deleteOne({ _id: new ObjectId(quoteId) });
 }

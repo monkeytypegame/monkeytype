@@ -5,25 +5,25 @@ import * as CustomText from "./custom-text";
 import * as TestInput from "./test-input";
 import * as ConfigEvent from "../observables/config-event";
 import { setCustomTextName } from "../states/custom-text-name";
-import * as Skeleton from "../popups/skeleton";
+import * as Skeleton from "../utils/skeleton";
 import { isPopupVisible } from "../utils/misc";
 
 const wrapperId = "practiseWordsPopupWrapper";
 
-interface BeforeCustomText {
+type BeforeCustomText = {
   text: string[];
   isTimeRandom: boolean;
   isWordRandom: boolean;
   time: number;
   word: number;
-}
+};
 
-interface Before {
-  mode: SharedTypes.Mode | null;
+type Before = {
+  mode: SharedTypes.Config.Mode | null;
   punctuation: boolean | null;
   numbers: boolean | null;
   customText: BeforeCustomText | null;
-}
+};
 
 export const before: Before = {
   mode: null,
@@ -147,7 +147,7 @@ export function showPopup(): void {
     Notifications.add("Practice words is unsupported in zen mode", 0);
     return;
   }
-  Skeleton.append(wrapperId);
+  Skeleton.append(wrapperId, "popups");
   if (!isPopupVisible(wrapperId)) {
     $("#practiseWordsPopupWrapper")
       .stop(true, true)

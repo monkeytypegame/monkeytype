@@ -18,7 +18,7 @@ export function addSeconds(s: number): void {
 
 export function getString(): string {
   const secString = Misc.secondsToString(Math.round(seconds), true, true);
-  return secString + (addedAllToday === true ? " today" : " session");
+  return secString + (addedAllToday ? " today" : " session");
 }
 
 export function addAllFromToday(): void {

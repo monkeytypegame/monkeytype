@@ -64,7 +64,7 @@
       }
     }
 
-    &.autoSwitchThemeInputs {
+    &[data-config-name="autoSwitchThemeInputs"] {
       grid-template-areas: unset;
       grid-template-columns: 1fr 3fr 1fr 3fr;
       gap: 2rem;
@@ -82,7 +82,7 @@
       }
     }
 
-    &.customBackgroundFilter {
+    &[data-config-name="customBackgroundFilter"] {
       .groups {
         grid-area: buttons;
         display: grid;

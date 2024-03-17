@@ -2,7 +2,7 @@ import * as Misc from "./misc";
 import Config, * as UpdateConfig from "../config";
 import * as Notifications from "../elements/notifications";
 import { decompressFromURI } from "lz-ts";
-import * as QuoteSearchPopup from "../popups/quote-search-popup";
+import * as TestState from "../test/test-state";
 import * as ManualRestart from "../test/manual-restart-tracker";
 import * as CustomText from "../test/custom-text";
 import Ape from "../ape";
@@ -32,13 +32,20 @@ export async function linkDiscord(hashOverride: string): Promise<void> {
       );
     }
 
+    if (response.data === null) {
+      return Notifications.add(
+        "Failed to link Discord: data returned was null",
+        -1
+      );
+    }
+
     Notifications.add(response.message, 1);
 
     const snapshot = DB.getSnapshot();
     if (!snapshot) return;
 
     const { discordId, discordAvatar } = response.data;
-    if (discordId) {
+    if (discordId !== undefined) {
       snapshot.discordId = discordId;
     } else {
       snapshot.discordAvatar = discordAvatar;
@@ -46,7 +53,7 @@ export async function linkDiscord(hashOverride: string): Promise<void> {
 
     DB.setSnapshot(snapshot);
 
-    AccountButton.update(undefined, discordId, discordAvatar);
+    void AccountButton.update(undefined, discordId, discordAvatar);
 
     Settings.updateDiscordSection();
   }
@@ -101,13 +108,13 @@ export function loadCustomThemeFromUrl(getOverride?: string): void {
 }
 
 type SharedTestSettings = [
-  SharedTypes.Mode | null,
-  SharedTypes.Mode2<SharedTypes.Mode> | null,
+  SharedTypes.Config.Mode | null,
+  SharedTypes.Config.Mode2<SharedTypes.Config.Mode> | null,
   SharedTypes.CustomText | null,
   boolean | null,
   boolean | null,
   string | null,
-  SharedTypes.Difficulty | null,
+  SharedTypes.Config.Difficulty | null,
   string | null
 ];
 
@@ -117,65 +124,65 @@ export function loadTestSettingsFromUrl(getOverride?: string): void {
 
   const de: SharedTestSettings = JSON.parse(decompressFromURI(getValue) ?? "");
 
-  const applied: { [key: string]: string } = {};
+  const applied: Record<string, string> = {};
 
-  if (de[0]) {
+  if (de[0] !== null) {
     UpdateConfig.setMode(de[0], true);
     applied["mode"] = de[0];
   }
 
-  if (de[1]) {
+  if (de[1] !== null) {
     if (Config.mode === "time") {
       UpdateConfig.setTimeConfig(parseInt(de[1], 10), true);
     } else if (Config.mode === "words") {
       UpdateConfig.setWordCount(parseInt(de[1], 10), true);
     } else if (Config.mode === "quote") {
       UpdateConfig.setQuoteLength(-2, false);
-      QuoteSearchPopup.setSelectedId(parseInt(de[1], 10));
+      TestState.setSelectedQuoteId(parseInt(de[1], 10));
       ManualRestart.set();
     }
     applied["mode2"] = de[1];
   }
 
-  if (de[2]) {
+  if (de[2] !== null) {
     const customTextSettings = de[2];
     CustomText.setPopupTextareaState(
-      customTextSettings["text"].join(customTextSettings["delimiter"])
+      customTextSettings.text.join(customTextSettings.delimiter)
     );
-    CustomText.setText(customTextSettings["text"]);
-    CustomText.setIsTimeRandom(customTextSettings["isTimeRandom"]);
-    CustomText.setIsWordRandom(customTextSettings["isWordRandom"]);
-    if (customTextSettings["isTimeRandom"]) {
-      CustomText.setTime(customTextSettings["time"]);
+    CustomText.setText(customTextSettings.text);
+    CustomText.setIsTimeRandom(customTextSettings.isTimeRandom);
+    CustomText.setIsWordRandom(customTextSettings.isWordRandom);
+    if (customTextSettings.isTimeRandom) {
+      CustomText.setTime(customTextSettings.time);
     }
-    if (customTextSettings["isWordRandom"]) {
-      CustomText.setWord(customTextSettings["word"]);
+    if (customTextSettings.isWordRandom) {
+      CustomText.setWord(customTextSettings.word);
     }
-    CustomText.setDelimiter(customTextSettings["delimiter"]);
+    CustomText.setDelimiter(customTextSettings.delimiter);
     applied["custom text settings"] = "";
   }
 
-  if (de[3]) {
+  if (de[3] !== null) {
     UpdateConfig.setPunctuation(de[3], true);
     applied["punctuation"] = de[3] ? "on" : "off";
   }
 
-  if (de[4]) {
+  if (de[4] !== null) {
     UpdateConfig.setNumbers(de[4], true);
     applied["numbers"] = de[4] ? "on" : "off";
   }
 
-  if (de[5]) {
+  if (de[5] !== null) {
     UpdateConfig.setLanguage(de[5], true);
     applied["language"] = de[5];
   }
 
-  if (de[6]) {
+  if (de[6] !== null) {
     UpdateConfig.setDifficulty(de[6], true);
     applied["difficulty"] = de[6];
   }
 
-  if (de[7]) {
+  if (de[7] !== null) {
     UpdateConfig.setFunbox(de[7], true);
     applied["funbox"] = de[7];
   }
@@ -186,7 +193,9 @@ export function loadTestSettingsFromUrl(getOverride?: string): void {
 
   Object.keys(applied).forEach((setKey) => {
     const set = applied[setKey];
-    appliedString += `${setKey}${set ? ": " + set : ""}<br>`;
+    if (set !== undefined) {
+      appliedString += `${setKey}${set ? ": " + set : ""}<br>`;
+    }
   });
 
   if (appliedString !== "") {

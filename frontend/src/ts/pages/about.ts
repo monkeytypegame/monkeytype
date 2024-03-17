@@ -5,33 +5,22 @@ import * as Notifications from "../elements/notifications";
 import * as ChartController from "../controllers/chart-controller";
 import * as ConnectionState from "../states/connection";
 import intervalToDuration from "date-fns/intervalToDuration";
-import * as Skeleton from "../popups/skeleton";
+import * as Skeleton from "../utils/skeleton";
 
 function reset(): void {
   $(".pageAbout .contributors").empty();
   $(".pageAbout .supporters").empty();
 
   ChartController.globalSpeedHistogram.getDataset("count").data = [];
-  ChartController.globalSpeedHistogram.updateColors();
+  void ChartController.globalSpeedHistogram.updateColors();
 }
 
-interface HistogramData {
-  [key: string]: number;
-}
-
-interface TypingStatsData {
-  type: string;
-  timeTyping: number;
-  testsCompleted: number;
-  testsStarted: number;
-}
-
-let speedHistogramResponseData: HistogramData | undefined;
-let typingStatsResponseData: TypingStatsData | undefined;
+let speedHistogramResponseData: SharedTypes.SpeedHistogram | null;
+let typingStatsResponseData: SharedTypes.PublicTypingStats | null;
 
 function updateStatsAndHistogram(): void {
   if (speedHistogramResponseData) {
-    ChartController.globalSpeedHistogram.updateColors();
+    void ChartController.globalSpeedHistogram.updateColors();
     const bucketedSpeedStats = getHistogramDataBucketed(
       speedHistogramResponseData
     );
@@ -151,7 +140,7 @@ async function fill(): Promise<void> {
     contributors = [];
   }
 
-  getStatsAndHistogramData().then(() => {
+  void getStatsAndHistogramData().then(() => {
     updateStatsAndHistogram();
   });
 
@@ -217,11 +206,13 @@ export const page = new Page(
   },
   async () => {
     Skeleton.append("pageAbout", "main");
-    fill();
+    void fill();
   },
   async () => {
     //
   }
 );
 
-Skeleton.save("pageAbout");
+$(() => {
+  Skeleton.save("pageAbout");
+});

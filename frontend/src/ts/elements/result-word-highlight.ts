@@ -23,10 +23,10 @@ type Line = {
 let lines: Line[] = [];
 
 // JQuery collection of all word elements
-let wordEls: JQuery<HTMLElement>;
+let wordEls: JQuery;
 
 // Dictionary mapping word indices to line indices
-let wordIndexToLineIndexDict: { [wordIndex: number]: number } = {};
+let wordIndexToLineIndexDict: Record<number, number> = {};
 
 // Array of container elements for highlights
 let highlightContainerEls: HTMLElement[] = [];
@@ -70,7 +70,7 @@ export async function highlightWordsInRange(
 
   // Early exit if highlight range has not changed
   if (
-    highlightRange &&
+    highlightRange !== undefined &&
     firstWordIndex === highlightRange[0] &&
     lastWordIndex === highlightRange[1]
   ) {
@@ -142,8 +142,7 @@ export async function highlightWordsInRange(
 
 // Function to clear all highlights
 export function clear(): void {
-  for (let i = 0; i < highlightEls.length; i++) {
-    const highlightEl = highlightEls[i] as HTMLElement;
+  for (const highlightEl of highlightEls) {
     highlightEl.classList.add("highlight-hidden");
   }
   isFirstHighlightSinceClear = true;
@@ -155,8 +154,7 @@ export function destroy(): void {
   if (!isInitialized) return;
 
   // Remove highlight containers from DOM
-  for (let i = 0; i < highlightContainerEls.length; i++) {
-    const highlightContainerEl = highlightContainerEls[i] as HTMLElement;
+  for (const highlightContainerEl of highlightContainerEls) {
     highlightContainerEl.remove();
   }
 
@@ -300,7 +298,7 @@ async function init(): Promise<boolean> {
 
     for (let i = line.firstWordIndex; i <= line.lastWordIndex; i += 1) {
       const wordEl = wordEls[i] as HTMLElement;
-      const userInputString = wordEl.getAttribute("input");
+      const userInputString = wordEl.getAttribute("input") ?? "";
 
       if (!userInputString) {
         continue;

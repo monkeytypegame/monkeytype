@@ -168,7 +168,7 @@ key {
   background-color: var(--sub-color);
   /* font-weight: bold; */
   padding: 0.1rem 0.3rem;
-  margin: 0rem 0.5rem;
+  margin: 0rem 0rem;
   border-radius: 0.1rem;
   display: inline-block;
   font-size: 0.7rem;
@@ -188,6 +188,7 @@ key {
     justify-self: center;
     display: grid;
     .barWrapper {
+      justify-content: center;
       display: grid;
       gap: 1rem;
       grid-row: 1;

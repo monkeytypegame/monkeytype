@@ -1,7 +1,6 @@
 import Config from "../config";
-import format from "date-fns/format";
-import * as Misc from "../utils/misc";
-import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
+import dateFormat from "date-fns/format";
+import Format from "../utils/format";
 
 function clearTables(isProfile: boolean): void {
   const source = isProfile ? "Profile" : "Account";
@@ -94,8 +93,18 @@ export function update(
   $(`.page${source} .profile .pbsTime`).html("");
   $(`.page${source} .profile .pbsWords`).html("");
 
-  const timeMode2s: SharedTypes.Mode2<"time">[] = ["15", "30", "60", "120"];
-  const wordMode2s: SharedTypes.Mode2<"words">[] = ["10", "25", "50", "100"];
+  const timeMode2s: SharedTypes.Config.Mode2<"time">[] = [
+    "15",
+    "30",
+    "60",
+    "120",
+  ];
+  const wordMode2s: SharedTypes.Config.Mode2<"words">[] = [
+    "10",
+    "25",
+    "50",
+    "100",
+  ];
 
   timeMode2s.forEach((mode2) => {
     text += buildPbHtml(personalBests, "time", mode2);
@@ -130,7 +139,6 @@ function buildPbHtml(
   let dateText = "";
   const modeString = `${mode2} ${mode === "time" ? "seconds" : "words"}`;
   const speedUnit = Config.typingSpeedUnit;
-  const typingSpeedUnit = getTypingSpeedUnit(Config.typingSpeedUnit);
   try {
     const pbData = (pbs[mode][mode2] ?? []).sort((a, b) => b.wpm - a.wpm)[0];
 
@@ -138,62 +146,26 @@ function buildPbHtml(
 
     const date = new Date(pbData.timestamp);
     if (pbData.timestamp) {
-      dateText = format(date, "dd MMM yyyy");
+      dateText = dateFormat(date, "dd MMM yyyy");
     }
-
-    let speedString: number | string = typingSpeedUnit.fromWpm(pbData.wpm);
-    if (Config.alwaysShowDecimalPlaces) {
-      speedString = Misc.roundTo2(speedString).toFixed(2);
-    } else {
-      speedString = Math.round(speedString);
-    }
-    speedString += ` ${speedUnit}`;
-
-    let rawString: number | string = typingSpeedUnit.fromWpm(pbData.raw);
-    if (Config.alwaysShowDecimalPlaces) {
-      rawString = Misc.roundTo2(rawString).toFixed(2);
-    } else {
-      rawString = Math.round(rawString);
-    }
-    rawString += ` raw`;
-
-    let accString: number | string = pbData.acc;
-    if (accString === undefined) {
-      accString = "-";
-    } else {
-      if (Config.alwaysShowDecimalPlaces) {
-        accString = Misc.roundTo2(accString).toFixed(2);
-      } else {
-        accString = Math.floor(accString);
-      }
-    }
-    accString += ` acc`;
-
-    let conString: number | string = pbData.consistency;
-    if (conString === undefined) {
-      conString = "-";
-    } else {
-      if (Config.alwaysShowDecimalPlaces) {
-        conString = Misc.roundTo2(conString).toFixed(2);
-      } else {
-        conString = Math.round(conString);
-      }
-    }
-    conString += ` con`;
 
     retval = `<div class="quick">
       <div class="test">${modeString}</div>
-      <div class="wpm">${Math.round(typingSpeedUnit.fromWpm(pbData.wpm))}</div>
-      <div class="acc">${
-        pbData.acc === undefined ? "-" : Math.floor(pbData.acc) + "%"
-      }</div>
+      <div class="wpm">${Format.typingSpeed(pbData.wpm, {
+        showDecimalPlaces: false,
+      })}</div>
+      <div class="acc">${Format.accuracy(pbData.acc, {
+        showDecimalPlaces: false,
+      })}</div>
     </div>
     <div class="fullTest">
       <div>${modeString}</div>
-      <div>${speedString}</div>
-      <div>${rawString}</div>
-      <div>${accString}</div>
-      <div>${conString}</div>
+      <div>${Format.typingSpeed(pbData.wpm, {
+        suffix: ` ${speedUnit}`,
+      })}</div>
+      <div>${Format.typingSpeed(pbData.raw, { suffix: " raw" })}</div>
+      <div>${Format.accuracy(pbData.acc, { suffix: " acc" })}</div>
+      <div>${Format.percentage(pbData.consistency, { suffix: " con" })}</div>
       <div>${dateText}</div>
     </div>`;
   } catch (e) {

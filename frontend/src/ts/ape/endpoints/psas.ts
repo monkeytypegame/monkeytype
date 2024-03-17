@@ -5,7 +5,7 @@ export default class Psas {
     this.httpClient = httpClient;
   }
 
-  async get(): Ape.EndpointResponse {
+  async get(): Ape.EndpointResponse<SharedTypes.PSA[]> {
     return await this.httpClient.get(BASE_PATH);
   }
 }

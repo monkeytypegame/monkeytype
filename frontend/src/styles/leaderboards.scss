@@ -29,7 +29,7 @@
         grid-area: buttons;
         .timeRange {
           grid-template-columns: 1fr 1fr;
-          .select2 {
+          .languageSelect {
             grid-column: span 2;
           }
         }
@@ -158,6 +158,12 @@
           }
           .badge {
             font-size: 0.6rem;
+          }
+          .flagsAndBadge {
+            display: flex;
+            gap: 0.5rem;
+            color: var(--sub-color);
+            place-items: center;
           }
         }
 

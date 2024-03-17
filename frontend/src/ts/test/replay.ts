@@ -10,11 +10,11 @@ type ReplayAction =
   | "submitErrorWord"
   | "setLetterIndex";
 
-interface Replay {
+type Replay = {
   action: ReplayAction;
   value?: string | number;
   time: number;
-}
+};
 
 let wordsList: string[] = [];
 let replayData: Replay[] = [];
@@ -88,12 +88,12 @@ export function pauseReplay(): void {
 function playSound(error = false): void {
   if (error) {
     if (config.playSoundOnError !== "off") {
-      Sound.playError();
+      void Sound.playError();
     } else {
-      Sound.playClick();
+      void Sound.playClick();
     }
   } else {
-    Sound.playClick();
+    void Sound.playClick();
   }
 }
 
