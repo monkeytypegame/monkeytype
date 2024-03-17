@@ -22,7 +22,6 @@ import AnimatedModal from "../utils/animated-modal";
 let signedInUser: UserCredential | undefined = undefined;
 
 function show(credential: UserCredential): void {
-  console.log("showing google sign up modal");
   void modal.show({
     focusFirstInput: true,
     beforeAnimation: async () => {
@@ -207,7 +206,6 @@ function setup(modalEl: HTMLElement): void {
   modalEl.querySelector("input")?.addEventListener("input", () => {
     disableButton();
     const val = $("#googleSignUpModal input").val() as string;
-    console.log("checking", val);
     if (val === "") {
       return nameIndicator.hide();
     } else {
