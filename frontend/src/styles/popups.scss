@@ -5,7 +5,7 @@
   max-width: 100%;
   max-height: 100%;
   margin: 0;
-  background: rgba(0, 0, 0, 0.75);
+  background: rgba(0, 0, 0, 0.5);
   position: fixed;
   left: 0;
   top: 0;
@@ -35,6 +35,7 @@
     color: var(--text-color);
     overflow-y: auto;
     @extend .ffscroll;
+    box-shadow: 0 0 0 0.2em var(--sub-alt-color);
 
     & > .title {
       font-size: 1.5rem;
