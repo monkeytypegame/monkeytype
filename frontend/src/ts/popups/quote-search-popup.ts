@@ -4,7 +4,7 @@ import * as DB from "../db";
 import * as ManualRestart from "../test/manual-restart-tracker";
 import * as Notifications from "../elements/notifications";
 import * as QuoteSubmitPopup from "../modals/quote-submit";
-import * as QuoteApprovePopup from "./quote-approve-popup";
+import * as QuoteApprovePopup from "../modals/quote-approve";
 import * as QuoteReportPopup from "./quote-report-popup";
 import {
   buildSearchService,
