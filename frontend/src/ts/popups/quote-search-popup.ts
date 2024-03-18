@@ -238,7 +238,7 @@ export async function show(clearText = true): Promise<void> {
       select: "#quoteSearchPopup .quoteLengthFilter",
       settings: {
         showSearch: false,
-        placeholderText: "Filter by length",
+        placeholderText: "filter by length",
       },
       data: [
         {
