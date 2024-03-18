@@ -4,7 +4,6 @@ import Config from "../config";
 import * as Notifications from "../elements/notifications";
 import Ape from "../ape/index";
 import * as Loader from "../elements/loader";
-import { showNewResultFilterPresetPopup } from "../popups/new-result-filter-preset-popup";
 
 export const defaultResultFilters: SharedTypes.ResultFilters = {
   _id: "default-result-filters-id",
@@ -211,7 +210,7 @@ function addFilterPresetToSnapshot(filter: SharedTypes.ResultFilters): void {
 }
 
 // callback function called by popup once user inputs name
-async function createFilterPresetCallback(name: string): Promise<void> {
+export async function createFilterPreset(name: string): Promise<void> {
   name = name.replace(/ /g, "_");
   Loader.show();
   const result = await Ape.users.addResultFilterPreset({ ...filters, name });
@@ -224,13 +223,6 @@ async function createFilterPresetCallback(name: string): Promise<void> {
     Notifications.add("Error creating filter preset: " + result.message, -1);
     console.log("error creating filter preset: " + result.message);
   }
-}
-
-// shows popup for user to select name
-async function startCreateFilterPreset(): Promise<void> {
-  showNewResultFilterPresetPopup(async (name: string) =>
-    createFilterPresetCallback(name)
-  );
 }
 
 function removeFilterPresetFromSnapshot(id: string): void {
@@ -724,10 +716,6 @@ export function removeButtons(): void {
     ".pageAccount .content .filterButtons .buttonsAndTitle.tags .buttons"
   ).empty();
 }
-
-$(".pageAccount .topFilters button.createFilterPresetBtn").on("click", () => {
-  void startCreateFilterPreset();
-});
 
 $(".group.presetFilterButtons .filterBtns").on(
   "click",

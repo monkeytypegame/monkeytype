@@ -4,6 +4,7 @@ import { getSnapshot } from "../db";
 import { isAuthenticated } from "../firebase";
 import * as Notifications from "../elements/notifications";
 import * as EditResultTagsModal from "../modals/edit-result-tags";
+import * as AddFilterPresetModal from "../modals/new-filter-preset";
 
 const accountPage = document.querySelector("#pageAccount") as HTMLElement;
 
@@ -44,3 +45,9 @@ $(accountPage).on("click", ".group.history .resultEditTagsButton", (e) => {
     "accountPage"
   );
 });
+
+$(accountPage)
+  .find("button.createFilterPresetBtn")
+  .on("click", () => {
+    AddFilterPresetModal.show();
+  });
