@@ -382,7 +382,7 @@ $("#popups").on(
 
 $("#popups").on("click", "#quoteSearchPopup #goToApproveQuotes", () => {
   hide();
-  void QuoteApprovePopup.show(true);
+  void QuoteApprovePopup.show({ animationDurationMs: 0 });
 });
 
 $("#popups").on("click", "#quoteSearchPopup .report", async (e) => {
