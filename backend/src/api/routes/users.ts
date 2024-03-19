@@ -537,7 +537,7 @@ router.patch(
       bio: profileDetailsBase.max(250),
       keyboard: profileDetailsBase.max(75),
       selectedBadgeId: joi.number(),
-      selectedLeaderboardTheme: joi.string(),
+      selectedLeaderboardTheme: joi.string().optional(),
       socialProfiles: joi.object({
         twitter: profileDetailsBase.regex(/^[0-9a-zA-Z_.-]+$/).max(20),
         github: profileDetailsBase.regex(/^[0-9a-zA-Z_.-]+$/).max(39),

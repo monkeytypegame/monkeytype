@@ -10,7 +10,6 @@ import { getSortedThemesList } from "../utils/misc";
 import SlimSelect from "slim-select";
 import type { DataObjectPartial } from "slim-select/dist/store";
 
-
 export function show(): void {
   if (!ConnectionState.get()) {
     Notifications.add("You are offline", 0, {
@@ -22,6 +21,12 @@ export function show(): void {
   void modal.show({
     beforeAnimation: async () => {
       hydrateInputs();
+      const isPremium = DB.getSnapshot()?.isPremium;
+      if (isPremium) {
+        $("#editProfilePopup .leaderboardTheme").removeClass("hidden");
+      } else {
+        $("#editProfilePopup .leaderboardTheme").addClass("hidden");
+      }
     },
   });
 }
@@ -44,7 +49,7 @@ const websiteInput = $("#editProfileModal .website");
 const badgeIdsSelect = $("#editProfileModal .badgeSelectionContainer");
 
 let currentSelectedBadgeId = -1;
-let currentSelectedLeaderBoardTheme = "";
+let currentSelectedLeaderBoardTheme: string | undefined;
 
 function hydrateInputs(): void {
   const snapshot = DB.getSnapshot();
@@ -190,14 +195,14 @@ const leaderboardThemeSelector = new SlimSelect({
   },
   events: {
     afterChange: (newVal): void => {
-      const selected = newVal[0]?.value as string;
-      currentSelectedLeaderBoardTheme = selected;
+      const selected = newVal[0]?.value;
+      currentSelectedLeaderBoardTheme = selected !== "" ? selected : undefined;
     },
   },
 });
 
 export async function init(current?: string): Promise<void> {
-  currentSelectedLeaderBoardTheme = current ?? "";
+  currentSelectedLeaderBoardTheme = current;
   const data = (await getSortedThemesList()).map(
     (it) =>
       ({
