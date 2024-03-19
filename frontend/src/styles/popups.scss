@@ -1141,19 +1141,8 @@
   }
 }
 
-#quoteReportPopupWrapper {
-  #quoteReportPopup {
-    background: var(--bg-color);
-    border-radius: var(--roundness);
-    padding: 2rem;
-    display: grid;
-    gap: 1rem;
-    grid-template-rows: auto auto auto auto auto auto auto auto auto;
-    height: auto;
-    max-height: 40rem;
-    overflow-y: scroll;
-    width: calc(100% - 4rem);
-    margin-left: 2rem;
+#quoteReportModal {
+  .modal {
     max-width: 800px;
 
     label {
@@ -1173,11 +1162,6 @@
       font-size: 1.5rem;
     }
 
-    .title {
-      font-size: 1.5rem;
-      color: var(--sub-color);
-    }
-
     textarea {
       resize: vertical;
       width: 100%;
@@ -1188,7 +1172,7 @@
 
     .characterCount {
       position: absolute;
-      top: -1.25rem;
+      top: -1.75rem;
       right: 0.25rem;
       color: var(--sub-color);
       -webkit-user-select: none;

@@ -7,6 +7,7 @@ import * as CustomTestDurationModal from "../modals/custom-test-duration";
 import * as TestWords from "../test/test-words";
 import * as Notifications from "../elements/notifications";
 import * as QuoteRateModal from "../modals/quote-rate";
+import * as QuoteReportModal from "../modals/quote-report";
 
 $(".pageTest").on("click", "#testModesNotice .textButton", async (event) => {
   const attr = $(event.currentTarget).attr("commands");
@@ -51,4 +52,12 @@ $(".pageTest #rateQuoteButton").on("click", async () => {
     return;
   }
   QuoteRateModal.show(TestWords.randomQuote);
+});
+
+$(".pageTest #reportQuoteButton").on("click", async () => {
+  if (TestWords.randomQuote === null) {
+    Notifications.add("Failed to show quote report popup: no quote", -1);
+    return;
+  }
+  void QuoteReportModal.show(TestWords.randomQuote?.id);
 });

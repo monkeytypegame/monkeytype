@@ -5,7 +5,7 @@ import * as ManualRestart from "../test/manual-restart-tracker";
 import * as Notifications from "../elements/notifications";
 import * as QuoteSubmitPopup from "../modals/quote-submit";
 import * as QuoteApprovePopup from "../modals/quote-approve";
-import * as QuoteReportPopup from "./quote-report-popup";
+import * as QuoteReportModal from "../modals/quote-report";
 import {
   buildSearchService,
   SearchService,
@@ -388,16 +388,11 @@ $("#popups").on("click", "#quoteSearchPopup #goToApproveQuotes", () => {
 });
 
 $("#popups").on("click", "#quoteSearchPopup .report", async (e) => {
-  const quoteId = e.target.closest(".searchResult").id;
-  const quoteIdSelectedForReport = parseInt(quoteId);
+  const quoteId = parseInt(e.target.closest(".searchResult").id);
 
   hide(true, false);
-  void QuoteReportPopup.show({
-    quoteId: quoteIdSelectedForReport,
-    noAnim: true,
-    previousPopupShowCallback: () => {
-      void show(false);
-    },
+  void QuoteReportModal.show(quoteId, {
+    // modalChain: modal
   });
 });
 

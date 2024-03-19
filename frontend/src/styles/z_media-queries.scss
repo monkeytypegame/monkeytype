@@ -784,13 +784,6 @@
     width: 90vw;
   }
 
-  #quoteReportPopup {
-    width: calc(100% - 2rem);
-    margin-left: 1rem;
-    max-width: 800px;
-    padding: 1rem;
-  }
-
   .pageSettings {
     .section[data-config-name="customBackgroundFilter"] .groups .group {
       grid-template-columns: auto 1fr;
