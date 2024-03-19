@@ -106,7 +106,7 @@ async function getQuotes(): Promise<void> {
   updateList();
 }
 
-export async function show(showOptions: ShowOptions): Promise<void> {
+export async function show(showOptions?: ShowOptions): Promise<void> {
   void modal.show({
     ...showOptions,
     beforeAnimation: async () => {
