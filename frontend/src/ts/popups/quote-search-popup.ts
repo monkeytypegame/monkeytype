@@ -379,10 +379,12 @@ $("#popups").on(
     });
   }
 );
-
+//todo uncomment these two after quote search modal is refactored
 $("#popups").on("click", "#quoteSearchPopup #goToApproveQuotes", () => {
   hide();
-  void QuoteApprovePopup.show(true);
+  void QuoteApprovePopup.show({
+    // modalChain: modal
+  });
 });
 
 $("#popups").on("click", "#quoteSearchPopup .report", async (e) => {
