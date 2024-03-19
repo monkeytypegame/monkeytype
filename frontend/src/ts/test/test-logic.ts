@@ -30,7 +30,7 @@ import * as DB from "../db";
 import * as Replay from "./replay";
 import * as TodayTracker from "./today-tracker";
 import * as ChallengeContoller from "../controllers/challenge-controller";
-import * as QuoteRatePopup from "../popups/quote-rate-popup";
+import * as QuoteRateModal from "../modals/quote-rate";
 import * as Result from "./result";
 import * as MonkeyPower from "../elements/monkey-power";
 import * as ActivePage from "../states/active-page";
@@ -273,7 +273,7 @@ export function restart(options = {} as RestartOptions): void {
   TestInput.input.setKoreanStatus(false);
   LayoutfluidFunboxTimer.hide();
   MemoryFunboxTimer.reset();
-  QuoteRatePopup.clearQuoteStats();
+  QuoteRateModal.clearQuoteStats();
   TestUI.reset();
 
   if (TestUI.resultVisible) {

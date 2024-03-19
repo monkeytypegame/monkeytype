@@ -339,15 +339,10 @@
   }
 }
 
-#quoteRatePopupWrapper {
-  #quoteRatePopup {
-    color: var(--sub-color);
-    background: var(--bg-color);
-    border-radius: var(--roundness);
-    padding: 2rem;
-    display: grid;
-    gap: 2rem;
-    width: 800px;
+#quoteRateModal {
+  .modal {
+    max-width: 800px;
+    overflow: unset;
 
     display: grid;
     grid-template-areas: "warning warning warning" "spacer2 spacer2 spacer2" "ratingStats ratingStats submitButton" "spacer spacer spacer" "quote quote quote";
@@ -375,7 +370,7 @@
       grid-area: spacer2;
     }
 
-    .submitButton {
+    button.submitButton {
       font-size: 2rem;
       grid-area: submitButton;
       color: var(--sub-color);
@@ -432,15 +427,23 @@
       justify-content: flex-start;
       align-items: center;
       cursor: pointer;
-    }
-    .star {
-      transition: 0.125s;
-    }
-    i {
-      pointer-events: none;
-    }
-    .star.active {
-      color: var(--text-color);
+      button.star {
+        padding: 0;
+        background: none;
+        color: var(--sub-color);
+        &:hover.active {
+          color: var(--text-color);
+        }
+      }
+      i {
+        pointer-events: none;
+      }
+      .star.active {
+        color: var(--main-color);
+      }
+      // &:hover .star.active {
+      //   color: var(--text-color);
+      // }
     }
   }
 }

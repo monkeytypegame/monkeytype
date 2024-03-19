@@ -4,6 +4,9 @@ import * as DB from "../db";
 import * as EditResultTagsModal from "../modals/edit-result-tags";
 import * as MobileTestConfigModal from "../modals/mobile-test-config";
 import * as CustomTestDurationModal from "../modals/custom-test-duration";
+import * as TestWords from "../test/test-words";
+import * as Notifications from "../elements/notifications";
+import * as QuoteRateModal from "../modals/quote-rate";
 
 $(".pageTest").on("click", "#testModesNotice .textButton", async (event) => {
   const attr = $(event.currentTarget).attr("commands");
@@ -40,4 +43,12 @@ $(".pageTest").on("click", ".tags .editTagsButton", () => {
 
 $(".pageTest").on("click", "#mobileTestConfigButton", () => {
   MobileTestConfigModal.show();
+});
+
+$(".pageTest #rateQuoteButton").on("click", async () => {
+  if (TestWords.randomQuote === null) {
+    Notifications.add("Failed to show quote rating popup: no quote", -1);
+    return;
+  }
+  QuoteRateModal.show(TestWords.randomQuote);
 });

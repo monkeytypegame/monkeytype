@@ -273,8 +273,8 @@
   </div>
 </div>
 
-<div id="quoteRatePopupWrapper" class="popupWrapper hidden">
-  <div id="quoteRatePopup" quoteId="">
+<dialog id="quoteRateModal" class="modalWrapper hidden">
+  <div class="modal">
     <div class="warning">
       If you find a grammatical error, think the quote has inappropriate
       language or feel like it's low quality -
@@ -311,21 +311,21 @@
       <div class="starsWrapper">
         <div class="top">your rating</div>
         <div class="stars">
-          <div class="star active" rating="1">
+          <button class="star" data-rating="1">
             <i class="fas fa-fw fa-star"></i>
-          </div>
-          <div class="star active" rating="2">
+          </button>
+          <button class="star" data-rating="2">
             <i class="fas fa-fw fa-star"></i>
-          </div>
-          <div class="star active" rating="3">
+          </button>
+          <button class="star" data-rating="3">
             <i class="fas fa-fw fa-star"></i>
-          </div>
-          <div class="star" rating="4">
+          </button>
+          <button class="star" data-rating="4">
             <i class="fas fa-fw fa-star"></i>
-          </div>
-          <div class="star" rating="5">
+          </button>
+          <button class="star" data-rating="5">
             <i class="fas fa-fw fa-star"></i>
-          </div>
+          </button>
         </div>
       </div>
     </div>
@@ -344,17 +344,15 @@
             <i class="fas fa-star"></i>
             <i class="fas fa-star"></i>
           </div> -->
-    <span
+    <button
+      class="textButton submitButton"
       aria-label="Submit review"
       data-balloon-pos="up"
-      style="display: grid"
     >
-      <div class="textButton submitButton">
-        <i class="fas fa-chevron-right"></i>
-      </div>
-    </span>
+      <i class="fas fa-chevron-right"></i>
+    </button>
   </div>
-</div>
+</dialog>
 
 <dialog id="importExportSettingsModal" class="modalWrapper hidden">
   <form class="modal" data-mode="">

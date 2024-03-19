@@ -9,7 +9,7 @@ import * as Loader from "../elements/loader";
 import * as Notifications from "../elements/notifications";
 import * as ThemeColors from "../elements/theme-colors";
 import { isAuthenticated } from "../firebase";
-import * as QuoteRatePopup from "../popups/quote-rate-popup";
+import * as quoteRateModal from "../modals/quote-rate";
 import * as GlarsesMode from "../states/glarses-mode";
 import * as SlowTimer from "../states/slow-timer";
 import * as Misc from "../utils/misc";
@@ -666,7 +666,8 @@ export function updateRateQuote(randomQuote: MonkeyTypes.Quote | null): void {
         .removeClass("far")
         .addClass("fas");
     }
-    QuoteRatePopup.getQuoteStats(randomQuote)
+    quoteRateModal
+      .getQuoteStats(randomQuote)
       .then((quoteStats) => {
         $(".pageTest #result #rateQuoteButton .rating").text(
           quoteStats?.average?.toFixed(1) ?? ""
