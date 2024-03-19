@@ -10,6 +10,8 @@ import "./event-handlers/about";
 import "./event-handlers/settings";
 import "./event-handlers/account";
 
+import "./modals/google-sign-up";
+
 import "./firebase";
 import * as Logger from "./utils/logger";
 import * as DB from "./db";
@@ -29,9 +31,6 @@ import "./ready";
 import "./controllers/route-controller";
 import "./pages/about";
 import "./elements/scroll-to-top";
-import "./popups/mobile-test-config-popup";
-import "./popups/google-sign-up-popup";
-import "./popups/result-tags-popup";
 import * as Account from "./pages/account";
 import "./elements/leaderboards";
 import "./elements/no-css";

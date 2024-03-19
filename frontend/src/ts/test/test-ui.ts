@@ -319,7 +319,10 @@ function updateWordsHeight(force = false): void {
     if (nh > wordsHeight) {
       nh = wordsHeight;
     }
-    $(".outOfFocusWarning").css("line-height", nh + "px");
+    $(".outOfFocusWarning").css(
+      "margin-top",
+      wordHeight + Misc.convertRemToPixels(1) / 2 + "px"
+    );
   } else {
     let finalWordsHeight: number, finalWrapperHeight: number;
 
@@ -370,7 +373,10 @@ function updateWordsHeight(force = false): void {
     $("#wordsWrapper")
       .css("height", finalWrapperHeight + "px")
       .css("overflow", "hidden");
-    $(".outOfFocusWarning").css("line-height", finalWrapperHeight + "px");
+    $(".outOfFocusWarning").css(
+      "margin-top",
+      finalWrapperHeight / 2 - Misc.convertRemToPixels(1) / 2 + "px"
+    );
   }
 
   if (Config.mode === "zen") {

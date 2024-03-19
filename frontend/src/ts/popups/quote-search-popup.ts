@@ -3,8 +3,8 @@ import Config, * as UpdateConfig from "../config";
 import * as DB from "../db";
 import * as ManualRestart from "../test/manual-restart-tracker";
 import * as Notifications from "../elements/notifications";
-import * as QuoteSubmitPopup from "./quote-submit-popup";
-import * as QuoteApprovePopup from "./quote-approve-popup";
+import * as QuoteSubmitPopup from "../modals/quote-submit";
+import * as QuoteApprovePopup from "../modals/quote-approve";
 import * as QuoteReportPopup from "./quote-report-popup";
 import {
   buildSearchService,
@@ -238,7 +238,7 @@ export async function show(clearText = true): Promise<void> {
       select: "#quoteSearchPopup .quoteLengthFilter",
       settings: {
         showSearch: false,
-        placeholderText: "Filter by length",
+        placeholderText: "filter by length",
       },
       data: [
         {
@@ -374,7 +374,9 @@ $("#popups").on(
       return;
     }
     hide();
-    void QuoteSubmitPopup.show(true);
+    void QuoteSubmitPopup.show({
+      // modalChain: modal
+    });
   }
 );
 
