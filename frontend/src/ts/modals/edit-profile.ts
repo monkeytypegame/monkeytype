@@ -21,11 +21,13 @@ export function show(): void {
   void modal.show({
     beforeAnimation: async () => {
       hydrateInputs();
+
       const isPremium = DB.getSnapshot()?.isPremium;
       if (isPremium) {
-        $("#editProfilePopup .leaderboardTheme").removeClass("hidden");
+        $("#editProfileModal .leaderboardTheme").removeClass("hidden");
+        await init(DB.getSnapshot()?.premium?.leaderboardTheme);
       } else {
-        $("#editProfilePopup .leaderboardTheme").addClass("hidden");
+        $("#editProfileModal .leaderboardTheme").addClass("hidden");
       }
     },
   });
@@ -187,23 +189,28 @@ const modal = new AnimatedModal({
   },
 });
 
-const leaderboardThemeSelector = new SlimSelect({
-  select: "#editProfilePopup .leaderboardThemeSelect",
-  settings: {
-    showSearch: false,
-    contentLocation: document.querySelector("#editProfilePopup") as HTMLElement,
-  },
-  events: {
-    afterChange: (newVal): void => {
-      const selected = newVal[0]?.value;
-      currentSelectedLeaderBoardTheme = selected !== "" ? selected : undefined;
-    },
-  },
-});
-
-export async function init(current?: string): Promise<void> {
+async function init(current?: string): Promise<void> {
   currentSelectedLeaderBoardTheme = current;
-  const data = (await getSortedThemesList()).map(
+
+  const leaderboardThemeSelector = new SlimSelect({
+    select: "#editProfileModal .leaderboardThemeSelect",
+    settings: {
+      showSearch: false,
+      contentLocation: document.querySelector(
+        "#editProfileModal"
+      ) as HTMLElement,
+    },
+    events: {
+      afterChange: (newVal): void => {
+        const selected = newVal[0]?.value;
+        currentSelectedLeaderBoardTheme =
+          selected !== "" ? selected : undefined;
+      },
+    },
+  });
+
+  const themes = await getSortedThemesList();
+  const data = themes.map(
     (it) =>
       ({
         html: `

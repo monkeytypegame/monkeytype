@@ -419,16 +419,6 @@ export function updateNameFontSize(where: ProfileViewPaths): void {
   nameField.style.fontSize = `${finalFontSize}px`;
 }
 
-
-$(".details .editProfileButton").on("click", () => {
-  const snapshot = DB.getSnapshot();
-  if (!snapshot) return;
-  await EditProfilePopup.init(snapshot.premium?.leaderboardTheme);
-  EditProfilePopup.show(() => {
-    void update("account", snapshot);
-  });
-});
-
 const throttledEvent = throttle(1000, () => {
   const activePage = ActivePage.get();
   if (activePage && ["account", "profile"].includes(activePage)) {
