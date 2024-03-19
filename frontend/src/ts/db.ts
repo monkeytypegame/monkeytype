@@ -53,10 +53,8 @@ export async function initSnapshot(): Promise<
     // }
     // LoadingPage.updateText("Downloading user...");
 
-    //getData recreates the user if it doesnt exist - thats why it needs to be called first, by itself
-    const userResponse = await Ape.users.getData();
-
-    const [configResponse, presetsResponse] = await Promise.all([
+    const [userResponse, configResponse, presetsResponse] = await Promise.all([
+      Ape.users.getData(),
       Ape.configs.get(),
       Ape.presets.get(),
     ]);

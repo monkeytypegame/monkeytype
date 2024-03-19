@@ -1202,7 +1202,7 @@ async function saveResult(
   }
 
   $("#result .stats .tags .editTagsButton").attr(
-    "result-id",
+    "data-result-id",
     response.data?.insertedId as string //if status is 200 then response.data is not null or undefined
   );
   $("#result .stats .tags .editTagsButton").removeClass("invisible");
@@ -1457,7 +1457,7 @@ $("#popups").on(
       return;
     }
     const sid = parseInt($(e.currentTarget).attr("id") ?? "");
-    QuoteSearchPopup.setSelectedId(sid);
+    TestState.setSelectedQuoteId(sid);
     if (QuoteSearchPopup.apply(sid)) restart();
   }
 );

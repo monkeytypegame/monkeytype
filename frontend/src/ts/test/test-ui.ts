@@ -319,7 +319,10 @@ function updateWordsHeight(force = false): void {
     if (nh > wordsHeight) {
       nh = wordsHeight;
     }
-    $(".outOfFocusWarning").css("line-height", nh + "px");
+    $(".outOfFocusWarning").css(
+      "margin-top",
+      wordHeight + Misc.convertRemToPixels(1) / 2 + "px"
+    );
   } else {
     let finalWordsHeight: number, finalWrapperHeight: number;
 
@@ -370,7 +373,10 @@ function updateWordsHeight(force = false): void {
     $("#wordsWrapper")
       .css("height", finalWrapperHeight + "px")
       .css("overflow", "hidden");
-    $(".outOfFocusWarning").css("line-height", finalWrapperHeight + "px");
+    $(".outOfFocusWarning").css(
+      "margin-top",
+      finalWrapperHeight / 2 - Misc.convertRemToPixels(1) / 2 + "px"
+    );
   }
 
   if (Config.mode === "zen") {
@@ -405,8 +411,8 @@ export async function screenshot(): Promise<void> {
 
   let revertCookie = false;
   if (
-    Misc.isElementVisible("#cookiePopupWrapper") ||
-    document.contains(document.querySelector("#cookiePopupWrapper"))
+    Misc.isElementVisible("#cookiesModal") ||
+    document.contains(document.querySelector("#cookiesModal"))
   ) {
     revertCookie = true;
   }
@@ -428,7 +434,7 @@ export async function screenshot(): Promise<void> {
     $("#result").removeClass("noBalloons");
     $(".wordInputHighlight").removeClass("hidden");
     $(".highlightContainer").removeClass("hidden");
-    if (revertCookie) $("#cookiePopupWrapper").removeClass("hidden");
+    if (revertCookie) $("#cookiesModal").removeClass("hidden");
     if (revealReplay) $("#resultReplay").removeClass("hidden");
     if (!isAuthenticated()) {
       $(".pageTest .loginTip").removeClass("hidden");
@@ -475,7 +481,7 @@ export async function screenshot(): Promise<void> {
   $("#result").addClass("noBalloons");
   $(".wordInputHighlight").addClass("hidden");
   $(".highlightContainer").addClass("hidden");
-  if (revertCookie) $("#cookiePopupWrapper").addClass("hidden");
+  if (revertCookie) $("#cookiesModal").addClass("hidden");
 
   FunboxList.get(Config.funbox).forEach((f) => f.functions?.clearGlobal?.());
 

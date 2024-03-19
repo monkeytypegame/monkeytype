@@ -3,8 +3,8 @@ import Config, * as UpdateConfig from "../config";
 import * as DB from "../db";
 import * as ManualRestart from "../test/manual-restart-tracker";
 import * as Notifications from "../elements/notifications";
-import * as QuoteSubmitPopup from "./quote-submit-popup";
-import * as QuoteApprovePopup from "./quote-approve-popup";
+import * as QuoteSubmitPopup from "../modals/quote-submit";
+import * as QuoteApprovePopup from "../modals/quote-approve";
 import * as QuoteReportPopup from "./quote-report-popup";
 import {
   buildSearchService,
@@ -20,14 +20,9 @@ import * as Loader from "../elements/loader";
 import * as Skeleton from "../utils/skeleton";
 import { isPopupVisible } from "../utils/misc";
 import SlimSelect from "slim-select";
+import * as TestState from "../test/test-state";
 
 const wrapperId = "quoteSearchPopupWrapper";
-
-export let selectedId = 1;
-
-export function setSelectedId(val: number): void {
-  selectedId = val;
-}
 
 const searchServiceCache: Record<string, SearchService<MonkeyTypes.Quote>> = {};
 
@@ -243,7 +238,7 @@ export async function show(clearText = true): Promise<void> {
       select: "#quoteSearchPopup .quoteLengthFilter",
       settings: {
         showSearch: false,
-        placeholderText: "Filter by length",
+        placeholderText: "filter by length",
       },
       data: [
         {
@@ -298,7 +293,6 @@ function hide(noAnim = false, focusWords = true): void {
           if (focusWords) {
             TestUI.focusWords();
             $("#quoteSearchPopup .quoteLengthFilter").val([]);
-            $("#quoteSearchPopup .quoteLengthFilter").trigger("change");
             Skeleton.remove(wrapperId);
           }
         }
@@ -315,7 +309,7 @@ export function apply(val: number): boolean {
   let ret;
   if (val !== null && !isNaN(val) && val >= 0) {
     UpdateConfig.setQuoteLength(-2 as SharedTypes.Config.QuoteLength, false);
-    selectedId = val;
+    TestState.setSelectedQuoteId(val);
     ManualRestart.set();
     ret = true;
   } else {
@@ -380,7 +374,9 @@ $("#popups").on(
       return;
     }
     hide();
-    void QuoteSubmitPopup.show(true);
+    void QuoteSubmitPopup.show({
+      // modalChain: modal
+    });
   }
 );
 

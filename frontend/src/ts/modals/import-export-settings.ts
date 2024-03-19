@@ -17,6 +17,7 @@ export function show(mode: "import" | "export", config?: string): void {
   state.value = config ?? "";
 
   void modal.show({
+    focusFirstInput: "focusAndSelect",
     beforeAnimation: async (modal) => {
       (modal.querySelector("input") as HTMLInputElement).value = state.value;
       if (state.mode === "export") {
@@ -27,35 +28,29 @@ export function show(mode: "import" | "export", config?: string): void {
         modal.querySelector("input")?.removeAttribute("readonly");
       }
     },
-    afterAnimation: async (modal) => {
-      const inputEl = modal.querySelector("input");
-      if (state.mode === "import") {
-        inputEl?.focus();
-      } else if (state.mode === "export") {
-        inputEl?.select();
-      }
-    },
   });
 }
 
-$("#settingsImportPopup input").on("input", (e) => {
-  state.value = (e.target as HTMLInputElement).value;
+const modal = new AnimatedModal({
+  dialogId: "importExportSettingsModal",
+  setup: async (modalEl): Promise<void> => {
+    modalEl.querySelector("input")?.addEventListener("input", (e) => {
+      state.value = (e.target as HTMLInputElement).value;
+    });
+    modalEl.querySelector("form")?.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      if (state.mode !== "import") return;
+      if (state.value === "") {
+        void modal.hide();
+        return;
+      }
+      try {
+        await UpdateConfig.apply(JSON.parse(state.value));
+      } catch (e) {
+        Notifications.add("Failed to import settings: " + e, -1);
+      }
+      UpdateConfig.saveFullConfigToLocalStorage();
+      void modal.hide();
+    });
+  },
 });
-
-$("#settingsImportPopup form").on("submit", async (e) => {
-  e.preventDefault();
-  if (state.mode !== "import") return;
-  if (state.value === "") {
-    void modal.hide();
-    return;
-  }
-  try {
-    await UpdateConfig.apply(JSON.parse(state.value));
-  } catch (e) {
-    Notifications.add("Failed to import settings: " + e, -1);
-  }
-  UpdateConfig.saveFullConfigToLocalStorage();
-  void modal.hide();
-});
-
-const modal = new AnimatedModal("settingsImportPopup", "popups");

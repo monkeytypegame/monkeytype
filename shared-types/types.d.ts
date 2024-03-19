@@ -14,6 +14,9 @@ declare namespace SharedTypes {
 
   interface Configuration {
     maintenance: boolean;
+    dev: {
+      responseSlowdownMs: number;
+    };
     quotes: {
       reporting: {
         enabled: boolean;

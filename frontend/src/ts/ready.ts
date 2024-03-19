@@ -5,7 +5,7 @@ import * as MonkeyPower from "./elements/monkey-power";
 import * as NewVersionNotification from "./elements/version-check";
 import * as Notifications from "./elements/notifications";
 import * as Focus from "./test/focus";
-import * as CookiePopup from "./popups/cookie-popup";
+import * as CookiesModal from "./modals/cookies";
 import * as PSA from "./elements/psa";
 import * as ConnectionState from "./states/connection";
 import * as FunboxList from "./test/funbox/funbox-list";
@@ -41,7 +41,7 @@ $(document).ready(() => {
   Misc.loadCSS("/css/balloon.min.css", true);
   Misc.loadCSS("/css/fa.min.css", true);
 
-  CookiePopup.check();
+  CookiesModal.check();
 
   $("body").css("transition", "background .25s, transform .05s");
   if (Config.quickRestart !== "off") {
@@ -91,8 +91,11 @@ $(document).ready(() => {
   if (ConnectionState.get()) {
     void PSA.show();
     void ServerConfiguration.sync().then(() => {
-      if (ServerConfiguration.get()?.users.signUp) {
-        $(".signInOut").removeClass("hidden");
+      if (!ServerConfiguration.get()?.users.signUp) {
+        $(".signInOut").addClass("hidden");
+        $(".register").addClass("hidden");
+        $(".login").addClass("hidden");
+        $(".disabledNotification").removeClass("hidden");
       }
     });
   }
@@ -131,6 +134,7 @@ window.onunhandledrejection = function (e): void {
       customTitle: "DEV: Unhandled rejection",
       duration: 5,
     });
+    console.error(e);
   }
   void log("error", {
     error: e.reason.stack ?? "",
