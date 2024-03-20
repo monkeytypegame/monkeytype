@@ -374,7 +374,8 @@ export function restart(options = {} as RestartOptions): void {
         void ModesNotice.update();
       }
 
-      OutOfFocus.hide();
+      const isWordsFocused = $("#wordsInput").is(":focus");
+      if (isWordsFocused) OutOfFocus.hide();
 
       $("#typingTest")
         .css("opacity", 0)
