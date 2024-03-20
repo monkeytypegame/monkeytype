@@ -111,7 +111,7 @@ async function submitReport(): Promise<void> {
   }
 
   Notifications.add("Report submitted. Thank you!", 1);
-  void hide();
+  void hide(true);
 }
 
 function setup(modalEl: HTMLElement): void {
