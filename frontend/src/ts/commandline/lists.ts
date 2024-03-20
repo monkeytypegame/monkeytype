@@ -99,7 +99,7 @@ import * as Notifications from "../elements/notifications";
 import * as VideoAdPopup from "../popups/video-ad-popup";
 import * as ShareTestSettingsPopup from "../popups/share-test-settings-popup";
 import * as TestStats from "../test/test-stats";
-import * as QuoteSearchPopup from "../popups/quote-search-popup";
+import * as QuoteSearchModal from "../modals/quote-search";
 import * as FPSCounter from "../elements/fps-counter";
 
 const layoutsPromise = Misc.getLayoutsList();
@@ -201,7 +201,7 @@ export const commands: MonkeyTypes.CommandsSubgroup = {
       icon: "fa-search",
       exec: (): void => {
         UpdateConfig.setMode("quote");
-        void QuoteSearchPopup.show();
+        void QuoteSearchModal.show();
       },
       shouldFocusTestUI: false,
     },

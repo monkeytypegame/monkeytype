@@ -753,12 +753,12 @@
   }
 }
 
-#quoteSearchPopupWrapper {
+#quoteSearchModal {
   .highlight {
     color: var(--main-color);
   }
 
-  #quoteSearchPopup {
+  .modal {
     background: var(--bg-color);
     border-radius: var(--roundness);
     padding: 2rem;
@@ -779,11 +779,10 @@
       }
 
       .buttons {
-        width: 33%;
         display: grid;
         gap: 0.5rem;
-        .button {
-          width: 100%;
+        button {
+          width: 180px;
         }
       }
     }
@@ -797,12 +796,9 @@
         width: 100%;
       }
 
-      #toggleShowFavorites {
+      .toggleFavorites {
         height: 100%;
-        display: flex;
         align-items: center;
-        justify-content: center;
-        padding: 0.4rem 1rem;
       }
     }
 
@@ -820,7 +816,7 @@
       cursor: pointer;
     }
 
-    #pageInfo {
+    .pageInfo {
       flex: 1;
       text-align: center;
       max-width: 20rem;

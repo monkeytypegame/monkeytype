@@ -8,6 +8,7 @@ import * as TestWords from "../test/test-words";
 import * as Notifications from "../elements/notifications";
 import * as QuoteRateModal from "../modals/quote-rate";
 import * as QuoteReportModal from "../modals/quote-report";
+import * as QuoteSearchModal from "../modals/quote-search";
 
 $(".pageTest").on("click", "#testModesNotice .textButton", async (event) => {
   const attr = $(event.currentTarget).attr("commands");
@@ -60,4 +61,11 @@ $(".pageTest #reportQuoteButton").on("click", async () => {
     return;
   }
   void QuoteReportModal.show(TestWords.randomQuote?.id);
+});
+
+$(".pageTest").on("click", "#testConfig .quoteLength .textButton", (e) => {
+  const len = parseInt($(e.currentTarget).attr("quoteLength") ?? "0");
+  if (len === -2) {
+    void QuoteSearchModal.show();
+  }
 });

@@ -21,7 +21,6 @@ import * as LiveWpm from "./live-wpm";
 import * as LiveAcc from "./live-acc";
 import * as LiveBurst from "./live-burst";
 import * as TimerProgress from "./timer-progress";
-import * as QuoteSearchPopup from "../popups/quote-search-popup";
 
 import * as TestTimer from "./test-timer";
 import * as OutOfFocus from "./out-of-focus";
@@ -374,6 +373,8 @@ export function restart(options = {} as RestartOptions): void {
       } else {
         void ModesNotice.update();
       }
+
+      OutOfFocus.hide();
 
       $("#typingTest")
         .css("opacity", 0)
@@ -1445,22 +1446,6 @@ $("#popups").on("click", "#practiseWordsPopup .button.both", () => {
     });
   }
 });
-
-$("#popups").on(
-  "click",
-  "#quoteSearchPopup #quoteSearchResults .searchResult",
-  (e) => {
-    if (
-      (e.target.classList.contains("report") as boolean) ||
-      (e.target.classList.contains("favorite") as boolean)
-    ) {
-      return;
-    }
-    const sid = parseInt($(e.currentTarget).attr("id") ?? "");
-    TestState.setSelectedQuoteId(sid);
-    if (QuoteSearchPopup.apply(sid)) restart();
-  }
-);
 
 $("header").on("click", "nav #startTestButton, #logo", () => {
   if (ActivePage.get() === "test") restart();

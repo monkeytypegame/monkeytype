@@ -57,9 +57,6 @@
       }
     }
   }
-  #quoteSearchPopupWrapper #quoteSearchPopup #quoteSearchControlsWrapper {
-    grid-template-columns: 1fr 1fr max-content;
-  }
   #customTextPopupWrapper #customTextPopup .buttonsTop {
     grid-template-columns: 1fr 1fr;
   }
@@ -75,9 +72,6 @@
     .bioAndKeyboard .value {
       font-size: 0.75rem;
     }
-  }
-  #quoteSearchPopupWrapper #quoteSearchPopup #quoteSearchControlsWrapper {
-    grid-template-columns: 1fr;
   }
   #result .morestats {
     gap: 1rem;
@@ -405,6 +399,9 @@
 
 //750px
 @media only screen and (max-width: 46.875rem) {
+  #quoteSearchModal .modal #quoteSearchControlsWrapper {
+    grid-template-columns: 1fr;
+  }
   #leaderboardsWrapper #leaderboards {
     .tables table {
       tr td:nth-child(5) {
