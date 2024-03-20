@@ -6,6 +6,7 @@ import * as ThemeController from "../controllers/theme-controller";
 import { clearFontPreview } from "../ui";
 import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
 import * as Notifications from "../elements/notifications";
+import * as OutOfFocus from "../test/out-of-focus";
 
 type CommandlineMode = "search" | "input";
 type InputModeParams = {
@@ -32,7 +33,7 @@ let subgroupOverride: MonkeyTypes.CommandsSubgroup | null = null;
 function removeCommandlineBackground(): void {
   $("#commandLine").addClass("noBackground");
   if (Config.showOutOfFocusWarning) {
-    $("#words").removeClass("blurred");
+    OutOfFocus.hide();
   }
 }
 
@@ -40,7 +41,7 @@ function addCommandlineBackground(): void {
   $("#commandLine").removeClass("noBackground");
   const isWordsFocused = $("#wordsInput").is(":focus");
   if (Config.showOutOfFocusWarning && !isWordsFocused) {
-    $("#words").addClass("blurred");
+    OutOfFocus.show();
   }
 }
 
