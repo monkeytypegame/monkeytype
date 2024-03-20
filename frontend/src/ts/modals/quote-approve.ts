@@ -111,7 +111,7 @@ export async function show(showOptions?: ShowOptions): Promise<void> {
     ...showOptions,
     beforeAnimation: async () => {
       quotes = [];
-      await getQuotes();
+      void getQuotes();
     },
   });
 }
