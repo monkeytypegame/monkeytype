@@ -7,6 +7,8 @@ import { clearFontPreview } from "../ui";
 import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
 import * as Notifications from "../elements/notifications";
 import * as OutOfFocus from "../test/out-of-focus";
+import * as ActivePage from "../states/active-page";
+import { focusWords } from "../test/test-ui";
 
 type CommandlineMode = "search" | "input";
 type InputModeParams = {
@@ -114,10 +116,16 @@ export function show(
 function hide(clearModalChain = false): void {
   clearFontPreview();
   void ThemeController.clearPreview();
+  if (ActivePage.get() === "test") {
+    focusWords();
+  }
   void modal.hide({
     clearModalChain,
     afterAnimation: async () => {
       addCommandlineBackground();
+      if (ActivePage.get() === "test") {
+        focusWords();
+      }
     },
   });
 }
