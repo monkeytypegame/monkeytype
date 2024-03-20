@@ -376,6 +376,7 @@ export function restart(options = {} as RestartOptions): void {
 
       const isWordsFocused = $("#wordsInput").is(":focus");
       if (isWordsFocused) OutOfFocus.hide();
+      TestUI.focusWords();
 
       $("#typingTest")
         .css("opacity", 0)
@@ -405,7 +406,6 @@ export function restart(options = {} as RestartOptions): void {
               "0";
 
             TestUI.setTestRestarting(false);
-            TestUI.focusWords();
             TestUI.updatePremid();
             ManualRestart.reset();
             PageTransition.set(false);
