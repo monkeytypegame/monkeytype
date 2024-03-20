@@ -501,9 +501,17 @@ export function doesListExist(listName: string): boolean {
   return lists[listName as ListsObjectKeys] !== undefined;
 }
 
-export function getList(
+export async function getList(
   listName: ListsObjectKeys
-): MonkeyTypes.CommandsSubgroup {
+): Promise<MonkeyTypes.CommandsSubgroup> {
+  await Promise.allSettled([
+    layoutsPromise,
+    languagesPromise,
+    funboxPromise,
+    fontsPromise,
+    themesPromise,
+    challengesPromise,
+  ]);
   const list = lists[listName];
   if (!list) {
     Notifications.add(`List not found: ${listName}`, -1);

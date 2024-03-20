@@ -9,6 +9,7 @@ import * as Notifications from "../elements/notifications";
 import * as OutOfFocus from "../test/out-of-focus";
 import * as ActivePage from "../states/active-page";
 import { focusWords } from "../test/test-ui";
+import * as Loader from "../elements/loader";
 
 type CommandlineMode = "search" | "input";
 type InputModeParams = {
@@ -77,9 +78,11 @@ export function show(
             settings.subgroupOverride
           );
           if (exists) {
-            subgroupOverride = CommandlineLists.getList(
+            Loader.show();
+            subgroupOverride = await CommandlineLists.getList(
               settings.subgroupOverride as CommandlineLists.ListsObjectKeys
             );
+            Loader.hide();
           } else {
             subgroupOverride = null;
             usingSingleList = Config.singleListCommandLine === "on";
