@@ -52,7 +52,7 @@ export async function show(showOptions: ShowOptions): Promise<void> {
   void modal.show({
     ...showOptions,
     focusFirstInput: true,
-    beforeAnimation: async () => {
+    afterAnimation: async () => {
       CaptchaController.render(
         document.querySelector("#quoteSubmitModal .g-recaptcha") as HTMLElement,
         "submitQuote"
