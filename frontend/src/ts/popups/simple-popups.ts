@@ -108,6 +108,18 @@ const list: Record<PopupKey, SimplePopup | undefined> = {
   forgotPassword: undefined,
 };
 
+type SimplePopupOptions = {
+  id: string;
+  type: string;
+  title: string;
+  inputs: Input[];
+  text?: string;
+  buttonText: string;
+  execFn: (thisPopup: SimplePopup, ...params: string[]) => Promise<ExecReturn>;
+  beforeInitFn: (thisPopup: SimplePopup) => void;
+  beforeShowFn?: (thisPopup: SimplePopup) => void;
+};
+
 class SimplePopup {
   parameters: string[];
   wrapper: JQuery;
@@ -116,39 +128,26 @@ class SimplePopup {
   type: string;
   title: string;
   inputs: Input[];
-  text: string;
+  text?: string;
   buttonText: string;
   execFn: (thisPopup: SimplePopup, ...params: string[]) => Promise<ExecReturn>;
   beforeInitFn: (thisPopup: SimplePopup) => void;
-  beforeShowFn: (thisPopup: SimplePopup) => void;
+  beforeShowFn: ((thisPopup: SimplePopup) => void) | undefined;
   canClose: boolean;
   private noAnimation: boolean;
-  constructor(
-    id: string,
-    type: string,
-    title: string,
-    inputs: Input[] = [],
-    text = "",
-    buttonText = "Confirm",
-    execFn: (
-      thisPopup: SimplePopup,
-      ...params: string[]
-    ) => Promise<ExecReturn>,
-    beforeInitFn: (thisPopup: SimplePopup) => void,
-    beforeShowFn: (thisPopup: SimplePopup) => void
-  ) {
+  constructor(options: SimplePopupOptions) {
     this.parameters = [];
-    this.id = id;
-    this.type = type;
-    this.execFn = execFn;
-    this.title = title;
-    this.inputs = inputs;
-    this.text = text;
+    this.id = options.id;
+    this.type = options.type;
+    this.execFn = options.execFn;
+    this.title = options.title;
+    this.inputs = options.inputs;
+    this.text = options.text;
     this.wrapper = $("#simplePopupWrapper");
     this.element = $("#simplePopup");
-    this.buttonText = buttonText;
-    this.beforeInitFn = (thisPopup): void => beforeInitFn(thisPopup);
-    this.beforeShowFn = (thisPopup): void => beforeShowFn(thisPopup);
+    this.buttonText = options.buttonText;
+    this.beforeInitFn = options.beforeInitFn;
+    this.beforeShowFn = options.beforeShowFn;
     this.canClose = true;
     this.noAnimation = false;
   }
@@ -169,7 +168,7 @@ class SimplePopup {
     this.reset();
     el.attr("popupId", this.id);
     el.find(".title").text(this.title);
-    el.find(".text").text(this.text);
+    el.find(".text").text(this.text ?? "");
 
     this.initInputs();
 
@@ -327,7 +326,7 @@ class SimplePopup {
     this.parameters = parameters;
     this.beforeInitFn(this);
     this.init();
-    this.beforeShowFn(this);
+    this.beforeShowFn?.(this);
     this.wrapper
       .stop(true, true)
       .css("opacity", 0)
@@ -479,11 +478,11 @@ async function reauthenticate(
   }
 }
 
-list.updateEmail = new SimplePopup(
-  "updateEmail",
-  "text",
-  "Update Email",
-  [
+list.updateEmail = new SimplePopup({
+  id: "updateEmail",
+  type: "text",
+  title: "Update email",
+  inputs: [
     {
       placeholder: "Password",
       type: "password",
@@ -498,9 +497,13 @@ list.updateEmail = new SimplePopup(
       initVal: "",
     },
   ],
-  "",
-  "Update",
-  async (_thisPopup, password, email, emailConfirm) => {
+  buttonText: "update",
+  execFn: async (
+    _thisPopup,
+    password,
+    email,
+    emailConfirm
+  ): Promise<ExecReturn> => {
     if (email !== emailConfirm) {
       return {
         status: 0,
@@ -535,7 +538,7 @@ list.updateEmail = new SimplePopup(
       message: "Email updated",
     };
   },
-  (thisPopup) => {
+  beforeInitFn: (thisPopup): void => {
     if (!isAuthenticated()) return;
     if (!isUsingPasswordAuthentication()) {
       thisPopup.inputs = [];
@@ -543,25 +546,22 @@ list.updateEmail = new SimplePopup(
       thisPopup.text = "Password authentication is not enabled";
     }
   },
-  (_thisPopup) => {
-    //
-  }
-);
+});
 
-list.removeGoogleAuth = new SimplePopup(
-  "removeGoogleAuth",
-  "text",
-  "Remove Google Authentication",
-  [
+list.removeGoogleAuth = new SimplePopup({
+  id: "removeGoogleAuth",
+  type: "text",
+  title: "Remove Google Authentication",
+  inputs: [
     {
       placeholder: "Password",
       type: "password",
       initVal: "",
     },
   ],
-  "",
-  "Remove",
-  async (_thisPopup, password) => {
+  text: "",
+  buttonText: "Remove",
+  execFn: async (_thisPopup, password): Promise<ExecReturn> => {
     const reauth = await reauthenticate("passwordOnly", password);
     if (reauth.status !== 1) {
       return {
@@ -588,7 +588,7 @@ list.removeGoogleAuth = new SimplePopup(
       message: "Google authentication removed",
     };
   },
-  (thisPopup) => {
+  beforeInitFn: (thisPopup): void => {
     if (!isAuthenticated()) return;
     if (!isUsingPasswordAuthentication()) {
       thisPopup.inputs = [];
@@ -596,16 +596,16 @@ list.removeGoogleAuth = new SimplePopup(
       thisPopup.text = "Password authentication is not enabled";
     }
   },
-  (_thisPopup) => {
+  beforeShowFn: (_thisPopup): void => {
     //
-  }
-);
+  },
+});
 
-list.updateName = new SimplePopup(
-  "updateName",
-  "text",
-  "Update Name",
-  [
+list.updateName = new SimplePopup({
+  id: "updateName",
+  type: "text",
+  title: "Update Name",
+  inputs: [
     {
       placeholder: "Password",
       type: "password",
@@ -617,9 +617,9 @@ list.updateName = new SimplePopup(
       initVal: "",
     },
   ],
-  "",
-  "Update",
-  async (_thisPopup, pass, newName) => {
+  text: "",
+  buttonText: "Update",
+  execFn: async (_thisPopup, pass, newName): Promise<ExecReturn> => {
     const reauth = await reauthenticate("passwordFirst", pass);
     if (reauth.status !== 1) {
       return {
@@ -664,7 +664,7 @@ list.updateName = new SimplePopup(
       message: "Name updated",
     };
   },
-  (thisPopup) => {
+  beforeInitFn: (thisPopup): void => {
     if (!isAuthenticated()) return;
     const snapshot = DB.getSnapshot();
     if (!snapshot) return;
@@ -677,16 +677,16 @@ list.updateName = new SimplePopup(
         "You need to change your account name. This might be because you have a duplicate name, no account name or your name is not allowed (contains whitespace or invalid characters). Sorry for the inconvenience.";
     }
   },
-  (_thisPopup) => {
+  beforeShowFn: (_thisPopup): void => {
     //
-  }
-);
+  },
+});
 
-list.updatePassword = new SimplePopup(
-  "updatePassword",
-  "text",
-  "Update Password",
-  [
+list.updatePassword = new SimplePopup({
+  id: "updatePassword",
+  type: "text",
+  title: "Update Password",
+  inputs: [
     {
       placeholder: "Password",
       type: "password",
@@ -703,9 +703,14 @@ list.updatePassword = new SimplePopup(
       initVal: "",
     },
   ],
-  "",
-  "Update",
-  async (_thisPopup, previousPass, newPass, newPassConfirm) => {
+  text: "",
+  buttonText: "Update",
+  execFn: async (
+    _thisPopup,
+    previousPass,
+    newPass,
+    newPassConfirm
+  ): Promise<ExecReturn> => {
     if (newPass !== newPassConfirm) {
       return {
         status: 0,
@@ -753,7 +758,7 @@ list.updatePassword = new SimplePopup(
       message: "Password updated",
     };
   },
-  (thisPopup) => {
+  beforeInitFn: (thisPopup): void => {
     if (!isAuthenticated()) return;
     if (!isUsingPasswordAuthentication()) {
       thisPopup.inputs = [];
@@ -761,16 +766,16 @@ list.updatePassword = new SimplePopup(
       thisPopup.text = "Password authentication is not enabled";
     }
   },
-  (_thisPopup) => {
+  beforeShowFn: (_thisPopup): void => {
     //
-  }
-);
+  },
+});
 
-list.addPasswordAuth = new SimplePopup(
-  "addPasswordAuth",
-  "text",
-  "Add Password Authentication",
-  [
+list.addPasswordAuth = new SimplePopup({
+  id: "addPasswordAuth",
+  type: "text",
+  title: "Add Password Authentication",
+  inputs: [
     {
       placeholder: "email",
       type: "email",
@@ -792,9 +797,15 @@ list.addPasswordAuth = new SimplePopup(
       initVal: "",
     },
   ],
-  "",
-  "Add",
-  async (_thisPopup, email, emailConfirm, pass, passConfirm) => {
+  text: "",
+  buttonText: "Add",
+  execFn: async (
+    _thisPopup,
+    email,
+    emailConfirm,
+    pass,
+    passConfirm
+  ): Promise<ExecReturn> => {
     if (email !== emailConfirm) {
       return {
         status: 0,
@@ -850,28 +861,28 @@ list.addPasswordAuth = new SimplePopup(
       message: "Password authentication added",
     };
   },
-  () => {
+  beforeInitFn: (): void => {
     //
   },
-  (_thisPopup) => {
+  beforeShowFn: (_thisPopup): void => {
     //
-  }
-);
+  },
+});
 
-list.deleteAccount = new SimplePopup(
-  "deleteAccount",
-  "text",
-  "Delete Account",
-  [
+list.deleteAccount = new SimplePopup({
+  id: "deleteAccount",
+  type: "text",
+  title: "Delete Account",
+  inputs: [
     {
       placeholder: "Password",
       type: "password",
       initVal: "",
     },
   ],
-  "This is the last time you can change your mind. After pressing the button everything is gone.",
-  "Delete",
-  async (_thisPopup, password) => {
+  text: "This is the last time you can change your mind. After pressing the button everything is gone.",
+  buttonText: "Delete",
+  execFn: async (_thisPopup, password): Promise<ExecReturn> => {
     const reauth = await reauthenticate("passwordFirst", password);
     if (reauth.status !== 1) {
       return {
@@ -897,32 +908,32 @@ list.deleteAccount = new SimplePopup(
       message: "Account deleted, goodbye",
     };
   },
-  (thisPopup) => {
+  beforeInitFn: (thisPopup): void => {
     if (!isAuthenticated()) return;
     if (!isUsingPasswordAuthentication()) {
       thisPopup.inputs = [];
       thisPopup.buttonText = "Reauthenticate to delete";
     }
   },
-  (_thisPopup) => {
+  beforeShowFn: (_thisPopup): void => {
     //
-  }
-);
+  },
+});
 
-list.resetAccount = new SimplePopup(
-  "resetAccount",
-  "text",
-  "Reset Account",
-  [
+list.resetAccount = new SimplePopup({
+  id: "resetAccount",
+  type: "text",
+  title: "Reset Account",
+  inputs: [
     {
       placeholder: "Password",
       type: "password",
       initVal: "",
     },
   ],
-  "This is the last time you can change your mind. After pressing the button everything is gone.",
-  "Reset",
-  async (_thisPopup, password) => {
+  text: "This is the last time you can change your mind. After pressing the button everything is gone.",
+  buttonText: "Reset",
+  execFn: async (_thisPopup, password): Promise<ExecReturn> => {
     const reauth = await reauthenticate("passwordFirst", password);
     if (reauth.status !== 1) {
       return {
@@ -950,32 +961,32 @@ list.resetAccount = new SimplePopup(
       message: "Account reset",
     };
   },
-  (thisPopup) => {
+  beforeInitFn: (thisPopup): void => {
     if (!isAuthenticated()) return;
     if (!isUsingPasswordAuthentication()) {
       thisPopup.inputs = [];
       thisPopup.buttonText = "Reauthenticate to reset";
     }
   },
-  (_thisPopup) => {
+  beforeShowFn: (_thisPopup): void => {
     //
-  }
-);
+  },
+});
 
-list.optOutOfLeaderboards = new SimplePopup(
-  "optOutOfLeaderboards",
-  "text",
-  "Opt out of leaderboards",
-  [
+list.optOutOfLeaderboards = new SimplePopup({
+  id: "optOutOfLeaderboards",
+  type: "text",
+  title: "Opt out of leaderboards",
+  inputs: [
     {
       placeholder: "Password",
       type: "password",
       initVal: "",
     },
   ],
-  "Are you sure you want to opt out of leaderboards?",
-  "Opt out",
-  async (_thisPopup, password) => {
+  text: "Are you sure you want to opt out of leaderboards?",
+  buttonText: "Opt out",
+  execFn: async (_thisPopup, password): Promise<ExecReturn> => {
     const reauth = await reauthenticate("passwordFirst", password);
     if (reauth.status !== 1) {
       return {
@@ -999,26 +1010,26 @@ list.optOutOfLeaderboards = new SimplePopup(
       message: "Leaderboards opt out successful",
     };
   },
-  (thisPopup) => {
+  beforeInitFn: (thisPopup): void => {
     if (!isAuthenticated()) return;
     if (!isUsingPasswordAuthentication()) {
       thisPopup.inputs = [];
       thisPopup.buttonText = "Reauthenticate to reset";
     }
   },
-  (_thisPopup) => {
+  beforeShowFn: (_thisPopup): void => {
     //
-  }
-);
+  },
+});
 
-list.clearTagPb = new SimplePopup(
-  "clearTagPb",
-  "text",
-  "Clear Tag PB",
-  [],
-  `Are you sure you want to clear this tags PB?`,
-  "Clear",
-  async (thisPopup) => {
+list.clearTagPb = new SimplePopup({
+  id: "clearTagPb",
+  type: "text",
+  title: "Clear Tag PB",
+  inputs: [],
+  text: "Are you sure you want to clear this tags PB?",
+  buttonText: "Clear",
+  execFn: async (thisPopup): Promise<ExecReturn> => {
     const tagId = thisPopup.parameters[0] as string;
     const response = await Ape.users.deleteTagPersonalBest(tagId);
     if (response.status !== 200) {
@@ -1051,22 +1062,22 @@ list.clearTagPb = new SimplePopup(
       message: "Tag PB cleared",
     };
   },
-  (thisPopup) => {
+  beforeInitFn: (thisPopup): void => {
     thisPopup.text = `Are you sure you want to clear PB for tag ${thisPopup.parameters[1]}?`;
   },
-  (_thisPopup) => {
+  beforeShowFn: (_thisPopup): void => {
     //
-  }
-);
+  },
+});
 
-list.applyCustomFont = new SimplePopup(
-  "applyCustomFont",
-  "text",
-  "Custom font",
-  [{ placeholder: "Font name", initVal: "" }],
-  "Make sure you have the font installed on your computer before applying",
-  "Apply",
-  async (_thisPopup, fontName) => {
+list.applyCustomFont = new SimplePopup({
+  id: "applyCustomFont",
+  type: "text",
+  title: "Custom font",
+  inputs: [{ placeholder: "Font name", initVal: "" }],
+  text: "Make sure you have the font installed on your computer before applying",
+  buttonText: "Apply",
+  execFn: async (_thisPopup, fontName): Promise<ExecReturn> => {
     Settings.groups["fontFamily"]?.setValue(fontName.replace(/\s/g, "_"));
 
     return {
@@ -1074,28 +1085,28 @@ list.applyCustomFont = new SimplePopup(
       message: "Font applied",
     };
   },
-  () => {
+  beforeInitFn: (): void => {
     //
   },
-  (_thisPopup) => {
+  beforeShowFn: (_thisPopup): void => {
     //
-  }
-);
+  },
+});
 
-list.resetPersonalBests = new SimplePopup(
-  "resetPersonalBests",
-  "text",
-  "Reset Personal Bests",
-  [
+list.resetPersonalBests = new SimplePopup({
+  id: "resetPersonalBests",
+  type: "text",
+  title: "Reset Personal Bests",
+  inputs: [
     {
       placeholder: "Password",
       type: "password",
       initVal: "",
     },
   ],
-  "",
-  "Reset",
-  async (_thisPopup, password) => {
+  text: "",
+  buttonText: "Reset",
+  execFn: async (_thisPopup, password): Promise<ExecReturn> => {
     const reauth = await reauthenticate("passwordFirst", password);
     if (reauth.status !== 1) {
       return {
@@ -1133,54 +1144,54 @@ list.resetPersonalBests = new SimplePopup(
       message: "Personal bests reset",
     };
   },
-  (thisPopup) => {
+  beforeInitFn: (thisPopup): void => {
     if (!isAuthenticated()) return;
     if (!isUsingPasswordAuthentication()) {
       thisPopup.inputs = [];
       thisPopup.buttonText = "Reauthenticate to reset";
     }
   },
-  (_thisPopup) => {
+  beforeShowFn: (_thisPopup): void => {
     //
-  }
-);
+  },
+});
 
-list.resetSettings = new SimplePopup(
-  "resetSettings",
-  "text",
-  "Reset Settings",
-  [],
-  "Are you sure you want to reset all your settings?",
-  "Reset",
-  async () => {
+list.resetSettings = new SimplePopup({
+  id: "resetSettings",
+  type: "text",
+  title: "Reset Settings",
+  inputs: [],
+  text: "Are you sure you want to reset all your settings?",
+  buttonText: "Reset",
+  execFn: async (): Promise<ExecReturn> => {
     await UpdateConfig.reset();
     return {
       status: 1,
       message: "Settings reset",
     };
   },
-  () => {
+  beforeInitFn: (): void => {
     //
   },
-  (_thisPopup) => {
+  beforeShowFn: (_thisPopup): void => {
     //
-  }
-);
+  },
+});
 
-list.revokeAllTokens = new SimplePopup(
-  "revokeAllTokens",
-  "text",
-  "Revoke All Tokens",
-  [
+list.revokeAllTokens = new SimplePopup({
+  id: "revokeAllTokens",
+  type: "text",
+  title: "Revoke All Tokens",
+  inputs: [
     {
       placeholder: "Password",
       type: "password",
       initVal: "",
     },
   ],
-  "Are you sure you want to this? This will log you out of all devices.",
-  "revoke all",
-  async (_thisPopup, password) => {
+  text: "Are you sure you want to this? This will log you out of all devices.",
+  buttonText: "revoke all",
+  execFn: async (_thisPopup, password): Promise<ExecReturn> => {
     const reauth = await reauthenticate("passwordFirst", password);
     if (reauth.status !== 1) {
       return {
@@ -1204,7 +1215,7 @@ list.revokeAllTokens = new SimplePopup(
       message: "Tokens revoked",
     };
   },
-  (thisPopup) => {
+  beforeInitFn: (thisPopup): void => {
     if (!isAuthenticated()) return;
     const snapshot = DB.getSnapshot();
     if (!snapshot) return;
@@ -1213,19 +1224,19 @@ list.revokeAllTokens = new SimplePopup(
       thisPopup.buttonText = "reauthenticate to revoke all tokens";
     }
   },
-  (_thisPopup) => {
+  beforeShowFn: (_thisPopup): void => {
     //
-  }
-);
+  },
+});
 
-list.unlinkDiscord = new SimplePopup(
-  "unlinkDiscord",
-  "text",
-  "Unlink Discord",
-  [],
-  "Are you sure you want to unlink your Discord account?",
-  "Unlink",
-  async () => {
+list.unlinkDiscord = new SimplePopup({
+  id: "unlinkDiscord",
+  type: "text",
+  title: "Unlink Discord",
+  inputs: [],
+  text: "Are you sure you want to unlink your Discord account?",
+  buttonText: "Unlink",
+  execFn: async (): Promise<ExecReturn> => {
     const snap = DB.getSnapshot();
     if (!snap) {
       return {
@@ -1253,27 +1264,27 @@ list.unlinkDiscord = new SimplePopup(
       message: "Discord unlinked",
     };
   },
-  () => {
+  beforeInitFn: (): void => {
     //
   },
-  (_thisPopup) => {
+  beforeShowFn: (_thisPopup): void => {
     //
-  }
-);
+  },
+});
 
-list.generateApeKey = new SimplePopup(
-  "generateApeKey",
-  "text",
-  "Generate new key",
-  [
+list.generateApeKey = new SimplePopup({
+  id: "generateApeKey",
+  type: "text",
+  title: "Generate new key",
+  inputs: [
     {
       placeholder: "Name",
       initVal: "",
     },
   ],
-  "",
-  "Generate",
-  async (_thisPopup, name) => {
+  text: "",
+  buttonText: "Generate",
+  execFn: async (_thisPopup, name): Promise<ExecReturn> => {
     const response = await Ape.apeKeys.generate(name, false);
     if (response.status !== 200) {
       return {
@@ -1293,19 +1304,19 @@ list.generateApeKey = new SimplePopup(
       },
     };
   },
-  () => {
+  beforeInitFn: (): void => {
     //
   },
-  (_thisPopup) => {
+  beforeShowFn: (_thisPopup): void => {
     //
-  }
-);
+  },
+});
 
-list.viewApeKey = new SimplePopup(
-  "viewApeKey",
-  "text",
-  "Ape Key",
-  [
+list.viewApeKey = new SimplePopup({
+  id: "viewApeKey",
+  type: "text",
+  title: "Ape Key",
+  inputs: [
     {
       type: "textarea",
       disabled: true,
@@ -1313,20 +1324,20 @@ list.viewApeKey = new SimplePopup(
       initVal: "",
     },
   ],
-  "This is your new Ape Key. Please keep it safe. You will only see it once!",
-  "Close",
-  async (_thisPopup) => {
+  text: "This is your new Ape Key. Please keep it safe. You will only see it once!",
+  buttonText: "Close",
+  execFn: async (_thisPopup): Promise<ExecReturn> => {
     void ApeKeysPopup.show();
     return {
       status: 1,
       message: "Key generated",
     };
   },
-  (_thisPopup) => {
+  beforeInitFn: (_thisPopup): void => {
     (_thisPopup.inputs[0] as Input).initVal = _thisPopup
       .parameters[0] as string;
   },
-  (_thisPopup) => {
+  beforeShowFn: (_thisPopup): void => {
     _thisPopup.canClose = false;
     $("#simplePopup textarea").css("height", "110px");
     $("#simplePopup .submitButton").addClass("hidden");
@@ -1334,17 +1345,17 @@ list.viewApeKey = new SimplePopup(
       _thisPopup.canClose = true;
       $("#simplePopup .submitButton").removeClass("hidden");
     }, 5000);
-  }
-);
+  },
+});
 
-list.deleteApeKey = new SimplePopup(
-  "deleteApeKey",
-  "text",
-  "Delete Ape Key",
-  [],
-  "Are you sure?",
-  "Delete",
-  async (_thisPopup) => {
+list.deleteApeKey = new SimplePopup({
+  id: "deleteApeKey",
+  type: "text",
+  title: "Delete Ape Key",
+  inputs: [],
+  text: "Are you sure?",
+  buttonText: "Delete",
+  execFn: async (_thisPopup): Promise<ExecReturn> => {
     const response = await Ape.apeKeys.delete(_thisPopup.parameters[0] ?? "");
     if (response.status !== 200) {
       return {
@@ -1360,27 +1371,27 @@ list.deleteApeKey = new SimplePopup(
       message: "Key deleted",
     };
   },
-  (_thisPopup) => {
+  beforeInitFn: (_thisPopup): void => {
     //
   },
-  (_thisPopup) => {
+  beforeShowFn: (_thisPopup): void => {
     //
-  }
-);
+  },
+});
 
-list.editApeKey = new SimplePopup(
-  "editApeKey",
-  "text",
-  "Edit Ape Key",
-  [
+list.editApeKey = new SimplePopup({
+  id: "editApeKey",
+  type: "text",
+  title: "Edit Ape Key",
+  inputs: [
     {
       placeholder: "Name",
       initVal: "",
     },
   ],
-  "",
-  "Edit",
-  async (_thisPopup, input) => {
+  text: "",
+  buttonText: "Edit",
+  execFn: async (_thisPopup, input): Promise<ExecReturn> => {
     const response = await Ape.apeKeys.update(_thisPopup.parameters[0] ?? "", {
       name: input,
     });
@@ -1398,22 +1409,22 @@ list.editApeKey = new SimplePopup(
       message: "Key updated",
     };
   },
-  (_thisPopup) => {
+  beforeInitFn: (_thisPopup): void => {
     //
   },
-  (_thisPopup) => {
+  beforeShowFn: (_thisPopup): void => {
     //
-  }
-);
+  },
+});
 
-list.deleteCustomText = new SimplePopup(
-  "deleteCustomText",
-  "text",
-  "Delete custom text",
-  [],
-  "Are you sure?",
-  "Delete",
-  async (_thisPopup) => {
+list.deleteCustomText = new SimplePopup({
+  id: "deleteCustomText",
+  type: "text",
+  title: "Delete custom text",
+  inputs: [],
+  text: "Are you sure?",
+  buttonText: "Delete",
+  execFn: async (_thisPopup): Promise<ExecReturn> => {
     CustomText.deleteCustomText(_thisPopup.parameters[0] as string, false);
     CustomTextState.setCustomTextName("", undefined);
     void SavedTextsPopup.show(true);
@@ -1423,22 +1434,22 @@ list.deleteCustomText = new SimplePopup(
       message: "Custom text deleted",
     };
   },
-  (_thisPopup) => {
+  beforeInitFn: (_thisPopup): void => {
     _thisPopup.text = `Are you sure you want to delete custom text ${_thisPopup.parameters[0]}?`;
   },
-  () => {
+  beforeShowFn: (): void => {
     //
-  }
-);
+  },
+});
 
-list.deleteCustomTextLong = new SimplePopup(
-  "deleteCustomTextLong",
-  "text",
-  "Delete custom text",
-  [],
-  "Are you sure?",
-  "Delete",
-  async (_thisPopup) => {
+list.deleteCustomTextLong = new SimplePopup({
+  id: "deleteCustomTextLong",
+  type: "text",
+  title: "Delete custom text",
+  inputs: [],
+  text: "Are you sure?",
+  buttonText: "Delete",
+  execFn: async (_thisPopup): Promise<ExecReturn> => {
     CustomText.deleteCustomText(_thisPopup.parameters[0] as string, true);
     CustomTextState.setCustomTextName("", undefined);
     void SavedTextsPopup.show(true);
@@ -1448,22 +1459,22 @@ list.deleteCustomTextLong = new SimplePopup(
       message: "Custom text deleted",
     };
   },
-  (_thisPopup) => {
+  beforeInitFn: (_thisPopup): void => {
     _thisPopup.text = `Are you sure you want to delete custom text ${_thisPopup.parameters[0]}?`;
   },
-  () => {
+  beforeShowFn: (): void => {
     //
-  }
-);
+  },
+});
 
-list.resetProgressCustomTextLong = new SimplePopup(
-  "resetProgressCustomTextLong",
-  "text",
-  "Reset progress for custom text",
-  [],
-  "Are you sure?",
-  "Reset",
-  async (_thisPopup) => {
+list.resetProgressCustomTextLong = new SimplePopup({
+  id: "resetProgressCustomTextLong",
+  type: "text",
+  title: "Reset progress for custom text",
+  inputs: [],
+  text: "Are you sure?",
+  buttonText: "Reset",
+  execFn: async (_thisPopup): Promise<ExecReturn> => {
     CustomText.setCustomTextLongProgress(_thisPopup.parameters[0] as string, 0);
     void SavedTextsPopup.show(true);
     CustomText.setPopupTextareaState(
@@ -1476,19 +1487,19 @@ list.resetProgressCustomTextLong = new SimplePopup(
       message: "Custom text progress reset",
     };
   },
-  (_thisPopup) => {
+  beforeInitFn: (_thisPopup): void => {
     _thisPopup.text = `Are you sure you want to reset your progress for custom text ${_thisPopup.parameters[0]}?`;
   },
-  () => {
+  beforeShowFn: (): void => {
     //
-  }
-);
+  },
+});
 
-list.updateCustomTheme = new SimplePopup(
-  "updateCustomTheme",
-  "text",
-  "Update custom theme",
-  [
+list.updateCustomTheme = new SimplePopup({
+  id: "updateCustomTheme",
+  type: "text",
+  title: "Update custom theme",
+  inputs: [
     {
       type: "text",
       placeholder: "Name",
@@ -1500,9 +1511,9 @@ list.updateCustomTheme = new SimplePopup(
       label: "Update custom theme to current colors",
     },
   ],
-  "",
-  "update",
-  async (_thisPopup, name, updateColors) => {
+  text: "",
+  buttonText: "update",
+  execFn: async (_thisPopup, name, updateColors): Promise<ExecReturn> => {
     const snapshot = DB.getSnapshot();
     if (!snapshot) {
       return {
@@ -1553,7 +1564,7 @@ list.updateCustomTheme = new SimplePopup(
       message: "Custom theme updated",
     };
   },
-  (_thisPopup) => {
+  beforeInitFn: (_thisPopup): void => {
     const snapshot = DB.getSnapshot();
     if (!snapshot) return;
 
@@ -1563,19 +1574,19 @@ list.updateCustomTheme = new SimplePopup(
     if (!customTheme) return;
     (_thisPopup.inputs[0] as Input).initVal = customTheme.name;
   },
-  (_thisPopup) => {
+  beforeShowFn: (_thisPopup): void => {
     //
-  }
-);
+  },
+});
 
-list.deleteCustomTheme = new SimplePopup(
-  "deleteCustomTheme",
-  "text",
-  "Delete Custom Theme",
-  [],
-  "Are you sure?",
-  "Delete",
-  async (_thisPopup) => {
+list.deleteCustomTheme = new SimplePopup({
+  id: "deleteCustomTheme",
+  type: "text",
+  title: "Delete Custom Theme",
+  inputs: [],
+  text: "Are you sure?",
+  buttonText: "Delete",
+  execFn: async (_thisPopup): Promise<ExecReturn> => {
     await DB.deleteCustomTheme(_thisPopup.parameters[0] as string);
     void ThemePicker.refreshButtons();
 
@@ -1584,28 +1595,28 @@ list.deleteCustomTheme = new SimplePopup(
       message: "Custom theme deleted",
     };
   },
-  (_thisPopup) => {
+  beforeInitFn: (_thisPopup): void => {
     //
   },
-  (_thisPopup) => {
+  beforeShowFn: (_thisPopup): void => {
     //
-  }
-);
+  },
+});
 
-list.forgotPassword = new SimplePopup(
-  "forgotPassword",
-  "text",
-  "Forgot Password",
-  [
+list.forgotPassword = new SimplePopup({
+  id: "forgotPassword",
+  type: "text",
+  title: "Forgot Password",
+  inputs: [
     {
       type: "text",
       placeholder: "Email",
       initVal: "",
     },
   ],
-  "",
-  "Send",
-  async (_thisPopup, email) => {
+  text: "",
+  buttonText: "Send",
+  execFn: async (_thisPopup, email): Promise<ExecReturn> => {
     const result = await Ape.users.forgotPasswordEmail(email.trim());
     if (result.status !== 200) {
       return {
@@ -1622,7 +1633,7 @@ list.forgotPassword = new SimplePopup(
       },
     };
   },
-  (thisPopup) => {
+  beforeInitFn: (thisPopup): void => {
     const inputValue = $(
       `.pageLogin .login input[name="current-email"]`
     ).val() as string;
@@ -1633,10 +1644,10 @@ list.forgotPassword = new SimplePopup(
       }, 1);
     }
   },
-  () => {
+  beforeShowFn: (): void => {
     //
-  }
-);
+  },
+});
 
 function showPopup(
   key: PopupKey,
