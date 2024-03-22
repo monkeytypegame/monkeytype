@@ -1160,9 +1160,9 @@
       "id": 195
     },
     {
-      "text": "Non, moi je crois qu'il faut que vous arrêtiez d'essayer de dire des trucs. Ça vous fatigue, déjà, et pour les autres, vous vous rendez pas compte de ce que c'est... Moi quand vous faites ça, ça me fout une angoisse... Je pourrais vous tuer, je crois. De chagrin, hein ! Je vous jure c'est pas bien. Il faut plus que vous parliez avec des gens.",
+      "text": "Non, moi je crois qu'il faut que vous arrêtiez d'essayer de dire des trucs. Ça vous fatigue, déjà, et pour les autres, vous vous rendez pas compte de ce que c'est...",
       "source": "Kaamelott, Livre I, Tel un chevalier",
-      "length": 344,
+      "length": 165,
       "id": 196
     },
     {
@@ -1172,16 +1172,10 @@
       "id": 197
     },
     {
-      "text": "Ah, le printemps ! La nature se réveille, les oiseaux reviennent, on crame des mecs...",
-      "source": "Kaamelott, Livre II, La Fête du Printemps",
-      "length": 86,
-      "id": 198
-    },
-    {
       "text": "Je gueule ; c'est vrai, je suis un peu sec, tout ça... Mais pour quelqu'un comme moi, qui a facilement tendance à la dépression, c'est très important ce que vous faites, parce que... Comment vous dire... C'est systématiquement débile mais c'est toujours inattendu. Et ça c'est très important pour la... la santé du... du cigare...",
       "source": "Kaamelott, Livre II, Unagi II",
       "length": 330,
-      "id": 199
+      "id": 198
     }
   ]
 }
