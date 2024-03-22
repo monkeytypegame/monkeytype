@@ -161,18 +161,18 @@ export default class AnimatedModal {
   }
 
   focusFirstInput(setting: true | "focusAndSelect" | undefined): void {
-    const input = this.modalEl.querySelector("input");
-    if (input !== null) {
-      const isHidden = input.classList.contains("hidden");
-      if (isHidden) {
-        this.wrapperEl.focus();
+    const inputs = [...this.modalEl.querySelectorAll("input")];
+    const input = inputs.filter(
+      (input) => !input.classList.contains("hidden")
+    )[0];
+    if (input !== undefined && input !== null) {
+      if (setting === true) {
+        input.focus();
+      } else if (setting === "focusAndSelect") {
+        input.focus();
+        input.select();
       } else {
-        if (setting === true) {
-          input.focus();
-        } else if (setting === "focusAndSelect") {
-          input.focus();
-          input.select();
-        }
+        this.wrapperEl.focus();
       }
     } else {
       this.wrapperEl.focus();
