@@ -448,21 +448,13 @@
   }
 }
 
-#simplePopupWrapper {
-  #simplePopup {
-    background: var(--bg-color);
-    border-radius: var(--roundness);
-    padding: 2rem;
-    width: 400px;
+#simpleModal {
+  .modal {
+    max-width: 500px;
 
     form {
       display: grid;
       gap: 1rem;
-    }
-
-    .title {
-      font-size: 1.5rem;
-      color: var(--sub-color);
     }
 
     .inputs {
@@ -473,6 +465,11 @@
     .text {
       font-size: 1rem;
       color: var(--text-color);
+    }
+  }
+  & [data-popup-id="viewApeKey"] {
+    textarea:disabled {
+      opacity: 1;
     }
   }
 }
