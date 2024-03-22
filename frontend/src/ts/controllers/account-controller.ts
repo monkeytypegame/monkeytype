@@ -593,7 +593,10 @@ async function signUp(): Promise<void> {
     }
     Notifications.add("Account created", 1);
   } catch (e) {
-    const message = Misc.createErrorMessage(e, "Failed to create account");
+    let message = Misc.createErrorMessage(e, "Failed to create account");
+    if(e.code === "auth/email-already-in-use"){
+      message = Misc.createErrorMessage({ message: "Email already exists"}, "Failed to create account");
+    }
     Notifications.add(message, -1);
     LoginPage.hidePreloader();
     LoginPage.enableInputs();
