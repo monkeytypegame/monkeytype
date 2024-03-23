@@ -1259,7 +1259,7 @@ export async function downloadResultsCSV(
 
   const link = document.createElement("a");
   link.setAttribute("href", href);
-  link.setAttribute("download", "results.csv");
+  link.setAttribute("download", "results.dsv");
   document.body.appendChild(link); // Required for FF
 
   link.click();
