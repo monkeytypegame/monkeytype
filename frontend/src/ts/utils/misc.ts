@@ -1230,7 +1230,7 @@ export async function downloadResultsCSV(
       item.acc,
       item.rawWpm,
       item.consistency,
-      item.charStats.join(","),
+      item.charStats.join(";"),
       item.mode,
       item.mode2,
       item.quoteLength,
@@ -1246,11 +1246,11 @@ export async function downloadResultsCSV(
       item.lazyMode,
       item.blindMode,
       item.bailedOut,
-      item.tags.join(","),
+      item.tags.join(";"),
       item.timestamp,
     ]),
   ]
-    .map((e) => e.join("|"))
+    .map((e) => e.join(","))
     .join("\n");
 
   const blob = new Blob([csvString], { type: "text/csv" });
