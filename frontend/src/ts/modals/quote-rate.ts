@@ -1,12 +1,8 @@
 import Ape from "../ape";
 import * as DB from "../db";
-import * as TestWords from "../test/test-words";
 import * as Loader from "../elements/loader";
 import * as Notifications from "../elements/notifications";
-import * as Skeleton from "../utils/skeleton";
-import { isPopupVisible } from "../utils/misc";
-
-const wrapperId = "quoteRatePopupWrapper";
+import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
 
 let rating = 0;
 
@@ -21,13 +17,17 @@ type QuoteStats = {
 let quoteStats: QuoteStats | null | Record<string, never> = null;
 let currentQuote: MonkeyTypes.Quote | null = null;
 
+export function clearQuoteStats(): void {
+  quoteStats = null;
+}
+
 function reset(): void {
-  $(`#quoteRatePopup .quote .text`).text("-");
-  $(`#quoteRatePopup .quote .source .val`).text("-");
-  $(`#quoteRatePopup .quote .id .val`).text("-");
-  $(`#quoteRatePopup .quote .length .val`).text("-");
-  $("#quoteRatePopup .ratingCount .val").text("-");
-  $("#quoteRatePopup .ratingAverage .val").text("-");
+  $(`#quoteRateModal .quote .text`).text("-");
+  $(`#quoteRateModal .quote .source .val`).text("-");
+  $(`#quoteRateModal .quote .id .val`).text("-");
+  $(`#quoteRateModal .quote .length .val`).text("-");
+  $("#quoteRateModal .ratingCount .val").text("-");
+  $("#quoteRateModal .ratingAverage .val").text("-");
 }
 
 function getRatingAverage(quoteStats: QuoteStats): number {
@@ -68,16 +68,16 @@ export async function getQuoteStats(
 
 function refreshStars(force?: number): void {
   const limit = force ? force : rating;
-  $(`#quoteRatePopup .star`).removeClass("active");
+  $(`#quoteRateModal .star`).removeClass("active");
   for (let i = 1; i <= limit; i++) {
-    $(`#quoteRatePopup .star[rating=${i}]`).addClass("active");
+    $(`#quoteRateModal .star[data-rating=${i}]`).addClass("active");
   }
 }
 
 async function updateRatingStats(): Promise<void> {
   if (!quoteStats) await getQuoteStats();
-  $("#quoteRatePopup .ratingCount .val").text(quoteStats?.ratings ?? "0");
-  $("#quoteRatePopup .ratingAverage .val").text(
+  $("#quoteRateModal .ratingCount .val").text(quoteStats?.ratings ?? "0");
+  $("#quoteRateModal .ratingAverage .val").text(
     quoteStats?.average?.toFixed(1) ?? "-"
   );
 }
@@ -94,61 +94,39 @@ function updateData(): void {
   } else if (currentQuote.group === 3) {
     lengthDesc = "thicc";
   }
-  $(`#quoteRatePopup .quote .text`).text(currentQuote.text);
-  $(`#quoteRatePopup .quote .source .val`).text(currentQuote.source);
-  $(`#quoteRatePopup .quote .id .val`).text(currentQuote.id);
-  $(`#quoteRatePopup .quote .length .val`).text(lengthDesc as string);
+  $(`#quoteRateModal .quote .text`).text(currentQuote.text);
+  $(`#quoteRateModal .quote .source .val`).text(currentQuote.source);
+  $(`#quoteRateModal .quote .id .val`).text(currentQuote.id);
+  $(`#quoteRateModal .quote .length .val`).text(lengthDesc as string);
   void updateRatingStats();
 }
 
-function show(quote: MonkeyTypes.Quote, shouldReset = true): void {
-  Skeleton.append(wrapperId, "popups");
-
-  if (!isPopupVisible(wrapperId)) {
-    if (shouldReset) {
+export function show(
+  quote: MonkeyTypes.Quote,
+  showOptions?: ShowOptions
+): void {
+  void modal.show({
+    ...showOptions,
+    beforeAnimation: async () => {
       reset();
-    }
-
-    currentQuote = quote;
-    rating = 0;
-
-    const snapshot = DB.getSnapshot();
-    const alreadyRated =
-      snapshot?.quoteRatings?.[currentQuote.language]?.[currentQuote.id];
-    if (alreadyRated) {
-      rating = alreadyRated;
-    }
-
-    refreshStars();
-    updateData();
-    $("#quoteRatePopupWrapper")
-      .stop(true, true)
-      .css("opacity", 0)
-      .removeClass("hidden")
-      .animate({ opacity: 1 }, 125);
-  }
+      currentQuote = quote;
+      rating = 0;
+      const snapshot = DB.getSnapshot();
+      const alreadyRated =
+        snapshot?.quoteRatings?.[currentQuote.language]?.[currentQuote.id];
+      if (alreadyRated) {
+        rating = alreadyRated;
+      }
+      refreshStars();
+      updateData();
+    },
+  });
 }
 
-function hide(): void {
-  if (isPopupVisible(wrapperId)) {
-    $("#quoteRatePopupWrapper")
-      .stop(true, true)
-      .css("opacity", 1)
-      .animate(
-        {
-          opacity: 0,
-        },
-        125,
-        () => {
-          $("#quoteRatePopupWrapper").addClass("hidden");
-          Skeleton.remove(wrapperId);
-        }
-      );
-  }
-}
-
-export function clearQuoteStats(): void {
-  quoteStats = null;
+function hide(clearChain = false): void {
+  void modal.hide({
+    clearModalChain: clearChain,
+  });
 }
 
 async function submit(): Promise<void> {
@@ -159,7 +137,7 @@ async function submit(): Promise<void> {
     return;
   }
 
-  hide();
+  hide(true);
 
   const response = await Ape.quotes.addRating(currentQuote, rating);
   Loader.hide();
@@ -219,37 +197,32 @@ async function submit(): Promise<void> {
   $(".pageTest #result #rateQuoteButton .icon").addClass("fas");
 }
 
-$("#quoteRatePopupWrapper").on("click", (e) => {
-  if ($(e.target).attr("id") === "quoteRatePopupWrapper") {
-    hide();
+function setup(modalEl: HTMLElement): void {
+  modalEl.querySelector(".submitButton")?.addEventListener("click", () => {
+    void submit();
+  });
+  const starButtons = modalEl.querySelectorAll(".stars button.star");
+  for (const button of starButtons) {
+    button.addEventListener("click", (e) => {
+      const ratingValue = parseInt(
+        (e.currentTarget as HTMLElement).getAttribute("data-rating") as string
+      );
+      rating = ratingValue;
+      refreshStars();
+    });
+    button.addEventListener("mouseenter", (e) => {
+      const ratingHover = parseInt(
+        (e.currentTarget as HTMLElement).getAttribute("data-rating") as string
+      );
+      refreshStars(ratingHover);
+    });
+    button.addEventListener("mouseleave", () => {
+      refreshStars();
+    });
   }
-});
+}
 
-$("#quoteRatePopupWrapper .stars .star").on("mouseenter mouseleave", (e) => {
-  const ratingHover = parseInt($(e.currentTarget).attr("rating") as string);
-  refreshStars(ratingHover);
+const modal = new AnimatedModal({
+  dialogId: "quoteRateModal",
+  setup,
 });
-
-$("#quoteRatePopupWrapper .stars .star").on("click", (e) => {
-  const ratingHover = parseInt($(e.currentTarget).attr("rating") as string);
-  rating = ratingHover;
-});
-
-$("#quoteRatePopupWrapper .stars .star").on("mouseout", () => {
-  $(`#quoteRatePopup .star`).removeClass("active");
-  refreshStars();
-});
-
-$("#quoteRatePopupWrapper .submitButton").on("click", () => {
-  void submit();
-});
-
-$(".pageTest #rateQuoteButton").on("click", async () => {
-  if (TestWords.randomQuote === null) {
-    Notifications.add("Failed to show quote rating popup: no quote", -1);
-    return;
-  }
-  show(TestWords.randomQuote);
-});
-
-Skeleton.save(wrapperId);

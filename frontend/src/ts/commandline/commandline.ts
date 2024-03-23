@@ -6,6 +6,10 @@ import * as ThemeController from "../controllers/theme-controller";
 import { clearFontPreview } from "../ui";
 import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
 import * as Notifications from "../elements/notifications";
+import * as OutOfFocus from "../test/out-of-focus";
+import * as ActivePage from "../states/active-page";
+import { focusWords } from "../test/test-ui";
+import * as Loader from "../elements/loader";
 
 type CommandlineMode = "search" | "input";
 type InputModeParams = {
@@ -32,7 +36,7 @@ let subgroupOverride: MonkeyTypes.CommandsSubgroup | null = null;
 function removeCommandlineBackground(): void {
   $("#commandLine").addClass("noBackground");
   if (Config.showOutOfFocusWarning) {
-    $("#words").removeClass("blurred");
+    OutOfFocus.hide();
   }
 }
 
@@ -40,7 +44,7 @@ function addCommandlineBackground(): void {
   $("#commandLine").removeClass("noBackground");
   const isWordsFocused = $("#wordsInput").is(":focus");
   if (Config.showOutOfFocusWarning && !isWordsFocused) {
-    $("#words").addClass("blurred");
+    OutOfFocus.show();
   }
 }
 
@@ -74,9 +78,11 @@ export function show(
             settings.subgroupOverride
           );
           if (exists) {
-            subgroupOverride = CommandlineLists.getList(
+            Loader.show();
+            subgroupOverride = await CommandlineLists.getList(
               settings.subgroupOverride as CommandlineLists.ListsObjectKeys
             );
+            Loader.hide();
           } else {
             subgroupOverride = null;
             usingSingleList = Config.singleListCommandLine === "on";
@@ -113,10 +119,16 @@ export function show(
 function hide(clearModalChain = false): void {
   clearFontPreview();
   void ThemeController.clearPreview();
+  if (ActivePage.get() === "test") {
+    focusWords();
+  }
   void modal.hide({
     clearModalChain,
     afterAnimation: async () => {
       addCommandlineBackground();
+      if (ActivePage.get() === "test") {
+        focusWords();
+      }
     },
   });
 }

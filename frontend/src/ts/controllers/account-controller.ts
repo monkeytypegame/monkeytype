@@ -455,8 +455,6 @@ export function signOut(): void {
       void AccountButton.update();
       navigate("/login");
       DB.setSnapshot(undefined);
-      LoginPage.enableSignUpButton();
-      LoginPage.enableInputs();
       $("header .signInOut .icon").html(`<i class="far fa-fw fa-user"></i>`);
       setTimeout(() => {
         hideFavoriteQuoteLength();
@@ -593,7 +591,17 @@ async function signUp(): Promise<void> {
     }
     Notifications.add("Account created", 1);
   } catch (e) {
-    const message = Misc.createErrorMessage(e, "Failed to create account");
+    let message = Misc.createErrorMessage(e, "Failed to create account");
+
+    if (e instanceof Error) {
+      if ("code" in e && e.code === "auth/email-already-in-use") {
+        message = Misc.createErrorMessage(
+          { message: "Email already in use" },
+          "Failed to create account"
+        );
+      }
+    }
+
     Notifications.add(message, -1);
     LoginPage.hidePreloader();
     LoginPage.enableInputs();

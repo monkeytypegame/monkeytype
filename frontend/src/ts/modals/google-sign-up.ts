@@ -7,7 +7,7 @@ import {
   getAdditionalUserInfo,
 } from "firebase/auth";
 import Ape from "../ape";
-import { createErrorMessage, isPopupVisible } from "../utils/misc";
+import { createErrorMessage } from "../utils/misc";
 import * as LoginPage from "../pages/login";
 import * as AllTimeStats from "../account/all-time-stats";
 import * as AccountController from "../controllers/account-controller";
@@ -17,68 +17,47 @@ import * as DB from "../db";
 import * as Loader from "../elements/loader";
 import { subscribe as subscribeToSignUpEvent } from "../observables/google-sign-up-event";
 import { InputIndicator } from "../elements/input-indicator";
-import * as Skeleton from "../utils/skeleton";
-
-const wrapperId = "googleSignUpPopupWrapper";
+import AnimatedModal from "../utils/animated-modal";
 
 let signedInUser: UserCredential | undefined = undefined;
 
 function show(credential: UserCredential): void {
-  Skeleton.append(wrapperId, "popups");
-
-  if (!isPopupVisible(wrapperId)) {
-    CaptchaController.reset("googleSignUpPopup");
-    CaptchaController.render(
-      $("#googleSignUpPopupWrapper .captcha")[0] as HTMLElement,
-      "googleSignUpPopup"
-    );
-    enableInput();
-    disableButton();
-    signedInUser = credential;
-    $("#googleSignUpPopupWrapper")
-      .stop(true, true)
-      .css("opacity", 0)
-      .removeClass("hidden")
-      .animate({ opacity: 1 }, 125, () => {
-        $("#googleSignUpPopup input").trigger("focus").trigger("select");
-      });
-  }
+  void modal.show({
+    focusFirstInput: true,
+    beforeAnimation: async () => {
+      CaptchaController.reset("googleSignUpModal");
+      CaptchaController.render(
+        $("#googleSignUpModal .captcha")[0] as HTMLElement,
+        "googleSignUpModal"
+      );
+      enableInput();
+      disableButton();
+      signedInUser = credential;
+    },
+  });
 }
 
 async function hide(): Promise<void> {
-  if (isPopupVisible(wrapperId)) {
-    if (signedInUser !== undefined) {
-      Notifications.add("Sign up process cancelled", 0, {
-        duration: 5,
-      });
-      LoginPage.hidePreloader();
-      LoginPage.enableInputs();
-      if (getAdditionalUserInfo(signedInUser)?.isNewUser) {
-        await Ape.users.delete();
-        await signedInUser.user.delete();
-      }
-      AccountController.signOut();
-      signedInUser = undefined;
-    }
-    $("#googleSignUpPopupWrapper")
-      .stop(true, true)
-      .css("opacity", 1)
-      .animate(
-        {
-          opacity: 0,
-        },
-        125,
-        () => {
-          $("#googleSignUpPopupWrapper").addClass("hidden");
-          Skeleton.remove(wrapperId);
+  void modal.hide({
+    afterAnimation: async () => {
+      if (signedInUser !== undefined) {
+        Notifications.add("Sign up process cancelled", 0, {
+          duration: 5,
+        });
+        LoginPage.hidePreloader();
+        LoginPage.enableInputs();
+        if (getAdditionalUserInfo(signedInUser)?.isNewUser) {
+          await Ape.users.delete();
+          await signedInUser.user.delete();
         }
-      );
-  }
+        AccountController.signOut();
+        signedInUser = undefined;
+      }
+    },
+  });
 }
 
 async function apply(): Promise<void> {
-  if ($("#googleSignUpPopup .button").hasClass("disabled")) return;
-
   if (!signedInUser) {
     return Notifications.add(
       "Missing user credential. Please close the popup and try again.",
@@ -86,16 +65,16 @@ async function apply(): Promise<void> {
     );
   }
 
-  const captcha = CaptchaController.getResponse("googleSignUpPopup");
+  const captcha = CaptchaController.getResponse("googleSignUpModal");
   if (!captcha) {
-    return Notifications.add("Please complete the captcha", -1);
+    return Notifications.add("Please complete the captcha", 0);
   }
 
   disableInput();
   disableButton();
 
   Loader.show();
-  const name = $("#googleSignUpPopup input").val() as string;
+  const name = $("#googleSignUpModal input").val() as string;
   try {
     if (name.length === 0) throw new Error("Name cannot be empty");
     const response = await Ape.users.create(name, captcha);
@@ -154,28 +133,22 @@ async function apply(): Promise<void> {
 }
 
 function enableButton(): void {
-  $("#googleSignUpPopup .button").removeClass("disabled");
+  $("#googleSignUpModal button").prop("disabled", false);
 }
 
 function disableButton(): void {
-  $("#googleSignUpPopup .button").addClass("disabled");
+  $("#googleSignUpModal button").prop("disabled", true);
 }
 
 function enableInput(): void {
-  $("#googleSignUpPopup input").prop("disabled", false);
+  $("#googleSignUpModal input").prop("disabled", false);
 }
 
 function disableInput(): void {
-  $("#googleSignUpPopup input").prop("disabled", true);
+  $("#googleSignUpModal input").prop("disabled", true);
 }
 
-$("#googleSignUpPopupWrapper").on("mousedown", (e) => {
-  if ($(e.target).attr("id") === "googleSignUpPopupWrapper") {
-    void hide();
-  }
-});
-
-const nameIndicator = new InputIndicator($("#googleSignUpPopup input"), {
+const nameIndicator = new InputIndicator($("#googleSignUpModal input"), {
   available: {
     icon: "fa-check",
     level: 1,
@@ -185,7 +158,7 @@ const nameIndicator = new InputIndicator($("#googleSignUpPopup input"), {
     level: -1,
   },
   taken: {
-    icon: "fa-times",
+    icon: "fa-user",
     level: -1,
   },
   checking: {
@@ -196,7 +169,7 @@ const nameIndicator = new InputIndicator($("#googleSignUpPopup input"), {
 });
 
 const checkNameDebounced = debounce(1000, async () => {
-  const val = $("#googleSignUpPopup input").val() as string;
+  const val = $("#googleSignUpModal input").val() as string;
   if (!val) return;
   const response = await Ape.users.getNameAvailability(val);
 
@@ -225,35 +198,22 @@ const checkNameDebounced = debounce(1000, async () => {
   }
 });
 
-$("#googleSignUpPopupWrapper input").on("input", () => {
-  setTimeout(() => {
+function setup(modalEl: HTMLElement): void {
+  modalEl.addEventListener("submit", (e) => {
+    e.preventDefault();
+    void apply();
+  });
+  modalEl.querySelector("input")?.addEventListener("input", () => {
     disableButton();
-    const val = $("#googleSignUpPopup input").val() as string;
+    const val = $("#googleSignUpModal input").val() as string;
     if (val === "") {
       return nameIndicator.hide();
     } else {
       nameIndicator.show("checking");
       void checkNameDebounced();
     }
-  }, 1);
-});
-
-$("#googleSignUpPopupWrapper input").on("keypress", (e) => {
-  if (e.key === "Enter") {
-    void apply();
-  }
-});
-
-$("#googleSignUpPopupWrapper .button").on("click", () => {
-  void apply();
-});
-
-$(document).on("keydown", (event) => {
-  if (event.key === "Escape" && isPopupVisible(wrapperId)) {
-    void hide();
-    event.preventDefault();
-  }
-});
+  });
+}
 
 subscribeToSignUpEvent((signedInUser, isNewUser) => {
   if (signedInUser !== undefined && isNewUser) {
@@ -261,4 +221,13 @@ subscribeToSignUpEvent((signedInUser, isNewUser) => {
   }
 });
 
-Skeleton.save(wrapperId);
+const modal = new AnimatedModal({
+  dialogId: "googleSignUpModal",
+  setup,
+  customEscapeHandler: async (): Promise<void> => {
+    void hide();
+  },
+  customWrapperClickHandler: async (): Promise<void> => {
+    void hide();
+  },
+});
