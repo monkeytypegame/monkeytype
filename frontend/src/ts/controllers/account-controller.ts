@@ -455,8 +455,6 @@ export function signOut(): void {
       void AccountButton.update();
       navigate("/login");
       DB.setSnapshot(undefined);
-      LoginPage.enableSignUpButton();
-      LoginPage.enableInputs();
       $("header .signInOut .icon").html(`<i class="far fa-fw fa-user"></i>`);
       setTimeout(() => {
         hideFavoriteQuoteLength();
