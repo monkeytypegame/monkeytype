@@ -70,7 +70,7 @@ $(document).ready(() => {
       roundingMethod: "floor",
     });
     Notifications.addBanner(
-      `The limited George Plushie will be gone in ${string} - don't miss out! <a target="_blank" rel="noopener" href="https://mktp.co/plushie2">monkeytype.store</a>`,
+      `Our limited plushie will be gone in ${string} - don't miss out! <a target="_blank" rel="noopener" href="https://mktp.co/plushie2">monkeytype.store</a>`,
       1,
       "./images/plushiebanner.png",
       true,
