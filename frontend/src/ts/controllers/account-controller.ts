@@ -598,7 +598,7 @@ async function signUp(): Promise<void> {
     if (e instanceof Error) {
       if ("code" in e && e.code === "auth/email-already-in-use") {
         message = Misc.createErrorMessage(
-          { message: "Email already exists" },
+          { message: "Email already in use" },
           "Failed to create account"
         );
       }
