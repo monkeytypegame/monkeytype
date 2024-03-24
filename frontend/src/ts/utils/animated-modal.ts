@@ -118,6 +118,10 @@ export default class AnimatedModal {
     Skeleton.save(this.dialogId);
   }
 
+  getPreviousModalInChain(): AnimatedModal | undefined {
+    return this.previousModalInChain;
+  }
+
   async runSetup(): Promise<void> {
     this.wrapperEl.addEventListener("keydown", (e) => {
       if (e.key === "Escape" && isPopupVisible(this.dialogId)) {
