@@ -689,14 +689,14 @@
     <button>submit</button>
   </div>
 </dialog>
-<div id="apeKeysPopupWrapper" class="hidden popupWrapper">
-  <div id="apeKeysPopup" mode="">
+<dialog id="apeKeysModal" class="hidden modalWrapper">
+  <div class="modal">
     <div class="top">
       <div class="title">Ape Keys</div>
-      <div class="button generateApeKey">
+      <button class="generateApeKey">
         <i class="fas fa-plus"></i>
         Generate new key
-      </div>
+      </button>
     </div>
     <table>
       <thead>
@@ -712,7 +712,7 @@
       <tbody></tbody>
     </table>
   </div>
-</div>
+</dialog>
 <dialog id="quoteReportModal" class="modalWrapper hidden">
   <div class="modal">
     <div class="title">Report a quote</div>

@@ -11,7 +11,6 @@ import * as Notifications from "../elements/notifications";
 import * as ImportExportSettingsModal from "../modals/import-export-settings";
 import * as ConfigEvent from "../observables/config-event";
 import * as ActivePage from "../states/active-page";
-import * as ApeKeysPopup from "../popups/ape-keys-popup";
 import Page from "./page";
 import { getAuthenticatedUser, isAuthenticated } from "../firebase";
 import Ape from "../ape";
@@ -1139,10 +1138,6 @@ $("#exportSettingsButton").on("click", () => {
 
 $(".pageSettings .sectionGroupTitle").on("click", (e) => {
   toggleSettingsGroup($(e.currentTarget).attr("group") as string);
-});
-
-$(".pageSettings .section.apeKeys #showApeKeysPopup").on("click", () => {
-  void ApeKeysPopup.show();
 });
 
 $(
