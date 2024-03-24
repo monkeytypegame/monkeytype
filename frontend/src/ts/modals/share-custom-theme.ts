@@ -74,9 +74,9 @@ async function copy(): Promise<void> {
 
 const modal = new AnimatedModal({
   dialogId: "shareCustomThemeModal",
-  setup: (modal): void => {
-    modal.querySelector("button")?.addEventListener("click", copy);
-    modal
+  setup: async (modalEl): Promise<void> => {
+    modalEl.querySelector("button")?.addEventListener("click", copy);
+    modalEl
       .querySelector("input[type='checkbox']")
       ?.addEventListener("change", (e) => {
         state.includeBackground = (e.target as HTMLInputElement).checked;

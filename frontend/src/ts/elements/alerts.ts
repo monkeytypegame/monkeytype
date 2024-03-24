@@ -416,7 +416,7 @@ const modal = new AnimatedModal({
   customWrapperClickHandler: (): void => {
     hide();
   },
-  setup: (): void => {
+  setup: async (): Promise<void> => {
     $("#alertsPopup .accountAlerts").on("click", ".claimAll", () => {
       for (const ie of accountAlerts) {
         if (!ie.read && !mailToMarkRead.includes(ie.id)) {

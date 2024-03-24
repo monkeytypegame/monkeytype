@@ -53,7 +53,7 @@ function apply(): void {
 
 const modal = new AnimatedModal({
   dialogId: "customWordAmountModal",
-  setup: (modalEl): void => {
+  setup: async (modalEl): Promise<void> => {
     modalEl.addEventListener("submit", (e) => {
       e.preventDefault();
       apply();

@@ -121,7 +121,7 @@ type SimplePopupOptions = {
 
 const modal = new AnimatedModal({
   dialogId: "simpleModal",
-  setup: (modalEl): void => {
+  setup: async (modalEl): Promise<void> => {
     modalEl.addEventListener("submit", (e) => {
       e.preventDefault();
       activePopup?.exec();

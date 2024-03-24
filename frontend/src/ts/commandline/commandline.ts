@@ -554,8 +554,8 @@ const modal = new AnimatedModal({
   showOptionsWhenInChain: {
     focusFirstInput: true,
   },
-  setup: (modal): void => {
-    const input = modal.querySelector("input") as HTMLInputElement;
+  setup: async (modalEl): Promise<void> => {
+    const input = modalEl.querySelector("input") as HTMLInputElement;
 
     input.addEventListener("input", async (e) => {
       inputValue = (e.target as HTMLInputElement).value;
@@ -607,7 +607,7 @@ const modal = new AnimatedModal({
       }
     });
 
-    modal.addEventListener("mousemove", (e) => {
+    modalEl.addEventListener("mousemove", (e) => {
       mouseMode = true;
     });
   },

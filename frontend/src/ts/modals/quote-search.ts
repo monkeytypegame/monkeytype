@@ -397,7 +397,7 @@ async function toggleFavoriteForQuote(quoteId: string): Promise<void> {
   }
 }
 
-function setup(modalEl: HTMLElement): void {
+async function setup(modalEl: HTMLElement): Promise<void> {
   modalEl.querySelector(".searchBox")?.addEventListener("input", (e) => {
     searchForQuotes();
   });

@@ -165,7 +165,7 @@ async function updateProfile(): Promise<void> {
 
 const modal = new AnimatedModal({
   dialogId: "editProfileModal",
-  setup: (modalEl): void => {
+  setup: async (modalEl): Promise<void> => {
     modalEl.addEventListener("submit", async (e) => {
       e.preventDefault();
       await updateProfile();

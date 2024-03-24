@@ -114,7 +114,7 @@ async function submitReport(): Promise<void> {
   void hide(true);
 }
 
-function setup(modalEl: HTMLElement): void {
+async function setup(modalEl: HTMLElement): Promise<void> {
   modalEl.querySelector(".comment")?.addEventListener("input", () => {
     const len = ($("#quoteReportModal .comment").val() as string).length;
     $("#quoteReportModal .characterCount").text(len);

@@ -83,7 +83,7 @@ function hide(clearModalChain: boolean): void {
   });
 }
 
-function setup(modalEl: HTMLElement): void {
+async function setup(modalEl: HTMLElement): Promise<void> {
   modalEl.querySelector("textarea")?.addEventListener("input", (e) => {
     const len = (e.target as HTMLTextAreaElement).value.length;
     $("#quoteSubmitModal .characterCount").text(len);
