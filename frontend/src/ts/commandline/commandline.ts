@@ -547,7 +547,7 @@ async function decrementActiveIndex(): Promise<void> {
 const modal = new AnimatedModal({
   dialogId: "commandLine",
   customEscapeHandler: (): void => {
-    hide();
+    //
   },
   customWrapperClickHandler: (): void => {
     hide();
