@@ -162,8 +162,10 @@ async function goBackOrHide(): Promise<void> {
 }
 
 async function filterSubgroup(): Promise<void> {
-  // const configKey = getSubgroup().configKey;
-  const list = await getList();
+  const subgroup = await getSubgroup();
+  subgroup.beforeList?.();
+  const list = subgroup.list;
+
   const inputNoQuickSingle = inputValue
     .replace(/^>/gi, "")
     .toLowerCase()
@@ -446,9 +448,6 @@ async function runActiveCommand(): Promise<void> {
     updateInput(inputModeParams.value as string);
     hideCommands();
   } else if (command.subgroup) {
-    if (command.subgroup.beforeList) {
-      command.subgroup.beforeList();
-    }
     CommandlineLists.pushToStack(
       command.subgroup as MonkeyTypes.CommandsSubgroup
     );
