@@ -31,7 +31,6 @@
 - create a new directory, e.g.  `monkeytype` and open it.
 - download the [docker-compose.yml](https://github.com/monkeytypegame/monkeytype/tree/master/docker/docker-compose.yml)
 - create an `.env` file, you can copy the content from the [example.env](https://github.com/monkeytypegame/monkeytype/tree/master/docker/example.env).
-- create an `serviceAccountKey.json` file. you can copy the content from the [serviceAccountKey-example.json](https://github.com/monkeytypegame/monkeytype/tree/master/docker/serviceAccountKey-example.json).
 - download the [backend-configuration.json](https://github.com/monkeytypegame/monkeytype/tree/master/docker/backend-configuration.json)
 - run `docker compose up -d`
 - After the command exits successfully you can access [http://localhost:8080](http://localhost:8080)
@@ -40,6 +39,7 @@
 ## Account System
 
 User signup/login is disabled by default. To allow users to signup you'll need to setup a Firebase project. 
+Stop the running docker containers using `docker compose down` before making any changes.
 
 ### Setup Firebase
 
@@ -56,6 +56,14 @@ User signup/login is disabled by default. To allow users to signup you'll need t
   - go to `Service accounts`
   - click `Generate new private key`. This will download a `.json` file.
   - store the `.json` file as `serviceAccountKey.json`
+  - update the `docker-compose.yml` file and uncomment the first volume from the `monkeytype-backend` container
+    ```yaml
+      #uncomment to enable the account system, check the SELF_HOSTING.md file
+      - type: bind
+        source: ./serviceAccountKey.json
+        target: /src/credentials/serviceAccountKey.json
+        read_only: true
+    ```
 
 - update the `.env` file
   - open the [firebase console](https://console.firebase.google.com/) and open your project
@@ -111,7 +119,6 @@ User signup/login is disabled by default. To allow users to signup you'll need t
     RECAPTCHA_SITE_KEY="your site key"
     RECAPTCHA_SECRET="your secret key"
     ``` 
-
 
 
 ## Enable daily leaderboards
