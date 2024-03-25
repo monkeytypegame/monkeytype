@@ -1061,13 +1061,16 @@ export async function finish(difficultyFailed = false): Promise<void> {
 
       let newText = CustomText.getCustomText(customTextName, true);
       newText = newText.slice(newProgress);
-      CustomText.setPopupTextareaState(newText.join(CustomText.delimiter));
+      CustomText.setPopupTextareaState(
+        newText.join(CustomText.delimiter),
+        true
+      );
       CustomText.setText(newText);
     } else {
       // They finished the test
       CustomText.setCustomTextLongProgress(customTextName, 0);
       const text = CustomText.getCustomText(customTextName, true);
-      CustomText.setPopupTextareaState(text.join(CustomText.delimiter));
+      CustomText.setPopupTextareaState(text.join(CustomText.delimiter), true);
       CustomText.setText(text);
       Notifications.add("Long custom text completed", 1, {
         duration: 5,

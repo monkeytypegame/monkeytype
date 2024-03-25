@@ -142,17 +142,7 @@ function hide(options = {} as HideOptions): void {
         options.noAnim ? 0 : 125,
         () => {
           if (options.resetState) {
-            const newText = CustomText.text.map((word) => {
-              if (word.endsWith("|")) {
-                word = word.slice(0, -1);
-              }
-              return word;
-            });
-
-            CustomText.setPopupTextareaState(
-              // CustomText.text.join(CustomText.delimiter)
-              newText.join(CustomText.delimiter)
-            );
+            CustomText.setPopupTextareaStateToSaved();
           }
 
           $(wrapper).addClass("hidden");
@@ -270,7 +260,7 @@ function apply(): void {
     }
   }
 
-  CustomText.setPopupTextareaState(text);
+  CustomText.setPopupTextareaState(text, true);
 
   if (
     $(`${popup} .replaceControlCharacters input`).prop("checked") as boolean
