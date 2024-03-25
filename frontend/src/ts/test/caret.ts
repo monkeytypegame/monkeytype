@@ -72,10 +72,14 @@ export async function updatePosition(noAnim = false): Promise<void> {
 
   const inputLen = TestInput.input.current.length;
   const currentLetterIndex = inputLen;
+  const activeWordEl = document?.querySelector("#words .active") as HTMLElement;
   //insert temporary character so the caret will work in zen mode
-  const activeWordEmpty = $("#words .active").children().length === 0;
+  const activeWordEmpty = activeWordEl?.children.length === 0;
   if (activeWordEmpty) {
-    $("#words .active").append('<letter style="opacity: 0;">_</letter>');
+    activeWordEl.insertAdjacentHTML(
+      "beforeend",
+      '<letter style="opacity: 0;">_</letter>'
+    );
   }
 
   const currentWordNodeList = document
@@ -112,13 +116,16 @@ export async function updatePosition(noAnim = false): Promise<void> {
 
   const diff = letterHeight - caret.offsetHeight;
 
-  let newTop = letterPosTop + diff / 2;
+  let newTop = activeWordEl.offsetTop + letterPosTop + diff / 2;
 
   if (Config.caretStyle === "underline") {
-    newTop = letterPosTop - caret.offsetHeight / 2;
+    newTop = activeWordEl.offsetTop + letterPosTop - caret.offsetHeight / 2;
   }
 
-  let newLeft = letterPosLeft - (fullWidthCaret ? 0 : caretWidth / 2);
+  let newLeft =
+    activeWordEl.offsetLeft +
+    letterPosLeft -
+    (fullWidthCaret ? 0 : caretWidth / 2);
 
   const wordsWrapperWidth =
     $(document.querySelector("#wordsWrapper") as HTMLElement).width() ?? 0;
@@ -199,7 +206,7 @@ export async function updatePosition(noAnim = false): Promise<void> {
     }
   }
   if (activeWordEmpty) {
-    $("#words .active").children().remove();
+    activeWordEl?.replaceChildren();
   }
 }
 
