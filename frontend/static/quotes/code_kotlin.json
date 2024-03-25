@@ -27,7 +27,7 @@
     },
     {
       "text": "val numbers = listOf(1, 2, 3, 4, 5)\nval doubled = numbers.map { it * 2 }",
-      "source": " ChatGPT - List Manipulation",
+      "source": "ChatGPT - List Manipulation",
       "id": 4,
       "length": 72
     },

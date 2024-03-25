@@ -1,0 +1,35 @@
+{
+  "language": "code_swift",
+  "groups": [
+    [0, 100],
+    [101, 300],
+    [301, 600],
+    [601, 9999]
+  ],
+  "quotes": [
+    {
+      "text": "print(\"Hello, World!\")",
+      "source": "Programiz - Swift Hello World",
+      "id": 1,
+      "length": 22
+    },
+    {
+      "text": "func findSquare(num: Int) -> Int {\n\tvar result = num * num\n\treturn result\n}",
+      "source": "Programiz - Swift Functions",
+      "id": 2,
+      "length": 80
+    },
+    {
+      "text": "var languages = [\"Swift\", \"Java\", \"C++\"]",
+      "source": "Programiz - Swift Arrays",
+      "id": 3,
+      "length": 40
+    },
+    {
+      "text": "func addNumbers(a: Int, b: Int) -> Int {\n\tvar sum = a + b\n\t return sum\n}",
+      "source": "Programiz - Swift Functions",
+      "id": 4,
+      "length": 67
+    }
+  ]
+}
