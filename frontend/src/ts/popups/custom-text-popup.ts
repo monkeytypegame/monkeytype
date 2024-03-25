@@ -141,6 +141,20 @@ function hide(options = {} as HideOptions): void {
         },
         options.noAnim ? 0 : 125,
         () => {
+          if (options.resetState) {
+            const newText = CustomText.text.map((word) => {
+              if (word.endsWith("|")) {
+                word = word.slice(0, -1);
+              }
+              return word;
+            });
+
+            CustomText.setPopupTextareaState(
+              // CustomText.text.join(CustomText.delimiter)
+              newText.join(CustomText.delimiter)
+            );
+          }
+
           $(wrapper).addClass("hidden");
           Skeleton.remove(skeletonId);
         }
