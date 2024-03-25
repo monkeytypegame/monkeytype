@@ -8,21 +8,21 @@ import * as ModesNotice from "../elements/modes-notice";
 import * as Keymap from "../elements/keymap";
 import * as TestConfig from "../test/test-config";
 
-export const page = new Page(
-  "test",
-  $(".page.pageTest"),
-  "/",
-  async () => {
+export const page = new Page({
+  name: "test",
+  element: $(".page.pageTest"),
+  pathName: "/",
+  beforeHide: async (): Promise<void> => {
     ManualRestart.set();
     TestLogic.restart();
     void Funbox.clear();
     void ModesNotice.update();
     $("#wordsInput").trigger("focusout");
   },
-  async () => {
+  afterHide: async (): Promise<void> => {
     updateFooterAndVerticalAds(true);
   },
-  async () => {
+  beforeShow: async (): Promise<void> => {
     updateFooterAndVerticalAds(false);
     TestStats.resetIncomplete();
     ManualRestart.set();
@@ -33,7 +33,4 @@ export const page = new Page(
     void Funbox.activate();
     void Keymap.refresh();
   },
-  async () => {
-    //
-  }
-);
+});
