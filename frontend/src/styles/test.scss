@@ -441,7 +441,6 @@
 
 .word letter.incorrect {
   color: var(--error-color);
-  //position: relative; /* Not needed anymore since hint is no longer its child */
 }
 
 .word .hints hint {
