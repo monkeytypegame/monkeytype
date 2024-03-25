@@ -923,7 +923,7 @@ $(document).on("keydown", async (event) => {
     !["Enter", "Tab", ...ModifierKeys].includes(event.key)
   ) {
     TestUI.focusWords();
-    if (Config.showOutOfFocusWarning) {
+    if (Config.showOutOfFocusWarning && !event.ctrlKey && !event.metaKey) {
       event.preventDefault();
     }
   }
@@ -968,7 +968,9 @@ $(document).on("keydown", async (event) => {
       activeElement?.tagName === "BUTTON" ||
       activeElement?.tagName === "A" ||
       activeElement?.classList.contains("button") ||
-      activeElement?.classList.contains("textButton");
+      activeElement?.classList.contains("textButton") ||
+      (activeElement?.tagName === "INPUT" &&
+        activeElement?.id !== "wordsInput");
 
     if (activeElementIsButton) return;
 
@@ -1008,7 +1010,6 @@ $(document).on("keydown", async (event) => {
         event,
       });
     } else {
-      handleChar("\n", TestInput.input.current.length);
       setWordsInput(" " + TestInput.input.current);
       if (Config.tapeMode !== "off") {
         TestUI.scrollTape();

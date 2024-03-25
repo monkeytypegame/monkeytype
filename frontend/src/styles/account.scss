@@ -373,12 +373,19 @@
     }
   }
 
-  #resultEditTags {
-    transition: 0.25s;
-    &:hover {
-      cursor: pointer;
+  td:has(.resultEditTagsButton) {
+    padding: 0;
+  }
+
+  .resultEditTagsButton {
+    opacity: 0.5;
+    &.active {
       color: var(--text-color);
-      opacity: 1 !important;
+    }
+    &:hover,
+    &:focus-visible,
+    &.active {
+      opacity: 1;
     }
   }
 }

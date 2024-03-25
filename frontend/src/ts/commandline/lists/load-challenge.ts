@@ -21,7 +21,6 @@ function update(challenges: MonkeyTypes.Challenge[]): void {
   challenges.forEach((challenge) => {
     subgroup.list.push({
       id: "loadChallenge" + capitalizeFirstLetterOfEachWord(challenge.name),
-      noIcon: true,
       display: challenge.display,
       exec: async (): Promise<void> => {
         navigate("/");

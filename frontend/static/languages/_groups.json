@@ -270,7 +270,7 @@
   },
   {
     "name": "estonian",
-    "languages": ["estonian", "estonian_1k", "estonian_10k"]
+    "languages": ["estonian", "estonian_1k", "estonian_5k", "estonian_10k"]
   },
   {
     "name": "udmurt",
@@ -464,6 +464,10 @@
     "languages": ["toki_pona", "toki_pona_ku_suli", "toki_pona_ku_lili"]
   },
   {
+    "name": "xhosa",
+    "languages":["xhosa"]
+  },
+  {
     "name": "other",
     "languages": [
       "lojban_gismu",
@@ -505,6 +509,10 @@
   {
     "name": "euskera",
     "languages": ["euskera"]
+  },
+  {
+    "name": "klingon",
+    "languages": ["klingon", "klingon_1k"]
   },
   {
     "name": "lorem_ipsum",
@@ -561,7 +569,8 @@
       "code_gdscript",
       "code_gdscript_2",
       "code_assembly",
-      "code_v"
+      "code_v",
+      "code_ook"
     ]
   }
 ]

@@ -3,13 +3,13 @@ import * as FunboxList from "./funbox/funbox-list";
 import * as CustomText from "./custom-text";
 import * as Wordset from "./wordset";
 import QuotesController from "../controllers/quotes-controller";
-import * as QuoteSearchPopup from "../popups/quote-search-popup";
 import * as TestWords from "./test-words";
 import * as BritishEnglish from "./british-english";
 import * as LazyMode from "./lazy-mode";
 import * as EnglishPunctuation from "./english-punctuation";
 import * as PractiseWords from "./practise-words";
 import * as Misc from "../utils/misc";
+import * as TestState from "../test/test-state";
 
 function shouldCapitalize(lastChar: string): boolean {
   return /[?!.؟]/.test(lastChar);
@@ -576,12 +576,12 @@ async function generateQuoteWords(
   let rq: MonkeyTypes.Quote;
   if (Config.quoteLength.includes(-2) && Config.quoteLength.length === 1) {
     const targetQuote = QuotesController.getQuoteById(
-      QuoteSearchPopup.selectedId
+      TestState.selectedQuoteId
     );
     if (targetQuote === undefined) {
       UpdateConfig.setQuoteLength(-1);
       throw new WordGenError(
-        `Quote ${QuoteSearchPopup.selectedId} does not exist`
+        `Quote ${TestState.selectedQuoteId} does not exist`
       );
     }
     rq = targetQuote;
@@ -769,6 +769,7 @@ export async function getNextWord(
     !Config.language.startsWith("german") &&
     !Config.language.startsWith("swiss_german") &&
     !Config.language.startsWith("code") &&
+    !Config.language.startsWith("klingon") &&
     !isCurrentlyUsingFunboxSection
   ) {
     randomWord = randomWord.toLowerCase();
@@ -779,7 +780,7 @@ export async function getNextWord(
   randomWord = applyLazyModeToWord(randomWord, language);
   randomWord = await applyBritishEnglishToWord(randomWord, previousWordRaw);
 
-  if (Config.language === "swiss_german") {
+  if (Config.language.startsWith("swiss_german")) {
     randomWord = randomWord.replace(/ß/g, "ss");
   }
 

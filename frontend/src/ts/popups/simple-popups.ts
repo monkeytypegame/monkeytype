@@ -5,7 +5,6 @@ import * as UpdateConfig from "../config";
 import * as Loader from "../elements/loader";
 import * as Notifications from "../elements/notifications";
 import * as Settings from "../pages/settings";
-import * as ApeKeysPopup from "../popups/ape-keys-popup";
 import * as ThemePicker from "../settings/theme-picker";
 import * as CustomText from "../test/custom-text";
 import * as SavedTextsPopup from "./saved-texts-popup";
@@ -24,16 +23,16 @@ import {
 } from "firebase/auth";
 import {
   createErrorMessage,
-  isElementVisible,
   isDevEnvironment,
   isPasswordStrong,
   reloadAfter,
 } from "../utils/misc";
 import * as CustomTextState from "../states/custom-text-name";
-import * as Skeleton from "../utils/skeleton";
 import * as ThemeController from "../controllers/theme-controller";
-
-const wrapperId = "simplePopupWrapper";
+import AnimatedModal, {
+  HideOptions,
+  ShowOptions,
+} from "../utils/animated-modal";
 
 type Input = {
   placeholder?: string;
@@ -51,6 +50,7 @@ type ExecReturn = {
   message: string;
   showNotification?: false;
   notificationOptions?: MonkeyTypes.AddNotificationOptions;
+  hideOptions?: HideOptions;
   afterHide?: () => void;
 };
 
@@ -108,68 +108,85 @@ const list: Record<PopupKey, SimplePopup | undefined> = {
   forgotPassword: undefined,
 };
 
+type SimplePopupOptions = {
+  id: string;
+  type: string;
+  title: string;
+  inputs?: Input[];
+  text?: string;
+  buttonText: string;
+  execFn: (thisPopup: SimplePopup, ...params: string[]) => Promise<ExecReturn>;
+  beforeInitFn?: (thisPopup: SimplePopup) => void;
+  beforeShowFn?: (thisPopup: SimplePopup) => void;
+  canClose?: boolean;
+  onlineOnly?: boolean;
+  hideCallsExec?: boolean;
+};
+
+const modal = new AnimatedModal({
+  dialogId: "simpleModal",
+  setup: async (modalEl): Promise<void> => {
+    modalEl.addEventListener("submit", (e) => {
+      e.preventDefault();
+      activePopup?.exec();
+    });
+  },
+  customEscapeHandler: (e): void => {
+    hide();
+  },
+  customWrapperClickHandler: (e): void => {
+    hide();
+  },
+});
+
 class SimplePopup {
   parameters: string[];
-  wrapper: JQuery;
-  element: JQuery;
+  wrapper: HTMLElement;
+  element: HTMLElement;
   id: string;
   type: string;
   title: string;
   inputs: Input[];
-  text: string;
+  text?: string;
   buttonText: string;
   execFn: (thisPopup: SimplePopup, ...params: string[]) => Promise<ExecReturn>;
-  beforeInitFn: (thisPopup: SimplePopup) => void;
-  beforeShowFn: (thisPopup: SimplePopup) => void;
+  beforeInitFn: ((thisPopup: SimplePopup) => void) | undefined;
+  beforeShowFn: ((thisPopup: SimplePopup) => void) | undefined;
   canClose: boolean;
-  private noAnimation: boolean;
-  constructor(
-    id: string,
-    type: string,
-    title: string,
-    inputs: Input[] = [],
-    text = "",
-    buttonText = "Confirm",
-    execFn: (
-      thisPopup: SimplePopup,
-      ...params: string[]
-    ) => Promise<ExecReturn>,
-    beforeInitFn: (thisPopup: SimplePopup) => void,
-    beforeShowFn: (thisPopup: SimplePopup) => void
-  ) {
+  onlineOnly: boolean;
+  hideCallsExec: boolean;
+  constructor(options: SimplePopupOptions) {
     this.parameters = [];
-    this.id = id;
-    this.type = type;
-    this.execFn = execFn;
-    this.title = title;
-    this.inputs = inputs;
-    this.text = text;
-    this.wrapper = $("#simplePopupWrapper");
-    this.element = $("#simplePopup");
-    this.buttonText = buttonText;
-    this.beforeInitFn = (thisPopup): void => beforeInitFn(thisPopup);
-    this.beforeShowFn = (thisPopup): void => beforeShowFn(thisPopup);
-    this.canClose = true;
-    this.noAnimation = false;
+    this.id = options.id;
+    this.type = options.type;
+    this.execFn = options.execFn;
+    this.title = options.title;
+    this.inputs = options.inputs ?? [];
+    this.text = options.text;
+    this.wrapper = modal.getWrapper();
+    this.element = modal.getModal();
+    this.buttonText = options.buttonText;
+    this.beforeInitFn = options.beforeInitFn;
+    this.beforeShowFn = options.beforeShowFn;
+    this.canClose = options.canClose ?? true;
+    this.onlineOnly = options.onlineOnly ?? false;
+    this.hideCallsExec = options.hideCallsExec ?? false;
   }
   reset(): void {
-    this.element.html(`
-    <form>
+    this.element.innerHTML = `
     <div class="title"></div>
     <div class="inputs"></div>
     <div class="text"></div>
-    <button type="submit" class="submitButton"></button>
-    </form>`);
+    <button type="submit" class="submitButton"></button>`;
   }
 
   init(): void {
-    const el = this.element;
+    const el = $(this.element);
     el.find("input").val("");
-    // if (el.attr("popupId") !== this.id) {
     this.reset();
-    el.attr("popupId", this.id);
+    el.attr("data-popup-id", this.id);
     el.find(".title").text(this.title);
-    el.find(".text").text(this.text);
+    el.find(".text").text(this.text ?? "");
 
     this.initInputs();
 
@@ -179,7 +196,7 @@ class SimplePopup {
       el.find(".submitButton").text(this.buttonText);
     }
 
-    if (this.text === "") {
+    if ((this.text ?? "") === "") {
       el.find(".text").addClass("hidden");
     } else {
       el.find(".text").removeClass("hidden");
@@ -189,11 +206,17 @@ class SimplePopup {
   }
 
   initInputs(): void {
-    const el = this.element;
-    if (this.inputs.length > 0) {
-      if (this.type === "number") {
-        this.inputs.forEach((input) => {
-          el.find(".inputs").append(`
+    const el = $(this.element);
+
+    const allInputsHidden = this.inputs.every((i) => i.hidden);
+    if (allInputsHidden || this.inputs.length === 0) {
+      el.find(".inputs").addClass("hidden");
+      return;
+    }
+
+    if (this.type === "number") {
+      this.inputs.forEach((input) => {
+        el.find(".inputs").append(`
             <input
               type="number"
               min="1"
@@ -204,12 +227,12 @@ class SimplePopup {
               autocomplete="off"
             >
           `);
-        });
-      } else if (this.type === "text") {
-        this.inputs.forEach((input) => {
-          if (input.type !== undefined && input.type !== "") {
-            if (input.type === "textarea") {
-              el.find(".inputs").append(`
+      });
+    } else if (this.type === "text") {
+      this.inputs.forEach((input) => {
+        if (input.type !== undefined && input.type !== "") {
+          if (input.type === "textarea") {
+            el.find(".inputs").append(`
                 <textarea
                   placeholder="${input.placeholder}"
                   class="${input.hidden ? "hidden" : ""}"
@@ -218,15 +241,15 @@ class SimplePopup {
                   autocomplete="off"
                 >${input.initVal}</textarea>
               `);
-            } else if (input.type === "checkbox") {
-              el.find(".inputs").append(`
+          } else if (input.type === "checkbox") {
+            el.find(".inputs").append(`
               <label class="checkbox">
                 <input type="checkbox" checked="">
                 <div>${input.label}</div>
               </label>
               `);
-            } else {
-              el.find(".inputs").append(`
+          } else {
+            el.find(".inputs").append(`
               <input
               type="${input.type}"
               value="${input.initVal}"
@@ -237,9 +260,9 @@ class SimplePopup {
               autocomplete="off"
               >
               `);
-            }
-          } else {
-            el.find(".inputs").append(`
+          }
+        } else {
+          el.find(".inputs").append(`
               <input
                 type="text"
                 value="${input.initVal}"
@@ -250,19 +273,16 @@ class SimplePopup {
                 autocomplete="off"
               >
             `);
-          }
-        });
-      }
-      el.find(".inputs").removeClass("hidden");
-    } else {
-      el.find(".inputs").addClass("hidden");
+        }
+      });
     }
+    el.find(".inputs").removeClass("hidden");
   }
 
   exec(): void {
     if (!this.canClose) return;
     const vals: string[] = [];
-    for (const el of $("#simplePopup input, #simplePopup textarea")) {
+    for (const el of $("#simpleModal input, #simpleModal textarea")) {
       if ($(el).is(":checkbox")) {
         vals.push($(el).is(":checked") ? "true" : "false");
       } else {
@@ -292,14 +312,14 @@ class SimplePopup {
         Notifications.add(res.message, res.status, res.notificationOptions);
       }
       if (res.status === 1) {
-        void this.hide().then(() => {
+        void this.hide(true, res.hideOptions).then(() => {
           if (res.afterHide) {
             res.afterHide();
           }
         });
       } else {
         this.enableInputs();
-        $($("#simplePopup").find("input")[0] as HTMLInputElement).trigger(
+        $($("#simpleModal").find("input")[0] as HTMLInputElement).trigger(
           "focus"
         );
       }
@@ -307,61 +327,41 @@ class SimplePopup {
   }
 
   disableInputs(): void {
-    $("#simplePopup input").prop("disabled", true);
-    $("#simplePopup button").prop("disabled", true);
-    $("#simplePopup textarea").prop("disabled", true);
-    $("#simplePopup .checkbox").addClass("disabled");
+    $("#simpleModal input").prop("disabled", true);
+    $("#simpleModal button").prop("disabled", true);
+    $("#simpleModal textarea").prop("disabled", true);
+    $("#simpleModal .checkbox").addClass("disabled");
   }
 
   enableInputs(): void {
-    $("#simplePopup input").prop("disabled", false);
-    $("#simplePopup button").prop("disabled", false);
-    $("#simplePopup textarea").prop("disabled", false);
-    $("#simplePopup .checkbox").removeClass("disabled");
+    $("#simpleModal input").prop("disabled", false);
+    $("#simpleModal button").prop("disabled", false);
+    $("#simpleModal textarea").prop("disabled", false);
+    $("#simpleModal .checkbox").removeClass("disabled");
   }
 
-  show(parameters: string[] = [], noAnimation = false): void {
-    Skeleton.append(wrapperId, "popups");
+  show(parameters: string[] = [], showOptions: ShowOptions): void {
     activePopup = this;
-    this.noAnimation = noAnimation;
     this.parameters = parameters;
-    this.beforeInitFn(this);
-    this.init();
-    this.beforeShowFn(this);
-    this.wrapper
-      .stop(true, true)
-      .css("opacity", 0)
-      .removeClass("hidden")
-      .animate({ opacity: 1 }, noAnimation ? 0 : 125, () => {
-        if (this.inputs.length > 0) {
-          $($("#simplePopup").find("input")[0] as HTMLInputElement).trigger(
-            "focus"
-          );
-        } else {
-          $("#simplePopup button").trigger("focus");
-        }
-      });
+    void modal.show({
+      ...showOptions,
+      focusFirstInput: true,
+      beforeAnimation: async () => {
+        this.beforeInitFn?.(this);
+        this.init();
+        this.beforeShowFn?.(this);
+      },
+    });
   }
 
-  async hide(): Promise<void> {
-    return new Promise((resolve, reject) => {
-      if (!this.canClose) {
-        reject(new Error("Cannot close popup"));
-        return;
-      }
-
+  async hide(callerIsExec?: boolean, hideOptions?: HideOptions): Promise<void> {
+    if (!this.canClose) return;
+    if (this.hideCallsExec && !callerIsExec) {
+      this.exec();
+    } else {
       activePopup = null;
-
-      this.wrapper
-        .stop(true, true)
-        .css("opacity", 1)
-        .removeClass("hidden")
-        .animate({ opacity: 0 }, this.noAnimation ? 0 : 125, () => {
-          this.wrapper.addClass("hidden");
-          Skeleton.remove(wrapperId);
-          resolve();
-        });
-    });
+      await modal.hide(hideOptions);
+    }
   }
 }
 
@@ -370,36 +370,7 @@ function hide(): void {
     void activePopup.hide();
     return;
   }
-  $("#simplePopupWrapper")
-    .stop(true, true)
-    .css("opacity", 1)
-    .removeClass("hidden")
-    .animate({ opacity: 0 }, 125, () => {
-      $("#simplePopupWrapper").addClass("hidden");
-    });
 }
-
-$("#simplePopupWrapper").on("mousedown", (e) => {
-  if ($(e.target).attr("id") === "simplePopupWrapper") {
-    if (activePopup) {
-      void activePopup.hide();
-      return;
-    }
-    $("#simplePopupWrapper")
-      .stop(true, true)
-      .css("opacity", 1)
-      .removeClass("hidden")
-      .animate({ opacity: 0 }, 125, () => {
-        $("#simplePopupWrapper").addClass("hidden");
-      });
-  }
-});
-
-$("#popups").on("submit", "#simplePopupWrapper form", (e) => {
-  e.preventDefault();
-  const id = $("#simplePopup").attr("popupId") as PopupKey;
-  (list[id] as SimplePopup).exec();
-});
 
 type ReauthMethod = "passwordOnly" | "passwordFirst";
 
@@ -479,11 +450,11 @@ async function reauthenticate(
   }
 }
 
-list.updateEmail = new SimplePopup(
-  "updateEmail",
-  "text",
-  "Update Email",
-  [
+list.updateEmail = new SimplePopup({
+  id: "updateEmail",
+  type: "text",
+  title: "Update email",
+  inputs: [
     {
       placeholder: "Password",
       type: "password",
@@ -498,9 +469,14 @@ list.updateEmail = new SimplePopup(
       initVal: "",
     },
   ],
-  "",
-  "Update",
-  async (_thisPopup, password, email, emailConfirm) => {
+  buttonText: "update",
+  onlineOnly: true,
+  execFn: async (
+    _thisPopup,
+    password,
+    email,
+    emailConfirm
+  ): Promise<ExecReturn> => {
     if (email !== emailConfirm) {
       return {
         status: 0,
@@ -535,7 +511,7 @@ list.updateEmail = new SimplePopup(
       message: "Email updated",
     };
   },
-  (thisPopup) => {
+  beforeInitFn: (thisPopup): void => {
     if (!isAuthenticated()) return;
     if (!isUsingPasswordAuthentication()) {
       thisPopup.inputs = [];
@@ -543,25 +519,22 @@ list.updateEmail = new SimplePopup(
       thisPopup.text = "Password authentication is not enabled";
     }
   },
-  (_thisPopup) => {
-    //
-  }
-);
+});
 
-list.removeGoogleAuth = new SimplePopup(
-  "removeGoogleAuth",
-  "text",
-  "Remove Google Authentication",
-  [
+list.removeGoogleAuth = new SimplePopup({
+  id: "removeGoogleAuth",
+  type: "text",
+  title: "Remove Google authentication",
+  inputs: [
     {
       placeholder: "Password",
       type: "password",
       initVal: "",
     },
   ],
-  "",
-  "Remove",
-  async (_thisPopup, password) => {
+  onlineOnly: true,
+  buttonText: "remove",
+  execFn: async (_thisPopup, password): Promise<ExecReturn> => {
     const reauth = await reauthenticate("passwordOnly", password);
     if (reauth.status !== 1) {
       return {
@@ -588,7 +561,7 @@ list.removeGoogleAuth = new SimplePopup(
       message: "Google authentication removed",
     };
   },
-  (thisPopup) => {
+  beforeInitFn: (thisPopup): void => {
     if (!isAuthenticated()) return;
     if (!isUsingPasswordAuthentication()) {
       thisPopup.inputs = [];
@@ -596,30 +569,27 @@ list.removeGoogleAuth = new SimplePopup(
       thisPopup.text = "Password authentication is not enabled";
     }
   },
-  (_thisPopup) => {
-    //
-  }
-);
+});
 
-list.updateName = new SimplePopup(
-  "updateName",
-  "text",
-  "Update Name",
-  [
+list.updateName = new SimplePopup({
+  id: "updateName",
+  type: "text",
+  title: "Update name",
+  inputs: [
     {
-      placeholder: "Password",
+      placeholder: "password",
       type: "password",
       initVal: "",
     },
     {
-      placeholder: "New name",
+      placeholder: "new name",
       type: "text",
       initVal: "",
     },
   ],
-  "",
-  "Update",
-  async (_thisPopup, pass, newName) => {
+  buttonText: "update",
+  onlineOnly: true,
+  execFn: async (_thisPopup, pass, newName): Promise<ExecReturn> => {
     const reauth = await reauthenticate("passwordFirst", pass);
     if (reauth.status !== 1) {
       return {
@@ -664,48 +634,50 @@ list.updateName = new SimplePopup(
       message: "Name updated",
     };
   },
-  (thisPopup) => {
+  beforeInitFn: (thisPopup): void => {
     if (!isAuthenticated()) return;
     const snapshot = DB.getSnapshot();
     if (!snapshot) return;
     if (!isUsingPasswordAuthentication()) {
       (thisPopup.inputs[0] as Input).hidden = true;
-      thisPopup.buttonText = "Reauthenticate to update";
+      thisPopup.buttonText = "reauthenticate to update";
     }
     if (snapshot.needsToChangeName === true) {
       thisPopup.text =
         "You need to change your account name. This might be because you have a duplicate name, no account name or your name is not allowed (contains whitespace or invalid characters). Sorry for the inconvenience.";
     }
   },
-  (_thisPopup) => {
-    //
-  }
-);
+});
 
-list.updatePassword = new SimplePopup(
-  "updatePassword",
-  "text",
-  "Update Password",
-  [
+list.updatePassword = new SimplePopup({
+  id: "updatePassword",
+  type: "text",
+  title: "Update password",
+  inputs: [
     {
-      placeholder: "Password",
+      placeholder: "current password",
       type: "password",
       initVal: "",
     },
     {
-      placeholder: "New password",
+      placeholder: "new password",
       type: "password",
       initVal: "",
     },
     {
-      placeholder: "Confirm new password",
+      placeholder: "confirm new password",
       type: "password",
       initVal: "",
     },
   ],
-  "",
-  "Update",
-  async (_thisPopup, previousPass, newPass, newPassConfirm) => {
+  buttonText: "update",
+  onlineOnly: true,
+  execFn: async (
+    _thisPopup,
+    previousPass,
+    newPass,
+    newPassConfirm
+  ): Promise<ExecReturn> => {
     if (newPass !== newPassConfirm) {
       return {
         status: 0,
@@ -753,7 +725,7 @@ list.updatePassword = new SimplePopup(
       message: "Password updated",
     };
   },
-  (thisPopup) => {
+  beforeInitFn: (thisPopup): void => {
     if (!isAuthenticated()) return;
     if (!isUsingPasswordAuthentication()) {
       thisPopup.inputs = [];
@@ -761,16 +733,13 @@ list.updatePassword = new SimplePopup(
       thisPopup.text = "Password authentication is not enabled";
     }
   },
-  (_thisPopup) => {
-    //
-  }
-);
+});
 
-list.addPasswordAuth = new SimplePopup(
-  "addPasswordAuth",
-  "text",
-  "Add Password Authentication",
-  [
+list.addPasswordAuth = new SimplePopup({
+  id: "addPasswordAuth",
+  type: "text",
+  title: "Add password authentication",
+  inputs: [
     {
       placeholder: "email",
       type: "email",
@@ -792,9 +761,15 @@ list.addPasswordAuth = new SimplePopup(
       initVal: "",
     },
   ],
-  "",
-  "Add",
-  async (_thisPopup, email, emailConfirm, pass, passConfirm) => {
+  buttonText: "reauthenticate to add",
+  onlineOnly: true,
+  execFn: async (
+    _thisPopup,
+    email,
+    emailConfirm,
+    pass,
+    passConfirm
+  ): Promise<ExecReturn> => {
     if (email !== emailConfirm) {
       return {
         status: 0,
@@ -850,28 +825,23 @@ list.addPasswordAuth = new SimplePopup(
       message: "Password authentication added",
     };
   },
-  () => {
-    //
-  },
-  (_thisPopup) => {
-    //
-  }
-);
+});
 
-list.deleteAccount = new SimplePopup(
-  "deleteAccount",
-  "text",
-  "Delete Account",
-  [
+list.deleteAccount = new SimplePopup({
+  id: "deleteAccount",
+  type: "text",
+  title: "Delete account",
+  inputs: [
     {
-      placeholder: "Password",
+      placeholder: "password",
       type: "password",
       initVal: "",
     },
   ],
-  "This is the last time you can change your mind. After pressing the button everything is gone.",
-  "Delete",
-  async (_thisPopup, password) => {
+  text: "This is the last time you can change your mind. After pressing the button everything is gone.",
+  buttonText: "delete",
+  onlineOnly: true,
+  execFn: async (_thisPopup, password): Promise<ExecReturn> => {
     const reauth = await reauthenticate("passwordFirst", password);
     if (reauth.status !== 1) {
       return {
@@ -897,32 +867,30 @@ list.deleteAccount = new SimplePopup(
       message: "Account deleted, goodbye",
     };
   },
-  (thisPopup) => {
+  beforeInitFn: (thisPopup): void => {
     if (!isAuthenticated()) return;
     if (!isUsingPasswordAuthentication()) {
       thisPopup.inputs = [];
-      thisPopup.buttonText = "Reauthenticate to delete";
+      thisPopup.buttonText = "reauthenticate to delete";
     }
   },
-  (_thisPopup) => {
-    //
-  }
-);
+});
 
-list.resetAccount = new SimplePopup(
-  "resetAccount",
-  "text",
-  "Reset Account",
-  [
+list.resetAccount = new SimplePopup({
+  id: "resetAccount",
+  type: "text",
+  title: "Reset account",
+  inputs: [
     {
-      placeholder: "Password",
+      placeholder: "password",
       type: "password",
       initVal: "",
     },
   ],
-  "This is the last time you can change your mind. After pressing the button everything is gone.",
-  "Reset",
-  async (_thisPopup, password) => {
+  text: "This is the last time you can change your mind. After pressing the button everything is gone.",
+  buttonText: "reset",
+  onlineOnly: true,
+  execFn: async (_thisPopup, password): Promise<ExecReturn> => {
     const reauth = await reauthenticate("passwordFirst", password);
     if (reauth.status !== 1) {
       return {
@@ -950,32 +918,30 @@ list.resetAccount = new SimplePopup(
       message: "Account reset",
     };
   },
-  (thisPopup) => {
+  beforeInitFn: (thisPopup): void => {
     if (!isAuthenticated()) return;
     if (!isUsingPasswordAuthentication()) {
       thisPopup.inputs = [];
-      thisPopup.buttonText = "Reauthenticate to reset";
+      thisPopup.buttonText = "reauthenticate to reset";
     }
   },
-  (_thisPopup) => {
-    //
-  }
-);
+});
 
-list.optOutOfLeaderboards = new SimplePopup(
-  "optOutOfLeaderboards",
-  "text",
-  "Opt out of leaderboards",
-  [
+list.optOutOfLeaderboards = new SimplePopup({
+  id: "optOutOfLeaderboards",
+  type: "text",
+  title: "Opt out of leaderboards",
+  inputs: [
     {
-      placeholder: "Password",
+      placeholder: "password",
       type: "password",
       initVal: "",
     },
   ],
-  "Are you sure you want to opt out of leaderboards?",
-  "Opt out",
-  async (_thisPopup, password) => {
+  text: "Are you sure you want to opt out of leaderboards?",
+  buttonText: "opt out",
+  onlineOnly: true,
+  execFn: async (_thisPopup, password): Promise<ExecReturn> => {
     const reauth = await reauthenticate("passwordFirst", password);
     if (reauth.status !== 1) {
       return {
@@ -999,26 +965,22 @@ list.optOutOfLeaderboards = new SimplePopup(
       message: "Leaderboards opt out successful",
     };
   },
-  (thisPopup) => {
+  beforeInitFn: (thisPopup): void => {
     if (!isAuthenticated()) return;
     if (!isUsingPasswordAuthentication()) {
       thisPopup.inputs = [];
-      thisPopup.buttonText = "Reauthenticate to reset";
+      thisPopup.buttonText = "reauthenticate to opt out";
     }
   },
-  (_thisPopup) => {
-    //
-  }
-);
+});
 
-list.clearTagPb = new SimplePopup(
-  "clearTagPb",
-  "text",
-  "Clear Tag PB",
-  [],
-  `Are you sure you want to clear this tags PB?`,
-  "Clear",
-  async (thisPopup) => {
+list.clearTagPb = new SimplePopup({
+  id: "clearTagPb",
+  type: "text",
+  title: "Clear tag PB",
+  text: "Are you sure you want to clear this tags PB?",
+  buttonText: "clear",
+  execFn: async (thisPopup): Promise<ExecReturn> => {
     const tagId = thisPopup.parameters[0] as string;
     const response = await Ape.users.deleteTagPersonalBest(tagId);
     if (response.status !== 200) {
@@ -1051,22 +1013,19 @@ list.clearTagPb = new SimplePopup(
       message: "Tag PB cleared",
     };
   },
-  (thisPopup) => {
+  beforeInitFn: (thisPopup): void => {
     thisPopup.text = `Are you sure you want to clear PB for tag ${thisPopup.parameters[1]}?`;
   },
-  (_thisPopup) => {
-    //
-  }
-);
+});
 
-list.applyCustomFont = new SimplePopup(
-  "applyCustomFont",
-  "text",
-  "Custom font",
-  [{ placeholder: "Font name", initVal: "" }],
-  "Make sure you have the font installed on your computer before applying",
-  "Apply",
-  async (_thisPopup, fontName) => {
+list.applyCustomFont = new SimplePopup({
+  id: "applyCustomFont",
+  type: "text",
+  title: "Custom font",
+  inputs: [{ placeholder: "Font name", initVal: "" }],
+  text: "Make sure you have the font installed on your computer before applying",
+  buttonText: "apply",
+  execFn: async (_thisPopup, fontName): Promise<ExecReturn> => {
     Settings.groups["fontFamily"]?.setValue(fontName.replace(/\s/g, "_"));
 
     return {
@@ -1074,28 +1033,22 @@ list.applyCustomFont = new SimplePopup(
       message: "Font applied",
     };
   },
-  () => {
-    //
-  },
-  (_thisPopup) => {
-    //
-  }
-);
+});
 
-list.resetPersonalBests = new SimplePopup(
-  "resetPersonalBests",
-  "text",
-  "Reset Personal Bests",
-  [
+list.resetPersonalBests = new SimplePopup({
+  id: "resetPersonalBests",
+  type: "text",
+  title: "Reset personal bests",
+  inputs: [
     {
-      placeholder: "Password",
+      placeholder: "password",
       type: "password",
       initVal: "",
     },
   ],
-  "",
-  "Reset",
-  async (_thisPopup, password) => {
+  buttonText: "reset",
+  onlineOnly: true,
+  execFn: async (_thisPopup, password): Promise<ExecReturn> => {
     const reauth = await reauthenticate("passwordFirst", password);
     if (reauth.status !== 1) {
       return {
@@ -1133,54 +1086,46 @@ list.resetPersonalBests = new SimplePopup(
       message: "Personal bests reset",
     };
   },
-  (thisPopup) => {
+  beforeInitFn: (thisPopup): void => {
     if (!isAuthenticated()) return;
     if (!isUsingPasswordAuthentication()) {
       thisPopup.inputs = [];
-      thisPopup.buttonText = "Reauthenticate to reset";
+      thisPopup.buttonText = "reauthenticate to reset";
     }
   },
-  (_thisPopup) => {
-    //
-  }
-);
+});
 
-list.resetSettings = new SimplePopup(
-  "resetSettings",
-  "text",
-  "Reset Settings",
-  [],
-  "Are you sure you want to reset all your settings?",
-  "Reset",
-  async () => {
+list.resetSettings = new SimplePopup({
+  id: "resetSettings",
+  type: "text",
+  title: "Reset settings",
+  text: "Are you sure you want to reset all your settings?",
+  buttonText: "reset",
+  onlineOnly: true,
+  execFn: async (): Promise<ExecReturn> => {
     await UpdateConfig.reset();
     return {
       status: 1,
       message: "Settings reset",
     };
   },
-  () => {
-    //
-  },
-  (_thisPopup) => {
-    //
-  }
-);
+});
 
-list.revokeAllTokens = new SimplePopup(
-  "revokeAllTokens",
-  "text",
-  "Revoke All Tokens",
-  [
+list.revokeAllTokens = new SimplePopup({
+  id: "revokeAllTokens",
+  type: "text",
+  title: "Revoke all tokens",
+  inputs: [
     {
-      placeholder: "Password",
+      placeholder: "password",
       type: "password",
       initVal: "",
     },
   ],
-  "Are you sure you want to this? This will log you out of all devices.",
-  "revoke all",
-  async (_thisPopup, password) => {
+  text: "Are you sure you want to this? This will log you out of all devices.",
+  buttonText: "revoke all",
+  onlineOnly: true,
+  execFn: async (_thisPopup, password): Promise<ExecReturn> => {
     const reauth = await reauthenticate("passwordFirst", password);
     if (reauth.status !== 1) {
       return {
@@ -1204,7 +1149,7 @@ list.revokeAllTokens = new SimplePopup(
       message: "Tokens revoked",
     };
   },
-  (thisPopup) => {
+  beforeInitFn: (thisPopup): void => {
     if (!isAuthenticated()) return;
     const snapshot = DB.getSnapshot();
     if (!snapshot) return;
@@ -1213,19 +1158,16 @@ list.revokeAllTokens = new SimplePopup(
       thisPopup.buttonText = "reauthenticate to revoke all tokens";
     }
   },
-  (_thisPopup) => {
-    //
-  }
-);
+});
 
-list.unlinkDiscord = new SimplePopup(
-  "unlinkDiscord",
-  "text",
-  "Unlink Discord",
-  [],
-  "Are you sure you want to unlink your Discord account?",
-  "Unlink",
-  async () => {
+list.unlinkDiscord = new SimplePopup({
+  id: "unlinkDiscord",
+  type: "text",
+  title: "Unlink Discord",
+  text: "Are you sure you want to unlink your Discord account?",
+  buttonText: "unlink",
+  onlineOnly: true,
+  execFn: async (): Promise<ExecReturn> => {
     const snap = DB.getSnapshot();
     if (!snap) {
       return {
@@ -1253,27 +1195,21 @@ list.unlinkDiscord = new SimplePopup(
       message: "Discord unlinked",
     };
   },
-  () => {
-    //
-  },
-  (_thisPopup) => {
-    //
-  }
-);
+});
 
-list.generateApeKey = new SimplePopup(
-  "generateApeKey",
-  "text",
-  "Generate new key",
-  [
+list.generateApeKey = new SimplePopup({
+  id: "generateApeKey",
+  type: "text",
+  title: "Generate new Ape key",
+  inputs: [
     {
       placeholder: "Name",
       initVal: "",
     },
   ],
-  "",
-  "Generate",
-  async (_thisPopup, name) => {
+  buttonText: "generate",
+  onlineOnly: true,
+  execFn: async (_thisPopup, name): Promise<ExecReturn> => {
     const response = await Ape.apeKeys.generate(name, false);
     if (response.status !== 200) {
       return {
@@ -1285,66 +1221,72 @@ list.generateApeKey = new SimplePopup(
     //if response is 200 data is guaranteed to not be null
     const data = response.data as Ape.ApeKeys.GenerateApeKey;
 
+    const modalChain = modal.getPreviousModalInChain();
     return {
       status: 1,
       message: "Key generated",
+      hideOptions: {
+        clearModalChain: true,
+        animationMode: "modalOnly",
+      },
       afterHide: (): void => {
-        showPopup("viewApeKey", [data.apeKey]);
+        showPopup("viewApeKey", [data.apeKey], {
+          modalChain,
+          animationMode: "modalOnly",
+        });
       },
     };
   },
-  () => {
-    //
-  },
-  (_thisPopup) => {
-    //
-  }
-);
+});
 
-list.viewApeKey = new SimplePopup(
-  "viewApeKey",
-  "text",
-  "Ape Key",
-  [
+list.viewApeKey = new SimplePopup({
+  id: "viewApeKey",
+  type: "text",
+  title: "Ape key",
+  inputs: [
     {
       type: "textarea",
       disabled: true,
-      placeholder: "Key",
+      placeholder: "key",
       initVal: "",
     },
   ],
-  "This is your new Ape Key. Please keep it safe. You will only see it once!",
-  "Close",
-  async (_thisPopup) => {
-    void ApeKeysPopup.show();
+  text: "This is your new Ape Key. Please keep it safe. You will only see it once!",
+  buttonText: "close",
+  hideCallsExec: true,
+  execFn: async (_thisPopup): Promise<ExecReturn> => {
     return {
       status: 1,
       message: "Key generated",
+      showNotification: false,
+      hideOptions: {
+        clearModalChain: true,
+      },
     };
   },
-  (_thisPopup) => {
+  beforeInitFn: (_thisPopup): void => {
     (_thisPopup.inputs[0] as Input).initVal = _thisPopup
       .parameters[0] as string;
   },
-  (_thisPopup) => {
+  beforeShowFn: (_thisPopup): void => {
     _thisPopup.canClose = false;
-    $("#simplePopup textarea").css("height", "110px");
-    $("#simplePopup .submitButton").addClass("hidden");
+    $("#simpleModal textarea").css("height", "110px");
+    $("#simpleModal .submitButton").addClass("hidden");
     setTimeout(() => {
       _thisPopup.canClose = true;
-      $("#simplePopup .submitButton").removeClass("hidden");
+      $("#simpleModal .submitButton").removeClass("hidden");
     }, 5000);
-  }
-);
+  },
+});
 
-list.deleteApeKey = new SimplePopup(
-  "deleteApeKey",
-  "text",
-  "Delete Ape Key",
-  [],
-  "Are you sure?",
-  "Delete",
-  async (_thisPopup) => {
+list.deleteApeKey = new SimplePopup({
+  id: "deleteApeKey",
+  type: "text",
+  title: "Delete Ape key",
+  text: "Are you sure?",
+  buttonText: "delete",
+  onlineOnly: true,
+  execFn: async (_thisPopup): Promise<ExecReturn> => {
     const response = await Ape.apeKeys.delete(_thisPopup.parameters[0] ?? "");
     if (response.status !== 200) {
       return {
@@ -1353,34 +1295,29 @@ list.deleteApeKey = new SimplePopup(
       };
     }
 
-    void ApeKeysPopup.show();
-
     return {
       status: 1,
       message: "Key deleted",
+      hideOptions: {
+        clearModalChain: true,
+      },
     };
   },
-  (_thisPopup) => {
-    //
-  },
-  (_thisPopup) => {
-    //
-  }
-);
+});
 
-list.editApeKey = new SimplePopup(
-  "editApeKey",
-  "text",
-  "Edit Ape Key",
-  [
+list.editApeKey = new SimplePopup({
+  id: "editApeKey",
+  type: "text",
+  title: "Edit Ape key",
+  inputs: [
     {
-      placeholder: "Name",
+      placeholder: "name",
       initVal: "",
     },
   ],
-  "",
-  "Edit",
-  async (_thisPopup, input) => {
+  buttonText: "edit",
+  onlineOnly: true,
+  execFn: async (_thisPopup, input): Promise<ExecReturn> => {
     const response = await Ape.apeKeys.update(_thisPopup.parameters[0] ?? "", {
       name: input,
     });
@@ -1390,30 +1327,23 @@ list.editApeKey = new SimplePopup(
         message: "Failed to update key: " + response.message,
       };
     }
-
-    void ApeKeysPopup.show();
-
     return {
       status: 1,
       message: "Key updated",
+      hideOptions: {
+        clearModalChain: true,
+      },
     };
   },
-  (_thisPopup) => {
-    //
-  },
-  (_thisPopup) => {
-    //
-  }
-);
+});
 
-list.deleteCustomText = new SimplePopup(
-  "deleteCustomText",
-  "text",
-  "Delete custom text",
-  [],
-  "Are you sure?",
-  "Delete",
-  async (_thisPopup) => {
+list.deleteCustomText = new SimplePopup({
+  id: "deleteCustomText",
+  type: "text",
+  title: "Delete custom text",
+  text: "Are you sure?",
+  buttonText: "delete",
+  execFn: async (_thisPopup): Promise<ExecReturn> => {
     CustomText.deleteCustomText(_thisPopup.parameters[0] as string, false);
     CustomTextState.setCustomTextName("", undefined);
     void SavedTextsPopup.show(true);
@@ -1423,22 +1353,18 @@ list.deleteCustomText = new SimplePopup(
       message: "Custom text deleted",
     };
   },
-  (_thisPopup) => {
+  beforeInitFn: (_thisPopup): void => {
     _thisPopup.text = `Are you sure you want to delete custom text ${_thisPopup.parameters[0]}?`;
   },
-  () => {
-    //
-  }
-);
+});
 
-list.deleteCustomTextLong = new SimplePopup(
-  "deleteCustomTextLong",
-  "text",
-  "Delete custom text",
-  [],
-  "Are you sure?",
-  "Delete",
-  async (_thisPopup) => {
+list.deleteCustomTextLong = new SimplePopup({
+  id: "deleteCustomTextLong",
+  type: "text",
+  title: "Delete custom text",
+  text: "Are you sure?",
+  buttonText: "delete",
+  execFn: async (_thisPopup): Promise<ExecReturn> => {
     CustomText.deleteCustomText(_thisPopup.parameters[0] as string, true);
     CustomTextState.setCustomTextName("", undefined);
     void SavedTextsPopup.show(true);
@@ -1448,22 +1374,18 @@ list.deleteCustomTextLong = new SimplePopup(
       message: "Custom text deleted",
     };
   },
-  (_thisPopup) => {
+  beforeInitFn: (_thisPopup): void => {
     _thisPopup.text = `Are you sure you want to delete custom text ${_thisPopup.parameters[0]}?`;
   },
-  () => {
-    //
-  }
-);
+});
 
-list.resetProgressCustomTextLong = new SimplePopup(
-  "resetProgressCustomTextLong",
-  "text",
-  "Reset progress for custom text",
-  [],
-  "Are you sure?",
-  "Reset",
-  async (_thisPopup) => {
+list.resetProgressCustomTextLong = new SimplePopup({
+  id: "resetProgressCustomTextLong",
+  type: "text",
+  title: "Reset progress for custom text",
+  text: "Are you sure?",
+  buttonText: "reset",
+  execFn: async (_thisPopup): Promise<ExecReturn> => {
     CustomText.setCustomTextLongProgress(_thisPopup.parameters[0] as string, 0);
     void SavedTextsPopup.show(true);
     CustomText.setPopupTextareaState(
@@ -1476,22 +1398,19 @@ list.resetProgressCustomTextLong = new SimplePopup(
       message: "Custom text progress reset",
     };
   },
-  (_thisPopup) => {
+  beforeInitFn: (_thisPopup): void => {
     _thisPopup.text = `Are you sure you want to reset your progress for custom text ${_thisPopup.parameters[0]}?`;
   },
-  () => {
-    //
-  }
-);
+});
 
-list.updateCustomTheme = new SimplePopup(
-  "updateCustomTheme",
-  "text",
-  "Update custom theme",
-  [
+list.updateCustomTheme = new SimplePopup({
+  id: "updateCustomTheme",
+  type: "text",
+  title: "Update custom theme",
+  inputs: [
     {
       type: "text",
-      placeholder: "Name",
+      placeholder: "name",
       initVal: "",
     },
     {
@@ -1500,9 +1419,9 @@ list.updateCustomTheme = new SimplePopup(
       label: "Update custom theme to current colors",
     },
   ],
-  "",
-  "update",
-  async (_thisPopup, name, updateColors) => {
+  buttonText: "update",
+  onlineOnly: true,
+  execFn: async (_thisPopup, name, updateColors): Promise<ExecReturn> => {
     const snapshot = DB.getSnapshot();
     if (!snapshot) {
       return {
@@ -1553,7 +1472,7 @@ list.updateCustomTheme = new SimplePopup(
       message: "Custom theme updated",
     };
   },
-  (_thisPopup) => {
+  beforeInitFn: (_thisPopup): void => {
     const snapshot = DB.getSnapshot();
     if (!snapshot) return;
 
@@ -1563,19 +1482,16 @@ list.updateCustomTheme = new SimplePopup(
     if (!customTheme) return;
     (_thisPopup.inputs[0] as Input).initVal = customTheme.name;
   },
-  (_thisPopup) => {
-    //
-  }
-);
+});
 
-list.deleteCustomTheme = new SimplePopup(
-  "deleteCustomTheme",
-  "text",
-  "Delete Custom Theme",
-  [],
-  "Are you sure?",
-  "Delete",
-  async (_thisPopup) => {
+list.deleteCustomTheme = new SimplePopup({
+  id: "deleteCustomTheme",
+  type: "text",
+  title: "Delete custom theme",
+  text: "Are you sure?",
+  buttonText: "delete",
+  onlineOnly: true,
+  execFn: async (_thisPopup): Promise<ExecReturn> => {
     await DB.deleteCustomTheme(_thisPopup.parameters[0] as string);
     void ThemePicker.refreshButtons();
 
@@ -1584,28 +1500,21 @@ list.deleteCustomTheme = new SimplePopup(
       message: "Custom theme deleted",
     };
   },
-  (_thisPopup) => {
-    //
-  },
-  (_thisPopup) => {
-    //
-  }
-);
+});
 
-list.forgotPassword = new SimplePopup(
-  "forgotPassword",
-  "text",
-  "Forgot Password",
-  [
+list.forgotPassword = new SimplePopup({
+  id: "forgotPassword",
+  type: "text",
+  title: "Forgot password",
+  inputs: [
     {
       type: "text",
-      placeholder: "Email",
+      placeholder: "email",
       initVal: "",
     },
   ],
-  "",
-  "Send",
-  async (_thisPopup, email) => {
+  buttonText: "send",
+  execFn: async (_thisPopup, email): Promise<ExecReturn> => {
     const result = await Ape.users.forgotPasswordEmail(email.trim());
     if (result.status !== 200) {
       return {
@@ -1622,35 +1531,42 @@ list.forgotPassword = new SimplePopup(
       },
     };
   },
-  (thisPopup) => {
+  beforeInitFn: (thisPopup): void => {
     const inputValue = $(
       `.pageLogin .login input[name="current-email"]`
     ).val() as string;
     if (inputValue) {
       (thisPopup.inputs[0] as Input).initVal = inputValue;
-      setTimeout(() => {
-        ($("#simplePopup").find("input")[0] as HTMLInputElement).select();
-      }, 1);
     }
   },
-  () => {
-    //
-  }
-);
+});
 
-function showPopup(
+function isUsingPasswordAuthentication(): boolean {
+  return (
+    Auth?.currentUser?.providerData.find(
+      (p) => p?.providerId === "password"
+    ) !== undefined
+  );
+}
+
+export function showPopup(
   key: PopupKey,
   showParams = [] as string[],
-  noAnimation = false
+  showOptions: ShowOptions = {}
 ): void {
   const popup = list[key];
   if (popup === undefined) {
     Notifications.add("Failed to show popup - popup is not defined", -1);
     return;
   }
-  popup.show(showParams, noAnimation);
+  if (popup.onlineOnly === true && !ConnectionState.get()) {
+    Notifications.add("You are offline", 0, { duration: 2 });
+    return;
+  }
+  popup.show(showParams, showOptions);
 }
 
+//todo: move these event handlers to their respective files (either global event files or popup files)
 $(".pageLogin #forgotPasswordButton").on("click", () => {
   showPopup("forgotPassword");
 });
@@ -1658,126 +1574,62 @@ $(".pageLogin #forgotPasswordButton").on("click", () => {
 $(".pageSettings .section.discordIntegration #unlinkDiscordButton").on(
   "click",
   () => {
-    if (!ConnectionState.get()) {
-      Notifications.add("You are offline", 0, { duration: 2 });
-      return;
-    }
     showPopup("unlinkDiscord");
   }
 );
 
 $(".pageSettings #removeGoogleAuth").on("click", () => {
-  if (!ConnectionState.get()) {
-    Notifications.add("You are offline", 0, { duration: 2 });
-    return;
-  }
   showPopup("removeGoogleAuth");
 });
 
 $("#resetSettingsButton").on("click", () => {
-  if (!ConnectionState.get()) {
-    Notifications.add("You are offline", 0, { duration: 2 });
-    return;
-  }
   showPopup("resetSettings");
 });
 
 $("#revokeAllTokens").on("click", () => {
-  if (!ConnectionState.get()) {
-    Notifications.add("You are offline", 0, { duration: 2 });
-    return;
-  }
   showPopup("revokeAllTokens");
 });
 
 $(".pageSettings #resetPersonalBestsButton").on("click", () => {
-  if (!ConnectionState.get()) {
-    Notifications.add("You are offline", 0, { duration: 2 });
-    return;
-  }
   showPopup("resetPersonalBests");
 });
 
 $(".pageSettings #updateAccountName").on("click", () => {
-  if (!ConnectionState.get()) {
-    Notifications.add("You are offline", 0, { duration: 2 });
-    return;
-  }
   showPopup("updateName");
 });
 
 $("#bannerCenter").on("click", ".banner .text .openNameChange", () => {
-  if (!ConnectionState.get()) {
-    Notifications.add("You are offline", 0, { duration: 2 });
-    return;
-  }
   showPopup("updateName");
 });
 
 $(".pageSettings #addPasswordAuth").on("click", () => {
-  if (!ConnectionState.get()) {
-    Notifications.add("You are offline", 0, { duration: 2 });
-    return;
-  }
   showPopup("addPasswordAuth");
 });
 
 $(".pageSettings #emailPasswordAuth").on("click", () => {
-  if (!ConnectionState.get()) {
-    Notifications.add("You are offline", 0, { duration: 2 });
-    return;
-  }
   showPopup("updateEmail");
 });
 
 $(".pageSettings #passPasswordAuth").on("click", () => {
-  if (!ConnectionState.get()) {
-    Notifications.add("You are offline", 0, { duration: 2 });
-    return;
-  }
   showPopup("updatePassword");
 });
 
 $(".pageSettings #deleteAccount").on("click", () => {
-  if (!ConnectionState.get()) {
-    Notifications.add("You are offline", 0, { duration: 2 });
-    return;
-  }
   showPopup("deleteAccount");
 });
 
 $(".pageSettings #resetAccount").on("click", () => {
-  if (!ConnectionState.get()) {
-    Notifications.add("You are offline", 0, { duration: 2 });
-    return;
-  }
   showPopup("resetAccount");
 });
 
 $(".pageSettings #optOutOfLeaderboardsButton").on("click", () => {
-  if (!ConnectionState.get()) {
-    Notifications.add("You are offline", 0, { duration: 2 });
-    return;
-  }
   showPopup("optOutOfLeaderboards");
-});
-
-$("#popups").on("click", "#apeKeysPopup .generateApeKey", () => {
-  if (!ConnectionState.get()) {
-    Notifications.add("You are offline", 0, { duration: 2 });
-    return;
-  }
-  showPopup("generateApeKey");
 });
 
 $(".pageSettings").on(
   "click",
   ".section.themes .customTheme .delButton",
   (e) => {
-    if (!ConnectionState.get()) {
-      Notifications.add("You are offline", 0, { duration: 2 });
-      return;
-    }
     const $parentElement = $(e.currentTarget).parent(".customTheme.button");
     const customThemeId = $parentElement.attr("customThemeId") as string;
     showPopup("deleteCustomTheme", [customThemeId]);
@@ -1788,10 +1640,6 @@ $(".pageSettings").on(
   "click",
   ".section.themes .customTheme .editButton",
   (e) => {
-    if (!ConnectionState.get()) {
-      Notifications.add("You are offline", 0, { duration: 2 });
-      return;
-    }
     const $parentElement = $(e.currentTarget).parent(".customTheme.button");
     const customThemeId = $parentElement.attr("customThemeId") as string;
     showPopup("updateCustomTheme", [customThemeId]);
@@ -1803,7 +1651,7 @@ $("#popups").on(
   `#savedTextsPopupWrapper .list .savedText .button.delete`,
   (e) => {
     const name = $(e.target).siblings(".button.name").text();
-    showPopup("deleteCustomText", [name], true);
+    showPopup("deleteCustomText", [name]);
   }
 );
 
@@ -1812,7 +1660,7 @@ $("#popups").on(
   `#savedTextsPopupWrapper .listLong .savedText .button.delete`,
   (e) => {
     const name = $(e.target).siblings(".button.name").text();
-    showPopup("deleteCustomTextLong", [name], true);
+    showPopup("deleteCustomTextLong", [name]);
   }
 );
 
@@ -1821,51 +1669,14 @@ $("#popups").on(
   `#savedTextsPopupWrapper .listLong .savedText .button.resetProgress`,
   (e) => {
     const name = $(e.target).siblings(".button.name").text();
-    showPopup("resetProgressCustomTextLong", [name], true);
+    showPopup("resetProgressCustomTextLong", [name]);
   }
 );
-
-$("#popups").on("click", "#apeKeysPopup table tbody tr .button.delete", (e) => {
-  if (!ConnectionState.get()) {
-    Notifications.add("You are offline", 0, { duration: 2 });
-    return;
-  }
-  const keyId = $(e.target).closest("tr").attr("keyId") as string;
-  showPopup("deleteApeKey", [keyId]);
-});
-
-$("#popups").on("click", "#apeKeysPopup table tbody tr .button.edit", (e) => {
-  if (!ConnectionState.get()) {
-    Notifications.add("You are offline", 0, { duration: 2 });
-    return;
-  }
-  const keyId = $(e.target).closest("tr").attr("keyId") as string;
-  showPopup("editApeKey", [keyId]);
-});
 
 $(".pageSettings").on(
   "click",
   ".section[data-config-name='fontFamily'] button[data-config-value='custom']",
   () => {
-    showPopup("applyCustomFont", []);
+    showPopup("applyCustomFont");
   }
 );
-
-$(document).on("keydown", (event) => {
-  if (event.key === "Escape" && isElementVisible("#simplePopupWrapper")) {
-    hide();
-    event.preventDefault();
-  }
-});
-
-Skeleton.save(wrapperId);
-
-console.log(list);
-
-function isUsingPasswordAuthentication(): boolean {
-  return (
-    Auth?.currentUser?.providerData.find(
-      (p) => p?.providerId === "password"
-    ) !== undefined
-  );
-}

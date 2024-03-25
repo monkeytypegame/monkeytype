@@ -230,6 +230,46 @@ describe("format.ts", () => {
       expect(format.decimals(80.75, { rounding: Math.floor })).toEqual("80");
     });
   });
+
+  describe("rank", () => {
+    it("should format with default fallback", () => {
+      const format = getInstance();
+      expect(format.rank(1)).toEqual("1st");
+      expect(format.rank(2)).toEqual("2nd");
+      expect(format.rank(3)).toEqual("3rd");
+      expect(format.rank(4)).toEqual("4th");
+
+      expect(format.rank(11)).toEqual("11th");
+      expect(format.rank(12)).toEqual("12th");
+      expect(format.rank(13)).toEqual("13th");
+      expect(format.rank(14)).toEqual("14th");
+
+      expect(format.rank(21)).toEqual("21st");
+      expect(format.rank(22)).toEqual("22nd");
+      expect(format.rank(23)).toEqual("23rd");
+      expect(format.rank(24)).toEqual("24th");
+    });
+
+    it("should format with fallback", () => {
+      const format = getInstance();
+
+      expect(format.rank(0)).toEqual("0th");
+      expect(format.rank(null)).toEqual("-");
+      expect(format.rank(undefined)).toEqual("-");
+
+      expect(format.rank(0, {})).toEqual("0th");
+      expect(format.rank(null, {})).toEqual("-");
+      expect(format.rank(undefined, {})).toEqual("-");
+
+      expect(format.rank(0, { fallback: "none" })).toEqual("0th");
+      expect(format.rank(null, { fallback: "none" })).toEqual("none");
+      expect(format.rank(undefined, { fallback: "none" })).toEqual("none");
+
+      expect(format.rank(0, { fallback: "" })).toEqual("0th");
+      expect(format.rank(null, { fallback: "" })).toEqual("");
+      expect(format.rank(undefined, { fallback: "" })).toEqual("");
+    });
+  });
 });
 
 function getInstance(config?: Partial<SharedTypes.Config>): Formatting {

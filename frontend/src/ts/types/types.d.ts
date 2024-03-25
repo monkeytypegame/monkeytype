@@ -293,24 +293,33 @@ declare namespace MonkeyTypes {
     };
   };
 
+  type CommandExecOptions = {
+    input?: string;
+    commandlineModal?: unknown;
+  };
+
   type Command = {
     id: string;
     display: string;
+    singleListDisplay?: string;
+    singleListDisplayNoIcon?: string;
     subgroup?: CommandsSubgroup;
     found?: boolean;
     icon?: string;
-    noIcon?: boolean;
     sticky?: boolean;
     alias?: string;
     input?: boolean;
     visible?: boolean;
     customStyle?: string;
+    opensModal?: boolean;
     defaultValue?: () => string;
+    configKey?: keyof SharedTypes.Config;
     configValue?: string | number | boolean | number[];
-    configValueMode?: string;
-    exec?: (input?: string) => void;
+    configValueMode?: "include";
+    exec?: (options: CommandExecOptions) => void;
     hover?: () => void;
-    available?: () => void;
+    available?: () => boolean;
+    active?: () => boolean;
     shouldFocusTestUI?: boolean;
     customData?: Record<string, string>;
   };

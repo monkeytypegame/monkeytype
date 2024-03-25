@@ -23,6 +23,7 @@ import * as ResultWordHighlight from "../elements/result-word-highlight";
 import * as ActivePage from "../states/active-page";
 import Format from "../utils/format";
 import * as Loader from "../elements/loader";
+import { getHtmlByUserFlags } from "../controllers/user-flag-controller";
 
 async function gethtml2canvas(): Promise<typeof import("html2canvas").default> {
   return (await import("html2canvas")).default;
@@ -62,10 +63,9 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
     void debouncedZipfCheck();
   }
   if (eventKey === "fontSize" && !nosave) {
-    setTimeout(() => {
-      updateWordsHeight(true);
-      updateWordsInputPosition(true);
-    }, 0);
+    OutOfFocus.hide();
+    updateWordsHeight(true);
+    updateWordsInputPosition(true);
   }
 
   if (eventKey === "theme") void applyBurstHeatmap();
@@ -127,9 +127,7 @@ export function reset(): void {
 }
 
 export function focusWords(): void {
-  if (!$("#wordsWrapper").hasClass("hidden")) {
-    $("#wordsInput").trigger("focus");
-  }
+  $("#wordsInput").trigger("focus");
 }
 
 export function blurWords(): void {
@@ -321,7 +319,10 @@ function updateWordsHeight(force = false): void {
     if (nh > wordsHeight) {
       nh = wordsHeight;
     }
-    $(".outOfFocusWarning").css("line-height", nh + "px");
+    $(".outOfFocusWarning").css(
+      "margin-top",
+      wordHeight + Misc.convertRemToPixels(1) / 2 + "px"
+    );
   } else {
     let finalWordsHeight: number, finalWrapperHeight: number;
 
@@ -372,7 +373,10 @@ function updateWordsHeight(force = false): void {
     $("#wordsWrapper")
       .css("height", finalWrapperHeight + "px")
       .css("overflow", "hidden");
-    $(".outOfFocusWarning").css("line-height", finalWrapperHeight + "px");
+    $(".outOfFocusWarning").css(
+      "margin-top",
+      finalWrapperHeight / 2 - Misc.convertRemToPixels(1) / 2 + "px"
+    );
   }
 
   if (Config.mode === "zen") {
@@ -407,8 +411,8 @@ export async function screenshot(): Promise<void> {
 
   let revertCookie = false;
   if (
-    Misc.isElementVisible("#cookiePopupWrapper") ||
-    document.contains(document.querySelector("#cookiePopupWrapper"))
+    Misc.isElementVisible("#cookiesModal") ||
+    document.contains(document.querySelector("#cookiesModal"))
   ) {
     revertCookie = true;
   }
@@ -430,7 +434,7 @@ export async function screenshot(): Promise<void> {
     $("#result").removeClass("noBalloons");
     $(".wordInputHighlight").removeClass("hidden");
     $(".highlightContainer").removeClass("hidden");
-    if (revertCookie) $("#cookiePopupWrapper").removeClass("hidden");
+    if (revertCookie) $("#cookiesModal").removeClass("hidden");
     if (revealReplay) $("#resultReplay").removeClass("hidden");
     if (!isAuthenticated()) {
       $(".pageTest .loginTip").removeClass("hidden");
@@ -449,17 +453,20 @@ export async function screenshot(): Promise<void> {
   const dateNow = new Date(Date.now());
   $("#resultReplay").addClass("hidden");
   $(".pageTest .ssWatermark").removeClass("hidden");
-  $(".pageTest .ssWatermark").text(
-    format(dateNow, "dd MMM yyyy HH:mm") + " | monkeytype.com "
-  );
-  if (isAuthenticated()) {
-    $(".pageTest .ssWatermark").text(
-      DB.getSnapshot()?.name +
-        " | " +
-        format(dateNow, "dd MMM yyyy HH:mm") +
-        " | monkeytype.com  "
-    );
+
+  const snapshot = DB.getSnapshot();
+  const ssWatermark = [format(dateNow, "dd MMM yyyy HH:mm"), "monkeytype.com"];
+  if (snapshot?.name !== undefined) {
+    const userText = `${snapshot?.name}${getHtmlByUserFlags(snapshot, {
+      iconsOnly: true,
+    })}`;
+    ssWatermark.unshift(userText);
   }
+  $(".pageTest .ssWatermark").html(
+    ssWatermark
+      .map((el) => `<span>${el}</span>`)
+      .join("<span class='pipe'>|</span>")
+  );
   $(".pageTest .buttons").addClass("hidden");
   $("#notificationCenter").addClass("hidden");
   $("#commandLineMobileButton").addClass("hidden");
@@ -474,7 +481,7 @@ export async function screenshot(): Promise<void> {
   $("#result").addClass("noBalloons");
   $(".wordInputHighlight").addClass("hidden");
   $(".highlightContainer").addClass("hidden");
-  if (revertCookie) $("#cookiePopupWrapper").addClass("hidden");
+  if (revertCookie) $("#cookiesModal").addClass("hidden");
 
   FunboxList.get(Config.funbox).forEach((f) => f.functions?.clearGlobal?.());
 
@@ -1336,7 +1343,9 @@ addEventListener("resize", () => {
   ResultWordHighlight.destroy();
 });
 
-$("#wordsInput").on("focus", () => {
+$("#wordsInput").on("focus", (e) => {
+  const wordsFocused = e.target === document.activeElement;
+  if (!wordsFocused) return;
   if (!resultVisible && Config.showOutOfFocusWarning) {
     OutOfFocus.hide();
   }

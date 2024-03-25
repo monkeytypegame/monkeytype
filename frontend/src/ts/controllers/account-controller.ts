@@ -14,7 +14,7 @@ import * as LoadingPage from "../pages/loading";
 import * as LoginPage from "../pages/login";
 import * as ResultFilters from "../account/result-filters";
 import * as TagController from "./tag-controller";
-import * as RegisterCaptchaPopup from "../popups/register-captcha-popup";
+import * as RegisterCaptchaModal from "../modals/register-captcha";
 import * as URLHandler from "../utils/url-handler";
 import * as Account from "../pages/account";
 import * as Alerts from "../elements/alerts";
@@ -40,6 +40,7 @@ import {
 } from "../test/test-config";
 import * as ConnectionState from "../states/connection";
 import { navigate } from "./route-controller";
+import { getHtmlByUserFlags } from "./user-flag-controller";
 
 let signedOutThisSession = false;
 
@@ -114,6 +115,9 @@ async function getDataAndInit(): Promise<boolean> {
   LoadingPage.updateText("Applying settings...");
   const snapshot = DB.getSnapshot() as MonkeyTypes.Snapshot;
   $("nav .textButton.account > .text").text(snapshot.name);
+  $("nav .textButton.account > .text").append(
+    getHtmlByUserFlags(snapshot, { iconsOnly: true })
+  );
   showFavoriteQuoteLength();
 
   ResultFilters.loadTags(snapshot.tags);
@@ -451,8 +455,6 @@ export function signOut(): void {
       void AccountButton.update();
       navigate("/login");
       DB.setSnapshot(undefined);
-      LoginPage.enableSignUpButton();
-      LoginPage.enableInputs();
       $("header .signInOut .icon").html(`<i class="far fa-fw fa-user"></i>`);
       setTimeout(() => {
         hideFavoriteQuoteLength();
@@ -476,8 +478,8 @@ async function signUp(): Promise<void> {
     });
     return;
   }
-  RegisterCaptchaPopup.show();
-  const captchaToken = await RegisterCaptchaPopup.promise;
+  RegisterCaptchaModal.show();
+  const captchaToken = await RegisterCaptchaModal.promise;
   if (captchaToken === undefined || captchaToken === "") {
     Notifications.add("Please complete the captcha", -1);
     return;
@@ -589,7 +591,17 @@ async function signUp(): Promise<void> {
     }
     Notifications.add("Account created", 1);
   } catch (e) {
-    const message = Misc.createErrorMessage(e, "Failed to create account");
+    let message = Misc.createErrorMessage(e, "Failed to create account");
+
+    if (e instanceof Error) {
+      if ("code" in e && e.code === "auth/email-already-in-use") {
+        message = Misc.createErrorMessage(
+          { message: "Email already in use" },
+          "Failed to create account"
+        );
+      }
+    }
+
     Notifications.add(message, -1);
     LoginPage.hidePreloader();
     LoginPage.enableInputs();

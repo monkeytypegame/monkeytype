@@ -13,6 +13,7 @@ let git;
 try {
   git = simpleGit(path.join(__dirname, PATH_TO_REPO));
 } catch (e) {
+  console.error(`Failed to initialize git: ${e}`);
   git = undefined;
 }
 

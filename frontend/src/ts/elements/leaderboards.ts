@@ -12,6 +12,7 @@ import * as Skeleton from "../utils/skeleton";
 import { debounce } from "throttle-debounce";
 import Format from "../utils/format";
 import SlimSelect from "slim-select";
+import { getHtmlByUserFlags } from "../controllers/user-flag-controller";
 
 const wrapperId = "leaderboardsWrapper";
 
@@ -336,7 +337,10 @@ async function fillTable(lb: LbKey): Promise<void> {
       <a href="${location.origin}/profile/${
       entry.uid
     }?isUid" class="entryName" uid=${entry.uid} router-link>${entry.name}</a>
-      ${entry.badgeId ? getBadgeHTMLbyId(entry.badgeId) : ""}
+      <div class="flagsAndBadge">
+        ${getHtmlByUserFlags(entry)}
+        ${entry.badgeId ? getBadgeHTMLbyId(entry.badgeId) : ""}
+      </div>
     </div>
     </td>
     <td class="alignRight">${Format.typingSpeed(entry.wpm, {
