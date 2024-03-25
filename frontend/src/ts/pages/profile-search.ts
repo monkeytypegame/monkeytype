@@ -1,21 +1,18 @@
 import Page from "./page";
 import * as Skeleton from "../utils/skeleton";
 
-export const page = new Page(
-  "profileSearch",
-  $(".page.pageProfileSearch"),
-  "/profile",
-  async () => {
-    //
-  },
-  async () => {
+export const page = new Page({
+  name: "profileSearch",
+  element: $(".page.pageProfileSearch"),
+  pathName: "/profile",
+  afterHide: async (): Promise<void> => {
     Skeleton.remove("pageProfileSearch");
   },
-  async () => {
+  beforeShow: async (): Promise<void> => {
     Skeleton.append("pageProfileSearch", "main");
     $(".page.pageProfileSearch input").val("");
   },
-  async () => {
-    $(".page.pageProfileSearch input").focus();
-  }
-);
+  afterShow: async (): Promise<void> => {
+    $(".page.pageProfileSearch input").trigger("focus");
+  },
+});

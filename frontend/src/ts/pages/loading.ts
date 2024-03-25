@@ -39,20 +39,14 @@ export async function showBar(): Promise<void> {
   });
 }
 
-export const page = new Page(
-  "loading",
-  $(".page.pageLoading"),
-  "/",
-  async () => {
-    //
-  },
-  async () => {
+export const page = new Page({
+  name: "loading",
+  element: $(".page.pageLoading"),
+  pathName: "/",
+  afterHide: async (): Promise<void> => {
     Skeleton.remove("pageLoading");
   },
-  async () => {
+  beforeShow: async (): Promise<void> => {
     Skeleton.append("pageLoading", "main");
   },
-  async () => {
-    //
-  }
-);
+});
