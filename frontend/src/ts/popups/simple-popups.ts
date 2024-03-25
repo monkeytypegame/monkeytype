@@ -59,6 +59,7 @@ type PopupKey =
   | "updateName"
   | "updatePassword"
   | "removeGoogleAuth"
+  | "removeGithubAuth"
   | "addPasswordAuth"
   | "deleteAccount"
   | "resetAccount"
@@ -86,6 +87,7 @@ const list: Record<PopupKey, SimplePopup | undefined> = {
   updateName: undefined,
   updatePassword: undefined,
   removeGoogleAuth: undefined,
+  removeGithubAuth: undefined,
   addPasswordAuth: undefined,
   deleteAccount: undefined,
   resetAccount: undefined,
@@ -424,7 +426,13 @@ async function reauthenticate(
       );
       await reauthenticateWithCredential(user, credential);
     } else if (method === "passwordFirst") {
-      await reauthenticateWithPopup(user, AccountController.gmailProvider);
+      const isGithub = user.providerData.some(
+        (p) => p?.providerId === "github.com"
+      );
+      const authProvider = isGithub
+        ? AccountController.githubProvider
+        : AccountController.gmailProvider;
+      await reauthenticateWithPopup(user, authProvider);
     }
 
     return {
@@ -535,7 +543,7 @@ list.removeGoogleAuth = new SimplePopup({
   onlineOnly: true,
   buttonText: "remove",
   execFn: async (_thisPopup, password): Promise<ExecReturn> => {
-    const reauth = await reauthenticate("passwordOnly", password);
+    const reauth = await reauthenticate("passwordFirst", password);
     if (reauth.status !== 1) {
       return {
         status: reauth.status,
@@ -565,8 +573,62 @@ list.removeGoogleAuth = new SimplePopup({
     if (!isAuthenticated()) return;
     if (!isUsingPasswordAuthentication()) {
       thisPopup.inputs = [];
-      thisPopup.buttonText = "";
-      thisPopup.text = "Password authentication is not enabled";
+      if (!isUsingGithubAuthentication()) {
+        thisPopup.buttonText = "";
+        thisPopup.text = "Password or GitHub authentication is not enabled";
+      }
+    }
+  },
+});
+
+list.removeGithubAuth = new SimplePopup({
+  id: "removeGithubAuth",
+  type: "text",
+  title: "Remove GitHub authentication",
+  inputs: [
+    {
+      placeholder: "Password",
+      type: "password",
+      initVal: "",
+    },
+  ],
+  onlineOnly: true,
+  buttonText: "remove",
+  execFn: async (_thisPopup, password): Promise<ExecReturn> => {
+    const reauth = await reauthenticate("passwordFirst", password);
+    if (reauth.status !== 1) {
+      return {
+        status: reauth.status,
+        message: reauth.message,
+      };
+    }
+
+    try {
+      await unlink(reauth.user, "github.com");
+    } catch (e) {
+      const message = createErrorMessage(e, "Failed to unlink GitHub account");
+      return {
+        status: -1,
+        message,
+      };
+    }
+
+    Settings.updateAuthSections();
+
+    reloadAfter(3);
+    return {
+      status: 1,
+      message: "GitHub authentication removed",
+    };
+  },
+  beforeInitFn: (thisPopup): void => {
+    if (!isAuthenticated()) return;
+    if (!isUsingPasswordAuthentication()) {
+      thisPopup.inputs = [];
+      if (!isUsingGoogleAuthentication()) {
+        thisPopup.buttonText = "";
+        thisPopup.text = "Password or Google authentication is not enabled";
+      }
     }
   },
 });
@@ -1542,13 +1604,24 @@ list.forgotPassword = new SimplePopup({
 });
 
 function isUsingPasswordAuthentication(): boolean {
-  return (
-    Auth?.currentUser?.providerData.find(
-      (p) => p?.providerId === "password"
-    ) !== undefined
-  );
+  return isUsingAuthentication("password");
 }
 
+function isUsingGithubAuthentication(): boolean {
+  return isUsingAuthentication("github.com");
+}
+
+function isUsingGoogleAuthentication(): boolean {
+  return isUsingAuthentication("google.com");
+}
+
+function isUsingAuthentication(authProvider: string): boolean {
+  return (
+    Auth?.currentUser?.providerData.some(
+      (p) => p.providerId === authProvider
+    ) || false
+  );
+}
 export function showPopup(
   key: PopupKey,
   showParams = [] as string[],
@@ -1580,6 +1653,10 @@ $(".pageSettings .section.discordIntegration #unlinkDiscordButton").on(
 
 $(".pageSettings #removeGoogleAuth").on("click", () => {
   showPopup("removeGoogleAuth");
+});
+
+$(".pageSettings #removeGithubAuth").on("click", () => {
+  showPopup("removeGithubAuth");
 });
 
 $("#resetSettingsButton").on("click", () => {
