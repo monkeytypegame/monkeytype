@@ -236,6 +236,11 @@ function apply(): void {
     return;
   }
 
+  if (text.length === 1) {
+    Notifications.add("Text cannot be a single character", 0);
+    return;
+  }
+
   text = text.trim();
   // text = text.replace(/[\r]/gm, " ");
 
