@@ -928,18 +928,29 @@ async function getAllTimeLbs(uid: string): Promise<SharedTypes.AllTimeLbs> {
     uid
   );
 
-  const allTime15EnglishRank =
-    allTime15English === false ? null : allTime15English.rank;
-  const allTime60EnglishRank =
-    allTime60English === false ? null : allTime60English.rank;
+  const english15 =
+    allTime15English === false
+      ? undefined
+      : ({
+          rank: allTime15English.rank,
+          count: allTime15English.count,
+        } as SharedTypes.RankAndCount);
+
+  const english60 =
+    allTime60English === false
+      ? undefined
+      : ({
+          rank: allTime60English.rank,
+          count: allTime60English.count,
+        } as SharedTypes.RankAndCount);
 
   return {
     time: {
       "15": {
-        english: allTime15EnglishRank,
+        english: english15,
       },
       "60": {
-        english: allTime60EnglishRank,
+        english: english60,
       },
     },
   };

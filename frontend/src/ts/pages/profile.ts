@@ -84,10 +84,12 @@ function reset(): void {
         <div class="group t15">
           <div class="testType">15 seconds</div>
           <div class="pos">-</div>
+          <div class="topPercentage">-</div>
         </div>
         <div class="group t60">
           <div class="testType">60 seconds</div>
           <div class="pos">-</div>
+          <div class="topPercentage">-</div>
         </div>
       </div>
       <div class="pbsWords">
