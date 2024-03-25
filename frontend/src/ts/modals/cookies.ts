@@ -66,7 +66,8 @@ async function hide(): Promise<void> {
 //   }
 // }
 
-const modal = new AnimatedModal("cookiesModal", "popups", undefined, {
+const modal = new AnimatedModal({
+  dialogId: "cookiesModal",
   customEscapeHandler: (): void => {
     //
   },

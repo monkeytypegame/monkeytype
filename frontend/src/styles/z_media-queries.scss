@@ -57,9 +57,6 @@
       }
     }
   }
-  #quoteSearchPopupWrapper #quoteSearchPopup #quoteSearchControlsWrapper {
-    grid-template-columns: 1fr 1fr max-content;
-  }
   #customTextPopupWrapper #customTextPopup .buttonsTop {
     grid-template-columns: 1fr 1fr;
   }
@@ -75,9 +72,6 @@
     .bioAndKeyboard .value {
       font-size: 0.75rem;
     }
-  }
-  #quoteSearchPopupWrapper #quoteSearchPopup #quoteSearchControlsWrapper {
-    grid-template-columns: 1fr;
   }
   #result .morestats {
     gap: 1rem;
@@ -131,9 +125,6 @@
 
 //1000px
 @media only screen and (max-width: 62.5rem) {
-  #quoteRatePopup {
-    width: 90vw !important;
-  }
   footer {
     .leftright {
       .left {
@@ -408,6 +399,9 @@
 
 //750px
 @media only screen and (max-width: 46.875rem) {
+  #quoteSearchModal .modal #quoteSearchControlsWrapper {
+    grid-template-columns: 1fr;
+  }
   #leaderboardsWrapper #leaderboards {
     .tables table {
       tr td:nth-child(5) {
@@ -433,7 +427,7 @@
 
 //700px
 @media only screen and (max-width: 43.75rem) {
-  #wordFilterPopupWrapper #wordFilterPopup {
+  #wordFilterModal .modal {
     .divider {
       width: 100%;
       height: 0.25rem;
@@ -588,7 +582,7 @@
       }
     }
   }
-  #quoteRatePopup {
+  #quoteRateModal {
     .ratingStats {
       grid-template-columns: 1fr 1fr !important;
     }
@@ -783,17 +777,6 @@
     grid-template-columns: 1fr;
   }
 
-  #simplePopupWrapper #simplePopup {
-    width: 90vw;
-  }
-
-  #quoteReportPopup {
-    width: calc(100% - 2rem);
-    margin-left: 1rem;
-    max-width: 800px;
-    padding: 1rem;
-  }
-
   .pageSettings {
     .section[data-config-name="customBackgroundFilter"] .groups .group {
       grid-template-columns: auto 1fr;
@@ -886,7 +869,7 @@
     display: none;
   }
 
-  #mobileTestConfig {
+  #mobileTestConfigButton {
     display: block;
   }
   #alertsPopupWrapper {
@@ -997,7 +980,7 @@
     display: none;
   }
 
-  #mobileTestConfig {
+  #mobileTestConfigButton {
     display: block;
   }
 

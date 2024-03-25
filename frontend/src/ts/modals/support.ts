@@ -5,17 +5,16 @@ export function show(): void {
   void modal.show();
 }
 
-const modal = new AnimatedModal("supportModal", "popups", undefined, {
-  setup: (modalEl): void => {
+const modal = new AnimatedModal({
+  dialogId: "supportModal",
+  setup: async (modalEl): Promise<void> => {
     modalEl.querySelector("button.ads")?.addEventListener("click", async () => {
       const commandline = await getCommandline();
-      await modal.hide({
-        animationMode: "modalOnly",
-        animationDurationMs: 62.5,
-      });
       commandline.show(
         { subgroupOverride: "enableAds" },
-        { animationMode: "modalOnly", animationDurationMs: 62.5 }
+        {
+          modalChain: modal,
+        }
       );
     });
   },

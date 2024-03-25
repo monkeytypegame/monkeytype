@@ -99,7 +99,7 @@ import * as Notifications from "../elements/notifications";
 import * as VideoAdPopup from "../popups/video-ad-popup";
 import * as ShareTestSettingsPopup from "../popups/share-test-settings-popup";
 import * as TestStats from "../test/test-stats";
-import * as QuoteSearchPopup from "../popups/quote-search-popup";
+import * as QuoteSearchModal from "../modals/quote-search";
 import * as FPSCounter from "../elements/fps-counter";
 
 const layoutsPromise = Misc.getLayoutsList();
@@ -201,7 +201,7 @@ export const commands: MonkeyTypes.CommandsSubgroup = {
       icon: "fa-search",
       exec: (): void => {
         UpdateConfig.setMode("quote");
-        void QuoteSearchPopup.show();
+        void QuoteSearchModal.show();
       },
       shouldFocusTestUI: false,
     },
@@ -241,7 +241,7 @@ export const commands: MonkeyTypes.CommandsSubgroup = {
       },
       input: true,
       icon: "fa-tint",
-      exec: (input): void => {
+      exec: ({ input }): void => {
         if (input === undefined) return;
         void UpdateConfig.setCustomLayoutfluid(
           input as MonkeyTypes.CustomLayoutFluidSpaces
@@ -308,7 +308,7 @@ export const commands: MonkeyTypes.CommandsSubgroup = {
         return Config.customBackground;
       },
       input: true,
-      exec: (input): void => {
+      exec: ({ input }): void => {
         UpdateConfig.setCustomBackground(input ?? "");
       },
     },
@@ -366,7 +366,7 @@ export const commands: MonkeyTypes.CommandsSubgroup = {
       icon: "fa-cog",
       alias: "import config",
       input: true,
-      exec: async (input): Promise<void> => {
+      exec: async ({ input }): Promise<void> => {
         if (input === undefined || input === "") return;
         try {
           await UpdateConfig.apply(JSON.parse(input));
@@ -501,9 +501,17 @@ export function doesListExist(listName: string): boolean {
   return lists[listName as ListsObjectKeys] !== undefined;
 }
 
-export function getList(
+export async function getList(
   listName: ListsObjectKeys
-): MonkeyTypes.CommandsSubgroup {
+): Promise<MonkeyTypes.CommandsSubgroup> {
+  await Promise.allSettled([
+    layoutsPromise,
+    languagesPromise,
+    funboxPromise,
+    fontsPromise,
+    themesPromise,
+    challengesPromise,
+  ]);
   const list = lists[listName];
   if (!list) {
     Notifications.add(`List not found: ${listName}`, -1);

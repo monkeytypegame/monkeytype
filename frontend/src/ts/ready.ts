@@ -15,6 +15,7 @@ import { log } from "./controllers/analytics-controller";
 import { envConfig } from "./constants/env-config";
 import * as ServerConfiguration from "./ape/server-configuration";
 import * as Skeleton from "./utils/skeleton";
+import { formatDistanceStrict } from "date-fns";
 
 if (Misc.isDevEnvironment()) {
   $("footer .currentVersion .text").text("localhost");
@@ -62,16 +63,19 @@ $(document).ready(() => {
   //   );
   // }
 
-  const plushieBannerClosed =
-    window.localStorage.getItem("plushieBannerClosed") === "true";
-  if (!plushieBannerClosed) {
+  const plushieBannerClosed2 =
+    window.localStorage.getItem("plushieBannerClosed2") === "true";
+  if (!plushieBannerClosed2) {
+    const string = formatDistanceStrict(1711918800000, Date.now(), {
+      roundingMethod: "floor",
+    });
     Notifications.addBanner(
-      `George Plushie - available now for a limited time! <a target="_blank" rel="noopener" href="https://mktp.co/plushie">monkeytype.store</a>`,
+      `Our limited plushie will be gone in ${string} - don't miss out! <a target="_blank" rel="noopener" href="https://mktp.co/plushie2">monkeytype.store</a>`,
       1,
       "./images/plushiebanner.png",
-      false,
+      true,
       () => {
-        window.localStorage.setItem("plushieBannerClosed", "true");
+        window.localStorage.setItem("plushieBannerClosed2", "true");
       },
       true
     );
@@ -91,8 +95,11 @@ $(document).ready(() => {
   if (ConnectionState.get()) {
     void PSA.show();
     void ServerConfiguration.sync().then(() => {
-      if (ServerConfiguration.get()?.users.signUp) {
-        $(".signInOut").removeClass("hidden");
+      if (!ServerConfiguration.get()?.users.signUp) {
+        $(".signInOut").addClass("hidden");
+        $(".register").addClass("hidden");
+        $(".login").addClass("hidden");
+        $(".disabledNotification").removeClass("hidden");
       }
     });
   }

@@ -90,4 +90,6 @@ export function show(mode: SharedTypes.Config.Mode): void {
   });
 }
 
-const modal = new AnimatedModal("pbTablesModal", "popups", undefined);
+const modal = new AnimatedModal({
+  dialogId: "pbTablesModal",
+});

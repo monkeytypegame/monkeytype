@@ -4,7 +4,6 @@ import differenceInDays from "date-fns/differenceInDays";
 import * as Misc from "../utils/misc";
 import { getHTMLById } from "../controllers/badge-controller";
 import { throttle } from "throttle-debounce";
-import * as EditProfilePopup from "../popups/edit-profile-popup";
 import * as ActivePage from "../states/active-page";
 import formatDistanceToNowStrict from "date-fns/formatDistanceToNowStrict";
 import { getHtmlByUserFlags } from "../controllers/user-flag-controller";
@@ -408,14 +407,6 @@ export function updateNameFontSize(where: ProfileViewPaths): void {
   const finalFontSize = Math.min(Math.max(fittedFontSize, 10), upperLimit);
   nameField.style.fontSize = `${finalFontSize}px`;
 }
-
-$(".details .editProfileButton").on("click", () => {
-  const snapshot = DB.getSnapshot();
-  if (!snapshot) return;
-  EditProfilePopup.show(() => {
-    void update("account", snapshot);
-  });
-});
 
 const throttledEvent = throttle(1000, () => {
   const activePage = ActivePage.get();

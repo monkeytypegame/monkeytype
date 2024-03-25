@@ -11,7 +11,6 @@ import * as Notifications from "../elements/notifications";
 import * as ImportExportSettingsModal from "../modals/import-export-settings";
 import * as ConfigEvent from "../observables/config-event";
 import * as ActivePage from "../states/active-page";
-import * as ApeKeysPopup from "../popups/ape-keys-popup";
 import Page from "./page";
 import { getAuthenticatedUser, isAuthenticated } from "../firebase";
 import Ape from "../ape";
@@ -943,17 +942,12 @@ export async function update(groupUpdate = true): Promise<void> {
   const modifierKey = window.navigator.userAgent.toLowerCase().includes("mac")
     ? "cmd"
     : "ctrl";
-  if (Config.quickRestart === "esc") {
-    $(".pageSettings .tip").html(`
-    tip: You can also change all these settings quickly using the
-    command line (<key>${modifierKey}</key>+<key>shift</key>+<key>p</key>)`);
-  } else {
-    $(".pageSettings .tip").html(`
-    tip: You can also change all these settings quickly using the
-    command line (<key>esc</key> or <key>${modifierKey}</key>+<key>shift</key>+<key>p</key>)`);
-  }
-}
 
+  const commandKey = Config.quickRestart === "esc" ? "tab" : "esc";
+  $(".pageSettings .tip").html(`
+    tip: You can also change all these settings quickly using the
+    command line (<key>${commandKey}</key> or <key>${modifierKey}</key> + <key>shift</key> + <key>p</key>)`);
+}
 function toggleSettingsGroup(groupName: string): void {
   const groupEl = $(`.pageSettings .settingsGroup.${groupName}`);
   groupEl.stop(true, true).slideToggle(250).toggleClass("slideup");
@@ -1144,10 +1138,6 @@ $("#exportSettingsButton").on("click", () => {
 
 $(".pageSettings .sectionGroupTitle").on("click", (e) => {
   toggleSettingsGroup($(e.currentTarget).attr("group") as string);
-});
-
-$(".pageSettings .section.apeKeys #showApeKeysPopup").on("click", () => {
-  void ApeKeysPopup.show();
 });
 
 $(

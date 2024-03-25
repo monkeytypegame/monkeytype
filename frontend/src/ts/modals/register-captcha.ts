@@ -9,6 +9,7 @@ export let promise = new Promise<string | undefined>((resolve) => {
 
 export function show(): void {
   void modal.show({
+    mode: "dialog",
     beforeAnimation: async (modal) => {
       promise = new Promise((resolve) => {
         resolvePromise = resolve;
@@ -32,7 +33,8 @@ function hide(resolveToUndefined = false): void {
   void modal.hide();
 }
 
-const modal = new AnimatedModal("registerCaptchaModal", "popups", undefined, {
+const modal = new AnimatedModal({
+  dialogId: "registerCaptchaModal",
   customEscapeHandler: async (): Promise<void> => {
     hide(true);
   },
