@@ -226,6 +226,8 @@ function apply(): void {
     return;
   }
 
+  CustomText.setPopupTextareaState(text, true);
+
   text = text.trim();
   // text = text.replace(/[\r]/gm, " ");
 
@@ -234,6 +236,15 @@ function apply(): void {
 
   //replace zero width characters
   text = text.replace(/[\u200B-\u200D\u2060\uFEFF]/g, "");
+
+  if (
+    $(`${popup} .replaceControlCharacters input`).prop("checked") as boolean
+  ) {
+    text = text.replace(/([^\\]|^)\\t/gm, "$1\t");
+    text = text.replace(/([^\\]|^)\\n/gm, "$1\n");
+    text = text.replace(/\\\\t/gm, "\\t");
+    text = text.replace(/\\\\n/gm, "\\n");
+  }
 
   text = text.replace(/ +/gm, " ");
   text = text.replace(/( *(\r\n|\r|\n) *)/g, "\n ");
@@ -258,17 +269,6 @@ function apply(): void {
       text = text.replace(/\n/gm, " ");
       text = text.replace(/ +/gm, " ");
     }
-  }
-
-  CustomText.setPopupTextareaState(text, true);
-
-  if (
-    $(`${popup} .replaceControlCharacters input`).prop("checked") as boolean
-  ) {
-    text = text.replace(/([^\\]|^)\\t/gm, "$1\t");
-    text = text.replace(/([^\\]|^)\\n/gm, "$1\n");
-    text = text.replace(/\\\\t/gm, "\\t");
-    text = text.replace(/\\\\n/gm, "\\n");
   }
 
   const words = text.split(CustomText.delimiter).filter((word) => word !== "");
