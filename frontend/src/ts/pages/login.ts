@@ -353,6 +353,8 @@ export const page = new Page(
   },
   async () => {
     Skeleton.append("pageLogin", "main");
+    enableSignUpButton();
+    enableInputs();
   },
   async () => {
     //

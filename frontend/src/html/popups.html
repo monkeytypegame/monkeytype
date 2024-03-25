@@ -55,9 +55,9 @@
   </div>
 </dialog>
 
-<div id="simplePopupWrapper" class="popupWrapper hidden">
-  <div id="simplePopup" popupId=""></div>
-</div>
+<dialog id="simpleModal" class="modalWrapper hidden">
+  <form class="modal"></form>
+</dialog>
 
 <dialog id="cookiesModal" class="modalWrapper hidden">
   <div class="extensionMessage">
@@ -273,8 +273,8 @@
   </div>
 </div>
 
-<div id="quoteRatePopupWrapper" class="popupWrapper hidden">
-  <div id="quoteRatePopup" quoteId="">
+<dialog id="quoteRateModal" class="modalWrapper hidden">
+  <div class="modal">
     <div class="warning">
       If you find a grammatical error, think the quote has inappropriate
       language or feel like it's low quality -
@@ -311,21 +311,21 @@
       <div class="starsWrapper">
         <div class="top">your rating</div>
         <div class="stars">
-          <div class="star active" rating="1">
+          <button class="star" data-rating="1">
             <i class="fas fa-fw fa-star"></i>
-          </div>
-          <div class="star active" rating="2">
+          </button>
+          <button class="star" data-rating="2">
             <i class="fas fa-fw fa-star"></i>
-          </div>
-          <div class="star active" rating="3">
+          </button>
+          <button class="star" data-rating="3">
             <i class="fas fa-fw fa-star"></i>
-          </div>
-          <div class="star" rating="4">
+          </button>
+          <button class="star" data-rating="4">
             <i class="fas fa-fw fa-star"></i>
-          </div>
-          <div class="star" rating="5">
+          </button>
+          <button class="star" data-rating="5">
             <i class="fas fa-fw fa-star"></i>
-          </div>
+          </button>
         </div>
       </div>
     </div>
@@ -344,17 +344,15 @@
             <i class="fas fa-star"></i>
             <i class="fas fa-star"></i>
           </div> -->
-    <span
+    <button
+      class="textButton submitButton"
       aria-label="Submit review"
       data-balloon-pos="up"
-      style="display: grid"
     >
-      <div class="textButton submitButton">
-        <i class="fas fa-chevron-right"></i>
-      </div>
-    </span>
+      <i class="fas fa-chevron-right"></i>
+    </button>
   </div>
-</div>
+</dialog>
 
 <dialog id="importExportSettingsModal" class="modalWrapper hidden">
   <form class="modal" data-mode="">
@@ -495,8 +493,12 @@
     <div class="button save">save</div>
   </div>
 </div>
-<div id="wordFilterPopupWrapper" class="popupWrapper hidden">
-  <div id="wordFilterPopup">
+<dialog id="wordFilterModal" class="modalWrapper hidden">
+  <div class="modal">
+    <!-- hidden for now, dunno where to place it -->
+    <!-- <div class="loadingIndicator">
+      <i class="fas fa-fw fa-spin fa-circle-notch"></i>
+    </div> -->
     <div class="top">
       <div class="group">
         <div class="title">language</div>
@@ -544,11 +546,6 @@
           title="exclude"
         />
       </div>
-      <!-- </div> -->
-      <!-- <div class="tip">
-        Use the above filters to include and exclude words or characters
-        (separated by spaces)
-      </div> -->
     </div>
     <div class="divider"></div>
 
@@ -562,20 +559,19 @@
         <select class="layoutInput"></select>
       </div>
       <!-- <div class="tip">Use the dropdowns above to generate presets</div> -->
-      <div class="button generateButton">generate</div>
+      <button class="generateButton">generate</button>
     </div>
 
     <div class="bottom">
       <div class="tip">
         "Set" replaces the current custom word list with the filter result,
-        "Add" appends the filter result to the current custom word list
+        "Add" appends the filter result to the current custom word list.
       </div>
-      <i class="fas fa-fw fa-spin fa-circle-notch hidden loadingIndicator"></i>
-      <div class="button setButton">set</div>
-      <div class="button addButton">add</div>
+      <button class="setButton">set</button>
+      <button class="addButton">add</button>
     </div>
   </div>
-</div>
+</dialog>
 <dialog id="googleSignUpModal" class="modalWrapper hidden">
   <form class="modal">
     <div class="title">Account name</div>
@@ -619,19 +615,19 @@
     <button>ok</button>
   </form>
 </dialog>
-<div id="quoteSearchPopupWrapper" class="popupWrapper hidden">
-  <div id="quoteSearchPopup" mode="">
+<dialog id="quoteSearchModal" class="modalWrapper hidden">
+  <div class="modal">
     <div id="quoteSearchTop">
-      <div class="title">Quote Search</div>
+      <div class="title">Quote search</div>
       <div class="buttons">
-        <div id="gotoSubmitQuoteButton" class="button">
+        <button class="goToQuoteSubmit">
           <i class="fas fa-plus"></i>
           Submit a quote
-        </div>
-        <div id="goToApproveQuotes" class="button">
+        </button>
+        <button class="goToQuoteApprove">
           <i class="fas fa-check"></i>
           Approve quotes
-        </div>
+        </button>
       </div>
     </div>
     <div id="quoteSearchControlsWrapper">
@@ -644,20 +640,23 @@
         placeholder="filter by text, source or id"
       />
       <select class="quoteLengthFilter" multiple></select>
-      <div id="toggleShowFavorites" class="button">Favorites Only</div>
+      <button class="toggleFavorites">
+        <i class="fas fa-fw fa-heart"></i>
+        <!-- favorites -->
+      </button>
     </div>
     <div id="quoteSearchResults" class="quoteSearchResults"></div>
     <div id="quoteSearchPageNavigator">
-      <div class="button prevPage disabled">
+      <button class="prevPage" disabled>
         <i class="fas fa-fw fa-chevron-left"></i>
-      </div>
-      <div id="pageInfo">No search results</div>
-      <div class="button nextPage disabled">
+      </button>
+      <div class="pageInfo">No search results</div>
+      <button class="nextPage" disabled>
         <i class="fas fa-fw fa-chevron-right"></i>
-      </div>
+      </button>
     </div>
   </div>
-</div>
+</dialog>
 <dialog id="quoteSubmitModal" class="modalWrapper hidden">
   <div class="modal">
     <div class="title">Submit a quote</div>
@@ -690,14 +689,14 @@
     <button>submit</button>
   </div>
 </dialog>
-<div id="apeKeysPopupWrapper" class="hidden popupWrapper">
-  <div id="apeKeysPopup" mode="">
+<dialog id="apeKeysModal" class="hidden modalWrapper">
+  <div class="modal">
     <div class="top">
       <div class="title">Ape Keys</div>
-      <div class="button generateApeKey">
+      <button class="generateApeKey">
         <i class="fas fa-plus"></i>
         Generate new key
-      </div>
+      </button>
     </div>
     <table>
       <thead>
@@ -713,10 +712,10 @@
       <tbody></tbody>
     </table>
   </div>
-</div>
-<div id="quoteReportPopupWrapper" class="popupWrapper hidden">
-  <div id="quoteReportPopup" mode="">
-    <div class="title">Report a Quote</div>
+</dialog>
+<dialog id="quoteReportModal" class="modalWrapper hidden">
+  <div class="modal">
+    <div class="title">Report a quote</div>
     <div class="text">
       Please report quotes responsibly - misuse may result in you losing access
       to this feature.
@@ -742,9 +741,9 @@
       class="g-recaptcha"
       data-sitekey="6Lc-V8McAAAAAJ7s6LGNe7MBZnRiwbsbiWts87aj"
     ></div>
-    <div class="button submit">report</div>
+    <button>report</button>
   </div>
-</div>
+</dialog>
 <dialog id="userReportModal" class="modalWrapper hidden">
   <div class="modal">
     <div class="title">Report a user</div>

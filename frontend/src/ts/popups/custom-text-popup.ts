@@ -5,7 +5,7 @@ import * as TestLogic from "../test/test-logic";
 import * as ChallengeController from "../controllers/challenge-controller";
 import Config, * as UpdateConfig from "../config";
 import * as Misc from "../utils/misc";
-import * as WordFilterPopup from "./word-filter-popup";
+import * as WordFilterPopup from "../modals/word-filter";
 import * as Notifications from "../elements/notifications";
 import * as SavedTextsPopup from "./saved-texts-popup";
 import * as SaveCustomTextPopup from "./save-custom-text-popup";
@@ -375,9 +375,8 @@ $(document).on("keydown", (event) => {
 
 $("#popups").on("click", `${popup} .wordfilter`, () => {
   hide({ noAnim: true, resetState: false });
-  void WordFilterPopup.show(true, () => {
-    show(true);
-  });
+  //todo use modal chain
+  void WordFilterPopup.show();
 });
 
 $(`${popup} .buttonsTop .showSavedTexts`).on("click", () => {

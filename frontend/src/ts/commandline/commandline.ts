@@ -6,6 +6,10 @@ import * as ThemeController from "../controllers/theme-controller";
 import { clearFontPreview } from "../ui";
 import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
 import * as Notifications from "../elements/notifications";
+import * as OutOfFocus from "../test/out-of-focus";
+import * as ActivePage from "../states/active-page";
+import { focusWords } from "../test/test-ui";
+import * as Loader from "../elements/loader";
 
 type CommandlineMode = "search" | "input";
 type InputModeParams = {
@@ -32,7 +36,7 @@ let subgroupOverride: MonkeyTypes.CommandsSubgroup | null = null;
 function removeCommandlineBackground(): void {
   $("#commandLine").addClass("noBackground");
   if (Config.showOutOfFocusWarning) {
-    $("#words").removeClass("blurred");
+    OutOfFocus.hide();
   }
 }
 
@@ -40,7 +44,7 @@ function addCommandlineBackground(): void {
   $("#commandLine").removeClass("noBackground");
   const isWordsFocused = $("#wordsInput").is(":focus");
   if (Config.showOutOfFocusWarning && !isWordsFocused) {
-    $("#words").addClass("blurred");
+    OutOfFocus.show();
   }
 }
 
@@ -74,9 +78,11 @@ export function show(
             settings.subgroupOverride
           );
           if (exists) {
-            subgroupOverride = CommandlineLists.getList(
+            Loader.show();
+            subgroupOverride = await CommandlineLists.getList(
               settings.subgroupOverride as CommandlineLists.ListsObjectKeys
             );
+            Loader.hide();
           } else {
             subgroupOverride = null;
             usingSingleList = Config.singleListCommandLine === "on";
@@ -113,10 +119,16 @@ export function show(
 function hide(clearModalChain = false): void {
   clearFontPreview();
   void ThemeController.clearPreview();
+  if (ActivePage.get() === "test") {
+    focusWords();
+  }
   void modal.hide({
     clearModalChain,
     afterAnimation: async () => {
       addCommandlineBackground();
+      if (ActivePage.get() === "test") {
+        focusWords();
+      }
     },
   });
 }
@@ -150,8 +162,10 @@ async function goBackOrHide(): Promise<void> {
 }
 
 async function filterSubgroup(): Promise<void> {
-  // const configKey = getSubgroup().configKey;
-  const list = await getList();
+  const subgroup = await getSubgroup();
+  subgroup.beforeList?.();
+  const list = subgroup.list;
+
   const inputNoQuickSingle = inputValue
     .replace(/^>/gi, "")
     .toLowerCase()
@@ -434,9 +448,6 @@ async function runActiveCommand(): Promise<void> {
     updateInput(inputModeParams.value as string);
     hideCommands();
   } else if (command.subgroup) {
-    if (command.subgroup.beforeList) {
-      command.subgroup.beforeList();
-    }
     CommandlineLists.pushToStack(
       command.subgroup as MonkeyTypes.CommandsSubgroup
     );
@@ -535,7 +546,7 @@ async function decrementActiveIndex(): Promise<void> {
 const modal = new AnimatedModal({
   dialogId: "commandLine",
   customEscapeHandler: (): void => {
-    hide();
+    //
   },
   customWrapperClickHandler: (): void => {
     hide();
@@ -543,8 +554,8 @@ const modal = new AnimatedModal({
   showOptionsWhenInChain: {
     focusFirstInput: true,
   },
-  setup: (modal): void => {
-    const input = modal.querySelector("input") as HTMLInputElement;
+  setup: async (modalEl): Promise<void> => {
+    const input = modalEl.querySelector("input") as HTMLInputElement;
 
     input.addEventListener("input", async (e) => {
       inputValue = (e.target as HTMLInputElement).value;
@@ -596,7 +607,7 @@ const modal = new AnimatedModal({
       }
     });
 
-    modal.addEventListener("mousemove", (e) => {
+    modalEl.addEventListener("mousemove", (e) => {
       mouseMode = true;
     });
   },

@@ -1343,7 +1343,9 @@ addEventListener("resize", () => {
   ResultWordHighlight.destroy();
 });
 
-$("#wordsInput").on("focus", () => {
+$("#wordsInput").on("focus", (e) => {
+  const wordsFocused = e.target === document.activeElement;
+  if (!wordsFocused) return;
   if (!resultVisible && Config.showOutOfFocusWarning) {
     OutOfFocus.hide();
   }

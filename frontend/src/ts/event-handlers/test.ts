@@ -4,6 +4,11 @@ import * as DB from "../db";
 import * as EditResultTagsModal from "../modals/edit-result-tags";
 import * as MobileTestConfigModal from "../modals/mobile-test-config";
 import * as CustomTestDurationModal from "../modals/custom-test-duration";
+import * as TestWords from "../test/test-words";
+import * as Notifications from "../elements/notifications";
+import * as QuoteRateModal from "../modals/quote-rate";
+import * as QuoteReportModal from "../modals/quote-report";
+import * as QuoteSearchModal from "../modals/quote-search";
 
 $(".pageTest").on("click", "#testModesNotice .textButton", async (event) => {
   const attr = $(event.currentTarget).attr("commands");
@@ -40,4 +45,27 @@ $(".pageTest").on("click", ".tags .editTagsButton", () => {
 
 $(".pageTest").on("click", "#mobileTestConfigButton", () => {
   MobileTestConfigModal.show();
+});
+
+$(".pageTest #rateQuoteButton").on("click", async () => {
+  if (TestWords.randomQuote === null) {
+    Notifications.add("Failed to show quote rating popup: no quote", -1);
+    return;
+  }
+  QuoteRateModal.show(TestWords.randomQuote);
+});
+
+$(".pageTest #reportQuoteButton").on("click", async () => {
+  if (TestWords.randomQuote === null) {
+    Notifications.add("Failed to show quote report popup: no quote", -1);
+    return;
+  }
+  void QuoteReportModal.show(TestWords.randomQuote?.id);
+});
+
+$(".pageTest").on("click", "#testConfig .quoteLength .textButton", (e) => {
+  const len = parseInt($(e.currentTarget).attr("quoteLength") ?? "0");
+  if (len === -2) {
+    void QuoteSearchModal.show();
+  }
 });

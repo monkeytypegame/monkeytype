@@ -43,7 +43,7 @@ type ConstructorParams = {
   showOptionsWhenInChain?: ShowOptions;
   customEscapeHandler?: (e: KeyboardEvent) => void;
   customWrapperClickHandler?: (e: MouseEvent) => void;
-  setup?: (modal: HTMLElement) => void;
+  setup?: (modal: HTMLElement) => Promise<void>;
 };
 
 const DEFAULT_ANIMATION_DURATION = 125;
@@ -63,7 +63,7 @@ export default class AnimatedModal {
 
   private customEscapeHandler: ((e: KeyboardEvent) => void) | undefined;
   private customWrapperClickHandler: ((e: MouseEvent) => void) | undefined;
-  private setup: ((modal: HTMLElement) => void) | undefined;
+  private setup: ((modal: HTMLElement) => Promise<void>) | undefined;
 
   constructor(constructorParams: ConstructorParams) {
     if (constructorParams.dialogId.startsWith("#")) {
@@ -118,7 +118,11 @@ export default class AnimatedModal {
     Skeleton.save(this.dialogId);
   }
 
-  runSetup(): void {
+  getPreviousModalInChain(): AnimatedModal | undefined {
+    return this.previousModalInChain;
+  }
+
+  async runSetup(): Promise<void> {
     this.wrapperEl.addEventListener("keydown", (e) => {
       if (e.key === "Escape" && isPopupVisible(this.dialogId)) {
         if (this.customEscapeHandler !== undefined) {
@@ -140,7 +144,7 @@ export default class AnimatedModal {
     });
 
     if (this.setup !== undefined) {
-      this.setup(this.modalEl);
+      await this.setup(this.modalEl);
     }
   }
 
@@ -161,18 +165,18 @@ export default class AnimatedModal {
   }
 
   focusFirstInput(setting: true | "focusAndSelect" | undefined): void {
-    const input = this.modalEl.querySelector("input");
-    if (input !== null) {
-      const isHidden = input.classList.contains("hidden");
-      if (isHidden) {
-        this.wrapperEl.focus();
+    const inputs = [...this.modalEl.querySelectorAll("input")];
+    const input = inputs.filter(
+      (input) => !input.classList.contains("hidden")
+    )[0];
+    if (input !== undefined && input !== null) {
+      if (setting === true) {
+        input.focus();
+      } else if (setting === "focusAndSelect") {
+        input.focus();
+        input.select();
       } else {
-        if (setting === true) {
-          input.focus();
-        } else if (setting === "focusAndSelect") {
-          input.focus();
-          input.select();
-        }
+        this.wrapperEl.focus();
       }
     } else {
       this.wrapperEl.focus();
@@ -186,7 +190,7 @@ export default class AnimatedModal {
       Skeleton.append(this.dialogId, this.skeletonAppendParent);
 
       if (!this.setupRan) {
-        this.runSetup();
+        await this.runSetup();
         this.setupRan = true;
       }
 

@@ -37,7 +37,7 @@ const modal = new AnimatedModal({
     modalEl.querySelector("input")?.addEventListener("input", (e) => {
       state.value = (e.target as HTMLInputElement).value;
     });
-    modalEl.querySelector("form")?.addEventListener("submit", async (e) => {
+    modalEl?.addEventListener("submit", async (e) => {
       e.preventDefault();
       if (state.mode !== "import") return;
       if (state.value === "") {

@@ -3,7 +3,7 @@ import Config, * as UpdateConfig from "../config";
 import * as ManualRestart from "../test/manual-restart-tracker";
 import * as CustomWordAmountPopup from "./custom-word-amount";
 import * as CustomTestDurationPopup from "./custom-test-duration";
-import * as QuoteSearchPopup from "../popups/quote-search-popup";
+import * as QuoteSearchModal from "./quote-search";
 import * as CustomTextPopup from "../popups/custom-text-popup";
 import AnimatedModal from "../utils/animated-modal";
 
@@ -69,7 +69,7 @@ function hide(): void {
   void modal.hide();
 }
 
-function setup(modalEl: HTMLElement): void {
+async function setup(modalEl: HTMLElement): Promise<void> {
   const wordsGroupButtons = modalEl.querySelectorAll(".wordsGroup button");
   for (const button of wordsGroupButtons) {
     button.addEventListener("click", (e) => {
@@ -127,8 +127,9 @@ function setup(modalEl: HTMLElement): void {
       const len = parseInt(target.getAttribute("data-quoteLength") ?? "0", 10);
 
       if (len === -2) {
-        hide(); //todo use modal chaining here
-        void QuoteSearchPopup.show();
+        void QuoteSearchModal.show({
+          modalChain: modal,
+        });
       } else {
         let newVal: number[] | number = len;
         if (len === -1) {

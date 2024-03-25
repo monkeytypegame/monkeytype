@@ -3,12 +3,10 @@ import * as Loader from "../elements/loader";
 import * as Notifications from "../elements/notifications";
 import format from "date-fns/format";
 import * as ConnectionState from "../states/connection";
-import * as Skeleton from "../utils/skeleton";
-import { isPopupVisible } from "../utils/misc";
+import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
+import { showPopup } from "../popups/simple-popups";
 
 let apeKeys: Ape.ApeKeys.GetApeKeys | null = {};
-
-const wrapperId = "apeKeysPopupWrapper";
 
 async function getData(): Promise<void> {
   Loader.show();
@@ -26,7 +24,7 @@ async function getData(): Promise<void> {
 function refreshList(): void {
   const data = apeKeys;
   if (data === undefined || data === null) return;
-  const table = $("#apeKeysPopupWrapper table tbody");
+  const table = $("#apeKeysModal table tbody");
   table.empty();
   const apeKeyIds = Object.keys(data);
   if (apeKeyIds.length === 0) {
@@ -40,15 +38,15 @@ function refreshList(): void {
     table.append(`
       <tr keyId="${apeKeyId}">
         <td>
-          <div class="textButton">
+          <button class="textButton toggleActive">
             ${
               key.enabled
                 ? `<i class="fas fa-fw fa-check-square"></i>`
                 : `<i class="far fa-fw fa-square"></i>`
             }
-          </div>
+          </button>
         </td>
-        <td>${key.name}</td>
+        <td  onClick=${console.log(key)}>${key.name}</td>
         <td>${format(new Date(key.createdOn), "dd MMM yyyy HH:mm")}</td>
         <td>${format(new Date(key.modifiedOn), "dd MMM yyyy HH:mm")}</td>
         <td>${
@@ -58,81 +56,59 @@ function refreshList(): void {
         }</td>
         <td>
           <div class="keyButtons">
-            <div class="button edit">
+            <button class="editButton">
               <i class="fas fa-fw fa-pen"></i>
-            </div>
-            <div class="button delete">
+            </button>
+            <button class="deleteButton">
               <i class="fas fa-fw fa-trash-alt"></i>
-            </div>
+            </button>
           </div>
         </td>
       </tr>
     `);
   });
-}
-
-function hide(): void {
-  if (isPopupVisible(wrapperId)) {
-    $("#apeKeysPopupWrapper")
-      .stop(true, true)
-      .css("opacity", 1)
-      .animate(
-        {
-          opacity: 0,
-        },
-        125,
-        () => {
-          $("#apeKeysPopupWrapper").addClass("hidden");
-          Skeleton.remove(wrapperId);
-        }
-      );
+  for (const tr of table.find("tr")) {
+    const keyid = tr.getAttribute("keyid") as string;
+    tr.querySelector("button.deleteButton")?.addEventListener("click", (e) => {
+      showPopup("deleteApeKey", [keyid], {
+        modalChain: modal,
+      });
+    });
+    tr.querySelector("button.editButton")?.addEventListener("click", (e) => {
+      showPopup("editApeKey", [keyid], {
+        modalChain: modal,
+      });
+    });
+    tr.querySelector("button.toggleActive")?.addEventListener("click", (e) => {
+      void toggleActiveKey(keyid);
+    });
   }
 }
 
+// function hide(clearModalChain = false): void {
+//   void modal.hide({
+//     clearModalChain,
+//   });
+// }
+
 //show the popup
-export async function show(): Promise<void> {
+export async function show(showOptions?: ShowOptions): Promise<void> {
   if (!ConnectionState.get()) {
     Notifications.add("You are offline", 0, {
       duration: 2,
     });
     return;
   }
-  Skeleton.append(wrapperId, "popups");
-  if (!isPopupVisible(wrapperId)) {
-    await getData();
-    refreshList();
-    $("#apeKeysPopupWrapper")
-      .stop(true, true)
-      .css("opacity", 0)
-      .removeClass("hidden")
-      .animate(
-        {
-          opacity: 1,
-        },
-        125,
-        () => {
-          $("#apeKeysPopup textarea").trigger("focus").trigger("select");
-        }
-      );
-  }
+  void modal.show({
+    ...showOptions,
+    beforeAnimation: async () => {
+      await getData();
+      refreshList();
+    },
+  });
 }
 
-$("#apeKeysPopupWrapper").on("mousedown", (e) => {
-  if ($(e.target).attr("id") === "apeKeysPopupWrapper") {
-    hide();
-  }
-});
-
-$("#apeKeysPopup .generateApeKey").on("click", () => {
-  hide();
-});
-
-$("#popups").on("click", "#apeKeysPopup table .keyButtons .button", () => {
-  hide();
-});
-
-$("#popups").on("click", "#apeKeysPopup table .textButton", async (e) => {
-  const keyId = $(e.target).closest("tr").attr("keyId") as string;
+async function toggleActiveKey(keyId: string): Promise<void> {
   const key = apeKeys?.[keyId];
   if (!key || apeKeys === undefined) return;
   Loader.show();
@@ -148,13 +124,19 @@ $("#popups").on("click", "#apeKeysPopup table .textButton", async (e) => {
   } else {
     Notifications.add("Key inactive", 1);
   }
-});
+}
 
-$(document).on("keydown", (event) => {
-  if (event.key === "Escape" && isPopupVisible(wrapperId)) {
-    hide();
-    event.preventDefault();
-  }
-});
+async function setup(modalEl: HTMLElement): Promise<void> {
+  modalEl
+    .querySelector(".generateApeKey")
+    ?.addEventListener("click", async () => {
+      showPopup("generateApeKey", [], {
+        modalChain: modal,
+      });
+    });
+}
 
-Skeleton.save(wrapperId);
+const modal = new AnimatedModal({
+  dialogId: "apeKeysModal",
+  setup,
+});

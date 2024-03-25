@@ -28,7 +28,7 @@ function apply(): void {
   hide(true);
 }
 
-function setup(modalEl: HTMLElement): void {
+async function setup(modalEl: HTMLElement): Promise<void> {
   modalEl.addEventListener("submit", (e) => {
     e.preventDefault();
     apply();

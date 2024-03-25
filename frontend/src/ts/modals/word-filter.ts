@@ -1,12 +1,8 @@
 import * as Misc from "../utils/misc";
 import * as CustomText from "../test/custom-text";
 import * as Notifications from "../elements/notifications";
-import * as Skeleton from "../utils/skeleton";
 import SlimSelect from "slim-select";
-
-const wrapperId = "wordFilterPopupWrapper";
-
-let initialised = false;
+import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
 
 type FilterPreset = {
   display: string;
@@ -95,62 +91,58 @@ const presets: Record<string, FilterPreset> = {
   },
 };
 
-async function init(): Promise<void> {
-  if (!initialised) {
-    $("#wordFilterPopup .languageInput").empty();
+async function initSelectOptions(): Promise<void> {
+  $("#wordFilterModal .languageInput").empty();
 
-    $("#wordFilterPopup .layoutInput").empty();
+  $("#wordFilterModal .layoutInput").empty();
 
-    $("wordFilterPopup .presetInput").empty();
+  $("wordFilterModal .presetInput").empty();
 
-    let LanguageList;
-    let LayoutList;
+  let LanguageList;
+  let LayoutList;
 
-    try {
-      LanguageList = await Misc.getLanguageList();
-    } catch (e) {
-      console.error(
-        Misc.createErrorMessage(
-          e,
-          "Failed to initialise word filter popup language list"
-        )
-      );
-      return;
-    }
+  try {
+    LanguageList = await Misc.getLanguageList();
+  } catch (e) {
+    console.error(
+      Misc.createErrorMessage(
+        e,
+        "Failed to initialise word filter popup language list"
+      )
+    );
+    return;
+  }
 
-    try {
-      LayoutList = await Misc.getLayoutsList();
-    } catch (e) {
-      console.error(
-        Misc.createErrorMessage(
-          e,
-          "Failed to initialise word filter popup preset list"
-        )
-      );
-      return;
-    }
+  try {
+    LayoutList = await Misc.getLayoutsList();
+  } catch (e) {
+    console.error(
+      Misc.createErrorMessage(
+        e,
+        "Failed to initialise word filter popup preset list"
+      )
+    );
+    return;
+  }
 
-    LanguageList.forEach((language) => {
-      const prettyLang = language.replace(/_/gi, " ");
-      $("#wordFilterPopup .languageInput").append(`
+  LanguageList.forEach((language) => {
+    const prettyLang = language.replace(/_/gi, " ");
+    $("#wordFilterModal .languageInput").append(`
         <option value=${language}>${prettyLang}</option>
       `);
-    });
+  });
 
-    for (const layout in LayoutList) {
-      const prettyLayout = layout.replace(/_/gi, " ");
-      $("#wordFilterPopup .layoutInput").append(`
+  for (const layout in LayoutList) {
+    const prettyLayout = layout.replace(/_/gi, " ");
+    $("#wordFilterModal .layoutInput").append(`
       <option value=${layout}>${prettyLayout}</option>
     `);
-    }
+  }
 
-    for (const [presetId, preset] of Object.entries(presets)) {
-      $("#wordFilterPopup .presetInput").append(
-        `<option value=${presetId}>${preset.display}</option>`
-      );
-    }
-
-    initialised = true;
+  for (const [presetId, preset] of Object.entries(presets)) {
+    $("#wordFilterModal .presetInput").append(
+      `<option value=${presetId}>${preset.display}</option>`
+    );
   }
 }
 
@@ -158,69 +150,54 @@ let languageSelect: SlimSelect | undefined = undefined;
 let layoutSelect: SlimSelect | undefined = undefined;
 let presetSelect: SlimSelect | undefined = undefined;
 
-let callbackFuncOnHide: (() => void) | undefined = undefined;
-
-export async function show(
-  noAnim = false,
-  callbackOnHide: () => void | undefined
-): Promise<void> {
-  Skeleton.append(wrapperId, "popups");
-  if (!Misc.isPopupVisible(wrapperId)) {
-    await init();
-    callbackFuncOnHide = callbackOnHide;
-    languageSelect = new SlimSelect({
-      select: "#wordFilterPopup .languageInput",
-    });
-    layoutSelect = new SlimSelect({
-      select: "#wordFilterPopup .layoutInput",
-    });
-    presetSelect = new SlimSelect({
-      select: "#wordFilterPopup .presetInput",
-    });
-    $("#wordFilterPopupWrapper .loadingIndicator").addClass("hidden");
-    $("#wordFilterPopupWrapper .button").removeClass("hidden");
-
-    $("#wordFilterPopupWrapper")
-      .stop(true, true)
-      .css("opacity", 0)
-      .removeClass("hidden")
-      .animate({ opacity: 1 }, noAnim ? 0 : 125, () => {
-        //
+export async function show(showOptions?: ShowOptions): Promise<void> {
+  void modal.show({
+    ...showOptions,
+    beforeAnimation: async (modalEl) => {
+      languageSelect = new SlimSelect({
+        select: "#wordFilterModal .languageInput",
+        settings: {
+          contentLocation: modalEl,
+        },
       });
-  }
+      layoutSelect = new SlimSelect({
+        select: "#wordFilterModal .layoutInput",
+        settings: {
+          contentLocation: modal.getModal(),
+        },
+      });
+      presetSelect = new SlimSelect({
+        select: "#wordFilterModal .presetInput",
+        settings: {
+          contentLocation: modal.getModal(),
+        },
+      });
+      $("#wordFilterModal .loadingIndicator").removeClass("hidden");
+      enableButtons();
+    },
+  });
 }
 
-function hide(noAnim = false): void {
-  if (Misc.isPopupVisible(wrapperId)) {
-    $("#wordFilterPopupWrapper")
-      .stop(true, true)
-      .css("opacity", 1)
-      .animate(
-        {
-          opacity: 0,
-        },
-        noAnim ? 0 : 125,
-        () => {
-          languageSelect?.destroy();
-          layoutSelect?.destroy();
-          presetSelect?.destroy();
-          languageSelect = undefined;
-          layoutSelect = undefined;
-          presetSelect = undefined;
-          $("#wordFilterPopupWrapper").addClass("hidden");
-          Skeleton.remove(wrapperId);
-          if (callbackFuncOnHide) callbackFuncOnHide();
-        }
-      );
-  }
+function hide(clearModalChain?: boolean): void {
+  void modal.hide({
+    clearModalChain,
+    afterAnimation: async () => {
+      languageSelect?.destroy();
+      layoutSelect?.destroy();
+      presetSelect?.destroy();
+      languageSelect = undefined;
+      layoutSelect = undefined;
+      presetSelect = undefined;
+    },
+  });
 }
 
 async function filter(language: string): Promise<string[]> {
-  let filterin = $("#wordFilterPopup .wordIncludeInput").val() as string;
+  let filterin = $("#wordFilterModal .wordIncludeInput").val() as string;
   filterin = Misc.escapeRegExp(filterin?.trim());
   filterin = filterin.replace(/\s+/gi, "|");
   const regincl = new RegExp(filterin, "i");
-  let filterout = $("#wordFilterPopup .wordExcludeInput").val() as string;
+  let filterout = $("#wordFilterModal .wordExcludeInput").val() as string;
   filterout = Misc.escapeRegExp(filterout.trim());
   filterout = filterout.replace(/\s+/gi, "|");
   const regexcl = new RegExp(filterout, "i");
@@ -237,8 +214,8 @@ async function filter(language: string): Promise<string[]> {
     return [];
   }
 
-  const maxLengthInput = $("#wordFilterPopup .wordMaxInput").val() as string;
-  const minLengthInput = $("#wordFilterPopup .wordMinInput").val() as string;
+  const maxLengthInput = $("#wordFilterModal .wordMaxInput").val() as string;
+  const minLengthInput = $("#wordFilterModal .wordMinInput").val() as string;
   let maxLength;
   let minLength;
   if (maxLengthInput === "") {
@@ -266,7 +243,7 @@ async function filter(language: string): Promise<string[]> {
 }
 
 async function apply(set: boolean): Promise<void> {
-  const language = $("#wordFilterPopup .languageInput").val() as string;
+  const language = $("#wordFilterModal .languageInput").val() as string;
   const filteredWords = await filter(language);
 
   if (filteredWords.length === 0) {
@@ -283,49 +260,65 @@ async function apply(set: boolean): Promise<void> {
   hide(true);
 }
 
-$("#wordFilterPopupWrapper").on("mousedown", (e) => {
-  if ($(e.target).attr("id") === "wordFilterPopupWrapper") {
-    hide(true);
+function disableButtons(): void {
+  for (const button of modal.getModal().querySelectorAll("button")) {
+    button.setAttribute("disabled", "true");
   }
-});
+}
 
-$("#wordFilterPopupWrapper .button.addButton").on("mousedown", () => {
-  $("#wordFilterPopupWrapper .loadingIndicator").removeClass("hidden");
-  $("#wordFilterPopupWrapper .button").addClass("hidden");
-  void apply(false);
-});
-
-$("#wordFilterPopupWrapper .button.setButton").on("mousedown", () => {
-  $("#wordFilterPopupWrapper .loadingIndicator").removeClass("hidden");
-  $("#wordFilterPopupWrapper .button").addClass("hidden");
-  void apply(true);
-});
-
-$("#wordFilterPopup .button.generateButton").on("click", async () => {
-  const presetName = $("#wordFilterPopup .presetInput").val() as string;
-  const layoutName = $("#wordFilterPopup .layoutInput").val() as string;
-
-  const presetToApply = presets[presetName];
-
-  if (presetToApply === undefined) {
-    Notifications.add(`Preset ${presetName} not found`, -1);
-    return;
+function enableButtons(): void {
+  for (const button of modal.getModal().querySelectorAll("button")) {
+    button.removeAttribute("disabled");
   }
+}
 
-  const layout = await Misc.getLayout(layoutName);
+async function setup(): Promise<void> {
+  await initSelectOptions();
 
-  $("#wordIncludeInput").val(
-    presetToApply
-      .getIncludeString(layout)
-      .map((x) => x[0])
-      .join(" ")
-  );
-  $("#wordExcludeInput").val(
-    presetToApply
-      .getExcludeString(layout)
-      .map((x) => x[0])
-      .join(" ")
-  );
+  $("#wordFilterModal button.generateButton").on("click", async () => {
+    const presetName = $("#wordFilterModal .presetInput").val() as string;
+    const layoutName = $("#wordFilterModal .layoutInput").val() as string;
+
+    const presetToApply = presets[presetName];
+
+    if (presetToApply === undefined) {
+      Notifications.add(`Preset ${presetName} not found`, -1);
+      return;
+    }
+
+    const layout = await Misc.getLayout(layoutName);
+
+    $("#wordIncludeInput").val(
+      presetToApply
+        .getIncludeString(layout)
+        .map((x) => x[0])
+        .join(" ")
+    );
+    $("#wordExcludeInput").val(
+      presetToApply
+        .getExcludeString(layout)
+        .map((x) => x[0])
+        .join(" ")
+    );
+  });
+  $("#wordFilterModal button.addButton").on("click", () => {
+    $("#wordFilterModal .loadingIndicator").removeClass("hidden");
+    disableButtons();
+    setTimeout(() => {
+      void apply(false);
+    }, 0);
+  });
+
+  $("#wordFilterModal button.setButton").on("click", () => {
+    $("#wordFilterModal .loadingIndicator").removeClass("hidden");
+    disableButtons();
+    setTimeout(() => {
+      void apply(true);
+    }, 0);
+  });
+}
+
+const modal = new AnimatedModal({
+  dialogId: "wordFilterModal",
+  setup,
 });
-
-Skeleton.save(wrapperId);

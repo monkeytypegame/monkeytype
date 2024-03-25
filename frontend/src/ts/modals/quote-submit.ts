@@ -52,7 +52,7 @@ export async function show(showOptions: ShowOptions): Promise<void> {
   void modal.show({
     ...showOptions,
     focusFirstInput: true,
-    beforeAnimation: async () => {
+    afterAnimation: async () => {
       CaptchaController.render(
         document.querySelector("#quoteSubmitModal .g-recaptcha") as HTMLElement,
         "submitQuote"
@@ -83,7 +83,7 @@ function hide(clearModalChain: boolean): void {
   });
 }
 
-function setup(modalEl: HTMLElement): void {
+async function setup(modalEl: HTMLElement): Promise<void> {
   modalEl.querySelector("textarea")?.addEventListener("input", (e) => {
     const len = (e.target as HTMLTextAreaElement).value.length;
     $("#quoteSubmitModal .characterCount").text(len);

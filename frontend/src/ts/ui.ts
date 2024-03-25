@@ -29,33 +29,10 @@ function updateKeytips(): void {
     ? "cmd"
     : "ctrl";
 
-  if (Config.quickRestart === "esc") {
-    $(".pageSettings .tip").html(`
-    tip: You can also change all these settings quickly using the
-    command line (<key>${modifierKey}</key>+<key>shift</key>+<key>p</key>)`);
-  } else {
-    $(".pageSettings .tip").html(`
-    tip: You can also change all these settings quickly using the
-    command line (<key>esc</key> or <key>${modifierKey}</key>+<key>shift</key>+<key>p</key>)`);
-  }
-
-  if (Config.quickRestart === "esc") {
-    $("footer .keyTips").html(`
-    <key>esc</key> - restart test<br>
-    <key>tab</key> or <key>${modifierKey}</key>+<key>shift</key>+<key>p</key> - command line`);
-  } else if (Config.quickRestart === "tab") {
-    $("footer .keyTips").html(`
-    <key>tab</key> - restart test<br>
-      <key>esc</key> or <key>${modifierKey}</key>+<key>shift</key>+<key>p</key> - command line`);
-  } else if (Config.quickRestart === "enter") {
-    $("footer .keyTips").html(`
-    <key>enter</key> - restart test<br>
-      <key>esc</key> or <key>${modifierKey}</key>+<key>shift</key>+<key>p</key> - command line`);
-  } else {
-    $("footer .keyTips").html(`
-    <key>tab</key> + <key>enter</key> - restart test<br>
-    <key>esc</key> or <key>${modifierKey}</key>+<key>shift</key>+<key>p</key> - command line`);
-  }
+  const commandKey = Config.quickRestart === "esc" ? "tab" : "esc";
+  $("footer .keyTips").html(`
+    <key>${Config.quickRestart}</key> - restart test<br>
+    <key>${commandKey}</key> or <key>${modifierKey}</key>+<key>shift</key>+<key>p</key> - command line`);
 }
 
 if (isDevEnvironment()) {

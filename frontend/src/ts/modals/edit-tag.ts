@@ -170,7 +170,7 @@ async function apply(): Promise<void> {
 
 const modal = new AnimatedModal({
   dialogId: "editTagModal",
-  setup: (modalEl): void => {
+  setup: async (modalEl): Promise<void> => {
     modalEl.addEventListener("submit", (e) => {
       e.preventDefault();
       void apply();

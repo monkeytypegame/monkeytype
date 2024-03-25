@@ -106,12 +106,12 @@ async function getQuotes(): Promise<void> {
   updateList();
 }
 
-export async function show(showOptions: ShowOptions): Promise<void> {
+export async function show(showOptions?: ShowOptions): Promise<void> {
   void modal.show({
     ...showOptions,
     beforeAnimation: async () => {
       quotes = [];
-      await getQuotes();
+      void getQuotes();
     },
   });
 }
@@ -224,7 +224,7 @@ async function editQuote(index: number, dbid: string): Promise<void> {
   updateList();
 }
 
-function setup(modalEl: HTMLElement): void {
+async function setup(modalEl: HTMLElement): Promise<void> {
   modalEl.querySelector("button.refreshList")?.addEventListener("click", () => {
     $("#quoteApproveModal .quotes").empty();
     void getQuotes();
