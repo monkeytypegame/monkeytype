@@ -347,6 +347,7 @@
 }
 
 .word {
+  position: relative;
   font-size: 1em;
   line-height: 1em;
   margin: 0.25em;
@@ -440,12 +441,11 @@
 
 .word letter.incorrect {
   color: var(--error-color);
-  position: relative;
 }
 
-.word letter.incorrect hint {
+.word .hints hint {
   position: absolute;
-  bottom: -1em;
+  bottom: -1.1em;
   color: var(--text-color);
   line-height: initial;
   font-size: 0.75em;
@@ -454,9 +454,9 @@
   left: 0;
   opacity: 0.5;
   text-align: center;
-  width: 100%;
   display: grid;
   justify-content: center;
+  transform: translate(-50%);
 }
 
 .word letter.incorrect.extra {

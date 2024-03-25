@@ -116,7 +116,10 @@ export function init(missed: boolean, slow: boolean): boolean {
   }
 
   UpdateConfig.setMode("custom", true);
-  CustomText.setPopupTextareaState(newCustomText.join(CustomText.delimiter));
+  CustomText.setPopupTextareaState(
+    newCustomText.join(CustomText.delimiter),
+    true
+  );
   CustomText.setText(newCustomText);
   CustomText.setIsWordRandom(true);
   CustomText.setIsTimeRandom(false);
