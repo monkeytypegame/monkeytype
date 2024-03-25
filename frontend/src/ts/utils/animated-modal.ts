@@ -43,7 +43,7 @@ type ConstructorParams = {
   showOptionsWhenInChain?: ShowOptions;
   customEscapeHandler?: (e: KeyboardEvent) => void;
   customWrapperClickHandler?: (e: MouseEvent) => void;
-  setup?: (modal: HTMLElement) => void;
+  setup?: (modal: HTMLElement) => Promise<void>;
 };
 
 const DEFAULT_ANIMATION_DURATION = 125;
@@ -63,7 +63,7 @@ export default class AnimatedModal {
 
   private customEscapeHandler: ((e: KeyboardEvent) => void) | undefined;
   private customWrapperClickHandler: ((e: MouseEvent) => void) | undefined;
-  private setup: ((modal: HTMLElement) => void) | undefined;
+  private setup: ((modal: HTMLElement) => Promise<void>) | undefined;
 
   constructor(constructorParams: ConstructorParams) {
     if (constructorParams.dialogId.startsWith("#")) {
@@ -118,7 +118,11 @@ export default class AnimatedModal {
     Skeleton.save(this.dialogId);
   }
 
-  runSetup(): void {
+  getPreviousModalInChain(): AnimatedModal | undefined {
+    return this.previousModalInChain;
+  }
+
+  async runSetup(): Promise<void> {
     this.wrapperEl.addEventListener("keydown", (e) => {
       if (e.key === "Escape" && isPopupVisible(this.dialogId)) {
         if (this.customEscapeHandler !== undefined) {
@@ -140,7 +144,7 @@ export default class AnimatedModal {
     });
 
     if (this.setup !== undefined) {
-      this.setup(this.modalEl);
+      await this.setup(this.modalEl);
     }
   }
 
@@ -186,7 +190,7 @@ export default class AnimatedModal {
       Skeleton.append(this.dialogId, this.skeletonAppendParent);
 
       if (!this.setupRan) {
-        this.runSetup();
+        await this.runSetup();
         this.setupRan = true;
       }
 

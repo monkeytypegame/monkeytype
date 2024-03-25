@@ -143,7 +143,7 @@ async function save(): Promise<void> {
 
 const modal = new AnimatedModal({
   dialogId: "editResultTagsModal",
-  setup: (modalEl): void => {
+  setup: async (modalEl): Promise<void> => {
     modalEl
       .querySelector("button.saveButton")
       ?.addEventListener("click", (e) => {

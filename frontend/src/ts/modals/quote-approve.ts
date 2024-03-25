@@ -224,7 +224,7 @@ async function editQuote(index: number, dbid: string): Promise<void> {
   updateList();
 }
 
-function setup(modalEl: HTMLElement): void {
+async function setup(modalEl: HTMLElement): Promise<void> {
   modalEl.querySelector("button.refreshList")?.addEventListener("click", () => {
     $("#quoteApproveModal .quotes").empty();
     void getQuotes();

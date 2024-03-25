@@ -5,7 +5,6 @@ import * as UpdateConfig from "../config";
 import * as Loader from "../elements/loader";
 import * as Notifications from "../elements/notifications";
 import * as Settings from "../pages/settings";
-import * as ApeKeysPopup from "../popups/ape-keys-popup";
 import * as ThemePicker from "../settings/theme-picker";
 import * as CustomText from "../test/custom-text";
 import * as SavedTextsPopup from "./saved-texts-popup";
@@ -30,7 +29,10 @@ import {
 } from "../utils/misc";
 import * as CustomTextState from "../states/custom-text-name";
 import * as ThemeController from "../controllers/theme-controller";
-import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
+import AnimatedModal, {
+  HideOptions,
+  ShowOptions,
+} from "../utils/animated-modal";
 
 type Input = {
   placeholder?: string;
@@ -48,6 +50,7 @@ type ExecReturn = {
   message: string;
   showNotification?: false;
   notificationOptions?: MonkeyTypes.AddNotificationOptions;
+  hideOptions?: HideOptions;
   afterHide?: () => void;
 };
 
@@ -117,11 +120,12 @@ type SimplePopupOptions = {
   beforeShowFn?: (thisPopup: SimplePopup) => void;
   canClose?: boolean;
   onlineOnly?: boolean;
+  hideCallsExec?: boolean;
 };
 
 const modal = new AnimatedModal({
   dialogId: "simpleModal",
-  setup: (modalEl): void => {
+  setup: async (modalEl): Promise<void> => {
     modalEl.addEventListener("submit", (e) => {
       e.preventDefault();
       activePopup?.exec();
@@ -150,6 +154,7 @@ class SimplePopup {
   beforeShowFn: ((thisPopup: SimplePopup) => void) | undefined;
   canClose: boolean;
   onlineOnly: boolean;
+  hideCallsExec: boolean;
   constructor(options: SimplePopupOptions) {
     this.parameters = [];
     this.id = options.id;
@@ -165,6 +170,7 @@ class SimplePopup {
     this.beforeShowFn = options.beforeShowFn;
     this.canClose = options.canClose ?? true;
     this.onlineOnly = options.onlineOnly ?? false;
+    this.hideCallsExec = options.hideCallsExec ?? false;
   }
   reset(): void {
     this.element.innerHTML = `
@@ -306,7 +312,7 @@ class SimplePopup {
         Notifications.add(res.message, res.status, res.notificationOptions);
       }
       if (res.status === 1) {
-        void this.hide().then(() => {
+        void this.hide(true, res.hideOptions).then(() => {
           if (res.afterHide) {
             res.afterHide();
           }
@@ -348,10 +354,14 @@ class SimplePopup {
     });
   }
 
-  async hide(): Promise<void> {
+  async hide(callerIsExec?: boolean, hideOptions?: HideOptions): Promise<void> {
     if (!this.canClose) return;
-    activePopup = null;
-    await modal.hide();
+    if (this.hideCallsExec && !callerIsExec) {
+      this.exec();
+    } else {
+      activePopup = null;
+      await modal.hide(hideOptions);
+    }
   }
 }
 
@@ -1211,11 +1221,19 @@ list.generateApeKey = new SimplePopup({
     //if response is 200 data is guaranteed to not be null
     const data = response.data as Ape.ApeKeys.GenerateApeKey;
 
+    const modalChain = modal.getPreviousModalInChain();
     return {
       status: 1,
       message: "Key generated",
+      hideOptions: {
+        clearModalChain: true,
+        animationMode: "modalOnly",
+      },
       afterHide: (): void => {
-        showPopup("viewApeKey", [data.apeKey]);
+        showPopup("viewApeKey", [data.apeKey], {
+          modalChain,
+          animationMode: "modalOnly",
+        });
       },
     };
   },
@@ -1235,11 +1253,15 @@ list.viewApeKey = new SimplePopup({
   ],
   text: "This is your new Ape Key. Please keep it safe. You will only see it once!",
   buttonText: "close",
+  hideCallsExec: true,
   execFn: async (_thisPopup): Promise<ExecReturn> => {
-    void ApeKeysPopup.show();
     return {
       status: 1,
       message: "Key generated",
+      showNotification: false,
+      hideOptions: {
+        clearModalChain: true,
+      },
     };
   },
   beforeInitFn: (_thisPopup): void => {
@@ -1273,11 +1295,12 @@ list.deleteApeKey = new SimplePopup({
       };
     }
 
-    void ApeKeysPopup.show();
-
     return {
       status: 1,
       message: "Key deleted",
+      hideOptions: {
+        clearModalChain: true,
+      },
     };
   },
 });
@@ -1304,12 +1327,12 @@ list.editApeKey = new SimplePopup({
         message: "Failed to update key: " + response.message,
       };
     }
-
-    void ApeKeysPopup.show();
-
     return {
       status: 1,
       message: "Key updated",
+      hideOptions: {
+        clearModalChain: true,
+      },
     };
   },
 });
@@ -1526,7 +1549,7 @@ function isUsingPasswordAuthentication(): boolean {
   );
 }
 
-function showPopup(
+export function showPopup(
   key: PopupKey,
   showParams = [] as string[],
   showOptions: ShowOptions = {}
@@ -1603,10 +1626,6 @@ $(".pageSettings #optOutOfLeaderboardsButton").on("click", () => {
   showPopup("optOutOfLeaderboards");
 });
 
-$("#popups").on("click", "#apeKeysPopup .generateApeKey", () => {
-  showPopup("generateApeKey");
-});
-
 $(".pageSettings").on(
   "click",
   ".section.themes .customTheme .delButton",
@@ -1653,16 +1672,6 @@ $("#popups").on(
     showPopup("resetProgressCustomTextLong", [name]);
   }
 );
-
-$("#popups").on("click", "#apeKeysPopup table tbody tr .button.delete", (e) => {
-  const keyId = $(e.target).closest("tr").attr("keyId") as string;
-  showPopup("deleteApeKey", [keyId]);
-});
-
-$("#popups").on("click", "#apeKeysPopup table tbody tr .button.edit", (e) => {
-  const keyId = $(e.target).closest("tr").attr("keyId") as string;
-  showPopup("editApeKey", [keyId]);
-});
 
 $(".pageSettings").on(
   "click",

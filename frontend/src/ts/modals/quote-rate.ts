@@ -197,7 +197,7 @@ async function submit(): Promise<void> {
   $(".pageTest #result #rateQuoteButton .icon").addClass("fas");
 }
 
-function setup(modalEl: HTMLElement): void {
+async function setup(modalEl: HTMLElement): Promise<void> {
   modalEl.querySelector(".submitButton")?.addEventListener("click", () => {
     void submit();
   });

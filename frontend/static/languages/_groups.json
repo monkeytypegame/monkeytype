@@ -464,6 +464,10 @@
     "languages": ["toki_pona", "toki_pona_ku_suli", "toki_pona_ku_lili"]
   },
   {
+    "name": "xhosa",
+    "languages":["xhosa"]
+  },
+  {
     "name": "other",
     "languages": [
       "lojban_gismu",

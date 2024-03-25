@@ -69,7 +69,7 @@ function hide(): void {
   void modal.hide();
 }
 
-function setup(modalEl: HTMLElement): void {
+async function setup(modalEl: HTMLElement): Promise<void> {
   const wordsGroupButtons = modalEl.querySelectorAll(".wordsGroup button");
   for (const button of wordsGroupButtons) {
     button.addEventListener("click", (e) => {
