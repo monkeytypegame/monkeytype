@@ -734,15 +734,19 @@ export function updateDiscordSection(): void {
 export function updateAuthSections(): void {
   $(".pageSettings .section.passwordAuthSettings button").addClass("hidden");
   $(".pageSettings .section.googleAuthSettings button").addClass("hidden");
+  $(".pageSettings .section.githubAuthSettings button").addClass("hidden");
 
   if (!isAuthenticated()) return;
   const user = getAuthenticatedUser();
 
-  const passwordProvider = user.providerData.find(
+  const passwordProvider = user.providerData.some(
     (provider) => provider.providerId === "password"
   );
-  const googleProvider = user.providerData.find(
+  const googleProvider = user.providerData.some(
     (provider) => provider.providerId === "google.com"
+  );
+  const githubProvider = user.providerData.some(
+    (provider) => provider.providerId === "github.com"
   );
 
   if (passwordProvider) {
@@ -762,7 +766,7 @@ export function updateAuthSections(): void {
     $(
       ".pageSettings .section.googleAuthSettings #removeGoogleAuth"
     ).removeClass("hidden");
-    if (passwordProvider) {
+    if (passwordProvider || githubProvider) {
       $(
         ".pageSettings .section.googleAuthSettings #removeGoogleAuth"
       ).removeClass("disabled");
@@ -773,6 +777,24 @@ export function updateAuthSections(): void {
     }
   } else {
     $(".pageSettings .section.googleAuthSettings #addGoogleAuth").removeClass(
+      "hidden"
+    );
+  }
+  if (githubProvider) {
+    $(
+      ".pageSettings .section.githubAuthSettings #removeGithubAuth"
+    ).removeClass("hidden");
+    if (passwordProvider || googleProvider) {
+      $(
+        ".pageSettings .section.githubAuthSettings #removeGithubAuth"
+      ).removeClass("disabled");
+    } else {
+      $(".pageSettings .section.githubAuthSettings #removeGithubAuth").addClass(
+        "disabled"
+      );
+    }
+  } else {
+    $(".pageSettings .section.githubAuthSettings #addGithubAuth").removeClass(
       "hidden"
     );
   }
