@@ -4,8 +4,12 @@ import Config from "../config";
 import * as AnalyticsController from "../controllers/analytics-controller";
 import * as ThemeController from "../controllers/theme-controller";
 import { clearFontPreview } from "../ui";
-import AnimatedModal, { ShowHideOptions } from "../utils/animated-modal";
+import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
 import * as Notifications from "../elements/notifications";
+import * as OutOfFocus from "../test/out-of-focus";
+import * as ActivePage from "../states/active-page";
+import { focusWords } from "../test/test-ui";
+import * as Loader from "../elements/loader";
 
 type CommandlineMode = "search" | "input";
 type InputModeParams = {
@@ -32,7 +36,7 @@ let subgroupOverride: MonkeyTypes.CommandsSubgroup | null = null;
 function removeCommandlineBackground(): void {
   $("#commandLine").addClass("noBackground");
   if (Config.showOutOfFocusWarning) {
-    $("#words").removeClass("blurred");
+    OutOfFocus.hide();
   }
 }
 
@@ -40,7 +44,7 @@ function addCommandlineBackground(): void {
   $("#commandLine").removeClass("noBackground");
   const isWordsFocused = $("#wordsInput").is(":focus");
   if (Config.showOutOfFocusWarning && !isWordsFocused) {
-    $("#words").addClass("blurred");
+    OutOfFocus.show();
   }
 }
 
@@ -51,15 +55,17 @@ type ShowSettings = {
 
 export function show(
   settings?: ShowSettings,
-  modalShowSettings?: ShowHideOptions
+  modalShowSettings?: ShowOptions
 ): void {
   void modal.show({
     ...modalShowSettings,
-    beforeAnimation: async (modal) => {
+    focusFirstInput: true,
+    beforeAnimation: async () => {
       mouseMode = false;
       inputValue = "";
       activeIndex = 0;
       mode = "search";
+      cachedSingleSubgroup = null;
       inputModeParams = {
         command: null,
         placeholder: null,
@@ -72,9 +78,11 @@ export function show(
             settings.subgroupOverride
           );
           if (exists) {
-            subgroupOverride = CommandlineLists.getList(
+            Loader.show();
+            subgroupOverride = await CommandlineLists.getList(
               settings.subgroupOverride as CommandlineLists.ListsObjectKeys
             );
+            Loader.hide();
           } else {
             subgroupOverride = null;
             usingSingleList = Config.singleListCommandLine === "on";
@@ -97,31 +105,30 @@ export function show(
       activeCommand = null;
       Focus.set(false);
       CommandlineLists.setStackToDefault();
-      await beforeList();
       updateInput();
       await filterSubgroup();
       await showCommands();
       await updateActiveCommand();
       setTimeout(() => {
-        // instead of waiting for the animation to finish,
-        // we focus just after it begins to increase responsivenes
-        // (you can type while the animation is running)
-        modal.querySelector("input")?.focus();
         keepActiveCommandInView();
-      }, 0);
-    },
-    afterAnimation: async (modal) => {
-      modal.querySelector("input")?.focus();
+      }, 1);
     },
   });
 }
 
-function hide(): void {
+function hide(clearModalChain = false): void {
   clearFontPreview();
   void ThemeController.clearPreview();
+  if (ActivePage.get() === "test") {
+    focusWords();
+  }
   void modal.hide({
+    clearModalChain,
     afterAnimation: async () => {
       addCommandlineBackground();
+      if (ActivePage.get() === "test") {
+        focusWords();
+      }
     },
   });
 }
@@ -155,8 +162,10 @@ async function goBackOrHide(): Promise<void> {
 }
 
 async function filterSubgroup(): Promise<void> {
-  // const configKey = getSubgroup().configKey;
-  const list = await getList();
+  const subgroup = await getSubgroup();
+  subgroup.beforeList?.();
+  const list = subgroup.list;
+
   const inputNoQuickSingle = inputValue
     .replace(/^>/gi, "")
     .toLowerCase()
@@ -247,13 +256,19 @@ function hideCommands(): void {
   element.innerHTML = "";
 }
 
+let cachedSingleSubgroup: MonkeyTypes.CommandsSubgroup | null = null;
+
 async function getSubgroup(): Promise<MonkeyTypes.CommandsSubgroup> {
   if (subgroupOverride !== null) {
     return subgroupOverride;
   }
 
   if (usingSingleList) {
-    return CommandlineLists.getSingleSubgroup();
+    if (cachedSingleSubgroup === null) {
+      cachedSingleSubgroup = await CommandlineLists.getSingleSubgroup();
+    } else {
+      return cachedSingleSubgroup;
+    }
   }
 
   return CommandlineLists.getTopOfStack();
@@ -261,10 +276,6 @@ async function getSubgroup(): Promise<MonkeyTypes.CommandsSubgroup> {
 
 async function getList(): Promise<MonkeyTypes.Command[]> {
   return (await getSubgroup()).list;
-}
-
-async function beforeList(): Promise<void> {
-  (await getSubgroup()).beforeList?.();
 }
 
 async function showCommands(): Promise<void> {
@@ -296,7 +307,14 @@ async function showCommands(): Promise<void> {
     }
     let configIcon = "";
     const configKey = command.configKey ?? (await getSubgroup()).configKey;
-    if (configKey !== undefined) {
+    if (command.active !== undefined) {
+      if (command.active()) {
+        firstActive = firstActive ?? index;
+        configIcon = `<i class="fas fa-fw fa-check"></i>`;
+      } else {
+        configIcon = `<i class="fas fa-fw"></i>`;
+      }
+    } else if (configKey !== undefined) {
       const valueIsIncluded =
         command.configValueMode === "include" &&
         (
@@ -406,8 +424,9 @@ function handleInputSubmit(): void {
   if (inputModeParams.command === null) {
     throw new Error("Can't handle input submit - command is null");
   }
-  const value = inputValue;
-  inputModeParams.command.exec?.(value);
+  inputModeParams.command.exec?.({
+    input: inputValue,
+  });
   void AnalyticsController.log("usedCommandLine", {
     command: inputModeParams.command.id,
   });
@@ -429,25 +448,24 @@ async function runActiveCommand(): Promise<void> {
     updateInput(inputModeParams.value as string);
     hideCommands();
   } else if (command.subgroup) {
-    if (command.subgroup.beforeList) {
-      command.subgroup.beforeList();
-    }
     CommandlineLists.pushToStack(
       command.subgroup as MonkeyTypes.CommandsSubgroup
     );
-    await beforeList();
     updateInput("");
     await filterSubgroup();
     await showCommands();
     await updateActiveCommand();
   } else {
-    command.exec?.();
+    command.exec?.({
+      commandlineModal: modal,
+    });
     const isSticky = command.sticky ?? false;
     if (!isSticky) {
       void AnalyticsController.log("usedCommandLine", { command: command.id });
-      hide();
+      if (!command.opensModal) {
+        hide(true);
+      }
     } else {
-      await beforeList();
       await filterSubgroup();
       await showCommands();
       await updateActiveCommand();
@@ -525,15 +543,19 @@ async function decrementActiveIndex(): Promise<void> {
   await updateActiveCommand();
 }
 
-const modal = new AnimatedModal("commandLine", "popups", undefined, {
+const modal = new AnimatedModal({
+  dialogId: "commandLine",
   customEscapeHandler: (): void => {
-    hide();
+    //
   },
   customWrapperClickHandler: (): void => {
     hide();
   },
-  setup: (modal): void => {
-    const input = modal.querySelector("input") as HTMLInputElement;
+  showOptionsWhenInChain: {
+    focusFirstInput: true,
+  },
+  setup: async (modalEl): Promise<void> => {
+    const input = modalEl.querySelector("input") as HTMLInputElement;
 
     input.addEventListener("input", async (e) => {
       inputValue = (e.target as HTMLInputElement).value;
@@ -585,7 +607,7 @@ const modal = new AnimatedModal("commandLine", "popups", undefined, {
       }
     });
 
-    modal.addEventListener("mousemove", (e) => {
+    modalEl.addEventListener("mousemove", (e) => {
       mouseMode = true;
     });
   },

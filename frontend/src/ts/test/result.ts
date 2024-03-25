@@ -9,7 +9,7 @@ import * as Loader from "../elements/loader";
 import * as Notifications from "../elements/notifications";
 import * as ThemeColors from "../elements/theme-colors";
 import { isAuthenticated } from "../firebase";
-import * as QuoteRatePopup from "../popups/quote-rate-popup";
+import * as quoteRateModal from "../modals/quote-rate";
 import * as GlarsesMode from "../states/glarses-mode";
 import * as SlowTimer from "../states/slow-timer";
 import * as Misc from "../utils/misc";
@@ -439,9 +439,9 @@ async function updateTags(dontSave: boolean): Promise<void> {
   } else {
     $("#result .stats .tags .bottom").text("");
   }
-  $("#result .stats .tags .editTagsButton").attr("result-id", "");
+  $("#result .stats .tags .editTagsButton").attr("data-result-id", "");
   $("#result .stats .tags .editTagsButton").attr(
-    "active-tag-ids",
+    "data-active-tag-ids",
     activeTags.map((t) => t._id).join(",")
   );
   $("#result .stats .tags .editTagsButton").addClass("invisible");
@@ -666,7 +666,8 @@ export function updateRateQuote(randomQuote: MonkeyTypes.Quote | null): void {
         .removeClass("far")
         .addClass("fas");
     }
-    QuoteRatePopup.getQuoteStats(randomQuote)
+    quoteRateModal
+      .getQuoteStats(randomQuote)
       .then((quoteStats) => {
         $(".pageTest #result #rateQuoteButton .rating").text(
           quoteStats?.average?.toFixed(1) ?? ""
@@ -864,6 +865,60 @@ export async function update(
       void Funbox.clear();
     }
   );
+}
+
+export function updateTagsAfterEdit(
+  tagIds: string[],
+  tagPbIds: string[]
+): void {
+  const tagNames: string[] = [];
+
+  if (tagIds.length > 0) {
+    for (const tag of tagIds) {
+      DB.getSnapshot()?.tags?.forEach((snaptag) => {
+        if (tag === snaptag._id) {
+          tagNames.push(snaptag.display);
+        }
+      });
+    }
+  }
+
+  if (tagIds.length === 0) {
+    $(`.pageTest #result .tags .bottom`).html(
+      "<div class='noTags'>no tags</div>"
+    );
+  } else {
+    $(`.pageTest #result .tags .bottom div.noTags`).remove();
+    const currentElements = $(`.pageTest #result .tags .bottom div[tagid]`);
+
+    const checked: string[] = [];
+    currentElements.each((_, element) => {
+      const tagId = $(element).attr("tagid") as string;
+      if (!tagIds.includes(tagId)) {
+        $(element).remove();
+      } else {
+        checked.push(tagId);
+      }
+    });
+
+    let html = "";
+
+    tagIds.forEach((tag, index) => {
+      if (checked.includes(tag)) return;
+      if (tagPbIds.includes(tag) as boolean) {
+        html += `<div tagid="${tag}" data-balloon-pos="up">${tagNames[index]}<i class="fas fa-crown"></i></div>`;
+      } else {
+        html += `<div tagid="${tag}">${tagNames[index]}</div>`;
+      }
+    });
+
+    // $(`.pageTest #result .tags .bottom`).html(tagNames.join("<br>"));
+    $(`.pageTest #result .tags .bottom`).append(html);
+    $(`.pageTest #result .tags .top .editTagsButton`).attr(
+      "active-tag-ids",
+      tagIds.join(",")
+    );
+  }
 }
 
 $(".pageTest #favoriteQuoteButton").on("click", async () => {

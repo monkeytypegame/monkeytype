@@ -4,7 +4,7 @@ import * as Profile from "../elements/profile";
 import * as PbTables from "../account/pb-tables";
 import * as Notifications from "../elements/notifications";
 import { checkIfGetParameterExists } from "../utils/misc";
-import * as UserReportPopup from "../popups/user-report-popup";
+import * as UserReportModal from "../modals/user-report";
 import * as Skeleton from "../utils/skeleton";
 
 function reset(): void {
@@ -84,10 +84,12 @@ function reset(): void {
         <div class="group t15">
           <div class="testType">15 seconds</div>
           <div class="pos">-</div>
+          <div class="topPercentage">-</div>
         </div>
         <div class="group t60">
           <div class="testType">60 seconds</div>
           <div class="pos">-</div>
+          <div class="topPercentage">-</div>
         </div>
       </div>
       <div class="pbsWords">
@@ -206,7 +208,7 @@ $(".page.pageProfile").on("click", ".profile .userReportButton", () => {
   const lbOptOut =
     ($(".page.pageProfile .profile").attr("lbOptOut") ?? "false") === "true";
 
-  void UserReportPopup.show({ uid, name, lbOptOut });
+  void UserReportModal.show({ uid, name, lbOptOut });
 });
 
 export const page = new Page<undefined | SharedTypes.UserProfile>(

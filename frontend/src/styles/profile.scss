@@ -119,6 +119,7 @@
         border-bottom-right-radius: var(--roundness);
       }
       button {
+        background: transparent;
         align-items: center;
         align-content: center;
         display: grid;
@@ -150,14 +151,23 @@
     }
     .group {
       display: grid;
-      gap: 1rem;
+      column-gap: 1rem;
       grid-template-columns: auto 1fr;
+      grid-template-areas: "testType pos" "topPercentage pos";
       align-items: center;
       .testType {
+        grid-area: testType;
         color: var(--sub-color);
       }
       .pos {
+        grid-area: pos;
         font-size: 2rem;
+      }
+      .topPercentage {
+        color: var(--sub-color);
+        grid-area: topPercentage;
+        font-size: 0.75rem;
+        text-align: right;
       }
       &.t15 {
         grid-area: t15;

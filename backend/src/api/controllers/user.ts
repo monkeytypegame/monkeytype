@@ -402,10 +402,13 @@ export async function getUser(
 
   const isPremium = await UserDAL.checkIfUserIsPremium(uid, userInfo);
 
+  const allTimeLbs = await getAllTimeLbs(uid);
+
   const userData = {
     ...getRelevantUserInfo(userInfo),
     inboxUnreadSize: inboxUnreadSize,
     isPremium,
+    allTimeLbs,
   };
 
   return new MonkeyResponse("User data retrieved", userData);
@@ -760,41 +763,13 @@ export async function getProfile(
     return new MonkeyResponse("Profile retrived: banned user", baseProfile);
   }
 
-  const allTime15English = await LeaderboardsDAL.getRank(
-    "time",
-    "15",
-    "english",
-    user.uid
-  );
-
-  const allTime60English = await LeaderboardsDAL.getRank(
-    "time",
-    "60",
-    "english",
-    user.uid
-  );
-
-  const allTime15EnglishRank =
-    (allTime15English === false ? null : allTime15English)?.rank ?? null;
-  const allTime60EnglishRank =
-    (allTime60English === false ? null : allTime60English)?.rank ?? null;
-
-  const alltimelbs = {
-    time: {
-      "15": {
-        english: allTime15EnglishRank,
-      },
-      "60": {
-        english: allTime60EnglishRank,
-      },
-    },
-  };
+  const allTimeLbs = await getAllTimeLbs(user.uid);
 
   const profileData = {
     ...baseProfile,
     inventory,
     details: profileDetails,
-    allTimeLbs: alltimelbs,
+    allTimeLbs,
     uid: user.uid,
   } as SharedTypes.UserProfile;
 
@@ -936,4 +911,47 @@ export async function revokeAllTokens(
   await FirebaseAdmin().auth().revokeRefreshTokens(uid);
   removeTokensFromCacheByUid(uid);
   return new MonkeyResponse("All tokens revoked");
+}
+
+async function getAllTimeLbs(uid: string): Promise<SharedTypes.AllTimeLbs> {
+  const allTime15English = await LeaderboardsDAL.getRank(
+    "time",
+    "15",
+    "english",
+    uid
+  );
+
+  const allTime60English = await LeaderboardsDAL.getRank(
+    "time",
+    "60",
+    "english",
+    uid
+  );
+
+  const english15 =
+    allTime15English === false
+      ? undefined
+      : ({
+          rank: allTime15English.rank,
+          count: allTime15English.count,
+        } as SharedTypes.RankAndCount);
+
+  const english60 =
+    allTime60English === false
+      ? undefined
+      : ({
+          rank: allTime60English.rank,
+          count: allTime60English.count,
+        } as SharedTypes.RankAndCount);
+
+  return {
+    time: {
+      "15": {
+        english: english15,
+      },
+      "60": {
+        english: english60,
+      },
+    },
+  };
 }

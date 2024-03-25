@@ -293,6 +293,11 @@ declare namespace MonkeyTypes {
     };
   };
 
+  type CommandExecOptions = {
+    input?: string;
+    commandlineModal?: unknown;
+  };
+
   type Command = {
     id: string;
     display: string;
@@ -306,13 +311,15 @@ declare namespace MonkeyTypes {
     input?: boolean;
     visible?: boolean;
     customStyle?: string;
+    opensModal?: boolean;
     defaultValue?: () => string;
     configKey?: keyof SharedTypes.Config;
     configValue?: string | number | boolean | number[];
     configValueMode?: "include";
-    exec?: (input?: string) => void;
+    exec?: (options: CommandExecOptions) => void;
     hover?: () => void;
     available?: () => boolean;
+    active?: () => boolean;
     shouldFocusTestUI?: boolean;
     customData?: Record<string, string>;
   };

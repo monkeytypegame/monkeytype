@@ -56,7 +56,7 @@ const subgroup: MonkeyTypes.CommandsSubgroup = {
       display: "custom...",
       configValue: "custom",
       input: true,
-      exec: (input): void => {
+      exec: ({ input }): void => {
         if (input === undefined || input === "") return;
         const newVal = getTypingSpeedUnit(Config.typingSpeedUnit).toWpm(
           parseInt(input)

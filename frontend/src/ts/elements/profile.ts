@@ -4,10 +4,10 @@ import differenceInDays from "date-fns/differenceInDays";
 import * as Misc from "../utils/misc";
 import { getHTMLById } from "../controllers/badge-controller";
 import { throttle } from "throttle-debounce";
-import * as EditProfilePopup from "../popups/edit-profile-popup";
 import * as ActivePage from "../states/active-page";
 import formatDistanceToNowStrict from "date-fns/formatDistanceToNowStrict";
 import { getHtmlByUserFlags } from "../controllers/user-flag-controller";
+import Format from "../utils/format";
 
 type ProfileViewPaths = "profile" | "account";
 type UserProfileOrSnapshot = SharedTypes.UserProfile | MonkeyTypes.Snapshot;
@@ -317,25 +317,30 @@ export async function update(
   } else {
     profileElement.find(".leaderboardsPositions").removeClass("hidden");
 
-    const lbPos =
-      where === "profile"
-        ? (profile as SharedTypes.UserProfile).allTimeLbs
-        : (profile as MonkeyTypes.Snapshot).lbMemory;
+    const t15 = profile.allTimeLbs.time?.["15"]?.["english"] ?? null;
+    const t60 = profile.allTimeLbs.time?.["60"]?.["english"] ?? null;
 
-    const t15 = lbPos?.time?.["15"]?.["english"];
-    const t60 = lbPos?.time?.["60"]?.["english"];
-
-    if (!t15 && !t60) {
+    if (t15 === null && t60 === null) {
       profileElement.find(".leaderboardsPositions").addClass("hidden");
     } else {
-      const t15string = t15 ? Misc.getPositionString(t15) : "-";
-      profileElement
-        .find(".leaderboardsPositions .group.t15 .pos")
-        .text(t15string);
-      const t60string = t60 ? Misc.getPositionString(t60) : "-";
-      profileElement
-        .find(".leaderboardsPositions .group.t60 .pos")
-        .text(t60string);
+      if (t15 !== null) {
+        profileElement
+          .find(".leaderboardsPositions .group.t15 .pos")
+          .text(Format.rank(t15?.rank));
+        profileElement
+          .find(".leaderboardsPositions .group.t15 .topPercentage")
+          .text(formatTopPercentage(t15));
+      }
+
+      if (t60 !== null) {
+        profileElement
+          .find(".leaderboardsPositions .group.t60 .pos")
+          .text(Format.rank(t60?.rank));
+
+        profileElement
+          .find(".leaderboardsPositions .group.t60 .topPercentage")
+          .text(formatTopPercentage(t60));
+      }
     }
   }
 
@@ -414,14 +419,6 @@ export function updateNameFontSize(where: ProfileViewPaths): void {
   nameField.style.fontSize = `${finalFontSize}px`;
 }
 
-$(".details .editProfileButton").on("click", () => {
-  const snapshot = DB.getSnapshot();
-  if (!snapshot) return;
-  EditProfilePopup.show(() => {
-    void update("account", snapshot);
-  });
-});
-
 const throttledEvent = throttle(1000, () => {
   const activePage = ActivePage.get();
   if (activePage && ["account", "profile"].includes(activePage)) {
@@ -432,3 +429,9 @@ const throttledEvent = throttle(1000, () => {
 $(window).on("resize", () => {
   throttledEvent();
 });
+
+function formatTopPercentage(lbRank: SharedTypes.RankAndCount): string {
+  if (lbRank.rank === undefined) return "-";
+  if (lbRank.rank === 1) return "GOAT";
+  return "Top " + Format.percentage((lbRank.rank / lbRank.count) * 100);
+}
