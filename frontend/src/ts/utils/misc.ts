@@ -308,15 +308,6 @@ export function whorf(speed: number, wordlen: number): number {
   );
 }
 
-export function getGibberish(): string {
-  const randLen = randomIntFromRange(1, 7);
-  let ret = "";
-  for (let i = 0; i < randLen; i++) {
-    ret += String.fromCharCode(97 + randomIntFromRange(0, 25));
-  }
-  return ret;
-}
-
 export function secondsToString(
   sec: number,
   alwaysShowMinutes = false,
@@ -412,21 +403,6 @@ export function secondsToString(
   return ret.trim();
 }
 
-export function getNumbers(len: number): string {
-  const randLen = randomIntFromRange(1, len);
-  let ret = "";
-  for (let i = 0; i < randLen; i++) {
-    let randomNum;
-    if (i === 0) {
-      randomNum = randomIntFromRange(1, 9);
-    } else {
-      randomNum = randomIntFromRange(0, 9);
-    }
-    ret += randomNum.toString();
-  }
-  return ret;
-}
-
 //convert numbers to arabic-indic
 export function convertNumberToArabic(numString: string): string {
   const arabicIndic = "٠١٢٣٤٥٦٧٨٩";
@@ -442,57 +418,6 @@ export function convertNumberToNepali(numString: string): string {
   let ret = "";
   for (const char of numString) {
     ret += nepaliIndic[parseInt(char)];
-  }
-  return ret;
-}
-
-export function getSpecials(): string {
-  const randLen = randomIntFromRange(1, 7);
-  let ret = "";
-  const specials = [
-    "`",
-    "~",
-    "!",
-    "@",
-    "#",
-    "$",
-    "%",
-    "^",
-    "&",
-    "*",
-    "(",
-    ")",
-    "-",
-    "_",
-    "=",
-    "+",
-    "{",
-    "}",
-    "[",
-    "]",
-    "'",
-    '"',
-    "/",
-    "\\",
-    "|",
-    "?",
-    ";",
-    ":",
-    ">",
-    "<",
-  ];
-  for (let i = 0; i < randLen; i++) {
-    ret += randomElementFromArray(specials);
-  }
-  return ret;
-}
-
-export function getASCII(): string {
-  const randLen = randomIntFromRange(1, 10);
-  let ret = "";
-  for (let i = 0; i < randLen; i++) {
-    const ran = 33 + randomIntFromRange(0, 93);
-    ret += String.fromCharCode(ran);
   }
   return ret;
 }
@@ -684,18 +609,6 @@ export function toggleFullscreen(): void {
       void document.webkitExitFullscreen();
     }
   }
-}
-
-export function getWords(): string {
-  const words = [...document.querySelectorAll("#words .word")]
-    .map((word) => {
-      return [...word.querySelectorAll("letter")]
-        .map((letter) => letter.textContent)
-        .join("");
-    })
-    .join(" ");
-
-  return words;
 }
 
 //credit: https://www.w3resource.com/javascript-exercises/javascript-string-exercise-32.php
@@ -1242,11 +1155,6 @@ export function isDevEnvironment(): boolean {
   return envConfig.isDevelopment;
 }
 
-export function getBinary(): string {
-  const ret = Math.floor(Math.random() * 256).toString(2);
-  return ret.padStart(8, "0");
-}
-
 export function dreymarIndex(arrayLength: number): number {
   const n = arrayLength;
   const g = 0.5772156649;
@@ -1340,73 +1248,6 @@ export function getBoundingRectOfElements(elements: HTMLElement[]): DOMRect {
       });
     },
   };
-}
-export function getMorse(word: string): string {
-  const morseCode: Record<string, string> = {
-    a: ".-",
-    b: "-...",
-    c: "-.-.",
-    d: "-..",
-    e: ".",
-    f: "..-.",
-    g: "--.",
-    h: "....",
-    i: "..",
-    j: ".---",
-    k: "-.-",
-    l: ".-..",
-    m: "--",
-    n: "-.",
-    o: "---",
-    p: ".--.",
-    q: "--.-",
-    r: ".-.",
-    s: "...",
-    t: "-",
-    u: "..-",
-    v: "...-",
-    w: ".--",
-    x: "-..-",
-    y: "-.--",
-    z: "--..",
-    "0": "-----",
-    "1": ".----",
-    "2": "..---",
-    "3": "...--",
-    "4": "....-",
-    "5": ".....",
-    "6": "-....",
-    "7": "--...",
-    "8": "---..",
-    "9": "----.",
-    ".": ".-.-.-",
-    ",": "--..--",
-    "?": "..--..",
-    "'": ".----.",
-    "/": "-..-.",
-    "(": "-.--.",
-    ")": "-.--.-",
-    "&": ".-...",
-    ":": "---...",
-    ";": "-.-.-.",
-    "=": "-...-",
-    "+": ".-.-.",
-    "-": "-....-",
-    _: "..--.-",
-    '"': ".-..-.",
-    $: "...-..-",
-    "!": "-.-.--",
-    "@": ".--.-.",
-  };
-
-  let morseWord = "";
-
-  const deAccentedWord = replaceSpecialChars(word);
-  for (let i = 0; i < deAccentedWord.length; i++) {
-    const letter = morseCode[deAccentedWord.toLowerCase()[i] as string];
-    morseWord += letter !== undefined ? letter + "/" : "";
-  }
-  return morseWord;
 }
 
 export function typedKeys<T extends object>(

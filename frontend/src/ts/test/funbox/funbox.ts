@@ -1,5 +1,6 @@
 import * as Notifications from "../../elements/notifications";
 import * as Misc from "../../utils/misc";
+import * as GetText from "../../utils/get-text";
 import * as Numbers from "../../utils/numbers";
 import * as ManualRestart from "../manual-restart-tracker";
 import Config, * as UpdateConfig from "../../config";
@@ -309,13 +310,13 @@ FunboxList.setFunboxFunctions("layoutfluid", {
 
 FunboxList.setFunboxFunctions("gibberish", {
   getWord(): string {
-    return Misc.getGibberish();
+    return GetText.getGibberish();
   },
 });
 
 FunboxList.setFunboxFunctions("58008", {
   getWord(): string {
-    let num = Misc.getNumbers(7);
+    let num = GetText.getNumbers(7);
     if (Config.language.startsWith("kurdish")) {
       num = Misc.convertNumberToArabic(num);
     } else if (Config.language.startsWith("nepali")) {
@@ -359,7 +360,7 @@ FunboxList.setFunboxFunctions("58008", {
 
 FunboxList.setFunboxFunctions("ascii", {
   getWord(): string {
-    return Misc.getASCII();
+    return GetText.getASCII();
   },
   punctuateWord(word: string): string {
     return word;
@@ -368,7 +369,7 @@ FunboxList.setFunboxFunctions("ascii", {
 
 FunboxList.setFunboxFunctions("specials", {
   getWord(): string {
-    return Misc.getSpecials();
+    return GetText.getSpecials();
   },
 });
 
@@ -491,7 +492,7 @@ FunboxList.setFunboxFunctions("IPv6", {
 
 FunboxList.setFunboxFunctions("binary", {
   getWord(): string {
-    return Misc.getBinary();
+    return GetText.getBinary();
   },
 });
 
@@ -701,7 +702,7 @@ export async function rememberSettings(): Promise<void> {
 
 FunboxList.setFunboxFunctions("morse", {
   alterText(word: string): string {
-    return Misc.getMorse(word);
+    return GetText.getMorse(word);
   },
 });
 

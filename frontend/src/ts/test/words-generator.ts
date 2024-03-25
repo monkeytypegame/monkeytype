@@ -10,6 +10,7 @@ import * as LazyMode from "./lazy-mode";
 import * as EnglishPunctuation from "./english-punctuation";
 import * as PractiseWords from "./practise-words";
 import * as Misc from "../utils/misc";
+import * as GetText from "../utils/get-text";
 
 function shouldCapitalize(lastChar: string): boolean {
   return /[?!.؟]/.test(lastChar);
@@ -797,7 +798,7 @@ export async function getNextWord(
   }
   if (Config.numbers) {
     if (Math.random() < 0.1) {
-      randomWord = Misc.getNumbers(4);
+      randomWord = GetText.getNumbers(4);
 
       if (Config.language.startsWith("kurdish")) {
         randomWord = Misc.convertNumberToArabic(randomWord);
