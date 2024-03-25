@@ -4,6 +4,7 @@
 // Constants for padding around the highlights
 
 import * as Misc from "../utils/misc";
+import * as GetData from "../utils/get-data";
 import Config from "../config";
 
 const PADDING_X = 16;
@@ -198,7 +199,7 @@ async function init(): Promise<boolean> {
   }
 
   // Set isLanguageRTL
-  const currentLanguage = await Misc.getCurrentLanguage(Config.language);
+  const currentLanguage = await GetData.getCurrentLanguage(Config.language);
   isLanguageRightToLeft = currentLanguage.rightToLeft;
 
   RWH_el = $("#resultWordsHistory")[0] as HTMLElement;

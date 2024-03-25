@@ -13,6 +13,7 @@ import * as QuoteRatePopup from "../popups/quote-rate-popup";
 import * as GlarsesMode from "../states/glarses-mode";
 import * as SlowTimer from "../states/slow-timer";
 import * as Misc from "../utils/misc";
+import * as GetData from "../utils/get-data";
 import * as Numbers from "../utils/numbers";
 import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
 import * as FunboxList from "./funbox/funbox-list";
@@ -450,7 +451,7 @@ async function updateTags(dontSave: boolean): Promise<void> {
   const funboxes = result.funbox?.split("#") ?? [];
 
   const funboxObjects = await Promise.all(
-    funboxes.map(async (f) => Misc.getFunbox(f))
+    funboxes.map(async (f) => GetData.getFunbox(f))
   );
 
   const allFunboxesCanGetPb = funboxObjects.every((f) => f?.canGetPb);

@@ -4,6 +4,7 @@ import * as TestStats from "../test/test-stats";
 import * as Monkey from "../test/monkey";
 import Config from "../config";
 import * as Misc from "../utils/misc";
+import * as GetData from "../utils/get-data";
 import * as Numbers from "../utils/numbers";
 import * as LiveAcc from "../test/live-acc";
 import * as LiveBurst from "../test/live-burst";
@@ -1115,7 +1116,7 @@ $(document).on("keydown", async (event) => {
       Config.oppositeShiftMode === "keymap" &&
       Config.keymapLayout !== "overrideSync"
     ) {
-      const keymapLayout = await Misc.getLayout(Config.keymapLayout).catch(
+      const keymapLayout = await GetData.getLayout(Config.keymapLayout).catch(
         () => undefined
       );
       if (keymapLayout === undefined) {

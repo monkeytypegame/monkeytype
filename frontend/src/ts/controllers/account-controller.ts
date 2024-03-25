@@ -3,6 +3,7 @@ import * as Notifications from "../elements/notifications";
 import Config, * as UpdateConfig from "../config";
 import * as AccountButton from "../elements/account-button";
 import * as Misc from "../utils/misc";
+import * as GetData from "../utils/get-data";
 import * as Settings from "../pages/settings";
 import * as AllTimeStats from "../account/all-time-stats";
 import * as DB from "../db";
@@ -118,7 +119,7 @@ async function getDataAndInit(): Promise<boolean> {
 
   ResultFilters.loadTags(snapshot.tags);
 
-  Promise.all([Misc.getLanguageList(), Misc.getFunboxList()])
+  Promise.all([GetData.getLanguageList(), GetData.getFunboxList()])
     .then((values) => {
       const [languages, funboxes] = values;
       languages.forEach((language) => {

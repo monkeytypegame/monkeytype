@@ -1,6 +1,7 @@
 import Config, * as UpdateConfig from "../config";
 import * as ThemeController from "../controllers/theme-controller";
 import * as Misc from "../utils/misc";
+import * as GetData from "../utils/get-data";
 import * as Colors from "../utils/colors";
 import * as Notifications from "../elements/notifications";
 import * as ThemeColors from "../elements/theme-colors";
@@ -173,7 +174,7 @@ export async function refreshButtons(): Promise<void> {
 
     let themes;
     try {
-      themes = await Misc.getSortedThemesList();
+      themes = await GetData.getSortedThemesList();
     } catch (e) {
       Notifications.add(
         Misc.createErrorMessage(e, "Failed to refresh theme buttons"),

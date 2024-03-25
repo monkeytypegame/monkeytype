@@ -1,4 +1,5 @@
 import * as Misc from "../utils/misc";
+import * as GetData from "../utils/get-data";
 import * as DB from "../db";
 import Config from "../config";
 import * as Notifications from "../elements/notifications";
@@ -645,7 +646,7 @@ $(".pageAccount .topFilters button.toggleAdvancedFilters").on("click", () => {
 export async function appendButtons(): Promise<void> {
   let languageList;
   try {
-    languageList = await Misc.getLanguageList();
+    languageList = await GetData.getLanguageList();
   } catch (e) {
     console.error(
       Misc.createErrorMessage(e, "Failed to append language buttons")
@@ -666,7 +667,7 @@ export async function appendButtons(): Promise<void> {
 
   let funboxList;
   try {
-    funboxList = await Misc.getFunboxList();
+    funboxList = await GetData.getFunboxList();
   } catch (e) {
     console.error(
       Misc.createErrorMessage(e, "Failed to append funbox buttons")

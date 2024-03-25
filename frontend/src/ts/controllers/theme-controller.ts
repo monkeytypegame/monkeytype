@@ -1,6 +1,7 @@
 import * as ThemeColors from "../elements/theme-colors";
 import * as ChartController from "./chart-controller";
 import * as Misc from "../utils/misc";
+import * as GetData from "../utils/get-data";
 import { isColorDark, isColorLight } from "../utils/colors";
 import Config, { setAutoSwitchTheme } from "../config";
 import * as BackgroundFilter from "../elements/custom-background-filter";
@@ -240,7 +241,7 @@ let themesList: string[] = [];
 async function changeThemeList(): Promise<void> {
   let themes;
   try {
-    themes = await Misc.getThemesList();
+    themes = await GetData.getThemesList();
   } catch (e) {
     console.error(
       Misc.createErrorMessage(e, "Failed to update random theme list")

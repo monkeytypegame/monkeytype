@@ -3,6 +3,7 @@ import * as Loader from "../elements/loader";
 import * as Notifications from "../elements/notifications";
 import * as CaptchaController from "../controllers/captcha-controller";
 import * as Misc from "../utils/misc";
+import * as GetData from "../utils/get-data";
 import Config from "../config";
 import * as Skeleton from "../utils/skeleton";
 import SlimSelect from "slim-select";
@@ -12,7 +13,7 @@ const wrapperId = "quoteSubmitPopupWrapper";
 let dropdownReady = false;
 async function initDropdown(): Promise<void> {
   if (dropdownReady) return;
-  const languageGroups = await Misc.getLanguageGroups();
+  const languageGroups = await GetData.getLanguageGroups();
   for (const group of languageGroups) {
     if (group.name === "swiss_german") continue;
     $("#quoteSubmitPopup #submitQuoteLanguage").append(

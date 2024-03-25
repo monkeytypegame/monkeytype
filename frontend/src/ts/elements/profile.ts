@@ -2,6 +2,7 @@ import * as DB from "../db";
 import format from "date-fns/format";
 import differenceInDays from "date-fns/differenceInDays";
 import * as Misc from "../utils/misc";
+import * as GetData from "../utils/get-data";
 import { abbreviateNumber } from "../utils/numbers";
 import { getHTMLById } from "../controllers/badge-controller";
 import { throttle } from "throttle-debounce";
@@ -301,9 +302,9 @@ export async function update(
   }
 
   const xp = profile.xp ?? 0;
-  const levelFraction = Misc.getLevel(xp);
+  const levelFraction = GetData.getLevel(xp);
   const level = Math.floor(levelFraction);
-  const xpForLevel = Misc.getXpForLevel(level);
+  const xpForLevel = GetData.getXpForLevel(level);
   const xpToDisplay = Math.round(xpForLevel * (levelFraction % 1));
   details
     .find(".level")

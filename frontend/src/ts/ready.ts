@@ -1,6 +1,7 @@
 import * as ManualRestart from "./test/manual-restart-tracker";
 import Config, * as UpdateConfig from "./config";
 import * as Misc from "./utils/misc";
+import * as GetData from "./utils/get-data";
 import * as MonkeyPower from "./elements/monkey-power";
 import * as NewVersionNotification from "./elements/version-check";
 import * as Notifications from "./elements/notifications";
@@ -21,7 +22,7 @@ if (Misc.isDevEnvironment()) {
     `<a class='button configureAPI' href='${envConfig.backendUrl}/configure/' target='_blank' aria-label="Configure API" data-balloon-pos="right"><i class="fas fa-fw fa-server"></i></a>`
   );
 } else {
-  Misc.getLatestReleaseFromGitHub()
+  GetData.getLatestReleaseFromGitHub()
     .then((v) => {
       $("footer .currentVersion .text").text(v);
       void NewVersionNotification.show(v);

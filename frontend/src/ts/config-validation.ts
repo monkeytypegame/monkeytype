@@ -1,4 +1,5 @@
 import * as Misc from "./utils/misc";
+import * as GetData from "./utils/get-data";
 import * as Notifications from "./elements/notifications";
 
 type PossibleType =
@@ -121,7 +122,7 @@ export async function isConfigValueValidAsync(
         if (layoutNames.length < 2 || layoutNames.length > 5) break;
 
         try {
-          await Misc.getLayoutsList();
+          await GetData.getLayoutsList();
         } catch (e) {
           customMessage = Misc.createErrorMessage(
             e,
@@ -132,7 +133,7 @@ export async function isConfigValueValidAsync(
 
         // convert the layout names to layouts
         const layouts = await Promise.all(
-          layoutNames.map(async (layoutName) => Misc.getLayout(layoutName))
+          layoutNames.map(async (layoutName) => GetData.getLayout(layoutName))
         );
 
         // check if all layouts exist

@@ -4,6 +4,7 @@ import * as ManualRestart from "./manual-restart-tracker";
 import Config, * as UpdateConfig from "../config";
 
 import * as Misc from "../utils/misc";
+import * as GetData from "../utils/get-data";
 import * as Numbers from "../utils/numbers";
 import * as Notifications from "../elements/notifications";
 import * as CustomText from "./custom-text";
@@ -441,7 +442,7 @@ export async function init(): Promise<void> {
 
   let language;
   try {
-    language = await Misc.getLanguage(Config.language);
+    language = await GetData.getLanguage(Config.language);
   } catch (e) {
     Notifications.add(
       Misc.createErrorMessage(e, "Failed to load language"),
@@ -632,10 +633,10 @@ export async function addWord(): Promise<void> {
 
   const language: MonkeyTypes.LanguageObject =
     Config.mode !== "custom"
-      ? await Misc.getCurrentLanguage(Config.language)
+      ? await GetData.getCurrentLanguage(Config.language)
       : {
           //borrow the direction of the current language
-          ...(await Misc.getCurrentLanguage(Config.language)),
+          ...(await GetData.getCurrentLanguage(Config.language)),
           words: CustomText.text,
         };
   const wordset = await Wordset.withWords(language.words);

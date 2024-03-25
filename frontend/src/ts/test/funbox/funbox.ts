@@ -1,5 +1,6 @@
 import * as Notifications from "../../elements/notifications";
 import * as Misc from "../../utils/misc";
+import * as GetData from "../../utils/get-data";
 import * as GetText from "../../utils/get-text";
 import * as Numbers from "../../utils/numbers";
 import * as ManualRestart from "../manual-restart-tracker";
@@ -602,7 +603,7 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
 
   let language;
   try {
-    language = await Misc.getCurrentLanguage(Config.language);
+    language = await GetData.getCurrentLanguage(Config.language);
   } catch (e) {
     Notifications.add(
       Misc.createErrorMessage(e, "Failed to activate funbox"),

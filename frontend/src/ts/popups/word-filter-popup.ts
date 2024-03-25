@@ -1,4 +1,5 @@
 import * as Misc from "../utils/misc";
+import * as GetData from "../utils/get-data";
 import * as CustomText from "../test/custom-text";
 import * as Notifications from "../elements/notifications";
 import * as Skeleton from "../utils/skeleton";
@@ -107,7 +108,7 @@ async function init(): Promise<void> {
     let LayoutList;
 
     try {
-      LanguageList = await Misc.getLanguageList();
+      LanguageList = await GetData.getLanguageList();
     } catch (e) {
       console.error(
         Misc.createErrorMessage(
@@ -119,7 +120,7 @@ async function init(): Promise<void> {
     }
 
     try {
-      LayoutList = await Misc.getLayoutsList();
+      LayoutList = await GetData.getLayoutsList();
     } catch (e) {
       console.error(
         Misc.createErrorMessage(
@@ -228,7 +229,7 @@ async function filter(language: string): Promise<string[]> {
 
   let languageWordList;
   try {
-    languageWordList = await Misc.getLanguage(language);
+    languageWordList = await GetData.getLanguage(language);
   } catch (e) {
     Notifications.add(
       Misc.createErrorMessage(e, "Failed to filter language words"),
@@ -312,7 +313,7 @@ $("#wordFilterPopup .button.generateButton").on("click", async () => {
     return;
   }
 
-  const layout = await Misc.getLayout(layoutName);
+  const layout = await GetData.getLayout(layoutName);
 
   $("#wordIncludeInput").val(
     presetToApply

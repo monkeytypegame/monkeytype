@@ -1,5 +1,5 @@
 import Config from "../config";
-import * as Misc from "../utils/misc";
+import * as GetData from "../utils/get-data";
 import { capsState } from "./caps-warning";
 import * as Notifications from "../elements/notifications";
 
@@ -124,7 +124,7 @@ async function updateKeymapLegendCasing(): Promise<void> {
         : Config.layout
       : Config.keymapLayout;
 
-  const layout = await Misc.getLayout(layoutName).catch(() => undefined);
+  const layout = await GetData.getLayout(layoutName).catch(() => undefined);
   if (layout === undefined) {
     Notifications.add("Failed to load keymap layout", -1);
 

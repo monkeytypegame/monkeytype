@@ -1,9 +1,9 @@
 import {
-  cachedFetchJson,
   randomElementFromArray,
   removeLanguageSize,
   shuffle,
 } from "../utils/misc";
+import { cachedFetchJson } from "../utils/get-data";
 import { subscribe } from "../observables/config-event";
 import * as DB from "../db";
 

@@ -1,4 +1,5 @@
 import * as Misc from "../utils/misc";
+import * as GetData from "../utils/get-data";
 import * as Numbers from "../utils/numbers";
 import Page from "./page";
 import Ape from "../ape";
@@ -122,7 +123,7 @@ async function getStatsAndHistogramData(): Promise<void> {
 async function fill(): Promise<void> {
   let supporters: string[];
   try {
-    supporters = await Misc.getSupportersList();
+    supporters = await GetData.getSupportersList();
   } catch (e) {
     Notifications.add(
       Misc.createErrorMessage(e, "Failed to get supporters"),
@@ -133,7 +134,7 @@ async function fill(): Promise<void> {
 
   let contributors: string[];
   try {
-    contributors = await Misc.getContributorsList();
+    contributors = await GetData.getContributorsList();
   } catch (e) {
     Notifications.add(
       Misc.createErrorMessage(e, "Failed to get contributors"),

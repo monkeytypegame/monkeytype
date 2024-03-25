@@ -1,5 +1,6 @@
 import format from "date-fns/format";
-import { getReleasesFromGitHub, isPopupVisible } from "../utils/misc";
+import { isPopupVisible } from "../utils/misc";
+import { getReleasesFromGitHub } from "../utils/get-data";
 import * as Skeleton from "../utils/skeleton";
 
 const wrapperId = "versionHistoryWrapper";

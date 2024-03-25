@@ -92,6 +92,7 @@ import KeymapLayoutsCommands, {
 
 import Config, * as UpdateConfig from "../config";
 import * as Misc from "../utils/misc";
+import * as GetData from "../utils/get-data";
 import { randomizeTheme } from "../controllers/theme-controller";
 import * as CustomTextPopup from "../popups/custom-text-popup";
 import * as Settings from "../pages/settings";
@@ -102,7 +103,7 @@ import * as TestStats from "../test/test-stats";
 import * as QuoteSearchPopup from "../popups/quote-search-popup";
 import * as FPSCounter from "../elements/fps-counter";
 
-Misc.getLayoutsList()
+GetData.getLayoutsList()
   .then((layouts) => {
     updateLayoutsCommands(layouts);
     updateKeymapLayoutsCommands(layouts);
@@ -113,7 +114,7 @@ Misc.getLayoutsList()
     );
   });
 
-Misc.getLanguageList()
+GetData.getLanguageList()
   .then((languages) => {
     updateLanguagesCommands(languages);
   })
@@ -123,7 +124,7 @@ Misc.getLanguageList()
     );
   });
 
-Misc.getFunboxList()
+GetData.getFunboxList()
   .then((funboxes) => {
     updateFunboxCommands(funboxes);
     if (FunboxCommands[0]?.subgroup) {
@@ -138,7 +139,7 @@ Misc.getFunboxList()
     );
   });
 
-Misc.getFontsList()
+GetData.getFontsList()
   .then((fonts) => {
     updateFontFamilyCommands(fonts);
   })
@@ -148,7 +149,7 @@ Misc.getFontsList()
     );
   });
 
-Misc.getThemesList()
+GetData.getThemesList()
   .then((themes) => {
     updateThemesCommands(themes);
   })
@@ -158,7 +159,7 @@ Misc.getThemesList()
     );
   });
 
-Misc.getChallengeList()
+GetData.getChallengeList()
   .then((challenges) => {
     updateLoadChallengeCommands(challenges);
   })
