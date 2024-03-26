@@ -301,6 +301,8 @@ export function addBanner(
 
 export function clearAllNotifications(): void {
   $("#notificationCenter .notif").remove();
+  visibleStickyNotifications = 0;
+  updateClearAllButton();
 }
 
 const debouncedMarginUpdate = debounce(100, updateMargin);
