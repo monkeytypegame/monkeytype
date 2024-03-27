@@ -492,6 +492,10 @@ export async function addResult(
   const isPremium =
     (await UserDAL.checkIfUserIsPremium(user.uid, user)) || undefined;
 
+  const leaderboardTheme = isPremium
+    ? user.premium?.leaderboardTheme ?? undefined
+    : undefined;
+
   if (dailyLeaderboard && validResultCriteria) {
     incrementDailyLeaderboard(
       completedEvent.mode,
@@ -511,6 +515,7 @@ export async function addResult(
         discordId: user.discordId,
         badgeId: selectedBadgeId,
         isPremium,
+        leaderboardTheme,
       },
       dailyLeaderboardsConfig
     );

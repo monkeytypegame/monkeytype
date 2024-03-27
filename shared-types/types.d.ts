@@ -451,6 +451,7 @@ declare namespace SharedTypes {
     rank: number;
     badgeId?: number;
     isPremium?: boolean;
+    leaderboardTheme?: string;
   }
 
   type PostResultResponse = {
@@ -497,6 +498,7 @@ declare namespace SharedTypes {
   type PremiumInfo = {
     startTimestamp: number;
     expirationTimestamp: number;
+    leaderboardTheme?: string;
   };
 
   type UserQuoteRatings = Record<string, Record<string, number>>;

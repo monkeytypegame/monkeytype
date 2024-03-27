@@ -6,6 +6,9 @@ import * as Notifications from "../elements/notifications";
 import * as ConnectionState from "../states/connection";
 import AnimatedModal from "../utils/animated-modal";
 import * as Profile from "../elements/profile";
+import { getSortedThemesList } from "../utils/misc";
+import SlimSelect from "slim-select";
+import type { DataObjectPartial } from "slim-select/dist/store";
 
 export function show(): void {
   if (!ConnectionState.get()) {
@@ -18,6 +21,14 @@ export function show(): void {
   void modal.show({
     beforeAnimation: async () => {
       hydrateInputs();
+
+      const isPremium = DB.getSnapshot()?.isPremium;
+      if (isPremium) {
+        $("#editProfileModal .leaderboardTheme").removeClass("hidden");
+        await init(DB.getSnapshot()?.premium?.leaderboardTheme);
+      } else {
+        $("#editProfileModal .leaderboardTheme").addClass("hidden");
+      }
     },
   });
 }
@@ -40,6 +51,7 @@ const websiteInput = $("#editProfileModal .website");
 const badgeIdsSelect = $("#editProfileModal .badgeSelectionContainer");
 
 let currentSelectedBadgeId = -1;
+let currentSelectedLeaderBoardTheme: string | undefined;
 
 function hydrateInputs(): void {
   const snapshot = DB.getSnapshot();
@@ -140,7 +152,8 @@ async function updateProfile(): Promise<void> {
   Loader.show();
   const response = await Ape.users.updateProfile(
     updates,
-    currentSelectedBadgeId
+    currentSelectedBadgeId,
+    currentSelectedLeaderBoardTheme
   );
   Loader.hide();
 
@@ -157,6 +170,9 @@ async function updateProfile(): Promise<void> {
       delete badge.selected;
     }
   });
+  if (snapshot.premium !== undefined) {
+    snapshot.premium.leaderboardTheme = currentSelectedLeaderBoardTheme;
+  }
 
   Notifications.add("Profile updated", 1);
 
@@ -172,3 +188,48 @@ const modal = new AnimatedModal({
     });
   },
 });
+
+async function init(current?: string): Promise<void> {
+  currentSelectedLeaderBoardTheme = current;
+
+  const leaderboardThemeSelector = new SlimSelect({
+    select: "#editProfileModal .leaderboardThemeSelect",
+    settings: {
+      showSearch: false,
+      contentLocation: document.querySelector(
+        "#editProfileModal"
+      ) as HTMLElement,
+    },
+    events: {
+      afterChange: (newVal): void => {
+        const selected = newVal[0]?.value;
+        currentSelectedLeaderBoardTheme =
+          selected !== "" ? selected : undefined;
+      },
+    },
+  });
+
+  const themes = await getSortedThemesList();
+  const data = themes.map(
+    (it) =>
+      ({
+        html: `
+      <div class="text">${it.name.replace(/_/g, " ")}</div>
+      <div class="themeBubbles" style="
+        background: ${it.bgColor};
+        color:${it.mainColor};
+        outline-color: ${it.bgColor};
+      ">
+        <div class="themeBubble" style="background: ${it.mainColor}"></div>
+        <div class="themeBubble" style="background: ${it.subColor}"></div>
+        <div class="themeBubble" style="background: ${it.textColor}"></div>
+      </div>`,
+        text: it.name.replaceAll("_", " "),
+        value: it.name,
+        selected: it.name === currentSelectedLeaderBoardTheme,
+      } as DataObjectPartial)
+  );
+
+  data.unshift({ text: "none", value: "" });
+  leaderboardThemeSelector.setData(data);
+}

@@ -15,6 +15,7 @@ type DailyLeaderboardEntry = {
   discordId?: string;
   badgeId?: number;
   isPremium?: boolean;
+  leaderboardTheme?: string;
 };
 
 type GetRankResponse = {
