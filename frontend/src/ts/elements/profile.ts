@@ -296,10 +296,7 @@ export async function update(
   details
     .find(".xp")
     .text(
-      `${Misc.abbreviateNumber(xpToDisplay)}/${Misc.abbreviateNumber(
-        xpForLevel
-      )}`
-    );
+      `${Misc.abbreviateNumber(xpToDisplay)}/${Misc.abbreviateNumber(xpForLevel)} (${Misc.abbreviateNumber((xpToDisplay / xpForLevel) * 100)}%)`);
   details
     .find(".xpBar .bar")
     .css("width", `${(xpToDisplay / xpForLevel) * 100}%`);
@@ -307,7 +304,7 @@ export async function update(
     .find(".xp")
     .attr(
       "aria-label",
-      `${Misc.abbreviateNumber(xpForLevel - xpToDisplay)} xp until next level`
+      `${Misc.abbreviateNumber(xpForLevel - xpToDisplay)} xp until next level (${Misc.abbreviateNumber((xpToDisplay / xpForLevel) * 100)}%)`
     );
 
   //lbs
