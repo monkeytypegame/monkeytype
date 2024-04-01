@@ -48,38 +48,38 @@ $(document).ready(() => {
   if (Config.quickRestart !== "off") {
     $("#restartTestButton").addClass("hidden");
   }
-  // const merchBannerClosed =
-  //   window.localStorage.getItem("merchbannerclosed") === "true";
-  // if (!merchBannerClosed) {
-  //   Notifications.addBanner(
-  //     `Check out our merchandise, available at <a target="_blank" rel="noopener" href="https://monkeytype.store/">monkeytype.store</a>`,
-  //     1,
-  //     "./images/merch2.png",
-  //     false,
-  //     () => {
-  //       window.localStorage.setItem("merchbannerclosed", "true");
-  //     },
-  //     true
-  //   );
-  // }
-
-  const plushieBannerClosed2 =
-    window.localStorage.getItem("plushieBannerClosed2") === "true";
-  if (!plushieBannerClosed2) {
-    const string = formatDistanceStrict(1711918800000, Date.now(), {
-      roundingMethod: "floor",
-    });
+  const merchBannerClosed =
+    window.localStorage.getItem("merchbannerclosed") === "true";
+  if (!merchBannerClosed) {
     Notifications.addBanner(
-      `Our limited plushie will be gone in ${string} - don't miss out! <a target="_blank" rel="noopener" href="https://mktp.co/plushie2">monkeytype.store</a>`,
+      `Check out our merchandise, available at <a target="_blank" rel="noopener" href="https://monkeytype.store/">monkeytype.store</a>`,
       1,
-      "./images/plushiebanner.png",
-      true,
+      "./images/merch2.png",
+      false,
       () => {
-        window.localStorage.setItem("plushieBannerClosed2", "true");
+        window.localStorage.setItem("merchbannerclosed", "true");
       },
       true
     );
   }
+
+  // const plushieBannerClosed2 =
+  //   window.localStorage.getItem("plushieBannerClosed2") === "true";
+  // if (!plushieBannerClosed2) {
+  //   const string = formatDistanceStrict(1711882800000, Date.now(), {
+  //     roundingMethod: "floor",
+  //   });
+  //   Notifications.addBanner(
+  //     `Our limited plushie will be gone in ${string} - don't miss out! <a target="_blank" rel="noopener" href="https://mktp.co/plushie2">monkeytype.store</a>`,
+  //     1,
+  //     "./images/plushiebanner.png",
+  //     true,
+  //     () => {
+  //       window.localStorage.setItem("plushieBannerClosed2", "true");
+  //     },
+  //     true
+  //   );
+  // }
 
   setTimeout(() => {
     FunboxList.get(Config.funbox).forEach((it) =>
