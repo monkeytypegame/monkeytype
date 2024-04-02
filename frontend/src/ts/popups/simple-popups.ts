@@ -374,7 +374,7 @@ function hide(): void {
   }
 }
 
-type AuthMethod = "password" | "github" | "google";
+type AuthMethod = "password" | "github.com" | "google.com";
 
 type ReauthSuccess = {
   status: 1;
@@ -395,7 +395,7 @@ type ReauthenticateOptions = {
 function getPreferredAuthenticationMethod(
   exclude?: AuthMethod
 ): AuthMethod | undefined {
-  const authMethods = ["password", "github", "google"] as AuthMethod[];
+  const authMethods = ["password", "github.com", "google.com"] as AuthMethod[];
   const filteredMethods = authMethods.filter((it) => it !== exclude);
   for (const method of filteredMethods) {
     if (isUsingAuthentication(method)) return method;
@@ -444,7 +444,7 @@ async function reauthenticate(
       await reauthenticateWithCredential(user, credential);
     } else {
       const authProvider =
-        authMethod === "github"
+        authMethod === "github.com"
           ? AccountController.githubProvider
           : AccountController.gmailProvider;
       await reauthenticateWithPopup(user, authProvider);
@@ -560,7 +560,7 @@ list.removeGoogleAuth = new SimplePopup({
   execFn: async (_thisPopup, password): Promise<ExecReturn> => {
     const reauth = await reauthenticate({
       password,
-      excludeMethod: "google",
+      excludeMethod: "google.com",
     });
     if (reauth.status !== 1) {
       return {
@@ -570,7 +570,7 @@ list.removeGoogleAuth = new SimplePopup({
     }
 
     try {
-      await unlink(reauth.user, "google");
+      await unlink(reauth.user, "google.com");
     } catch (e) {
       const message = createErrorMessage(e, "Failed to unlink Google account");
       return {
@@ -615,7 +615,7 @@ list.removeGithubAuth = new SimplePopup({
   execFn: async (_thisPopup, password): Promise<ExecReturn> => {
     const reauth = await reauthenticate({
       password,
-      excludeMethod: "github",
+      excludeMethod: "github.com",
     });
     if (reauth.status !== 1) {
       return {
@@ -625,7 +625,7 @@ list.removeGithubAuth = new SimplePopup({
     }
 
     try {
-      await unlink(reauth.user, "github");
+      await unlink(reauth.user, "github.com");
     } catch (e) {
       const message = createErrorMessage(e, "Failed to unlink GitHub account");
       return {
@@ -1629,11 +1629,11 @@ function isUsingPasswordAuthentication(): boolean {
 }
 
 function isUsingGithubAuthentication(): boolean {
-  return isUsingAuthentication("github");
+  return isUsingAuthentication("github.com");
 }
 
 function isUsingGoogleAuthentication(): boolean {
-  return isUsingAuthentication("google");
+  return isUsingAuthentication("google.com");
 }
 
 function isUsingAuthentication(authProvider: AuthMethod): boolean {
