@@ -374,7 +374,7 @@ function hide(): void {
   }
 }
 
-type ReauthMethod = "passwordOnly" | "passwordFirst";
+type AuthMethod = "password" | "github.com" | "google.com";
 
 type ReauthSuccess = {
   status: 1;
@@ -387,9 +387,24 @@ type ReauthFailed = {
   message: string;
 };
 
+type ReauthenticateOptions = {
+  excludeMethod?: AuthMethod;
+  password?: string;
+};
+
+function getPreferredAuthenticationMethod(
+  exclude?: AuthMethod
+): AuthMethod | undefined {
+  for (const method of ["password", "github.com", "google.com"].filter(
+    (it) => it !== exclude
+  )) {
+    if (isUsingAuthentication(method as AuthMethod))
+      return method as AuthMethod;
+  }
+  return undefined;
+}
 async function reauthenticate(
-  method: ReauthMethod,
-  password: string
+  options: ReauthenticateOptions
 ): Promise<ReauthSuccess | ReauthFailed> {
   if (Auth === undefined) {
     return {
@@ -405,33 +420,34 @@ async function reauthenticate(
     };
   }
   const user = getAuthenticatedUser();
+  const authMethod = getPreferredAuthenticationMethod(options.excludeMethod);
 
   try {
-    const passwordAuthEnabled = user.providerData.some(
-      (p) => p?.providerId === "password"
-    );
-
-    if (!passwordAuthEnabled && method === "passwordOnly") {
+    if (authMethod === undefined) {
       return {
         status: -1,
         message:
-          "Failed to reauthenticate in password only mode: password authentication is not enabled on this account",
+          "Failed to reauthenticate: there is no valid authentication present on the account.",
       };
     }
 
-    if (passwordAuthEnabled) {
+    if (authMethod === "password") {
+      if (options.password === undefined) {
+        return {
+          status: -1,
+          message: "Failed to reauthenticate using password: password missing.",
+        };
+      }
       const credential = EmailAuthProvider.credential(
         user.email as string,
-        password
+        options.password
       );
       await reauthenticateWithCredential(user, credential);
-    } else if (method === "passwordFirst") {
-      const hasGithubAuth = user.providerData.some(
-        (p) => p?.providerId === "github.com"
-      );
-      const authProvider = hasGithubAuth
-        ? AccountController.githubProvider
-        : AccountController.gmailProvider;
+    } else {
+      const authProvider =
+        authMethod === "github.com"
+          ? AccountController.githubProvider
+          : AccountController.gmailProvider;
       await reauthenticateWithPopup(user, authProvider);
     }
 
@@ -492,7 +508,7 @@ list.updateEmail = new SimplePopup({
       };
     }
 
-    const reauth = await reauthenticate("passwordOnly", password);
+    const reauth = await reauthenticate({ password });
     if (reauth.status !== 1) {
       return {
         status: reauth.status,
@@ -543,7 +559,10 @@ list.removeGoogleAuth = new SimplePopup({
   onlineOnly: true,
   buttonText: "remove",
   execFn: async (_thisPopup, password): Promise<ExecReturn> => {
-    const reauth = await reauthenticate("passwordFirst", password);
+    const reauth = await reauthenticate({
+      password,
+      excludeMethod: "google.com",
+    });
     if (reauth.status !== 1) {
       return {
         status: reauth.status,
@@ -595,7 +614,10 @@ list.removeGithubAuth = new SimplePopup({
   onlineOnly: true,
   buttonText: "remove",
   execFn: async (_thisPopup, password): Promise<ExecReturn> => {
-    const reauth = await reauthenticate("passwordFirst", password);
+    const reauth = await reauthenticate({
+      password,
+      excludeMethod: "github.com",
+    });
     if (reauth.status !== 1) {
       return {
         status: reauth.status,
@@ -651,8 +673,8 @@ list.updateName = new SimplePopup({
   ],
   buttonText: "update",
   onlineOnly: true,
-  execFn: async (_thisPopup, pass, newName): Promise<ExecReturn> => {
-    const reauth = await reauthenticate("passwordFirst", pass);
+  execFn: async (_thisPopup, password, newName): Promise<ExecReturn> => {
+    const reauth = await reauthenticate({ password });
     if (reauth.status !== 1) {
       return {
         status: reauth.status,
@@ -762,7 +784,7 @@ list.updatePassword = new SimplePopup({
       };
     }
 
-    const reauth = await reauthenticate("passwordOnly", previousPass);
+    const reauth = await reauthenticate({ password: previousPass });
     if (reauth.status !== 1) {
       return {
         status: reauth.status,
@@ -829,7 +851,7 @@ list.addPasswordAuth = new SimplePopup({
     _thisPopup,
     email,
     emailConfirm,
-    pass,
+    password,
     passConfirm
   ): Promise<ExecReturn> => {
     if (email !== emailConfirm) {
@@ -839,14 +861,14 @@ list.addPasswordAuth = new SimplePopup({
       };
     }
 
-    if (pass !== passConfirm) {
+    if (password !== passConfirm) {
       return {
         status: 0,
         message: "Passwords don't match",
       };
     }
 
-    const reauth = await reauthenticate("passwordFirst", pass);
+    const reauth = await reauthenticate({ password });
     if (reauth.status !== 1) {
       return {
         status: reauth.status,
@@ -855,7 +877,7 @@ list.addPasswordAuth = new SimplePopup({
     }
 
     try {
-      const credential = EmailAuthProvider.credential(email, pass);
+      const credential = EmailAuthProvider.credential(email, password);
       await linkWithCredential(reauth.user, credential);
     } catch (e) {
       const message = createErrorMessage(
@@ -904,7 +926,7 @@ list.deleteAccount = new SimplePopup({
   buttonText: "delete",
   onlineOnly: true,
   execFn: async (_thisPopup, password): Promise<ExecReturn> => {
-    const reauth = await reauthenticate("passwordFirst", password);
+    const reauth = await reauthenticate({ password });
     if (reauth.status !== 1) {
       return {
         status: reauth.status,
@@ -953,7 +975,7 @@ list.resetAccount = new SimplePopup({
   buttonText: "reset",
   onlineOnly: true,
   execFn: async (_thisPopup, password): Promise<ExecReturn> => {
-    const reauth = await reauthenticate("passwordFirst", password);
+    const reauth = await reauthenticate({ password });
     if (reauth.status !== 1) {
       return {
         status: reauth.status,
@@ -1004,7 +1026,7 @@ list.optOutOfLeaderboards = new SimplePopup({
   buttonText: "opt out",
   onlineOnly: true,
   execFn: async (_thisPopup, password): Promise<ExecReturn> => {
-    const reauth = await reauthenticate("passwordFirst", password);
+    const reauth = await reauthenticate({ password });
     if (reauth.status !== 1) {
       return {
         status: reauth.status,
@@ -1111,7 +1133,7 @@ list.resetPersonalBests = new SimplePopup({
   buttonText: "reset",
   onlineOnly: true,
   execFn: async (_thisPopup, password): Promise<ExecReturn> => {
-    const reauth = await reauthenticate("passwordFirst", password);
+    const reauth = await reauthenticate({ password });
     if (reauth.status !== 1) {
       return {
         status: reauth.status,
@@ -1188,7 +1210,7 @@ list.revokeAllTokens = new SimplePopup({
   buttonText: "revoke all",
   onlineOnly: true,
   execFn: async (_thisPopup, password): Promise<ExecReturn> => {
-    const reauth = await reauthenticate("passwordFirst", password);
+    const reauth = await reauthenticate({ password });
     if (reauth.status !== 1) {
       return {
         status: reauth.status,
@@ -1615,7 +1637,7 @@ function isUsingGoogleAuthentication(): boolean {
   return isUsingAuthentication("google.com");
 }
 
-function isUsingAuthentication(authProvider: string): boolean {
+function isUsingAuthentication(authProvider: AuthMethod): boolean {
   return (
     Auth?.currentUser?.providerData.some(
       (p) => p.providerId === authProvider
