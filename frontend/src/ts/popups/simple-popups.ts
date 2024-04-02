@@ -395,11 +395,10 @@ type ReauthenticateOptions = {
 function getPreferredAuthenticationMethod(
   exclude?: AuthMethod
 ): AuthMethod | undefined {
-  for (const method of ["password", "github", "google"].filter(
-    (it) => it !== exclude
-  )) {
-    if (isUsingAuthentication(method as AuthMethod))
-      return method as AuthMethod;
+  const authMethods = ["password", "github", "google"] as AuthMethod[];
+  const filteredMethods = authMethods.filter((it) => it !== exclude);
+  for (const method of filteredMethods) {
+    if (isUsingAuthentication(method)) return method;
   }
   return undefined;
 }
