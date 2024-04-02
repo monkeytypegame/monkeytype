@@ -7,7 +7,6 @@ import * as Notifications from "../elements/notifications";
 import * as Settings from "../pages/settings";
 import * as ThemePicker from "../settings/theme-picker";
 import * as CustomText from "../test/custom-text";
-import * as SavedTextsPopup from "../popups/saved-texts-popup";
 import * as AccountButton from "../elements/account-button";
 import { FirebaseError } from "firebase/app";
 import { Auth, isAuthenticated, getAuthenticatedUser } from "../firebase";
