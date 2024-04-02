@@ -437,5 +437,5 @@ $(window).on("resize", () => {
 function formatTopPercentage(lbRank: SharedTypes.RankAndCount): string {
   if (lbRank.rank === undefined) return "-";
   if (lbRank.rank === 1) return "GOAT";
-  return "Top " + Format.percentage((lbRank.rank / lbRank.count) * 100);
+  return "Top " + Misc.roundTo2((lbRank.rank / lbRank.count) * 100) + "%";
 }

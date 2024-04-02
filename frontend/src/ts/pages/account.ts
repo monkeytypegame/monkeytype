@@ -1255,19 +1255,16 @@ ConfigEvent.subscribe((eventKey) => {
   }
 });
 
-export const page = new Page(
-  "account",
-  $(".page.pageAccount"),
-  "/account",
-  async () => {
-    //
-  },
-  async () => {
+export const page = new Page({
+  name: "account",
+  element: $(".page.pageAccount"),
+  path: "/account",
+  afterHide: async (): Promise<void> => {
     reset();
     ResultFilters.removeButtons();
     Skeleton.remove("pageAccount");
   },
-  async () => {
+  beforeShow: async (): Promise<void> => {
     Skeleton.append("pageAccount", "main");
     if (DB.getSnapshot()?.results === undefined) {
       $(".pageLoading .fill, .pageAccount .fill").css("width", "0%");
@@ -1290,10 +1287,7 @@ export const page = new Page(
       ResultBatches.showOrHideIfNeeded();
     });
   },
-  async () => {
-    //
-  }
-);
+});
 
 $(() => {
   Skeleton.save("pageAccount");
