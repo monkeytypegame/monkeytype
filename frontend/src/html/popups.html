@@ -475,8 +475,8 @@
     <div class="listLong"></div>
   </div>
 </dialog>
-<div id="saveCustomTextPopupWrapper" class="popupWrapper hidden">
-  <div id="saveCustomTextPopup">
+<dialog id="saveCustomTextModal" class="modalWrapper hidden">
+  <form class="modal">
     <div class="title">Save custom text</div>
     <input class="textName" type="text" placeholder="name" />
     <div>
@@ -490,9 +490,9 @@
         </div>
       </label>
     </div>
-    <div class="button save">save</div>
-  </div>
-</div>
+    <button class="save">save</button>
+  </form>
+</dialog>
 <dialog id="wordFilterModal" class="modalWrapper hidden">
   <div class="modal">
     <!-- hidden for now, dunno where to place it -->

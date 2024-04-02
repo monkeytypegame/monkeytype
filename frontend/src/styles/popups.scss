@@ -220,21 +220,9 @@
   }
 }
 
-#saveCustomTextPopupWrapper {
-  #saveCustomTextPopup {
-    background: var(--bg-color);
-    border-radius: var(--roundness);
-    padding: 2rem;
-    display: grid;
-    gap: 1rem;
-    width: 400px;
-    max-height: 80vh;
-    overflow: auto;
-
-    .title {
-      font-size: 1.5rem;
-      color: var(--sub-color);
-    }
+#saveCustomTextModal {
+  .modal {
+    max-width: 400px;
   }
 }
 
