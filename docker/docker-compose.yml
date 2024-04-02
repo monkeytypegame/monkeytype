@@ -36,10 +36,11 @@ services:
       - FRONTEND_URL=${MONKEYTYPE_FRONTENDURL}
       - RECAPTCHA_SECRET=${RECAPTCHA_SECRET:-""}
     volumes:
-      - type: bind
-        source: ./serviceAccountKey.json
-        target: /src/credentials/serviceAccountKey.json
-        read_only: true
+      #uncomment to enable the account system, check the SELF_HOSTING.md file
+      #- type: bind
+      #  source: ./serviceAccountKey.json
+      #  target: /src/credentials/serviceAccountKey.json
+      #  read_only: true
       - type: bind
         source: ./backend-configuration.json
         target: /app/backend-configuration.json
