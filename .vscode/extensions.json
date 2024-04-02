@@ -3,6 +3,7 @@
     "esbenp.prettier-vscode",
     "Orta.vscode-jest",
     "vitest.explorer",
-    "ryanluker.vscode-coverage-gutters"
+    "ryanluker.vscode-coverage-gutters",
+    "huntertran.auto-markdown-toc"
   ]
 }

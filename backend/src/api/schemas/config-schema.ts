@@ -77,7 +77,11 @@ const CONFIG_SCHEMA = joi.object({
   keymapLegendStyle: joi
     .string()
     .valid("lowercase", "uppercase", "blank", "dynamic"),
-  keymapLayout: joi.string().valid().max(50).token(),
+  keymapLayout: joi
+    .string()
+    .regex(/[\w-_]+/)
+    .valid()
+    .max(50),
   keymapShowTopRow: joi.string().valid("always", "layout", "never"),
   fontFamily: joi
     .string()

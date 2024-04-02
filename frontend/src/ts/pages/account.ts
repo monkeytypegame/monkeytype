@@ -100,9 +100,10 @@ function loadMoreLines(lineIndex?: number): void {
       icons += `<span class="miniResultChartButton" aria-label="View graph" data-balloon-pos="up" filteredResultsId="${i}" style="opacity: 1"><i class="fas fa-chart-line"></i></span>`;
     }
 
-    let tagNames = "";
+    let tagNames = "no tags";
 
     if (result.tags !== undefined && result.tags.length > 0) {
+      tagNames = "";
       result.tags.forEach((tag) => {
         DB.getSnapshot()?.tags?.forEach((snaptag) => {
           if (tag === snaptag._id) {
@@ -120,15 +121,17 @@ function loadMoreLines(lineIndex?: number): void {
       restags = JSON.stringify(result.tags);
     }
 
-    let tagIcons = `<span id="resultEditTags" resultId="${result._id}" tags='${restags}' aria-label="no tags" data-balloon-pos="up" style="opacity: .25"><i class="fas fa-fw fa-tag"></i></span>`;
+    const isActive = result.tags !== undefined && result.tags.length > 0;
+    const icon =
+      result.tags !== undefined && result.tags.length > 1
+        ? "fa-tags"
+        : "fa-tag";
 
-    if (tagNames !== "") {
-      if (result.tags !== undefined && result.tags.length > 1) {
-        tagIcons = `<span id="resultEditTags" resultId="${result._id}" tags='${restags}' aria-label="${tagNames}" data-balloon-pos="up"><i class="fas fa-fw fa-tags"></i></span>`;
-      } else {
-        tagIcons = `<span id="resultEditTags" resultId="${result._id}" tags='${restags}' aria-label="${tagNames}" data-balloon-pos="up"><i class="fas fa-fw fa-tag"></i></span>`;
-      }
-    }
+    const resultTagsButton = `<button class="textButton resultEditTagsButton ${
+      isActive ? "active" : ""
+    }" data-result-id="${
+      result._id
+    }" data-tags='${restags}' aria-label="${tagNames}" data-balloon-pos="up"><i class="fas fa-fw ${icon}"></i></button>`;
 
     let pb = "";
     if (result.isPb) {
@@ -152,7 +155,7 @@ function loadMoreLines(lineIndex?: number): void {
     <td>${charStats}</td>
     <td>${result.mode} ${result.mode2}</td>
     <td class="infoIcons">${icons}</td>
-    <td>${tagIcons}</td>
+    <td>${resultTagsButton}</td>
     <td>${format(date, "dd MMM yyyy")}<br>
     ${format(date, "HH:mm")}
     </td>
@@ -986,6 +989,40 @@ async function update(): Promise<void> {
   }
 }
 
+export function updateTagsForResult(resultId: string, tagIds: string[]): void {
+  const tagNames: string[] = [];
+
+  if (tagIds.length > 0) {
+    for (const tag of tagIds) {
+      DB.getSnapshot()?.tags?.forEach((snaptag) => {
+        if (tag === snaptag._id) {
+          tagNames.push(snaptag.display);
+        }
+      });
+    }
+  }
+
+  const el = $(
+    `.pageAccount .resultEditTagsButton[data-result-id='${resultId}']`
+  );
+
+  el.attr("data-tags", JSON.stringify(tagIds));
+
+  if (tagIds.length > 0) {
+    el.attr("aria-label", tagNames.join(", "));
+    el.addClass("active");
+    if (tagIds.length > 1) {
+      el.html(`<i class="fas fa-fw fa-tags"></i>`);
+    } else {
+      el.html(`<i class="fas fa-fw fa-tag"></i>`);
+    }
+  } else {
+    el.attr("aria-label", "no tags");
+    el.removeClass("active");
+    el.html(`<i class="fas fa-fw fa-tag"></i>`);
+  }
+}
+
 function sortAndRefreshHistory(
   keyString: string,
   headerClass: string,
@@ -1219,19 +1256,16 @@ ConfigEvent.subscribe((eventKey) => {
   }
 });
 
-export const page = new Page(
-  "account",
-  $(".page.pageAccount"),
-  "/account",
-  async () => {
-    //
-  },
-  async () => {
+export const page = new Page({
+  name: "account",
+  element: $(".page.pageAccount"),
+  path: "/account",
+  afterHide: async (): Promise<void> => {
     reset();
     ResultFilters.removeButtons();
     Skeleton.remove("pageAccount");
   },
-  async () => {
+  beforeShow: async (): Promise<void> => {
     Skeleton.append("pageAccount", "main");
     if (DB.getSnapshot()?.results === undefined) {
       $(".pageLoading .fill, .pageAccount .fill").css("width", "0%");
@@ -1254,10 +1288,7 @@ export const page = new Page(
       ResultBatches.showOrHideIfNeeded();
     });
   },
-  async () => {
-    //
-  }
-);
+});
 
 $(() => {
   Skeleton.save("pageAccount");

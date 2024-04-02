@@ -171,11 +171,9 @@ const BUILD_CONFIG = {
         navigateFallback: "",
         runtimeCaching: [
           {
-            urlPattern: ({ request, url }) => {
-              const sameOrigin =
-                new URL(request.url).origin === new URL(url).origin;
-              const isApi = request.url.includes("api.monkeytype.com");
-              return sameOrigin && !isApi;
+            urlPattern: (options) => {
+              const isApi = options.url.hostname === "api.monkeytype.com";
+              return options.sameOrigin && !isApi;
             },
             handler: "NetworkFirst",
             options: {},
@@ -194,7 +192,9 @@ const BUILD_CONFIG = {
     ]),
   ],
   define: {
-    BACKEND_URL: JSON.stringify("https://api.monkeytype.com"),
+    BACKEND_URL: JSON.stringify(
+      process.env.BACKEND_URL || "https://api.monkeytype.com"
+    ),
     IS_DEVELOPMENT: JSON.stringify(false),
     CLIENT_VERSION: JSON.stringify(buildClientVersion()),
     RECAPTCHA_SITE_KEY: JSON.stringify(process.env.RECAPTCHA_SITE_KEY),

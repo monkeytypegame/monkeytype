@@ -9,11 +9,9 @@ import * as TagController from "../controllers/tag-controller";
 import * as PresetController from "../controllers/preset-controller";
 import * as ThemePicker from "../settings/theme-picker";
 import * as Notifications from "../elements/notifications";
-import * as ImportExportSettingsPopup from "../popups/import-export-settings-popup";
+import * as ImportExportSettingsModal from "../modals/import-export-settings";
 import * as ConfigEvent from "../observables/config-event";
 import * as ActivePage from "../states/active-page";
-import * as ApeKeysPopup from "../popups/ape-keys-popup";
-import * as CookiePopup from "../popups/cookie-popup";
 import Page from "./page";
 import { getAuthenticatedUser, isAuthenticated } from "../firebase";
 import Ape from "../ape";
@@ -737,15 +735,19 @@ export function updateDiscordSection(): void {
 export function updateAuthSections(): void {
   $(".pageSettings .section.passwordAuthSettings button").addClass("hidden");
   $(".pageSettings .section.googleAuthSettings button").addClass("hidden");
+  $(".pageSettings .section.githubAuthSettings button").addClass("hidden");
 
   if (!isAuthenticated()) return;
   const user = getAuthenticatedUser();
 
-  const passwordProvider = user.providerData.find(
+  const passwordProvider = user.providerData.some(
     (provider) => provider.providerId === "password"
   );
-  const googleProvider = user.providerData.find(
+  const googleProvider = user.providerData.some(
     (provider) => provider.providerId === "google.com"
+  );
+  const githubProvider = user.providerData.some(
+    (provider) => provider.providerId === "github.com"
   );
 
   if (passwordProvider) {
@@ -765,7 +767,7 @@ export function updateAuthSections(): void {
     $(
       ".pageSettings .section.googleAuthSettings #removeGoogleAuth"
     ).removeClass("hidden");
-    if (passwordProvider) {
+    if (passwordProvider || githubProvider) {
       $(
         ".pageSettings .section.googleAuthSettings #removeGoogleAuth"
       ).removeClass("disabled");
@@ -776,6 +778,24 @@ export function updateAuthSections(): void {
     }
   } else {
     $(".pageSettings .section.googleAuthSettings #addGoogleAuth").removeClass(
+      "hidden"
+    );
+  }
+  if (githubProvider) {
+    $(
+      ".pageSettings .section.githubAuthSettings #removeGithubAuth"
+    ).removeClass("hidden");
+    if (passwordProvider || googleProvider) {
+      $(
+        ".pageSettings .section.githubAuthSettings #removeGithubAuth"
+      ).removeClass("disabled");
+    } else {
+      $(".pageSettings .section.githubAuthSettings #removeGithubAuth").addClass(
+        "disabled"
+      );
+    }
+  } else {
+    $(".pageSettings .section.githubAuthSettings #addGithubAuth").removeClass(
       "hidden"
     );
   }
@@ -945,17 +965,12 @@ export async function update(groupUpdate = true): Promise<void> {
   const modifierKey = window.navigator.userAgent.toLowerCase().includes("mac")
     ? "cmd"
     : "ctrl";
-  if (Config.quickRestart === "esc") {
-    $(".pageSettings .tip").html(`
-    tip: You can also change all these settings quickly using the
-    command line (<key>${modifierKey}</key>+<key>shift</key>+<key>p</key>)`);
-  } else {
-    $(".pageSettings .tip").html(`
-    tip: You can also change all these settings quickly using the
-    command line (<key>esc</key> or <key>${modifierKey}</key>+<key>shift</key>+<key>p</key>)`);
-  }
-}
 
+  const commandKey = Config.quickRestart === "esc" ? "tab" : "esc";
+  $(".pageSettings .tip").html(`
+    tip: You can also change all these settings quickly using the
+    command line (<key>${commandKey}</key> or <key>${modifierKey}</key> + <key>shift</key> + <key>p</key>)`);
+}
 function toggleSettingsGroup(groupName: string): void {
   const groupEl = $(`.pageSettings .settingsGroup.${groupName}`);
   groupEl.stop(true, true).slideToggle(250).toggleClass("slideup");
@@ -1129,7 +1144,7 @@ $(".pageSettings .section.presets").on(
 );
 
 $("#importSettingsButton").on("click", () => {
-  ImportExportSettingsPopup.show("import");
+  ImportExportSettingsModal.show("import");
 });
 
 $("#exportSettingsButton").on("click", () => {
@@ -1139,17 +1154,13 @@ $("#exportSettingsButton").on("click", () => {
       Notifications.add("JSON Copied to clipboard", 0);
     },
     function () {
-      ImportExportSettingsPopup.show("export");
+      ImportExportSettingsModal.show("export");
     }
   );
 });
 
 $(".pageSettings .sectionGroupTitle").on("click", (e) => {
   toggleSettingsGroup($(e.currentTarget).attr("group") as string);
-});
-
-$(".pageSettings .section.apeKeys #showApeKeysPopup").on("click", () => {
-  void ApeKeysPopup.show();
 });
 
 $(
@@ -1248,11 +1259,6 @@ $(".pageSettings .quickNav .links a").on("click", (e) => {
   isOpen && toggleSettingsGroup(settingsGroup);
 });
 
-$(".pageSettings .section.updateCookiePreferences button").on("click", () => {
-  CookiePopup.show();
-  CookiePopup.showSettings();
-});
-
 $(".pageSettings .section.discordIntegration .getLinkAndGoToOauth").on(
   "click",
   () => {
@@ -1278,26 +1284,20 @@ ConfigEvent.subscribe((eventKey) => {
   }
 });
 
-export const page = new Page(
-  "settings",
-  $(".page.pageSettings"),
-  "/settings",
-  async () => {
-    //
-  },
-  async () => {
+export const page = new Page({
+  name: "settings",
+  element: $(".page.pageSettings"),
+  path: "/settings",
+  afterHide: async (): Promise<void> => {
     reset();
     Skeleton.remove("pageSettings");
   },
-  async () => {
+  beforeShow: async (): Promise<void> => {
     Skeleton.append("pageSettings", "main");
     await fillSettingsPage();
     await update(false);
   },
-  async () => {
-    //
-  }
-);
+});
 
 $(async () => {
   Skeleton.save("pageSettings");

@@ -23,7 +23,6 @@ import * as LiveWpm from "./live-wpm";
 import * as LiveAcc from "./live-acc";
 import * as LiveBurst from "./live-burst";
 import * as TimerProgress from "./timer-progress";
-import * as QuoteSearchPopup from "../popups/quote-search-popup";
 
 import * as TestTimer from "./test-timer";
 import * as OutOfFocus from "./out-of-focus";
@@ -32,7 +31,7 @@ import * as DB from "../db";
 import * as Replay from "./replay";
 import * as TodayTracker from "./today-tracker";
 import * as ChallengeContoller from "../controllers/challenge-controller";
-import * as QuoteRatePopup from "../popups/quote-rate-popup";
+import * as QuoteRateModal from "../modals/quote-rate";
 import * as Result from "./result";
 import * as MonkeyPower from "../elements/monkey-power";
 import * as ActivePage from "../states/active-page";
@@ -58,6 +57,7 @@ import * as KeymapEvent from "../observables/keymap-event";
 import * as LayoutfluidFunboxTimer from "../test/funbox/layoutfluid-funbox-timer";
 import * as Wordset from "./wordset";
 import * as ArabicLazyMode from "../states/arabic-lazy-mode";
+import Format from "../utils/format";
 
 let failReason = "";
 const koInputVisual = document.getElementById("koInputVisual") as HTMLElement;
@@ -274,7 +274,7 @@ export function restart(options = {} as RestartOptions): void {
   TestInput.input.setKoreanStatus(false);
   LayoutfluidFunboxTimer.hide();
   MemoryFunboxTimer.reset();
-  QuoteRatePopup.clearQuoteStats();
+  QuoteRateModal.clearQuoteStats();
   TestUI.reset();
 
   if (TestUI.resultVisible) {
@@ -376,6 +376,10 @@ export function restart(options = {} as RestartOptions): void {
         void ModesNotice.update();
       }
 
+      const isWordsFocused = $("#wordsInput").is(":focus");
+      if (isWordsFocused) OutOfFocus.hide();
+      TestUI.focusWords();
+
       $("#typingTest")
         .css("opacity", 0)
         .removeClass("hidden")
@@ -404,7 +408,6 @@ export function restart(options = {} as RestartOptions): void {
               "0";
 
             TestUI.setTestRestarting(false);
-            TestUI.focusWords();
             TestUI.updatePremid();
             ManualRestart.reset();
             PageTransition.set(false);
@@ -1063,13 +1066,16 @@ export async function finish(difficultyFailed = false): Promise<void> {
 
       let newText = CustomText.getCustomText(customTextName, true);
       newText = newText.slice(newProgress);
-      CustomText.setPopupTextareaState(newText.join(CustomText.delimiter));
+      CustomText.setPopupTextareaState(
+        newText.join(CustomText.delimiter),
+        true
+      );
       CustomText.setText(newText);
     } else {
       // They finished the test
       CustomText.setCustomTextLongProgress(customTextName, 0);
       const text = CustomText.getCustomText(customTextName, true);
-      CustomText.setPopupTextareaState(text.join(CustomText.delimiter));
+      CustomText.setPopupTextareaState(text.join(CustomText.delimiter), true);
       CustomText.setText(text);
       Notifications.add("Long custom text completed", 1, {
         duration: 5,
@@ -1203,7 +1209,7 @@ async function saveResult(
   }
 
   $("#result .stats .tags .editTagsButton").attr(
-    "result-id",
+    "data-result-id",
     response.data?.insertedId as string //if status is 200 then response.data is not null or undefined
   );
   $("#result .stats .tags .editTagsButton").removeClass("invisible");
@@ -1292,7 +1298,7 @@ async function saveResult(
         500
       );
     $("#result .stats .dailyLeaderboard .bottom").html(
-      Misc.getPositionString(response.data.dailyLeaderboardRank)
+      Format.rank(response.data.dailyLeaderboardRank, { fallback: "" })
     );
   }
 
@@ -1446,22 +1452,6 @@ $("#popups").on("click", "#practiseWordsPopup .button.both", () => {
     });
   }
 });
-
-$("#popups").on(
-  "click",
-  "#quoteSearchPopup #quoteSearchResults .searchResult",
-  (e) => {
-    if (
-      (e.target.classList.contains("report") as boolean) ||
-      (e.target.classList.contains("favorite") as boolean)
-    ) {
-      return;
-    }
-    const sid = parseInt($(e.currentTarget).attr("id") ?? "");
-    QuoteSearchPopup.setSelectedId(sid);
-    if (QuoteSearchPopup.apply(sid)) restart();
-  }
-);
 
 $("header").on("click", "nav #startTestButton, #logo", () => {
   if (ActivePage.get() === "test") restart();

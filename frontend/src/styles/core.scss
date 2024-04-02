@@ -168,7 +168,7 @@ key {
   background-color: var(--sub-color);
   /* font-weight: bold; */
   padding: 0.1rem 0.3rem;
-  margin: 0rem 0.5rem;
+  margin: 0rem 0rem;
   border-radius: 0.1rem;
   display: inline-block;
   font-size: 0.7rem;
@@ -385,9 +385,9 @@ key {
   text-align: center;
   z-index: 999999999;
   &.main {
-    color: rgb(30, 255, 0);
+    color: var(--text-color);
   }
   &.error {
-    color: red;
+    color: var(--error-color);
   }
 }

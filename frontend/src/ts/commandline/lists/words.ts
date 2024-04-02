@@ -65,7 +65,7 @@ const commands: MonkeyTypes.Command[] = [
           id: "changeWordCountCustom",
           display: "custom...",
           input: true,
-          exec: (input): void => {
+          exec: ({ input }): void => {
             if (input === undefined || input === "") return;
             UpdateConfig.setMode("words");
             UpdateConfig.setWordCount(parseInt(input));

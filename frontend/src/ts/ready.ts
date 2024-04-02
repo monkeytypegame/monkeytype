@@ -6,7 +6,7 @@ import * as MonkeyPower from "./elements/monkey-power";
 import * as NewVersionNotification from "./elements/version-check";
 import * as Notifications from "./elements/notifications";
 import * as Focus from "./test/focus";
-import * as CookiePopup from "./popups/cookie-popup";
+import * as CookiesModal from "./modals/cookies";
 import * as PSA from "./elements/psa";
 import * as ConnectionState from "./states/connection";
 import * as FunboxList from "./test/funbox/funbox-list";
@@ -15,6 +15,7 @@ import Konami from "konami";
 import { log } from "./controllers/analytics-controller";
 import { envConfig } from "./constants/env-config";
 import * as ServerConfiguration from "./ape/server-configuration";
+import * as Skeleton from "./utils/skeleton";
 
 if (Misc.isDevEnvironment()) {
   $("footer .currentVersion .text").text("localhost");
@@ -41,41 +42,44 @@ $(document).ready(() => {
   Misc.loadCSS("/css/balloon.min.css", true);
   Misc.loadCSS("/css/fa.min.css", true);
 
-  CookiePopup.check();
+  CookiesModal.check();
 
   $("body").css("transition", "background .25s, transform .05s");
   if (Config.quickRestart !== "off") {
     $("#restartTestButton").addClass("hidden");
   }
-  // const merchBannerClosed =
-  //   window.localStorage.getItem("merchbannerclosed") === "true";
-  // if (!merchBannerClosed) {
-  //   Notifications.addBanner(
-  //     `Check out our merchandise, available at <a target="_blank" rel="noopener" href="https://monkeytype.store/">monkeytype.store</a>`,
-  //     1,
-  //     "./images/merch2.png",
-  //     false,
-  //     () => {
-  //       window.localStorage.setItem("merchbannerclosed", "true");
-  //     },
-  //     true
-  //   );
-  // }
-
-  const plushieBannerClosed =
-    window.localStorage.getItem("plushieBannerClosed") === "true";
-  if (!plushieBannerClosed) {
+  const merchBannerClosed =
+    window.localStorage.getItem("merchbannerclosed") === "true";
+  if (!merchBannerClosed) {
     Notifications.addBanner(
-      `George Plushie - available now for a limited time! <a target="_blank" rel="noopener" href="https://mktp.co/plushie">monkeytype.store</a>`,
+      `Check out our merchandise, available at <a target="_blank" rel="noopener" href="https://monkeytype.store/">monkeytype.store</a>`,
       1,
-      "./images/plushiebanner.png",
+      "./images/merch2.png",
       false,
       () => {
-        window.localStorage.setItem("plushieBannerClosed", "true");
+        window.localStorage.setItem("merchbannerclosed", "true");
       },
       true
     );
   }
+
+  // const plushieBannerClosed2 =
+  //   window.localStorage.getItem("plushieBannerClosed2") === "true";
+  // if (!plushieBannerClosed2) {
+  //   const string = formatDistanceStrict(1711882800000, Date.now(), {
+  //     roundingMethod: "floor",
+  //   });
+  //   Notifications.addBanner(
+  //     `Our limited plushie will be gone in ${string} - don't miss out! <a target="_blank" rel="noopener" href="https://mktp.co/plushie2">monkeytype.store</a>`,
+  //     1,
+  //     "./images/plushiebanner.png",
+  //     true,
+  //     () => {
+  //       window.localStorage.setItem("plushieBannerClosed2", "true");
+  //     },
+  //     true
+  //   );
+  // }
 
   setTimeout(() => {
     FunboxList.get(Config.funbox).forEach((it) =>
@@ -91,8 +95,11 @@ $(document).ready(() => {
   if (ConnectionState.get()) {
     void PSA.show();
     void ServerConfiguration.sync().then(() => {
-      if (ServerConfiguration.get()?.users.signUp) {
-        $(".signInOut").removeClass("hidden");
+      if (!ServerConfiguration.get()?.users.signUp) {
+        $(".signInOut").addClass("hidden");
+        $(".register").addClass("hidden");
+        $(".login").addClass("hidden");
+        $(".disabledNotification").removeClass("hidden");
       }
     });
   }
@@ -109,6 +116,8 @@ $(document).ready(() => {
         }
       });
   }
+
+  Skeleton.save("commandLine");
 });
 
 window.onerror = function (message, url, line, column, error): void {
@@ -129,6 +138,7 @@ window.onunhandledrejection = function (e): void {
       customTitle: "DEV: Unhandled rejection",
       duration: 5,
     });
+    console.error(e);
   }
   void log("error", {
     error: e.reason.stack ?? "",

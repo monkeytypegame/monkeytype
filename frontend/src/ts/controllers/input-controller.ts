@@ -147,7 +147,7 @@ function backspaceToPrevious(): void {
   TestUI.setCurrentWordElementIndex(TestUI.currentWordElementIndex - 1);
   TestUI.updateActiveElement(true);
   Funbox.toggleScript(TestWords.words.getCurrent());
-  TestUI.updateWordElement();
+  void TestUI.updateWordElement();
 
   if (Config.mode === "zen") {
     TimerProgress.update();
@@ -212,7 +212,7 @@ function handleSpace(): void {
   TestInput.incrementAccuracy(isWordCorrect);
   if (isWordCorrect) {
     if (Config.indicateTypos !== "off" && Config.stopOnError === "letter") {
-      TestUI.updateWordElement();
+      void TestUI.updateWordElement();
     }
     PaceCaret.handleSpace(true, currentWord);
     TestInput.input.pushHistory();
@@ -262,7 +262,7 @@ function handleSpace(): void {
       if (Config.stopOnError === "word") {
         dontInsertSpace = false;
         Replay.addReplayEvent("incorrectLetter", "_");
-        TestUI.updateWordElement(true);
+        void TestUI.updateWordElement(true);
         void Caret.updatePosition();
       }
       return;
@@ -563,7 +563,7 @@ function handleChar(
     !Config.language.startsWith("korean")
   ) {
     TestInput.input.current = resultingWord;
-    TestUI.updateWordElement();
+    void TestUI.updateWordElement();
     void Caret.updatePosition();
     return;
   }
@@ -644,7 +644,7 @@ function handleChar(
     !thisCharCorrect
   ) {
     if (Config.indicateTypos !== "off") {
-      TestUI.updateWordElement(undefined, TestInput.input.current + char);
+      void TestUI.updateWordElement(undefined, TestInput.input.current + char);
     }
     return;
   }
@@ -710,7 +710,7 @@ function handleChar(
   const activeWordTopBeforeJump = document.querySelector<HTMLElement>(
     "#words .word.active"
   )?.offsetTop as number;
-  TestUI.updateWordElement();
+  void TestUI.updateWordElement();
 
   if (!Config.hideExtraLetters) {
     const newActiveTop = document.querySelector<HTMLElement>(
@@ -731,7 +731,7 @@ function handleChar(
         if (!Config.showAllLines) TestUI.lineJump(currentTop);
       } else {
         TestInput.input.current = TestInput.input.current.slice(0, -1);
-        TestUI.updateWordElement();
+        void TestUI.updateWordElement();
       }
     }
   }
@@ -925,7 +925,7 @@ $(document).on("keydown", async (event) => {
     !["Enter", "Tab", ...ModifierKeys].includes(event.key)
   ) {
     TestUI.focusWords();
-    if (Config.showOutOfFocusWarning) {
+    if (Config.showOutOfFocusWarning && !event.ctrlKey && !event.metaKey) {
       event.preventDefault();
     }
   }
@@ -970,7 +970,9 @@ $(document).on("keydown", async (event) => {
       activeElement?.tagName === "BUTTON" ||
       activeElement?.tagName === "A" ||
       activeElement?.classList.contains("button") ||
-      activeElement?.classList.contains("textButton");
+      activeElement?.classList.contains("textButton") ||
+      (activeElement?.tagName === "INPUT" &&
+        activeElement?.id !== "wordsInput");
 
     if (activeElementIsButton) return;
 
@@ -1010,7 +1012,6 @@ $(document).on("keydown", async (event) => {
         event,
       });
     } else {
-      handleChar("\n", TestInput.input.current.length);
       setWordsInput(" " + TestInput.input.current);
       if (Config.tapeMode !== "off") {
         TestUI.scrollTape();
@@ -1354,7 +1355,7 @@ $("#wordsInput").on("input", (event) => {
       TestInput.input.current = inputValue;
     }
 
-    TestUI.updateWordElement();
+    void TestUI.updateWordElement();
     void Caret.updatePosition();
     if (!CompositionState.getComposing()) {
       const keyStroke = event?.originalEvent as InputEvent;
@@ -1396,7 +1397,7 @@ $("#wordsInput").on("input", (event) => {
 
     const stateafter = CompositionState.getComposing();
     if (statebefore !== stateafter) {
-      TestUI.updateWordElement();
+      void TestUI.updateWordElement();
     }
 
     // force caret at end of input

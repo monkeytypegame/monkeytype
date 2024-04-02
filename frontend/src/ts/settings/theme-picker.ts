@@ -6,7 +6,6 @@ import * as Colors from "../utils/colors";
 import * as Notifications from "../elements/notifications";
 import * as ThemeColors from "../elements/theme-colors";
 import * as ChartController from "../controllers/chart-controller";
-import * as ShareCustomThemePopup from "../popups/share-custom-theme-popup";
 import * as Loader from "../elements/loader";
 import * as DB from "../db";
 import * as ConfigEvent from "../observables/config-event";
@@ -457,11 +456,6 @@ $(".pageSettings #loadCustomColorsFromPreset").on("click", async () => {
     updateColors($(".colorPicker #" + colorName).parent(), color as string);
   });
   // }, 250);
-});
-
-// Handles click on share custom theme button
-$("#shareCustomThemeButton").on("click", () => {
-  ShareCustomThemePopup.show();
 });
 
 $(".pageSettings #saveCustomThemeButton").on("click", async () => {

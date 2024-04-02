@@ -249,7 +249,7 @@ export async function setup(challengeName: string): Promise<boolean> {
       UpdateConfig.setDifficulty("normal", true);
     } else if (challenge.type === "customText") {
       CustomText.setDelimiter(" ");
-      CustomText.setPopupTextareaState(challenge.parameters[0] as string);
+      CustomText.setPopupTextareaState(challenge.parameters[0] as string, true);
       CustomText.setText((challenge.parameters[0] as string).split(" "));
       CustomText.setIsTimeRandom(false);
       CustomText.setIsSectionRandom(false);
@@ -270,7 +270,7 @@ export async function setup(challengeName: string): Promise<boolean> {
       text = text.replace(/[\n\r\t ]/gm, " ");
       text = text.replace(/ +/gm, " ");
       CustomText.setDelimiter(" ");
-      CustomText.setPopupTextareaState(text);
+      CustomText.setPopupTextareaState(text, true);
       CustomText.setText(text.split(" "));
       CustomText.setIsWordRandom(false);
       CustomText.setIsSectionRandom(false);

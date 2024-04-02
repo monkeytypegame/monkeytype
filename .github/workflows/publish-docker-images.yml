@@ -1,0 +1,76 @@
+name: Publish Docker image
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+jobs:
+  push_to_registry:
+    env:
+      BE_REPO: monkeytype/monkeytype-backend
+      FE_REPO: monkeytype/monkeytype-frontend
+
+    name: Push Docker image to Docker Hub
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v4
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@343f7c4344506bcbf9b4de18042ae17996df046d
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_ACCESS_TOKEN }}
+
+      - name: Backend extract metadata (tags, labels)
+        id: bemeta
+        uses: docker/metadata-action@8e5442c4ef9f78752691e2d8f8d19755c6f78e81
+        with:
+          images: ${{ env.BE_REPO }}
+          tags: |
+            type=semver,pattern={{version}}
+
+      - name: Backend build and push Docker image
+        uses: docker/build-push-action@3b5e8027fcad23fda98b2e3ac259d8d67585f671
+        with:
+          context: .
+          file: ./docker/backend/Dockerfile
+          push: true
+          tags: ${{ env.BE_REPO }}:latest,${{ steps.bemeta.outputs.tags }}
+          labels: ${{ steps.bemeta.outputs.labels }}
+
+      - name: Backend publish description
+        uses: peter-evans/dockerhub-description@e98e4d1628a5f3be2be7c231e50981aee98723ae
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_ACCESS_TOKEN }}
+          repository: ${{ env.BE_REPO }}
+          short-description: Backend server for monkeytype.com
+          readme-filepath: ./SELF_HOSTING.md
+
+      - name: Frontend extract metadata (tags, labels)
+        id: femeta
+        uses: docker/metadata-action@8e5442c4ef9f78752691e2d8f8d19755c6f78e81
+        with:
+          images: ${{ env.FE_REPO }}
+          tags: |
+            type=semver,pattern={{version}}
+
+      - name: Frontend build and push Docker image
+        uses: docker/build-push-action@3b5e8027fcad23fda98b2e3ac259d8d67585f671
+        with:
+          context: .
+          file: ./docker/frontend/Dockerfile
+          push: true
+          tags: ${{ env.FE_REPO }}:latest,${{ steps.femeta.outputs.tags }}
+          labels: ${{ steps.femeta.outputs.labels }}
+
+      - name: Frontend publish description
+        uses: peter-evans/dockerhub-description@e98e4d1628a5f3be2be7c231e50981aee98723ae
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_ACCESS_TOKEN }}
+          repository: ${{ env.FE_REPO }}
+          short-description: Frontend server for monkeytype.com
+          readme-filepath: ./SELF_HOSTING.md
