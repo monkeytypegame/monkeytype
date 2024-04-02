@@ -196,7 +196,7 @@ function getHistogramDataBucketed(data: Record<string, number>): {
 export const page = new Page({
   name: "about",
   element: $(".page.pageAbout"),
-  pathName: "/about",
+  path: "/about",
   afterHide: async (): Promise<void> => {
     reset();
     Skeleton.remove("pageAbout");

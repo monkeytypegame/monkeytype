@@ -214,7 +214,7 @@ $(".page.pageProfile").on("click", ".profile .userReportButton", () => {
 export const page = new Page<undefined | SharedTypes.UserProfile>({
   name: "profile",
   element: $(".page.pageProfile"),
-  pathName: "/profile",
+  path: "/profile",
   afterHide: async (): Promise<void> => {
     Skeleton.remove("pageProfile");
     reset();

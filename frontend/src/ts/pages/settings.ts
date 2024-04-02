@@ -1264,7 +1264,7 @@ ConfigEvent.subscribe((eventKey) => {
 export const page = new Page({
   name: "settings",
   element: $(".page.pageSettings"),
-  pathName: "/settings",
+  path: "/settings",
   afterHide: async (): Promise<void> => {
     reset();
     Skeleton.remove("pageSettings");

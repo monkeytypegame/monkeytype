@@ -6,7 +6,7 @@ type Options<T> = {
 type PageProperties<T> = {
   name: MonkeyTypes.PageName;
   element: JQuery;
-  pathName: string;
+  path: string;
   beforeHide?: () => Promise<void>;
   afterHide?: () => Promise<void>;
   beforeShow?: (options: Options<T>) => Promise<void>;
@@ -28,7 +28,7 @@ export default class Page<T> {
   constructor(props: PageProperties<T>) {
     this.name = props.name;
     this.element = props.element;
-    this.pathname = props.pathName;
+    this.pathname = props.path;
     this.beforeHide = props.beforeHide ?? empty;
     this.afterHide = props.afterHide ?? empty;
     this.beforeShow = props.beforeShow ?? empty;

@@ -42,7 +42,7 @@ export async function showBar(): Promise<void> {
 export const page = new Page({
   name: "loading",
   element: $(".page.pageLoading"),
-  pathName: "/",
+  path: "/",
   afterHide: async (): Promise<void> => {
     Skeleton.remove("pageLoading");
   },

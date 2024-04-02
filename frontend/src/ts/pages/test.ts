@@ -11,7 +11,7 @@ import * as TestConfig from "../test/test-config";
 export const page = new Page({
   name: "test",
   element: $(".page.pageTest"),
-  pathName: "/",
+  path: "/",
   beforeHide: async (): Promise<void> => {
     ManualRestart.set();
     TestLogic.restart();

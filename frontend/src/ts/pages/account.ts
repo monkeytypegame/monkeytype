@@ -1258,7 +1258,7 @@ ConfigEvent.subscribe((eventKey) => {
 export const page = new Page({
   name: "account",
   element: $(".page.pageAccount"),
-  pathName: "/account",
+  path: "/account",
   afterHide: async (): Promise<void> => {
     reset();
     ResultFilters.removeButtons();

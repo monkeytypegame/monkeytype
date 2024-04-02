@@ -4,7 +4,7 @@ import * as Skeleton from "../utils/skeleton";
 export const page = new Page({
   name: "profileSearch",
   element: $(".page.pageProfileSearch"),
-  pathName: "/profile",
+  path: "/profile",
   afterHide: async (): Promise<void> => {
     Skeleton.remove("pageProfileSearch");
   },
