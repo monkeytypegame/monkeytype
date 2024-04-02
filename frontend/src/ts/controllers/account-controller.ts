@@ -410,6 +410,11 @@ async function signInWithProvider(provider: AuthProvider): Promise<void> {
       } else if (error.code === "auth/user-cancelled") {
         // message = "User refused to sign in";
         return;
+      } else if (
+        error.code === "auth/account-exists-with-different-credential"
+      ) {
+        message =
+          "Account already exists, but its using a different authentication method. Try signing in with a different method";
       }
       Notifications.add(message, -1);
       LoginPage.hidePreloader();
