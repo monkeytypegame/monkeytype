@@ -385,9 +385,9 @@ key {
   text-align: center;
   z-index: 999999999;
   &.main {
-    color: rgb(30, 255, 0);
+    color: var(--text-color);
   }
   &.error {
-    color: red;
+    color: var(--error-color);
   }
 }
