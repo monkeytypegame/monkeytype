@@ -402,6 +402,27 @@ function getPreferredAuthenticationMethod(
   }
   return undefined;
 }
+
+function isUsingPasswordAuthentication(): boolean {
+  return isUsingAuthentication("password");
+}
+
+function isUsingGithubAuthentication(): boolean {
+  return isUsingAuthentication("github.com");
+}
+
+function isUsingGoogleAuthentication(): boolean {
+  return isUsingAuthentication("google.com");
+}
+
+function isUsingAuthentication(authProvider: AuthMethod): boolean {
+  return (
+    Auth?.currentUser?.providerData.some(
+      (p) => p.providerId === authProvider
+    ) || false
+  );
+}
+
 async function reauthenticate(
   options: ReauthenticateOptions
 ): Promise<ReauthSuccess | ReauthFailed> {
@@ -1624,25 +1645,6 @@ list.forgotPassword = new SimplePopup({
   },
 });
 
-function isUsingPasswordAuthentication(): boolean {
-  return isUsingAuthentication("password");
-}
-
-function isUsingGithubAuthentication(): boolean {
-  return isUsingAuthentication("github.com");
-}
-
-function isUsingGoogleAuthentication(): boolean {
-  return isUsingAuthentication("google.com");
-}
-
-function isUsingAuthentication(authProvider: AuthMethod): boolean {
-  return (
-    Auth?.currentUser?.providerData.some(
-      (p) => p.providerId === authProvider
-    ) || false
-  );
-}
 export function showPopup(
   key: PopupKey,
   showParams = [] as string[],
