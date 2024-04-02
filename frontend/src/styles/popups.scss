@@ -51,15 +51,8 @@
 }
 
 #customTextPopupWrapper {
-  #customTextPopup {
-    background: var(--bg-color);
-    border-radius: var(--roundness);
-    padding: 2rem;
-    display: grid;
-    gap: 1rem;
+  .modal {
     max-width: 1200px;
-    max-height: 100%;
-    overflow-y: auto;
     grid-template-areas:
       "topButtons topButtons topButtons"
       "textArea textArea checkboxes"

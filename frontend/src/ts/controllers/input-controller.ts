@@ -769,10 +769,12 @@ function handleTab(event: JQuery.KeyDownEvent, popupVisible: boolean): void {
   }
 
   //special case for inserting tab characters into the textarea
-  if ($("#customTextPopup .textarea").is(":focus")) {
+  if ($("#customTextPopupWrapper .textarea").is(":focus")) {
     event.preventDefault();
 
-    const area = $("#customTextPopup .textarea")[0] as HTMLTextAreaElement;
+    const area = $(
+      "#customTextPopupWrapper .textarea"
+    )[0] as HTMLTextAreaElement;
 
     const start: number = area.selectionStart;
     const end: number = area.selectionEnd;

@@ -9,12 +9,10 @@ import * as WordFilterPopup from "../modals/word-filter";
 import * as Notifications from "../elements/notifications";
 import * as SavedTextsPopup from "./saved-texts-popup";
 import * as SaveCustomTextPopup from "./save-custom-text-popup";
-import * as Skeleton from "../utils/skeleton";
-
-const skeletonId = "customTextPopupWrapper";
+import AnimatedModal from "../utils/animated-modal";
 
 const wrapper = "#customTextPopupWrapper";
-const popup = "#customTextPopup";
+const popup = wrapper + " .modal";
 
 function updateLongTextWarning(): void {
   if (CustomTextState.isCustomTextLong() === true) {
@@ -32,63 +30,110 @@ function updateLongTextWarning(): void {
 
 //todo: rewrite this file to use a state object instead of constantly directly accessing the DOM
 
-export function show(noAnim = false): void {
-  Skeleton.append(skeletonId, "popups");
-  if (!Misc.isElementVisible(wrapper)) {
-    updateLongTextWarning();
+export function show(): void {
+  // Skeleton.append(skeletonId, "popups");
+  // if (!Misc.isElementVisible(wrapper)) {
+  //   updateLongTextWarning();
 
-    if (
-      CustomText.isSectionRandom ||
-      CustomText.isTimeRandom ||
-      CustomText.isWordRandom
-    ) {
-      $(`${popup} .randomWordsCheckbox input`).prop("checked", true);
-    } else {
-      $(`${popup} .randomWordsCheckbox input`).prop("checked", false);
-    }
+  //   if (
+  //     CustomText.isSectionRandom ||
+  //     CustomText.isTimeRandom ||
+  //     CustomText.isWordRandom
+  //   ) {
+  //     $(`${popup} .randomWordsCheckbox input`).prop("checked", true);
+  //   } else {
+  //     $(`${popup} .randomWordsCheckbox input`).prop("checked", false);
+  //   }
 
-    if (CustomText.delimiter === "|") {
-      $(`${popup} .delimiterCheck input`).prop("checked", true);
-    } else {
-      $(`${popup} .delimiterCheck input`).prop("checked", false);
-    }
+  //   if (CustomText.delimiter === "|") {
+  //     $(`${popup} .delimiterCheck input`).prop("checked", true);
+  //   } else {
+  //     $(`${popup} .delimiterCheck input`).prop("checked", false);
+  //   }
 
-    if ($(`${popup} .randomWordsCheckbox input`).prop("checked") as boolean) {
-      $(`${popup} .inputs .randomInputFields`).removeClass("disabled");
-    } else {
-      $(`${popup} .inputs .randomInputFields`).addClass("disabled");
-    }
-    if (
-      $(`${popup} .replaceNewlineWithSpace input`).prop("checked") as boolean
-    ) {
-      $(`${popup} .inputs .replaceNewLinesButtons`).removeClass("disabled");
-    } else {
-      $(`${popup} .inputs .replaceNewLinesButtons`).addClass("disabled");
-    }
-    $(`${popup} textarea`).val(CustomText.popupTextareaState);
+  //   if ($(`${popup} .randomWordsCheckbox input`).prop("checked") as boolean) {
+  //     $(`${popup} .inputs .randomInputFields`).removeClass("disabled");
+  //   } else {
+  //     $(`${popup} .inputs .randomInputFields`).addClass("disabled");
+  //   }
+  //   if (
+  //     $(`${popup} .replaceNewlineWithSpace input`).prop("checked") as boolean
+  //   ) {
+  //     $(`${popup} .inputs .replaceNewLinesButtons`).removeClass("disabled");
+  //   } else {
+  //     $(`${popup} .inputs .replaceNewLinesButtons`).addClass("disabled");
+  //   }
+  //   $(`${popup} textarea`).val(CustomText.popupTextareaState);
 
-    $(wrapper)
-      .stop(true, true)
-      .css("opacity", 0)
-      .removeClass("hidden")
-      .animate({ opacity: 1 }, noAnim ? 0 : 125, () => {
-        $(`${popup} .wordcount input`).val(
-          CustomText.word === -1 ? "" : CustomText.word
-        );
-        $(`${popup} .time input`).val(
-          CustomText.time === -1 ? "" : CustomText.time
-        );
-        $(`${popup} textarea`).trigger("focus");
-      });
-  }
-  setTimeout(
-    () => {
+  //   $(wrapper)
+  //     .stop(true, true)
+  //     .css("opacity", 0)
+  //     .removeClass("hidden")
+  //     .animate({ opacity: 1 }, noAnim ? 0 : 125, () => {
+  //       $(`${popup} .wordcount input`).val(
+  //         CustomText.word === -1 ? "" : CustomText.word
+  //       );
+  //       $(`${popup} .time input`).val(
+  //         CustomText.time === -1 ? "" : CustomText.time
+  //       );
+  //       $(`${popup} textarea`).trigger("focus");
+  //     });
+  // }
+  // setTimeout(
+  //   () => {
+  //     if (!CustomTextState.isCustomTextLong()) {
+  //       $(`${popup} textarea`).trigger("focus");
+  //     }
+  //   },
+  //   noAnim ? 10 : 150
+  // );
+  void modal.show({
+    beforeAnimation: async () => {
+      updateLongTextWarning();
+
+      if (
+        CustomText.isSectionRandom ||
+        CustomText.isTimeRandom ||
+        CustomText.isWordRandom
+      ) {
+        $(`${popup} .randomWordsCheckbox input`).prop("checked", true);
+      } else {
+        $(`${popup} .randomWordsCheckbox input`).prop("checked", false);
+      }
+
+      if (CustomText.delimiter === "|") {
+        $(`${popup} .delimiterCheck input`).prop("checked", true);
+      } else {
+        $(`${popup} .delimiterCheck input`).prop("checked", false);
+      }
+
+      if ($(`${popup} .randomWordsCheckbox input`).prop("checked") as boolean) {
+        $(`${popup} .inputs .randomInputFields`).removeClass("disabled");
+      } else {
+        $(`${popup} .inputs .randomInputFields`).addClass("disabled");
+      }
+      if (
+        $(`${popup} .replaceNewlineWithSpace input`).prop("checked") as boolean
+      ) {
+        $(`${popup} .inputs .replaceNewLinesButtons`).removeClass("disabled");
+      } else {
+        $(`${popup} .inputs .replaceNewLinesButtons`).addClass("disabled");
+      }
+      $(`${popup} textarea`).val(CustomText.popupTextareaState);
+
+      $(`${popup} .wordcount input`).val(
+        CustomText.word === -1 ? "" : CustomText.word
+      );
+      $(`${popup} .time input`).val(
+        CustomText.time === -1 ? "" : CustomText.time
+      );
+    },
+    afterAnimation: async () => {
       if (!CustomTextState.isCustomTextLong()) {
         $(`${popup} textarea`).trigger("focus");
       }
     },
-    noAnim ? 10 : 150
-  );
+  });
 }
 
 $(`${popup} .delimiterCheck input`).on("change", () => {
@@ -122,41 +167,38 @@ $(`${popup} .delimiterCheck input`).on("change", () => {
   CustomText.setDelimiter(delimiter);
 });
 
-type HideOptions = {
-  noAnim?: boolean | undefined;
-  resetState?: boolean | undefined;
-};
+function hide(resetTextareaState = true, clearModalChain = false): void {
+  // if (options.noAnim === undefined) options.noAnim = false;
+  // if (options.resetState === undefined) options.resetState = true;
 
-function hide(options = {} as HideOptions): void {
-  if (options.noAnim === undefined) options.noAnim = false;
-  if (options.resetState === undefined) options.resetState = true;
+  // if (Misc.isElementVisible(wrapper)) {
+  //   $(wrapper)
+  //     .stop(true, true)
+  //     .css("opacity", 1)
+  //     .animate(
+  //       {
+  //         opacity: 0,
+  //       },
+  //       options.noAnim ? 0 : 125,
+  //       () => {
+  //         if (options.resetState) {
+  //           CustomText.setPopupTextareaStateToSaved();
+  //         }
 
-  if (Misc.isElementVisible(wrapper)) {
-    $(wrapper)
-      .stop(true, true)
-      .css("opacity", 1)
-      .animate(
-        {
-          opacity: 0,
-        },
-        options.noAnim ? 0 : 125,
-        () => {
-          if (options.resetState) {
-            CustomText.setPopupTextareaStateToSaved();
-          }
-
-          $(wrapper).addClass("hidden");
-          Skeleton.remove(skeletonId);
-        }
-      );
-  }
+  //         $(wrapper).addClass("hidden");
+  //         Skeleton.remove(skeletonId);
+  //       }
+  //     );
+  // }
+  void modal.hide({
+    clearModalChain,
+    afterAnimation: async () => {
+      if (resetTextareaState) {
+        CustomText.setPopupTextareaStateToSaved();
+      }
+    },
+  });
 }
-
-$(wrapper).on("mousedown", (e) => {
-  if ($(e.target).attr("id") === "customTextPopupWrapper") {
-    hide();
-  }
-});
 
 $(`${popup} .inputs .randomWordsCheckbox input`).on("change", () => {
   if ($(`${popup} .randomWordsCheckbox input`).prop("checked") as boolean) {
@@ -184,7 +226,7 @@ $(`${popup} textarea`).on("input", () => {
 });
 
 $(`${popup} textarea`).on("keypress", (e) => {
-  if (Misc.isElementVisible(`#customTextPopup .longCustomTextWarning`)) {
+  if (Misc.isElementVisible(`#customTextPopupWrapper .longCustomTextWarning`)) {
     e.preventDefault();
     return;
   }
@@ -355,38 +397,27 @@ $(".pageTest").on("click", "#testConfig .customText .textButton", () => {
   show();
 });
 
-$(document).on("keydown", (event) => {
-  if (
-    event.key === "Escape" &&
-    Misc.isElementVisible("#customTextPopupWrapper")
-  ) {
-    hide();
-    event.preventDefault();
-  }
-});
-
 $("#popups").on("click", `${popup} .wordfilter`, () => {
-  hide({ noAnim: true, resetState: false });
-  //todo use modal chain
-  void WordFilterPopup.show();
+  void WordFilterPopup.show({
+    modalChain: modal,
+  });
 });
 
 $(`${popup} .buttonsTop .showSavedTexts`).on("click", () => {
-  hide({ noAnim: true });
-  void SavedTextsPopup.show(true, () => {
-    show(true);
+  void SavedTextsPopup.show({
+    modalChain: modal,
   });
 });
 
 $(`#customTextPopupWrapper .buttonsTop .saveCustomText`).on("click", () => {
-  hide({ noAnim: true, resetState: false });
+  hide(false);
   void SaveCustomTextPopup.show(true, () => {
-    show(true);
+    show();
   });
 });
 
 $(`#customTextPopupWrapper .longCustomTextWarning .button`).on("click", () => {
-  $(`#customTextPopup .longCustomTextWarning`).addClass("hidden");
+  $(`#customTextPopupWrapper .longCustomTextWarning`).addClass("hidden");
 });
 
 $(`#fileInput`).on("change", () => {
@@ -415,4 +446,17 @@ $(`#fileInput`).on("change", () => {
   }
 });
 
-Skeleton.save(skeletonId);
+async function setup(): Promise<void> {
+  //
+}
+
+const modal = new AnimatedModal({
+  dialogId: "customTextPopupWrapper",
+  setup,
+  customEscapeHandler: async (): Promise<void> => {
+    hide();
+  },
+  customWrapperClickHandler: async (): Promise<void> => {
+    hide();
+  },
+});
