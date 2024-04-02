@@ -1,10 +1,10 @@
 import * as CustomText from "../test/custom-text";
 import * as CustomTextState from "../states/custom-text-name";
 import { escapeHTML } from "../utils/misc";
-import AnimatedModal from "../utils/animated-modal";
+import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
 import { showPopup } from "../modals/simple-modals";
 
-function fill(): void {
+async function fill(): Promise<void> {
   const names = CustomText.getCustomTextNames();
   const listEl = $(`#savedTextsPopupWrapper .list`).empty();
   let list = "";
@@ -72,7 +72,7 @@ function fill(): void {
   });
 }
 
-export async function show(): Promise<void> {
+export async function show(options: ShowOptions): Promise<void> {
   // Skeleton.append(wrapperId, "popups");
   // if (!isPopupVisible(wrapperId)) {
   //   callbackFuncOnHide = callbackOnHide;
@@ -84,8 +84,9 @@ export async function show(): Promise<void> {
   //     .animate({ opacity: 1 }, noAnim ? 0 : 125);
   // }
   void modal.show({
+    ...options,
     beforeAnimation: async () => {
-      fill();
+      void fill();
     },
   });
 }
