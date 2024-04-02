@@ -11,10 +11,6 @@
   --colorful-error-extra-color: #b13535;
 }
 
-header #logo .icon svg path {
-  fill: var(--text-color);
-}
-
 header #logo .text {
   background: linear-gradient(
     90deg,
@@ -23,4 +19,13 @@ header #logo .text {
   );
   -webkit-background-clip: text;
   color: transparent;
+  padding-bottom: 0.1em;
+}
+
+header #logo .icon svg path {
+  fill: var(--text-color);
+}
+
+header #logo .icon {
+  padding-bottom: 0.1em;
 }
