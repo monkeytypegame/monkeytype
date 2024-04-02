@@ -25,7 +25,7 @@ import * as Result from "./test/result";
 import "./controllers/account-controller";
 import { enable } from "./states/glarses-mode";
 import "./test/caps-warning";
-import "./popups/simple-popups";
+import "./modals/simple-modals";
 import "./controllers/input-controller";
 import "./ready";
 import "./controllers/route-controller";

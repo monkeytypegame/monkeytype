@@ -7,7 +7,7 @@ import * as Notifications from "../elements/notifications";
 import * as Settings from "../pages/settings";
 import * as ThemePicker from "../settings/theme-picker";
 import * as CustomText from "../test/custom-text";
-import * as SavedTextsPopup from "./saved-texts-popup";
+import * as SavedTextsPopup from "../popups/saved-texts-popup";
 import * as AccountButton from "../elements/account-button";
 import { FirebaseError } from "firebase/app";
 import { Auth, isAuthenticated, getAuthenticatedUser } from "../firebase";
@@ -43,7 +43,7 @@ type Input = {
   label?: string;
 };
 
-let activePopup: SimplePopup | null = null;
+let activePopup: SimpleModal | null = null;
 
 type ExecReturn = {
   status: 1 | 0 | -1;
@@ -82,7 +82,7 @@ type PopupKey =
   | "deleteCustomTheme"
   | "forgotPassword";
 
-const list: Record<PopupKey, SimplePopup | undefined> = {
+const list: Record<PopupKey, SimpleModal | undefined> = {
   updateEmail: undefined,
   updateName: undefined,
   updatePassword: undefined,
@@ -110,16 +110,16 @@ const list: Record<PopupKey, SimplePopup | undefined> = {
   forgotPassword: undefined,
 };
 
-type SimplePopupOptions = {
+type SimpleModalOptions = {
   id: string;
   type: string;
   title: string;
   inputs?: Input[];
   text?: string;
   buttonText: string;
-  execFn: (thisPopup: SimplePopup, ...params: string[]) => Promise<ExecReturn>;
-  beforeInitFn?: (thisPopup: SimplePopup) => void;
-  beforeShowFn?: (thisPopup: SimplePopup) => void;
+  execFn: (thisPopup: SimpleModal, ...params: string[]) => Promise<ExecReturn>;
+  beforeInitFn?: (thisPopup: SimpleModal) => void;
+  beforeShowFn?: (thisPopup: SimpleModal) => void;
   canClose?: boolean;
   onlineOnly?: boolean;
   hideCallsExec?: boolean;
@@ -141,7 +141,7 @@ const modal = new AnimatedModal({
   },
 });
 
-class SimplePopup {
+class SimpleModal {
   parameters: string[];
   wrapper: HTMLElement;
   element: HTMLElement;
@@ -151,13 +151,13 @@ class SimplePopup {
   inputs: Input[];
   text?: string;
   buttonText: string;
-  execFn: (thisPopup: SimplePopup, ...params: string[]) => Promise<ExecReturn>;
-  beforeInitFn: ((thisPopup: SimplePopup) => void) | undefined;
-  beforeShowFn: ((thisPopup: SimplePopup) => void) | undefined;
+  execFn: (thisPopup: SimpleModal, ...params: string[]) => Promise<ExecReturn>;
+  beforeInitFn: ((thisPopup: SimpleModal) => void) | undefined;
+  beforeShowFn: ((thisPopup: SimpleModal) => void) | undefined;
   canClose: boolean;
   onlineOnly: boolean;
   hideCallsExec: boolean;
-  constructor(options: SimplePopupOptions) {
+  constructor(options: SimpleModalOptions) {
     this.parameters = [];
     this.id = options.id;
     this.type = options.type;
@@ -494,7 +494,7 @@ async function reauthenticate(
   }
 }
 
-list.updateEmail = new SimplePopup({
+list.updateEmail = new SimpleModal({
   id: "updateEmail",
   type: "text",
   title: "Update email",
@@ -565,7 +565,7 @@ list.updateEmail = new SimplePopup({
   },
 });
 
-list.removeGoogleAuth = new SimplePopup({
+list.removeGoogleAuth = new SimpleModal({
   id: "removeGoogleAuth",
   type: "text",
   title: "Remove Google authentication",
@@ -620,7 +620,7 @@ list.removeGoogleAuth = new SimplePopup({
   },
 });
 
-list.removeGithubAuth = new SimplePopup({
+list.removeGithubAuth = new SimpleModal({
   id: "removeGithubAuth",
   type: "text",
   title: "Remove GitHub authentication",
@@ -675,7 +675,7 @@ list.removeGithubAuth = new SimplePopup({
   },
 });
 
-list.updateName = new SimplePopup({
+list.updateName = new SimpleModal({
   id: "updateName",
   type: "text",
   title: "Update name",
@@ -753,7 +753,7 @@ list.updateName = new SimplePopup({
   },
 });
 
-list.updatePassword = new SimplePopup({
+list.updatePassword = new SimpleModal({
   id: "updatePassword",
   type: "text",
   title: "Update password",
@@ -839,7 +839,7 @@ list.updatePassword = new SimplePopup({
   },
 });
 
-list.addPasswordAuth = new SimplePopup({
+list.addPasswordAuth = new SimpleModal({
   id: "addPasswordAuth",
   type: "text",
   title: "Add password authentication",
@@ -931,7 +931,7 @@ list.addPasswordAuth = new SimplePopup({
   },
 });
 
-list.deleteAccount = new SimplePopup({
+list.deleteAccount = new SimpleModal({
   id: "deleteAccount",
   type: "text",
   title: "Delete account",
@@ -980,7 +980,7 @@ list.deleteAccount = new SimplePopup({
   },
 });
 
-list.resetAccount = new SimplePopup({
+list.resetAccount = new SimpleModal({
   id: "resetAccount",
   type: "text",
   title: "Reset account",
@@ -1031,7 +1031,7 @@ list.resetAccount = new SimplePopup({
   },
 });
 
-list.optOutOfLeaderboards = new SimplePopup({
+list.optOutOfLeaderboards = new SimpleModal({
   id: "optOutOfLeaderboards",
   type: "text",
   title: "Opt out of leaderboards",
@@ -1078,7 +1078,7 @@ list.optOutOfLeaderboards = new SimplePopup({
   },
 });
 
-list.clearTagPb = new SimplePopup({
+list.clearTagPb = new SimpleModal({
   id: "clearTagPb",
   type: "text",
   title: "Clear tag PB",
@@ -1122,7 +1122,7 @@ list.clearTagPb = new SimplePopup({
   },
 });
 
-list.applyCustomFont = new SimplePopup({
+list.applyCustomFont = new SimpleModal({
   id: "applyCustomFont",
   type: "text",
   title: "Custom font",
@@ -1139,7 +1139,7 @@ list.applyCustomFont = new SimplePopup({
   },
 });
 
-list.resetPersonalBests = new SimplePopup({
+list.resetPersonalBests = new SimpleModal({
   id: "resetPersonalBests",
   type: "text",
   title: "Reset personal bests",
@@ -1199,7 +1199,7 @@ list.resetPersonalBests = new SimplePopup({
   },
 });
 
-list.resetSettings = new SimplePopup({
+list.resetSettings = new SimpleModal({
   id: "resetSettings",
   type: "text",
   title: "Reset settings",
@@ -1215,7 +1215,7 @@ list.resetSettings = new SimplePopup({
   },
 });
 
-list.revokeAllTokens = new SimplePopup({
+list.revokeAllTokens = new SimpleModal({
   id: "revokeAllTokens",
   type: "text",
   title: "Revoke all tokens",
@@ -1264,7 +1264,7 @@ list.revokeAllTokens = new SimplePopup({
   },
 });
 
-list.unlinkDiscord = new SimplePopup({
+list.unlinkDiscord = new SimpleModal({
   id: "unlinkDiscord",
   type: "text",
   title: "Unlink Discord",
@@ -1301,7 +1301,7 @@ list.unlinkDiscord = new SimplePopup({
   },
 });
 
-list.generateApeKey = new SimplePopup({
+list.generateApeKey = new SimpleModal({
   id: "generateApeKey",
   type: "text",
   title: "Generate new Ape key",
@@ -1343,7 +1343,7 @@ list.generateApeKey = new SimplePopup({
   },
 });
 
-list.viewApeKey = new SimplePopup({
+list.viewApeKey = new SimpleModal({
   id: "viewApeKey",
   type: "text",
   title: "Ape key",
@@ -1383,7 +1383,7 @@ list.viewApeKey = new SimplePopup({
   },
 });
 
-list.deleteApeKey = new SimplePopup({
+list.deleteApeKey = new SimpleModal({
   id: "deleteApeKey",
   type: "text",
   title: "Delete Ape key",
@@ -1409,7 +1409,7 @@ list.deleteApeKey = new SimplePopup({
   },
 });
 
-list.editApeKey = new SimplePopup({
+list.editApeKey = new SimpleModal({
   id: "editApeKey",
   type: "text",
   title: "Edit Ape key",
@@ -1441,7 +1441,7 @@ list.editApeKey = new SimplePopup({
   },
 });
 
-list.deleteCustomText = new SimplePopup({
+list.deleteCustomText = new SimpleModal({
   id: "deleteCustomText",
   type: "text",
   title: "Delete custom text",
@@ -1462,7 +1462,7 @@ list.deleteCustomText = new SimplePopup({
   },
 });
 
-list.deleteCustomTextLong = new SimplePopup({
+list.deleteCustomTextLong = new SimpleModal({
   id: "deleteCustomTextLong",
   type: "text",
   title: "Delete custom text",
@@ -1483,7 +1483,7 @@ list.deleteCustomTextLong = new SimplePopup({
   },
 });
 
-list.resetProgressCustomTextLong = new SimplePopup({
+list.resetProgressCustomTextLong = new SimpleModal({
   id: "resetProgressCustomTextLong",
   type: "text",
   title: "Reset progress for custom text",
@@ -1507,7 +1507,7 @@ list.resetProgressCustomTextLong = new SimplePopup({
   },
 });
 
-list.updateCustomTheme = new SimplePopup({
+list.updateCustomTheme = new SimpleModal({
   id: "updateCustomTheme",
   type: "text",
   title: "Update custom theme",
@@ -1588,7 +1588,7 @@ list.updateCustomTheme = new SimplePopup({
   },
 });
 
-list.deleteCustomTheme = new SimplePopup({
+list.deleteCustomTheme = new SimpleModal({
   id: "deleteCustomTheme",
   type: "text",
   title: "Delete custom theme",
@@ -1606,7 +1606,7 @@ list.deleteCustomTheme = new SimplePopup({
   },
 });
 
-list.forgotPassword = new SimplePopup({
+list.forgotPassword = new SimpleModal({
   id: "forgotPassword",
   type: "text",
   title: "Forgot password",
