@@ -1440,6 +1440,11 @@
 }
 
 #editProfileModal {
+  .tip {
+    font-size: 0.75em;
+    color: var(--sub-color);
+    padding: 0.5rem 0.25rem;
+  }
   .modal {
     max-width: 600px;
     max-height: 100%;
