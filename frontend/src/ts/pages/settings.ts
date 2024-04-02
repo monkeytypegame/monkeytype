@@ -1261,26 +1261,20 @@ ConfigEvent.subscribe((eventKey) => {
   }
 });
 
-export const page = new Page(
-  "settings",
-  $(".page.pageSettings"),
-  "/settings",
-  async () => {
-    //
-  },
-  async () => {
+export const page = new Page({
+  name: "settings",
+  element: $(".page.pageSettings"),
+  path: "/settings",
+  afterHide: async (): Promise<void> => {
     reset();
     Skeleton.remove("pageSettings");
   },
-  async () => {
+  beforeShow: async (): Promise<void> => {
     Skeleton.append("pageSettings", "main");
     await fillSettingsPage();
     await update(false);
   },
-  async () => {
-    //
-  }
-);
+});
 
 $(async () => {
   Skeleton.save("pageSettings");

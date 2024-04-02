@@ -335,14 +335,11 @@ $(".page.pageLogin .register.side .verifyPasswordInput").on("input", () => {
   checkPasswordsMatch();
 });
 
-export const page = new Page(
-  "login",
-  $(".page.pageLogin"),
-  "/login",
-  async () => {
-    //
-  },
-  async () => {
+export const page = new Page({
+  name: "login",
+  element: $(".page.pageLogin"),
+  path: "/login",
+  afterHide: async (): Promise<void> => {
     $(".pageLogin input").val("");
     nameIndicator.hide();
     emailIndicator.hide();
@@ -351,15 +348,12 @@ export const page = new Page(
     verifyPasswordIndicator.hide();
     Skeleton.remove("pageLogin");
   },
-  async () => {
+  beforeShow: async (): Promise<void> => {
     Skeleton.append("pageLogin", "main");
     enableSignUpButton();
     enableInputs();
   },
-  async () => {
-    //
-  }
-);
+});
 
 $(() => {
   Skeleton.save("pageLogin");
