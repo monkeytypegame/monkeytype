@@ -1202,5 +1202,12 @@
     "mainColor": "#ffadad",
     "subColor": "#ff3d8b",
     "textColor": "#f1deef"
+  },
+  {
+    "name": "tokyonight_moon",
+    "bgColor": "#222436",
+    "mainColor": "#c099ff",
+    "subColor": "#828bb8",
+    "textColor": "#c8d3f5"
   }
 ]
