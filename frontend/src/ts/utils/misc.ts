@@ -765,30 +765,6 @@ export async function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-export function memoizeAsync<P, T extends <B>(...args: P[]) => Promise<B>>(
-  fn: T,
-  getKey?: (...args: Parameters<T>) => P
-): T {
-  const cache = new Map<P, Promise<ReturnType<T>>>();
-
-  return (async (...args: Parameters<T>): Promise<ReturnType<T>> => {
-    const key = getKey ? getKey.apply(args) : (args[0] as P);
-
-    if (cache.has(key)) {
-      const ret = await cache.get(key);
-      if (ret !== undefined) {
-        return ret as ReturnType<T>;
-      }
-    }
-
-    // eslint-disable-next-line prefer-spread
-    const result = fn.apply(null, args) as Promise<ReturnType<T>>;
-    cache.set(key, result);
-
-    return result;
-  }) as T;
-}
-
 export class Section {
   public title: string;
   public author: string;
