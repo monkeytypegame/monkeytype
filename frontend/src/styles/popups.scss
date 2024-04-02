@@ -197,22 +197,8 @@
 }
 
 #savedTextsPopupWrapper {
-  #savedTextsPopup {
-    color: var(--sub-color);
-    background: var(--bg-color);
-    border-radius: var(--roundness);
-    padding: 2rem;
-    display: grid;
-    gap: 1rem;
-    width: 400px;
-    max-height: 80vh;
-    overflow: auto;
-
-    .title {
-      font-size: 1.5rem;
-      color: var(--sub-color);
-    }
-
+  .modal {
+    max-width: 500px;
     .list {
       display: grid;
       gap: 1rem;
@@ -229,10 +215,10 @@
     .listLong {
       display: grid;
       gap: 1rem;
-      .savedText {
+      .savedLongText {
         display: grid;
         gap: 0.5rem;
-        grid-template-columns: 2fr 1fr 3rem;
+        grid-template-columns: 2fr auto auto;
         .button .fas {
           pointer-events: none;
         }

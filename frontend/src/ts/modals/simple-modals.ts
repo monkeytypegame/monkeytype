@@ -1450,11 +1450,13 @@ list.deleteCustomText = new SimpleModal({
   execFn: async (_thisPopup): Promise<ExecReturn> => {
     CustomText.deleteCustomText(_thisPopup.parameters[0] as string, false);
     CustomTextState.setCustomTextName("", undefined);
-    void SavedTextsPopup.show(true);
 
     return {
       status: 1,
       message: "Custom text deleted",
+      hideOptions: {
+        clearModalChain: true,
+      },
     };
   },
   beforeInitFn: (_thisPopup): void => {
@@ -1471,11 +1473,13 @@ list.deleteCustomTextLong = new SimpleModal({
   execFn: async (_thisPopup): Promise<ExecReturn> => {
     CustomText.deleteCustomText(_thisPopup.parameters[0] as string, true);
     CustomTextState.setCustomTextName("", undefined);
-    void SavedTextsPopup.show(true);
 
     return {
       status: 1,
       message: "Custom text deleted",
+      hideOptions: {
+        clearModalChain: true,
+      },
     };
   },
   beforeInitFn: (_thisPopup): void => {
@@ -1491,7 +1495,6 @@ list.resetProgressCustomTextLong = new SimpleModal({
   buttonText: "reset",
   execFn: async (_thisPopup): Promise<ExecReturn> => {
     CustomText.setCustomTextLongProgress(_thisPopup.parameters[0] as string, 0);
-    void SavedTextsPopup.show(true);
     CustomText.setPopupTextareaState(
       CustomText.getCustomText(_thisPopup.parameters[0] as string, true).join(
         " "
@@ -1500,6 +1503,9 @@ list.resetProgressCustomTextLong = new SimpleModal({
     return {
       status: 1,
       message: "Custom text progress reset",
+      hideOptions: {
+        clearModalChain: true,
+      },
     };
   },
   beforeInitFn: (_thisPopup): void => {
@@ -1743,33 +1749,6 @@ $(".pageSettings").on(
     const $parentElement = $(e.currentTarget).parent(".customTheme.button");
     const customThemeId = $parentElement.attr("customThemeId") as string;
     showPopup("updateCustomTheme", [customThemeId]);
-  }
-);
-
-$("#popups").on(
-  "click",
-  `#savedTextsPopupWrapper .list .savedText .button.delete`,
-  (e) => {
-    const name = $(e.target).siblings(".button.name").text();
-    showPopup("deleteCustomText", [name]);
-  }
-);
-
-$("#popups").on(
-  "click",
-  `#savedTextsPopupWrapper .listLong .savedText .button.delete`,
-  (e) => {
-    const name = $(e.target).siblings(".button.name").text();
-    showPopup("deleteCustomTextLong", [name]);
-  }
-);
-
-$("#popups").on(
-  "click",
-  `#savedTextsPopupWrapper .listLong .savedText .button.resetProgress`,
-  (e) => {
-    const name = $(e.target).siblings(".button.name").text();
-    showPopup("resetProgressCustomTextLong", [name]);
   }
 );
 
