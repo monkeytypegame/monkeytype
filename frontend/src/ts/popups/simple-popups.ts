@@ -426,10 +426,10 @@ async function reauthenticate(
       );
       await reauthenticateWithCredential(user, credential);
     } else if (method === "passwordFirst") {
-      const isGithub = user.providerData.some(
+      const hasGithubAuth = user.providerData.some(
         (p) => p?.providerId === "github.com"
       );
-      const authProvider = isGithub
+      const authProvider = hasGithubAuth
         ? AccountController.githubProvider
         : AccountController.gmailProvider;
       await reauthenticateWithPopup(user, authProvider);
