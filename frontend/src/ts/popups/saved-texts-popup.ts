@@ -70,6 +70,26 @@ async function fill(): Promise<void> {
       modalChain: modal,
     });
   });
+
+  $("#savedTextsPopupWrapper .list .savedText .button.name").on(
+    "click",
+    (e) => {
+      const name = $(e.target).text();
+      CustomTextState.setCustomTextName(name, false);
+      applySaved(name, false);
+      hide();
+    }
+  );
+
+  $("#savedTextsPopupWrapper .listLong .savedLongText .button.name").on(
+    "click",
+    (e) => {
+      const name = $(e.target).text();
+      CustomTextState.setCustomTextName(name, true);
+      applySaved(name, true);
+      hide();
+    }
+  );
 }
 
 export async function show(options: ShowOptions): Promise<void> {
@@ -91,7 +111,7 @@ export async function show(options: ShowOptions): Promise<void> {
   });
 }
 
-function hide(clearChain: boolean): void {
+function hide(clearChain = false): void {
   // if (isPopupVisible(wrapperId)) {
   //   $("#savedTextsPopupWrapper")
   //     .stop(true, true)
