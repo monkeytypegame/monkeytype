@@ -4,7 +4,7 @@ import * as Notifications from "../elements/notifications";
 import format from "date-fns/format";
 import * as ConnectionState from "../states/connection";
 import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
-import { showPopup } from "../popups/simple-popups";
+import { showPopup } from "./simple-modals";
 
 let apeKeys: Ape.ApeKeys.GetApeKeys | null = {};
 

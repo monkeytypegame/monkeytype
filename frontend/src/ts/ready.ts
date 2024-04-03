@@ -15,7 +15,6 @@ import { log } from "./controllers/analytics-controller";
 import { envConfig } from "./constants/env-config";
 import * as ServerConfiguration from "./ape/server-configuration";
 import * as Skeleton from "./utils/skeleton";
-import { formatDistanceStrict } from "date-fns";
 
 if (Misc.isDevEnvironment()) {
   $("footer .currentVersion .text").text("localhost");
