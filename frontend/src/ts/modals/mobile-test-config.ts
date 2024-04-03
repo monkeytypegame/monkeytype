@@ -4,7 +4,7 @@ import * as ManualRestart from "../test/manual-restart-tracker";
 import * as CustomWordAmountPopup from "./custom-word-amount";
 import * as CustomTestDurationPopup from "./custom-test-duration";
 import * as QuoteSearchModal from "./quote-search";
-import * as CustomTextPopup from "../popups/custom-text-popup";
+import * as CustomTextPopup from "./custom-text-popup";
 import AnimatedModal from "../utils/animated-modal";
 
 function update(): void {

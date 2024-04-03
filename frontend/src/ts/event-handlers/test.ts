@@ -9,7 +9,7 @@ import * as Notifications from "../elements/notifications";
 import * as QuoteRateModal from "../modals/quote-rate";
 import * as QuoteReportModal from "../modals/quote-report";
 import * as QuoteSearchModal from "../modals/quote-search";
-import * as CustomTextModal from "../popups/custom-text-popup";
+import * as CustomTextModal from "../modals/custom-text-popup";
 
 $(".pageTest").on("click", "#testModesNotice .textButton", async (event) => {
   const attr = $(event.currentTarget).attr("commands");
