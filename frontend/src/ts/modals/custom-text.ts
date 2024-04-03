@@ -141,10 +141,12 @@ function handleDelimiterChange(): void {
     let newtext = currentTextSplit.join(delimiter);
     newtext = newtext.replace(/\n /g, "\n");
     $(`${popup} textarea`).val(newtext);
+    state.textarea = newtext;
   } else {
     let newtext = CustomText.text.join(delimiter);
     newtext = newtext.replace(/\n /g, "\n");
     $(`${popup} textarea`).val(newtext);
+    state.textarea = newtext;
   }
   CustomText.setDelimiter(delimiter);
 }
@@ -165,6 +167,7 @@ function handleFileOpen(): void {
     reader.onload = (readerEvent): void => {
       const content = readerEvent.target?.result as string;
       $(`${popup} textarea`).val(content);
+      state.textarea = content;
       $(`#fileInput`).val("");
     };
     reader.onerror = (): void => {
