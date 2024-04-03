@@ -4,7 +4,7 @@ import * as TestStats from "../test/test-stats";
 import * as Monkey from "../test/monkey";
 import Config from "../config";
 import * as Misc from "../utils/misc";
-import * as GetData from "../utils/JSON-data";
+import * as GetData from "../utils/json-data";
 import * as Numbers from "../utils/numbers";
 import * as LiveAcc from "../test/live-acc";
 import * as LiveBurst from "../test/live-burst";

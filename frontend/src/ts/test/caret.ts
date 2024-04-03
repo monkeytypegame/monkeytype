@@ -1,5 +1,5 @@
 import * as Numbers from "../utils/numbers";
-import * as GetData from "../utils/JSON-data";
+import * as GetData from "../utils/json-data";
 import Config from "../config";
 import * as TestInput from "./test-input";
 import * as SlowTimer from "../states/slow-timer";
