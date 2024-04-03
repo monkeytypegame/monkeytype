@@ -12,7 +12,7 @@ import * as Misc from "../utils/misc";
 import * as Strings from "../utils/strings";
 import * as Arrays from "../utils/arrays";
 import * as TestState from "../test/test-state";
-import * as GetText from "../utils/get-text";
+import * as GetText from "../utils/generate";
 
 function shouldCapitalize(lastChar: string): boolean {
   return /[?!.؟]/.test(lastChar);

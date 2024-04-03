@@ -1,5 +1,5 @@
 import * as Misc from "./utils/misc";
-import * as GetData from "./utils/get-data";
+import * as GetData from "./utils/JSON-data";
 import * as Notifications from "./elements/notifications";
 
 type PossibleType =

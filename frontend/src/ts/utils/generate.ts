@@ -1,5 +1,5 @@
 import { randomIntFromRange } from "./numbers";
-import * as Arrays from "../utils/arrays";
+import * as Arrays from "./arrays";
 import * as Strings from "./strings";
 
 /**

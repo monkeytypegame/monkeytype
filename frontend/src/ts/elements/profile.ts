@@ -3,8 +3,8 @@ import format from "date-fns/format";
 import differenceInDays from "date-fns/differenceInDays";
 import * as Misc from "../utils/misc";
 import * as Numbers from "../utils/numbers";
+import * as Levels from "../utils/levels";
 import * as DateTime from "../utils/date-and-time";
-import * as GetData from "../utils/get-data";
 import { getHTMLById } from "../controllers/badge-controller";
 import { throttle } from "throttle-debounce";
 import * as ActivePage from "../states/active-page";
@@ -291,9 +291,9 @@ export async function update(
   }
 
   const xp = profile.xp ?? 0;
-  const levelFraction = GetData.getLevel(xp);
+  const levelFraction = Levels.getLevel(xp);
   const level = Math.floor(levelFraction);
-  const xpForLevel = GetData.getXpForLevel(level);
+  const xpForLevel = Levels.getXpForLevel(level);
   const xpToDisplay = Math.round(xpForLevel * (levelFraction % 1));
   details
     .find(".level")

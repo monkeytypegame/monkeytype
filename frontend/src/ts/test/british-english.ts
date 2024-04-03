@@ -1,6 +1,6 @@
 import Config from "../config";
 import { capitalizeFirstLetterOfEachWord } from "../utils/strings";
-import { cachedFetchJson } from "../utils/get-data";
+import { cachedFetchJson } from "../utils/JSON-data";
 import * as CustomText from "../test/custom-text";
 
 type BritishEnglishReplacement = {

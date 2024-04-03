@@ -1,7 +1,7 @@
 import * as TestLogic from "../../test/test-logic";
 import * as TestUI from "../../test/test-ui";
 import * as PractiseWords from "../../test/practise-words";
-import * as GetText from "../../utils/get-text";
+import * as GetText from "../../utils/generate";
 import * as Notifications from "../../elements/notifications";
 
 const copyWords: MonkeyTypes.CommandsSubgroup = {

@@ -5,7 +5,7 @@ import * as DB from "../db";
 import * as SlowTimer from "../states/slow-timer";
 import * as Misc from "../utils/misc";
 import * as Numbers from "../utils/numbers";
-import * as GetData from "../utils/get-data";
+import * as GetData from "../utils/JSON-data";
 import * as TestState from "./test-state";
 import * as ConfigEvent from "../observables/config-event";
 

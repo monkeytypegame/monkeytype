@@ -1,7 +1,7 @@
 import Config, * as UpdateConfig from "../config";
 import * as ThemeController from "../controllers/theme-controller";
 import * as Misc from "../utils/misc";
-import * as GetData from "../utils/get-data";
+import * as GetData from "../utils/JSON-data";
 import * as Colors from "../utils/colors";
 import * as Notifications from "../elements/notifications";
 import * as ThemeColors from "../elements/theme-colors";
