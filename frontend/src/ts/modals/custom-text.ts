@@ -11,8 +11,7 @@ import * as SavedTextsPopup from "./saved-texts";
 import * as SaveCustomTextPopup from "./save-custom-text";
 import AnimatedModal from "../utils/animated-modal";
 
-const wrapper = "#customTextModal";
-const popup = wrapper + " .modal";
+const popup = "#customTextModal .modal";
 
 type State = {
   textarea: string;
