@@ -5,7 +5,7 @@ import * as DB from "../db";
 import * as SlowTimer from "../states/slow-timer";
 import * as Misc from "../utils/misc";
 import * as Numbers from "../utils/numbers";
-import * as GetData from "../utils/json-data";
+import * as JSONData from "../utils/json-data";
 import * as TestState from "./test-state";
 import * as ConfigEvent from "../observables/config-event";
 
@@ -49,7 +49,7 @@ async function resetCaretPosition(): Promise<void> {
 
   if (firstLetter === undefined || firstLetterHeight === undefined) return;
 
-  const currentLanguage = await GetData.getCurrentLanguage(Config.language);
+  const currentLanguage = await JSONData.getCurrentLanguage(Config.language);
   const isLanguageRightToLeft = currentLanguage.rightToLeft;
 
   caret.stop(true, true).animate(
@@ -217,7 +217,9 @@ export async function update(expectedStepEnd: number): Promise<void> {
         );
       }
 
-      const currentLanguage = await GetData.getCurrentLanguage(Config.language);
+      const currentLanguage = await JSONData.getCurrentLanguage(
+        Config.language
+      );
       const isLanguageRightToLeft = currentLanguage.rightToLeft;
 
       newTop =

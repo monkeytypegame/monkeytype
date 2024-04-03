@@ -1,5 +1,5 @@
 import * as Misc from "../utils/misc";
-import * as GetData from "../utils/json-data";
+import * as JSONData from "../utils/json-data";
 import * as Numbers from "../utils/numbers";
 import Page from "./page";
 import Ape from "../ape";
@@ -123,7 +123,7 @@ async function getStatsAndHistogramData(): Promise<void> {
 async function fill(): Promise<void> {
   let supporters: string[];
   try {
-    supporters = await GetData.getSupportersList();
+    supporters = await JSONData.getSupportersList();
   } catch (e) {
     Notifications.add(
       Misc.createErrorMessage(e, "Failed to get supporters"),
@@ -134,7 +134,7 @@ async function fill(): Promise<void> {
 
   let contributors: string[];
   try {
-    contributors = await GetData.getContributorsList();
+    contributors = await JSONData.getContributorsList();
   } catch (e) {
     Notifications.add(
       Misc.createErrorMessage(e, "Failed to get contributors"),

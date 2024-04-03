@@ -1,7 +1,7 @@
 import * as Loader from "../elements/loader";
 import { envConfig } from "../constants/env-config";
 import { lastElementFromArray } from "./arrays";
-import * as GetData from "./json-data";
+import * as JSONData from "./json-data";
 
 export function kogasa(cov: number): number {
   return (
@@ -668,7 +668,7 @@ export function dreymarIndex(arrayLength: number): number {
 export async function checkIfLanguageSupportsZipf(
   language: string
 ): Promise<"yes" | "no" | "unknown"> {
-  const lang = await GetData.getLanguage(language);
+  const lang = await JSONData.getLanguage(language);
   if (lang.orderedByFrequency === true) return "yes";
   if (lang.orderedByFrequency === false) return "no";
   return "unknown";

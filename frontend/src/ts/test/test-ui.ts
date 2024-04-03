@@ -10,7 +10,7 @@ import * as OutOfFocus from "./out-of-focus";
 import * as Replay from "./replay";
 import * as Misc from "../utils/misc";
 import * as Strings from "../utils/strings";
-import * as GetData from "../utils/json-data";
+import * as JSONData from "../utils/json-data";
 import * as Numbers from "../utils/numbers";
 import { blendTwoHexColors } from "../utils/colors";
 import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
@@ -59,7 +59,7 @@ async function joinOverlappingHints(
   activeWordLetters: NodeListOf<Element>,
   hintElements: HTMLCollection
 ): Promise<void> {
-  const currentLanguage = await GetData.getCurrentLanguage(Config.language);
+  const currentLanguage = await JSONData.getCurrentLanguage(Config.language);
   const isLanguageRTL = currentLanguage.rightToLeft;
 
   let i = 0;
@@ -259,7 +259,7 @@ async function updateHintsPosition(): Promise<void> {
   )
     return;
 
-  const currentLanguage = await GetData.getCurrentLanguage(Config.language);
+  const currentLanguage = await JSONData.getCurrentLanguage(Config.language);
   const isLanguageRTL = currentLanguage.rightToLeft;
 
   let wordEl: HTMLElement | undefined;

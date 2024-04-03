@@ -15,7 +15,7 @@ import * as SlowTimer from "../states/slow-timer";
 import * as DateTime from "../utils/date-and-time";
 import * as Misc from "../utils/misc";
 import * as Strings from "../utils/strings";
-import * as GetData from "../utils/json-data";
+import * as JSONData from "../utils/json-data";
 import * as Numbers from "../utils/numbers";
 import * as Arrays from "../utils/arrays";
 import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
@@ -454,7 +454,7 @@ async function updateTags(dontSave: boolean): Promise<void> {
   const funboxes = result.funbox?.split("#") ?? [];
 
   const funboxObjects = await Promise.all(
-    funboxes.map(async (f) => GetData.getFunbox(f))
+    funboxes.map(async (f) => JSONData.getFunbox(f))
   );
 
   const allFunboxesCanGetPb = funboxObjects.every((f) => f?.canGetPb);

@@ -1,5 +1,5 @@
 import * as Misc from "../utils/misc";
-import * as GetData from "../utils/json-data";
+import * as JSONData from "../utils/json-data";
 import * as CustomText from "../test/custom-text";
 import * as Notifications from "../elements/notifications";
 import SlimSelect from "slim-select";
@@ -103,7 +103,7 @@ async function initSelectOptions(): Promise<void> {
   let LayoutList;
 
   try {
-    LanguageList = await GetData.getLanguageList();
+    LanguageList = await JSONData.getLanguageList();
   } catch (e) {
     console.error(
       Misc.createErrorMessage(
@@ -115,7 +115,7 @@ async function initSelectOptions(): Promise<void> {
   }
 
   try {
-    LayoutList = await GetData.getLayoutsList();
+    LayoutList = await JSONData.getLayoutsList();
   } catch (e) {
     console.error(
       Misc.createErrorMessage(
@@ -206,7 +206,7 @@ async function filter(language: string): Promise<string[]> {
 
   let languageWordList;
   try {
-    languageWordList = await GetData.getLanguage(language);
+    languageWordList = await JSONData.getLanguage(language);
   } catch (e) {
     Notifications.add(
       Misc.createErrorMessage(e, "Failed to filter language words"),
@@ -287,7 +287,7 @@ async function setup(): Promise<void> {
       return;
     }
 
-    const layout = await GetData.getLayout(layoutName);
+    const layout = await JSONData.getLayout(layoutName);
 
     $("#wordIncludeInput").val(
       presetToApply

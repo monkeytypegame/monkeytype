@@ -3,7 +3,7 @@ import Config, * as UpdateConfig from "../config";
 import * as Sound from "../controllers/sound-controller";
 import * as Misc from "../utils/misc";
 import * as Strings from "../utils/strings";
-import * as GetData from "../utils/json-data";
+import * as JSONData from "../utils/json-data";
 import * as DB from "../db";
 import { toggleFunbox } from "../test/funbox/funbox";
 import * as TagController from "../controllers/tag-controller";
@@ -442,7 +442,7 @@ async function fillSettingsPage(): Promise<void> {
 
   let languageGroups;
   try {
-    languageGroups = await GetData.getLanguageGroups();
+    languageGroups = await JSONData.getLanguageGroups();
   } catch (e) {
     console.error(
       Misc.createErrorMessage(
@@ -478,7 +478,7 @@ async function fillSettingsPage(): Promise<void> {
 
   let layoutsList;
   try {
-    layoutsList = await GetData.getLayoutsList();
+    layoutsList = await JSONData.getLayoutsList();
   } catch (e) {
     console.error(Misc.createErrorMessage(e, "Failed to refresh keymap"));
   }
@@ -521,7 +521,7 @@ async function fillSettingsPage(): Promise<void> {
 
   let themes;
   try {
-    themes = await GetData.getThemesList();
+    themes = await JSONData.getThemesList();
   } catch (e) {
     console.error(
       Misc.createErrorMessage(e, "Failed to load themes into dropdown boxes")
@@ -581,7 +581,7 @@ async function fillSettingsPage(): Promise<void> {
 
   let funboxList;
   try {
-    funboxList = await GetData.getFunboxList();
+    funboxList = await JSONData.getFunboxList();
   } catch (e) {
     console.error(Misc.createErrorMessage(e, "Failed to get funbox list"));
   }
@@ -630,7 +630,7 @@ async function fillSettingsPage(): Promise<void> {
 
   let fontsList;
   try {
-    fontsList = await GetData.getFontsList();
+    fontsList = await JSONData.getFontsList();
   } catch (e) {
     console.error(
       Misc.createErrorMessage(e, "Failed to update fonts settings buttons")
@@ -809,7 +809,7 @@ function setActiveFunboxButton(): void {
   $(`.pageSettings .section[data-config-name='funbox'] .button`).removeClass(
     "disabled"
   );
-  GetData.getFunboxList()
+  JSONData.getFunboxList()
     .then((funboxModes) => {
       funboxModes.forEach((funbox) => {
         if (

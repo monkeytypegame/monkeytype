@@ -3,7 +3,7 @@ import * as Loader from "../elements/loader";
 import * as Notifications from "../elements/notifications";
 import * as CaptchaController from "../controllers/captcha-controller";
 import * as Strings from "../utils/strings";
-import * as GetData from "../utils/json-data";
+import * as JSONData from "../utils/json-data";
 import Config from "../config";
 import SlimSelect from "slim-select";
 import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
@@ -11,7 +11,7 @@ import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
 let dropdownReady = false;
 async function initDropdown(): Promise<void> {
   if (dropdownReady) return;
-  const languageGroups = await GetData.getLanguageGroups();
+  const languageGroups = await JSONData.getLanguageGroups();
   for (const group of languageGroups) {
     if (group.name === "swiss_german") continue;
     $("#quoteSubmitModal .newQuoteLanguage").append(

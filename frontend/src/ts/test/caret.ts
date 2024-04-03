@@ -1,5 +1,5 @@
 import * as Numbers from "../utils/numbers";
-import * as GetData from "../utils/json-data";
+import * as JSONData from "../utils/json-data";
 import Config from "../config";
 import * as TestInput from "./test-input";
 import * as SlowTimer from "../states/slow-timer";
@@ -97,7 +97,7 @@ export async function updatePosition(noAnim = false): Promise<void> {
     Math.min(currentLetterIndex - 1, currentWordNodeList.length - 1)
   ] as HTMLElement;
 
-  const currentLanguage = await GetData.getCurrentLanguage(Config.language);
+  const currentLanguage = await JSONData.getCurrentLanguage(Config.language);
   const isLanguageRightToLeft = currentLanguage.rightToLeft;
   const letterPosLeft = getTargetPositionLeft(
     fullWidthCaret,
