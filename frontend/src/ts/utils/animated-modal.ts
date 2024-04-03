@@ -34,6 +34,7 @@ export type ShowOptions = ShowHideOptions & {
 
 export type HideOptions = ShowHideOptions & {
   clearModalChain?: boolean;
+  dontShowPreviousModalInchain?: boolean;
 };
 
 type ConstructorParams = {
@@ -210,6 +211,8 @@ export default class AnimatedModal {
         await this.previousModalInChain.hide({
           animationMode: "modalOnly",
           animationDurationMs: modalAnimationDuration,
+          dontShowPreviousModalInchain:
+            options.modalChain.previousModalInChain !== undefined,
         });
       }
 
@@ -361,7 +364,10 @@ export default class AnimatedModal {
               this.open = false;
               await options?.afterAnimation?.(this.modalEl);
 
-              if (this.previousModalInChain !== undefined) {
+              if (
+                this.previousModalInChain !== undefined &&
+                !options?.dontShowPreviousModalInchain
+              ) {
                 await this.previousModalInChain.show({
                   animationMode: "modalOnly",
                   animationDurationMs:
@@ -393,7 +399,10 @@ export default class AnimatedModal {
             this.open = false;
             await options?.afterAnimation?.(this.modalEl);
 
-            if (this.previousModalInChain !== undefined) {
+            if (
+              this.previousModalInChain !== undefined &&
+              !options?.dontShowPreviousModalInchain
+            ) {
               await this.previousModalInChain.show({
                 animationMode: "modalOnly",
                 animationDurationMs:
