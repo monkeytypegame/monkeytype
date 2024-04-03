@@ -107,8 +107,14 @@
   .ssWatermark {
     font-size: 1.25rem;
     color: var(--sub-color);
-    line-height: 1rem;
-    text-align: right;
+    display: flex;
+    justify-content: flex-end;
+    gap: 0 1em;
+    flex-wrap: wrap;
+
+    .fas {
+      margin-left: 0.33em;
+    }
   }
 
   #timerNumber {
@@ -341,6 +347,7 @@
 }
 
 .word {
+  position: relative;
   font-size: 1em;
   line-height: 1em;
   margin: 0.25em;
@@ -434,12 +441,11 @@
 
 .word letter.incorrect {
   color: var(--error-color);
-  position: relative;
 }
 
-.word letter.incorrect hint {
+.word .hints hint {
   position: absolute;
-  bottom: -1em;
+  bottom: -1.1em;
   color: var(--text-color);
   line-height: initial;
   font-size: 0.75em;
@@ -448,9 +454,9 @@
   left: 0;
   opacity: 0.5;
   text-align: center;
-  width: 100%;
   display: grid;
   justify-content: center;
+  transform: translate(-50%);
 }
 
 .word letter.incorrect.extra {
@@ -526,9 +532,8 @@
   // "ssw ssw";
 
   .editTagsButton {
-    display: inline-block;
-    font-size: 0.75rem;
-    padding-bottom: 0;
+    padding: 0 0.25em;
+    margin-left: 0.5em;
   }
 
   &.noBalloons {
@@ -790,6 +795,8 @@
     .tags,
     .source {
       .top {
+        display: flex;
+        align-items: center;
         font-size: 1rem;
         line-height: 1rem;
       }
@@ -944,17 +951,19 @@
   }
 }
 
-#mobileTestConfig {
-  font-size: 0.75rem;
-  padding: 0.25rem 1rem;
-  background: var(--sub-alt-color);
-  border-radius: var(--roundness);
-  width: max-content;
-  justify-self: center;
+#mobileTestConfigButton {
   display: none;
-  height: max-content;
+  justify-self: center;
   margin-bottom: 1rem;
-  transition: opacity 0.125s;
+  height: max-content;
+  button {
+    font-size: 0.75rem;
+    padding: 1em 2em;
+    color: var(--sub-color);
+    &:hover {
+      color: var(--bg-color);
+    }
+  }
 }
 
 #testConfig {
@@ -1094,9 +1103,10 @@
   .outOfFocusWarning {
     text-align: center;
     height: 0;
-    line-height: 150px;
+    font-size: 1rem;
     z-index: 999;
-    position: relative;
+    position: absolute;
+    width: 100%;
     -webkit-user-select: none;
     user-select: none;
     pointer-events: none;
@@ -1239,7 +1249,7 @@ main.focus .pageTest {
   #testConfig {
     opacity: 0 !important;
   }
-  #mobileTestConfig {
+  #mobileTestConfigButton {
     opacity: 0 !important;
   }
 }

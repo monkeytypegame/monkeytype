@@ -19,10 +19,18 @@ export let word = -1;
 export let time = -1;
 export let section = -1;
 export let delimiter = " ";
-export let popupTextareaState = "The quick brown fox jumps over the lazy dog";
+export let popupTextareaState = text.join(" ");
+export let savedPopupTextareaState = popupTextareaState;
 
-export function setPopupTextareaState(value: string): void {
+export function setPopupTextareaStateToSaved(): void {
+  popupTextareaState = savedPopupTextareaState;
+}
+
+export function setPopupTextareaState(value: string, save = false): void {
   popupTextareaState = value;
+  if (save) {
+    savedPopupTextareaState = value;
+  }
 }
 
 export function setText(txt: string[], tribeOverride = false): void {

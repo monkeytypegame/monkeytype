@@ -164,6 +164,7 @@
   ,"finnish_10k"
   ,"estonian"
   ,"estonian_1k"
+  ,"estonian_5k"
   ,"estonian_10k"
   ,"udmurt"
   ,"welsh"
@@ -276,6 +277,8 @@
   ,"frysk_1k"
   ,"pashto"
   ,"euskera"
+  ,"klingon"
+  ,"klingon_1k"
   ,"code_python"
   ,"code_python_1k"
   ,"code_python_2k"
@@ -326,4 +329,6 @@
   ,"code_gdscript_2"
   ,"code_assembly"
   ,"code_v"
+  ,"code_ook"
+  ,"xhosa"
 ]

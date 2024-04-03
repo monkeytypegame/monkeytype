@@ -26,9 +26,85 @@ import * as PractiseWords from "./practise-words";
 import * as ActivePage from "../states/active-page";
 import Format from "../utils/format";
 import * as Loader from "../elements/loader";
+import { getHtmlByUserFlags } from "../controllers/user-flag-controller";
 
 async function gethtml2canvas(): Promise<typeof import("html2canvas").default> {
   return (await import("html2canvas")).default;
+}
+
+function createHintsHtml(
+  incorrectLtrIndices: number[][],
+  activeWordLetters: NodeListOf<Element>
+): string {
+  let hintsHtml = "";
+  for (const adjacentLetters of incorrectLtrIndices) {
+    for (const indx of adjacentLetters) {
+      const blockLeft = (activeWordLetters[indx] as HTMLElement).offsetLeft;
+      const blockWidth = (activeWordLetters[indx] as HTMLElement).offsetWidth;
+      const blockIndices = `[${indx}]`;
+      const blockChars = TestInput.input.current[indx];
+
+      hintsHtml +=
+        `<hint data-length=1 data-chars-index=${blockIndices}` +
+        ` style="left: ${blockLeft + blockWidth / 2}px;">${blockChars}</hint>`;
+    }
+  }
+  hintsHtml = `<div class="hints">${hintsHtml}</div>`;
+  return hintsHtml;
+}
+
+async function joinOverlappingHints(
+  incorrectLtrIndices: number[][],
+  activeWordLetters: NodeListOf<Element>,
+  hintElements: HTMLCollection
+): Promise<void> {
+  const currentLanguage = await Misc.getCurrentLanguage(Config.language);
+  const isLanguageRTL = currentLanguage.rightToLeft;
+
+  let i = 0;
+  for (const adjacentLetters of incorrectLtrIndices) {
+    for (let j = 0; j < adjacentLetters.length - 1; j++) {
+      const block1El = hintElements[i] as HTMLElement;
+      const block2El = hintElements[i + 1] as HTMLElement;
+      const leftBlock = isLanguageRTL ? block2El : block1El;
+      const rightBlock = isLanguageRTL ? block1El : block2El;
+
+      /** HintBlock.offsetLeft is at the center line of corresponding letters
+       * then "transform: translate(-50%)" aligns hints with letters */
+      if (
+        leftBlock.offsetLeft + leftBlock.offsetWidth / 2 >
+        rightBlock.offsetLeft - rightBlock.offsetWidth / 2
+      ) {
+        block1El.dataset["length"] = (
+          parseInt(block1El.dataset["length"] ?? "1") +
+          parseInt(block2El.dataset["length"] ?? "1")
+        ).toString();
+
+        const block1Indices = block1El.dataset["charsIndex"] ?? "[]";
+        const block2Indices = block2El.dataset["charsIndex"] ?? "[]";
+        block1El.dataset["charsIndex"] =
+          block1Indices.slice(0, -1) + "," + block2Indices.slice(1);
+
+        const letter1Index = adjacentLetters[j] ?? 0;
+        const newLeft =
+          (activeWordLetters[letter1Index] as HTMLElement).offsetLeft +
+          (isLanguageRTL
+            ? (activeWordLetters[letter1Index] as HTMLElement).offsetWidth
+            : 0) +
+          (block2El.offsetLeft - block1El.offsetLeft);
+        block1El.style.left = newLeft.toString() + "px";
+
+        block1El.insertAdjacentHTML("beforeend", block2El.innerHTML);
+
+        block2El.remove();
+        adjacentLetters.splice(j + 1, 1);
+        i -= j === 0 ? 1 : 2;
+        j -= j === 0 ? 1 : 2;
+      }
+      i++;
+    }
+    i++;
+  }
 }
 
 const debouncedZipfCheck = debounce(250, async () => {
@@ -65,11 +141,14 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
     void debouncedZipfCheck();
   }
   if (eventKey === "fontSize" && !nosave) {
-    setTimeout(() => {
-      updateWordsHeight(true);
-      updateWordsInputPosition(true);
-    }, 0);
+    OutOfFocus.hide();
+    updateWordsHeight(true);
+    updateWordsInputPosition(true);
   }
+  if (eventKey === "fontSize" || eventKey === "fontFamily")
+    updateHintsPosition().catch((e) => {
+      console.error(e);
+    });
 
   if (eventKey === "theme") void applyBurstHeatmap();
 
@@ -82,7 +161,7 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
   if (typeof eventValue !== "boolean") return;
   if (eventKey === "flipTestColors") flipColors(eventValue);
   if (eventKey === "colorfulMode") colorful(eventValue);
-  if (eventKey === "highlightMode") updateWordElement(eventValue);
+  if (eventKey === "highlightMode") void updateWordElement(eventValue);
   if (eventKey === "burstHeatmap") void applyBurstHeatmap();
 });
 
@@ -130,9 +209,7 @@ export function reset(): void {
 }
 
 export function focusWords(): void {
-  if (!$("#wordsWrapper").hasClass("hidden")) {
-    $("#wordsInput").trigger("focus");
-  }
+  $("#wordsInput").trigger("focus");
 }
 
 export function blurWords(): void {
@@ -170,6 +247,53 @@ export function updateActiveElement(
   } catch (e) {}
   if (!initial && shouldUpdateWordsInputPosition()) {
     updateWordsInputPosition();
+  }
+}
+
+async function updateHintsPosition(): Promise<void> {
+  if (
+    ActivePage.get() !== "test" ||
+    resultVisible ||
+    Config.indicateTypos !== "below"
+  )
+    return;
+
+  const currentLanguage = await Misc.getCurrentLanguage(Config.language);
+  const isLanguageRTL = currentLanguage.rightToLeft;
+
+  let wordEl: HTMLElement | undefined;
+  let letterElements: NodeListOf<Element> | undefined;
+
+  const hintElements = document
+    .getElementById("words")
+    ?.querySelectorAll("div.word > div.hints > hint");
+  for (let i = 0; i < (hintElements?.length ?? 0); i++) {
+    const hintEl = hintElements?.[i] as HTMLElement;
+
+    if (!wordEl || hintEl.parentElement?.parentElement !== wordEl) {
+      wordEl = hintEl.parentElement?.parentElement as HTMLElement;
+      letterElements = wordEl?.querySelectorAll("letter");
+    }
+
+    const letterIndices = hintEl.dataset["charsIndex"]
+      ?.slice(1, -1)
+      .split(",")
+      .map((indx) => parseInt(indx));
+    const leftmostIndx = isLanguageRTL
+      ? parseInt(hintEl.dataset["length"] ?? "1") - 1
+      : 0;
+    let newLeft = (
+      letterElements?.[letterIndices?.[leftmostIndx] ?? 0] as HTMLElement
+    ).offsetLeft;
+    const lettersWidth =
+      letterIndices?.reduce(
+        (accum, curr) =>
+          accum + (letterElements?.[curr] as HTMLElement).offsetWidth,
+        0
+      ) ?? 0;
+    newLeft += lettersWidth / 2;
+
+    hintEl.style.left = newLeft.toString() + "px";
   }
 }
 
@@ -324,7 +448,10 @@ function updateWordsHeight(force = false): void {
     if (nh > wordsHeight) {
       nh = wordsHeight;
     }
-    $(".outOfFocusWarning").css("line-height", nh + "px");
+    $(".outOfFocusWarning").css(
+      "margin-top",
+      wordHeight + Misc.convertRemToPixels(1) / 2 + "px"
+    );
     $("#typingTest .tribeCountdown").css("line-height", nh + "px");
   } else {
     let finalWordsHeight: number, finalWrapperHeight: number;
@@ -376,7 +503,10 @@ function updateWordsHeight(force = false): void {
     $("#wordsWrapper")
       .css("height", finalWrapperHeight + "px")
       .css("overflow", "hidden");
-    $(".outOfFocusWarning").css("line-height", finalWrapperHeight + "px");
+    $(".outOfFocusWarning").css(
+      "margin-top",
+      finalWrapperHeight / 2 - Misc.convertRemToPixels(1) / 2 + "px"
+    );
     $("#typingTest .tribeCountdown").css(
       "line-height",
       finalWrapperHeight + "px"
@@ -415,8 +545,8 @@ export async function screenshot(): Promise<void> {
 
   let revertCookie = false;
   if (
-    Misc.isElementVisible("#cookiePopupWrapper") ||
-    document.contains(document.querySelector("#cookiePopupWrapper"))
+    Misc.isElementVisible("#cookiesModal") ||
+    document.contains(document.querySelector("#cookiesModal"))
   ) {
     revertCookie = true;
   }
@@ -438,7 +568,7 @@ export async function screenshot(): Promise<void> {
     $("#result").removeClass("noBalloons");
     $(".wordInputHighlight").removeClass("hidden");
     $(".highlightContainer").removeClass("hidden");
-    if (revertCookie) $("#cookiePopupWrapper").removeClass("hidden");
+    if (revertCookie) $("#cookiesModal").removeClass("hidden");
     if (revealReplay) $("#resultReplay").removeClass("hidden");
     if (!isAuthenticated()) {
       $(".pageTest .loginTip").removeClass("hidden");
@@ -461,17 +591,20 @@ export async function screenshot(): Promise<void> {
   const dateNow = new Date(Date.now());
   $("#resultReplay").addClass("hidden");
   $(".pageTest .ssWatermark").removeClass("hidden");
-  $(".pageTest .ssWatermark").text(
-    format(dateNow, "dd MMM yyyy HH:mm") + " | monkeytype.com "
-  );
-  if (isAuthenticated()) {
-    $(".pageTest .ssWatermark").text(
-      DB.getSnapshot()?.name +
-        " | " +
-        format(dateNow, "dd MMM yyyy HH:mm") +
-        " | monkeytype.com  "
-    );
+
+  const snapshot = DB.getSnapshot();
+  const ssWatermark = [format(dateNow, "dd MMM yyyy HH:mm"), "monkeytype.com"];
+  if (snapshot?.name !== undefined) {
+    const userText = `${snapshot?.name}${getHtmlByUserFlags(snapshot, {
+      iconsOnly: true,
+    })}`;
+    ssWatermark.unshift(userText);
   }
+  $(".pageTest .ssWatermark").html(
+    ssWatermark
+      .map((el) => `<span>${el}</span>`)
+      .join("<span class='pipe'>|</span>")
+  );
   $(".pageTest .buttons").addClass("hidden");
   $("#notificationCenter").addClass("hidden");
   $("#commandLineMobileButton").addClass("hidden");
@@ -487,7 +620,7 @@ export async function screenshot(): Promise<void> {
   $("#result").addClass("noBalloons");
   $(".wordInputHighlight").addClass("hidden");
   $(".highlightContainer").addClass("hidden");
-  if (revertCookie) $("#cookiePopupWrapper").addClass("hidden");
+  if (revertCookie) $("#cookiesModal").addClass("hidden");
 
   FunboxList.get(Config.funbox).forEach((f) => f.functions?.clearGlobal?.());
 
@@ -576,15 +709,18 @@ export async function screenshot(): Promise<void> {
   }, 3000);
 }
 
-export function updateWordElement(
+export async function updateWordElement(
   showError = !Config.blindMode,
   inputOverride?: string
-): void {
+): Promise<void> {
   const input = inputOverride ?? TestInput.input.current;
-  const wordAtIndex = document.querySelector("#words .word.active") as Element;
+  const wordAtIndex = document.querySelector(
+    "#words .word.active"
+  ) as HTMLElement;
   const currentWord = TestWords.words.getCurrent();
   if (!currentWord && Config.mode !== "zen") return;
   let ret = "";
+  const hintIndices: number[][] = [];
 
   let newlineafter = false;
 
@@ -717,8 +853,15 @@ export function updateWordElement(
               ? "_"
               : input[i]
             : currentLetter) +
-          (Config.indicateTypos === "below" ? `<hint>${input[i]}</hint>` : "") +
           "</letter>";
+        if (Config.indicateTypos === "below") {
+          if (!hintIndices?.length) hintIndices.push([i]);
+          else {
+            const lastblock = hintIndices[hintIndices.length - 1];
+            if (lastblock?.[lastblock.length - 1] === i - 1) lastblock.push(i);
+            else hintIndices.push([i]);
+          }
+        }
       }
     }
 
@@ -747,7 +890,17 @@ export function updateWordElement(
       }
     }
   }
+
   wordAtIndex.innerHTML = ret;
+
+  if (hintIndices?.length) {
+    const activeWordLetters = wordAtIndex.querySelectorAll("letter");
+    const hintsHtml = createHintsHtml(hintIndices, activeWordLetters);
+    wordAtIndex.insertAdjacentHTML("beforeend", hintsHtml);
+    const hintElements = wordAtIndex.getElementsByTagName("hint");
+    await joinOverlappingHints(hintIndices, activeWordLetters, hintElements);
+  }
+
   if (newlineafter) $("#words").append("<div class='newline'></div>");
 }
 
@@ -1350,7 +1503,9 @@ addEventListener("resize", () => {
   ResultWordHighlight.destroy();
 });
 
-$("#wordsInput").on("focus", () => {
+$("#wordsInput").on("focus", (e) => {
+  const wordsFocused = e.target === document.activeElement;
+  if (!wordsFocused) return;
   if (!resultVisible && Config.showOutOfFocusWarning) {
     OutOfFocus.hide();
   }

@@ -5,7 +5,7 @@ import * as TestLogic from "../test/test-logic";
 import * as ChallengeController from "../controllers/challenge-controller";
 import Config, * as UpdateConfig from "../config";
 import * as Misc from "../utils/misc";
-import * as WordFilterPopup from "./word-filter-popup";
+import * as WordFilterPopup from "../modals/word-filter";
 import * as Notifications from "../elements/notifications";
 import * as SavedTextsPopup from "./saved-texts-popup";
 import * as SaveCustomTextPopup from "./save-custom-text-popup";
@@ -142,17 +142,7 @@ function hide(options = {} as HideOptions): void {
         options.noAnim ? 0 : 125,
         () => {
           if (options.resetState) {
-            const newText = CustomText.text.map((word) => {
-              if (word.endsWith("|")) {
-                word = word.slice(0, -1);
-              }
-              return word;
-            });
-
-            CustomText.setPopupTextareaState(
-              // CustomText.text.join(CustomText.delimiter)
-              newText.join(CustomText.delimiter)
-            );
+            CustomText.setPopupTextareaStateToSaved();
           }
 
           $(wrapper).addClass("hidden");
@@ -235,6 +225,8 @@ function apply(): void {
     Notifications.add("Text cannot be empty", 0);
     return;
   }
+
+  CustomText.setPopupTextareaState(text, true);
 
   text = text.trim();
   // text = text.replace(/[\r]/gm, " ");
@@ -375,9 +367,8 @@ $(document).on("keydown", (event) => {
 
 $("#popups").on("click", `${popup} .wordfilter`, () => {
   hide({ noAnim: true, resetState: false });
-  void WordFilterPopup.show(true, () => {
-    show(true);
-  });
+  //todo use modal chain
+  void WordFilterPopup.show();
 });
 
 $(`${popup} .buttonsTop .showSavedTexts`).on("click", () => {

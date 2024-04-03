@@ -2,7 +2,7 @@ import * as Misc from "./misc";
 import Config, * as UpdateConfig from "../config";
 import * as Notifications from "../elements/notifications";
 import { decompressFromURI } from "lz-ts";
-import * as QuoteSearchPopup from "../popups/quote-search-popup";
+import * as TestState from "../test/test-state";
 import * as ManualRestart from "../test/manual-restart-tracker";
 import * as CustomText from "../test/custom-text";
 import Ape from "../ape";
@@ -139,7 +139,7 @@ export function loadTestSettingsFromUrl(getOverride?: string): void {
       UpdateConfig.setWordCount(parseInt(de[1], 10), true);
     } else if (Config.mode === "quote") {
       UpdateConfig.setQuoteLength(-2, false);
-      QuoteSearchPopup.setSelectedId(parseInt(de[1], 10));
+      TestState.setSelectedQuoteId(parseInt(de[1], 10));
       ManualRestart.set();
     }
     applied["mode2"] = de[1];
@@ -148,7 +148,8 @@ export function loadTestSettingsFromUrl(getOverride?: string): void {
   if (de[2] !== null) {
     const customTextSettings = de[2];
     CustomText.setPopupTextareaState(
-      customTextSettings.text.join(customTextSettings.delimiter)
+      customTextSettings.text.join(customTextSettings.delimiter),
+      true
     );
     CustomText.setText(customTextSettings.text);
     CustomText.setIsTimeRandom(customTextSettings.isTimeRandom);

@@ -814,22 +814,6 @@ export function chart2Word(first: boolean): string {
   return measure;
 }
 
-export function getPositionString(number: number): string {
-  let numend = "th";
-  const t = number % 10;
-  const h = number % 100;
-  if (t === 1 && h !== 11) {
-    numend = "st";
-  }
-  if (t === 2 && h !== 12) {
-    numend = "nd";
-  }
-  if (t === 3 && h !== 13) {
-    numend = "rd";
-  }
-  return number + numend;
-}
-
 export function findGetParameter(
   parameterName: string,
   getOverride?: string
@@ -1254,7 +1238,7 @@ export async function downloadResultsCSV(
       item.acc,
       item.rawWpm,
       item.consistency,
-      item.charStats.join(","),
+      item.charStats.join(";"),
       item.mode,
       item.mode2,
       item.quoteLength,
@@ -1270,11 +1254,11 @@ export async function downloadResultsCSV(
       item.lazyMode,
       item.blindMode,
       item.bailedOut,
-      item.tags.join(","),
+      item.tags.join(";"),
       item.timestamp,
     ]),
   ]
-    .map((e) => e.join("|"))
+    .map((e) => e.join(","))
     .join("\n");
 
   const blob = new Blob([csvString], { type: "text/csv" });

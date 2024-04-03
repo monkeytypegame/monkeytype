@@ -54,7 +54,7 @@ const commands: MonkeyTypes.Command[] = [
           id: "changeTimeConfigCustom",
           display: "custom...",
           input: true,
-          exec: (input): void => {
+          exec: ({ input }): void => {
             if (input === undefined || input === "") return;
             UpdateConfig.setMode("time");
             UpdateConfig.setTimeConfig(parseInt(input));

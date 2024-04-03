@@ -14,6 +14,9 @@ declare namespace SharedTypes {
 
   interface Configuration {
     maintenance: boolean;
+    dev: {
+      responseSlowdownMs: number;
+    };
     quotes: {
       reporting: {
         enabled: boolean;
@@ -448,7 +451,8 @@ declare namespace SharedTypes {
     discordId?: string;
     discordAvatar?: string;
     rank: number;
-    badgeId: number | null;
+    badgeId?: number;
+    isPremium?: boolean;
   }
 
   type PostResultResponse = {
@@ -528,9 +532,11 @@ declare namespace SharedTypes {
     profileDetails?: UserProfileDetails;
     customThemes?: CustomTheme[];
     premium?: PremiumInfo;
+    isPremium?: boolean;
     quoteRatings?: UserQuoteRatings;
     favoriteQuotes?: Record<string, string[]>;
     lbMemory?: UserLbMemory;
+    allTimeLbs: AllTimeLbs;
     inventory?: UserInventory;
     banned?: boolean;
     lbOptOut?: boolean;
@@ -577,6 +583,8 @@ declare namespace SharedTypes {
     | "lbOptOut"
     | "inventory"
     | "uid"
+    | "isPremium"
+    | "allTimeLbs"
   > & {
     typingStats: {
       completedTests: User["completedTests"];
@@ -586,9 +594,6 @@ declare namespace SharedTypes {
     streak: UserStreak["length"];
     maxStreak: UserStreak["maxLength"];
     details: UserProfileDetails;
-    allTimeLbs: {
-      time: Record<string, Record<string, number | null>>;
-    };
     personalBests: {
       time: Pick<
         Record<`${number}`, SharedTypes.PersonalBest[]>,
@@ -599,5 +604,14 @@ declare namespace SharedTypes {
         "10" | "25" | "50" | "100"
       >;
     };
+  };
+
+  type AllTimeLbs = {
+    time: Record<string, Record<string, RankAndCount | undefined>>;
+  };
+
+  type RankAndCount = {
+    rank?: number;
+    count: number;
   };
 }

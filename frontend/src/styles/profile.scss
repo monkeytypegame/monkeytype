@@ -119,6 +119,7 @@
         border-bottom-right-radius: var(--roundness);
       }
       button {
+        background: transparent;
         align-items: center;
         align-content: center;
         display: grid;
@@ -150,14 +151,23 @@
     }
     .group {
       display: grid;
-      gap: 1rem;
+      column-gap: 1rem;
       grid-template-columns: auto 1fr;
+      grid-template-areas: "testType pos" "topPercentage pos";
       align-items: center;
       .testType {
+        grid-area: testType;
         color: var(--sub-color);
       }
       .pos {
+        grid-area: pos;
         font-size: 2rem;
+      }
+      .topPercentage {
+        color: var(--sub-color);
+        grid-area: topPercentage;
+        font-size: 0.75rem;
+        text-align: right;
       }
       &.t15 {
         grid-area: t15;
@@ -355,17 +365,20 @@
           grid-column: 1/2;
         }
       }
-      .name {
-        // font-size: 3rem;
-        // line-height: 2.5rem;
+      .user {
+        display: flex;
+        flex-wrap: wrap;
         font-size: 1rem;
-        line-height: 100%;
+        // line-height: 100%;
         width: max-content;
-        .bannedIcon {
-          margin-left: 0.5em;
-          display: inline-grid;
-          font-size: 75%;
-          color: var(--error-color);
+        gap: 0.35rem;
+        .userFlags {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 0.35rem;
+          // font-size: 0.75em;
+          color: var(--sub-color);
+          place-items: center left;
         }
       }
       .badge {

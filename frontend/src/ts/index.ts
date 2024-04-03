@@ -2,8 +2,17 @@
 import "jquery-color";
 import "jquery.easing";
 
-import "./firebase";
+import "./event-handlers/global";
+import "./event-handlers/footer";
+import "./event-handlers/keymap";
+import "./event-handlers/test";
+import "./event-handlers/about";
+import "./event-handlers/settings";
+import "./event-handlers/account";
 
+import "./modals/google-sign-up";
+
+import "./firebase";
 import * as Logger from "./utils/logger";
 import * as DB from "./db";
 import "./ui";
@@ -21,25 +30,14 @@ import * as TribeSocket from "./tribe/tribe-socket";
 import "./controllers/account-controller";
 import { enable } from "./states/glarses-mode";
 import "./test/caps-warning";
-import "./popups/support-popup";
-import "./popups/contact-popup";
-import "./popups/version-popup";
-import "./popups/edit-preset-popup";
-import "./popups/set-streak-hour-offset";
-import "./popups/simple-popups";
+import "./modals/simple-modals";
 import "./controllers/input-controller";
 import "./ready";
 import "./controllers/route-controller";
 import "./pages/about";
-import "./popups/pb-tables-popup";
 import "./elements/scroll-to-top";
-import "./popups/mobile-test-config-popup";
-import "./popups/edit-tags-popup";
-import "./popups/google-sign-up-popup";
-import "./popups/result-tags-popup";
 import * as Account from "./pages/account";
 import "./elements/leaderboards";
-import "./commandline/index";
 import "./elements/no-css";
 import { egVideoListener } from "./popups/video-ad-popup";
 import "./states/connection";
@@ -48,7 +46,6 @@ import "./elements/fps-counter";
 import "./popups/tribe-room-code-popup";
 import "./popups/tribe-browse-public-rooms-popup";
 import "./controllers/profile-search-controller";
-import "./version";
 import { isDevEnvironment } from "./utils/misc";
 
 function addToGlobal(items: Record<string, unknown>): void {

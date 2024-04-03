@@ -193,24 +193,20 @@ function getHistogramDataBucketed(data: Record<string, number>): {
   return { data: histogramChartDataBucketed, labels };
 }
 
-export const page = new Page(
-  "about",
-  $(".page.pageAbout"),
-  "/about",
-  async () => {
-    //
-  },
-  async () => {
+export const page = new Page({
+  name: "about",
+  element: $(".page.pageAbout"),
+  path: "/about",
+  afterHide: async (): Promise<void> => {
     reset();
     Skeleton.remove("pageAbout");
   },
-  async () => {
+  beforeShow: async (): Promise<void> => {
     Skeleton.append("pageAbout", "main");
     void fill();
   },
-  async () => {
-    //
-  }
-);
+});
 
-Skeleton.save("pageAbout");
+$(() => {
+  Skeleton.save("pageAbout");
+});
