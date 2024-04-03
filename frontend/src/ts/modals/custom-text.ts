@@ -10,7 +10,6 @@ import * as Notifications from "../elements/notifications";
 import * as SavedTextsPopup from "./saved-texts";
 import * as SaveCustomTextPopup from "./save-custom-text";
 import AnimatedModal from "../utils/animated-modal";
-import { text } from "stream/consumers";
 
 const wrapper = "#customTextModal";
 const popup = wrapper + " .modal";
