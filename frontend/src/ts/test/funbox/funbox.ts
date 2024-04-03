@@ -25,6 +25,7 @@ import {
 } from "./funbox-validation";
 import { Wordset } from "../wordset";
 import * as LayoutfluidFunboxTimer from "./layoutfluid-funbox-timer";
+import * as DDR from "../../utils/ddr";
 
 const prefixSize = 2;
 
@@ -131,7 +132,7 @@ FunboxList.setFunboxFunctions("tts", {
 
 FunboxList.setFunboxFunctions("arrows", {
   getWord(_wordset, wordIndex): string {
-    return Misc.chart2Word(wordIndex === 0);
+    return DDR.chart2Word(wordIndex === 0);
   },
   rememberSettings(): void {
     save("highlightMode", Config.highlightMode, UpdateConfig.setHighlightMode);
