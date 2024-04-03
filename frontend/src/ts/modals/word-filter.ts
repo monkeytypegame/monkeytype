@@ -2,7 +2,10 @@ import * as Misc from "../utils/misc";
 import * as CustomText from "../test/custom-text";
 import * as Notifications from "../elements/notifications";
 import SlimSelect from "slim-select";
-import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
+import AnimatedModal, {
+  HideOptions,
+  ShowOptions,
+} from "../utils/animated-modal";
 
 type FilterPreset = {
   display: string;
@@ -178,9 +181,9 @@ export async function show(showOptions?: ShowOptions): Promise<void> {
   });
 }
 
-function hide(clearModalChain?: boolean): void {
+function hide(hideOptions?: HideOptions): void {
   void modal.hide({
-    clearModalChain,
+    ...hideOptions,
     afterAnimation: async () => {
       languageSelect?.destroy();
       layoutSelect?.destroy();
@@ -254,10 +257,12 @@ async function apply(set: boolean): Promise<void> {
 
   const customText = filteredWords.join(CustomText.delimiter);
 
-  CustomText.setPopupTextareaState(
-    (set ? "" : CustomText.popupTextareaState + " ") + customText
-  );
-  hide(true);
+  hide({
+    modalChainData: {
+      text: customText,
+      set,
+    },
+  });
 }
 
 function disableButtons(): void {
