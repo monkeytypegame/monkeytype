@@ -93,3 +93,31 @@ export function splitByAndKeep(text: string, delimiters: string[]): string[] {
 
   return splitString;
 }
+
+/**
+ * Returns a display string for the given language, optionally removing the size indicator.
+ * @param language The language string.
+ * @param noSizeString Whether to remove the size indicator from the language string. Default is false.
+ * @returns A display string for the language.
+ */
+export function getLanguageDisplayString(
+  language: string,
+  noSizeString = false
+): string {
+  let out = "";
+  if (noSizeString) {
+    out = removeLanguageSize(language);
+  } else {
+    out = language;
+  }
+  return out.replace(/_/g, " ");
+}
+
+/**
+ * Removes the size indicator from a language string.
+ * @param language The language string.
+ * @returns The language string with the size indicator removed.
+ */
+export function removeLanguageSize(language: string): string {
+  return language.replace(/_\d*k$/g, "");
+}

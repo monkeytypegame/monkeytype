@@ -14,6 +14,7 @@ import * as GlarsesMode from "../states/glarses-mode";
 import * as SlowTimer from "../states/slow-timer";
 import * as DateTime from "../utils/date-and-time";
 import * as Misc from "../utils/misc";
+import * as Strings from "../utils/strings";
 import * as GetData from "../utils/get-data";
 import * as Numbers from "../utils/numbers";
 import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
@@ -565,7 +566,7 @@ function updateTestType(randomQuote: MonkeyTypes.Quote | null): void {
       f.properties?.includes("ignoresLanguage")
     ) !== undefined;
   if (Config.mode !== "custom" && !ignoresLanguage) {
-    testType += "<br>" + Misc.getLanguageDisplayString(result.language);
+    testType += "<br>" + Strings.getLanguageDisplayString(result.language);
   }
   if (Config.punctuation) {
     testType += "<br>punctuation";

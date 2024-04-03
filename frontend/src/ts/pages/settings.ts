@@ -2,6 +2,7 @@ import SettingsGroup from "../settings/settings-group";
 import Config, * as UpdateConfig from "../config";
 import * as Sound from "../controllers/sound-controller";
 import * as Misc from "../utils/misc";
+import * as Strings from "../utils/strings";
 import * as GetData from "../utils/get-data";
 import * as DB from "../db";
 import { toggleFunbox } from "../test/funbox/funbox";
@@ -461,7 +462,7 @@ async function fillSettingsPage(): Promise<void> {
       html += `<optgroup label="${group.name}">`;
       for (const language of group.languages) {
         const selected = language === Config.language ? "selected" : "";
-        const text = Misc.getLanguageDisplayString(language);
+        const text = Strings.getLanguageDisplayString(language);
         html += `<option value="${language}" ${selected}>${text}</option>`;
       }
       html += `</optgroup>`;

@@ -1,4 +1,5 @@
 import * as Misc from "../utils/misc";
+import * as Strings from "../utils/strings";
 import * as GetData from "../utils/get-data";
 import * as DB from "../db";
 import Config from "../config";
@@ -647,7 +648,7 @@ export async function appendButtons(): Promise<void> {
   if (languageList) {
     let html = "";
     for (const language of languageList) {
-      html += `<button filter="${language}">${Misc.getLanguageDisplayString(
+      html += `<button filter="${language}">${Strings.getLanguageDisplayString(
         language
       )}</button>`;
     }

@@ -113,7 +113,7 @@ const debouncedZipfCheck = debounce(250, async () => {
   if (supports === "no") {
     Notifications.add(
       `${Strings.capitalizeFirstLetter(
-        Misc.getLanguageDisplayString(Config.language)
+        Strings.getLanguageDisplayString(Config.language)
       )} does not support Zipf funbox, because the list is not ordered by frequency. Please try another word list.`,
       0,
       {
@@ -124,7 +124,7 @@ const debouncedZipfCheck = debounce(250, async () => {
   if (supports === "unknown") {
     Notifications.add(
       `${Strings.capitalizeFirstLetter(
-        Misc.getLanguageDisplayString(Config.language)
+        Strings.getLanguageDisplayString(Config.language)
       )} may not support Zipf funbox, because we don't know if it's ordered by frequency or not. If you would like to add this label, please contact us.`,
       0,
       {
@@ -958,7 +958,7 @@ export function updatePremid(): void {
     fbtext = " " + Config.funbox.split("#").join(" ");
   }
   $(".pageTest #premidTestMode").text(
-    `${Config.mode} ${mode2} ${Misc.getLanguageDisplayString(
+    `${Config.mode} ${mode2} ${Strings.getLanguageDisplayString(
       Config.language
     )}${fbtext}`
   );

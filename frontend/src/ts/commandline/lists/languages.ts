@@ -1,6 +1,8 @@
 import * as UpdateConfig from "../../config";
-import { getLanguageDisplayString } from "../../utils/misc";
-import { capitalizeFirstLetterOfEachWord } from "../../utils/strings";
+import {
+  capitalizeFirstLetterOfEachWord,
+  getLanguageDisplayString,
+} from "../../utils/strings";
 
 const subgroup: MonkeyTypes.CommandsSubgroup = {
   title: "Language...",
