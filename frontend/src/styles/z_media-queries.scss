@@ -39,7 +39,7 @@
   #app {
     grid-template-columns: auto;
   }
-  #customTextPopupWrapper {
+  #customTextModal {
     padding: 2rem;
     .modal {
       grid-template-columns: 1fr 1fr 2fr;
@@ -57,7 +57,7 @@
       }
     }
   }
-  #customTextPopupWrapper .modal .buttonsTop {
+  #customTextModal .modal .buttonsTop {
     grid-template-columns: 1fr 1fr;
   }
 }
@@ -153,7 +153,7 @@
 
 //900px
 @media only screen and (max-width: 56.25rem) {
-  #customTextPopupWrapper .modal {
+  #customTextModal .modal {
     grid-template-areas:
       "topButtons topButtons topButtons"
       "textArea textArea textArea"
@@ -390,7 +390,7 @@
     }
   }
 
-  #customTextPopupWrapper .modal {
+  #customTextModal .modal {
     .buttonsTop {
       grid-template-columns: 1fr;
     }

@@ -12,7 +12,7 @@ import * as SaveCustomTextPopup from "./save-custom-text";
 import AnimatedModal from "../utils/animated-modal";
 import { text } from "stream/consumers";
 
-const wrapper = "#customTextPopupWrapper";
+const wrapper = "#customTextModal";
 const popup = wrapper + " .modal";
 
 function updateLongTextWarning(): void {
@@ -356,9 +356,7 @@ async function setup(modalEl: HTMLElement): Promise<void> {
     CustomText.setPopupTextareaState(area.value);
   });
   textarea?.addEventListener("keypress", (e) => {
-    if (
-      Misc.isElementVisible(`#customTextPopupWrapper .longCustomTextWarning`)
-    ) {
+    if (Misc.isElementVisible(`#customTextModal .longCustomTextWarning`)) {
       e.preventDefault();
       return;
     }
@@ -420,12 +418,12 @@ async function setup(modalEl: HTMLElement): Promise<void> {
   modalEl
     .querySelector(".longCustomTextWarning .button")
     ?.addEventListener("click", () => {
-      $(`#customTextPopupWrapper .longCustomTextWarning`).addClass("hidden");
+      $(`#customTextModal .longCustomTextWarning`).addClass("hidden");
     });
 }
 
 const modal = new AnimatedModal({
-  dialogId: "customTextPopupWrapper",
+  dialogId: "customTextModal",
   setup,
   customEscapeHandler: async (): Promise<void> => {
     hide();
