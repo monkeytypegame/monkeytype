@@ -76,7 +76,7 @@ async function fill(): Promise<void> {
     const name = $(e.target).text();
     CustomTextState.setCustomTextName(name, false);
     const text = getSavedText(name, false);
-    hide({ modalChainData: { text } });
+    hide({ modalChainData: { text, long: false } });
   });
 
   $("#savedTextsModal .listLong .savedLongText .button.name").on(
@@ -85,7 +85,7 @@ async function fill(): Promise<void> {
       const name = $(e.target).text();
       CustomTextState.setCustomTextName(name, true);
       const text = getSavedText(name, true);
-      hide({ modalChainData: { text } });
+      hide({ modalChainData: { text, long: true } });
     }
   );
 }
@@ -119,6 +119,7 @@ async function setup(): Promise<void> {
 
 type OutgoingData = {
   text: string;
+  long: boolean;
 };
 
 const modal = new AnimatedModal<unknown, OutgoingData>({

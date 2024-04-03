@@ -1488,11 +1488,11 @@ list.resetProgressCustomTextLong = new SimpleModal({
   buttonText: "reset",
   execFn: async (_thisPopup): Promise<ExecReturn> => {
     CustomText.setCustomTextLongProgress(_thisPopup.parameters[0] as string, 0);
-    CustomText.setPopupTextareaState(
-      CustomText.getCustomText(_thisPopup.parameters[0] as string, true).join(
-        " "
-      )
+    const text = CustomText.getCustomText(
+      _thisPopup.parameters[0] as string,
+      true
     );
+    CustomText.setText(text);
     return {
       status: 1,
       message: "Custom text progress reset",

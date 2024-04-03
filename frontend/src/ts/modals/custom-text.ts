@@ -14,6 +14,16 @@ import AnimatedModal from "../utils/animated-modal";
 const wrapper = "#customTextModal";
 const popup = wrapper + " .modal";
 
+type State = {
+  textarea: string;
+  lastSavedTextareaState: string;
+};
+
+const state: State = {
+  textarea: CustomText.text.join(" "),
+  lastSavedTextareaState: CustomText.text.join(" "),
+};
+
 function updateLongTextWarning(): void {
   if (CustomTextState.isCustomTextLong() === true) {
     $(`${popup} .longCustomTextWarning`).removeClass("hidden");
@@ -63,16 +73,27 @@ async function beforeAnimation(
     $(`${popup} .inputs .replaceNewLinesButtons`).addClass("disabled");
   }
 
+  if (CustomTextState.isCustomTextLong()) {
+    // if we are in long custom text mode, always reset the textarea state to the current text
+    state.textarea = CustomText.text.join(" ");
+  }
+
   if (modalChainData?.text !== undefined) {
+    if (modalChainData.long !== true && CustomTextState.isCustomTextLong()) {
+      CustomTextState.setCustomTextName("", undefined);
+      Notifications.add("Disabled long custom text progress tracking", 0, {
+        duration: 5,
+      });
+      updateLongTextWarning();
+    }
+
     const newText =
       modalChainData.set ?? true
         ? modalChainData.text
-        : CustomText.popupTextareaState + " " + modalChainData.text;
-    $(`${popup} textarea`).val(newText);
-    CustomText.setPopupTextareaState(newText);
-  } else {
-    $(`${popup} textarea`).val(CustomText.popupTextareaState);
+        : state.textarea + " " + modalChainData.text;
+    state.textarea = newText;
   }
+  $(`${popup} textarea`).val(state.textarea);
 
   $(`${popup} .wordcount input`).val(
     CustomText.word === -1 ? "" : CustomText.word
@@ -87,21 +108,15 @@ async function afterAnimation(): Promise<void> {
 }
 
 export function show(): void {
+  state.textarea = state.lastSavedTextareaState;
   void modal.show({
     beforeAnimation,
     afterAnimation,
   });
 }
 
-function hide(resetTextareaState = true, clearModalChain = false): void {
-  void modal.hide({
-    clearModalChain,
-    afterAnimation: async () => {
-      if (resetTextareaState) {
-        CustomText.setPopupTextareaStateToSaved();
-      }
-    },
-  });
+function hide(): void {
+  void modal.hide();
 }
 
 function handleDelimiterChange(): void {
@@ -162,16 +177,16 @@ function handleFileOpen(): void {
 }
 
 function apply(): void {
-  let text = ($(`${popup} textarea`).val() as string).normalize();
+  let text = state.textarea;
 
   if (text === "") {
     Notifications.add("Text cannot be empty", 0);
     return;
   }
 
-  CustomText.setPopupTextareaState(text, true);
+  state.lastSavedTextareaState = state.textarea;
 
-  text = text.trim();
+  text = text.normalize().trim();
   // text = text.replace(/[\r]/gm, " ");
 
   //replace any characters that look like a space with an actual space
@@ -328,7 +343,7 @@ async function setup(modalEl: HTMLElement): Promise<void> {
   }
   const textarea = modalEl.querySelector("textarea");
   textarea?.addEventListener("input", (e) => {
-    CustomText.setPopupTextareaState($(`${popup} textarea`).val() as string);
+    state.textarea = (e.target as HTMLTextAreaElement).value;
   });
   textarea?.addEventListener("keydown", (e) => {
     if (e.key !== "Tab") return;
@@ -345,7 +360,7 @@ async function setup(modalEl: HTMLElement): Promise<void> {
     // put caret at right position again
     area.selectionStart = area.selectionEnd = start + 1;
 
-    CustomText.setPopupTextareaState(area.value);
+    state.textarea = area.value;
   });
   textarea?.addEventListener("keypress", (e) => {
     if (Misc.isElementVisible(`#customTextModal .longCustomTextWarning`)) {
@@ -404,7 +419,7 @@ async function setup(modalEl: HTMLElement): Promise<void> {
     ?.addEventListener("click", () => {
       void SaveCustomTextPopup.show({
         modalChain: modal as AnimatedModal<unknown, unknown>,
-        modalChainData: { text: CustomText.popupTextareaState },
+        modalChainData: { text: state.textarea },
       });
     });
   modalEl
@@ -417,6 +432,7 @@ async function setup(modalEl: HTMLElement): Promise<void> {
 type IncomingData = {
   text: string;
   set?: boolean;
+  long?: boolean;
 };
 
 const modal = new AnimatedModal<IncomingData>({
