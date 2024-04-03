@@ -9,6 +9,10 @@ import * as Caret from "./caret";
 import * as OutOfFocus from "./out-of-focus";
 import * as Replay from "./replay";
 import * as Misc from "../utils/misc";
+import * as Strings from "../utils/strings";
+import * as JSONData from "../utils/json-data";
+import * as Numbers from "../utils/numbers";
+import { blendTwoHexColors } from "../utils/colors";
 import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
 import * as SlowTimer from "../states/slow-timer";
 import * as CompositionState from "../states/composition";
@@ -58,7 +62,7 @@ async function joinOverlappingHints(
   activeWordLetters: NodeListOf<Element>,
   hintElements: HTMLCollection
 ): Promise<void> {
-  const currentLanguage = await Misc.getCurrentLanguage(Config.language);
+  const currentLanguage = await JSONData.getCurrentLanguage(Config.language);
   const isLanguageRTL = currentLanguage.rightToLeft;
 
   let i = 0;
@@ -111,8 +115,8 @@ const debouncedZipfCheck = debounce(250, async () => {
   const supports = await Misc.checkIfLanguageSupportsZipf(Config.language);
   if (supports === "no") {
     Notifications.add(
-      `${Misc.capitalizeFirstLetter(
-        Misc.getLanguageDisplayString(Config.language)
+      `${Strings.capitalizeFirstLetter(
+        Strings.getLanguageDisplayString(Config.language)
       )} does not support Zipf funbox, because the list is not ordered by frequency. Please try another word list.`,
       0,
       {
@@ -122,8 +126,8 @@ const debouncedZipfCheck = debounce(250, async () => {
   }
   if (supports === "unknown") {
     Notifications.add(
-      `${Misc.capitalizeFirstLetter(
-        Misc.getLanguageDisplayString(Config.language)
+      `${Strings.capitalizeFirstLetter(
+        Strings.getLanguageDisplayString(Config.language)
       )} may not support Zipf funbox, because we don't know if it's ordered by frequency or not. If you would like to add this label, please contact us.`,
       0,
       {
@@ -258,7 +262,7 @@ async function updateHintsPosition(): Promise<void> {
   )
     return;
 
-  const currentLanguage = await Misc.getCurrentLanguage(Config.language);
+  const currentLanguage = await JSONData.getCurrentLanguage(Config.language);
   const isLanguageRTL = currentLanguage.rightToLeft;
 
   let wordEl: HTMLElement | undefined;
@@ -450,7 +454,7 @@ function updateWordsHeight(force = false): void {
     }
     $(".outOfFocusWarning").css(
       "margin-top",
-      wordHeight + Misc.convertRemToPixels(1) / 2 + "px"
+      wordHeight + Numbers.convertRemToPixels(1) / 2 + "px"
     );
     $("#typingTest .tribeCountdown").css("line-height", nh + "px");
   } else {
@@ -505,7 +509,7 @@ function updateWordsHeight(force = false): void {
       .css("overflow", "hidden");
     $(".outOfFocusWarning").css(
       "margin-top",
-      finalWrapperHeight / 2 - Misc.convertRemToPixels(1) / 2 + "px"
+      finalWrapperHeight / 2 - Numbers.convertRemToPixels(1) / 2 + "px"
     );
     $("#typingTest .tribeCountdown").css(
       "line-height",
@@ -638,8 +642,8 @@ export async function screenshot(): Promise<void> {
     true
   ) as number; /*clientHeight/offsetHeight from div#target*/
   try {
-    const paddingX = Misc.convertRemToPixels(2);
-    const paddingY = Misc.convertRemToPixels(2);
+    const paddingX = Numbers.convertRemToPixels(2);
+    const paddingY = Numbers.convertRemToPixels(2);
 
     const canvas = await (
       await gethtml2canvas()
@@ -967,7 +971,7 @@ export function updatePremid(): void {
     fbtext = " " + Config.funbox.split("#").join(" ");
   }
   $(".pageTest #premidTestMode").text(
-    `${Config.mode} ${mode2} ${Misc.getLanguageDisplayString(
+    `${Config.mode} ${mode2} ${Strings.getLanguageDisplayString(
       Config.language
     )}${fbtext}`
   );
@@ -1304,9 +1308,9 @@ export async function applyBurstHeatmap(): Promise<void> {
 
     let colors = [
       themeColors.colorfulError,
-      Misc.blendTwoHexColors(themeColors.colorfulError, themeColors.text, 0.5),
+      blendTwoHexColors(themeColors.colorfulError, themeColors.text, 0.5),
       themeColors.text,
-      Misc.blendTwoHexColors(themeColors.main, themeColors.text, 0.5),
+      blendTwoHexColors(themeColors.main, themeColors.text, 0.5),
       themeColors.main,
     ];
     let unreachedColor = themeColors.sub;
@@ -1314,13 +1318,9 @@ export async function applyBurstHeatmap(): Promise<void> {
     if (themeColors.main === themeColors.text) {
       colors = [
         themeColors.colorfulError,
-        Misc.blendTwoHexColors(
-          themeColors.colorfulError,
-          themeColors.text,
-          0.5
-        ),
+        blendTwoHexColors(themeColors.colorfulError, themeColors.text, 0.5),
         themeColors.sub,
-        Misc.blendTwoHexColors(themeColors.sub, themeColors.text, 0.5),
+        blendTwoHexColors(themeColors.sub, themeColors.text, 0.5),
         themeColors.main,
       ];
       unreachedColor = themeColors.subAlt;

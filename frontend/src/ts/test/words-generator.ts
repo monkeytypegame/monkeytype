@@ -9,7 +9,10 @@ import * as LazyMode from "./lazy-mode";
 import * as EnglishPunctuation from "./english-punctuation";
 import * as PractiseWords from "./practise-words";
 import * as Misc from "../utils/misc";
+import * as Strings from "../utils/strings";
+import * as Arrays from "../utils/arrays";
 import * as TestState from "../test/test-state";
+import * as GetText from "../utils/generate";
 import * as Random from "../utils/random";
 import * as TribeState from "../tribe/tribe-state";
 
@@ -28,7 +31,7 @@ export async function punctuateWord(
 
   const currentLanguage = Config.language.split("_")[0];
 
-  const lastChar = Misc.getLastChar(previousWord);
+  const lastChar = Strings.getLastChar(previousWord);
 
   const funbox = FunboxList.get(Config.funbox).find(
     (f) => f.functions?.punctuateWord
@@ -43,7 +46,7 @@ export async function punctuateWord(
   ) {
     //always capitalise the first word or if there was a dot unless using a code alphabet or the Georgian language
 
-    word = Misc.capitalizeFirstLetterOfEachWord(word);
+    word = Strings.capitalizeFirstLetterOfEachWord(word);
 
     if (currentLanguage === "turkish") {
       word = word.replace(/I/g, "İ");
@@ -260,12 +263,12 @@ export async function punctuateWord(
         !Config.language.startsWith("code_css")) ||
       Config.language.startsWith("code_arduino")
     ) {
-      word = Misc.randomElementFromArray(specialsC);
+      word = Arrays.randomElementFromArray(specialsC);
     } else {
       if (Config.language.startsWith("code_javascript")) {
-        word = Misc.randomElementFromArray([...specials, "`"]);
+        word = Arrays.randomElementFromArray([...specials, "`"]);
       } else {
-        word = Misc.randomElementFromArray(specials);
+        word = Arrays.randomElementFromArray(specials);
       }
     }
   } else if (
@@ -531,8 +534,8 @@ export async function generateWords(
         i,
         language,
         limit,
-        Misc.nthElementFromArray(ret.words, -1) ?? "",
-        Misc.nthElementFromArray(ret.words, -2) ?? ""
+        Arrays.nthElementFromArray(ret.words, -1) ?? "",
+        Arrays.nthElementFromArray(ret.words, -2) ?? ""
       );
       ret.words.push(nextWord.word);
       ret.sectionIndexes.push(nextWord.sectionIndex);
@@ -629,7 +632,7 @@ async function generateQuoteWords(
     rq = randomQuote;
   }
 
-  rq.language = Misc.removeLanguageSize(Config.language);
+  rq.language = Strings.removeLanguageSize(Config.language);
   rq.text = rq.text.replace(/ +/gm, " ");
   rq.text = rq.text.replace(/( *(\r\n|\r|\n) *)/g, "\n ");
   rq.text = rq.text.replace(/…/g, "...");
@@ -663,8 +666,8 @@ async function generateQuoteWords(
       i,
       language,
       limit,
-      Misc.nthElementFromArray(ret.words, -1) ?? "",
-      Misc.nthElementFromArray(ret.words, -2) ?? ""
+      Arrays.nthElementFromArray(ret.words, -1) ?? "",
+      Arrays.nthElementFromArray(ret.words, -2) ?? ""
     );
     ret.words.push(nextWord.word);
     ret.sectionIndexes.push(i);
@@ -726,8 +729,8 @@ export async function getNextWord(
     } else if (Config.mode === "custom" && CustomText.isSectionRandom) {
       randomWord = wordset.randomWord(funboxFrequency);
 
-      const previousSection = Misc.nthElementFromArray(sectionHistory, -1);
-      const previousSection2 = Misc.nthElementFromArray(sectionHistory, -2);
+      const previousSection = Arrays.nthElementFromArray(sectionHistory, -1);
+      const previousSection2 = Arrays.nthElementFromArray(sectionHistory, -2);
 
       let regenerationCount = 0;
       while (
@@ -826,7 +829,7 @@ export async function getNextWord(
   }
   if (Config.numbers) {
     if (Random.get() < 0.1) {
-      randomWord = Misc.getNumbers(4);
+      randomWord = GetText.getNumbers(4);
 
       if (Config.language.startsWith("kurdish")) {
         randomWord = Misc.convertNumberToArabic(randomWord);

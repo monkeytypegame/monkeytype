@@ -1,7 +1,7 @@
 import {
   getLanguageDisplayString,
   removeLanguageSize,
-} from "../../src/ts/utils/misc";
+} from "../../src/ts/utils/strings";
 
 describe("misc.ts", () => {
   describe("getLanguageDisplayString", () => {

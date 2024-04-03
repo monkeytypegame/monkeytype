@@ -1,4 +1,5 @@
-import * as Misc from "../utils/misc";
+import * as Numbers from "../utils/numbers";
+import * as JSONData from "../utils/json-data";
 import Config from "../config";
 import * as TestInput from "./test-input";
 import * as SlowTimer from "../states/slow-timer";
@@ -96,7 +97,7 @@ export async function updatePosition(noAnim = false): Promise<void> {
     Math.min(currentLetterIndex - 1, currentWordNodeList.length - 1)
   ] as HTMLElement;
 
-  const currentLanguage = await Misc.getCurrentLanguage(Config.language);
+  const currentLanguage = await JSONData.getCurrentLanguage(Config.language);
   const isLanguageRightToLeft = currentLanguage.rightToLeft;
   const letterPosLeft = getTargetPositionLeft(
     fullWidthCaret,
@@ -112,7 +113,7 @@ export async function updatePosition(noAnim = false): Promise<void> {
   const letterHeight =
     currentLetter?.offsetHeight ??
     previousLetter?.offsetHeight ??
-    Config.fontSize * Misc.convertRemToPixels(1);
+    Config.fontSize * Numbers.convertRemToPixels(1);
 
   const diff = letterHeight - caret.offsetHeight;
 

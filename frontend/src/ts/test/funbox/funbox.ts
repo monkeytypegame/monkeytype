@@ -1,5 +1,10 @@
 import * as Notifications from "../../elements/notifications";
 import * as Misc from "../../utils/misc";
+import * as JSONData from "../../utils/json-data";
+import * as GetText from "../../utils/generate";
+import * as Numbers from "../../utils/numbers";
+import * as Arrays from "../../utils/arrays";
+import * as Strings from "../../utils/strings";
 import * as ManualRestart from "../manual-restart-tracker";
 import Config, * as UpdateConfig from "../../config";
 import * as MemoryTimer from "./memory-funbox-timer";
@@ -22,6 +27,8 @@ import {
 import * as TribeConfigSyncEvent from "../../observables/tribe-config-sync-event";
 import { Wordset } from "../wordset";
 import * as LayoutfluidFunboxTimer from "./layoutfluid-funbox-timer";
+import * as DDR from "../../utils/ddr";
+import * as Random from "../../utils/random";
 
 const prefixSize = 2;
 
@@ -43,7 +50,7 @@ class CharDistribution {
   }
 
   public randomChar(): string {
-    const randomIndex = Misc.randomIntFromRange(0, this.count - 1);
+    const randomIndex = Numbers.randomIntFromRange(0, this.count - 1);
     let runningCount = 0;
     for (const [char, charCount] of Object.entries(this.chars)) {
       runningCount += charCount;
@@ -128,7 +135,7 @@ FunboxList.setFunboxFunctions("tts", {
 
 FunboxList.setFunboxFunctions("arrows", {
   getWord(_wordset, wordIndex): string {
-    return Misc.chart2Word(wordIndex === 0);
+    return DDR.chart2Word(wordIndex === 0);
   },
   rememberSettings(): void {
     save("highlightMode", Config.highlightMode, UpdateConfig.setHighlightMode);
@@ -233,7 +240,7 @@ FunboxList.setFunboxFunctions("backwards", {
 
 FunboxList.setFunboxFunctions("capitals", {
   alterText(word: string): string {
-    return Misc.capitalizeFirstLetterOfEachWord(word);
+    return Strings.capitalizeFirstLetterOfEachWord(word);
   },
 });
 
@@ -312,13 +319,13 @@ FunboxList.setFunboxFunctions("layoutfluid", {
 
 FunboxList.setFunboxFunctions("gibberish", {
   getWord(): string {
-    return Misc.getGibberish();
+    return GetText.getGibberish();
   },
 });
 
 FunboxList.setFunboxFunctions("58008", {
   getWord(): string {
-    let num = Misc.getNumbers(7);
+    let num = GetText.getNumbers(7);
     if (Config.language.startsWith("kurdish")) {
       num = Misc.convertNumberToArabic(num);
     } else if (Config.language.startsWith("nepali")) {
@@ -328,22 +335,22 @@ FunboxList.setFunboxFunctions("58008", {
   },
   punctuateWord(word: string): string {
     if (word.length > 3) {
-      if (Math.random() < 0.5) {
-        word = Misc.setCharAt(
+      if (Random.get() < 0.5) {
+        word = Strings.replaceCharAt(
           word,
-          Misc.randomIntFromRange(1, word.length - 2),
+          Numbers.randomIntFromRange(1, word.length - 2),
           "."
         );
       }
-      if (Math.random() < 0.75) {
-        const index = Misc.randomIntFromRange(1, word.length - 2);
+      if (Random.get() < 0.75) {
+        const index = Numbers.randomIntFromRange(1, word.length - 2);
         if (
           word[index - 1] !== "." &&
           word[index + 1] !== "." &&
           word[index + 1] !== "0"
         ) {
-          const special = Misc.randomElementFromArray(["/", "*", "-", "+"]);
-          word = Misc.setCharAt(word, index, special);
+          const special = Arrays.randomElementFromArray(["/", "*", "-", "+"]);
+          word = Strings.replaceCharAt(word, index, special);
         }
       }
     }
@@ -362,7 +369,7 @@ FunboxList.setFunboxFunctions("58008", {
 
 FunboxList.setFunboxFunctions("ascii", {
   getWord(): string {
-    return Misc.getASCII();
+    return GetText.getASCII();
   },
   punctuateWord(word: string): string {
     return word;
@@ -371,7 +378,7 @@ FunboxList.setFunboxFunctions("ascii", {
 
 FunboxList.setFunboxFunctions("specials", {
   getWord(): string {
-    return Misc.getSpecials();
+    return GetText.getSpecials();
   },
 });
 
@@ -458,7 +465,7 @@ FunboxList.setFunboxFunctions("IPv4", {
   },
   punctuateWord(word: string): string {
     let w = word;
-    if (Math.random() < 0.25) {
+    if (Random.get() < 0.25) {
       w = IPGenerator.addressToCIDR(word);
     }
     return w;
@@ -474,7 +481,7 @@ FunboxList.setFunboxFunctions("IPv6", {
   },
   punctuateWord(word: string): string {
     let w = word;
-    if (Math.random() < 0.25) {
+    if (Random.get() < 0.25) {
       w = IPGenerator.addressToCIDR(word);
     }
     // Compress
@@ -494,7 +501,7 @@ FunboxList.setFunboxFunctions("IPv6", {
 
 FunboxList.setFunboxFunctions("binary", {
   getWord(): string {
-    return Misc.getBinary();
+    return GetText.getBinary();
   },
 });
 
@@ -533,7 +540,7 @@ export function toggleFunbox(funbox: string): boolean {
     !Config.funbox.split("#").includes(funbox)
   ) {
     Notifications.add(
-      `${Misc.capitalizeFirstLetter(
+      `${Strings.capitalizeFirstLetter(
         funbox.replace(/_/g, " ")
       )} funbox is not compatible with the current funbox selection`,
       0
@@ -605,7 +612,7 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
 
   let language;
   try {
-    language = await Misc.getCurrentLanguage(Config.language);
+    language = await JSONData.getCurrentLanguage(Config.language);
   } catch (e) {
     Notifications.add(
       Misc.createErrorMessage(e, "Failed to activate funbox"),
@@ -705,7 +712,7 @@ export async function rememberSettings(): Promise<void> {
 
 FunboxList.setFunboxFunctions("morse", {
   alterText(word: string): string {
-    return Misc.convertToMorse(word);
+    return GetText.getMorse(word);
   },
 });
 

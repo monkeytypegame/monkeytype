@@ -1,4 +1,5 @@
 import * as Misc from "../utils/misc";
+import * as JSONData from "../utils/json-data";
 import * as Notifications from "../elements/notifications";
 import * as ManualRestart from "../test/manual-restart-tracker";
 import * as CustomText from "../test/custom-text";
@@ -209,7 +210,7 @@ export async function setup(challengeName: string): Promise<boolean> {
 
   let list;
   try {
-    list = await Misc.getChallengeList();
+    list = await JSONData.getChallengeList();
   } catch (e) {
     const message = Misc.createErrorMessage(e, "Failed to setup challenge");
     Notifications.add(message, -1);

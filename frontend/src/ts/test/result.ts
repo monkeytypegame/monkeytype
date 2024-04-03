@@ -12,7 +12,12 @@ import { isAuthenticated } from "../firebase";
 import * as quoteRateModal from "../modals/quote-rate";
 import * as GlarsesMode from "../states/glarses-mode";
 import * as SlowTimer from "../states/slow-timer";
+import * as DateTime from "../utils/date-and-time";
 import * as Misc from "../utils/misc";
+import * as Strings from "../utils/strings";
+import * as JSONData from "../utils/json-data";
+import * as Numbers from "../utils/numbers";
+import * as Arrays from "../utils/arrays";
 import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
 import * as FunboxList from "./funbox/funbox-list";
 import * as PbCrown from "./pb-crown";
@@ -59,7 +64,7 @@ async function updateGraph(): Promise<void> {
 
   for (let i = 1; i <= TestInput.wpmHistory.length; i++) {
     if (TestStats.lastSecondNotRound && i === TestInput.wpmHistory.length) {
-      labels.push(Misc.roundTo2(result.testDuration).toString());
+      labels.push(Numbers.roundTo2(result.testDuration).toString());
     } else {
       labels.push(i.toString());
     }
@@ -70,7 +75,7 @@ async function updateGraph(): Promise<void> {
 
   const chartData1 = [
     ...TestInput.wpmHistory.map((a) =>
-      Misc.roundTo2(typingSpeedUnit.fromWpm(a))
+      Numbers.roundTo2(typingSpeedUnit.fromWpm(a))
     ),
   ];
 
@@ -78,7 +83,7 @@ async function updateGraph(): Promise<void> {
 
   const chartData2 = [
     ...result.chartData.raw.map((a) =>
-      Misc.roundTo2(typingSpeedUnit.fromWpm(a))
+      Numbers.roundTo2(typingSpeedUnit.fromWpm(a))
     ),
   ];
 
@@ -94,7 +99,7 @@ async function updateGraph(): Promise<void> {
 
   let smoothedRawData = chartData2;
   if (!useUnsmoothedRaw) {
-    smoothedRawData = Misc.smooth(smoothedRawData, 1);
+    smoothedRawData = Arrays.smooth(smoothedRawData, 1);
     smoothedRawData = smoothedRawData.map((a) => Math.round(a));
   }
 
@@ -181,7 +186,7 @@ export async function updateGraphPBLine(): Promise<void> {
   );
   if (lpb === 0) return;
   const typingSpeedUnit = getTypingSpeedUnit(Config.typingSpeedUnit);
-  const chartlpb = Misc.roundTo2(typingSpeedUnit.fromWpm(lpb)).toFixed(2);
+  const chartlpb = Numbers.roundTo2(typingSpeedUnit.fromWpm(lpb)).toFixed(2);
   resultAnnotation.push({
     display: true,
     type: "line",
@@ -253,9 +258,9 @@ function updateWpmAndAcc(): void {
       $("#result .stats .raw .bottom").removeAttr("aria-label");
     }
 
-    let time = Misc.roundTo2(result.testDuration).toFixed(2) + "s";
+    let time = Numbers.roundTo2(result.testDuration).toFixed(2) + "s";
     if (result.testDuration > 61) {
-      time = Misc.secondsToString(Misc.roundTo2(result.testDuration));
+      time = DateTime.secondsToString(Numbers.roundTo2(result.testDuration));
     }
     $("#result .stats .time .bottom .text").text(time);
     // $("#result .stats .acc .bottom").removeAttr("aria-label");
@@ -315,7 +320,7 @@ function updateConsistency(): void {
 }
 
 function updateTime(): void {
-  const afkSecondsPercent = Misc.roundTo2(
+  const afkSecondsPercent = Numbers.roundTo2(
     (result.afkDuration / result.testDuration) * 100
   );
   $("#result .stats .time .bottom .afk").text("");
@@ -328,20 +333,20 @@ function updateTime(): void {
   );
 
   if (Config.alwaysShowDecimalPlaces) {
-    let time = Misc.roundTo2(result.testDuration).toFixed(2) + "s";
+    let time = Numbers.roundTo2(result.testDuration).toFixed(2) + "s";
     if (result.testDuration > 61) {
-      time = Misc.secondsToString(Misc.roundTo2(result.testDuration));
+      time = DateTime.secondsToString(Numbers.roundTo2(result.testDuration));
     }
     $("#result .stats .time .bottom .text").text(time);
   } else {
     let time = Math.round(result.testDuration) + "s";
     if (result.testDuration > 61) {
-      time = Misc.secondsToString(Math.round(result.testDuration));
+      time = DateTime.secondsToString(Math.round(result.testDuration));
     }
     $("#result .stats .time .bottom .text").text(time);
     $("#result .stats .time .bottom").attr(
       "aria-label",
-      `${Misc.roundTo2(result.testDuration)}s (${
+      `${Numbers.roundTo2(result.testDuration)}s (${
         result.afkDuration
       }s afk ${afkSecondsPercent}%)`
     );
@@ -455,7 +460,7 @@ async function updateTags(dontSave: boolean): Promise<void> {
   const funboxes = result.funbox?.split("#") ?? [];
 
   const funboxObjects = await Promise.all(
-    funboxes.map(async (f) => Misc.getFunbox(f))
+    funboxes.map(async (f) => JSONData.getFunbox(f))
   );
 
   const allFunboxesCanGetPb = funboxObjects.every((f) => f?.canGetPb);
@@ -503,7 +508,7 @@ async function updateTags(dontSave: boolean): Promise<void> {
         ).removeClass("hidden");
         $(`#result .stats .tags .bottom div[tagid="${tag._id}"]`).attr(
           "aria-label",
-          "+" + Misc.roundTo2(result.wpm - tpb)
+          "+" + Numbers.roundTo2(result.wpm - tpb)
         );
         // console.log("new pb for tag " + tag.display);
       } else {
@@ -532,7 +537,7 @@ async function updateTags(dontSave: boolean): Promise<void> {
             position: annotationSide,
             xAdjust: labelAdjust,
             enabled: true,
-            content: `${tag.display} PB: ${Misc.roundTo2(
+            content: `${tag.display} PB: ${Numbers.roundTo2(
               typingSpeedUnit.fromWpm(tpb)
             ).toFixed(2)}`,
           },
@@ -568,7 +573,7 @@ function updateTestType(randomQuote: MonkeyTypes.Quote | null): void {
       f.properties?.includes("ignoresLanguage")
     ) !== undefined;
   if (Config.mode !== "custom" && !ignoresLanguage) {
-    testType += "<br>" + Misc.getLanguageDisplayString(result.language);
+    testType += "<br>" + Strings.getLanguageDisplayString(result.language);
   }
   if (Config.punctuation) {
     testType += "<br>punctuation";
