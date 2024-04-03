@@ -3,7 +3,7 @@ import * as Loader from "../elements/loader";
 import * as Notifications from "../elements/notifications";
 import * as CaptchaController from "../controllers/captcha-controller";
 import * as Strings from "../utils/strings";
-import * as JSONData from "../utils/json-data";
+import * as JSONData from "../utils/JSON-data2";
 import Config from "../config";
 import SlimSelect from "slim-select";
 import AnimatedModal, { ShowOptions } from "../utils/animated-modal";

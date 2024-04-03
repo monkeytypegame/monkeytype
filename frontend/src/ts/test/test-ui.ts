@@ -10,7 +10,7 @@ import * as OutOfFocus from "./out-of-focus";
 import * as Replay from "./replay";
 import * as Misc from "../utils/misc";
 import * as Strings from "../utils/strings";
-import * as JSONData from "../utils/json-data";
+import * as JSONData from "../utils/JSON-data2";
 import * as Numbers from "../utils/numbers";
 import { blendTwoHexColors } from "../utils/colors";
 import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";

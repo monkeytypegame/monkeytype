@@ -1,5 +1,5 @@
 import Config from "../config";
-import * as JSONData from "../utils/json-data";
+import * as JSONData from "../utils/JSON-data2";
 import { capsState } from "./caps-warning";
 import * as Notifications from "../elements/notifications";
 

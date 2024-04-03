@@ -1,7 +1,7 @@
 import * as ManualRestart from "./test/manual-restart-tracker";
 import Config, * as UpdateConfig from "./config";
 import * as Misc from "./utils/misc";
-import * as JSONData from "./utils/json-data";
+import * as JSONData from "./utils/JSON-data2";
 import * as MonkeyPower from "./elements/monkey-power";
 import * as NewVersionNotification from "./elements/version-check";
 import * as Notifications from "./elements/notifications";

@@ -15,7 +15,7 @@ import * as SlowTimer from "../states/slow-timer";
 import * as DateTime from "../utils/date-and-time";
 import * as Misc from "../utils/misc";
 import * as Strings from "../utils/strings";
-import * as JSONData from "../utils/json-data";
+import * as JSONData from "../utils/JSON-data2";
 import * as Numbers from "../utils/numbers";
 import * as Arrays from "../utils/arrays";
 import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";

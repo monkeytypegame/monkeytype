@@ -1,6 +1,6 @@
 import * as Loader from "../elements/loader";
 import * as Misc from "../utils/misc";
-import * as JSONData from "../utils/json-data";
+import * as JSONData from "../utils/JSON-data2";
 import { Section } from "../utils/misc";
 
 export async function getTLD(

@@ -6,7 +6,7 @@ import { isAuthenticated } from "./firebase";
 import { defaultSnap } from "./constants/default-snapshot";
 import * as ConnectionState from "./states/connection";
 import { lastElementFromArray } from "./utils/arrays";
-import { getFunboxList } from "./utils/json-data";
+import { getFunboxList } from "./utils/JSON-data2";
 import { mergeWithDefaultConfig } from "./utils/config";
 
 let dbSnapshot: MonkeyTypes.Snapshot | undefined;
