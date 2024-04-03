@@ -7,10 +7,21 @@ import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
 
 let indicator: InputIndicator | undefined;
 
+type State = {
+  textToSave: string;
+};
+
+const state: State = {
+  textToSave: "",
+};
+
 export async function show(options: ShowOptions): Promise<void> {
+  state.textToSave = "";
   void modal.show({
     ...options,
-    beforeAnimation: async () => {
+    beforeAnimation: async (modalEl, modalChainData) => {
+      const typedData = modalChainData as { text: string } | undefined;
+      state.textToSave = typedData?.text ?? "";
       $("#saveCustomTextModal .textName").val("");
       $("#saveCustomTextModal .isLongText").prop("checked", false);
       $("#saveCustomTextModal button.save").prop("disabled", true);
@@ -25,21 +36,20 @@ function hide(): void {
 function save(): boolean {
   const name = $("#saveCustomTextModal .textName").val() as string;
   const checkbox = $("#saveCustomTextModal .isLongText").prop("checked");
-  let text = CustomText.popupTextareaState.normalize();
 
   if (!name) {
     Notifications.add("Custom text needs a name", 0);
     return false;
   }
 
-  if (text.length === 0) {
+  if (state.textToSave.length === 0) {
     Notifications.add("Custom text can't be empty", 0);
     return false;
   }
 
-  text = text.replace(/( *(\r\n|\r|\n) *)/g, "\n ");
+  state.textToSave = state.textToSave.replace(/( *(\r\n|\r|\n) *)/g, "\n ");
 
-  CustomText.setCustomText(name, text, checkbox);
+  CustomText.setCustomText(name, state.textToSave, checkbox);
   CustomTextState.setCustomTextName(name, checkbox);
   Notifications.add("Custom text saved", 1);
   return true;

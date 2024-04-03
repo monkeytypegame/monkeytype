@@ -394,6 +394,7 @@ $(`${popup} .buttonsTop .showSavedTexts`).on("click", () => {
 $(`#customTextPopupWrapper .buttonsTop .saveCustomText`).on("click", () => {
   void SaveCustomTextPopup.show({
     modalChain: modal,
+    modalChainData: { text: CustomText.popupTextareaState },
   });
 });
 
