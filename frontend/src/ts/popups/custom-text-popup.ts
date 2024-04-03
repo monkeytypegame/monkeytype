@@ -39,6 +39,7 @@ async function beforeAnimation(
   const typedChainData = modalChainData as
     | {
         text: string;
+        set?: boolean;
       }
     | undefined;
 
@@ -70,7 +71,12 @@ async function beforeAnimation(
   }
 
   if (typedChainData?.text !== undefined) {
-    $(`${popup} textarea`).val(typedChainData.text);
+    const newText =
+      typedChainData.set ?? true
+        ? typedChainData.text
+        : CustomText.popupTextareaState + " " + typedChainData.text;
+    $(`${popup} textarea`).val(newText);
+    CustomText.setPopupTextareaState(newText);
   } else {
     $(`${popup} textarea`).val(CustomText.popupTextareaState);
   }
