@@ -737,10 +737,11 @@ export async function getNextWord(
     } else {
       let regenarationCount = 0; //infinite loop emergency stop button
       let firstAfterSplit = (randomWord.split(" ")[0] as string).toLowerCase();
+      let firstAfterSplitLazy = applyLazyModeToWord(firstAfterSplit, language);
       while (
         regenarationCount < 100 &&
-        (previousWordRaw === firstAfterSplit ||
-          previousWord2Raw === firstAfterSplit ||
+        (previousWordRaw === firstAfterSplitLazy ||
+          previousWord2Raw === firstAfterSplitLazy ||
           (Config.mode !== "custom" &&
             !Config.punctuation &&
             randomWord === "I") ||
@@ -755,6 +756,7 @@ export async function getNextWord(
         regenarationCount++;
         randomWord = wordset.randomWord(funboxFrequency);
         firstAfterSplit = randomWord.split(" ")[0] as string;
+        firstAfterSplitLazy = applyLazyModeToWord(firstAfterSplit, language);
       }
     }
     randomWord = randomWord.replace(/ +/g, " ");
