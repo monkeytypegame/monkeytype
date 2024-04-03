@@ -1,10 +1,11 @@
 import * as Misc from "../utils/misc";
+import * as Strings from "../utils/strings";
+import * as JSONData from "../utils/json-data";
 import * as DB from "../db";
 import Config from "../config";
 import * as Notifications from "../elements/notifications";
 import Ape from "../ape/index";
 import * as Loader from "../elements/loader";
-import { showNewResultFilterPresetPopup } from "../popups/new-result-filter-preset-popup";
 
 export const defaultResultFilters: SharedTypes.ResultFilters = {
   _id: "default-result-filters-id",
@@ -211,7 +212,7 @@ function addFilterPresetToSnapshot(filter: SharedTypes.ResultFilters): void {
 }
 
 // callback function called by popup once user inputs name
-async function createFilterPresetCallback(name: string): Promise<void> {
+export async function createFilterPreset(name: string): Promise<void> {
   name = name.replace(/ /g, "_");
   Loader.show();
   const result = await Ape.users.addResultFilterPreset({ ...filters, name });
@@ -224,13 +225,6 @@ async function createFilterPresetCallback(name: string): Promise<void> {
     Notifications.add("Error creating filter preset: " + result.message, -1);
     console.log("error creating filter preset: " + result.message);
   }
-}
-
-// shows popup for user to select name
-async function startCreateFilterPreset(): Promise<void> {
-  showNewResultFilterPresetPopup(async (name: string) =>
-    createFilterPresetCallback(name)
-  );
 }
 
 function removeFilterPresetFromSnapshot(id: string): void {
@@ -645,7 +639,7 @@ $(".pageAccount .topFilters button.toggleAdvancedFilters").on("click", () => {
 export async function appendButtons(): Promise<void> {
   let languageList;
   try {
-    languageList = await Misc.getLanguageList();
+    languageList = await JSONData.getLanguageList();
   } catch (e) {
     console.error(
       Misc.createErrorMessage(e, "Failed to append language buttons")
@@ -654,7 +648,7 @@ export async function appendButtons(): Promise<void> {
   if (languageList) {
     let html = "";
     for (const language of languageList) {
-      html += `<button filter="${language}">${Misc.getLanguageDisplayString(
+      html += `<button filter="${language}">${Strings.getLanguageDisplayString(
         language
       )}</button>`;
     }
@@ -666,7 +660,7 @@ export async function appendButtons(): Promise<void> {
 
   let funboxList;
   try {
-    funboxList = await Misc.getFunboxList();
+    funboxList = await JSONData.getFunboxList();
   } catch (e) {
     console.error(
       Misc.createErrorMessage(e, "Failed to append funbox buttons")
@@ -724,10 +718,6 @@ export function removeButtons(): void {
     ".pageAccount .content .filterButtons .buttonsAndTitle.tags .buttons"
   ).empty();
 }
-
-$(".pageAccount .topFilters button.createFilterPresetBtn").on("click", () => {
-  void startCreateFilterPreset();
-});
 
 $(".group.presetFilterButtons .filterBtns").on(
   "click",

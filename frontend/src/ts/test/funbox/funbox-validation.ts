@@ -1,6 +1,7 @@
 import * as FunboxList from "./funbox-list";
 import * as Notifications from "../../elements/notifications";
-import * as Misc from "../../utils/misc";
+import * as Arrays from "../../utils/arrays";
+import * as Strings from "../../utils/strings";
 
 export function checkFunboxForcedConfigs(
   key: string,
@@ -43,7 +44,7 @@ export function checkFunboxForcedConfigs(
               key
             ] as SharedTypes.ConfigValue[];
           } else {
-            forcedConfigs[key] = Misc.intersect(
+            forcedConfigs[key] = Arrays.intersect(
               forcedConfigs[key] as SharedTypes.ConfigValue[],
               fb.forcedConfig[key] as SharedTypes.ConfigValue[],
               true
@@ -139,7 +140,7 @@ export function canSetConfigWithCurrentFunboxes(
   if (errorCount > 0) {
     if (!noNotification) {
       Notifications.add(
-        `You can't set ${Misc.camelCaseToWords(
+        `You can't set ${Strings.camelCaseToWords(
           key
         )} to ${value} with currently active funboxes.`,
         0,
@@ -185,8 +186,8 @@ export function canSetFunboxWithConfig(
     const errorStrings = [];
     for (const error of errors) {
       errorStrings.push(
-        `${Misc.capitalizeFirstLetter(
-          Misc.camelCaseToWords(error.key)
+        `${Strings.capitalizeFirstLetter(
+          Strings.camelCaseToWords(error.key)
         )} cannot be set to ${error.value}.`
       );
     }
@@ -304,7 +305,7 @@ export function areFunboxesCompatible(
     for (const key in f.forcedConfig) {
       if (allowedConfig[key]) {
         if (
-          Misc.intersect(
+          Arrays.intersect(
             allowedConfig[key] as SharedTypes.ConfigValue[],
             f.forcedConfig[key] as SharedTypes.ConfigValue[],
             true

@@ -57,9 +57,6 @@
       }
     }
   }
-  #quoteSearchPopupWrapper #quoteSearchPopup #quoteSearchControlsWrapper {
-    grid-template-columns: 1fr 1fr max-content;
-  }
   #customTextPopupWrapper #customTextPopup .buttonsTop {
     grid-template-columns: 1fr 1fr;
   }
@@ -76,24 +73,9 @@
       font-size: 0.75rem;
     }
   }
-  #quoteSearchPopupWrapper #quoteSearchPopup #quoteSearchControlsWrapper {
-    grid-template-columns: 1fr;
-  }
   #result .morestats {
     gap: 1rem;
     grid-template-rows: 1fr 1fr;
-  }
-  #supportMe {
-    width: 90vw !important;
-    .buttons {
-      button,
-      .button {
-        .icon {
-          font-size: 3rem !important;
-          line-height: 3rem !important;
-        }
-      }
-    }
   }
   #leaderboardsWrapper {
     #leaderboards {
@@ -143,9 +125,6 @@
 
 //1000px
 @media only screen and (max-width: 62.5rem) {
-  #quoteRatePopup {
-    width: 90vw !important;
-  }
   footer {
     .leftright {
       .left {
@@ -384,10 +363,6 @@
     font-size: 0.75rem;
   }
 
-  #contactPopupWrapper #contactPopup .buttons {
-    grid-template-columns: 1fr;
-  }
-
   .page404 .content {
     grid-auto-flow: row;
     grid-template-columns: 300px;
@@ -424,6 +399,9 @@
 
 //750px
 @media only screen and (max-width: 46.875rem) {
+  #quoteSearchModal .modal #quoteSearchControlsWrapper {
+    grid-template-columns: 1fr;
+  }
   #leaderboardsWrapper #leaderboards {
     .tables table {
       tr td:nth-child(5) {
@@ -449,7 +427,7 @@
 
 //700px
 @media only screen and (max-width: 43.75rem) {
-  #wordFilterPopupWrapper #wordFilterPopup {
+  #wordFilterModal .modal {
     .divider {
       width: 100%;
       height: 0.25rem;
@@ -604,7 +582,7 @@
       }
     }
   }
-  #quoteRatePopup {
+  #quoteRateModal {
     .ratingStats {
       grid-template-columns: 1fr 1fr !important;
     }
@@ -646,23 +624,6 @@
         grid-column: 1/5;
         width: 100%;
         text-align: center;
-      }
-    }
-  }
-
-  #supportMe {
-    width: 80vw !important;
-    .buttons {
-      grid-template-columns: none !important;
-      button,
-      .button {
-        grid-template-columns: auto 1fr;
-        align-items: center;
-        .icon {
-          font-size: 2rem !important;
-          line-height: 2rem !important;
-          margin-left: 2rem;
-        }
       }
     }
   }
@@ -737,6 +698,14 @@
     //   }
     // }
   }
+
+  .modalWrapper {
+    padding: 1rem;
+    .modal {
+      padding: 1rem;
+    }
+  }
+
   #commandLineWrapper {
     padding: 5rem 1rem;
   }
@@ -784,14 +753,6 @@
       grid-template-areas: "title" "t15" "t60";
     }
   }
-  #cookiePopupWrapper {
-    #cookiePopup,
-    .extensionMessage {
-      right: 1rem;
-      bottom: 1rem;
-      width: calc(100vw - 2rem);
-    }
-  }
   #keymap {
     .row {
       height: 1.25rem;
@@ -811,30 +772,9 @@
     }
   }
 
-  #contactPopupWrapper #contactPopup .buttons .button .text {
-    font-size: 1rem;
-  }
-  #contactPopupWrapper #contactPopup .buttons .button .icon {
-    font-size: 1.5rem;
-    line-height: 1.5rem;
-  }
-  #contactPopupWrapper #contactPopup {
-    padding: 1rem;
-  }
   .pageAbout .section .supporters,
   .pageAbout .section .contributors {
     grid-template-columns: 1fr;
-  }
-
-  #simplePopupWrapper #simplePopup {
-    width: 90vw;
-  }
-
-  #quoteReportPopup {
-    width: calc(100% - 2rem);
-    margin-left: 1rem;
-    max-width: 800px;
-    padding: 1rem;
   }
 
   .pageSettings {
@@ -929,7 +869,7 @@
     display: none;
   }
 
-  #mobileTestConfig {
+  #mobileTestConfigButton {
     display: block;
   }
   #alertsPopupWrapper {
@@ -1040,7 +980,7 @@
     display: none;
   }
 
-  #mobileTestConfig {
+  #mobileTestConfigButton {
     display: block;
   }
 

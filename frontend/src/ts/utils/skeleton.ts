@@ -27,3 +27,7 @@ export function append(id: string, parent: SkeletonAppendParents): void {
   const popup = skeletons.get(id) as HTMLElement;
   parents[parent].append(popup);
 }
+
+export function has(id: string): boolean {
+  return skeletons.has(id);
+}

@@ -5,6 +5,9 @@
  */
 export const BASE_CONFIGURATION: SharedTypes.Configuration = {
   maintenance: false,
+  dev: {
+    responseSlowdownMs: 0,
+  },
   results: {
     savingEnabled: false,
     objectHashCheckEnabled: false,
@@ -150,6 +153,17 @@ export const CONFIGURATION_FORM_SCHEMA: ObjectSchema<SharedTypes.Configuration> 
       maintenance: {
         type: "boolean",
         label: "In Maintenance",
+      },
+      dev: {
+        type: "object",
+        label: "Development",
+        fields: {
+          responseSlowdownMs: {
+            type: "number",
+            label: "Response Slowdown (miliseconds)",
+            min: 0,
+          },
+        },
       },
       results: {
         type: "object",

@@ -4,6 +4,8 @@ import Config from "../config";
 import * as DB from "../db";
 import * as SlowTimer from "../states/slow-timer";
 import * as Misc from "../utils/misc";
+import * as Numbers from "../utils/numbers";
+import * as JSONData from "../utils/json-data";
 import * as TestState from "./test-state";
 import * as ConfigEvent from "../observables/config-event";
 
@@ -31,7 +33,7 @@ export function setLastTestWpm(wpm: number): void {
   }
 }
 
-function resetCaretPosition(): void {
+async function resetCaretPosition(): Promise<void> {
   if (Config.paceCaret === "off" && !TestState.isPaceRepeat) return;
   if (!$("#paceCaret").hasClass("hidden")) {
     $("#paceCaret").addClass("hidden");
@@ -47,10 +49,15 @@ function resetCaretPosition(): void {
 
   if (firstLetter === undefined || firstLetterHeight === undefined) return;
 
+  const currentLanguage = await JSONData.getCurrentLanguage(Config.language);
+  const isLanguageRightToLeft = currentLanguage.rightToLeft;
+
   caret.stop(true, true).animate(
     {
       top: firstLetter.offsetTop - firstLetterHeight / 4,
-      left: firstLetter.offsetLeft,
+      left:
+        firstLetter.offsetLeft +
+        (isLanguageRightToLeft ? firstLetter.offsetWidth : 0),
     },
     0,
     "linear"
@@ -121,10 +128,10 @@ export async function init(): Promise<void> {
     wordsStatus: {},
     timeout: null,
   };
-  resetCaretPosition();
+  await resetCaretPosition();
 }
 
-export function update(expectedStepEnd: number): void {
+export async function update(expectedStepEnd: number): Promise<void> {
   if (settings === null || !TestState.isActive || TestUI.resultVisible) {
     return;
   }
@@ -210,15 +217,28 @@ export function update(expectedStepEnd: number): void {
         );
       }
 
+      const currentLanguage = await JSONData.getCurrentLanguage(
+        Config.language
+      );
+      const isLanguageRightToLeft = currentLanguage.rightToLeft;
+
       newTop =
+        word.offsetTop +
         currentLetter.offsetTop -
-        Config.fontSize * Misc.convertRemToPixels(1) * 0.1;
+        Config.fontSize * Numbers.convertRemToPixels(1) * 0.1;
       newLeft;
       if (settings.currentLetterIndex === -1) {
-        newLeft = currentLetter.offsetLeft;
+        newLeft =
+          word.offsetLeft +
+          currentLetter.offsetLeft -
+          caretWidth / 2 +
+          (isLanguageRightToLeft ? currentLetterWidth : 0);
       } else {
         newLeft =
-          currentLetter.offsetLeft + currentLetterWidth - caretWidth / 2;
+          word.offsetLeft +
+          currentLetter.offsetLeft -
+          caretWidth / 2 +
+          (isLanguageRightToLeft ? 0 : currentLetterWidth);
       }
       caret.removeClass("hidden");
     } catch (e) {
@@ -254,11 +274,9 @@ export function update(expectedStepEnd: number): void {
       }
     }
     settings.timeout = setTimeout(() => {
-      try {
-        update(expectedStepEnd + (settings?.spc ?? 0) * 1000);
-      } catch (e) {
+      update(expectedStepEnd + (settings?.spc ?? 0) * 1000).catch(() => {
         settings = null;
-      }
+      });
     }, duration);
   } catch (e) {
     console.error(e);
@@ -296,7 +314,7 @@ export function handleSpace(correct: boolean, currentWord: string): void {
 }
 
 export function start(): void {
-  update(performance.now() + (settings?.spc ?? 0) * 1000);
+  void update(performance.now() + (settings?.spc ?? 0) * 1000);
 }
 
 ConfigEvent.subscribe((eventKey) => {

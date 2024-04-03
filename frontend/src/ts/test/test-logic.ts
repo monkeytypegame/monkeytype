@@ -2,8 +2,11 @@ import Ape from "../ape";
 import * as TestUI from "./test-ui";
 import * as ManualRestart from "./manual-restart-tracker";
 import Config, * as UpdateConfig from "../config";
+import * as Strings from "../utils/strings";
 import * as Misc from "../utils/misc";
-
+import * as Arrays from "../utils/arrays";
+import * as JSONData from "../utils/json-data";
+import * as Numbers from "../utils/numbers";
 import * as Notifications from "../elements/notifications";
 import * as CustomText from "./custom-text";
 import * as CustomTextState from "../states/custom-text-name";
@@ -21,7 +24,6 @@ import * as LiveWpm from "./live-wpm";
 import * as LiveAcc from "./live-acc";
 import * as LiveBurst from "./live-burst";
 import * as TimerProgress from "./timer-progress";
-import * as QuoteSearchPopup from "../popups/quote-search-popup";
 
 import * as TestTimer from "./test-timer";
 import * as OutOfFocus from "./out-of-focus";
@@ -30,7 +32,7 @@ import * as DB from "../db";
 import * as Replay from "./replay";
 import * as TodayTracker from "./today-tracker";
 import * as ChallengeContoller from "../controllers/challenge-controller";
-import * as QuoteRatePopup from "../popups/quote-rate-popup";
+import * as QuoteRateModal from "../modals/quote-rate";
 import * as Result from "./result";
 import * as MonkeyPower from "../elements/monkey-power";
 import * as ActivePage from "../states/active-page";
@@ -56,6 +58,7 @@ import * as KeymapEvent from "../observables/keymap-event";
 import * as LayoutfluidFunboxTimer from "../test/funbox/layoutfluid-funbox-timer";
 import * as Wordset from "./wordset";
 import * as ArabicLazyMode from "../states/arabic-lazy-mode";
+import Format from "../utils/format";
 
 let failReason = "";
 const koInputVisual = document.getElementById("koInputVisual") as HTMLElement;
@@ -205,11 +208,11 @@ export function restart(options = {} as RestartOptions): void {
       TestInput.pushAfkToHistory();
       const testSeconds = TestStats.calculateTestSeconds(performance.now());
       const afkseconds = TestStats.calculateAfkSeconds(testSeconds);
-      let tt = Misc.roundTo2(testSeconds - afkseconds);
+      let tt = Numbers.roundTo2(testSeconds - afkseconds);
       if (tt < 0) tt = 0;
       TestStats.incrementIncompleteSeconds(tt);
       TestStats.incrementRestartCount();
-      const acc = Misc.roundTo2(TestStats.calculateAccuracy());
+      const acc = Numbers.roundTo2(TestStats.calculateAccuracy());
       TestStats.pushIncompleteTest(acc, tt);
     }
   }
@@ -272,7 +275,7 @@ export function restart(options = {} as RestartOptions): void {
   TestInput.input.setKoreanStatus(false);
   LayoutfluidFunboxTimer.hide();
   MemoryFunboxTimer.reset();
-  QuoteRatePopup.clearQuoteStats();
+  QuoteRateModal.clearQuoteStats();
   TestUI.reset();
 
   if (TestUI.resultVisible) {
@@ -348,7 +351,7 @@ export function restart(options = {} as RestartOptions): void {
         TestUI.showWords();
         if (Config.keymapMode === "next" && Config.mode !== "zen") {
           void KeymapEvent.highlight(
-            Misc.nthElementFromArray(
+            Arrays.nthElementFromArray(
               [...TestWords.words.getCurrent()],
               0
             ) as string
@@ -373,6 +376,10 @@ export function restart(options = {} as RestartOptions): void {
       } else {
         void ModesNotice.update();
       }
+
+      const isWordsFocused = $("#wordsInput").is(":focus");
+      if (isWordsFocused) OutOfFocus.hide();
+      TestUI.focusWords();
 
       $("#typingTest")
         .css("opacity", 0)
@@ -402,7 +409,6 @@ export function restart(options = {} as RestartOptions): void {
               "0";
 
             TestUI.setTestRestarting(false);
-            TestUI.focusWords();
             TestUI.updatePremid();
             ManualRestart.reset();
             PageTransition.set(false);
@@ -440,7 +446,7 @@ export async function init(): Promise<void> {
 
   let language;
   try {
-    language = await Misc.getLanguage(Config.language);
+    language = await JSONData.getLanguage(Config.language);
   } catch (e) {
     Notifications.add(
       Misc.createErrorMessage(e, "Failed to load language"),
@@ -547,7 +553,7 @@ export async function init(): Promise<void> {
 
   if (Config.keymapMode === "next" && Config.mode !== "zen") {
     void KeymapEvent.highlight(
-      Misc.nthElementFromArray([...TestWords.words.getCurrent()], 0) as string
+      Arrays.nthElementFromArray([...TestWords.words.getCurrent()], 0) as string
     );
   }
   Funbox.toggleScript(TestWords.words.getCurrent());
@@ -631,10 +637,10 @@ export async function addWord(): Promise<void> {
 
   const language: MonkeyTypes.LanguageObject =
     Config.mode !== "custom"
-      ? await Misc.getCurrentLanguage(Config.language)
+      ? await JSONData.getCurrentLanguage(Config.language)
       : {
           //borrow the direction of the current language
-          ...(await Misc.getCurrentLanguage(Config.language)),
+          ...(await JSONData.getCurrentLanguage(Config.language)),
           words: CustomText.text,
         };
   const wordset = await Wordset.withWords(language.words);
@@ -696,14 +702,14 @@ function buildCompletedEvent(
   difficultyFailed: boolean
 ): SharedTypes.CompletedEvent {
   //build completed event object
-  let stfk = Misc.roundTo2(
+  let stfk = Numbers.roundTo2(
     TestInput.keypressTimings.spacing.first - TestStats.start
   );
   if (stfk < 0 || Config.mode === "zen") {
     stfk = 0;
   }
 
-  let lkte = Misc.roundTo2(
+  let lkte = Numbers.roundTo2(
     TestStats.end - TestInput.keypressTimings.spacing.last
   );
   if (lkte < 0 || Config.mode === "zen") {
@@ -747,9 +753,9 @@ function buildCompletedEvent(
     );
   }
 
-  const stddev = Misc.stdDev(rawPerSecond);
-  const avg = Misc.mean(rawPerSecond);
-  let consistency = Misc.roundTo2(Misc.kogasa(stddev / avg));
+  const stddev = Numbers.stdDev(rawPerSecond);
+  const avg = Numbers.mean(rawPerSecond);
+  let consistency = Numbers.roundTo2(Misc.kogasa(stddev / avg));
   let keyConsistencyArray = TestInput.keypressTimings.spacing.array.slice();
   if (keyConsistencyArray.length > 0) {
     keyConsistencyArray = keyConsistencyArray.slice(
@@ -757,9 +763,9 @@ function buildCompletedEvent(
       keyConsistencyArray.length - 1
     );
   }
-  let keyConsistency = Misc.roundTo2(
+  let keyConsistency = Numbers.roundTo2(
     Misc.kogasa(
-      Misc.stdDev(keyConsistencyArray) / Misc.mean(keyConsistencyArray)
+      Numbers.stdDev(keyConsistencyArray) / Numbers.mean(keyConsistencyArray)
     )
   );
   if (!consistency || isNaN(consistency)) {
@@ -781,9 +787,9 @@ function buildCompletedEvent(
   };
 
   //wpm consistency
-  const stddev3 = Misc.stdDev(chartData.wpm ?? []);
-  const avg3 = Misc.mean(chartData.wpm ?? []);
-  const wpmCons = Misc.roundTo2(Misc.kogasa(stddev3 / avg3));
+  const stddev3 = Numbers.stdDev(chartData.wpm ?? []);
+  const avg3 = Numbers.mean(chartData.wpm ?? []);
+  const wpmCons = Numbers.roundTo2(Misc.kogasa(stddev3 / avg3));
   const wpmConsistency = isNaN(wpmCons) ? 0 : wpmCons;
 
   let customText: SharedTypes.CustomText | null = null;
@@ -808,7 +814,7 @@ function buildCompletedEvent(
   const afkDuration = TestStats.calculateAfkSeconds(duration);
   let language = Config.language;
   if (Config.mode === "quote") {
-    language = Misc.removeLanguageSize(Config.language);
+    language = Strings.removeLanguageSize(Config.language);
   }
 
   const quoteLength = TestWords.randomQuote?.group ?? -1;
@@ -837,13 +843,13 @@ function buildCompletedEvent(
     incompleteTestSeconds:
       TestStats.incompleteSeconds < 0
         ? 0
-        : Misc.roundTo2(TestStats.incompleteSeconds),
+        : Numbers.roundTo2(TestStats.incompleteSeconds),
     difficulty: Config.difficulty,
     blindMode: Config.blindMode,
     tags: activeTagsIds,
     keySpacing: TestInput.keypressTimings.spacing.array,
     keyDuration: TestInput.keypressTimings.duration.array,
-    keyOverlap: Misc.roundTo2(TestInput.keyOverlap.total),
+    keyOverlap: Numbers.roundTo2(TestInput.keyOverlap.total),
     lastKeyToEnd: lkte,
     startToFirstKey: stfk,
     consistency: consistency,
@@ -1033,7 +1039,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
   if (TestState.isRepeated) {
     const testSeconds = completedEvent.testDuration;
     const afkseconds = completedEvent.afkDuration;
-    let tt = Misc.roundTo2(testSeconds - afkseconds);
+    let tt = Numbers.roundTo2(testSeconds - afkseconds);
     if (tt < 0) tt = 0;
     const acc = completedEvent.acc;
     TestStats.incrementIncompleteSeconds(tt);
@@ -1061,13 +1067,16 @@ export async function finish(difficultyFailed = false): Promise<void> {
 
       let newText = CustomText.getCustomText(customTextName, true);
       newText = newText.slice(newProgress);
-      CustomText.setPopupTextareaState(newText.join(CustomText.delimiter));
+      CustomText.setPopupTextareaState(
+        newText.join(CustomText.delimiter),
+        true
+      );
       CustomText.setText(newText);
     } else {
       // They finished the test
       CustomText.setCustomTextLongProgress(customTextName, 0);
       const text = CustomText.getCustomText(customTextName, true);
-      CustomText.setPopupTextareaState(text.join(CustomText.delimiter));
+      CustomText.setPopupTextareaState(text.join(CustomText.delimiter), true);
       CustomText.setText(text);
       Notifications.add("Long custom text completed", 1, {
         duration: 5,
@@ -1081,7 +1090,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
       completedEvent.testDuration +
         (TestStats.incompleteSeconds < 0
           ? 0
-          : Misc.roundTo2(TestStats.incompleteSeconds)) -
+          : Numbers.roundTo2(TestStats.incompleteSeconds)) -
         completedEvent.afkDuration
     );
     Result.updateTodayTracker();
@@ -1201,7 +1210,7 @@ async function saveResult(
   }
 
   $("#result .stats .tags .editTagsButton").attr(
-    "result-id",
+    "data-result-id",
     response.data?.insertedId as string //if status is 200 then response.data is not null or undefined
   );
   $("#result .stats .tags .editTagsButton").removeClass("invisible");
@@ -1290,7 +1299,7 @@ async function saveResult(
         500
       );
     $("#result .stats .dailyLeaderboard .bottom").html(
-      Misc.getPositionString(response.data.dailyLeaderboardRank)
+      Format.rank(response.data.dailyLeaderboardRank, { fallback: "" })
     );
   }
 
@@ -1311,11 +1320,11 @@ export function fail(reason: string): void {
   if (!TestState.savingEnabled) return;
   const testSeconds = TestStats.calculateTestSeconds(performance.now());
   const afkseconds = TestStats.calculateAfkSeconds(testSeconds);
-  let tt = Misc.roundTo2(testSeconds - afkseconds);
+  let tt = Numbers.roundTo2(testSeconds - afkseconds);
   if (tt < 0) tt = 0;
   TestStats.incrementIncompleteSeconds(tt);
   TestStats.incrementRestartCount();
-  const acc = Misc.roundTo2(TestStats.calculateAccuracy());
+  const acc = Numbers.roundTo2(TestStats.calculateAccuracy());
   TestStats.pushIncompleteTest(acc, tt);
 }
 
@@ -1445,22 +1454,6 @@ $("#popups").on("click", "#practiseWordsPopup .button.both", () => {
   }
 });
 
-$("#popups").on(
-  "click",
-  "#quoteSearchPopup #quoteSearchResults .searchResult",
-  (e) => {
-    if (
-      (e.target.classList.contains("report") as boolean) ||
-      (e.target.classList.contains("favorite") as boolean)
-    ) {
-      return;
-    }
-    const sid = parseInt($(e.currentTarget).attr("id") ?? "");
-    QuoteSearchPopup.setSelectedId(sid);
-    if (QuoteSearchPopup.apply(sid)) restart();
-  }
-);
-
 $("header").on("click", "nav #startTestButton, #logo", () => {
   if (ActivePage.get() === "test") restart();
 });
@@ -1496,7 +1489,7 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
     ) {
       setTimeout(() => {
         void KeymapEvent.highlight(
-          Misc.nthElementFromArray(
+          Arrays.nthElementFromArray(
             [...TestWords.words.getCurrent()],
             0
           ) as string

@@ -1,10 +1,11 @@
 import Config, * as UpdateConfig from "../config";
 import * as ThemeController from "../controllers/theme-controller";
 import * as Misc from "../utils/misc";
+import * as JSONData from "../utils/json-data";
+import * as Colors from "../utils/colors";
 import * as Notifications from "../elements/notifications";
 import * as ThemeColors from "../elements/theme-colors";
 import * as ChartController from "../controllers/chart-controller";
-import * as ShareCustomThemePopup from "../popups/share-custom-theme-popup";
 import * as Loader from "../elements/loader";
 import * as DB from "../db";
 import * as ConfigEvent from "../observables/config-event";
@@ -83,7 +84,7 @@ function updateColors(
   }
 
   $(".colorConverter").css("color", color);
-  const hexColor: string | undefined = Misc.convertRGBtoHEX(
+  const hexColor: string | undefined = Colors.rgbStringtoHex(
     $(".colorConverter").css("color")
   );
   if (hexColor === undefined) {
@@ -172,7 +173,7 @@ export async function refreshButtons(): Promise<void> {
 
     let themes;
     try {
-      themes = await Misc.getSortedThemesList();
+      themes = await JSONData.getSortedThemesList();
     } catch (e) {
       Notifications.add(
         Misc.createErrorMessage(e, "Failed to refresh theme buttons"),
@@ -455,11 +456,6 @@ $(".pageSettings #loadCustomColorsFromPreset").on("click", async () => {
     updateColors($(".colorPicker #" + colorName).parent(), color as string);
   });
   // }, 250);
-});
-
-// Handles click on share custom theme button
-$("#shareCustomThemeButton").on("click", () => {
-  ShareCustomThemePopup.show();
 });
 
 $(".pageSettings #saveCustomThemeButton").on("click", async () => {

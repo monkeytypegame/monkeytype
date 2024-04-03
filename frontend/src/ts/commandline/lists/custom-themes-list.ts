@@ -40,7 +40,7 @@ export function update(): void {
   if (snapshot.customThemes?.length === 0) {
     return;
   }
-  snapshot.customThemes.forEach((theme) => {
+  for (const theme of snapshot.customThemes) {
     subgroup.list.push({
       id: "setCustomThemeId" + theme._id,
       display: theme.name.replace(/_/gi, " "),
@@ -54,7 +54,7 @@ export function update(): void {
         UpdateConfig.setCustomThemeColors(theme.colors);
       },
     });
-  });
+  }
 }
 
 export default commands;

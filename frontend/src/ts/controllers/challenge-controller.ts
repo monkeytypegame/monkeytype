@@ -1,4 +1,5 @@
 import * as Misc from "../utils/misc";
+import * as JSONData from "../utils/json-data";
 import * as Notifications from "../elements/notifications";
 import * as ManualRestart from "../test/manual-restart-tracker";
 import * as CustomText from "../test/custom-text";
@@ -209,7 +210,7 @@ export async function setup(challengeName: string): Promise<boolean> {
 
   let list;
   try {
-    list = await Misc.getChallengeList();
+    list = await JSONData.getChallengeList();
   } catch (e) {
     const message = Misc.createErrorMessage(e, "Failed to setup challenge");
     Notifications.add(message, -1);
@@ -248,7 +249,7 @@ export async function setup(challengeName: string): Promise<boolean> {
       UpdateConfig.setDifficulty("normal", true);
     } else if (challenge.type === "customText") {
       CustomText.setDelimiter(" ");
-      CustomText.setPopupTextareaState(challenge.parameters[0] as string);
+      CustomText.setPopupTextareaState(challenge.parameters[0] as string, true);
       CustomText.setText((challenge.parameters[0] as string).split(" "));
       CustomText.setIsTimeRandom(false);
       CustomText.setIsSectionRandom(false);
@@ -269,7 +270,7 @@ export async function setup(challengeName: string): Promise<boolean> {
       text = text.replace(/[\n\r\t ]/gm, " ");
       text = text.replace(/ +/gm, " ");
       CustomText.setDelimiter(" ");
-      CustomText.setPopupTextareaState(text);
+      CustomText.setPopupTextareaState(text, true);
       CustomText.setText(text.split(" "));
       CustomText.setIsWordRandom(false);
       CustomText.setIsSectionRandom(false);

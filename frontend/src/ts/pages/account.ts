@@ -11,7 +11,10 @@ import * as Focus from "../test/focus";
 import * as TodayTracker from "../test/today-tracker";
 import * as Notifications from "../elements/notifications";
 import Page from "./page";
+import * as DateTime from "../utils/date-and-time";
 import * as Misc from "../utils/misc";
+import * as Arrays from "../utils/arrays";
+import * as Numbers from "../utils/numbers";
 import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
 import * as Profile from "../elements/profile";
 import format from "date-fns/format";
@@ -99,9 +102,10 @@ function loadMoreLines(lineIndex?: number): void {
       icons += `<span class="miniResultChartButton" aria-label="View graph" data-balloon-pos="up" filteredResultsId="${i}" style="opacity: 1"><i class="fas fa-chart-line"></i></span>`;
     }
 
-    let tagNames = "";
+    let tagNames = "no tags";
 
     if (result.tags !== undefined && result.tags.length > 0) {
+      tagNames = "";
       result.tags.forEach((tag) => {
         DB.getSnapshot()?.tags?.forEach((snaptag) => {
           if (tag === snaptag._id) {
@@ -119,15 +123,17 @@ function loadMoreLines(lineIndex?: number): void {
       restags = JSON.stringify(result.tags);
     }
 
-    let tagIcons = `<span id="resultEditTags" resultId="${result._id}" tags='${restags}' aria-label="no tags" data-balloon-pos="up" style="opacity: .25"><i class="fas fa-fw fa-tag"></i></span>`;
+    const isActive = result.tags !== undefined && result.tags.length > 0;
+    const icon =
+      result.tags !== undefined && result.tags.length > 1
+        ? "fa-tags"
+        : "fa-tag";
 
-    if (tagNames !== "") {
-      if (result.tags !== undefined && result.tags.length > 1) {
-        tagIcons = `<span id="resultEditTags" resultId="${result._id}" tags='${restags}' aria-label="${tagNames}" data-balloon-pos="up"><i class="fas fa-fw fa-tags"></i></span>`;
-      } else {
-        tagIcons = `<span id="resultEditTags" resultId="${result._id}" tags='${restags}' aria-label="${tagNames}" data-balloon-pos="up"><i class="fas fa-fw fa-tag"></i></span>`;
-      }
-    }
+    const resultTagsButton = `<button class="textButton resultEditTagsButton ${
+      isActive ? "active" : ""
+    }" data-result-id="${
+      result._id
+    }" data-tags='${restags}' aria-label="${tagNames}" data-balloon-pos="up"><i class="fas fa-fw ${icon}"></i></button>`;
 
     let pb = "";
     if (result.isPb) {
@@ -151,7 +157,7 @@ function loadMoreLines(lineIndex?: number): void {
     <td>${charStats}</td>
     <td>${result.mode} ${result.mode2}</td>
     <td class="infoIcons">${icons}</td>
-    <td>${tagIcons}</td>
+    <td>${resultTagsButton}</td>
     <td>${format(date, "dd MMM yyyy")}<br>
     ${format(date, "HH:mm")}
     </td>
@@ -608,8 +614,8 @@ async function fillContent(): Promise<void> {
 
       chartData.push({
         x: filteredResults.length,
-        y: Misc.roundTo2(typingSpeedUnit.fromWpm(result.wpm)),
-        wpm: Misc.roundTo2(typingSpeedUnit.fromWpm(result.wpm)),
+        y: Numbers.roundTo2(typingSpeedUnit.fromWpm(result.wpm)),
+        wpm: Numbers.roundTo2(typingSpeedUnit.fromWpm(result.wpm)),
         acc: result.acc,
         mode: result.mode,
         mode2: result.mode2,
@@ -617,7 +623,7 @@ async function fillContent(): Promise<void> {
         language: result.language,
         timestamp: result.timestamp,
         difficulty: result.difficulty,
-        raw: Misc.roundTo2(typingSpeedUnit.fromWpm(result.rawWpm)),
+        raw: Numbers.roundTo2(typingSpeedUnit.fromWpm(result.rawWpm)),
         isPb: result.isPb ?? false,
       });
 
@@ -673,7 +679,7 @@ async function fillContent(): Promise<void> {
     });
     activityChartData_avgWpm.push({
       x: dateInt,
-      y: Misc.roundTo2(
+      y: Numbers.roundTo2(
         typingSpeedUnit.fromWpm(dataPoint.totalWpm) / dataPoint.amount
       ),
     });
@@ -740,7 +746,7 @@ async function fillContent(): Promise<void> {
     // add last point to pb
     pb.push({
       x: 1,
-      y: Misc.lastElementFromArray(pb)?.y as number,
+      y: Arrays.lastElementFromArray(pb)?.y as number,
     });
 
     const avgTen = [];
@@ -843,7 +849,7 @@ async function fillContent(): Promise<void> {
   }
 
   $(".pageAccount .timeTotalFiltered .val").text(
-    Misc.secondsToString(Math.round(totalSecondsFiltered), true, true)
+    DateTime.secondsToString(Math.round(totalSecondsFiltered), true, true)
   );
 
   const speedUnit = Config.typingSpeedUnit;
@@ -913,7 +919,7 @@ async function fillContent(): Promise<void> {
 
   const wpmPoints = filteredResults.map((r) => r.wpm).reverse();
 
-  const trend = Misc.findLineByLeastSquares(wpmPoints);
+  const trend = Numbers.findLineByLeastSquares(wpmPoints);
   if (trend) {
     const wpmChange = trend[1][1] - trend[0][1];
     const wpmChangePerHour = wpmChange * (3600 / totalSecondsFiltered);
@@ -982,6 +988,40 @@ async function update(): Promise<void> {
       console.error(e);
       Notifications.add(`Something went wrong: ${e}`, -1);
     }
+  }
+}
+
+export function updateTagsForResult(resultId: string, tagIds: string[]): void {
+  const tagNames: string[] = [];
+
+  if (tagIds.length > 0) {
+    for (const tag of tagIds) {
+      DB.getSnapshot()?.tags?.forEach((snaptag) => {
+        if (tag === snaptag._id) {
+          tagNames.push(snaptag.display);
+        }
+      });
+    }
+  }
+
+  const el = $(
+    `.pageAccount .resultEditTagsButton[data-result-id='${resultId}']`
+  );
+
+  el.attr("data-tags", JSON.stringify(tagIds));
+
+  if (tagIds.length > 0) {
+    el.attr("aria-label", tagNames.join(", "));
+    el.addClass("active");
+    if (tagIds.length > 1) {
+      el.html(`<i class="fas fa-fw fa-tags"></i>`);
+    } else {
+      el.html(`<i class="fas fa-fw fa-tag"></i>`);
+    }
+  } else {
+    el.attr("aria-label", "no tags");
+    el.removeClass("active");
+    el.html(`<i class="fas fa-fw fa-tag"></i>`);
   }
 }
 
@@ -1218,19 +1258,16 @@ ConfigEvent.subscribe((eventKey) => {
   }
 });
 
-export const page = new Page(
-  "account",
-  $(".page.pageAccount"),
-  "/account",
-  async () => {
-    //
-  },
-  async () => {
+export const page = new Page({
+  name: "account",
+  element: $(".page.pageAccount"),
+  path: "/account",
+  afterHide: async (): Promise<void> => {
     reset();
     ResultFilters.removeButtons();
     Skeleton.remove("pageAccount");
   },
-  async () => {
+  beforeShow: async (): Promise<void> => {
     Skeleton.append("pageAccount", "main");
     if (DB.getSnapshot()?.results === undefined) {
       $(".pageLoading .fill, .pageAccount .fill").css("width", "0%");
@@ -1253,10 +1290,7 @@ export const page = new Page(
       ResultBatches.showOrHideIfNeeded();
     });
   },
-  async () => {
-    //
-  }
-);
+});
 
 $(() => {
   Skeleton.save("pageAccount");

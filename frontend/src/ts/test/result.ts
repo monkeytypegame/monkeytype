@@ -9,10 +9,15 @@ import * as Loader from "../elements/loader";
 import * as Notifications from "../elements/notifications";
 import * as ThemeColors from "../elements/theme-colors";
 import { isAuthenticated } from "../firebase";
-import * as QuoteRatePopup from "../popups/quote-rate-popup";
+import * as quoteRateModal from "../modals/quote-rate";
 import * as GlarsesMode from "../states/glarses-mode";
 import * as SlowTimer from "../states/slow-timer";
+import * as DateTime from "../utils/date-and-time";
 import * as Misc from "../utils/misc";
+import * as Strings from "../utils/strings";
+import * as JSONData from "../utils/json-data";
+import * as Numbers from "../utils/numbers";
+import * as Arrays from "../utils/arrays";
 import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
 import * as FunboxList from "./funbox/funbox-list";
 import * as PbCrown from "./pb-crown";
@@ -53,7 +58,7 @@ async function updateGraph(): Promise<void> {
 
   for (let i = 1; i <= TestInput.wpmHistory.length; i++) {
     if (TestStats.lastSecondNotRound && i === TestInput.wpmHistory.length) {
-      labels.push(Misc.roundTo2(result.testDuration).toString());
+      labels.push(Numbers.roundTo2(result.testDuration).toString());
     } else {
       labels.push(i.toString());
     }
@@ -64,7 +69,7 @@ async function updateGraph(): Promise<void> {
 
   const chartData1 = [
     ...TestInput.wpmHistory.map((a) =>
-      Misc.roundTo2(typingSpeedUnit.fromWpm(a))
+      Numbers.roundTo2(typingSpeedUnit.fromWpm(a))
     ),
   ];
 
@@ -72,7 +77,7 @@ async function updateGraph(): Promise<void> {
 
   const chartData2 = [
     ...result.chartData.raw.map((a) =>
-      Misc.roundTo2(typingSpeedUnit.fromWpm(a))
+      Numbers.roundTo2(typingSpeedUnit.fromWpm(a))
     ),
   ];
 
@@ -88,7 +93,7 @@ async function updateGraph(): Promise<void> {
 
   let smoothedRawData = chartData2;
   if (!useUnsmoothedRaw) {
-    smoothedRawData = Misc.smooth(smoothedRawData, 1);
+    smoothedRawData = Arrays.smooth(smoothedRawData, 1);
     smoothedRawData = smoothedRawData.map((a) => Math.round(a));
   }
 
@@ -175,7 +180,7 @@ export async function updateGraphPBLine(): Promise<void> {
   );
   if (lpb === 0) return;
   const typingSpeedUnit = getTypingSpeedUnit(Config.typingSpeedUnit);
-  const chartlpb = Misc.roundTo2(typingSpeedUnit.fromWpm(lpb)).toFixed(2);
+  const chartlpb = Numbers.roundTo2(typingSpeedUnit.fromWpm(lpb)).toFixed(2);
   resultAnnotation.push({
     display: true,
     type: "line",
@@ -247,9 +252,9 @@ function updateWpmAndAcc(): void {
       $("#result .stats .raw .bottom").removeAttr("aria-label");
     }
 
-    let time = Misc.roundTo2(result.testDuration).toFixed(2) + "s";
+    let time = Numbers.roundTo2(result.testDuration).toFixed(2) + "s";
     if (result.testDuration > 61) {
-      time = Misc.secondsToString(Misc.roundTo2(result.testDuration));
+      time = DateTime.secondsToString(Numbers.roundTo2(result.testDuration));
     }
     $("#result .stats .time .bottom .text").text(time);
     // $("#result .stats .acc .bottom").removeAttr("aria-label");
@@ -309,7 +314,7 @@ function updateConsistency(): void {
 }
 
 function updateTime(): void {
-  const afkSecondsPercent = Misc.roundTo2(
+  const afkSecondsPercent = Numbers.roundTo2(
     (result.afkDuration / result.testDuration) * 100
   );
   $("#result .stats .time .bottom .afk").text("");
@@ -322,20 +327,20 @@ function updateTime(): void {
   );
 
   if (Config.alwaysShowDecimalPlaces) {
-    let time = Misc.roundTo2(result.testDuration).toFixed(2) + "s";
+    let time = Numbers.roundTo2(result.testDuration).toFixed(2) + "s";
     if (result.testDuration > 61) {
-      time = Misc.secondsToString(Misc.roundTo2(result.testDuration));
+      time = DateTime.secondsToString(Numbers.roundTo2(result.testDuration));
     }
     $("#result .stats .time .bottom .text").text(time);
   } else {
     let time = Math.round(result.testDuration) + "s";
     if (result.testDuration > 61) {
-      time = Misc.secondsToString(Math.round(result.testDuration));
+      time = DateTime.secondsToString(Math.round(result.testDuration));
     }
     $("#result .stats .time .bottom .text").text(time);
     $("#result .stats .time .bottom").attr(
       "aria-label",
-      `${Misc.roundTo2(result.testDuration)}s (${
+      `${Numbers.roundTo2(result.testDuration)}s (${
         result.afkDuration
       }s afk ${afkSecondsPercent}%)`
     );
@@ -439,9 +444,9 @@ async function updateTags(dontSave: boolean): Promise<void> {
   } else {
     $("#result .stats .tags .bottom").text("");
   }
-  $("#result .stats .tags .editTagsButton").attr("result-id", "");
+  $("#result .stats .tags .editTagsButton").attr("data-result-id", "");
   $("#result .stats .tags .editTagsButton").attr(
-    "active-tag-ids",
+    "data-active-tag-ids",
     activeTags.map((t) => t._id).join(",")
   );
   $("#result .stats .tags .editTagsButton").addClass("invisible");
@@ -449,7 +454,7 @@ async function updateTags(dontSave: boolean): Promise<void> {
   const funboxes = result.funbox?.split("#") ?? [];
 
   const funboxObjects = await Promise.all(
-    funboxes.map(async (f) => Misc.getFunbox(f))
+    funboxes.map(async (f) => JSONData.getFunbox(f))
   );
 
   const allFunboxesCanGetPb = funboxObjects.every((f) => f?.canGetPb);
@@ -497,7 +502,7 @@ async function updateTags(dontSave: boolean): Promise<void> {
         ).removeClass("hidden");
         $(`#result .stats .tags .bottom div[tagid="${tag._id}"]`).attr(
           "aria-label",
-          "+" + Misc.roundTo2(result.wpm - tpb)
+          "+" + Numbers.roundTo2(result.wpm - tpb)
         );
         // console.log("new pb for tag " + tag.display);
       } else {
@@ -526,7 +531,7 @@ async function updateTags(dontSave: boolean): Promise<void> {
             position: annotationSide,
             xAdjust: labelAdjust,
             enabled: true,
-            content: `${tag.display} PB: ${Misc.roundTo2(
+            content: `${tag.display} PB: ${Numbers.roundTo2(
               typingSpeedUnit.fromWpm(tpb)
             ).toFixed(2)}`,
           },
@@ -562,7 +567,7 @@ function updateTestType(randomQuote: MonkeyTypes.Quote | null): void {
       f.properties?.includes("ignoresLanguage")
     ) !== undefined;
   if (Config.mode !== "custom" && !ignoresLanguage) {
-    testType += "<br>" + Misc.getLanguageDisplayString(result.language);
+    testType += "<br>" + Strings.getLanguageDisplayString(result.language);
   }
   if (Config.punctuation) {
     testType += "<br>punctuation";
@@ -666,7 +671,8 @@ export function updateRateQuote(randomQuote: MonkeyTypes.Quote | null): void {
         .removeClass("far")
         .addClass("fas");
     }
-    QuoteRatePopup.getQuoteStats(randomQuote)
+    quoteRateModal
+      .getQuoteStats(randomQuote)
       .then((quoteStats) => {
         $(".pageTest #result #rateQuoteButton .rating").text(
           quoteStats?.average?.toFixed(1) ?? ""
@@ -864,6 +870,60 @@ export async function update(
       void Funbox.clear();
     }
   );
+}
+
+export function updateTagsAfterEdit(
+  tagIds: string[],
+  tagPbIds: string[]
+): void {
+  const tagNames: string[] = [];
+
+  if (tagIds.length > 0) {
+    for (const tag of tagIds) {
+      DB.getSnapshot()?.tags?.forEach((snaptag) => {
+        if (tag === snaptag._id) {
+          tagNames.push(snaptag.display);
+        }
+      });
+    }
+  }
+
+  if (tagIds.length === 0) {
+    $(`.pageTest #result .tags .bottom`).html(
+      "<div class='noTags'>no tags</div>"
+    );
+  } else {
+    $(`.pageTest #result .tags .bottom div.noTags`).remove();
+    const currentElements = $(`.pageTest #result .tags .bottom div[tagid]`);
+
+    const checked: string[] = [];
+    currentElements.each((_, element) => {
+      const tagId = $(element).attr("tagid") as string;
+      if (!tagIds.includes(tagId)) {
+        $(element).remove();
+      } else {
+        checked.push(tagId);
+      }
+    });
+
+    let html = "";
+
+    tagIds.forEach((tag, index) => {
+      if (checked.includes(tag)) return;
+      if (tagPbIds.includes(tag) as boolean) {
+        html += `<div tagid="${tag}" data-balloon-pos="up">${tagNames[index]}<i class="fas fa-crown"></i></div>`;
+      } else {
+        html += `<div tagid="${tag}">${tagNames[index]}</div>`;
+      }
+    });
+
+    // $(`.pageTest #result .tags .bottom`).html(tagNames.join("<br>"));
+    $(`.pageTest #result .tags .bottom`).append(html);
+    $(`.pageTest #result .tags .top .editTagsButton`).attr(
+      "active-tag-ids",
+      tagIds.join(",")
+    );
+  }
 }
 
 $(".pageTest #favoriteQuoteButton").on("click", async () => {

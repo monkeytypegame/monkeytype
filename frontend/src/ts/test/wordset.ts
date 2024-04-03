@@ -1,5 +1,6 @@
 import * as FunboxList from "./funbox/funbox-list";
-import { dreymarIndex, randomElementFromArray } from "../utils/misc";
+import { dreymarIndex } from "../utils/misc";
+import { randomElementFromArray } from "../utils/arrays";
 import Config from "../config";
 
 let currentWordset: Wordset | null = null;

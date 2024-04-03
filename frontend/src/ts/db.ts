@@ -5,7 +5,8 @@ import DefaultConfig from "./constants/default-config";
 import { isAuthenticated } from "./firebase";
 import { defaultSnap } from "./constants/default-snapshot";
 import * as ConnectionState from "./states/connection";
-import { getFunboxList, lastElementFromArray } from "./utils/misc";
+import { lastElementFromArray } from "./utils/arrays";
+import { getFunboxList } from "./utils/json-data";
 import { mergeWithDefaultConfig } from "./utils/config";
 
 let dbSnapshot: MonkeyTypes.Snapshot | undefined;
@@ -53,10 +54,8 @@ export async function initSnapshot(): Promise<
     // }
     // LoadingPage.updateText("Downloading user...");
 
-    //getData recreates the user if it doesnt exist - thats why it needs to be called first, by itself
-    const userResponse = await Ape.users.getData();
-
-    const [configResponse, presetsResponse] = await Promise.all([
+    const [userResponse, configResponse, presetsResponse] = await Promise.all([
+      Ape.users.getData(),
       Ape.configs.get(),
       Ape.presets.get(),
     ]);
@@ -133,6 +132,7 @@ export async function initSnapshot(): Promise<
     snap.maxStreak = userData?.streak?.maxLength ?? 0;
     snap.filterPresets = userData.resultFilterPresets ?? [];
     snap.isPremium = userData?.isPremium;
+    snap.allTimeLbs = userData.allTimeLbs;
 
     const hourOffset = userData?.streak?.hourOffset;
     snap.streakHourOffset =
