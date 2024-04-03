@@ -1,5 +1,5 @@
 import Config from "../config";
-import * as JSONData from "../utils/JSON-data2";
+import * as JSONData from "../utils/json-data";
 import * as ConfigEvent from "../observables/config-event";
 import * as TTSEvent from "../observables/tts-event";
 

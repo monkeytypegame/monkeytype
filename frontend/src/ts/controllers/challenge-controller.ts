@@ -1,5 +1,5 @@
 import * as Misc from "../utils/misc";
-import * as JSONData from "../utils/JSON-data2";
+import * as JSONData from "../utils/json-data";
 import * as Notifications from "../elements/notifications";
 import * as ManualRestart from "../test/manual-restart-tracker";
 import * as CustomText from "../test/custom-text";

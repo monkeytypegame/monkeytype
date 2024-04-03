@@ -5,7 +5,7 @@ import Config, * as UpdateConfig from "../config";
 import * as Strings from "../utils/strings";
 import * as Misc from "../utils/misc";
 import * as Arrays from "../utils/arrays";
-import * as JSONData from "../utils/JSON-data2";
+import * as JSONData from "../utils/json-data";
 import * as Numbers from "../utils/numbers";
 import * as Notifications from "../elements/notifications";
 import * as CustomText from "./custom-text";

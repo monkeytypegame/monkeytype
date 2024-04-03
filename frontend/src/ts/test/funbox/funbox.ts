@@ -1,6 +1,6 @@
 import * as Notifications from "../../elements/notifications";
 import * as Misc from "../../utils/misc";
-import * as JSONData from "../../utils/JSON-data2";
+import * as JSONData from "../../utils/json-data";
 import * as GetText from "../../utils/generate";
 import * as Numbers from "../../utils/numbers";
 import * as Arrays from "../../utils/arrays";

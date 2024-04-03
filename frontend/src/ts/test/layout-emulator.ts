@@ -1,6 +1,6 @@
 import Config from "../config";
 import * as Misc from "../utils/misc";
-import * as JSONData from "../utils/JSON-data2";
+import * as JSONData from "../utils/json-data";
 import { capsState } from "./caps-warning";
 import * as Notifications from "../elements/notifications";
 

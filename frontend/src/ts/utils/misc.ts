@@ -1,7 +1,7 @@
 import * as Loader from "../elements/loader";
 import { envConfig } from "../constants/env-config";
 import { lastElementFromArray } from "./arrays";
-import * as JSONData from "./JSON-data2";
+import * as JSONData from "./json-data";
 
 export function kogasa(cov: number): number {
   return (

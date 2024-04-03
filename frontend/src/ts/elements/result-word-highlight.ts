@@ -4,7 +4,7 @@
 // Constants for padding around the highlights
 
 import * as Misc from "../utils/misc";
-import * as JSONData from "../utils/JSON-data2";
+import * as JSONData from "../utils/json-data";
 import Config from "../config";
 
 const PADDING_X = 16;
