@@ -1,5 +1,6 @@
 import * as Loader from "../elements/loader";
 import * as Misc from "../utils/misc";
+import * as JSONData from "../utils/json-data";
 import { Section } from "../utils/misc";
 
 export async function getTLD(
@@ -249,7 +250,7 @@ export async function getSection(language: string): Promise<Section> {
 
   let currentLanguageGroup: MonkeyTypes.LanguageGroup | undefined;
   try {
-    currentLanguageGroup = await Misc.findCurrentGroup(language);
+    currentLanguageGroup = await JSONData.getCurrentGroup(language);
   } catch (e) {
     console.error(
       Misc.createErrorMessage(e, "Failed to find current language group")

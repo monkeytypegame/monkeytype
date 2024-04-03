@@ -1,6 +1,6 @@
-import * as Misc from "./misc";
 import Config from "../config";
 import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
+import * as Numbers from "../utils/numbers";
 
 export type FormatOptions = {
   showDecimalPlaces?: boolean;
@@ -75,7 +75,7 @@ export class Formatting {
         ? formatOptions.showDecimalPlaces
         : this.config.alwaysShowDecimalPlaces
     ) {
-      return Misc.roundTo2(value).toFixed(2) + suffix;
+      return Numbers.roundTo2(value).toFixed(2) + suffix;
     }
     return (formatOptions.rounding ?? Math.round)(value).toString() + suffix;
   }

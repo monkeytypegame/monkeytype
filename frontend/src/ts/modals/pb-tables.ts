@@ -1,6 +1,6 @@
 import * as DB from "../db";
 import format from "date-fns/format";
-import { getLanguageDisplayString } from "../utils/misc";
+import { getLanguageDisplayString } from "../utils/strings";
 import Config from "../config";
 import Format from "../utils/format";
 import AnimatedModal from "../utils/animated-modal";

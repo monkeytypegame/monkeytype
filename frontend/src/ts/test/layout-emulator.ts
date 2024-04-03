@@ -1,5 +1,6 @@
 import Config from "../config";
 import * as Misc from "../utils/misc";
+import * as JSONData from "../utils/json-data";
 import { capsState } from "./caps-warning";
 import * as Notifications from "../elements/notifications";
 
@@ -31,7 +32,7 @@ export async function getCharFromEvent(
   let layout;
 
   try {
-    layout = await Misc.getLayout(Config.layout);
+    layout = await JSONData.getLayout(Config.layout);
   } catch (e) {
     Notifications.add(
       Misc.createErrorMessage(e, "Failed to emulate event"),

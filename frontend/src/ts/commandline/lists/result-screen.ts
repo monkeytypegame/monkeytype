@@ -1,7 +1,7 @@
 import * as TestLogic from "../../test/test-logic";
 import * as TestUI from "../../test/test-ui";
 import * as PractiseWords from "../../test/practise-words";
-import * as Misc from "../../utils/misc";
+import * as GetText from "../../utils/generate";
 import * as Notifications from "../../elements/notifications";
 
 const copyWords: MonkeyTypes.CommandsSubgroup = {
@@ -15,7 +15,7 @@ const copyWords: MonkeyTypes.CommandsSubgroup = {
       id: "copyYes",
       display: "Yes, I am sure",
       exec: (): void => {
-        const words = Misc.getWords();
+        const words = GetText.getWords();
 
         navigator.clipboard.writeText(words).then(
           () => {

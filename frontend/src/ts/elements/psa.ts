@@ -1,5 +1,6 @@
 import Ape from "../ape";
-import { isDevEnvironment, secondsToString } from "../utils/misc";
+import { isDevEnvironment } from "../utils/misc";
+import { secondsToString } from "../utils/date-and-time";
 import * as Notifications from "./notifications";
 import format from "date-fns/format";
 import * as Alerts from "./alerts";

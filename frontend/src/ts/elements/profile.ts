@@ -2,6 +2,9 @@ import * as DB from "../db";
 import format from "date-fns/format";
 import differenceInDays from "date-fns/differenceInDays";
 import * as Misc from "../utils/misc";
+import * as Numbers from "../utils/numbers";
+import * as Levels from "../utils/levels";
+import * as DateTime from "../utils/date-and-time";
 import { getHTMLById } from "../controllers/badge-controller";
 import { throttle } from "throttle-debounce";
 import * as ActivePage from "../states/active-page";
@@ -127,7 +130,7 @@ export async function update(
 
     const dayInMilis = 1000 * 60 * 60 * 24;
 
-    let target = Misc.getCurrentDayTimestamp(streakOffset) + dayInMilis;
+    let target = DateTime.getCurrentDayTimestamp(streakOffset) + dayInMilis;
     if (target < Date.now()) {
       target += dayInMilis;
     }
@@ -138,20 +141,23 @@ export async function update(
     console.debug("dayInMilis", dayInMilis);
     console.debug(
       "difTarget",
-      new Date(Misc.getCurrentDayTimestamp(streakOffset) + dayInMilis)
+      new Date(DateTime.getCurrentDayTimestamp(streakOffset) + dayInMilis)
     );
     console.debug("timeDif", timeDif);
     console.debug(
-      "Misc.getCurrentDayTimestamp()",
-      Misc.getCurrentDayTimestamp(),
-      new Date(Misc.getCurrentDayTimestamp())
+      "DateTime.getCurrentDayTimestamp()",
+      DateTime.getCurrentDayTimestamp(),
+      new Date(DateTime.getCurrentDayTimestamp())
     );
     console.debug("profile.streakHourOffset", streakOffset);
 
     if (lastResult) {
       //check if the last result is from today
-      const isToday = Misc.isToday(lastResult.timestamp, streakOffset);
-      const isYesterday = Misc.isYesterday(lastResult.timestamp, streakOffset);
+      const isToday = DateTime.isToday(lastResult.timestamp, streakOffset);
+      const isYesterday = DateTime.isYesterday(
+        lastResult.timestamp,
+        streakOffset
+      );
 
       console.debug(
         "lastResult.timestamp",
@@ -217,7 +223,7 @@ export async function update(
   typingStatsEl
     .find(".timeTyping .value")
     .text(
-      Misc.secondsToString(
+      DateTime.secondsToString(
         Math.round(profile.typingStats?.timeTyping ?? 0),
         true,
         true
@@ -285,18 +291,18 @@ export async function update(
   }
 
   const xp = profile.xp ?? 0;
-  const levelFraction = Misc.getLevel(xp);
+  const levelFraction = Levels.getLevel(xp);
   const level = Math.floor(levelFraction);
-  const xpForLevel = Misc.getXpForLevel(level);
+  const xpForLevel = Levels.getXpForLevel(level);
   const xpToDisplay = Math.round(xpForLevel * (levelFraction % 1));
   details
     .find(".level")
     .text(level)
-    .attr("aria-label", `${Misc.abbreviateNumber(xp)} total xp`);
+    .attr("aria-label", `${Numbers.abbreviateNumber(xp)} total xp`);
   details
     .find(".xp")
     .text(
-      `${Misc.abbreviateNumber(xpToDisplay)}/${Misc.abbreviateNumber(
+      `${Numbers.abbreviateNumber(xpToDisplay)}/${Numbers.abbreviateNumber(
         xpForLevel
       )}`
     );
@@ -307,7 +313,9 @@ export async function update(
     .find(".xp")
     .attr(
       "aria-label",
-      `${Misc.abbreviateNumber(xpForLevel - xpToDisplay)} xp until next level`
+      `${Numbers.abbreviateNumber(
+        xpForLevel - xpToDisplay
+      )} xp until next level`
     );
 
   //lbs
@@ -406,7 +414,7 @@ export function updateNameFontSize(where: ProfileViewPaths): void {
   const nameFieldjQ = details.find(".user");
   const nameFieldParent = nameFieldjQ.parent()[0];
   const nameField = nameFieldjQ[0];
-  const upperLimit = Misc.convertRemToPixels(2);
+  const upperLimit = Numbers.convertRemToPixels(2);
 
   if (!nameField || !nameFieldParent) return;
 
@@ -433,5 +441,5 @@ $(window).on("resize", () => {
 function formatTopPercentage(lbRank: SharedTypes.RankAndCount): string {
   if (lbRank.rank === undefined) return "-";
   if (lbRank.rank === 1) return "GOAT";
-  return "Top " + Misc.roundTo2((lbRank.rank / lbRank.count) * 100) + "%";
+  return "Top " + Numbers.roundTo2((lbRank.rank / lbRank.count) * 100) + "%";
 }

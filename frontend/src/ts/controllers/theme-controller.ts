@@ -1,6 +1,9 @@
 import * as ThemeColors from "../elements/theme-colors";
 import * as ChartController from "./chart-controller";
 import * as Misc from "../utils/misc";
+import * as Arrays from "../utils/arrays";
+import * as JSONData from "../utils/json-data";
+import { isColorDark, isColorLight } from "../utils/colors";
 import Config, { setAutoSwitchTheme } from "../config";
 import * as BackgroundFilter from "../elements/custom-background-filter";
 import * as ConfigEvent from "../observables/config-event";
@@ -239,7 +242,7 @@ let themesList: string[] = [];
 async function changeThemeList(): Promise<void> {
   let themes;
   try {
-    themes = await Misc.getThemesList();
+    themes = await JSONData.getThemesList();
   } catch (e) {
     console.error(
       Misc.createErrorMessage(e, "Failed to update random theme list")
@@ -251,11 +254,11 @@ async function changeThemeList(): Promise<void> {
     themesList = Config.favThemes;
   } else if (Config.randomTheme === "light") {
     themesList = themes
-      .filter((t) => Misc.isColorLight(t.bgColor))
+      .filter((t) => isColorLight(t.bgColor))
       .map((t) => t.name);
   } else if (Config.randomTheme === "dark") {
     themesList = themes
-      .filter((t) => Misc.isColorDark(t.bgColor))
+      .filter((t) => isColorDark(t.bgColor))
       .map((t) => t.name);
   } else if (Config.randomTheme === "on") {
     themesList = themes.map((t) => {
@@ -264,7 +267,7 @@ async function changeThemeList(): Promise<void> {
   } else if (Config.randomTheme === "custom" && DB.getSnapshot()) {
     themesList = DB.getSnapshot()?.customThemes?.map((ct) => ct._id) ?? [];
   }
-  Misc.shuffle(themesList);
+  Arrays.shuffle(themesList);
   randomThemeIndex = 0;
 }
 
@@ -277,7 +280,7 @@ export async function randomizeTheme(): Promise<void> {
   randomThemeIndex++;
 
   if (randomThemeIndex >= themesList.length) {
-    Misc.shuffle(themesList);
+    Arrays.shuffle(themesList);
     randomThemeIndex = 0;
   }
 

@@ -92,6 +92,7 @@ import KeymapLayoutsCommands, {
 
 import Config, * as UpdateConfig from "../config";
 import * as Misc from "../utils/misc";
+import * as JSONData from "../utils/json-data";
 import { randomizeTheme } from "../controllers/theme-controller";
 import * as CustomTextPopup from "../popups/custom-text-popup";
 import * as Settings from "../pages/settings";
@@ -102,7 +103,7 @@ import * as TestStats from "../test/test-stats";
 import * as QuoteSearchModal from "../modals/quote-search";
 import * as FPSCounter from "../elements/fps-counter";
 
-const layoutsPromise = Misc.getLayoutsList();
+const layoutsPromise = JSONData.getLayoutsList();
 layoutsPromise
   .then((layouts) => {
     updateLayoutsCommands(layouts);
@@ -114,7 +115,7 @@ layoutsPromise
     );
   });
 
-const languagesPromise = Misc.getLanguageList();
+const languagesPromise = JSONData.getLanguageList();
 languagesPromise
   .then((languages) => {
     updateLanguagesCommands(languages);
@@ -125,7 +126,7 @@ languagesPromise
     );
   });
 
-const funboxPromise = Misc.getFunboxList();
+const funboxPromise = JSONData.getFunboxList();
 funboxPromise
   .then((funboxes) => {
     updateFunboxCommands(funboxes);
@@ -141,7 +142,7 @@ funboxPromise
     );
   });
 
-const fontsPromise = Misc.getFontsList();
+const fontsPromise = JSONData.getFontsList();
 fontsPromise
   .then((fonts) => {
     updateFontFamilyCommands(fonts);
@@ -152,7 +153,7 @@ fontsPromise
     );
   });
 
-const themesPromise = Misc.getThemesList();
+const themesPromise = JSONData.getThemesList();
 themesPromise
   .then((themes) => {
     updateThemesCommands(themes);
@@ -163,7 +164,7 @@ themesPromise
     );
   });
 
-const challengesPromise = Misc.getChallengeList();
+const challengesPromise = JSONData.getChallengeList();
 challengesPromise
   .then((challenges) => {
     updateLoadChallengeCommands(challenges);
