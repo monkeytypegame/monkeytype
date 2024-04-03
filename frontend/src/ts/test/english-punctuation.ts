@@ -1,7 +1,5 @@
-import {
-  capitalizeFirstLetterOfEachWord,
-  randomElementFromArray,
-} from "../utils/misc";
+import { randomElementFromArray } from "../utils/misc";
+import { capitalizeFirstLetterOfEachWord } from "../utils/strings";
 
 type Pair = [string, string[]];
 

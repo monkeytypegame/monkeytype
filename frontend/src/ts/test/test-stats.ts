@@ -1,6 +1,6 @@
 import Hangul from "hangul-js";
 import Config from "../config";
-import * as Misc from "../utils/misc";
+import * as Strings from "../utils/strings";
 import * as TestInput from "./test-input";
 import * as TestWords from "./test-words";
 import * as FunboxList from "./funbox/funbox-list";
@@ -292,7 +292,7 @@ function countChars(): CharCount {
       correctChars += targetWord.length;
       if (
         i < inputWords.length - 1 &&
-        Misc.getLastChar(inputWord as string) !== "\n"
+        Strings.getLastChar(inputWord as string) !== "\n"
       ) {
         correctspaces++;
       }

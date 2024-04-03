@@ -1,5 +1,5 @@
 import { debounce } from "throttle-debounce";
-import * as Misc from "../utils/misc";
+import * as Numbers from "../utils/numbers";
 import * as ConfigEvent from "../observables/config-event";
 import * as BannerEvent from "../observables/banner-event";
 import Config from "../config";
@@ -90,7 +90,7 @@ function removeResult(): void {
 
 function updateVerticalMargin(): void {
   const height = $("#bannerCenter").height() as number;
-  const margin = height + Misc.convertRemToPixels(2) + "px";
+  const margin = height + Numbers.convertRemToPixels(2) + "px";
   $("#ad-vertical-left-wrapper").css("margin-top", margin);
   $("#ad-vertical-right-wrapper").css("margin-top", margin);
 }

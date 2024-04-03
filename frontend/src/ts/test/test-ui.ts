@@ -9,7 +9,9 @@ import * as Caret from "./caret";
 import * as OutOfFocus from "./out-of-focus";
 import * as Replay from "./replay";
 import * as Misc from "../utils/misc";
+import * as Strings from "../utils/strings";
 import * as GetData from "../utils/get-data";
+import * as Numbers from "../utils/numbers";
 import { blendTwoHexColors } from "../utils/colors";
 import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
 import * as SlowTimer from "../states/slow-timer";
@@ -110,7 +112,7 @@ const debouncedZipfCheck = debounce(250, async () => {
   const supports = await Misc.checkIfLanguageSupportsZipf(Config.language);
   if (supports === "no") {
     Notifications.add(
-      `${Misc.capitalizeFirstLetter(
+      `${Strings.capitalizeFirstLetter(
         Misc.getLanguageDisplayString(Config.language)
       )} does not support Zipf funbox, because the list is not ordered by frequency. Please try another word list.`,
       0,
@@ -121,7 +123,7 @@ const debouncedZipfCheck = debounce(250, async () => {
   }
   if (supports === "unknown") {
     Notifications.add(
-      `${Misc.capitalizeFirstLetter(
+      `${Strings.capitalizeFirstLetter(
         Misc.getLanguageDisplayString(Config.language)
       )} may not support Zipf funbox, because we don't know if it's ordered by frequency or not. If you would like to add this label, please contact us.`,
       0,
@@ -449,7 +451,7 @@ function updateWordsHeight(force = false): void {
     }
     $(".outOfFocusWarning").css(
       "margin-top",
-      wordHeight + Misc.convertRemToPixels(1) / 2 + "px"
+      wordHeight + Numbers.convertRemToPixels(1) / 2 + "px"
     );
   } else {
     let finalWordsHeight: number, finalWrapperHeight: number;
@@ -503,7 +505,7 @@ function updateWordsHeight(force = false): void {
       .css("overflow", "hidden");
     $(".outOfFocusWarning").css(
       "margin-top",
-      finalWrapperHeight / 2 - Misc.convertRemToPixels(1) / 2 + "px"
+      finalWrapperHeight / 2 - Numbers.convertRemToPixels(1) / 2 + "px"
     );
   }
 
@@ -627,8 +629,8 @@ export async function screenshot(): Promise<void> {
     true
   ) as number; /*clientHeight/offsetHeight from div#target*/
   try {
-    const paddingX = Misc.convertRemToPixels(2);
-    const paddingY = Misc.convertRemToPixels(2);
+    const paddingX = Numbers.convertRemToPixels(2);
+    const paddingY = Numbers.convertRemToPixels(2);
 
     const canvas = await (
       await gethtml2canvas()

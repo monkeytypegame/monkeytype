@@ -1,6 +1,6 @@
 import * as UpdateConfig from "../../config";
 import * as TestLogic from "../../test/test-logic";
-import { capitalizeFirstLetterOfEachWord } from "../../utils/misc";
+import { capitalizeFirstLetterOfEachWord } from "../../utils/strings";
 
 const subgroup: MonkeyTypes.CommandsSubgroup = {
   title: "Layout emulator...",

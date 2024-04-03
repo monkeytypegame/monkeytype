@@ -1,4 +1,4 @@
-import * as Misc from "../utils/misc";
+import * as Numbers from "../utils/numbers";
 import * as GetData from "../utils/get-data";
 import Config from "../config";
 import * as TestInput from "./test-input";
@@ -113,7 +113,7 @@ export async function updatePosition(noAnim = false): Promise<void> {
   const letterHeight =
     currentLetter?.offsetHeight ??
     previousLetter?.offsetHeight ??
-    Config.fontSize * Misc.convertRemToPixels(1);
+    Config.fontSize * Numbers.convertRemToPixels(1);
 
   const diff = letterHeight - caret.offsetHeight;
 

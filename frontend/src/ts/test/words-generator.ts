@@ -9,6 +9,7 @@ import * as LazyMode from "./lazy-mode";
 import * as EnglishPunctuation from "./english-punctuation";
 import * as PractiseWords from "./practise-words";
 import * as Misc from "../utils/misc";
+import * as Strings from "../utils/strings";
 import * as TestState from "../test/test-state";
 import * as GetText from "../utils/get-text";
 
@@ -27,7 +28,7 @@ export async function punctuateWord(
 
   const currentLanguage = Config.language.split("_")[0];
 
-  const lastChar = Misc.getLastChar(previousWord);
+  const lastChar = Strings.getLastChar(previousWord);
 
   const funbox = FunboxList.get(Config.funbox).find(
     (f) => f.functions?.punctuateWord
@@ -42,7 +43,7 @@ export async function punctuateWord(
   ) {
     //always capitalise the first word or if there was a dot unless using a code alphabet or the Georgian language
 
-    word = Misc.capitalizeFirstLetterOfEachWord(word);
+    word = Strings.capitalizeFirstLetterOfEachWord(word);
 
     if (currentLanguage === "turkish") {
       word = word.replace(/I/g, "İ");

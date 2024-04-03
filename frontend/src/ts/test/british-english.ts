@@ -1,5 +1,5 @@
 import Config from "../config";
-import { capitalizeFirstLetterOfEachWord } from "../utils/misc";
+import { capitalizeFirstLetterOfEachWord } from "../utils/strings";
 import { cachedFetchJson } from "../utils/get-data";
 import * as CustomText from "../test/custom-text";
 

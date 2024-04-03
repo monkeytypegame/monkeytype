@@ -89,6 +89,15 @@ export function median(arr: number[]): number {
 export function roundTo2(num: number): number {
   return Math.round((num + Number.EPSILON) * 100) / 100;
 }
+/**
+ * Converts a value in rem units to pixels based on the root element's font size.
+ * https://stackoverflow.com/questions/36532307/rem-px-in-javascript
+ * @param rem The value in rem units to convert to pixels.
+ * @returns The equivalent value in pixels.
+ */
+export function convertRemToPixels(rem: number): number {
+  return rem * parseFloat(getComputedStyle(document.documentElement).fontSize);
+}
 
 /**
  * Formats a number with spaces for thousands separator.

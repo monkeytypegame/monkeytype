@@ -4,7 +4,6 @@ import differenceInDays from "date-fns/differenceInDays";
 import * as Misc from "../utils/misc";
 import * as Numbers from "../utils/numbers";
 import * as GetData from "../utils/get-data";
-import { abbreviateNumber } from "../utils/numbers";
 import { getHTMLById } from "../controllers/badge-controller";
 import { throttle } from "throttle-debounce";
 import * as ActivePage from "../states/active-page";
@@ -295,10 +294,14 @@ export async function update(
   details
     .find(".level")
     .text(level)
-    .attr("aria-label", `${abbreviateNumber(xp)} total xp`);
+    .attr("aria-label", `${Numbers.abbreviateNumber(xp)} total xp`);
   details
     .find(".xp")
-    .text(`${abbreviateNumber(xpToDisplay)}/${abbreviateNumber(xpForLevel)}`);
+    .text(
+      `${Numbers.abbreviateNumber(xpToDisplay)}/${Numbers.abbreviateNumber(
+        xpForLevel
+      )}`
+    );
   details
     .find(".xpBar .bar")
     .css("width", `${(xpToDisplay / xpForLevel) * 100}%`);
@@ -306,7 +309,9 @@ export async function update(
     .find(".xp")
     .attr(
       "aria-label",
-      `${abbreviateNumber(xpForLevel - xpToDisplay)} xp until next level`
+      `${Numbers.abbreviateNumber(
+        xpForLevel - xpToDisplay
+      )} xp until next level`
     );
 
   //lbs
@@ -405,7 +410,7 @@ export function updateNameFontSize(where: ProfileViewPaths): void {
   const nameFieldjQ = details.find(".user");
   const nameFieldParent = nameFieldjQ.parent()[0];
   const nameField = nameFieldjQ[0];
-  const upperLimit = Misc.convertRemToPixels(2);
+  const upperLimit = Numbers.convertRemToPixels(2);
 
   if (!nameField || !nameFieldParent) return;
 

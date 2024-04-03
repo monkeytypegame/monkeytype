@@ -1,5 +1,6 @@
 import { randomIntFromRange } from "./numbers";
 import * as Misc from "./misc";
+import * as Strings from "./strings";
 
 /**
  * Generates a random binary string of length 8.
@@ -75,7 +76,7 @@ export function getMorse(word: string): string {
 
   let morseWord = "";
 
-  const deAccentedWord = Misc.replaceSpecialChars(word);
+  const deAccentedWord = Strings.replaceSpecialChars(word);
   for (let i = 0; i < deAccentedWord.length; i++) {
     const letter = morseCode[deAccentedWord.toLowerCase()[i] as string];
     morseWord += letter !== undefined ? letter + "/" : "";

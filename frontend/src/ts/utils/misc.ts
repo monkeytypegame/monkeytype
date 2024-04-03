@@ -3,29 +3,6 @@ import { envConfig } from "../constants/env-config";
 import { roundTo2, randomIntFromRange } from "./numbers";
 import * as GetData from "./get-data";
 
-export function getLastChar(word: string): string {
-  try {
-    return word.charAt(word.length - 1);
-  } catch {
-    return "";
-  }
-}
-
-export function capitalizeFirstLetterOfEachWord(str: string): string {
-  return str
-    .split(/ +/)
-    .map((s) => s.charAt(0).toUpperCase() + s.slice(1))
-    .join(" ");
-}
-
-export function capitalizeFirstLetter(str: string): string {
-  return str.charAt(0).toUpperCase() + str.slice(1);
-}
-
-export function isASCIILetter(c: string): boolean {
-  return c.length === 1 && /[a-z]/i.test(c);
-}
-
 export function kogasa(cov: number): number {
   return (
     100 * (1 - Math.tanh(cov + Math.pow(cov, 3) / 3 + Math.pow(cov, 5) / 5))
@@ -326,14 +303,6 @@ export function toggleFullscreen(): void {
   }
 }
 
-//credit: https://www.w3resource.com/javascript-exercises/javascript-string-exercise-32.php
-export function remove_non_ascii(str: string): string {
-  if (str === null || str === "") return "";
-  else str = str.toString();
-
-  return str.replace(/[^\x20-\x7E]/g, "");
-}
-
 export function escapeRegExp(str: string): string {
   return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
@@ -446,11 +415,6 @@ export function clearTimeouts(timeouts: (number | NodeJS.Timeout)[]): void {
   });
 }
 
-export function replaceCharAt(str: string, index: number, chr: string): string {
-  if (index > str.length - 1) return str;
-  return str.substring(0, index) + chr + str.substring(index + 1);
-}
-
 //https://stackoverflow.com/questions/273789/is-there-a-version-of-javascripts-string-indexof-that-allows-for-regular-expr
 export function regexIndexOf(
   string: string,
@@ -502,11 +466,6 @@ export async function getDiscordAvatarUrl(
   } catch (error) {}
 
   return null;
-}
-
-//https://stackoverflow.com/questions/36532307/rem-px-in-javascript
-export function convertRemToPixels(rem: number): number {
-  return rem * parseFloat(getComputedStyle(document.documentElement).fontSize);
 }
 
 export async function swapElements(
@@ -808,13 +767,6 @@ export function htmlToText(html: string): string {
   return (el.textContent as string) || el.innerText || "";
 }
 
-export function camelCaseToWords(str: string): string {
-  return str
-    .replace(/([A-Z])/g, " $1")
-    .trim()
-    .toLowerCase();
-}
-
 export function loadCSS(href: string, prepend = false): void {
   const link = document.createElement("link");
   link.type = "text/css";
@@ -937,11 +889,6 @@ export function typedKeys<T extends object>(
   obj: T
 ): T extends T ? (keyof T)[] : never {
   return Object.keys(obj) as unknown as T extends T ? (keyof T)[] : never;
-}
-
-//https://ricardometring.com/javascript-replace-special-characters
-export function replaceSpecialChars(str: string): string {
-  return str.normalize("NFD").replace(/[\u0300-\u036f]/g, ""); // Remove accents
 }
 
 export function reloadAfter(seconds: number): void {

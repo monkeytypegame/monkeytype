@@ -3,6 +3,7 @@ import * as Misc from "../../utils/misc";
 import * as GetData from "../../utils/get-data";
 import * as GetText from "../../utils/get-text";
 import * as Numbers from "../../utils/numbers";
+import * as Strings from "../../utils/strings";
 import * as ManualRestart from "../manual-restart-tracker";
 import Config, * as UpdateConfig from "../../config";
 import * as MemoryTimer from "./memory-funbox-timer";
@@ -232,7 +233,7 @@ FunboxList.setFunboxFunctions("backwards", {
 
 FunboxList.setFunboxFunctions("capitals", {
   alterText(word: string): string {
-    return Misc.capitalizeFirstLetterOfEachWord(word);
+    return Strings.capitalizeFirstLetterOfEachWord(word);
   },
 });
 
@@ -328,7 +329,7 @@ FunboxList.setFunboxFunctions("58008", {
   punctuateWord(word: string): string {
     if (word.length > 3) {
       if (Math.random() < 0.5) {
-        word = Misc.replaceCharAt(
+        word = Strings.replaceCharAt(
           word,
           Numbers.randomIntFromRange(1, word.length - 2),
           "."
@@ -342,7 +343,7 @@ FunboxList.setFunboxFunctions("58008", {
           word[index + 1] !== "0"
         ) {
           const special = Misc.randomElementFromArray(["/", "*", "-", "+"]);
-          word = Misc.replaceCharAt(word, index, special);
+          word = Strings.replaceCharAt(word, index, special);
         }
       }
     }
@@ -531,7 +532,7 @@ export function toggleFunbox(funbox: string): boolean {
     !Config.funbox.split("#").includes(funbox)
   ) {
     Notifications.add(
-      `${Misc.capitalizeFirstLetter(
+      `${Strings.capitalizeFirstLetter(
         funbox.replace(/_/g, " ")
       )} funbox is not compatible with the current funbox selection`,
       0
