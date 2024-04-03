@@ -3,6 +3,7 @@ import * as Misc from "../../utils/misc";
 import * as GetData from "../../utils/get-data";
 import * as GetText from "../../utils/get-text";
 import * as Numbers from "../../utils/numbers";
+import * as Arrays from "../../utils/arrays";
 import * as Strings from "../../utils/strings";
 import * as ManualRestart from "../manual-restart-tracker";
 import Config, * as UpdateConfig from "../../config";
@@ -342,7 +343,7 @@ FunboxList.setFunboxFunctions("58008", {
           word[index + 1] !== "." &&
           word[index + 1] !== "0"
         ) {
-          const special = Misc.randomElementFromArray(["/", "*", "-", "+"]);
+          const special = Arrays.randomElementFromArray(["/", "*", "-", "+"]);
           word = Strings.replaceCharAt(word, index, special);
         }
       }

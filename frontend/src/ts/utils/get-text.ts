@@ -1,5 +1,5 @@
 import { randomIntFromRange } from "./numbers";
-import * as Misc from "./misc";
+import * as Arrays from "../utils/arrays";
 import * as Strings from "./strings";
 
 /**
@@ -167,7 +167,7 @@ export function getSpecials(): string {
     "<",
   ];
   for (let i = 0; i < randLen; i++) {
-    ret += Misc.randomElementFromArray(specials);
+    ret += Arrays.randomElementFromArray(specials);
   }
   return ret;
 }

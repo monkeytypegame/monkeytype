@@ -13,6 +13,7 @@ import * as Notifications from "../elements/notifications";
 import Page from "./page";
 import * as DateTime from "../utils/date-and-time";
 import * as Misc from "../utils/misc";
+import * as Arrays from "../utils/arrays";
 import * as Numbers from "../utils/numbers";
 import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
 import * as Profile from "../elements/profile";
@@ -745,7 +746,7 @@ async function fillContent(): Promise<void> {
     // add last point to pb
     pb.push({
       x: 1,
-      y: Misc.lastElementFromArray(pb)?.y as number,
+      y: Arrays.lastElementFromArray(pb)?.y as number,
     });
 
     const avgTen = [];

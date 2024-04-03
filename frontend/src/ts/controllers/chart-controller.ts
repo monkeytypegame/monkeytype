@@ -64,7 +64,7 @@ import * as ThemeColors from "../elements/theme-colors";
 import * as ConfigEvent from "../observables/config-event";
 import * as TestInput from "../test/test-input";
 import * as DateTime from "../utils/date-and-time";
-import * as Misc from "../utils/misc";
+import * as Arrays from "../utils/arrays";
 import * as Numbers from "../utils/numbers";
 import { blendTwoHexColors } from "../utils/colors";
 
@@ -245,7 +245,8 @@ export const result = new ChartWithUpdateColors<
 
               const unique = [...new Set(wordsToHighlight)];
               const firstHighlightWordIndex = unique[0];
-              const lastHighlightWordIndex = Misc.lastElementFromArray(unique);
+              const lastHighlightWordIndex =
+                Arrays.lastElementFromArray(unique);
               if (
                 firstHighlightWordIndex === undefined ||
                 lastHighlightWordIndex === undefined

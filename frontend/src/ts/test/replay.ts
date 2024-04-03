@@ -1,7 +1,7 @@
 import config from "../config";
 import * as Sound from "../controllers/sound-controller";
 import * as TestInput from "./test-input";
-import * as Misc from "../utils/misc";
+import * as Arrays from "../utils/arrays";
 
 type ReplayAction =
   | "correctLetter"
@@ -271,7 +271,7 @@ function playReplay(): void {
 
   let swTime = Math.round(lastTime / 1000); //starting time
   const swEndTime = Math.round(
-    (Misc.lastElementFromArray(replayData) as Replay).time / 1000
+    (Arrays.lastElementFromArray(replayData) as Replay).time / 1000
   );
   while (swTime <= swEndTime) {
     const time = swTime;
@@ -300,7 +300,7 @@ function playReplay(): void {
         "aria-label",
         "Start replay"
       );
-    }, (Misc.lastElementFromArray(replayData) as Replay).time - lastTime)
+    }, (Arrays.lastElementFromArray(replayData) as Replay).time - lastTime)
   );
 }
 

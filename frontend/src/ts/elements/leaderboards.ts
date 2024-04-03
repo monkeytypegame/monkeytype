@@ -3,6 +3,7 @@ import * as DB from "../db";
 import Config from "../config";
 import * as DateTime from "../utils/date-and-time";
 import * as Misc from "../utils/misc";
+import * as Arrays from "../utils/arrays";
 import * as Numbers from "../utils/numbers";
 import * as Notifications from "./notifications";
 import format from "date-fns/format";
@@ -527,7 +528,7 @@ async function requestMore(lb: LbKey, prepend = false): Promise<void> {
   if (requesting[lb]) return;
   requesting[lb] = true;
   showLoader(lb);
-  let skipVal = Misc.lastElementFromArray(currentData[lb])?.rank as number;
+  let skipVal = Arrays.lastElementFromArray(currentData[lb])?.rank as number;
   if (prepend) {
     skipVal = (currentData[lb][0]?.rank ?? 0) - leaderboardSingleLimit;
   }

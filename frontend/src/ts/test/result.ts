@@ -17,6 +17,7 @@ import * as Misc from "../utils/misc";
 import * as Strings from "../utils/strings";
 import * as GetData from "../utils/get-data";
 import * as Numbers from "../utils/numbers";
+import * as Arrays from "../utils/arrays";
 import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
 import * as FunboxList from "./funbox/funbox-list";
 import * as PbCrown from "./pb-crown";
@@ -92,7 +93,7 @@ async function updateGraph(): Promise<void> {
 
   let smoothedRawData = chartData2;
   if (!useUnsmoothedRaw) {
-    smoothedRawData = Numbers.smooth(smoothedRawData, 1);
+    smoothedRawData = Arrays.smooth(smoothedRawData, 1);
     smoothedRawData = smoothedRawData.map((a) => Math.round(a));
   }
 

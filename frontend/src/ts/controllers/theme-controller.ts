@@ -1,6 +1,7 @@
 import * as ThemeColors from "../elements/theme-colors";
 import * as ChartController from "./chart-controller";
 import * as Misc from "../utils/misc";
+import * as Arrays from "../utils/arrays";
 import * as GetData from "../utils/get-data";
 import { isColorDark, isColorLight } from "../utils/colors";
 import Config, { setAutoSwitchTheme } from "../config";
@@ -266,7 +267,7 @@ async function changeThemeList(): Promise<void> {
   } else if (Config.randomTheme === "custom" && DB.getSnapshot()) {
     themesList = DB.getSnapshot()?.customThemes?.map((ct) => ct._id) ?? [];
   }
-  Misc.shuffle(themesList);
+  Arrays.shuffle(themesList);
   randomThemeIndex = 0;
 }
 
@@ -279,7 +280,7 @@ export async function randomizeTheme(): Promise<void> {
   randomThemeIndex++;
 
   if (randomThemeIndex >= themesList.length) {
-    Misc.shuffle(themesList);
+    Arrays.shuffle(themesList);
     randomThemeIndex = 0;
   }
 

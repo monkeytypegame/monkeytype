@@ -2,7 +2,7 @@ import Ape from "../ape";
 import * as Loader from "../elements/loader";
 import * as Notifications from "../elements/notifications";
 import * as CaptchaController from "../controllers/captcha-controller";
-import * as Misc from "../utils/misc";
+import * as Strings from "../utils/strings";
 import * as GetData from "../utils/get-data";
 import Config from "../config";
 import SlimSelect from "slim-select";
@@ -65,7 +65,7 @@ export async function show(showOptions: ShowOptions): Promise<void> {
       });
 
       $("#quoteSubmitModal .newQuoteLanguage").val(
-        Misc.removeLanguageSize(Config.language)
+        Strings.removeLanguageSize(Config.language)
       );
       $("#quoteSubmitModal .newQuoteLanguage").trigger("change");
       $("#quoteSubmitModal input").val("");

@@ -1,37 +1,4 @@
 /**
- * Applies a smoothing algorithm to an array of numbers.
- * @param arr The input array of numbers.
- * @param windowSize The size of the window used for smoothing.
- * @param getter An optional function to extract values from the array elements. Defaults to the identity function.
- * @returns An array of smoothed values, where each value is the average of itself and its neighbors within the window.
- */
-export function smooth(
-  arr: number[],
-  windowSize: number,
-  getter = (value: number): number => value
-): number[] {
-  const get = getter;
-  const result = [];
-
-  for (let i = 0; i < arr.length; i += 1) {
-    const leftOffeset = i - windowSize;
-    const from = leftOffeset >= 0 ? leftOffeset : 0;
-    const to = i + windowSize + 1;
-
-    let count = 0;
-    let sum = 0;
-    for (let j = from; j < to && j < arr.length; j += 1) {
-      sum += get(arr[j] as number);
-      count += 1;
-    }
-
-    result[i] = sum / count;
-  }
-
-  return result;
-}
-
-/**
  * Calculates the standard deviation of an array of numbers.
  * @param array An array of numbers.
  * @returns The standard deviation of the input array.

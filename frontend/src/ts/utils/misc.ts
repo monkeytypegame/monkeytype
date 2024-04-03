@@ -1,6 +1,6 @@
 import * as Loader from "../elements/loader";
 import { envConfig } from "../constants/env-config";
-import { randomIntFromRange } from "./numbers";
+import { lastElementFromArray } from "./arrays";
 import * as GetData from "./get-data";
 
 export function kogasa(cov: number): number {
@@ -541,38 +541,6 @@ export async function downloadResultsCSV(
   Loader.hide();
 }
 
-/**
- * Shuffle an array of elements using the Fisher–Yates algorithm.
- * This function mutates the input array.
- * @param elements
- */
-export function shuffle<T>(elements: T[]): void {
-  for (let i = elements.length - 1; i > 0; --i) {
-    const j = randomIntFromRange(0, i);
-    const temp = elements[j];
-    elements[j] = elements[i] as T;
-    elements[i] = temp as T;
-  }
-}
-
-export function randomElementFromArray<T>(array: T[]): T {
-  return array[randomIntFromRange(0, array.length - 1)] as T;
-}
-
-export function nthElementFromArray<T>(
-  array: T[],
-  index: number
-): T | undefined {
-  index = index < 0 ? array.length + index : index;
-  return array[index];
-}
-
-export function randomElementFromObject<T extends object>(
-  object: T
-): T[keyof T] {
-  return randomElementFromArray(Object.values(object));
-}
-
 export function createErrorMessage(error: unknown, message: string): string {
   if (error instanceof Error) {
     return `${message}: ${error.message}`;
@@ -647,14 +615,6 @@ export function isPasswordStrong(password: string): boolean {
   const isLong = password.length >= 8;
   const isShort = password.length <= 64;
   return hasCapital && hasNumber && hasSpecial && isLong && isShort;
-}
-
-export function areUnsortedArraysEqual(a: unknown[], b: unknown[]): boolean {
-  return a.length === b.length && a.every((v) => b.includes(v));
-}
-
-export function areSortedArraysEqual(a: unknown[], b: unknown[]): boolean {
-  return a.length === b.length && a.every((v, i) => v === b[i]);
 }
 
 export function intersect<T>(a: T[], b: T[], removeDuplicates = false): T[] {
@@ -776,10 +736,6 @@ export function updateTitle(title?: string): void {
   } else {
     document.title = local + title;
   }
-}
-
-export function lastElementFromArray<T>(array: T[]): T | undefined {
-  return array[array.length - 1];
 }
 
 // DO NOT ALTER GLOBAL OBJECTSONSTRUCTOR, IT WILL BREAK RESULT HASHES

@@ -1,7 +1,7 @@
 import * as ChartController from "../controllers/chart-controller";
 import Config from "../config";
 import * as Misc from "../utils/misc";
-import * as Numbers from "../utils/numbers";
+import * as Arrays from "../utils/arrays";
 
 export function updatePosition(x: number, y: number): void {
   $(".pageAccount .miniResultChartWrapper").css({ top: y, left: x });
@@ -29,7 +29,7 @@ export function updateData(data: SharedTypes.ChartData): void {
   data.err = data.err.slice(0, data.raw.length);
   labels = labels.slice(0, data.raw.length);
 
-  const smoothedRawData = Numbers.smooth(data.raw, 1);
+  const smoothedRawData = Arrays.smooth(data.raw, 1);
 
   ChartController.miniResult.data.labels = labels;
 

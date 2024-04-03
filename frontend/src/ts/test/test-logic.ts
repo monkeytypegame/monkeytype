@@ -2,8 +2,9 @@ import Ape from "../ape";
 import * as TestUI from "./test-ui";
 import * as ManualRestart from "./manual-restart-tracker";
 import Config, * as UpdateConfig from "../config";
-
+import * as Strings from "../utils/strings";
 import * as Misc from "../utils/misc";
+import * as Arrays from "../utils/arrays";
 import * as GetData from "../utils/get-data";
 import * as Numbers from "../utils/numbers";
 import * as Notifications from "../elements/notifications";
@@ -350,7 +351,7 @@ export function restart(options = {} as RestartOptions): void {
         TestUI.showWords();
         if (Config.keymapMode === "next" && Config.mode !== "zen") {
           void KeymapEvent.highlight(
-            Misc.nthElementFromArray(
+            Arrays.nthElementFromArray(
               [...TestWords.words.getCurrent()],
               0
             ) as string
@@ -552,7 +553,7 @@ export async function init(): Promise<void> {
 
   if (Config.keymapMode === "next" && Config.mode !== "zen") {
     void KeymapEvent.highlight(
-      Misc.nthElementFromArray([...TestWords.words.getCurrent()], 0) as string
+      Arrays.nthElementFromArray([...TestWords.words.getCurrent()], 0) as string
     );
   }
   Funbox.toggleScript(TestWords.words.getCurrent());
@@ -813,7 +814,7 @@ function buildCompletedEvent(
   const afkDuration = TestStats.calculateAfkSeconds(duration);
   let language = Config.language;
   if (Config.mode === "quote") {
-    language = Misc.removeLanguageSize(Config.language);
+    language = Strings.removeLanguageSize(Config.language);
   }
 
   const quoteLength = TestWords.randomQuote?.group ?? -1;
@@ -1488,7 +1489,7 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
     ) {
       setTimeout(() => {
         void KeymapEvent.highlight(
-          Misc.nthElementFromArray(
+          Arrays.nthElementFromArray(
             [...TestWords.words.getCurrent()],
             0
           ) as string
