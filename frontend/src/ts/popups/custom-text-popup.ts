@@ -10,6 +10,7 @@ import * as Notifications from "../elements/notifications";
 import * as SavedTextsPopup from "../modals/saved-texts";
 import * as SaveCustomTextPopup from "../modals/save-custom-text";
 import AnimatedModal from "../utils/animated-modal";
+import { text } from "stream/consumers";
 
 const wrapper = "#customTextPopupWrapper";
 const popup = wrapper + " .modal";
@@ -100,7 +101,18 @@ export function show(): void {
   });
 }
 
-$(`${popup} .delimiterCheck input`).on("change", () => {
+function hide(resetTextareaState = true, clearModalChain = false): void {
+  void modal.hide({
+    clearModalChain,
+    afterAnimation: async () => {
+      if (resetTextareaState) {
+        CustomText.setPopupTextareaStateToSaved();
+      }
+    },
+  });
+}
+
+function handleDelimiterChange(): void {
   let delimiter;
   if ($(`${popup} .delimiterCheck input`).prop("checked") as boolean) {
     delimiter = "|";
@@ -129,118 +141,33 @@ $(`${popup} .delimiterCheck input`).on("change", () => {
     $(`${popup} textarea`).val(newtext);
   }
   CustomText.setDelimiter(delimiter);
-});
-
-function hide(resetTextareaState = true, clearModalChain = false): void {
-  // if (options.noAnim === undefined) options.noAnim = false;
-  // if (options.resetState === undefined) options.resetState = true;
-
-  // if (Misc.isElementVisible(wrapper)) {
-  //   $(wrapper)
-  //     .stop(true, true)
-  //     .css("opacity", 1)
-  //     .animate(
-  //       {
-  //         opacity: 0,
-  //       },
-  //       options.noAnim ? 0 : 125,
-  //       () => {
-  //         if (options.resetState) {
-  //           CustomText.setPopupTextareaStateToSaved();
-  //         }
-
-  //         $(wrapper).addClass("hidden");
-  //         Skeleton.remove(skeletonId);
-  //       }
-  //     );
-  // }
-  void modal.hide({
-    clearModalChain,
-    afterAnimation: async () => {
-      if (resetTextareaState) {
-        CustomText.setPopupTextareaStateToSaved();
-      }
-    },
-  });
 }
 
-$(`${popup} .inputs .randomWordsCheckbox input`).on("change", () => {
-  if ($(`${popup} .randomWordsCheckbox input`).prop("checked") as boolean) {
-    $(`${popup} .inputs .randomInputFields`).removeClass("disabled");
-  } else {
-    $(`${popup} .inputs .randomInputFields`).addClass("disabled");
+function handleFileOpen(): void {
+  const file = ($(`#fileInput`)[0] as HTMLInputElement).files?.[0];
+  if (file) {
+    if (file.type !== "text/plain") {
+      Notifications.add("File is not a text file", -1, {
+        duration: 5,
+      });
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.readAsText(file, "UTF-8");
+
+    reader.onload = (readerEvent): void => {
+      const content = readerEvent.target?.result as string;
+      $(`${popup} textarea`).val(content);
+      $(`#fileInput`).val("");
+    };
+    reader.onerror = (): void => {
+      Notifications.add("Failed to read file", -1, {
+        duration: 5,
+      });
+    };
   }
-});
-
-$(`${popup} .replaceNewlineWithSpace input`).on("change", () => {
-  if ($(`${popup} .replaceNewlineWithSpace input`).prop("checked") as boolean) {
-    $(`${popup} .inputs .replaceNewLinesButtons`).removeClass("disabled");
-  } else {
-    $(`${popup} .inputs .replaceNewLinesButtons`).addClass("disabled");
-  }
-});
-
-$(`${popup} .inputs .replaceNewLinesButtons .button`).on("click", (e) => {
-  $(`${popup} .inputs .replaceNewLinesButtons .button`).removeClass("active");
-  $(e.target).addClass("active");
-});
-
-$(`${popup} textarea`).on("input", () => {
-  CustomText.setPopupTextareaState($(`${popup} textarea`).val() as string);
-});
-
-$(`${popup} textarea`).on("keydown", (e) => {
-  if (e.key !== "Tab") return;
-  e.preventDefault();
-
-  const area = e.target as HTMLTextAreaElement;
-  const start: number = area.selectionStart;
-  const end: number = area.selectionEnd;
-
-  // set textarea value to: text before caret + tab + text after caret
-  area.value =
-    area.value.substring(0, start) + "\t" + area.value.substring(end);
-
-  // put caret at right position again
-  area.selectionStart = area.selectionEnd = start + 1;
-
-  CustomText.setPopupTextareaState(area.value);
-});
-
-$(`${popup} textarea`).on("keypress", (e) => {
-  if (Misc.isElementVisible(`#customTextPopupWrapper .longCustomTextWarning`)) {
-    e.preventDefault();
-    return;
-  }
-  if (e.code === "Enter" && e.ctrlKey) {
-    $(`${popup} .button.apply`).trigger("click");
-  }
-  if (
-    CustomTextState.isCustomTextLong() &&
-    CustomTextState.getCustomTextName() !== ""
-  ) {
-    CustomTextState.setCustomTextName("", undefined);
-    Notifications.add("Disabled long custom text progress tracking", 0, {
-      duration: 5,
-    });
-    updateLongTextWarning();
-  }
-});
-
-$(`${popup} .randomInputFields .wordcount input`).on("keypress", () => {
-  $(`${popup} .randomInputFields .time input`).val("");
-  $(`${popup} .randomInputFields .sectioncount input`).val("");
-});
-
-$(`${popup} .randomInputFields .time input`).on("keypress", () => {
-  $(`${popup} .randomInputFields .wordcount input`).val("");
-  $(`${popup} .randomInputFields .sectioncount input`).val("");
-});
-
-$(`${popup} .randomInputFields .sectioncount input`).on("keypress", () => {
-  $(`${popup} .randomInputFields .time input`).val("");
-  $(`${popup} .randomInputFields .wordcount input`).val("");
-});
+}
 
 function apply(): void {
   let text = ($(`${popup} textarea`).val() as string).normalize();
@@ -371,65 +298,130 @@ function apply(): void {
   hide();
 }
 
-$("#popups").on("click", `${popup} .button.apply`, () => {
-  apply();
-});
-
-$(".pageTest").on("click", "#testConfig .customText .textButton", () => {
-  show();
-});
-
-$("#popups").on("click", `${popup} .wordfilter`, () => {
-  void WordFilterPopup.show({
-    modalChain: modal,
+async function setup(modalEl: HTMLElement): Promise<void> {
+  modalEl
+    .querySelector(".delimiterCheck input")
+    ?.addEventListener("change", handleDelimiterChange);
+  modalEl
+    .querySelector("#fileInput")
+    ?.addEventListener("change", handleFileOpen);
+  modalEl
+    .querySelector(".randomWordsCheckbox input")
+    ?.addEventListener("change", () => {
+      if ($(`${popup} .randomWordsCheckbox input`).prop("checked") as boolean) {
+        $(`${popup} .inputs .randomInputFields`).removeClass("disabled");
+      } else {
+        $(`${popup} .inputs .randomInputFields`).addClass("disabled");
+      }
+    });
+  modalEl
+    .querySelector(".replaceNewlineWithSpace input")
+    ?.addEventListener("change", () => {
+      if (
+        $(`${popup} .replaceNewlineWithSpace input`).prop("checked") as boolean
+      ) {
+        $(`${popup} .inputs .replaceNewLinesButtons`).removeClass("disabled");
+      } else {
+        $(`${popup} .inputs .replaceNewLinesButtons`).addClass("disabled");
+      }
+    });
+  const replaceNewLinesButtons = modalEl.querySelectorAll(
+    ".replaceNewLinesButtons .button"
+  );
+  for (const button of replaceNewLinesButtons) {
+    button.addEventListener("click", () => {
+      $(`${popup} .replaceNewLinesButtons .button`).removeClass("active");
+      $(button).addClass("active");
+    });
+  }
+  const textarea = modalEl.querySelector("textarea");
+  textarea?.addEventListener("input", (e) => {
+    CustomText.setPopupTextareaState($(`${popup} textarea`).val() as string);
   });
-});
+  textarea?.addEventListener("keydown", (e) => {
+    if (e.key !== "Tab") return;
+    e.preventDefault();
 
-$(`${popup} .buttonsTop .showSavedTexts`).on("click", () => {
-  void SavedTextsPopup.show({
-    modalChain: modal,
+    const area = e.target as HTMLTextAreaElement;
+    const start: number = area.selectionStart;
+    const end: number = area.selectionEnd;
+
+    // set textarea value to: text before caret + tab + text after caret
+    area.value =
+      area.value.substring(0, start) + "\t" + area.value.substring(end);
+
+    // put caret at right position again
+    area.selectionStart = area.selectionEnd = start + 1;
+
+    CustomText.setPopupTextareaState(area.value);
   });
-});
-
-$(`#customTextPopupWrapper .buttonsTop .saveCustomText`).on("click", () => {
-  void SaveCustomTextPopup.show({
-    modalChain: modal,
-    modalChainData: { text: CustomText.popupTextareaState },
-  });
-});
-
-$(`#customTextPopupWrapper .longCustomTextWarning .button`).on("click", () => {
-  $(`#customTextPopupWrapper .longCustomTextWarning`).addClass("hidden");
-});
-
-$(`#fileInput`).on("change", () => {
-  const file = ($(`#fileInput`)[0] as HTMLInputElement).files?.[0];
-  if (file) {
-    if (file.type !== "text/plain") {
-      Notifications.add("File is not a text file", -1, {
-        duration: 5,
-      });
+  textarea?.addEventListener("keypress", (e) => {
+    if (
+      Misc.isElementVisible(`#customTextPopupWrapper .longCustomTextWarning`)
+    ) {
+      e.preventDefault();
       return;
     }
-
-    const reader = new FileReader();
-    reader.readAsText(file, "UTF-8");
-
-    reader.onload = (readerEvent): void => {
-      const content = readerEvent.target?.result as string;
-      $(`${popup} textarea`).val(content);
-      $(`#fileInput`).val("");
-    };
-    reader.onerror = (): void => {
-      Notifications.add("Failed to read file", -1, {
+    if (e.code === "Enter" && e.ctrlKey) {
+      $(`${popup} .button.apply`).trigger("click");
+    }
+    if (
+      CustomTextState.isCustomTextLong() &&
+      CustomTextState.getCustomTextName() !== ""
+    ) {
+      CustomTextState.setCustomTextName("", undefined);
+      Notifications.add("Disabled long custom text progress tracking", 0, {
         duration: 5,
       });
-    };
-  }
-});
-
-async function setup(): Promise<void> {
-  //
+      updateLongTextWarning();
+    }
+  });
+  modalEl
+    .querySelector(".randomInputFields .wordcount input")
+    ?.addEventListener("keypress", (e) => {
+      $(`${popup} .randomInputFields .time input`).val("");
+      $(`${popup} .randomInputFields .sectioncount input`).val("");
+    });
+  modalEl
+    .querySelector(".randomInputFields .time input")
+    ?.addEventListener("keypress", (e) => {
+      $(`${popup} .randomInputFields .wordcount input`).val("");
+      $(`${popup} .randomInputFields .sectioncount input`).val("");
+    });
+  modalEl
+    .querySelector(".randomInputFields .sectioncount input")
+    ?.addEventListener("keypress", (e) => {
+      $(`${popup} .randomInputFields .time input`).val("");
+      $(`${popup} .randomInputFields .wordcount input`).val("");
+    });
+  modalEl.querySelector(".button.apply")?.addEventListener("click", () => {
+    apply();
+  });
+  modalEl.querySelector(".button.wordfilter")?.addEventListener("click", () => {
+    void WordFilterPopup.show({
+      modalChain: modal,
+    });
+  });
+  modalEl
+    .querySelector(".button.showSavedTexts")
+    ?.addEventListener("click", () => {
+      void SavedTextsPopup.show({
+        modalChain: modal,
+      });
+    });
+  modalEl
+    .querySelector(".button.saveCustomText")
+    ?.addEventListener("click", () => {
+      void SaveCustomTextPopup.show({
+        modalChain: modal,
+        modalChainData: { text: CustomText.popupTextareaState },
+      });
+    });
+  modalEl
+    .querySelector(".longCustomTextWarning .button")
+    ?.addEventListener("click", () => {
+      $(`#customTextPopupWrapper .longCustomTextWarning`).addClass("hidden");
+    });
 }
 
 const modal = new AnimatedModal({
