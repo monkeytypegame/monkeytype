@@ -1,7 +1,10 @@
 import * as CustomText from "../test/custom-text";
 import * as CustomTextState from "../states/custom-text-name";
 import { escapeHTML } from "../utils/misc";
-import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
+import AnimatedModal, {
+  HideOptions,
+  ShowOptions,
+} from "../utils/animated-modal";
 import { showPopup } from "./simple-modals";
 
 async function fill(): Promise<void> {
@@ -72,8 +75,8 @@ async function fill(): Promise<void> {
   $("#savedTextsModal .list .savedText .button.name").on("click", (e) => {
     const name = $(e.target).text();
     CustomTextState.setCustomTextName(name, false);
-    applySaved(name, false);
-    hide();
+    const text = getSavedText(name, false);
+    hide({ modalChainData: { text } });
   });
 
   $("#savedTextsModal .listLong .savedLongText .button.name").on(
@@ -81,8 +84,8 @@ async function fill(): Promise<void> {
     (e) => {
       const name = $(e.target).text();
       CustomTextState.setCustomTextName(name, true);
-      applySaved(name, true);
-      hide();
+      const text = getSavedText(name, true);
+      hide({ modalChainData: { text } });
     }
   );
 }
@@ -96,18 +99,18 @@ export async function show(options: ShowOptions): Promise<void> {
   });
 }
 
-function hide(clearChain = false): void {
+function hide(hideOptions?: HideOptions): void {
   void modal.hide({
-    clearModalChain: clearChain,
+    ...hideOptions,
   });
 }
 
-function applySaved(name: string, long: boolean): void {
+function getSavedText(name: string, long: boolean): string {
   let text = CustomText.getCustomText(name, long);
   if (long) {
     text = text.slice(CustomText.getCustomTextLongProgress(name));
   }
-  CustomText.setPopupTextareaState(text.join(" "));
+  return text.join(" ");
 }
 
 async function setup(): Promise<void> {

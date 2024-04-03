@@ -18,7 +18,10 @@ type ConstructorCustomAnimations = {
   hide?: CustomWrapperAndModalAnimations;
 };
 
-type Animation = (modal: HTMLElement) => Promise<void>;
+type Animation = (
+  modal: HTMLElement,
+  modalChainData?: unknown
+) => Promise<void>;
 
 type ShowHideOptions = {
   animationMode?: "none" | "both" | "modalOnly";
@@ -26,6 +29,7 @@ type ShowHideOptions = {
   customAnimation?: CustomWrapperAndModalAnimations;
   beforeAnimation?: Animation;
   afterAnimation?: Animation;
+  modalChainData?: unknown;
 };
 
 export type ShowOptions = ShowHideOptions & {
@@ -225,7 +229,7 @@ export default class AnimatedModal {
         this.wrapperEl.showModal();
       }
 
-      await options?.beforeAnimation?.(this.modalEl);
+      await options?.beforeAnimation?.(this.modalEl, options?.modalChainData);
 
       //wait until the next event loop to allow the dialog to start animating
       setTimeout(async () => {
@@ -275,7 +279,10 @@ export default class AnimatedModal {
             wrapperAnimation.easing ?? "swing",
             async () => {
               this.focusFirstInput(options?.focusFirstInput);
-              await options?.afterAnimation?.(this.modalEl);
+              await options?.afterAnimation?.(
+                this.modalEl,
+                options?.modalChainData
+              );
               resolve();
             }
           );
@@ -293,7 +300,10 @@ export default class AnimatedModal {
           modalAnimation?.easing ?? "swing",
           async () => {
             this.focusFirstInput(options?.focusFirstInput);
-            await options?.afterAnimation?.(this.modalEl);
+            await options?.afterAnimation?.(
+              this.modalEl,
+              options?.modalChainData
+            );
             resolve();
           }
         );
@@ -372,6 +382,7 @@ export default class AnimatedModal {
               ) {
                 await this.previousModalInChain.show({
                   animationMode: "modalOnly",
+                  modalChainData: options?.modalChainData,
                   animationDurationMs:
                     modalAnimationDuration * MODAL_ONLY_ANIMATION_MULTIPLIER,
                   ...this.previousModalInChain.showOptionsWhenInChain,
@@ -407,6 +418,7 @@ export default class AnimatedModal {
             ) {
               await this.previousModalInChain.show({
                 animationMode: "modalOnly",
+                modalChainData: options?.modalChainData,
                 animationDurationMs:
                   modalAnimationDuration * MODAL_ONLY_ANIMATION_MULTIPLIER,
                 ...this.previousModalInChain.showOptionsWhenInChain,
