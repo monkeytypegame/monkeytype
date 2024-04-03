@@ -248,7 +248,7 @@ async function apply(set: boolean): Promise<void> {
 
   if (filteredWords.length === 0) {
     Notifications.add("No words found", 0);
-    hide(true);
+    enableButtons();
     return;
   }
 
