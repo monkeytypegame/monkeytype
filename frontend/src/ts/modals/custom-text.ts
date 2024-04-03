@@ -423,7 +423,7 @@ async function setup(modalEl: HTMLElement): Promise<void> {
       });
     });
   modalEl
-    .querySelector(".longCustomTextWarning .button")
+    .querySelector(".longCustomTextWarning")
     ?.addEventListener("click", () => {
       $(`#customTextModal .longCustomTextWarning`).addClass("hidden");
     });

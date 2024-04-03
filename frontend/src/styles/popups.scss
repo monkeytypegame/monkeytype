@@ -101,7 +101,8 @@
     }
 
     .longCustomTextWarning {
-      background: rgba(0, 0, 0, 0.9);
+      // background: rgba(0, 0, 0, 0.5);
+      background: var(--sub-alt-color);
       position: absolute;
       left: 0;
       right: 0;
@@ -110,12 +111,16 @@
       display: grid;
       place-items: center center;
       border-radius: var(--roundness);
-      .textAndButton {
-        width: 80%;
-        max-width: 20rem;
-        text-align: center;
-        display: grid;
-        gap: 1rem;
+      text-align: center;
+      height: 100%;
+      align-items: center;
+      p {
+        font-size: 1.25em;
+        margin: 0;
+      }
+      p.small {
+        font-size: 0.75em;
+        color: var(--sub-color);
       }
     }
 
