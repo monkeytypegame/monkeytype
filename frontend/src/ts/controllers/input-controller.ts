@@ -768,29 +768,6 @@ function handleTab(event: JQuery.KeyDownEvent, popupVisible: boolean): void {
     return;
   }
 
-  //special case for inserting tab characters into the textarea
-  if ($("#customTextPopupWrapper .textarea").is(":focus")) {
-    event.preventDefault();
-
-    const area = $(
-      "#customTextPopupWrapper .textarea"
-    )[0] as HTMLTextAreaElement;
-
-    const start: number = area.selectionStart;
-    const end: number = area.selectionEnd;
-
-    // set textarea value to: text before caret + tab + text after caret
-    area.value =
-      area.value.substring(0, start) + "\t" + area.value.substring(end);
-
-    // put caret at right position again
-    area.selectionStart = area.selectionEnd = start + 1;
-
-    CustomText.setPopupTextareaState(area.value);
-
-    return;
-  }
-
   let shouldInsertTabCharacter = false;
 
   if (

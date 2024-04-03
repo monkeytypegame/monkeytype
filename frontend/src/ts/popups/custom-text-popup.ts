@@ -189,6 +189,24 @@ $(`${popup} textarea`).on("input", () => {
   CustomText.setPopupTextareaState($(`${popup} textarea`).val() as string);
 });
 
+$(`${popup} textarea`).on("keydown", (e) => {
+  if (e.key !== "Tab") return;
+  e.preventDefault();
+
+  const area = e.target as HTMLTextAreaElement;
+  const start: number = area.selectionStart;
+  const end: number = area.selectionEnd;
+
+  // set textarea value to: text before caret + tab + text after caret
+  area.value =
+    area.value.substring(0, start) + "\t" + area.value.substring(end);
+
+  // put caret at right position again
+  area.selectionStart = area.selectionEnd = start + 1;
+
+  CustomText.setPopupTextareaState(area.value);
+});
+
 $(`${popup} textarea`).on("keypress", (e) => {
   if (Misc.isElementVisible(`#customTextPopupWrapper .longCustomTextWarning`)) {
     e.preventDefault();
