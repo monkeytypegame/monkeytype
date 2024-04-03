@@ -93,7 +93,7 @@ import KeymapLayoutsCommands, {
 import Config, * as UpdateConfig from "../config";
 import * as Misc from "../utils/misc";
 import { randomizeTheme } from "../controllers/theme-controller";
-import * as CustomTextPopup from "../modals/custom-text-popup";
+import * as CustomTextPopup from "../modals/custom-text";
 import * as Settings from "../pages/settings";
 import * as Notifications from "../elements/notifications";
 import * as VideoAdPopup from "../popups/video-ad-popup";
