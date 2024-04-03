@@ -72,7 +72,7 @@ nav {
 
       .xpBar {
         opacity: 0;
-        pointer-events: none;
+        pointer-events: auto;
         position: absolute;
         height: 0.25em;
         bottom: -0.5em;

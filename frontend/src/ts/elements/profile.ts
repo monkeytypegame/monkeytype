@@ -299,16 +299,17 @@ export async function update(
       `${Misc.abbreviateNumber(xpToDisplay)}/${Misc.abbreviateNumber(
         xpForLevel
       )}`
+    )
+    .attr(
+      "aria-label",
+      `${Misc.abbreviateNumber(xpForLevel - xpToDisplay)} xp until next level`
     );
   details
     .find(".xpBar .bar")
     .css("width", `${(xpToDisplay / xpForLevel) * 100}%`);
   details
-    .find(".xp")
-    .attr(
-      "aria-label",
-      `${Misc.abbreviateNumber(xpForLevel - xpToDisplay)} xp until next level`
-    );
+    .find(".xpBar")
+    .attr("aria-label", `${((xpToDisplay / xpForLevel) * 100).toFixed(2)}%`);
 
   //lbs
 
