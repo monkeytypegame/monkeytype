@@ -1,6 +1,6 @@
 import * as FunboxList from "./funbox-list";
 import * as Notifications from "../../elements/notifications";
-import * as Misc from "../../utils/misc";
+import * as Arrays from "../../utils/arrays";
 import * as Strings from "../../utils/strings";
 
 export function checkFunboxForcedConfigs(
@@ -44,7 +44,7 @@ export function checkFunboxForcedConfigs(
               key
             ] as SharedTypes.ConfigValue[];
           } else {
-            forcedConfigs[key] = Misc.intersect(
+            forcedConfigs[key] = Arrays.intersect(
               forcedConfigs[key] as SharedTypes.ConfigValue[],
               fb.forcedConfig[key] as SharedTypes.ConfigValue[],
               true
@@ -305,7 +305,7 @@ export function areFunboxesCompatible(
     for (const key in f.forcedConfig) {
       if (allowedConfig[key]) {
         if (
-          Misc.intersect(
+          Arrays.intersect(
             allowedConfig[key] as SharedTypes.ConfigValue[],
             f.forcedConfig[key] as SharedTypes.ConfigValue[],
             true

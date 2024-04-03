@@ -555,15 +555,6 @@ export function isPasswordStrong(password: string): boolean {
   return hasCapital && hasNumber && hasSpecial && isLong && isShort;
 }
 
-export function intersect<T>(a: T[], b: T[], removeDuplicates = false): T[] {
-  let t;
-  if (b.length > a.length) (t = b), (b = a), (a = t); // indexOf to loop over shorter
-  const filtered = a.filter(function (e) {
-    return b.includes(e);
-  });
-  return removeDuplicates ? [...new Set(filtered)] : filtered;
-}
-
 export function htmlToText(html: string): string {
   const el = document.createElement("div");
   el.innerHTML = html;
