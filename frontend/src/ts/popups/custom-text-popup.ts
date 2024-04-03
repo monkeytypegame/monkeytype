@@ -7,7 +7,7 @@ import Config, * as UpdateConfig from "../config";
 import * as Misc from "../utils/misc";
 import * as WordFilterPopup from "../modals/word-filter";
 import * as Notifications from "../elements/notifications";
-import * as SavedTextsPopup from "./saved-texts-popup";
+import * as SavedTextsPopup from "../modals/saved-texts";
 import * as SaveCustomTextPopup from "../modals/save-custom-text";
 import AnimatedModal from "../utils/animated-modal";
 
