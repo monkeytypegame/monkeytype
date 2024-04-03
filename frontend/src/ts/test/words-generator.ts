@@ -76,7 +76,10 @@ export async function punctuateWord(
           word += ".";
         } else if (currentLanguage === "nepali") {
           word += "।";
-        } else if (currentLanguage === "japanese") {
+        } else if (
+          currentLanguage === "japanese" ||
+          currentLanguage === "chinese"
+        ) {
           word += "。";
         } else {
           word += ".";
@@ -93,7 +96,10 @@ export async function punctuateWord(
           word += "؟";
         } else if (currentLanguage === "greek") {
           word += ";";
-        } else if (currentLanguage === "japanese") {
+        } else if (
+          currentLanguage === "japanese" ||
+          currentLanguage === "chinese"
+        ) {
           word += "？";
         } else {
           word += "?";
@@ -101,7 +107,10 @@ export async function punctuateWord(
       } else {
         if (currentLanguage === "french") {
           word = "!";
-        } else if (currentLanguage === "japanese") {
+        } else if (
+          currentLanguage === "japanese" ||
+          currentLanguage === "chinese"
+        ) {
           word += "！";
         } else {
           word += "!";
@@ -138,7 +147,10 @@ export async function punctuateWord(
       const bracket = brackets[index] as string;
 
       word = `${bracket[0]}${word}${bracket[1]}`;
-    } else if (currentLanguage === "japanese") {
+    } else if (
+      currentLanguage === "japanese" ||
+      currentLanguage === "chinese"
+    ) {
       word = `（${word}）`;
     } else {
       word = `(${word})`;
@@ -149,12 +161,16 @@ export async function punctuateWord(
     lastChar !== "." &&
     lastChar !== ";" &&
     lastChar !== "؛" &&
-    lastChar !== ":"
+    lastChar !== ":" &&
+    lastChar !== "；" &&
+    lastChar !== "："
   ) {
     if (currentLanguage === "french") {
       word = ":";
     } else if (currentLanguage === "greek") {
       word = "·";
+    } else if (currentLanguage === "chinese") {
+      word += "：";
     } else {
       word += ":";
     }
@@ -171,7 +187,8 @@ export async function punctuateWord(
     lastChar !== "." &&
     lastChar !== ";" &&
     lastChar !== "؛" &&
-    lastChar !== ":"
+    lastChar !== "；" &&
+    lastChar !== "："
   ) {
     if (currentLanguage === "french") {
       word = ";";
@@ -179,6 +196,8 @@ export async function punctuateWord(
       word = "·";
     } else if (currentLanguage === "arabic" || currentLanguage === "kurdish") {
       word += "؛";
+    } else if (currentLanguage === "chinese") {
+      word += "；";
     } else {
       word += ";";
     }
@@ -192,6 +211,8 @@ export async function punctuateWord(
       word += "،";
     } else if (currentLanguage === "japanese") {
       word += "、";
+    } else if (currentLanguage === "chinese") {
+      word += "，";
     } else {
       word += ",";
     }
