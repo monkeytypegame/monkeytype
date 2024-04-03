@@ -3,6 +3,7 @@ import format from "date-fns/format";
 import differenceInDays from "date-fns/differenceInDays";
 import * as Misc from "../utils/misc";
 import * as Numbers from "../utils/numbers";
+import * as DateTime from "../utils/date-and-time";
 import * as GetData from "../utils/get-data";
 import { getHTMLById } from "../controllers/badge-controller";
 import { throttle } from "throttle-debounce";
@@ -129,7 +130,7 @@ export async function update(
 
     const dayInMilis = 1000 * 60 * 60 * 24;
 
-    let target = Misc.getCurrentDayTimestamp(streakOffset) + dayInMilis;
+    let target = DateTime.getCurrentDayTimestamp(streakOffset) + dayInMilis;
     if (target < Date.now()) {
       target += dayInMilis;
     }
@@ -140,20 +141,23 @@ export async function update(
     console.debug("dayInMilis", dayInMilis);
     console.debug(
       "difTarget",
-      new Date(Misc.getCurrentDayTimestamp(streakOffset) + dayInMilis)
+      new Date(DateTime.getCurrentDayTimestamp(streakOffset) + dayInMilis)
     );
     console.debug("timeDif", timeDif);
     console.debug(
-      "Misc.getCurrentDayTimestamp()",
-      Misc.getCurrentDayTimestamp(),
-      new Date(Misc.getCurrentDayTimestamp())
+      "DateTime.getCurrentDayTimestamp()",
+      DateTime.getCurrentDayTimestamp(),
+      new Date(DateTime.getCurrentDayTimestamp())
     );
     console.debug("profile.streakHourOffset", streakOffset);
 
     if (lastResult) {
       //check if the last result is from today
-      const isToday = Misc.isToday(lastResult.timestamp, streakOffset);
-      const isYesterday = Misc.isYesterday(lastResult.timestamp, streakOffset);
+      const isToday = DateTime.isToday(lastResult.timestamp, streakOffset);
+      const isYesterday = DateTime.isYesterday(
+        lastResult.timestamp,
+        streakOffset
+      );
 
       console.debug(
         "lastResult.timestamp",
@@ -219,7 +223,7 @@ export async function update(
   typingStatsEl
     .find(".timeTyping .value")
     .text(
-      Misc.secondsToString(
+      DateTime.secondsToString(
         Math.round(profile.typingStats?.timeTyping ?? 0),
         true,
         true

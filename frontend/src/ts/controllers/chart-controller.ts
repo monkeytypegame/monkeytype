@@ -63,6 +63,7 @@ import Config from "../config";
 import * as ThemeColors from "../elements/theme-colors";
 import * as ConfigEvent from "../observables/config-event";
 import * as TestInput from "../test/test-input";
+import * as DateTime from "../utils/date-and-time";
 import * as Misc from "../utils/misc";
 import * as Numbers from "../utils/numbers";
 import { blendTwoHexColors } from "../utils/colors";
@@ -676,7 +677,7 @@ export const accountActivity = new ChartWithUpdateColors<
               ] as MonkeyTypes.ActivityChartDataPoint;
               switch (tooltipItem.datasetIndex) {
                 case 0:
-                  return `Time Typing: ${Misc.secondsToString(
+                  return `Time Typing: ${DateTime.secondsToString(
                     Math.round(resultData.y * 60),
                     true,
                     true
@@ -779,7 +780,7 @@ export const accountHistogram = new ChartWithUpdateColors<
           //     ] as MonkeyTypes.ActivityChartDataPoint;
           //     switch (tooltipItem.datasetIndex) {
           //       case 0:
-          //         return `Time Typing: ${Misc.secondsToString(
+          //         return `Time Typing: ${DateTime.secondsToString(
           //           Math.round(resultData.y),
           //           true,
           //           true

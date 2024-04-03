@@ -11,6 +11,7 @@ import * as Focus from "../test/focus";
 import * as TodayTracker from "../test/today-tracker";
 import * as Notifications from "../elements/notifications";
 import Page from "./page";
+import * as DateTime from "../utils/date-and-time";
 import * as Misc from "../utils/misc";
 import * as Numbers from "../utils/numbers";
 import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
@@ -847,7 +848,7 @@ async function fillContent(): Promise<void> {
   }
 
   $(".pageAccount .timeTotalFiltered .val").text(
-    Misc.secondsToString(Math.round(totalSecondsFiltered), true, true)
+    DateTime.secondsToString(Math.round(totalSecondsFiltered), true, true)
   );
 
   const speedUnit = Config.typingSpeedUnit;

@@ -1,6 +1,7 @@
 import Ape from "../ape";
 import * as DB from "../db";
 import Config from "../config";
+import * as DateTime from "../utils/date-and-time";
 import * as Misc from "../utils/misc";
 import * as Numbers from "../utils/numbers";
 import * as Notifications from "./notifications";
@@ -102,7 +103,7 @@ function updateTimerElement(): void {
     const diff = differenceInSeconds(date, dateNow);
 
     $("#leaderboards .subTitle").text(
-      "Next reset in: " + Misc.secondsToString(diff, true)
+      "Next reset in: " + DateTime.secondsToString(diff, true)
     );
   } else {
     const date = new Date();
@@ -110,7 +111,7 @@ function updateTimerElement(): void {
     const secondsToNextUpdate = 60 - date.getSeconds();
     const totalSeconds = minutesToNextUpdate * 60 + secondsToNextUpdate;
     $("#leaderboards .subTitle").text(
-      "Next update in: " + Misc.secondsToString(totalSeconds, true)
+      "Next update in: " + DateTime.secondsToString(totalSeconds, true)
     );
   }
 }

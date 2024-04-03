@@ -12,6 +12,7 @@ import { isAuthenticated } from "../firebase";
 import * as quoteRateModal from "../modals/quote-rate";
 import * as GlarsesMode from "../states/glarses-mode";
 import * as SlowTimer from "../states/slow-timer";
+import * as DateTime from "../utils/date-and-time";
 import * as Misc from "../utils/misc";
 import * as GetData from "../utils/get-data";
 import * as Numbers from "../utils/numbers";
@@ -251,7 +252,7 @@ function updateWpmAndAcc(): void {
 
     let time = Numbers.roundTo2(result.testDuration).toFixed(2) + "s";
     if (result.testDuration > 61) {
-      time = Misc.secondsToString(Numbers.roundTo2(result.testDuration));
+      time = DateTime.secondsToString(Numbers.roundTo2(result.testDuration));
     }
     $("#result .stats .time .bottom .text").text(time);
     // $("#result .stats .acc .bottom").removeAttr("aria-label");
@@ -326,13 +327,13 @@ function updateTime(): void {
   if (Config.alwaysShowDecimalPlaces) {
     let time = Numbers.roundTo2(result.testDuration).toFixed(2) + "s";
     if (result.testDuration > 61) {
-      time = Misc.secondsToString(Numbers.roundTo2(result.testDuration));
+      time = DateTime.secondsToString(Numbers.roundTo2(result.testDuration));
     }
     $("#result .stats .time .bottom .text").text(time);
   } else {
     let time = Math.round(result.testDuration) + "s";
     if (result.testDuration > 61) {
-      time = Misc.secondsToString(Math.round(result.testDuration));
+      time = DateTime.secondsToString(Math.round(result.testDuration));
     }
     $("#result .stats .time .bottom .text").text(time);
     $("#result .stats .time .bottom").attr(

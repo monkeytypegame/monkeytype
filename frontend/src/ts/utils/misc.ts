@@ -1,6 +1,6 @@
 import * as Loader from "../elements/loader";
 import { envConfig } from "../constants/env-config";
-import { roundTo2, randomIntFromRange } from "./numbers";
+import { randomIntFromRange } from "./numbers";
 import * as GetData from "./get-data";
 
 export function kogasa(cov: number): number {
@@ -14,101 +14,6 @@ export function whorf(speed: number, wordlen: number): number {
     speed,
     Math.floor(speed * Math.pow(1.03, -2 * (wordlen - 3)))
   );
-}
-
-export function secondsToString(
-  sec: number,
-  alwaysShowMinutes = false,
-  alwaysShowHours = false,
-  delimiter: ":" | "text" = ":",
-  showSeconds = true,
-  showDays = false
-): string {
-  sec = Math.abs(sec);
-  let days = 0;
-  let hours;
-  if (showDays) {
-    days = Math.floor(sec / 86400);
-    hours = Math.floor((sec % 86400) / 3600);
-  } else {
-    hours = Math.floor(sec / 3600);
-  }
-  const minutes = Math.floor((sec % 3600) / 60);
-  const seconds = roundTo2((sec % 3600) % 60);
-
-  let daysString;
-  let hoursString;
-  let minutesString;
-  let secondsString;
-
-  if (showDays) {
-    days < 10 && delimiter !== "text"
-      ? (daysString = "0" + days)
-      : (daysString = days);
-  }
-  hours < 10 && delimiter !== "text"
-    ? (hoursString = "0" + hours)
-    : (hoursString = hours);
-  minutes < 10 && delimiter !== "text"
-    ? (minutesString = "0" + minutes)
-    : (minutesString = minutes);
-  seconds < 10 &&
-  (minutes > 0 || hours > 0 || alwaysShowMinutes) &&
-  delimiter !== "text"
-    ? (secondsString = "0" + seconds)
-    : (secondsString = seconds);
-
-  let ret = "";
-  if (days > 0 && showDays) {
-    ret += daysString;
-    if (delimiter === "text") {
-      if (days === 1) {
-        ret += " day ";
-      } else {
-        ret += " days ";
-      }
-    } else {
-      ret += delimiter;
-    }
-  }
-  if (hours > 0 || alwaysShowHours) {
-    ret += hoursString;
-    if (delimiter === "text") {
-      if (hours === 1) {
-        ret += " hour ";
-      } else {
-        ret += " hours ";
-      }
-    } else {
-      ret += delimiter;
-    }
-  }
-  if (minutes > 0 || hours > 0 || alwaysShowMinutes) {
-    ret += minutesString;
-    if (delimiter === "text") {
-      if (minutes === 1) {
-        ret += " minute ";
-      } else {
-        ret += " minutes ";
-      }
-    } else if (showSeconds) {
-      ret += delimiter;
-    }
-  }
-  if (showSeconds) {
-    ret += secondsString;
-    if (delimiter === "text") {
-      if (seconds === 1) {
-        ret += " second";
-      } else {
-        ret += " seconds";
-      }
-    }
-  }
-  if (hours === 0 && minutes === 0 && !showSeconds && delimiter === "text") {
-    ret = "less than 1 minute";
-  }
-  return ret.trim();
 }
 
 //convert numbers to arabic-indic
@@ -807,41 +712,6 @@ export async function checkIfLanguageSupportsZipf(
   if (lang.orderedByFrequency === true) return "yes";
   if (lang.orderedByFrequency === false) return "no";
   return "unknown";
-}
-
-export function getCurrentDayTimestamp(hourOffset = 0): number {
-  const offsetMilis = hourOffset * MILISECONDS_IN_HOUR;
-  const currentTime = Date.now();
-  return getStartOfDayTimestamp(currentTime, offsetMilis);
-}
-
-const MILISECONDS_IN_HOUR = 3600000;
-const MILLISECONDS_IN_DAY = 86400000;
-
-export function getStartOfDayTimestamp(
-  timestamp: number,
-  offsetMilis = 0
-): number {
-  return timestamp - ((timestamp - offsetMilis) % MILLISECONDS_IN_DAY);
-}
-
-export function isYesterday(timestamp: number, hourOffset = 0): boolean {
-  const offsetMilis = hourOffset * MILISECONDS_IN_HOUR;
-  const yesterday = getStartOfDayTimestamp(
-    Date.now() - MILLISECONDS_IN_DAY,
-    offsetMilis
-  );
-  const date = getStartOfDayTimestamp(timestamp, offsetMilis);
-
-  return yesterday === date;
-}
-
-export function isToday(timestamp: number, hourOffset = 0): boolean {
-  const offsetMilis = hourOffset * MILISECONDS_IN_HOUR;
-  const today = getStartOfDayTimestamp(Date.now(), offsetMilis);
-  const date = getStartOfDayTimestamp(timestamp, offsetMilis);
-
-  return today === date;
 }
 
 // Function to get the bounding rectangle of a collection of elements
