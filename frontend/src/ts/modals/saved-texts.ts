@@ -117,4 +117,9 @@ async function setup(): Promise<void> {
 const modal = new AnimatedModal({
   dialogId: "savedTextsModal",
   setup,
+  showOptionsWhenInChain: {
+    beforeAnimation: async (): Promise<void> => {
+      void fill();
+    },
+  },
 });

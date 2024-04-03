@@ -1453,9 +1453,6 @@ list.deleteCustomText = new SimpleModal({
     return {
       status: 1,
       message: "Custom text deleted",
-      hideOptions: {
-        clearModalChain: true,
-      },
     };
   },
   beforeInitFn: (_thisPopup): void => {
@@ -1476,9 +1473,6 @@ list.deleteCustomTextLong = new SimpleModal({
     return {
       status: 1,
       message: "Custom text deleted",
-      hideOptions: {
-        clearModalChain: true,
-      },
     };
   },
   beforeInitFn: (_thisPopup): void => {
@@ -1502,9 +1496,6 @@ list.resetProgressCustomTextLong = new SimpleModal({
     return {
       status: 1,
       message: "Custom text progress reset",
-      hideOptions: {
-        clearModalChain: true,
-      },
     };
   },
   beforeInitFn: (_thisPopup): void => {
