@@ -48,7 +48,7 @@ async function fill(): Promise<void> {
   $("#savedTextsModal .list .savedText .button.delete").on("click", (e) => {
     const name = $(e.target).closest(".savedText").data("name");
     showPopup("deleteCustomText", [name], {
-      modalChain: modal,
+      modalChain: modal as AnimatedModal<unknown, unknown>,
     });
   });
 
@@ -57,7 +57,7 @@ async function fill(): Promise<void> {
     (e) => {
       const name = $(e.target).closest(".savedLongText").data("name");
       showPopup("deleteCustomTextLong", [name], {
-        modalChain: modal,
+        modalChain: modal as AnimatedModal<unknown, unknown>,
       });
     }
   );
@@ -67,7 +67,7 @@ async function fill(): Promise<void> {
     (e) => {
       const name = $(e.target).closest(".savedLongText").data("name");
       showPopup("resetProgressCustomTextLong", [name], {
-        modalChain: modal,
+        modalChain: modal as AnimatedModal<unknown, unknown>,
       });
     }
   );
@@ -99,7 +99,7 @@ export async function show(options: ShowOptions): Promise<void> {
   });
 }
 
-function hide(hideOptions?: HideOptions): void {
+function hide(hideOptions?: HideOptions<OutgoingData>): void {
   void modal.hide({
     ...hideOptions,
   });
@@ -117,7 +117,11 @@ async function setup(): Promise<void> {
   //
 }
 
-const modal = new AnimatedModal({
+type OutgoingData = {
+  text: string;
+};
+
+const modal = new AnimatedModal<unknown, OutgoingData>({
   dialogId: "savedTextsModal",
   setup,
   showOptionsWhenInChain: {

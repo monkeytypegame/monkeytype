@@ -32,16 +32,9 @@ function updateLongTextWarning(): void {
 
 async function beforeAnimation(
   modalEl: HTMLElement,
-  modalChainData: unknown
+  modalChainData?: IncomingData
 ): Promise<void> {
   updateLongTextWarning();
-
-  const typedChainData = modalChainData as
-    | {
-        text: string;
-        set?: boolean;
-      }
-    | undefined;
 
   if (
     CustomText.isSectionRandom ||
@@ -70,11 +63,11 @@ async function beforeAnimation(
     $(`${popup} .inputs .replaceNewLinesButtons`).addClass("disabled");
   }
 
-  if (typedChainData?.text !== undefined) {
+  if (modalChainData?.text !== undefined) {
     const newText =
-      typedChainData.set ?? true
-        ? typedChainData.text
-        : CustomText.popupTextareaState + " " + typedChainData.text;
+      modalChainData.set ?? true
+        ? modalChainData.text
+        : CustomText.popupTextareaState + " " + modalChainData.text;
     $(`${popup} textarea`).val(newText);
     CustomText.setPopupTextareaState(newText);
   } else {
@@ -396,21 +389,21 @@ async function setup(modalEl: HTMLElement): Promise<void> {
   });
   modalEl.querySelector(".button.wordfilter")?.addEventListener("click", () => {
     void WordFilterPopup.show({
-      modalChain: modal,
+      modalChain: modal as AnimatedModal<unknown, unknown>,
     });
   });
   modalEl
     .querySelector(".button.showSavedTexts")
     ?.addEventListener("click", () => {
       void SavedTextsPopup.show({
-        modalChain: modal,
+        modalChain: modal as AnimatedModal<unknown, unknown>,
       });
     });
   modalEl
     .querySelector(".button.saveCustomText")
     ?.addEventListener("click", () => {
       void SaveCustomTextPopup.show({
-        modalChain: modal,
+        modalChain: modal as AnimatedModal<unknown, unknown>,
         modalChainData: { text: CustomText.popupTextareaState },
       });
     });
@@ -421,7 +414,12 @@ async function setup(modalEl: HTMLElement): Promise<void> {
     });
 }
 
-const modal = new AnimatedModal({
+type IncomingData = {
+  text: string;
+  set?: boolean;
+};
+
+const modal = new AnimatedModal<IncomingData>({
   dialogId: "customTextModal",
   setup,
   customEscapeHandler: async (): Promise<void> => {

@@ -181,7 +181,7 @@ export async function show(showOptions?: ShowOptions): Promise<void> {
   });
 }
 
-function hide(hideOptions?: HideOptions): void {
+function hide(hideOptions?: HideOptions<OutgoingData>): void {
   void modal.hide({
     ...hideOptions,
     afterAnimation: async () => {
@@ -323,7 +323,12 @@ async function setup(): Promise<void> {
   });
 }
 
-const modal = new AnimatedModal({
+type OutgoingData = {
+  text: string;
+  set: boolean;
+};
+
+const modal = new AnimatedModal<unknown, OutgoingData>({
   dialogId: "wordFilterModal",
   setup,
 });

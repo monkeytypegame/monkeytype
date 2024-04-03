@@ -15,13 +15,12 @@ const state: State = {
   textToSave: "",
 };
 
-export async function show(options: ShowOptions): Promise<void> {
+export async function show(options: ShowOptions<IncomingData>): Promise<void> {
   state.textToSave = "";
   void modal.show({
     ...options,
     beforeAnimation: async (modalEl, modalChainData) => {
-      const typedData = modalChainData as { text: string } | undefined;
-      state.textToSave = typedData?.text ?? "";
+      state.textToSave = modalChainData?.text ?? "";
       $("#saveCustomTextModal .textName").val("");
       $("#saveCustomTextModal .isLongText").prop("checked", false);
       $("#saveCustomTextModal button.save").prop("disabled", true);
@@ -112,7 +111,11 @@ async function setup(modalEl: HTMLElement): Promise<void> {
   });
 }
 
-const modal = new AnimatedModal({
+type IncomingData = {
+  text: string;
+};
+
+const modal = new AnimatedModal<IncomingData>({
   dialogId: "saveCustomTextModal",
   setup,
 });
