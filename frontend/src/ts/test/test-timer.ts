@@ -9,7 +9,7 @@ import * as TestStats from "./test-stats";
 import * as TestInput from "./test-input";
 import * as TestWords from "./test-words";
 import * as Monkey from "./monkey";
-import * as Misc from "../utils/misc";
+import * as Numbers from "../utils/numbers";
 import * as Notifications from "../elements/notifications";
 import * as Caret from "./caret";
 import * as SlowTimer from "../states/slow-timer";
@@ -77,7 +77,7 @@ function monkey(wpmAndRaw: MonkeyTypes.WpmAndRaw): void {
 
 function calculateAcc(): number {
   if (timerDebug) console.time("calculate acc");
-  const acc = Misc.roundTo2(TestStats.calculateAccuracy());
+  const acc = Numbers.roundTo2(TestStats.calculateAccuracy());
   if (timerDebug) console.timeEnd("calculate acc");
   return acc;
 }

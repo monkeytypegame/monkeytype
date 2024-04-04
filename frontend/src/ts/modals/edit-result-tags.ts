@@ -4,7 +4,7 @@ import * as Loader from "../elements/loader";
 import * as Notifications from "../elements/notifications";
 import * as AccountPage from "../pages/account";
 import * as ConnectionState from "../states/connection";
-import { areUnsortedArraysEqual } from "../utils/misc";
+import { areUnsortedArraysEqual } from "../utils/arrays";
 import * as Result from "../test/result";
 import AnimatedModal from "../utils/animated-modal";
 

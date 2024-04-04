@@ -4,6 +4,8 @@ import * as TestStats from "../test/test-stats";
 import * as Monkey from "../test/monkey";
 import Config from "../config";
 import * as Misc from "../utils/misc";
+import * as JSONData from "../utils/json-data";
+import * as Numbers from "../utils/numbers";
 import * as LiveAcc from "../test/live-acc";
 import * as LiveBurst from "../test/live-burst";
 import * as Funbox from "../test/funbox/funbox";
@@ -53,7 +55,7 @@ function setWordsInput(value: string): void {
 }
 
 function updateUI(): void {
-  const acc: number = Misc.roundTo2(TestStats.calculateAccuracy());
+  const acc: number = Numbers.roundTo2(TestStats.calculateAccuracy());
   if (!isNaN(acc)) LiveAcc.update(acc);
 
   if (Config.keymapMode === "next" && Config.mode !== "zen") {
@@ -1115,7 +1117,7 @@ $(document).on("keydown", async (event) => {
       Config.oppositeShiftMode === "keymap" &&
       Config.keymapLayout !== "overrideSync"
     ) {
-      const keymapLayout = await Misc.getLayout(Config.keymapLayout).catch(
+      const keymapLayout = await JSONData.getLayout(Config.keymapLayout).catch(
         () => undefined
       );
       if (keymapLayout === undefined) {

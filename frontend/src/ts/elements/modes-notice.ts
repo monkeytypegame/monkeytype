@@ -7,7 +7,7 @@ import * as TestWords from "../test/test-words";
 import * as ConfigEvent from "../observables/config-event";
 import { isAuthenticated } from "../firebase";
 import * as CustomTextState from "../states/custom-text-name";
-import { getLanguageDisplayString } from "../utils/misc";
+import { getLanguageDisplayString } from "../utils/strings";
 import Format from "../utils/format";
 
 ConfigEvent.subscribe((eventKey) => {
