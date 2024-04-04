@@ -308,7 +308,9 @@ export async function update(
     )
     .attr(
       "aria-label",
-      `${Misc.abbreviateNumber(xpForLevel - xpToDisplay)} xp until next level`
+      `${Numbers.abbreviateNumber(
+        xpForLevel - xpToDisplay
+      )} xp until next level`
     );
   details
     .find(".xpBar .bar")
