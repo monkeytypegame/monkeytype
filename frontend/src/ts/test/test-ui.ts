@@ -35,7 +35,8 @@ async function gethtml2canvas(): Promise<typeof import("html2canvas").default> {
 
 function createHintsHtml(
   incorrectLtrIndices: number[][],
-  activeWordLetters: NodeListOf<Element>
+  activeWordLetters: NodeListOf<Element>,
+  inputWord: string
 ): string {
   let hintsHtml = "";
   for (const adjacentLetters of incorrectLtrIndices) {
@@ -43,7 +44,7 @@ function createHintsHtml(
       const blockLeft = (activeWordLetters[indx] as HTMLElement).offsetLeft;
       const blockWidth = (activeWordLetters[indx] as HTMLElement).offsetWidth;
       const blockIndices = `[${indx}]`;
-      const blockChars = TestInput.input.current[indx];
+      const blockChars = inputWord[indx];
 
       hintsHtml +=
         `<hint data-length=1 data-chars-index=${blockIndices}` +
@@ -886,7 +887,7 @@ export async function updateWordElement(
 
   if (hintIndices?.length) {
     const activeWordLetters = wordAtIndex.querySelectorAll("letter");
-    const hintsHtml = createHintsHtml(hintIndices, activeWordLetters);
+    const hintsHtml = createHintsHtml(hintIndices, activeWordLetters, input);
     wordAtIndex.insertAdjacentHTML("beforeend", hintsHtml);
     const hintElements = wordAtIndex.getElementsByTagName("hint");
     await joinOverlappingHints(hintIndices, activeWordLetters, hintElements);
