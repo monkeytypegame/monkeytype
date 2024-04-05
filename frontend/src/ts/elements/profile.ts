@@ -305,19 +305,19 @@ export async function update(
       `${Numbers.abbreviateNumber(xpToDisplay)}/${Numbers.abbreviateNumber(
         xpForLevel
       )}`
-    );
-  details
-    .find(".xpBar .bar")
-    .css("width", `${(xpToDisplay / xpForLevel) * 100}%`);
-  details
-    .find(".xp")
+    )
     .attr(
       "aria-label",
       `${Numbers.abbreviateNumber(
         xpForLevel - xpToDisplay
       )} xp until next level`
     );
-
+  details
+    .find(".xpBar .bar")
+    .css("width", `${(xpToDisplay / xpForLevel) * 100}%`);
+  details
+    .find(".xpBar")
+    .attr("aria-label", `${((xpToDisplay / xpForLevel) * 100).toFixed(2)}%`);
   //lbs
 
   if (banned) {

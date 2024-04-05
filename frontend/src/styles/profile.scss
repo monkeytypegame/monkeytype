@@ -414,10 +414,14 @@
         grid-template-columns: auto 1fr auto;
         gap: 1rem;
         align-items: center;
+        .level,
+        .xp {
+          line-height: 0;
+        }
         .xpBar {
-          pointer-events: none;
+          pointer-events: auto;
           height: 0.5rem;
-          bottom: -0.25rem;
+          bottom: 0rem;
           width: 100%;
           left: 0;
           background: var(--bg-color);
