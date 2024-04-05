@@ -367,8 +367,8 @@
     <div class="button">ok</div>
   </div>
 </dialog>
-<div id="customTextPopupWrapper" class="popupWrapper hidden">
-  <div id="customTextPopup" action="">
+<dialog id="customTextModal" class="modalWrapper hidden">
+  <div class="modal" action="">
     <div class="buttonsTop">
       <div class="button saveCustomText">
         <i class="fas fa-save"></i>
@@ -394,10 +394,15 @@
     </div>
     <div class="textAreaWrapper" style="position: relative">
       <div class="longCustomTextWarning">
-        <div class="textAndButton">
-          A long custom text is currently loaded. Editing the text will disable
-          progress tracking.
-          <div class="button">Got it</div>
+        <div>
+          <p>
+            A long custom text is currently loaded.
+            <br />
+            Editing the text will disable progress tracking.
+            <br />
+            <br />
+          </p>
+          <p class="small">Click anywhere to start editing the text.</p>
         </div>
       </div>
       <textarea class="textarea"></textarea>
@@ -466,17 +471,17 @@
     </div>
     <div class="button apply">ok</div>
   </div>
-</div>
-<div id="savedTextsPopupWrapper" class="popupWrapper hidden">
-  <div id="savedTextsPopup">
+</dialog>
+<dialog id="savedTextsModal" class="modalWrapper hidden">
+  <div class="modal">
     <div class="title">Saved texts</div>
     <div class="list"></div>
     <div class="title">Saved long texts</div>
     <div class="listLong"></div>
   </div>
-</div>
-<div id="saveCustomTextPopupWrapper" class="popupWrapper hidden">
-  <div id="saveCustomTextPopup">
+</dialog>
+<dialog id="saveCustomTextModal" class="modalWrapper hidden">
+  <form class="modal">
     <div class="title">Save custom text</div>
     <input class="textName" type="text" placeholder="name" />
     <div>
@@ -490,9 +495,9 @@
         </div>
       </label>
     </div>
-    <div class="button save">save</div>
-  </div>
-</div>
+    <button class="save">save</button>
+  </form>
+</dialog>
 <dialog id="wordFilterModal" class="modalWrapper hidden">
   <div class="modal">
     <!-- hidden for now, dunno where to place it -->
