@@ -600,4 +600,15 @@ describe("Misc Utils", () => {
       expect(misc.formatSeconds(seconds)).toBe(expected);
     });
   });
+  it("dayOfTheYear", () => {
+    //2023-02-20
+    expect(misc.dayOfTheYear(new Date(1676851200000))).toBe(51);
+    //2023-03-30
+    expect(misc.dayOfTheYear(new Date(1680184619000))).toBe(89);
+
+    //2024-02-20
+    expect(misc.dayOfTheYear(new Date(1708387200000))).toBe(51);
+    //2023-03-30
+    expect(misc.dayOfTheYear(new Date(1711806362000))).toBe(90);
+  });
 });

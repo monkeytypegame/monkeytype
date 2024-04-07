@@ -6,7 +6,12 @@ import * as db from "../init/db";
 import MonkeyError from "../utils/error";
 import { Collection, ObjectId, Long, UpdateFilter } from "mongodb";
 import Logger from "../utils/logger";
-import { flattenObjectDeep, isToday, isYesterday } from "../utils/misc";
+import {
+  dayOfTheYear,
+  flattenObjectDeep,
+  isToday,
+  isYesterday,
+} from "../utils/misc";
 import { getCachedConfiguration } from "../init/configuration";
 
 const SECONDS_PER_HOUR = 3600;
@@ -600,6 +605,30 @@ export async function incrementBananas(uid: string, wpm): Promise<void> {
 export async function incrementXp(uid: string, xp: number): Promise<void> {
   if (isNaN(xp)) xp = 0;
   await getUsersCollection().updateOne({ uid }, { $inc: { xp: new Long(xp) } });
+}
+
+export async function incrementTestsByYearAndDate(
+  user: MonkeyTypes.DBUser,
+  timestamp: number
+): Promise<void> {
+  const date = new Date(timestamp);
+  const dayOfYear = dayOfTheYear(date);
+  const year = date.getFullYear();
+
+  if (
+    user.testsByYearAndDay === undefined ||
+    user.testsByYearAndDay[year] === undefined
+  ) {
+    await getUsersCollection().updateOne(
+      { uid: user.uid },
+      { $set: { [`testsByYearAndDay.${date.getFullYear()}`]: [] } }
+    );
+  }
+
+  await getUsersCollection().updateOne(
+    { uid: user.uid },
+    { $inc: { [`testsByYearAndDay.${date.getFullYear()}.${dayOfYear}`]: 1 } }
+  );
 }
 
 export function themeDoesNotExist(customThemes, id): boolean {

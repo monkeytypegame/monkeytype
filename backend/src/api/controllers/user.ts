@@ -337,6 +337,7 @@ function getRelevantUserInfo(
     "lastResultHashes",
     "note",
     "ips",
+    "testsByYearAndDay",
   ]);
 }
 
@@ -403,12 +404,14 @@ export async function getUser(
   const isPremium = await UserDAL.checkIfUserIsPremium(uid, userInfo);
 
   const allTimeLbs = await getAllTimeLbs(uid);
+  const testActivity = userInfo.testsByYearAndDay?.[new Date().getFullYear()];
 
   const userData = {
     ...getRelevantUserInfo(userInfo),
     inboxUnreadSize: inboxUnreadSize,
     isPremium,
     allTimeLbs,
+    testActivity,
   };
 
   return new MonkeyResponse("User data retrieved", userData);

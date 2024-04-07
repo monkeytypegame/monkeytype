@@ -20,7 +20,12 @@ declare namespace MonkeyTypes {
 
   type DBUser = Omit<
     SharedTypes.User,
-    "resultFilterPresets" | "tags" | "customThemes" | "isPremium" | "allTimeLbs"
+    | "resultFilterPresets"
+    | "tags"
+    | "customThemes"
+    | "isPremium"
+    | "allTimeLbs"
+    | "testActivity"
   > & {
     _id: ObjectId;
     resultFilterPresets?: WithObjectIdArray<SharedTypes.ResultFilters[]>;
@@ -34,6 +39,7 @@ declare namespace MonkeyTypes {
     lastNameChange?: number;
     canManageApeKeys?: boolean;
     bananas?: number;
+    testsByYearAndDay?: { [key: string]: number[] };
   };
 
   type DBCustomTheme = WithObjectId<SharedTypes.CustomTheme>;

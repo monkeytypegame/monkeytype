@@ -1,4 +1,4 @@
-import _ from "lodash";
+import _, { times } from "lodash";
 import uaparser from "ua-parser-js";
 
 //todo split this file into smaller util files (grouped by functionality)
@@ -304,4 +304,11 @@ export function stringToNumberOrDefault(
 
 export function isDevEnvironment(): boolean {
   return process.env["MODE"] === "dev";
+}
+
+export function dayOfTheYear(date: Date): number {
+  return Math.floor(
+    // @ts-expect-error
+    (date - new Date(date.getFullYear(), 0, 0)) / 1000 / 60 / 60 / 24
+  );
 }

@@ -550,6 +550,7 @@ declare namespace SharedTypes {
     needsToChangeName?: boolean;
     quoteMod?: boolean | string;
     resultFilterPresets?: ResultFilters[];
+    testActivity?: number[];
   };
 
   type Reward<T> = {
