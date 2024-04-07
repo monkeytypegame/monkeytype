@@ -27,6 +27,7 @@ import { Auth } from "../firebase";
 import * as Loader from "../elements/loader";
 import * as ResultBatches from "../elements/result-batches";
 import Format from "../utils/format";
+import * as TestActivity from "../elements/test-activity";
 
 let filterDebug = false;
 //toggle filterdebug
@@ -211,8 +212,8 @@ async function fillContent(): Promise<void> {
 
   PbTables.update(snapshot.personalBests);
   void Profile.update("account", snapshot);
-
-  void ResultBatches.update();
+  void TestActivity.update(snapshot.testActivity, new Date().getFullYear());
+  void void ResultBatches.update();
 
   chartData = [];
   accChartData = [];

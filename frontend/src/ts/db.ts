@@ -133,6 +133,7 @@ export async function initSnapshot(): Promise<
     snap.filterPresets = userData.resultFilterPresets ?? [];
     snap.isPremium = userData?.isPremium;
     snap.allTimeLbs = userData.allTimeLbs;
+    snap.testActivity = userData.testActivity;
 
     const hourOffset = userData?.streak?.hourOffset;
     snap.streakHourOffset =
