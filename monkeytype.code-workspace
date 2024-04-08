@@ -39,7 +39,7 @@
     "vitest.watchOnStartup": true,
     "coverage-gutters.coverageBaseDir": "**/coverage",
     "editor.defaultFormatter": "esbenp.prettier-vscode",
-    "editor.formatOnSaveMode": "modifications",
+    "editor.formatOnSaveMode": "file",
     "editor.formatOnSave": true,
     "testing.openTesting": "neverOpen"
   }
