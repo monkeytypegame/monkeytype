@@ -14751,7 +14751,7 @@
       "length": 283
     },
     {
-      "text": "We found our way back to the city we came from. 'Cause I look back and I thought, man what if I gave up. I watched myself burn and there's nothing I'm ashamed of, 'cause I found my new self and the fire I'm afraid of.",
+      "text": "We found our way back to the city we came from. 'Cause I look back and I thought: \"Man, what if I gave up?\" I watched myself burn and there's nothing I'm ashamed of, 'cause I found my new self and the fire I'm afraid of.",
       "source": "Solid As A Stone (outro)",
       "id": 2604,
       "length": 217
@@ -15043,12 +15043,6 @@
       "source": "The Catcher in the Rye J. D. Salinger",
       "id": 2653,
       "length": 201
-    },
-    {
-      "text": "We were playing checkers. I used to kid her once in a while because she wouldn't take her kings out of the back row. But I didn't kid her much though. You never wanted to kid Jane too much. I think I really like it best when you can kid the pants off a girl when the opportunity arises, but it's a funny thing. The girls I like best are ones I never feel much like kidding. Sometimes I think they'd like it if you kidded them - in fact I know they would - but it's hard to get started, once you've known them a pretty long time and never kidded them.",
-      "source": "The Catcher in the Rye",
-      "id": 2654,
-      "length": 550
     },
     {
       "text": "In all the houses keys to memorizing objects and feelings had been written. But the system demanded so much vigilance and moral strength that many succumbed to the spell of an imaginary reality, one invented by themselves, which was less practical for them but more comforting.",
@@ -17577,12 +17571,6 @@
       "length": 242
     },
     {
-      "text": "Oh dear god, I don't feel alive. When you're cut short of misery. Will you pray it be the end? Give a look surprised, wide eyes to me. Then you'll know just what I am. The scare that triggers your fear. Come know me in a different light now. Come know me as god.",
-      "source": "Delirium Trigger",
-      "id": 3109,
-      "length": 262
-    },
-    {
       "text": "Time is dead as long as it is being clicked off by little wheels; only when the clock stops does time come to life.",
       "source": "The Sound and the Fury",
       "id": 3110,
@@ -19174,6 +19162,7 @@
     },
     {
       "text": "All programs have to manage the way they use a computer's memory while running. Some languages have garbage collection that constantly looks for no longer used memory as the program runs; in other languages, the programmer must explicitly allocate and free the memory. Rust uses a third approach: memory is managed through a system of ownership with a set of rules that the compiler checks at compile time. None of the ownership features slow down your program while it's running.",
+      "britishText": "All programs have to manage the way they use a computer's memory while running. Some languages have garbage collection that constantly looks for no longer used memory as the program runs; in other languages, the programmer must explicitly allocate and free the memory. Rust uses a third approach: memory is managed through a system of ownership with a set of rules that the compiler checks at compile time. None of the ownership features slow down your program while it's running.",
       "source": "The Rust Programming Language",
       "id": 3396,
       "length": 480
@@ -21453,12 +21442,6 @@
       "length": 110
     },
     {
-      "text": "Individual science fiction stories may seem as trivial as ever to the blinder critics and philosophers of today - but the core of science fiction, its essence, the concept around which it revolves, has become crucial to our salvation if we are to be saved at all.",
-      "source": "My Own View",
-      "id": 3805,
-      "length": 263
-    },
-    {
       "text": "We've had vicious kings and we've had idiot kings, but I don't know if we've ever been cursed with a vicious idiot for a king!",
       "source": "A Game of Thrones",
       "id": 3806,
@@ -22971,12 +22954,6 @@
       "length": 579
     },
     {
-      "text": "My father died on this floor. Right there. Stabbed 27 times, butchered by men he called his friends. Who will tell me that is not murder? Who will tell my legions, who love Caesar as I do, that that is not murder? Who will speak against the motion?",
-      "source": "Rome",
-      "id": 4073,
-      "length": 248
-    },
-    {
       "text": "In two dimensions we say that a rigid body has only one rotational degree of freedom, whereas in three dimensions we say that a rigid body has three rotational degrees of freedom. This might lead you to infer that in three dimensions you need to have three scalar quantities to represent a body's rotation. Indeed, this is the minimum requirement.",
       "source": "Physics for Game Developers",
       "id": 4074,
@@ -23151,12 +23128,6 @@
       "length": 616
     },
     {
-      "text": "I am not a recruiter. I am a software engineer. And as such, I know what it's like to be asked to whip up brilliant algorithms on the spot and then write flawless code on a whiteboard. I know because I've been asked to do the same thing - in interviews at Google, Microsoft, Apple, and Amazon, among other companies.",
-      "source": "Cracking the Coding Interview",
-      "id": 4108,
-      "length": 316
-    },
-    {
       "text": "It's funny. All you have to do is say something nobody understands and they'll do practically anything you want them to.",
       "source": "The Catcher in the Rye",
       "id": 4109,
@@ -23257,12 +23228,6 @@
       "source": "Stalin: New Biography of a Dictator",
       "id": 4125,
       "length": 538
-    },
-    {
-      "text": "It's amazing what devices you can sympathize, empathize. This is my mistake; let me make it good. I raised the wall and I will be the one to knock it down.",
-      "source": "World Leader Pretend",
-      "id": 4126,
-      "length": 155
     },
     {
       "text": "I need a love reaction. Come on now, baby, give me just one look.",
@@ -24103,12 +24068,6 @@
       "source": "Doctor Who",
       "id": 4277,
       "length": 236
-    },
-    {
-      "text": "Men are not subtle - men are obvious. Women know what men want. Men know what men want. What do we want? We want women! It's the only thing we know for sure: we want women! How do we get women? Oh, we don't know that. The next step after that we have no idea. This is why you see men honking car-horns, yelling from construction sites.",
-      "source": "Seinfeld",
-      "id": 4278,
-      "length": 335
     },
     {
       "text": "Mr Willy Wonka can make marshmallows that taste of violets, and rich caramels that change color every ten seconds as you suck them, and little feathery sweets that melt away deliciously the moment you put them between your lips. He can make chewing-gum that never loses its taste, and sugar balloons that you can blow up to enormous sizes before you pop them with a pin and gobble them up. And, by a most secret method, he can make lovely blue birds' eggs with black spots on them, and when you put one of these in your mouth, it gradually gets smaller and smaller until suddenly there is nothing left except a tiny little dark red sugary baby bird sitting on the tip of your tongue.",
@@ -25735,12 +25694,6 @@
       "source": "Right Here Waiting",
       "id": 4578,
       "length": 161
-    },
-    {
-      "text": "Recursive descent takes a different approach to locating instructions. Recursive descent focuses on the concept of control flow, which determines whether an instruction should be disassembled or not based on whether it is referenced by another instruction. To understand recursive descent, it is helpful to classify instructions according to how they affect the CPU instruction pointer.",
-      "source": "The IDA Pro Book",
-      "id": 4579,
-      "length": 386
     },
     {
       "text": "Human history, like all great movements, was cyclical, and returned to the point of beginning. The idea of indefinite progress in a right line was a chimera of the imagination, with no analogue in nature. The parabola of a comet was perhaps a yet better illustration of the career of humanity. Tending upward and sunward from the aphelion of barbarism, the race attained the perihelion of civilization only to plunge downward once more to its nether goal in the regions of chaos.",
@@ -29386,12 +29339,6 @@
       "id": 5240
     },
     {
-      "text": "Then Bilbo fled [with the cup]. But the dragon did not wake - not yet - but shifted into other dreams of greed and violence, lying there in his stolen hall while the little hobbit toiled back up the long tunnel. His heart was beating and a more fevered shaking was in his legs than when he was going down, but still he clutched the cup, and his chief thought was: 'I've done it! This will show them. 'More like a grocer than a burglar' indeed! Well, we'll hear no more of that.'",
-      "source": "Bilbo Baggins, The Hobbit",
-      "length": 478,
-      "id": 5241
-    },
-    {
       "text": "'Very well!' said Bilbo very downcast, and also rather annoyed. 'Come along back to your nice cells, and I will lock you all in again, and you can sit there comfortably and think of a better plan-but I don't suppose I shall ever get hold of the keys again, even if I feel inclined to try.'",
       "source": "Bilbo Baggins, The Hobbit",
       "length": 289,
@@ -31853,7 +31800,7 @@
     },
     {
       "text": "He's the hero Gotham deserves, but not the one it needs right now. So, we'll hunt him, because he can take it. Because he's not our hero. He's a silent guardian. A watchful protector. A Dark Knight.",
-      "source": "The Dark Kight",
+      "source": "The Dark Knight",
       "length": 198,
       "id": 5755
     },
@@ -32386,7 +32333,7 @@
       "id": 5856
     },
     {
-      "text": "This… is Berk. The best kept secret this side of, well, anywhere. Granted, it may not look like much, but this wet heap of rock packs more than a few surprises. Life here is amazing, just not for the faint of heart. See, where most folks enjoy hobbies like whittling or needlepoint, we Berkians prefer a little something we like to call-DRAGON RACING!",
+      "text": "This… is Berk. The best kept secret this side of, well, anywhere. Granted, it may not look like much, but this wet heap of rock packs more than a few surprises. Life here is amazing, just not for the faint of heart. See, where most folks enjoy hobbies like whittling or needlepoint, we Berkians prefer a little something we like to call: DRAGON RACING!",
       "source": "Hiccup, How To Train Your Dragon 2",
       "length": 351,
       "id": 5857
@@ -32642,12 +32589,6 @@
       "source": "William Carlos Williams",
       "length": 89,
       "id": 5910
-    },
-    {
-      "text": "Oh! Hush thee, my baby, the night is behind us, and black are the waters that sparkled so green. The moon, o'er the combers, looks downward to find us at rest in the hollows that rustle between. Where billow meets billow, there soft be thy pillow; Ah, weary wee flipperling, curl at thy ease! The storm shall not wake thee, nor shark overtake thee. Asleep in the arms of the slow-swinging seas.",
-      "source": "Rudyard Kipling",
-      "length": 394,
-      "id": 5911
     },
     {
       "text": "Proximity to power deludes some into thinking they wield it.",
@@ -33643,7 +33584,7 @@
       "id": 6201
     },
     {
-      "text": "Wake up to reality! Nothing ever goes as planned in this accursed world. The longer you live, the more you realize that the only things that truly exist in this reality are merely pain, suffering and futility. Listen, everywhere you look in this world, wherever there is light, there will always be shadows to be found as well. As long as there is a concept of victors, the vanquished will also exist. The selfish intent of wanting to preserve peace, initiates war and hatred is born in order to protect love. There are nexuses causal relationships that cannot be separated.",
+      "text": "Wake up to reality! Nothing ever goes as planned in this accursed world. The longer you live, the more you realize that the only things that truly exist in this reality are merely pain, suffering and futility. Listen, everywhere you look in this world, wherever there is light, there will always be shadows to be found as well. As long as there is a concept of victors, the vanquished will also exist. The selfish intent of wanting to preserve peace, initiates war and hatred is born in order to protect love. There are nexuses - causal relationships that cannot be separated.",
       "source": "Uchiha Madara - Naruto",
       "length": 574,
       "id": 6202
@@ -35736,13 +35677,6 @@
       "id": 6549
     },
     {
-      "text": "HYDRA was founded on the belief that humanity could not be trusted with its own freedom. What we did not realize was that if you tried to take that freedom, they resist. The war taught us much. Humanity needed to surrender its freedom willingly. After the war, S.H.I.E.L.D. was founded, and I was recruited. The new HYDRA grew, a beautiful parasite inside S.H.I.E.L.D. For 70 years, HYDRA has been secretly feeding crises, reaping war. And when history did not cooperate, history was changed.",
-      "source": "Captain America: The Winter Soldier",
-      "length": 492,
-      "approvedBy": "Smithster",
-      "id": 6550
-    },
-    {
       "text": "Kneel before me. I said... kneel! Is not this simpler? Is this not your natural state? It's the unspoken truth of humanity that you crave subjugation. The bright lure of freedom diminishes your life's joy in a mad scramble for power. For identity. You were made to be ruled. In the end, you will always kneel.",
       "source": "The Avengers",
       "length": 309,
@@ -35869,13 +35803,6 @@
       "id": 6569
     },
     {
-      "text": "You're interesting! You're like a different person yet you've changed not a single bit! It's almost as if you have refused to grow on the outside, but you're growing all wrong-way, like your head is stretching deep into your stomach, like you're speaking with your bum and defecating through your eyeballs. This visage is tainted but from within, and if I were to rip a piece from you and place it between my lips I'd be duly poisoned. What's with you?",
-      "source": "Oh, perispomenon!",
-      "length": 452,
-      "approvedBy": "Smithster",
-      "id": 6570
-    },
-    {
       "text": "When we doubt our hearts, our bodies react. Tear ducts overflow and the face flushes red hot embers. A burning, turning sensation overwhelms, and a pressure in the head seduces the mind to doubt. A cycle of connection, a circle of ever-expanding, inexplicable nervous system responses. When we doubt our heads, our stomach cramps, our fists clench and our thoughts tumble into larger and larger whirls of uncertainty, beating our bodies blue and scabish. When we quiet our minds and center our soul we are receptive to an intuition much stronger than knowledge and knowing.",
       "source": "Tinker creek.",
       "length": 573,
@@ -35986,13 +35913,6 @@
       "length": 784,
       "approvedBy": "Smithster",
       "id": 6587
-    },
-    {
-      "text": "I don't want your body, but I hate to think about you with somebody else. Our love has gone cold, you're intertwining your soul with somebody else. I'm looking through you while you're looking through your phone and then leaving with somebody else. No, I don't want your body but I'm picturing your body with somebody else.",
-      "source": "Somebody Else",
-      "length": 323,
-      "approvedBy": "Smithster",
-      "id": 6588
     },
     {
       "text": "I didn't want to remember him. If I had to remember him, it would mean he wasn't a part of my life anymore.",
@@ -36451,7 +36371,7 @@
     },
     {
       "text": "Dad told me I could learn a lesson from this, which was to never lose your temper and do something stupid.",
-      "source": "Diary of a Wimply Kid: The Getaway",
+      "source": "Diary of a Wimpy Kid: The Getaway",
       "length": 106,
       "approvedBy": "Smithster",
       "id": 6658
@@ -36580,12 +36500,6 @@
       "id": 6681
     },
     {
-      "text": "Thunder and lightning can be quite frightening, but don't worry - Liyue's storm and fire defenses are second to none.",
-      "source": "Genshin Impact",
-      "length": 117,
-      "id": 6682
-    },
-    {
       "text": "Morning. Time to set the tone for the rest of the day, so if you're still feeling sleepy, shake it off!",
       "source": "Genshin Impact",
       "length": 103,
@@ -36697,13 +36611,6 @@
       "length": 157,
       "approvedBy": "Smithster",
       "id": 6705
-    },
-    {
-      "text": "It is easy to see things in retrospect. But I was ignorant then of everything but my own happiness, and I don't know what else to say except that life itself seemed very magical in those days: a web of symbol, coincidence, premonition, omen. Everything, somehow, fit together; some sly and benevolent Providence was revealing itself by degrees and I felt myself trembling on the brink of a fabulous discovery, as though any morning it was all going to come together – my future, my past, the whole of my life – and I was going to sit up in bed like a thunderbolt and say oh! oh! oh!",
-      "source": "The Secret History",
-      "length": 582,
-      "approvedBy": "Smithster",
-      "id": 6706
     },
     {
       "text": "Which is better - to have rules and agree, or to hunt and kill? ",
@@ -36874,7 +36781,8 @@
       "id": 6734
     },
     {
-      "text": "I live in the American Gardens building on West 81st Street, on the 11th floor. My name is Patrick Bateman. I'm 27 years old. I believe in taking care of myself, in a balanced diet, in a rigorous exercise routine. In the morning if my face is a little puffy, I'll put on an ice pack while doing my stomach crunches. I can do a 1,000 now. After I remove the ice pack, I use a deep pore cleanser lotion. In the shower, I use a water-activated gel cleanser... then a honey-almond body scrub, and on the face, an exfoliating gel scrub. Then I apply an herb mint facial mask, which I leave on for ten minutes while I prepare the rest of my routine. I always use an aftershave lotion with little or no alcohol, because alcohol dries your face out and makes you look older. Then moisturizer, then an anti-aging eye balm, followed by a final moisturizing protective lotion. There is an idea of a Patrick Bateman. Some kind of abstraction. But there is no real me, only an entity, something illusory, and though I can hide my cold gaze and you can shake my hand and feel flesh gripping yours, and maybe you can even sense our lifestyles are probably comparable, I simply am not there.",
+      "text": "I live in the American Gardens building on West 81st Street, on the 11th floor. My name is Patrick Bateman. I'm 27 years old. I believe in taking care of myself, in a balanced diet, in a rigorous exercise routine. In the morning if my face is a little puffy, I'll put on an ice pack while doing my stomach crunches. I can do a 1,000 now. After I remove the ice pack, I use a deep pore cleanser lotion. In the shower, I use a water-activated gel cleanser... then a honey-almond body scrub, and on the face, an exfoliating gel scrub. Then I apply a herb mint facial mask, which I leave on for ten minutes while I prepare the rest of my routine. I always use an aftershave lotion with little or no alcohol, because alcohol dries your face out and makes you look older. Then moisturizer, then an anti-aging eye balm, followed by a final moisturizing protective lotion. There is an idea of a Patrick Bateman. Some kind of abstraction. But there is no real me, only an entity, something illusory, and though I can hide my cold gaze and you can shake my hand and feel flesh gripping yours, and maybe you can even sense our lifestyles are probably comparable, I simply am not there.",
+      "britishText": "I live in the American Gardens building on West 81st Street, on the 11th floor. My name is Patrick Bateman. I'm 27 years old. I believe in taking care of myself, in a balanced diet, in a rigorous exercise routine. In the morning if my face is a little puffy, I'll put on an ice pack while doing my stomach crunches. I can do a 1,000 now. After I remove the ice pack, I use a deep pore cleanser lotion. In the shower, I use a water-activated gel cleanser... then a honey-almond body scrub, and on the face, an exfoliating gel scrub. Then I apply an herb mint facial mask, which I leave on for ten minutes while I prepare the rest of my routine. I always use an aftershave lotion with little or no alcohol, because alcohol dries your face out and makes you look older. Then moisturizer, then an anti-aging eye balm, followed by a final moisturizing protective lotion. There is an idea of a Patrick Bateman. Some kind of abstraction. But there is no real me, only an entity, something illusory, and though I can hide my cold gaze and you can shake my hand and feel flesh gripping yours, and maybe you can even sense our lifestyles are probably comparable, I simply am not there.",
       "source": "American Psycho",
       "length": 1175,
       "approvedBy": "Smithster",
@@ -38671,6 +38579,5 @@
       "length": 552,
       "id": 7046
     }
-
   ]
 }
