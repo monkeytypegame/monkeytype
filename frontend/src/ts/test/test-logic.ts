@@ -180,23 +180,6 @@ export function restart(options = {} as RestartOptions): void {
     }
   }
 
-  if (options.withSameWordset) {
-    const funboxToPush =
-      FunboxList.get(Config.funbox)
-        .find((f) => f.properties?.find((fp) => fp.startsWith("toPush")))
-        ?.properties?.find((fp) => fp.startsWith("toPush:")) ?? "";
-    if (funboxToPush) {
-      Notifications.add(
-        "You can't repeat a test with currently active funboxes",
-        0,
-        {
-          important: true,
-        }
-      );
-      options.withSameWordset = false;
-    }
-  }
-
   if (TestState.isActive) {
     if (TestState.isRepeated) {
       options.withSameWordset = true;
@@ -333,34 +316,10 @@ export function restart(options = {} as RestartOptions): void {
         repeatWithPace = true;
       }
 
-      if (!options.withSameWordset) {
-        TestState.setRepeated(false);
-        TestState.setPaceRepeat(repeatWithPace);
-        await init();
-        await PaceCaret.init();
-      } else {
-        await Funbox.activate();
-        TestState.setRepeated(true);
-        TestState.setPaceRepeat(repeatWithPace);
-        Replay.stopReplayRecording();
-        TestWords.words.resetCurrentIndex();
-        TestInput.input.reset();
-        TestUI.showWords();
-        if (Config.keymapMode === "next" && Config.mode !== "zen") {
-          void KeymapEvent.highlight(
-            Arrays.nthElementFromArray(
-              [...TestWords.words.getCurrent()],
-              0
-            ) as string
-          );
-        }
-        Funbox.toggleScript(TestWords.words.getCurrent());
-        await PaceCaret.init();
-      }
-
-      if (Config.mode === "quote") {
-        TestState.setRepeated(false);
-      }
+      TestState.setRepeated(options.withSameWordset ?? false);
+      TestState.setPaceRepeat(repeatWithPace);
+      await init();
+      await PaceCaret.init();
 
       for (const f of FunboxList.get(Config.funbox)) {
         if (f.functions?.restart) f.functions.restart();
