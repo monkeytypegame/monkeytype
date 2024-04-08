@@ -583,7 +583,11 @@ async function generateQuoteWords(
     sectionIndexes: [],
   };
   if (TestState.isRepeated) {
-    for (let i = 0; i < limit; i++) {
+    for (
+      let i = 0;
+      i < Math.min(limit, previousGetNextWordReturns.length);
+      i++
+    ) {
       const repeated = previousGetNextWordReturns[i];
 
       if (repeated === undefined) {
