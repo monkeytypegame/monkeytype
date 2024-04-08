@@ -1,50 +1,75 @@
 {
   "name": "monkeytype",
-  "version": "1.14.3",
   "license": "GPL-3.0",
   "private": true,
   "scripts": {
     "prepare": "husky install",
-    "pre-commit": "pretty-quick --staged",
+    "pre-commit": "lint-staged",
     "lint": "npm run lint-be && npm run lint-fe",
-    "lint-be": "cd backend && eslint \"**/*.ts\"",
-    "lint-fe": "cd frontend && eslint \"**/*.ts\"",
+    "lint-be": "eslint \"./backend/**/*.ts\"",
+    "lint-fe": "eslint \"./frontend/**/*.ts\"",
     "install-all": "sh ./bin/install.sh",
     "install-windows": ".\\bin\\install.cmd",
-    "docker": "cd backend && docker-compose up",
+    "docker": "cd backend && docker compose up",
+    "test": "npm run test-be && npm run test-fe",
     "test-be": "cd backend && npm run test",
-    "dev": "concurrently --kill-others \"npm run dev-fe\" \"npm run dev-be\"",
+    "test-fe": "cd frontend && npm run test",
+    "dev": "concurrently --kill-others \"wait-for-localhost 5005 && npm run dev-fe\" \"npm run dev-be\"",
     "dev-be": "cd backend && npm run dev",
     "dev-fe": "cd frontend && npm run dev",
     "live": "concurrently --kill-others \"cd frontend && npm run live\" \"cd backend && npm run start\"",
     "audit-fe": "cd frontend && npm run audit",
-    "deploy-live": "cd frontend && npm run deploy-live",
-    "build-fe": "cd ./frontend && npm run build-live",
+    "release": "release-it -c .release-it.json",
+    "release-fe": "release-it -c .release-it-fe.json",
+    "hotfix": "cd frontend && npm run deploy-live && cd .. && sh ./bin/purgeCfCache.sh",
+    "build-fe": "cd ./frontend && npm run build",
     "pretty": "prettier --check \"./backend/**/*.{ts,json,js,css,html}\" \"./frontend/**/*.{ts,js,scss}\" \"./frontend/static/**/*.{json,html,css}\"",
     "pretty-code": "prettier --check \"./backend/**/*.{ts,js,json,css,html}\" \"./frontend/**/*.{ts,js}\" \"./frontend/src/**/*.scss\"",
     "pretty-code-be": "prettier --check \"./backend/**/*.{ts,js,json,css,html}\"",
     "pretty-code-fe": "prettier --check \"./frontend/**/*.{ts,js}\" \"./frontend/src/**/*.scss\"",
     "pretty-fix": "prettier --write \"./backend/**/*.{ts,json,js,css,html}\" \"./frontend/**/*.{ts,js,scss}\" \"./frontend/static/**/*.{json,html,css}\"",
-    "pr-check-lint-json": "cd frontend && npx gulp pr-check-lint-json",
+    "pr-check-lint-json": "cd frontend && eslint './static/**/*.json'",
     "pr-check-quote-json": "cd frontend && npx gulp pr-check-quote-json",
     "pr-check-language-json": "cd frontend && npx gulp pr-check-language-json",
     "pr-check-other-json": "cd frontend && npx gulp pr-check-other-json",
-    "pr-check-ts": "cd frontend && npx gulp pr-check-ts",
+    "pr-check-build-fe": "cd frontend && npm run build",
     "pr-check-build-be": "cd backend && npm run build"
   },
   "engines": {
-    "npm": "8.1.2"
+    "node": "18.19.1",
+    "npm": "10.2.4"
   },
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "5.20.0",
-    "@typescript-eslint/parser": "5.20.0",
+    "@commitlint/cli": "17.7.1",
+    "@commitlint/config-conventional": "17.7.0",
+    "@csmith/release-it-calver-plugin": "2023.9.0",
+    "@release-it/conventional-changelog": "7.0.0",
+    "@typescript-eslint/eslint-plugin": "7.1.0",
+    "@typescript-eslint/parser": "7.1.0",
     "concurrently": "7.2.1",
-    "eslint": "8.8.0",
+    "conventional-changelog": "4.0.0",
+    "eslint": "8.57.0",
+    "eslint-config-prettier": "9.0.0",
+    "eslint-import-resolver-typescript": "3.6.1",
+    "eslint-plugin-import": "2.29.0",
     "eslint-plugin-json": "2.1.2",
     "eslint-plugin-require-path-exists": "1.1.9",
     "husky": "8.0.1",
+    "knip": "2.19.2",
+    "lint-staged": "13.2.3",
     "prettier": "2.5.1",
-    "pretty-quick": "3.1.0",
-    "typescript": "4.5.5"
-  }
+    "release-it": "16.1.4",
+    "typescript": "5.3.3",
+    "wait-for-localhost-cli": "3.1.0"
+  },
+  "lint-staged": {
+    "*.{json,scss,css,html}": [
+      "prettier --write"
+    ],
+    "*.{ts,js}": [
+      "prettier --write",
+      "eslint"
+    ]
+  },
+  "version": "24.14.1"
 }

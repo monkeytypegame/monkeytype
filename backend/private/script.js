@@ -228,6 +228,19 @@ window.onload = async () => {
     dataResponse.json(),
   ]);
 
+  if (schemaResponse.status !== 200 || dataResponse.status !== 200) {
+    const root = document.querySelector("#root");
+    let html = "";
+    if (schemaResponse.status !== 200) {
+      html += `<i class="unknown-input">Error fetching configuration schema: ${schemaResponseJson.message}</i>`;
+    }
+    if (dataResponse.status !== 200) {
+      html += `<i class="unknown-input">Error fetching configuration data: ${dataResponseJson.message}</i>`;
+    }
+    root.innerHTML = html;
+    return;
+  }
+
   const { data: formSchema } = schemaResponseJson;
   const { data: initialData } = dataResponseJson;
 

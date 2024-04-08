@@ -1,17 +1,17 @@
 import Config from "../config";
-import format from "date-fns/format";
-import * as Misc from "../utils/misc";
+import dateFormat from "date-fns/format";
+import Format from "../utils/format";
 
 function clearTables(isProfile: boolean): void {
   const source = isProfile ? "Profile" : "Account";
 
-  const showAllButton = `<div class="buttonGroup"><div
-  class="showAllButton button"
+  const showAllButton = `<div class="buttonGroup"><button
+  class="showAllButton"
   data-balloon-pos="left"
   aria-label="Show all personal bests"
 >
   <i class="fas fa-ellipsis-v"></i>
-</div></div>`;
+</button></div>`;
 
   const htmlToShow = isProfile ? "" : showAllButton;
 
@@ -80,7 +80,7 @@ function clearTables(isProfile: boolean): void {
 }
 
 export function update(
-  personalBests?: MonkeyTypes.PersonalBests,
+  personalBests?: SharedTypes.PersonalBests,
   isProfile = false
 ): void {
   clearTables(isProfile);
@@ -93,25 +93,37 @@ export function update(
   $(`.page${source} .profile .pbsTime`).html("");
   $(`.page${source} .profile .pbsWords`).html("");
 
-  text = "";
-  [15, 30, 60, 120].forEach((mode2) => {
+  const timeMode2s: SharedTypes.Config.Mode2<"time">[] = [
+    "15",
+    "30",
+    "60",
+    "120",
+  ];
+  const wordMode2s: SharedTypes.Config.Mode2<"words">[] = [
+    "10",
+    "25",
+    "50",
+    "100",
+  ];
+
+  timeMode2s.forEach((mode2) => {
     text += buildPbHtml(personalBests, "time", mode2);
   });
 
   const showAllButton = isProfile
     ? ""
-    : `<div class="buttonGroup"><div
-      class="showAllButton button"
+    : `<div class="buttonGroup"><button
+      class="showAllButton"
       data-balloon-pos="left"
       aria-label="Show all personal bests"
     >
       <i class="fas fa-ellipsis-v"></i>
-    </div></div>`;
+    </button></div>`;
 
   $(`.page${source} .profile .pbsTime`).append(text + showAllButton);
 
   text = "";
-  [10, 25, 50, 100].forEach((mode2) => {
+  wordMode2s.forEach((mode2) => {
     text += buildPbHtml(personalBests, "words", mode2);
   });
 
@@ -119,76 +131,41 @@ export function update(
 }
 
 function buildPbHtml(
-  pbs: MonkeyTypes.PersonalBests,
+  pbs: SharedTypes.PersonalBests,
   mode: "time" | "words",
-  mode2: number
+  mode2: SharedTypes.StringNumber
 ): string {
   let retval = "";
-  let pbData;
   let dateText = "";
-  const multiplier = Config.alwaysShowCPM ? 5 : 1;
   const modeString = `${mode2} ${mode === "time" ? "seconds" : "words"}`;
-  const wpmCpm = Config.alwaysShowCPM ? "cpm" : "wpm";
+  const speedUnit = Config.typingSpeedUnit;
   try {
-    pbData = pbs[mode][mode2].sort((a, b) => b.wpm - a.wpm)[0];
+    const pbData = (pbs[mode][mode2] ?? []).sort((a, b) => b.wpm - a.wpm)[0];
+
+    if (pbData === undefined) throw new Error("No PB data found");
+
     const date = new Date(pbData.timestamp);
     if (pbData.timestamp) {
-      dateText = format(date, "dd MMM yyyy");
+      dateText = dateFormat(date, "dd MMM yyyy");
     }
-
-    let wpmString: number | string = pbData.wpm * multiplier;
-    if (Config.alwaysShowDecimalPlaces) {
-      wpmString = Misc.roundTo2(wpmString).toFixed(2);
-    } else {
-      wpmString = Math.round(wpmString);
-    }
-    wpmString += ` ${wpmCpm}`;
-
-    let rawString: number | string = pbData.raw * multiplier;
-    if (Config.alwaysShowDecimalPlaces) {
-      rawString = Misc.roundTo2(rawString).toFixed(2);
-    } else {
-      rawString = Math.round(rawString);
-    }
-    rawString += ` raw`;
-
-    let accString: number | string = pbData.acc;
-    if (accString === undefined) {
-      accString = "-";
-    } else {
-      if (Config.alwaysShowDecimalPlaces) {
-        accString = Misc.roundTo2(accString).toFixed(2);
-      } else {
-        accString = Math.round(accString);
-      }
-    }
-    accString += ` acc`;
-
-    let conString: number | string = pbData.consistency;
-    if (conString === undefined) {
-      conString = "-";
-    } else {
-      if (Config.alwaysShowDecimalPlaces) {
-        conString = Misc.roundTo2(conString).toFixed(2);
-      } else {
-        conString = Math.round(conString);
-      }
-    }
-    conString += ` con`;
 
     retval = `<div class="quick">
       <div class="test">${modeString}</div>
-      <div class="wpm">${Math.round(pbData.wpm * multiplier)}</div>
-      <div class="acc">${
-        pbData.acc === undefined ? "-" : Math.floor(pbData.acc) + "%"
-      }</div>
+      <div class="wpm">${Format.typingSpeed(pbData.wpm, {
+        showDecimalPlaces: false,
+      })}</div>
+      <div class="acc">${Format.accuracy(pbData.acc, {
+        showDecimalPlaces: false,
+      })}</div>
     </div>
     <div class="fullTest">
       <div>${modeString}</div>
-      <div>${wpmString}</div>
-      <div>${rawString}</div>
-      <div>${accString}</div>
-      <div>${conString}</div>
+      <div>${Format.typingSpeed(pbData.wpm, {
+        suffix: ` ${speedUnit}`,
+      })}</div>
+      <div>${Format.typingSpeed(pbData.raw, { suffix: " raw" })}</div>
+      <div>${Format.accuracy(pbData.acc, { suffix: " acc" })}</div>
+      <div>${Format.percentage(pbData.consistency, { suffix: " con" })}</div>
       <div>${dateText}</div>
     </div>`;
   } catch (e) {

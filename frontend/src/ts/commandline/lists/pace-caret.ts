@@ -1,5 +1,6 @@
-import * as UpdateConfig from "../../config";
+import Config, * as UpdateConfig from "../../config";
 import * as TestLogic from "../../test/test-logic";
+import { get as getTypingSpeedUnit } from "../../utils/typing-speed-units";
 
 const subgroup: MonkeyTypes.CommandsSubgroup = {
   title: "Pace caret mode...",
@@ -55,9 +56,12 @@ const subgroup: MonkeyTypes.CommandsSubgroup = {
       display: "custom...",
       configValue: "custom",
       input: true,
-      exec: (input): void => {
-        if (!input) return;
-        UpdateConfig.setPaceCaretCustomSpeed(parseInt(input));
+      exec: ({ input }): void => {
+        if (input === undefined || input === "") return;
+        const newVal = getTypingSpeedUnit(Config.typingSpeedUnit).toWpm(
+          parseInt(input)
+        );
+        UpdateConfig.setPaceCaretCustomSpeed(newVal);
         UpdateConfig.setPaceCaret("custom");
         TestLogic.restart();
       },

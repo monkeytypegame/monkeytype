@@ -1,11 +1,11 @@
-import { navigate } from "../../observables/navigate-event";
+import { navigate } from "../../controllers/route-controller";
 import { toggleFullscreen } from "../../utils/misc";
 
 const commands: MonkeyTypes.Command[] = [
   {
     id: "viewTypingPage",
     display: "View Typing Page",
-    alias: "start begin type test",
+    alias: "navigate go to start begin type test",
     icon: "fa-keyboard",
     exec: (): void => {
       navigate("/");
@@ -14,14 +14,16 @@ const commands: MonkeyTypes.Command[] = [
   {
     id: "viewLeaderboards",
     display: "View Leaderboards",
+    alias: "navigate go to",
     icon: "fa-crown",
     exec: (): void => {
-      $("#top #menu .textButton.view-leaderboards").trigger("click");
+      $("header nav .textButton.view-leaderboards").trigger("click");
     },
   },
   {
     id: "viewAbout",
     display: "View About Page",
+    alias: "navigate go to",
     icon: "fa-info",
     exec: (): void => {
       navigate("/about");
@@ -30,6 +32,7 @@ const commands: MonkeyTypes.Command[] = [
   {
     id: "viewSettings",
     display: "View Settings Page",
+    alias: "navigate go to",
     icon: "fa-cog",
     exec: (): void => {
       navigate("/settings");
@@ -39,10 +42,10 @@ const commands: MonkeyTypes.Command[] = [
   {
     id: "viewAccount",
     display: "View Account Page",
+    alias: "navigate go to stats",
     icon: "fa-user",
-    alias: "stats",
     exec: (): void => {
-      $("#top #menu .textButton.view-account").hasClass("hidden")
+      $("header nav .textButton.view-account").hasClass("hidden")
         ? navigate("/login")
         : navigate("/account");
     },

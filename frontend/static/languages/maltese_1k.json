@@ -1,6 +1,5 @@
 {
   "name": "maltese_1k",
-  "leftToRight": true,
   "ligatures": false,
   "bcp47": "mt",
   "words": [

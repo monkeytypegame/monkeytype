@@ -1,0 +1,101 @@
+{
+  "language": "estonian",
+  "groups": [
+    [0, 100],
+    [101, 300],
+    [301, 600],
+    [601, 9999]
+  ],
+  "quotes": [
+    {
+      "text": "Sõnad on nagu lehed – lendavad suust välja ja tuul keerutab ning keerutab neid. Lõppkokkuvõttes ei või sa kunagi kindel olla, kuhu nad välja jõuavad.",
+      "source": "Fred Jüssi",
+      "length": 149,
+      "id": 1
+    },
+    {
+      "text": "Õige perenaise hääl on magusam kui teise mehe rukis.",
+      "source": "Estonian proverb",
+      "length": 52,
+      "id": 2
+    },
+    {
+      "text": "Otseteed õnneni viivad sageli sohu. Kindla jalgealuse leiame enamasti hoopis käänulisel rajal.",
+      "source": "Toomas Hendrik Ilves",
+      "length": 94,
+      "id": 3
+    },
+    {
+      "text": "Rikas elab nõnda, kuidas tahab, vaene nõnda, kuidas saab.",
+      "source": "Estonian proverb",
+      "length": 57,
+      "id": 4
+    },
+    {
+      "text": "Kes tahab, et tal sõpru oleks, peab ise sõbralik olema.",
+      "source": "Estonian proverb",
+      "length": 55,
+      "id": 5
+    },
+    {
+      "text": "Kõige raskem on õnne ära tunda. Õnn on enamasti tagantjärele tuntav nagu noorus, tervis või mõnikord ka armastus.",
+      "source": "Voldemar Panso",
+      "length": 113,
+      "id": 6
+    },
+    {
+      "text": "Tõde on nagu vesi janusele. Veel ei ole maitset, värvi ega lõhna, aga temata ei ole elu.",
+      "source": "Toomas Paul",
+      "length": 88,
+      "id": 7
+    },
+    {
+      "text": "Kunst on paratamatus. Kunst on kultuuri geen, mis iseennast taastoodab ja niiviisi kultuuri kasvatab, ainsat keskkonda, milles inimese vaim saab hingata.",
+      "source": "Lennart Meri",
+      "length": 153,
+      "id": 8
+    },
+    {
+      "text": "On väga lihtne rääkida juttu, mis kõigile meeldib. Palju raskem on rääkida juttu, mis on tõde.",
+      "source": "Lennart Meri",
+      "length": 94,
+      "id": 9
+    },
+    {
+      "text": "Inimene toimib edukalt ainult niisuguses keskkonnas, mille põhjuslikke seoseid ta mõistab või arvab mõistvat.",
+      "source": "Lennart Meri",
+      "length": 109,
+      "id": 10
+    },
+    {
+      "text": "Usaldus ei ole kaasavaram, mida on kogutud sukasäärde, kuni see on saanud täis. Usaldust tuleb igal jumalahommikul uuendada, päevast päeva taastada, kasvatada nagu kapitali ja hoida nagu algkapitali.",
+      "source": "Lennart Meri",
+      "length": 199,
+      "id": 11
+    },
+    {
+      "text": "Omad koerad kisuvad, võõrad koerad kosuvad.",
+      "source": "Iko Maran",
+      "length": 43,
+      "id": 12
+    },
+    {
+      "text": "Vigadel on niisugune omadus et inimene kipub ühte viga teise veaga varjama, mistõttu teine viga peab alati suurem olema kui esimene.",
+      "source": "Lennart Meri",
+      "length": 132,
+      "id": 13
+    },
+    {
+      "text": "Täissöönul pole isu ja nälginul toitu ning hädas on mõlemad.",
+      "source": "Anton Hansen Tammsaare",
+      "length": 60,
+      "id": 14
+    },
+    {
+      "text": "Ma ei ole veel ühtegi kindralit näinud, kes oskaks lehma lüpsta.",
+      "source": "Lennart Meri",
+      "length": 64,
+      "id": 15
+    }
+  ]
+}

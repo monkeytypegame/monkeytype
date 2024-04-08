@@ -1,5 +1,6 @@
 import Ape from "../ape";
-import { secondsToString } from "../utils/misc";
+import { isDevEnvironment } from "../utils/misc";
+import { secondsToString } from "../utils/date-and-time";
 import * as Notifications from "./notifications";
 import format from "date-fns/format";
 import * as Alerts from "./alerts";
@@ -18,10 +19,11 @@ function setMemory(id: string): void {
   window.localStorage.setItem("confirmedPSAs", JSON.stringify(list));
 }
 
-async function getLatest(): Promise<MonkeyTypes.PSA[] | null> {
+async function getLatest(): Promise<SharedTypes.PSA[] | null> {
   const response = await Ape.psas.get();
+
   if (response.status === 500) {
-    if (window.location.hostname === "localhost") {
+    if (isDevEnvironment()) {
       Notifications.addBanner(
         "Dev Info: Backend server not running",
         0,
@@ -53,13 +55,13 @@ async function getLatest(): Promise<MonkeyTypes.PSA[] | null> {
   } else if (response.status !== 200) {
     return null;
   }
-  return response.data as MonkeyTypes.PSA[];
+  return response.data;
 }
 
 export async function show(): Promise<void> {
   const latest = await getLatest();
   if (latest === null) return;
-  if (latest.length == 0) {
+  if (latest.length === 0) {
     clearMemory();
     return;
   }
@@ -89,7 +91,7 @@ export async function show(): Promise<void> {
 
     Alerts.addPSA(psa.message, psa.level ?? -1);
 
-    if (localmemory.includes(psa._id) && (psa.sticky ?? false) === false) {
+    if (localmemory.includes(psa._id) && !(psa.sticky ?? false)) {
       return;
     }
 

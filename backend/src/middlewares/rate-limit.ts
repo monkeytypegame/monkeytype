@@ -3,21 +3,22 @@ import MonkeyError from "../utils/error";
 import { Response, NextFunction } from "express";
 import { RateLimiterMemory } from "rate-limiter-flexible";
 import rateLimit, { Options } from "express-rate-limit";
+import { isDevEnvironment } from "../utils/misc";
 
-const REQUEST_MULTIPLIER = process.env.MODE === "dev" ? 100 : 1;
+const REQUEST_MULTIPLIER = isDevEnvironment() ? 100 : 1;
 
 const getKey = (req: MonkeyTypes.Request, _res: Response): string => {
-  return (req.headers["cf-connecting-ip"] ||
-    req.headers["x-forwarded-for"] ||
-    req.ip ||
+  return ((req.headers["cf-connecting-ip"] as string) ||
+    (req.headers["x-forwarded-for"] as string) ||
+    (req.ip as string) ||
     "255.255.255.255") as string;
 };
 
 const getKeyWithUid = (req: MonkeyTypes.Request, _res: Response): string => {
   const uid = req?.ctx?.decodedToken?.uid;
-  const useUid = uid.length > 0 && uid;
+  const useUid = uid !== undefined && uid !== "";
 
-  return (useUid || getKey(req, _res)) as string;
+  return useUid ? uid : getKey(req, _res);
 };
 
 export const customHandler = (
@@ -31,6 +32,7 @@ export const customHandler = (
 
 const ONE_HOUR_SECONDS = 60 * 60;
 const ONE_HOUR_MS = 1000 * ONE_HOUR_SECONDS;
+const ONE_DAY_MS = 24 * ONE_HOUR_MS;
 
 // Root Rate Limit
 export const rootRateLimiter = rateLimit({
@@ -56,7 +58,9 @@ export async function badAuthRateLimiterHandler(
   res: Response,
   next: NextFunction
 ): Promise<void> {
-  if (!_.get(req, "ctx.configuration.rateLimiting.badAuthentication.enabled")) {
+  const badAuthEnabled =
+    req?.ctx?.configuration?.rateLimiting?.badAuthentication?.enabled;
+  if (!badAuthEnabled) {
     return next();
   }
 
@@ -82,11 +86,8 @@ export async function incrementBadAuth(
   res: Response,
   status: number
 ): Promise<void> {
-  const { enabled, penalty, flaggedStatusCodes } = _.get(
-    req,
-    "ctx.configuration.rateLimiting.badAuthentication",
-    {}
-  );
+  const { enabled, penalty, flaggedStatusCodes } =
+    req?.ctx?.configuration?.rateLimiting?.badAuthentication ?? {};
 
   if (!enabled || !flaggedStatusCodes.includes(status)) {
     return;
@@ -97,6 +98,13 @@ export async function incrementBadAuth(
     await badAuthRateLimiter.penalty(key, penalty);
   } catch (error) {}
 }
+
+export const adminLimit = rateLimit({
+  windowMs: 5000,
+  max: 1 * REQUEST_MULTIPLIER,
+  keyGenerator: getKeyWithUid,
+  handler: customHandler,
+});
 
 // Config Routing
 export const configUpdate = rateLimit({
@@ -125,6 +133,13 @@ export const leaderboardsGet = rateLimit({
 export const newQuotesGet = rateLimit({
   windowMs: ONE_HOUR_MS,
   max: 500 * REQUEST_MULTIPLIER,
+  keyGenerator: getKeyWithUid,
+  handler: customHandler,
+});
+
+export const newQuotesIsSubmissionEnabled = rateLimit({
+  windowMs: 60 * 1000,
+  max: 60 * REQUEST_MULTIPLIER,
   keyGenerator: getKeyWithUid,
   handler: customHandler,
 });
@@ -243,8 +258,8 @@ export const resultsGet = rateLimit({
 
 // Results Routing
 export const resultsGetApe = rateLimit({
-  windowMs: ONE_HOUR_MS,
-  max: 1 * REQUEST_MULTIPLIER,
+  windowMs: ONE_DAY_MS,
+  max: 30 * REQUEST_MULTIPLIER,
   keyGenerator: getKeyWithUid,
   handler: customHandler,
 });
@@ -288,6 +303,13 @@ export const resultsLeaderboardQualificationGet = rateLimit({
 export const userGet = rateLimit({
   windowMs: ONE_HOUR_MS,
   max: 60 * REQUEST_MULTIPLIER,
+  keyGenerator: getKeyWithUid,
+  handler: customHandler,
+});
+
+export const setStreakHourOffset = rateLimit({
+  windowMs: ONE_HOUR_MS,
+  max: 5 * REQUEST_MULTIPLIER,
   keyGenerator: getKeyWithUid,
   handler: customHandler,
 });
@@ -344,6 +366,13 @@ export const userUpdateEmail = rateLimit({
 export const userClearPB = rateLimit({
   windowMs: ONE_HOUR_MS,
   max: 60 * REQUEST_MULTIPLIER,
+  keyGenerator: getKeyWithUid,
+  handler: customHandler,
+});
+
+export const userOptOutOfLeaderboards = rateLimit({
+  windowMs: ONE_HOUR_MS,
+  max: 10 * REQUEST_MULTIPLIER,
   keyGenerator: getKeyWithUid,
   handler: customHandler,
 });
@@ -441,6 +470,27 @@ export const userDiscordUnlink = rateLimit({
   handler: customHandler,
 });
 
+export const userRequestVerificationEmail = rateLimit({
+  windowMs: ONE_HOUR_MS / 4,
+  max: 1 * REQUEST_MULTIPLIER,
+  keyGenerator: getKeyWithUid,
+  handler: customHandler,
+});
+
+export const userForgotPasswordEmail = rateLimit({
+  windowMs: ONE_HOUR_MS / 4,
+  max: 1 * REQUEST_MULTIPLIER,
+  keyGenerator: getKeyWithUid,
+  handler: customHandler,
+});
+
+export const userRevokeAllTokens = rateLimit({
+  windowMs: ONE_HOUR_MS,
+  max: 10 * REQUEST_MULTIPLIER,
+  keyGenerator: getKeyWithUid,
+  handler: customHandler,
+});
+
 export const userProfileGet = rateLimit({
   windowMs: ONE_HOUR_MS,
   max: 100 * REQUEST_MULTIPLIER,
@@ -480,6 +530,13 @@ export const apeKeysGet = rateLimit({
 export const apeKeysGenerate = rateLimit({
   windowMs: ONE_HOUR_MS,
   max: 15 * REQUEST_MULTIPLIER,
+  keyGenerator: getKeyWithUid,
+  handler: customHandler,
+});
+
+export const webhookLimit = rateLimit({
+  windowMs: 1000,
+  max: 1 * REQUEST_MULTIPLIER,
   keyGenerator: getKeyWithUid,
   handler: customHandler,
 });

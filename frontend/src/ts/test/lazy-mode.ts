@@ -6,21 +6,22 @@ const accents: [string, string][] = [
   ["úùûüŭũúūůű", "u"],
   ["ńňñ", "n"],
   ["çĉčć", "c"],
-  ["ř", "r"],
-  ["ďđ", "d"],
-  ["ťț", "t"],
+  ["řŕṛ", "r"],
+  ["ďđḍ", "d"],
+  ["ťțṭ", "t"],
+  ["ṃ", "m"],
   ["æ", "ae"],
   ["œ", "oe"],
   ["ẅŵ", "w"],
   ["ĝğg̃", "g"],
   ["ĥ", "h"],
   ["ĵ", "j"],
-  ["ń", "n"],
-  ["ŝśšșş", "s"],
+  ["ńṇ", "n"],
+  ["ŝśšșşṣ", "s"],
   ["ß", "ss"],
   ["żźž", "z"],
   ["ÿỹýÿŷ", "y"],
-  ["łľ", "l"],
+  ["łľĺ", "l"],
   ["أإآ", "ا"],
   ["َ", ""],
   ["ُ", ""],
@@ -31,19 +32,56 @@ const accents: [string, string][] = [
   ["ٍ", ""],
   ["ّ", ""],
   ["ё", "е"],
+  ["ά", "α"],
+  ["έ", "ε"],
+  ["ί", "ι"],
+  ["ύ", "υ"],
+  ["ό", "ο"],
+  ["ή", "η"],
+  ["ώ", "ω"],
+  ["þ", "th"],
 ];
+
+const accentsMap = new Map<string, string>(
+  accents.flatMap((rule) => [...rule[0]].map((accent) => [accent, rule[1]]))
+);
+
+function findAccent(
+  char: string,
+  additionalAccents?: MonkeyTypes.Accents
+): string | undefined {
+  const lookup = char.toLowerCase();
+
+  const found = additionalAccents?.find((rule) => rule[0].includes(lookup));
+
+  return found !== undefined ? found[1] : accentsMap.get(lookup);
+}
 
 export function replaceAccents(
   word: string,
-  accentsOverride?: MonkeyTypes.Accents
+  additionalAccents?: MonkeyTypes.Accents
 ): string {
-  let newWord = word;
-  if (!accents && !accentsOverride) return newWord;
-  let regex;
-  const list = accentsOverride || accents;
-  for (let i = 0; i < list.length; i++) {
-    regex = new RegExp(`[${list[i][0]}]`, "gi");
-    newWord = newWord.replace(regex, list[i][1]);
+  if (!word) return word;
+  const uppercased = word.toUpperCase();
+  const cases = [...word].map((it, i) => it == uppercased[i]);
+  const newWordArray: string[] = [];
+
+  for (let i = 0; i < word.length; i++) {
+    const char = word[i] as string;
+    const isUpperCase = cases[i];
+    const accent = findAccent(char, additionalAccents);
+
+    if (accent !== undefined) {
+      if (isUpperCase) {
+        newWordArray.push(accent.substring(0, 1).toUpperCase());
+        newWordArray.push(accent.substring(1));
+      } else {
+        newWordArray.push(accent);
+      }
+    } else {
+      newWordArray.push(isUpperCase ? char.toUpperCase() : char);
+    }
   }
-  return newWord;
+
+  return newWordArray.join("");
 }

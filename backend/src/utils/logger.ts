@@ -1,6 +1,6 @@
 import * as db from "../init/db";
 import chalk from "chalk";
-import winston, { format } from "winston";
+import { format, createLogger, transports, Logger } from "winston";
 import { resolve } from "path";
 import { ObjectId } from "mongodb";
 
@@ -9,16 +9,16 @@ const warningColor = chalk.yellow.bold;
 const successColor = chalk.green.bold;
 const infoColor = chalk.white;
 
-const logFolderPath = process.env.LOG_FOLDER_PATH ?? "./logs";
-const maxLogSize = parseInt(process.env.LOG_FILE_MAX_SIZE ?? "10485760");
+const logFolderPath = process.env["LOG_FOLDER_PATH"] ?? "./logs";
+const maxLogSize = parseInt(process.env["LOG_FILE_MAX_SIZE"] ?? "10485760");
 
-interface Log {
+type Log = {
   type?: string;
   timestamp: number;
   uid: string;
   event: string;
-  message: string;
-}
+  message: string | Record<string, unknown>;
+};
 
 const customLevels = {
   error: 0,
@@ -32,7 +32,7 @@ const timestampFormat = format.timestamp({
 });
 
 const simpleOutputFormat = format.printf((log) => {
-  return `${log.timestamp}\t${log.level}: ${log.message}`;
+  return `${log["timestamp"]}\t${log.level}: ${log.message}`;
 });
 
 const coloredOutputFormat = format.printf((log) => {
@@ -50,35 +50,35 @@ const coloredOutputFormat = format.printf((log) => {
       break;
   }
 
-  return `${log.timestamp}\t${color(log.message)}`;
+  return `${log["timestamp"]}\t${color(log.message)}`;
 });
 
 const fileFormat = format.combine(timestampFormat, simpleOutputFormat);
 
 const consoleFormat = format.combine(timestampFormat, coloredOutputFormat);
 
-const logger = winston.createLogger({
+const logger = createLogger({
   levels: customLevels,
   transports: [
-    new winston.transports.File({
+    new transports.File({
       level: "error",
       filename: resolve(logFolderPath, "error.log"),
       maxsize: maxLogSize,
       format: fileFormat,
     }),
-    new winston.transports.File({
+    new transports.File({
       level: "success",
       filename: resolve(logFolderPath, "combined.log"),
       maxsize: maxLogSize,
       format: fileFormat,
     }),
-    new winston.transports.Console({
+    new transports.Console({
       level: "success",
       format: consoleFormat,
     }),
   ],
   exceptionHandlers: [
-    new winston.transports.File({
+    new transports.File({
       filename: resolve(logFolderPath, "exceptions.log"),
       format: fileFormat,
     }),
@@ -87,7 +87,7 @@ const logger = winston.createLogger({
 
 const logToDb = async (
   event: string,
-  message: any,
+  message: string | Record<string, unknown>,
   uid?: string
 ): Promise<void> => {
   const logsCollection = db.collection<Log>("logs");
@@ -107,10 +107,10 @@ const logToDb = async (
 };
 
 const Logger = {
-  error: (message: string): winston.Logger => logger.error(message),
-  warning: (message: string): winston.Logger => logger.warning(message),
-  info: (message: string): winston.Logger => logger.info(message),
-  success: (message: string): winston.Logger => logger.log("success", message),
+  error: (message: string): Logger => logger.error(message),
+  warning: (message: string): Logger => logger.warning(message),
+  info: (message: string): Logger => logger.info(message),
+  success: (message: string): Logger => logger.log("success", message),
   logToDb,
 };
 

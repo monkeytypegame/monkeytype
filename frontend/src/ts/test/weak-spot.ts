@@ -1,5 +1,5 @@
 import * as TestInput from "./test-input";
-import { Wordset } from "../utils/misc";
+import { Wordset } from "./wordset";
 
 // Changes how quickly it 'learns' scores - very roughly the score for a char
 // is based on last perCharCount occurrences. Make it smaller to adjust faster.
@@ -12,7 +12,7 @@ const wordSamples = 20;
 // Score penatly (in milliseconds) for getting a letter wrong.
 const incorrectPenalty = 5000;
 
-const scores: { [char: string]: Score } = {};
+const scores: Record<string, Score> = {};
 
 class Score {
   public average: number;
@@ -37,14 +37,14 @@ export function updateScore(char: string, isCorrect: boolean): void {
   if (timings.length === 0 || typeof timings === "string") {
     return;
   }
-  let score = timings[timings.length - 1];
+  let score = timings[timings.length - 1] as number;
   if (!isCorrect) {
     score += incorrectPenalty;
   }
   if (!(char in scores)) {
     scores[char] = new Score();
   }
-  scores[char].update(score);
+  scores[char]?.update(score);
 }
 
 function score(word: string): number {
@@ -52,20 +52,20 @@ function score(word: string): number {
   let numChars = 0;
   for (const c of word) {
     if (c in scores) {
-      total += scores[c].average;
+      total += (scores[c] as Score).average;
       numChars++;
     }
   }
-  return numChars == 0 ? 0.0 : total / numChars;
+  return numChars === 0 ? 0.0 : total / numChars;
 }
 
 export function getWord(wordset: Wordset): string {
   let highScore;
   let randomWord = "";
   for (let i = 0; i < wordSamples; i++) {
-    const newWord = wordset.randomWord();
+    const newWord = wordset.randomWord("normal");
     const newScore = score(newWord);
-    if (i == 0 || highScore === undefined || newScore > highScore) {
+    if (i === 0 || highScore === undefined || newScore > highScore) {
       randomWord = newWord;
       highScore = newScore;
     }

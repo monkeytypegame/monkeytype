@@ -1,6 +1,8 @@
 import * as UpdateConfig from "../../config";
-import * as TestLogic from "../../test/test-logic";
-import { capitalizeFirstLetterOfEachWord } from "../../utils/misc";
+import {
+  capitalizeFirstLetterOfEachWord,
+  getLanguageDisplayString,
+} from "../../utils/strings";
 
 const subgroup: MonkeyTypes.CommandsSubgroup = {
   title: "Language...",
@@ -27,11 +29,10 @@ function update(languages: string[]): void {
   languages.forEach((language) => {
     subgroup.list.push({
       id: "changeLanguage" + capitalizeFirstLetterOfEachWord(language),
-      display: language.replace(/_/g, " "),
+      display: getLanguageDisplayString(language),
       configValue: language,
       exec: (): void => {
         UpdateConfig.setLanguage(language);
-        TestLogic.restart();
       },
     });
   });

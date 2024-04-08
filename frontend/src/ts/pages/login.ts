@@ -3,29 +3,26 @@ import Ape from "../ape";
 import Page from "./page";
 import * as Notifications from "../elements/notifications";
 import { InputIndicator } from "../elements/input-indicator";
+import * as Skeleton from "../utils/skeleton";
+import * as Misc from "../utils/misc";
+import TypoList from "../utils/typo-list";
 
 export function enableSignUpButton(): void {
-  $(".page.pageLogin .register.side .button").removeClass("disabled");
+  $(".page.pageLogin .register.side button").prop("disabled", false);
 }
 
 export function disableSignUpButton(): void {
-  $(".page.pageLogin .register.side .button").addClass("disabled");
-}
-
-export function enableSignInButton(): void {
-  $(".page.pageLogin .login.side .button").removeClass("disabled");
-}
-
-export function disableSignInButton(): void {
-  $(".page.pageLogin .login.side .button").addClass("disabled");
+  $(".page.pageLogin .register.side button").prop("disabled", true);
 }
 
 export function enableInputs(): void {
   $(".pageLogin input").prop("disabled", false);
+  $(".pageLogin button").prop("disabled", false);
 }
 
 export function disableInputs(): void {
   $(".pageLogin input").prop("disabled", true);
+  $(".pageLogin button").prop("disabled", true);
 }
 
 export function showPreloader(): void {
@@ -39,7 +36,9 @@ export function hidePreloader(): void {
 export const updateSignupButton = (): void => {
   if (
     nameIndicator.get() !== "available" ||
-    emailIndicator.get() !== "valid" ||
+    (emailIndicator.get() !== "valid" &&
+      emailIndicator.get() !== "typo" &&
+      emailIndicator.get() !== "edu") ||
     verifyEmailIndicator.get() !== "match" ||
     passwordIndicator.get() !== "good" ||
     verifyPasswordIndicator.get() !== "match"
@@ -79,12 +78,29 @@ const checkNameDebounced = debounce(1000, async () => {
 });
 
 const checkEmail = (): void => {
+  const email = $(".page.pageLogin .register.side .emailInput").val() as string;
   const emailRegex =
     /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+  const educationRegex = /@.*(education|\.edu$|\.edu\.|\.ac\.|\.sch\.)/i;
 
-  const email = $(".page.pageLogin .register.side .emailInput").val() as string;
+  const emailHasTypo = TypoList.some((typo) => {
+    return email.endsWith(typo);
+  });
+
   if (emailRegex.test(email)) {
-    emailIndicator.show("valid");
+    if (emailHasTypo) {
+      emailIndicator.show(
+        "typo",
+        "Please check your email address, it may contain a typo."
+      );
+    } else if (educationRegex.test(email)) {
+      emailIndicator.show(
+        "edu",
+        "Some education emails will fail to receive our messages. Consider using a personal email address."
+      );
+    } else {
+      emailIndicator.show("valid");
+    }
   } else {
     emailIndicator.show("invalid");
   }
@@ -111,22 +127,20 @@ const checkPassword = (): void => {
     ".page.pageLogin .register.side .passwordInput"
   ).val() as string;
 
-  // Force user to use a capital letter, number, special character when setting up an account and changing password
-  if (password.length < 8) {
-    passwordIndicator.show("short", "Password must be at least 8 characters");
-    return;
-  } else {
-    const hasCapital = password.match(/[A-Z]/);
-    const hasNumber = password.match(/[\d]/);
-    const hasSpecial = password.match(/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/);
-    if (!hasCapital || !hasNumber || !hasSpecial) {
+  // Force user to use a capital letter, number, special character and reasonable length when setting up an account and changing password
+  if (!Misc.isDevEnvironment() && !Misc.isPasswordStrong(password)) {
+    if (password.length < 8) {
+      passwordIndicator.show("short", "Password must be at least 8 characters");
+    } else if (password.length > 64) {
+      passwordIndicator.show("long", "Password must be at most 64 characters");
+    } else {
       passwordIndicator.show(
         "weak",
         "Password must contain at least one capital letter, number, and special character"
       );
-    } else {
-      passwordIndicator.show("good", "Password is good");
     }
+  } else {
+    passwordIndicator.show("good", "Password is good");
   }
   updateSignupButton();
 };
@@ -157,7 +171,7 @@ const nameIndicator = new InputIndicator(
       level: -1,
     },
     taken: {
-      icon: "fa-times",
+      icon: "fa-user",
       level: -1,
     },
     checking: {
@@ -178,6 +192,14 @@ const emailIndicator = new InputIndicator(
     invalid: {
       icon: "fa-times",
       level: -1,
+    },
+    typo: {
+      icon: "fa-exclamation-triangle",
+      level: 1,
+    },
+    edu: {
+      icon: "fa-exclamation-triangle",
+      level: 1,
     },
   }
 );
@@ -204,6 +226,10 @@ const passwordIndicator = new InputIndicator(
       level: 1,
     },
     short: {
+      icon: "fa-times",
+      level: -1,
+    },
+    long: {
       icon: "fa-times",
       level: -1,
     },
@@ -237,16 +263,20 @@ $(".page.pageLogin .register.side .usernameInput").on("input", () => {
       return nameIndicator.hide();
     } else {
       nameIndicator.show("checking");
-      checkNameDebounced();
+      void checkNameDebounced();
     }
   }, 1);
 });
 
 $(".page.pageLogin .register.side .emailInput").on("input", () => {
-  if (
-    !$(".page.pageLogin .register.side .emailInput").val() &&
-    !$(".page.pageLogin .register.side .verifyEmailInput").val()
-  ) {
+  const emailInputValue = $(
+    ".page.pageLogin .register.side .emailInput"
+  ).val() as string;
+  const verifyInputValue = $(
+    ".page.pageLogin .register.side .verifyEmailInput"
+  ).val() as string;
+
+  if (!emailInputValue && !verifyInputValue) {
     emailIndicator.hide();
     verifyEmailIndicator.hide();
     return;
@@ -256,10 +286,14 @@ $(".page.pageLogin .register.side .emailInput").on("input", () => {
 });
 
 $(".page.pageLogin .register.side .verifyEmailInput").on("input", () => {
-  if (
-    !$(".page.pageLogin .register.side .emailInput").val() &&
-    !$(".page.pageLogin .register.side .verifyEmailInput").val()
-  ) {
+  const emailInputValue = $(
+    ".page.pageLogin .register.side .emailInput"
+  ).val() as string;
+  const verifyInputValue = $(
+    ".page.pageLogin .register.side .verifyEmailInput"
+  ).val() as string;
+
+  if (!emailInputValue && !verifyInputValue) {
     emailIndicator.hide();
     verifyEmailIndicator.hide();
     return;
@@ -268,10 +302,14 @@ $(".page.pageLogin .register.side .verifyEmailInput").on("input", () => {
 });
 
 $(".page.pageLogin .register.side .passwordInput").on("input", () => {
-  if (
-    !$(".page.pageLogin .register.side .passwordInput").val() &&
-    !$(".page.pageLogin .register.side .verifyPasswordInput").val()
-  ) {
+  const passwordInputValue = $(
+    ".page.pageLogin .register.side .passwordInput"
+  ).val() as string;
+  const verifyPasswordInputValue = $(
+    ".page.pageLogin .register.side .verifyPasswordInput"
+  ).val() as string;
+
+  if (!passwordInputValue && !verifyPasswordInputValue) {
     passwordIndicator.hide();
     verifyPasswordIndicator.hide();
     return;
@@ -281,10 +319,14 @@ $(".page.pageLogin .register.side .passwordInput").on("input", () => {
 });
 
 $(".page.pageLogin .register.side .verifyPasswordInput").on("input", () => {
-  if (
-    !$(".page.pageLogin .register.side .passwordInput").val() &&
-    !$(".page.pageLogin .register.side .verifyPasswordInput").val()
-  ) {
+  const passwordInputValue = $(
+    ".page.pageLogin .register.side .passwordInput"
+  ).val() as string;
+  const verifyPasswordInputValue = $(
+    ".page.pageLogin .register.side .verifyPasswordInput"
+  ).val() as string;
+
+  if (!passwordInputValue && !verifyPasswordInputValue) {
     passwordIndicator.hide();
     verifyPasswordIndicator.hide();
     return;
@@ -293,20 +335,26 @@ $(".page.pageLogin .register.side .verifyPasswordInput").on("input", () => {
   checkPasswordsMatch();
 });
 
-export const page = new Page(
-  "login",
-  $(".page.pageLogin"),
-  "/login",
-  async () => {
-    //
+export const page = new Page({
+  name: "login",
+  element: $(".page.pageLogin"),
+  path: "/login",
+  afterHide: async (): Promise<void> => {
+    $(".pageLogin input").val("");
+    nameIndicator.hide();
+    emailIndicator.hide();
+    verifyEmailIndicator.hide();
+    passwordIndicator.hide();
+    verifyPasswordIndicator.hide();
+    Skeleton.remove("pageLogin");
   },
-  async () => {
-    //
+  beforeShow: async (): Promise<void> => {
+    Skeleton.append("pageLogin", "main");
+    enableSignUpButton();
+    enableInputs();
   },
-  async () => {
-    //
-  },
-  async () => {
-    //
-  }
-);
+});
+
+$(() => {
+  Skeleton.save("pageLogin");
+});

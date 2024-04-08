@@ -3,7 +3,7 @@ const badges: Record<number, MonkeyTypes.UserBadge> = {
     id: 1,
     name: "Developer",
     description: "I made this",
-    icon: "fa-rocket",
+    icon: "fa-laptop",
     color: "white",
     customStyle: "animation: rgb-bg 10s linear infinite;",
   },
@@ -74,7 +74,7 @@ const badges: Record<number, MonkeyTypes.UserBadge> = {
   10: {
     id: 10,
     name: "Bug Hunter",
-    description: "Reported bugs on the site",
+    description: "Reported or helped track down bugs on the site",
     icon: "fa-bug",
     color: "var(--text-color)",
     background: "var(--sub-color)",
@@ -95,40 +95,71 @@ const badges: Record<number, MonkeyTypes.UserBadge> = {
     color: "var(--text-color)",
     background: "var(--sub-color)",
   },
+  13: {
+    id: 13,
+    name: "Mythical",
+    description: "Yes, I'm actually this fast",
+    icon: "fa-rocket",
+    color: "white",
+    customStyle: "animation: rgb-bg 10s linear infinite;",
+  },
+  14: {
+    id: 14,
+    name: "All Year Long",
+    description: "Reached a streak of 365 days",
+    icon: "fa-fire",
+    color: "var(--bg-color)",
+    background: "var(--main-color)",
+  },
 };
 
 export function getHTMLById(
   id: number,
   noText = false,
-  noBalloon = false
+  noBalloon = false,
+  showUnknown = false
 ): string {
-  const badge = badges[id];
-  if (!badge) {
+  const badge = badges[id] as MonkeyTypes.UserBadge | undefined;
+
+  if (!badge && !showUnknown) {
     return "";
   }
+
   let style = "";
-  if (badge.background) {
+  if (badge?.background !== undefined) {
     style += `background: ${badge.background};`;
   }
-  if (badge.color) {
+  if (badge?.color !== undefined) {
     style += `color: ${badge.color};`;
   }
-  if (badge.customStyle) {
+  if (badge?.customStyle !== undefined) {
     style += badge.customStyle;
   }
 
-  const balloonText = (noText ? badge.name + ": " : "") + badge.description;
+  const badgeName = badge?.name ?? "Badge Name Missing";
+  const badgeDescription = badge?.description ?? "Badge Description Missing";
+
+  const balloonText = (noText ? badgeName + ": " : "") + badgeDescription;
 
   let balloon = "";
   if (!noBalloon) {
     balloon = `aria-label="${balloonText}" data-balloon-pos="right"`;
   }
 
-  return `<div class="badge" ${balloon} style="${style}">${
-    badge.icon ? `<i class="fas ${badge.icon}"></i>` : ""
-  }${noText ? "" : `<div class="text">${badge.name}</div>`}</div>`;
+  let icon = "";
+  if (badge?.icon !== undefined) {
+    icon = `<i class="fas ${noText ? "fa-fw" : ""} ${badge.icon}"></i>`;
+  } else {
+    icon = `<i class="fas fa-question"></i>`;
+  }
+
+  const text = `<div class="text">${badgeName}</div>`;
+
+  return `<div class="badge" ${balloon} style="${style}">${icon}${
+    noText ? "" : text
+  }</div>`;
 }
 
-export function getById(id: number): MonkeyTypes.UserBadge {
+export function getById(id: number): MonkeyTypes.UserBadge | undefined {
   return badges[id];
 }

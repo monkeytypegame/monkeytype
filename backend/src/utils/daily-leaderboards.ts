@@ -1,9 +1,9 @@
 import _ from "lodash";
-import LRUCache from "lru-cache";
 import * as RedisClient from "../init/redis";
+import LaterQueue from "../queues/later-queue";
 import { getCurrentDayTimestamp, matchesAPattern, kogascore } from "./misc";
 
-interface DailyLeaderboardEntry {
+type DailyLeaderboardEntry = {
   uid: string;
   name: string;
   wpm: number;
@@ -11,12 +11,22 @@ interface DailyLeaderboardEntry {
   acc: number;
   consistency: number;
   timestamp: number;
-  rank?: number;
-  count?: number;
   discordAvatar?: string;
   discordId?: string;
   badgeId?: number;
-}
+  isPremium?: boolean;
+};
+
+type GetRankResponse = {
+  minWpm: number;
+  count: number;
+  rank: number | null;
+  entry: DailyLeaderboardEntry | null;
+};
+
+export type LbEntryWithRank = {
+  rank: number;
+} & DailyLeaderboardEntry;
 
 const dailyLeaderboardNamespace = "monkeytype:dailyleaderboard";
 const scoresNamespace = `${dailyLeaderboardNamespace}:scores`;
@@ -27,12 +37,16 @@ export class DailyLeaderboard {
   private leaderboardScoresKeyName: string;
   private leaderboardModeKey: string;
   private customTime: number;
+  private modeRule: SharedTypes.ValidModeRule;
 
-  constructor(language: string, mode: string, mode2: string, customTime = -1) {
+  constructor(modeRule: SharedTypes.ValidModeRule, customTime = -1) {
+    const { language, mode, mode2 } = modeRule;
+
     this.leaderboardModeKey = `${language}:${mode}:${mode2}`;
     this.leaderboardResultsKeyName = `${resultsNamespace}:${this.leaderboardModeKey}`;
     this.leaderboardScoresKeyName = `${scoresNamespace}:${this.leaderboardModeKey}`;
     this.customTime = customTime;
+    this.modeRule = modeRule;
   }
 
   private getTodaysLeaderboardKeys(): {
@@ -54,7 +68,7 @@ export class DailyLeaderboard {
 
   public async addResult(
     entry: DailyLeaderboardEntry,
-    dailyLeaderboardsConfig: MonkeyTypes.Configuration["dailyLeaderboards"]
+    dailyLeaderboardsConfig: SharedTypes.Configuration["dailyLeaderboards"]
   ): Promise<number> {
     const connection = RedisClient.getConnection();
     if (!connection || !dailyLeaderboardsConfig.enabled) {
@@ -75,7 +89,7 @@ export class DailyLeaderboard {
 
     const resultScore = kogascore(entry.wpm, entry.acc, entry.timestamp);
 
-    // @ts-ignore
+    // @ts-expect-error
     const rank = await connection.addResult(
       2,
       leaderboardScoresKey,
@@ -87,6 +101,19 @@ export class DailyLeaderboard {
       JSON.stringify(entry)
     );
 
+    if (
+      isValidModeRule(
+        this.modeRule,
+        dailyLeaderboardsConfig.scheduleRewardsModeRules
+      )
+    ) {
+      await LaterQueue.scheduleForTomorrow(
+        "daily-leaderboard-results",
+        this.leaderboardModeKey,
+        this.modeRule
+      );
+    }
+
     if (rank === null) {
       return -1;
     }
@@ -97,8 +124,9 @@ export class DailyLeaderboard {
   public async getResults(
     minRank: number,
     maxRank: number,
-    dailyLeaderboardsConfig: MonkeyTypes.Configuration["dailyLeaderboards"]
-  ): Promise<DailyLeaderboardEntry[]> {
+    dailyLeaderboardsConfig: SharedTypes.Configuration["dailyLeaderboards"],
+    premiumFeaturesEnabled: boolean
+  ): Promise<LbEntryWithRank[]> {
     const connection = RedisClient.getConnection();
     if (!connection || !dailyLeaderboardsConfig.enabled) {
       return [];
@@ -107,7 +135,7 @@ export class DailyLeaderboard {
     const { leaderboardScoresKey, leaderboardResultsKey } =
       this.getTodaysLeaderboardKeys();
 
-    // @ts-ignore
+    // @ts-expect-error
     const [results]: string[][] = await connection.getResults(
       2,
       leaderboardScoresKey,
@@ -117,20 +145,30 @@ export class DailyLeaderboard {
       "false"
     );
 
-    const resultsWithRanks: DailyLeaderboardEntry[] = results.map(
+    if (results === undefined) {
+      throw new Error(
+        "Redis returned undefined when getting daily leaderboard results"
+      );
+    }
+
+    const resultsWithRanks: LbEntryWithRank[] = results.map(
       (resultJSON, index) => ({
         ...JSON.parse(resultJSON),
         rank: minRank + index + 1,
       })
     );
 
+    if (!premiumFeaturesEnabled) {
+      resultsWithRanks.forEach((it) => (it.isPremium = undefined));
+    }
+
     return resultsWithRanks;
   }
 
   public async getRank(
     uid: string,
-    dailyLeaderboardsConfig: MonkeyTypes.Configuration["dailyLeaderboards"]
-  ): Promise<DailyLeaderboardEntry | null> {
+    dailyLeaderboardsConfig: SharedTypes.Configuration["dailyLeaderboards"]
+  ): Promise<GetRankResponse | null> {
     const connection = RedisClient.getConnection();
     if (!connection || !dailyLeaderboardsConfig.enabled) {
       return null;
@@ -139,47 +177,61 @@ export class DailyLeaderboard {
     const { leaderboardScoresKey, leaderboardResultsKey } =
       this.getTodaysLeaderboardKeys();
 
-    const [[, rank], [, count], [, result]] = await connection
+    // @ts-expect-error
+    const [[, rank], [, count], [, result], [, minScore]] = await connection
       .multi()
       .zrevrank(leaderboardScoresKey, uid)
       .zcard(leaderboardScoresKey)
       .hget(leaderboardResultsKey, uid)
+      .zrange(leaderboardScoresKey, 0, 0, "WITHSCORES")
       .exec();
 
+    const minWpm =
+      minScore.length > 0 ? parseInt(minScore[1]?.slice(1, 6)) / 100 : 0;
     if (rank === null) {
-      return null;
+      return {
+        minWpm,
+        count: count ?? 0,
+        rank: null,
+        entry: null,
+      };
     }
 
     return {
-      rank: rank + 1,
+      minWpm,
       count: count ?? 0,
-      ...JSON.parse(result ?? "null"),
+      rank: rank + 1,
+      entry: {
+        ...JSON.parse(result ?? "null"),
+      },
     };
   }
 }
 
 export async function purgeUserFromDailyLeaderboards(
   uid: string,
-  configuration: MonkeyTypes.Configuration["dailyLeaderboards"]
+  configuration: SharedTypes.Configuration["dailyLeaderboards"]
 ): Promise<void> {
   const connection = RedisClient.getConnection();
   if (!connection || !configuration.enabled) {
     return;
   }
 
-  // @ts-ignore
+  // @ts-expect-error
   await connection.purgeResults(0, uid, dailyLeaderboardNamespace);
 }
 
-let DAILY_LEADERBOARDS: LRUCache<string, DailyLeaderboard>;
+function isValidModeRule(
+  modeRule: SharedTypes.ValidModeRule,
+  modeRules: SharedTypes.ValidModeRule[]
+): boolean {
+  const { language, mode, mode2 } = modeRule;
 
-export function initializeDailyLeaderboardsCache(
-  configuration: MonkeyTypes.Configuration["dailyLeaderboards"]
-): void {
-  const { dailyLeaderboardCacheSize } = configuration;
-
-  DAILY_LEADERBOARDS = new LRUCache({
-    max: dailyLeaderboardCacheSize,
+  return modeRules.some((rule) => {
+    const matchesLanguage = matchesAPattern(language, rule.language);
+    const matchesMode = matchesAPattern(mode, rule.mode);
+    const matchesMode2 = matchesAPattern(mode2, rule.mode2);
+    return matchesLanguage && matchesMode && matchesMode2;
   });
 }
 
@@ -187,33 +239,17 @@ export function getDailyLeaderboard(
   language: string,
   mode: string,
   mode2: string,
-  dailyLeaderboardsConfig: MonkeyTypes.Configuration["dailyLeaderboards"],
+  dailyLeaderboardsConfig: SharedTypes.Configuration["dailyLeaderboards"],
   customTimestamp = -1
 ): DailyLeaderboard | null {
   const { validModeRules, enabled } = dailyLeaderboardsConfig;
 
-  const isValidMode = validModeRules.some((rule) => {
-    const matchesLanguage = matchesAPattern(language, rule.language);
-    const matchesMode = matchesAPattern(mode, rule.mode);
-    const matchesMode2 = matchesAPattern(mode2, rule.mode2);
-    return matchesLanguage && matchesMode && matchesMode2;
-  });
+  const modeRule = { language, mode, mode2 };
+  const isValidMode = isValidModeRule(modeRule, validModeRules);
 
-  if (!enabled || !isValidMode || !DAILY_LEADERBOARDS) {
+  if (!enabled || !isValidMode) {
     return null;
   }
 
-  const key = `${language}:${mode}:${mode2}:${customTimestamp}`;
-
-  if (!DAILY_LEADERBOARDS.has(key)) {
-    const dailyLeaderboard = new DailyLeaderboard(
-      language,
-      mode,
-      mode2,
-      customTimestamp
-    );
-    DAILY_LEADERBOARDS.set(key, dailyLeaderboard);
-  }
-
-  return DAILY_LEADERBOARDS.get(key) ?? null;
+  return new DailyLeaderboard(modeRule, customTimestamp);
 }

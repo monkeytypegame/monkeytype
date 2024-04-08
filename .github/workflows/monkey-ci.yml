@@ -1,7 +1,8 @@
 name: Monkey CI
 
 env:
-  NODE_VERSION: "16.13.2"
+  NODE_VERSION: "18.19.1"
+  RECAPTCHA_SITE_KEY: "6Lc-V8McAAAAAJ7s6LGNe7MBZnRiwbsbiWts87aj"
 
 permissions:
   contents: read
@@ -11,6 +12,7 @@ permissions:
 on:
   pull_request:
     branches: [master]
+    types: [opened, reopened, synchronize, ready_for_review]
   push:
     branches: [master]
 
@@ -20,6 +22,7 @@ concurrency:
 
 jobs:
   pre-ci:
+    if: github.event.pull_request.draft == false
     name: pre-ci
     runs-on: ubuntu-latest
     outputs:
@@ -28,7 +31,7 @@ jobs:
       assets-json: ${{ steps.export-changes.outputs.assets-json }}
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - uses: dorny/paths-filter@v2
         id: filter
         with:
@@ -59,9 +62,9 @@ jobs:
     runs-on: ubuntu-latest
     if: needs.pre-ci.outputs.should-build-be == 'true'
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: Set up Node.js
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v3
         with:
           node-version: ${{ env.NODE_VERSION }}
 
@@ -86,15 +89,15 @@ jobs:
     runs-on: ubuntu-latest
     if: needs.pre-ci.outputs.should-build-fe == 'true'
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: Set up Node.js
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v3
         with:
           node-version: ${{ env.NODE_VERSION }}
 
       - name: Create stub firebase config
         working-directory: ./frontend/src/ts/constants
-        run: mv ./firebase-config-example.ts ./firebase-config-live.ts
+        run: mv ./firebase-config-example.ts ./firebase-config.ts && cp ./firebase-config.ts ./firebase-config-live.ts
 
       - name: Install dependencies
         run: npm ci & cd frontend && npm ci
@@ -106,7 +109,10 @@ jobs:
         run: npm run lint-fe
 
       - name: Build
-        run: npm run pr-check-ts
+        run: npm run pr-check-build-fe
+
+      - name: Test
+        run: npm run test-fe
 
   ci-assets:
     name: ci-assets
@@ -114,7 +120,7 @@ jobs:
     runs-on: ubuntu-latest
     if: needs.pre-ci.outputs.assets-json == 'true'
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - uses: dorny/paths-filter@v2
         id: filter
         with:
@@ -130,7 +136,7 @@ jobs:
               - 'frontend/static/challenges/*.json'
               - 'frontend/static/layouts/*.json'
       - name: Set up Node.js
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v3
         with:
           node-version: ${{ env.NODE_VERSION }}
 
@@ -159,14 +165,15 @@ jobs:
     needs: [ci-be, ci-fe, ci-assets]
     if: ${{ always() && contains(needs.*.result, 'failure') && github.ref != 'refs/heads/master' }}
     steps:
-      - name: Comment on PR
-        uses: actions/github-script@v6
+      - uses: actions/checkout@v4
+      - name: Save the PR number in an artifact
+        shell: bash
+        env:
+          PR_NUM: ${{ github.event.number }}
+        run: echo $PR_NUM > pr_num.txt
+
+      - name: Upload the PR number
+        uses: actions/upload-artifact@v3
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            github.rest.issues.createComment({
-              issue_number: ${{ github.event.number }},
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: 'Continuous integration check(s) failed. Please review the failing check\'s logs and make the necessary changes. ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'
-            })
+          name: pr_num
+          path: ./pr_num.txt

@@ -1,7 +1,7 @@
 import * as TestLogic from "../../test/test-logic";
 import * as TestUI from "../../test/test-ui";
 import * as PractiseWords from "../../test/practise-words";
-import * as Misc from "../../utils/misc";
+import * as GetText from "../../utils/generate";
 import * as Notifications from "../../elements/notifications";
 
 const copyWords: MonkeyTypes.CommandsSubgroup = {
@@ -15,7 +15,7 @@ const copyWords: MonkeyTypes.CommandsSubgroup = {
       id: "copyYes",
       display: "Yes, I am sure",
       exec: (): void => {
-        const words = Misc.getWords();
+        const words = GetText.getWords();
 
         navigator.clipboard.writeText(words).then(
           () => {
@@ -36,7 +36,6 @@ const practiceSubgroup: MonkeyTypes.CommandsSubgroup = {
     {
       id: "practiseWordsMissed",
       display: "missed",
-      noIcon: true,
       exec: (): void => {
         PractiseWords.init(true, false);
         TestLogic.restart({
@@ -47,7 +46,6 @@ const practiceSubgroup: MonkeyTypes.CommandsSubgroup = {
     {
       id: "practiseWordsSlow",
       display: "slow",
-      noIcon: true,
       exec: (): void => {
         PractiseWords.init(false, true);
         TestLogic.restart({
@@ -58,7 +56,6 @@ const practiceSubgroup: MonkeyTypes.CommandsSubgroup = {
     {
       id: "practiseWordsBoth",
       display: "both",
-      noIcon: true,
       exec: (): void => {
         PractiseWords.init(true, true);
         TestLogic.restart({
@@ -117,12 +114,12 @@ const commands: MonkeyTypes.Command[] = [
   },
   {
     id: "saveScreenshot",
-    display: "Save screenshot",
+    display: "Copy screenshot to clipboard",
     icon: "fa-image",
-    alias: "ss picture",
+    alias: "save",
     exec: (): void => {
       setTimeout(() => {
-        TestUI.screenshot();
+        void TestUI.screenshot();
       }, 500);
     },
     available: (): boolean => {

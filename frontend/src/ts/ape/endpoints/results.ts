@@ -1,5 +1,3 @@
-import { CLIENT_VERSION } from "../../version";
-
 const BASE_PATH = "/results";
 
 export default class Results {
@@ -7,24 +5,30 @@ export default class Results {
     this.httpClient = httpClient;
   }
 
-  async get(): Ape.EndpointData {
-    return await this.httpClient.get(BASE_PATH);
+  async get(
+    offset?: number
+  ): Ape.EndpointResponse<SharedTypes.DBResult<SharedTypes.Config.Mode>[]> {
+    return await this.httpClient.get(BASE_PATH, { searchQuery: { offset } });
   }
 
-  async save(result: MonkeyTypes.Result<MonkeyTypes.Mode>): Ape.EndpointData {
+  async save(
+    result: SharedTypes.Result<SharedTypes.Config.Mode>
+  ): Ape.EndpointResponse<Ape.Results.PostResult> {
     return await this.httpClient.post(BASE_PATH, {
       payload: { result },
-      headers: { "Client-Version": CLIENT_VERSION },
     });
   }
 
-  async updateTags(resultId: string, tagIds: string[]): Ape.EndpointData {
+  async updateTags(
+    resultId: string,
+    tagIds: string[]
+  ): Ape.EndpointResponse<Ape.Results.PatchResult> {
     return await this.httpClient.patch(`${BASE_PATH}/tags`, {
       payload: { resultId, tagIds },
     });
   }
 
-  async deleteAll(): Ape.EndpointData {
+  async deleteAll(): Ape.EndpointResponse<Ape.Results.DeleteAll> {
     return await this.httpClient.delete(BASE_PATH);
   }
 }

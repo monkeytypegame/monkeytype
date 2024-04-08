@@ -1,13 +1,20 @@
 import * as Notifications from "../elements/notifications";
 import * as AdController from "../controllers/ad-controller";
+import * as Skeleton from "../utils/skeleton";
+import { isPopupVisible } from "../utils/misc";
+
+const wrapperId = "videoAdPopupWrapper";
 
 export async function show(): Promise<void> {
+  Skeleton.append(wrapperId, "popups");
   await AdController.checkAdblock();
   if (AdController.adBlock) {
     Notifications.add(
       "Looks like you're using an adblocker. Video ads will not work until you disable it.",
       0,
-      6
+      {
+        duration: 6,
+      }
     );
     return;
   }
@@ -17,25 +24,27 @@ export async function show(): Promise<void> {
     Notifications.add(
       "Looks like you're using a cookie popup blocker. Video ads will not work without giving your consent through the popup.",
       0,
-      7
+      {
+        duration: 7,
+      }
     );
     return;
   }
 
-  if ($("#videoAdPopupWrapper").hasClass("hidden")) {
+  if (!isPopupVisible(wrapperId)) {
     $("#videoAdPopupWrapper")
       .stop(true, true)
       .css("opacity", 0)
       .removeClass("hidden")
-      .animate({ opacity: 1 }, 100, () => {
-        //@ts-ignore
+      .animate({ opacity: 1 }, 125, () => {
+        //@ts-expect-error
         window.dataLayer.push({ event: "EG_Video" });
       });
   }
 }
 
 function hide(): void {
-  if (!$("#videoAdPopupWrapper").hasClass("hidden")) {
+  if (isPopupVisible(wrapperId)) {
     $("#videoAdPopupWrapper")
       .stop(true, true)
       .css("opacity", 1)
@@ -43,9 +52,10 @@ function hide(): void {
         {
           opacity: 0,
         },
-        100,
+        125,
         () => {
           $("#videoAdPopupWrapper").addClass("hidden");
+          Skeleton.remove(wrapperId);
         }
       );
   }
@@ -59,11 +69,15 @@ export function egVideoListener(options: Record<string, string>): void {
   } else if (event === "finished") {
     hide();
   } else if (event === "empty") {
-    Notifications.add("Failed to load video ad. Please try again later", -1, 3);
+    Notifications.add("Failed to load video ad. Please try again later", -1, {
+      duration: 3,
+    });
     hide();
   }
 }
 
 $(".pageTest #watchVideoAdButton").on("click", () => {
-  show();
+  void show();
 });
+
+Skeleton.save(wrapperId);

@@ -21,13 +21,13 @@ const filters = {
   },
 };
 
-export function getCSS(): string {
+function getCSS(): string {
   let ret = "";
   Object.keys(filters).forEach((filterKey) => {
     const key = filterKey as keyof typeof filters;
-    if (filters[key].value != filters[key].default) {
+    if (filters[key].value !== filters[key].default) {
       ret += `${filterKey}(${filters[key].value}${
-        filterKey == "blur" ? "rem" : ""
+        filterKey === "blur" ? "rem" : ""
       }) `;
     }
   });
@@ -48,88 +48,117 @@ export function apply(): void {
 }
 
 function syncSliders(): void {
-  $(".section.customBackgroundFilter .blur input").val(filters["blur"].value);
-  $(".section.customBackgroundFilter .brightness input").val(
-    filters["brightness"].value
+  $(".section[data-config-name='customBackgroundFilter'] .blur input").val(
+    filters.blur.value
   );
-  $(".section.customBackgroundFilter .saturate input").val(
-    filters["saturate"].value
+  $(
+    ".section[data-config-name='customBackgroundFilter'] .brightness input"
+  ).val(filters.brightness.value);
+  $(".section[data-config-name='customBackgroundFilter'] .saturate input").val(
+    filters.saturate.value
   );
-  $(".section.customBackgroundFilter .opacity input").val(
-    filters["opacity"].value
+  $(".section[data-config-name='customBackgroundFilter'] .opacity input").val(
+    filters.opacity.value
   );
 }
 
 function updateNumbers(): void {
-  $(".section.customBackgroundFilter .blur .value").html(
+  $(".section[data-config-name='customBackgroundFilter'] .blur .value").html(
     filters.blur.value.toFixed(1)
   );
-  $(".section.customBackgroundFilter .brightness .value").html(
-    filters.brightness.value.toFixed(1)
-  );
-  $(".section.customBackgroundFilter .saturate .value").html(
-    filters.saturate.value.toFixed(1)
-  );
-  $(".section.customBackgroundFilter .opacity .value").html(
+  $(
+    ".section[data-config-name='customBackgroundFilter'] .brightness .value"
+  ).html(filters.brightness.value.toFixed(1));
+  $(
+    ".section[data-config-name='customBackgroundFilter'] .saturate .value"
+  ).html(filters.saturate.value.toFixed(1));
+  $(".section[data-config-name='customBackgroundFilter'] .opacity .value").html(
     filters.opacity.value.toFixed(1)
   );
 }
 
-export function loadConfig(config: number[]): void {
+export function updateUI(): void {
+  syncSliders();
+  updateNumbers();
+}
+
+function loadConfig(config: SharedTypes.Config.CustomBackgroundFilter): void {
   filters.blur.value = config[0];
   filters.brightness.value = config[1];
   filters.saturate.value = config[2];
   filters.opacity.value = config[3];
-  updateNumbers();
-  syncSliders();
+  updateUI();
 }
 
-$(".section.customBackgroundFilter .blur input").on("input", () => {
-  filters["blur"].value = parseFloat(
-    $(".section.customBackgroundFilter .blur input").val() as string
-  );
-  updateNumbers();
-  apply();
-});
+$(".section[data-config-name='customBackgroundFilter'] .blur input").on(
+  "input",
+  () => {
+    filters.blur.value = parseFloat(
+      $(
+        ".section[data-config-name='customBackgroundFilter'] .blur input"
+      ).val() as string
+    );
+    updateNumbers();
+    apply();
+  }
+);
 
-$(".section.customBackgroundFilter .brightness input").on("input", () => {
-  filters["brightness"].value = parseFloat(
-    $(".section.customBackgroundFilter .brightness input").val() as string
-  );
-  updateNumbers();
-  apply();
-});
+$(".section[data-config-name='customBackgroundFilter'] .brightness input").on(
+  "input",
+  () => {
+    filters.brightness.value = parseFloat(
+      $(
+        ".section[data-config-name='customBackgroundFilter'] .brightness input"
+      ).val() as string
+    );
+    updateNumbers();
+    apply();
+  }
+);
 
-$(".section.customBackgroundFilter .saturate input").on("input", () => {
-  filters["saturate"].value = parseFloat(
-    $(".section.customBackgroundFilter .saturate input").val() as string
-  );
-  updateNumbers();
-  apply();
-});
+$(".section[data-config-name='customBackgroundFilter'] .saturate input").on(
+  "input",
+  () => {
+    filters.saturate.value = parseFloat(
+      $(
+        ".section[data-config-name='customBackgroundFilter'] .saturate input"
+      ).val() as string
+    );
+    updateNumbers();
+    apply();
+  }
+);
 
-$(".section.customBackgroundFilter .opacity input").on("input", () => {
-  filters["opacity"].value = parseFloat(
-    $(".section.customBackgroundFilter .opacity input").val() as string
-  );
-  updateNumbers();
-  apply();
-});
+$(".section[data-config-name='customBackgroundFilter'] .opacity input").on(
+  "input",
+  () => {
+    filters.opacity.value = parseFloat(
+      $(
+        ".section[data-config-name='customBackgroundFilter'] .opacity input"
+      ).val() as string
+    );
+    updateNumbers();
+    apply();
+  }
+);
 
-$(".section.customBackgroundFilter input").on("input", () => {
-  debouncedSave();
-});
+$(".section[data-config-name='customBackgroundFilter'] input").on(
+  "input",
+  () => {
+    void debouncedSave();
+  }
+);
 
 const debouncedSave = debounce(2000, async () => {
   const arr = Object.keys(filters).map(
     (filterKey) => filters[filterKey as keyof typeof filters].value
-  ) as MonkeyTypes.CustomBackgroundFilter;
+  ) as SharedTypes.Config.CustomBackgroundFilter;
   UpdateConfig.setCustomBackgroundFilter(arr, false);
 });
 
 ConfigEvent.subscribe((eventKey, eventValue) => {
-  if (eventKey === "customBackgroundFilter") {
-    loadConfig((eventValue as string[]).map((ev) => parseFloat(ev)));
+  if (eventKey === "customBackgroundFilter" && (eventValue as boolean)) {
+    loadConfig(eventValue as SharedTypes.Config.CustomBackgroundFilter);
     apply();
   }
 });

@@ -35,6 +35,16 @@ export async function getQuotes(
   return new MonkeyResponse("Quote submissions retrieved", data);
 }
 
+export async function isSubmissionEnabled(
+  req: MonkeyTypes.Request
+): Promise<MonkeyResponse> {
+  const { submissionsEnabled } = req.ctx.configuration.quotes;
+  return new MonkeyResponse(
+    "Quote submission " + (submissionsEnabled ? "enabled" : "disabled"),
+    { isEnabled: submissionsEnabled }
+  );
+}
+
 export async function addQuote(
   req: MonkeyTypes.Request
 ): Promise<MonkeyResponse> {
@@ -60,7 +70,7 @@ export async function approveQuote(
   }
 
   const data = await NewQuotesDAL.approve(quoteId, editText, editSource, name);
-  Logger.logToDb("system_quote_approved", data, uid);
+  void Logger.logToDb("system_quote_approved", data, uid);
 
   return new MonkeyResponse(data.message, data.quote);
 }

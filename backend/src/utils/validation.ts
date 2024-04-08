@@ -1,7 +1,8 @@
 import _ from "lodash";
 import { replaceHomoglyphs } from "../constants/homoglyphs";
 import { profanities, regexProfanities } from "../constants/profanities";
-import { matchesAPattern, sanitizeString } from "./misc";
+import { intersect, matchesAPattern, sanitizeString } from "./misc";
+import { default as FunboxList } from "../constants/funbox-list";
 
 export function inRange(value: number, min: number, max: number): boolean {
   return value >= min && value <= max;
@@ -21,7 +22,7 @@ export function isUsernameValid(name: string): boolean {
     return false;
   }
 
-  const isProfanity = profanities.find((profanity) =>
+  const isProfanity = profanities.some((profanity) =>
     normalizedName.includes(profanity)
   );
   if (isProfanity) {
@@ -56,12 +57,14 @@ export function isTagPresetNameValid(name: string): boolean {
   return VALID_NAME_PATTERN.test(name);
 }
 
-export function isTestTooShort(result: MonkeyTypes.CompletedEvent): boolean {
+export function isTestTooShort(result: SharedTypes.CompletedEvent): boolean {
   const { mode, mode2, customText, testDuration, bailedOut } = result;
 
   if (mode === "time") {
-    const setTimeTooShort = mode2 > 0 && mode2 < 15;
-    const infiniteTimeTooShort = mode2 === 0 && testDuration < 15;
+    const seconds = parseInt(mode2);
+
+    const setTimeTooShort = seconds > 0 && seconds < 15;
+    const infiniteTimeTooShort = seconds === 0 && testDuration < 15;
     const bailedOutTooShort = bailedOut
       ? bailedOut && testDuration < 15
       : false;
@@ -69,8 +72,10 @@ export function isTestTooShort(result: MonkeyTypes.CompletedEvent): boolean {
   }
 
   if (mode === "words") {
-    const setWordTooShort = mode2 > 0 && mode2 < 10;
-    const infiniteWordTooShort = mode2 === 0 && testDuration < 15;
+    const wordCount = parseInt(mode2);
+
+    const setWordTooShort = wordCount > 0 && wordCount < 10;
+    const infiniteWordTooShort = wordCount === 0 && testDuration < 15;
     const bailedOutTooShort = bailedOut
       ? bailedOut && testDuration < 15
       : false;
@@ -100,4 +105,134 @@ export function isTestTooShort(result: MonkeyTypes.CompletedEvent): boolean {
   }
 
   return false;
+}
+
+export function areFunboxesCompatible(funboxesString: string): boolean {
+  const funboxes = funboxesString.split("#").filter((f) => f !== "none");
+
+  const funboxesToCheck = FunboxList.filter((f) => funboxes.includes(f.name));
+
+  const allFunboxesAreValid = funboxesToCheck.length === funboxes.length;
+  const oneWordModifierMax =
+    funboxesToCheck.filter(
+      (f) =>
+        f.frontendFunctions?.includes("getWord") ??
+        f.frontendFunctions?.includes("pullSection") ??
+        f.frontendFunctions?.includes("withWords")
+    ).length <= 1;
+  const layoutUsability =
+    funboxesToCheck.filter((f) =>
+      f.properties?.find((fp) => fp === "changesLayout")
+    ).length === 0 ||
+    funboxesToCheck.filter((f) =>
+      f.properties?.find((fp) => fp === "ignoresLayout" || fp === "usesLayout")
+    ).length === 0;
+  const oneNospaceOrToPushMax =
+    funboxesToCheck.filter((f) =>
+      f.properties?.find((fp) => fp === "nospace" || fp.startsWith("toPush"))
+    ).length <= 1;
+  const oneWordOrderMax =
+    funboxesToCheck.filter((f) =>
+      f.properties?.find((fp) => fp.startsWith("wordOrder"))
+    ).length <= 1;
+  const oneChangesWordsVisibilityMax =
+    funboxesToCheck.filter((f) =>
+      f.properties?.find((fp) => fp === "changesWordsVisibility")
+    ).length <= 1;
+  const oneFrequencyChangesMax =
+    funboxesToCheck.filter((f) =>
+      f.properties?.find((fp) => fp === "changesWordsFrequency")
+    ).length <= 1;
+  const noFrequencyChangesConflicts =
+    funboxesToCheck.filter((f) =>
+      f.properties?.find((fp) => fp === "changesWordsFrequency")
+    ).length === 0 ||
+    funboxesToCheck.filter((f) =>
+      f.properties?.find((fp) => fp === "ignoresLanguage")
+    ).length === 0;
+  const capitalisationChangePosibility =
+    funboxesToCheck.filter((f) =>
+      f.properties?.find((fp) => fp === "noLetters")
+    ).length === 0 ||
+    funboxesToCheck.filter((f) =>
+      f.properties?.find((fp) => fp === "changesCapitalisation")
+    ).length === 0;
+  const noConflictsWithSymmetricChars =
+    funboxesToCheck.filter((f) =>
+      f.properties?.find((fp) => fp === "conflictsWithSymmetricChars")
+    ).length === 0 ||
+    funboxesToCheck.filter((f) =>
+      f.properties?.find((fp) => fp === "symmetricChars")
+    ).length === 0;
+  const canSpeak =
+    funboxesToCheck.filter((f) =>
+      f.properties?.find((fp) => fp === "speaks" || fp === "unspeakable")
+    ).length <= 1;
+  const hasLanguageToSpeak =
+    funboxesToCheck.filter((f) => f.properties?.find((fp) => fp === "speaks"))
+      .length === 0 ||
+    funboxesToCheck.filter((f) =>
+      f.properties?.find((fp) => fp === "ignoresLanguage")
+    ).length === 0;
+  const oneToPushOrPullSectionMax =
+    funboxesToCheck.filter(
+      (f) =>
+        f.properties?.some((fp) => fp.startsWith("toPush:")) ??
+        f.frontendFunctions?.includes("pullSection")
+    ).length <= 1;
+  const oneApplyCSSMax =
+    funboxesToCheck.filter((f) => f.frontendFunctions?.includes("applyCSS"))
+      .length <= 1;
+  const onePunctuateWordMax =
+    funboxesToCheck.filter((f) =>
+      f.frontendFunctions?.includes("punctuateWord")
+    ).length <= 1;
+  const oneCharCheckerMax =
+    funboxesToCheck.filter((f) =>
+      f.frontendFunctions?.includes("isCharCorrect")
+    ).length <= 1;
+  const oneCharReplacerMax =
+    funboxesToCheck.filter((f) => f.frontendFunctions?.includes("getWordHtml"))
+      .length <= 1;
+  const allowedConfig = {} as Record<string, string[] | boolean[]>;
+  let noConfigConflicts = true;
+  for (const f of funboxesToCheck) {
+    if (!f.frontendForcedConfig) continue;
+    for (const key in f.frontendForcedConfig) {
+      const allowedConfigValue = allowedConfig[key];
+      const funboxValue = f.frontendForcedConfig[key];
+      if (allowedConfigValue !== undefined && funboxValue !== undefined) {
+        if (
+          intersect<string | boolean>(allowedConfigValue, funboxValue, true)
+            .length === 0
+        ) {
+          noConfigConflicts = false;
+          break;
+        }
+      } else if (funboxValue !== undefined) {
+        allowedConfig[key] = funboxValue;
+      }
+    }
+  }
+
+  return (
+    allFunboxesAreValid &&
+    oneWordModifierMax &&
+    layoutUsability &&
+    oneNospaceOrToPushMax &&
+    oneChangesWordsVisibilityMax &&
+    oneFrequencyChangesMax &&
+    noFrequencyChangesConflicts &&
+    capitalisationChangePosibility &&
+    noConflictsWithSymmetricChars &&
+    canSpeak &&
+    hasLanguageToSpeak &&
+    oneToPushOrPullSectionMax &&
+    oneApplyCSSMax &&
+    onePunctuateWordMax &&
+    oneCharCheckerMax &&
+    oneCharReplacerMax &&
+    noConfigConflicts &&
+    oneWordOrderMax
+  );
 }

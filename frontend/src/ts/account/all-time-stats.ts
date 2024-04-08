@@ -1,5 +1,5 @@
 import * as DB from "../db";
-import * as Misc from "../utils/misc";
+import * as DateTime from "../utils/date-and-time";
 
 export function clear(): void {
   $(".pageAccount .globalTimeTyping .val").text(`-`);
@@ -19,7 +19,7 @@ export function update(): void {
     if (seconds === 0) {
       string = "-";
     } else {
-      string = Misc.secondsToString(Math.round(seconds), true, true);
+      string = DateTime.secondsToString(Math.round(seconds), true, true);
     }
     $(".pageAccount .globalTimeTyping .val").text(string);
   }
@@ -28,9 +28,7 @@ export function update(): void {
     $(".pageAccount .globalTestsStarted .val").text(
       snapshot.typingStats.startedTests as number
     );
-  }
 
-  if (snapshot.typingStats !== undefined) {
     $(".pageAccount .globalTestsCompleted .val").text(
       snapshot.typingStats.completedTests as number
     );

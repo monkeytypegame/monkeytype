@@ -1,415 +1,7 @@
 import * as Loader from "../elements/loader";
-
-async function fetchJson<T>(url: string): Promise<T> {
-  try {
-    if (!url) throw new Error("No URL");
-    const res = await fetch(url);
-    if (res.ok) {
-      return await res.json();
-    } else {
-      throw new Error(`${res.status} ${res.statusText}`);
-    }
-  } catch (e) {
-    console.error("Error fetching JSON: " + url, e);
-    throw e;
-  }
-}
-
-export const cachedFetchJson = memoizeAsync(fetchJson);
-
-export async function getLayoutsList(): Promise<MonkeyTypes.Layouts> {
-  try {
-    const layoutsList = await cachedFetchJson<MonkeyTypes.Layouts>(
-      "/./layouts/_list.json"
-    );
-    return layoutsList;
-  } catch (e) {
-    throw new Error("Layouts JSON fetch failed");
-  }
-}
-
-/**
- * @throws {Error} If layout list or layout doesnt exist.
- */
-export async function getLayout(
-  layoutName: string
-): Promise<MonkeyTypes.Layout> {
-  const layouts = await getLayoutsList();
-  const layout = layouts[layoutName];
-  if (layout === undefined) {
-    throw new Error(`Layout ${layoutName} is undefined`);
-  }
-  return layout;
-}
-
-let themesList: MonkeyTypes.Theme[] | undefined;
-export async function getThemesList(): Promise<MonkeyTypes.Theme[]> {
-  if (!themesList) {
-    let themes = await cachedFetchJson<MonkeyTypes.Theme[]>(
-      "/./themes/_list.json"
-    );
-
-    themes = themes.sort(function (a: MonkeyTypes.Theme, b: MonkeyTypes.Theme) {
-      const nameA = a.name.toLowerCase();
-      const nameB = b.name.toLowerCase();
-      if (nameA < nameB) return -1;
-      if (nameA > nameB) return 1;
-      return 0;
-    });
-    themesList = themes;
-    return themesList;
-  } else {
-    return themesList;
-  }
-}
-
-let sortedThemesList: MonkeyTypes.Theme[] | undefined;
-export async function getSortedThemesList(): Promise<MonkeyTypes.Theme[]> {
-  if (!sortedThemesList) {
-    if (!themesList) {
-      await getThemesList();
-    }
-    if (!themesList) {
-      throw new Error("Themes list is undefined");
-    }
-    let sorted = [...themesList];
-    sorted = sorted.sort((a, b) => {
-      const b1 = hexToHSL(a.bgColor);
-      const b2 = hexToHSL(b.bgColor);
-      return b2.lgt - b1.lgt;
-    });
-    sortedThemesList = sorted;
-    return sortedThemesList;
-  } else {
-    return sortedThemesList;
-  }
-}
-
-export async function getLanguageList(): Promise<string[]> {
-  try {
-    const languageList = await cachedFetchJson<string[]>(
-      "/./languages/_list.json"
-    );
-    return languageList;
-  } catch (e) {
-    throw new Error("Language list JSON fetch failed");
-  }
-}
-
-export async function getLanguageGroups(): Promise<
-  MonkeyTypes.LanguageGroup[]
-> {
-  try {
-    const languageGroupList = await cachedFetchJson<
-      MonkeyTypes.LanguageGroup[]
-    >("/./languages/_groups.json");
-    return languageGroupList;
-  } catch (e) {
-    throw new Error("Language groups JSON fetch failed");
-  }
-}
-
-let currentLanguage: MonkeyTypes.LanguageObject;
-export async function getLanguage(
-  lang: string
-): Promise<MonkeyTypes.LanguageObject> {
-  // try {
-  if (currentLanguage == undefined || currentLanguage.name !== lang) {
-    currentLanguage = await cachedFetchJson<MonkeyTypes.LanguageObject>(
-      `/./languages/${lang}.json`
-    );
-  }
-  return currentLanguage;
-  // } catch (e) {
-  //   console.error(`error getting language`);
-  //   console.error(e);
-  //   currentLanguage = await cachedFetchJson<MonkeyTypes.LanguageObject>(
-  //     `/./language/english.json`
-  //   );
-  //   return currentLanguage;
-  // }
-}
-
-export async function getCurrentLanguage(
-  languageName: string
-): Promise<MonkeyTypes.LanguageObject> {
-  return await getLanguage(languageName);
-}
-
-export async function findCurrentGroup(
-  language: string
-): Promise<MonkeyTypes.LanguageGroup | undefined> {
-  let retgroup: MonkeyTypes.LanguageGroup | undefined;
-  const groups = await getLanguageGroups();
-  groups.forEach((group) => {
-    if (retgroup === undefined) {
-      if (group.languages.includes(language)) {
-        retgroup = group;
-      }
-    }
-  });
-  return retgroup;
-}
-
-let funboxList: MonkeyTypes.FunboxMetadata[] | undefined;
-export async function getFunboxList(): Promise<MonkeyTypes.FunboxMetadata[]> {
-  if (!funboxList) {
-    let list = await cachedFetchJson<MonkeyTypes.FunboxMetadata[]>(
-      "/./funbox/_list.json"
-    );
-    list = list.sort(function (
-      a: MonkeyTypes.FunboxMetadata,
-      b: MonkeyTypes.FunboxMetadata
-    ) {
-      const nameA = a.name.toLowerCase();
-      const nameB = b.name.toLowerCase();
-      if (nameA < nameB) return -1;
-      if (nameA > nameB) return 1;
-      return 0;
-    });
-    funboxList = list;
-    return funboxList;
-  } else {
-    return funboxList;
-  }
-}
-
-export async function getFunbox(
-  funbox: string
-): Promise<MonkeyTypes.FunboxMetadata | undefined> {
-  const list: MonkeyTypes.FunboxMetadata[] = await getFunboxList();
-  return list.find(function (element) {
-    return element.name == funbox;
-  });
-}
-
-let fontsList: MonkeyTypes.FontObject[] | undefined;
-export async function getFontsList(): Promise<MonkeyTypes.FontObject[]> {
-  if (!fontsList) {
-    let list = await cachedFetchJson<MonkeyTypes.FontObject[]>(
-      "/./fonts/_list.json"
-    );
-    list = list.sort(function (
-      a: MonkeyTypes.FontObject,
-      b: MonkeyTypes.FontObject
-    ) {
-      const nameA = a.name.toLowerCase();
-      const nameB = b.name.toLowerCase();
-      if (nameA < nameB) return -1;
-      if (nameA > nameB) return 1;
-      return 0;
-    });
-    fontsList = list;
-    return fontsList;
-  } else {
-    return fontsList;
-  }
-}
-
-export async function getChallengeList(): Promise<MonkeyTypes.Challenge[]> {
-  try {
-    const data = await cachedFetchJson<MonkeyTypes.Challenge[]>(
-      "/./challenges/_list.json"
-    );
-    return data;
-  } catch (e) {
-    throw new Error("Challenge list JSON fetch failed");
-  }
-}
-
-export async function getSupportersList(): Promise<string[]> {
-  try {
-    const data = await cachedFetchJson<string[]>("/./about/supporters.json");
-    return data;
-  } catch (e) {
-    throw new Error("Supporters list JSON fetch failed");
-  }
-}
-
-export async function getContributorsList(): Promise<string[]> {
-  try {
-    const data = await cachedFetchJson<string[]>("/./about/contributors.json");
-    return data;
-  } catch (e) {
-    throw new Error("Contributors list JSON fetch failed");
-  }
-}
-
-function hexToHSL(hex: string): {
-  hue: number;
-  sat: number;
-  lgt: number;
-  string: string;
-} {
-  // Convert hex to RGB first
-  let r: number;
-  let g: number;
-  let b: number;
-  if (hex.length == 4) {
-    r = ("0x" + hex[1] + hex[1]) as unknown as number;
-    g = ("0x" + hex[2] + hex[2]) as unknown as number;
-    b = ("0x" + hex[3] + hex[3]) as unknown as number;
-  } else if (hex.length == 7) {
-    r = ("0x" + hex[1] + hex[2]) as unknown as number;
-    g = ("0x" + hex[3] + hex[4]) as unknown as number;
-    b = ("0x" + hex[5] + hex[6]) as unknown as number;
-  } else {
-    r = 0x00;
-    g = 0x00;
-    b = 0x00;
-  }
-  // Then to HSL
-  r /= 255;
-  g /= 255;
-  b /= 255;
-  const cmin = Math.min(r, g, b);
-  const cmax = Math.max(r, g, b);
-  const delta = cmax - cmin;
-  let h = 0;
-  let s = 0;
-  let l = 0;
-
-  if (delta == 0) h = 0;
-  else if (cmax == r) h = ((g - b) / delta) % 6;
-  else if (cmax == g) h = (b - r) / delta + 2;
-  else h = (r - g) / delta + 4;
-
-  h = Math.round(h * 60);
-
-  if (h < 0) h += 360;
-
-  l = (cmax + cmin) / 2;
-  s = delta == 0 ? 0 : delta / (1 - Math.abs(2 * l - 1));
-  s = +(s * 100).toFixed(1);
-  l = +(l * 100).toFixed(1);
-
-  return {
-    hue: h,
-    sat: s,
-    lgt: l,
-    string: "hsl(" + h + "," + s + "%," + l + "%)",
-  };
-}
-
-export function isColorLight(hex: string): boolean {
-  const hsl = hexToHSL(hex);
-  return hsl.lgt >= 50;
-}
-
-export function isColorDark(hex: string): boolean {
-  const hsl = hexToHSL(hex);
-  return hsl.lgt < 50;
-}
-
-export function smooth(
-  arr: number[],
-  windowSize: number,
-  getter = (value: number): number => value
-): number[] {
-  const get = getter;
-  const result = [];
-
-  for (let i = 0; i < arr.length; i += 1) {
-    const leftOffeset = i - windowSize;
-    const from = leftOffeset >= 0 ? leftOffeset : 0;
-    const to = i + windowSize + 1;
-
-    let count = 0;
-    let sum = 0;
-    for (let j = from; j < to && j < arr.length; j += 1) {
-      sum += get(arr[j]);
-      count += 1;
-    }
-
-    result[i] = sum / count;
-  }
-
-  return result;
-}
-
-export function stdDev(array: number[]): number {
-  try {
-    const n = array.length;
-    const mean = array.reduce((a, b) => a + b) / n;
-    return Math.sqrt(
-      array.map((x) => Math.pow(x - mean, 2)).reduce((a, b) => a + b) / n
-    );
-  } catch (e) {
-    return 0;
-  }
-}
-
-export function mean(array: number[]): number {
-  try {
-    return (
-      array.reduce((previous, current) => (current += previous)) / array.length
-    );
-  } catch (e) {
-    return 0;
-  }
-}
-
-//https://www.w3resource.com/javascript-exercises/fundamental/javascript-fundamental-exercise-88.php
-export function median(arr: number[]): number {
-  try {
-    const mid = Math.floor(arr.length / 2),
-      nums = [...arr].sort((a, b) => a - b);
-    return arr.length % 2 !== 0 ? nums[mid] : (nums[mid - 1] + nums[mid]) / 2;
-  } catch (e) {
-    return 0;
-  }
-}
-
-export async function getLatestReleaseFromGitHub(): Promise<string> {
-  const releases = await $.getJSON(
-    "https://api.github.com/repos/monkeytypegame/monkeytype/releases?per_page=1"
-  );
-  return releases[0].name;
-}
-
-export async function getReleasesFromGitHub(): Promise<
-  MonkeyTypes.GithubRelease[]
-> {
-  return $.getJSON(
-    "https://api.github.com/repos/monkeytypegame/monkeytype/releases?per_page=5"
-  );
-}
-
-// function getPatreonNames() {
-//   let namesel = $(".pageAbout .section .supporters");
-//   firebase
-//     .functions()
-//     .httpsCallable("getPatreons")()
-//     .then((data) => {
-//       let names = data.data;
-//       names.forEach((name) => {
-//         namesel.append(`<div>${name}</div>`);
-//       });
-//     });
-// }
-
-export function getLastChar(word: string): string {
-  try {
-    return word.charAt(word.length - 1);
-  } catch {
-    return "";
-  }
-}
-
-export function capitalizeFirstLetterOfEachWord(str: string): string {
-  return str
-    .split(/ +/)
-    .map((s) => s.charAt(0).toUpperCase() + s.slice(1))
-    .join(" ");
-}
-
-export function capitalizeFirstLetter(str: string): string {
-  return str.charAt(0).toUpperCase() + str.slice(1);
-}
-
-export function isASCIILetter(c: string): boolean {
-  return c.length === 1 && /[a-z]/i.test(c);
-}
+import { envConfig } from "../constants/env-config";
+import { lastElementFromArray } from "./arrays";
+import * as JSONData from "./json-data";
 
 export function kogasa(cov: number): number {
   return (
@@ -424,181 +16,12 @@ export function whorf(speed: number, wordlen: number): number {
   );
 }
 
-export function roundTo2(num: number): number {
-  return Math.round((num + Number.EPSILON) * 100) / 100;
-}
-
-export function findLineByLeastSquares(values_y: number[]): number[][] {
-  let sum_x = 0;
-  let sum_y = 0;
-  let sum_xy = 0;
-  let sum_xx = 0;
-  let count = 0;
-
-  /*
-   * We'll use those letiables for faster read/write access.
-   */
-  let x = 0;
-  let y = 0;
-  const values_length = values_y.length;
-
-  /*
-   * Nothing to do.
-   */
-  if (values_length === 0) {
-    return [[], []];
-  }
-
-  /*
-   * Calculate the sum for each of the parts necessary.
-   */
-  for (let v = 0; v < values_length; v++) {
-    x = v + 1;
-    y = values_y[v];
-    sum_x += x;
-    sum_y += y;
-    sum_xx += x * x;
-    sum_xy += x * y;
-    count++;
-  }
-
-  /*
-   * Calculate m and b for the formular:
-   * y = x * m + b
-   */
-  const m = (count * sum_xy - sum_x * sum_y) / (count * sum_xx - sum_x * sum_x);
-  const b = sum_y / count - (m * sum_x) / count;
-
-  const returnpoint1 = [1, 1 * m + b];
-  const returnpoint2 = [values_length, values_length * m + b];
-  return [returnpoint1, returnpoint2];
-}
-
-export function getGibberish(): string {
-  const randLen = randomIntFromRange(1, 7);
-  let ret = "";
-  for (let i = 0; i < randLen; i++) {
-    ret += String.fromCharCode(97 + randomIntFromRange(0, 25));
-  }
-  return ret;
-}
-
-export function secondsToString(
-  sec: number,
-  alwaysShowMinutes = false,
-  alwaysShowHours = false,
-  delimiter: ":" | "text" = ":",
-  showSeconds = true,
-  showDays = false
-): string {
-  sec = Math.abs(sec);
-  let days = 0;
-  let hours;
-  if (showDays) {
-    days = Math.floor(sec / 86400);
-    hours = Math.floor((sec % 86400) / 3600);
-  } else {
-    hours = Math.floor(sec / 3600);
-  }
-  const minutes = Math.floor((sec % 3600) / 60);
-  const seconds = roundTo2((sec % 3600) % 60);
-
-  let daysString;
-  let hoursString;
-  let minutesString;
-  let secondsString;
-
-  if (showDays) {
-    days < 10 && delimiter !== "text"
-      ? (daysString = "0" + days)
-      : (daysString = days);
-  }
-  hours < 10 && delimiter !== "text"
-    ? (hoursString = "0" + hours)
-    : (hoursString = hours);
-  minutes < 10 && delimiter !== "text"
-    ? (minutesString = "0" + minutes)
-    : (minutesString = minutes);
-  seconds < 10 &&
-  (minutes > 0 || hours > 0 || alwaysShowMinutes) &&
-  delimiter !== "text"
-    ? (secondsString = "0" + seconds)
-    : (secondsString = seconds);
-
-  let ret = "";
-  if (days > 0 && showDays) {
-    ret += daysString;
-    if (delimiter === "text") {
-      if (days == 1) {
-        ret += " day ";
-      } else {
-        ret += " days ";
-      }
-    } else {
-      ret += delimiter;
-    }
-  }
-  if (hours > 0 || alwaysShowHours) {
-    ret += hoursString;
-    if (delimiter === "text") {
-      if (hours == 1) {
-        ret += " hour ";
-      } else {
-        ret += " hours ";
-      }
-    } else {
-      ret += delimiter;
-    }
-  }
-  if (minutes > 0 || hours > 0 || alwaysShowMinutes) {
-    ret += minutesString;
-    if (delimiter === "text") {
-      if (minutes == 1) {
-        ret += " minute ";
-      } else {
-        ret += " minutes ";
-      }
-    } else if (showSeconds) {
-      ret += delimiter;
-    }
-  }
-  if (showSeconds) {
-    ret += secondsString;
-    if (delimiter === "text") {
-      if (seconds == 1) {
-        ret += " second";
-      } else {
-        ret += " seconds";
-      }
-    }
-  }
-  if (hours === 0 && minutes === 0 && !showSeconds && delimiter === "text") {
-    ret = "less than 1 minute";
-  }
-  return ret.trim();
-}
-
-export function getNumbers(len: number): string {
-  const randLen = randomIntFromRange(1, len);
-  let ret = "";
-  for (let i = 0; i < randLen; i++) {
-    let randomNum;
-    if (i === 0) {
-      randomNum = randomIntFromRange(1, 9);
-    } else {
-      randomNum = randomIntFromRange(0, 9);
-    }
-    ret += randomNum.toString();
-  }
-  return ret;
-}
-
 //convert numbers to arabic-indic
 export function convertNumberToArabic(numString: string): string {
   const arabicIndic = "٠١٢٣٤٥٦٧٨٩";
   let ret = "";
-  for (let i = 0; i < numString.length; i++) {
-    ret += arabicIndic[parseInt(numString[i])];
+  for (const char of numString) {
+    ret += arabicIndic[parseInt(char)];
   }
   return ret;
 }
@@ -606,90 +29,10 @@ export function convertNumberToArabic(numString: string): string {
 export function convertNumberToNepali(numString: string): string {
   const nepaliIndic = "०१२३४५६७८९";
   let ret = "";
-  for (let i = 0; i < numString.length; i++) {
-    ret += nepaliIndic[parseInt(numString[i])];
+  for (const char of numString) {
+    ret += nepaliIndic[parseInt(char)];
   }
   return ret;
-}
-
-export function getSpecials(): string {
-  const randLen = randomIntFromRange(1, 7);
-  let ret = "";
-  const specials = [
-    "!",
-    "@",
-    "#",
-    "$",
-    "%",
-    "^",
-    "&",
-    "*",
-    "(",
-    ")",
-    "-",
-    "_",
-    "=",
-    "+",
-    "{",
-    "}",
-    "[",
-    "]",
-    "'",
-    '"',
-    "/",
-    "\\",
-    "|",
-    "?",
-    ";",
-    ":",
-    ">",
-    "<",
-  ];
-  for (let i = 0; i < randLen; i++) {
-    ret += randomElementFromArray(specials);
-  }
-  return ret;
-}
-
-export function getASCII(): string {
-  const randLen = randomIntFromRange(1, 10);
-  let ret = "";
-  for (let i = 0; i < randLen; i++) {
-    const ran = 33 + randomIntFromRange(0, 93);
-    ret += String.fromCharCode(ran);
-  }
-  return ret;
-}
-
-export function getArrows(): string {
-  const arrowArray = ["←", "↑", "→", "↓"];
-  let arrowWord = "";
-  let lastchar;
-  for (let i = 0; i < 5; i++) {
-    let random = randomElementFromArray(arrowArray);
-    while (random === lastchar) {
-      random = randomElementFromArray(arrowArray);
-    }
-    lastchar = random;
-    arrowWord += random;
-  }
-  return arrowWord;
-}
-
-export function getPositionString(number: number): string {
-  let numend = "th";
-  const t = number % 10;
-  const h = number % 100;
-  if (t == 1 && h != 11) {
-    numend = "st";
-  }
-  if (t == 2 && h != 12) {
-    numend = "nd";
-  }
-  if (t == 3 && h != 13) {
-    numend = "rd";
-  }
-  return number + numend;
 }
 
 export function findGetParameter(
@@ -700,16 +43,17 @@ export function findGetParameter(
   let tmp = [];
 
   let search = location.search;
-  if (getOverride) {
+  if (getOverride !== undefined && getOverride !== "") {
     search = getOverride;
   }
 
   search
-    .substr(1)
+    .slice(1)
     .split("&")
     .forEach(function (item) {
       tmp = item.split("=");
-      if (tmp[0] === parameterName) result = decodeURIComponent(tmp[1]);
+      if (tmp[0] === parameterName)
+        result = decodeURIComponent(tmp[1] as string);
     });
   return result;
 }
@@ -722,12 +66,12 @@ export function checkIfGetParameterExists(
   let tmp = [];
 
   let search = location.search;
-  if (getOverride) {
+  if (getOverride !== undefined && getOverride !== "") {
     search = getOverride;
   }
 
   search
-    .substr(1)
+    .slice(1)
     .split("&")
     .forEach(function (item) {
       tmp = item.split("=");
@@ -752,6 +96,8 @@ export function objectToQueryString<T extends string | number | boolean>(
 }
 
 declare global {
+  // type gets a "Duplicate identifier" error
+  // eslint-disable-next-line @typescript-eslint/consistent-type-definitions
   interface Document {
     mozCancelFullScreen?: () => Promise<void>;
     msRequestFullscreen?: () => Promise<void>;
@@ -761,6 +107,7 @@ declare global {
     msFullscreenElement?: Element;
     webkitFullscreenElement?: Element;
   }
+  // eslint-disable-next-line @typescript-eslint/consistent-type-definitions
   interface HTMLElement {
     msRequestFullscreen?: () => Promise<void>;
     mozRequestFullScreen?: () => Promise<void>;
@@ -776,47 +123,27 @@ export function toggleFullscreen(): void {
     !document.webkitFullscreenElement &&
     !document.msFullscreenElement
   ) {
-    if (elem.requestFullscreen) {
-      elem.requestFullscreen();
+    if (elem.requestFullscreen !== undefined) {
+      void elem.requestFullscreen();
     } else if (elem.msRequestFullscreen) {
-      elem.msRequestFullscreen();
+      void elem.msRequestFullscreen();
     } else if (elem.mozRequestFullScreen) {
-      elem.mozRequestFullScreen();
+      void elem.mozRequestFullScreen();
     } else if (elem.webkitRequestFullscreen) {
-      // @ts-ignore
-      elem.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
+      // @ts-expect-error
+      void elem.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
     }
   } else {
-    if (document.exitFullscreen) {
-      document.exitFullscreen();
+    if (document.exitFullscreen !== undefined) {
+      void document.exitFullscreen();
     } else if (document.msExitFullscreen) {
-      document.msExitFullscreen();
+      void document.msExitFullscreen();
     } else if (document.mozCancelFullScreen) {
-      document.mozCancelFullScreen();
+      void document.mozCancelFullScreen();
     } else if (document.webkitExitFullscreen) {
-      document.webkitExitFullscreen();
+      void document.webkitExitFullscreen();
     }
   }
-}
-
-export function getWords(): string {
-  const words = [...document.querySelectorAll("#words .word")]
-    .map((word) => {
-      return [...word.querySelectorAll("letter")]
-        .map((letter) => letter.textContent)
-        .join("");
-    })
-    .join(" ");
-
-  return words;
-}
-
-//credit: https://www.w3resource.com/javascript-exercises/javascript-string-exercise-32.php
-export function remove_non_ascii(str: string): string {
-  if (str === null || str === "") return "";
-  else str = str.toString();
-
-  return str.replace(/[^\x20-\x7E]/g, "");
 }
 
 export function escapeRegExp(str: string): string {
@@ -858,8 +185,8 @@ export function cleanTypographySymbols(textToClean: string): string {
 
 export function isUsernameValid(name: string): boolean {
   if (name === null || name === undefined || name === "") return false;
-  if (/miodec/.test(name.toLowerCase())) return false;
-  if (/bitly/.test(name.toLowerCase())) return false;
+  if (name.toLowerCase().includes("miodec")) return false;
+  if (name.toLowerCase().includes("bitly")) return false;
   if (name.length > 14) return false;
   if (/^\..*/.test(name.toLowerCase())) return false;
   return /^[0-9a-zA-Z_.-]+$/.test(name);
@@ -894,12 +221,12 @@ export function canQuickRestart(
   mode: string,
   words: number,
   time: number,
-  CustomText: MonkeyTypes.CustomText,
+  CustomText: SharedTypes.CustomText,
   customTextIsLong: boolean
 ): boolean {
   const wordsLong = mode === "words" && (words >= 1000 || words === 0);
   const timeLong = mode === "time" && (time >= 900 || time === 0);
-  const customTextLong = mode === "custom" && customTextIsLong == true;
+  const customTextLong = mode === "custom" && customTextIsLong;
   const customTextRandomWordsLong =
     mode === "custom" && CustomText.isWordRandom && CustomText.word >= 1000;
   const customTextRandomTimeLong =
@@ -931,12 +258,6 @@ export function clearTimeouts(timeouts: (number | NodeJS.Timeout)[]): void {
   });
 }
 
-//https://stackoverflow.com/questions/1431094/how-do-i-replace-a-character-at-a-particular-index-in-javascript
-export function setCharAt(str: string, index: number, chr: string): string {
-  if (index > str.length - 1) return str;
-  return str.substring(0, index) + chr + str.substring(index + 1);
-}
-
 //https://stackoverflow.com/questions/273789/is-there-a-version-of-javascripts-string-indexof-that-allows-for-regular-expr
 export function regexIndexOf(
   string: string,
@@ -947,37 +268,47 @@ export function regexIndexOf(
   return indexOf >= 0 ? indexOf + (startpos || 0) : indexOf;
 }
 
-export function convertRGBtoHEX(rgb: string): string | undefined {
-  const match: RegExpMatchArray | null = rgb.match(
-    /^rgb\((\d+), \s*(\d+), \s*(\d+)\)$/
-  );
-  if (match === null) return;
-  if (match.length < 3) return;
-  function hexCode(i: string): string {
-    // Take the last 2 characters and convert
-    // them to Hexadecimal.
-
-    return ("0" + parseInt(i).toString(16)).slice(-2);
-  }
-  return "#" + hexCode(match[1]) + hexCode(match[2]) + hexCode(match[3]);
-}
-
-interface LastIndex extends String {
+type LastIndex = {
   lastIndexOfRegex(regex: RegExp): number;
-}
+} & string;
 
 (String.prototype as LastIndex).lastIndexOfRegex = function (
   regex: RegExp
 ): number {
   const match = this.match(regex);
-  return match ? this.lastIndexOf(match[match.length - 1]) : -1;
+  return match ? this.lastIndexOf(lastElementFromArray(match) as string) : -1;
 };
 
 export const trailingComposeChars = /[\u02B0-\u02FF`´^¨~]+$|⎄.*$/;
 
-//https://stackoverflow.com/questions/36532307/rem-px-in-javascript
-export function convertRemToPixels(rem: number): number {
-  return rem * parseFloat(getComputedStyle(document.documentElement).fontSize);
+export async function getDiscordAvatarUrl(
+  discordId?: string,
+  discordAvatar?: string,
+  discordAvatarSize = 32
+): Promise<string | null> {
+  if (
+    discordId === undefined ||
+    discordId === "" ||
+    discordAvatar === undefined ||
+    discordAvatar === ""
+  ) {
+    return null;
+  }
+  // An invalid request to this URL will return a 404.
+  try {
+    const avatarUrl = `https://cdn.discordapp.com/avatars/${discordId}/${discordAvatar}.png?size=${discordAvatarSize}`;
+
+    const response = await fetch(avatarUrl, {
+      method: "HEAD",
+    });
+    if (!response.ok) {
+      return null;
+    }
+
+    return avatarUrl;
+  } catch (error) {}
+
+  return null;
 }
 
 export async function swapElements(
@@ -1020,8 +351,8 @@ export async function swapElements(
                 opacity: 1,
               },
               totalDuration / 2,
-              () => {
-                callback();
+              async () => {
+                await callback();
               }
             );
         }
@@ -1049,28 +380,32 @@ export async function swapElements(
   return;
 }
 
-export function getMode2(
-  config: MonkeyTypes.Config,
-  randomQuote: MonkeyTypes.Quote
-): string {
+export function getMode2<M extends keyof SharedTypes.PersonalBests>(
+  config: SharedTypes.Config,
+  randomQuote: MonkeyTypes.Quote | null
+): SharedTypes.Config.Mode2<M> {
   const mode = config.mode;
+  let retVal: string;
+
   if (mode === "time") {
-    return config.time.toString();
+    retVal = config.time.toString();
   } else if (mode === "words") {
-    return config.words.toString();
+    retVal = config.words.toString();
   } else if (mode === "custom") {
-    return "custom";
+    retVal = "custom";
   } else if (mode === "zen") {
-    return "zen";
+    retVal = "zen";
   } else if (mode === "quote") {
-    return randomQuote.id.toString();
+    retVal = `${randomQuote?.id ?? -1}`;
+  } else {
+    throw new Error("Invalid mode");
   }
 
-  return "";
+  return retVal as SharedTypes.Config.Mode2<M>;
 }
 
 export async function downloadResultsCSV(
-  array: MonkeyTypes.Result<MonkeyTypes.Mode>[]
+  array: SharedTypes.Result<SharedTypes.Config.Mode>[]
 ): Promise<void> {
   Loader.show();
   const csvString = [
@@ -1100,14 +435,14 @@ export async function downloadResultsCSV(
       "tags",
       "timestamp",
     ],
-    ...array.map((item: MonkeyTypes.Result<MonkeyTypes.Mode>) => [
+    ...array.map((item: SharedTypes.Result<SharedTypes.Config.Mode>) => [
       item._id,
       item.isPb,
       item.wpm,
       item.acc,
       item.rawWpm,
       item.consistency,
-      item.charStats.join(","),
+      item.charStats.join(";"),
       item.mode,
       item.mode2,
       item.quoteLength,
@@ -1123,11 +458,11 @@ export async function downloadResultsCSV(
       item.lazyMode,
       item.blindMode,
       item.bailedOut,
-      item.tags.join(","),
+      item.tags.join(";"),
       item.timestamp,
     ]),
   ]
-    .map((e) => e.join("|"))
+    .map((e) => e.join(","))
     .join("\n");
 
   const blob = new Blob([csvString], { type: "text/csv" });
@@ -1144,42 +479,6 @@ export async function downloadResultsCSV(
   Loader.hide();
 }
 
-/**
- * Gets an integer between min and max, both are inclusive.
- * @param min
- * @param max
- * @returns Random integer betwen min and max.
- */
-export function randomIntFromRange(min: number, max: number): number {
-  const minNorm = Math.ceil(min);
-  const maxNorm = Math.floor(max);
-  return Math.floor(Math.random() * (maxNorm - minNorm + 1) + minNorm);
-}
-
-/**
- * Shuffle an array of elements using the Fisher–Yates algorithm.
- * This function mutates the input array.
- * @param elements
- */
-export function shuffle<T>(elements: T[]): void {
-  for (let i = elements.length - 1; i > 0; --i) {
-    const j = randomIntFromRange(0, i);
-    const temp = elements[j];
-    elements[j] = elements[i];
-    elements[i] = temp;
-  }
-}
-
-export function randomElementFromArray<T>(array: T[]): T {
-  return array[randomIntFromRange(0, array.length - 1)];
-}
-
-export function randomElementFromObject<T extends object>(
-  object: T
-): T[keyof T] {
-  return randomElementFromArray(Object.values(object));
-}
-
 export function createErrorMessage(error: unknown, message: string): string {
   if (error instanceof Error) {
     return `${message}: ${error.message}`;
@@ -1187,19 +486,33 @@ export function createErrorMessage(error: unknown, message: string): string {
 
   const objectWithMessage = error as { message?: string };
 
-  if (objectWithMessage?.message) {
+  if (objectWithMessage?.message !== undefined) {
     return `${message}: ${objectWithMessage.message}`;
   }
 
   return message;
 }
 
+export function isElementVisible(query: string): boolean {
+  const el = document.querySelector(query);
+  if (!el) {
+    return false;
+  }
+  // const style = window.getComputedStyle(el);
+  return !!el.getClientRects().length;
+}
+
+export function isPopupVisible(popupId: string): boolean {
+  return isElementVisible(`#popups #${popupId}`);
+}
+
 export function isAnyPopupVisible(): boolean {
-  const popups = document.querySelectorAll("#popups .popupWrapper");
+  const popups = document.querySelectorAll(
+    "#popups .popupWrapper, #popups .backdrop, #popups .modalWrapper"
+  );
   let popupVisible = false;
   for (const popup of popups) {
-    const style = window.getComputedStyle(popup);
-    if (style.display !== "none") {
+    if (isPopupVisible(popup.id)) {
       popupVisible = true;
       break;
     }
@@ -1207,40 +520,8 @@ export function isAnyPopupVisible(): boolean {
   return popupVisible;
 }
 
-export async function getDiscordAvatarUrl(
-  discordId?: string,
-  discordAvatar?: string,
-  discordAvatarSize = 32
-): Promise<string | null> {
-  if (!discordId || !discordAvatar) {
-    return null;
-  }
-
-  // An invalid request to this URL will return a 404.
-  try {
-    const avatarUrl = `https://cdn.discordapp.com/avatars/${discordId}/${discordAvatar}.png?size=${discordAvatarSize}`;
-
-    const response = await fetch(avatarUrl);
-    if (!response.ok) {
-      return null;
-    }
-
-    return avatarUrl;
-  } catch (error) {}
-
-  return null;
-}
-
-export function getLevel(xp: number): number {
-  return (1 / 98) * (-151 + Math.sqrt(392 * xp + 22801)) + 1;
-}
-
-export function getXpForLevel(level: number): number {
-  return 49 * (level - 1) + 100;
-}
-
 export async function promiseAnimation(
-  el: JQuery<HTMLElement>,
+  el: JQuery,
   animation: Record<string, string>,
   duration: number,
   easing: string
@@ -1250,56 +531,8 @@ export async function promiseAnimation(
   });
 }
 
-//abbreviateNumber
-export function abbreviateNumber(num: number, decimalPoints = 1): string {
-  if (num < 1000) {
-    return num.toString();
-  }
-
-  const exp = Math.floor(Math.log(num) / Math.log(1000));
-  const pre = "kmbtqQsSond".charAt(exp - 1);
-  return (num / Math.pow(1000, exp)).toFixed(decimalPoints) + pre;
-}
-
 export async function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
-export function memoizeAsync<T extends (...args: any) => Promise<any>>(
-  fn: T,
-  getKey?: (...args: Parameters<T>) => any
-): T {
-  const cache = new Map<any, Promise<ReturnType<T>>>();
-
-  return (async (...args: Parameters<T>): Promise<ReturnType<T>> => {
-    const key = getKey ? getKey.apply(args) : args[0];
-
-    if (cache.has(key)) {
-      const ret = await cache.get(key);
-      if (ret !== undefined) {
-        return ret as ReturnType<T>;
-      }
-    }
-
-    // eslint-disable-next-line prefer-spread
-    const result = fn.apply(null, args);
-    cache.set(key, result);
-
-    return result;
-  }) as T;
-}
-
-export class Wordset {
-  public words: string[];
-  public length: number;
-  constructor(words: string[]) {
-    this.words = words;
-    this.length = this.words.length;
-  }
-
-  public randomWord(): string {
-    return randomElementFromArray(this.words);
-  }
 }
 
 export class Section {
@@ -1318,35 +551,120 @@ export function isPasswordStrong(password: string): boolean {
   const hasNumber = !!password.match(/[\d]/);
   const hasSpecial = !!password.match(/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/);
   const isLong = password.length >= 8;
-  return hasCapital && hasNumber && hasSpecial && isLong;
-}
-
-export function areUnsortedArraysEqual(a: unknown[], b: unknown[]): boolean {
-  return a.length === b.length && a.every((v) => b.includes(v));
-}
-
-export function areSortedArraysEqual(a: unknown[], b: unknown[]): boolean {
-  return a.length === b.length && a.every((v, i) => v === b[i]);
-}
-
-export function intersect<T>(a: T[], b: T[], removeDuplicates = false): T[] {
-  let t;
-  if (b.length > a.length) (t = b), (b = a), (a = t); // indexOf to loop over shorter
-  const filtered = a.filter(function (e) {
-    return b.indexOf(e) > -1;
-  });
-  return removeDuplicates ? [...new Set(filtered)] : filtered;
+  const isShort = password.length <= 64;
+  return hasCapital && hasNumber && hasSpecial && isLong && isShort;
 }
 
 export function htmlToText(html: string): string {
   const el = document.createElement("div");
   el.innerHTML = html;
-  return el.textContent || el.innerText || "";
+  return (el.textContent as string) || el.innerText || "";
 }
 
-export function camelCaseToWords(str: string): string {
-  return str
-    .replace(/([A-Z])/g, " $1")
-    .trim()
-    .toLowerCase();
+export function loadCSS(href: string, prepend = false): void {
+  const link = document.createElement("link");
+  link.type = "text/css";
+  link.rel = "stylesheet";
+  link.href = href;
+
+  const head = document.getElementsByTagName("head")[0];
+
+  if (head === undefined) {
+    throw new Error("Could not load CSS - head is undefined");
+  }
+
+  if (prepend) {
+    head.prepend(link);
+  } else {
+    head.appendChild(link);
+  }
 }
+
+export function isDevEnvironment(): boolean {
+  return envConfig.isDevelopment;
+}
+
+export function dreymarIndex(arrayLength: number): number {
+  const n = arrayLength;
+  const g = 0.5772156649;
+  const M = Math.log(n) + g;
+  const r = Math.random();
+  const h = Math.exp(r * M - g);
+  const W = Math.ceil(h);
+  return W - 1;
+}
+
+export async function checkIfLanguageSupportsZipf(
+  language: string
+): Promise<"yes" | "no" | "unknown"> {
+  const lang = await JSONData.getLanguage(language);
+  if (lang.orderedByFrequency === true) return "yes";
+  if (lang.orderedByFrequency === false) return "no";
+  return "unknown";
+}
+
+// Function to get the bounding rectangle of a collection of elements
+export function getBoundingRectOfElements(elements: HTMLElement[]): DOMRect {
+  let minX = Infinity,
+    minY = Infinity,
+    maxX = -Infinity,
+    maxY = -Infinity;
+
+  elements.forEach((element) => {
+    const rect = element.getBoundingClientRect();
+
+    minX = Math.min(minX, rect.left);
+    minY = Math.min(minY, rect.top);
+    maxX = Math.max(maxX, rect.right);
+    maxY = Math.max(maxY, rect.bottom);
+  });
+
+  // Create a new object with the same properties as a DOMRect
+  return {
+    x: minX,
+    y: minY,
+    width: maxX - minX,
+    height: maxY - minY,
+    top: minY,
+    right: maxX,
+    bottom: maxY,
+    left: minX,
+    toJSON: function (): string {
+      return JSON.stringify({
+        x: this.x,
+        y: this.y,
+        width: this.width,
+        height: this.height,
+        top: this.top,
+        right: this.right,
+        bottom: this.bottom,
+        left: this.left,
+      });
+    },
+  };
+}
+
+export function typedKeys<T extends object>(
+  obj: T
+): T extends T ? (keyof T)[] : never {
+  return Object.keys(obj) as unknown as T extends T ? (keyof T)[] : never;
+}
+
+export function reloadAfter(seconds: number): void {
+  setTimeout(() => {
+    window.location.reload();
+  }, seconds * 1000);
+}
+
+export function updateTitle(title?: string): void {
+  const local = isDevEnvironment() ? "localhost - " : "";
+
+  if (title === undefined || title === "") {
+    document.title =
+      local + "Monkeytype | A minimalistic, customizable typing test";
+  } else {
+    document.title = local + title;
+  }
+}
+
+// DO NOT ALTER GLOBAL OBJECTSONSTRUCTOR, IT WILL BREAK RESULT HASHES

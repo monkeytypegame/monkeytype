@@ -1,8 +1,8 @@
 import Config, * as UpdateConfig from "../../config";
-import { capitalizeFirstLetterOfEachWord } from "../../utils/misc";
+import { capitalizeFirstLetterOfEachWord } from "../../utils/strings";
 import * as ThemeController from "../../controllers/theme-controller";
 
-export const subgroup: MonkeyTypes.CommandsSubgroup = {
+const subgroup: MonkeyTypes.CommandsSubgroup = {
   title: "Theme...",
   configKey: "theme",
   list: [],
@@ -35,7 +35,7 @@ function update(themes: MonkeyTypes.Theme[]): void {
         },
         hover: (): void => {
           // previewTheme(theme.name);
-          ThemeController.preview(theme.name, false);
+          ThemeController.preview(theme.name);
         },
         exec: (): void => {
           UpdateConfig.setTheme(theme.name);
@@ -55,7 +55,7 @@ function update(themes: MonkeyTypes.Theme[]): void {
         },
         hover: (): void => {
           // previewTheme(theme.name);
-          ThemeController.preview(theme.name, false);
+          ThemeController.preview(theme.name);
         },
         exec: (): void => {
           UpdateConfig.setTheme(theme.name);

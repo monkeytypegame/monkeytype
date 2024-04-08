@@ -1,6 +1,8 @@
-import { Auth } from "../../firebase";
+import { getAuthenticatedUser, isAuthenticated } from "../../firebase";
 import { getIdToken } from "firebase/auth";
 import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
+import { envConfig } from "../../constants/env-config";
+import { createErrorMessage } from "../../utils/misc";
 
 type AxiosClientMethod = (
   endpoint: string,
@@ -9,17 +11,16 @@ type AxiosClientMethod = (
 
 type AxiosClientDataMethod = (
   endpoint: string,
-  data: any,
+  data: unknown,
   config: AxiosRequestConfig
 ) => Promise<AxiosResponse>;
 
-type AxiosClientMethods = AxiosClientMethod & AxiosClientDataMethod;
-
-async function adaptRequestOptions(
-  options: Ape.RequestOptions
+async function adaptRequestOptions<TQuery, TPayload>(
+  options: Ape.RequestOptionsWithPayload<TQuery, TPayload>
 ): Promise<AxiosRequestConfig> {
-  const currentUser = Auth?.currentUser;
-  const idToken = currentUser && (await getIdToken(currentUser));
+  const idToken = isAuthenticated()
+    ? await getIdToken(getAuthenticatedUser())
+    : "";
 
   return {
     params: options.searchQuery,
@@ -29,37 +30,64 @@ async function adaptRequestOptions(
       Accept: "application/json",
       "Content-Type": "application/json",
       ...(idToken && { Authorization: `Bearer ${idToken}` }),
+      "X-Client-Version": envConfig.clientVersion,
     },
   };
 }
 
 function apeifyClientMethod(
-  clientMethod: AxiosClientMethods,
+  clientMethod: AxiosClientMethod | AxiosClientDataMethod,
   methodType: Ape.HttpMethodTypes
-): Ape.HttpClientMethod {
-  return async (
+): Ape.HttpClientMethod | Ape.HttpClientMethodWithPayload {
+  return async function <TQuery, TPayload, TData>(
     endpoint: string,
-    options: Ape.RequestOptions = {}
-  ): Ape.EndpointData => {
+    options: Ape.RequestOptionsWithPayload<TQuery, TPayload> = {}
+  ): Ape.EndpointResponse<TData> {
     let errorMessage = "";
 
+    let requestOptions: AxiosRequestConfig;
     try {
-      const requestOptions: AxiosRequestConfig = await adaptRequestOptions(
-        options
-      );
+      requestOptions = await adaptRequestOptions(options);
+    } catch (error) {
+      console.error("Failed to adapt request options");
+      console.error(error);
 
+      if ((error as Error).message.includes("auth/network-request-failed")) {
+        return {
+          status: 400,
+          message:
+            "Network error while trying to authenticate. Please try again.",
+          data: null,
+        };
+      }
+
+      const message = createErrorMessage(
+        error,
+        "Failed to adapt request options"
+      );
+      return {
+        status: 400,
+        message: message,
+        data: null,
+      };
+    }
+
+    try {
       let response;
       if (methodType === "get" || methodType === "delete") {
-        response = await clientMethod(endpoint, requestOptions);
+        response = await (clientMethod as AxiosClientMethod)(
+          endpoint,
+          requestOptions
+        );
       } else {
-        response = await clientMethod(
+        response = await (clientMethod as AxiosClientDataMethod)(
           endpoint,
           requestOptions.data,
           requestOptions
         );
       }
 
-      const { message, data } = response.data as Ape.ApiResponse;
+      const { message, data } = response.data;
 
       return {
         status: response.status,
@@ -84,6 +112,7 @@ function apeifyClientMethod(
     return {
       status: 500,
       message: errorMessage,
+      data: null,
     };
   };
 }

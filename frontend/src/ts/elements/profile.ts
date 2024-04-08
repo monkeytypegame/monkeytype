@@ -2,21 +2,24 @@ import * as DB from "../db";
 import format from "date-fns/format";
 import differenceInDays from "date-fns/differenceInDays";
 import * as Misc from "../utils/misc";
+import * as Numbers from "../utils/numbers";
+import * as Levels from "../utils/levels";
+import * as DateTime from "../utils/date-and-time";
 import { getHTMLById } from "../controllers/badge-controller";
 import { throttle } from "throttle-debounce";
-import * as EditProfilePopup from "../popups/edit-profile-popup";
 import * as ActivePage from "../states/active-page";
+import formatDistanceToNowStrict from "date-fns/formatDistanceToNowStrict";
+import { getHtmlByUserFlags } from "../controllers/user-flag-controller";
+import Format from "../utils/format";
 
 type ProfileViewPaths = "profile" | "account";
+type UserProfileOrSnapshot = SharedTypes.UserProfile | MonkeyTypes.Snapshot;
 
-interface ProfileData extends MonkeyTypes.Snapshot {
-  allTimeLbs: MonkeyTypes.LeaderboardMemory;
-  uid: string;
-}
+//this is probably the dirtiest code ive ever written
 
 export async function update(
   where: ProfileViewPaths,
-  profile: Partial<ProfileData>
+  profile: UserProfileOrSnapshot
 ): Promise<void> {
   const elementClass = where.charAt(0).toUpperCase() + where.slice(1);
   const profileElement = $(`.page${elementClass} .profile`);
@@ -31,20 +34,30 @@ export async function update(
 
   const banned = profile.banned === true;
 
-  if (!details || !profile || !profile.name || !profile.addedAt) return;
+  if (
+    details === undefined ||
+    profile === undefined ||
+    profile.name === undefined ||
+    profile.addedAt === undefined
+  )
+    return;
 
   details.find(".placeholderAvatar").removeClass("hidden");
-  if (profile.discordAvatar && profile.discordId && !banned) {
-    const avatarUrl = await Misc.getDiscordAvatarUrl(
+  if (
+    profile.discordAvatar !== undefined &&
+    profile.discordId !== undefined &&
+    !banned
+  ) {
+    void Misc.getDiscordAvatarUrl(
       profile.discordId,
       profile.discordAvatar,
       256
-    );
-
-    if (avatarUrl) {
-      details.find(".placeholderAvatar").addClass("hidden");
-      details.find(".avatar").css("background-image", `url(${avatarUrl})`);
-    }
+    ).then((avatarUrl) => {
+      if (avatarUrl !== null) {
+        details.find(".placeholderAvatar").addClass("hidden");
+        details.find(".avatar").css("background-image", `url(${avatarUrl})`);
+      }
+    });
   } else {
     details.find(".avatar").removeAttr("style");
   }
@@ -66,22 +79,32 @@ export async function update(
   }
 
   details.find(".name").text(profile.name);
+  details.find(".userFlags").html(getHtmlByUserFlags(profile));
 
-  if (banned) {
-    details
-      .find(".name")
-      .append(
-        `<div class="bannedIcon" aria-label="This account is banned" data-balloon-pos="up"><i class="fas fa-gavel"></i></div>`
-      );
+  if (profile.lbOptOut === true) {
+    if (where === "profile") {
+      profileElement
+        .find(".lbOptOutReminder")
+        .removeClass("hidden")
+        .text(
+          "Note: This account has opted out of the leaderboards, meaning their results aren't verified by the anticheat system and may not be legitimate."
+        );
+    } else {
+      profileElement.find(".lbOptOutReminder").addClass("hidden");
+    }
   }
 
-  updateNameFontSize(where);
+  setTimeout(() => {
+    updateNameFontSize(where);
+  }, 10);
 
   const joinedText = "Joined " + format(profile.addedAt ?? 0, "dd MMM yyyy");
   const creationDate = new Date(profile.addedAt);
   const diffDays = differenceInDays(new Date(), creationDate);
-  const balloonText = `${diffDays} day${diffDays != 1 ? "s" : ""} ago`;
+  const balloonText = `${diffDays} day${diffDays !== 1 ? "s" : ""} ago`;
   details.find(".joined").text(joinedText).attr("aria-label", balloonText);
+
+  let hoverText = "";
 
   if (profile.streak && profile?.streak > 1) {
     details
@@ -90,15 +113,99 @@ export async function update(
         `Current streak: ${profile.streak} ${
           profile.streak === 1 ? "day" : "days"
         }`
-      )
-      .attr(
-        "aria-label",
-        `Longest streak: ${profile.maxStreak} ${
-          profile.maxStreak === 1 ? "day" : "days"
-        }`
       );
+    hoverText = `Longest streak: ${profile.maxStreak} ${
+      profile.maxStreak === 1 ? "day" : "days"
+    }`;
   } else {
-    details.find(".streak").text("").attr("aria-label", "");
+    details.find(".streak").text("");
+    hoverText = "";
+  }
+
+  if (where === "account") {
+    const results = DB.getSnapshot()?.results;
+    const lastResult = results?.[0];
+
+    const streakOffset = (profile as MonkeyTypes.Snapshot).streakHourOffset;
+
+    const dayInMilis = 1000 * 60 * 60 * 24;
+
+    let target = DateTime.getCurrentDayTimestamp(streakOffset) + dayInMilis;
+    if (target < Date.now()) {
+      target += dayInMilis;
+    }
+    const timeDif = formatDistanceToNowStrict(target);
+
+    console.debug("Streak hour offset");
+    console.debug("date.now()", Date.now(), new Date(Date.now()));
+    console.debug("dayInMilis", dayInMilis);
+    console.debug(
+      "difTarget",
+      new Date(DateTime.getCurrentDayTimestamp(streakOffset) + dayInMilis)
+    );
+    console.debug("timeDif", timeDif);
+    console.debug(
+      "DateTime.getCurrentDayTimestamp()",
+      DateTime.getCurrentDayTimestamp(),
+      new Date(DateTime.getCurrentDayTimestamp())
+    );
+    console.debug("profile.streakHourOffset", streakOffset);
+
+    if (lastResult) {
+      //check if the last result is from today
+      const isToday = DateTime.isToday(lastResult.timestamp, streakOffset);
+      const isYesterday = DateTime.isYesterday(
+        lastResult.timestamp,
+        streakOffset
+      );
+
+      console.debug(
+        "lastResult.timestamp",
+        lastResult.timestamp,
+        new Date(lastResult.timestamp)
+      );
+      console.debug("isToday", isToday);
+      console.debug("isYesterday", isYesterday);
+
+      const offsetString = streakOffset
+        ? `(${streakOffset > 0 ? "+" : ""}${streakOffset} offset)`
+        : "";
+
+      if (isToday) {
+        hoverText += `\nClaimed today: yes`;
+        hoverText += `\nCome back in: ${timeDif} ${offsetString}`;
+      } else {
+        hoverText += `\nClaimed today: no`;
+        hoverText += `\nStreak lost in: ${timeDif} ${offsetString}`;
+      }
+
+      console.debug(hoverText);
+
+      if (streakOffset === undefined) {
+        hoverText += `\n\nIf the streak reset time doesn't line up with your timezone, you can change it in Settings > Danger zone > Update streak hour offset.`;
+      }
+    }
+  }
+
+  details
+    .find(".streak")
+    .attr("aria-label", hoverText)
+    .attr("data-balloon-break", "");
+
+  let completedPercentage = "";
+  let restartRatio = "";
+  if (
+    profile.typingStats.completedTests !== undefined &&
+    profile.typingStats.startedTests !== undefined
+  ) {
+    completedPercentage = Math.floor(
+      (profile.typingStats.completedTests / profile.typingStats.startedTests) *
+        100
+    ).toString();
+    restartRatio = (
+      (profile.typingStats.startedTests - profile.typingStats.completedTests) /
+      profile.typingStats.completedTests
+    ).toFixed(1);
   }
 
   const typingStatsEl = details.find(".typingStats");
@@ -107,11 +214,16 @@ export async function update(
     .text(profile.typingStats?.startedTests ?? 0);
   typingStatsEl
     .find(".completed .value")
-    .text(profile.typingStats?.completedTests ?? 0);
+    .text(profile.typingStats?.completedTests ?? 0)
+    .attr("data-balloon-pos", "up")
+    .attr(
+      "aria-label",
+      `${completedPercentage}% (${restartRatio} restarts per completed test)`
+    );
   typingStatsEl
     .find(".timeTyping .value")
     .text(
-      Misc.secondsToString(
+      DateTime.secondsToString(
         Math.round(profile.typingStats?.timeTyping ?? 0),
         true,
         true
@@ -123,44 +235,44 @@ export async function update(
   let socials = false;
 
   if (!banned) {
-    bio = profile.details?.bio ? true : false;
+    bio = profile.details?.bio ?? "" ? true : false;
     details.find(".bio .value").text(profile.details?.bio ?? "");
 
-    keyboard = profile.details?.keyboard ? true : false;
+    keyboard = profile.details?.keyboard ?? "" ? true : false;
     details.find(".keyboard .value").text(profile.details?.keyboard ?? "");
 
     if (
-      profile.details?.socialProfiles.github ||
-      profile.details?.socialProfiles.twitter ||
-      profile.details?.socialProfiles.website
+      profile.details?.socialProfiles.github !== undefined ||
+      profile.details?.socialProfiles.twitter !== undefined ||
+      profile.details?.socialProfiles.website !== undefined
     ) {
       socials = true;
       const socialsEl = details.find(".socials .value");
       socialsEl.empty();
 
-      const git = profile.details?.socialProfiles.github;
+      const git = profile.details?.socialProfiles.github ?? "";
       if (git) {
         socialsEl.append(
           `<a href='https://github.com/${Misc.escapeHTML(
             git
-          )}/' target="_blank" aria-label="${Misc.escapeHTML(
+          )}/' target="_blank" rel="nofollow me" aria-label="${Misc.escapeHTML(
             git
-          )}" data-balloon-pos="up"><i class="fab fa-fw fa-github"></i></a>`
+          )}" data-balloon-pos="up" class="textButton"><i class="fab fa-fw fa-github"></i></a>`
         );
       }
 
-      const twitter = profile.details?.socialProfiles.twitter;
+      const twitter = profile.details?.socialProfiles.twitter ?? "";
       if (twitter) {
         socialsEl.append(
           `<a href='https://twitter.com/${Misc.escapeHTML(
             twitter
-          )}' target="_blank" aria-label="${Misc.escapeHTML(
+          )}' target="_blank" rel="nofollow me" aria-label="${Misc.escapeHTML(
             twitter
-          )}" data-balloon-pos="up"><i class="fab fa-fw fa-twitter"></i></a>`
+          )}" data-balloon-pos="up" class="textButton"><i class="fab fa-fw fa-twitter"></i></a>`
         );
       }
 
-      const website = profile.details?.socialProfiles.website;
+      const website = profile.details?.socialProfiles.website ?? "";
 
       //regular expression to get website name from url
       const regex = /^https?:\/\/(?:www\.)?([^/]+)/;
@@ -170,40 +282,42 @@ export async function update(
         socialsEl.append(
           `<a href='${Misc.escapeHTML(
             website
-          )}' target="_blank" aria-label="${Misc.escapeHTML(
+          )}' target="_blank" rel="nofollow me" aria-label="${Misc.escapeHTML(
             websiteName ?? ""
-          )}" data-balloon-pos="up"><i class="fas fa-fw fa-globe"></i></a>`
+          )}" data-balloon-pos="up" class="textButton"><i class="fas fa-fw fa-globe"></i></a>`
         );
       }
     }
   }
 
   const xp = profile.xp ?? 0;
-  const levelFraction = Misc.getLevel(xp);
+  const levelFraction = Levels.getLevel(xp);
   const level = Math.floor(levelFraction);
-  const xpForLevel = Misc.getXpForLevel(level);
+  const xpForLevel = Levels.getXpForLevel(level);
   const xpToDisplay = Math.round(xpForLevel * (levelFraction % 1));
   details
     .find(".level")
     .text(level)
-    .attr("aria-label", `${Misc.abbreviateNumber(xp)} total xp`);
+    .attr("aria-label", `${Numbers.abbreviateNumber(xp)} total xp`);
   details
     .find(".xp")
     .text(
-      `${Misc.abbreviateNumber(xpToDisplay)}/${Misc.abbreviateNumber(
+      `${Numbers.abbreviateNumber(xpToDisplay)}/${Numbers.abbreviateNumber(
         xpForLevel
       )}`
+    )
+    .attr(
+      "aria-label",
+      `${Numbers.abbreviateNumber(
+        xpForLevel - xpToDisplay
+      )} xp until next level`
     );
   details
     .find(".xpBar .bar")
     .css("width", `${(xpToDisplay / xpForLevel) * 100}%`);
   details
-    .find(".xp")
-    .attr(
-      "aria-label",
-      `${Misc.abbreviateNumber(xpForLevel - xpToDisplay)} xp until next level`
-    );
-
+    .find(".xpBar")
+    .attr("aria-label", `${((xpToDisplay / xpForLevel) * 100).toFixed(2)}%`);
   //lbs
 
   if (banned) {
@@ -211,22 +325,30 @@ export async function update(
   } else {
     profileElement.find(".leaderboardsPositions").removeClass("hidden");
 
-    const lbPos = where === "profile" ? profile.allTimeLbs : profile.lbMemory;
+    const t15 = profile.allTimeLbs.time?.["15"]?.["english"] ?? null;
+    const t60 = profile.allTimeLbs.time?.["60"]?.["english"] ?? null;
 
-    const t15 = lbPos?.time?.[15]?.["english"];
-    const t60 = lbPos?.time?.[60]?.["english"];
-
-    if (!t15 && !t60) {
+    if (t15 === null && t60 === null) {
       profileElement.find(".leaderboardsPositions").addClass("hidden");
     } else {
-      const t15string = t15 ? Misc.getPositionString(t15) : "-";
-      profileElement
-        .find(".leaderboardsPositions .group.t15 .pos")
-        .text(t15string);
-      const t60string = t60 ? Misc.getPositionString(t60) : "-";
-      profileElement
-        .find(".leaderboardsPositions .group.t60 .pos")
-        .text(t60string);
+      if (t15 !== null) {
+        profileElement
+          .find(".leaderboardsPositions .group.t15 .pos")
+          .text(Format.rank(t15?.rank));
+        profileElement
+          .find(".leaderboardsPositions .group.t15 .topPercentage")
+          .text(formatTopPercentage(t15));
+      }
+
+      if (t60 !== null) {
+        profileElement
+          .find(".leaderboardsPositions .group.t60 .pos")
+          .text(Format.rank(t60?.rank));
+
+        profileElement
+          .find(".leaderboardsPositions .group.t60 .topPercentage")
+          .text(formatTopPercentage(t60));
+      }
     }
   }
 
@@ -278,6 +400,10 @@ export async function update(
 }
 
 export function updateNameFontSize(where: ProfileViewPaths): void {
+  //dont run this function in safari because OH MY GOD IT IS SO SLOW
+  const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+  if (isSafari) return;
+
   let details;
   if (where === "account") {
     details = $(".pageAccount .profile .details");
@@ -285,30 +411,23 @@ export function updateNameFontSize(where: ProfileViewPaths): void {
     details = $(".pageProfile .profile .details");
   }
   if (!details) return;
-  const nameField = details.find(".name");
-  const nameFieldParent = nameField.parent();
-  const upperLimit = Misc.convertRemToPixels(2);
-  // const nameFieldParentWidth = nameField.parent().width() ?? 0;
-  let fontSize = 15;
-  let nameWidth;
-  let parentWidth;
-  do {
-    fontSize = fontSize + 1;
-    nameField.css("font-size", fontSize);
-    nameWidth = nameField.width() ?? 0;
-    parentWidth = nameFieldParent.width() ?? 0;
-  } while (nameWidth < parentWidth - 10 && fontSize < upperLimit);
+  const nameFieldjQ = details.find(".user");
+  const nameFieldParent = nameFieldjQ.parent()[0];
+  const nameField = nameFieldjQ[0];
+  const upperLimit = Numbers.convertRemToPixels(2);
+
+  if (!nameField || !nameFieldParent) return;
+
+  nameField.style.fontSize = `10px`;
+  const parentWidth = nameFieldParent.clientWidth;
+  const widthAt10 = nameField.clientWidth;
+  const ratioAt10 = parentWidth / widthAt10;
+  const fittedFontSize = ratioAt10 * 10;
+  const finalFontSize = Math.min(Math.max(fittedFontSize, 10), upperLimit);
+  nameField.style.fontSize = `${finalFontSize}px`;
 }
 
-$(".details .editProfileButton").on("click", () => {
-  const snapshot = DB.getSnapshot();
-  if (!snapshot) return;
-  EditProfilePopup.show(() => {
-    update("account", snapshot);
-  });
-});
-
-const throttledEvent = throttle(250, () => {
+const throttledEvent = throttle(1000, () => {
   const activePage = ActivePage.get();
   if (activePage && ["account", "profile"].includes(activePage)) {
     updateNameFontSize(activePage as ProfileViewPaths);
@@ -318,3 +437,9 @@ const throttledEvent = throttle(250, () => {
 $(window).on("resize", () => {
   throttledEvent();
 });
+
+function formatTopPercentage(lbRank: SharedTypes.RankAndCount): string {
+  if (lbRank.rank === undefined) return "-";
+  if (lbRank.rank === 1) return "GOAT";
+  return "Top " + Numbers.roundTo2((lbRank.rank / lbRank.count) * 100) + "%";
+}

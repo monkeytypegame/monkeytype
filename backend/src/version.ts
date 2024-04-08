@@ -1,5 +1,5 @@
 import { join } from "path";
-import { padNumbers } from "./utils/misc";
+import { isDevEnvironment, padNumbers } from "./utils/misc";
 import { readFileSync, writeFileSync, existsSync } from "fs";
 
 const SERVER_VERSION_FILE_PATH = join(__dirname, "./server.version");
@@ -21,7 +21,7 @@ function getDateVersion(): string {
 }
 
 function getVersion(): string {
-  if (process.env.MODE === "dev") {
+  if (isDevEnvironment()) {
     return "DEVELOPMENT-VERSION";
   }
 

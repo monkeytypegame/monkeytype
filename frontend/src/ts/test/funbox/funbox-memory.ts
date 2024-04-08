@@ -1,23 +1,31 @@
-type SetFunction = (...params: any[]) => any;
+type SetFunction<T> = (param: T, nosave?: boolean) => boolean;
 
-let settingsMemory: {
-  [key: string]: { value: any; setFunction: SetFunction };
-} = {};
+type ValueAndSetFunction<T> = {
+  value: T;
+  setFunction: SetFunction<T>;
+};
 
-export function save(
+type SettingsMemory<T> = Record<string, ValueAndSetFunction<T>>;
+
+let settingsMemory: SettingsMemory<SharedTypes.ConfigValue> = {};
+
+export function save<T extends SharedTypes.ConfigValue>(
   settingName: string,
-  value: any,
-  setFunction: SetFunction
+  value: T,
+  setFunction: SetFunction<T>
 ): void {
   settingsMemory[settingName] ??= {
     value,
-    setFunction,
+    setFunction: setFunction as SetFunction<SharedTypes.ConfigValue>,
   };
 }
 
 export function load(): void {
   Object.keys(settingsMemory).forEach((setting) => {
-    settingsMemory[setting].setFunction(settingsMemory[setting].value, true);
+    const memory = settingsMemory[
+      setting
+    ] as ValueAndSetFunction<SharedTypes.ConfigValue>;
+    memory.setFunction(memory.value, true);
   });
   settingsMemory = {};
 }

@@ -1,10 +1,11 @@
 import * as DB from "../../db";
-import * as EditTagsPopup from "../../popups/edit-tags-popup";
+import * as EditTagsPopup from "../../modals/edit-tag";
 import * as ModesNotice from "../../elements/modes-notice";
 import * as TagController from "../../controllers/tag-controller";
 import Config from "../../config";
 import * as PaceCaret from "../../test/pace-caret";
-import { Auth } from "../../firebase";
+import { isAuthenticated } from "../../firebase";
+import AnimatedModal from "../../utils/animated-modal";
 
 const subgroup: MonkeyTypes.CommandsSubgroup = {
   title: "Change tags...",
@@ -16,13 +17,12 @@ const subgroup: MonkeyTypes.CommandsSubgroup = {
 
 const commands: MonkeyTypes.Command[] = [
   {
-    visible: false,
     id: "changeTags",
     display: "Tags...",
     icon: "fa-tag",
     subgroup,
     available: (): boolean => {
-      return !!Auth?.currentUser;
+      return isAuthenticated();
     },
   },
 ];
@@ -30,14 +30,23 @@ const commands: MonkeyTypes.Command[] = [
 function update(): void {
   const snapshot = DB.getSnapshot();
   subgroup.list = [];
-  if (!snapshot || !snapshot.tags || snapshot.tags.length === 0) {
+  if (
+    snapshot === undefined ||
+    snapshot.tags === undefined ||
+    snapshot.tags.length === 0
+  ) {
     subgroup.list.push({
       id: "createTag",
       display: "Create tag",
       icon: "fa-plus",
       shouldFocusTestUI: false,
-      exec: (): void => {
-        EditTagsPopup.show("add");
+      exec: ({ commandlineModal }): void => {
+        EditTagsPopup.show(
+          "add",
+          undefined,
+          undefined,
+          commandlineModal as AnimatedModal
+        );
       },
     });
     return;
@@ -46,6 +55,7 @@ function update(): void {
     id: "clearTags",
     display: `Clear tags`,
     icon: "fa-times",
+    sticky: true,
     exec: (): void => {
       const snapshot = DB.getSnapshot();
       if (!snapshot) return;
@@ -57,66 +67,48 @@ function update(): void {
       });
 
       DB.setSnapshot(snapshot);
-      ModesNotice.update();
+      void ModesNotice.update();
       TagController.saveActiveToLocalStorage();
     },
   });
 
-  DB.getSnapshot()?.tags?.forEach((tag) => {
-    let dis = tag.display;
-
-    if (tag.active === true) {
-      dis = '<i class="fas fa-fw fa-check"></i>' + dis;
-    } else {
-      dis = '<i class="fas fa-fw"></i>' + dis;
-    }
-
+  for (const tag of snapshot.tags) {
     subgroup.list.push({
       id: "toggleTag" + tag._id,
-      noIcon: true,
-      display: dis,
+      display: tag.display,
       sticky: true,
-      exec: (): void => {
+      active: () => {
+        return (
+          DB.getSnapshot()?.tags?.find((t) => t._id === tag._id)?.active ??
+          false
+        );
+      },
+      exec: async (): Promise<void> => {
         TagController.toggle(tag._id);
-        ModesNotice.update();
+        void ModesNotice.update();
 
         if (Config.paceCaret === "average") {
-          PaceCaret.init();
-          ModesNotice.update();
-        }
-
-        let txt = tag.display;
-
-        if (tag.active === true) {
-          txt = '<i class="fas fa-fw fa-check"></i>' + txt;
-        } else {
-          txt = '<i class="fas fa-fw"></i>' + txt;
-        }
-        if ($("#commandLine").hasClass("allCommands")) {
-          $(
-            `#commandLine .suggestions .entry[command='toggleTag${tag._id}']`
-          ).html(
-            `<div class="icon"><i class="fas fa-fw fa-tag"></i></div><div>Tags  > ` +
-              txt
-          );
-        } else {
-          $(
-            `#commandLine .suggestions .entry[command='toggleTag${tag._id}']`
-          ).html(txt);
+          await PaceCaret.init();
+          void ModesNotice.update();
         }
       },
     });
-  });
+  }
   subgroup.list.push({
     id: "createTag",
     display: "Create tag",
     icon: "fa-plus",
     shouldFocusTestUI: false,
-    exec: (): void => {
-      EditTagsPopup.show("add");
+    opensModal: true,
+    exec: ({ commandlineModal }): void => {
+      EditTagsPopup.show(
+        "add",
+        undefined,
+        undefined,
+        commandlineModal as AnimatedModal
+      );
     },
   });
 }
 
 export default commands;
-export { update };

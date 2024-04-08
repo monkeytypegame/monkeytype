@@ -1,6 +1,5 @@
 {
   "name": "code_powershell",
-  "leftToRight": true,
   "noLazyMode": true,
   "words": [
     "Add-Content",

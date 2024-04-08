@@ -1,6 +1,8 @@
 import _ from "lodash";
 import uaparser from "ua-parser-js";
 
+//todo split this file into smaller util files (grouped by functionality)
+
 export function roundTo2(num: number): number {
   return _.round(num, 2);
 }
@@ -28,7 +30,7 @@ export function kogasa(cov: number): number {
   );
 }
 
-export function identity(value: any): string {
+export function identity(value: unknown): string {
   return Object.prototype.toString
     .call(value)
     .replace(/^\[object\s+([a-z]+)\]$/i, "$1")
@@ -43,20 +45,20 @@ export function base64UrlDecode(data: string): string {
   return Buffer.from(data, "base64url").toString();
 }
 
-interface AgentLog {
-  ip: string | string[];
+type AgentLog = {
+  ip: string;
   agent: string;
   device?: string;
-}
+};
 
 export function buildAgentLog(req: MonkeyTypes.Request): AgentLog {
   const agent = uaparser(req.headers["user-agent"]);
 
   const agentLog: AgentLog = {
     ip:
-      req.headers["cf-connecting-ip"] ||
-      req.headers["x-forwarded-for"] ||
-      req.ip ||
+      (req.headers["cf-connecting-ip"] as string) ||
+      (req.headers["x-forwarded-for"] as string) ||
+      (req.ip as string) ||
       "255.255.255.255",
     agent: `${agent.os.name} ${agent.os.version} ${agent.browser.name} ${agent.browser.version}`,
   };
@@ -64,9 +66,10 @@ export function buildAgentLog(req: MonkeyTypes.Request): AgentLog {
   const {
     device: { vendor, model, type },
   } = agent;
-  if (vendor) {
-    agentLog.device = `${vendor} ${model} ${type}`;
-  }
+
+  agentLog.device = `${vendor ?? "unknown vendor"} ${
+    model ?? "unknown model"
+  } ${type ?? "unknown type"}`;
 
   return agentLog;
 }
@@ -81,10 +84,14 @@ export function padNumbers(
   );
 }
 
+export const MILISECONDS_IN_HOUR = 3600000;
 export const MILLISECONDS_IN_DAY = 86400000;
 
-export function getStartOfDayTimestamp(timestamp: number): number {
-  return timestamp - (timestamp % MILLISECONDS_IN_DAY);
+export function getStartOfDayTimestamp(
+  timestamp: number,
+  offsetMilis = 0
+): number {
+  return timestamp - ((timestamp - offsetMilis) % MILLISECONDS_IN_DAY);
 }
 
 export function getCurrentDayTimestamp(): number {
@@ -115,10 +122,10 @@ export function kogascore(wpm: number, acc: number, timestamp: number): number {
 }
 
 export function flattenObjectDeep(
-  obj: Record<string, any>,
+  obj: Record<string, unknown>,
   prefix = ""
-): Record<string, any> {
-  const result: Record<string, any> = {};
+): Record<string, unknown> {
+  const result: Record<string, unknown> = {};
   const keys = Object.keys(obj);
 
   keys.forEach((key) => {
@@ -127,7 +134,7 @@ export function flattenObjectDeep(
     const newPrefix = prefix.length > 0 ? `${prefix}.${key}` : key;
 
     if (_.isPlainObject(value)) {
-      const flattened = flattenObjectDeep(value);
+      const flattened = flattenObjectDeep(value as Record<string, unknown>);
       const flattenedKeys = Object.keys(flattened);
 
       if (flattenedKeys.length === 0) {
@@ -146,7 +153,7 @@ export function flattenObjectDeep(
 }
 
 export function sanitizeString(str: string | undefined): string | undefined {
-  if (!str) {
+  if (str === undefined || str === "") {
     return str;
   }
 
@@ -161,20 +168,25 @@ const suffixes = ["th", "st", "nd", "rd"];
 export function getOrdinalNumberString(number: number): string {
   const lastTwo = number % 100;
   const suffix =
-    suffixes[(lastTwo - 20) % 10] || suffixes[lastTwo] || suffixes[0];
+    suffixes[(lastTwo - 20) % 10] ?? suffixes[lastTwo] ?? suffixes[0];
   return `${number}${suffix}`;
 }
 
-export function isYesterday(timestamp: number): boolean {
-  const yesterday = getStartOfDayTimestamp(Date.now() - MILLISECONDS_IN_DAY);
-  const date = getStartOfDayTimestamp(timestamp);
+export function isYesterday(timestamp: number, hourOffset = 0): boolean {
+  const offsetMilis = hourOffset * MILISECONDS_IN_HOUR;
+  const yesterday = getStartOfDayTimestamp(
+    Date.now() - MILLISECONDS_IN_DAY,
+    offsetMilis
+  );
+  const date = getStartOfDayTimestamp(timestamp, offsetMilis);
 
   return yesterday === date;
 }
 
-export function isToday(timestamp: number): boolean {
-  const today = getStartOfDayTimestamp(Date.now());
-  const date = getStartOfDayTimestamp(timestamp);
+export function isToday(timestamp: number, hourOffset = 0): boolean {
+  const offsetMilis = hourOffset * MILISECONDS_IN_HOUR;
+  const today = getStartOfDayTimestamp(Date.now(), offsetMilis);
+  const date = getStartOfDayTimestamp(timestamp, offsetMilis);
 
   return today === date;
 }
@@ -217,4 +229,79 @@ export function getStartOfWeekTimestamp(timestamp: number): number {
 export function getCurrentWeekTimestamp(): number {
   const currentTime = Date.now();
   return getStartOfWeekTimestamp(currentTime);
+}
+
+type TimeUnit =
+  | "second"
+  | "minute"
+  | "hour"
+  | "day"
+  | "week"
+  | "month"
+  | "year";
+
+export const MINUTE_IN_SECONDS = 1 * 60;
+export const HOUR_IN_SECONDS = 1 * 60 * MINUTE_IN_SECONDS;
+export const DAY_IN_SECONDS = 1 * 24 * HOUR_IN_SECONDS;
+export const WEEK_IN_SECONDS = 1 * 7 * DAY_IN_SECONDS;
+export const MONTH_IN_SECONDS = 1 * 30.4167 * DAY_IN_SECONDS;
+export const YEAR_IN_SECONDS = 1 * 12 * MONTH_IN_SECONDS;
+
+export function formatSeconds(
+  seconds: number
+): `${number} ${TimeUnit}${"s" | ""}` {
+  let unit: TimeUnit;
+  let secondsInUnit: number;
+
+  if (seconds < MINUTE_IN_SECONDS) {
+    unit = "second";
+    secondsInUnit = 1;
+  } else if (seconds < HOUR_IN_SECONDS) {
+    unit = "minute";
+    secondsInUnit = MINUTE_IN_SECONDS;
+  } else if (seconds < DAY_IN_SECONDS) {
+    unit = "hour";
+    secondsInUnit = HOUR_IN_SECONDS;
+  } else if (seconds < WEEK_IN_SECONDS) {
+    unit = "day";
+    secondsInUnit = DAY_IN_SECONDS;
+  } else if (seconds < YEAR_IN_SECONDS) {
+    if (seconds < WEEK_IN_SECONDS * 4) {
+      unit = "week";
+      secondsInUnit = WEEK_IN_SECONDS;
+    } else {
+      unit = "month";
+      secondsInUnit = MONTH_IN_SECONDS;
+    }
+  } else {
+    unit = "year";
+    secondsInUnit = YEAR_IN_SECONDS;
+  }
+
+  const normalized = roundTo2(seconds / secondsInUnit);
+
+  return `${normalized} ${unit}${normalized > 1 ? "s" : ""}`;
+}
+
+export function intersect<T>(a: T[], b: T[], removeDuplicates = false): T[] {
+  let t;
+  if (b.length > a.length) (t = b), (b = a), (a = t); // indexOf to loop over shorter
+  const filtered = a.filter(function (e) {
+    return b.includes(e);
+  });
+  return removeDuplicates ? [...new Set(filtered)] : filtered;
+}
+
+export function stringToNumberOrDefault(
+  string: string,
+  defaultValue: number
+): number {
+  if (string === undefined) return defaultValue;
+  const value = parseInt(string, 10);
+  if (!Number.isFinite(value)) return defaultValue;
+  return value;
+}
+
+export function isDevEnvironment(): boolean {
+  return process.env["MODE"] === "dev";
 }

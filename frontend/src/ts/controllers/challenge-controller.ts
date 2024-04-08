@@ -1,4 +1,5 @@
 import * as Misc from "../utils/misc";
+import * as JSONData from "../utils/json-data";
 import * as Notifications from "../elements/notifications";
 import * as ManualRestart from "../test/manual-restart-tracker";
 import * as CustomText from "../test/custom-text";
@@ -23,7 +24,7 @@ export function clearActive(): void {
 }
 
 export function verify(
-  result: MonkeyTypes.Result<MonkeyTypes.Mode>
+  result: SharedTypes.Result<SharedTypes.Config.Mode>
 ): string | null {
   try {
     if (TestState.activeChallenge) {
@@ -34,7 +35,7 @@ export function verify(
         return null;
       }
 
-      if (!TestState.activeChallenge.requirements) {
+      if (TestState.activeChallenge.requirements === undefined) {
         Notifications.add(
           `${TestState.activeChallenge.display} challenge passed!`,
           1
@@ -44,103 +45,119 @@ export function verify(
         let requirementsMet = true;
         const failReasons = [];
         for (const requirementType in TestState.activeChallenge.requirements) {
-          if (requirementsMet == false) return null;
+          if (!requirementsMet) return null;
           const requirementValue =
             TestState.activeChallenge.requirements[
               requirementType as keyof typeof TestState.activeChallenge.requirements
             ];
-          if (requirementType == "wpm") {
+
+          if (requirementValue === undefined) {
+            throw new Error("Requirement value is undefined");
+          }
+
+          if (requirementType === "wpm") {
             const wpmMode = Object.keys(requirementValue)[0];
-            if (wpmMode == "exact") {
-              if (Math.round(result.wpm) != requirementValue["exact"]) {
+            if (wpmMode === "exact") {
+              if (Math.round(result.wpm) !== requirementValue["exact"]) {
                 requirementsMet = false;
                 failReasons.push(`WPM not ${requirementValue["exact"]}`);
               }
-            } else if (wpmMode == "min") {
-              if (result.wpm < requirementValue["min"]) {
+            } else if (wpmMode === "min") {
+              if (result.wpm < Number(requirementValue["min"])) {
                 requirementsMet = false;
                 failReasons.push(`WPM below ${requirementValue["min"]}`);
               }
             }
-          } else if (requirementType == "acc") {
+          } else if (requirementType === "acc") {
             const accMode = Object.keys(requirementValue)[0];
-            if (accMode == "exact") {
-              if (result.acc != requirementValue["exact"]) {
+            if (accMode === "exact") {
+              if (result.acc !== requirementValue["exact"]) {
                 requirementsMet = false;
                 failReasons.push(`Accuracy not ${requirementValue["exact"]}`);
               }
-            } else if (accMode == "min") {
-              if (result.acc < requirementValue["min"]) {
+            } else if (accMode === "min") {
+              if (result.acc < Number(requirementValue["min"])) {
                 requirementsMet = false;
                 failReasons.push(`Accuracy below ${requirementValue["min"]}`);
               }
             }
-          } else if (requirementType == "afk") {
+          } else if (requirementType === "afk") {
             const afkMode = Object.keys(requirementValue)[0];
-            if (afkMode == "max") {
-              if (Math.round(afk) > requirementValue["max"]) {
+            if (afkMode === "max") {
+              if (Math.round(afk) > Number(requirementValue["max"])) {
                 requirementsMet = false;
                 failReasons.push(
                   `AFK percentage above ${requirementValue["max"]}`
                 );
               }
             }
-          } else if (requirementType == "time") {
+          } else if (requirementType === "time") {
             const timeMode = Object.keys(requirementValue)[0];
-            if (timeMode == "min") {
-              if (Math.round(result.testDuration) < requirementValue["min"]) {
+            if (timeMode === "min") {
+              if (
+                Math.round(result.testDuration) <
+                Number(requirementValue["min"])
+              ) {
                 requirementsMet = false;
                 failReasons.push(`Test time below ${requirementValue["min"]}`);
               }
             }
-          } else if (requirementType == "funbox") {
+          } else if (requirementType === "funbox") {
             const funboxMode = requirementValue["exact"]
-              .toString()
+              ?.toString()
               .split("#")
               .sort()
               .join("#");
-            if (funboxMode != result.funbox) {
+
+            if (funboxMode === undefined) {
+              throw new Error("Funbox mode is undefined");
+            }
+
+            if (funboxMode !== result.funbox) {
               requirementsMet = false;
               for (const f of funboxMode.split("#")) {
                 if (
-                  result.funbox?.split("#").find((rf) => rf == f) == undefined
+                  result.funbox?.split("#").find((rf) => rf === f) === undefined
                 ) {
                   failReasons.push(`${f} funbox not active`);
                 }
               }
-              if (result.funbox?.split("#")) {
-                for (const f of result.funbox.split("#")) {
+              const funboxSplit = result.funbox?.split("#");
+              if (funboxSplit !== undefined && funboxSplit.length > 0) {
+                for (const f of funboxSplit) {
                   if (
-                    funboxMode.split("#").find((rf) => rf == f) == undefined
+                    funboxMode.split("#").find((rf) => rf === f) === undefined
                   ) {
                     failReasons.push(`${f} funbox active`);
                   }
                 }
               }
             }
-          } else if (requirementType == "raw") {
+          } else if (requirementType === "raw") {
             const rawMode = Object.keys(requirementValue)[0];
-            if (rawMode == "exact") {
-              if (Math.round(result.rawWpm) != requirementValue["exact"]) {
+            if (rawMode === "exact") {
+              if (Math.round(result.rawWpm) !== requirementValue["exact"]) {
                 requirementsMet = false;
                 failReasons.push(`Raw WPM not ${requirementValue["exact"]}`);
               }
             }
-          } else if (requirementType == "con") {
+          } else if (requirementType === "con") {
             const conMode = Object.keys(requirementValue)[0];
-            if (conMode == "exact") {
-              if (Math.round(result.consistency) != requirementValue["exact"]) {
+            if (conMode === "exact") {
+              if (
+                Math.round(result.consistency) !== requirementValue["exact"]
+              ) {
                 requirementsMet = false;
                 failReasons.push(
                   `Consistency not ${requirementValue["exact"]}`
                 );
               }
             }
-          } else if (requirementType == "config") {
+          } else if (requirementType === "config") {
             for (const configKey in requirementValue) {
               const configValue = requirementValue[configKey];
               if (
-                Config[configKey as keyof MonkeyTypes.Config] != configValue
+                Config[configKey as keyof SharedTypes.Config] !== configValue
               ) {
                 requirementsMet = false;
                 failReasons.push(`${configKey} not set to ${configValue}`);
@@ -153,7 +170,9 @@ export function verify(
             Notifications.add(
               "You will receive a role shortly. Please don't post a screenshot in challenge submissions.",
               1,
-              5
+              {
+                duration: 5,
+              }
             );
           }
           Notifications.add(
@@ -191,13 +210,13 @@ export async function setup(challengeName: string): Promise<boolean> {
 
   let list;
   try {
-    list = await Misc.getChallengeList();
+    list = await JSONData.getChallengeList();
   } catch (e) {
     const message = Misc.createErrorMessage(e, "Failed to setup challenge");
     Notifications.add(message, -1);
     ManualRestart.set();
     setTimeout(() => {
-      $("#top .config").removeClass("hidden");
+      $("header .config").removeClass("hidden");
       $(".page.pageTest").removeClass("hidden");
     }, 250);
     return false;
@@ -210,7 +229,7 @@ export async function setup(challengeName: string): Promise<boolean> {
       Notifications.add("Challenge not found", 0);
       ManualRestart.set();
       setTimeout(() => {
-        $("#top .config").removeClass("hidden");
+        $("header .config").removeClass("hidden");
         $(".page.pageTest").removeClass("hidden");
       }, 250);
       return false;
@@ -229,8 +248,10 @@ export async function setup(challengeName: string): Promise<boolean> {
       UpdateConfig.setMode("words", true);
       UpdateConfig.setDifficulty("normal", true);
     } else if (challenge.type === "customText") {
+      CustomText.setDelimiter(" ");
       CustomText.setText((challenge.parameters[0] as string).split(" "));
       CustomText.setIsTimeRandom(false);
+      CustomText.setIsSectionRandom(false);
       CustomText.setIsWordRandom(challenge.parameters[1] as boolean);
       CustomText.setWord(challenge.parameters[2] as number);
       CustomText.setTime(-1);
@@ -240,21 +261,27 @@ export async function setup(challengeName: string): Promise<boolean> {
       Loader.show();
       const response = await fetch("/challenges/" + challenge.parameters[0]);
       Loader.hide();
+      if (response.status !== 200) {
+        throw new Error(`${response.status} ${response.statusText}`);
+      }
       const scriptdata = await response.text();
       let text = scriptdata.trim();
       text = text.replace(/[\n\r\t ]/gm, " ");
       text = text.replace(/ +/gm, " ");
+      CustomText.setDelimiter(" ");
       CustomText.setText(text.split(" "));
       CustomText.setIsWordRandom(false);
+      CustomText.setIsSectionRandom(false);
+      CustomText.setIsTimeRandom(false);
       CustomText.setTime(-1);
       CustomText.setWord(-1);
       UpdateConfig.setMode("custom", true);
       UpdateConfig.setDifficulty("normal", true);
-      if (challenge.parameters[1] != null) {
+      if (challenge.parameters[1] !== null) {
         UpdateConfig.setTheme(challenge.parameters[1] as string);
       }
-      if (challenge.parameters[2] != null) {
-        Funbox.activate(<string>challenge.parameters[2]);
+      if (challenge.parameters[2] !== null) {
+        void Funbox.activate(challenge.parameters[2] as string);
       }
     } else if (challenge.type === "accuracy") {
       UpdateConfig.setTimeConfig(0, true);
@@ -268,10 +295,13 @@ export async function setup(challengeName: string): Promise<boolean> {
       } else if (challenge.parameters[1] === "time") {
         UpdateConfig.setTimeConfig(challenge.parameters[2] as number, true);
       }
-      UpdateConfig.setMode(challenge.parameters[1] as MonkeyTypes.Mode, true);
+      UpdateConfig.setMode(
+        challenge.parameters[1] as SharedTypes.Config.Mode,
+        true
+      );
       if (challenge.parameters[3] !== undefined) {
         UpdateConfig.setDifficulty(
-          challenge.parameters[3] as MonkeyTypes.Difficulty,
+          challenge.parameters[3] as SharedTypes.Config.Difficulty,
           true
         );
       }
@@ -290,7 +320,7 @@ export async function setup(challengeName: string): Promise<boolean> {
     }
     ManualRestart.set();
     notitext = challenge.message;
-    $("#top .config").removeClass("hidden");
+    $("header .config").removeClass("hidden");
     $(".page.pageTest").removeClass("hidden");
 
     if (notitext === undefined) {
@@ -302,7 +332,10 @@ export async function setup(challengeName: string): Promise<boolean> {
     challengeLoading = false;
     return true;
   } catch (e) {
-    Notifications.add("Something went wrong: " + e, -1);
+    Notifications.add(
+      Misc.createErrorMessage(e, "Failed to load challenge"),
+      -1
+    );
     return false;
   }
 }

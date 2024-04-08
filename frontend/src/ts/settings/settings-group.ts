@@ -1,58 +1,45 @@
 import Config from "../config";
+import * as Notifications from "../elements/notifications";
+import SlimSelect from "slim-select";
 
-type ConfigValues =
-  | string
-  | number
-  | boolean
-  | string[]
-  | MonkeyTypes.QuoteLength[]
-  | MonkeyTypes.ResultFilters
-  | MonkeyTypes.CustomBackgroundFilter
-  | null
-  | undefined;
-
-export default class SettingsGroup {
+export default class SettingsGroup<T extends SharedTypes.ConfigValue> {
   public configName: string;
-  public configValue: ConfigValues;
-  public configFunction: (...params: any[]) => boolean;
+  public configValue: T;
+  public configFunction: (param: T, nosave?: boolean) => boolean;
   public mode: string;
   public setCallback?: () => void;
   public updateCallback?: () => void;
   constructor(
     configName: string,
-    configFunction: (...params: any[]) => boolean,
+    configFunction: (param: T, nosave?: boolean) => boolean,
     mode: string,
     setCallback?: () => void,
     updateCallback?: () => void
   ) {
     this.configName = configName;
-    this.configValue = Config[configName as keyof typeof Config];
+    this.configValue = Config[configName as keyof typeof Config] as T;
     this.mode = mode;
     this.configFunction = configFunction;
     this.setCallback = setCallback;
     this.updateCallback = updateCallback;
 
-    this.updateInput();
+    this.updateUI();
 
     if (this.mode === "select") {
-      $(".pageSettings").on(
-        "change",
-        `.section.${this.configName} select`,
-        (e) => {
-          const target = $(e.currentTarget);
-          if (
-            target.hasClass("disabled") ||
-            target.hasClass("no-auto-handle")
-          ) {
-            return;
-          }
-          this.setValue(target.val());
-        }
+      const selectElement = document.querySelector(
+        `.pageSettings .section[data-config-name=${this.configName}] select`
       );
+      selectElement?.addEventListener("change", (e) => {
+        const target = $(e.target as HTMLSelectElement);
+        if (target.hasClass("disabled") || target.hasClass("no-auto-handle")) {
+          return;
+        }
+        this.setValue(target.val() as T);
+      });
     } else if (this.mode === "button") {
       $(".pageSettings").on(
         "click",
-        `.section.${this.configName} .button`,
+        `.section[data-config-name='${this.configName}'] button`,
         (e) => {
           const target = $(e.currentTarget);
           if (
@@ -61,39 +48,58 @@ export default class SettingsGroup {
           ) {
             return;
           }
-          let value: string | boolean = target.attr(configName) as string;
-          const params = target.attr("params");
-          if (!value && !params) return;
-          if (value === "true") value = true;
-          if (value === "false") value = false;
-          this.setValue(value, params as unknown as ConfigValues[]);
+          const value = target.attr(`data-config-value`);
+          if (value === undefined || value === "") {
+            console.error(
+              `Failed to handle settings button click for ${configName}: data-${configName} is missing or empty.`
+            );
+            Notifications.add(
+              "Button is missing data property. Please report this.",
+              -1
+            );
+            return;
+          }
+          let typed = value as T;
+          if (typed === "true") typed = true as T;
+          if (typed === "false") typed = false as T;
+          this.setValue(typed as T);
         }
       );
     }
   }
 
-  setValue(value: ConfigValues, params?: ConfigValues[]): void {
-    if (params === undefined) {
-      this.configFunction(value);
-    } else {
-      this.configFunction(value, ...params);
-    }
-    this.updateInput();
+  setValue(value: T): void {
+    this.configFunction(value);
+    this.updateUI();
     if (this.setCallback) this.setCallback();
   }
 
-  updateInput(): void {
-    this.configValue = Config[this.configName as keyof typeof Config];
-    $(`.pageSettings .section.${this.configName} .button`).removeClass(
-      "active"
-    );
+  updateUI(): void {
+    this.configValue = Config[this.configName as keyof typeof Config] as T;
+    $(
+      `.pageSettings .section[data-config-name='${this.configName}'] button`
+    ).removeClass("active");
     if (this.mode === "select") {
-      $(`.pageSettings .section.${this.configName} select`)
-        .val(this.configValue as string)
-        .trigger("change.select2");
+      const select = document.querySelector(
+        `.pageSettings .section[data-config-name='${this.configName}'] select`
+      ) as HTMLSelectElement | null;
+
+      if (select === null) {
+        return;
+      }
+
+      select.value = this.configValue as string;
+
+      //@ts-expect-error
+      const ss = select.slim as SlimSelect | undefined;
+      ss?.store.setSelectedBy("value", [this.configValue as string]);
+      ss?.render.renderValues();
+      ss?.render.renderOptions(ss.store.getData());
     } else if (this.mode === "button") {
       $(
-        `.pageSettings .section.${this.configName} .button[${this.configName}='${this.configValue}']`
+        // this cant be an object?
+        // eslint-disable-next-line @typescript-eslint/no-base-to-string
+        `.pageSettings .section[data-config-name='${this.configName}'] button[data-config-value='${this.configValue}']`
       ).addClass("active");
     }
     if (this.updateCallback) this.updateCallback();

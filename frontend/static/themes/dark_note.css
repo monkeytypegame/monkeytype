@@ -59,7 +59,7 @@ body::before {
   background: var(--theme-accent-stripe-color);
 }
 
-#commandLineWrapper #commandLine {
+#commandLine .modal {
   --roundness: 0; /* making command line sharp */
 }
 
@@ -75,6 +75,10 @@ body::before {
 #words.colorfulMode .word letter.incorrect:not(.extra),
 #words .word letter.incorrect:not(.extra) {
   color: var(--current-color);
+}
+
+#words .word.error letter:not(.correct):not(.incorrect)::after {
+  background: var(--sub-color);
 }
 
 #words .word letter.incorrect,
@@ -97,13 +101,11 @@ body::before {
   --c-dot--error: var(--colorful-error-color);
 }
 
-#wordsWrapper .word:not(.active) letter.correct,
-#wordsWrapper .word:not(.active) letter.incorrect {
+#wordsWrapper .word:has(~ .active) letter {
   animation: toDust 200ms ease-out 0ms 1 forwards;
 }
 
-#wordsWrapper .word:not(.active) letter.correct::after,
-#wordsWrapper .word:not(.active) letter.incorrect::after {
+#wordsWrapper .word:has(~ .active) letter::after {
   animation: fadeIn 100ms ease-in 100ms 1 forwards;
 }
 
@@ -111,7 +113,7 @@ body::before {
   position: relative;
 }
 
-#wordsWrapper .word letter::after {
+#words:not(.withLigatures) .word letter::after {
   content: "";
   position: absolute;
   top: 50%;
@@ -123,7 +125,7 @@ body::before {
   opacity: 0;
 }
 
-#wordsWrapper .word letter.correct::after {
+#wordsWrapper .word:has(~ .active) letter::after {
   background: var(--c-dot);
 }
 

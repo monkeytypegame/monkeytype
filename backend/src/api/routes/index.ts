@@ -8,6 +8,8 @@ import configs from "./configs";
 import results from "./results";
 import presets from "./presets";
 import apeKeys from "./ape-keys";
+import admin from "./admin";
+import webhooks from "./webhooks";
 import configuration from "./configuration";
 import { version } from "../../version";
 import leaderboards from "./leaderboards";
@@ -22,9 +24,12 @@ import {
   Router,
   static as expressStatic,
 } from "express";
+import { isDevEnvironment } from "../../utils/misc";
+import { getLiveConfiguration } from "../../init/configuration";
+import Logger from "../../utils/logger";
 
-const pathOverride = process.env.API_PATH_OVERRIDE;
-const BASE_ROUTE = pathOverride ? `/${pathOverride}` : "";
+const pathOverride = process.env["API_PATH_OVERRIDE"];
+const BASE_ROUTE = pathOverride !== undefined ? `/${pathOverride}` : "";
 const APP_START_TIME = Date.now();
 
 const API_ROUTE_MAP = {
@@ -37,6 +42,8 @@ const API_ROUTE_MAP = {
   "/leaderboards": leaderboards,
   "/quotes": quotes,
   "/ape-keys": apeKeys,
+  "/admin": admin,
+  "/webhooks": webhooks,
 };
 
 function addApiRoutes(app: Application): void {
@@ -44,19 +51,34 @@ function addApiRoutes(app: Application): void {
     res.sendStatus(404);
   });
 
+  if (isDevEnvironment()) {
+    //disable csp to allow assets to load from unsecured http
+    app.use((req, res, next) => {
+      res.setHeader("Content-Security-Policy", "");
+      return next();
+    });
+    app.use("/configure", expressStatic(join(__dirname, "../../../private")));
+
+    app.use(async (req, res, next) => {
+      const slowdown = (await getLiveConfiguration()).dev.responseSlowdownMs;
+      if (slowdown > 0) {
+        Logger.info(`Simulating ${slowdown}ms delay for ${req.path}`);
+        await new Promise((resolve) => setTimeout(resolve, slowdown));
+      }
+      next();
+    });
+  }
+
   // Cannot be added to the route map because it needs to be added before the maintenance handler
   app.use("/configuration", configuration);
-
-  if (process.env.MODE === "dev") {
-    app.use("/configure", expressStatic(join(__dirname, "../../../private")));
-  }
 
   addSwaggerMiddlewares(app);
 
   app.use(
     (req: MonkeyTypes.Request, res: Response, next: NextFunction): void => {
       const inMaintenance =
-        process.env.MAINTENANCE === "true" || req.ctx.configuration.maintenance;
+        process.env["MAINTENANCE"] === "true" ||
+        req.ctx.configuration.maintenance;
 
       if (inMaintenance) {
         res.status(503).json({ message: "Server is down for maintenance" });
@@ -64,7 +86,9 @@ function addApiRoutes(app: Application): void {
       }
 
       if (req.path === "/psas") {
-        const clientVersion = req.headers["client-version"];
+        const clientVersion =
+          (req.headers["x-client-version"] as string) ||
+          req.headers["client-version"];
         recordClientVersion(clientVersion?.toString() ?? "unknown");
       }
 

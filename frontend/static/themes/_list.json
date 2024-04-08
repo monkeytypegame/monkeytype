@@ -149,16 +149,16 @@
   {
     "name": "dracula",
     "bgColor": "#282a36",
-    "mainColor": "#f2f2f2",
-    "subColor": "#bd93f9",
-    "textColor": "#f2f2f2"
+    "mainColor": "#bd93f9",
+    "subColor": "#6272a4",
+    "textColor": "#f8f8f2"
   },
   {
     "name": "nord",
     "bgColor": "#242933",
-    "mainColor": "#d8dee9",
-    "subColor": "#617b94",
-    "textColor": "#d8dee9"
+    "mainColor": "#88C0D0",
+    "subColor": "#2E3440",
+    "textColor": "#88C0D0"
   },
   {
     "name": "mr_sleeves",
@@ -339,7 +339,7 @@
     "name": "matrix",
     "bgColor": "#000000",
     "mainColor": "#15ff00",
-    "subColor": "#003b00",
+    "subColor": "#006500",
     "textColor": "#d1ffcd"
   },
   {
@@ -1024,9 +1024,9 @@
   {
     "name": "catppuccin",
     "bgColor": "#1e1e2e",
-    "mainColor": "#abe9b3",
-    "subColor": "#575268",
-    "textColor": "#d9e0ee"
+    "mainColor": "#cba6f7",
+    "subColor": "#7f849c",
+    "textColor": "#cdd6f4"
   },
   {
     "name": "snes",
@@ -1127,10 +1127,87 @@
     "textColor": "#e6c7a8"
   },
   {
-    "name": "purpurite",
-    "bgColor": "#1f2533",
-    "mainColor": "#9999ff",
-    "subColor": "#ccddff",
-    "textColor": "#9999ff"
+    "name": "purpleish",
+    "bgColor": "#1e1e32",
+    "mainColor": "#7a52cc",
+    "subColor": "#3d3d66",
+    "textColor": "#7a52cc"
+  },
+  {
+    "name": "nord_light",
+    "bgColor": "#eceff4",
+    "mainColor": "#8fbcbb",
+    "subColor": "#6a7791",
+    "textColor": "#8fbcbb"
+  },
+  {
+    "name": "slambook",
+    "bgColor": "#FFFDDE",
+    "mainColor": "#13005A",
+    "subColor": "#1c82adc4",
+    "textColor": "#125d98"
+  },
+  {
+    "name": "breeze",
+    "bgColor": "#e8d5c4",
+    "mainColor": "#7d67a9",
+    "subColor": "#3a98b9",
+    "textColor": "#1b4c5e"
+  },
+  {
+    "name": "cherry_blossom",
+    "bgColor": "#323437",
+    "mainColor": "#d65ccc",
+    "subColor": "#787d82",
+    "textColor": "#d1d0c5"
+  },
+  {
+    "name": "everblush",
+    "bgColor": "#141b1e",
+    "mainColor": "#8ccf7e",
+    "subColor": "#838887",
+    "textColor": "#dadada"
+  },
+  {
+    "name": "grape",
+    "bgColor": "#2c003e",
+    "mainColor": "#ff8f00",
+    "subColor": "#651e56",
+    "textColor": "#fff"
+  },
+  {
+    "name": "rainbow_trail",
+    "bgColor": "#f5f5f5",
+    "mainColor": "#363636",
+    "subColor": "#4f4f4f",
+    "textColor": "#1f1f1f"
+  },
+  {
+    "name": "tangerine",
+    "bgColor": "#ffede0",
+    "mainColor": "#fe5503",
+    "subColor": "#ff9562",
+    "textColor": "#3d1705"
+  },
+  {
+    "name": "macroblank",
+    "bgColor": "#b2d2c8",
+    "mainColor": "#c13117",
+    "subColor": "#717977",
+    "textColor": "#490909"
+  },
+  {
+    "name": "anti_hero",
+    "bgColor": "#00002e",
+    "mainColor": "#ffadad",
+    "subColor": "#ff3d8b",
+    "textColor": "#f1deef"
+  },
+  {
+    "name": "incognito",
+    "bgColor": "#0e0e0e",
+    "mainColor": "#ff9900",
+    "subColor": "#2f2f2f",
+    "textColor": "#c6c6c6"
   }
 ]

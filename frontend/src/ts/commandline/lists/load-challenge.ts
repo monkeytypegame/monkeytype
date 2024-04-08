@@ -1,9 +1,9 @@
-import { navigate } from "../../observables/navigate-event";
+import { navigate } from "../../controllers/route-controller";
 import * as ChallengeController from "../../controllers/challenge-controller";
 import * as TestLogic from "../../test/test-logic";
-import { capitalizeFirstLetterOfEachWord } from "../../utils/misc";
+import { capitalizeFirstLetterOfEachWord } from "../../utils/strings";
 
-export const subgroup: MonkeyTypes.CommandsSubgroup = {
+const subgroup: MonkeyTypes.CommandsSubgroup = {
   title: "Load challenge...",
   list: [],
 };
@@ -21,7 +21,6 @@ function update(challenges: MonkeyTypes.Challenge[]): void {
   challenges.forEach((challenge) => {
     subgroup.list.push({
       id: "loadChallenge" + capitalizeFirstLetterOfEachWord(challenge.name),
-      noIcon: true,
       display: challenge.display,
       exec: async (): Promise<void> => {
         navigate("/");

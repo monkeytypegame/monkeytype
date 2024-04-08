@@ -11,10 +11,10 @@
   --colorful-error-extra-color: #f279c2;
 }
 
-#menu .textButton {
+nav .textButton {
   color: #ba96db;
 }
 
-#menu .textButton:hover {
+nav .textButton:hover {
   color: #212b43;
 }

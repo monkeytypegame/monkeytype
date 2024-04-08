@@ -1,4 +1,5 @@
 import { v4 as uuidv4 } from "uuid";
+import { isDevEnvironment } from "./misc";
 
 class MonkeyError extends Error {
   status: number;
@@ -12,12 +13,13 @@ class MonkeyError extends Error {
     this.stack = stack;
     this.uid = uid;
 
-    if (process.env.MODE === "dev") {
-      this.message = stack
-        ? String(message) + "\nStack: " + String(stack)
-        : String(message);
+    if (isDevEnvironment()) {
+      this.message =
+        stack ?? ""
+          ? String(message) + "\nStack: " + String(stack)
+          : String(message);
     } else {
-      if (this.stack && this.status >= 500) {
+      if ((this.stack ?? "") && this.status >= 500) {
         this.stack = this.message + "\n" + this.stack;
         this.message = "Internal Server Error " + this.errorId;
       } else {

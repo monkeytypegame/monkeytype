@@ -9,14 +9,14 @@ const RECENT_AGE_MILLISECONDS = RECENT_AGE_MINUTES * 60 * 1000;
 
 async function getTop10(
   leaderboardTime: string
-): Promise<MonkeyTypes.LeaderboardEntry[]> {
+): Promise<SharedTypes.LeaderboardEntry[]> {
   return (await LeaderboardsDAL.get(
     "time",
     leaderboardTime,
     "english",
     0,
     10
-  )) as MonkeyTypes.LeaderboardEntry[]; //can do that because gettop10 will not be called during an update
+  )) as SharedTypes.LeaderboardEntry[]; //can do that because gettop10 will not be called during an update
 }
 
 async function updateLeaderboardAndNotifyChanges(
@@ -37,9 +37,9 @@ async function updateLeaderboardAndNotifyChanges(
   const newRecords = top10AfterUpdate.filter((record) => {
     const userId = record.uid;
 
+    const previousMapUser = previousRecordsMap[userId];
     const userImprovedRank =
-      userId in previousRecordsMap &&
-      previousRecordsMap[userId].rank > record.rank;
+      previousMapUser && previousMapUser.rank > record.rank;
 
     const newUserInTop10 = !(userId in previousRecordsMap);
 
@@ -62,8 +62,8 @@ async function updateLeaderboards(): Promise<void> {
     return;
   }
 
-  await updateLeaderboardAndNotifyChanges("15");
   await updateLeaderboardAndNotifyChanges("60");
+  await updateLeaderboardAndNotifyChanges("15");
 }
 
 export default new CronJob(CRON_SCHEDULE, updateLeaderboards);

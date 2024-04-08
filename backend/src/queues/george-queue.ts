@@ -1,13 +1,14 @@
+import { LbEntryWithRank } from "../utils/daily-leaderboards";
 import { MonkeyQueue } from "./monkey-queue";
 
 const QUEUE_NAME = "george-tasks";
 
-interface GeorgeTask {
+type GeorgeTask = {
   name: string;
-  args: any[];
-}
+  args: unknown[];
+};
 
-function buildGeorgeTask(taskName: string, taskArgs: any[]): GeorgeTask {
+function buildGeorgeTask(taskName: string, taskArgs: unknown[]): GeorgeTask {
   return {
     name: taskName,
     args: taskArgs,
@@ -15,6 +16,14 @@ function buildGeorgeTask(taskName: string, taskArgs: any[]): GeorgeTask {
 }
 
 class GeorgeQueue extends MonkeyQueue<GeorgeTask> {
+  async sendReleaseAnnouncement(releaseName: string): Promise<void> {
+    const taskName = "sendReleaseAnnouncement";
+    const sendReleaseAnnouncementTask = buildGeorgeTask(taskName, [
+      releaseName,
+    ]);
+    await this.add(taskName, sendReleaseAnnouncementTask);
+  }
+
   async updateDiscordRole(discordId: string, wpm: number): Promise<void> {
     const taskName = "updateRole";
     const updateDiscordRoleTask = buildGeorgeTask(taskName, [discordId, wpm]);
@@ -45,8 +54,14 @@ class GeorgeQueue extends MonkeyQueue<GeorgeTask> {
     await this.add(taskName, awardChallengeTask);
   }
 
+  async userBanned(discordId: string, banned: boolean): Promise<void> {
+    const taskName = "userBanned";
+    const userBannedTask = buildGeorgeTask(taskName, [discordId, banned]);
+    await this.add(taskName, userBannedTask);
+  }
+
   async announceLeaderboardUpdate(
-    newRecords: any[],
+    newRecords: SharedTypes.LeaderboardEntry[],
     leaderboardId: string
   ): Promise<void> {
     const taskName = "announceLeaderboardUpdate";
@@ -74,7 +89,7 @@ class GeorgeQueue extends MonkeyQueue<GeorgeTask> {
   async announceDailyLeaderboardTopResults(
     leaderboardId: string,
     leaderboardTimestamp: number,
-    topResults: any[]
+    topResults: LbEntryWithRank[]
   ): Promise<void> {
     const taskName = "announceDailyLeaderboardTopResults";
 

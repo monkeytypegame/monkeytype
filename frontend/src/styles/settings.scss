@@ -1,29 +1,25 @@
 .pageSettings {
-  display: grid;
-  // grid-template-columns: 1fr 1fr;
+  display: flex;
+  flex-direction: column;
   gap: 2rem;
 
   .tip {
     color: var(--sub-color);
+    text-align: center;
   }
 
   .sectionGroupTitle {
     font-size: 2rem;
-    color: var(--sub-color);
-    line-height: 2rem;
-    cursor: pointer;
-    transition: 0.25s;
-
-    &:hover {
-      color: var(--text-color);
-    }
+    width: max-content;
+    margin: -0.25em;
+    padding: 0.25em;
 
     .fas {
-      margin-left: 0.5rem;
+      transition: transform 0.25s;
+    }
 
-      &.rotate {
-        transform: rotate(-90deg);
-      }
+    &.rotateIcon .fas {
+      transform: rotate(-90deg);
     }
   }
 
@@ -45,24 +41,17 @@
     display: grid;
     // gap: .5rem;
     grid-template-areas:
-      "title title"
+      "title buttons"
       "text buttons";
     grid-template-columns: 2fr 1fr;
+    grid-template-rows: auto 1fr;
     column-gap: 2rem;
+    row-gap: 0.5rem;
     align-items: center;
-
-    .button.danger {
-      box-shadow: 0px 0px 0px 2px var(--error-color);
-      color: var(--text-color);
-      &:hover {
-        background: var(--text-color);
-        color: var(--bg-color);
-      }
-    }
 
     .inputAndButton {
       display: grid;
-      grid-template-columns: 8fr 1fr;
+      grid-template-columns: auto min-content;
       gap: 0.5rem;
       margin-bottom: 0.5rem;
 
@@ -75,7 +64,7 @@
       }
     }
 
-    &.autoSwitchThemeInputs {
+    &[data-config-name="autoSwitchThemeInputs"] {
       grid-template-areas: unset;
       grid-template-columns: 1fr 3fr 1fr 3fr;
       gap: 2rem;
@@ -93,7 +82,7 @@
       }
     }
 
-    &.customBackgroundFilter {
+    &[data-config-name="customBackgroundFilter"] {
       .groups {
         grid-area: buttons;
         display: grid;
@@ -128,11 +117,28 @@
     }
 
     & .customThemeEdit {
-      grid-row: 3;
+      // grid-row: 3;
       display: grid;
-      grid-template-columns: 1fr 1fr 1fr 1fr;
-      justify-items: stretch;
-      gap: 0.5rem 1rem;
+      gap: 1rem;
+      // grid-template-columns: 1fr 1fr 1fr 1fr;
+      // justify-items: stretch;
+      // gap: 0.5rem 1rem;
+
+      .customThemeInputs {
+        display: grid;
+        grid-template-columns: 1fr 1.5fr 1fr 1.5fr;
+        gap: 1rem;
+      }
+
+      .customThemeButtons {
+        display: grid;
+        gap: 1rem;
+        grid-template-columns: 1fr 1fr 1fr;
+      }
+
+      .inputAndButton {
+        grid-template-columns: 1fr auto;
+      }
 
       input {
         width: 100%;
@@ -143,23 +149,40 @@
         place-content: center start;
       }
 
-      & p {
-        grid-area: unset;
-        grid-column: 1 / span 4;
+      & .spacer {
+        grid-column: span 4;
       }
 
-      & .spacer {
-        grid-column: 3 / 5;
+      & .buttons {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        grid-column: 1/5;
+        gap: 0.5rem;
       }
     }
 
-    h1 {
+    .groupTitle {
       font-size: 1rem;
-      line-height: 1rem;
       color: var(--sub-color);
       margin: 0;
       grid-area: title;
       font-weight: 300;
+      display: flex;
+      align-items: baseline;
+      .fab,
+      .fas,
+      .far,
+      .textIcon {
+        margin-right: 0.5em;
+      }
+    }
+
+    &.themes .groupTitle {
+      .fab,
+      .fas,
+      .far {
+        margin-bottom: 0;
+      }
     }
 
     p {
@@ -172,12 +195,19 @@
       align-self: normal;
       color: var(--text-color);
       grid-area: text;
+      .red {
+        line-height: 2rem;
+        color: var(--error-color);
+      }
+    }
+
+    .inputs {
+      grid-area: buttons;
     }
 
     .buttons {
       display: grid;
-      grid-auto-flow: column;
-      grid-auto-columns: 1fr;
+      grid-template-columns: repeat(auto-fit, minmax(4.5rem, 1fr));
       gap: 0.5rem;
       grid-area: buttons;
       &.vertical {
@@ -218,7 +248,7 @@
       }
 
       .tag {
-        grid-template-columns: 6fr 1fr 1fr 1fr;
+        grid-template-columns: auto min-content min-content min-content;
         margin-bottom: 0.5rem;
       }
     }
@@ -229,7 +259,7 @@
       }
 
       .preset {
-        grid-template-columns: 7fr 1fr 1fr;
+        grid-template-columns: auto min-content min-content;
         margin-bottom: 0.5rem;
       }
     }
@@ -342,7 +372,7 @@
           }
         }
         &.active {
-          outline-width: 0.2rem !important;
+          box-shadow: 0 0 0 0.2em var(--main-color);
           transform: scale(1.1);
           .themeBubbles {
             opacity: 1;
@@ -375,9 +405,8 @@
         margin-left: 0;
         grid-auto-flow: dense;
         display: grid;
-        grid-template-columns: 1fr 1fr 1fr 1fr;
+        grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr)) !important;
         gap: 0.5rem;
-        margin-top: 0.5rem;
         .button {
           transition: transform 0.125s;
           &:hover .themeBubbles {
@@ -417,16 +446,10 @@
 
       .buttons {
         margin-left: 0;
-        grid-auto-flow: dense;
         display: grid;
-        grid-template-columns: 1fr 1fr 1fr 1fr;
+        grid-template-columns: repeat(auto-fit, minmax(13.5rem, 1fr));
         gap: 0.5rem;
-        margin-top: 1rem;
       }
-    }
-
-    &.randomTheme .buttons {
-      grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
     }
   }
 }

@@ -1,0 +1,899 @@
+{
+  "language": "norwegian_bokmal",
+  "groups": [
+    [0, 100],
+    [101, 300],
+    [301, 600],
+    [601, 9999]
+  ],
+  "quotes": [
+    {
+      "text": "Men Norge er fremfor alt mennesker. Nordmenn er nordlendinger, trøndere, sørlendinger – og folk fra alle de andre regionene. Nordmenn har også innvandret fra Afghanistan, Pakistan og Polen, Sverige, Somalia og Syria. Mine besteforeldre innvandret fra Danmark og England for 110 år siden. Det er ikke alltid så lett å si hvor vi er fra, hvilken nasjonalitet vi tilhører. Det vi kaller hjem, er der hjertet vårt er – og det kan ikke alltid plasseres innenfor landegrenser. Nordmenn er unge og gamle, høye og lave, funksjonsfriske og rullestolbrukere. Stadig flere er over hundre år. Nordmenn er rike, fattige og midt i mellom. Nordmenn liker fotball og håndball, klatrer fjelltopper og seiler – mens andre er mest glad i sofaen. Noen har god selvtillit, mens andre sliter med å tro på at de er gode nok som de er. Nordmenn jobber i butikk, på sykehus, på oljeplattform. Nordmenn arbeider for at vi skal være trygge, arbeider med å holde landet rent for søppel, og leter etter nye løsninger for en grønn fremtid. Nordmenn dyrker jorda og driver fiske. Nordmenn forsker og lærer bort. Nordmenn er engasjert ungdom og livserfarne gamle. Nordmenn er enslige, skilte, barnefamilier og gamle ektepar. Nordmenn er jenter som er glad i jenter, gutter som er glad i gutter, og jenter og gutter som er glad i hverandre. Nordmenn tror på Gud, Allah, Altet og Ingenting. Nordmenn liker Grieg og Kygo, Hellbillies og Kari Bremnes. Med andre ord: Norge er dere. Norge er oss. Når vi synger \"Ja vi elsker dette landet\", skal vi huske på at vi også synger om hverandre. For det er vi som utgjør landet. Derfor er nasjonalsangen vår også en kjærlighetserklæring til det norske folk. Mitt største håp for Norge er at vi skal klare å ta vare på hverandre. At vi skal bygge dette landet videre – på tillit, felleskap og raushet. At vi skal kjenne at vi – på tross av all vår ulikhet – er ett folk. At Norge er ett.",
+      "source": "Hagefest i slottsparken: Velkomsttale",
+      "id": 1,
+      "length": 1892
+    },
+    {
+      "text": "Du må ikke sove mer i natt! Du må ikke gå til ditt kjøpmannskap og tenke på hva der gir vinning og tap! Du må ikke skylde på åker og fe og at du har mer enn nok med det! Du må ikke sitte trygt i ditt hjem og si: Det er sørgelig, stakkars dem! Du må ikke tåle så inderlig vel den urett som ikke rammer deg selv! Jeg roper med siste pust av min stemme Du har ikke lov å gå der og glemme!",
+      "source": "Arnulf Øverland, Du må ikke sove",
+      "id": 2,
+      "length": 385
+    },
+    {
+      "text": "Bæ bæ lille lam, har du noe ull? Ja, ja, kjære barn, jeg har kroppen full. Søndagsklær til far, og søndagsklær til mor, og to par strømper til bitte lille bror.",
+      "source": "Bæ Bæ lille lam, Tommy Thumb's pretty Song Book (norsk oversettelse)",
+      "id": 3,
+      "length": 160
+    },
+    {
+      "text": "Uten elementet nytelse er det ikke verdt å prøve å utmerke seg i noe som helst.",
+      "source": "Magnus Carlsen",
+      "id": 4,
+      "length": 79
+    },
+    {
+      "text": "Bjørnen sover, bjørnen sover, i sitt lune hi. Den er ikke farlig, bare man går varlig, men man kan jo, men man kan jo, aldri være TRYGG!",
+      "source": "Bjørnen sover",
+      "id": 5,
+      "length": 136
+    },
+    {
+      "text": "Han som ikke arbeider seg svett, han eter seg svett.",
+      "source": "Ordtak",
+      "id": 6,
+      "length": 52
+    },
+    {
+      "text": "Hvorfor gjøre i dag, det man kan få andre til å gjøre i morgen.",
+      "source": "Ordtak",
+      "id": 7,
+      "length": 63
+    },
+    {
+      "text": "Skogen ville være uendelig stille om det bare var de beste fuglene som sang.",
+      "source": "Ordtak",
+      "id": 8,
+      "length": 76
+    },
+    {
+      "text": "Gresset er grønt nok på vår side av gjerdet når vi bare husker å vanne det.",
+      "source": "Ordtak",
+      "id": 9,
+      "length": 75
+    },
+    {
+      "text": "Lykke er en kombinasjon av god helse og dårlig hukommelse.",
+      "source": "Ordtak",
+      "id": 10,
+      "length": 58
+    },
+    {
+      "text": "Et til du sprekker, det er deg vel unt, sa mannen til presten.",
+      "source": "Ordtak",
+      "id": 11,
+      "length": 62
+    },
+    {
+      "text": "Grøt er en rask rett - rask blir en sulten, og rask blir en mett.",
+      "source": "Ordtak",
+      "id": 12,
+      "length": 65
+    },
+    {
+      "text": "Den som ikke sparer fra lokket, skal snart se bunnen.",
+      "source": "Ordtak",
+      "id": 13,
+      "length": 53
+    },
+    {
+      "text": "Det er godt mulig det lar seg gjøre, sa kjerringa og hoppa ned og dro med seg røyskatta og fløy inn i peistoga.",
+      "source": "Ordtak",
+      "id": 14,
+      "length": 111
+    },
+    {
+      "text": "Når forandringens vind blåser, kan man velge å bygge levegg - eller vindmølle.",
+      "source": "Ordtak",
+      "id": 15,
+      "length": 78
+    },
+    {
+      "text": "Sikt på månen, om du bommer befinner du deg blant stjernene.",
+      "source": "Ordtak",
+      "id": 16,
+      "length": 60
+    },
+    {
+      "text": "Det fins alltid en utvei, sa musen, den lå i kattens mage.",
+      "source": "Ordtak",
+      "id": 17,
+      "length": 58
+    },
+    {
+      "text": "Det er ikke gull alt som glimrer, det kan også være diamanter.",
+      "source": "Ordtak",
+      "id": 18,
+      "length": 62
+    },
+    {
+      "text": "Den som sår sparsomt, skal høste sparsomt, og den som sår med velsignelse, skal høste med velsignelse.",
+      "source": "Ordtak",
+      "id": 19,
+      "length": 102
+    },
+    {
+      "text": "Alt er ikke som det skal være når prikken over i-en mangler.",
+      "source": "Ordtak",
+      "id": 20,
+      "length": 60
+    },
+    {
+      "text": "Jeg har hatt mange bekymringer, men de fleste har det ikke blitt noe av.",
+      "source": "Ordtak",
+      "id": 21,
+      "length": 72
+    },
+    {
+      "text": "Selv en reise på tusen mil begynner med et lite skritt.",
+      "source": "Ordtak",
+      "id": 22,
+      "length": 55
+    },
+    {
+      "text": "Den som tror han er ferdig utlært, er ikke utlært, men ferdig.",
+      "source": "Ordtak",
+      "id": 23,
+      "length": 62
+    },
+    {
+      "text": "Ikke gi armeringer til barnet, det vil aldri lære å svømme.",
+      "source": "Ordtak",
+      "id": 24,
+      "length": 59
+    },
+    {
+      "text": "Blunder du også, din enøyde djevel, sa mannen - han skulle træ en tråd i nåla.",
+      "source": "Ordtak",
+      "id": 25,
+      "length": 78
+    },
+    {
+      "text": "Det er bedre å komme fem minutter for sent enn å daue førti år for tidlig.",
+      "source": "Ordtak",
+      "id": 26,
+      "length": 74
+    },
+    {
+      "text": "Tida flyr, du veit ikke hvor det blir av han, plutselig er han borte.",
+      "source": "Ordtak",
+      "id": 27,
+      "length": 69
+    },
+    {
+      "text": "Det er godt det flasker seg, bare det ikke korker seg.",
+      "source": "Ordtak",
+      "id": 28,
+      "length": 54
+    },
+    {
+      "text": "Skjærer man seg i en finger, er det ille, men skjærer man seg i to, er det verre.",
+      "source": "Ordtak",
+      "id": 29,
+      "length": 81
+    },
+    {
+      "text": "Det er ikke sikkert at fyren er svak selv om han er blek.",
+      "source": "Ordtak",
+      "id": 30,
+      "length": 57
+    },
+    {
+      "text": "Påfuglen gråter når den ser føttene sine, men ler når den ser halen.",
+      "source": "Ordtak",
+      "id": 31,
+      "length": 68
+    },
+    {
+      "text": "Man elsker ikke noen fordi man syns de er pene. Man syns de er pene fordi man elsker dem.",
+      "source": "Ordtak",
+      "id": 32,
+      "length": 89
+    },
+    {
+      "text": "En blir ikke skikkelig klok før en har vært tre ganger gal.",
+      "source": "Ordtak",
+      "id": 33,
+      "length": 59
+    },
+    {
+      "text": "Det gjelder å søke alderdommens visdom og samtidig se verden med et barns øyne.",
+      "source": "Ordtak",
+      "id": 34,
+      "length": 79
+    },
+    {
+      "text": "Sola den milde tar frakken av mannen raskere enn vinden den sterke.",
+      "source": "Ordtak",
+      "id": 35,
+      "length": 67
+    },
+    {
+      "text": "Når skitt kommer til ære, vet det ikke hvordan det skal være.",
+      "source": "Ordtak",
+      "id": 36,
+      "length": 61
+    },
+    {
+      "text": "Det er mye tull med disse automatheisene gitt, jeg tror det kommer til å gå sånn jeg, at folk kommer til å gå. Sånn tror jeg det kommer til å gå, at folk kommer til å gå.",
+      "source": "Fleksnes",
+      "id": 37,
+      "length": 170
+    },
+    {
+      "text": "Nøtt' itte å bygge bil da vettu, når'n itte eier nåla i veggen.",
+      "source": "Flåklypa Grand Prix, Reodor Felgen",
+      "id": 38,
+      "length": 63
+    },
+    {
+      "text": "Kjøra! Kjøra! Farli' norsk hengebro', Kjøra! Tempo! Kjøra!",
+      "source": "Flåypa Grand Prix, Ben Redic Fy Fazan",
+      "id": 39,
+      "length": 58
+    },
+    {
+      "text": "Kom arbeidslyst og treng deg på. Her skal du motstand finne.",
+      "source": "Flåklypa Grand Prix, Solan Gundersen",
+      "id": 40,
+      "length": 60
+    },
+    {
+      "text": "Ååå... Det var vondt det... Har aldri hatt det så vondt. Att det går ann å ha det så vondt a!",
+      "source": "Flåklypa Grand Prix, Ludvig",
+      "id": 41,
+      "length": 93
+    },
+    {
+      "text": "Næ jø så nøfyse! No' så fryktelig nøfyse! Æ'kke detta fali' så veit ikke jeg hva som er fali'!",
+      "source": "Flåklypa Grand Prix, Ludvig",
+      "id": 42,
+      "length": 94
+    },
+    {
+      "text": "Je e villi tell når som helst, hvor som helst, å møte åkken som helst.",
+      "source": "Flåklypa Grand Prix, Rudolf Blodstrupmoen",
+      "id": 43,
+      "length": 70
+    },
+    {
+      "text": "Knotten bærer frakk med stoppdekkmønster, han er aktiv fargeblind og overkjørt en rekke ganger. Utprega sårbeint, urøddig gangsett, og speller kontrabass ved høytidelige anledninger.",
+      "source": "Flåklypa Grand Prix",
+      "id": 44,
+      "length": 182
+    },
+    {
+      "text": "Den første gangen da Reodor satte nøkkelen i prototypen, da slo seismografen i Bergen ut på 7,8! Og det er ikke dårlig for en som driver med hjemmeindustri.",
+      "source": "Flåklypa Grand Prix",
+      "id": 45,
+      "length": 156
+    },
+    {
+      "text": "Vi er så heldige å ha fjernsynet her i dag, i svart/hvitt og fine farger!",
+      "source": "Flåklypa Grand Prix, Meieribestyrer Ollvar O. Kleppvold",
+      "id": 46,
+      "length": 73
+    },
+    {
+      "text": "Men, men, alt blir jo en vane, bare man venner seg til det!",
+      "source": "Flåklypa Tidende, forgjenger Gudleik Knotten",
+      "id": 47,
+      "length": 59
+    },
+    {
+      "text": "Fotgjenger Gudleik Knotten som driver hjemmeindustri av plastknapper på Ramstadsletta utenfor Oslo, er frampå igjen og overveier å kaste ut på markedet en hvit plastknapp med inskripsjonen: \"Ja til konvensjonell krig\", dette som et supplement til \"Nei til atomvåpen\".",
+      "source": "Flåklypa Tidende",
+      "id": 48,
+      "length": 267
+    },
+    {
+      "text": "Giv Mennesket en Motorsag, og det haver Ved i mange Aar.",
+      "source": "Flåklypa Tidende, Sindre Pilten",
+      "id": 49,
+      "length": 56
+    },
+    {
+      "text": "Flåklypa Tidende har forelagt saken for generaldirektør Kjell Holler i Teledirektoratet, som opplyser at hvis man hører stemmer i telefonen, så tyder dette på at linjen er i orden.",
+      "source": "Flåklypa Tidende, Frimand Pløsen",
+      "id": 50,
+      "length": 180
+    },
+    {
+      "text": "Infanteristene er oppstilt, og fenriken roper: \"Fremad januar, februar, mars!\"",
+      "source": "Flåklypa Tidende, Olram Slåpen",
+      "id": 51,
+      "length": 78
+    },
+    {
+      "text": "Vi gjentar: Man blir ikke automatisk humorist av å bo i Bergen!",
+      "source": "Flåklypa Tidende, Frimand Pløsen",
+      "id": 52,
+      "length": 63
+    },
+    {
+      "text": "Svogeren til manufakturhandler Nisse Dahlberg från Uddevalla, fhv. fanejunker Göran \"Ludde\" Andersson (59) från Västervik på østkysten av Sverige, mellom Öland og Gotland, ca. 10 mil nord for Oskarshamn, som ligger en dagsreise fra Arvika hvis man passerer Vänern på høyre side av landshøvding Axel Oxenstiernas herresete, tatt i odel 1873, stakk i går oppom Flåklypa Tidende for å fortelle at alt sto bra til.",
+      "source": "Flåklypa Tidende, utenriks",
+      "id": 53,
+      "length": 410
+    },
+    {
+      "text": "Født under Menstad-slaget 8. juni 1931, og senere politisk interessert. Fra 1952 sjefredaktør i Flåklypa Tidende. Var blant de bærende krefter under papirinnsamlingen i 1954. Ble vårslapp og har siden holdt seg oppe ved hjelp av stivetøy. Han er allergisk mot Vestlandslefse og blå turnsko. Har blodtype B-Rhesus+ og balkong med sidemarkise.",
+      "source": "Flåklypa Tidende, om Frimand Pløsen",
+      "id": 54,
+      "length": 341
+    },
+    {
+      "text": "Fritenker. Født under et steinsprang i Jøssingfjord i 1918. Fikk tarmslyng og ble synsk da han fikk en Noritt-stein i skallen. Har blant annet sett fruktblomstringen i Hardanger, Åna-Sira, Blåfjell, filmen \"Gjest Bårdsen\" og oktoberrevolusjonen i desember. Søkte stilling i postvesenet og fikk svar på 2. brev fra Korintene. Mysil Bergsprekken har gjensydde lommer med møllkuler i. Han deltar ikke i arbeidslivet.",
+      "source": "Flåklypa Tidende, om Mysil R. Bergsprekken",
+      "id": 55,
+      "length": 413
+    },
+    {
+      "text": "To-takters håndtlanger, montert av sykkelreparatør Reodor Felgen i Flåklypa 2/10 1959 og satt inn i arbeidslivet fra samme dato. Stakk seg vekk under låven 3/10 hvor han undersøkte sin egen mekanisme. Tuklet med kingbolten og gikk i vranglås. Demontert og trimmet på ny. Gikk som smurt til topplokkeet røk under reinsdyrjakten. Ble arrogant og arbeidssky og nektet å skifte olje. Fortsatte som blindjeger med ventilklakk til han gikk tørr. Har fra den 1. des. uten departementets tillatlese, tatt av lydpotta. Super Essex er dieseldrevet, fargeblind og oppfarende.",
+      "source": "Flåklypa Tidende, om Super Essex",
+      "id": 56,
+      "length": 564
+    },
+    {
+      "text": "Oppsjekking av dåpsattester i Selbu viser at sesongarbeider Bertram Nufsefjord er for ung. Han skal være fem dager eldre, da tretallet i kirkeboken dessverre er blitt tatt for et åttetall. Gir man saken tilbakevirkende kraft, har Nufsefjord, som i år fyller 50 år, med andre ord tiltusket seg 250 dager, uten dekning.",
+      "source": "Flåklypa Tidende",
+      "id": 57,
+      "length": 317
+    },
+    {
+      "text": "Som følge  av knappe kommunale bevilgninger til snørydding, ønskes øyeblikkelig kjøpt bykart, kompass, boksmat og norske flagg, samt 8 grønlandshunder til hundespann for ombringelse av vår avis i Oslo sentrum.",
+      "source": "Flåklypa Tidende, sjefsredaktør Frimand Pløsen",
+      "id": 58,
+      "length": 209
+    },
+    {
+      "text": "Trelasthandlere Busk-Hagbartsens og fanejunker Torgrim Snokens kollisjon i Munkegata 2. påskedag, skal ifølge vitners utsagn være den styggeste som noensinne er forekommet blant fotgjengere her til lands.",
+      "source": "Flåklypa Tidende",
+      "id": 59,
+      "length": 204
+    },
+    {
+      "text": "Og har jeg end sejlet min skude på grund, o, så var det dog dejligt at fare!",
+      "source": "Henrik Ibsen, Kjærlighedens komedie",
+      "id": 60,
+      "length": 76
+    },
+    {
+      "text": "Saken er den, ser I, at den sterkeste mann i verden, det er han som står mest alene.",
+      "source": "Henrik Ibsen, En folkefiende",
+      "id": 61,
+      "length": 84
+    },
+    {
+      "text": "Man skal ei lese for å sluke, men for å se hva man kan bruke.",
+      "source": "Henrik Ibsen, Peer Gynt",
+      "id": 62,
+      "length": 61
+    },
+    {
+      "text": "Hvor utgangspunktet er galest, blir titt resultatet originalest.",
+      "source": "Henrik Ibsen, Peer Gynt",
+      "id": 63,
+      "length": 64
+    },
+    {
+      "text": "Tar De livsløgnen fra et gjennomsnitsmenneske, tar De lykken fra ham med det samme.",
+      "source": "Henrik Ibsen, Vildanden",
+      "id": 64,
+      "length": 83
+    },
+    {
+      "text": "Jeg har Dem mistenkt Werle junior for å gå med den ideale fordring uforkortet i baklummen.",
+      "source": "Henrik Ibsen, Vildanden",
+      "id": 65,
+      "length": 90
+    },
+    {
+      "text": "Det er mange som snakker om sjelevandring. Men hvis alle skulle gjenoppstå, ville det ikke bli plass til alle sammen. Jeg tror ikke jeg ville ha noe imot å gjenoppstå som en ydmyk liten Ludvig-blomst.",
+      "source": "Kjell Aukrust",
+      "id": 66,
+      "length": 200
+    },
+    {
+      "text": "Da var det gjort. Bygde-Norge erklærte krig. Sunnmørsposten skrev en leder der de priste seg lykkelig over at slike tilstander ikke var vanlige på deres kanter. Tre stortingsmenn og en landbruksskolestyrer fra Gudbrandsdalen skrev brev der de ba meg slutte å henge ut bygdene i en avis som Dagbladet.",
+      "source": "Kjell Aukrust",
+      "id": 67,
+      "length": 300
+    },
+    {
+      "text": "Simen hadde krimduk, mysostfarga hår, fregner og undertøy av grov ull som klødde. Hele grenda visste når Simen fikk nytt undertøybytte.",
+      "source": "Kjell Aukrust, Simen",
+      "id": 68,
+      "length": 135
+    },
+    {
+      "text": "Simen var min beste venn, og han gjorde mye rart. En gang gjorde'n i brønnen.",
+      "source": "Kjell Aukrust, Simen",
+      "id": 69,
+      "length": 77
+    },
+    {
+      "text": "Folk kom i humør av dette. De glemte skigardstvister og andre uoverensstemmelser og slo lens i fordragelighetens ånd bak husnåva. Sjøl giktbrøtne føderådsgubber friska på minnet og spente revkrok på stuegolvet i gemenslig kåthet og ble båret til sengs.",
+      "source": "Kjell Aukrust, Simen",
+      "id": 70,
+      "length": 252
+    },
+    {
+      "text": "Tro ikke frosten som senker en fred av sne i ditt hår. Alltid er det på jorden et sted tidlig vår. Tro ikke mørket når lyset går ned i skumringens fang. Alltid er det på jorden et sted soloppgang.",
+      "source": "André Bjerke",
+      "id": 71,
+      "length": 196
+    },
+    {
+      "text": "Kalven skal hete Bongo etter min far, slår det meg mens jeg rusler tilbake mot skogen. Selv om min far ikke het Bongo skal kalven hete Bongo etter ham. Noen ganger må man klare å åpne seg for den slags koblinger.",
+      "source": "Erlend Loe, Doppler",
+      "id": 72,
+      "length": 212
+    },
+    {
+      "text": "Punken var lyden av mitt ulevde liv. Den hadde all den nerven, alt det engasjementet, all den lyden som jeg hadde inni meg.",
+      "source": "Sturle Brustad",
+      "id": 73,
+      "length": 123
+    },
+    {
+      "text": "I Thorbjørn Egners \"Dyrene i Hakkebakkeskogen\" ble reven overtalt til å bli vegetarianer av hensyn til fellesskapet - en slags sosialdemokratisk revolusjon i skogen ved hjelp av solidaritetsargumenter.",
+      "source": "Paul Chaffey",
+      "id": 74,
+      "length": 201
+    },
+    {
+      "text": "Den franske kunstneren Yves Klein fant opp en spesiell blåfarge og tok patent på den: IKB 79. Nå kan ingen andre enn han bruke akkurat denne blandingen, blå pigmenter tilsatt syntetisk harpiks. Minst to ganger i året må han saksøke himmelen for plagiat.",
+      "source": "Lars Saabye Christensen, Maskeblomstfamilien",
+      "id": 75,
+      "length": 253
+    },
+    {
+      "text": "Tiden har ikke alene forsonende anerkjent begge retningers likeberettigelse, men den er nesten nådd til en ombytning av rollene, således at den mere og mere i Wergeland erkjenner universaldikteren, kosmopolitten, og i Welhaven den mere spesifikk nasjonale dikter. Hvorledes denne siste selv har opfattet dette punkt, hvorledes hans sinnelag mot denne sin ungdomsmotstander i hans senere livsår artet sig, må forbli mere uvisst; men at han forsonet er gått inn til sin Gud, derom synes en drøm han hadde nestsiste natt før sin død, smukt å vidne: at en uimotståelig trang drev ham op til Wergelands grav.",
+      "source": "Camilla Collett, Amtmandens Døttre",
+      "id": 76,
+      "length": 603
+    },
+    {
+      "text": "Smilet er en billig vare. Det gir vi bort til hvem som helst. Tårene er mere verd. Dem holder vi for oss selv.",
+      "source": "Peter Egge",
+      "id": 77,
+      "length": 110
+    },
+    {
+      "text": "Det er etter de gode ord det gror, ikke etter småskårenhet og pirkeri. Det har ennå ikke flyttet verden et lusefjed.",
+      "source": "Johan Falkberget",
+      "id": 78,
+      "length": 116
+    },
+    {
+      "text": "Selv i dag, hvor det knapt finnes en eneste blå kjeledress i byen – det nærmeste du kommer er blå onepiecer som metroseksuelle vestkantungdommer går med – lever mytene om arbeiderbydelene videre.",
+      "source": "Erling Fossen",
+      "id": 79,
+      "length": 195
+    },
+    {
+      "text": "Hvorfor er folk uglade? De går og venter seg med glede fra andre. De skulle selv glede andre, så ble de glade.",
+      "source": "Arne Garborg",
+      "id": 80,
+      "length": 110
+    },
+    {
+      "text": "Synden er ikke noe vi skal studere, synden er det vi skal holde oss fra.",
+      "source": "Arne Garborg",
+      "id": 81,
+      "length": 72
+    },
+    {
+      "text": "Fire amatør-dj-er, så kule at de ikke klarer å si hei til folk som ikke loffer rundt i sæggebukser. Denne byen er full av sosialt inkompetente slaver av kulhet.",
+      "source": "Mikael Godø, Galleri Oslo",
+      "id": 82,
+      "length": 160
+    },
+    {
+      "text": "Kunstnerne, de første settlerne, kommer av økonomiske grunner. De trenger god plass, noe de får billig i nedlagte industrilokaler. Kunstnerne drar igang gallerier og kaféer, som igjen suger til seg folk på jakt etter det autentiske. Disse kommer ikke på grunn av trang økonomi, men som følge av overflod. De vil ha mer spenning i livet, de vil ha inspirasjon og det må være den riktige typen inspirasjon. De jakter på troverdighet og mening, og håper å finne det i livsstil og estetikk.",
+      "source": "Mikael Godø, Galleri Oslo",
+      "id": 83,
+      "length": 486
+    },
+    {
+      "text": "Det er høst. Sommeren er forbi, den forsvant like så hurtig som den kom; akk hvor den gikk hurtig.",
+      "source": "Knut Hamsun",
+      "id": 84,
+      "length": 98
+    },
+    {
+      "text": "Våren – jovel, dens hastighet og galskap og henrykkelse; men høsten! Den stemte til mørkreddhet og kveldsbønn, man ble synsk og hørte varsler.",
+      "source": "Knut Hamsun",
+      "id": 85,
+      "length": 142
+    },
+    {
+      "text": "Jeg prøver å spore opp øyeblikket da Buzz Aldrin endelig løftet seg opp etter håret, våger å tenke tanken helt ut: Det kreves enorm viljestyrke, flaks og dyktighet for å bli først. Men det krever et gigantisk hjerte å være nummer to.",
+      "source": "Johan Harstad, Buzz Aldrin, hvor ble det av deg i alt mylderet?",
+      "id": 86,
+      "length": 233
+    },
+    {
+      "text": "Folk siger vel i Herredet, at Jeppe drikker, men de siger ikke hvorfor Jeppe drikker.",
+      "source": "Ludvig Holberg, Jeppe på Berget",
+      "id": 87,
+      "length": 85
+    },
+    {
+      "text": "Har du sagt A, så har du sagt A. Verden vil både bedras og bedra. Kem bryr seg om at rett har blitt makt, Eller ka skriftå på veggen har sagt. Livet e lurvete, Skabbete , skurvete. Løgnen har ordet, og løgnen må le. For Løgnen e møkkete, Krokete, krøkkete. Og sannheten e kje te leva med.",
+      "source": "Ingvar Hovland, Har du sagt A, så har du sagt A",
+      "id": 88,
+      "length": 288
+    },
+    {
+      "text": "Essayet er en metasjanger. Det handler om å stoppe opp og vurdere hva du holder på med. Dersom jeg skriver en avhandling om et emne, så kunne jeg plutselig stoppe midt ute i avhandlingen og si: Men stopp lite grann nå, det har vært et forferdelig vær i dag, og jeg lurer på om jeg skal skrive videre. Idet jeg skriver slik, blir jeg essayist. Da har jeg fått vist at jeg selv er til stede i teksten, og slik sett nærmer essayet seg lyrikken og fortellingen. Essayet er den viktigste litteraturformen i vårt samfunn. Det er den jeg tror mest på. Essayet er den sakprosaformen som tør å innrømme at den er kunstig. Den er altså kunstprosa.",
+      "source": "Georg Johannesen",
+      "id": 89,
+      "length": 637
+    },
+    {
+      "text": "Bergens historie er 150 års tilbakegang, avbrutt av enkelte katastrofer.",
+      "source": "Georg Johannesen",
+      "id": 90,
+      "length": 72
+    },
+    {
+      "text": "Det finnes to slags mennesker: De som forstår paradokset med Akilles og skilpadden, og de som ikke gjør det.",
+      "source": "Jan Kjærstad",
+      "id": 91,
+      "length": 108
+    },
+    {
+      "text": "Fransk konservatismes historie er for øvrig svært lite oppbyggelig, som fransk politisk historie overhodet.",
+      "source": "Lars Roar Langslet",
+      "id": 92,
+      "length": 107
+    },
+    {
+      "text": "Det er så mye som forandrer seg. Og jeg pleier ikke å legge vekt på gamle sitater. Men jeg må få sitere hva hr. Hønsvald sa i 1928: \"Det er slik med oss trenede sosialister i byene at vi tror så altfor godt om oss selv\". Det er godt å vite at iallfall noe holder seg konstant.",
+      "source": "Jon Leirfall",
+      "id": 93,
+      "length": 276
+    },
+    {
+      "text": "Det vil bli så langt mellom gårdene at alle må ha egen hannkatt.",
+      "source": "Jon Leirfall",
+      "id": 94,
+      "length": 64
+    },
+    {
+      "text": "Hvis Jesus hadde vært her nå, ville han fått konkurranse fra Einar Gerhardsen.",
+      "source": "Jon Leirfall",
+      "id": 95,
+      "length": 78
+    },
+    {
+      "text": "Kikk litt ut i stjernenatten, og du vil ane at hele den planet, min venn, hvorpå du eksekverer i en ganske liten sprekk, kun er en ert i hele suppen.",
+      "source": "Jonas Lie",
+      "id": 96,
+      "length": 149
+    },
+    {
+      "text": "Og den franske innenriksministeren prøvde å roe gemyttene ved å kalle ungdommene \"avskum\".",
+      "source": "Knut Nærum",
+      "id": 97,
+      "length": 90
+    },
+    {
+      "text": "Det er like dumt som om vi skulle bruke et utenlandsk ord for pommes frites.",
+      "source": "Knut Nærum",
+      "id": 98,
+      "length": 76
+    },
+    {
+      "text": "VG har enda en gang bekreftet sin rolle som Norges høyeste domstol.",
+      "source": "Knut Nærum",
+      "id": 99,
+      "length": 67
+    },
+    {
+      "text": "Først så skal alle kandidatene slåss mot sine egne partifeller og forsøke å knuse dem, og først når de er ferdig med det kan de begynne å slåss mot fienden. Det er som om USA skulle varme opp til Irak-krigen med å bombe Florida!",
+      "source": "Knut Nærum",
+      "id": 100,
+      "length": 228
+    },
+    {
+      "text": "En av bylivets fordeler i min barndom var at vi flyttet så ofte og at jeg derfor kan tidfeste opplevelsene så bra. All flyttingen gjorde at jeg kunne fastslå når det og det var skjedd både i familien og i samfunnet, og jeg moret meg over det ry jeg fikk for usedvanlig husk.",
+      "source": "Trygve Gulbranssen",
+      "id": 101,
+      "length": 274
+    },
+    {
+      "text": "Jeg har alltid vært et alenemenneske, og jeg liker det. Det er ikke alltid en tragedie å være alene. Men av og til så er det det. Da er det vondt. Man savner. Det er klart.",
+      "source": "Anne-Cath. Vestly",
+      "id": 102,
+      "length": 172
+    },
+    {
+      "text": "Jeg ligger og kjender at jeg hater dette forbandede fjeld, fordi det har magt over mitt sind.",
+      "source": "Peter Wessel Zapffe",
+      "id": 103,
+      "length": 93
+    },
+    {
+      "text": "Innerst inne i alle voksne mennesker sitter et lite barn som skal begynne på skolen i august.",
+      "source": "Janneken Øverland",
+      "id": 104,
+      "length": 93
+    },
+    {
+      "text": "Da sa Don Quijote med et nesten umerkelig smil: - Tror I jeg lar meg imponere av et par latterlige løver?",
+      "source": "Miguel Cervantes, Don Quijote",
+      "id": 105,
+      "length": 105
+    },
+    {
+      "text": "Bør: Velkommen, sitt ræv! Aksjemegler Solen: Behager? Bør: Eh, om herrene godtar å nedsittes.",
+      "source": "Bør Børson Jr.",
+      "id": 106,
+      "length": 93
+    },
+    {
+      "text": "Vi har slitt en gitarstreng nå, og mangler backupgitar, så det virker som en naturlig anledning til å oppløse bandet.",
+      "source": "Anders Bortne, Et bra band",
+      "id": 107,
+      "length": 117
+    },
+    {
+      "text": "Cathrine Færøy er 36 år gammel og har vært en filantropisk og meget engasjert lærerinne. Det er allikevel ikke til å stikke under en stol at hun som klasseforstander for klasse 2A på B-Skole har opparbeidet et hat mot Lonyl som ikke kan sidestilles med hatet hun har følt for noe annet menneske.",
+      "source": "Matias Faldbakken, The Cocka Hola Company. Skandinavisk misantropi",
+      "id": 108,
+      "length": 295
+    },
+    {
+      "text": "Nordmenn er egenrådige og i Bergen viser dette seg på sitt sterkeste. Bergen var den gamle hovedstaden i Norge, og for bergenserne har ikke dette endret seg. De er svært stolte folk.",
+      "source": "Trond Espen Seim",
+      "id": 109,
+      "length": 182
+    },
+    {
+      "text": "Det blir som om et lag fra Premier League skulle møtt Raufoss i pre-season.",
+      "source": "Martin Andresen",
+      "id": 110,
+      "length": 75
+    },
+    {
+      "text": "Jeg er ikke så inne i fotball, men jeg har skjønt at det å score mål er viktig.",
+      "source": "Ole Einar Bjørndalen",
+      "id": 111,
+      "length": 79
+    },
+    {
+      "text": "Nå sikter jeg meg inn på en plass ved veggen. Ikke hornet på veggen, for det er opptatt. Men den lille vuggen etter det, er min plass. Den sjette far i huset.",
+      "source": "Rune Bratseth",
+      "id": 112,
+      "length": 158
+    },
+    {
+      "text": "En gang i forrige sesong var jeg ydmyk i omtrent fjorten dager, men ingen la merke til det.",
+      "source": "John Carew",
+      "id": 113,
+      "length": 91
+    },
+    {
+      "text": "Dæm har itj sjans! Det e så lett! Barneskirenn!",
+      "source": "Petter Northug",
+      "id": 114,
+      "length": 47
+    },
+    {
+      "text": "Da de spurte, ble jeg helt overveldet. Meg, liksom?! Du må jo helst være død for å havne på frimerke.",
+      "source": "Kari Traa",
+      "id": 115,
+      "length": 101
+    },
+    {
+      "text": "Nordmenn er frostskadde tosker. Dette er mennesker som, med det største fondet for utvikling av fremtidige generasjoner, med hundre millioner på konto, vil spise gammelt brød. Jeg tåler ikke nordmenn.",
+      "source": "Aleksander Tikhonov",
+      "id": 116,
+      "length": 200
+    },
+    {
+      "text": "Kirken bør høyt og offentlig si at helvete ikke finnes. Helvete kan man oppleve her og nå, kjenne det i sine egne liv og se det på TV, men å true med at folk vil brenne i helvetet etter døden, er stygt.",
+      "source": "Bjørn Eidsvåg",
+      "id": 117,
+      "length": 202
+    },
+    {
+      "text": "Det var så kaldt den dagen je vart født at je sku' ønske det hadde vørti utsatt.",
+      "source": "Tor Karseth, La det flara",
+      "id": 118,
+      "length": 80
+    },
+    {
+      "text": "Men jeg er så nerd, jeg. Tvers igjennom. Jeg tror musikkbransjen er nerdenes hevn. Vi var ikke de kuleste på skolen. Men vi seirer til slutt.",
+      "source": "Marit Larsen",
+      "id": 119,
+      "length": 141
+    },
+    {
+      "text": "Kan du noen steder bedre ha det enn i Oslo nå på sommer'n når de stressa folka alle er forsvunnet til Mallorca, eller sitter i en ferjekø ved Lavik?",
+      "source": "Lillebjørn Nilsen, Bysommer",
+      "id": 120,
+      "length": 148
+    },
+    {
+      "text": "Hver gang jeg hører begrepet \"ekte rock\" griper jeg til min seksløper.",
+      "source": "Kjetil Rolness",
+      "id": 121,
+      "length": 70
+    },
+    {
+      "text": "Av alle vinder jeg har seilt i er motvind den verste å seile med.",
+      "source": "Øystein Sunde, Det var det året det var så bratt",
+      "id": 122,
+      "length": 65
+    },
+    {
+      "text": "En gang skjøt jeg en elefant i pyjamas. Hvordan han kom inn i pyjamasen, aner jeg ikke.",
+      "source": "Groucho Marx",
+      "id": 123,
+      "length": 87
+    },
+    {
+      "text": "Jeg ble født i et høl på E18. Det hølet har senere blitt kjent som Drammen.",
+      "source": "Herodes Falsk",
+      "id": 124,
+      "length": 75
+    },
+    {
+      "text": "Det kan hende han er skada eller sitter hjemme og fletter kurver.",
+      "source": "Ivar Hoff",
+      "id": 125,
+      "length": 65
+    },
+    {
+      "text": "Jeg er en av de få som kan snakke både på inn- og utpust.",
+      "source": "Ernst A. Lersveen",
+      "id": 126,
+      "length": 57
+    },
+    {
+      "text": "Saken er biff, saken er karbonade, saken er ertesuppe.",
+      "source": "Bjørge Lillelien",
+      "id": 127,
+      "length": 54
+    },
+    {
+      "text": "Altså, kamerat Bresjnev, pass på, her kommer vi!",
+      "source": "Bjørge Lillelien",
+      "id": 128,
+      "length": 48
+    },
+    {
+      "text": "Han har immunforsvar som et flattbrød.",
+      "source": "Svein Mathisen",
+      "id": 129,
+      "length": 38
+    },
+    {
+      "text": "Det er ingen klubber som har levert flere spillere Til europeiske nattklubber enn Start.",
+      "source": "Svein Mathisen",
+      "id": 130,
+      "length": 88
+    },
+    {
+      "text": "Da jeg dro til Balkan i 1999, var det rolig der i forhold til tilstanden i NRKs nyhetsdivisjon.",
+      "source": "Hans-Wilhelm Steinfeld",
+      "id": 131,
+      "length": 95
+    },
+    {
+      "text": "Et sterkt parti trenger en sterk ungdomsbevegelse. Denne må sørge for partiets rekruttering, samtidig som den er partiets salt. Det er de eldre som har ansvaret. Det er ungdommens oppgave å sørge for at de ikke sovner av, når de vel har fått plassert seg i maktens hynder. Det er ungdommen som må holde idealene blanke, når de gamle henfaller til koselig klikkstyre med små intriger eller forbrødring.",
+      "source": "Lorentz Vogt",
+      "id": 132,
+      "length": 401
+    },
+    {
+      "text": "Mange kloke ord er blitt sagt i spøk. Dessverre blir i langt høyere grad dumme ord sagt i fullt alvor.",
+      "source": "Søren Kierkegaard",
+      "id": 133,
+      "length": 102
+    },
+    {
+      "text": "Hvilken vei skal jeg gå, spurte Alice. Hvor er det du skal, svarte haren. Jeg vet ikke, sa Alice. Da har det ikke så mye å si hvor du går, svarte haren.",
+      "source": "Alice i eventyrland",
+      "id": 134,
+      "length": 152
+    },
+    {
+      "text": "Far verden, far vel! Jeg vil ikke lenger være din trell. De byrder du byltet og lesset meg på, dem kaster jeg fra meg og vil dem forsmå. Jeg river meg løs for jeg kjeder med ved forfengelighet, forfengelighet!",
+      "source": "Thomas Kingos, Keed af Verden og kier ad Himmelen",
+      "id": 135,
+      "length": 209
+    },
+    {
+      "text": "Landets innbyggere er einebærbusker av begge kjønn. Det er likevel bare mennene som steller i kjøkkenet og utfører annet simpelt arbeid. Når det er krig, melder de seg riktignok som frivillige, men som regel blir de bare vervet som menige soldater. Bare noen ganske få av dem blir sersjanter. (Det er det høyeste en mann kan drive til.) Kvinnene får derimot alle de viktigste stillingene både i stat, kirke, og militærvesen. Jeg hadde jo tidligere moret meg over potuanerne fordi de ikke skjelnet mellom kjønnene ved stillingsbesettelser. Men dette folket virket aldeles vanvittig og fullstendig naturstridig på meg.",
+      "source": "Ludvig Holberg, Nils Klims reise til den underjordiske verden, Kjønnsrollemønsteret i Cocklecu",
+      "id": 137,
+      "length": 616
+    },
+    {
+      "text": "Kunst skapt av kvinner, eller av mennesker som tilhører ulike minoriteter i samfunnet, blir gjerne automatisk behandlet som politiske utspill, enten de var ment som dette eller ei. En tv-serie om en kompisgjeng er bare en tv-serie, mens dersom den handler om en gjeng med jenter, blir den tolket som feministisk aktivisme i seg selv. Det må være et fortvilende øyeblikk for en kunstner når det går opp for henne at hun trolig aldri vil slippe unna den kjønnede tolkningen av sine verk. At hennes litteratur aldri vil bli lest som allmenn. Uforståelig og nærmest uutholdelig.",
+      "source": "Marta Breen, Om muser og menn",
+      "id": 138,
+      "length": 574
+    },
+    {
+      "text": "Lukk dog ei øyet i natt, våk med erindringens skatt! Her, mens du sitter alene, åpner seg minnenes scene, her vil fromme skygger komme vinkende blant månelyse grene.",
+      "source": "Johan Sebastian Welhaven, En vårnatt",
+      "id": 139,
+      "length": 165
+    },
+    {
+      "text": "Man blir tykk av å spise loff, sies det, det er ikke sunt - mulig det mulig det! Men viktigere er det (som jeg tror) at man blir blid av å spise loff, spør nå det første blide menneske du treffer om han liker loff. Vent så bare på svaret. (Eller spør meg!)",
+      "source": "Jan Erik Vold, Mor Godhjertas glade versjon. Ja, Tale for loffen",
+      "id": 140,
+      "length": 256
+    },
+    {
+      "text": "Året etter at han vakte  interessen min for ved, kom en ny vår, slik våren alltid gjør. Den samme traktoren kom durende ned veien, i den samme måneden som forrige år. Og igjen begynte Ottar å stable. Igjen fikk han krefter av det manuelle arbeidet og vissheten om at han, tross lungesykdommen, fortsatt var i stand til å gjøre et stykke arbeid som ruvet.",
+      "source": "Lars Mytting, Hel ved, Burning love",
+      "id": 141,
+      "length": 354
+    },
+    {
+      "text": "Fanitullen kalles Endu den ville slått, Og dølene den spiller, Og spiller den godt. Men lyder de grumme toner Under øldrikk og svir, Da løsner atter kniven I hallingdølens slir.",
+      "source": "Jørgen Moe, Fanitullen",
+      "id": 142,
+      "length": 177
+    },
+    {
+      "text": "Jeg tillater meg derfor å foreslå at H.C. Andersen og P. Chr. Asbjørnsen fra nå av slås sammen til én forfatter under navnet: Asbjørn Andersen. Hensynet til de unge må gå foran alt. Dessuten er de to nevnte forfattere for lengst død og maktesløse. De levende har livets rett. Kun de.",
+      "source": "Fredrik Stabel, Snarere tvert i mot",
+      "id": 143,
+      "length": 283
+    },
+    {
+      "text": "Om våren kommer den siste snøen seilende i klumper ned trikkeskinnene, skyver brunt vann foran seg med fine bølgestriper i. Siden blå menn som skyfler skinnene rene så solen skal få klatre uten sand i munnen opp bakken til Adamstua, der leira ligger våt og snart skal bli gras mellom skinnene.",
+      "source": "Jan Erik Vold, Mor Godhjertas glade versjon. Ja, Trikkeskinnediktet",
+      "id": 144,
+      "length": 293
+    },
+    {
+      "text": "For bøndene og fiskerne i Norge i 1840-årene var naturen hverken majestetisk eller sakral, hverken norsk eller fylt av sjel. For dem var naturen neverskogen eller torskemedet, den var reinfjellet eller tømmerskogen, den var geitehaugen eller sauerlia, kort sagt var den et landskap de måtte beskrive, oppdele og lese nøye i slik at de fant ut hva slags bruksverdi det hadde for dem.",
+      "source": "Karsten Alnæs, Mot moderne tider, En retusjert virkelighet",
+      "id": 145,
+      "length": 382
+    },
+    {
+      "text": "Den litteraturen jeg liker, gjør noe med meg, noe gjerne enkelt og smått, men likevel rystende og endrende. Den overrasker meg, får meg til å se verden, livet, meg selv, menneskene rundt meg på en ny måte - om enn bare et lite element av verden, livet, meg selv; om enn bare en liten endring, men noe er forandring.",
+      "source": "Trude Marstein, Konstruksjon og virkelighet, Lyst",
+      "id": 146,
+      "length": 315
+    },
+    {
+      "text": "Over meg henger de blinkende lyskorsene fra flya i luftkorridoren over Gardermoen. Jeg tenker noe om at jeg er glad jeg ikke er en av de tre vise menn. At det er så mange lys i dag. At det er så mange måter å gå seg vill på.",
+      "source": "Levi Henriksen, Hjem til jul, bare mjuke pakker under treet",
+      "id": 147,
+      "length": 224
+    },
+    {
+      "text": "Er ikke bare ute det er rotbløyte, det kan det fort bli her inne også, bare å holde glasset ut igjennom vinduet så får du is og blandevann helt gratis!",
+      "source": "Fleksnes",
+      "id": 148,
+      "length": 151
+    },
+    {
+      "text": "Det ligger et land mot den evige sne. Det er ikke stort vi kan gjøre med det.",
+      "source": "Fleksnes",
+      "id": 149,
+      "length": 77
+    }
+  ]
+}

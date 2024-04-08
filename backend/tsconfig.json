@@ -4,20 +4,30 @@
     "module": "commonjs",
     "target": "es6",
     "sourceMap": false,
-    "allowJs": true,
-    "checkJs": true,
+    "allowJs": false,
+    "checkJs": false,
     "outDir": "build",
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "strictNullChecks": true,
-    "skipLibCheck": true
+    "skipLibCheck": false,
+    "noUncheckedIndexedAccess": true,
+    "noImplicitReturns": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "noFallthroughCasesInSwitch": true,
+    "forceConsistentCasingInFileNames": true
   },
   "ts-node": {
     "files": true
   },
-  "include": ["./src/**/*"],
+  "files": [
+    "./src/types/types.d.ts",
+    "../shared-types/types.d.ts",
+    "../shared-types/config.d.ts"
+  ],
+  "include": ["./src/**/*", "../shared-types/**/*.d.ts"],
   "exclude": [
     "node_modules",
     "build",

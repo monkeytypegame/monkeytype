@@ -1,6 +1,5 @@
 {
   "name": "code_elixir",
-  "leftToRight": true,
   "ligatures": true,
   "words": [
     "__MODULE__",

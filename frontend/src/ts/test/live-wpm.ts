@@ -1,6 +1,7 @@
 import Config from "../config";
-import * as TestActive from "../states/test-active";
+import * as TestState from "../test/test-state";
 import * as ConfigEvent from "../observables/config-event";
+import Format from "../utils/format";
 
 const liveWpmElement = document.querySelector("#liveWpm") as Element;
 const miniLiveWpmElement = document.querySelector(
@@ -8,29 +9,24 @@ const miniLiveWpmElement = document.querySelector(
 ) as Element;
 
 export function update(wpm: number, raw: number): void {
-  // if (!TestActive.get() || !Config.showLiveWpm) {
-  //   hideLiveWpm();
-  // } else {
-  //   showLiveWpm();
-  // }
   let number = wpm;
   if (Config.blindMode) {
     number = raw;
   }
-  if (Config.alwaysShowCPM) {
-    number = Math.round(number * 5);
-  }
-  miniLiveWpmElement.innerHTML = number.toString();
-  liveWpmElement.innerHTML = number.toString();
+  const numberText = Format.typingSpeed(number, { showDecimalPlaces: false });
+  miniLiveWpmElement.innerHTML = numberText;
+  liveWpmElement.innerHTML = numberText;
 }
+
+let state = false;
 
 export function show(): void {
   if (!Config.showLiveWpm) return;
-  if (!TestActive.get()) return;
+  if (!TestState.isActive) return;
+  if (state) return;
   if (Config.timerStyle === "mini") {
-    if (!$("#miniTimerAndLiveWpm .wpm").hasClass("hidden")) return;
-    $("#miniTimerAndLiveWpm .wpm")
-      .stop(true, true)
+    $(miniLiveWpmElement)
+      .stop(true, false)
       .removeClass("hidden")
       .css("opacity", 0)
       .animate(
@@ -40,9 +36,8 @@ export function show(): void {
         125
       );
   } else {
-    if (!$("#liveWpm").hasClass("hidden")) return;
-    $("#liveWpm")
-      .stop(true, true)
+    $(liveWpmElement)
+      .stop(true, false)
       .removeClass("hidden")
       .css("opacity", 0)
       .animate(
@@ -52,33 +47,36 @@ export function show(): void {
         125
       );
   }
+  state = true;
 }
 
 export function hide(): void {
-  $("#liveWpm")
-    .stop(true, true)
+  if (!state) return;
+  $(liveWpmElement)
+    .stop(true, false)
     .animate(
       {
         opacity: 0,
       },
       125,
       () => {
-        $("#liveWpm").addClass("hidden");
+        liveWpmElement.classList.add("hidden");
       }
     );
-  $("#miniTimerAndLiveWpm .wpm")
-    .stop(true, true)
+  $(miniLiveWpmElement)
+    .stop(true, false)
     .animate(
       {
         opacity: 0,
       },
       125,
       () => {
-        $("#miniTimerAndLiveWpm .wpm").addClass("hidden");
+        miniLiveWpmElement.classList.add("hidden");
       }
     );
+  state = false;
 }
 
 ConfigEvent.subscribe((eventKey, eventValue) => {
-  if (eventKey === "showLiveWpm") eventValue ? show() : hide();
+  if (eventKey === "showLiveWpm") (eventValue as boolean) ? show() : hide();
 });

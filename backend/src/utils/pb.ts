@@ -1,42 +1,49 @@
 import _ from "lodash";
-import FunboxesMetadata from "../constants/funbox";
+import FunboxList from "../constants/funbox-list";
 
-interface CheckAndUpdatePbResult {
+type CheckAndUpdatePbResult = {
   isPb: boolean;
-  personalBests: MonkeyTypes.PersonalBests;
+  personalBests: SharedTypes.PersonalBests;
   lbPersonalBests?: MonkeyTypes.LbPersonalBests;
-}
+};
 
-type Result = MonkeyTypes.Result<MonkeyTypes.Mode>;
+type Result = Omit<
+  SharedTypes.DBResult<SharedTypes.Config.Mode>,
+  "_id" | "name"
+>;
 
-export function canFunboxGetPb(
-  result: MonkeyTypes.Result<MonkeyTypes.Mode>
-): boolean {
+export function canFunboxGetPb(result: Result): boolean {
   const funbox = result.funbox;
-  if (!funbox || funbox === "none") return true;
+  if (funbox === undefined || funbox === "" || funbox === "none") return true;
 
-  return funbox
-    .split("#")
-    .every((funboxName) => FunboxesMetadata[funboxName]?.canGetPb === true);
+  let ret = true;
+  const resultFunboxes = funbox.split("#");
+  for (const funbox of FunboxList) {
+    if (resultFunboxes.includes(funbox.name)) {
+      if (!funbox.canGetPb) {
+        ret = false;
+      }
+    }
+  }
+
+  return ret;
 }
 
 export function checkAndUpdatePb(
-  userPersonalBests: MonkeyTypes.PersonalBests,
+  userPersonalBests: SharedTypes.PersonalBests,
   lbPersonalBests: MonkeyTypes.LbPersonalBests | undefined,
   result: Result
 ): CheckAndUpdatePbResult {
   const mode = result.mode;
-  const mode2 = result.mode2 as 15 | 60;
+  const mode2 = result.mode2 as SharedTypes.Config.Mode2<"time">;
 
   const userPb = userPersonalBests ?? {};
-  userPb[mode] = userPb[mode] ?? {};
-  userPb[mode][mode2] = userPb[mode][mode2] ?? [];
+  userPb[mode] ??= {};
+  userPb[mode][mode2] ??= [];
 
-  const personalBestMatch: MonkeyTypes.PersonalBest = userPb[mode][mode2].find(
-    (pb: MonkeyTypes.PersonalBest) => {
-      return matchesPersonalBest(result, pb);
-    }
-  );
+  const personalBestMatch = (
+    userPb[mode][mode2] as SharedTypes.PersonalBest[]
+  ).find((pb) => matchesPersonalBest(result, pb));
 
   let isPb = true;
 
@@ -60,29 +67,38 @@ export function checkAndUpdatePb(
 
 function matchesPersonalBest(
   result: Result,
-  personalBest: MonkeyTypes.PersonalBest
+  personalBest: SharedTypes.PersonalBest
 ): boolean {
   if (
     result.difficulty === undefined ||
     result.language === undefined ||
     result.punctuation === undefined ||
-    result.lazyMode === undefined
+    result.lazyMode === undefined ||
+    result.numbers === undefined
   ) {
     throw new Error("Missing result data (matchesPersonalBest)");
   }
 
   const sameLazyMode =
-    result.lazyMode === personalBest.lazyMode ||
-    (!result.lazyMode && !personalBest.lazyMode);
-  const samePunctuation = result.punctuation === personalBest.punctuation;
+    (result.lazyMode ?? false) === (personalBest.lazyMode ?? false);
+  const samePunctuation =
+    (result.punctuation ?? false) === (personalBest.punctuation ?? false);
   const sameDifficulty = result.difficulty === personalBest.difficulty;
   const sameLanguage = result.language === personalBest.language;
+  const sameNumbers =
+    (result.numbers ?? false) === (personalBest.numbers ?? false);
 
-  return sameLazyMode && samePunctuation && sameDifficulty && sameLanguage;
+  return (
+    sameLazyMode &&
+    samePunctuation &&
+    sameDifficulty &&
+    sameLanguage &&
+    sameNumbers
+  );
 }
 
 function updatePersonalBest(
-  personalBest: MonkeyTypes.PersonalBest,
+  personalBest: SharedTypes.PersonalBest,
   result: Result
 ): boolean {
   if (personalBest.wpm >= result.wpm) {
@@ -97,7 +113,8 @@ function updatePersonalBest(
     result.acc === undefined ||
     result.consistency === undefined ||
     result.rawWpm === undefined ||
-    result.wpm === undefined
+    result.wpm === undefined ||
+    result.numbers === undefined
   ) {
     throw new Error("Missing result data (updatePersonalBest)");
   }
@@ -110,12 +127,13 @@ function updatePersonalBest(
   personalBest.consistency = result.consistency;
   personalBest.raw = result.rawWpm;
   personalBest.wpm = result.wpm;
+  personalBest.numbers = result.numbers;
   personalBest.timestamp = Date.now();
 
   return true;
 }
 
-function buildPersonalBest(result: Result): MonkeyTypes.PersonalBest {
+function buildPersonalBest(result: Result): SharedTypes.PersonalBest {
   if (
     result.difficulty === undefined ||
     result.language === undefined ||
@@ -124,7 +142,8 @@ function buildPersonalBest(result: Result): MonkeyTypes.PersonalBest {
     result.acc === undefined ||
     result.consistency === undefined ||
     result.rawWpm === undefined ||
-    result.wpm === undefined
+    result.wpm === undefined ||
+    result.numbers === undefined
   ) {
     throw new Error("Missing result data (buildPersonalBest)");
   }
@@ -137,12 +156,13 @@ function buildPersonalBest(result: Result): MonkeyTypes.PersonalBest {
     punctuation: result.punctuation,
     raw: result.rawWpm,
     wpm: result.wpm,
+    numbers: result.numbers,
     timestamp: Date.now(),
   };
 }
 
 function updateLeaderboardPersonalBests(
-  userPersonalBests: MonkeyTypes.PersonalBests,
+  userPersonalBests: SharedTypes.PersonalBests,
   lbPersonalBests: MonkeyTypes.LbPersonalBests,
   result: Result
 ): void {
@@ -151,20 +171,20 @@ function updateLeaderboardPersonalBests(
   }
 
   const mode = result.mode;
-  const mode2 = result.mode2 as MonkeyTypes.Mode2<"time">;
+  const mode2 = result.mode2 as SharedTypes.Config.Mode2<"time">;
 
   lbPersonalBests[mode] = lbPersonalBests[mode] ?? {};
-  const lbMode2 = lbPersonalBests[mode][mode2];
-  if (!lbMode2 || Array.isArray(lbMode2)) {
+  const lbMode2 = lbPersonalBests[mode][mode2] as MonkeyTypes.LbPersonalBests;
+  if (lbMode2 === undefined || Array.isArray(lbMode2)) {
     lbPersonalBests[mode][mode2] = {};
   }
 
   const bestForEveryLanguage = {};
 
-  userPersonalBests[mode][mode2].forEach((pb: MonkeyTypes.PersonalBest) => {
+  userPersonalBests[mode][mode2].forEach((pb: SharedTypes.PersonalBest) => {
     const language = pb.language;
     if (
-      !bestForEveryLanguage[language] ||
+      bestForEveryLanguage[language] === undefined ||
       bestForEveryLanguage[language].wpm < pb.wpm
     ) {
       bestForEveryLanguage[language] = pb;
@@ -173,8 +193,9 @@ function updateLeaderboardPersonalBests(
 
   _.each(
     bestForEveryLanguage,
-    (pb: MonkeyTypes.PersonalBest, language: string) => {
-      const languageDoesNotExist = !lbPersonalBests[mode][mode2][language];
+    (pb: SharedTypes.PersonalBest, language: string) => {
+      const languageDoesNotExist =
+        lbPersonalBests[mode][mode2][language] === undefined;
 
       if (
         languageDoesNotExist ||

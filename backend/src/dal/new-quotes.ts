@@ -1,10 +1,11 @@
-import simpleGit from "simple-git";
+import { simpleGit } from "simple-git";
 import { ObjectId } from "mongodb";
-import stringSimilarity from "string-similarity";
 import path from "path";
-import fs from "fs";
+import { existsSync, writeFileSync } from "fs";
+import { readFile } from "node:fs/promises";
 import * as db from "../init/db";
 import MonkeyError from "../utils/error";
+import { compareTwoStrings } from "string-similarity";
 
 const PATH_TO_REPO = "../../../../monkeytype-new-quotes";
 
@@ -12,22 +13,23 @@ let git;
 try {
   git = simpleGit(path.join(__dirname, PATH_TO_REPO));
 } catch (e) {
+  console.error(`Failed to initialize git: ${e}`);
   git = undefined;
 }
 
-interface AddQuoteReturn {
+type AddQuoteReturn = {
   languageError?: number;
   duplicateId?: number;
   similarityScore?: number;
-}
+};
 
 export async function add(
   text: string,
   source: string,
   language: string,
   uid: string
-): Promise<AddQuoteReturn | void> {
-  if (!git) throw new MonkeyError(500, "Git not available.");
+): Promise<AddQuoteReturn | undefined> {
+  if (git === undefined) throw new MonkeyError(500, "Git not available.");
   const quote = {
     _id: new ObjectId(),
     text: text,
@@ -42,6 +44,17 @@ export async function add(
     throw new MonkeyError(500, `Invalid language name`, language);
   }
 
+  const count = await db
+    .collection("new-quotes")
+    .countDocuments({ language: language });
+
+  if (count >= 100) {
+    throw new MonkeyError(
+      409,
+      "There are already 100 quotes in the queue for this language."
+    );
+  }
+
   //check for duplicate first
   const fileDir = path.join(
     __dirname,
@@ -49,16 +62,13 @@ export async function add(
   );
   let duplicateId = -1;
   let similarityScore = -1;
-  if (fs.existsSync(fileDir)) {
-    const quoteFile = fs.readFileSync(fileDir);
+  if (existsSync(fileDir)) {
+    const quoteFile = await readFile(fileDir);
     const quoteFileJSON = JSON.parse(quoteFile.toString());
     quoteFileJSON.quotes.every((old) => {
-      if (stringSimilarity.compareTwoStrings(old.text, quote.text) > 0.9) {
+      if (compareTwoStrings(old.text, quote.text) > 0.9) {
         duplicateId = old.id;
-        similarityScore = stringSimilarity.compareTwoStrings(
-          old.text,
-          quote.text
-        );
+        similarityScore = compareTwoStrings(old.text, quote.text);
         return false;
       }
       return true;
@@ -66,14 +76,15 @@ export async function add(
   } else {
     return { languageError: 1 };
   }
-  if (duplicateId != -1) {
+  if (duplicateId !== -1) {
     return { duplicateId, similarityScore };
   }
   await db.collection("new-quotes").insertOne(quote);
+  return undefined;
 }
 
 export async function get(language: string): Promise<MonkeyTypes.NewQuote[]> {
-  if (!git) throw new MonkeyError(500, "Git not available.");
+  if (git === undefined) throw new MonkeyError(500, "Git not available.");
   const where: {
     approved: boolean;
     language?: string;
@@ -96,18 +107,18 @@ export async function get(language: string): Promise<MonkeyTypes.NewQuote[]> {
     .toArray();
 }
 
-interface Quote {
+type Quote = {
   id?: number;
   text: string;
   source: string;
   length: number;
   approvedBy: string;
-}
+};
 
-interface ApproveReturn {
+type ApproveReturn = {
   quote: Quote;
   message: string;
-}
+};
 
 export async function approve(
   quoteId: string,
@@ -115,7 +126,7 @@ export async function approve(
   editSource: string,
   name: string
 ): Promise<ApproveReturn> {
-  if (!git) throw new MonkeyError(500, "Git not available.");
+  if (git === undefined) throw new MonkeyError(500, "Git not available.");
   //check mod status
   const targetQuote = await db
     .collection<MonkeyTypes.NewQuote>("new-quotes")
@@ -144,11 +155,11 @@ export async function approve(
     `${PATH_TO_REPO}/frontend/static/quotes/${language}.json`
   );
   await git.pull("upstream", "master");
-  if (fs.existsSync(fileDir)) {
-    const quoteFile = fs.readFileSync(fileDir);
+  if (existsSync(fileDir)) {
+    const quoteFile = await readFile(fileDir);
     const quoteObject = JSON.parse(quoteFile.toString());
     quoteObject.quotes.every((old) => {
-      if (stringSimilarity.compareTwoStrings(old.text, quote.text) > 0.8) {
+      if (compareTwoStrings(old.text, quote.text) > 0.8) {
         throw new MonkeyError(409, "Duplicate quote");
       }
     });
@@ -160,12 +171,12 @@ export async function approve(
     });
     quote.id = maxid + 1;
     quoteObject.quotes.push(quote);
-    fs.writeFileSync(fileDir, JSON.stringify(quoteObject, null, 2));
+    writeFileSync(fileDir, JSON.stringify(quoteObject, null, 2));
     message = `Added quote to ${language}.json.`;
   } else {
     //file doesnt exist, create it
     quote.id = 1;
-    fs.writeFileSync(
+    writeFileSync(
       fileDir,
       JSON.stringify({
         language: language,
@@ -188,6 +199,6 @@ export async function approve(
 }
 
 export async function refuse(quoteId: string): Promise<void> {
-  if (!git) throw new MonkeyError(500, "Git not available.");
+  if (git === undefined) throw new MonkeyError(500, "Git not available.");
   await db.collection("new-quotes").deleteOne({ _id: new ObjectId(quoteId) });
 }

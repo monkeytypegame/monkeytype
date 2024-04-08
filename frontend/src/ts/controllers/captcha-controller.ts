@@ -1,16 +1,18 @@
-const siteKey = "6Lc-V8McAAAAAJ7s6LGNe7MBZnRiwbsbiWts87aj";
+import { envConfig } from "../constants/env-config";
+const siteKey = envConfig.recaptchaSiteKey;
 
 const captchas: Record<string, number> = {};
 
 export function render(
   element: HTMLElement,
   id: string,
-  callback?: (data: any) => void
+  callback?: (responseToken: string) => void
 ): void {
   if (captchas[id] !== undefined && captchas[id] !== null) {
     return;
   }
 
+  //@ts-expect-error
   const widgetId = grecaptcha.render(element, {
     sitekey: siteKey,
     callback,
@@ -24,6 +26,7 @@ export function reset(id: string): void {
     return;
   }
 
+  //@ts-expect-error
   grecaptcha.reset(captchas[id]);
 }
 
@@ -32,5 +35,6 @@ export function getResponse(id: string): string {
     return "";
   }
 
+  //@ts-expect-error
   return grecaptcha.getResponse(captchas[id]);
 }

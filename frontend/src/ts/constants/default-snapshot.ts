@@ -1,20 +1,24 @@
+import defaultConfig from "./default-config";
+
 export const defaultSnap: MonkeyTypes.Snapshot = {
   results: undefined,
   personalBests: {
     time: {},
     words: {},
-    zen: { zen: [] },
-    quote: { custom: [] },
-    custom: { custom: [] },
+    quote: {},
+    zen: {},
+    custom: {},
   },
   name: "",
+  email: "",
+  uid: "",
+  isPremium: false,
+  config: defaultConfig,
   customThemes: [],
   presets: [],
   tags: [],
-  favouriteThemes: [],
   banned: undefined,
   verified: undefined,
-  emailVerified: undefined,
   lbMemory: { time: { 15: { english: 0 }, 60: { english: 0 } } },
   typingStats: {
     timeTyping: 0,
@@ -30,4 +34,11 @@ export const defaultSnap: MonkeyTypes.Snapshot = {
   inboxUnreadSize: 0,
   streak: 0,
   maxStreak: 0,
+  streakHourOffset: undefined,
+  allTimeLbs: {
+    time: {
+      15: { english: { count: 0, rank: 0 } },
+      60: { english: { count: 0, rank: 0 } },
+    },
+  },
 };

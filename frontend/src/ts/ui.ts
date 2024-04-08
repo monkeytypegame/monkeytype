@@ -2,47 +2,44 @@ import Config from "./config";
 import * as Caret from "./test/caret";
 import * as Notifications from "./elements/notifications";
 import * as CustomText from "./test/custom-text";
-import * as TestActive from "./states/test-active";
+import * as TestState from "./test/test-state";
 import * as ConfigEvent from "./observables/config-event";
 import { debounce, throttle } from "throttle-debounce";
 import * as TestUI from "./test/test-ui";
 import { get as getActivePage } from "./states/active-page";
+import { isDevEnvironment } from "./utils/misc";
 
-export function updateKeytips(): void {
+let isPreviewingFont = false;
+export function previewFontFamily(font: string): void {
+  document.documentElement.style.setProperty(
+    "--font",
+    '"' + font.replace(/_/g, " ") + '", "Roboto Mono", "Vazirmatn"'
+  );
+  isPreviewingFont = true;
+}
+
+export function clearFontPreview(): void {
+  if (!isPreviewingFont) return;
+  previewFontFamily(Config.fontFamily);
+  isPreviewingFont = false;
+}
+
+function updateKeytips(): void {
   const modifierKey = window.navigator.userAgent.toLowerCase().includes("mac")
     ? "cmd"
     : "ctrl";
 
-  if (Config.quickRestart === "esc") {
-    $(".pageSettings .tip").html(`
-    tip: You can also change all these settings quickly using the
-    command line (<key>${modifierKey}</key>+<key>shift</key>+<key>p</key>)`);
-  } else {
-    $(".pageSettings .tip").html(`
-    tip: You can also change all these settings quickly using the
-    command line (<key>esc</key> or <key>${modifierKey}</key>+<key>shift</key>+<key>p</key>)`);
-  }
-
-  if (Config.quickRestart === "esc") {
-    $("#bottom .keyTips").html(`
-    <key>esc</key> - restart test<br>
-    <key>tab</key> or <key>${modifierKey}</key>+<key>shift</key>+<key>p</key> - command line`);
-  } else if (Config.quickRestart === "tab") {
-    $("#bottom .keyTips").html(`
-    <key>tab</key> - restart test<br>
-      <key>esc</key> or <key>${modifierKey}</key>+<key>shift</key>+<key>p</key> - command line`);
-  } else {
-    $("#bottom .keyTips").html(`
-    <key>tab</key> + <key>enter</key> - restart test<br>
-    <key>esc</key> or <key>${modifierKey}</key>+<key>shift</key>+<key>p</key> - command line`);
-  }
+  const commandKey = Config.quickRestart === "esc" ? "tab" : "esc";
+  $("footer .keyTips").html(`
+    <key>${Config.quickRestart}</key> - restart test<br>
+    <key>${commandKey}</key> or <key>${modifierKey}</key>+<key>shift</key>+<key>p</key> - command line`);
 }
 
-if (window.location.hostname === "localhost") {
+if (isDevEnvironment()) {
   window.onerror = function (error): void {
-    Notifications.add(error.toString(), -1);
+    Notifications.add(JSON.stringify(error), -1);
   };
-  $("#top .logo .top").text("localhost");
+  $("header #logo .top").text("localhost");
   $("head title").text($("head title").text() + " (localhost)");
   $("body").append(
     `<div class="devIndicator tl">local</div><div class="devIndicator br">local</div>`
@@ -74,7 +71,7 @@ window.addEventListener("beforeunload", (event) => {
   ) {
     //ignore
   } else {
-    if (TestActive.get()) {
+    if (TestState.isActive) {
       event.preventDefault();
       // Chrome requires returnValue to be set.
       event.returnValue = "";
@@ -82,17 +79,26 @@ window.addEventListener("beforeunload", (event) => {
   }
 });
 
-const debouncedEvent = debounce(250, async () => {
-  Caret.updatePosition();
-  if (
-    Config.tapeMode !== "off" &&
-    getActivePage() === "test" &&
-    !TestUI.resultVisible
-  ) {
-    TestUI.scrollTape();
+const debouncedEvent = debounce(250, () => {
+  void Caret.updatePosition();
+  if (getActivePage() === "test" && !TestUI.resultVisible) {
+    if (Config.tapeMode !== "off") {
+      TestUI.scrollTape();
+    } else {
+      const word =
+        document.querySelectorAll<HTMLElement>("#words .word")[
+          TestUI.currentWordElementIndex - 1
+        ];
+      if (word) {
+        const currentTop: number = Math.floor(word.offsetTop);
+        TestUI.lineJump(currentTop);
+      }
+    }
   }
   setTimeout(() => {
-    Caret.show();
+    if ($("#wordsInput").is(":focus")) {
+      Caret.show();
+    }
   }, 250);
 });
 

@@ -1,24 +1,36 @@
 .pageAbout {
-  display: grid;
+  display: flex;
+  flex-direction: column;
   gap: 2rem;
+
+  h2 {
+    font-size: 1rem;
+    margin: 0;
+    font-weight: unset;
+  }
 
   .created {
     text-align: center;
     color: var(--sub-color);
-    a {
-      text-decoration: none;
-    }
   }
 
   .section {
     display: grid;
     gap: 0.25rem;
 
-    .title {
+    .bigtitle {
       font-size: 2rem;
       line-height: 2rem;
       color: var(--sub-color);
       margin: 0 0 1rem 0;
+    }
+
+    .title {
+      font-size: 1rem;
+      line-height: 1rem;
+      color: var(--sub-color);
+      margin: 0;
+      font-weight: 300;
     }
 
     .contactButtons,
@@ -27,14 +39,10 @@
       display: grid;
       grid-template-columns: 1fr 1fr 1fr 1fr;
       gap: 1rem;
+      button,
       .button {
-        text-decoration: none;
         font-size: 1.5rem;
         padding: 2rem 0;
-        .fas,
-        .fab {
-          margin-right: 1rem;
-        }
       }
     }
 
@@ -48,14 +56,6 @@
       grid-template-columns: 1fr 1fr 1fr 1fr;
       gap: 0.25rem;
       color: var(--text-color);
-    }
-
-    h1 {
-      font-size: 1rem;
-      line-height: 1rem;
-      color: var(--sub-color);
-      margin: 0;
-      font-weight: 300;
     }
 
     p {

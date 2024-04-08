@@ -18,31 +18,32 @@ export class Poem extends Section {
   cleanUpText(): void {
     let count = 0;
     const scrubbedWords = [];
-    for (let i = 0; i < this.words.length; i++) {
+
+    for (const word of this.words) {
       let scrubbed = "";
-      for (let j = 0; j < this.words[i].length; j++) {
-        if (!bannedChars.includes(this.words[i][j])) {
-          scrubbed += this.words[i][j];
+      for (const char of word) {
+        if (!bannedChars.includes(char)) {
+          scrubbed += char;
         }
       }
 
-      if (scrubbed == "") continue;
+      if (scrubbed === "") continue;
 
       scrubbedWords.push(scrubbed);
       count++;
 
-      if (count == maxWords) break;
+      if (count === maxWords) break;
     }
 
     this.words = scrubbedWords;
   }
 }
 
-interface PoemObject {
+type PoemObject = {
   lines: string[];
   title: string;
   author: string;
-}
+};
 
 export async function getPoem(): Promise<Section | false> {
   console.log("Getting poem");

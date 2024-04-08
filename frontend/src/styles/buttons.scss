@@ -1,0 +1,173 @@
+a.button,
+a.textButton {
+  text-decoration: none;
+}
+
+button,
+.button,
+.textButton {
+  .fas,
+  .far,
+  .fab {
+    line-height: 1.25;
+    pointer-events: none;
+  }
+  &.fullWidth {
+    width: 100%;
+  }
+  &.circle {
+    border-radius: 100%;
+  }
+}
+
+button,
+.button,
+input[type="button"],
+input[type="reset"],
+input[type="submit"] {
+  text-align: center;
+  color: var(--text-color);
+  cursor: pointer;
+  transition: background 0.125s, color 0.125s, opacity 0.125s;
+  padding: 0.5em;
+  border-radius: var(--roundness);
+  background: var(--sub-alt-color);
+  text-align: center;
+  -webkit-user-select: none;
+  user-select: none;
+  align-content: center;
+  height: -moz-min-content;
+  height: min-content;
+  line-height: 1.25;
+  appearance: none;
+  border: none;
+  font-family: inherit;
+  font-size: 1em;
+  display: inline-flex;
+  gap: 0.5em;
+  align-items: baseline;
+  justify-content: center;
+
+  &.danger {
+    background: var(--error-color);
+    color: var(--bg-color);
+  }
+
+  &.active {
+    background: var(--main-color);
+    color: var(--bg-color);
+    &:hover {
+      background: var(--text-color);
+    }
+    &:active {
+      background: var(--sub-color);
+      color: var(--bg-color);
+    }
+  }
+
+  &[disabled],
+  &.disabled {
+    opacity: 0.33;
+    pointer-events: none;
+    &:hover {
+      background: var(--text-color);
+      outline: none;
+    }
+    &:active {
+      background: var(--sub-color);
+      color: var(--bg-color);
+    }
+  }
+
+  &:hover {
+    color: var(--bg-color);
+    background: var(--text-color);
+    outline: none;
+  }
+  &:focus-visible {
+    box-shadow: 0 0 0 0.1rem var(--bg-color), 0 0 0 0.2rem var(--text-color);
+    outline: none;
+  }
+  &:active {
+    background: var(--sub-color);
+    color: var(--bg-color);
+  }
+}
+
+button.text,
+.button.text,
+.textButton {
+  color: var(--sub-color);
+  cursor: pointer;
+  transition: background 0.125s, color 0.125s, opacity 0.125s;
+  padding: 0.5em;
+  border-radius: var(--roundness);
+  background: none;
+  text-align: center;
+  -webkit-user-select: none;
+  user-select: none;
+  align-content: center;
+  height: -moz-min-content;
+  height: min-content;
+  line-height: 1.25;
+  appearance: none;
+  border: none;
+  font-family: inherit;
+  font-size: 1em;
+  display: inline-flex;
+  gap: 0.5em;
+  align-items: baseline;
+  justify-content: center;
+
+  &.danger {
+    color: var(--error-color);
+    background: none;
+  }
+
+  &.active {
+    color: var(--main-color);
+    background: none;
+    &:hover {
+      color: var(--text-color);
+      background: none;
+    }
+    &:active {
+      color: var(--sub-color);
+      background: none;
+    }
+  }
+
+  &[disabled],
+  &.disabled {
+    &:hover {
+      color: var(--text-color);
+      outline: none;
+    }
+    &:active {
+      background: var(--sub-color);
+      color: var(--bg-color);
+    }
+  }
+
+  &:hover {
+    color: var(--text-color);
+    background: none;
+    outline: none;
+  }
+  &:focus-visible {
+    box-shadow: 0 0 0 0.1rem var(--text-color);
+    outline: none;
+  }
+  &:active {
+    color: var(--sub-color);
+    background: none;
+  }
+}
+
+a.textButton,
+a.text,
+a.button {
+  &:focus-visible {
+    border-radius: var(--roundness);
+  }
+}

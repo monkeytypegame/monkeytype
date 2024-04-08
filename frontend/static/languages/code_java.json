@@ -1,6 +1,5 @@
 {
   "name": "code_java",
-  "leftToRight": true,
   "noLazyMode": true,
   "words": [
     "abstract",
@@ -61,7 +60,6 @@
     "put",
     "set",
     "with",
-    "throwas",
     "build",
     "add",
     "subtract",

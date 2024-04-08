@@ -1,8 +1,3 @@
-I know this is a little late:
-
-# IMPORTANT: I will be taking a break from Monkeytype for the duration of December (and potentially a bit of January too). I will address all PRs and issues when I start working on the project again. For critical issues, email jack@monkeytype.com. Thanks.
-
-
 [![](https://github.com/monkeytypegame/monkeytype/blob/master/frontend/static/images/githubbanner2.png?raw=true)](https://monkeytype.com/)
 <br />
 
@@ -12,14 +7,14 @@ I know this is a little late:
 
 # About
 
-Monkeytype is a minimalistic and customizable typing test. It features many test modes, an account system to save your typing speed history, and user-configurable features such as themes, sounds, a smooth caret, and more. Monkeytype attempts to emulate the experience of natural typing during a typing test, by unobtrusively presenting the text prompts and displaying typed characters in-place, providing straightforward, real-time feedback on typos, speed, and accuracy.
+Monkeytype is a minimalistic and customizable [typing test](https://www.monkeytype.com). It features many test modes, an account system to save your typing speed history, and user-configurable features such as themes, sounds, a smooth caret, and more. Monkeytype attempts to emulate a natural typing experience during a typing test by unobtrusively presenting the text prompts and displaying typed characters in place, providing straightforward, real-time feedback on typos, speed, and accuracy.
 
 # Features
 
 - minimalistic design, with optional advertisements and focus mode while typing
 - type what you see, see what you type
 - live errors, wpm, and accuracy displays
-- variety of test lengths and languages
+- a variety of test lengths and languages
 - punctuation and numbers modes
 - quotes
 - themes
@@ -34,7 +29,7 @@ On the [Monkeytype Discord server](https://www.discord.gg/monkeytype), we added 
 
 # Bug report or Feature request
 
-If you encounter a bug or have a feature request, [send us an email](mailto:jack@monkeytype.com), [create an issue](https://github.com/monkeytypegame/monkeytype/issues), [create a discussion thread](https://github.com/monkeytypegame/monkeytype/discussions), or [join the Discord server](https://www.discord.gg/monkeytype).
+If you encounter a bug or have a feature request, [send us an email](mailto:contact@monkeytype.com), [create an issue](https://github.com/monkeytypegame/monkeytype/issues), [create a discussion thread](https://github.com/monkeytypegame/monkeytype/discussions), or [join the Discord server](https://www.discord.gg/monkeytype).
 
 # Want to Contribute?
 
@@ -50,7 +45,7 @@ Before contributing to this repository, please read the [code of conduct](./CODE
 
 Everyone who provided valuable feedback on the [original Reddit post](https://www.reddit.com/r/MechanicalKeyboards/comments/gc6wx3/experimenting_with_a_completely_new_type_of/) for the prototype of this website.
 
-All of the [contributors](https://github.com/monkeytypegame/monkeytype/graphs/contributors) that have helped with implementing various features, adding themes, fixing bugs, and more.
+All of the [contributors](https://github.com/monkeytypegame/monkeytype/graphs/contributors) have helped implement various features, add themes, fix bugs, and more.
 
 # Support
 

@@ -5,8 +5,10 @@ import * as Last10Average from "../elements/last-10-average";
 import Config from "../config";
 import * as TestWords from "../test/test-words";
 import * as ConfigEvent from "../observables/config-event";
-import { Auth } from "../firebase";
+import { isAuthenticated } from "../firebase";
 import * as CustomTextState from "../states/custom-text-name";
+import { getLanguageDisplayString } from "../utils/strings";
+import Format from "../utils/format";
 
 ConfigEvent.subscribe((eventKey) => {
   if (
@@ -21,17 +23,15 @@ ConfigEvent.subscribe((eventKey) => {
       "confidenceMode",
       "layout",
       "showAverage",
-      "alwaysShowCPM",
+      "typingSpeedUnit",
+      "quickRestart",
     ].includes(eventKey)
   ) {
-    update();
+    void update();
   }
 });
 
 export async function update(): Promise<void> {
-  let anim = false;
-  if ($(".pageTest #testModesNotice").text() === "") anim = true;
-
   $(".pageTest #testModesNotice").empty();
 
   if (TestState.isRepeated && Config.mode !== "quote") {
@@ -51,11 +51,21 @@ export async function update(): Promise<void> {
       $(".pageTest #testModesNotice").append(
         `<div class="textButton noInteraction"><i class="fas fa-long-arrow-alt-right"></i>shift + tab to open commandline</div>`
       );
-    } else {
       $(".pageTest #testModesNotice").append(
-        `<div class="textButton noInteraction"><i class="fas fa-long-arrow-alt-right"></i>shift + tab to restart</div>`
+        `<div class="textButton noInteraction"><i class="fas fa-level-down-alt fa-rotate-90"></i>shift + esc to restart</div>`
       );
     }
+    if (Config.quickRestart === "tab") {
+      $(".pageTest #testModesNotice").append(
+        `<div class="textButton noInteraction"><i class="fas fa-level-down-alt fa-rotate-90"></i>shift + tab to restart</div>`
+      );
+    }
+  }
+
+  if (TestWords.hasNewline && Config.quickRestart === "enter") {
+    $(".pageTest #testModesNotice").append(
+      `<div class="textButton noInteraction"><i class="fas fa-level-down-alt fa-rotate-90"></i>shift + enter to restart</div>`
+    );
   }
 
   const customTextName = CustomTextState.getCustomTextName();
@@ -80,9 +90,9 @@ export async function update(): Promise<void> {
 
   if (Config.mode !== "zen") {
     $(".pageTest #testModesNotice").append(
-      `<div class="textButton" commands="languages"><i class="fas fa-globe-americas"></i>${Config.language.replace(
-        /_/g,
-        " "
+      `<div class="textButton" commands="languages"><i class="fas fa-globe-americas"></i>${getLanguageDisplayString(
+        Config.language,
+        Config.mode === "quote"
       )}</div>`
     );
   }
@@ -113,10 +123,11 @@ export async function update(): Promise<void> {
     Config.paceCaret !== "off" ||
     (Config.repeatedPace && TestState.isPaceRepeat)
   ) {
-    let speed = "";
-    try {
-      speed = ` (${Math.round(PaceCaret.settings?.wpm ?? 0)} wpm)`;
-    } catch {}
+    const speed = Format.typingSpeed(PaceCaret.settings?.wpm ?? 0, {
+      showDecimalPlaces: false,
+      suffix: ` ${Config.typingSpeedUnit}`,
+    });
+
     $(".pageTest #testModesNotice").append(
       `<div class="textButton" commands="paceCaretMode"><i class="fas fa-tachometer-alt"></i>${
         Config.paceCaret === "average"
@@ -128,28 +139,24 @@ export async function update(): Promise<void> {
           : Config.paceCaret === "daily"
           ? "daily"
           : "custom"
-      } pace${speed}</div>`
+      } pace ${speed}</div>`
     );
   }
 
   if (Config.showAverage !== "off") {
-    let avgWPM = Last10Average.getWPM();
-    let avgAcc = Last10Average.getAcc();
+    const avgWPM = Last10Average.getWPM();
+    const avgAcc = Last10Average.getAcc();
 
-    if (!Config.alwaysShowDecimalPlaces) {
-      avgWPM = Math.round(avgWPM);
-      avgAcc = Math.round(avgAcc);
-    }
-
-    if (Auth?.currentUser && avgWPM > 0) {
-      const avgWPMText = ["wpm", "both"].includes(Config.showAverage)
-        ? Config.alwaysShowCPM
-          ? `${Math.round(avgWPM * 5)} cpm`
-          : `${avgWPM} wpm`
+    if (isAuthenticated() && avgWPM > 0) {
+      const avgWPMText = ["speed", "both"].includes(Config.showAverage)
+        ? Format.typingSpeed(avgWPM, {
+            suffix: ` ${Config.typingSpeedUnit}`,
+            showDecimalPlaces: false,
+          })
         : "";
 
       const avgAccText = ["acc", "both"].includes(Config.showAverage)
-        ? `${avgAcc}% acc`
+        ? Format.accuracy(avgAcc, { suffix: " acc", showDecimalPlaces: false })
         : "";
 
       const text = `${avgWPMText} ${avgAccText}`.trim();
@@ -162,7 +169,10 @@ export async function update(): Promise<void> {
 
   if (Config.minWpm !== "off") {
     $(".pageTest #testModesNotice").append(
-      `<div class="textButton" commands="minWpm"><i class="fas fa-bomb"></i>min ${Config.minWpmCustomSpeed} wpm</div>`
+      `<div class="textButton" commands="minWpm"><i class="fas fa-bomb"></i>min ${Format.typingSpeed(
+        Config.minWpmCustomSpeed,
+        { showDecimalPlaces: false, suffix: ` ${Config.typingSpeedUnit}` }
+      )}</div>`
     );
   }
 
@@ -174,9 +184,12 @@ export async function update(): Promise<void> {
 
   if (Config.minBurst !== "off") {
     $(".pageTest #testModesNotice").append(
-      `<div class="textButton" commands="minBurst"><i class="fas fa-bomb"></i>min ${
-        Config.minBurstCustomSpeed
-      } burst ${Config.minBurst === "flex" ? "(flex)" : ""}</div>`
+      `<div class="textButton" commands="minBurst"><i class="fas fa-bomb"></i>min ${Format.typingSpeed(
+        Config.minBurstCustomSpeed,
+        { showDecimalPlaces: false }
+      )} ${Config.typingSpeedUnit} burst ${
+        Config.minBurst === "flex" ? "(flex)" : ""
+      }</div>`
     );
   }
 
@@ -199,7 +212,7 @@ export async function update(): Promise<void> {
     );
   }
 
-  if (Config.stopOnError != "off") {
+  if (Config.stopOnError !== "off") {
     $(".pageTest #testModesNotice").append(
       `<div class="textButton" commands="stopOnError"><i class="fas fa-hand-paper"></i>stop on ${Config.stopOnError}</div>`
     );
@@ -239,19 +252,16 @@ export async function update(): Promise<void> {
       );
     }
   } catch {}
+}
 
-  if (anim) {
-    $(".pageTest #testModesNotice")
-      .css("transition", "none")
-      .css("opacity", 0)
-      .animate(
-        {
-          opacity: 1,
-        },
-        125,
-        () => {
-          $(".pageTest #testModesNotice").css("transition", ".125s");
-        }
-      );
-  }
+if (import.meta.hot !== undefined) {
+  import.meta.hot.dispose(() => {
+    //
+  });
+  import.meta.hot.accept(() => {
+    //
+  });
+  import.meta.hot.on("vite:afterUpdate", () => {
+    void update();
+  });
 }

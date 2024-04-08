@@ -1,6 +1,5 @@
 {
   "name": "code_bash",
-  "leftToRight": true,
   "noLazyMode": true,
   "words": [
     "ls",

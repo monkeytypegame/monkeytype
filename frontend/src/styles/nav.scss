@@ -1,4 +1,4 @@
-#menu {
+nav {
   font-size: 1rem;
   line-height: 1rem;
   color: var(--sub-color);
@@ -6,14 +6,22 @@
   grid-auto-flow: column;
   gap: 0.5rem;
   // margin-bottom: -0.4rem;
-  width: fit-content;
   width: -moz-fit-content;
+  width: fit-content;
+  width: 100%;
+  grid-template-columns: auto auto auto auto 1fr auto;
+
+  button.showAlerts {
+    position: relative;
+  }
 
   .textButton {
     .text {
-      font-size: 0.65em;
-      line-height: 0rem;
+      font-size: 0.75em;
       align-self: center;
+      .fas {
+        margin-left: 0.33em;
+      }
     }
 
     .icon,
@@ -26,13 +34,12 @@
       place-content: center center;
     }
 
-    &.showAlerts {
-      position: relative;
-    }
-
     &.account {
       position: relative;
       align-items: center;
+      gap: 0.33em;
+      display: grid;
+      grid-auto-flow: column;
       .loading,
       .user,
       .avatar {
@@ -42,10 +49,10 @@
         height: 1.25em;
       }
 
-      .loading,
-      .user {
-        // margin-top: 0.1rem;
-      }
+      // .loading,
+      // .user {
+      //   // margin-top: 0.1rem;
+      // }
 
       .levelAndBar {
         transition: 0.125s;
@@ -103,8 +110,13 @@
           }
         }
       }
-      &:hover .level {
-        background-color: var(--text-color);
+      &:hover {
+        .level {
+          background-color: var(--text-color);
+        }
+        .userFlags {
+          color: var(--text-color);
+        }
       }
     }
   }
@@ -116,50 +128,34 @@
   }
 }
 
-#top.focus #menu .textButton.discord::after {
-  background: transparent;
-}
-
-#top.focus #menu {
-  color: transparent !important;
-  .notificationBubble {
-    opacity: 0 !important;
-  }
-}
-
-#top.focus #menu .textButton {
-  color: transparent !important;
-}
-
-#top.focus #menu .textButton.account .avatar {
-  opacity: 0 !important;
-}
-
-#top.focus #menu .levelAndBar {
-  opacity: 0 !important;
-}
-
-#top {
+header {
   grid-template-areas: "logo menu";
   line-height: 2.3rem;
   font-size: 2.3rem;
   /* text-align: center; */
   // transition: 0.25s;
-  padding: 0 5px;
+  // padding: 0 5px;
   display: grid;
   grid-auto-flow: column;
   grid-template-columns: auto 1fr;
   z-index: 2;
   align-items: center;
   gap: 0.5rem;
+  -webkit-user-select: none;
   user-select: none;
 
-  .logo {
+  #logo {
     // margin-bottom: 0.6rem;
     cursor: pointer;
     display: grid;
     grid-template-columns: auto 1fr;
     gap: 0.5rem;
+    transition: none;
+    text-decoration: none;
+    color: var(--text-color);
+    padding: 0.35rem 0.25rem;
+    margin-left: -0.25rem;
+    margin-right: -0.25rem;
 
     .icon {
       width: 2.5rem;
@@ -175,20 +171,24 @@
     .text {
       .top {
         position: absolute;
-        left: 0.25rem;
-        top: -0.1rem;
-        font-size: 0.65rem;
-        line-height: 0.65rem;
+        left: 0.35em;
+        font-size: 0.325em;
+        line-height: 0.325em;
         color: var(--sub-color);
-        transition: color 0.25s;
+        transition: color 0.125s, opacity 0.125s;
       }
       position: relative;
       font-size: 2rem;
-      margin-top: -0.4rem;
-      font-family: "Lexend Deca";
+      line-height: 2rem;
+      font-family: "Lexend Deca", sans-serif;
       transition: color 0.25s;
+      font-weight: unset;
+      margin-block-start: unset;
+      margin-block-end: unset;
+      margin-top: -0.23em;
     }
     white-space: nowrap;
+    -webkit-user-select: none;
     user-select: none;
 
     .bottom {
@@ -196,6 +196,15 @@
       color: var(--main-color);
       transition: 0.25s;
       cursor: pointer;
+    }
+    &:focus-visible {
+      outline: none;
+      box-shadow: 0 0 0 0.1rem var(--bg-color), 0 0 0 0.2rem var(--text-color);
+      border-radius: var(--roundness);
+      .text .top {
+        opacity: 0;
+        transition: none;
+      }
     }
   }
 
@@ -260,6 +269,10 @@
   &.focus {
     color: var(--sub-color) !important;
 
+    .notificationBubble {
+      opacity: 0;
+    }
+
     .result {
       opacity: 0 !important;
     }
@@ -268,17 +281,30 @@
       fill: var(--sub-color) !important;
     }
 
-    .logo .text {
+    #logo .text {
       color: var(--sub-color) !important;
       // opacity: 0 !important;
     }
 
-    .logo .top {
+    #logo .top {
       opacity: 0 !important;
     }
 
     .config {
       opacity: 0 !important;
+    }
+
+    nav {
+      color: transparent;
+
+      .textButton,
+      button {
+        color: transparent;
+      }
+      .avatar,
+      .levelAndBar {
+        opacity: 0 !important;
+      }
     }
   }
 }

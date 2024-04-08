@@ -27,6 +27,7 @@ const commands: MonkeyTypes.Command[] = [
   {
     id: "changeFreedomMode",
     display: "Freedom mode...",
+    icon: "fa-feather-alt",
     subgroup,
   },
 ];

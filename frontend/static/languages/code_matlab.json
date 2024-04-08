@@ -1,6 +1,5 @@
 {
   "name": "code_matlab",
-  "leftToRight": true,
   "noLazyMode": true,
   "words": [
     "x",
@@ -39,7 +38,7 @@
     "real()",
     "angle()",
     "ceil",
-    "longspace",
+    "logspace",
     "abs",
     "floor",
     "hold",

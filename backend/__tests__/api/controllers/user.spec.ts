@@ -51,11 +51,15 @@ describe("user controller test", () => {
             enabled: false,
             maxMail: 0,
           },
+          premium: {
+            enabled: true,
+          },
         },
       } as any);
 
       await mockApp
         .post("/users/signup")
+        .set("authorization", "Uid 123456789|newuser@mail.com")
         .send(newUser)
         .set({
           Accept: "application/json",
@@ -64,9 +68,8 @@ describe("user controller test", () => {
 
       const response = await mockApp
         .get("/users")
-        .send({
-          uid: "123456789",
-        })
+        .set("authorization", "Uid 123456789")
+        .send()
         .set({
           Accept: "application/json",
         })

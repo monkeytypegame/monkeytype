@@ -8,8 +8,8 @@ import { BASE_CONFIGURATION } from "../constants/base-configuration";
 const CONFIG_UPDATE_INTERVAL = 10 * 60 * 1000; // 10 Minutes
 
 function mergeConfigurations(
-  baseConfiguration: MonkeyTypes.Configuration,
-  liveConfiguration: Partial<MonkeyTypes.Configuration>
+  baseConfiguration: SharedTypes.Configuration,
+  liveConfiguration: Partial<SharedTypes.Configuration>
 ): void {
   if (
     !_.isPlainObject(baseConfiguration) ||
@@ -45,7 +45,7 @@ let serverConfigurationUpdated = false;
 
 export async function getCachedConfiguration(
   attemptCacheUpdate = false
-): Promise<MonkeyTypes.Configuration> {
+): Promise<SharedTypes.Configuration> {
   if (
     attemptCacheUpdate &&
     lastFetchTime < Date.now() - CONFIG_UPDATE_INTERVAL
@@ -57,7 +57,7 @@ export async function getCachedConfiguration(
   return configuration;
 }
 
-export async function getLiveConfiguration(): Promise<MonkeyTypes.Configuration> {
+export async function getLiveConfiguration(): Promise<SharedTypes.Configuration> {
   lastFetchTime = Date.now();
 
   const configurationCollection = db.collection("configuration");
@@ -71,10 +71,10 @@ export async function getLiveConfiguration(): Promise<MonkeyTypes.Configuration>
       const liveConfigurationWithoutId = _.omit(
         liveConfiguration,
         "_id"
-      ) as MonkeyTypes.Configuration;
+      ) as SharedTypes.Configuration;
       mergeConfigurations(baseConfiguration, liveConfigurationWithoutId);
 
-      pushConfiguration(baseConfiguration);
+      await pushConfiguration(baseConfiguration);
       configuration = baseConfiguration;
     } else {
       await configurationCollection.insertOne({
@@ -83,7 +83,7 @@ export async function getLiveConfiguration(): Promise<MonkeyTypes.Configuration>
       }); // Seed the base configuration.
     }
   } catch (error) {
-    Logger.logToDb(
+    void Logger.logToDb(
       "fetch_configuration_failure",
       `Could not fetch configuration: ${error.message}`
     );
@@ -93,7 +93,7 @@ export async function getLiveConfiguration(): Promise<MonkeyTypes.Configuration>
 }
 
 async function pushConfiguration(
-  configuration: MonkeyTypes.Configuration
+  configuration: SharedTypes.Configuration
 ): Promise<void> {
   if (serverConfigurationUpdated) {
     return;
@@ -103,7 +103,7 @@ async function pushConfiguration(
     await db.collection("configuration").replaceOne({}, configuration);
     serverConfigurationUpdated = true;
   } catch (error) {
-    Logger.logToDb(
+    void Logger.logToDb(
       "push_configuration_failure",
       `Could not push configuration: ${error.message}`
     );
@@ -111,7 +111,7 @@ async function pushConfiguration(
 }
 
 export async function patchConfiguration(
-  configurationUpdates: Partial<MonkeyTypes.Configuration>
+  configurationUpdates: Partial<SharedTypes.Configuration>
 ): Promise<boolean> {
   try {
     const currentConfiguration = _.cloneDeep(configuration);
@@ -123,7 +123,7 @@ export async function patchConfiguration(
 
     await getLiveConfiguration();
   } catch (error) {
-    Logger.logToDb(
+    void Logger.logToDb(
       "patch_configuration_failure",
       `Could not patch configuration: ${error.message}`
     );

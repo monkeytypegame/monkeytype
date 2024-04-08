@@ -69,8 +69,12 @@ node_modules_bak/
 .env
 
 #vs code
-.vscode
+.vscode/*
+.vscode/.*
+!.vscode/extensions.json
 *.code-workspace
+!monkeytype.code-workspace
+
 
 .idea
 
@@ -78,6 +82,7 @@ node_modules_bak/
 .firebaserc
 .firebaserc_copy
 serviceAccountKey*.json
+!docker/serviceAccountKey-example.json
 frontend/src/ts/constants/firebase-config.ts
 frontend/src/ts/constants/firebase-config-live.ts
 
@@ -86,11 +91,11 @@ dist/
 frontend/public/
 backend/globalConfig.json
 backend/server.version
+vite-build/
 
 #cloudflare y
 .cloudflareKey.txt
 .cloudflareKey_copy.txt
-purgeCfCache.sh
 
 frontend/static/adtest.html
 backend/lastId.txt
@@ -106,11 +111,13 @@ dep-graph.png
 
 # TypeScript
 build/
-backend/worker.*
+backend/workers
 
 #scripts
 updateContributors.js
 removeDupes.js
+content-validation.js
 
 ads.txt
 updateContributors.mjs
+copyAnticheatToDev.sh

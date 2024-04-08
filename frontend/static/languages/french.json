@@ -1,6 +1,5 @@
 {
   "name": "french",
-  "leftToRight": true,
   "bcp47": "fr-FR",
   "words": [
     "a",

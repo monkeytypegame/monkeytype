@@ -1,0 +1,83 @@
+{
+  "language": "code_lua",
+  "groups": [
+    [0, 100],
+    [101, 300],
+    [301, 600],
+    [601, 9999]
+  ],
+  "quotes": [
+    {
+      "text": "local MultiSelect = {}\nMultiSelect.__index = MultiSelect\n\nfunction MultiSelect:new()\n\treturn setmetatable({\n\t\t_entries = {},\n\t}, MultiSelect)\nend",
+      "source": "Github nvim-telescope/telescope.nvim - pickers",
+      "length": 145,
+      "id": 1
+    },
+    {
+      "text": "function histories.History:append(line, picker, no_reset)\n\tif not self.enabled then\n\t\treturn\n\tend\n\tself._append(self, line, picker, no_reset)\nend",
+      "source": "Github nvim-telescope/telescope.nvim - actions",
+      "length": 145,
+      "id": 2
+    },
+    {
+      "text": "local function require_on_exported_call(mod)\n\treturn setmetatable({}, {\n\t\t__index = function(_, picker)\n\t\t\treturn function(...)\n\t\t\t\treturn require(mod)[picker](...)\n\t\t\tend\n\t\tend,\n\t})\nend",
+      "source": "Github nvim-telescope/telescope.nvim - builtin",
+      "length": 186,
+      "id": 3
+    },
+    {
+      "text": "function M.get_length()\n\tlog.trace(\"_get_length()\")\n\treturn table.maxn(harpoon.get_term_config().cmds)\nend",
+      "source": "Github ThePrimeagen/harpoon - tmux",
+      "length": 106,
+      "id": 4
+    },
+    {
+      "text": "for _, v in pairs(log_levels) do\n\toverride(v)\nend",
+      "source": "Github ThePrimeagen/harpoon - dev",
+      "length": 49,
+      "id": 5
+    },
+    {
+      "text": "function M.clear_all()\n\tharpoon.get_mark_config().marks = {}\n\tlog.trace(\"clear_all(): Clearing all marks.\")\n\temit_changed()\nend",
+      "source": "Github ThePrimeagen/harpoon - mark",
+      "length": 127,
+      "id": 6
+    },
+    {
+      "text": "s = \"hello world from Lua\"\nfor w in string.gmatch(s, \"%a+\") do\n\tprint(w)\nend",
+      "source": "Lua 5.4 manual - string.gmatch",
+      "length": 76,
+      "id": 7
+    },
+    {
+      "text": "local i = 1\nwhile a[i] do\n\tprint(a[i])\n\ti = i + 1\nend",
+      "source": "Lua pil - while",
+      "length": 53,
+      "id": 8
+    },
+    {
+      "text": "-- print the first non-empty line\nrepeat\n\tline = io.read()\nuntil line ~= \"\"\nprint(line)",
+      "source": "Lua pil - repeat",
+      "length": 87,
+      "id": 9
+    },
+    {
+      "text": "function perm (a)\n\tlocal n = table.getn(a)\n\treturn coroutine.wrap(function () permgen(a, n) end)\nend",
+      "source": "Lua pil - coroutines",
+      "length": 100,
+      "id": 10
+    },
+    {
+      "text": "function Set (list)\n\tlocal set = {}\n\tfor _, l in ipairs(list) do set[l] = true end\n\treturn set\nend",
+      "source": "Lua pil - set",
+      "length": 98,
+      "id": 11
+    },
+    {
+      "text": "line = io.read()\nn = tonumber(line)\nif n == nil then\n\terror(line .. \" is not a valid number\")\nelse\n\tprint(n*2)\nend",
+      "source": "Lua pil - strings",
+      "length": 114,
+      "id": 12
+    }
+  ]
+}

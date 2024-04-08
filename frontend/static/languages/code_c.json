@@ -1,6 +1,5 @@
 {
   "name": "code_c",
-  "leftToRight": true,
   "noLazyMode": true,
   "words": [
     "auto",
@@ -163,7 +162,7 @@
     "strncpy",
     "strcat",
     "strncat",
-    "strlenstrnlen_s",
+    "strlen",
     "strcmp",
     "strncmp",
     "strcoll",

@@ -1,4 +1,5 @@
 import * as Misc from "./utils/misc";
+import * as JSONData from "./utils/json-data";
 import * as Notifications from "./elements/notifications";
 
 type PossibleType =
@@ -9,16 +10,17 @@ type PossibleType =
   | "undefined"
   | "null"
   | "stringArray"
+  | "layoutfluid"
   | string[]
   | number[];
 
 type PossibleTypeAsync = "layoutfluid";
 
-export function isConfigKeyValid(name: string): boolean {
-  if (name === null || name === undefined || name === "") return false;
-  if (name.length > 30) return false;
-  return /^[0-9a-zA-Z_.\-#+]+$/.test(name);
-}
+// function isConfigKeyValid(name: string): boolean {
+//   if (name === null || name === undefined || name === "") return false;
+//   if (name.length > 30) return false;
+//   return /^[0-9a-zA-Z_.\-#+]+$/.test(name);
+// }
 
 function invalid(key: string, val: unknown, customMessage?: string): void {
   if (customMessage === undefined) {
@@ -66,7 +68,10 @@ export function isConfigValueValid(
         break;
 
       case "numberArray":
-        if (isArray(val) && val.every((v) => typeof v === "number")) {
+        if (
+          isArray(val) &&
+          val.every((v) => typeof v === "number" && !isNaN(v))
+        ) {
           isValid = true;
         }
         break;
@@ -87,7 +92,7 @@ export function isConfigValueValid(
 
       default:
         if (isArray(possibleType)) {
-          if (possibleType.includes(<never>val)) isValid = true;
+          if (possibleType.includes(val as never)) isValid = true;
         }
         break;
     }
@@ -117,7 +122,7 @@ export async function isConfigValueValidAsync(
         if (layoutNames.length < 2 || layoutNames.length > 5) break;
 
         try {
-          await Misc.getLayoutsList();
+          await JSONData.getLayoutsList();
         } catch (e) {
           customMessage = Misc.createErrorMessage(
             e,
@@ -128,7 +133,7 @@ export async function isConfigValueValidAsync(
 
         // convert the layout names to layouts
         const layouts = await Promise.all(
-          layoutNames.map(async (layoutName) => Misc.getLayout(layoutName))
+          layoutNames.map(async (layoutName) => JSONData.getLayout(layoutName))
         );
 
         // check if all layouts exist

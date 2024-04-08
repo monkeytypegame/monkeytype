@@ -1,6 +1,5 @@
 {
   "name": "code_vim",
-  "leftToRight": true,
   "noLazyMode": true,
   "words": [
     ":e",
@@ -32,8 +31,8 @@
     "y$",
     "D",
     ":e.",
-    ":Sex",
-    ":Sex!",
+    ":s/find/new",
+    "/findall",
     ":browse e",
     ":ls",
     ":cd..",

@@ -5,8 +5,12 @@ export default class Quotes {
     this.httpClient = httpClient;
   }
 
-  async get(): Ape.EndpointData {
+  async get(): Ape.EndpointResponse<Ape.Quotes.GetQuotes> {
     return await this.httpClient.get(BASE_PATH);
+  }
+
+  async isSubmissionEnabled(): Ape.EndpointResponse<Ape.Quotes.GetIsSubmissionEnabled> {
+    return await this.httpClient.get(`${BASE_PATH}/isSubmissionEnabled`);
   }
 
   async submit(
@@ -14,7 +18,7 @@ export default class Quotes {
     source: string,
     language: string,
     captcha: string
-  ): Ape.EndpointData {
+  ): Ape.EndpointResponse<Ape.Quotes.PostQuotes> {
     const payload = {
       text,
       source,
@@ -29,7 +33,7 @@ export default class Quotes {
     quoteSubmissionId: string,
     editText?: string,
     editSource?: string
-  ): Ape.EndpointData {
+  ): Ape.EndpointResponse<Ape.Quotes.PostApprove> {
     const payload = {
       quoteId: quoteSubmissionId,
       editText,
@@ -39,13 +43,17 @@ export default class Quotes {
     return await this.httpClient.post(`${BASE_PATH}/approve`, { payload });
   }
 
-  async rejectSubmission(quoteSubmissionId: string): Ape.EndpointData {
+  async rejectSubmission(
+    quoteSubmissionId: string
+  ): Ape.EndpointResponse<Ape.Quotes.PostReject> {
     return await this.httpClient.post(`${BASE_PATH}/reject`, {
       payload: { quoteId: quoteSubmissionId },
     });
   }
 
-  async getRating(quote: MonkeyTypes.Quote): Ape.EndpointData {
+  async getRating(
+    quote: MonkeyTypes.Quote
+  ): Ape.EndpointResponse<Ape.Quotes.GetRating> {
     const searchQuery = {
       quoteId: quote.id,
       language: quote.language,
@@ -54,7 +62,10 @@ export default class Quotes {
     return await this.httpClient.get(`${BASE_PATH}/rating`, { searchQuery });
   }
 
-  async addRating(quote: MonkeyTypes.Quote, rating: number): Ape.EndpointData {
+  async addRating(
+    quote: MonkeyTypes.Quote,
+    rating: number
+  ): Ape.EndpointResponse<Ape.Quotes.PostRating> {
     const payload = {
       quoteId: quote.id,
       rating,
@@ -70,7 +81,7 @@ export default class Quotes {
     reason: string,
     comment: string,
     captcha: string
-  ): Ape.EndpointData {
+  ): Ape.EndpointResponse<Ape.Quotes.PostReport> {
     const payload = {
       quoteId,
       quoteLanguage,

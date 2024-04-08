@@ -2,6 +2,7 @@ import * as Funbox from "../../test/funbox/funbox";
 import * as TestLogic from "../../test/test-logic";
 import * as ManualRestart from "../../test/manual-restart-tracker";
 import Config from "../../config";
+import { areFunboxesCompatible } from "../../test/funbox/funbox-validation";
 
 const subgroup: MonkeyTypes.CommandsSubgroup = {
   title: "Funbox...",
@@ -38,6 +39,7 @@ function update(funboxes: MonkeyTypes.FunboxMetadata[]): void {
     display: "none",
     configValue: "none",
     alias: "off",
+    sticky: true,
     exec: (): void => {
       ManualRestart.set();
       if (Funbox.setFunbox("none")) {
@@ -45,71 +47,25 @@ function update(funboxes: MonkeyTypes.FunboxMetadata[]): void {
       }
     },
   });
-  funboxes.forEach((funbox) => {
-    let dis;
-    if (Config.funbox.includes(funbox.name)) {
-      dis =
-        '<i class="fas fa-fw fa-check"></i>' + funbox.name.replace(/_/g, " ");
-    } else {
-      dis = '<i class="fas fa-fw"></i>' + funbox.name.replace(/_/g, " ");
-    }
-
+  for (const funbox of funboxes) {
     subgroup.list.push({
       id: "changeFunbox" + funbox.name,
-      noIcon: true,
-      display: dis,
-      // visible: Funbox.isFunboxCompatible(funbox.name, funbox.type),
+      display: funbox.name.replace(/_/g, " "),
+      available: () => {
+        if (Config.funbox.split("#").includes(funbox.name)) return true;
+        return areFunboxesCompatible(Config.funbox, funbox.name);
+      },
       sticky: true,
       alias: funbox.alias,
       configValue: funbox.name,
+      configValueMode: "include",
       exec: (): void => {
         Funbox.toggleFunbox(funbox.name);
         ManualRestart.set();
         TestLogic.restart();
-
-        for (let i = 0; i < funboxes.length; i++) {
-          // subgroup.list[i].visible = Funbox.isFunboxCompatible(funboxes[i].name, funboxes[i].type);
-
-          let txt = funboxes[i].name.replace(/_/g, " ");
-          if (Config.funbox.includes(funboxes[i].name)) {
-            txt = '<i class="fas fa-fw fa-check"></i>' + txt;
-          } else {
-            txt = '<i class="fas fa-fw"></i>' + txt;
-          }
-          if ($("#commandLine").hasClass("allCommands")) {
-            $(
-              `#commandLine .suggestions .entry[command='changeFunbox${funboxes[i].name}']`
-            ).html(
-              `<div class="icon"><i class="fas fa-fw fa-gamepad"></i></div><div>Funbox  > ` +
-                txt
-            );
-          } else {
-            $(
-              `#commandLine .suggestions .entry[command='changeFunbox${funboxes[i].name}']`
-            ).html(txt);
-          }
-        }
-        if (funboxes.length > 0) {
-          const noneTxt =
-            Config.funbox === "none"
-              ? `<i class="fas fa-fw fa-check"></i>none`
-              : `<i class="fas fa-fw"></i>none`;
-          if ($("#commandLine").hasClass("allCommands")) {
-            $(
-              `#commandLine .suggestions .entry[command='changeFunboxNone']`
-            ).html(
-              `<div class="icon"><i class="fas fa-fw fa-gamepad"></i></div><div>Funbox  > ` +
-                noneTxt
-            );
-          } else {
-            $(
-              `#commandLine .suggestions .entry[command='changeFunboxNone']`
-            ).html(noneTxt);
-          }
-        }
       },
     });
-  });
+  }
 }
 
 export default commands;

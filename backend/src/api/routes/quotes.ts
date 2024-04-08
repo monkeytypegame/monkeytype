@@ -14,7 +14,10 @@ const router = Router();
 
 const checkIfUserIsQuoteMod = checkUserPermissions({
   criteria: (user) => {
-    return !!user.quoteMod;
+    return (
+      user.quoteMod === true ||
+      (typeof user.quoteMod === "string" && user.quoteMod !== "")
+    );
   },
 });
 
@@ -24,6 +27,15 @@ router.get(
   RateLimit.newQuotesGet,
   checkIfUserIsQuoteMod,
   asyncHandler(QuoteController.getQuotes)
+);
+
+router.get(
+  "/isSubmissionEnabled",
+  authenticateRequest({
+    isPublic: true,
+  }),
+  RateLimit.newQuotesIsSubmissionEnabled,
+  asyncHandler(QuoteController.isSubmissionEnabled)
 );
 
 router.post(
@@ -37,15 +49,23 @@ router.post(
   }),
   authenticateRequest(),
   RateLimit.newQuotesAdd,
-  validateRequest({
-    body: {
-      text: joi.string().min(60).required(),
-      source: joi.string().required(),
-      language: joi.string().regex(/^\w+$/).required(),
-      captcha: joi.string().required(),
+  validateRequest(
+    {
+      body: {
+        text: joi.string().min(60).required(),
+        source: joi.string().required(),
+        language: joi
+          .string()
+          .regex(/^[\w+]+$/)
+          .required(),
+        captcha: joi
+          .string()
+          .regex(/[\w-_]+/)
+          .required(),
+      },
     },
-    validationErrorMessage: "Please fill all the fields",
-  }),
+    { validationErrorMessage: "Please fill all the fields" }
+  ),
   asyncHandler(QuoteController.addQuote)
 );
 
@@ -53,14 +73,16 @@ router.post(
   "/approve",
   authenticateRequest(),
   RateLimit.newQuotesAction,
-  validateRequest({
-    body: {
-      quoteId: joi.string().required(),
-      editText: joi.string().allow(null),
-      editSource: joi.string().allow(null),
+  validateRequest(
+    {
+      body: {
+        quoteId: joi.string().required(),
+        editText: joi.string().allow(null),
+        editSource: joi.string().allow(null),
+      },
     },
-    validationErrorMessage: "Please fill all the fields",
-  }),
+    { validationErrorMessage: "Please fill all the fields" }
+  ),
   checkIfUserIsQuoteMod,
   asyncHandler(QuoteController.approveQuote)
 );
@@ -85,7 +107,10 @@ router.get(
   validateRequest({
     query: {
       quoteId: joi.string().regex(/^\d+$/).required(),
-      language: joi.string().regex(/^\w+$/).required(),
+      language: joi
+        .string()
+        .regex(/^[\w+]+$/)
+        .required(),
     },
   }),
   asyncHandler(QuoteController.getRating)
@@ -99,7 +124,11 @@ router.post(
     body: {
       quoteId: joi.number().required(),
       rating: joi.number().min(1).max(5).required(),
-      language: joi.string().regex(/^\w+$/).required(),
+      language: joi
+        .string()
+        .regex(/^[\w+]+$/)
+        .max(50)
+        .required(),
     },
   }),
   asyncHandler(QuoteController.submitRating)
@@ -122,7 +151,10 @@ router.post(
   validateRequest({
     body: {
       quoteId: withCustomMessages.regex(/\d+/).required(),
-      quoteLanguage: withCustomMessages.regex(/^\w+$/).required(),
+      quoteLanguage: withCustomMessages
+        .regex(/^[\w+]+$/)
+        .max(50)
+        .required(),
       reason: joi
         .string()
         .valid(
@@ -142,7 +174,7 @@ router.post(
   }),
   checkUserPermissions({
     criteria: (user) => {
-      return !user.cannotReport;
+      return user.canReport !== false;
     },
   }),
   asyncHandler(QuoteController.reportQuote)

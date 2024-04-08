@@ -1,5 +1,7 @@
 import config from "../config";
 import * as Sound from "../controllers/sound-controller";
+import * as TestInput from "./test-input";
+import * as Arrays from "../utils/arrays";
 
 type ReplayAction =
   | "correctLetter"
@@ -9,11 +11,11 @@ type ReplayAction =
   | "submitErrorWord"
   | "setLetterIndex";
 
-interface Replay {
+type Replay = {
   action: ReplayAction;
   value?: string | number;
   time: number;
-}
+};
 
 let wordsList: string[] = [];
 let replayData: Replay[] = [];
@@ -50,14 +52,14 @@ function initializeReplayPrompt(): void {
       wordCount++;
     }
   });
-  wordsList.forEach((item, i) => {
+  wordsList.forEach((word, i) => {
     if (i > wordCount) return;
     const x = document.createElement("div");
     x.className = "word";
-    for (i = 0; i < item.length; i++) {
-      const letter = document.createElement("letter");
-      letter.innerHTML = item[i];
-      x.appendChild(letter);
+    for (const letter of word) {
+      const elem = document.createElement("letter");
+      elem.innerHTML = letter;
+      x.appendChild(elem);
     }
     replayWordsElement.appendChild(x);
   });
@@ -86,13 +88,13 @@ export function pauseReplay(): void {
 
 function playSound(error = false): void {
   if (error) {
-    if (config.playSoundOnError) {
-      Sound.playError();
+    if (config.playSoundOnError !== "off") {
+      void Sound.playError();
     } else {
-      Sound.playClick();
+      void Sound.playClick();
     }
   } else {
-    Sound.playClick();
+    void Sound.playClick();
   }
 }
 
@@ -103,7 +105,7 @@ function handleDisplayLogic(item: Replay, nosound = false): void {
 
   if (item.action === "correctLetter") {
     if (!nosound) playSound();
-    activeWord.children[curPos].classList.add("correct");
+    activeWord.children[curPos]?.classList.add("correct");
     curPos++;
   } else if (item.action === "incorrectLetter") {
     if (!nosound) playSound(true);
@@ -111,12 +113,12 @@ function handleDisplayLogic(item: Replay, nosound = false): void {
     if (curPos >= activeWord.children.length) {
       //if letter is an extra
       myElement = document.createElement("letter");
-      myElement.classList.add("extra");
+      myElement?.classList.add("extra");
       myElement.innerHTML = item.value?.toString() ?? "";
       activeWord.appendChild(myElement);
     }
     myElement = activeWord.children[curPos];
-    myElement.classList.add("incorrect");
+    myElement?.classList.add("incorrect");
     curPos++;
   } else if (
     item.action === "setLetterIndex" &&
@@ -126,7 +128,7 @@ function handleDisplayLogic(item: Replay, nosound = false): void {
     curPos = item.value;
     // remove all letters from cursor to end of word
     for (const myElement of [...activeWord.children].slice(curPos)) {
-      if (myElement.classList.contains("extra")) {
+      if (myElement?.classList.contains("extra")) {
         myElement.remove();
       } else {
         myElement.className = "";
@@ -138,7 +140,7 @@ function handleDisplayLogic(item: Replay, nosound = false): void {
     curPos = 0;
   } else if (item.action === "submitErrorWord") {
     if (!nosound) playSound(true);
-    activeWord.classList.add("error");
+    activeWord?.classList.add("error");
     wordPos++;
     curPos = 0;
   } else if (item.action === "backWord") {
@@ -147,11 +149,12 @@ function handleDisplayLogic(item: Replay, nosound = false): void {
 
     const replayWords = document.getElementById("replayWords");
 
-    if (replayWords !== null) activeWord = replayWords.children[wordPos];
+    if (replayWords !== null)
+      activeWord = replayWords.children[wordPos] as HTMLElement;
 
     curPos = activeWord.children.length;
-    while (activeWord.children[curPos - 1].className === "") curPos--;
-    activeWord.classList.remove("error");
+    while (activeWord.children[curPos - 1]?.className === "") curPos--;
+    activeWord?.classList.remove("error");
   }
 }
 
@@ -169,8 +172,16 @@ function loadOldReplay(): number {
       startingIndex = i + 1;
     }
   });
-  const time = Math.floor(replayData[startingIndex].time / 1000);
-  $("#replayStopwatch").text(time + "s");
+
+  const datatime = replayData[startingIndex]?.time;
+
+  if (datatime === undefined) {
+    throw new Error("Failed to load old replay: datatime is undefined");
+  }
+
+  const time = Math.floor(datatime / 1000);
+  updateStatsString(time);
+
   return startingIndex;
 }
 
@@ -212,7 +223,7 @@ function startReplayRecording(): void {
     //hide replay display if user left it open
     toggleReplayDisplay();
   }
-  $("#replayStopwatch").text(0 + "s");
+  $("#replayStats").text("");
   replayData = [];
   replayStartTime = performance.now();
   replayRecording = true;
@@ -233,6 +244,12 @@ function addReplayEvent(action: ReplayAction, value?: number | string): void {
   replayData.push({ action: action, value: value, time: timeDelta });
 }
 
+function updateStatsString(time: number): void {
+  const wpm = TestInput.wpmHistory[time - 1] ?? 0;
+  const statsString = `${wpm}wpm\t${time}s`;
+  $("#replayStats").text(statsString);
+}
+
 function playReplay(): void {
   curPos = 0;
   wordPos = 0;
@@ -246,14 +263,21 @@ function playReplay(): void {
   );
   initializeReplayPrompt();
   const startingIndex = loadOldReplay();
-  const lastTime = replayData[startingIndex].time;
+  const lastTime = replayData[startingIndex]?.time;
+
+  if (lastTime === undefined) {
+    throw new Error("Failed to play replay: lastTime is undefined");
+  }
+
   let swTime = Math.round(lastTime / 1000); //starting time
-  const swEndTime = Math.round(replayData[replayData.length - 1].time / 1000);
+  const swEndTime = Math.round(
+    (Arrays.lastElementFromArray(replayData) as Replay).time / 1000
+  );
   while (swTime <= swEndTime) {
     const time = swTime;
     stopwatchList.push(
       setTimeout(() => {
-        $("#replayStopwatch").text(time + "s");
+        updateStatsString(time);
       }, time * 1000 - lastTime)
     );
     swTime++;
@@ -276,7 +300,7 @@ function playReplay(): void {
         "aria-label",
         "Start replay"
       );
-    }, replayData[replayData.length - 1].time - lastTime)
+    }, (Arrays.lastElementFromArray(replayData) as Replay).time - lastTime)
   );
 }
 
@@ -302,17 +326,11 @@ $("#replayWords").on("click", "letter", (event) => {
 
   const words = [...(replayWords?.children ?? [])];
   targetWordPos = words.indexOf(event.target.parentNode);
-  const letters = [...words[targetWordPos].children];
+  const letters = [...(words[targetWordPos] as HTMLElement).children];
   targetCurPos = letters.indexOf(event.target);
 
   initializeReplayPrompt();
   loadOldReplay();
-});
-
-$(document).on("keypress", "#watchReplayButton", (event) => {
-  if (event.key === "Enter") {
-    toggleReplayDisplay();
-  }
 });
 
 $(".pageTest").on("click", "#watchReplayButton", () => {

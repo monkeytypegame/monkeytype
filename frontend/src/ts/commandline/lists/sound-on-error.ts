@@ -8,18 +8,45 @@ const subgroup: MonkeyTypes.CommandsSubgroup = {
     {
       id: "setPlaySoundOnErrorOff",
       display: "off",
-      configValue: false,
+      configValue: "off",
       exec: (): void => {
-        UpdateConfig.setPlaySoundOnError(false);
+        UpdateConfig.setPlaySoundOnError("off");
       },
     },
     {
-      id: "setPlaySoundOnErrorOn",
-      display: "on",
-      configValue: true,
+      id: "setPlaySoundOnError1",
+      display: "damage",
+      configValue: "1",
       exec: (): void => {
-        UpdateConfig.setPlaySoundOnError(true);
-        SoundController.playError();
+        UpdateConfig.setPlaySoundOnError("1");
+        void SoundController.playError();
+      },
+    },
+    {
+      id: "setPlaySoundOnError2",
+      display: "triangle",
+      configValue: "2",
+      exec: (): void => {
+        UpdateConfig.setPlaySoundOnError("2");
+        void SoundController.playError();
+      },
+    },
+    {
+      id: "setPlaySoundOnError3",
+      display: "square",
+      configValue: "3",
+      exec: (): void => {
+        UpdateConfig.setPlaySoundOnError("3");
+        void SoundController.playError();
+      },
+    },
+    {
+      id: "setPlaySoundOnError3",
+      display: "punch miss",
+      configValue: "4",
+      exec: (): void => {
+        UpdateConfig.setPlaySoundOnError("4");
+        void SoundController.playError();
       },
     },
   ],

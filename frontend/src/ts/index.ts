@@ -1,8 +1,19 @@
 // this file should be concatenated at the top of the legacy ts files
+import "jquery-color";
+import "jquery.easing";
 
-import "../styles/index.scss";
+import "./event-handlers/global";
+import "./event-handlers/footer";
+import "./event-handlers/keymap";
+import "./event-handlers/test";
+import "./event-handlers/about";
+import "./event-handlers/settings";
+import "./event-handlers/account";
+
+import "./modals/google-sign-up";
+
 import "./firebase";
-
+import * as Logger from "./utils/logger";
 import * as DB from "./db";
 import "./ui";
 import "./controllers/ad-controller";
@@ -11,56 +22,48 @@ import * as TestStats from "./test/test-stats";
 import * as Replay from "./test/replay";
 import * as TestTimer from "./test/test-timer";
 import * as Result from "./test/result";
-import * as TestInput from "./test/test-input";
 import "./controllers/account-controller";
 import { enable } from "./states/glarses-mode";
 import "./test/caps-warning";
-import "./popups/support-popup";
-import "./popups/contact-popup";
-import "./popups/version-popup";
-import "./popups/edit-preset-popup";
-import "./popups/simple-popups";
+import "./modals/simple-modals";
 import "./controllers/input-controller";
 import "./ready";
 import "./controllers/route-controller";
 import "./pages/about";
-import "./popups/pb-tables-popup";
 import "./elements/scroll-to-top";
-import "./popups/mobile-test-config-popup";
-import "./popups/edit-tags-popup";
-import "./popups/google-sign-up-popup";
 import * as Account from "./pages/account";
 import "./elements/leaderboards";
-import "./commandline/index";
 import "./elements/no-css";
 import { egVideoListener } from "./popups/video-ad-popup";
 import "./states/connection";
 import "./test/tts";
+import "./elements/fps-counter";
+import "./controllers/profile-search-controller";
+import { isDevEnvironment } from "./utils/misc";
 
-type ExtendedGlobal = typeof globalThis & MonkeyTypes.Global;
+function addToGlobal(items: Record<string, unknown>): void {
+  for (const [name, item] of Object.entries(items)) {
+    //@ts-expect-error
+    window[name] = item;
+  }
+}
 
-const extendedGlobal = global as ExtendedGlobal;
+addToGlobal({
+  snapshot: DB.getSnapshot,
+  config: Config,
+  toggleFilterDebug: Account.toggleFilterDebug,
+  glarsesMode: enable,
+  stats: TestStats.getStats,
+  replay: Replay.getReplayExport,
+  enableTimerDebug: TestTimer.enableTimerDebug,
+  getTimerStats: TestTimer.getTimerStats,
+  toggleUnsmoothedRaw: Result.toggleUnsmoothedRaw,
+  egVideoListener: egVideoListener,
+  toggleDebugLogs: Logger.toggleDebugLogs,
+});
 
-extendedGlobal.snapshot = DB.getSnapshot;
-
-extendedGlobal.config = Config;
-
-extendedGlobal.toggleFilterDebug = Account.toggleFilterDebug;
-
-extendedGlobal.glarsesMode = enable;
-
-extendedGlobal.stats = TestStats.getStats;
-
-extendedGlobal.replay = Replay.getReplayExport;
-
-extendedGlobal.enableTimerDebug = TestTimer.enableTimerDebug;
-
-extendedGlobal.getTimerStats = TestTimer.getTimerStats;
-
-extendedGlobal.toggleUnsmoothedRaw = Result.toggleUnsmoothedRaw;
-
-extendedGlobal.enableSpacingDebug = TestInput.enableSpacingDebug;
-
-extendedGlobal.egVideoListener = egVideoListener;
-
-extendedGlobal.wpmCalculationDebug = TestStats.wpmCalculationDebug;
+if (isDevEnvironment()) {
+  void import("jquery").then((jq) => {
+    addToGlobal({ $: jq.default });
+  });
+}

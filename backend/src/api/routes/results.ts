@@ -22,6 +22,8 @@ router.get(
   validateRequest({
     query: {
       onOrAfterTimestamp: joi.number().integer().min(1589428800000),
+      limit: joi.number().integer().min(0).max(1000),
+      offset: joi.number().integer().min(0),
     },
   }),
   asyncHandler(ResultController.getResults)
@@ -51,8 +53,14 @@ router.patch(
   RateLimit.resultsTagsUpdate,
   validateRequest({
     body: {
-      tagIds: joi.array().items(joi.string()).required(),
-      resultId: joi.string().required(),
+      tagIds: joi
+        .array()
+        .items(joi.string().regex(/^[a-f\d]{24}$/i))
+        .required(),
+      resultId: joi
+        .string()
+        .regex(/^[a-f\d]{24}$/i)
+        .required(),
     },
   }),
   asyncHandler(ResultController.updateTags)
