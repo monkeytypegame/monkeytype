@@ -128,6 +128,7 @@
         border-radius: 0;
         &:hover {
           color: var(--bg-color);
+          background-color: var(--text-color);
         }
       }
     }
