@@ -39,7 +39,7 @@ import AutoRoleList from "../../constants/auto-roles";
 import * as UserDAL from "../../dal/user";
 import { buildMonkeyMail } from "../../utils/monkey-mail";
 import FunboxList from "../../constants/funbox-list";
-import _, { result } from "lodash";
+import _ from "lodash";
 import * as WeeklyXpLeaderboard from "../../services/weekly-xp-leaderboard";
 import { UAParser } from "ua-parser-js";
 import { canFunboxGetPb } from "../../utils/pb";
@@ -602,6 +602,7 @@ export async function addResult(
 
   const addedResult = await ResultDAL.addResult(uid, dbresult);
 
+  //next two command could be combined to have only one call to mongo
   await UserDAL.incrementXp(uid, xpGained.xp);
   await UserDAL.incrementTestsByYearAndDate(user, completedEvent.timestamp);
 

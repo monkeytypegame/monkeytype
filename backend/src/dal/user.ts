@@ -616,7 +616,7 @@ export async function incrementTestsByYearAndDate(
   const year = date.getFullYear();
 
   if (
-    user.testsByYearAndDay === undefined ||
+    user.testsByYearAndDay === undefined || //TODO initial fill from results collection in this case
     user.testsByYearAndDay[year] === undefined
   ) {
     await getUsersCollection().updateOne(

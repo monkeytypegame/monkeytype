@@ -429,8 +429,8 @@ function getBuckets(data: (number | null)[]): number[] {
   const sorted = filtered.sort((a, b) => a - b);
 
   const trimmed = sorted.slice(
-    Math.round(data.length * 0.1),
-    data.length - Math.round(data.length * 0.1)
+    Math.round(sorted.length * 0.1),
+    data.length - Math.round(sorted.length * 0.1)
   );
   const sum = trimmed.reduce((a, c) => a + c, 0) as number;
   const mid = sum / trimmed.length;

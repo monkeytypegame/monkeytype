@@ -1,4 +1,4 @@
-import _, { times } from "lodash";
+import _ from "lodash";
 import uaparser from "ua-parser-js";
 
 //todo split this file into smaller util files (grouped by functionality)
@@ -308,7 +308,7 @@ export function isDevEnvironment(): boolean {
 
 export function dayOfTheYear(date: Date): number {
   return Math.floor(
-    // @ts-expect-error
+    // @ts-expect-error  TODO: figure out how to do this without disabling eslint
     (date - new Date(date.getFullYear(), 0, 0)) / 1000 / 60 / 60 / 24
   );
 }

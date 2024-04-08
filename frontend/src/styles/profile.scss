@@ -522,13 +522,18 @@
   grid-template-rows: min-content 1fr min-content;
   gap: 1em 1em;
   grid-template-areas:
-    "none month"
+    "year month"
     "day chart"
     "empty legend";
 
   background: var(--sub-alt-color);
   border-radius: var(--roundness);
   padding: 1rem;
+
+  .year {
+    grid-area: year;
+    color: var(--sub-color);
+  }
 
   .months {
     grid-area: month;
