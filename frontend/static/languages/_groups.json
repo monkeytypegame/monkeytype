@@ -44,7 +44,7 @@
   },
   {
     "name": "arabic",
-    "languages": ["arabic", "arabic_10k"]
+    "languages": ["arabic","arabic", "arabic_10k"]
   },
   {
     "name": "italian",
