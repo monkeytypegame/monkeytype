@@ -477,6 +477,9 @@ export async function generateWords(
   words: string[];
   sectionIndexes: number[];
 }> {
+  if (!TestState.isRepeated) {
+    previousGetNextWordReturns = [];
+  }
   currentQuote = [];
   currentSection = [];
   sectionIndex = 0;
@@ -579,6 +582,20 @@ async function generateQuoteWords(
     words: [],
     sectionIndexes: [],
   };
+  if (TestState.isRepeated) {
+    for (let i = 0; i < limit; i++) {
+      const repeated = previousGetNextWordReturns[i];
+
+      if (repeated === undefined) {
+        throw new WordGenError("Repeated word is undefined");
+      }
+
+      ret.words.push(repeated.word);
+      ret.sectionIndexes.push(repeated.sectionIndex);
+    }
+    return ret;
+  }
+
   const languageToGet = language.name.startsWith("swiss_german")
     ? "german"
     : language.name;
@@ -674,6 +691,13 @@ export let sectionIndex = 0;
 export let currentSection: string[] = [];
 let sectionHistory: string[] = [];
 
+let previousGetNextWordReturns: GetNextWordReturn[] = [];
+
+type GetNextWordReturn = {
+  word: string;
+  sectionIndex: number;
+};
+
 //generate next word
 export async function getNextWord(
   wordset: Wordset.Wordset,
@@ -682,11 +706,9 @@ export async function getNextWord(
   wordsBound: number,
   previousWord: string,
   previousWord2: string
-): Promise<{
-  word: string;
-  sectionIndex: number;
-}> {
+): Promise<GetNextWordReturn> {
   console.debug("Getting next word", {
+    isRepeated: TestState.isRepeated,
     wordset,
     wordIndex,
     language,
@@ -694,6 +716,18 @@ export async function getNextWord(
     previousWord,
     previousWord2,
   });
+
+  if (TestState.isRepeated) {
+    const repeated = previousGetNextWordReturns[wordIndex];
+
+    if (repeated === undefined) {
+      throw new WordGenError("Repeated word is undefined");
+    }
+
+    console.debug("Repeated word: ", repeated);
+    return repeated;
+  }
+
   const funboxFrequency = getFunboxWordsFrequency() ?? "normal";
   let randomWord = wordset.randomWord(funboxFrequency);
   const previousWordRaw = previousWord.replace(/[.?!":\-,]/g, "").toLowerCase();
@@ -838,8 +872,12 @@ export async function getNextWord(
 
   console.debug("Word:", randomWord);
 
-  return {
+  const ret = {
     word: randomWord,
     sectionIndex: sectionIndex,
   };
+
+  previousGetNextWordReturns.push(ret);
+
+  return ret;
 }
