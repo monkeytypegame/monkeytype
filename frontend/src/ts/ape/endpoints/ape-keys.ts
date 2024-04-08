@@ -22,10 +22,12 @@ export default class ApeKeys {
     updates: { name?: string; enabled?: boolean }
   ): Ape.EndpointResponse<null> {
     const payload = { ...updates };
-    return await this.httpClient.patch(`${BASE_PATH}/${apeKeyId}`, { payload });
+    const encoded = encodeURIComponent(apeKeyId);
+    return await this.httpClient.patch(`${BASE_PATH}/${encoded}`, { payload });
   }
 
   async delete(apeKeyId: string): Ape.EndpointResponse<null> {
-    return await this.httpClient.delete(`${BASE_PATH}/${apeKeyId}`);
+    const encoded = encodeURIComponent(apeKeyId);
+    return await this.httpClient.delete(`${BASE_PATH}/${encoded}`);
   }
 }
