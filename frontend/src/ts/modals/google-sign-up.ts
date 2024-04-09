@@ -23,6 +23,7 @@ let signedInUser: UserCredential | undefined = undefined;
 
 function show(credential: UserCredential): void {
   void modal.show({
+    mode: "dialog",
     focusFirstInput: true,
     beforeAnimation: async () => {
       CaptchaController.reset("googleSignUpModal");
