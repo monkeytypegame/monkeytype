@@ -9,7 +9,7 @@
     "clean": "tsc --build --clean",
     "start": "npm run build && node ./build/server.js",
     "test": "jest --verbose --collect-coverage --runInBand",
-    "dev": "ts-node-dev ./src/server.ts -- --inspect --transpileOnly",
+    "dev": "ts-node-dev --transpile-only --inspect -- ./src/server.ts",
     "knip": "knip",
     "docker-db-only": "docker compose -f docker/compose.db-only.yml up",
     "docker": "docker compose -f docker/compose.yml up"
