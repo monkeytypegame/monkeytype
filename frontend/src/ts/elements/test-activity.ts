@@ -1,8 +1,11 @@
 import format from "date-fns/format";
+import SlimSelect from "slim-select";
+import type { DataObjectPartial } from "slim-select/dist/store";
+import * as Dates from "date-fns";
 
 export function update(
   data: (number | null)[] | undefined,
-  year: number
+  lastDay: Date
 ): void {
   if (data === undefined) {
     $("#testActivity").addClass("hidden");
@@ -13,11 +16,10 @@ export function update(
   const container = document.querySelector("#testActivity .activity");
   if (container === null)
     throw new Error("cannot find container #testActivity .activity");
-
   container.innerHTML = "";
 
   //test data
-  data = [
+  const data2 = [
     12,
     23,
     null,
@@ -386,14 +388,31 @@ export function update(
     23,
   ];
 
-  console.log(data);
+  //data = data.slice(0, -21);
+  const endDay = Dates.startOfDay(Dates.endOfMonth(lastDay));
+  const startDay = Dates.addDays(Dates.subYears(endDay, 1), 1);
+  const interval = { start: startDay, end: endDay };
+
+  //start more test data
+  const dataInterval = {
+    start: Dates.subDays(Dates.startOfDay(Dates.subYears(lastDay, 1)), 20),
+    end: Dates.startOfDay(lastDay),
+  };
+  console.log(dataInterval);
+
+  const data3 = Dates.eachDayOfInterval(dataInterval).map((it) =>
+    Dates.getDayOfYear(it)
+  );
+  console.log(data3);
+
+  //end
+
+  data = data2;
+
+  updateYearSelector(endDay);
+  updateMonths(interval);
+
   const buckets = getBuckets(data);
-  const firstDay = new Date(year, 0, 1, 12, 0, 0);
-  const lastDay = new Date(year, 11, 31, 12, 0, 0);
-
-  // @ts-expect-error
-  const days = (lastDay - firstDay) / 1000 / 60 / 60 / 24;
-
   const getValue = (v: number | null): number => {
     if (v === null || v === 0) return 0;
     for (let b = 0; b < 4; b++) if (v <= (buckets[b] ?? 0)) return 1 + b;
@@ -402,26 +421,62 @@ export function update(
   };
 
   //skip weekdays in the previous year
-  for (let i = 0; i < firstDay.getDay(); i++) {
+  for (let i = 0; i < startDay.getDay(); i++) {
     const elem = document.createElement("div");
     elem.className = "filler";
     container.appendChild(elem);
   }
 
-  const currentDate = firstDay;
-  for (let i = 0; i <= days; i++) {
+  const days = Dates.differenceInDays(interval.end, interval.start) + 1;
+  const offset =
+    data.length -
+    days +
+    Math.abs(Dates.differenceInDays(interval.end, lastDay)) +
+    1;
+
+  console.log({ days, offset });
+
+  let currentDate = startDay;
+  for (let i = offset; i < days + offset; i++) {
     const elem = document.createElement("div");
-    elem.setAttribute("data-level", getValue(data[i] ?? null).toString());
-    if (data[i] !== null) {
-      elem.setAttribute("data-balloon-pos", "up");
-      elem.setAttribute(
-        "aria-label",
-        `${data[i]} tests on ${format(currentDate, "dd MMM yyyy")}`
-      );
+    if (data[i] === undefined) {
+      elem.className = "filler";
+    } else {
+      elem.setAttribute("data-level", getValue(data[i] ?? null).toString());
+      if (data[i] !== null) {
+        elem.setAttribute("data-balloon-pos", "up");
+        elem.setAttribute(
+          "aria-label",
+          `${data[i]} tests on ${format(currentDate, "EEEE dd MMM yyyy")}`
+        );
+      }
     }
     container.appendChild(elem);
-    currentDate.setDate(currentDate.getDate() + 1);
+    currentDate = Dates.addDays(currentDate, 1);
   }
+}
+
+function updateYearSelector(startDate: Date): void {
+  const selectedYear = startDate.getFullYear();
+  const currentYear = new Date().getFullYear();
+  const years: DataObjectPartial[] = [
+    { text: currentYear.toString(), value: "current" },
+  ];
+  for (let year = currentYear - 1; year >= 2020; year--) {
+    years.push({
+      text: year.toString(),
+      value: year.toString(),
+      selected: year == selectedYear,
+    });
+  }
+
+  new SlimSelect({
+    select: "#testActivity .yearSelect",
+    settings: {
+      showSearch: false,
+    },
+    data: years,
+  });
 }
 
 function getBuckets(data: (number | null)[]): number[] {
@@ -435,4 +490,12 @@ function getBuckets(data: (number | null)[]): number[] {
   const sum = trimmed.reduce((a, c) => a + c, 0) as number;
   const mid = sum / trimmed.length;
   return [Math.floor(mid / 2), Math.round(mid), Math.round(mid * 1.5)];
+}
+
+function updateMonths(interval: Interval): void {
+  const months = document.querySelector("#testActivity .months") as Element;
+
+  months.innerHTML = Dates.eachMonthOfInterval(interval)
+    .map((month) => `<div>${Dates.format(month, "MMM`yy")}</div>`)
+    .join("");
 }

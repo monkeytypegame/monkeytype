@@ -212,7 +212,10 @@ async function fillContent(): Promise<void> {
 
   PbTables.update(snapshot.personalBests);
   void Profile.update("account", snapshot);
-  void TestActivity.update(snapshot.testActivity, new Date().getFullYear());
+
+  const demoDate = new Date();
+
+  void TestActivity.update(snapshot.testActivity, demoDate);
   void void ResultBatches.update();
 
   chartData = [];

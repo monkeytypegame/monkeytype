@@ -469,3 +469,124 @@
   user-select: none;
   background-color: var(--sub-alt-color);
 }
+
+#testActivity {
+  display: grid;
+  grid-template-columns: min-content 1fr;
+  grid-template-rows: min-content 1fr min-content;
+  gap: 1em 1em;
+  grid-template-areas:
+    "year month"
+    "day chart"
+    "empty legend";
+
+  background: var(--sub-alt-color);
+  border-radius: var(--roundness);
+  padding: 1rem;
+
+  .yearSelect,
+  .months div,
+  .days div,
+  .legend {
+    color: var(--sub-color);
+    font-size: 0.8em;
+  }
+
+  .year {
+    grid-area: year;
+  }
+
+  .months {
+    grid-area: month;
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+
+    div {
+      width: 100%;
+      text-align: center;
+      padding-top: 0.5em;
+    }
+  }
+
+  .days {
+    grid-area: day;
+    display: grid;
+    grid-template-rows: repeat(7, 1fr);
+  }
+
+  .activity {
+    grid-area: chart;
+    display: grid;
+    grid-auto-flow: column;
+    grid-template-rows: repeat(7, 1fr);
+    grid-template-columns: repeat(53, 1fr);
+    gap: 0.25rem;
+
+    div {
+      width: 100%;
+      aspect-ratio: 1;
+    }
+  }
+
+  .activity div {
+    &:hover {
+      border: 2px solid var(--text-color);
+    }
+    &.filler:hover,
+    &[data-level="0"]:hover {
+      border: none;
+    }
+  }
+
+  .activity div,
+  .legend div {
+    border-radius: 0.25em;
+
+    &[data-level="0"],
+    &.filler {
+      background-color: color-mix(
+        in srgb,
+        var(--bg-color) 100%,
+        var(--sub-alt-color)
+      );
+    }
+    &[data-level="1"] {
+      background-color: color-mix(
+        in srgb,
+        var(--main-color) 20%,
+        var(--sub-alt-color)
+      );
+    }
+
+    &[data-level="2"] {
+      background-color: color-mix(
+        in srgb,
+        var(--main-color) 50%,
+        var(--sub-alt-color)
+      );
+    }
+
+    &[data-level="3"] {
+      background-color: color-mix(
+        in srgb,
+        var(--main-color) 75%,
+        var(--sub-alt-color)
+      );
+    }
+
+    &[data-level="4"] {
+      background-color: var(--main-color);
+    }
+  }
+
+  .legend {
+    grid-area: legend;
+    display: flexbox;
+
+    div {
+      display: inline-flex;
+      height: 100%;
+      aspect-ratio: 1/1;
+    }
+  }
+}
