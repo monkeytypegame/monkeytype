@@ -1209,5 +1209,12 @@
     "mainColor": "#ff9900",
     "subColor": "#2f2f2f",
     "textColor": "#c6c6c6"
+  },
+  {
+    "name": "discord",
+    "bgColor": "#202225",
+    "mainColor": "#5eaeeb",
+    "subColor": "#646669",
+    "textColor": "#d1d0c5"
   }
 ]
