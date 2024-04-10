@@ -48,4 +48,48 @@ router.post(
   asyncHandler(toggleBan)
 );
 
+router.post(
+  "/report/accept",
+  authenticateRequest({
+    noCache: true,
+  }),
+  checkIfUserIsAdmin(),
+  validateRequest({
+    body: {
+      reports: joi
+        .array()
+        .items(
+          joi.object({
+            reportId: joi.string().required(),
+            verdict: joi.boolean().required(),
+          })
+        )
+        .required(),
+    },
+  }),
+  asyncHandler(AdminController.acceptReports)
+);
+
+router.post(
+  "/report/reject",
+  authenticateRequest({
+    noCache: true,
+  }),
+  checkIfUserIsAdmin(),
+  validateRequest({
+    body: {
+      reports: joi
+        .array()
+        .items(
+          joi.object({
+            reportId: joi.string().required(),
+            verdict: joi.boolean().required(),
+          })
+        )
+        .required(),
+    },
+  }),
+  asyncHandler(AdminController.rejectReports)
+);
+
 export default router;
