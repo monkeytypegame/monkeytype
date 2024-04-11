@@ -519,7 +519,7 @@
     display: grid;
     grid-auto-flow: column;
     grid-template-rows: repeat(7, 1fr);
-    grid-template-columns: repeat(53, 1fr);
+    grid-template-columns: repeat(54, 1fr);
     gap: 0.25rem;
 
     div {
@@ -532,7 +532,7 @@
     &:hover {
       border: 2px solid var(--text-color);
     }
-    &.filler:hover,
+    &[data-level="filler"]:hover,
     &[data-level="0"]:hover {
       border: none;
     }
@@ -542,11 +542,11 @@
   .legend div {
     border-radius: 0.25em;
 
-    &[data-level="0"],
-    &.filler {
+    &[data-level="filler"],
+    &[data-level="0"] {
       background-color: color-mix(
         in srgb,
-        var(--bg-color) 100%,
+        var(--bg-color) 50%,
         var(--sub-alt-color)
       );
     }
