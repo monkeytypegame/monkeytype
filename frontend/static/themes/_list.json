@@ -1216,5 +1216,19 @@
     "mainColor": "#5a65ea",
     "subColor": "#565861",
     "textColor": "#dcdee3"
+  },
+  {
+    "name": "aira_hope",
+    "bgColor": "#131C24",
+    "mainColor": "#50E191",
+    "subColor": "#17212B",
+    "textColor": "#E5E5E5"
+  },
+  {
+    "name": "aira_peace",
+    "bgColor": "#282D3D",
+    "mainColor": "#50E191",
+    "subColor": "#17212B",
+    "textColor": "#E5E5E5"
   }
 ]
