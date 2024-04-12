@@ -61,7 +61,6 @@ router.post(
         .items(
           joi.object({
             reportId: joi.string().required(),
-            verdict: joi.boolean().required(),
           })
         )
         .required(),
@@ -83,7 +82,7 @@ router.post(
         .items(
           joi.object({
             reportId: joi.string().required(),
-            verdict: joi.boolean().required(),
+            reason: joi.string().optional(),
           })
         )
         .required(),
