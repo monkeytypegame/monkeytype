@@ -3,6 +3,21 @@ import * as db from "../init/db";
 
 const COLLECTION_NAME = "reports";
 
+export async function getReports(
+  reportIds: ObjectId[]
+): Promise<MonkeyTypes.Report[]> {
+  const query = { _id: { $in: reportIds } };
+  return await db
+    .collection<MonkeyTypes.Report>(COLLECTION_NAME)
+    .find(query)
+    .toArray();
+}
+
+export async function deleteReports(reportIds: ObjectId[]): Promise<void> {
+  const query = { _id: { $in: reportIds } };
+  await db.collection(COLLECTION_NAME).deleteMany(query);
+}
+
 export async function createReport(
   report: MonkeyTypes.Report,
   maxReports: number,

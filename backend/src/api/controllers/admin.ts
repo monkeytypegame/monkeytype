@@ -1,74 +1,68 @@
 import { MonkeyResponse } from "../../utils/monkey-response";
 import { ObjectId } from "mongodb";
-import * as db from "../../init/db";
-import MonkeyError from "../../utils/error";
 import { buildMonkeyMail } from "../../utils/monkey-mail";
 import * as UserDAL from "../../dal/user";
+import * as ReportDAL from "../../dal/report";
 
 export async function test(): Promise<MonkeyResponse> {
   return new MonkeyResponse("OK");
 }
 
-const REPORTS_COLLECTION = "reports";
-async function removeReportFromDb(reportId: string): Promise<void> {
-  const query = { _id: new ObjectId(reportId) };
-  const result = await db
-    .collection<MonkeyTypes.Report>(REPORTS_COLLECTION)
-    .deleteOne(query);
-  if (result.deletedCount === 0) {
-    throw new MonkeyError(404, "Report not found.");
-  }
-}
-
 export async function acceptReports(
   req: MonkeyTypes.Request
 ): Promise<MonkeyResponse> {
-  const { reports } = req.body;
-  try {
-    for (const { reportId } of reports) {
-      const query = { _id: new ObjectId(reportId) };
-      const report = await db
-        .collection<MonkeyTypes.Report>(REPORTS_COLLECTION)
-        .findOne(query);
-      if (!report) {
-        throw new MonkeyError(404, "Report not found.");
-      }
-      const mailBody = `Your report for the ${report.type}: ${report.contentId} (for ${report.reason}) was approved.`;
-      const mail = buildMonkeyMail({
-        subject: "Report approved",
-        body: mailBody,
-      });
-      await UserDAL.addToInbox(
-        report.uid,
-        [mail],
-        req.ctx.configuration.users.inbox
-      );
-      await removeReportFromDb(reportId);
-    }
-    return new MonkeyResponse("Accepted reports removed and users notified.");
-  } catch (e) {
-    return new MonkeyResponse(e.message, e.status);
-  }
+  return handleReports(req, true);
 }
 
 export async function rejectReports(
   req: MonkeyTypes.Request
 ): Promise<MonkeyResponse> {
+  return handleReports(req, false);
+}
+
+export async function handleReports(
+  req: MonkeyTypes.Request,
+  accept: boolean
+): Promise<MonkeyResponse> {
   const { reports } = req.body;
-  try {
-    for (const { reportId, reason } of reports) {
-      const query = { _id: new ObjectId(reportId) };
-      const report = await db
-        .collection<MonkeyTypes.Report>(REPORTS_COLLECTION)
-        .findOne(query);
-      if (!report) {
-        throw new MonkeyError(404, "Report not found.");
-      }
+  const reportIds = reports.map(({ reportId }) => new ObjectId(reportId));
+
+  const reportsFromDb = await ReportDAL.getReports(reportIds);
+  const existingReportIds = reportsFromDb.map((report) =>
+    report._id.toString()
+  );
+  const missingReportIds = reportIds.filter(
+    (reportId) => !existingReportIds.includes(reportId.toString())
+  );
+
+  if (missingReportIds.length > 0) {
+    return new MonkeyResponse(
+      `Reports not found for some IDs`,
+      missingReportIds,
+      404
+    );
+  }
+
+  await ReportDAL.deleteReports(reportIds);
+
+  // sorting both the arrays ensures one to one mapping as no reports are missing
+  reports.sort((a, b) => a.reportId.localeCompare(b.reportId));
+  reportsFromDb.sort((a, b) =>
+    a._id.toString().localeCompare(b._id.toString())
+  );
+  for (let i = 0; i < reports.length; i++) {
+    reports[i].report = reportsFromDb[i];
+  }
+
+  for (const { _, reason, report } of reports) {
+    try {
       const mailBody =
-        `Your report for the ${report.type}: ${report.contentId} (for ${report.reason}) was not approved.` +
+        `Your report for the ${report.type}: ${report.contentId} (for ${report.reason}) was ` +
+        (accept ? `approved.` : `denied.`) +
         (reason !== undefined ? `\nReason: ${reason}` : "");
+      const mailSubject = accept ? "Report approved" : "Report denied";
       const mail = buildMonkeyMail({
-        subject: "Report not approved",
+        subject: mailSubject,
         body: mailBody,
       });
       await UserDAL.addToInbox(
@@ -76,10 +70,9 @@ export async function rejectReports(
         [mail],
         req.ctx.configuration.users.inbox
       );
-      await removeReportFromDb(reportId);
+    } catch (e) {
+      return new MonkeyResponse(e.message, null, e.status);
     }
-    return new MonkeyResponse("Rejected reports removed and users notified.");
-  } catch (e) {
-    return new MonkeyResponse(e.message, e.status);
   }
+  return new MonkeyResponse("Reports removed and users notified.");
 }
