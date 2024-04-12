@@ -3,28 +3,42 @@ import SlimSelect from "slim-select";
 import type { DataObjectPartial } from "slim-select/dist/store";
 import * as Dates from "date-fns";
 
-type ActivityDay = {
+export type ActivityDay = {
   level: string;
   label?: string;
 };
+
 export class ActivityCalendar {
-  private data: (number | null | undefined)[];
-  private startDay: Date;
-  private endDay: Date;
+  protected data: (number | null | undefined)[];
+  protected startDay: Date;
+  protected endDay: Date;
 
   constructor(data: (number | null)[], lastDay: Date) {
-    this.endDay = Dates.endOfMonth(lastDay);
-    this.startDay = Dates.addDays(Dates.subYears(this.endDay, 1), 1);
+    const interval = this.getInterval(lastDay);
+    this.startDay = interval.start as Date;
+    this.endDay = interval.end as Date;
+    this.data = this.buildData(data, lastDay);
+  }
 
+  protected getInterval(lastDay: Date): Interval {
+    const end = Dates.endOfMonth(lastDay);
+    const start = Dates.addDays(Dates.subYears(end, 1), 1);
+    return { start, end };
+  }
+
+  protected buildData(
+    data: (number | null | undefined)[],
+    lastDay: Date
+  ): (number | null | undefined)[] {
     //fill calendar with enough values
-    const values = new Array(386 - data.length).fill(undefined);
+    const values = new Array(Math.max(0, 386 - data.length)).fill(undefined);
     values.push(...data);
 
     //discard values outside the calendar range
     const days = Dates.differenceInDays(this.endDay, this.startDay) + 1;
     const offset =
       values.length - days + Dates.differenceInDays(this.endDay, lastDay);
-    this.data = values.slice(offset);
+    return values.slice(offset);
   }
 
   getMonths(): string[] {
@@ -32,26 +46,6 @@ export class ActivityCalendar {
       start: this.startDay,
       end: this.endDay,
     }).map((month) => Dates.format(month, "MMM`yy"));
-  }
-
-  getYearSelector(): DataObjectPartial[] {
-    const selectedYear = this.endDay.getFullYear();
-    const currentYear = new Date().getFullYear();
-    const years: DataObjectPartial[] = [
-      {
-        text: currentYear.toString(),
-        value: "current",
-        selected: selectedYear == currentYear,
-      },
-    ];
-    for (let year = currentYear - 1; year >= 2020; year--) {
-      years.push({
-        text: year.toString(),
-        value: year.toString(),
-        selected: year == selectedYear,
-      });
-    }
-    return years;
   }
 
   getDays(): ActivityDay[] {
@@ -118,6 +112,37 @@ export class ActivityCalendar {
   }
 }
 
+export class ModifiableActicityCalendar extends ActivityCalendar {
+  private lastDay: Date;
+
+  constructor(data: (number | null)[], lastDay: Date) {
+    super(data, lastDay);
+    this.lastDay = lastDay;
+  }
+
+  increment(date: Date): void {
+    if (Dates.isSameDay(date, this.lastDay)) {
+      const last = this.data.length - 1;
+      this.data[last] = (this.data[last] || 0) + 1;
+    } else if (Dates.isBefore(date, this.lastDay)) {
+      throw new Error("cannot alter data in the past.");
+    } else {
+      const missedDays = Dates.differenceInDays(date, this.lastDay) - 1;
+      for (let i = 0; i < missedDays; i++) {
+        this.data.push(undefined);
+      }
+      this.data.push(1);
+      //update timeframe
+      const interval = this.getInterval(date);
+      this.startDay = interval.start as Date;
+      this.endDay = interval.end as Date;
+      this.lastDay = date;
+    }
+
+    this.data = this.buildData(this.data, this.lastDay);
+  }
+}
+
 export function update(
   data: (number | null)[] | undefined,
   lastDay: Date
@@ -133,8 +158,10 @@ export function update(
     throw new Error("cannot find container #testActivity .activity");
   container.innerHTML = "";
 
+  data = new Array(400).fill(null).map((it) => Math.round(Math.random() * 255));
+
   const calendar = new ActivityCalendar(data, lastDay);
-  initYearSelector(calendar.getYearSelector());
+  initYearSelector(lastDay);
   updateMonths(calendar.getMonths());
 
   for (const day of calendar.getDays()) {
@@ -148,7 +175,24 @@ export function update(
   }
 }
 
-function initYearSelector(years: DataObjectPartial[]): void {
+function initYearSelector(selectedDate: Date): void {
+  const selectedYear = selectedDate.getFullYear();
+  const currentYear = new Date().getFullYear();
+  const years: DataObjectPartial[] = [
+    {
+      text: currentYear.toString(),
+      value: "current",
+      selected: selectedYear == currentYear,
+    },
+  ];
+  for (let year = currentYear - 1; year >= 2020; year--) {
+    years.push({
+      text: year.toString(),
+      value: year.toString(),
+      selected: year == selectedYear,
+    });
+  }
+
   new SlimSelect({
     select: "#testActivity .yearSelect",
     settings: {
