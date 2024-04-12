@@ -1212,9 +1212,9 @@
   },
   {
     "name": "discord",
-    "bgColor": "#202225",
-    "mainColor": "#5eaeeb",
-    "subColor": "#646669",
-    "textColor": "#d1d0c5"
+    "bgColor": "#313338",
+    "mainColor": "#5a65ea",
+    "subColor": "#565861",
+    "textColor": "#dcdee3"
   }
 ]
