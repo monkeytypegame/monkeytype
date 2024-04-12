@@ -1275,7 +1275,7 @@ export const page = new Page({
       $(".pageAccount .preloader").removeClass("hidden");
       await LoadingPage.showBar();
     }
-    await ResultFilters.appendButtons();
+    await ResultFilters.appendButtons(update);
     ResultFilters.updateActive();
     await Misc.sleep(0);
 
