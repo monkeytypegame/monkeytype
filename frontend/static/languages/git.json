@@ -49,6 +49,7 @@
     "archive",
     "bundle",
     "build",
-    "cherrypick"
+    "cherrypick",
+    "@"
   ]
 }
