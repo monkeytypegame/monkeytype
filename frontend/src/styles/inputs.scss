@@ -190,7 +190,8 @@ select:-webkit-autofill:focus {
   font-size: 1em;
   font-family: var(--font);
   caret-color: var(--main-color);
-  line-height: 1.25em;
+  line-height: 1.25;
+  min-height: 2.25em;
   &:focus {
     box-shadow: inherit;
   }
@@ -224,13 +225,16 @@ select:-webkit-autofill:focus {
         color: var(--bg-color);
         background: var(--main-color);
         border-radius: calc(var(--roundness) / 2) 0 0 calc(var(--roundness) / 2);
+        display: flex;
+        align-items: center;
+        padding: 0.35em 0.5em;
       }
       .ss-value-delete {
         border-left: 1px solid var(--bg-color);
         background: var(--main-color);
         height: 100%;
         box-sizing: border-box;
-        width: 100%;
+        width: min-content;
         border-radius: 0 calc(var(--roundness) / 2) calc(var(--roundness) / 2) 0;
         transition: background 0.125s;
         svg path {

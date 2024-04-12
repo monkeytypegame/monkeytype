@@ -438,6 +438,10 @@
   .pageAccount .presetFilterButtons .buttons {
     grid-template-columns: 1fr;
   }
+  .pageAccount .group.filterButtons {
+    grid-template-columns: 1fr;
+  }
+
   .pageAccount {
     .triplegroup {
       grid-template-columns: 1fr 1fr;

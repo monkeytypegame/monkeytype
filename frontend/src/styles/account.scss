@@ -409,6 +409,17 @@
     display: grid;
     grid-template-columns: 1fr 1fr;
 
+    .tripleSelectsColumn {
+      grid-column: 1/-1;
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      .buttonsAndTitle {
+        flex-grow: 1;
+        min-width: 20rem;
+      }
+    }
+
     .buttonsAndTitle {
       height: fit-content;
       height: -moz-fit-content;
