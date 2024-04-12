@@ -1,5 +1,4 @@
 import { MonkeyResponse } from "../../utils/monkey-response";
-import { ObjectId } from "mongodb";
 import { buildMonkeyMail } from "../../utils/monkey-mail";
 import * as UserDAL from "../../dal/user";
 import * as ReportDAL from "../../dal/report";
@@ -25,14 +24,14 @@ export async function handleReports(
   accept: boolean
 ): Promise<MonkeyResponse> {
   const { reports } = req.body;
-  const reportIds = reports.map(({ reportId }) => new ObjectId(reportId));
+  const reportIds = reports.map(({ reportId }) => reportId);
 
   const reportsFromDb = await ReportDAL.getReports(reportIds);
-  const existingReportIds = reportsFromDb.map((report) =>
-    report._id.toString()
-  );
+  const reportById = new Map(reportsFromDb.map((it) => [it.id, it]));
+
+  const existingReportIds = reportsFromDb.map((report) => report.id);
   const missingReportIds = reportIds.filter(
-    (reportId) => !existingReportIds.includes(reportId.toString())
+    (reportId) => !existingReportIds.includes(reportId)
   );
 
   if (missingReportIds.length > 0) {
@@ -45,19 +44,18 @@ export async function handleReports(
 
   await ReportDAL.deleteReports(reportIds);
 
-  // sorting both the arrays ensures one to one mapping as no reports are missing
-  reports.sort((a, b) => a.reportId.localeCompare(b.reportId));
-  reportsFromDb.sort((a, b) =>
-    a._id.toString().localeCompare(b._id.toString())
-  );
-  for (let i = 0; i < reports.length; i++) {
-    reports[i].report = reportsFromDb[i];
-  }
-
-  for (const { _, reason, report } of reports) {
+  for (const { reportId, reason } of reports) {
     try {
+      const report = reportById.get(reportId);
+      if (!report) {
+        return new MonkeyResponse(
+          `Report not found for ID: ${reportId}`,
+          null,
+          404
+        );
+      }
       const mailBody =
-        `Your report for the ${report.type}: ${report.contentId} (for ${report.reason}) was ` +
+        `Your report for the ${report.type}, ${report.contentId} (for ${report.reason}) was ` +
         (accept ? `approved.` : `denied.`) +
         (reason !== undefined ? `\nReason: ${reason}` : "");
       const mailSubject = accept ? "Report approved" : "Report denied";
