@@ -9,7 +9,7 @@ import * as WordFilterPopup from "./word-filter";
 import * as Notifications from "../elements/notifications";
 import * as SavedTextsPopup from "./saved-texts";
 import * as SaveCustomTextPopup from "./save-custom-text";
-import AnimatedModal from "../utils/animated-modal";
+import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
 
 const popup = "#customTextModal .modal";
 
@@ -106,9 +106,10 @@ async function afterAnimation(): Promise<void> {
   }
 }
 
-export function show(): void {
+export function show(showOptions?: ShowOptions): void {
   state.textarea = state.lastSavedTextareaState;
   void modal.show({
+    ...(showOptions as ShowOptions<IncomingData>),
     beforeAnimation,
     afterAnimation,
   });
