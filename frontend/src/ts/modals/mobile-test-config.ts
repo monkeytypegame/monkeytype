@@ -149,8 +149,9 @@ async function setup(modalEl: HTMLElement): Promise<void> {
   }
 
   modalEl.querySelector(".customChange")?.addEventListener("click", () => {
-    hide(); //todo use modal chaining here
-    CustomTextPopup.show();
+    CustomTextPopup.show({
+      modalChain: modal,
+    });
   });
 
   modalEl.querySelector(".punctuation")?.addEventListener("click", () => {
