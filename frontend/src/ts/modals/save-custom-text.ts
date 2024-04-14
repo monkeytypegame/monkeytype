@@ -8,19 +8,19 @@ import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
 let indicator: InputIndicator | undefined;
 
 type State = {
-  textToSave: string;
+  textToSave: string[];
 };
 
 const state: State = {
-  textToSave: "",
+  textToSave: [],
 };
 
 export async function show(options: ShowOptions<IncomingData>): Promise<void> {
-  state.textToSave = "";
+  state.textToSave = [];
   void modal.show({
     ...options,
     beforeAnimation: async (modalEl, modalChainData) => {
-      state.textToSave = modalChainData?.text ?? "";
+      state.textToSave = modalChainData?.text ?? [];
       $("#saveCustomTextModal .textName").val("");
       $("#saveCustomTextModal .isLongText").prop("checked", false);
       $("#saveCustomTextModal button.save").prop("disabled", true);
@@ -45,8 +45,6 @@ function save(): boolean {
     Notifications.add("Custom text can't be empty", 0);
     return false;
   }
-
-  state.textToSave = state.textToSave.replace(/( *(\r\n|\r|\n) *)/g, "\n ");
 
   CustomText.setCustomText(name, state.textToSave, checkbox);
   CustomTextState.setCustomTextName(name, checkbox);
@@ -112,7 +110,7 @@ async function setup(modalEl: HTMLElement): Promise<void> {
 }
 
 type IncomingData = {
-  text: string;
+  text: string[];
 };
 
 const modal = new AnimatedModal<IncomingData>({
