@@ -2,6 +2,9 @@ import format from "date-fns/format";
 import SlimSelect from "slim-select";
 import type { DataObjectPartial } from "slim-select/dist/store";
 import * as Dates from "date-fns";
+import { getTestActivities } from "../db";
+
+let yearSelector: SlimSelect | undefined;
 
 export type ActivityDay = {
   level: string;
@@ -143,11 +146,8 @@ export class ModifiableActicityCalendar extends ActivityCalendar {
   }
 }
 
-export function update(
-  data: (number | null)[] | undefined,
-  lastDay: Date
-): void {
-  if (data === undefined) {
+export function update(testActivity?: SharedTypes.TestActivity): void {
+  if (testActivity === undefined) {
     $("#testActivity").addClass("hidden");
     return;
   }
@@ -158,9 +158,12 @@ export function update(
     throw new Error("cannot find container #testActivity .activity");
   container.innerHTML = "";
 
-  data = new Array(400).fill(null).map((it) => Math.round(Math.random() * 255));
+  const lastDay = new Date(testActivity.lastDay);
 
-  const calendar = new ActivityCalendar(data, lastDay);
+  //test data
+  //data = new Array(400).fill(null).map((it) => Math.round(Math.random() * 255));
+
+  const calendar = new ActivityCalendar(testActivity.testsByDays, lastDay);
   initYearSelector(lastDay);
   updateMonths(calendar.getMonths());
 
@@ -176,6 +179,7 @@ export function update(
 }
 
 function initYearSelector(selectedDate: Date): void {
+  if (yearSelector !== undefined) return;
   const selectedYear = selectedDate.getFullYear();
   const currentYear = new Date().getFullYear();
   const years: DataObjectPartial[] = [
@@ -193,12 +197,19 @@ function initYearSelector(selectedDate: Date): void {
     });
   }
 
-  new SlimSelect({
+  yearSelector = new SlimSelect({
     select: "#testActivity .yearSelect",
     settings: {
       showSearch: false,
     },
     data: years,
+    events: {
+      afterChange: async (newVal): Promise<void> => {
+        const selected = newVal[0]?.value as string;
+        const activity = await getTestActivities(selected);
+        update(activity);
+      },
+    },
   });
 }
 

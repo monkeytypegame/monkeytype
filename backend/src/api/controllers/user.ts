@@ -30,6 +30,8 @@ import {
   removeTokensFromCacheByUid,
   deleteUser as firebaseDeleteUser,
 } from "../../utils/auth";
+import * as Dates from "date-fns";
+import { number } from "joi";
 
 async function verifyCaptcha(captcha: string): Promise<void> {
   if (!(await verify(captcha))) {
@@ -404,7 +406,7 @@ export async function getUser(
   const isPremium = await UserDAL.checkIfUserIsPremium(uid, userInfo);
 
   const allTimeLbs = await getAllTimeLbs(uid);
-  const testActivity = userInfo.testsByYearAndDay?.[new Date().getFullYear()];
+  const testActivity = getCurrentTestActivity(userInfo.testsByYearAndDay);
 
   const userData = {
     ...getRelevantUserInfo(userInfo),
@@ -957,4 +959,49 @@ async function getAllTimeLbs(uid: string): Promise<SharedTypes.AllTimeLbs> {
       },
     },
   };
+}
+
+function getCurrentTestActivity(
+  testsByYearAndDay: { [key: string]: number[] } | undefined
+): SharedTypes.TestActivity | undefined {
+  const thisYear = Dates.startOfYear(new Date());
+  const lastYear = Dates.startOfYear(Dates.subYears(thisYear, 1));
+
+  const thisYearData =
+    testsByYearAndDay?.[thisYear.getFullYear().toString()] ?? [];
+
+  let lastYearData =
+    testsByYearAndDay?.[lastYear.getFullYear().toString()] ?? [];
+
+  //make sure lastYearData covers the full year
+  if (lastYearData.length < Dates.getDaysInYear(lastYear)) {
+    lastYearData.push(
+      ...new Array(Dates.getDaysInYear(lastYear) - lastYearData.length).fill(
+        undefined
+      )
+    );
+  }
+  //use enough days of the last year to have 366 days in total
+  lastYearData = lastYearData.slice(-366 + thisYearData.length);
+
+  const lastDay = Dates.startOfDay(
+    Dates.addDays(thisYear, thisYearData.length - 1)
+  );
+
+  return {
+    testsByDays: [...lastYearData, ...thisYearData],
+    lastDay: lastDay.valueOf(),
+  };
+}
+
+export async function getTestActivities(
+  req: MonkeyTypes.Request
+): Promise<MonkeyResponse> {
+  const { uid } = req.ctx.decodedToken;
+  const user = await UserDAL.getUser(uid, "test-activities");
+
+  return new MonkeyResponse(
+    "Test activity data retrieved",
+    user.testsByYearAndDay
+  );
 }

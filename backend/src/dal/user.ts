@@ -6,13 +6,9 @@ import * as db from "../init/db";
 import MonkeyError from "../utils/error";
 import { Collection, ObjectId, Long, UpdateFilter } from "mongodb";
 import Logger from "../utils/logger";
-import {
-  dayOfTheYear,
-  flattenObjectDeep,
-  isToday,
-  isYesterday,
-} from "../utils/misc";
+import { flattenObjectDeep, isToday, isYesterday } from "../utils/misc";
 import { getCachedConfiguration } from "../init/configuration";
+import { getDayOfYear } from "date-fns";
 
 const SECONDS_PER_HOUR = 3600;
 
@@ -612,7 +608,7 @@ export async function incrementTestsByYearAndDate(
   timestamp: number
 ): Promise<void> {
   const date = new Date(timestamp);
-  const dayOfYear = dayOfTheYear(date);
+  const dayOfYear = getDayOfYear(date);
   const year = date.getFullYear();
 
   if (
@@ -1081,7 +1077,7 @@ export async function checkIfUserIsPremium(
 ): Promise<boolean> {
   const premiumFeaturesEnabled = (await getCachedConfiguration(true)).users
     .premium.enabled;
-  if (!premiumFeaturesEnabled) {
+  if (premiumFeaturesEnabled !== true) {
     return false;
   }
   const user = userInfoOverride ?? (await getUser(uid, "checkIfUserIsPremium"));

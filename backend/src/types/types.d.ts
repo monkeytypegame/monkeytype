@@ -39,7 +39,7 @@ declare namespace MonkeyTypes {
     lastNameChange?: number;
     canManageApeKeys?: boolean;
     bananas?: number;
-    testsByYearAndDay?: { [key: string]: number[] };
+    testsByYearAndDay?: SharedTypes.CountByYearAndDay;
   };
 
   type DBCustomTheme = WithObjectId<SharedTypes.CustomTheme>;

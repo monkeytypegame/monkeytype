@@ -305,10 +305,3 @@ export function stringToNumberOrDefault(
 export function isDevEnvironment(): boolean {
   return process.env["MODE"] === "dev";
 }
-
-export function dayOfTheYear(date: Date): number {
-  return Math.floor(
-    // @ts-expect-error  TODO: figure out how to do this without disabling eslint
-    (date - new Date(date.getFullYear(), 0, 0)) / 1000 / 60 / 60 / 24
-  );
-}

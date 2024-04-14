@@ -8,6 +8,7 @@ import * as ConnectionState from "./states/connection";
 import { lastElementFromArray } from "./utils/arrays";
 import { getFunboxList } from "./utils/json-data";
 import { mergeWithDefaultConfig } from "./utils/config";
+import * as Dates from "date-fns";
 
 let dbSnapshot: MonkeyTypes.Snapshot | undefined;
 
@@ -953,6 +954,45 @@ export function setStreak(streak: number): void {
   }
 
   setSnapshot(snapshot);
+}
+
+export async function getTestActivities(
+  yearString: string
+): Promise<SharedTypes.TestActivity | undefined> {
+  if (!isAuthenticated() || !dbSnapshot) return undefined;
+
+  if (yearString === "current") return dbSnapshot.testActivity;
+
+  if (!ConnectionState.get()) {
+    return undefined;
+  }
+
+  if (dbSnapshot.testActivityByYear === undefined) {
+    LoadingPage.updateText("Downloading test activity...");
+    LoadingPage.updateBar(90);
+    const response = await Ape.users.getTestActivities();
+    if (response.status !== 200) {
+      Notifications.add(
+        "Error getting test activities: " + response.message,
+        -1
+      );
+      return undefined;
+    }
+    response.data !== null ? response.data : {};
+    dbSnapshot.testActivityByYear = {};
+    for (const year in response.data) {
+      const testsByDays = response.data[year] ?? [];
+      const lastDay = Dates.endOfYear(new Date(parseInt(year), 0, 1));
+
+      console.log({ year, lastDay });
+      dbSnapshot.testActivityByYear[year] = {
+        testsByDays,
+        lastDay: lastDay.valueOf(),
+      };
+    }
+  }
+
+  return dbSnapshot.testActivityByYear[yearString];
 }
 
 // export async function DB.getLocalTagPB(tagId) {

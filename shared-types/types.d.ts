@@ -550,7 +550,7 @@ declare namespace SharedTypes {
     needsToChangeName?: boolean;
     quoteMod?: boolean | string;
     resultFilterPresets?: ResultFilters[];
-    testActivity?: number[];
+    testActivity?: TestActivity;
   };
 
   type Reward<T> = {
@@ -621,4 +621,11 @@ declare namespace SharedTypes {
     rank?: number;
     count: number;
   };
+
+  type TestActivity = {
+    testsByDays: number[];
+    lastDay: number;
+  };
+
+  type CountByYearAndDay = { [key: string]: number[] };
 }
