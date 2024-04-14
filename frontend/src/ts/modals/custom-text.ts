@@ -179,15 +179,10 @@ function handleFileOpen(): void {
   }
 }
 
-function apply(): void {
+function cleanUpText(): string[] {
   let text = state.textarea;
 
-  if (text === "") {
-    Notifications.add("Text cannot be empty", 0);
-    return;
-  }
-
-  state.lastSavedTextareaState = state.textarea;
+  if (text === "") return [];
 
   text = text.normalize().trim();
   // text = text.replace(/[\r]/gm, " ");
@@ -233,7 +228,18 @@ function apply(): void {
   }
 
   const words = text.split(CustomText.delimiter).filter((word) => word !== "");
-  CustomText.setText(words);
+  return words;
+}
+
+function apply(): void {
+  if (state.textarea === "") {
+    Notifications.add("Text cannot be empty", 0);
+    return;
+  }
+
+  state.lastSavedTextareaState = state.textarea;
+
+  CustomText.setText(cleanUpText());
 
   CustomText.setWord(
     parseInt(($(`${popup} .wordcount input`).val() as string) || "-1")
@@ -422,7 +428,7 @@ async function setup(modalEl: HTMLElement): Promise<void> {
     ?.addEventListener("click", () => {
       void SaveCustomTextPopup.show({
         modalChain: modal as AnimatedModal<unknown, unknown>,
-        modalChainData: { text: state.textarea },
+        modalChainData: { text: cleanUpText() },
       });
     });
   modalEl
