@@ -1,16 +1,16 @@
 import {
-  ActivityCalendar,
+  TestActivityCalendar,
   ActivityDay,
-  ModifiableActicityCalendar,
+  ModifiableTestActivityCalendar,
 } from "../../src/ts/elements/test-activity";
 import * as Dates from "date-fns";
 import { MatcherResult } from "../vitest";
 
 describe("test-activity.ts", () => {
-  describe("ActivityCalendar", () => {
+  describe("TestActivityCalendar", () => {
     describe("getMonths", () => {
       it("for lastDay in april", () => {
-        const calendar = new ActivityCalendar([], getDate("2024-04-10"));
+        const calendar = new TestActivityCalendar([], getDate("2024-04-10"));
 
         expect(calendar.getMonths()).toEqual([
           "May`23",
@@ -28,7 +28,7 @@ describe("test-activity.ts", () => {
         ]);
       });
       it("for lastDay in january", () => {
-        const calendar = new ActivityCalendar([], getDate("2023-01-01"));
+        const calendar = new TestActivityCalendar([], getDate("2023-01-01"));
 
         expect(calendar.getMonths()).toEqual([
           "Feb`22",
@@ -57,7 +57,7 @@ describe("test-activity.ts", () => {
       });
       it("for start of 2022", () => {
         vi.setSystemTime(getDate("2022-01-01"));
-        const calendar = new ActivityCalendar([], getDate("2022-01-01"));
+        const calendar = new TestActivityCalendar([], getDate("2022-01-01"));
         const selector = calendar.getYearSelector();
         expect(selector).toEqual([
           { text: "2022", value: "current", selected: true },
@@ -67,7 +67,7 @@ describe("test-activity.ts", () => {
       });
       it("for end of 2022", () => {
         vi.setSystemTime(getDate("2022-12-31"));
-        const calendar = new ActivityCalendar([], getDate("2022-01-01"));
+        const calendar = new TestActivityCalendar([], getDate("2022-01-01"));
         const selector = calendar.getYearSelector();
         expect(selector).toEqual([
           { text: "2022", value: "current", selected: true },
@@ -77,7 +77,7 @@ describe("test-activity.ts", () => {
       });
       it("for past year", () => {
         vi.setSystemTime(getDate("2023-12-31"));
-        const calendar = new ActivityCalendar([], getDate("2021-04-23"));
+        const calendar = new TestActivityCalendar([], getDate("2021-04-23"));
         const selector = calendar.getYearSelector();
         expect(selector).toEqual([
           { text: "2023", value: "current", selected: false },
@@ -91,7 +91,7 @@ describe("test-activity.ts", () => {
     describe("getDays", () => {
       it("for lastDay in april", () => {
         const data = getData("2023-04-10", "2024-04-10");
-        const calendar = new ActivityCalendar(data, getDate("2024-04-10"));
+        const calendar = new TestActivityCalendar(data, getDate("2024-04-10"));
         const days = calendar.getDays();
 
         expect(days).toHaveLength(1 + 366 + 4); //one filler on the start, 366 days in leap year, four fillers at the end
@@ -124,7 +124,7 @@ describe("test-activity.ts", () => {
       it("for full leap year", () => {
         //GIVEN
         const data = getData("2024-01-01", "2024-12-31");
-        const calendar = new ActivityCalendar(data, getDate("2024-12-31"));
+        const calendar = new TestActivityCalendar(data, getDate("2024-12-31"));
 
         //WHEN
         const days = calendar.getDays();
@@ -152,7 +152,7 @@ describe("test-activity.ts", () => {
     it("for full year", () => {
       //GIVEN
       const data = getData("2022-12-20", "2023-12-31");
-      const calendar = new ActivityCalendar(data, new Date(2023, 11, 31));
+      const calendar = new TestActivityCalendar(data, new Date(2023, 11, 31));
 
       //WHEN
       const days = calendar.getDays();
@@ -175,7 +175,7 @@ describe("test-activity.ts", () => {
     it("ignores data before calendar range", () => {
       //GIVEN
       const data = getData("2023-03-28", "2024-04-10"); //extra data in front of the calendar
-      const calendar = new ActivityCalendar(data, getDate("2024-04-10"));
+      const calendar = new TestActivityCalendar(data, getDate("2024-04-10"));
 
       //WHEN
       const days = calendar.getDays();
@@ -193,7 +193,7 @@ describe("test-activity.ts", () => {
     it("handles missing data in calendar range", () => {
       //GIVEN
       const data = getData("2024-04-01", "2024-04-10");
-      const calendar = new ActivityCalendar(data, getDate("2024-04-10"));
+      const calendar = new TestActivityCalendar(data, getDate("2024-04-10"));
 
       //WHEN
       const days = calendar.getDays();
@@ -216,7 +216,7 @@ describe("test-activity.ts", () => {
     it("for lastDay in february", () => {
       //GIVEN
       const data = getData("2022-02-10", "2023-02-10");
-      const calendar = new ActivityCalendar(data, getDate("2023-02-10"));
+      const calendar = new TestActivityCalendar(data, getDate("2023-02-10"));
 
       //WHEN
       const days = calendar.getDays();
@@ -243,12 +243,15 @@ describe("test-activity.ts", () => {
       }
     });
   });
-  describe("ModifiableActivityCalendar", () => {
+  describe("ModifiableTestActivityCalendar", () => {
     describe("increment", () => {
       it("increments on lastDay", () => {
         //GIVEN
         const lastDate = getDate("2024-04-10");
-        const calendar = new ModifiableActicityCalendar([1, 2, 3], lastDate);
+        const calendar = new ModifiableTestActivityCalendar(
+          [1, 2, 3],
+          lastDate
+        );
 
         //WHEN
         calendar.increment(lastDate);
@@ -265,7 +268,10 @@ describe("test-activity.ts", () => {
       it("increments after lastDay", () => {
         //GIVEN
         const lastDate = getDate("2024-04-10");
-        const calendar = new ModifiableActicityCalendar([1, 2, 3], lastDate);
+        const calendar = new ModifiableTestActivityCalendar(
+          [1, 2, 3],
+          lastDate
+        );
 
         //WHEN
         calendar.increment(getDate("2024-04-12"));
@@ -298,7 +304,7 @@ describe("test-activity.ts", () => {
 
       it("increments after two months", () => {
         //GIVEN
-        const calendar = new ModifiableActicityCalendar(
+        const calendar = new ModifiableTestActivityCalendar(
           [1, 2, 3],
           getDate("2024-04-10")
         );
@@ -321,7 +327,7 @@ describe("test-activity.ts", () => {
       });
       it("fails increment in the past", () => {
         //GIVEN
-        const calendar = new ModifiableActicityCalendar(
+        const calendar = new ModifiableTestActivityCalendar(
           [1, 2, 3],
           getDate("2024-04-10")
         );

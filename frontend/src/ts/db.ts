@@ -10,8 +10,8 @@ import { getFunboxList } from "./utils/json-data";
 import { mergeWithDefaultConfig } from "./utils/config";
 import * as Dates from "date-fns";
 import {
-  ActivityCalendar,
-  ModifiableActivityCalendar,
+  TestActivityCalendar,
+  ModifiableTestActivityCalendar,
 } from "./elements/test-activity";
 
 let dbSnapshot: MonkeyTypes.Snapshot | undefined;
@@ -139,7 +139,7 @@ export async function initSnapshot(): Promise<
     snap.isPremium = userData?.isPremium;
     snap.allTimeLbs = userData.allTimeLbs;
     if (userData.testActivity !== undefined) {
-      snap.testActivity = new ModifiableActivityCalendar(
+      snap.testActivity = new ModifiableTestActivityCalendar(
         userData.testActivity.testsByDays,
         new Date(userData.testActivity.lastDay)
       );
@@ -908,6 +908,11 @@ export function saveLocalResult(
 
     setSnapshot(snapshot);
   }
+
+  if (snapshot?.testActivity !== undefined) {
+    snapshot.testActivity.increment(new Date(result.timestamp));
+    setSnapshot(snapshot);
+  }
 }
 
 export function updateLocalStats(started: number, time: number): void {
@@ -994,7 +999,7 @@ export async function getTestActivityCalendar(
       const lastDay = Dates.endOfYear(new Date(parseInt(year), 0, 1));
 
       console.log({ year, lastDay });
-      dbSnapshot.testActivityByYear[year] = new ActivityCalendar(
+      dbSnapshot.testActivityByYear[year] = new TestActivityCalendar(
         testsByDays,
         lastDay
       );

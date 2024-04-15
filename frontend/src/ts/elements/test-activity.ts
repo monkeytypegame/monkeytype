@@ -11,7 +11,7 @@ export type ActivityDay = {
   label?: string;
 };
 
-export class ActivityCalendar implements MonkeyTypes.TestActivityCalendar {
+export class TestActivityCalendar implements MonkeyTypes.TestActivityCalendar {
   protected data: (number | null | undefined)[];
   protected startDay: Date;
   protected endDay: Date;
@@ -115,8 +115,8 @@ export class ActivityCalendar implements MonkeyTypes.TestActivityCalendar {
   }
 }
 
-export class ModifiableActivityCalendar
-  extends ActivityCalendar
+export class ModifiableTestActivityCalendar
+  extends TestActivityCalendar
   implements MonkeyTypes.ModifiableTestActivityCalendar
 {
   private lastDay: Date;
