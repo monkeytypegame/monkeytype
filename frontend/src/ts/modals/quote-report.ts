@@ -4,7 +4,7 @@ import * as Loader from "../elements/loader";
 import * as Notifications from "../elements/notifications";
 import QuotesController from "../controllers/quotes-controller";
 import * as CaptchaController from "../controllers/captcha-controller";
-import { removeLanguageSize } from "../utils/misc";
+import { removeLanguageSize } from "../utils/strings";
 import SlimSelect from "slim-select";
 import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
 

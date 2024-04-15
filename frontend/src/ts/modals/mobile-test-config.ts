@@ -4,7 +4,7 @@ import * as ManualRestart from "../test/manual-restart-tracker";
 import * as CustomWordAmountPopup from "./custom-word-amount";
 import * as CustomTestDurationPopup from "./custom-test-duration";
 import * as QuoteSearchModal from "./quote-search";
-import * as CustomTextPopup from "../popups/custom-text-popup";
+import * as CustomTextPopup from "./custom-text";
 import AnimatedModal from "../utils/animated-modal";
 
 function update(): void {
@@ -149,8 +149,9 @@ async function setup(modalEl: HTMLElement): Promise<void> {
   }
 
   modalEl.querySelector(".customChange")?.addEventListener("click", () => {
-    hide(); //todo use modal chaining here
-    CustomTextPopup.show();
+    CustomTextPopup.show({
+      modalChain: modal,
+    });
   });
 
   modalEl.querySelector(".punctuation")?.addEventListener("click", () => {

@@ -225,8 +225,6 @@ function buildFooter(logs) {
 //   return `\n### Other\n\n- Various ${finalString} changes`;
 // }
 
-console.log("---------");
-
 function convertStringToLog(logString) {
   let log = [];
   for (let line of logString) {
@@ -239,7 +237,9 @@ function convertStringToLog(logString) {
     //   /(\w{40}) (\w{9,10}) (.*)/
     // );
 
-    const [hash, shortHash, title, body] = line.split(logDelimiter);
+    const [hash, shortHash, title, body] = line
+      .split(logDelimiter)
+      .map((s) => s.trim());
 
     // console.log({
     //   hash,
@@ -276,11 +276,12 @@ function convertStringToLog(logString) {
         type,
         scope,
         message,
-        usernames,
+        usernames: usernames || [],
         prs,
-        body,
+        body: body || "",
       });
     } else {
+      console.log({ hash, shortHash, title, body });
       console.warn("skipping line due to invalid format: " + line);
     }
   }
@@ -362,6 +363,7 @@ async function main() {
       message: "add quotes in various languages",
       usernames: quoteAddCommits.map((item) => item.usernames).flat(),
       prs: quoteAddCommits.map((item) => item.prs).flat(),
+      body: "",
     });
   }
 
@@ -373,6 +375,7 @@ async function main() {
       message: "update or remove quotes reported by users",
       usernames: quoteReportCommits.map((item) => item.usernames).flat(),
       prs: quoteReportCommits.map((item) => item.prs).flat(),
+      body: "",
     });
   }
 

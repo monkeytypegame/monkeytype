@@ -1,7 +1,10 @@
 import Ape from "../ape";
 import * as DB from "../db";
 import Config from "../config";
+import * as DateTime from "../utils/date-and-time";
 import * as Misc from "../utils/misc";
+import * as Arrays from "../utils/arrays";
+import * as Numbers from "../utils/numbers";
 import * as Notifications from "./notifications";
 import format from "date-fns/format";
 import { isAuthenticated } from "../firebase";
@@ -101,7 +104,7 @@ function updateTimerElement(): void {
     const diff = differenceInSeconds(date, dateNow);
 
     $("#leaderboards .subTitle").text(
-      "Next reset in: " + Misc.secondsToString(diff, true)
+      "Next reset in: " + DateTime.secondsToString(diff, true)
     );
   } else {
     const date = new Date();
@@ -109,7 +112,7 @@ function updateTimerElement(): void {
     const secondsToNextUpdate = 60 - date.getSeconds();
     const totalSeconds = minutesToNextUpdate * 60 + secondsToNextUpdate;
     $("#leaderboards .subTitle").text(
-      "Next update in: " + Misc.secondsToString(totalSeconds, true)
+      "Next update in: " + DateTime.secondsToString(totalSeconds, true)
     );
   }
 }
@@ -193,7 +196,7 @@ function updateFooter(lb: LbKey): void {
 
   let toppercent = "";
   if (currentTimeRange === "allTime" && lbRank !== undefined && lbRank?.rank) {
-    const num = Misc.roundTo2(
+    const num = Numbers.roundTo2(
       (lbRank.rank / (currentRank[lb].count as number)) * 100
     );
     if (currentRank[lb].rank === 1) {
@@ -525,7 +528,7 @@ async function requestMore(lb: LbKey, prepend = false): Promise<void> {
   if (requesting[lb]) return;
   requesting[lb] = true;
   showLoader(lb);
-  let skipVal = currentData[lb][currentData[lb].length - 1]?.rank as number;
+  let skipVal = Arrays.lastElementFromArray(currentData[lb])?.rank as number;
   if (prepend) {
     skipVal = (currentData[lb][0]?.rank ?? 0) - leaderboardSingleLimit;
   }

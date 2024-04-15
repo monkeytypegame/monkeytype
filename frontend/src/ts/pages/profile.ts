@@ -29,8 +29,8 @@ function reset(): void {
 	          <div class="streak" data-balloon-pos="up">-</div>
           </div>
           <div class="levelAndBar">
-            <div class="level">-</div>
-            <div class="xpBar">
+            <div class="level" data-balloon-pos="up">-</div>
+            <div class="xpBar" data-balloon-pos="up">
               <div class="bar" style="width: 0%;"></div>
             </div>
             <div class="xp" data-balloon-pos="up">-/-</div>
@@ -211,18 +211,15 @@ $(".page.pageProfile").on("click", ".profile .userReportButton", () => {
   void UserReportModal.show({ uid, name, lbOptOut });
 });
 
-export const page = new Page<undefined | SharedTypes.UserProfile>(
-  "profile",
-  $(".page.pageProfile"),
-  "/profile",
-  async () => {
-    //
-  },
-  async () => {
+export const page = new Page<undefined | SharedTypes.UserProfile>({
+  name: "profile",
+  element: $(".page.pageProfile"),
+  path: "/profile",
+  afterHide: async (): Promise<void> => {
     Skeleton.remove("pageProfile");
     reset();
   },
-  async (options) => {
+  beforeShow: async (options): Promise<void> => {
     Skeleton.append("pageProfile", "main");
     const uidOrName = options?.params?.["uidOrName"] ?? "";
     if (uidOrName) {
@@ -240,9 +237,6 @@ export const page = new Page<undefined | SharedTypes.UserProfile>(
       $(".page.pageProfile .content").addClass("hidden");
     }
   },
-  async () => {
-    //
-  }
-);
+});
 
 Skeleton.save("pageProfile");

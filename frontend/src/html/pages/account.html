@@ -46,7 +46,7 @@
           </div>
           <div class="levelAndBar">
             <div class="level" data-balloon-pos="up">-</div>
-            <div class="xpBar">
+            <div class="xpBar" data-balloon-pos="up">
               <div class="bar" style="width: 0%"></div>
             </div>
             <div class="xp" data-balloon-pos="up">-/-</div>
@@ -369,7 +369,7 @@
       </div>
     </div>
     <div class="group filterButtons" style="display: none">
-      <div class="buttonsAndTitle" style="grid-column: 1/3">
+      <div class="buttonsAndTitle" style="grid-column: 1/-1">
         <div class="title">advanced filters</div>
         <div class="buttons">
           <button class="noFilters">clear filters</button>
@@ -443,17 +443,19 @@
           <button filter="off">off</button>
         </div>
       </div>
-      <div class="buttonsAndTitle tags" style="grid-column: 1/3">
-        <div class="title">tags</div>
-        <div class="buttons filterGroup" group="tags"></div>
-      </div>
-      <div class="buttonsAndTitle languages" style="grid-column: 1/3">
-        <div class="title">language</div>
-        <div class="buttons filterGroup" group="language"></div>
-      </div>
-      <div class="buttonsAndTitle funbox" style="grid-column: 1/3">
-        <div class="title">funbox</div>
-        <div class="buttons filterGroup" group="funbox"></div>
+      <div class="tripleSelectsColumn">
+        <div class="buttonsAndTitle tags">
+          <div class="title">tags</div>
+          <div class="select filterGroup" group="tags"></div>
+        </div>
+        <div class="buttonsAndTitle funbox">
+          <div class="title">funbox</div>
+          <div class="select filterGroup" group="funbox"></div>
+        </div>
+        <div class="buttonsAndTitle languages">
+          <div class="title">language</div>
+          <div class="select filterGroup" group="language"></div>
+        </div>
       </div>
     </div>
     <div class="group noDataError hidden">

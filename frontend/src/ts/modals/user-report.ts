@@ -30,6 +30,7 @@ export async function show(options: ShowOptions): Promise<void> {
   }
 
   void modal.show({
+    mode: "dialog",
     focusFirstInput: true,
     beforeAnimation: async (modalEl) => {
       CaptchaController.render(

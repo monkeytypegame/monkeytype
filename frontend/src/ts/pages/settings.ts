@@ -2,6 +2,8 @@ import SettingsGroup from "../settings/settings-group";
 import Config, * as UpdateConfig from "../config";
 import * as Sound from "../controllers/sound-controller";
 import * as Misc from "../utils/misc";
+import * as Strings from "../utils/strings";
+import * as JSONData from "../utils/json-data";
 import * as DB from "../db";
 import { toggleFunbox } from "../test/funbox/funbox";
 import * as TagController from "../controllers/tag-controller";
@@ -440,7 +442,7 @@ async function fillSettingsPage(): Promise<void> {
 
   let languageGroups;
   try {
-    languageGroups = await Misc.getLanguageGroups();
+    languageGroups = await JSONData.getLanguageGroups();
   } catch (e) {
     console.error(
       Misc.createErrorMessage(
@@ -460,7 +462,7 @@ async function fillSettingsPage(): Promise<void> {
       html += `<optgroup label="${group.name}">`;
       for (const language of group.languages) {
         const selected = language === Config.language ? "selected" : "";
-        const text = Misc.getLanguageDisplayString(language);
+        const text = Strings.getLanguageDisplayString(language);
         html += `<option value="${language}" ${selected}>${text}</option>`;
       }
       html += `</optgroup>`;
@@ -476,7 +478,7 @@ async function fillSettingsPage(): Promise<void> {
 
   let layoutsList;
   try {
-    layoutsList = await Misc.getLayoutsList();
+    layoutsList = await JSONData.getLayoutsList();
   } catch (e) {
     console.error(Misc.createErrorMessage(e, "Failed to refresh keymap"));
   }
@@ -519,7 +521,7 @@ async function fillSettingsPage(): Promise<void> {
 
   let themes;
   try {
-    themes = await Misc.getThemesList();
+    themes = await JSONData.getThemesList();
   } catch (e) {
     console.error(
       Misc.createErrorMessage(e, "Failed to load themes into dropdown boxes")
@@ -579,7 +581,7 @@ async function fillSettingsPage(): Promise<void> {
 
   let funboxList;
   try {
-    funboxList = await Misc.getFunboxList();
+    funboxList = await JSONData.getFunboxList();
   } catch (e) {
     console.error(Misc.createErrorMessage(e, "Failed to get funbox list"));
   }
@@ -628,7 +630,7 @@ async function fillSettingsPage(): Promise<void> {
 
   let fontsList;
   try {
-    fontsList = await Misc.getFontsList();
+    fontsList = await JSONData.getFontsList();
   } catch (e) {
     console.error(
       Misc.createErrorMessage(e, "Failed to update fonts settings buttons")
@@ -734,15 +736,19 @@ export function updateDiscordSection(): void {
 export function updateAuthSections(): void {
   $(".pageSettings .section.passwordAuthSettings button").addClass("hidden");
   $(".pageSettings .section.googleAuthSettings button").addClass("hidden");
+  $(".pageSettings .section.githubAuthSettings button").addClass("hidden");
 
   if (!isAuthenticated()) return;
   const user = getAuthenticatedUser();
 
-  const passwordProvider = user.providerData.find(
+  const passwordProvider = user.providerData.some(
     (provider) => provider.providerId === "password"
   );
-  const googleProvider = user.providerData.find(
+  const googleProvider = user.providerData.some(
     (provider) => provider.providerId === "google.com"
+  );
+  const githubProvider = user.providerData.some(
+    (provider) => provider.providerId === "github.com"
   );
 
   if (passwordProvider) {
@@ -762,7 +768,7 @@ export function updateAuthSections(): void {
     $(
       ".pageSettings .section.googleAuthSettings #removeGoogleAuth"
     ).removeClass("hidden");
-    if (passwordProvider) {
+    if (passwordProvider || githubProvider) {
       $(
         ".pageSettings .section.googleAuthSettings #removeGoogleAuth"
       ).removeClass("disabled");
@@ -776,6 +782,24 @@ export function updateAuthSections(): void {
       "hidden"
     );
   }
+  if (githubProvider) {
+    $(
+      ".pageSettings .section.githubAuthSettings #removeGithubAuth"
+    ).removeClass("hidden");
+    if (passwordProvider || googleProvider) {
+      $(
+        ".pageSettings .section.githubAuthSettings #removeGithubAuth"
+      ).removeClass("disabled");
+    } else {
+      $(".pageSettings .section.githubAuthSettings #removeGithubAuth").addClass(
+        "disabled"
+      );
+    }
+  } else {
+    $(".pageSettings .section.githubAuthSettings #addGithubAuth").removeClass(
+      "hidden"
+    );
+  }
 }
 
 function setActiveFunboxButton(): void {
@@ -785,7 +809,7 @@ function setActiveFunboxButton(): void {
   $(`.pageSettings .section[data-config-name='funbox'] .button`).removeClass(
     "disabled"
   );
-  Misc.getFunboxList()
+  JSONData.getFunboxList()
     .then((funboxModes) => {
       funboxModes.forEach((funbox) => {
         if (
@@ -1261,26 +1285,20 @@ ConfigEvent.subscribe((eventKey) => {
   }
 });
 
-export const page = new Page(
-  "settings",
-  $(".page.pageSettings"),
-  "/settings",
-  async () => {
-    //
-  },
-  async () => {
+export const page = new Page({
+  name: "settings",
+  element: $(".page.pageSettings"),
+  path: "/settings",
+  afterHide: async (): Promise<void> => {
     reset();
     Skeleton.remove("pageSettings");
   },
-  async () => {
+  beforeShow: async (): Promise<void> => {
     Skeleton.append("pageSettings", "main");
     await fillSettingsPage();
     await update(false);
   },
-  async () => {
-    //
-  }
-);
+});
 
 $(async () => {
   Skeleton.save("pageSettings");

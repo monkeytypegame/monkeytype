@@ -1,6 +1,7 @@
 import { getSnapshot } from "../db";
 import { isAuthenticated } from "../firebase";
 import * as Misc from "../utils/misc";
+import * as Levels from "../utils/levels";
 import { getAll } from "./theme-colors";
 import * as SlowTimer from "../states/slow-timer";
 
@@ -102,9 +103,9 @@ export async function update(
 ): Promise<void> {
   if (isAuthenticated()) {
     if (xp !== undefined) {
-      $("header nav .level").text(Math.floor(Misc.getLevel(xp)));
+      $("header nav .level").text(Math.floor(Levels.getLevel(xp)));
       $("header nav .bar").css({
-        width: (Misc.getLevel(xp) % 1) * 100 + "%",
+        width: (Levels.getLevel(xp) % 1) * 100 + "%",
       });
     }
     if ((discordAvatar ?? "") && (discordId ?? "")) {
@@ -156,14 +157,14 @@ export async function updateXpBar(
   breakdown?: Record<string, number>
 ): Promise<void> {
   skipBreakdown = false;
-  const startingLevel = Misc.getLevel(currentXp);
-  const endingLevel = Misc.getLevel(currentXp + addedXp);
+  const startingLevel = Levels.getLevel(currentXp);
+  const endingLevel = Levels.getLevel(currentXp + addedXp);
 
   const snapshot = getSnapshot();
   if (!snapshot) return;
 
   if (skipBreakdown) {
-    $("nav .level").text(Math.floor(Misc.getLevel(snapshot.xp)));
+    $("nav .level").text(Math.floor(Levels.getLevel(snapshot.xp)));
     $("nav .xpBar")
       .stop(true, true)
       .css("opacity", 1)
@@ -178,7 +179,7 @@ export async function updateXpBar(
 
   await Promise.all([xpBarPromise, xpBreakdownPromise]);
   await Misc.sleep(2000);
-  $("nav .level").text(Math.floor(Misc.getLevel(snapshot.xp)));
+  $("nav .level").text(Math.floor(Levels.getLevel(snapshot.xp)));
   $("nav .xpBar")
     .stop(true, true)
     .css("opacity", 1)

@@ -35,5 +35,13 @@ export async function createReport(
     );
   }
 
+  const countFromUserMakingReport = sameReports.filter((r) => {
+    return r.uid === report.uid;
+  }).length;
+
+  if (countFromUserMakingReport > 0) {
+    throw new MonkeyError(409, "You have already reported this content.");
+  }
+
   await db.collection<MonkeyTypes.Report>(COLLECTION_NAME).insertOne(report);
 }

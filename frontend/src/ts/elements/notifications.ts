@@ -1,5 +1,6 @@
 import { debounce } from "throttle-debounce";
 import * as Misc from "../utils/misc";
+import * as Numbers from "../utils/numbers";
 import * as BannerEvent from "../observables/banner-event";
 // import * as Alerts from "./alerts";
 import * as NotificationEvent from "../observables/notification-event";
@@ -8,7 +9,7 @@ function updateMargin(): void {
   const height = $("#bannerCenter").height() as number;
   $("#contentWrapper").css(
     "padding-top",
-    height + Misc.convertRemToPixels(2) + "px"
+    height + Numbers.convertRemToPixels(2) + "px"
   );
   $("#notificationCenter").css("margin-top", height + "px");
 }
@@ -301,6 +302,8 @@ export function addBanner(
 
 export function clearAllNotifications(): void {
   $("#notificationCenter .notif").remove();
+  visibleStickyNotifications = 0;
+  updateClearAllButton();
 }
 
 const debouncedMarginUpdate = debounce(100, updateMargin);

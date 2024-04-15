@@ -50,16 +50,9 @@
   }
 }
 
-#customTextPopupWrapper {
-  #customTextPopup {
-    background: var(--bg-color);
-    border-radius: var(--roundness);
-    padding: 2rem;
-    display: grid;
-    gap: 1rem;
+#customTextModal {
+  .modal {
     max-width: 1200px;
-    max-height: 100%;
-    overflow-y: auto;
     grid-template-areas:
       "topButtons topButtons topButtons"
       "textArea textArea checkboxes"
@@ -108,7 +101,8 @@
     }
 
     .longCustomTextWarning {
-      background: rgba(0, 0, 0, 0.9);
+      // background: rgba(0, 0, 0, 0.5);
+      background: var(--sub-alt-color);
       position: absolute;
       left: 0;
       right: 0;
@@ -117,12 +111,16 @@
       display: grid;
       place-items: center center;
       border-radius: var(--roundness);
-      .textAndButton {
-        width: 80%;
-        max-width: 20rem;
-        text-align: center;
-        display: grid;
-        gap: 1rem;
+      text-align: center;
+      height: 100%;
+      align-items: center;
+      p {
+        font-size: 1.25em;
+        margin: 0;
+      }
+      p.small {
+        font-size: 0.75em;
+        color: var(--sub-color);
       }
     }
 
@@ -196,23 +194,9 @@
   }
 }
 
-#savedTextsPopupWrapper {
-  #savedTextsPopup {
-    color: var(--sub-color);
-    background: var(--bg-color);
-    border-radius: var(--roundness);
-    padding: 2rem;
-    display: grid;
-    gap: 1rem;
-    width: 400px;
-    max-height: 80vh;
-    overflow: auto;
-
-    .title {
-      font-size: 1.5rem;
-      color: var(--sub-color);
-    }
-
+#savedTextsModal {
+  .modal {
+    max-width: 500px;
     .list {
       display: grid;
       gap: 1rem;
@@ -229,10 +213,10 @@
     .listLong {
       display: grid;
       gap: 1rem;
-      .savedText {
+      .savedLongText {
         display: grid;
         gap: 0.5rem;
-        grid-template-columns: 2fr 1fr 3rem;
+        grid-template-columns: 2fr auto auto;
         .button .fas {
           pointer-events: none;
         }
@@ -241,21 +225,9 @@
   }
 }
 
-#saveCustomTextPopupWrapper {
-  #saveCustomTextPopup {
-    background: var(--bg-color);
-    border-radius: var(--roundness);
-    padding: 2rem;
-    display: grid;
-    gap: 1rem;
-    width: 400px;
-    max-height: 80vh;
-    overflow: auto;
-
-    .title {
-      font-size: 1.5rem;
-      color: var(--sub-color);
-    }
+#saveCustomTextModal {
+  .modal {
+    max-width: 400px;
   }
 }
 
@@ -1218,7 +1190,7 @@
   .modal {
     @extend .ffscroll;
     overflow-y: scroll;
-    max-width: 800px;
+    max-width: 1200px;
 
     hr {
       background: var(--sub-alt-color);

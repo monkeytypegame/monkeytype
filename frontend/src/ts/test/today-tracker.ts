@@ -1,4 +1,4 @@
-import * as Misc from "../utils/misc";
+import * as DateTime from "../utils/date-and-time";
 import * as DB from "../db";
 
 let seconds = 0;
@@ -17,7 +17,7 @@ export function addSeconds(s: number): void {
 }
 
 export function getString(): string {
-  const secString = Misc.secondsToString(Math.round(seconds), true, true);
+  const secString = DateTime.secondsToString(Math.round(seconds), true, true);
   return secString + (addedAllToday ? " today" : " session");
 }
 

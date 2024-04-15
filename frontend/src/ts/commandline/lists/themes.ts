@@ -1,5 +1,5 @@
 import Config, * as UpdateConfig from "../../config";
-import { capitalizeFirstLetterOfEachWord } from "../../utils/misc";
+import { capitalizeFirstLetterOfEachWord } from "../../utils/strings";
 import * as ThemeController from "../../controllers/theme-controller";
 
 const subgroup: MonkeyTypes.CommandsSubgroup = {

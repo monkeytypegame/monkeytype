@@ -1,5 +1,6 @@
 import * as DB from "../db";
 import * as Misc from "../utils/misc";
+import * as Numbers from "../utils/numbers";
 import Config from "../config";
 import * as TestWords from "../test/test-words";
 
@@ -19,7 +20,7 @@ export async function update(): Promise<void> {
       Config.difficulty,
       Config.lazyMode
     )
-  ).map(Misc.roundTo2) as [number, number];
+  ).map(Numbers.roundTo2) as [number, number];
 
   averageWPM = Config.alwaysShowDecimalPlaces ? wpm : Math.round(wpm);
   averageAcc = Config.alwaysShowDecimalPlaces ? acc : Math.floor(acc);

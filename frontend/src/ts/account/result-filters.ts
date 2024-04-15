@@ -1,9 +1,20 @@
 import * as Misc from "../utils/misc";
+import * as Strings from "../utils/strings";
+import * as JSONData from "../utils/json-data";
 import * as DB from "../db";
 import Config from "../config";
 import * as Notifications from "../elements/notifications";
 import Ape from "../ape/index";
 import * as Loader from "../elements/loader";
+import SlimSelect from "slim-select";
+// this is only to make ts happy
+// eslint-disable-next-line import/no-unresolved
+import { Option } from "slim-select/dist/store";
+
+const groupsUsingSelect = ["language", "funbox", "tags"];
+const groupSelects: Partial<
+  Record<keyof SharedTypes.ResultFilters, SlimSelect>
+> = {};
 
 export const defaultResultFilters: SharedTypes.ResultFilters = {
   _id: "default-result-filters-id",
@@ -281,6 +292,14 @@ export function getFilter<G extends keyof SharedTypes.ResultFilters>(
   return filters[group][filter];
 }
 
+function setFilter(
+  group: keyof SharedTypes.ResultFilters,
+  filter: MonkeyTypes.Filter<typeof group>,
+  value: boolean
+): void {
+  filters[group][filter as keyof typeof filters[typeof group]] = value as never;
+}
+
 function setAllFilters(
   group: keyof SharedTypes.ResultFilters,
   value: boolean
@@ -333,22 +352,72 @@ export function updateActive(): void {
           groupAboveChartDisplay.all = false;
         }
       }
-      let buttonEl;
-      if (group === "date") {
-        buttonEl = $(
-          `.pageAccount .group.topFilters .filterGroup[group="${group}"] button[filter="${filter}"]`
+
+      if (groupsUsingSelect.includes(group)) {
+        const option = $(
+          `.pageAccount .group.filterButtons .filterGroup[group="${group}"] option[filter="${filter}"]`
         );
+        if (filterValue === true) {
+          option.prop("selected", true);
+        } else {
+          option.prop("selected", false);
+        }
       } else {
-        buttonEl = $(
-          `.pageAccount .group.filterButtons .filterGroup[group="${group}"] button[filter="${filter}"]`
-        );
-      }
-      if (filterValue === true) {
-        buttonEl.addClass("active");
-      } else {
-        buttonEl.removeClass("active");
+        let buttonEl;
+        if (group === "date") {
+          buttonEl = $(
+            `.pageAccount .group.topFilters .filterGroup[group="${group}"] button[filter="${filter}"]`
+          );
+        } else {
+          buttonEl = $(
+            `.pageAccount .group.filterButtons .filterGroup[group="${group}"] button[filter="${filter}"]`
+          );
+        }
+        if (filterValue === true) {
+          buttonEl.addClass("active");
+        } else {
+          buttonEl.removeClass("active");
+        }
       }
     }
+  }
+
+  for (const [id, select] of Object.entries(groupSelects)) {
+    const ss = select;
+    const group = getGroup(id as keyof SharedTypes.ResultFilters);
+    const everythingSelected = Object.values(group).every((v) => v === true);
+
+    const newData = ss.store.getData();
+
+    if (everythingSelected) {
+      for (const data of newData) {
+        //@ts-expect-error
+        if (data.value !== "all") {
+          //@ts-expect-error
+          data.selected = false;
+        } else {
+          //@ts-expect-error
+          data.selected = true;
+        }
+      }
+    } else {
+      for (const data of newData) {
+        //@ts-expect-error
+        if (group[data.value] === true) {
+          //@ts-expect-error
+          data.selected = true;
+        } else {
+          //@ts-expect-error
+          data.selected = false;
+        }
+      }
+    }
+
+    setTimeout(() => {
+      ss.store.setData(newData);
+      ss?.render.renderValues();
+      ss?.render.renderOptions(newData);
+    }, 0);
   }
 
   function addText(group: keyof SharedTypes.ResultFilters): string {
@@ -634,10 +703,57 @@ $(".pageAccount .topFilters button.toggleAdvancedFilters").on("click", () => {
   );
 });
 
-export async function appendButtons(): Promise<void> {
+function selectBeforeChangeFn(
+  group: keyof SharedTypes.ResultFilters,
+  selectedOptions: Option[],
+  oldSelectedOptions: Option[]
+): void {
+  const includesAll = selectedOptions.some((option) => option.value === "all");
+  const allIsNew =
+    !oldSelectedOptions.some((option) => option.value === "all") && includesAll;
+
+  if (includesAll) {
+    if (allIsNew) {
+      selectedOptions = selectedOptions.filter(
+        (option) => option.value === "all"
+      );
+    } else if (selectedOptions.length > 1) {
+      selectedOptions = selectedOptions.filter(
+        (option) => option.value !== "all"
+      );
+    }
+  }
+
+  setAllFilters(group, false);
+  for (const selectedOption of selectedOptions) {
+    if (selectedOption.value === "all") {
+      setAllFilters(group, true);
+      updateActive();
+      save();
+      selectChangeCallbackFn();
+      break;
+    }
+
+    setFilter(group, selectedOption.value, true);
+  }
+
+  updateActive();
+  save();
+  selectChangeCallbackFn();
+}
+
+let selectChangeCallbackFn: () => void = () => {
+  //
+};
+
+export async function appendButtons(
+  selectChangeCallback: () => void
+): Promise<void> {
+  selectChangeCallbackFn = selectChangeCallback;
+
   let languageList;
   try {
-    languageList = await Misc.getLanguageList();
+    languageList = await JSONData.getLanguageList();
   } catch (e) {
     console.error(
       Misc.createErrorMessage(e, "Failed to append language buttons")
@@ -645,20 +761,47 @@ export async function appendButtons(): Promise<void> {
   }
   if (languageList) {
     let html = "";
+
+    html +=
+      "<select class='languageSelect' group='language' placeholder='select a language' multiple>";
+
+    html += "<option value='all'>all</option>";
+
     for (const language of languageList) {
-      html += `<button filter="${language}">${Misc.getLanguageDisplayString(
+      html += `<option value="${language}" filter="${language}">${Strings.getLanguageDisplayString(
         language
-      )}</button>`;
+      )}</option>`;
     }
+
+    html += "</select>";
+
     const el = document.querySelector(
-      ".pageAccount .content .filterButtons .buttonsAndTitle.languages .buttons"
+      ".pageAccount .content .filterButtons .buttonsAndTitle.languages .select"
     );
-    if (el) el.innerHTML = html;
+    if (el) {
+      el.innerHTML = html;
+      groupSelects["language"] = new SlimSelect({
+        select: el.querySelector(".languageSelect") as HTMLSelectElement,
+        settings: {
+          showSearch: true,
+          placeholderText: "select a language",
+        },
+        events: {
+          beforeChange: (selectedOptions, oldSelectedOptions): void => {
+            selectBeforeChangeFn(
+              "language",
+              selectedOptions,
+              oldSelectedOptions
+            );
+          },
+        },
+      });
+    }
   }
 
   let funboxList;
   try {
-    funboxList = await Misc.getFunboxList();
+    funboxList = await JSONData.getFunboxList();
   } catch (e) {
     console.error(
       Misc.createErrorMessage(e, "Failed to append funbox buttons")
@@ -666,35 +809,78 @@ export async function appendButtons(): Promise<void> {
   }
   if (funboxList) {
     let html = "";
+
+    html +=
+      "<select class='funboxSelect' group='funbox' placeholder='select a funbox' multiple>";
+
+    html += "<option value='all'>all</option>";
+
     for (const funbox of funboxList) {
-      html += `<button filter="${funbox.name}">${funbox.name.replace(
-        /_/g,
-        " "
-      )}</button>`;
+      html += `<option value="${funbox.name}" filter="${
+        funbox.name
+      }">${funbox.name.replace(/_/g, " ")}</option>`;
     }
+
+    html += "</select>";
+
     const el = document.querySelector(
-      ".pageAccount .content .filterButtons .buttonsAndTitle.funbox .buttons"
+      ".pageAccount .content .filterButtons .buttonsAndTitle.funbox .select"
     );
     if (el) {
-      el.innerHTML = `<button filter="none">none</button>` + html;
+      el.innerHTML = html;
+      groupSelects["funbox"] = new SlimSelect({
+        select: el.querySelector(".funboxSelect") as HTMLSelectElement,
+        settings: {
+          showSearch: true,
+          placeholderText: "select a funbox",
+        },
+        events: {
+          beforeChange: (selectedOptions, oldSelectedOptions): void => {
+            selectBeforeChangeFn("funbox", selectedOptions, oldSelectedOptions);
+          },
+        },
+      });
     }
   }
 
   const snapshot = DB.getSnapshot();
 
-  if ((snapshot?.tags?.length ?? 0) > 0) {
+  if (snapshot !== undefined && (snapshot.tags?.length ?? 0) > 0) {
     $(".pageAccount .content .filterButtons .buttonsAndTitle.tags").removeClass(
       "hidden"
     );
-    let html = `<button filter="none">no tag</button>`;
-    for (const tag of snapshot?.tags ?? []) {
-      html += `<button filter="${tag._id}">${tag.display}</button>`;
+
+    let html = "";
+
+    html +=
+      "<select class='tagsSelect' group='tags' placeholder='select a tag' multiple>";
+
+    html += "<option value='all'>all</option>";
+    html += "<option value='none'>no tag</option>";
+
+    for (const tag of snapshot.tags) {
+      html += `<option value="${tag._id}" filter="${tag.name}">${tag.display}</option>`;
     }
+
+    html += "</select>";
+
     const el = document.querySelector(
-      ".pageAccount .content .filterButtons .buttonsAndTitle.tags .buttons"
+      ".pageAccount .content .filterButtons .buttonsAndTitle.tags .select"
     );
     if (el) {
       el.innerHTML = html;
+      groupSelects["tags"] = new SlimSelect({
+        select: el.querySelector(".tagsSelect") as HTMLSelectElement,
+        settings: {
+          showSearch: true,
+          placeholderText: "select a tag",
+        },
+        events: {
+          beforeChange: (selectedOptions, oldSelectedOptions): void => {
+            selectBeforeChangeFn("tags", selectedOptions, oldSelectedOptions);
+          },
+        },
+      });
     }
   } else {
     $(".pageAccount .content .filterButtons .buttonsAndTitle.tags").addClass(

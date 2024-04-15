@@ -1,4 +1,6 @@
 import * as Misc from "../utils/misc";
+import * as JSONData from "../utils/json-data";
+import * as Numbers from "../utils/numbers";
 import Page from "./page";
 import Ape from "../ape";
 import * as Notifications from "../elements/notifications";
@@ -44,10 +46,10 @@ function updateStatsAndHistogram(): void {
     $(".pageAbout #totalTimeTypingStat .valSmall").text("years");
     $(".pageAbout #totalTimeTypingStat").attr(
       "aria-label",
-      Misc.numberWithSpaces(Math.round(secondsRounded / 3600)) + " hours"
+      Numbers.numberWithSpaces(Math.round(secondsRounded / 3600)) + " hours"
     );
 
-    const startedWithMagnitude = Misc.getNumberWithMagnitude(
+    const startedWithMagnitude = Numbers.getNumberWithMagnitude(
       typingStatsResponseData.testsStarted
     );
 
@@ -61,10 +63,10 @@ function updateStatsAndHistogram(): void {
     );
     $(".pageAbout #totalStartedTestsStat").attr(
       "aria-label",
-      Misc.numberWithSpaces(typingStatsResponseData.testsStarted) + " tests"
+      Numbers.numberWithSpaces(typingStatsResponseData.testsStarted) + " tests"
     );
 
-    const completedWIthMagnitude = Misc.getNumberWithMagnitude(
+    const completedWIthMagnitude = Numbers.getNumberWithMagnitude(
       typingStatsResponseData.testsCompleted
     );
 
@@ -78,7 +80,8 @@ function updateStatsAndHistogram(): void {
     );
     $(".pageAbout #totalCompletedTestsStat").attr(
       "aria-label",
-      Misc.numberWithSpaces(typingStatsResponseData.testsCompleted) + " tests"
+      Numbers.numberWithSpaces(typingStatsResponseData.testsCompleted) +
+        " tests"
     );
   }
 }
@@ -120,7 +123,7 @@ async function getStatsAndHistogramData(): Promise<void> {
 async function fill(): Promise<void> {
   let supporters: string[];
   try {
-    supporters = await Misc.getSupportersList();
+    supporters = await JSONData.getSupportersList();
   } catch (e) {
     Notifications.add(
       Misc.createErrorMessage(e, "Failed to get supporters"),
@@ -131,7 +134,7 @@ async function fill(): Promise<void> {
 
   let contributors: string[];
   try {
-    contributors = await Misc.getContributorsList();
+    contributors = await JSONData.getContributorsList();
   } catch (e) {
     Notifications.add(
       Misc.createErrorMessage(e, "Failed to get contributors"),
@@ -193,25 +196,19 @@ function getHistogramDataBucketed(data: Record<string, number>): {
   return { data: histogramChartDataBucketed, labels };
 }
 
-export const page = new Page(
-  "about",
-  $(".page.pageAbout"),
-  "/about",
-  async () => {
-    //
-  },
-  async () => {
+export const page = new Page({
+  name: "about",
+  element: $(".page.pageAbout"),
+  path: "/about",
+  afterHide: async (): Promise<void> => {
     reset();
     Skeleton.remove("pageAbout");
   },
-  async () => {
+  beforeShow: async (): Promise<void> => {
     Skeleton.append("pageAbout", "main");
     void fill();
   },
-  async () => {
-    //
-  }
-);
+});
 
 $(() => {
   Skeleton.save("pageAbout");

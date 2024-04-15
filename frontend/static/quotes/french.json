@@ -26,9 +26,9 @@
       "id": 3
     },
     {
-      "text": "À m'asseoir sur un banc cinq minutes avec toi et regarder les gens tant qu'y en a te parler du bon temps qui est mort ou qui reviendra en serrant dans ma main tes petits doigts Puis donner à bouffer à des pigeons idiots leur filer des coups de pied pour de faux et entendre ton rire qui lézarde les murs qui sait surtout guérir mes blessures.",
+      "text": "À m'asseoir sur un banc cinq minutes avec toi et regarder les gens tant qu'y en a te parler du bon temps qui est mort ou qui reviendra en serrant dans ma main tes petits doigts. Puis donner à bouffer à des pigeons idiots leur filer des coups de pied pour de faux et entendre ton rire qui lézarde les murs qui sait surtout guérir mes blessures.",
       "source": "Renaud - Mistral gagnant",
-      "length": 342,
+      "length": 343,
       "id": 4
     },
     {
@@ -38,7 +38,7 @@
       "id": 5
     },
     {
-      "text": "CHERUB est un département secret des services de renseignement britanniques composé d'agents âgés de dix à dix-sept ans recrutés dans les orphelinats du pays. Soumis à un entraînement intensif, ils sont chargés de remplir des missions d'espionnage visant à mettre en échec les entreprises criminelles et terroristes qui menacent le Royaume-Uni. Ils vivent au quartier général de CHERUB, une base aussi appelée \"campus\" dissimulée au coeur de la campagne anglaise.",
+      "text": "CHERUB est un département secret des services de renseignement britanniques composé d’agents âgés de dix à dix-sept ans recrutés dans les orphelinats du pays. Soumis à un entraînement intensif, ils sont chargés de remplir des missions d'espionnage visant à mettre en échec les entreprises criminelles et terroristes qui menacent le Royaume-Uni. Ils vivent au quartier général de CHERUB, une base aussi appelée «campus» dissimulée au coeur de la campagne anglaise.",
       "source": "CHERUB, Avant-propos",
       "length": 463,
       "id": 6
@@ -86,7 +86,7 @@
       "id": 13
     },
     {
-      "text": "La religion traduit des aspirations profondes de la race humaine. Nulles qu'elles n'ont davantage façonné l'histoire. Ceci que l'on tente en a tiré des leçons. Devenir de meilleurs croyants où de meilleurs athées ça signifie avant tout \"regarder au plus profond de nous pour ne pas reproduire les erreurs du passé.\"",
+      "text": "La religion traduit des aspirations profondes de la race humaine. Nulles qu'elles n'ont davantage façonné l'histoire. Ceci que l'on tente en a tiré des leçons. Devenir de meilleurs croyants ou de meilleurs athées ça signifie avant tout \"regarder au plus profond de nous pour ne pas reproduire les erreurs du passé.\"",
       "source": "Simon Puech - DIEU EST MORT",
       "length": 315,
       "id": 14
@@ -134,9 +134,9 @@
       "id": 21
     },
     {
-      "text": "Si tu savais le temps que fait une minute, écoute le son de mon coeur quand il explose comme une cocotte minute.",
+      "text": "Si tu savais le temps que fait une minute, écoute le son de mon cœur quand il explose comme une cocotte minute.",
       "source": "Stupeflip - Nan?..Si?",
-      "length": 112,
+      "length": 111,
       "id": 22
     },
     {
@@ -210,12 +210,6 @@
       "source": "Charles-Augustin Sainte-Beuve - Le siècle du progrès — Anthologie établie et présentée par Pierre Berès",
       "length": 223,
       "id": 34
-    },
-    {
-      "text": "J'aime celui qui ne veut pas avoir trop de vertus. Il y a plus de vertus en une vertu qu'en deux vertus, c'est un noeud où s'accroche la destinée.",
-      "source": "Friedrich Nietzsche - Ainsi parlait Zarathoustra",
-      "length": 146,
-      "id": 35
     },
     {
       "text": "La fonction ne crée pas l'organe.",
@@ -296,7 +290,7 @@
       "id": 48
     },
     {
-      "text": "Mais il est notoire que la mémoire des anciens est capricieuse. A travers leurs souvenirs, leur lointaine enfance est le jouet d'étranges déformations.",
+      "text": "Mais il est notoire que la mémoire des anciens est capricieuse. À travers leurs souvenirs, leur lointaine enfance est le jouet d'étranges déformations.",
       "source": "Brian Aldiss - Croisière sans escale",
       "length": 151,
       "id": 49
@@ -404,7 +398,7 @@
       "id": 67
     },
     {
-      "text": "A la recherche du temps perdu n'est pas un roman hâtif, et c'est sa qualité. Proust est un entrepreneur texan qui ne quitte pas ses hectares sans en avoir sucé le maximum de pétrole. Et ses personnages, grands derricks noirs, se dressent à perte de vue dans nos imaginations.",
+      "text": "À la recherche du temps perdu n'est pas un roman hâtif, et c'est sa qualité. Proust est un entrepreneur texan qui ne quitte pas ses hectares sans en avoir sucé le maximum de pétrole. Et ses personnages, grands derricks noirs, se dressent à perte de vue dans nos imaginations.",
       "source": "Charles Dantzig - Dictionnaire égoïste de la littérature française",
       "length": 275,
       "id": 68
@@ -681,21 +675,15 @@
     },
     {
       "text": "L'année 1866 fut marquée par un événement bizarre, un phénomène inexpliqué et inexplicable que personne n'a sans doute oublié. Sans parler des rumeurs qui agitaient les populations des ports et surexcitaient l'esprit public à l'intérieur des continents, les gens de mer furent particulièrement émus. Les négociants, armateurs, capitaines de navires, skippers et masters de l'Europe et de l'Amérique, officiers des marines militaires de tous pays, et, après eux, les gouvernements des divers États des deux continents, se préoccupèrent de ce fait au plus haut point.",
-      "source": "Jules Verne - Vingt mille lieues sous les mers",
+      "source": "Jules Vernes - Vingt mille lieues sous les mers",
       "length": 565,
       "id": 114
     },
     {
       "text": "Il y avait une grande affluence d'auditeurs, le 14 janvier 1862, à la séance de la Société royale géographique de Londres, Waterloo place, 3. Le président, Sir Francis M..., faisait à ses honorables collègues une importante communication dans un discours fréquemment interrompu par les applaudissements.",
-      "source": "Jules Verne - Cinq semainer en ballon",
+      "source": "Jules Vernes - Cinq semaines en ballon",
       "length": 303,
       "id": 115
-    },
-    {
-      "text": "Le 18 mars 1867, j'arrivais à Liverpool. Le Great Eastern devait partir quelques jours après pour New York, et je venais prendre passage à son bord. Voyage d'amateur, rien de plus. Une traversée de l'Atlantique sur ce gigantesque bateau me tentait. Par occasion, je comptais visiter le North-Amérique, mais accessoirement. Le Great Eastern d'abord. Le pays célébré par Cooper ensuite. En effet, ce steamship est un chef-d'œuvre de construction navale.",
-      "source": "Jules Verne - Une ville flotante",
-      "length": 451,
-      "id": 116
     },
     {
       "text": "Tu es assis et tu ne veux qu'attendre, attendre seulement jusqu'à ce qu'il n'y ait plus rien à attendre : que vienne la nuit, que sonnent les heures, que les jours s'en aillent, que les souvenirs s'estompent.",
@@ -992,12 +980,6 @@
       "id": 167
     },
     {
-      "text": "C'est comme ça, aucune meuf sur terre ne pourra m'changer, tu n'es pas la première personne à avoir essayé.",
-      "source": "Jok'air - Las Vegas",
-      "length": 107,
-      "id": 168
-    },
-    {
       "text": "Soulager ma haine avant que le ciel me rappelle, esclave de ma cause mais j'ai choisi mes chaînes.",
       "source": "Luidji - Monde",
       "length": 98,
@@ -1058,9 +1040,9 @@
       "id": 179
     },
     {
-      "text": "Les scènes que j'vis me rendent plus sensible à force, et quand on naviguait dans l'Black Pearl, c'était toi la perle noire.",
+      "text": "Les scènes que je vis me rendent plus sensible à force, et quand on naviguait dans le Black Pearl, c'était toi la perle noire.",
       "source": "Savage Toddy - Tout s’en va sauf les souvenirs",
-      "length": 124,
+      "length": 126,
       "id": 180
     },
     {
@@ -1136,9 +1118,9 @@
       "id": 193
     },
     {
-      "text": "Non mais je vous écoute, je vous écoute seulement je vous préviens, je vous le dis, je vais vous faire descendre en cabane avec un pichet de flotte et un bout de pain sec. je suis désolé, je suis démuni, je ne vois pas d'autre solution. Et puis je pense que ça vous donnera un peu le occasion de... de réfléchir un peu à tout ça à tête reposée, de prendre un peu de recul sur les choses parce que Bohort, on ne réveille pas son roi en pleine nuit pour des conneries, encore moins deux fois de suite...",
+      "text": "Non mais je vous écoute, je vous écoute seulement je vous préviens, je vous le dis, je vais vous faire descendre en cabane avec un pichet de flotte et un bout de pain sec. Je suis désolé, je suis démuni, je ne vois pas d'autre solution. Et puis je pense que ça vous donnera un peu l'occasion de... de réfléchir un peu à tout ça à tête reposée, de prendre un peu de recul sur les choses parce que Bohort, on ne réveille pas son roi en pleine nuit pour des conneries, encore moins deux fois de suite...",
       "source": "Kaamelott, Livre I, Haunted",
-      "length": 501,
+      "length": 500,
       "id": 194
     },
     {
