@@ -2,7 +2,7 @@ import format from "date-fns/format";
 import SlimSelect from "slim-select";
 import type { DataObjectPartial } from "slim-select/dist/store";
 import * as Dates from "date-fns";
-import { getTestActivities } from "../db";
+import { getTestActivityCalendar } from "../db";
 
 let yearSelector: SlimSelect | undefined;
 
@@ -11,7 +11,7 @@ export type ActivityDay = {
   label?: string;
 };
 
-export class ActivityCalendar {
+export class ActivityCalendar implements MonkeyTypes.TestActivityCalendar {
   protected data: (number | null | undefined)[];
   protected startDay: Date;
   protected endDay: Date;
@@ -115,7 +115,10 @@ export class ActivityCalendar {
   }
 }
 
-export class ModifiableActicityCalendar extends ActivityCalendar {
+export class ModifiableActivityCalendar
+  extends ActivityCalendar
+  implements MonkeyTypes.ModifiableTestActivityCalendar
+{
   private lastDay: Date;
 
   constructor(data: (number | null)[], lastDay: Date) {
@@ -146,8 +149,8 @@ export class ModifiableActicityCalendar extends ActivityCalendar {
   }
 }
 
-export function update(testActivity?: SharedTypes.TestActivity): void {
-  if (testActivity === undefined) {
+export function update(calendar?: MonkeyTypes.TestActivityCalendar): void {
+  if (calendar === undefined) {
     $("#testActivity").addClass("hidden");
     return;
   }
@@ -158,13 +161,12 @@ export function update(testActivity?: SharedTypes.TestActivity): void {
     throw new Error("cannot find container #testActivity .activity");
   container.innerHTML = "";
 
-  const lastDay = new Date(testActivity.lastDay);
-
   //test data
-  //data = new Array(400).fill(null).map((it) => Math.round(Math.random() * 255));
+  //testActivity.testsByDays = new Array(400)
+  //  .fill(null)
+  //  .map((it) => Math.round(Math.random() * 255));
 
-  const calendar = new ActivityCalendar(testActivity.testsByDays, lastDay);
-  initYearSelector(lastDay);
+  initYearSelector(new Date());
   updateMonths(calendar.getMonths());
 
   for (const day of calendar.getDays()) {
@@ -206,7 +208,7 @@ function initYearSelector(selectedDate: Date): void {
     events: {
       afterChange: async (newVal): Promise<void> => {
         const selected = newVal[0]?.value as string;
-        const activity = await getTestActivities(selected);
+        const activity = await getTestActivityCalendar(selected);
         update(activity);
       },
     },

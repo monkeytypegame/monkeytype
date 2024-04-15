@@ -31,7 +31,6 @@ import {
   deleteUser as firebaseDeleteUser,
 } from "../../utils/auth";
 import * as Dates from "date-fns";
-import { number } from "joi";
 
 async function verifyCaptcha(captcha: string): Promise<void> {
   if (!(await verify(captcha))) {

@@ -9,6 +9,10 @@ import { lastElementFromArray } from "./utils/arrays";
 import { getFunboxList } from "./utils/json-data";
 import { mergeWithDefaultConfig } from "./utils/config";
 import * as Dates from "date-fns";
+import {
+  ActivityCalendar,
+  ModifiableActivityCalendar,
+} from "./elements/test-activity";
 
 let dbSnapshot: MonkeyTypes.Snapshot | undefined;
 
@@ -134,7 +138,12 @@ export async function initSnapshot(): Promise<
     snap.filterPresets = userData.resultFilterPresets ?? [];
     snap.isPremium = userData?.isPremium;
     snap.allTimeLbs = userData.allTimeLbs;
-    snap.testActivity = userData.testActivity;
+    if (userData.testActivity !== undefined) {
+      snap.testActivity = new ModifiableActivityCalendar(
+        userData.testActivity.testsByDays,
+        new Date(userData.testActivity.lastDay)
+      );
+    }
 
     const hourOffset = userData?.streak?.hourOffset;
     snap.streakHourOffset =
@@ -956,10 +965,10 @@ export function setStreak(streak: number): void {
   setSnapshot(snapshot);
 }
 
-export async function getTestActivities(
+export async function getTestActivityCalendar(
   yearString: string
-): Promise<SharedTypes.TestActivity | undefined> {
-  if (!isAuthenticated() || !dbSnapshot) return undefined;
+): Promise<MonkeyTypes.TestActivityCalendar | undefined> {
+  if (!isAuthenticated() || dbSnapshot === undefined) return undefined;
 
   if (yearString === "current") return dbSnapshot.testActivity;
 
@@ -985,10 +994,10 @@ export async function getTestActivities(
       const lastDay = Dates.endOfYear(new Date(parseInt(year), 0, 1));
 
       console.log({ year, lastDay });
-      dbSnapshot.testActivityByYear[year] = {
+      dbSnapshot.testActivityByYear[year] = new ActivityCalendar(
         testsByDays,
-        lastDay: lastDay.valueOf(),
-      };
+        lastDay
+      );
     }
   }
 
