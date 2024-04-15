@@ -79,7 +79,7 @@ export class TestActivityCalendar implements MonkeyTypes.TestActivityCalendar {
       result.push({
         level: getValue(count),
         label:
-          this.data[i] !== undefined
+          this.data[i] !== undefined && this.data[i] !== null
             ? `${count} ${count == 1 ? "test" : "tests"} on ${format(
                 currentDate,
                 "EEEE dd MMM yyyy"
