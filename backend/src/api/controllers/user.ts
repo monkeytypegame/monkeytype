@@ -966,11 +966,14 @@ function getCurrentTestActivity(
   const thisYear = Dates.startOfYear(new Date());
   const lastYear = Dates.startOfYear(Dates.subYears(thisYear, 1));
 
-  const thisYearData =
-    testsByYearAndDay?.[thisYear.getFullYear().toString()] ?? [];
+  let thisYearData = testsByYearAndDay?.[thisYear.getFullYear().toString()];
+  let lastYearData = testsByYearAndDay?.[lastYear.getFullYear().toString()];
 
-  let lastYearData =
-    testsByYearAndDay?.[lastYear.getFullYear().toString()] ?? [];
+  if (lastYearData === undefined && thisYearData === undefined)
+    return undefined;
+
+  lastYearData = lastYearData ?? [];
+  thisYearData = thisYearData ?? [];
 
   //make sure lastYearData covers the full year
   if (lastYearData.length < Dates.getDaysInYear(lastYear)) {

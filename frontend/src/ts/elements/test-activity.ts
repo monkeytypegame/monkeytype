@@ -148,26 +148,35 @@ export class ModifiableTestActivityCalendar
     this.data = this.buildData(this.data, this.lastDay);
   }
 }
-
-export function update(calendar?: MonkeyTypes.TestActivityCalendar): void {
+export function init(calendar?: MonkeyTypes.TestActivityCalendar): void {
   if (calendar === undefined) {
     $("#testActivity").addClass("hidden");
     return;
   }
   $("#testActivity").removeClass("hidden");
+  initYearSelector(new Date());
+  update(calendar);
+}
 
-  const container = document.querySelector("#testActivity .activity");
-  if (container === null)
-    throw new Error("cannot find container #testActivity .activity");
+function update(calendar?: MonkeyTypes.TestActivityCalendar): void {
+  const container = document.querySelector(
+    "#testActivity .activity"
+  ) as HTMLElement;
   container.innerHTML = "";
+
+  if (calendar === undefined) {
+    updateMonths([]);
+    $("#testActivity .nodata").removeClass("hidden");
+    return;
+  }
 
   //test data
   //testActivity.testsByDays = new Array(400)
   //  .fill(null)
   //  .map((it) => Math.round(Math.random() * 255));
 
-  initYearSelector(new Date());
   updateMonths(calendar.getMonths());
+  $("#testActivity .nodata").addClass("hidden");
 
   for (const day of calendar.getDays()) {
     const elem = document.createElement("div");

@@ -607,14 +607,16 @@ export async function incrementTestsByYearAndDate(
   user: MonkeyTypes.DBUser,
   timestamp: number
 ): Promise<void> {
+  if (user.testsByYearAndDay === undefined) {
+    //migration script did not run yet
+    return;
+  }
+
   const date = new Date(timestamp);
   const dayOfYear = getDayOfYear(date);
   const year = date.getFullYear();
 
-  if (
-    user.testsByYearAndDay === undefined || //TODO initial fill from results collection in this case
-    user.testsByYearAndDay[year] === undefined
-  ) {
+  if (user.testsByYearAndDay[year] === undefined) {
     await getUsersCollection().updateOne(
       { uid: user.uid },
       { $set: { [`testsByYearAndDay.${date.getFullYear()}`]: [] } }
