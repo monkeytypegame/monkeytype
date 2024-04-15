@@ -211,7 +211,7 @@ function handleSpace(): void {
   void MonkeyPower.addPower(isWordCorrect, true);
   TestInput.incrementAccuracy(isWordCorrect);
   if (isWordCorrect) {
-    if (Config.indicateTypos !== "off" && Config.stopOnError === "letter") {
+    if (Config.stopOnError === "letter") {
       void TestUI.updateWordElement();
     }
     PaceCaret.handleSpace(true, currentWord);
@@ -643,9 +643,7 @@ function handleChar(
     Config.stopOnError === "letter" &&
     !thisCharCorrect
   ) {
-    if (Config.indicateTypos !== "off") {
-      void TestUI.updateWordElement(undefined, TestInput.input.current + char);
-    }
+    void TestUI.updateWordElement(undefined, TestInput.input.current + char);
     return;
   }
 
