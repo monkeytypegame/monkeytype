@@ -1,5 +1,4 @@
 import _ from "lodash";
-import { ObjectId } from "mongodb";
 import { updateStreak } from "../../src/dal/user";
 import * as UserDAL from "../../src/dal/user";
 
@@ -295,7 +294,7 @@ describe("UserDal", () => {
     await UserDAL.addUser(testUser.name, testUser.email, testUser.uid);
 
     // when
-    Date.now = jest.fn(() => 0);
+    Date.now = vi.fn(() => 0);
     await UserDAL.recordAutoBanEvent(testUser.uid, 2, 1);
     await UserDAL.recordAutoBanEvent(testUser.uid, 2, 1);
     await UserDAL.recordAutoBanEvent(testUser.uid, 2, 1);
@@ -317,7 +316,7 @@ describe("UserDal", () => {
     await UserDAL.addUser(testUser.name, testUser.email, testUser.uid);
 
     // when
-    Date.now = jest.fn(() => 0);
+    Date.now = vi.fn(() => 0);
     await UserDAL.recordAutoBanEvent(testUser.uid, 2, 1);
 
     // then
@@ -337,11 +336,11 @@ describe("UserDal", () => {
     await UserDAL.addUser(testUser.name, testUser.email, testUser.uid);
 
     // when
-    Date.now = jest.fn(() => 0);
+    Date.now = vi.fn(() => 0);
     await UserDAL.recordAutoBanEvent(testUser.uid, 2, 1);
     await UserDAL.recordAutoBanEvent(testUser.uid, 2, 1);
 
-    Date.now = jest.fn(() => 36000000);
+    Date.now = vi.fn(() => 36000000);
 
     await UserDAL.recordAutoBanEvent(testUser.uid, 2, 1);
 
@@ -678,7 +677,7 @@ describe("UserDal", () => {
 
     for (const { date, expectedStreak } of testSteps) {
       const milis = new Date(date).getTime();
-      Date.now = jest.fn(() => milis);
+      Date.now = vi.fn(() => milis);
 
       const streak = await updateStreak("TestID", milis);
 
@@ -736,7 +735,7 @@ describe("UserDal", () => {
 
     for (const { date, expectedStreak } of testSteps) {
       const milis = new Date(date).getTime();
-      Date.now = jest.fn(() => milis);
+      Date.now = vi.fn(() => milis);
 
       const streak = await updateStreak("TestID", milis);
 
@@ -778,7 +777,7 @@ describe("UserDal", () => {
 
     for (const { date, expectedStreak } of testSteps) {
       const milis = new Date(date).getTime();
-      Date.now = jest.fn(() => milis);
+      Date.now = vi.fn(() => milis);
 
       const streak = await updateStreak("TestID", milis);
 

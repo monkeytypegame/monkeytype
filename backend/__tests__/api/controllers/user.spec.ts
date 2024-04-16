@@ -21,7 +21,7 @@ describe("user controller test", () => {
         captcha: "captcha",
       };
 
-      jest.spyOn(Configuration, "getCachedConfiguration").mockResolvedValue({
+      vi.spyOn(Configuration, "getCachedConfiguration").mockResolvedValue({
         //if stuff breaks this might be the reason
         users: {
           signUp: true,
@@ -90,7 +90,7 @@ describe("user controller test", () => {
         })
         .expect(409);
 
-      jest.restoreAllMocks();
+      vi.restoreAllMocks();
     });
   });
 });

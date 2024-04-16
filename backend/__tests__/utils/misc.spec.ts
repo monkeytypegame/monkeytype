@@ -1,9 +1,11 @@
 import _ from "lodash";
 import * as misc from "../../src/utils/misc";
+import * as bc from "bcrypt";
 
 describe("Misc Utils", () => {
   it("getCurrentDayTimestamp", () => {
-    Date.now = jest.fn(() => 1652743381);
+    bc.genSalt();
+    Date.now = vi.fn(() => 1652743381);
 
     const currentDay = misc.getCurrentDayTimestamp();
     expect(currentDay).toBe(1641600000);
@@ -313,7 +315,7 @@ describe("Misc Utils", () => {
   });
 
   it("getCurrentWeekTimestamp", () => {
-    Date.now = jest.fn(() => 825289481000); // Sun Feb 25 1996 23:04:41 GMT+0000
+    Date.now = vi.fn(() => 825289481000); // Sun Feb 25 1996 23:04:41 GMT+0000
 
     const currentWeek = misc.getCurrentWeekTimestamp();
     expect(currentWeek).toBe(824688000000); // Mon Feb 19 1996 00:00:00 GMT+0000
@@ -417,7 +419,7 @@ describe("Misc Utils", () => {
     ];
 
     testCases.forEach(({ now, input, offset, expected }) => {
-      Date.now = jest.fn(() => now);
+      Date.now = vi.fn(() => now);
       expect(misc.isToday(input, offset)).toEqual(expected);
     });
   });
@@ -481,7 +483,7 @@ describe("Misc Utils", () => {
     ];
 
     testCases.forEach(({ now, input, offset, expected }) => {
-      Date.now = jest.fn(() => now);
+      Date.now = vi.fn(() => now);
       expect(misc.isYesterday(input, offset)).toEqual(expected);
     });
   });
