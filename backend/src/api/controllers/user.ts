@@ -405,7 +405,7 @@ export async function getUser(
   const isPremium = await UserDAL.checkIfUserIsPremium(uid, userInfo);
 
   const allTimeLbs = await getAllTimeLbs(uid);
-  const testActivity = getCurrentTestActivity(userInfo.testsByYearAndDay);
+  const testActivity = getCurrentTestActivity(userInfo.testActivity);
 
   const userData = {
     ...getRelevantUserInfo(userInfo),
@@ -960,14 +960,14 @@ async function getAllTimeLbs(uid: string): Promise<SharedTypes.AllTimeLbs> {
   };
 }
 
-function getCurrentTestActivity(
-  testsByYearAndDay: { [key: string]: number[] } | undefined
+export function getCurrentTestActivity(
+  testActivity: { [key: string]: number[] } | undefined
 ): SharedTypes.TestActivity | undefined {
   const thisYear = Dates.startOfYear(new Date());
   const lastYear = Dates.startOfYear(Dates.subYears(thisYear, 1));
 
-  let thisYearData = testsByYearAndDay?.[thisYear.getFullYear().toString()];
-  let lastYearData = testsByYearAndDay?.[lastYear.getFullYear().toString()];
+  let thisYearData = testActivity?.[thisYear.getFullYear().toString()];
+  let lastYearData = testActivity?.[lastYear.getFullYear().toString()];
 
   if (lastYearData === undefined && thisYearData === undefined)
     return undefined;
@@ -996,14 +996,11 @@ function getCurrentTestActivity(
   };
 }
 
-export async function getTestActivities(
+export async function getTestActivity(
   req: MonkeyTypes.Request
 ): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
-  const user = await UserDAL.getUser(uid, "test-activities");
+  const user = await UserDAL.getUser(uid, "testActivity");
 
-  return new MonkeyResponse(
-    "Test activity data retrieved",
-    user.testsByYearAndDay
-  );
+  return new MonkeyResponse("Test activity data retrieved", user.testActivity);
 }

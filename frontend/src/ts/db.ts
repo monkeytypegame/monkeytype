@@ -984,7 +984,7 @@ export async function getTestActivityCalendar(
   if (dbSnapshot.testActivityByYear === undefined) {
     LoadingPage.updateText("Downloading test activity...");
     LoadingPage.updateBar(90);
-    const response = await Ape.users.getTestActivities();
+    const response = await Ape.users.getTestActivity();
     if (response.status !== 200) {
       Notifications.add(
         "Error getting test activities: " + response.message,

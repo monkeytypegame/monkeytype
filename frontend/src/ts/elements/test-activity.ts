@@ -109,7 +109,7 @@ export class TestActivityCalendar implements MonkeyTypes.TestActivityCalendar {
       Math.round(sorted.length * 0.1),
       sorted.length - Math.round(sorted.length * 0.1)
     );
-    const sum = trimmed.reduce((a, c) => a + c, 0) as number;
+    const sum = trimmed.reduce((a, c) => a + c, 0);
     const mid = sum / trimmed.length;
     return [Math.floor(mid / 2), Math.round(mid), Math.round(mid * 1.5)];
   }
@@ -127,6 +127,7 @@ export class ModifiableTestActivityCalendar
   }
 
   increment(date: Date): void {
+    //TODO timezones?
     if (Dates.isSameDay(date, this.lastDay)) {
       const last = this.data.length - 1;
       this.data[last] = (this.data[last] || 0) + 1;

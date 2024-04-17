@@ -660,10 +660,10 @@ router.post(
 );
 
 router.get(
-  "/test-activities",
+  "/testActivity",
   authenticateRequest(),
-  RateLimit.userGet,
-  asyncHandler(UserController.getTestActivities)
+  RateLimit.userTestActivity,
+  asyncHandler(UserController.getTestActivity)
 );
 
 export default router;

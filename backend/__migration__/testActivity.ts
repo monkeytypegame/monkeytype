@@ -4,7 +4,7 @@ import * as DB from "../src/init/db";
 let db;
 let userCollection, resultCollection;
 
-const filter = { testsByYearAndDay: { $exists: false } };
+const filter = { testActivity: { $exists: false } };
 
 async function main(): Promise<void> {
   try {
@@ -37,7 +37,7 @@ async function migrateResults(batchSize = 50): Promise<void> {
     return;
   }
 
-  console.log(`Migrating ${allUsersCount} using batchSize=${batchSize}`);
+  console.log(`Migrating ~${allUsersCount} using batchSize=${batchSize}`);
 
   let count = 0;
   let uids: string[] = [];
@@ -153,7 +153,7 @@ async function migrateUsers(uids: string[]): Promise<void> {
         {
           $group: {
             _id: "$uid",
-            testsByYearAndDay: {
+            testActivity: {
               $mergeObjects: "$days",
             },
           },
@@ -187,6 +187,6 @@ async function handleUsersWithNoResults(uids: string[]): Promise<void> {
     {
       $and: [{ uid: { $in: uids } }, filter],
     },
-    { $set: { testsByYearAndDay: {} } }
+    { $set: { testActivity: {} } }
   );
 }

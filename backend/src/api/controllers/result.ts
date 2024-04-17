@@ -604,7 +604,7 @@ export async function addResult(
 
   //next two command could be combined to have only one call to mongo
   await UserDAL.incrementXp(uid, xpGained.xp);
-  await UserDAL.incrementTestsByYearAndDate(user, completedEvent.timestamp);
+  await UserDAL.incrementTestActivity(user, completedEvent.timestamp);
 
   if (isPb) {
     void Logger.logToDb(

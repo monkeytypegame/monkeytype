@@ -38,6 +38,8 @@ export async function addUser(
       zen: {},
       custom: {},
     },
+    //TODO: enable after migration is completed
+    //testActivity: []
   };
 
   const result = await getUsersCollection().updateOne(
@@ -603,11 +605,11 @@ export async function incrementXp(uid: string, xp: number): Promise<void> {
   await getUsersCollection().updateOne({ uid }, { $inc: { xp: new Long(xp) } });
 }
 
-export async function incrementTestsByYearAndDate(
+export async function incrementTestActivity(
   user: MonkeyTypes.DBUser,
   timestamp: number
 ): Promise<void> {
-  if (user.testsByYearAndDay === undefined) {
+  if (user.testActivity === undefined) {
     //migration script did not run yet
     return;
   }
@@ -616,16 +618,16 @@ export async function incrementTestsByYearAndDate(
   const dayOfYear = getDayOfYear(date);
   const year = date.getFullYear();
 
-  if (user.testsByYearAndDay[year] === undefined) {
+  if (user.testActivity[year] === undefined) {
     await getUsersCollection().updateOne(
       { uid: user.uid },
-      { $set: { [`testsByYearAndDay.${date.getFullYear()}`]: [] } }
+      { $set: { [`testActivity.${date.getFullYear()}`]: [] } }
     );
   }
 
   await getUsersCollection().updateOne(
     { uid: user.uid },
-    { $inc: { [`testsByYearAndDay.${date.getFullYear()}.${dayOfYear}`]: 1 } }
+    { $inc: { [`testActivity.${date.getFullYear()}.${dayOfYear}`]: 1 } }
   );
 }
 
