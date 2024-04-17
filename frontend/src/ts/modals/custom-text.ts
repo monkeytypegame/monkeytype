@@ -16,15 +16,82 @@ const popup = "#customTextModal .modal";
 type State = {
   textarea: string;
   lastSavedTextareaState: string;
+  longCustomTextWarning: boolean;
+  randomWordsChecked: boolean;
+  randomWordInputs: {
+    word: string;
+    time: string;
+    section: string;
+  };
+  pipeDelimiterChecked: boolean;
+  replaceNewlines: "off" | "space" | "period";
+  replaceControlCharactersChecked: boolean;
+  replaceFancyTypographyChecked: boolean;
 };
 
 const state: State = {
   textarea: CustomText.text.join(" "),
   lastSavedTextareaState: CustomText.text.join(" "),
+  longCustomTextWarning: false,
+  randomWordsChecked: false,
+  randomWordInputs: {
+    word: "",
+    time: "",
+    section: "",
+  },
+  pipeDelimiterChecked: false,
+  replaceNewlines: "off",
+  replaceControlCharactersChecked: true,
+  replaceFancyTypographyChecked: true,
 };
 
-function updateLongTextWarning(): void {
-  if (CustomTextState.isCustomTextLong() === true) {
+function updateUI(): void {
+  if (state.randomWordsChecked) {
+    $(`${popup} .randomWordsCheckbox input`).prop("checked", true);
+    $(`${popup} .inputs .randomInputFields`).removeClass("disabled");
+  } else {
+    $(`${popup} .randomWordsCheckbox input`).prop("checked", false);
+    $(`${popup} .inputs .randomInputFields`).addClass("disabled");
+  }
+
+  if (state.pipeDelimiterChecked) {
+    $(`${popup} .delimiterCheck input`).prop("checked", true);
+  } else {
+    $(`${popup} .delimiterCheck input`).prop("checked", false);
+  }
+
+  $(`${popup} .replaceNewLinesButtons .button`).removeClass("active");
+
+  if (state.replaceNewlines !== "off") {
+    $(`${popup} .inputs .replaceNewLinesButtons`).removeClass("disabled");
+    $(
+      `${popup} .replaceNewLinesButtons .button[data-replace-new-lines=${state.replaceNewlines}]`
+    ).addClass("active");
+  } else {
+    $(`${popup} .inputs .replaceNewLinesButtons`).addClass("disabled");
+  }
+
+  $(`${popup} textarea`).val(state.textarea);
+
+  if (state.pipeDelimiterChecked) {
+    $(`${popup} .randomInputFields .sectioncount `).removeClass("hidden");
+    state.randomWordInputs.word = "";
+    $(`${popup} .randomInputFields .wordcount `).addClass("hidden");
+  } else {
+    state.randomWordInputs.section = "";
+    $(`${popup} .randomInputFields .sectioncount `).addClass("hidden");
+    $(`${popup} .randomInputFields .wordcount `).removeClass("hidden");
+  }
+
+  $(`${popup} .randomInputFields .wordcount input`).val(
+    state.randomWordInputs.word
+  );
+  $(`${popup} .randomInputFields .time input`).val(state.randomWordInputs.time);
+  $(`${popup} .randomInputFields .sectioncount input`).val(
+    state.randomWordInputs.section
+  );
+
+  if (state.longCustomTextWarning) {
     $(`${popup} .longCustomTextWarning`).removeClass("hidden");
     $(`${popup} .randomWordsCheckbox input`).prop("checked", false);
     $(`${popup} .delimiterCheck input`).prop("checked", false);
@@ -37,40 +104,17 @@ function updateLongTextWarning(): void {
   }
 }
 
-//todo: rewrite this file to use a state object instead of constantly directly accessing the DOM
-
 async function beforeAnimation(
   modalEl: HTMLElement,
   modalChainData?: IncomingData
 ): Promise<void> {
-  updateLongTextWarning();
-
-  if (
+  state.longCustomTextWarning = CustomTextState.isCustomTextLong() ?? false;
+  state.randomWordsChecked =
     CustomText.isSectionRandom ||
     CustomText.isTimeRandom ||
-    CustomText.isWordRandom
-  ) {
-    $(`${popup} .randomWordsCheckbox input`).prop("checked", true);
-  } else {
-    $(`${popup} .randomWordsCheckbox input`).prop("checked", false);
-  }
-
-  if (CustomText.delimiter === "|") {
-    $(`${popup} .delimiterCheck input`).prop("checked", true);
-  } else {
-    $(`${popup} .delimiterCheck input`).prop("checked", false);
-  }
-
-  if ($(`${popup} .randomWordsCheckbox input`).prop("checked") as boolean) {
-    $(`${popup} .inputs .randomInputFields`).removeClass("disabled");
-  } else {
-    $(`${popup} .inputs .randomInputFields`).addClass("disabled");
-  }
-  if ($(`${popup} .replaceNewlineWithSpace input`).prop("checked") as boolean) {
-    $(`${popup} .inputs .replaceNewLinesButtons`).removeClass("disabled");
-  } else {
-    $(`${popup} .inputs .replaceNewLinesButtons`).addClass("disabled");
-  }
+    CustomText.isWordRandom;
+  state.pipeDelimiterChecked = CustomText.delimiter === "|";
+  // state.replaceNewlinesChecked = false;
 
   if (CustomTextState.isCustomTextLong()) {
     // if we are in long custom text mode, always reset the textarea state to the current text
@@ -83,7 +127,7 @@ async function beforeAnimation(
       Notifications.add("Disabled long custom text progress tracking", 0, {
         duration: 5,
       });
-      updateLongTextWarning();
+      state.longCustomTextWarning = false;
     }
 
     const newText =
@@ -92,12 +136,15 @@ async function beforeAnimation(
         : state.textarea + " " + modalChainData.text;
     state.textarea = newText;
   }
-  $(`${popup} textarea`).val(state.textarea);
 
-  $(`${popup} .wordcount input`).val(
-    CustomText.word === -1 ? "" : CustomText.word
-  );
-  $(`${popup} .time input`).val(CustomText.time === -1 ? "" : CustomText.time);
+  state.randomWordInputs.word =
+    CustomText.word === -1 ? "" : `${CustomText.word}`;
+  state.randomWordInputs.time =
+    CustomText.time === -1 ? "" : `${CustomText.time}`;
+  state.randomWordInputs.section =
+    CustomText.section === -1 ? "" : `${CustomText.section}`;
+
+  updateUI();
 }
 
 async function afterAnimation(): Promise<void> {
@@ -119,39 +166,6 @@ function hide(): void {
   void modal.hide();
 }
 
-function handleDelimiterChange(): void {
-  let delimiter;
-  if ($(`${popup} .delimiterCheck input`).prop("checked") as boolean) {
-    delimiter = "|";
-
-    $(`${popup} .randomInputFields .sectioncount `).removeClass("hidden");
-
-    $(`${popup} .randomInputFields .wordcount input `).val("");
-    $(`${popup} .randomInputFields .wordcount `).addClass("hidden");
-  } else {
-    delimiter = " ";
-    $(`${popup} .randomInputFields .sectioncount input `).val("");
-    $(`${popup} .randomInputFields .sectioncount `).addClass("hidden");
-    $(`${popup} .randomInputFields .wordcount `).removeClass("hidden");
-  }
-  if (
-    $(`${popup} textarea`).val() !== CustomText.text.join(CustomText.delimiter)
-  ) {
-    const currentText = $(`${popup} textarea`).val() as string;
-    const currentTextSplit = currentText.split(CustomText.delimiter);
-    let newtext = currentTextSplit.join(delimiter);
-    newtext = newtext.replace(/\n /g, "\n");
-    $(`${popup} textarea`).val(newtext);
-    state.textarea = newtext;
-  } else {
-    let newtext = CustomText.text.join(delimiter);
-    newtext = newtext.replace(/\n /g, "\n");
-    $(`${popup} textarea`).val(newtext);
-    state.textarea = newtext;
-  }
-  CustomText.setDelimiter(delimiter);
-}
-
 function handleFileOpen(): void {
   const file = ($(`#fileInput`)[0] as HTMLInputElement).files?.[0];
   if (file) {
@@ -167,8 +181,8 @@ function handleFileOpen(): void {
 
     reader.onload = (readerEvent): void => {
       const content = readerEvent.target?.result as string;
-      $(`${popup} textarea`).val(content);
       state.textarea = content;
+      updateUI();
       $(`#fileInput`).val("");
     };
     reader.onerror = (): void => {
@@ -193,9 +207,7 @@ function cleanUpText(): string[] {
   //replace zero width characters
   text = text.replace(/[\u200B-\u200D\u2060\uFEFF]/g, "");
 
-  if (
-    $(`${popup} .replaceControlCharacters input`).prop("checked") as boolean
-  ) {
+  if (state.replaceControlCharactersChecked) {
     text = text.replace(/([^\\]|^)\\t/gm, "$1\t");
     text = text.replace(/([^\\]|^)\\n/gm, "$1\n");
     text = text.replace(/\\\\t/gm, "\\t");
@@ -204,19 +216,12 @@ function cleanUpText(): string[] {
 
   text = text.replace(/ +/gm, " ");
   text = text.replace(/( *(\r\n|\r|\n) *)/g, "\n ");
-  if ($(`${popup} .typographyCheck input`).prop("checked") as boolean) {
+  if (state.replaceFancyTypographyChecked) {
     text = Misc.cleanTypographySymbols(text);
   }
-  if ($(`${popup} .replaceNewlineWithSpace input`).prop("checked") as boolean) {
-    let periods = true;
-    if (
-      $(
-        $(`${popup} .replaceNewLinesButtons .button`)[0] as HTMLElement
-      ).hasClass("active")
-    ) {
-      periods = false;
-    }
 
+  if (state.replaceNewlines !== "off") {
+    const periods = state.replaceNewlines === "period";
     if (periods) {
       text = text.replace(/\n/gm, ". ");
       text = text.replace(/\.\. /gm, ". ");
@@ -241,30 +246,17 @@ function apply(): void {
 
   CustomText.setText(cleanUpText());
 
-  CustomText.setWord(
-    parseInt(($(`${popup} .wordcount input`).val() as string) || "-1")
-  );
-  CustomText.setTime(
-    parseInt(($(`${popup} .time input`).val() as string) || "-1")
-  );
+  CustomText.setWord(parseInt(state.randomWordInputs.word || "-1"));
+  CustomText.setTime(parseInt(state.randomWordInputs.time || "-1"));
+  CustomText.setSection(parseInt(state.randomWordInputs.section || "-1"));
 
-  CustomText.setSection(
-    parseInt(($(`${popup} .sectioncount input`).val() as string) || "-1")
-  );
-  CustomText.setIsWordRandom(
-    ($(`${popup} .randomWordsCheckbox input`).prop("checked") as boolean) &&
-      CustomText.word > -1
-  );
-  CustomText.setIsTimeRandom(
-    ($(`${popup} .randomWordsCheckbox input`).prop("checked") as boolean) &&
-      CustomText.time > -1
-  );
+  CustomText.setIsWordRandom(state.randomWordsChecked && CustomText.word > -1);
+  CustomText.setIsTimeRandom(state.randomWordsChecked && CustomText.time > -1);
   CustomText.setIsSectionRandom(
-    ($(`${popup} .randomWordsCheckbox input`).prop("checked") as boolean) &&
-      CustomText.section > -1
+    state.randomWordsChecked && CustomText.section > -1
   );
   if (
-    ($(`${popup} .randomWordsCheckbox input`).prop("checked") as boolean) &&
+    state.randomWordsChecked &&
     !CustomText.isTimeRandom &&
     !CustomText.isWordRandom &&
     !CustomText.isSectionRandom
@@ -280,7 +272,8 @@ function apply(): void {
   }
 
   if (
-    ($(`${popup} .randomWordsCheckbox input`).prop("checked") as boolean) &&
+    // ($(`${popup} .randomWordsCheckbox input`).prop("checked") as boolean) &&
+    state.randomWordsChecked &&
     CustomText.isTimeRandom &&
     CustomText.isWordRandom
   ) {
@@ -316,38 +309,63 @@ function apply(): void {
 
 async function setup(modalEl: HTMLElement): Promise<void> {
   modalEl
-    .querySelector(".delimiterCheck input")
-    ?.addEventListener("change", handleDelimiterChange);
-  modalEl
     .querySelector("#fileInput")
     ?.addEventListener("change", handleFileOpen);
   modalEl
     .querySelector(".randomWordsCheckbox input")
-    ?.addEventListener("change", () => {
-      if ($(`${popup} .randomWordsCheckbox input`).prop("checked") as boolean) {
-        $(`${popup} .inputs .randomInputFields`).removeClass("disabled");
+    ?.addEventListener("change", (e) => {
+      state.randomWordsChecked = (e.target as HTMLInputElement).checked;
+      updateUI();
+    });
+  modalEl
+    .querySelector(".typographyCheck input")
+    ?.addEventListener("change", (e) => {
+      state.replaceFancyTypographyChecked = (
+        e.target as HTMLInputElement
+      ).checked;
+      updateUI();
+    });
+  modalEl
+    .querySelector(".delimiterCheck input")
+    ?.addEventListener("change", (e) => {
+      state.pipeDelimiterChecked = (e.target as HTMLInputElement).checked;
+      if (state.textarea !== CustomText.text.join(CustomText.delimiter)) {
+        const currentTextSplit = state.textarea.split(CustomText.delimiter);
+        let newtext = currentTextSplit.join(
+          state.pipeDelimiterChecked ? "|" : " "
+        );
+        newtext = newtext.replace(/\n /g, "\n");
+        state.textarea = newtext;
       } else {
-        $(`${popup} .inputs .randomInputFields`).addClass("disabled");
+        let newtext = CustomText.text.join(
+          state.pipeDelimiterChecked ? "|" : " "
+        );
+        newtext = newtext.replace(/\n /g, "\n");
+        state.textarea = newtext;
       }
+      CustomText.setDelimiter(state.pipeDelimiterChecked ? "|" : " ");
+      updateUI();
     });
   modalEl
     .querySelector(".replaceNewlineWithSpace input")
-    ?.addEventListener("change", () => {
-      if (
-        $(`${popup} .replaceNewlineWithSpace input`).prop("checked") as boolean
-      ) {
-        $(`${popup} .inputs .replaceNewLinesButtons`).removeClass("disabled");
+    ?.addEventListener("change", (e) => {
+      const checked = (e.target as HTMLInputElement).checked;
+      if (checked === false) {
+        state.replaceNewlines = "off";
       } else {
-        $(`${popup} .inputs .replaceNewLinesButtons`).addClass("disabled");
+        state.replaceNewlines = "space";
       }
+      updateUI();
     });
   const replaceNewLinesButtons = modalEl.querySelectorAll(
     ".replaceNewLinesButtons .button"
   );
   for (const button of replaceNewLinesButtons) {
-    button.addEventListener("click", () => {
-      $(`${popup} .replaceNewLinesButtons .button`).removeClass("active");
-      $(button).addClass("active");
+    button.addEventListener("click", (e) => {
+      state.replaceNewlines = (e.target as HTMLElement).dataset[
+        "replaceNewLines"
+      ] as "space" | "period";
+      updateUI();
     });
   }
   const textarea = modalEl.querySelector("textarea");
@@ -372,7 +390,7 @@ async function setup(modalEl: HTMLElement): Promise<void> {
     state.textarea = area.value;
   });
   textarea?.addEventListener("keypress", (e) => {
-    if (Misc.isElementVisible(`#customTextModal .longCustomTextWarning`)) {
+    if (state.longCustomTextWarning) {
       e.preventDefault();
       return;
     }
@@ -384,29 +402,35 @@ async function setup(modalEl: HTMLElement): Promise<void> {
       CustomTextState.getCustomTextName() !== ""
     ) {
       CustomTextState.setCustomTextName("", undefined);
+      state.longCustomTextWarning = false;
       Notifications.add("Disabled long custom text progress tracking", 0, {
         duration: 5,
       });
-      updateLongTextWarning();
     }
   });
   modalEl
     .querySelector(".randomInputFields .wordcount input")
-    ?.addEventListener("keypress", (e) => {
-      $(`${popup} .randomInputFields .time input`).val("");
-      $(`${popup} .randomInputFields .sectioncount input`).val("");
+    ?.addEventListener("input", (e) => {
+      state.randomWordInputs.time = "";
+      state.randomWordInputs.word = (e.target as HTMLInputElement).value;
+      state.randomWordInputs.section = "";
+      updateUI();
     });
   modalEl
     .querySelector(".randomInputFields .time input")
-    ?.addEventListener("keypress", (e) => {
-      $(`${popup} .randomInputFields .wordcount input`).val("");
-      $(`${popup} .randomInputFields .sectioncount input`).val("");
+    ?.addEventListener("input", (e) => {
+      state.randomWordInputs.time = (e.target as HTMLInputElement).value;
+      state.randomWordInputs.word = "";
+      state.randomWordInputs.section = "";
+      updateUI();
     });
   modalEl
     .querySelector(".randomInputFields .sectioncount input")
-    ?.addEventListener("keypress", (e) => {
-      $(`${popup} .randomInputFields .time input`).val("");
-      $(`${popup} .randomInputFields .wordcount input`).val("");
+    ?.addEventListener("input", (e) => {
+      state.randomWordInputs.time = "";
+      state.randomWordInputs.word = "";
+      state.randomWordInputs.section = (e.target as HTMLInputElement).value;
+      updateUI();
     });
   modalEl.querySelector(".button.apply")?.addEventListener("click", () => {
     apply();
@@ -434,7 +458,8 @@ async function setup(modalEl: HTMLElement): Promise<void> {
   modalEl
     .querySelector(".longCustomTextWarning")
     ?.addEventListener("click", () => {
-      $(`#customTextModal .longCustomTextWarning`).addClass("hidden");
+      state.longCustomTextWarning = false;
+      updateUI();
     });
 }
 
