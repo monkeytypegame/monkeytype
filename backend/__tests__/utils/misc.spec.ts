@@ -1,10 +1,8 @@
 import _ from "lodash";
 import * as misc from "../../src/utils/misc";
-import * as bc from "bcrypt";
 
 describe("Misc Utils", () => {
   it("getCurrentDayTimestamp", () => {
-    bc.genSalt();
     Date.now = vi.fn(() => 1652743381);
 
     const currentDay = misc.getCurrentDayTimestamp();

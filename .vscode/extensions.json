@@ -2,7 +2,6 @@
   "recommendations": [
     "esbenp.prettier-vscode",
     "vitest.explorer",
-    "ryanluker.vscode-coverage-gutters",
     "huntertran.auto-markdown-toc"
   ]
 }
