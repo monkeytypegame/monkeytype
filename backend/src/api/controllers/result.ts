@@ -599,7 +599,6 @@ export async function addResult(
   }
 
   const dbresult = buildDbResult(completedEvent, user.name, isPb);
-
   const addedResult = await ResultDAL.addResult(uid, dbresult);
 
   //next two command could be combined to have only one call to mongo

@@ -1,16 +1,29 @@
 import "dotenv/config";
 import * as DB from "../src/init/db";
 
+let appRunning = true;
 let db;
 let userCollection, resultCollection;
 
 const filter = { testActivity: { $exists: false } };
+
+process.on("SIGINT", () => {
+  console.log("\nshutting down...");
+  appRunning = false;
+});
+
+main();
 
 async function main(): Promise<void> {
   try {
     console.log(
       `Connecting to database ${process.env["DB_NAME"]} on ${process.env["DB_URI"]}...`
     );
+    console.log(
+      "Looking good? you have 4 seconds to abort using <ctrl>-<c>..."
+    );
+    await new Promise((resolve) => setTimeout(resolve, 4000));
+
     await DB.connect();
     console.log("Connected to database");
     db = DB.getDb();
@@ -23,12 +36,11 @@ async function main(): Promise<void> {
 
     await migrateResults();
 
-    console.log("done.");
+    console.log(`\n${appRunning ? "done" : "aborted"}.`);
   } finally {
     await db.close();
   }
 }
-main();
 
 async function migrateResults(batchSize = 50): Promise<void> {
   const allUsersCount = await userCollection.countDocuments(filter);
@@ -37,9 +49,10 @@ async function migrateResults(batchSize = 50): Promise<void> {
     return;
   }
 
-  console.log(`Migrating ~${allUsersCount} using batchSize=${batchSize}`);
+  console.log(`Migrating ~${allUsersCount} users using batchSize=${batchSize}`);
 
   let count = 0;
+  const start = new Date().valueOf();
   let uids: string[] = [];
   do {
     uids = await getUsersToMigrate(batchSize);
@@ -50,12 +63,10 @@ async function migrateResults(batchSize = 50): Promise<void> {
 
     //progress tracker
     count += uids.length;
-    if (count % 100 == 0 || uids.length == 0) {
-      process.stdout.clearLine(0);
-      process.stdout.cursorTo(0);
-      process.stdout.write(Math.round((count / allUsersCount) * 100) + "%");
-    }
-  } while (uids.length > 0);
+    updateProgress(allUsersCount, count, start);
+  } while (uids.length > 0 && appRunning);
+
+  if (appRunning) updateProgress(100, 100, start);
 }
 
 async function getUsersToMigrate(limit: number): Promise<string[]> {
@@ -188,5 +199,18 @@ async function handleUsersWithNoResults(uids: string[]): Promise<void> {
       $and: [{ uid: { $in: uids } }, filter],
     },
     { $set: { testActivity: {} } }
+  );
+}
+
+function updateProgress(all: number, current: number, start: number) {
+  const percentage = (current / all) * 100;
+  const timeLeft = Math.round(
+    (((new Date().valueOf() - start) / percentage) * (100 - percentage)) / 1000
+  );
+
+  process.stdout.clearLine(0);
+  process.stdout.cursorTo(0);
+  process.stdout.write(
+    `${Math.round(percentage)}% done, estimated time left ${timeLeft} seconds.`
   );
 }
