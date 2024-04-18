@@ -5,12 +5,14 @@ import {
 } from "../../src/ts/elements/test-activity";
 import * as Dates from "date-fns";
 import { MatcherResult } from "../vitest";
+import { localFromUtc } from "../../src/ts/utils/date-and-time";
 
 describe("test-activity.ts", () => {
   describe("TestActivityCalendar", () => {
     describe("getMonths", () => {
       it("for lastDay in april", () => {
         const calendar = new TestActivityCalendar([], getDate("2024-04-10"));
+        console.log(Dates.format(getDate("2024-04-10"), "yyyy-MM-dd hh:mm:ss"));
 
         expect(calendar.getMonths()).toEqual([
           "May`23",
@@ -151,8 +153,12 @@ describe("test-activity.ts", () => {
 
     it("for full year", () => {
       //GIVEN
-      const data = getData("2022-12-20", "2023-12-31");
-      const calendar = new TestActivityCalendar(data, new Date(2023, 11, 31));
+      const data = getData("2022-11-30", "2023-12-31");
+      console.log(new Date("2023-12-31T23:59:59Z").valueOf());
+      const calendar = new TestActivityCalendar(
+        data,
+        new Date("2023-12-31T23:59:59Z")
+      ); //2023-12-31T23:59:59Z
 
       //WHEN
       const days = calendar.getDays();
@@ -342,7 +348,8 @@ describe("test-activity.ts", () => {
 });
 
 function getDate(date: string): Date {
-  return Dates.parseISO(date + "T00:00:00Z");
+  const parts = date.split("-").map((it) => parseInt(it));
+  return new Date(Date.UTC(parts[0], parts[1] - 1, parts[2], 0, 0, 0, 0));
 }
 
 function getData(from: string, to: string): number[] {

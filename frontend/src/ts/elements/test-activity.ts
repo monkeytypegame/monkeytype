@@ -1,8 +1,8 @@
-import format from "date-fns/format";
 import SlimSelect from "slim-select";
 import type { DataObjectPartial } from "slim-select/dist/store";
 import * as Dates from "date-fns";
 import { getTestActivityCalendar } from "../db";
+import * as DateTime from "../utils/date-and-time";
 
 let yearSelector: SlimSelect | undefined;
 
@@ -17,15 +17,25 @@ export class TestActivityCalendar implements MonkeyTypes.TestActivityCalendar {
   protected endDay: Date;
 
   constructor(data: (number | null)[], lastDay: Date) {
-    const interval = this.getInterval(lastDay);
+    const local = DateTime.localFromUtc(lastDay);
+    const interval = this.getInterval(local);
     this.startDay = interval.start as Date;
     this.endDay = interval.end as Date;
-    this.data = this.buildData(data, lastDay);
+    this.data = this.buildData(data, local);
   }
 
-  protected getInterval(lastDay: Date): Interval {
+  protected getInterval(lastDay: Date): Dates.Interval {
     const end = Dates.endOfMonth(lastDay);
     const start = Dates.addDays(Dates.subYears(end, 1), 1);
+    /*
+    console.log({
+      offset: new Date().getTimezoneOffset() / 60,
+      lastDay: Dates.format(lastDay, "EEEE dd MMM yyyy"),
+      lastDayValue: lastDay.valueOf(),
+      end: Dates.format(end, "EEEE dd MMM yyyy"),
+      start: Dates.format(start, "EEEE dd MMM yyyy"),
+    });
+    */
     return { start, end };
   }
 
@@ -76,11 +86,18 @@ export class TestActivityCalendar implements MonkeyTypes.TestActivityCalendar {
     let currentDate = this.startDay;
     for (let i = 0; i < days; i++) {
       const count = this.data[i];
+      /*
+      console.log({
+        i,
+        count,
+        date: Dates.format(currentDate, "EEEE dd MMM yyyy"),
+      });
+      */
       result.push({
         level: getValue(count),
         label:
           this.data[i] !== undefined && this.data[i] !== null
-            ? `${count} ${count == 1 ? "test" : "tests"} on ${format(
+            ? `${count} ${count == 1 ? "test" : "tests"} on ${Dates.format(
                 currentDate,
                 "EEEE dd MMM yyyy"
               )}`

@@ -10,7 +10,7 @@
     "start": "npm run build && node ./build/server.js",
     "test": "vitest run",
     "test-coverage": "vitest run --coverage",
-    "dev": "ts-node-dev --transpile-only --inspect -- ./src/server.ts",
+    "dev": "TZ=UTC ts-node-dev --transpile-only --inspect -- ./src/server.ts",
     "knip": "knip",
     "docker-db-only": "docker compose -f docker/compose.db-only.yml up",
     "docker": "docker compose -f docker/compose.yml up"

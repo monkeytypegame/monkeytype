@@ -987,7 +987,7 @@ export function getCurrentTestActivity(
   lastYearData = lastYearData.slice(-366 + thisYearData.length);
 
   const lastDay = Dates.startOfDay(
-    Dates.addDays(thisYear, thisYearData.length - 2)
+    Dates.addDays(thisYear, thisYearData.length - 1)
   );
 
   return {
