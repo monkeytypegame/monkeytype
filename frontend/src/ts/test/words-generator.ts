@@ -411,7 +411,8 @@ export function getWordsLimit(): number {
     ) {
       limit = 100;
     } else {
-      limit = CustomText.getLimitValue();
+      limit =
+        CustomText.getLimitValue() > 100 ? 100 : CustomText.getLimitValue();
     }
   }
 
