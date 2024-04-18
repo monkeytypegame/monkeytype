@@ -288,9 +288,6 @@ function apply(): void {
     return;
   }
 
-  //todo maybe this should be below the guards?
-  state.lastSavedTextareaState = state.textarea;
-
   if (
     [
       state.customTextLimits.word,
@@ -302,17 +299,6 @@ function apply(): void {
       duration: 5,
     });
     return;
-  }
-
-  if (state.customTextLimits.word !== "") {
-    CustomText.setLimitMode("word");
-    CustomText.setLimitValue(parseInt(state.customTextLimits.word));
-  } else if (state.customTextLimits.time !== "") {
-    CustomText.setLimitMode("time");
-    CustomText.setLimitValue(parseInt(state.customTextLimits.time));
-  } else if (state.customTextLimits.section !== "") {
-    CustomText.setLimitMode("section");
-    CustomText.setLimitValue(parseInt(state.customTextLimits.section));
   }
 
   if (
@@ -335,6 +321,19 @@ function apply(): void {
         duration: 7,
       }
     );
+  }
+
+  state.lastSavedTextareaState = state.textarea;
+
+  if (state.customTextLimits.word !== "") {
+    CustomText.setLimitMode("word");
+    CustomText.setLimitValue(parseInt(state.customTextLimits.word));
+  } else if (state.customTextLimits.time !== "") {
+    CustomText.setLimitMode("time");
+    CustomText.setLimitValue(parseInt(state.customTextLimits.time));
+  } else if (state.customTextLimits.section !== "") {
+    CustomText.setLimitMode("section");
+    CustomText.setLimitValue(parseInt(state.customTextLimits.section));
   }
 
   CustomText.setMode(
