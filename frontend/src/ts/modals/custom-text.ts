@@ -57,23 +57,21 @@ function updateUI(): void {
     "hidden"
   );
 
+  $(`${popup} .inputs .group[data-id="limit"] input.words`).val(
+    state.customTextLimits.word
+  );
+  $(`${popup} .inputs .group[data-id="limit"] input.time`).val(
+    state.customTextLimits.time
+  );
+  $(`${popup} .inputs .group[data-id="limit"] input.sections`).val(
+    state.customTextLimits.section
+  );
   if (state.customTextLimits.word !== "") {
-    $(`${popup} .inputs .group[data-id="limit"] input.words`).val(
-      state.customTextLimits.word
-    );
     $(`${popup} .inputs .group[data-id="limit"] input.words`).removeClass(
       "hidden"
     );
   }
-  if (state.customTextLimits.time !== "") {
-    $(`${popup} .inputs .group[data-id="limit"] input.time`).val(
-      state.customTextLimits.time
-    );
-  }
   if (state.customTextLimits.section !== "") {
-    $(`${popup} .inputs .group[data-id="limit"] input.sections`).val(
-      state.customTextLimits.section
-    );
     $(`${popup} .inputs .group[data-id="limit"] input.sections`).removeClass(
       "hidden"
     );
@@ -430,18 +428,27 @@ async function setup(modalEl: HTMLElement): Promise<void> {
     .querySelector(".group[data-id='limit'] input.words")
     ?.addEventListener("input", (e) => {
       state.customTextLimits.word = (e.target as HTMLInputElement).value;
+      state.customTextLimits.time = "";
+      state.customTextLimits.section = "";
+      updateUI();
     });
 
   modalEl
     .querySelector(".group[data-id='limit'] input.time")
     ?.addEventListener("input", (e) => {
       state.customTextLimits.time = (e.target as HTMLInputElement).value;
+      state.customTextLimits.word = "";
+      state.customTextLimits.section = "";
+      updateUI();
     });
 
   modalEl
     .querySelector(".group[data-id='limit'] input.sections")
     ?.addEventListener("input", (e) => {
       state.customTextLimits.section = (e.target as HTMLInputElement).value;
+      state.customTextLimits.word = "";
+      state.customTextLimits.time = "";
+      updateUI();
     });
 
   const textarea = modalEl.querySelector("textarea");
