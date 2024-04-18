@@ -9,7 +9,7 @@
     "audit": "vite-bundle-visualizer",
     "dep-graph": "madge -c -i \"dep-graph.png\" ./src/ts",
     "build": "npm run madge && vite build",
-    "madge": " madge --circular --extensions ts ./",
+    "madge": " madge --circular --extensions ts ./src",
     "live": "npm run build && vite preview --port 3000",
     "dev": "vite dev",
     "deploy-live": "npm run validate-json && npm run build && firebase deploy -P live --only hosting",

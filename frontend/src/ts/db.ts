@@ -12,7 +12,7 @@ import * as Dates from "date-fns";
 import {
   TestActivityCalendar,
   ModifiableTestActivityCalendar,
-} from "./elements/test-activity";
+} from "./elements/test-activity-calendar";
 
 let dbSnapshot: MonkeyTypes.Snapshot | undefined;
 
