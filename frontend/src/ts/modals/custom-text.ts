@@ -325,12 +325,19 @@ function apply(): void {
 
   state.lastSavedTextareaState = state.textarea;
 
-  CustomText.setMode(
-    state.customTextMode === "simple" ? "repeat" : state.customTextMode
-  );
+  const text = cleanUpText();
+
+  if (state.customTextMode === "simple") {
+    state.customTextLimits.word = `${text.length}`;
+    state.customTextLimits.time = "";
+    state.customTextLimits.section = "";
+    CustomText.setMode("repeat");
+  } else {
+    CustomText.setMode(state.customTextMode);
+  }
 
   CustomText.setPipeDelimiter(state.customTextPipeDelimiter);
-  CustomText.setText(cleanUpText());
+  CustomText.setText(text);
 
   if (state.customTextLimits.word !== "") {
     CustomText.setLimitMode("word");
