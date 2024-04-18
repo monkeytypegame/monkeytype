@@ -140,11 +140,11 @@ export class ModifiableTestActivityCalendar
 
   constructor(data: (number | null)[], lastDay: Date) {
     super(data, lastDay);
-    this.lastDay = lastDay;
+    this.lastDay = new UTCDateMini(lastDay);
   }
 
-  increment(date: Date): void {
-    //TODO timezones?
+  increment(utcDate: Date): void {
+    const date = new UTCDateMini(utcDate);
     if (isSameDay(date, this.lastDay)) {
       const last = this.data.length - 1;
       this.data[last] = (this.data[last] || 0) + 1;

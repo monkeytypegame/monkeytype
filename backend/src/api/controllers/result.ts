@@ -314,8 +314,6 @@ export async function addResult(
     //
   }
 
-  completedEvent.timestamp = Math.floor(Date.now() / 1000) * 1000;
-
   //check if now is earlier than last result plus duration (-1 second as a buffer)
   const testDurationMilis = completedEvent.testDuration * 1000;
   const earliestPossible = (lastResultTimestamp ?? 0) + testDurationMilis;
@@ -600,6 +598,9 @@ export async function addResult(
 
   const dbresult = buildDbResult(completedEvent, user.name, isPb);
   const addedResult = await ResultDAL.addResult(uid, dbresult);
+
+  //don't trust the user
+  completedEvent.timestamp = Math.floor(Date.now() / 1000) * 1000;
 
   //next two command could be combined to have only one call to mongo
   await UserDAL.incrementXp(uid, xpGained.xp);

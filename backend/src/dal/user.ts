@@ -40,7 +40,7 @@ export async function addUser(
       custom: {},
     },
     //TODO: enable after migration is completed
-    //testActivity: []
+    //testActivity: {}
   };
 
   const result = await getUsersCollection().updateOne(
@@ -628,7 +628,7 @@ export async function incrementTestActivity(
 
   await getUsersCollection().updateOne(
     { uid: user.uid },
-    { $inc: { [`testActivity.${date.getFullYear()}.${dayOfYear}`]: 1 } }
+    { $inc: { [`testActivity.${date.getFullYear()}.${dayOfYear - 1}`]: 1 } }
   );
 }
 
