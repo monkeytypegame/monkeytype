@@ -551,5 +551,3 @@ const modal = new AnimatedModal<IncomingData>({
     afterAnimation,
   },
 });
-
-show();
