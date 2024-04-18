@@ -10,15 +10,8 @@ let text: string[] = [
   "dog",
 ];
 
-type CustomTextMode = "repeat" | "random";
-type CustomTextLimitMode = "word" | "time" | "section";
-type CustomTextLimit = {
-  value: number;
-  mode: CustomTextLimitMode;
-};
-
-let mode: CustomTextMode = "repeat";
-const limit: CustomTextLimit = {
+let mode: MonkeyTypes.CustomTextMode = "repeat";
+const limit: MonkeyTypes.CustomTextLimit = {
   value: 9,
   mode: "word",
 };
@@ -33,16 +26,16 @@ export function setText(txt: string[]): void {
   limit.value = text.length;
 }
 
-export function getMode(): CustomTextMode {
+export function getMode(): MonkeyTypes.CustomTextMode {
   return mode;
 }
 
-export function setMode(val: CustomTextMode): void {
+export function setMode(val: MonkeyTypes.CustomTextMode): void {
   mode = val;
   limit.value = text.length;
 }
 
-export function getLimit(): CustomTextLimit {
+export function getLimit(): MonkeyTypes.CustomTextLimit {
   return limit;
 }
 
@@ -50,7 +43,7 @@ export function getLimitValue(): number {
   return limit.value;
 }
 
-export function getLimitMode(): CustomTextLimitMode {
+export function getLimitMode(): MonkeyTypes.CustomTextLimitMode {
   return limit.mode;
 }
 
@@ -58,7 +51,7 @@ export function setLimitValue(val: number): void {
   limit.value = val;
 }
 
-export function setLimitMode(val: CustomTextLimitMode): void {
+export function setLimitMode(val: MonkeyTypes.CustomTextLimitMode): void {
   limit.mode = val;
 }
 
@@ -72,8 +65,8 @@ export function setPipeDelimiter(val: boolean): void {
 
 export type CustomTextData = {
   text: string[];
-  mode: CustomTextMode;
-  limit: CustomTextLimit;
+  mode: MonkeyTypes.CustomTextMode;
+  limit: MonkeyTypes.CustomTextLimit;
   pipeDelimiter: boolean;
 };
 

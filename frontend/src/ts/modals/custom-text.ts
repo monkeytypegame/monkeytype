@@ -18,7 +18,7 @@ type State = {
   lastSavedTextareaState: string;
   longCustomTextWarning: boolean;
 
-  customTextMode: "simple" | "repeat" | "random";
+  customTextMode: "simple" | MonkeyTypes.CustomTextMode;
   customTextLimits: {
     word: string;
     time: string;
