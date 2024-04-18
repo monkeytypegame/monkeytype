@@ -144,6 +144,15 @@ async function beforeAnimation(
   modalChainData?: IncomingData
 ): Promise<void> {
   state.customTextMode = CustomText.getMode();
+
+  if (
+    state.customTextMode === "repeat" &&
+    CustomText.getLimitMode() === "word" &&
+    CustomText.getLimitValue() === CustomText.getText().length
+  ) {
+    state.customTextMode = "simple";
+  }
+
   state.customTextLimits.word = "";
   state.customTextLimits.time = "";
   state.customTextLimits.section = "";
