@@ -56,6 +56,7 @@ function updateUI(): void {
   $(`${popup} .inputs .group[data-id="limit"] input.sections`).addClass(
     "hidden"
   );
+
   if (state.customTextLimits.word !== "") {
     $(`${popup} .inputs .group[data-id="limit"] input.words`).val(
       state.customTextLimits.word
@@ -63,17 +64,44 @@ function updateUI(): void {
     $(`${popup} .inputs .group[data-id="limit"] input.words`).removeClass(
       "hidden"
     );
-  } else if (state.customTextLimits.time !== "") {
+  }
+  if (state.customTextLimits.time !== "") {
     $(`${popup} .inputs .group[data-id="limit"] input.time`).val(
       state.customTextLimits.time
     );
-  } else if (state.customTextLimits.section !== "") {
+  }
+  if (state.customTextLimits.section !== "") {
     $(`${popup} .inputs .group[data-id="limit"] input.sections`).val(
       state.customTextLimits.section
     );
     $(`${popup} .inputs .group[data-id="limit"] input.sections`).removeClass(
       "hidden"
     );
+  }
+
+  if (state.customTextPipeDelimiter) {
+    $(`${popup} .inputs .group[data-id="limit"] input.sections`).removeClass(
+      "hidden"
+    );
+    $(`${popup} .inputs .group[data-id="limit"] input.words`).addClass(
+      "hidden"
+    );
+  } else {
+    $(`${popup} .inputs .group[data-id="limit"] input.words`).removeClass(
+      "hidden"
+    );
+    $(`${popup} .inputs .group[data-id="limit"] input.sections`).addClass(
+      "hidden"
+    );
+  }
+
+  if (state.customTextMode === "simple") {
+    $(`${popup} .inputs .group[data-id="limit"]`).addClass("disabled");
+    $(`${popup} .inputs .group[data-id="limit"] input`).val("");
+    $(`${popup} .inputs .group[data-id="limit"] input`).prop("disabled", true);
+  } else {
+    $(`${popup} .inputs .group[data-id="limit"]`).removeClass("disabled");
+    $(`${popup} .inputs .group[data-id="limit"] input`).prop("disabled", false);
   }
 
   $(`${popup} .inputs .group[data-id="fancy"] button`).removeClass("active");
@@ -257,6 +285,19 @@ function apply(): void {
 
   CustomText.setText(cleanUpText());
 
+  if (
+    [
+      state.customTextLimits.word,
+      state.customTextLimits.time,
+      state.customTextLimits.section,
+    ].filter((limit) => limit !== "").length > 1
+  ) {
+    Notifications.add("You can only specify one limit", 0, {
+      duration: 5,
+    });
+    return;
+  }
+
   if (state.customTextLimits.word !== "") {
     CustomText.setLimitMode("word");
     CustomText.setLimitValue(parseInt(state.customTextLimits.word));
@@ -359,6 +400,15 @@ async function setup(modalEl: HTMLElement): Promise<void> {
     button.addEventListener("click", (e) => {
       state.customTextPipeDelimiter =
         (e.target as HTMLButtonElement).value === "true" ? true : false;
+      if (state.customTextPipeDelimiter && state.customTextLimits.word !== "") {
+        state.customTextLimits.word = "";
+      }
+      if (
+        !state.customTextPipeDelimiter &&
+        state.customTextLimits.section !== ""
+      ) {
+        state.customTextLimits.section = "";
+      }
       handleDelimiterChange();
       updateUI();
     });
@@ -377,19 +427,19 @@ async function setup(modalEl: HTMLElement): Promise<void> {
   }
 
   modalEl
-    .querySelector(".group[data-id='mode'] input.words")
+    .querySelector(".group[data-id='limit'] input.words")
     ?.addEventListener("input", (e) => {
       state.customTextLimits.word = (e.target as HTMLInputElement).value;
     });
 
   modalEl
-    .querySelector(".group[data-id='mode'] input.time")
+    .querySelector(".group[data-id='limit'] input.time")
     ?.addEventListener("input", (e) => {
       state.customTextLimits.time = (e.target as HTMLInputElement).value;
     });
 
   modalEl
-    .querySelector(".group[data-id='mode'] input.sections")
+    .querySelector(".group[data-id='limit'] input.sections")
     ?.addEventListener("input", (e) => {
       state.customTextLimits.section = (e.target as HTMLInputElement).value;
     });

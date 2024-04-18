@@ -22,7 +22,7 @@ type CustomTextLimit = {
 let mode: CustomTextMode = "repeat";
 const limit: CustomTextLimit = {
   value: 3,
-  mode: "section",
+  mode: "word",
 };
 let pipeDelimiter = false;
 
