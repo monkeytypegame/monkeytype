@@ -1,4 +1,4 @@
-export let text = [
+let text: string[] = [
   "The",
   "quick",
   "brown",
@@ -9,52 +9,83 @@ export let text = [
   "lazy",
   "dog",
 ];
-export let isWordRandom = false;
-export let isTimeRandom = false;
-export let isSectionRandom = false;
-export let word = -1;
-export let time = -1;
-export let section = -1;
-export let delimiter = " ";
 
-export function setText(txt: string[]): void {
-  text = txt;
-}
+// let text: string[] = ["Section 1", "section 2", "section 3"];
 
-export function getText(): string {
-  return text.join(" ");
-}
+type CustomTextMode = "repeat" | "random";
+type CustomTextLimitMode = "word" | "time" | "section";
+type CustomTextLimit = {
+  value: number;
+  mode: CustomTextLimitMode;
+};
 
-export function getTextArray(): string[] {
+let mode: CustomTextMode = "repeat";
+const limit: CustomTextLimit = {
+  value: 3,
+  mode: "section",
+};
+let pipeDelimiter = false;
+
+export function getText(): string[] {
   return text;
 }
 
-export function setIsWordRandom(val: boolean): void {
-  isWordRandom = val;
+export function setText(txt: string[]): void {
+  text = txt;
+  limit.value = text.length;
 }
 
-export function setIsTimeRandom(val: boolean): void {
-  isTimeRandom = val;
+export function getMode(): CustomTextMode {
+  return mode;
 }
 
-export function setIsSectionRandom(val: boolean): void {
-  isSectionRandom = val;
+export function setMode(val: CustomTextMode): void {
+  mode = val;
+  limit.value = text.length;
 }
 
-export function setTime(val: number): void {
-  time = val;
+export function getLimit(): CustomTextLimit {
+  return limit;
 }
 
-export function setWord(val: number): void {
-  word = val;
+export function getLimitValue(): number {
+  return limit.value;
 }
 
-export function setSection(val: number): void {
-  section = val;
+export function getLimitMode(): CustomTextLimitMode {
+  return limit.mode;
 }
 
-export function setDelimiter(val: string): void {
-  delimiter = val;
+export function setLimitValue(val: number): void {
+  limit.value = val;
+}
+
+export function setLimitMode(val: CustomTextLimitMode): void {
+  limit.mode = val;
+}
+
+export function getPipeDelimiter(): boolean {
+  return pipeDelimiter;
+}
+
+export function setPipeDelimiter(val: boolean): void {
+  pipeDelimiter = val;
+}
+
+export type CustomTextData = {
+  text: string[];
+  mode: CustomTextMode;
+  limit: CustomTextLimit;
+  pipeDelimiter: boolean;
+};
+
+export function getData(): CustomTextData {
+  return {
+    text,
+    mode,
+    limit,
+    pipeDelimiter,
+  };
 }
 
 type CustomTextObject = Record<string, string>;

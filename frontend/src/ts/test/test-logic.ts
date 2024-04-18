@@ -155,7 +155,7 @@ export function restart(options = {} as RestartOptions): void {
           Config.mode,
           Config.words,
           Config.time,
-          CustomText,
+          CustomText.getData(),
           CustomTextState.isCustomTextLong() ?? false
         )
       ) {
@@ -225,10 +225,11 @@ export function restart(options = {} as RestartOptions): void {
 
     if (PractiseWords.before.customText) {
       CustomText.setText(PractiseWords.before.customText.text);
-      CustomText.setIsTimeRandom(PractiseWords.before.customText.isTimeRandom);
-      CustomText.setIsWordRandom(PractiseWords.before.customText.isWordRandom);
-      CustomText.setWord(PractiseWords.before.customText.word);
-      CustomText.setTime(PractiseWords.before.customText.time);
+      CustomText.setLimitMode(PractiseWords.before.customText.limit.mode);
+      CustomText.setLimitValue(PractiseWords.before.customText.limit.value);
+      CustomText.setPipeDelimiter(
+        PractiseWords.before.customText.pipeDelimiter
+      );
     }
 
     UpdateConfig.setMode(PractiseWords.before.mode);
@@ -537,22 +538,17 @@ export async function addWord(): Promise<void> {
       TestWords.words.length >= Config.words &&
       Config.words > 0) ||
     (Config.mode === "custom" &&
-      CustomText.isWordRandom &&
-      TestWords.words.length >= CustomText.word &&
-      CustomText.word !== 0) ||
-    (Config.mode === "custom" &&
-      !CustomText.isWordRandom &&
-      !CustomText.isTimeRandom &&
-      !CustomText.isSectionRandom &&
-      TestWords.words.length >= CustomText.text.length) ||
+      CustomText.getLimitMode() === "word" &&
+      TestWords.words.length >= CustomText.getLimitValue() &&
+      CustomText.getLimitValue() !== 0) ||
     (Config.mode === "quote" &&
       TestWords.words.length >=
         (TestWords.randomQuote?.textSplit?.length ?? 0)) ||
     (Config.mode === "custom" &&
-      CustomText.isSectionRandom &&
-      WordsGenerator.sectionIndex >= CustomText.section &&
+      CustomText.getLimitMode() === "section" &&
+      WordsGenerator.sectionIndex >= CustomText.getLimitValue() &&
       WordsGenerator.currentSection.length === 0 &&
-      CustomText.section !== 0)
+      CustomText.getLimitValue() !== 0)
   ) {
     return;
   }
@@ -597,7 +593,7 @@ export async function addWord(): Promise<void> {
       : {
           //borrow the direction of the current language
           ...(await JSONData.getCurrentLanguage(Config.language)),
-          words: CustomText.text,
+          words: CustomText.getText(),
         };
   const wordset = await Wordset.withWords(language.words);
 
@@ -748,14 +744,9 @@ function buildCompletedEvent(
   const wpmCons = Numbers.roundTo2(Misc.kogasa(stddev3 / avg3));
   const wpmConsistency = isNaN(wpmCons) ? 0 : wpmCons;
 
-  let customText: SharedTypes.CustomText | null = null;
+  let customText: CustomText.CustomTextData | null = null;
   if (Config.mode === "custom") {
-    customText = {} as SharedTypes.CustomText;
-    customText.textLen = CustomText.text.length;
-    customText.isWordRandom = CustomText.isWordRandom;
-    customText.isTimeRandom = CustomText.isTimeRandom;
-    customText.word = CustomText.word;
-    customText.time = CustomText.time;
+    customText = CustomText.getData();
   }
 
   //tags
@@ -935,25 +926,12 @@ export async function finish(difficultyFailed = false): Promise<void> {
       mode2Number === 0 &&
       completedEvent.testDuration < 15) ||
     (Config.mode === "custom" &&
-      !CustomText.isWordRandom &&
-      !CustomText.isTimeRandom &&
-      !CustomText.isSectionRandom &&
-      CustomText.text.length < 10) ||
+      (CustomText.getLimitMode() === "word" ||
+        CustomText.getLimitMode() === "section") &&
+      CustomText.getLimitValue() < 10) ||
     (Config.mode === "custom" &&
-      CustomText.isWordRandom &&
-      !CustomText.isTimeRandom &&
-      !CustomText.isSectionRandom &&
-      CustomText.word < 10) ||
-    (Config.mode === "custom" &&
-      !CustomText.isWordRandom &&
-      !CustomText.isSectionRandom &&
-      CustomText.isTimeRandom &&
-      CustomText.time < 15) ||
-    (Config.mode === "custom" &&
-      !CustomText.isWordRandom &&
-      !CustomText.isTimeRandom &&
-      CustomText.isSectionRandom &&
-      TestWords.words.length < 10) ||
+      CustomText.getLimitMode() === "time" &&
+      CustomText.getLimitValue() < 15) ||
     (Config.mode === "zen" && completedEvent.testDuration < 15)
   ) {
     Notifications.add("Test invalid - too short", 0);

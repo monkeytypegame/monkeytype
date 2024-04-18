@@ -183,16 +183,6 @@ declare namespace SharedTypes {
     punctuation: boolean;
   }
 
-  interface CustomText {
-    text: string[];
-    isWordRandom: boolean;
-    isTimeRandom: boolean;
-    word: number;
-    time: number;
-    delimiter: string;
-    textLen?: number;
-  }
-
   type DBResult<T extends SharedTypes.Config.Mode> = Omit<
     SharedTypes.Result<T>,
     | "bailedOut"
@@ -229,7 +219,7 @@ declare namespace SharedTypes {
     incompleteTestSeconds?: number;
     afkDuration?: number;
     tags?: string[];
-    customText?: CustomText;
+    customText?: any; //todo fix me
     quoteLength?: number;
     isPb?: boolean;
   };
@@ -237,7 +227,7 @@ declare namespace SharedTypes {
   interface CompletedEvent extends Result<SharedTypes.Config.Mode> {
     keySpacing: number[] | "toolong";
     keyDuration: number[] | "toolong";
-    customText?: CustomText;
+    customText?: any; //todo fix me
     wpmConsistency: number;
     challenge?: string | null;
     keyOverlap: number;

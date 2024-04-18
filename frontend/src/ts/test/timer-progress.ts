@@ -95,7 +95,7 @@ const miniTimerNumberElement = document.querySelector(
 );
 
 function getCurrentCount(): number {
-  if (Config.mode === "custom" && CustomText.isSectionRandom) {
+  if (Config.mode === "custom" && CustomText.getLimitMode() === "section") {
     return (
       (TestWords.words.sectionIndexList[
         TestWords.words.currentIndex
@@ -110,11 +110,11 @@ export function update(): void {
   const time = Time.get();
   if (
     Config.mode === "time" ||
-    (Config.mode === "custom" && CustomText.isTimeRandom)
+    (Config.mode === "custom" && CustomText.getLimitMode() === "time")
   ) {
     let maxtime = Config.time;
-    if (Config.mode === "custom" && CustomText.isTimeRandom) {
-      maxtime = CustomText.time;
+    if (Config.mode === "custom" && CustomText.getLimitMode() === "time") {
+      maxtime = CustomText.getLimitValue();
     }
     if (Config.timerStyle === "bar") {
       const percent = 100 - ((time + 1) / maxtime) * 100;
@@ -154,13 +154,14 @@ export function update(): void {
       outof = Config.words;
     }
     if (Config.mode === "custom") {
-      if (CustomText.isWordRandom) {
-        outof = CustomText.word;
-      } else if (CustomText.isSectionRandom) {
-        outof = CustomText.section;
-      } else {
-        outof = CustomText.text.length;
-      }
+      outof = CustomText.getLimitValue();
+      // if (CustomText.getLimitMode() === "word") {
+      //   outof = CustomText.word;
+      // } else if (CustomText.isSectionRandom) {
+      //   outof = CustomText.section;
+      // } else {
+      //   outof = CustomText.text.length;
+      // }
     }
     if (Config.mode === "quote") {
       outof = TestWords.randomQuote?.textSplit?.length ?? 1;

@@ -16,7 +16,7 @@ function getCheckboxValue(checkbox: string): boolean {
 type SharedTestSettings = [
   SharedTypes.Config.Mode | null,
   SharedTypes.Config.Mode2<SharedTypes.Config.Mode> | null,
-  SharedTypes.CustomText | null,
+  CustomText.CustomTextData | null,
   boolean | null,
   boolean | null,
   string | null,
@@ -49,14 +49,7 @@ function updateURL(): void {
   }
 
   if (getCheckboxValue("customText")) {
-    settings[2] = {
-      text: CustomText.text,
-      isWordRandom: CustomText.isWordRandom,
-      isTimeRandom: CustomText.isTimeRandom,
-      word: CustomText.word,
-      time: CustomText.time,
-      delimiter: CustomText.delimiter,
-    };
+    settings[2] = CustomText.getData();
   }
 
   if (getCheckboxValue("punctuation")) {

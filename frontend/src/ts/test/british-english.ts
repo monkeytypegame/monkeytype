@@ -39,14 +39,8 @@ export async function replace(
 
     if (!replacement) return word;
 
-    if (
-      (Config.mode === "quote" ||
-        (Config.mode === "custom" &&
-          !CustomText.isTimeRandom &&
-          !CustomText.isWordRandom &&
-          !CustomText.isSectionRandom)) &&
-      replacement[2]?.includes(previousWord)
-    ) {
+    console.log(replacement[2], previousWord);
+    if (Config.mode === "quote" && replacement[2]?.includes(previousWord)) {
       return word;
     }
 

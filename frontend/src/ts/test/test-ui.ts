@@ -435,8 +435,8 @@ function updateWordsHeight(force = false): void {
   if (
     Config.showAllLines &&
     Config.mode !== "time" &&
-    !(CustomText.isWordRandom && CustomText.word === 0) &&
-    !CustomText.isTimeRandom
+    CustomText.getLimitMode() !== "time" &&
+    CustomText.getLimitValue() !== 0
   ) {
     $("#words")
       .css("height", "auto")

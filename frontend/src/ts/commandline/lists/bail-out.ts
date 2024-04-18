@@ -8,15 +8,13 @@ function canBailOut(): boolean {
   return (
     (Config.mode === "custom" && CustomTextState.isCustomTextLong() === true) ||
     (Config.mode === "custom" &&
-      CustomText.isWordRandom &&
-      (CustomText.word >= 5000 || CustomText.word === 0)) ||
+      (CustomText.getLimitMode() === "word" ||
+        CustomText.getLimitMode() === "section") &&
+      CustomText.getLimit().value >= 5000) ||
     (Config.mode === "custom" &&
-      !CustomText.isWordRandom &&
-      !CustomText.isTimeRandom &&
-      CustomText.text.length >= 5000) ||
-    (Config.mode === "custom" &&
-      CustomText.isTimeRandom &&
-      (CustomText.time >= 3600 || CustomText.time === 0)) ||
+      CustomText.getLimitMode() === "time" &&
+      (CustomText.getLimitValue() >= 3600 ||
+        CustomText.getLimitValue() === 0)) ||
     (Config.mode === "words" && Config.words >= 5000) ||
     Config.words === 0 ||
     (Config.mode === "time" && (Config.time >= 3600 || Config.time === 0)) ||
