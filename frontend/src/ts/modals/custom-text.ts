@@ -17,16 +17,6 @@ type State = {
   textarea: string;
   lastSavedTextareaState: string;
   longCustomTextWarning: boolean;
-  randomWordsChecked: boolean;
-  randomWordInputs: {
-    word: string;
-    time: string;
-    section: string;
-  };
-  pipeDelimiterChecked: boolean;
-  OldreplaceNewlines: "off" | "space" | "period";
-  replaceControlCharactersChecked: boolean;
-  replaceFancyTypographyChecked: boolean;
 
   customTextMode: "simple" | "repeat" | "random";
   customTextLimits: {
@@ -44,16 +34,6 @@ const state: State = {
   textarea: CustomText.getText().join(" "),
   lastSavedTextareaState: CustomText.getText().join(" "),
   longCustomTextWarning: false,
-  randomWordsChecked: false,
-  randomWordInputs: {
-    word: "",
-    time: "",
-    section: "",
-  },
-  pipeDelimiterChecked: false,
-  OldreplaceNewlines: "off",
-  replaceControlCharactersChecked: true,
-  replaceFancyTypographyChecked: true,
   customTextMode: "simple",
   customTextLimits: {
     word: "",
@@ -118,52 +98,7 @@ function updateUI(): void {
     `${popup} .inputs .group[data-id="newlines"] button[value="${state.replaceNewlines}"]`
   ).addClass("active");
 
-  //=========
-
-  if (state.randomWordsChecked) {
-    $(`${popup} .randomWordsCheckbox input`).prop("checked", true);
-    $(`${popup} .inputs .randomInputFields`).removeClass("disabled");
-  } else {
-    $(`${popup} .randomWordsCheckbox input`).prop("checked", false);
-    $(`${popup} .inputs .randomInputFields`).addClass("disabled");
-  }
-
-  if (state.pipeDelimiterChecked) {
-    $(`${popup} .delimiterCheck input`).prop("checked", true);
-  } else {
-    $(`${popup} .delimiterCheck input`).prop("checked", false);
-  }
-
-  $(`${popup} .replaceNewLinesButtons .button`).removeClass("active");
-
-  if (state.OldreplaceNewlines !== "off") {
-    $(`${popup} .inputs .replaceNewLinesButtons`).removeClass("disabled");
-    $(
-      `${popup} .replaceNewLinesButtons .button[data-replace-new-lines=${state.OldreplaceNewlines}]`
-    ).addClass("active");
-  } else {
-    $(`${popup} .inputs .replaceNewLinesButtons`).addClass("disabled");
-  }
-
   $(`${popup} textarea`).val(state.textarea);
-
-  if (state.pipeDelimiterChecked) {
-    $(`${popup} .randomInputFields .sectioncount `).removeClass("hidden");
-    state.randomWordInputs.word = "";
-    $(`${popup} .randomInputFields .wordcount `).addClass("hidden");
-  } else {
-    state.randomWordInputs.section = "";
-    $(`${popup} .randomInputFields .sectioncount `).addClass("hidden");
-    $(`${popup} .randomInputFields .wordcount `).removeClass("hidden");
-  }
-
-  $(`${popup} .randomInputFields .wordcount input`).val(
-    state.randomWordInputs.word
-  );
-  $(`${popup} .randomInputFields .time input`).val(state.randomWordInputs.time);
-  $(`${popup} .randomInputFields .sectioncount input`).val(
-    state.randomWordInputs.section
-  );
 
   if (state.longCustomTextWarning) {
     $(`${popup} .longCustomTextWarning`).removeClass("hidden");
@@ -193,18 +128,13 @@ async function beforeAnimation(
   } else if (CustomText.getLimitMode() === "section") {
     state.customTextLimits.section = `${CustomText.getLimitValue()}`;
   }
+  state.customTextPipeDelimiter = CustomText.getPipeDelimiter();
 
   state.longCustomTextWarning = CustomTextState.isCustomTextLong() ?? false;
-  state.randomWordsChecked =
-    CustomText.isSectionRandom ||
-    CustomText.isTimeRandom ||
-    CustomText.isWordRandom;
-  state.pipeDelimiterChecked = CustomText.delimiter === "|";
-  // state.replaceNewlinesChecked = false;
 
   if (CustomTextState.isCustomTextLong()) {
     // if we are in long custom text mode, always reset the textarea state to the current text
-    state.textarea = CustomText.text.join(" ");
+    state.textarea = CustomText.getText().join(" ");
   }
 
   if (modalChainData?.text !== undefined) {
@@ -222,13 +152,6 @@ async function beforeAnimation(
         : state.textarea + " " + modalChainData.text;
     state.textarea = newText;
   }
-
-  state.randomWordInputs.word =
-    CustomText.word === -1 ? "" : `${CustomText.word}`;
-  state.randomWordInputs.time =
-    CustomText.time === -1 ? "" : `${CustomText.time}`;
-  state.randomWordInputs.section =
-    CustomText.section === -1 ? "" : `${CustomText.section}`;
 
   updateUI();
 }
@@ -293,7 +216,7 @@ function cleanUpText(): string[] {
   //replace zero width characters
   text = text.replace(/[\u200B-\u200D\u2060\uFEFF]/g, "");
 
-  if (state.replaceControlCharactersChecked) {
+  if (state.replaceControlCharactersEnabled) {
     text = text.replace(/([^\\]|^)\\t/gm, "$1\t");
     text = text.replace(/([^\\]|^)\\n/gm, "$1\n");
     text = text.replace(/\\\\t/gm, "\\t");
@@ -302,12 +225,12 @@ function cleanUpText(): string[] {
 
   text = text.replace(/ +/gm, " ");
   text = text.replace(/( *(\r\n|\r|\n) *)/g, "\n ");
-  if (state.replaceFancyTypographyChecked) {
+  if (state.removeFancyTypographyEnabled) {
     text = Misc.cleanTypographySymbols(text);
   }
 
-  if (state.OldreplaceNewlines !== "off") {
-    const periods = state.OldreplaceNewlines === "period";
+  if (state.replaceNewlines !== "off") {
+    const periods = state.replaceNewlines === "periodSpace";
     if (periods) {
       text = text.replace(/\n/gm, ". ");
       text = text.replace(/\.\. /gm, ". ");
@@ -318,7 +241,9 @@ function cleanUpText(): string[] {
     }
   }
 
-  const words = text.split(CustomText.delimiter).filter((word) => word !== "");
+  const words = text
+    .split(state.customTextPipeDelimiter ? "|" : " ")
+    .filter((word) => word !== "");
   return words;
 }
 
@@ -332,53 +257,32 @@ function apply(): void {
 
   CustomText.setText(cleanUpText());
 
-  CustomText.setWord(parseInt(state.randomWordInputs.word || "-1"));
-  CustomText.setTime(parseInt(state.randomWordInputs.time || "-1"));
-  CustomText.setSection(parseInt(state.randomWordInputs.section || "-1"));
-
-  CustomText.setIsWordRandom(state.randomWordsChecked && CustomText.word > -1);
-  CustomText.setIsTimeRandom(state.randomWordsChecked && CustomText.time > -1);
-  CustomText.setIsSectionRandom(
-    state.randomWordsChecked && CustomText.section > -1
-  );
-  if (
-    state.randomWordsChecked &&
-    !CustomText.isTimeRandom &&
-    !CustomText.isWordRandom &&
-    !CustomText.isSectionRandom
-  ) {
-    Notifications.add(
-      "You need to specify word count or time in seconds to start a random custom test",
-      0,
-      {
-        duration: 5,
-      }
-    );
-    return;
+  if (state.customTextLimits.word !== "") {
+    CustomText.setLimitMode("word");
+    CustomText.setLimitValue(parseInt(state.customTextLimits.word));
+  } else if (state.customTextLimits.time !== "") {
+    CustomText.setLimitMode("time");
+    CustomText.setLimitValue(parseInt(state.customTextLimits.time));
+  } else if (state.customTextLimits.section !== "") {
+    CustomText.setLimitMode("section");
+    CustomText.setLimitValue(parseInt(state.customTextLimits.section));
   }
 
   if (
-    // ($(`${popup} .randomWordsCheckbox input`).prop("checked") as boolean) &&
-    state.randomWordsChecked &&
-    CustomText.isTimeRandom &&
-    CustomText.isWordRandom
+    state.customTextMode !== "simple" &&
+    state.customTextLimits.word === "" &&
+    state.customTextLimits.time === "" &&
+    state.customTextLimits.section === ""
   ) {
-    Notifications.add(
-      "You need to pick between word count or time in seconds to start a random custom test",
-      0,
-      {
-        duration: 5,
-      }
-    );
+    Notifications.add("You need to specify a limit", 0, {
+      duration: 5,
+    });
     return;
   }
 
-  if (
-    (CustomText.isWordRandom && CustomText.word === 0) ||
-    (CustomText.isTimeRandom && CustomText.time === 0)
-  ) {
+  if (CustomText.getLimitValue() === 0) {
     Notifications.add(
-      "Infinite words! Make sure to use Bail Out from the command line to save your result.",
+      "Infinite test! Make sure to use Bail Out from the command line to save your result.",
       0,
       {
         duration: 7,
@@ -391,6 +295,23 @@ function apply(): void {
   if (Config.mode !== "custom") UpdateConfig.setMode("custom");
   TestLogic.restart();
   hide();
+}
+
+function handleDelimiterChange(): void {
+  //todo this might not work
+  const currentDelimiter = CustomText.getPipeDelimiter() ? "|" : " ";
+  const newDelimiter = state.customTextPipeDelimiter ? "|" : " ";
+  if (state.textarea !== CustomText.getText().join(currentDelimiter)) {
+    const currentTextSplit = state.textarea.split(currentDelimiter);
+    let newtext = currentTextSplit.join(newDelimiter);
+    newtext = newtext.replace(/\n /g, "\n");
+    state.textarea = newtext;
+  } else {
+    let newtext = CustomText.getText().join(currentDelimiter);
+    newtext = newtext.replace(/\n /g, "\n");
+    state.textarea = newtext;
+  }
+  CustomText.setPipeDelimiter(state.customTextPipeDelimiter);
 }
 
 async function setup(modalEl: HTMLElement): Promise<void> {
@@ -438,6 +359,7 @@ async function setup(modalEl: HTMLElement): Promise<void> {
     button.addEventListener("click", (e) => {
       state.customTextPipeDelimiter =
         (e.target as HTMLButtonElement).value === "true" ? true : false;
+      handleDelimiterChange();
       updateUI();
     });
   }
@@ -472,63 +394,6 @@ async function setup(modalEl: HTMLElement): Promise<void> {
       state.customTextLimits.section = (e.target as HTMLInputElement).value;
     });
 
-  modalEl
-    .querySelector(".randomWordsCheckbox input")
-    ?.addEventListener("change", (e) => {
-      state.randomWordsChecked = (e.target as HTMLInputElement).checked;
-      updateUI();
-    });
-  modalEl
-    .querySelector(".typographyCheck input")
-    ?.addEventListener("change", (e) => {
-      state.replaceFancyTypographyChecked = (
-        e.target as HTMLInputElement
-      ).checked;
-      updateUI();
-    });
-  modalEl
-    .querySelector(".delimiterCheck input")
-    ?.addEventListener("change", (e) => {
-      state.pipeDelimiterChecked = (e.target as HTMLInputElement).checked;
-      if (state.textarea !== CustomText.text.join(CustomText.delimiter)) {
-        const currentTextSplit = state.textarea.split(CustomText.delimiter);
-        let newtext = currentTextSplit.join(
-          state.pipeDelimiterChecked ? "|" : " "
-        );
-        newtext = newtext.replace(/\n /g, "\n");
-        state.textarea = newtext;
-      } else {
-        let newtext = CustomText.text.join(
-          state.pipeDelimiterChecked ? "|" : " "
-        );
-        newtext = newtext.replace(/\n /g, "\n");
-        state.textarea = newtext;
-      }
-      CustomText.setDelimiter(state.pipeDelimiterChecked ? "|" : " ");
-      updateUI();
-    });
-  modalEl
-    .querySelector(".replaceNewlineWithSpace input")
-    ?.addEventListener("change", (e) => {
-      const checked = (e.target as HTMLInputElement).checked;
-      if (checked === false) {
-        state.OldreplaceNewlines = "off";
-      } else {
-        state.OldreplaceNewlines = "space";
-      }
-      updateUI();
-    });
-  const replaceNewLinesButtons = modalEl.querySelectorAll(
-    ".replaceNewLinesButtons .button"
-  );
-  for (const button of replaceNewLinesButtons) {
-    button.addEventListener("click", (e) => {
-      state.OldreplaceNewlines = (e.target as HTMLElement).dataset[
-        "replaceNewLines"
-      ] as "space" | "period";
-      updateUI();
-    });
-  }
   const textarea = modalEl.querySelector("textarea");
   textarea?.addEventListener("input", (e) => {
     state.textarea = (e.target as HTMLTextAreaElement).value;
@@ -569,30 +434,6 @@ async function setup(modalEl: HTMLElement): Promise<void> {
       });
     }
   });
-  modalEl
-    .querySelector(".randomInputFields .wordcount input")
-    ?.addEventListener("input", (e) => {
-      state.randomWordInputs.time = "";
-      state.randomWordInputs.word = (e.target as HTMLInputElement).value;
-      state.randomWordInputs.section = "";
-      updateUI();
-    });
-  modalEl
-    .querySelector(".randomInputFields .time input")
-    ?.addEventListener("input", (e) => {
-      state.randomWordInputs.time = (e.target as HTMLInputElement).value;
-      state.randomWordInputs.word = "";
-      state.randomWordInputs.section = "";
-      updateUI();
-    });
-  modalEl
-    .querySelector(".randomInputFields .sectioncount input")
-    ?.addEventListener("input", (e) => {
-      state.randomWordInputs.time = "";
-      state.randomWordInputs.word = "";
-      state.randomWordInputs.section = (e.target as HTMLInputElement).value;
-      updateUI();
-    });
   modalEl.querySelector(".button.apply")?.addEventListener("click", () => {
     apply();
   });
