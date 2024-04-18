@@ -288,9 +288,8 @@ function apply(): void {
     return;
   }
 
+  //todo maybe this should be below the guards?
   state.lastSavedTextareaState = state.textarea;
-
-  CustomText.setText(cleanUpText());
 
   if (
     [
@@ -338,6 +337,12 @@ function apply(): void {
     );
   }
 
+  CustomText.setMode(
+    state.customTextMode === "simple" ? "repeat" : state.customTextMode
+  );
+  CustomText.setPipeDelimiter(state.customTextPipeDelimiter);
+  CustomText.setText(cleanUpText());
+
   ChallengeController.clearActive();
   ManualRestart.set();
   if (Config.mode !== "custom") UpdateConfig.setMode("custom");
@@ -346,20 +351,11 @@ function apply(): void {
 }
 
 function handleDelimiterChange(): void {
-  //todo this might not work
-  const currentDelimiter = CustomText.getPipeDelimiter() ? "|" : " ";
-  const newDelimiter = state.customTextPipeDelimiter ? "|" : " ";
-  if (state.textarea !== CustomText.getText().join(currentDelimiter)) {
-    const currentTextSplit = state.textarea.split(currentDelimiter);
-    let newtext = currentTextSplit.join(newDelimiter);
-    newtext = newtext.replace(/\n /g, "\n");
-    state.textarea = newtext;
-  } else {
-    let newtext = CustomText.getText().join(currentDelimiter);
-    newtext = newtext.replace(/\n /g, "\n");
-    state.textarea = newtext;
-  }
-  CustomText.setPipeDelimiter(state.customTextPipeDelimiter);
+  let newtext = state.textarea
+    .split(state.customTextPipeDelimiter ? " " : "|")
+    .join(state.customTextPipeDelimiter ? "|" : " ");
+  newtext = newtext.replace(/\n /g, "\n");
+  state.textarea = newtext;
 }
 
 async function setup(modalEl: HTMLElement): Promise<void> {
@@ -374,9 +370,6 @@ async function setup(modalEl: HTMLElement): Promise<void> {
         | "simple"
         | "repeat"
         | "random";
-      CustomText.setMode(
-        state.customTextMode === "simple" ? "repeat" : state.customTextMode
-      );
       updateUI();
     });
   }
