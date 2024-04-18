@@ -34,6 +34,7 @@ type State = {
     time: string;
     section: string;
   };
+  removeFancyTypographyEnabled: boolean;
 };
 
 const state: State = {
@@ -56,6 +57,7 @@ const state: State = {
     time: "",
     section: "",
   },
+  removeFancyTypographyEnabled: true,
 };
 
 function updateUI(): void {
@@ -87,6 +89,13 @@ function updateUI(): void {
       "hidden"
     );
   }
+
+  $(`${popup} .inputs .group[data-id="fancy"] button`).removeClass("active");
+  $(
+    `${popup} .inputs .group[data-id="fancy"] button[value="${
+      state.removeFancyTypographyEnabled ? 1 : 0
+    }"]`
+  ).addClass("active");
 
   if (state.randomWordsChecked) {
     $(`${popup} .randomWordsCheckbox input`).prop("checked", true);
@@ -380,6 +389,16 @@ async function setup(modalEl: HTMLElement): Promise<void> {
     });
   }
 
+  for (const button of modalEl.querySelectorAll(
+    ".group[data-id='fancy'] button"
+  )) {
+    button.addEventListener("click", (e) => {
+      state.removeFancyTypographyEnabled =
+        (e.target as HTMLButtonElement).value === "1" ? true : false;
+      updateUI();
+    });
+  }
+
   modalEl
     .querySelector(".group[data-id='mode'] input.words")
     ?.addEventListener("input", (e) => {
@@ -570,3 +589,5 @@ const modal = new AnimatedModal<IncomingData>({
     afterAnimation,
   },
 });
+
+show();
