@@ -2,7 +2,23 @@ import SlimSelect from "slim-select";
 import type { DataObjectPartial } from "slim-select/dist/store";
 import { getTestActivityCalendar } from "../db";
 
-let yearSelector: SlimSelect | undefined;
+const yearSelector = new SlimSelect({
+  select: "#testActivity .yearSelect",
+  settings: {
+    showSearch: false,
+  },
+  events: {
+    afterChange: async (newVal): Promise<void> => {
+      yearSelector?.disable();
+      const selected = newVal[0]?.value as string;
+      const activity = await getTestActivityCalendar(selected);
+      update(activity);
+      if ((yearSelector?.getData() ?? []).length > 1) {
+        yearSelector?.enable();
+      }
+    },
+  },
+});
 
 export function init(
   calendar?: MonkeyTypes.TestActivityCalendar,
@@ -29,11 +45,6 @@ function update(calendar?: MonkeyTypes.TestActivityCalendar): void {
     return;
   }
 
-  //test data
-  //testActivity.testsByDays = new Array(400)
-  //  .fill(null)
-  //  .map((it) => Math.round(Math.random() * 255));
-
   updateMonths(calendar.getMonths());
   $("#testActivity .nodata").addClass("hidden");
 
@@ -49,7 +60,6 @@ function update(calendar?: MonkeyTypes.TestActivityCalendar): void {
 }
 
 function initYearSelector(selectedDate: Date, startYear: number): void {
-  if (yearSelector !== undefined) return;
   const selectedYear = selectedDate.getFullYear();
   const currentYear = new Date().getFullYear();
 
@@ -68,22 +78,8 @@ function initYearSelector(selectedDate: Date, startYear: number): void {
     });
   }
 
-  yearSelector = new SlimSelect({
-    select: "#testActivity .yearSelect",
-    settings: {
-      showSearch: false,
-    },
-    data: years,
-    events: {
-      afterChange: async (newVal): Promise<void> => {
-        yearSelector?.disable();
-        const selected = newVal[0]?.value as string;
-        const activity = await getTestActivityCalendar(selected);
-        update(activity);
-        yearSelector?.enable();
-      },
-    },
-  });
+  yearSelector.setData(years);
+  years.length > 1 ? yearSelector.enable() : yearSelector.disable();
 }
 
 function updateMonths(months: string[]): void {
