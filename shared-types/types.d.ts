@@ -627,5 +627,5 @@ declare namespace SharedTypes {
     lastDay: number;
   };
 
-  type CountByYearAndDay = { [key: string]: number[] };
+  type CountByYearAndDay = { [key: string]: (number | null)[] };
 }

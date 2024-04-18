@@ -4,13 +4,16 @@ import { getTestActivityCalendar } from "../db";
 
 let yearSelector: SlimSelect | undefined;
 
-export function init(calendar?: MonkeyTypes.TestActivityCalendar): void {
+export function init(
+  calendar?: MonkeyTypes.TestActivityCalendar,
+  userSignUpDate?: Date
+): void {
   if (calendar === undefined) {
     $("#testActivity").addClass("hidden");
     return;
   }
   $("#testActivity").removeClass("hidden");
-  initYearSelector(new Date());
+  initYearSelector(new Date(), userSignUpDate?.getFullYear() || 2022);
   update(calendar);
 }
 
@@ -45,10 +48,11 @@ function update(calendar?: MonkeyTypes.TestActivityCalendar): void {
   }
 }
 
-function initYearSelector(selectedDate: Date): void {
+function initYearSelector(selectedDate: Date, startYear: number): void {
   if (yearSelector !== undefined) return;
   const selectedYear = selectedDate.getFullYear();
   const currentYear = new Date().getFullYear();
+
   const years: DataObjectPartial[] = [
     {
       text: currentYear.toString(),
@@ -56,7 +60,7 @@ function initYearSelector(selectedDate: Date): void {
       selected: selectedYear == currentYear,
     },
   ];
-  for (let year = currentYear - 1; year >= 2020; year--) {
+  for (let year = currentYear - 1; year >= startYear; year--) {
     years.push({
       text: year.toString(),
       value: year.toString(),
@@ -72,9 +76,11 @@ function initYearSelector(selectedDate: Date): void {
     data: years,
     events: {
       afterChange: async (newVal): Promise<void> => {
+        yearSelector?.disable();
         const selected = newVal[0]?.value as string;
         const activity = await getTestActivityCalendar(selected);
         update(activity);
+        yearSelector?.enable();
       },
     },
   });

@@ -18,15 +18,6 @@ export class TestActivityCalendar implements MonkeyTypes.TestActivityCalendar {
 
   constructor(data: (number | null)[], lastDay: Date) {
     const local = new UTCDateMini(lastDay);
-    /*
-    console.log({
-      offset: new Date().getTimezoneOffset() / 60,
-      utc: lastDay.valueOf(),
-      local: local.valueOf(),
-      utcFormat: format(lastDay, "yyyy-MMM-dd HH:mm:ss"),
-      localFormat: format(local, "yyyy-MMM-dd HH:mm:ss"),
-    });
-    */
     const interval = this.getInterval(local);
     this.startDay = interval.start as Date;
     this.endDay = interval.end as Date;

@@ -13,6 +13,7 @@ import {
   TestActivityCalendar,
   ModifiableTestActivityCalendar,
 } from "./elements/test-activity-calendar";
+import * as Loader from "./elements/loader";
 
 let dbSnapshot: MonkeyTypes.Snapshot | undefined;
 
@@ -138,6 +139,7 @@ export async function initSnapshot(): Promise<
     snap.filterPresets = userData.resultFilterPresets ?? [];
     snap.isPremium = userData?.isPremium;
     snap.allTimeLbs = userData.allTimeLbs;
+
     if (userData.testActivity !== undefined) {
       snap.testActivity = new ModifiableTestActivityCalendar(
         userData.testActivity.testsByDays,
@@ -982,28 +984,31 @@ export async function getTestActivityCalendar(
   }
 
   if (dbSnapshot.testActivityByYear === undefined) {
-    LoadingPage.updateText("Downloading test activity...");
-    LoadingPage.updateBar(90);
+    Loader.show();
     const response = await Ape.users.getTestActivity();
     if (response.status !== 200) {
       Notifications.add(
         "Error getting test activities: " + response.message,
         -1
       );
+      Loader.hide();
       return undefined;
     }
     response.data !== null ? response.data : {};
     dbSnapshot.testActivityByYear = {};
     for (const year in response.data) {
       const testsByDays = response.data[year] ?? [];
-      const lastDay = Dates.endOfYear(new Date(parseInt(year), 0, 1));
+      const lastDay = Dates.addDays(
+        new Date(parseInt(year), 0, 1),
+        testsByDays.length
+      );
 
-      console.log({ year, lastDay });
       dbSnapshot.testActivityByYear[year] = new TestActivityCalendar(
         testsByDays,
         lastDay
       );
     }
+    Loader.hide();
   }
 
   return dbSnapshot.testActivityByYear[yearString];
