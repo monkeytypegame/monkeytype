@@ -35,6 +35,7 @@ type State = {
     section: string;
   };
   removeFancyTypographyEnabled: boolean;
+  replaceControlCharactersEnabled: boolean;
 };
 
 const state: State = {
@@ -58,6 +59,7 @@ const state: State = {
     section: "",
   },
   removeFancyTypographyEnabled: true,
+  replaceControlCharactersEnabled: true,
 };
 
 function updateUI(): void {
@@ -96,6 +98,13 @@ function updateUI(): void {
       state.removeFancyTypographyEnabled ? 1 : 0
     }"]`
   ).addClass("active");
+
+  $(`${popup} .inputs .group[data-id="control"] button`).removeClass("active");
+  $(
+    `${popup} .inputs .group[data-id="control"] button[value="${state.replaceControlCharactersEnabled}"]`
+  ).addClass("active");
+
+  //=========
 
   if (state.randomWordsChecked) {
     $(`${popup} .randomWordsCheckbox input`).prop("checked", true);
@@ -395,6 +404,16 @@ async function setup(modalEl: HTMLElement): Promise<void> {
     button.addEventListener("click", (e) => {
       state.removeFancyTypographyEnabled =
         (e.target as HTMLButtonElement).value === "1" ? true : false;
+      updateUI();
+    });
+  }
+
+  for (const button of modalEl.querySelectorAll(
+    ".group[data-id='control'] button"
+  )) {
+    button.addEventListener("click", (e) => {
+      state.replaceControlCharactersEnabled =
+        (e.target as HTMLButtonElement).value === "true" ? true : false;
       updateUI();
     });
   }
