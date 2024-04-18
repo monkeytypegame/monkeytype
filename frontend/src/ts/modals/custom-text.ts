@@ -325,6 +325,13 @@ function apply(): void {
 
   state.lastSavedTextareaState = state.textarea;
 
+  CustomText.setMode(
+    state.customTextMode === "simple" ? "repeat" : state.customTextMode
+  );
+
+  CustomText.setPipeDelimiter(state.customTextPipeDelimiter);
+  CustomText.setText(cleanUpText());
+
   if (state.customTextLimits.word !== "") {
     CustomText.setLimitMode("word");
     CustomText.setLimitValue(parseInt(state.customTextLimits.word));
@@ -335,12 +342,6 @@ function apply(): void {
     CustomText.setLimitMode("section");
     CustomText.setLimitValue(parseInt(state.customTextLimits.section));
   }
-
-  CustomText.setMode(
-    state.customTextMode === "simple" ? "repeat" : state.customTextMode
-  );
-  CustomText.setPipeDelimiter(state.customTextPipeDelimiter);
-  CustomText.setText(cleanUpText());
 
   ChallengeController.clearActive();
   ManualRestart.set();
