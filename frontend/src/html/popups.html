@@ -422,7 +422,7 @@
           </div>
         </div>
       </div>
-      <div class="group">
+      <div class="group" data-id="limit">
         <div class="title">
           <i class="fas fa-fw fa-step-forward"></i>
           Limit
@@ -430,13 +430,20 @@
         <div class="sub">
           Control how many words to generate or for how long you want to type.
         </div>
-        <div class="groupInputs limitInputs disabled">
+        <div class="groupInputs limitInputs">
           <input
             class="words"
             type="number"
             value=""
             min="0"
             placeholder="words"
+          />
+          <input
+            class="sections hidden"
+            type="number"
+            value=""
+            min="0"
+            placeholder="sections"
           />
           <div class="or">or</div>
           <input
@@ -445,13 +452,6 @@
             value=""
             min="0"
             placeholder="time"
-          />
-          <input
-            class="sections hidden"
-            type="number"
-            value=""
-            min="0"
-            placeholder="sections"
           />
         </div>
       </div>

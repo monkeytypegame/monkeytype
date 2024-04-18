@@ -29,6 +29,11 @@ type State = {
   replaceFancyTypographyChecked: boolean;
 
   customTextMode: "simple" | "repeat" | "random";
+  customTextLimits: {
+    word: string;
+    time: string;
+    section: string;
+  };
 };
 
 const state: State = {
@@ -46,6 +51,11 @@ const state: State = {
   replaceControlCharactersChecked: true,
   replaceFancyTypographyChecked: true,
   customTextMode: "simple",
+  customTextLimits: {
+    word: "",
+    time: "",
+    section: "",
+  },
 };
 
 function updateUI(): void {
@@ -53,6 +63,30 @@ function updateUI(): void {
   $(
     `${popup} .inputs .group[data-id="mode"] button[value="${state.customTextMode}"]`
   ).addClass("active");
+
+  $(`${popup} .inputs .group[data-id="limit"] input.words`).addClass("hidden");
+  $(`${popup} .inputs .group[data-id="limit"] input.sections`).addClass(
+    "hidden"
+  );
+  if (state.customTextLimits.word !== "") {
+    $(`${popup} .inputs .group[data-id="limit"] input.words`).val(
+      state.customTextLimits.word
+    );
+    $(`${popup} .inputs .group[data-id="limit"] input.words`).removeClass(
+      "hidden"
+    );
+  } else if (state.customTextLimits.time !== "") {
+    $(`${popup} .inputs .group[data-id="limit"] input.time`).val(
+      state.customTextLimits.time
+    );
+  } else if (state.customTextLimits.section !== "") {
+    $(`${popup} .inputs .group[data-id="limit"] input.sections`).val(
+      state.customTextLimits.section
+    );
+    $(`${popup} .inputs .group[data-id="limit"] input.sections`).removeClass(
+      "hidden"
+    );
+  }
 
   if (state.randomWordsChecked) {
     $(`${popup} .randomWordsCheckbox input`).prop("checked", true);
@@ -117,6 +151,16 @@ async function beforeAnimation(
   modalChainData?: IncomingData
 ): Promise<void> {
   state.customTextMode = CustomText.getMode();
+  state.customTextLimits.word = "";
+  state.customTextLimits.time = "";
+  state.customTextLimits.section = "";
+  if (CustomText.getLimitMode() === "word") {
+    state.customTextLimits.word = `${CustomText.getLimitValue()}`;
+  } else if (CustomText.getLimitMode() === "time") {
+    state.customTextLimits.time = `${CustomText.getLimitValue()}`;
+  } else if (CustomText.getLimitMode() === "section") {
+    state.customTextLimits.section = `${CustomText.getLimitValue()}`;
+  }
 
   state.longCustomTextWarning = CustomTextState.isCustomTextLong() ?? false;
   state.randomWordsChecked =
@@ -335,6 +379,24 @@ async function setup(modalEl: HTMLElement): Promise<void> {
       updateUI();
     });
   }
+
+  modalEl
+    .querySelector(".group[data-id='mode'] input.words")
+    ?.addEventListener("input", (e) => {
+      state.customTextLimits.word = (e.target as HTMLInputElement).value;
+    });
+
+  modalEl
+    .querySelector(".group[data-id='mode'] input.time")
+    ?.addEventListener("input", (e) => {
+      state.customTextLimits.time = (e.target as HTMLInputElement).value;
+    });
+
+  modalEl
+    .querySelector(".group[data-id='mode'] input.sections")
+    ?.addEventListener("input", (e) => {
+      state.customTextLimits.section = (e.target as HTMLInputElement).value;
+    });
 
   modalEl
     .querySelector(".randomWordsCheckbox input")
