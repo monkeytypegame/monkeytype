@@ -36,6 +36,7 @@ type State = {
   };
   removeFancyTypographyEnabled: boolean;
   replaceControlCharactersEnabled: boolean;
+  customTextPipeDelimiter: boolean;
 };
 
 const state: State = {
@@ -60,6 +61,7 @@ const state: State = {
   },
   removeFancyTypographyEnabled: true,
   replaceControlCharactersEnabled: true,
+  customTextPipeDelimiter: false,
 };
 
 function updateUI(): void {
@@ -100,6 +102,13 @@ function updateUI(): void {
   $(`${popup} .inputs .group[data-id="control"] button`).removeClass("active");
   $(
     `${popup} .inputs .group[data-id="control"] button[value="${state.replaceControlCharactersEnabled}"]`
+  ).addClass("active");
+
+  $(`${popup} .inputs .group[data-id="delimiter"] button`).removeClass(
+    "active"
+  );
+  $(
+    `${popup} .inputs .group[data-id="delimiter"] button[value="${state.customTextPipeDelimiter}"]`
   ).addClass("active");
 
   //=========
@@ -411,6 +420,16 @@ async function setup(modalEl: HTMLElement): Promise<void> {
   )) {
     button.addEventListener("click", (e) => {
       state.replaceControlCharactersEnabled =
+        (e.target as HTMLButtonElement).value === "true" ? true : false;
+      updateUI();
+    });
+  }
+
+  for (const button of modalEl.querySelectorAll(
+    ".group[data-id='delimiter'] button"
+  )) {
+    button.addEventListener("click", (e) => {
+      state.customTextPipeDelimiter =
         (e.target as HTMLButtonElement).value === "true" ? true : false;
       updateUI();
     });
