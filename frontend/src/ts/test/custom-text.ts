@@ -10,8 +10,6 @@ let text: string[] = [
   "dog",
 ];
 
-// let text: string[] = ["Section 1", "section 2", "section 3"];
-
 type CustomTextMode = "repeat" | "random";
 type CustomTextLimitMode = "word" | "time" | "section";
 type CustomTextLimit = {
@@ -21,7 +19,7 @@ type CustomTextLimit = {
 
 let mode: CustomTextMode = "repeat";
 const limit: CustomTextLimit = {
-  value: 3,
+  value: 9,
   mode: "word",
 };
 let pipeDelimiter = false;
