@@ -27,11 +27,13 @@ type State = {
   replaceNewlines: "off" | "space" | "period";
   replaceControlCharactersChecked: boolean;
   replaceFancyTypographyChecked: boolean;
+
+  customTextMode: "simple" | "repeat" | "random";
 };
 
 const state: State = {
-  textarea: CustomText.text.join(" "),
-  lastSavedTextareaState: CustomText.text.join(" "),
+  textarea: CustomText.getText().join(" "),
+  lastSavedTextareaState: CustomText.getText().join(" "),
   longCustomTextWarning: false,
   randomWordsChecked: false,
   randomWordInputs: {
@@ -43,9 +45,15 @@ const state: State = {
   replaceNewlines: "off",
   replaceControlCharactersChecked: true,
   replaceFancyTypographyChecked: true,
+  customTextMode: "simple",
 };
 
 function updateUI(): void {
+  $(`${popup} .inputs .group[data-id="mode"] button`).removeClass("active");
+  $(
+    `${popup} .inputs .group[data-id="mode"] button[value="${state.customTextMode}"]`
+  ).addClass("active");
+
   if (state.randomWordsChecked) {
     $(`${popup} .randomWordsCheckbox input`).prop("checked", true);
     $(`${popup} .inputs .randomInputFields`).removeClass("disabled");
@@ -108,6 +116,8 @@ async function beforeAnimation(
   modalEl: HTMLElement,
   modalChainData?: IncomingData
 ): Promise<void> {
+  state.customTextMode = CustomText.getMode();
+
   state.longCustomTextWarning = CustomTextState.isCustomTextLong() ?? false;
   state.randomWordsChecked =
     CustomText.isSectionRandom ||
@@ -311,6 +321,21 @@ async function setup(modalEl: HTMLElement): Promise<void> {
   modalEl
     .querySelector("#fileInput")
     ?.addEventListener("change", handleFileOpen);
+
+  const buttons = modalEl.querySelectorAll(".group[data-id='mode'] button");
+  for (const button of buttons) {
+    button.addEventListener("click", (e) => {
+      state.customTextMode = (e.target as HTMLButtonElement).value as
+        | "simple"
+        | "repeat"
+        | "random";
+      CustomText.setMode(
+        state.customTextMode === "simple" ? "repeat" : state.customTextMode
+      );
+      updateUI();
+    });
+  }
+
   modalEl
     .querySelector(".randomWordsCheckbox input")
     ?.addEventListener("change", (e) => {
