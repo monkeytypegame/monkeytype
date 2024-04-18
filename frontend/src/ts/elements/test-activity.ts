@@ -2,7 +2,7 @@ import SlimSelect from "slim-select";
 import type { DataObjectPartial } from "slim-select/dist/store";
 import * as Dates from "date-fns";
 import { getTestActivityCalendar } from "../db";
-import * as DateTime from "../utils/date-and-time";
+import { UTCDateMini } from "@date-fns/utc/date/mini";
 
 let yearSelector: SlimSelect | undefined;
 
@@ -17,7 +17,14 @@ export class TestActivityCalendar implements MonkeyTypes.TestActivityCalendar {
   protected endDay: Date;
 
   constructor(data: (number | null)[], lastDay: Date) {
-    const local = DateTime.localFromUtc(lastDay);
+    const local = new UTCDateMini(lastDay);
+    console.log({
+      offset: new Date().getTimezoneOffset() / 60,
+      utc: lastDay.valueOf(),
+      local: local.valueOf(),
+      utcFormat: Dates.format(lastDay, "yyyy-MMM-dd HH:mm:ss"),
+      localFormat: Dates.format(local, "yyyy-MMM-dd HH:mm:ss"),
+    });
     const interval = this.getInterval(local);
     this.startDay = interval.start as Date;
     this.endDay = interval.end as Date;

@@ -31,6 +31,7 @@ import {
   deleteUser as firebaseDeleteUser,
 } from "../../utils/auth";
 import * as Dates from "date-fns";
+import { UTCDateMini } from "@date-fns/utc";
 
 async function verifyCaptcha(captcha: string): Promise<void> {
   if (!(await verify(captcha))) {
@@ -963,7 +964,7 @@ async function getAllTimeLbs(uid: string): Promise<SharedTypes.AllTimeLbs> {
 export function getCurrentTestActivity(
   testActivity: { [key: string]: number[] } | undefined
 ): SharedTypes.TestActivity | undefined {
-  const thisYear = Dates.startOfYear(new Date());
+  const thisYear = Dates.startOfYear(new UTCDateMini());
   const lastYear = Dates.startOfYear(Dates.subYears(thisYear, 1));
 
   let thisYearData = testActivity?.[thisYear.getFullYear().toString()];

@@ -162,12 +162,3 @@ export function secondsToString(
   }
   return ret.trim();
 }
-
-/**
- * Shift an utc date to compensate for the current system timezone.
- * @param utc Date in utc
- * @returns local date
- */
-export function localFromUtc(utc: Date): Date {
-  return new Date(utc.valueOf() + utc.getTimezoneOffset() * 60000);
-}

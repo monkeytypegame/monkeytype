@@ -9,6 +9,7 @@ import Logger from "../utils/logger";
 import { flattenObjectDeep, isToday, isYesterday } from "../utils/misc";
 import { getCachedConfiguration } from "../init/configuration";
 import { getDayOfYear } from "date-fns";
+import { UTCDate } from "@date-fns/utc";
 
 const SECONDS_PER_HOUR = 3600;
 
@@ -614,7 +615,7 @@ export async function incrementTestActivity(
     return;
   }
 
-  const date = new Date(timestamp);
+  const date = new UTCDate(timestamp);
   const dayOfYear = getDayOfYear(date);
   const year = date.getFullYear();
 

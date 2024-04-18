@@ -5,7 +5,6 @@ import {
 } from "../../src/ts/elements/test-activity";
 import * as Dates from "date-fns";
 import { MatcherResult } from "../vitest";
-import { localFromUtc } from "../../src/ts/utils/date-and-time";
 
 describe("test-activity.ts", () => {
   describe("TestActivityCalendar", () => {
