@@ -24,7 +24,7 @@ type State = {
     section: string;
   };
   pipeDelimiterChecked: boolean;
-  replaceNewlines: "off" | "space" | "period";
+  OldreplaceNewlines: "off" | "space" | "period";
   replaceControlCharactersChecked: boolean;
   replaceFancyTypographyChecked: boolean;
 
@@ -37,6 +37,7 @@ type State = {
   removeFancyTypographyEnabled: boolean;
   replaceControlCharactersEnabled: boolean;
   customTextPipeDelimiter: boolean;
+  replaceNewlines: "off" | "space" | "periodSpace";
 };
 
 const state: State = {
@@ -50,7 +51,7 @@ const state: State = {
     section: "",
   },
   pipeDelimiterChecked: false,
-  replaceNewlines: "off",
+  OldreplaceNewlines: "off",
   replaceControlCharactersChecked: true,
   replaceFancyTypographyChecked: true,
   customTextMode: "simple",
@@ -62,6 +63,7 @@ const state: State = {
   removeFancyTypographyEnabled: true,
   replaceControlCharactersEnabled: true,
   customTextPipeDelimiter: false,
+  replaceNewlines: "off",
 };
 
 function updateUI(): void {
@@ -111,6 +113,11 @@ function updateUI(): void {
     `${popup} .inputs .group[data-id="delimiter"] button[value="${state.customTextPipeDelimiter}"]`
   ).addClass("active");
 
+  $(`${popup} .inputs .group[data-id="newlines"] button`).removeClass("active");
+  $(
+    `${popup} .inputs .group[data-id="newlines"] button[value="${state.replaceNewlines}"]`
+  ).addClass("active");
+
   //=========
 
   if (state.randomWordsChecked) {
@@ -129,10 +136,10 @@ function updateUI(): void {
 
   $(`${popup} .replaceNewLinesButtons .button`).removeClass("active");
 
-  if (state.replaceNewlines !== "off") {
+  if (state.OldreplaceNewlines !== "off") {
     $(`${popup} .inputs .replaceNewLinesButtons`).removeClass("disabled");
     $(
-      `${popup} .replaceNewLinesButtons .button[data-replace-new-lines=${state.replaceNewlines}]`
+      `${popup} .replaceNewLinesButtons .button[data-replace-new-lines=${state.OldreplaceNewlines}]`
     ).addClass("active");
   } else {
     $(`${popup} .inputs .replaceNewLinesButtons`).addClass("disabled");
@@ -299,8 +306,8 @@ function cleanUpText(): string[] {
     text = Misc.cleanTypographySymbols(text);
   }
 
-  if (state.replaceNewlines !== "off") {
-    const periods = state.replaceNewlines === "period";
+  if (state.OldreplaceNewlines !== "off") {
+    const periods = state.OldreplaceNewlines === "period";
     if (periods) {
       text = text.replace(/\n/gm, ". ");
       text = text.replace(/\.\. /gm, ". ");
@@ -435,6 +442,18 @@ async function setup(modalEl: HTMLElement): Promise<void> {
     });
   }
 
+  for (const button of modalEl.querySelectorAll(
+    ".group[data-id='newlines'] button"
+  )) {
+    button.addEventListener("click", (e) => {
+      state.replaceNewlines = (e.target as HTMLButtonElement).value as
+        | "off"
+        | "space"
+        | "periodSpace";
+      updateUI();
+    });
+  }
+
   modalEl
     .querySelector(".group[data-id='mode'] input.words")
     ?.addEventListener("input", (e) => {
@@ -493,9 +512,9 @@ async function setup(modalEl: HTMLElement): Promise<void> {
     ?.addEventListener("change", (e) => {
       const checked = (e.target as HTMLInputElement).checked;
       if (checked === false) {
-        state.replaceNewlines = "off";
+        state.OldreplaceNewlines = "off";
       } else {
-        state.replaceNewlines = "space";
+        state.OldreplaceNewlines = "space";
       }
       updateUI();
     });
@@ -504,7 +523,7 @@ async function setup(modalEl: HTMLElement): Promise<void> {
   );
   for (const button of replaceNewLinesButtons) {
     button.addEventListener("click", (e) => {
-      state.replaceNewlines = (e.target as HTMLElement).dataset[
+      state.OldreplaceNewlines = (e.target as HTMLElement).dataset[
         "replaceNewLines"
       ] as "space" | "period";
       updateUI();
