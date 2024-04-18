@@ -94,9 +94,7 @@ function updateUI(): void {
 
   $(`${popup} .inputs .group[data-id="fancy"] button`).removeClass("active");
   $(
-    `${popup} .inputs .group[data-id="fancy"] button[value="${
-      state.removeFancyTypographyEnabled ? 1 : 0
-    }"]`
+    `${popup} .inputs .group[data-id="fancy"] button[value="${state.removeFancyTypographyEnabled}"]`
   ).addClass("active");
 
   $(`${popup} .inputs .group[data-id="control"] button`).removeClass("active");
@@ -403,7 +401,7 @@ async function setup(modalEl: HTMLElement): Promise<void> {
   )) {
     button.addEventListener("click", (e) => {
       state.removeFancyTypographyEnabled =
-        (e.target as HTMLButtonElement).value === "1" ? true : false;
+        (e.target as HTMLButtonElement).value === "true" ? true : false;
       updateUI();
     });
   }
