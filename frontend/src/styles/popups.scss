@@ -145,7 +145,7 @@
       width: 100%;
       border-radius: var(--roundness);
       resize: vertical;
-      height: 500px;
+      height: 590px;
       color: var(--text-color);
       overflow-x: hidden;
       overflow-y: scroll;
@@ -172,6 +172,8 @@
         }
         .sub {
           // font-size: 0.75em;
+          // height: 0;
+          // overflow: hidden;
           color: var(--text-color);
           margin-top: 0.25rem;
           margin-bottom: 0.5rem;
