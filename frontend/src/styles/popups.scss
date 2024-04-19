@@ -90,7 +90,8 @@
     //   }
     // }
 
-    .longCustomTextWarning {
+    .longCustomTextWarning,
+    .challengeWarning {
       // background: rgba(0, 0, 0, 0.5);
       background: var(--sub-alt-color);
       position: absolute;

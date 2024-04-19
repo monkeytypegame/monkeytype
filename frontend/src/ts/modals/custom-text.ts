@@ -10,6 +10,7 @@ import * as Notifications from "../elements/notifications";
 import * as SavedTextsPopup from "./saved-texts";
 import * as SaveCustomTextPopup from "./save-custom-text";
 import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
+import * as TestState from "../test/test-state";
 
 const popup = "#customTextModal .modal";
 
@@ -17,6 +18,7 @@ type State = {
   textarea: string;
   lastSavedTextareaState: string;
   longCustomTextWarning: boolean;
+  challengeWarning: boolean;
 
   customTextMode: "simple" | MonkeyTypes.CustomTextMode;
   customTextLimits: {
@@ -34,6 +36,7 @@ const state: State = {
   textarea: CustomText.getText().join(" "),
   lastSavedTextareaState: CustomText.getText().join(" "),
   longCustomTextWarning: false,
+  challengeWarning: false,
   customTextMode: "simple",
   customTextLimits: {
     word: "",
@@ -137,6 +140,18 @@ function updateUI(): void {
     $(`${popup} .longCustomTextWarning`).addClass("hidden");
     $(`${popup} .inputs`).removeClass("disabled");
   }
+
+  if (state.challengeWarning) {
+    $(`${popup} .challengeWarning`).removeClass("hidden");
+    $(`${popup} .randomWordsCheckbox input`).prop("checked", false);
+    $(`${popup} .delimiterCheck input`).prop("checked", false);
+    $(`${popup} .typographyCheck`).prop("checked", true);
+    $(`${popup} .replaceNewlineWithSpace input`).prop("checked", false);
+    $(`${popup} .inputs`).addClass("disabled");
+  } else {
+    $(`${popup} .challengeWarning`).addClass("hidden");
+    $(`${popup} .inputs`).removeClass("disabled");
+  }
 }
 
 async function beforeAnimation(
@@ -172,6 +187,13 @@ async function beforeAnimation(
     state.textarea = CustomText.getText().join(" ");
   }
 
+  if (TestState.activeChallenge !== null) {
+    if (TestState.activeChallenge.type === "customText") {
+      state.challengeWarning = true;
+      state.textarea = TestState.activeChallenge.parameters[0] as string;
+    }
+  }
+
   if (modalChainData?.text !== undefined) {
     if (modalChainData.long !== true && CustomTextState.isCustomTextLong()) {
       CustomTextState.setCustomTextName("", undefined);
@@ -192,7 +214,7 @@ async function beforeAnimation(
 }
 
 async function afterAnimation(): Promise<void> {
-  if (!CustomTextState.isCustomTextLong()) {
+  if (!state.challengeWarning && !state.longCustomTextWarning) {
     $(`${popup} textarea`).trigger("focus");
   }
 }
@@ -482,7 +504,7 @@ async function setup(modalEl: HTMLElement): Promise<void> {
     state.textarea = area.value;
   });
   textarea?.addEventListener("keypress", (e) => {
-    if (state.longCustomTextWarning) {
+    if (state.longCustomTextWarning || state.challengeWarning) {
       e.preventDefault();
       return;
     }
@@ -529,6 +551,10 @@ async function setup(modalEl: HTMLElement): Promise<void> {
       state.longCustomTextWarning = false;
       updateUI();
     });
+  modalEl.querySelector(".challengeWarning")?.addEventListener("click", () => {
+    state.challengeWarning = false;
+    updateUI();
+  });
 }
 
 type IncomingData = {
