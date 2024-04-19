@@ -188,9 +188,14 @@ async function beforeAnimation(
   }
 
   if (TestState.activeChallenge !== null) {
-    if (TestState.activeChallenge.type === "customText") {
+    if (
+      TestState.activeChallenge.type === "customText" ||
+      TestState.activeChallenge.type === "script"
+    ) {
       state.challengeWarning = true;
-      state.textarea = TestState.activeChallenge.parameters[0] as string;
+      state.textarea = CustomText.getText().join(
+        CustomText.getPipeDelimiter() ? "|" : " "
+      );
     }
   }
 
