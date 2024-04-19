@@ -198,16 +198,20 @@
           .buttonGroup {
             display: flex;
             width: 100%;
+            gap: 0.5rem;
             button {
               flex-grow: 1;
-              border-radius: 0;
             }
-            button:first-child {
-              border-radius: var(--roundness) 0 0 var(--roundness);
-            }
-            button:last-child {
-              border-radius: 0 var(--roundness) var(--roundness) 0;
-            }
+            // button {
+            //   flex-grow: 1;
+            //   border-radius: 0;
+            // }
+            // button:first-child {
+            //   border-radius: var(--roundness) 0 0 var(--roundness);
+            // }
+            // button:last-child {
+            //   border-radius: 0 var(--roundness) var(--roundness) 0;
+            // }
           }
         }
       }
