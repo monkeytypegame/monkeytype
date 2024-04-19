@@ -53,11 +53,16 @@
 #customTextModal {
   .modal {
     max-width: 1200px;
+    // grid-template-areas:
+    //   "topButtons topButtons topButtons"
+    //   "textArea textArea checkboxes"
+    //   "ok ok ok";
     grid-template-areas:
-      "topButtons topButtons topButtons"
+      "topButtons topButtons checkboxes"
       "textArea textArea checkboxes"
-      "ok ok ok";
+      "ok ok checkboxes";
     grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: min-content 1fr min-content;
 
     .buttonsTop {
       grid-area: topButtons;
@@ -117,6 +122,7 @@
 
     .buttonsTop {
       display: grid;
+      // grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
       grid-template-columns: 1fr 1fr 1fr 1fr;
       gap: 1rem;
     }
@@ -135,6 +141,7 @@
     }
 
     textarea {
+      align-self: start;
       background: var(--sub-alt-color);
       padding: 1rem;
       color: var(--main-color);
@@ -145,7 +152,7 @@
       width: 100%;
       border-radius: var(--roundness);
       resize: vertical;
-      height: 590px;
+      min-height: 477px;
       color: var(--text-color);
       overflow-x: hidden;
       overflow-y: scroll;
