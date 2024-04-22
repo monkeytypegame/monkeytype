@@ -31,7 +31,9 @@ type State = {
 };
 
 const state: State = {
-  textarea: CustomText.getText().join(" "),
+  textarea: CustomText.getText().join(
+    CustomText.getPipeDelimiter() ? "|" : " "
+  ),
   longCustomTextWarning: false,
   challengeWarning: false,
   customTextMode: "simple",
