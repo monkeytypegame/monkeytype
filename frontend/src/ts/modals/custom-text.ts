@@ -366,9 +366,6 @@ function apply(): void {
   const text = cleanUpText();
 
   if (state.customTextMode === "simple") {
-    state.customTextLimits.word = `${text.length}`;
-    state.customTextLimits.time = "";
-    state.customTextLimits.section = "";
     CustomText.setMode("repeat");
   } else {
     CustomText.setMode(state.customTextMode);
@@ -415,6 +412,12 @@ async function setup(modalEl: HTMLElement): Promise<void> {
         | "simple"
         | "repeat"
         | "random";
+      if (state.customTextMode === "simple") {
+        const text = cleanUpText();
+        state.customTextLimits.word = `${text.length}`;
+        state.customTextLimits.time = "";
+        state.customTextLimits.section = "";
+      }
       updateUI();
     });
   }
