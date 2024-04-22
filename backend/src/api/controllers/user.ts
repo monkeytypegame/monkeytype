@@ -339,7 +339,7 @@ function getRelevantUserInfo(
     "lastResultHashes",
     "note",
     "ips",
-    "testsByYearAndDay",
+    "testActivity",
   ]);
 }
 
