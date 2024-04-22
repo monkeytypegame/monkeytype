@@ -10,14 +10,11 @@ import * as Notifications from "../elements/notifications";
 import * as SavedTextsPopup from "./saved-texts";
 import * as SaveCustomTextPopup from "./save-custom-text";
 import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
-import * as TestState from "../test/test-state";
-import * as PractiseWords from "../test/practise-words";
 
 const popup = "#customTextModal .modal";
 
 type State = {
   textarea: string;
-  lastSavedTextareaState: string;
   longCustomTextWarning: boolean;
   challengeWarning: boolean;
 
@@ -35,7 +32,6 @@ type State = {
 
 const state: State = {
   textarea: CustomText.getText().join(" "),
-  lastSavedTextareaState: CustomText.getText().join(" "),
   longCustomTextWarning: false,
   challengeWarning: false,
   customTextMode: "simple",
@@ -183,29 +179,6 @@ async function beforeAnimation(
 
   state.longCustomTextWarning = CustomTextState.isCustomTextLong() ?? false;
 
-  if (CustomTextState.isCustomTextLong()) {
-    // if we are in long custom text mode, always reset the textarea state to the current text
-    state.textarea = CustomText.getText().join(" ");
-  }
-
-  if (TestState.activeChallenge !== null) {
-    if (
-      TestState.activeChallenge.type === "customText" ||
-      TestState.activeChallenge.type === "script"
-    ) {
-      state.challengeWarning = true;
-      state.textarea = CustomText.getText().join(
-        CustomText.getPipeDelimiter() ? "|" : " "
-      );
-    }
-  }
-
-  if (PractiseWords.before.mode !== null) {
-    state.textarea = CustomText.getText().join(
-      CustomText.getPipeDelimiter() ? "|" : " "
-    );
-  }
-
   if (modalChainData?.text !== undefined) {
     if (modalChainData.long !== true && CustomTextState.isCustomTextLong()) {
       CustomTextState.setCustomTextName("", undefined);
@@ -220,6 +193,10 @@ async function beforeAnimation(
         ? modalChainData.text
         : state.textarea + " " + modalChainData.text;
     state.textarea = newText;
+    state.customTextMode = "simple";
+    state.customTextLimits.word = `${cleanUpText().length}`;
+    state.customTextLimits.time = "";
+    state.customTextLimits.section = "";
   }
 
   updateUI();
@@ -232,7 +209,9 @@ async function afterAnimation(): Promise<void> {
 }
 
 export function show(showOptions?: ShowOptions): void {
-  state.textarea = state.lastSavedTextareaState;
+  state.textarea = CustomText.getText().join(
+    CustomText.getPipeDelimiter() ? "|" : " "
+  );
   void modal.show({
     ...(showOptions as ShowOptions<IncomingData>),
     beforeAnimation,
@@ -360,8 +339,6 @@ function apply(): void {
       }
     );
   }
-
-  state.lastSavedTextareaState = state.textarea;
 
   const text = cleanUpText();
 
