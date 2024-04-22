@@ -347,7 +347,11 @@ function apply(): void {
     return;
   }
 
-  if (CustomText.getLimitValue() === 0) {
+  if (
+    state.customTextLimits.section === "0" ||
+    state.customTextLimits.word === "0" ||
+    state.customTextLimits.time === "0"
+  ) {
     Notifications.add(
       "Infinite test! Make sure to use Bail Out from the command line to save your result.",
       0,
