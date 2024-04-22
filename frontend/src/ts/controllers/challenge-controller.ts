@@ -249,12 +249,10 @@ export async function setup(challengeName: string): Promise<boolean> {
       UpdateConfig.setDifficulty("normal", true);
     } else if (challenge.type === "customText") {
       CustomText.setText((challenge.parameters[0] as string).split(" "));
-      CustomText.setMode(
-        challenge.parameters[1] as string as MonkeyTypes.CustomTextMode
-      );
+      CustomText.setMode(challenge.parameters[1] as SharedTypes.CustomTextMode);
       CustomText.setLimitValue(challenge.parameters[2] as number);
       CustomText.setLimitMode(
-        challenge.parameters[3] as string as MonkeyTypes.CustomTextLimitMode
+        challenge.parameters[3] as SharedTypes.CustomTextLimitMode
       );
       CustomText.setPipeDelimiter(challenge.parameters[4] as boolean);
       UpdateConfig.setMode("custom", true);

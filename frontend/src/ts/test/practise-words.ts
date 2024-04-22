@@ -14,7 +14,7 @@ type Before = {
   mode: SharedTypes.Config.Mode | null;
   punctuation: boolean | null;
   numbers: boolean | null;
-  customText: CustomText.CustomTextData | null;
+  customText: SharedTypes.CustomTextData | null;
 };
 
 export const before: Before = {

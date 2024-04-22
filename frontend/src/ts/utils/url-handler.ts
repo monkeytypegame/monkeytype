@@ -110,7 +110,7 @@ export function loadCustomThemeFromUrl(getOverride?: string): void {
 type SharedTestSettings = [
   SharedTypes.Config.Mode | null,
   SharedTypes.Config.Mode2<SharedTypes.Config.Mode> | null,
-  CustomText.CustomTextData | null,
+  SharedTypes.CustomTextData | null,
   boolean | null,
   boolean | null,
   string | null,

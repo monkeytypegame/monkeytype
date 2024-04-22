@@ -18,7 +18,7 @@ type State = {
   longCustomTextWarning: boolean;
   challengeWarning: boolean;
 
-  customTextMode: "simple" | MonkeyTypes.CustomTextMode;
+  customTextMode: "simple" | SharedTypes.CustomTextMode;
   customTextLimits: {
     word: string;
     time: string;

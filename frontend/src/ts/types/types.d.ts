@@ -437,11 +437,4 @@ declare namespace MonkeyTypes {
     histogramDataBucketSize: number;
     historyStepSize: number;
   };
-
-  type CustomTextMode = "repeat" | "random";
-  type CustomTextLimitMode = "word" | "time" | "section";
-  type CustomTextLimit = {
-    value: number;
-    mode: CustomTextLimitMode;
-  };
 }

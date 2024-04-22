@@ -744,9 +744,15 @@ function buildCompletedEvent(
   const wpmCons = Numbers.roundTo2(Misc.kogasa(stddev3 / avg3));
   const wpmConsistency = isNaN(wpmCons) ? 0 : wpmCons;
 
-  let customText: CustomText.CustomTextData | null = null;
+  let customText: SharedTypes.CustomTextDataWithTextLen | null = null;
   if (Config.mode === "custom") {
-    customText = CustomText.getData();
+    const temp = CustomText.getData();
+    customText = {
+      textLen: temp.text.length,
+      mode: temp.mode,
+      pipeDelimiter: temp.pipeDelimiter,
+      limit: temp.limit,
+    };
   }
 
   //tags
@@ -865,6 +871,8 @@ export async function finish(difficultyFailed = false): Promise<void> {
   }
 
   const ce = buildCompletedEvent(difficultyFailed);
+
+  console.debug("Completed event object", ce);
 
   function countUndefined(input: unknown): number {
     if (typeof input === "number") {
