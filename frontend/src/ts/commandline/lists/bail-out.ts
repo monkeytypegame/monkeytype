@@ -10,7 +10,8 @@ function canBailOut(): boolean {
     (Config.mode === "custom" &&
       (CustomText.getLimitMode() === "word" ||
         CustomText.getLimitMode() === "section") &&
-      CustomText.getLimit().value >= 5000) ||
+      (CustomText.getLimit().value >= 5000 ||
+        CustomText.getLimit().value === 0)) ||
     (Config.mode === "custom" &&
       CustomText.getLimitMode() === "time" &&
       (CustomText.getLimitValue() >= 3600 ||
