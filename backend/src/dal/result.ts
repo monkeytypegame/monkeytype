@@ -5,7 +5,7 @@ import * as db from "../init/db";
 
 import { getUser, getTags } from "./user";
 
-type DBResult = MonkeyTypes.WithObjectId<
+export type DBResult = MonkeyTypes.WithObjectId<
   SharedTypes.DBResult<SharedTypes.Config.Mode>
 >;
 

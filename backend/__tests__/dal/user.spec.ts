@@ -1,8 +1,7 @@
 import _ from "lodash";
 import { updateStreak } from "../../src/dal/user";
 import * as UserDAL from "../../src/dal/user";
-import * as DB from "../../src/init/db";
-import { ObjectId } from "mongodb";
+import * as UserTestData from "../__testData__/users";
 
 const mockPersonalBest = {
   acc: 1,
@@ -789,7 +788,7 @@ describe("UserDal", () => {
   describe("incrementTestActivity", () => {
     it("ignores user without migration", async () => {
       // given
-      const user = await createUser();
+      const user = await UserTestData.createUser();
 
       //when
       await UserDAL.incrementTestActivity(user, 1712102400000);
@@ -800,7 +799,9 @@ describe("UserDal", () => {
     });
     it("increments for new year", async () => {
       // given
-      const user = await createUser({ testActivity: { "2023": [null, 1] } });
+      const user = await UserTestData.createUser({
+        testActivity: { "2023": [null, 1] },
+      });
 
       //when
       await UserDAL.incrementTestActivity(user, 1712102400000);
@@ -816,7 +817,7 @@ describe("UserDal", () => {
     });
     it("increments for existing year", async () => {
       // given
-      const user = await createUser({
+      const user = await UserTestData.createUser({
         testActivity: { "2024": [null, 5] },
       });
 
@@ -836,7 +837,7 @@ describe("UserDal", () => {
     });
     it("increments for existing day", async () => {
       // given
-      let user = await createUser({ testActivity: {} });
+      let user = await UserTestData.createUser({ testActivity: {} });
       await UserDAL.incrementTestActivity(user, 1712102400000);
       user = await UserDAL.getUser(user.uid, "");
 
@@ -850,12 +851,3 @@ describe("UserDal", () => {
     });
   });
 });
-
-async function createUser(
-  user?: Partial<MonkeyTypes.DBUser>
-): Promise<MonkeyTypes.DBUser> {
-  const uid = new ObjectId().toHexString();
-  await UserDAL.addUser("user" + uid, uid + "@example.com", uid);
-  await DB.collection("users").updateOne({ uid }, { $set: { ...user } });
-  return await UserDAL.getUser(uid, "test");
-}

@@ -31,15 +31,19 @@ async function main(): Promise<void> {
       throw Error("db connection failed");
     }
 
-    userCollection = db.collection("users");
-    resultCollection = db.collection("results");
-
-    await migrateResults();
+    await migrate(db);
 
     console.log(`\n${appRunning ? "done" : "aborted"}.`);
   } finally {
     await db.close();
   }
+}
+
+export async function migrate(db): Promise<void> {
+  userCollection = db.collection("users");
+  resultCollection = db.collection("results");
+
+  await migrateResults();
 }
 
 async function migrateResults(batchSize = 50): Promise<void> {
@@ -202,14 +206,14 @@ async function handleUsersWithNoResults(uids: string[]): Promise<void> {
   );
 }
 
-function updateProgress(all: number, current: number, start: number) {
+function updateProgress(all: number, current: number, start: number): void {
   const percentage = (current / all) * 100;
   const timeLeft = Math.round(
     (((new Date().valueOf() - start) / percentage) * (100 - percentage)) / 1000
   );
 
-  process.stdout.clearLine(0);
-  process.stdout.cursorTo(0);
+  process.stdout.clearLine?.(0);
+  process.stdout.cursorTo?.(0);
   process.stdout.write(
     `${Math.round(percentage)}% done, estimated time left ${timeLeft} seconds.`
   );
