@@ -962,7 +962,7 @@ async function getAllTimeLbs(uid: string): Promise<SharedTypes.AllTimeLbs> {
 }
 
 export function getCurrentTestActivity(
-  testActivity: { [key: string]: number[] } | undefined
+  testActivity: SharedTypes.CountByYearAndDay | undefined
 ): SharedTypes.TestActivity | undefined {
   const thisYear = Dates.startOfYear(new UTCDateMini());
   const lastYear = Dates.startOfYear(Dates.subYears(thisYear, 1));

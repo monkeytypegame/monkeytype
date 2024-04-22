@@ -618,10 +618,8 @@ export async function incrementTestActivity(
   const date = new UTCDate(timestamp);
   const dayOfYear = getDayOfYear(date);
   const year = date.getFullYear();
-  console.log(dayOfYear, `testActivity.${date.getFullYear()}.${dayOfYear - 1}`);
 
   if (user.testActivity[year] === undefined) {
-    console.log("new");
     await getUsersCollection().updateOne(
       { uid: user.uid },
       { $set: { [`testActivity.${date.getFullYear()}`]: [] } }

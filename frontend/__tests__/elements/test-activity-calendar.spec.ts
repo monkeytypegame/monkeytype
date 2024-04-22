@@ -47,47 +47,6 @@ describe("test-activity-calendar.ts", () => {
       });
     });
 
-    /*
-    describe("getYearSelector", () => {
-      beforeAll(() => {
-        vi.useFakeTimers();
-      });
-      afterAll(() => {
-        vi.useRealTimers();
-      });
-      it("for start of 2022", () => {
-        vi.setSystemTime(getDate("2022-01-01"));
-        const calendar = new TestActivityCalendar([], getDate("2022-01-01"));
-        const selector = calendar.getYearSelector();
-        expect(selector).toEqual([
-          { text: "2022", value: "current", selected: true },
-          { text: "2021", value: "2021", selected: false },
-          { text: "2020", value: "2020", selected: false },
-        ]);
-      });
-      it("for end of 2022", () => {
-        vi.setSystemTime(getDate("2022-12-31"));
-        const calendar = new TestActivityCalendar([], getDate("2022-01-01"));
-        const selector = calendar.getYearSelector();
-        expect(selector).toEqual([
-          { text: "2022", value: "current", selected: true },
-          { text: "2021", value: "2021", selected: false },
-          { text: "2020", value: "2020", selected: false },
-        ]);
-      });
-      it("for past year", () => {
-        vi.setSystemTime(getDate("2023-12-31"));
-        const calendar = new TestActivityCalendar([], getDate("2021-04-23"));
-        const selector = calendar.getYearSelector();
-        expect(selector).toEqual([
-          { text: "2023", value: "current", selected: false },
-          { text: "2022", value: "2022", selected: false },
-          { text: "2021", value: "2021", selected: true },
-          { text: "2020", value: "2020", selected: false },
-        ]);
-      });
-    });
-    */
     describe("getDays", () => {
       it("for lastDay in april", () => {
         const data = getData("2023-04-10", "2024-04-10");
@@ -358,7 +317,10 @@ function getData(from: string, to: string): number[] {
 }
 
 expect.extend({
-  toBeDate(received: ActivityDay, expected: string): MatcherResult {
+  toBeDate(
+    received: MonkeyTypes.TestActivityDay,
+    expected: string
+  ): MatcherResult {
     const expectedDate = Dates.format(getDate(expected), "EEEE dd MMM yyyy");
     const actual = received.label?.substring(received.label.indexOf("on") + 3);
 
@@ -369,7 +331,10 @@ expect.extend({
       expected: expectedDate,
     };
   },
-  toHaveTests(received: ActivityDay, expected: number): MatcherResult {
+  toHaveTests(
+    received: MonkeyTypes.TestActivityDay,
+    expected: number
+  ): MatcherResult {
     const expectedLabel = `${expected} ${expected == 1 ? "test" : "tests"}`;
     const actual = received.label?.substring(0, received.label.indexOf(" on"));
 
@@ -380,7 +345,10 @@ expect.extend({
       expected: expectedLabel,
     };
   },
-  toHaveLevel(received: ActivityDay, expected: string | number): MatcherResult {
+  toHaveLevel(
+    received: MonkeyTypes.TestActivityDay,
+    expected: string | number
+  ): MatcherResult {
     return {
       pass: received.level === expected.toString(),
       message: () => `Level ${received.level} is not ${expected}`,
@@ -389,7 +357,7 @@ expect.extend({
     };
   },
 
-  toBeFiller(received: ActivityDay): MatcherResult {
+  toBeFiller(received: MonkeyTypes.TestActivityDay): MatcherResult {
     return {
       pass: received.level === "filler",
       message: () => `Is not a filler.`,

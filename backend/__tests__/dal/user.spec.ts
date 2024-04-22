@@ -828,7 +828,6 @@ describe("UserDal", () => {
       expect(read).toHaveProperty("2024");
       const year2024 = read["2024"];
       expect(year2024).toHaveLength(94);
-      //fill previous days with null
 
       expect(year2024[0]).toBeNull();
       expect(year2024[1]).toEqual(5);
@@ -846,7 +845,6 @@ describe("UserDal", () => {
 
       //then
       const read = (await UserDAL.getUser(user.uid, "")).testActivity || {};
-      console.log(read);
       const year2024 = read["2024"];
       expect(year2024[93]).toEqual(2);
     });
@@ -858,6 +856,6 @@ async function createUser(
 ): Promise<MonkeyTypes.DBUser> {
   const uid = new ObjectId().toHexString();
   await UserDAL.addUser("user" + uid, uid + "@example.com", uid);
-  DB.collection("users").updateOne({ uid }, { $set: { ...user } });
+  await DB.collection("users").updateOne({ uid }, { $set: { ...user } });
   return await UserDAL.getUser(uid, "test");
 }

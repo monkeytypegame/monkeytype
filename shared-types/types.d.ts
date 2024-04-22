@@ -623,7 +623,7 @@ declare namespace SharedTypes {
   };
 
   type TestActivity = {
-    testsByDays: number[];
+    testsByDays: (number | null)[];
     lastDay: number;
   };
 

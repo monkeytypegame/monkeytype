@@ -27,15 +27,6 @@ export class TestActivityCalendar implements MonkeyTypes.TestActivityCalendar {
   protected getInterval(lastDay: Date): Interval {
     const end = endOfMonth(lastDay);
     const start = addDays(subYears(end, 1), 1);
-    /*
-    console.log({
-      offset: new Date().getTimezoneOffset() / 60,
-      lastDay: format(lastDay, "EEEE dd MMM yyyy"),
-      lastDayValue: lastDay.valueOf(),
-      end: format(end, "EEEE dd MMM yyyy"),
-      start: format(start, "EEEE dd MMM yyyy"),
-    });
-    */
     return { start, end };
   }
 
@@ -86,13 +77,6 @@ export class TestActivityCalendar implements MonkeyTypes.TestActivityCalendar {
     let currentDate = this.startDay;
     for (let i = 0; i < days; i++) {
       const count = this.data[i];
-      /*
-      console.log({
-        i,
-        count,
-        date: format(currentDate, "EEEE dd MMM yyyy"),
-      });
-      */
       result.push({
         level: getValue(count),
         label:
