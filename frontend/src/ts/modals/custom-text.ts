@@ -11,6 +11,7 @@ import * as SavedTextsPopup from "./saved-texts";
 import * as SaveCustomTextPopup from "./save-custom-text";
 import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
 import * as TestState from "../test/test-state";
+import * as PractiseWords from "../test/practise-words";
 
 const popup = "#customTextModal .modal";
 
@@ -197,6 +198,12 @@ async function beforeAnimation(
         CustomText.getPipeDelimiter() ? "|" : " "
       );
     }
+  }
+
+  if (PractiseWords.before.mode !== null) {
+    state.textarea = CustomText.getText().join(
+      CustomText.getPipeDelimiter() ? "|" : " "
+    );
   }
 
   if (modalChainData?.text !== undefined) {
