@@ -232,11 +232,11 @@ export function canQuickRestart(
   const customTextRandomWordsLong =
     mode === "custom" &&
     (CustomText.limit.mode === "word" || CustomText.limit.mode === "section") &&
-    CustomText.limit.value >= 1000;
+    (CustomText.limit.value >= 1000 || CustomText.limit.value === 0);
   const customTextRandomTimeLong =
     mode === "custom" &&
     CustomText.limit.mode === "time" &&
-    CustomText.limit.value >= 900;
+    (CustomText.limit.value >= 900 || CustomText.limit.value === 0);
 
   if (
     wordsLong ||
