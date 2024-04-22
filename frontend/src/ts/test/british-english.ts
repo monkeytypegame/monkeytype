@@ -38,7 +38,6 @@ export async function replace(
 
     if (!replacement) return word;
 
-    console.log(replacement[2], previousWord);
     if (Config.mode === "quote" && replacement[2]?.includes(previousWord)) {
       return word;
     }
