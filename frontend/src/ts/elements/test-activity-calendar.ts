@@ -9,6 +9,8 @@ import {
   eachMonthOfInterval,
   isSameDay,
   isBefore,
+  endOfYear,
+  startOfYear,
 } from "date-fns";
 
 export class TestActivityCalendar implements MonkeyTypes.TestActivityCalendar {
@@ -16,17 +18,20 @@ export class TestActivityCalendar implements MonkeyTypes.TestActivityCalendar {
   protected startDay: Date;
   protected endDay: Date;
 
-  constructor(data: (number | null)[], lastDay: Date) {
+  constructor(data: (number | null)[], lastDay: Date, fullYear = false) {
     const local = new UTCDateMini(lastDay);
-    const interval = this.getInterval(local);
+    const interval = this.getInterval(local, fullYear);
+
     this.startDay = interval.start as Date;
     this.endDay = interval.end as Date;
     this.data = this.buildData(data, local);
   }
 
-  protected getInterval(lastDay: Date): Interval {
-    const end = endOfMonth(lastDay);
-    const start = addDays(subYears(end, 1), 1);
+  protected getInterval(lastDay: Date, fullYear = false): Interval {
+    const end = (fullYear ? endOfYear : endOfMonth)(lastDay);
+    const start = fullYear
+      ? startOfYear(lastDay)
+      : addDays(subYears(end, 1), 1);
     return { start, end };
   }
 
@@ -57,7 +62,7 @@ export class TestActivityCalendar implements MonkeyTypes.TestActivityCalendar {
 
     const buckets = this.getBuckets();
     const getValue = (v: number | null | undefined): string => {
-      if (v === undefined) return "filler";
+      if (v === undefined) return "0";
       if (v === null || v === 0) return "0";
       for (let b = 0; b < 4; b++)
         if (v <= (buckets[b] ?? 0)) return (1 + b).toString();
@@ -80,7 +85,7 @@ export class TestActivityCalendar implements MonkeyTypes.TestActivityCalendar {
       result.push({
         level: getValue(count),
         label:
-          this.data[i] !== undefined && this.data[i] !== null
+          1 === 1 || (this.data[i] !== undefined && this.data[i] !== null)
             ? `${count} ${count == 1 ? "test" : "tests"} on ${format(
                 currentDate,
                 "EEEE dd MMM yyyy"

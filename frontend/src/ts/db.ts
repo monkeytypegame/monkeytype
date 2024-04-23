@@ -975,6 +975,7 @@ export function setStreak(streak: number): void {
 export async function getTestActivityCalendar(
   yearString: string
 ): Promise<MonkeyTypes.TestActivityCalendar | undefined> {
+  console.log("getting activityCalendar", { yearString });
   if (!isAuthenticated() || dbSnapshot === undefined) return undefined;
 
   if (yearString === "current") return dbSnapshot.testActivity;
@@ -1005,9 +1006,11 @@ export async function getTestActivityCalendar(
 
       dbSnapshot.testActivityByYear[year] = new TestActivityCalendar(
         testsByDays,
-        lastDay
+        lastDay,
+        true
       );
     }
+    console.log("db", { cals: getSnapshot()?.testActivityByYear });
     Loader.hide();
   }
 

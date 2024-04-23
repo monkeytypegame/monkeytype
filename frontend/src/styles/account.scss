@@ -553,6 +553,9 @@
         var(--sub-alt-color)
       );
     }
+    &[data-level="0"] {
+      background-color: hotpink;
+    }
     &[data-level="1"] {
       background-color: color-mix(
         in srgb,

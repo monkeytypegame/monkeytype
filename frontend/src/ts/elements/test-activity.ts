@@ -12,6 +12,7 @@ const yearSelector = new SlimSelect({
       yearSelector?.disable();
       const selected = newVal[0]?.value as string;
       const activity = await getTestActivityCalendar(selected);
+      console.log({ activity });
       update(activity);
       if ((yearSelector?.getData() ?? []).length > 1) {
         yearSelector?.enable();
@@ -29,7 +30,7 @@ export function init(
     return;
   }
   $("#testActivity").removeClass("hidden");
-  initYearSelector(new Date(), userSignUpDate?.getFullYear() || 2022);
+  initYearSelector("current", userSignUpDate?.getFullYear() || 2022);
   update(calendar);
 }
 
@@ -59,22 +60,24 @@ function update(calendar?: MonkeyTypes.TestActivityCalendar): void {
   }
 }
 
-function initYearSelector(selectedDate: Date, startYear: number): void {
-  const selectedYear = selectedDate.getFullYear();
+function initYearSelector(
+  selectedYear: number | "current",
+  startYear: number
+): void {
   const currentYear = new Date().getFullYear();
 
   const years: DataObjectPartial[] = [
     {
-      text: currentYear.toString(),
+      text: "last 12 months",
       value: "current",
-      selected: selectedYear == currentYear,
+      selected: selectedYear === "current",
     },
   ];
-  for (let year = currentYear - 1; year >= startYear; year--) {
+  for (let year = currentYear; year >= startYear; year--) {
     years.push({
       text: year.toString(),
       value: year.toString(),
-      selected: year == selectedYear,
+      selected: year === selectedYear,
     });
   }
 
