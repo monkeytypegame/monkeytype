@@ -5,6 +5,9 @@
       content: "blue";
     }
   }
+  #app {
+    grid-template-columns: auto 640px auto;
+  }
   #contentWrapper {
     max-width: 640px;
   }

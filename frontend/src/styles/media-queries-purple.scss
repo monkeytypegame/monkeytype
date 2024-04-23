@@ -9,6 +9,9 @@
     max-width: 100%;
     padding: 1rem;
   }
+  #app {
+    grid-template-columns: auto 1fr auto;
+  }
   header {
     nav {
       font-size: 0.9rem;

@@ -8,4 +8,7 @@
   #contentWrapper {
     max-width: 1280px;
   }
+  #app {
+    grid-template-columns: auto 1280px auto;
+  }
 }

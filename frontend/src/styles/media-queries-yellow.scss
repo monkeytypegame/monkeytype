@@ -8,6 +8,9 @@
   #contentWrapper {
     max-width: 1024px;
   }
+  #app {
+    grid-template-columns: auto 1024px auto;
+  }
   .pageSettings {
     .section {
       grid-template-columns: 1.5fr 1fr;

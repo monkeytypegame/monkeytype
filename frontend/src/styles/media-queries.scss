@@ -18,15 +18,15 @@
 
 // uncomment to debug media queries
 
-#mediaQueryDebug {
-  display: block;
-}
-#contentWrapper,
-header,
-main,
-footer {
-  border: 0.1rem solid var(--sub-color);
-}
+// #mediaQueryDebug {
+//   display: block;
+// }
+// #contentWrapper,
+// header,
+// main,
+// footer {
+//   border: 0.1rem solid var(--sub-color);
+// }
 
 //media queries based on tailwind breakpoints https://tailwindcss.com/docs/container
 @import "media-queries-orange";
