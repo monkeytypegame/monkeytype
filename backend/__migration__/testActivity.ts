@@ -34,6 +34,8 @@ async function main(): Promise<void> {
     await migrate(db);
 
     console.log(`\n${appRunning ? "done" : "aborted"}.`);
+  } catch (e) {
+    console.log("error occured:", { e });
   } finally {
     await db.close();
   }
@@ -42,7 +44,6 @@ async function main(): Promise<void> {
 export async function migrate(db): Promise<void> {
   userCollection = db.collection("users");
   resultCollection = db.collection("results");
-
   await migrateResults();
 }
 
@@ -83,6 +84,7 @@ async function getUsersToMigrate(limit: number): Promise<string[]> {
 }
 
 async function migrateUsers(uids: string[]): Promise<void> {
+  console.log("migrateUsers:", uids.join(","));
   return await resultCollection
     .aggregate(
       [
@@ -198,6 +200,7 @@ async function migrateUsers(uids: string[]): Promise<void> {
 }
 
 async function handleUsersWithNoResults(uids: string[]): Promise<void> {
+  console.log("handleUsersWithNoResults:", uids.join(","));
   return userCollection.updateMany(
     {
       $and: [{ uid: { $in: uids } }, filter],
