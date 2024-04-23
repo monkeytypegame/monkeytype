@@ -7,9 +7,13 @@
   }
   #contentWrapper {
     max-width: 100%;
+    padding: 1rem;
   }
   header {
     nav {
+      font-size: 0.9rem;
+      line-height: 0.9rem;
+      gap: 0.25rem;
       .account {
         .text {
           display: none;
