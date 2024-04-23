@@ -17,6 +17,11 @@
   #testModesNotice {
     font-size: 0.8rem;
   }
+  .pageAbout {
+    .triplegroup {
+      grid-template-columns: 1fr;
+    }
+  }
 }
 
 @media (pointer: coarse) and (max-width: 778px) {

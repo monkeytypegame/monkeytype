@@ -27,6 +27,13 @@
       }
     }
   }
+  .pageAbout {
+    .section {
+      .contactButtons {
+        grid-template-columns: 1fr;
+      }
+    }
+  }
   #keymap .row {
     height: 1.25rem;
   }

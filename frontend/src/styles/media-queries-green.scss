@@ -30,6 +30,13 @@
       }
     }
   }
+  .pageAbout {
+    .section {
+      .contactButtons {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+  }
   footer {
     .leftright {
       .left {
