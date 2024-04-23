@@ -15,6 +15,12 @@
     font-size: 0.7rem;
     --horizontalPadding: 0.6em;
   }
+  .ad.ad-h {
+    display: none;
+  }
+  .ad.ad-h-s {
+    display: grid;
+  }
   header {
     #logo {
       .text {
