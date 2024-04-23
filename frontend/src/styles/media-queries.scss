@@ -7,9 +7,25 @@
     padding-top: 0.75rem;
     padding-left: 0.5rem;
     display: block;
+    z-index: 99999999;
+    position: absolute;
   }
-  // display: none;
+  display: none;
 }
+
+// uncomment to debug media queries
+
+// #mediaQueryDebug {
+//   display: block;
+// }
+// #contentWrapper {
+//   background: var(--sub-alt-color);
+// }
+// header,
+// main,
+// footer {
+//   border: 0.1rem solid var(--sub-color);
+// }
 
 //media queries based on tailwind breakpoints https://tailwindcss.com/docs/container
 @import "media-queries-orange";
