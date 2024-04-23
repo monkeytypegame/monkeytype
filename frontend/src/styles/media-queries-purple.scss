@@ -8,6 +8,21 @@
   #contentWrapper {
     max-width: 100%;
   }
+  header {
+    nav {
+      .account {
+        .text {
+          display: none;
+        }
+      }
+    }
+    #logo {
+      grid-template-columns: 1fr;
+      .text {
+        display: none;
+      }
+    }
+  }
   footer {
     .leftright {
       grid-template-columns: 1fr 1fr;
