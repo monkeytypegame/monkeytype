@@ -105,7 +105,6 @@ const CONFIG_SCHEMA = joi.object({
     .valid("off", "average", "pb", "last", "daily", "custom"),
   paceCaretCustomSpeed: joi.number().min(0),
   repeatedPace: joi.boolean(),
-  pageWidth: joi.string().valid("100", "125", "150", "200", "max"),
   accountChart: joi
     .array()
     .items(joi.string().valid("on", "off"))
