@@ -584,7 +584,10 @@
 
   .legend {
     grid-area: legend;
-    display: flexbox;
+    display: flex;
+    gap: 0.5em;
+    justify-content: flex-end;
+    margin-right: 1rem;
 
     div {
       display: inline-flex;
