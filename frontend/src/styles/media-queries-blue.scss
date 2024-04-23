@@ -141,6 +141,17 @@
       }
     }
   }
+  #leaderboardsWrapper #leaderboards .leaderboardsTop {
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas: "title title" "subtitle yesterday" "buttons buttons";
+    .buttons .timeRange {
+      font-size: 0.75rem;
+      grid-template-columns: 1fr 1fr 1fr;
+      .languageSelect {
+        grid-column: span 1;
+      }
+    }
+  }
 }
 
 @media (pointer: coarse) and (max-width: 778px) {
