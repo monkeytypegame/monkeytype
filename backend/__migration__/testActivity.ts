@@ -12,7 +12,7 @@ process.on("SIGINT", () => {
   appRunning = false;
 });
 
-main();
+void main();
 
 async function main(): Promise<void> {
   try {
@@ -44,6 +44,8 @@ async function main(): Promise<void> {
 export async function migrate(db): Promise<void> {
   userCollection = db.collection("users");
   resultCollection = db.collection("results");
+
+  await userCollection.createIndex({ uid: 1 }, { unique: true });
   await migrateResults();
 }
 

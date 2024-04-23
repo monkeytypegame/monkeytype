@@ -5,10 +5,6 @@ import * as DB from "../../src/init/db";
 import * as ResultDal from "../../src/dal/result";
 
 describe("testActivity migration", () => {
-  beforeAll(() => {
-    DB.getDb()?.collection("users").createIndex({ uid: 1 }, { unique: true });
-  });
-
   it("migrates users without results", async () => {
     //given
     const user1 = await UserTestData.createUser();
