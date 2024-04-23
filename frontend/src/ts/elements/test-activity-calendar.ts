@@ -54,7 +54,7 @@ export class TestActivityCalendar implements MonkeyTypes.TestActivityCalendar {
     return eachMonthOfInterval({
       start: this.startDay,
       end: this.endDay,
-    }).map((month) => format(month, "MMM`yy"));
+    }).map((month) => format(month, "MMM"));
   }
 
   getDays(): MonkeyTypes.TestActivityDay[] {

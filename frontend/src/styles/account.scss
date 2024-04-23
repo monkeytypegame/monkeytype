@@ -476,13 +476,29 @@
   grid-template-rows: min-content 1fr min-content;
   gap: 1em 1em;
   grid-template-areas:
-    "year month"
+    "top top"
     "day chart"
-    "empty legend";
+    "empty month";
+  // grid-template-areas:
+  //   "empty month"
+  //   "day chart"
+  //   "top top";
 
   background: var(--sub-alt-color);
   border-radius: var(--roundness);
   padding: 1rem;
+
+  .top {
+    grid-area: top;
+    display: grid;
+    grid-template-columns: 11rem 1fr 11rem;
+    grid-template-areas: "year title legend";
+    gap: 1rem;
+  }
+
+  .ss-main {
+    border: 0.2em solid var(--bg-color);
+  }
 
   .yearSelect,
   .months div,
@@ -496,6 +512,14 @@
     grid-area: year;
   }
 
+  .title {
+    grid-area: title;
+    text-align: center;
+    // font-size: 1.5em;
+    color: var(--sub-color);
+    align-self: center;
+  }
+
   .months {
     grid-area: month;
     display: grid;
@@ -504,7 +528,6 @@
     div {
       width: 100%;
       text-align: left;
-      padding-top: 0.5em;
     }
   }
 
@@ -545,16 +568,16 @@
   .legend div {
     border-radius: 0.25em;
 
-    &[data-level="filler"],
+    &[data-level="filler"] {
+      background: none;
+    }
     &[data-level="0"] {
       background-color: color-mix(
         in srgb,
         var(--bg-color) 50%,
         var(--sub-alt-color)
       );
-    }
-    &[data-level="0"] {
-      background-color: hotpink;
+      background-color: var(--bg-color);
     }
     &[data-level="1"] {
       background-color: color-mix(
@@ -590,11 +613,11 @@
     display: flex;
     gap: 0.5em;
     justify-content: flex-end;
-    margin-right: 1rem;
+    align-self: center;
 
     div {
       display: inline-flex;
-      height: 100%;
+      height: 1rem;
       aspect-ratio: 1/1;
     }
   }
