@@ -263,12 +263,16 @@
 
     .title {
       color: var(--sub-color);
-      margin-bottom: 0.5em;
+      // margin-bottom: 0.25em;
+    }
+
+    .avgres {
+      font-size: 0.75em;
     }
 
     .val {
       font-size: 3rem;
-      line-height: 3.5rem;
+      line-height: 1.1;
     }
 
     .chartjs-render-monitor {
@@ -284,6 +288,7 @@
         margin-bottom: 1rem;
         color: var(--sub-color);
         flex-wrap: wrap;
+        row-gap: 0.5em;
 
         .group {
           display: flex;

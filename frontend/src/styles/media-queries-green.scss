@@ -64,6 +64,17 @@
         }
       }
     }
+    .group.chart .below {
+      grid-template-columns: 1fr;
+      .buttons {
+        grid-template-columns: 1fr 1fr 1fr 1fr;
+      }
+    }
+    .triplegroup.stats {
+      .val {
+        font-size: 2rem;
+      }
+    }
   }
   .profile .pbsWords,
   .profile .pbsTime {

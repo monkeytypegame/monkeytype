@@ -22,6 +22,21 @@
       grid-template-columns: 1fr;
     }
   }
+  .pageAccount {
+    .triplegroup.stats {
+      .title {
+        font-size: 0.75rem;
+      }
+      .val {
+        font-size: 1.5rem;
+      }
+    }
+    .group.estimatedWordsTyped {
+      .val {
+        font-size: 2rem;
+      }
+    }
+  }
   .pageSettings {
     .section {
       grid-template-columns: 1fr;

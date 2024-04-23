@@ -48,6 +48,20 @@
         }
       }
     }
+    .group.chart .below {
+      .buttons {
+        grid-template-columns: repeat(auto-fit, minmax(7rem, 1fr));
+      }
+    }
+    .triplegroup.stats {
+      grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+    }
+    .group.aboveHistory {
+      grid-template-columns: 1fr;
+      .exportCSV {
+        grid-column: span 1;
+      }
+    }
   }
   .profile .pbsWords,
   .profile .pbsTime {

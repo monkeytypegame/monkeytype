@@ -13,4 +13,12 @@
       grid-template-columns: 1.5fr 1fr;
     }
   }
+  .pageAccount {
+    .group.chart .below {
+      grid-template-columns: auto 250px;
+      .buttons {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+  }
 }
