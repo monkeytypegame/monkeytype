@@ -4,7 +4,7 @@ footer {
   line-height: 1rem;
   font-size: 0.75rem;
   color: var(--sub-color);
-  margin: -0.5em;
+  // margin: -0.5em;
 
   .keyTips {
     transition: 0.125s;
@@ -34,6 +34,7 @@ footer {
   }
 
   .leftright {
+    margin: -0.5em;
     -webkit-user-select: none;
     user-select: none;
     display: grid;
