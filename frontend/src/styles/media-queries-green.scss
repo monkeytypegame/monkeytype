@@ -187,8 +187,10 @@
       }
     }
     .leaderboardsTop {
+      .buttons .timeRange {
+        font-size: 0.75rem;
+      }
       // grid-template-columns: 1fr 1fr;
-      gap: 0.5rem;
       // grid-template-areas: "title title" "subtitle yesterday" "buttons buttons";
       .mainTitle {
         font-size: 1.5rem;
