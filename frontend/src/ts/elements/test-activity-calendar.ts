@@ -18,7 +18,11 @@ export class TestActivityCalendar implements MonkeyTypes.TestActivityCalendar {
   protected startDay: Date;
   protected endDay: Date;
 
-  constructor(data: (number | null)[], lastDay: Date, fullYear = false) {
+  constructor(
+    data: (number | null | undefined)[],
+    lastDay: Date,
+    fullYear = false
+  ) {
     const local = new UTCDateMini(lastDay);
     const interval = this.getInterval(local, fullYear);
 
@@ -85,7 +89,7 @@ export class TestActivityCalendar implements MonkeyTypes.TestActivityCalendar {
       result.push({
         level: getValue(count),
         label:
-          1 === 1 || (this.data[i] !== undefined && this.data[i] !== null)
+          this.data[i] !== undefined && this.data[i] !== null
             ? `${count} ${count == 1 ? "test" : "tests"} on ${format(
                 currentDate,
                 "EEEE dd MMM yyyy"
@@ -153,5 +157,9 @@ export class ModifiableTestActivityCalendar
     }
 
     this.data = this.buildData(this.data, this.lastDay);
+  }
+
+  getFullYearCalendar(): MonkeyTypes.TestActivityCalendar {
+    return new TestActivityCalendar(this.data, this.lastDay, true);
   }
 }

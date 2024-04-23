@@ -13,36 +13,58 @@ describe("test-activity-calendar.ts", () => {
         const calendar = new TestActivityCalendar([], getDate("2024-04-10"));
 
         expect(calendar.getMonths()).toEqual([
-          "May`23",
-          "Jun`23",
-          "Jul`23",
-          "Aug`23",
-          "Sep`23",
-          "Oct`23",
-          "Nov`23",
-          "Dec`23",
-          "Jan`24",
-          "Feb`24",
-          "Mar`24",
-          "Apr`24",
+          "may",
+          "jun",
+          "jul",
+          "aug",
+          "sep",
+          "oct",
+          "nov",
+          "dec",
+          "jan",
+          "feb",
+          "mar",
+          "apr",
         ]);
       });
       it("for lastDay in january", () => {
         const calendar = new TestActivityCalendar([], getDate("2023-01-01"));
 
         expect(calendar.getMonths()).toEqual([
-          "Feb`22",
-          "Mar`22",
-          "Apr`22",
-          "May`22",
-          "Jun`22",
-          "Jul`22",
-          "Aug`22",
-          "Sep`22",
-          "Oct`22",
-          "Nov`22",
-          "Dec`22",
-          "Jan`23",
+          "feb",
+          "mar",
+          "apr",
+          "may",
+          "jun",
+          "jul",
+          "aug",
+          "sep",
+          "oct",
+          "nov",
+          "dec",
+          "jan",
+        ]);
+      });
+      it("for lastDay and full year", () => {
+        const calendar = new TestActivityCalendar(
+          [],
+          getDate("2023-05-10"),
+          true
+        );
+
+        expect(calendar.getMonths()).toEqual([
+          "jan",
+          "feb",
+          "mar",
+          "apr",
+          "may",
+          "jun",
+          "jul",
+          "aug",
+          "sep",
+          "oct",
+          "nov",
+          "dec",
         ]);
       });
     });
@@ -76,7 +98,7 @@ describe("test-activity-calendar.ts", () => {
 
         //days from April 11th to April 30th
         for (let day = 347; day <= 366; day++) {
-          expect(days[day]).toBeFiller();
+          expect(days[day]).toHaveLevel(0);
         }
       });
 
@@ -132,6 +154,12 @@ describe("test-activity-calendar.ts", () => {
       for (let day = 365; day < 365 + 6; day++) {
         expect(days[day]).toBeFiller();
       }
+
+      //december 24 ends with a tuesday
+      expect(days[367]).toBeFiller();
+      expect(days[368]).toBeFiller();
+      expect(days[369]).toBeFiller();
+      expect(days[370]).toBeFiller();
     });
 
     it("ignores data before calendar range", () => {
@@ -163,15 +191,16 @@ describe("test-activity-calendar.ts", () => {
       //THEN
       expect(days).toHaveLength(1 + 366 + 4); //one filler on the start, 366 days in leap year, four fillers at the end
 
-      for (let day = 0; day <= 336; day++) {
-        expect(days[day]).toBeFiller();
+      expect(days[0]).toBeFiller();
+      for (let day = 1; day <= 336; day++) {
+        expect(days[day]).toHaveLevel(0);
       }
 
       expect(days[337]).toBeDate("2024-04-01").toHaveTests(92).toHaveLevel(2);
       expect(days[346]).toBeDate("2024-04-10").toHaveTests(101).toHaveLevel(3);
 
-      for (let day = 347; day <= 370; day++) {
-        expect(days[day]).toBeFiller();
+      for (let day = 347; day <= 366; day++) {
+        expect(days[day]).toHaveLevel(0);
       }
     });
 
@@ -197,12 +226,41 @@ describe("test-activity-calendar.ts", () => {
 
       //days from 11th till 28 Februar
       for (let day = 349; day <= 365; day++) {
-        expect(days[day]).toBeFiller();
+        expect(days[day]).toHaveLevel(0);
       }
-      //februar 23 ends with tzesday, add four fillers
+      //februar 23 ends with tuesday, add four fillers
       for (let day = 367; day <= 370; day++) {
         expect(days[day]).toBeFiller();
       }
+    });
+    it("for lastDay in february full year", () => {
+      //GIVEN
+      const data = getData("2023-02-10", "2024-02-10");
+      const calendar = new TestActivityCalendar(
+        data,
+        getDate("2024-02-10"),
+        true
+      );
+
+      //WHEN
+      const days = calendar.getDays();
+
+      //THEN
+      //january 24 starts with a monday, skip one day
+      expect(days[0]).toBeFiller();
+
+      expect(days[1]).toBeDate("2024-01-01").toHaveTests(1).toHaveLevel(1);
+      expect(days[41]).toBeDate("2024-02-10").toHaveTests(41).toHaveLevel(4);
+
+      //days from 11th february to 31th december
+      for (let day = 42; day <= 366; day++) {
+        expect(days[day]).toHaveLevel(0);
+      }
+      //december 24 ends with a tuesday
+      expect(days[367]).toBeFiller();
+      expect(days[368]).toBeFiller();
+      expect(days[369]).toBeFiller();
+      expect(days[370]).toBeFiller();
     });
   });
   describe("ModifiableTestActivityCalendar", () => {
@@ -221,11 +279,11 @@ describe("test-activity-calendar.ts", () => {
         //THEN
         const days = calendar.getDays();
 
-        expect(days[343]).toBeFiller();
+        expect(days[343]).toHaveLevel(0);
         expect(days[344]).toBeDate("2024-04-08").toHaveTests(1);
         expect(days[345]).toBeDate("2024-04-09").toHaveTests(2);
         expect(days[346]).toBeDate("2024-04-10").toHaveTests(4);
-        expect(days[347]).toBeFiller();
+        expect(days[347]).toHaveLevel(0);
       });
       it("increments after lastDay", () => {
         //GIVEN
@@ -242,11 +300,11 @@ describe("test-activity-calendar.ts", () => {
         //THEN
         let days = calendar.getDays();
 
-        expect(days[343]).toBeFiller();
+        expect(days[343]).toHaveLevel(0);
         expect(days[344]).toBeDate("2024-04-08").toHaveTests(1);
         expect(days[345]).toBeDate("2024-04-09").toHaveTests(2);
         expect(days[346]).toBeDate("2024-04-10").toHaveTests(3);
-        expect(days[347]).toBeFiller();
+        expect(days[347]).toHaveLevel(0);
         expect(days[348]).toBeDate("2024-04-12").toHaveTests(1);
 
         //WHEN
@@ -256,11 +314,11 @@ describe("test-activity-calendar.ts", () => {
         //THEN
         days = calendar.getDays();
 
-        expect(days[343]).toBeFiller();
+        expect(days[343]).toHaveLevel(0);
         expect(days[344]).toBeDate("2024-04-08").toHaveTests(1);
         expect(days[345]).toBeDate("2024-04-09").toHaveTests(2);
         expect(days[346]).toBeDate("2024-04-10").toHaveTests(3);
-        expect(days[347]).toBeFiller();
+        expect(days[347]).toHaveLevel(0);
         expect(days[348]).toBeDate("2024-04-12").toHaveTests(2);
       });
 
@@ -277,15 +335,15 @@ describe("test-activity-calendar.ts", () => {
         //THEN
         const days = calendar.getDays();
 
-        expect(days[287]).toBeFiller();
+        expect(days[287]).toHaveLevel(0);
         expect(days[288].label).toEqual("1 test on Monday 08 Apr 2024");
         expect(days[289].label).toEqual("2 tests on Tuesday 09 Apr 2024");
         expect(days[290].label).toEqual("3 tests on Wednesday 10 Apr 2024");
-        expect(days[291]).toBeFiller();
+        expect(days[291]).toHaveLevel(0);
 
-        expect(days[352]).toBeFiller();
+        expect(days[352]).toHaveLevel(0);
         expect(days[353].label).toEqual("1 test on Wednesday 12 Jun 2024");
-        expect(days[354]).toBeFiller();
+        expect(days[354]).toHaveLevel(0);
       });
       it("fails increment in the past", () => {
         //GIVEN
@@ -299,6 +357,36 @@ describe("test-activity-calendar.ts", () => {
           new Error("cannot alter data in the past.")
         );
       });
+    });
+  });
+  describe("getFullYearCalendar", () => {
+    it("gets calendar", () => {
+      //GIVEN
+      const lastDate = getDate("2024-01-02");
+      const calendar = new ModifiableTestActivityCalendar(
+        [1, 2, 3, 4],
+        lastDate
+      );
+
+      //WHEN
+      const fullYear = calendar.getFullYearCalendar();
+
+      //THEN
+      const days = fullYear.getDays();
+
+      //2024 starts with a monday
+      expect(days).toHaveLength(1 + 366 + 4);
+      expect(days[0]).toBeFiller();
+      expect(days[1]).toBeDate("2024-01-01").toHaveTests(3);
+      expect(days[2]).toBeDate("2024-01-02").toHaveTests(4);
+
+      for (let day = 3; day <= 366; day++) {
+        expect(days[day]).toHaveLevel(0);
+      }
+      expect(days[367]).toBeFiller();
+      expect(days[368]).toBeFiller();
+      expect(days[369]).toBeFiller();
+      expect(days[370]).toBeFiller();
     });
   });
 });

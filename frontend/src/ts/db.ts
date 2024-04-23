@@ -975,16 +975,20 @@ export function setStreak(streak: number): void {
 export async function getTestActivityCalendar(
   yearString: string
 ): Promise<MonkeyTypes.TestActivityCalendar | undefined> {
-  console.log("getting activityCalendar", { yearString });
   if (!isAuthenticated() || dbSnapshot === undefined) return undefined;
 
   if (yearString === "current") return dbSnapshot.testActivity;
 
-  if (!ConnectionState.get()) {
-    return undefined;
+  const currentYear = new Date().getFullYear().toString();
+  if (yearString === currentYear) {
+    return dbSnapshot.testActivity?.getFullYearCalendar();
   }
 
   if (dbSnapshot.testActivityByYear === undefined) {
+    if (!ConnectionState.get()) {
+      return undefined;
+    }
+
     Loader.show();
     const response = await Ape.users.getTestActivity();
     if (response.status !== 200) {
@@ -995,9 +999,10 @@ export async function getTestActivityCalendar(
       Loader.hide();
       return undefined;
     }
-    response.data !== null ? response.data : {};
+
     dbSnapshot.testActivityByYear = {};
     for (const year in response.data) {
+      if (year === currentYear) continue;
       const testsByDays = response.data[year] ?? [];
       const lastDay = Dates.addDays(
         new Date(parseInt(year), 0, 1),
@@ -1010,7 +1015,6 @@ export async function getTestActivityCalendar(
         true
       );
     }
-    console.log("db", { cals: getSnapshot()?.testActivityByYear });
     Loader.hide();
   }
 

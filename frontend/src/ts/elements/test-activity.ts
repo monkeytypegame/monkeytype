@@ -12,7 +12,6 @@ const yearSelector = new SlimSelect({
       yearSelector?.disable();
       const selected = newVal[0]?.value as string;
       const activity = await getTestActivityCalendar(selected);
-      console.log({ activity });
       update(activity);
       if ((yearSelector?.getData() ?? []).length > 1) {
         yearSelector?.enable();
