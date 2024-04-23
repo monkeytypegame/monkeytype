@@ -39,13 +39,13 @@
   #app {
     grid-template-columns: auto;
   }
-  #customTextModal {
-    padding: 2rem;
-    .modal {
-      grid-template-columns: 1fr 1fr 2fr;
-      width: 100%;
-    }
-  }
+  // #customTextModal {
+  //   padding: 2rem;
+  //   .modal {
+  //     grid-template-columns: 1fr 1fr 2fr;
+  //     width: 100%;
+  //   }
+  // }
 }
 
 //1250px
@@ -57,8 +57,13 @@
       }
     }
   }
-  #customTextModal .modal .buttonsTop {
-    grid-template-columns: 1fr 1fr;
+  #customTextModal .modal {
+    textarea {
+      min-height: 426px;
+    }
+    .buttonsTop {
+      grid-template-columns: 1fr 1fr;
+    }
   }
 }
 

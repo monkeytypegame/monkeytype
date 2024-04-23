@@ -65,9 +65,9 @@ export function show(): void {
   });
 }
 
-function hide(): void {
-  void modal.hide();
-}
+// function hide(): void {
+//   void modal.hide();
+// }
 
 async function setup(modalEl: HTMLElement): Promise<void> {
   const wordsGroupButtons = modalEl.querySelectorAll(".wordsGroup button");

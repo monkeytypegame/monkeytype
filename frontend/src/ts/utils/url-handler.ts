@@ -110,7 +110,7 @@ export function loadCustomThemeFromUrl(getOverride?: string): void {
 type SharedTestSettings = [
   SharedTypes.Config.Mode | null,
   SharedTypes.Config.Mode2<SharedTypes.Config.Mode> | null,
-  SharedTypes.CustomText | null,
+  SharedTypes.CustomTextData | null,
   boolean | null,
   boolean | null,
   string | null,
@@ -147,15 +147,10 @@ export function loadTestSettingsFromUrl(getOverride?: string): void {
   if (de[2] !== null) {
     const customTextSettings = de[2];
     CustomText.setText(customTextSettings.text);
-    CustomText.setIsTimeRandom(customTextSettings.isTimeRandom);
-    CustomText.setIsWordRandom(customTextSettings.isWordRandom);
-    if (customTextSettings.isTimeRandom) {
-      CustomText.setTime(customTextSettings.time);
-    }
-    if (customTextSettings.isWordRandom) {
-      CustomText.setWord(customTextSettings.word);
-    }
-    CustomText.setDelimiter(customTextSettings.delimiter);
+    CustomText.setLimitMode(customTextSettings.limit.mode);
+    CustomText.setLimitValue(customTextSettings.limit.value);
+    CustomText.setPipeDelimiter(customTextSettings.pipeDelimiter);
+
     applied["custom text settings"] = "";
   }
 

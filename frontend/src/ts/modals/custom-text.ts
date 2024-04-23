@@ -15,81 +15,118 @@ const popup = "#customTextModal .modal";
 
 type State = {
   textarea: string;
-  lastSavedTextareaState: string;
   longCustomTextWarning: boolean;
-  randomWordsChecked: boolean;
-  randomWordInputs: {
+  challengeWarning: boolean;
+
+  customTextMode: "simple" | SharedTypes.CustomTextMode;
+  customTextLimits: {
     word: string;
     time: string;
     section: string;
   };
-  pipeDelimiterChecked: boolean;
-  replaceNewlines: "off" | "space" | "period";
-  replaceControlCharactersChecked: boolean;
-  replaceFancyTypographyChecked: boolean;
+  removeFancyTypographyEnabled: boolean;
+  replaceControlCharactersEnabled: boolean;
+  customTextPipeDelimiter: boolean;
+  replaceNewlines: "off" | "space" | "periodSpace";
 };
 
 const state: State = {
-  textarea: CustomText.text.join(" "),
-  lastSavedTextareaState: CustomText.text.join(" "),
+  textarea: CustomText.getText().join(
+    CustomText.getPipeDelimiter() ? "|" : " "
+  ),
   longCustomTextWarning: false,
-  randomWordsChecked: false,
-  randomWordInputs: {
+  challengeWarning: false,
+  customTextMode: "simple",
+  customTextLimits: {
     word: "",
     time: "",
     section: "",
   },
-  pipeDelimiterChecked: false,
+  removeFancyTypographyEnabled: true,
+  replaceControlCharactersEnabled: true,
+  customTextPipeDelimiter: false,
   replaceNewlines: "off",
-  replaceControlCharactersChecked: true,
-  replaceFancyTypographyChecked: true,
 };
 
 function updateUI(): void {
-  if (state.randomWordsChecked) {
-    $(`${popup} .randomWordsCheckbox input`).prop("checked", true);
-    $(`${popup} .inputs .randomInputFields`).removeClass("disabled");
-  } else {
-    $(`${popup} .randomWordsCheckbox input`).prop("checked", false);
-    $(`${popup} .inputs .randomInputFields`).addClass("disabled");
+  $(`${popup} .inputs .group[data-id="mode"] button`).removeClass("active");
+  $(
+    `${popup} .inputs .group[data-id="mode"] button[value="${state.customTextMode}"]`
+  ).addClass("active");
+
+  $(`${popup} .inputs .group[data-id="limit"] input.words`).addClass("hidden");
+  $(`${popup} .inputs .group[data-id="limit"] input.sections`).addClass(
+    "hidden"
+  );
+
+  $(`${popup} .inputs .group[data-id="limit"] input.words`).val(
+    state.customTextLimits.word
+  );
+  $(`${popup} .inputs .group[data-id="limit"] input.time`).val(
+    state.customTextLimits.time
+  );
+  $(`${popup} .inputs .group[data-id="limit"] input.sections`).val(
+    state.customTextLimits.section
+  );
+  if (state.customTextLimits.word !== "") {
+    $(`${popup} .inputs .group[data-id="limit"] input.words`).removeClass(
+      "hidden"
+    );
+  }
+  if (state.customTextLimits.section !== "") {
+    $(`${popup} .inputs .group[data-id="limit"] input.sections`).removeClass(
+      "hidden"
+    );
   }
 
-  if (state.pipeDelimiterChecked) {
-    $(`${popup} .delimiterCheck input`).prop("checked", true);
+  if (state.customTextPipeDelimiter) {
+    $(`${popup} .inputs .group[data-id="limit"] input.sections`).removeClass(
+      "hidden"
+    );
+    $(`${popup} .inputs .group[data-id="limit"] input.words`).addClass(
+      "hidden"
+    );
   } else {
-    $(`${popup} .delimiterCheck input`).prop("checked", false);
+    $(`${popup} .inputs .group[data-id="limit"] input.words`).removeClass(
+      "hidden"
+    );
+    $(`${popup} .inputs .group[data-id="limit"] input.sections`).addClass(
+      "hidden"
+    );
   }
 
-  $(`${popup} .replaceNewLinesButtons .button`).removeClass("active");
-
-  if (state.replaceNewlines !== "off") {
-    $(`${popup} .inputs .replaceNewLinesButtons`).removeClass("disabled");
-    $(
-      `${popup} .replaceNewLinesButtons .button[data-replace-new-lines=${state.replaceNewlines}]`
-    ).addClass("active");
+  if (state.customTextMode === "simple") {
+    $(`${popup} .inputs .group[data-id="limit"]`).addClass("disabled");
+    $(`${popup} .inputs .group[data-id="limit"] input`).val("");
+    $(`${popup} .inputs .group[data-id="limit"] input`).prop("disabled", true);
   } else {
-    $(`${popup} .inputs .replaceNewLinesButtons`).addClass("disabled");
+    $(`${popup} .inputs .group[data-id="limit"]`).removeClass("disabled");
+    $(`${popup} .inputs .group[data-id="limit"] input`).prop("disabled", false);
   }
+
+  $(`${popup} .inputs .group[data-id="fancy"] button`).removeClass("active");
+  $(
+    `${popup} .inputs .group[data-id="fancy"] button[value="${state.removeFancyTypographyEnabled}"]`
+  ).addClass("active");
+
+  $(`${popup} .inputs .group[data-id="control"] button`).removeClass("active");
+  $(
+    `${popup} .inputs .group[data-id="control"] button[value="${state.replaceControlCharactersEnabled}"]`
+  ).addClass("active");
+
+  $(`${popup} .inputs .group[data-id="delimiter"] button`).removeClass(
+    "active"
+  );
+  $(
+    `${popup} .inputs .group[data-id="delimiter"] button[value="${state.customTextPipeDelimiter}"]`
+  ).addClass("active");
+
+  $(`${popup} .inputs .group[data-id="newlines"] button`).removeClass("active");
+  $(
+    `${popup} .inputs .group[data-id="newlines"] button[value="${state.replaceNewlines}"]`
+  ).addClass("active");
 
   $(`${popup} textarea`).val(state.textarea);
-
-  if (state.pipeDelimiterChecked) {
-    $(`${popup} .randomInputFields .sectioncount `).removeClass("hidden");
-    state.randomWordInputs.word = "";
-    $(`${popup} .randomInputFields .wordcount `).addClass("hidden");
-  } else {
-    state.randomWordInputs.section = "";
-    $(`${popup} .randomInputFields .sectioncount `).addClass("hidden");
-    $(`${popup} .randomInputFields .wordcount `).removeClass("hidden");
-  }
-
-  $(`${popup} .randomInputFields .wordcount input`).val(
-    state.randomWordInputs.word
-  );
-  $(`${popup} .randomInputFields .time input`).val(state.randomWordInputs.time);
-  $(`${popup} .randomInputFields .sectioncount input`).val(
-    state.randomWordInputs.section
-  );
 
   if (state.longCustomTextWarning) {
     $(`${popup} .longCustomTextWarning`).removeClass("hidden");
@@ -102,24 +139,47 @@ function updateUI(): void {
     $(`${popup} .longCustomTextWarning`).addClass("hidden");
     $(`${popup} .inputs`).removeClass("disabled");
   }
+
+  if (state.challengeWarning) {
+    $(`${popup} .challengeWarning`).removeClass("hidden");
+    $(`${popup} .randomWordsCheckbox input`).prop("checked", false);
+    $(`${popup} .delimiterCheck input`).prop("checked", false);
+    $(`${popup} .typographyCheck`).prop("checked", true);
+    $(`${popup} .replaceNewlineWithSpace input`).prop("checked", false);
+    $(`${popup} .inputs`).addClass("disabled");
+  } else {
+    $(`${popup} .challengeWarning`).addClass("hidden");
+    $(`${popup} .inputs`).removeClass("disabled");
+  }
 }
 
 async function beforeAnimation(
   modalEl: HTMLElement,
   modalChainData?: IncomingData
 ): Promise<void> {
-  state.longCustomTextWarning = CustomTextState.isCustomTextLong() ?? false;
-  state.randomWordsChecked =
-    CustomText.isSectionRandom ||
-    CustomText.isTimeRandom ||
-    CustomText.isWordRandom;
-  state.pipeDelimiterChecked = CustomText.delimiter === "|";
-  // state.replaceNewlinesChecked = false;
+  state.customTextMode = CustomText.getMode();
 
-  if (CustomTextState.isCustomTextLong()) {
-    // if we are in long custom text mode, always reset the textarea state to the current text
-    state.textarea = CustomText.text.join(" ");
+  if (
+    state.customTextMode === "repeat" &&
+    CustomText.getLimitMode() === "word" &&
+    CustomText.getLimitValue() === CustomText.getText().length
+  ) {
+    state.customTextMode = "simple";
   }
+
+  state.customTextLimits.word = "";
+  state.customTextLimits.time = "";
+  state.customTextLimits.section = "";
+  if (CustomText.getLimitMode() === "word") {
+    state.customTextLimits.word = `${CustomText.getLimitValue()}`;
+  } else if (CustomText.getLimitMode() === "time") {
+    state.customTextLimits.time = `${CustomText.getLimitValue()}`;
+  } else if (CustomText.getLimitMode() === "section") {
+    state.customTextLimits.section = `${CustomText.getLimitValue()}`;
+  }
+  state.customTextPipeDelimiter = CustomText.getPipeDelimiter();
+
+  state.longCustomTextWarning = CustomTextState.isCustomTextLong() ?? false;
 
   if (modalChainData?.text !== undefined) {
     if (modalChainData.long !== true && CustomTextState.isCustomTextLong()) {
@@ -135,26 +195,25 @@ async function beforeAnimation(
         ? modalChainData.text
         : state.textarea + " " + modalChainData.text;
     state.textarea = newText;
+    state.customTextMode = "simple";
+    state.customTextLimits.word = `${cleanUpText().length}`;
+    state.customTextLimits.time = "";
+    state.customTextLimits.section = "";
   }
-
-  state.randomWordInputs.word =
-    CustomText.word === -1 ? "" : `${CustomText.word}`;
-  state.randomWordInputs.time =
-    CustomText.time === -1 ? "" : `${CustomText.time}`;
-  state.randomWordInputs.section =
-    CustomText.section === -1 ? "" : `${CustomText.section}`;
 
   updateUI();
 }
 
 async function afterAnimation(): Promise<void> {
-  if (!CustomTextState.isCustomTextLong()) {
+  if (!state.challengeWarning && !state.longCustomTextWarning) {
     $(`${popup} textarea`).trigger("focus");
   }
 }
 
 export function show(showOptions?: ShowOptions): void {
-  state.textarea = state.lastSavedTextareaState;
+  state.textarea = CustomText.getText().join(
+    CustomText.getPipeDelimiter() ? "|" : " "
+  );
   void modal.show({
     ...(showOptions as ShowOptions<IncomingData>),
     beforeAnimation,
@@ -207,7 +266,7 @@ function cleanUpText(): string[] {
   //replace zero width characters
   text = text.replace(/[\u200B-\u200D\u2060\uFEFF]/g, "");
 
-  if (state.replaceControlCharactersChecked) {
+  if (state.replaceControlCharactersEnabled) {
     text = text.replace(/([^\\]|^)\\t/gm, "$1\t");
     text = text.replace(/([^\\]|^)\\n/gm, "$1\n");
     text = text.replace(/\\\\t/gm, "\\t");
@@ -216,12 +275,12 @@ function cleanUpText(): string[] {
 
   text = text.replace(/ +/gm, " ");
   text = text.replace(/( *(\r\n|\r|\n) *)/g, "\n ");
-  if (state.replaceFancyTypographyChecked) {
+  if (state.removeFancyTypographyEnabled) {
     text = Misc.cleanTypographySymbols(text);
   }
 
   if (state.replaceNewlines !== "off") {
-    const periods = state.replaceNewlines === "period";
+    const periods = state.replaceNewlines === "periodSpace";
     if (periods) {
       text = text.replace(/\n/gm, ". ");
       text = text.replace(/\.\. /gm, ". ");
@@ -232,7 +291,9 @@ function cleanUpText(): string[] {
     }
   }
 
-  const words = text.split(CustomText.delimiter).filter((word) => word !== "");
+  const words = text
+    .split(state.customTextPipeDelimiter ? "|" : " ")
+    .filter((word) => word !== "");
   return words;
 }
 
@@ -242,62 +303,65 @@ function apply(): void {
     return;
   }
 
-  state.lastSavedTextareaState = state.textarea;
-
-  CustomText.setText(cleanUpText());
-
-  CustomText.setWord(parseInt(state.randomWordInputs.word || "-1"));
-  CustomText.setTime(parseInt(state.randomWordInputs.time || "-1"));
-  CustomText.setSection(parseInt(state.randomWordInputs.section || "-1"));
-
-  CustomText.setIsWordRandom(state.randomWordsChecked && CustomText.word > -1);
-  CustomText.setIsTimeRandom(state.randomWordsChecked && CustomText.time > -1);
-  CustomText.setIsSectionRandom(
-    state.randomWordsChecked && CustomText.section > -1
-  );
   if (
-    state.randomWordsChecked &&
-    !CustomText.isTimeRandom &&
-    !CustomText.isWordRandom &&
-    !CustomText.isSectionRandom
+    [
+      state.customTextLimits.word,
+      state.customTextLimits.time,
+      state.customTextLimits.section,
+    ].filter((limit) => limit !== "").length > 1
   ) {
-    Notifications.add(
-      "You need to specify word count or time in seconds to start a random custom test",
-      0,
-      {
-        duration: 5,
-      }
-    );
+    Notifications.add("You can only specify one limit", 0, {
+      duration: 5,
+    });
     return;
   }
 
   if (
-    // ($(`${popup} .randomWordsCheckbox input`).prop("checked") as boolean) &&
-    state.randomWordsChecked &&
-    CustomText.isTimeRandom &&
-    CustomText.isWordRandom
+    state.customTextMode !== "simple" &&
+    state.customTextLimits.word === "" &&
+    state.customTextLimits.time === "" &&
+    state.customTextLimits.section === ""
   ) {
-    Notifications.add(
-      "You need to pick between word count or time in seconds to start a random custom test",
-      0,
-      {
-        duration: 5,
-      }
-    );
+    Notifications.add("You need to specify a limit", 0, {
+      duration: 5,
+    });
     return;
   }
 
   if (
-    (CustomText.isWordRandom && CustomText.word === 0) ||
-    (CustomText.isTimeRandom && CustomText.time === 0)
+    state.customTextLimits.section === "0" ||
+    state.customTextLimits.word === "0" ||
+    state.customTextLimits.time === "0"
   ) {
     Notifications.add(
-      "Infinite words! Make sure to use Bail Out from the command line to save your result.",
+      "Infinite test! Make sure to use Bail Out from the command line to save your result.",
       0,
       {
         duration: 7,
       }
     );
+  }
+
+  const text = cleanUpText();
+
+  if (state.customTextMode === "simple") {
+    CustomText.setMode("repeat");
+  } else {
+    CustomText.setMode(state.customTextMode);
+  }
+
+  CustomText.setPipeDelimiter(state.customTextPipeDelimiter);
+  CustomText.setText(text);
+
+  if (state.customTextLimits.word !== "") {
+    CustomText.setLimitMode("word");
+    CustomText.setLimitValue(parseInt(state.customTextLimits.word));
+  } else if (state.customTextLimits.time !== "") {
+    CustomText.setLimitMode("time");
+    CustomText.setLimitValue(parseInt(state.customTextLimits.time));
+  } else if (state.customTextLimits.section !== "") {
+    CustomText.setLimitMode("section");
+    CustomText.setLimitValue(parseInt(state.customTextLimits.section));
   }
 
   ChallengeController.clearActive();
@@ -307,67 +371,115 @@ function apply(): void {
   hide();
 }
 
+function handleDelimiterChange(): void {
+  let newtext = state.textarea
+    .split(state.customTextPipeDelimiter ? " " : "|")
+    .join(state.customTextPipeDelimiter ? "|" : " ");
+  newtext = newtext.replace(/\n /g, "\n");
+  state.textarea = newtext;
+}
+
 async function setup(modalEl: HTMLElement): Promise<void> {
   modalEl
     .querySelector("#fileInput")
     ?.addEventListener("change", handleFileOpen);
-  modalEl
-    .querySelector(".randomWordsCheckbox input")
-    ?.addEventListener("change", (e) => {
-      state.randomWordsChecked = (e.target as HTMLInputElement).checked;
-      updateUI();
-    });
-  modalEl
-    .querySelector(".typographyCheck input")
-    ?.addEventListener("change", (e) => {
-      state.replaceFancyTypographyChecked = (
-        e.target as HTMLInputElement
-      ).checked;
-      updateUI();
-    });
-  modalEl
-    .querySelector(".delimiterCheck input")
-    ?.addEventListener("change", (e) => {
-      state.pipeDelimiterChecked = (e.target as HTMLInputElement).checked;
-      if (state.textarea !== CustomText.text.join(CustomText.delimiter)) {
-        const currentTextSplit = state.textarea.split(CustomText.delimiter);
-        let newtext = currentTextSplit.join(
-          state.pipeDelimiterChecked ? "|" : " "
-        );
-        newtext = newtext.replace(/\n /g, "\n");
-        state.textarea = newtext;
-      } else {
-        let newtext = CustomText.text.join(
-          state.pipeDelimiterChecked ? "|" : " "
-        );
-        newtext = newtext.replace(/\n /g, "\n");
-        state.textarea = newtext;
-      }
-      CustomText.setDelimiter(state.pipeDelimiterChecked ? "|" : " ");
-      updateUI();
-    });
-  modalEl
-    .querySelector(".replaceNewlineWithSpace input")
-    ?.addEventListener("change", (e) => {
-      const checked = (e.target as HTMLInputElement).checked;
-      if (checked === false) {
-        state.replaceNewlines = "off";
-      } else {
-        state.replaceNewlines = "space";
-      }
-      updateUI();
-    });
-  const replaceNewLinesButtons = modalEl.querySelectorAll(
-    ".replaceNewLinesButtons .button"
-  );
-  for (const button of replaceNewLinesButtons) {
+
+  const buttons = modalEl.querySelectorAll(".group[data-id='mode'] button");
+  for (const button of buttons) {
     button.addEventListener("click", (e) => {
-      state.replaceNewlines = (e.target as HTMLElement).dataset[
-        "replaceNewLines"
-      ] as "space" | "period";
+      state.customTextMode = (e.target as HTMLButtonElement).value as
+        | "simple"
+        | "repeat"
+        | "random";
+      if (state.customTextMode === "simple") {
+        const text = cleanUpText();
+        state.customTextLimits.word = `${text.length}`;
+        state.customTextLimits.time = "";
+        state.customTextLimits.section = "";
+      }
       updateUI();
     });
   }
+
+  for (const button of modalEl.querySelectorAll(
+    ".group[data-id='fancy'] button"
+  )) {
+    button.addEventListener("click", (e) => {
+      state.removeFancyTypographyEnabled =
+        (e.target as HTMLButtonElement).value === "true" ? true : false;
+      updateUI();
+    });
+  }
+
+  for (const button of modalEl.querySelectorAll(
+    ".group[data-id='control'] button"
+  )) {
+    button.addEventListener("click", (e) => {
+      state.replaceControlCharactersEnabled =
+        (e.target as HTMLButtonElement).value === "true" ? true : false;
+      updateUI();
+    });
+  }
+
+  for (const button of modalEl.querySelectorAll(
+    ".group[data-id='delimiter'] button"
+  )) {
+    button.addEventListener("click", (e) => {
+      state.customTextPipeDelimiter =
+        (e.target as HTMLButtonElement).value === "true" ? true : false;
+      if (state.customTextPipeDelimiter && state.customTextLimits.word !== "") {
+        state.customTextLimits.word = "";
+      }
+      if (
+        !state.customTextPipeDelimiter &&
+        state.customTextLimits.section !== ""
+      ) {
+        state.customTextLimits.section = "";
+      }
+      handleDelimiterChange();
+      updateUI();
+    });
+  }
+
+  for (const button of modalEl.querySelectorAll(
+    ".group[data-id='newlines'] button"
+  )) {
+    button.addEventListener("click", (e) => {
+      state.replaceNewlines = (e.target as HTMLButtonElement).value as
+        | "off"
+        | "space"
+        | "periodSpace";
+      updateUI();
+    });
+  }
+
+  modalEl
+    .querySelector(".group[data-id='limit'] input.words")
+    ?.addEventListener("input", (e) => {
+      state.customTextLimits.word = (e.target as HTMLInputElement).value;
+      state.customTextLimits.time = "";
+      state.customTextLimits.section = "";
+      updateUI();
+    });
+
+  modalEl
+    .querySelector(".group[data-id='limit'] input.time")
+    ?.addEventListener("input", (e) => {
+      state.customTextLimits.time = (e.target as HTMLInputElement).value;
+      state.customTextLimits.word = "";
+      state.customTextLimits.section = "";
+      updateUI();
+    });
+
+  modalEl
+    .querySelector(".group[data-id='limit'] input.sections")
+    ?.addEventListener("input", (e) => {
+      state.customTextLimits.section = (e.target as HTMLInputElement).value;
+      state.customTextLimits.word = "";
+      state.customTextLimits.time = "";
+      updateUI();
+    });
+
   const textarea = modalEl.querySelector("textarea");
   textarea?.addEventListener("input", (e) => {
     state.textarea = (e.target as HTMLTextAreaElement).value;
@@ -390,7 +502,7 @@ async function setup(modalEl: HTMLElement): Promise<void> {
     state.textarea = area.value;
   });
   textarea?.addEventListener("keypress", (e) => {
-    if (state.longCustomTextWarning) {
+    if (state.longCustomTextWarning || state.challengeWarning) {
       e.preventDefault();
       return;
     }
@@ -408,30 +520,6 @@ async function setup(modalEl: HTMLElement): Promise<void> {
       });
     }
   });
-  modalEl
-    .querySelector(".randomInputFields .wordcount input")
-    ?.addEventListener("input", (e) => {
-      state.randomWordInputs.time = "";
-      state.randomWordInputs.word = (e.target as HTMLInputElement).value;
-      state.randomWordInputs.section = "";
-      updateUI();
-    });
-  modalEl
-    .querySelector(".randomInputFields .time input")
-    ?.addEventListener("input", (e) => {
-      state.randomWordInputs.time = (e.target as HTMLInputElement).value;
-      state.randomWordInputs.word = "";
-      state.randomWordInputs.section = "";
-      updateUI();
-    });
-  modalEl
-    .querySelector(".randomInputFields .sectioncount input")
-    ?.addEventListener("input", (e) => {
-      state.randomWordInputs.time = "";
-      state.randomWordInputs.word = "";
-      state.randomWordInputs.section = (e.target as HTMLInputElement).value;
-      updateUI();
-    });
   modalEl.querySelector(".button.apply")?.addEventListener("click", () => {
     apply();
   });
@@ -461,6 +549,10 @@ async function setup(modalEl: HTMLElement): Promise<void> {
       state.longCustomTextWarning = false;
       updateUI();
     });
+  modalEl.querySelector(".challengeWarning")?.addEventListener("click", () => {
+    state.challengeWarning = false;
+    updateUI();
+  });
 }
 
 type IncomingData = {

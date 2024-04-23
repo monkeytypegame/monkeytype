@@ -85,14 +85,14 @@
     "display": "True Simp",
     "autoRole": true,
     "type": "customText",
-    "parameters": ["miodec",true,10000]
+    "parameters": ["miodec", "repeat", 10000, "word", false]
   }
   ,{
     "name": "bigramSalad",
     "display": "Bigram Salad",
     "autoRole": true,
     "type": "customText",
-    "parameters": ["to of in it is as at be we he so on an or do if up by my go",true,100],
+    "parameters": ["to of in it is as at be we he so on an or do if up by my go", "random", 100, "word", false],
     "requirements" : {
       "wpm": {
         "min": 100
@@ -104,14 +104,14 @@
     "display": "Simp",
     "autoRole": true,
     "type": "customText",
-    "parameters": ["miodec",true,1000]
+    "parameters": ["miodec", "repeat", 1000, "word", false]
   }
   ,{
     "name": "antidiseWhat",
     "display": "Antidise-what?",
     "autoRole": true,
     "type": "customText",
-    "parameters": ["antidisestablishmentarianism",true,1],
+    "parameters": ["antidisestablishmentarianism","repeat",1,"word",false],
     "requirements" : {
       "wpm": {
         "min": 200
@@ -123,14 +123,14 @@
     "display": "What's this website called again?",
     "autoRole": true,
     "type": "customText",
-    "parameters": ["monkeytype",true,1000]
+    "parameters": ["monkeytype","repeat",1000, "word", false]
   }
   ,{
     "name": "developd",
     "display": "Develop'd",
     "autoRole": true,
     "type": "customText",
-    "parameters": ["develop",true,1000]
+    "parameters": ["develop","repeat",1000,"word",false]
   }
   ,{
     "name": "slowAndSteady",
@@ -153,7 +153,7 @@
     "display": "Speed Spacer",
     "autoRole": true,
     "type": "customText",
-    "parameters": ["a b c d e f g h i j k l m n o p q r s t u v w x y z",true,100],
+    "parameters": ["a b c d e f g h i j k l m n o p q r s t u v w x y z","random",100,"word",false],
     "requirements" : {
       "wpm": {
         "min": 100

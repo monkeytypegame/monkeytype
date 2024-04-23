@@ -312,8 +312,8 @@ function handleSpace(): void {
   if (
     !Config.showAllLines ||
     Config.mode === "time" ||
-    (CustomText.isWordRandom && CustomText.word === 0) ||
-    CustomText.isTimeRandom
+    (Config.mode === "custom" && CustomText.getLimitValue() === 0) ||
+    (Config.mode === "custom" && CustomText.getLimitMode() === "time")
   ) {
     const currentTop: number = Math.floor(
       document.querySelectorAll<HTMLElement>("#words .word")[
@@ -1042,7 +1042,7 @@ $(document).on("keydown", async (event) => {
           Config.mode,
           Config.words,
           Config.time,
-          CustomText,
+          CustomText.getData(),
           CustomTextState.isCustomTextLong() ?? false
         )
       ) {

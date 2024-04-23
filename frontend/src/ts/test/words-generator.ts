@@ -392,11 +392,7 @@ export function getWordsLimit(): number {
 
   if (Config.showAllLines) {
     if (Config.mode === "custom") {
-      if (CustomText.isWordRandom) {
-        limit = CustomText.word;
-      } else if (!CustomText.isTimeRandom && !CustomText.isWordRandom) {
-        limit = CustomText.text.length;
-      }
+      limit = CustomText.getLimitValue();
     }
     if (Config.mode === "words") {
       limit = Config.words;
@@ -407,15 +403,17 @@ export function getWordsLimit(): number {
   if (Config.mode === "words" && Config.words === 0) {
     limit = 100;
   }
-  if (
-    Config.mode === "custom" &&
-    CustomText.isWordRandom &&
-    CustomText.word === 0
-  ) {
-    limit = 100;
-  }
-  if (Config.mode === "custom" && CustomText.delimiter === "|") {
-    limit = 100;
+  if (Config.mode === "custom") {
+    if (
+      CustomText.getLimitValue() === 0 ||
+      CustomText.getLimitMode() === "time" ||
+      CustomText.getLimitMode() === "section"
+    ) {
+      limit = 100;
+    } else {
+      limit =
+        CustomText.getLimitValue() > 100 ? 100 : CustomText.getLimitValue();
+    }
   }
 
   //funboxes
@@ -426,35 +424,6 @@ export function getWordsLimit(): number {
   //make sure the limit is not higher than the word count
   if (Config.mode === "words" && Config.words !== 0 && Config.words < limit) {
     limit = Config.words;
-  }
-  if (
-    Config.mode === "custom" &&
-    !CustomText.isSectionRandom &&
-    !CustomText.isTimeRandom &&
-    CustomText.isWordRandom &&
-    CustomText.word !== 0 &&
-    CustomText.word < limit
-  ) {
-    limit = CustomText.word;
-  }
-  if (
-    Config.mode === "custom" &&
-    !CustomText.isTimeRandom &&
-    !CustomText.isWordRandom &&
-    !CustomText.isSectionRandom &&
-    CustomText.text.length !== 0 &&
-    CustomText.text.length < limit
-  ) {
-    let newLimit = 0;
-    for (const word of CustomText.text) {
-      if (/ /g.test(word)) {
-        newLimit += word.split(" ").length;
-      } else {
-        newLimit++;
-      }
-    }
-
-    limit = newLimit;
   }
 
   return limit;
@@ -499,6 +468,7 @@ export async function generateWords(
     sectionFunbox?.functions?.pullSection !== undefined;
 
   const limit = getWordsLimit();
+  console.debug("Words limit", limit);
 
   const wordOrder = getQuoteOrCustomModeWordOrder();
   console.debug("Word order", wordOrder);
@@ -506,9 +476,9 @@ export async function generateWords(
   let wordList = language.words;
   if (Config.mode === "custom") {
     if (wordOrder === "reverse") {
-      wordList = CustomText.text.reverse();
+      wordList = CustomText.getText().reverse();
     } else {
-      wordList = CustomText.text;
+      wordList = CustomText.getText();
     }
   }
   const wordset = await Wordset.withWords(wordList);
@@ -542,20 +512,14 @@ export async function generateWords(
       ret.sectionIndexes.push(nextWord.sectionIndex);
 
       const randomSectionStop =
-        CustomText.isSectionRandom &&
-        CustomText.section !== 0 &&
-        sectionIndex >= CustomText.section;
-
-      const nonRandomSectionStop =
-        !CustomText.isSectionRandom &&
-        !CustomText.isTimeRandom &&
-        sectionIndex >= wordset.length;
+        CustomText.getLimitMode() === "section" &&
+        CustomText.getLimitValue() !== 0 &&
+        sectionIndex >= CustomText.getLimitValue();
 
       const customModeStop =
         Config.mode === "custom" &&
         currentSection.length === 0 &&
-        CustomText.delimiter === "|" &&
-        (randomSectionStop || nonRandomSectionStop);
+        randomSectionStop;
 
       if (customModeStop || ret.words.length >= limit) {
         stop = true;
@@ -744,22 +708,19 @@ export async function getNextWord(
 
     if (Config.mode === "quote") {
       randomWord = currentQuote[wordIndex] as string;
+    } else if (Config.mode === "custom" && CustomText.getMode() === "repeat") {
+      const customText = CustomText.getText();
+      randomWord = customText[sectionIndex % customText.length] as string;
     } else if (
       Config.mode === "custom" &&
-      !CustomText.isWordRandom &&
-      !CustomText.isTimeRandom &&
-      !CustomText.isSectionRandom
-    ) {
-      randomWord = CustomText.text[sectionIndex] as string;
-    } else if (
-      Config.mode === "custom" &&
-      (CustomText.isWordRandom ||
-        CustomText.isTimeRandom ||
-        CustomText.isSectionRandom) &&
+      CustomText.getMode() === "random" &&
       (wordset.length < 4 || PractiseWords.before.mode !== null)
     ) {
       randomWord = wordset.randomWord(funboxFrequency);
-    } else if (Config.mode === "custom" && CustomText.isSectionRandom) {
+    } else if (
+      Config.mode === "custom" &&
+      CustomText.getLimitMode() === "section"
+    ) {
       randomWord = wordset.randomWord(funboxFrequency);
 
       const previousSection = Arrays.nthElementFromArray(sectionHistory, -1);

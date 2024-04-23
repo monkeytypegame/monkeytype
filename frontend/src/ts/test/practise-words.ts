@@ -10,19 +10,11 @@ import { isPopupVisible } from "../utils/misc";
 
 const wrapperId = "practiseWordsPopupWrapper";
 
-type BeforeCustomText = {
-  text: string[];
-  isTimeRandom: boolean;
-  isWordRandom: boolean;
-  time: number;
-  word: number;
-};
-
 type Before = {
   mode: SharedTypes.Config.Mode | null;
   punctuation: boolean | null;
   numbers: boolean | null;
-  customText: BeforeCustomText | null;
+  customText: SharedTypes.CustomTextData | null;
 };
 
 export const before: Before = {
@@ -106,23 +98,15 @@ export function init(missed: boolean, slow: boolean): boolean {
 
   let customText = null;
   if (Config.mode === "custom") {
-    customText = {
-      text: CustomText.text,
-      isWordRandom: CustomText.isWordRandom,
-      isTimeRandom: CustomText.isTimeRandom,
-      word: CustomText.word,
-      time: CustomText.time,
-    };
+    customText = CustomText.getData();
   }
 
   UpdateConfig.setMode("custom", true);
   CustomText.setText(newCustomText);
-  CustomText.setIsWordRandom(true);
-  CustomText.setIsTimeRandom(false);
-  CustomText.setWord(
+  CustomText.setLimitMode("word");
+  CustomText.setLimitValue(
     (sortableSlowWords.length + sortableMissedWords.length) * 5
   );
-  CustomText.setTime(-1);
 
   setCustomTextName("practise", undefined);
 

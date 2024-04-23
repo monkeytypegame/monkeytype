@@ -256,7 +256,9 @@ async function apply(set: boolean): Promise<void> {
     return;
   }
 
-  const customText = filteredWords.join(CustomText.delimiter);
+  const customText = filteredWords.join(
+    CustomText.getPipeDelimiter() ? "|" : " "
+  );
 
   hide({
     modalChainData: {

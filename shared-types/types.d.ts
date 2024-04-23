@@ -183,16 +183,6 @@ declare namespace SharedTypes {
     punctuation: boolean;
   }
 
-  interface CustomText {
-    text: string[];
-    isWordRandom: boolean;
-    isTimeRandom: boolean;
-    word: number;
-    time: number;
-    delimiter: string;
-    textLen?: number;
-  }
-
   type DBResult<T extends SharedTypes.Config.Mode> = Omit<
     SharedTypes.Result<T>,
     | "bailedOut"
@@ -211,6 +201,7 @@ declare namespace SharedTypes {
     | "customText"
     | "quoteLength"
     | "isPb"
+    | "customText"
   > & {
     correctChars?: number; // --------------
     incorrectChars?: number; // legacy results
@@ -229,7 +220,7 @@ declare namespace SharedTypes {
     incompleteTestSeconds?: number;
     afkDuration?: number;
     tags?: string[];
-    customText?: CustomText;
+    customText?: CustomTextDataWithTextLen;
     quoteLength?: number;
     isPb?: boolean;
   };
@@ -237,7 +228,7 @@ declare namespace SharedTypes {
   interface CompletedEvent extends Result<SharedTypes.Config.Mode> {
     keySpacing: number[] | "toolong";
     keyDuration: number[] | "toolong";
-    customText?: CustomText;
+    customText?: CustomTextDataWithTextLen;
     wpmConsistency: number;
     challenge?: string | null;
     keyOverlap: number;
@@ -247,6 +238,24 @@ declare namespace SharedTypes {
     stringified?: string;
     hash?: string;
   }
+
+  type CustomTextMode = "repeat" | "random";
+  type CustomTextLimitMode = "word" | "time" | "section";
+  type CustomTextLimit = {
+    value: number;
+    mode: CustomTextLimitMode;
+  };
+
+  type CustomTextData = {
+    text: string[];
+    mode: CustomTextMode;
+    limit: CustomTextLimit;
+    pipeDelimiter: boolean;
+  };
+
+  type CustomTextDataWithTextLen = Omit<CustomTextData, "text"> & {
+    textLen: number;
+  };
 
   interface ResultFilters {
     _id: string;

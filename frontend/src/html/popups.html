@@ -372,20 +372,20 @@
     <div class="buttonsTop">
       <div class="button saveCustomText">
         <i class="fas fa-save"></i>
-        Save
+        save
       </div>
       <div class="button showSavedTexts">
         <i class="fas fa-folder"></i>
-        Show saved texts
+        saved texts
       </div>
       <input id="fileInput" type="file" class="hidden" accept=".txt" />
       <label for="fileInput" class="button importText">
         <i class="fas fa-file-import"></i>
-        Open file
+        open file
       </label>
       <div class="button wordfilter">
         <i class="fas fa-filter"></i>
-        Words filter
+        words filter
       </div>
     </div>
     <div class="savedTexts hidden" style="display: none">
@@ -405,70 +405,133 @@
           <p class="small">Click anywhere to start editing the text.</p>
         </div>
       </div>
+      <div class="challengeWarning">
+        <div>
+          <p>
+            A challenge is currently loaded.
+            <br />
+            Editing the settings will clear the challenge.
+            <br />
+            <br />
+          </p>
+          <p class="small">Click anywhere to edit.</p>
+        </div>
+      </div>
       <textarea class="textarea"></textarea>
     </div>
     <div class="inputs">
-      <label class="checkboxWithSub randomWordsCheckbox">
-        <input type="checkbox" />
-        <div>Random</div>
-        <div class="sub">
-          Randomize the above words, and control how many words are generated.
+      <div class="group" data-id="mode">
+        <div class="title">
+          <i class="fas fa-fw fa-cog"></i>
+          Mode
         </div>
-      </label>
-      <div class="randomInputFields disabled">
-        <label class="wordcount">
-          Words
-          <input type="number" value="" min="1" max="10000" />
-        </label>
-        <label class="sectioncount hidden">
-          Sections
-          <input type="number" value="" min="1" max="10000" />
-        </label>
-        <div style="color: var(--sub-color)">or</div>
-        <label class="time">
-          Time
-          <input type="number" value="" min="1" max="10000" />
-        </label>
-        <!-- <div style="color: var(--sub-color)">or</div> -->
+        <div class="sub">Change the way words are generated.</div>
+        <div class="groupInputs">
+          <div class="buttonGroup">
+            <button value="simple">simple</button>
+            <button value="repeat">repeat</button>
+            <button value="random">random</button>
+          </div>
+        </div>
       </div>
-      <label class="checkboxWithSub typographyCheck">
-        <input type="checkbox" checked />
-        <div>Remove fancy typography</div>
+      <div class="group" data-id="limit">
+        <div class="title">
+          <i class="fas fa-fw fa-step-forward"></i>
+          Limit
+        </div>
+        <div class="sub">
+          Control how many words to generate or for how long you want to type.
+        </div>
+        <div class="groupInputs limitInputs">
+          <input
+            class="words"
+            type="number"
+            value=""
+            min="0"
+            placeholder="words"
+          />
+          <input
+            class="sections hidden"
+            type="number"
+            value=""
+            min="0"
+            placeholder="sections"
+          />
+          <div class="or">or</div>
+          <input
+            class="time"
+            type="number"
+            value=""
+            min="0"
+            placeholder="time"
+          />
+        </div>
+      </div>
+
+      <div class="group" data-id="fancy">
+        <div class="title">
+          <i class="fas fa-fw fa-pen-fancy"></i>
+          Remove fancy typography
+        </div>
         <div class="sub">
           Standardises typography symbols (for example “ and ” become ")
         </div>
-      </label>
-      <label class="checkboxWithSub replaceControlCharacters">
-        <input type="checkbox" checked />
-        <div>Replace control characters</div>
+        <div class="groupInputs">
+          <div class="buttonGroup">
+            <button value="false">no</button>
+            <button value="true">yes</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="group" data-id="control">
+        <div class="title">
+          <i class="fas fa-fw fa-code"></i>
+          Replace control characters
+        </div>
         <div class="sub">
           Replace control characters (\n becomes a new line and \t becomes a
           tab)
         </div>
-      </label>
-      <label class="checkboxWithSub delimiterCheck">
-        <input type="checkbox" />
-        <div>Pipe delimiter</div>
+        <div class="groupInputs">
+          <div class="buttonGroup">
+            <button value="false">no</button>
+            <button value="true">yes</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="group" data-id="delimiter">
+        <div class="title">
+          <i class="fas fa-fw fa-grip-lines-vertical"></i>
+          Word delimiter
+        </div>
         <div class="sub">
           Change how words are separated. Using the pipe delimiter allows you to
           randomize groups of words.
         </div>
-      </label>
-      <label class="checkboxWithSub replaceNewlineWithSpace">
-        <input type="checkbox" />
-        <div>Replace new lines with spaces</div>
+        <div class="groupInputs">
+          <div class="buttonGroup">
+            <button value="true">pipe</button>
+            <button value="false">space</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="group" data-id="newlines">
+        <div class="title">
+          <i class="fas fa-fw fa-level-down-alt fa-rotate-90"></i>
+          Replace new lines with spaces
+        </div>
         <div class="sub">
           Replace all new line characters with spaces. Can automatically add
           periods to the end of lines if you wish.
         </div>
-      </label>
-      <div class="replaceNewLinesButtons disabled">
-        <div class="buttonGroup">
-          <div class="button active noPeriods" data-replace-new-lines="space">
-            no periods
-          </div>
-          <div class="button periods" data-replace-new-lines="period">
-            periods
+        <div class="groupInputs">
+          <div class="buttonGroup">
+            <button value="off">off</button>
+            <button value="space">space</button>
+            <button value="periodSpace">period + space</button>
           </div>
         </div>
       </div>
