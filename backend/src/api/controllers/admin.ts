@@ -54,10 +54,20 @@ export async function handleReports(
           404
         );
       }
-      const mailBody =
-        `Your report for the ${report.type}, ${report.contentId} (for ${report.reason}) was ` +
-        (accept ? `approved.` : `denied.`) +
-        (reason !== undefined ? `\nReason: ${reason}` : "");
+
+      let mailBody = "";
+      if (accept) {
+        mailBody = `Your report regarding ${report.type} ${
+          report.contentId
+        } (${report.reason.toLowerCase()}) has been approved. Thank you.`;
+      } else {
+        mailBody = `Sorry, but your report regarding ${report.type} ${
+          report.contentId
+        } (${report.reason.toLowerCase()}) has been denied. ${
+          reason !== undefined ? `\nReason: ${reason}` : ""
+        }`;
+      }
+
       const mailSubject = accept ? "Report approved" : "Report denied";
       const mail = buildMonkeyMail({
         subject: mailSubject,
