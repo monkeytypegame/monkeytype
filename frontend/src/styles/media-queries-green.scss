@@ -37,6 +37,15 @@
       }
     }
   }
+  .pageSettings {
+    .section {
+      grid-template-columns: 1fr 1fr;
+    }
+    .settingsGroup.quickNav .links {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+    }
+  }
   footer {
     .leftright {
       .left {

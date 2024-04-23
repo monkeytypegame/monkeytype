@@ -8,4 +8,9 @@
   #contentWrapper {
     max-width: 1024px;
   }
+  .pageSettings {
+    .section {
+      grid-template-columns: 1.5fr 1fr;
+    }
+  }
 }

@@ -31,9 +31,13 @@
     display: grid;
     gap: 2rem;
     &.quickNav .links {
-      display: grid;
-      grid-auto-flow: column;
+      width: 100%;
+      display: flex;
+      flex-wrap: wrap;
       text-align: center;
+      a {
+        flex-grow: 1;
+      }
     }
   }
 

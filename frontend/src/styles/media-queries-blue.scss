@@ -22,6 +22,28 @@
       grid-template-columns: 1fr;
     }
   }
+  .pageSettings {
+    .section {
+      grid-template-columns: 1fr;
+      grid-template-areas:
+        "title"
+        "text" "buttons";
+      &.discordIntegration .info {
+        margin: 1rem 0;
+      }
+      .customThemeEdit {
+        .spacer {
+          display: none;
+        }
+        .customThemeInputs {
+          grid-template-columns: 1fr 1.5fr;
+        }
+        .customThemeButtons {
+          grid-template-columns: 1fr;
+        }
+      }
+    }
+  }
 }
 
 @media (pointer: coarse) and (max-width: 778px) {
