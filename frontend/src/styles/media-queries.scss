@@ -1,3 +1,27 @@
+#mediaQueryDebug {
+  height: 0.5rem;
+  width: 100%;
+  background: #f44336;
+  &::before {
+    content: "red";
+    padding-top: 0.75rem;
+    padding-left: 0.5rem;
+    display: block;
+  }
+  // display: none;
+}
+
+#contentWrapper {
+  overflow: hidden;
+}
+
+//media queries based on tailwind breakpoints https://tailwindcss.com/docs/container
+@import "media-queries-orange";
+@import "media-queries-yellow";
+@import "media-queries-green";
+@import "media-queries-blue";
+@import "media-queries-purple";
+
 //1450px
 @media only screen and (max-width: 90.625rem) {
   #leaderboardsWrapper #leaderboards {

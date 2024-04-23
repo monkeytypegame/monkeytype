@@ -1,0 +1,11 @@
+@media only screen and (max-width: 640px) {
+  #mediaQueryDebug {
+    background: #7e57c2;
+    &::before {
+      content: "purple";
+    }
+  }
+  #contentWrapper {
+    max-width: 100%;
+  }
+}

@@ -1,0 +1,11 @@
+@media only screen and (max-width: 1024px) {
+  #mediaQueryDebug {
+    background: #9ccc65;
+    &::before {
+      content: "green";
+    }
+  }
+  #contentWrapper {
+    max-width: 768px;
+  }
+}
