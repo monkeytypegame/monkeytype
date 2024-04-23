@@ -62,6 +62,12 @@
         grid-column: span 1;
       }
     }
+    .group.history table thead td:nth-child(3),
+    .group.history table tbody td:nth-child(3),
+    .group.history table thead td:nth-child(5),
+    .group.history table tbody td:nth-child(5) {
+      display: none;
+    }
   }
   .profile .pbsWords,
   .profile .pbsTime {

@@ -13,6 +13,12 @@
       gap: 0.1rem;
     }
   }
+  .pageAccount {
+    .group.history table thead td:nth-child(7),
+    .group.history table tbody td:nth-child(7) {
+      display: none;
+    }
+  }
   #keymap .row {
     height: 1rem;
     gap: 0.1rem;
