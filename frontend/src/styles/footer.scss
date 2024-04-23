@@ -37,7 +37,8 @@ footer {
     -webkit-user-select: none;
     user-select: none;
     display: grid;
-    grid-template-columns: auto auto;
+    grid-template-columns: 1fr max-content;
+    gap: 2rem;
     .textButton {
       text-decoration: none;
       font-size: 0.75rem;
@@ -46,19 +47,16 @@ footer {
     }
     .left {
       text-align: left;
-      display: grid;
-      grid-auto-flow: column;
-      width: -moz-fit-content;
-      width: fit-content;
+      display: flex;
+      justify-items: start;
+      width: max-content;
     }
     .right {
       text-align: right;
-      display: grid;
-      grid-auto-flow: column;
-      width: -moz-fit-content;
-      width: fit-content;
+      display: flex;
       justify-self: right;
-      // align-items: center;
+      width: max-content;
+      height: max-content;
     }
     .left .textButton,
     .right .textButton {

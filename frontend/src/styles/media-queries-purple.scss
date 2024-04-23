@@ -8,4 +8,13 @@
   #contentWrapper {
     max-width: 100%;
   }
+  footer {
+    .leftright {
+      grid-template-columns: 1fr 1fr;
+      .left {
+        width: unset;
+        grid-template-columns: repeat(auto-fit, minmax(5rem, 1fr));
+      }
+    }
+  }
 }

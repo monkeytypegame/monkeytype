@@ -8,4 +8,16 @@
   #contentWrapper {
     max-width: 640px;
   }
+  #testConfig {
+    display: none;
+  }
+  #mobileTestConfigButton {
+    display: block;
+  }
+}
+
+@media (pointer: coarse) and (max-width: 768px) {
+  #restartTestButton {
+    display: block !important;
+  }
 }
