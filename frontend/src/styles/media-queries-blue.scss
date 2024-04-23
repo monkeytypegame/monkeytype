@@ -1,4 +1,4 @@
-@media only screen and (max-width: 768px) {
+@media only screen and (max-width: 778px) {
   #mediaQueryDebug {
     background: #29b6f6;
     &::before {
@@ -19,7 +19,7 @@
   }
 }
 
-@media (pointer: coarse) and (max-width: 768px) {
+@media (pointer: coarse) and (max-width: 778px) {
   #restartTestButton {
     display: block !important;
   }
