@@ -471,6 +471,8 @@
 }
 
 #testActivity {
+  // overflow-x: scroll;
+  // .wrapper {
   display: grid;
   grid-template-columns: min-content 1fr;
   grid-template-rows: min-content 1fr min-content;
@@ -487,6 +489,7 @@
   background: var(--sub-alt-color);
   border-radius: var(--roundness);
   padding: 1rem;
+  // }
 
   .top {
     grid-area: top;
@@ -535,6 +538,20 @@
     grid-area: day;
     display: grid;
     grid-template-rows: repeat(7, 1fr);
+    // align-items: center;
+    // div {
+    // display: grid;
+    // overflow: hidden;
+    // align-items: center;
+    // }
+    .text {
+      // align-self: center;
+      // margin-top: 0.33em;\
+      display: flex;
+      // transform: translateY(-50%);
+      // height: 0px;
+      font-size: 1em;
+    }
   }
 
   .nodata {
@@ -547,10 +564,17 @@
     grid-auto-flow: column;
     grid-template-rows: repeat(7, 1fr);
     grid-template-columns: repeat(53, 1fr);
-    gap: 0.25rem;
+    gap: 0.25em;
+    // width: max-content;
+    // max-width: 100%;
 
     div {
       width: 100%;
+      max-height: 1rem;
+      // min-width: 1rem;
+      // height: 1rem;
+      // max-width: 1rem;
+      justify-self: center;
       aspect-ratio: 1;
     }
   }
