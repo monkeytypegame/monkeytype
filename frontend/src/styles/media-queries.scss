@@ -36,6 +36,15 @@ footer {
 @import "media-queries-purple";
 @import "media-queries-brown";
 
+@media only screen and (max-width: 1875px) {
+  .ad.ad-v {
+    display: none;
+  }
+  #app {
+    grid-template-columns: auto;
+  }
+}
+
 // //1450px
 // @media only screen and (max-width: 90.625rem) {
 //   #leaderboardsWrapper #leaderboards {
