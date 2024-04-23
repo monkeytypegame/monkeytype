@@ -128,4 +128,8 @@
   #alertsPopup .modal {
     max-width: calc(100% - 4rem);
   }
+  .popupWrapper .modal,
+  .modalWrapper .modal {
+    padding: 1rem;
+  }
 }
