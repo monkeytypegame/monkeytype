@@ -2,6 +2,9 @@
   height: 0.5rem;
   width: 100%;
   background: #f44336;
+  position: fixed;
+  z-index: 99999999;
+  top: 0px;
   &::before {
     content: "red";
     padding-top: 0.75rem;
@@ -15,17 +18,17 @@
 
 // uncomment to debug media queries
 
-// #mediaQueryDebug {
-//   display: block;
-// }
-// #contentWrapper {
-//   background: var(--sub-alt-color);
-// }
-// header,
-// main,
-// footer {
-//   border: 0.1rem solid var(--sub-color);
-// }
+#mediaQueryDebug {
+  display: block;
+}
+#contentWrapper {
+  background: var(--sub-alt-color);
+}
+header,
+main,
+footer {
+  border: 0.1rem solid var(--sub-color);
+}
 
 //media queries based on tailwind breakpoints https://tailwindcss.com/docs/container
 @import "media-queries-orange";
