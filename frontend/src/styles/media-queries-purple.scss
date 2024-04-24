@@ -170,4 +170,18 @@
       grid-template-columns: 1fr 1fr;
     }
   }
+  #contactModal {
+    .modal {
+      .buttons {
+        grid-template-columns: 1fr;
+        .button {
+          padding: 0.5rem 1rem;
+          .icon,
+          .text {
+            font-size: 1rem;
+          }
+        }
+      }
+    }
+  }
 }
