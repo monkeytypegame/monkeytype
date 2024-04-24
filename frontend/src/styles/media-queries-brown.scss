@@ -13,6 +13,13 @@
       gap: 0.1rem;
     }
   }
+  .page404 {
+    .content {
+      grid-template-columns: 1fr;
+      grid-auto-flow: unset;
+      gap: 1rem;
+    }
+  }
   .pageTest {
     #result {
       grid-template-columns: 1fr;

@@ -20,6 +20,13 @@
   #testModesNotice {
     font-size: 0.8rem;
   }
+  .page404 {
+    .content {
+      grid-template-columns: 300px;
+      grid-auto-flow: unset;
+      gap: 1rem;
+    }
+  }
   .pageTest {
     #result {
       grid-template-columns: 1fr;
