@@ -67,7 +67,6 @@ export default {
   paceCaret: "off",
   paceCaretCustomSpeed: 100,
   repeatedPace: true,
-  pageWidth: "125",
   accountChart: ["on", "on", "on", "on"],
   minWpm: "off",
   minWpmCustomSpeed: 100,

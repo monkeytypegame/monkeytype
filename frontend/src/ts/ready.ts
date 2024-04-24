@@ -122,6 +122,8 @@ $(document).ready(() => {
 
 window.onerror = function (message, url, line, column, error): void {
   if (Misc.isDevEnvironment()) {
+    //this is causing errors when using chrome responsive design dev tools
+    if (error?.message.includes("x_magnitude")) return;
     Notifications.add(error?.message ?? "Undefined message", -1, {
       customTitle: "DEV: Unhandled error",
       duration: 5,

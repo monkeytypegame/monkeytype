@@ -740,38 +740,6 @@ export function setOppositeShiftMode(
   return true;
 }
 
-export function setPageWidth(
-  val: SharedTypes.Config.PageWidth,
-  nosave?: boolean
-): boolean {
-  if (
-    !isConfigValueValid("page width", val, [
-      ["max", "100", "125", "150", "200"],
-    ])
-  ) {
-    return false;
-  }
-
-  config.pageWidth = val;
-  $("#contentWrapper").removeClass("wide125");
-  $("#contentWrapper").removeClass("wide150");
-  $("#contentWrapper").removeClass("wide200");
-  $("#contentWrapper").removeClass("widemax");
-  $("#app").removeClass("wide125");
-  $("#app").removeClass("wide150");
-  $("#app").removeClass("wide200");
-  $("#app").removeClass("widemax");
-
-  if (val !== "100") {
-    $("#contentWrapper").addClass("wide" + val);
-    $("#app").addClass("wide" + val);
-  }
-  saveToLocalStorage("pageWidth", nosave);
-  ConfigEvent.dispatch("pageWidth", config.pageWidth);
-
-  return true;
-}
-
 export function setCaretStyle(
   caretStyle: SharedTypes.Config.CaretStyle,
   nosave?: boolean
@@ -1900,7 +1868,6 @@ export async function apply(
     setPaceCaret(configObj.paceCaret, true);
     setPaceCaretCustomSpeed(configObj.paceCaretCustomSpeed, true);
     setRepeatedPace(configObj.repeatedPace, true);
-    setPageWidth(configObj.pageWidth, true);
     setAccountChart(configObj.accountChart, true);
     setMinBurst(configObj.minBurst, true);
     setMinBurstCustomSpeed(configObj.minBurstCustomSpeed, true);

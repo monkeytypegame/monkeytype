@@ -336,11 +336,6 @@ async function initGroups(): Promise<void> {
     UpdateConfig.setFontSize,
     "button"
   ) as SettingsGroup<SharedTypes.ConfigValue>;
-  groups["pageWidth"] = new SettingsGroup(
-    "pageWidth",
-    UpdateConfig.setPageWidth,
-    "button"
-  ) as SettingsGroup<SharedTypes.ConfigValue>;
   groups["caretStyle"] = new SettingsGroup(
     "caretStyle",
     UpdateConfig.setCaretStyle,

@@ -1,0 +1,14 @@
+@media only screen and (max-width: 1546px) {
+  #mediaQueryDebug {
+    background: #ffa726;
+    &::before {
+      content: "orange";
+    }
+  }
+  #contentWrapper {
+    max-width: 1280px;
+  }
+  #app {
+    grid-template-columns: auto 1280px auto;
+  }
+}

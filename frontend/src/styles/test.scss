@@ -962,9 +962,11 @@
 }
 
 #testConfig {
+  --horizontalPadding: 1em;
+  --verticalPadding: 1em;
   display: grid;
   font-size: 0.75rem;
-  gap: 0.5rem;
+  gap: 0.5em;
   grid-auto-flow: column;
   height: max-content;
   width: 100%;
@@ -974,7 +976,6 @@
   .puncAndNum {
     // transition: 0.25s cubic-bezier(0.37, 0, 0.63, 1);
     overflow: hidden;
-    max-width: 15rem;
     opacity: 1;
   }
   .row {
@@ -997,11 +998,13 @@
   }
 
   .wordCount,
-  .time {
+  .time,
+  .customText {
     .textButton {
-      line-height: 1rem;
+      // line-height: 1.4em;
       span {
-        height: 1.1em;
+        // height: 1.1em;
+        margin-top: 0.12em;
       }
     }
   }
@@ -1017,16 +1020,21 @@
     grid-auto-flow: column;
 
     .textButton {
-      padding: 0.75rem 0.5rem 0.7rem 0.5rem;
+      padding: var(--verticalPadding) var(--horizontalPadding);
+
+      --double: calc(var(--horizontalPadding) * 2);
 
       &:first-child {
-        padding: 0.75rem 0.5rem 0.7rem 1rem;
+        padding: var(--verticalPadding) var(--horizontalPadding)
+          var(--verticalPadding) var(--double);
       }
       &:last-child {
-        padding: 0.75rem 1rem 0.7rem 0.5rem;
+        padding: var(--verticalPadding) var(--double) var(--verticalPadding)
+          var(--horizontalPadding);
       }
       &:only-child {
-        padding: 0.75rem 1rem 0.7rem 1rem;
+        padding: var(--verticalPadding) var(--double) var(--verticalPadding)
+          var(--double);
       }
     }
   }

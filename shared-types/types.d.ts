@@ -403,7 +403,6 @@ declare namespace SharedTypes {
     paceCaret: SharedTypes.Config.PaceCaret;
     paceCaretCustomSpeed: number;
     repeatedPace: boolean;
-    pageWidth: SharedTypes.Config.PageWidth;
     accountChart: SharedTypes.Config.AccountChart;
     minWpm: SharedTypes.Config.MinimumWordsPerMinute;
     minWpmCustomSpeed: number;
