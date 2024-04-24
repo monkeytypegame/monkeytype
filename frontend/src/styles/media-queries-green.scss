@@ -227,4 +227,11 @@
       }
     }
   }
+  #supportModal {
+    .modal {
+      .buttons {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+  }
 }

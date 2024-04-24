@@ -184,4 +184,28 @@
       }
     }
   }
+  #supportModal {
+    .modal {
+      .buttons {
+        grid-template-columns: 1fr;
+        button,
+        a.button {
+          display: grid;
+          grid-template-columns: auto 1fr;
+          justify-content: start;
+          align-items: center;
+          gap: 1.5rem;
+          padding: 0;
+          .icon {
+            font-size: 1.5rem;
+            margin-left: 1.5rem;
+          }
+          .text {
+            text-align: left;
+            font-size: 1rem;
+          }
+        }
+      }
+    }
+  }
 }
