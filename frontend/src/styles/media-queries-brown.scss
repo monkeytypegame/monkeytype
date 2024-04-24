@@ -13,6 +13,25 @@
       gap: 0.1rem;
     }
   }
+  .pageTest {
+    #result {
+      grid-template-columns: 1fr;
+      grid-template-areas:
+        "stats" "chart"
+        "morestats";
+      .stats {
+        grid-template-columns: 1fr;
+        grid-template-areas: "wpm" "acc";
+      }
+      .stats.morestats {
+        justify-items: start;
+        display: grid;
+        grid-template-columns: 1fr;
+        grid-template-rows: unset;
+        grid-auto-flow: unset;
+      }
+    }
+  }
   .pageAccount {
     .group.history table thead td:nth-child(3),
     .group.history table tbody td:nth-child(3),

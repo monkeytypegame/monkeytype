@@ -30,6 +30,17 @@
       }
     }
   }
+  .pageTest {
+    #result {
+      .buttons {
+        grid-template-columns: 1fr 1fr;
+        grid-auto-flow: unset;
+        #nextTestButton {
+          grid-column: span 2;
+        }
+      }
+    }
+  }
   .pageAbout {
     .section {
       .contactButtons {

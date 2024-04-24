@@ -20,6 +20,26 @@
   #testModesNotice {
     font-size: 0.8rem;
   }
+  .pageTest {
+    #result {
+      grid-template-columns: 1fr;
+      grid-template-areas:
+        "stats" "chart"
+        "morestats";
+      .stats {
+        grid-template-columns: 1fr 1fr;
+        grid-template-areas: "wpm acc";
+        justify-items: center;
+      }
+      .stats.morestats {
+        gap: 1rem;
+        justify-items: start;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: 1fr 1fr 1fr;
+      }
+    }
+  }
   .pageAbout {
     .triplegroup {
       grid-template-columns: 1fr;
