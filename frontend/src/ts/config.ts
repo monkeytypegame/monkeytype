@@ -1660,7 +1660,7 @@ export function setFontSize(fontSize: number, nosave?: boolean): boolean {
 
   config.fontSize = fontSize;
 
-  $("#words, #caret, #paceCaret, #miniTimerAndLiveWpm").css(
+  $("#caret, #paceCaret, #miniTimerAndLiveWpm, #typingTest").css(
     "fontSize",
     fontSize + "rem"
   );

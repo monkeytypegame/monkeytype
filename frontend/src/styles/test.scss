@@ -102,6 +102,9 @@
 
   #typingTest {
     position: relative;
+    max-width: 70ch;
+    width: 100%;
+    margin: 0 auto;
   }
 
   .ssWatermark {
@@ -473,6 +476,7 @@
 }
 
 #wordsInput {
+  font-size: 1rem;
   opacity: 0;
   padding: 0;
   margin: 0 auto;
@@ -487,6 +491,7 @@
 }
 
 #capsWarning {
+  font-size: 1rem;
   background: var(--main-color);
   color: var(--bg-color);
   display: table;
@@ -920,6 +925,7 @@
 }
 
 #restartTestButton {
+  font-size: 1rem;
   margin: 1rem auto 0 auto;
   display: flex;
   padding: 1em 2em;
@@ -1081,6 +1087,7 @@
   }
   #memoryTimer,
   #layoutfluidTimer {
+    font-size: 1rem;
     background: var(--main-color);
     color: var(--bg-color);
     padding: 1rem;
@@ -1111,6 +1118,7 @@
   }
 
   #testModesNotice {
+    font-size: 1rem;
     display: flex;
     flex-wrap: wrap;
     color: var(--sub-color);
