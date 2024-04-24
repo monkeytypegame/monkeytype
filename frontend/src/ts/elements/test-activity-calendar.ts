@@ -160,6 +160,11 @@ export class ModifiableTestActivityCalendar
   }
 
   getFullYearCalendar(): MonkeyTypes.TestActivityCalendar {
-    return new TestActivityCalendar(this.data, this.lastDay, true);
+    const today = new Date();
+    if (this.lastDay.getFullYear() !== new UTCDateMini(today).getFullYear()) {
+      return new TestActivityCalendar([], today, true);
+    } else {
+      return new TestActivityCalendar(this.data, this.lastDay, true);
+    }
   }
 }

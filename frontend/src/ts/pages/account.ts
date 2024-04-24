@@ -1271,7 +1271,8 @@ export const page = new Page({
   },
   beforeShow: async (): Promise<void> => {
     Skeleton.append("pageAccount", "main");
-    if (DB.getSnapshot()?.results === undefined) {
+    const snapshot = DB.getSnapshot();
+    if (snapshot?.results === undefined) {
       $(".pageLoading .fill, .pageAccount .fill").css("width", "0%");
       $(".pageAccount .content").addClass("hidden");
       $(".pageAccount .preloader").removeClass("hidden");
@@ -1280,6 +1281,11 @@ export const page = new Page({
     await ResultFilters.appendButtons(update);
     ResultFilters.updateActive();
     await Misc.sleep(0);
+
+    TestActivity.initYearSelector(
+      "current",
+      snapshot !== undefined ? new Date(snapshot.addedAt).getFullYear() : 2020
+    );
 
     void update().then(() => {
       void updateChartColors();

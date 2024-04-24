@@ -345,6 +345,26 @@ describe("test-activity-calendar.ts", () => {
         expect(days[353].label).toEqual("1 test on Wednesday 12 Jun 2024");
         expect(days[354]).toHaveLevel(0);
       });
+      it("increments in new year", () => {
+        //GIVEN
+        const calendar = new ModifiableTestActivityCalendar(
+          getData("2023-12-20", "2024-12-24"),
+          getDate("2024-12-24")
+        );
+
+        //WHEN
+        calendar.increment(getDate("2025-01-02"));
+
+        //THEN
+        const days = calendar.getDays();
+
+        expect(days[331]).toBeDate("2024-12-24").toHaveTests(359);
+        for (let day = 332; day <= 339; day++) {
+          expect(days[day]).toHaveLevel(0);
+        }
+        expect(days[340]).toBeDate("2025-01-02").toHaveTests(1);
+        expect(days[341]).toHaveLevel(0);
+      });
       it("fails increment in the past", () => {
         //GIVEN
         const calendar = new ModifiableTestActivityCalendar(

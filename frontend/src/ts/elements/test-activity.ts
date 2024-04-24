@@ -59,7 +59,7 @@ function update(calendar?: MonkeyTypes.TestActivityCalendar): void {
   }
 }
 
-function initYearSelector(
+export function initYearSelector(
   selectedYear: number | "current",
   startYear: number
 ): void {

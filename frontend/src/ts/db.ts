@@ -911,7 +911,7 @@ export function saveLocalResult(
     setSnapshot(snapshot);
   }
 
-  if (snapshot?.testActivity !== undefined) {
+  if (snapshot.testActivity !== undefined) {
     snapshot.testActivity.increment(new Date(result.timestamp));
     setSnapshot(snapshot);
   }
