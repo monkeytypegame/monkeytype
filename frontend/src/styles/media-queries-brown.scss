@@ -14,8 +14,10 @@
     }
   }
   .pageAccount {
-    .group.history table thead td:nth-child(7),
-    .group.history table tbody td:nth-child(7) {
+    .group.history table thead td:nth-child(3),
+    .group.history table tbody td:nth-child(3),
+    .group.history table thead td:nth-child(5),
+    .group.history table tbody td:nth-child(5) {
       display: none;
     }
   }

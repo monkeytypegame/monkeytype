@@ -84,12 +84,19 @@
         font-size: 2rem;
       }
     }
-    .group.history table thead td:nth-child(8),
-    .group.history table thead td:nth-child(9),
-    .group.history table tbody td:nth-child(8),
-    .group.history table tbody td:nth-child(9) {
+    .group.history {
+      font-size: 0.75rem;
+    }
+    .group.history table thead td:nth-child(6),
+    .group.history table tbody td:nth-child(6) {
       display: none;
     }
+    // .group.history table thead td:nth-child(8),
+    // .group.history table thead td:nth-child(9),
+    // .group.history table tbody td:nth-child(8),
+    // .group.history table tbody td:nth-child(9) {
+    //   display: none;
+    // }
   }
   .profile .pbsWords,
   .profile .pbsTime {
