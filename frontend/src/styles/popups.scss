@@ -167,6 +167,7 @@
       height: min-content;
       // margin: 1rem 0;
       font-size: 0.75rem;
+      align-items: start;
 
       .group {
         display: grid;
@@ -194,6 +195,9 @@
             align-items: center;
             width: 100%;
             gap: 1rem;
+            input {
+              width: 100%;
+            }
             .or {
               color: var(--sub-color);
             }

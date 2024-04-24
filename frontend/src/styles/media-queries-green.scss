@@ -214,4 +214,17 @@
       // }
     }
   }
+  #customTextModal {
+    .modal {
+      grid-template-areas:
+        "topButtons topButtons"
+        "textArea textArea"
+        "checkboxes checkboxes"
+        "ok ok";
+      grid-template-columns: 1fr 1fr;
+      .inputs {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+  }
 }

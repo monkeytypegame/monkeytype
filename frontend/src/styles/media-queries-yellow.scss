@@ -34,4 +34,14 @@
       font-size: 2rem;
     }
   }
+  #customTextModal {
+    .modal {
+      .buttonsTop {
+        grid-template-columns: 1fr 1fr;
+      }
+      textarea {
+        min-height: 426px;
+      }
+    }
+  }
 }
