@@ -346,6 +346,9 @@ function apply(): void {
 
   if (state.customTextMode === "simple") {
     CustomText.setMode("repeat");
+    state.customTextLimits.word = `${text.length}`;
+    state.customTextLimits.time = "";
+    state.customTextLimits.section = "";
   } else {
     CustomText.setMode(state.customTextMode);
   }
