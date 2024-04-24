@@ -280,7 +280,7 @@
   .modal {
     grid-template-areas: "top top top" "left divider right" "bottom bottom bottom";
     grid-template-columns: 1fr auto 1fr;
-    gap: 2rem;
+    gap: 2rem 1rem;
     max-width: 800px;
 
     .top {
@@ -348,6 +348,7 @@
       width: 0.25rem;
       background-color: var(--sub-alt-color);
       border-radius: var(--roundness);
+      grid-area: divider;
     }
   }
 }
