@@ -45,6 +45,12 @@ footer {
   }
 }
 
+@media only screen and (max-width: 355px) {
+  .ad.ad-h-s {
+    display: none;
+  }
+}
+
 // //1450px
 // @media only screen and (max-width: 90.625rem) {
 //   #leaderboardsWrapper #leaderboards {
