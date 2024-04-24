@@ -403,6 +403,8 @@ export function getWordsLimit(): number {
   if (Config.mode === "words" && Config.words === 0) {
     limit = 100;
   }
+
+  //custom
   if (Config.mode === "custom") {
     if (
       CustomText.getLimitValue() === 0 ||
@@ -424,6 +426,14 @@ export function getWordsLimit(): number {
   //make sure the limit is not higher than the word count
   if (Config.mode === "words" && Config.words !== 0 && Config.words < limit) {
     limit = Config.words;
+  }
+
+  if (
+    Config.mode === "custom" &&
+    CustomText.getLimitMode() === "word" &&
+    CustomText.getLimitValue() < limit
+  ) {
+    limit = CustomText.getLimitValue();
   }
 
   return limit;
