@@ -29,7 +29,7 @@ export default {
   mode: "time",
   quoteLength: [1],
   language: "english",
-  fontSize: 1.5,
+  fontSize: 2,
   freedomMode: false,
   difficulty: "normal",
   blindMode: false,
