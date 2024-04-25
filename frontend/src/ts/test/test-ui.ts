@@ -1528,4 +1528,11 @@ ConfigEvent.subscribe((key, value) => {
       $(".pageTest #restartTestButton").addClass("hidden");
     }
   }
+  if (key === "tapeMode") {
+    if (value === "off") {
+      $("#typingTest").css("max-width", "70ch");
+    } else {
+      $("#typingTest").css("max-width", "100%");
+    }
+  }
 });
