@@ -19,7 +19,6 @@ export default {
   favThemes: [],
   showKeyTips: true,
   showLiveWpm: false,
-  showTimerProgress: true,
   smoothCaret: "medium",
   quickRestart: "off",
   punctuation: false,

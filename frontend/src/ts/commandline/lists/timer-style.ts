@@ -5,10 +5,17 @@ const subgroup: MonkeyTypes.CommandsSubgroup = {
   configKey: "timerStyle",
   list: [
     {
+      id: "setTimerStyleOff",
+      display: "off",
+      configValue: "off",
+      exec: (): void => {
+        UpdateConfig.setTimerStyle("off");
+      },
+    },
+    {
       id: "setTimerStyleBar",
       display: "bar",
       configValue: "bar",
-      alias: "timer",
       exec: (): void => {
         UpdateConfig.setTimerStyle("bar");
       },
@@ -17,7 +24,6 @@ const subgroup: MonkeyTypes.CommandsSubgroup = {
       id: "setTimerStyleText",
       display: "text",
       configValue: "text",
-      alias: "timer",
       exec: (): void => {
         UpdateConfig.setTimerStyle("text");
       },
@@ -26,7 +32,6 @@ const subgroup: MonkeyTypes.CommandsSubgroup = {
       id: "setTimerStyleMini",
       display: "mini",
       configValue: "mini",
-      alias: "timer",
       exec: (): void => {
         UpdateConfig.setTimerStyle("mini");
       },
@@ -39,6 +44,7 @@ const commands: MonkeyTypes.Command[] = [
     id: "changeTimerStyle",
     display: "Live progress style...",
     icon: "fa-chart-pie",
+    alias: "timer",
     subgroup,
   },
 ];
