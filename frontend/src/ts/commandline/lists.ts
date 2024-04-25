@@ -13,7 +13,6 @@ import LiveWpmCommands from "./lists/live-wpm";
 import LiveAccCommands from "./lists/live-acc";
 import LiveBurstCommands from "./lists/live-burst";
 import ShowAverageCommands from "./lists/show-average";
-import ShowTimerCommands from "./lists/show-timer";
 import KeyTipsCommands from "./lists/key-tips";
 import FreedomModeCommands from "./lists/freedom-mode";
 import StrictSpaceCommands from "./lists/strict-space";
@@ -328,7 +327,6 @@ export const commands: MonkeyTypes.CommandsSubgroup = {
     ...LiveWpmCommands,
     ...LiveAccCommands,
     ...LiveBurstCommands,
-    ...ShowTimerCommands,
     ...KeyTipsCommands,
     ...OutOfFocusWarningCommands,
     ...CapsLockWarningCommands,

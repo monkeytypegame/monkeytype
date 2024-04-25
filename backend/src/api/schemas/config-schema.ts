@@ -25,7 +25,6 @@ const CONFIG_SCHEMA = joi.object({
   favThemes: joi.array().items(joi.string().max(50).token()),
   showKeyTips: joi.boolean(),
   showLiveWpm: joi.boolean(),
-  showTimerProgress: joi.boolean(),
   smoothCaret: joi.string().valid("off", "slow", "medium", "fast"),
   quickRestart: joi.string().valid("off", "tab", "esc", "enter"),
   punctuation: joi.boolean(),
@@ -53,7 +52,7 @@ const CONFIG_SCHEMA = joi.object({
     .regex(/[\w#]+/),
   confidenceMode: joi.string().valid("off", "on", "max"),
   indicateTypos: joi.string().valid("off", "below", "replace"),
-  timerStyle: joi.string().valid("bar", "text", "mini"),
+  timerStyle: joi.string().valid("off", "bar", "text", "mini"),
   colorfulMode: joi.boolean(),
   randomTheme: joi
     .string()

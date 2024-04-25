@@ -174,9 +174,12 @@ export async function update(
       if (isToday) {
         hoverText += `\nClaimed today: yes`;
         hoverText += `\nCome back in: ${timeDif} ${offsetString}`;
-      } else {
+      } else if (isYesterday) {
         hoverText += `\nClaimed today: no`;
         hoverText += `\nStreak lost in: ${timeDif} ${offsetString}`;
+      } else {
+        hoverText += `\nStreak lost ${timeDif} ${offsetString} ago`;
+        hoverText += `\nIt will be removed from your profile on the next result save`;
       }
 
       console.debug(hoverText);

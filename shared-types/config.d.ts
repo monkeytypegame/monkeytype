@@ -18,7 +18,7 @@ declare namespace SharedTypes.Config {
   type Mode2Custom<M extends Mode> = Mode2<M> | "custom";
   type ConfidenceMode = "off" | "on" | "max";
   type IndicateTypos = "off" | "below" | "replace";
-  type TimerStyle = "bar" | "text" | "mini";
+  type TimerStyle = "off" | "bar" | "text" | "mini";
   type RandomTheme = "off" | "on" | "fav" | "light" | "dark" | "custom";
   type TimerColor = "black" | "sub" | "text" | "main";
   type TimerOpacity = "0.25" | "0.5" | "0.75" | "1";
