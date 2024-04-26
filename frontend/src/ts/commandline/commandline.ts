@@ -572,7 +572,6 @@ async function decrementActiveIndex(): Promise<void> {
 }
 
 const debouncedInputHandler = debounce(100, async (e) => {
-  console.log(e);
   inputValue = (e.target as HTMLInputElement).value;
   if (subgroupOverride === null) {
     if (Config.singleListCommandLine === "on") {
