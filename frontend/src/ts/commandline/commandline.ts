@@ -266,8 +266,8 @@ async function filterSubgroup(): Promise<void> {
       continue;
     }
     if (
-      match.matchCount === minMatchCountToShow &&
-      match.matchStrength === maxMatchStrength
+      match.matchCount >= minMatchCountToShow &&
+      match.matchStrength >= maxMatchStrength
     ) {
       command.found = true;
     } else {
