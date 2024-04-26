@@ -571,23 +571,6 @@ async function decrementActiveIndex(): Promise<void> {
   await updateActiveCommand();
 }
 
-const debouncedInputHandler = debounce(100, async (e) => {
-  inputValue = (e.target as HTMLInputElement).value;
-  if (subgroupOverride === null) {
-    if (Config.singleListCommandLine === "on") {
-      usingSingleList = true;
-    } else {
-      usingSingleList = inputValue.startsWith(">");
-    }
-  }
-  if (mode !== "search") return;
-  mouseMode = false;
-  activeIndex = 0;
-  await filterSubgroup();
-  await showCommands();
-  await updateActiveCommand();
-});
-
 const modal = new AnimatedModal({
   dialogId: "commandLine",
   customEscapeHandler: (): void => {
@@ -603,7 +586,20 @@ const modal = new AnimatedModal({
     const input = modalEl.querySelector("input") as HTMLInputElement;
 
     input.addEventListener("input", async (e) => {
-      void debouncedInputHandler(e);
+      inputValue = (e.target as HTMLInputElement).value;
+      if (subgroupOverride === null) {
+        if (Config.singleListCommandLine === "on") {
+          usingSingleList = true;
+        } else {
+          usingSingleList = inputValue.startsWith(">");
+        }
+      }
+      if (mode !== "search") return;
+      mouseMode = false;
+      activeIndex = 0;
+      await filterSubgroup();
+      await showCommands();
+      await updateActiveCommand();
     });
 
     input.addEventListener("keydown", async (e) => {
