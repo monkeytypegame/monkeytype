@@ -10,6 +10,7 @@ import * as OutOfFocus from "../test/out-of-focus";
 import * as ActivePage from "../states/active-page";
 import { focusWords } from "../test/test-ui";
 import * as Loader from "../elements/loader";
+import { debounce } from "throttle-debounce";
 
 type CommandlineMode = "search" | "input";
 type InputModeParams = {
@@ -570,6 +571,24 @@ async function decrementActiveIndex(): Promise<void> {
   await updateActiveCommand();
 }
 
+const debouncedInputHandler = debounce(100, async (e) => {
+  console.log(e);
+  inputValue = (e.target as HTMLInputElement).value;
+  if (subgroupOverride === null) {
+    if (Config.singleListCommandLine === "on") {
+      usingSingleList = true;
+    } else {
+      usingSingleList = inputValue.startsWith(">");
+    }
+  }
+  if (mode !== "search") return;
+  mouseMode = false;
+  activeIndex = 0;
+  await filterSubgroup();
+  await showCommands();
+  await updateActiveCommand();
+});
+
 const modal = new AnimatedModal({
   dialogId: "commandLine",
   customEscapeHandler: (): void => {
@@ -585,20 +604,7 @@ const modal = new AnimatedModal({
     const input = modalEl.querySelector("input") as HTMLInputElement;
 
     input.addEventListener("input", async (e) => {
-      inputValue = (e.target as HTMLInputElement).value;
-      if (subgroupOverride === null) {
-        if (Config.singleListCommandLine === "on") {
-          usingSingleList = true;
-        } else {
-          usingSingleList = inputValue.startsWith(">");
-        }
-      }
-      if (mode !== "search") return;
-      mouseMode = false;
-      activeIndex = 0;
-      await filterSubgroup();
-      await showCommands();
-      await updateActiveCommand();
+      void debouncedInputHandler(e);
     });
 
     input.addEventListener("keydown", async (e) => {
