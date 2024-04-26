@@ -174,6 +174,12 @@ async function filterSubgroup(): Promise<void> {
   const inputSplit =
     inputNoQuickSingle.length === 0 ? [] : inputNoQuickSingle.split(" ");
 
+  const matches: {
+    displayMatchCount: number;
+    aliasMatchCount: number;
+    aliasCount: number;
+  }[] = [];
+
   const displayMatchCounts: number[] = [];
   const aliasMatchCounts: number[] = [];
   for (const command of list) {
@@ -181,12 +187,22 @@ async function filterSubgroup(): Promise<void> {
     if (!isAvailable) {
       displayMatchCounts.push(-1);
       aliasMatchCounts.push(-1);
+      matches.push({
+        displayMatchCount: -1,
+        aliasMatchCount: -1,
+        aliasCount: 0,
+      });
       continue;
     }
 
     if (inputNoQuickSingle.length === 0 || inputSplit.length === 0) {
       displayMatchCounts.push(0);
       aliasMatchCounts.push(0);
+      matches.push({
+        displayMatchCount: 0,
+        aliasMatchCount: 0,
+        aliasCount: 0,
+      });
       continue;
     }
 
@@ -234,12 +250,22 @@ async function filterSubgroup(): Promise<void> {
 
     displayMatchCounts.push(displayMatchCount);
     aliasMatchCounts.push(aliasMatchCount);
+    matches.push({
+      displayMatchCount,
+      aliasMatchCount,
+      aliasCount: aliasSplit.length,
+    });
   }
 
   for (const [index, command] of list.entries()) {
+    const match = matches[index];
+    if (match === undefined) {
+      command.found = false;
+      continue;
+    }
     if (
-      (displayMatchCounts[index] as number) >= inputSplit.length ||
-      (aliasMatchCounts[index] as number) >= inputSplit.length
+      match.displayMatchCount >= inputSplit.length ||
+      (match.aliasCount > 0 && match.aliasMatchCount >= 1)
     ) {
       command.found = true;
     } else {
