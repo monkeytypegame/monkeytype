@@ -620,7 +620,7 @@ export async function screenshot(): Promise<void> {
   window.scrollTo({
     top: 0,
   });
-  const src = $("#result");
+  const src = $("#result .wrapper");
   const sourceX = src.offset()?.left ?? 0; /*X position from div#target*/
   const sourceY = src.offset()?.top ?? 0; /*Y position from div#target*/
   const sourceWidth = src.outerWidth(

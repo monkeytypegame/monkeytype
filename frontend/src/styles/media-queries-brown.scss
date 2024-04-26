@@ -21,7 +21,7 @@
     }
   }
   .pageTest {
-    #result {
+    #result .wrapper {
       grid-template-columns: 1fr;
       grid-template-areas:
         "stats" "chart"

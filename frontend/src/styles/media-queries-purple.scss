@@ -34,7 +34,7 @@
     }
   }
   .pageTest {
-    #result {
+    #result .wrapper {
       .stats {
         grid-template-columns: 1fr;
         grid-template-areas: "wpm" "acc";
