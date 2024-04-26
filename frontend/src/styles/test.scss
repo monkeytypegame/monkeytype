@@ -516,7 +516,7 @@
   }
 }
 
-#result {
+#result .wrapper {
   display: grid;
   // height: 200px;
   gap: 1rem;
@@ -688,6 +688,10 @@
       display: inline-block;
       cursor: pointer;
     }
+  }
+
+  .bottom {
+    grid-column: 1/-1;
   }
 
   .stats {
@@ -1144,11 +1148,10 @@
     height: 0;
     margin-left: 0.25em;
     display: flex;
-    position: absolute;
+    margin-top: -1.25em;
     color: black;
 
     div {
-      margin-top: -1.25em;
       font-size: 1em;
       line-height: 1em;
     }

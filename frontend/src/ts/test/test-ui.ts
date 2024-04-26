@@ -620,7 +620,7 @@ export async function screenshot(): Promise<void> {
   window.scrollTo({
     top: 0,
   });
-  const src = $("#result");
+  const src = $("#result .wrapper");
   const sourceX = src.offset()?.left ?? 0; /*X position from div#target*/
   const sourceY = src.offset()?.top ?? 0; /*Y position from div#target*/
   const sourceWidth = src.outerWidth(
@@ -1530,9 +1530,26 @@ ConfigEvent.subscribe((key, value) => {
   }
   if (key === "tapeMode") {
     if (value === "off") {
-      $("#typingTest").css("max-width", "70ch");
+      $("#typingTest").css({
+        "max-width": Config.maxLineWidth + "ch",
+      });
+      $("#miniTimerAndLiveWpm").css({
+        "grid-column": "full-width-padding",
+      });
     } else {
-      $("#typingTest").css("max-width", "100%");
+      $("#typingTest").css({
+        "max-width": "100%",
+      });
+      $("#miniTimerAndLiveWpm").css({
+        "grid-column": "content",
+      });
+    }
+  }
+  if (key === "maxLineWidth") {
+    if (Config.tapeMode === "off") {
+      $("#typingTest").css({
+        "max-width": Config.maxLineWidth + "ch",
+      });
     }
   }
 });

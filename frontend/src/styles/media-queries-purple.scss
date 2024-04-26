@@ -34,7 +34,18 @@
     }
   }
   .pageTest {
-    #result {
+    #result .wrapper {
+      .stats {
+        grid-template-columns: 1fr;
+        grid-template-areas: "wpm" "acc";
+        width: max-content;
+        justify-items: start;
+        justify-self: center;
+      }
+      .morestats {
+        justify-self: unset;
+        width: unset;
+      }
       .buttons {
         grid-template-columns: 1fr 1fr;
         grid-auto-flow: unset;
