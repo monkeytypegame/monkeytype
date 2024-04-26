@@ -429,6 +429,7 @@ declare namespace SharedTypes {
     lazyMode: boolean;
     showAverage: SharedTypes.Config.ShowAverage;
     tapeMode: SharedTypes.Config.TapeMode;
+    maxLineWidth: number;
   }
 
   type ConfigValue = Config[keyof Config];

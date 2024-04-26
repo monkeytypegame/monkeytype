@@ -146,6 +146,7 @@ const CONFIG_SCHEMA = joi.object({
   britishEnglish: joi.boolean(),
   lazyMode: joi.boolean(),
   showAverage: joi.string().valid("off", "speed", "acc", "both"),
+  maxLineWidth: joi.number().min(20).max(1000),
 });
 
 export default CONFIG_SCHEMA;

@@ -1661,6 +1661,32 @@ export function setFontSize(fontSize: number, nosave?: boolean): boolean {
   return true;
 }
 
+export function setMaxLineWidth(
+  maxLineWidth: number,
+  nosave?: boolean
+): boolean {
+  if (!isConfigValueValid("max line width", maxLineWidth, ["number"])) {
+    return false;
+  }
+
+  if (maxLineWidth < 20) {
+    maxLineWidth = 20;
+  }
+  if (maxLineWidth > 1000) {
+    maxLineWidth = 1000;
+  }
+
+  config.maxLineWidth = maxLineWidth;
+
+  saveToLocalStorage("maxLineWidth", nosave);
+  ConfigEvent.dispatch("maxLineWidth", config.maxLineWidth, nosave);
+
+  // trigger a resize event to update the layout - handled in ui.ts:108
+  $(window).trigger("resize");
+
+  return true;
+}
+
 export function setCustomBackground(value: string, nosave?: boolean): boolean {
   if (!isConfigValueValid("custom background", value, ["string"])) return false;
 

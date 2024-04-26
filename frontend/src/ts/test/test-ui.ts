@@ -1531,7 +1531,7 @@ ConfigEvent.subscribe((key, value) => {
   if (key === "tapeMode") {
     if (value === "off") {
       $("#typingTest").css({
-        "max-width": "70ch%",
+        "max-width": Config.maxLineWidth + "ch",
       });
       $("#miniTimerAndLiveWpm").css({
         "grid-column": "full-width-padding",
@@ -1542,6 +1542,13 @@ ConfigEvent.subscribe((key, value) => {
       });
       $("#miniTimerAndLiveWpm").css({
         "grid-column": "content",
+      });
+    }
+  }
+  if (key === "maxLineWidth") {
+    if (Config.tapeMode === "off") {
+      $("#typingTest").css({
+        "max-width": Config.maxLineWidth + "ch",
       });
     }
   }
