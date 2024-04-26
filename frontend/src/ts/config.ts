@@ -1840,6 +1840,7 @@ export async function apply(
     setLanguage(configObj.language, true);
     setLayout(configObj.layout, true);
     setFontSize(configObj.fontSize, true);
+    setMaxLineWidth(configObj.maxLineWidth, true);
     setFreedomMode(configObj.freedomMode, true);
     setCaretStyle(configObj.caretStyle, true);
     setPaceCaretStyle(configObj.paceCaretStyle, true);
