@@ -822,21 +822,6 @@ export function setPaceCaretStyle(
   return true;
 }
 
-export function setShowTimerProgress(
-  timer: boolean,
-  nosave?: boolean
-): boolean {
-  if (!isConfigValueValid("show timer progress", timer, ["boolean"])) {
-    return false;
-  }
-
-  config.showTimerProgress = timer;
-  saveToLocalStorage("showTimerProgress", nosave);
-  ConfigEvent.dispatch("showTimerProgress", config.showTimerProgress);
-
-  return true;
-}
-
 export function setShowLiveWpm(live: boolean, nosave?: boolean): boolean {
   if (!isConfigValueValid("show live speed", live, ["boolean"])) return false;
 
@@ -949,7 +934,9 @@ export function setTimerStyle(
   style: SharedTypes.Config.TimerStyle,
   nosave?: boolean
 ): boolean {
-  if (!isConfigValueValid("timer style", style, [["bar", "text", "mini"]])) {
+  if (
+    !isConfigValueValid("timer style", style, [["off", "bar", "text", "mini"]])
+  ) {
     return false;
   }
 
@@ -1851,7 +1838,6 @@ export async function apply(
     setShowLiveWpm(configObj.showLiveWpm, true);
     setShowLiveAcc(configObj.showLiveAcc, true);
     setShowLiveBurst(configObj.showLiveBurst, true);
-    setShowTimerProgress(configObj.showTimerProgress, true);
     setAlwaysShowDecimalPlaces(configObj.alwaysShowDecimalPlaces, true);
     setAlwaysShowWordsHistory(configObj.alwaysShowWordsHistory, true);
     setSingleListCommandLine(configObj.singleListCommandLine, true);
@@ -1964,6 +1950,11 @@ function replaceLegacyValues(
 
   if (typeof configObj.playSoundOnError === "boolean") {
     configObj.playSoundOnError = configObj.playSoundOnError ? "1" : "off";
+  }
+
+  //@ts-expect-error
+  if (configObj.showTimerProgress === false) {
+    configObj.timerStyle = "off";
   }
 
   return configObj;

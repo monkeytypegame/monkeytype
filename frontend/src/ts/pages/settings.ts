@@ -65,11 +65,6 @@ async function initGroups(): Promise<void> {
     UpdateConfig.setShowLiveBurst,
     "button"
   ) as SettingsGroup<SharedTypes.ConfigValue>;
-  groups["showTimerProgress"] = new SettingsGroup(
-    "showTimerProgress",
-    UpdateConfig.setShowTimerProgress,
-    "button"
-  ) as SettingsGroup<SharedTypes.ConfigValue>;
   groups["showAverage"] = new SettingsGroup(
     "showAverage",
     UpdateConfig.setShowAverage,

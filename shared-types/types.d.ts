@@ -355,7 +355,6 @@ declare namespace SharedTypes {
     favThemes: string[];
     showKeyTips: boolean;
     showLiveWpm: boolean;
-    showTimerProgress: boolean;
     smoothCaret: SharedTypes.Config.SmoothCaret;
     quickRestart: SharedTypes.Config.QuickRestart;
     punctuation: boolean;
