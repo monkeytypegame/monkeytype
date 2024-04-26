@@ -1530,9 +1530,19 @@ ConfigEvent.subscribe((key, value) => {
   }
   if (key === "tapeMode") {
     if (value === "off") {
-      $("#typingTest").css("max-width", "70ch");
+      $("#typingTest").css({
+        "max-width": "70ch%",
+      });
+      $("#miniTimerAndLiveWpm").css({
+        "grid-column": "full-width-padding",
+      });
     } else {
-      $("#typingTest").css("max-width", "100%");
+      $("#typingTest").css({
+        "max-width": "100%",
+      });
+      $("#miniTimerAndLiveWpm").css({
+        "grid-column": "content",
+      });
     }
   }
 });
