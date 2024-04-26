@@ -78,9 +78,7 @@
     minmax(0, var(--padding-inline)) [full-width-end];
 }
 
-.content-grid > :not(.breakout, .full-width, .full-width-padding),
-.full-width > :not(.breakout, .full-width, .full-width-padding),
-.full-width-padding > :not(.breakout, .full-width, .full-width-padding) {
+.content-grid > :not(.breakout, .full-width, .full-width-padding) {
   grid-column: content;
 }
 
@@ -90,14 +88,10 @@
 
 .content-grid > .full-width {
   grid-column: full-width;
-  display: grid;
-  grid-template-columns: inherit;
 }
 
 .content-grid > .full-width-padding {
   grid-column: full-width-padding;
-  display: grid;
-  grid-template-columns: inherit;
 }
 
 #ad-vertical-left-wrapper,
