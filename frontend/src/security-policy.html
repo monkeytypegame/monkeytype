@@ -43,10 +43,6 @@
         color: var(--text-color);
       }
 
-      #contentWrapper {
-        align-items: flex-start !important;
-      }
-
       h1 {
         font-weight: unset !important;
         color: var(--main-color) !important;
@@ -58,11 +54,15 @@
         justify-content: center !important;
         display: flex !important;
       }
+
+      main {
+        height: max-content;
+      }
     </style>
   </head>
 
   <body>
-    <div id="contentWrapper">
+    <div id="app" class="content-grid">
       <header>
         <div id="logo">
           <div class="icon">

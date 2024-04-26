@@ -1,4 +1,4 @@
-<div class="page pageTest hidden">
+<div class="page pageTest hidden full-width content-grid">
   <div id="testConfig">
     <div class="row">
       <div class="puncAndNum">
@@ -93,7 +93,7 @@
       Test settings
     </button>
   </div>
-  <div id="typingTest">
+  <div id="typingTest" class="content-grid full-width">
     <div id="capsWarning" class="hidden">
       <i class="fas fa-lock"></i>
       Caps Lock
@@ -110,28 +110,32 @@
       <div class="acc hidden">100%</div>
       <div class="burst hidden">1</div>
     </div>
-    <div class="outOfFocusWarning hidden">
-      <i class="fas fa-fw fa-mouse-pointer"></i>
-      Click here or press any key to focus
-    </div>
-    <input
-      id="wordsInput"
-      class=""
-      type="text"
-      autocomplete="off"
-      autocapitalize="off"
-      autocapitalize="none"
-      autocorrect="off"
-      data-gramm="false"
-      data-gramm_editor="false"
-      data-enable-grammarly="false"
-      list="autocompleteOff"
-      spellcheck="false"
-    />
-    <div id="wordsWrapper" translate="no">
-      <div id="paceCaret" class="default hidden"></div>
-      <div id="caret" class="default"></div>
-      <div id="words"></div>
+    <div
+      id="wordsWrapper"
+      class="content-grid full-width-padding"
+      translate="no"
+    >
+      <input
+        id="wordsInput"
+        class="full-width"
+        type="text"
+        autocomplete="off"
+        autocapitalize="off"
+        autocapitalize="none"
+        autocorrect="off"
+        data-gramm="false"
+        data-gramm_editor="false"
+        data-enable-grammarly="false"
+        list="autocompleteOff"
+        spellcheck="false"
+      />
+      <div class="outOfFocusWarning hidden">
+        <i class="fas fa-fw fa-mouse-pointer"></i>
+        Click here or press any key to focus
+      </div>
+      <div id="paceCaret" class="full-width default hidden"></div>
+      <div id="caret" class="full-width default"></div>
+      <div id="words" class="full-width"></div>
     </div>
 
     <div id="koInputVisualContainer" style="display: none">
@@ -438,7 +442,7 @@
       to save your result
     </div>
     <div style="grid-column: span 2">
-      <div id="ad-result-wrapper" class="ad advertisement ad-h">
+      <div id="ad-result-wrapper" class="ad full-width advertisement ad-h">
         <div class="iconAndText">
           <div class="icon"><i class="fas fa-ad"></i></div>
           <div class="text textRight"></div>

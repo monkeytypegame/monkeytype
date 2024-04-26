@@ -89,10 +89,10 @@ function removeResult(): void {
 }
 
 function updateVerticalMargin(): void {
-  const height = $("#bannerCenter").height() as number;
-  const margin = height + Numbers.convertRemToPixels(2) + "px";
-  $("#ad-vertical-left-wrapper").css("margin-top", margin);
-  $("#ad-vertical-right-wrapper").css("margin-top", margin);
+  // const height = $("#bannerCenter").height() as number;
+  // const margin = height + Numbers.convertRemToPixels(2) + "px";
+  // $("#ad-vertical-left-wrapper").css("margin-top", margin);
+  // $("#ad-vertical-right-wrapper").css("margin-top", margin);
 }
 
 function updateBreakpoint(noReinstate = false): void {

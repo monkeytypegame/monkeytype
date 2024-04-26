@@ -21,11 +21,13 @@
 // #mediaQueryDebug {
 //   display: block;
 // }
-// #contentWrapper,
-// header,
-// main,
-// footer {
-//   border: 0.1rem solid var(--sub-color);
+
+// .content-grid > * {
+//   border: 0.1rem dashed var(--sub-color);
+// }
+
+// .content-grid {
+//   border: 0.1rem dashed var(--main-color);
 // }
 
 //media queries based on tailwind breakpoints https://tailwindcss.com/docs/container
@@ -39,9 +41,6 @@
 @media only screen and (max-width: 1875px) {
   .ad.ad-v {
     display: none;
-  }
-  #app {
-    grid-template-columns: auto;
   }
 }
 
