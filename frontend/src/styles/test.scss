@@ -690,6 +690,10 @@
     }
   }
 
+  .bottom {
+    grid-column: 1/-1;
+  }
+
   .stats {
     grid-area: stats;
     display: grid;

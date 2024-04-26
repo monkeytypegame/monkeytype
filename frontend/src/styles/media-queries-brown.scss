@@ -26,10 +26,6 @@
       grid-template-areas:
         "stats" "chart"
         "morestats";
-      .stats {
-        grid-template-columns: 1fr;
-        grid-template-areas: "wpm" "acc";
-      }
       .stats.morestats {
         justify-items: start;
         display: grid;
