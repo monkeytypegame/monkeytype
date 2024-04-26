@@ -383,13 +383,13 @@ export function updateWordsInputPosition(initial = false): void {
   const activeWordMargin =
     parseInt(computed.marginTop) + parseInt(computed.marginBottom);
 
-  const wordsWrapperTop =
-    (document.querySelector("#wordsWrapper") as HTMLElement | null)
-      ?.offsetTop ?? 0;
+  // const wordsWrapperTop =
+  //   (document.querySelector("#wordsWrapper") as HTMLElement | null)
+  //     ?.offsetTop ?? 0;
 
   if (Config.tapeMode !== "off") {
     el.style.top =
-      wordsWrapperTop +
+      // wordsWrapperTop +
       activeWord.offsetHeight +
       activeWordMargin * 0.25 +
       -el.offsetHeight +
@@ -404,7 +404,7 @@ export function updateWordsInputPosition(initial = false): void {
   ) {
     el.style.left = "0px";
     el.style.top =
-      wordsWrapperTop +
+      // wordsWrapperTop +
       activeWord.offsetHeight * 2 +
       activeWordMargin * 1.5 +
       -el.offsetHeight +
@@ -414,7 +414,7 @@ export function updateWordsInputPosition(initial = false): void {
     el.style.top =
       activeWord.offsetTop -
       activeWordMargin +
-      wordsWrapperTop +
+      // wordsWrapperTop +
       activeWord.offsetHeight +
       activeWordMargin +
       -el.offsetHeight +
@@ -1530,9 +1530,26 @@ ConfigEvent.subscribe((key, value) => {
   }
   if (key === "tapeMode") {
     if (value === "off") {
-      $("#typingTest").css("max-width", "70ch");
+      $("#typingTest").css({
+        "max-width": Config.maxLineWidth + "ch",
+      });
+      $("#miniTimerAndLiveWpm").css({
+        "grid-column": "full-width-padding",
+      });
     } else {
-      $("#typingTest").css("max-width", "100%");
+      $("#typingTest").css({
+        "max-width": "100%",
+      });
+      $("#miniTimerAndLiveWpm").css({
+        "grid-column": "content",
+      });
+    }
+  }
+  if (key === "maxLineWidth") {
+    if (Config.tapeMode === "off") {
+      $("#typingTest").css({
+        "max-width": Config.maxLineWidth + "ch",
+      });
     }
   }
 });

@@ -1144,11 +1144,10 @@
     height: 0;
     margin-left: 0.25em;
     display: flex;
-    position: absolute;
+    margin-top: -1.25em;
     color: black;
 
     div {
-      margin-top: -1.25em;
       font-size: 1em;
       line-height: 1em;
     }
