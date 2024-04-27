@@ -587,20 +587,9 @@ export async function addWord(): Promise<void> {
     }
   }
 
-  const language: MonkeyTypes.LanguageObject =
-    Config.mode !== "custom"
-      ? await JSONData.getCurrentLanguage(Config.language)
-      : {
-          //borrow the direction of the current language
-          ...(await JSONData.getCurrentLanguage(Config.language)),
-          words: CustomText.getText(),
-        };
-  const wordset = await Wordset.withWords(language.words);
-
+  try {
   const randomWord = await WordsGenerator.getNextWord(
-    wordset,
     TestWords.words.length,
-    language,
     bound,
     TestWords.words.get(TestWords.words.length - 1),
     TestWords.words.get(TestWords.words.length - 2)
@@ -608,6 +597,16 @@ export async function addWord(): Promise<void> {
 
   TestWords.words.push(randomWord.word, randomWord.sectionIndex);
   TestUI.addWord(randomWord.word);
+  } catch (e) {
+    TimerEvent.dispatch("fail", "word generation error");
+    Notifications.add(
+      Misc.createErrorMessage(
+        e,
+        "Error while getting next word. Please try again later"
+      ),
+      -1
+    );
+  }
 }
 
 type RetrySaving = {
