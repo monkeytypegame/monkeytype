@@ -689,8 +689,7 @@ export async function getNextWord(
     if (Config.mode === "quote") {
       randomWord = currentWordset.nextWord();
     } else if (Config.mode === "custom" && CustomText.getMode() === "repeat") {
-      const customText = CustomText.getText();
-      randomWord = customText[sectionIndex % customText.length] as string;
+      randomWord = currentWordset.nextWord();
     } else if (
       Config.mode === "custom" &&
       CustomText.getMode() === "random" &&
