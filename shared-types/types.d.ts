@@ -239,7 +239,7 @@ declare namespace SharedTypes {
     hash?: string;
   }
 
-  type CustomTextMode = "repeat" | "random";
+  type CustomTextMode = "repeat" | "random" | "shuffle";
   type CustomTextLimitMode = "word" | "time" | "section";
   type CustomTextLimit = {
     value: number;
