@@ -455,132 +455,16 @@ export class WordGenError extends Error {
 
 let currentQuote: string[] = [];
 
-let isCurrentlyUsingFunboxSection = false;
-
-export async function generateWords(
+async function getQuoteWordList(
   language: MonkeyTypes.LanguageObject
-): Promise<{
-  words: string[];
-  sectionIndexes: number[];
-}> {
-  if (!TestState.isRepeated) {
-    previousGetNextWordReturns = [];
-  }
-  currentQuote = [];
-  currentSection = [];
-  sectionIndex = 0;
-  sectionHistory = [];
-  const ret: {
-    words: string[];
-    sectionIndexes: number[];
-  } = {
-    words: [],
-    sectionIndexes: [],
-  };
-
-  const sectionFunbox = FunboxList.get(Config.funbox).find(
-    (f) => f.functions?.pullSection
-  );
-  isCurrentlyUsingFunboxSection =
-    sectionFunbox?.functions?.pullSection !== undefined;
-
-  const limit = getWordsLimit();
-  console.debug("Words limit", limit);
-
-  const wordOrder = getQuoteOrCustomModeWordOrder();
-  console.debug("Word order", wordOrder);
-
-  let wordList = language.words;
-  if (Config.mode === "custom") {
-    if (wordOrder === "reverse") {
-      wordList = CustomText.getText().reverse();
-    } else {
-      wordList = CustomText.getText();
-    }
-  }
-  const wordset = await Wordset.withWords(wordList);
-
-  if (Config.mode === "quote") {
-    const quoteWords = await generateQuoteWords(language, wordset, limit);
-    if (wordOrder === "reverse") {
-      quoteWords.words.reverse();
-      quoteWords.sectionIndexes.reverse();
-    }
-    return quoteWords;
-  }
-
-  if (
-    Config.mode === "time" ||
-    Config.mode === "words" ||
-    Config.mode === "custom"
-  ) {
-    let stop = false;
-    let i = 0;
-    while (!stop) {
-      const nextWord = await getNextWord(
-        wordset,
-        i,
-        language,
-        limit,
-        Arrays.nthElementFromArray(ret.words, -1) ?? "",
-        Arrays.nthElementFromArray(ret.words, -2) ?? ""
-      );
-      ret.words.push(nextWord.word);
-      ret.sectionIndexes.push(nextWord.sectionIndex);
-
-      const randomSectionStop =
-        CustomText.getLimitMode() === "section" &&
-        CustomText.getLimitValue() !== 0 &&
-        sectionIndex >= CustomText.getLimitValue();
-
-      const customModeStop =
-        Config.mode === "custom" &&
-        currentSection.length === 0 &&
-        randomSectionStop;
-
-      if (customModeStop || ret.words.length >= limit) {
-        stop = true;
-      }
-      i++;
-    }
-  }
-  sectionHistory = []; //free up a bit of memory? is that even a thing?
-  return ret;
-}
-
-async function generateQuoteWords(
-  language: MonkeyTypes.LanguageObject,
-  wordset: Wordset.Wordset,
-  limit: number
-): Promise<{
-  words: string[];
-  sectionIndexes: number[];
-}> {
-  const ret: {
-    words: string[];
-    sectionIndexes: number[];
-  } = {
-    words: [],
-    sectionIndexes: [],
-  };
+): Promise<string[]> {
   if (TestState.isRepeated) {
-    for (
-      let i = 0;
-      i < Math.min(limit, previousGetNextWordReturns.length);
-      i++
-    ) {
-      const repeated = previousGetNextWordReturns[i];
-
-      if (repeated === undefined) {
-        throw new WordGenError("Repeated word is undefined");
-      }
-
-      ret.words.push(repeated.word);
-      ret.sectionIndexes.push(repeated.sectionIndex);
+    if (currentWordset === null) {
+      throw new WordGenError("Current wordset is null");
     }
-    return ret;
+    currentQuote = currentWordset.words;
+    return currentWordset.words;
   }
-
   const languageToGet = language.name.startsWith("swiss_german")
     ? "german"
     : language.name;
@@ -657,8 +541,63 @@ async function generateQuoteWords(
 
   currentQuote = TestWords.randomQuote.textSplit;
 
+  return currentQuote;
+}
+
 let currentWordset: Wordset.Wordset | null = null;
 let currentLanguage: MonkeyTypes.LanguageObject | null = null;
+let isCurrentlyUsingFunboxSection = false;
+
+export async function generateWords(
+  language: MonkeyTypes.LanguageObject
+): Promise<{
+  words: string[];
+  sectionIndexes: number[];
+}> {
+  if (!TestState.isRepeated) {
+    previousGetNextWordReturns = [];
+  }
+  currentQuote = [];
+  currentSection = [];
+  sectionIndex = 0;
+  sectionHistory = [];
+  currentLanguage = language;
+  const ret: {
+    words: string[];
+    sectionIndexes: number[];
+  } = {
+    words: [],
+    sectionIndexes: [],
+  };
+
+  const sectionFunbox = FunboxList.get(Config.funbox).find(
+    (f) => f.functions?.pullSection
+  );
+  isCurrentlyUsingFunboxSection =
+    sectionFunbox?.functions?.pullSection !== undefined;
+
+  let wordList = language.words;
+  if (Config.mode === "custom") {
+    wordList = CustomText.getText();
+  } else if (Config.mode === "quote") {
+    wordList = await getQuoteWordList(language);
+  }
+
+  const limit = getWordsLimit();
+  console.debug("Words limit", limit);
+
+  const wordOrder = getWordOrder();
+  console.debug("Word order", wordOrder);
+
+  if (wordOrder === "reverse") {
+    wordList = wordList.reverse();
+  }
+
+  currentWordset = await Wordset.withWords(wordList);
+
+  let stop = false;
+  let i = 0;
+  while (!stop) {
     const nextWord = await getNextWord(
       i,
       limit,
@@ -666,8 +605,24 @@ let currentLanguage: MonkeyTypes.LanguageObject | null = null;
       Arrays.nthElementFromArray(ret.words, -2) ?? ""
     );
     ret.words.push(nextWord.word);
-    ret.sectionIndexes.push(i);
+    ret.sectionIndexes.push(nextWord.sectionIndex);
+
+    const randomSectionStop =
+      CustomText.getLimitMode() === "section" &&
+      CustomText.getLimitValue() !== 0 &&
+      sectionIndex >= CustomText.getLimitValue();
+
+    const customModeStop =
+      Config.mode === "custom" &&
+      currentSection.length === 0 &&
+      randomSectionStop;
+
+    if (customModeStop || ret.words.length >= limit) {
+      stop = true;
+    }
+    i++;
   }
+  sectionHistory = []; //free up a bit of memory? is that even a thing?
   return ret;
 }
 
