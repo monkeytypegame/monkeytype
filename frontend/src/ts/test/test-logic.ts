@@ -56,7 +56,6 @@ import * as FunboxList from "./funbox/funbox-list";
 import * as MemoryFunboxTimer from "./funbox/memory-funbox-timer";
 import * as KeymapEvent from "../observables/keymap-event";
 import * as LayoutfluidFunboxTimer from "../test/funbox/layoutfluid-funbox-timer";
-import * as Wordset from "./wordset";
 import * as ArabicLazyMode from "../states/arabic-lazy-mode";
 import Format from "../utils/format";
 
@@ -588,15 +587,15 @@ export async function addWord(): Promise<void> {
   }
 
   try {
-  const randomWord = await WordsGenerator.getNextWord(
-    TestWords.words.length,
-    bound,
-    TestWords.words.get(TestWords.words.length - 1),
-    TestWords.words.get(TestWords.words.length - 2)
-  );
+    const randomWord = await WordsGenerator.getNextWord(
+      TestWords.words.length,
+      bound,
+      TestWords.words.get(TestWords.words.length - 1),
+      TestWords.words.get(TestWords.words.length - 2)
+    );
 
-  TestWords.words.push(randomWord.word, randomWord.sectionIndex);
-  TestUI.addWord(randomWord.word);
+    TestWords.words.push(randomWord.word, randomWord.sectionIndex);
+    TestUI.addWord(randomWord.word);
   } catch (e) {
     TimerEvent.dispatch("fail", "word generation error");
     Notifications.add(
