@@ -10,7 +10,6 @@ import * as OutOfFocus from "../test/out-of-focus";
 import * as ActivePage from "../states/active-page";
 import { focusWords } from "../test/test-ui";
 import * as Loader from "../elements/loader";
-import { debounce } from "throttle-debounce";
 
 type CommandlineMode = "search" | "input";
 type InputModeParams = {
