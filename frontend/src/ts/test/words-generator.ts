@@ -727,6 +727,8 @@ export async function getNextWord(
       (wordset.length < 4 || PractiseWords.before.mode !== null)
     ) {
       randomWord = wordset.randomWord(funboxFrequency);
+    } else if (Config.mode === "custom" && CustomText.getMode() === "shuffle") {
+      randomWord = wordset.shuffledWord();
     } else if (
       Config.mode === "custom" &&
       CustomText.getLimitMode() === "section"
