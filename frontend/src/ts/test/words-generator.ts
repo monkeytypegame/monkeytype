@@ -369,7 +369,7 @@ function applyLazyModeToWord(
   return word;
 }
 
-export function getQuoteOrCustomModeWordOrder(): MonkeyTypes.FunboxWordOrder {
+export function getWordOrder(): MonkeyTypes.FunboxWordOrder {
   const wordOrder =
     FunboxList.get(Config.funbox)
       .find((f) => f.properties?.find((fp) => fp.startsWith("wordOrder")))
