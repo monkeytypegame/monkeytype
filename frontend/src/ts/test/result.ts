@@ -834,7 +834,7 @@ export async function update(
     $("#result"),
     250,
     async () => {
-      $("#result").trigger("focus");
+      $("#result .wrapper").trigger("focus");
       void AdController.renderResult();
       TestUI.setResultCalculating(false);
       $("#words").empty();

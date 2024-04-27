@@ -34,7 +34,7 @@ const commands: MonkeyTypes.Command[] = [
   {
     id: "changeMinWpm",
     display: "Minimum speed...",
-    alias: "minimum",
+    alias: "minimum wpm",
     icon: "fa-bomb",
     subgroup,
   },
