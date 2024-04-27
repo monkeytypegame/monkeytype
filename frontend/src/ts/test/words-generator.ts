@@ -397,6 +397,9 @@ export function getWordsLimit(): number {
     if (Config.mode === "words") {
       limit = Config.words;
     }
+    if (Config.mode === "quote") {
+      limit = currentQuote.length;
+    }
   }
 
   //infinite words
@@ -426,6 +429,10 @@ export function getWordsLimit(): number {
   //make sure the limit is not higher than the word count
   if (Config.mode === "words" && Config.words !== 0 && Config.words < limit) {
     limit = Config.words;
+  }
+
+  if (Config.mode === "quote" && currentQuote.length < limit) {
+    limit = currentQuote.length;
   }
 
   if (
