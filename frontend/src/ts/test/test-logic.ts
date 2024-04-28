@@ -525,7 +525,7 @@ export async function init(): Promise<void> {
 
 //add word during the test
 export async function addWord(): Promise<void> {
-  let bound = 100;
+  let bound = 100; // how many extra words to aim for AFTER the current word
   const funboxToPush = FunboxList.get(Config.funbox)
     .find((f) => f.properties?.find((fp) => fp.startsWith("toPush")))
     ?.properties?.find((fp) => fp.startsWith("toPush:"));
