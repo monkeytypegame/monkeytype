@@ -615,17 +615,14 @@ export async function generateWords(
     ret.words.push(nextWord.word);
     ret.sectionIndexes.push(nextWord.sectionIndex);
 
-    const randomSectionStop =
-      CustomText.getLimitMode() === "section" &&
-      CustomText.getLimitValue() !== 0 &&
-      sectionIndex >= CustomText.getLimitValue();
-
-    const customModeStop =
-      Config.mode === "custom" &&
-      currentSection.length === 0 &&
-      randomSectionStop;
-
-    if (customModeStop || ret.words.length >= limit) {
+    if (Config.mode === "custom" && CustomText.getPipeDelimiter()) {
+      const sectionFinishedAndOverLimit =
+        currentSection.length === 0 &&
+        sectionIndex >= CustomText.getLimitValue();
+      if (sectionFinishedAndOverLimit) {
+        stop = true;
+      }
+    } else if (ret.words.length >= limit) {
       stop = true;
     }
     i++;
