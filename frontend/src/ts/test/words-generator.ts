@@ -556,12 +556,16 @@ let currentWordset: Wordset.Wordset | null = null;
 let currentLanguage: MonkeyTypes.LanguageObject | null = null;
 let isCurrentlyUsingFunboxSection = false;
 
-export async function generateWords(
-  language: MonkeyTypes.LanguageObject
-): Promise<{
+type GenerateWordsReturn = {
   words: string[];
   sectionIndexes: number[];
-}> {
+  hasTab: boolean;
+  hasNewline: boolean;
+};
+
+export async function generateWords(
+  language: MonkeyTypes.LanguageObject
+): Promise<GenerateWordsReturn> {
   if (!TestState.isRepeated) {
     previousGetNextWordReturns = [];
   }
@@ -570,12 +574,11 @@ export async function generateWords(
   sectionIndex = 0;
   sectionHistory = [];
   currentLanguage = language;
-  const ret: {
-    words: string[];
-    sectionIndexes: number[];
-  } = {
+  const ret: GenerateWordsReturn = {
     words: [],
     sectionIndexes: [],
+    hasTab: false,
+    hasNewline: false,
   };
 
   const sectionFunbox = FunboxList.get(Config.funbox).find(
@@ -627,6 +630,16 @@ export async function generateWords(
     }
     i++;
   }
+
+  ret.hasTab =
+    ret.words.some((w) => /\t/.test(w)) ||
+    currentWordset.words.some((w) => /\t/.test(w)) ||
+    (Config.mode === "quote" && currentQuote.some((w) => /\t/.test(w)));
+  ret.hasNewline =
+    ret.words.some((w) => /\n/.test(w)) ||
+    currentWordset.words.some((w) => /\n/.test(w)) ||
+    (Config.mode === "quote" && currentQuote.some((w) => /\n/.test(w)));
+
   sectionHistory = []; //free up a bit of memory? is that even a thing?
   return ret;
 }

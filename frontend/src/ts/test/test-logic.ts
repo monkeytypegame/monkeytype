@@ -450,10 +450,14 @@ export async function init(): Promise<void> {
 
   let generatedWords: string[];
   let generatedSectionIndexes: number[];
+  let wordsHaveTab = false;
+  let wordsHaveNewline = false;
   try {
     const gen = await WordsGenerator.generateWords(language);
     generatedWords = gen.words;
     generatedSectionIndexes = gen.sectionIndexes;
+    wordsHaveTab = gen.hasTab;
+    wordsHaveNewline = gen.hasNewline;
   } catch (e) {
     console.error(e);
     if (e instanceof WordsGenerator.WordGenError) {
@@ -476,25 +480,17 @@ export async function init(): Promise<void> {
 
   const beforeHasNumbers = TestWords.hasNumbers ? true : false;
 
-  let hasTab = false;
   let hasNumbers = false;
-  let hasNewline = false;
 
   for (const word of generatedWords) {
-    if (/\t/g.test(word) && !hasTab) {
-      hasTab = true;
-    }
     if (/\d/g.test(word) && !hasNumbers) {
       hasNumbers = true;
     }
-    if (/\n/g.test(word) && !hasNewline) {
-      hasNewline = true;
-    }
   }
 
-  TestWords.setHasTab(hasTab);
   TestWords.setHasNumbers(hasNumbers);
-  TestWords.setHasNewline(hasNewline);
+  TestWords.setHasTab(wordsHaveTab);
+  TestWords.setHasNewline(wordsHaveNewline);
 
   if (beforeHasNumbers !== hasNumbers) {
     void Keymap.refresh();
