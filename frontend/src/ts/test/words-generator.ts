@@ -456,14 +456,22 @@ export class WordGenError extends Error {
 let currentQuote: string[] = [];
 
 async function getQuoteWordList(
-  language: MonkeyTypes.LanguageObject
+  language: MonkeyTypes.LanguageObject,
+  wordOrder?: MonkeyTypes.FunboxWordOrder
 ): Promise<string[]> {
   if (TestState.isRepeated) {
     if (currentWordset === null) {
       throw new WordGenError("Current wordset is null");
     }
     currentQuote = currentWordset.words;
-    return currentWordset.words;
+
+    // need to re-reverse the words if the test is repeated
+    // because it will be reversed again in the generateWords function
+    if (wordOrder === "reverse") {
+      return currentWordset.words.reverse();
+    } else {
+      return currentWordset.words;
+    }
   }
   const languageToGet = language.name.startsWith("swiss_german")
     ? "german"
@@ -576,18 +584,18 @@ export async function generateWords(
   isCurrentlyUsingFunboxSection =
     sectionFunbox?.functions?.pullSection !== undefined;
 
+  const wordOrder = getWordOrder();
+  console.debug("Word order", wordOrder);
+
   let wordList = language.words;
   if (Config.mode === "custom") {
     wordList = CustomText.getText();
   } else if (Config.mode === "quote") {
-    wordList = await getQuoteWordList(language);
+    wordList = await getQuoteWordList(language, wordOrder);
   }
 
   const limit = getWordsLimit();
   console.debug("Words limit", limit);
-
-  const wordOrder = getWordOrder();
-  console.debug("Word order", wordOrder);
 
   if (wordOrder === "reverse") {
     wordList = wordList.reverse();
