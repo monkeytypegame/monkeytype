@@ -248,6 +248,10 @@ export async function updateName(
 
   const user = await UserDAL.getUser(uid, "update name");
 
+  if (user.banned) {
+    throw new MonkeyError(403, "Banned users cannot change their name");
+  }
+
   if (
     !user?.needsToChangeName &&
     Date.now() - (user.lastNameChange ?? 0) < MILLISECONDS_IN_DAY * 30
