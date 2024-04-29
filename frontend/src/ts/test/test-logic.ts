@@ -56,7 +56,6 @@ import * as FunboxList from "./funbox/funbox-list";
 import * as MemoryFunboxTimer from "./funbox/memory-funbox-timer";
 import * as KeymapEvent from "../observables/keymap-event";
 import * as LayoutfluidFunboxTimer from "../test/funbox/layoutfluid-funbox-timer";
-import * as Wordset from "./wordset";
 import * as ArabicLazyMode from "../states/arabic-lazy-mode";
 import Format from "../utils/format";
 
@@ -451,10 +450,14 @@ export async function init(): Promise<void> {
 
   let generatedWords: string[];
   let generatedSectionIndexes: number[];
+  let wordsHaveTab = false;
+  let wordsHaveNewline = false;
   try {
     const gen = await WordsGenerator.generateWords(language);
     generatedWords = gen.words;
     generatedSectionIndexes = gen.sectionIndexes;
+    wordsHaveTab = gen.hasTab;
+    wordsHaveNewline = gen.hasNewline;
   } catch (e) {
     console.error(e);
     if (e instanceof WordsGenerator.WordGenError) {
@@ -477,25 +480,17 @@ export async function init(): Promise<void> {
 
   const beforeHasNumbers = TestWords.hasNumbers ? true : false;
 
-  let hasTab = false;
   let hasNumbers = false;
-  let hasNewline = false;
 
   for (const word of generatedWords) {
-    if (/\t/g.test(word) && !hasTab) {
-      hasTab = true;
-    }
     if (/\d/g.test(word) && !hasNumbers) {
       hasNumbers = true;
     }
-    if (/\n/g.test(word) && !hasNewline) {
-      hasNewline = true;
-    }
   }
 
-  TestWords.setHasTab(hasTab);
   TestWords.setHasNumbers(hasNumbers);
-  TestWords.setHasNewline(hasNewline);
+  TestWords.setHasTab(wordsHaveTab);
+  TestWords.setHasNewline(wordsHaveNewline);
 
   if (beforeHasNumbers !== hasNumbers) {
     void Keymap.refresh();
@@ -526,7 +521,7 @@ export async function init(): Promise<void> {
 
 //add word during the test
 export async function addWord(): Promise<void> {
-  let bound = 100;
+  let bound = 100; // how many extra words to aim for AFTER the current word
   const funboxToPush = FunboxList.get(Config.funbox)
     .find((f) => f.properties?.find((fp) => fp.startsWith("toPush")))
     ?.properties?.find((fp) => fp.startsWith("toPush:"));
@@ -587,27 +582,26 @@ export async function addWord(): Promise<void> {
     }
   }
 
-  const language: MonkeyTypes.LanguageObject =
-    Config.mode !== "custom"
-      ? await JSONData.getCurrentLanguage(Config.language)
-      : {
-          //borrow the direction of the current language
-          ...(await JSONData.getCurrentLanguage(Config.language)),
-          words: CustomText.getText(),
-        };
-  const wordset = await Wordset.withWords(language.words);
+  try {
+    const randomWord = await WordsGenerator.getNextWord(
+      TestWords.words.length,
+      bound,
+      TestWords.words.get(TestWords.words.length - 1),
+      TestWords.words.get(TestWords.words.length - 2)
+    );
 
-  const randomWord = await WordsGenerator.getNextWord(
-    wordset,
-    TestWords.words.length,
-    language,
-    bound,
-    TestWords.words.get(TestWords.words.length - 1),
-    TestWords.words.get(TestWords.words.length - 2)
-  );
-
-  TestWords.words.push(randomWord.word, randomWord.sectionIndex);
-  TestUI.addWord(randomWord.word);
+    TestWords.words.push(randomWord.word, randomWord.sectionIndex);
+    TestUI.addWord(randomWord.word);
+  } catch (e) {
+    TimerEvent.dispatch("fail", "word generation error");
+    Notifications.add(
+      Misc.createErrorMessage(
+        e,
+        "Error while getting next word. Please try again later"
+      ),
+      -1
+    );
+  }
 }
 
 type RetrySaving = {
