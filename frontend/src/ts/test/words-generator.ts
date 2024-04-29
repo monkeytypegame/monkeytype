@@ -605,6 +605,7 @@ export async function generateWords(
   }
 
   currentWordset = await Wordset.withWords(wordList);
+  console.debug("Wordset", currentWordset);
 
   let stop = false;
   let i = 0;
