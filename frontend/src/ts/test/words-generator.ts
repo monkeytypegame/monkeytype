@@ -383,6 +383,10 @@ export function getWordOrder(): MonkeyTypes.FunboxWordOrder {
 }
 
 export function getWordsLimit(): number {
+  if (Config.mode === "zen") {
+    return 0;
+  }
+
   let limit = 100;
 
   const funboxToPush =
@@ -595,6 +599,8 @@ export async function generateWords(
     wordList = CustomText.getText();
   } else if (Config.mode === "quote") {
     wordList = await getQuoteWordList(language, wordOrder);
+  } else if (Config.mode === "zen") {
+    wordList = [];
   }
 
   const limit = getWordsLimit();
@@ -606,6 +612,10 @@ export async function generateWords(
 
   currentWordset = await Wordset.withWords(wordList);
   console.debug("Wordset", currentWordset);
+
+  if (limit === 0) {
+    return ret;
+  }
 
   let stop = false;
   let i = 0;
