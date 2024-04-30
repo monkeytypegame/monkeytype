@@ -56,7 +56,7 @@ export default {
   smoothLineScroll: false,
   alwaysShowDecimalPlaces: false,
   alwaysShowWordsHistory: false,
-  singleListCommandLine: "manual",
+  singleListCommandLine: "on",
   capsLockWarning: true,
   playSoundOnError: "off",
   playSoundOnClick: "off",
