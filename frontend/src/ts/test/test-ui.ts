@@ -353,6 +353,7 @@ export function showWords(): void {
 
   $("#words").html(wordsHTML);
 
+  updateWordsWidth();
   updateWordsHeight(true);
   updateActiveElement(undefined, true);
   void Caret.updatePosition();
@@ -1407,6 +1408,38 @@ export function highlightMode(mode?: SharedTypes.Config.HighlightMode): void {
   $("#words").attr("class", existing.join(" "));
 }
 
+function updateWordsWidth(): void {
+  let css: Record<string, string> = {};
+  if (Config.tapeMode === "off") {
+    if (Config.maxLineWidth === 0) {
+      css = {
+        "max-width": "100%",
+      };
+    } else {
+      css = {
+        "max-width": Config.maxLineWidth + "ch",
+      };
+    }
+  } else {
+    if (Config.maxLineWidth === 0) {
+      css = {
+        "max-width": "100%",
+      };
+    } else {
+      css = {
+        "max-width": "100%",
+      };
+    }
+  }
+  const el = $("#typingTest");
+  el.css(css);
+  if (Config.maxLineWidth === 0) {
+    el.removeClass("full-width-padding").addClass("content");
+  } else {
+    el.removeClass("content").addClass("full-width-padding");
+  }
+}
+
 $(".pageTest").on("click", "#saveScreenshotButton", () => {
   void screenshot();
 });
@@ -1528,28 +1561,7 @@ ConfigEvent.subscribe((key, value) => {
       $(".pageTest #restartTestButton").addClass("hidden");
     }
   }
-  if (key === "tapeMode") {
-    if (value === "off") {
-      $("#typingTest").css({
-        "max-width": Config.maxLineWidth + "ch",
-      });
-      $("#miniTimerAndLiveWpm").css({
-        "grid-column": "full-width",
-      });
-    } else {
-      $("#typingTest").css({
-        "max-width": "100%",
-      });
-      $("#miniTimerAndLiveWpm").css({
-        "grid-column": "content",
-      });
-    }
-  }
   if (key === "maxLineWidth") {
-    if (Config.tapeMode === "off") {
-      $("#typingTest").css({
-        "max-width": Config.maxLineWidth + "ch",
-      });
-    }
+    updateWordsWidth();
   }
 });

@@ -93,5 +93,5 @@ export default {
   lazyMode: false,
   showAverage: "off",
   tapeMode: "off",
-  maxLineWidth: 70,
+  maxLineWidth: 0,
 } as SharedTypes.Config;
