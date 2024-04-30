@@ -1534,7 +1534,7 @@ ConfigEvent.subscribe((key, value) => {
         "max-width": Config.maxLineWidth + "ch",
       });
       $("#miniTimerAndLiveWpm").css({
-        "grid-column": "full-width-padding",
+        "grid-column": "full-width",
       });
     } else {
       $("#typingTest").css({
