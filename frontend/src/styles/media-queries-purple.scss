@@ -34,6 +34,12 @@
     }
   }
   .pageTest {
+    #testConfig {
+      display: none;
+    }
+    #mobileTestConfigButton {
+      display: block;
+    }
     #result .wrapper {
       .stats {
         grid-template-columns: 1fr;
