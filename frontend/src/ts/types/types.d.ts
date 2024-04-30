@@ -111,11 +111,14 @@ declare namespace MonkeyTypes {
   class Wordset {
     words: string[];
     length: number;
+    orderedIndex: number;
     shuffledIndexes: number[];
     constructor(words: string[]);
+    resetIndexes(): void;
     randomWord(mode: MonkeyTypes.FunboxWordsFrequency): string;
     shuffledWord(): string;
     generateShuffledIndexes(): void;
+    nextWord(): string;
   }
 
   class Section {

@@ -8,12 +8,18 @@ let currentWordset: MonkeyTypes.Wordset | null = null;
 export class Wordset implements MonkeyTypes.Wordset {
   words: string[];
   length: number;
-
+  orderedIndex: number;
   shuffledIndexes: number[];
 
   constructor(words: string[]) {
     this.words = words;
     this.length = this.words.length;
+    this.shuffledIndexes = [];
+    this.orderedIndex = 0;
+  }
+
+  resetIndexes(): void {
+    this.orderedIndex = 0;
     this.shuffledIndexes = [];
   }
 
@@ -39,6 +45,13 @@ export class Wordset implements MonkeyTypes.Wordset {
     }
     shuffle(this.shuffledIndexes);
   }
+
+  nextWord(): string {
+    if (this.orderedIndex >= this.length) {
+      this.orderedIndex = 0;
+    }
+    return this.words[this.orderedIndex++] as string;
+  }
 }
 
 export async function withWords(words: string[]): Promise<MonkeyTypes.Wordset> {
@@ -51,5 +64,6 @@ export async function withWords(words: string[]): Promise<MonkeyTypes.Wordset> {
   if (currentWordset === null || words !== currentWordset.words) {
     currentWordset = new Wordset(words);
   }
+  currentWordset.resetIndexes();
   return currentWordset;
 }

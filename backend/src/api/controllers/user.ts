@@ -182,6 +182,10 @@ export async function deleteUser(
 
   const userInfo = await UserDAL.getUser(uid, "delete user");
 
+  if (userInfo.banned) {
+    throw new MonkeyError(403, "Banned users cannot delete their account");
+  }
+
   //cleanup database
   await Promise.all([
     UserDAL.deleteUser(uid),
@@ -213,6 +217,10 @@ export async function resetUser(
   const { uid } = req.ctx.decodedToken;
 
   const userInfo = await UserDAL.getUser(uid, "reset user");
+  if (userInfo.banned) {
+    throw new MonkeyError(403, "Banned users cannot reset their account");
+  }
+
   const promises = [
     UserDAL.resetUser(uid),
     deleteAllApeKeys(uid),
@@ -241,6 +249,10 @@ export async function updateName(
   const { name } = req.body;
 
   const user = await UserDAL.getUser(uid, "update name");
+
+  if (user.banned) {
+    throw new MonkeyError(403, "Banned users cannot change their name");
+  }
 
   if (
     !user?.needsToChangeName &&
