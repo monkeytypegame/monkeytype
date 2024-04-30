@@ -148,7 +148,9 @@ export async function update(
         animTime,
         easing.both,
         () => {
-          //
+          if (currentWidth !== 0) {
+            puncAndNumEl.css("width", "unset");
+          }
         }
       );
   }
