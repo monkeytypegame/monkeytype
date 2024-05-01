@@ -3,6 +3,7 @@ import * as ActivePage from "../states/active-page";
 import * as LiveSpeed from "./live-speed";
 import * as LiveBurst from "./live-burst";
 import * as LiveAcc from "./live-acc";
+import * as TimerProgress from "./timer-progress";
 
 const unfocusPx = 3;
 let state = false;
@@ -25,6 +26,7 @@ export function set(foc: boolean, withCursor = false): void {
     LiveSpeed.show();
     LiveBurst.show();
     LiveAcc.show();
+    TimerProgress.show();
   } else if (!foc && state) {
     state = false;
     Caret.startAnimation();
@@ -43,6 +45,7 @@ export function set(foc: boolean, withCursor = false): void {
     LiveSpeed.hide();
     LiveBurst.hide();
     LiveAcc.hide();
+    TimerProgress.hide();
   }
 }
 
