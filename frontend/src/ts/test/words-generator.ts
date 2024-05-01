@@ -383,6 +383,10 @@ export function getWordOrder(): MonkeyTypes.FunboxWordOrder {
 }
 
 export function getWordsLimit(): number {
+  if (Config.mode === "zen") {
+    return 0;
+  }
+
   let limit = 100;
 
   const funboxToPush =
@@ -595,6 +599,8 @@ export async function generateWords(
     wordList = CustomText.getText();
   } else if (Config.mode === "quote") {
     wordList = await getQuoteWordList(language, wordOrder);
+  } else if (Config.mode === "zen") {
+    wordList = [];
   }
 
   const limit = getWordsLimit();
@@ -605,6 +611,11 @@ export async function generateWords(
   }
 
   currentWordset = await Wordset.withWords(wordList);
+  console.debug("Wordset", currentWordset);
+
+  if (limit === 0) {
+    return ret;
+  }
 
   let stop = false;
   let i = 0;
@@ -687,11 +698,30 @@ export async function getNextWord(
     const repeated = previousGetNextWordReturns[wordIndex];
 
     if (repeated === undefined) {
-      throw new WordGenError("Repeated word is undefined");
-    }
+      // if the repeated word is undefined, that means we are out of words from the previous test
+      // we need to either throw, or revert to random generation
+      // reverting should only happen in certain cases
 
-    console.debug("Repeated word: ", repeated);
-    return repeated;
+      let continueRandomGeneration = false;
+
+      if (
+        Config.mode === "time" ||
+        (Config.mode === "custom" && CustomText.getLimitMode() === "time")
+      ) {
+        continueRandomGeneration = true;
+      }
+
+      if (!continueRandomGeneration) {
+        throw new WordGenError("Repeated word is undefined");
+      } else {
+        console.debug(
+          "Repeated word is undefined but random generation is allowed - getting random word"
+        );
+      }
+    } else {
+      console.debug("Repeated word: ", repeated);
+      return repeated;
+    }
   }
 
   const funboxFrequency = getFunboxWordsFrequency() ?? "normal";

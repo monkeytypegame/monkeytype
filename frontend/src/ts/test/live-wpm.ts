@@ -24,7 +24,7 @@ export function show(): void {
   if (!Config.showLiveWpm) return;
   if (!TestState.isActive) return;
   if (state) return;
-  if (Config.timerStyle === "mini") {
+  if (Config.timerStyle === "mini" || Config.timerStyle === "bar") {
     $(miniLiveWpmElement)
       .stop(true, false)
       .removeClass("hidden")

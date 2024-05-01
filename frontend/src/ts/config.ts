@@ -1669,7 +1669,7 @@ export function setMaxLineWidth(
     return false;
   }
 
-  if (maxLineWidth < 20) {
+  if (maxLineWidth < 20 && maxLineWidth !== 0) {
     maxLineWidth = 20;
   }
   if (maxLineWidth > 1000) {

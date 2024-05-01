@@ -56,7 +56,7 @@ export default {
   smoothLineScroll: false,
   alwaysShowDecimalPlaces: false,
   alwaysShowWordsHistory: false,
-  singleListCommandLine: "manual",
+  singleListCommandLine: "on",
   capsLockWarning: true,
   playSoundOnError: "off",
   playSoundOnClick: "off",
@@ -93,5 +93,5 @@ export default {
   lazyMode: false,
   showAverage: "off",
   tapeMode: "off",
-  maxLineWidth: 70,
+  maxLineWidth: 0,
 } as SharedTypes.Config;

@@ -17,7 +17,7 @@ export function show(): void {
   if (!Config.showLiveBurst) return;
   if (!TestState.isActive) return;
   if (state) return;
-  if (Config.timerStyle === "mini") {
+  if (Config.timerStyle === "mini" || Config.timerStyle === "bar") {
     $("#miniTimerAndLiveWpm .burst")
       .stop(true, false)
       .removeClass("hidden")
