@@ -158,18 +158,6 @@
     gap: clamp(1rem, 8vw, 5rem);
     width: 0;
     margin: 0 auto;
-
-    #liveWpm {
-      opacity: 0;
-    }
-
-    #liveAcc {
-      opacity: 0;
-    }
-
-    #liveBurst {
-      opacity: 0;
-    }
   }
 
   #liveStatsTextBottom.timerMain,
