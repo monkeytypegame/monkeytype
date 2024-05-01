@@ -43,7 +43,10 @@ export function show(): void {
 
 export function reset(): void {
   let width = "0vw";
-  if (Config.mode === "time") {
+  if (
+    Config.mode === "time" ||
+    (Config.mode === "custom" && CustomText.getLimitMode() === "time")
+  ) {
     width = "100vw";
   }
   barEl.stop(true, true).animate(
