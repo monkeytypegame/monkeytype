@@ -1147,17 +1147,14 @@
       line-height: 1em;
     }
 
-    .time {
-      margin-right: 2rem;
-    }
-
-    .wpm,
+    .time,
+    .speed,
     .acc {
-      margin-right: 2rem;
+      margin-right: 0.5em;
     }
 
     .time,
-    .wpm,
+    .speed,
     .acc,
     .burst {
       opacity: 0;
