@@ -1,12 +1,17 @@
 import Config from "../config";
-import * as TestState from "../test/test-state";
+import * as TestState from "./test-state";
 import * as ConfigEvent from "../observables/config-event";
 import Format from "../utils/format";
 
-const liveWpmElement = document.querySelector("#liveWpm") as Element;
-const miniLiveWpmElement = document.querySelector(
-  "#miniTimerAndLiveWpm .wpm"
+const textElement = document.querySelector(
+  "#liveStatsTextBottom .liveSpeed"
 ) as Element;
+const miniElement = document.querySelector("#liveStatsMini .speed") as Element;
+
+export function reset(): void {
+  textElement.innerHTML = "0";
+  miniElement.innerHTML = "0";
+}
 
 export function update(wpm: number, raw: number): void {
   let number = wpm;
@@ -14,18 +19,18 @@ export function update(wpm: number, raw: number): void {
     number = raw;
   }
   const numberText = Format.typingSpeed(number, { showDecimalPlaces: false });
-  miniLiveWpmElement.innerHTML = numberText;
-  liveWpmElement.innerHTML = numberText;
+  textElement.innerHTML = numberText;
+  miniElement.innerHTML = numberText;
 }
 
 let state = false;
 
 export function show(): void {
-  if (!Config.showLiveWpm) return;
+  if (Config.liveSpeedStyle === "off") return;
   if (!TestState.isActive) return;
   if (state) return;
-  if (Config.timerStyle === "mini" || Config.timerStyle === "bar") {
-    $(miniLiveWpmElement)
+  if (Config.liveSpeedStyle === "mini") {
+    $(miniElement)
       .stop(true, false)
       .removeClass("hidden")
       .css("opacity", 0)
@@ -36,7 +41,7 @@ export function show(): void {
         125
       );
   } else {
-    $(liveWpmElement)
+    $(textElement)
       .stop(true, false)
       .removeClass("hidden")
       .css("opacity", 0)
@@ -52,7 +57,7 @@ export function show(): void {
 
 export function hide(): void {
   if (!state) return;
-  $(liveWpmElement)
+  $(textElement)
     .stop(true, false)
     .animate(
       {
@@ -60,10 +65,10 @@ export function hide(): void {
       },
       125,
       () => {
-        liveWpmElement.classList.add("hidden");
+        textElement.classList.add("hidden");
       }
     );
-  $(miniLiveWpmElement)
+  $(miniElement)
     .stop(true, false)
     .animate(
       {
@@ -71,12 +76,12 @@ export function hide(): void {
       },
       125,
       () => {
-        miniLiveWpmElement.classList.add("hidden");
+        miniElement.classList.add("hidden");
       }
     );
   state = false;
 }
 
 ConfigEvent.subscribe((eventKey, eventValue) => {
-  if (eventKey === "showLiveWpm") (eventValue as boolean) ? show() : hide();
+  if (eventKey === "liveSpeedStyle") eventValue === "off" ? hide() : show();
 });

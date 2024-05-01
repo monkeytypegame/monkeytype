@@ -181,7 +181,7 @@ header #logo .top,
   animation: rainbow 7.5s ease-in-out forwards;
 }
 
-#timerNumber.timerMain,
+#liveStatsTextTop.timerMain,
 #largeLiveWpmAndAcc.timerMain,
 #miniTimerAndLiveWpm.timerMain {
   animation: rainbow-infinite-loop 30s linear infinite;

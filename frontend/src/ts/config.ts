@@ -984,9 +984,9 @@ export function setTimerColor(
   $("#timer").removeClass("timerText");
   $("#timer").removeClass("timerMain");
 
-  $("#timerNumber").removeClass("timerSub");
-  $("#timerNumber").removeClass("timerText");
-  $("#timerNumber").removeClass("timerMain");
+  $("#liveStatsTextTop").removeClass("timerSub");
+  $("#liveStatsTextTop").removeClass("timerText");
+  $("#liveStatsTextTop").removeClass("timerMain");
 
   $("#largeLiveWpmAndAcc").removeClass("timerSub");
   $("#largeLiveWpmAndAcc").removeClass("timerText");
@@ -998,17 +998,17 @@ export function setTimerColor(
 
   if (color === "main") {
     $("#timer").addClass("timerMain");
-    $("#timerNumber").addClass("timerMain");
+    $("#liveStatsTextTop").addClass("timerMain");
     $("#largeLiveWpmAndAcc").addClass("timerMain");
     $("#miniTimerAndLiveWpm").addClass("timerMain");
   } else if (color === "sub") {
     $("#timer").addClass("timerSub");
-    $("#timerNumber").addClass("timerSub");
+    $("#liveStatsTextTop").addClass("timerSub");
     $("#largeLiveWpmAndAcc").addClass("timerSub");
     $("#miniTimerAndLiveWpm").addClass("timerSub");
   } else if (color === "text") {
     $("#timer").addClass("timerText");
-    $("#timerNumber").addClass("timerText");
+    $("#liveStatsTextTop").addClass("timerText");
     $("#largeLiveWpmAndAcc").addClass("timerText");
     $("#miniTimerAndLiveWpm").addClass("timerText");
   }

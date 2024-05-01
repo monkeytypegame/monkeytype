@@ -119,7 +119,7 @@
     }
   }
 
-  #timerNumber {
+  #liveStatsTextTop {
     pointer-events: none;
     transition: 0.25s;
     height: 0;
@@ -175,7 +175,7 @@
   }
 
   #largeLiveWpmAndAcc.timerMain,
-  #timerNumber.timerMain {
+  #liveStatsTextTop.timerMain {
     color: var(--main-color);
   }
 
@@ -184,7 +184,7 @@
   }
 
   #largeLiveWpmAndAcc.timerSub,
-  #timerNumber.timerSub {
+  #liveStatsTextTop.timerSub {
     color: var(--sub-color);
   }
 
@@ -193,7 +193,7 @@
   }
 
   #largeLiveWpmAndAcc.timerText,
-  #timerNumber.timerText {
+  #liveStatsTextTop.timerText {
     color: var(--text-color);
   }
 

@@ -18,7 +18,7 @@ export function show(): void {
       125
     );
   } else if (Config.timerStyle === "text") {
-    $("#timerNumber")
+    $("#liveStatsTextTop")
       .stop(true, true)
       .removeClass("hidden")
       .css("opacity", 0)
@@ -61,7 +61,7 @@ export function hide(): void {
         $("#miniTimerAndLiveWpm .time").addClass("hidden");
       }
     );
-  $("#timerNumber").stop(true, true).animate(
+  $("#liveStatsTextTop").stop(true, true).animate(
     {
       opacity: 0,
     },
@@ -89,7 +89,7 @@ export function restart(): void {
   }
 }
 
-const timerNumberElement = document.querySelector("#timerNumber");
+const timerNumberElement = document.querySelector("#liveStatsTextTop");
 const miniTimerNumberElement = document.querySelector(
   "#miniTimerAndLiveWpm .time"
 );

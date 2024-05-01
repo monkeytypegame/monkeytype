@@ -3,19 +3,19 @@ import * as TestState from "../test/test-state";
 import * as ConfigEvent from "../observables/config-event";
 
 export function update(acc: number): void {
-  let number = Math.floor(acc);
-  if (Config.blindMode) {
-    number = 100;
-  }
-  (document.querySelector("#miniTimerAndLiveWpm .acc") as Element).innerHTML =
-    number + "%";
-  (document.querySelector("#liveAcc") as Element).innerHTML = number + "%";
+  // let number = Math.floor(acc);
+  // if (Config.blindMode) {
+  //   number = 100;
+  // }
+  // (document.querySelector("#miniTimerAndLiveWpm .acc") as Element).innerHTML =
+  //   number + "%";
+  // (document.querySelector("#liveAcc") as Element).innerHTML = number + "%";
 }
 
 let state = false;
 
 export function show(): void {
-  if (!Config.showLiveAcc) return;
+  if (Config.liveAccStyle === "off") return;
   if (!TestState.isActive) return;
   if (state) return;
   if (Config.timerStyle === "mini" || Config.timerStyle === "bar") {
@@ -74,5 +74,5 @@ export function hide(): void {
 }
 
 ConfigEvent.subscribe((eventKey, eventValue) => {
-  if (eventKey === "showLiveAcc") (eventValue as boolean) ? show() : hide();
+  if (eventKey === "liveAccStyle") eventValue === "off" ? hide() : show();
 });
