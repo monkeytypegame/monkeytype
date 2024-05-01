@@ -8,29 +8,30 @@ import * as SlowTimer from "../states/slow-timer";
 import * as TestState from "./test-state";
 import * as ConfigEvent from "../observables/config-event";
 
+const barWrapperEl = $("#barTimerProgress");
+const barEl = $("#barTimerProgress .bar");
+const textEl = $("#liveStatsTextTop");
+const miniEl = $("#liveStatsMini .time");
+
 export function show(): void {
   const op = Config.timerStyle !== "off" ? parseFloat(Config.timerOpacity) : 0;
   if (Config.mode !== "zen" && Config.timerStyle === "bar") {
-    $("#barTimerProgress").stop(true, true).removeClass("hidden").animate(
+    barWrapperEl.stop(true, true).removeClass("hidden").animate(
       {
         opacity: op,
       },
       125
     );
   } else if (Config.timerStyle === "text") {
-    $("#liveStatsTextTop")
-      .stop(true, true)
-      .removeClass("hidden")
-      .css("opacity", 0)
-      .animate(
-        {
-          opacity: op,
-        },
-        125
-      );
+    textEl.stop(true, true).removeClass("hidden").css("opacity", 0).animate(
+      {
+        opacity: op,
+      },
+      125
+    );
   } else if (Config.mode === "zen" || Config.timerStyle === "mini") {
     if (op > 0) {
-      $("#liveStatsMini .time").stop(true, true).removeClass("hidden").animate(
+      miniEl.stop(true, true).removeClass("hidden").animate(
         {
           opacity: op,
         },
@@ -41,24 +42,22 @@ export function show(): void {
 }
 
 export function hide(): void {
-  $("#barTimerProgress").stop(true, true).animate(
+  barWrapperEl.stop(true, true).animate(
     {
       opacity: 0,
     },
     125
   );
-  $("#liveStatsMini .time")
-    .stop(true, true)
-    .animate(
-      {
-        opacity: 0,
-      },
-      125,
-      () => {
-        $("#liveStatsMini .time").addClass("hidden");
-      }
-    );
-  $("#liveStatsTextTop").stop(true, true).animate(
+  miniEl.stop(true, true).animate(
+    {
+      opacity: 0,
+    },
+    125,
+    () => {
+      miniEl.addClass("hidden");
+    }
+  );
+  textEl.stop(true, true).animate(
     {
       opacity: 0,
     },
@@ -69,14 +68,14 @@ export function hide(): void {
 export function restart(): void {
   if (Config.timerStyle === "bar") {
     if (Config.mode === "time") {
-      $("#barTimerProgress .bar").stop(true, true).animate(
+      barEl.stop(true, true).animate(
         {
           width: "100vw",
         },
         0
       );
     } else if (Config.mode === "words" || Config.mode === "custom") {
-      $("#barTimerProgress .bar").stop(true, true).animate(
+      barEl.stop(true, true).animate(
         {
           width: "0vw",
         },
@@ -86,8 +85,8 @@ export function restart(): void {
   }
 }
 
-const timerNumberElement = document.querySelector("#liveStatsTextTop");
-const miniTimerNumberElement = document.querySelector("#liveStatsMini .time");
+const timerNumberElement = textEl[0] as HTMLElement;
+const miniTimerNumberElement = miniEl[0] as HTMLElement;
 
 function getCurrentCount(): number {
   if (Config.mode === "custom" && CustomText.getLimitMode() === "section") {
@@ -113,15 +112,13 @@ export function update(): void {
     }
     if (Config.timerStyle === "bar") {
       const percent = 100 - ((time + 1) / maxtime) * 100;
-      $("#barTimerProgress .bar")
-        .stop(true, true)
-        .animate(
-          {
-            width: percent + "vw",
-          },
-          SlowTimer.get() ? 0 : 1000,
-          "linear"
-        );
+      barEl.stop(true, true).animate(
+        {
+          width: percent + "vw",
+        },
+        SlowTimer.get() ? 0 : 1000,
+        "linear"
+      );
     } else if (Config.timerStyle === "text") {
       let displayTime = DateTime.secondsToString(maxtime - time);
       if (maxtime === 0) {
@@ -150,13 +147,6 @@ export function update(): void {
     }
     if (Config.mode === "custom") {
       outof = CustomText.getLimitValue();
-      // if (CustomText.getLimitMode() === "word") {
-      //   outof = CustomText.word;
-      // } else if (CustomText.isSectionRandom) {
-      //   outof = CustomText.section;
-      // } else {
-      //   outof = CustomText.text.length;
-      // }
     }
     if (Config.mode === "quote") {
       outof = TestWords.randomQuote?.textSplit?.length ?? 1;
@@ -165,14 +155,12 @@ export function update(): void {
       const percent = Math.floor(
         ((TestWords.words.currentIndex + 1) / outof) * 100
       );
-      $("#barTimerProgress .bar")
-        .stop(true, true)
-        .animate(
-          {
-            width: percent + "vw",
-          },
-          SlowTimer.get() ? 0 : 250
-        );
+      barEl.stop(true, true).animate(
+        {
+          width: percent + "vw",
+        },
+        SlowTimer.get() ? 0 : 250
+      );
     } else if (Config.timerStyle === "text") {
       if (outof === 0) {
         if (timerNumberElement !== null) {
