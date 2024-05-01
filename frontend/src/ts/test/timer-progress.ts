@@ -30,15 +30,12 @@ export function show(): void {
       );
   } else if (Config.mode === "zen" || Config.timerStyle === "mini") {
     if (op > 0) {
-      $("#miniTimerAndLiveWpm .time")
-        .stop(true, true)
-        .removeClass("hidden")
-        .animate(
-          {
-            opacity: op,
-          },
-          125
-        );
+      $("#liveStatsMini .time").stop(true, true).removeClass("hidden").animate(
+        {
+          opacity: op,
+        },
+        125
+      );
     }
   }
 }
@@ -50,7 +47,7 @@ export function hide(): void {
     },
     125
   );
-  $("#miniTimerAndLiveWpm .time")
+  $("#liveStatsMini .time")
     .stop(true, true)
     .animate(
       {
@@ -58,7 +55,7 @@ export function hide(): void {
       },
       125,
       () => {
-        $("#miniTimerAndLiveWpm .time").addClass("hidden");
+        $("#liveStatsMini .time").addClass("hidden");
       }
     );
   $("#liveStatsTextTop").stop(true, true).animate(
@@ -90,9 +87,7 @@ export function restart(): void {
 }
 
 const timerNumberElement = document.querySelector("#liveStatsTextTop");
-const miniTimerNumberElement = document.querySelector(
-  "#miniTimerAndLiveWpm .time"
-);
+const miniTimerNumberElement = document.querySelector("#liveStatsMini .time");
 
 function getCurrentCount(): number {
   if (Config.mode === "custom" && CustomText.getLimitMode() === "section") {

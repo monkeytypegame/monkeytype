@@ -183,7 +183,7 @@ header #logo .top,
 
 #liveStatsTextTop.timerMain,
 #largeLiveWpmAndAcc.timerMain,
-#miniTimerAndLiveWpm.timerMain {
+#liveStatsMini.timerMain {
   animation: rainbow-infinite-loop 30s linear infinite;
 }
 

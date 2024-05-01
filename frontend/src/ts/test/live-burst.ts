@@ -6,7 +6,7 @@ import Format from "../utils/format";
 export async function update(burst: number): Promise<void> {
   if (!Config.showLiveBurst) return;
   const burstText = Format.typingSpeed(burst, { showDecimalPlaces: false });
-  (document.querySelector("#miniTimerAndLiveWpm .burst") as Element).innerHTML =
+  (document.querySelector("#liveStatsMini .burst") as Element).innerHTML =
     burstText;
   (document.querySelector("#liveBurst") as Element).innerHTML = burstText;
 }
@@ -18,7 +18,7 @@ export function show(): void {
   if (!TestState.isActive) return;
   if (state) return;
   if (Config.timerStyle === "mini" || Config.timerStyle === "bar") {
-    $("#miniTimerAndLiveWpm .burst")
+    $("#liveStatsMini .burst")
       .stop(true, false)
       .removeClass("hidden")
       .css("opacity", 0)
@@ -56,7 +56,7 @@ export function hide(): void {
         $("#liveBurst").addClass("hidden");
       }
     );
-  $("#miniTimerAndLiveWpm .burst")
+  $("#liveStatsMini .burst")
     .stop(true, false)
     .animate(
       {
@@ -64,7 +64,7 @@ export function hide(): void {
       },
       125,
       () => {
-        $("#miniTimerAndLiveWpm .burst").addClass("hidden");
+        $("#liveStatsMini .burst").addClass("hidden");
       }
     );
   state = false;

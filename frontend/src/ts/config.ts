@@ -992,25 +992,25 @@ export function setTimerColor(
   $("#largeLiveWpmAndAcc").removeClass("timerText");
   $("#largeLiveWpmAndAcc").removeClass("timerMain");
 
-  $("#miniTimerAndLiveWpm").removeClass("timerSub");
-  $("#miniTimerAndLiveWpm").removeClass("timerText");
-  $("#miniTimerAndLiveWpm").removeClass("timerMain");
+  $("#liveStatsMini").removeClass("timerSub");
+  $("#liveStatsMini").removeClass("timerText");
+  $("#liveStatsMini").removeClass("timerMain");
 
   if (color === "main") {
     $("#timer").addClass("timerMain");
     $("#liveStatsTextTop").addClass("timerMain");
     $("#largeLiveWpmAndAcc").addClass("timerMain");
-    $("#miniTimerAndLiveWpm").addClass("timerMain");
+    $("#liveStatsMini").addClass("timerMain");
   } else if (color === "sub") {
     $("#timer").addClass("timerSub");
     $("#liveStatsTextTop").addClass("timerSub");
     $("#largeLiveWpmAndAcc").addClass("timerSub");
-    $("#miniTimerAndLiveWpm").addClass("timerSub");
+    $("#liveStatsMini").addClass("timerSub");
   } else if (color === "text") {
     $("#timer").addClass("timerText");
     $("#liveStatsTextTop").addClass("timerText");
     $("#largeLiveWpmAndAcc").addClass("timerText");
-    $("#miniTimerAndLiveWpm").addClass("timerText");
+    $("#liveStatsMini").addClass("timerText");
   }
 
   saveToLocalStorage("timerColor", nosave);
@@ -1666,7 +1666,7 @@ export function setFontSize(fontSize: number, nosave?: boolean): boolean {
 
   config.fontSize = fontSize;
 
-  $("#caret, #paceCaret, #miniTimerAndLiveWpm, #typingTest").css(
+  $("#caret, #paceCaret, #liveStatsMini, #typingTest").css(
     "fontSize",
     fontSize + "rem"
   );

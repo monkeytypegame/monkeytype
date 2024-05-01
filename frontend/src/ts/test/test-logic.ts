@@ -352,14 +352,14 @@ export function restart(options = {} as RestartOptions): void {
             // TimerProgress.reset();
 
             // (
-            //   document.querySelector("#miniTimerAndLiveWpm .wpm") as HTMLElement
+            //   document.querySelector("#liveStatsMini .wpm") as HTMLElement
             // ).innerHTML = "0";
             // (
-            //   document.querySelector("#miniTimerAndLiveWpm .acc") as HTMLElement
+            //   document.querySelector("#liveStatsMini .acc") as HTMLElement
             // ).innerHTML = "100%";
             // (
             //   document.querySelector(
-            //     "#miniTimerAndLiveWpm .burst"
+            //     "#liveStatsMini .burst"
             //   ) as HTMLElement
             // ).innerHTML = "0";
             // (document.querySelector("#liveWpm") as HTMLElement).innerHTML = "0";

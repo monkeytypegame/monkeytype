@@ -7,7 +7,7 @@ export function update(acc: number): void {
   // if (Config.blindMode) {
   //   number = 100;
   // }
-  // (document.querySelector("#miniTimerAndLiveWpm .acc") as Element).innerHTML =
+  // (document.querySelector("#liveStatsMini .acc") as Element).innerHTML =
   //   number + "%";
   // (document.querySelector("#liveAcc") as Element).innerHTML = number + "%";
 }
@@ -19,7 +19,7 @@ export function show(): void {
   if (!TestState.isActive) return;
   if (state) return;
   if (Config.timerStyle === "mini" || Config.timerStyle === "bar") {
-    $("#miniTimerAndLiveWpm .acc")
+    $("#liveStatsMini .acc")
       .stop(true, false)
       .removeClass("hidden")
       .css("opacity", 0)
@@ -46,7 +46,7 @@ export function show(): void {
 
 export function hide(): void {
   // $("#liveWpm").css("opacity", 0);
-  // $("#miniTimerAndLiveWpm .wpm").css("opacity", 0);
+  // $("#liveStatsMini .wpm").css("opacity", 0);
   if (!state) return;
   $("#liveAcc")
     .stop(true, false)
@@ -59,7 +59,7 @@ export function hide(): void {
         $("#liveAcc").addClass("hidden");
       }
     );
-  $("#miniTimerAndLiveWpm .acc")
+  $("#liveStatsMini .acc")
     .stop(true, false)
     .animate(
       {
@@ -67,7 +67,7 @@ export function hide(): void {
       },
       125,
       () => {
-        $("#miniTimerAndLiveWpm .acc").addClass("hidden");
+        $("#liveStatsMini .acc").addClass("hidden");
       }
     );
   state = false;
