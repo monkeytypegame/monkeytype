@@ -519,6 +519,11 @@ export async function unlinkDiscord(
   const { uid } = req.ctx.decodedToken;
 
   const userInfo = await UserDAL.getUser(uid, "unlink discord");
+
+  if (userInfo.banned) {
+    throw new MonkeyError(403, "Banned accounts cannot unlink Discord");
+  }
+
   const discordId = userInfo.discordId;
   if (discordId === undefined || discordId === "") {
     throw new MonkeyError(404, "User does not have a linked Discord account");
