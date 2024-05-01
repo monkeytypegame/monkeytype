@@ -36,7 +36,7 @@ export function show(): void {
       .css("opacity", 0)
       .animate(
         {
-          opacity: Config.timerOpacity,
+          opacity: 1,
         },
         125
       );
@@ -47,7 +47,7 @@ export function show(): void {
       .css("opacity", 0)
       .animate(
         {
-          opacity: Config.timerOpacity,
+          opacity: 1,
         },
         125
       );
