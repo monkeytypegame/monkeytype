@@ -18,7 +18,7 @@ export function show(): void {
   if (!Config.showLiveAcc) return;
   if (!TestState.isActive) return;
   if (state) return;
-  if (Config.timerStyle === "mini") {
+  if (Config.timerStyle === "mini" || Config.timerStyle === "bar") {
     $("#miniTimerAndLiveWpm .acc")
       .stop(true, false)
       .removeClass("hidden")
