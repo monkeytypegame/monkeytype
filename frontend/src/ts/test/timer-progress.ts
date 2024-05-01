@@ -11,7 +11,7 @@ import * as ConfigEvent from "../observables/config-event";
 export function show(): void {
   const op = Config.timerStyle !== "off" ? parseFloat(Config.timerOpacity) : 0;
   if (Config.mode !== "zen" && Config.timerStyle === "bar") {
-    $("#timerWrapper").stop(true, true).removeClass("hidden").animate(
+    $("#barTimerProgress").stop(true, true).removeClass("hidden").animate(
       {
         opacity: op,
       },
@@ -41,7 +41,7 @@ export function show(): void {
 }
 
 export function hide(): void {
-  $("#timerWrapper").stop(true, true).animate(
+  $("#barTimerProgress").stop(true, true).animate(
     {
       opacity: 0,
     },
@@ -69,14 +69,14 @@ export function hide(): void {
 export function restart(): void {
   if (Config.timerStyle === "bar") {
     if (Config.mode === "time") {
-      $("#timer").stop(true, true).animate(
+      $("#barTimerProgress .bar").stop(true, true).animate(
         {
           width: "100vw",
         },
         0
       );
     } else if (Config.mode === "words" || Config.mode === "custom") {
-      $("#timer").stop(true, true).animate(
+      $("#barTimerProgress .bar").stop(true, true).animate(
         {
           width: "0vw",
         },
@@ -113,7 +113,7 @@ export function update(): void {
     }
     if (Config.timerStyle === "bar") {
       const percent = 100 - ((time + 1) / maxtime) * 100;
-      $("#timer")
+      $("#barTimerProgress .bar")
         .stop(true, true)
         .animate(
           {
@@ -165,7 +165,7 @@ export function update(): void {
       const percent = Math.floor(
         ((TestWords.words.currentIndex + 1) / outof) * 100
       );
-      $("#timer")
+      $("#barTimerProgress .bar")
         .stop(true, true)
         .animate(
           {

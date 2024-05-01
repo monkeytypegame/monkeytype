@@ -980,9 +980,9 @@ export function setTimerColor(
 
   config.timerColor = color;
 
-  $("#timer").removeClass("timerSub");
-  $("#timer").removeClass("timerText");
-  $("#timer").removeClass("timerMain");
+  $("#barTimerProgress").removeClass("timerSub");
+  $("#barTimerProgress").removeClass("timerText");
+  $("#barTimerProgress").removeClass("timerMain");
 
   $("#liveStatsTextTop").removeClass("timerSub");
   $("#liveStatsTextTop").removeClass("timerText");
@@ -997,17 +997,17 @@ export function setTimerColor(
   $("#liveStatsMini").removeClass("timerMain");
 
   if (color === "main") {
-    $("#timer").addClass("timerMain");
+    $("#barTimerProgress").addClass("timerMain");
     $("#liveStatsTextTop").addClass("timerMain");
     $("#largeLiveWpmAndAcc").addClass("timerMain");
     $("#liveStatsMini").addClass("timerMain");
   } else if (color === "sub") {
-    $("#timer").addClass("timerSub");
+    $("#barTimerProgress").addClass("timerSub");
     $("#liveStatsTextTop").addClass("timerSub");
     $("#largeLiveWpmAndAcc").addClass("timerSub");
     $("#liveStatsMini").addClass("timerSub");
   } else if (color === "text") {
-    $("#timer").addClass("timerText");
+    $("#barTimerProgress").addClass("timerText");
     $("#liveStatsTextTop").addClass("timerText");
     $("#largeLiveWpmAndAcc").addClass("timerText");
     $("#liveStatsMini").addClass("timerText");
