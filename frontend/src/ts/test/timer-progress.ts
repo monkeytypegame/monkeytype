@@ -41,6 +41,21 @@ export function show(): void {
   }
 }
 
+export function reset(): void {
+  let width = "0vw";
+  if (Config.mode === "time") {
+    width = "100vw";
+  }
+  barEl.stop(true, true).animate(
+    {
+      width,
+    },
+    0
+  );
+  miniEl.text("0");
+  textEl.text("0");
+}
+
 export function hide(): void {
   barWrapperEl.stop(true, true).animate(
     {
@@ -63,26 +78,6 @@ export function hide(): void {
     },
     125
   );
-}
-
-export function restart(): void {
-  if (Config.timerStyle === "bar") {
-    if (Config.mode === "time") {
-      barEl.stop(true, true).animate(
-        {
-          width: "100vw",
-        },
-        0
-      );
-    } else if (Config.mode === "words" || Config.mode === "custom") {
-      barEl.stop(true, true).animate(
-        {
-          width: "0vw",
-        },
-        0
-      );
-    }
-  }
 }
 
 const timerNumberElement = textEl[0] as HTMLElement;

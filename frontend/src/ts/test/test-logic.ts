@@ -90,7 +90,6 @@ export function startTest(now: number): boolean {
   Replay.startReplayRecording();
   Replay.replayGetWordsList(TestWords.words.list);
   TestInput.resetKeypressTimings();
-  TimerProgress.restart();
   TimerProgress.show();
   LiveSpeed.show();
   LiveAcc.show();
@@ -346,10 +345,10 @@ export function restart(options = {} as RestartOptions): void {
           },
           options.noAnim ? 0 : 125,
           () => {
+            TimerProgress.reset();
             LiveSpeed.reset();
             // LiveAcc.reset();
             // LiveBurst.reset();
-            // TimerProgress.reset();
 
             // (
             //   document.querySelector("#liveStatsMini .wpm") as HTMLElement
