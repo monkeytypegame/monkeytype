@@ -8,36 +8,32 @@ import * as SlowTimer from "../states/slow-timer";
 import * as TestState from "./test-state";
 import * as ConfigEvent from "../observables/config-event";
 
-const barWrapperEl = $("#barTimerProgress");
 const barEl = $("#barTimerProgress .bar");
-const textEl = $("#liveStatsTextTop");
+const textEl = $("#liveStatsTextTop .timerProgress");
 const miniEl = $("#liveStatsMini .time");
 
 export function show(): void {
-  const op = Config.timerStyle !== "off" ? parseFloat(Config.timerOpacity) : 0;
   if (Config.mode !== "zen" && Config.timerStyle === "bar") {
-    barWrapperEl.stop(true, true).removeClass("hidden").animate(
+    barEl.stop(true, true).removeClass("hidden").animate(
       {
-        opacity: op,
+        opacity: 1,
       },
       125
     );
   } else if (Config.timerStyle === "text") {
     textEl.stop(true, true).removeClass("hidden").css("opacity", 0).animate(
       {
-        opacity: op,
+        opacity: 1,
       },
       125
     );
   } else if (Config.mode === "zen" || Config.timerStyle === "mini") {
-    if (op > 0) {
-      miniEl.stop(true, true).removeClass("hidden").animate(
-        {
-          opacity: op,
-        },
-        125
-      );
-    }
+    miniEl.stop(true, true).removeClass("hidden").animate(
+      {
+        opacity: 1,
+      },
+      125
+    );
   }
 }
 
@@ -60,7 +56,7 @@ export function reset(): void {
 }
 
 export function hide(): void {
-  barWrapperEl.stop(true, true).animate(
+  barEl.stop(true, true).animate(
     {
       opacity: 0,
     },

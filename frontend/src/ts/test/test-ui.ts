@@ -1564,4 +1564,10 @@ ConfigEvent.subscribe((key, value) => {
   if (key === "maxLineWidth") {
     updateWordsWidth();
   }
+  if (key === "timerOpacity") {
+    $("#barTimerProgress").css("opacity", parseFloat(value as string));
+    $("#liveStatsTextTop").css("opacity", parseFloat(value as string));
+    $("#liveStatsTextBottom").css("opacity", parseFloat(value as string));
+    $("#liveStatsMini").css("opacity", parseFloat(value as string));
+  }
 });
