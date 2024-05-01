@@ -980,39 +980,6 @@ export function setTimerColor(
 
   config.timerColor = color;
 
-  $("#barTimerProgress").removeClass("timerSub");
-  $("#barTimerProgress").removeClass("timerText");
-  $("#barTimerProgress").removeClass("timerMain");
-
-  $("#liveStatsTextTop").removeClass("timerSub");
-  $("#liveStatsTextTop").removeClass("timerText");
-  $("#liveStatsTextTop").removeClass("timerMain");
-
-  $("#liveStatsTextBottom").removeClass("timerSub");
-  $("#liveStatsTextBottom").removeClass("timerText");
-  $("#liveStatsTextBottom").removeClass("timerMain");
-
-  $("#liveStatsMini").removeClass("timerSub");
-  $("#liveStatsMini").removeClass("timerText");
-  $("#liveStatsMini").removeClass("timerMain");
-
-  if (color === "main") {
-    $("#barTimerProgress").addClass("timerMain");
-    $("#liveStatsTextTop").addClass("timerMain");
-    $("#liveStatsTextBottom").addClass("timerMain");
-    $("#liveStatsMini").addClass("timerMain");
-  } else if (color === "sub") {
-    $("#barTimerProgress").addClass("timerSub");
-    $("#liveStatsTextTop").addClass("timerSub");
-    $("#liveStatsTextBottom").addClass("timerSub");
-    $("#liveStatsMini").addClass("timerSub");
-  } else if (color === "text") {
-    $("#barTimerProgress").addClass("timerText");
-    $("#liveStatsTextTop").addClass("timerText");
-    $("#liveStatsTextBottom").addClass("timerText");
-    $("#liveStatsMini").addClass("timerText");
-  }
-
   saveToLocalStorage("timerColor", nosave);
   ConfigEvent.dispatch("timerColor", config.timerColor);
 
