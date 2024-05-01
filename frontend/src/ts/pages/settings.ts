@@ -47,24 +47,6 @@ async function initGroups(): Promise<void> {
     UpdateConfig.setQuickRestartMode,
     "button"
   ) as SettingsGroup<SharedTypes.ConfigValue>;
-  groups["showLiveWpm"] = new SettingsGroup(
-    "showLiveWpm",
-    UpdateConfig.setShowLiveWpm,
-    "button",
-    () => {
-      groups["keymapMode"]?.updateUI();
-    }
-  ) as SettingsGroup<SharedTypes.ConfigValue>;
-  groups["showLiveAcc"] = new SettingsGroup(
-    "showLiveAcc",
-    UpdateConfig.setShowLiveAcc,
-    "button"
-  ) as SettingsGroup<SharedTypes.ConfigValue>;
-  groups["showLiveBurst"] = new SettingsGroup(
-    "showLiveBurst",
-    UpdateConfig.setShowLiveBurst,
-    "button"
-  ) as SettingsGroup<SharedTypes.ConfigValue>;
   groups["showAverage"] = new SettingsGroup(
     "showAverage",
     UpdateConfig.setShowAverage,
@@ -349,6 +331,21 @@ async function initGroups(): Promise<void> {
   groups["timerStyle"] = new SettingsGroup(
     "timerStyle",
     UpdateConfig.setTimerStyle,
+    "button"
+  ) as SettingsGroup<SharedTypes.ConfigValue>;
+  groups["liveSpeedStyle"] = new SettingsGroup(
+    "liveSpeedStyle",
+    UpdateConfig.setLiveSpeedStyle,
+    "button"
+  ) as SettingsGroup<SharedTypes.ConfigValue>;
+  groups["liveAccStyle"] = new SettingsGroup(
+    "liveAccStyle",
+    UpdateConfig.setLiveAccStyle,
+    "button"
+  ) as SettingsGroup<SharedTypes.ConfigValue>;
+  groups["liveBurstStyle"] = new SettingsGroup(
+    "liveBurstStyle",
+    UpdateConfig.setLiveBurstStyle,
     "button"
   ) as SettingsGroup<SharedTypes.ConfigValue>;
   groups["highlightMode"] = new SettingsGroup(
