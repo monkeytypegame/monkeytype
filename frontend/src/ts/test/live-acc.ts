@@ -2,14 +2,18 @@ import Config from "../config";
 import * as TestState from "../test/test-state";
 import * as ConfigEvent from "../observables/config-event";
 
+const textEl = document.querySelector(
+  "#liveStatsTextBottom .liveAcc"
+) as Element;
+const miniEl = document.querySelector("#liveStatsMini .acc") as Element;
+
 export function update(acc: number): void {
-  // let number = Math.floor(acc);
-  // if (Config.blindMode) {
-  //   number = 100;
-  // }
-  // (document.querySelector("#liveStatsMini .acc") as Element).innerHTML =
-  //   number + "%";
-  // (document.querySelector("#liveAcc") as Element).innerHTML = number + "%";
+  let number = Math.floor(acc);
+  if (Config.blindMode) {
+    number = 100;
+  }
+  miniEl.innerHTML = number + "%";
+  textEl.innerHTML = number + "%";
 }
 
 let state = false;
@@ -18,37 +22,27 @@ export function show(): void {
   if (Config.liveAccStyle === "off") return;
   if (!TestState.isActive) return;
   if (state) return;
-  if (Config.timerStyle === "mini" || Config.timerStyle === "bar") {
-    $("#liveStatsMini .acc")
-      .stop(true, false)
-      .removeClass("hidden")
-      .css("opacity", 0)
-      .animate(
-        {
-          opacity: Config.timerOpacity,
-        },
-        125
-      );
+  if (Config.liveAccStyle === "mini") {
+    $(miniEl).stop(true, false).removeClass("hidden").css("opacity", 0).animate(
+      {
+        opacity: 1,
+      },
+      125
+    );
   } else {
-    $("#liveAcc")
-      .stop(true, false)
-      .removeClass("hidden")
-      .css("opacity", 0)
-      .animate(
-        {
-          opacity: Config.timerOpacity,
-        },
-        125
-      );
+    $(textEl).stop(true, false).removeClass("hidden").css("opacity", 0).animate(
+      {
+        opacity: 1,
+      },
+      125
+    );
   }
   state = true;
 }
 
 export function hide(): void {
-  // $("#liveWpm").css("opacity", 0);
-  // $("#liveStatsMini .wpm").css("opacity", 0);
   if (!state) return;
-  $("#liveAcc")
+  $(textEl)
     .stop(true, false)
     .animate(
       {
@@ -56,10 +50,10 @@ export function hide(): void {
       },
       125,
       () => {
-        $("#liveAcc").addClass("hidden");
+        $(textEl).addClass("hidden");
       }
     );
-  $("#liveStatsMini .acc")
+  $(miniEl)
     .stop(true, false)
     .animate(
       {
@@ -67,7 +61,7 @@ export function hide(): void {
       },
       125,
       () => {
-        $("#liveStatsMini .acc").addClass("hidden");
+        $(miniEl).addClass("hidden");
       }
     );
   state = false;
