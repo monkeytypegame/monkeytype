@@ -1440,6 +1440,48 @@ function updateWordsWidth(): void {
   }
 }
 
+function updateLiveStatsOpacity(value: SharedTypes.Config.TimerOpacity): void {
+  $("#barTimerProgress").css("opacity", parseFloat(value as string));
+  $("#liveStatsTextTop").css("opacity", parseFloat(value as string));
+  $("#liveStatsTextBottom").css("opacity", parseFloat(value as string));
+  $("#liveStatsMini").css("opacity", parseFloat(value as string));
+}
+
+function updateLiveStatsColor(value: SharedTypes.Config.TimerColor): void {
+  $("#barTimerProgress").removeClass("timerSub");
+  $("#barTimerProgress").removeClass("timerText");
+  $("#barTimerProgress").removeClass("timerMain");
+
+  $("#liveStatsTextTop").removeClass("timerSub");
+  $("#liveStatsTextTop").removeClass("timerText");
+  $("#liveStatsTextTop").removeClass("timerMain");
+
+  $("#liveStatsTextBottom").removeClass("timerSub");
+  $("#liveStatsTextBottom").removeClass("timerText");
+  $("#liveStatsTextBottom").removeClass("timerMain");
+
+  $("#liveStatsMini").removeClass("timerSub");
+  $("#liveStatsMini").removeClass("timerText");
+  $("#liveStatsMini").removeClass("timerMain");
+
+  if (value === "main") {
+    $("#barTimerProgress").addClass("timerMain");
+    $("#liveStatsTextTop").addClass("timerMain");
+    $("#liveStatsTextBottom").addClass("timerMain");
+    $("#liveStatsMini").addClass("timerMain");
+  } else if (value === "sub") {
+    $("#barTimerProgress").addClass("timerSub");
+    $("#liveStatsTextTop").addClass("timerSub");
+    $("#liveStatsTextBottom").addClass("timerSub");
+    $("#liveStatsMini").addClass("timerSub");
+  } else if (value === "text") {
+    $("#barTimerProgress").addClass("timerText");
+    $("#liveStatsTextTop").addClass("timerText");
+    $("#liveStatsTextBottom").addClass("timerText");
+    $("#liveStatsMini").addClass("timerText");
+  }
+}
+
 $(".pageTest").on("click", "#saveScreenshotButton", () => {
   void screenshot();
 });
@@ -1565,9 +1607,9 @@ ConfigEvent.subscribe((key, value) => {
     updateWordsWidth();
   }
   if (key === "timerOpacity") {
-    $("#barTimerProgress").css("opacity", parseFloat(value as string));
-    $("#liveStatsTextTop").css("opacity", parseFloat(value as string));
-    $("#liveStatsTextBottom").css("opacity", parseFloat(value as string));
-    $("#liveStatsMini").css("opacity", parseFloat(value as string));
+    updateLiveStatsOpacity(value as SharedTypes.Config.TimerOpacity);
+  }
+  if (key === "timerColor") {
+    updateLiveStatsColor(value as SharedTypes.Config.TimerColor);
   }
 });
