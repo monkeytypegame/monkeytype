@@ -9,10 +9,8 @@
     --content-max-width: 640px;
   }
   #testConfig {
-    display: none;
-  }
-  #mobileTestConfigButton {
-    display: block;
+    font-size: 0.65rem;
+    --horizontalPadding: 0.55em;
   }
   #testModesNotice {
     font-size: 0.8rem;
