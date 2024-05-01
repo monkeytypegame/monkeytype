@@ -141,7 +141,7 @@
     transition: none;
   }
 
-  #largeLiveWpmAndAcc {
+  #liveStatsTextBottom {
     font-size: clamp(1rem, 12vw, 10rem);
     color: black;
     width: 100%;
@@ -172,7 +172,7 @@
     }
   }
 
-  #largeLiveWpmAndAcc.timerMain,
+  #liveStatsTextBottom.timerMain,
   #liveStatsTextTop.timerMain {
     color: var(--main-color);
   }
@@ -181,7 +181,7 @@
     background: var(--main-color);
   }
 
-  #largeLiveWpmAndAcc.timerSub,
+  #liveStatsTextBottom.timerSub,
   #liveStatsTextTop.timerSub {
     color: var(--sub-color);
   }
@@ -190,7 +190,7 @@
     background: var(--sub-color);
   }
 
-  #largeLiveWpmAndAcc.timerText,
+  #liveStatsTextBottom.timerText,
   #liveStatsTextTop.timerText {
     color: var(--text-color);
   }

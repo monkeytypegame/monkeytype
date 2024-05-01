@@ -988,9 +988,9 @@ export function setTimerColor(
   $("#liveStatsTextTop").removeClass("timerText");
   $("#liveStatsTextTop").removeClass("timerMain");
 
-  $("#largeLiveWpmAndAcc").removeClass("timerSub");
-  $("#largeLiveWpmAndAcc").removeClass("timerText");
-  $("#largeLiveWpmAndAcc").removeClass("timerMain");
+  $("#liveStatsTextBottom").removeClass("timerSub");
+  $("#liveStatsTextBottom").removeClass("timerText");
+  $("#liveStatsTextBottom").removeClass("timerMain");
 
   $("#liveStatsMini").removeClass("timerSub");
   $("#liveStatsMini").removeClass("timerText");
@@ -999,17 +999,17 @@ export function setTimerColor(
   if (color === "main") {
     $("#barTimerProgress").addClass("timerMain");
     $("#liveStatsTextTop").addClass("timerMain");
-    $("#largeLiveWpmAndAcc").addClass("timerMain");
+    $("#liveStatsTextBottom").addClass("timerMain");
     $("#liveStatsMini").addClass("timerMain");
   } else if (color === "sub") {
     $("#barTimerProgress").addClass("timerSub");
     $("#liveStatsTextTop").addClass("timerSub");
-    $("#largeLiveWpmAndAcc").addClass("timerSub");
+    $("#liveStatsTextBottom").addClass("timerSub");
     $("#liveStatsMini").addClass("timerSub");
   } else if (color === "text") {
     $("#barTimerProgress").addClass("timerText");
     $("#liveStatsTextTop").addClass("timerText");
-    $("#largeLiveWpmAndAcc").addClass("timerText");
+    $("#liveStatsTextBottom").addClass("timerText");
     $("#liveStatsMini").addClass("timerText");
   }
 
