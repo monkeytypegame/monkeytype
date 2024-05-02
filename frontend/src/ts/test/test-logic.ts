@@ -347,26 +347,8 @@ export function restart(options = {} as RestartOptions): void {
           () => {
             TimerProgress.reset();
             LiveSpeed.reset();
-            // LiveAcc.reset();
-            // LiveBurst.reset();
-
-            // (
-            //   document.querySelector("#liveStatsMini .wpm") as HTMLElement
-            // ).innerHTML = "0";
-            // (
-            //   document.querySelector("#liveStatsMini .acc") as HTMLElement
-            // ).innerHTML = "100%";
-            // (
-            //   document.querySelector(
-            //     "#liveStatsMini .burst"
-            //   ) as HTMLElement
-            // ).innerHTML = "0";
-            // (document.querySelector("#liveWpm") as HTMLElement).innerHTML = "0";
-            // (document.querySelector("#liveAcc") as HTMLElement).innerHTML =
-            //   "100%";
-            // (document.querySelector("#liveBurst") as HTMLElement).innerHTML =
-            //   "0";
-
+            LiveAcc.reset();
+            LiveBurst.reset();
             TestUI.setTestRestarting(false);
             TestUI.updatePremid();
             ManualRestart.reset();
