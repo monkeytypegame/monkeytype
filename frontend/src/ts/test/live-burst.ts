@@ -3,49 +3,49 @@ import * as TestState from "../test/test-state";
 import * as ConfigEvent from "../observables/config-event";
 import Format from "../utils/format";
 
+const textEl = document.querySelector(
+  "#liveStatsTextBottom .liveBurst"
+) as Element;
+const miniEl = document.querySelector("#liveStatsMini .burst") as Element;
+
+export function reset(): void {
+  textEl.innerHTML = "0";
+  miniEl.innerHTML = "0";
+}
+
 export async function update(burst: number): Promise<void> {
-  if (!Config.showLiveBurst) return;
   const burstText = Format.typingSpeed(burst, { showDecimalPlaces: false });
-  (document.querySelector("#miniTimerAndLiveWpm .burst") as Element).innerHTML =
-    burstText;
-  (document.querySelector("#liveBurst") as Element).innerHTML = burstText;
+  miniEl.innerHTML = burstText;
+  textEl.innerHTML = burstText;
 }
 
 let state = false;
 
 export function show(): void {
-  if (!Config.showLiveBurst) return;
+  if (Config.liveSpeedStyle === "off") return;
   if (!TestState.isActive) return;
   if (state) return;
-  if (Config.timerStyle === "mini" || Config.timerStyle === "bar") {
-    $("#miniTimerAndLiveWpm .burst")
-      .stop(true, false)
-      .removeClass("hidden")
-      .css("opacity", 0)
-      .animate(
-        {
-          opacity: Config.timerOpacity,
-        },
-        125
-      );
+  if (Config.liveBurstStyle === "mini") {
+    $(miniEl).stop(true, false).removeClass("hidden").css("opacity", 0).animate(
+      {
+        opacity: 1,
+      },
+      125
+    );
   } else {
-    $("#liveBurst")
-      .stop(true, false)
-      .removeClass("hidden")
-      .css("opacity", 0)
-      .animate(
-        {
-          opacity: Config.timerOpacity,
-        },
-        125
-      );
+    $(textEl).stop(true, false).removeClass("hidden").css("opacity", 0).animate(
+      {
+        opacity: 1,
+      },
+      125
+    );
   }
   state = true;
 }
 
 export function hide(): void {
   if (!state) return;
-  $("#liveBurst")
+  $(textEl)
     .stop(true, false)
     .animate(
       {
@@ -53,10 +53,10 @@ export function hide(): void {
       },
       125,
       () => {
-        $("#liveBurst").addClass("hidden");
+        $(textEl).addClass("hidden");
       }
     );
-  $("#miniTimerAndLiveWpm .burst")
+  $(miniEl)
     .stop(true, false)
     .animate(
       {
@@ -64,12 +64,12 @@ export function hide(): void {
       },
       125,
       () => {
-        $("#miniTimerAndLiveWpm .burst").addClass("hidden");
+        $(miniEl).addClass("hidden");
       }
     );
   state = false;
 }
 
 ConfigEvent.subscribe((eventKey, eventValue) => {
-  if (eventKey === "showLiveBurst") (eventValue as boolean) ? show() : hide();
+  if (eventKey === "liveBurstStyle") eventValue === "off" ? hide() : show();
 });

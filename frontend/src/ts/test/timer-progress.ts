@@ -8,91 +8,79 @@ import * as SlowTimer from "../states/slow-timer";
 import * as TestState from "./test-state";
 import * as ConfigEvent from "../observables/config-event";
 
+const barEl = $("#barTimerProgress .bar");
+const textEl = $("#liveStatsTextTop .timerProgress");
+const miniEl = $("#liveStatsMini .time");
+
 export function show(): void {
-  const op = Config.timerStyle !== "off" ? parseFloat(Config.timerOpacity) : 0;
   if (Config.mode !== "zen" && Config.timerStyle === "bar") {
-    $("#timerWrapper").stop(true, true).removeClass("hidden").animate(
+    barEl.stop(true, true).removeClass("hidden").animate(
       {
-        opacity: op,
+        opacity: 1,
       },
       125
     );
   } else if (Config.timerStyle === "text") {
-    $("#timerNumber")
-      .stop(true, true)
-      .removeClass("hidden")
-      .css("opacity", 0)
-      .animate(
-        {
-          opacity: op,
-        },
-        125
-      );
+    textEl.stop(true, true).removeClass("hidden").css("opacity", 0).animate(
+      {
+        opacity: 1,
+      },
+      125
+    );
   } else if (Config.mode === "zen" || Config.timerStyle === "mini") {
-    if (op > 0) {
-      $("#miniTimerAndLiveWpm .time")
-        .stop(true, true)
-        .removeClass("hidden")
-        .animate(
-          {
-            opacity: op,
-          },
-          125
-        );
-    }
+    miniEl.stop(true, true).removeClass("hidden").animate(
+      {
+        opacity: 1,
+      },
+      125
+    );
   }
+}
+
+export function reset(): void {
+  let width = "0vw";
+  if (
+    Config.mode === "time" ||
+    (Config.mode === "custom" && CustomText.getLimitMode() === "time")
+  ) {
+    width = "100vw";
+  }
+  barEl.stop(true, true).animate(
+    {
+      width,
+    },
+    0
+  );
+  miniEl.text("0");
+  textEl.text("0");
 }
 
 export function hide(): void {
-  $("#timerWrapper").stop(true, true).animate(
+  barEl.stop(true, true).animate(
     {
       opacity: 0,
     },
     125
   );
-  $("#miniTimerAndLiveWpm .time")
-    .stop(true, true)
-    .animate(
-      {
-        opacity: 0,
-      },
-      125,
-      () => {
-        $("#miniTimerAndLiveWpm .time").addClass("hidden");
-      }
-    );
-  $("#timerNumber").stop(true, true).animate(
+  miniEl.stop(true, true).animate(
     {
       opacity: 0,
     },
-    125
-  );
-}
-
-export function restart(): void {
-  if (Config.timerStyle === "bar") {
-    if (Config.mode === "time") {
-      $("#timer").stop(true, true).animate(
-        {
-          width: "100vw",
-        },
-        0
-      );
-    } else if (Config.mode === "words" || Config.mode === "custom") {
-      $("#timer").stop(true, true).animate(
-        {
-          width: "0vw",
-        },
-        0
-      );
+    125,
+    () => {
+      miniEl.addClass("hidden");
     }
-  }
+  );
+  textEl.stop(true, true).animate(
+    {
+      opacity: 0,
+    },
+    125
+  );
 }
 
-const timerNumberElement = document.querySelector("#timerNumber");
-const miniTimerNumberElement = document.querySelector(
-  "#miniTimerAndLiveWpm .time"
-);
+const timerNumberElement = textEl[0] as HTMLElement;
+const miniTimerNumberElement = miniEl[0] as HTMLElement;
 
 function getCurrentCount(): number {
   if (Config.mode === "custom" && CustomText.getLimitMode() === "section") {
@@ -118,15 +106,13 @@ export function update(): void {
     }
     if (Config.timerStyle === "bar") {
       const percent = 100 - ((time + 1) / maxtime) * 100;
-      $("#timer")
-        .stop(true, true)
-        .animate(
-          {
-            width: percent + "vw",
-          },
-          SlowTimer.get() ? 0 : 1000,
-          "linear"
-        );
+      barEl.stop(true, true).animate(
+        {
+          width: percent + "vw",
+        },
+        SlowTimer.get() ? 0 : 1000,
+        "linear"
+      );
     } else if (Config.timerStyle === "text") {
       let displayTime = DateTime.secondsToString(maxtime - time);
       if (maxtime === 0) {
@@ -155,13 +141,6 @@ export function update(): void {
     }
     if (Config.mode === "custom") {
       outof = CustomText.getLimitValue();
-      // if (CustomText.getLimitMode() === "word") {
-      //   outof = CustomText.word;
-      // } else if (CustomText.isSectionRandom) {
-      //   outof = CustomText.section;
-      // } else {
-      //   outof = CustomText.text.length;
-      // }
     }
     if (Config.mode === "quote") {
       outof = TestWords.randomQuote?.textSplit?.length ?? 1;
@@ -170,14 +149,12 @@ export function update(): void {
       const percent = Math.floor(
         ((TestWords.words.currentIndex + 1) / outof) * 100
       );
-      $("#timer")
-        .stop(true, true)
-        .animate(
-          {
-            width: percent + "vw",
-          },
-          SlowTimer.get() ? 0 : 250
-        );
+      barEl.stop(true, true).animate(
+        {
+          width: percent + "vw",
+        },
+        SlowTimer.get() ? 0 : 250
+      );
     } else if (Config.timerStyle === "text") {
       if (outof === 0) {
         if (timerNumberElement !== null) {
