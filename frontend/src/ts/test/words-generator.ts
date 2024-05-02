@@ -867,6 +867,8 @@ export async function getNextWord(
         randomWord = Misc.convertNumberToArabic(randomWord);
       } else if (Config.language.startsWith("nepali")) {
         randomWord = Misc.convertNumberToNepali(randomWord);
+      } else if (Config.language.startsWith("bangla")) {
+        randomWord = Misc.convertNumberToBangla(randomWord);
       }
     }
   }
