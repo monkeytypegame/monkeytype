@@ -1,7 +1,7 @@
 import * as UpdateConfig from "../../config";
 
 const subgroup: MonkeyTypes.CommandsSubgroup = {
-  title: "Live progress color...",
+  title: "Live stats color...",
   configKey: "timerColor",
   list: [
     {
@@ -46,8 +46,9 @@ const subgroup: MonkeyTypes.CommandsSubgroup = {
 const commands: MonkeyTypes.Command[] = [
   {
     id: "changeTimerColor",
-    display: "Live progress color...",
+    display: "Live stats color...",
     icon: "fa-chart-pie",
+    alias: "timer speed wpm burst acc",
     subgroup,
   },
 ];
