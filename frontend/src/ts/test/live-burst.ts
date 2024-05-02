@@ -22,7 +22,7 @@ export async function update(burst: number): Promise<void> {
 let state = false;
 
 export function show(): void {
-  if (Config.liveSpeedStyle === "off") return;
+  if (Config.liveBurstStyle === "off") return;
   if (!TestState.isActive) return;
   if (state) return;
   if (Config.liveBurstStyle === "mini") {
