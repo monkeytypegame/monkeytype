@@ -77,7 +77,10 @@ export async function punctuateWord(
       if (rand <= 0.8) {
         if (currentLanguage === "kurdish") {
           word += ".";
-        } else if (currentLanguage === "nepali") {
+        } else if (
+          currentLanguage === "nepali" ||
+          currentLanguage === "bangla"
+        ) {
           word += "।";
         } else if (
           currentLanguage === "japanese" ||
