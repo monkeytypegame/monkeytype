@@ -50,6 +50,9 @@
     "bundle",
     "build",
     "cherrypick",
-    "@"
+    "@",
+    "-f",
+    "--force-if-includes",
+    "--force-with-lease"
   ]
 }
