@@ -4,7 +4,7 @@ footer {
   line-height: 1rem;
   font-size: 0.75rem;
   color: var(--sub-color);
-  margin: -0.5em;
+  // margin: -0.5em;
 
   .keyTips {
     transition: 0.125s;
@@ -17,9 +17,10 @@ footer {
 
   #commandLineMobileButton {
     display: none;
-    top: -4rem;
-    left: 0;
-    position: absolute;
+    // top: -4rem;
+    bottom: 2rem;
+    left: 2rem;
+    position: fixed;
     font-size: 1rem;
     width: 3rem;
     height: 3rem;
@@ -34,10 +35,12 @@ footer {
   }
 
   .leftright {
+    margin: -0.5em;
     -webkit-user-select: none;
     user-select: none;
     display: grid;
-    grid-template-columns: auto auto;
+    grid-template-columns: 1fr max-content;
+    gap: 2rem;
     .textButton {
       text-decoration: none;
       font-size: 0.75rem;
@@ -46,19 +49,16 @@ footer {
     }
     .left {
       text-align: left;
-      display: grid;
-      grid-auto-flow: column;
-      width: -moz-fit-content;
-      width: fit-content;
+      display: flex;
+      justify-items: start;
+      width: max-content;
     }
     .right {
       text-align: right;
-      display: grid;
-      grid-auto-flow: column;
-      width: -moz-fit-content;
-      width: fit-content;
+      display: flex;
       justify-self: right;
-      // align-items: center;
+      width: max-content;
+      height: max-content;
     }
     .left .textButton,
     .right .textButton {

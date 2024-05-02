@@ -1,7 +1,7 @@
 import * as TribeState from "../tribe/tribe-state";
 import * as TribeConfigSyncEvent from "../observables/tribe-config-sync-event";
 
-export let text = [
+let text: string[] = [
   "The",
   "quick",
   "brown",
@@ -12,77 +12,83 @@ export let text = [
   "lazy",
   "dog",
 ];
-export let isWordRandom = false;
-export let isTimeRandom = false;
-export let isSectionRandom = false;
-export let word = -1;
-export let time = -1;
-export let section = -1;
-export let delimiter = " ";
-export let popupTextareaState = text.join(" ");
-export let savedPopupTextareaState = popupTextareaState;
 
-export function setPopupTextareaStateToSaved(): void {
-  popupTextareaState = savedPopupTextareaState;
-}
+let mode: SharedTypes.CustomTextMode = "repeat";
+const limit: SharedTypes.CustomTextLimit = {
+  value: 9,
+  mode: "word",
+};
+let pipeDelimiter = false;
 
-export function setPopupTextareaState(value: string, save = false): void {
-  popupTextareaState = value;
-  if (save) {
-    savedPopupTextareaState = value;
-  }
+export function getText(): string[] {
+  return text;
 }
 
 export function setText(txt: string[], tribeOverride = false): void {
   if (!TribeState.canChangeConfig(tribeOverride)) return;
   text = txt;
+  limit.value = text.length;
   if (!tribeOverride) TribeConfigSyncEvent.dispatch();
 }
 
-export function getText(): string {
-  return text.join(" ");
+export function getMode(): SharedTypes.CustomTextMode {
+  return mode;
 }
 
-export function getTextArray(): string[] {
-  return text;
-}
-
-export function setIsWordRandom(val: boolean, tribeOverride = false): void {
+export function setMode(
+  val: SharedTypes.CustomTextMode,
+  tribeOverride = false
+): void {
   if (!TribeState.canChangeConfig(tribeOverride)) return;
-  isWordRandom = val;
+  mode = val;
+  limit.value = text.length;
   if (!tribeOverride) TribeConfigSyncEvent.dispatch();
 }
 
-export function setIsTimeRandom(val: boolean, tribeOverride = false): void {
+export function getLimit(): SharedTypes.CustomTextLimit {
+  return limit;
+}
+
+export function getLimitValue(): number {
+  return limit.value;
+}
+
+export function getLimitMode(): SharedTypes.CustomTextLimitMode {
+  return limit.mode;
+}
+
+export function setLimitValue(val: number, tribeOverride = false): void {
   if (!TribeState.canChangeConfig(tribeOverride)) return;
-  isTimeRandom = val;
+  limit.value = val;
   if (!tribeOverride) TribeConfigSyncEvent.dispatch();
 }
 
-export function setIsSectionRandom(val: boolean): void {
-  isSectionRandom = val;
-}
-
-export function setTime(val: number, tribeOverride = false): void {
+export function setLimitMode(
+  val: SharedTypes.CustomTextLimitMode,
+  tribeOverride = false
+): void {
   if (!TribeState.canChangeConfig(tribeOverride)) return;
-  time = val;
+  limit.mode = val;
   if (!tribeOverride) TribeConfigSyncEvent.dispatch();
 }
 
-export function setWord(val: number, tribeOverride = false): void {
+export function getPipeDelimiter(): boolean {
+  return pipeDelimiter;
+}
+
+export function setPipeDelimiter(val: boolean, tribeOverride = false): void {
   if (!TribeState.canChangeConfig(tribeOverride)) return;
-  word = val;
+  pipeDelimiter = val;
   if (!tribeOverride) TribeConfigSyncEvent.dispatch();
 }
 
-export function setSection(val: number): void {
-  section = val;
-}
-
-export function setDelimiter(val: string, tribeOverride = false): void {
-  if (!TribeState.canChangeConfig(tribeOverride)) return;
-  delimiter = val;
-  if (!tribeOverride) TribeConfigSyncEvent.dispatch();
+export function getData(): SharedTypes.CustomTextData {
+  return {
+    text,
+    mode,
+    limit,
+    pipeDelimiter,
+  };
 }
 
 type CustomTextObject = Record<string, string>;

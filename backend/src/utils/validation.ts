@@ -84,20 +84,16 @@ export function isTestTooShort(result: SharedTypes.CompletedEvent): boolean {
 
   if (mode === "custom") {
     if (!customText) return true;
-    const { isWordRandom, isTimeRandom, textLen, word, time } = customText;
-    const setTextTooShort =
-      !isWordRandom && !isTimeRandom && _.isNumber(textLen) && textLen < 10;
-    const randomWordsTooShort = isWordRandom && !isTimeRandom && word < 10;
-    const randomTimeTooShort = !isWordRandom && isTimeRandom && time < 15;
+    const wordLimitTooShort =
+      (customText.limit.mode === "word" ||
+        customText.limit.mode === "section") &&
+      customText.limit.value < 10;
+    const timeLimitTooShort =
+      customText.limit.mode === "time" && customText.limit.value < 15;
     const bailedOutTooShort = bailedOut
       ? bailedOut && testDuration < 15
       : false;
-    return (
-      setTextTooShort ||
-      randomWordsTooShort ||
-      randomTimeTooShort ||
-      bailedOutTooShort
-    );
+    return wordLimitTooShort || timeLimitTooShort || bailedOutTooShort;
   }
 
   if (mode === "zen") {

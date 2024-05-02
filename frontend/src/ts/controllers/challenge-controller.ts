@@ -248,14 +248,13 @@ export async function setup(challengeName: string): Promise<boolean> {
       UpdateConfig.setMode("words", true);
       UpdateConfig.setDifficulty("normal", true);
     } else if (challenge.type === "customText") {
-      CustomText.setDelimiter(" ");
-      CustomText.setPopupTextareaState(challenge.parameters[0] as string, true);
       CustomText.setText((challenge.parameters[0] as string).split(" "));
-      CustomText.setIsTimeRandom(false);
-      CustomText.setIsSectionRandom(false);
-      CustomText.setIsWordRandom(challenge.parameters[1] as boolean);
-      CustomText.setWord(challenge.parameters[2] as number);
-      CustomText.setTime(-1);
+      CustomText.setMode(challenge.parameters[1] as SharedTypes.CustomTextMode);
+      CustomText.setLimitValue(challenge.parameters[2] as number);
+      CustomText.setLimitMode(
+        challenge.parameters[3] as SharedTypes.CustomTextLimitMode
+      );
+      CustomText.setPipeDelimiter(challenge.parameters[4] as boolean);
       UpdateConfig.setMode("custom", true);
       UpdateConfig.setDifficulty("normal", true);
     } else if (challenge.type === "script") {
@@ -269,14 +268,10 @@ export async function setup(challengeName: string): Promise<boolean> {
       let text = scriptdata.trim();
       text = text.replace(/[\n\r\t ]/gm, " ");
       text = text.replace(/ +/gm, " ");
-      CustomText.setDelimiter(" ");
-      CustomText.setPopupTextareaState(text, true);
       CustomText.setText(text.split(" "));
-      CustomText.setIsWordRandom(false);
-      CustomText.setIsSectionRandom(false);
-      CustomText.setIsTimeRandom(false);
-      CustomText.setTime(-1);
-      CustomText.setWord(-1);
+      CustomText.setMode("repeat");
+      CustomText.setLimitMode("word");
+      CustomText.setPipeDelimiter(false);
       UpdateConfig.setMode("custom", true);
       UpdateConfig.setDifficulty("normal", true);
       if (challenge.parameters[1] !== null) {

@@ -31,8 +31,6 @@
   }
 
   .content {
-    display: flex;
-    flex-direction: column;
     gap: 2rem;
   }
 
@@ -73,7 +71,7 @@
 
   .presetFilterButtons .buttons {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
     gap: 1rem;
   }
 
@@ -263,12 +261,16 @@
 
     .title {
       color: var(--sub-color);
-      margin-bottom: 0.5em;
+      // margin-bottom: 0.25em;
+    }
+
+    .avgres {
+      font-size: 0.75em;
     }
 
     .val {
       font-size: 3rem;
-      line-height: 3.5rem;
+      line-height: 1.1;
     }
 
     .chartjs-render-monitor {
@@ -284,6 +286,7 @@
         margin-bottom: 1rem;
         color: var(--sub-color);
         flex-wrap: wrap;
+        row-gap: 0.5em;
 
         .group {
           display: flex;
@@ -408,6 +411,17 @@
     gap: 1rem;
     display: grid;
     grid-template-columns: 1fr 1fr;
+
+    .tripleSelectsColumn {
+      grid-column: 1/-1;
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      .buttonsAndTitle {
+        flex-grow: 1;
+        min-width: 20rem;
+      }
+    }
 
     .buttonsAndTitle {
       height: fit-content;

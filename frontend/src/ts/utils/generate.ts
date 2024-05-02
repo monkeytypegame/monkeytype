@@ -1,14 +1,13 @@
 import { randomIntFromRange } from "./numbers";
 import * as Arrays from "./arrays";
 import * as Strings from "./strings";
-import * as Random from "./random";
 
 /**
  * Generates a random binary string of length 8.
  * @returns The generated binary string.
  */
 export function getBinary(): string {
-  const ret = Math.floor(Random.get() * 256).toString(2);
+  const ret = Math.floor(Math.random() * 256).toString(2);
   return ret.padStart(8, "0");
 }
 

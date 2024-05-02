@@ -52,6 +52,7 @@ async function submitQuote(): Promise<void> {
 export async function show(showOptions: ShowOptions): Promise<void> {
   void modal.show({
     ...showOptions,
+    mode: "dialog",
     focusFirstInput: true,
     afterAnimation: async () => {
       CaptchaController.render(

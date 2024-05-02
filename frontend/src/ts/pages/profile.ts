@@ -29,8 +29,8 @@ function reset(): void {
 	          <div class="streak" data-balloon-pos="up">-</div>
           </div>
           <div class="levelAndBar">
-            <div class="level">-</div>
-            <div class="xpBar">
+            <div class="level" data-balloon-pos="up">-</div>
+            <div class="xpBar" data-balloon-pos="up">
               <div class="bar" style="width: 0%;"></div>
             </div>
             <div class="xp" data-balloon-pos="up">-/-</div>

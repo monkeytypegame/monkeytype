@@ -1,5 +1,3 @@
-import * as Random from "./random";
-
 // code for "generateStep" is from Mirin's "Queue" modfile,
 // converted from lua to typescript by Spax
 // lineout: https://youtu.be/LnnArS9yrSs
@@ -12,10 +10,10 @@ let lastLeftStep = 0,
   rightStepCount = 0;
 function generateStep(leftRightOverride: boolean): number {
   facingCount--;
-  let randomStep = Math.round(Random.get());
-  let stepValue = Math.round(Random.get() * 5 - 0.5);
+  let randomStep = Math.round(Math.random());
+  let stepValue = Math.round(Math.random() * 5 - 0.5);
   if (leftRightOverride) {
-    footTrack = Boolean(Math.round(Random.get()));
+    footTrack = Boolean(Math.round(Math.random()));
     if (footTrack) stepValue = 3;
     else stepValue = 0;
   } else {
@@ -45,7 +43,7 @@ function generateStep(leftRightOverride: boolean): number {
 
     if (facingCount < 0 && randomStep === 0) {
       currFacing = 1 - currFacing;
-      facingCount = Math.floor(Random.get() * 3) + 3;
+      facingCount = Math.floor(Math.random() * 3) + 3;
     }
   }
 

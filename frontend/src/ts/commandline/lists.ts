@@ -13,7 +13,6 @@ import LiveWpmCommands from "./lists/live-wpm";
 import LiveAccCommands from "./lists/live-acc";
 import LiveBurstCommands from "./lists/live-burst";
 import ShowAverageCommands from "./lists/show-average";
-import ShowTimerCommands from "./lists/show-timer";
 import KeyTipsCommands from "./lists/key-tips";
 import FreedomModeCommands from "./lists/freedom-mode";
 import StrictSpaceCommands from "./lists/strict-space";
@@ -57,13 +56,13 @@ import KeymapModeCommands from "./lists/keymap-mode";
 import KeymapStyleCommands from "./lists/keymap-style";
 import KeymapLegendStyleCommands from "./lists/keymap-legend-style";
 import KeymapShowTopRowCommands from "./lists/keymap-show-top-row";
-import PageWidthCommands from "./lists/page-width";
 import EnableAdsCommands from "./lists/enable-ads";
 import MonkeyPowerLevelCommands from "./lists/monkey-power-level";
 import BailOutCommands from "./lists/bail-out";
 import ResultSavingCommands from "./lists/result-saving";
 import NavigationCommands from "./lists/navigation";
 import FontSizeCommands from "./lists/font-size";
+import MaxLineWidthCommands from "./lists/max-line-width";
 import ResultScreenCommands from "./lists/result-screen";
 import CustomBackgroundSizeCommands from "./lists/background-size";
 import CustomBackgroundFilterCommands from "./lists/background-filter";
@@ -96,7 +95,7 @@ import Config, * as UpdateConfig from "../config";
 import * as Misc from "../utils/misc";
 import * as JSONData from "../utils/json-data";
 import { randomizeTheme } from "../controllers/theme-controller";
-import * as CustomTextPopup from "../popups/custom-text-popup";
+import * as CustomTextPopup from "../modals/custom-text";
 import * as Settings from "../pages/settings";
 import * as Notifications from "../elements/notifications";
 import * as VideoAdPopup from "../popups/video-ad-popup";
@@ -291,9 +290,9 @@ export const commands: MonkeyTypes.CommandsSubgroup = {
     ...TypingSpeedUnitCommands,
     ...AlwaysShowDecimalCommands,
     ...StartGraphsAtZeroCommands,
+    ...MaxLineWidthCommands,
     ...FontSizeCommands,
     ...FontFamilyCommands,
-    ...PageWidthCommands,
     ...KeymapModeCommands,
     ...KeymapStyleCommands,
     ...KeymapLegendStyleCommands,
@@ -336,7 +335,6 @@ export const commands: MonkeyTypes.CommandsSubgroup = {
     ...LiveWpmCommands,
     ...LiveAccCommands,
     ...LiveBurstCommands,
-    ...ShowTimerCommands,
     ...KeyTipsCommands,
     ...OutOfFocusWarningCommands,
     ...CapsLockWarningCommands,

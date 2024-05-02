@@ -9,7 +9,7 @@ import * as TestState from "./test-state";
 import * as ConfigEvent from "../observables/config-event";
 
 export function show(): void {
-  const op = Config.showTimerProgress ? parseFloat(Config.timerOpacity) : 0;
+  const op = Config.timerStyle !== "off" ? parseFloat(Config.timerOpacity) : 0;
   if (Config.mode !== "zen" && Config.timerStyle === "bar") {
     $("#timerWrapper").stop(true, true).removeClass("hidden").animate(
       {
@@ -95,7 +95,7 @@ const miniTimerNumberElement = document.querySelector(
 );
 
 function getCurrentCount(): number {
-  if (Config.mode === "custom" && CustomText.isSectionRandom) {
+  if (Config.mode === "custom" && CustomText.getLimitMode() === "section") {
     return (
       (TestWords.words.sectionIndexList[
         TestWords.words.currentIndex
@@ -110,11 +110,11 @@ export function update(): void {
   const time = Time.get();
   if (
     Config.mode === "time" ||
-    (Config.mode === "custom" && CustomText.isTimeRandom)
+    (Config.mode === "custom" && CustomText.getLimitMode() === "time")
   ) {
     let maxtime = Config.time;
-    if (Config.mode === "custom" && CustomText.isTimeRandom) {
-      maxtime = CustomText.time;
+    if (Config.mode === "custom" && CustomText.getLimitMode() === "time") {
+      maxtime = CustomText.getLimitValue();
     }
     if (Config.timerStyle === "bar") {
       const percent = 100 - ((time + 1) / maxtime) * 100;
@@ -154,13 +154,14 @@ export function update(): void {
       outof = Config.words;
     }
     if (Config.mode === "custom") {
-      if (CustomText.isWordRandom) {
-        outof = CustomText.word;
-      } else if (CustomText.isSectionRandom) {
-        outof = CustomText.section;
-      } else {
-        outof = CustomText.text.length;
-      }
+      outof = CustomText.getLimitValue();
+      // if (CustomText.getLimitMode() === "word") {
+      //   outof = CustomText.word;
+      // } else if (CustomText.isSectionRandom) {
+      //   outof = CustomText.section;
+      // } else {
+      //   outof = CustomText.text.length;
+      // }
     }
     if (Config.mode === "quote") {
       outof = TestWords.randomQuote?.textSplit?.length ?? 1;
@@ -218,18 +219,12 @@ export function updateStyle(): void {
   if (!TestState.isActive) return;
   hide();
   update();
+  if (Config.timerStyle === "off") return;
   setTimeout(() => {
     show();
   }, 125);
 }
 
 ConfigEvent.subscribe((eventKey, eventValue) => {
-  if (eventKey === "showTimerProgress") {
-    if (eventValue === true && TestState.isActive) {
-      show();
-    } else {
-      hide();
-    }
-  }
   if (eventKey === "timerStyle") updateStyle();
 });

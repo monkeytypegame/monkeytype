@@ -174,9 +174,12 @@ export async function update(
       if (isToday) {
         hoverText += `\nClaimed today: yes`;
         hoverText += `\nCome back in: ${timeDif} ${offsetString}`;
-      } else {
+      } else if (isYesterday) {
         hoverText += `\nClaimed today: no`;
         hoverText += `\nStreak lost in: ${timeDif} ${offsetString}`;
+      } else {
+        hoverText += `\nStreak lost ${timeDif} ${offsetString} ago`;
+        hoverText += `\nIt will be removed from your profile on the next result save`;
       }
 
       console.debug(hoverText);
@@ -305,19 +308,19 @@ export async function update(
       `${Numbers.abbreviateNumber(xpToDisplay)}/${Numbers.abbreviateNumber(
         xpForLevel
       )}`
-    );
-  details
-    .find(".xpBar .bar")
-    .css("width", `${(xpToDisplay / xpForLevel) * 100}%`);
-  details
-    .find(".xp")
+    )
     .attr(
       "aria-label",
       `${Numbers.abbreviateNumber(
         xpForLevel - xpToDisplay
       )} xp until next level`
     );
-
+  details
+    .find(".xpBar .bar")
+    .css("width", `${(xpToDisplay / xpForLevel) * 100}%`);
+  details
+    .find(".xpBar")
+    .attr("aria-label", `${((xpToDisplay / xpForLevel) * 100).toFixed(2)}%`);
   //lbs
 
   if (banned) {

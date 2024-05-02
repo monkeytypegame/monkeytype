@@ -799,38 +799,6 @@ export function setOppositeShiftMode(
   return true;
 }
 
-export function setPageWidth(
-  val: SharedTypes.Config.PageWidth,
-  nosave?: boolean
-): boolean {
-  if (
-    !isConfigValueValid("page width", val, [
-      ["max", "100", "125", "150", "200"],
-    ])
-  ) {
-    return false;
-  }
-
-  config.pageWidth = val;
-  $("#contentWrapper").removeClass("wide125");
-  $("#contentWrapper").removeClass("wide150");
-  $("#contentWrapper").removeClass("wide200");
-  $("#contentWrapper").removeClass("widemax");
-  $("#app").removeClass("wide125");
-  $("#app").removeClass("wide150");
-  $("#app").removeClass("wide200");
-  $("#app").removeClass("widemax");
-
-  if (val !== "100") {
-    $("#contentWrapper").addClass("wide" + val);
-    $("#app").addClass("wide" + val);
-  }
-  saveToLocalStorage("pageWidth", nosave);
-  ConfigEvent.dispatch("pageWidth", config.pageWidth);
-
-  return true;
-}
-
 export function setCaretStyle(
   caretStyle: SharedTypes.Config.CaretStyle,
   nosave?: boolean
@@ -909,21 +877,6 @@ export function setPaceCaretStyle(
   }
   saveToLocalStorage("paceCaretStyle", nosave);
   ConfigEvent.dispatch("paceCaretStyle", config.paceCaretStyle);
-
-  return true;
-}
-
-export function setShowTimerProgress(
-  timer: boolean,
-  nosave?: boolean
-): boolean {
-  if (!isConfigValueValid("show timer progress", timer, ["boolean"])) {
-    return false;
-  }
-
-  config.showTimerProgress = timer;
-  saveToLocalStorage("showTimerProgress", nosave);
-  ConfigEvent.dispatch("showTimerProgress", config.showTimerProgress);
 
   return true;
 }
@@ -1040,7 +993,9 @@ export function setTimerStyle(
   style: SharedTypes.Config.TimerStyle,
   nosave?: boolean
 ): boolean {
-  if (!isConfigValueValid("timer style", style, [["bar", "text", "mini"]])) {
+  if (
+    !isConfigValueValid("timer style", style, [["off", "bar", "text", "mini"]])
+  ) {
     return false;
   }
 
@@ -1778,7 +1733,7 @@ export function setFontSize(fontSize: number, nosave?: boolean): boolean {
 
   config.fontSize = fontSize;
 
-  $("#words, #caret, #paceCaret, #miniTimerAndLiveWpm, .tribeCaret").css(
+  $("#caret, #paceCaret, #miniTimerAndLiveWpm, #typingTest, .tribeCaret").css(
     "fontSize",
     fontSize + "rem"
   );
@@ -1788,6 +1743,32 @@ export function setFontSize(fontSize: number, nosave?: boolean): boolean {
 
   saveToLocalStorage("fontSize", nosave);
   ConfigEvent.dispatch("fontSize", config.fontSize, nosave);
+
+  // trigger a resize event to update the layout - handled in ui.ts:108
+  $(window).trigger("resize");
+
+  return true;
+}
+
+export function setMaxLineWidth(
+  maxLineWidth: number,
+  nosave?: boolean
+): boolean {
+  if (!isConfigValueValid("max line width", maxLineWidth, ["number"])) {
+    return false;
+  }
+
+  if (maxLineWidth < 20 && maxLineWidth !== 0) {
+    maxLineWidth = 20;
+  }
+  if (maxLineWidth > 1000) {
+    maxLineWidth = 1000;
+  }
+
+  config.maxLineWidth = maxLineWidth;
+
+  saveToLocalStorage("maxLineWidth", nosave);
+  ConfigEvent.dispatch("maxLineWidth", config.maxLineWidth, nosave);
 
   // trigger a resize event to update the layout - handled in ui.ts:108
   $(window).trigger("resize");
@@ -2008,6 +1989,7 @@ export async function apply(
     setLanguage(configObj.language, true);
     setLayout(configObj.layout, true);
     setFontSize(configObj.fontSize, true);
+    setMaxLineWidth(configObj.maxLineWidth, true);
     setFreedomMode(configObj.freedomMode, true);
     setCaretStyle(configObj.caretStyle, true);
     setPaceCaretStyle(configObj.paceCaretStyle, true);
@@ -2032,7 +2014,6 @@ export async function apply(
     setShowLiveWpm(configObj.showLiveWpm, true);
     setShowLiveAcc(configObj.showLiveAcc, true);
     setShowLiveBurst(configObj.showLiveBurst, true);
-    setShowTimerProgress(configObj.showTimerProgress, true);
     setAlwaysShowDecimalPlaces(configObj.alwaysShowDecimalPlaces, true);
     setAlwaysShowWordsHistory(configObj.alwaysShowWordsHistory, true);
     setSingleListCommandLine(configObj.singleListCommandLine, true);
@@ -2049,7 +2030,6 @@ export async function apply(
     setPaceCaret(configObj.paceCaret, true);
     setPaceCaretCustomSpeed(configObj.paceCaretCustomSpeed, true);
     setRepeatedPace(configObj.repeatedPace, true);
-    setPageWidth(configObj.pageWidth, true);
     setAccountChart(configObj.accountChart, true);
     setMinBurst(configObj.minBurst, true);
     setMinBurstCustomSpeed(configObj.minBurstCustomSpeed, true);
@@ -2149,6 +2129,11 @@ function replaceLegacyValues(
 
   if (typeof configObj.playSoundOnError === "boolean") {
     configObj.playSoundOnError = configObj.playSoundOnError ? "1" : "off";
+  }
+
+  //@ts-expect-error
+  if (configObj.showTimerProgress === false) {
+    configObj.timerStyle = "off";
   }
 
   return configObj;

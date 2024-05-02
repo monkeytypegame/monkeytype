@@ -66,7 +66,6 @@ import * as MemoryFunboxTimer from "./funbox/memory-funbox-timer";
 import * as KeymapEvent from "../observables/keymap-event";
 import * as LayoutfluidFunboxTimer from "../test/funbox/layoutfluid-funbox-timer";
 import tribeSocket from "../tribe/tribe-socket";
-import * as Wordset from "./wordset";
 import * as ArabicLazyMode from "../states/arabic-lazy-mode";
 import Format from "../utils/format";
 
@@ -172,7 +171,7 @@ export function restart(options = {} as RestartOptions): void {
           Config.mode,
           Config.words,
           Config.time,
-          CustomText,
+          CustomText.getData(),
           CustomTextState.isCustomTextLong() ?? false
         )
       ) {
@@ -194,23 +193,6 @@ export function restart(options = {} as RestartOptions): void {
         );
         return;
       }
-    }
-  }
-
-  if (options.withSameWordset) {
-    const funboxToPush =
-      FunboxList.get(Config.funbox)
-        .find((f) => f.properties?.find((fp) => fp.startsWith("toPush")))
-        ?.properties?.find((fp) => fp.startsWith("toPush:")) ?? "";
-    if (funboxToPush) {
-      Notifications.add(
-        "You can't repeat a test with currently active funboxes",
-        0,
-        {
-          important: true,
-        }
-      );
-      options.withSameWordset = false;
     }
   }
 
@@ -259,12 +241,10 @@ export function restart(options = {} as RestartOptions): void {
 
     if (PractiseWords.before.customText) {
       CustomText.setText(PractiseWords.before.customText.text);
-      CustomText.setIsTimeRandom(PractiseWords.before.customText.isTimeRandom);
-      CustomText.setIsWordRandom(PractiseWords.before.customText.isWordRandom);
-      CustomText.setWord(PractiseWords.before.customText.word);
-      CustomText.setTime(PractiseWords.before.customText.time);
-      CustomText.setPopupTextareaState(
-        PractiseWords.before.customText.text.join(CustomText.delimiter)
+      CustomText.setLimitMode(PractiseWords.before.customText.limit.mode);
+      CustomText.setLimitValue(PractiseWords.before.customText.limit.value);
+      CustomText.setPipeDelimiter(
+        PractiseWords.before.customText.pipeDelimiter
       );
     }
 
@@ -364,34 +344,10 @@ export function restart(options = {} as RestartOptions): void {
         repeatWithPace = true;
       }
 
-      if (!options.withSameWordset) {
-        TestState.setRepeated(false);
-        TestState.setPaceRepeat(repeatWithPace);
-        await init();
-        await PaceCaret.init();
-      } else {
-        await Funbox.activate();
-        TestState.setRepeated(true);
-        TestState.setPaceRepeat(repeatWithPace);
-        Replay.stopReplayRecording();
-        TestWords.words.resetCurrentIndex();
-        TestInput.input.reset();
-        TestUI.showWords();
-        if (Config.keymapMode === "next" && Config.mode !== "zen") {
-          void KeymapEvent.highlight(
-            Arrays.nthElementFromArray(
-              [...TestWords.words.getCurrent()],
-              0
-            ) as string
-          );
-        }
-        Funbox.toggleScript(TestWords.words.getCurrent());
-        await PaceCaret.init();
-      }
-
-      if (Config.mode === "quote") {
-        TestState.setRepeated(false);
-      }
+      TestState.setRepeated(options.withSameWordset ?? false);
+      TestState.setPaceRepeat(repeatWithPace);
+      await init();
+      await PaceCaret.init();
 
       for (const f of FunboxList.get(Config.funbox)) {
         if (f.functions?.restart) f.functions.restart();
@@ -527,10 +483,14 @@ export async function init(): Promise<void> {
 
   let generatedWords: string[];
   let generatedSectionIndexes: number[];
+  let wordsHaveTab = false;
+  let wordsHaveNewline = false;
   try {
     const gen = await WordsGenerator.generateWords(language);
     generatedWords = gen.words;
     generatedSectionIndexes = gen.sectionIndexes;
+    wordsHaveTab = gen.hasTab;
+    wordsHaveNewline = gen.hasNewline;
   } catch (e) {
     console.error(e);
     if (e instanceof WordsGenerator.WordGenError) {
@@ -553,25 +513,17 @@ export async function init(): Promise<void> {
 
   const beforeHasNumbers = TestWords.hasNumbers ? true : false;
 
-  let hasTab = false;
   let hasNumbers = false;
-  let hasNewline = false;
 
   for (const word of generatedWords) {
-    if (/\t/g.test(word) && !hasTab) {
-      hasTab = true;
-    }
     if (/\d/g.test(word) && !hasNumbers) {
       hasNumbers = true;
     }
-    if (/\n/g.test(word) && !hasNewline) {
-      hasNewline = true;
-    }
   }
 
-  TestWords.setHasTab(hasTab);
   TestWords.setHasNumbers(hasNumbers);
-  TestWords.setHasNewline(hasNewline);
+  TestWords.setHasTab(wordsHaveTab);
+  TestWords.setHasNewline(wordsHaveNewline);
 
   if (beforeHasNumbers !== hasNumbers) {
     void Keymap.refresh();
@@ -602,7 +554,7 @@ export async function init(): Promise<void> {
 
 //add word during the test
 export async function addWord(): Promise<void> {
-  let bound = 100;
+  let bound = 100; // how many extra words to aim for AFTER the current word
   const funboxToPush = FunboxList.get(Config.funbox)
     .find((f) => f.properties?.find((fp) => fp.startsWith("toPush")))
     ?.properties?.find((fp) => fp.startsWith("toPush:"));
@@ -614,22 +566,17 @@ export async function addWord(): Promise<void> {
       TestWords.words.length >= Config.words &&
       Config.words > 0) ||
     (Config.mode === "custom" &&
-      CustomText.isWordRandom &&
-      TestWords.words.length >= CustomText.word &&
-      CustomText.word !== 0) ||
-    (Config.mode === "custom" &&
-      !CustomText.isWordRandom &&
-      !CustomText.isTimeRandom &&
-      !CustomText.isSectionRandom &&
-      TestWords.words.length >= CustomText.text.length) ||
+      CustomText.getLimitMode() === "word" &&
+      TestWords.words.length >= CustomText.getLimitValue() &&
+      CustomText.getLimitValue() !== 0) ||
     (Config.mode === "quote" &&
       TestWords.words.length >=
         (TestWords.randomQuote?.textSplit?.length ?? 0)) ||
     (Config.mode === "custom" &&
-      CustomText.isSectionRandom &&
-      WordsGenerator.sectionIndex >= CustomText.section &&
+      CustomText.getLimitMode() === "section" &&
+      WordsGenerator.sectionIndex >= CustomText.getLimitValue() &&
       WordsGenerator.currentSection.length === 0 &&
-      CustomText.section !== 0)
+      CustomText.getLimitValue() !== 0)
   ) {
     return;
   }
@@ -668,27 +615,26 @@ export async function addWord(): Promise<void> {
     }
   }
 
-  const language: MonkeyTypes.LanguageObject =
-    Config.mode !== "custom"
-      ? await JSONData.getCurrentLanguage(Config.language)
-      : {
-          //borrow the direction of the current language
-          ...(await JSONData.getCurrentLanguage(Config.language)),
-          words: CustomText.text,
-        };
-  const wordset = await Wordset.withWords(language.words);
+  try {
+    const randomWord = await WordsGenerator.getNextWord(
+      TestWords.words.length,
+      bound,
+      TestWords.words.get(TestWords.words.length - 1),
+      TestWords.words.get(TestWords.words.length - 2)
+    );
 
-  const randomWord = await WordsGenerator.getNextWord(
-    wordset,
-    TestWords.words.length,
-    language,
-    bound,
-    TestWords.words.get(TestWords.words.length - 1),
-    TestWords.words.get(TestWords.words.length - 2)
-  );
-
-  TestWords.words.push(randomWord.word, randomWord.sectionIndex);
-  TestUI.addWord(randomWord.word);
+    TestWords.words.push(randomWord.word, randomWord.sectionIndex);
+    TestUI.addWord(randomWord.word);
+  } catch (e) {
+    TimerEvent.dispatch("fail", "word generation error");
+    Notifications.add(
+      Misc.createErrorMessage(
+        e,
+        "Error while getting next word. Please try again later"
+      ),
+      -1
+    );
+  }
 }
 
 type RetrySaving = {
@@ -831,14 +777,15 @@ function buildCompletedEvent(
   const wpmCons = Numbers.roundTo2(Misc.kogasa(stddev3 / avg3));
   const wpmConsistency = isNaN(wpmCons) ? 0 : wpmCons;
 
-  let customText: SharedTypes.CustomText | null = null;
+  let customText: SharedTypes.CustomTextDataWithTextLen | null = null;
   if (Config.mode === "custom") {
-    customText = {} as SharedTypes.CustomText;
-    customText.textLen = CustomText.text.length;
-    customText.isWordRandom = CustomText.isWordRandom;
-    customText.isTimeRandom = CustomText.isTimeRandom;
-    customText.word = CustomText.word;
-    customText.time = CustomText.time;
+    const temp = CustomText.getData();
+    customText = {
+      textLen: temp.text.length,
+      mode: temp.mode,
+      pipeDelimiter: temp.pipeDelimiter,
+      limit: temp.limit,
+    };
   }
 
   //tags
@@ -921,6 +868,10 @@ export async function finish(difficultyFailed = false): Promise<void> {
   const now = performance.now();
   TestStats.setEnd(now);
 
+  if (TestState.isRepeated && Config.mode === "quote") {
+    TestState.setRepeated(false);
+  }
+
   await Misc.sleep(1); //this is needed to make sure the last keypress is registered
   if (TestInput.input.current.length !== 0) {
     TestInput.input.pushHistory();
@@ -966,6 +917,8 @@ export async function finish(difficultyFailed = false): Promise<void> {
   }
 
   const ce = buildCompletedEvent(difficultyFailed);
+
+  console.debug("Completed event object", ce);
 
   function countUndefined(input: unknown): number {
     if (typeof input === "number") {
@@ -1044,25 +997,12 @@ export async function finish(difficultyFailed = false): Promise<void> {
       mode2Number === 0 &&
       completedEvent.testDuration < 15) ||
     (Config.mode === "custom" &&
-      !CustomText.isWordRandom &&
-      !CustomText.isTimeRandom &&
-      !CustomText.isSectionRandom &&
-      CustomText.text.length < 10) ||
+      (CustomText.getLimitMode() === "word" ||
+        CustomText.getLimitMode() === "section") &&
+      CustomText.getLimitValue() < 10) ||
     (Config.mode === "custom" &&
-      CustomText.isWordRandom &&
-      !CustomText.isTimeRandom &&
-      !CustomText.isSectionRandom &&
-      CustomText.word < 10) ||
-    (Config.mode === "custom" &&
-      !CustomText.isWordRandom &&
-      !CustomText.isSectionRandom &&
-      CustomText.isTimeRandom &&
-      CustomText.time < 15) ||
-    (Config.mode === "custom" &&
-      !CustomText.isWordRandom &&
-      !CustomText.isTimeRandom &&
-      CustomText.isSectionRandom &&
-      TestWords.words.length < 10) ||
+      CustomText.getLimitMode() === "time" &&
+      CustomText.getLimitValue() < 15) ||
     (Config.mode === "zen" && completedEvent.testDuration < 15)
   ) {
     Notifications.add("Test invalid - too short", 0);
@@ -1143,16 +1083,11 @@ export async function finish(difficultyFailed = false): Promise<void> {
 
       let newText = CustomText.getCustomText(customTextName, true);
       newText = newText.slice(newProgress);
-      CustomText.setPopupTextareaState(
-        newText.join(CustomText.delimiter),
-        true
-      );
       CustomText.setText(newText);
     } else {
       // They finished the test
       CustomText.setCustomTextLongProgress(customTextName, 0);
       const text = CustomText.getCustomText(customTextName, true);
-      CustomText.setPopupTextareaState(text.join(CustomText.delimiter), true);
       CustomText.setText(text);
       Notifications.add("Long custom text completed", 1, {
         duration: 5,

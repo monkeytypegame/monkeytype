@@ -218,29 +218,28 @@ export function canQuickRestart(
   mode: string,
   words: number,
   time: number,
-  CustomText: SharedTypes.CustomText,
+  CustomText: SharedTypes.CustomTextData,
   customTextIsLong: boolean
 ): boolean {
   const wordsLong = mode === "words" && (words >= 1000 || words === 0);
   const timeLong = mode === "time" && (time >= 900 || time === 0);
   const customTextLong = mode === "custom" && customTextIsLong;
+
   const customTextRandomWordsLong =
-    mode === "custom" && CustomText.isWordRandom && CustomText.word >= 1000;
-  const customTextRandomTimeLong =
-    mode === "custom" && CustomText.isTimeRandom && CustomText.time > 900;
-  const customTextNoRandomLong =
     mode === "custom" &&
-    !CustomText.isWordRandom &&
-    !CustomText.isTimeRandom &&
-    CustomText.text.length >= 1000;
+    (CustomText.limit.mode === "word" || CustomText.limit.mode === "section") &&
+    (CustomText.limit.value >= 1000 || CustomText.limit.value === 0);
+  const customTextRandomTimeLong =
+    mode === "custom" &&
+    CustomText.limit.mode === "time" &&
+    (CustomText.limit.value >= 900 || CustomText.limit.value === 0);
 
   if (
     wordsLong ||
     timeLong ||
     customTextLong ||
     customTextRandomWordsLong ||
-    customTextRandomTimeLong ||
-    customTextNoRandomLong
+    customTextRandomTimeLong
   ) {
     return false;
   } else {
@@ -476,50 +475,6 @@ export async function downloadResultsCSV(
   Loader.hide();
 }
 
-/**
- * Gets an integer between min and max, both are inclusive.
- * @param min
- * @param max
- * @returns Random integer betwen min and max.
- */
-export function randomIntFromRange(min: number, max: number): number {
-  const minNorm = Math.ceil(min);
-  const maxNorm = Math.floor(max);
-  return Math.floor(Random.get() * (maxNorm - minNorm + 1) + minNorm);
-}
-
-/**
- * Shuffle an array of elements using the Fisher–Yates algorithm.
- * This function mutates the input array.
- * @param elements
- */
-export function shuffle<T>(elements: T[]): void {
-  for (let i = elements.length - 1; i > 0; --i) {
-    const j = randomIntFromRange(0, i);
-    const temp = elements[j];
-    elements[j] = elements[i] as T;
-    elements[i] = temp as T;
-  }
-}
-
-export function randomElementFromArray<T>(array: T[]): T {
-  return array[randomIntFromRange(0, array.length - 1)] as T;
-}
-
-export function nthElementFromArray<T>(
-  array: T[],
-  index: number
-): T | undefined {
-  index = index < 0 ? array.length + index : index;
-  return array[index];
-}
-
-export function randomElementFromObject<T extends object>(
-  object: T
-): T[keyof T] {
-  return randomElementFromArray(Object.values(object));
-}
-
 export function createErrorMessage(error: unknown, message: string): string {
   if (error instanceof Error) {
     return `${message}: ${error.message}`;
@@ -594,15 +549,6 @@ export function isPasswordStrong(password: string): boolean {
   const isLong = password.length >= 8;
   const isShort = password.length <= 64;
   return hasCapital && hasNumber && hasSpecial && isLong && isShort;
-}
-
-export function intersect<T>(a: T[], b: T[], removeDuplicates = false): T[] {
-  let t;
-  if (b.length > a.length) (t = b), (b = a), (a = t); // indexOf to loop over shorter
-  const filtered = a.filter(function (e) {
-    return b.includes(e);
-  });
-  return removeDuplicates ? [...new Set(filtered)] : filtered;
 }
 
 export function htmlToText(html: string): string {

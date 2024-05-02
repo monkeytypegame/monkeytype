@@ -47,7 +47,7 @@ function updateTimer(): void {
   if (timerDebug) console.time("timer progress update");
   if (
     Config.mode === "time" ||
-    (Config.mode === "custom" && CustomText.isTimeRandom)
+    (Config.mode === "custom" && CustomText.getLimitMode() === "time")
   ) {
     TimerProgress.update();
   }
@@ -149,14 +149,14 @@ function checkIfTimeIsUp(): void {
   if (timerDebug) console.time("times up check");
   if (
     Config.mode === "time" ||
-    (Config.mode === "custom" && CustomText.isTimeRandom)
+    (Config.mode === "custom" && CustomText.getLimitMode() === "time")
   ) {
     if (
       (Time.get() >= Config.time &&
         Config.time !== 0 &&
         Config.mode === "time") ||
-      (Time.get() >= CustomText.time &&
-        CustomText.time !== 0 &&
+      (Time.get() >= CustomText.getLimitValue() &&
+        CustomText.getLimitValue() !== 0 &&
         Config.mode === "custom")
     ) {
       //times up

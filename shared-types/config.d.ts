@@ -18,7 +18,7 @@ declare namespace SharedTypes.Config {
   type Mode2Custom<M extends Mode> = Mode2<M> | "custom";
   type ConfidenceMode = "off" | "on" | "max";
   type IndicateTypos = "off" | "below" | "replace";
-  type TimerStyle = "bar" | "text" | "mini";
+  type TimerStyle = "off" | "bar" | "text" | "mini";
   type RandomTheme = "off" | "on" | "fav" | "light" | "dark" | "custom";
   type TimerColor = "black" | "sub" | "text" | "main";
   type TimerOpacity = "0.25" | "0.5" | "0.75" | "1";
@@ -55,7 +55,6 @@ declare namespace SharedTypes.Config {
   type PlaySoundOnError = "off" | "1" | "2" | "3" | "4";
   type SoundVolume = "0.1" | "0.5" | "1.0";
   type PaceCaret = "off" | "average" | "pb" | "last" | "custom" | "daily";
-  type PageWidth = "100" | "125" | "150" | "200" | "max";
   type AccountChart = ["off" | "on", "off" | "on", "off" | "on", "off" | "on"];
   type MinimumWordsPerMinute = "off" | "custom";
   type HighlightMode =

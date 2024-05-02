@@ -34,12 +34,8 @@
       "**/public/**": true,
       "**/coverage/**": true
     },
-    "jest.disabledWorkspaceFolders": ["root", "shared-types", "frontend"],
-    "vitest.enable": true,
-    "vitest.watchOnStartup": true,
-    "coverage-gutters.coverageBaseDir": "**/coverage",
     "editor.defaultFormatter": "esbenp.prettier-vscode",
-    "editor.formatOnSaveMode": "modifications",
+    "editor.formatOnSaveMode": "file",
     "editor.formatOnSave": true,
     "testing.openTesting": "neverOpen"
   }

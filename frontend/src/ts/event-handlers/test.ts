@@ -9,6 +9,7 @@ import * as Notifications from "../elements/notifications";
 import * as QuoteRateModal from "../modals/quote-rate";
 import * as QuoteReportModal from "../modals/quote-report";
 import * as QuoteSearchModal from "../modals/quote-search";
+import * as CustomTextModal from "../modals/custom-text";
 
 $(".pageTest").on("click", "#testModesNotice .textButton", async (event) => {
   const attr = $(event.currentTarget).attr("commands");
@@ -68,4 +69,8 @@ $(".pageTest").on("click", "#testConfig .quoteLength .textButton", (e) => {
   if (len === -2) {
     void QuoteSearchModal.show();
   }
+});
+
+$(".pageTest").on("click", "#testConfig .customText .textButton", () => {
+  CustomTextModal.show();
 });

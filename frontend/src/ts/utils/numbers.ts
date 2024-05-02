@@ -1,5 +1,3 @@
-import * as Random from "./random";
-
 /**
  * Calculates the standard deviation of an array of numbers.
  * @param array An array of numbers.

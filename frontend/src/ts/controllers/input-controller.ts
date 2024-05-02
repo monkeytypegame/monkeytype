@@ -215,7 +215,7 @@ function handleSpace(): void {
   void MonkeyPower.addPower(isWordCorrect, true);
   TestInput.incrementAccuracy(isWordCorrect);
   if (isWordCorrect) {
-    if (Config.indicateTypos !== "off" && Config.stopOnError === "letter") {
+    if (Config.stopOnError === "letter") {
       void TestUI.updateWordElement();
     }
     PaceCaret.handleSpace(true, currentWord);
@@ -316,8 +316,8 @@ function handleSpace(): void {
   if (
     !Config.showAllLines ||
     Config.mode === "time" ||
-    (CustomText.isWordRandom && CustomText.word === 0) ||
-    CustomText.isTimeRandom
+    (Config.mode === "custom" && CustomText.getLimitValue() === 0) ||
+    (Config.mode === "custom" && CustomText.getLimitMode() === "time")
   ) {
     const currentTop: number = Math.floor(
       document.querySelectorAll<HTMLElement>("#words .word")[
@@ -647,9 +647,7 @@ function handleChar(
     Config.stopOnError === "letter" &&
     !thisCharCorrect
   ) {
-    if (Config.indicateTypos !== "off") {
-      void TestUI.updateWordElement(undefined, TestInput.input.current + char);
-    }
+    void TestUI.updateWordElement(undefined, TestInput.input.current + char);
     return;
   }
 
@@ -771,27 +769,6 @@ function handleChar(
 function handleTab(event: JQuery.KeyDownEvent, popupVisible: boolean): void {
   if (TestUI.resultCalculating) {
     event.preventDefault();
-    return;
-  }
-
-  //special case for inserting tab characters into the textarea
-  if ($("#customTextPopup .textarea").is(":focus")) {
-    event.preventDefault();
-
-    const area = $("#customTextPopup .textarea")[0] as HTMLTextAreaElement;
-
-    const start: number = area.selectionStart;
-    const end: number = area.selectionEnd;
-
-    // set textarea value to: text before caret + tab + text after caret
-    area.value =
-      area.value.substring(0, start) + "\t" + area.value.substring(end);
-
-    // put caret at right position again
-    area.selectionStart = area.selectionEnd = start + 1;
-
-    CustomText.setPopupTextareaState(area.value);
-
     return;
   }
 
@@ -1300,7 +1277,7 @@ $(document).on("keydown", async (event) => {
           Config.mode,
           Config.words,
           Config.time,
-          CustomText,
+          CustomText.getData(),
           CustomTextState.isCustomTextLong() ?? false
         )
       ) {
