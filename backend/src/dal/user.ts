@@ -39,8 +39,7 @@ export async function addUser(
       zen: {},
       custom: {},
     },
-    //TODO: enable after migration is completed
-    //testActivity: {}
+    testActivity: {},
   };
 
   const result = await getUsersCollection().updateOne(

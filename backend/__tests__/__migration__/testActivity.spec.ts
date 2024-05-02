@@ -23,8 +23,9 @@ describe("testActivity migration", () => {
 
   it("migrates users with results", async () => {
     //given
-    const withResults = await UserTestData.createUser();
-    const withoutResults = await UserTestData.createUser();
+    const withResults = await UserTestData.createUserWithoutMigration();
+    const withoutResults = await UserTestData.createUserWithoutMigration();
+
     const uid = withResults.uid;
 
     //2023-01-02

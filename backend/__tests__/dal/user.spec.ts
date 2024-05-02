@@ -788,7 +788,7 @@ describe("UserDal", () => {
   describe("incrementTestActivity", () => {
     it("ignores user without migration", async () => {
       // given
-      const user = await UserTestData.createUser();
+      const user = await UserTestData.createUserWithoutMigration();
 
       //when
       await UserDAL.incrementTestActivity(user, 1712102400000);
