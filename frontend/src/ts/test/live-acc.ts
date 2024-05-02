@@ -16,6 +16,11 @@ export function update(acc: number): void {
   textEl.innerHTML = number + "%";
 }
 
+export function reset(): void {
+  miniEl.innerHTML = "100%";
+  textEl.innerHTML = "100%";
+}
+
 let state = false;
 
 export function show(): void {
