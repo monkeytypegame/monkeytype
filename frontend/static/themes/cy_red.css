@@ -2,11 +2,11 @@
     --bg-color: #6e2626;
     --main-color: #e55050;
     --caret-color: #541d1d;
-    --sub-color: #c1939e;
+    --sub-color: #ff6060;
     --sub-alt-color: #3f1616;
-    --text-color: #ea5656;
-    --error-color: #a04949;
-    --error-extra-color: #a81717;
-    --colorful-error-color: #a04949;
-    --colorful-error-extra-color: #a81717;
+    --text-color: #ffaaaa;
+    --error-color: #ad2929;
+    --error-extra-color: #ce2929;
+    --colorful-error-color: #ad2929;
+    --colorful-error-extra-color: #ce2929;
   }
