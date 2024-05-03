@@ -222,7 +222,9 @@ export async function setup(challengeName: string): Promise<boolean> {
     return false;
   }
 
-  const challenge = list.filter((c) => c.name === challengeName)[0];
+  const challenge = list.filter(
+    (c) => c.name.toLowerCase() === challengeName.toLowerCase()
+  )[0];
   let notitext;
   try {
     if (challenge === undefined) {
