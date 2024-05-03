@@ -1,16 +1,19 @@
-@media only screen and (max-width: 650px) {
+@media only screen and (max-width: calc(640px + 5rem)) {
   #mediaQueryDebug {
     background: #7e57c2;
     &::before {
       content: "purple";
     }
   }
-  #contentWrapper {
-    max-width: 100%;
-    padding: 1rem;
+  .content-grid {
+    --content-max-width: 100%;
+    --padding-inline: 1rem;
   }
-  #app {
-    grid-template-columns: auto 1fr auto;
+  .ad.ad-h {
+    display: none;
+  }
+  .ad.ad-h-s {
+    display: grid;
   }
   header {
     nav {
@@ -31,7 +34,24 @@
     }
   }
   .pageTest {
-    #result {
+    #testConfig {
+      display: none;
+    }
+    #mobileTestConfigButton {
+      display: block;
+    }
+    #result .wrapper {
+      .stats {
+        grid-template-columns: 1fr;
+        grid-template-areas: "wpm" "acc";
+        width: max-content;
+        justify-items: start;
+        justify-self: center;
+      }
+      .morestats {
+        justify-self: unset;
+        width: unset;
+      }
       .buttons {
         grid-template-columns: 1fr 1fr;
         grid-auto-flow: unset;

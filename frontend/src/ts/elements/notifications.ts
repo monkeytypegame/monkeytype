@@ -7,10 +7,7 @@ import * as NotificationEvent from "../observables/notification-event";
 
 function updateMargin(): void {
   const height = $("#bannerCenter").height() as number;
-  $("#contentWrapper").css(
-    "padding-top",
-    height + Numbers.convertRemToPixels(2) + "px"
-  );
+  $("#app").css("padding-top", height + Numbers.convertRemToPixels(2) + "px");
   $("#notificationCenter").css("margin-top", height + "px");
 }
 

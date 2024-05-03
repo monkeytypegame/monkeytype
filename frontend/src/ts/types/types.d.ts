@@ -109,10 +109,16 @@ declare namespace MonkeyTypes {
     | `wordOrder:${FunboxWordOrder}`;
 
   class Wordset {
-    public words: string[];
-    public length: number;
+    words: string[];
+    length: number;
+    orderedIndex: number;
+    shuffledIndexes: number[];
     constructor(words: string[]);
+    resetIndexes(): void;
     randomWord(mode: MonkeyTypes.FunboxWordsFrequency): string;
+    shuffledWord(): string;
+    generateShuffledIndexes(): void;
+    nextWord(): string;
   }
 
   class Section {

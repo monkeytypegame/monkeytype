@@ -353,6 +353,7 @@ export function showWords(): void {
 
   $("#words").html(wordsHTML);
 
+  updateWordsWidth();
   updateWordsHeight(true);
   updateActiveElement(undefined, true);
   void Caret.updatePosition();
@@ -383,13 +384,13 @@ export function updateWordsInputPosition(initial = false): void {
   const activeWordMargin =
     parseInt(computed.marginTop) + parseInt(computed.marginBottom);
 
-  const wordsWrapperTop =
-    (document.querySelector("#wordsWrapper") as HTMLElement | null)
-      ?.offsetTop ?? 0;
+  // const wordsWrapperTop =
+  //   (document.querySelector("#wordsWrapper") as HTMLElement | null)
+  //     ?.offsetTop ?? 0;
 
   if (Config.tapeMode !== "off") {
     el.style.top =
-      wordsWrapperTop +
+      // wordsWrapperTop +
       activeWord.offsetHeight +
       activeWordMargin * 0.25 +
       -el.offsetHeight +
@@ -404,7 +405,7 @@ export function updateWordsInputPosition(initial = false): void {
   ) {
     el.style.left = "0px";
     el.style.top =
-      wordsWrapperTop +
+      // wordsWrapperTop +
       activeWord.offsetHeight * 2 +
       activeWordMargin * 1.5 +
       -el.offsetHeight +
@@ -414,7 +415,7 @@ export function updateWordsInputPosition(initial = false): void {
     el.style.top =
       activeWord.offsetTop -
       activeWordMargin +
-      wordsWrapperTop +
+      // wordsWrapperTop +
       activeWord.offsetHeight +
       activeWordMargin +
       -el.offsetHeight +
@@ -620,7 +621,7 @@ export async function screenshot(): Promise<void> {
   window.scrollTo({
     top: 0,
   });
-  const src = $("#result");
+  const src = $("#result .wrapper");
   const sourceX = src.offset()?.left ?? 0; /*X position from div#target*/
   const sourceY = src.offset()?.top ?? 0; /*Y position from div#target*/
   const sourceWidth = src.outerWidth(
@@ -1407,6 +1408,38 @@ export function highlightMode(mode?: SharedTypes.Config.HighlightMode): void {
   $("#words").attr("class", existing.join(" "));
 }
 
+function updateWordsWidth(): void {
+  let css: Record<string, string> = {};
+  if (Config.tapeMode === "off") {
+    if (Config.maxLineWidth === 0) {
+      css = {
+        "max-width": "100%",
+      };
+    } else {
+      css = {
+        "max-width": Config.maxLineWidth + "ch",
+      };
+    }
+  } else {
+    if (Config.maxLineWidth === 0) {
+      css = {
+        "max-width": "100%",
+      };
+    } else {
+      css = {
+        "max-width": "100%",
+      };
+    }
+  }
+  const el = $("#typingTest");
+  el.css(css);
+  if (Config.maxLineWidth === 0) {
+    el.removeClass("full-width-padding").addClass("content");
+  } else {
+    el.removeClass("content").addClass("full-width-padding");
+  }
+}
+
 $(".pageTest").on("click", "#saveScreenshotButton", () => {
   void screenshot();
 });
@@ -1528,11 +1561,7 @@ ConfigEvent.subscribe((key, value) => {
       $(".pageTest #restartTestButton").addClass("hidden");
     }
   }
-  if (key === "tapeMode") {
-    if (value === "off") {
-      $("#typingTest").css("max-width", "70ch");
-    } else {
-      $("#typingTest").css("max-width", "100%");
-    }
+  if (key === "maxLineWidth") {
+    updateWordsWidth();
   }
 });

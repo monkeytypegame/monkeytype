@@ -1,15 +1,12 @@
-@media only screen and (max-width: 1290px) {
+@media only screen and (max-width: calc(1280px + 5rem)) {
   #mediaQueryDebug {
     background: #ffee58;
     &::before {
       content: "yellow";
     }
   }
-  #contentWrapper {
-    max-width: 1024px;
-  }
-  #app {
-    grid-template-columns: auto 1024px auto;
+  .content-grid {
+    --content-max-width: 1024px;
   }
   .pageSettings {
     .section {

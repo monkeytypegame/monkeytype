@@ -1,25 +1,16 @@
-@media only screen and (max-width: 1034px) {
+@media only screen and (max-width: calc(1024px + 5rem)) {
   #mediaQueryDebug {
     background: #9ccc65;
     &::before {
       content: "green";
     }
   }
-  #contentWrapper {
-    max-width: 768px;
-  }
-  #app {
-    grid-template-columns: auto 768px auto;
+  .content-grid {
+    --content-max-width: 768px;
   }
   #testConfig {
     font-size: 0.7rem;
     --horizontalPadding: 0.6em;
-  }
-  .ad.ad-h {
-    display: none;
-  }
-  .ad.ad-h-s {
-    display: grid;
   }
   header {
     #logo {
@@ -40,7 +31,7 @@
     }
   }
   .pageTest {
-    #result .stats.morestats {
+    #result .wrapper .stats.morestats {
       display: grid;
       grid-template-columns: 1fr 1fr 1fr;
       grid-template-rows: 1fr 1fr;

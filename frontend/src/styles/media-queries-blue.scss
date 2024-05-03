@@ -1,21 +1,16 @@
-@media only screen and (max-width: 778px) {
+@media only screen and (max-width: calc(768px + 5rem)) {
   #mediaQueryDebug {
     background: #29b6f6;
     &::before {
       content: "blue";
     }
   }
-  #app {
-    grid-template-columns: auto 640px auto;
-  }
-  #contentWrapper {
-    max-width: 640px;
+  .content-grid {
+    --content-max-width: 640px;
   }
   #testConfig {
-    display: none;
-  }
-  #mobileTestConfigButton {
-    display: block;
+    font-size: 0.65rem;
+    --horizontalPadding: 0.55em;
   }
   #testModesNotice {
     font-size: 0.8rem;
@@ -28,7 +23,7 @@
     }
   }
   .pageTest {
-    #result {
+    #result .wrapper {
       grid-template-columns: 1fr;
       grid-template-areas:
         "stats" "chart"

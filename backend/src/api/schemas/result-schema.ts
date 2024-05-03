@@ -23,7 +23,7 @@ const RESULT_SCHEMA = joi
     consistency: joi.number().min(0).max(100).required(),
     customText: joi.object({
       textLen: joi.number().required(),
-      mode: joi.string().valid("repeat", "random").required(),
+      mode: joi.string().valid("repeat", "random", "shuffle").required(),
       pipeDelimiter: joi.boolean().required(),
       limit: joi.object({
         mode: joi.string().valid("word", "time", "section").required(),

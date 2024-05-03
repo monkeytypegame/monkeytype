@@ -1,4 +1,4 @@
-<div class="page pageSettings hidden" id="pageSettings">
+<div class="page pageSettings hidden full-width content-grid" id="pageSettings">
   <div class="scrollToTopButton">
     <i class="fas fa-angle-double-up"></i>
   </div>
@@ -27,7 +27,7 @@
     </div>
   </div>
 
-  <div id="ad-settings-1-wrapper" class="ad advertisement ad-h">
+  <div id="ad-settings-1-wrapper" class="ad full-width advertisement ad-h">
     <div class="icon"><i class="fas fa-ad"></i></div>
     <div id="ad-settings-1"></div>
   </div>
@@ -561,7 +561,7 @@
     <div class="sectionSpacer"></div>
   </div>
 
-  <div id="ad-settings-2-wrapper" class="ad advertisement ad-h">
+  <div id="ad-settings-2-wrapper" class="ad full-width advertisement ad-h">
     <div class="icon"><i class="fas fa-ad"></i></div>
     <div id="ad-settings-2"></div>
   </div>
@@ -893,6 +893,29 @@
         <button data-config-value="true">on</button>
       </div>
     </div>
+    <div class="section" data-config-name="maxLineWidth">
+      <div class="groupTitle">
+        <i class="fas fa-text-width"></i>
+        <span>max line width</span>
+      </div>
+      <div class="text">
+        Change the maximum width of the typing test, measured in characters.
+        Setting this to 0 will align the words to the edges of the content area.
+      </div>
+      <div class="inputs">
+        <div class="inputAndButton">
+          <input
+            type="number"
+            placeholder="max line width"
+            class="input"
+            min="0"
+          />
+          <button class="save no-auto-handle">
+            <i class="fas fa-save fa-fw"></i>
+          </button>
+        </div>
+      </div>
+    </div>
     <div class="section" data-config-name="fontSize">
       <div class="groupTitle">
         <i class="fas fa-font"></i>
@@ -989,7 +1012,7 @@
     <div class="sectionSpacer"></div>
   </div>
 
-  <div id="ad-settings-3-wrapper" class="ad advertisement ad-h">
+  <div id="ad-settings-3-wrapper" class="ad full-width advertisement ad-h">
     <div class="icon"><i class="fas fa-ad"></i></div>
     <div id="ad-settings-3"></div>
   </div>
