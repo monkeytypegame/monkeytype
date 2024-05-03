@@ -1221,4 +1221,6 @@
     "name": "cy_red",
     "bgColor": "#6e2626",
     "mainColor": "#e55050"
+    "subColor": "#c1939e",
+    "textColor": "#ea5656"
 }]
