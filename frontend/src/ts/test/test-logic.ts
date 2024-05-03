@@ -433,6 +433,10 @@ export async function init(): Promise<void> {
     rememberLazyMode = false;
   }
 
+  if (Config.mode === "custom") {
+    console.debug("Custom text", CustomText.getData());
+  }
+
   let generatedWords: string[];
   let generatedSectionIndexes: number[];
   let wordsHaveTab = false;
