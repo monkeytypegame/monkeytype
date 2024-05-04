@@ -15,6 +15,17 @@
   #testModesNotice {
     font-size: 0.8rem;
   }
+  #bannerCenter {
+    font-size: 0.85rem;
+    .banner.withImage {
+      .image {
+        display: none;
+      }
+      .lefticon {
+        display: block;
+      }
+    }
+  }
   .page404 {
     .content {
       grid-template-columns: 300px;
