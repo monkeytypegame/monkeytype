@@ -14,7 +14,7 @@ const miniEl = $("#liveStatsMini .time");
 
 export function show(): void {
   if (Config.mode !== "zen" && Config.timerStyle === "bar") {
-    barEl.stop(true, true).removeClass("hidden").animate(
+    barEl.stop(true, true).removeClass("hidden").css("opacity", 0).animate(
       {
         opacity: 1,
       },
@@ -28,7 +28,7 @@ export function show(): void {
       125
     );
   } else if (Config.mode === "zen" || Config.timerStyle === "mini") {
-    miniEl.stop(true, true).removeClass("hidden").animate(
+    miniEl.stop(true, true).removeClass("hidden").css("opacity", 0).animate(
       {
         opacity: 1,
       },
