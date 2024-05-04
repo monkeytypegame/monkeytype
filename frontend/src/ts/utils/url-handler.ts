@@ -189,7 +189,7 @@ export function loadTestSettingsFromUrl(getOverride?: string): void {
   Object.keys(applied).forEach((setKey) => {
     const set = applied[setKey];
     if (set !== undefined) {
-      appliedString += `${setKey}${set ? ": " + set : ""}<br>`;
+      appliedString += `${setKey}${Misc.escapeHTML(set ? ": " + set : "")}<br>`;
     }
   });
 
