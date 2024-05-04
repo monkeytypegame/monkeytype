@@ -40,7 +40,12 @@
   },
   {
     "name": "portuguese",
-    "languages": ["portuguese", "portuguese_3k", "portuguese_acentos_e_cedilha"]
+    "languages": [
+      "portuguese", 
+      "portuguese_3k", 
+      "portuguese_acentos_e_cedilha", 
+      "portuguese_sem_acentos_ou_cedilha"
+    ]
   },
   {
     "name": "arabic",
