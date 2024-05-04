@@ -119,45 +119,51 @@
 
   #liveStatsTextTop {
     pointer-events: none;
-    transition: 0.25s;
-    height: 0;
     color: black;
-    line-height: 0;
     z-index: -1;
     text-align: center;
-    left: 0;
     width: 100%;
     position: relative;
-    font-size: clamp(1rem, 12vw, 10rem);
+    display: grid;
+    font-size: 10rem;
 
     opacity: 0;
     width: 0;
     height: 0;
-    margin: 0 auto;
-    display: grid;
-    justify-content: center;
-    bottom: clamp(2rem, 12vw, 6rem);
+    justify-self: center;
 
     transition: none;
+
+    .wrapper {
+      position: absolute;
+      bottom: 1.25rem;
+      display: flex;
+      justify-self: center;
+      gap: 0.5ch;
+      line-height: 1;
+    }
   }
 
   #liveStatsTextBottom {
-    font-size: clamp(1rem, 12vw, 10rem);
+    font-size: 10rem;
     color: black;
     width: 100%;
-    left: 0;
     text-align: center;
     z-index: -1;
     height: 0;
-    line-height: 0;
-    top: clamp(1rem, 10vw, 5rem);
     position: relative;
     display: grid;
-    grid-auto-flow: column;
-    justify-content: center;
-    gap: clamp(1rem, 8vw, 5rem);
-    width: 0;
     margin: 0 auto;
+    pointer-events: none;
+
+    .wrapper {
+      position: absolute;
+      top: 1rem;
+      display: flex;
+      justify-self: center;
+      gap: 0.5ch;
+      line-height: 1;
+    }
   }
 
   #liveStatsTextBottom.timerMain,
