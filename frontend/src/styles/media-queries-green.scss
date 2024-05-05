@@ -36,6 +36,10 @@
       grid-template-columns: 1fr 1fr 1fr;
       grid-template-rows: 1fr 1fr;
     }
+    #liveStatsTextTop,
+    #liveStatsTextBottom {
+      font-size: 7rem;
+    }
   }
   .pageAbout {
     .section {
