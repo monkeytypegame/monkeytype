@@ -896,7 +896,12 @@ export async function finish(difficultyFailed = false): Promise<void> {
 
   let tooShort = false;
   //fail checks
-  if (difficultyFailed) {
+  const dateDur = (TestStats.end3 - TestStats.start3) / 1000;
+  if (ce.testDuration < dateDur - 0.05 || ce.testDuration > dateDur + 0.05) {
+    Notifications.add("Test invalid - inconsistent test duration", 0);
+    TestStats.setInvalid();
+    dontSave = true;
+  } else if (difficultyFailed) {
     Notifications.add(`Test failed - ${failReason}`, 0, {
       duration: 1,
     });
