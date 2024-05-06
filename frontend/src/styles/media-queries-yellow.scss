@@ -51,5 +51,11 @@
     .legend div {
       height: var(--box-size);
     }
+    .days {
+      display: grid;
+    }
+    .daysFull {
+      display: none;
+    }
   }
 }
