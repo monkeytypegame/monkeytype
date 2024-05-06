@@ -176,6 +176,14 @@
       }
     }
   }
+  #testActivity {
+    .activity div,
+    .legend div {
+      width: 0.7em;
+      height: 0.7em;
+      border-radius: 0.15em;
+    }
+  }
 }
 
 @media (pointer: coarse) and (max-width: 778px) {

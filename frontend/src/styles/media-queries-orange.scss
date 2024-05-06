@@ -8,4 +8,10 @@
   .content-grid {
     --content-max-width: 1280px;
   }
+  #testActivity {
+    .activity div,
+    .legend div {
+      width: 1.6em;
+    }
+  }
 }
