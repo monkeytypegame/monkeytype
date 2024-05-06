@@ -471,30 +471,33 @@
 }
 
 #testActivity {
-  // overflow-x: scroll;
-  // .wrapper {
-  display: grid;
-  grid-template-columns: min-content 1fr;
-  grid-template-rows: min-content 1fr min-content;
-  gap: 1em 1em;
-  grid-template-areas:
-    "top top"
-    "day chart"
-    "empty month";
-  // grid-template-areas:
-  //   "empty month"
-  //   "day chart"
-  //   "top top";
-
   background: var(--sub-alt-color);
   border-radius: var(--roundness);
   padding: 1rem;
-  // }
+  display: flex;
+  justify-content: center;
+
+  .wrapper {
+    width: max-content;
+    display: grid;
+    grid-template-columns: min-content 1fr;
+    grid-template-rows: min-content 1fr min-content;
+    gap: 1em 1em;
+    grid-template-areas:
+      "top top"
+      "day chart"
+      "empty month";
+    // grid-template-areas:
+    //   "empty month"
+    //   "day chart"
+    //   "top top";
+    font-size: 0.75rem;
+  }
 
   .top {
     grid-area: top;
     display: grid;
-    grid-template-columns: 11rem 1fr 11rem;
+    grid-template-columns: 15rem 1fr max-content;
     grid-template-areas: "year title legend";
     gap: 1rem;
   }
@@ -508,7 +511,6 @@
   .days div,
   .legend {
     color: var(--sub-color);
-    font-size: 0.8em;
   }
 
   .year {
@@ -569,13 +571,6 @@
     // max-width: 100%;
 
     div {
-      width: 100%;
-      //max-height: 1rem;
-      // min-width: 1rem;
-      // height: 1rem;
-      // max-width: 1rem;
-      justify-self: center;
-      aspect-ratio: 1;
       &:hover {
         border: 2px solid var(--text-color);
       }
@@ -585,9 +580,25 @@
       }
     }
   }
+  .legend {
+    grid-area: legend;
+    display: flex;
+    gap: 0.25em;
+    justify-content: flex-end;
+    align-self: center;
+    & *:first-child {
+      margin-left: 0.25rem;
+    }
+    & *:last-child {
+      margin-right: 0.25rem;
+    }
+  }
   .activity div,
   .legend div {
-    border-radius: 0.25em;
+    width: 2em;
+    height: 1em;
+    border-radius: calc(var(--roundness) / 2);
+    place-self: center;
 
     &[data-level="filler"] {
       background: none;
@@ -626,20 +637,6 @@
 
     &[data-level="4"] {
       background-color: var(--main-color);
-    }
-  }
-
-  .legend {
-    grid-area: legend;
-    display: flex;
-    gap: 0.5em;
-    justify-content: flex-end;
-    align-self: center;
-
-    div {
-      display: inline-flex;
-      height: 1rem;
-      aspect-ratio: 1/1;
     }
   }
 }
