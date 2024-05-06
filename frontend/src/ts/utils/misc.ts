@@ -26,6 +26,15 @@ export function convertNumberToArabic(numString: string): string {
   return ret;
 }
 
+export function convertNumberToBangla(numString: string): string {
+  const banglaIndic = "০১২৩৪৫৬৭৮৯";
+  let ret = "";
+  for (const char of numString) {
+    ret += banglaIndic[parseInt(char)];
+  }
+  return ret;
+}
+
 export function convertNumberToNepali(numString: string): string {
   const nepaliIndic = "०१२३४५६७८९";
   let ret = "";
