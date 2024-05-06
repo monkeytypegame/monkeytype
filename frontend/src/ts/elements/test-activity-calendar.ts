@@ -118,18 +118,19 @@ export class TestActivityCalendar implements MonkeyTypes.TestActivityCalendar {
     let currentDate = this.startDay;
     for (let i = 0; i < days; i++) {
       const count = this.data[i];
+      const label =
+        this.data[i] !== null
+          ? `${count} ${count == 1 ? "test" : "tests"} on ${format(
+              currentDate,
+              "EEEE dd MMM yyyy"
+            )}`
+          : `no activity on ${format(currentDate, "EEEE dd MMM yyyy")}`;
       result.push({
         level:
           this.isFullYear || isBefore(currentDate, tomorrow)
             ? getValue(count)
             : "filler",
-        label:
-          this.data[i] !== undefined && this.data[i] !== null
-            ? `${count} ${count == 1 ? "test" : "tests"} on ${format(
-                currentDate,
-                "EEEE dd MMM yyyy"
-              )}`
-            : `no activity on ${format(currentDate, "EEEE dd MMM yyyy")}`,
+        label: this.data[i] !== undefined ? label : undefined,
       });
       currentDate = addDays(currentDate, 1);
     }
