@@ -448,7 +448,7 @@ declare namespace MonkeyTypes {
   };
 
   type TestActivityCalendar = {
-    getMonths: () => string[];
+    getMonths: () => TestActivityMonth[];
     getDays: () => TestActivityDay[];
   };
 
@@ -460,5 +460,10 @@ declare namespace MonkeyTypes {
   type TestActivityDay = {
     level: string;
     label?: string;
+  };
+
+  type TestActivityMonth = {
+    text: string;
+    weeks: number;
   };
 }

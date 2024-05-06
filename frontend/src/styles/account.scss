@@ -536,7 +536,7 @@
   .months {
     grid-area: month;
     display: grid;
-    grid-template-columns: repeat(12, 1fr);
+    grid-template-columns: repeat(53, 1fr);
 
     div {
       width: 100%;

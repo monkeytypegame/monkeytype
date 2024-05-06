@@ -11,12 +11,20 @@ import {
   isBefore,
   endOfYear,
   startOfYear,
+  endOfWeek,
+  differenceInWeeks,
+  startOfMonth,
+  nextSunday,
+  previousSunday,
+  isSunday,
+  startOfDay,
 } from "date-fns";
 
 export class TestActivityCalendar implements MonkeyTypes.TestActivityCalendar {
   protected data: (number | null | undefined)[];
   protected startDay: Date;
   protected endDay: Date;
+  protected isFullYear: boolean;
 
   constructor(
     data: (number | null | undefined)[],
@@ -29,10 +37,11 @@ export class TestActivityCalendar implements MonkeyTypes.TestActivityCalendar {
     this.startDay = interval.start as Date;
     this.endDay = interval.end as Date;
     this.data = this.buildData(data, local);
+    this.isFullYear = fullYear;
   }
 
   protected getInterval(lastDay: Date, fullYear = false): Interval {
-    const end = (fullYear ? endOfYear : endOfMonth)(lastDay);
+    const end = fullYear ? endOfYear(lastDay) : endOfWeek(new Date());
     const start = fullYear
       ? startOfYear(lastDay)
       : addDays(subYears(end, 1), 1);
@@ -54,15 +63,35 @@ export class TestActivityCalendar implements MonkeyTypes.TestActivityCalendar {
     return values.slice(offset);
   }
 
-  getMonths(): string[] {
-    return eachMonthOfInterval({
+  getMonths(): MonkeyTypes.TestActivityMonth[] {
+    const months: Date[] = eachMonthOfInterval({
       start: this.startDay,
       end: this.endDay,
-    }).map((month) => format(month, "MMM").toLowerCase());
+    });
+
+    const results: MonkeyTypes.TestActivityMonth[] = [];
+
+    for (let i = 0; i < months.length; i++) {
+      const month: Date = months[i] as Date;
+      let start = i === 0 ? previousSunday(this.startDay) : startOfMonth(month);
+      if (!isSunday(start)) start = nextSunday(start);
+      let end = i === 12 ? this.endDay : endOfMonth(month);
+      if (!isSunday(end)) end = previousSunday(end);
+
+      const weeks = differenceInWeeks(end, start) + 1;
+
+      if (weeks > 2)
+        results.push({
+          text: format(month, "MMM").toLowerCase(),
+          weeks: weeks,
+        });
+    }
+    return results;
   }
 
   getDays(): MonkeyTypes.TestActivityDay[] {
     const result: MonkeyTypes.TestActivityDay[] = [];
+    const tomorrow = addDays(startOfDay(new Date()), 1);
 
     const buckets = this.getBuckets();
     const getValue = (v: number | null | undefined): string => {
@@ -87,7 +116,10 @@ export class TestActivityCalendar implements MonkeyTypes.TestActivityCalendar {
     for (let i = 0; i < days; i++) {
       const count = this.data[i];
       result.push({
-        level: getValue(count),
+        level:
+          this.isFullYear || isBefore(currentDate, tomorrow)
+            ? getValue(count)
+            : "filler",
         label:
           this.data[i] !== undefined && this.data[i] !== null
             ? `${count} ${count == 1 ? "test" : "tests"} on ${format(

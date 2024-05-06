@@ -84,8 +84,13 @@ export function initYearSelector(
   years.length > 1 ? yearSelector.enable() : yearSelector.disable();
 }
 
-function updateMonths(months: string[]): void {
+function updateMonths(months: MonkeyTypes.TestActivityMonth[]): void {
   const element = document.querySelector("#testActivity .months") as Element;
 
-  element.innerHTML = months.map((month) => `<div>${month}</div>`).join("");
+  element.innerHTML = months
+    .map(
+      (month) =>
+        `<div style="grid-column: span ${month.weeks}">${month.text}</div>`
+    )
+    .join("");
 }
