@@ -77,7 +77,10 @@ export async function punctuateWord(
       if (rand <= 0.8) {
         if (currentLanguage === "kurdish") {
           word += ".";
-        } else if (currentLanguage === "nepali") {
+        } else if (
+          currentLanguage === "nepali" ||
+          currentLanguage === "hindi"
+        ) {
           word += "।";
         } else if (
           currentLanguage === "japanese" ||
@@ -864,6 +867,8 @@ export async function getNextWord(
         randomWord = Misc.convertNumberToArabic(randomWord);
       } else if (Config.language.startsWith("nepali")) {
         randomWord = Misc.convertNumberToNepali(randomWord);
+      } else if (Config.language.startsWith("hindi")) {
+        randomWord = Misc.convertNumberToHindi(randomWord);
       }
     }
   }

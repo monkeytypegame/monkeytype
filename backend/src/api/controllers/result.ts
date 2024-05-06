@@ -296,15 +296,6 @@ export async function addResult(
   //   );
   //   return res.status(400).json({ message: "Time traveler detected" });
 
-  // this probably wont work if we replace the timestamp with the server time later
-  // let timestampres = await ResultDAO.getResultByTimestamp(
-  //   uid,
-  //   result.timestamp
-  // );
-  // if (timestampres) {
-  //   return res.status(400).json({ message: "Duplicate result" });
-  // }
-
   //convert result test duration to miliseconds
   //get latest result ordered by timestamp
   let lastResultTimestamp: null | number = null;

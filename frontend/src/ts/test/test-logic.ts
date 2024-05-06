@@ -20,7 +20,7 @@ import * as ThemeController from "../controllers/theme-controller";
 import * as ResultWordHighlight from "../elements/result-word-highlight";
 import * as PaceCaret from "./pace-caret";
 import * as Caret from "./caret";
-import * as LiveWpm from "./live-wpm";
+import * as LiveSpeed from "./live-speed";
 import * as LiveAcc from "./live-acc";
 import * as LiveBurst from "./live-burst";
 import * as TimerProgress from "./timer-progress";
@@ -90,10 +90,8 @@ export function startTest(now: number): boolean {
   Replay.startReplayRecording();
   Replay.replayGetWordsList(TestWords.words.list);
   TestInput.resetKeypressTimings();
-  TimerProgress.restart();
   TimerProgress.show();
-  $("#liveWpm").text("0");
-  LiveWpm.show();
+  LiveSpeed.show();
   LiveAcc.show();
   LiveBurst.show();
   TimerProgress.update();
@@ -244,7 +242,7 @@ export function restart(options = {} as RestartOptions): void {
   Caret.hide();
   TestState.setActive(false);
   Replay.stopReplayRecording();
-  LiveWpm.hide();
+  LiveSpeed.hide();
   LiveAcc.hide();
   LiveBurst.hide();
   TimerProgress.hide();
@@ -347,23 +345,10 @@ export function restart(options = {} as RestartOptions): void {
           },
           options.noAnim ? 0 : 125,
           () => {
-            (
-              document.querySelector("#miniTimerAndLiveWpm .wpm") as HTMLElement
-            ).innerHTML = "0";
-            (
-              document.querySelector("#miniTimerAndLiveWpm .acc") as HTMLElement
-            ).innerHTML = "100%";
-            (
-              document.querySelector(
-                "#miniTimerAndLiveWpm .burst"
-              ) as HTMLElement
-            ).innerHTML = "0";
-            (document.querySelector("#liveWpm") as HTMLElement).innerHTML = "0";
-            (document.querySelector("#liveAcc") as HTMLElement).innerHTML =
-              "100%";
-            (document.querySelector("#liveBurst") as HTMLElement).innerHTML =
-              "0";
-
+            TimerProgress.reset();
+            LiveSpeed.reset();
+            LiveAcc.reset();
+            LiveBurst.reset();
             TestUI.setTestRestarting(false);
             TestUI.updatePremid();
             ManualRestart.reset();
@@ -446,6 +431,10 @@ export async function init(): Promise<void> {
 
   if (!Config.lazyMode && !language.noLazyMode) {
     rememberLazyMode = false;
+  }
+
+  if (Config.mode === "custom") {
+    console.debug("Custom text", CustomText.getData());
   }
 
   let generatedWords: string[];
@@ -844,7 +833,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
   TestState.setActive(false);
   Replay.stopReplayRecording();
   Caret.hide();
-  LiveWpm.hide();
+  LiveSpeed.hide();
   LiveAcc.hide();
   LiveBurst.hide();
   TimerProgress.hide();
@@ -907,7 +896,12 @@ export async function finish(difficultyFailed = false): Promise<void> {
 
   let tooShort = false;
   //fail checks
-  if (difficultyFailed) {
+  const dateDur = (TestStats.end3 - TestStats.start3) / 1000;
+  if (ce.testDuration < dateDur - 0.05 || ce.testDuration > dateDur + 0.05) {
+    Notifications.add("Test invalid - inconsistent test duration", 0);
+    TestStats.setInvalid();
+    dontSave = true;
+  } else if (difficultyFailed) {
     Notifications.add(`Test failed - ${failReason}`, 0, {
       duration: 1,
     });
