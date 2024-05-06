@@ -44,6 +44,15 @@ export function convertNumberToNepali(numString: string): string {
   return ret;
 }
 
+export function convertNumberToHindi(numString: string): string {
+  const hindiIndic = "०१२३४५६७८९";
+  let ret = "";
+  for (const char of numString) {
+    ret += hindiIndic[parseInt(char)];
+  }
+  return ret;
+}
+
 export function findGetParameter(
   parameterName: string,
   getOverride?: string

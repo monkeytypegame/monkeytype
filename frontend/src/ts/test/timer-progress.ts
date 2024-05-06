@@ -9,17 +9,22 @@ import * as TestState from "./test-state";
 import * as ConfigEvent from "../observables/config-event";
 
 const barEl = $("#barTimerProgress .bar");
+const barOpacityEl = $("#barTimerProgress .opacityWrapper");
 const textEl = $("#liveStatsTextTop .timerProgress");
 const miniEl = $("#liveStatsMini .time");
 
 export function show(): void {
   if (Config.mode !== "zen" && Config.timerStyle === "bar") {
-    barEl.stop(true, true).removeClass("hidden").css("opacity", 0).animate(
-      {
-        opacity: 1,
-      },
-      125
-    );
+    barOpacityEl
+      .stop(true, true)
+      .removeClass("hidden")
+      .css("opacity", 0)
+      .animate(
+        {
+          opacity: 1,
+        },
+        125
+      );
   } else if (Config.timerStyle === "text") {
     textEl.stop(true, true).removeClass("hidden").css("opacity", 0).animate(
       {
@@ -56,7 +61,7 @@ export function reset(): void {
 }
 
 export function hide(): void {
-  barEl.stop(true, true).animate(
+  barOpacityEl.stop(true, true).animate(
     {
       opacity: 0,
     },

@@ -79,7 +79,8 @@ export async function punctuateWord(
           word += ".";
         } else if (
           currentLanguage === "nepali" ||
-          currentLanguage === "bangla"
+          currentLanguage === "bangla" ||
+          currentLanguage === "hindi"
         ) {
           word += "।";
         } else if (
@@ -869,6 +870,8 @@ export async function getNextWord(
         randomWord = Misc.convertNumberToNepali(randomWord);
       } else if (Config.language.startsWith("bangla")) {
         randomWord = Misc.convertNumberToBangla(randomWord);
+      } else if (Config.language.startsWith("hindi")) {
+        randomWord = Misc.convertNumberToHindi(randomWord);
       }
     }
   }
