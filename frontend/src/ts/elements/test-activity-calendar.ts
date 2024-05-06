@@ -43,7 +43,7 @@ export class TestActivityCalendar implements MonkeyTypes.TestActivityCalendar {
   }
 
   protected getInterval(lastDay: Date, fullYear = false): Interval {
-    const end = fullYear ? endOfYear(lastDay) : endOfWeek(Date.now());
+    const end = fullYear ? endOfYear(lastDay) : new Date();
     let start = startOfYear(lastDay);
     if (!fullYear) {
       start = addDays(subYears(end, 1), 1);
@@ -117,24 +117,19 @@ export class TestActivityCalendar implements MonkeyTypes.TestActivityCalendar {
       });
     }
 
-    const days = differenceInDays(this.endDay, this.startDay) + 1;
+    const days = differenceInDays(this.endDay, this.startDay);
 
     let currentDate = this.startDay;
-    for (let i = 0; i < days; i++) {
+    for (let i = 0; i <= days; i++) {
       const count = this.data[i];
       const day = format(currentDate, "EEEE dd MMM yyyy");
-      const level =
-        this.isFullYear || isBefore(currentDate, tomorrow)
-          ? getValue(count)
-          : "filler";
-      const label =
-        count !== undefined && count !== null
-          ? `${count} ${count == 1 ? "test" : "tests"} on ${day}`
-          : `no activity on ${day}`;
 
       result.push({
-        level: level,
-        label: level === "filler" ? undefined : label,
+        level: getValue(count),
+        label:
+          count !== undefined && count !== null
+            ? `${count} ${count == 1 ? "test" : "tests"} on ${day}`
+            : `no activity on ${day}`,
       });
       currentDate = addDays(currentDate, 1);
     }
@@ -178,13 +173,14 @@ export class ModifiableTestActivityCalendar
 
   increment(utcDate: Date): void {
     const date = new UTCDateMini(utcDate);
-    if (isSameDay(date, this.lastDay)) {
+    const lastDay = new UTCDateMini(this.lastDay);
+    if (isSameDay(date, lastDay)) {
       const last = this.data.length - 1;
       this.data[last] = (this.data[last] || 0) + 1;
-    } else if (isBefore(date, this.lastDay)) {
+    } else if (isBefore(date, lastDay)) {
       throw new Error("cannot alter data in the past.");
     } else {
-      const missedDays = differenceInDays(date, this.lastDay) - 1;
+      const missedDays = differenceInDays(date, lastDay) - 1;
       for (let i = 0; i < missedDays; i++) {
         this.data.push(undefined);
       }
