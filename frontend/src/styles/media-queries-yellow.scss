@@ -42,9 +42,14 @@
     }
   }
   #testActivity {
+    --box-size: 0.9em;
+    --font-size: 0.9em;
+    // .days {
+    //   font-size: 0.8em;
+    // }
     .activity div,
     .legend div {
-      width: 1.2em;
+      height: var(--box-size);
     }
   }
 }

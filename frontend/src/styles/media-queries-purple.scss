@@ -243,12 +243,12 @@
     .wrapper {
       width: 100%;
       .top {
-        grid-template-columns: 10rem 1fr 9rem;
+        grid-template-columns: 12rem 1fr 8rem;
       }
     }
-    .activity {
-      gap: 0.1em;
-    }
+    // .activity {
+    //   gap: 0.1em;
+    // }
     .activity div,
     .legend div {
       width: 100%;

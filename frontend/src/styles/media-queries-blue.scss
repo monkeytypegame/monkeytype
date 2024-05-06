@@ -177,12 +177,13 @@
     }
   }
   #testActivity {
-    .activity div,
-    .legend div {
-      width: 0.7em;
-      height: 0.7em;
-      border-radius: 0.15em;
-    }
+    --box-size: 0.58em;
+    // .activity div,
+    // .legend div {
+    //   width: 0.7em;
+    //   height: 0.7em;
+    //   border-radius: 0.15em;
+    // }
   }
 }
 

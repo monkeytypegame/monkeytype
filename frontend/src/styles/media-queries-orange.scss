@@ -9,9 +9,10 @@
     --content-max-width: 1280px;
   }
   #testActivity {
-    .activity div,
-    .legend div {
-      width: 1.6em;
-    }
+    --box-size: 1.1em;
+    // .activity div,
+    // .legend div {
+    //   width: 1.6em;
+    // }
   }
 }

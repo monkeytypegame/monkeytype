@@ -240,6 +240,7 @@
     }
   }
   #testActivity {
+    --box-size: 0.7em;
     .wrapper {
       grid-template-areas:
         "top top"
@@ -249,11 +250,11 @@
     .days {
       display: none;
     }
-    .activity div,
-    .legend div {
-      width: 0.9em;
-      height: 0.9em;
-      border-radius: 0.2em;
-    }
+    // .activity div,
+    // .legend div {
+    //   width: 0.9em;
+    //   height: 0.9em;
+    //   border-radius: 0.2em;
+    // }
   }
 }
