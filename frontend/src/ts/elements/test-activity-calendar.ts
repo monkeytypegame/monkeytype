@@ -126,7 +126,7 @@ export class TestActivityCalendar implements MonkeyTypes.TestActivityCalendar {
                 currentDate,
                 "EEEE dd MMM yyyy"
               )}`
-            : undefined,
+            : `0 tests on ${format(currentDate, "EEEE dd MMM yyyy")}`,
       });
       currentDate = addDays(currentDate, 1);
     }
