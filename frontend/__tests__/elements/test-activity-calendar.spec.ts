@@ -8,44 +8,183 @@ import { UTCDateMini } from "@date-fns/utc/date/mini";
 
 describe("test-activity-calendar.ts", () => {
   describe("TestActivityCalendar", () => {
+    beforeEach(() => {
+      vi.useFakeTimers();
+    });
+    afterEach(() => {
+      vi.useRealTimers();
+    });
     describe("getMonths", () => {
       it("for lastDay in april", () => {
+        //set today
+        vi.setSystemTime(getDate("2024-04-10"));
         const calendar = new TestActivityCalendar([], getDate("2024-04-10"));
 
         expect(calendar.getMonths()).toEqual([
-          "may",
-          "jun",
-          "jul",
-          "aug",
-          "sep",
-          "oct",
-          "nov",
-          "dec",
-          "jan",
-          "feb",
-          "mar",
-          "apr",
+          {
+            text: "apr",
+            weeks: 4,
+          },
+          {
+            text: "may",
+            weeks: 4,
+          },
+          {
+            text: "jun",
+            weeks: 4,
+          },
+          {
+            text: "jul",
+            weeks: 5,
+          },
+          {
+            text: "aug",
+            weeks: 4,
+          },
+          {
+            text: "sep",
+            weeks: 4,
+          },
+          {
+            text: "oct",
+            weeks: 5,
+          },
+          {
+            text: "nov",
+            weeks: 4,
+          },
+          {
+            text: "dec",
+            weeks: 5,
+          },
+          {
+            text: "jan",
+            weeks: 4,
+          },
+          {
+            text: "feb",
+            weeks: 4,
+          },
+          {
+            text: "mar",
+            weeks: 5,
+          },
+        ]);
+      });
+
+      it("for lastDay in april, not test for the current week", () => {
+        //set today
+        vi.setSystemTime(getDate("2024-04-24"));
+        const calendar = new TestActivityCalendar([], getDate("2024-04-10"));
+
+        expect(calendar.getMonths()).toEqual([
+          {
+            text: "may",
+            weeks: 4,
+          },
+          {
+            text: "jun",
+            weeks: 4,
+          },
+          {
+            text: "jul",
+            weeks: 5,
+          },
+          {
+            text: "aug",
+            weeks: 4,
+          },
+          {
+            text: "sep",
+            weeks: 4,
+          },
+          {
+            text: "oct",
+            weeks: 5,
+          },
+          {
+            text: "nov",
+            weeks: 4,
+          },
+          {
+            text: "dec",
+            weeks: 5,
+          },
+          {
+            text: "jan",
+            weeks: 4,
+          },
+          {
+            text: "feb",
+            weeks: 4,
+          },
+          {
+            text: "mar",
+            weeks: 5,
+          },
+          {
+            text: "apr",
+            weeks: 3,
+          },
         ]);
       });
       it("for lastDay in january", () => {
+        //set today
+        vi.setSystemTime(getDate("2023-01-01"));
         const calendar = new TestActivityCalendar([], getDate("2023-01-01"));
 
         expect(calendar.getMonths()).toEqual([
-          "feb",
-          "mar",
-          "apr",
-          "may",
-          "jun",
-          "jul",
-          "aug",
-          "sep",
-          "oct",
-          "nov",
-          "dec",
-          "jan",
+          {
+            text: "jan",
+            weeks: 5,
+          },
+          {
+            text: "feb",
+            weeks: 4,
+          },
+          {
+            text: "mar",
+            weeks: 4,
+          },
+          {
+            text: "apr",
+            weeks: 4,
+          },
+          {
+            text: "may",
+            weeks: 5,
+          },
+          {
+            text: "jun",
+            weeks: 4,
+          },
+          {
+            text: "jul",
+            weeks: 5,
+          },
+          {
+            text: "aug",
+            weeks: 4,
+          },
+          {
+            text: "sep",
+            weeks: 4,
+          },
+          {
+            text: "oct",
+            weeks: 5,
+          },
+          {
+            text: "nov",
+            weeks: 4,
+          },
+          {
+            text: "dec",
+            weeks: 4,
+          },
         ]);
       });
-      it("for lastDay and full year", () => {
+      it("for lastDay and full year starting with sunday", () => {
         const calendar = new TestActivityCalendar(
           [],
           getDate("2023-05-10"),
@@ -53,18 +192,112 @@ describe("test-activity-calendar.ts", () => {
         );
 
         expect(calendar.getMonths()).toEqual([
-          "jan",
-          "feb",
-          "mar",
-          "apr",
-          "may",
-          "jun",
-          "jul",
-          "aug",
-          "sep",
-          "oct",
-          "nov",
-          "dec",
+          {
+            text: "jan",
+            weeks: 5,
+          },
+          {
+            text: "feb",
+            weeks: 4,
+          },
+          {
+            text: "mar",
+            weeks: 4,
+          },
+          {
+            text: "apr",
+            weeks: 5,
+          },
+          {
+            text: "may",
+            weeks: 4,
+          },
+          {
+            text: "jun",
+            weeks: 4,
+          },
+          {
+            text: "jul",
+            weeks: 5,
+          },
+          {
+            text: "aug",
+            weeks: 4,
+          },
+          {
+            text: "sep",
+            weeks: 4,
+          },
+          {
+            text: "oct",
+            weeks: 5,
+          },
+          {
+            text: "nov",
+            weeks: 4,
+          },
+          {
+            text: "dec",
+            weeks: 5,
+          },
+        ]);
+      });
+      it("for lastDay and full year starting with monday", () => {
+        const calendar = new TestActivityCalendar(
+          [],
+          getDate("2024-05-10"),
+          true
+        );
+
+        expect(calendar.getMonths()).toEqual([
+          {
+            text: "jan",
+            weeks: 5,
+          },
+          {
+            text: "feb",
+            weeks: 4,
+          },
+          {
+            text: "mar",
+            weeks: 5,
+          },
+          {
+            text: "apr",
+            weeks: 4,
+          },
+          {
+            text: "may",
+            weeks: 4,
+          },
+          {
+            text: "jun",
+            weeks: 5,
+          },
+          {
+            text: "jul",
+            weeks: 4,
+          },
+          {
+            text: "aug",
+            weeks: 4,
+          },
+          {
+            text: "sep",
+            weeks: 5,
+          },
+          {
+            text: "oct",
+            weeks: 4,
+          },
+          {
+            text: "nov",
+            weeks: 4,
+          },
+          {
+            text: "dec",
+            weeks: 5,
+          },
         ]);
       });
     });

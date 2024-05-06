@@ -18,6 +18,8 @@ import {
   previousSunday,
   isSunday,
   startOfDay,
+  nextSaturday,
+  isSaturday,
 } from "date-fns";
 
 export class TestActivityCalendar implements MonkeyTypes.TestActivityCalendar {
@@ -41,7 +43,7 @@ export class TestActivityCalendar implements MonkeyTypes.TestActivityCalendar {
   }
 
   protected getInterval(lastDay: Date, fullYear = false): Interval {
-    const end = fullYear ? endOfYear(lastDay) : endOfWeek(new Date());
+    const end = fullYear ? endOfYear(lastDay) : endOfWeek(Date.now());
     let start = startOfYear(lastDay);
     if (!fullYear) {
       start = addDays(subYears(end, 1), 1);
@@ -76,13 +78,15 @@ export class TestActivityCalendar implements MonkeyTypes.TestActivityCalendar {
 
     for (let i = 0; i < months.length; i++) {
       const month: Date = months[i] as Date;
-      let start = i === 0 ? previousSunday(this.startDay) : startOfMonth(month);
-      if (!isSunday(start)) start = nextSunday(start);
-      let end = i === 12 ? this.endDay : endOfMonth(month);
-      if (!isSunday(end)) end = previousSunday(end);
+      let start =
+        i === 0 ? new UTCDateMini(this.startDay) : startOfMonth(month);
+      let end = i === 12 ? new UTCDateMini(this.endDay) : endOfMonth(start);
 
-      const weeks = differenceInWeeks(end, start) + 1;
+      if (!isSunday(start))
+        start = (i === 0 ? previousSunday : nextSunday)(start);
+      if (!isSaturday(end)) end = nextSaturday(end);
 
+      const weeks = differenceInWeeks(end, start, { roundingMethod: "ceil" });
       if (weeks > 2)
         results.push({
           text: format(month, "MMM").toLowerCase(),
@@ -118,19 +122,19 @@ export class TestActivityCalendar implements MonkeyTypes.TestActivityCalendar {
     let currentDate = this.startDay;
     for (let i = 0; i < days; i++) {
       const count = this.data[i];
+      const day = format(currentDate, "EEEE dd MMM yyyy");
+      const level =
+        this.isFullYear || isBefore(currentDate, tomorrow)
+          ? getValue(count)
+          : "filler";
       const label =
         count !== undefined && count !== null
-          ? `${count} ${count == 1 ? "test" : "tests"} on ${format(
-              currentDate,
-              "EEEE dd MMM yyyy"
-            )}`
-          : `no activity on ${format(currentDate, "EEEE dd MMM yyyy")}`;
+          ? `${count} ${count == 1 ? "test" : "tests"} on ${day}`
+          : `no activity on ${day}`;
+
       result.push({
-        level:
-          this.isFullYear || isBefore(currentDate, tomorrow)
-            ? getValue(count)
-            : "filler",
-        label: this.isFullYear || count !== undefined ? label : undefined,
+        level: level,
+        label: level === "filler" ? undefined : label,
       });
       currentDate = addDays(currentDate, 1);
     }
