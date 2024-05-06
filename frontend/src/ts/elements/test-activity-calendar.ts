@@ -42,9 +42,12 @@ export class TestActivityCalendar implements MonkeyTypes.TestActivityCalendar {
 
   protected getInterval(lastDay: Date, fullYear = false): Interval {
     const end = fullYear ? endOfYear(lastDay) : endOfWeek(new Date());
-    const start = fullYear
-      ? startOfYear(lastDay)
-      : addDays(subYears(end, 1), 1);
+    let start = startOfYear(lastDay);
+    if (!fullYear) {
+      start = addDays(subYears(end, 1), 1);
+      if (!isSunday(start)) start = previousSunday(start);
+    }
+
     return { start, end };
   }
 
