@@ -576,18 +576,15 @@
       // max-width: 1rem;
       justify-self: center;
       aspect-ratio: 1;
+      &:hover {
+        border: 2px solid var(--text-color);
+      }
+      &[data-level="filler"]:hover,
+      &[data-level="0"]:hover {
+        border: none;
+      }
     }
   }
-  .activity div {
-    &:hover {
-      border: 2px solid var(--text-color);
-    }
-    &[data-level="filler"]:hover,
-    &[data-level="0"]:hover {
-      border: none;
-    }
-  }
-
   .activity div,
   .legend div {
     border-radius: 0.25em;
