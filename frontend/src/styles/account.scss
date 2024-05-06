@@ -592,8 +592,7 @@
       &:hover {
         border: 2px solid var(--text-color);
       }
-      &[data-level="filler"]:hover,
-      &[data-level="0"]:hover {
+      &[data-level="filler"]:hover {
         border: none;
       }
     }
