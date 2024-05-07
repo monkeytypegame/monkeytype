@@ -62,7 +62,10 @@ export async function update(): Promise<void> {
     }
   }
 
-  if (TestWords.hasNewline && Config.quickRestart === "enter") {
+  if (
+    (TestWords.hasNewline || Config.funbox.includes("58008")) &&
+    Config.quickRestart === "enter"
+  ) {
     $(".pageTest #testModesNotice").append(
       `<div class="textButton noInteraction"><i class="fas fa-level-down-alt fa-rotate-90"></i>shift + enter to restart</div>`
     );

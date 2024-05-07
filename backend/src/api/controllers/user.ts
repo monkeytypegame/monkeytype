@@ -182,9 +182,10 @@ export async function deleteUser(
 
   const userInfo = await UserDAL.getUser(uid, "delete user");
 
-  if (userInfo.banned) {
-    throw new MonkeyError(403, "Banned users cannot delete their account");
-  }
+  // gdpr goes brr, find a different way
+  // if (userInfo.banned) {
+  //   throw new MonkeyError(403, "Banned users cannot delete their account");
+  // }
 
   //cleanup database
   await Promise.all([

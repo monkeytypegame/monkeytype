@@ -974,8 +974,9 @@ $(document).on("keydown", async (event) => {
     if (Config.mode === "zen") {
       //do nothing
     } else if (
-      !TestWords.hasNewline ||
-      (TestWords.hasNewline && event.shiftKey)
+      (!TestWords.hasNewline && !Config.funbox.includes("58008")) ||
+      ((TestWords.hasNewline || Config.funbox.includes("58008")) &&
+        event.shiftKey)
     ) {
       // in case we are in a long test, setting manual restart
       if (event.shiftKey) {
@@ -988,11 +989,6 @@ $(document).on("keydown", async (event) => {
       TestLogic.restart({
         event,
       });
-    } else {
-      setWordsInput(" " + TestInput.input.current);
-      if (Config.tapeMode !== "off") {
-        TestUI.scrollTape();
-      }
     }
   }
 

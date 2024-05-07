@@ -12,6 +12,14 @@
     font-size: 0.7rem;
     --horizontalPadding: 0.6em;
   }
+  #bannerCenter {
+    font-size: 0.85rem;
+    .banner .container {
+      .closeButton {
+        padding: 0.4em;
+      }
+    }
+  }
   header {
     #logo {
       .text {
@@ -35,6 +43,10 @@
       display: grid;
       grid-template-columns: 1fr 1fr 1fr;
       grid-template-rows: 1fr 1fr;
+    }
+    #liveStatsTextTop,
+    #liveStatsTextBottom {
+      font-size: 7rem;
     }
   }
   .pageAbout {

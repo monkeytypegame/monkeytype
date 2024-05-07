@@ -34,6 +34,10 @@
     }
   }
   .pageTest {
+    #liveStatsTextTop,
+    #liveStatsTextBottom {
+      font-size: 12vw;
+    }
     #testConfig {
       display: none;
     }

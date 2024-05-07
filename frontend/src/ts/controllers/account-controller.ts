@@ -253,23 +253,8 @@ if (Auth && ConnectionState.get()) {
 
     URLHandler.loadCustomThemeFromUrl(search);
     URLHandler.loadTestSettingsFromUrl(search);
+    URLHandler.loadChallengeFromUrl(search);
     void URLHandler.linkDiscord(hash);
-
-    if (/challenge_.+/g.test(window.location.pathname)) {
-      Notifications.add(
-        "Challenge links temporarily disabled. Please use the command line to load the challenge manually",
-        0,
-        {
-          duration: 7,
-        }
-      );
-      return;
-      // Notifications.add("Loading challenge", 0);
-      // let challengeName = window.location.pathname.split("_")[1];
-      // setTimeout(() => {
-      //   ChallengeController.setup(challengeName);
-      // }, 1000);
-    }
 
     Settings.updateAuthSections();
   });
