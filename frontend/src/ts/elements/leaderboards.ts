@@ -702,9 +702,10 @@ const languageSelector = new SlimSelect({
     "#leaderboardsWrapper #leaderboards .leaderboardsTop .buttonGroup.timeRange .languageSelect",
   settings: {
     showSearch: false,
-    contentLocation: document.querySelector(
-      "#leaderboardsWrapper"
-    ) as HTMLElement,
+    // contentLocation: document.querySelector(
+    //   "#leaderboardsWrapper"
+    // ) as HTMLElement,
+    // contentPosition: "relative",
   },
   data: [
     {
