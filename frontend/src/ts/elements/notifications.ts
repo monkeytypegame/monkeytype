@@ -155,12 +155,16 @@ class Notification {
     } else if (this.type === "banner") {
       let leftside = `<div class="icon lefticon">${icon}</div>`;
 
+      let withImage = false;
       if (/images\/.*/.test(this.customIcon as string)) {
-        leftside = `<div class="image" style="background-image: url(${this.customIcon})"></div>`;
+        withImage = true;
+        leftside = `<div class="icon lefticon"><i class="fas fa-fw fa-bullhorn"></i></div><div class="image" style="background-image: url(${this.customIcon})"></div>`;
       }
 
       $("#bannerCenter").prepend(`
-        <div class="banner ${cls}" id="${this.id}">
+        <div class="banner ${cls} content-grid ${
+        withImage ? "withImage" : ""
+      }" id="${this.id}">
         <div class="container">
           ${leftside}
           <div class="text">
