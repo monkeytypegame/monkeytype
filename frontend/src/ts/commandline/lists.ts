@@ -59,6 +59,7 @@ import KeymapShowTopRowCommands from "./lists/keymap-show-top-row";
 import EnableAdsCommands from "./lists/enable-ads";
 import MonkeyPowerLevelCommands from "./lists/monkey-power-level";
 import BailOutCommands from "./lists/bail-out";
+import QuoteFavoriteCommands from "./lists/quote-favorites";
 import ResultSavingCommands from "./lists/result-saving";
 import NavigationCommands from "./lists/navigation";
 import FontSizeCommands from "./lists/font-size";
@@ -205,6 +206,7 @@ export const commands: MonkeyTypes.CommandsSubgroup = {
       },
       shouldFocusTestUI: false,
     },
+    ...QuoteFavoriteCommands,
     ...BailOutCommands,
     {
       id: "shareTestSettings",
