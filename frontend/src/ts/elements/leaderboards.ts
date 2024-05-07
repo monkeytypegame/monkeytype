@@ -925,8 +925,8 @@ $(
 ).on("click", () => {
   currentTimeRange = "allTime";
   currentLanguage = "english";
-  languageSelector.disable();
-  languageSelector.setSelected("english");
+  languageSelector?.disable();
+  languageSelector?.setSelected("english");
   void update();
 });
 
@@ -935,7 +935,7 @@ $(
 ).on("click", () => {
   currentTimeRange = "daily";
   updateYesterdayButton();
-  languageSelector.enable();
+  languageSelector?.enable();
   void update();
 });
 
