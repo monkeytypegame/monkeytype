@@ -5,8 +5,8 @@
     --sub-color: #ff6060;
     --sub-alt-color: #3f1616;
     --text-color: #ffaaaa;
-    --error-color: #ad2929;
-    --error-extra-color: #ce2929;
-    --colorful-error-color: #ad2929;
-    --colorful-error-extra-color: #ce2929;
+    --error-color: #c42121;
+    --error-extra-color: #a71111;
+    --colorful-error-color: #c42121;
+    --colorful-error-extra-color: #a71111;
   }
