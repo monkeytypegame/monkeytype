@@ -11,13 +11,11 @@ import {
   isBefore,
   endOfYear,
   startOfYear,
-  endOfWeek,
   differenceInWeeks,
   startOfMonth,
   nextSunday,
   previousSunday,
   isSunday,
-  startOfDay,
   nextSaturday,
   isSaturday,
 } from "date-fns";
@@ -98,8 +96,6 @@ export class TestActivityCalendar implements MonkeyTypes.TestActivityCalendar {
 
   getDays(): MonkeyTypes.TestActivityDay[] {
     const result: MonkeyTypes.TestActivityDay[] = [];
-    const tomorrow = addDays(startOfDay(new Date()), 1);
-
     const buckets = this.getBuckets();
     const getValue = (v: number | null | undefined): string => {
       if (v === undefined) return "0";
