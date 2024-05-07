@@ -737,10 +737,6 @@ const languageSelector = new SlimSelect({
       value: "italian",
       text: "italian",
     },
-    {
-      value: "russian",
-      text: "russian",
-    },
   ],
   events: {
     afterChange: (newVal): void => {
