@@ -1,9 +1,12 @@
 import "dotenv/config";
 import * as DB from "../src/init/db";
+import { Collection, Db } from "mongodb";
+import { DBResult } from "../src/dal/result";
 
 let appRunning = true;
-let db;
-let userCollection, resultCollection;
+let db: Db | undefined;
+let userCollection: Collection<MonkeyTypes.DBUser>;
+let resultCollection: Collection<DBResult>;
 
 const filter = { testActivity: { $exists: false } };
 
@@ -24,26 +27,28 @@ async function main(): Promise<void> {
     );
     await new Promise((resolve) => setTimeout(resolve, 4000));
 
-    await DB.connect();
-    console.log("Connected to database");
-    db = DB.getDb();
-    if (db === undefined) {
-      throw Error("db connection failed");
+    if (appRunning) {
+      await DB.connect();
+      console.log("Connected to database");
+      db = DB.getDb();
+      if (db === undefined) {
+        throw Error("db connection failed");
+      }
+
+      await migrate();
     }
 
-    await migrate(db);
-
-    console.log(`\n${appRunning ? "done" : "aborted"}.`);
+    console.log(`\nMigration ${appRunning ? "done" : "aborted"}.`);
   } catch (e) {
     console.log("error occured:", { e });
   } finally {
-    await db.close();
+    await DB.close();
   }
 }
 
-export async function migrate(db): Promise<void> {
-  userCollection = db.collection("users");
-  resultCollection = db.collection("results");
+export async function migrate(): Promise<void> {
+  userCollection = DB.collection("users");
+  resultCollection = DB.collection("results");
 
   await userCollection.createIndex({ uid: 1 }, { unique: true });
   await migrateResults();
@@ -82,12 +87,12 @@ async function getUsersToMigrate(limit: number): Promise<string[]> {
       .find(filter, { limit })
       .project({ uid: 1, _id: 0 })
       .toArray()
-  ).map((it) => it.uid);
+  ).map((it) => it["uid"]);
 }
 
 async function migrateUsers(uids: string[]): Promise<void> {
   console.log("migrateUsers:", uids.join(","));
-  return await resultCollection
+  await resultCollection
     .aggregate(
       [
         {
@@ -203,7 +208,7 @@ async function migrateUsers(uids: string[]): Promise<void> {
 
 async function handleUsersWithNoResults(uids: string[]): Promise<void> {
   console.log("handleUsersWithNoResults:", uids.join(","));
-  return userCollection.updateMany(
+  await userCollection.updateMany(
     {
       $and: [{ uid: { $in: uids } }, filter],
     },

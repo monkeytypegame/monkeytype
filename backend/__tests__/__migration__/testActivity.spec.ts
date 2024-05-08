@@ -1,7 +1,6 @@
 import * as Migration from "../../__migration__/testActivity";
 import * as UserTestData from "../__testData__/users";
 import * as UserDal from "../../src/dal/user";
-import * as DB from "../../src/init/db";
 import * as ResultDal from "../../src/dal/result";
 
 describe("testActivity migration", () => {
@@ -11,7 +10,7 @@ describe("testActivity migration", () => {
     const user2 = await UserTestData.createUser();
 
     //when
-    await Migration.migrate(DB.getDb());
+    await Migration.migrate();
 
     //then
     const readUser1 = await UserDal.getUser(user1.uid, "");
@@ -42,7 +41,7 @@ describe("testActivity migration", () => {
     await createResult(uid, 1704243600000);
 
     //when
-    await Migration.migrate(DB.getDb());
+    await Migration.migrate();
 
     //then
     const readWithResults = await UserDal.getUser(withResults.uid, "");
