@@ -3,6 +3,7 @@ import app from "../../../src/app";
 import * as Configuration from "../../../src/init/configuration";
 import { getCurrentTestActivity } from "../../../src/api/controllers/user";
 import * as UserDal from "../../../src/dal/user";
+import _ from "lodash";
 
 const mockApp = request(app);
 
@@ -97,11 +98,26 @@ describe("user controller test", () => {
   });
 
   describe("getTestActivity", () => {
-    it("gets", async () => {
+    it("should return 503 for non premium users", async () => {
       //given
       vi.spyOn(UserDal, "getUser").mockResolvedValue({
         testActivity: { "2023": [1, 2, 3], "2024": [4, 5, 6] },
       } as unknown as MonkeyTypes.DBUser);
+
+      //when
+      const response = await mockApp
+        .get("/users/testActivity")
+        .set("authorization", "Uid 123456789")
+        .send()
+        .expect(503);
+    });
+    it("should send data for premium users", async () => {
+      //given
+      vi.spyOn(UserDal, "getUser").mockResolvedValue({
+        testActivity: { "2023": [1, 2, 3], "2024": [4, 5, 6] },
+      } as unknown as MonkeyTypes.DBUser);
+      vi.spyOn(UserDal, "checkIfUserIsPremium").mockResolvedValue(true);
+      await enablePremiumFeatures(true);
 
       //when
       const response = await mockApp
@@ -192,4 +208,16 @@ function fillYearWithDay(days: number): number[] {
     result.push(i + 1);
   }
   return result;
+}
+
+const configuration = Configuration.getCachedConfiguration();
+
+async function enablePremiumFeatures(premium: boolean): Promise<void> {
+  const mockConfig = _.merge(await configuration, {
+    users: { premium: { enabled: premium } },
+  });
+
+  vi.spyOn(Configuration, "getCachedConfiguration").mockResolvedValue(
+    mockConfig
+  );
 }
