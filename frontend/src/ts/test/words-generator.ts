@@ -79,6 +79,7 @@ export async function punctuateWord(
           word += ".";
         } else if (
           currentLanguage === "nepali" ||
+          currentLanguage === "bangla" ||
           currentLanguage === "hindi"
         ) {
           word += "।";
@@ -416,11 +417,7 @@ export function getWordsLimit(): number {
 
   //custom
   if (Config.mode === "custom") {
-    if (
-      CustomText.getLimitValue() === 0 ||
-      CustomText.getLimitMode() === "time" ||
-      CustomText.getLimitMode() === "section"
-    ) {
+    if (CustomText.getLimitValue() === 0) {
       limit = 100;
     } else {
       limit =
@@ -445,7 +442,8 @@ export function getWordsLimit(): number {
   if (
     Config.mode === "custom" &&
     CustomText.getLimitMode() === "word" &&
-    CustomText.getLimitValue() < limit
+    CustomText.getLimitValue() < limit &&
+    CustomText.getLimitValue() !== 0
   ) {
     limit = CustomText.getLimitValue();
   }
@@ -867,6 +865,8 @@ export async function getNextWord(
         randomWord = Misc.convertNumberToArabic(randomWord);
       } else if (Config.language.startsWith("nepali")) {
         randomWord = Misc.convertNumberToNepali(randomWord);
+      } else if (Config.language.startsWith("bangla")) {
+        randomWord = Misc.convertNumberToBangla(randomWord);
       } else if (Config.language.startsWith("hindi")) {
         randomWord = Misc.convertNumberToHindi(randomWord);
       }

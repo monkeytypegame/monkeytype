@@ -388,7 +388,12 @@
   },
   {
     "name": "japanese",
-    "languages": ["japanese_hiragana", "japanese_katakana", "japanese_romaji"]
+    "languages": [
+      "japanese_hiragana",
+      "japanese_katakana",
+      "japanese_romaji",
+      "japanese_romaji_1k"
+    ]
   },
   {
     "name": "hindi",

@@ -381,6 +381,8 @@ export function hide(): void {
       },
       100,
       () => {
+        languageSelector?.destroy();
+        languageSelector = undefined;
         clearBody("15");
         clearBody("60");
         clearFoot("15");
@@ -674,6 +676,56 @@ export function show(): void {
     $("#leaderboards table thead tr td:nth-child(3)").html(
       Config.typingSpeedUnit + '<br><div class="sub">accuracy</div>'
     );
+
+    languageSelector = new SlimSelect({
+      select:
+        "#leaderboardsWrapper #leaderboards .leaderboardsTop .buttonGroup.timeRange .languageSelect",
+      settings: {
+        showSearch: false,
+        // contentLocation: document.querySelector(
+        //   "#leaderboardsWrapper"
+        // ) as HTMLElement,
+        // contentPosition: "relative",
+      },
+      data: [
+        {
+          value: "english",
+          text: "english",
+          selected: true,
+        },
+        {
+          value: "spanish",
+          text: "spanish",
+        },
+        {
+          value: "german",
+          text: "german",
+        },
+        {
+          value: "french",
+          text: "french",
+        },
+        {
+          value: "portuguese",
+          text: "portuguese",
+        },
+        {
+          value: "indonesian",
+          text: "indonesian",
+        },
+        {
+          value: "italian",
+          text: "italian",
+        },
+      ],
+      events: {
+        afterChange: (newVal): void => {
+          currentLanguage = newVal[0]?.value as string;
+          updateTitle();
+          void update();
+        },
+      },
+    });
     $("#leaderboardsWrapper")
       .stop(true, true)
       .css("opacity", 0)
@@ -697,58 +749,57 @@ $("#leaderboardsWrapper").on("click", (e) => {
   }
 });
 
-const languageSelector = new SlimSelect({
-  select:
-    "#leaderboardsWrapper #leaderboards .leaderboardsTop .buttonGroup.timeRange .languageSelect",
-  settings: {
-    showSearch: false,
-    contentLocation: document.querySelector(
-      "#leaderboardsWrapper"
-    ) as HTMLElement,
-  },
-  data: [
-    {
-      value: "english",
-      text: "english",
-      selected: true,
-    },
-    {
-      value: "spanish",
-      text: "spanish",
-    },
-    {
-      value: "german",
-      text: "german",
-    },
-    {
-      value: "french",
-      text: "french",
-    },
-    {
-      value: "portuguese",
-      text: "portuguese",
-    },
-    {
-      value: "indonesian",
-      text: "indonesian",
-    },
-    {
-      value: "italian",
-      text: "italian",
-    },
-    {
-      value: "russian",
-      text: "russian",
-    },
-  ],
-  events: {
-    afterChange: (newVal): void => {
-      currentLanguage = newVal[0]?.value as string;
-      updateTitle();
-      void update();
-    },
-  },
-});
+let languageSelector: SlimSelect | undefined = undefined;
+
+// const languageSelector = new SlimSelect({
+//   select:
+//     "#leaderboardsWrapper #leaderboards .leaderboardsTop .buttonGroup.timeRange .languageSelect",
+//   settings: {
+//     showSearch: false,
+//     // contentLocation: document.querySelector(
+//     //   "#leaderboardsWrapper"
+//     // ) as HTMLElement,
+//     // contentPosition: "relative",
+//   },
+//   data: [
+//     {
+//       value: "english",
+//       text: "english",
+//       selected: true,
+//     },
+//     {
+//       value: "spanish",
+//       text: "spanish",
+//     },
+//     {
+//       value: "german",
+//       text: "german",
+//     },
+//     {
+//       value: "french",
+//       text: "french",
+//     },
+//     {
+//       value: "portuguese",
+//       text: "portuguese",
+//     },
+//     {
+//       value: "indonesian",
+//       text: "indonesian",
+//     },
+//     {
+//       value: "italian",
+//       text: "italian",
+//     },
+//   ],
+//   events: {
+//     afterChange: (newVal): void => {
+//       currentLanguage = newVal[0]?.value as string;
+//       updateTitle();
+//       void update();
+//     },
+//   },
+// });
 
 let leftScrollEnabled = true;
 
@@ -874,8 +925,8 @@ $(
 ).on("click", () => {
   currentTimeRange = "allTime";
   currentLanguage = "english";
-  languageSelector.disable();
-  languageSelector.setSelected("english");
+  languageSelector?.disable();
+  languageSelector?.setSelected("english");
   void update();
 });
 
@@ -884,7 +935,7 @@ $(
 ).on("click", () => {
   currentTimeRange = "daily";
   updateYesterdayButton();
-  languageSelector.enable();
+  languageSelector?.enable();
   void update();
 });
 
