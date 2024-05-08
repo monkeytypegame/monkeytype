@@ -64,11 +64,6 @@ async function migrateResults(batchSize = 50): Promise<void> {
     return;
   } else {
     console.log("Users to migrate:", allUsersCount);
-    //@ts-ignore
-    if (!readlineSync.keyInYN("Continue?")) {
-      appRunning = false;
-      return;
-    }
   }
 
   console.log(`Migrating ~${allUsersCount} users using batchSize=${batchSize}`);
