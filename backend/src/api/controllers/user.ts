@@ -1019,7 +1019,17 @@ export async function getTestActivity(
   req: MonkeyTypes.Request
 ): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
+  const premiumFeaturesEnabled = req.ctx.configuration.users.premium.enabled;
   const user = await UserDAL.getUser(uid, "testActivity");
+  const userHasPremium = await UserDAL.checkIfUserIsPremium(uid, user);
+
+  if (!premiumFeaturesEnabled) {
+    throw new MonkeyError(503, "Premium features are disabled");
+  }
+
+  if (!userHasPremium) {
+    throw new MonkeyError(503, "User does not have premium");
+  }
 
   return new MonkeyResponse("Test activity data retrieved", user.testActivity);
 }
