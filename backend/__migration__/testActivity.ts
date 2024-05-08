@@ -2,6 +2,7 @@ import "dotenv/config";
 import * as DB from "../src/init/db";
 import { Collection, Db } from "mongodb";
 import { DBResult } from "../src/dal/result";
+import readlineSync from "readline-sync";
 
 let appRunning = true;
 let db: Db | undefined;
@@ -22,10 +23,10 @@ async function main(): Promise<void> {
     console.log(
       `Connecting to database ${process.env["DB_NAME"]} on ${process.env["DB_URI"]}...`
     );
-    console.log(
-      "Looking good? you have 4 seconds to abort using <ctrl>-<c>..."
-    );
-    await new Promise((resolve) => setTimeout(resolve, 4000));
+
+    if (!readlineSync.keyInYN("Ready to start migration?")) {
+      appRunning = false;
+    }
 
     if (appRunning) {
       await DB.connect();
@@ -50,6 +51,7 @@ export async function migrate(): Promise<void> {
   userCollection = DB.collection("users");
   resultCollection = DB.collection("results");
 
+  console.log("Creating index on users collection...");
   await userCollection.createIndex({ uid: 1 }, { unique: true });
   await migrateResults();
 }
@@ -59,6 +61,12 @@ async function migrateResults(batchSize = 50): Promise<void> {
   if (allUsersCount === 0) {
     console.log("No users to migrate.");
     return;
+  } else {
+    console.log("Users to migrate:", allUsersCount);
+    if (!readlineSync.keyInYN("Continue?")) {
+      appRunning = false;
+      return;
+    }
   }
 
   console.log(`Migrating ~${allUsersCount} users using batchSize=${batchSize}`);
