@@ -24,6 +24,7 @@ async function main(): Promise<void> {
       `Connecting to database ${process.env["DB_NAME"]} on ${process.env["DB_URI"]}...`
     );
 
+    //@ts-ignore
     if (!readlineSync.keyInYN("Ready to start migration?")) {
       appRunning = false;
     }
@@ -63,6 +64,7 @@ async function migrateResults(batchSize = 50): Promise<void> {
     return;
   } else {
     console.log("Users to migrate:", allUsersCount);
+    //@ts-ignore
     if (!readlineSync.keyInYN("Continue?")) {
       appRunning = false;
       return;
