@@ -24,7 +24,6 @@ const CONFIG_SCHEMA = joi.object({
     .length(10),
   favThemes: joi.array().items(joi.string().max(50).token()),
   showKeyTips: joi.boolean(),
-  showLiveWpm: joi.boolean(),
   smoothCaret: joi.string().valid("off", "slow", "medium", "fast"),
   quickRestart: joi.string().valid("off", "tab", "esc", "enter"),
   punctuation: joi.boolean(),
@@ -53,6 +52,9 @@ const CONFIG_SCHEMA = joi.object({
   confidenceMode: joi.string().valid("off", "on", "max"),
   indicateTypos: joi.string().valid("off", "below", "replace"),
   timerStyle: joi.string().valid("off", "bar", "text", "mini"),
+  liveSpeedStyle: joi.string().valid("off", "text", "mini"),
+  liveAccStyle: joi.string().valid("off", "text", "mini"),
+  liveBurstStyle: joi.string().valid("off", "text", "mini"),
   colorfulMode: joi.boolean(),
   randomTheme: joi
     .string()
@@ -130,8 +132,6 @@ const CONFIG_SCHEMA = joi.object({
   strictSpace: joi.boolean(),
   minAcc: joi.string().valid("off", "custom"),
   minAccCustom: joi.number().min(0),
-  showLiveAcc: joi.boolean(),
-  showLiveBurst: joi.boolean(),
   monkey: joi.boolean(),
   repeatQuotes: joi.string().valid("off", "typing"),
   oppositeShiftMode: joi.string().valid("off", "on", "keymap"),

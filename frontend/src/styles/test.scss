@@ -65,13 +65,12 @@
   }
 }
 
-#timerWrapper {
+#barTimerProgress {
   opacity: 0;
-  transition: 0.25s;
   z-index: -1;
   position: relative;
   z-index: 99;
-  #timer {
+  .bar {
     position: fixed;
     top: 0;
     left: 0;
@@ -82,18 +81,17 @@
     /*   background: red; */
     // transition: 1s linear;
     z-index: -1;
+  }
+  &.timerMain .bar {
+    background: var(--main-color);
+  }
 
-    &.timerMain {
-      background: var(--main-color);
-    }
+  &.timerSub .bar {
+    background: var(--sub-color);
+  }
 
-    &.timerSub {
-      background: var(--sub-color);
-    }
-
-    &.timerText {
-      background: var(--text-color);
-    }
+  &.timerText .bar {
+    background: var(--text-color);
   }
 }
 
@@ -119,85 +117,79 @@
     }
   }
 
-  #timerNumber {
+  #liveStatsTextTop {
     pointer-events: none;
-    transition: 0.25s;
-    height: 0;
     color: black;
-    line-height: 0;
     z-index: -1;
     text-align: center;
-    left: 0;
     width: 100%;
     position: relative;
-    font-size: clamp(1rem, 12vw, 10rem);
+    display: grid;
+    font-size: 10rem;
 
     opacity: 0;
     width: 0;
     height: 0;
-    margin: 0 auto;
-    display: grid;
-    justify-content: center;
-    bottom: clamp(2rem, 12vw, 6rem);
+    justify-self: center;
 
     transition: none;
+
+    .wrapper {
+      position: absolute;
+      bottom: 1.25rem;
+      display: flex;
+      justify-self: center;
+      gap: 0.5ch;
+      line-height: 1;
+    }
   }
 
-  #largeLiveWpmAndAcc {
-    font-size: clamp(1rem, 12vw, 10rem);
+  #liveStatsTextBottom {
+    font-size: 10rem;
     color: black;
     width: 100%;
-    left: 0;
     text-align: center;
     z-index: -1;
     height: 0;
-    line-height: 0;
-    top: clamp(1rem, 10vw, 5rem);
     position: relative;
     display: grid;
-    grid-auto-flow: column;
-    justify-content: center;
-    gap: clamp(1rem, 8vw, 5rem);
-    width: 0;
     margin: 0 auto;
+    pointer-events: none;
 
-    #liveWpm {
-      opacity: 0;
-    }
-
-    #liveAcc {
-      opacity: 0;
-    }
-
-    #liveBurst {
-      opacity: 0;
+    .wrapper {
+      position: absolute;
+      top: 1rem;
+      display: flex;
+      justify-self: center;
+      gap: 0.5ch;
+      line-height: 1;
     }
   }
 
-  #largeLiveWpmAndAcc.timerMain,
-  #timerNumber.timerMain {
+  #liveStatsTextBottom.timerMain,
+  #liveStatsTextTop.timerMain {
     color: var(--main-color);
   }
 
-  #timer.timerMain {
+  #barTimerProgress.timerMain .bar {
     background: var(--main-color);
   }
 
-  #largeLiveWpmAndAcc.timerSub,
-  #timerNumber.timerSub {
+  #liveStatsTextBottom.timerSub,
+  #liveStatsTextTop.timerSub {
     color: var(--sub-color);
   }
 
-  #timer.timerSub {
+  #barTimerProgress.timerSub .bar {
     background: var(--sub-color);
   }
 
-  #largeLiveWpmAndAcc.timerText,
-  #timerNumber.timerText {
+  #liveStatsTextBottom.timerText,
+  #liveStatsTextTop.timerText {
     color: var(--text-color);
   }
 
-  #timer.timerText {
+  #barTimerProgress.timerText .bar {
     background: var(--text-color);
   }
 }
@@ -1149,7 +1141,7 @@
       margin-right: 0.5rem;
     }
   }
-  #miniTimerAndLiveWpm {
+  #liveStatsMini {
     height: 0;
     margin-left: 0.25em;
     display: flex;
@@ -1161,17 +1153,14 @@
       line-height: 1em;
     }
 
-    .time {
-      margin-right: 2rem;
-    }
-
-    .wpm,
+    .time,
+    .speed,
     .acc {
-      margin-right: 2rem;
+      margin-right: 0.5em;
     }
 
     .time,
-    .wpm,
+    .speed,
     .acc,
     .burst {
       opacity: 0;

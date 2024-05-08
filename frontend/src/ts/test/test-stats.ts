@@ -34,6 +34,7 @@ type Stats = {
 export let invalid = false;
 export let start: number, end: number;
 export let start2: number, end2: number;
+export let start3: number, end3: number;
 export let lastSecondNotRound = false;
 
 export let lastResult: SharedTypes.Result<SharedTypes.Config.Mode>;
@@ -166,11 +167,13 @@ export function calculateWpmAndRaw(
 export function setEnd(e: number): void {
   end = e;
   end2 = Date.now();
+  end3 = new Date().getTime();
 }
 
 export function setStart(s: number): void {
   start = s;
   start2 = Date.now();
+  start3 = new Date().getTime();
 }
 
 export function calculateAfkSeconds(testSeconds: number): number {
@@ -370,7 +373,18 @@ export function calculateStats(): Stats {
     testSeconds,
     " (date based) ",
     (end2 - start2) / 1000,
-    " (performance.now based)"
+    " (performance.now based)",
+    (end3 - start3) / 1000,
+    " (new Date based)"
+  );
+  console.debug(
+    "Test seconds",
+    Numbers.roundTo1(testSeconds),
+    " (date based) ",
+    Numbers.roundTo1((end2 - start2) / 1000),
+    " (performance.now based)",
+    Numbers.roundTo1((end3 - start3) / 1000),
+    " (new Date based)"
   );
   if (Config.mode !== "custom") {
     testSeconds = Numbers.roundTo2(testSeconds);

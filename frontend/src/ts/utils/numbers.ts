@@ -49,6 +49,15 @@ export function median(arr: number[]): number {
 }
 
 /**
+ * Rounds a number to one decimal places.
+ * @param num The number to round.
+ * @returns The input number rounded to one decimal places.
+ */
+export function roundTo1(num: number): number {
+  return Math.round((num + Number.EPSILON) * 10) / 10;
+}
+
+/**
  * Rounds a number to two decimal places.
  * @param num The number to round.
  * @returns The input number rounded to two decimal places.
