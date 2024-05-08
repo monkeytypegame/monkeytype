@@ -417,11 +417,7 @@ export function getWordsLimit(): number {
 
   //custom
   if (Config.mode === "custom") {
-    if (
-      CustomText.getLimitValue() === 0 ||
-      CustomText.getLimitMode() === "time" ||
-      CustomText.getLimitMode() === "section"
-    ) {
+    if (CustomText.getLimitValue() === 0) {
       limit = 100;
     } else {
       limit =
@@ -446,7 +442,8 @@ export function getWordsLimit(): number {
   if (
     Config.mode === "custom" &&
     CustomText.getLimitMode() === "word" &&
-    CustomText.getLimitValue() < limit
+    CustomText.getLimitValue() < limit &&
+    CustomText.getLimitValue() !== 0
   ) {
     limit = CustomText.getLimitValue();
   }
