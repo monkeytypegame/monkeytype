@@ -1,6 +1,8 @@
 import SlimSelect from "slim-select";
 import type { DataObjectPartial } from "slim-select/dist/store";
 import { getTestActivityCalendar } from "../db";
+import * as ServerConfiguration from "../ape/server-configuration";
+import * as DB from "../db";
 
 const yearSelector = new SlimSelect({
   select: "#testActivity .yearSelect",
@@ -73,11 +75,17 @@ export function initYearSelector(
     },
   ];
   for (let year = currentYear; year >= startYear; year--) {
-    years.push({
-      text: year.toString(),
-      value: year.toString(),
-      selected: year === selectedYear,
-    });
+    if (
+      years.length < 2 ||
+      (ServerConfiguration.get()?.users.premium.enabled &&
+        DB.getSnapshot()?.isPremium)
+    ) {
+      years.push({
+        text: year.toString(),
+        value: year.toString(),
+        selected: year === selectedYear,
+      });
+    }
   }
 
   yearSelector.setData(years);
