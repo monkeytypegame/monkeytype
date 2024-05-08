@@ -9,7 +9,7 @@ vi.mock("../src/init/db", () => ({
   getDb: (): Db => db,
   collection: <T>(name: string): Collection<WithId<T>> =>
     db.collection<WithId<T>>(name),
-  close: () => client.close(),
+  close: () => client?.close(),
 }));
 
 vi.mock("../src/utils/logger", () => ({
