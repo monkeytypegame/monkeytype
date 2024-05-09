@@ -392,39 +392,31 @@ async function animateXpBar(
     let toAnimate = difference;
 
     let firstOneDone = false;
+    let animationDuration = quickSpeed;
+    let animationEasing = "linear";
+    let decrement = 1 - (startingLevel % 1);
 
-    while (toAnimate > 1) {
+    do {
       if (toAnimate - 1 < 1) {
-        if (firstOneDone) {
-          void flashLevel();
-          barEl.css("width", "0%");
-        }
-        await Misc.promiseAnimation(
-          barEl,
-          {
-            width: "100%",
-          },
-          SlowTimer.get() ? 0 : Misc.mapRange(toAnimate - 1, 0, 0.5, 1000, 200),
-          "easeOutQuad"
-        );
-        toAnimate--;
-      } else {
-        if (firstOneDone) {
-          void flashLevel();
-          barEl.css("width", "0%");
-        }
-        await Misc.promiseAnimation(
-          barEl,
-          {
-            width: "100%",
-          },
-          SlowTimer.get() ? 0 : quickSpeed,
-          "linear"
-        );
-        toAnimate--;
+        animationDuration = Misc.mapRange(toAnimate - 1, 0, 0.5, 1000, 200);
+        animationEasing = "easeOutQuad";
       }
+      if (firstOneDone) {
+        void flashLevel();
+        barEl.css("width", "0%");
+        decrement = 1;
+      }
+      await Misc.promiseAnimation(
+        barEl,
+        {
+          width: "100%",
+        },
+        SlowTimer.get() ? 0 : animationDuration,
+        animationEasing
+      );
+      toAnimate -= decrement;
       firstOneDone = true;
-    }
+    } while (toAnimate > 1);
 
     void flashLevel();
     barEl.css("width", "0%");
