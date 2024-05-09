@@ -103,9 +103,12 @@ export async function update(
 ): Promise<void> {
   if (isAuthenticated()) {
     if (xp !== undefined) {
-      $("header nav .level").text(Math.floor(Levels.getLevel(xp)));
+      const xpDetails = Levels.getXpDetails(xp);
+      const levelCompletionRatio =
+        xpDetails.levelXp / xpDetails.requiredXpForLevel;
+      $("header nav .level").text(xpDetails.level);
       $("header nav .bar").css({
-        width: (Levels.getLevel(xp) % 1) * 100 + "%",
+        width: levelCompletionRatio * 100 + "%",
       });
     }
     if ((discordAvatar ?? "") && (discordId ?? "")) {
@@ -157,8 +160,12 @@ export async function updateXpBar(
   breakdown?: Record<string, number>
 ): Promise<void> {
   skipBreakdown = false;
-  const startingLevel = Levels.getLevel(currentXp);
-  const endingLevel = Levels.getLevel(currentXp + addedXp);
+  const startingXp = Levels.getXpDetails(currentXp);
+  const endingXp = Levels.getXpDetails(currentXp + addedXp);
+  const startingLevel =
+    startingXp.level + startingXp.levelXp / startingXp.requiredXpForLevel;
+  const endingLevel =
+    endingXp.level + endingXp.levelXp / endingXp.requiredXpForLevel;
 
   const snapshot = getSnapshot();
   if (!snapshot) return;
