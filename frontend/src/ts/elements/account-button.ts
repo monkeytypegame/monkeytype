@@ -170,22 +170,14 @@ export async function updateXpBar(
   const snapshot = getSnapshot();
   if (!snapshot) return;
 
-  if (skipBreakdown) {
-    $("nav .level").text(Math.floor(Levels.getLevel(snapshot.xp)));
-    $("nav .xpBar")
-      .stop(true, true)
-      .css("opacity", 1)
-      .animate({ opacity: 0 }, SlowTimer.get() ? 0 : 250, () => {
-        $("nav .xpBar .xpGain").text(``);
-      });
-    return;
+  if (!skipBreakdown) {
+    const xpBarPromise = animateXpBar(startingLevel, endingLevel);
+    const xpBreakdownPromise = animateXpBreakdown(addedXp, breakdown);
+
+    await Promise.all([xpBarPromise, xpBreakdownPromise]);
+    await Misc.sleep(2000);
   }
 
-  const xpBarPromise = animateXpBar(startingLevel, endingLevel);
-  const xpBreakdownPromise = animateXpBreakdown(addedXp, breakdown);
-
-  await Promise.all([xpBarPromise, xpBreakdownPromise]);
-  await Misc.sleep(2000);
   $("nav .level").text(Math.floor(Levels.getLevel(snapshot.xp)));
   $("nav .xpBar")
     .stop(true, true)
