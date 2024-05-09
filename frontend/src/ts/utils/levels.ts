@@ -1,10 +1,11 @@
 /**
- * Calculates the level based on the XP.
- * @param xp The experience points.
+ * Calculates the level based on the total XP.
+ * This is the inverse of the function getTotalXpOfLastLevelling()
+ * @param xp The total experience points.
  * @returns The calculated level.
  */
 export function getLevel(xp: number): number {
-  return (1 / 98) * (-151 + Math.sqrt(392 * xp + 22801)) + 1;
+  return Math.floor((Math.sqrt(392 * xp + 22801) - 53) / 98);
 }
 
 /**
@@ -18,6 +19,10 @@ function getXpForLevel(level: number): number {
 
 /**
  * Calculates the total experience points to reach the given level.
+ * This is the inverse of the function getLevel().
+ * Calculated as the sum of xp required for all levels up to `level`,
+ * where xp required for `level` is calculated using getXpForLevel(),
+ * and the first level is 1 and it requires 100xp to reach level 2.
  * @param level The level.
  * @returns The total experience points required to reach the level.
  */
@@ -36,7 +41,7 @@ export function getXpDetails(totalXp: number): {
   levelXp: number;
   requiredXpForLevel: number;
 } {
-  const level = Math.floor(getLevel(totalXp));
+  const level = getLevel(totalXp);
   return {
     level: level,
     levelXp: totalXp - getTotalXpOfLastLevelling(level),
