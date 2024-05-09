@@ -12,7 +12,7 @@ export function getLevel(xp: number): number {
  * @param level The level.
  * @returns The experience points required for the level.
  */
-export function getXpForLevel(level: number): number {
+function getXpForLevel(level: number): number {
   return 49 * (level - 1) + 100;
 }
 
