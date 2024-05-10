@@ -447,6 +447,7 @@ async function flashLevel(): Promise<void> {
       backgroundColor: themecolors.main,
       // transform: "scale(1.5) rotate(10deg)",
       borderSpacing: 100,
+      transition: "initial",
     })
     .animate(
       {
@@ -465,7 +466,10 @@ async function flashLevel(): Promise<void> {
         duration: 2000,
         easing: "easeOutCubic",
         complete: () => {
-          barEl.css("background-color", "");
+          barEl.css({
+            backgroundColor: "",
+            transition: "",
+          });
         },
       }
     );
