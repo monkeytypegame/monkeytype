@@ -434,14 +434,19 @@ async function animateXpBar(
 
 async function flashLevel(): Promise<void> {
   const themecolors = await getAll();
-  const barEl = $("nav .level");
+  const levelEl = $("nav .level");
 
-  barEl.text(parseInt(barEl.text()) + 1);
+  levelEl.text(parseInt(levelEl.text()) + 1);
 
   const rand = Math.random() * 2 - 1;
   const rand2 = Math.random() + 1;
 
-  barEl
+  /**
+   * `borderSpacing` has no visible effect on this element,
+   * and is used in the animation only to provide numerical
+   * values for the `step(step)` function.
+   */
+  levelEl
     .stop(true, true)
     .css({
       backgroundColor: themecolors.main,
@@ -456,7 +461,7 @@ async function flashLevel(): Promise<void> {
       },
       {
         step(step) {
-          barEl.css(
+          levelEl.css(
             "transform",
             `scale(${1 + (step / 200) * rand2}) rotate(${
               (step / 10) * rand
@@ -466,7 +471,7 @@ async function flashLevel(): Promise<void> {
         duration: 2000,
         easing: "easeOutCubic",
         complete: () => {
-          barEl.css({
+          levelEl.css({
             backgroundColor: "",
             transition: "",
           });
