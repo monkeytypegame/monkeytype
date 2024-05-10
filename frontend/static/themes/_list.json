@@ -1216,5 +1216,12 @@
     "mainColor": "#5a65ea",
     "subColor": "#565861",
     "textColor": "#dcdee3"
+  },
+  {
+    "name": "transgender",
+    "bgColor": "#ffffff",
+    "mainColor": "#5bcefa",
+    "subColor": "#f5a9b8",
+    "textColor": "#5bcefa"
   }
 ]
