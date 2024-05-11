@@ -3,6 +3,7 @@ import { randomElementFromArray, shuffle } from "../utils/arrays";
 import { cachedFetchJson } from "../utils/json-data";
 import { subscribe } from "../observables/config-event";
 import * as DB from "../db";
+import Ape from "../ape";
 
 type JsonQuote = {
   text: string;
@@ -211,6 +212,51 @@ class QuotesController {
     });
 
     return matchedLanguage !== undefined;
+  }
+
+  async setQuoteFavorite(
+    quote: MonkeyTypes.Quote,
+    isFavorite: boolean
+  ): Promise<void> {
+    const snapshot = DB.getSnapshot();
+    if (!snapshot) {
+      throw new Error("Snapshot is not available");
+    }
+
+    if (!isFavorite) {
+      // Remove from favorites
+      const response = await Ape.users.removeQuoteFromFavorites(
+        quote.language,
+        `${quote.id}`
+      );
+
+      if (response.status === 200) {
+        const quoteIndex = snapshot.favoriteQuotes?.[quote.language]?.indexOf(
+          `${quote.id}`
+        ) as number;
+        snapshot.favoriteQuotes?.[quote.language]?.splice(quoteIndex, 1);
+      } else {
+        throw new Error(response.message);
+      }
+    } else {
+      // Remove from favorites
+      const response = await Ape.users.addQuoteToFavorites(
+        quote.language,
+        `${quote.id}`
+      );
+
+      if (response.status === 200) {
+        if (snapshot.favoriteQuotes === undefined) {
+          snapshot.favoriteQuotes = {};
+        }
+        if (!snapshot.favoriteQuotes[quote.language]) {
+          snapshot.favoriteQuotes[quote.language] = [];
+        }
+        snapshot.favoriteQuotes[quote.language]?.push(`${quote.id}`);
+      } else {
+        throw new Error(response.message);
+      }
+    }
   }
 }
 

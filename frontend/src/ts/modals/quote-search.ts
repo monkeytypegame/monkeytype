@@ -20,6 +20,7 @@ import SlimSelect from "slim-select";
 import * as TestState from "../test/test-state";
 import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
 import * as TestLogic from "../test/test-logic";
+import { createErrorMessage } from "../utils/misc";
 
 const searchServiceCache: Record<string, SearchService<MonkeyTypes.Quote>> = {};
 
@@ -352,47 +353,43 @@ async function toggleFavoriteForQuote(quoteId: string): Promise<void> {
     return;
   }
 
+  const quote = {
+    language: quoteLang,
+    id: parseInt(quoteId, 10),
+  } as MonkeyTypes.Quote;
+
+  const alreadyFavorited = QuotesController.isQuoteFavorite(quote);
+
   const $button = $(
     `#quoteSearchModal .searchResult[data-quote-id=${quoteId}] .textButton.favorite i`
   );
   const dbSnapshot = DB.getSnapshot();
   if (!dbSnapshot) return;
 
-  if ($button.hasClass("fas")) {
-    // Remove from favorites
-    Loader.show();
-    const response = await Ape.users.removeQuoteFromFavorites(
-      quoteLang,
-      quoteId
-    );
-    Loader.hide();
-
-    Notifications.add(response.message, response.status === 200 ? 1 : -1);
-
-    if (response.status === 200) {
+  if (alreadyFavorited) {
+    try {
+      Loader.show();
+      await QuotesController.setQuoteFavorite(quote, false);
+      Loader.hide();
       $button.removeClass("fas").addClass("far");
-      const quoteIndex = dbSnapshot.favoriteQuotes?.[quoteLang]?.indexOf(
-        quoteId
-      ) as number;
-      dbSnapshot.favoriteQuotes?.[quoteLang]?.splice(quoteIndex, 1);
+    } catch (e) {
+      Loader.hide();
+      const message = createErrorMessage(
+        e,
+        "Failed to remove quote from favorites"
+      );
+      Notifications.add(message, -1);
     }
   } else {
-    // Add to favorites
-    Loader.show();
-    const response = await Ape.users.addQuoteToFavorites(quoteLang, quoteId);
-    Loader.hide();
-
-    Notifications.add(response.message, response.status === 200 ? 1 : -1);
-
-    if (response.status === 200) {
+    try {
+      Loader.show();
+      await QuotesController.setQuoteFavorite(quote, true);
+      Loader.hide();
       $button.removeClass("far").addClass("fas");
-      if (dbSnapshot.favoriteQuotes === undefined) {
-        dbSnapshot.favoriteQuotes = {};
-      }
-      if (!dbSnapshot.favoriteQuotes[quoteLang]) {
-        dbSnapshot.favoriteQuotes[quoteLang] = [];
-      }
-      dbSnapshot.favoriteQuotes[quoteLang]?.push(quoteId);
+    } catch (e) {
+      Loader.hide();
+      const message = createErrorMessage(e, "Failed to add quote to favorites");
+      Notifications.add(message, -1);
     }
   }
 }
