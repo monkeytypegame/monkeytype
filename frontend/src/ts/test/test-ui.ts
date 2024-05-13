@@ -497,9 +497,10 @@ function updateWordsHeight(force = false): void {
       .css("overflow", "hidden");
 
     if (Config.tapeMode !== "off") {
-      $("#words").css("width", "200%").css("margin-left", "50%");
+      $("#words").width("110vw");
+      scrollTape();
     } else {
-      $("#words").css("width", "100%").css("margin-left", "unset");
+      $("#words").css({ marginLeft: "unset", width: "unset" });
     }
 
     $("#wordsWrapper")
