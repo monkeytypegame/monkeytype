@@ -4,6 +4,7 @@ import * as Notifications from "../../elements/notifications";
 import { isAuthenticated } from "../../firebase";
 import { createErrorMessage } from "../../utils/misc";
 import * as Loader from "../../elements/loader";
+import * as TestWords from "../../test/test-words";
 
 const commands: MonkeyTypes.Command[] = [
   {
@@ -11,19 +12,19 @@ const commands: MonkeyTypes.Command[] = [
     display: "Add current quote to favorite",
     icon: "fa-heart",
     available: (): boolean => {
-      const currentQuote = QuotesController.getCurrentQuote();
+      const quote = TestWords.currentQuote;
       return (
         isAuthenticated() &&
-        currentQuote !== null &&
+        quote !== null &&
         Config.mode === "quote" &&
-        !QuotesController.isQuoteFavorite(currentQuote)
+        !QuotesController.isQuoteFavorite(quote)
       );
     },
     exec: async (): Promise<void> => {
       try {
         Loader.show();
         await QuotesController.setQuoteFavorite(
-          QuotesController.getCurrentQuote() as MonkeyTypes.Quote,
+          TestWords.currentQuote as MonkeyTypes.QuoteWithTextSplit,
           true
         );
         Loader.hide();
@@ -43,19 +44,19 @@ const commands: MonkeyTypes.Command[] = [
     display: "Remove current quote from favorite",
     icon: "fa-heart-broken",
     available: (): boolean => {
-      const currentQuote = QuotesController.getCurrentQuote();
+      const quote = TestWords.currentQuote;
       return (
         isAuthenticated() &&
-        currentQuote !== null &&
+        quote !== null &&
         Config.mode === "quote" &&
-        QuotesController.isQuoteFavorite(currentQuote)
+        QuotesController.isQuoteFavorite(quote)
       );
     },
     exec: async (): Promise<void> => {
       try {
         Loader.show();
         await QuotesController.setQuoteFavorite(
-          QuotesController.getCurrentQuote() as MonkeyTypes.Quote,
+          TestWords.currentQuote as MonkeyTypes.QuoteWithTextSplit,
           false
         );
         Loader.hide();

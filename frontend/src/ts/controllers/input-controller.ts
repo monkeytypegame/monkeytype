@@ -643,7 +643,9 @@ function handleChar(
     Config.stopOnError === "letter" &&
     !thisCharCorrect
   ) {
-    void TestUI.updateWordElement(undefined, TestInput.input.current + char);
+    if (!Config.blindMode) {
+      void TestUI.updateWordElement(undefined, TestInput.input.current + char);
+    }
     return;
   }
 

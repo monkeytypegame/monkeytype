@@ -199,8 +199,8 @@ export function restart(options = {} as RestartOptions): void {
 
   if (
     Config.mode === "quote" &&
-    TestWords.randomQuote !== null &&
-    Config.language.startsWith(TestWords.randomQuote.language) &&
+    TestWords.currentQuote !== null &&
+    Config.language.startsWith(TestWords.currentQuote.language) &&
     Config.repeatQuotes === "typing" &&
     (TestState.isActive || failReason !== "")
   ) {
@@ -527,7 +527,7 @@ export async function addWord(): Promise<void> {
       CustomText.getLimitValue() !== 0) ||
     (Config.mode === "quote" &&
       TestWords.words.length >=
-        (TestWords.randomQuote?.textSplit?.length ?? 0)) ||
+        (TestWords.currentQuote?.textSplit?.length ?? 0)) ||
     (Config.mode === "custom" &&
       CustomText.getLimitMode() === "section" &&
       WordsGenerator.sectionIndex >= CustomText.getLimitValue() &&
@@ -753,7 +753,7 @@ function buildCompletedEvent(
     language = Strings.removeLanguageSize(Config.language);
   }
 
-  const quoteLength = TestWords.randomQuote?.group ?? -1;
+  const quoteLength = TestWords.currentQuote?.group ?? -1;
 
   const completedEvent = {
     wpm: stats.wpm,
@@ -767,7 +767,7 @@ function buildCompletedEvent(
     charTotal: stats.allChars,
     acc: stats.acc,
     mode: Config.mode,
-    mode2: Misc.getMode2(Config, TestWords.randomQuote),
+    mode2: Misc.getMode2(Config, TestWords.currentQuote),
     quoteLength: quoteLength,
     punctuation: Config.punctuation,
     numbers: Config.numbers,
@@ -1057,7 +1057,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
     afkDetected,
     TestState.isRepeated,
     tooShort,
-    TestWords.randomQuote,
+    TestWords.currentQuote,
     dontSave
   );
 
@@ -1081,7 +1081,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
   TestStats.resetIncomplete();
 
   completedEvent.uid = Auth?.currentUser?.uid as string;
-  Result.updateRateQuote(TestWords.randomQuote);
+  Result.updateRateQuote(TestWords.currentQuote);
 
   AccountButton.loading(true);
   if (completedEvent.bailedOut !== true) {
