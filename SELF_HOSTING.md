@@ -86,12 +86,12 @@ Stop the running docker containers using `docker compose down` before making any
         ```
    - update the `.env` file with the values above:
         ```
-        FIREBASE_APIKEY="AAAAAAAA"
-        FIREBASE_AUTHDOMAIN="monkeytype-00000.firebaseapp.com"
-        FIREBASE_PROJECTID="monkeytype-00000"
-        FIREBASE_STORAGEBUCKET="monkeytype-00000.appspot.com"
-        FIREBASE_MESSAGINGSENDERID="90000000000"
-        FIREBASE_APPID="1:90000000000:web:000000000000"   
+        FIREBASE_APIKEY=AAAAAAAA
+        FIREBASE_AUTHDOMAIN=monkeytype-00000.firebaseapp.com
+        FIREBASE_PROJECTID=monkeytype-00000
+        FIREBASE_STORAGEBUCKET=monkeytype-00000.appspot.com
+        FIREBASE_MESSAGINGSENDERID=90000000000
+        FIREBASE_APPID=1:90000000000:web:000000000000
         ```
 
 ### Update backend configuration

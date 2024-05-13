@@ -356,6 +356,10 @@ declare namespace MonkeyTypes {
     textSplit?: string[];
   };
 
+  type QuoteWithTextSplit = Quote & {
+    textSplit: string[];
+  };
+
   type ThemeColors = {
     bg: string;
     main: string;
