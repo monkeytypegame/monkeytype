@@ -295,7 +295,7 @@ export async function update(
 
   const xp = profile.xp ?? 0;
   const xpDetails = Levels.getXpDetails(xp);
-  const xpForLevel = xpDetails.requiredXpForNextLevel;
+  const xpForLevel = xpDetails.requiredXpForLevel;
   const xpToDisplay = xpDetails.levelXp;
   details
     .find(".level")

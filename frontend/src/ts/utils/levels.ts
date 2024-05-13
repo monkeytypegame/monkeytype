@@ -9,11 +9,12 @@ export function getLevelFromTotalXp(totalXp: number): number {
 }
 
 /**
- * Calculates the experience points required for a given level.
+ * Calculates the experience points required to complete a given level.
+ * It does not take into consideration the experience points already gained in that level.
  * @param level The level.
  * @returns The experience points required for the level.
  */
-function getLevelXp(level: number): number {
+function getXpForLevel(level: number): number {
   return 49 * (level - 1) + 100;
 }
 
@@ -33,7 +34,7 @@ function getTotalXpToReachLevel(level: number): number {
 type XPDetails = {
   currentLevel: number;
   levelXp: number;
-  requiredXpForNextLevel: number;
+  requiredXpForLevel: number;
 };
 
 /**
@@ -47,6 +48,6 @@ export function getXpDetails(totalXp: number): XPDetails {
   return {
     currentLevel: level,
     levelXp: totalXp - getTotalXpToReachLevel(level),
-    requiredXpForNextLevel: getLevelXp(level),
+    requiredXpForLevel: getXpForLevel(level),
   };
 }
