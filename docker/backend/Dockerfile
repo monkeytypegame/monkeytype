@@ -15,7 +15,7 @@ RUN cd backend && npm ci
 RUN cd backend && npm run build
 
 # target
-FROM node:hydrogen-alpine
+FROM node:18.19.1-alpine3.19
 RUN apk add wget
 WORKDIR /
 COPY backend/redis-scripts /redis-scripts
