@@ -20,7 +20,7 @@
     "npm": "10.2.4"
   },
   "dependencies": {
-    "bcrypt": "5.0.1",
+    "bcrypt": "5.1.1",
     "bullmq": "1.91.1",
     "chalk": "4.1.2",
     "cors": "2.8.5",
