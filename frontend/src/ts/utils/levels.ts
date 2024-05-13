@@ -13,7 +13,7 @@ export function getLevel(totalXp: number): number {
  * @param level The level.
  * @returns The experience points required for the level.
  */
-function getXpForLevel(level: number): number {
+function getLevelXp(level: number): number {
   return 49 * (level - 1) + 100;
 }
 
@@ -47,6 +47,6 @@ export function getXpDetails(totalXp: number): XPDetails {
   return {
     currentLevel: level,
     levelXp: totalXp - getTotalXpToReachLevel(level),
-    requiredXpForNextLevel: getXpForLevel(level),
+    requiredXpForNextLevel: getLevelXp(level),
   };
 }
