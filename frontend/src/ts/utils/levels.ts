@@ -1,6 +1,6 @@
 /**
  * Calculates the level based on the total XP.
- * This is the inverse of the function getTotalXpOfLastLevelling()
+ * This is the inverse of the function getTotalXpToReachLevel()
  * @param totalXp The total experience points.
  * @returns The calculated level.
  */
@@ -20,9 +20,9 @@ function getLevelMaxXp(level: number): number {
 
 /**
  * Calculates the total experience points to reach the given level.
- * This is the inverse of the function getLevel().
+ * This is the inverse of the function getLevelFromTotalXp().
  * Calculated as the sum of xp required for all levels up to `level`,
- * where xp required for `level` is calculated using getXpForLevel(),
+ * where xp required for `level` is calculated using getLevelMaxXp(),
  * and the first level is 1 and it requires 100xp to reach level 2.
  * @param level The level.
  * @returns The total experience points required to reach the level.
