@@ -179,7 +179,7 @@ export async function updateXpBar(
     await Misc.sleep(2000);
   }
 
-  $("nav .level").text(Levels.getLevel(snapshot.xp));
+  $("nav .level").text(Levels.getLevelFromTotalXp(snapshot.xp));
   $("nav .xpBar")
     .stop(true, true)
     .css("opacity", 1)

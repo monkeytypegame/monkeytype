@@ -4,7 +4,7 @@
  * @param totalXp The total experience points.
  * @returns The calculated level.
  */
-export function getLevel(totalXp: number): number {
+export function getLevelFromTotalXp(totalXp: number): number {
   return Math.floor((Math.sqrt(392 * totalXp + 22801) - 53) / 98);
 }
 
@@ -43,7 +43,7 @@ type XPDetails = {
  *  partial xp of the level, and required xp for level completion.
  */
 export function getXpDetails(totalXp: number): XPDetails {
-  const level = getLevel(totalXp);
+  const level = getLevelFromTotalXp(totalXp);
   return {
     currentLevel: level,
     levelXp: totalXp - getTotalXpToReachLevel(level),
