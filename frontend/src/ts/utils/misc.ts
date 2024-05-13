@@ -183,6 +183,7 @@ export function cleanTypographySymbols(textToClean: string): string {
   const specials = {
     "“": '"', // &ldquo;	&#8220;
     "”": '"', // &rdquo;	&#8221;
+    "„": '"', // &bdquo;	&#8222;
     "’": "'", // &lsquo;	&#8216;
     "‘": "'", // &rsquo;	&#8217;
     ",": ",", // &sbquo;	&#8218;
