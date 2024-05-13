@@ -105,7 +105,7 @@ export async function update(
     if (xp !== undefined) {
       const xpDetails = Levels.getXpDetails(xp);
       const levelCompletionRatio =
-        xpDetails.levelXp / xpDetails.requiredXpForLevel;
+        xpDetails.currentLevelXp / xpDetails.currentLevelMaxXp;
       $("header nav .level").text(xpDetails.currentLevel);
       $("header nav .bar").css({
         width: levelCompletionRatio * 100 + "%",
@@ -164,9 +164,10 @@ export async function updateXpBar(
   const endingXp = Levels.getXpDetails(currentXp + addedXp);
   const startingLevel =
     startingXp.currentLevel +
-    startingXp.levelXp / startingXp.requiredXpForLevel;
+    startingXp.currentLevelXp / startingXp.currentLevelMaxXp;
   const endingLevel =
-    endingXp.currentLevel + endingXp.levelXp / endingXp.requiredXpForLevel;
+    endingXp.currentLevel +
+    endingXp.currentLevelXp / endingXp.currentLevelMaxXp;
 
   const snapshot = getSnapshot();
   if (!snapshot) return;
