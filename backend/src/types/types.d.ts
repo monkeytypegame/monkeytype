@@ -106,4 +106,8 @@ declare namespace MonkeyTypes {
     frontendForcedConfig?: Record<string, string[] | boolean[]>;
     frontendFunctions?: string[];
   };
+
+  type DBResult = MonkeyTypes.WithObjectId<
+    SharedTypes.DBResult<SharedTypes.Config.Mode>
+  >;
 }
