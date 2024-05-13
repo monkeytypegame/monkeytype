@@ -955,7 +955,7 @@ export function scrollTape(): void {
 }
 
 export function updatePremid(): void {
-  const mode2 = Misc.getMode2(Config, TestWords.randomQuote);
+  const mode2 = Misc.getMode2(Config, TestWords.currentQuote);
   let fbtext = "";
   if (Config.funbox !== "none") {
     fbtext = " " + Config.funbox.split("#").join(" ");

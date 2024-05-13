@@ -150,14 +150,6 @@ class QuotesController {
     return randomQuote;
   }
 
-  getCurrentQuote(): MonkeyTypes.Quote | null {
-    if (this.quoteQueue.length === 0) {
-      return null;
-    }
-
-    return this.quoteQueue[this.queueIndex] as MonkeyTypes.Quote;
-  }
-
   getRandomFavoriteQuote(language: string): MonkeyTypes.Quote | null {
     const snapshot = DB.getSnapshot();
     if (!snapshot) {
