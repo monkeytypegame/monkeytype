@@ -295,11 +295,11 @@ export async function update(
 
   const xp = profile.xp ?? 0;
   const xpDetails = Levels.getXpDetails(xp);
-  const xpForLevel = xpDetails.requiredXpForLevel;
+  const xpForLevel = xpDetails.requiredXpForNextLevel;
   const xpToDisplay = xpDetails.levelXp;
   details
     .find(".level")
-    .text(xpDetails.level)
+    .text(xpDetails.currentLevel)
     .attr("aria-label", `${Numbers.abbreviateNumber(xp)} total xp`);
   details
     .find(".xp")

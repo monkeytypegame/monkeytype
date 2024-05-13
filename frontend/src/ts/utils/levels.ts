@@ -1,11 +1,11 @@
 /**
  * Calculates the level based on the total XP.
  * This is the inverse of the function getTotalXpOfLastLevelling()
- * @param xp The total experience points.
+ * @param totalXp The total experience points.
  * @returns The calculated level.
  */
-export function getLevel(xp: number): number {
-  return Math.floor((Math.sqrt(392 * xp + 22801) - 53) / 98);
+export function getLevel(totalXp: number): number {
+  return Math.floor((Math.sqrt(392 * totalXp + 22801) - 53) / 98);
 }
 
 /**
@@ -26,9 +26,15 @@ function getXpForLevel(level: number): number {
  * @param level The level.
  * @returns The total experience points required to reach the level.
  */
-function getTotalXpOfLastLevelling(level: number): number {
+function getTotalXpToReachLevel(level: number): number {
   return (49 * Math.pow(level, 2) + 53 * level - 102) / 2;
 }
+
+type XPDetails = {
+  currentLevel: number;
+  levelXp: number;
+  requiredXpForNextLevel: number;
+};
 
 /**
  * Calculates the details of experience points based on given total xp.
@@ -36,15 +42,11 @@ function getTotalXpOfLastLevelling(level: number): number {
  * @returns An object with the following properties: calculated level (floored),
  *  partial xp of the level, and required xp for level completion.
  */
-export function getXpDetails(totalXp: number): {
-  level: number;
-  levelXp: number;
-  requiredXpForLevel: number;
-} {
+export function getXpDetails(totalXp: number): XPDetails {
   const level = getLevel(totalXp);
   return {
-    level: level,
-    levelXp: totalXp - getTotalXpOfLastLevelling(level),
-    requiredXpForLevel: getXpForLevel(level),
+    currentLevel: level,
+    levelXp: totalXp - getTotalXpToReachLevel(level),
+    requiredXpForNextLevel: getXpForLevel(level),
   };
 }
