@@ -49,19 +49,19 @@ $(".pageTest").on("click", "#mobileTestConfigButton", () => {
 });
 
 $(".pageTest #rateQuoteButton").on("click", async () => {
-  if (TestWords.randomQuote === null) {
+  if (TestWords.currentQuote === null) {
     Notifications.add("Failed to show quote rating popup: no quote", -1);
     return;
   }
-  QuoteRateModal.show(TestWords.randomQuote);
+  QuoteRateModal.show(TestWords.currentQuote);
 });
 
 $(".pageTest #reportQuoteButton").on("click", async () => {
-  if (TestWords.randomQuote === null) {
+  if (TestWords.currentQuote === null) {
     Notifications.add("Failed to show quote report popup: no quote", -1);
     return;
   }
-  void QuoteReportModal.show(TestWords.randomQuote?.id);
+  void QuoteReportModal.show(TestWords.currentQuote?.id);
 });
 
 $(".pageTest").on("click", "#testConfig .quoteLength .textButton", (e) => {
