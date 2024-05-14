@@ -9,11 +9,6 @@ export default defineConfig({
 
     coverage: {
       include: ["**/*.ts"],
-      provider: "istanbul",
-      reporter: [
-        "text", // For the terminal
-        "lcov", // For the VSCode extension and browser
-      ],
     },
   },
 });
