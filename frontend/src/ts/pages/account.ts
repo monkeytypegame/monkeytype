@@ -145,6 +145,8 @@ function loadMoreLines(lineIndex?: number): void {
 
     const charStats = result.charStats.join("/");
 
+    const mode2 = result.mode === "custom" ? "" : result.mode2;
+
     const date = new Date(result.timestamp);
     $(".pageAccount .history table tbody").append(`
     <tr class="resultRow" id="result-${i}">
@@ -156,7 +158,7 @@ function loadMoreLines(lineIndex?: number): void {
       showDecimalPlaces: true,
     })}</td>
     <td>${charStats}</td>
-    <td>${result.mode} ${result.mode2}</td>
+    <td>${result.mode} ${mode2}</td>
     <td class="infoIcons">${icons}</td>
     <td>${resultTagsButton}</td>
     <td>${format(date, "dd MMM yyyy")}<br>
