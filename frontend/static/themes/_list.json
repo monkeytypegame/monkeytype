@@ -1228,7 +1228,7 @@
     "name": "hi_viz",
     "bgColor": "#eeff00",
     "mainColor": "#777",
-    "subColor": "#444",
-    "textColor": "#000"
+    "subColor": "#222",
+    "textColor": "#444"
   }
 ]
