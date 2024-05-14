@@ -26,10 +26,15 @@ export function clearFontPreview(): void {
 }
 
 function updateKeytips(): void {
+  const userAgent = window.navigator.userAgent.toLowerCase();
+  const modifierKey = (userAgent.includes("mac") && !userAgent.includes("firefox"))
+    ? "cmd"
+    : "ctrl";
+
   const commandKey = Config.quickRestart === "esc" ? "tab" : "esc";
   $("footer .keyTips").html(`
     <key>${Config.quickRestart}</key> - restart test<br>
-    <key>${commandKey}</key> or <key>ctrl</key>+<key>shift</key>+<key>p</key> - command line`);
+    <key>${commandKey}</key> or <key>${modifierKey}</key>+<key>shift</key>+<key>p</key> - command line`);
 }
 
 if (isDevEnvironment()) {
