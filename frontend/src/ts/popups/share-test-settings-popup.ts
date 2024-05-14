@@ -1,5 +1,5 @@
 import Config from "../config";
-import { randomQuote } from "../test/test-words";
+import { currentQuote } from "../test/test-words";
 import { getMode2, isPopupVisible } from "../utils/misc";
 import * as CustomText from "../test/custom-text";
 import { compressToURI } from "lz-ts";
@@ -44,7 +44,7 @@ function updateURL(): void {
   if (getCheckboxValue("mode2")) {
     settings[1] = getMode2(
       Config,
-      randomQuote
+      currentQuote
     ) as SharedTypes.Config.Mode2<SharedTypes.Config.Mode>;
   }
 

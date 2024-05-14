@@ -148,7 +148,7 @@ export function update(): void {
       outof = CustomText.getLimitValue();
     }
     if (Config.mode === "quote") {
-      outof = TestWords.randomQuote?.textSplit?.length ?? 1;
+      outof = TestWords.currentQuote?.textSplit.length ?? 1;
     }
     if (Config.timerStyle === "bar") {
       const percent = Math.floor(
