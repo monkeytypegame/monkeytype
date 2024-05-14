@@ -28,9 +28,9 @@ export function clearFontPreview(): void {
 function updateKeytips(): void {
   const userAgent = window.navigator.userAgent.toLowerCase();
   const modifierKey =
-  userAgent.includes("mac") && !userAgent.includes("firefox")
-    ? "cmd"
-    : "ctrl";
+    userAgent.includes("mac") && !userAgent.includes("firefox")
+      ? "cmd"
+      : "ctrl";
 
   const commandKey = Config.quickRestart === "esc" ? "tab" : "esc";
   $("footer .keyTips").html(`
