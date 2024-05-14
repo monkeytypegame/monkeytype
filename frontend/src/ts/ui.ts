@@ -27,7 +27,8 @@ export function clearFontPreview(): void {
 
 function updateKeytips(): void {
   const userAgent = window.navigator.userAgent.toLowerCase();
-  const modifierKey = (userAgent.includes("mac") && !userAgent.includes("firefox"))
+  const modifierKey =
+  userAgent.includes("mac") && !userAgent.includes("firefox")
     ? "cmd"
     : "ctrl";
 

@@ -960,7 +960,8 @@ export async function update(groupUpdate = true): Promise<void> {
   CustomBackgroundFilter.updateUI();
 
   const userAgent = window.navigator.userAgent.toLowerCase();
-  const modifierKey = (userAgent.includes("mac") && !userAgent.includes("firefox"))
+  const modifierKey =
+  userAgent.includes("mac") && !userAgent.includes("firefox")
     ? "cmd"
     : "ctrl";
 
