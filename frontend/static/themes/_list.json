@@ -1223,5 +1223,12 @@
     "mainColor": "#e55050",
     "subColor": "#ff6060",
     "textColor": "#ffaaaa"
+  },
+  {
+    "name": "floret",
+    "bgColor": "#00272c",
+    "mainColor": " #ffdd6d",
+    "subColor": "#779097",
+    "textColor": "#FFC300"
   }
 ]
