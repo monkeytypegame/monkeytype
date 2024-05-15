@@ -1,6 +1,6 @@
 import * as DB from "../db";
-import format from "date-fns/format";
-import differenceInDays from "date-fns/differenceInDays";
+import { format } from "date-fns/format";
+import { differenceInDays } from "date-fns/differenceInDays";
 import * as Misc from "../utils/misc";
 import * as Numbers from "../utils/numbers";
 import * as Levels from "../utils/levels";
@@ -8,7 +8,7 @@ import * as DateTime from "../utils/date-and-time";
 import { getHTMLById } from "../controllers/badge-controller";
 import { throttle } from "throttle-debounce";
 import * as ActivePage from "../states/active-page";
-import formatDistanceToNowStrict from "date-fns/formatDistanceToNowStrict";
+import { formatDistanceToNowStrict } from "date-fns/formatDistanceToNowStrict";
 import { getHtmlByUserFlags } from "../controllers/user-flag-controller";
 import Format from "../utils/format";
 

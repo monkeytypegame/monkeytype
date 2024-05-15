@@ -243,4 +243,21 @@
       }
     }
   }
+  #testActivity {
+    .wrapper {
+      width: 100%;
+      .top {
+        grid-template-columns: 12rem 1fr 8rem;
+      }
+    }
+    // .activity {
+    //   gap: 0.1em;
+    // }
+    .activity div,
+    .legend div {
+      width: 100%;
+      height: unset;
+      aspect-ratio: 1;
+    }
+  }
 }

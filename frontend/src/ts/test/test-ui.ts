@@ -18,7 +18,7 @@ import * as SlowTimer from "../states/slow-timer";
 import * as CompositionState from "../states/composition";
 import * as ConfigEvent from "../observables/config-event";
 import * as Hangul from "hangul-js";
-import format from "date-fns/format";
+import { format } from "date-fns/format";
 import { isAuthenticated } from "../firebase";
 import { skipXpBreakdown } from "../elements/account-button";
 import * as FunboxList from "./funbox/funbox-list";

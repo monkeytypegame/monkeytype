@@ -19,7 +19,7 @@
   "ts-node": {
     "files": true
   },
-  "files": ["../src/ts/types/types.d.ts"],
+  "files": ["../src/ts/types/types.d.ts", "vitest.d.ts"],
   "include": [
     "./**/*.spec.ts",
     "./setup-tests.ts",

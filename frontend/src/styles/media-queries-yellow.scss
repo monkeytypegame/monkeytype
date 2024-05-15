@@ -47,4 +47,21 @@
       }
     }
   }
+  #testActivity {
+    --box-size: 0.9em;
+    --font-size: 0.9em;
+    // .days {
+    //   font-size: 0.8em;
+    // }
+    .activity div,
+    .legend div {
+      height: var(--box-size);
+    }
+    .days {
+      display: grid;
+    }
+    .daysFull {
+      display: none;
+    }
+  }
 }
