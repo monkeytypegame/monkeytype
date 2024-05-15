@@ -53,7 +53,8 @@
     .supporters,
     .contributors {
       display: grid;
-      grid-template-columns: 1fr 1fr 1fr 1fr;
+      // grid-template-columns: 1fr 1fr 1fr 1fr;
+      grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr));
       gap: 0.25rem;
       color: var(--text-color);
     }

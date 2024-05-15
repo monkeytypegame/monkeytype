@@ -6,7 +6,7 @@ import Ape from "../ape";
 import * as Notifications from "../elements/notifications";
 import * as ChartController from "../controllers/chart-controller";
 import * as ConnectionState from "../states/connection";
-import intervalToDuration from "date-fns/intervalToDuration";
+import { intervalToDuration } from "date-fns/intervalToDuration";
 import * as Skeleton from "../utils/skeleton";
 
 function reset(): void {

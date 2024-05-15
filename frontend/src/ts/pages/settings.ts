@@ -47,29 +47,6 @@ async function initGroups(): Promise<void> {
     UpdateConfig.setQuickRestartMode,
     "button"
   ) as SettingsGroup<SharedTypes.ConfigValue>;
-  groups["showLiveWpm"] = new SettingsGroup(
-    "showLiveWpm",
-    UpdateConfig.setShowLiveWpm,
-    "button",
-    () => {
-      groups["keymapMode"]?.updateUI();
-    }
-  ) as SettingsGroup<SharedTypes.ConfigValue>;
-  groups["showLiveAcc"] = new SettingsGroup(
-    "showLiveAcc",
-    UpdateConfig.setShowLiveAcc,
-    "button"
-  ) as SettingsGroup<SharedTypes.ConfigValue>;
-  groups["showLiveBurst"] = new SettingsGroup(
-    "showLiveBurst",
-    UpdateConfig.setShowLiveBurst,
-    "button"
-  ) as SettingsGroup<SharedTypes.ConfigValue>;
-  groups["showTimerProgress"] = new SettingsGroup(
-    "showTimerProgress",
-    UpdateConfig.setShowTimerProgress,
-    "button"
-  ) as SettingsGroup<SharedTypes.ConfigValue>;
   groups["showAverage"] = new SettingsGroup(
     "showAverage",
     UpdateConfig.setShowAverage,
@@ -336,9 +313,9 @@ async function initGroups(): Promise<void> {
     UpdateConfig.setFontSize,
     "button"
   ) as SettingsGroup<SharedTypes.ConfigValue>;
-  groups["pageWidth"] = new SettingsGroup(
-    "pageWidth",
-    UpdateConfig.setPageWidth,
+  groups["maxLineWidth"] = new SettingsGroup(
+    "maxLineWidth",
+    UpdateConfig.setMaxLineWidth,
     "button"
   ) as SettingsGroup<SharedTypes.ConfigValue>;
   groups["caretStyle"] = new SettingsGroup(
@@ -354,6 +331,21 @@ async function initGroups(): Promise<void> {
   groups["timerStyle"] = new SettingsGroup(
     "timerStyle",
     UpdateConfig.setTimerStyle,
+    "button"
+  ) as SettingsGroup<SharedTypes.ConfigValue>;
+  groups["liveSpeedStyle"] = new SettingsGroup(
+    "liveSpeedStyle",
+    UpdateConfig.setLiveSpeedStyle,
+    "button"
+  ) as SettingsGroup<SharedTypes.ConfigValue>;
+  groups["liveAccStyle"] = new SettingsGroup(
+    "liveAccStyle",
+    UpdateConfig.setLiveAccStyle,
+    "button"
+  ) as SettingsGroup<SharedTypes.ConfigValue>;
+  groups["liveBurstStyle"] = new SettingsGroup(
+    "liveBurstStyle",
+    UpdateConfig.setLiveBurstStyle,
     "button"
   ) as SettingsGroup<SharedTypes.ConfigValue>;
   groups["highlightMode"] = new SettingsGroup(
@@ -667,6 +659,10 @@ async function fillSettingsPage(): Promise<void> {
     Config.fontSize
   );
 
+  $(".pageSettings .section[data-config-name='maxLineWidth'] input").val(
+    Config.maxLineWidth
+  );
+
   $(".pageSettings .section[data-config-name='customLayoutfluid'] input").val(
     Config.customLayoutfluid.replace(/#/g, " ")
   );
@@ -963,9 +959,11 @@ export async function update(groupUpdate = true): Promise<void> {
 
   CustomBackgroundFilter.updateUI();
 
-  const modifierKey = window.navigator.userAgent.toLowerCase().includes("mac")
-    ? "cmd"
-    : "ctrl";
+  const userAgent = window.navigator.userAgent.toLowerCase();
+  const modifierKey =
+    userAgent.includes("mac") && !userAgent.includes("firefox")
+      ? "cmd"
+      : "ctrl";
 
   const commandKey = Config.quickRestart === "esc" ? "tab" : "esc";
   $(".pageSettings .tip").html(`
@@ -1211,6 +1209,59 @@ $(
       parseFloat(
         $(
           ".pageSettings .section[data-config-name='fontSize'] .inputAndButton input"
+        ).val() as string
+      )
+    );
+    if (didConfigSave) {
+      Notifications.add("Saved", 1, {
+        duration: 1,
+      });
+    }
+  }
+});
+
+$(
+  ".pageSettings .section[data-config-name='maxLineWidth'] .inputAndButton button.save"
+).on("click", () => {
+  const didConfigSave = UpdateConfig.setMaxLineWidth(
+    parseFloat(
+      $(
+        ".pageSettings .section[data-config-name='maxLineWidth'] .inputAndButton input"
+      ).val() as string
+    )
+  );
+  if (didConfigSave) {
+    Notifications.add("Saved", 1, {
+      duration: 1,
+    });
+  }
+});
+
+$(
+  ".pageSettings .section[data-config-name='maxLineWidth'] .inputAndButton input"
+).on("focusout", () => {
+  const didConfigSave = UpdateConfig.setMaxLineWidth(
+    parseFloat(
+      $(
+        ".pageSettings .section[data-config-name='maxLineWidth'] .inputAndButton input"
+      ).val() as string
+    )
+  );
+  if (didConfigSave) {
+    Notifications.add("Saved", 1, {
+      duration: 1,
+    });
+  }
+});
+
+$(
+  ".pageSettings .section[data-config-name='maxLineWidth'] .inputAndButton input"
+).on("keypress", (e) => {
+  if (e.key === "Enter") {
+    const didConfigSave = UpdateConfig.setMaxLineWidth(
+      parseFloat(
+        $(
+          ".pageSettings .section[data-config-name='maxLineWidth'] .inputAndButton input"
         ).val() as string
       )
     );

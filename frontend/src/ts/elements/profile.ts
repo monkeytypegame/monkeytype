@@ -1,6 +1,6 @@
 import * as DB from "../db";
-import format from "date-fns/format";
-import differenceInDays from "date-fns/differenceInDays";
+import { format } from "date-fns/format";
+import { differenceInDays } from "date-fns/differenceInDays";
 import * as Misc from "../utils/misc";
 import * as Numbers from "../utils/numbers";
 import * as Levels from "../utils/levels";
@@ -8,7 +8,7 @@ import * as DateTime from "../utils/date-and-time";
 import { getHTMLById } from "../controllers/badge-controller";
 import { throttle } from "throttle-debounce";
 import * as ActivePage from "../states/active-page";
-import formatDistanceToNowStrict from "date-fns/formatDistanceToNowStrict";
+import { formatDistanceToNowStrict } from "date-fns/formatDistanceToNowStrict";
 import { getHtmlByUserFlags } from "../controllers/user-flag-controller";
 import Format from "../utils/format";
 
@@ -174,9 +174,12 @@ export async function update(
       if (isToday) {
         hoverText += `\nClaimed today: yes`;
         hoverText += `\nCome back in: ${timeDif} ${offsetString}`;
-      } else {
+      } else if (isYesterday) {
         hoverText += `\nClaimed today: no`;
         hoverText += `\nStreak lost in: ${timeDif} ${offsetString}`;
+      } else {
+        hoverText += `\nStreak lost ${timeDif} ${offsetString} ago`;
+        hoverText += `\nIt will be removed from your profile on the next result save`;
       }
 
       console.debug(hoverText);
@@ -291,13 +294,12 @@ export async function update(
   }
 
   const xp = profile.xp ?? 0;
-  const levelFraction = Levels.getLevel(xp);
-  const level = Math.floor(levelFraction);
-  const xpForLevel = Levels.getXpForLevel(level);
-  const xpToDisplay = Math.round(xpForLevel * (levelFraction % 1));
+  const xpDetails = Levels.getXpDetails(xp);
+  const xpForLevel = xpDetails.levelMaxXp;
+  const xpToDisplay = xpDetails.levelCurrentXp;
   details
     .find(".level")
-    .text(level)
+    .text(xpDetails.level)
     .attr("aria-label", `${Numbers.abbreviateNumber(xp)} total xp`);
   details
     .find(".xp")

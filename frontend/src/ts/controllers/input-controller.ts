@@ -211,7 +211,7 @@ function handleSpace(): void {
   void MonkeyPower.addPower(isWordCorrect, true);
   TestInput.incrementAccuracy(isWordCorrect);
   if (isWordCorrect) {
-    if (Config.indicateTypos !== "off" && Config.stopOnError === "letter") {
+    if (Config.stopOnError === "letter") {
       void TestUI.updateWordElement();
     }
     PaceCaret.handleSpace(true, currentWord);
@@ -312,8 +312,8 @@ function handleSpace(): void {
   if (
     !Config.showAllLines ||
     Config.mode === "time" ||
-    (CustomText.isWordRandom && CustomText.word === 0) ||
-    CustomText.isTimeRandom
+    (Config.mode === "custom" && CustomText.getLimitValue() === 0) ||
+    (Config.mode === "custom" && CustomText.getLimitMode() === "time")
   ) {
     const currentTop: number = Math.floor(
       document.querySelectorAll<HTMLElement>("#words .word")[
@@ -643,7 +643,7 @@ function handleChar(
     Config.stopOnError === "letter" &&
     !thisCharCorrect
   ) {
-    if (Config.indicateTypos !== "off") {
+    if (!Config.blindMode) {
       void TestUI.updateWordElement(undefined, TestInput.input.current + char);
     }
     return;
@@ -976,8 +976,9 @@ $(document).on("keydown", async (event) => {
     if (Config.mode === "zen") {
       //do nothing
     } else if (
-      !TestWords.hasNewline ||
-      (TestWords.hasNewline && event.shiftKey)
+      (!TestWords.hasNewline && !Config.funbox.includes("58008")) ||
+      ((TestWords.hasNewline || Config.funbox.includes("58008")) &&
+        event.shiftKey)
     ) {
       // in case we are in a long test, setting manual restart
       if (event.shiftKey) {
@@ -990,11 +991,6 @@ $(document).on("keydown", async (event) => {
       TestLogic.restart({
         event,
       });
-    } else {
-      setWordsInput(" " + TestInput.input.current);
-      if (Config.tapeMode !== "off") {
-        TestUI.scrollTape();
-      }
     }
   }
 
@@ -1044,7 +1040,7 @@ $(document).on("keydown", async (event) => {
           Config.mode,
           Config.words,
           Config.time,
-          CustomText,
+          CustomText.getData(),
           CustomTextState.isCustomTextLong() ?? false
         )
       ) {

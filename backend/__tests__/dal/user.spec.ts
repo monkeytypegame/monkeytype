@@ -1,7 +1,7 @@
 import _ from "lodash";
-import { ObjectId } from "mongodb";
 import { updateStreak } from "../../src/dal/user";
 import * as UserDAL from "../../src/dal/user";
+import * as UserTestData from "../__testData__/users";
 
 const mockPersonalBest = {
   acc: 1,
@@ -295,7 +295,7 @@ describe("UserDal", () => {
     await UserDAL.addUser(testUser.name, testUser.email, testUser.uid);
 
     // when
-    Date.now = jest.fn(() => 0);
+    Date.now = vi.fn(() => 0);
     await UserDAL.recordAutoBanEvent(testUser.uid, 2, 1);
     await UserDAL.recordAutoBanEvent(testUser.uid, 2, 1);
     await UserDAL.recordAutoBanEvent(testUser.uid, 2, 1);
@@ -317,7 +317,7 @@ describe("UserDal", () => {
     await UserDAL.addUser(testUser.name, testUser.email, testUser.uid);
 
     // when
-    Date.now = jest.fn(() => 0);
+    Date.now = vi.fn(() => 0);
     await UserDAL.recordAutoBanEvent(testUser.uid, 2, 1);
 
     // then
@@ -337,11 +337,11 @@ describe("UserDal", () => {
     await UserDAL.addUser(testUser.name, testUser.email, testUser.uid);
 
     // when
-    Date.now = jest.fn(() => 0);
+    Date.now = vi.fn(() => 0);
     await UserDAL.recordAutoBanEvent(testUser.uid, 2, 1);
     await UserDAL.recordAutoBanEvent(testUser.uid, 2, 1);
 
-    Date.now = jest.fn(() => 36000000);
+    Date.now = vi.fn(() => 36000000);
 
     await UserDAL.recordAutoBanEvent(testUser.uid, 2, 1);
 
@@ -678,7 +678,7 @@ describe("UserDal", () => {
 
     for (const { date, expectedStreak } of testSteps) {
       const milis = new Date(date).getTime();
-      Date.now = jest.fn(() => milis);
+      Date.now = vi.fn(() => milis);
 
       const streak = await updateStreak("TestID", milis);
 
@@ -736,7 +736,7 @@ describe("UserDal", () => {
 
     for (const { date, expectedStreak } of testSteps) {
       const milis = new Date(date).getTime();
-      Date.now = jest.fn(() => milis);
+      Date.now = vi.fn(() => milis);
 
       const streak = await updateStreak("TestID", milis);
 
@@ -778,11 +778,76 @@ describe("UserDal", () => {
 
     for (const { date, expectedStreak } of testSteps) {
       const milis = new Date(date).getTime();
-      Date.now = jest.fn(() => milis);
+      Date.now = vi.fn(() => milis);
 
       const streak = await updateStreak("TestID", milis);
 
       await expect(streak).toBe(expectedStreak);
     }
+  });
+  describe("incrementTestActivity", () => {
+    it("ignores user without migration", async () => {
+      // given
+      const user = await UserTestData.createUserWithoutMigration();
+
+      //when
+      await UserDAL.incrementTestActivity(user, 1712102400000);
+
+      //then
+      const read = await UserDAL.getUser(user.uid, "");
+      expect(read.testActivity).toBeUndefined();
+    });
+    it("increments for new year", async () => {
+      // given
+      const user = await UserTestData.createUser({
+        testActivity: { "2023": [null, 1] },
+      });
+
+      //when
+      await UserDAL.incrementTestActivity(user, 1712102400000);
+
+      //then
+      const read = (await UserDAL.getUser(user.uid, "")).testActivity || {};
+      expect(read).toHaveProperty("2024");
+      const year2024 = read["2024"];
+      expect(year2024).toHaveLength(94);
+      //fill previous days with null
+      expect(year2024.slice(0, 93)).toEqual(new Array(93).fill(null));
+      expect(year2024[93]).toEqual(1);
+    });
+    it("increments for existing year", async () => {
+      // given
+      const user = await UserTestData.createUser({
+        testActivity: { "2024": [null, 5] },
+      });
+
+      //when
+      await UserDAL.incrementTestActivity(user, 1712102400000);
+
+      //then
+      const read = (await UserDAL.getUser(user.uid, "")).testActivity || {};
+      expect(read).toHaveProperty("2024");
+      const year2024 = read["2024"];
+      expect(year2024).toHaveLength(94);
+
+      expect(year2024[0]).toBeNull();
+      expect(year2024[1]).toEqual(5);
+      expect(year2024.slice(2, 91)).toEqual(new Array(89).fill(null));
+      expect(year2024[93]).toEqual(1);
+    });
+    it("increments for existing day", async () => {
+      // given
+      let user = await UserTestData.createUser({ testActivity: {} });
+      await UserDAL.incrementTestActivity(user, 1712102400000);
+      user = await UserDAL.getUser(user.uid, "");
+
+      //when
+      await UserDAL.incrementTestActivity(user, 1712102400000);
+
+      //then
+      const read = (await UserDAL.getUser(user.uid, "")).testActivity || {};
+      const year2024 = read["2024"];
+      expect(year2024[93]).toEqual(2);
+    });
   });
 });

@@ -65,13 +65,12 @@
   }
 }
 
-#timerWrapper {
+#barTimerProgress {
   opacity: 0;
-  transition: 0.25s;
   z-index: -1;
   position: relative;
   z-index: 99;
-  #timer {
+  .bar {
     position: fixed;
     top: 0;
     left: 0;
@@ -82,18 +81,17 @@
     /*   background: red; */
     // transition: 1s linear;
     z-index: -1;
+  }
+  &.timerMain .bar {
+    background: var(--main-color);
+  }
 
-    &.timerMain {
-      background: var(--main-color);
-    }
+  &.timerSub .bar {
+    background: var(--sub-color);
+  }
 
-    &.timerSub {
-      background: var(--sub-color);
-    }
-
-    &.timerText {
-      background: var(--text-color);
-    }
+  &.timerText .bar {
+    background: var(--text-color);
   }
 }
 
@@ -102,6 +100,8 @@
 
   #typingTest {
     position: relative;
+    width: 100%;
+    margin: 0 auto;
   }
 
   .ssWatermark {
@@ -117,85 +117,79 @@
     }
   }
 
-  #timerNumber {
+  #liveStatsTextTop {
     pointer-events: none;
-    transition: 0.25s;
-    height: 0;
     color: black;
-    line-height: 0;
     z-index: -1;
     text-align: center;
-    left: 0;
     width: 100%;
     position: relative;
-    font-size: clamp(1rem, 12vw, 10rem);
+    display: grid;
+    font-size: 10rem;
 
     opacity: 0;
     width: 0;
     height: 0;
-    margin: 0 auto;
-    display: grid;
-    justify-content: center;
-    bottom: clamp(2rem, 12vw, 6rem);
+    justify-self: center;
 
     transition: none;
+
+    .wrapper {
+      position: absolute;
+      bottom: 1.25rem;
+      display: flex;
+      justify-self: center;
+      gap: 0.5ch;
+      line-height: 1;
+    }
   }
 
-  #largeLiveWpmAndAcc {
-    font-size: clamp(1rem, 12vw, 10rem);
+  #liveStatsTextBottom {
+    font-size: 10rem;
     color: black;
     width: 100%;
-    left: 0;
     text-align: center;
     z-index: -1;
     height: 0;
-    line-height: 0;
-    top: clamp(1rem, 10vw, 5rem);
     position: relative;
     display: grid;
-    grid-auto-flow: column;
-    justify-content: center;
-    gap: clamp(1rem, 8vw, 5rem);
-    width: 0;
     margin: 0 auto;
+    pointer-events: none;
 
-    #liveWpm {
-      opacity: 0;
-    }
-
-    #liveAcc {
-      opacity: 0;
-    }
-
-    #liveBurst {
-      opacity: 0;
+    .wrapper {
+      position: absolute;
+      top: 1rem;
+      display: flex;
+      justify-self: center;
+      gap: 0.5ch;
+      line-height: 1;
     }
   }
 
-  #largeLiveWpmAndAcc.timerMain,
-  #timerNumber.timerMain {
+  #liveStatsTextBottom.timerMain,
+  #liveStatsTextTop.timerMain {
     color: var(--main-color);
   }
 
-  #timer.timerMain {
+  #barTimerProgress.timerMain .bar {
     background: var(--main-color);
   }
 
-  #largeLiveWpmAndAcc.timerSub,
-  #timerNumber.timerSub {
+  #liveStatsTextBottom.timerSub,
+  #liveStatsTextTop.timerSub {
     color: var(--sub-color);
   }
 
-  #timer.timerSub {
+  #barTimerProgress.timerSub .bar {
     background: var(--sub-color);
   }
 
-  #largeLiveWpmAndAcc.timerText,
-  #timerNumber.timerText {
+  #liveStatsTextBottom.timerText,
+  #liveStatsTextTop.timerText {
     color: var(--text-color);
   }
 
-  #timer.timerText {
+  #barTimerProgress.timerText .bar {
     background: var(--text-color);
   }
 }
@@ -473,6 +467,7 @@
 }
 
 #wordsInput {
+  font-size: 1rem;
   opacity: 0;
   padding: 0;
   margin: 0 auto;
@@ -487,6 +482,7 @@
 }
 
 #capsWarning {
+  font-size: 1rem;
   background: var(--main-color);
   color: var(--bg-color);
   display: table;
@@ -512,24 +508,8 @@
 }
 
 #result {
-  display: grid;
-  // height: 200px;
-  gap: 1rem;
-  // grid-template-columns: auto 1fr;
-  // justify-content: center;
-  align-items: center;
-  grid-template-columns: auto 1fr;
-  grid-template-areas:
-    "stats chart"
-    "morestats morestats";
-  // "wordsHistory wordsHistory"
-  // "buttons buttons"
-  // "login login"
-  // "ssw ssw";
-
-  .editTagsButton {
-    padding: 0 0.25em;
-    margin-left: 0.5em;
+  &:focus-visible {
+    outline: none;
   }
 
   &.noBalloons {
@@ -543,364 +523,390 @@
     outline: none;
   }
 
-  button {
-    padding: 1em 2em;
-  }
-
-  .buttons {
+  .wrapper {
     display: grid;
-    grid-auto-flow: column;
+    // height: 200px;
     gap: 1rem;
-    justify-content: center;
-    grid-column: 1/3;
-  }
+    // grid-template-columns: auto 1fr;
+    // justify-content: center;
+    align-items: center;
+    grid-template-columns: auto 1fr;
+    grid-template-areas:
+      "stats chart"
+      "morestats morestats";
+    // "wordsHistory wordsHistory"
+    // "buttons buttons"
+    // "login login"
+    // "ssw ssw";
 
-  .ssWatermark {
-    grid-column: 1/3;
-  }
-
-  #retrySavingResultButton {
-    margin: 0 auto 1rem auto;
-    display: flex;
-  }
-
-  #resultWordsHistory,
-  #resultReplay {
-    // grid-area: wordsHistory;
-    color: var(--sub-color);
-    // grid-column: 1/3;
-    margin-bottom: 1rem;
-    .textButton {
+    .editTagsButton {
       padding: 0 0.25em;
-    }
-    #copyWordsListButton {
       margin-left: 0.5em;
     }
-    .heatmapLegend {
-      margin-left: 0.5rem;
-      display: inline-grid;
-      grid-template-columns: auto auto auto;
-      gap: 1rem;
-      font-size: 0.75rem;
-      color: var(--sub-color);
-      width: min-content;
-      .boxes {
-        // display: flex;
-        display: grid;
-        grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
-        .box {
-          // width: 1rem;
-          height: 1rem;
-          color: var(--bg-color);
-          padding: 0.1rem 0.5rem;
-          white-space: nowrap;
-          line-height: 0.75rem;
-          display: grid;
-          place-content: center center;
-        }
-        .box:nth-child(1) {
-          border-radius: var(--roundness) 0 0 var(--roundness);
-        }
-        .box:nth-child(5) {
-          border-radius: 0 var(--roundness) var(--roundness) 0;
-        }
-      }
-    }
-    .title {
-      user-select: none;
-      margin-bottom: 0.25rem;
-      display: flex;
-      align-items: center;
-    }
-    .words {
-      display: flex;
-      flex-wrap: wrap;
-      width: 100%;
-      align-content: flex-start;
-      .word {
-        position: relative;
-        margin: 0.18rem 0.6rem 0.15rem 0;
-        letter.correct {
-          color: var(--text-color);
-        }
-        letter.incorrect {
-          color: var(--error-color);
-        }
-        letter.incorrect.extra {
-          color: var(--error-extra-color);
-        }
-        &.heatmapInherit letter {
-          color: inherit;
-        }
-      }
-      &.rightToLeftTest {
-        //flex-direction: row-reverse; // no need for hacking 😉, CSS fully support right-to-left languages
-        direction: rtl;
-        .word {
-          //flex-direction: row-reverse;
-          direction: rtl;
-        }
-      }
-      &.withLigatures {
-        letter {
-          display: inline;
-        }
-      }
-    }
-  }
 
-  #resultReplay .words {
-    user-select: none;
-    -webkit-user-select: none;
-  }
-
-  .chart {
-    grid-area: chart;
-    width: 100%;
-
-    canvas {
-      width: 100% !important;
-      height: 100%;
+    button {
+      padding: 1em 2em;
     }
 
-    max-height: 200px;
-    height: 200px;
-
-    .title {
-      color: var(--sub-color);
-      margin-bottom: 1rem;
-    }
-  }
-
-  .loginTip {
-    grid-column: 1/3;
-    text-align: center;
-    color: var(--sub-color);
-    // grid-area: login;
-    grid-column: 1/3;
-    .link {
-      text-decoration: underline;
-      display: inline-block;
-      cursor: pointer;
-    }
-  }
-
-  .stats {
-    grid-area: stats;
-    display: grid;
-    // column-gap: 0.5rem;
-    gap: 0.5rem;
-    justify-content: center;
-    align-items: center;
-    // grid-template-areas:
-    //   "wpm acc"
-    //   "wpm key"
-    //   "raw time"
-    //   "consistency consistency"
-    //   "source source"
-    //   "leaderboards leaderboards"
-    //   "testType infoAndTags";
-    // grid-template-areas:
-    //   "wpm acc key consistency testType leaderboards source"
-    //   "wpm raw time nothing infoAndTags leaderboards source";
-    grid-template-areas:
-      "wpm"
-      "acc";
-
-    &.morestats {
+    .buttons {
       display: grid;
       grid-auto-flow: column;
-      grid-template-areas: none;
-      align-items: flex-start;
-      justify-content: space-between;
-      column-gap: 2rem;
-      grid-area: morestats;
-
-      // grid-template-areas: "raw consistency testType infoAndTags leaderboards source"
-      //   "key time testType infoAndTags leaderboards source";
-      .subgroup {
-        display: grid;
-        gap: 0.5rem;
-      }
+      gap: 1rem;
+      justify-content: center;
+      grid-column: 1/3;
     }
 
-    .group {
-      // margin-bottom: 0.5rem;
+    .ssWatermark {
+      grid-column: 1/3;
+    }
 
-      .top {
+    #retrySavingResultButton {
+      margin: 0 auto 1rem auto;
+      display: flex;
+    }
+
+    #resultWordsHistory,
+    #resultReplay {
+      // grid-area: wordsHistory;
+      color: var(--sub-color);
+      // grid-column: 1/3;
+      margin-bottom: 1rem;
+      .textButton {
+        padding: 0 0.25em;
+      }
+      #copyWordsListButton {
+        margin-left: 0.5em;
+      }
+      .heatmapLegend {
+        margin-left: 0.5rem;
+        display: inline-grid;
+        grid-template-columns: auto auto auto;
+        gap: 1rem;
+        font-size: 0.75rem;
         color: var(--sub-color);
-        font-size: 1rem;
-        line-height: 1rem;
+        width: min-content;
+        .boxes {
+          // display: flex;
+          display: grid;
+          grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+          .box {
+            // width: 1rem;
+            height: 1rem;
+            color: var(--bg-color);
+            padding: 0.1rem 0.5rem;
+            white-space: nowrap;
+            line-height: 0.75rem;
+            display: grid;
+            place-content: center center;
+          }
+          .box:nth-child(1) {
+            border-radius: var(--roundness) 0 0 var(--roundness);
+          }
+          .box:nth-child(5) {
+            border-radius: 0 var(--roundness) var(--roundness) 0;
+          }
+        }
+      }
+      .title {
+        user-select: none;
         margin-bottom: 0.25rem;
-      }
-
-      .bottom {
-        color: var(--main-color);
-        font-size: 2rem;
-        line-height: 2rem;
-      }
-
-      &.time {
-        .afk,
-        .timeToday {
-          color: var(--sub-color);
-          font-size: 0.75rem;
-          line-height: 0.75rem;
-          margin-left: 0.2rem;
-        }
-      }
-
-      &.dailyLeaderboard {
-        max-width: 13rem;
-        overflow: hidden;
-        white-space: nowrap;
-      }
-
-      &.source {
-        #rateQuoteButton,
-        #reportQuoteButton,
-        #favoriteQuoteButton {
-          padding: 0 0.25rem;
-        }
-        #rateQuoteButton {
-          gap: 0.25rem;
-        }
-      }
-    }
-
-    // .infoAndTags {
-    //   display: grid;
-    //   gap: 0.5rem;
-    //   align-self: baseline;
-    //   // grid-area: infoAndTags;
-    //   color: var(--sub-color);
-
-    //   .top {
-    //     font-size: 1rem;
-    //     line-height: 1rem;
-    //   }
-
-    //   .bottom {
-    //     font-size: 1rem;
-    //     line-height: 1rem;
-    //   }
-    // }
-
-    .info,
-    .tags,
-    .source {
-      .top {
         display: flex;
         align-items: center;
-        font-size: 1rem;
-        line-height: 1rem;
       }
-
-      .bottom {
-        font-size: 1rem;
-        line-height: 1rem;
-      }
-    }
-
-    .source {
-      max-width: 30rem;
-    }
-
-    .tags .bottom .fas {
-      margin-left: 0.5rem;
-    }
-
-    .wpm {
-      grid-area: wpm;
-
-      .top {
-        font-size: 2rem;
-        line-height: 1.5rem;
+      .words {
         display: flex;
-        // margin-top: -0.5rem;
-
-        // .crownWrapper {
-        //   width: 1.7rem;
-        //   overflow: hidden;
-        //   height: 1.7rem;
-        //   margin-left: 0.5rem;
-        //   // margin-top: 0.98rem;
-        //   margin-top: -0.5rem;
-
-        .crown {
-          height: 1.7rem;
-          width: 1.7rem;
-          margin-left: 0.5rem;
-          margin-top: -0.2rem;
-          font-size: 0.7rem;
-          line-height: 1.7rem;
-          background: var(--main-color);
-          color: var(--bg-color);
-          border-radius: 0.6rem;
-          text-align: center;
-          align-self: center;
-          width: 1.7rem;
-          height: 1.7rem;
+        flex-wrap: wrap;
+        width: 100%;
+        align-content: flex-start;
+        .word {
+          position: relative;
+          margin: 0.18rem 0.6rem 0.15rem 0;
+          letter.correct {
+            color: var(--text-color);
+          }
+          letter.incorrect {
+            color: var(--error-color);
+          }
+          letter.incorrect.extra {
+            color: var(--error-extra-color);
+          }
+          &.heatmapInherit letter {
+            color: inherit;
+          }
         }
-        // }
-      }
-
-      .bottom {
-        font-size: 4rem;
-        line-height: 4rem;
-      }
-    }
-
-    .testType,
-    .leaderboards {
-      .bottom {
-        font-size: 1rem;
-        line-height: 1rem;
-        .lbChange .fas {
-          margin-right: 0.15rem;
+        &.rightToLeftTest {
+          //flex-direction: row-reverse; // no need for hacking 😉, CSS fully support right-to-left languages
+          direction: rtl;
+          .word {
+            //flex-direction: row-reverse;
+            direction: rtl;
+          }
+        }
+        &.withLigatures {
+          letter {
+            display: inline;
+          }
         }
       }
     }
 
-    .acc {
-      grid-area: acc;
+    #resultReplay .words {
+      user-select: none;
+      -webkit-user-select: none;
+    }
 
-      .top {
-        font-size: 2rem;
-        line-height: 1.5rem;
+    .chart {
+      grid-area: chart;
+      width: 100%;
+
+      canvas {
+        width: 100% !important;
+        height: 100%;
       }
 
-      .bottom {
-        font-size: 4rem;
-        line-height: 4rem;
+      max-height: 200px;
+      height: 200px;
+
+      .title {
+        color: var(--sub-color);
+        margin-bottom: 1rem;
       }
     }
 
-    .burst {
-      grid-area: burst;
-
-      .top {
-        font-size: 2rem;
-        line-height: 1.5rem;
-      }
-
-      .bottom {
-        font-size: 4rem;
-        line-height: 4rem;
+    .loginTip {
+      grid-column: 1/3;
+      text-align: center;
+      color: var(--sub-color);
+      // grid-area: login;
+      grid-column: 1/3;
+      .link {
+        text-decoration: underline;
+        display: inline-block;
+        cursor: pointer;
       }
     }
 
-    // .key {
-    //   grid-area: key;
-    // }
+    .bottom {
+      grid-column: 1/-1;
+    }
 
-    // .time {
-    //   grid-area: time;
-    // }
+    .stats {
+      grid-area: stats;
+      display: grid;
+      // column-gap: 0.5rem;
+      gap: 0.5rem;
+      justify-content: center;
+      align-items: center;
+      // grid-template-areas:
+      //   "wpm acc"
+      //   "wpm key"
+      //   "raw time"
+      //   "consistency consistency"
+      //   "source source"
+      //   "leaderboards leaderboards"
+      //   "testType infoAndTags";
+      // grid-template-areas:
+      //   "wpm acc key consistency testType leaderboards source"
+      //   "wpm raw time nothing infoAndTags leaderboards source";
+      grid-template-areas:
+        "wpm"
+        "acc";
 
-    // .raw {
-    //   grid-area: raw;
-    // }
+      &.morestats {
+        display: grid;
+        grid-auto-flow: column;
+        grid-template-areas: none;
+        align-items: flex-start;
+        justify-content: space-between;
+        column-gap: 2rem;
+        grid-area: morestats;
+
+        // grid-template-areas: "raw consistency testType infoAndTags leaderboards source"
+        //   "key time testType infoAndTags leaderboards source";
+        .subgroup {
+          display: grid;
+          gap: 0.5rem;
+        }
+      }
+
+      .group {
+        // margin-bottom: 0.5rem;
+
+        .top {
+          color: var(--sub-color);
+          font-size: 1rem;
+          line-height: 1rem;
+          margin-bottom: 0.25rem;
+        }
+
+        .bottom {
+          color: var(--main-color);
+          font-size: 2rem;
+          line-height: 2rem;
+        }
+
+        &.time {
+          .afk,
+          .timeToday {
+            color: var(--sub-color);
+            font-size: 0.75rem;
+            line-height: 0.75rem;
+            margin-left: 0.2rem;
+          }
+        }
+
+        &.dailyLeaderboard {
+          max-width: 13rem;
+          overflow: hidden;
+          white-space: nowrap;
+        }
+
+        &.source {
+          #rateQuoteButton,
+          #reportQuoteButton,
+          #favoriteQuoteButton {
+            padding: 0 0.25rem;
+          }
+          #rateQuoteButton {
+            gap: 0.25rem;
+          }
+        }
+      }
+
+      // .infoAndTags {
+      //   display: grid;
+      //   gap: 0.5rem;
+      //   align-self: baseline;
+      //   // grid-area: infoAndTags;
+      //   color: var(--sub-color);
+
+      //   .top {
+      //     font-size: 1rem;
+      //     line-height: 1rem;
+      //   }
+
+      //   .bottom {
+      //     font-size: 1rem;
+      //     line-height: 1rem;
+      //   }
+      // }
+
+      .info,
+      .tags,
+      .source {
+        .top {
+          display: flex;
+          align-items: center;
+          font-size: 1rem;
+          line-height: 1rem;
+        }
+
+        .bottom {
+          font-size: 1rem;
+          line-height: 1rem;
+        }
+      }
+
+      .source {
+        max-width: 30rem;
+      }
+
+      .tags .bottom .fas {
+        margin-left: 0.5rem;
+      }
+
+      .wpm {
+        grid-area: wpm;
+
+        .top {
+          font-size: 2rem;
+          line-height: 1.5rem;
+          display: flex;
+          // margin-top: -0.5rem;
+
+          // .crownWrapper {
+          //   width: 1.7rem;
+          //   overflow: hidden;
+          //   height: 1.7rem;
+          //   margin-left: 0.5rem;
+          //   // margin-top: 0.98rem;
+          //   margin-top: -0.5rem;
+
+          .crown {
+            height: 1.7rem;
+            width: 1.7rem;
+            margin-left: 0.5rem;
+            margin-top: -0.2rem;
+            font-size: 0.7rem;
+            line-height: 1.7rem;
+            background: var(--main-color);
+            color: var(--bg-color);
+            border-radius: 0.6rem;
+            text-align: center;
+            align-self: center;
+            width: 1.7rem;
+            height: 1.7rem;
+          }
+          // }
+        }
+
+        .bottom {
+          font-size: 4rem;
+          line-height: 4rem;
+        }
+      }
+
+      .testType,
+      .leaderboards {
+        .bottom {
+          font-size: 1rem;
+          line-height: 1rem;
+          .lbChange .fas {
+            margin-right: 0.15rem;
+          }
+        }
+      }
+
+      .acc {
+        grid-area: acc;
+
+        .top {
+          font-size: 2rem;
+          line-height: 1.5rem;
+        }
+
+        .bottom {
+          font-size: 4rem;
+          line-height: 4rem;
+        }
+      }
+
+      .burst {
+        grid-area: burst;
+
+        .top {
+          font-size: 2rem;
+          line-height: 1.5rem;
+        }
+
+        .bottom {
+          font-size: 4rem;
+          line-height: 4rem;
+        }
+      }
+
+      // .key {
+      //   grid-area: key;
+      // }
+
+      // .time {
+      //   grid-area: time;
+      // }
+
+      // .raw {
+      //   grid-area: raw;
+      // }
+    }
   }
 }
 
@@ -920,6 +926,7 @@
 }
 
 #restartTestButton {
+  font-size: 1rem;
   margin: 1rem auto 0 auto;
   display: flex;
   padding: 1em 2em;
@@ -962,9 +969,11 @@
 }
 
 #testConfig {
+  --horizontalPadding: 1em;
+  --verticalPadding: 1em;
   display: grid;
   font-size: 0.75rem;
-  gap: 0.5rem;
+  gap: 0.5em;
   grid-auto-flow: column;
   height: max-content;
   width: 100%;
@@ -974,7 +983,6 @@
   .puncAndNum {
     // transition: 0.25s cubic-bezier(0.37, 0, 0.63, 1);
     overflow: hidden;
-    max-width: 15rem;
     opacity: 1;
   }
   .row {
@@ -997,11 +1005,13 @@
   }
 
   .wordCount,
-  .time {
+  .time,
+  .customText {
     .textButton {
-      line-height: 1rem;
+      // line-height: 1.4em;
       span {
-        height: 1.1em;
+        // height: 1.1em;
+        margin-top: 0.12em;
       }
     }
   }
@@ -1017,16 +1027,21 @@
     grid-auto-flow: column;
 
     .textButton {
-      padding: 0.75rem 0.5rem 0.7rem 0.5rem;
+      padding: var(--verticalPadding) var(--horizontalPadding);
+
+      --double: calc(var(--horizontalPadding) * 2);
 
       &:first-child {
-        padding: 0.75rem 0.5rem 0.7rem 1rem;
+        padding: var(--verticalPadding) var(--horizontalPadding)
+          var(--verticalPadding) var(--double);
       }
       &:last-child {
-        padding: 0.75rem 1rem 0.7rem 0.5rem;
+        padding: var(--verticalPadding) var(--double) var(--verticalPadding)
+          var(--horizontalPadding);
       }
       &:only-child {
-        padding: 0.75rem 1rem 0.7rem 1rem;
+        padding: var(--verticalPadding) var(--double) var(--verticalPadding)
+          var(--double);
       }
     }
   }
@@ -1073,6 +1088,7 @@
   }
   #memoryTimer,
   #layoutfluidTimer {
+    font-size: 1rem;
     background: var(--main-color);
     color: var(--bg-color);
     padding: 1rem;
@@ -1103,6 +1119,7 @@
   }
 
   #testModesNotice {
+    font-size: 1rem;
     display: flex;
     flex-wrap: wrap;
     color: var(--sub-color);
@@ -1124,30 +1141,26 @@
       margin-right: 0.5rem;
     }
   }
-  #miniTimerAndLiveWpm {
+  #liveStatsMini {
     height: 0;
     margin-left: 0.25em;
     display: flex;
-    position: absolute;
+    margin-top: -1.25em;
     color: black;
 
     div {
-      margin-top: -1.25em;
       font-size: 1em;
       line-height: 1em;
     }
 
-    .time {
-      margin-right: 2rem;
-    }
-
-    .wpm,
+    .time,
+    .speed,
     .acc {
-      margin-right: 2rem;
+      margin-right: 0.5em;
     }
 
     .time,
-    .wpm,
+    .speed,
     .acc,
     .burst {
       opacity: 0;

@@ -1,6 +1,9 @@
 import request from "supertest";
 import app from "../../../src/app";
 import * as Configuration from "../../../src/init/configuration";
+import { getCurrentTestActivity } from "../../../src/api/controllers/user";
+import * as UserDal from "../../../src/dal/user";
+import _ from "lodash";
 
 const mockApp = request(app);
 
@@ -21,7 +24,7 @@ describe("user controller test", () => {
         captcha: "captcha",
       };
 
-      jest.spyOn(Configuration, "getCachedConfiguration").mockResolvedValue({
+      vi.spyOn(Configuration, "getCachedConfiguration").mockResolvedValue({
         //if stuff breaks this might be the reason
         users: {
           signUp: true,
@@ -90,7 +93,131 @@ describe("user controller test", () => {
         })
         .expect(409);
 
-      jest.restoreAllMocks();
+      vi.restoreAllMocks();
+    });
+  });
+
+  describe("getTestActivity", () => {
+    it("should return 503 for non premium users", async () => {
+      //given
+      vi.spyOn(UserDal, "getUser").mockResolvedValue({
+        testActivity: { "2023": [1, 2, 3], "2024": [4, 5, 6] },
+      } as unknown as MonkeyTypes.DBUser);
+
+      //when
+      const response = await mockApp
+        .get("/users/testActivity")
+        .set("authorization", "Uid 123456789")
+        .send()
+        .expect(503);
+    });
+    it("should send data for premium users", async () => {
+      //given
+      vi.spyOn(UserDal, "getUser").mockResolvedValue({
+        testActivity: { "2023": [1, 2, 3], "2024": [4, 5, 6] },
+      } as unknown as MonkeyTypes.DBUser);
+      vi.spyOn(UserDal, "checkIfUserIsPremium").mockResolvedValue(true);
+      await enablePremiumFeatures(true);
+
+      //when
+      const response = await mockApp
+        .get("/users/testActivity")
+        .set("authorization", "Uid 123456789")
+        .send()
+        .expect(200);
+
+      //%hen
+      const result = response.body.data;
+      expect(result["2023"]).toEqual([1, 2, 3]);
+      expect(result["2024"]).toEqual([4, 5, 6]);
+    });
+  });
+
+  describe("getCurrentTestActivity", () => {
+    beforeAll(() => {
+      vi.useFakeTimers().setSystemTime(1712102400000);
+    });
+    it("without any data", () => {
+      expect(getCurrentTestActivity(undefined)).toBeUndefined();
+    });
+    it("with current year only", () => {
+      //given
+      const data = {
+        "2024": fillYearWithDay(94).map((it) => 2024000 + it),
+      };
+
+      //when
+      const testActivity = getCurrentTestActivity(data);
+
+      //then
+      expect(testActivity?.lastDay).toEqual(1712102400000);
+
+      const testsByDays = testActivity?.testsByDays ?? [];
+      expect(testsByDays).toHaveLength(366);
+      expect(testsByDays[0]).toEqual(undefined); //2023-04-04
+      expect(testsByDays[271]).toEqual(undefined); //2023-12-31
+      expect(testsByDays[272]).toEqual(2024001); //2024-01-01
+      expect(testsByDays[365]).toEqual(2024094); //2024-01
+    });
+    it("with current and last year", () => {
+      //given
+      const data = {
+        "2023": fillYearWithDay(365).map((it) => 2023000 + it),
+        "2024": fillYearWithDay(94).map((it) => 2024000 + it),
+      };
+
+      //when
+      const testActivity = getCurrentTestActivity(data);
+
+      //then
+      expect(testActivity?.lastDay).toEqual(1712102400000);
+
+      const testsByDays = testActivity?.testsByDays ?? [];
+      expect(testsByDays).toHaveLength(366);
+      expect(testsByDays[0]).toEqual(2023094); //2023-04-04
+      expect(testsByDays[271]).toEqual(2023365); //2023-12-31
+      expect(testsByDays[272]).toEqual(2024001); //2024-01-01
+      expect(testsByDays[365]).toEqual(2024094); //2024-01
+    });
+    it("with current and missing days of last year", () => {
+      //given
+      const data = {
+        "2023": fillYearWithDay(20).map((it) => 2023000 + it),
+        "2024": fillYearWithDay(94).map((it) => 2024000 + it),
+      };
+
+      //when
+      const testActivity = getCurrentTestActivity(data);
+
+      //then
+      expect(testActivity?.lastDay).toEqual(1712102400000);
+
+      const testsByDays = testActivity?.testsByDays ?? [];
+      expect(testsByDays).toHaveLength(366);
+      expect(testsByDays[0]).toEqual(undefined); //2023-04-04
+      expect(testsByDays[271]).toEqual(undefined); //2023-12-31
+      expect(testsByDays[272]).toEqual(2024001); //2024-01-01
+      expect(testsByDays[365]).toEqual(2024094); //2024-01
     });
   });
 });
+
+function fillYearWithDay(days: number): number[] {
+  const result: number[] = [];
+  for (let i = 0; i < days; i++) {
+    result.push(i + 1);
+  }
+  return result;
+}
+
+const configuration = Configuration.getCachedConfiguration();
+
+async function enablePremiumFeatures(premium: boolean): Promise<void> {
+  const mockConfig = _.merge(await configuration, {
+    users: { premium: { enabled: premium } },
+  });
+
+  vi.spyOn(Configuration, "getCachedConfiguration").mockResolvedValue(
+    mockConfig
+  );
+}

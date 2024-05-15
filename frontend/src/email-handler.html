@@ -67,13 +67,14 @@
       .preloader {
         text-align: center;
         display: grid;
-        width: 300px;
-        /* gap: 1rem; */
+        align-items: center;
+        align-content: center;
+        width: 350px;
+        gap: 1rem;
       }
       .preloader .icon {
         font-size: 2rem;
         color: var(--main-color);
-        margin-bottom: 1rem;
       }
       .preloader .subText {
         font-size: 1rem;
@@ -85,6 +86,8 @@
         display: grid;
         width: 300px;
         gap: 1rem;
+        align-items: center;
+        align-content: center;
       }
 
       .hidden {
@@ -94,7 +97,7 @@
   </head>
 
   <body>
-    <div id="contentWrapper">
+    <div id="app" class="content-grid">
       <header>
         <div id="logo">
           <div class="icon">

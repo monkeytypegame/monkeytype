@@ -7,10 +7,7 @@ import * as NotificationEvent from "../observables/notification-event";
 
 function updateMargin(): void {
   const height = $("#bannerCenter").height() as number;
-  $("#contentWrapper").css(
-    "padding-top",
-    height + Numbers.convertRemToPixels(2) + "px"
-  );
+  $("#app").css("padding-top", height + Numbers.convertRemToPixels(2) + "px");
   $("#notificationCenter").css("margin-top", height + "px");
 }
 
@@ -158,12 +155,16 @@ class Notification {
     } else if (this.type === "banner") {
       let leftside = `<div class="icon lefticon">${icon}</div>`;
 
+      let withImage = false;
       if (/images\/.*/.test(this.customIcon as string)) {
-        leftside = `<div class="image" style="background-image: url(${this.customIcon})"></div>`;
+        withImage = true;
+        leftside = `<div class="icon lefticon"><i class="fas fa-fw fa-bullhorn"></i></div><div class="image" style="background-image: url(${this.customIcon})"></div>`;
       }
 
       $("#bannerCenter").prepend(`
-        <div class="banner ${cls}" id="${this.id}">
+        <div class="banner ${cls} content-grid ${
+        withImage ? "withImage" : ""
+      }" id="${this.id}">
         <div class="container">
           ${leftside}
           <div class="text">

@@ -19,7 +19,7 @@ export async function instantUpdate(): Promise<void> {
   );
 
   $("#testConfig .puncAndNum").css({
-    maxWidth: 0,
+    width: 0,
     opacity: 0,
   });
   $("#testConfig .spacer").addClass("scrolled");
@@ -31,7 +31,7 @@ export async function instantUpdate(): Promise<void> {
 
   if (Config.mode === "time") {
     $("#testConfig .puncAndNum").css({
-      maxWidth: "",
+      width: "unset",
       opacity: 1,
     });
     $("#testConfig .leftSpacer").removeClass("scrolled");
@@ -41,7 +41,7 @@ export async function instantUpdate(): Promise<void> {
     updateExtras("time", Config.time);
   } else if (Config.mode === "words") {
     $("#testConfig .puncAndNum").css({
-      maxWidth: "",
+      width: "unset",
       opacity: 1,
     });
 
@@ -58,7 +58,7 @@ export async function instantUpdate(): Promise<void> {
     updateExtras("quoteLength", Config.quoteLength);
   } else if (Config.mode === "custom") {
     $("#testConfig .puncAndNum").css({
-      maxWidth: "",
+      width: "unset",
       opacity: 1,
     });
 
@@ -110,44 +110,48 @@ export async function update(
 
   const puncAndNumEl = $("#testConfig .puncAndNum");
 
-  if (!puncAndNumVisible[previous] && puncAndNumVisible[current]) {
-    //show
+  if (puncAndNumVisible[current] !== puncAndNumVisible[previous]) {
+    if (!puncAndNumVisible[current]) {
+      $("#testConfig .leftSpacer").addClass("scrolled");
+    } else {
+      $("#testConfig .leftSpacer").removeClass("scrolled");
+    }
 
-    puncAndNumEl.css("maxWidth", "");
-
-    const puncAndNumWidth = Math.round(
-      puncAndNumEl[0]?.getBoundingClientRect().width ?? 224
+    const previousWidth = Math.round(
+      puncAndNumEl[0]?.getBoundingClientRect().width ?? 0
     );
 
-    $("#testConfig .leftSpacer").removeClass("scrolled");
+    if (previousWidth === 0) {
+      puncAndNumEl.css({
+        width: "unset",
+      });
+    } else {
+      puncAndNumEl.css({
+        width: 0,
+      });
+    }
+
+    const currentWidth = Math.round(
+      puncAndNumEl[0]?.getBoundingClientRect().width ?? 0
+    );
+
     puncAndNumEl
       .css({
-        opacity: 0,
-        maxWidth: 0,
+        opacity: puncAndNumVisible[current] ? 0 : 1,
+        width: previousWidth,
       })
       .animate(
         {
-          opacity: 1,
-          maxWidth: puncAndNumWidth,
+          width: currentWidth,
+          opacity: puncAndNumVisible[current] ? 1 : 0,
         },
         animTime,
-        easing.both
-      );
-  } else if (puncAndNumVisible[previous] && !puncAndNumVisible[current]) {
-    //hide
-    $("#testConfig .leftSpacer").addClass("scrolled");
-    puncAndNumEl
-      .css({
-        opacity: 1,
-        maxWidth: "",
-      })
-      .animate(
-        {
-          opacity: 0,
-          maxWidth: "0",
-        },
-        animTime,
-        easing.both
+        easing.both,
+        () => {
+          if (currentWidth !== 0) {
+            puncAndNumEl.css("width", "unset");
+          }
+        }
       );
   }
 

@@ -9,11 +9,10 @@ import NumbersCommands from "./lists/numbers";
 import SmoothCaretCommands from "./lists/smooth-caret";
 import QuickRestartCommands from "./lists/quick-restart";
 import RepeatQuotesCommands from "./lists/repeat-quotes";
-import LiveWpmCommands from "./lists/live-wpm";
-import LiveAccCommands from "./lists/live-acc";
-import LiveBurstCommands from "./lists/live-burst";
+import LiveSpeedStyleCommands from "./lists/live-speed-style";
+import LiveAccStyleCommands from "./lists/live-acc-style";
+import LiveBurstStyleCommands from "./lists/live-burst-style";
 import ShowAverageCommands from "./lists/show-average";
-import ShowTimerCommands from "./lists/show-timer";
 import KeyTipsCommands from "./lists/key-tips";
 import FreedomModeCommands from "./lists/freedom-mode";
 import StrictSpaceCommands from "./lists/strict-space";
@@ -57,13 +56,14 @@ import KeymapModeCommands from "./lists/keymap-mode";
 import KeymapStyleCommands from "./lists/keymap-style";
 import KeymapLegendStyleCommands from "./lists/keymap-legend-style";
 import KeymapShowTopRowCommands from "./lists/keymap-show-top-row";
-import PageWidthCommands from "./lists/page-width";
 import EnableAdsCommands from "./lists/enable-ads";
 import MonkeyPowerLevelCommands from "./lists/monkey-power-level";
 import BailOutCommands from "./lists/bail-out";
+import QuoteFavoriteCommands from "./lists/quote-favorites";
 import ResultSavingCommands from "./lists/result-saving";
 import NavigationCommands from "./lists/navigation";
 import FontSizeCommands from "./lists/font-size";
+import MaxLineWidthCommands from "./lists/max-line-width";
 import ResultScreenCommands from "./lists/result-screen";
 import CustomBackgroundSizeCommands from "./lists/background-size";
 import CustomBackgroundFilterCommands from "./lists/background-filter";
@@ -206,6 +206,7 @@ export const commands: MonkeyTypes.CommandsSubgroup = {
       },
       shouldFocusTestUI: false,
     },
+    ...QuoteFavoriteCommands,
     ...BailOutCommands,
     {
       id: "shareTestSettings",
@@ -276,6 +277,10 @@ export const commands: MonkeyTypes.CommandsSubgroup = {
 
     //appearence
     ...TimerStyleCommands,
+    ...LiveSpeedStyleCommands,
+    ...LiveAccStyleCommands,
+    ...LiveBurstStyleCommands,
+
     ...TimerColorCommands,
     ...TimerOpacityCommands,
     ...HighlightModeCommands,
@@ -285,9 +290,9 @@ export const commands: MonkeyTypes.CommandsSubgroup = {
     ...TypingSpeedUnitCommands,
     ...AlwaysShowDecimalCommands,
     ...StartGraphsAtZeroCommands,
+    ...MaxLineWidthCommands,
     ...FontSizeCommands,
     ...FontFamilyCommands,
-    ...PageWidthCommands,
     ...KeymapModeCommands,
     ...KeymapStyleCommands,
     ...KeymapLegendStyleCommands,
@@ -327,10 +332,6 @@ export const commands: MonkeyTypes.CommandsSubgroup = {
     },
 
     //showhide elements
-    ...LiveWpmCommands,
-    ...LiveAccCommands,
-    ...LiveBurstCommands,
-    ...ShowTimerCommands,
     ...KeyTipsCommands,
     ...OutOfFocusWarningCommands,
     ...CapsLockWarningCommands,

@@ -740,38 +740,6 @@ export function setOppositeShiftMode(
   return true;
 }
 
-export function setPageWidth(
-  val: SharedTypes.Config.PageWidth,
-  nosave?: boolean
-): boolean {
-  if (
-    !isConfigValueValid("page width", val, [
-      ["max", "100", "125", "150", "200"],
-    ])
-  ) {
-    return false;
-  }
-
-  config.pageWidth = val;
-  $("#contentWrapper").removeClass("wide125");
-  $("#contentWrapper").removeClass("wide150");
-  $("#contentWrapper").removeClass("wide200");
-  $("#contentWrapper").removeClass("widemax");
-  $("#app").removeClass("wide125");
-  $("#app").removeClass("wide150");
-  $("#app").removeClass("wide200");
-  $("#app").removeClass("widemax");
-
-  if (val !== "100") {
-    $("#contentWrapper").addClass("wide" + val);
-    $("#app").addClass("wide" + val);
-  }
-  saveToLocalStorage("pageWidth", nosave);
-  ConfigEvent.dispatch("pageWidth", config.pageWidth);
-
-  return true;
-}
-
 export function setCaretStyle(
   caretStyle: SharedTypes.Config.CaretStyle,
   nosave?: boolean
@@ -850,51 +818,6 @@ export function setPaceCaretStyle(
   }
   saveToLocalStorage("paceCaretStyle", nosave);
   ConfigEvent.dispatch("paceCaretStyle", config.paceCaretStyle);
-
-  return true;
-}
-
-export function setShowTimerProgress(
-  timer: boolean,
-  nosave?: boolean
-): boolean {
-  if (!isConfigValueValid("show timer progress", timer, ["boolean"])) {
-    return false;
-  }
-
-  config.showTimerProgress = timer;
-  saveToLocalStorage("showTimerProgress", nosave);
-  ConfigEvent.dispatch("showTimerProgress", config.showTimerProgress);
-
-  return true;
-}
-
-export function setShowLiveWpm(live: boolean, nosave?: boolean): boolean {
-  if (!isConfigValueValid("show live speed", live, ["boolean"])) return false;
-
-  config.showLiveWpm = live;
-  saveToLocalStorage("showLiveWpm", nosave);
-  ConfigEvent.dispatch("showLiveWpm", config.showLiveWpm);
-
-  return true;
-}
-
-export function setShowLiveAcc(live: boolean, nosave?: boolean): boolean {
-  if (!isConfigValueValid("show live acc", live, ["boolean"])) return false;
-
-  config.showLiveAcc = live;
-  saveToLocalStorage("showLiveAcc", nosave);
-  ConfigEvent.dispatch("showLiveAcc", config.showLiveAcc);
-
-  return true;
-}
-
-export function setShowLiveBurst(live: boolean, nosave?: boolean): boolean {
-  if (!isConfigValueValid("show live burst", live, ["boolean"])) return false;
-
-  config.showLiveBurst = live;
-  saveToLocalStorage("showLiveBurst", nosave);
-  ConfigEvent.dispatch("showLiveBurst", config.showLiveBurst);
 
   return true;
 }
@@ -981,13 +904,64 @@ export function setTimerStyle(
   style: SharedTypes.Config.TimerStyle,
   nosave?: boolean
 ): boolean {
-  if (!isConfigValueValid("timer style", style, [["bar", "text", "mini"]])) {
+  if (
+    !isConfigValueValid("timer style", style, [["off", "bar", "text", "mini"]])
+  ) {
     return false;
   }
 
   config.timerStyle = style;
   saveToLocalStorage("timerStyle", nosave);
   ConfigEvent.dispatch("timerStyle", config.timerStyle);
+
+  return true;
+}
+
+export function setLiveSpeedStyle(
+  style: SharedTypes.Config.LiveSpeedAccBurstStyle,
+  nosave?: boolean
+): boolean {
+  if (
+    !isConfigValueValid("live speed style", style, [["off", "text", "mini"]])
+  ) {
+    return false;
+  }
+
+  config.liveSpeedStyle = style;
+  saveToLocalStorage("liveSpeedStyle", nosave);
+  ConfigEvent.dispatch("liveSpeedStyle", config.timerStyle);
+
+  return true;
+}
+
+export function setLiveAccStyle(
+  style: SharedTypes.Config.LiveSpeedAccBurstStyle,
+  nosave?: boolean
+): boolean {
+  if (!isConfigValueValid("live acc style", style, [["off", "text", "mini"]])) {
+    return false;
+  }
+
+  config.liveAccStyle = style;
+  saveToLocalStorage("liveAccStyle", nosave);
+  ConfigEvent.dispatch("liveAccStyle", config.timerStyle);
+
+  return true;
+}
+
+export function setLiveBurstStyle(
+  style: SharedTypes.Config.LiveSpeedAccBurstStyle,
+  nosave?: boolean
+): boolean {
+  if (
+    !isConfigValueValid("live burst style", style, [["off", "text", "mini"]])
+  ) {
+    return false;
+  }
+
+  config.liveBurstStyle = style;
+  saveToLocalStorage("liveBurstStyle", nosave);
+  ConfigEvent.dispatch("liveBurstStyle", config.timerStyle);
 
   return true;
 }
@@ -1005,39 +979,6 @@ export function setTimerColor(
   }
 
   config.timerColor = color;
-
-  $("#timer").removeClass("timerSub");
-  $("#timer").removeClass("timerText");
-  $("#timer").removeClass("timerMain");
-
-  $("#timerNumber").removeClass("timerSub");
-  $("#timerNumber").removeClass("timerText");
-  $("#timerNumber").removeClass("timerMain");
-
-  $("#largeLiveWpmAndAcc").removeClass("timerSub");
-  $("#largeLiveWpmAndAcc").removeClass("timerText");
-  $("#largeLiveWpmAndAcc").removeClass("timerMain");
-
-  $("#miniTimerAndLiveWpm").removeClass("timerSub");
-  $("#miniTimerAndLiveWpm").removeClass("timerText");
-  $("#miniTimerAndLiveWpm").removeClass("timerMain");
-
-  if (color === "main") {
-    $("#timer").addClass("timerMain");
-    $("#timerNumber").addClass("timerMain");
-    $("#largeLiveWpmAndAcc").addClass("timerMain");
-    $("#miniTimerAndLiveWpm").addClass("timerMain");
-  } else if (color === "sub") {
-    $("#timer").addClass("timerSub");
-    $("#timerNumber").addClass("timerSub");
-    $("#largeLiveWpmAndAcc").addClass("timerSub");
-    $("#miniTimerAndLiveWpm").addClass("timerSub");
-  } else if (color === "text") {
-    $("#timer").addClass("timerText");
-    $("#timerNumber").addClass("timerText");
-    $("#largeLiveWpmAndAcc").addClass("timerText");
-    $("#miniTimerAndLiveWpm").addClass("timerText");
-  }
 
   saveToLocalStorage("timerColor", nosave);
   ConfigEvent.dispatch("timerColor", config.timerColor);
@@ -1692,13 +1633,39 @@ export function setFontSize(fontSize: number, nosave?: boolean): boolean {
 
   config.fontSize = fontSize;
 
-  $("#words, #caret, #paceCaret, #miniTimerAndLiveWpm").css(
+  $("#caret, #paceCaret, #liveStatsMini, #typingTest").css(
     "fontSize",
     fontSize + "rem"
   );
 
   saveToLocalStorage("fontSize", nosave);
   ConfigEvent.dispatch("fontSize", config.fontSize, nosave);
+
+  // trigger a resize event to update the layout - handled in ui.ts:108
+  $(window).trigger("resize");
+
+  return true;
+}
+
+export function setMaxLineWidth(
+  maxLineWidth: number,
+  nosave?: boolean
+): boolean {
+  if (!isConfigValueValid("max line width", maxLineWidth, ["number"])) {
+    return false;
+  }
+
+  if (maxLineWidth < 20 && maxLineWidth !== 0) {
+    maxLineWidth = 20;
+  }
+  if (maxLineWidth > 1000) {
+    maxLineWidth = 1000;
+  }
+
+  config.maxLineWidth = maxLineWidth;
+
+  saveToLocalStorage("maxLineWidth", nosave);
+  ConfigEvent.dispatch("maxLineWidth", config.maxLineWidth, nosave);
 
   // trigger a resize event to update the layout - handled in ui.ts:108
   $(window).trigger("resize");
@@ -1859,6 +1826,7 @@ export async function apply(
     setLanguage(configObj.language, true);
     setLayout(configObj.layout, true);
     setFontSize(configObj.fontSize, true);
+    setMaxLineWidth(configObj.maxLineWidth, true);
     setFreedomMode(configObj.freedomMode, true);
     setCaretStyle(configObj.caretStyle, true);
     setPaceCaretStyle(configObj.paceCaretStyle, true);
@@ -1870,6 +1838,9 @@ export async function apply(
     setConfidenceMode(configObj.confidenceMode, true);
     setIndicateTypos(configObj.indicateTypos, true);
     setTimerStyle(configObj.timerStyle, true);
+    setLiveSpeedStyle(configObj.liveSpeedStyle, true);
+    setLiveAccStyle(configObj.liveAccStyle, true);
+    setLiveBurstStyle(configObj.liveBurstStyle, true);
     setTimerColor(configObj.timerColor, true);
     setTimerOpacity(configObj.timerOpacity, true);
     setKeymapMode(configObj.keymapMode, true);
@@ -1880,10 +1851,6 @@ export async function apply(
     setFontFamily(configObj.fontFamily, true);
     setSmoothCaret(configObj.smoothCaret, true);
     setSmoothLineScroll(configObj.smoothLineScroll, true);
-    setShowLiveWpm(configObj.showLiveWpm, true);
-    setShowLiveAcc(configObj.showLiveAcc, true);
-    setShowLiveBurst(configObj.showLiveBurst, true);
-    setShowTimerProgress(configObj.showTimerProgress, true);
     setAlwaysShowDecimalPlaces(configObj.alwaysShowDecimalPlaces, true);
     setAlwaysShowWordsHistory(configObj.alwaysShowWordsHistory, true);
     setSingleListCommandLine(configObj.singleListCommandLine, true);
@@ -1900,7 +1867,6 @@ export async function apply(
     setPaceCaret(configObj.paceCaret, true);
     setPaceCaretCustomSpeed(configObj.paceCaretCustomSpeed, true);
     setRepeatedPace(configObj.repeatedPace, true);
-    setPageWidth(configObj.pageWidth, true);
     setAccountChart(configObj.accountChart, true);
     setMinBurst(configObj.minBurst, true);
     setMinBurstCustomSpeed(configObj.minBurstCustomSpeed, true);
@@ -1997,6 +1963,38 @@ function replaceLegacyValues(
 
   if (typeof configObj.playSoundOnError === "boolean") {
     configObj.playSoundOnError = configObj.playSoundOnError ? "1" : "off";
+  }
+
+  //@ts-expect-error
+  if (configObj.showTimerProgress === false) {
+    configObj.timerStyle = "off";
+  }
+
+  //@ts-expect-error
+  if (configObj.showLiveWpm === true) {
+    let val: SharedTypes.Config.LiveSpeedAccBurstStyle = "mini";
+    if (configObj.timerStyle !== "bar" && configObj.timerStyle !== "off") {
+      val = configObj.timerStyle;
+    }
+    configObj.liveSpeedStyle = val;
+  }
+
+  //@ts-expect-error
+  if (configObj.showLiveBurst === true) {
+    let val: SharedTypes.Config.LiveSpeedAccBurstStyle = "mini";
+    if (configObj.timerStyle !== "bar" && configObj.timerStyle !== "off") {
+      val = configObj.timerStyle;
+    }
+    configObj.liveBurstStyle = val;
+  }
+
+  //@ts-expect-error
+  if (configObj.showLiveAcc === true) {
+    let val: SharedTypes.Config.LiveSpeedAccBurstStyle = "mini";
+    if (configObj.timerStyle !== "bar" && configObj.timerStyle !== "off") {
+      val = configObj.timerStyle;
+    }
+    configObj.liveAccStyle = val;
   }
 
   return configObj;

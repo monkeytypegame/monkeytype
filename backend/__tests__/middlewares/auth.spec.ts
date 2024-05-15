@@ -15,7 +15,7 @@ const mockDecodedToken: DecodedIdToken = {
   iat: 0,
 } as DecodedIdToken;
 
-jest.spyOn(AuthUtils, "verifyIdToken").mockResolvedValue(mockDecodedToken);
+vi.spyOn(AuthUtils, "verifyIdToken").mockResolvedValue(mockDecodedToken);
 
 const mockApeKey = {
   _id: new ObjectId(),
@@ -28,9 +28,9 @@ const mockApeKey = {
   useCount: 0,
   enabled: true,
 };
-jest.spyOn(ApeKeys, "getApeKey").mockResolvedValue(mockApeKey);
-jest.spyOn(ApeKeys, "updateLastUsedOn").mockResolvedValue();
-const isDevModeMock = jest.spyOn(Misc, "isDevEnvironment");
+vi.spyOn(ApeKeys, "getApeKey").mockResolvedValue(mockApeKey);
+vi.spyOn(ApeKeys, "updateLastUsedOn").mockResolvedValue();
+const isDevModeMock = vi.spyOn(Misc, "isDevEnvironment");
 
 describe("middlewares/auth", () => {
   let mockRequest: Partial<MonkeyTypes.Request>;
@@ -60,9 +60,9 @@ describe("middlewares/auth", () => {
       },
     };
     mockResponse = {
-      json: jest.fn(),
+      json: vi.fn(),
     };
-    nextFunction = jest.fn((error) => {
+    nextFunction = vi.fn((error) => {
       if (error) {
         throw error;
       }
@@ -76,7 +76,7 @@ describe("middlewares/auth", () => {
 
   describe("authenticateRequest", () => {
     it("should fail if token is not fresh", async () => {
-      Date.now = jest.fn(() => 60001);
+      Date.now = vi.fn(() => 60001);
 
       const authenticateRequest = Auth.authenticateRequest({
         requireFreshToken: true,
@@ -100,7 +100,7 @@ describe("middlewares/auth", () => {
       expect(nextFunction).toHaveBeenCalledTimes(1);
     });
     it("should allow the request if token is fresh", async () => {
-      Date.now = jest.fn(() => 10000);
+      Date.now = vi.fn(() => 10000);
 
       const authenticateRequest = Auth.authenticateRequest({
         requireFreshToken: true,

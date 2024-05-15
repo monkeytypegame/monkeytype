@@ -1,5 +1,5 @@
 import Config from "../config";
-import { randomQuote } from "../test/test-words";
+import { currentQuote } from "../test/test-words";
 import { getMode2, isPopupVisible } from "../utils/misc";
 import * as CustomText from "../test/custom-text";
 import { compressToURI } from "lz-ts";
@@ -16,7 +16,7 @@ function getCheckboxValue(checkbox: string): boolean {
 type SharedTestSettings = [
   SharedTypes.Config.Mode | null,
   SharedTypes.Config.Mode2<SharedTypes.Config.Mode> | null,
-  SharedTypes.CustomText | null,
+  SharedTypes.CustomTextData | null,
   boolean | null,
   boolean | null,
   string | null,
@@ -44,19 +44,12 @@ function updateURL(): void {
   if (getCheckboxValue("mode2")) {
     settings[1] = getMode2(
       Config,
-      randomQuote
+      currentQuote
     ) as SharedTypes.Config.Mode2<SharedTypes.Config.Mode>;
   }
 
   if (getCheckboxValue("customText")) {
-    settings[2] = {
-      text: CustomText.text,
-      isWordRandom: CustomText.isWordRandom,
-      isTimeRandom: CustomText.isTimeRandom,
-      word: CustomText.word,
-      time: CustomText.time,
-      delimiter: CustomText.delimiter,
-    };
+    settings[2] = CustomText.getData();
   }
 
   if (getCheckboxValue("punctuation")) {

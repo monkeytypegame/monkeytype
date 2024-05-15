@@ -236,6 +236,7 @@
   ,"japanese_hiragana"
   ,"japanese_katakana"
   ,"japanese_romaji"
+  ,"japanese_romaji_1k"
   ,"sinhala"
   ,"latvian"
   ,"latvian_1k"
@@ -331,5 +332,6 @@
   ,"code_assembly"
   ,"code_v"
   ,"code_ook"
+  ,"code_typescript"
   ,"xhosa"
 ]

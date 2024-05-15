@@ -1,0 +1,22 @@
+@media only screen and (max-width: calc(1536px + 5rem)) {
+  #mediaQueryDebug {
+    background: #ffa726;
+    &::before {
+      content: "orange";
+    }
+  }
+  .content-grid {
+    --content-max-width: 1280px;
+  }
+  #testActivity {
+    --box-size: 1.05em;
+    .daysFull {
+      margin-right: 1rem;
+    }
+
+    // .activity div,
+    // .legend div {
+    //   width: 1.6em;
+    // }
+  }
+}

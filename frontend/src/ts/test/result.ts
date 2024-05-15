@@ -855,7 +855,7 @@ export async function update(
         Config.mode,
         Config.words,
         Config.time,
-        CustomText,
+        CustomText.getData(),
         CustomTextState.isCustomTextLong() ?? false
       );
 

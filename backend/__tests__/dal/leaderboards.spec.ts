@@ -359,7 +359,7 @@ async function enablePremiumFeatures(premium: boolean): Promise<void> {
     users: { premium: { enabled: premium } },
   });
 
-  jest
-    .spyOn(Configuration, "getCachedConfiguration")
-    .mockResolvedValue(mockConfig);
+  vi.spyOn(Configuration, "getCachedConfiguration").mockResolvedValue(
+    mockConfig
+  );
 }

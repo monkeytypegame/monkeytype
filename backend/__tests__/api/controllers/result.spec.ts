@@ -14,9 +14,9 @@ const mockDecodedToken: DecodedIdToken = {
   iat: 0,
 } as DecodedIdToken;
 
-jest.spyOn(AuthUtils, "verifyIdToken").mockResolvedValue(mockDecodedToken);
+vi.spyOn(AuthUtils, "verifyIdToken").mockResolvedValue(mockDecodedToken);
 
-const resultMock = jest.spyOn(ResultDal, "getResults");
+const resultMock = vi.spyOn(ResultDal, "getResults");
 
 const mockApp = request(app);
 
@@ -33,7 +33,7 @@ describe("result controller test", () => {
     });
     it("should get latest 1000 results for regular user", async () => {
       //GIVEN
-      jest.spyOn(UserDal, "checkIfUserIsPremium").mockResolvedValue(false);
+      vi.spyOn(UserDal, "checkIfUserIsPremium").mockResolvedValue(false);
       //WHEN
       await mockApp
         .get("/results")
@@ -51,7 +51,7 @@ describe("result controller test", () => {
     it("should get results filter by onOrAfterTimestamp", async () => {
       //GIVEN
       const now = Date.now();
-      jest.spyOn(UserDal, "checkIfUserIsPremium").mockResolvedValue(false);
+      vi.spyOn(UserDal, "checkIfUserIsPremium").mockResolvedValue(false);
       //WHEN
       await mockApp
         .get("/results")
@@ -70,7 +70,7 @@ describe("result controller test", () => {
     });
     it("should get with limit and offset", async () => {
       //GIVEN
-      jest.spyOn(UserDal, "checkIfUserIsPremium").mockResolvedValue(false);
+      vi.spyOn(UserDal, "checkIfUserIsPremium").mockResolvedValue(false);
 
       //WHEN
       await mockApp
@@ -89,7 +89,7 @@ describe("result controller test", () => {
     });
     it("should fail exceeding max limit for regular user", async () => {
       //GIVEN
-      jest.spyOn(UserDal, "checkIfUserIsPremium").mockResolvedValue(false);
+      vi.spyOn(UserDal, "checkIfUserIsPremium").mockResolvedValue(false);
 
       //WHEN
       await mockApp
@@ -112,7 +112,7 @@ describe("result controller test", () => {
     });
     it("should get with higher max limit for premium user", async () => {
       //GIVEN
-      jest.spyOn(UserDal, "checkIfUserIsPremium").mockResolvedValue(true);
+      vi.spyOn(UserDal, "checkIfUserIsPremium").mockResolvedValue(true);
 
       //WHEN
       await mockApp
@@ -132,7 +132,7 @@ describe("result controller test", () => {
     });
     it("should get results if offset/limit is partly outside the max limit", async () => {
       //GIVEN
-      jest.spyOn(UserDal, "checkIfUserIsPremium").mockResolvedValue(false);
+      vi.spyOn(UserDal, "checkIfUserIsPremium").mockResolvedValue(false);
 
       //WHEN
       await mockApp
@@ -152,7 +152,7 @@ describe("result controller test", () => {
     });
     it("should fail exceeding 1k limit", async () => {
       //GIVEN
-      jest.spyOn(UserDal, "checkIfUserIsPremium").mockResolvedValue(false);
+      vi.spyOn(UserDal, "checkIfUserIsPremium").mockResolvedValue(false);
 
       //WHEN
       await mockApp
@@ -171,7 +171,7 @@ describe("result controller test", () => {
     });
     it("should fail exceeding maxlimit for premium user", async () => {
       //GIVEN
-      jest.spyOn(UserDal, "checkIfUserIsPremium").mockResolvedValue(true);
+      vi.spyOn(UserDal, "checkIfUserIsPremium").mockResolvedValue(true);
 
       //WHEN
       await mockApp
@@ -194,7 +194,7 @@ describe("result controller test", () => {
     });
     it("should get results within regular limits for premium users even if premium is globally disabled", async () => {
       //GIVEN
-      jest.spyOn(UserDal, "checkIfUserIsPremium").mockResolvedValue(true);
+      vi.spyOn(UserDal, "checkIfUserIsPremium").mockResolvedValue(true);
       enablePremiumFeatures(false);
 
       //WHEN
@@ -214,7 +214,7 @@ describe("result controller test", () => {
     });
     it("should fail exceeding max limit for premium user if premium is globally disabled", async () => {
       //GIVEN
-      jest.spyOn(UserDal, "checkIfUserIsPremium").mockResolvedValue(true);
+      vi.spyOn(UserDal, "checkIfUserIsPremium").mockResolvedValue(true);
       enablePremiumFeatures(false);
 
       //WHEN
@@ -230,7 +230,7 @@ describe("result controller test", () => {
     });
     it("should get results with regular limit as default for premium users if premium is globally disabled", async () => {
       //GIVEN
-      jest.spyOn(UserDal, "checkIfUserIsPremium").mockResolvedValue(true);
+      vi.spyOn(UserDal, "checkIfUserIsPremium").mockResolvedValue(true);
       enablePremiumFeatures(false);
 
       //WHEN
@@ -259,7 +259,7 @@ async function enablePremiumFeatures(premium: boolean): Promise<void> {
     users: { premium: { enabled: premium } },
   });
 
-  jest
-    .spyOn(Configuration, "getCachedConfiguration")
-    .mockResolvedValue(mockConfig);
+  vi.spyOn(Configuration, "getCachedConfiguration").mockResolvedValue(
+    mockConfig
+  );
 }
