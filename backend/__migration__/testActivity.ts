@@ -1,13 +1,13 @@
 import "dotenv/config";
 import * as DB from "../src/init/db";
 import { Collection, Db } from "mongodb";
-import { DBResult } from "../src/dal/result";
+
 import readlineSync from "readline-sync";
 
 let appRunning = true;
 let db: Db | undefined;
 let userCollection: Collection<MonkeyTypes.DBUser>;
-let resultCollection: Collection<DBResult>;
+let resultCollection: Collection<MonkeyTypes.DBResult>;
 
 const filter = { testActivity: { $exists: false } };
 
@@ -16,7 +16,9 @@ process.on("SIGINT", () => {
   appRunning = false;
 });
 
-void main();
+if (require.main === module) {
+  void main();
+}
 
 async function main(): Promise<void> {
   try {
