@@ -959,9 +959,11 @@ export async function update(groupUpdate = true): Promise<void> {
 
   CustomBackgroundFilter.updateUI();
 
-  const modifierKey = window.navigator.userAgent.toLowerCase().includes("mac")
-    ? "cmd"
-    : "ctrl";
+  const userAgent = window.navigator.userAgent.toLowerCase();
+  const modifierKey =
+    userAgent.includes("mac") && !userAgent.includes("firefox")
+      ? "cmd"
+      : "ctrl";
 
   const commandKey = Config.quickRestart === "esc" ? "tab" : "esc";
   $(".pageSettings .tip").html(`
