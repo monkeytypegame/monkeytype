@@ -1,9 +1,16 @@
 import _ from "lodash";
-import { DeleteResult, ObjectId, UpdateResult } from "mongodb";
+import { Collection, DeleteResult, ObjectId, UpdateResult } from "mongodb";
 import MonkeyError from "../utils/error";
 import * as db from "../init/db";
 
 import { getUser, getTags } from "./user";
+
+type DBResult = MonkeyTypes.WithObjectId<
+  SharedTypes.DBResult<SharedTypes.Config.Mode>
+>;
+
+export const getResultCollection = (): Collection<DBResult> =>
+  db.collection<DBResult>("results");
 
 export async function addResult(
   uid: string,

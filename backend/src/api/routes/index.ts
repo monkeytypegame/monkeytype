@@ -10,6 +10,7 @@ import presets from "./presets";
 import apeKeys from "./ape-keys";
 import admin from "./admin";
 import webhooks from "./webhooks";
+import dev from "./dev";
 import configuration from "./configuration";
 import { version } from "../../version";
 import leaderboards from "./leaderboards";
@@ -44,6 +45,7 @@ const API_ROUTE_MAP = {
   "/ape-keys": apeKeys,
   "/admin": admin,
   "/webhooks": webhooks,
+  "/dev": dev,
 };
 
 function addApiRoutes(app: Application): void {
