@@ -500,7 +500,7 @@ function updateWordsHeight(force = false): void {
       $("#words").width("200vw");
       scrollTape();
     } else {
-      $("#words").css({ marginLeft: "unset", width: "unset" });
+      $("#words").css({ marginLeft: "unset", width: "" });
     }
 
     $("#wordsWrapper")
