@@ -1230,5 +1230,12 @@
     "mainColor": " #ffdd6d",
     "subColor": "#779097",
     "textColor": "#E5E5E5"
+  }, 
+  {
+    "name": "tokyonight",
+    "bgColor": "#1a1b26",
+    "mainColor": "#c0caf5",
+    "subColor": "#a9b1d6",
+    "textColor": "#c0caf5"
   }
 ]
