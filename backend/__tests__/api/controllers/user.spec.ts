@@ -239,7 +239,7 @@ describe("user controller test", () => {
         discordId: "discordId",
         banned: true,
       } as unknown as MonkeyTypes.DBUser;
-      await getUserMock.mockResolvedValue(user);
+      getUserMock.mockResolvedValue(user);
 
       //WHEN
       /*await mockApp
