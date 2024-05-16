@@ -9,8 +9,8 @@ import * as AuthUtils from "../../../src/utils/auth";
 import * as BlocklistDal from "../../../src/dal/blocklist";
 import * as ApeKeys from "../../../src/dal/ape-keys";
 import * as PresetDal from "../../../src/dal/preset";
-import * as ConfigDal from "../../../src/dal/config";
-import * as ResultDal from "../../../src/dal/result";
+//import * as ConfigDal from "../../../src/dal/config";
+//import * as ResultDal from "../../../src/dal/result";
 //import * as DailyLeaderboards from "../../../src/utils/daily-leaderboards";
 const mockApp = request(app);
 const configuration = Configuration.getCachedConfiguration();
@@ -197,8 +197,8 @@ describe("user controller test", () => {
     const firebaseDeleteUserMock = vi.spyOn(AuthUtils, "deleteUser");
     const deleteAllApeKeysMock = vi.spyOn(ApeKeys, "deleteAllApeKeys");
     const deleteAllPresetsMock = vi.spyOn(PresetDal, "deleteAllPresets");
-    const deleteConfigMock = vi.spyOn(ConfigDal, "deleteConfig");
-    const deleteAllResultMock = vi.spyOn(ResultDal, "deleteAll");
+    //const deleteConfigMock = vi.spyOn(ConfigDal, "deleteConfig");
+    //const deleteAllResultMock = vi.spyOn(ResultDal, "deleteAll");
     /*const purgeUserFromDailyLeaderboardsMock = vi.spyOn(
       DailyLeaderboards,
       "purgeUserFromDailyLeaderboards"
@@ -210,8 +210,8 @@ describe("user controller test", () => {
         firebaseDeleteUserMock,
         deleteUserMock,
         deleteAllPresetsMock,
-        deleteConfigMock,
-        deleteAllResultMock,
+        //deleteConfigMock,
+        //deleteAllResultMock,
         //purgeUserFromDailyLeaderboardsMock,
       ].forEach((it) => it.mockResolvedValue({} as any));
     });
@@ -221,8 +221,8 @@ describe("user controller test", () => {
         deleteUserMock,
         blocklistAddMock,
         firebaseDeleteUserMock,
-        deleteConfigMock,
-        deleteAllResultMock,
+        //deleteConfigMock,
+        //deleteAllResultMock,
         //purgeUserFromDailyLeaderboardsMock,
       ].forEach((it) => it.mockReset());
     });
