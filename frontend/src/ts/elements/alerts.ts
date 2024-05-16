@@ -1,4 +1,4 @@
-import formatDistanceToNowStrict from "date-fns/formatDistanceToNowStrict";
+import { formatDistanceToNowStrict } from "date-fns/formatDistanceToNowStrict";
 import Ape from "../ape";
 import { isAuthenticated } from "../firebase";
 import * as AccountButton from "../elements/account-button";

@@ -659,4 +659,11 @@ router.post(
   asyncHandler(UserController.revokeAllTokens)
 );
 
+router.get(
+  "/testActivity",
+  authenticateRequest(),
+  RateLimit.userTestActivity,
+  asyncHandler(UserController.getTestActivity)
+);
+
 export default router;

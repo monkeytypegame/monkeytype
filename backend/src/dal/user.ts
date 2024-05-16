@@ -8,6 +8,8 @@ import { Collection, ObjectId, Long, UpdateFilter } from "mongodb";
 import Logger from "../utils/logger";
 import { flattenObjectDeep, isToday, isYesterday } from "../utils/misc";
 import { getCachedConfiguration } from "../init/configuration";
+import { getDayOfYear } from "date-fns";
+import { UTCDate } from "@date-fns/utc";
 
 const SECONDS_PER_HOUR = 3600;
 
@@ -37,6 +39,7 @@ export async function addUser(
       zen: {},
       custom: {},
     },
+    testActivity: {},
   };
 
   const result = await getUsersCollection().updateOne(
@@ -602,6 +605,32 @@ export async function incrementXp(uid: string, xp: number): Promise<void> {
   await getUsersCollection().updateOne({ uid }, { $inc: { xp: new Long(xp) } });
 }
 
+export async function incrementTestActivity(
+  user: MonkeyTypes.DBUser,
+  timestamp: number
+): Promise<void> {
+  if (user.testActivity === undefined) {
+    //migration script did not run yet
+    return;
+  }
+
+  const date = new UTCDate(timestamp);
+  const dayOfYear = getDayOfYear(date);
+  const year = date.getFullYear();
+
+  if (user.testActivity[year] === undefined) {
+    await getUsersCollection().updateOne(
+      { uid: user.uid },
+      { $set: { [`testActivity.${date.getFullYear()}`]: [] } }
+    );
+  }
+
+  await getUsersCollection().updateOne(
+    { uid: user.uid },
+    { $inc: { [`testActivity.${date.getFullYear()}.${dayOfYear - 1}`]: 1 } }
+  );
+}
+
 export function themeDoesNotExist(customThemes, id): boolean {
   return (
     (customThemes ?? []).filter((t) => t._id.toString() === id).length === 0
@@ -1052,7 +1081,7 @@ export async function checkIfUserIsPremium(
 ): Promise<boolean> {
   const premiumFeaturesEnabled = (await getCachedConfiguration(true)).users
     .premium.enabled;
-  if (!premiumFeaturesEnabled) {
+  if (premiumFeaturesEnabled !== true) {
     return false;
   }
   const user = userInfoOverride ?? (await getUser(uid, "checkIfUserIsPremium"));

@@ -274,4 +274,8 @@ export default class Users {
   async revokeAllTokens(): Ape.EndpointResponse<null> {
     return await this.httpClient.post(`${BASE_PATH}/revokeAllTokens`);
   }
+
+  async getTestActivity(): Ape.EndpointResponse<SharedTypes.CountByYearAndDay> {
+    return await this.httpClient.get(`${BASE_PATH}/testActivity`);
+  }
 }

@@ -18,7 +18,7 @@ import * as SlowTimer from "../states/slow-timer";
 import * as CompositionState from "../states/composition";
 import * as ConfigEvent from "../observables/config-event";
 import * as Hangul from "hangul-js";
-import format from "date-fns/format";
+import { format } from "date-fns/format";
 import { isAuthenticated } from "../firebase";
 import { skipXpBreakdown } from "../elements/account-button";
 import * as FunboxList from "./funbox/funbox-list";
@@ -497,10 +497,10 @@ function updateWordsHeight(force = false): void {
       .css("overflow", "hidden");
 
     if (Config.tapeMode !== "off") {
-      $("#words").width("110vw");
+      $("#words").width("200vw");
       scrollTape();
     } else {
-      $("#words").css({ marginLeft: "unset", width: "unset" });
+      $("#words").css({ marginLeft: "unset", width: "" });
     }
 
     $("#wordsWrapper")

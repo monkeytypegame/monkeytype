@@ -17,7 +17,7 @@ import * as Arrays from "../utils/arrays";
 import * as Numbers from "../utils/numbers";
 import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
 import * as Profile from "../elements/profile";
-import format from "date-fns/format";
+import { format } from "date-fns/format";
 import * as ConnectionState from "../states/connection";
 import * as Skeleton from "../utils/skeleton";
 import type { ScaleChartOptions, LinearScaleOptions } from "chart.js";
@@ -27,6 +27,7 @@ import { Auth } from "../firebase";
 import * as Loader from "../elements/loader";
 import * as ResultBatches from "../elements/result-batches";
 import Format from "../utils/format";
+import * as TestActivity from "../elements/test-activity";
 
 let filterDebug = false;
 //toggle filterdebug
@@ -214,7 +215,8 @@ async function fillContent(): Promise<void> {
   PbTables.update(snapshot.personalBests);
   void Profile.update("account", snapshot);
 
-  void ResultBatches.update();
+  void TestActivity.init(snapshot.testActivity, new Date(snapshot.addedAt));
+  void void ResultBatches.update();
 
   chartData = [];
   accChartData = [];
@@ -1271,7 +1273,8 @@ export const page = new Page({
   },
   beforeShow: async (): Promise<void> => {
     Skeleton.append("pageAccount", "main");
-    if (DB.getSnapshot()?.results === undefined) {
+    const snapshot = DB.getSnapshot();
+    if (snapshot?.results === undefined) {
       $(".pageLoading .fill, .pageAccount .fill").css("width", "0%");
       $(".pageAccount .content").addClass("hidden");
       $(".pageAccount .preloader").removeClass("hidden");
@@ -1280,6 +1283,11 @@ export const page = new Page({
     await ResultFilters.appendButtons(update);
     ResultFilters.updateActive();
     await Misc.sleep(0);
+
+    TestActivity.initYearSelector(
+      "current",
+      snapshot !== undefined ? new Date(snapshot.addedAt).getFullYear() : 2020
+    );
 
     void update().then(() => {
       void updateChartColors();

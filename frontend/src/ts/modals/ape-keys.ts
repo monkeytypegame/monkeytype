@@ -1,7 +1,7 @@
 import Ape from "../ape";
 import * as Loader from "../elements/loader";
 import * as Notifications from "../elements/notifications";
-import format from "date-fns/format";
+import { format } from "date-fns/format";
 import * as ConnectionState from "../states/connection";
 import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
 import { showPopup } from "./simple-modals";

@@ -30,6 +30,8 @@ import {
   removeTokensFromCacheByUid,
   deleteUser as firebaseDeleteUser,
 } from "../../utils/auth";
+import * as Dates from "date-fns";
+import { UTCDateMini } from "@date-fns/utc";
 
 async function verifyCaptcha(captcha: string): Promise<void> {
   if (!(await verify(captcha))) {
@@ -350,6 +352,7 @@ function getRelevantUserInfo(
     "lastResultHashes",
     "note",
     "ips",
+    "testActivity",
   ]);
 }
 
@@ -416,12 +419,14 @@ export async function getUser(
   const isPremium = await UserDAL.checkIfUserIsPremium(uid, userInfo);
 
   const allTimeLbs = await getAllTimeLbs(uid);
+  const testActivity = getCurrentTestActivity(userInfo.testActivity);
 
   const userData = {
     ...getRelevantUserInfo(userInfo),
     inboxUnreadSize: inboxUnreadSize,
     isPremium,
     allTimeLbs,
+    testActivity,
   };
 
   return new MonkeyResponse("User data retrieved", userData);
@@ -972,4 +977,59 @@ async function getAllTimeLbs(uid: string): Promise<SharedTypes.AllTimeLbs> {
       },
     },
   };
+}
+
+export function getCurrentTestActivity(
+  testActivity: SharedTypes.CountByYearAndDay | undefined
+): SharedTypes.TestActivity | undefined {
+  const thisYear = Dates.startOfYear(new UTCDateMini());
+  const lastYear = Dates.startOfYear(Dates.subYears(thisYear, 1));
+
+  let thisYearData = testActivity?.[thisYear.getFullYear().toString()];
+  let lastYearData = testActivity?.[lastYear.getFullYear().toString()];
+
+  if (lastYearData === undefined && thisYearData === undefined)
+    return undefined;
+
+  lastYearData = lastYearData ?? [];
+  thisYearData = thisYearData ?? [];
+
+  //make sure lastYearData covers the full year
+  if (lastYearData.length < Dates.getDaysInYear(lastYear)) {
+    lastYearData.push(
+      ...new Array(Dates.getDaysInYear(lastYear) - lastYearData.length).fill(
+        undefined
+      )
+    );
+  }
+  //use enough days of the last year to have 366 days in total
+  lastYearData = lastYearData.slice(-366 + thisYearData.length);
+
+  const lastDay = Dates.startOfDay(
+    Dates.addDays(thisYear, thisYearData.length - 1)
+  );
+
+  return {
+    testsByDays: [...lastYearData, ...thisYearData],
+    lastDay: lastDay.valueOf(),
+  };
+}
+
+export async function getTestActivity(
+  req: MonkeyTypes.Request
+): Promise<MonkeyResponse> {
+  const { uid } = req.ctx.decodedToken;
+  const premiumFeaturesEnabled = req.ctx.configuration.users.premium.enabled;
+  const user = await UserDAL.getUser(uid, "testActivity");
+  const userHasPremium = await UserDAL.checkIfUserIsPremium(uid, user);
+
+  if (!premiumFeaturesEnabled) {
+    throw new MonkeyError(503, "Premium features are disabled");
+  }
+
+  if (!userHasPremium) {
+    throw new MonkeyError(503, "User does not have premium");
+  }
+
+  return new MonkeyResponse("Test activity data retrieved", user.testActivity);
 }

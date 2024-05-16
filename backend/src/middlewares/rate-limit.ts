@@ -519,6 +519,13 @@ export const userMailUpdate = rateLimit({
   handler: customHandler,
 });
 
+export const userTestActivity = rateLimit({
+  windowMs: ONE_HOUR_MS,
+  max: 60 * REQUEST_MULTIPLIER,
+  keyGenerator: getKeyWithUid,
+  handler: customHandler,
+});
+
 // ApeKeys Routing
 export const apeKeysGet = rateLimit({
   windowMs: ONE_HOUR_MS,
