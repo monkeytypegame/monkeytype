@@ -22,7 +22,6 @@ router.use(
     invalidMessage: "Admin endpoints are currently disabled.",
   })
 );
-
 router.get(
   "/",
   adminLimit,

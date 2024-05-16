@@ -110,4 +110,14 @@ declare namespace MonkeyTypes {
   type DBResult = MonkeyTypes.WithObjectId<
     SharedTypes.DBResult<SharedTypes.Config.Mode>
   >;
+
+  type BlocklistEntry = {
+    _id: string;
+    usernameHash?: string;
+    emailHash?: string;
+    discordIdHash?: string;
+    timestamp: number;
+  };
+
+  type DBBlocklistEntry = WithObjectId<MonkeyTypes.BlocklistEntry>;
 }
