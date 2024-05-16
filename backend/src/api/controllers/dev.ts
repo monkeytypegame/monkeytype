@@ -5,7 +5,6 @@ import Logger from "../../utils/logger";
 import * as DateUtils from "date-fns";
 import { UTCDate } from "@date-fns/utc";
 import * as ResultDal from "../../dal/result";
-import type { DBResult } from "../../dal/result";
 import { roundTo2 } from "../../utils/misc";
 import { ObjectId } from "mongodb";
 import * as LeaderboardDal from "../../dal/leaderboards";
@@ -108,7 +107,7 @@ function random(min: number, max: number): number {
 function createResult(
   user: MonkeyTypes.DBUser,
   timestamp: Date //evil, we modify this value
-): DBResult {
+): MonkeyTypes.DBResult {
   const mode: SharedTypes.Config.Mode = randomValue(["time", "words"]);
   const mode2: number =
     mode === "time"
@@ -207,7 +206,7 @@ async function updateUser(uid: string): Promise<void> {
         .sort({ wpm: -1, timestamp: 1 })
         .limit(1)
         .toArray()
-    )[0] as DBResult;
+    )[0] as MonkeyTypes.DBResult;
 
     if (personalBests[mode.mode] === undefined) personalBests[mode.mode] = {};
     if (personalBests[mode.mode][mode.mode2] === undefined)
