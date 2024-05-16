@@ -7,6 +7,7 @@ describe("Misc Utils", () => {
 
     const currentDay = misc.getCurrentDayTimestamp();
     expect(currentDay).toBe(1641600000);
+    console.log(currentDay);
   });
 
   it("matchesAPattern", () => {
