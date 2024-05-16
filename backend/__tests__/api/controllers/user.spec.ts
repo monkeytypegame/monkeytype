@@ -4,11 +4,26 @@ import * as Configuration from "../../../src/init/configuration";
 import { getCurrentTestActivity } from "../../../src/api/controllers/user";
 import * as UserDal from "../../../src/dal/user";
 import _ from "lodash";
+import { DecodedIdToken } from "firebase-admin/lib/auth/token-verifier";
+import * as AuthUtils from "../../../src/utils/auth";
 
 const mockApp = request(app);
+const configuration = Configuration.getCachedConfiguration();
+
+const mockDecodedToken: DecodedIdToken = {
+  uid: "123456789",
+  email: "newuser@mail.com",
+  iat: Date.now(),
+} as DecodedIdToken;
 
 describe("user controller test", () => {
+  beforeEach(() => {
+    vi.spyOn(AuthUtils, "verifyIdToken").mockResolvedValue(mockDecodedToken);
+  });
   describe("user creation flow", () => {
+    beforeEach(async () => {
+      await enableSignup(true);
+    });
     it("should be able to check name, sign up, and get user data", async () => {
       await mockApp
         .get("/users/checkName/NewUser")
@@ -23,42 +38,6 @@ describe("user controller test", () => {
         email: "newuser@mail.com",
         captcha: "captcha",
       };
-
-      vi.spyOn(Configuration, "getCachedConfiguration").mockResolvedValue({
-        //if stuff breaks this might be the reason
-        users: {
-          signUp: true,
-          discordIntegration: {
-            enabled: false,
-          },
-          autoBan: {
-            enabled: false,
-            maxCount: 5,
-            maxHours: 1,
-          },
-          profiles: {
-            enabled: false,
-          },
-          xp: {
-            enabled: false,
-            gainMultiplier: 0,
-            maxDailyBonus: 0,
-            minDailyBonus: 0,
-            streak: {
-              enabled: false,
-              maxStreakDays: 0,
-              maxStreakMultiplier: 0,
-            },
-          },
-          inbox: {
-            enabled: false,
-            maxMail: 0,
-          },
-          premium: {
-            enabled: true,
-          },
-        },
-      } as any);
 
       await mockApp
         .post("/users/signup")
@@ -210,11 +189,39 @@ function fillYearWithDay(days: number): number[] {
   return result;
 }
 
-const configuration = Configuration.getCachedConfiguration();
-
 async function enablePremiumFeatures(premium: boolean): Promise<void> {
   const mockConfig = _.merge(await configuration, {
     users: { premium: { enabled: premium } },
+  });
+
+  vi.spyOn(Configuration, "getCachedConfiguration").mockResolvedValue(
+    mockConfig
+  );
+}
+
+async function enableAdminFeatures(enabled: boolean): Promise<void> {
+  const mockConfig = _.merge(await configuration, {
+    admin: { endpointsEnabled: enabled },
+  });
+
+  vi.spyOn(Configuration, "getCachedConfiguration").mockResolvedValue(
+    mockConfig
+  );
+}
+
+async function enableSignup(enabled: boolean): Promise<void> {
+  const mockConfig = _.merge(await configuration, {
+    users: { signUp: enabled },
+  });
+
+  vi.spyOn(Configuration, "getCachedConfiguration").mockResolvedValue(
+    mockConfig
+  );
+}
+
+async function enableDiscordIntegration(enabled: boolean): Promise<void> {
+  const mockConfig = _.merge(await configuration, {
+    users: { discordIntegration: { enabled } },
   });
 
   vi.spyOn(Configuration, "getCachedConfiguration").mockResolvedValue(
