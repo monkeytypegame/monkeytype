@@ -187,14 +187,18 @@ describe("user controller test", () => {
     });
   });
   describe("getTestActivity", () => {
+    const getUserMock = vi.spyOn(UserDal, "getUser");
+    afterAll(() => {
+      getUserMock.mockReset();
+    });
     it("should return 503 for non premium users", async () => {
       //given
-      vi.spyOn(UserDal, "getUser").mockResolvedValue({
+      getUserMock.mockResolvedValue({
         testActivity: { "2023": [1, 2, 3], "2024": [4, 5, 6] },
       } as unknown as MonkeyTypes.DBUser);
 
       //when
-      const response = await mockApp
+      await mockApp
         .get("/users/testActivity")
         .set("authorization", "Uid 123456789")
         .send()
@@ -202,7 +206,7 @@ describe("user controller test", () => {
     });
     it("should send data for premium users", async () => {
       //given
-      vi.spyOn(UserDal, "getUser").mockResolvedValue({
+      getUserMock.mockResolvedValue({
         testActivity: { "2023": [1, 2, 3], "2024": [4, 5, 6] },
       } as unknown as MonkeyTypes.DBUser);
       vi.spyOn(UserDal, "checkIfUserIsPremium").mockResolvedValue(true);
