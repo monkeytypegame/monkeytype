@@ -11,7 +11,7 @@ import * as ApeKeys from "../../../src/dal/ape-keys";
 import * as PresetDal from "../../../src/dal/preset";
 import * as ConfigDal from "../../../src/dal/config";
 import * as ResultDal from "../../../src/dal/result";
-import * as DailyLeaderboards from "../../../src/utils/daily-leaderboards";
+//import * as DailyLeaderboards from "../../../src/utils/daily-leaderboards";
 const mockApp = request(app);
 const configuration = Configuration.getCachedConfiguration();
 
@@ -199,10 +199,10 @@ describe("user controller test", () => {
     const deleteAllPresetsMock = vi.spyOn(PresetDal, "deleteAllPresets");
     const deleteConfigMock = vi.spyOn(ConfigDal, "deleteConfig");
     const deleteAllResultMock = vi.spyOn(ResultDal, "deleteAll");
-    const purgeUserFromDailyLeaderboardsMock = vi.spyOn(
+    /*const purgeUserFromDailyLeaderboardsMock = vi.spyOn(
       DailyLeaderboards,
       "purgeUserFromDailyLeaderboards"
-    );
+    );*/
     const blocklistAddMock = vi.spyOn(BlocklistDal, "add");
 
     beforeEach(async () => {
@@ -212,7 +212,7 @@ describe("user controller test", () => {
         deleteAllPresetsMock,
         deleteConfigMock,
         deleteAllResultMock,
-        purgeUserFromDailyLeaderboardsMock,
+        //purgeUserFromDailyLeaderboardsMock,
       ].forEach((it) => it.mockResolvedValue({} as any));
     });
     afterEach(() => {
@@ -223,7 +223,7 @@ describe("user controller test", () => {
         firebaseDeleteUserMock,
         deleteConfigMock,
         deleteAllResultMock,
-        purgeUserFromDailyLeaderboardsMock,
+        //purgeUserFromDailyLeaderboardsMock,
       ].forEach((it) => it.mockReset());
     });
     it("should add user to blocklist if banned", async () => {
