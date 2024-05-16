@@ -314,18 +314,19 @@ describe("user controller test", () => {
     );*/
     const blocklistAddMock = vi.spyOn(BlocklistDal, "add");
 
-    beforeEach(async () => {
+    /*beforeEach(async () => {
       [
-        firebaseDeleteUserMock,
-        deleteUserMock,
-        blocklistAddMock,
+        //firebaseDeleteUserMock,
+        //deleteUserMock,
+        //blocklistAddMock,
         //deleteAllApeKeys,
         //deleteAllPresetsMock,
         //deleteConfigMock,
         //deleteAllResultMock,
         //purgeUserFromDailyLeaderboardsMock,
       ].forEach((it) => it.mockResolvedValue(undefined));
-    });
+      */
+    //});
     afterEach(() => {
       [
         getUserMock,
