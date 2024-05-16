@@ -7,7 +7,11 @@ import _ from "lodash";
 import { DecodedIdToken } from "firebase-admin/lib/auth/token-verifier";
 import * as AuthUtils from "../../../src/utils/auth";
 import * as BlocklistDal from "../../../src/dal/blocklist";
-
+import * as ApeKeys from "../../../src/dal/ape-keys";
+import * as PresetDal from "../../../src/dal/preset";
+import * as ConfigDal from "../../../src/dal/config";
+import * as ResultDal from "../../../src/dal/result";
+import * as DailyLeaderboards from "../../../src/utils/daily-leaderboards";
 const mockApp = request(app);
 const configuration = Configuration.getCachedConfiguration();
 
@@ -184,6 +188,78 @@ describe("user controller test", () => {
 
       //user will be created in firebase from the frontend, make sure we remove it
       expect(firebaseDeleteUserMock).toHaveBeenCalledWith("123456789");
+    });
+  });
+
+  describe("delete user", () => {
+    const getUserMock = vi.spyOn(UserDal, "getUser");
+    const deleteUserMock = vi.spyOn(UserDal, "deleteUser");
+    const firebaseDeleteUserMock = vi.spyOn(AuthUtils, "deleteUser");
+    const deleteAllApeKeysMock = vi.spyOn(ApeKeys, "deleteAllApeKeys");
+    const deleteAllPresetsMock = vi.spyOn(PresetDal, "deleteAllPresets");
+    const deleteConfigMock = vi.spyOn(ConfigDal, "deleteConfig");
+    const deleteAllResultMock = vi.spyOn(ResultDal, "deleteAll");
+    const purgeUserFromDailyLeaderboardsMock = vi.spyOn(
+      DailyLeaderboards,
+      "purgeUserFromDailyLeaderboards"
+    );
+    const blocklistAddMock = vi.spyOn(BlocklistDal, "add");
+
+    beforeEach(async () => {
+      [
+        firebaseDeleteUserMock,
+        deleteUserMock,
+        deleteAllPresetsMock,
+        deleteConfigMock,
+        deleteAllResultMock,
+        purgeUserFromDailyLeaderboardsMock,
+      ].forEach((it) => it.mockResolvedValue({} as any));
+    });
+    afterEach(() => {
+      [
+        getUserMock,
+        deleteUserMock,
+        blocklistAddMock,
+        firebaseDeleteUserMock,
+        deleteConfigMock,
+        deleteAllResultMock,
+        purgeUserFromDailyLeaderboardsMock,
+      ].forEach((it) => it.mockReset());
+    });
+    it("should add user to blocklist if banned", async () => {
+      //GIVEN
+      const uid = mockDecodedToken.uid;
+      const user = {
+        uid,
+        name: "name",
+        email: "email",
+        discordId: "discordId",
+        banned: true,
+      } as unknown as MonkeyTypes.DBUser;
+      await getUserMock.mockResolvedValue(user);
+
+      //WHEN
+      await mockApp
+        .delete("/users/")
+        .set("Authorization", "Bearer 123456789")
+        .set({
+          Accept: "application/json",
+        })
+        .expect(200);
+
+      //THEN
+      expect(blocklistAddMock).toHaveBeenCalledWith(user);
+
+      expect(deleteUserMock).toHaveBeenCalledWith(uid);
+      expect(firebaseDeleteUserMock).toHaveBeenCalledWith(uid);
+      expect(deleteAllApeKeysMock).toHaveBeenCalledWith(uid);
+      expect(deleteAllPresetsMock).toHaveBeenCalledWith(uid);
+      expect(deleteConfigMock).toHaveBeenCalledWith(uid);
+      expect(deleteAllResultMock).toHaveBeenCalledWith(uid);
+      expect(purgeUserFromDailyLeaderboardsMock).toHaveBeenCalledWith(
+        uid,
+        (await configuration).dailyLeaderboards
+      );
     });
   });
   describe("getTestActivity", () => {
