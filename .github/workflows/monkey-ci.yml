@@ -24,7 +24,7 @@ jobs:
   pre-ci:
     if: github.event.pull_request.draft == false
     name: pre-ci
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     outputs:
       should-build-be: ${{ steps.export-changes.outputs.should-build-be }}
       should-build-fe: ${{ steps.export-changes.outputs.should-build-fe }}
@@ -59,7 +59,7 @@ jobs:
   ci-be:
     name: ci-be
     needs: [pre-ci]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     if: needs.pre-ci.outputs.should-build-be == 'true'
     steps:
       - uses: actions/checkout@v4
@@ -86,7 +86,7 @@ jobs:
   ci-fe:
     name: ci-fe
     needs: [pre-ci]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     if: needs.pre-ci.outputs.should-build-fe == 'true'
     steps:
       - uses: actions/checkout@v4
@@ -117,7 +117,7 @@ jobs:
   ci-assets:
     name: ci-assets
     needs: [pre-ci]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     if: needs.pre-ci.outputs.assets-json == 'true'
     steps:
       - uses: actions/checkout@v4
@@ -161,7 +161,7 @@ jobs:
   on-failure:
     permissions: write-all
     name: on-failure
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     needs: [ci-be, ci-fe, ci-assets]
     if: ${{ always() && contains(needs.*.result, 'failure') && github.ref != 'refs/heads/master' }}
     steps:
