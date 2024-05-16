@@ -1,14 +1,39 @@
 import request from "supertest";
 import app from "../../../src/app";
 import * as Configuration from "../../../src/init/configuration";
+
 import { getCurrentTestActivity } from "../../../src/api/controllers/user";
 import * as UserDal from "../../../src/dal/user";
 import _ from "lodash";
+import * as AuthUtils from "../../../src/utils/auth";
+import * as AdminUuids from "../../../src/dal/admin-uids";
+import * as ApeKeys from "../../../src/dal/ape-keys";
+import * as BlocklistDal from "../../../src/dal/blocklist";
+import * as PresetDal from "../../../src/dal/preset";
+import * as ConfigDal from "../../../src/dal/config";
+import * as ResultDal from "../../../src/dal/result";
+import * as DailyLeaderboards from "../../../src/utils/daily-leaderboards";
+import GeorgeQueue from "../../../src/queues/george-queue";
+import * as DiscordUtils from "../../../src/utils/discord";
+import { DecodedIdToken } from "firebase-admin/lib/auth/token-verifier";
 
 const mockApp = request(app);
+const configuration = Configuration.getCachedConfiguration();
+
+const mockDecodedToken: DecodedIdToken = {
+  uid: "123456789",
+  email: "newuser@mail.com",
+  iat: Date.now(),
+} as DecodedIdToken;
 
 describe("user controller test", () => {
+  beforeEach(() => {
+    vi.spyOn(AuthUtils, "verifyIdToken").mockResolvedValue(mockDecodedToken);
+  });
   describe("user creation flow", () => {
+    beforeEach(async () => {
+      await enableSignup(true);
+    });
     it("should be able to check name, sign up, and get user data", async () => {
       await mockApp
         .get("/users/checkName/NewUser")
@@ -23,42 +48,6 @@ describe("user controller test", () => {
         email: "newuser@mail.com",
         captcha: "captcha",
       };
-
-      vi.spyOn(Configuration, "getCachedConfiguration").mockResolvedValue({
-        //if stuff breaks this might be the reason
-        users: {
-          signUp: true,
-          discordIntegration: {
-            enabled: false,
-          },
-          autoBan: {
-            enabled: false,
-            maxCount: 5,
-            maxHours: 1,
-          },
-          profiles: {
-            enabled: false,
-          },
-          xp: {
-            enabled: false,
-            gainMultiplier: 0,
-            maxDailyBonus: 0,
-            minDailyBonus: 0,
-            streak: {
-              enabled: false,
-              maxStreakDays: 0,
-              maxStreakMultiplier: 0,
-            },
-          },
-          inbox: {
-            enabled: false,
-            maxMail: 0,
-          },
-          premium: {
-            enabled: true,
-          },
-        },
-      } as any);
 
       await mockApp
         .post("/users/signup")
@@ -92,20 +81,257 @@ describe("user controller test", () => {
           Accept: "application/json",
         })
         .expect(409);
+    });
+  });
+  describe("user signup", () => {
+    const blocklistContainsMock = vi.spyOn(BlocklistDal, "contains");
+    const firebaseDeleteUserMock = vi.spyOn(AuthUtils, "deleteUser");
+    const usernameAvailableMock = vi.spyOn(UserDal, "isNameAvailable");
 
-      vi.restoreAllMocks();
+    beforeEach(async () => {
+      await enableSignup(true);
+      usernameAvailableMock.mockResolvedValue(true);
+    });
+    afterEach(() => {
+      [
+        blocklistContainsMock,
+        firebaseDeleteUserMock,
+        usernameAvailableMock,
+      ].forEach((it) => it.mockReset());
+    });
+
+    it("should not create user if blocklisted", async () => {
+      //GIVEN
+      blocklistContainsMock.mockResolvedValue(true);
+      firebaseDeleteUserMock.mockResolvedValue();
+
+      const newUser = {
+        name: "NewUser",
+        uid: "123456789",
+        email: "newuser@mail.com",
+        captcha: "captcha",
+      };
+
+      //WHEN
+      const result = await mockApp
+        .post("/users/signup")
+        .set("authorization", "Uid 123456789|newuser@mail.com")
+        .send(newUser)
+        .set({
+          Accept: "application/json",
+        })
+        .expect(409);
+
+      //THEN
+      expect(result.body.message).toEqual("Username or email blocked");
+      expect(blocklistContainsMock).toHaveBeenCalledWith({
+        name: "NewUser",
+        email: "newuser@mail.com",
+      });
+
+      //user will be created in firebase from the frontend, make sure we remove it
+      expect(firebaseDeleteUserMock).toHaveBeenCalledWith("123456789");
+    });
+
+    it("should not create user domain is blacklisted", async () => {
+      ["tidal.lol", "selfbot.cc"].forEach(async (domain) => {
+        //GIVEN
+        firebaseDeleteUserMock.mockResolvedValue();
+
+        const newUser = {
+          name: "NewUser",
+          uid: "123456789",
+          email: `newuser@${domain}`,
+          captcha: "captcha",
+        };
+
+        //WHEN
+        const result = await mockApp
+          .post("/users/signup")
+          .set("authorization", `Uid 123456789|newuser@${domain}`)
+          .send(newUser)
+          .set({
+            Accept: "application/json",
+          })
+          .expect(400);
+
+        //THEN
+        expect(result.body.message).toEqual("Invalid domain");
+
+        //user will be created in firebase from the frontend, make sure we remove it
+        expect(firebaseDeleteUserMock).toHaveBeenCalledWith("123456789");
+      });
+    });
+
+    it("should not create user if username is taken", async () => {
+      //GIVEN
+      usernameAvailableMock.mockResolvedValue(false);
+      firebaseDeleteUserMock.mockResolvedValue();
+
+      const newUser = {
+        name: "NewUser",
+        uid: "123456789",
+        email: "newuser@mail.com",
+        captcha: "captcha",
+      };
+
+      //WHEN
+      const result = await mockApp
+        .post("/users/signup")
+        .set("authorization", "Uid 123456789|newuser@mail.com")
+        .send(newUser)
+        .set({
+          Accept: "application/json",
+        })
+        .expect(409);
+
+      //THEN
+      expect(result.body.message).toEqual("Username unavailable");
+      expect(usernameAvailableMock).toHaveBeenCalledWith(
+        "NewUser",
+        "123456789"
+      );
+
+      //user will be created in firebase from the frontend, make sure we remove it
+      expect(firebaseDeleteUserMock).toHaveBeenCalledWith("123456789");
+    });
+  });
+
+  describe("toggle ban", () => {
+    const getUserMock = vi.spyOn(UserDal, "getUser");
+    const setBannedMock = vi.spyOn(UserDal, "setBanned");
+    const georgeUserBannedMock = vi.spyOn(GeorgeQueue, "userBanned");
+    const isAdminMock = vi.spyOn(AdminUuids, "isAdmin");
+    beforeEach(async () => {
+      await enableAdminFeatures(true);
+
+      isAdminMock.mockResolvedValue(true);
+    });
+    afterEach(() => {
+      [getUserMock, setBannedMock, georgeUserBannedMock, isAdminMock].forEach(
+        (it) => it.mockReset()
+      );
+    });
+
+    it("bans user with discord", async () => {
+      //GIVEN
+      const uid = "myUid";
+      const user = {
+        uid,
+        name: "name",
+        email: "email",
+        discordId: "discordId",
+      } as unknown as MonkeyTypes.DBUser;
+      getUserMock.mockResolvedValue(user);
+
+      //WHEN
+      await mockApp
+        .post("/admin/toggleBan")
+        .set("Authorization", "Bearer 123456789")
+        .send({ uid })
+        .set({
+          Accept: "application/json",
+        })
+        .expect(200);
+
+      //THEN
+      expect(getUserMock).toHaveBeenLastCalledWith(uid, "toggle ban");
+      expect(setBannedMock).toHaveBeenCalledWith(uid, true);
+      expect(georgeUserBannedMock).toHaveBeenCalledWith("discordId", true);
+    });
+    it("bans user without discord", async () => {
+      //GIVEN
+      const uid = "myUid";
+      const user = {
+        uid,
+        name: "name",
+        email: "email",
+        discordId: "",
+      } as unknown as MonkeyTypes.DBUser;
+      getUserMock.mockResolvedValue(user);
+
+      //WHEN
+      await mockApp
+        .post("/admin/toggleBan")
+        .set("Authorization", "Bearer 123456789")
+        .send({ uid })
+        .set({
+          Accept: "application/json",
+        })
+        .expect(200);
+
+      //THEN
+      expect(georgeUserBannedMock).not.toHaveBeenCalled();
+    });
+    it("unbans user with discord", async () => {
+      //GIVEN
+      const uid = "myUid";
+
+      const user = {
+        uid,
+        name: "name",
+        email: "email",
+        discordId: "discordId",
+        banned: true,
+      } as unknown as MonkeyTypes.DBUser;
+      getUserMock.mockResolvedValue(user);
+
+      //WHEN
+      await mockApp
+        .post("/admin/toggleBan")
+        .set("Authorization", "Bearer 123456789")
+        .send({ uid })
+        .set({
+          Accept: "application/json",
+        })
+        .expect(200);
+
+      //THEN
+      expect(getUserMock).toHaveBeenLastCalledWith(uid, "toggle ban");
+      expect(setBannedMock).toHaveBeenCalledWith(uid, false);
+      expect(georgeUserBannedMock).toHaveBeenCalledWith("discordId", false);
+    });
+    it("unbans user without discord", async () => {
+      //GIVEN
+      const uid = "myUid";
+
+      const user = {
+        uid,
+        name: "name",
+        email: "email",
+        discordId: "",
+        banned: true,
+      } as unknown as MonkeyTypes.DBUser;
+      getUserMock.mockResolvedValue(user);
+
+      //WHEN
+      await mockApp
+        .post("/admin/toggleBan")
+        .set("Authorization", "Bearer 123456789")
+        .send({ uid })
+        .set({
+          Accept: "application/json",
+        })
+        .expect(200);
+
+      //THEN
+      expect(georgeUserBannedMock).not.toHaveBeenCalled();
     });
   });
 
   describe("getTestActivity", () => {
+    const getUserMock = vi.spyOn(UserDal, "getUser");
+    afterAll(() => {
+      getUserMock.mockReset();
+    });
     it("should return 503 for non premium users", async () => {
       //given
-      vi.spyOn(UserDal, "getUser").mockResolvedValue({
+      getUserMock.mockResolvedValue({
         testActivity: { "2023": [1, 2, 3], "2024": [4, 5, 6] },
       } as unknown as MonkeyTypes.DBUser);
 
       //when
-      const response = await mockApp
+      await mockApp
         .get("/users/testActivity")
         .set("authorization", "Uid 123456789")
         .send()
@@ -113,7 +339,7 @@ describe("user controller test", () => {
     });
     it("should send data for premium users", async () => {
       //given
-      vi.spyOn(UserDal, "getUser").mockResolvedValue({
+      getUserMock.mockResolvedValue({
         testActivity: { "2023": [1, 2, 3], "2024": [4, 5, 6] },
       } as unknown as MonkeyTypes.DBUser);
       vi.spyOn(UserDal, "checkIfUserIsPremium").mockResolvedValue(true);
@@ -200,6 +426,176 @@ describe("user controller test", () => {
       expect(testsByDays[365]).toEqual(2024094); //2024-01
     });
   });
+
+  describe("delete user", () => {
+    const getUserMock = vi.spyOn(UserDal, "getUser");
+    const deleteUserMock = vi.spyOn(UserDal, "deleteUser");
+    const firebaseDeleteUserMock = vi.spyOn(AuthUtils, "deleteUser");
+    const deleteAllApeKeysMock = vi.spyOn(ApeKeys, "deleteAllApeKeys");
+    const deleteAllPresetsMock = vi.spyOn(PresetDal, "deleteAllPresets");
+    const deleteConfigMock = vi.spyOn(ConfigDal, "deleteConfig");
+    const deleteAllResultMock = vi.spyOn(ResultDal, "deleteAll");
+    const purgeUserFromDailyLeaderboardsMock = vi.spyOn(
+      DailyLeaderboards,
+      "purgeUserFromDailyLeaderboards"
+    );
+    const blocklistAddMock = vi.spyOn(BlocklistDal, "add");
+
+    beforeEach(async () => {
+      [
+        firebaseDeleteUserMock,
+        deleteUserMock,
+        deleteAllPresetsMock,
+        deleteConfigMock,
+        deleteAllResultMock,
+        purgeUserFromDailyLeaderboardsMock,
+      ].forEach((it) => it.mockResolvedValue({} as any));
+    });
+    afterEach(() => {
+      [
+        getUserMock,
+        deleteUserMock,
+        blocklistAddMock,
+        firebaseDeleteUserMock,
+        deleteConfigMock,
+        deleteAllResultMock,
+        purgeUserFromDailyLeaderboardsMock,
+      ].forEach((it) => it.mockReset());
+    });
+    it("should add user to blocklist if banned", async () => {
+      //GIVEN
+      const uid = mockDecodedToken.uid;
+      const user = {
+        uid,
+        name: "name",
+        email: "email",
+        discordId: "discordId",
+        banned: true,
+      } as unknown as MonkeyTypes.DBUser;
+      await getUserMock.mockResolvedValue(user);
+
+      //WHEN
+      await mockApp
+        .delete("/users/")
+        .set("Authorization", "Bearer 123456789")
+        .set({
+          Accept: "application/json",
+        })
+        .expect(200);
+
+      //THEN
+      expect(blocklistAddMock).toHaveBeenCalledWith(user);
+
+      expect(deleteUserMock).toHaveBeenCalledWith(uid);
+      expect(firebaseDeleteUserMock).toHaveBeenCalledWith(uid);
+      expect(deleteAllApeKeysMock).toHaveBeenCalledWith(uid);
+      expect(deleteAllPresetsMock).toHaveBeenCalledWith(uid);
+      expect(deleteConfigMock).toHaveBeenCalledWith(uid);
+      expect(deleteAllResultMock).toHaveBeenCalledWith(uid);
+      expect(purgeUserFromDailyLeaderboardsMock).toHaveBeenCalledWith(
+        uid,
+        (await configuration).dailyLeaderboards
+      );
+    });
+    it("should delete user without adding to blocklist if not banned", async () => {
+      //GIVEN
+      const uid = mockDecodedToken.uid;
+      const user = {
+        uid,
+        name: "name",
+        email: "email",
+        discordId: "discordId",
+      } as unknown as MonkeyTypes.DBUser;
+      getUserMock.mockResolvedValue(user);
+
+      //WHEN
+      await mockApp
+        .delete("/users/")
+        .set("Authorization", "Bearer 123456789")
+        .set({
+          Accept: "application/json",
+        })
+        .expect(200);
+
+      //THEN
+      expect(blocklistAddMock).not.toHaveBeenCalled();
+
+      expect(deleteUserMock).toHaveBeenCalledWith(uid);
+      expect(firebaseDeleteUserMock).toHaveBeenCalledWith(uid);
+      expect(deleteAllApeKeysMock).toHaveBeenCalledWith(uid);
+      expect(deleteAllPresetsMock).toHaveBeenCalledWith(uid);
+      expect(deleteConfigMock).toHaveBeenCalledWith(uid);
+      expect(deleteAllResultMock).toHaveBeenCalledWith(uid);
+      expect(purgeUserFromDailyLeaderboardsMock).toHaveBeenCalledWith(
+        uid,
+        (await configuration).dailyLeaderboards
+      );
+    });
+  });
+  describe("link discord", () => {
+    const getUserMock = vi.spyOn(UserDal, "getUser");
+    const isDiscordIdAvailableMock = vi.spyOn(UserDal, "isDiscordIdAvailable");
+    const isStateValidForUserMock = vi.spyOn(
+      DiscordUtils,
+      "iStateValidForUser"
+    );
+    const getDiscordUserMock = vi.spyOn(DiscordUtils, "getDiscordUser");
+    const blocklistContainsMock = vi.spyOn(BlocklistDal, "contains");
+
+    beforeEach(async () => {
+      isStateValidForUserMock.mockResolvedValue(true);
+      getDiscordUserMock.mockResolvedValue({
+        id: "discordUserId",
+        avatar: "discorUserAvatar",
+        username: "discordUserName",
+        discriminator: "discordUserDiscriminator",
+      });
+      isDiscordIdAvailableMock.mockResolvedValue(true);
+      blocklistContainsMock.mockResolvedValue(false);
+      await enableDiscordIntegration(true);
+    });
+    afterEach(() => {
+      [
+        getUserMock,
+        isStateValidForUserMock,
+        isDiscordIdAvailableMock,
+        getDiscordUserMock,
+      ].forEach((it) => it.mockReset());
+    });
+
+    it("should not link if discordId is blocked", async () => {
+      //GIVEN
+      const uid = mockDecodedToken.uid;
+      const user = {
+        uid,
+        name: "name",
+        email: "email",
+      } as unknown as MonkeyTypes.DBUser;
+      getUserMock.mockResolvedValue(user);
+      blocklistContainsMock.mockResolvedValue(true);
+
+      //WHEN
+      const result = await mockApp
+        .post("/users/discord/link")
+        .set("Authorization", "Bearer 123456789")
+        .set({
+          Accept: "application/json",
+        })
+        .send({
+          tokenType: "tokenType",
+          accessToken: "accessToken",
+          state: "statestatestatestate",
+        })
+        .expect(409);
+
+      //THEN
+      expect(result.body.message).toEqual("The Discord account is blocked");
+
+      expect(blocklistContainsMock).toBeCalledWith({
+        discordId: "discordUserId",
+      });
+    });
+  });
 });
 
 function fillYearWithDay(days: number): number[] {
@@ -210,11 +606,39 @@ function fillYearWithDay(days: number): number[] {
   return result;
 }
 
-const configuration = Configuration.getCachedConfiguration();
-
 async function enablePremiumFeatures(premium: boolean): Promise<void> {
   const mockConfig = _.merge(await configuration, {
     users: { premium: { enabled: premium } },
+  });
+
+  vi.spyOn(Configuration, "getCachedConfiguration").mockResolvedValue(
+    mockConfig
+  );
+}
+
+async function enableAdminFeatures(enabled: boolean): Promise<void> {
+  const mockConfig = _.merge(await configuration, {
+    admin: { endpointsEnabled: enabled },
+  });
+
+  vi.spyOn(Configuration, "getCachedConfiguration").mockResolvedValue(
+    mockConfig
+  );
+}
+
+async function enableSignup(enabled: boolean): Promise<void> {
+  const mockConfig = _.merge(await configuration, {
+    users: { signUp: enabled },
+  });
+
+  vi.spyOn(Configuration, "getCachedConfiguration").mockResolvedValue(
+    mockConfig
+  );
+}
+
+async function enableDiscordIntegration(enabled: boolean): Promise<void> {
+  const mockConfig = _.merge(await configuration, {
+    users: { discordIntegration: { enabled } },
   });
 
   vi.spyOn(Configuration, "getCachedConfiguration").mockResolvedValue(
