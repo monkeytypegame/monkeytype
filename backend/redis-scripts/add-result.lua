@@ -1,6 +1,5 @@
 local redis_call = redis.call
 local leaderboard_scores_key, leaderboard_results_key = KEYS[1], KEYS[2]
-
 local max_results = tonumber(ARGV[1])
 local leaderboard_expiration_time = ARGV[2]
 local user_id = ARGV[3]
@@ -14,7 +13,6 @@ if (number_of_results_changed == 1) then
 end
 
 local number_of_results = redis_call('ZCARD', leaderboard_scores_key)
-
 local removed_user_id = nil
 
 if (number_of_results > max_results) then
@@ -26,7 +24,7 @@ if (number_of_results > max_results) then
     end
 end
 
-if (number_of_results == 1) then -- Indicates that this is the first score of the day, set the leaderboard keys to expire at specified time
+if (number_of_results == 1) then
     redis_call('EXPIREAT', leaderboard_scores_key, leaderboard_expiration_time)
     redis_call('EXPIREAT', leaderboard_results_key, leaderboard_expiration_time)
 end

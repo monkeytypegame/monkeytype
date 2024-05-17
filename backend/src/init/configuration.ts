@@ -1,8 +1,6 @@
-import _ from "lodash";
 import * as db from "./db";
 import { ObjectId } from "mongodb";
 import Logger from "../utils/logger";
-import { identity } from "../utils/misc";
 import { BASE_CONFIGURATION } from "../constants/base-configuration";
 
 const CONFIG_UPDATE_INTERVAL = 10 * 60 * 1000; // 10 Minutes
@@ -12,25 +10,25 @@ function mergeConfigurations(
   liveConfiguration: Partial<SharedTypes.Configuration>
 ): void {
   if (
-    !_.isPlainObject(baseConfiguration) ||
-    !_.isPlainObject(liveConfiguration)
+    typeof baseConfiguration !== 'object' ||
+    typeof liveConfiguration !== 'object'
   ) {
     return;
   }
 
   function merge(base: object, source: object): void {
-    const commonKeys = _.intersection(_.keys(base), _.keys(source));
+    const commonKeys = Object.keys(base).filter(key => key in source);
 
     commonKeys.forEach((key) => {
       const baseValue = base[key];
       const sourceValue = source[key];
 
-      const isBaseValueObject = _.isPlainObject(baseValue);
-      const isSourceValueObject = _.isPlainObject(sourceValue);
+      const isBaseValueObject = typeof baseValue === 'object';
+      const isSourceValueObject = typeof sourceValue === 'object';
 
       if (isBaseValueObject && isSourceValueObject) {
         merge(baseValue, sourceValue);
-      } else if (identity(baseValue) === identity(sourceValue)) {
+      } else if (baseValue === sourceValue) {
         base[key] = sourceValue;
       }
     });
@@ -66,12 +64,9 @@ export async function getLiveConfiguration(): Promise<SharedTypes.Configuration>
     const liveConfiguration = await configurationCollection.findOne();
 
     if (liveConfiguration) {
-      const baseConfiguration = _.cloneDeep(BASE_CONFIGURATION);
+      const baseConfiguration = JSON.parse(JSON.stringify(BASE_CONFIGURATION));
 
-      const liveConfigurationWithoutId = _.omit(
-        liveConfiguration,
-        "_id"
-      ) as SharedTypes.Configuration;
+      const liveConfigurationWithoutId = { ...liveConfiguration, _id: undefined };
       mergeConfigurations(baseConfiguration, liveConfigurationWithoutId);
 
       await pushConfiguration(baseConfiguration);
@@ -114,7 +109,7 @@ export async function patchConfiguration(
   configurationUpdates: Partial<SharedTypes.Configuration>
 ): Promise<boolean> {
   try {
-    const currentConfiguration = _.cloneDeep(configuration);
+    const currentConfiguration = JSON.parse(JSON.stringify(configuration));
     mergeConfigurations(currentConfiguration, configurationUpdates);
 
     await db

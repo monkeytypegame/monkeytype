@@ -1,49 +1,22 @@
 import * as db from "../init/db";
 
-export async function submit(
-  quoteId: number,
-  language: string,
-  rating: number,
-  update: boolean
-): Promise<void> {
-  if (update) {
-    await db
-      .collection<MonkeyTypes.QuoteRating>("quote-rating")
-      .updateOne(
-        { quoteId, language },
-        { $inc: { totalRating: rating } },
-        { upsert: true }
-      );
-  } else {
-    await db
-      .collection<MonkeyTypes.QuoteRating>("quote-rating")
-      .updateOne(
-        { quoteId, language },
-        { $inc: { ratings: 1, totalRating: rating } },
-        { upsert: true }
-      );
-  }
+type QuoteRating = MonkeyTypes.QuoteRating;
+
+const quoteRatingCollection = () => db.collection<QuoteRating>("quote-rating");
+
+async function get(quoteId: number, language: string): Promise<QuoteRating | null> {
+  return await quoteRatingCollection().findOne({ quoteId, language });
+}
+
+async function submit(quoteId: number, language: string, rating: number, update: boolean): Promise<void> {
+  const increment = update ? { totalRating: rating } : { ratings: 1, totalRating: rating };
+  await quoteRatingCollection().updateOne({ quoteId, language }, { $inc: increment }, { upsert: true });
 
   const quoteRating = await get(quoteId, language);
-  if (quoteRating === null) {
-    throw new Error("Quote rating is null after adding rating?");
-  }
-  const average = parseFloat(
-    (
-      Math.round((quoteRating.totalRating / quoteRating.ratings) * 10) / 10
-    ).toFixed(1)
-  );
+  if (!quoteRating) throw new Error("Quote rating is null after adding rating?");
 
-  await db
-    .collection<MonkeyTypes.QuoteRating>("quote-rating")
-    .updateOne({ quoteId, language }, { $set: { average } });
+  const average = parseFloat((Math.round((quoteRating.totalRating / quoteRating.ratings) * 10) / 10).toFixed(1));
+  await quoteRatingCollection().updateOne({ quoteId, language }, { $set: { average } });
 }
 
-export async function get(
-  quoteId: number,
-  language: string
-): Promise<MonkeyTypes.QuoteRating | null> {
-  return await db
-    .collection<MonkeyTypes.QuoteRating>("quote-rating")
-    .findOne({ quoteId, language });
-}
+export { get, submit };
