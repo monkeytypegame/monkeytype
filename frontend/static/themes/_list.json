@@ -1230,5 +1230,12 @@
     "mainColor": " #ffdd6d",
     "subColor": "#779097",
     "textColor": "#E5E5E5"
+  },
+  {
+    "name": "lilac_mist",
+    "bgColor": "#EED2FB",
+    "mainColor": "#df8ebf",
+    "subColor": "#d59bd2",
+    "textColor": "#de7fb8"
   }
 ]
