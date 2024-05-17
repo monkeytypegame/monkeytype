@@ -691,31 +691,37 @@ export function show(): void {
         {
           value: "english",
           text: "english",
-          selected: true,
+          selected: currentLanguage === "english",
         },
         {
           value: "spanish",
           text: "spanish",
+          selected: currentLanguage === "spanish",
         },
         {
           value: "german",
           text: "german",
+          selected: currentLanguage === "german",
         },
         {
           value: "french",
           text: "french",
+          selected: currentLanguage === "french",
         },
         {
           value: "portuguese",
           text: "portuguese",
+          selected: currentLanguage === "portuguese",
         },
         {
           value: "indonesian",
           text: "indonesian",
+          selected: currentLanguage === "indonesian",
         },
         {
           value: "italian",
           text: "italian",
+          selected: currentLanguage === "italian",
         },
       ],
       events: {
