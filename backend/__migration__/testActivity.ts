@@ -4,6 +4,8 @@ import { Collection, Db } from "mongodb";
 
 import readlineSync from "readline-sync";
 
+const batchSize = 50;
+
 let appRunning = true;
 let db: Db | undefined;
 let userCollection: Collection<MonkeyTypes.DBUser>;
@@ -61,7 +63,7 @@ export async function migrate(): Promise<void> {
   await migrateResults();
 }
 
-async function migrateResults(batchSize = 50): Promise<void> {
+async function migrateResults(): Promise<void> {
   const allUsersCount = await userCollection.countDocuments(filter);
   if (allUsersCount === 0) {
     console.log("No users to migrate.");
@@ -246,7 +248,9 @@ function updateProgress(
   process.stdout.clearLine?.(0);
   process.stdout.cursorTo?.(0);
   process.stdout.write(
-    `Previous batch took ${Math.round(previousBatchSizeTime)}ms ${Math.round(
+    `Previous batch took ${Math.round(previousBatchSizeTime)}ms (~${
+      previousBatchSizeTime / batchSize
+    }ms per user) ${Math.round(
       percentage
     )}% done, estimated time left ${timeLeft} seconds.`
   );
