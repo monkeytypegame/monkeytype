@@ -688,42 +688,18 @@ export function show(): void {
         // contentPosition: "relative",
       },
       data: [
-        {
-          value: "english",
-          text: "english",
-          selected: currentLanguage === "english",
-        },
-        {
-          value: "spanish",
-          text: "spanish",
-          selected: currentLanguage === "spanish",
-        },
-        {
-          value: "german",
-          text: "german",
-          selected: currentLanguage === "german",
-        },
-        {
-          value: "french",
-          text: "french",
-          selected: currentLanguage === "french",
-        },
-        {
-          value: "portuguese",
-          text: "portuguese",
-          selected: currentLanguage === "portuguese",
-        },
-        {
-          value: "indonesian",
-          text: "indonesian",
-          selected: currentLanguage === "indonesian",
-        },
-        {
-          value: "italian",
-          text: "italian",
-          selected: currentLanguage === "italian",
-        },
-      ],
+        "english",
+        "spanish",
+        "german",
+        "french",
+        "portuguese",
+        "indonesian",
+        "italian",
+      ].map((lang) => ({
+        value: lang,
+        text: lang,
+        selected: lang === currentLanguage,
+      })),
       events: {
         afterChange: (newVal): void => {
           currentLanguage = newVal[0]?.value as string;
