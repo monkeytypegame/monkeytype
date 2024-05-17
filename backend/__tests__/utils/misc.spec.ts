@@ -2,8 +2,13 @@ import _ from "lodash";
 import * as misc from "../../src/utils/misc";
 
 describe("Misc Utils", () => {
+  afterAll(() => {
+    vi.useRealTimers();
+  });
+
   it("getCurrentDayTimestamp", () => {
-    Date.now = vi.fn(() => 1652743381);
+    vi.useFakeTimers();
+    vi.setSystemTime(1652743381);
 
     const currentDay = misc.getCurrentDayTimestamp();
     expect(currentDay).toBe(1641600000);

@@ -19,8 +19,6 @@ import { deleteConfig } from "../../dal/config";
 import { verify } from "../../utils/captcha";
 import * as LeaderboardsDAL from "../../dal/leaderboards";
 import { purgeUserFromDailyLeaderboards } from "../../utils/daily-leaderboards";
-import { randomBytes } from "crypto";
-import * as RedisClient from "../../init/redis";
 import { v4 as uuidv4 } from "uuid";
 import { ObjectId } from "mongodb";
 import * as ReportDAL from "../../dal/report";
@@ -32,6 +30,7 @@ import {
 } from "../../utils/auth";
 import * as Dates from "date-fns";
 import { UTCDateMini } from "@date-fns/utc";
+import * as BlocklistDal from "../../dal/blocklist";
 
 async function verifyCaptcha(captcha: string): Promise<void> {
   if (!(await verify(captcha))) {
@@ -47,28 +46,30 @@ export async function createNewUser(
 
   try {
     await verifyCaptcha(captcha);
-  } catch (e) {
-    try {
-      await firebaseDeleteUser(uid);
-    } catch (e) {
-      // user might be deleted on the frontend
+
+    if (email.endsWith("@tidal.lol") || email.endsWith("@selfbot.cc")) {
+      throw new MonkeyError(400, "Invalid domain");
     }
+
+    const available = await UserDAL.isNameAvailable(name, uid);
+    if (!available) {
+      throw new MonkeyError(409, "Username unavailable");
+    }
+
+    const blocklisted = await BlocklistDal.contains({ name, email });
+    if (blocklisted) {
+      throw new MonkeyError(409, "Username or email blocked");
+    }
+
+    await UserDAL.addUser(name, email, uid);
+    void Logger.logToDb("user_created", `${name} ${email}`, uid);
+
+    return new MonkeyResponse("User created");
+  } catch (e) {
+    //user was created in firebase from the frontend, remove it
+    await firebaseDeleteUserIgnoreError(uid);
     throw e;
   }
-
-  if (email.endsWith("@tidal.lol") || email.endsWith("@selfbot.cc")) {
-    throw new MonkeyError(400, "Invalid domain");
-  }
-
-  const available = await UserDAL.isNameAvailable(name, uid);
-  if (!available) {
-    throw new MonkeyError(409, "Username unavailable");
-  }
-
-  await UserDAL.addUser(name, email, uid);
-  void Logger.logToDb("user_created", `${name} ${email}`, uid);
-
-  return new MonkeyResponse("User created");
 }
 
 export async function sendVerificationEmail(
@@ -182,10 +183,9 @@ export async function deleteUser(
 
   const userInfo = await UserDAL.getUser(uid, "delete user");
 
-  // gdpr goes brr, find a different way
-  // if (userInfo.banned) {
-  //   throw new MonkeyError(403, "Banned users cannot delete their account");
-  // }
+  if (userInfo.banned === true) {
+    await BlocklistDal.add(userInfo);
+  }
 
   //cleanup database
   await Promise.all([
@@ -435,39 +435,24 @@ export async function getUser(
 export async function getOauthLink(
   req: MonkeyTypes.Request
 ): Promise<MonkeyResponse> {
-  const connection = RedisClient.getConnection();
-  if (!connection) {
-    throw new MonkeyError(500, "Redis connection not found");
-  }
-
   const { uid } = req.ctx.decodedToken;
-  const token = randomBytes(10).toString("hex");
-
-  //add the token uid pair to reids
-  await connection.setex(`discordoauth:${uid}`, 60, token);
 
   //build the url
-  const url = DiscordUtils.getOauthLink();
+  const url = await DiscordUtils.getOauthLink(uid);
 
   //return
   return new MonkeyResponse("Discord oauth link generated", {
-    url: `${url}&state=${token}`,
+    url: url,
   });
 }
 
 export async function linkDiscord(
   req: MonkeyTypes.Request
 ): Promise<MonkeyResponse> {
-  const connection = RedisClient.getConnection();
-  if (!connection) {
-    throw new MonkeyError(500, "Redis connection not found");
-  }
   const { uid } = req.ctx.decodedToken;
   const { tokenType, accessToken, state } = req.body;
 
-  const redisToken = await connection.getdel(`discordoauth:${uid}`);
-
-  if (!(redisToken ?? "") || redisToken !== state) {
+  if (!(await DiscordUtils.iStateValidForUser(state, uid))) {
     throw new MonkeyError(403, "Invalid user token");
   }
 
@@ -501,6 +486,10 @@ export async function linkDiscord(
       409,
       "This Discord account is linked to a different account"
     );
+  }
+
+  if (await BlocklistDal.contains({ discordId })) {
+    throw new MonkeyError(409, "The Discord account is blocked");
   }
 
   await UserDAL.linkDiscord(uid, discordId, discordAvatar);
@@ -1032,4 +1021,12 @@ export async function getTestActivity(
   }
 
   return new MonkeyResponse("Test activity data retrieved", user.testActivity);
+}
+
+async function firebaseDeleteUserIgnoreError(uid: string): Promise<void> {
+  try {
+    await firebaseDeleteUser(uid);
+  } catch (e) {
+    //ignore
+  }
 }
