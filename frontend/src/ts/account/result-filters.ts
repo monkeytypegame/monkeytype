@@ -814,6 +814,7 @@ export async function appendButtons(
       "<select class='funboxSelect' group='funbox' placeholder='select a funbox' multiple>";
 
     html += "<option value='all'>all</option>";
+    html += "<option value='none'>no funbox</option>";
 
     for (const funbox of funboxList) {
       html += `<option value="${funbox.name}" filter="${
