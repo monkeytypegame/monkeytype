@@ -24,7 +24,7 @@ async function getLatest(): Promise<SharedTypes.PSA[] | null> {
 
   if (response.status === 500) {
     if (isDevEnvironment()) {
-      Notifications.addBanner(
+      Notifications.addPSA(
         "Dev Info: Backend server not running",
         0,
         "exclamation-triangle",
