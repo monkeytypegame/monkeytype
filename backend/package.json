@@ -81,5 +81,8 @@
     "typescript": "5.3.3",
     "vitest": "1.6.0",
     "vitest-mongodb": "0.0.5"
+  },
+  "overrides": {
+    "mongodb-memory-server": "9.2.0"
   }
 }
