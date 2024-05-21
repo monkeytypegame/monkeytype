@@ -3,9 +3,12 @@
 @import "node_modules/@fortawesome/fontawesome-free/scss/_variables.scss";
 @import "node_modules/@fortawesome/fontawesome-free/scss/_mixins.scss";
 @import "node_modules/@fortawesome/fontawesome-free/scss/_core.scss";
-@import "node_modules/@fortawesome/fontawesome-free/scss/_list.scss"; //fa-li
+
+/** fixed-with **/
 @import "node_modules/@fortawesome/fontawesome-free/scss/_fixed-width.scss"; //fa-fw
+/** animated **/
 @import "node_modules/@fortawesome/fontawesome-free/scss/_animated.scss"; //fa-spin
+/** rotated **/
 @import "node_modules/@fortawesome/fontawesome-free/scss/_rotated-flipped.scss"; //fa-rotate-90
 
 @font-face {
