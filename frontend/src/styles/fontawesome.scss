@@ -1,4 +1,5 @@
 @use "sass:list";
+@use "sass:map";
 @import "node_modules/@fortawesome/fontawesome-free/scss/_functions.scss";
 @import "node_modules/@fortawesome/fontawesome-free/scss/_variables.scss";
 @import "node_modules/@fortawesome/fontawesome-free/scss/_mixins.scss";
@@ -18,11 +19,10 @@
   src: url("/webfonts-generated/fa-solid-900.woff2") format("woff2");
 }
 
-@each $name, $icon in $fa-icons {
-  @if list.index($fontawesomeSolid, $name) {
-    .#{$fa-css-prefix}-#{$name}::before {
-      content: unquote('"#{ $icon }"');
-    }
+@each $name in $fontawesomeSolid {
+  $icon: map.get($fa-icons, $name);
+  .#{$fa-css-prefix}-#{$name}::before {
+    content: unquote('"#{ $icon }"');
   }
 }
 
@@ -37,10 +37,9 @@
   font-weight: 400;
 }
 
-@each $name, $icon in $fa-brand-icons {
-  @if list.index($fontawesomeBrands, $name) {
-    .#{$fa-css-prefix}-#{$name}:before {
-      content: unquote('"#{ $icon }"');
-    }
+@each $name in $fontawesomeBrands {
+  $icon: map.get($fa-brand-icons, $name);
+  .#{$fa-css-prefix}-#{$name}:before {
+    content: unquote('"#{ $icon }"');
   }
 }
