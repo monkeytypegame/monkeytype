@@ -1,5 +1,4 @@
 @use "sass:list";
-@use "sass:string";
 @import "node_modules/@fortawesome/fontawesome-free/scss/_functions.scss";
 @import "node_modules/@fortawesome/fontawesome-free/scss/_variables.scss";
 @import "node_modules/@fortawesome/fontawesome-free/scss/_mixins.scss";
@@ -13,7 +12,7 @@
   font-family: "Font Awesome 6 Free";
   font-display: block;
   font-weight: 900;
-  src: url("/webfonts/fa-solid-900.woff2") format("woff2");
+  src: url("/webfonts-generated/fa-solid-900.woff2") format("woff2");
 }
 
 @each $name, $icon in $fa-icons {
@@ -28,7 +27,7 @@
   font-family: "Font Awesome 6 Brands";
   font-display: block;
   font-weight: 400;
-  src: url("/webfonts/fa-brands-400.woff2") format("woff2");
+  src: url("/webfonts-generated/fa-brands-400.woff2") format("woff2");
 }
 .fab,
 .fa-brands {

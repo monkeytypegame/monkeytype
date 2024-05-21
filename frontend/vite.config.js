@@ -166,6 +166,16 @@ const fontawesomeSolid = [
   "arrow-left",
   "sign-out-alt",
 ];
+fontawesomeSubset(
+  {
+    solid: fontawesomeSolid,
+    brands: fontawesomeBrands,
+  },
+  "src/webfonts-generated",
+  {
+    targetFormats: ["woff2"],
+  }
+);
 
 function pad(numbers, maxLength, fillString) {
   return numbers.map((number) =>
@@ -218,16 +228,6 @@ const BASE_CONFIG = {
         }
       },
     },
-    fontawesomeSubset(
-      {
-        solid: fontawesomeSolid,
-        brands: fontawesomeBrands,
-      },
-      "static/webfonts",
-      {
-        targetFormats: ["woff2"],
-      }
-    ),
     checker({
       typescript: {
         root: path.resolve(__dirname, "./"),
@@ -275,6 +275,7 @@ const BASE_CONFIG = {
   build: {
     emptyOutDir: true,
     outDir: "../dist",
+    assetsInlineLimit: 0, //dont inline small files as data
     rollupOptions: {
       input: {
         monkeytype: path.resolve(__dirname, "src/index.html"),
@@ -289,6 +290,9 @@ const BASE_CONFIG = {
           let extType = assetInfo.name.split(".").at(1);
           if (/png|jpe?g|svg|gif|tiff|bmp|ico/i.test(extType)) {
             extType = "images";
+          }
+          if (/\.(woff|woff2|eot|ttf|otf)$/.test(assetInfo.name)) {
+            return `webfonts/[name]-[hash].${extType}`;
           }
           return `${extType}/[name].[hash][extname]`;
         },
@@ -315,6 +319,7 @@ const BASE_CONFIG = {
   },
   optimizeDeps: {
     include: ["jquery"],
+    exclude: ["@fortawesome/fontawesome-free"],
   },
 };
 

@@ -123,5 +123,5 @@ updateContributors.mjs
 copyAnticheatToDev.sh
 
 
-# find better solution
-frontend/static/webfonts/fa*
+# ignore generated fonts
+frontend/src/webfonts-generated
