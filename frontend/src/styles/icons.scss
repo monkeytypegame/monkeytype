@@ -16,47 +16,28 @@
   src: url("/webfonts/fa-solid-900.woff2") format("woff2");
 }
 
+@each $name, $icon in $fa-icons {
+  @if list.index($fontawesomeSolid, $name) {
+    .#{$fa-css-prefix}-#{$name}::before {
+      content: unquote('"#{ $icon }"');
+    }
+  }
+}
+
 @font-face {
   font-family: "Font Awesome 6 Brands";
   font-display: block;
   font-weight: 400;
   src: url("/webfonts/fa-brands-400.woff2") format("woff2");
 }
+.fab,
+.fa-brands {
+  font-weight: 400;
+}
 
-/* Find a way to share config between vite and here */
-// keep in sync with vite.config.js fontawesomeIcons
-$fontawesomeBrands: "github", "twitter", "discord", "patreon", "google";
-$fontawesomeSolid: "times", "ad", "terminal", "envelope", "donate", "code",
-  "file-contract", "shield-alt", "lock", "palette", "code-branch", "file",
-  "keyboard", "crown", "info", "cog", "circle-notch", "user", "bell",
-  "sign-in-alt", "inbox", "gift", "trash", "bullhorn", "comment-alt",
-  "cookie-bite", "exclamation-triangle", "star", "chevron-right", "file-import",
-  "filter", "step-forward", "pen-fancy", "grip-lines-vertical", "level-down-alt",
-  "plus", "check", "heart", "chevron-left", "sync-alt", "calendar-day", "shirt",
-  "question-circle", "comment-dots", "bug", "user-circle", "briefcase",
-  "ellipsis-h", "search", "home", "angle-double-up", "pen", "ellipsis-v",
-  "chart-line", "sort-down", "user-plus", "flag", "chevron-down", "unlink",
-  "tag", "sliders-h", "redo-alt", "eye-slash", "align-right", "list", "bomb",
-  "save", "language", "gamepad", "tint", "feather-alt", "minus", "exchange-alt",
-  "hand-paper", "backspace", "exclamation", "volume-up", "volume-down",
-  "volume-mute", "i-cursor", "chart-pie", "tachometer-alt", "highlighter",
-  "tape", "align-left", "text-width", "font", "adjust", "fill-drip", "image",
-  "random", "question", "chart-bar", "key", "clock", "user-slash", "at",
-  "hashtag", "quote-left", "mountain", "wrench", "tools", "mouse-pointer",
-  "fire-alt", "play", "redo", "server", "bars", "tags", "globe-americas",
-  "calendar", "share", "egg", "users", "heart-broken", "running", "couch",
-  "award", "expand", "quote-right", "copy", "laptop", "hammer", "baby", "gem",
-  "user-secret", "video", "hands-helping", "rocket", "gavel", "dollar-sign",
-  "angle-up", "angle-down", "long-arrow-alt-right", "book", "poll",
-  "star-half-alt", "info-circle", "check-circle", "times-circle", "globe",
-  "check-square", "square", "trash-alt", "frown-open", "undo-alt", "ruler",
-  "sort-up", "pause", "arrow-up", "arrow-down", "arrow-left", "sign-out-alt";
-
-@each $name, $icon in $fa-icons {
-  @if list.index($fontawesomeBrands, $name) or
-    list.index($fontawesomeSolid, $name)
-  {
-    .#{$fa-css-prefix}-#{$name}::before {
+@each $name, $icon in $fa-brand-icons {
+  @if list.index($fontawesomeBrands, $name) {
+    .#{$fa-css-prefix}-#{$name}:before {
       content: unquote('"#{ $icon }"');
     }
   }

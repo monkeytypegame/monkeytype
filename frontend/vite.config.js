@@ -10,7 +10,6 @@ import autoprefixer from "autoprefixer";
 import "dotenv/config";
 import { fontawesomeSubset } from "fontawesome-subset";
 
-//keep in sync with icons.scss
 const fontawesomeBrands = ["github", "twitter", "discord", "patreon", "google"];
 const fontawesomeSolid = [
   "times",
@@ -255,6 +254,22 @@ const BASE_CONFIG = {
     postcss: {
       plugins: [autoprefixer({})],
     },
+    preprocessorOptions: {
+      scss: {
+        additionalData(source, fp) {
+          if (fp.endsWith("index.scss")) {
+            return `
+            //inject variables into sass context
+            $fontawesomeBrands: ${sassList(fontawesomeBrands)};             
+            $fontawesomeSolid: ${sassList(fontawesomeSolid)};
+
+            ${source}`;
+          } else {
+            return source;
+          }
+        },
+      },
+    },
   },
   envDir: "../",
   build: {
@@ -380,3 +395,7 @@ export default defineConfig(({ command }) => {
     return BASE_CONFIG;
   }
 });
+
+function sassList(values) {
+  return values.map((it) => `"${it}"`).join(",");
+}
