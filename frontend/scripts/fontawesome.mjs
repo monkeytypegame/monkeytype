@@ -1,47 +1,34 @@
 import * as fs from "fs";
 import * as path from "path";
 
-type Config = {
-  solid: string[];
-  brands: string[];
-};
-type FileAndDir = {
-  name: string;
-  isDirectory: boolean;
-};
-
-function toFileAndDir(dir: string, file: string): FileAndDir {
+function toFileAndDir(dir, file) {
   const name = path.join(dir, file);
   return { name, isDirectory: fs.statSync(name).isDirectory() };
 }
 
-export function getFontawesomeClasses(): Config {
-  const getAllFiles = (
-    dir: string,
-    filter = (filename: string): boolean => true
-  ) =>
+export function getFontawesomeClasses(debug = false) {
+  const getAllFiles = (dir, filter = (filename) => true) =>
     fs
       .readdirSync(dir)
       .map((it) => toFileAndDir(dir, it))
       .filter((file) => file.isDirectory || filter(file.name))
-      .reduce((files: FileAndDir[], file) => {
+      .reduce((files, file) => {
         return file.isDirectory
           ? [...files, ...getAllFiles(file.name, filter)]
           : [...files, file.name];
       }, []);
 
-  const srcFiles: FileAndDir[] = getAllFiles(
+  const srcFiles = getAllFiles(
     "./src",
     (filename) => !filename.endsWith("fontawesome.scss")
   );
   const staticFiles = getAllFiles(
     "./static",
-    (filename: string): boolean =>
-      filename.endsWith(".html") || filename.endsWith(".css")
+    (filename) => filename.endsWith(".html") || filename.endsWith(".css")
   );
   const allFiles = [...srcFiles, ...staticFiles];
 
-  const result = new Set<string>();
+  const result = new Set();
 
   const regex = new RegExp("[^a-zA-Z0-9-_]", "g");
   for (const file of allFiles) {
@@ -81,26 +68,41 @@ export function getFontawesomeClasses(): Config {
         it.length > 3 &&
         modules.filter((mod) => mod.classes.includes(it)).length === 0
     )
-    .map((it) => it.substring(3));
+    .map((it) => it.substring(3))
+    .sort();
 
   const brands = allClasses
     .filter((it) => it.length > 3 && brandsModule.classes.includes(it))
     .map((it) => it.substring(3));
 
-  console.debug(
-    "Make sure fontawesome modules are active: ",
-    modules
-      .filter(
-        (it) => allClasses.filter((c) => it.classes.includes(c)).length > 0
-      )
-      .map((it) => it.name)
-      .filter((it) => it !== "brands")
+  if (debug === true) {
+    console.debug(
+      "Make sure fontawesome modules are active: ",
+      modules
+        .filter(
+          (it) => allClasses.filter((c) => it.classes.includes(c)).length > 0
+        )
+        .map((it) => it.name)
+        .filter((it) => it !== "brands")
 
-      .join(", ")
-  );
+        .join(", ")
+    );
+
+    console.debug(
+      "Here is your config: \n",
+      JSON.stringify({
+        solid,
+        brands,
+      })
+    );
+  }
 
   return {
     solid,
     brands,
   };
+}
+
+if (import.meta.url.endsWith(process.argv[1])) {
+  getFontawesomeClasses(true);
 }
