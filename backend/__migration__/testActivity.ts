@@ -4,6 +4,8 @@ import { Collection, Db } from "mongodb";
 
 import readlineSync from "readline-sync";
 
+const batchSize = 50;
+
 let appRunning = true;
 let db: Db | undefined;
 let userCollection: Collection<MonkeyTypes.DBUser>;
@@ -55,11 +57,13 @@ export async function migrate(): Promise<void> {
   resultCollection = DB.collection("results");
 
   console.log("Creating index on users collection...");
+  const t1 = Date.now();
   await userCollection.createIndex({ uid: 1 }, { unique: true });
+  console.log("Index created in", Date.now() - t1, "ms");
   await migrateResults();
 }
 
-async function migrateResults(batchSize = 50): Promise<void> {
+async function migrateResults(): Promise<void> {
   const allUsersCount = await userCollection.countDocuments(filter);
   if (allUsersCount === 0) {
     console.log("No users to migrate.");
@@ -74,18 +78,27 @@ async function migrateResults(batchSize = 50): Promise<void> {
   const start = new Date().valueOf();
   let uids: string[] = [];
   do {
+    const t0 = Date.now();
+    console.log("Fetching users to migrate...");
+    const t1 = Date.now();
     uids = await getUsersToMigrate(batchSize);
+    console.log("Fetched", uids.length, "users in", Date.now() - t1, "ms");
+    console.log("Users to migrate:", uids.join(","));
 
     //migrate
+    const t2 = Date.now();
     await migrateUsers(uids);
+    console.log("Migrated", uids.length, "users in", Date.now() - t2, "ms");
+    const t3 = Date.now();
     await handleUsersWithNoResults(uids);
+    console.log("Handled users with no results in", Date.now() - t3, "ms");
 
     //progress tracker
     count += uids.length;
-    updateProgress(allUsersCount, count, start);
+    updateProgress(allUsersCount, count, start, Date.now() - t0);
   } while (uids.length > 0 && appRunning);
 
-  if (appRunning) updateProgress(100, 100, start);
+  if (appRunning) updateProgress(100, 100, start, 0);
 }
 
 async function getUsersToMigrate(limit: number): Promise<string[]> {
@@ -98,7 +111,6 @@ async function getUsersToMigrate(limit: number): Promise<string[]> {
 }
 
 async function migrateUsers(uids: string[]): Promise<void> {
-  console.log("migrateUsers:", uids.join(","));
   await resultCollection
     .aggregate(
       [
@@ -214,7 +226,6 @@ async function migrateUsers(uids: string[]): Promise<void> {
 }
 
 async function handleUsersWithNoResults(uids: string[]): Promise<void> {
-  console.log("handleUsersWithNoResults:", uids.join(","));
   await userCollection.updateMany(
     {
       $and: [{ uid: { $in: uids } }, filter],
@@ -223,7 +234,12 @@ async function handleUsersWithNoResults(uids: string[]): Promise<void> {
   );
 }
 
-function updateProgress(all: number, current: number, start: number): void {
+function updateProgress(
+  all: number,
+  current: number,
+  start: number,
+  previousBatchSizeTime: number
+): void {
   const percentage = (current / all) * 100;
   const timeLeft = Math.round(
     (((new Date().valueOf() - start) / percentage) * (100 - percentage)) / 1000
@@ -232,6 +248,10 @@ function updateProgress(all: number, current: number, start: number): void {
   process.stdout.clearLine?.(0);
   process.stdout.cursorTo?.(0);
   process.stdout.write(
-    `${Math.round(percentage)}% done, estimated time left ${timeLeft} seconds.`
+    `Previous batch took ${Math.round(previousBatchSizeTime)}ms (~${
+      previousBatchSizeTime / batchSize
+    }ms per user) ${Math.round(
+      percentage
+    )}% done, estimated time left ${timeLeft} seconds.`
   );
 }

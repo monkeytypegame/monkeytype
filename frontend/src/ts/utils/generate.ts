@@ -98,22 +98,6 @@ export function getGibberish(): string {
 }
 
 /**
- * Retrieves the words from the HTML elements with IDs "words" and returns them as a string.
- * @returns The words extracted from the HTML elements.
- */
-export function getWords(): string {
-  const words = [...document.querySelectorAll("#words .word")]
-    .map((word) => {
-      return [...word.querySelectorAll("letter")]
-        .map((letter) => letter.textContent)
-        .join("");
-    })
-    .join(" ");
-
-  return words;
-}
-
-/**
  * Generates a random ASCII string of printable characters.
  * @returns The generated ASCII string.
  */
