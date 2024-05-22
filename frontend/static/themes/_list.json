@@ -1230,5 +1230,12 @@
     "mainColor": " #ffdd6d",
     "subColor": "#779097",
     "textColor": "#E5E5E5"
+  },
+  {
+    "name": "dark_coffee",
+    "bgColor": "#000000",
+    "mainColor": "#634832",
+    "subColor": "#b18e72",
+    "textColor": "#c9b7a1"
   }
 ]
