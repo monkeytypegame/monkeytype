@@ -1,3 +1,2 @@
 *.d.ts
 node_modules
-scripts/**
