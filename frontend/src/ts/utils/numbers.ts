@@ -146,7 +146,7 @@ export function getNumberWithMagnitude(num: number): {
  */
 export function abbreviateNumber(num: number, decimalPoints = 1): string {
   if (num < 1000) {
-    return num.toString();
+    return num.toFixed(decimalPoints);
   }
 
   const exp = Math.floor(Math.log(num) / Math.log(1000));
