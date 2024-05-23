@@ -382,6 +382,7 @@ async function signInWithProvider(provider: AuthProvider): Promise<void> {
       }
     })
     .catch((error) => {
+      console.log(error);
       let message = error.message;
       if (error.code === "auth/wrong-password") {
         message = "Incorrect password";
@@ -391,18 +392,22 @@ async function signInWithProvider(provider: AuthProvider): Promise<void> {
         message =
           "Invalid email format (make sure you are using your email to login - not your username)";
       } else if (error.code === "auth/popup-closed-by-user") {
+        message = "";
         // message = "Popup closed by user";
-        return;
+        // return;
       } else if (error.code === "auth/user-cancelled") {
+        message = "";
         // message = "User refused to sign in";
-        return;
+        // return;
       } else if (
         error.code === "auth/account-exists-with-different-credential"
       ) {
         message =
           "Account already exists, but its using a different authentication method. Try signing in with a different method";
       }
-      Notifications.add(message, -1);
+      if (message !== "") {
+        Notifications.add(message, -1);
+      }
       LoginPage.hidePreloader();
       LoginPage.enableInputs();
       LoginPage.updateSignupButton();
