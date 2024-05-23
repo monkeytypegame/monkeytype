@@ -41,7 +41,7 @@ class Notification {
     this.message = allowHTML ? message : Misc.escapeHTML(message);
     this.level = level;
     this.important = important ?? false;
-    if (type === "banner") {
+    if (type === "banner" || type === "psa") {
       this.duration = duration as number;
     } else {
       if (duration === undefined) {
@@ -86,7 +86,7 @@ class Notification {
       title = this.customTitle;
     }
 
-    if (this.type === "banner") {
+    if (this.type === "banner" || this.type === "psa") {
       icon = `<i class="fas fa-fw fa-bullhorn"></i>`;
     }
 
@@ -186,20 +186,23 @@ class Notification {
       updateMargin();
       BannerEvent.dispatch();
       if (this.duration >= 0) {
-        $(`#bannerCenter .banner[id='${this.id}'] .closeButton`).on(
-          "click",
-          () => {
-            this.hide();
-            this.closeCallback();
-          }
-        );
+        $(
+          `#bannerCenter .banner[id='${this.id}'] .closeButton, #bannerCenter .psa[id='${this.id}'] .closeButton`
+        ).on("click", () => {
+          this.hide();
+          this.closeCallback();
+        });
       }
       // NOTE: This need to be changed if the update banner text is changed
       if (this.message.includes("please refresh")) {
         // add pointer when refresh is needed
-        $(`#bannerCenter .banner[id='${this.id}']`).css("cursor", "pointer");
+        $(
+          `#bannerCenter .banner[id='${this.id}'], #bannerCenter .psa[id='${this.id}']`
+        ).css("cursor", "pointer");
         // refresh on clicking banner
-        $(`#bannerCenter .banner[id='${this.id}']`).on("click", () => {
+        $(
+          `#bannerCenter .banner[id='${this.id}'], #bannerCenter .psa[id='${this.id}']`
+        ).on("click", () => {
           window.location.reload();
         });
       }
@@ -231,8 +234,10 @@ class Notification {
             );
           }
         );
-    } else if (this.type === "banner") {
-      $(`#bannerCenter .banner[id='${this.id}']`)
+    } else if (this.type === "banner" || this.type === "psa") {
+      $(
+        `#bannerCenter .banner[id='${this.id}'], #bannerCenter .psa[id='${this.id}']`
+      )
         .css("opacity", 1)
         .animate(
           {
@@ -240,7 +245,9 @@ class Notification {
           },
           125,
           () => {
-            $(`#bannerCenter .banner[id='${this.id}']`).remove();
+            $(
+              `#bannerCenter .banner[id='${this.id}'], #bannerCenter .psa[id='${this.id}']`
+            ).remove();
             updateMargin();
             BannerEvent.dispatch();
           }
