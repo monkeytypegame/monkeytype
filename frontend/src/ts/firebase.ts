@@ -30,7 +30,7 @@ try {
   Auth = undefined;
   console.error("Authentication failed to initialize", e);
   if (isDevEnvironment()) {
-    Notifications.addBanner(
+    Notifications.addPSA(
       createErrorMessage(e, "Authentication uninitialized") +
         " Check your firebase-config.ts",
       0,
