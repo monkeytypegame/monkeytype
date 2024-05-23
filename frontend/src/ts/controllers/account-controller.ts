@@ -148,7 +148,7 @@ async function getDataAndInit(): Promise<boolean> {
     });
 
   if (snapshot.needsToChangeName) {
-    Notifications.addBanner(
+    Notifications.addPSA(
       "You need to update your account name. <a class='openNameChange'>Click here</a> to change it and learn more about why.",
       -1,
       undefined,

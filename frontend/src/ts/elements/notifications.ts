@@ -13,9 +13,10 @@ function updateMargin(): void {
 
 let visibleStickyNotifications = 0;
 let id = 0;
+type NotificationType = "notification" | "banner" | "psa";
 class Notification {
   id: number;
-  type: string;
+  type: NotificationType;
   message: string;
   level: number;
   important: boolean;
@@ -24,7 +25,7 @@ class Notification {
   customIcon?: string;
   closeCallback: () => void;
   constructor(
-    type: string,
+    type: NotificationType,
     message: string,
     level: number,
     important: boolean | undefined,
@@ -152,7 +153,7 @@ class Notification {
       $(`#notificationCenter .notif[id='${this.id}']`).on("hover", () => {
         $(`#notificationCenter .notif[id='${this.id}']`).toggleClass("hover");
       });
-    } else if (this.type === "banner") {
+    } else if (this.type === "banner" || this.type === "psa") {
       let leftside = `<div class="icon lefticon">${icon}</div>`;
 
       let withImage = false;
@@ -162,7 +163,7 @@ class Notification {
       }
 
       $("#bannerCenter").prepend(`
-        <div class="banner ${cls} content-grid ${
+        <div class="${this.type} ${cls} content-grid ${
         withImage ? "withImage" : ""
       }" id="${this.id}">
         <div class="container">
@@ -299,6 +300,29 @@ export function addBanner(
   );
   banner.show();
   return banner.id;
+}
+
+export function addPSA(
+  message: string,
+  level = -1,
+  customIcon = "bullhorn",
+  sticky = false,
+  closeCallback?: () => void,
+  allowHTML?: boolean
+): number {
+  const psa = new Notification(
+    "psa",
+    message,
+    level,
+    false,
+    sticky ? -1 : 0,
+    undefined,
+    customIcon,
+    closeCallback,
+    allowHTML
+  );
+  psa.show();
+  return psa.id;
 }
 
 export function clearAllNotifications(): void {
