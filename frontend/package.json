@@ -29,7 +29,7 @@
     "defaults"
   ],
   "devDependencies": {
-    "@fortawesome/fontawesome-free": "6.5.2",
+    "@fortawesome/fontawesome-free": "5.15.4",
     "@types/canvas-confetti": "1.4.3",
     "@types/chartjs-plugin-trendline": "1.0.1",
     "@types/damerau-levenshtein": "1.0.0",

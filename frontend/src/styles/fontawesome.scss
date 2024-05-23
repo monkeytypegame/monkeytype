@@ -1,6 +1,3 @@
-@use "sass:list";
-@use "sass:map";
-@import "node_modules/@fortawesome/fontawesome-free/scss/_functions.scss";
 @import "node_modules/@fortawesome/fontawesome-free/scss/_variables.scss";
 @import "node_modules/@fortawesome/fontawesome-free/scss/_mixins.scss";
 @import "node_modules/@fortawesome/fontawesome-free/scss/_core.scss";
@@ -13,33 +10,27 @@
 @import "node_modules/@fortawesome/fontawesome-free/scss/_rotated-flipped.scss"; //fa-rotate-90
 
 @font-face {
-  font-family: "Font Awesome 6 Free";
+  font-family: "Font Awesome 5 Free";
   font-display: block;
   font-weight: 900;
   src: url("/webfonts-generated/fa-solid-900.woff2") format("woff2");
 }
 
-@each $name in $fontawesomeSolid {
-  $icon: map.get($fa-icons, $name);
-  .#{$fa-css-prefix}-#{$name}::before {
-    content: unquote('"#{ $icon }"');
-  }
+.fa,
+.fas {
+  font-family: "Font Awesome 5 Free";
+  font-weight: 900;
 }
 
 @font-face {
-  font-family: "Font Awesome 6 Brands";
+  font-family: "Font Awesome 5 Brands";
   font-display: block;
   font-weight: 400;
   src: url("/webfonts-generated/fa-brands-400.woff2") format("woff2");
 }
-.fab,
-.fa-brands {
+.fab {
+  font-family: "Font Awesome 5 Brands";
   font-weight: 400;
 }
 
-@each $name in $fontawesomeBrands {
-  $icon: map.get($fa-brand-icons, $name);
-  .#{$fa-css-prefix}-#{$name}:before {
-    content: unquote('"#{ $icon }"');
-  }
-}
+@import "node_modules/@fortawesome/fontawesome-free/scss/_icons.scss";
