@@ -360,6 +360,18 @@ export async function updateEmail(
   return new MonkeyResponse("Email updated");
 }
 
+export async function updatePassword(
+  req: MonkeyTypes.Request
+): Promise<MonkeyResponse> {
+  const { uid } = req.ctx.decodedToken;
+  const { newPassword } = req.body;
+
+  await AuthUtil.updateUserPassword(uid, newPassword);
+  await AuthUtil.revokeTokensByUid(uid);
+
+  return new MonkeyResponse("Password updated");
+}
+
 function getRelevantUserInfo(
   user: MonkeyTypes.DBUser
 ): Partial<MonkeyTypes.DBUser> {

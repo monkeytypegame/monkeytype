@@ -811,17 +811,16 @@ list.updatePassword = new SimpleModal({
       };
     }
 
-    try {
-      await updatePassword(reauth.user, newPass);
-    } catch (e) {
-      const message = createErrorMessage(e, "Failed to update password");
+    const response = await Ape.users.updatePassword(newPass);
+
+    if (response.status !== 200) {
       return {
         status: -1,
-        message,
+        message: "Failed to update password: " + response.message,
       };
     }
 
-    reloadAfter(3);
+    AccountController.signOut();
 
     return {
       status: 1,

@@ -59,6 +59,15 @@ export async function updateUserEmail(
   });
 }
 
+export async function updateUserPassword(
+  uid: string,
+  password: string
+): Promise<UserRecord> {
+  return await FirebaseAdmin().auth().updateUser(uid, {
+    password,
+  });
+}
+
 export async function deleteUser(uid: string): Promise<void> {
   await FirebaseAdmin().auth().deleteUser(uid);
 }
