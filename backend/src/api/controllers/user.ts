@@ -24,10 +24,8 @@ import { ObjectId } from "mongodb";
 import * as ReportDAL from "../../dal/report";
 import emailQueue from "../../queues/email-queue";
 import FirebaseAdmin from "../../init/firebase-admin";
-import {
-  removeTokensFromCacheByUid,
-  deleteUser as firebaseDeleteUser,
-} from "../../utils/auth";
+import * as AuthUtil from "../../utils/auth";
+
 import * as Dates from "date-fns";
 import { UTCDateMini } from "@date-fns/utc";
 import * as BlocklistDal from "../../dal/blocklist";
@@ -201,7 +199,8 @@ export async function deleteUser(
   ]);
 
   //delete user from
-  await firebaseDeleteUser(uid);
+  await AuthUtil.deleteUser(uid);
+  await AuthUtil.revokeTokensByUid(uid);
 
   void Logger.logToDb(
     "user_deleted",
@@ -325,9 +324,31 @@ export async function updateEmail(
   newEmail = newEmail.toLowerCase();
 
   try {
+    await AuthUtil.updateUserEmail(uid, newEmail);
     await UserDAL.updateEmail(uid, newEmail);
+    await AuthUtil.revokeTokensByUid(uid);
   } catch (e) {
-    throw new MonkeyError(404, e.message, "update email", uid);
+    if (e.code === "auth/email-already-exists") {
+      throw new MonkeyError(
+        409,
+        "The email address is already in use by another account"
+      );
+    } else if (e.code === "auth/invalid-email") {
+      throw new MonkeyError(400, "Invalid email address");
+    } else if (e.code === "auth/too-many-requests") {
+      throw new MonkeyError(429, "Too many requests. Please try again later");
+    } else if (e.code === "auth/user-not-found") {
+      throw new MonkeyError(
+        404,
+        "User not found in the auth system",
+        "update email",
+        uid
+      );
+    } else if (e.code === "auth/invalid-user-token") {
+      throw new MonkeyError(401, "Invalid user token", "update email", uid);
+    } else {
+      throw e;
+    }
   }
 
   void Logger.logToDb(
@@ -920,8 +941,7 @@ export async function revokeAllTokens(
   req: MonkeyTypes.Request
 ): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
-  await FirebaseAdmin().auth().revokeRefreshTokens(uid);
-  removeTokensFromCacheByUid(uid);
+  await AuthUtil.revokeTokensByUid(uid);
   return new MonkeyResponse("All tokens revoked");
 }
 

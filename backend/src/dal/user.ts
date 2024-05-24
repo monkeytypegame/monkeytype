@@ -1,6 +1,6 @@
 import _ from "lodash";
 import { isUsernameValid } from "../utils/validation";
-import { updateUserEmail } from "../utils/auth";
+import { updateUserEmail, updateUserPassword } from "../utils/auth";
 import { canFunboxGetPb, checkAndUpdatePb } from "../utils/pb";
 import * as db from "../init/db";
 import MonkeyError from "../utils/error";
@@ -178,7 +178,6 @@ export async function updateQuoteRatings(
   quoteRatings: SharedTypes.UserQuoteRatings
 ): Promise<boolean> {
   await getUser(uid, "update quote ratings");
-
   await getUsersCollection().updateOne({ uid }, { $set: { quoteRatings } });
   return true;
 }
@@ -188,7 +187,6 @@ export async function updateEmail(
   email: string
 ): Promise<boolean> {
   await getUser(uid, "update email"); // To make sure that the user exists
-  await updateUserEmail(uid, email);
   await getUsersCollection().updateOne({ uid }, { $set: { email } });
   return true;
 }
