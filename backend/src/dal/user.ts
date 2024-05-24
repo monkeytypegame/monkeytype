@@ -1,6 +1,5 @@
 import _ from "lodash";
 import { isUsernameValid } from "../utils/validation";
-import { updateUserEmail, updateUserPassword } from "../utils/auth";
 import { canFunboxGetPb, checkAndUpdatePb } from "../utils/pb";
 import * as db from "../init/db";
 import MonkeyError from "../utils/error";
