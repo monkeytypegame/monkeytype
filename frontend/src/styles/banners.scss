@@ -3,7 +3,8 @@
   width: 100%;
   z-index: 1000;
   transition: opacity 0.25s;
-  .banner {
+  .banner,
+  .psa {
     background: var(--sub-color);
     color: var(--bg-color);
     justify-content: center;
