@@ -711,6 +711,18 @@ $(".pageAccount .topFilters button.toggleAdvancedFilters").on("click", () => {
   );
 });
 
+function adjustScrollposition(
+  group: keyof SharedTypes.ResultFilters,
+  topItem: number = 0
+): void {
+  const slimSelect = groupSelects[group];
+  if (slimSelect === undefined) return;
+  const listElement = slimSelect.render.content.list;
+  const topListItem = listElement.children.item(topItem) as HTMLElement;
+
+  listElement.scrollTop = topListItem.offsetTop - listElement.offsetTop;
+}
+
 function selectBeforeChangeFn(
   group: keyof SharedTypes.ResultFilters,
   selectedOptions: Option[],
@@ -815,6 +827,9 @@ export async function appendButtons(
               oldSelectedOptions
             );
           },
+          beforeOpen: (): void => {
+            adjustScrollposition("funbox");
+          },
         },
       });
     }
@@ -869,6 +884,9 @@ export async function appendButtons(
               oldSelectedOptions
             );
           },
+          beforeOpen: (): void => {
+            adjustScrollposition("funbox");
+          },
         },
       });
     }
@@ -918,6 +936,9 @@ export async function appendButtons(
               selectedOptions,
               oldSelectedOptions
             );
+          },
+          beforeOpen: (): void => {
+            adjustScrollposition("funbox");
           },
         },
       });
