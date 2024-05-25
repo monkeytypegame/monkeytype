@@ -459,12 +459,6 @@ function handleChar(
     return;
   }
 
-  console.debug("Handling char", char, charIndex, realInputValue);
-
-  const now = performance.now();
-
-  const isCharKorean: boolean = TestInput.input.getKoreanStatus();
-
   if (char === "…" && TestWords.words.getCurrent()[charIndex] !== "…") {
     for (let i = 0; i < 3; i++) {
       handleChar(".", charIndex + i);
@@ -472,6 +466,24 @@ function handleChar(
 
     return;
   }
+
+  if (char === "œ" && TestWords.words.getCurrent()[charIndex] !== "œ") {
+    handleChar("o", charIndex);
+    handleChar("e", charIndex + 1);
+    return;
+  }
+
+  if (char === "æ" && TestWords.words.getCurrent()[charIndex] !== "æ") {
+    handleChar("a", charIndex);
+    handleChar("e", charIndex + 1);
+    return;
+  }
+
+  console.debug("Handling char", char, charIndex, realInputValue);
+
+  const now = performance.now();
+
+  const isCharKorean: boolean = TestInput.input.getKoreanStatus();
 
   for (const f of FunboxList.get(Config.funbox)) {
     if (f.functions?.handleChar) char = f.functions.handleChar(char);

@@ -132,7 +132,7 @@ describe("user controller test", () => {
     });
 
     it("should not create user domain is blacklisted", async () => {
-      ["tidal.lol", "selfbot.cc"].forEach(async (domain) => {
+      for (const domain of ["tidal.lol", "selfbot.cc"]) {
         //GIVEN
         firebaseDeleteUserMock.mockResolvedValue();
 
@@ -158,7 +158,7 @@ describe("user controller test", () => {
 
         //user will be created in firebase from the frontend, make sure we remove it
         expect(firebaseDeleteUserMock).toHaveBeenCalledWith("123456789");
-      });
+      }
     });
 
     it("should not create user if username is taken", async () => {
