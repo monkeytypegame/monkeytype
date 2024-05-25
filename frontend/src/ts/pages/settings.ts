@@ -968,7 +968,7 @@ export async function update(groupUpdate = true): Promise<void> {
   const commandKey = Config.quickRestart === "esc" ? "tab" : "esc";
   $(".pageSettings .tip").html(`
     tip: You can also change all these settings quickly using the
-    command line (<key>${commandKey}</key> or <key>${modifierKey}</key> + <key>shift</key> + <key>p</key>)`);
+    command line (<key>${commandKey}</key> or <key>${modifierKey}</key> + <key>k</key>)`);
 }
 function toggleSettingsGroup(groupName: string): void {
   const groupEl = $(`.pageSettings .settingsGroup.${groupName}`);

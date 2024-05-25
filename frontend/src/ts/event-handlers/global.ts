@@ -18,7 +18,7 @@ document.addEventListener("keydown", async (e) => {
       Config.quickRestart === "esc" &&
       TestWords.hasTab &&
       e.shiftKey) ||
-    (e.key.toLowerCase() === "p" && (e.metaKey || e.ctrlKey) && e.shiftKey)
+    (e.key.toLowerCase() === "k" && (e.metaKey || e.ctrlKey))
   ) {
     e.preventDefault();
     const popupVisible = Misc.isAnyPopupVisible();
