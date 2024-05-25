@@ -355,7 +355,7 @@ export function updateActive(): void {
 
       if (groupsUsingSelect.includes(group)) {
         const option = $(
-          `.pageAccount .group.filterButtons .filterGroup[group="${group}"] option[filter="${filter}"]`
+          `.pageAccount .group.filterButtons .filterGroup[group="${group}"] option[value="${filter}"]`
         );
         if (filterValue === true) {
           option.prop("selected", true);
