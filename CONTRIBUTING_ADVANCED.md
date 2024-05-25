@@ -25,7 +25,9 @@ This contribution guide is for cases in which you need to test the functionality
 
 ### Git
 
-**IMPORTANT: If you are on Windows, run `git config --global core.autocrlf false` before cloning this repo to prevent CRLF errors.**
+
+> [!WARNING]
+> If you are on Windows, run `git config --global core.autocrlf false` before cloning this repo to prevent CRLF errors.** 
 
 Git is optional but we recommend you utilize it. Monkeytype uses the Git source control management (SCM) system for its version control. Assuming you don't have experience typing commands in the command line, we suggest installing [Sourcetree](https://www.sourcetreeapp.com/). You will be able to utilize the power of Git without needing to remember any cryptic commands. Using a Git client such as Sourcetree won't give you access to the full functionality of Git, but provides an easy-to-understand graphical user interface (GUI). Once you have downloaded Sourcetree, run the installer. While installing Sourcetree, keep your eyes peeled for the option to also install Git with Sourcetree. This is the option you will need to look for in order to install Git. **Make sure to click yes in the installer to install Git with Sourcetree.**
 
@@ -145,7 +147,8 @@ npm run dev
 
 These commands will start a local development website on [port 3000](http://localhost:3000) and a local development server on [port 5005](http://localhost:5005). They will automatically rebuild the website/server when you make changes in the `src/` directory. Use <kbd>Ctrl+C</kbd> to stop them.
 
-Note: Rebuilding doesn't happen instantaneously and depends on your machine, so be patient for changes to appear.
+> [!NOTE]
+> Rebuilding doesn't happen instantaneously and depends on your machine, so be patient for changes to appear.
 
 If you are on a UNIX system and you get a spawn error, run npm with `sudo`.
 
