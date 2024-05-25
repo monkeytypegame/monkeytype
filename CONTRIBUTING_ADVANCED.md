@@ -147,6 +147,8 @@ These commands will start a local development website on [port 3000](http://loca
 
 Note: Rebuilding doesn't happen instantaneously and depends on your machine, so be patient for changes to appear.
 
+If you are on a UNIX system and you get a spawn error, run npm with `sudo`.
+
 ## Standards and Guidelines
 
 Code style is enforced by [Prettier](https://prettier.io/docs/en/install.html), which automatically runs every time you make a commit.
