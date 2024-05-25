@@ -391,24 +391,19 @@ export function updateActive(): void {
 
     if (everythingSelected) {
       for (const data of newData) {
-        //@ts-expect-error
-        if (data.value !== "all") {
-          //@ts-expect-error
-          data.selected = false;
-        } else {
-          //@ts-expect-error
-          data.selected = true;
+        if ("value" in data) {
+          if (data.value === "all") data.selected = true;
+          else data.selected = false;
         }
       }
     } else {
       for (const data of newData) {
-        //@ts-expect-error
-        if (group[data.value] === true) {
-          //@ts-expect-error
-          data.selected = true;
-        } else {
-          //@ts-expect-error
-          data.selected = false;
+        if ("value" in data) {
+          if (group[data.value as keyof typeof group] === true) {
+            data.selected = true;
+          } else {
+            data.selected = false;
+          }
         }
       }
     }
