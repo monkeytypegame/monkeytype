@@ -389,7 +389,12 @@ export function updateActive(): void {
 
     const newData = ss.store.getData();
 
+    const allOption = $(
+      `.pageAccount .group.filterButtons .filterGroup[group="${id}"] option[value="all"]`
+    );
+
     if (everythingSelected) {
+      allOption.prop("selected", true);
       for (const data of newData) {
         if ("value" in data) {
           if (data.value === "all") data.selected = true;
@@ -398,6 +403,8 @@ export function updateActive(): void {
       }
       ss.store.setData(newData);
       ss.render.renderValues();
+    } else {
+      allOption.prop("selected", false);
     }
 
     for (const data of newData) {
