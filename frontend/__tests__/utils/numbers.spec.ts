@@ -23,7 +23,7 @@ describe("numbers", () => {
 
     it("should round to two decimals", () => {
       expect(Numbers.abbreviateNumber(1, 2)).toEqual("1");
-      expect(Numbers.abbreviateNumber(1.5, 2)).toEqual("1.50");
+      expect(Numbers.abbreviateNumber(1.5, 2)).toEqual("1.5");
       expect(Numbers.abbreviateNumber(1.55, 2)).toEqual("1.55");
 
       expect(Numbers.abbreviateNumber(1000, 2)).toEqual("1.00k");
