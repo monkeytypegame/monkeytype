@@ -828,7 +828,7 @@ export async function appendButtons(
             );
           },
           beforeOpen: (): void => {
-            adjustScrollposition("funbox");
+            adjustScrollposition("language");
           },
         },
       });
@@ -938,7 +938,7 @@ export async function appendButtons(
             );
           },
           beforeOpen: (): void => {
-            adjustScrollposition("funbox");
+            adjustScrollposition("tags");
           },
         },
       });
