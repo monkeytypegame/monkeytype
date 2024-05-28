@@ -3,7 +3,7 @@ import * as Numbers from "../../src/ts/utils/numbers";
 describe("numbers", () => {
   describe("abbreviateNumber", () => {
     it("should round to one decimal by default", () => {
-      expect(Numbers.abbreviateNumber(1)).toEqual("1");
+      expect(Numbers.abbreviateNumber(1)).toEqual("1.0");
       expect(Numbers.abbreviateNumber(1.5)).toEqual("1.5");
       expect(Numbers.abbreviateNumber(1.55)).toEqual("1.6");
 
@@ -22,8 +22,8 @@ describe("numbers", () => {
     });
 
     it("should round to two decimals", () => {
-      expect(Numbers.abbreviateNumber(1, 2)).toEqual("1");
-      expect(Numbers.abbreviateNumber(1.5, 2)).toEqual("1.5");
+      expect(Numbers.abbreviateNumber(1, 2)).toEqual("1.00");
+      expect(Numbers.abbreviateNumber(1.5, 2)).toEqual("1.50");
       expect(Numbers.abbreviateNumber(1.55, 2)).toEqual("1.55");
 
       expect(Numbers.abbreviateNumber(1000, 2)).toEqual("1.00k");
@@ -32,7 +32,7 @@ describe("numbers", () => {
     });
     it("should use suffixes", () => {
       let number = 1;
-      expect(Numbers.abbreviateNumber(number)).toEqual("1");
+      expect(Numbers.abbreviateNumber(number)).toEqual("1.0");
       expect(Numbers.abbreviateNumber((number *= 1000))).toEqual("1.0k");
       expect(Numbers.abbreviateNumber((number *= 1000))).toEqual("1.0m");
       expect(Numbers.abbreviateNumber((number *= 1000))).toEqual("1.0b");
