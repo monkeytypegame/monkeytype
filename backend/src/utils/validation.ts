@@ -3,97 +3,97 @@ import { replaceHomoglyphs } from "../constants/homoglyphs";
 import { profanities, regexProfanities } from "../constants/profanities";
 import { intersect, matchesAPattern, sanitizeString } from "./misc";
 import { default as FunboxList } from "../constants/funbox-list";
+import { z } from 'zod';
 
+// Utility function to check if a value is in a specified range
 export function inRange(value: number, min: number, max: number): boolean {
   return value >= min && value <= max;
 }
 
-const VALID_NAME_PATTERN = /^[\da-zA-Z_.-]+$/;
+// Zod schema for username validation
+const usernameSchema = z.string().regex(/^[\da-zA-Z_.-]+$/).min(1).max(16);
 
+// Function to check if the username is valid
 export function isUsernameValid(name: string): boolean {
-  if (_.isNil(name) || !inRange(name.length, 1, 16)) {
+  if (_.isNil(name)) return false;
+
+  try {
+    usernameSchema.parse(name);
+  } catch {
     return false;
   }
 
   const normalizedName = name.toLowerCase();
+  if (normalizedName.startsWith('.')) return false;
+  if (profanities.some(profanity => normalizedName.includes(profanity))) return false;
 
-  const beginsWithPeriod = /^\..*/.test(normalizedName);
-  if (beginsWithPeriod) {
-    return false;
-  }
-
-  const isProfanity = profanities.some((profanity) =>
-    normalizedName.includes(profanity)
-  );
-  if (isProfanity) {
-    return false;
-  }
-
-  return VALID_NAME_PATTERN.test(name);
+  return true;
 }
 
+// Function to check if a text contains profanity
 export function containsProfanity(text: string): boolean {
   const normalizedText = text
     .toLowerCase()
     .split(/[.,"/#!?$%^&*;:{}=\-_`~()\s\n]+/g)
-    .map((str) => {
-      return replaceHomoglyphs(sanitizeString(str) ?? "");
-    });
+    .map(str => replaceHomoglyphs(sanitizeString(str) ?? ""));
 
-  const hasProfanity = regexProfanities.some((profanity) => {
-    return normalizedText.some((word) => {
-      return matchesAPattern(word, profanity);
-    });
-  });
-
-  return hasProfanity;
+  return regexProfanities.some(profanity =>
+    normalizedText.some(word => matchesAPattern(word, profanity))
+  );
 }
 
+// Function to check if a tag preset name is valid
 export function isTagPresetNameValid(name: string): boolean {
-  if (_.isNil(name) || !inRange(name.length, 1, 16)) {
+  if (_.isNil(name)) return false;
+
+  try {
+    usernameSchema.parse(name);
+  } catch {
     return false;
   }
 
-  return VALID_NAME_PATTERN.test(name);
+  return true;
 }
 
-export function isTestTooShort(result: SharedTypes.CompletedEvent): boolean {
+// SharedTypes.CompletedEvent type definition (you should define this according to your actual type)
+type CompletedEvent = {
+  mode: string;
+  mode2: string;
+  customText?: { limit: { mode: string; value: number } };
+  testDuration: number;
+  bailedOut?: boolean;
+};
+
+// Function to check if a test duration is too short
+export function isTestTooShort(result: CompletedEvent): boolean {
   const { mode, mode2, customText, testDuration, bailedOut } = result;
 
   if (mode === "time") {
     const seconds = parseInt(mode2);
-
-    const setTimeTooShort = seconds > 0 && seconds < 15;
-    const infiniteTimeTooShort = seconds === 0 && testDuration < 15;
-    const bailedOutTooShort = bailedOut
-      ? bailedOut && testDuration < 15
-      : false;
-    return setTimeTooShort || infiniteTimeTooShort || bailedOutTooShort;
+    return (
+      (seconds > 0 && seconds < 15) ||
+      (seconds === 0 && testDuration < 15) ||
+      (bailedOut && testDuration < 15)
+    );
   }
 
   if (mode === "words") {
     const wordCount = parseInt(mode2);
-
-    const setWordTooShort = wordCount > 0 && wordCount < 10;
-    const infiniteWordTooShort = wordCount === 0 && testDuration < 15;
-    const bailedOutTooShort = bailedOut
-      ? bailedOut && testDuration < 15
-      : false;
-    return setWordTooShort || infiniteWordTooShort || bailedOutTooShort;
+    return (
+      (wordCount > 0 && wordCount < 10) ||
+      (wordCount === 0 && testDuration < 15) ||
+      (bailedOut && testDuration < 15)
+    );
   }
 
   if (mode === "custom") {
     if (!customText) return true;
-    const wordLimitTooShort =
-      (customText.limit.mode === "word" ||
-        customText.limit.mode === "section") &&
-      customText.limit.value < 10;
-    const timeLimitTooShort =
-      customText.limit.mode === "time" && customText.limit.value < 15;
-    const bailedOutTooShort = bailedOut
-      ? bailedOut && testDuration < 15
-      : false;
-    return wordLimitTooShort || timeLimitTooShort || bailedOutTooShort;
+    const { limit } = customText;
+    return (
+      (["word", "section"].includes(limit.mode) && limit.value < 10) ||
+      (limit.mode === "time" && limit.value < 15) ||
+      (bailedOut && testDuration < 15)
+    );
   }
 
   if (mode === "zen") {
@@ -103,94 +103,30 @@ export function isTestTooShort(result: SharedTypes.CompletedEvent): boolean {
   return false;
 }
 
+// Function to check if funboxes are compatible
 export function areFunboxesCompatible(funboxesString: string): boolean {
-  const funboxes = funboxesString.split("#").filter((f) => f !== "none");
-
-  const funboxesToCheck = FunboxList.filter((f) => funboxes.includes(f.name));
+  const funboxes = funboxesString.split("#").filter(f => f !== "none");
+  const funboxesToCheck = FunboxList.filter(f => funboxes.includes(f.name));
 
   const allFunboxesAreValid = funboxesToCheck.length === funboxes.length;
-  const oneWordModifierMax =
-    funboxesToCheck.filter(
-      (f) =>
-        f.frontendFunctions?.includes("getWord") ??
-        f.frontendFunctions?.includes("pullSection") ??
-        f.frontendFunctions?.includes("withWords")
-    ).length <= 1;
-  const layoutUsability =
-    funboxesToCheck.filter((f) =>
-      f.properties?.find((fp) => fp === "changesLayout")
-    ).length === 0 ||
-    funboxesToCheck.filter((f) =>
-      f.properties?.find((fp) => fp === "ignoresLayout" || fp === "usesLayout")
-    ).length === 0;
-  const oneNospaceOrToPushMax =
-    funboxesToCheck.filter((f) =>
-      f.properties?.find((fp) => fp === "nospace" || fp.startsWith("toPush"))
-    ).length <= 1;
-  const oneWordOrderMax =
-    funboxesToCheck.filter((f) =>
-      f.properties?.find((fp) => fp.startsWith("wordOrder"))
-    ).length <= 1;
-  const oneChangesWordsVisibilityMax =
-    funboxesToCheck.filter((f) =>
-      f.properties?.find((fp) => fp === "changesWordsVisibility")
-    ).length <= 1;
-  const oneFrequencyChangesMax =
-    funboxesToCheck.filter((f) =>
-      f.properties?.find((fp) => fp === "changesWordsFrequency")
-    ).length <= 1;
-  const noFrequencyChangesConflicts =
-    funboxesToCheck.filter((f) =>
-      f.properties?.find((fp) => fp === "changesWordsFrequency")
-    ).length === 0 ||
-    funboxesToCheck.filter((f) =>
-      f.properties?.find((fp) => fp === "ignoresLanguage")
-    ).length === 0;
-  const capitalisationChangePosibility =
-    funboxesToCheck.filter((f) =>
-      f.properties?.find((fp) => fp === "noLetters")
-    ).length === 0 ||
-    funboxesToCheck.filter((f) =>
-      f.properties?.find((fp) => fp === "changesCapitalisation")
-    ).length === 0;
-  const noConflictsWithSymmetricChars =
-    funboxesToCheck.filter((f) =>
-      f.properties?.find((fp) => fp === "conflictsWithSymmetricChars")
-    ).length === 0 ||
-    funboxesToCheck.filter((f) =>
-      f.properties?.find((fp) => fp === "symmetricChars")
-    ).length === 0;
-  const canSpeak =
-    funboxesToCheck.filter((f) =>
-      f.properties?.find((fp) => fp === "speaks" || fp === "unspeakable")
-    ).length <= 1;
-  const hasLanguageToSpeak =
-    funboxesToCheck.filter((f) => f.properties?.find((fp) => fp === "speaks"))
-      .length === 0 ||
-    funboxesToCheck.filter((f) =>
-      f.properties?.find((fp) => fp === "ignoresLanguage")
-    ).length === 0;
-  const oneToPushOrPullSectionMax =
-    funboxesToCheck.filter(
-      (f) =>
-        f.properties?.some((fp) => fp.startsWith("toPush:")) ??
-        f.frontendFunctions?.includes("pullSection")
-    ).length <= 1;
-  const oneApplyCSSMax =
-    funboxesToCheck.filter((f) => f.frontendFunctions?.includes("applyCSS"))
-      .length <= 1;
-  const onePunctuateWordMax =
-    funboxesToCheck.filter((f) =>
-      f.frontendFunctions?.includes("punctuateWord")
-    ).length <= 1;
-  const oneCharCheckerMax =
-    funboxesToCheck.filter((f) =>
-      f.frontendFunctions?.includes("isCharCorrect")
-    ).length <= 1;
-  const oneCharReplacerMax =
-    funboxesToCheck.filter((f) => f.frontendFunctions?.includes("getWordHtml"))
-      .length <= 1;
-  const allowedConfig = {} as Record<string, string[] | boolean[]>;
+  const oneWordModifierMax = funboxesToCheck.filter(f => f.frontendFunctions?.some(fn => ["getWord", "pullSection", "withWords"].includes(fn))).length <= 1;
+  const layoutUsability = funboxesToCheck.every(f => !f.properties?.includes("changesLayout")) || funboxesToCheck.every(f => ["ignoresLayout", "usesLayout"].some(fp => f.properties?.includes(fp)));
+  const oneNospaceOrToPushMax = funboxesToCheck.filter(f => f.properties?.some(fp => ["nospace", "toPush"].includes(fp))).length <= 1;
+  const oneWordOrderMax = funboxesToCheck.filter(f => f.properties?.some(fp => fp.startsWith("wordOrder"))).length <= 1;
+  const oneChangesWordsVisibilityMax = funboxesToCheck.filter(f => f.properties?.includes("changesWordsVisibility")).length <= 1;
+  const oneFrequencyChangesMax = funboxesToCheck.filter(f => f.properties?.includes("changesWordsFrequency")).length <= 1;
+  const noFrequencyChangesConflicts = funboxesToCheck.every(f => !f.properties?.includes("changesWordsFrequency")) || funboxesToCheck.every(f => !f.properties?.includes("ignoresLanguage"));
+  const capitalisationChangePosibility = funboxesToCheck.every(f => !f.properties?.includes("noLetters")) || funboxesToCheck.every(f => !f.properties?.includes("changesCapitalisation"));
+  const noConflictsWithSymmetricChars = funboxesToCheck.every(f => !f.properties?.includes("conflictsWithSymmetricChars")) || funboxesToCheck.every(f => !f.properties?.includes("symmetricChars"));
+  const canSpeak = funboxesToCheck.filter(f => ["speaks", "unspeakable"].some(fp => f.properties?.includes(fp))).length <= 1;
+  const hasLanguageToSpeak = funboxesToCheck.every(f => !f.properties?.includes("speaks")) || funboxesToCheck.every(f => !f.properties?.includes("ignoresLanguage"));
+  const oneToPushOrPullSectionMax = funboxesToCheck.filter(f => ["toPush:", "pullSection"].some(fp => f.properties?.includes(fp) || f.frontendFunctions?.includes(fp))).length <= 1;
+  const oneApplyCSSMax = funboxesToCheck.filter(f => f.frontendFunctions?.includes("applyCSS")).length <= 1;
+  const onePunctuateWordMax = funboxesToCheck.filter(f => f.frontendFunctions?.includes("punctuateWord")).length <= 1;
+  const oneCharCheckerMax = funboxesToCheck.filter(f => f.frontendFunctions?.includes("isCharCorrect")).length <= 1;
+  const oneCharReplacerMax = funboxesToCheck.filter(f => f.frontendFunctions?.includes("getWordHtml")).length <= 1;
+
+  const allowedConfig: Record<string, (string | boolean)[]> = {};
   let noConfigConflicts = true;
   for (const f of funboxesToCheck) {
     if (!f.frontendForcedConfig) continue;
@@ -198,10 +134,7 @@ export function areFunboxesCompatible(funboxesString: string): boolean {
       const allowedConfigValue = allowedConfig[key];
       const funboxValue = f.frontendForcedConfig[key];
       if (allowedConfigValue !== undefined && funboxValue !== undefined) {
-        if (
-          intersect<string | boolean>(allowedConfigValue, funboxValue, true)
-            .length === 0
-        ) {
+        if (intersect<string | boolean>(allowedConfigValue, funboxValue, true).length === 0) {
           noConfigConflicts = false;
           break;
         }
