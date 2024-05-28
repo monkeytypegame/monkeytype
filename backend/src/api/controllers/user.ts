@@ -200,7 +200,6 @@ export async function deleteUser(
 
   //delete user from
   await AuthUtil.deleteUser(uid);
-  await AuthUtil.revokeTokensByUid(uid);
 
   void Logger.logToDb(
     "user_deleted",
@@ -326,7 +325,6 @@ export async function updateEmail(
   try {
     await AuthUtil.updateUserEmail(uid, newEmail);
     await UserDAL.updateEmail(uid, newEmail);
-    await AuthUtil.revokeTokensByUid(uid);
   } catch (e) {
     if (e.code === "auth/email-already-exists") {
       throw new MonkeyError(
@@ -367,7 +365,6 @@ export async function updatePassword(
   const { newPassword } = req.body;
 
   await AuthUtil.updateUserPassword(uid, newPassword);
-  await AuthUtil.revokeTokensByUid(uid);
 
   return new MonkeyResponse("Password updated");
 }
