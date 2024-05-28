@@ -422,6 +422,7 @@ export async function checkIfPb(
   const { mode } = result;
 
   if (!canFunboxGetPb(result)) return false;
+  if ("stopOnLetter" in result && result.stopOnLetter === true) return false;
 
   if (mode === "quote") {
     return false;
@@ -467,6 +468,7 @@ export async function checkIfTagPb(
 
   const { mode, tags: resultTags } = result;
   if (!canFunboxGetPb(result)) return [];
+  if ("stopOnLetter" in result && result.stopOnLetter === true) return [];
 
   if (mode === "quote") {
     return [];

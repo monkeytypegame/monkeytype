@@ -18,7 +18,6 @@ import {
   reauthenticateWithCredential,
   reauthenticateWithPopup,
   unlink,
-  updatePassword,
 } from "firebase/auth";
 import {
   createErrorMessage,

@@ -237,6 +237,7 @@ declare namespace SharedTypes {
     charTotal: number;
     stringified?: string;
     hash?: string;
+    stopOnLetter: boolean;
   }
 
   type CustomTextMode = "repeat" | "random" | "shuffle";
