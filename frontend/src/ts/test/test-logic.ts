@@ -1142,6 +1142,10 @@ async function saveResult(
       response.message =
         "Old key data format. Please refresh the page to download the new update. If the problem persists, please contact support.";
     }
+    if (/"result\..+" is (not allowed|required)/gi.test(response.message)) {
+      response.message =
+        "Looks like your result data is using an incorrect schema. Please refresh the page to download the new update. If the problem persists, please contact support.";
+    }
     return Notifications.add("Failed to save result: " + response.message, -1);
   }
 
