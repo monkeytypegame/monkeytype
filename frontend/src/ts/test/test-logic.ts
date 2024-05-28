@@ -1195,8 +1195,7 @@ async function saveResult(
     ) {
       Result.showConfetti();
     }
-    Result.showCrown();
-    await Result.updateCrown();
+    Result.showCrown("normal");
     await DB.saveLocalPB(
       Config.mode,
       completedEvent.mode2,
@@ -1210,6 +1209,8 @@ async function saveResult(
       completedEvent.rawWpm,
       completedEvent.consistency
     );
+  } else {
+    Result.showErrorCrownIfNeeded();
   }
 
   // if (response.data.dailyLeaderboardRank) {
