@@ -372,8 +372,8 @@ export function updateCrownType(type: PbCrown.CrownType): void {
   PbCrown.update(type);
 }
 
-export async function updateCrown(): Promise<void> {
-  if (Config.mode === "quote") {
+export async function updateCrown(dontSave: boolean): Promise<void> {
+  if (Config.mode === "quote" || dontSave) {
     hideCrown();
     return;
   }
@@ -857,7 +857,7 @@ export async function update(
   updateTestType(randomQuote);
   updateQuoteSource(randomQuote);
   updateQuoteFavorite(randomQuote);
-  await updateCrown();
+  await updateCrown(dontSave);
   await updateGraph();
   await updateGraphPBLine();
   await updateTags(dontSave);
