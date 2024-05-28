@@ -797,6 +797,7 @@ function buildCompletedEvent(
     customText: customText,
     testDuration: duration,
     afkDuration: afkDuration,
+    stopOnLetter: Config.stopOnError === "letter",
   } as SharedTypes.CompletedEvent;
 
   if (completedEvent.mode !== "custom") delete completedEvent.customText;
