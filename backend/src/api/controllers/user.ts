@@ -403,7 +403,7 @@ export async function getUser(
       //since there is no data in the database anyway, we can just delete the user from the auth system
       //and ask them to sign up again
       try {
-        await firebaseDeleteUser(uid);
+        await AuthUtil.deleteUser(uid);
         throw new MonkeyError(
           404,
           "User not found in the database, but found in the auth system. We have deleted the ghost user from the auth system. Please sign up again.",
@@ -1057,7 +1057,7 @@ export async function getTestActivity(
 
 async function firebaseDeleteUserIgnoreError(uid: string): Promise<void> {
   try {
-    await firebaseDeleteUser(uid);
+    await AuthUtil.deleteUser(uid);
   } catch (e) {
     //ignore
   }
