@@ -196,4 +196,6 @@ Example content from `backend-configuration.json`:
 If you have the `curl` and `jq` installed you can also run `curl -wO- http://localhost:5005/configuration | jq ".data" > backend-configuration.json` to update the configuration file.
 
 
-_Note:_ The configuration is applied on container startup only. You have to restart the container for your changes to become active.
+> [!NOTE]
+> The configuration is applied on container startup only. You have to restart the container for your changes to become active.
+

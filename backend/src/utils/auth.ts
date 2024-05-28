@@ -59,12 +59,21 @@ export async function updateUserEmail(
   });
 }
 
-export async function deleteUser(uid: string): Promise<void> {
-  await FirebaseAdmin().auth().deleteUser(uid);
-  removeTokensFromCacheByUid(uid);
+export async function updateUserPassword(
+  uid: string,
+  password: string
+): Promise<UserRecord> {
+  return await FirebaseAdmin().auth().updateUser(uid, {
+    password,
+  });
 }
 
-export function removeTokensFromCacheByUid(uid: string): void {
+export async function deleteUser(uid: string): Promise<void> {
+  await FirebaseAdmin().auth().deleteUser(uid);
+}
+
+export async function revokeTokensByUid(uid: string): Promise<void> {
+  await FirebaseAdmin().auth().revokeRefreshTokens(uid);
   for (const entry of tokenCache.entries()) {
     if (entry[1].uid === uid) {
       tokenCache.delete(entry[0]);

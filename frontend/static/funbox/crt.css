@@ -52,6 +52,7 @@ body.crtmode #result,
 body.crtmode #popups,
 body.crtmode #notificationCenter,
 body.crtmode .word.error,
+body.crtmode .word .hints hint,
 body.crtmode input,
 body.crtmode button,
 body.crtmode textarea,
@@ -115,7 +116,10 @@ body.crtmode #logo .icon {
 
 body.crtmode .avatars,
 body.crtmode nav .account .avatar,
-body.crtmode nav .account .levelAndBar,
+/* Adding `filter` style to .levelAndBar would make it
+the containing block for the absolute positioned .xpBar */
+body.crtmode nav .account .levelAndBar .level,
+body.crtmode nav .account .levelAndBar .xpBar,
 body.crtmode header.focus #logo .icon {
   filter: drop-shadow(3px 0px 1px var(--crt-sub-color-glow))
     drop-shadow(-3px 0px 0px var(--crt-sub-color-glow));
