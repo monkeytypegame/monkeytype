@@ -1874,8 +1874,6 @@ export async function apply(
     setMinWpmCustomSpeed(configObj.minWpmCustomSpeed, true);
     setMinAcc(configObj.minAcc, true);
     setMinAccCustom(configObj.minAccCustom, true);
-    setNumbers(configObj.numbers, true);
-    setPunctuation(configObj.punctuation, true);
     setHighlightMode(configObj.highlightMode, true);
     setTypingSpeedUnit(configObj.typingSpeedUnit, true);
     setHideExtraLetters(configObj.hideExtraLetters, true);
@@ -1883,6 +1881,8 @@ export async function apply(
     setStrictSpace(configObj.strictSpace, true);
     setOppositeShiftMode(configObj.oppositeShiftMode, true);
     setMode(configObj.mode, true);
+    setNumbers(configObj.numbers, true);
+    setPunctuation(configObj.punctuation, true);
     setMonkey(configObj.monkey, true);
     setRepeatQuotes(configObj.repeatQuotes, true);
     setMonkeyPowerLevel(configObj.monkeyPowerLevel, true);
