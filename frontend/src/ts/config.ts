@@ -1642,7 +1642,7 @@ export function setFontSize(fontSize: number, nosave?: boolean): boolean {
   ConfigEvent.dispatch("fontSize", config.fontSize, nosave);
 
   // trigger a resize event to update the layout - handled in ui.ts:108
-  $(window).trigger("resize");
+  if (!nosave) $(window).trigger("resize");
 
   return true;
 }
