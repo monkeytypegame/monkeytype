@@ -437,7 +437,6 @@ describe("user controller test", () => {
       "purgeUserFromDailyLeaderboards"
     );
     const blocklistAddMock = vi.spyOn(BlocklistDal, "add");
-    const revokeTokensByUidMock = vi.spyOn(AuthUtils, "revokeTokensByUid");
 
     beforeEach(() => {
       [
@@ -448,7 +447,6 @@ describe("user controller test", () => {
         deleteAllPresetsMock,
         deleteConfigMock,
         purgeUserFromDailyLeaderboardsMock,
-        revokeTokensByUidMock,
       ].forEach((it) => it.mockResolvedValue(undefined));
 
       deleteAllResultMock.mockResolvedValue({} as any);
@@ -465,7 +463,6 @@ describe("user controller test", () => {
         deleteAllApeKeysMock,
         deleteAllPresetsMock,
         purgeUserFromDailyLeaderboardsMock,
-        revokeTokensByUidMock,
       ].forEach((it) => it.mockReset());
     });
 
@@ -493,7 +490,6 @@ describe("user controller test", () => {
       //THEN
       expect(blocklistAddMock).toHaveBeenCalledWith(user);
 
-      expect(revokeTokensByUidMock).toHaveBeenCalledWith(uid);
       expect(deleteUserMock).toHaveBeenCalledWith(uid);
       expect(firebaseDeleteUserMock).toHaveBeenCalledWith(uid);
       expect(deleteAllApeKeysMock).toHaveBeenCalledWith(uid);
