@@ -300,19 +300,13 @@ export async function update(
   details
     .find(".level")
     .text(xpDetails.level)
-    .attr("aria-label", `${Numbers.abbreviateNumber(xp)} total xp`);
+    .attr("aria-label", `${formatXp(xp)} total xp`);
   details
     .find(".xp")
-    .text(
-      `${Numbers.abbreviateNumber(xpToDisplay)}/${Numbers.abbreviateNumber(
-        xpForLevel
-      )}`
-    )
+    .text(`${formatXp(xpToDisplay)}/${formatXp(xpForLevel)}`)
     .attr(
       "aria-label",
-      `${Numbers.abbreviateNumber(
-        xpForLevel - xpToDisplay
-      )} xp until next level`
+      `${formatXp(xpForLevel - xpToDisplay)} xp until next level`
     );
   details
     .find(".xpBar .bar")
@@ -444,4 +438,12 @@ function formatTopPercentage(lbRank: SharedTypes.RankAndCount): string {
   if (lbRank.rank === undefined) return "-";
   if (lbRank.rank === 1) return "GOAT";
   return "Top " + Numbers.roundTo2((lbRank.rank / lbRank.count) * 100) + "%";
+}
+
+function formatXp(xp: number): string {
+  if (xp < 1000) {
+    return Math.round(xp).toString();
+  } else {
+    return Numbers.abbreviateNumber(xp);
+  }
 }
