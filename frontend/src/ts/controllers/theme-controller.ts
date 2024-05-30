@@ -426,10 +426,9 @@ ConfigEvent.subscribe(async (eventKey, eventValue, nosave) => {
   }
 });
 
-window.addEventListener("customBackgroundFailed", (e) => {
+window.addEventListener("customBackgroundFailed", () => {
   Notifications.add(
     "The custom background cannot be loaded and will be removed from your configuration."
   );
   setCustomBackground("");
-  applyCustomBackground();
 });
