@@ -38,8 +38,8 @@
 
 ## Account System
 
-user signup/login is disabled by default. To allow users to signup you'll need to setup a Firebase project. 
-stop the running docker containers using `docker compose down` before making any changes.
+User signup/login is disabled by default. To allow users to signup you'll need to setup a Firebase project. 
+Stop the running docker containers using `docker compose down` before making any changes.
 
 ### Setup Firebase
 
@@ -123,7 +123,7 @@ stop the running docker containers using `docker compose down` before making any
 
 ## Enable daily leaderboards
 
-to enable daily leaderboards update the `backend-configuration.json` file and add/modify
+To enable daily leaderboards update the `backend-configuration.json` file and add/modify
 ```json
 {
     "dailyLeaderboards": {
@@ -154,7 +154,7 @@ to enable daily leaderboards update the `backend-configuration.json` file and ad
 
 ### env file
 
-all settings are described in the [example.env](https://github.com/monkeytypegame/monkeytype/tree/master/docker/example.env) file.
+All settings are described in the [example.env](https://github.com/monkeytypegame/monkeytype/tree/master/docker/example.env) file.
 
 ### serviceAccountKey.json
 
@@ -162,16 +162,16 @@ contains your firebase config, only needed if you want to allow users to signup.
 
 ### backend-configuration.json
 
-configuration of the backend. 
+Configuration of the backend. 
 
-if you don't want to update this file manually you can
+If you don't want to update this file manually you can
 
 - open the backend url in your browser, e.g. `http://localhost:5005/configure/`
 - adjust the settings and click `Save Changes`
 - open the configuration in your browser, e.g. `http://localhost:5005/configuration`
 - copy everything from `data` into the `backend-configuration.json` file.
 
-example output from `http://localhost:5005/configuration`:
+Example output from `http://localhost:5005/configuration`:
 ```json
 {
     "message": "Configuration retrieved",
@@ -184,7 +184,7 @@ example output from `http://localhost:5005/configuration`:
 }
 ```
 
-example content from `backend-configuration.json`:
+Example content from `backend-configuration.json`:
 ```
 {
     "maintenance": false,
@@ -193,7 +193,7 @@ example content from `backend-configuration.json`:
 }
 ```
 
-if you have `curl` and `jq` installed you can also run `curl -wO- http://localhost:5005/configuration | jq ".data" > backend-configuration.json` to update the configuration file.
+If you have `curl` and `jq` installed you can also run `curl -wO- http://localhost:5005/configuration | jq ".data" > backend-configuration.json` to update the configuration file.
 
 
 > [!NOTE]
