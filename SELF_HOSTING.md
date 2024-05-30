@@ -33,13 +33,13 @@
 - create an `.env` file, you can copy the content from the [example.env](https://github.com/monkeytypegame/monkeytype/tree/master/docker/example.env).
 - download the [backend-configuration.json](https://github.com/monkeytypegame/monkeytype/tree/master/docker/backend-configuration.json)
 - run `docker compose up -d`
-- After the command exits successfully you can access [http://localhost:8080](http://localhost:8080)
+- after the command exits successfully you can access [http://localhost:8080](http://localhost:8080)
 
 
 ## Account System
 
-User signup/login is disabled by default. To allow users to signup you'll need to setup a Firebase project. 
-Stop the running docker containers using `docker compose down` before making any changes.
+user signup/login is disabled by default. To allow users to signup you'll need to setup a Firebase project. 
+stop the running docker containers using `docker compose down` before making any changes.
 
 ### Setup Firebase
 
@@ -68,7 +68,7 @@ Stop the running docker containers using `docker compose down` before making any
 - update the `.env` file
   - open the [firebase console](https://console.firebase.google.com/) and open your project
   - open the project settings by clicking the `⚙` icon on the sidebar and `Project settings`
-  - If there is no app in your project create a new web-app `</>`
+  - if there is no app in your project create a new web-app `</>`
     - nickname `monkeytype`
     - uncheck `set up firebase hosting`
     - click `Register app` 
@@ -123,7 +123,7 @@ Stop the running docker containers using `docker compose down` before making any
 
 ## Enable daily leaderboards
 
-To enable daily leaderboards update the `backend-configuration.json` file and add/modify
+to enable daily leaderboards update the `backend-configuration.json` file and add/modify
 ```json
 {
     "dailyLeaderboards": {
@@ -154,24 +154,24 @@ To enable daily leaderboards update the `backend-configuration.json` file and ad
 
 ### env file
 
-All settings are described in the [example.env](https://github.com/monkeytypegame/monkeytype/tree/master/docker/example.env) file.
+all settings are described in the [example.env](https://github.com/monkeytypegame/monkeytype/tree/master/docker/example.env) file.
 
 ### serviceAccountKey.json
 
-Contains your firebase config, only needed if you want to allow users to signup.
+contains your firebase config, only needed if you want to allow users to signup.
 
 ### backend-configuration.json
 
-Configuration of the backend. 
+configuration of the backend. 
 
-If you don't want to update this file manually you can
+if you don't want to update this file manually you can
 
 - open the backend url in your browser, e.g. `http://localhost:5005/configure/`
 - adjust the settings and click `Save Changes`
 - open the configuration in your browser, e.g. `http://localhost:5005/configuration`
 - copy everything from `data` into the `backend-configuration.json` file.
 
-Example output from `http://localhost:5005/configuration`:
+example output from `http://localhost:5005/configuration`:
 ```json
 {
     "message": "Configuration retrieved",
@@ -184,7 +184,7 @@ Example output from `http://localhost:5005/configuration`:
 }
 ```
 
-Example content from `backend-configuration.json`:
+example content from `backend-configuration.json`:
 ```
 {
     "maintenance": false,
@@ -193,7 +193,7 @@ Example content from `backend-configuration.json`:
 }
 ```
 
-If you have the `curl` and `jq` installed you can also run `curl -wO- http://localhost:5005/configuration | jq ".data" > backend-configuration.json` to update the configuration file.
+if you have `curl` and `jq` installed you can also run `curl -wO- http://localhost:5005/configuration | jq ".data" > backend-configuration.json` to update the configuration file.
 
 
 > [!NOTE]
