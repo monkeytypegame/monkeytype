@@ -3,7 +3,12 @@ export function hide(): void {
   $("#result .stats .wpm .crown").css("opacity", 0).addClass("hidden");
 }
 
-export type CrownType = "normal" | "broken" | "half" | "error" | "warning";
+export type CrownType =
+  | "normal"
+  | "ineligible"
+  | "pending"
+  | "error"
+  | "warning";
 
 let visible = false;
 let currentType: CrownType = "normal";
@@ -28,8 +33,8 @@ export function show(): void {
 export function update(type: CrownType): void {
   currentType = type;
   const el = $("#result .stats .wpm .crown");
-  el.removeClass("broken");
-  el.removeClass("half");
+  el.removeClass("ineligible");
+  el.removeClass("pending");
   el.removeClass("error");
   el.removeClass("warning");
   el.addClass(type);

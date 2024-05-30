@@ -372,8 +372,8 @@ export function updateCrownType(type: PbCrown.CrownType): void {
   PbCrown.update(type);
 }
 
-export async function updateCrown(): Promise<void> {
-  if (Config.mode === "quote") {
+export async function updateCrown(dontSave: boolean): Promise<void> {
+  if (Config.mode === "quote" || dontSave) {
     hideCrown();
     return;
   }
@@ -397,7 +397,7 @@ export async function updateCrown(): Promise<void> {
       hideCrown();
     } else {
       //show half crown as the pb is not confirmed by the server
-      showCrown("half");
+      showCrown("pending");
       $("#result .stats .wpm .crown").attr(
         "aria-label",
         "+" + Format.typingSpeed(pbDiff, { showDecimalPlaces: true })
@@ -423,7 +423,7 @@ export async function updateCrown(): Promise<void> {
         `This result is not eligible for a new PB (${canGetPb.reason})`
       );
     } else {
-      showCrown("broken");
+      showCrown("ineligible");
       $("#result .stats .wpm .crown").attr(
         "aria-label",
         `You could've gotten a new PB (+${Format.typingSpeed(pbDiff, {
@@ -440,7 +440,7 @@ export function hideCrown(): void {
 }
 
 export function showErrorCrownIfNeeded(): void {
-  if (PbCrown.getCurrentType() !== "half") return;
+  if (PbCrown.getCurrentType() !== "pending") return;
   PbCrown.show();
   PbCrown.update("error");
   $("#result .stats .wpm .crown").attr(
@@ -857,7 +857,7 @@ export async function update(
   updateTestType(randomQuote);
   updateQuoteSource(randomQuote);
   updateQuoteFavorite(randomQuote);
-  await updateCrown();
+  await updateCrown(dontSave);
   await updateGraph();
   await updateGraphPBLine();
   await updateTags(dontSave);

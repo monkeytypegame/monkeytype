@@ -53,6 +53,7 @@ export async function updateUserEmail(
   uid: string,
   email: string
 ): Promise<UserRecord> {
+  await revokeTokensByUid(uid);
   return await FirebaseAdmin().auth().updateUser(uid, {
     email,
     emailVerified: false,
@@ -63,12 +64,14 @@ export async function updateUserPassword(
   uid: string,
   password: string
 ): Promise<UserRecord> {
+  await revokeTokensByUid(uid);
   return await FirebaseAdmin().auth().updateUser(uid, {
     password,
   });
 }
 
 export async function deleteUser(uid: string): Promise<void> {
+  await revokeTokensByUid(uid);
   await FirebaseAdmin().auth().deleteUser(uid);
 }
 
