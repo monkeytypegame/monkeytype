@@ -304,7 +304,6 @@ describe("test-activity-calendar.ts", () => {
         //set today
         vi.setSystemTime(getDate("2024-06-01"));
         const calendar = new TestActivityCalendar([], getDate("2024-06-01"));
-        console.log(calendar.getMonths());
 
         expect(calendar.getMonths()).toEqual([
           {
