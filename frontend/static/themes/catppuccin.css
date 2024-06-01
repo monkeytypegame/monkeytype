@@ -1,40 +1,40 @@
 :root {
-  --bg-color: #1e1e2e;
-  --caret-color: #f2cdcd;
-  --main-color: #cba6f7;
-  --sub-color: #7f849c;
-  --sub-alt-color: #181825;
-  --text-color: #cdd6f4;
-  --error-color: #f38ba8;
-  --error-extra-color: #eba0ac;
-  --colorful-error-color: #f38ba8;
-  --colorful-error-extra-color: #eba0ac;
+  --bg-color: #24273a;
+  --caret-color: #f4dbd6;
+  --main-color: #cad3f5;
+  --sub-color: #5b6078;
+  --sub-alt-color: #1e2030;
+  --text-color: #cad3f5;
+  --error-color: #ed8796;
+  --error-extra-color: #f0c6c6;
+  --colorful-error-color: #ed8796;
+  --colorful-error-extra-color: #f0c6c6;
 }
 
 nav .view-start {
-  color: #f38ba8;
+  color: #ed8796;
 }
 
 nav .view-leaderboards {
-  color: #fab387;
+  color: #f5a97f;
 }
 
 nav .view-about {
-  color: #f9e2af;
+  color: #eed49f;
 }
 
 nav .view-settings {
-  color: #a6e3a1;
+  color: #a6da95;
 }
 
 nav .view-account {
-  color: #89dceb;
+  color: #8bd5ca;
 }
 
 nav .showAlerts {
-  color: #89b4fa;
+  color: #8aadf4;
 }
 
 nav .signInOut {
-  color: #b4befe;
+  color: #c6a0f6;
 }
