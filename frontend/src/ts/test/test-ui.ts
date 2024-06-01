@@ -356,7 +356,9 @@ export function showWords(): void {
   updateWordsWidth();
   updateWordsHeight(true);
   updateActiveElement(undefined, true);
-  void Caret.updatePosition();
+  setTimeout(() => {
+    void Caret.updatePosition();
+  }, 125);
   updateWordsInputPosition(true);
 }
 

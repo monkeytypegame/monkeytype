@@ -355,7 +355,7 @@ export function updateActive(): void {
 
       if (groupsUsingSelect.includes(group)) {
         const option = $(
-          `.pageAccount .group.filterButtons .filterGroup[group="${group}"] option[filter="${filter}"]`
+          `.pageAccount .group.filterButtons .filterGroup[group="${group}"] option[value="${filter}"]`
         );
         if (filterValue === true) {
           option.prop("selected", true);
@@ -389,34 +389,42 @@ export function updateActive(): void {
 
     const newData = ss.store.getData();
 
+    const allOption = $(
+      `.pageAccount .group.filterButtons .filterGroup[group="${id}"] option[value="all"]`
+    );
+
     if (everythingSelected) {
+      allOption.prop("selected", true);
       for (const data of newData) {
-        //@ts-expect-error
-        if (data.value !== "all") {
-          //@ts-expect-error
-          data.selected = false;
-        } else {
-          //@ts-expect-error
-          data.selected = true;
+        if ("value" in data) {
+          if (data.value === "all") data.selected = true;
+          else data.selected = false;
         }
       }
+      ss.store.setData(newData);
+      ss.render.renderValues();
     } else {
-      for (const data of newData) {
-        //@ts-expect-error
-        if (group[data.value] === true) {
-          //@ts-expect-error
+      allOption.prop("selected", false);
+    }
+
+    for (const data of newData) {
+      if ("value" in data) {
+        if (group[data.value as keyof typeof group] === true) {
           data.selected = true;
         } else {
-          //@ts-expect-error
-          data.selected = false;
+          if (!everythingSelected || data.value !== "all") {
+            data.selected = false;
+          }
         }
       }
     }
 
     setTimeout(() => {
       ss.store.setData(newData);
-      ss?.render.renderValues();
-      ss?.render.renderOptions(newData);
+      if (!everythingSelected) {
+        ss.render.renderValues();
+      }
+      ss.render.renderOptions(newData);
     }, 0);
   }
 
@@ -703,24 +711,46 @@ $(".pageAccount .topFilters button.toggleAdvancedFilters").on("click", () => {
   );
 });
 
+function adjustScrollposition(
+  group: keyof SharedTypes.ResultFilters,
+  topItem: number = 0
+): void {
+  const slimSelect = groupSelects[group];
+  if (slimSelect === undefined) return;
+  const listElement = slimSelect.render.content.list;
+  const topListItem = listElement.children.item(topItem) as HTMLElement;
+
+  listElement.scrollTop = topListItem.offsetTop - listElement.offsetTop;
+}
+
 function selectBeforeChangeFn(
   group: keyof SharedTypes.ResultFilters,
   selectedOptions: Option[],
   oldSelectedOptions: Option[]
-): void {
-  const includesAll = selectedOptions.some((option) => option.value === "all");
-  const allIsNew =
-    !oldSelectedOptions.some((option) => option.value === "all") && includesAll;
+): void | boolean {
+  const includesAllNow = selectedOptions.some(
+    (option) => option.value === "all"
+  );
+  const includedAllBefore = oldSelectedOptions.some(
+    (option) => option.value === "all"
+  );
 
-  if (includesAll) {
-    if (allIsNew) {
+  if (includesAllNow) {
+    if (!includedAllBefore) {
+      // all option was selected
       selectedOptions = selectedOptions.filter(
         (option) => option.value === "all"
       );
-    } else if (selectedOptions.length > 1) {
+    } else if (selectedOptions.length < oldSelectedOptions.length) {
+      // options other than all were deselcted
       selectedOptions = selectedOptions.filter(
         (option) => option.value !== "all"
       );
+    }
+  } else {
+    if (includedAllBefore) {
+      // all option was deselected
+      selectedOptions = [];
     }
   }
 
@@ -728,9 +758,6 @@ function selectBeforeChangeFn(
   for (const selectedOption of selectedOptions) {
     if (selectedOption.value === "all") {
       setAllFilters(group, true);
-      updateActive();
-      save();
-      selectChangeCallbackFn();
       break;
     }
 
@@ -740,6 +767,7 @@ function selectBeforeChangeFn(
   updateActive();
   save();
   selectChangeCallbackFn();
+  return false;
 }
 
 let selectChangeCallbackFn: () => void = () => {
@@ -785,14 +813,22 @@ export async function appendButtons(
         settings: {
           showSearch: true,
           placeholderText: "select a language",
+          allowDeselect: true,
+          closeOnSelect: false,
         },
         events: {
-          beforeChange: (selectedOptions, oldSelectedOptions): void => {
-            selectBeforeChangeFn(
+          beforeChange: (
+            selectedOptions,
+            oldSelectedOptions
+          ): void | boolean => {
+            return selectBeforeChangeFn(
               "language",
               selectedOptions,
               oldSelectedOptions
             );
+          },
+          beforeOpen: (): void => {
+            adjustScrollposition("language");
           },
         },
       });
@@ -834,10 +870,22 @@ export async function appendButtons(
         settings: {
           showSearch: true,
           placeholderText: "select a funbox",
+          allowDeselect: true,
+          closeOnSelect: false,
         },
         events: {
-          beforeChange: (selectedOptions, oldSelectedOptions): void => {
-            selectBeforeChangeFn("funbox", selectedOptions, oldSelectedOptions);
+          beforeChange: (
+            selectedOptions,
+            oldSelectedOptions
+          ): void | boolean => {
+            return selectBeforeChangeFn(
+              "funbox",
+              selectedOptions,
+              oldSelectedOptions
+            );
+          },
+          beforeOpen: (): void => {
+            adjustScrollposition("funbox");
           },
         },
       });
@@ -875,10 +923,22 @@ export async function appendButtons(
         settings: {
           showSearch: true,
           placeholderText: "select a tag",
+          allowDeselect: true,
+          closeOnSelect: false,
         },
         events: {
-          beforeChange: (selectedOptions, oldSelectedOptions): void => {
-            selectBeforeChangeFn("tags", selectedOptions, oldSelectedOptions);
+          beforeChange: (
+            selectedOptions,
+            oldSelectedOptions
+          ): void | boolean => {
+            return selectBeforeChangeFn(
+              "tags",
+              selectedOptions,
+              oldSelectedOptions
+            );
+          },
+          beforeOpen: (): void => {
+            adjustScrollposition("tags");
           },
         },
       });
