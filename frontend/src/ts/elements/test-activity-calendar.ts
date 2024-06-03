@@ -78,7 +78,10 @@ export class TestActivityCalendar implements MonkeyTypes.TestActivityCalendar {
       const month: Date = months[i] as Date;
       let start =
         i === 0 ? new UTCDateMini(this.startDay) : startOfMonth(month);
-      let end = i === 12 ? new UTCDateMini(this.endDay) : endOfMonth(start);
+      let end =
+        i === months.length - 1
+          ? new UTCDateMini(this.endDay)
+          : endOfMonth(start);
 
       if (!isSunday(start))
         start = (i === 0 ? previousSunday : nextSunday)(start);
