@@ -158,7 +158,7 @@ All settings are described in the [example.env](https://github.com/monkeytypegam
 
 ### serviceAccountKey.json
 
-contains your firebase config, only needed if you want to allow users to signup.
+Contains your firebase config, only needed if you want to allow users to signup.
 
 ### backend-configuration.json
 
