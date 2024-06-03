@@ -233,6 +233,9 @@ async function updateUser(uid: string): Promise<void> {
 
       lbPersonalBests[mode.mode][mode.mode2][mode.language] = entry;
     }
+
+    //update testActivity
+    await updateTestActicity(uid);
   }
 
   //update the user
@@ -262,4 +265,119 @@ function randomValue<T>(values: T[]): T {
 
 function createArray<T>(size: number, builder: () => T): T[] {
   return new Array(size).fill(0).map((it) => builder());
+}
+
+async function updateTestActicity(uid: string): Promise<void> {
+  await ResultDal.getResultCollection()
+    .aggregate(
+      [
+        {
+          $match: {
+            uid,
+          },
+        },
+        {
+          $project: {
+            _id: 0,
+            timestamp: -1,
+            uid: 1,
+          },
+        },
+        {
+          $addFields: {
+            date: {
+              $toDate: "$timestamp",
+            },
+          },
+        },
+        {
+          $replaceWith: {
+            uid: "$uid",
+            year: {
+              $year: "$date",
+            },
+            day: {
+              $dayOfYear: "$date",
+            },
+          },
+        },
+        {
+          $group: {
+            _id: {
+              uid: "$uid",
+              year: "$year",
+              day: "$day",
+            },
+            count: {
+              $sum: 1,
+            },
+          },
+        },
+        {
+          $group: {
+            _id: {
+              uid: "$_id.uid",
+              year: "$_id.year",
+            },
+            days: {
+              $addToSet: {
+                day: "$_id.day",
+                tests: "$count",
+              },
+            },
+          },
+        },
+        {
+          $replaceWith: {
+            uid: "$_id.uid",
+            days: {
+              $function: {
+                lang: "js",
+                args: ["$days", "$_id.year"],
+                body: `function (days, year) {
+                                var max = Math.max(
+                                    ...days.map((it) => it.day)
+                                )-1;
+                                var arr = new Array(max).fill(null);
+                                for (day of days) {
+                                    arr[day.day-1] = day.tests;
+                                }
+                                let result = {};
+                                result[year] = arr;
+                                return result;
+                            }`,
+              },
+            },
+          },
+        },
+        {
+          $group: {
+            _id: "$uid",
+            testActivity: {
+              $mergeObjects: "$days",
+            },
+          },
+        },
+        {
+          $addFields: {
+            uid: "$_id",
+          },
+        },
+        {
+          $project: {
+            _id: 0,
+          },
+        },
+        {
+          $merge: {
+            into: "users",
+            on: "uid",
+            whenMatched: "merge",
+            whenNotMatched: "discard",
+          },
+        },
+      ],
+      { allowDiskUse: true }
+    )
+    .toArray();
 }
