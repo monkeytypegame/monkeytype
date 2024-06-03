@@ -54,7 +54,7 @@ const BASE_CONFIG = {
           targetFormats: ["woff2"],
         });
       },
-      handleHotUpdate({ file }) {
+      async handleHotUpdate({ server, file }) {
         if (
           file.endsWith(".html") ||
           file.endsWith(".css") ||
@@ -62,8 +62,17 @@ const BASE_CONFIG = {
           file.endsWith(".ts")
         ) {
           const fontawesomeClasses = getFontawesomeConfig();
-          fontawesomeSubset(fontawesomeClasses, "src/webfonts-generated", {
-            targetFormats: ["woff2"],
+          await fontawesomeSubset(
+            fontawesomeClasses,
+            "src/webfonts-generated",
+            {
+              targetFormats: ["woff2"],
+            }
+          );
+
+          console.log("full reload");
+          server.ws.send({
+            type: "full-reload",
           });
         }
       },
@@ -186,6 +195,28 @@ const BASE_CONFIG = {
 };
 
 /** @type {import("vite").UserConfig} */
+const DEV_CONFIG = {
+  plugins: [
+    {
+      name: "force-disable-cache",
+      configureServer(server) {
+        server.middlewares.use((req, res, next) => {
+          if (req.url.endsWith("woff2")) {
+            res.setHeader(
+              "Cache-Control",
+              "no-cache, no-store, must-revalidate, max-age=1"
+            );
+            res.setHeader("Pragma", "no-cache");
+            res.setHeader("Etag", `W/"${Math.random()}"`);
+          }
+          next();
+        });
+      },
+    },
+  ],
+};
+
+/** @type {import("vite").UserConfig} */
 const BUILD_CONFIG = {
   plugins: [
     splitVendorChunkPlugin(),
@@ -259,7 +290,7 @@ export default defineConfig(({ command }) => {
     }
     return mergeConfig(BASE_CONFIG, BUILD_CONFIG);
   } else {
-    return BASE_CONFIG;
+    return mergeConfig(BASE_CONFIG, DEV_CONFIG);
   }
 });
 
