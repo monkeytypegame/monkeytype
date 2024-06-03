@@ -26,6 +26,7 @@ const modules2 = {
  */
 
 export function getFontawesomeConfig(debug = false) {
+  const time = Date.now();
   const srcFiles = findAllFiles(
     "./src",
     (filename) => !filename.endsWith("fontawesome.scss") //ignore our own css
@@ -38,13 +39,18 @@ export function getFontawesomeConfig(debug = false) {
   const allFiles = [...srcFiles, ...staticFiles];
   const usedClassesSet = new Set();
 
-  const regex = new RegExp("[^a-zA-Z0-9-_]", "g");
+  const regex = /\bfa-[a-z0-9-]+\b/g;
+
   for (const file of allFiles) {
-    fs.readFileSync("./" + file)
-      .toString()
-      .split(regex)
-      .filter((it) => it.startsWith("fa-") && it.length > 3)
-      .forEach((it) => usedClassesSet.add(it));
+    const fileContent = fs.readFileSync("./" + file).toString();
+    const matches = fileContent.match(regex);
+
+    if (matches) {
+      matches.forEach((match) => {
+        const [icon] = match.split(" ");
+        usedClassesSet.add(icon);
+      });
+    }
   }
 
   const usedClasses = new Array(...usedClassesSet).sort();
@@ -75,6 +81,7 @@ export function getFontawesomeConfig(debug = false) {
         brands,
       })
     );
+    console.debug("Detected fontawesome classes in", Date.now() - time, "ms");
   }
 
   return {
