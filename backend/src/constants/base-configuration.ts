@@ -7,7 +7,6 @@ export const BASE_CONFIGURATION: SharedTypes.Configuration = {
   maintenance: false,
   dev: {
     responseSlowdownMs: 0,
-    enabled: false,
   },
   results: {
     savingEnabled: false,
@@ -163,10 +162,6 @@ export const CONFIGURATION_FORM_SCHEMA: ObjectSchema<SharedTypes.Configuration> 
             type: "number",
             label: "Response Slowdown (miliseconds)",
             min: 0,
-          },
-          enabled: {
-            type: "boolean",
-            label: "Endpoints enabled",
           },
         },
       },

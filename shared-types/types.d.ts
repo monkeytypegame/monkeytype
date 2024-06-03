@@ -16,7 +16,6 @@ declare namespace SharedTypes {
     maintenance: boolean;
     dev: {
       responseSlowdownMs: number;
-      enabled: boolean;
     };
     quotes: {
       reporting: {

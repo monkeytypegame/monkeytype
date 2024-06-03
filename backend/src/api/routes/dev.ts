@@ -8,13 +8,14 @@ import {
 } from "../../middlewares/api-utils";
 import joi from "joi";
 import { createTestData } from "../controllers/dev";
+import { isDevEnvironment } from "../../utils/misc";
 
 const router = Router();
 
 router.use(
   validateConfiguration({
-    criteria: (configuration) => {
-      return configuration.dev.enabled;
+    criteria: () => {
+      return isDevEnvironment();
     },
     invalidMessage: "Development endpoints are currently disabled.",
   })
