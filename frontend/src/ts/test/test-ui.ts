@@ -405,23 +405,17 @@ export function updateWordsInputPosition(initial = false): void {
     initial &&
     !posUpdateLangList.some((l) => Config.language.startsWith(l))
   ) {
-    el.style.left = "0px";
+    el.style.left = activeWord.offsetLeft + "px";
     el.style.top =
-      // wordsWrapperTop +
-      activeWord.offsetHeight * 2 +
-      activeWordMargin * 1.5 +
+      activeWord.offsetTop +
+      activeWord.offsetHeight +
       -el.offsetHeight +
+      (activeWord.offsetHeight + activeWordMargin) +
       "px";
   } else {
     el.style.left = activeWord.offsetLeft + "px";
     el.style.top =
-      activeWord.offsetTop -
-      activeWordMargin +
-      // wordsWrapperTop +
-      activeWord.offsetHeight +
-      activeWordMargin +
-      -el.offsetHeight +
-      "px";
+      activeWord.offsetTop + activeWord.offsetHeight + -el.offsetHeight + "px";
   }
 }
 
