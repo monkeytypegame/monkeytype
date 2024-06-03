@@ -11,6 +11,7 @@ import * as DB from "../db";
 import * as Loader from "../elements/loader";
 import * as AccountButton from "../elements/account-button";
 import { restart as restartTest } from "../test/test-logic";
+import * as ChallengeController from "../controllers/challenge-controller";
 import * as Tribe from "../tribe/tribe";
 
 export async function linkDiscord(hashOverride: string): Promise<void> {
@@ -180,14 +181,16 @@ export function loadTestSettingsFromUrl(getOverride?: string): void {
     applied["funbox"] = de[7];
   }
 
-  restartTest();
+  restartTest({
+    nosave: true,
+  });
 
   let appliedString = "";
 
   Object.keys(applied).forEach((setKey) => {
     const set = applied[setKey];
     if (set !== undefined) {
-      appliedString += `${setKey}${set ? ": " + set : ""}<br>`;
+      appliedString += `${setKey}${Misc.escapeHTML(set ? ": " + set : "")}<br>`;
     }
   });
 
@@ -197,6 +200,28 @@ export function loadTestSettingsFromUrl(getOverride?: string): void {
       allowHTML: true,
     });
   }
+}
+
+export function loadChallengeFromUrl(getOverride?: string): void {
+  const getValue = (
+    Misc.findGetParameter("challenge", getOverride) ?? ""
+  ).toLowerCase();
+  if (getValue === "") return;
+
+  Notifications.add("Loading challenge", 0);
+  ChallengeController.setup(getValue)
+    .then((result) => {
+      if (result === true) {
+        Notifications.add("Challenge loaded", 1);
+        restartTest({
+          nosave: true,
+        });
+      }
+    })
+    .catch((e) => {
+      Notifications.add("Failed to load challenge", -1);
+      console.error(e);
+    });
 }
 
 export function loadTribeAutoJoinFromUrl(override?: string): void {

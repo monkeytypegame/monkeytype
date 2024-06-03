@@ -1,6 +1,6 @@
 import * as DB from "../db";
-import format from "date-fns/format";
-import differenceInDays from "date-fns/differenceInDays";
+import { format } from "date-fns/format";
+import { differenceInDays } from "date-fns/differenceInDays";
 import * as Misc from "../utils/misc";
 import * as Numbers from "../utils/numbers";
 import * as Levels from "../utils/levels";
@@ -8,7 +8,7 @@ import * as DateTime from "../utils/date-and-time";
 import { getHTMLById } from "../controllers/badge-controller";
 import { throttle } from "throttle-debounce";
 import * as ActivePage from "../states/active-page";
-import formatDistanceToNowStrict from "date-fns/formatDistanceToNowStrict";
+import { formatDistanceToNowStrict } from "date-fns/formatDistanceToNowStrict";
 import { getHtmlByUserFlags } from "../controllers/user-flag-controller";
 import Format from "../utils/format";
 
@@ -294,26 +294,19 @@ export async function update(
   }
 
   const xp = profile.xp ?? 0;
-  const levelFraction = Levels.getLevel(xp);
-  const level = Math.floor(levelFraction);
-  const xpForLevel = Levels.getXpForLevel(level);
-  const xpToDisplay = Math.round(xpForLevel * (levelFraction % 1));
+  const xpDetails = Levels.getXpDetails(xp);
+  const xpForLevel = xpDetails.levelMaxXp;
+  const xpToDisplay = xpDetails.levelCurrentXp;
   details
     .find(".level")
-    .text(level)
-    .attr("aria-label", `${Numbers.abbreviateNumber(xp)} total xp`);
+    .text(xpDetails.level)
+    .attr("aria-label", `${formatXp(xp)} total xp`);
   details
     .find(".xp")
-    .text(
-      `${Numbers.abbreviateNumber(xpToDisplay)}/${Numbers.abbreviateNumber(
-        xpForLevel
-      )}`
-    )
+    .text(`${formatXp(xpToDisplay)}/${formatXp(xpForLevel)}`)
     .attr(
       "aria-label",
-      `${Numbers.abbreviateNumber(
-        xpForLevel - xpToDisplay
-      )} xp until next level`
+      `${formatXp(xpForLevel - xpToDisplay)} xp until next level`
     );
   details
     .find(".xpBar .bar")
@@ -445,4 +438,12 @@ function formatTopPercentage(lbRank: SharedTypes.RankAndCount): string {
   if (lbRank.rank === undefined) return "-";
   if (lbRank.rank === 1) return "GOAT";
   return "Top " + Numbers.roundTo2((lbRank.rank / lbRank.count) * 100) + "%";
+}
+
+function formatXp(xp: number): string {
+  if (xp < 1000) {
+    return Math.round(xp).toString();
+  } else {
+    return Numbers.abbreviateNumber(xp);
+  }
 }

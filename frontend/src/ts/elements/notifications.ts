@@ -13,9 +13,10 @@ function updateMargin(): void {
 
 let visibleStickyNotifications = 0;
 let id = 0;
+type NotificationType = "notification" | "banner" | "psa";
 class Notification {
   id: number;
-  type: string;
+  type: NotificationType;
   message: string;
   level: number;
   important: boolean;
@@ -24,7 +25,7 @@ class Notification {
   customIcon?: string;
   closeCallback: () => void;
   constructor(
-    type: string,
+    type: NotificationType,
     message: string,
     level: number,
     important: boolean | undefined,
@@ -40,7 +41,7 @@ class Notification {
     this.message = allowHTML ? message : Misc.escapeHTML(message);
     this.level = level;
     this.important = important ?? false;
-    if (type === "banner") {
+    if (type === "banner" || type === "psa") {
       this.duration = duration as number;
     } else {
       if (duration === undefined) {
@@ -85,7 +86,7 @@ class Notification {
       title = this.customTitle;
     }
 
-    if (this.type === "banner") {
+    if (this.type === "banner" || this.type === "psa") {
       icon = `<i class="fas fa-fw fa-bullhorn"></i>`;
     }
 
@@ -152,15 +153,19 @@ class Notification {
       $(`#notificationCenter .notif[id='${this.id}']`).on("hover", () => {
         $(`#notificationCenter .notif[id='${this.id}']`).toggleClass("hover");
       });
-    } else if (this.type === "banner") {
+    } else if (this.type === "banner" || this.type === "psa") {
       let leftside = `<div class="icon lefticon">${icon}</div>`;
 
+      let withImage = false;
       if (/images\/.*/.test(this.customIcon as string)) {
-        leftside = `<div class="image" style="background-image: url(${this.customIcon})"></div>`;
+        withImage = true;
+        leftside = `<div class="icon lefticon"><i class="fas fa-fw fa-bullhorn"></i></div><div class="image" style="background-image: url(${this.customIcon})"></div>`;
       }
 
       $("#bannerCenter").prepend(`
-        <div class="banner ${cls}" id="${this.id}">
+        <div class="${this.type} ${cls} content-grid ${
+        withImage ? "withImage" : ""
+      }" id="${this.id}">
         <div class="container">
           ${leftside}
           <div class="text">
@@ -181,20 +186,23 @@ class Notification {
       updateMargin();
       BannerEvent.dispatch();
       if (this.duration >= 0) {
-        $(`#bannerCenter .banner[id='${this.id}'] .closeButton`).on(
-          "click",
-          () => {
-            this.hide();
-            this.closeCallback();
-          }
-        );
+        $(
+          `#bannerCenter .banner[id='${this.id}'] .closeButton, #bannerCenter .psa[id='${this.id}'] .closeButton`
+        ).on("click", () => {
+          this.hide();
+          this.closeCallback();
+        });
       }
       // NOTE: This need to be changed if the update banner text is changed
       if (this.message.includes("please refresh")) {
         // add pointer when refresh is needed
-        $(`#bannerCenter .banner[id='${this.id}']`).css("cursor", "pointer");
+        $(
+          `#bannerCenter .banner[id='${this.id}'], #bannerCenter .psa[id='${this.id}']`
+        ).css("cursor", "pointer");
         // refresh on clicking banner
-        $(`#bannerCenter .banner[id='${this.id}']`).on("click", () => {
+        $(
+          `#bannerCenter .banner[id='${this.id}'], #bannerCenter .psa[id='${this.id}']`
+        ).on("click", () => {
           window.location.reload();
         });
       }
@@ -226,8 +234,10 @@ class Notification {
             );
           }
         );
-    } else if (this.type === "banner") {
-      $(`#bannerCenter .banner[id='${this.id}']`)
+    } else if (this.type === "banner" || this.type === "psa") {
+      $(
+        `#bannerCenter .banner[id='${this.id}'], #bannerCenter .psa[id='${this.id}']`
+      )
         .css("opacity", 1)
         .animate(
           {
@@ -235,7 +245,9 @@ class Notification {
           },
           125,
           () => {
-            $(`#bannerCenter .banner[id='${this.id}']`).remove();
+            $(
+              `#bannerCenter .banner[id='${this.id}'], #bannerCenter .psa[id='${this.id}']`
+            ).remove();
             updateMargin();
             BannerEvent.dispatch();
           }
@@ -295,6 +307,29 @@ export function addBanner(
   );
   banner.show();
   return banner.id;
+}
+
+export function addPSA(
+  message: string,
+  level = -1,
+  customIcon = "bullhorn",
+  sticky = false,
+  closeCallback?: () => void,
+  allowHTML?: boolean
+): number {
+  const psa = new Notification(
+    "psa",
+    message,
+    level,
+    false,
+    sticky ? -1 : 0,
+    undefined,
+    customIcon,
+    closeCallback,
+    allowHTML
+  );
+  psa.show();
+  return psa.id;
 }
 
 export function clearAllNotifications(): void {

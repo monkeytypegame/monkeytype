@@ -20,7 +20,7 @@ import * as ThemeController from "../controllers/theme-controller";
 import * as ResultWordHighlight from "../elements/result-word-highlight";
 import * as PaceCaret from "./pace-caret";
 import * as Caret from "./caret";
-import * as LiveWpm from "./live-wpm";
+import * as LiveSpeed from "./live-speed";
 import * as LiveAcc from "./live-acc";
 import * as LiveBurst from "./live-burst";
 import * as TimerProgress from "./timer-progress";
@@ -100,10 +100,8 @@ export function startTest(now: number): boolean {
   Replay.startReplayRecording();
   Replay.replayGetWordsList(TestWords.words.list);
   TestInput.resetKeypressTimings();
-  TimerProgress.restart();
   TimerProgress.show();
-  $("#liveWpm").text("0");
-  LiveWpm.show();
+  LiveSpeed.show();
   TribeDelta.show();
   LiveAcc.show();
   LiveBurst.show();
@@ -218,8 +216,8 @@ export function restart(options = {} as RestartOptions): void {
 
   if (
     Config.mode === "quote" &&
-    TestWords.randomQuote !== null &&
-    Config.language.startsWith(TestWords.randomQuote.language) &&
+    TestWords.currentQuote !== null &&
+    Config.language.startsWith(TestWords.currentQuote.language) &&
     Config.repeatQuotes === "typing" &&
     (TestState.isActive || failReason !== "")
   ) {
@@ -261,7 +259,7 @@ export function restart(options = {} as RestartOptions): void {
   Caret.hide();
   TestState.setActive(false);
   Replay.stopReplayRecording();
-  LiveWpm.hide();
+  LiveSpeed.hide();
   TribeDelta.hide();
   LiveAcc.hide();
   LiveBurst.hide();
@@ -375,23 +373,10 @@ export function restart(options = {} as RestartOptions): void {
           },
           options.noAnim ? 0 : 125,
           () => {
-            (
-              document.querySelector("#miniTimerAndLiveWpm .wpm") as HTMLElement
-            ).innerHTML = "0";
-            (
-              document.querySelector("#miniTimerAndLiveWpm .acc") as HTMLElement
-            ).innerHTML = "100%";
-            (
-              document.querySelector(
-                "#miniTimerAndLiveWpm .burst"
-              ) as HTMLElement
-            ).innerHTML = "0";
-            (document.querySelector("#liveWpm") as HTMLElement).innerHTML = "0";
-            (document.querySelector("#liveAcc") as HTMLElement).innerHTML =
-              "100%";
-            (document.querySelector("#liveBurst") as HTMLElement).innerHTML =
-              "0";
-
+            TimerProgress.reset();
+            LiveSpeed.reset();
+            LiveAcc.reset();
+            LiveBurst.reset();
             TestUI.setTestRestarting(false);
             TestUI.updatePremid();
             ManualRestart.reset();
@@ -479,6 +464,10 @@ export async function init(): Promise<void> {
 
   if (!Config.lazyMode && !language.noLazyMode) {
     rememberLazyMode = false;
+  }
+
+  if (Config.mode === "custom") {
+    console.debug("Custom text", CustomText.getData());
   }
 
   let generatedWords: string[];
@@ -571,7 +560,7 @@ export async function addWord(): Promise<void> {
       CustomText.getLimitValue() !== 0) ||
     (Config.mode === "quote" &&
       TestWords.words.length >=
-        (TestWords.randomQuote?.textSplit?.length ?? 0)) ||
+        (TestWords.currentQuote?.textSplit?.length ?? 0)) ||
     (Config.mode === "custom" &&
       CustomText.getLimitMode() === "section" &&
       WordsGenerator.sectionIndex >= CustomText.getLimitValue() &&
@@ -803,7 +792,7 @@ function buildCompletedEvent(
     language = Strings.removeLanguageSize(Config.language);
   }
 
-  const quoteLength = TestWords.randomQuote?.group ?? -1;
+  const quoteLength = TestWords.currentQuote?.group ?? -1;
 
   const completedEvent = {
     wpm: stats.wpm,
@@ -817,7 +806,7 @@ function buildCompletedEvent(
     charTotal: stats.allChars,
     acc: stats.acc,
     mode: Config.mode,
-    mode2: Misc.getMode2(Config, TestWords.randomQuote),
+    mode2: Misc.getMode2(Config, TestWords.currentQuote),
     quoteLength: quoteLength,
     punctuation: Config.punctuation,
     numbers: Config.numbers,
@@ -847,6 +836,7 @@ function buildCompletedEvent(
     customText: customText,
     testDuration: duration,
     afkDuration: afkDuration,
+    stopOnLetter: Config.stopOnError === "letter",
   } as SharedTypes.CompletedEvent;
 
   if (completedEvent.mode !== "custom") delete completedEvent.customText;
@@ -894,7 +884,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
   TestState.setActive(false);
   Replay.stopReplayRecording();
   Caret.hide();
-  LiveWpm.hide();
+  LiveSpeed.hide();
   TribeDelta.hide();
   TribeDelta.hideBar();
   LiveAcc.hide();
@@ -961,7 +951,19 @@ export async function finish(difficultyFailed = false): Promise<void> {
 
   let tooShort = false;
   //fail checks
-  if (difficultyFailed) {
+  const dateDur = (TestStats.end3 - TestStats.start3) / 1000;
+  if (
+    Config.mode !== "zen" &&
+    !TestState.bailedOut &&
+    (ce.testDuration < dateDur - 0.05 || ce.testDuration > dateDur + 0.05)
+  ) {
+    //dont bother checking this for zen mode or bailed out tests because
+    //the duration might be modified to remove trailing afk time
+    //its also not a big deal if the duration is off in those tests
+    Notifications.add("Test invalid - inconsistent test duration", 0);
+    TestStats.setInvalid();
+    dontSave = true;
+  } else if (difficultyFailed) {
     Notifications.add(`Test failed - ${failReason}`, 0, {
       duration: 1,
     });
@@ -1144,7 +1146,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
     afkDetected,
     TestState.isRepeated,
     tooShort,
-    TestWords.randomQuote,
+    TestWords.currentQuote,
     dontSave
   );
 
@@ -1185,7 +1187,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
   TestStats.resetIncomplete();
 
   completedEvent.uid = Auth?.currentUser?.uid as string;
-  Result.updateRateQuote(TestWords.randomQuote);
+  Result.updateRateQuote(TestWords.currentQuote);
 
   AccountButton.loading(true);
   if (completedEvent.bailedOut !== true) {
@@ -1290,6 +1292,10 @@ async function saveResult(
       response.message =
         "Old key data format. Please refresh the page to download the new update. If the problem persists, please contact support.";
     }
+    if (/"result\..+" is (not allowed|required)/gi.test(response.message)) {
+      response.message =
+        "Looks like your result data is using an incorrect schema. Please refresh the page to download the new update. If the problem persists, please contact support.";
+    }
     return Notifications.add("Failed to save result: " + response.message, -1);
   }
 
@@ -1338,8 +1344,7 @@ async function saveResult(
     ) {
       Result.showConfetti();
     }
-    Result.showCrown();
-    await Result.updateCrown();
+    Result.showCrown("normal");
     await DB.saveLocalPB(
       Config.mode,
       completedEvent.mode2,
@@ -1353,6 +1358,8 @@ async function saveResult(
       completedEvent.rawWpm,
       completedEvent.consistency
     );
+  } else {
+    Result.showErrorCrownIfNeeded();
   }
 
   // if (response.data.dailyLeaderboardRank) {

@@ -4,16 +4,12 @@ export default defineConfig({
   test: {
     globals: true,
     environment: "node",
+    globalSetup: "__tests__/global-setup.ts",
     setupFiles: ["__tests__/setup-tests.ts"],
     pool: "forks",
 
     coverage: {
       include: ["**/*.ts"],
-      provider: "istanbul",
-      reporter: [
-        "text", // For the terminal
-        "lcov", // For the VSCode extension and browser
-      ],
     },
   },
 });

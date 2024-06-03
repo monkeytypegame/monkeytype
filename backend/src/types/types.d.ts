@@ -20,7 +20,12 @@ declare namespace MonkeyTypes {
 
   type DBUser = Omit<
     SharedTypes.User,
-    "resultFilterPresets" | "tags" | "customThemes" | "isPremium" | "allTimeLbs"
+    | "resultFilterPresets"
+    | "tags"
+    | "customThemes"
+    | "isPremium"
+    | "allTimeLbs"
+    | "testActivity"
   > & {
     _id: ObjectId;
     resultFilterPresets?: WithObjectIdArray<SharedTypes.ResultFilters[]>;
@@ -34,6 +39,7 @@ declare namespace MonkeyTypes {
     lastNameChange?: number;
     canManageApeKeys?: boolean;
     bananas?: number;
+    testActivity?: SharedTypes.CountByYearAndDay;
   };
 
   type DBCustomTheme = WithObjectId<SharedTypes.CustomTheme>;
@@ -100,4 +106,18 @@ declare namespace MonkeyTypes {
     frontendForcedConfig?: Record<string, string[] | boolean[]>;
     frontendFunctions?: string[];
   };
+
+  type DBResult = MonkeyTypes.WithObjectId<
+    SharedTypes.DBResult<SharedTypes.Config.Mode>
+  >;
+
+  type BlocklistEntry = {
+    _id: string;
+    usernameHash?: string;
+    emailHash?: string;
+    discordIdHash?: string;
+    timestamp: number;
+  };
+
+  type DBBlocklistEntry = WithObjectId<MonkeyTypes.BlocklistEntry>;
 }

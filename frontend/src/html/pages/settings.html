@@ -904,7 +904,7 @@
         <span>live progress style</span>
       </div>
       <div class="text">
-        Change the style of the timer/word count during a timed test.
+        Change the style of the timer/word count during a test.
       </div>
       <div class="buttons">
         <button data-config-value="off">off</button>
@@ -913,14 +913,55 @@
         <button data-config-value="mini">mini</button>
       </div>
     </div>
+    <div class="section" data-config-name="liveSpeedStyle">
+      <div class="groupTitle">
+        <i class="fas fa-tachometer-alt"></i>
+        <span>live speed style</span>
+      </div>
+      <div class="text">
+        Change the style of the live speed displayed during the test.
+      </div>
+      <div class="buttons">
+        <button data-config-value="off">off</button>
+        <button data-config-value="text">text</button>
+        <button data-config-value="mini">mini</button>
+      </div>
+    </div>
+    <div class="section" data-config-name="liveAccStyle">
+      <div class="groupTitle">
+        <i class="fas fa-tachometer-alt"></i>
+        <span>live accuracy style</span>
+      </div>
+      <div class="text">
+        Change the style of the live accuracy displayed during the test.
+      </div>
+      <div class="buttons">
+        <button data-config-value="off">off</button>
+        <button data-config-value="text">text</button>
+        <button data-config-value="mini">mini</button>
+      </div>
+    </div>
+    <div class="section" data-config-name="liveBurstStyle">
+      <div class="groupTitle">
+        <i class="fas fa-tachometer-alt"></i>
+        <span>live burst style</span>
+      </div>
+      <div class="text">
+        Change the style of the live burst speed displayed during the test.
+      </div>
+      <div class="buttons">
+        <button data-config-value="off">off</button>
+        <button data-config-value="text">text</button>
+        <button data-config-value="mini">mini</button>
+      </div>
+    </div>
     <div class="section" data-config-name="timerColor">
       <div class="groupTitle">
         <i class="fas fa-chart-pie"></i>
-        <span>live progress color</span>
+        <span>live stats color</span>
       </div>
       <div class="text">
-        Change the color of the timer/word count number/bar and live speed
-        number.
+        Change the color of the progress, live speed, accuracy and burst text.
       </div>
       <div class="buttons">
         <button data-config-value="black">black</button>
@@ -932,11 +973,10 @@
     <div class="section" data-config-name="timerOpacity">
       <div class="groupTitle">
         <i class="fas fa-chart-pie"></i>
-        <span>live progress opacity</span>
+        <span>live stats opacity</span>
       </div>
       <div class="text">
-        Change the opacity of the timer/word count number/bar and live speed
-        number.
+        Change the opacity of the progress, live speed, burst and accuracy text.
       </div>
       <div class="buttons">
         <button data-config-value="0.25">0.25</button>
@@ -1555,43 +1595,6 @@
     hide elements
   </button>
   <div class="settingsGroup hideElements">
-    <div class="section" data-config-name="showLiveWpm">
-      <div class="groupTitle">
-        <i class="fas fa-tachometer-alt"></i>
-        <span>live speed</span>
-      </div>
-      <div class="text">
-        Displays a live speed during the test. Updates once every second.
-      </div>
-      <div class="buttons">
-        <button data-config-value="false">hide</button>
-        <button data-config-value="true">show</button>
-      </div>
-    </div>
-    <div class="section" data-config-name="showLiveAcc">
-      <div class="groupTitle">
-        <i class="fas fa-tachometer-alt"></i>
-        <span>live accuracy</span>
-      </div>
-      <div class="text">Displays live accuracy during the test.</div>
-      <div class="buttons">
-        <button data-config-value="false">hide</button>
-        <button data-config-value="true">show</button>
-      </div>
-    </div>
-    <div class="section" data-config-name="showLiveBurst">
-      <div class="groupTitle">
-        <i class="fas fa-tachometer-alt"></i>
-        <span>live burst</span>
-      </div>
-      <div class="text">
-        Displays live burst during the test of the last word you typed.
-      </div>
-      <div class="buttons">
-        <button data-config-value="false">hide</button>
-        <button data-config-value="true">show</button>
-      </div>
-    </div>
     <div class="section" data-config-name="showKeyTips">
       <div class="groupTitle">
         <i class="fas fa-question"></i>

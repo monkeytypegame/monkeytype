@@ -49,6 +49,15 @@ export function median(arr: number[]): number {
 }
 
 /**
+ * Rounds a number to one decimal places.
+ * @param num The number to round.
+ * @returns The input number rounded to one decimal places.
+ */
+export function roundTo1(num: number): number {
+  return Math.round((num + Number.EPSILON) * 10) / 10;
+}
+
+/**
  * Rounds a number to two decimal places.
  * @param num The number to round.
  * @returns The input number rounded to two decimal places.
@@ -137,7 +146,7 @@ export function getNumberWithMagnitude(num: number): {
  */
 export function abbreviateNumber(num: number, decimalPoints = 1): string {
   if (num < 1000) {
-    return num.toString();
+    return num.toFixed(decimalPoints);
   }
 
   const exp = Math.floor(Math.log(num) / Math.log(1000));

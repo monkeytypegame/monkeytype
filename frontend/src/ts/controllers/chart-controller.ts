@@ -58,7 +58,7 @@ Chart.defaults.elements.line.tension = 0.3;
 Chart.defaults.elements.line.fill = "origin";
 
 import "chartjs-adapter-date-fns";
-import format from "date-fns/format";
+import { format } from "date-fns/format";
 import Config from "../config";
 import * as ThemeColors from "../elements/theme-colors";
 import * as ConfigEvent from "../observables/config-event";

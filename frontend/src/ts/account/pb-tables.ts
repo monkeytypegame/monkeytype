@@ -1,5 +1,5 @@
 import Config from "../config";
-import dateFormat from "date-fns/format";
+import { format as dateFormat } from "date-fns/format";
 import Format from "../utils/format";
 
 function clearTables(isProfile: boolean): void {

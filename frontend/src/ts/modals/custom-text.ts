@@ -4,7 +4,7 @@ import * as ManualRestart from "../test/manual-restart-tracker";
 import * as TestLogic from "../test/test-logic";
 import * as ChallengeController from "../controllers/challenge-controller";
 import Config, * as UpdateConfig from "../config";
-import * as Misc from "../utils/misc";
+import * as Strings from "../utils/strings";
 import * as WordFilterPopup from "./word-filter";
 import * as Notifications from "../elements/notifications";
 import * as SavedTextsPopup from "./saved-texts";
@@ -268,6 +268,7 @@ function cleanUpText(): string[] {
 
   if (state.replaceControlCharactersEnabled) {
     text = text.replace(/([^\\]|^)\\t/gm, "$1\t");
+    text = text.replace(/\\n/g, " \n");
     text = text.replace(/([^\\]|^)\\n/gm, "$1\n");
     text = text.replace(/\\\\t/gm, "\\t");
     text = text.replace(/\\\\n/gm, "\\n");
@@ -276,7 +277,7 @@ function cleanUpText(): string[] {
   text = text.replace(/ +/gm, " ");
   text = text.replace(/( *(\r\n|\r|\n) *)/g, "\n ");
   if (state.removeFancyTypographyEnabled) {
-    text = Misc.cleanTypographySymbols(text);
+    text = Strings.cleanTypographySymbols(text);
   }
 
   if (state.replaceNewlines !== "off") {

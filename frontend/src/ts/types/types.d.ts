@@ -219,6 +219,7 @@ declare namespace MonkeyTypes {
     | "resultFilterPresets"
     | "tags"
     | "xp"
+    | "testActivity"
   > & {
     typingStats: {
       timeTyping: number;
@@ -237,6 +238,8 @@ declare namespace MonkeyTypes {
     presets: SnapshotPreset[];
     results?: SharedTypes.Result<SharedTypes.Config.Mode>[];
     xp: number;
+    testActivity?: ModifiableTestActivityCalendar;
+    testActivityByYear?: { [key: string]: TestActivityCalendar };
   };
 
   type Group<
@@ -357,6 +360,10 @@ declare namespace MonkeyTypes {
     textSplit?: string[];
   };
 
+  type QuoteWithTextSplit = Quote & {
+    textSplit: string[];
+  };
+
   type ThemeColors = {
     bg: string;
     main: string;
@@ -443,5 +450,25 @@ declare namespace MonkeyTypes {
     fullUnitString: string;
     histogramDataBucketSize: number;
     historyStepSize: number;
+  };
+
+  type TestActivityCalendar = {
+    getMonths: () => TestActivityMonth[];
+    getDays: () => TestActivityDay[];
+  };
+
+  type ModifiableTestActivityCalendar = TestActivityCalendar & {
+    increment: (date: Date) => void;
+    getFullYearCalendar: () => TestActivityCalendar;
+  };
+
+  type TestActivityDay = {
+    level: string;
+    label?: string;
+  };
+
+  type TestActivityMonth = {
+    text: string;
+    weeks: number;
   };
 }

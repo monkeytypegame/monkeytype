@@ -2,53 +2,52 @@ import Config from "../config";
 import * as TestState from "../test/test-state";
 import * as ConfigEvent from "../observables/config-event";
 
+const textEl = document.querySelector(
+  "#liveStatsTextBottom .liveAcc"
+) as Element;
+const miniEl = document.querySelector("#liveStatsMini .acc") as Element;
+
 export function update(acc: number): void {
   let number = Math.floor(acc);
   if (Config.blindMode) {
     number = 100;
   }
-  (document.querySelector("#miniTimerAndLiveWpm .acc") as Element).innerHTML =
-    number + "%";
-  (document.querySelector("#liveAcc") as Element).innerHTML = number + "%";
+  miniEl.innerHTML = number + "%";
+  textEl.innerHTML = number + "%";
+}
+
+export function reset(): void {
+  miniEl.innerHTML = "100%";
+  textEl.innerHTML = "100%";
 }
 
 let state = false;
 
 export function show(): void {
-  if (!Config.showLiveAcc) return;
+  if (Config.liveAccStyle === "off") return;
   if (!TestState.isActive) return;
   if (state) return;
-  if (Config.timerStyle === "mini" || Config.timerStyle === "bar") {
-    $("#miniTimerAndLiveWpm .acc")
-      .stop(true, false)
-      .removeClass("hidden")
-      .css("opacity", 0)
-      .animate(
-        {
-          opacity: Config.timerOpacity,
-        },
-        125
-      );
+  if (Config.liveAccStyle === "mini") {
+    $(miniEl).stop(true, false).removeClass("hidden").css("opacity", 0).animate(
+      {
+        opacity: 1,
+      },
+      125
+    );
   } else {
-    $("#liveAcc")
-      .stop(true, false)
-      .removeClass("hidden")
-      .css("opacity", 0)
-      .animate(
-        {
-          opacity: Config.timerOpacity,
-        },
-        125
-      );
+    $(textEl).stop(true, false).removeClass("hidden").css("opacity", 0).animate(
+      {
+        opacity: 1,
+      },
+      125
+    );
   }
   state = true;
 }
 
 export function hide(): void {
-  // $("#liveWpm").css("opacity", 0);
-  // $("#miniTimerAndLiveWpm .wpm").css("opacity", 0);
   if (!state) return;
-  $("#liveAcc")
+  $(textEl)
     .stop(true, false)
     .animate(
       {
@@ -56,10 +55,10 @@ export function hide(): void {
       },
       125,
       () => {
-        $("#liveAcc").addClass("hidden");
+        $(textEl).addClass("hidden");
       }
     );
-  $("#miniTimerAndLiveWpm .acc")
+  $(miniEl)
     .stop(true, false)
     .animate(
       {
@@ -67,12 +66,12 @@ export function hide(): void {
       },
       125,
       () => {
-        $("#miniTimerAndLiveWpm .acc").addClass("hidden");
+        $(miniEl).addClass("hidden");
       }
     );
   state = false;
 }
 
 ConfigEvent.subscribe((eventKey, eventValue) => {
-  if (eventKey === "showLiveAcc") (eventValue as boolean) ? show() : hide();
+  if (eventKey === "liveAccStyle") eventValue === "off" ? hide() : show();
 });

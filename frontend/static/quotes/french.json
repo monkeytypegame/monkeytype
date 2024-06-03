@@ -134,9 +134,9 @@
       "id": 21
     },
     {
-      "text": "Si tu savais le temps que fait une minute, écoute le son de mon cœur quand il explose comme une cocotte minute.",
+      "text": "Si tu savais le temps que fait une minute, écoute le son de mon coeur quand il explose comme une cocotte minute.",
       "source": "Stupeflip - Nan?..Si?",
-      "length": 111,
+      "length": 112,
       "id": 22
     },
     {
@@ -986,12 +986,6 @@
       "id": 169
     },
     {
-      "text": "Tous ces moments où t'es seul et tu t'sens humilié, tous ces gens qui t'ont douillé, qui ont profité d'ta vision brouillée.",
-      "source": "Laylow - Maladresse",
-      "length": 123,
-      "id": 170
-    },
-    {
       "text": "Démon m'dit qu'il faut rien oublier, toutes les défaites et les ennemis d'hier.",
       "source": "Laylow - Maladresse",
       "length": 79,
@@ -1146,6 +1140,24 @@
       "source": "Kaamelott, Livre II, Unagi II",
       "length": 330,
       "id": 198
+    },
+    {
+      "text": "Il ne peut pas le savoir, mais moi j’en suis sûr. Sa voix est un miracle, la promesse rare d’un don exceptionnel.",
+      "source": "Mathieu, Les Choristes",
+      "length": 113,
+      "id": 199
+    },
+    {
+      "text": "Pepinot avait raison d’y croire, le jour du renvoi de Mathieu c’était un samedi.",
+      "source": "Les Choristes",
+      "length": 80,
+      "id": 200
+    },
+    {
+      "text": "Ouvre tes mains, bien présentées comme ça... Voilà, je te nomme pupitre.",
+      "source": "Mathieu, Les Choristes",
+      "length": 72,
+      "id": 201
     }
   ]
 }

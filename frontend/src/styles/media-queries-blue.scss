@@ -15,6 +15,17 @@
   #testModesNotice {
     font-size: 0.8rem;
   }
+  #bannerCenter {
+    font-size: 0.85rem;
+    .banner.withImage {
+      .image {
+        display: none;
+      }
+      .lefticon {
+        display: block;
+      }
+    }
+  }
   .page404 {
     .content {
       grid-template-columns: 300px;
@@ -23,6 +34,10 @@
     }
   }
   .pageTest {
+    #liveStatsTextTop,
+    #liveStatsTextBottom {
+      font-size: 5rem;
+    }
     #result .wrapper {
       grid-template-columns: 1fr;
       grid-template-areas:
@@ -175,6 +190,15 @@
         grid-column: span 1;
       }
     }
+  }
+  #testActivity {
+    --box-size: 0.58em;
+    // .activity div,
+    // .legend div {
+    //   width: 0.7em;
+    //   height: 0.7em;
+    //   border-radius: 0.15em;
+    // }
   }
 }
 

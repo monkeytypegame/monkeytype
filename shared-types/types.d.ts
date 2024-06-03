@@ -237,6 +237,7 @@ declare namespace SharedTypes {
     charTotal: number;
     stringified?: string;
     hash?: string;
+    stopOnLetter: boolean;
   }
 
   type CustomTextMode = "repeat" | "random" | "shuffle";
@@ -354,7 +355,6 @@ declare namespace SharedTypes {
     customThemeColors: string[];
     favThemes: string[];
     showKeyTips: boolean;
-    showLiveWpm: boolean;
     smoothCaret: SharedTypes.Config.SmoothCaret;
     quickRestart: SharedTypes.Config.QuickRestart;
     punctuation: boolean;
@@ -377,6 +377,9 @@ declare namespace SharedTypes {
     confidenceMode: SharedTypes.Config.ConfidenceMode;
     indicateTypos: SharedTypes.Config.IndicateTypos;
     timerStyle: SharedTypes.Config.TimerStyle;
+    liveSpeedStyle: SharedTypes.Config.LiveSpeedAccBurstStyle;
+    liveAccStyle: SharedTypes.Config.LiveSpeedAccBurstStyle;
+    liveBurstStyle: SharedTypes.Config.LiveSpeedAccBurstStyle;
     colorfulMode: boolean;
     randomTheme: SharedTypes.Config.RandomTheme;
     timerColor: SharedTypes.Config.TimerColor;
@@ -412,8 +415,6 @@ declare namespace SharedTypes {
     strictSpace: boolean;
     minAcc: SharedTypes.Config.MinimumAccuracy;
     minAccCustom: number;
-    showLiveAcc: boolean;
-    showLiveBurst: boolean;
     monkey: boolean;
     repeatQuotes: SharedTypes.Config.RepeatQuotes;
     oppositeShiftMode: SharedTypes.Config.OppositeShiftMode;
@@ -552,6 +553,7 @@ declare namespace SharedTypes {
     needsToChangeName?: boolean;
     quoteMod?: boolean | string;
     resultFilterPresets?: ResultFilters[];
+    testActivity?: TestActivity;
   };
 
   type Reward<T> = {
@@ -622,4 +624,11 @@ declare namespace SharedTypes {
     rank?: number;
     count: number;
   };
+
+  type TestActivity = {
+    testsByDays: (number | null)[];
+    lastDay: number;
+  };
+
+  type CountByYearAndDay = { [key: string]: (number | null)[] };
 }

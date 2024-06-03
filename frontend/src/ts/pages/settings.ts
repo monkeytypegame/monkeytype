@@ -47,24 +47,6 @@ async function initGroups(): Promise<void> {
     UpdateConfig.setQuickRestartMode,
     "button"
   ) as SettingsGroup<SharedTypes.ConfigValue>;
-  groups["showLiveWpm"] = new SettingsGroup(
-    "showLiveWpm",
-    UpdateConfig.setShowLiveWpm,
-    "button",
-    () => {
-      groups["keymapMode"]?.updateUI();
-    }
-  ) as SettingsGroup<SharedTypes.ConfigValue>;
-  groups["showLiveAcc"] = new SettingsGroup(
-    "showLiveAcc",
-    UpdateConfig.setShowLiveAcc,
-    "button"
-  ) as SettingsGroup<SharedTypes.ConfigValue>;
-  groups["showLiveBurst"] = new SettingsGroup(
-    "showLiveBurst",
-    UpdateConfig.setShowLiveBurst,
-    "button"
-  ) as SettingsGroup<SharedTypes.ConfigValue>;
   groups["showAverage"] = new SettingsGroup(
     "showAverage",
     UpdateConfig.setShowAverage,
@@ -349,6 +331,21 @@ async function initGroups(): Promise<void> {
   groups["timerStyle"] = new SettingsGroup(
     "timerStyle",
     UpdateConfig.setTimerStyle,
+    "button"
+  ) as SettingsGroup<SharedTypes.ConfigValue>;
+  groups["liveSpeedStyle"] = new SettingsGroup(
+    "liveSpeedStyle",
+    UpdateConfig.setLiveSpeedStyle,
+    "button"
+  ) as SettingsGroup<SharedTypes.ConfigValue>;
+  groups["liveAccStyle"] = new SettingsGroup(
+    "liveAccStyle",
+    UpdateConfig.setLiveAccStyle,
+    "button"
+  ) as SettingsGroup<SharedTypes.ConfigValue>;
+  groups["liveBurstStyle"] = new SettingsGroup(
+    "liveBurstStyle",
+    UpdateConfig.setLiveBurstStyle,
     "button"
   ) as SettingsGroup<SharedTypes.ConfigValue>;
   groups["highlightMode"] = new SettingsGroup(
@@ -963,6 +960,9 @@ export async function update(groupUpdate = true): Promise<void> {
       ".pageSettings .section[data-config-name='customBackgroundFilter']"
     ).addClass("hidden");
   }
+  $(
+    ".pageSettings .section[data-config-name='customBackgroundSize'] input"
+  ).val(Config.customBackground);
 
   if (isAuthenticated()) {
     showAccountSection();
@@ -972,9 +972,11 @@ export async function update(groupUpdate = true): Promise<void> {
 
   CustomBackgroundFilter.updateUI();
 
-  const modifierKey = window.navigator.userAgent.toLowerCase().includes("mac")
-    ? "cmd"
-    : "ctrl";
+  const userAgent = window.navigator.userAgent.toLowerCase();
+  const modifierKey =
+    userAgent.includes("mac") && !userAgent.includes("firefox")
+      ? "cmd"
+      : "ctrl";
 
   const commandKey = Config.quickRestart === "esc" ? "tab" : "esc";
   $(".pageSettings .tip").html(`

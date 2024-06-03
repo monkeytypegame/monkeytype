@@ -211,6 +211,20 @@ router.patch(
   asyncHandler(UserController.updateEmail)
 );
 
+router.patch(
+  "/password",
+  authenticateRequest({
+    requireFreshToken: true,
+  }),
+  RateLimit.userUpdateEmail,
+  validateRequest({
+    body: {
+      newPassword: joi.string().required(),
+    },
+  }),
+  asyncHandler(UserController.updatePassword)
+);
+
 router.delete(
   "/personalBests",
   authenticateRequest({
@@ -657,6 +671,13 @@ router.post(
     noCache: true,
   }),
   asyncHandler(UserController.revokeAllTokens)
+);
+
+router.get(
+  "/testActivity",
+  authenticateRequest(),
+  RateLimit.userTestActivity,
+  asyncHandler(UserController.getTestActivity)
 );
 
 export default router;

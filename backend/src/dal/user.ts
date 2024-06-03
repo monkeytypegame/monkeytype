@@ -1,6 +1,5 @@
 import _ from "lodash";
 import { isUsernameValid } from "../utils/validation";
-import { updateUserEmail } from "../utils/auth";
 import { canFunboxGetPb, checkAndUpdatePb } from "../utils/pb";
 import * as db from "../init/db";
 import MonkeyError from "../utils/error";
@@ -8,6 +7,8 @@ import { Collection, ObjectId, Long, UpdateFilter } from "mongodb";
 import Logger from "../utils/logger";
 import { flattenObjectDeep, isToday, isYesterday } from "../utils/misc";
 import { getCachedConfiguration } from "../init/configuration";
+import { getDayOfYear } from "date-fns";
+import { UTCDate } from "@date-fns/utc";
 
 const SECONDS_PER_HOUR = 3600;
 
@@ -37,6 +38,7 @@ export async function addUser(
       zen: {},
       custom: {},
     },
+    testActivity: {},
   };
 
   const result = await getUsersCollection().updateOne(
@@ -88,6 +90,7 @@ export async function resetUser(uid: string): Promise<void> {
           lastResultTimestamp: 0,
           maxLength: 0,
         },
+        testActivity: {},
       },
       $unset: {
         discordAvatar: "",
@@ -174,7 +177,6 @@ export async function updateQuoteRatings(
   quoteRatings: SharedTypes.UserQuoteRatings
 ): Promise<boolean> {
   await getUser(uid, "update quote ratings");
-
   await getUsersCollection().updateOne({ uid }, { $set: { quoteRatings } });
   return true;
 }
@@ -184,7 +186,6 @@ export async function updateEmail(
   email: string
 ): Promise<boolean> {
   await getUser(uid, "update email"); // To make sure that the user exists
-  await updateUserEmail(uid, email);
   await getUsersCollection().updateOne({ uid }, { $set: { email } });
   return true;
 }
@@ -421,6 +422,7 @@ export async function checkIfPb(
   const { mode } = result;
 
   if (!canFunboxGetPb(result)) return false;
+  if ("stopOnLetter" in result && result.stopOnLetter === true) return false;
 
   if (mode === "quote") {
     return false;
@@ -466,6 +468,7 @@ export async function checkIfTagPb(
 
   const { mode, tags: resultTags } = result;
   if (!canFunboxGetPb(result)) return [];
+  if ("stopOnLetter" in result && result.stopOnLetter === true) return [];
 
   if (mode === "quote") {
     return [];
@@ -600,6 +603,32 @@ export async function incrementBananas(uid: string, wpm): Promise<void> {
 export async function incrementXp(uid: string, xp: number): Promise<void> {
   if (isNaN(xp)) xp = 0;
   await getUsersCollection().updateOne({ uid }, { $inc: { xp: new Long(xp) } });
+}
+
+export async function incrementTestActivity(
+  user: MonkeyTypes.DBUser,
+  timestamp: number
+): Promise<void> {
+  if (user.testActivity === undefined) {
+    //migration script did not run yet
+    return;
+  }
+
+  const date = new UTCDate(timestamp);
+  const dayOfYear = getDayOfYear(date);
+  const year = date.getFullYear();
+
+  if (user.testActivity[year] === undefined) {
+    await getUsersCollection().updateOne(
+      { uid: user.uid },
+      { $set: { [`testActivity.${date.getFullYear()}`]: [] } }
+    );
+  }
+
+  await getUsersCollection().updateOne(
+    { uid: user.uid },
+    { $inc: { [`testActivity.${date.getFullYear()}.${dayOfYear - 1}`]: 1 } }
+  );
 }
 
 export function themeDoesNotExist(customThemes, id): boolean {
@@ -1052,7 +1081,7 @@ export async function checkIfUserIsPremium(
 ): Promise<boolean> {
   const premiumFeaturesEnabled = (await getCachedConfiguration(true)).users
     .premium.enabled;
-  if (!premiumFeaturesEnabled) {
+  if (premiumFeaturesEnabled !== true) {
     return false;
   }
   const user = userInfoOverride ?? (await getUser(uid, "checkIfUserIsPremium"));

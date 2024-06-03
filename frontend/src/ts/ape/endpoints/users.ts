@@ -78,6 +78,12 @@ export default class Users {
     return await this.httpClient.patch(`${BASE_PATH}/email`, { payload });
   }
 
+  async updatePassword(newPassword: string): Ape.EndpointResponse<null> {
+    return await this.httpClient.patch(`${BASE_PATH}/password`, {
+      payload: { newPassword },
+    });
+  }
+
   async deletePersonalBests(): Ape.EndpointResponse<null> {
     return await this.httpClient.delete(`${BASE_PATH}/personalBests`);
   }
@@ -273,5 +279,9 @@ export default class Users {
 
   async revokeAllTokens(): Ape.EndpointResponse<null> {
     return await this.httpClient.post(`${BASE_PATH}/revokeAllTokens`);
+  }
+
+  async getTestActivity(): Ape.EndpointResponse<SharedTypes.CountByYearAndDay> {
+    return await this.httpClient.get(`${BASE_PATH}/testActivity`);
   }
 }

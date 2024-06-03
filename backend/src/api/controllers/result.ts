@@ -1,12 +1,4 @@
 import * as ResultDAL from "../../dal/result";
-import {
-  getUser,
-  checkIfPb,
-  checkIfTagPb,
-  incrementBananas,
-  updateTypingStats,
-  recordAutoBanEvent,
-} from "../../dal/user";
 import * as PublicDAL from "../../dal/public";
 import {
   getCurrentDayTimestamp,
@@ -165,8 +157,8 @@ export async function updateTags(
     result.numbers = false;
   }
 
-  const user = await getUser(uid, "update tags");
-  const tagPbs = await checkIfTagPb(uid, user, result);
+  const user = await UserDAL.getUser(uid, "update tags");
+  const tagPbs = await UserDAL.checkIfTagPb(uid, user, result);
   return new MonkeyResponse("Result tags updated", {
     tagPbs,
   });
@@ -179,7 +171,7 @@ export async function addResult(
   return new MonkeyResponse("Result added");
   const { uid } = req.ctx.decodedToken;
 
-  const user = await getUser(uid, "add result");
+  const user = await UserDAL.getUser(uid, "add result");
 
   if (user.needsToChangeName) {
     throw new MonkeyError(
@@ -298,15 +290,6 @@ export async function addResult(
   //   );
   //   return res.status(400).json({ message: "Time traveler detected" });
 
-  // this probably wont work if we replace the timestamp with the server time later
-  // let timestampres = await ResultDAO.getResultByTimestamp(
-  //   uid,
-  //   result.timestamp
-  // );
-  // if (timestampres) {
-  //   return res.status(400).json({ message: "Duplicate result" });
-  // }
-
   //convert result test duration to miliseconds
   //get latest result ordered by timestamp
   let lastResultTimestamp: null | number = null;
@@ -359,7 +342,7 @@ export async function addResult(
         //autoban
         const autoBanConfig = req.ctx.configuration.users.autoBan;
         if (autoBanConfig.enabled) {
-          const didUserGetBanned = await recordAutoBanEvent(
+          const didUserGetBanned = await UserDAL.recordAutoBanEvent(
             uid,
             autoBanConfig.maxCount,
             autoBanConfig.maxHours
@@ -436,13 +419,13 @@ export async function addResult(
 
   if (!completedEvent.bailedOut) {
     [isPb, tagPbs] = await Promise.all([
-      checkIfPb(uid, user, completedEvent),
-      checkIfTagPb(uid, user, completedEvent),
+      UserDAL.checkIfPb(uid, user, completedEvent),
+      UserDAL.checkIfTagPb(uid, user, completedEvent),
     ]);
   }
 
   if (completedEvent.mode === "time" && completedEvent.mode2 === "60") {
-    void incrementBananas(uid, completedEvent.wpm);
+    void UserDAL.incrementBananas(uid, completedEvent.wpm);
     if (isPb && user.discordId !== undefined && user.discordId !== "") {
       void GeorgeQueue.updateDiscordRole(user.discordId, completedEvent.wpm);
     }
@@ -463,7 +446,7 @@ export async function addResult(
   const afk = completedEvent.afkDuration ?? 0;
   const totalDurationTypedSeconds =
     completedEvent.testDuration + completedEvent.incompleteTestSeconds - afk;
-  void updateTypingStats(
+  void UserDAL.updateTypingStats(
     uid,
     completedEvent.restartCount,
     totalDurationTypedSeconds
@@ -488,7 +471,8 @@ export async function addResult(
     !completedEvent.bailedOut &&
     user.banned !== true &&
     user.lbOptOut !== true &&
-    (isDevEnvironment() || (user.timeTyping ?? 0) > 7200);
+    (isDevEnvironment() || (user.timeTyping ?? 0) > 7200) &&
+    completedEvent.stopOnLetter !== true;
 
   const selectedBadgeId = user.inventory?.badges?.find((b) => b.selected)?.id;
   const isPremium =
@@ -601,10 +585,10 @@ export async function addResult(
   }
 
   const dbresult = buildDbResult(completedEvent, user.name, isPb);
-
   const addedResult = await ResultDAL.addResult(uid, dbresult);
 
   await UserDAL.incrementXp(uid, xpGained.xp);
+  await UserDAL.incrementTestActivity(user, completedEvent.timestamp);
 
   if (isPb) {
     void Logger.logToDb(

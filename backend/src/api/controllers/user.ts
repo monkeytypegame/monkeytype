@@ -19,17 +19,16 @@ import { deleteConfig } from "../../dal/config";
 import { verify } from "../../utils/captcha";
 import * as LeaderboardsDAL from "../../dal/leaderboards";
 import { purgeUserFromDailyLeaderboards } from "../../utils/daily-leaderboards";
-import { randomBytes } from "crypto";
-import * as RedisClient from "../../init/redis";
 import { v4 as uuidv4 } from "uuid";
 import { ObjectId } from "mongodb";
 import * as ReportDAL from "../../dal/report";
 import emailQueue from "../../queues/email-queue";
 import FirebaseAdmin from "../../init/firebase-admin";
-import {
-  removeTokensFromCacheByUid,
-  deleteUser as firebaseDeleteUser,
-} from "../../utils/auth";
+import * as AuthUtil from "../../utils/auth";
+
+import * as Dates from "date-fns";
+import { UTCDateMini } from "@date-fns/utc";
+import * as BlocklistDal from "../../dal/blocklist";
 
 async function verifyCaptcha(captcha: string): Promise<void> {
   if (!(await verify(captcha))) {
@@ -45,28 +44,30 @@ export async function createNewUser(
 
   try {
     await verifyCaptcha(captcha);
-  } catch (e) {
-    try {
-      await firebaseDeleteUser(uid);
-    } catch (e) {
-      // user might be deleted on the frontend
+
+    if (email.endsWith("@tidal.lol") || email.endsWith("@selfbot.cc")) {
+      throw new MonkeyError(400, "Invalid domain");
     }
+
+    const available = await UserDAL.isNameAvailable(name, uid);
+    if (!available) {
+      throw new MonkeyError(409, "Username unavailable");
+    }
+
+    const blocklisted = await BlocklistDal.contains({ name, email });
+    if (blocklisted) {
+      throw new MonkeyError(409, "Username or email blocked");
+    }
+
+    await UserDAL.addUser(name, email, uid);
+    void Logger.logToDb("user_created", `${name} ${email}`, uid);
+
+    return new MonkeyResponse("User created");
+  } catch (e) {
+    //user was created in firebase from the frontend, remove it
+    await firebaseDeleteUserIgnoreError(uid);
     throw e;
   }
-
-  if (email.endsWith("@tidal.lol") || email.endsWith("@selfbot.cc")) {
-    throw new MonkeyError(400, "Invalid domain");
-  }
-
-  const available = await UserDAL.isNameAvailable(name, uid);
-  if (!available) {
-    throw new MonkeyError(409, "Username unavailable");
-  }
-
-  await UserDAL.addUser(name, email, uid);
-  void Logger.logToDb("user_created", `${name} ${email}`, uid);
-
-  return new MonkeyResponse("User created");
 }
 
 export async function sendVerificationEmail(
@@ -180,8 +181,8 @@ export async function deleteUser(
 
   const userInfo = await UserDAL.getUser(uid, "delete user");
 
-  if (userInfo.banned) {
-    throw new MonkeyError(403, "Banned users cannot delete their account");
+  if (userInfo.banned === true) {
+    await BlocklistDal.add(userInfo);
   }
 
   //cleanup database
@@ -198,7 +199,7 @@ export async function deleteUser(
   ]);
 
   //delete user from
-  await firebaseDeleteUser(uid);
+  await AuthUtil.deleteUser(uid);
 
   void Logger.logToDb(
     "user_deleted",
@@ -322,9 +323,30 @@ export async function updateEmail(
   newEmail = newEmail.toLowerCase();
 
   try {
+    await AuthUtil.updateUserEmail(uid, newEmail);
     await UserDAL.updateEmail(uid, newEmail);
   } catch (e) {
-    throw new MonkeyError(404, e.message, "update email", uid);
+    if (e.code === "auth/email-already-exists") {
+      throw new MonkeyError(
+        409,
+        "The email address is already in use by another account"
+      );
+    } else if (e.code === "auth/invalid-email") {
+      throw new MonkeyError(400, "Invalid email address");
+    } else if (e.code === "auth/too-many-requests") {
+      throw new MonkeyError(429, "Too many requests. Please try again later");
+    } else if (e.code === "auth/user-not-found") {
+      throw new MonkeyError(
+        404,
+        "User not found in the auth system",
+        "update email",
+        uid
+      );
+    } else if (e.code === "auth/invalid-user-token") {
+      throw new MonkeyError(401, "Invalid user token", "update email", uid);
+    } else {
+      throw e;
+    }
   }
 
   void Logger.logToDb(
@@ -334,6 +356,17 @@ export async function updateEmail(
   );
 
   return new MonkeyResponse("Email updated");
+}
+
+export async function updatePassword(
+  req: MonkeyTypes.Request
+): Promise<MonkeyResponse> {
+  const { uid } = req.ctx.decodedToken;
+  const { newPassword } = req.body;
+
+  await AuthUtil.updateUserPassword(uid, newPassword);
+
+  return new MonkeyResponse("Password updated");
 }
 
 function getRelevantUserInfo(
@@ -349,6 +382,7 @@ function getRelevantUserInfo(
     "lastResultHashes",
     "note",
     "ips",
+    "testActivity",
   ]);
 }
 
@@ -366,7 +400,7 @@ export async function getUser(
       //since there is no data in the database anyway, we can just delete the user from the auth system
       //and ask them to sign up again
       try {
-        await firebaseDeleteUser(uid);
+        await AuthUtil.deleteUser(uid);
         throw new MonkeyError(
           404,
           "User not found in the database, but found in the auth system. We have deleted the ghost user from the auth system. Please sign up again.",
@@ -415,12 +449,14 @@ export async function getUser(
   const isPremium = await UserDAL.checkIfUserIsPremium(uid, userInfo);
 
   const allTimeLbs = await getAllTimeLbs(uid);
+  const testActivity = getCurrentTestActivity(userInfo.testActivity);
 
   const userData = {
     ...getRelevantUserInfo(userInfo),
     inboxUnreadSize: inboxUnreadSize,
     isPremium,
     allTimeLbs,
+    testActivity,
   };
 
   return new MonkeyResponse("User data retrieved", userData);
@@ -429,39 +465,24 @@ export async function getUser(
 export async function getOauthLink(
   req: MonkeyTypes.Request
 ): Promise<MonkeyResponse> {
-  const connection = RedisClient.getConnection();
-  if (!connection) {
-    throw new MonkeyError(500, "Redis connection not found");
-  }
-
   const { uid } = req.ctx.decodedToken;
-  const token = randomBytes(10).toString("hex");
-
-  //add the token uid pair to reids
-  await connection.setex(`discordoauth:${uid}`, 60, token);
 
   //build the url
-  const url = DiscordUtils.getOauthLink();
+  const url = await DiscordUtils.getOauthLink(uid);
 
   //return
   return new MonkeyResponse("Discord oauth link generated", {
-    url: `${url}&state=${token}`,
+    url: url,
   });
 }
 
 export async function linkDiscord(
   req: MonkeyTypes.Request
 ): Promise<MonkeyResponse> {
-  const connection = RedisClient.getConnection();
-  if (!connection) {
-    throw new MonkeyError(500, "Redis connection not found");
-  }
   const { uid } = req.ctx.decodedToken;
   const { tokenType, accessToken, state } = req.body;
 
-  const redisToken = await connection.getdel(`discordoauth:${uid}`);
-
-  if (!(redisToken ?? "") || redisToken !== state) {
+  if (!(await DiscordUtils.iStateValidForUser(state, uid))) {
     throw new MonkeyError(403, "Invalid user token");
   }
 
@@ -495,6 +516,10 @@ export async function linkDiscord(
       409,
       "This Discord account is linked to a different account"
     );
+  }
+
+  if (await BlocklistDal.contains({ discordId })) {
+    throw new MonkeyError(409, "The Discord account is blocked");
   }
 
   await UserDAL.linkDiscord(uid, discordId, discordAvatar);
@@ -925,8 +950,7 @@ export async function revokeAllTokens(
   req: MonkeyTypes.Request
 ): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
-  await FirebaseAdmin().auth().revokeRefreshTokens(uid);
-  removeTokensFromCacheByUid(uid);
+  await AuthUtil.revokeTokensByUid(uid);
   return new MonkeyResponse("All tokens revoked");
 }
 
@@ -971,4 +995,67 @@ async function getAllTimeLbs(uid: string): Promise<SharedTypes.AllTimeLbs> {
       },
     },
   };
+}
+
+export function getCurrentTestActivity(
+  testActivity: SharedTypes.CountByYearAndDay | undefined
+): SharedTypes.TestActivity | undefined {
+  const thisYear = Dates.startOfYear(new UTCDateMini());
+  const lastYear = Dates.startOfYear(Dates.subYears(thisYear, 1));
+
+  let thisYearData = testActivity?.[thisYear.getFullYear().toString()];
+  let lastYearData = testActivity?.[lastYear.getFullYear().toString()];
+
+  if (lastYearData === undefined && thisYearData === undefined)
+    return undefined;
+
+  lastYearData = lastYearData ?? [];
+  thisYearData = thisYearData ?? [];
+
+  //make sure lastYearData covers the full year
+  if (lastYearData.length < Dates.getDaysInYear(lastYear)) {
+    lastYearData.push(
+      ...new Array(Dates.getDaysInYear(lastYear) - lastYearData.length).fill(
+        undefined
+      )
+    );
+  }
+  //use enough days of the last year to have 372 days in total to always fill the first week of the graph
+  lastYearData = lastYearData.slice(-372 + thisYearData.length);
+
+  const lastDay = Dates.startOfDay(
+    Dates.addDays(thisYear, thisYearData.length - 1)
+  );
+
+  return {
+    testsByDays: [...lastYearData, ...thisYearData],
+    lastDay: lastDay.valueOf(),
+  };
+}
+
+export async function getTestActivity(
+  req: MonkeyTypes.Request
+): Promise<MonkeyResponse> {
+  const { uid } = req.ctx.decodedToken;
+  const premiumFeaturesEnabled = req.ctx.configuration.users.premium.enabled;
+  const user = await UserDAL.getUser(uid, "testActivity");
+  const userHasPremium = await UserDAL.checkIfUserIsPremium(uid, user);
+
+  if (!premiumFeaturesEnabled) {
+    throw new MonkeyError(503, "Premium features are disabled");
+  }
+
+  if (!userHasPremium) {
+    throw new MonkeyError(503, "User does not have premium");
+  }
+
+  return new MonkeyResponse("Test activity data retrieved", user.testActivity);
+}
+
+async function firebaseDeleteUserIgnoreError(uid: string): Promise<void> {
+  try {
+    await AuthUtil.deleteUser(uid);
+  } catch (e) {
+    //ignore
+  }
 }

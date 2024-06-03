@@ -165,7 +165,7 @@
     "display": "I've got the POWER",
     "autoRole": true,
     "type": "customText",
-    "parameters": ["power",true,10],
+    "parameters": ["power","repeat",10,"word",false],
     "requirements" : {
       "wpm": {
         "min": 400
