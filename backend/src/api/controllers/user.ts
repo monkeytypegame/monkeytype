@@ -1020,8 +1020,8 @@ export function getCurrentTestActivity(
       )
     );
   }
-  //use enough days of the last year to have 366 days in total
-  lastYearData = lastYearData.slice(-366 + thisYearData.length);
+  //use enough days of the last year to have 372 days in total to always fill the first week of the graph
+  lastYearData = lastYearData.slice(-372 + thisYearData.length);
 
   const lastDay = Dates.startOfDay(
     Dates.addDays(thisYear, thisYearData.length - 1)
