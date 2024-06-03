@@ -12,11 +12,6 @@ import { fontawesomeSubset } from "fontawesome-subset";
 
 //read used fontawesome icons from sources
 import { getFontawesomeConfig } from "./scripts/fontawesome.mjs";
-const fontawesomeClasses = getFontawesomeConfig();
-
-fontawesomeSubset(fontawesomeClasses, "src/webfonts-generated", {
-  targetFormats: ["woff2"],
-});
 
 function pad(numbers, maxLength, fillString) {
   return numbers.map((number) =>
@@ -50,6 +45,29 @@ function buildClientVersion() {
 /** @type {import("vite").UserConfig} */
 const BASE_CONFIG = {
   plugins: [
+    {
+      name: "vite-plugin-fontawesome-subset",
+      apply: "serve",
+      buildStart() {
+        const fontawesomeClasses = getFontawesomeConfig();
+        fontawesomeSubset(fontawesomeClasses, "src/webfonts-generated", {
+          targetFormats: ["woff2"],
+        });
+      },
+      handleHotUpdate({ file }) {
+        if (
+          file.endsWith(".html") ||
+          file.endsWith(".css") ||
+          file.endsWith(".js") ||
+          file.endsWith(".ts")
+        ) {
+          const fontawesomeClasses = getFontawesomeConfig();
+          fontawesomeSubset(fontawesomeClasses, "src/webfonts-generated", {
+            targetFormats: ["woff2"],
+          });
+        }
+      },
+    },
     {
       name: "simple-jquery-inject",
       async transform(src, id) {
@@ -98,6 +116,7 @@ const BASE_CONFIG = {
     preprocessorOptions: {
       scss: {
         additionalData(source, fp) {
+          const fontawesomeClasses = getFontawesomeConfig();
           if (fp.endsWith("index.scss")) {
             return `
             //inject variables into sass context
