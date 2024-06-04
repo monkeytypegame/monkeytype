@@ -144,17 +144,17 @@ function backspaceToPrevious(): void {
 
   TestInput.input.current = TestInput.input.popHistory();
   TestInput.corrected.popHistory();
-  TestWords.words.decreaseCurrentIndex();
-  TestUI.setCurrentWordElementIndex(TestUI.currentWordElementIndex - 1);
-  TestUI.updateActiveElement(true);
-  Funbox.toggleScript(TestWords.words.getCurrent());
   if (
     FunboxList.get(Config.funbox).find((f) => f.properties?.includes("nospace"))
   ) {
     TestInput.input.current = TestInput.input.current.slice(0, -1);
     setWordsInput(" " + TestInput.input.current + " ");
-    void TestUI.updateWordElement();
   }
+  TestWords.words.decreaseCurrentIndex();
+  TestUI.setCurrentWordElementIndex(TestUI.currentWordElementIndex - 1);
+  TestUI.updateActiveElement(true);
+  Funbox.toggleScript(TestWords.words.getCurrent());
+  void TestUI.updateWordElement();
 
   if (Config.mode === "zen") {
     TimerProgress.update();
