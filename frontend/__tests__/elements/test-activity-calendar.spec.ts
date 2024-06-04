@@ -300,6 +300,62 @@ describe("test-activity-calendar.ts", () => {
           },
         ]);
       });
+      it("for first day in june", () => {
+        //set today
+        vi.setSystemTime(getDate("2024-06-01"));
+        const calendar = new TestActivityCalendar([], getDate("2024-06-01"));
+
+        expect(calendar.getMonths()).toEqual([
+          {
+            text: "jun",
+            weeks: 4,
+          },
+          {
+            text: "jul",
+            weeks: 5,
+          },
+          {
+            text: "aug",
+            weeks: 4,
+          },
+          {
+            text: "sep",
+            weeks: 4,
+          },
+          {
+            text: "oct",
+            weeks: 5,
+          },
+          {
+            text: "nov",
+            weeks: 4,
+          },
+          {
+            text: "dec",
+            weeks: 5,
+          },
+          {
+            text: "jan",
+            weeks: 4,
+          },
+          {
+            text: "feb",
+            weeks: 4,
+          },
+          {
+            text: "mar",
+            weeks: 5,
+          },
+          {
+            text: "apr",
+            weeks: 4,
+          },
+          {
+            text: "may",
+            weeks: 4,
+          },
+        ]);
+      });
     });
 
     describe("getDays", () => {
