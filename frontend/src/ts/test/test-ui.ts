@@ -145,7 +145,7 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
   if (eventKey === "fontSize" && !nosave) {
     OutOfFocus.hide();
     updateWordsHeight(true);
-    updateWordsInputPosition(true);
+    void updateWordsInputPosition(true);
   }
   if (eventKey === "fontSize" || eventKey === "fontFamily")
     updateHintsPosition().catch((e) => {
@@ -248,7 +248,7 @@ export function updateActiveElement(
     }
   } catch (e) {}
   if (!initial && shouldUpdateWordsInputPosition()) {
-    updateWordsInputPosition();
+    void updateWordsInputPosition();
   }
 }
 
@@ -359,7 +359,7 @@ export function showWords(): void {
   setTimeout(() => {
     void Caret.updatePosition();
   }, 125);
-  updateWordsInputPosition(true);
+  void updateWordsInputPosition(true);
 }
 
 const posUpdateLangList = ["japanese", "chinese", "korean"];
@@ -368,9 +368,13 @@ function shouldUpdateWordsInputPosition(): boolean {
   return language || (Config.mode !== "time" && Config.showAllLines);
 }
 
-export function updateWordsInputPosition(initial = false): void {
+export async function updateWordsInputPosition(initial = false): Promise<void> {
   if (ActivePage.get() !== "test") return;
   if (Config.tapeMode !== "off" && !initial) return;
+
+  const currentLanguage = await JSONData.getCurrentLanguage(Config.language);
+  const isLanguageRTL = currentLanguage.rightToLeft;
+
   const el = document.querySelector("#wordsInput") as HTMLElement;
   const activeWord = document.querySelector(
     "#words .active"
@@ -401,11 +405,17 @@ export function updateWordsInputPosition(initial = false): void {
     return;
   }
 
+  if (isLanguageRTL) {
+    el.style.left =
+      activeWord.offsetLeft - el.offsetWidth + activeWord.offsetWidth + "px";
+  } else {
+    el.style.left = activeWord.offsetLeft + "px";
+  }
+
   if (
     initial &&
     !posUpdateLangList.some((l) => Config.language.startsWith(l))
   ) {
-    el.style.left = activeWord.offsetLeft + "px";
     el.style.top =
       activeWord.offsetTop +
       activeWord.offsetHeight +
@@ -413,7 +423,6 @@ export function updateWordsInputPosition(initial = false): void {
       (activeWord.offsetHeight + activeWordMargin) +
       "px";
   } else {
-    el.style.left = activeWord.offsetLeft + "px";
     el.style.top =
       activeWord.offsetTop + activeWord.offsetHeight + -el.offsetHeight + "px";
   }
