@@ -12,6 +12,7 @@ import { fontawesomeSubset } from "fontawesome-subset";
 
 //read used fontawesome icons from sources
 import { getFontawesomeConfig } from "./scripts/fontawesome.mjs";
+let cachedFontConfig = "";
 
 function pad(numbers, maxLength, fillString) {
   return numbers.map((number) =>
@@ -50,11 +51,12 @@ const BASE_CONFIG = {
       apply: "serve",
       buildStart() {
         const fontawesomeClasses = getFontawesomeConfig();
+        cachedFontConfig = JSON.stringify(fontawesomeClasses);
         fontawesomeSubset(fontawesomeClasses, "src/webfonts-generated", {
           targetFormats: ["woff2"],
         });
       },
-      async handleHotUpdate({ server, file }) {
+      async handleHotUpdate({ file }) {
         if (
           file.endsWith(".html") ||
           file.endsWith(".css") ||
@@ -62,18 +64,19 @@ const BASE_CONFIG = {
           file.endsWith(".ts")
         ) {
           const fontawesomeClasses = getFontawesomeConfig();
-          await fontawesomeSubset(
-            fontawesomeClasses,
-            "src/webfonts-generated",
-            {
-              targetFormats: ["woff2"],
-            }
-          );
+          const newFontConfig = JSON.stringify(fontawesomeClasses);
+          if (cachedFontConfig != newFontConfig) {
+            await fontawesomeSubset(
+              fontawesomeClasses,
+              "src/webfonts-generated",
+              {
+                targetFormats: ["woff2"],
+              }
+            );
 
-          console.log("full reload");
-          server.ws.send({
-            type: "full-reload",
-          });
+            cachedFontConfig = newFontConfig;
+            return [];
+          }
         }
       },
     },
@@ -125,8 +128,9 @@ const BASE_CONFIG = {
     preprocessorOptions: {
       scss: {
         additionalData(source, fp) {
-          const fontawesomeClasses = getFontawesomeConfig();
+          console.log({ fp });
           if (fp.endsWith("index.scss")) {
+            const fontawesomeClasses = getFontawesomeConfig();
             return `
             //inject variables into sass context
             $fontawesomeBrands: ${sassList(
@@ -192,28 +196,6 @@ const BASE_CONFIG = {
     include: ["jquery"],
     exclude: ["@fortawesome/fontawesome-free"],
   },
-};
-
-/** @type {import("vite").UserConfig} */
-const DEV_CONFIG = {
-  plugins: [
-    {
-      name: "force-disable-cache",
-      configureServer(server) {
-        server.middlewares.use((req, res, next) => {
-          if (req.url.endsWith("woff2")) {
-            res.setHeader(
-              "Cache-Control",
-              "no-cache, no-store, must-revalidate, max-age=1"
-            );
-            res.setHeader("Pragma", "no-cache");
-            res.setHeader("Etag", `W/"${Math.random()}"`);
-          }
-          next();
-        });
-      },
-    },
-  ],
 };
 
 /** @type {import("vite").UserConfig} */
@@ -290,7 +272,7 @@ export default defineConfig(({ command }) => {
     }
     return mergeConfig(BASE_CONFIG, BUILD_CONFIG);
   } else {
-    return mergeConfig(BASE_CONFIG, DEV_CONFIG);
+    return BASE_CONFIG;
   }
 });
 
