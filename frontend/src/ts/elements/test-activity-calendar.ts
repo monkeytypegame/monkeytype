@@ -1,24 +1,22 @@
 import type { Interval } from "date-fns/types";
 import { UTCDateMini } from "@date-fns/utc/date/mini";
-import {
-  format,
-  endOfMonth,
-  subYears,
-  addDays,
-  differenceInDays,
-  eachMonthOfInterval,
-  isSameDay,
-  isBefore,
-  endOfYear,
-  startOfYear,
-  differenceInWeeks,
-  startOfMonth,
-  nextSunday,
-  previousSunday,
-  isSunday,
-  nextSaturday,
-  isSaturday,
-} from "date-fns";
+import { format } from "date-fns/format";
+import { endOfMonth } from "date-fns/endOfMonth";
+import { subYears } from "date-fns/subYears";
+import { addDays } from "date-fns/addDays";
+import { differenceInDays } from "date-fns/differenceInDays";
+import { eachMonthOfInterval } from "date-fns/eachMonthOfInterval";
+import { isSameDay } from "date-fns/isSameDay";
+import { isBefore } from "date-fns/isBefore";
+import { endOfYear } from "date-fns/endOfYear";
+import { startOfYear } from "date-fns/startOfYear";
+import { differenceInWeeks } from "date-fns/differenceInWeeks";
+import { startOfMonth } from "date-fns/startOfMonth";
+import { nextSunday } from "date-fns/nextSunday";
+import { previousSunday } from "date-fns/previousSunday";
+import { isSunday } from "date-fns/isSunday";
+import { nextSaturday } from "date-fns/nextSaturday";
+import { isSaturday } from "date-fns/isSaturday";
 
 export class TestActivityCalendar implements MonkeyTypes.TestActivityCalendar {
   protected data: (number | null | undefined)[];

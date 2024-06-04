@@ -8,7 +8,7 @@ import * as ConnectionState from "./states/connection";
 import { lastElementFromArray } from "./utils/arrays";
 import { getFunboxList } from "./utils/json-data";
 import { mergeWithDefaultConfig } from "./utils/config";
-import * as Dates from "date-fns";
+import { addDays } from "date-fns/addDays";
 import {
   TestActivityCalendar,
   ModifiableTestActivityCalendar,
@@ -1004,7 +1004,7 @@ export async function getTestActivityCalendar(
     for (const year in response.data) {
       if (year === currentYear) continue;
       const testsByDays = response.data[year] ?? [];
-      const lastDay = Dates.addDays(
+      const lastDay = addDays(
         new Date(parseInt(year), 0, 1),
         testsByDays.length
       );

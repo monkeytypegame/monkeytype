@@ -130,7 +130,7 @@ const BASE_CONFIG = {
     ),
   },
   optimizeDeps: {
-    include: ["jquery"],
+    exclude: ["date-fns"],
   },
 };
 

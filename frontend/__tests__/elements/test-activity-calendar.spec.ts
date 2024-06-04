@@ -2,9 +2,13 @@ import {
   TestActivityCalendar,
   ModifiableTestActivityCalendar,
 } from "../../src/ts/elements/test-activity-calendar";
-import * as Dates from "date-fns";
+
 import { MatcherResult } from "../vitest";
 import { UTCDateMini } from "@date-fns/utc/date/mini";
+import { parseISO } from "date-fns/parseISO";
+import { eachDayOfInterval } from "date-fns/eachDayOfInterval";
+import { getDayOfYear } from "date-fns/getDayOfYear";
+import { format } from "date-fns/format";
 
 describe("test-activity-calendar.ts", () => {
   beforeEach(() => {
@@ -753,16 +757,14 @@ describe("test-activity-calendar.ts", () => {
 });
 
 function getDate(date: string): Date {
-  return new UTCDateMini(Dates.parseISO(date + "T00:00:00Z"));
+  return new UTCDateMini(parseISO(date + "T00:00:00Z"));
 }
 
 function getData(from: string, to: string): number[] {
   const start = getDate(from);
   const end = getDate(to);
 
-  return Dates.eachDayOfInterval({ start, end }).map((it) =>
-    Dates.getDayOfYear(it)
-  );
+  return eachDayOfInterval({ start, end }).map((it) => getDayOfYear(it));
 }
 
 expect.extend({
@@ -770,7 +772,7 @@ expect.extend({
     received: MonkeyTypes.TestActivityDay,
     expected: string
   ): MatcherResult {
-    const expectedDate = Dates.format(getDate(expected), "EEEE dd MMM yyyy");
+    const expectedDate = format(getDate(expected), "EEEE dd MMM yyyy");
     const actual = received.label?.substring(received.label.indexOf("on") + 3);
 
     return {
