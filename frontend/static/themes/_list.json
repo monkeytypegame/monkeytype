@@ -1233,9 +1233,9 @@
   },
   {
     "name": "lilac_mist",
-    "bgColor": "#ffeffc",
-    "mainColor": "#df8ebf",
-    "subColor": "#a65ba2e3",
-    "textColor": "#de7fb8"
+    "bgColor": "#fffbfe",
+    "mainColor": "#8f4371",
+    "subColor": "#de7fb8",
+    "textColor": "#8e4883"
   }
 ]
