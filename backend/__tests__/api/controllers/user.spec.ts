@@ -254,11 +254,11 @@ describe("user controller test", () => {
       expect(testActivity?.lastDay).toEqual(1712102400000);
 
       const testsByDays = testActivity?.testsByDays ?? [];
-      expect(testsByDays).toHaveLength(366);
-      expect(testsByDays[0]).toEqual(undefined); //2023-04-04
-      expect(testsByDays[271]).toEqual(undefined); //2023-12-31
-      expect(testsByDays[272]).toEqual(2024001); //2024-01-01
-      expect(testsByDays[365]).toEqual(2024094); //2024-01
+      expect(testsByDays).toHaveLength(372);
+      expect(testsByDays[6]).toEqual(undefined); //2023-04-04
+      expect(testsByDays[277]).toEqual(undefined); //2023-12-31
+      expect(testsByDays[278]).toEqual(2024001); //2024-01-01
+      expect(testsByDays[371]).toEqual(2024094); //2024-01
     });
     it("with current and last year", () => {
       //given
@@ -274,11 +274,11 @@ describe("user controller test", () => {
       expect(testActivity?.lastDay).toEqual(1712102400000);
 
       const testsByDays = testActivity?.testsByDays ?? [];
-      expect(testsByDays).toHaveLength(366);
-      expect(testsByDays[0]).toEqual(2023094); //2023-04-04
-      expect(testsByDays[271]).toEqual(2023365); //2023-12-31
-      expect(testsByDays[272]).toEqual(2024001); //2024-01-01
-      expect(testsByDays[365]).toEqual(2024094); //2024-01
+      expect(testsByDays).toHaveLength(372);
+      expect(testsByDays[6]).toEqual(2023094); //2023-04-04
+      expect(testsByDays[277]).toEqual(2023365); //2023-12-31
+      expect(testsByDays[278]).toEqual(2024001); //2024-01-01
+      expect(testsByDays[371]).toEqual(2024094); //2024-01
     });
     it("with current and missing days of last year", () => {
       //given
@@ -294,11 +294,11 @@ describe("user controller test", () => {
       expect(testActivity?.lastDay).toEqual(1712102400000);
 
       const testsByDays = testActivity?.testsByDays ?? [];
-      expect(testsByDays).toHaveLength(366);
-      expect(testsByDays[0]).toEqual(undefined); //2023-04-04
-      expect(testsByDays[271]).toEqual(undefined); //2023-12-31
-      expect(testsByDays[272]).toEqual(2024001); //2024-01-01
-      expect(testsByDays[365]).toEqual(2024094); //2024-01
+      expect(testsByDays).toHaveLength(372);
+      expect(testsByDays[6]).toEqual(undefined); //2023-04-04
+      expect(testsByDays[277]).toEqual(undefined); //2023-12-31
+      expect(testsByDays[278]).toEqual(2024001); //2024-01-01
+      expect(testsByDays[371]).toEqual(2024094); //2024-01
     });
   });
 
