@@ -6,7 +6,7 @@ import * as path from "path";
  */
 const modules2 = {
   solid: [], //leave empty
-  brands: ["fa-github", "fa-twitter", "fa-discord", "fa-patreon", "fa-google"],
+  brands: detectBrands(),
   "fixed-width": ["fa-fw"],
   "rotated-flipped": ["fa-rotate-90", "fa-rotate-180", "fa-rotate-270"],
   animated: ["fa-spin"],
@@ -110,4 +110,13 @@ function findAllFiles(dir, filter = (filename) => true) {
         ? [...files, ...findAllFiles(file.name, filter)]
         : [...files, file.name];
     }, []);
+}
+
+function detectBrands() {
+  const brandFile = fs
+    .readFileSync("node_modules/@fortawesome/fontawesome-free/js/brands.js")
+    .toString();
+  return brandFile
+    .match(/\"(.*)\"\: \[.*\],/g)
+    .map((it) => "fa-" + it.substring(1, it.indexOf(":") - 1));
 }
