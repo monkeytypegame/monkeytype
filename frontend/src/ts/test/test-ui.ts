@@ -145,7 +145,7 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
   if (eventKey === "fontSize" && !nosave) {
     OutOfFocus.hide();
     updateWordsHeight(true);
-    updateWordsInputPosition(true);
+    void updateWordsInputPosition(true);
   }
   if (eventKey === "fontSize" || eventKey === "fontFamily")
     updateHintsPosition().catch((e) => {
@@ -248,7 +248,7 @@ export function updateActiveElement(
     }
   } catch (e) {}
   if (!initial && shouldUpdateWordsInputPosition()) {
-    updateWordsInputPosition();
+    void updateWordsInputPosition();
   }
 }
 
@@ -356,8 +356,10 @@ export function showWords(): void {
   updateWordsWidth();
   updateWordsHeight(true);
   updateActiveElement(undefined, true);
-  void Caret.updatePosition();
-  updateWordsInputPosition(true);
+  setTimeout(() => {
+    void Caret.updatePosition();
+  }, 125);
+  void updateWordsInputPosition(true);
 }
 
 const posUpdateLangList = ["japanese", "chinese", "korean"];
@@ -366,9 +368,13 @@ function shouldUpdateWordsInputPosition(): boolean {
   return language || (Config.mode !== "time" && Config.showAllLines);
 }
 
-export function updateWordsInputPosition(initial = false): void {
+export async function updateWordsInputPosition(initial = false): Promise<void> {
   if (ActivePage.get() !== "test") return;
   if (Config.tapeMode !== "off" && !initial) return;
+
+  const currentLanguage = await JSONData.getCurrentLanguage(Config.language);
+  const isLanguageRTL = currentLanguage.rightToLeft;
+
   const el = document.querySelector("#wordsInput") as HTMLElement;
   const activeWord = document.querySelector(
     "#words .active"
@@ -399,27 +405,26 @@ export function updateWordsInputPosition(initial = false): void {
     return;
   }
 
+  if (isLanguageRTL) {
+    el.style.left =
+      activeWord.offsetLeft - el.offsetWidth + activeWord.offsetWidth + "px";
+  } else {
+    el.style.left = activeWord.offsetLeft + "px";
+  }
+
   if (
     initial &&
     !posUpdateLangList.some((l) => Config.language.startsWith(l))
   ) {
-    el.style.left = "0px";
     el.style.top =
-      // wordsWrapperTop +
-      activeWord.offsetHeight * 2 +
-      activeWordMargin * 1.5 +
+      activeWord.offsetTop +
+      activeWord.offsetHeight +
       -el.offsetHeight +
+      (activeWord.offsetHeight + activeWordMargin) +
       "px";
   } else {
-    el.style.left = activeWord.offsetLeft + "px";
     el.style.top =
-      activeWord.offsetTop -
-      activeWordMargin +
-      // wordsWrapperTop +
-      activeWord.offsetHeight +
-      activeWordMargin +
-      -el.offsetHeight +
-      "px";
+      activeWord.offsetTop + activeWord.offsetHeight + -el.offsetHeight + "px";
   }
 }
 

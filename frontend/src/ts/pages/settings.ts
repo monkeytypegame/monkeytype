@@ -950,6 +950,9 @@ export async function update(groupUpdate = true): Promise<void> {
       ".pageSettings .section[data-config-name='customBackgroundFilter']"
     ).addClass("hidden");
   }
+  $(
+    ".pageSettings .section[data-config-name='customBackgroundSize'] input"
+  ).val(Config.customBackground);
 
   if (isAuthenticated()) {
     showAccountSection();

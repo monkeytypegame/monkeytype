@@ -4,7 +4,7 @@ import * as Misc from "../utils/misc";
 import * as Arrays from "../utils/arrays";
 import * as JSONData from "../utils/json-data";
 import { isColorDark, isColorLight } from "../utils/colors";
-import Config, { setAutoSwitchTheme } from "../config";
+import Config, { setAutoSwitchTheme, setCustomBackground } from "../config";
 import * as BackgroundFilter from "../elements/custom-background-filter";
 import * as ConfigEvent from "../observables/config-event";
 import * as DB from "../db";
@@ -345,7 +345,7 @@ function applyCustomBackground(): void {
     $("#words").addClass("noErrorBorder");
     $("#resultWordsHistory").addClass("noErrorBorder");
     $(".customBackground").html(
-      `<img src="${Config.customBackground}" alt="" />`
+      `<img src="${Config.customBackground}" alt="" onerror="javascript:window.dispatchEvent(new Event('customBackgroundFailed'))" />`
     );
     BackgroundFilter.apply();
     applyCustomBackgroundSize();
@@ -424,4 +424,11 @@ ConfigEvent.subscribe(async (eventKey, eventValue, nosave) => {
   ) {
     await set(Config.themeDark, true);
   }
+});
+
+window.addEventListener("customBackgroundFailed", () => {
+  Notifications.add(
+    "The custom background cannot be loaded and will be removed from your configuration."
+  );
+  setCustomBackground("");
 });

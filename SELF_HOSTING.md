@@ -33,7 +33,7 @@
 - create an `.env` file, you can copy the content from the [example.env](https://github.com/monkeytypegame/monkeytype/tree/master/docker/example.env).
 - download the [backend-configuration.json](https://github.com/monkeytypegame/monkeytype/tree/master/docker/backend-configuration.json)
 - run `docker compose up -d`
-- After the command exits successfully you can access [http://localhost:8080](http://localhost:8080)
+- after the command exits successfully you can access [http://localhost:8080](http://localhost:8080)
 
 
 ## Account System
@@ -68,7 +68,7 @@ Stop the running docker containers using `docker compose down` before making any
 - update the `.env` file
   - open the [firebase console](https://console.firebase.google.com/) and open your project
   - open the project settings by clicking the `⚙` icon on the sidebar and `Project settings`
-  - If there is no app in your project create a new web-app `</>`
+  - if there is no app in your project create a new web-app `</>`
     - nickname `monkeytype`
     - uncheck `set up firebase hosting`
     - click `Register app` 
@@ -193,7 +193,9 @@ Example content from `backend-configuration.json`:
 }
 ```
 
-If you have the `curl` and `jq` installed you can also run `curl -wO- http://localhost:5005/configuration | jq ".data" > backend-configuration.json` to update the configuration file.
+If you have `curl` and `jq` installed you can also run `curl -wO- http://localhost:5005/configuration | jq ".data" > backend-configuration.json` to update the configuration file.
 
 
-_Note:_ The configuration is applied on container startup only. You have to restart the container for your changes to become active.
+> [!NOTE]
+> The configuration is applied on container startup only. You have to restart the container for your changes to become active.
+

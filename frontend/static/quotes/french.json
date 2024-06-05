@@ -1140,6 +1140,24 @@
       "source": "Kaamelott, Livre II, Unagi II",
       "length": 330,
       "id": 198
+    },
+    {
+      "text": "Il ne peut pas le savoir, mais moi j’en suis sûr. Sa voix est un miracle, la promesse rare d’un don exceptionnel.",
+      "source": "Mathieu, Les Choristes",
+      "length": 113,
+      "id": 199
+    },
+    {
+      "text": "Pepinot avait raison d’y croire, le jour du renvoi de Mathieu c’était un samedi.",
+      "source": "Les Choristes",
+      "length": 80,
+      "id": 200
+    },
+    {
+      "text": "Ouvre tes mains, bien présentées comme ça... Voilà, je te nomme pupitre.",
+      "source": "Mathieu, Les Choristes",
+      "length": 72,
+      "id": 201
     }
   ]
 }
