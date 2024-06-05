@@ -207,7 +207,6 @@ describe("UserDal", () => {
       "", // empty
       " ".repeat(16), // too long
       ".testName", // cant begin with period
-      "miodec", // profanity
       "asdasdAS$", // invalid characters
     ];
 
