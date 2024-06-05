@@ -1,6 +1,6 @@
 import type { Interval } from "date-fns/types";
 import { UTCDateMini } from "@date-fns/utc/date/mini";
-import { format } from "date-fns/format";
+import { format } from "../utils/date-format";
 import { endOfMonth } from "date-fns/endOfMonth";
 import { subYears } from "date-fns/subYears";
 import { addDays } from "date-fns/addDays";

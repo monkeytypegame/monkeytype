@@ -2,7 +2,7 @@ import Ape from "../ape";
 import { isDevEnvironment } from "../utils/misc";
 import { secondsToString } from "../utils/date-and-time";
 import * as Notifications from "./notifications";
-import { format } from "date-fns/format";
+import { format } from "../utils/date-format";
 import * as Alerts from "./alerts";
 
 function clearMemory(): void {

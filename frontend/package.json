@@ -6,7 +6,7 @@
   "scripts": {
     "lint": "eslint \"./**/*.ts\"",
     "validate-json": "npx gulp validate-json-schema",
-    "audit": "vite-bundle-visualizer -o /tmp/report.html",
+    "audit": "vite-bundle-visualizer -o /tmp/report.html --open=false",
     "dep-graph": "madge -c -i \"dep-graph.png\" ./src/ts",
     "build": "npm run madge && vite build",
     "madge": " madge --circular --extensions ts ./src",

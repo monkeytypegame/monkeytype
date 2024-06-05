@@ -17,7 +17,7 @@ import * as Arrays from "../utils/arrays";
 import * as Numbers from "../utils/numbers";
 import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
 import * as Profile from "../elements/profile";
-import { format } from "date-fns/format";
+import { format } from "../utils/date-format";
 import * as ConnectionState from "../states/connection";
 import * as Skeleton from "../utils/skeleton";
 import type { ScaleChartOptions, LinearScaleOptions } from "chart.js";

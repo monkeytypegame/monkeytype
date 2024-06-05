@@ -1,5 +1,5 @@
 import * as DB from "../db";
-import { format } from "date-fns/format";
+import { format } from "../utils/date-format";
 import { getLanguageDisplayString } from "../utils/strings";
 import Config from "../config";
 import Format from "../utils/format";

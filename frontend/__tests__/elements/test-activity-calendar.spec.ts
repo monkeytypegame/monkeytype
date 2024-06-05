@@ -8,7 +8,7 @@ import { UTCDateMini } from "@date-fns/utc/date/mini";
 import { parseISO } from "date-fns/parseISO";
 import { eachDayOfInterval } from "date-fns/eachDayOfInterval";
 import { getDayOfYear } from "date-fns/getDayOfYear";
-import { format } from "date-fns/format";
+import { format } from "../../src/ts/utils/date-format";
 
 describe("test-activity-calendar.ts", () => {
   beforeEach(() => {
