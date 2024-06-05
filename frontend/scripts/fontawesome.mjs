@@ -7,9 +7,33 @@ import * as path from "path";
 const modules2 = {
   solid: [], //leave empty
   brands: detectBrands(),
+  animated: ["fa-spin", "fa-pulse"],
+  "bordererd-pulled": ["fa-border", "fa-pull-left", "fa-pull-right"],
   "fixed-width": ["fa-fw"],
-  "rotated-flipped": ["fa-rotate-90", "fa-rotate-180", "fa-rotate-270"],
-  animated: ["fa-spin"],
+  larger: [
+    "fw-lg",
+    "fw-xs",
+    "fw-sm",
+    "fa-1x",
+    "fa-2x",
+    "fa-3x",
+    "fa-4x",
+    "fa-5x",
+    "fa-6x",
+    "fa-7x",
+    "fa-8x",
+    "fa-9x",
+    "fa-10x",
+  ],
+  "rotated-flipped": [
+    "fa-rotate-90",
+    "fa-rotate-180",
+    "fa-rotate-270",
+    "fa-flip-horizontal",
+    "fa-flip-vertical",
+    "fa-flip-both",
+  ],
+  stacked: ["fa-stack", "fa-stack-1x", "fa-stack-2x", "fa-inverse"],
 };
 
 /**
@@ -69,7 +93,7 @@ export function getFontawesomeConfig(debug = false) {
       "Make sure fontawesome modules are active: ",
       Object.entries(modules2)
         .filter((it) => usedClasses.filter((c) => it[1].includes(c)).length > 0)
-        .map((it) => it.name)
+        .map((it) => it[0])
         .filter((it) => it !== "brands")
         .join(", ")
     );
