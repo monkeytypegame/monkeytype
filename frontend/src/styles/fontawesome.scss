@@ -1,3 +1,10 @@
+/** For Fontawesome V6 **/
+/*
+@use "sass:list";
+@use "sass:map";
+@import "node_modules/@fortawesome/fontawesome-free/scss/_functions.scss";
+*/
+
 @import "node_modules/@fortawesome/fontawesome-free/scss/_variables.scss";
 @import "node_modules/@fortawesome/fontawesome-free/scss/_mixins.scss";
 @import "node_modules/@fortawesome/fontawesome-free/scss/_core.scss";
@@ -13,7 +20,11 @@
   font-family: "Font Awesome 5 Free";
   font-display: block;
   font-weight: 900;
-  src: url("/webfonts-generated/fa-solid-900.woff2") format("woff2");
+  @if variable-exists(fontAwesomeOverride) {
+    src: url("#{$fontAwesomeOverride}/fa-solid-900.woff2") format("woff2");
+  } @else {
+    src: url("/webfonts-generated/fa-solid-900.woff2") format("woff2");
+  }
 }
 
 .fa,
@@ -26,11 +37,34 @@
   font-family: "Font Awesome 5 Brands";
   font-display: block;
   font-weight: 400;
-  src: url("/webfonts-generated/fa-brands-400.woff2") format("woff2");
+  @if variable-exists(fontAwesomeOverride) {
+    src: url("#{$fontAwesomeOverride}/fa-brands-400.woff2") format("woff2");
+  } @else {
+    src: url("/webfonts-generated/fa-brands-400.woff2") format("woff2");
+  }
 }
 .fab {
   font-family: "Font Awesome 5 Brands";
   font-weight: 400;
 }
 
+/** For Fontawesome V5 **/
 @import "node_modules/@fortawesome/fontawesome-free/scss/_icons.scss";
+
+/** For Fontawesome V6 **/
+/*
+
+@each $name in $fontawesomeSolid {
+  $icon: map.get($fa-icons, $name);
+  .#{$fa-css-prefix}-#{$name}::before {
+    content: unquote('"#{ $icon }"');
+  }
+}
+
+@each $name in $fontawesomeBrands {
+  $icon: map.get($fa-brand-icons, $name);
+  .#{$fa-css-prefix}-#{$name}:before {
+    content: unquote('"#{ $icon }"');
+  }
+}
+*/

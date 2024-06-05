@@ -9,10 +9,7 @@ import Inspect from "vite-plugin-inspect";
 import autoprefixer from "autoprefixer";
 import "dotenv/config";
 import { fontawesomeSubset } from "fontawesome-subset";
-
-//read used fontawesome icons from sources
 import { getFontawesomeConfig } from "./scripts/fontawesome.mjs";
-let cachedFontConfig = "";
 
 function pad(numbers, maxLength, fillString) {
   return numbers.map((number) =>
@@ -46,7 +43,7 @@ function buildClientVersion() {
 /** @type {import("vite").UserConfig} */
 const BASE_CONFIG = {
   plugins: [
-    {
+    /*{
       name: "vite-plugin-fontawesome-subset",
       apply: "serve",
       buildStart() {
@@ -79,8 +76,7 @@ const BASE_CONFIG = {
           }
         }
       },
-    },
-    {
+    }*/ {
       name: "simple-jquery-inject",
       async transform(src, id) {
         if (id.endsWith(".ts")) {
@@ -124,26 +120,6 @@ const BASE_CONFIG = {
     devSourcemap: true,
     postcss: {
       plugins: [autoprefixer({})],
-    },
-    preprocessorOptions: {
-      scss: {
-        additionalData(source, fp) {
-          console.log({ fp });
-          if (fp.endsWith("index.scss")) {
-            const fontawesomeClasses = getFontawesomeConfig();
-            return `
-            //inject variables into sass context
-            $fontawesomeBrands: ${sassList(
-              fontawesomeClasses.brands
-            )};             
-            $fontawesomeSolid: ${sassList(fontawesomeClasses.solid)};
-
-            ${source}`;
-          } else {
-            return source;
-          }
-        },
-      },
     },
   },
   envDir: "../",
@@ -199,8 +175,29 @@ const BASE_CONFIG = {
 };
 
 /** @type {import("vite").UserConfig} */
+const DEV_CONFIG = {
+  css: {
+    preprocessorOptions: {
+      scss: {
+        additionalData: `$fontAwesomeOverride:"@fortawesome/fontawesome-free/webfonts";`,
+      },
+    },
+  },
+};
+
+/** @type {import("vite").UserConfig} */
 const BUILD_CONFIG = {
   plugins: [
+    {
+      name: "vite-plugin-fontawesome-subset",
+      apply: "build",
+      buildStart() {
+        const fontawesomeClasses = getFontawesomeConfig();
+        fontawesomeSubset(fontawesomeClasses, "src/webfonts-generated", {
+          targetFormats: ["woff2"],
+        });
+      },
+    },
     splitVendorChunkPlugin(),
     VitePWA({
       registerType: "autoUpdate",
@@ -263,6 +260,26 @@ const BUILD_CONFIG = {
     CLIENT_VERSION: JSON.stringify(buildClientVersion()),
     RECAPTCHA_SITE_KEY: JSON.stringify(process.env.RECAPTCHA_SITE_KEY),
   },
+  /** Enable for font awesome v6 */
+  /*preprocessorOptions: {
+    scss: {
+      additionalData(source, fp) {
+        if (fp.endsWith("index.scss")) {
+          const fontawesomeClasses = getFontawesomeConfig();
+          return `
+          //inject variables into sass context
+          $fontawesomeBrands: ${sassList(
+            fontawesomeClasses.brands
+          )};             
+          $fontawesomeSolid: ${sassList(fontawesomeClasses.solid)};
+
+          ${source}`;
+        } else {
+          return source;
+        }
+      },
+    },
+  },*/
 };
 
 export default defineConfig(({ command }) => {
@@ -272,10 +289,13 @@ export default defineConfig(({ command }) => {
     }
     return mergeConfig(BASE_CONFIG, BUILD_CONFIG);
   } else {
-    return BASE_CONFIG;
+    return mergeConfig(BASE_CONFIG, DEV_CONFIG);
   }
 });
 
+/** Enable for font awesome v6 */
+/*
 function sassList(values) {
   return values.map((it) => `"${it}"`).join(",");
 }
+*/
