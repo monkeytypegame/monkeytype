@@ -24,6 +24,6 @@
     "./**/*.ts",
     "./**/*.spec.ts",
     "./setup-tests.ts",
-    "../../shared-types/**/*.d.ts"
+    "../../shared/types/**/*.d.ts"
   ]
 }

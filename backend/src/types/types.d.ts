@@ -1,6 +1,10 @@
 type ObjectId = import("mongodb").ObjectId;
-
 type ExpressRequest = import("express").Request;
+/* eslint-disable  @typescript-eslint/no-explicit-any */
+type TsRestRequest = import("@ts-rest/express").TsRestRequest<any>;
+/* eslint-enable  @typescript-eslint/no-explicit-any */
+type AppRoute = import("@ts-rest/core").AppRoute;
+type AppRouter = import("@ts-rest/core").AppRouter;
 
 declare namespace MonkeyTypes {
   type DecodedToken = {
@@ -17,6 +21,18 @@ declare namespace MonkeyTypes {
   type Request = {
     ctx: Readonly<Context>;
   } & ExpressRequest;
+
+  type Request2<TQuery = never, TBody = never, TParams = never> = {
+    query: Readonly<TQuery>;
+    body: Readonly<TBody>;
+    params: TParams;
+    ctx: Readonly<Context>;
+    raw: TsRestRequest;
+  };
+
+  type RequestTsRest = {
+    ctx: Readonly<Context>;
+  } & TsRestRequest;
 
   type DBUser = Omit<
     SharedTypes.User,
@@ -120,4 +136,8 @@ declare namespace MonkeyTypes {
   };
 
   type DBBlocklistEntry = WithObjectId<MonkeyTypes.BlocklistEntry>;
+
+  type DBConfig = WithObjectId<
+    import("@shared/contract/configs.contract").ConfigWrapped
+  >;
 }

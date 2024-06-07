@@ -1,29 +1,18 @@
-import { Router } from "express";
-import { authenticateRequest } from "../../middlewares/auth";
-import { asyncHandler, validateRequest } from "../../middlewares/api-utils";
-import configSchema from "../schemas/config-schema";
-import * as ConfigController from "../controllers/config";
+import { configsContract } from "../../../../shared/contract/configs.contract";
+import { initServer } from "@ts-rest/express";
+import { authenticateRequestV2 } from "../../middlewares/auth";
 import * as RateLimit from "../../middlewares/rate-limit";
+import * as ConfigController from "../controllers/config";
+import { callController } from ".";
 
-const router = Router();
-
-router.get(
-  "/",
-  authenticateRequest(),
-  RateLimit.configGet,
-  asyncHandler(ConfigController.getConfig)
-);
-
-router.patch(
-  "/",
-  authenticateRequest(),
-  RateLimit.configUpdate,
-  validateRequest({
-    body: {
-      config: configSchema.required(),
-    },
-  }),
-  asyncHandler(ConfigController.saveConfig)
-);
-
-export default router;
+const s = initServer();
+export const configsRoutes = s.router(configsContract, {
+  get: {
+    middleware: [authenticateRequestV2(), RateLimit.configGet],
+    handler: async (r) => callController(ConfigController.getConfig)(r),
+  },
+  save: {
+    middleware: [authenticateRequestV2(), RateLimit.configUpdate],
+    handler: async (r) => callController(ConfigController.saveConfig)(r),
+  },
+});

@@ -77,7 +77,7 @@ export async function initSnapshot(): Promise<
     if (configResponse.status !== 200) {
       // eslint-disable-next-line @typescript-eslint/no-throw-literal
       throw {
-        message: `${configResponse.message} (config)`,
+        message: `${configResponse.body.message} (config)`,
         responseCode: configResponse.status,
       };
     }
@@ -90,7 +90,7 @@ export async function initSnapshot(): Promise<
     }
 
     const userData = userResponse.data;
-    const configData = configResponse.data;
+    const configData = configResponse.body.data;
     const presetsData = presetsResponse.data;
 
     if (userData === null) {
@@ -892,9 +892,9 @@ export async function updateLbMemory<M extends SharedTypes.Config.Mode>(
 
 export async function saveConfig(config: SharedTypes.Config): Promise<void> {
   if (isAuthenticated()) {
-    const response = await Ape.configs.save(config);
+    const response = await Ape.configs.save({ body: { config } });
     if (response.status !== 200) {
-      Notifications.add("Failed to save config: " + response.message, -1);
+      Notifications.add("Failed to save config: " + response.body.message, -1);
     }
   }
 }

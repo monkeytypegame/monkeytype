@@ -1,7 +1,9 @@
 import { v4 as uuidv4 } from "uuid";
 import { isDevEnvironment } from "./misc";
+import { MonkeyStatusAware } from "./monkey-response";
+import { MonkeyErrorType } from "@shared/contract/common.contract";
 
-class MonkeyError extends Error {
+class MonkeyError extends Error implements MonkeyStatusAware, MonkeyErrorType {
   status: number;
   errorId: string;
   uid?: string;
