@@ -44,7 +44,7 @@ import {
   TypingSpeedUnitSchema,
 } from "./shared/config";
 import { token } from "./shared/helpers";
-import { ModeSchema } from "./users.contract";
+import { ModeSchema } from "./shared/types";
 
 export const ConfigSchema = z.object({
   theme: token().max(50),

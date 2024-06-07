@@ -1,6 +1,7 @@
 import * as Misc from "./utils/misc";
 import * as JSONData from "./utils/json-data";
 import * as Notifications from "./elements/notifications";
+import { ZodSchema } from "zod";
 
 type PossibleType =
   | "string"
@@ -40,6 +41,17 @@ function invalid(key: string, val: unknown, customMessage?: string): void {
 
 function isArray(val: unknown): val is unknown[] {
   return val instanceof Array;
+}
+
+export function isConfigValueValidSchema<T>(
+  key: string,
+  val: T,
+  schema: ZodSchema<T>
+): boolean {
+  const isValid = schema.safeParse(val).success;
+  if (!isValid) invalid(key, val, undefined);
+
+  return isValid;
 }
 
 export function isConfigValueValid(
