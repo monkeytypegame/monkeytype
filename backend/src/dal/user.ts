@@ -1,5 +1,5 @@
 import _ from "lodash";
-import { isUsernameValid } from "../utils/validation";
+import { containsProfanity, isUsernameValid } from "../utils/validation";
 import { canFunboxGetPb, checkAndUpdatePb } from "../utils/pb";
 import * as db from "../init/db";
 import MonkeyError from "../utils/error";
@@ -112,6 +112,9 @@ export async function updateName(
   }
   if (!isUsernameValid(name)) {
     throw new MonkeyError(400, "Invalid username");
+  }
+  if (containsProfanity(name, "substring")) {
+    throw new MonkeyError(400, "Username contains profanity");
   }
 
   if (
