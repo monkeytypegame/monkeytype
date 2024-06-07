@@ -53,7 +53,9 @@ export function getFontawesomeConfig(debug = false) {
   const time = Date.now();
   const srcFiles = findAllFiles(
     "./src",
-    (filename) => !filename.endsWith("fontawesome.scss") //ignore our own css
+    (filename) =>
+      !filename.endsWith("fontawesome-5.scss") &&
+      !filename.endsWith("fontawesome-6.scss") //ignore our own css
   );
   const staticFiles = findAllFiles(
     "./static",
