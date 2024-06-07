@@ -1,39 +1,42 @@
 import * as fs from "fs";
 import * as path from "path";
 
+const iconSet = {
+  solid: parseIcons("solid"),
+  regular: parseIcons("regular"),
+  brands: parseIcons("brands"),
+};
 /**
  * Map containing reserved classes by module
  */
 const modules2 = {
-  solid: [], //leave empty
-  brands: detectBrands(),
-  animated: ["fa-spin", "fa-pulse"],
-  "bordererd-pulled": ["fa-border", "fa-pull-left", "fa-pull-right"],
-  "fixed-width": ["fa-fw"],
+  animated: ["spin", "pulse"],
+  "bordererd-pulled": ["border", "pull-left", "pull-right"],
+  "fixed-width": ["fw"],
   larger: [
-    "fw-lg",
-    "fw-xs",
-    "fw-sm",
-    "fa-1x",
-    "fa-2x",
-    "fa-3x",
-    "fa-4x",
-    "fa-5x",
-    "fa-6x",
-    "fa-7x",
-    "fa-8x",
-    "fa-9x",
-    "fa-10x",
+    "lg",
+    "xs",
+    "sm",
+    "1x",
+    "2x",
+    "3x",
+    "4x",
+    "5x",
+    "6x",
+    "7x",
+    "8x",
+    "9x",
+    "10x",
   ],
   "rotated-flipped": [
-    "fa-rotate-90",
-    "fa-rotate-180",
-    "fa-rotate-270",
-    "fa-flip-horizontal",
-    "fa-flip-vertical",
-    "fa-flip-both",
+    "rotate-90",
+    "rotate-180",
+    "rotate-270",
+    "flip-horizontal",
+    "flip-vertical",
+    "flip-both",
   ],
-  stacked: ["fa-stack", "fa-stack-1x", "fa-stack-2x", "fa-inverse"],
+  stacked: ["stack", "stack-1x", "stack-2x", "inverse"],
 };
 
 /**
@@ -74,21 +77,25 @@ export function getFontawesomeConfig(debug = false) {
     if (matches) {
       matches.forEach((match) => {
         const [icon] = match.split(" ");
-        usedClassesSet.add(icon);
+        usedClassesSet.add(icon.substring(3));
       });
     }
   }
 
   const usedClasses = new Array(...usedClassesSet).sort();
   const allModuleClasses = Object.values(modules2).flatMap((it) => it);
+  const icons = usedClasses.filter((it) => !allModuleClasses.includes(it));
 
-  const solid = usedClasses
-    .filter((it) => !allModuleClasses.includes(it))
-    .map((it) => it.substring(3));
+  const solid = icons.filter((it) => iconSet.solid.includes(it));
+  const regular = icons.filter((it) => iconSet.regular.includes(it));
+  const brands = usedClasses.filter((it) => iconSet.brands.includes(it));
 
-  const brands = usedClasses
-    .filter((it) => modules2.brands.includes(it))
-    .map((it) => it.substring(3));
+  const leftOvers = icons.filter(
+    (it) => !(solid.includes(it) || regular.includes(it) || brands.includes(it))
+  );
+  if (leftOvers.length !== 0) {
+    throw new Error("unknown icons: " + leftOvers);
+  }
 
   if (debug === true) {
     console.debug(
@@ -103,6 +110,7 @@ export function getFontawesomeConfig(debug = false) {
     console.debug(
       "Here is your config: \n",
       JSON.stringify({
+        regular,
         solid,
         brands,
       })
@@ -111,6 +119,7 @@ export function getFontawesomeConfig(debug = false) {
   }
 
   return {
+    regular,
     solid,
     brands,
   };
@@ -138,11 +147,11 @@ function findAllFiles(dir, filter = (filename) => true) {
     }, []);
 }
 
-function detectBrands() {
-  const brandFile = fs
-    .readFileSync("node_modules/@fortawesome/fontawesome-free/js/brands.js")
+function parseIcons(iconSet) {
+  const file = fs
+    .readFileSync(`node_modules/@fortawesome/fontawesome-free/js/${iconSet}.js`)
     .toString();
-  return brandFile
+  return file
     .match(/\"(.*)\"\: \[.*\],/g)
-    .map((it) => "fa-" + it.substring(1, it.indexOf(":") - 1));
+    .map((it) => it.substring(1, it.indexOf(":") - 1));
 }

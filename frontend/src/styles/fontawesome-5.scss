@@ -10,7 +10,7 @@
 @import "node_modules/@fortawesome/fontawesome-free/scss/_rotated-flipped.scss"; //fa-rotate-90
 
 @font-face {
-  font-family: "Font Awesome 5 Free";
+  font-family: "Font Awesome";
   font-display: block;
   font-weight: 900;
   @if variable-exists(fontAwesomeOverride) {
@@ -20,14 +20,35 @@
   }
 }
 
+@font-face {
+  font-family: "Font Awesome";
+  font-display: block;
+  font-weight: 400;
+  @if variable-exists(fontAwesomeOverride) {
+    src: url("#{$fontAwesomeOverride}/fa-regular-400.woff2") format("woff2");
+  } @else {
+    src: url("/webfonts-generated/fa-regular-400.woff2") format("woff2");
+  }
+}
+
 .fa,
 .fas {
-  font-family: "Font Awesome 5 Free";
+  font-family: "Font Awesome";
   font-weight: 900;
 }
 
+.far {
+  font-family: "Font Awesome";
+  font-weight: 400;
+}
+
+.fab {
+  font-family: "Font Awesome Brands";
+  font-weight: 400;
+}
+
 @font-face {
-  font-family: "Font Awesome 5 Brands";
+  font-family: "Font Awesome Brands";
   font-display: block;
   font-weight: 400;
   @if variable-exists(fontAwesomeOverride) {
@@ -35,10 +56,6 @@
   } @else {
     src: url("/webfonts-generated/fa-brands-400.woff2") format("woff2");
   }
-}
-.fab {
-  font-family: "Font Awesome 5 Brands";
-  font-weight: 400;
 }
 
 @import "node_modules/@fortawesome/fontawesome-free/scss/_icons.scss";
