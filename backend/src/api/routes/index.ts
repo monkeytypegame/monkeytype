@@ -45,7 +45,6 @@ const API_ROUTE_MAP = {
   "/ape-keys": apeKeys,
   "/admin": admin,
   "/webhooks": webhooks,
-  "/dev": dev,
 };
 
 function addApiRoutes(app: Application): void {
@@ -69,6 +68,9 @@ function addApiRoutes(app: Application): void {
       }
       next();
     });
+
+    //enable dev edpoints
+    app.use("/dev", dev);
   }
 
   // Cannot be added to the route map because it needs to be added before the maintenance handler
