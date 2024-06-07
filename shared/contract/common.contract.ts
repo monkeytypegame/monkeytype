@@ -14,6 +14,9 @@ export type MonkeyValidationError = z.infer<typeof MonkeyValidationErrorSchema>;
 export const MonkeyErrorSchema = MonkeyResponseSchema.extend({
   errorId: z.string(),
   uid: z.string().optional(),
-}).or(MonkeyValidationErrorSchema);
-
+});
 export type MonkeyErrorType = z.infer<typeof MonkeyErrorSchema>;
+
+export const MonkeyErrorResponseSchema = MonkeyErrorSchema.or(
+  MonkeyValidationErrorSchema
+);

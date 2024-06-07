@@ -1,6 +1,9 @@
 import { initContract } from "@ts-rest/core";
 import { z } from "zod";
-import { MonkeyErrorSchema, MonkeyResponseSchema } from "./common.contract";
+import {
+  MonkeyErrorResponseSchema,
+  MonkeyResponseSchema,
+} from "./common.contract";
 import {
   AccountChartSchema,
   AdsSchema,
@@ -167,7 +170,7 @@ export const configsContract = c.router(
       path: "/",
       responses: {
         200: MonkeyResponseSchema.extend({ data: ConfigWrappedSchema }),
-        400: MonkeyErrorSchema,
+        400: MonkeyErrorResponseSchema,
       },
     },
     save: {
@@ -176,7 +179,7 @@ export const configsContract = c.router(
       body: ConfigUpdateBodySchema,
       responses: {
         200: MonkeyResponseSchema,
-        400: MonkeyErrorSchema,
+        400: MonkeyErrorResponseSchema,
       },
     },
   },

@@ -25,9 +25,9 @@ declare namespace MonkeyTypes {
   type Request2<TQuery = never, TBody = never, TParams = never> = {
     query: Readonly<TQuery>;
     body: Readonly<TBody>;
-    params: TParams;
+    params: Readonly<TParams>;
     ctx: Readonly<Context>;
-    raw: TsRestRequest;
+    raw: Readonly<TsRestRequest>;
   };
 
   type RequestTsRest = {
