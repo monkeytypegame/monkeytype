@@ -43,40 +43,7 @@ function buildClientVersion() {
 /** @type {import("vite").UserConfig} */
 const BASE_CONFIG = {
   plugins: [
-    /*{
-      name: "vite-plugin-fontawesome-subset",
-      apply: "serve",
-      buildStart() {
-        const fontawesomeClasses = getFontawesomeConfig();
-        cachedFontConfig = JSON.stringify(fontawesomeClasses);
-        fontawesomeSubset(fontawesomeClasses, "src/webfonts-generated", {
-          targetFormats: ["woff2"],
-        });
-      },
-      async handleHotUpdate({ file }) {
-        if (
-          file.endsWith(".html") ||
-          file.endsWith(".css") ||
-          file.endsWith(".js") ||
-          file.endsWith(".ts")
-        ) {
-          const fontawesomeClasses = getFontawesomeConfig();
-          const newFontConfig = JSON.stringify(fontawesomeClasses);
-          if (cachedFontConfig != newFontConfig) {
-            await fontawesomeSubset(
-              fontawesomeClasses,
-              "src/webfonts-generated",
-              {
-                targetFormats: ["woff2"],
-              }
-            );
-
-            cachedFontConfig = newFontConfig;
-            return [];
-          }
-        }
-      },
-    }*/ {
+    {
       name: "simple-jquery-inject",
       async transform(src, id) {
         if (id.endsWith(".ts")) {
