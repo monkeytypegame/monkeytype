@@ -11,6 +11,7 @@ export const configsRoutes = s.router(configsContract, {
     middleware: [authenticateRequestV2(), RateLimit.configGet],
     handler: async (r) => callController(ConfigController.getConfig)(r),
   },
+
   save: {
     middleware: [authenticateRequestV2(), RateLimit.configUpdate],
     handler: async (r) => callController(ConfigController.saveConfig)(r),

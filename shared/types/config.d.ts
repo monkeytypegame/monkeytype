@@ -4,7 +4,7 @@ declare namespace SharedTypes.Config {
   type QuoteLength = import("../contract/shared/config").QuoteLength;
   type CaretStyle = import("../contract/shared/config").CaretStyle;
   type Difficulty = import("../contract/shared/config").Difficulty;
-  type Mode = import("../contract/users.contract").Mode;
+  type Mode = import("../contract/shared/types").Mode;
   type Mode2<M extends Mode> = M extends M ? keyof PersonalBests[M] : never;
   type Mode2Custom<M extends Mode> = Mode2<M> | "custom";
   type ConfidenceMode = import("../contract/shared/config").ConfidenceMode;

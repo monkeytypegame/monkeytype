@@ -1,8 +1,11 @@
 import { z } from "zod";
 
+const StatusCodeSchema = z.number().int();
+export type StatusCode = z.infer<typeof StatusCodeSchema>;
+
 export const MonkeyResponseSchema = z.object({
   message: z.string(),
-  status: z.number().int(),
+  status: StatusCodeSchema,
 });
 export type MonkeyResonseType = z.infer<typeof MonkeyResponseSchema>;
 

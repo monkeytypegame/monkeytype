@@ -170,7 +170,7 @@ export const configsContract = c.router(
       path: "/",
       responses: {
         200: MonkeyResponseSchema.extend({ data: ConfigWrappedSchema }),
-        400: MonkeyErrorResponseSchema,
+        //400: MonkeyErrorResponseSchema,
       },
     },
     save: {

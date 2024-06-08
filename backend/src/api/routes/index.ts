@@ -29,10 +29,15 @@ import {
 import { isDevEnvironment } from "../../utils/misc";
 import { getLiveConfiguration } from "../../init/configuration";
 import Logger from "../../utils/logger";
-import { createExpressEndpoints, initServer } from "@ts-rest/express";
+import {
+  TsRestRequest,
+  createExpressEndpoints,
+  initServer,
+} from "@ts-rest/express";
 import { configsRoutes } from "./configs";
 import { ZodIssue } from "zod";
 import { MonkeyValidationError } from "@shared/contract/common.contract";
+import { AppRoute, AppRouter } from "@ts-rest/core";
 
 const pathOverride = process.env["API_PATH_OVERRIDE"];
 const BASE_ROUTE = pathOverride !== undefined ? `/${pathOverride}` : "";
@@ -173,29 +178,69 @@ function applyApiRoutes(app: Application): void {
   });
 }
 
-/* eslint-disable  @typescript-eslint/no-explicit-any */
 export function callController<
-  TInput,
-  TBody,
+  TRoute extends AppRoute | AppRouter,
   TQuery,
+  TBody,
   TParams,
-  TResponse extends MonkeyResponse2<any>
+  TResponse
 >(
-  handler: (
-    req: MonkeyTypes.Request2<TQuery, TBody, TParams>
-  ) => Promise<TResponse>
-): (all: TInput) => Promise<any> {
+  handler: Handler<TQuery, TBody, TParams, TResponse>
+): (all: RequestType2<TRoute, TQuery, TBody, TParams>) => Promise<{
+  status: 200;
+  body: { message: string; status: number; data: TResponse };
+}> {
   return async (all) => {
-    const { req, body, params, query } = all as any;
-    const result = await handler({
-      body: body as TBody,
-      query: query as TQuery,
-      params: params as TParams,
-      ctx: req.ctx,
-      raw: req,
-    });
-    return { status: result.status, body: result };
+    const req: MonkeyTypes.Request2<TQuery, TBody, TParams> = {
+      body: all.body as TBody,
+      query: all.query as TQuery,
+      params: all.params as TParams,
+      raw: all.req,
+      ctx: all.req["ctx"],
+    };
+
+    const result = await handler(req);
+
+    return {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      status: result.status as any,
+      body: result,
+    };
   };
 }
 
-/* eslint-enable  @typescript-eslint/no-explicit-any */
+type WithBody<T> = {
+  body: T;
+};
+type WithQuery<T> = {
+  query: T;
+};
+
+type WithParams<T> = {
+  params: T;
+};
+
+type WithoutBody = {
+  body?: never;
+};
+type WithoutQuery = {
+  query?: never;
+};
+type WithoutParams = {
+  params?: never;
+};
+
+type Handler<TQuery, TBody, TParams, TResponse> = (
+  req: MonkeyTypes.Request2<TQuery, TBody, TParams>
+) => Promise<MonkeyResponse2<TResponse>>;
+
+type RequestType2<
+  TRoute extends AppRoute | AppRouter,
+  TQuery,
+  TBody,
+  TParams
+> = {
+  req: TsRestRequest<TRoute>;
+} & (TQuery extends undefined ? WithoutQuery : WithQuery<TQuery>) &
+  (TBody extends undefined ? WithoutBody : WithBody<TBody>) &
+  (TParams extends undefined ? WithoutParams : WithParams<TParams>);

@@ -3,7 +3,10 @@ import {
   ConfigUpdateBody,
 } from "@shared/contract/configs.contract";
 import * as ConfigDAL from "../../dal/config";
-import { MonkeyResponse2 } from "../../utils/monkey-response";
+import {
+  MonkeyResponse2,
+  MonkeyResponse2Empty,
+} from "../../utils/monkey-response";
 import MonkeyError from "../../utils/error";
 
 export async function getConfig(
@@ -17,12 +20,12 @@ export async function getConfig(
 }
 
 export async function saveConfig(
-  req: MonkeyTypes.Request2<never, ConfigUpdateBody>
-): Promise<MonkeyResponse2<never>> {
+  req: MonkeyTypes.Request2<undefined, ConfigUpdateBody>
+): Promise<MonkeyResponse2Empty> {
   const { config } = req.body;
   const { uid } = req.ctx.decodedToken;
 
   await ConfigDAL.saveConfig(uid, config);
 
-  return new MonkeyResponse2("Config updated");
+  return new MonkeyResponse2Empty("Config updated");
 }

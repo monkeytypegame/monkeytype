@@ -13,7 +13,7 @@ declare namespace MonkeyTypes {
     email: string;
   };
 
-  type Context = {
+  export type Context = {
     configuration: SharedTypes.Configuration;
     decodedToken: DecodedToken;
   };
@@ -22,7 +22,7 @@ declare namespace MonkeyTypes {
     ctx: Readonly<Context>;
   } & ExpressRequest;
 
-  type Request2<TQuery = never, TBody = never, TParams = never> = {
+  type Request2<TQuery = undefined, TBody = undefined, TParams = undefined> = {
     query: Readonly<TQuery>;
     body: Readonly<TBody>;
     params: Readonly<TParams>;
