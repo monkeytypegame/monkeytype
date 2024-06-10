@@ -693,7 +693,7 @@ export async function getNextWord(
   wordIndex: number,
   wordsBound: number,
   previousWord: string,
-  previousWord2: string
+  previousWord2: string | undefined
 ): Promise<GetNextWordReturn> {
   console.debug("Getting next word", {
     isRepeated: TestState.isRepeated,
@@ -750,7 +750,7 @@ export async function getNextWord(
   let randomWord = currentWordset.randomWord(funboxFrequency);
   const previousWordRaw = previousWord.replace(/[.?!":\-,]/g, "").toLowerCase();
   const previousWord2Raw = previousWord2
-    .replace(/[.?!":\-,']/g, "")
+    ?.replace(/[.?!":\-,']/g, "")
     .toLowerCase();
 
   if (currentSection.length === 0) {
