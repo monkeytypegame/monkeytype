@@ -508,16 +508,8 @@ export async function init(): Promise<void> {
   );
 }
 
-//add word during the test
-export async function addWord(): Promise<void> {
-  let bound = 100; // how many extra words to aim for AFTER the current word
-  const funboxToPush = FunboxList.get(Config.funbox)
-    .find((f) => f.properties?.find((fp) => fp.startsWith("toPush")))
-    ?.properties?.find((fp) => fp.startsWith("toPush:"));
-  const toPushCount = funboxToPush?.split(":")[1];
-  if (toPushCount !== undefined) bound = +toPushCount - 1;
-  if (
-    TestWords.words.length - TestInput.input.history.length > bound ||
+export function areAllTestWordsGenerated(): boolean {
+  return (
     (Config.mode === "words" &&
       TestWords.words.length >= Config.words &&
       Config.words > 0) ||
@@ -533,6 +525,20 @@ export async function addWord(): Promise<void> {
       WordsGenerator.sectionIndex >= CustomText.getLimitValue() &&
       WordsGenerator.currentSection.length === 0 &&
       CustomText.getLimitValue() !== 0)
+  );
+}
+
+//add word during the test
+export async function addWord(): Promise<void> {
+  let bound = 100; // how many extra words to aim for AFTER the current word
+  const funboxToPush = FunboxList.get(Config.funbox)
+    .find((f) => f.properties?.find((fp) => fp.startsWith("toPush")))
+    ?.properties?.find((fp) => fp.startsWith("toPush:"));
+  const toPushCount = funboxToPush?.split(":")[1];
+  if (toPushCount !== undefined) bound = +toPushCount - 1;
+  if (
+    TestWords.words.length - TestInput.input.history.length > bound ||
+    areAllTestWordsGenerated()
   ) {
     return;
   }
