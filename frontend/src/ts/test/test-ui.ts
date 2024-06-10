@@ -233,20 +233,22 @@ export function updateActiveElement(
     }
     active.classList.remove("active");
   }
-  try {
-    const activeWord = document.querySelectorAll("#words .word")[
-      currentWordElementIndex
-    ] as Element;
-    activeWord.classList.add("active");
-    activeWord.classList.remove("error");
-    activeWordTop = (document.querySelector("#words .active") as HTMLElement)
-      .offsetTop;
-    if (Config.highlightMode === "word") {
-      activeWord.querySelectorAll("letter").forEach((e) => {
-        e.classList.add("correct");
-      });
-    }
-  } catch (e) {}
+  const activeWord =
+    document.querySelectorAll("#words .word")[currentWordElementIndex];
+
+  if (activeWord == undefined) {
+    throw new Error("activeWord is undefined - can't update active element");
+  }
+
+  activeWord.classList.add("active");
+  activeWord.classList.remove("error");
+  activeWordTop = (document.querySelector("#words .active") as HTMLElement)
+    .offsetTop;
+  if (Config.highlightMode === "word") {
+    activeWord.querySelectorAll("letter").forEach((e) => {
+      e.classList.add("correct");
+    });
+  }
   if (!initial && shouldUpdateWordsInputPosition()) {
     void updateWordsInputPosition();
   }
