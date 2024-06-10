@@ -275,9 +275,6 @@ function handleSpace(): void {
       return;
     }
     PaceCaret.handleSpace(false, currentWord);
-    if (Config.blindMode && Config.highlightMode !== "off") {
-      $("#words .word.active letter").addClass("correct");
-    }
     TestInput.input.pushHistory();
     TestUI.highlightBadWord(TestUI.currentWordElementIndex, !Config.blindMode);
     TestWords.words.increaseCurrentIndex();
