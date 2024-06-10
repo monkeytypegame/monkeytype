@@ -15,6 +15,16 @@ textarea {
   }
 }
 
+.textareaWithCounter {
+  .char-counter {
+    display: block;
+    font-size: 0.8em;
+    color: var(--sub-color);
+    margin-top: 2px;
+    text-align: right;
+  }
+}
+
 textarea {
   resize: vertical;
 }
