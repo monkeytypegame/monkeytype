@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { ColorHexValueSchema } from "./types";
 
 export const SmoothCaretSchema = z.enum(["off", "slow", "medium", "fast"]);
 export type SmoothCaret = z.infer<typeof SmoothCaretSchema>;
@@ -197,3 +198,17 @@ export type MinimumBurst = z.infer<typeof MinimumBurstSchema>;
 
 export const ShowAverageSchema = z.enum(["off", "speed", "acc", "both"]);
 export type ShowAverage = z.infer<typeof ShowAverageSchema>;
+
+export const CustomThemeColorsSchema = z.tuple([
+  ColorHexValueSchema,
+  ColorHexValueSchema,
+  ColorHexValueSchema,
+  ColorHexValueSchema,
+  ColorHexValueSchema,
+  ColorHexValueSchema,
+  ColorHexValueSchema,
+  ColorHexValueSchema,
+  ColorHexValueSchema,
+  ColorHexValueSchema,
+]);
+export type CustomThemeColors = z.infer<typeof CustomThemeColorsSchema>;

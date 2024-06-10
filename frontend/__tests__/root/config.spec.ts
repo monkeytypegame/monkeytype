@@ -1,6 +1,6 @@
-import * as Config from "../../src/ts/config";
-import defaultConfig from "../../src/ts/constants/default-config";
-import * as ConfigValidation from "../../src/ts/config-validation";
+import * as Config from "../src/ts/config";
+import * as ConfigValidation from "../src/ts/config-validation";
+import { CustomThemeColors } from "../../shared/contract/shared/config";
 
 describe("Config", () => {
   const asyncValidationMock = vi.spyOn(
@@ -219,4 +219,27 @@ describe("Config", () => {
 
     expect(Config.setMonkeyPowerLevel("invalid" as any)).toBe(false);
   });
+  it("setCustomThemeColors", () => {
+    expect(Config.setCustomThemeColors(customThemeColors(10))).toBe(true);
+
+    //gets converted
+    expect(Config.setCustomThemeColors(customThemeColors(9))).toBe(true);
+
+    expect(Config.setCustomThemeColors([] as any)).toBe(false);
+    expect(Config.setCustomThemeColors(["invalid"] as any)).toBe(false);
+    expect(Config.setCustomThemeColors(customThemeColors(5))).toBe(false);
+    expect(Config.setCustomThemeColors(customThemeColors(11))).toBe(false);
+
+    const tenColors = customThemeColors(10);
+    tenColors[0] = "black";
+    expect(Config.setCustomThemeColors(tenColors)).toBe(false);
+    tenColors[0] = "#123456";
+    expect(Config.setCustomThemeColors(tenColors)).toBe(true);
+    tenColors[0] = "#1234";
+    expect(Config.setCustomThemeColors(tenColors)).toBe(false);
+  });
 });
+
+function customThemeColors(n: number): CustomThemeColors {
+  return new Array(n).fill("#000") as CustomThemeColors;
+}

@@ -6,6 +6,9 @@ export const StringNumberSchema = z.custom<`${number}`>((val) => {
 });
 export type StringNumber = z.infer<typeof StringNumberSchema>;
 
+export const ColorHexValueSchema = z.string().regex(/^#([\da-f]{3}){1,2}$/i);
+export type ColorHexValue = z.infer<typeof ColorHexValueSchema>;
+
 export const PersonalBestSchema = z.object({
   acc: z.number().nonnegative().max(100),
   consistency: z.number().nonnegative().max(100),

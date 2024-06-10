@@ -1338,12 +1338,13 @@ export function setThemeDark(name: string, nosave?: boolean): boolean {
 function setThemes(
   theme: string,
   customState: boolean,
-  customThemeColors: string[],
+  customThemeColors: Config.CustomThemeColors,
   autoSwitchTheme: boolean,
   nosave?: boolean
 ): boolean {
   if (!isConfigValueValid("themes", theme, ["string"])) return false;
 
+  //@ts-expect-error
   if (customThemeColors.length === 9) {
     //color missing
     if (customState) {
@@ -1425,13 +1426,11 @@ export function setLazyMode(val: boolean, nosave?: boolean): boolean {
 }
 
 export function setCustomThemeColors(
-  colors: string[],
+  colors: Config.CustomThemeColors,
   nosave?: boolean
 ): boolean {
-  if (!isConfigValueValid("custom theme colors", colors, ["stringArray"])) {
-    return false;
-  }
-
+  // migrate existing configs missing sub alt color
+  // @ts-expect-error
   if (colors.length === 9) {
     //color missing
     Notifications.add(
@@ -1442,6 +1441,16 @@ export function setCustomThemeColors(
       }
     );
     colors.splice(4, 0, "#000000");
+  }
+
+  if (
+    !isConfigValueValidSchema(
+      "custom theme colors",
+      colors,
+      Config.CustomThemeColorsSchema
+    )
+  ) {
+    return false;
   }
 
   if (colors !== undefined) {

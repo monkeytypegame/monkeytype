@@ -12,6 +12,7 @@ import {
   CustomBackgroundFilterSchema,
   CustomBackgroundSizeSchema,
   CustomLayoutFluidSchema,
+  CustomThemeColorsSchema,
   DifficultySchema,
   HighlightModeSchema,
   IndicateTyposSchema,
@@ -53,9 +54,7 @@ export const ConfigSchema = z.object({
   autoSwitchTheme: z.boolean(),
   customTheme: z.boolean(),
   //customThemeId: token().nonnegative().max(24),
-  customThemeColors: z
-    .array(z.string().regex(/^#([\da-f]{3}){1,2}$/i))
-    .length(10),
+  customThemeColors: CustomThemeColorsSchema,
   favThemes: z.array(token().max(50)),
   showKeyTips: z.boolean(),
   smoothCaret: SmoothCaretSchema,
