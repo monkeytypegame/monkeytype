@@ -1969,6 +1969,7 @@
       "row4": ["zZ", "xX", "-?", "vV", "bB", ".:", "hH", "gG", ",;", "kK"],
       "row5": [" "]
     }
+  },
   "cascade": {
     "keymapShowTopRow": false,
     "type": "ansi",
