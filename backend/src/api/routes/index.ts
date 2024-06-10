@@ -183,11 +183,13 @@ export function callController<
   TQuery,
   TBody,
   TParams,
-  TResponse
+  TResponse,
+  TStatus extends number = 200
 >(
-  handler: Handler<TQuery, TBody, TParams, TResponse>
+  handler: Handler<TQuery, TBody, TParams, TResponse>,
+  status?: TStatus
 ): (all: RequestType2<TRoute, TQuery, TBody, TParams>) => Promise<{
-  status: 200;
+  status: TStatus;
   body: { message: string; status: number; data: TResponse };
 }> {
   return async (all) => {

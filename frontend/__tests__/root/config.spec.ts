@@ -204,7 +204,9 @@ describe("Config", () => {
     expect(Config.setCustomBackgroundSize("invalid" as any)).toBe(false);
   });
   it("setCustomBackgroundFilter", () => {
-    expect(Config.setCustomBackgroundFilter([0, 1, 2, 3, 4])).toBe(true);
+    expect(Config.setCustomBackgroundFilter([0, 1, 2, 3])).toBe(true);
+    //gets converted
+    expect(Config.setCustomBackgroundFilter([0, 1, 2, 3, 4] as any)).toBe(true);
     expect(Config.setCustomBackgroundFilter([] as any)).toBe(false);
     expect(Config.setCustomBackgroundFilter(["invalid"] as any)).toBe(false);
     expect(Config.setCustomBackgroundFilter([1, 2, 3, 4, 5, 6] as any)).toBe(

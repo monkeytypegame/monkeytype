@@ -1749,6 +1749,12 @@ export function setCustomBackgroundFilter(
   array: Config.CustomBackgroundFilter,
   nosave?: boolean
 ): boolean {
+  //convert existing configs using five values down to four
+  //@ts-expect-error
+  if (array.length === 5) {
+    array = [array[0], array[1], array[2], array[3]];
+  }
+
   if (
     !isConfigValueValidSchema(
       "custom background filter",
@@ -1765,7 +1771,6 @@ export function setCustomBackgroundFilter(
 
   return true;
 }
-
 export function setMonkeyPowerLevel(
   level: Config.MonkeyPowerLevel,
   nosave?: boolean

@@ -181,7 +181,6 @@ export const CustomBackgroundFilterSchema = z.tuple([
   z.number(),
   z.number(),
   z.number(),
-  z.number(),
 ]);
 export type CustomBackgroundFilter = z.infer<
   typeof CustomBackgroundFilterSchema
