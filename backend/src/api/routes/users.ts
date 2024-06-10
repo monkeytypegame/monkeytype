@@ -69,7 +69,7 @@ const usernameValidation = joi
   .string()
   .required()
   .custom((value, helpers) => {
-    if (containsProfanity(value)) {
+    if (containsProfanity(value, "substring")) {
       return helpers.error("string.profanity");
     }
 
@@ -531,14 +531,15 @@ const profileDetailsBase = joi
   .string()
   .allow("")
   .custom((value, helpers) => {
-    if (containsProfanity(value)) {
+    if (containsProfanity(value, "word")) {
       return helpers.error("string.profanity");
     }
 
     return value;
   })
   .messages({
-    "string.profanity": "Profanity detected. Please remove it.",
+    "string.profanity":
+      "Profanity detected. Please remove it. (if you believe this is a mistake, please contact us)",
   });
 
 router.patch(

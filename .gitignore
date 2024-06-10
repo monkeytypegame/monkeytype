@@ -121,3 +121,7 @@ content-validation.js
 ads.txt
 updateContributors.mjs
 copyAnticheatToDev.sh
+
+
+# ignore generated fonts
+frontend/src/webfonts-generated

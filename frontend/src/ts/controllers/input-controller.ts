@@ -120,19 +120,26 @@ function backspaceToPrevious(): void {
     return;
   }
 
+  const wordElements = document.querySelectorAll("#words > .word");
   if (
     (TestInput.input.history[TestWords.words.currentIndex - 1] ==
       TestWords.words.get(TestWords.words.currentIndex - 1) &&
       !Config.freedomMode) ||
-    $($(".word")[TestWords.words.currentIndex - 1] as HTMLElement).hasClass(
-      "hidden"
-    )
+    wordElements[TestWords.words.currentIndex - 1]?.classList.contains("hidden")
   ) {
     return;
   }
 
   if (Config.confidenceMode === "on" || Config.confidenceMode === "max") {
     return;
+  }
+
+  const incorrectLetterBackspaced =
+    wordElements[TestWords.words.currentIndex]?.children[0]?.classList.contains(
+      "incorrect"
+    );
+  if (Config.stopOnError === "letter" && incorrectLetterBackspaced) {
+    void TestUI.updateWordElement();
   }
 
   TestInput.input.current = TestInput.input.popHistory();
