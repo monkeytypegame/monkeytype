@@ -702,7 +702,8 @@ function handleChar(
     //do not stop if not all characters have been parsed by handleChar yet
     const currentWord = TestWords.words.getCurrent();
     const lastWordIndex = TestWords.words.currentIndex;
-    const isLastWord = lastWordIndex === TestWords.words.length - 1;
+    const lastWord = lastWordIndex === TestWords.words.length - 1;
+    const allWordGenerated = TestLogic.areAllTestWordsGenerated();
     const wordIsTheSame = currentWord === TestInput.input.current;
     const shouldQuickEnd =
       Config.quickEnd &&
@@ -712,7 +713,8 @@ function handleChar(
     const isChinese = Config.language.startsWith("chinese");
 
     if (
-      isLastWord &&
+      lastWord &&
+      allWordGenerated &&
       (wordIsTheSame || shouldQuickEnd) &&
       (!isChinese ||
         (realInputValue !== undefined &&
