@@ -2,10 +2,9 @@ import * as DB from "./db";
 import * as OutOfFocus from "./test/out-of-focus";
 import * as Notifications from "./elements/notifications";
 import {
-  isConfigValueValid,
   isConfigValueValidAsync,
   isConfigValueValidBoolean,
-  isConfigValueValidSchema,
+  isConfigValueValid,
 } from "./config-validation";
 import * as ConfigEvent from "./observables/config-event";
 import DefaultConfig from "./constants/default-config";
@@ -111,7 +110,7 @@ export function setMode(
   mode: SharedContractTypes.Mode,
   nosave?: boolean
 ): boolean {
-  if (!isConfigValueValidSchema("mode", mode, SharedContractTypes.ModeSchema)) {
+  if (!isConfigValueValid("mode", mode, SharedContractTypes.ModeSchema)) {
     return false;
   }
 
@@ -143,7 +142,7 @@ export function setPlaySoundOnError(
   nosave?: boolean
 ): boolean {
   if (
-    !isConfigValueValidSchema(
+    !isConfigValueValid(
       "play sound on error",
       val,
       Config.PlaySoundOnErrorSchema
@@ -164,7 +163,7 @@ export function setPlaySoundOnClick(
   nosave?: boolean
 ): boolean {
   if (
-    !isConfigValueValidSchema(
+    !isConfigValueValid(
       "play sound on click",
       val,
       Config.PlaySoundOnClickSchema
@@ -184,9 +183,7 @@ export function setSoundVolume(
   val: Config.SoundVolume,
   nosave?: boolean
 ): boolean {
-  if (
-    !isConfigValueValidSchema("sound volume", val, Config.SoundVolumeSchema)
-  ) {
+  if (!isConfigValueValid("sound volume", val, Config.SoundVolumeSchema)) {
     return false;
   }
 
@@ -203,7 +200,7 @@ export function setDifficulty(
   nosave?: boolean
 ): boolean {
   if (
-    !isConfigValueValidSchema(
+    !isConfigValueValid(
       "difficulty",
       diff,
       SharedContractTypes.DifficultySchema
@@ -220,8 +217,11 @@ export function setDifficulty(
 }
 
 //set fav themes
-export function setFavThemes(themes: string[], nosave?: boolean): boolean {
-  if (!isConfigValueValid("favorite themes", themes, ["stringArray"])) {
+export function setFavThemes(
+  themes: Config.FavThemes,
+  nosave?: boolean
+): boolean {
+  if (!isConfigValueValid("favorite themes", themes, Config.FavThemesSchema)) {
     return false;
   }
   config.favThemes = themes;
@@ -231,8 +231,8 @@ export function setFavThemes(themes: string[], nosave?: boolean): boolean {
   return true;
 }
 
-export function setFunbox(funbox: string, nosave?: boolean): boolean {
-  if (!isConfigValueValid("funbox", funbox, ["string"])) return false;
+export function setFunbox(funbox: Config.Funbox, nosave?: boolean): boolean {
+  if (!isConfigValueValid("funbox", funbox, Config.FunboxSchema)) return false;
 
   for (const funbox of config.funbox.split("#")) {
     if (!canSetFunboxWithConfig(funbox, config)) {
@@ -249,10 +249,10 @@ export function setFunbox(funbox: string, nosave?: boolean): boolean {
 }
 
 export function toggleFunbox(
-  funbox: string,
+  funbox: Config.Funbox,
   nosave?: boolean
 ): number | boolean {
-  if (!isConfigValueValid("funbox", funbox, ["string"])) return false;
+  if (!isConfigValueValid("funbox", funbox, Config.FunboxSchema)) return false;
 
   let r;
 
@@ -299,9 +299,7 @@ export function setAccountChart(
     array = ["on", "on", "on", "on"];
   }
 
-  if (
-    !isConfigValueValidSchema("account chart", array, Config.AccountChartSchema)
-  ) {
+  if (!isConfigValueValid("account chart", array, Config.AccountChartSchema)) {
     return false;
   }
 
@@ -376,9 +374,7 @@ export function setStopOnError(
   soe: Config.StopOnError,
   nosave?: boolean
 ): boolean {
-  if (
-    !isConfigValueValidSchema("stop on error", soe, Config.StopOnErrorSchema)
-  ) {
+  if (!isConfigValueValid("stop on error", soe, Config.StopOnErrorSchema)) {
     return false;
   }
 
@@ -416,11 +412,7 @@ export function setTypingSpeedUnit(
   nosave?: boolean
 ): boolean {
   if (
-    !isConfigValueValidSchema(
-      "typing speed unit",
-      val,
-      Config.TypingSpeedUnitSchema
-    )
+    !isConfigValueValid("typing speed unit", val, Config.TypingSpeedUnitSchema)
   ) {
     return false;
   }
@@ -451,7 +443,7 @@ export function setShowOutOfFocusWarning(
 
 //pace caret
 export function setPaceCaret(val: Config.PaceCaret, nosave?: boolean): boolean {
-  if (!isConfigValueValidSchema("pace caret", val, Config.PaceCaretSchema)) {
+  if (!isConfigValueValid("pace caret", val, Config.PaceCaretSchema)) {
     return false;
   }
 
@@ -473,10 +465,16 @@ export function setPaceCaret(val: Config.PaceCaret, nosave?: boolean): boolean {
 }
 
 export function setPaceCaretCustomSpeed(
-  val: number,
+  val: Config.PaceCaretCustomSpeed,
   nosave?: boolean
 ): boolean {
-  if (!isConfigValueValid("pace caret custom speed", val, ["number"])) {
+  if (
+    !isConfigValueValid(
+      "pace caret custom speed",
+      val,
+      Config.PaceCaretCustomSpeedSchema
+    )
+  ) {
     return false;
   }
 
@@ -503,11 +501,7 @@ export function setMinWpm(
   nosave?: boolean
 ): boolean {
   if (
-    !isConfigValueValidSchema(
-      "min speed",
-      minwpm,
-      Config.MinimumWordsPerMinuteSchema
-    )
+    !isConfigValueValid("min speed", minwpm, Config.MinimumWordsPerMinuteSchema)
   ) {
     return false;
   }
@@ -519,8 +513,13 @@ export function setMinWpm(
   return true;
 }
 
-export function setMinWpmCustomSpeed(val: number, nosave?: boolean): boolean {
-  if (!isConfigValueValid("min speed custom", val, ["number"])) {
+export function setMinWpmCustomSpeed(
+  val: Config.MinWpmCustomSpeed,
+  nosave?: boolean
+): boolean {
+  if (
+    !isConfigValueValid("min speed custom", val, Config.MinWpmCustomSpeedSchema)
+  ) {
     return false;
   }
 
@@ -536,7 +535,7 @@ export function setMinAcc(
   min: Config.MinimumAccuracy,
   nosave?: boolean
 ): boolean {
-  if (!isConfigValueValidSchema("min acc", min, Config.MinimumAccuracySchema))
+  if (!isConfigValueValid("min acc", min, Config.MinimumAccuracySchema))
     return false;
 
   config.minAcc = min;
@@ -546,9 +545,20 @@ export function setMinAcc(
   return true;
 }
 
-export function setMinAccCustom(val: number, nosave?: boolean): boolean {
-  if (!isConfigValueValid("min acc custom", val, ["number"])) return false;
+export function setMinAccCustom(
+  val: Config.MinimumAccuracyCustom,
+  nosave?: boolean
+): boolean {
+  //migrate legacy configs
   if (val > 100) val = 100;
+  if (
+    !isConfigValueValid(
+      "min acc custom",
+      val,
+      Config.MinimumAccuracyCustomSchema
+    )
+  )
+    return false;
 
   config.minAccCustom = val;
   saveToLocalStorage("minAccCustom", nosave);
@@ -562,7 +572,7 @@ export function setMinBurst(
   min: Config.MinimumBurst,
   nosave?: boolean
 ): boolean {
-  if (!isConfigValueValidSchema("min burst", min, Config.MinimumBurstSchema)) {
+  if (!isConfigValueValid("min burst", min, Config.MinimumBurstSchema)) {
     return false;
   }
 
@@ -573,8 +583,17 @@ export function setMinBurst(
   return true;
 }
 
-export function setMinBurstCustomSpeed(val: number, nosave?: boolean): boolean {
-  if (!isConfigValueValid("min burst custom speed", val, ["number"])) {
+export function setMinBurstCustomSpeed(
+  val: Config.MinimumBurstCustomSpeed,
+  nosave?: boolean
+): boolean {
+  if (
+    !isConfigValueValid(
+      "min burst custom speed",
+      val,
+      Config.MinimumBurstCustomSpeedSchema
+    )
+  ) {
     return false;
   }
 
@@ -607,7 +626,7 @@ export function setSingleListCommandLine(
   nosave?: boolean
 ): boolean {
   if (
-    !isConfigValueValidSchema(
+    !isConfigValueValid(
       "single list command line",
       option,
       Config.SingleListCommandLineSchema
@@ -660,7 +679,7 @@ export function setQuickEnd(qe: boolean, nosave?: boolean): boolean {
 }
 
 export function setAds(val: Config.Ads, nosave?: boolean): boolean {
-  if (!isConfigValueValidSchema("ads", val, Config.AdsSchema)) {
+  if (!isConfigValueValid("ads", val, Config.AdsSchema)) {
     return false;
   }
 
@@ -679,9 +698,7 @@ export function setRepeatQuotes(
   val: Config.RepeatQuotes,
   nosave?: boolean
 ): boolean {
-  if (
-    !isConfigValueValidSchema("repeat quotes", val, Config.RepeatQuotesSchema)
-  ) {
+  if (!isConfigValueValid("repeat quotes", val, Config.RepeatQuotesSchema)) {
     return false;
   }
 
@@ -731,7 +748,7 @@ export function setOppositeShiftMode(
   nosave?: boolean
 ): boolean {
   if (
-    !isConfigValueValidSchema(
+    !isConfigValueValid(
       "opposite shift mode",
       val,
       Config.OppositeShiftModeSchema
@@ -751,13 +768,7 @@ export function setCaretStyle(
   caretStyle: Config.CaretStyle,
   nosave?: boolean
 ): boolean {
-  if (
-    !isConfigValueValidSchema(
-      "caret style",
-      caretStyle,
-      Config.CaretStyleSchema
-    )
-  ) {
+  if (!isConfigValueValid("caret style", caretStyle, Config.CaretStyleSchema)) {
     return false;
   }
 
@@ -796,11 +807,7 @@ export function setPaceCaretStyle(
   nosave?: boolean
 ): boolean {
   if (
-    !isConfigValueValidSchema(
-      "pace caret style",
-      caretStyle,
-      Config.CaretStyleSchema
-    )
+    !isConfigValueValid("pace caret style", caretStyle, Config.CaretStyleSchema)
   ) {
     return false;
   }
@@ -837,9 +844,7 @@ export function setShowAverage(
   value: Config.ShowAverage,
   nosave?: boolean
 ): boolean {
-  if (
-    !isConfigValueValidSchema("show average", value, Config.ShowAverageSchema)
-  ) {
+  if (!isConfigValueValid("show average", value, Config.ShowAverageSchema)) {
     return false;
   }
 
@@ -854,13 +859,7 @@ export function setHighlightMode(
   mode: Config.HighlightMode,
   nosave?: boolean
 ): boolean {
-  if (
-    !isConfigValueValidSchema(
-      "highlight mode",
-      mode,
-      Config.HighlightModeSchema
-    )
-  ) {
+  if (!isConfigValueValid("highlight mode", mode, Config.HighlightModeSchema)) {
     return false;
   }
 
@@ -876,7 +875,7 @@ export function setHighlightMode(
 }
 
 export function setTapeMode(mode: Config.TapeMode, nosave?: boolean): boolean {
-  if (!isConfigValueValidSchema("tape mode", mode, Config.TapeModeSchema)) {
+  if (!isConfigValueValid("tape mode", mode, Config.TapeModeSchema)) {
     return false;
   }
 
@@ -905,9 +904,7 @@ export function setTimerStyle(
   style: Config.TimerStyle,
   nosave?: boolean
 ): boolean {
-  if (
-    !isConfigValueValidSchema("timer style", style, Config.TimerStyleSchema)
-  ) {
+  if (!isConfigValueValid("timer style", style, Config.TimerStyleSchema)) {
     return false;
   }
 
@@ -923,7 +920,7 @@ export function setLiveSpeedStyle(
   nosave?: boolean
 ): boolean {
   if (
-    !isConfigValueValidSchema(
+    !isConfigValueValid(
       "live speed style",
       style,
       Config.LiveSpeedAccBurstStyleSchema
@@ -944,7 +941,7 @@ export function setLiveAccStyle(
   nosave?: boolean
 ): boolean {
   if (
-    !isConfigValueValidSchema(
+    !isConfigValueValid(
       "live acc style",
       style,
       Config.LiveSpeedAccBurstStyleSchema
@@ -965,7 +962,7 @@ export function setLiveBurstStyle(
   nosave?: boolean
 ): boolean {
   if (
-    !isConfigValueValidSchema(
+    !isConfigValueValid(
       "live burst style",
       style,
       Config.LiveSpeedAccBurstStyleSchema
@@ -985,9 +982,7 @@ export function setTimerColor(
   color: Config.TimerColor,
   nosave?: boolean
 ): boolean {
-  if (
-    !isConfigValueValidSchema("timer color", color, Config.TimerColorSchema)
-  ) {
+  if (!isConfigValueValid("timer color", color, Config.TimerColorSchema)) {
     return false;
   }
 
@@ -1003,11 +998,7 @@ export function setTimerOpacity(
   nosave?: boolean
 ): boolean {
   if (
-    !isConfigValueValidSchema(
-      "timer opacity",
-      opacity,
-      Config.TimerOpacitySchema
-    )
+    !isConfigValueValid("timer opacity", opacity, Config.TimerOpacitySchema)
   ) {
     return false;
   }
@@ -1036,43 +1027,44 @@ export function setKeyTips(keyTips: boolean, nosave?: boolean): boolean {
 }
 
 //mode
-export function setTimeConfig(time: number, nosave?: boolean): boolean {
-  if (!isConfigValueValid("time", time, ["number"])) return false;
+export function setTimeConfig(
+  time: Config.TimeConfig,
+  nosave?: boolean
+): boolean {
+  time = isNaN(time) || time < 0 ? DefaultConfig.time : time;
+  if (!isConfigValueValid("time", time, Config.TimeConfigSchema)) return false;
 
   if (!canSetConfigWithCurrentFunboxes("words", time, config.funbox)) {
     return false;
   }
 
-  const newTime = isNaN(time) || time < 0 ? DefaultConfig.time : time;
-
-  config.time = newTime;
-
+  config.time = time;
   saveToLocalStorage("time", nosave);
   ConfigEvent.dispatch("time", config.time);
 
   return true;
 }
 
-//quote length //TODO
 export function setQuoteLength(
   len: SharedTypes.Config.QuoteLength[] | SharedTypes.Config.QuoteLength,
   nosave?: boolean,
   multipleMode?: boolean
 ): boolean {
-  if (
-    !isConfigValueValid("quote length", len, [
-      [-3, -2, -1, 0, 1, 2, 3],
-      "numberArray",
-    ])
-  ) {
-    return false;
-  }
-
   if (Array.isArray(len)) {
+    if (
+      !isConfigValueValid("quote length", len, Config.QuoteLengthConfigSchema)
+    ) {
+      return false;
+    }
+
     //config load
     if (len.length === 1 && len[0] === -1) len = [1];
     config.quoteLength = len;
   } else {
+    if (!isConfigValueValid("quote length", len, Config.QuoteLengthSchema)) {
+      return false;
+    }
+
     if (!Array.isArray(config.quoteLength)) config.quoteLength = [];
     if (len === null || isNaN(len) || len < -3 || len > 3) {
       len = 1;
@@ -1100,17 +1092,21 @@ export function setQuoteLength(
   return true;
 }
 
-export function setWordCount(wordCount: number, nosave?: boolean): boolean {
-  if (!isConfigValueValid("words", wordCount, ["number"])) return false;
+export function setWordCount(
+  wordCount: Config.WordCount,
+  nosave?: boolean
+): boolean {
+  wordCount =
+    wordCount < 0 || wordCount > 100000 ? DefaultConfig.words : wordCount;
+
+  if (!isConfigValueValid("words", wordCount, Config.WordCountSchema))
+    return false;
 
   if (!canSetConfigWithCurrentFunboxes("words", wordCount, config.funbox)) {
     return false;
   }
 
-  const newWordCount =
-    wordCount < 0 || wordCount > 100000 ? DefaultConfig.words : wordCount;
-
-  config.words = newWordCount;
+  config.words = wordCount;
 
   saveToLocalStorage("words", nosave);
   ConfigEvent.dispatch("words", config.words);
@@ -1123,9 +1119,7 @@ export function setSmoothCaret(
   mode: Config.SmoothCaret,
   nosave?: boolean
 ): boolean {
-  if (
-    !isConfigValueValidSchema("smooth caret", mode, Config.SmoothCaretSchema)
-  ) {
+  if (!isConfigValueValid("smooth caret", mode, Config.SmoothCaretSchema)) {
     return false;
   }
   config.smoothCaret = mode;
@@ -1172,11 +1166,7 @@ export function setQuickRestartMode(
   nosave?: boolean
 ): boolean {
   if (
-    !isConfigValueValidSchema(
-      "quick restart mode",
-      mode,
-      Config.QuickRestartSchema
-    )
+    !isConfigValueValid("quick restart mode", mode, Config.QuickRestartSchema)
   ) {
     return false;
   }
@@ -1189,8 +1179,12 @@ export function setQuickRestartMode(
 }
 
 //font family
-export function setFontFamily(font: string, nosave?: boolean): boolean {
-  if (!isConfigValueValid("font family", font, ["string"])) return false;
+export function setFontFamily(
+  font: Config.FontFamily,
+  nosave?: boolean
+): boolean {
+  if (!isConfigValueValid("font family", font, Config.FontFamilySchema))
+    return false;
 
   if (font === "") {
     font = "roboto_mono";
@@ -1241,13 +1235,7 @@ export function setConfidenceMode(
   cm: Config.ConfidenceMode,
   nosave?: boolean
 ): boolean {
-  if (
-    !isConfigValueValidSchema(
-      "confidence mode",
-      cm,
-      Config.ConfidenceModeSchema
-    )
-  ) {
+  if (!isConfigValueValid("confidence mode", cm, Config.ConfidenceModeSchema)) {
     return false;
   }
 
@@ -1269,11 +1257,7 @@ export function setIndicateTypos(
   nosave?: boolean
 ): boolean {
   if (
-    !isConfigValueValidSchema(
-      "indicate typos",
-      value,
-      Config.IndicateTyposSchema
-    )
+    !isConfigValueValid("indicate typos", value, Config.IndicateTyposSchema)
   ) {
     return false;
   }
@@ -1311,8 +1295,8 @@ export function setCustomTheme(boolean: boolean, nosave?: boolean): boolean {
   return true;
 }
 
-export function setTheme(name: string, nosave?: boolean): boolean {
-  if (!isConfigValueValid("theme", name, ["string"])) return false;
+export function setTheme(name: Config.ThemeName, nosave?: boolean): boolean {
+  if (!isConfigValueValid("theme", name, Config.ThemeNameSchema)) return false;
 
   config.theme = name;
   if (config.customTheme) setCustomTheme(false);
@@ -1322,8 +1306,12 @@ export function setTheme(name: string, nosave?: boolean): boolean {
   return true;
 }
 
-export function setThemeLight(name: string, nosave?: boolean): boolean {
-  if (!isConfigValueValid("theme light", name, ["string"])) return false;
+export function setThemeLight(
+  name: Config.ThemeName,
+  nosave?: boolean
+): boolean {
+  if (!isConfigValueValid("theme light", name, Config.ThemeNameSchema))
+    return false;
 
   config.themeLight = name;
   saveToLocalStorage("themeLight", nosave);
@@ -1332,8 +1320,12 @@ export function setThemeLight(name: string, nosave?: boolean): boolean {
   return true;
 }
 
-export function setThemeDark(name: string, nosave?: boolean): boolean {
-  if (!isConfigValueValid("theme dark", name, ["string"])) return false;
+export function setThemeDark(
+  name: Config.ThemeName,
+  nosave?: boolean
+): boolean {
+  if (!isConfigValueValid("theme dark", name, Config.ThemeNameSchema))
+    return false;
 
   config.themeDark = name;
   saveToLocalStorage("themeDark", nosave);
@@ -1343,13 +1335,14 @@ export function setThemeDark(name: string, nosave?: boolean): boolean {
 }
 
 function setThemes(
-  theme: string,
+  theme: Config.ThemeName,
   customState: boolean,
   customThemeColors: Config.CustomThemeColors,
   autoSwitchTheme: boolean,
   nosave?: boolean
 ): boolean {
-  if (!isConfigValueValid("themes", theme, ["string"])) return false;
+  if (!isConfigValueValid("themes", theme, Config.ThemeNameSchema))
+    return false;
 
   //@ts-expect-error
   if (customThemeColors.length === 9) {
@@ -1380,9 +1373,7 @@ export function setRandomTheme(
   val: Config.RandomTheme,
   nosave?: boolean
 ): boolean {
-  if (
-    !isConfigValueValidSchema("random theme", val, Config.RandomThemeSchema)
-  ) {
+  if (!isConfigValueValid("random theme", val, Config.RandomThemeSchema)) {
     return false;
   }
 
@@ -1451,7 +1442,7 @@ export function setCustomThemeColors(
   }
 
   if (
-    !isConfigValueValidSchema(
+    !isConfigValueValid(
       "custom theme colors",
       colors,
       Config.CustomThemeColorsSchema
@@ -1471,8 +1462,12 @@ export function setCustomThemeColors(
   return true;
 }
 
-export function setLanguage(language: string, nosave?: boolean): boolean {
-  if (!isConfigValueValid("language", language, ["string"])) return false;
+export function setLanguage(
+  language: Config.Language,
+  nosave?: boolean
+): boolean {
+  if (!isConfigValueValid("language", language, Config.LanguageSchema))
+    return false;
 
   config.language = language;
   void AnalyticsController.log("changedLanguage", { language });
@@ -1496,7 +1491,7 @@ export function setKeymapMode(
   mode: Config.KeymapMode,
   nosave?: boolean
 ): boolean {
-  if (!isConfigValueValidSchema("keymap mode", mode, Config.KeymapModeSchema)) {
+  if (!isConfigValueValid("keymap mode", mode, Config.KeymapModeSchema)) {
     return false;
   }
 
@@ -1514,7 +1509,7 @@ export function setKeymapLegendStyle(
   nosave?: boolean
 ): boolean {
   if (
-    !isConfigValueValidSchema(
+    !isConfigValueValid(
       "keymap legend style",
       style,
       Config.KeymapLegendStyleSchema
@@ -1557,9 +1552,7 @@ export function setKeymapStyle(
   style: Config.KeymapStyle,
   nosave?: boolean
 ): boolean {
-  if (
-    !isConfigValueValidSchema("keymap style", style, Config.KeymapStyleSchema)
-  ) {
+  if (!isConfigValueValid("keymap style", style, Config.KeymapStyleSchema)) {
     return false;
   }
 
@@ -1571,8 +1564,12 @@ export function setKeymapStyle(
   return true;
 }
 
-export function setKeymapLayout(layout: string, nosave?: boolean): boolean {
-  if (!isConfigValueValid("keymap layout", layout, ["string"])) return false;
+export function setKeymapLayout(
+  layout: Config.KeymapLayout,
+  nosave?: boolean
+): boolean {
+  if (!isConfigValueValid("keymap layout", layout, Config.KeymapLayoutSchema))
+    return false;
 
   config.keymapLayout = layout;
   saveToLocalStorage("keymapLayout", nosave);
@@ -1586,11 +1583,7 @@ export function setKeymapShowTopRow(
   nosave?: boolean
 ): boolean {
   if (
-    !isConfigValueValidSchema(
-      "keymapShowTopRow",
-      show,
-      Config.KeymapShowTopRowSchema
-    )
+    !isConfigValueValid("keymapShowTopRow", show, Config.KeymapShowTopRowSchema)
   ) {
     return false;
   }
@@ -1602,8 +1595,8 @@ export function setKeymapShowTopRow(
   return true;
 }
 
-export function setLayout(layout: string, nosave?: boolean): boolean {
-  if (!isConfigValueValid("layout", layout, ["string"])) return false;
+export function setLayout(layout: Config.Layout, nosave?: boolean): boolean {
+  if (!isConfigValueValid("layout", layout, Config.LayoutSchema)) return false;
 
   config.layout = layout;
   saveToLocalStorage("layout", nosave);
@@ -1622,7 +1615,13 @@ export function setLayout(layout: string, nosave?: boolean): boolean {
 //   return true;
 // }
 
-export function setFontSize(fontSize: number, nosave?: boolean): boolean {
+export function setFontSize(
+  fontSize: Config.FontSize,
+  nosave?: boolean
+): boolean {
+  if (fontSize < 0) {
+    fontSize = 1;
+  }
   if (
     typeof fontSize === "string" &&
     ["1", "125", "15", "2", "3", "4"].includes(fontSize)
@@ -1636,12 +1635,8 @@ export function setFontSize(fontSize: number, nosave?: boolean): boolean {
     }
   }
 
-  if (!isConfigValueValid("font size", fontSize, ["number"])) {
+  if (!isConfigValueValid("font size", fontSize, Config.FontSizeSchema)) {
     return false;
-  }
-
-  if (fontSize < 0) {
-    fontSize = 1;
   }
 
   // i dont know why the above check is not enough
@@ -1670,18 +1665,24 @@ export function setFontSize(fontSize: number, nosave?: boolean): boolean {
 }
 
 export function setMaxLineWidth(
-  maxLineWidth: number,
+  maxLineWidth: Config.MaxLineWidth,
   nosave?: boolean
 ): boolean {
-  if (!isConfigValueValid("max line width", maxLineWidth, ["number"])) {
-    return false;
-  }
-
   if (maxLineWidth < 20 && maxLineWidth !== 0) {
     maxLineWidth = 20;
   }
   if (maxLineWidth > 1000) {
     maxLineWidth = 1000;
+  }
+
+  if (
+    !isConfigValueValid(
+      "max line width",
+      maxLineWidth,
+      Config.MaxLineWidthSchema
+    )
+  ) {
+    return false;
   }
 
   config.maxLineWidth = maxLineWidth;
@@ -1695,23 +1696,23 @@ export function setMaxLineWidth(
   return true;
 }
 
-export function setCustomBackground(value: string, nosave?: boolean): boolean {
-  if (!isConfigValueValid("custom background", value, ["string"])) return false;
-
+export function setCustomBackground(
+  value: Config.CustomBackground,
+  nosave?: boolean
+): boolean {
   value = value.trim();
   if (
-    (/(https|http):\/\/(www\.|).+\..+\/.+(\.png|\.gif|\.jpeg|\.jpg)/gi.test(
-      value
-    ) &&
-      !/[<> "]/.test(value)) ||
-    value === ""
-  ) {
-    config.customBackground = value;
-    saveToLocalStorage("customBackground", nosave);
-    ConfigEvent.dispatch("customBackground", config.customBackground);
-  } else {
-    Notifications.add("Invalid custom background URL", 0);
-  }
+    !isConfigValueValid(
+      "custom background",
+      value,
+      Config.CustomBackgroundSchema
+    )
+  )
+    return false;
+
+  config.customBackground = value;
+  saveToLocalStorage("customBackground", nosave);
+  ConfigEvent.dispatch("customBackground", config.customBackground);
 
   return true;
 }
@@ -1745,7 +1746,7 @@ export function setCustomBackgroundSize(
   nosave?: boolean
 ): boolean {
   if (
-    !isConfigValueValidSchema(
+    !isConfigValueValid(
       "custom background size",
       value,
       Config.CustomBackgroundSizeSchema
@@ -1772,7 +1773,7 @@ export function setCustomBackgroundFilter(
   }
 
   if (
-    !isConfigValueValidSchema(
+    !isConfigValueValid(
       "custom background filter",
       array,
       Config.CustomBackgroundFilterSchema
@@ -1792,7 +1793,7 @@ export function setMonkeyPowerLevel(
   nosave?: boolean
 ): boolean {
   if (
-    !isConfigValueValidSchema(
+    !isConfigValueValid(
       "monkey power level",
       level,
       Config.MonkeyPowerLevelSchema

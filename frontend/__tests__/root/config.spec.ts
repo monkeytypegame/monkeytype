@@ -1,6 +1,7 @@
 import * as Config from "../../src/ts/config";
 import * as ConfigValidation from "../../src/ts/config-validation";
 import { CustomThemeColors } from "../../../shared/contract/shared/config";
+import { randomBytes } from "crypto";
 
 describe("Config", () => {
   const asyncValidationMock = vi.spyOn(
@@ -322,6 +323,205 @@ describe("Config", () => {
   it("setRepeatedPace", () => {
     testBoolean(Config.setRepeatedPace);
   });
+  it("setFavThemes", () => {
+    expect(Config.setFavThemes([])).toBe(true);
+    expect(Config.setFavThemes(["test"])).toBe(true);
+    expect(Config.setFavThemes([stringOfLength(50)])).toBe(true);
+
+    expect(Config.setFavThemes("invalid" as any)).toBe(false);
+    expect(Config.setFavThemes([stringOfLength(51)])).toBe(false);
+  });
+  it("setFunbox", () => {
+    expect(Config.setFunbox("one")).toBe(true);
+    expect(Config.setFunbox("one#two")).toBe(true);
+    expect(Config.setFunbox("one#two#")).toBe(true);
+    expect(Config.setFunbox(stringOfLength(100))).toBe(true);
+
+    expect(Config.setFunbox(stringOfLength(101))).toBe(false);
+  });
+  it("setPaceCaretCustomSpeed", () => {
+    expect(Config.setPaceCaretCustomSpeed(0)).toBe(true);
+    expect(Config.setPaceCaretCustomSpeed(1)).toBe(true);
+    expect(Config.setPaceCaretCustomSpeed(11.11)).toBe(true);
+
+    expect(Config.setPaceCaretCustomSpeed("invalid" as any)).toBe(false);
+    expect(Config.setPaceCaretCustomSpeed(-1)).toBe(false);
+  });
+  it("setMinWpmCustomSpeed", () => {
+    expect(Config.setMinWpmCustomSpeed(0)).toBe(true);
+    expect(Config.setMinWpmCustomSpeed(1)).toBe(true);
+    expect(Config.setMinWpmCustomSpeed(11.11)).toBe(true);
+
+    expect(Config.setMinWpmCustomSpeed("invalid" as any)).toBe(false);
+    expect(Config.setMinWpmCustomSpeed(-1)).toBe(false);
+  });
+  it("setMinAccCustom", () => {
+    expect(Config.setMinAccCustom(0)).toBe(true);
+    expect(Config.setMinAccCustom(1)).toBe(true);
+    expect(Config.setMinAccCustom(11.11)).toBe(true);
+    //gets converted
+    expect(Config.setMinAccCustom(120)).toBe(true);
+
+    expect(Config.setMinAccCustom("invalid" as any)).toBe(false);
+    expect(Config.setMinAccCustom(-1)).toBe(false);
+  });
+  it("setMinBurstCustomSpeed", () => {
+    expect(Config.setMinBurstCustomSpeed(0)).toBe(true);
+    expect(Config.setMinBurstCustomSpeed(1)).toBe(true);
+    expect(Config.setMinBurstCustomSpeed(11.11)).toBe(true);
+
+    expect(Config.setMinBurstCustomSpeed("invalid" as any)).toBe(false);
+    expect(Config.setMinBurstCustomSpeed(-1)).toBe(false);
+  });
+  it("setTimeConfig", () => {
+    expect(Config.setTimeConfig(0)).toBe(true);
+    expect(Config.setTimeConfig(1)).toBe(true);
+
+    //gets converted
+    expect(Config.setTimeConfig("invalid" as any)).toBe(true);
+    expect(Config.setTimeConfig(-1)).toBe(true);
+
+    expect(Config.setTimeConfig(11.11)).toBe(false);
+  });
+  it("setWordCount", () => {
+    expect(Config.setWordCount(0)).toBe(true);
+    expect(Config.setWordCount(1)).toBe(true);
+
+    //gets converted
+    expect(Config.setWordCount(-1)).toBe(true);
+
+    expect(Config.setWordCount("invalid" as any)).toBe(false);
+    expect(Config.setWordCount(11.11)).toBe(false);
+  });
+  it("setFontFamily", () => {
+    expect(Config.setFontFamily("Arial")).toBe(true);
+    expect(Config.setFontFamily("roboto_mono")).toBe(true);
+    expect(Config.setFontFamily("test_font")).toBe(true);
+    expect(Config.setFontFamily(stringOfLength(50))).toBe(true);
+
+    expect(Config.setFontFamily(stringOfLength(51))).toBe(false);
+    expect(Config.setFontFamily("test font")).toBe(false);
+    expect(Config.setFontFamily("test!font")).toBe(false);
+  });
+  it("setTheme", () => {
+    expect(Config.setTheme("serika")).toBe(true);
+    expect(Config.setTheme("serika_dark")).toBe(true);
+    expect(Config.setTheme(stringOfLength(50))).toBe(true);
+
+    expect(Config.setTheme("serika dark")).toBe(false);
+    expect(Config.setTheme("serika-dark")).toBe(false);
+    expect(Config.setTheme(stringOfLength(51))).toBe(false);
+  });
+  it("setThemeLight", () => {
+    expect(Config.setThemeLight("serika")).toBe(true);
+    expect(Config.setThemeLight("serika_dark")).toBe(true);
+    expect(Config.setThemeLight(stringOfLength(50))).toBe(true);
+
+    expect(Config.setThemeLight("serika dark")).toBe(false);
+    expect(Config.setThemeLight("serika-dark")).toBe(false);
+    expect(Config.setThemeLight(stringOfLength(51))).toBe(false);
+  });
+  it("setThemeDark", () => {
+    expect(Config.setThemeDark("serika")).toBe(true);
+    expect(Config.setThemeDark("serika_dark")).toBe(true);
+    expect(Config.setThemeDark(stringOfLength(50))).toBe(true);
+
+    expect(Config.setThemeDark("serika dark")).toBe(false);
+    expect(Config.setThemeDark("serika-dark")).toBe(false);
+    expect(Config.setThemeDark(stringOfLength(51))).toBe(false);
+  });
+  it("setLanguage", () => {
+    expect(Config.setLanguage("english")).toBe(true);
+    expect(Config.setLanguage("english_1k")).toBe(true);
+    expect(Config.setLanguage(stringOfLength(50))).toBe(true);
+
+    expect(Config.setLanguage("english 1k")).toBe(false);
+    expect(Config.setLanguage("english-1k")).toBe(false);
+    expect(Config.setLanguage(stringOfLength(51))).toBe(false);
+  });
+  it("setKeymapLayout", () => {
+    expect(Config.setKeymapLayout("overrideSync")).toBe(true);
+    expect(Config.setKeymapLayout("override_sync")).toBe(true);
+    expect(Config.setKeymapLayout("override sync")).toBe(true);
+    expect(Config.setKeymapLayout("override-sync!")).toBe(true);
+    expect(Config.setKeymapLayout(stringOfLength(50))).toBe(true);
+
+    expect(Config.setKeymapLayout(stringOfLength(51))).toBe(false);
+  });
+  it("setLayout", () => {
+    expect(Config.setLayout("semimak")).toBe(true);
+    expect(Config.setLayout("semi_mak")).toBe(true);
+    expect(Config.setLayout(stringOfLength(50))).toBe(true);
+
+    expect(Config.setLayout("semi mak")).toBe(false);
+    expect(Config.setLayout("semi-mak")).toBe(false);
+    expect(Config.setLayout(stringOfLength(51))).toBe(false);
+  });
+  it("setFontSize", () => {
+    expect(Config.setFontSize(1)).toBe(true);
+
+    //gets converted
+    expect(Config.setFontSize(-1)).toBe(true);
+    expect(Config.setFontSize("1" as any)).toBe(true);
+    expect(Config.setFontSize("125" as any)).toBe(true);
+    expect(Config.setFontSize("15" as any)).toBe(true);
+    expect(Config.setFontSize("2" as any)).toBe(true);
+    expect(Config.setFontSize("3" as any)).toBe(true);
+    expect(Config.setFontSize("4" as any)).toBe(true);
+
+    expect(Config.setFontSize(0)).toBe(false);
+    expect(Config.setFontSize("5" as any)).toBe(false);
+    expect(Config.setFontSize("invalid" as any)).toBe(false);
+  });
+  it("setMaxLineWidth", () => {
+    expect(Config.setMaxLineWidth(0)).toBe(true);
+    expect(Config.setMaxLineWidth(50)).toBe(true);
+    expect(Config.setMaxLineWidth(50.5)).toBe(true);
+
+    //gets converted
+    expect(Config.setMaxLineWidth(10)).toBe(true);
+    expect(Config.setMaxLineWidth(10_000)).toBe(true);
+    expect(Config.setMaxLineWidth("invalid" as any)).toBe(false);
+  });
+  it("setCustomBackground", () => {
+    expect(Config.setCustomBackground("http://example.com/test.png")).toBe(
+      true
+    );
+    expect(Config.setCustomBackground("https://www.example.com/test.gif")).toBe(
+      true
+    );
+    expect(Config.setCustomBackground("https://example.com/test.jpg")).toBe(
+      true
+    );
+    expect(Config.setCustomBackground("http://www.example.com/test.jpeg")).toBe(
+      true
+    );
+
+    //gets converted
+    expect(
+      Config.setCustomBackground("     http://example.com/test.png   ")
+    ).toBe(true);
+
+    expect(Config.setCustomBackground("http://www.example.com/test.webp")).toBe(
+      false
+    );
+    expect(
+      Config.setCustomBackground("http://www.example.com/test?test=foo&bar=baz")
+    ).toBe(false);
+    expect(Config.setCustomBackground("invalid")).toBe(false);
+  });
+  it("setQuoteLength", () => {
+    expect(Config.setQuoteLength(0)).toBe(true);
+    expect(Config.setQuoteLength(-3)).toBe(true);
+    expect(Config.setQuoteLength(3)).toBe(true);
+
+    expect(Config.setQuoteLength(-4 as any)).toBe(false);
+    expect(Config.setQuoteLength(4 as any)).toBe(false);
+
+    expect(Config.setQuoteLength([0, -3, 2])).toBe(true);
+
+    expect(Config.setQuoteLength([-4 as any, 5 as any])).toBe(false);
+  });
 });
 
 function customThemeColors(n: number): CustomThemeColors {
@@ -335,4 +535,10 @@ function testBoolean(fn: (val: boolean) => boolean): void {
   expect(fn("true" as any)).toBe(false);
   expect(fn("0" as any)).toBe(false);
   expect(fn("invalid" as any)).toBe(false);
+}
+
+function stringOfLength(length: number): string {
+  return randomBytes(Math.ceil(length / 2))
+    .toString("hex")
+    .slice(0, length);
 }

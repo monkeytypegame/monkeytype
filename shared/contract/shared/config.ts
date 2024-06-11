@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { ColorHexValueSchema } from "./types";
+import { token } from "./helpers";
 
 export const SmoothCaretSchema = z.enum(["off", "slow", "medium", "fast"]);
 export type SmoothCaret = z.infer<typeof SmoothCaretSchema>;
@@ -17,6 +18,9 @@ export const QuoteLengthSchema = z.union([
   z.literal(3),
 ]);
 export type QuoteLength = z.infer<typeof QuoteLengthSchema>;
+
+export const QuoteLengthConfigSchema = z.array(QuoteLengthSchema);
+export type QuoteLengthConfig = z.infer<typeof QuoteLengthConfigSchema>;
 
 export const CaretStyleSchema = z.enum([
   "off",
@@ -209,3 +213,68 @@ export const CustomThemeColorsSchema = z.tuple([
   ColorHexValueSchema,
 ]);
 export type CustomThemeColors = z.infer<typeof CustomThemeColorsSchema>;
+
+export const FavThemesSchema = z.array(token().max(50));
+export type FavThemes = z.infer<typeof FavThemesSchema>;
+
+export const FunboxSchema = z
+  .string()
+  .max(100)
+  .regex(/[\w#]+/);
+export type Funbox = z.infer<typeof FunboxSchema>;
+
+export const PaceCaretCustomSpeedSchema = z.number().nonnegative();
+export type PaceCaretCustomSpeed = z.infer<typeof PaceCaretCustomSpeedSchema>;
+
+export const MinWpmCustomSpeedSchema = z.number().nonnegative();
+export type MinWpmCustomSpeed = z.infer<typeof MinWpmCustomSpeedSchema>;
+
+export const MinimumAccuracyCustomSchema = z.number().nonnegative().max(100);
+export type MinimumAccuracyCustom = z.infer<typeof MinimumAccuracyCustomSchema>;
+
+export const MinimumBurstCustomSpeedSchema = z.number().nonnegative();
+export type MinimumBurstCustomSpeed = z.infer<
+  typeof MinimumBurstCustomSpeedSchema
+>;
+
+export const TimeConfigSchema = z.number().int().nonnegative();
+export type TimeConfig = z.infer<typeof TimeConfigSchema>;
+
+export const WordCountSchema = z.number().int().nonnegative();
+export type WordCount = z.infer<typeof WordCountSchema>;
+
+export const FontFamilySchema = z
+  .string()
+  .max(50)
+  .regex(/^[a-zA-Z0-9_\-+.]+$/);
+export type FontFamily = z.infer<typeof FontFamilySchema>;
+
+export const ThemeNameSchema = token().max(50);
+export type ThemeName = z.infer<typeof ThemeNameSchema>;
+
+export const LanguageSchema = z
+  .string()
+  .max(50)
+  .regex(/^[a-zA-Z0-9_+]+$/);
+export type Language = z.infer<typeof LanguageSchema>;
+
+export const KeymapLayoutSchema = z
+  .string()
+  .max(50)
+  .regex(/[\w-_]+/);
+export type KeymapLayout = z.infer<typeof KeymapLayoutSchema>;
+
+export const LayoutSchema = token().max(50);
+export type Layout = z.infer<typeof LayoutSchema>;
+
+export const FontSizeSchema = z.number().positive();
+export type FontSize = z.infer<typeof FontSizeSchema>;
+
+export const MaxLineWidthSchema = z.number().min(20).max(1000).or(z.literal(0));
+export type MaxLineWidth = z.infer<typeof MaxLineWidthSchema>;
+
+export const CustomBackgroundSchema = z
+  .string()
+  .regex(/(https|http):\/\/(www\.|).+\..+\/.+(\.png|\.gif|\.jpeg|\.jpg)/gi)
+  .or(z.literal(""));
+export type CustomBackground = z.infer<typeof CustomBackgroundSchema>;

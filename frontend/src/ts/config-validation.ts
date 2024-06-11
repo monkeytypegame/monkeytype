@@ -3,17 +3,6 @@ import * as JSONData from "./utils/json-data";
 import * as Notifications from "./elements/notifications";
 import { ZodSchema, z } from "zod";
 
-type PossibleType =
-  | "string"
-  | "number"
-  | "numberArray"
-  | "undefined"
-  | "null"
-  | "stringArray"
-  | "layoutfluid"
-  | string[]
-  | number[];
-
 type PossibleTypeAsync = "layoutfluid";
 
 // function isConfigKeyValid(name: string): boolean {
@@ -42,7 +31,7 @@ function isArray(val: unknown): val is unknown[] {
   return val instanceof Array;
 }
 
-export function isConfigValueValidSchema<T>(
+export function isConfigValueValid<T>(
   key: string,
   val: T,
   schema: ZodSchema<T>
@@ -53,64 +42,7 @@ export function isConfigValueValidSchema<T>(
   return isValid;
 }
 export function isConfigValueValidBoolean(key: string, val: boolean): boolean {
-  return isConfigValueValidSchema(key, val, z.boolean());
-}
-
-export function isConfigValueValid(
-  key: string,
-  val: unknown,
-  possibleTypes: PossibleType[]
-): boolean {
-  let isValid = false;
-
-  // might be used in the future
-  // eslint-disable-next-line
-  let customMessage: string | undefined = undefined;
-
-  for (const possibleType of possibleTypes) {
-    switch (possibleType) {
-      case "null":
-        if (val === null) isValid = true;
-        break;
-
-      case "number":
-        if (typeof val === "number" && !isNaN(val)) isValid = true;
-        break;
-
-      case "numberArray":
-        if (
-          isArray(val) &&
-          val.every((v) => typeof v === "number" && !isNaN(v))
-        ) {
-          isValid = true;
-        }
-        break;
-
-      case "string":
-        if (typeof val === "string") isValid = true;
-        break;
-
-      case "stringArray":
-        if (isArray(val) && val.every((v) => typeof v === "string")) {
-          isValid = true;
-        }
-        break;
-
-      case "undefined":
-        if (typeof val === "undefined" || val === undefined) isValid = true;
-        break;
-
-      default:
-        if (isArray(possibleType)) {
-          if (possibleType.includes(val as never)) isValid = true;
-        }
-        break;
-    }
-  }
-
-  if (!isValid) invalid(key, val, customMessage);
-
-  return isValid;
+  return isConfigValueValid(key, val, z.boolean());
 }
 
 export async function isConfigValueValidAsync(
