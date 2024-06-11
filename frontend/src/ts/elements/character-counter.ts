@@ -34,10 +34,14 @@ export class CharacterCounter {
     const maxLength = this.maxLength;
     const currentLength = (this.textareaElement.val() as string).length;
     const remaining = maxLength - currentLength;
-    this.counterElement.text(`${remaining.toString()} characters remaining`);
+    this.counterElement.text(`${currentLength}/${maxLength}`);
 
     const remainingPercentage = (remaining / this.maxLength) * 100;
-    this.counterElement.css("color", remainingPercentage < 10 ? "red" : "");
+    if (remainingPercentage < 10) {
+      this.counterElement.addClass("red");
+    } else {
+      this.counterElement.removeClass("red");
+    }
   }
 
   public setMaxLength(maxLength: number): void {

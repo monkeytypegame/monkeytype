@@ -16,12 +16,18 @@ textarea {
 }
 
 .textareaWithCounter {
+  position: relative;
+
   .char-counter {
-    display: block;
-    font-size: 0.8em;
+    position: absolute;
+    top: -1.5rem;
+    right: 0.25rem;
     color: var(--sub-color);
-    margin-top: 2px;
-    text-align: right;
+    -webkit-user-select: none;
+    user-select: none;
+    &.red {
+      color: var(--error-color);
+    }
   }
 }
 
