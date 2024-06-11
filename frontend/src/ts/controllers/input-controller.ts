@@ -280,20 +280,16 @@ async function handleSpace(): Promise<void> {
     TestInput.incrementKeypressCount();
     TestInput.pushKeypressWord(TestWords.words.currentIndex);
     Replay.addReplayEvent("submitErrorWord");
+    if (Config.difficulty === "expert" || Config.difficulty === "master") {
+      TestLogic.fail("difficulty");
+    }
   }
 
   if (
     TestLogic.areAllTestWordsGenerated() &&
     TestWords.words.currentIndex === TestWords.words.length
   ) {
-    if (
-      !isWordCorrect &&
-      (Config.difficulty === "expert" || Config.difficulty === "master")
-    ) {
-      TestLogic.fail("difficulty");
-    } else {
-      void TestLogic.finish();
-    }
+    void TestLogic.finish();
     return;
   }
 
