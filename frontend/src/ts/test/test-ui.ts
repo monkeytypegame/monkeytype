@@ -226,7 +226,11 @@ export function updateActiveElement(
   if (Config.mode === "zen" && backspace) {
     active?.remove();
   } else if (active !== null) {
-    if (Config.highlightMode === "word") {
+    if (
+      ["word", "next_word", "next_two_words", "next_three_words"].includes(
+        Config.highlightMode
+      )
+    ) {
       active.querySelectorAll("letter").forEach((e) => {
         e.classList.remove("correct");
       });
