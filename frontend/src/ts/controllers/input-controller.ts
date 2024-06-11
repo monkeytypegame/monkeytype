@@ -176,7 +176,7 @@ function backspaceToPrevious(): void {
   Replay.addReplayEvent("backWord");
 }
 
-function handleSpace(): void {
+async function handleSpace(): Promise<void> {
   if (!TestState.isActive) return;
 
   if (TestInput.input.current === "") return;
@@ -224,10 +224,7 @@ function handleSpace(): void {
     PaceCaret.handleSpace(true, currentWord);
     TestInput.input.pushHistory();
     TestWords.words.increaseCurrentIndex();
-    TestUI.setCurrentWordElementIndex(TestUI.currentWordElementIndex + 1);
-    TestUI.updateActiveElement();
     Funbox.toggleScript(TestWords.words.getCurrent());
-    void Caret.updatePosition();
     TestInput.incrementKeypressCount();
     TestInput.pushKeypressWord(TestWords.words.currentIndex);
     if (!nospace) {
@@ -273,10 +270,7 @@ function handleSpace(): void {
     TestInput.input.pushHistory();
     TestUI.highlightBadWord(TestUI.currentWordElementIndex, !Config.blindMode);
     TestWords.words.increaseCurrentIndex();
-    TestUI.setCurrentWordElementIndex(TestUI.currentWordElementIndex + 1);
-    TestUI.updateActiveElement();
     Funbox.toggleScript(TestWords.words.getCurrent());
-    void Caret.updatePosition();
     TestInput.incrementKeypressCount();
     TestInput.pushKeypressWord(TestWords.words.currentIndex);
     Replay.addReplayEvent("submitErrorWord");
@@ -369,8 +363,11 @@ function handleSpace(): void {
     Config.mode === "custom" ||
     Config.mode === "quote"
   ) {
-    void TestLogic.addWord();
+    await TestLogic.addWord();
   }
+  TestUI.setCurrentWordElementIndex(TestUI.currentWordElementIndex + 1);
+  TestUI.updateActiveElement();
+  void Caret.updatePosition();
 }
 
 function isCharCorrect(char: string, charIndex: number): boolean {
@@ -502,7 +499,7 @@ function handleChar(
 
   if (char !== "\n" && char !== "\t" && /\s/.test(char)) {
     if (nospace) return;
-    handleSpace();
+    void handleSpace();
 
     //insert space for expert and master or strict space,
     //or for stop on error set to word,
@@ -762,7 +759,7 @@ function handleChar(
       TestInput.input.current.length === TestWords.words.getCurrent().length) ||
     (char === "\n" && thisCharCorrect)
   ) {
-    handleSpace();
+    void handleSpace();
   }
 
   const currentWord = TestWords.words.getCurrent();
