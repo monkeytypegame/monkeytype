@@ -654,6 +654,7 @@ async function fillSettingsPage(): Promise<void> {
   $(
     ".pageSettings .section[data-config-name='customBackgroundSize'] input"
   ).val(Config.customBackground);
+  updateCustomBackgroundRemoveButtonVisibility();
 
   $(".pageSettings .section[data-config-name='fontSize'] input").val(
     Config.fontSize
@@ -987,6 +988,20 @@ function toggleSettingsGroup(groupName: string): void {
   }
 }
 
+function updateCustomBackgroundRemoveButtonVisibility(): void {
+  const button = $(
+    ".pageSettings .section[data-config-name='customBackgroundSize'] button.remove"
+  );
+  if (
+    Config.customBackground !== undefined &&
+    Config.customBackground.length > 0
+  ) {
+    button.removeClass("hidden");
+  } else {
+    button.addClass("hidden");
+  }
+}
+
 $(".pageSettings .section[data-config-name='paceCaret']").on(
   "focusout",
   "input.customPaceCaretSpeed",
@@ -1173,6 +1188,14 @@ $(
       ".pageSettings .section[data-config-name='customBackgroundSize'] .inputAndButton input"
     ).val() as string
   );
+  updateCustomBackgroundRemoveButtonVisibility();
+});
+
+$(
+  ".pageSettings .section[data-config-name='customBackgroundSize'] .inputAndButton button.remove"
+).on("click", () => {
+  UpdateConfig.setCustomBackground("");
+  updateCustomBackgroundRemoveButtonVisibility();
 });
 
 $(
@@ -1184,6 +1207,7 @@ $(
         ".pageSettings .section[data-config-name='customBackgroundSize'] .inputAndButton input"
       ).val() as string
     );
+    updateCustomBackgroundRemoveButtonVisibility();
   }
 });
 
