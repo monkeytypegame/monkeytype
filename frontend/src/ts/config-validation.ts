@@ -1,13 +1,12 @@
 import * as Misc from "./utils/misc";
 import * as JSONData from "./utils/json-data";
 import * as Notifications from "./elements/notifications";
-import { ZodSchema } from "zod";
+import { ZodSchema, z } from "zod";
 
 type PossibleType =
   | "string"
   | "number"
   | "numberArray"
-  | "boolean"
   | "undefined"
   | "null"
   | "stringArray"
@@ -53,6 +52,9 @@ export function isConfigValueValidSchema<T>(
 
   return isValid;
 }
+export function isConfigValueValidBoolean(key: string, val: boolean): boolean {
+  return isConfigValueValidSchema(key, val, z.boolean());
+}
 
 export function isConfigValueValid(
   key: string,
@@ -67,10 +69,6 @@ export function isConfigValueValid(
 
   for (const possibleType of possibleTypes) {
     switch (possibleType) {
-      case "boolean":
-        if (typeof val === "boolean") isValid = true;
-        break;
-
       case "null":
         if (val === null) isValid = true;
         break;

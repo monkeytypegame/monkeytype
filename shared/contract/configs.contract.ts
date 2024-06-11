@@ -1,9 +1,6 @@
 import { initContract } from "@ts-rest/core";
 import { z } from "zod";
-import {
-  MonkeyErrorResponseSchema,
-  MonkeyResponseSchema,
-} from "./common.contract";
+
 import {
   AccountChartSchema,
   AdsSchema,
@@ -13,7 +10,6 @@ import {
   CustomBackgroundSizeSchema,
   CustomLayoutFluidSchema,
   CustomThemeColorsSchema,
-  DifficultySchema,
   HighlightModeSchema,
   IndicateTyposSchema,
   KeymapLegendStyleSchema,
@@ -45,7 +41,12 @@ import {
   TypingSpeedUnitSchema,
 } from "./shared/config";
 import { token } from "./shared/helpers";
-import { ModeSchema } from "./shared/types";
+import {
+  DifficultySchema,
+  ModeSchema,
+  MonkeyErrorResponseSchema,
+  MonkeyResponseSchema,
+} from "./shared/types";
 
 export const ConfigSchema = z.object({
   theme: token().max(50),

@@ -3,7 +3,7 @@ declare namespace SharedTypes.Config {
   type QuickRestart = import("../contract/shared/config").QuickRestart;
   type QuoteLength = import("../contract/shared/config").QuoteLength;
   type CaretStyle = import("../contract/shared/config").CaretStyle;
-  type Difficulty = import("../contract/shared/config").Difficulty;
+  type Difficulty = import("../contract/shared/types").Difficulty;
   type Mode = import("../contract/shared/types").Mode;
   type Mode2<M extends Mode> = M extends M ? keyof PersonalBests[M] : never;
   type Mode2Custom<M extends Mode> = Mode2<M> | "custom";
@@ -47,4 +47,6 @@ declare namespace SharedTypes.Config {
   type MinimumBurst = import("../contract/shared/config").MinimumBurst;
   type ShowAverage = import("../contract/shared/config").ShowAverage;
   type TapeMode = import("../contract/shared/config").TapeMode;
+  type CustomThemeColors =
+    import("../contract/shared/config").CustomThemeColors;
 }

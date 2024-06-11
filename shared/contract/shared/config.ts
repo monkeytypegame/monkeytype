@@ -18,9 +18,6 @@ export const QuoteLengthSchema = z.union([
 ]);
 export type QuoteLength = z.infer<typeof QuoteLengthSchema>;
 
-export const DifficultySchema = z.enum(["normal", "expert", "master"]);
-export type Difficulty = z.infer<typeof DifficultySchema>;
-
 export const CaretStyleSchema = z.enum([
   "off",
   "default",

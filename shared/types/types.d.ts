@@ -398,7 +398,7 @@ declare namespace SharedTypes {
   type CustomTheme = {
     _id: string;
     name: string;
-    colors: string[];
+    colors: Config.CustomThemeColors;
   };
 
   type PremiumInfo = {

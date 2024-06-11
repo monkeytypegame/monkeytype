@@ -1,5 +1,28 @@
 import { z } from "zod";
-import { DifficultySchema } from "./config";
+
+const StatusCodeSchema = z.number().int();
+export type StatusCode = z.infer<typeof StatusCodeSchema>;
+
+export const MonkeyResponseSchema = z.object({
+  message: z.string(),
+  status: StatusCodeSchema,
+});
+export type MonkeyResonseType = z.infer<typeof MonkeyResponseSchema>;
+
+export const MonkeyValidationErrorSchema = MonkeyResponseSchema.extend({
+  validationErrors: z.array(z.string()).nonempty(),
+});
+export type MonkeyValidationError = z.infer<typeof MonkeyValidationErrorSchema>;
+
+export const MonkeyErrorSchema = MonkeyResponseSchema.extend({
+  errorId: z.string(),
+  uid: z.string().optional(),
+});
+export type MonkeyErrorType = z.infer<typeof MonkeyErrorSchema>;
+
+export const MonkeyErrorResponseSchema = MonkeyErrorSchema.or(
+  MonkeyValidationErrorSchema
+);
 
 export const StringNumberSchema = z.custom<`${number}`>((val) => {
   return typeof val === "string" ? /^\d+$/.test(val) : false;
@@ -8,6 +31,9 @@ export type StringNumber = z.infer<typeof StringNumberSchema>;
 
 export const ColorHexValueSchema = z.string().regex(/^#([\da-f]{3}){1,2}$/i);
 export type ColorHexValue = z.infer<typeof ColorHexValueSchema>;
+
+export const DifficultySchema = z.enum(["normal", "expert", "master"]);
+export type Difficulty = z.infer<typeof DifficultySchema>;
 
 export const PersonalBestSchema = z.object({
   acc: z.number().nonnegative().max(100),

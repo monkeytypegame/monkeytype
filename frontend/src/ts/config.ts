@@ -4,6 +4,7 @@ import * as Notifications from "./elements/notifications";
 import {
   isConfigValueValid,
   isConfigValueValidAsync,
+  isConfigValueValidBoolean,
   isConfigValueValidSchema,
 } from "./config-validation";
 import * as ConfigEvent from "./observables/config-event";
@@ -72,7 +73,7 @@ export function saveFullConfigToLocalStorage(noDbCheck = false): void {
 
 //numbers
 export function setNumbers(numb: boolean, nosave?: boolean): boolean {
-  if (!isConfigValueValid("numbers", numb, ["boolean"])) return false;
+  if (!isConfigValueValidBoolean("numbers", numb)) return false;
 
   if (!canSetConfigWithCurrentFunboxes("numbers", numb, config.funbox)) {
     return false;
@@ -90,7 +91,7 @@ export function setNumbers(numb: boolean, nosave?: boolean): boolean {
 
 //punctuation
 export function setPunctuation(punc: boolean, nosave?: boolean): boolean {
-  if (!isConfigValueValid("punctuation", punc, ["boolean"])) return false;
+  if (!isConfigValueValidBoolean("punctuation", punc)) return false;
 
   if (!canSetConfigWithCurrentFunboxes("punctuation", punc, config.funbox)) {
     return false;
@@ -198,10 +199,16 @@ export function setSoundVolume(
 
 //difficulty
 export function setDifficulty(
-  diff: Config.Difficulty,
+  diff: SharedContractTypes.Difficulty,
   nosave?: boolean
 ): boolean {
-  if (!isConfigValueValidSchema("difficulty", diff, Config.DifficultySchema)) {
+  if (
+    !isConfigValueValidSchema(
+      "difficulty",
+      diff,
+      SharedContractTypes.DifficultySchema
+    )
+  ) {
     return false;
   }
 
@@ -275,7 +282,7 @@ export function toggleFunbox(
 }
 
 export function setBlindMode(blind: boolean, nosave?: boolean): boolean {
-  if (!isConfigValueValid("blind mode", blind, ["boolean"])) return false;
+  if (!isConfigValueValidBoolean("blind mode", blind)) return false;
 
   config.blindMode = blind;
   saveToLocalStorage("blindMode", nosave);
@@ -309,7 +316,7 @@ export function setAccountChartResults(
   value: boolean,
   nosave?: boolean
 ): boolean {
-  if (!isConfigValueValid("account chart results", value, ["boolean"])) {
+  if (!isConfigValueValidBoolean("account chart results", value)) {
     return false;
   }
 
@@ -324,7 +331,7 @@ export function setAccountChartAccuracy(
   value: boolean,
   nosave?: boolean
 ): boolean {
-  if (!isConfigValueValid("account chart accuracy", value, ["boolean"])) {
+  if (!isConfigValueValidBoolean("account chart accuracy", value)) {
     return false;
   }
 
@@ -339,7 +346,7 @@ export function setAccountChartAvg10(
   value: boolean,
   nosave?: boolean
 ): boolean {
-  if (!isConfigValueValid("account chart avg 10", value, ["boolean"])) {
+  if (!isConfigValueValidBoolean("account chart avg 10", value)) {
     return false;
   }
 
@@ -354,7 +361,7 @@ export function setAccountChartAvg100(
   value: boolean,
   nosave?: boolean
 ): boolean {
-  if (!isConfigValueValid("account chart avg 100", value, ["boolean"])) {
+  if (!isConfigValueValidBoolean("account chart avg 100", value)) {
     return false;
   }
 
@@ -390,7 +397,7 @@ export function setAlwaysShowDecimalPlaces(
   val: boolean,
   nosave?: boolean
 ): boolean {
-  if (!isConfigValueValid("always show decimal places", val, ["boolean"])) {
+  if (!isConfigValueValidBoolean("always show decimal places", val)) {
     return false;
   }
 
@@ -428,7 +435,7 @@ export function setShowOutOfFocusWarning(
   val: boolean,
   nosave?: boolean
 ): boolean {
-  if (!isConfigValueValid("show out of focus warning", val, ["boolean"])) {
+  if (!isConfigValueValidBoolean("show out of focus warning", val)) {
     return false;
   }
 
@@ -481,7 +488,7 @@ export function setPaceCaretCustomSpeed(
 }
 
 export function setRepeatedPace(pace: boolean, nosave?: boolean): boolean {
-  if (!isConfigValueValid("repeated pace", pace, ["boolean"])) return false;
+  if (!isConfigValueValidBoolean("repeated pace", pace)) return false;
 
   config.repeatedPace = pace;
   saveToLocalStorage("repeatedPace", nosave);
@@ -583,7 +590,7 @@ export function setAlwaysShowWordsHistory(
   val: boolean,
   nosave?: boolean
 ): boolean {
-  if (!isConfigValueValid("always show words history", val, ["boolean"])) {
+  if (!isConfigValueValidBoolean("always show words history", val)) {
     return false;
   }
 
@@ -618,7 +625,7 @@ export function setSingleListCommandLine(
 
 //caps lock warning
 export function setCapsLockWarning(val: boolean, nosave?: boolean): boolean {
-  if (!isConfigValueValid("caps lock warning", val, ["boolean"])) return false;
+  if (!isConfigValueValidBoolean("caps lock warning", val)) return false;
 
   config.capsLockWarning = val;
   saveToLocalStorage("capsLockWarning", nosave);
@@ -628,7 +635,7 @@ export function setCapsLockWarning(val: boolean, nosave?: boolean): boolean {
 }
 
 export function setShowAllLines(sal: boolean, nosave?: boolean): boolean {
-  if (!isConfigValueValid("show all lines", sal, ["boolean"])) return false;
+  if (!isConfigValueValidBoolean("show all lines", sal)) return false;
 
   if (sal && config.tapeMode !== "off") {
     Notifications.add("Show all lines doesn't support tape mode", 0);
@@ -643,7 +650,7 @@ export function setShowAllLines(sal: boolean, nosave?: boolean): boolean {
 }
 
 export function setQuickEnd(qe: boolean, nosave?: boolean): boolean {
-  if (!isConfigValueValid("quick end", qe, ["boolean"])) return false;
+  if (!isConfigValueValidBoolean("quick end", qe)) return false;
 
   config.quickEnd = qe;
   saveToLocalStorage("quickEnd", nosave);
@@ -687,7 +694,7 @@ export function setRepeatQuotes(
 
 //flip colors
 export function setFlipTestColors(flip: boolean, nosave?: boolean): boolean {
-  if (!isConfigValueValid("flip test colors", flip, ["boolean"])) return false;
+  if (!isConfigValueValidBoolean("flip test colors", flip)) return false;
 
   config.flipTestColors = flip;
   saveToLocalStorage("flipTestColors", nosave);
@@ -698,7 +705,7 @@ export function setFlipTestColors(flip: boolean, nosave?: boolean): boolean {
 
 //extra color
 export function setColorfulMode(extra: boolean, nosave?: boolean): boolean {
-  if (!isConfigValueValid("colorful mode", extra, ["boolean"])) return false;
+  if (!isConfigValueValidBoolean("colorful mode", extra)) return false;
 
   config.colorfulMode = extra;
   saveToLocalStorage("colorfulMode", nosave);
@@ -709,7 +716,7 @@ export function setColorfulMode(extra: boolean, nosave?: boolean): boolean {
 
 //strict space
 export function setStrictSpace(val: boolean, nosave?: boolean): boolean {
-  if (!isConfigValueValid("strict space", val, ["boolean"])) return false;
+  if (!isConfigValueValidBoolean("strict space", val)) return false;
 
   config.strictSpace = val;
   saveToLocalStorage("strictSpace", nosave);
@@ -885,7 +892,7 @@ export function setTapeMode(mode: Config.TapeMode, nosave?: boolean): boolean {
 }
 
 export function setHideExtraLetters(val: boolean, nosave?: boolean): boolean {
-  if (!isConfigValueValid("hide extra letters", val, ["boolean"])) return false;
+  if (!isConfigValueValidBoolean("hide extra letters", val)) return false;
 
   config.hideExtraLetters = val;
   saveToLocalStorage("hideExtraLetters", nosave);
@@ -1014,7 +1021,7 @@ export function setTimerOpacity(
 
 //key tips
 export function setKeyTips(keyTips: boolean, nosave?: boolean): boolean {
-  if (!isConfigValueValid("key tips", keyTips, ["boolean"])) return false;
+  if (!isConfigValueValidBoolean("key tips", keyTips)) return false;
 
   config.showKeyTips = keyTips;
   if (config.showKeyTips) {
@@ -1135,7 +1142,7 @@ export function setSmoothCaret(
 }
 
 export function setStartGraphsAtZero(mode: boolean, nosave?: boolean): boolean {
-  if (!isConfigValueValid("start graphs at zero", mode, ["boolean"])) {
+  if (!isConfigValueValidBoolean("start graphs at zero", mode)) {
     return false;
   }
 
@@ -1148,7 +1155,7 @@ export function setStartGraphsAtZero(mode: boolean, nosave?: boolean): boolean {
 
 //linescroll
 export function setSmoothLineScroll(mode: boolean, nosave?: boolean): boolean {
-  if (!isConfigValueValid("smooth line scroll", mode, ["boolean"])) {
+  if (!isConfigValueValidBoolean("smooth line scroll", mode)) {
     return false;
   }
 
@@ -1215,7 +1222,7 @@ export function setFontFamily(font: string, nosave?: boolean): boolean {
 
 //freedom
 export function setFreedomMode(freedom: boolean, nosave?: boolean): boolean {
-  if (!isConfigValueValid("freedom mode", freedom, ["boolean"])) return false;
+  if (!isConfigValueValidBoolean("freedom mode", freedom)) return false;
 
   if (freedom === null || freedom === undefined) {
     freedom = false;
@@ -1282,7 +1289,7 @@ export function setAutoSwitchTheme(
   boolean: boolean,
   nosave?: boolean
 ): boolean {
-  if (!isConfigValueValid("auto switch theme", boolean, ["boolean"])) {
+  if (!isConfigValueValidBoolean("auto switch theme", boolean)) {
     return false;
   }
 
@@ -1295,7 +1302,7 @@ export function setAutoSwitchTheme(
 }
 
 export function setCustomTheme(boolean: boolean, nosave?: boolean): boolean {
-  if (!isConfigValueValid("custom theme", boolean, ["boolean"])) return false;
+  if (!isConfigValueValidBoolean("custom theme", boolean)) return false;
 
   config.customTheme = boolean;
   saveToLocalStorage("customTheme", nosave);
@@ -1400,7 +1407,7 @@ export function setRandomTheme(
 }
 
 export function setBritishEnglish(val: boolean, nosave?: boolean): boolean {
-  if (!isConfigValueValid("british english", val, ["boolean"])) return false;
+  if (!isConfigValueValidBoolean("british english", val)) return false;
 
   if (!val) {
     val = false;
@@ -1413,7 +1420,7 @@ export function setBritishEnglish(val: boolean, nosave?: boolean): boolean {
 }
 
 export function setLazyMode(val: boolean, nosave?: boolean): boolean {
-  if (!isConfigValueValid("lazy mode", val, ["boolean"])) return false;
+  if (!isConfigValueValidBoolean("lazy mode", val)) return false;
 
   if (!val) {
     val = false;
@@ -1476,7 +1483,7 @@ export function setLanguage(language: string, nosave?: boolean): boolean {
 }
 
 export function setMonkey(monkey: boolean, nosave?: boolean): boolean {
-  if (!isConfigValueValid("monkey", monkey, ["boolean"])) return false;
+  if (!isConfigValueValidBoolean("monkey", monkey)) return false;
 
   config.monkey = monkey;
   saveToLocalStorage("monkey", nosave);
@@ -1801,7 +1808,7 @@ export function setMonkeyPowerLevel(
 }
 
 export function setBurstHeatmap(value: boolean, nosave?: boolean): boolean {
-  if (!isConfigValueValid("burst heatmap", value, ["boolean"])) return false;
+  if (!isConfigValueValidBoolean("burst heatmap", value)) return false;
 
   if (!value) {
     value = false;

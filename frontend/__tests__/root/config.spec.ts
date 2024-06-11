@@ -1,6 +1,6 @@
-import * as Config from "../src/ts/config";
-import * as ConfigValidation from "../src/ts/config-validation";
-import { CustomThemeColors } from "../../shared/contract/shared/config";
+import * as Config from "../../src/ts/config";
+import * as ConfigValidation from "../../src/ts/config-validation";
+import { CustomThemeColors } from "../../../shared/contract/shared/config";
 
 describe("Config", () => {
   const asyncValidationMock = vi.spyOn(
@@ -238,8 +238,101 @@ describe("Config", () => {
     tenColors[0] = "#1234";
     expect(Config.setCustomThemeColors(tenColors)).toBe(false);
   });
+  it("setNumbers", () => {
+    testBoolean(Config.setNumbers);
+  });
+  it("setPunctuation", () => {
+    testBoolean(Config.setPunctuation);
+  });
+  it("setBlindMode", () => {
+    testBoolean(Config.setBlindMode);
+  });
+  it("setAccountChartResults", () => {
+    testBoolean(Config.setAccountChartResults);
+  });
+  it("setAccountChartAccuracy", () => {
+    testBoolean(Config.setAccountChartAccuracy);
+  });
+  it("setAccountChartAvg10", () => {
+    testBoolean(Config.setAccountChartAvg10);
+  });
+  it("setAccountChartAvg100", () => {
+    testBoolean(Config.setAccountChartAvg100);
+  });
+  it("setAlwaysShowDecimalPlaces", () => {
+    testBoolean(Config.setAlwaysShowDecimalPlaces);
+  });
+  it("setShowOutOfFocusWarning", () => {
+    testBoolean(Config.setShowOutOfFocusWarning);
+  });
+  it("setAlwaysShowWordsHistory", () => {
+    testBoolean(Config.setAlwaysShowWordsHistory);
+  });
+  it("setCapsLockWarning", () => {
+    testBoolean(Config.setCapsLockWarning);
+  });
+  it("setShowAllLines", () => {
+    testBoolean(Config.setShowAllLines);
+  });
+  it("setQuickEnd", () => {
+    testBoolean(Config.setQuickEnd);
+  });
+  it("setFlipTestColors", () => {
+    testBoolean(Config.setFlipTestColors);
+  });
+  it("setColorfulMode", () => {
+    testBoolean(Config.setColorfulMode);
+  });
+  it("setStrictSpace", () => {
+    testBoolean(Config.setStrictSpace);
+  });
+  it("setHideExtraLetters", () => {
+    testBoolean(Config.setHideExtraLetters);
+  });
+  it("setKeyTips", () => {
+    testBoolean(Config.setKeyTips);
+  });
+  it("setStartGraphsAtZero", () => {
+    testBoolean(Config.setStartGraphsAtZero);
+  });
+  it("setSmoothLineScroll", () => {
+    testBoolean(Config.setSmoothLineScroll);
+  });
+  it("setFreedomMode", () => {
+    testBoolean(Config.setFreedomMode);
+  });
+  it("setAutoSwitchTheme", () => {
+    testBoolean(Config.setAutoSwitchTheme);
+  });
+  it("setCustomTheme", () => {
+    testBoolean(Config.setCustomTheme);
+  });
+  it("setBritishEnglish", () => {
+    testBoolean(Config.setBritishEnglish);
+  });
+  it("setLazyMode", () => {
+    testBoolean(Config.setLazyMode);
+  });
+  it("setMonkey", () => {
+    testBoolean(Config.setMonkey);
+  });
+  it("setBurstHeatmap", () => {
+    testBoolean(Config.setBurstHeatmap);
+  });
+  it("setRepeatedPace", () => {
+    testBoolean(Config.setRepeatedPace);
+  });
 });
 
 function customThemeColors(n: number): CustomThemeColors {
   return new Array(n).fill("#000") as CustomThemeColors;
+}
+
+function testBoolean(fn: (val: boolean) => boolean): void {
+  expect(fn(true)).toBe(true);
+  expect(fn(false)).toBe(true);
+
+  expect(fn("true" as any)).toBe(false);
+  expect(fn("0" as any)).toBe(false);
+  expect(fn("invalid" as any)).toBe(false);
 }
