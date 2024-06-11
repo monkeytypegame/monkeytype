@@ -1083,9 +1083,6 @@ $(document).on("keydown", async (event) => {
     } else {
       handleChar("\n", TestInput.input.current.length);
       setWordsInput(" " + TestInput.input.current);
-      if (Config.tapeMode !== "off") {
-        TestUI.scrollTape();
-      }
     }
   }
 
@@ -1140,9 +1137,6 @@ $(document).on("keydown", async (event) => {
       handleChar(event.key, TestInput.input.current.length);
       updateUI();
       setWordsInput(" " + TestInput.input.current);
-      if (Config.tapeMode !== "off") {
-        TestUI.scrollTape();
-      }
     }
   }
 
@@ -1159,9 +1153,6 @@ $(document).on("keydown", async (event) => {
       handleChar(char, TestInput.input.current.length);
       updateUI();
       setWordsInput(" " + TestInput.input.current);
-    }
-    if (Config.tapeMode !== "off") {
-      TestUI.scrollTape();
     }
   }
 
@@ -1377,10 +1368,6 @@ $("#wordsInput").on("input", (event) => {
 
   setWordsInput(" " + TestInput.input.current);
   updateUI();
-  if (Config.tapeMode !== "off") {
-    TestUI.scrollTape();
-  }
-
   const statebefore = CompositionState.getComposing();
   setTimeout(() => {
     // checking composition state during the input event and on the next loop

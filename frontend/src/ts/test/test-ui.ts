@@ -252,6 +252,9 @@ export function updateActiveElement(
   if (!initial && shouldUpdateWordsInputPosition()) {
     void updateWordsInputPosition();
   }
+  if (Config.tapeMode !== "off") {
+    scrollTape();
+  }
 }
 
 async function updateHintsPosition(): Promise<void> {
