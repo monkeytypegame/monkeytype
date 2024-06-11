@@ -234,11 +234,6 @@ function handleSpace(): void {
       void Sound.playClick();
     }
     Replay.addReplayEvent("submitCorrectWord");
-    if (TestWords.words.currentIndex === TestWords.words.length) {
-      //submitted last word (checking this in case the test doesnt stop automatically on correct last keypress)
-      void TestLogic.finish();
-      return;
-    }
   } else {
     if (!nospace) {
       if (Config.playSoundOnError === "off" || Config.blindMode) {
@@ -284,15 +279,22 @@ function handleSpace(): void {
     void Caret.updatePosition();
     TestInput.incrementKeypressCount();
     TestInput.pushKeypressWord(TestWords.words.currentIndex);
-    if (Config.difficulty === "expert" || Config.difficulty === "master") {
-      TestLogic.fail("difficulty");
-      return;
-    } else if (TestWords.words.currentIndex === TestWords.words.length) {
-      //submitted last word that is incorrect
-      void TestLogic.finish();
-      return;
-    }
     Replay.addReplayEvent("submitErrorWord");
+  }
+
+  if (
+    TestLogic.areAllTestWordsGenerated() &&
+    TestWords.words.currentIndex === TestWords.words.length
+  ) {
+    if (
+      !isWordCorrect &&
+      (Config.difficulty === "expert" || Config.difficulty === "master")
+    ) {
+      TestLogic.fail("difficulty");
+    } else {
+      void TestLogic.finish();
+    }
+    return;
   }
 
   let wordLength: number;
