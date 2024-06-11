@@ -657,9 +657,7 @@ export async function addCustomTheme(
   const { name, colors } = req.body;
 
   const addedTheme = await UserDAL.addTheme(uid, { name, colors });
-  return new MonkeyResponse("Custom theme added", {
-    theme: addedTheme,
-  });
+  return new MonkeyResponse("Custom theme added", addedTheme);
 }
 
 export async function removeCustomTheme(
