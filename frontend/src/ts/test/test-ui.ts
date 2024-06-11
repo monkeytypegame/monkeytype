@@ -910,6 +910,9 @@ export async function updateWordElement(
   }
 
   if (newlineafter) $("#words").append("<div class='newline'></div>");
+  if (Config.tapeMode !== "off") {
+    scrollTape();
+  }
 }
 
 export function scrollTape(): void {
