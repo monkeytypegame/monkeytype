@@ -309,6 +309,29 @@ async function handleSpace(): Promise<void> {
 
   TestInput.corrected.pushHistory();
 
+  if (Config.keymapMode === "react") {
+    void KeymapEvent.flash(" ", true);
+  }
+  if (
+    Config.mode === "words" ||
+    Config.mode === "custom" ||
+    Config.mode === "quote" ||
+    Config.mode === "zen"
+  ) {
+    TimerProgress.update();
+  }
+  if (
+    Config.mode === "time" ||
+    Config.mode === "words" ||
+    Config.mode === "custom" ||
+    Config.mode === "quote"
+  ) {
+    await TestLogic.addWord();
+  }
+  TestUI.setCurrentWordElementIndex(TestUI.currentWordElementIndex + 1);
+  TestUI.updateActiveElement();
+  void Caret.updatePosition();
+
   if (
     !Config.showAllLines ||
     Config.mode === "time" ||
@@ -345,29 +368,6 @@ async function handleSpace(): Promise<void> {
   //   //send a tab event using jquery
   //   $("#wordsInput").trigger($.Event("keydown", { key: "Tab", code: "Tab" }));
   // }
-
-  if (Config.keymapMode === "react") {
-    void KeymapEvent.flash(" ", true);
-  }
-  if (
-    Config.mode === "words" ||
-    Config.mode === "custom" ||
-    Config.mode === "quote" ||
-    Config.mode === "zen"
-  ) {
-    TimerProgress.update();
-  }
-  if (
-    Config.mode === "time" ||
-    Config.mode === "words" ||
-    Config.mode === "custom" ||
-    Config.mode === "quote"
-  ) {
-    await TestLogic.addWord();
-  }
-  TestUI.setCurrentWordElementIndex(TestUI.currentWordElementIndex + 1);
-  TestUI.updateActiveElement();
-  void Caret.updatePosition();
 }
 
 function isCharCorrect(char: string, charIndex: number): boolean {
