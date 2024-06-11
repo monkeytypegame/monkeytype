@@ -267,8 +267,14 @@ async function handleSpace(): Promise<void> {
       return;
     }
     PaceCaret.handleSpace(false, currentWord);
+    if (Config.blindMode) {
+      if (Config.highlightMode !== "off") {
+        TestUI.highlightAllLettersAsCorrect(TestUI.currentWordElementIndex);
+      }
+    } else {
+      TestUI.highlightBadWord(TestUI.currentWordElementIndex);
+    }
     TestInput.input.pushHistory();
-    TestUI.highlightBadWord(TestUI.currentWordElementIndex, !Config.blindMode);
     TestWords.words.increaseCurrentIndex();
     Funbox.toggleScript(TestWords.words.getCurrent());
     TestInput.incrementKeypressCount();

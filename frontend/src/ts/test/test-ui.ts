@@ -1408,9 +1408,14 @@ export async function applyBurstHeatmap(): Promise<void> {
   }
 }
 
-export function highlightBadWord(index: number, showError: boolean): void {
-  if (!showError) return;
+export function highlightBadWord(index: number): void {
   $($("#words .word")[index] as HTMLElement).addClass("error");
+}
+
+export function highlightAllLettersAsCorrect(wordIndex: number): void {
+  $($("#words .word")[wordIndex] as HTMLElement)
+    .find("letter")
+    .addClass("correct");
 }
 
 export function highlightMode(mode?: SharedTypes.Config.HighlightMode): void {
