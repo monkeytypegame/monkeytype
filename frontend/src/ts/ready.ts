@@ -1,4 +1,4 @@
-import Config, * as UpdateConfig from "./config";
+import Config from "./config";
 import * as Misc from "./utils/misc";
 import * as MonkeyPower from "./elements/monkey-power";
 import * as Notifications from "./elements/notifications";
@@ -10,8 +10,6 @@ import * as FunboxList from "./test/funbox/funbox-list";
 import Konami from "konami";
 import { envConfig } from "./constants/env-config";
 import * as ServerConfiguration from "./ape/server-configuration";
-
-void UpdateConfig.loadFromLocalStorage();
 
 $(document).ready(() => {
   Misc.loadCSS("/css/slimselect.min.css", true);
