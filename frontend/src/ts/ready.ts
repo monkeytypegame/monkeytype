@@ -1,8 +1,6 @@
 import Config, * as UpdateConfig from "./config";
 import * as Misc from "./utils/misc";
-import * as JSONData from "./utils/json-data";
 import * as MonkeyPower from "./elements/monkey-power";
-import * as NewVersionNotification from "./elements/version-check";
 import * as Notifications from "./elements/notifications";
 import * as CookiesModal from "./modals/cookies";
 import * as PSA from "./elements/psa";
@@ -12,22 +10,6 @@ import * as FunboxList from "./test/funbox/funbox-list";
 import Konami from "konami";
 import { envConfig } from "./constants/env-config";
 import * as ServerConfiguration from "./ape/server-configuration";
-
-if (Misc.isDevEnvironment()) {
-  $("footer .currentVersion .text").text("localhost");
-  $("body").prepend(
-    `<a class='button configureAPI' href='${envConfig.backendUrl}/configure/' target='_blank' aria-label="Configure API" data-balloon-pos="right"><i class="fas fa-fw fa-server"></i></a>`
-  );
-} else {
-  JSONData.getLatestReleaseFromGitHub()
-    .then((v) => {
-      $("footer .currentVersion .text").text(v);
-      void NewVersionNotification.show(v);
-    })
-    .catch((e) => {
-      $("footer .currentVersion .text").text("unknown");
-    });
-}
 
 void UpdateConfig.loadFromLocalStorage();
 
@@ -89,5 +71,8 @@ $(document).ready(() => {
           void registration.unregister();
         }
       });
+    $("body").prepend(
+      `<a class='button configureAPI' href='${envConfig.backendUrl}/configure/' target='_blank' aria-label="Configure API" data-balloon-pos="right"><i class="fas fa-fw fa-server"></i></a>`
+    );
   }
 });

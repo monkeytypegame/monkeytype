@@ -40,6 +40,7 @@ import "./test/tts";
 import "./elements/fps-counter";
 import "./controllers/profile-search-controller";
 import { isDevEnvironment } from "./utils/misc";
+import "./elements/version-button";
 
 function addToGlobal(items: Record<string, unknown>): void {
   for (const [name, item] of Object.entries(items)) {
