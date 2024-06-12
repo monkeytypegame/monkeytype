@@ -167,6 +167,7 @@ const BUILD_CONFIG = {
     },
     splitVendorChunkPlugin(),
     VitePWA({
+      injectRegister: "networkfirst",
       registerType: "autoUpdate",
       manifest: {
         short_name: "Monkeytype",
