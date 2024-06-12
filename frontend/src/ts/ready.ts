@@ -57,24 +57,6 @@ $(document).ready(() => {
     );
   }
 
-  // const plushieBannerClosed2 =
-  //   window.localStorage.getItem("plushieBannerClosed2") === "true";
-  // if (!plushieBannerClosed2) {
-  //   const string = formatDistanceStrict(1711882800000, Date.now(), {
-  //     roundingMethod: "floor",
-  //   });
-  //   Notifications.addBanner(
-  //     `Our limited plushie will be gone in ${string} - don't miss out! <a target="_blank" rel="noopener" href="https://mktp.co/plushie2">monkeytype.store</a>`,
-  //     1,
-  //     "./images/plushiebanner.png",
-  //     true,
-  //     () => {
-  //       window.localStorage.setItem("plushieBannerClosed2", "true");
-  //     },
-  //     true
-  //   );
-  // }
-
   setTimeout(() => {
     FunboxList.get(Config.funbox).forEach((it) =>
       it.functions?.applyGlobalCSS?.()
