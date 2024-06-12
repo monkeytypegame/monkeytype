@@ -951,6 +951,8 @@ export async function update(groupUpdate = true): Promise<void> {
       ".pageSettings .section[data-config-name='customBackgroundFilter']"
     ).addClass("hidden");
   }
+  updateCustomBackgroundRemoveButtonVisibility();
+
   $(
     ".pageSettings .section[data-config-name='customBackgroundSize'] input"
   ).val(Config.customBackground);
@@ -1188,14 +1190,12 @@ $(
       ".pageSettings .section[data-config-name='customBackgroundSize'] .inputAndButton input"
     ).val() as string
   );
-  updateCustomBackgroundRemoveButtonVisibility();
 });
 
 $(
   ".pageSettings .section[data-config-name='customBackgroundSize'] .inputAndButton button.remove"
 ).on("click", () => {
   UpdateConfig.setCustomBackground("");
-  updateCustomBackgroundRemoveButtonVisibility();
 });
 
 $(
@@ -1207,7 +1207,6 @@ $(
         ".pageSettings .section[data-config-name='customBackgroundSize'] .inputAndButton input"
       ).val() as string
     );
-    updateCustomBackgroundRemoveButtonVisibility();
   }
 });
 

@@ -4,7 +4,7 @@ import * as Misc from "../utils/misc";
 import * as Arrays from "../utils/arrays";
 import * as JSONData from "../utils/json-data";
 import { isColorDark, isColorLight } from "../utils/colors";
-import Config, { setAutoSwitchTheme, setCustomBackground } from "../config";
+import Config, { setAutoSwitchTheme } from "../config";
 import * as BackgroundFilter from "../elements/custom-background-filter";
 import * as ConfigEvent from "../observables/config-event";
 import * as DB from "../db";
@@ -428,7 +428,8 @@ ConfigEvent.subscribe(async (eventKey, eventValue, nosave) => {
 
 window.addEventListener("customBackgroundFailed", () => {
   Notifications.add(
-    "The custom background cannot be loaded and will be removed from your configuration."
+    "The custom background cannot be loaded. Please update your configuration",
+    0,
+    { duration: 5 }
   );
-  setCustomBackground("");
 });
