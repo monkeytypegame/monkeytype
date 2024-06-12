@@ -1,11 +1,9 @@
-import * as ManualRestart from "./test/manual-restart-tracker";
 import Config, * as UpdateConfig from "./config";
 import * as Misc from "./utils/misc";
 import * as JSONData from "./utils/json-data";
 import * as MonkeyPower from "./elements/monkey-power";
 import * as NewVersionNotification from "./elements/version-check";
 import * as Notifications from "./elements/notifications";
-import * as Focus from "./test/focus";
 import * as CookiesModal from "./modals/cookies";
 import * as PSA from "./elements/psa";
 import * as ConnectionState from "./states/connection";
