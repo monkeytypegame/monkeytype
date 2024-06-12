@@ -11,6 +11,7 @@ const CARET_STYLES = [
   "banana",
 ];
 
+//TODO replaced
 const CONFIG_SCHEMA = joi.object({
   theme: joi.string().max(50).token(),
   themeLight: joi.string().max(50).token(),

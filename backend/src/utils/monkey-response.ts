@@ -1,6 +1,14 @@
 import { Response } from "express";
 import { isCustomCode } from "../constants/monkey-status-codes";
+import {
+  MonkeyResonseType as MonkeyResponseType,
+  StatusCode,
+} from "@shared/contract/shared/types";
+import { omit } from "lodash";
 
+export type MonkeyStatusAware = {
+  status: number;
+};
 //TODO FIX ANYS
 
 export class MonkeyResponse {
@@ -35,4 +43,32 @@ export function handleMonkeyResponse(
   }
 
   res.json({ message, data });
+}
+
+export class MonkeyResponse2<T>
+  implements MonkeyResponseType, MonkeyStatusAware
+{
+  constructor(
+    public message: string,
+    public data: T,
+    public status: StatusCode = 200
+  ) {}
+
+  public static fromDB<T extends { _id: string }>(
+    message: string,
+    data: MonkeyTypes.WithObjectId<T>,
+    status?: StatusCode
+  ): MonkeyResponse2<T> {
+    return new MonkeyResponse2(
+      message,
+      { _id: data._id.toString(), ...omit(data, "_id") } as unknown as T,
+      status
+    );
+  }
+}
+
+export class MonkeyResponse2Empty extends MonkeyResponse2<undefined> {
+  constructor(message: string, status = 200) {
+    super(message, undefined, status);
+  }
 }

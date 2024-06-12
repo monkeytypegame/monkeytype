@@ -31,6 +31,7 @@ import AnimatedModal, {
   HideOptions,
   ShowOptions,
 } from "../utils/animated-modal";
+import { CustomThemeColors } from "@shared/contract/shared/config";
 
 type Input = {
   placeholder?: string;
@@ -1553,7 +1554,7 @@ list.updateCustomTheme = new SimpleModal({
 
     const newTheme = {
       name: name.replaceAll(" ", "_"),
-      colors: newColors,
+      colors: newColors as CustomThemeColors,
     };
     const validation = await DB.editCustomTheme(customTheme._id, newTheme);
     if (!validation) {
@@ -1562,7 +1563,7 @@ list.updateCustomTheme = new SimpleModal({
         message: "Failed to update custom theme",
       };
     }
-    UpdateConfig.setCustomThemeColors(newColors);
+    UpdateConfig.setCustomThemeColors(newColors as CustomThemeColors);
     void ThemePicker.refreshButtons();
 
     return {

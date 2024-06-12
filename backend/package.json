@@ -21,6 +21,9 @@
   },
   "dependencies": {
     "@date-fns/utc": "1.2.0",
+    "@ts-rest/core": "3.45.2",
+    "@ts-rest/express": "3.45.2",
+    "@ts-rest/open-api": "3.45.2",
     "bcrypt": "5.1.1",
     "bullmq": "1.91.1",
     "chalk": "4.1.2",
@@ -52,7 +55,8 @@
     "swagger-ui-express": "4.3.0",
     "ua-parser-js": "0.7.28",
     "uuid": "9.0.1",
-    "winston": "3.6.0"
+    "winston": "3.6.0",
+    "zod": "3.23.8"
   },
   "devDependencies": {
     "@types/bcrypt": "5.0.0",
