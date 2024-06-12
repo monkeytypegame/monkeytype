@@ -42,9 +42,6 @@ $(document).ready(() => {
   CookiesModal.check();
 
   $("body").css("transition", "background .25s, transform .05s");
-  if (Config.quickRestart !== "off") {
-    $("#restartTestButton").addClass("hidden");
-  }
   const merchBannerClosed =
     window.localStorage.getItem("merchbannerclosed") === "true";
   if (!merchBannerClosed) {
