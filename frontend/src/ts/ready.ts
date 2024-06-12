@@ -12,7 +12,6 @@ import * as ConnectionState from "./states/connection";
 import * as FunboxList from "./test/funbox/funbox-list";
 //@ts-expect-error
 import Konami from "konami";
-import { log } from "./controllers/analytics-controller";
 import { envConfig } from "./constants/env-config";
 import * as ServerConfiguration from "./ape/server-configuration";
 import * as Skeleton from "./utils/skeleton";
@@ -118,30 +117,3 @@ $(document).ready(() => {
 
   Skeleton.save("commandLine");
 });
-
-window.onerror = function (message, url, line, column, error): void {
-  if (Misc.isDevEnvironment()) {
-    //this is causing errors when using chrome responsive design dev tools
-    if (error?.message.includes("x_magnitude")) return;
-    Notifications.add(error?.message ?? "Undefined message", -1, {
-      customTitle: "DEV: Unhandled error",
-      duration: 5,
-    });
-  }
-  void log("error", {
-    error: error?.stack ?? "",
-  });
-};
-
-window.onunhandledrejection = function (e): void {
-  if (Misc.isDevEnvironment()) {
-    Notifications.add(e.reason.message, -1, {
-      customTitle: "DEV: Unhandled rejection",
-      duration: 5,
-    });
-    console.error(e);
-  }
-  void log("error", {
-    error: e.reason.stack ?? "",
-  });
-};
