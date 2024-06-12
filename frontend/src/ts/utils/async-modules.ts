@@ -1,6 +1,9 @@
 import * as Loader from "../elements/loader";
 import * as Notifications from "../elements/notifications";
 import { createErrorMessage } from "./misc";
+import * as Skeleton from "../utils/skeleton";
+
+Skeleton.save("commandLine");
 
 export async function getCommandline(): Promise<
   typeof import("../commandline/commandline.js")

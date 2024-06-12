@@ -14,7 +14,6 @@ import * as FunboxList from "./test/funbox/funbox-list";
 import Konami from "konami";
 import { envConfig } from "./constants/env-config";
 import * as ServerConfiguration from "./ape/server-configuration";
-import * as Skeleton from "./utils/skeleton";
 
 if (Misc.isDevEnvironment()) {
   $("footer .currentVersion .text").text("localhost");
@@ -114,6 +113,4 @@ $(document).ready(() => {
         }
       });
   }
-
-  Skeleton.save("commandLine");
 });
