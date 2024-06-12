@@ -32,7 +32,6 @@ if (Misc.isDevEnvironment()) {
 }
 
 void UpdateConfig.loadFromLocalStorage();
-Focus.set(true, true);
 
 $(document).ready(() => {
   Misc.loadCSS("/css/slimselect.min.css", true);
