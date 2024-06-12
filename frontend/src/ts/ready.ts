@@ -31,7 +31,6 @@ if (Misc.isDevEnvironment()) {
     });
 }
 
-ManualRestart.set();
 void UpdateConfig.loadFromLocalStorage();
 Focus.set(true, true);
 
