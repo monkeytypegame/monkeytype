@@ -428,7 +428,7 @@ ConfigEvent.subscribe(async (eventKey, eventValue, nosave) => {
 
 window.addEventListener("customBackgroundFailed", () => {
   Notifications.add(
-    "The custom background cannot be loaded. Please update your configuration",
+    "Custom background link is either temporairly unavailable or expired. Please make sure the URL is correct or change it",
     0,
     { duration: 5 }
   );
