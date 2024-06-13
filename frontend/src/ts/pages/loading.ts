@@ -1,6 +1,6 @@
 import * as Misc from "../utils/misc";
 import Page from "./page";
-import * as Skeleton from "../popups/skeleton";
+import * as Skeleton from "../utils/skeleton";
 
 export function updateBar(percentage: number, fast = false): void {
   const speed = fast ? 100 : 1000;
@@ -20,7 +20,7 @@ export function updateText(text: string): void {
 
 export async function showBar(): Promise<void> {
   return new Promise((resolve) => {
-    Misc.swapElements(
+    void Misc.swapElements(
       $(".pageLoading .preloader .icon"),
       $(".pageLoading .preloader .barWrapper"),
       125,
@@ -28,7 +28,7 @@ export async function showBar(): Promise<void> {
         resolve();
       }
     );
-    Misc.swapElements(
+    void Misc.swapElements(
       $(".pageAccount .preloader .icon"),
       $(".pageAccount .preloader .barWrapper"),
       125,
@@ -39,20 +39,14 @@ export async function showBar(): Promise<void> {
   });
 }
 
-export const page = new Page(
-  "loading",
-  $(".page.pageLoading"),
-  "/",
-  async () => {
-    //
-  },
-  async () => {
+export const page = new Page({
+  name: "loading",
+  element: $(".page.pageLoading"),
+  path: "/",
+  afterHide: async (): Promise<void> => {
     Skeleton.remove("pageLoading");
   },
-  async () => {
-    Skeleton.append("pageLoading");
+  beforeShow: async (): Promise<void> => {
+    Skeleton.append("pageLoading", "main");
   },
-  async () => {
-    //
-  }
-);
+});

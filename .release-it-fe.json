@@ -2,10 +2,11 @@
   "hooks": {
     "before:init": [
       "npm run lint-fe",
-      "cd frontend && npx gulp build-production"
+      "npm run test-fe",
+      "cd frontend && npm run validate-json && npm run build"
     ],
     "before:release": [
-      "cd frontend && npm run deploy-live",
+      "cd frontend && firebase deploy -P live --only hosting",
       "sh ./bin/purgeCfCache.sh"
     ]
   },

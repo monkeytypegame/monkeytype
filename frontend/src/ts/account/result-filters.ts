@@ -1,10 +1,20 @@
 import * as Misc from "../utils/misc";
+import * as Strings from "../utils/strings";
+import * as JSONData from "../utils/json-data";
 import * as DB from "../db";
 import Config from "../config";
 import * as Notifications from "../elements/notifications";
 import Ape from "../ape/index";
 import * as Loader from "../elements/loader";
-import { showNewResultFilterPresetPopup } from "../popups/new-result-filter-preset-popup";
+import SlimSelect from "slim-select";
+// this is only to make ts happy
+// eslint-disable-next-line import/no-unresolved
+import { Option } from "slim-select/dist/store";
+
+const groupsUsingSelect = ["language", "funbox", "tags"];
+const groupSelects: Partial<
+  Record<keyof SharedTypes.ResultFilters, SlimSelect>
+> = {};
 
 export const defaultResultFilters: SharedTypes.ResultFilters = {
   _id: "default-result-filters-id",
@@ -78,7 +88,7 @@ function save(): void {
 
 export async function load(): Promise<void> {
   try {
-    const newResultFilters = window.localStorage.getItem("resultFilters");
+    const newResultFilters = window.localStorage.getItem("resultFilters") ?? "";
 
     if (!newResultFilters) {
       filters = defaultResultFilters;
@@ -87,7 +97,7 @@ export async function load(): Promise<void> {
 
       let reset = false;
       for (const key of Object.keys(defaultResultFilters)) {
-        if (reset === true) break;
+        if (reset) break;
         if (newFiltersObject[key] === undefined) {
           reset = true;
           break;
@@ -116,9 +126,7 @@ export async function load(): Promise<void> {
       }
     }
 
-    const newTags: {
-      [tag: string]: boolean;
-    } = { none: false };
+    const newTags: Record<string, boolean> = { none: false };
 
     Object.keys(defaultResultFilters.tags).forEach((tag) => {
       if (filters.tags[tag] !== undefined) {
@@ -213,26 +221,19 @@ function addFilterPresetToSnapshot(filter: SharedTypes.ResultFilters): void {
 }
 
 // callback function called by popup once user inputs name
-async function createFilterPresetCallback(name: string): Promise<void> {
+export async function createFilterPreset(name: string): Promise<void> {
   name = name.replace(/ /g, "_");
   Loader.show();
   const result = await Ape.users.addResultFilterPreset({ ...filters, name });
   Loader.hide();
   if (result.status === 200) {
-    addFilterPresetToSnapshot({ ...filters, name, _id: result.data });
-    updateFilterPresets();
+    addFilterPresetToSnapshot({ ...filters, name, _id: result.data as string });
+    void updateFilterPresets();
     Notifications.add("Filter preset created", 1);
   } else {
     Notifications.add("Error creating filter preset: " + result.message, -1);
     console.log("error creating filter preset: " + result.message);
   }
-}
-
-// shows popup for user to select name
-async function startCreateFilterPreset(): Promise<void> {
-  showNewResultFilterPresetPopup(async (name: string) =>
-    createFilterPresetCallback(name)
-  );
 }
 
 function removeFilterPresetFromSnapshot(id: string): void {
@@ -254,7 +255,7 @@ async function deleteFilterPreset(id: string): Promise<void> {
   Loader.hide();
   if (result.status === 200) {
     removeFilterPresetFromSnapshot(id);
-    updateFilterPresets();
+    void updateFilterPresets();
     reset();
     Notifications.add("Filter preset deleted", 1);
   } else {
@@ -291,6 +292,14 @@ export function getFilter<G extends keyof SharedTypes.ResultFilters>(
   return filters[group][filter];
 }
 
+function setFilter(
+  group: keyof SharedTypes.ResultFilters,
+  filter: MonkeyTypes.Filter<typeof group>,
+  value: boolean
+): void {
+  filters[group][filter as keyof typeof filters[typeof group]] = value as never;
+}
+
 function setAllFilters(
   group: keyof SharedTypes.ResultFilters,
   value: boolean
@@ -301,7 +310,7 @@ function setAllFilters(
   });
 }
 
-export function loadTags(tags: MonkeyTypes.Tag[]): void {
+export function loadTags(tags: MonkeyTypes.UserTag[]): void {
   tags.forEach((tag) => {
     defaultResultFilters.tags[tag._id] = true;
   });
@@ -318,10 +327,11 @@ type AboveChartDisplay = Partial<
 
 export function updateActive(): void {
   const aboveChartDisplay: AboveChartDisplay = {};
-  Misc.typedKeys(getFilters()).forEach((group) => {
+
+  for (const group of Misc.typedKeys(getFilters())) {
     // id and name field do not correspond to any ui elements, no need to update
     if (group === "_id" || group === "name") {
-      return;
+      continue;
     }
 
     aboveChartDisplay[group] = {
@@ -329,35 +339,94 @@ export function updateActive(): void {
       array: [],
     };
 
-    Misc.typedKeys(getGroup(group)).forEach((filter) => {
+    for (const filter of Misc.typedKeys(getGroup(group))) {
       const groupAboveChartDisplay = aboveChartDisplay[group];
 
-      if (groupAboveChartDisplay === undefined) return;
+      if (groupAboveChartDisplay === undefined) continue;
 
-      if (getFilter(group, filter)) {
-        groupAboveChartDisplay["array"]?.push(filter);
+      const filterValue = getFilter(group, filter);
+      if (filterValue === true) {
+        groupAboveChartDisplay.array?.push(filter);
       } else {
-        if (groupAboveChartDisplay["all"] !== undefined) {
-          groupAboveChartDisplay["all"] = false;
+        if (groupAboveChartDisplay.all !== undefined) {
+          groupAboveChartDisplay.all = false;
         }
       }
-      let buttonEl;
-      if (group === "date") {
-        buttonEl = $(
-          `.pageAccount .group.topFilters .filterGroup[group="${group}"] button[filter="${filter}"]`
+
+      if (groupsUsingSelect.includes(group)) {
+        const option = $(
+          `.pageAccount .group.filterButtons .filterGroup[group="${group}"] option[value="${filter}"]`
         );
+        if (filterValue === true) {
+          option.prop("selected", true);
+        } else {
+          option.prop("selected", false);
+        }
       } else {
-        buttonEl = $(
-          `.pageAccount .group.filterButtons .filterGroup[group="${group}"] button[filter="${filter}"]`
-        );
+        let buttonEl;
+        if (group === "date") {
+          buttonEl = $(
+            `.pageAccount .group.topFilters .filterGroup[group="${group}"] button[filter="${filter}"]`
+          );
+        } else {
+          buttonEl = $(
+            `.pageAccount .group.filterButtons .filterGroup[group="${group}"] button[filter="${filter}"]`
+          );
+        }
+        if (filterValue === true) {
+          buttonEl.addClass("active");
+        } else {
+          buttonEl.removeClass("active");
+        }
       }
-      if (getFilter(group, filter)) {
-        buttonEl.addClass("active");
-      } else {
-        buttonEl.removeClass("active");
+    }
+  }
+
+  for (const [id, select] of Object.entries(groupSelects)) {
+    const ss = select;
+    const group = getGroup(id as keyof SharedTypes.ResultFilters);
+    const everythingSelected = Object.values(group).every((v) => v === true);
+
+    const newData = ss.store.getData();
+
+    const allOption = $(
+      `.pageAccount .group.filterButtons .filterGroup[group="${id}"] option[value="all"]`
+    );
+
+    if (everythingSelected) {
+      allOption.prop("selected", true);
+      for (const data of newData) {
+        if ("value" in data) {
+          if (data.value === "all") data.selected = true;
+          else data.selected = false;
+        }
       }
-    });
-  });
+      ss.store.setData(newData);
+      ss.render.renderValues();
+    } else {
+      allOption.prop("selected", false);
+    }
+
+    for (const data of newData) {
+      if ("value" in data) {
+        if (group[data.value as keyof typeof group] === true) {
+          data.selected = true;
+        } else {
+          if (!everythingSelected || data.value !== "all") {
+            data.selected = false;
+          }
+        }
+      }
+    }
+
+    setTimeout(() => {
+      ss.store.setData(newData);
+      if (!everythingSelected) {
+        ss.render.renderValues();
+      }
+      ss.render.renderOptions(newData);
+    }, 0);
+  }
 
   function addText(group: keyof SharedTypes.ResultFilters): string {
     let ret = "";
@@ -468,10 +537,10 @@ function toggle<G extends keyof SharedTypes.ResultFilters>(
     if (group === "date") {
       setAllFilters("date", false);
     }
-    const newValue = !filters[group][
-      filter
-    ] as unknown as SharedTypes.ResultFilters[G][MonkeyTypes.Filter<G>];
-    filters[group][filter] = newValue;
+    const currentValue = filters[group][filter] as unknown as boolean;
+    const newValue = !currentValue;
+    filters[group][filter] =
+      newValue as unknown as SharedTypes.ResultFilters[G][MonkeyTypes.Filter<G>];
     save();
   } catch (e) {
     Notifications.add(
@@ -502,7 +571,7 @@ $(
       setAllFilters(group, true);
     });
     setAllFilters("date", false);
-    filters["date"]["all"] = true;
+    filters.date.all = true;
   } else if ($(e.target).hasClass("noFilters")) {
     Misc.typedKeys(getFilters()).forEach((group) => {
       // id and name field do not correspond to any ui elements, no need to update
@@ -543,7 +612,7 @@ $(".pageAccount .topFilters button.allFilters").on("click", () => {
     setAllFilters(group, true);
   });
   setAllFilters("date", false);
-  filters["date"]["all"] = true;
+  filters.date.all = true;
   updateActive();
   save();
 });
@@ -561,24 +630,24 @@ $(".pageAccount .topFilters button.currentConfigFilter").on("click", () => {
     setAllFilters(group, false);
   });
 
-  filters["pb"]["no"] = true;
-  filters["pb"]["yes"] = true;
+  filters.pb.no = true;
+  filters.pb.yes = true;
 
-  filters["difficulty"][Config.difficulty] = true;
-  filters["mode"][Config.mode] = true;
+  filters.difficulty[Config.difficulty] = true;
+  filters.mode[Config.mode] = true;
   if (Config.mode === "time") {
     if ([15, 30, 60, 120].includes(Config.time)) {
       const configTime = Config.time as MonkeyTypes.DefaultTimeModes;
-      filters["time"][configTime] = true;
+      filters.time[configTime] = true;
     } else {
-      filters["time"]["custom"] = true;
+      filters.time.custom = true;
     }
   } else if (Config.mode === "words") {
     if ([10, 25, 50, 100, 200].includes(Config.words)) {
       const configWords = Config.words as MonkeyTypes.DefaultWordsModes;
-      filters["words"][configWords] = true;
+      filters.words[configWords] = true;
     } else {
-      filters["words"]["custom"] = true;
+      filters.words.custom = true;
     }
   } else if (Config.mode === "quote") {
     const filterName: MonkeyTypes.Filter<"quoteLength">[] = [
@@ -588,27 +657,29 @@ $(".pageAccount .topFilters button.currentConfigFilter").on("click", () => {
       "thicc",
     ];
     filterName.forEach((ql, index) => {
-      if (Config.quoteLength.includes(index as MonkeyTypes.QuoteLength)) {
-        filters["quoteLength"][ql] = true;
+      if (
+        Config.quoteLength.includes(index as SharedTypes.Config.QuoteLength)
+      ) {
+        filters.quoteLength[ql] = true;
       } else {
-        filters["quoteLength"][ql] = false;
+        filters.quoteLength[ql] = false;
       }
     });
   }
   if (Config.punctuation) {
-    filters["punctuation"]["on"] = true;
+    filters.punctuation.on = true;
   } else {
-    filters["punctuation"]["off"] = true;
+    filters.punctuation.off = true;
   }
   if (Config.numbers) {
-    filters["numbers"]["on"] = true;
+    filters.numbers.on = true;
   } else {
-    filters["numbers"]["off"] = true;
+    filters.numbers.off = true;
   }
   if (Config.mode === "quote" && /english.*/.test(Config.language)) {
-    filters["language"]["english"] = true;
+    filters.language["english"] = true;
   } else {
-    filters["language"][Config.language] = true;
+    filters.language[Config.language] = true;
   }
 
   if (Config.funbox === "none") {
@@ -619,16 +690,16 @@ $(".pageAccount .topFilters button.currentConfigFilter").on("click", () => {
     }
   }
 
-  filters["tags"]["none"] = true;
+  filters.tags["none"] = true;
 
   DB.getSnapshot()?.tags?.forEach((tag) => {
     if (tag.active === true) {
-      filters["tags"]["none"] = false;
-      filters["tags"][tag._id] = true;
+      filters.tags["none"] = false;
+      filters.tags[tag._id] = true;
     }
   });
 
-  filters["date"]["all"] = true;
+  filters.date.all = true;
   updateActive();
   save();
 });
@@ -640,10 +711,77 @@ $(".pageAccount .topFilters button.toggleAdvancedFilters").on("click", () => {
   );
 });
 
-export async function appendButtons(): Promise<void> {
+function adjustScrollposition(
+  group: keyof SharedTypes.ResultFilters,
+  topItem: number = 0
+): void {
+  const slimSelect = groupSelects[group];
+  if (slimSelect === undefined) return;
+  const listElement = slimSelect.render.content.list;
+  const topListItem = listElement.children.item(topItem) as HTMLElement;
+
+  listElement.scrollTop = topListItem.offsetTop - listElement.offsetTop;
+}
+
+function selectBeforeChangeFn(
+  group: keyof SharedTypes.ResultFilters,
+  selectedOptions: Option[],
+  oldSelectedOptions: Option[]
+): void | boolean {
+  const includesAllNow = selectedOptions.some(
+    (option) => option.value === "all"
+  );
+  const includedAllBefore = oldSelectedOptions.some(
+    (option) => option.value === "all"
+  );
+
+  if (includesAllNow) {
+    if (!includedAllBefore) {
+      // all option was selected
+      selectedOptions = selectedOptions.filter(
+        (option) => option.value === "all"
+      );
+    } else if (selectedOptions.length < oldSelectedOptions.length) {
+      // options other than all were deselcted
+      selectedOptions = selectedOptions.filter(
+        (option) => option.value !== "all"
+      );
+    }
+  } else {
+    if (includedAllBefore) {
+      // all option was deselected
+      selectedOptions = [];
+    }
+  }
+
+  setAllFilters(group, false);
+  for (const selectedOption of selectedOptions) {
+    if (selectedOption.value === "all") {
+      setAllFilters(group, true);
+      break;
+    }
+
+    setFilter(group, selectedOption.value, true);
+  }
+
+  updateActive();
+  save();
+  selectChangeCallbackFn();
+  return false;
+}
+
+let selectChangeCallbackFn: () => void = () => {
+  //
+};
+
+export async function appendButtons(
+  selectChangeCallback: () => void
+): Promise<void> {
+  selectChangeCallbackFn = selectChangeCallback;
+
   let languageList;
   try {
-    languageList = await Misc.getLanguageList();
+    languageList = await JSONData.getLanguageList();
   } catch (e) {
     console.error(
       Misc.createErrorMessage(e, "Failed to append language buttons")
@@ -651,21 +789,55 @@ export async function appendButtons(): Promise<void> {
   }
   if (languageList) {
     let html = "";
+
+    html +=
+      "<select class='languageSelect' group='language' placeholder='select a language' multiple>";
+
+    html += "<option value='all'>all</option>";
+
     for (const language of languageList) {
-      html += `<button filter="${language}">${language.replace(
-        "_",
-        " "
-      )}</button>`;
+      html += `<option value="${language}" filter="${language}">${Strings.getLanguageDisplayString(
+        language
+      )}</option>`;
     }
+
+    html += "</select>";
+
     const el = document.querySelector(
-      ".pageAccount .content .filterButtons .buttonsAndTitle.languages .buttons"
+      ".pageAccount .content .filterButtons .buttonsAndTitle.languages .select"
     );
-    if (el) el.innerHTML = html;
+    if (el) {
+      el.innerHTML = html;
+      groupSelects["language"] = new SlimSelect({
+        select: el.querySelector(".languageSelect") as HTMLSelectElement,
+        settings: {
+          showSearch: true,
+          placeholderText: "select a language",
+          allowDeselect: true,
+          closeOnSelect: false,
+        },
+        events: {
+          beforeChange: (
+            selectedOptions,
+            oldSelectedOptions
+          ): void | boolean => {
+            return selectBeforeChangeFn(
+              "language",
+              selectedOptions,
+              oldSelectedOptions
+            );
+          },
+          beforeOpen: (): void => {
+            adjustScrollposition("language");
+          },
+        },
+      });
+    }
   }
 
   let funboxList;
   try {
-    funboxList = await Misc.getFunboxList();
+    funboxList = await JSONData.getFunboxList();
   } catch (e) {
     console.error(
       Misc.createErrorMessage(e, "Failed to append funbox buttons")
@@ -673,35 +845,103 @@ export async function appendButtons(): Promise<void> {
   }
   if (funboxList) {
     let html = "";
+
+    html +=
+      "<select class='funboxSelect' group='funbox' placeholder='select a funbox' multiple>";
+
+    html += "<option value='all'>all</option>";
+    html += "<option value='none'>no funbox</option>";
+
     for (const funbox of funboxList) {
-      html += `<button filter="${funbox.name}">${funbox.name.replace(
-        /_/g,
-        " "
-      )}</button>`;
+      html += `<option value="${funbox.name}" filter="${
+        funbox.name
+      }">${funbox.name.replace(/_/g, " ")}</option>`;
     }
+
+    html += "</select>";
+
     const el = document.querySelector(
-      ".pageAccount .content .filterButtons .buttonsAndTitle.funbox .buttons"
+      ".pageAccount .content .filterButtons .buttonsAndTitle.funbox .select"
     );
     if (el) {
-      el.innerHTML = `<button filter="none">none</button>` + html;
+      el.innerHTML = html;
+      groupSelects["funbox"] = new SlimSelect({
+        select: el.querySelector(".funboxSelect") as HTMLSelectElement,
+        settings: {
+          showSearch: true,
+          placeholderText: "select a funbox",
+          allowDeselect: true,
+          closeOnSelect: false,
+        },
+        events: {
+          beforeChange: (
+            selectedOptions,
+            oldSelectedOptions
+          ): void | boolean => {
+            return selectBeforeChangeFn(
+              "funbox",
+              selectedOptions,
+              oldSelectedOptions
+            );
+          },
+          beforeOpen: (): void => {
+            adjustScrollposition("funbox");
+          },
+        },
+      });
     }
   }
 
   const snapshot = DB.getSnapshot();
 
-  if ((snapshot?.tags?.length ?? 0) > 0) {
+  if (snapshot !== undefined && (snapshot.tags?.length ?? 0) > 0) {
     $(".pageAccount .content .filterButtons .buttonsAndTitle.tags").removeClass(
       "hidden"
     );
-    let html = `<button filter="none">no tag</button>`;
-    for (const tag of snapshot?.tags ?? []) {
-      html += `<button filter="${tag._id}">${tag.display}</button>`;
+
+    let html = "";
+
+    html +=
+      "<select class='tagsSelect' group='tags' placeholder='select a tag' multiple>";
+
+    html += "<option value='all'>all</option>";
+    html += "<option value='none'>no tag</option>";
+
+    for (const tag of snapshot.tags) {
+      html += `<option value="${tag._id}" filter="${tag.name}">${tag.display}</option>`;
     }
+
+    html += "</select>";
+
     const el = document.querySelector(
-      ".pageAccount .content .filterButtons .buttonsAndTitle.tags .buttons"
+      ".pageAccount .content .filterButtons .buttonsAndTitle.tags .select"
     );
     if (el) {
       el.innerHTML = html;
+      groupSelects["tags"] = new SlimSelect({
+        select: el.querySelector(".tagsSelect") as HTMLSelectElement,
+        settings: {
+          showSearch: true,
+          placeholderText: "select a tag",
+          allowDeselect: true,
+          closeOnSelect: false,
+        },
+        events: {
+          beforeChange: (
+            selectedOptions,
+            oldSelectedOptions
+          ): void | boolean => {
+            return selectBeforeChangeFn(
+              "tags",
+              selectedOptions,
+              oldSelectedOptions
+            );
+          },
+          beforeOpen: (): void => {
+            adjustScrollposition("tags");
+          },
+        },
+      });
     }
   } else {
     $(".pageAccount .content .filterButtons .buttonsAndTitle.tags").addClass(
@@ -709,7 +949,7 @@ export async function appendButtons(): Promise<void> {
     );
   }
 
-  updateFilterPresets();
+  void updateFilterPresets();
 }
 
 export function removeButtons(): void {
@@ -724,15 +964,11 @@ export function removeButtons(): void {
   ).empty();
 }
 
-$(".pageAccount .topFilters button.createFilterPresetBtn").on("click", () => {
-  startCreateFilterPreset();
-});
-
 $(".group.presetFilterButtons .filterBtns").on(
   "click",
   ".filterPresets .delete-filter-preset",
   (e) => {
-    deleteFilterPreset($(e.currentTarget).data("id"));
+    void deleteFilterPreset($(e.currentTarget).data("id"));
   }
 );
 

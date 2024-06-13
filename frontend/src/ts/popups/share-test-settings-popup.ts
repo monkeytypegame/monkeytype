@@ -1,9 +1,9 @@
 import Config from "../config";
-import { randomQuote } from "../test/test-words";
+import { currentQuote } from "../test/test-words";
 import { getMode2, isPopupVisible } from "../utils/misc";
 import * as CustomText from "../test/custom-text";
 import { compressToURI } from "lz-ts";
-import * as Skeleton from "./skeleton";
+import * as Skeleton from "../utils/skeleton";
 
 const wrapperId = "shareTestSettingsPopupWrapper";
 
@@ -14,13 +14,13 @@ function getCheckboxValue(checkbox: string): boolean {
 }
 
 type SharedTestSettings = [
-  SharedTypes.Mode | null,
-  SharedTypes.Mode2<SharedTypes.Mode> | null,
-  SharedTypes.CustomText | null,
+  SharedTypes.Config.Mode | null,
+  SharedTypes.Config.Mode2<SharedTypes.Config.Mode> | null,
+  SharedTypes.CustomTextData | null,
   boolean | null,
   boolean | null,
   string | null,
-  SharedTypes.Difficulty | null,
+  SharedTypes.Config.Difficulty | null,
   string | null
 ];
 
@@ -44,19 +44,12 @@ function updateURL(): void {
   if (getCheckboxValue("mode2")) {
     settings[1] = getMode2(
       Config,
-      randomQuote
-    ) as SharedTypes.Mode2<SharedTypes.Mode>;
+      currentQuote
+    ) as SharedTypes.Config.Mode2<SharedTypes.Config.Mode>;
   }
 
   if (getCheckboxValue("customText")) {
-    settings[2] = {
-      text: CustomText.text,
-      isWordRandom: CustomText.isWordRandom,
-      isTimeRandom: CustomText.isTimeRandom,
-      word: CustomText.word,
-      time: CustomText.time,
-      delimiter: CustomText.delimiter,
-    };
+    settings[2] = CustomText.getData();
   }
 
   if (getCheckboxValue("punctuation")) {
@@ -99,7 +92,7 @@ function updateSubgroups(): void {
 }
 
 export function show(): void {
-  Skeleton.append(wrapperId);
+  Skeleton.append(wrapperId, "popups");
   if (!isPopupVisible(wrapperId)) {
     updateURL();
     updateSubgroups();
@@ -140,13 +133,13 @@ $("#shareTestSettingsPopupWrapper textarea.url").on("click", () => {
 
 $("#shareTestSettingsPopupWrapper").on("mousedown", (e) => {
   if ($(e.target).attr("id") === "shareTestSettingsPopupWrapper") {
-    hide();
+    void hide();
   }
 });
 
 $(document).on("keydown", (event) => {
   if (event.key === "Escape" && isPopupVisible(wrapperId)) {
-    hide();
+    void hide();
     event.preventDefault();
   }
 });

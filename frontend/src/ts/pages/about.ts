@@ -1,37 +1,28 @@
 import * as Misc from "../utils/misc";
+import * as JSONData from "../utils/json-data";
+import * as Numbers from "../utils/numbers";
 import Page from "./page";
 import Ape from "../ape";
 import * as Notifications from "../elements/notifications";
 import * as ChartController from "../controllers/chart-controller";
 import * as ConnectionState from "../states/connection";
-import intervalToDuration from "date-fns/intervalToDuration";
-import * as Skeleton from "../popups/skeleton";
+import { intervalToDuration } from "date-fns/intervalToDuration";
+import * as Skeleton from "../utils/skeleton";
 
 function reset(): void {
   $(".pageAbout .contributors").empty();
   $(".pageAbout .supporters").empty();
 
   ChartController.globalSpeedHistogram.getDataset("count").data = [];
-  ChartController.globalSpeedHistogram.updateColors();
+  void ChartController.globalSpeedHistogram.updateColors();
 }
 
-interface HistogramData {
-  [key: string]: number;
-}
-
-interface TypingStatsData {
-  type: string;
-  timeTyping: number;
-  testsCompleted: number;
-  testsStarted: number;
-}
-
-let speedHistogramResponseData: HistogramData | undefined;
-let typingStatsResponseData: TypingStatsData | undefined;
+let speedHistogramResponseData: SharedTypes.SpeedHistogram | null;
+let typingStatsResponseData: SharedTypes.PublicTypingStats | null;
 
 function updateStatsAndHistogram(): void {
   if (speedHistogramResponseData) {
-    ChartController.globalSpeedHistogram.updateColors();
+    void ChartController.globalSpeedHistogram.updateColors();
     const bucketedSpeedStats = getHistogramDataBucketed(
       speedHistogramResponseData
     );
@@ -55,10 +46,10 @@ function updateStatsAndHistogram(): void {
     $(".pageAbout #totalTimeTypingStat .valSmall").text("years");
     $(".pageAbout #totalTimeTypingStat").attr(
       "aria-label",
-      Misc.numberWithSpaces(Math.round(secondsRounded / 3600)) + " hours"
+      Numbers.numberWithSpaces(Math.round(secondsRounded / 3600)) + " hours"
     );
 
-    const startedWithMagnitude = Misc.getNumberWithMagnitude(
+    const startedWithMagnitude = Numbers.getNumberWithMagnitude(
       typingStatsResponseData.testsStarted
     );
 
@@ -72,10 +63,10 @@ function updateStatsAndHistogram(): void {
     );
     $(".pageAbout #totalStartedTestsStat").attr(
       "aria-label",
-      Misc.numberWithSpaces(typingStatsResponseData.testsStarted) + " tests"
+      Numbers.numberWithSpaces(typingStatsResponseData.testsStarted) + " tests"
     );
 
-    const completedWIthMagnitude = Misc.getNumberWithMagnitude(
+    const completedWIthMagnitude = Numbers.getNumberWithMagnitude(
       typingStatsResponseData.testsCompleted
     );
 
@@ -89,7 +80,8 @@ function updateStatsAndHistogram(): void {
     );
     $(".pageAbout #totalCompletedTestsStat").attr(
       "aria-label",
-      Misc.numberWithSpaces(typingStatsResponseData.testsCompleted) + " tests"
+      Numbers.numberWithSpaces(typingStatsResponseData.testsCompleted) +
+        " tests"
     );
   }
 }
@@ -131,7 +123,7 @@ async function getStatsAndHistogramData(): Promise<void> {
 async function fill(): Promise<void> {
   let supporters: string[];
   try {
-    supporters = await Misc.getSupportersList();
+    supporters = await JSONData.getSupportersList();
   } catch (e) {
     Notifications.add(
       Misc.createErrorMessage(e, "Failed to get supporters"),
@@ -142,7 +134,7 @@ async function fill(): Promise<void> {
 
   let contributors: string[];
   try {
-    contributors = await Misc.getContributorsList();
+    contributors = await JSONData.getContributorsList();
   } catch (e) {
     Notifications.add(
       Misc.createErrorMessage(e, "Failed to get contributors"),
@@ -151,7 +143,7 @@ async function fill(): Promise<void> {
     contributors = [];
   }
 
-  getStatsAndHistogramData().then(() => {
+  void getStatsAndHistogramData().then(() => {
     updateStatsAndHistogram();
   });
 
@@ -204,24 +196,20 @@ function getHistogramDataBucketed(data: Record<string, number>): {
   return { data: histogramChartDataBucketed, labels };
 }
 
-export const page = new Page(
-  "about",
-  $(".page.pageAbout"),
-  "/about",
-  async () => {
-    //
-  },
-  async () => {
+export const page = new Page({
+  name: "about",
+  element: $(".page.pageAbout"),
+  path: "/about",
+  afterHide: async (): Promise<void> => {
     reset();
     Skeleton.remove("pageAbout");
   },
-  async () => {
+  beforeShow: async (): Promise<void> => {
     Skeleton.append("pageAbout", "main");
-    fill();
+    void fill();
   },
-  async () => {
-    //
-  }
-);
+});
 
-Skeleton.save("pageAbout");
+$(() => {
+  Skeleton.save("pageAbout");
+});

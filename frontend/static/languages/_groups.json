@@ -12,7 +12,8 @@
       "english_contractions",
       "english_doubleletter",
       "english_shakespearean",
-      "english_old"
+      "english_old",
+      "english_medical"
     ]
   },
   {
@@ -39,7 +40,7 @@
   },
   {
     "name": "portuguese",
-    "languages": ["portuguese", "portuguese_3k", "portuguese_acentos_e_cedilha"]
+    "languages": ["portuguese", "portuguese_3k", "portuguese_acentos_e_cedilha, portuguese_5k"]
   },
   {
     "name": "arabic",
@@ -269,7 +270,7 @@
   },
   {
     "name": "estonian",
-    "languages": ["estonian", "estonian_1k", "estonian_10k"]
+    "languages": ["estonian", "estonian_1k", "estonian_5k", "estonian_10k"]
   },
   {
     "name": "udmurt",
@@ -387,7 +388,12 @@
   },
   {
     "name": "japanese",
-    "languages": ["japanese_hiragana", "japanese_katakana"]
+    "languages": [
+      "japanese_hiragana",
+      "japanese_katakana",
+      "japanese_romaji",
+      "japanese_romaji_1k"
+    ]
   },
   {
     "name": "hindi",
@@ -399,8 +405,8 @@
   },
   {
     "name": "gujarati",
-    "languages": ["gujarati"]
-  }, 
+    "languages": ["gujarati", "gujarati_1k"]
+  },
   {
     "name": "nepali",
     "languages": ["nepali", "nepali_1k"]
@@ -424,7 +430,15 @@
   },
   {
     "name": "belarusian",
-    "languages": ["belarusian", "belarusian_1k"]
+    "languages": [
+      "belarusian",
+      "belarusian_1k",
+      "belarusian_5k",
+      "belarusian_10k",
+      "belarusian_25k",
+      "belarusian_50k",
+      "belarusian_100k"
+    ]
   },
   {
     "name": "belarusian_lacinka",
@@ -453,6 +467,10 @@
   {
     "name": "toki_pona",
     "languages": ["toki_pona", "toki_pona_ku_suli", "toki_pona_ku_lili"]
+  },
+  {
+    "name": "xhosa",
+    "languages": ["xhosa"]
   },
   {
     "name": "other",
@@ -496,6 +514,10 @@
   {
     "name": "euskera",
     "languages": ["euskera"]
+  },
+  {
+    "name": "klingon",
+    "languages": ["klingon", "klingon_1k"]
   },
   {
     "name": "lorem_ipsum",
@@ -552,7 +574,9 @@
       "code_gdscript",
       "code_gdscript_2",
       "code_assembly",
-      "code_v"
+      "code_v",
+      "code_ook",
+      "code_typescript"
     ]
   }
 ]

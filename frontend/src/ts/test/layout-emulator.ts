@@ -1,5 +1,6 @@
 import Config from "../config";
 import * as Misc from "../utils/misc";
+import * as JSONData from "../utils/json-data";
 import { capsState } from "./caps-warning";
 import * as Notifications from "../elements/notifications";
 
@@ -22,8 +23,8 @@ export async function getCharFromEvent(
       isCapitalized = !event.shiftKey;
     }
 
-    const altVersion = keyVariants[(isCapitalized ? 1 : 0) + altGrIndex];
-    const nonAltVersion = keyVariants[isCapitalized ? 1 : 0];
+    const altVersion = keyVariants[(isCapitalized ? 1 : 0) + altGrIndex] ?? "";
+    const nonAltVersion = keyVariants[isCapitalized ? 1 : 0] ?? "";
     const defaultVersion = keyVariants[0];
 
     return altVersion || nonAltVersion || defaultVersion;
@@ -31,7 +32,7 @@ export async function getCharFromEvent(
   let layout;
 
   try {
-    layout = await Misc.getLayout(Config.layout);
+    layout = await JSONData.getLayout(Config.layout);
   } catch (e) {
     Notifications.add(
       Misc.createErrorMessage(e, "Failed to emulate event"),
@@ -204,11 +205,11 @@ export async function getCharFromEvent(
 
   const layoutKeys = layout.keys;
 
-  const layoutMap = layoutKeys["row1"]
-    .concat(layoutKeys["row2"])
-    .concat(layoutKeys["row3"])
-    .concat(layoutKeys["row4"])
-    .concat(layoutKeys["row5"]);
+  const layoutMap = layoutKeys.row1
+    .concat(layoutKeys.row2)
+    .concat(layoutKeys.row3)
+    .concat(layoutKeys.row4)
+    .concat(layoutKeys.row5);
 
   const mapIndex = keyEventCodes.indexOf(event.code);
   if (mapIndex === -1) {

@@ -1,0 +1,41 @@
+{
+  "language": "code_r",
+  "groups": [
+    [0, 100],
+    [101, 300],
+    [301, 600],
+    [601, 9999]
+  ],
+  "quotes": [
+    {
+      "text": "ggplot(data = sample_df, mapping = aes(x = group, y = value)) +\n\tgeom_point() +\n\tgeom_point(\n\tdata = group_means_df, mapping = aes(x = group, y = group_mean), \n\tcolor = \"red\", size = 3\n\t)",
+      "source": "tidyverse - ggplot2 plot.R",
+      "id": 1,
+      "length": 187
+    },
+    {
+      "text": "starwars %>% \n\tfilter(!is.na(height)) %>%\n\tslice_max(height, n = 3)",
+      "source": "tidyverse - dplyr vignettes/dplyr.Rmd",
+      "id": 2,
+      "length": 67
+    },
+    {
+      "text": "classroom2 <- classroom %>%\n\tpivot_longer(quiz1:test1, names_to = \"assessment\", values_to = \"grade\") %>%\n\tarrange(name, assessment)\nclassroom2",
+      "source": "tidyverse - tidyr vignettes/tidy-data.Rmd",
+      "id": 3,
+      "length": 142
+    },
+    {
+      "text": "library(palmerpenguins)\nlibrary(ggplot2)\nggplot2::theme_set(ggplot2::theme_minimal())\n\nbill_len_dep <- ggplot(\n\tdata = penguins,\n\taes(\n\t\tx = bill_length_mm,\n\t\ty = bill_depth_mm,\n\t\tgroup = species\n\t)\n) +\n\tgeom_point(\n\t\taes(\n\t\t\tcolor = species,\n\t\t\tshape = species\n\t\t),\n\t\tsize = 3,\n\t\talpha = 0.8\n\t) +\n\tgeom_smooth(method = \"lm\", se = FALSE, aes(color = species)) +\n\tscale_color_manual(values = c(\"darkorange\", \"purple\", \"cyan4\")) +\n\tlabs(\n\t\ttitle = \"Penguin bill dimensions\",\n\t\tsubtitle = \"Bill length and depth for Adelie, Chinstrap and Gentoo Penguins at Palmer Station LTER\",\n\t\tx = \"Bill length (mm)\",\n\t\ty = \"Bill depth (mm)\",\n\t\tcolor = \"Penguin species\",\n\t\tshape = \"Penguin species\",\n\t\t) +\n\ttheme(\n\t\tlegend.position = c(0.85, 0.15),\n\t\tplot.title.position = \"plot\",\n\t\tplot.caption = element_text(hjust = 0, face = \"italic\"),\n\t\tplot.caption.position = \"plot\"\n\t)\n\nbill_len_dep",
+      "source": "Allison Horst: palmerpenguins example adapted to tidyverse style guide.",
+      "id": 4,
+      "length": 874
+    },
+    {
+      "text": "my_summarise <- function(data, group_var) {\n\tdata %>%\n\t\tgroup_by({{ group_var }}) %>%\n\t\tsummarise(mean = mean(mass))\n}\nmy_summarise2 <- function(data, expr) {\n\tdata %>% summarise(\n\t\tmean = mean({{ expr }}),\n\t\tsum = sum({{ expr }}),\n\t\tn = n()\n\t)\n}\n\nmy_summarise3 <- function(data, mean_var, sd_var) {\n\tdata %>%\n\t\tsummarise(mean = mean({{ mean_var }}), sd = sd({{ sd_var }}))\n}",
+      "source": "tidyverse - dplyr vignettes/programming.Rmd",
+      "id": 5,
+      "length": 375
+    }
+  ]
+}

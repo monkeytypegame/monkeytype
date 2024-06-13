@@ -1,44 +1,46 @@
 import conventionalChangelog from "conventional-changelog";
 import { exec } from "child_process";
 
-const stream = conventionalChangelog(
-  {
-    preset: {
-      name: "conventionalcommits",
-      types: [
-        { type: "feat", section: "Features" },
-        { type: "impr", section: "Improvements" },
-        { type: "fix", section: "Fixes" },
-      ],
-    },
-  },
-  undefined,
-  undefined,
-  undefined,
-  {
-    headerPartial: "",
-  }
-);
+// const stream = conventionalChangelog(
+//   {
+//     preset: {
+//       name: "conventionalcommits",
+//       types: [
+//         { type: "feat", section: "Features" },
+//         { type: "impr", section: "Improvements" },
+//         { type: "fix", section: "Fixes" },
+//       ],
+//     },
+//   },
+//   undefined,
+//   undefined,
+//   undefined,
+//   {
+//     headerPartial: "",
+//   }
+// );
 
-const header =
-  "Thank you to all the contributors who made this release possible!";
+// let log = "";
+// for await (const chunk of stream) {
+//   log += chunk;
+// }
 
-let log = "";
-for await (const chunk of stream) {
-  log += chunk;
-}
-
-log = log.replace(/^\*/gm, "-");
+// log = log.replace(/^\*/gm, "-");
 
 // console.log(log);
 
 // console.log(header + log + footer);
 //i might come back to the approach below at some point
 
+const lineDelimiter =
+  "thisismylinedelimiterthatwilldefinitelynotappearintheactualcommitmessage";
+const logDelimiter =
+  "thisismylogdelimiterthatwilldefinitelynotappearintheactualcommitmessage";
+
 async function getLog() {
   return new Promise((resolve, reject) => {
     exec(
-      `git log --oneline $(git describe --tags --abbrev=0 @^)..@ --pretty="format:%H %h %s"`,
+      `git log --oneline $(git describe --tags --abbrev=0 @^)..@ --pretty="format:${lineDelimiter}%H${logDelimiter}%h${logDelimiter}%s${logDelimiter}%b"`,
       (err, stdout, stderr) => {
         if (err) {
           reject(err);
@@ -90,17 +92,15 @@ function getCommitLink(hash, longHash) {
   return `[${hash}](https://github.com/monkeytypegame/monkeytype/commit/${longHash})`;
 }
 
-function buildSection(type, allItems) {
-  let ret = `### ${titles[type]}\n\n`;
-
-  const items = allItems.filter((item) => item.type === type);
-
-  if (items.length === 0) {
-    return "";
-  }
-
+function buildItems(items, mergeTypeAndScope = false) {
+  let ret = "";
   for (let item of items) {
-    const scope = item.scope ? `**${item.scope}:** ` : "";
+    let scope = item.scope ? `**${item.scope}:** ` : "";
+
+    if (mergeTypeAndScope) {
+      scope = `**${item.type}${item.scope ? `(${item.scope})` : ""}:** `;
+    }
+
     const usernames =
       item.usernames.length > 0 ? ` (${item.usernames.join(", ")})` : "";
     const pr =
@@ -113,11 +113,36 @@ function buildSection(type, allItems) {
 
     ret += `- ${scope}${item.message}${usernames}${pr}${hash}\n`;
   }
-
   return ret;
 }
 
+function buildSection(type, allItems) {
+  let ret = `### ${titles[type]}\n\n`;
+
+  const items = allItems.filter(
+    (item) => item.type === type && !item.body.includes("!nuf")
+  );
+
+  if (items.length === 0) {
+    return "";
+  }
+
+  return (ret += buildItems(items));
+}
+
 function buildFooter(logs) {
+  let out =
+    "\n### Nerd stuff\n\nThese changes will not be visible to users, but are included for completeness and to credit contributors.\n\n";
+
+  const featLogs = logs.filter(
+    (item) => item.type === "feat" && item.body.includes("!nuf")
+  );
+  const imprLogs = logs.filter(
+    (item) => item.type === "impr" && item.body.includes("!nuf")
+  );
+  const fixLogs = logs.filter(
+    (item) => item.type === "fix" && item.body.includes("!nuf")
+  );
   const styleLogs = logs.filter((item) => item.type === "style");
   const docLogs = logs.filter((item) => item.type === "docs");
   const refactorLogs = logs.filter((item) => item.type === "refactor");
@@ -125,56 +150,107 @@ function buildFooter(logs) {
   const ciLogs = logs.filter((item) => item.type === "ci");
   const testLogs = logs.filter((item) => item.type === "test");
   const buildLogs = logs.filter((item) => item.type === "build");
+  const choreLogs = logs.filter((item) => item.type === "chore");
 
-  const otherStrings = [];
+  const allOtherLogs = [
+    ...featLogs,
+    ...imprLogs,
+    ...fixLogs,
+    ...styleLogs,
+    ...docLogs,
+    ...refactorLogs,
+    ...perfLogs,
+    ...ciLogs,
+    ...testLogs,
+    ...buildLogs,
+    ...choreLogs,
+  ];
 
-  if (styleLogs.length > 0) {
-    otherStrings.push("style");
-  }
-  if (docLogs.length > 0) {
-    otherStrings.push("documentation");
-  }
-  if (refactorLogs.length > 0) {
-    otherStrings.push("refactoring");
-  }
-  if (perfLogs.length > 0) {
-    otherStrings.push("performance");
-  }
-  if (ciLogs.length > 0) {
-    otherStrings.push("CI");
-  }
-  if (testLogs.length > 0) {
-    otherStrings.push("testing");
-  }
-  if (buildLogs.length > 0) {
-    otherStrings.push("build");
-  }
+  //remove dupes based on hash
+  const uniqueOtherLogs = allOtherLogs.filter(
+    (item, index, self) =>
+      index === self.findIndex((t) => t.hashes[0].full === item.hashes[0].full)
+  );
 
-  if (otherStrings.length === 0) {
-    return "";
-  }
+  // console.log(uniqueOtherLogs);
 
-  //build a string where otherStrings are joined by commas and the last one is joined by "and"
-  const finalString =
-    otherStrings.length > 1
-      ? otherStrings.slice(0, -1).join(", ") + " and " + otherStrings.slice(-1)
-      : otherStrings[0];
+  out += buildItems(uniqueOtherLogs, true);
 
-  return `\n### Other\n\n- Various ${finalString} changes`;
+  return out;
 }
+
+// function buildFooter(logs) {
+//   const styleLogs = logs.filter((item) => item.type === "style");
+//   const docLogs = logs.filter((item) => item.type === "docs");
+//   const refactorLogs = logs.filter((item) => item.type === "refactor");
+//   const perfLogs = logs.filter((item) => item.type === "perf");
+//   const ciLogs = logs.filter((item) => item.type === "ci");
+//   const testLogs = logs.filter((item) => item.type === "test");
+//   const buildLogs = logs.filter((item) => item.type === "build");
+
+//   const otherStrings = [];
+
+//   if (styleLogs.length > 0) {
+//     otherStrings.push("style");
+//   }
+//   if (docLogs.length > 0) {
+//     otherStrings.push("documentation");
+//   }
+//   if (refactorLogs.length > 0) {
+//     otherStrings.push("refactoring");
+//   }
+//   if (perfLogs.length > 0) {
+//     otherStrings.push("performance");
+//   }
+//   if (ciLogs.length > 0) {
+//     otherStrings.push("CI");
+//   }
+//   if (testLogs.length > 0) {
+//     otherStrings.push("testing");
+//   }
+//   if (buildLogs.length > 0) {
+//     otherStrings.push("build");
+//   }
+
+//   if (otherStrings.length === 0) {
+//     return "";
+//   }
+
+//   //build a string where otherStrings are joined by commas and the last one is joined by "and"
+//   const finalString =
+//     otherStrings.length > 1
+//       ? otherStrings.slice(0, -1).join(", ") + " and " + otherStrings.slice(-1)
+//       : otherStrings[0];
+
+//   return `\n### Other\n\n- Various ${finalString} changes`;
+// }
 
 function convertStringToLog(logString) {
   let log = [];
   for (let line of logString) {
+    if (line === "" || line === "\r" || line === "\n") continue;
+    // console.log(line);
+
     //split line based on the format: d2739e4f193137db4d86450f0d50b3489d75c106 d2739e4f1 style: adjusted testConfig and modesNotice.
     //use regex to split
-    const [_, hash, shortHash, fullMessage] = line.split(
-      /(\w{40}) (\w{9,10}) (.*)/
-    );
+    // const [_, hash, shortHash, fullMessage] = line.split(
+    //   /(\w{40}) (\w{9,10}) (.*)/
+    // );
+
+    const [hash, shortHash, title, body] = line
+      .split(logDelimiter)
+      .map((s) => s.trim());
+
+    // console.log({
+    //   hash,
+    //   shortHash,
+    //   title,
+    //   body,
+    // });
 
     //split message using regex based on fix(language): spelling mistakes in Nepali wordlist and quotes (sapradhan) (#4528)
     //scope is optional, username is optional, pr number is optional
-    const [__, type, scope, message, message2, message3] = fullMessage.split(
+    const [__, type, scope, message, message2, message3] = title.split(
       /^(\w+)(?:\(([^)]+)\))?:\s+(.+?)\s*(?:\(([^)]+)\))?(?:\s+\(([^)]+)\))?(?:\s+\(([^)]+)\))?$/
     );
 
@@ -200,19 +276,24 @@ function convertStringToLog(logString) {
         type,
         scope,
         message,
-        usernames,
+        usernames: usernames || [],
         prs,
+        body: body || "",
       });
     } else {
+      console.log({ hash, shortHash, title, body });
       console.warn("skipping line due to invalid format: " + line);
     }
   }
   return log;
 }
 
+const header =
+  "Thank you to all the contributors who made this release possible!";
+
 async function main() {
   let logString = await getLog();
-  logString = logString.split("\n");
+  logString = logString.split(lineDelimiter);
 
   //test commits
   // const logString = [
@@ -240,6 +321,14 @@ async function main() {
   //   "d2739e4f193137db4d86450f0d50b3489d75c106 d2739e4f1 style(scope): add new feature (#1234)",
   //   "d2739e4f193137db4d86450f0d50b3489d75c106 d2739e4f1 test: add new feature (#1234)",
   //   "d2739e4f193137db4d86450f0d50b3489d75c106 d2739e4f1 test(scope): add new feature (#1234)",
+  // ];
+
+  //test commits
+  // logString = [
+  //   "d2739e4f193137db4d86450f0d50b3489d75c101 d2739e4f1 fix: add new fix (#1234)",
+  //   "d2739e4f193137db4d86450f0d50b3489d75c102 d2739e4f1 fix(nuf something): add new fix nuf (#1234)",
+  //   "d2739e4f193137db4d86450f0d50b3489d75c103 d2739e4f1 test: add new test (#1234)",
+  //   "d2739e4f193137db4d86450f0d50b3489d75c104 d2739e4f1 test(blah): add new test blah (#1234)",
   // ];
 
   let log = convertStringToLog(logString);
@@ -274,6 +363,7 @@ async function main() {
       message: "add quotes in various languages",
       usernames: quoteAddCommits.map((item) => item.usernames).flat(),
       prs: quoteAddCommits.map((item) => item.prs).flat(),
+      body: "",
     });
   }
 
@@ -285,6 +375,7 @@ async function main() {
       message: "update or remove quotes reported by users",
       usernames: quoteReportCommits.map((item) => item.usernames).flat(),
       prs: quoteReportCommits.map((item) => item.prs).flat(),
+      body: "",
     });
   }
 

@@ -42,7 +42,7 @@ const accents: [string, string][] = [
   ["þ", "th"],
 ];
 
-const accentsMap: Map<string, string> = new Map(
+const accentsMap = new Map<string, string>(
   accents.flatMap((rule) => [...rule[0]].map((accent) => [accent, rule[1]]))
 );
 

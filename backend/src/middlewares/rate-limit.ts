@@ -8,17 +8,17 @@ import { isDevEnvironment } from "../utils/misc";
 const REQUEST_MULTIPLIER = isDevEnvironment() ? 100 : 1;
 
 const getKey = (req: MonkeyTypes.Request, _res: Response): string => {
-  return (req.headers["cf-connecting-ip"] ||
-    req.headers["x-forwarded-for"] ||
-    req.ip ||
+  return ((req.headers["cf-connecting-ip"] as string) ||
+    (req.headers["x-forwarded-for"] as string) ||
+    (req.ip as string) ||
     "255.255.255.255") as string;
 };
 
 const getKeyWithUid = (req: MonkeyTypes.Request, _res: Response): string => {
   const uid = req?.ctx?.decodedToken?.uid;
-  const useUid = uid.length > 0 && uid;
+  const useUid = uid !== undefined && uid !== "";
 
-  return (useUid || getKey(req, _res)) as string;
+  return useUid ? uid : getKey(req, _res);
 };
 
 export const customHandler = (
@@ -58,7 +58,9 @@ export async function badAuthRateLimiterHandler(
   res: Response,
   next: NextFunction
 ): Promise<void> {
-  if (!_.get(req, "ctx.configuration.rateLimiting.badAuthentication.enabled")) {
+  const badAuthEnabled =
+    req?.ctx?.configuration?.rateLimiting?.badAuthentication?.enabled;
+  if (!badAuthEnabled) {
     return next();
   }
 
@@ -84,11 +86,8 @@ export async function incrementBadAuth(
   res: Response,
   status: number
 ): Promise<void> {
-  const { enabled, penalty, flaggedStatusCodes } = _.get(
-    req,
-    "ctx.configuration.rateLimiting.badAuthentication",
-    {}
-  );
+  const { enabled, penalty, flaggedStatusCodes } =
+    req?.ctx?.configuration?.rateLimiting?.badAuthentication ?? {};
 
   if (!enabled || !flaggedStatusCodes.includes(status)) {
     return;
@@ -514,6 +513,13 @@ export const userMailGet = rateLimit({
 });
 
 export const userMailUpdate = rateLimit({
+  windowMs: ONE_HOUR_MS,
+  max: 60 * REQUEST_MULTIPLIER,
+  keyGenerator: getKeyWithUid,
+  handler: customHandler,
+});
+
+export const userTestActivity = rateLimit({
   windowMs: ONE_HOUR_MS,
   max: 60 * REQUEST_MULTIPLIER,
   keyGenerator: getKeyWithUid,

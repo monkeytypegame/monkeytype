@@ -3,49 +3,49 @@
   width: 100%;
   z-index: 1000;
   transition: opacity 0.25s;
-  .banner {
+  .banner,
+  .psa {
     background: var(--sub-color);
     color: var(--bg-color);
-    display: flex;
     justify-content: center;
+
+    &.withImage {
+      .lefticon {
+        display: none;
+      }
+    }
+
     .container {
-      max-width: 1000px;
+      padding-right: 0.25em;
       display: grid;
       grid-template-columns: auto 1fr auto;
-      gap: 1rem;
+      gap: 1em;
       align-items: center;
       width: 100%;
       justify-items: center;
       .image {
-        height: 2.35rem;
+        height: 2.25em;
         background-size: cover;
         aspect-ratio: 6/1;
         background-position: center;
         background-repeat: no-repeat;
-        margin-left: 2rem;
       }
-      .icon {
-        margin-left: 1rem;
-        margin-top: 0.5rem;
-        margin-bottom: 0.5rem;
+      .lefticon,
+      .image {
+        grid-column: 1;
+        grid-row: 1;
       }
       .text {
-        margin-top: 0.5rem;
-        margin-bottom: 0.5rem;
+        margin-top: 0.5em;
+        margin-bottom: 0.5em;
       }
       .closeButton {
-        margin-right: 1rem;
-        /* margin-top: 0.5rem; */
-        /* margin-bottom: 0.5rem; */
+        padding: 0.25em;
         transition: 0.125s;
-        font-size: 1.4rem;
         &:hover {
           cursor: pointer;
           color: var(--text-color);
         }
-      }
-      .righticon {
-        margin-right: 1rem;
       }
     }
     &.good {

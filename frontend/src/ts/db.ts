@@ -2,10 +2,18 @@ import Ape from "./ape";
 import * as Notifications from "./elements/notifications";
 import * as LoadingPage from "./pages/loading";
 import DefaultConfig from "./constants/default-config";
-import { Auth } from "./firebase";
+import { isAuthenticated } from "./firebase";
 import { defaultSnap } from "./constants/default-snapshot";
 import * as ConnectionState from "./states/connection";
-import { getFunboxList, lastElementFromArray } from "./utils/misc";
+import { lastElementFromArray } from "./utils/arrays";
+import { getFunboxList } from "./utils/json-data";
+import { mergeWithDefaultConfig } from "./utils/config";
+import * as Dates from "date-fns";
+import {
+  TestActivityCalendar,
+  ModifiableTestActivityCalendar,
+} from "./elements/test-activity-calendar";
+import * as Loader from "./elements/loader";
 
 let dbSnapshot: MonkeyTypes.Snapshot | undefined;
 
@@ -44,7 +52,7 @@ export async function initSnapshot(): Promise<
   //send api request with token that returns tags, presets, and data needed for snap
   const snap = { ...defaultSnap };
   try {
-    if (!Auth?.currentUser) return false;
+    if (!isAuthenticated()) return false;
     // if (ActivePage.get() === "loading") {
     //   LoadingPage.updateBar(22.5);
     // } else {
@@ -52,38 +60,46 @@ export async function initSnapshot(): Promise<
     // }
     // LoadingPage.updateText("Downloading user...");
 
-    //getData recreates the user if it doesnt exist - thats why it needs to be called first, by itself
-    const userResponse = await Ape.users.getData();
-
-    const [configResponse, presetsResponse] = await Promise.all([
+    const [userResponse, configResponse, presetsResponse] = await Promise.all([
+      Ape.users.getData(),
       Ape.configs.get(),
       Ape.presets.get(),
     ]);
 
+    //these objects are explicitly handled so its ok to throw that way
     if (userResponse.status !== 200) {
+      // eslint-disable-next-line @typescript-eslint/no-throw-literal
       throw {
         message: `${userResponse.message} (user)`,
         responseCode: userResponse.status,
       };
     }
     if (configResponse.status !== 200) {
+      // eslint-disable-next-line @typescript-eslint/no-throw-literal
       throw {
         message: `${configResponse.message} (config)`,
         responseCode: configResponse.status,
       };
     }
     if (presetsResponse.status !== 200) {
+      // eslint-disable-next-line @typescript-eslint/no-throw-literal
       throw {
         message: `${presetsResponse.message} (presets)`,
         responseCode: presetsResponse.status,
       };
     }
 
-    const [userData, configData, presetsData] = [
-      userResponse,
-      configResponse,
-      presetsResponse,
-    ].map((response) => response.data);
+    const userData = userResponse.data;
+    const configData = configResponse.data;
+    const presetsData = presetsResponse.data;
+
+    if (userData === null) {
+      // eslint-disable-next-line @typescript-eslint/no-throw-literal
+      throw {
+        message: "Request was successful but user data is null",
+        responseCode: 200,
+      };
+    }
 
     snap.name = userData.name;
     snap.personalBests = userData.personalBests;
@@ -106,15 +122,13 @@ export async function initSnapshot(): Promise<
     snap.discordAvatar = userData.discordAvatar;
     snap.needsToChangeName = userData.needsToChangeName;
     snap.typingStats = {
-      timeTyping: userData.timeTyping,
-      startedTests: userData.startedTests,
-      completedTests: userData.completedTests,
+      timeTyping: userData.timeTyping ?? 0,
+      startedTests: userData.startedTests ?? 0,
+      completedTests: userData.completedTests ?? 0,
     };
     snap.quoteMod = userData.quoteMod;
     snap.favoriteQuotes = userData.favoriteQuotes ?? {};
     snap.quoteRatings = userData.quoteRatings;
-    snap.favouriteThemes =
-      userData.favouriteThemes === undefined ? [] : userData.favouriteThemes;
     snap.details = userData.profileDetails;
     snap.addedAt = userData.addedAt;
     snap.inventory = userData.inventory;
@@ -124,15 +138,20 @@ export async function initSnapshot(): Promise<
     snap.maxStreak = userData?.streak?.maxLength ?? 0;
     snap.filterPresets = userData.resultFilterPresets ?? [];
     snap.isPremium = userData?.isPremium;
+    snap.allTimeLbs = userData.allTimeLbs;
+
+    if (userData.testActivity !== undefined) {
+      snap.testActivity = new ModifiableTestActivityCalendar(
+        userData.testActivity.testsByDays,
+        new Date(userData.testActivity.lastDay)
+      );
+    }
 
     const hourOffset = userData?.streak?.hourOffset;
     snap.streakHourOffset =
       hourOffset === undefined || hourOffset === null ? undefined : hourOffset;
 
-    if (userData.lbMemory?.time15 || userData.lbMemory?.time60) {
-      //old memory format
-      snap.lbMemory = {} as MonkeyTypes.LeaderboardMemory;
-    } else if (userData.lbMemory) {
+    if (userData.lbMemory !== undefined) {
       snap.lbMemory = userData.lbMemory;
     }
     // if (ActivePage.get() === "loading") {
@@ -141,19 +160,12 @@ export async function initSnapshot(): Promise<
     //   LoadingPage.updateBar(32);
     // }
     // LoadingPage.updateText("Downloading config...");
-    if (configData) {
-      const newConfig = {
+    if (configData === undefined || configData === null) {
+      snap.config = {
         ...DefaultConfig,
       };
-
-      for (const key in configData.config) {
-        const value = configData.config[key];
-        (newConfig[
-          key as keyof MonkeyTypes.Config
-        ] as typeof configData[typeof key]) = value;
-      }
-
-      snap.config = newConfig;
+    } else {
+      snap.config = mergeWithDefaultConfig(configData.config);
     }
     // if (ActivePage.get() === "loading") {
     //   LoadingPage.updateBar(67.5);
@@ -163,24 +175,30 @@ export async function initSnapshot(): Promise<
     // LoadingPage.updateText("Downloading tags...");
     snap.customThemes = userData.customThemes ?? [];
 
-    const userDataTags: MonkeyTypes.Tag[] = userData.tags ?? [];
+    // const userDataTags: MonkeyTypes.UserTagWithDisplay[] = userData.tags ?? [];
 
-    userDataTags.forEach((tag) => {
-      tag.display = tag.name.replaceAll("_", " ");
-      tag.personalBests ??= {
-        time: {},
-        words: {},
-        quote: {},
-        zen: {},
-        custom: {},
-      };
+    // userDataTags.forEach((tag) => {
+    //   tag.display = tag.name.replaceAll("_", " ");
+    //   tag.personalBests ??= {
+    //     time: {},
+    //     words: {},
+    //     quote: {},
+    //     zen: {},
+    //     custom: {},
+    //   };
 
-      for (const mode of ["time", "words", "quote", "zen", "custom"]) {
-        tag.personalBests[mode as keyof SharedTypes.PersonalBests] ??= {};
-      }
-    });
+    //   for (const mode of ["time", "words", "quote", "zen", "custom"]) {
+    //     tag.personalBests[mode as keyof SharedTypes.PersonalBests] ??= {};
+    //   }
+    // });
 
-    snap.tags = userDataTags;
+    // snap.tags = userDataTags;
+
+    snap.tags =
+      userData.tags?.map((tag) => ({
+        ...tag,
+        display: tag.name.replaceAll("_", " "),
+      })) ?? [];
 
     snap.tags = snap.tags?.sort((a, b) => {
       if (a.name > b.name) {
@@ -198,21 +216,26 @@ export async function initSnapshot(): Promise<
     //   LoadingPage.updateBar(64);
     // }
     // LoadingPage.updateText("Downloading presets...");
-    snap.presets = presetsData;
 
-    snap.presets?.forEach((preset) => {
-      preset.display = preset.name.replaceAll("_", " ");
-    });
+    if (presetsData !== undefined && presetsData !== null) {
+      const presetsWithDisplay = presetsData.map((preset) => {
+        return {
+          ...preset,
+          display: preset.name.replace(/_/gi, " "),
+        };
+      }) as MonkeyTypes.SnapshotPreset[];
+      snap.presets = presetsWithDisplay;
 
-    snap.presets = snap.presets?.sort((a, b) => {
-      if (a.name > b.name) {
-        return 1;
-      } else if (a.name < b.name) {
-        return -1;
-      } else {
-        return 0;
-      }
-    });
+      snap.presets = snap.presets?.sort((a, b) => {
+        if (a.name > b.name) {
+          return 1;
+        } else if (a.name < b.name) {
+          return -1;
+        } else {
+          return 0;
+        }
+      });
+    }
 
     dbSnapshot = snap;
     return dbSnapshot;
@@ -223,8 +246,8 @@ export async function initSnapshot(): Promise<
 }
 
 export async function getUserResults(offset?: number): Promise<boolean> {
-  const user = Auth?.currentUser;
-  if (!user) return false;
+  if (!isAuthenticated()) return false;
+
   if (!dbSnapshot) return false;
   if (
     dbSnapshot.results !== undefined &&
@@ -249,7 +272,8 @@ export async function getUserResults(offset?: number): Promise<boolean> {
     return false;
   }
 
-  const results = response.data as SharedTypes.DBResult<SharedTypes.Mode>[];
+  const results =
+    response.data as SharedTypes.DBResult<SharedTypes.Config.Mode>[];
   results?.sort((a, b) => b.timestamp - a.timestamp);
   results.forEach((result) => {
     if (result.bailedOut === undefined) result.bailedOut = false;
@@ -262,6 +286,7 @@ export async function getUserResults(offset?: number): Promise<boolean> {
     }
     if (result.numbers === undefined) result.numbers = false;
     if (result.punctuation === undefined) result.punctuation = false;
+    if (result.numbers === undefined) result.numbers = false;
     if (result.quoteLength === undefined) result.quoteLength = -1;
     if (result.restartCount === undefined) result.restartCount = 0;
     if (result.incompleteTestSeconds === undefined) {
@@ -286,11 +311,11 @@ export async function getUserResults(offset?: number): Promise<boolean> {
       (it) => it.timestamp < oldestTimestamp
     );
     dbSnapshot.results.push(
-      ...(resultsWithoutDuplicates as unknown as SharedTypes.Result<SharedTypes.Mode>[])
+      ...(resultsWithoutDuplicates as unknown as SharedTypes.Result<SharedTypes.Config.Mode>[])
     );
   } else {
     dbSnapshot.results =
-      results as unknown as SharedTypes.Result<SharedTypes.Mode>[];
+      results as unknown as SharedTypes.Result<SharedTypes.Config.Mode>[];
   }
   return true;
 }
@@ -298,13 +323,17 @@ export async function getUserResults(offset?: number): Promise<boolean> {
 function _getCustomThemeById(
   themeID: string
 ): MonkeyTypes.CustomTheme | undefined {
-  return dbSnapshot?.customThemes.find((t) => t._id === themeID);
+  return dbSnapshot?.customThemes?.find((t) => t._id === themeID);
 }
 
 export async function addCustomTheme(
   theme: MonkeyTypes.RawCustomTheme
 ): Promise<boolean> {
   if (!dbSnapshot) return false;
+
+  if (dbSnapshot.customThemes === undefined) {
+    dbSnapshot.customThemes = [];
+  }
 
   if (dbSnapshot.customThemes.length >= 10) {
     Notifications.add("Too many custom themes!", 0);
@@ -317,9 +346,14 @@ export async function addCustomTheme(
     return false;
   }
 
+  if (response.data === null) {
+    Notifications.add("Error adding custom theme: No data returned", -1);
+    return false;
+  }
+
   const newCustomTheme: MonkeyTypes.CustomTheme = {
     ...theme,
-    _id: response.data.theme._id as string,
+    _id: response.data._id,
   };
 
   dbSnapshot.customThemes.push(newCustomTheme);
@@ -330,11 +364,14 @@ export async function editCustomTheme(
   themeId: string,
   newTheme: MonkeyTypes.RawCustomTheme
 ): Promise<boolean> {
-  const user = Auth?.currentUser;
-  if (!user) return false;
+  if (!isAuthenticated()) return false;
   if (!dbSnapshot) return false;
 
-  const customTheme = dbSnapshot.customThemes.find((t) => t._id === themeId);
+  if (dbSnapshot.customThemes === undefined) {
+    dbSnapshot.customThemes = [];
+  }
+
+  const customTheme = dbSnapshot.customThemes?.find((t) => t._id === themeId);
   if (!customTheme) {
     Notifications.add(
       "Editing failed: Custom theme with id: " + themeId + " does not exist",
@@ -361,11 +398,10 @@ export async function editCustomTheme(
 }
 
 export async function deleteCustomTheme(themeId: string): Promise<boolean> {
-  const user = Auth?.currentUser;
-  if (!user) return false;
+  if (!isAuthenticated()) return false;
   if (!dbSnapshot) return false;
 
-  const customTheme = dbSnapshot.customThemes.find((t) => t._id === themeId);
+  const customTheme = dbSnapshot.customThemes?.find((t) => t._id === themeId);
   if (!customTheme) return false;
 
   const response = await Ape.users.deleteCustomTheme(themeId);
@@ -374,53 +410,20 @@ export async function deleteCustomTheme(themeId: string): Promise<boolean> {
     return false;
   }
 
-  dbSnapshot.customThemes = dbSnapshot.customThemes.filter(
+  dbSnapshot.customThemes = dbSnapshot.customThemes?.filter(
     (t) => t._id !== themeId
   );
 
   return true;
 }
 
-async function _getUserHighestWpm<M extends SharedTypes.Mode>(
+export async function getUserAverage10<M extends SharedTypes.Config.Mode>(
   mode: M,
-  mode2: SharedTypes.Mode2<M>,
+  mode2: SharedTypes.Config.Mode2<M>,
   punctuation: boolean,
+  numbers: boolean,
   language: string,
-  difficulty: SharedTypes.Difficulty,
-  lazyMode: boolean
-): Promise<number> {
-  function cont(): number {
-    let topWpm = 0;
-
-    dbSnapshot?.results?.forEach((result) => {
-      if (
-        result.mode === mode &&
-        `${result.mode2}` === `${mode2 as string | number}` && //using template strings here because legacy results can have numbers in mode2
-        result.punctuation === punctuation &&
-        result.language === language &&
-        result.difficulty === difficulty &&
-        (result.lazyMode === lazyMode ||
-          (result.lazyMode === undefined && lazyMode === false))
-      ) {
-        if (result.wpm > topWpm) {
-          topWpm = result.wpm;
-        }
-      }
-    });
-    return topWpm;
-  }
-
-  const retval = !dbSnapshot || dbSnapshot.results === undefined ? 0 : cont();
-
-  return retval;
-}
-
-export async function getUserAverage10<M extends SharedTypes.Mode>(
-  mode: M,
-  mode2: SharedTypes.Mode2<M>,
-  punctuation: boolean,
-  language: string,
-  difficulty: SharedTypes.Difficulty,
+  difficulty: SharedTypes.Config.Difficulty,
   lazyMode: boolean
 ): Promise<[number, number]> {
   const snapshot = getSnapshot();
@@ -446,11 +449,12 @@ export async function getUserAverage10<M extends SharedTypes.Mode>(
       for (const result of snapshot.results) {
         if (
           result.mode === mode &&
-          result.punctuation === punctuation &&
+          (result.punctuation ?? false) === punctuation &&
+          (result.numbers ?? false) === numbers &&
           result.language === language &&
           result.difficulty === difficulty &&
           (result.lazyMode === lazyMode ||
-            (result.lazyMode === undefined && lazyMode === false)) &&
+            (result.lazyMode === undefined && !lazyMode)) &&
           (activeTagIds.length === 0 ||
             activeTagIds.some((tagId) => result.tags.includes(tagId)))
         ) {
@@ -498,12 +502,13 @@ export async function getUserAverage10<M extends SharedTypes.Mode>(
   return retval;
 }
 
-export async function getUserDailyBest<M extends SharedTypes.Mode>(
+export async function getUserDailyBest<M extends SharedTypes.Config.Mode>(
   mode: M,
-  mode2: SharedTypes.Mode2<M>,
+  mode2: SharedTypes.Config.Mode2<M>,
   punctuation: boolean,
+  numbers: boolean,
   language: string,
-  difficulty: SharedTypes.Difficulty,
+  difficulty: SharedTypes.Config.Difficulty,
   lazyMode: boolean
 ): Promise<number> {
   const snapshot = getSnapshot();
@@ -524,11 +529,12 @@ export async function getUserDailyBest<M extends SharedTypes.Mode>(
       for (const result of snapshot.results) {
         if (
           result.mode === mode &&
-          result.punctuation === punctuation &&
+          (result.punctuation ?? false) === punctuation &&
+          (result.numbers ?? false) === numbers &&
           result.language === language &&
           result.difficulty === difficulty &&
           (result.lazyMode === lazyMode ||
-            (result.lazyMode === undefined && lazyMode === false)) &&
+            (result.lazyMode === undefined && !lazyMode)) &&
           (activeTagIds.length === 0 ||
             activeTagIds.some((tagId) => result.tags.includes(tagId)))
         ) {
@@ -561,12 +567,13 @@ export async function getUserDailyBest<M extends SharedTypes.Mode>(
   return retval;
 }
 
-export async function getLocalPB<M extends SharedTypes.Mode>(
+export async function getLocalPB<M extends SharedTypes.Config.Mode>(
   mode: M,
-  mode2: SharedTypes.Mode2<M>,
+  mode2: SharedTypes.Config.Mode2<M>,
   punctuation: boolean,
+  numbers: boolean,
   language: string,
-  difficulty: SharedTypes.Difficulty,
+  difficulty: SharedTypes.Config.Difficulty,
   lazyMode: boolean,
   funbox: string
 ): Promise<number> {
@@ -577,45 +584,33 @@ export async function getLocalPB<M extends SharedTypes.Mode>(
   if (!funboxes.every((f) => f.canGetPb)) {
     return 0;
   }
+  if (dbSnapshot === null || dbSnapshot?.personalBests === null) return 0;
 
-  function cont(): number {
-    let ret = 0;
-    try {
-      if (!dbSnapshot?.personalBests) return ret;
+  const bestsByMode = dbSnapshot?.personalBests[mode][
+    mode2
+  ] as SharedTypes.PersonalBest[];
 
-      (
-        dbSnapshot.personalBests[mode][
-          mode2
-        ] as unknown as SharedTypes.PersonalBest[]
-      ).forEach((pb) => {
-        if (
-          pb.punctuation === punctuation &&
-          pb.difficulty === difficulty &&
-          pb.language === language &&
-          (pb.lazyMode === lazyMode ||
-            (pb.lazyMode === undefined && lazyMode === false))
-        ) {
-          ret = pb.wpm;
-        }
-      });
+  if (bestsByMode === undefined) return 0;
 
-      return ret;
-    } catch (e) {
-      return ret;
-    }
-  }
-
-  const retval = dbSnapshot === null ? 0 : cont();
-
-  return retval;
+  return (
+    bestsByMode.find(
+      (pb) =>
+        (pb.punctuation ?? false) === punctuation &&
+        (pb.numbers ?? false) === numbers &&
+        pb.difficulty === difficulty &&
+        pb.language === language &&
+        (pb.lazyMode ?? false) === lazyMode
+    )?.wpm ?? 0
+  );
 }
 
-export async function saveLocalPB<M extends SharedTypes.Mode>(
+export async function saveLocalPB<M extends SharedTypes.Config.Mode>(
   mode: M,
-  mode2: SharedTypes.Mode2<M>,
+  mode2: SharedTypes.Config.Mode2<M>,
   punctuation: boolean,
+  numbers: boolean,
   language: string,
-  difficulty: SharedTypes.Difficulty,
+  difficulty: SharedTypes.Config.Difficulty,
   lazyMode: boolean,
   wpm: number,
   acc: number,
@@ -641,7 +636,7 @@ export async function saveLocalPB<M extends SharedTypes.Mode>(
     };
 
     dbSnapshot.personalBests[mode][mode2] ??=
-      [] as unknown as SharedTypes.PersonalBests[M][SharedTypes.Mode2<M>];
+      [] as unknown as SharedTypes.PersonalBests[M][SharedTypes.Config.Mode2<M>];
 
     (
       dbSnapshot.personalBests[mode][
@@ -649,11 +644,11 @@ export async function saveLocalPB<M extends SharedTypes.Mode>(
       ] as unknown as SharedTypes.PersonalBest[]
     ).forEach((pb) => {
       if (
-        pb.punctuation === punctuation &&
+        (pb.punctuation ?? false) === punctuation &&
+        (pb.numbers ?? false) === numbers &&
         pb.difficulty === difficulty &&
         pb.language === language &&
-        (pb.lazyMode === lazyMode ||
-          (pb.lazyMode === undefined && lazyMode === false))
+        (pb.lazyMode ?? false) === lazyMode
       ) {
         found = true;
         pb.wpm = wpm;
@@ -675,6 +670,7 @@ export async function saveLocalPB<M extends SharedTypes.Mode>(
         difficulty,
         lazyMode,
         punctuation,
+        numbers,
         wpm,
         acc,
         raw,
@@ -689,67 +685,65 @@ export async function saveLocalPB<M extends SharedTypes.Mode>(
   }
 }
 
-export async function getLocalTagPB<M extends SharedTypes.Mode>(
+export async function getLocalTagPB<M extends SharedTypes.Config.Mode>(
   tagId: string,
   mode: M,
-  mode2: SharedTypes.Mode2<M>,
+  mode2: SharedTypes.Config.Mode2<M>,
   punctuation: boolean,
+  numbers: boolean,
   language: string,
-  difficulty: SharedTypes.Difficulty,
+  difficulty: SharedTypes.Config.Difficulty,
   lazyMode: boolean
 ): Promise<number> {
-  function cont(): number {
-    let ret = 0;
+  if (dbSnapshot === null) return 0;
 
-    const filteredtag = (getSnapshot()?.tags ?? []).filter(
-      (t) => t._id === tagId
-    )[0];
+  let ret = 0;
 
-    if (filteredtag === undefined) return ret;
+  const filteredtag = (getSnapshot()?.tags ?? []).filter(
+    (t) => t._id === tagId
+  )[0];
 
-    filteredtag.personalBests ??= {
-      time: {},
-      words: {},
-      quote: {},
-      zen: {},
-      custom: {},
-    };
+  if (filteredtag === undefined) return ret;
 
-    filteredtag.personalBests[mode] ??= {
-      [mode2]: [],
-    };
+  filteredtag.personalBests ??= {
+    time: {},
+    words: {},
+    quote: {},
+    zen: {},
+    custom: {},
+  };
 
-    filteredtag.personalBests[mode][mode2] ??=
-      [] as unknown as SharedTypes.PersonalBests[M][SharedTypes.Mode2<M>];
+  filteredtag.personalBests[mode] ??= {
+    [mode2]: [],
+  };
 
-    const personalBests = (filteredtag.personalBests[mode][mode2] ??
-      []) as SharedTypes.PersonalBest[];
+  filteredtag.personalBests[mode][mode2] ??=
+    [] as unknown as SharedTypes.PersonalBests[M][SharedTypes.Config.Mode2<M>];
 
-    ret =
-      personalBests.find(
-        (pb) =>
-          pb.punctuation === punctuation &&
-          pb.difficulty === difficulty &&
-          pb.language === language &&
-          (pb.lazyMode === lazyMode ||
-            (pb.lazyMode === undefined && lazyMode === false))
-      )?.wpm ?? 0;
+  const personalBests = (filteredtag.personalBests[mode][mode2] ??
+    []) as SharedTypes.PersonalBest[];
 
-    return ret;
-  }
+  ret =
+    personalBests.find(
+      (pb) =>
+        (pb.punctuation ?? false) === punctuation &&
+        (pb.numbers ?? false) === numbers &&
+        pb.difficulty === difficulty &&
+        pb.language === language &&
+        (pb.lazyMode === lazyMode || (pb.lazyMode === undefined && !lazyMode))
+    )?.wpm ?? 0;
 
-  const retval = dbSnapshot === null ? 0 : cont();
-
-  return retval;
+  return ret;
 }
 
-export async function saveLocalTagPB<M extends SharedTypes.Mode>(
+export async function saveLocalTagPB<M extends SharedTypes.Config.Mode>(
   tagId: string,
   mode: M,
-  mode2: SharedTypes.Mode2<M>,
+  mode2: SharedTypes.Config.Mode2<M>,
   punctuation: boolean,
+  numbers: boolean,
   language: string,
-  difficulty: SharedTypes.Difficulty,
+  difficulty: SharedTypes.Config.Difficulty,
   lazyMode: boolean,
   wpm: number,
   acc: number,
@@ -761,7 +755,7 @@ export async function saveLocalTagPB<M extends SharedTypes.Mode>(
   function cont(): void {
     const filteredtag = dbSnapshot?.tags?.filter(
       (t) => t._id === tagId
-    )[0] as MonkeyTypes.Tag;
+    )[0] as MonkeyTypes.UserTag;
 
     filteredtag.personalBests ??= {
       time: {},
@@ -776,7 +770,7 @@ export async function saveLocalTagPB<M extends SharedTypes.Mode>(
     };
 
     filteredtag.personalBests[mode][mode2] ??=
-      [] as unknown as SharedTypes.PersonalBests[M][SharedTypes.Mode2<M>];
+      [] as unknown as SharedTypes.PersonalBests[M][SharedTypes.Config.Mode2<M>];
 
     try {
       let found = false;
@@ -787,11 +781,11 @@ export async function saveLocalTagPB<M extends SharedTypes.Mode>(
         ] as unknown as SharedTypes.PersonalBest[]
       ).forEach((pb) => {
         if (
-          pb.punctuation === punctuation &&
+          (pb.punctuation ?? false) === punctuation &&
+          (pb.numbers ?? false) === numbers &&
           pb.difficulty === difficulty &&
           pb.language === language &&
-          (pb.lazyMode === lazyMode ||
-            (pb.lazyMode === undefined && lazyMode === false))
+          (pb.lazyMode === lazyMode || (pb.lazyMode === undefined && !lazyMode))
         ) {
           found = true;
           pb.wpm = wpm;
@@ -813,6 +807,7 @@ export async function saveLocalTagPB<M extends SharedTypes.Mode>(
           difficulty,
           lazyMode,
           punctuation,
+          numbers,
           wpm,
           acc,
           raw,
@@ -835,13 +830,14 @@ export async function saveLocalTagPB<M extends SharedTypes.Mode>(
           difficulty: difficulty,
           lazyMode: lazyMode,
           punctuation: punctuation,
+          numbers: numbers,
           wpm: wpm,
           acc: acc,
           raw: raw,
           timestamp: Date.now(),
           consistency: consistency,
         },
-      ] as unknown as SharedTypes.PersonalBests[M][SharedTypes.Mode2<M>];
+      ] as unknown as SharedTypes.PersonalBests[M][SharedTypes.Config.Mode2<M>];
     }
   }
 
@@ -852,9 +848,9 @@ export async function saveLocalTagPB<M extends SharedTypes.Mode>(
   return;
 }
 
-export async function updateLbMemory<M extends SharedTypes.Mode>(
+export async function updateLbMemory<M extends SharedTypes.Config.Mode>(
   mode: M,
-  mode2: SharedTypes.Mode2<M>,
+  mode2: SharedTypes.Config.Mode2<M>,
   language: string,
   rank: number,
   api = false
@@ -879,8 +875,14 @@ export async function updateLbMemory<M extends SharedTypes.Mode>(
     if (snapshot.lbMemory[timeMode][timeMode2] === undefined) {
       snapshot.lbMemory[timeMode][timeMode2] = {};
     }
-    const current = snapshot.lbMemory[timeMode][timeMode2][language];
-    snapshot.lbMemory[timeMode][timeMode2][language] = rank;
+    const current = snapshot.lbMemory?.[timeMode]?.[timeMode2]?.[language];
+
+    //this is protected above so not sure why it would be undefined
+    const mem = snapshot.lbMemory[timeMode][timeMode2] as Record<
+      string,
+      number
+    >;
+    mem[language] = rank;
     if (api && current !== rank) {
       await Ape.users.updateLeaderboardMemory(mode, mode2, language, rank);
     }
@@ -888,8 +890,8 @@ export async function updateLbMemory<M extends SharedTypes.Mode>(
   }
 }
 
-export async function saveConfig(config: MonkeyTypes.Config): Promise<void> {
-  if (Auth?.currentUser) {
+export async function saveConfig(config: SharedTypes.Config): Promise<void> {
+  if (isAuthenticated()) {
     const response = await Ape.configs.save(config);
     if (response.status !== 200) {
       Notifications.add("Failed to save config: " + response.message, -1);
@@ -898,14 +900,19 @@ export async function saveConfig(config: MonkeyTypes.Config): Promise<void> {
 }
 
 export function saveLocalResult(
-  result: SharedTypes.Result<SharedTypes.Mode>
+  result: SharedTypes.Result<SharedTypes.Config.Mode>
 ): void {
   const snapshot = getSnapshot();
   if (!snapshot) return;
 
-  if (snapshot !== null && snapshot.results !== undefined) {
+  if (snapshot?.results !== undefined) {
     snapshot.results.unshift(result);
 
+    setSnapshot(snapshot);
+  }
+
+  if (snapshot.testActivity !== undefined) {
+    snapshot.testActivity.increment(new Date(result.timestamp));
     setSnapshot(snapshot);
   }
 }
@@ -914,25 +921,16 @@ export function updateLocalStats(started: number, time: number): void {
   const snapshot = getSnapshot();
   if (!snapshot) return;
   if (snapshot.typingStats === undefined) {
-    snapshot.typingStats = {} as MonkeyTypes.TypingStats;
+    snapshot.typingStats = {
+      timeTyping: 0,
+      startedTests: 0,
+      completedTests: 0,
+    };
   }
-  if (snapshot !== null && snapshot.typingStats !== undefined) {
-    if (snapshot.typingStats.timeTyping === undefined) {
-      snapshot.typingStats.timeTyping = time;
-    } else {
-      snapshot.typingStats.timeTyping += time;
-    }
-    if (snapshot.typingStats.startedTests === undefined) {
-      snapshot.typingStats.startedTests = started;
-    } else {
-      snapshot.typingStats.startedTests += started;
-    }
-    if (snapshot.typingStats.completedTests === undefined) {
-      snapshot.typingStats.completedTests = 1;
-    } else {
-      snapshot.typingStats.completedTests += 1;
-    }
-  }
+
+  snapshot.typingStats.timeTyping += time;
+  snapshot.typingStats.startedTests += started;
+  snapshot.typingStats.completedTests += 1;
 
   setSnapshot(snapshot);
 }
@@ -948,7 +946,7 @@ export function addXp(xp: number): void {
   setSnapshot(snapshot);
 }
 
-export function addBadge(badge: MonkeyTypes.Badge): void {
+export function addBadge(badge: SharedTypes.Badge): void {
   const snapshot = getSnapshot();
   if (!snapshot) return;
 
@@ -972,6 +970,55 @@ export function setStreak(streak: number): void {
   }
 
   setSnapshot(snapshot);
+}
+
+export async function getTestActivityCalendar(
+  yearString: string
+): Promise<MonkeyTypes.TestActivityCalendar | undefined> {
+  if (!isAuthenticated() || dbSnapshot === undefined) return undefined;
+
+  if (yearString === "current") return dbSnapshot.testActivity;
+
+  const currentYear = new Date().getFullYear().toString();
+  if (yearString === currentYear) {
+    return dbSnapshot.testActivity?.getFullYearCalendar();
+  }
+
+  if (dbSnapshot.testActivityByYear === undefined) {
+    if (!ConnectionState.get()) {
+      return undefined;
+    }
+
+    Loader.show();
+    const response = await Ape.users.getTestActivity();
+    if (response.status !== 200) {
+      Notifications.add(
+        "Error getting test activities: " + response.message,
+        -1
+      );
+      Loader.hide();
+      return undefined;
+    }
+
+    dbSnapshot.testActivityByYear = {};
+    for (const year in response.data) {
+      if (year === currentYear) continue;
+      const testsByDays = response.data[year] ?? [];
+      const lastDay = Dates.addDays(
+        new Date(parseInt(year), 0, 1),
+        testsByDays.length
+      );
+
+      dbSnapshot.testActivityByYear[year] = new TestActivityCalendar(
+        testsByDays,
+        lastDay,
+        true
+      );
+    }
+    Loader.hide();
+  }
+
+  return dbSnapshot.testActivityByYear[yearString];
 }
 
 // export async function DB.getLocalTagPB(tagId) {

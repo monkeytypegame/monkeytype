@@ -42,21 +42,77 @@
 }
 
 #app {
+  min-height: 100vh;
+  grid-template-rows: [top-start] auto [content-start] 1fr [content-end] auto [top-end];
+  overflow: hidden;
+  row-gap: 2rem;
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+  width: 100%;
+}
+
+// from an amazing guide by Kevin Powell https://www.youtube.com/watch?v=c13gpBrnGEw
+.content-grid {
+  --padding-inline: 2rem;
+  --content-max-width: 1536px;
+
+  // --breakout-max-width: 1200px;
+
+  // --breakout-size: calc(
+  //   (var(--breakout-max-width) - var(--content-max-width)) / 2
+  // );
+
+  justify-content: center;
   display: grid;
-  grid-template-columns: auto minmax(0, 1000px) auto;
-  justify-items: center;
-  &.wide125 {
-    grid-template-columns: auto minmax(0, 1250px) auto;
-  }
-  &.wide150 {
-    grid-template-columns: auto minmax(0, 1500px) auto;
-  }
-  &.wide200 {
-    grid-template-columns: auto minmax(0, 2000px) auto;
-  }
-  &.widemax {
-    grid-template-columns: auto minmax(0, 1fr) auto;
-  }
+  grid-template-columns:
+    [full-width-start] minmax(0, var(--padding-inline))
+    [full-width-padding-start] minmax(0, 1fr)
+    // [breakout-start] minmax(0, var(--breakout-size))
+    [content-start] min(
+      100% - (var(--padding-inline) * 2),
+      var(--content-max-width)
+    )
+    [content-end]
+    // minmax(0, var(--breakout-size)) [breakout-end]
+    minmax(0, 1fr) [full-width-padding-end]
+    minmax(0, var(--padding-inline)) [full-width-end];
+}
+
+.content-grid > :not(.breakout, .full-width, .full-width-padding) {
+  grid-column: content;
+}
+
+// #app > .breakout {
+//   grid-column: breakout;
+// }
+
+.content-grid > .full-width {
+  grid-column: full-width;
+}
+
+.content-grid > .full-width-padding {
+  grid-column: full-width-padding;
+}
+
+#ad-vertical-left-wrapper,
+#ad-vertical-right-wrapper {
+  grid-row: content;
+  margin-right: 2rem;
+  position: fixed;
+}
+
+#ad-vertical-left-wrapper {
+  grid-column: full-width-start/content-start;
+  left: 0;
+}
+
+#ad-vertical-right-wrapper {
+  grid-column: content-end/full-width-end;
+  right: -2rem;
+}
+
+main {
+  display: grid; //stupid fix for stupid safari
 }
 
 #nocss {
@@ -128,47 +184,12 @@ body {
   z-index: 9999;
 }
 
-#contentWrapper {
-  max-width: 1000px;
-  // min-width: 500px;
-  // margin: 0 auto;
-  display: grid;
-  grid-auto-flow: row;
-  min-height: 100vh;
-  padding-left: 2rem;
-  padding-right: 2rem;
-  padding-top: 2rem;
-  padding-bottom: 2rem;
-  gap: 2rem;
-  align-items: center;
-  z-index: 999;
-  grid-template-rows: auto 1fr auto;
-  width: 100%;
-  transition: padding-top 0.125s;
-  &.wide125 {
-    max-width: 1250px;
-  }
-  &.wide150 {
-    max-width: 1500px;
-  }
-  &.wide200 {
-    max-width: 2000px;
-  }
-  &.widemax {
-    max-width: unset;
-  }
-}
-
-main {
-  display: grid; //stupid fix for stupid safari
-}
-
 key {
   color: var(--bg-color);
   background-color: var(--sub-color);
   /* font-weight: bold; */
   padding: 0.1rem 0.3rem;
-  margin: 0rem 0.5rem;
+  margin: 0rem 0rem;
   border-radius: 0.1rem;
   display: inline-block;
   font-size: 0.7rem;
@@ -188,6 +209,7 @@ key {
     justify-self: center;
     display: grid;
     .barWrapper {
+      justify-content: center;
       display: grid;
       gap: 1rem;
       grid-row: 1;
@@ -384,9 +406,9 @@ key {
   text-align: center;
   z-index: 999999999;
   &.main {
-    color: rgb(30, 255, 0);
+    color: var(--text-color);
   }
   &.error {
-    color: red;
+    color: var(--error-color);
   }
 }

@@ -25,9 +25,12 @@ export async function submit(
   }
 
   const quoteRating = await get(quoteId, language);
+  if (quoteRating === null) {
+    throw new Error("Quote rating is null after adding rating?");
+  }
   const average = parseFloat(
     (
-      Math.round((quoteRating!.totalRating / quoteRating!.ratings) * 10) / 10
+      Math.round((quoteRating.totalRating / quoteRating.ratings) * 10) / 10
     ).toFixed(1)
   );
 

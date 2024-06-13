@@ -1,5 +1,6 @@
 import * as TestWords from "./test-words";
-import { mean, roundTo2 } from "../utils/misc";
+import { lastElementFromArray } from "../utils/arrays";
+import { mean, roundTo2 } from "../utils/numbers";
 
 const keysToTrack = [
   "NumpadMultiply",
@@ -72,7 +73,7 @@ const keysToTrack = [
   "NoCode", //android (smells) and some keyboards might send no location data - need to use this as a fallback
 ];
 
-interface KeypressTimings {
+type KeypressTimings = {
   spacing: {
     first: number;
     last: number;
@@ -81,17 +82,17 @@ interface KeypressTimings {
   duration: {
     array: number[];
   };
-}
+};
 
-interface Keydata {
+type Keydata = {
   timestamp: number;
   index: number;
-}
+};
 
-interface ErrorHistoryObject {
+type ErrorHistoryObject = {
   count: number;
   words: number[];
-}
+};
 
 class Input {
   current: string;
@@ -167,7 +168,7 @@ class Input {
   }
 
   getHistoryLast(): string | undefined {
-    return this.history[this.history.length - 1];
+    return lastElementFromArray(this.history);
   }
 }
 
@@ -221,9 +222,7 @@ export const corrected = new Corrected();
 export let keypressCountHistory: number[] = [];
 let currentKeypressCount = 0;
 export let currentBurstStart = 0;
-export let missedWords: {
-  [word: string]: number;
-} = {};
+export let missedWords: Record<string, number> = {};
 export let accuracy = {
   correct: 0,
   incorrect: 0,
@@ -310,7 +309,7 @@ export function forceKeyup(now: number): void {
   for (const keyOrder of keysOrder) {
     recordKeyupTime(now, keyOrder[0]);
   }
-  const last = keysOrder[keysOrder.length - 1]?.[0] as string;
+  const last = lastElementFromArray(keysOrder)?.[0] as string;
   const index = keyDownData[last]?.index;
   if (last !== undefined && index !== undefined) {
     keypressTimings.duration.array[index] = avg;
@@ -335,6 +334,7 @@ export function recordKeyupTime(now: number, key: string): void {
   keypressTimings.duration.array[keyDownDataForKey.index] = diff;
 
   console.debug("Keyup recorded", key, diff);
+  // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
   delete keyDownData[key];
 
   updateOverlap(now);

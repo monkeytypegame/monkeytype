@@ -25,9 +25,11 @@ import {
   static as expressStatic,
 } from "express";
 import { isDevEnvironment } from "../../utils/misc";
+import { getLiveConfiguration } from "../../init/configuration";
+import Logger from "../../utils/logger";
 
 const pathOverride = process.env["API_PATH_OVERRIDE"];
-const BASE_ROUTE = pathOverride ? `/${pathOverride}` : "";
+const BASE_ROUTE = pathOverride !== undefined ? `/${pathOverride}` : "";
 const APP_START_TIME = Date.now();
 
 const API_ROUTE_MAP = {
@@ -49,9 +51,6 @@ function addApiRoutes(app: Application): void {
     res.sendStatus(404);
   });
 
-  // Cannot be added to the route map because it needs to be added before the maintenance handler
-  app.use("/configuration", configuration);
-
   if (isDevEnvironment()) {
     //disable csp to allow assets to load from unsecured http
     app.use((req, res, next) => {
@@ -59,7 +58,19 @@ function addApiRoutes(app: Application): void {
       return next();
     });
     app.use("/configure", expressStatic(join(__dirname, "../../../private")));
+
+    app.use(async (req, res, next) => {
+      const slowdown = (await getLiveConfiguration()).dev.responseSlowdownMs;
+      if (slowdown > 0) {
+        Logger.info(`Simulating ${slowdown}ms delay for ${req.path}`);
+        await new Promise((resolve) => setTimeout(resolve, slowdown));
+      }
+      next();
+    });
   }
+
+  // Cannot be added to the route map because it needs to be added before the maintenance handler
+  app.use("/configuration", configuration);
 
   addSwaggerMiddlewares(app);
 
@@ -76,7 +87,8 @@ function addApiRoutes(app: Application): void {
 
       if (req.path === "/psas") {
         const clientVersion =
-          req.headers["x-client-version"] || req.headers["client-version"];
+          (req.headers["x-client-version"] as string) ||
+          req.headers["client-version"];
         recordClientVersion(clientVersion?.toString() ?? "unknown");
       }
 

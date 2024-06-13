@@ -59,7 +59,7 @@ body::before {
   background: var(--theme-accent-stripe-color);
 }
 
-#commandLineWrapper #commandLine {
+#commandLine .modal {
   --roundness: 0; /* making command line sharp */
 }
 
@@ -75,6 +75,10 @@ body::before {
 #words.colorfulMode .word letter.incorrect:not(.extra),
 #words .word letter.incorrect:not(.extra) {
   color: var(--current-color);
+}
+
+#words .word.error letter:not(.correct):not(.incorrect)::after {
+  background: var(--sub-color);
 }
 
 #words .word letter.incorrect,

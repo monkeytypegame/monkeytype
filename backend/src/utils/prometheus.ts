@@ -89,7 +89,7 @@ export function setLeaderboard(
 }
 
 export function incrementResult(
-  res: SharedTypes.Result<SharedTypes.Mode>
+  res: SharedTypes.Result<SharedTypes.Config.Mode>
 ): void {
   const {
     mode,
@@ -187,6 +187,16 @@ const clientErrorByVersion = new Counter({
 
 export function recordClientErrorByVersion(version: string): void {
   clientErrorByVersion.inc({ version });
+}
+
+const serverErrorByVersion = new Counter({
+  name: "api_server_error_by_version",
+  help: "Server versions which are generating 500 errors",
+  labelNames: ["version"],
+});
+
+export function recordServerErrorByVersion(version: string): void {
+  serverErrorByVersion.inc({ version });
 }
 
 const authTime = new Histogram({

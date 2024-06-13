@@ -18,8 +18,8 @@ const subgroup: MonkeyTypes.CommandsSubgroup = {
       display: "custom...",
       configValue: "custom",
       input: true,
-      exec: (input): void => {
-        if (!input) return;
+      exec: ({ input }): void => {
+        if (input === undefined || input === "") return;
         const newVal = getTypingSpeedUnit(Config.typingSpeedUnit).toWpm(
           parseInt(input)
         );
@@ -34,7 +34,7 @@ const commands: MonkeyTypes.Command[] = [
   {
     id: "changeMinWpm",
     display: "Minimum speed...",
-    alias: "minimum",
+    alias: "minimum wpm",
     icon: "fa-bomb",
     subgroup,
   },

@@ -3,7 +3,7 @@ import * as RedisClient from "../init/redis";
 import LaterQueue from "../queues/later-queue";
 import { getCurrentDayTimestamp, matchesAPattern, kogascore } from "./misc";
 
-interface DailyLeaderboardEntry {
+type DailyLeaderboardEntry = {
   uid: string;
   name: string;
   wpm: number;
@@ -14,18 +14,19 @@ interface DailyLeaderboardEntry {
   discordAvatar?: string;
   discordId?: string;
   badgeId?: number;
-}
+  isPremium?: boolean;
+};
 
-interface GetRankResponse {
+type GetRankResponse = {
   minWpm: number;
   count: number;
   rank: number | null;
   entry: DailyLeaderboardEntry | null;
-}
+};
 
-interface LbEntryWithRank extends DailyLeaderboardEntry {
+export type LbEntryWithRank = {
   rank: number;
-}
+} & DailyLeaderboardEntry;
 
 const dailyLeaderboardNamespace = "monkeytype:dailyleaderboard";
 const scoresNamespace = `${dailyLeaderboardNamespace}:scores`;
@@ -88,7 +89,7 @@ export class DailyLeaderboard {
 
     const resultScore = kogascore(entry.wpm, entry.acc, entry.timestamp);
 
-    // @ts-ignore
+    // @ts-expect-error
     const rank = await connection.addResult(
       2,
       leaderboardScoresKey,
@@ -123,7 +124,8 @@ export class DailyLeaderboard {
   public async getResults(
     minRank: number,
     maxRank: number,
-    dailyLeaderboardsConfig: SharedTypes.Configuration["dailyLeaderboards"]
+    dailyLeaderboardsConfig: SharedTypes.Configuration["dailyLeaderboards"],
+    premiumFeaturesEnabled: boolean
   ): Promise<LbEntryWithRank[]> {
     const connection = RedisClient.getConnection();
     if (!connection || !dailyLeaderboardsConfig.enabled) {
@@ -133,7 +135,7 @@ export class DailyLeaderboard {
     const { leaderboardScoresKey, leaderboardResultsKey } =
       this.getTodaysLeaderboardKeys();
 
-    // @ts-ignore
+    // @ts-expect-error
     const [results]: string[][] = await connection.getResults(
       2,
       leaderboardScoresKey,
@@ -156,6 +158,10 @@ export class DailyLeaderboard {
       })
     );
 
+    if (!premiumFeaturesEnabled) {
+      resultsWithRanks.forEach((it) => (it.isPremium = undefined));
+    }
+
     return resultsWithRanks;
   }
 
@@ -171,7 +177,7 @@ export class DailyLeaderboard {
     const { leaderboardScoresKey, leaderboardResultsKey } =
       this.getTodaysLeaderboardKeys();
 
-    // @ts-ignore
+    // @ts-expect-error
     const [[, rank], [, count], [, result], [, minScore]] = await connection
       .multi()
       .zrevrank(leaderboardScoresKey, uid)
@@ -211,7 +217,7 @@ export async function purgeUserFromDailyLeaderboards(
     return;
   }
 
-  // @ts-ignore
+  // @ts-expect-error
   await connection.purgeResults(0, uid, dailyLeaderboardNamespace);
 }
 

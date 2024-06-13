@@ -4,12 +4,12 @@ import * as ActivePage from "../states/active-page";
 
 export function show(): void {
   $("#testConfig").removeClass("invisible");
-  $("#mobileTestConfig").removeClass("invisible");
+  $("#mobileTestConfigButton").removeClass("invisible");
 }
 
 export function hide(): void {
   $("#testConfig").addClass("invisible");
-  $("#mobileTestConfig").addClass("invisible");
+  $("#mobileTestConfigButton").addClass("invisible");
 }
 
 export async function instantUpdate(): Promise<void> {
@@ -19,7 +19,7 @@ export async function instantUpdate(): Promise<void> {
   );
 
   $("#testConfig .puncAndNum").css({
-    maxWidth: 0,
+    width: 0,
     opacity: 0,
   });
   $("#testConfig .spacer").addClass("scrolled");
@@ -31,7 +31,7 @@ export async function instantUpdate(): Promise<void> {
 
   if (Config.mode === "time") {
     $("#testConfig .puncAndNum").css({
-      maxWidth: "",
+      width: "unset",
       opacity: 1,
     });
     $("#testConfig .leftSpacer").removeClass("scrolled");
@@ -41,7 +41,7 @@ export async function instantUpdate(): Promise<void> {
     updateExtras("time", Config.time);
   } else if (Config.mode === "words") {
     $("#testConfig .puncAndNum").css({
-      maxWidth: "",
+      width: "unset",
       opacity: 1,
     });
 
@@ -58,7 +58,7 @@ export async function instantUpdate(): Promise<void> {
     updateExtras("quoteLength", Config.quoteLength);
   } else if (Config.mode === "custom") {
     $("#testConfig .puncAndNum").css({
-      maxWidth: "",
+      width: "unset",
       opacity: 1,
     });
 
@@ -73,8 +73,8 @@ export async function instantUpdate(): Promise<void> {
 }
 
 export async function update(
-  previous: SharedTypes.Mode,
-  current: SharedTypes.Mode
+  previous: SharedTypes.Config.Mode,
+  current: SharedTypes.Config.Mode
 ): Promise<void> {
   if (previous === current) return;
   $("#testConfig .mode .textButton").removeClass("active");
@@ -110,50 +110,48 @@ export async function update(
 
   const puncAndNumEl = $("#testConfig .puncAndNum");
 
-  if (
-    puncAndNumVisible[previous] === false &&
-    puncAndNumVisible[current] === true
-  ) {
-    //show
+  if (puncAndNumVisible[current] !== puncAndNumVisible[previous]) {
+    if (!puncAndNumVisible[current]) {
+      $("#testConfig .leftSpacer").addClass("scrolled");
+    } else {
+      $("#testConfig .leftSpacer").removeClass("scrolled");
+    }
 
-    puncAndNumEl.css("maxWidth", "");
-
-    const puncAndNumWidth = Math.round(
-      puncAndNumEl[0]?.getBoundingClientRect().width ?? 224
+    const previousWidth = Math.round(
+      puncAndNumEl[0]?.getBoundingClientRect().width ?? 0
     );
 
-    $("#testConfig .leftSpacer").removeClass("scrolled");
+    if (previousWidth === 0) {
+      puncAndNumEl.css({
+        width: "unset",
+      });
+    } else {
+      puncAndNumEl.css({
+        width: 0,
+      });
+    }
+
+    const currentWidth = Math.round(
+      puncAndNumEl[0]?.getBoundingClientRect().width ?? 0
+    );
+
     puncAndNumEl
       .css({
-        opacity: 0,
-        maxWidth: 0,
+        opacity: puncAndNumVisible[current] ? 0 : 1,
+        width: previousWidth,
       })
       .animate(
         {
-          opacity: 1,
-          maxWidth: puncAndNumWidth,
+          width: currentWidth,
+          opacity: puncAndNumVisible[current] ? 1 : 0,
         },
         animTime,
-        easing.both
-      );
-  } else if (
-    puncAndNumVisible[previous] === true &&
-    puncAndNumVisible[current] === false
-  ) {
-    //hide
-    $("#testConfig .leftSpacer").addClass("scrolled");
-    puncAndNumEl
-      .css({
-        opacity: 1,
-        maxWidth: "",
-      })
-      .animate(
-        {
-          opacity: 0,
-          maxWidth: "0",
-        },
-        animTime,
-        easing.both
+        easing.both,
+        () => {
+          if (currentWidth !== 0) {
+            puncAndNumEl.css("width", "unset");
+          }
+        }
       );
   }
 
@@ -228,7 +226,7 @@ export async function update(
 
 export function updateExtras(
   key: string,
-  value: MonkeyTypes.ConfigValues
+  value: SharedTypes.ConfigValue
 ): void {
   if (key === "time") {
     $("#testConfig .time .textButton").removeClass("active");
@@ -250,19 +248,19 @@ export function updateExtras(
     ).addClass("active");
   } else if (key === "quoteLength") {
     $("#testConfig .quoteLength .textButton").removeClass("active");
-    (value as MonkeyTypes.QuoteLength[]).forEach((ql) => {
+    (value as SharedTypes.Config.QuoteLength[]).forEach((ql) => {
       $(
         "#testConfig .quoteLength .textButton[quoteLength='" + ql + "']"
       ).addClass("active");
     });
   } else if (key === "numbers") {
-    if (!value) {
+    if (value === false) {
       $("#testConfig .numbersMode.textButton").removeClass("active");
     } else {
       $("#testConfig .numbersMode.textButton").addClass("active");
     }
   } else if (key === "punctuation") {
-    if (!value) {
+    if (value === false) {
       $("#testConfig .punctuationMode.textButton").removeClass("active");
     } else {
       $("#testConfig .punctuationMode.textButton").addClass("active");
@@ -281,9 +279,9 @@ export function hideFavoriteQuoteLength(): void {
 ConfigEvent.subscribe((eventKey, eventValue, _nosave, eventPreviousValue) => {
   if (ActivePage.get() !== "test") return;
   if (eventKey === "mode") {
-    update(
-      eventPreviousValue as SharedTypes.Mode,
-      eventValue as SharedTypes.Mode
+    void update(
+      eventPreviousValue as SharedTypes.Config.Mode,
+      eventValue as SharedTypes.Config.Mode
     );
 
     let m2;
@@ -296,12 +294,12 @@ ConfigEvent.subscribe((eventKey, eventValue, _nosave, eventPreviousValue) => {
       m2 = Config.quoteLength;
     }
 
-    updateExtras(Config.mode, m2);
+    if (m2 !== undefined) updateExtras(Config.mode, m2);
   } else if (
     ["time", "quoteLength", "words", "numbers", "punctuation"].includes(
       eventKey
     )
   ) {
-    updateExtras(eventKey, eventValue);
+    if (eventValue !== undefined) updateExtras(eventKey, eventValue);
   }
 });

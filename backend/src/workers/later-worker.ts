@@ -31,7 +31,8 @@ async function handleDailyLeaderboardResults(
   const allResults = await dailyLeaderboard.getResults(
     0,
     -1,
-    dailyLeaderboardsConfig
+    dailyLeaderboardsConfig,
+    false
   );
 
   if (allResults.length === 0) {
@@ -43,7 +44,7 @@ async function handleDailyLeaderboardResults(
   if (inboxConfig.enabled && xpRewardBrackets.length > 0) {
     const mailEntries: {
       uid: string;
-      mail: MonkeyTypes.MonkeyMail[];
+      mail: SharedTypes.MonkeyMail[];
     }[] = [];
 
     allResults.forEach((entry) => {
@@ -132,7 +133,7 @@ async function handleWeeklyXpLeaderboardResults(
 
   const mailEntries: {
     uid: string;
-    mail: MonkeyTypes.MonkeyMail[];
+    mail: SharedTypes.MonkeyMail[];
   }[] = [];
 
   allResults.forEach((entry) => {

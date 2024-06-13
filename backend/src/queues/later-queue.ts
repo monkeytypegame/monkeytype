@@ -9,10 +9,10 @@ export type LaterTaskType =
   | "daily-leaderboard-results"
   | "weekly-xp-leaderboard-results";
 
-export interface LaterTask<T extends LaterTaskType> {
+export type LaterTask<T extends LaterTaskType> = {
   taskName: LaterTaskType;
   ctx: LaterTaskContexts[T];
-}
+};
 
 export type LaterTaskContexts = {
   "daily-leaderboard-results": {

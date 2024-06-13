@@ -13,10 +13,17 @@
     "esModuleInterop": true,
     "strictNullChecks": true,
     "skipLibCheck": true,
-    "noEmit": true
+    "noEmit": true,
+    "types": ["vitest/globals"]
   },
   "ts-node": {
     "files": true
   },
-  "include": ["./**/*.spec.ts", "./setup-tests.ts"]
+  "files": ["../src/types/types.d.ts"],
+  "include": [
+    "./**/*.ts",
+    "./**/*.spec.ts",
+    "./setup-tests.ts",
+    "../../shared-types/**/*.d.ts"
+  ]
 }

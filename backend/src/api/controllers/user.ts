@@ -11,7 +11,7 @@ import {
   sanitizeString,
 } from "../../utils/misc";
 import GeorgeQueue from "../../queues/george-queue";
-import admin from "firebase-admin";
+import admin, { FirebaseError } from "firebase-admin";
 import { deleteAllApeKeys } from "../../dal/ape-keys";
 import { deleteAllPresets } from "../../dal/preset";
 import { deleteAll as deleteAllResults } from "../../dal/result";
@@ -19,14 +19,16 @@ import { deleteConfig } from "../../dal/config";
 import { verify } from "../../utils/captcha";
 import * as LeaderboardsDAL from "../../dal/leaderboards";
 import { purgeUserFromDailyLeaderboards } from "../../utils/daily-leaderboards";
-import { randomBytes } from "crypto";
-import * as RedisClient from "../../init/redis";
 import { v4 as uuidv4 } from "uuid";
 import { ObjectId } from "mongodb";
 import * as ReportDAL from "../../dal/report";
 import emailQueue from "../../queues/email-queue";
 import FirebaseAdmin from "../../init/firebase-admin";
-import { removeTokensFromCacheByUid } from "../../utils/auth";
+import * as AuthUtil from "../../utils/auth";
+
+import * as Dates from "date-fns";
+import { UTCDateMini } from "@date-fns/utc";
+import * as BlocklistDal from "../../dal/blocklist";
 
 async function verifyCaptcha(captcha: string): Promise<void> {
   if (!(await verify(captcha))) {
@@ -42,28 +44,30 @@ export async function createNewUser(
 
   try {
     await verifyCaptcha(captcha);
-  } catch (e) {
-    try {
-      await FirebaseAdmin().auth().deleteUser(uid);
-    } catch (e) {
-      // user might be deleted on the frontend
+
+    if (email.endsWith("@tidal.lol") || email.endsWith("@selfbot.cc")) {
+      throw new MonkeyError(400, "Invalid domain");
     }
+
+    const available = await UserDAL.isNameAvailable(name, uid);
+    if (!available) {
+      throw new MonkeyError(409, "Username unavailable");
+    }
+
+    const blocklisted = await BlocklistDal.contains({ name, email });
+    if (blocklisted) {
+      throw new MonkeyError(409, "Username or email blocked");
+    }
+
+    await UserDAL.addUser(name, email, uid);
+    void Logger.logToDb("user_created", `${name} ${email}`, uid);
+
+    return new MonkeyResponse("User created");
+  } catch (e) {
+    //user was created in firebase from the frontend, remove it
+    await firebaseDeleteUserIgnoreError(uid);
     throw e;
   }
-
-  if (email.endsWith("@tidal.lol") || email.endsWith("@selfbot.cc")) {
-    throw new MonkeyError(400, "Invalid domain");
-  }
-
-  const available = await UserDAL.isNameAvailable(name, uid);
-  if (!available) {
-    throw new MonkeyError(409, "Username unavailable");
-  }
-
-  await UserDAL.addUser(name, email, uid);
-  Logger.logToDb("user_created", `${name} ${email}`, uid);
-
-  return new MonkeyResponse("User created");
 }
 
 export async function sendVerificationEmail(
@@ -83,7 +87,7 @@ export async function sendVerificationEmail(
         );
       })
   ).emailVerified;
-  if (isVerified === true) {
+  if (isVerified) {
     throw new MonkeyError(400, "Email already verified");
   }
 
@@ -106,14 +110,15 @@ export async function sendVerificationEmail(
           : "https://monkeytype.com",
       });
   } catch (e) {
+    const firebaseError = e as FirebaseError;
     if (
-      e.code === "auth/internal-error" &&
-      e.message.includes("TOO_MANY_ATTEMPTS_TRY_LATER")
+      firebaseError.code === "auth/internal-error" &&
+      firebaseError.message.includes("TOO_MANY_ATTEMPTS_TRY_LATER")
     ) {
       // for some reason this error is not handled with a custom auth/ code, so we have to do it manually
       throw new MonkeyError(429, "Too many requests. Please try again later");
     }
-    if (e.code === "auth/user-not-found") {
+    if (firebaseError.code === "auth/user-not-found") {
       throw new MonkeyError(
         500,
         "Auth user not found when the user was found in the database. Contact support with this error message and your email",
@@ -125,13 +130,12 @@ export async function sendVerificationEmail(
         userInfo.uid
       );
     }
-    if (e.message.includes("Internal error encountered.")) {
+    if (firebaseError.message.includes("Internal error encountered.")) {
       throw new MonkeyError(
         500,
         "Firebase failed to generate an email verification link. Please try again later."
       );
     }
-    throw e;
   }
 
   await emailQueue.sendVerificationEmail(email, userInfo.name, link);
@@ -176,18 +180,32 @@ export async function deleteUser(
   const { uid } = req.ctx.decodedToken;
 
   const userInfo = await UserDAL.getUser(uid, "delete user");
+
+  if (userInfo.banned === true) {
+    await BlocklistDal.add(userInfo);
+  }
+
+  //cleanup database
   await Promise.all([
     UserDAL.deleteUser(uid),
     deleteAllApeKeys(uid),
     deleteAllPresets(uid),
     deleteConfig(uid),
+    deleteAllResults(uid),
     purgeUserFromDailyLeaderboards(
       uid,
       req.ctx.configuration.dailyLeaderboards
     ),
   ]);
 
-  Logger.logToDb("user_deleted", `${userInfo.email} ${userInfo.name}`, uid);
+  //delete user from
+  await AuthUtil.deleteUser(uid);
+
+  void Logger.logToDb(
+    "user_deleted",
+    `${userInfo.email} ${userInfo.name}`,
+    uid
+  );
 
   return new MonkeyResponse("User deleted");
 }
@@ -198,6 +216,10 @@ export async function resetUser(
   const { uid } = req.ctx.decodedToken;
 
   const userInfo = await UserDAL.getUser(uid, "reset user");
+  if (userInfo.banned) {
+    throw new MonkeyError(403, "Banned users cannot reset their account");
+  }
+
   const promises = [
     UserDAL.resetUser(uid),
     deleteAllApeKeys(uid),
@@ -210,11 +232,11 @@ export async function resetUser(
     ),
   ];
 
-  if (userInfo.discordId) {
+  if (userInfo.discordId !== undefined && userInfo.discordId !== "") {
     promises.push(GeorgeQueue.unlinkDiscord(userInfo.discordId, uid));
   }
   await Promise.all(promises);
-  Logger.logToDb("user_reset", `${userInfo.email} ${userInfo.name}`, uid);
+  void Logger.logToDb("user_reset", `${userInfo.email} ${userInfo.name}`, uid);
 
   return new MonkeyResponse("User reset");
 }
@@ -227,6 +249,10 @@ export async function updateName(
 
   const user = await UserDAL.getUser(uid, "update name");
 
+  if (user.banned) {
+    throw new MonkeyError(403, "Banned users cannot change their name");
+  }
+
   if (
     !user?.needsToChangeName &&
     Date.now() - (user.lastNameChange ?? 0) < MILLISECONDS_IN_DAY * 30
@@ -235,7 +261,7 @@ export async function updateName(
   }
 
   await UserDAL.updateName(uid, name, user.name);
-  Logger.logToDb(
+  void Logger.logToDb(
     "user_name_updated",
     `changed name from ${user.name} to ${name}`,
     uid
@@ -254,7 +280,7 @@ export async function clearPb(
     uid,
     req.ctx.configuration.dailyLeaderboards
   );
-  Logger.logToDb("user_cleared_pbs", "", uid);
+  void Logger.logToDb("user_cleared_pbs", "", uid);
 
   return new MonkeyResponse("User's PB cleared");
 }
@@ -269,7 +295,7 @@ export async function optOutOfLeaderboards(
     uid,
     req.ctx.configuration.dailyLeaderboards
   );
-  Logger.logToDb("user_opted_out_of_leaderboards", "", uid);
+  void Logger.logToDb("user_opted_out_of_leaderboards", "", uid);
 
   return new MonkeyResponse("User opted out of leaderboards");
 }
@@ -297,19 +323,55 @@ export async function updateEmail(
   newEmail = newEmail.toLowerCase();
 
   try {
+    await AuthUtil.updateUserEmail(uid, newEmail);
     await UserDAL.updateEmail(uid, newEmail);
   } catch (e) {
-    throw new MonkeyError(404, e.message, "update email", uid);
+    if (e.code === "auth/email-already-exists") {
+      throw new MonkeyError(
+        409,
+        "The email address is already in use by another account"
+      );
+    } else if (e.code === "auth/invalid-email") {
+      throw new MonkeyError(400, "Invalid email address");
+    } else if (e.code === "auth/too-many-requests") {
+      throw new MonkeyError(429, "Too many requests. Please try again later");
+    } else if (e.code === "auth/user-not-found") {
+      throw new MonkeyError(
+        404,
+        "User not found in the auth system",
+        "update email",
+        uid
+      );
+    } else if (e.code === "auth/invalid-user-token") {
+      throw new MonkeyError(401, "Invalid user token", "update email", uid);
+    } else {
+      throw e;
+    }
   }
 
-  Logger.logToDb("user_email_updated", `changed email to ${newEmail}`, uid);
+  void Logger.logToDb(
+    "user_email_updated",
+    `changed email to ${newEmail}`,
+    uid
+  );
 
   return new MonkeyResponse("Email updated");
 }
 
+export async function updatePassword(
+  req: MonkeyTypes.Request
+): Promise<MonkeyResponse> {
+  const { uid } = req.ctx.decodedToken;
+  const { newPassword } = req.body;
+
+  await AuthUtil.updateUserPassword(uid, newPassword);
+
+  return new MonkeyResponse("Password updated");
+}
+
 function getRelevantUserInfo(
-  user: MonkeyTypes.User
-): Partial<MonkeyTypes.User> {
+  user: MonkeyTypes.DBUser
+): Partial<MonkeyTypes.DBUser> {
   return _.omit(user, [
     "bananas",
     "lbPersonalBests",
@@ -319,6 +381,8 @@ function getRelevantUserInfo(
     "_id",
     "lastResultHashes",
     "note",
+    "ips",
+    "testActivity",
   ]);
 }
 
@@ -327,7 +391,7 @@ export async function getUser(
 ): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
 
-  let userInfo: MonkeyTypes.User;
+  let userInfo: MonkeyTypes.DBUser;
   try {
     userInfo = await UserDAL.getUser(uid, "get user");
   } catch (e) {
@@ -336,7 +400,7 @@ export async function getUser(
       //since there is no data in the database anyway, we can just delete the user from the auth system
       //and ask them to sign up again
       try {
-        await FirebaseAdmin().auth().deleteUser(uid);
+        await AuthUtil.deleteUser(uid);
         throw new MonkeyError(
           404,
           "User not found in the database, but found in the auth system. We have deleted the ghost user from the auth system. Please sign up again.",
@@ -369,8 +433,8 @@ export async function getUser(
   };
 
   const agentLog = buildAgentLog(req);
-  Logger.logToDb("user_data_requested", agentLog, uid);
-  UserDAL.logIpAddress(uid, agentLog.ip, userInfo);
+  void Logger.logToDb("user_data_requested", agentLog, uid);
+  void UserDAL.logIpAddress(uid, agentLog.ip, userInfo);
 
   let inboxUnreadSize = 0;
   if (req.ctx.configuration.users.inbox.enabled) {
@@ -379,15 +443,20 @@ export async function getUser(
 
   if (!userInfo.name) {
     userInfo.needsToChangeName = true;
-    UserDAL.flagForNameChange(uid);
+    await UserDAL.flagForNameChange(uid);
   }
 
   const isPremium = await UserDAL.checkIfUserIsPremium(uid, userInfo);
+
+  const allTimeLbs = await getAllTimeLbs(uid);
+  const testActivity = getCurrentTestActivity(userInfo.testActivity);
 
   const userData = {
     ...getRelevantUserInfo(userInfo),
     inboxUnreadSize: inboxUnreadSize,
     isPremium,
+    allTimeLbs,
+    testActivity,
   };
 
   return new MonkeyResponse("User data retrieved", userData);
@@ -396,39 +465,24 @@ export async function getUser(
 export async function getOauthLink(
   req: MonkeyTypes.Request
 ): Promise<MonkeyResponse> {
-  const connection = RedisClient.getConnection();
-  if (!connection) {
-    throw new MonkeyError(500, "Redis connection not found");
-  }
-
   const { uid } = req.ctx.decodedToken;
-  const token = randomBytes(10).toString("hex");
-
-  //add the token uid pair to reids
-  await connection.setex(`discordoauth:${uid}`, 60, token);
 
   //build the url
-  const url = DiscordUtils.getOauthLink();
+  const url = await DiscordUtils.getOauthLink(uid);
 
   //return
   return new MonkeyResponse("Discord oauth link generated", {
-    url: `${url}&state=${token}`,
+    url: url,
   });
 }
 
 export async function linkDiscord(
   req: MonkeyTypes.Request
 ): Promise<MonkeyResponse> {
-  const connection = RedisClient.getConnection();
-  if (!connection) {
-    throw new MonkeyError(500, "Redis connection not found");
-  }
   const { uid } = req.ctx.decodedToken;
   const { tokenType, accessToken, state } = req.body;
 
-  const redisToken = await connection.getdel(`discordoauth:${uid}`);
-
-  if (!redisToken || redisToken !== state) {
+  if (!(await DiscordUtils.iStateValidForUser(state, uid))) {
     throw new MonkeyError(403, "Invalid user token");
   }
 
@@ -440,7 +494,7 @@ export async function linkDiscord(
   const { id: discordId, avatar: discordAvatar } =
     await DiscordUtils.getDiscordUser(tokenType, accessToken);
 
-  if (userInfo.discordId) {
+  if (userInfo.discordId !== undefined && userInfo.discordId !== "") {
     await UserDAL.linkDiscord(uid, userInfo.discordId, discordAvatar);
     return new MonkeyResponse("Discord avatar updated", {
       discordId,
@@ -464,10 +518,14 @@ export async function linkDiscord(
     );
   }
 
+  if (await BlocklistDal.contains({ discordId })) {
+    throw new MonkeyError(409, "The Discord account is blocked");
+  }
+
   await UserDAL.linkDiscord(uid, discordId, discordAvatar);
 
-  GeorgeQueue.linkDiscord(discordId, uid);
-  Logger.logToDb("user_discord_link", `linked to ${discordId}`, uid);
+  await GeorgeQueue.linkDiscord(discordId, uid);
+  void Logger.logToDb("user_discord_link", `linked to ${discordId}`, uid);
 
   return new MonkeyResponse("Discord account linked", {
     discordId,
@@ -481,13 +539,19 @@ export async function unlinkDiscord(
   const { uid } = req.ctx.decodedToken;
 
   const userInfo = await UserDAL.getUser(uid, "unlink discord");
-  if (!userInfo.discordId) {
+
+  if (userInfo.banned) {
+    throw new MonkeyError(403, "Banned accounts cannot unlink Discord");
+  }
+
+  const discordId = userInfo.discordId;
+  if (discordId === undefined || discordId === "") {
     throw new MonkeyError(404, "User does not have a linked Discord account");
   }
 
-  GeorgeQueue.unlinkDiscord(userInfo.discordId, uid);
+  await GeorgeQueue.unlinkDiscord(discordId, uid);
   await UserDAL.unlinkDiscord(uid);
-  Logger.logToDb("user_discord_unlinked", userInfo.discordId, uid);
+  void Logger.logToDb("user_discord_unlinked", discordId, uid);
 
   return new MonkeyResponse("Discord account unlinked");
 }
@@ -571,7 +635,8 @@ export async function updateLbMemory(
 ): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
   const { mode, language, rank } = req.body;
-  const mode2 = req.body.mode2 as SharedTypes.Mode2<SharedTypes.Mode>;
+  const mode2 = req.body
+    .mode2 as SharedTypes.Config.Mode2<SharedTypes.Config.Mode>;
 
   await UserDAL.updateLbMemory(uid, mode, mode2, language, rank);
   return new MonkeyResponse("Leaderboard memory updated");
@@ -592,9 +657,7 @@ export async function addCustomTheme(
   const { name, colors } = req.body;
 
   const addedTheme = await UserDAL.addTheme(uid, { name, colors });
-  return new MonkeyResponse("Custom theme added", {
-    theme: addedTheme,
-  });
+  return new MonkeyResponse("Custom theme added", addedTheme);
 }
 
 export async function removeCustomTheme(
@@ -733,51 +796,22 @@ export async function getProfile(
     streak: streak?.length ?? 0,
     maxStreak: streak?.maxLength ?? 0,
     lbOptOut,
+    isPremium: await UserDAL.checkIfUserIsPremium(user.uid, user),
   };
 
   if (banned) {
     return new MonkeyResponse("Profile retrived: banned user", baseProfile);
   }
 
-  const allTime15English = await LeaderboardsDAL.getRank(
-    "time",
-    "15",
-    "english",
-    user.uid
-  );
-
-  const allTime60English = await LeaderboardsDAL.getRank(
-    "time",
-    "60",
-    "english",
-    user.uid
-  );
-
-  const allTime15EnglishRank = allTime15English
-    ? allTime15English.rank
-    : undefined;
-  const allTime60EnglishRank = allTime60English
-    ? allTime60English.rank
-    : undefined;
-
-  const alltimelbs = {
-    time: {
-      "15": {
-        english: allTime15EnglishRank,
-      },
-      "60": {
-        english: allTime60EnglishRank,
-      },
-    },
-  };
+  const allTimeLbs = await getAllTimeLbs(user.uid);
 
   const profileData = {
     ...baseProfile,
     inventory,
     details: profileDetails,
-    allTimeLbs: alltimelbs,
+    allTimeLbs,
     uid: user.uid,
-  };
+  } as SharedTypes.UserProfile;
 
   return new MonkeyResponse("Profile retrieved", profileData);
 }
@@ -802,10 +836,13 @@ export async function updateProfile(
     }
   });
 
-  const profileDetailsUpdates: Partial<MonkeyTypes.UserProfileDetails> = {
+  const profileDetailsUpdates: Partial<SharedTypes.UserProfileDetails> = {
     bio: sanitizeString(bio),
     keyboard: sanitizeString(keyboard),
-    socialProfiles: _.mapValues(socialProfiles, sanitizeString),
+    socialProfiles: _.mapValues(
+      socialProfiles,
+      sanitizeString
+    ) as SharedTypes.UserProfileDetails["socialProfiles"],
   };
 
   await UserDAL.updateProfile(uid, profileDetailsUpdates, user.inventory);
@@ -892,13 +929,14 @@ export async function toggleBan(
 
   const user = await UserDAL.getUser(uid, "toggle ban");
   const discordId = user.discordId;
+  const discordIdIsValid = discordId !== undefined && discordId !== "";
 
   if (user.banned) {
-    UserDAL.setBanned(uid, false);
-    if (discordId) GeorgeQueue.userBanned(discordId, false);
+    await UserDAL.setBanned(uid, false);
+    if (discordIdIsValid) await GeorgeQueue.userBanned(discordId, false);
   } else {
-    UserDAL.setBanned(uid, true);
-    if (discordId) GeorgeQueue.userBanned(discordId, true);
+    await UserDAL.setBanned(uid, true);
+    if (discordIdIsValid) await GeorgeQueue.userBanned(discordId, true);
   }
 
   return new MonkeyResponse(`Ban toggled`, {
@@ -910,7 +948,112 @@ export async function revokeAllTokens(
   req: MonkeyTypes.Request
 ): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
-  await FirebaseAdmin().auth().revokeRefreshTokens(uid);
-  removeTokensFromCacheByUid(uid);
+  await AuthUtil.revokeTokensByUid(uid);
   return new MonkeyResponse("All tokens revoked");
+}
+
+async function getAllTimeLbs(uid: string): Promise<SharedTypes.AllTimeLbs> {
+  const allTime15English = await LeaderboardsDAL.getRank(
+    "time",
+    "15",
+    "english",
+    uid
+  );
+
+  const allTime60English = await LeaderboardsDAL.getRank(
+    "time",
+    "60",
+    "english",
+    uid
+  );
+
+  const english15 =
+    allTime15English === false
+      ? undefined
+      : ({
+          rank: allTime15English.rank,
+          count: allTime15English.count,
+        } as SharedTypes.RankAndCount);
+
+  const english60 =
+    allTime60English === false
+      ? undefined
+      : ({
+          rank: allTime60English.rank,
+          count: allTime60English.count,
+        } as SharedTypes.RankAndCount);
+
+  return {
+    time: {
+      "15": {
+        english: english15,
+      },
+      "60": {
+        english: english60,
+      },
+    },
+  };
+}
+
+export function getCurrentTestActivity(
+  testActivity: SharedTypes.CountByYearAndDay | undefined
+): SharedTypes.TestActivity | undefined {
+  const thisYear = Dates.startOfYear(new UTCDateMini());
+  const lastYear = Dates.startOfYear(Dates.subYears(thisYear, 1));
+
+  let thisYearData = testActivity?.[thisYear.getFullYear().toString()];
+  let lastYearData = testActivity?.[lastYear.getFullYear().toString()];
+
+  if (lastYearData === undefined && thisYearData === undefined)
+    return undefined;
+
+  lastYearData = lastYearData ?? [];
+  thisYearData = thisYearData ?? [];
+
+  //make sure lastYearData covers the full year
+  if (lastYearData.length < Dates.getDaysInYear(lastYear)) {
+    lastYearData.push(
+      ...new Array(Dates.getDaysInYear(lastYear) - lastYearData.length).fill(
+        undefined
+      )
+    );
+  }
+  //use enough days of the last year to have 372 days in total to always fill the first week of the graph
+  lastYearData = lastYearData.slice(-372 + thisYearData.length);
+
+  const lastDay = Dates.startOfDay(
+    Dates.addDays(thisYear, thisYearData.length - 1)
+  );
+
+  return {
+    testsByDays: [...lastYearData, ...thisYearData],
+    lastDay: lastDay.valueOf(),
+  };
+}
+
+export async function getTestActivity(
+  req: MonkeyTypes.Request
+): Promise<MonkeyResponse> {
+  const { uid } = req.ctx.decodedToken;
+  const premiumFeaturesEnabled = req.ctx.configuration.users.premium.enabled;
+  const user = await UserDAL.getUser(uid, "testActivity");
+  const userHasPremium = await UserDAL.checkIfUserIsPremium(uid, user);
+
+  if (!premiumFeaturesEnabled) {
+    throw new MonkeyError(503, "Premium features are disabled");
+  }
+
+  if (!userHasPremium) {
+    throw new MonkeyError(503, "User does not have premium");
+  }
+
+  return new MonkeyResponse("Test activity data retrieved", user.testActivity);
+}
+
+async function firebaseDeleteUserIgnoreError(uid: string): Promise<void> {
+  try {
+    await AuthUtil.deleteUser(uid);
+  } catch (e) {
+    //ignore
+  }
 }

@@ -1,8 +1,9 @@
 import * as Caret from "./caret";
 import * as ActivePage from "../states/active-page";
-import * as LiveWpm from "./live-wpm";
+import * as LiveSpeed from "./live-speed";
 import * as LiveBurst from "./live-burst";
 import * as LiveAcc from "./live-acc";
+import * as TimerProgress from "./timer-progress";
 
 const unfocusPx = 3;
 let state = false;
@@ -22,9 +23,10 @@ export function set(foc: boolean, withCursor = false): void {
     $("#ad-vertical-left-wrapper").addClass("focus");
     $("#ad-footer-wrapper").addClass("focus");
     $("#ad-footer-small-wrapper").addClass("focus");
-    LiveWpm.show();
+    LiveSpeed.show();
     LiveBurst.show();
     LiveAcc.show();
+    TimerProgress.show();
   } else if (!foc && state) {
     state = false;
     Caret.startAnimation();
@@ -40,16 +42,17 @@ export function set(foc: boolean, withCursor = false): void {
     $("#ad-vertical-left-wrapper").removeClass("focus");
     $("#ad-footer-wrapper").removeClass("focus");
     $("#ad-footer-small-wrapper").removeClass("focus");
-    LiveWpm.hide();
+    LiveSpeed.hide();
     LiveBurst.hide();
     LiveAcc.hide();
+    TimerProgress.hide();
   }
 }
 
 $(document).on("mousemove", function (event) {
   if (!state) return;
   if (ActivePage.get() === "loading") return;
-  if (ActivePage.get() === "account" && state === true) return;
+  if (ActivePage.get() === "account" && state) return;
   if (
     event.originalEvent &&
     // To avoid mouse/desk vibration from creating a flashy effect, we'll unfocus @ >5px instead of >0px

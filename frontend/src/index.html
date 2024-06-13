@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+  <load src="html/head.html" />
+
+  <body>
+    <div id="mediaQueryDebug"></div>
+    <load src="html/warnings.html" />
+    <div id="fpsCounter" class="hidden"></div>
+    <div class="customBackground"></div>
+    <div id="backgroundLoader" style="display: none"></div>
+    <div id="bannerCenter" class="focus"></div>
+    <div id="notificationCenter">
+      <div class="clearAll button invisible" style="display: none">
+        <i class="fas fa-times"></i>
+        Clear all
+      </div>
+      <div class="history"></div>
+    </div>
+    <div id="barTimerProgress" class="timerMain">
+      <div class="opacityWrapper" style="opacity: 0">
+        <div class="bar"></div>
+      </div>
+    </div>
+    <div id="popups">
+      <load src="html/popups.html" />
+    </div>
+    <!-- <div id="div-gpt-ad-mkt-0" style="height: 100vh"></div> -->
+    <div id="app" class="content-grid focus hidden">
+      <load src="html/header.html" />
+      <main class="full-width content-grid" style="height: 100%">
+        <div id="ad-vertical-left-wrapper" class="ad advertisement ad-v focus">
+          <div class="icon"><i class="fas fa-ad"></i></div>
+          <div id="ad-vertical-left"></div>
+        </div>
+        <div id="ad-vertical-right-wrapper" class="ad advertisement ad-v focus">
+          <div class="icon"><i class="fas fa-ad"></i></div>
+          <div id="ad-vertical-right"></div>
+        </div>
+        <load src="html/pages/loading.html" />
+        <load src="html/pages/about.html" />
+        <load src="html/pages/settings.html" />
+        <load src="html/pages/login.html" />
+        <load src="html/pages/account.html" />
+        <load src="html/pages/profile.html" />
+        <load src="html/pages/test.html" />
+        <load src="html/pages/404.html" />
+      </main>
+      <load src="html/footer.html" />
+      <div
+        id="ad-footer-wrapper"
+        class="full-width ad advertisement ad-h focus"
+      >
+        <div class="icon"><i class="fas fa-ad"></i></div>
+        <div id="ad-footer"></div>
+      </div>
+      <div id="ad-footer-small-wrapper" class="ad advertisement ad-h-s focus">
+        <div class="icon small"><i class="fas fa-ad"></i></div>
+        <div id="ad-footer-small"></div>
+      </div>
+    </div>
+    <script
+      src="https://www.google.com/recaptcha/api.js?render=explicit"
+      async
+      defer
+    ></script>
+    <link rel="stylesheet" href="/themes/serika_dark.css" id="currentTheme" />
+    <link rel="stylesheet" href="" id="funBoxTheme" />
+    <link rel="stylesheet" href="" id="globalFunBoxTheme" type="text/css" />
+    <script type="module" src="ts/index.ts"></script>
+  </body>
+</html>

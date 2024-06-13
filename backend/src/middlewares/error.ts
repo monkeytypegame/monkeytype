@@ -5,8 +5,25 @@ import MonkeyError from "../utils/error";
 import { incrementBadAuth } from "./rate-limit";
 import { NextFunction, Response } from "express";
 import { MonkeyResponse, handleMonkeyResponse } from "../utils/monkey-response";
-import { recordClientErrorByVersion } from "../utils/prometheus";
+import {
+  recordClientErrorByVersion,
+  recordServerErrorByVersion,
+} from "../utils/prometheus";
 import { isDevEnvironment } from "../utils/misc";
+import { ObjectId } from "mongodb";
+import { version } from "../version";
+
+type DBError = {
+  _id: ObjectId;
+  timestamp: number;
+  status: number;
+  uid: string;
+  message: string;
+  stack?: string;
+  endpoint: string;
+  method: string;
+  url: string;
+};
 
 async function errorHandlingMiddleware(
   error: Error,
@@ -43,7 +60,13 @@ async function errorHandlingMiddleware(
       recordClientErrorByVersion(req.headers["x-client-version"] as string);
     }
 
-    if (!isDevEnvironment() && monkeyResponse.status >= 500) {
+    if (
+      !isDevEnvironment() &&
+      monkeyResponse.status >= 500 &&
+      monkeyResponse.status !== 503
+    ) {
+      recordServerErrorByVersion(version);
+
       const { uid, errorId } = monkeyResponse.data;
 
       try {
@@ -52,7 +75,7 @@ async function errorHandlingMiddleware(
           `${monkeyResponse.status} ${errorId} ${error.message} ${error.stack}`,
           uid
         );
-        await db.collection<any>("errors").insertOne({
+        await db.collection<DBError>("errors").insertOne({
           _id: errorId,
           timestamp: Date.now(),
           status: monkeyResponse.status,
@@ -72,7 +95,7 @@ async function errorHandlingMiddleware(
     }
 
     if (monkeyResponse.status < 500) {
-      delete monkeyResponse.data["errorId"];
+      delete monkeyResponse.data.errorId;
     }
 
     return handleMonkeyResponse(monkeyResponse, res);

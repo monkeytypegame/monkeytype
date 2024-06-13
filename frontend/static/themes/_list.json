@@ -1024,9 +1024,9 @@
   {
     "name": "catppuccin",
     "bgColor": "#1e1e2e",
-    "mainColor": "#abe9b3",
-    "subColor": "#575268",
-    "textColor": "#d9e0ee"
+    "mainColor": "#cba6f7",
+    "subColor": "#7f849c",
+    "textColor": "#cdd6f4"
   },
   {
     "name": "snes",
@@ -1181,5 +1181,61 @@
     "mainColor": "#363636",
     "subColor": "#4f4f4f",
     "textColor": "#1f1f1f"
+  },
+  {
+    "name": "tangerine",
+    "bgColor": "#ffede0",
+    "mainColor": "#fe5503",
+    "subColor": "#ff9562",
+    "textColor": "#3d1705"
+  },
+  {
+    "name": "macroblank",
+    "bgColor": "#b2d2c8",
+    "mainColor": "#c13117",
+    "subColor": "#717977",
+    "textColor": "#490909"
+  },
+  {
+    "name": "anti_hero",
+    "bgColor": "#00002e",
+    "mainColor": "#ffadad",
+    "subColor": "#ff3d8b",
+    "textColor": "#f1deef"
+  },
+  {
+    "name": "incognito",
+    "bgColor": "#0e0e0e",
+    "mainColor": "#ff9900",
+    "subColor": "#2f2f2f",
+    "textColor": "#c6c6c6"
+  },
+  {
+    "name": "discord",
+    "bgColor": "#313338",
+    "mainColor": "#5a65ea",
+    "subColor": "#565861",
+    "textColor": "#dcdee3"
+  },
+  {
+    "name": "cy_red",
+    "bgColor": "#6e2626",
+    "mainColor": "#e55050",
+    "subColor": "#ff6060",
+    "textColor": "#ffaaaa"
+  },
+  {
+    "name": "floret",
+    "bgColor": "#00272c",
+    "mainColor": " #ffdd6d",
+    "subColor": "#779097",
+    "textColor": "#E5E5E5"
+  },
+  {
+    "name": "lilac_mist",
+    "bgColor": "#fffbfe",
+    "mainColor": "#b94189",
+    "subColor": "#e094c2",
+    "textColor": "#5c2954"
   }
 ]

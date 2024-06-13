@@ -1,0 +1,53 @@
+{
+  "language": "code_assembly",
+  "groups": [
+    [0, 100],
+    [101, 300],
+    [301, 600],
+    [601, 9999]
+  ],
+  "quotes": [
+    {
+      "text": "section .data\nstr: db 'Hello World', 0Ah\nstr_len equ $ - str\nsection .text\nglobal _start\n_start:\n\tmov eax, 4\n\tmov ebx, 1\n\tmov ecx, str\n\tmov edx, str_len\n\tint 80h\n\tmov eax, 1\n\tmov ebx, 0\n\tint 80h",
+      "source": "Prithvirajbilla's Hello World",
+      "length": 194,
+      "id": 1
+    },
+    {
+      "text": "push ebp\npush edi\npush esi\npush ebx\nsub esp, LocalVarsSize",
+      "source": "GCC Source Code",
+      "length": 58,
+      "id": 2
+    },
+    {
+      "text": "LeaveLoopCmps: test eax, 0000FFFFh\n\tjnz LenLower\n\tadd edx, 2\n\tshr eax, 16\nLenLower: sub al, 1\n\tadc edx, 0",
+      "source": "GCC Source Code",
+      "length": 105,
+      "id": 3
+    },
+    {
+      "text": "%if %2 == 8\n\tpmaddubsw m0, [rfilterq + %3q*8] ;x1*c1+x2*c2\n\tpmaddubsw m2, [rfilterq + %3q*8+%%offset] ;x3*c3+x4*c4\n\tpmaddubsw m4, [rfilterq + %3q*8+2*%%offset] ;x5*c5+x6*c6\n\tpmaddubsw m6, [rfilterq + %3q*8+3*%%offset] ;x7*c7+x8*c8\n\tpaddw m0, m2\n\tpaddw m4, m6\n\tpaddw m0, m4\n%else\n\tpmaddwd m0, [rfilterq + %3q*8]\n\tpmaddwd m2, [rfilterq + %3q*8+%%offset]\n\tpmaddwd m4, [rfilterq + %3q*8+2*%%offset]\n\tpmaddwd m6, [rfilterq + %3q*8+3*%%offset]\n\tpaddd m0, m2\n\tpaddd m4, m6\n\tpaddd m0, m4\n%if %2 != 8\n\tpsrad m0, %2-8\n%endif",
+      "source": "FFmpeg Source Code",
+      "length": 514,
+      "id": 4
+    },
+    {
+      "text": ".model flat, C\n.code\nDynaCall proc cargs:dword, pargs:dword, pfn:dword, opt:dword\n\tmov ecx, cargs\n\tmov edx, ecx\n\tshl edx, 2\n\tsub esp, edx\n\tpush esi\n\tpush edi\n\tmov esi, pargs\n\tlea edi, [esp+8]\n\trep movsd\n\tpop edi\n\tpop esi\n\tcmp opt, 0\n\tje over\n\tpop ecx\nover:\n\tcall pfn\n\tret\nDynaCall endp\nGetFloatRetval proc\n\tret\nGetFloatRetval endp\nGetDoubleRetval proc\n\tret\nGetDoubleRetval endp\nend",
+      "source": "AutoHotkey Source Code",
+      "length": 381,
+      "id": 5
+    },
+    {
+      "text": "movl %esp, %ebp\npushl $b\npushl $a\npushl $inputFormat\ncall _scanf",
+      "source": "SASM Source Code",
+      "length": 64,
+      "id": 6
+    },
+    {
+      "text": "_TEXT SEGMENT\nPUBLIC fastjmp_set\nPUBLIC fastjmp_jmp\n; void fastjmp_set(fastjmp_buf*)\nfastjmp_set PROC\n mov rax, qword ptr [rsp]\n mov rdx, rsp ; fixup stack pointer, so it doesn't include the call to fastjmp_set\n add rdx, 8\n mov qword ptr [rcx], rax ; actually rip\n mov qword ptr [rcx 8], rbx\n mov qword ptr [rcx 16], rdx ; actually rsp\n mov qword ptr [rcx 24], rbp\n mov qword ptr [rcx 32], rsi\n mov qword ptr [rcx 40], rdi\n mov qword ptr [rcx 48], r12\n mov qword ptr [rcx 56], r13\n mov qword ptr [rcx 64], r14\n mov qword ptr [rcx 72], r15\n movaps xmmword ptr [rcx 80], xmm6\n movaps xmmword ptr [rcx 96], xmm7\n movaps xmmword ptr [rcx 112], xmm8\n add rcx, 112 ; split to two batches to fit displacement in a single byte\n movaps xmmword ptr [rcx 16], xmm9\n movaps xmmword ptr [rcx 32], xmm10\n movaps xmmword ptr [rcx 48], xmm11\n movaps xmmword ptr [rcx 64], xmm12\n movaps xmmword ptr [rcx 80], xmm13\n movaps xmmword ptr [rcx 96], xmm14\n movaps xmmword ptr [rcx 112], xmm15\n xor eax, eax\n ret\nfastjmp_set ENDP\n; void fastjmp_jmp(fastjmp_buf*, int)\nfastjmp_jmp PROC\n mov eax, edx ; return code\n mov rdx, qword ptr [rcx 0] ; actually rip\n mov rbx, qword ptr [rcx 8]\n mov rsp, qword ptr [rcx 16]\n mov rbp, qword ptr [rcx 24]\n mov rsi, qword ptr [rcx 32]\n mov rdi, qword ptr [rcx 40]\n mov r12, qword ptr [rcx 48]\n mov r13, qword ptr [rcx 56]\n mov r14, qword ptr [rcx 64]\n mov r15, qword ptr [rcx 72]\n movaps xmm6, xmmword ptr [rcx 80]\n movaps xmm7, xmmword ptr [rcx 96]\n movaps xmm8, xmmword ptr [rcx 112]\n add rcx, 112 ; split to two batches to fit displacement in a single byte\n movaps xmm9, xmmword ptr [rcx 16]\n movaps xmm10, xmmword ptr [rcx 32]\n movaps xmm11, xmmword ptr [rcx 48]\n movaps xmm12, xmmword ptr [rcx 64]\n movaps xmm13, xmmword ptr [rcx 80]\n movaps xmm14, xmmword ptr [rcx 96]\n movaps xmm15, xmmword ptr [rcx 112]\n jmp rdx\nfastjmp_jmp ENDP\n_TEXT ENDS\nEND\n }",
+      "source": "PCSX2 Source Code",
+      "length": 1868,
+      "id": 7
+    }
+  ]
+}

@@ -1,7 +1,9 @@
 #leaderboardsWrapper {
   #leaderboards {
-    min-width: 300px;
-    width: 85vw;
+    // max-width: 300px;
+    max-width: 1536px;
+    width: 100%;
+    height: 100%;
     // height: calc(95vh - 5rem);
     overflow-y: auto;
     background: var(--bg-color);
@@ -29,7 +31,7 @@
         grid-area: buttons;
         .timeRange {
           grid-template-columns: 1fr 1fr;
-          .select2 {
+          .languageSelect {
             grid-column: span 2;
           }
         }
@@ -158,6 +160,12 @@
           }
           .badge {
             font-size: 0.6rem;
+          }
+          .flagsAndBadge {
+            display: flex;
+            gap: 0.5rem;
+            color: var(--sub-color);
+            place-items: center;
           }
         }
 

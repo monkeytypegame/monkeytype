@@ -1,14 +1,15 @@
 import * as FunboxList from "./funbox-list";
 import * as Notifications from "../../elements/notifications";
-import * as Misc from "../../utils/misc";
+import * as Arrays from "../../utils/arrays";
+import * as Strings from "../../utils/strings";
 
 export function checkFunboxForcedConfigs(
   key: string,
-  value: MonkeyTypes.ConfigValues,
+  value: SharedTypes.ConfigValue,
   funbox: string
 ): {
   result: boolean;
-  forcedConfigs?: Array<MonkeyTypes.ConfigValues>;
+  forcedConfigs?: SharedTypes.ConfigValue[];
 } {
   if (FunboxList.get(funbox).length === 0) return { result: true };
 
@@ -32,7 +33,7 @@ export function checkFunboxForcedConfigs(
       return { result: true };
     }
   } else {
-    const forcedConfigs: Record<string, MonkeyTypes.ConfigValues[]> = {};
+    const forcedConfigs: Record<string, SharedTypes.ConfigValue[]> = {};
     // collect all forced configs
     for (const fb of FunboxList.get(funbox)) {
       if (fb.forcedConfig) {
@@ -41,11 +42,11 @@ export function checkFunboxForcedConfigs(
           if (forcedConfigs[key] === undefined) {
             forcedConfigs[key] = fb.forcedConfig[
               key
-            ] as MonkeyTypes.ConfigValues[];
+            ] as SharedTypes.ConfigValue[];
           } else {
-            forcedConfigs[key] = Misc.intersect(
-              forcedConfigs[key] as MonkeyTypes.ConfigValues[],
-              fb.forcedConfig[key] as MonkeyTypes.ConfigValues[],
+            forcedConfigs[key] = Arrays.intersect(
+              forcedConfigs[key] as SharedTypes.ConfigValue[],
+              fb.forcedConfig[key] as SharedTypes.ConfigValue[],
               true
             );
           }
@@ -62,7 +63,7 @@ export function checkFunboxForcedConfigs(
       }
       return {
         result: (forcedConfigs[key] ?? []).includes(
-          <MonkeyTypes.ConfigValues>value
+          value as SharedTypes.ConfigValue
         ),
         forcedConfigs: forcedConfigs[key],
       };
@@ -75,7 +76,7 @@ export function checkFunboxForcedConfigs(
 // if it returns false, show a notification and return false
 export function canSetConfigWithCurrentFunboxes(
   key: string,
-  value: MonkeyTypes.ConfigValues,
+  value: SharedTypes.ConfigValue,
   funbox: string,
   noNotification = false
 ): boolean {
@@ -93,16 +94,16 @@ export function canSetConfigWithCurrentFunboxes(
       fb = fb.concat(
         FunboxList.get(funbox).filter(
           (f) =>
-            f.functions?.getWord ||
-            f.functions?.pullSection ||
-            f.functions?.alterText ||
-            f.functions?.withWords ||
-            f.properties?.includes("changesCapitalisation") ||
-            f.properties?.includes("nospace") ||
-            f.properties?.find((fp) => fp.startsWith("toPush:")) ||
-            f.properties?.includes("changesWordsVisibility") ||
-            f.properties?.includes("speaks") ||
-            f.properties?.includes("changesLayout") ||
+            f.functions?.getWord ??
+            f.functions?.pullSection ??
+            f.functions?.alterText ??
+            f.functions?.withWords ??
+            f.properties?.includes("changesCapitalisation") ??
+            f.properties?.includes("nospace") ??
+            f.properties?.find((fp) => fp.startsWith("toPush:")) ??
+            f.properties?.includes("changesWordsVisibility") ??
+            f.properties?.includes("speaks") ??
+            f.properties?.includes("changesLayout") ??
             f.properties?.includes("changesWordsFrequency")
         )
       );
@@ -111,9 +112,9 @@ export function canSetConfigWithCurrentFunboxes(
       fb = fb.concat(
         FunboxList.get(funbox).filter(
           (f) =>
-            f.functions?.getWord ||
-            f.functions?.pullSection ||
-            f.functions?.withWords ||
+            f.functions?.getWord ??
+            f.functions?.pullSection ??
+            f.functions?.withWords ??
             f.properties?.includes("changesWordsFrequency")
         )
       );
@@ -139,7 +140,7 @@ export function canSetConfigWithCurrentFunboxes(
   if (errorCount > 0) {
     if (!noNotification) {
       Notifications.add(
-        `You can't set ${Misc.camelCaseToWords(
+        `You can't set ${Strings.camelCaseToWords(
           key
         )} to ${value} with currently active funboxes.`,
         0,
@@ -156,7 +157,7 @@ export function canSetConfigWithCurrentFunboxes(
 
 export function canSetFunboxWithConfig(
   funbox: string,
-  config: MonkeyTypes.Config
+  config: SharedTypes.Config
 ): boolean {
   console.log("cansetfunboxwithconfig", funbox, config.mode);
   let funboxToCheck = config.funbox;
@@ -185,8 +186,8 @@ export function canSetFunboxWithConfig(
     const errorStrings = [];
     for (const error of errors) {
       errorStrings.push(
-        `${Misc.capitalizeFirstLetter(
-          Misc.camelCaseToWords(error.key)
+        `${Strings.capitalizeFirstLetter(
+          Strings.camelCaseToWords(error.key)
         )} cannot be set to ${error.value}.`
       );
     }
@@ -225,8 +226,8 @@ export function areFunboxesCompatible(
   const oneWordModifierMax =
     funboxesToCheck.filter(
       (f) =>
-        f.functions?.getWord ||
-        f.functions?.pullSection ||
+        f.functions?.getWord ??
+        f.functions?.pullSection ??
         f.functions?.withWords
     ).length <= 1;
   const layoutUsability =
@@ -286,7 +287,7 @@ export function areFunboxesCompatible(
   const oneToPushOrPullSectionMax =
     funboxesToCheck.filter(
       (f) =>
-        f.properties?.find((fp) => fp.startsWith("toPush:")) ||
+        (f.properties?.find((fp) => fp.startsWith("toPush:")) ?? "") ||
         f.functions?.pullSection
     ).length <= 1;
   const oneApplyCSSMax =
@@ -304,9 +305,9 @@ export function areFunboxesCompatible(
     for (const key in f.forcedConfig) {
       if (allowedConfig[key]) {
         if (
-          Misc.intersect(
-            allowedConfig[key] as MonkeyTypes.ConfigValues[],
-            f.forcedConfig[key] as MonkeyTypes.ConfigValues[],
+          Arrays.intersect(
+            allowedConfig[key] as SharedTypes.ConfigValue[],
+            f.forcedConfig[key] as SharedTypes.ConfigValue[],
             true
           ).length === 0
         ) {
@@ -314,7 +315,7 @@ export function areFunboxesCompatible(
           break;
         }
       } else {
-        allowedConfig[key] = f.forcedConfig[key] as MonkeyTypes.ConfigValues[];
+        allowedConfig[key] = f.forcedConfig[key] as SharedTypes.ConfigValue[];
       }
     }
   }

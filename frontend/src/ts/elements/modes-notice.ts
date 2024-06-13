@@ -5,10 +5,10 @@ import * as Last10Average from "../elements/last-10-average";
 import Config from "../config";
 import * as TestWords from "../test/test-words";
 import * as ConfigEvent from "../observables/config-event";
-import { Auth } from "../firebase";
+import { isAuthenticated } from "../firebase";
 import * as CustomTextState from "../states/custom-text-name";
-import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
-import { roundTo2 } from "../utils/misc";
+import { getLanguageDisplayString } from "../utils/strings";
+import Format from "../utils/format";
 
 ConfigEvent.subscribe((eventKey) => {
   if (
@@ -24,9 +24,10 @@ ConfigEvent.subscribe((eventKey) => {
       "layout",
       "showAverage",
       "typingSpeedUnit",
+      "quickRestart",
     ].includes(eventKey)
   ) {
-    update();
+    void update();
   }
 });
 
@@ -50,14 +51,21 @@ export async function update(): Promise<void> {
       $(".pageTest #testModesNotice").append(
         `<div class="textButton noInteraction"><i class="fas fa-long-arrow-alt-right"></i>shift + tab to open commandline</div>`
       );
-    } else {
       $(".pageTest #testModesNotice").append(
-        `<div class="textButton noInteraction"><i class="fas fa-long-arrow-alt-right"></i>shift + tab to restart</div>`
+        `<div class="textButton noInteraction"><i class="fas fa-level-down-alt fa-rotate-90"></i>shift + esc to restart</div>`
+      );
+    }
+    if (Config.quickRestart === "tab") {
+      $(".pageTest #testModesNotice").append(
+        `<div class="textButton noInteraction"><i class="fas fa-level-down-alt fa-rotate-90"></i>shift + tab to restart</div>`
       );
     }
   }
 
-  if (TestWords.hasNewline && Config.quickRestart === "enter") {
+  if (
+    (TestWords.hasNewline || Config.funbox.includes("58008")) &&
+    Config.quickRestart === "enter"
+  ) {
     $(".pageTest #testModesNotice").append(
       `<div class="textButton noInteraction"><i class="fas fa-level-down-alt fa-rotate-90"></i>shift + enter to restart</div>`
     );
@@ -85,9 +93,9 @@ export async function update(): Promise<void> {
 
   if (Config.mode !== "zen") {
     $(".pageTest #testModesNotice").append(
-      `<div class="textButton" commands="languages"><i class="fas fa-globe-americas"></i>${Config.language.replace(
-        /_/g,
-        " "
+      `<div class="textButton" commands="languages"><i class="fas fa-globe-americas"></i>${getLanguageDisplayString(
+        Config.language,
+        Config.mode === "quote"
       )}</div>`
     );
   }
@@ -118,14 +126,11 @@ export async function update(): Promise<void> {
     Config.paceCaret !== "off" ||
     (Config.repeatedPace && TestState.isPaceRepeat)
   ) {
-    let speed = "";
-    try {
-      speed = ` (${roundTo2(
-        getTypingSpeedUnit(Config.typingSpeedUnit).fromWpm(
-          PaceCaret.settings?.wpm ?? 0
-        )
-      )} ${Config.typingSpeedUnit})`;
-    } catch {}
+    const speed = Format.typingSpeed(PaceCaret.settings?.wpm ?? 0, {
+      showDecimalPlaces: false,
+      suffix: ` ${Config.typingSpeedUnit}`,
+    });
+
     $(".pageTest #testModesNotice").append(
       `<div class="textButton" commands="paceCaretMode"><i class="fas fa-tachometer-alt"></i>${
         Config.paceCaret === "average"
@@ -137,29 +142,24 @@ export async function update(): Promise<void> {
           : Config.paceCaret === "daily"
           ? "daily"
           : "custom"
-      } pace${speed}</div>`
+      } pace ${speed}</div>`
     );
   }
 
   if (Config.showAverage !== "off") {
-    let avgWPM = Last10Average.getWPM();
-    let avgAcc = Last10Average.getAcc();
+    const avgWPM = Last10Average.getWPM();
+    const avgAcc = Last10Average.getAcc();
 
-    if (!Config.alwaysShowDecimalPlaces) {
-      avgWPM = Math.round(avgWPM);
-      avgAcc = Math.round(avgAcc);
-    }
-
-    if (Auth?.currentUser && avgWPM > 0) {
+    if (isAuthenticated() && avgWPM > 0) {
       const avgWPMText = ["speed", "both"].includes(Config.showAverage)
-        ? getTypingSpeedUnit(Config.typingSpeedUnit).convertWithUnitSuffix(
-            avgWPM,
-            Config.alwaysShowDecimalPlaces
-          )
+        ? Format.typingSpeed(avgWPM, {
+            suffix: ` ${Config.typingSpeedUnit}`,
+            showDecimalPlaces: false,
+          })
         : "";
 
       const avgAccText = ["acc", "both"].includes(Config.showAverage)
-        ? `${avgAcc}% acc`
+        ? Format.accuracy(avgAcc, { suffix: " acc", showDecimalPlaces: false })
         : "";
 
       const text = `${avgWPMText} ${avgAccText}`.trim();
@@ -172,11 +172,10 @@ export async function update(): Promise<void> {
 
   if (Config.minWpm !== "off") {
     $(".pageTest #testModesNotice").append(
-      `<div class="textButton" commands="minWpm"><i class="fas fa-bomb"></i>min ${roundTo2(
-        getTypingSpeedUnit(Config.typingSpeedUnit).fromWpm(
-          Config.minWpmCustomSpeed
-        )
-      )} ${Config.typingSpeedUnit}</div>`
+      `<div class="textButton" commands="minWpm"><i class="fas fa-bomb"></i>min ${Format.typingSpeed(
+        Config.minWpmCustomSpeed,
+        { showDecimalPlaces: false, suffix: ` ${Config.typingSpeedUnit}` }
+      )}</div>`
     );
   }
 
@@ -188,10 +187,9 @@ export async function update(): Promise<void> {
 
   if (Config.minBurst !== "off") {
     $(".pageTest #testModesNotice").append(
-      `<div class="textButton" commands="minBurst"><i class="fas fa-bomb"></i>min ${roundTo2(
-        getTypingSpeedUnit(Config.typingSpeedUnit).fromWpm(
-          Config.minBurstCustomSpeed
-        )
+      `<div class="textButton" commands="minBurst"><i class="fas fa-bomb"></i>min ${Format.typingSpeed(
+        Config.minBurstCustomSpeed,
+        { showDecimalPlaces: false }
       )} ${Config.typingSpeedUnit} burst ${
         Config.minBurst === "flex" ? "(flex)" : ""
       }</div>`
@@ -257,4 +255,16 @@ export async function update(): Promise<void> {
       );
     }
   } catch {}
+}
+
+if (import.meta.hot !== undefined) {
+  import.meta.hot.dispose(() => {
+    //
+  });
+  import.meta.hot.accept(() => {
+    //
+  });
+  import.meta.hot.on("vite:afterUpdate", () => {
+    void update();
+  });
 }

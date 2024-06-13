@@ -1,6 +1,6 @@
 import * as UpdateConfig from "../../config";
 import * as TestLogic from "../../test/test-logic";
-import { Auth } from "../../firebase";
+import { isAuthenticated } from "../../firebase";
 
 const commands: MonkeyTypes.Command[] = [
   {
@@ -72,7 +72,7 @@ const commands: MonkeyTypes.Command[] = [
           configValue: -3,
           configValueMode: "include",
           available: (): boolean => {
-            return !!Auth?.currentUser;
+            return isAuthenticated();
           },
           exec: (): void => {
             UpdateConfig.setMode("quote");

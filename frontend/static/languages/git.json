@@ -49,6 +49,10 @@
     "archive",
     "bundle",
     "build",
-    "cherrypick"
+    "cherrypick",
+    "@",
+    "-f",
+    "--force-if-includes",
+    "--force-with-lease"
   ]
 }

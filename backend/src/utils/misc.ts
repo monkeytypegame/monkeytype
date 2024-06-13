@@ -1,6 +1,8 @@
 import _ from "lodash";
 import uaparser from "ua-parser-js";
 
+//todo split this file into smaller util files (grouped by functionality)
+
 export function roundTo2(num: number): number {
   return _.round(num, 2);
 }
@@ -28,7 +30,7 @@ export function kogasa(cov: number): number {
   );
 }
 
-export function identity(value: any): string {
+export function identity(value: unknown): string {
   return Object.prototype.toString
     .call(value)
     .replace(/^\[object\s+([a-z]+)\]$/i, "$1")
@@ -43,11 +45,11 @@ export function base64UrlDecode(data: string): string {
   return Buffer.from(data, "base64url").toString();
 }
 
-interface AgentLog {
+type AgentLog = {
   ip: string;
   agent: string;
   device?: string;
-}
+};
 
 export function buildAgentLog(req: MonkeyTypes.Request): AgentLog {
   const agent = uaparser(req.headers["user-agent"]);
@@ -56,7 +58,7 @@ export function buildAgentLog(req: MonkeyTypes.Request): AgentLog {
     ip:
       (req.headers["cf-connecting-ip"] as string) ||
       (req.headers["x-forwarded-for"] as string) ||
-      req.ip ||
+      (req.ip as string) ||
       "255.255.255.255",
     agent: `${agent.os.name} ${agent.os.version} ${agent.browser.name} ${agent.browser.version}`,
   };
@@ -64,9 +66,10 @@ export function buildAgentLog(req: MonkeyTypes.Request): AgentLog {
   const {
     device: { vendor, model, type },
   } = agent;
-  if (vendor) {
-    agentLog.device = `${vendor} ${model} ${type}`;
-  }
+
+  agentLog.device = `${vendor ?? "unknown vendor"} ${
+    model ?? "unknown model"
+  } ${type ?? "unknown type"}`;
 
   return agentLog;
 }
@@ -119,10 +122,10 @@ export function kogascore(wpm: number, acc: number, timestamp: number): number {
 }
 
 export function flattenObjectDeep(
-  obj: Record<string, any>,
+  obj: Record<string, unknown>,
   prefix = ""
-): Record<string, any> {
-  const result: Record<string, any> = {};
+): Record<string, unknown> {
+  const result: Record<string, unknown> = {};
   const keys = Object.keys(obj);
 
   keys.forEach((key) => {
@@ -131,7 +134,7 @@ export function flattenObjectDeep(
     const newPrefix = prefix.length > 0 ? `${prefix}.${key}` : key;
 
     if (_.isPlainObject(value)) {
-      const flattened = flattenObjectDeep(value);
+      const flattened = flattenObjectDeep(value as Record<string, unknown>);
       const flattenedKeys = Object.keys(flattened);
 
       if (flattenedKeys.length === 0) {
@@ -150,7 +153,7 @@ export function flattenObjectDeep(
 }
 
 export function sanitizeString(str: string | undefined): string | undefined {
-  if (!str) {
+  if (str === undefined || str === "") {
     return str;
   }
 
@@ -165,7 +168,7 @@ const suffixes = ["th", "st", "nd", "rd"];
 export function getOrdinalNumberString(number: number): string {
   const lastTwo = number % 100;
   const suffix =
-    suffixes[(lastTwo - 20) % 10] || suffixes[lastTwo] || suffixes[0];
+    suffixes[(lastTwo - 20) % 10] ?? suffixes[lastTwo] ?? suffixes[0];
   return `${number}${suffix}`;
 }
 
@@ -284,7 +287,7 @@ export function intersect<T>(a: T[], b: T[], removeDuplicates = false): T[] {
   let t;
   if (b.length > a.length) (t = b), (b = a), (a = t); // indexOf to loop over shorter
   const filtered = a.filter(function (e) {
-    return b.indexOf(e) > -1;
+    return b.includes(e);
   });
   return removeDuplicates ? [...new Set(filtered)] : filtered;
 }

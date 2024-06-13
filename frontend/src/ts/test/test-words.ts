@@ -11,7 +11,6 @@ class Words {
     this.currentIndex = 0;
   }
 
-  get(): string[];
   get(i?: undefined, raw?: boolean): string[];
   get(i: number, raw?: boolean): string;
   get(i?: number | undefined, raw = false): string | string[] | undefined {
@@ -70,10 +69,12 @@ export const words = new Words();
 export let hasTab = false;
 export let hasNewline = false;
 export let hasNumbers = false;
-export let randomQuote = null as MonkeyTypes.Quote | null;
+export let currentQuote = null as MonkeyTypes.QuoteWithTextSplit | null;
 
-export function setRandomQuote(rq: MonkeyTypes.Quote): void {
-  randomQuote = rq;
+export function setCurrentQuote(
+  rq: MonkeyTypes.QuoteWithTextSplit | null
+): void {
+  currentQuote = rq;
 }
 
 export function setHasTab(tf: boolean): void {

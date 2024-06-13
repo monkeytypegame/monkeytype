@@ -24,8 +24,6 @@ const CONFIG_SCHEMA = joi.object({
     .length(10),
   favThemes: joi.array().items(joi.string().max(50).token()),
   showKeyTips: joi.boolean(),
-  showLiveWpm: joi.boolean(),
-  showTimerProgress: joi.boolean(),
   smoothCaret: joi.string().valid("off", "slow", "medium", "fast"),
   quickRestart: joi.string().valid("off", "tab", "esc", "enter"),
   punctuation: joi.boolean(),
@@ -53,7 +51,10 @@ const CONFIG_SCHEMA = joi.object({
     .regex(/[\w#]+/),
   confidenceMode: joi.string().valid("off", "on", "max"),
   indicateTypos: joi.string().valid("off", "below", "replace"),
-  timerStyle: joi.string().valid("bar", "text", "mini"),
+  timerStyle: joi.string().valid("off", "bar", "text", "mini"),
+  liveSpeedStyle: joi.string().valid("off", "text", "mini"),
+  liveAccStyle: joi.string().valid("off", "text", "mini"),
+  liveBurstStyle: joi.string().valid("off", "text", "mini"),
   colorfulMode: joi.boolean(),
   randomTheme: joi
     .string()
@@ -77,7 +78,11 @@ const CONFIG_SCHEMA = joi.object({
   keymapLegendStyle: joi
     .string()
     .valid("lowercase", "uppercase", "blank", "dynamic"),
-  keymapLayout: joi.string().valid().max(50).token(),
+  keymapLayout: joi
+    .string()
+    .regex(/[\w-_]+/)
+    .valid()
+    .max(50),
   keymapShowTopRow: joi.string().valid("always", "layout", "never"),
   fontFamily: joi
     .string()
@@ -88,10 +93,10 @@ const CONFIG_SCHEMA = joi.object({
   alwaysShowWordsHistory: joi.boolean(),
   singleListCommandLine: joi.string().valid("manual", "on"),
   capsLockWarning: joi.boolean(),
-  playSoundOnError: joi.string().valid("off", ..._.range(1, 4).map(_.toString)),
+  playSoundOnError: joi.string().valid("off", ..._.range(1, 5).map(_.toString)),
   playSoundOnClick: joi.alternatives().try(
     joi.boolean(), //todo remove soon
-    joi.string().valid("off", ..._.range(1, 14).map(_.toString))
+    joi.string().valid("off", ..._.range(1, 16).map(_.toString))
   ),
   soundVolume: joi.string().valid("0.1", "0.5", "1.0"),
   startGraphsAtZero: joi.boolean(),
@@ -101,7 +106,6 @@ const CONFIG_SCHEMA = joi.object({
     .valid("off", "average", "pb", "last", "daily", "custom"),
   paceCaretCustomSpeed: joi.number().min(0),
   repeatedPace: joi.boolean(),
-  pageWidth: joi.string().valid("100", "125", "150", "200", "max"),
   accountChart: joi
     .array()
     .items(joi.string().valid("on", "off"))
@@ -128,8 +132,6 @@ const CONFIG_SCHEMA = joi.object({
   strictSpace: joi.boolean(),
   minAcc: joi.string().valid("off", "custom"),
   minAccCustom: joi.number().min(0),
-  showLiveAcc: joi.boolean(),
-  showLiveBurst: joi.boolean(),
   monkey: joi.boolean(),
   repeatQuotes: joi.string().valid("off", "typing"),
   oppositeShiftMode: joi.string().valid("off", "on", "keymap"),
@@ -144,6 +146,7 @@ const CONFIG_SCHEMA = joi.object({
   britishEnglish: joi.boolean(),
   lazyMode: joi.boolean(),
   showAverage: joi.string().valid("off", "speed", "acc", "both"),
+  maxLineWidth: joi.number().min(20).max(1000).allow(0),
 });
 
 export default CONFIG_SCHEMA;

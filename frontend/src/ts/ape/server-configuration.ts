@@ -13,6 +13,6 @@ export async function sync(): Promise<void> {
     console.error("Could not fetch configuration", response.message);
     return;
   } else {
-    config = response.data as SharedTypes.Configuration;
+    config = response.data ?? undefined;
   }
 }

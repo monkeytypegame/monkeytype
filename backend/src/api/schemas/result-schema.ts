@@ -23,10 +23,12 @@ const RESULT_SCHEMA = joi
     consistency: joi.number().min(0).max(100).required(),
     customText: joi.object({
       textLen: joi.number().required(),
-      isWordRandom: joi.boolean().required(),
-      isTimeRandom: joi.boolean().required(),
-      word: joi.number().allow(null),
-      time: joi.number().allow(null),
+      mode: joi.string().valid("repeat", "random", "shuffle").required(),
+      pipeDelimiter: joi.boolean().required(),
+      limit: joi.object({
+        mode: joi.string().valid("word", "time", "section").required(),
+        value: joi.number().min(0).required(),
+      }),
     }),
     difficulty: joi.string().valid("normal", "expert", "master").required(),
     funbox: joi
@@ -89,6 +91,7 @@ const RESULT_SCHEMA = joi
     uid: joi.string().max(100).token().required(),
     wpm: joi.number().min(0).max(420).required(),
     wpmConsistency: joi.number().min(0).max(100).required(),
+    stopOnLetter: joi.boolean().required(),
   })
   .required();
 

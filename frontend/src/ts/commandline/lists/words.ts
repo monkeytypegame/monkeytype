@@ -65,8 +65,8 @@ const commands: MonkeyTypes.Command[] = [
           id: "changeWordCountCustom",
           display: "custom...",
           input: true,
-          exec: (input): void => {
-            if (!input) return;
+          exec: ({ input }): void => {
+            if (input === undefined || input === "") return;
             UpdateConfig.setMode("words");
             UpdateConfig.setWordCount(parseInt(input));
             TestLogic.restart();

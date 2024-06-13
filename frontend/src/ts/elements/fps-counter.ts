@@ -1,4 +1,4 @@
-import { roundTo2 } from "../utils/misc";
+import { roundTo2 } from "../utils/numbers";
 
 let frameCount = 0;
 let fpsInterval: number;
@@ -15,7 +15,7 @@ function loop(timestamp: number): void {
     const fps = roundTo2((frameCount * 1000) / elapsedTime).toFixed(2);
     frameCount = 0;
     startTime = timestamp;
-    updateElement(fps);
+    void updateElement(fps);
   }
 
   window.requestAnimationFrame(loop);

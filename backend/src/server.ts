@@ -14,6 +14,7 @@ import * as EmailClient from "./init/email-client";
 import { init as initFirebaseAdmin } from "./init/firebase-admin";
 
 import { createIndicies as leaderboardDbSetup } from "./dal/leaderboards";
+import { createIndicies as blocklistDbSetup } from "./dal/blocklist";
 
 async function bootServer(port: number): Promise<Server> {
   try {
@@ -31,7 +32,7 @@ async function bootServer(port: number): Promise<Server> {
     Logger.success("Live configuration fetched");
 
     Logger.info("Initializing email client...");
-    EmailClient.init();
+    await EmailClient.init();
 
     Logger.info("Connecting to redis...");
     await RedisClient.connect();
@@ -51,8 +52,8 @@ async function bootServer(port: number): Promise<Server> {
       );
 
       Logger.info("Initializing workers...");
-      workers.forEach((worker) => {
-        worker(connection).run();
+      workers.forEach(async (worker) => {
+        await worker(connection).run();
       });
       Logger.success(
         `Workers initialized: ${workers
@@ -67,6 +68,9 @@ async function bootServer(port: number): Promise<Server> {
 
     Logger.info("Setting up leaderboard indicies...");
     await leaderboardDbSetup();
+
+    Logger.info("Setting up blocklist indicies...");
+    await blocklistDbSetup();
 
     recordServerVersion(version);
   } catch (error) {
@@ -83,4 +87,4 @@ async function bootServer(port: number): Promise<Server> {
 
 const PORT = parseInt(process.env["PORT"] ?? "5005", 10);
 
-bootServer(PORT);
+void bootServer(PORT);

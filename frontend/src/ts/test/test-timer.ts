@@ -4,12 +4,12 @@
 import Config, * as UpdateConfig from "../config";
 import * as CustomText from "./custom-text";
 import * as TimerProgress from "./timer-progress";
-import * as LiveWpm from "./live-wpm";
+import * as LiveWpm from "./live-speed";
 import * as TestStats from "./test-stats";
 import * as TestInput from "./test-input";
 import * as TestWords from "./test-words";
 import * as Monkey from "./monkey";
-import * as Misc from "../utils/misc";
+import * as Numbers from "../utils/numbers";
 import * as Notifications from "../elements/notifications";
 import * as Caret from "./caret";
 import * as SlowTimer from "../states/slow-timer";
@@ -47,7 +47,7 @@ function updateTimer(): void {
   if (timerDebug) console.time("timer progress update");
   if (
     Config.mode === "time" ||
-    (Config.mode === "custom" && CustomText.isTimeRandom)
+    (Config.mode === "custom" && CustomText.getLimitMode() === "time")
   ) {
     TimerProgress.update();
   }
@@ -77,7 +77,7 @@ function monkey(wpmAndRaw: MonkeyTypes.WpmAndRaw): void {
 
 function calculateAcc(): number {
   if (timerDebug) console.time("calculate acc");
-  const acc = Misc.roundTo2(TestStats.calculateAccuracy());
+  const acc = Numbers.roundTo2(TestStats.calculateAccuracy());
   if (timerDebug) console.timeEnd("calculate acc");
   return acc;
 }
@@ -149,14 +149,14 @@ function checkIfTimeIsUp(): void {
   if (timerDebug) console.time("times up check");
   if (
     Config.mode === "time" ||
-    (Config.mode === "custom" && CustomText.isTimeRandom)
+    (Config.mode === "custom" && CustomText.getLimitMode() === "time")
   ) {
     if (
       (Time.get() >= Config.time &&
         Config.time !== 0 &&
         Config.mode === "time") ||
-      (Time.get() >= CustomText.time &&
-        CustomText.time !== 0 &&
+      (Time.get() >= CustomText.getLimitValue() &&
+        CustomText.getLimitValue() !== 0 &&
         Config.mode === "custom")
     ) {
       //times up
@@ -244,7 +244,7 @@ export async function start(): Promise<void> {
         return;
       }
 
-      timerStep();
+      void timerStep();
 
       expected += interval;
       loop();

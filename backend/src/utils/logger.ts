@@ -12,13 +12,13 @@ const infoColor = chalk.white;
 const logFolderPath = process.env["LOG_FOLDER_PATH"] ?? "./logs";
 const maxLogSize = parseInt(process.env["LOG_FILE_MAX_SIZE"] ?? "10485760");
 
-interface Log {
+type Log = {
   type?: string;
   timestamp: number;
   uid: string;
   event: string;
-  message: string;
-}
+  message: string | Record<string, unknown>;
+};
 
 const customLevels = {
   error: 0,
@@ -87,7 +87,7 @@ const logger = createLogger({
 
 const logToDb = async (
   event: string,
-  message: any,
+  message: string | Record<string, unknown>,
   uid?: string
 ): Promise<void> => {
   const logsCollection = db.collection<Log>("logs");

@@ -1,6 +1,7 @@
 import { getSnapshot } from "../db";
-import { Auth } from "../firebase";
+import { isAuthenticated } from "../firebase";
 import * as Misc from "../utils/misc";
+import * as Levels from "../utils/levels";
 import { getAll } from "./theme-colors";
 import * as SlowTimer from "../states/slow-timer";
 
@@ -100,17 +101,20 @@ export async function update(
   discordId?: string,
   discordAvatar?: string
 ): Promise<void> {
-  if (Auth?.currentUser) {
+  if (isAuthenticated()) {
     if (xp !== undefined) {
-      $("header nav .level").text(Math.floor(Misc.getLevel(xp)));
+      const xpDetails = Levels.getXpDetails(xp);
+      const levelCompletionRatio =
+        xpDetails.levelCurrentXp / xpDetails.levelMaxXp;
+      $("header nav .level").text(xpDetails.level);
       $("header nav .bar").css({
-        width: (Misc.getLevel(xp) % 1) * 100 + "%",
+        width: levelCompletionRatio * 100 + "%",
       });
     }
-    if (discordAvatar && discordId) {
-      Misc.getDiscordAvatarUrl(discordId, discordAvatar).then(
+    if ((discordAvatar ?? "") && (discordId ?? "")) {
+      void Misc.getDiscordAvatarUrl(discordId, discordAvatar).then(
         (discordAvatarUrl) => {
-          if (discordAvatarUrl) {
+          if (discordAvatarUrl !== null) {
             $("header nav .account .avatar").css(
               "background-image",
               `url(${discordAvatarUrl})`
@@ -156,29 +160,25 @@ export async function updateXpBar(
   breakdown?: Record<string, number>
 ): Promise<void> {
   skipBreakdown = false;
-  const startingLevel = Misc.getLevel(currentXp);
-  const endingLevel = Misc.getLevel(currentXp + addedXp);
+  const startingXp = Levels.getXpDetails(currentXp);
+  const endingXp = Levels.getXpDetails(currentXp + addedXp);
+  const startingLevel =
+    startingXp.level + startingXp.levelCurrentXp / startingXp.levelMaxXp;
+  const endingLevel =
+    endingXp.level + endingXp.levelCurrentXp / endingXp.levelMaxXp;
 
   const snapshot = getSnapshot();
   if (!snapshot) return;
 
-  if (skipBreakdown) {
-    $("nav .level").text(Math.floor(Misc.getLevel(snapshot.xp)));
-    $("nav .xpBar")
-      .stop(true, true)
-      .css("opacity", 1)
-      .animate({ opacity: 0 }, SlowTimer.get() ? 0 : 250, () => {
-        $("nav .xpBar .xpGain").text(``);
-      });
-    return;
+  if (!skipBreakdown) {
+    const xpBarPromise = animateXpBar(startingLevel, endingLevel);
+    const xpBreakdownPromise = animateXpBreakdown(addedXp, breakdown);
+
+    await Promise.all([xpBarPromise, xpBreakdownPromise]);
+    await Misc.sleep(2000);
   }
 
-  const xpBarPromise = animateXpBar(startingLevel, endingLevel);
-  const xpBreakdownPromise = animateXpBreakdown(addedXp, breakdown);
-
-  await Promise.all([xpBarPromise, xpBreakdownPromise]);
-  await Misc.sleep(2000);
-  $("nav .level").text(Math.floor(Misc.getLevel(snapshot.xp)));
+  $("nav .level").text(Levels.getLevelFromTotalXp(snapshot.xp));
   $("nav .xpBar")
     .stop(true, true)
     .css("opacity", 1)
@@ -377,7 +377,7 @@ async function animateXpBar(
       SlowTimer.get() ? 0 : 1000,
       "easeOutExpo"
     );
-    flashLevel();
+    void flashLevel();
     barEl.css("width", `0%`);
   } else if (Math.floor(startingLevel) === Math.floor(endingLevel)) {
     await Misc.promiseAnimation(
@@ -392,41 +392,33 @@ async function animateXpBar(
     let toAnimate = difference;
 
     let firstOneDone = false;
+    let animationDuration = quickSpeed;
+    let animationEasing = "linear";
+    let decrement = 1 - (startingLevel % 1);
 
-    while (toAnimate > 1) {
+    do {
       if (toAnimate - 1 < 1) {
-        if (firstOneDone) {
-          flashLevel();
-          barEl.css("width", "0%");
-        }
-        await Misc.promiseAnimation(
-          barEl,
-          {
-            width: "100%",
-          },
-          SlowTimer.get() ? 0 : Misc.mapRange(toAnimate - 1, 0, 0.5, 1000, 200),
-          "easeOutQuad"
-        );
-        toAnimate--;
-      } else {
-        if (firstOneDone) {
-          flashLevel();
-          barEl.css("width", "0%");
-        }
-        await Misc.promiseAnimation(
-          barEl,
-          {
-            width: "100%",
-          },
-          SlowTimer.get() ? 0 : quickSpeed,
-          "linear"
-        );
-        toAnimate--;
+        animationDuration = Misc.mapRange(toAnimate - 1, 0, 0.5, 1000, 200);
+        animationEasing = "easeOutQuad";
       }
+      if (firstOneDone) {
+        void flashLevel();
+        barEl.css("width", "0%");
+        decrement = 1;
+      }
+      await Misc.promiseAnimation(
+        barEl,
+        {
+          width: "100%",
+        },
+        SlowTimer.get() ? 0 : animationDuration,
+        animationEasing
+      );
+      toAnimate -= decrement;
       firstOneDone = true;
-    }
+    } while (toAnimate > 1);
 
-    flashLevel();
+    void flashLevel();
     barEl.css("width", "0%");
     await Misc.promiseAnimation(
       barEl,
@@ -442,19 +434,25 @@ async function animateXpBar(
 
 async function flashLevel(): Promise<void> {
   const themecolors = await getAll();
-  const barEl = $("nav .level");
+  const levelEl = $("nav .level");
 
-  barEl.text(parseInt(barEl.text()) + 1);
+  levelEl.text(parseInt(levelEl.text()) + 1);
 
   const rand = Math.random() * 2 - 1;
   const rand2 = Math.random() + 1;
 
-  barEl
+  /**
+   * `borderSpacing` has no visible effect on this element,
+   * and is used in the animation only to provide numerical
+   * values for the `step(step)` function.
+   */
+  levelEl
     .stop(true, true)
     .css({
       backgroundColor: themecolors.main,
       // transform: "scale(1.5) rotate(10deg)",
       borderSpacing: 100,
+      transition: "initial",
     })
     .animate(
       {
@@ -463,7 +461,7 @@ async function flashLevel(): Promise<void> {
       },
       {
         step(step) {
-          barEl.css(
+          levelEl.css(
             "transform",
             `scale(${1 + (step / 200) * rand2}) rotate(${
               (step / 10) * rand
@@ -473,7 +471,10 @@ async function flashLevel(): Promise<void> {
         duration: 2000,
         easing: "easeOutCubic",
         complete: () => {
-          barEl.css("background-color", "");
+          levelEl.css({
+            backgroundColor: "",
+            transition: "",
+          });
         },
       }
     );

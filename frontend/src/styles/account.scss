@@ -25,11 +25,12 @@
 
   .preloader {
     align-self: center;
+    text-align: center;
+    align-items: center;
+    height: 100%;
   }
 
   .content {
-    display: flex;
-    flex-direction: column;
     gap: 2rem;
   }
 
@@ -70,7 +71,7 @@
 
   .presetFilterButtons .buttons {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
     gap: 1rem;
   }
 
@@ -260,12 +261,16 @@
 
     .title {
       color: var(--sub-color);
-      margin-bottom: 0.5em;
+      // margin-bottom: 0.25em;
+    }
+
+    .avgres {
+      font-size: 0.75em;
     }
 
     .val {
       font-size: 3rem;
-      line-height: 3.5rem;
+      line-height: 1.1;
     }
 
     .chartjs-render-monitor {
@@ -281,6 +286,7 @@
         margin-bottom: 1rem;
         color: var(--sub-color);
         flex-wrap: wrap;
+        row-gap: 0.5em;
 
         .group {
           display: flex;
@@ -370,12 +376,19 @@
     }
   }
 
-  #resultEditTags {
-    transition: 0.25s;
-    &:hover {
-      cursor: pointer;
+  td:has(.resultEditTagsButton) {
+    padding: 0;
+  }
+
+  .resultEditTagsButton {
+    opacity: 0.5;
+    &.active {
       color: var(--text-color);
-      opacity: 1 !important;
+    }
+    &:hover,
+    &:focus-visible,
+    &.active {
+      opacity: 1;
     }
   }
 }
@@ -398,6 +411,17 @@
     gap: 1rem;
     display: grid;
     grid-template-columns: 1fr 1fr;
+
+    .tripleSelectsColumn {
+      grid-column: 1/-1;
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      .buttonsAndTitle {
+        flex-grow: 1;
+        min-width: 20rem;
+      }
+    }
 
     .buttonsAndTitle {
       height: fit-content;
@@ -444,4 +468,197 @@
   -webkit-user-select: none;
   user-select: none;
   background-color: var(--sub-alt-color);
+}
+
+#testActivity {
+  // width: max-content;
+  // justify-self: center;
+  background: var(--sub-alt-color);
+  border-radius: var(--roundness);
+  padding: 1rem;
+  display: flex;
+  justify-content: center;
+
+  --box-size: 1.1em;
+  --gap-size: calc(var(--box-size) / 4);
+  --font-size: 1em;
+
+  .wrapper {
+    width: max-content;
+    display: grid;
+    grid-template-columns: min-content 1fr;
+    grid-template-rows: min-content 1fr min-content;
+    gap: 1em 1em;
+    grid-template-areas:
+      "top top"
+      "day chart"
+      "empty month";
+    // grid-template-areas:
+    //   "empty month"
+    //   "day chart"
+    //   "top top";
+    // font-size: 0.75rem;
+  }
+
+  .top {
+    grid-area: top;
+    display: grid;
+    grid-template-columns: 15rem 1fr max-content;
+    grid-template-areas: "year title legend";
+    gap: 1rem;
+  }
+
+  .ss-main {
+    border: 0.2em solid var(--bg-color);
+  }
+
+  .yearSelect,
+  .months div,
+  .days div,
+  .daysFull div,
+  .legend {
+    color: var(--sub-color);
+  }
+
+  .year {
+    grid-area: year;
+    font-size: var(--font-size);
+  }
+
+  .title {
+    grid-area: title;
+    text-align: center;
+    // font-size: 1.5em;
+    color: var(--sub-color);
+    align-self: center;
+  }
+
+  .months {
+    grid-area: month;
+    display: grid;
+    grid-template-columns: repeat(53, 1fr);
+
+    div {
+      width: 100%;
+      text-align: center;
+    }
+    font-size: var(--font-size);
+  }
+
+  .days {
+    display: none;
+  }
+
+  .daysFull {
+    margin-right: 2rem;
+  }
+
+  .days,
+  .daysFull {
+    grid-area: day;
+    display: grid;
+    grid-template-rows: repeat(7, 1fr);
+    align-items: center;
+    // div {
+    // display: grid;
+    // overflow: hidden;
+    // align-items: center;
+    // }
+    .text {
+      // align-self: center;
+      // margin-top: 0.33em;\
+      display: flex;
+      // transform: translateY(-50%);
+      // height: 0px;
+      font-size: var(--font-size);
+    }
+  }
+
+  .nodata {
+    grid-area: chart;
+  }
+
+  .activity {
+    grid-area: chart;
+    display: grid;
+    grid-auto-flow: column;
+    grid-template-rows: repeat(7, 1fr);
+    grid-template-columns: repeat(53, 1fr);
+    gap: var(--gap-size);
+    // width: max-content;
+    // max-width: 100%;
+
+    div {
+      &:hover {
+        border: 2px solid var(--text-color);
+      }
+      &[data-level="filler"]:hover {
+        border: none;
+      }
+    }
+  }
+  .legend {
+    grid-area: legend;
+    display: flex;
+    gap: var(--gap-size);
+    justify-content: flex-end;
+    align-self: center;
+    align-items: center;
+
+    span {
+      font-size: var(--font-size);
+      &:first-child {
+        margin-right: var(--gap-size);
+      }
+      &:last-child {
+        margin-left: var(--gap-size);
+      }
+    }
+  }
+  .activity div,
+  .legend div {
+    width: var(--box-size);
+    height: 1em;
+    border-radius: var(--gap-size);
+    place-self: center;
+
+    &[data-level="filler"] {
+      background: none;
+    }
+    &[data-level="0"] {
+      background-color: color-mix(
+        in srgb,
+        var(--bg-color) 50%,
+        var(--sub-alt-color)
+      );
+      background-color: var(--bg-color);
+    }
+    &[data-level="1"] {
+      background-color: color-mix(
+        in srgb,
+        var(--main-color) 20%,
+        var(--sub-alt-color)
+      );
+    }
+
+    &[data-level="2"] {
+      background-color: color-mix(
+        in srgb,
+        var(--main-color) 50%,
+        var(--sub-alt-color)
+      );
+    }
+
+    &[data-level="3"] {
+      background-color: color-mix(
+        in srgb,
+        var(--main-color) 75%,
+        var(--sub-alt-color)
+      );
+    }
+
+    &[data-level="4"] {
+      background-color: var(--main-color);
+    }
+  }
 }

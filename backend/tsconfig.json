@@ -17,13 +17,20 @@
     "noImplicitReturns": true,
     "noPropertyAccessFromIndexSignature": true,
     "noFallthroughCasesInSwitch": true,
-    "forceConsistentCasingInFileNames": true
+    "forceConsistentCasingInFileNames": true,
+    "paths": {
+      "@shared/*": ["../shared-types/*"]
+    }
   },
   "ts-node": {
     "files": true
   },
-  "files": ["./src/types/types.d.ts", "../shared-types/types.d.ts"],
-  "include": ["./src/**/*"],
+  "files": [
+    "./src/types/types.d.ts",
+    "../shared-types/types.d.ts",
+    "../shared-types/config.d.ts"
+  ],
+  "include": ["./src/**/*", "../shared-types/**/*.d.ts"],
   "exclude": [
     "node_modules",
     "build",

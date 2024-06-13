@@ -1,4 +1,5 @@
 import * as Misc from "../utils/misc";
+import * as JSONData from "../utils/json-data";
 import * as Notifications from "../elements/notifications";
 import * as ManualRestart from "../test/manual-restart-tracker";
 import * as CustomText from "../test/custom-text";
@@ -23,7 +24,7 @@ export function clearActive(): void {
 }
 
 export function verify(
-  result: SharedTypes.Result<SharedTypes.Mode>
+  result: SharedTypes.Result<SharedTypes.Config.Mode>
 ): string | null {
   try {
     if (TestState.activeChallenge) {
@@ -34,7 +35,7 @@ export function verify(
         return null;
       }
 
-      if (!TestState.activeChallenge.requirements) {
+      if (TestState.activeChallenge.requirements === undefined) {
         Notifications.add(
           `${TestState.activeChallenge.display} challenge passed!`,
           1
@@ -44,7 +45,7 @@ export function verify(
         let requirementsMet = true;
         const failReasons = [];
         for (const requirementType in TestState.activeChallenge.requirements) {
-          if (requirementsMet === false) return null;
+          if (!requirementsMet) return null;
           const requirementValue =
             TestState.activeChallenge.requirements[
               requirementType as keyof typeof TestState.activeChallenge.requirements
@@ -121,8 +122,9 @@ export function verify(
                   failReasons.push(`${f} funbox not active`);
                 }
               }
-              if (result.funbox?.split("#")) {
-                for (const f of result.funbox.split("#")) {
+              const funboxSplit = result.funbox?.split("#");
+              if (funboxSplit !== undefined && funboxSplit.length > 0) {
+                for (const f of funboxSplit) {
                   if (
                     funboxMode.split("#").find((rf) => rf === f) === undefined
                   ) {
@@ -155,7 +157,7 @@ export function verify(
             for (const configKey in requirementValue) {
               const configValue = requirementValue[configKey];
               if (
-                Config[configKey as keyof MonkeyTypes.Config] !== configValue
+                Config[configKey as keyof SharedTypes.Config] !== configValue
               ) {
                 requirementsMet = false;
                 failReasons.push(`${configKey} not set to ${configValue}`);
@@ -208,7 +210,7 @@ export async function setup(challengeName: string): Promise<boolean> {
 
   let list;
   try {
-    list = await Misc.getChallengeList();
+    list = await JSONData.getChallengeList();
   } catch (e) {
     const message = Misc.createErrorMessage(e, "Failed to setup challenge");
     Notifications.add(message, -1);
@@ -220,7 +222,9 @@ export async function setup(challengeName: string): Promise<boolean> {
     return false;
   }
 
-  const challenge = list.filter((c) => c.name === challengeName)[0];
+  const challenge = list.filter(
+    (c) => c.name.toLowerCase() === challengeName.toLowerCase()
+  )[0];
   let notitext;
   try {
     if (challenge === undefined) {
@@ -246,14 +250,13 @@ export async function setup(challengeName: string): Promise<boolean> {
       UpdateConfig.setMode("words", true);
       UpdateConfig.setDifficulty("normal", true);
     } else if (challenge.type === "customText") {
-      CustomText.setDelimiter(" ");
-      CustomText.setPopupTextareaState(challenge.parameters[0] as string);
       CustomText.setText((challenge.parameters[0] as string).split(" "));
-      CustomText.setIsTimeRandom(false);
-      CustomText.setIsSectionRandom(false);
-      CustomText.setIsWordRandom(challenge.parameters[1] as boolean);
-      CustomText.setWord(challenge.parameters[2] as number);
-      CustomText.setTime(-1);
+      CustomText.setMode(challenge.parameters[1] as SharedTypes.CustomTextMode);
+      CustomText.setLimitValue(challenge.parameters[2] as number);
+      CustomText.setLimitMode(
+        challenge.parameters[3] as SharedTypes.CustomTextLimitMode
+      );
+      CustomText.setPipeDelimiter(challenge.parameters[4] as boolean);
       UpdateConfig.setMode("custom", true);
       UpdateConfig.setDifficulty("normal", true);
     } else if (challenge.type === "script") {
@@ -267,21 +270,17 @@ export async function setup(challengeName: string): Promise<boolean> {
       let text = scriptdata.trim();
       text = text.replace(/[\n\r\t ]/gm, " ");
       text = text.replace(/ +/gm, " ");
-      CustomText.setDelimiter(" ");
-      CustomText.setPopupTextareaState(text);
       CustomText.setText(text.split(" "));
-      CustomText.setIsWordRandom(false);
-      CustomText.setIsSectionRandom(false);
-      CustomText.setIsTimeRandom(false);
-      CustomText.setTime(-1);
-      CustomText.setWord(-1);
+      CustomText.setMode("repeat");
+      CustomText.setLimitMode("word");
+      CustomText.setPipeDelimiter(false);
       UpdateConfig.setMode("custom", true);
       UpdateConfig.setDifficulty("normal", true);
       if (challenge.parameters[1] !== null) {
         UpdateConfig.setTheme(challenge.parameters[1] as string);
       }
       if (challenge.parameters[2] !== null) {
-        Funbox.activate(<string>challenge.parameters[2]);
+        void Funbox.activate(challenge.parameters[2] as string);
       }
     } else if (challenge.type === "accuracy") {
       UpdateConfig.setTimeConfig(0, true);
@@ -295,10 +294,13 @@ export async function setup(challengeName: string): Promise<boolean> {
       } else if (challenge.parameters[1] === "time") {
         UpdateConfig.setTimeConfig(challenge.parameters[2] as number, true);
       }
-      UpdateConfig.setMode(challenge.parameters[1] as SharedTypes.Mode, true);
+      UpdateConfig.setMode(
+        challenge.parameters[1] as SharedTypes.Config.Mode,
+        true
+      );
       if (challenge.parameters[3] !== undefined) {
         UpdateConfig.setDifficulty(
-          challenge.parameters[3] as SharedTypes.Difficulty,
+          challenge.parameters[3] as SharedTypes.Config.Difficulty,
           true
         );
       }

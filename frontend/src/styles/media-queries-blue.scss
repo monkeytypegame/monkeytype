@@ -1,0 +1,209 @@
+@media only screen and (max-width: calc(768px + 5rem)) {
+  #mediaQueryDebug {
+    background: #29b6f6;
+    &::before {
+      content: "blue";
+    }
+  }
+  .content-grid {
+    --content-max-width: 640px;
+  }
+  #testConfig {
+    font-size: 0.65rem;
+    --horizontalPadding: 0.55em;
+  }
+  #testModesNotice {
+    font-size: 0.8rem;
+  }
+  #bannerCenter {
+    font-size: 0.85rem;
+    .banner.withImage {
+      .image {
+        display: none;
+      }
+      .lefticon {
+        display: block;
+      }
+    }
+  }
+  .page404 {
+    .content {
+      grid-template-columns: 300px;
+      grid-auto-flow: unset;
+      gap: 1rem;
+    }
+  }
+  .pageTest {
+    #liveStatsTextTop,
+    #liveStatsTextBottom {
+      font-size: 5rem;
+    }
+    #result .wrapper {
+      grid-template-columns: 1fr;
+      grid-template-areas:
+        "stats" "chart"
+        "morestats";
+      .stats {
+        grid-template-columns: 1fr 1fr;
+        grid-template-areas: "wpm acc";
+        justify-items: center;
+      }
+      .stats.morestats {
+        gap: 1rem;
+        justify-items: start;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: 1fr 1fr 1fr;
+      }
+    }
+  }
+  .pageAbout {
+    .triplegroup {
+      grid-template-columns: 1fr;
+    }
+  }
+  .pageAccount {
+    .triplegroup.stats {
+      .title {
+        font-size: 0.75rem;
+      }
+      .val {
+        font-size: 1.5rem;
+      }
+    }
+    .group.estimatedWordsTyped {
+      .val {
+        font-size: 2rem;
+      }
+    }
+    .group.history table thead td:nth-child(7),
+    .group.history table tbody td:nth-child(7) {
+      display: none;
+    }
+  }
+  .pageSettings {
+    .section {
+      grid-template-columns: 1fr;
+      grid-template-areas:
+        "title"
+        "text" "buttons";
+      &.discordIntegration .info {
+        margin: 1rem 0;
+      }
+      .customThemeEdit {
+        .spacer {
+          display: none;
+        }
+        .customThemeInputs {
+          grid-template-columns: 1fr 1.5fr;
+        }
+        .customThemeButtons {
+          grid-template-columns: 1fr;
+        }
+      }
+    }
+  }
+  .profile {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto;
+    grid-template-areas:
+      "info"
+      "leaderboards"
+      "pbsTime"
+      "pbsWords";
+    .details.none {
+      grid-template-areas:
+        "avAndName"
+        "typingStats";
+      grid-template-columns: 1fr;
+      .separator {
+        display: none;
+      }
+      .typingStats {
+        grid-template-columns: 1fr 1fr 1fr;
+      }
+    }
+    .details.bioAndKey {
+      grid-template-areas:
+        "avAndName bioAndKey"
+        "typingStats typingStats";
+      grid-template-columns: 1fr 1fr;
+      .separator {
+        display: none;
+      }
+      .typingStats {
+        grid-template-columns: 1fr 1fr 1fr;
+      }
+    }
+    .details.soc {
+      grid-template-areas:
+        "avAndName"
+        "typingStats"
+        "socials";
+      grid-template-columns: 1fr;
+      .separator {
+        display: none;
+      }
+      .typingStats {
+        grid-template-columns: 1fr 1fr 1fr;
+      }
+      .socials {
+        justify-content: start;
+        .title {
+          display: block;
+        }
+        .value {
+          grid-auto-flow: column;
+        }
+      }
+    }
+    .details.both {
+      grid-template-areas:
+        "avAndName bioAndKey"
+        "typingStats typingStats"
+        "socials socials";
+      grid-template-columns: 1fr 1fr;
+      .separator {
+        display: none;
+      }
+      .typingStats {
+        grid-template-columns: 1fr 1fr 1fr;
+      }
+      .socials {
+        height: 100%; //dumb safari fix
+        justify-content: start;
+        .title {
+          display: block;
+        }
+        .value {
+          grid-auto-flow: column;
+        }
+      }
+    }
+  }
+  #leaderboardsWrapper #leaderboards .leaderboardsTop {
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas: "title title" "subtitle yesterday" "buttons buttons";
+    .buttons .timeRange {
+      grid-template-columns: 1fr 1fr 1fr;
+      .languageSelect {
+        grid-column: span 1;
+      }
+    }
+  }
+  #testActivity {
+    --box-size: 0.58em;
+    // .activity div,
+    // .legend div {
+    //   width: 0.7em;
+    //   height: 0.7em;
+    //   border-radius: 0.15em;
+    // }
+  }
+}
+
+@media (pointer: coarse) and (max-width: 778px) {
+  #restartTestButton {
+    display: block !important;
+  }
+}

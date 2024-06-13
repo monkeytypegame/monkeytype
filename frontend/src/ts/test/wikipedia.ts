@@ -1,10 +1,67 @@
 import * as Loader from "../elements/loader";
 import * as Misc from "../utils/misc";
+import * as Strings from "../utils/strings";
+import * as JSONData from "../utils/json-data";
 import { Section } from "../utils/misc";
 
 export async function getTLD(
   languageGroup: MonkeyTypes.LanguageGroup
-): Promise<"en" | "es" | "fr" | "de" | "pt" | "it" | "nl" | "pl"> {
+): Promise<
+  | "en"
+  | "es"
+  | "fr"
+  | "de"
+  | "pt"
+  | "ar"
+  | "it"
+  | "la"
+  | "af"
+  | "ko"
+  | "ru"
+  | "pl"
+  | "cs"
+  | "sk"
+  | "uk"
+  | "lt"
+  | "id"
+  | "el"
+  | "tr"
+  | "th"
+  | "ta"
+  | "sl"
+  | "hr"
+  | "nl"
+  | "da"
+  | "hu"
+  | "no"
+  | "nn"
+  | "he"
+  | "ms"
+  | "ro"
+  | "fi"
+  | "et"
+  | "cy"
+  | "fa"
+  | "kk"
+  | "vi"
+  | "sv"
+  | "sr"
+  | "ka"
+  | "ca"
+  | "bg"
+  | "eo"
+  | "bn"
+  | "ur"
+  | "hy"
+  | "my"
+  | "hi"
+  | "mk"
+  | "uz"
+  | "be"
+  | "az"
+  | "lv"
+  | "eu"
+> {
   // language group to tld
   switch (languageGroup.name) {
     case "english":
@@ -22,30 +79,168 @@ export async function getTLD(
     case "portuguese":
       return "pt";
 
+    case "arabic":
+      return "ar";
+
     case "italian":
       return "it";
+
+    case "latin":
+      return "la";
+
+    case "afrikaans":
+      return "af";
+
+    case "korean":
+      return "ko";
+
+    case "russian":
+      return "ru";
+
+    case "polish":
+      return "pl";
+
+    case "czech":
+      return "cs";
+
+    case "slovak":
+      return "sk";
+
+    case "ukrainian":
+      return "uk";
+
+    case "lithuanian":
+      return "lt";
+
+    case "indonesian":
+      return "id";
+
+    case "greek":
+      return "el";
+
+    case "turkish":
+      return "tr";
+
+    case "thai":
+      return "th";
+
+    case "tamil":
+      return "ta";
+
+    case "slovenian":
+      return "sl";
+
+    case "croatian":
+      return "hr";
 
     case "dutch":
       return "nl";
 
-    case "polish":
-      return "pl";
+    case "danish":
+      return "da";
+
+    case "hungarian":
+      return "hu";
+
+    case "norwegian_bokmal":
+      return "no";
+
+    case "norwegian_nynorsk":
+      return "nn";
+
+    case "hebrew":
+      return "he";
+
+    case "malay":
+      return "ms";
+
+    case "romanian":
+      return "ro";
+
+    case "finnish":
+      return "fi";
+
+    case "estonian":
+      return "et";
+
+    case "welsh":
+      return "cy";
+
+    case "persian":
+      return "fa";
+
+    case "kazakh":
+      return "kk";
+
+    case "vietnamese":
+      return "vi";
+
+    case "swedish":
+      return "sv";
+
+    case "serbian":
+      return "sr";
+
+    case "georgian":
+      return "ka";
+
+    case "catalan":
+      return "ca";
+
+    case "bulgarian":
+      return "bg";
+
+    case "esperanto":
+      return "eo";
+
+    case "bangla":
+      return "bn";
+
+    case "urdu":
+      return "ur";
+
+    case "armenian":
+      return "hy";
+
+    case "myanmar":
+      return "my";
+
+    case "hindi":
+      return "hi";
+
+    case "macedonian":
+      return "mk";
+
+    case "uzbek":
+      return "uz";
+
+    case "belarusian":
+      return "be";
+
+    case "azerbaijani":
+      return "az";
+
+    case "latvian":
+      return "lv";
+
+    case "euskera":
+      return "eu";
 
     default:
       return "en";
   }
 }
 
-interface Post {
+type Post = {
   title: string;
   author: string;
   pageid: number;
-}
+};
 
-interface SectionObject {
+type SectionObject = {
   title: string;
   author: string;
-}
+};
 
 export async function getSection(language: string): Promise<Section> {
   // console.log("Getting section");
@@ -56,7 +251,7 @@ export async function getSection(language: string): Promise<Section> {
 
   let currentLanguageGroup: MonkeyTypes.LanguageGroup | undefined;
   try {
-    currentLanguageGroup = await Misc.findCurrentGroup(language);
+    currentLanguageGroup = await JSONData.getCurrentGroup(language);
   } catch (e) {
     console.error(
       Misc.createErrorMessage(e, "Failed to find current language group")
@@ -107,7 +302,7 @@ export async function getSection(language: string): Promise<Section> {
           sectionText = sectionText.replace(/[\u200B-\u200D\uFEFF]/g, "");
 
           // replace any fancy symbols
-          sectionText = Misc.cleanTypographySymbols(sectionText);
+          sectionText = Strings.cleanTypographySymbols(sectionText);
 
           // Remove non-ascii characters for English articles
           if (urlTLD === "en") {

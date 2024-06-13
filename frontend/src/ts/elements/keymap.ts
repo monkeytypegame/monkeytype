@@ -4,6 +4,7 @@ import * as SlowTimer from "../states/slow-timer";
 import * as ConfigEvent from "../observables/config-event";
 import * as KeymapEvent from "../observables/keymap-event";
 import * as Misc from "../utils/misc";
+import * as JSONData from "../utils/json-data";
 import * as Hangul from "hangul-js";
 import * as Notifications from "../elements/notifications";
 import * as ActivePage from "../states/active-page";
@@ -115,7 +116,7 @@ export async function refresh(
   try {
     let layouts;
     try {
-      layouts = await Misc.getLayoutsList();
+      layouts = await JSONData.getLayoutsList();
     } catch (e) {
       Notifications.add(
         Misc.createErrorMessage(e, "Failed to refresh keymap"),
@@ -327,7 +328,7 @@ export async function refresh(
 
 ConfigEvent.subscribe((eventKey, newValue) => {
   if (eventKey === "layout" && Config.keymapLayout === "overrideSync") {
-    refresh(Config.keymapLayout);
+    void refresh(Config.keymapLayout);
   }
   if (
     eventKey === "keymapLayout" ||
@@ -335,7 +336,7 @@ ConfigEvent.subscribe((eventKey, newValue) => {
     eventKey === "keymapShowTopRow" ||
     eventKey === "keymapMode"
   ) {
-    refresh();
+    void refresh();
   }
   if (eventKey === "keymapMode") {
     newValue === "off" ? hide() : show();
@@ -347,6 +348,6 @@ KeymapEvent.subscribe((mode, key, correct) => {
     highlightKey(key);
   }
   if (mode === "flash") {
-    flashKey(key, correct);
+    void flashKey(key, correct);
   }
 });

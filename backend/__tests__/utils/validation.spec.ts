@@ -89,14 +89,6 @@ describe("Validation", () => {
   it("isUsernameValid", () => {
     const testCases = [
       {
-        name: "Miodec",
-        expected: false,
-      },
-      {
-        name: "fucker",
-        expected: false,
-      },
-      {
         name: "Bruce",
         expected: true,
       },
@@ -124,10 +116,6 @@ describe("Validation", () => {
         name: ".period",
         expected: false,
       },
-      {
-        name: "fucking_profane",
-        expected: false,
-      },
     ];
 
     testCases.forEach((testCase) => {
@@ -139,6 +127,14 @@ describe("Validation", () => {
     const testCases = [
       {
         text: "https://www.fuckyou.com",
+        expected: true,
+      },
+      {
+        text: "fucking_profane",
+        expected: true,
+      },
+      {
+        text: "fucker",
         expected: true,
       },
       {
@@ -160,7 +156,7 @@ describe("Validation", () => {
     ];
 
     testCases.forEach((testCase) => {
-      expect(Validation.containsProfanity(testCase.text)).toBe(
+      expect(Validation.containsProfanity(testCase.text, "substring")).toBe(
         testCase.expected
       );
     });

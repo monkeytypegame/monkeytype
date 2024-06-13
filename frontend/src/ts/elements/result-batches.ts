@@ -1,6 +1,7 @@
 import * as DB from "../db";
 import * as ServerConfiguration from "../ape/server-configuration";
-import { blendTwoHexColors, mapRange } from "../utils/misc";
+import { mapRange } from "../utils/misc";
+import { blendTwoHexColors } from "../utils/colors";
 import * as ThemeColors from "../elements/theme-colors";
 
 export function hide(): void {

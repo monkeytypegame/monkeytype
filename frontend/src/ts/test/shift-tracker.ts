@@ -1,5 +1,5 @@
 import Config from "../config";
-import * as Misc from "../utils/misc";
+import * as JSONData from "../utils/json-data";
 import { capsState } from "./caps-warning";
 import * as Notifications from "../elements/notifications";
 
@@ -99,16 +99,16 @@ async function updateKeymapLegendCasing(): Promise<void> {
   const states = getLegendStates();
   if (states === undefined) return;
 
-  const keymapKeys = <HTMLElement[]>[
-    ...document.getElementsByClassName("keymapKey"),
-  ].filter((el) => {
-    const isKeymapKey = el.classList.contains("keymapKey");
-    const isNotSpace =
-      !el.classList.contains("keySpace") &&
-      !el.classList.contains("keySplitSpace");
+  const keymapKeys = [...document.getElementsByClassName("keymapKey")].filter(
+    (el) => {
+      const isKeymapKey = el.classList.contains("keymapKey");
+      const isNotSpace =
+        !el.classList.contains("keySpace") &&
+        !el.classList.contains("keySplitSpace");
 
-    return isKeymapKey && isNotSpace;
-  });
+      return isKeymapKey && isNotSpace;
+    }
+  ) as HTMLElement[];
 
   const layoutKeys = keymapKeys.map((el) => el.dataset["key"]);
   if (layoutKeys.includes(undefined)) return;
@@ -124,7 +124,7 @@ async function updateKeymapLegendCasing(): Promise<void> {
         : Config.layout
       : Config.keymapLayout;
 
-  const layout = await Misc.getLayout(layoutName).catch(() => undefined);
+  const layout = await JSONData.getLayout(layoutName).catch(() => undefined);
   if (layout === undefined) {
     Notifications.add("Failed to load keymap layout", -1);
 
@@ -175,7 +175,7 @@ $(document).on("keydown", (e) => {
   }
 
   if (Config.keymapLegendStyle === "dynamic") {
-    updateKeymapLegendCasing();
+    void updateKeymapLegendCasing();
   }
 });
 
@@ -186,7 +186,7 @@ $(document).on("keyup", (e) => {
   }
 
   if (Config.keymapLegendStyle === "dynamic") {
-    updateKeymapLegendCasing();
+    void updateKeymapLegendCasing();
   }
 });
 

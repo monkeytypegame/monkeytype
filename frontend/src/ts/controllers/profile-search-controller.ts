@@ -2,7 +2,7 @@ import { InputIndicator } from "../elements/input-indicator";
 import { sleep } from "../utils/misc";
 import Ape from "../ape";
 import { navigate } from "../controllers/route-controller";
-import * as Skeleton from "../popups/skeleton";
+import * as Skeleton from "../utils/skeleton";
 
 const searchIndicator = new InputIndicator(
   $(".page.pageProfileSearch .search input"),
@@ -73,7 +73,7 @@ async function lookupProfile(): Promise<void> {
 $(".page.pageProfileSearch form").on("submit", (e) => {
   e.preventDefault();
   if (areInputsDisabled()) return;
-  lookupProfile();
+  void lookupProfile();
 });
 
 Skeleton.save("pageProfileSearch");

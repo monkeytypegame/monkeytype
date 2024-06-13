@@ -1,12 +1,13 @@
 import Hangul from "hangul-js";
 import Config from "../config";
-import * as Misc from "../utils/misc";
+import * as Strings from "../utils/strings";
 import * as TestInput from "./test-input";
 import * as TestWords from "./test-words";
 import * as FunboxList from "./funbox/funbox-list";
 import * as TestState from "./test-state";
+import * as Numbers from "../utils/numbers";
 
-interface CharCount {
+type CharCount = {
   spaces: number;
   correctWordChars: number;
   allCorrectChars: number;
@@ -14,9 +15,9 @@ interface CharCount {
   extraChars: number;
   missedChars: number;
   correctSpaces: number;
-}
+};
 
-interface Stats {
+type Stats = {
   wpm: number;
   wpmRaw: number;
   acc: number;
@@ -28,17 +29,18 @@ interface Stats {
   time: number;
   spaces: number;
   correctSpaces: number;
-}
+};
 
 export let invalid = false;
 export let start: number, end: number;
 export let start2: number, end2: number;
+export let start3: number, end3: number;
 export let lastSecondNotRound = false;
 
-export let lastResult: SharedTypes.Result<SharedTypes.Mode>;
+export let lastResult: SharedTypes.Result<SharedTypes.Config.Mode>;
 
 export function setLastResult(
-  result: SharedTypes.Result<SharedTypes.Mode>
+  result: SharedTypes.Result<SharedTypes.Config.Mode>
 ): void {
   lastResult = result;
 }
@@ -60,31 +62,33 @@ export function getStats(): unknown {
     accuracy: TestInput.accuracy,
     keypressTimings: TestInput.keypressTimings,
     keyOverlap: TestInput.keyOverlap,
+    wordsHistory: TestWords.words.list.slice(0, TestInput.input.history.length),
+    inputHistory: TestInput.input.history,
   };
 
   try {
-    // @ts-ignore
+    // @ts-expect-error
     ret.keypressTimings.spacing.average =
       (TestInput.keypressTimings.spacing.array as number[]).reduce(
         (previous, current) => (current += previous)
       ) / TestInput.keypressTimings.spacing.array.length;
 
-    // @ts-ignore
-    ret.keypressTimings.spacing.sd = Misc.stdDev(
+    // @ts-expect-error
+    ret.keypressTimings.spacing.sd = Numbers.stdDev(
       TestInput.keypressTimings.spacing.array as number[]
     );
   } catch (e) {
     //
   }
   try {
-    // @ts-ignore
+    // @ts-expect-error
     ret.keypressTimings.duration.average =
       (TestInput.keypressTimings.duration.array as number[]).reduce(
         (previous, current) => (current += previous)
       ) / TestInput.keypressTimings.duration.array.length;
 
-    // @ts-ignore
-    ret.keypressTimings.duration.sd = Misc.stdDev(
+    // @ts-expect-error
+    ret.keypressTimings.duration.sd = Numbers.stdDev(
       TestInput.keypressTimings.duration.array as number[]
     );
   } catch (e) {
@@ -143,10 +147,10 @@ export function calculateWpmAndRaw(
     TestState.isActive ? performance.now() : end
   );
   const chars = countChars();
-  const wpm = Misc.roundTo2(
+  const wpm = Numbers.roundTo2(
     ((chars.correctWordChars + chars.correctSpaces) * (60 / testSeconds)) / 5
   );
-  const raw = Misc.roundTo2(
+  const raw = Numbers.roundTo2(
     ((chars.allCorrectChars +
       chars.spaces +
       chars.incorrectChars +
@@ -163,11 +167,13 @@ export function calculateWpmAndRaw(
 export function setEnd(e: number): void {
   end = e;
   end2 = Date.now();
+  end3 = new Date().getTime();
 }
 
 export function setStart(s: number): void {
   start = s;
   start2 = Date.now();
+  start3 = new Date().getTime();
 }
 
 export function calculateAfkSeconds(testSeconds: number): number {
@@ -187,7 +193,7 @@ export function calculateAfkSeconds(testSeconds: number): number {
     //   `gonna add extra ${extraAfk} seconds of afk because of no keypress data`
     // );
   }
-  const ret = TestInput.afkHistory.filter((afk) => afk === true).length;
+  const ret = TestInput.afkHistory.filter((afk) => afk).length;
   return ret + extraAfk;
 }
 
@@ -209,7 +215,7 @@ export function calculateBurst(): number {
           ?.length ?? 0;
   }
   if (wordLength === 0) return 0;
-  const speed = Misc.roundTo2((wordLength * (60 / timeToWrite)) / 5);
+  const speed = Numbers.roundTo2((wordLength * (60 / timeToWrite)) / 5);
   return Math.round(speed);
 }
 
@@ -289,7 +295,7 @@ function countChars(): CharCount {
       correctChars += targetWord.length;
       if (
         i < inputWords.length - 1 &&
-        Misc.getLastChar(inputWord as string) !== "\n"
+        Strings.getLastChar(inputWord as string) !== "\n"
       ) {
         correctspaces++;
       }
@@ -367,10 +373,21 @@ export function calculateStats(): Stats {
     testSeconds,
     " (date based) ",
     (end2 - start2) / 1000,
-    " (performance.now based)"
+    " (performance.now based)",
+    (end3 - start3) / 1000,
+    " (new Date based)"
+  );
+  console.debug(
+    "Test seconds",
+    Numbers.roundTo1(testSeconds),
+    " (date based) ",
+    Numbers.roundTo1((end2 - start2) / 1000),
+    " (performance.now based)",
+    Numbers.roundTo1((end3 - start3) / 1000),
+    " (new Date based)"
   );
   if (Config.mode !== "custom") {
-    testSeconds = Misc.roundTo2(testSeconds);
+    testSeconds = Numbers.roundTo2(testSeconds);
     console.debug(
       "Mode is not custom - rounding to 2. New time: ",
       testSeconds
@@ -378,7 +395,7 @@ export function calculateStats(): Stats {
   }
   const chars = countChars();
   const { wpm, raw } = calculateWpmAndRaw(true);
-  const acc = Misc.roundTo2(calculateAccuracy());
+  const acc = Numbers.roundTo2(calculateAccuracy());
   const ret = {
     wpm: isNaN(wpm) ? 0 : wpm,
     wpmRaw: isNaN(raw) ? 0 : raw,
@@ -392,7 +409,7 @@ export function calculateStats(): Stats {
       chars.spaces +
       chars.incorrectChars +
       chars.extraChars,
-    time: Misc.roundTo2(testSeconds),
+    time: Numbers.roundTo2(testSeconds),
     spaces: chars.spaces,
     correctSpaces: chars.correctSpaces,
   };

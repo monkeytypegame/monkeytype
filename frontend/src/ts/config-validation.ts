@@ -1,4 +1,5 @@
 import * as Misc from "./utils/misc";
+import * as JSONData from "./utils/json-data";
 import * as Notifications from "./elements/notifications";
 
 type PossibleType =
@@ -9,6 +10,7 @@ type PossibleType =
   | "undefined"
   | "null"
   | "stringArray"
+  | "layoutfluid"
   | string[]
   | number[];
 
@@ -90,7 +92,7 @@ export function isConfigValueValid(
 
       default:
         if (isArray(possibleType)) {
-          if (possibleType.includes(<never>val)) isValid = true;
+          if (possibleType.includes(val as never)) isValid = true;
         }
         break;
     }
@@ -120,7 +122,7 @@ export async function isConfigValueValidAsync(
         if (layoutNames.length < 2 || layoutNames.length > 5) break;
 
         try {
-          await Misc.getLayoutsList();
+          await JSONData.getLayoutsList();
         } catch (e) {
           customMessage = Misc.createErrorMessage(
             e,
@@ -131,7 +133,7 @@ export async function isConfigValueValidAsync(
 
         // convert the layout names to layouts
         const layouts = await Promise.all(
-          layoutNames.map(async (layoutName) => Misc.getLayout(layoutName))
+          layoutNames.map(async (layoutName) => JSONData.getLayout(layoutName))
         );
 
         // check if all layouts exist

@@ -7,7 +7,7 @@ import {
 } from "./config-validation";
 import * as ConfigEvent from "./observables/config-event";
 import DefaultConfig from "./constants/default-config";
-import { Auth } from "./firebase";
+import { isAuthenticated } from "./firebase";
 import * as AnalyticsController from "./controllers/analytics-controller";
 import * as AccountButton from "./elements/account-button";
 import { debounce } from "throttle-debounce";
@@ -17,7 +17,7 @@ import {
 } from "./test/funbox/funbox-validation";
 import { reloadAfter } from "./utils/misc";
 
-export let localStorageConfig: MonkeyTypes.Config;
+export let localStorageConfig: SharedTypes.Config;
 
 let loadDone: (value?: unknown) => void;
 
@@ -25,22 +25,22 @@ const config = {
   ...DefaultConfig,
 };
 
-let configToSend = {} as MonkeyTypes.Config;
+let configToSend = {} as SharedTypes.Config;
 const saveToDatabase = debounce(1000, () => {
   if (Object.keys(configToSend).length > 0) {
     AccountButton.loading(true);
-    DB.saveConfig(configToSend).then(() => {
+    void DB.saveConfig(configToSend).then(() => {
       AccountButton.loading(false);
     });
   }
-  configToSend = {} as MonkeyTypes.Config;
+  configToSend = {} as SharedTypes.Config;
 });
 
-async function saveToLocalStorage(
-  key: keyof MonkeyTypes.Config,
+function saveToLocalStorage(
+  key: keyof SharedTypes.Config,
   nosave = false,
   noDbCheck = false
-): Promise<void> {
+): void {
   if (nosave) return;
 
   const localToSave = config;
@@ -49,21 +49,19 @@ async function saveToLocalStorage(
   window.localStorage.setItem("config", localToSaveStringified);
   if (!noDbCheck) {
     (configToSend[key] as typeof config[typeof key]) = config[key];
-    await saveToDatabase();
+    saveToDatabase();
   }
   ConfigEvent.dispatch("saveToLocalStorage", localToSaveStringified);
 }
 
-export async function saveFullConfigToLocalStorage(
-  noDbCheck = false
-): Promise<void> {
+export function saveFullConfigToLocalStorage(noDbCheck = false): void {
   console.log("saving full config to localStorage");
   const save = config;
   const stringified = JSON.stringify(save);
   window.localStorage.setItem("config", stringified);
   if (!noDbCheck) {
     AccountButton.loading(true);
-    await DB.saveConfig(save);
+    void DB.saveConfig(save);
     AccountButton.loading(false);
   }
   ConfigEvent.dispatch("saveToLocalStorage", stringified);
@@ -105,7 +103,10 @@ export function setPunctuation(punc: boolean, nosave?: boolean): boolean {
   return true;
 }
 
-export function setMode(mode: SharedTypes.Mode, nosave?: boolean): boolean {
+export function setMode(
+  mode: SharedTypes.Config.Mode,
+  nosave?: boolean
+): boolean {
   if (
     !isConfigValueValid("mode", mode, [
       ["time", "words", "quote", "zen", "custom"],
@@ -138,11 +139,13 @@ export function setMode(mode: SharedTypes.Mode, nosave?: boolean): boolean {
 }
 
 export function setPlaySoundOnError(
-  val: MonkeyTypes.PlaySoundOnError,
+  val: SharedTypes.Config.PlaySoundOnError,
   nosave?: boolean
 ): boolean {
   if (
-    !isConfigValueValid("play sound on error", val, [["off", "1", "2", "3"]])
+    !isConfigValueValid("play sound on error", val, [
+      ["off", "1", "2", "3", "4"],
+    ])
   ) {
     return false;
   }
@@ -155,7 +158,7 @@ export function setPlaySoundOnError(
 }
 
 export function setPlaySoundOnClick(
-  val: MonkeyTypes.PlaySoundOnClick,
+  val: SharedTypes.Config.PlaySoundOnClick,
   nosave?: boolean
 ): boolean {
   if (
@@ -175,6 +178,8 @@ export function setPlaySoundOnClick(
         "11",
         "12",
         "13",
+        "14",
+        "15",
       ],
     ])
   ) {
@@ -189,7 +194,7 @@ export function setPlaySoundOnClick(
 }
 
 export function setSoundVolume(
-  val: MonkeyTypes.SoundVolume,
+  val: SharedTypes.Config.SoundVolume,
   nosave?: boolean
 ): boolean {
   if (!isConfigValueValid("sound volume", val, [["0.1", "0.5", "1.0"]])) {
@@ -205,7 +210,7 @@ export function setSoundVolume(
 
 //difficulty
 export function setDifficulty(
-  diff: SharedTypes.Difficulty,
+  diff: SharedTypes.Config.Difficulty,
   nosave?: boolean
 ): boolean {
   if (
@@ -294,7 +299,7 @@ export function setBlindMode(blind: boolean, nosave?: boolean): boolean {
 }
 
 function setAccountChart(
-  array: MonkeyTypes.AccountChart,
+  array: SharedTypes.Config.AccountChart,
   nosave?: boolean
 ): boolean {
   if (
@@ -375,7 +380,7 @@ export function setAccountChartAvg100(
 }
 
 export function setStopOnError(
-  soe: MonkeyTypes.StopOnError,
+  soe: SharedTypes.Config.StopOnError,
   nosave?: boolean
 ): boolean {
   if (!isConfigValueValid("stop on error", soe, [["off", "word", "letter"]])) {
@@ -412,7 +417,7 @@ export function setAlwaysShowDecimalPlaces(
 }
 
 export function setTypingSpeedUnit(
-  val: MonkeyTypes.TypingSpeedUnit,
+  val: SharedTypes.Config.TypingSpeedUnit,
   nosave?: boolean
 ): boolean {
   if (
@@ -449,7 +454,7 @@ export function setShowOutOfFocusWarning(
 
 //pace caret
 export function setPaceCaret(
-  val: MonkeyTypes.PaceCaret,
+  val: SharedTypes.Config.PaceCaret,
   nosave?: boolean
 ): boolean {
   if (
@@ -461,7 +466,7 @@ export function setPaceCaret(
   }
 
   if (document.readyState === "complete") {
-    if (val === "pb" && !Auth?.currentUser) {
+    if (val === "pb" && !isAuthenticated()) {
       Notifications.add("PB pace caret is unavailable without an account", 0);
       return false;
     }
@@ -504,7 +509,7 @@ export function setRepeatedPace(pace: boolean, nosave?: boolean): boolean {
 
 //min wpm
 export function setMinWpm(
-  minwpm: MonkeyTypes.MinimumWordsPerMinute,
+  minwpm: SharedTypes.Config.MinimumWordsPerMinute,
   nosave?: boolean
 ): boolean {
   if (!isConfigValueValid("min speed", minwpm, [["off", "custom"]])) {
@@ -532,7 +537,7 @@ export function setMinWpmCustomSpeed(val: number, nosave?: boolean): boolean {
 
 //min acc
 export function setMinAcc(
-  min: MonkeyTypes.MinimumAccuracy,
+  min: SharedTypes.Config.MinimumAccuracy,
   nosave?: boolean
 ): boolean {
   if (!isConfigValueValid("min acc", min, [["off", "custom"]])) return false;
@@ -557,7 +562,7 @@ export function setMinAccCustom(val: number, nosave?: boolean): boolean {
 
 //min burst
 export function setMinBurst(
-  min: MonkeyTypes.MinimumBurst,
+  min: SharedTypes.Config.MinimumBurst,
   nosave?: boolean
 ): boolean {
   if (!isConfigValueValid("min burst", min, [["off", "fixed", "flex"]])) {
@@ -601,7 +606,7 @@ export function setAlwaysShowWordsHistory(
 
 //single list command line
 export function setSingleListCommandLine(
-  option: MonkeyTypes.SingleListCommandLine,
+  option: SharedTypes.Config.SingleListCommandLine,
   nosave?: boolean
 ): boolean {
   if (
@@ -653,7 +658,7 @@ export function setQuickEnd(qe: boolean, nosave?: boolean): boolean {
   return true;
 }
 
-export function setAds(val: MonkeyTypes.Ads, nosave?: boolean): boolean {
+export function setAds(val: SharedTypes.Config.Ads, nosave?: boolean): boolean {
   if (!isConfigValueValid("ads", val, [["off", "result", "on", "sellout"]])) {
     return false;
   }
@@ -670,7 +675,7 @@ export function setAds(val: MonkeyTypes.Ads, nosave?: boolean): boolean {
 }
 
 export function setRepeatQuotes(
-  val: MonkeyTypes.RepeatQuotes,
+  val: SharedTypes.Config.RepeatQuotes,
   nosave?: boolean
 ): boolean {
   if (!isConfigValueValid("repeat quotes", val, [["off", "typing"]])) {
@@ -719,7 +724,7 @@ export function setStrictSpace(val: boolean, nosave?: boolean): boolean {
 
 //opposite shift space
 export function setOppositeShiftMode(
-  val: MonkeyTypes.OppositeShiftMode,
+  val: SharedTypes.Config.OppositeShiftMode,
   nosave?: boolean
 ): boolean {
   if (
@@ -735,40 +740,8 @@ export function setOppositeShiftMode(
   return true;
 }
 
-export function setPageWidth(
-  val: MonkeyTypes.PageWidth,
-  nosave?: boolean
-): boolean {
-  if (
-    !isConfigValueValid("page width", val, [
-      ["max", "100", "125", "150", "200"],
-    ])
-  ) {
-    return false;
-  }
-
-  config.pageWidth = val;
-  $("#contentWrapper").removeClass("wide125");
-  $("#contentWrapper").removeClass("wide150");
-  $("#contentWrapper").removeClass("wide200");
-  $("#contentWrapper").removeClass("widemax");
-  $("#app").removeClass("wide125");
-  $("#app").removeClass("wide150");
-  $("#app").removeClass("wide200");
-  $("#app").removeClass("widemax");
-
-  if (val !== "100") {
-    $("#contentWrapper").addClass("wide" + val);
-    $("#app").addClass("wide" + val);
-  }
-  saveToLocalStorage("pageWidth", nosave);
-  ConfigEvent.dispatch("pageWidth", config.pageWidth);
-
-  return true;
-}
-
 export function setCaretStyle(
-  caretStyle: MonkeyTypes.CaretStyle,
+  caretStyle: SharedTypes.Config.CaretStyle,
   nosave?: boolean
 ): boolean {
   if (
@@ -810,7 +783,7 @@ export function setCaretStyle(
 }
 
 export function setPaceCaretStyle(
-  caretStyle: MonkeyTypes.CaretStyle,
+  caretStyle: SharedTypes.Config.CaretStyle,
   nosave?: boolean
 ): boolean {
   if (
@@ -849,53 +822,8 @@ export function setPaceCaretStyle(
   return true;
 }
 
-export function setShowTimerProgress(
-  timer: boolean,
-  nosave?: boolean
-): boolean {
-  if (!isConfigValueValid("show timer progress", timer, ["boolean"])) {
-    return false;
-  }
-
-  config.showTimerProgress = timer;
-  saveToLocalStorage("showTimerProgress", nosave);
-  ConfigEvent.dispatch("showTimerProgress", config.showTimerProgress);
-
-  return true;
-}
-
-export function setShowLiveWpm(live: boolean, nosave?: boolean): boolean {
-  if (!isConfigValueValid("show live speed", live, ["boolean"])) return false;
-
-  config.showLiveWpm = live;
-  saveToLocalStorage("showLiveWpm", nosave);
-  ConfigEvent.dispatch("showLiveWpm", config.showLiveWpm);
-
-  return true;
-}
-
-export function setShowLiveAcc(live: boolean, nosave?: boolean): boolean {
-  if (!isConfigValueValid("show live acc", live, ["boolean"])) return false;
-
-  config.showLiveAcc = live;
-  saveToLocalStorage("showLiveAcc", nosave);
-  ConfigEvent.dispatch("showLiveAcc", config.showLiveAcc);
-
-  return true;
-}
-
-export function setShowLiveBurst(live: boolean, nosave?: boolean): boolean {
-  if (!isConfigValueValid("show live burst", live, ["boolean"])) return false;
-
-  config.showLiveBurst = live;
-  saveToLocalStorage("showLiveBurst", nosave);
-  ConfigEvent.dispatch("showLiveBurst", config.showLiveBurst);
-
-  return true;
-}
-
 export function setShowAverage(
-  value: MonkeyTypes.ShowAverage,
+  value: SharedTypes.Config.ShowAverage,
   nosave?: boolean
 ): boolean {
   if (
@@ -914,7 +842,7 @@ export function setShowAverage(
 }
 
 export function setHighlightMode(
-  mode: MonkeyTypes.HighlightMode,
+  mode: SharedTypes.Config.HighlightMode,
   nosave?: boolean
 ): boolean {
   if (
@@ -944,14 +872,14 @@ export function setHighlightMode(
 }
 
 export function setTapeMode(
-  mode: MonkeyTypes.TapeMode,
+  mode: SharedTypes.Config.TapeMode,
   nosave?: boolean
 ): boolean {
   if (!isConfigValueValid("tape mode", mode, [["off", "letter", "word"]])) {
     return false;
   }
 
-  if (mode !== "off" && config.showAllLines === true) {
+  if (mode !== "off" && config.showAllLines) {
     setShowAllLines(false, true);
   }
 
@@ -973,10 +901,12 @@ export function setHideExtraLetters(val: boolean, nosave?: boolean): boolean {
 }
 
 export function setTimerStyle(
-  style: MonkeyTypes.TimerStyle,
+  style: SharedTypes.Config.TimerStyle,
   nosave?: boolean
 ): boolean {
-  if (!isConfigValueValid("timer style", style, [["bar", "text", "mini"]])) {
+  if (
+    !isConfigValueValid("timer style", style, [["off", "bar", "text", "mini"]])
+  ) {
     return false;
   }
 
@@ -987,8 +917,57 @@ export function setTimerStyle(
   return true;
 }
 
+export function setLiveSpeedStyle(
+  style: SharedTypes.Config.LiveSpeedAccBurstStyle,
+  nosave?: boolean
+): boolean {
+  if (
+    !isConfigValueValid("live speed style", style, [["off", "text", "mini"]])
+  ) {
+    return false;
+  }
+
+  config.liveSpeedStyle = style;
+  saveToLocalStorage("liveSpeedStyle", nosave);
+  ConfigEvent.dispatch("liveSpeedStyle", config.timerStyle);
+
+  return true;
+}
+
+export function setLiveAccStyle(
+  style: SharedTypes.Config.LiveSpeedAccBurstStyle,
+  nosave?: boolean
+): boolean {
+  if (!isConfigValueValid("live acc style", style, [["off", "text", "mini"]])) {
+    return false;
+  }
+
+  config.liveAccStyle = style;
+  saveToLocalStorage("liveAccStyle", nosave);
+  ConfigEvent.dispatch("liveAccStyle", config.timerStyle);
+
+  return true;
+}
+
+export function setLiveBurstStyle(
+  style: SharedTypes.Config.LiveSpeedAccBurstStyle,
+  nosave?: boolean
+): boolean {
+  if (
+    !isConfigValueValid("live burst style", style, [["off", "text", "mini"]])
+  ) {
+    return false;
+  }
+
+  config.liveBurstStyle = style;
+  saveToLocalStorage("liveBurstStyle", nosave);
+  ConfigEvent.dispatch("liveBurstStyle", config.timerStyle);
+
+  return true;
+}
+
 export function setTimerColor(
-  color: MonkeyTypes.TimerColor,
+  color: SharedTypes.Config.TimerColor,
   nosave?: boolean
 ): boolean {
   if (
@@ -1001,46 +980,13 @@ export function setTimerColor(
 
   config.timerColor = color;
 
-  $("#timer").removeClass("timerSub");
-  $("#timer").removeClass("timerText");
-  $("#timer").removeClass("timerMain");
-
-  $("#timerNumber").removeClass("timerSub");
-  $("#timerNumber").removeClass("timerText");
-  $("#timerNumber").removeClass("timerMain");
-
-  $("#largeLiveWpmAndAcc").removeClass("timerSub");
-  $("#largeLiveWpmAndAcc").removeClass("timerText");
-  $("#largeLiveWpmAndAcc").removeClass("timerMain");
-
-  $("#miniTimerAndLiveWpm").removeClass("timerSub");
-  $("#miniTimerAndLiveWpm").removeClass("timerText");
-  $("#miniTimerAndLiveWpm").removeClass("timerMain");
-
-  if (color === "main") {
-    $("#timer").addClass("timerMain");
-    $("#timerNumber").addClass("timerMain");
-    $("#largeLiveWpmAndAcc").addClass("timerMain");
-    $("#miniTimerAndLiveWpm").addClass("timerMain");
-  } else if (color === "sub") {
-    $("#timer").addClass("timerSub");
-    $("#timerNumber").addClass("timerSub");
-    $("#largeLiveWpmAndAcc").addClass("timerSub");
-    $("#miniTimerAndLiveWpm").addClass("timerSub");
-  } else if (color === "text") {
-    $("#timer").addClass("timerText");
-    $("#timerNumber").addClass("timerText");
-    $("#largeLiveWpmAndAcc").addClass("timerText");
-    $("#miniTimerAndLiveWpm").addClass("timerText");
-  }
-
   saveToLocalStorage("timerColor", nosave);
   ConfigEvent.dispatch("timerColor", config.timerColor);
 
   return true;
 }
 export function setTimerOpacity(
-  opacity: MonkeyTypes.TimerOpacity,
+  opacity: SharedTypes.Config.TimerOpacity,
   nosave?: boolean
 ): boolean {
   if (
@@ -1075,10 +1021,7 @@ export function setKeyTips(keyTips: boolean, nosave?: boolean): boolean {
 }
 
 //mode
-export function setTimeConfig(
-  time: MonkeyTypes.TimeModes,
-  nosave?: boolean
-): boolean {
+export function setTimeConfig(time: number, nosave?: boolean): boolean {
   if (!isConfigValueValid("time", time, ["number"])) return false;
 
   if (!canSetConfigWithCurrentFunboxes("words", time, config.funbox)) {
@@ -1097,7 +1040,7 @@ export function setTimeConfig(
 
 //quote length
 export function setQuoteLength(
-  len: MonkeyTypes.QuoteLength[] | MonkeyTypes.QuoteLength,
+  len: SharedTypes.Config.QuoteLength[] | SharedTypes.Config.QuoteLength,
   nosave?: boolean,
   multipleMode?: boolean
 ): boolean {
@@ -1119,7 +1062,7 @@ export function setQuoteLength(
     if (len === null || isNaN(len) || len < -3 || len > 3) {
       len = 1;
     }
-    len = parseInt(len.toString()) as MonkeyTypes.QuoteLength;
+    len = parseInt(len.toString()) as SharedTypes.Config.QuoteLength;
 
     if (len === -1) {
       config.quoteLength = [0, 1, 2, 3];
@@ -1142,10 +1085,7 @@ export function setQuoteLength(
   return true;
 }
 
-export function setWordCount(
-  wordCount: MonkeyTypes.WordsModes,
-  nosave?: boolean
-): boolean {
+export function setWordCount(wordCount: number, nosave?: boolean): boolean {
   if (!isConfigValueValid("words", wordCount, ["number"])) return false;
 
   if (!canSetConfigWithCurrentFunboxes("words", wordCount, config.funbox)) {
@@ -1165,7 +1105,7 @@ export function setWordCount(
 
 //caret
 export function setSmoothCaret(
-  mode: MonkeyTypes.SmoothCaretMode,
+  mode: SharedTypes.Config["smoothCaret"],
   nosave?: boolean
 ): boolean {
   if (
@@ -1233,19 +1173,6 @@ export function setQuickRestartMode(
   return true;
 }
 
-export function previewFontFamily(font: string): boolean {
-  if (!isConfigValueValid("preview font family", font, ["string"])) {
-    return false;
-  }
-
-  document.documentElement.style.setProperty(
-    "--font",
-    '"' + font.replace(/_/g, " ") + '", "Roboto Mono", "Vazirmatn"'
-  );
-
-  return true;
-}
-
 //font family
 export function setFontFamily(font: string, nosave?: boolean): boolean {
   if (!isConfigValueValid("font family", font, ["string"])) return false;
@@ -1296,7 +1223,7 @@ export function setFreedomMode(freedom: boolean, nosave?: boolean): boolean {
 }
 
 export function setConfidenceMode(
-  cm: MonkeyTypes.ConfidenceMode,
+  cm: SharedTypes.Config.ConfidenceMode,
   nosave?: boolean
 ): boolean {
   if (!isConfigValueValid("confidence mode", cm, [["off", "on", "max"]])) {
@@ -1317,7 +1244,7 @@ export function setConfidenceMode(
 }
 
 export function setIndicateTypos(
-  value: MonkeyTypes.IndicateTypos,
+  value: SharedTypes.Config.IndicateTypos,
   nosave?: boolean
 ): boolean {
   if (
@@ -1363,7 +1290,7 @@ export function setTheme(name: string, nosave?: boolean): boolean {
   if (!isConfigValueValid("theme", name, ["string"])) return false;
 
   config.theme = name;
-  if (config.customTheme === true) setCustomTheme(false);
+  if (config.customTheme) setCustomTheme(false);
   saveToLocalStorage("theme", nosave);
   ConfigEvent.dispatch("theme", config.theme);
 
@@ -1424,7 +1351,7 @@ function setThemes(
 }
 
 export function setRandomTheme(
-  val: MonkeyTypes.RandomTheme,
+  val: SharedTypes.Config.RandomTheme,
   nosave?: boolean
 ): boolean {
   if (
@@ -1436,12 +1363,12 @@ export function setRandomTheme(
   }
 
   if (val === "custom") {
-    if (!Auth?.currentUser) {
+    if (!isAuthenticated()) {
       config.randomTheme = val;
       return false;
     }
     if (!DB.getSnapshot()) return true;
-    if (DB.getSnapshot()?.customThemes.length === 0) {
+    if (DB.getSnapshot()?.customThemes?.length === 0) {
       Notifications.add("You need to create a custom theme first", 0);
       config.randomTheme = "off";
       return false;
@@ -1516,7 +1443,7 @@ export function setLanguage(language: string, nosave?: boolean): boolean {
   if (!isConfigValueValid("language", language, ["string"])) return false;
 
   config.language = language;
-  AnalyticsController.log("changedLanguage", { language });
+  void AnalyticsController.log("changedLanguage", { language });
   saveToLocalStorage("language", nosave);
   ConfigEvent.dispatch("language", config.language);
 
@@ -1534,7 +1461,7 @@ export function setMonkey(monkey: boolean, nosave?: boolean): boolean {
 }
 
 export function setKeymapMode(
-  mode: MonkeyTypes.KeymapMode,
+  mode: SharedTypes.Config.KeymapMode,
   nosave?: boolean
 ): boolean {
   if (
@@ -1555,7 +1482,7 @@ export function setKeymapMode(
 }
 
 export function setKeymapLegendStyle(
-  style: MonkeyTypes.KeymapLegendStyle,
+  style: SharedTypes.Config.KeymapLegendStyle,
   nosave?: boolean
 ): boolean {
   if (
@@ -1597,7 +1524,7 @@ export function setKeymapLegendStyle(
 }
 
 export function setKeymapStyle(
-  style: MonkeyTypes.KeymapStyle,
+  style: SharedTypes.Config.KeymapStyle,
   nosave?: boolean
 ): boolean {
   if (
@@ -1635,7 +1562,7 @@ export function setKeymapLayout(layout: string, nosave?: boolean): boolean {
 }
 
 export function setKeymapShowTopRow(
-  show: MonkeyTypes.KeymapShowTopRow,
+  show: SharedTypes.Config.KeymapShowTopRow,
   nosave?: boolean
 ): boolean {
   if (
@@ -1706,13 +1633,39 @@ export function setFontSize(fontSize: number, nosave?: boolean): boolean {
 
   config.fontSize = fontSize;
 
-  $("#words, #caret, #paceCaret, #miniTimerAndLiveWpm").css(
+  $("#caret, #paceCaret, #liveStatsMini, #typingTest").css(
     "fontSize",
     fontSize + "rem"
   );
 
   saveToLocalStorage("fontSize", nosave);
   ConfigEvent.dispatch("fontSize", config.fontSize, nosave);
+
+  // trigger a resize event to update the layout - handled in ui.ts:108
+  if (!nosave) $(window).trigger("resize");
+
+  return true;
+}
+
+export function setMaxLineWidth(
+  maxLineWidth: number,
+  nosave?: boolean
+): boolean {
+  if (!isConfigValueValid("max line width", maxLineWidth, ["number"])) {
+    return false;
+  }
+
+  if (maxLineWidth < 20 && maxLineWidth !== 0) {
+    maxLineWidth = 20;
+  }
+  if (maxLineWidth > 1000) {
+    maxLineWidth = 1000;
+  }
+
+  config.maxLineWidth = maxLineWidth;
+
+  saveToLocalStorage("maxLineWidth", nosave);
+  ConfigEvent.dispatch("maxLineWidth", config.maxLineWidth, nosave);
 
   // trigger a resize event to update the layout - handled in ui.ts:108
   $(window).trigger("resize");
@@ -1756,7 +1709,7 @@ export async function setCustomLayoutfluid(
   const customLayoutfluid = trimmed.replace(
     / /g,
     "#"
-  ) as MonkeyTypes.CustomLayoutFluid;
+  ) as SharedTypes.Config.CustomLayoutFluid;
 
   config.customLayoutfluid = customLayoutfluid;
   saveToLocalStorage("customLayoutfluid", nosave);
@@ -1766,7 +1719,7 @@ export async function setCustomLayoutfluid(
 }
 
 export function setCustomBackgroundSize(
-  value: MonkeyTypes.CustomBackgroundSize,
+  value: SharedTypes.Config.CustomBackgroundSize,
   nosave?: boolean
 ): boolean {
   if (
@@ -1785,7 +1738,7 @@ export function setCustomBackgroundSize(
 }
 
 export function setCustomBackgroundFilter(
-  array: MonkeyTypes.CustomBackgroundFilter,
+  array: SharedTypes.Config.CustomBackgroundFilter,
   nosave?: boolean
 ): boolean {
   if (!isConfigValueValid("custom background filter", array, ["numberArray"])) {
@@ -1800,7 +1753,7 @@ export function setCustomBackgroundFilter(
 }
 
 export function setMonkeyPowerLevel(
-  level: MonkeyTypes.MonkeyPowerLevel,
+  level: SharedTypes.Config.MonkeyPowerLevel,
   nosave?: boolean
 ): boolean {
   if (
@@ -1832,15 +1785,17 @@ export function setBurstHeatmap(value: boolean, nosave?: boolean): boolean {
   return true;
 }
 
-export function apply(
-  configToApply: MonkeyTypes.Config | MonkeyTypes.ConfigChanges
-): void {
-  if (!configToApply) return;
+export async function apply(
+  configToApply: SharedTypes.Config | MonkeyTypes.ConfigChanges
+): Promise<void> {
+  if (configToApply === undefined) return;
+
+  ConfigEvent.dispatch("fullConfigChange");
 
   configToApply = replaceLegacyValues(configToApply);
 
-  const configObj = configToApply as MonkeyTypes.Config;
-  (Object.keys(DefaultConfig) as (keyof MonkeyTypes.Config)[]).forEach(
+  const configObj = configToApply as SharedTypes.Config;
+  (Object.keys(DefaultConfig) as (keyof SharedTypes.Config)[]).forEach(
     (configKey) => {
       if (configObj[configKey] === undefined) {
         const newValue = DefaultConfig[configKey];
@@ -1849,6 +1804,7 @@ export function apply(
     }
   );
   if (configObj !== undefined && configObj !== null) {
+    setAds(configObj.ads, true);
     setThemeLight(configObj.themeLight, true);
     setThemeDark(configObj.themeDark, true);
     setThemes(
@@ -1858,7 +1814,7 @@ export function apply(
       configObj.autoSwitchTheme,
       true
     );
-    setCustomLayoutfluid(configObj.customLayoutfluid, true);
+    await setCustomLayoutfluid(configObj.customLayoutfluid, true);
     setCustomBackground(configObj.customBackground, true);
     setCustomBackgroundSize(configObj.customBackgroundSize, true);
     setCustomBackgroundFilter(configObj.customBackgroundFilter, true);
@@ -1870,6 +1826,7 @@ export function apply(
     setLanguage(configObj.language, true);
     setLayout(configObj.layout, true);
     setFontSize(configObj.fontSize, true);
+    setMaxLineWidth(configObj.maxLineWidth, true);
     setFreedomMode(configObj.freedomMode, true);
     setCaretStyle(configObj.caretStyle, true);
     setPaceCaretStyle(configObj.paceCaretStyle, true);
@@ -1881,6 +1838,9 @@ export function apply(
     setConfidenceMode(configObj.confidenceMode, true);
     setIndicateTypos(configObj.indicateTypos, true);
     setTimerStyle(configObj.timerStyle, true);
+    setLiveSpeedStyle(configObj.liveSpeedStyle, true);
+    setLiveAccStyle(configObj.liveAccStyle, true);
+    setLiveBurstStyle(configObj.liveBurstStyle, true);
     setTimerColor(configObj.timerColor, true);
     setTimerOpacity(configObj.timerOpacity, true);
     setKeymapMode(configObj.keymapMode, true);
@@ -1891,10 +1851,6 @@ export function apply(
     setFontFamily(configObj.fontFamily, true);
     setSmoothCaret(configObj.smoothCaret, true);
     setSmoothLineScroll(configObj.smoothLineScroll, true);
-    setShowLiveWpm(configObj.showLiveWpm, true);
-    setShowLiveAcc(configObj.showLiveAcc, true);
-    setShowLiveBurst(configObj.showLiveBurst, true);
-    setShowTimerProgress(configObj.showTimerProgress, true);
     setAlwaysShowDecimalPlaces(configObj.alwaysShowDecimalPlaces, true);
     setAlwaysShowWordsHistory(configObj.alwaysShowWordsHistory, true);
     setSingleListCommandLine(configObj.singleListCommandLine, true);
@@ -1911,7 +1867,6 @@ export function apply(
     setPaceCaret(configObj.paceCaret, true);
     setPaceCaretCustomSpeed(configObj.paceCaretCustomSpeed, true);
     setRepeatedPace(configObj.repeatedPace, true);
-    setPageWidth(configObj.pageWidth, true);
     setAccountChart(configObj.accountChart, true);
     setMinBurst(configObj.minBurst, true);
     setMinBurstCustomSpeed(configObj.minBurstCustomSpeed, true);
@@ -1919,8 +1874,6 @@ export function apply(
     setMinWpmCustomSpeed(configObj.minWpmCustomSpeed, true);
     setMinAcc(configObj.minAcc, true);
     setMinAccCustom(configObj.minAccCustom, true);
-    setNumbers(configObj.numbers, true);
-    setPunctuation(configObj.punctuation, true);
     setHighlightMode(configObj.highlightMode, true);
     setTypingSpeedUnit(configObj.typingSpeedUnit, true);
     setHideExtraLetters(configObj.hideExtraLetters, true);
@@ -1928,6 +1881,8 @@ export function apply(
     setStrictSpace(configObj.strictSpace, true);
     setOppositeShiftMode(configObj.oppositeShiftMode, true);
     setMode(configObj.mode, true);
+    setNumbers(configObj.numbers, true);
+    setPunctuation(configObj.punctuation, true);
     setMonkey(configObj.monkey, true);
     setRepeatQuotes(configObj.repeatQuotes, true);
     setMonkeyPowerLevel(configObj.monkeyPowerLevel, true);
@@ -1936,7 +1891,6 @@ export function apply(
     setLazyMode(configObj.lazyMode, true);
     setShowAverage(configObj.showAverage, true);
     setTapeMode(configObj.tapeMode, true);
-    setAds(configObj.ads, true);
 
     ConfigEvent.dispatch(
       "configApplied",
@@ -1946,18 +1900,18 @@ export function apply(
       config
     );
   }
+  ConfigEvent.dispatch("fullConfigChangeFinished");
 }
 
-export function reset(): void {
-  ConfigEvent.dispatch("fullConfigChange");
-  apply(DefaultConfig);
+export async function reset(): Promise<void> {
+  await apply(DefaultConfig);
   saveFullConfigToLocalStorage();
 }
 
-export function loadFromLocalStorage(): void {
+export async function loadFromLocalStorage(): Promise<void> {
   console.log("loading localStorage config");
   const newConfigString = window.localStorage.getItem("config");
-  let newConfig: MonkeyTypes.Config;
+  let newConfig: SharedTypes.Config;
   if (
     newConfigString !== undefined &&
     newConfigString !== null &&
@@ -1966,24 +1920,24 @@ export function loadFromLocalStorage(): void {
     try {
       newConfig = JSON.parse(newConfigString);
     } catch (e) {
-      newConfig = {} as MonkeyTypes.Config;
+      newConfig = {} as SharedTypes.Config;
     }
-    apply(newConfig);
+    await apply(newConfig);
     localStorageConfig = newConfig;
     saveFullConfigToLocalStorage(true);
   } else {
-    reset();
+    await reset();
   }
   // TestLogic.restart(false, true);
   loadDone();
 }
 
 function replaceLegacyValues(
-  configToApply: MonkeyTypes.Config | MonkeyTypes.ConfigChanges
-): MonkeyTypes.Config | MonkeyTypes.ConfigChanges {
-  const configObj = configToApply as MonkeyTypes.Config;
+  configToApply: SharedTypes.Config | MonkeyTypes.ConfigChanges
+): SharedTypes.Config | MonkeyTypes.ConfigChanges {
+  const configObj = configToApply as SharedTypes.Config;
 
-  //@ts-ignore
+  //@ts-expect-error
   if (configObj.quickTab === true) {
     configObj.quickRestart = "tab";
   }
@@ -1992,17 +1946,17 @@ function replaceLegacyValues(
     configObj.smoothCaret = configObj.smoothCaret ? "medium" : "off";
   }
 
-  //@ts-ignore
+  //@ts-expect-error
   if (configObj.swapEscAndTab === true) {
     configObj.quickRestart = "esc";
   }
 
-  //@ts-ignore
+  //@ts-expect-error
   if (configObj.alwaysShowCPM === true) {
     configObj.typingSpeedUnit = "cpm";
   }
 
-  //@ts-ignore
+  //@ts-expect-error
   if (configObj.showAverage === "wpm") {
     configObj.showAverage = "speed";
   }
@@ -2011,12 +1965,44 @@ function replaceLegacyValues(
     configObj.playSoundOnError = configObj.playSoundOnError ? "1" : "off";
   }
 
+  //@ts-expect-error
+  if (configObj.showTimerProgress === false) {
+    configObj.timerStyle = "off";
+  }
+
+  //@ts-expect-error
+  if (configObj.showLiveWpm === true) {
+    let val: SharedTypes.Config.LiveSpeedAccBurstStyle = "mini";
+    if (configObj.timerStyle !== "bar" && configObj.timerStyle !== "off") {
+      val = configObj.timerStyle;
+    }
+    configObj.liveSpeedStyle = val;
+  }
+
+  //@ts-expect-error
+  if (configObj.showLiveBurst === true) {
+    let val: SharedTypes.Config.LiveSpeedAccBurstStyle = "mini";
+    if (configObj.timerStyle !== "bar" && configObj.timerStyle !== "off") {
+      val = configObj.timerStyle;
+    }
+    configObj.liveBurstStyle = val;
+  }
+
+  //@ts-expect-error
+  if (configObj.showLiveAcc === true) {
+    let val: SharedTypes.Config.LiveSpeedAccBurstStyle = "mini";
+    if (configObj.timerStyle !== "bar" && configObj.timerStyle !== "off") {
+      val = configObj.timerStyle;
+    }
+    configObj.liveAccStyle = val;
+  }
+
   return configObj;
 }
 
 export function getConfigChanges(): MonkeyTypes.PresetConfig {
   const configChanges = {} as MonkeyTypes.PresetConfig;
-  (Object.keys(config) as (keyof MonkeyTypes.Config)[])
+  (Object.keys(config) as (keyof SharedTypes.Config)[])
     .filter((key) => {
       return config[key] !== DefaultConfig[key];
     })

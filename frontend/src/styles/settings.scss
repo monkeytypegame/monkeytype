@@ -1,6 +1,4 @@
 .pageSettings {
-  display: flex;
-  flex-direction: column;
   gap: 2rem;
 
   .tip {
@@ -31,9 +29,13 @@
     display: grid;
     gap: 2rem;
     &.quickNav .links {
-      display: grid;
-      grid-auto-flow: column;
+      width: 100%;
+      display: flex;
+      flex-wrap: wrap;
       text-align: center;
+      a {
+        flex-grow: 1;
+      }
     }
   }
 
@@ -64,7 +66,7 @@
       }
     }
 
-    &.autoSwitchThemeInputs {
+    &[data-config-name="autoSwitchThemeInputs"] {
       grid-template-areas: unset;
       grid-template-columns: 1fr 3fr 1fr 3fr;
       gap: 2rem;
@@ -82,7 +84,7 @@
       }
     }
 
-    &.customBackgroundFilter {
+    &[data-config-name="customBackgroundFilter"] {
       .groups {
         grid-area: buttons;
         display: grid;
@@ -405,7 +407,7 @@
         margin-left: 0;
         grid-auto-flow: dense;
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr)) !important;
+        grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr)) !important;
         gap: 0.5rem;
         .button {
           transition: transform 0.125s;

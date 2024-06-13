@@ -1,34 +1,10 @@
 import * as TestLogic from "../../test/test-logic";
 import * as TestUI from "../../test/test-ui";
 import * as PractiseWords from "../../test/practise-words";
-import * as Misc from "../../utils/misc";
 import * as Notifications from "../../elements/notifications";
-
-const copyWords: MonkeyTypes.CommandsSubgroup = {
-  title: "Are you sure...",
-  list: [
-    {
-      id: "copyNo",
-      display: "Nevermind",
-    },
-    {
-      id: "copyYes",
-      display: "Yes, I am sure",
-      exec: (): void => {
-        const words = Misc.getWords();
-
-        navigator.clipboard.writeText(words).then(
-          () => {
-            Notifications.add("Copied to clipboard", 1);
-          },
-          () => {
-            Notifications.add("Failed to copy!", -1);
-          }
-        );
-      },
-    },
-  ],
-};
+import * as TestInput from "../../test/test-input";
+import * as TestWords from "../../test/test-words";
+import Config from "../../config";
 
 const practiceSubgroup: MonkeyTypes.CommandsSubgroup = {
   title: "Practice words...",
@@ -119,7 +95,7 @@ const commands: MonkeyTypes.Command[] = [
     alias: "save",
     exec: (): void => {
       setTimeout(() => {
-        TestUI.screenshot();
+        void TestUI.screenshot();
       }, 500);
     },
     available: (): boolean => {
@@ -130,7 +106,22 @@ const commands: MonkeyTypes.Command[] = [
     id: "copyWordsToClipboard",
     display: "Copy words to clipboard",
     icon: "fa-copy",
-    subgroup: copyWords,
+    exec: (): void => {
+      const words = (
+        Config.mode === "zen"
+          ? TestInput.input.history
+          : TestWords.words.list.slice(0, TestInput.input.history.length)
+      ).join(" ");
+
+      navigator.clipboard.writeText(words).then(
+        () => {
+          Notifications.add("Copied to clipboard", 1);
+        },
+        () => {
+          Notifications.add("Failed to copy!", -1);
+        }
+      );
+    },
     available: (): boolean => {
       return TestUI.resultVisible;
     },
