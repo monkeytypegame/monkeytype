@@ -1237,5 +1237,12 @@
     "mainColor": "#b94189",
     "subColor": "#e094c2",
     "textColor": "#5c2954"
+  },
+  {
+    "name": "blossom",
+    "bgColor": "#10111b",
+    "mainColor": "#ff058d,
+    "subColor": "#9200ff",
+    "textColor": "#403a72"
   }
 ]
