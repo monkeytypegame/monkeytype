@@ -23,11 +23,7 @@ router.use(
 
 router.post(
   "/testData",
-  authenticateRequest({
-    noCache: true,
-    acceptApeKeys: true,
-  }),
-  checkIfUserIsAdmin(),
+  authenticateRequest(),
   validateRequest({
     body: {
       username: joi.string().required(),

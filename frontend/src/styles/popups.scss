@@ -37,9 +37,44 @@
     @extend .ffscroll;
     box-shadow: 0 0 0 0.2em var(--sub-alt-color);
 
+    &:has(> .inputs.withLabel) {
+      max-width: 75% !important;
+    }
+
     & > .title {
       font-size: 1.5rem;
       color: var(--sub-color);
+    }
+
+    .inputs.withLabel {
+      display: grid;
+      grid-template-columns: max-content auto;
+      grid-auto-flow: row;
+    }
+
+    .inputs {
+      div:has(> input[type="range"]) {
+        display: grid;
+        grid-auto-columns: auto 3rem;
+        grid-auto-flow: column;
+        gap: 0.5rem;
+
+        span {
+          text-align: right;
+        }
+      }
+    }
+  }
+}
+
+body.darkMode {
+  .popupWrapper,
+  .modalWrapper {
+    .modal .inputs {
+      input[type="date"]::-webkit-calendar-picker-indicator,
+      input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+        filter: invert(1);
+      }
     }
   }
 }
