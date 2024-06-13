@@ -8,9 +8,7 @@ import * as ConnectionState from "./states/connection";
 import * as FunboxList from "./test/funbox/funbox-list";
 //@ts-expect-error
 import Konami from "konami";
-import { envConfig } from "./constants/env-config";
 import * as ServerConfiguration from "./ape/server-configuration";
-import { showPopup } from "./modals/simple-modals";
 
 $(document).ready(() => {
   Misc.loadCSS("/css/slimselect.min.css", true);
@@ -70,16 +68,5 @@ $(document).ready(() => {
           void registration.unregister();
         }
       });
-    $("body").prepend(
-      `
-        <div class="devButtons">
-          <a class='button configureAPI' href='${envConfig.backendUrl}/configure/' target='_blank' aria-label="Configure API" data-balloon-pos="right"><i class="fas fa-fw fa-server"></i></a>
-          <button id="testData" class='button' aria-label="Test Data" data-balloon-pos="right"><i class="fas fa-fw fa-table"></i></button>
-        <div>
-        `
-    );
-    $(".devButtons").on("click", "#testData", () => {
-      showPopup("devTestData");
-    });
   }
 });
