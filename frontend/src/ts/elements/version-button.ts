@@ -1,11 +1,11 @@
 import { isDevEnvironment } from "../utils/misc";
 import * as Version from "../states/version";
 
-export function setText(text: string): void {
+function setText(text: string): void {
   $("footer .currentVersion .text").text(text);
 }
 
-export function setIndicatorVisible(state: boolean): void {
+function setIndicatorVisible(state: boolean): void {
   if (state) {
     $("#newVersionIndicator").removeClass("hidden");
   } else {
@@ -13,7 +13,7 @@ export function setIndicatorVisible(state: boolean): void {
   }
 }
 
-async function update(): Promise<void> {
+export async function update(): Promise<void> {
   if (isDevEnvironment()) {
     setText("localhost");
     return;
@@ -23,5 +23,3 @@ async function update(): Promise<void> {
   setText(version);
   setIndicatorVisible(isNew);
 }
-
-void update();

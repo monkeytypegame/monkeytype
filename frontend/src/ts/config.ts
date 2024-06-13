@@ -1908,7 +1908,7 @@ export async function reset(): Promise<void> {
   saveFullConfigToLocalStorage();
 }
 
-async function loadFromLocalStorage(): Promise<void> {
+export async function loadFromLocalStorage(): Promise<void> {
   console.log("loading localStorage config");
   const newConfigString = window.localStorage.getItem("config");
   let newConfig: SharedTypes.Config;
@@ -2015,7 +2015,5 @@ export function getConfigChanges(): MonkeyTypes.PresetConfig {
 export const loadPromise = new Promise((v) => {
   loadDone = v;
 });
-
-void loadFromLocalStorage();
 
 export default config;
