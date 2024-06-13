@@ -54,7 +54,6 @@ function addToGlobal(items: Record<string, unknown>): void {
 void loadFromLocalStorage();
 void VersionButton.update();
 void Focus.set(true, true);
-DevButtons.append();
 
 addToGlobal({
   snapshot: DB.getSnapshot,
@@ -74,4 +73,5 @@ if (isDevEnvironment()) {
   void import("jquery").then((jq) => {
     addToGlobal({ $: jq.default });
   });
+  DevButtons.append();
 }
