@@ -32,7 +32,7 @@ import AnimatedModal, {
   ShowOptions,
 } from "../utils/animated-modal";
 import { format as dateFormat } from "date-fns/format";
-import { buildTag } from "../utils/tag-builder";
+import { Attributes, buildTag } from "../utils/tag-builder";
 
 type CommonInput<TType, TValue> = {
   type: TType;
@@ -68,11 +68,12 @@ type DateInput = {
 type CheckboxInput = {
   label: string;
   placeholder?: never;
+  description?: string;
 } & CommonInput<"checkbox", boolean>;
 
 type NumberInput = {
-  min: number;
-  max: number;
+  min?: number;
+  max?: number;
 } & CommonInput<"number", number>;
 
 type CommonInputType =
@@ -273,20 +274,23 @@ class SimpleModal {
 
       const tagname = input.type === "textarea" ? "textarea" : "input";
       const classes = input.hidden ? ["hidden"] : undefined;
-      const attributes = {
+      const attributes: Attributes = {
         id: id,
         placeholder: input.placeholder ?? "",
         oninput: input.oninput ?? "",
         autocomplete: "off",
-        value:
-          input.type === "textarea"
-            ? undefined
-            : input.initVal?.toString() ?? "",
-        type: input.type === "textarea" ? undefined : input.type,
-      } as Record<string, string | undefined>;
-      const extras = [];
-      if (!input.hidden && !input.optional === true) extras.push("required");
-      if (input.disabled) extras.push("disabled");
+      };
+
+      if (input.type !== "textarea") {
+        attributes["value"] = input.initVal?.toString() ?? "";
+        attributes["type"] = input.type;
+      }
+      if (!input.hidden && !input.optional === true) {
+        attributes["required"] = true;
+      }
+      if (input.disabled) {
+        attributes["disabled"] = true;
+      }
 
       if (input.type === "textarea") {
         inputs.append(
@@ -294,7 +298,6 @@ class SimpleModal {
             tagname,
             classes,
             attributes,
-            extras,
             innerHTML: input.initVal,
           })
         );
@@ -307,6 +310,9 @@ class SimpleModal {
           class="${input.hidden ? "hidden" : ""}"
           ${input.initVal ? 'checked="checked"' : ""}>
         `;
+        if (input.description !== undefined) {
+          html += `<span>${input.description}</span>`;
+        }
         if (!this.showLabels) {
           html = `
           <label class="checkbox">
@@ -314,6 +320,8 @@ class SimpleModal {
             <div>${input.label}</div>
           </label>
         `;
+        } else {
+          html = `<div>${html}</div>`;
         }
         inputs.append(html);
       } else if (input.type === "range") {
@@ -324,12 +332,11 @@ class SimpleModal {
               classes,
               attributes: {
                 ...attributes,
-                min: input.min?.toString(),
-                max: input.max?.toString(),
+                min: input.min.toString(),
+                max: input.max.toString(),
                 step: input.step?.toString(),
                 oninput: "this.nextElementSibling.innerHTML = this.value",
               },
-              extras,
             })}
             <span>${input.initVal ?? ""}</span>
           </div>
@@ -342,30 +349,36 @@ class SimpleModal {
             break;
 
           case "datetime-local": {
-            if (input.min !== undefined)
+            if (input.min !== undefined) {
               attributes["min"] = dateFormat(
                 input.min,
                 "yyyy-MM-dd'T'HH:mm:ss"
               );
-            if (input.max !== undefined)
+            }
+            if (input.max !== undefined) {
               attributes["max"] = dateFormat(
                 input.max,
                 "yyyy-MM-dd'T'HH:mm:ss"
               );
-            if (input.initVal !== undefined)
+            }
+            if (input.initVal !== undefined) {
               attributes["value"] = dateFormat(
                 input.initVal,
                 "yyyy-MM-dd'T'HH:mm:ss"
               );
+            }
             break;
           }
           case "date": {
-            if (input.min !== undefined)
+            if (input.min !== undefined) {
               attributes["min"] = dateFormat(input.min, "yyyy-MM-dd");
-            if (input.max !== undefined)
+            }
+            if (input.max !== undefined) {
               attributes["max"] = dateFormat(input.max, "yyyy-MM-dd");
-            if (input.initVal !== undefined)
+            }
+            if (input.initVal !== undefined) {
               attributes["value"] = dateFormat(input.initVal, "yyyy-MM-dd");
+            }
             break;
           }
           case "number": {
@@ -374,7 +387,7 @@ class SimpleModal {
             break;
           }
         }
-        inputs.append(buildTag({ tagname, classes, attributes, extras }));
+        inputs.append(buildTag({ tagname, classes, attributes }));
       }
     });
 
@@ -1723,27 +1736,21 @@ list.forgotPassword = new SimpleModal({
 
 list.devTestData = new SimpleModal({
   id: "devTestData",
-  title: "Create test data",
+  title: "Create test results",
   showLabels: true,
   inputs: [
     {
       type: "text",
       label: "username",
       placeholder: "username",
-      initVal: "",
-      oninput: "$('#devTestData_2')[0].value=this.value+'@example.com'",
+      oninput:
+        "$('#devTestData_1 + span')[0].innerText='if checked, user will be created with '+this.value+'@example.com and password: password'",
     },
     {
-      type: "password",
-      label: "password",
-      placeholder: "password",
-      initVal: "",
-    },
-    {
-      type: "email",
-      label: "email",
-      initVal: "@example.com",
-      disabled: true,
+      type: "checkbox",
+      label: "create user",
+      description:
+        "if checked, user will be created with {username}@example.com and password: password",
     },
     {
       type: "date",
@@ -1773,21 +1780,19 @@ list.devTestData = new SimpleModal({
       step: 10,
     },
   ],
-  buttonText: "create data (might take a while)",
+  buttonText: "create results (might take a while)",
   execFn: async (
     _thisPopup,
     username,
-    password,
-    email,
+    createUser,
     firstTestTimestamp,
     lastTestTimestamp,
     minTestsPerDay,
     maxTestsPerDay
   ): Promise<ExecReturn> => {
-    email = "" + email; //avoid unused warning
     const request: Ape.Dev.CreateTestData = {
       username,
-      password,
+      createUser: createUser === "true",
     };
     if (firstTestTimestamp !== undefined && firstTestTimestamp.length > 0)
       request.firstTestTimestamp = Date.parse(firstTestTimestamp);

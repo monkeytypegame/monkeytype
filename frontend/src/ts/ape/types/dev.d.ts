@@ -1,7 +1,7 @@
 declare namespace Ape.Dev {
   type CreateTestData = {
     username: string;
-    password: string;
+    createUser?: boolean;
     firstTestTimestamp?: number;
     lastTestTimestamp?: number;
     minTestsPerDay?: number;

@@ -1,8 +1,8 @@
+export type Attributes = Record<string, string | true | undefined>;
 type TagOptions = {
   tagname: string;
   classes?: string[];
-  attributes?: Record<string, string | undefined>;
-  extras?: string[];
+  attributes?: Attributes;
   innerHTML?: string;
 };
 
@@ -10,7 +10,6 @@ export function buildTag({
   tagname,
   classes,
   attributes,
-  extras,
   innerHTML,
 }: TagOptions): string {
   let html = `<${tagname}`;
@@ -22,11 +21,8 @@ export function buildTag({
       Object.entries(attributes)
         .filter((it) => it[1] !== undefined)
         .sort((a, b) => a[0].localeCompare(b[0]))
-        .map((it) => `${it[0]}="${it[1]}"`)
+        .map((it) => (it[1] === true ? `${it[0]}` : `${it[0]}="${it[1]}"`))
         .join(" ");
-  }
-  if (extras !== undefined) {
-    html += " " + extras.join(" ");
   }
 
   if (innerHTML !== undefined) html += `>${innerHTML}</${tagname}>`;

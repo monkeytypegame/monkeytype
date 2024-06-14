@@ -9,6 +9,7 @@ import { roundTo2 } from "../../utils/misc";
 import { ObjectId } from "mongodb";
 import * as LeaderboardDal from "../../dal/leaderboards";
 import { isNumber } from "lodash";
+import MonkeyError from "../../utils/error";
 
 type CreateResultOptions = {
   firstTestTimestamp: Date;
@@ -27,8 +28,9 @@ const CREATE_RESULT_DEFAULT_OPTIONS: CreateResultOptions = {
 export async function createTestData(
   req: MonkeyTypes.Request
 ): Promise<MonkeyResponse> {
-  const { username, password } = req.body;
-  const user = await getOrCreateUser(username, password);
+  const { username, createUser } = req.body;
+  const user = await getOrCreateUser(username, "password", createUser);
+
   const { uid, email } = user;
 
   await createTestResults(user, req.body);
@@ -40,12 +42,15 @@ export async function createTestData(
 
 async function getOrCreateUser(
   username: string,
-  password: string
+  password: string,
+  createUser = false
 ): Promise<MonkeyTypes.DBUser> {
   const existingUser = await UserDal.findByName(username);
 
   if (existingUser !== undefined && existingUser !== null) {
     return existingUser;
+  } else if (createUser === false) {
+    throw new MonkeyError(404, `User ${username} does not exist.`);
   }
 
   const email = username + "@example.com";

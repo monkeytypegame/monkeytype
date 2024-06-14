@@ -17,16 +17,14 @@ describe("simple-modals", () => {
           attributes: {
             id: "4711",
             oninput: "console.log()",
+            required: true,
+            checked: true,
             missing: undefined,
           },
         })
-      ).toBe('<input id="4711" oninput="console.log()" />');
+      ).toBe('<input checked id="4711" oninput="console.log()" required />');
     });
-    it("builds with extras", () => {
-      expect(
-        buildTag({ tagname: "input", extras: ["readonly", "required"] })
-      ).toBe("<input readonly required />");
-    });
+
     it("builds with innerHtml", () => {
       expect(
         buildTag({ tagname: "textarea", innerHTML: "<h1>Hello</h1>" })
@@ -37,8 +35,12 @@ describe("simple-modals", () => {
         buildTag({
           tagname: "textarea",
           classes: ["hidden", "bold"],
-          attributes: { id: "4711", oninput: "console.log()" },
-          extras: ["readonly", "required"],
+          attributes: {
+            id: "4711",
+            oninput: "console.log()",
+            readonly: true,
+            required: true,
+          },
           innerHTML: "<h1>Hello</h1>",
         })
       ).toBe(

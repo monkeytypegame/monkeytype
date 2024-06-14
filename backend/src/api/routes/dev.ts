@@ -2,7 +2,6 @@ import { Router } from "express";
 import { authenticateRequest } from "../../middlewares/auth";
 import {
   asyncHandler,
-  checkIfUserIsAdmin,
   validateConfiguration,
   validateRequest,
 } from "../../middlewares/api-utils";
@@ -27,7 +26,7 @@ router.post(
   validateRequest({
     body: {
       username: joi.string().required(),
-      password: joi.string().required().min(6),
+      createUser: joi.boolean().optional(),
       firstTestTimestamp: joi.number().optional(),
       lastTestTimestamp: joi.number().optional(),
       minTestsPerDay: joi.number().optional(),
