@@ -11,7 +11,7 @@ import Konami from "konami";
 import { envConfig } from "./constants/env-config";
 import * as ServerConfiguration from "./ape/server-configuration";
 
-$(document).ready(() => {
+$((): void => {
   Misc.loadCSS("/css/slimselect.min.css", true);
   Misc.loadCSS("/css/balloon.min.css", true);
 
