@@ -83,6 +83,7 @@ input[type="range"] {
 label.checkbox {
   display: flex;
   gap: 0.5em;
+  user-select: none;
 }
 
 label.checkboxWithSub {
