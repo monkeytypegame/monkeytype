@@ -147,6 +147,10 @@ input[type="checkbox"] {
   }
 }
 
+label:has(input[type="checkbox"][disabled]) {
+  color: color-mix(in srgb, transparent 66%, var(--text-color));
+}
+
 input[type="color"] {
   height: 3px; //i dont know why its 3, but safari gods have spoken - 3 makes it work
   opacity: 0;
