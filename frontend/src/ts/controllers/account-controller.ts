@@ -12,7 +12,7 @@ import * as PageTransition from "../states/page-transition";
 import * as ActivePage from "../states/active-page";
 import * as LoadingPage from "../pages/loading";
 import * as LoginPage from "../pages/login";
-import * as ResultFilters from "../account/result-filters";
+import * as ResultFilters from "../elements/account/result-filters";
 import * as TagController from "./tag-controller";
 import * as RegisterCaptchaModal from "../modals/register-captcha";
 import * as URLHandler from "../utils/url-handler";
