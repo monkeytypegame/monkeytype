@@ -594,23 +594,16 @@
   }
 }
 
-#shareTestSettingsPopup {
-  background: var(--bg-color);
-  border-radius: var(--roundness);
-  padding: 2rem;
-  display: grid;
-  gap: 1rem;
-  width: 500px;
-  .title {
-    font-size: 1.5rem;
-    color: var(--sub-color);
-  }
-  .subgroup {
-    padding-left: 2rem;
-  }
-  .tooLongWarning {
-    font-size: 0.75rem;
-    color: var(--error-color);
+#shareTestSettingsModal {
+  .modal {
+    max-width: 600px;
+    .subgroup {
+      padding-left: 2rem;
+    }
+    .tooLongWarning {
+      font-size: 0.75rem;
+      color: var(--error-color);
+    }
   }
 }
 #cookiesModal {
@@ -937,17 +930,6 @@
       line-height: 1.2rem;
       min-height: 5rem;
     }
-    .characterCount {
-      position: absolute;
-      top: -1.75rem;
-      right: 0.25rem;
-      color: var(--sub-color);
-      -webkit-user-select: none;
-      user-select: none;
-      &.red {
-        color: var(--error-color);
-      }
-    }
   }
 }
 #apeKeysModal {
@@ -1167,18 +1149,6 @@
       line-height: 1.2rem;
       min-height: 5rem;
     }
-
-    .characterCount {
-      position: absolute;
-      top: -1.75rem;
-      right: 0.25rem;
-      color: var(--sub-color);
-      -webkit-user-select: none;
-      user-select: none;
-      &.red {
-        color: var(--error-color);
-      }
-    }
   }
 }
 
@@ -1205,18 +1175,6 @@
       padding: 10px;
       line-height: 1.2rem;
       min-height: 5rem;
-    }
-
-    .characterCount {
-      position: absolute;
-      top: -1.75rem;
-      right: 0.25rem;
-      color: var(--sub-color);
-      -webkit-user-select: none;
-      user-select: none;
-      &.red {
-        color: var(--error-color);
-      }
     }
   }
 }

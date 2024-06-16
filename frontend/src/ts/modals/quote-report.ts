@@ -7,6 +7,7 @@ import * as CaptchaController from "../controllers/captcha-controller";
 import { removeLanguageSize } from "../utils/strings";
 import SlimSelect from "slim-select";
 import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
+import { CharacterCounter } from "../elements/character-counter";
 
 type State = {
   quoteToReport?: MonkeyTypes.Quote;
@@ -42,7 +43,6 @@ export async function show(
       $("#quoteReportModal .quote").text(state.quoteToReport?.text as string);
       $("#quoteReportModal .reason").val("Grammatical error");
       $("#quoteReportModal .comment").val("");
-      $("#quoteReportModal .characterCount").text("-");
 
       state.reasonSelect = new SlimSelect({
         select: "#quoteReportModal .reason",
@@ -50,6 +50,11 @@ export async function show(
           showSearch: false,
         },
       });
+
+      new CharacterCounter(
+        $("#quoteReportModal .comment") as JQuery<HTMLTextAreaElement>,
+        250
+      );
     },
   });
 }
@@ -115,15 +120,6 @@ async function submitReport(): Promise<void> {
 }
 
 async function setup(modalEl: HTMLElement): Promise<void> {
-  modalEl.querySelector(".comment")?.addEventListener("input", () => {
-    const len = ($("#quoteReportModal .comment").val() as string).length;
-    $("#quoteReportModal .characterCount").text(len);
-    if (len > 250) {
-      $("#quoteReportModal .characterCount").addClass("red");
-    } else {
-      $("#quoteReportModal .characterCount").removeClass("red");
-    }
-  });
   modalEl.querySelector("button")?.addEventListener("click", async () => {
     await submitReport();
   });

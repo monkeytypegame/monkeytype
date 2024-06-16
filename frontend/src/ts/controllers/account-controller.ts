@@ -5,7 +5,6 @@ import * as AccountButton from "../elements/account-button";
 import * as Misc from "../utils/misc";
 import * as JSONData from "../utils/json-data";
 import * as Settings from "../pages/settings";
-import * as AllTimeStats from "../account/all-time-stats";
 import * as DB from "../db";
 import * as TestLogic from "../test/test-logic";
 import * as Loader from "../elements/loader";
@@ -13,7 +12,7 @@ import * as PageTransition from "../states/page-transition";
 import * as ActivePage from "../states/active-page";
 import * as LoadingPage from "../pages/loading";
 import * as LoginPage from "../pages/login";
-import * as ResultFilters from "../account/result-filters";
+import * as ResultFilters from "../elements/account/result-filters";
 import * as TagController from "./tag-controller";
 import * as RegisterCaptchaModal from "../modals/register-captcha";
 import * as URLHandler from "../utils/url-handler";
@@ -463,7 +462,6 @@ export function signOut(): void {
       Notifications.add("Signed out", 0, {
         duration: 2,
       });
-      AllTimeStats.clear();
       Settings.hideAccountSection();
       void AccountButton.update();
       navigate("/login");
@@ -582,7 +580,6 @@ async function signUp(): Promise<void> {
 
     await updateProfile(createdAuthUser.user, { displayName: nname });
     await sendVerificationEmail();
-    AllTimeStats.clear();
     $("nav .textButton.account .text").text(nname);
     LoginPage.hidePreloader();
     await loadUser(createdAuthUser.user);
