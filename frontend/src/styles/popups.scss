@@ -594,23 +594,16 @@
   }
 }
 
-#shareTestSettingsPopup {
-  background: var(--bg-color);
-  border-radius: var(--roundness);
-  padding: 2rem;
-  display: grid;
-  gap: 1rem;
-  width: 500px;
-  .title {
-    font-size: 1.5rem;
-    color: var(--sub-color);
-  }
-  .subgroup {
-    padding-left: 2rem;
-  }
-  .tooLongWarning {
-    font-size: 0.75rem;
-    color: var(--error-color);
+#shareTestSettingsModal {
+  .modal {
+    max-width: 600px;
+    .subgroup {
+      padding-left: 2rem;
+    }
+    .tooLongWarning {
+      font-size: 0.75rem;
+      color: var(--error-color);
+    }
   }
 }
 #cookiesModal {
