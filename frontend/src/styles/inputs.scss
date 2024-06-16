@@ -15,6 +15,25 @@ textarea {
   }
 }
 
+.textareaWithCounter {
+  position: relative;
+
+  .char-counter {
+    position: absolute;
+    top: -1.75rem;
+    right: 0.25rem;
+    color: var(--sub-color);
+    -webkit-user-select: none;
+    user-select: none;
+    &.error {
+      color: var(--error-color);
+    }
+    &.warning {
+      color: color-mix(in srgb, var(--text-color) 50%, var(--error-color) 50%);
+    }
+  }
+}
+
 textarea {
   resize: vertical;
 }

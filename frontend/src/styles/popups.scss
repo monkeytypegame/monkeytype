@@ -937,17 +937,6 @@
       line-height: 1.2rem;
       min-height: 5rem;
     }
-    .characterCount {
-      position: absolute;
-      top: -1.75rem;
-      right: 0.25rem;
-      color: var(--sub-color);
-      -webkit-user-select: none;
-      user-select: none;
-      &.red {
-        color: var(--error-color);
-      }
-    }
   }
 }
 #apeKeysModal {
@@ -1167,18 +1156,6 @@
       line-height: 1.2rem;
       min-height: 5rem;
     }
-
-    .characterCount {
-      position: absolute;
-      top: -1.75rem;
-      right: 0.25rem;
-      color: var(--sub-color);
-      -webkit-user-select: none;
-      user-select: none;
-      &.red {
-        color: var(--error-color);
-      }
-    }
   }
 }
 
@@ -1205,18 +1182,6 @@
       padding: 10px;
       line-height: 1.2rem;
       min-height: 5rem;
-    }
-
-    .characterCount {
-      position: absolute;
-      top: -1.75rem;
-      right: 0.25rem;
-      color: var(--sub-color);
-      -webkit-user-select: none;
-      user-select: none;
-      &.red {
-        color: var(--error-color);
-      }
     }
   }
 }
