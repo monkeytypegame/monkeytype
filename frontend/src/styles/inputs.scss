@@ -25,7 +25,7 @@ textarea {
     color: var(--sub-color);
     -webkit-user-select: none;
     user-select: none;
-    &.red {
+    &.warning {
       color: var(--error-color);
     }
   }

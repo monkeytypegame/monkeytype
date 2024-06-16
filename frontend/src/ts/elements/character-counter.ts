@@ -38,9 +38,9 @@ export class CharacterCounter {
 
     const remainingPercentage = (remaining / this.maxLength) * 100;
     if (remainingPercentage < 10) {
-      this.counterElement.addClass("red");
+      this.counterElement.addClass("warning");
     } else {
-      this.counterElement.removeClass("red");
+      this.counterElement.removeClass("warning");
     }
   }
 
