@@ -790,12 +790,15 @@ export async function updateWordElement(
     const funbox = FunboxList.get(Config.funbox).find(
       (f) => f.functions?.getWordHtml
     );
+    const isTts = FunboxList.get(Config.funbox).find((it) => it.name === "tts");
+
     for (let i = 0; i < input.length; i++) {
       const charCorrect = currentWord[i] === input[i];
 
       let correctClass = "correct";
       if (Config.highlightMode === "off") {
         correctClass = "";
+        if (isTts) correctClass = "visible";
       }
 
       let currentLetter = currentWord[i] as string;
