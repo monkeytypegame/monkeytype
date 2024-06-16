@@ -384,7 +384,12 @@
   },
   {
     "name": "armenian",
-    "languages": ["armenian_western", "armenian_western_1k"]
+    "languages": [
+      "armenian",
+      "armenian_1k",
+      "armenian_western",
+      "armenian_western_1k"
+    ]
   },
   {
     "name": "myanmar",
