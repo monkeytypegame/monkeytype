@@ -79,6 +79,10 @@ describe("test-activity-calendar.ts", () => {
 
         expect(calendar.getMonths()).toEqual([
           {
+            text: "",
+            weeks: 2,
+          },
+          {
             text: "may",
             weeks: 4,
           },
@@ -353,6 +357,66 @@ describe("test-activity-calendar.ts", () => {
           {
             text: "may",
             weeks: 4,
+          },
+        ]);
+      });
+      it("no double month for for 16th june", () => {
+        //set today
+        vi.setSystemTime(getDate("2024-06-16"));
+        const calendar = new TestActivityCalendar([], getDate("2024-06-01"));
+
+        expect(calendar.getMonths()).toEqual([
+          {
+            text: "",
+            weeks: 2,
+          },
+          {
+            text: "jul",
+            weeks: 5,
+          },
+          {
+            text: "aug",
+            weeks: 4,
+          },
+          {
+            text: "sep",
+            weeks: 4,
+          },
+          {
+            text: "oct",
+            weeks: 5,
+          },
+          {
+            text: "nov",
+            weeks: 4,
+          },
+          {
+            text: "dec",
+            weeks: 5,
+          },
+          {
+            text: "jan",
+            weeks: 4,
+          },
+          {
+            text: "feb",
+            weeks: 4,
+          },
+          {
+            text: "mar",
+            weeks: 5,
+          },
+          {
+            text: "apr",
+            weeks: 4,
+          },
+          {
+            text: "may",
+            weeks: 4,
+          },
+          {
+            text: "jun",
+            weeks: 3,
           },
         ]);
       });
