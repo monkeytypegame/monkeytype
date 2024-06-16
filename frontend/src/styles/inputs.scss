@@ -25,8 +25,11 @@ textarea {
     color: var(--sub-color);
     -webkit-user-select: none;
     user-select: none;
-    &.warning {
+    &.error {
       color: var(--error-color);
+    }
+    &.warning {
+      color: color-mix(in srgb, var(--text-color) 50%, var(--error-color) 50%);
     }
   }
 }

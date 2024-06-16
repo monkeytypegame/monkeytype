@@ -37,10 +37,14 @@ export class CharacterCounter {
     this.counterElement.text(`${currentLength}/${maxLength}`);
 
     const remainingPercentage = (remaining / this.maxLength) * 100;
-    if (remainingPercentage < 10) {
+
+    this.counterElement.removeClass("warning");
+    this.counterElement.removeClass("error");
+
+    if (remainingPercentage === 0) {
+      this.counterElement.addClass("error");
+    } else if (remainingPercentage < 10) {
       this.counterElement.addClass("warning");
-    } else {
-      this.counterElement.removeClass("warning");
     }
   }
 
