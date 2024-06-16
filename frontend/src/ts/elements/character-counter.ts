@@ -8,9 +8,7 @@ export class CharacterCounter {
     this.textareaElement = textareaElement;
     this.maxLength = maxLength;
 
-    if (this.textareaElement.attr("maxlength") == undefined) {
-      this.textareaElement.attr("maxlength", this.maxLength.toString());
-    }
+    this.textareaElement.attr("maxlength", this.maxLength.toString());
 
     // Wrap the textarea element in a div if not already wrapped
     if (!this.textareaElement.parent().hasClass("textareaWithCounter")) {
