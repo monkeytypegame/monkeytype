@@ -273,4 +273,8 @@
       aspect-ratio: 1;
     }
   }
+  .popupWrapper .modal .inputs.withLabel,
+  .modalWrapper .modal .inputs.withLabel {
+    grid-template-columns: 1fr;
+  }
 }

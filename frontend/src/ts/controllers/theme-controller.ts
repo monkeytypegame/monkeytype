@@ -181,6 +181,12 @@ async function apply(
   $("#metaThemeColor").attr("content", colors.bg);
   // }
   updateFooterThemeName(isPreview ? themeName : undefined);
+
+  if (isColorDark(await ThemeColors.get("bg"))) {
+    $("body").addClass("darkMode");
+  } else {
+    $("body").removeClass("darkMode");
+  }
 }
 
 function updateFooterThemeName(nameOverride?: string): void {

@@ -8,7 +8,6 @@ import * as ConnectionState from "./states/connection";
 import * as FunboxList from "./test/funbox/funbox-list";
 //@ts-expect-error
 import Konami from "konami";
-import { envConfig } from "./constants/env-config";
 import * as ServerConfiguration from "./ape/server-configuration";
 
 $((): void => {
@@ -69,8 +68,5 @@ $((): void => {
           void registration.unregister();
         }
       });
-    $("body").prepend(
-      `<a class='button configureAPI' href='${envConfig.backendUrl}/configure/' target='_blank' aria-label="Configure API" data-balloon-pos="right"><i class="fas fa-fw fa-server"></i></a>`
-    );
   }
 });
