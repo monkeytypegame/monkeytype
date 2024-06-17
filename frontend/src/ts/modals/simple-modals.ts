@@ -5,7 +5,7 @@ import * as UpdateConfig from "../config";
 import * as Loader from "../elements/loader";
 import * as Notifications from "../elements/notifications";
 import * as Settings from "../pages/settings";
-import * as ThemePicker from "../settings/theme-picker";
+import * as ThemePicker from "../elements/settings/theme-picker";
 import * as CustomText from "../test/custom-text";
 import * as AccountButton from "../elements/account-button";
 import { FirebaseError } from "firebase/app";

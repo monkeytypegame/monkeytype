@@ -15,6 +15,25 @@ textarea {
   }
 }
 
+.textareaWithCounter {
+  position: relative;
+
+  .char-counter {
+    position: absolute;
+    top: -1.75rem;
+    right: 0.25rem;
+    color: var(--sub-color);
+    -webkit-user-select: none;
+    user-select: none;
+    &.error {
+      color: var(--error-color);
+    }
+    &.warning {
+      color: color-mix(in srgb, var(--text-color) 50%, var(--error-color) 50%);
+    }
+  }
+}
+
 textarea {
   resize: vertical;
 }
@@ -64,6 +83,7 @@ input[type="range"] {
 label.checkbox {
   display: flex;
   gap: 0.5em;
+  user-select: none;
 }
 
 label.checkboxWithSub {
@@ -125,6 +145,10 @@ input[type="checkbox"] {
       color: var(--main-color);
     }
   }
+}
+
+label:has(input[type="checkbox"][disabled]) {
+  color: color-mix(in srgb, transparent 66%, var(--text-color));
 }
 
 input[type="color"] {

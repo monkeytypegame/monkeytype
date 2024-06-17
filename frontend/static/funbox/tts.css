@@ -5,3 +5,15 @@
 #words .word {
   color: transparent !important;
 }
+
+#words .word letter.visible {
+  color: var(--sub-color) !important;
+}
+
+#words.flipped .word letter.visible {
+  color: var(--text-color) !important;
+}
+
+#words.flipped.colorfulMode .word letter.visible {
+  color: var(--main-color) !important;
+}

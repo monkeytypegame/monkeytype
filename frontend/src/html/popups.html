@@ -131,8 +131,9 @@
   </div>
 </dialog>
 
-<div id="shareTestSettingsPopupWrapper" class="popupWrapper hidden">
-  <div id="shareTestSettingsPopup">
+<dialog id="shareTestSettingsModal" class="modalWrapper hidden">
+  <!-- <div id="shareTestSettingsPopup"> -->
+  <div class="modal">
     <div class="title">Share test settings</div>
     <label class="checkboxWithSub mode">
       <input type="checkbox" setting="mode" />
@@ -184,8 +185,9 @@
       <i class="fas fa-fw fa-exclamation-triangle"></i>
       <span>The URL is over 2000 characters long - it might not work</span>
     </div>
+    <!-- </div> -->
   </div>
-</div>
+</dialog>
 
 <dialog id="mobileTestConfigModal" class="modalWrapper hidden">
   <div class="modal">
@@ -765,10 +767,7 @@
       </li>
     </ul>
     <label>quote</label>
-    <div style="position: relative">
-      <textarea class="newQuoteText" type="text" autocomplete="off"></textarea>
-      <div class="characterCount">-</div>
-    </div>
+    <textarea class="newQuoteText" type="text" autocomplete="off"></textarea>
     <label>source</label>
     <input class="newQuoteSource" type="text" autocomplete="off" />
     <label>language</label>
@@ -821,10 +820,7 @@
       <option value="Incorrect source">Incorrect source</option>
     </select>
     <label>comment</label>
-    <div style="position: relative">
-      <textarea class="comment" type="text" autocomplete="off"></textarea>
-      <div class="characterCount">-</div>
-    </div>
+    <textarea class="comment" type="text" autocomplete="off"></textarea>
     <div
       class="g-recaptcha"
       data-sitekey="6Lc-V8McAAAAAJ7s6LGNe7MBZnRiwbsbiWts87aj"
@@ -851,10 +847,7 @@
       <option value="Suspected cheating">Suspected cheating</option>
     </select>
     <label>comment</label>
-    <div style="position: relative">
-      <textarea class="comment" type="text" autocomplete="off"></textarea>
-      <div class="characterCount">-</div>
-    </div>
+    <textarea class="comment" type="text" autocomplete="off"></textarea>
     <div
       class="g-recaptcha"
       data-sitekey="6Lc-V8McAAAAAJ7s6LGNe7MBZnRiwbsbiWts87aj"
@@ -1219,29 +1212,51 @@
     </div>
     <div>
       <label>bio</label>
-      <textarea class="bio" type="text" autocomplete="off"></textarea>
+      <textarea
+        class="bio"
+        type="text"
+        autocomplete="off"
+        maxlength="250"
+      ></textarea>
     </div>
     <div>
       <label>keyboard</label>
-      <textarea class="keyboard" type="text" autocomplete="off"></textarea>
+      <textarea
+        class="keyboard"
+        type="text"
+        autocomplete="off"
+        maxlength="75"
+      ></textarea>
     </div>
     <div>
       <label>github</label>
       <div class="socialURL">
         <p>https://github.com/</p>
-        <input class="github" type="text" value="" placeholder="username" />
+        <input
+          class="github"
+          type="text"
+          value=""
+          placeholder="username"
+          maxlength="39"
+        />
       </div>
     </div>
     <div>
       <label>twitter</label>
       <div class="socialURL">
         <p>https://twitter.com/</p>
-        <input class="twitter" type="text" value="" placeholder="username" />
+        <input
+          class="twitter"
+          type="text"
+          value=""
+          placeholder="username"
+          maxlength="20"
+        />
       </div>
     </div>
     <div>
       <label>website</label>
-      <input class="website" type="text" value="" />
+      <input class="website" type="text" value="" maxlength="200" />
     </div>
     <div>
       <label>badge</label>

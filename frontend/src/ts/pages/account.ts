@@ -1,11 +1,10 @@
 import * as DB from "../db";
-import * as ResultFilters from "../account/result-filters";
+import * as ResultFilters from "../elements/account/result-filters";
 import * as ThemeColors from "../elements/theme-colors";
 import * as ChartController from "../controllers/chart-controller";
 import Config, * as UpdateConfig from "../config";
-import * as MiniResultChart from "../account/mini-result-chart";
-import * as AllTimeStats from "../account/all-time-stats";
-import * as PbTables from "../account/pb-tables";
+import * as MiniResultChart from "../elements/account/mini-result-chart";
+import * as PbTables from "../elements/account/pb-tables";
 import * as LoadingPage from "./loading";
 import * as Focus from "../test/focus";
 import * as TodayTracker from "../test/today-tracker";
@@ -207,7 +206,6 @@ async function fillContent(): Promise<void> {
   LoadingPage.updateBar(100);
   console.log("updating account page");
   ThemeColors.update();
-  AllTimeStats.update();
 
   const snapshot = DB.getSnapshot();
   if (!snapshot) return;

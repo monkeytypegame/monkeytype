@@ -10,7 +10,7 @@ import * as FunboxList from "./test/funbox/funbox-list";
 import Konami from "konami";
 import * as ServerConfiguration from "./ape/server-configuration";
 
-$(document).ready(() => {
+$((): void => {
   Misc.loadCSS("/css/slimselect.min.css", true);
   Misc.loadCSS("/css/balloon.min.css", true);
 
