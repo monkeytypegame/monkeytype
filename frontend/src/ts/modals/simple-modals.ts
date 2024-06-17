@@ -303,13 +303,8 @@ class SimpleModal {
           })
         );
       } else if (input.type === "checkbox") {
-        let html = `
-        <input
-          id="${id}"
-          type="checkbox"
-          class="${input.hidden ? "hidden" : ""}"
-          ${input.initVal ? 'checked="checked"' : ""}>
-        `;
+        let html = buildTag({ tagname, classes, attributes });
+
         if (input.description !== undefined) {
           html += `<span>${input.description}</span>`;
         }
@@ -808,14 +803,6 @@ list.removePasswordAuth = new SimpleModal({
       label: `I understand I will lose access to my Monkeytype account if my ${
         isUsingGoogleAuthentication() ? "Google" : "GitHub"
       } account is lost or disabled.`,
-      oninput: (event): void => {
-        const target = event.target as HTMLInputElement;
-
-        $("#simpleModal .submitButton").prop(
-          "disabled",
-          target.checked ? "" : "disabled"
-        );
-      },
     },
   ],
   onlineOnly: true,
@@ -854,9 +841,6 @@ list.removePasswordAuth = new SimpleModal({
   },
   beforeInitFn: (): void => {
     if (!isAuthenticated()) return;
-  },
-  beforeShowFn: (): void => {
-    $("#simpleModal .submitButton").prop("disabled", "disabled");
   },
 });
 
@@ -1684,6 +1668,7 @@ list.updateCustomTheme = new SimpleModal({
       type: "checkbox",
       initVal: false,
       label: "Update custom theme to current colors",
+      optional: true,
     },
   ],
   buttonText: "update",
@@ -1829,6 +1814,7 @@ list.devGenerateData = new SimpleModal({
       label: "create user",
       description:
         "if checked, user will be created with {username}@example.com and password: password",
+      optional: true,
     },
     {
       type: "date",
