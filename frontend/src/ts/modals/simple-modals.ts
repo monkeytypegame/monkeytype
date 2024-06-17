@@ -690,9 +690,8 @@ list.removePasswordAuth = new SimpleModal({
   ],
   onlineOnly: true,
   buttonText: "reauthenticate to remove",
-  execFn: async (_thisPopup, password): Promise<ExecReturn> => {
+  execFn: async (_thisPopup): Promise<ExecReturn> => {
     const reauth = await reauthenticate({
-      password,
       excludeMethod: "password",
     });
     if (reauth.status !== 1) {
@@ -723,7 +722,7 @@ list.removePasswordAuth = new SimpleModal({
       message: "Password authentication removed",
     };
   },
-  beforeInitFn: (thisPopup): void => {
+  beforeInitFn: (): void => {
     if (!isAuthenticated()) return;
   },
 });

@@ -460,8 +460,8 @@
 
     &.passwordAuthSettings {
       .buttons {
-        grid-template-rows: 1fr 1fr;
-        grid-template-columns: minmax(4.5rem, 1fr) minmax(4.5rem, 1fr);
+        grid-template-rows: repeat(auto-fill, 1fr);
+        grid-template-columns: repeat(2, minmax(4.5rem, 1fr));
 
         #removePasswordAuth {
           grid-column: span 2;
