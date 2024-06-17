@@ -1,5 +1,5 @@
 declare namespace Ape.Dev {
-  type CreateTestData = {
+  type GenerateData = {
     username: string;
     createUser?: boolean;
     firstTestTimestamp?: number;
@@ -7,7 +7,7 @@ declare namespace Ape.Dev {
     minTestsPerDay?: number;
     maxTestsPerDay?: number;
   };
-  type CreateTestDataResponse = {
+  type GenerateDataResponse = {
     uid: string;
     email: string;
   };

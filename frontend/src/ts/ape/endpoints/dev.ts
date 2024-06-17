@@ -5,10 +5,10 @@ export default class Dev {
     this.httpClient = httpClient;
   }
 
-  async addTestData(
-    params: Ape.Dev.CreateTestData
-  ): Ape.EndpointResponse<Ape.Dev.CreateTestDataResponse> {
-    return await this.httpClient.post(BASE_PATH + "/testData", {
+  async generateData(
+    params: Ape.Dev.GenerateData
+  ): Ape.EndpointResponse<Ape.Dev.GenerateDataResponse> {
+    return await this.httpClient.post(BASE_PATH + "/generateData", {
       payload: params,
     });
   }

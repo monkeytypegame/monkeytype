@@ -7,8 +7,8 @@ export function show(): void {
 }
 
 async function setup(modalEl: HTMLElement): Promise<void> {
-  modalEl.querySelector(".createTestResults")?.addEventListener("click", () => {
-    showPopup("devTestData");
+  modalEl.querySelector(".generateData")?.addEventListener("click", () => {
+    showPopup("devGenerateData");
   });
 }
 

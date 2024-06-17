@@ -125,7 +125,7 @@ type PopupKey =
   | "updateCustomTheme"
   | "deleteCustomTheme"
   | "forgotPassword"
-  | "devTestData";
+  | "devGenerateData";
 
 const list: Record<PopupKey, SimpleModal | undefined> = {
   updateEmail: undefined,
@@ -153,7 +153,7 @@ const list: Record<PopupKey, SimpleModal | undefined> = {
   updateCustomTheme: undefined,
   deleteCustomTheme: undefined,
   forgotPassword: undefined,
-  devTestData: undefined,
+  devGenerateData: undefined,
 };
 
 type SimpleModalOptions = {
@@ -1734,9 +1734,9 @@ list.forgotPassword = new SimpleModal({
   },
 });
 
-list.devTestData = new SimpleModal({
-  id: "devTestData",
-  title: "Create test results",
+list.devGenerateData = new SimpleModal({
+  id: "devGenerateData",
+  title: "Generate data",
   showLabels: true,
   inputs: [
     {
@@ -1744,7 +1744,7 @@ list.devTestData = new SimpleModal({
       label: "username",
       placeholder: "username",
       oninput:
-        "$('#devTestData_1 + span')[0].innerText='if checked, user will be created with '+this.value+'@example.com and password: password'",
+        "$('#devGenerateData_1 + span')[0].innerText='if checked, user will be created with '+this.value+'@example.com and password: password'",
     },
     {
       type: "checkbox",
@@ -1780,7 +1780,7 @@ list.devTestData = new SimpleModal({
       step: 10,
     },
   ],
-  buttonText: "create results (might take a while)",
+  buttonText: "generate (might take a while)",
   execFn: async (
     _thisPopup,
     username,
@@ -1790,7 +1790,7 @@ list.devTestData = new SimpleModal({
     minTestsPerDay,
     maxTestsPerDay
   ): Promise<ExecReturn> => {
-    const request: Ape.Dev.CreateTestData = {
+    const request: Ape.Dev.GenerateData = {
       username,
       createUser: createUser === "true",
     };
@@ -1803,7 +1803,7 @@ list.devTestData = new SimpleModal({
     if (maxTestsPerDay !== undefined && maxTestsPerDay.length > 0)
       request.maxTestsPerDay = Number.parseInt(maxTestsPerDay);
 
-    const result = await Ape.dev.addTestData(request);
+    const result = await Ape.dev.generateData(request);
 
     return {
       status: result.status === 200 ? 1 : -1,
