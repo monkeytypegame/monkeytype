@@ -42,7 +42,7 @@ type CommonInput<TType, TValue> = {
   disabled?: boolean;
   optional?: boolean;
   label?: string;
-  oninput?: string;
+  oninput?: (event: Event) => void;
 };
 
 type TextInput = CommonInput<"text", string>;
@@ -277,7 +277,6 @@ class SimpleModal {
       const attributes: Attributes = {
         id: id,
         placeholder: input.placeholder ?? "",
-        oninput: input.oninput ?? "",
         autocomplete: "off",
       };
 
@@ -306,7 +305,6 @@ class SimpleModal {
         <input
           id="${id}"
           type="checkbox"
-          oninput="${input.oninput ?? ""}"
           class="${input.hidden ? "hidden" : ""}"
           ${input.initVal ? 'checked="checked"' : ""}>
         `;
@@ -388,6 +386,11 @@ class SimpleModal {
           }
         }
         inputs.append(buildTag({ tagname, classes, attributes }));
+      }
+      if (input.oninput !== undefined) {
+        (
+          document.querySelector("#" + attributes["id"]) as HTMLElement
+        ).oninput = input.oninput;
       }
     });
 
@@ -1743,8 +1746,14 @@ list.devGenerateData = new SimpleModal({
       type: "text",
       label: "username",
       placeholder: "username",
-      oninput:
-        "$('#devGenerateData_1 + span')[0].innerText='if checked, user will be created with '+this.value+'@example.com and password: password'",
+      oninput: (event): void => {
+        const target = event.target as HTMLInputElement;
+        const span = document.querySelector(
+          "#devGenerateData_1 + span"
+        ) as HTMLInputElement;
+        span.innerHTML = `if checked, user will be created with ${target.value}@example.com and password: password`;
+        return;
+      },
     },
     {
       type: "checkbox",
