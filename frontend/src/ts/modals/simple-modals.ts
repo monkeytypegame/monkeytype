@@ -801,15 +801,21 @@ list.removeGithubAuth = new SimpleModal({
 
 list.removePasswordAuth = new SimpleModal({
   id: "removePaswordAuth",
-  type: "text",
   title: "Remove Password authentication",
   inputs: [
     {
       type: "checkbox",
-      initVal: "false",
       label: `I understand I will lose access to my Monkeytype account if my ${
         isUsingGoogleAuthentication() ? "Google" : "GitHub"
       } account is lost or disabled.`,
+      oninput: (event): void => {
+        const target = event.target as HTMLInputElement;
+
+        $("#simpleModal .submitButton").prop(
+          "disabled",
+          target.checked ? "" : "disabled"
+        );
+      },
     },
   ],
   onlineOnly: true,
@@ -848,6 +854,9 @@ list.removePasswordAuth = new SimpleModal({
   },
   beforeInitFn: (): void => {
     if (!isAuthenticated()) return;
+  },
+  beforeShowFn: (): void => {
+    $("#simpleModal .submitButton").prop("disabled", "disabled");
   },
 });
 
