@@ -22,7 +22,6 @@ router.use(
 
 router.post(
   "/generateData",
-  authenticateRequest(),
   validateRequest({
     body: {
       username: joi.string().required(),
