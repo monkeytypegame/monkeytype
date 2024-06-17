@@ -469,8 +469,8 @@ class SimpleModal {
     activePopup = this;
     this.parameters = parameters;
     void modal.show({
-      ...showOptions,
       focusFirstInput: true,
+      ...showOptions,
       beforeAnimation: async () => {
         this.beforeInitFn?.(this);
         this.init();
@@ -1926,7 +1926,9 @@ $(".pageSettings").on(
   (e) => {
     const $parentElement = $(e.currentTarget).parent(".customTheme.button");
     const customThemeId = $parentElement.attr("customThemeId") as string;
-    showPopup("updateCustomTheme", [customThemeId]);
+    showPopup("updateCustomTheme", [customThemeId], {
+      focusFirstInput: "focusAndSelect",
+    });
   }
 );
 
