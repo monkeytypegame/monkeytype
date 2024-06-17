@@ -16,7 +16,7 @@ router.use(
     criteria: () => {
       return isDevEnvironment();
     },
-    invalidMessage: "Development endpoints are currently disabled.",
+    invalidMessage: "Development endpoints are only available in DEV mode.",
   })
 );
 
