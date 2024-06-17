@@ -457,6 +457,17 @@
         gap: 0.5rem;
       }
     }
+
+    &.passwordAuthSettings {
+      .buttons {
+        grid-template-rows: 1fr 1fr;
+        grid-template-columns: minmax(4.5rem, 1fr) minmax(4.5rem, 1fr);
+
+        #removePasswordAuth {
+          grid-column: span 2;
+        }
+      }
+    }
   }
 }
 
