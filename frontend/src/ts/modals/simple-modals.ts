@@ -58,6 +58,7 @@ type PopupKey =
   | "updatePassword"
   | "removeGoogleAuth"
   | "removeGithubAuth"
+  | "removePasswordAuth"
   | "addPasswordAuth"
   | "deleteAccount"
   | "resetAccount"
@@ -86,6 +87,7 @@ const list: Record<PopupKey, SimpleModal | undefined> = {
   updatePassword: undefined,
   removeGoogleAuth: undefined,
   removeGithubAuth: undefined,
+  removePasswordAuth: undefined,
   addPasswordAuth: undefined,
   deleteAccount: undefined,
   resetAccount: undefined,
@@ -670,6 +672,59 @@ list.removeGithubAuth = new SimpleModal({
         thisPopup.text = "Password or Google authentication is not enabled";
       }
     }
+  },
+});
+
+list.removePasswordAuth = new SimpleModal({
+  id: "removePaswordAuth",
+  type: "text",
+  title: "Remove Password authentication",
+  inputs: [
+    {
+      type: "checkbox",
+      initVal: "false",
+      label: `I understand I will lose access to my Monkeytype account if my ${
+        isUsingGoogleAuthentication() ? "Google" : "GitHub"
+      } account is lost or disabled.`,
+    },
+  ],
+  onlineOnly: true,
+  buttonText: "reauthenticate to remove",
+  execFn: async (_thisPopup, password): Promise<ExecReturn> => {
+    const reauth = await reauthenticate({
+      password,
+      excludeMethod: "password",
+    });
+    if (reauth.status !== 1) {
+      return {
+        status: reauth.status,
+        message: reauth.message,
+      };
+    }
+
+    try {
+      await unlink(reauth.user, "password");
+    } catch (e) {
+      const message = createErrorMessage(
+        e,
+        "Failed to remove password authentication"
+      );
+      return {
+        status: -1,
+        message,
+      };
+    }
+
+    Settings.updateAuthSections();
+
+    reloadAfter(3);
+    return {
+      status: 1,
+      message: "Password authentication removed",
+    };
+  },
+  beforeInitFn: (thisPopup): void => {
+    if (!isAuthenticated()) return;
   },
 });
 
@@ -1674,6 +1729,9 @@ $(".pageSettings #removeGoogleAuth").on("click", () => {
 
 $(".pageSettings #removeGithubAuth").on("click", () => {
   showPopup("removeGithubAuth");
+});
+$(".pageSettings #removePasswordAuth").on("click", () => {
+  showPopup("removePasswordAuth");
 });
 
 $("#resetSettingsButton").on("click", () => {
