@@ -42,7 +42,7 @@ import "./controllers/profile-search-controller";
 import { isDevEnvironment } from "./utils/misc";
 import * as VersionButton from "./elements/version-button";
 import * as Focus from "./test/focus";
-import * as DevButtons from "./elements/dev-buttons";
+import { getDevOptionsModal } from "./utils/async-modules";
 
 function addToGlobal(items: Record<string, unknown>): void {
   for (const [name, item] of Object.entries(items)) {
@@ -73,5 +73,7 @@ if (isDevEnvironment()) {
   void import("jquery").then((jq) => {
     addToGlobal({ $: jq.default });
   });
-  DevButtons.append();
+  void getDevOptionsModal().then((module) => {
+    module.appendButton();
+  });
 }

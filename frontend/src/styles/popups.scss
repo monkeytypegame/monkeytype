@@ -629,6 +629,12 @@ body.darkMode {
   }
 }
 
+#devOptionsModal {
+  .modal {
+    max-width: 400px;
+  }
+}
+
 #shareTestSettingsPopup {
   background: var(--bg-color);
   border-radius: var(--roundness);
