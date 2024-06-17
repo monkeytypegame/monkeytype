@@ -1,6 +1,10 @@
 import { envConfig } from "../constants/env-config";
 import AnimatedModal from "../utils/animated-modal";
 import { showPopup } from "./simple-modals";
+import * as Notifications from "../elements/notifications";
+import { setMediaQueryDebugLevel } from "../ui";
+
+let mediaQueryDebugLevel = 0;
 
 export function show(): void {
   void modal.show();
@@ -10,6 +14,19 @@ async function setup(modalEl: HTMLElement): Promise<void> {
   modalEl.querySelector(".generateData")?.addEventListener("click", () => {
     showPopup("devGenerateData");
   });
+  modalEl
+    .querySelector(".toggleMediaQueryDebug")
+    ?.addEventListener("click", () => {
+      mediaQueryDebugLevel++;
+      if (mediaQueryDebugLevel > 3) {
+        mediaQueryDebugLevel = 0;
+      }
+      Notifications.add(
+        `Setting media query debug level to ${mediaQueryDebugLevel}`,
+        5
+      );
+      setMediaQueryDebugLevel(mediaQueryDebugLevel);
+    });
 }
 
 const modal = new AnimatedModal({
