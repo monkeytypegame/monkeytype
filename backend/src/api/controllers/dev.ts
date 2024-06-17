@@ -11,14 +11,14 @@ import * as LeaderboardDal from "../../dal/leaderboards";
 import { isNumber } from "lodash";
 import MonkeyError from "../../utils/error";
 
-type CreateResultOptions = {
+type GenerateDataOptions = {
   firstTestTimestamp: Date;
   lastTestTimestamp: Date;
   minTestsPerDay: number;
   maxTestsPerDay: number;
 };
 
-const CREATE_RESULT_DEFAULT_OPTIONS: CreateResultOptions = {
+const CREATE_RESULT_DEFAULT_OPTIONS: GenerateDataOptions = {
   firstTestTimestamp: DateUtils.startOfDay(new UTCDate(Date.now())),
   lastTestTimestamp: DateUtils.endOfDay(new UTCDate(Date.now())),
   minTestsPerDay: 0,
@@ -68,7 +68,7 @@ async function getOrCreateUser(
 
 async function createTestResults(
   user: MonkeyTypes.DBUser,
-  configOptions: Partial<CreateResultOptions>
+  configOptions: Partial<GenerateDataOptions>
 ): Promise<void> {
   const config = {
     ...CREATE_RESULT_DEFAULT_OPTIONS,
