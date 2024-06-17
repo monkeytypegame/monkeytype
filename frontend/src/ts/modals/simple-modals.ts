@@ -800,9 +800,7 @@ list.removePasswordAuth = new SimpleModal({
   inputs: [
     {
       type: "checkbox",
-      label: `I understand I will lose access to my Monkeytype account if my ${
-        isUsingGoogleAuthentication() ? "Google" : "GitHub"
-      } account is lost or disabled.`,
+      label: `I understand I will lose access to my Monkeytype account if my Google/GitHub account is lost or disabled.`,
     },
   ],
   onlineOnly: true,
