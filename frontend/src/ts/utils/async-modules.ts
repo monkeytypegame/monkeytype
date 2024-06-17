@@ -30,3 +30,31 @@ export async function getCommandline(): Promise<
     throw e;
   }
 }
+
+Skeleton.save("devOptionsModal");
+
+export async function getDevOptionsModal(): Promise<
+  typeof import("../modals/dev-options.js")
+> {
+  try {
+    Loader.show();
+    const module = await import("../modals/dev-options.js");
+    Loader.hide();
+    return module;
+  } catch (e) {
+    Loader.hide();
+    if (
+      e instanceof Error &&
+      e.message.includes("Failed to fetch dynamically imported module")
+    ) {
+      Notifications.add(
+        "Failed to load dev options module: could not fetch",
+        -1
+      );
+    } else {
+      const msg = createErrorMessage(e, "Failed to load dev options module");
+      Notifications.add(msg, -1);
+    }
+    throw e;
+  }
+}

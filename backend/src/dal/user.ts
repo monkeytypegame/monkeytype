@@ -202,7 +202,7 @@ export async function getUser(
   return user;
 }
 
-async function findByName(
+export async function findByName(
   name: string
 ): Promise<MonkeyTypes.DBUser | undefined> {
   return (
