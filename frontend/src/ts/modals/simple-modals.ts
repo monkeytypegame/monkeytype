@@ -408,14 +408,20 @@ class SimpleModal {
       }
     }
 
-    const inputsWithCurrentValue = [];
+    type CommonInputWithCurrentValue = CommonInputType & {
+      currentValue: string | undefined;
+    };
+
+    const inputsWithCurrentValue: CommonInputWithCurrentValue[] = [];
     for (let i = 0; i < this.inputs.length; i++) {
-      inputsWithCurrentValue.push({ ...this.inputs[i], currentValue: vals[i] });
+      inputsWithCurrentValue.push({
+        ...(this.inputs[i] as CommonInputType),
+        currentValue: vals[i],
+      });
     }
 
     if (
       inputsWithCurrentValue
-        // @ts-expect-error
         .filter((i) => i.hidden !== true && i.optional !== true)
         .some((v) => v.currentValue === undefined || v.currentValue === "")
     ) {
