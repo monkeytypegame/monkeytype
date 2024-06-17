@@ -1808,6 +1808,9 @@ list.devTestData = new SimpleModal({
     return {
       status: result.status === 200 ? 1 : -1,
       message: result.message,
+      hideOptions: {
+        clearModalChain: true,
+      },
     };
   },
 });
