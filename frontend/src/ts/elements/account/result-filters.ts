@@ -1,11 +1,11 @@
-import * as Misc from "../utils/misc";
-import * as Strings from "../utils/strings";
-import * as JSONData from "../utils/json-data";
-import * as DB from "../db";
-import Config from "../config";
-import * as Notifications from "../elements/notifications";
-import Ape from "../ape/index";
-import * as Loader from "../elements/loader";
+import * as Misc from "../../utils/misc";
+import * as Strings from "../../utils/strings";
+import * as JSONData from "../../utils/json-data";
+import * as DB from "../../db";
+import Config from "../../config";
+import * as Notifications from "../notifications";
+import Ape from "../../ape/index";
+import * as Loader from "../loader";
 import SlimSelect from "slim-select";
 // this is only to make ts happy
 // eslint-disable-next-line import/no-unresolved

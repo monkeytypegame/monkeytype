@@ -41,6 +41,37 @@
       font-size: 1.5rem;
       color: var(--sub-color);
     }
+
+    .inputs.withLabel {
+      display: grid;
+      grid-template-columns: max-content auto;
+      grid-auto-flow: row;
+    }
+
+    .inputs {
+      div:has(> input[type="range"]) {
+        display: grid;
+        grid-auto-columns: auto 3rem;
+        grid-auto-flow: column;
+        gap: 0.5rem;
+
+        span {
+          text-align: right;
+        }
+      }
+    }
+  }
+}
+
+body.darkMode {
+  .popupWrapper,
+  .modalWrapper {
+    .modal .inputs {
+      input[type="date"]::-webkit-calendar-picker-indicator,
+      input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+        filter: invert(1);
+      }
+    }
   }
 }
 
@@ -486,6 +517,9 @@
       opacity: 1;
     }
   }
+  & [data-popup-id="devGenerateData"] {
+    max-width: 700px;
+  }
 }
 
 #mobileTestConfigModal {
@@ -594,23 +628,22 @@
   }
 }
 
-#shareTestSettingsPopup {
-  background: var(--bg-color);
-  border-radius: var(--roundness);
-  padding: 2rem;
-  display: grid;
-  gap: 1rem;
-  width: 500px;
-  .title {
-    font-size: 1.5rem;
-    color: var(--sub-color);
+#devOptionsModal {
+  .modal {
+    max-width: 400px;
   }
-  .subgroup {
-    padding-left: 2rem;
-  }
-  .tooLongWarning {
-    font-size: 0.75rem;
-    color: var(--error-color);
+}
+
+#shareTestSettingsModal {
+  .modal {
+    max-width: 600px;
+    .subgroup {
+      padding-left: 2rem;
+    }
+    .tooLongWarning {
+      font-size: 0.75rem;
+      color: var(--error-color);
+    }
   }
 }
 #cookiesModal {
@@ -937,17 +970,6 @@
       line-height: 1.2rem;
       min-height: 5rem;
     }
-    .characterCount {
-      position: absolute;
-      top: -1.75rem;
-      right: 0.25rem;
-      color: var(--sub-color);
-      -webkit-user-select: none;
-      user-select: none;
-      &.red {
-        color: var(--error-color);
-      }
-    }
   }
 }
 #apeKeysModal {
@@ -1167,18 +1189,6 @@
       line-height: 1.2rem;
       min-height: 5rem;
     }
-
-    .characterCount {
-      position: absolute;
-      top: -1.75rem;
-      right: 0.25rem;
-      color: var(--sub-color);
-      -webkit-user-select: none;
-      user-select: none;
-      &.red {
-        color: var(--error-color);
-      }
-    }
   }
 }
 
@@ -1205,18 +1215,6 @@
       padding: 10px;
       line-height: 1.2rem;
       min-height: 5rem;
-    }
-
-    .characterCount {
-      position: absolute;
-      top: -1.75rem;
-      right: 0.25rem;
-      color: var(--sub-color);
-      -webkit-user-select: none;
-      user-select: none;
-      &.red {
-        color: var(--error-color);
-      }
     }
   }
 }

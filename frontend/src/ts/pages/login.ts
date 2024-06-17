@@ -350,8 +350,8 @@ export const page = new Page({
   },
   beforeShow: async (): Promise<void> => {
     Skeleton.append("pageLogin", "main");
-    enableSignUpButton();
     enableInputs();
+    disableSignUpButton();
   },
 });
 

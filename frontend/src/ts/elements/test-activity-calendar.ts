@@ -3,7 +3,6 @@ import { UTCDateMini } from "@date-fns/utc/date/mini";
 import {
   format,
   endOfMonth,
-  subYears,
   addDays,
   differenceInDays,
   eachMonthOfInterval,
@@ -18,6 +17,7 @@ import {
   isSunday,
   nextSaturday,
   isSaturday,
+  subWeeks,
 } from "date-fns";
 
 export class TestActivityCalendar implements MonkeyTypes.TestActivityCalendar {
@@ -44,7 +44,8 @@ export class TestActivityCalendar implements MonkeyTypes.TestActivityCalendar {
     const end = fullYear ? endOfYear(lastDay) : new Date();
     let start = startOfYear(lastDay);
     if (!fullYear) {
-      start = addDays(subYears(end, 1), 1);
+      //show the last 52 weeks. Not using one year to avoid the graph to show 54 weeks
+      start = addDays(subWeeks(end, 52), 1);
       if (!isSunday(start)) start = previousSunday(start);
     }
 
@@ -88,11 +89,14 @@ export class TestActivityCalendar implements MonkeyTypes.TestActivityCalendar {
       if (!isSaturday(end)) end = nextSaturday(end);
 
       const weeks = differenceInWeeks(end, start, { roundingMethod: "ceil" });
-      if (weeks > 2)
+      if (weeks > 2) {
         results.push({
           text: format(month, "MMM").toLowerCase(),
           weeks: weeks,
         });
+      } else if (i == 0) {
+        results.push({ text: "", weeks: weeks });
+      }
     }
     return results;
   }

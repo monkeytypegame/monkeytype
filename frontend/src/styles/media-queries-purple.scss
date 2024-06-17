@@ -33,6 +33,19 @@
       }
     }
   }
+  .pageLogin {
+    flex-direction: column;
+    gap: 4rem;
+    .side {
+      width: 100%;
+      input[type="email"],
+      input[type="password"],
+      input[type="text"] {
+        width: 100%;
+        max-width: 100%;
+      }
+    }
+  }
   .pageTest {
     #liveStatsTextTop,
     #liveStatsTextBottom {
@@ -259,5 +272,9 @@
       height: unset;
       aspect-ratio: 1;
     }
+  }
+  .popupWrapper .modal .inputs.withLabel,
+  .modalWrapper .modal .inputs.withLabel {
+    grid-template-columns: 1fr;
   }
 }

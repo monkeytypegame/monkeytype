@@ -4,7 +4,7 @@ import * as Misc from "../utils/misc";
 import * as Arrays from "../utils/arrays";
 import * as JSONData from "../utils/json-data";
 import { isColorDark, isColorLight } from "../utils/colors";
-import Config, { setAutoSwitchTheme, setCustomBackground } from "../config";
+import Config, { setAutoSwitchTheme } from "../config";
 import * as BackgroundFilter from "../elements/custom-background-filter";
 import * as ConfigEvent from "../observables/config-event";
 import * as DB from "../db";
@@ -181,6 +181,12 @@ async function apply(
   $("#metaThemeColor").attr("content", colors.bg);
   // }
   updateFooterThemeName(isPreview ? themeName : undefined);
+
+  if (isColorDark(await ThemeColors.get("bg"))) {
+    $("body").addClass("darkMode");
+  } else {
+    $("body").removeClass("darkMode");
+  }
 }
 
 function updateFooterThemeName(nameOverride?: string): void {
@@ -428,7 +434,8 @@ ConfigEvent.subscribe(async (eventKey, eventValue, nosave) => {
 
 window.addEventListener("customBackgroundFailed", () => {
   Notifications.add(
-    "The custom background cannot be loaded and will be removed from your configuration."
+    "Custom background link is either temporairly unavailable or expired. Please make sure the URL is correct or change it",
+    0,
+    { duration: 5 }
   );
-  setCustomBackground("");
 });
