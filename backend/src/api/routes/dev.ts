@@ -21,7 +21,7 @@ router.use(
 );
 
 router.post(
-  "/testData",
+  "/generateData",
   authenticateRequest(),
   validateRequest({
     body: {
