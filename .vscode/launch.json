@@ -7,6 +7,14 @@
       "name": "Debug attach backend",
       "port": 9229,
       "skipFiles": ["<node_internals>/**"]
+    },
+    {
+      "name": "Vite Debugger",
+      "type": "chrome",
+      "request": "launch",
+      "port": 9222,
+      "url": "http://localhost:3000",
+      "webRoot": "${workspaceFolder}/frontend/src"
     }
   ]
 }
