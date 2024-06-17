@@ -457,6 +457,18 @@
         gap: 0.5rem;
       }
     }
+
+    &.passwordAuthSettings {
+      .buttons {
+        grid-template-rows: repeat(auto-fill, 1fr);
+        grid-template-columns: repeat(2, minmax(4.5rem, 1fr));
+
+        #removePasswordAuth,
+        #addPasswordAuth {
+          grid-column: span 2;
+        }
+      }
+    }
   }
 }
 

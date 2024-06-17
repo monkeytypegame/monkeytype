@@ -755,6 +755,11 @@ export function updateAuthSections(): void {
     $(
       ".pageSettings .section.passwordAuthSettings #passPasswordAuth"
     ).removeClass("hidden");
+    if (googleProvider || githubProvider) {
+      $(
+        ".pageSettings .section.passwordAuthSettings #removePasswordAuth"
+      ).removeClass("hidden");
+    }
   } else {
     $(
       ".pageSettings .section.passwordAuthSettings #addPasswordAuth"

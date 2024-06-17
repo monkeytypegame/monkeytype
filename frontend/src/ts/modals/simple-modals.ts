@@ -104,6 +104,7 @@ type PopupKey =
   | "updatePassword"
   | "removeGoogleAuth"
   | "removeGithubAuth"
+  | "removePasswordAuth"
   | "addPasswordAuth"
   | "deleteAccount"
   | "resetAccount"
@@ -133,6 +134,7 @@ const list: Record<PopupKey, SimpleModal | undefined> = {
   updatePassword: undefined,
   removeGoogleAuth: undefined,
   removeGithubAuth: undefined,
+  removePasswordAuth: undefined,
   addPasswordAuth: undefined,
   deleteAccount: undefined,
   resetAccount: undefined,
@@ -301,13 +303,8 @@ class SimpleModal {
           })
         );
       } else if (input.type === "checkbox") {
-        let html = `
-        <input
-          id="${id}"
-          type="checkbox"
-          class="${input.hidden ? "hidden" : ""}"
-          ${input.initVal ? 'checked="checked"' : ""}>
-        `;
+        let html = buildTag({ tagname, classes, attributes });
+
         if (input.description !== undefined) {
           html += `<span>${input.description}</span>`;
         }
@@ -794,6 +791,54 @@ list.removeGithubAuth = new SimpleModal({
         thisPopup.text = "Password or Google authentication is not enabled";
       }
     }
+  },
+});
+
+list.removePasswordAuth = new SimpleModal({
+  id: "removePaswordAuth",
+  title: "Remove Password authentication",
+  inputs: [
+    {
+      type: "checkbox",
+      label: `I understand I will lose access to my Monkeytype account if my Google/GitHub account is lost or disabled.`,
+    },
+  ],
+  onlineOnly: true,
+  buttonText: "reauthenticate to remove",
+  execFn: async (_thisPopup): Promise<ExecReturn> => {
+    const reauth = await reauthenticate({
+      excludeMethod: "password",
+    });
+    if (reauth.status !== 1) {
+      return {
+        status: reauth.status,
+        message: reauth.message,
+      };
+    }
+
+    try {
+      await unlink(reauth.user, "password");
+    } catch (e) {
+      const message = createErrorMessage(
+        e,
+        "Failed to remove password authentication"
+      );
+      return {
+        status: -1,
+        message,
+      };
+    }
+
+    Settings.updateAuthSections();
+
+    reloadAfter(3);
+    return {
+      status: 1,
+      message: "Password authentication removed",
+    };
+  },
+  beforeInitFn: (): void => {
+    if (!isAuthenticated()) return;
   },
 });
 
@@ -1621,6 +1666,7 @@ list.updateCustomTheme = new SimpleModal({
       type: "checkbox",
       initVal: false,
       label: "Update custom theme to current colors",
+      optional: true,
     },
   ],
   buttonText: "update",
@@ -1766,6 +1812,7 @@ list.devGenerateData = new SimpleModal({
       label: "create user",
       description:
         "if checked, user will be created with {username}@example.com and password: password",
+      optional: true,
     },
     {
       type: "date",
@@ -1864,6 +1911,9 @@ $(".pageSettings #removeGoogleAuth").on("click", () => {
 
 $(".pageSettings #removeGithubAuth").on("click", () => {
   showPopup("removeGithubAuth");
+});
+$(".pageSettings #removePasswordAuth").on("click", () => {
+  showPopup("removePasswordAuth");
 });
 
 $("#resetSettingsButton").on("click", () => {
