@@ -1,0 +1,311 @@
+{
+  "language": "code_php",
+  "groups": [
+    [0, 100],
+    [101, 300],
+    [301, 600],
+    [601, 9999]
+  ],
+  "quotes": [
+    {
+      "text": "function findMax(array $numbers): int {\n\treturn max($numbers);\n} class Calculator {\n\tpublic function sum(int $a, int $b): int {\n\t\treturn $a + $b;\n\t}\n} class Order {\n\tpublic function __construct(\n\t\tprivate int $orderId,\n\t\tprivate float $totalAmount\n\t) {}\n}",
+      "source": "ChatGPT",
+      "id": 1,
+      "length": 255
+    },
+    {
+      "text": "class Calculator {\n\tpublic function sum(int $a, int $b): int {\n\t\treturn $a + $b;\n\t}\n} class User {\n\tprivate string $name;\n\tpublic function __construct(string $name) {\n\t\t$this->name = $name;\n\t}\n} function add(int $a, int $b): int {\n\treturn $a + $b;\n}",
+      "source": "ChatGPT",
+      "id": 2,
+      "length": 249
+    },
+    {
+      "text": "class Notification {\n\tpublic function send(string $message, string $recipient): bool {\n\t\t// Send notification logic\n\t\treturn true;\n\t}\n} class Circle implements Shape {\n\tpublic function draw(): void {\n\t\t// Draw circle logic\n\t}\n\tpublic function resize(float $scale): void {\n\t\t// Resize circle logic\n\t}\n}",
+      "source": "ChatGPT",
+      "id": 3,
+      "length": 301
+    },
+    {
+      "text": "class Product {\n\tprivate float $price;\n\tpublic function __construct(float $price) {\n\t\t$this->price = $price;\n\t}\n} function findMax(array $numbers): int {\n\treturn max($numbers);\n} class Notification {\n\tpublic function send(string $message, string $recipient): bool {\n\t\t// Send notification logic\n\t\treturn true;\n\t}\n}",
+      "source": "ChatGPT",
+      "id": 4,
+      "length": 314
+    },
+    {
+      "text": "class Circle implements Shape {\n\tpublic function draw(): void {\n\t\t// Draw circle logic\n\t}\n\tpublic function resize(float $scale): void {\n\t\t// Resize circle logic\n\t}\n} class Database {\n\tprivate \\PDO $connection;\n\tpublic function __construct(string $dsn, string $user, string $password) {\n\t\t$this->connection = new \\PDO($dsn, $user, $password);\n\t}\n}",
+      "source": "ChatGPT",
+      "id": 5,
+      "length": 346
+    },
+    {
+      "text": "class Order {\n\tpublic function __construct(\n\t\tprivate int $orderId,\n\t\tprivate float $totalAmount\n\t) {}\n} function findMax(array $numbers): int {\n\treturn max($numbers);\n} class Notification {\n\tpublic function send(string $message, string $recipient): bool {\n\t\t// Send notification logic\n\t\treturn true;\n\t}\n}",
+      "source": "ChatGPT",
+      "id": 6,
+      "length": 305
+    },
+    {
+      "text": "function generateReport(array $data): string {\n\t$report = \"\";\n\tforeach ($data as $item) {\n\t\t$report .= $item->toString() . \"\\n\";\n\t}\n\treturn $report;\n} function add(int $a, int $b): int {\n\treturn $a + $b;\n}",
+      "source": "ChatGPT",
+      "id": 7,
+      "length": 205
+    },
+    {
+      "text": "class Calculator {\n\tpublic function sum(int $a, int $b): int {\n\t\treturn $a + $b;\n\t}\n} class User {\n\tprivate string $name;\n\tpublic function __construct(string $name) {\n\t\t$this->name = $name;\n\t}\n} class Car extends AbstractVehicle {\n\tpublic function drive(): void {\n\t\t// Car driving logic\n\t}\n}",
+      "source": "ChatGPT",
+      "id": 8,
+      "length": 291
+    },
+    {
+      "text": "interface Shape {\n\tpublic function draw(): void;\n\tpublic function resize(float $scale): void;\n} class Product {\n\tprivate float $price;\n\tpublic function __construct(float $price) {\n\t\t$this->price = $price;\n\t}\n}",
+      "source": "ChatGPT",
+      "id": 9,
+      "length": 209
+    },
+    {
+      "text": "class Database {\n\tprivate \\PDO $connection;\n\tpublic function __construct(string $dsn, string $user, string $password) {\n\t\t$this->connection = new \\PDO($dsn, $user, $password);\n\t}\n} class Database {\n\tprivate \\PDO $connection;\n\tpublic function __construct(string $dsn, string $user, string $password) {\n\t\t$this->connection = new \\PDO($dsn, $user, $password);\n\t}\n}",
+      "source": "ChatGPT",
+      "id": 10,
+      "length": 361
+    },
+    {
+      "text": "function greet(string $name): string {\n\treturn \"Hello, $name!\";\n} class Car extends AbstractVehicle {\n\tpublic function drive(): void {\n\t\t// Car driving logic\n\t}\n} class Calculator {\n\tpublic function sum(int $a, int $b): int {\n\t\treturn $a + $b;\n\t}\n}",
+      "source": "ChatGPT",
+      "id": 11,
+      "length": 248
+    },
+    {
+      "text": "class User {\n\tprivate string $name;\n\tpublic function __construct(string $name) {\n\t\t$this->name = $name;\n\t}\n} class UserController {\n\tpublic function createUser(string $name, string $email): User {\n\t\treturn new User($name, $email);\n\t}\n\tpublic function deleteUser(int $id): bool {\n\t\t// Delete user logic\n\t\treturn true;\n\t}\n}",
+      "source": "ChatGPT",
+      "id": 12,
+      "length": 321
+    },
+    {
+      "text": "function greet(string $name): string {\n\treturn \"Hello, $name!\";\n} class ApiClient {\n\tprivate string $endpoint;\n\tpublic function __construct(string $endpoint) {\n\t\tthis->endpoint = $endpoint;\n\t}\n\tpublic function fetchData(): array {\n\t\t// Fetch data logic\n\t\treturn [];\n\t}\n}",
+      "source": "ChatGPT",
+      "id": 13,
+      "length": 270
+    },
+    {
+      "text": "class User {\n\tprivate string $name;\n\tpublic function __construct(string $name) {\n\t\t$this->name = $name;\n\t}\n} function generateReport(array $data): string {\n\t$report = \"\";\n\tforeach ($data as $item) {\n\t\t$report .= $item->toString() . \"\\n\";\n\t}\n\treturn $report;\n}",
+      "source": "ChatGPT",
+      "id": 14,
+      "length": 259
+    },
+    {
+      "text": "class Logger {\n\tpublic function log(string $message): void {\n\t\t// Log message\n\t}\n} class Email {\n\tpublic function send(string $to, string $subject, string $message): bool {\n\t\t// Send email logic\n\t\treturn true;\n\t}\n}",
+      "source": "ChatGPT",
+      "id": 15,
+      "length": 214
+    },
+    {
+      "text": "class Calculator {\n\tpublic function sum(int $a, int $b): int {\n\t\treturn $a + $b;\n\t}\n} function greet(string $name): string {\n\treturn \"Hello, $name!\";\n} function greet(string $name): string {\n\treturn \"Hello, $name!\";\n}",
+      "source": "ChatGPT",
+      "id": 16,
+      "length": 217
+    },
+    {
+      "text": "class Notification {\n\tpublic function send(string $message, string $recipient): bool {\n\t\t// Send notification logic\n\t\treturn true;\n\t}\n} function greet(string $name): string {\n\treturn \"Hello, $name!\";\n}",
+      "source": "ChatGPT",
+      "id": 17,
+      "length": 201
+    },
+    {
+      "text": "class Calculator {\n\tpublic function sum(int $a, int $b): int {\n\t\treturn $a + $b;\n\t}\n} class Notification {\n\tpublic function send(string $message, string $recipient): bool {\n\t\t// Send notification logic\n\t\treturn true;\n\t}\n}",
+      "source": "ChatGPT",
+      "id": 18,
+      "length": 221
+    },
+    {
+      "text": "class User {\n\tprivate string $name;\n\tpublic function __construct(string $name) {\n\t\t$this->name = $name;\n\t}\n} class Calculator {\n\tpublic function sum(int $a, int $b): int {\n\t\treturn $a + $b;\n\t}\n} function findMax(array $numbers): int {\n\treturn max($numbers);\n}",
+      "source": "ChatGPT",
+      "id": 19,
+      "length": 259
+    },
+    {
+      "text": "class Database {\n\tprivate \\PDO $connection;\n\tpublic function __construct(string $dsn, string $user, string $password) {\n\t\t$this->connection = new \\PDO($dsn, $user, $password);\n\t}\n} class Car extends AbstractVehicle {\n\tpublic function drive(): void {\n\t\t// Car driving logic\n\t}\n}",
+      "source": "ChatGPT",
+      "id": 20,
+      "length": 277
+    },
+    {
+      "text": "function add(int $a, int $b): int {\n\treturn $a + $b;\n} interface Shape {\n\tpublic function draw(): void;\n\tpublic function resize(float $scale): void;\n} class Email {\n\tpublic function send(string $to, string $subject, string $message): bool {\n\t\t// Send email logic\n\t\treturn true;\n\t}\n}",
+      "source": "ChatGPT",
+      "id": 21,
+      "length": 282
+    },
+    {
+      "text": "function calculateTotal(array $items): float {\n\t$total = 0.0;\n\tforeach ($items as $item) {\n\t\t$total += $item->price;\n\t}\n\treturn $total;\n} class Logger {\n\tpublic function log(string $message): void {\n\t\t// Log message\n\t}\n}",
+      "source": "ChatGPT",
+      "id": 22,
+      "length": 220
+    },
+    {
+      "text": "interface Shape {\n\tpublic function draw(): void;\n\tpublic function resize(float $scale): void;\n} function findMax(array $numbers): int {\n\treturn max($numbers);\n} class ApiClient {\n\tprivate string $endpoint;\n\tpublic function __construct(string $endpoint) {\n\t\tthis->endpoint = $endpoint;\n\t}\n\tpublic function fetchData(): array {\n\t\t// Fetch data logic\n\t\treturn [];\n\t}\n}",
+      "source": "ChatGPT",
+      "id": 23,
+      "length": 365
+    },
+    {
+      "text": "class Notification {\n\tpublic function send(string $message, string $recipient): bool {\n\t\t// Send notification logic\n\t\treturn true;\n\t}\n} class Logger {\n\tpublic function log(string $message): void {\n\t\t// Log message\n\t}\n}",
+      "source": "ChatGPT",
+      "id": 24,
+      "length": 218
+    },
+    {
+      "text": "class Calculator {\n\tpublic function sum(int $a, int $b): int {\n\t\treturn $a + $b;\n\t}\n} class Order {\n\tpublic function __construct(\n\t\tprivate int $orderId,\n\t\tprivate float $totalAmount\n\t) {}\n} class Circle implements Shape {\n\tpublic function draw(): void {\n\t\t// Draw circle logic\n\t}\n\tpublic function resize(float $scale): void {\n\t\t// Resize circle logic\n\t}\n}",
+      "source": "ChatGPT",
+      "id": 25,
+      "length": 356
+    },
+    {
+      "text": "class Calculator {\n\tpublic function sum(int $a, int $b): int {\n\t\treturn $a + $b;\n\t}\n} function findMax(array $numbers): int {\n\treturn max($numbers);\n} class Calculator {\n\tpublic function sum(int $a, int $b): int {\n\t\treturn $a + $b;\n\t}\n}",
+      "source": "ChatGPT",
+      "id": 26,
+      "length": 236
+    },
+    {
+      "text": "class UserController {\n\tpublic function createUser(string $name, string $email): User {\n\t\treturn new User($name, $email);\n\t}\n\tpublic function deleteUser(int $id): bool {\n\t\t// Delete user logic\n\t\treturn true;\n\t}\n}",
+      "source": "ChatGPT",
+      "id": 27,
+      "length": 212
+    },
+    {
+      "text": "class Database {\n\tprivate \\PDO $connection;\n\tpublic function __construct(string $dsn, string $user, string $password) {\n\t\t$this->connection = new \\PDO($dsn, $user, $password);\n\t}\n} class UserController {\n\tpublic function createUser(string $name, string $email): User {\n\t\treturn new User($name, $email);\n\t}\n\tpublic function deleteUser(int $id): bool {\n\t\t// Delete user logic\n\t\treturn true;\n\t}\n}",
+      "source": "ChatGPT",
+      "id": 28,
+      "length": 393
+    },
+    {
+      "text": "class Car extends AbstractVehicle {\n\tpublic function drive(): void {\n\t\t// Car driving logic\n\t}\n} trait Singleton {\n\tprivate static ?self $instance = null;\n\tpublic static function getInstance(): self {\n\t\tif (self::$instance === null) {\n\t\t\tself::$instance = new self();\n\t\t}\n\t\treturn self::$instance;\n\t}\n}",
+      "source": "ChatGPT",
+      "id": 29,
+      "length": 302
+    },
+    {
+      "text": "class Calculator {\n\tpublic function sum(int $a, int $b): int {\n\t\treturn $a + $b;\n\t}\n} class Calculator {\n\tpublic function sum(int $a, int $b): int {\n\t\treturn $a + $b;\n\t}\n} function greet(string $name): string {\n\treturn \"Hello, $name!\";\n}",
+      "source": "ChatGPT",
+      "id": 30,
+      "length": 237
+    },
+    {
+      "text": "interface Shape {\n\tpublic function draw(): void;\n\tpublic function resize(float $scale): void;\n} function findMax(array $numbers): int {\n\treturn max($numbers);\n} class Circle implements Shape {\n\tpublic function draw(): void {\n\t\t// Draw circle logic\n\t}\n\tpublic function resize(float $scale): void {\n\t\t// Resize circle logic\n\t}\n}",
+      "source": "ChatGPT",
+      "id": 31,
+      "length": 326
+    },
+    {
+      "text": "interface Shape {\n\tpublic function draw(): void;\n\tpublic function resize(float $scale): void;\n} class User {\n\tprivate string $name;\n\tpublic function __construct(string $name) {\n\t\t$this->name = $name;\n\t}\n}",
+      "source": "ChatGPT",
+      "id": 32,
+      "length": 204
+    },
+    {
+      "text": "trait Singleton {\n\tprivate static ?self $instance = null;\n\tpublic static function getInstance(): self {\n\t\tif (self::$instance === null) {\n\t\t\tself::$instance = new self();\n\t\t}\n\t\treturn self::$instance;\n\t}\n}",
+      "source": "ChatGPT",
+      "id": 33,
+      "length": 205
+    },
+    {
+      "text": "function greet(string $name): string {\n\treturn \"Hello, $name!\";\n} function findMax(array $numbers): int {\n\treturn max($numbers);\n} class Car extends AbstractVehicle {\n\tpublic function drive(): void {\n\t\t// Car driving logic\n\t}\n}",
+      "source": "ChatGPT",
+      "id": 34,
+      "length": 227
+    },
+    {
+      "text": "class Circle implements Shape {\n\tpublic function draw(): void {\n\t\t// Draw circle logic\n\t}\n\tpublic function resize(float $scale): void {\n\t\t// Resize circle logic\n\t}\n} class Database {\n\tprivate \\PDO $connection;\n\tpublic function __construct(string $dsn, string $user, string $password) {\n\t\t$this->connection = new \\PDO($dsn, $user, $password);\n\t}\n}",
+      "source": "ChatGPT",
+      "id": 35,
+      "length": 346
+    },
+    {
+      "text": "class Product {\n\tprivate float $price;\n\tpublic function __construct(float $price) {\n\t\t$this->price = $price;\n\t}\n} class UserController {\n\tpublic function createUser(string $name, string $email): User {\n\t\treturn new User($name, $email);\n\t}\n\tpublic function deleteUser(int $id): bool {\n\t\t// Delete user logic\n\t\treturn true;\n\t}\n}",
+      "source": "ChatGPT",
+      "id": 36,
+      "length": 326
+    },
+    {
+      "text": "class Notification {\n\tpublic function send(string $message, string $recipient): bool {\n\t\t// Send notification logic\n\t\treturn true;\n\t}\n} class Calculator {\n\tpublic function sum(int $a, int $b): int {\n\t\treturn $a + $b;\n\t}\n}",
+      "source": "ChatGPT",
+      "id": 37,
+      "length": 221
+    },
+    {
+      "text": "function generateReport(array $data): string {\n\t$report = \"\";\n\tforeach ($data as $item) {\n\t\t$report .= $item->toString() . \"\\n\";\n\t}\n\treturn $report;\n} class Email {\n\tpublic function send(string $to, string $subject, string $message): bool {\n\t\t// Send email logic\n\t\treturn true;\n\t}\n}",
+      "source": "ChatGPT",
+      "id": 38,
+      "length": 282
+    },
+    {
+      "text": "trait Singleton {\n\tprivate static ?self $instance = null;\n\tpublic static function getInstance(): self {\n\t\tif (self::$instance === null) {\n\t\t\tself::$instance = new self();\n\t\t}\n\t\treturn self::$instance;\n\t}\n}",
+      "source": "ChatGPT",
+      "id": 39,
+      "length": 205
+    },
+    {
+      "text": "class Calculator {\n\tpublic function sum(int $a, int $b): int {\n\t\treturn $a + $b;\n\t}\n} class Calculator {\n\tpublic function sum(int $a, int $b): int {\n\t\treturn $a + $b;\n\t}\n} class Database {\n\tprivate \\PDO $connection;\n\tpublic function __construct(string $dsn, string $user, string $password) {\n\t\t$this->connection = new \\PDO($dsn, $user, $password);\n\t}\n}",
+      "source": "ChatGPT",
+      "id": 40,
+      "length": 352
+    },
+    {
+      "text": "class Database {\n\tprivate \\PDO $connection;\n\tpublic function __construct(string $dsn, string $user, string $password) {\n\t\t$this->connection = new \\PDO($dsn, $user, $password);\n\t}\n} class Circle implements Shape {\n\tpublic function draw(): void {\n\t\t// Draw circle logic\n\t}\n\tpublic function resize(float $scale): void {\n\t\t// Resize circle logic\n\t}\n}",
+      "source": "ChatGPT",
+      "id": 41,
+      "length": 346
+    },
+    {
+      "text": "class Order {\n\tpublic function __construct(\n\t\tprivate int $orderId,\n\t\tprivate float $totalAmount\n\t) {}\n} class Logger {\n\tpublic function log(string $message): void {\n\t\t// Log message\n\t}\n} class ApiClient {\n\tprivate string $endpoint;\n\tpublic function __construct(string $endpoint) {\n\t\tthis->endpoint = $endpoint;\n\t}\n\tpublic function fetchData(): array {\n\t\t// Fetch data logic\n\t\treturn [];\n\t}\n}",
+      "source": "ChatGPT",
+      "id": 42,
+      "length": 392
+    },
+    {
+      "text": "class Circle implements Shape {\n\tpublic function draw(): void {\n\t\t// Draw circle logic\n\t}\n\tpublic function resize(float $scale): void {\n\t\t// Resize circle logic\n\t}\n} class Calculator {\n\tpublic function sum(int $a, int $b): int {\n\t\treturn $a + $b;\n\t}\n}",
+      "source": "ChatGPT",
+      "id": 43,
+      "length": 251
+    },
+    {
+      "text": "abstract class AbstractVehicle {\n\tprotected string $make;\n\tprotected string $model;\n\tpublic function __construct(string $make, string $model) {\n\t\t$this->make = $make;\n\t\tthis->model = $model;\n\t}\n\tabstract public function drive(): void;\n}",
+      "source": "ChatGPT",
+      "id": 44,
+      "length": 236
+    },
+    {
+      "text": "class Circle implements Shape {\n\tpublic function draw(): void {\n\t\t// Draw circle logic\n\t}\n\tpublic function resize(float $scale): void {\n\t\t// Resize circle logic\n\t}\n} function generateReport(array $data): string {\n\t$report = \"\";\n\tforeach ($data as $item) {\n\t\t$report .= $item->toString() . \"\\n\";\n\t}\n\treturn $report;\n}",
+      "source": "ChatGPT",
+      "id": 45,
+      "length": 316
+    },
+    {
+      "text": "class Car extends AbstractVehicle {\n\tpublic function drive(): void {\n\t\t// Car driving logic\n\t}\n} class Notification {\n\tpublic function send(string $message, string $recipient): bool {\n\t\t// Send notification logic\n\t\treturn true;\n\t}\n}",
+      "source": "ChatGPT",
+      "id": 46,
+      "length": 232
+    },
+    {
+      "text": "class Database {\n\tprivate \\PDO $connection;\n\tpublic function __construct(string $dsn, string $user, string $password) {\n\t\t$this->connection = new \\PDO($dsn, $user, $password);\n\t}\n} abstract class AbstractVehicle {\n\tprotected string $make;\n\tprotected string $model;\n\tpublic function __construct(string $make, string $model) {\n\t\t$this->make = $make;\n\t\tthis->model = $model;\n\t}\n\tabstract public function drive(): void;\n}",
+      "source": "ChatGPT",
+      "id": 47,
+      "length": 417
+    },
+    {
+      "text": "trait Singleton {\n\tprivate static ?self $instance = null;\n\tpublic static function getInstance(): self {\n\t\tif (self::$instance === null) {\n\t\t\tself::$instance = new self();\n\t\t}\n\t\treturn self::$instance;\n\t}\n}",
+      "source": "ChatGPT",
+      "id": 48,
+      "length": 205
+    },
+    {
+      "text": "class User {\n\tprivate string $name;\n\tpublic function __construct(string $name) {\n\t\t$this->name = $name;\n\t}\n} class Product {\n\tprivate float $price;\n\tpublic function __construct(float $price) {\n\t\t$this->price = $price;\n\t}\n}",
+      "source": "ChatGPT",
+      "id": 49,
+      "length": 222
+    },
+    {
+      "text": "class Calculator {\n\tpublic function sum(int $a, int $b): int {\n\t\treturn $a + $b;\n\t}\n} function greet(string $name): string {\n\treturn \"Hello, $name!\";\n} class Database {\n\tprivate \\PDO $connection;\n\tpublic function __construct(string $dsn, string $user, string $password) {\n\t\t$this->connection = new \\PDO($dsn, $user, $password);\n\t}\n}",
+      "source": "ChatGPT",
+      "id": 50,
+      "length": 332
+    }
+  ]
+}
