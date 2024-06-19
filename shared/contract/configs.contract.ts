@@ -177,6 +177,8 @@ export const configsContract = c.router(
         200: MonkeyResponseSchema.extend({ data: ConfigWrappedSchema }),
         400: MonkeyErrorResponseSchema,
       },
+      summary: "get config",
+      description: "Get config of the current user.",
     },
     save: {
       method: "PATCH",
@@ -186,6 +188,9 @@ export const configsContract = c.router(
         200: MonkeyResponseSchema,
         400: MonkeyErrorResponseSchema,
       },
+      summary: "update config",
+      description:
+        "Update the config of the current user. Only provided values will be updated while the missing values will be unchanged.",
     },
   },
   {

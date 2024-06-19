@@ -53,16 +53,4 @@ export class MonkeyResponse2<T>
     public data?: T,
     public status: StatusCode = 200
   ) {}
-
-  public static fromDB<T extends { _id: string }>(
-    message: string,
-    data: MonkeyTypes.WithObjectId<T>,
-    status?: StatusCode
-  ): MonkeyResponse2<T> {
-    return new MonkeyResponse2(
-      message,
-      { _id: data._id.toString(), ...omit(data, "_id") } as unknown as T,
-      status
-    );
-  }
 }
