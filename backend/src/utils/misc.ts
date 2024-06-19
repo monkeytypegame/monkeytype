@@ -307,12 +307,12 @@ export function isDevEnvironment(): boolean {
   return process.env["MODE"] === "dev";
 }
 
-export function replaceObjectId<T extends { _id: string }>(
-  data: MonkeyTypes.WithObjectId<T>
-): T {
+export function replaceObjectId<T extends { _id: ObjectId }>(
+  data: T
+): T & { _id: string } {
   const result = {
     _id: data._id.toString(),
     ...omit(data, "_id"),
-  } as unknown as T;
+  } as T & { _id: string };
   return result;
 }

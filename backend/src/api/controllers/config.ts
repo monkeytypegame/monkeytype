@@ -14,10 +14,7 @@ export async function getConfig(
 
   const data = await ConfigDAL.getConfig(uid);
   if (data === null) throw new MonkeyError(400, "No config found.");
-  return new MonkeyResponse2(
-    "Configuration retrieved",
-    replaceObjectId<ConfigWrapped>(data)
-  );
+  return new MonkeyResponse2("Configuration retrieved", replaceObjectId(data));
 }
 
 export async function saveConfig(
