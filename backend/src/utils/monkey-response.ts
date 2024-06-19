@@ -50,7 +50,7 @@ export class MonkeyResponse2<T>
 {
   constructor(
     public message: string,
-    public data: T,
+    public data?: T,
     public status: StatusCode = 200
   ) {}
 
@@ -64,11 +64,5 @@ export class MonkeyResponse2<T>
       { _id: data._id.toString(), ...omit(data, "_id") } as unknown as T,
       status
     );
-  }
-}
-
-export class MonkeyResponse2Empty extends MonkeyResponse2<undefined> {
-  constructor(message: string, status = 200) {
-    super(message, undefined, status);
   }
 }

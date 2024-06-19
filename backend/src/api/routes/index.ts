@@ -187,7 +187,7 @@ export function callController<
   TStatus extends number = 200
 >(
   handler: Handler<TQuery, TBody, TParams, TResponse>,
-  status?: TStatus
+  _status?: TStatus
 ): (all: RequestType2<TRoute, TQuery, TBody, TParams>) => Promise<{
   status: TStatus;
   body: { message: string; status: number; data: TResponse };
@@ -202,12 +202,17 @@ export function callController<
     };
 
     const result = await handler(req);
-
-    return {
+    const response = {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       status: result.status as any,
-      body: result,
+      body: {
+        message: result.message,
+        status: result.status,
+        data: result.data as TResponse,
+      },
     };
+
+    return response;
   };
 }
 
