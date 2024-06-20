@@ -1,6 +1,6 @@
 import * as Config from "../../src/ts/config";
 import * as ConfigValidation from "../../src/ts/config-validation";
-import { CustomThemeColors } from "@shared/contract/shared/config";
+import { CustomThemeColors } from "shared/contract/shared/config";
 import { randomBytes } from "crypto";
 
 describe("Config", () => {

@@ -31,10 +31,7 @@
     "noPropertyAccessFromIndexSignature": true,
     "allowUnusedLabels": false,
     "allowUnreachableCode": false,
-    "skipLibCheck": false,
-    "paths": {
-      "@shared/*": ["../shared/*"]
-    }
+    "skipLibCheck": false
   },
   "include": ["./src/**/*.ts", "../shared/**/*.d.ts"],
   "exclude": ["node_modules", "build", "setup-tests.ts", "**/*.spec.ts"]

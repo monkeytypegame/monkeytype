@@ -33,7 +33,7 @@ import AnimatedModal, {
 } from "../utils/animated-modal";
 import { format as dateFormat } from "date-fns/format";
 import { Attributes, buildTag } from "../utils/tag-builder";
-import { CustomThemeColors } from "@shared/contract/shared/config";
+import { CustomThemeColors } from "shared/contract/shared/config";
 
 type CommonInput<TType, TValue> = {
   type: TType;

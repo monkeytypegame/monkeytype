@@ -1,4 +1,4 @@
-import { configsContract } from "@shared/contract/configs.contract";
+import { configsContract } from "shared/contract/configs.contract";
 import { initServer } from "@ts-rest/express";
 import { authenticateRequestV2 } from "../../middlewares/auth";
 import * as RateLimit from "../../middlewares/rate-limit";

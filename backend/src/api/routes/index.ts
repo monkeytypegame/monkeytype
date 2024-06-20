@@ -1,5 +1,5 @@
 import _ from "lodash";
-import { contract } from "@shared/contract/index.contract";
+import { contract } from "shared/contract/index.contract";
 import psas from "./psas";
 import publicStats from "./public";
 import users from "./users";
@@ -36,7 +36,7 @@ import {
 } from "@ts-rest/express";
 import { configsRoutes } from "./configs";
 import { ZodIssue } from "zod";
-import { MonkeyValidationError } from "@shared/contract/shared/types";
+import { MonkeyValidationError } from "shared/contract/shared/types";
 import { AppRoute, AppRouter } from "@ts-rest/core";
 
 const pathOverride = process.env["API_PATH_OVERRIDE"];

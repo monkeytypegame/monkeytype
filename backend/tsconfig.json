@@ -17,10 +17,7 @@
     "noImplicitReturns": true,
     "noPropertyAccessFromIndexSignature": true,
     "noFallthroughCasesInSwitch": true,
-    "forceConsistentCasingInFileNames": true,
-    "paths": {
-      "@shared/*": ["../shared/*"]
-    }
+    "forceConsistentCasingInFileNames": true
   },
   "ts-node": {
     "files": true

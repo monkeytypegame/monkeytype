@@ -17,8 +17,8 @@ import {
   canSetFunboxWithConfig,
 } from "./test/funbox/funbox-validation";
 import { reloadAfter } from "./utils/misc";
-import * as Config from "@shared/contract/shared/config";
-import * as SharedContractTypes from "@shared/contract/shared/types";
+import * as Config from "shared/contract/shared/config";
+import * as SharedContractTypes from "shared/contract/shared/types";
 
 export let localStorageConfig: SharedTypes.Config;
 

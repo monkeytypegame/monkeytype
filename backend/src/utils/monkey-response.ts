@@ -3,7 +3,7 @@ import { isCustomCode } from "../constants/monkey-status-codes";
 import {
   MonkeyResonseType as MonkeyResponseType,
   StatusCode,
-} from "@shared/contract/shared/types";
+} from "shared/contract/shared/types";
 import { omit } from "lodash";
 
 export type MonkeyStatusAware = {

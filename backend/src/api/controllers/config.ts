@@ -1,7 +1,7 @@
 import {
   ConfigWrapped,
   ConfigUpdateBody,
-} from "@shared/contract/configs.contract";
+} from "shared/contract/configs.contract";
 import * as ConfigDAL from "../../dal/config";
 import { MonkeyResponse2 } from "../../utils/monkey-response";
 import MonkeyError from "../../utils/error";

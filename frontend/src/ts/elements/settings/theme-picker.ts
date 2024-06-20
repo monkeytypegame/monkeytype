@@ -11,7 +11,7 @@ import * as DB from "../../db";
 import * as ConfigEvent from "../../observables/config-event";
 import { isAuthenticated } from "../../firebase";
 import * as ActivePage from "../../states/active-page";
-import { CustomThemeColors } from "@shared/contract/shared/config";
+import { CustomThemeColors } from "shared/contract/shared/config";
 
 function updateActiveButton(): void {
   let activeThemeName = Config.theme;
