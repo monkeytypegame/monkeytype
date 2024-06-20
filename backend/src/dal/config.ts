@@ -1,7 +1,7 @@
 import { Collection, UpdateResult } from "mongodb";
 import * as db from "../init/db";
 import _ from "lodash";
-import { Config } from "@shared/contract/configs.contract";
+import { Config, ConfigWrapped } from "@shared/contract/configs.contract";
 
 const configLegacyProperties = [
   "swapEscAndTab",
@@ -23,9 +23,11 @@ const configLegacyProperties = [
   "enableAds",
 ];
 
+type DBConfig = MonkeyTypes.WithObjectId<ConfigWrapped>;
+
 // Export for use in tests
-export const getConfigCollection = (): Collection<MonkeyTypes.DBConfig> =>
-  db.collection<MonkeyTypes.DBConfig>("configs");
+export const getConfigCollection = (): Collection<DBConfig> =>
+  db.collection<DBConfig>("configs");
 
 export async function saveConfig(
   uid: string,
@@ -44,9 +46,7 @@ export async function saveConfig(
   );
 }
 
-export async function getConfig(
-  uid: string
-): Promise<MonkeyTypes.DBConfig | null> {
+export async function getConfig(uid: string): Promise<DBConfig | null> {
   const config = await getConfigCollection().findOne({ uid });
   return config;
 }
