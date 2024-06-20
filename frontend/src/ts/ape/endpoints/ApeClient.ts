@@ -38,7 +38,7 @@ function buildApi(axios: Axios): (args: ApiFetcherArgs) => Promise<{
         const result = {
           status: response?.status ?? 500,
           body: {
-            status: response?.data.status ?? 500,
+            status: response?.status ?? 500,
             message: response?.data.message ?? e.message,
           },
           headers: response?.headers,
