@@ -526,6 +526,20 @@ export const userTestActivity = rateLimit({
   handler: customHandler,
 });
 
+export const userCurrentTestActivity = rateLimit({
+  windowMs: ONE_HOUR_MS,
+  max: 60 * REQUEST_MULTIPLIER,
+  keyGenerator: getKeyWithUid,
+  handler: customHandler,
+});
+
+export const userStreak = rateLimit({
+  windowMs: ONE_HOUR_MS,
+  max: 60 * REQUEST_MULTIPLIER,
+  keyGenerator: getKeyWithUid,
+  handler: customHandler,
+});
+
 // ApeKeys Routing
 export const apeKeysGet = rateLimit({
   windowMs: ONE_HOUR_MS,
