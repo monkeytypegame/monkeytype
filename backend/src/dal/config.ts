@@ -1,7 +1,7 @@
 import { Collection, UpdateResult } from "mongodb";
 import * as db from "../init/db";
 import _ from "lodash";
-import { Config, ConfigWrapped } from "shared/contract/configs.contract";
+import { Config, PartialConfig } from "shared/contract/configs.contract";
 
 const configLegacyProperties = [
   "swapEscAndTab",
@@ -23,7 +23,11 @@ const configLegacyProperties = [
   "enableAds",
 ];
 
-type DBConfig = MonkeyTypes.WithObjectId<ConfigWrapped>;
+type DBConfig = {
+  _id: ObjectId;
+  uid: string;
+  config: PartialConfig;
+};
 
 // Export for use in tests
 export const getConfigCollection = (): Collection<DBConfig> =>

@@ -20,6 +20,11 @@ import { reloadAfter } from "./utils/misc";
 import * as Config from "shared/contract/shared/config";
 import * as SharedContractTypes from "shared/contract/shared/types";
 
+import type {
+  PartialConfig,
+  Config as ConfigType,
+} from "shared/contract/configs.contract";
+
 export let localStorageConfig: SharedTypes.Config;
 
 let loadDone: (value?: unknown) => void;
@@ -1969,9 +1974,9 @@ export async function loadFromLocalStorage(): Promise<void> {
 }
 
 function replaceLegacyValues(
-  configToApply: SharedTypes.Config | MonkeyTypes.ConfigChanges
-): SharedTypes.Config | MonkeyTypes.ConfigChanges {
-  const configObj = configToApply as SharedTypes.Config;
+  configToApply: PartialConfig | MonkeyTypes.ConfigChanges
+): ConfigType | MonkeyTypes.ConfigChanges {
+  const configObj = configToApply as ConfigType;
 
   //@ts-expect-error
   if (configObj.quickTab === true) {

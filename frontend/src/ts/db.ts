@@ -165,7 +165,7 @@ export async function initSnapshot(): Promise<
         ...DefaultConfig,
       };
     } else {
-      snap.config = mergeWithDefaultConfig(configData.config);
+      snap.config = mergeWithDefaultConfig(configData);
     }
     // if (ActivePage.get() === "loading") {
     //   LoadingPage.updateBar(67.5);
@@ -892,7 +892,7 @@ export async function updateLbMemory<M extends SharedTypes.Config.Mode>(
 
 export async function saveConfig(config: SharedTypes.Config): Promise<void> {
   if (isAuthenticated()) {
-    const response = await Ape.configs.save({ body: { config } });
+    const response = await Ape.configs.save({ body: config });
     if (response.status !== 200) {
       Notifications.add("Failed to save config: " + response.body.message, -1);
     }

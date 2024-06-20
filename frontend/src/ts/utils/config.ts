@@ -1,9 +1,8 @@
+import { Config, PartialConfig } from "shared/contract/configs.contract";
 import DefaultConfig from "../constants/default-config";
 import { typedKeys } from "./misc";
 
-export function mergeWithDefaultConfig(
-  config: Partial<SharedTypes.Config>
-): SharedTypes.Config {
+export function mergeWithDefaultConfig(config: PartialConfig): Config {
   const mergedConfig = {} as SharedTypes.Config;
   for (const key of typedKeys(DefaultConfig)) {
     const newValue =

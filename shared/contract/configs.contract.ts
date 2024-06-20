@@ -40,7 +40,6 @@ import {
   PlaySoundOnErrorSchema,
   QuickRestartSchema,
   QuoteLengthConfigSchema,
-  QuoteLengthSchema,
   RandomThemeSchema,
   RepeatQuotesSchema,
   ShowAverageSchema,
@@ -154,17 +153,8 @@ export const ConfigSchema = z.object({
 });
 export type Config = z.infer<typeof ConfigSchema>;
 
-export const ConfigWrappedSchema = z.object({
-  _id: z.string(),
-  uid: z.string(),
-  config: ConfigSchema,
-});
-export type ConfigWrapped = z.infer<typeof ConfigWrappedSchema>;
-
-export const ConfigUpdateBodySchema = z.object({
-  config: ConfigSchema.partial(),
-});
-export type ConfigUpdateBody = z.infer<typeof ConfigUpdateBodySchema>;
+export const PartialConfigSchema = ConfigSchema.partial();
+export type PartialConfig = z.infer<typeof PartialConfigSchema>;
 
 const c = initContract();
 
@@ -174,7 +164,9 @@ export const configsContract = c.router(
       method: "GET",
       path: "/",
       responses: {
-        200: MonkeyResponseSchema.extend({ data: ConfigWrappedSchema }),
+        200: MonkeyResponseSchema.extend({
+          data: PartialConfigSchema.optional(),
+        }),
         400: MonkeyErrorResponseSchema,
       },
       summary: "get config",
@@ -183,7 +175,7 @@ export const configsContract = c.router(
     save: {
       method: "PATCH",
       path: "/",
-      body: ConfigUpdateBodySchema,
+      body: PartialConfigSchema.strict(),
       responses: {
         200: MonkeyResponseSchema,
         400: MonkeyErrorResponseSchema,
