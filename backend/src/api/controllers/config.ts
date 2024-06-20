@@ -22,3 +22,12 @@ export async function saveConfig(
 
   return new MonkeyResponse2("Config updated");
 }
+
+export async function deleteConfig(
+  req: MonkeyTypes.Request2
+): Promise<MonkeyResponse2<undefined>> {
+  const { uid } = req.ctx.decodedToken;
+
+  await ConfigDAL.deleteConfig(uid);
+  return new MonkeyResponse2("Config deleted");
+}

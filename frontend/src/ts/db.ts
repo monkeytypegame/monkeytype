@@ -899,6 +899,15 @@ export async function saveConfig(config: SharedTypes.Config): Promise<void> {
   }
 }
 
+export async function resetConfig(): Promise<void> {
+  if (isAuthenticated()) {
+    const response = await Ape.configs.delete();
+    if (response.status !== 200) {
+      Notifications.add("Failed to reset config: " + response.body.message, -1);
+    }
+  }
+}
+
 export function saveLocalResult(
   result: SharedTypes.Result<SharedTypes.Config.Mode>
 ): void {

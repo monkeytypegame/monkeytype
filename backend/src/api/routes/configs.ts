@@ -16,4 +16,8 @@ export const configsRoutes = s.router(configsContract, {
     middleware: [authenticateRequestV2(), RateLimit.configUpdate],
     handler: async (r) => callController(ConfigController.saveConfig)(r),
   },
+  delete: {
+    middleware: [authenticateRequestV2(), RateLimit.configDelete],
+    handler: async (r) => callController(ConfigController.deleteConfig)(r),
+  },
 });

@@ -1946,7 +1946,8 @@ export async function apply(
 
 export async function reset(): Promise<void> {
   await apply(DefaultConfig);
-  saveFullConfigToLocalStorage();
+  await DB.resetConfig();
+  saveFullConfigToLocalStorage(true);
 }
 
 export async function loadFromLocalStorage(): Promise<void> {

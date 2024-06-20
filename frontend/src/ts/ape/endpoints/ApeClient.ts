@@ -33,12 +33,17 @@ function buildApi(axios: Axios): (args: ApiFetcherArgs) => Promise<{
     } catch (e: Error | AxiosError | unknown) {
       if (isAxiosError(e)) {
         const error = e as AxiosError;
-        const response = error.response as AxiosResponse;
-        return {
-          status: response.status,
-          body: response.data,
-          headers: response.headers,
+        const response = error.response as AxiosResponse | undefined;
+
+        const result = {
+          status: response?.status ?? 500,
+          body: {
+            status: response?.data.status ?? 500,
+            message: response?.data.message ?? e.message,
+          },
+          headers: response?.headers,
         };
+        return result;
       }
       throw e;
     }
