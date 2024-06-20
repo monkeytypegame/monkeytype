@@ -1,5 +1,5 @@
 import _ from "lodash";
-import { contract } from "./../../../../shared/contract/index.contract";
+import { contract } from "@shared/contract/index.contract";
 import psas from "./psas";
 import publicStats from "./public";
 import users from "./users";

@@ -3,7 +3,7 @@ import { buildHttpClient } from "./adapters/axios-adapter";
 import { envConfig } from "../constants/env-config";
 import axios from "axios";
 import { buildClient } from "./endpoints/ApeClient";
-import { configsContract } from "../../../../shared/contract/configs.contract";
+import { configsContract } from "@shared/contract/configs.contract";
 
 const API_PATH = "";
 const BASE_URL = envConfig.backendUrl;
