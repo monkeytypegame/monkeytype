@@ -203,8 +203,7 @@ export function callController<
 
     const result = await handler(req);
     const response = {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      status: result.status as any,
+      status: result.status as TStatus,
       body: {
         message: result.message,
         status: result.status,
