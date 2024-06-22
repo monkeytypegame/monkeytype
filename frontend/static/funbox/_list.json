@@ -190,5 +190,10 @@
     "name": "ddoouubblleedd",
     "info": "TTyyppee eevveerryytthhiinngg ttwwiiccee..",
     "canGetPb": true
+  },
+  {
+    "name": "pig_latin",
+    "info": "Iyay ovelay igpay atinlay!",
+    "canGetPb": true
   }
 ]

@@ -265,6 +265,19 @@ const list: MonkeyTypes.FunboxMetadata[] = [
     info: "TTyyppee eevveerryytthhiinngg ttwwiiccee..",
     properties: ["noLigatures"],
   },
+  {
+    name: "pig_latin",
+    info: "Iyay ovelay igpay atinlay!",
+    properties: [
+      "noLigatures",
+      "conflictsWithSymmetricChars",
+      "changesCapitalisation",
+    ],
+    forcedConfig: {
+      punctuation: [false],
+      numbers: [false],
+    },
+  },
 ];
 
 export function getAll(): MonkeyTypes.FunboxMetadata[] {

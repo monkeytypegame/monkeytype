@@ -344,6 +344,21 @@ const FunboxList: MonkeyTypes.FunboxMetadata[] = [
     frontendFunctions: ["alterText"],
     name: "ddoouubblleedd",
   },
+  {
+    name: "pig_latin",
+    difficultyLevel: 1,
+    properties: [
+      "noLigatures",
+      "conflictsWithSymmetricChars",
+      "changesCapitalisation",
+    ],
+    frontendFunctions: ["alterText"],
+    frontendForcedConfig: {
+      punctuation: [false],
+      numbers: [false],
+    },
+    canGetPb: true,
+  },
 ];
 
 export default FunboxList;

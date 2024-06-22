@@ -233,6 +233,18 @@ FunboxList.setFunboxFunctions("backwards", {
   },
 });
 
+FunboxList.setFunboxFunctions("pig_latin", {
+  alterText(word: string): string {
+    if (word.length === 0) return word;
+    const vowels = ["a", "e", "i", "o", "u"];
+    const firstLetter = word.charAt(0);
+
+    return vowels.includes(firstLetter.toLowerCase())
+      ? word + "yay" // If first letter is a vowel
+      : word.slice(1) + firstLetter + "ay"; // If first letter is a consonant
+  },
+});
+
 FunboxList.setFunboxFunctions("capitals", {
   alterText(word: string): string {
     return Strings.capitalizeFirstLetterOfEachWord(word);
