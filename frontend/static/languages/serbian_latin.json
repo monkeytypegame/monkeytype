@@ -1,6 +1,8 @@
 {
   "name": "serbian_latin",
-  "noLazyMode": true,
+  "additionalAccents": [
+    ["đ", "dj"]
+  ],
   "words": [
     "kao",
     "ja",
