@@ -38,6 +38,7 @@ import { configsRoutes } from "./configs";
 import { ZodIssue } from "zod";
 import { MonkeyValidationError } from "shared/contract/shared/types";
 import { AppRoute, AppRouter } from "@ts-rest/core";
+import { addRedocMiddlewares } from "./redoc";
 
 const pathOverride = process.env["API_PATH_OVERRIDE"];
 const BASE_ROUTE = pathOverride !== undefined ? `/${pathOverride}` : "";
@@ -129,6 +130,7 @@ function applyApiRoutes(app: Application): void {
   app.use("/configuration", configuration);
 
   addSwaggerMiddlewares(app);
+  addRedocMiddlewares(app);
 
   app.use(
     (req: MonkeyTypes.Request, res: Response, next: NextFunction): void => {

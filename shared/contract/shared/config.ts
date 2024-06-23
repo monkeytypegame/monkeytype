@@ -261,7 +261,7 @@ export type Language = z.infer<typeof LanguageSchema>;
 export const KeymapLayoutSchema = z
   .string()
   .max(50)
-  .regex(/[\w-_]+/);
+  .regex(/[\w\-_]+/);
 export type KeymapLayout = z.infer<typeof KeymapLayoutSchema>;
 
 export const LayoutSchema = token().max(50);

@@ -189,10 +189,12 @@ export const configsContract = c.router(
     delete: {
       method: "DELETE",
       path: "/",
-      body: z.never().or(z.object({}).strict()),
+      body: z.void(),
       responses: {
         200: MonkeyResponseSchema,
       },
+      summary: "delete config",
+      description: "Delete/reset the config for the current user.",
     },
   },
   {

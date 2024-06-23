@@ -81,7 +81,7 @@ const CONFIG_SCHEMA = joi.object({
     .valid("lowercase", "uppercase", "blank", "dynamic"),
   keymapLayout: joi
     .string()
-    .regex(/[\w-_]+/)
+    .regex(/[\w\-_]+/)
     .valid()
     .max(50),
   keymapShowTopRow: joi.string().valid("always", "layout", "never"),

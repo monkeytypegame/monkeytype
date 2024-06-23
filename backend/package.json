@@ -4,16 +4,17 @@
   "license": "GPL-3.0",
   "private": true,
   "scripts": {
-    "build": "tsc --build",
+    "build": "npm run gen-docs && tsc --build",
     "watch": "tsc --build --watch",
     "clean": "tsc --build --clean",
     "start": "npm run build && node ./build/server.js",
     "test": "vitest run",
     "test-coverage": "vitest run --coverage",
-    "dev": "ts-node-dev --transpile-only --inspect -- ./src/server.ts",
+    "dev": "npm run gen-docs && ts-node-dev --transpile-only --inspect -- ./src/server.ts",
     "knip": "knip",
     "docker-db-only": "docker compose -f docker/compose.db-only.yml up",
-    "docker": "docker compose -f docker/compose.yml up"
+    "docker": "docker compose -f docker/compose.yml up",
+    "gen-docs": "ts-node scripts/openapi.ts build/static/api/openapi.json && redocly build-docs all@v2 -o build/static/api/documentation-all.html"
   },
   "engines": {
     "node": "18.19.1",
@@ -60,6 +61,7 @@
     "zod": "3.23.8"
   },
   "devDependencies": {
+    "@redocly/cli": "1.16.0",
     "@types/bcrypt": "5.0.0",
     "@types/cors": "2.8.12",
     "@types/cron": "1.7.3",
