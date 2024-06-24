@@ -449,7 +449,7 @@ export async function getUser(
   const isPremium = await UserDAL.checkIfUserIsPremium(uid, userInfo);
 
   const allTimeLbs = await getAllTimeLbs(uid);
-  const testActivity = calculateCurrentTestActivity(userInfo.testActivity);
+  const testActivity = generateCurrentTestActivity(userInfo.testActivity);
 
   const userData = {
     ...getRelevantUserInfo(userInfo),
@@ -995,7 +995,7 @@ async function getAllTimeLbs(uid: string): Promise<SharedTypes.AllTimeLbs> {
   };
 }
 
-export function calculateCurrentTestActivity(
+export function generateCurrentTestActivity(
   testActivity: SharedTypes.CountByYearAndDay | undefined
 ): SharedTypes.TestActivity | undefined {
   const thisYear = Dates.startOfYear(new UTCDateMini());
@@ -1064,7 +1064,7 @@ export async function getCurrentTestActivity(
   const { uid } = req.ctx.decodedToken;
 
   const user = await UserDAL.getUser(uid, "current test activity");
-  const data = calculateCurrentTestActivity(user.testActivity);
+  const data = generateCurrentTestActivity(user.testActivity);
   return new MonkeyResponse("Current test activity data retrieved", data);
 }
 
@@ -1074,7 +1074,6 @@ export async function getStreak(
   const { uid } = req.ctx.decodedToken;
 
   const user = await UserDAL.getUser(uid, "streak");
-  user.streak;
 
   return new MonkeyResponse("Streak data retrieved", user.streak);
 }

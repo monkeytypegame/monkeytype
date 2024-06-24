@@ -1,7 +1,7 @@
 import request from "supertest";
 import app from "../../../src/app";
 import * as Configuration from "../../../src/init/configuration";
-import { calculateCurrentTestActivity } from "../../../src/api/controllers/user";
+import { generateCurrentTestActivity } from "../../../src/api/controllers/user";
 import * as UserDal from "../../../src/dal/user";
 import _ from "lodash";
 import { DecodedIdToken } from "firebase-admin/lib/auth/token-verifier";
@@ -234,12 +234,12 @@ describe("user controller test", () => {
     });
   });
 
-  describe("calculateCurrentTestActivity", () => {
+  describe("generateCurrentTestActivity", () => {
     beforeAll(() => {
       vi.useFakeTimers().setSystemTime(1712102400000);
     });
     it("without any data", () => {
-      expect(calculateCurrentTestActivity(undefined)).toBeUndefined();
+      expect(generateCurrentTestActivity(undefined)).toBeUndefined();
     });
     it("with current year only", () => {
       //given
@@ -248,7 +248,7 @@ describe("user controller test", () => {
       };
 
       //when
-      const testActivity = calculateCurrentTestActivity(data);
+      const testActivity = generateCurrentTestActivity(data);
 
       //then
       expect(testActivity?.lastDay).toEqual(1712102400000);
@@ -268,7 +268,7 @@ describe("user controller test", () => {
       };
 
       //when
-      const testActivity = calculateCurrentTestActivity(data);
+      const testActivity = generateCurrentTestActivity(data);
 
       //then
       expect(testActivity?.lastDay).toEqual(1712102400000);
@@ -288,7 +288,7 @@ describe("user controller test", () => {
       };
 
       //when
-      const testActivity = calculateCurrentTestActivity(data);
+      const testActivity = generateCurrentTestActivity(data);
 
       //then
       expect(testActivity?.lastDay).toEqual(1712102400000);
