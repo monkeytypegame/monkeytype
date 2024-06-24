@@ -6,10 +6,9 @@ export async function getConfig(
   req: MonkeyTypes.Request2
 ): Promise<MonkeyResponse2<PartialConfig>> {
   const { uid } = req.ctx.decodedToken;
+  const data = (await ConfigDAL.getConfig(uid))?.config ?? null;
 
-  const data = await ConfigDAL.getConfig(uid);
-  if (data === null) return new MonkeyResponse2("Configuration retrieved");
-  return new MonkeyResponse2("Configuration retrieved", data.config);
+  return new MonkeyResponse2("Configuration retrieved", data);
 }
 
 export async function saveConfig(

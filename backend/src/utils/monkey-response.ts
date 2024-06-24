@@ -4,10 +4,13 @@ import {
   MonkeyResonseType as MonkeyResponseType,
   StatusCode,
 } from "shared/contract/shared/types";
-import { omit } from "lodash";
 
 export type MonkeyStatusAware = {
   status: number;
+};
+
+export type MonkeyDataAware<T> = {
+  data: T | null;
 };
 //TODO FIX ANYS
 
@@ -46,11 +49,11 @@ export function handleMonkeyResponse(
 }
 
 export class MonkeyResponse2<T>
-  implements MonkeyResponseType, MonkeyStatusAware
+  implements MonkeyResponseType, MonkeyStatusAware, MonkeyDataAware<T>
 {
   constructor(
     public message: string,
-    public data?: T,
+    public data: T | null = null,
     public status: StatusCode = 200
   ) {}
 }

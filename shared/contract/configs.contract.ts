@@ -64,6 +64,7 @@ import {
   MonkeyErrorResponseSchema,
   MonkeyResponseSchema,
 } from "./shared/types";
+import { responseWithData } from "./shared/helpers";
 
 export const ConfigSchema = z
   .object({
@@ -168,13 +169,8 @@ export const configsContract = c.router(
       description: "Get config of the current user.",
       method: "GET",
       path: "/",
-      metadata: {
-        auth: { acceptApeKeys: true } as Auth,
-      },
       responses: {
-        200: MonkeyResponseSchema.extend({
-          data: PartialConfigSchema.optional(),
-        }),
+        200: responseWithData(PartialConfigSchema),
         400: MonkeyErrorResponseSchema,
       },
     },
