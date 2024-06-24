@@ -280,6 +280,16 @@ export async function punctuateWord(
   ) {
     word = await applyEnglishPunctuationToWord(word);
   }
+
+  if (word.includes("\t")) {
+    word = word.replace(/\t/g, "");
+    word += "\t";
+  }
+  if (word.includes("\n")) {
+    word = word.replace(/\n/g, "");
+    word += "\n";
+  }
+
   return word;
 }
 
