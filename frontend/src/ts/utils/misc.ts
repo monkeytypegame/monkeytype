@@ -579,7 +579,7 @@ export function isDevEnvironment(): boolean {
   return envConfig.isDevelopment;
 }
 
-export function dreymarIndex(dictLength: number): number {
+export function zipfyRandomArrayIndex(dictLength: number): number {
   /**
    * get random index based on probability distribution of Zipf's law,
    * where PMF is (1/n)/H_N,
