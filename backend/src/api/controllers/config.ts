@@ -1,10 +1,13 @@
-import { PartialConfig } from "shared/contract/configs.contract";
+import {
+  GetConfigResponse,
+  PartialConfig,
+} from "shared/contract/configs.contract";
 import * as ConfigDAL from "../../dal/config";
 import { MonkeyResponse2 } from "../../utils/monkey-response";
 
 export async function getConfig(
   req: MonkeyTypes.Request2
-): Promise<MonkeyResponse2<PartialConfig>> {
+): Promise<GetConfigResponse> {
   const { uid } = req.ctx.decodedToken;
   const data = (await ConfigDAL.getConfig(uid))?.config ?? null;
 

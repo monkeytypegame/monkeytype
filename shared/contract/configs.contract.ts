@@ -160,6 +160,11 @@ export type Config = z.infer<typeof ConfigSchema>;
 export const PartialConfigSchema = ConfigSchema.partial();
 export type PartialConfig = z.infer<typeof PartialConfigSchema>;
 
+export const GetConfigResponseSchema = MonkeyResponseSchema.extend({
+  data: PartialConfigSchema.nullable(),
+});
+export type GetConfigResponse = z.infer<typeof GetConfigResponseSchema>;
+
 const c = initContract();
 
 export const configsContract = c.router(
@@ -170,7 +175,7 @@ export const configsContract = c.router(
       method: "GET",
       path: "/",
       responses: {
-        200: responseWithData(PartialConfigSchema),
+        200: GetConfigResponseSchema,
         400: MonkeyErrorResponseSchema,
       },
     },
