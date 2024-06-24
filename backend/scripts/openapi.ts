@@ -21,11 +21,28 @@ export function getOpenApi() {
         },
       },
     },
-    { jsonQuery: true, setOperationId: "concatenated-path" }
+
+    {
+      jsonQuery: true,
+      setOperationId: "concatenated-path",
+      operationMapper: (operation, route) => ({
+        ...operation,
+        ...addAuth(route.metadata),
+      }),
+    }
   );
   return openApiDocument;
 }
 
+function addAuth(metadata) {
+  const auth = metadata?.["auth"] ?? {};
+
+  return {
+    "x-public": auth.isPublic === true ? "yes" : "no",
+    "x-accept-apekey": auth.acceptApeKeys === true ? "yes" : "no",
+    apekey: auth.acceptApeKeys === true ? "yes" : "no",
+  };
+}
 //detect if we run this as a main
 if (require.main === module) {
   const args = process.argv.slice(2);
@@ -43,6 +60,5 @@ if (require.main === module) {
   }
 
   const openapi = getOpenApi();
-  writeFileSync(args[0] as string, JSON.stringify(openapi));
-  //console.log(JSON.stringify(openapi));
+  writeFileSync(args[0] as string, JSON.stringify(openapi, null, 2));
 }

@@ -2,8 +2,16 @@ extends:
   - recommended
 
 apis:
-  all@v2:
+  internal@v2:
     root: build/static/api/openapi.json
+  public-filter:
+    root: build/static/api/openapi.json
+    decorators:
+      filter-in:
+        property: x-accept-apekey
+        value: yes
+  public@v2:
+    root: build/static/api/public.json
 
 features.openapi:
   theme:

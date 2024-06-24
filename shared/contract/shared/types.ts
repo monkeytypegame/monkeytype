@@ -1,5 +1,12 @@
 import { z } from "zod";
 
+export type Auth = {
+  isPublic?: boolean;
+  acceptApeKeys?: boolean;
+  requireFreshToken?: boolean;
+  noCache?: boolean;
+};
+
 const StatusCodeSchema = z.number().int();
 export type StatusCode = z.infer<typeof StatusCodeSchema>;
 

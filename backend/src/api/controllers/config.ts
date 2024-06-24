@@ -24,7 +24,7 @@ export async function saveConfig(
 }
 
 export async function deleteConfig(
-  req: MonkeyTypes.Request2<undefined, void>
+  req: MonkeyTypes.Request2<undefined, unknown>
 ): Promise<MonkeyResponse2<undefined>> {
   const { uid } = req.ctx.decodedToken;
 

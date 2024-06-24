@@ -58,6 +58,7 @@ import {
 } from "./shared/config";
 
 import {
+  Auth,
   DifficultySchema,
   ModeSchema,
   MonkeyErrorResponseSchema,
@@ -163,16 +164,19 @@ const c = initContract();
 export const configsContract = c.router(
   {
     get: {
+      summary: "get config",
+      description: "Get config of the current user.",
       method: "GET",
       path: "/",
+      metadata: {
+        auth: { acceptApeKeys: true } as Auth,
+      },
       responses: {
         200: MonkeyResponseSchema.extend({
           data: PartialConfigSchema.optional(),
         }),
         400: MonkeyErrorResponseSchema,
       },
-      summary: "get config",
-      description: "Get config of the current user.",
     },
     save: {
       method: "PATCH",
@@ -189,7 +193,7 @@ export const configsContract = c.router(
     delete: {
       method: "DELETE",
       path: "/",
-      body: z.void(),
+      body: z.never().or(z.object({}).strict()),
       responses: {
         200: MonkeyResponseSchema,
       },
