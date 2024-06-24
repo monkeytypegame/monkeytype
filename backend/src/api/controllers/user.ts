@@ -449,7 +449,7 @@ export async function getUser(
   const isPremium = await UserDAL.checkIfUserIsPremium(uid, userInfo);
 
   const allTimeLbs = await getAllTimeLbs(uid);
-  const testActivity = getCurrentTestActivity(userInfo.testActivity);
+  const testActivity = generateCurrentTestActivity(userInfo.testActivity);
 
   const userData = {
     ...getRelevantUserInfo(userInfo),
@@ -995,7 +995,7 @@ async function getAllTimeLbs(uid: string): Promise<SharedTypes.AllTimeLbs> {
   };
 }
 
-export function getCurrentTestActivity(
+export function generateCurrentTestActivity(
   testActivity: SharedTypes.CountByYearAndDay | undefined
 ): SharedTypes.TestActivity | undefined {
   const thisYear = Dates.startOfYear(new UTCDateMini());
@@ -1056,4 +1056,24 @@ async function firebaseDeleteUserIgnoreError(uid: string): Promise<void> {
   } catch (e) {
     //ignore
   }
+}
+
+export async function getCurrentTestActivity(
+  req: MonkeyTypes.Request
+): Promise<MonkeyResponse> {
+  const { uid } = req.ctx.decodedToken;
+
+  const user = await UserDAL.getUser(uid, "current test activity");
+  const data = generateCurrentTestActivity(user.testActivity);
+  return new MonkeyResponse("Current test activity data retrieved", data);
+}
+
+export async function getStreak(
+  req: MonkeyTypes.Request
+): Promise<MonkeyResponse> {
+  const { uid } = req.ctx.decodedToken;
+
+  const user = await UserDAL.getUser(uid, "streak");
+
+  return new MonkeyResponse("Streak data retrieved", user.streak);
 }
