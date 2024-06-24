@@ -91,8 +91,6 @@ export function init(missed: boolean, slow: boolean): boolean {
 
   // console.log(newCustomText);
 
-  newCustomText.sort(() => Math.random() - 0.5);
-
   const mode = before.mode === null ? Config.mode : before.mode;
   const punctuation =
     before.punctuation === null ? Config.punctuation : before.punctuation;
@@ -109,6 +107,7 @@ export function init(missed: boolean, slow: boolean): boolean {
   CustomText.setLimitValue(
     (sortableSlowWords.length + sortableMissedWords.length) * 5
   );
+  CustomText.setMode("shuffle");
 
   setCustomTextName("practise", undefined);
 
