@@ -160,9 +160,8 @@ export type Config = z.infer<typeof ConfigSchema>;
 export const PartialConfigSchema = ConfigSchema.partial();
 export type PartialConfig = z.infer<typeof PartialConfigSchema>;
 
-export const GetConfigResponseSchema = MonkeyResponseSchema.extend({
-  data: PartialConfigSchema.nullable(),
-});
+export const GetConfigResponseSchema = responseWithData(PartialConfigSchema);
+
 export type GetConfigResponse = z.infer<typeof GetConfigResponseSchema>;
 
 const c = initContract();
