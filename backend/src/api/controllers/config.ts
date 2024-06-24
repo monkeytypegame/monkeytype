@@ -16,7 +16,7 @@ export async function getConfig(
 
 export async function saveConfig(
   req: MonkeyTypes.Request2<undefined, PartialConfig>
-): Promise<MonkeyResponse2<undefined>> {
+): Promise<MonkeyResponse2> {
   const config = req.body;
   const { uid } = req.ctx.decodedToken;
 
@@ -27,7 +27,7 @@ export async function saveConfig(
 
 export async function deleteConfig(
   req: MonkeyTypes.Request2<undefined, unknown>
-): Promise<MonkeyResponse2<undefined>> {
+): Promise<MonkeyResponse2> {
   const { uid } = req.ctx.decodedToken;
 
   await ConfigDAL.deleteConfig(uid);

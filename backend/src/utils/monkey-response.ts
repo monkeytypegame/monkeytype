@@ -48,7 +48,7 @@ export function handleMonkeyResponse(
   res.json({ message, data });
 }
 
-export class MonkeyResponse2<T>
+export class MonkeyResponse2<T = null>
   implements MonkeyResponseType, MonkeyStatusAware, MonkeyDataAware<T>
 {
   constructor(
