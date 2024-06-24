@@ -1237,5 +1237,13 @@
     "mainColor": "#b94189",
     "subColor": "#e094c2",
     "textColor": "#5c2954"
+  },
+  {
+    "name": "lean",
+    "bgColor": "#9324C6",
+    "mainColor": "#3A0453",
+    "subColor": "#CB5BFF",
+    "textColor": "#2E0043"
   }
+
 ]
