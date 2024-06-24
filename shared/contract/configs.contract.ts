@@ -64,7 +64,7 @@ import {
   MonkeyErrorResponseSchema,
   MonkeyResponseSchema,
 } from "./shared/types";
-import { responseWithData } from "./shared/helpers";
+import { responseWithNullableData } from "./shared/helpers";
 
 export const ConfigSchema = z
   .object({
@@ -160,7 +160,8 @@ export type Config = z.infer<typeof ConfigSchema>;
 export const PartialConfigSchema = ConfigSchema.partial();
 export type PartialConfig = z.infer<typeof PartialConfigSchema>;
 
-export const GetConfigResponseSchema = responseWithData(PartialConfigSchema);
+export const GetConfigResponseSchema =
+  responseWithNullableData(PartialConfigSchema);
 
 export type GetConfigResponse = z.infer<typeof GetConfigResponseSchema>;
 
