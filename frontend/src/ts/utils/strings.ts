@@ -149,3 +149,23 @@ export function cleanTypographySymbols(textToClean: string): string {
     (char) => specials[char as keyof typeof specials] || ""
   );
 }
+
+export function unaccentedCharacter(character: string): string {
+  const charMap = {
+    e: ["ê", "ë"],
+    a: ["â", "ã", "ä"],
+    o: ["ô", "ö", "õ"],
+    i: ["î", "ï", "ĩ"],
+    u: ["û", "ü"],
+    n: ["ñ"],
+    y: ["ÿ"],
+  };
+
+  for (const [normalizedChar, accentedChars] of Object.entries(charMap)) {
+    if (accentedChars.includes(character)) {
+      return normalizedChar;
+    }
+  }
+
+  return character;
+}

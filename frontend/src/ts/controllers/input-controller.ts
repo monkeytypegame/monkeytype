@@ -31,10 +31,10 @@ import * as Hangul from "hangul-js";
 import * as CustomTextState from "../states/custom-text-name";
 import * as FunboxList from "../test/funbox/funbox-list";
 import * as KeymapEvent from "../observables/keymap-event";
-import * as LazyMode from "../test/lazy-mode";
 import { IgnoredKeys } from "../constants/ignored-keys";
 import { ModifierKeys } from "../constants/modifier-keys";
 import { navigate } from "./route-controller";
+import { unaccentedCharacter } from "../utils/strings";
 
 let dontInsertSpace = false;
 let correctShiftUsed = true;
@@ -1100,7 +1100,7 @@ $(document).on("keydown", async (event) => {
     const len: number = TestInput.input.current.length; // have to do this because prettier wraps the line and causes an error
 
     const currentChar = TestWords.words.getCurrent().charAt(len).toString();
-    const unaccentedChar = LazyMode.replaceAccents(currentChar);
+    const unaccentedChar = unaccentedCharacter(currentChar);
 
     if (unaccentedChar !== currentChar)
       //dead key + unaccented character = accented character
