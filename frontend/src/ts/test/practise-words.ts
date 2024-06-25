@@ -107,6 +107,7 @@ export function init(missed: boolean, slow: boolean): boolean {
   CustomText.setLimitValue(
     (sortableSlowWords.length + sortableMissedWords.length) * 5
   );
+  CustomText.setMode("shuffle");
 
   setCustomTextName("practise", undefined);
 
