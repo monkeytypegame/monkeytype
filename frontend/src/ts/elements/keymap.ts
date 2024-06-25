@@ -9,7 +9,6 @@ import * as Hangul from "hangul-js";
 import * as Notifications from "../elements/notifications";
 import * as ActivePage from "../states/active-page";
 import * as TestWords from "../test/test-words";
-import { AccentCharacterMap } from "../constants/accents";
 
 const stenoKeys: MonkeyTypes.Layout = {
   keymapShowTopRow: true,
@@ -21,6 +20,12 @@ const stenoKeys: MonkeyTypes.Layout = {
     row4: ["aA", "oO", "eE", "uU"],
     row5: [],
   },
+};
+
+const accentMap = {
+  "^": ["ê", "â", "î", "ô", "û"],
+  "¨": ["ë", "ä", "ï", "ö", "ü", "ÿ"],
+  "~": ["ã", "õ", "ñ"],
 };
 
 function highlightKey(currentKey: string): void {
@@ -43,9 +48,8 @@ function highlightKey(currentKey: string): void {
 
       //if accented letter not highlighted, highlight the required dead key to write it
       if ($(highlightKey).length === 0) {
-        for (const [accent, accentedChars] of Object.entries(
-          AccentCharacterMap
-        )) {
+        for (const [accent, accentedChars] of Object.entries(accentMap)) {
+          console.log("for accent : " + accent + " ; " + accentedChars);
           if (accentedChars.includes(currentKey)) {
             highlightKey = `#keymap .keymapKey[data-key*="${accent}"]`;
             break;
@@ -54,7 +58,7 @@ function highlightKey(currentKey: string): void {
       }
     }
 
-    // console.log("highlighting", highlightKey);
+    console.log("highlighting", highlightKey);
 
     $(highlightKey).addClass("activeKey");
   } catch (e) {
