@@ -22,12 +22,6 @@ const stenoKeys: MonkeyTypes.Layout = {
   },
 };
 
-const accentMap = {
-  "^": ["ê", "â", "î", "ô", "û"],
-  "¨": ["ë", "ä", "ï", "ö", "ü", "ÿ"],
-  "~": ["ã", "õ", "ñ"],
-};
-
 function highlightKey(currentKey: string): void {
   if (Config.mode === "zen") return;
   if (currentKey === "") currentKey = " ";
@@ -38,27 +32,15 @@ function highlightKey(currentKey: string): void {
     if (Config.language.startsWith("korean")) {
       currentKey = Hangul.disassemble(currentKey)[0] ?? currentKey;
     }
-
     if (currentKey === " ") {
       highlightKey = "#keymap .keySpace, #keymap .keySplitSpace";
     } else if (currentKey === '"') {
       highlightKey = `#keymap .keymapKey[data-key*='${currentKey}']`;
     } else {
       highlightKey = `#keymap .keymapKey[data-key*="${currentKey}"]`;
-
-      //if accented letter not highlighted, highlight the required dead key to write it
-      if ($(highlightKey).length === 0) {
-        for (const [accent, accentedChars] of Object.entries(accentMap)) {
-          console.log("for accent : " + accent + " ; " + accentedChars);
-          if (accentedChars.includes(currentKey)) {
-            highlightKey = `#keymap .keymapKey[data-key*="${accent}"]`;
-            break;
-          }
-        }
-      }
     }
 
-    console.log("highlighting", highlightKey);
+    // console.log("highlighting", highlightKey);
 
     $(highlightKey).addClass("activeKey");
   } catch (e) {
