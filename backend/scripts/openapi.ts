@@ -11,6 +11,7 @@ export function getOpenApi() {
   const openApiDocument = generateOpenApi(
     contract,
     {
+      openapi: "3.1.0",
       info: {
         title: "Monkeytype API",
         description:
@@ -24,7 +25,17 @@ export function getOpenApi() {
         "x-logo": {
           url: "https://monkeytype.com/images/mtfulllogo.png",
         },
+        license: {
+          name: "GPL-3.0",
+          url: "https://www.gnu.org/licenses/gpl-3.0.html",
+        },
       },
+      servers: [
+        {
+          url: "https://api.monkeytype.com",
+          description: "Production server",
+        },
+      ],
       components: {
         securitySchemes: {
           BearerAuth: {

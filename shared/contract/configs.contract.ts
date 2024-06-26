@@ -197,6 +197,7 @@ export const configsContract = c.router(
       body: c.noBody(),
       responses: {
         200: MonkeyResponseSchema,
+        400: MonkeyErrorResponseSchema,
       },
       summary: "delete config",
       description: "Delete/reset the config for the current user.",
