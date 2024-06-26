@@ -9,19 +9,12 @@ import {
   incrementAuth,
   recordAuthTime,
   recordRequestCountry,
-  // recordRequestForUid,
 } from "../utils/prometheus";
 import crypto from "crypto";
 import { performance } from "perf_hooks";
 import { TsRestRequestHandler } from "@ts-rest/express";
 import { AppRoute, AppRouter } from "@ts-rest/core";
-
-type RequestAuthenticationOptions = {
-  isPublic?: boolean;
-  acceptApeKeys?: boolean;
-  requireFreshToken?: boolean;
-  noCache?: boolean;
-};
+import { RequestAuthenticationOptions } from "shared/contract/shared/types";
 
 const DEFAULT_OPTIONS: RequestAuthenticationOptions = {
   isPublic: false,

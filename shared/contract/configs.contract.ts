@@ -58,8 +58,8 @@ import {
 } from "./shared/config";
 
 import {
-  Auth,
   DifficultySchema,
+  Metadata,
   ModeSchema,
   MonkeyErrorResponseSchema,
   MonkeyResponseSchema,
@@ -205,5 +205,8 @@ export const configsContract = c.router(
   {
     pathPrefix: "/configs",
     strictStatusCodes: true,
+    metadata: {
+      tags: "configs",
+    } as Metadata,
   }
 );

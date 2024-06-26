@@ -1,8 +1,19 @@
 import { z } from "zod";
 
-export type Auth = {
+export type OperationTag = "configs";
+
+export type Metadata = {
+  /** Authentication options, by default a bearer token is required. */
+  auth?: RequestAuthenticationOptions;
+  tags?: OperationTag | OperationTag[];
+};
+
+export type RequestAuthenticationOptions = {
+  /** Endpoint is accessible without any authentication. If `false` bearer authentication is required. */
   isPublic?: boolean;
+  /** Endpoint is accessible with ape key authentication in  _addition_ to the bearer authentication. */
   acceptApeKeys?: boolean;
+  /** Endpoint requires an authentication token which is younger than one minute.  */
   requireFreshToken?: boolean;
   noCache?: boolean;
 };

@@ -1,7 +1,7 @@
 import { generateOpenApi } from "@ts-rest/open-api";
 import { contract } from "../../shared/contract/index.contract";
 import { writeFileSync, mkdirSync } from "fs";
-import { Auth } from "../../shared/contract/shared/types";
+import { Metadata } from "../../shared/contract/shared/types";
 
 type SecurityRequirementObject = {
   [name: string]: string[];
@@ -37,6 +37,14 @@ export function getOpenApi() {
           },
         },
       },
+      tags: [
+        {
+          name: "configs",
+          description:
+            "User specific configurations like test settings, theme or tags.",
+          "x-displayName": "User configuration",
+        },
+      ],
     },
 
     {
@@ -44,15 +52,16 @@ export function getOpenApi() {
       setOperationId: "concatenated-path",
       operationMapper: (operation, route) => ({
         ...operation,
-        ...addAuth(route.metadata),
+        ...addAuth(route.metadata as Metadata),
+        ...addTags(route.metadata as Metadata),
       }),
     }
   );
   return openApiDocument;
 }
 
-function addAuth(metadata) {
-  const auth: Auth = metadata?.["auth"] ?? {};
+function addAuth(metadata: Metadata | undefined): Object {
+  const auth = metadata?.["auth"] ?? {};
   const security: SecurityRequirementObject[] = [];
   if (!auth.isPublic === true) {
     security.push({ BearerAuth: [] });
@@ -66,6 +75,13 @@ function addAuth(metadata) {
   return {
     "x-public": includeInPublic ? "yes" : "no",
     security,
+  };
+}
+
+function addTags(metadata: Metadata | undefined): Object {
+  if (metadata === undefined || metadata.tags === undefined) return {};
+  return {
+    tags: Array.isArray(metadata.tags) ? metadata.tags : [metadata.tags],
   };
 }
 
