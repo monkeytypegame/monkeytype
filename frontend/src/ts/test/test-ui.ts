@@ -155,9 +155,12 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
   if (eventKey === "theme") void applyBurstHeatmap();
 
   if (eventValue === undefined) return;
-  if (eventKey === "highlightMode" && ActivePage.get() === "test") {
+  if (
+    eventKey === "highlightMode" &&
+    (ActivePage.get() === "test" || ActivePage.get() === "loading")
+  ) {
     highlightMode(eventValue as SharedTypes.Config.HighlightMode);
-    updateActiveElement();
+    if (ActivePage.get() === "test") updateActiveElement();
   }
 
   if (typeof eventValue !== "boolean") return;
