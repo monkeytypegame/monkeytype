@@ -194,7 +194,7 @@ export const configsContract = c.router(
     delete: {
       method: "DELETE",
       path: "/",
-      body: z.never().or(z.object({}).strict()),
+      body: c.noBody(),
       responses: {
         200: MonkeyResponseSchema,
       },
