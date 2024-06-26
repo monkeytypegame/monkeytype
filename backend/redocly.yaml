@@ -8,7 +8,7 @@ apis:
     root: build/static/api/openapi.json
     decorators:
       filter-in:
-        property: x-accept-apekey
+        property: x-public
         value: yes
   public@v2:
     root: build/static/api/public.json

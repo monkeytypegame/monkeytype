@@ -1,6 +1,11 @@
 import { generateOpenApi } from "@ts-rest/open-api";
 import { contract } from "../../shared/contract/index.contract";
 import { writeFileSync, mkdirSync } from "fs";
+import { Auth } from "../../shared/contract/shared/types";
+
+type SecurityRequirementObject = {
+  [name: string]: string[];
+};
 
 export function getOpenApi() {
   const openApiDocument = generateOpenApi(
@@ -20,6 +25,18 @@ export function getOpenApi() {
           url: "https://monkeytype.com/images/mtfulllogo.png",
         },
       },
+      components: {
+        securitySchemes: {
+          BearerAuth: {
+            type: "http",
+            scheme: "bearer",
+          },
+          ApeKey: {
+            type: "http",
+            scheme: "ApeKey",
+          },
+        },
+      },
     },
 
     {
@@ -35,14 +52,23 @@ export function getOpenApi() {
 }
 
 function addAuth(metadata) {
-  const auth = metadata?.["auth"] ?? {};
+  const auth: Auth = metadata?.["auth"] ?? {};
+  const security: SecurityRequirementObject[] = [];
+  if (!auth.isPublic === true) {
+    security.push({ BearerAuth: [] });
 
+    if (auth.acceptApeKeys === true) {
+      security.push({ ApeKey: [] });
+    }
+  }
+
+  const includeInPublic = auth.isPublic === true || auth.acceptApeKeys === true;
   return {
-    "x-public": auth.isPublic === true ? "yes" : "no",
-    "x-accept-apekey": auth.acceptApeKeys === true ? "yes" : "no",
-    apekey: auth.acceptApeKeys === true ? "yes" : "no",
+    "x-public": includeInPublic ? "yes" : "no",
+    security,
   };
 }
+
 //detect if we run this as a main
 if (require.main === module) {
   const args = process.argv.slice(2);
