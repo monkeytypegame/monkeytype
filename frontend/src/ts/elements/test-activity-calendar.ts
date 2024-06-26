@@ -72,21 +72,19 @@ export class TestActivityCalendar implements MonkeyTypes.TestActivityCalendar {
       start: this.startDay,
       end: this.endDay,
     });
-
     const results: MonkeyTypes.TestActivityMonth[] = [];
 
     for (let i = 0; i < months.length; i++) {
       const month: Date = months[i] as Date;
-      let start =
-        i === 0 ? new UTCDateMini(this.startDay) : startOfMonth(month);
-      let end =
-        i === months.length - 1
-          ? new UTCDateMini(this.endDay)
-          : endOfMonth(start);
+      let start = i === 0 ? this.startDay : startOfMonth(month);
+      let end = i === months.length - 1 ? this.endDay : endOfMonth(start);
 
-      if (!isSunday(start))
+      if (!isSunday(start)) {
         start = (i === 0 ? previousSunday : nextSunday)(start);
-      if (!isSaturday(end)) end = nextSaturday(end);
+      }
+      if (!isSaturday(end)) {
+        end = nextSaturday(end);
+      }
 
       const weeks = differenceInWeeks(end, start, { roundingMethod: "ceil" });
       if (weeks > 2) {

@@ -681,4 +681,21 @@ router.get(
   asyncHandler(UserController.getTestActivity)
 );
 
+router.get(
+  "/currentTestActivity",
+  authenticateRequest({
+    acceptApeKeys: true,
+  }),
+  withApeRateLimiter(RateLimit.userCurrentTestActivity),
+  asyncHandler(UserController.getCurrentTestActivity)
+);
+
+router.get(
+  "/streak",
+  authenticateRequest({
+    acceptApeKeys: true,
+  }),
+  withApeRateLimiter(RateLimit.userStreak),
+  asyncHandler(UserController.getStreak)
+);
 export default router;
