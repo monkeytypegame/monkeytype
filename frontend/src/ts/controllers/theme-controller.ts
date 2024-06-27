@@ -316,7 +316,7 @@ export async function randomizeTheme(): Promise<void> {
   }
 }
 
-export async function clearRandom(): Promise<void> {
+async function clearRandom(): Promise<void> {
   if (randomTheme === null) return;
   randomTheme = null;
   if (Config.customTheme) {

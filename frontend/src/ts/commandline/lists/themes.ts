@@ -37,8 +37,7 @@ function update(themes: MonkeyTypes.Theme[]): void {
           // previewTheme(theme.name);
           ThemeController.preview(theme.name);
         },
-        exec: async (): Promise<void> => {
-          await ThemeController.clearRandom();
+        exec: (): void => {
           UpdateConfig.setTheme(theme.name);
         },
       });
