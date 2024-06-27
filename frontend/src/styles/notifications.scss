@@ -28,6 +28,7 @@
   .notif {
     --notif-border-color: rgba(0, 130, 251, 0.985);
     --notif-background-color: rgba(0, 77, 148, 0.9);
+    transition: 0.125s background;
 
     -webkit-user-select: none;
     user-select: none;
