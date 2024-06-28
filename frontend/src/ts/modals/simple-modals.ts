@@ -34,7 +34,18 @@ import AnimatedModal, {
 import { format as dateFormat } from "date-fns/format";
 import { Attributes, buildTag } from "../utils/tag-builder";
 
-type CommonInput<TType, TValue> = {
+type InputType =
+  | "text"
+  | "textarea"
+  | "password"
+  | "email"
+  | "range"
+  | "number"
+  | "datetime-local"
+  | "date"
+  | "checkbox";
+
+type CommonInput<TType extends InputType, TValue> = {
   type: TType;
   initVal?: TValue;
   placeholder?: string;
@@ -126,7 +137,8 @@ type PopupKey =
   | "updateCustomTheme"
   | "deleteCustomTheme"
   | "forgotPassword"
-  | "devGenerateData";
+  | "devGenerateData"
+  | "updateStreakNotification";
 
 const list: Record<PopupKey, SimpleModal | undefined> = {
   updateEmail: undefined,
@@ -156,6 +168,7 @@ const list: Record<PopupKey, SimpleModal | undefined> = {
   deleteCustomTheme: undefined,
   forgotPassword: undefined,
   devGenerateData: undefined,
+  updateStreakNotification: undefined,
 };
 
 type SimpleModalOptions = {
@@ -303,9 +316,11 @@ class SimpleModal {
           })
         );
       } else if (input.type === "checkbox") {
+        if (input.initVal) attributes["checked"] = true;
+        attributes["value"] = undefined;
         let html = buildTag({ tagname, classes, attributes });
 
-        if (input.description !== undefined) {
+        if (input.description !== undefined && !input.hidden) {
           html += `<span>${input.description}</span>`;
         }
         if (!this.showLabels) {
@@ -1876,6 +1891,104 @@ list.devGenerateData = new SimpleModal({
     };
   },
 });
+
+const notificationDeniedMessage =
+  "Notifications are blocked in your browser. Please allow notifications on this site to enable the reminder.";
+
+list.updateStreakNotification = new SimpleModal({
+  id: "updateStreakNotification",
+  title: "Streak expiration reminder",
+  showLabels: true,
+  inputs: [
+    {
+      type: "checkbox",
+      label: "enabled",
+      optional: true,
+      oninput: (event): void => {
+        const target = event.target as HTMLInputElement;
+        const enabled = target.checked;
+        const notificationCheckbox = document.querySelector(
+          "#updateStreakNotification_2"
+        ) as HTMLInputElement;
+
+        notificationCheckbox.required = enabled;
+      },
+    },
+    {
+      type: "range",
+      label: "hours",
+      min: 1,
+      max: 12,
+    },
+    {
+      type: "checkbox",
+      label: "permit notifications",
+      description: "Allow notifications in your browser.",
+      initVal: false,
+      optional: false,
+      oninput: async (event): Promise<void> => {
+        const target = event.target as HTMLInputElement;
+        const enabled = target.checked;
+        if (enabled && Notification.permission !== "granted") {
+          const result = await Notification.requestPermission();
+          target.checked = result === "granted";
+          if (result === "denied") {
+            target.disabled = true;
+            (target.nextSibling as HTMLSpanElement).textContent =
+              notificationDeniedMessage;
+          }
+        }
+      },
+    },
+  ],
+  buttonText: "save",
+  execFn: async (_thisPopup, enabled, hours): Promise<ExecReturn> => {
+    console.log({ _thisPopup, enabled });
+    if (enabled === "true" && Notification.permission === "denied") {
+      return {
+        status: -1,
+        message: notificationDeniedMessage,
+      };
+    }
+    //TODO save config
+
+    if (enabled === "true") {
+      return {
+        status: 1,
+        message: `Notifications are enabled ${hours} hours before your streak will expire.`,
+      };
+    }
+    return { status: 0, message: "Streak reminder disabled." };
+  },
+  beforeShowFn: (thisPopup): void => {
+    if (Notification.permission === "denied") {
+      thisPopup.disableInputs();
+    }
+  },
+  beforeInitFn: (thisPopup): void => {
+    const permission = Notification.permission;
+
+    if (permission === "denied") {
+      thisPopup.text = notificationDeniedMessage;
+      (thisPopup.inputs[2] as CheckboxInput).hidden = true;
+    }
+    if (permission === "granted") {
+      (thisPopup.inputs[2] as CheckboxInput).hidden = true;
+    }
+
+    const streakNotificationHours = 4; //TODO config.streakNotificationHours
+    const streakNotificationEnabled = streakNotificationHours !== undefined;
+
+    //init fields with current values
+    (thisPopup.inputs[0] as CheckboxInput).initVal = streakNotificationEnabled;
+    (thisPopup.inputs[1] as RangeInput).initVal = streakNotificationHours;
+
+    //permission are required if feature is enabled
+    (thisPopup.inputs[2] as CheckboxInput).optional =
+      !streakNotificationEnabled;
+  },
+});
+
 export function showPopup(
   key: PopupKey,
   showParams = [] as string[],
@@ -1987,5 +2100,13 @@ $(".pageSettings").on(
   ".section[data-config-name='fontFamily'] button[data-config-value='custom']",
   () => {
     showPopup("applyCustomFont");
+  }
+);
+
+$(".pageSettings").on(
+  "click",
+  ".section.updateStreakNotification button",
+  () => {
+    showPopup("updateStreakNotification");
   }
 );
