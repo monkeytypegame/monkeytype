@@ -36,10 +36,6 @@
       "@shared/*": ["../shared-types/*"]
     }
   },
-  "include": [
-    "./src/ts/**/*.ts",
-    "./src/ts/**/*.d.ts",
-    "../shared-types/**/*.d.ts"
-  ],
+  "include": ["./src/**/*.ts", "../shared-types/**/*.d.ts"],
   "exclude": ["node_modules", "build", "setup-tests.ts", "**/*.spec.ts"]
 }

@@ -10,7 +10,6 @@ import autoprefixer from "autoprefixer";
 import "dotenv/config";
 import { fontawesomeSubset } from "fontawesome-subset";
 import { getFontawesomeConfig } from "./scripts/fontawesome.mjs";
-import { comlink } from "vite-plugin-comlink";
 
 function pad(numbers, maxLength, fillString) {
   return numbers.map((number) =>
@@ -40,6 +39,25 @@ function buildClientVersion() {
     return `${version}.unknown-hash`;
   }
 }
+
+/*
+const CompileTsServiceWorker = () => ({
+  name: "compile-typescript-service-worker",
+  async writeBundle(_options, _outputBundle) {
+    const inputOptions = {
+      input: "src/ts/workers/streak-reminder-service-worker.ts",
+      plugins: [rollupPluginTypescript(), nodeResolve()],
+    };
+    const outputOptions = {
+      file: "dist/streakRemindeServiceWorker.js",
+      format: "es",
+    };
+    const bundle = await rollup(inputOptions);
+    await bundle.write(outputOptions);
+    await bundle.close();
+  },
+});
+*/
 
 /** @type {import("vite").UserConfig} */
 const BASE_CONFIG = {
@@ -76,7 +94,52 @@ const BASE_CONFIG = {
     }),
     injectHTML(),
     Inspect(),
-    comlink(),
+    VitePWA({
+      injectRegister: "auto",
+      registerType: "autoUpdate",
+      manifest: {
+        short_name: "Monkeytype",
+        name: "Monkeytype",
+        start_url: "/",
+        icons: [
+          {
+            src: "/images/icons/maskable_icon_x512.png",
+            sizes: "512x512",
+            type: "image/png",
+            purpose: "maskable",
+          },
+          {
+            src: "/images/icons/general_icon_x512.png",
+            sizes: "512x512",
+            type: "image/png",
+            purpose: "any",
+          },
+        ],
+        background_color: "#323437",
+        display: "standalone",
+        theme_color: "#323437",
+      },
+      manifestFilename: "manifest.json",
+      workbox: {
+        importScripts: ["ts/workers/streak-reminder-service-worker.ts"], //TODO on prod this whould be "js/streakReminderWorker.hash.js"
+        clientsClaim: true,
+        cleanupOutdatedCaches: true,
+        globIgnores: ["**/.*"],
+        globPatterns: [],
+        navigateFallback: "",
+        runtimeCaching: [
+          {
+            urlPattern: (options) => {
+              const isApi = options.url.hostname === "api.monkeytype.com";
+              return options.sameOrigin && !isApi;
+            },
+            handler: "NetworkFirst",
+            options: {},
+          },
+        ],
+      },
+      devOptions: { enabled: true },
+    }),
   ],
   server: {
     open: process.env.SERVER_OPEN !== "false",
@@ -104,9 +167,14 @@ const BASE_CONFIG = {
         security: path.resolve(__dirname, "src/security-policy.html"),
         terms: path.resolve(__dirname, "src/terms-of-service.html"),
         404: path.resolve(__dirname, "src/404.html"),
+        streakReminderWorker: path.resolve(
+          __dirname,
+          "src/ts/workers/streak-reminder-service-worker.ts"
+        ),
       },
       output: {
         assetFileNames: (assetInfo) => {
+          console.log(assetInfo.name);
           let extType = assetInfo.name.split(".").at(1);
           if (/png|jpe?g|svg|gif|tiff|bmp|ico/i.test(extType)) {
             extType = "images";
@@ -117,7 +185,7 @@ const BASE_CONFIG = {
           return `${extType}/[name].[hash][extname]`;
         },
         chunkFileNames: "js/[name].[hash].js",
-        entryFileNames: "js/[name].[hash].js",
+        //entryFileNames: "js/[name].[hash].js",
       },
     },
   },
@@ -168,51 +236,7 @@ const BUILD_CONFIG = {
       },
     },
     splitVendorChunkPlugin(),
-    VitePWA({
-      injectRegister: "networkfirst",
-      registerType: "autoUpdate",
-      manifest: {
-        short_name: "Monkeytype",
-        name: "Monkeytype",
-        start_url: "/",
-        icons: [
-          {
-            src: "/images/icons/maskable_icon_x512.png",
-            sizes: "512x512",
-            type: "image/png",
-            purpose: "maskable",
-          },
-          {
-            src: "/images/icons/general_icon_x512.png",
-            sizes: "512x512",
-            type: "image/png",
-            purpose: "any",
-          },
-        ],
-        background_color: "#323437",
-        display: "standalone",
-        theme_color: "#323437",
-      },
-      manifestFilename: "manifest.json",
-      workbox: {
-        clientsClaim: true,
-        cleanupOutdatedCaches: true,
-        globIgnores: ["**/.*"],
-        globPatterns: [],
-        navigateFallback: "",
-        runtimeCaching: [
-          {
-            urlPattern: (options) => {
-              const isApi = options.url.hostname === "api.monkeytype.com";
-              return options.sameOrigin && !isApi;
-            },
-            handler: "NetworkFirst",
-            options: {},
-          },
-        ],
-      },
-      devOptions: { enabled: true },
-    }),
+
     replace([
       {
         filter: /firebase\.ts$/,
@@ -223,9 +247,6 @@ const BUILD_CONFIG = {
       },
     ]),
   ],
-  worker: {
-    plugins: () => [comlink()],
-  },
   define: {
     BACKEND_URL: JSON.stringify(
       process.env.BACKEND_URL || "https://api.monkeytype.com"

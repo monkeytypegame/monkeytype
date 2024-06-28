@@ -1,5 +1,9 @@
 import { addHours } from "date-fns";
-import { StreakReminderConfig } from "./streak-reminder";
+
+export type StreakReminderConfig = {
+  streakOffset?: number;
+  reminderHours?: number;
+};
 
 let timeout: NodeJS.Timeout | undefined = undefined;
 let notification: Notification | undefined;

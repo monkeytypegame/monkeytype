@@ -33,6 +33,7 @@ import AnimatedModal, {
 } from "../utils/animated-modal";
 import { format as dateFormat } from "date-fns/format";
 import { Attributes, buildTag } from "../utils/tag-builder";
+import * as StreakReminder from "../workers/streak-reminder";
 
 type InputType =
   | "text"
@@ -1928,13 +1929,13 @@ list.updateStreakNotification = new SimpleModal({
       optional: false,
       oninput: async (event): Promise<void> => {
         const target = event.target as HTMLInputElement;
-        const enabled = target.checked;
+        const enabled = target.checked === "";
         if (enabled && Notification.permission !== "granted") {
           const result = await Notification.requestPermission();
           target.checked = result === "granted";
           if (result === "denied") {
             target.disabled = true;
-            (target.nextSibling as HTMLSpanElement).textContent =
+            (target.nextSibling as HTMLElement).textContent =
               notificationDeniedMessage;
           }
         }
@@ -1951,6 +1952,7 @@ list.updateStreakNotification = new SimpleModal({
       };
     }
     //TODO save config
+    StreakReminder.init({ reminderHours: hours, streakOffset: -2 });
 
     if (enabled === "true") {
       return {

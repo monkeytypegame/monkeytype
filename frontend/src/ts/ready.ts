@@ -6,6 +6,7 @@ import * as CookiesModal from "./modals/cookies";
 import * as PSA from "./elements/psa";
 import * as ConnectionState from "./states/connection";
 import * as FunboxList from "./test/funbox/funbox-list";
+
 //@ts-expect-error
 import Konami from "konami";
 import * as ServerConfiguration from "./ape/server-configuration";
@@ -60,6 +61,7 @@ $((): void => {
 
   new Konami("https://keymash.io/");
 
+  /*
   if (Misc.isDevEnvironment()) {
     void navigator.serviceWorker
       ?.getRegistrations()
@@ -69,6 +71,5 @@ $((): void => {
         }
       });
   }
-
-  //StreakReminder.init({ reminderHours: 4, streakOffset: -2 });
+      */
 });
