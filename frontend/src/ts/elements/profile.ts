@@ -267,7 +267,7 @@ export async function update(
       const twitter = profile.details?.socialProfiles.twitter ?? "";
       if (twitter) {
         socialsEl.append(
-          `<a href='https://twitter.com/${Misc.escapeHTML(
+          `<a href='https://x.com/${Misc.escapeHTML(
             twitter
           )}' target="_blank" rel="nofollow me" aria-label="${Misc.escapeHTML(
             twitter
