@@ -74,7 +74,7 @@ body.crtmode nav .textButton:nth-child(4) {
     -3px 0 color-mix(in srgb, var(--error-color) 30%, transparent), 0 0 3px;
 }
 
-/* color indicudual parts of the mt logo */
+/* color individual parts of the mt logo */
 #logo .icon svg path:nth-child(2),
 #logo .icon svg path:nth-child(8) {
   fill: var(--error-color);

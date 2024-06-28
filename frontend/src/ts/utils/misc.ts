@@ -576,7 +576,7 @@ export function loadCSS(href: string, prepend = false): void {
 }
 
 export function isDevEnvironment(): boolean {
-  return envConfig.isDevelopment;
+  return false; //envConfig.isDevelopment;
 }
 
 export function zipfyRandomArrayIndex(dictLength: number): number {
