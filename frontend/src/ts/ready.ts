@@ -62,11 +62,13 @@ $((): void => {
 
   if (Misc.isDevEnvironment()) {
     void navigator.serviceWorker
-      .getRegistrations()
+      ?.getRegistrations()
       .then(function (registrations) {
         for (const registration of registrations) {
           void registration.unregister();
         }
       });
   }
+
+  //StreakReminder.init({ reminderHours: 4, streakOffset: -2 });
 });

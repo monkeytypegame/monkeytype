@@ -10,6 +10,7 @@ import autoprefixer from "autoprefixer";
 import "dotenv/config";
 import { fontawesomeSubset } from "fontawesome-subset";
 import { getFontawesomeConfig } from "./scripts/fontawesome.mjs";
+import { comlink } from "vite-plugin-comlink";
 
 function pad(numbers, maxLength, fillString) {
   return numbers.map((number) =>
@@ -75,6 +76,7 @@ const BASE_CONFIG = {
     }),
     injectHTML(),
     Inspect(),
+    comlink(),
   ],
   server: {
     open: process.env.SERVER_OPEN !== "false",
@@ -209,6 +211,7 @@ const BUILD_CONFIG = {
           },
         ],
       },
+      devOptions: { enabled: true },
     }),
     replace([
       {
@@ -220,6 +223,9 @@ const BUILD_CONFIG = {
       },
     ]),
   ],
+  worker: {
+    plugins: () => [comlink()],
+  },
   define: {
     BACKEND_URL: JSON.stringify(
       process.env.BACKEND_URL || "https://api.monkeytype.com"
