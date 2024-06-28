@@ -157,7 +157,7 @@ export async function updateTags(
     result.numbers = false;
   }
 
-  const user = await UserDAL.getUser(uid, "update tags");
+  const user = await UserDAL.getPartial(uid, "update tags", ["tags"]);
   const tagPbs = await UserDAL.checkIfTagPb(uid, user, result);
   return new MonkeyResponse("Result tags updated", {
     tagPbs,

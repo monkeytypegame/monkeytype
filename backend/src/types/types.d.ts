@@ -42,6 +42,8 @@ declare namespace MonkeyTypes {
     testActivity?: SharedTypes.CountByYearAndDay;
   };
 
+  type DBUserKeys = keyof DBUser;
+
   type DBCustomTheme = WithObjectId<SharedTypes.CustomTheme>;
 
   type DBUserTag = WithObjectId<SharedTypes.UserTag>;
