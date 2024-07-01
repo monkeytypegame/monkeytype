@@ -91,7 +91,11 @@ export async function sendVerificationEmail(
     throw new MonkeyError(400, "Email already verified");
   }
 
-  const userInfo = await UserDAL.getUser(uid, "request verification email");
+  const userInfo = await UserDAL.getPartialUser(
+    uid,
+    "request verification email",
+    ["uid", "name", "email"]
+  );
 
   if (userInfo.email !== email) {
     throw new MonkeyError(
@@ -150,9 +154,10 @@ export async function sendForgotPasswordEmail(
 
   try {
     const uid = (await FirebaseAdmin().auth().getUserByEmail(email)).uid;
-    const userInfo = await UserDAL.getUser(
+    const userInfo = await UserDAL.getPartialUser(
       uid,
-      "request forgot password email"
+      "request forgot password email",
+      ["name"]
     );
 
     const link = await FirebaseAdmin()
@@ -179,7 +184,12 @@ export async function deleteUser(
 ): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
 
-  const userInfo = await UserDAL.getUser(uid, "delete user");
+  const userInfo = await UserDAL.getPartialUser(uid, "delete user", [
+    "banned",
+    "name",
+    "email",
+    "discordId",
+  ]);
 
   if (userInfo.banned === true) {
     await BlocklistDal.add(userInfo);
@@ -215,7 +225,12 @@ export async function resetUser(
 ): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
 
-  const userInfo = await UserDAL.getUser(uid, "reset user");
+  const userInfo = await UserDAL.getPartialUser(uid, "reset user", [
+    "banned",
+    "discordId",
+    "email",
+    "name",
+  ]);
   if (userInfo.banned) {
     throw new MonkeyError(403, "Banned users cannot reset their account");
   }
@@ -247,7 +262,12 @@ export async function updateName(
   const { uid } = req.ctx.decodedToken;
   const { name } = req.body;
 
-  const user = await UserDAL.getUser(uid, "update name");
+  const user = await UserDAL.getPartialUser(uid, "update name", [
+    "name",
+    "banned",
+    "needsToChangeName",
+    "lastNameChange",
+  ]);
 
   if (user.banned) {
     throw new MonkeyError(403, "Banned users cannot change their name");
@@ -486,7 +506,10 @@ export async function linkDiscord(
     throw new MonkeyError(403, "Invalid user token");
   }
 
-  const userInfo = await UserDAL.getUser(uid, "link discord");
+  const userInfo = await UserDAL.getPartialUser(uid, "link discord", [
+    "banned",
+    "discordId",
+  ]);
   if (userInfo.banned) {
     throw new MonkeyError(403, "Banned accounts cannot link with Discord");
   }
@@ -538,7 +561,10 @@ export async function unlinkDiscord(
 ): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
 
-  const userInfo = await UserDAL.getUser(uid, "unlink discord");
+  const userInfo = await UserDAL.getPartialUser(uid, "unlink discord", [
+    "banned",
+    "discordId",
+  ]);
 
   if (userInfo.banned) {
     throw new MonkeyError(403, "Banned accounts cannot unlink Discord");
@@ -822,7 +848,10 @@ export async function updateProfile(
   const { uid } = req.ctx.decodedToken;
   const { bio, keyboard, socialProfiles, selectedBadgeId } = req.body;
 
-  const user = await UserDAL.getUser(uid, "update user profile");
+  const user = await UserDAL.getPartialUser(uid, "update user profile", [
+    "banned",
+    "inventory",
+  ]);
 
   if (user.banned) {
     throw new MonkeyError(403, "Banned users cannot update their profile");
@@ -908,7 +937,9 @@ export async function setStreakHourOffset(
   const { uid } = req.ctx.decodedToken;
   const { hourOffset } = req.body;
 
-  const user = await UserDAL.getUser(uid, "update user profile");
+  const user = await UserDAL.getPartialUser(uid, "update user profile", [
+    "streak",
+  ]);
 
   if (
     user.streak?.hourOffset !== undefined &&
@@ -927,7 +958,10 @@ export async function toggleBan(
 ): Promise<MonkeyResponse> {
   const { uid } = req.body;
 
-  const user = await UserDAL.getUser(uid, "toggle ban");
+  const user = await UserDAL.getPartialUser(uid, "toggle ban", [
+    "banned",
+    "discordId",
+  ]);
   const discordId = user.discordId;
   const discordIdIsValid = discordId !== undefined && discordId !== "";
 
@@ -1036,7 +1070,10 @@ export async function getTestActivity(
 ): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
   const premiumFeaturesEnabled = req.ctx.configuration.users.premium.enabled;
-  const user = await UserDAL.getUser(uid, "testActivity");
+  const user = await UserDAL.getPartialUser(uid, "testActivity", [
+    "testActivity",
+    "premium",
+  ]);
   const userHasPremium = await UserDAL.checkIfUserIsPremium(uid, user);
 
   if (!premiumFeaturesEnabled) {
@@ -1063,7 +1100,9 @@ export async function getCurrentTestActivity(
 ): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
 
-  const user = await UserDAL.getUser(uid, "current test activity");
+  const user = await UserDAL.getPartialUser(uid, "current test activity", [
+    "testActivity",
+  ]);
   const data = generateCurrentTestActivity(user.testActivity);
   return new MonkeyResponse("Current test activity data retrieved", data);
 }
@@ -1073,7 +1112,7 @@ export async function getStreak(
 ): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
 
-  const user = await UserDAL.getUser(uid, "streak");
+  const user = await UserDAL.getPartialUser(uid, "streak", ["streak"]);
 
   return new MonkeyResponse("Streak data retrieved", user.streak);
 }
