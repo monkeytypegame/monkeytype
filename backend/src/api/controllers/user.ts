@@ -847,7 +847,7 @@ export async function updateProfile(
 
   await UserDAL.updateProfile(uid, profileDetailsUpdates, user.inventory);
 
-  return new MonkeyResponse("Profile updated");
+  return new MonkeyResponse("Profile updated", profileDetailsUpdates);
 }
 
 export async function getInbox(

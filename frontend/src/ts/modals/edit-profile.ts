@@ -158,7 +158,7 @@ async function updateProfile(): Promise<void> {
     return;
   }
 
-  snapshot.details = updates;
+  snapshot.details = response.data ?? updates;
   snapshot.inventory?.badges.forEach((badge) => {
     if (badge.id === currentSelectedBadgeId) {
       badge.selected = true;
