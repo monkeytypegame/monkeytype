@@ -32,7 +32,7 @@ async function getLatest(): Promise<SharedTypes.PSA[] | null> {
       );
     } else {
       Notifications.addPSA(
-        "Looks like the server is experiencing maintenance or some unexpected down time.<br>Check the <a target= '_blank' href='https://monkeytype.instatus.com/'>status page</a> or <a target= '_blank' href='https://x.com/monkeytypegame'>Twitter</a> for more information.",
+        "Looks like the server is experiencing maintenance or some unexpected down time.<br>Check the <a target= '_blank' href='https://monkeytype.instatus.com/'>status page</a> or <a target= '_blank' href='https://x.com/monkeytype'>Twitter</a> for more information.",
         -1,
         "exclamation-triangle",
         false,
