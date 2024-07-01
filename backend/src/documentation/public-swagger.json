@@ -120,6 +120,34 @@
         }
       }
     },
+    "/users/currentTestActivity": {
+      "get": {
+        "tags": ["users"],
+        "summary": "Gets a user's test activity data for the last ~52 weeks",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/CurrentTestActivity"
+            }
+          }
+        }
+      }
+    },
+    "/users/streak": {
+      "get": {
+        "tags": ["users"],
+        "summary": "Gets a user's streak",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/UserStreak"
+            }
+          }
+        }
+      }
+    },
     "/results": {
       "get": {
         "tags": ["results"],
@@ -784,6 +812,42 @@
               "example": 19.65
             }
           }
+        }
+      }
+    },
+    "CurrentTestActivity": {
+      "type": "object",
+      "properties": {
+        "testByDays": {
+          "type": "array",
+          "items": {
+            "type": "number",
+            "nullable": true
+          },
+          "example": [null, null, null, 1, 2, 3, null, 4],
+          "description": "Test activity by day. Last element of the array are the tests on the date specified by the `lastDay` property. All dates are in UTC."
+        },
+        "lastDay": {
+          "type": "integer",
+          "example": 1712140496000
+        }
+      }
+    },
+    "UserStreak": {
+      "type": "object",
+      "properties": {
+        "lastResultTimestamp": {
+          "type": "integer"
+        },
+        "length": {
+          "type": "integer"
+        },
+        "maxLength": {
+          "type": "integer"
+        },
+        "hourOffset": {
+          "type": "integer",
+          "nullable": true
         }
       }
     }

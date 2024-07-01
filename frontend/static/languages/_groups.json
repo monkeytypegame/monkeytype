@@ -40,7 +40,11 @@
   },
   {
     "name": "portuguese",
-    "languages": ["portuguese", "portuguese_3k", "portuguese_acentos_e_cedilha"]
+    "languages": [
+      "portuguese",
+      "portuguese_3k",
+      "portuguese_acentos_e_cedilha, portuguese_5k"
+    ]
   },
   {
     "name": "arabic",
@@ -380,7 +384,12 @@
   },
   {
     "name": "armenian",
-    "languages": ["armenian_western", "armenian_western_1k"]
+    "languages": [
+      "armenian",
+      "armenian_1k",
+      "armenian_western",
+      "armenian_western_1k"
+    ]
   },
   {
     "name": "myanmar",

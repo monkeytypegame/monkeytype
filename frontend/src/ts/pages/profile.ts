@@ -1,7 +1,7 @@
 import Ape from "../ape";
 import Page from "./page";
 import * as Profile from "../elements/profile";
-import * as PbTables from "../account/pb-tables";
+import * as PbTables from "../elements/account/pb-tables";
 import * as Notifications from "../elements/notifications";
 import { checkIfGetParameterExists } from "../utils/misc";
 import * as UserReportModal from "../modals/user-report";

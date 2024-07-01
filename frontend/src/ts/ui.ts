@@ -25,6 +25,18 @@ export function clearFontPreview(): void {
   isPreviewingFont = false;
 }
 
+export function setMediaQueryDebugLevel(level: number): void {
+  const body = document.querySelector("body") as HTMLElement;
+
+  body.classList.remove("mediaQueryDebugLevel1");
+  body.classList.remove("mediaQueryDebugLevel2");
+  body.classList.remove("mediaQueryDebugLevel3");
+
+  if (level > 0 && level < 4) {
+    body.classList.add(`mediaQueryDebugLevel${level}`);
+  }
+}
+
 function updateKeytips(): void {
   const userAgent = window.navigator.userAgent.toLowerCase();
   const modifierKey =

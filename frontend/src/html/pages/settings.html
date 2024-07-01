@@ -1,5 +1,5 @@
 <div class="page pageSettings hidden full-width content-grid" id="pageSettings">
-  <div class="scrollToTopButton">
+  <div class="scrollToTopButton invisible">
     <i class="fas fa-angle-double-up"></i>
   </div>
   <div class="tip">
@@ -1114,9 +1114,14 @@
             tabindex="0"
             onClick="this.select();"
           />
-          <button class="save no-auto-handle">
-            <i class="fas fa-save fa-fw"></i>
-          </button>
+          <span>
+            <button class="hidden remove no-auto-handle">
+              <i class="fas fa-trash fa-fw"></i>
+            </button>
+            <button class="save no-auto-handle">
+              <i class="fas fa-save fa-fw"></i>
+            </button>
+          </span>
         </div>
         <div class="buttons">
           <button data-config-value="cover">cover</button>
@@ -1617,6 +1622,9 @@
         </button>
         <button class="danger" id="emailPasswordAuth">update email</button>
         <button class="danger" id="passPasswordAuth">update password</button>
+        <button class="danger" id="removePasswordAuth">
+          remove password authentication
+        </button>
       </div>
     </div>
     <div class="section googleAuthSettings needsAccount hidden">

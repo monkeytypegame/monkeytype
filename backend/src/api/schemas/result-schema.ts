@@ -91,6 +91,7 @@ const RESULT_SCHEMA = joi
     uid: joi.string().max(100).token().required(),
     wpm: joi.number().min(0).max(420).required(),
     wpmConsistency: joi.number().min(0).max(100).required(),
+    stopOnLetter: joi.boolean().required(),
   })
   .required();
 

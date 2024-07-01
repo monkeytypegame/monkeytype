@@ -1,6 +1,5 @@
 import _ from "lodash";
-import { isUsernameValid } from "../utils/validation";
-import { updateUserEmail } from "../utils/auth";
+import { containsProfanity, isUsernameValid } from "../utils/validation";
 import { canFunboxGetPb, checkAndUpdatePb } from "../utils/pb";
 import * as db from "../init/db";
 import MonkeyError from "../utils/error";
@@ -114,6 +113,9 @@ export async function updateName(
   if (!isUsernameValid(name)) {
     throw new MonkeyError(400, "Invalid username");
   }
+  if (containsProfanity(name, "substring")) {
+    throw new MonkeyError(400, "Username contains profanity");
+  }
 
   if (
     name?.toLowerCase() !== previousName?.toLowerCase() &&
@@ -178,7 +180,6 @@ export async function updateQuoteRatings(
   quoteRatings: SharedTypes.UserQuoteRatings
 ): Promise<boolean> {
   await getUser(uid, "update quote ratings");
-
   await getUsersCollection().updateOne({ uid }, { $set: { quoteRatings } });
   return true;
 }
@@ -188,7 +189,6 @@ export async function updateEmail(
   email: string
 ): Promise<boolean> {
   await getUser(uid, "update email"); // To make sure that the user exists
-  await updateUserEmail(uid, email);
   await getUsersCollection().updateOne({ uid }, { $set: { email } });
   return true;
 }
@@ -202,7 +202,7 @@ export async function getUser(
   return user;
 }
 
-async function findByName(
+export async function findByName(
   name: string
 ): Promise<MonkeyTypes.DBUser | undefined> {
   return (
@@ -425,6 +425,7 @@ export async function checkIfPb(
   const { mode } = result;
 
   if (!canFunboxGetPb(result)) return false;
+  if ("stopOnLetter" in result && result.stopOnLetter === true) return false;
 
   if (mode === "quote") {
     return false;
@@ -470,6 +471,7 @@ export async function checkIfTagPb(
 
   const { mode, tags: resultTags } = result;
   if (!canFunboxGetPb(result)) return [];
+  if ("stopOnLetter" in result && result.stopOnLetter === true) return [];
 
   if (mode === "quote") {
     return [];

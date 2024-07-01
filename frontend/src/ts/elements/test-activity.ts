@@ -4,23 +4,7 @@ import { getTestActivityCalendar } from "../db";
 import * as ServerConfiguration from "../ape/server-configuration";
 import * as DB from "../db";
 
-const yearSelector = new SlimSelect({
-  select: "#testActivity .yearSelect",
-  settings: {
-    showSearch: false,
-  },
-  events: {
-    afterChange: async (newVal): Promise<void> => {
-      yearSelector?.disable();
-      const selected = newVal[0]?.value as string;
-      const activity = await getTestActivityCalendar(selected);
-      update(activity);
-      if ((yearSelector?.getData() ?? []).length > 1) {
-        yearSelector?.enable();
-      }
-    },
-  },
-});
+let yearSelector: SlimSelect | undefined = undefined;
 
 export function init(
   calendar?: MonkeyTypes.TestActivityCalendar,
@@ -31,6 +15,8 @@ export function init(
     return;
   }
   $("#testActivity").removeClass("hidden");
+
+  yearSelector = getYearSelector();
   initYearSelector("current", userSignUpDate?.getFullYear() || 2022);
   update(calendar);
 }
@@ -66,7 +52,6 @@ export function initYearSelector(
   startYear: number
 ): void {
   const currentYear = new Date().getFullYear();
-
   const years: DataObjectPartial[] = [
     {
       text: "last 12 months",
@@ -88,8 +73,9 @@ export function initYearSelector(
     }
   }
 
-  yearSelector.setData(years);
-  years.length > 1 ? yearSelector.enable() : yearSelector.disable();
+  const yearSelect = getYearSelector();
+  yearSelect.setData(years);
+  years.length > 1 ? yearSelect.enable() : yearSelect.disable();
 }
 
 function updateMonths(months: MonkeyTypes.TestActivityMonth[]): void {
@@ -101,4 +87,26 @@ function updateMonths(months: MonkeyTypes.TestActivityMonth[]): void {
         `<div style="grid-column: span ${month.weeks}">${month.text}</div>`
     )
     .join("");
+}
+
+function getYearSelector(): SlimSelect {
+  if (yearSelector !== undefined) return yearSelector;
+  yearSelector = new SlimSelect({
+    select: "#testActivity .yearSelect",
+    settings: {
+      showSearch: false,
+    },
+    events: {
+      afterChange: async (newVal): Promise<void> => {
+        yearSelector?.disable();
+        const selected = newVal[0]?.value as string;
+        const activity = await getTestActivityCalendar(selected);
+        update(activity);
+        if ((yearSelector?.getData() ?? []).length > 1) {
+          yearSelector?.enable();
+        }
+      },
+    },
+  });
+  return yearSelector;
 }

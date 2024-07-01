@@ -16,19 +16,32 @@
   display: none;
 }
 
-// uncomment to debug media queries
-
-// #mediaQueryDebug {
-//   display: block;
-// }
-
-// .content-grid > * {
-//   border: 0.1rem dashed var(--sub-color);
-// }
-
-// .content-grid {
-//   border: 0.1rem dashed var(--main-color);
-// }
+body {
+  &.mediaQueryDebugLevel1 {
+    #mediaQueryDebug {
+      display: block;
+    }
+  }
+  &.mediaQueryDebugLevel2 {
+    #mediaQueryDebug {
+      display: block;
+    }
+    .content-grid {
+      border: 0.1rem dashed var(--main-color);
+    }
+  }
+  &.mediaQueryDebugLevel3 {
+    #mediaQueryDebug {
+      display: block;
+    }
+    .content-grid > * {
+      border: 0.1rem dashed var(--sub-color);
+    }
+    .content-grid {
+      border: 0.1rem dashed var(--main-color);
+    }
+  }
+}
 
 //media queries based on tailwind breakpoints https://tailwindcss.com/docs/container
 @import "media-queries-orange";

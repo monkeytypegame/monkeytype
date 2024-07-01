@@ -120,19 +120,26 @@ function backspaceToPrevious(): void {
     return;
   }
 
+  const wordElements = document.querySelectorAll("#words > .word");
   if (
     (TestInput.input.history[TestWords.words.currentIndex - 1] ==
       TestWords.words.get(TestWords.words.currentIndex - 1) &&
       !Config.freedomMode) ||
-    $($(".word")[TestWords.words.currentIndex - 1] as HTMLElement).hasClass(
-      "hidden"
-    )
+    wordElements[TestWords.words.currentIndex - 1]?.classList.contains("hidden")
   ) {
     return;
   }
 
   if (Config.confidenceMode === "on" || Config.confidenceMode === "max") {
     return;
+  }
+
+  const incorrectLetterBackspaced =
+    wordElements[TestWords.words.currentIndex]?.children[0]?.classList.contains(
+      "incorrect"
+    );
+  if (Config.stopOnError === "letter" && incorrectLetterBackspaced) {
+    void TestUI.updateWordElement();
   }
 
   TestInput.input.current = TestInput.input.popHistory();
@@ -169,7 +176,7 @@ function backspaceToPrevious(): void {
   Replay.addReplayEvent("backWord");
 }
 
-function handleSpace(): void {
+async function handleSpace(): Promise<void> {
   if (!TestState.isActive) return;
 
   if (TestInput.input.current === "") return;
@@ -217,21 +224,13 @@ function handleSpace(): void {
     PaceCaret.handleSpace(true, currentWord);
     TestInput.input.pushHistory();
     TestWords.words.increaseCurrentIndex();
-    TestUI.setCurrentWordElementIndex(TestUI.currentWordElementIndex + 1);
-    TestUI.updateActiveElement();
     Funbox.toggleScript(TestWords.words.getCurrent());
-    void Caret.updatePosition();
     TestInput.incrementKeypressCount();
     TestInput.pushKeypressWord(TestWords.words.currentIndex);
     if (!nospace) {
       void Sound.playClick();
     }
     Replay.addReplayEvent("submitCorrectWord");
-    if (TestWords.words.currentIndex === TestWords.words.length) {
-      //submitted last word (checking this in case the test doesnt stop automatically on correct last keypress)
-      void TestLogic.finish();
-      return;
-    }
   } else {
     if (!nospace) {
       if (Config.playSoundOnError === "off" || Config.blindMode) {
@@ -268,27 +267,30 @@ function handleSpace(): void {
       return;
     }
     PaceCaret.handleSpace(false, currentWord);
-    if (Config.blindMode && Config.highlightMode !== "off") {
-      $("#words .word.active letter").addClass("correct");
+    if (Config.blindMode) {
+      if (Config.highlightMode !== "off") {
+        TestUI.highlightAllLettersAsCorrect(TestUI.currentWordElementIndex);
+      }
+    } else {
+      TestUI.highlightBadWord(TestUI.currentWordElementIndex);
     }
     TestInput.input.pushHistory();
-    TestUI.highlightBadWord(TestUI.currentWordElementIndex, !Config.blindMode);
     TestWords.words.increaseCurrentIndex();
-    TestUI.setCurrentWordElementIndex(TestUI.currentWordElementIndex + 1);
-    TestUI.updateActiveElement();
     Funbox.toggleScript(TestWords.words.getCurrent());
-    void Caret.updatePosition();
     TestInput.incrementKeypressCount();
     TestInput.pushKeypressWord(TestWords.words.currentIndex);
+    Replay.addReplayEvent("submitErrorWord");
     if (Config.difficulty === "expert" || Config.difficulty === "master") {
       TestLogic.fail("difficulty");
-      return;
-    } else if (TestWords.words.currentIndex === TestWords.words.length) {
-      //submitted last word that is incorrect
-      void TestLogic.finish();
-      return;
     }
-    Replay.addReplayEvent("submitErrorWord");
+  }
+
+  if (
+    TestLogic.areAllTestWordsGenerated() &&
+    TestWords.words.currentIndex === TestWords.words.length
+  ) {
+    void TestLogic.finish();
+    return;
   }
 
   let wordLength: number;
@@ -308,6 +310,29 @@ function handleSpace(): void {
   }
 
   TestInput.corrected.pushHistory();
+
+  if (Config.keymapMode === "react") {
+    void KeymapEvent.flash(" ", true);
+  }
+  if (
+    Config.mode === "words" ||
+    Config.mode === "custom" ||
+    Config.mode === "quote" ||
+    Config.mode === "zen"
+  ) {
+    TimerProgress.update();
+  }
+  if (
+    Config.mode === "time" ||
+    Config.mode === "words" ||
+    Config.mode === "custom" ||
+    Config.mode === "quote"
+  ) {
+    await TestLogic.addWord();
+  }
+  TestUI.setCurrentWordElementIndex(TestUI.currentWordElementIndex + 1);
+  TestUI.updateActiveElement();
+  void Caret.updatePosition();
 
   if (
     !Config.showAllLines ||
@@ -345,26 +370,6 @@ function handleSpace(): void {
   //   //send a tab event using jquery
   //   $("#wordsInput").trigger($.Event("keydown", { key: "Tab", code: "Tab" }));
   // }
-
-  if (Config.keymapMode === "react") {
-    void KeymapEvent.flash(" ", true);
-  }
-  if (
-    Config.mode === "words" ||
-    Config.mode === "custom" ||
-    Config.mode === "quote" ||
-    Config.mode === "zen"
-  ) {
-    TimerProgress.update();
-  }
-  if (
-    Config.mode === "time" ||
-    Config.mode === "words" ||
-    Config.mode === "custom" ||
-    Config.mode === "quote"
-  ) {
-    void TestLogic.addWord();
-  }
 }
 
 function isCharCorrect(char: string, charIndex: number): boolean {
@@ -496,7 +501,7 @@ function handleChar(
 
   if (char !== "\n" && char !== "\t" && /\s/.test(char)) {
     if (nospace) return;
-    handleSpace();
+    void handleSpace();
 
     //insert space for expert and master or strict space,
     //or for stop on error set to word,
@@ -698,7 +703,8 @@ function handleChar(
     //do not stop if not all characters have been parsed by handleChar yet
     const currentWord = TestWords.words.getCurrent();
     const lastWordIndex = TestWords.words.currentIndex;
-    const isLastWord = lastWordIndex === TestWords.words.length - 1;
+    const lastWord = lastWordIndex === TestWords.words.length - 1;
+    const allWordGenerated = TestLogic.areAllTestWordsGenerated();
     const wordIsTheSame = currentWord === TestInput.input.current;
     const shouldQuickEnd =
       Config.quickEnd &&
@@ -708,7 +714,8 @@ function handleChar(
     const isChinese = Config.language.startsWith("chinese");
 
     if (
-      isLastWord &&
+      lastWord &&
+      allWordGenerated &&
       (wordIsTheSame || shouldQuickEnd) &&
       (!isChinese ||
         (realInputValue !== undefined &&
@@ -754,7 +761,7 @@ function handleChar(
       TestInput.input.current.length === TestWords.words.getCurrent().length) ||
     (char === "\n" && thisCharCorrect)
   ) {
-    handleSpace();
+    void handleSpace();
   }
 
   const currentWord = TestWords.words.getCurrent();
@@ -1077,9 +1084,6 @@ $(document).on("keydown", async (event) => {
     } else {
       handleChar("\n", TestInput.input.current.length);
       setWordsInput(" " + TestInput.input.current);
-      if (Config.tapeMode !== "off") {
-        TestUI.scrollTape();
-      }
     }
   }
 
@@ -1134,9 +1138,6 @@ $(document).on("keydown", async (event) => {
       handleChar(event.key, TestInput.input.current.length);
       updateUI();
       setWordsInput(" " + TestInput.input.current);
-      if (Config.tapeMode !== "off") {
-        TestUI.scrollTape();
-      }
     }
   }
 
@@ -1153,9 +1154,6 @@ $(document).on("keydown", async (event) => {
       handleChar(char, TestInput.input.current.length);
       updateUI();
       setWordsInput(" " + TestInput.input.current);
-    }
-    if (Config.tapeMode !== "off") {
-      TestUI.scrollTape();
     }
   }
 
@@ -1371,10 +1369,6 @@ $("#wordsInput").on("input", (event) => {
 
   setWordsInput(" " + TestInput.input.current);
   updateUI();
-  if (Config.tapeMode !== "off") {
-    TestUI.scrollTape();
-  }
-
   const statebefore = CompositionState.getComposing();
   setTimeout(() => {
     // checking composition state during the input event and on the next loop

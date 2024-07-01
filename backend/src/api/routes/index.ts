@@ -10,6 +10,7 @@ import presets from "./presets";
 import apeKeys from "./ape-keys";
 import admin from "./admin";
 import webhooks from "./webhooks";
+import dev from "./dev";
 import configuration from "./configuration";
 import { version } from "../../version";
 import leaderboards from "./leaderboards";
@@ -67,6 +68,9 @@ function addApiRoutes(app: Application): void {
       }
       next();
     });
+
+    //enable dev edpoints
+    app.use("/dev", dev);
   }
 
   // Cannot be added to the route map because it needs to be added before the maintenance handler

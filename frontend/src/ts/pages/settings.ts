@@ -1,4 +1,4 @@
-import SettingsGroup from "../settings/settings-group";
+import SettingsGroup from "../elements/settings/settings-group";
 import Config, * as UpdateConfig from "../config";
 import * as Sound from "../controllers/sound-controller";
 import * as Misc from "../utils/misc";
@@ -8,7 +8,7 @@ import * as DB from "../db";
 import { toggleFunbox } from "../test/funbox/funbox";
 import * as TagController from "../controllers/tag-controller";
 import * as PresetController from "../controllers/preset-controller";
-import * as ThemePicker from "../settings/theme-picker";
+import * as ThemePicker from "../elements/settings/theme-picker";
 import * as Notifications from "../elements/notifications";
 import * as ImportExportSettingsModal from "../modals/import-export-settings";
 import * as ConfigEvent from "../observables/config-event";
@@ -654,6 +654,7 @@ async function fillSettingsPage(): Promise<void> {
   $(
     ".pageSettings .section[data-config-name='customBackgroundSize'] input"
   ).val(Config.customBackground);
+  updateCustomBackgroundRemoveButtonVisibility();
 
   $(".pageSettings .section[data-config-name='fontSize'] input").val(
     Config.fontSize
@@ -754,6 +755,11 @@ export function updateAuthSections(): void {
     $(
       ".pageSettings .section.passwordAuthSettings #passPasswordAuth"
     ).removeClass("hidden");
+    if (googleProvider || githubProvider) {
+      $(
+        ".pageSettings .section.passwordAuthSettings #removePasswordAuth"
+      ).removeClass("hidden");
+    }
   } else {
     $(
       ".pageSettings .section.passwordAuthSettings #addPasswordAuth"
@@ -950,6 +956,11 @@ export async function update(groupUpdate = true): Promise<void> {
       ".pageSettings .section[data-config-name='customBackgroundFilter']"
     ).addClass("hidden");
   }
+  updateCustomBackgroundRemoveButtonVisibility();
+
+  $(
+    ".pageSettings .section[data-config-name='customBackgroundSize'] input"
+  ).val(Config.customBackground);
 
   if (isAuthenticated()) {
     showAccountSection();
@@ -981,6 +992,20 @@ function toggleSettingsGroup(groupName: string): void {
     $(`.pageSettings .sectionGroupTitle[group=${groupName}]`).removeClass(
       "rotateIcon"
     );
+  }
+}
+
+function updateCustomBackgroundRemoveButtonVisibility(): void {
+  const button = $(
+    ".pageSettings .section[data-config-name='customBackgroundSize'] button.remove"
+  );
+  if (
+    Config.customBackground !== undefined &&
+    Config.customBackground.length > 0
+  ) {
+    button.removeClass("hidden");
+  } else {
+    button.addClass("hidden");
   }
 }
 
@@ -1170,6 +1195,12 @@ $(
       ".pageSettings .section[data-config-name='customBackgroundSize'] .inputAndButton input"
     ).val() as string
   );
+});
+
+$(
+  ".pageSettings .section[data-config-name='customBackgroundSize'] .inputAndButton button.remove"
+).on("click", () => {
+  UpdateConfig.setCustomBackground("");
 });
 
 $(

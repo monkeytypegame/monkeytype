@@ -57,6 +57,10 @@
       gap: 0.5rem;
       margin-bottom: 0.5rem;
 
+      span {
+        display: flex;
+        gap: 0.5rem;
+      }
       .button {
         height: auto;
 
@@ -451,6 +455,18 @@
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(13.5rem, 1fr));
         gap: 0.5rem;
+      }
+    }
+
+    &.passwordAuthSettings {
+      .buttons {
+        grid-template-rows: repeat(auto-fill, 1fr);
+        grid-template-columns: repeat(2, minmax(4.5rem, 1fr));
+
+        #removePasswordAuth,
+        #addPasswordAuth {
+          grid-column: span 2;
+        }
       }
     }
   }

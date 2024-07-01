@@ -508,16 +508,8 @@ export async function init(): Promise<void> {
   );
 }
 
-//add word during the test
-export async function addWord(): Promise<void> {
-  let bound = 100; // how many extra words to aim for AFTER the current word
-  const funboxToPush = FunboxList.get(Config.funbox)
-    .find((f) => f.properties?.find((fp) => fp.startsWith("toPush")))
-    ?.properties?.find((fp) => fp.startsWith("toPush:"));
-  const toPushCount = funboxToPush?.split(":")[1];
-  if (toPushCount !== undefined) bound = +toPushCount - 1;
-  if (
-    TestWords.words.length - TestInput.input.history.length > bound ||
+export function areAllTestWordsGenerated(): boolean {
+  return (
     (Config.mode === "words" &&
       TestWords.words.length >= Config.words &&
       Config.words > 0) ||
@@ -533,6 +525,20 @@ export async function addWord(): Promise<void> {
       WordsGenerator.sectionIndex >= CustomText.getLimitValue() &&
       WordsGenerator.currentSection.length === 0 &&
       CustomText.getLimitValue() !== 0)
+  );
+}
+
+//add word during the test
+export async function addWord(): Promise<void> {
+  let bound = 100; // how many extra words to aim for AFTER the current word
+  const funboxToPush = FunboxList.get(Config.funbox)
+    .find((f) => f.properties?.find((fp) => fp.startsWith("toPush")))
+    ?.properties?.find((fp) => fp.startsWith("toPush:"));
+  const toPushCount = funboxToPush?.split(":")[1];
+  if (toPushCount !== undefined) bound = +toPushCount - 1;
+  if (
+    TestWords.words.length - TestInput.input.history.length > bound ||
+    areAllTestWordsGenerated()
   ) {
     return;
   }
@@ -797,6 +803,7 @@ function buildCompletedEvent(
     customText: customText,
     testDuration: duration,
     afkDuration: afkDuration,
+    stopOnLetter: Config.stopOnError === "letter",
   } as SharedTypes.CompletedEvent;
 
   if (completedEvent.mode !== "custom") delete completedEvent.customText;
@@ -1142,6 +1149,10 @@ async function saveResult(
       response.message =
         "Old key data format. Please refresh the page to download the new update. If the problem persists, please contact support.";
     }
+    if (/"result\..+" is (not allowed|required)/gi.test(response.message)) {
+      response.message =
+        "Looks like your result data is using an incorrect schema. Please refresh the page to download the new update. If the problem persists, please contact support.";
+    }
     return Notifications.add("Failed to save result: " + response.message, -1);
   }
 
@@ -1190,8 +1201,7 @@ async function saveResult(
     ) {
       Result.showConfetti();
     }
-    Result.showCrown();
-    await Result.updateCrown();
+    Result.showCrown("normal");
     await DB.saveLocalPB(
       Config.mode,
       completedEvent.mode2,
@@ -1205,6 +1215,8 @@ async function saveResult(
       completedEvent.rawWpm,
       completedEvent.consistency
     );
+  } else {
+    Result.showErrorCrownIfNeeded();
   }
 
   // if (response.data.dailyLeaderboardRank) {

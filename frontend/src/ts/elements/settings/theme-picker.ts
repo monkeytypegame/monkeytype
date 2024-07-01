@@ -1,16 +1,16 @@
-import Config, * as UpdateConfig from "../config";
-import * as ThemeController from "../controllers/theme-controller";
-import * as Misc from "../utils/misc";
-import * as JSONData from "../utils/json-data";
-import * as Colors from "../utils/colors";
-import * as Notifications from "../elements/notifications";
-import * as ThemeColors from "../elements/theme-colors";
-import * as ChartController from "../controllers/chart-controller";
-import * as Loader from "../elements/loader";
-import * as DB from "../db";
-import * as ConfigEvent from "../observables/config-event";
-import { isAuthenticated } from "../firebase";
-import * as ActivePage from "../states/active-page";
+import Config, * as UpdateConfig from "../../config";
+import * as ThemeController from "../../controllers/theme-controller";
+import * as Misc from "../../utils/misc";
+import * as JSONData from "../../utils/json-data";
+import * as Colors from "../../utils/colors";
+import * as Notifications from "../notifications";
+import * as ThemeColors from "../theme-colors";
+import * as ChartController from "../../controllers/chart-controller";
+import * as Loader from "../loader";
+import * as DB from "../../db";
+import * as ConfigEvent from "../../observables/config-event";
+import { isAuthenticated } from "../../firebase";
+import * as ActivePage from "../../states/active-page";
 
 function updateActiveButton(): void {
   let activeThemeName = Config.theme;

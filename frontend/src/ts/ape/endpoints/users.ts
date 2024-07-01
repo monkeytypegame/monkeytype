@@ -78,6 +78,12 @@ export default class Users {
     return await this.httpClient.patch(`${BASE_PATH}/email`, { payload });
   }
 
+  async updatePassword(newPassword: string): Ape.EndpointResponse<null> {
+    return await this.httpClient.patch(`${BASE_PATH}/password`, {
+      payload: { newPassword },
+    });
+  }
+
   async deletePersonalBests(): Ape.EndpointResponse<null> {
     return await this.httpClient.delete(`${BASE_PATH}/personalBests`);
   }
@@ -215,7 +221,7 @@ export default class Users {
   async updateProfile(
     profileUpdates: Partial<SharedTypes.UserProfileDetails>,
     selectedBadgeId?: number
-  ): Ape.EndpointResponse<null> {
+  ): Ape.EndpointResponse<SharedTypes.UserProfileDetails> {
     return await this.httpClient.patch(`${BASE_PATH}/profile`, {
       payload: {
         ...profileUpdates,

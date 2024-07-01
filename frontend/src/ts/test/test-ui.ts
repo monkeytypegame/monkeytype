@@ -145,7 +145,7 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
   if (eventKey === "fontSize" && !nosave) {
     OutOfFocus.hide();
     updateWordsHeight(true);
-    updateWordsInputPosition(true);
+    void updateWordsInputPosition(true);
   }
   if (eventKey === "fontSize" || eventKey === "fontFamily")
     updateHintsPosition().catch((e) => {
@@ -157,7 +157,7 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
   if (eventValue === undefined) return;
   if (eventKey === "highlightMode") {
     highlightMode(eventValue as SharedTypes.Config.HighlightMode);
-    updateActiveElement();
+    if (ActivePage.get() === "test") updateActiveElement();
   }
 
   if (typeof eventValue !== "boolean") return;
@@ -226,29 +226,38 @@ export function updateActiveElement(
   if (Config.mode === "zen" && backspace) {
     active?.remove();
   } else if (active !== null) {
-    if (Config.highlightMode === "word") {
+    if (
+      ["word", "next_word", "next_two_words", "next_three_words"].includes(
+        Config.highlightMode
+      )
+    ) {
       active.querySelectorAll("letter").forEach((e) => {
         e.classList.remove("correct");
       });
     }
     active.classList.remove("active");
   }
-  try {
-    const activeWord = document.querySelectorAll("#words .word")[
-      currentWordElementIndex
-    ] as Element;
-    activeWord.classList.add("active");
-    activeWord.classList.remove("error");
-    activeWordTop = (document.querySelector("#words .active") as HTMLElement)
-      .offsetTop;
-    if (Config.highlightMode === "word") {
-      activeWord.querySelectorAll("letter").forEach((e) => {
-        e.classList.add("correct");
-      });
-    }
-  } catch (e) {}
+  const activeWord =
+    document.querySelectorAll("#words .word")[currentWordElementIndex];
+
+  if (activeWord == undefined) {
+    throw new Error("activeWord is undefined - can't update active element");
+  }
+
+  activeWord.classList.add("active");
+  activeWord.classList.remove("error");
+  activeWordTop = (document.querySelector("#words .active") as HTMLElement)
+    .offsetTop;
+  if (Config.highlightMode === "word") {
+    activeWord.querySelectorAll("letter").forEach((e) => {
+      e.classList.add("correct");
+    });
+  }
   if (!initial && shouldUpdateWordsInputPosition()) {
-    updateWordsInputPosition();
+    void updateWordsInputPosition();
+  }
+  if (Config.tapeMode !== "off") {
+    scrollTape();
   }
 }
 
@@ -356,8 +365,10 @@ export function showWords(): void {
   updateWordsWidth();
   updateWordsHeight(true);
   updateActiveElement(undefined, true);
-  void Caret.updatePosition();
-  updateWordsInputPosition(true);
+  setTimeout(() => {
+    void Caret.updatePosition();
+  }, 125);
+  void updateWordsInputPosition(true);
 }
 
 const posUpdateLangList = ["japanese", "chinese", "korean"];
@@ -366,9 +377,13 @@ function shouldUpdateWordsInputPosition(): boolean {
   return language || (Config.mode !== "time" && Config.showAllLines);
 }
 
-export function updateWordsInputPosition(initial = false): void {
+export async function updateWordsInputPosition(initial = false): Promise<void> {
   if (ActivePage.get() !== "test") return;
   if (Config.tapeMode !== "off" && !initial) return;
+
+  const currentLanguage = await JSONData.getCurrentLanguage(Config.language);
+  const isLanguageRTL = currentLanguage.rightToLeft;
+
   const el = document.querySelector("#wordsInput") as HTMLElement;
   const activeWord = document.querySelector(
     "#words .active"
@@ -399,27 +414,26 @@ export function updateWordsInputPosition(initial = false): void {
     return;
   }
 
+  if (isLanguageRTL) {
+    el.style.left =
+      activeWord.offsetLeft - el.offsetWidth + activeWord.offsetWidth + "px";
+  } else {
+    el.style.left = activeWord.offsetLeft + "px";
+  }
+
   if (
     initial &&
     !posUpdateLangList.some((l) => Config.language.startsWith(l))
   ) {
-    el.style.left = "0px";
     el.style.top =
-      // wordsWrapperTop +
-      activeWord.offsetHeight * 2 +
-      activeWordMargin * 1.5 +
+      activeWord.offsetTop +
+      activeWord.offsetHeight +
       -el.offsetHeight +
+      (activeWord.offsetHeight + activeWordMargin) +
       "px";
   } else {
-    el.style.left = activeWord.offsetLeft + "px";
     el.style.top =
-      activeWord.offsetTop -
-      activeWordMargin +
-      // wordsWrapperTop +
-      activeWord.offsetHeight +
-      activeWordMargin +
-      -el.offsetHeight +
-      "px";
+      activeWord.offsetTop + activeWord.offsetHeight + -el.offsetHeight + "px";
   }
 }
 
@@ -776,12 +790,15 @@ export async function updateWordElement(
     const funbox = FunboxList.get(Config.funbox).find(
       (f) => f.functions?.getWordHtml
     );
+    const isTts = FunboxList.get(Config.funbox).find((it) => it.name === "tts");
+
     for (let i = 0; i < input.length; i++) {
       const charCorrect = currentWord[i] === input[i];
 
       let correctClass = "correct";
       if (Config.highlightMode === "off") {
         correctClass = "";
+        if (isTts) correctClass = "visible";
       }
 
       let currentLetter = currentWord[i] as string;
@@ -896,6 +913,9 @@ export async function updateWordElement(
   }
 
   if (newlineafter) $("#words").append("<div class='newline'></div>");
+  if (Config.tapeMode !== "off") {
+    scrollTape();
+  }
 }
 
 export function scrollTape(): void {
@@ -1391,9 +1411,14 @@ export async function applyBurstHeatmap(): Promise<void> {
   }
 }
 
-export function highlightBadWord(index: number, showError: boolean): void {
-  if (!showError) return;
+export function highlightBadWord(index: number): void {
   $($("#words .word")[index] as HTMLElement).addClass("error");
+}
+
+export function highlightAllLettersAsCorrect(wordIndex: number): void {
+  $($("#words .word")[wordIndex] as HTMLElement)
+    .find("letter")
+    .addClass("correct");
 }
 
 export function highlightMode(mode?: SharedTypes.Config.HighlightMode): void {

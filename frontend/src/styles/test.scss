@@ -353,7 +353,7 @@
   }
 
   &.lastbeforenewline::after {
-    font-family: "Font Awesome 5 Free";
+    font-family: "Font Awesome";
     font-weight: 600;
     content: "\f107";
     margin-left: 0.5rem;
@@ -479,6 +479,7 @@
   z-index: -1;
   cursor: default;
   pointer-events: none;
+  border-radius: 0;
 }
 
 #capsWarning {
@@ -822,32 +823,76 @@
           font-size: 2rem;
           line-height: 1.5rem;
           display: flex;
-          // margin-top: -0.5rem;
-
-          // .crownWrapper {
-          //   width: 1.7rem;
-          //   overflow: hidden;
-          //   height: 1.7rem;
-          //   margin-left: 0.5rem;
-          //   // margin-top: 0.98rem;
-          //   margin-top: -0.5rem;
 
           .crown {
-            height: 1.7rem;
-            width: 1.7rem;
+            --main: var(--main-color);
+            --alt: var(--bg-color);
+
             margin-left: 0.5rem;
             margin-top: -0.2rem;
             font-size: 0.7rem;
-            line-height: 1.7rem;
-            background: var(--main-color);
-            color: var(--bg-color);
-            border-radius: 0.6rem;
-            text-align: center;
-            align-self: center;
+            background: var(--main);
+            color: var(--alt);
             width: 1.7rem;
             height: 1.7rem;
+            border-radius: var(--roundness);
+            display: grid;
+            grid-template-areas: "icon";
+            align-items: center;
+            justify-items: center;
+
+            transition: opacity 0.125s, background 0.125s, color 0.125s,
+              outline 0.125s;
+
+            i {
+              grid-area: icon;
+            }
+
+            .fa-slash {
+              color: var(--main);
+              font-size: 1.2rem;
+              opacity: 0;
+            }
+
+            .fa-question,
+            .fa-exclamation-triangle {
+              color: var(--alt);
+              opacity: 0;
+            }
+
+            &.half {
+              --main: var(--bg-color);
+              --alt: var(--main-color);
+              outline: 0.2em solid var(--main-color);
+            }
+            &.broken {
+              --main: var(--sub-color);
+              --alt: var(--bg-color);
+              .fa-slash {
+                opacity: 1;
+              }
+            }
+            &.error {
+              --main: var(--error-color);
+              --alt: var(--bg-color);
+              .fa-crown {
+                opacity: 0;
+              }
+              .fa-question {
+                opacity: 1;
+              }
+            }
+            &.warning {
+              --main: var(--sub-color);
+              --alt: var(--bg-color);
+              .fa-crown {
+                opacity: 0;
+              }
+              .fa-exclamation-triangle {
+                opacity: 1;
+              }
+            }
           }
-          // }
         }
 
         .bottom {

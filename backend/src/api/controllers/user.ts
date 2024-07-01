@@ -24,10 +24,8 @@ import { ObjectId } from "mongodb";
 import * as ReportDAL from "../../dal/report";
 import emailQueue from "../../queues/email-queue";
 import FirebaseAdmin from "../../init/firebase-admin";
-import {
-  removeTokensFromCacheByUid,
-  deleteUser as firebaseDeleteUser,
-} from "../../utils/auth";
+import * as AuthUtil from "../../utils/auth";
+
 import * as Dates from "date-fns";
 import { UTCDateMini } from "@date-fns/utc";
 import * as BlocklistDal from "../../dal/blocklist";
@@ -201,7 +199,7 @@ export async function deleteUser(
   ]);
 
   //delete user from
-  await firebaseDeleteUser(uid);
+  await AuthUtil.deleteUser(uid);
 
   void Logger.logToDb(
     "user_deleted",
@@ -325,9 +323,30 @@ export async function updateEmail(
   newEmail = newEmail.toLowerCase();
 
   try {
+    await AuthUtil.updateUserEmail(uid, newEmail);
     await UserDAL.updateEmail(uid, newEmail);
   } catch (e) {
-    throw new MonkeyError(404, e.message, "update email", uid);
+    if (e.code === "auth/email-already-exists") {
+      throw new MonkeyError(
+        409,
+        "The email address is already in use by another account"
+      );
+    } else if (e.code === "auth/invalid-email") {
+      throw new MonkeyError(400, "Invalid email address");
+    } else if (e.code === "auth/too-many-requests") {
+      throw new MonkeyError(429, "Too many requests. Please try again later");
+    } else if (e.code === "auth/user-not-found") {
+      throw new MonkeyError(
+        404,
+        "User not found in the auth system",
+        "update email",
+        uid
+      );
+    } else if (e.code === "auth/invalid-user-token") {
+      throw new MonkeyError(401, "Invalid user token", "update email", uid);
+    } else {
+      throw e;
+    }
   }
 
   void Logger.logToDb(
@@ -337,6 +356,17 @@ export async function updateEmail(
   );
 
   return new MonkeyResponse("Email updated");
+}
+
+export async function updatePassword(
+  req: MonkeyTypes.Request
+): Promise<MonkeyResponse> {
+  const { uid } = req.ctx.decodedToken;
+  const { newPassword } = req.body;
+
+  await AuthUtil.updateUserPassword(uid, newPassword);
+
+  return new MonkeyResponse("Password updated");
 }
 
 function getRelevantUserInfo(
@@ -370,7 +400,7 @@ export async function getUser(
       //since there is no data in the database anyway, we can just delete the user from the auth system
       //and ask them to sign up again
       try {
-        await firebaseDeleteUser(uid);
+        await AuthUtil.deleteUser(uid);
         throw new MonkeyError(
           404,
           "User not found in the database, but found in the auth system. We have deleted the ghost user from the auth system. Please sign up again.",
@@ -419,7 +449,7 @@ export async function getUser(
   const isPremium = await UserDAL.checkIfUserIsPremium(uid, userInfo);
 
   const allTimeLbs = await getAllTimeLbs(uid);
-  const testActivity = getCurrentTestActivity(userInfo.testActivity);
+  const testActivity = generateCurrentTestActivity(userInfo.testActivity);
 
   const userData = {
     ...getRelevantUserInfo(userInfo),
@@ -627,9 +657,7 @@ export async function addCustomTheme(
   const { name, colors } = req.body;
 
   const addedTheme = await UserDAL.addTheme(uid, { name, colors });
-  return new MonkeyResponse("Custom theme added", {
-    theme: addedTheme,
-  });
+  return new MonkeyResponse("Custom theme added", addedTheme);
 }
 
 export async function removeCustomTheme(
@@ -819,7 +847,7 @@ export async function updateProfile(
 
   await UserDAL.updateProfile(uid, profileDetailsUpdates, user.inventory);
 
-  return new MonkeyResponse("Profile updated");
+  return new MonkeyResponse("Profile updated", profileDetailsUpdates);
 }
 
 export async function getInbox(
@@ -920,8 +948,7 @@ export async function revokeAllTokens(
   req: MonkeyTypes.Request
 ): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
-  await FirebaseAdmin().auth().revokeRefreshTokens(uid);
-  removeTokensFromCacheByUid(uid);
+  await AuthUtil.revokeTokensByUid(uid);
   return new MonkeyResponse("All tokens revoked");
 }
 
@@ -968,7 +995,7 @@ async function getAllTimeLbs(uid: string): Promise<SharedTypes.AllTimeLbs> {
   };
 }
 
-export function getCurrentTestActivity(
+export function generateCurrentTestActivity(
   testActivity: SharedTypes.CountByYearAndDay | undefined
 ): SharedTypes.TestActivity | undefined {
   const thisYear = Dates.startOfYear(new UTCDateMini());
@@ -991,8 +1018,8 @@ export function getCurrentTestActivity(
       )
     );
   }
-  //use enough days of the last year to have 366 days in total
-  lastYearData = lastYearData.slice(-366 + thisYearData.length);
+  //use enough days of the last year to have 372 days in total to always fill the first week of the graph
+  lastYearData = lastYearData.slice(-372 + thisYearData.length);
 
   const lastDay = Dates.startOfDay(
     Dates.addDays(thisYear, thisYearData.length - 1)
@@ -1025,8 +1052,28 @@ export async function getTestActivity(
 
 async function firebaseDeleteUserIgnoreError(uid: string): Promise<void> {
   try {
-    await firebaseDeleteUser(uid);
+    await AuthUtil.deleteUser(uid);
   } catch (e) {
     //ignore
   }
+}
+
+export async function getCurrentTestActivity(
+  req: MonkeyTypes.Request
+): Promise<MonkeyResponse> {
+  const { uid } = req.ctx.decodedToken;
+
+  const user = await UserDAL.getUser(uid, "current test activity");
+  const data = generateCurrentTestActivity(user.testActivity);
+  return new MonkeyResponse("Current test activity data retrieved", data);
+}
+
+export async function getStreak(
+  req: MonkeyTypes.Request
+): Promise<MonkeyResponse> {
+  const { uid } = req.ctx.decodedToken;
+
+  const user = await UserDAL.getUser(uid, "streak");
+
+  return new MonkeyResponse("Streak data retrieved", user.streak);
 }
