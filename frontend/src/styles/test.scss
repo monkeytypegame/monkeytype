@@ -1074,6 +1074,12 @@
     .textButton {
       padding: var(--verticalPadding) var(--horizontalPadding);
 
+      box-shadow: none;
+      &:focus-visible {
+        color: var(--text-color);
+        background: none;
+      }
+
       --double: calc(var(--horizontalPadding) * 2);
 
       &:first-child {

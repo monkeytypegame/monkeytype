@@ -21,6 +21,7 @@ export async function instantUpdate(): Promise<void> {
   $("#testConfig .puncAndNum").css({
     width: 0,
     opacity: 0,
+    visibility: "hidden",
   });
   $("#testConfig .spacer").addClass("scrolled");
   $("#testConfig .time").addClass("hidden");
@@ -33,6 +34,7 @@ export async function instantUpdate(): Promise<void> {
     $("#testConfig .puncAndNum").css({
       width: "unset",
       opacity: 1,
+      visibility: "visible",
     });
     $("#testConfig .leftSpacer").removeClass("scrolled");
     $("#testConfig .rightSpacer").removeClass("scrolled");
@@ -43,6 +45,7 @@ export async function instantUpdate(): Promise<void> {
     $("#testConfig .puncAndNum").css({
       width: "unset",
       opacity: 1,
+      visibility: "visible",
     });
 
     $("#testConfig .leftSpacer").removeClass("scrolled");
@@ -60,6 +63,7 @@ export async function instantUpdate(): Promise<void> {
     $("#testConfig .puncAndNum").css({
       width: "unset",
       opacity: 1,
+      visibility: "visible",
     });
 
     $("#testConfig .leftSpacer").removeClass("scrolled");
@@ -139,6 +143,7 @@ export async function update(
       .css({
         opacity: puncAndNumVisible[current] ? 0 : 1,
         width: previousWidth,
+        visibility: "visible",
       })
       .animate(
         {
@@ -150,6 +155,8 @@ export async function update(
         () => {
           if (currentWidth !== 0) {
             puncAndNumEl.css("width", "unset");
+          } else {
+            puncAndNumEl.css("visibility", "hidden");
           }
         }
       );
