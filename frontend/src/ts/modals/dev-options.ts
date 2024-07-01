@@ -15,6 +15,20 @@ async function setup(modalEl: HTMLElement): Promise<void> {
     showPopup("devGenerateData");
   });
   modalEl
+    .querySelector(".showTestNotifications")
+    ?.addEventListener("click", () => {
+      Notifications.add("This is a test", 1, {
+        duration: 0,
+      });
+      Notifications.add("This is a test", 0, {
+        duration: 0,
+      });
+      Notifications.add("This is a test", -1, {
+        duration: 0,
+      });
+      void modal.hide();
+    });
+  modalEl
     .querySelector(".toggleMediaQueryDebug")
     ?.addEventListener("click", () => {
       mediaQueryDebugLevel++;
