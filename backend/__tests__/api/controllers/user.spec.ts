@@ -195,7 +195,7 @@ describe("user controller test", () => {
     });
   });
   describe("getTestActivity", () => {
-    const getUserMock = vi.spyOn(UserDal, "getPartial");
+    const getUserMock = vi.spyOn(UserDal, "getPartialUser");
     afterAll(() => {
       getUserMock.mockReset();
     });
@@ -303,7 +303,7 @@ describe("user controller test", () => {
   });
 
   describe("toggle ban", () => {
-    const getUserMock = vi.spyOn(UserDal, "getPartial");
+    const getUserMock = vi.spyOn(UserDal, "getPartialUser");
     const setBannedMock = vi.spyOn(UserDal, "setBanned");
     const georgeUserBannedMock = vi.spyOn(GeorgeQueue, "userBanned");
     const isAdminMock = vi.spyOn(AdminUuids, "isAdmin");
@@ -431,7 +431,7 @@ describe("user controller test", () => {
   });
 
   describe("delete user", () => {
-    const getUserMock = vi.spyOn(UserDal, "getPartial");
+    const getUserMock = vi.spyOn(UserDal, "getPartialUser");
     const deleteUserMock = vi.spyOn(UserDal, "deleteUser");
     const firebaseDeleteUserMock = vi.spyOn(AuthUtils, "deleteUser");
     const deleteAllApeKeysMock = vi.spyOn(ApeKeys, "deleteAllApeKeys");
@@ -543,7 +543,7 @@ describe("user controller test", () => {
     });
   });
   describe("link discord", () => {
-    const getUserMock = vi.spyOn(UserDal, "getPartial");
+    const getUserMock = vi.spyOn(UserDal, "getPartialUser");
     const isDiscordIdAvailableMock = vi.spyOn(UserDal, "isDiscordIdAvailable");
     const isStateValidForUserMock = vi.spyOn(
       DiscordUtils,
@@ -607,7 +607,7 @@ describe("user controller test", () => {
     });
   });
   describe("getCurrentTestActivity", () => {
-    const getUserMock = vi.spyOn(UserDal, "getPartial");
+    const getUserMock = vi.spyOn(UserDal, "getPartialUser");
 
     afterEach(() => {
       getUserMock.mockReset();
@@ -641,7 +641,7 @@ describe("user controller test", () => {
     });
   });
   describe("getStreak", () => {
-    const getUserMock = vi.spyOn(UserDal, "getPartial");
+    const getUserMock = vi.spyOn(UserDal, "getPartialUser");
 
     afterEach(() => {
       getUserMock.mockReset();

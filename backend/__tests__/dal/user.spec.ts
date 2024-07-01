@@ -849,10 +849,10 @@ describe("UserDal", () => {
       expect(year2024[93]).toEqual(2);
     });
   });
-  describe("getPartial", () => {
+  describe("getPartialUser", () => {
     it("should throw for unknown user", async () => {
       expect(async () =>
-        UserDAL.getPartial("1234", "stack", [])
+        UserDAL.getPartialUser("1234", "stack", [])
       ).rejects.toThrowError("User not found\nStack: stack");
     });
 
@@ -868,7 +868,9 @@ describe("UserDal", () => {
       });
 
       //WHEN
-      const partial = await UserDAL.getPartial(user.uid, "streak", ["streak"]);
+      const partial = await UserDAL.getPartialUser(user.uid, "streak", [
+        "streak",
+      ]);
 
       //THEN
       expect(partial).toStrictEqual({

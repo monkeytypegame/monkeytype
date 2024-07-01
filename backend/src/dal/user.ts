@@ -209,7 +209,7 @@ export async function getUser(
  * @returns partial DBUser only containing requested fields
  * @throws MonkeyError if user does not exist
  */
-export async function getPartial<K extends MonkeyTypes.DBUserKeys>(
+export async function getPartialUser<K extends keyof MonkeyTypes.DBUser>(
   uid: string,
   stack: string,
   fields: K[]
@@ -266,7 +266,7 @@ export async function addResultFilterPreset(
 ): Promise<ObjectId> {
   // ensure limit not reached
   const filtersCount = (
-    (await getPartial(uid, "Add Result filter", ["resultFilterPresets"]))
+    (await getPartialUser(uid, "Add Result filter", ["resultFilterPresets"]))
       .resultFilterPresets ?? []
   ).length;
 
@@ -289,7 +289,7 @@ export async function removeResultFilterPreset(
   uid: string,
   _id: string
 ): Promise<void> {
-  const user = await getPartial(uid, "remove result filter", [
+  const user = await getPartialUser(uid, "remove result filter", [
     "resultFilterPresets",
   ]);
   const filterId = new ObjectId(_id);
@@ -314,7 +314,7 @@ export async function addTag(
   uid: string,
   name: string
 ): Promise<MonkeyTypes.DBUserTag> {
-  const user = await getPartial(uid, "add tag", ["tags"]);
+  const user = await getPartialUser(uid, "add tag", ["tags"]);
 
   if ((user?.tags?.length ?? 0) >= 15) {
     throw new MonkeyError(400, "You can only have up to 15 tags");
@@ -345,7 +345,7 @@ export async function addTag(
 }
 
 export async function getTags(uid: string): Promise<MonkeyTypes.DBUserTag[]> {
-  const user = await getPartial(uid, "get tags", ["tags"]);
+  const user = await getPartialUser(uid, "get tags", ["tags"]);
 
   return user.tags ?? [];
 }
@@ -355,7 +355,7 @@ export async function editTag(
   _id: string,
   name: string
 ): Promise<void> {
-  const user = await getPartial(uid, "edit tag", ["tags"]);
+  const user = await getPartialUser(uid, "edit tag", ["tags"]);
   if (
     user.tags === undefined ||
     user.tags.filter((t) => t._id.toHexString() === _id).length === 0
@@ -372,7 +372,7 @@ export async function editTag(
 }
 
 export async function removeTag(uid: string, _id: string): Promise<void> {
-  const user = await getPartial(uid, "remove tag", ["tags"]);
+  const user = await getPartialUser(uid, "remove tag", ["tags"]);
   if (
     user.tags === undefined ||
     user.tags.filter((t) => t._id.toHexString() === _id).length === 0
@@ -389,7 +389,7 @@ export async function removeTag(uid: string, _id: string): Promise<void> {
 }
 
 export async function removeTagPb(uid: string, _id: string): Promise<void> {
-  const user = await getPartial(uid, "remove tag pb", ["tags"]);
+  const user = await getPartialUser(uid, "remove tag pb", ["tags"]);
   if (
     user.tags === undefined ||
     user.tags.filter((t) => t._id.toHexString() === _id).length === 0
@@ -422,7 +422,7 @@ export async function updateLbMemory(
   language: string,
   rank: number
 ): Promise<void> {
-  const user = await getPartial(uid, "update lb memory", ["lbMemory"]);
+  const user = await getPartialUser(uid, "update lb memory", ["lbMemory"]);
   if (user.lbMemory === undefined) user.lbMemory = {};
   if (user.lbMemory[mode] === undefined) user.lbMemory[mode] = {};
   if (user.lbMemory[mode]?.[mode2] === undefined) {
@@ -609,7 +609,9 @@ export async function unlinkDiscord(uid: string): Promise<void> {
 }
 
 export async function incrementBananas(uid: string, wpm): Promise<void> {
-  const user = await getPartial(uid, "increment bananas", ["personalBests"]);
+  const user = await getPartialUser(uid, "increment bananas", [
+    "personalBests",
+  ]);
 
   let best60: number | undefined;
   const personalBests60 = user.personalBests?.time["60"];
@@ -665,7 +667,7 @@ export async function addTheme(
   uid: string,
   theme
 ): Promise<{ _id: ObjectId; name: string }> {
-  const user = await getPartial(uid, "add theme", ["customThemes"]);
+  const user = await getPartialUser(uid, "add theme", ["customThemes"]);
 
   if ((user.customThemes ?? []).length >= 10) {
     throw new MonkeyError(409, "Too many custom themes");
@@ -692,7 +694,7 @@ export async function addTheme(
 }
 
 export async function removeTheme(uid: string, _id): Promise<void> {
-  const user = await getPartial(uid, "remove theme", ["customThemes"]);
+  const user = await getPartialUser(uid, "remove theme", ["customThemes"]);
 
   if (themeDoesNotExist(user.customThemes, _id)) {
     throw new MonkeyError(404, "Custom theme not found");
@@ -708,7 +710,7 @@ export async function removeTheme(uid: string, _id): Promise<void> {
 }
 
 export async function editTheme(uid: string, _id, theme): Promise<void> {
-  const user = await getPartial(uid, "edit theme", ["customThemes"]);
+  const user = await getPartialUser(uid, "edit theme", ["customThemes"]);
 
   if (themeDoesNotExist(user.customThemes, _id)) {
     throw new MonkeyError(404, "Custom Theme not found");
@@ -731,7 +733,7 @@ export async function editTheme(uid: string, _id, theme): Promise<void> {
 export async function getThemes(
   uid: string
 ): Promise<MonkeyTypes.DBCustomTheme[]> {
-  const user = await getPartial(uid, "get themes", ["customThemes"]);
+  const user = await getPartialUser(uid, "get themes", ["customThemes"]);
   return user.customThemes ?? [];
 }
 
@@ -740,7 +742,9 @@ export async function getPersonalBests(
   mode: string,
   mode2?: string
 ): Promise<SharedTypes.PersonalBest> {
-  const user = await getPartial(uid, "get personal bests", ["personalBests"]);
+  const user = await getPartialUser(uid, "get personal bests", [
+    "personalBests",
+  ]);
 
   if (mode2 !== undefined) {
     return user.personalBests?.[mode]?.[mode2];
@@ -752,7 +756,7 @@ export async function getPersonalBests(
 export async function getStats(
   uid: string
 ): Promise<Record<string, number | undefined>> {
-  const user = await getPartial(uid, "get stats", [
+  const user = await getPartialUser(uid, "get stats", [
     "startedTests",
     "completedTests",
     "timeTyping",
@@ -768,7 +772,9 @@ export async function getStats(
 export async function getFavoriteQuotes(
   uid
 ): Promise<MonkeyTypes.DBUser["favoriteQuotes"]> {
-  const user = await getPartial(uid, "get favorite quotes", ["favoriteQuotes"]);
+  const user = await getPartialUser(uid, "get favorite quotes", [
+    "favoriteQuotes",
+  ]);
 
   return user.favoriteQuotes ?? {};
 }
@@ -779,7 +785,9 @@ export async function addFavoriteQuote(
   quoteId: string,
   maxQuotes: number
 ): Promise<void> {
-  const user = await getPartial(uid, "add favorite quote", ["favoriteQuotes"]);
+  const user = await getPartialUser(uid, "add favorite quote", [
+    "favoriteQuotes",
+  ]);
 
   if (user.favoriteQuotes) {
     if (user.favoriteQuotes[language]?.includes(quoteId)) {
@@ -815,7 +823,7 @@ export async function removeFavoriteQuote(
   language: string,
   quoteId: string
 ): Promise<void> {
-  const user = await getPartial(uid, "remove favorite quote", [
+  const user = await getPartialUser(uid, "remove favorite quote", [
     "favoriteQuotes",
   ]);
 
@@ -834,7 +842,7 @@ export async function recordAutoBanEvent(
   maxCount: number,
   maxHours: number
 ): Promise<boolean> {
-  const user = await getPartial(uid, "record auto ban event", [
+  const user = await getPartialUser(uid, "record auto ban event", [
     "banned",
     "autoBanTimestamps",
   ]);
@@ -905,7 +913,7 @@ export async function updateProfile(
 export async function getInbox(
   uid: string
 ): Promise<MonkeyTypes.DBUser["inbox"]> {
-  const user = await getPartial(uid, "get inbox", ["inbox"]);
+  const user = await getPartialUser(uid, "get inbox", ["inbox"]);
   return user.inbox ?? [];
 }
 
@@ -1014,7 +1022,10 @@ export async function updateInbox(
   mailToRead: string[],
   mailToDelete: string[]
 ): Promise<void> {
-  const user = await getPartial(uid, "update inbox", ["inbox", "inventory"]);
+  const user = await getPartialUser(uid, "update inbox", [
+    "inbox",
+    "inventory",
+  ]);
 
   const inbox = user.inbox ?? [];
 
@@ -1054,7 +1065,7 @@ export async function updateStreak(
   uid: string,
   timestamp: number
 ): Promise<number> {
-  const user = await getPartial(uid, "calculate streak", ["streak"]);
+  const user = await getPartialUser(uid, "calculate streak", ["streak"]);
   const streak: SharedTypes.UserStreak = {
     lastResultTimestamp: user.streak?.lastResultTimestamp ?? 0,
     length: user.streak?.length ?? 0,
@@ -1119,7 +1130,7 @@ export async function checkIfUserIsPremium(
   }
   const user =
     userInfoOverride ??
-    (await getPartial(uid, "checkIfUserIsPremium", ["premium"]));
+    (await getPartialUser(uid, "checkIfUserIsPremium", ["premium"]));
   const expirationDate = user.premium?.expirationTimestamp;
 
   if (expirationDate === undefined) return false;
@@ -1133,7 +1144,7 @@ export async function logIpAddress(
   userInfoOverride?: Pick<MonkeyTypes.DBUser, "ips">
 ): Promise<void> {
   const user =
-    userInfoOverride ?? (await getPartial(uid, "logIpAddress", ["ips"]));
+    userInfoOverride ?? (await getPartialUser(uid, "logIpAddress", ["ips"]));
   const currentIps = user.ips ?? [];
   const ipIndex = currentIps.indexOf(ip);
   if (ipIndex !== -1) {
