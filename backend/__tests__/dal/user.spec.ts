@@ -849,4 +849,46 @@ describe("UserDal", () => {
       expect(year2024[93]).toEqual(2);
     });
   });
+  describe("getPartialUser", () => {
+    it("should throw for unknown user", async () => {
+      expect(async () =>
+        UserDAL.getPartialUser("1234", "stack", [])
+      ).rejects.toThrowError("User not found\nStack: stack");
+    });
+
+    it("should get streak", async () => {
+      //GIVEN
+      let user = await UserTestData.createUser({
+        streak: {
+          hourOffset: 1,
+          length: 5,
+          lastResultTimestamp: 4711,
+          maxLength: 23,
+        },
+      });
+
+      //WHEN
+      const partial = await UserDAL.getPartialUser(user.uid, "streak", [
+        "streak",
+      ]);
+
+      //THEN
+      expect(partial).toStrictEqual({
+        _id: user._id,
+        streak: {
+          hourOffset: 1,
+          length: 5,
+          lastResultTimestamp: 4711,
+          maxLength: 23,
+        },
+      });
+    });
+  });
+  describe("updateEmail", () => {
+    it("throws for nonexisting user", async () => {
+      expect(async () =>
+        UserDAL.updateEmail(123, "test@example.com")
+      ).rejects.toThrowError("User not found\nStack: update email");
+    });
+  });
 });
