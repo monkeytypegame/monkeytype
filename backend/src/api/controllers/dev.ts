@@ -269,7 +269,7 @@ function randomValue<T>(values: T[]): T {
 }
 
 function createArray<T>(size: number, builder: () => T): T[] {
-  return new Array(size).fill(0).map((it) => builder());
+  return new Array(size).fill(0).map(() => builder());
 }
 
 async function updateTestActicity(uid: string): Promise<void> {
