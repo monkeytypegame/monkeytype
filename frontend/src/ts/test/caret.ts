@@ -1,4 +1,5 @@
-import * as Misc from "../utils/misc";
+import * as Numbers from "../utils/numbers";
+import * as JSONData from "../utils/json-data";
 import Config from "../config";
 import * as TestInput from "./test-input";
 import * as SlowTimer from "../states/slow-timer";
@@ -72,10 +73,14 @@ export async function updatePosition(noAnim = false): Promise<void> {
 
   const inputLen = TestInput.input.current.length;
   const currentLetterIndex = inputLen;
+  const activeWordEl = document?.querySelector("#words .active") as HTMLElement;
   //insert temporary character so the caret will work in zen mode
-  const activeWordEmpty = $("#words .active").children().length === 0;
+  const activeWordEmpty = activeWordEl?.children.length === 0;
   if (activeWordEmpty) {
-    $("#words .active").append('<letter style="opacity: 0;">_</letter>');
+    activeWordEl.insertAdjacentHTML(
+      "beforeend",
+      '<letter style="opacity: 0;">_</letter>'
+    );
   }
 
   const currentWordNodeList = document
@@ -92,7 +97,7 @@ export async function updatePosition(noAnim = false): Promise<void> {
     Math.min(currentLetterIndex - 1, currentWordNodeList.length - 1)
   ] as HTMLElement;
 
-  const currentLanguage = await Misc.getCurrentLanguage(Config.language);
+  const currentLanguage = await JSONData.getCurrentLanguage(Config.language);
   const isLanguageRightToLeft = currentLanguage.rightToLeft;
   const letterPosLeft = getTargetPositionLeft(
     fullWidthCaret,
@@ -108,17 +113,20 @@ export async function updatePosition(noAnim = false): Promise<void> {
   const letterHeight =
     currentLetter?.offsetHeight ??
     previousLetter?.offsetHeight ??
-    Config.fontSize * Misc.convertRemToPixels(1);
+    Config.fontSize * Numbers.convertRemToPixels(1);
 
   const diff = letterHeight - caret.offsetHeight;
 
-  let newTop = letterPosTop + diff / 2;
+  let newTop = activeWordEl.offsetTop + letterPosTop + diff / 2;
 
   if (Config.caretStyle === "underline") {
-    newTop = letterPosTop - caret.offsetHeight / 2;
+    newTop = activeWordEl.offsetTop + letterPosTop - caret.offsetHeight / 2;
   }
 
-  let newLeft = letterPosLeft - (fullWidthCaret ? 0 : caretWidth / 2);
+  let newLeft =
+    activeWordEl.offsetLeft +
+    letterPosLeft -
+    (fullWidthCaret ? 0 : caretWidth / 2);
 
   const wordsWrapperWidth =
     $(document.querySelector("#wordsWrapper") as HTMLElement).width() ?? 0;
@@ -199,7 +207,7 @@ export async function updatePosition(noAnim = false): Promise<void> {
     }
   }
   if (activeWordEmpty) {
-    $("#words .active").children().remove();
+    activeWordEl?.replaceChildren();
   }
 }
 

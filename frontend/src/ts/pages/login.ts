@@ -6,7 +6,6 @@ import { InputIndicator } from "../elements/input-indicator";
 import * as Skeleton from "../utils/skeleton";
 import * as Misc from "../utils/misc";
 import TypoList from "../utils/typo-list";
-import * as ServerConfiguration from "../ape/server-configuration";
 
 export function enableSignUpButton(): void {
   $(".page.pageLogin .register.side button").prop("disabled", false);
@@ -172,7 +171,7 @@ const nameIndicator = new InputIndicator(
       level: -1,
     },
     taken: {
-      icon: "fa-times",
+      icon: "fa-user",
       level: -1,
     },
     checking: {
@@ -336,14 +335,11 @@ $(".page.pageLogin .register.side .verifyPasswordInput").on("input", () => {
   checkPasswordsMatch();
 });
 
-export const page = new Page(
-  "login",
-  $(".page.pageLogin"),
-  "/login",
-  async () => {
-    //
-  },
-  async () => {
+export const page = new Page({
+  name: "login",
+  element: $(".page.pageLogin"),
+  path: "/login",
+  afterHide: async (): Promise<void> => {
     $(".pageLogin input").val("");
     nameIndicator.hide();
     emailIndicator.hide();
@@ -352,21 +348,12 @@ export const page = new Page(
     verifyPasswordIndicator.hide();
     Skeleton.remove("pageLogin");
   },
-  async () => {
+  beforeShow: async (): Promise<void> => {
     Skeleton.append("pageLogin", "main");
-    if (ServerConfiguration.get()?.users.signUp) {
-      enableInputs();
-      enableSignUpButton();
-
-      $(".register").removeClass("hidden");
-      $(".login").removeClass("hidden");
-      $(".disabledNotification").addClass("hidden");
-    }
+    enableInputs();
+    disableSignUpButton();
   },
-  async () => {
-    //
-  }
-);
+});
 
 $(() => {
   Skeleton.save("pageLogin");

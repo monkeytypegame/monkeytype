@@ -1,8 +1,17 @@
-<div id="registerCaptchaPopupWrapper" class="popupWrapper hidden">
-  <div id="registerCaptchaPopup">
+<dialog id="registerCaptchaModal" class="modalWrapper hidden">
+  <div class="modal">
     <div class="g-recaptcha"></div>
   </div>
-</div>
+</dialog>
+
+<dialog id="devOptionsModal" class="modalWrapper hidden">
+  <div class="modal">
+    <div class="title">Dev options</div>
+    <button class="generateData">generate data</button>
+    <button class="toggleMediaQueryDebug">toggle media query debug</button>
+    <button class="showTestNotifications">show test notifications</button>
+  </div>
+</dialog>
 
 <dialog id="alertsPopup" class="modalWrapper hidden">
   <div class="modal">
@@ -55,14 +64,11 @@
   </div>
 </dialog>
 
-<div id="simplePopupWrapper" class="popupWrapper hidden">
-  <div id="simplePopup" popupId=""></div>
-</div>
+<dialog id="simpleModal" class="modalWrapper hidden">
+  <form class="modal"></form>
+</dialog>
 
-<dialog
-  id="cookiePopup"
-  class="cookie-popup-wrapper cookiePopupWrapper modalWrapper hidden"
->
+<dialog id="cookiesModal" class="modalWrapper hidden">
   <div class="extensionMessage">
     If you see this text, that means an extension is blocking a cookie consent
     popup. This will cause the website to incorrectly assume its still visible
@@ -127,8 +133,9 @@
   </div>
 </dialog>
 
-<div id="shareTestSettingsPopupWrapper" class="popupWrapper hidden">
-  <div id="shareTestSettingsPopup">
+<dialog id="shareTestSettingsModal" class="modalWrapper hidden">
+  <!-- <div id="shareTestSettingsPopup"> -->
+  <div class="modal">
     <div class="title">Share test settings</div>
     <label class="checkboxWithSub mode">
       <input type="checkbox" setting="mode" />
@@ -180,16 +187,16 @@
       <i class="fas fa-fw fa-exclamation-triangle"></i>
       <span>The URL is over 2000 characters long - it might not work</span>
     </div>
+    <!-- </div> -->
   </div>
-</div>
+</dialog>
 
-<div id="mobileTestConfigPopupWrapper" class="popupWrapper hidden">
-  <div id="mobileTestConfigPopup">
+<dialog id="mobileTestConfigModal" class="modalWrapper hidden">
+  <div class="modal">
     <div class="group">
       <button class="punctuation">punctuation</button>
       <button class="numbers">numbers</button>
     </div>
-    <div class="spacer"></div>
     <div class="group modeGroup">
       <button data-mode="time">time</button>
       <button class="active" data-mode="words">words</button>
@@ -197,7 +204,6 @@
       <button data-mode="zen">zen</button>
       <button data-mode="custom">custom</button>
     </div>
-    <div class="spacer"></div>
     <div class="group timeGroup">
       <button data-time="15">15</button>
       <button class="button active" data-time="30">30</button>
@@ -224,7 +230,7 @@
       <button class="customChange">change</button>
     </div>
   </div>
-</div>
+</dialog>
 
 <div id="videoAdPopupWrapper" class="popupWrapper hidden">
   <div id="videoAdPopup">
@@ -235,9 +241,8 @@
   </div>
 </div>
 
-<div id="pbTablesPopupWrapper" class="popupWrapper hidden">
-  <div id="pbTablesPopup">
-    <!-- <div class="title">All words personal bests</div> -->
+<dialog id="pbTablesModal" class="modalWrapper hidden">
+  <div class="modal">
     <table>
       <thead>
         <tr>
@@ -263,7 +268,7 @@
       <tbody></tbody>
     </table>
   </div>
-</div>
+</dialog>
 
 <div id="practiseWordsPopupWrapper" class="popupWrapper hidden" tabindex="-1">
   <div id="practiseWordsPopup" action="">
@@ -279,8 +284,8 @@
   </div>
 </div>
 
-<div id="quoteRatePopupWrapper" class="popupWrapper hidden">
-  <div id="quoteRatePopup" quoteId="">
+<dialog id="quoteRateModal" class="modalWrapper hidden">
+  <div class="modal">
     <div class="warning">
       If you find a grammatical error, think the quote has inappropriate
       language or feel like it's low quality -
@@ -317,21 +322,21 @@
       <div class="starsWrapper">
         <div class="top">your rating</div>
         <div class="stars">
-          <div class="star active" rating="1">
+          <button class="star" data-rating="1">
             <i class="fas fa-fw fa-star"></i>
-          </div>
-          <div class="star active" rating="2">
+          </button>
+          <button class="star" data-rating="2">
             <i class="fas fa-fw fa-star"></i>
-          </div>
-          <div class="star active" rating="3">
+          </button>
+          <button class="star" data-rating="3">
             <i class="fas fa-fw fa-star"></i>
-          </div>
-          <div class="star" rating="4">
+          </button>
+          <button class="star" data-rating="4">
             <i class="fas fa-fw fa-star"></i>
-          </div>
-          <div class="star" rating="5">
+          </button>
+          <button class="star" data-rating="5">
             <i class="fas fa-fw fa-star"></i>
-          </div>
+          </button>
         </div>
       </div>
     </div>
@@ -350,50 +355,48 @@
             <i class="fas fa-star"></i>
             <i class="fas fa-star"></i>
           </div> -->
-    <span
+    <button
+      class="textButton submitButton"
       aria-label="Submit review"
       data-balloon-pos="up"
-      style="display: grid"
     >
-      <div class="textButton submitButton">
-        <i class="fas fa-chevron-right"></i>
-      </div>
-    </span>
+      <i class="fas fa-chevron-right"></i>
+    </button>
   </div>
-</div>
+</dialog>
 
-<dialog id="settingsImportPopup" class="modalWrapper hidden">
+<dialog id="importExportSettingsModal" class="modalWrapper hidden">
   <form class="modal" data-mode="">
     <input type="text" title="import settings" />
     <button>import settings</button>
   </form>
 </dialog>
 
-<div id="customThemeShareWrapper" class="popupWrapper hidden">
-  <div id="customThemeShare" action="">
+<dialog id="shareCustomThemeUrlModal" class="modalWrapper hidden">
+  <div class="modal">
     <input type="text" title="custom theme" />
     <div class="button">ok</div>
   </div>
-</div>
-<div id="customTextPopupWrapper" class="popupWrapper hidden">
-  <div id="customTextPopup" action="">
+</dialog>
+<dialog id="customTextModal" class="modalWrapper hidden">
+  <div class="modal" action="">
     <div class="buttonsTop">
       <div class="button saveCustomText">
         <i class="fas fa-save"></i>
-        Save
+        save
       </div>
       <div class="button showSavedTexts">
         <i class="fas fa-folder"></i>
-        Show saved texts
+        saved texts
       </div>
       <input id="fileInput" type="file" class="hidden" accept=".txt" />
       <label for="fileInput" class="button importText">
         <i class="fas fa-file-import"></i>
-        Open file
+        open file
       </label>
       <div class="button wordfilter">
         <i class="fas fa-filter"></i>
-        Words filter
+        words filter
       </div>
     </div>
     <div class="savedTexts hidden" style="display: none">
@@ -402,89 +405,162 @@
     </div>
     <div class="textAreaWrapper" style="position: relative">
       <div class="longCustomTextWarning">
-        <div class="textAndButton">
-          A long custom text is currently loaded. Editing the text will disable
-          progress tracking.
-          <div class="button">Got it</div>
+        <div>
+          <p>
+            A long custom text is currently loaded.
+            <br />
+            Editing the text will disable progress tracking.
+            <br />
+            <br />
+          </p>
+          <p class="small">Click anywhere to start editing the text.</p>
+        </div>
+      </div>
+      <div class="challengeWarning">
+        <div>
+          <p>
+            A challenge is currently loaded.
+            <br />
+            Editing the settings will clear the challenge.
+            <br />
+            <br />
+          </p>
+          <p class="small">Click anywhere to edit.</p>
         </div>
       </div>
       <textarea class="textarea"></textarea>
     </div>
     <div class="inputs">
-      <label class="checkboxWithSub randomWordsCheckbox">
-        <input type="checkbox" />
-        <div>Random</div>
-        <div class="sub">
-          Randomize the above words, and control how many words are generated.
+      <div class="group" data-id="mode">
+        <div class="title">
+          <i class="fas fa-fw fa-cog"></i>
+          Mode
         </div>
-      </label>
-      <div class="randomInputFields disabled">
-        <label class="wordcount">
-          Words
-          <input type="number" value="" min="1" max="10000" />
-        </label>
-        <label class="sectioncount hidden">
-          Sections
-          <input type="number" value="" min="1" max="10000" />
-        </label>
-        <div style="color: var(--sub-color)">or</div>
-        <label class="time">
-          Time
-          <input type="number" value="" min="1" max="10000" />
-        </label>
-        <!-- <div style="color: var(--sub-color)">or</div> -->
+        <div class="sub">Change the way words are generated.</div>
+        <div class="groupInputs">
+          <div class="buttonGroup">
+            <button value="simple">simple</button>
+            <button value="repeat">repeat</button>
+            <button value="shuffle">shuffle</button>
+            <button value="random">random</button>
+          </div>
+        </div>
       </div>
-      <label class="checkboxWithSub typographyCheck">
-        <input type="checkbox" checked />
-        <div>Remove fancy typography</div>
+      <div class="group" data-id="limit">
+        <div class="title">
+          <i class="fas fa-fw fa-step-forward"></i>
+          Limit
+        </div>
+        <div class="sub">
+          Control how many words to generate or for how long you want to type.
+        </div>
+        <div class="groupInputs limitInputs">
+          <input
+            class="words"
+            type="number"
+            value=""
+            min="0"
+            placeholder="words"
+          />
+          <input
+            class="sections hidden"
+            type="number"
+            value=""
+            min="0"
+            placeholder="sections"
+          />
+          <div class="or">or</div>
+          <input
+            class="time"
+            type="number"
+            value=""
+            min="0"
+            placeholder="time"
+          />
+        </div>
+      </div>
+
+      <div class="group" data-id="fancy">
+        <div class="title">
+          <i class="fas fa-fw fa-pen-fancy"></i>
+          Remove fancy typography
+        </div>
         <div class="sub">
           Standardises typography symbols (for example “ and ” become ")
         </div>
-      </label>
-      <label class="checkboxWithSub replaceControlCharacters">
-        <input type="checkbox" checked />
-        <div>Replace control characters</div>
+        <div class="groupInputs">
+          <div class="buttonGroup">
+            <button value="false">no</button>
+            <button value="true">yes</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="group" data-id="control">
+        <div class="title">
+          <i class="fas fa-fw fa-code"></i>
+          Replace control characters
+        </div>
         <div class="sub">
           Replace control characters (\n becomes a new line and \t becomes a
           tab)
         </div>
-      </label>
-      <label class="checkboxWithSub delimiterCheck">
-        <input type="checkbox" />
-        <div>Pipe delimiter</div>
+        <div class="groupInputs">
+          <div class="buttonGroup">
+            <button value="false">no</button>
+            <button value="true">yes</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="group" data-id="delimiter">
+        <div class="title">
+          <i class="fas fa-fw fa-grip-lines-vertical"></i>
+          Word delimiter
+        </div>
         <div class="sub">
           Change how words are separated. Using the pipe delimiter allows you to
           randomize groups of words.
         </div>
-      </label>
-      <label class="checkboxWithSub replaceNewlineWithSpace">
-        <input type="checkbox" />
-        <div>Replace new lines with spaces</div>
+        <div class="groupInputs">
+          <div class="buttonGroup">
+            <button value="true">pipe</button>
+            <button value="false">space</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="group" data-id="newlines">
+        <div class="title">
+          <i class="fas fa-fw fa-level-down-alt fa-rotate-90"></i>
+          Replace new lines with spaces
+        </div>
         <div class="sub">
           Replace all new line characters with spaces. Can automatically add
           periods to the end of lines if you wish.
         </div>
-      </label>
-      <div class="replaceNewLinesButtons">
-        <div class="buttonGroup">
-          <div class="button active noPeriods">no periods</div>
-          <div class="button periods">periods</div>
+        <div class="groupInputs">
+          <div class="buttonGroup">
+            <button value="off">off</button>
+            <button value="space">space</button>
+            <button value="periodSpace">period + space</button>
+          </div>
         </div>
       </div>
     </div>
     <div class="button apply">ok</div>
   </div>
-</div>
-<div id="savedTextsPopupWrapper" class="popupWrapper hidden">
-  <div id="savedTextsPopup">
+</dialog>
+<dialog id="savedTextsModal" class="modalWrapper hidden">
+  <div class="modal">
     <div class="title">Saved texts</div>
     <div class="list"></div>
     <div class="title">Saved long texts</div>
     <div class="listLong"></div>
   </div>
-</div>
-<div id="saveCustomTextPopupWrapper" class="popupWrapper hidden">
-  <div id="saveCustomTextPopup">
+</dialog>
+<dialog id="saveCustomTextModal" class="modalWrapper hidden">
+  <form class="modal">
     <div class="title">Save custom text</div>
     <input class="textName" type="text" placeholder="name" />
     <div>
@@ -498,11 +574,15 @@
         </div>
       </label>
     </div>
-    <div class="button save">save</div>
-  </div>
-</div>
-<div id="wordFilterPopupWrapper" class="popupWrapper hidden">
-  <div id="wordFilterPopup">
+    <button class="save">save</button>
+  </form>
+</dialog>
+<dialog id="wordFilterModal" class="modalWrapper hidden">
+  <div class="modal">
+    <!-- hidden for now, dunno where to place it -->
+    <!-- <div class="loadingIndicator">
+      <i class="fas fa-fw fa-spin fa-circle-notch"></i>
+    </div> -->
     <div class="top">
       <div class="group">
         <div class="title">language</div>
@@ -550,11 +630,6 @@
           title="exclude"
         />
       </div>
-      <!-- </div> -->
-      <!-- <div class="tip">
-        Use the above filters to include and exclude words or characters
-        (separated by spaces)
-      </div> -->
     </div>
     <div class="divider"></div>
 
@@ -568,65 +643,83 @@
         <select class="layoutInput"></select>
       </div>
       <!-- <div class="tip">Use the dropdowns above to generate presets</div> -->
-      <div class="button generateButton">generate</div>
+      <button class="generateButton">generate</button>
     </div>
 
     <div class="bottom">
       <div class="tip">
         "Set" replaces the current custom word list with the filter result,
-        "Add" appends the filter result to the current custom word list
+        "Add" appends the filter result to the current custom word list.
       </div>
-      <i class="fas fa-fw fa-spin fa-circle-notch hidden loadingIndicator"></i>
-      <div class="button setButton">set</div>
-      <div class="button addButton">add</div>
+      <button class="setButton">set</button>
+      <button class="addButton">add</button>
     </div>
   </div>
-</div>
-<div id="googleSignUpPopupWrapper" class="popupWrapper hidden">
-  <div id="googleSignUpPopup">
+</dialog>
+<dialog id="googleSignUpModal" class="modalWrapper hidden">
+  <form class="modal">
     <div class="title">Account name</div>
-    <div class="text">You need to choose a username before continuing</div>
+    <div class="text">Please enter a username before continuing</div>
     <input type="text" placeholder="username" />
     <div class="captcha"></div>
-    <div class="button disabled">Sign up</div>
-  </div>
-</div>
-<div id="customWordAmountPopupWrapper" class="popupWrapper hidden">
-  <div id="customWordAmountPopup">
-    <div class="title">Word amount</div>
-    <input type="number" value="1" min="1" max="10000" />
+    <button>continue</button>
+  </form>
+</dialog>
+<dialog id="customWordAmountModal" class="modalWrapper hidden">
+  <form class="modal">
+    <div class="title">Custom word amount</div>
+    <input type="number" value="1" min="0" max="10000" />
     <div class="tip">
       You can start an infinite test by inputting 0. Then, to stop the test, use
-      the Bail Out feature (esc or ctrl/cmd + shift + p > Bail Out)
+      the Bail Out feature (
+      <key>esc</key>
+      or
+      <key>ctrl/cmd</key>
+      +
+      <key>shift</key>
+      +
+      <key>p</key>
+      > Bail Out)
     </div>
     <button>ok</button>
-  </div>
-</div>
-<div id="customTestDurationPopupWrapper" class="popupWrapper hidden">
-  <div id="customTestDurationPopup">
+  </form>
+</dialog>
+<dialog id="customTestDurationModal" class="modalWrapper hidden">
+  <form class="modal">
     <div class="title">Test duration</div>
     <div class="preview"></div>
-    <input value="1" title="test duration" />
+    <input value="1" title="test duration" min="0" />
     <div class="tip">
+      You can use "h" for hours and "m" for minutes, for example "1h30m".
+      <br />
+      <br />
       You can start an infinite test by inputting 0. Then, to stop the test, use
-      the Bail Out feature (esc or ctrl/cmd + shift + p > Bail Out)
+      the Bail Out feature (
+      <key>esc</key>
+      or
+      <key>ctrl/cmd</key>
+      +
+      <key>shift</key>
+      +
+      <key>p</key>
+      > Bail Out)
     </div>
     <button>ok</button>
-  </div>
-</div>
-<div id="quoteSearchPopupWrapper" class="popupWrapper hidden">
-  <div id="quoteSearchPopup" mode="">
+  </form>
+</dialog>
+<dialog id="quoteSearchModal" class="modalWrapper hidden">
+  <div class="modal">
     <div id="quoteSearchTop">
-      <div class="title">Quote Search</div>
+      <div class="title">Quote search</div>
       <div class="buttons">
-        <div id="gotoSubmitQuoteButton" class="button">
+        <button class="goToQuoteSubmit">
           <i class="fas fa-plus"></i>
           Submit a quote
-        </div>
-        <div id="goToApproveQuotes" class="button">
+        </button>
+        <button class="goToQuoteApprove">
           <i class="fas fa-check"></i>
           Approve quotes
-        </div>
+        </button>
       </div>
     </div>
     <div id="quoteSearchControlsWrapper">
@@ -636,26 +729,29 @@
         type="text"
         maxlength="200"
         autocomplete="off"
-        placeholder="Filter by text"
+        placeholder="filter by text, source or id"
       />
       <select class="quoteLengthFilter" multiple></select>
-      <div id="toggleShowFavorites" class="button">Favorites Only</div>
+      <button class="toggleFavorites">
+        <i class="fas fa-fw fa-heart"></i>
+        <!-- favorites -->
+      </button>
     </div>
     <div id="quoteSearchResults" class="quoteSearchResults"></div>
     <div id="quoteSearchPageNavigator">
-      <div class="button prevPage disabled">
+      <button class="prevPage" disabled>
         <i class="fas fa-fw fa-chevron-left"></i>
-      </div>
-      <div id="pageInfo">No search results</div>
-      <div class="button nextPage disabled">
+      </button>
+      <div class="pageInfo">No search results</div>
+      <button class="nextPage" disabled>
         <i class="fas fa-fw fa-chevron-right"></i>
-      </div>
+      </button>
     </div>
   </div>
-</div>
-<div id="quoteSubmitPopupWrapper" class="popupWrapper hidden">
-  <div id="quoteSubmitPopup" mode="">
-    <div class="title">Submit a Quote</div>
+</dialog>
+<dialog id="quoteSubmitModal" class="modalWrapper hidden">
+  <div class="modal">
+    <div class="title">Submit a quote</div>
     <ul>
       <li>
         Do not include content that contains any libelous or otherwise unlawful,
@@ -672,32 +768,24 @@
         </b>
       </li>
     </ul>
-    <label>Quote</label>
-    <div style="position: relative">
-      <textarea
-        id="submitQuoteText"
-        class=""
-        type="text"
-        autocomplete="off"
-      ></textarea>
-      <div class="characterCount">-</div>
-    </div>
-    <label>Source</label>
-    <input id="submitQuoteSource" class="" type="text" autocomplete="off" />
-    <label>Language</label>
-    <select name="language" id="submitQuoteLanguage"></select>
+    <label>quote</label>
+    <textarea class="newQuoteText" type="text" autocomplete="off"></textarea>
+    <label>source</label>
+    <input class="newQuoteSource" type="text" autocomplete="off" />
+    <label>language</label>
+    <select name="language" class="newQuoteLanguage"></select>
     <div class="g-recaptcha"></div>
-    <div id="submitQuoteButton" class="button">Submit</div>
+    <button>submit</button>
   </div>
-</div>
-<div id="apeKeysPopupWrapper" class="hidden popupWrapper">
-  <div id="apeKeysPopup" mode="">
+</dialog>
+<dialog id="apeKeysModal" class="hidden modalWrapper">
+  <div class="modal">
     <div class="top">
       <div class="title">Ape Keys</div>
-      <div class="button generateApeKey">
+      <button class="generateApeKey">
         <i class="fas fa-plus"></i>
         Generate new key
-      </div>
+      </button>
     </div>
     <table>
       <thead>
@@ -713,10 +801,10 @@
       <tbody></tbody>
     </table>
   </div>
-</div>
-<div id="quoteReportPopupWrapper" class="popupWrapper hidden">
-  <div id="quoteReportPopup" mode="">
-    <div class="title">Report a Quote</div>
+</dialog>
+<dialog id="quoteReportModal" class="modalWrapper hidden">
+  <div class="modal">
+    <div class="title">Report a quote</div>
     <div class="text">
       Please report quotes responsibly - misuse may result in you losing access
       to this feature.
@@ -734,23 +822,20 @@
       <option value="Incorrect source">Incorrect source</option>
     </select>
     <label>comment</label>
-    <div style="position: relative">
-      <textarea class="comment" type="text" autocomplete="off"></textarea>
-      <div class="characterCount">-</div>
-    </div>
+    <textarea class="comment" type="text" autocomplete="off"></textarea>
     <div
       class="g-recaptcha"
       data-sitekey="6Lc-V8McAAAAAJ7s6LGNe7MBZnRiwbsbiWts87aj"
     ></div>
-    <div class="button submit">report</div>
+    <button>report</button>
   </div>
-</div>
-<div id="userReportPopupWrapper" class="popupWrapper hidden">
-  <div id="userReportPopup" mode="">
-    <div class="title">Report a User</div>
+</dialog>
+<dialog id="userReportModal" class="modalWrapper hidden">
+  <div class="modal">
+    <div class="title">Report a user</div>
     <div class="text">
-      Please report users responsibly. Please add comments in English only.
-      Misuse may result in you losing access to this feature.
+      Please report users responsibly and add comments in English only. Misuse
+      may result in you losing access to this feature.
     </div>
     <label>user</label>
     <div class="user"></div>
@@ -764,41 +849,37 @@
       <option value="Suspected cheating">Suspected cheating</option>
     </select>
     <label>comment</label>
-    <div style="position: relative">
-      <textarea class="comment" type="text" autocomplete="off"></textarea>
-      <div class="characterCount">-</div>
-    </div>
+    <textarea class="comment" type="text" autocomplete="off"></textarea>
     <div
       class="g-recaptcha"
       data-sitekey="6Lc-V8McAAAAAJ7s6LGNe7MBZnRiwbsbiWts87aj"
     ></div>
-    <div class="button submit">Report</div>
+    <button>Report</button>
   </div>
-</div>
-<div id="quoteApprovePopupWrapper" class="popupWrapper hidden">
-  <div id="quoteApprovePopup" mode="">
+</dialog>
+<dialog id="quoteApproveModal" class="modalWrapper hidden">
+  <div class="modal">
     <div class="top">
-      <div class="title">Approve Quotes</div>
-      <div class="button refreshList">
+      <div class="title">Approve quotes</div>
+      <button class="refreshList">
         <i class="fas fa-sync-alt"></i>
         Refresh list
-      </div>
+      </button>
     </div>
     <div class="quotes"></div>
   </div>
-</div>
-<div id="tagsWrapper" class="popupWrapper hidden" tabindex="-1">
-  <div id="tagsEdit" action="" tagid="">
-    <form>
-      <div class="title"></div>
-      <input type="text" title="tag" />
-      <button type="submit"></button>
-    </form>
-  </div>
-</div>
-<div id="streakHourOffsetPopupWrapper" class="popupWrapper hidden">
-  <div id="streakHourOffsetPopup">
-    <div class="title">Set Streak Hour Offset</div>
+</dialog>
+<dialog id="editTagModal" class="modalWrapper hidden">
+  <form class="modal">
+    <div class="title"></div>
+    <input type="text" title="tag" />
+    <div class="text"></div>
+    <button type="submit"></button>
+  </form>
+</dialog>
+<dialog id="streakHourOffsetModal" class="modalWrapper hidden">
+  <div class="modal">
+    <div class="title">Set streak hour offset</div>
     <div class="text">
       Streaks reset at midnight UTC by default. If this is not convenient for
       you (for example if it means that streaks reset in the middle of the day),
@@ -812,28 +893,28 @@
     </div>
     <input type="number" min="-11" max="12" value="0" />
     <div class="preview"></div>
-    <div class="button">set</div>
+    <button>set</button>
   </div>
-</div>
-<div id="resultEditTagsPanelWrapper" class="popupWrapper hidden">
-  <div id="resultEditTagsPanel" resultid="">
+</dialog>
+<dialog id="editResultTagsModal" class="modalWrapper hidden">
+  <div class="modal">
+    <div class="title">Edit result tags</div>
     <div class="buttons"></div>
-    <div class="button confirmButton"><i class="fas fa-check"></i></div>
+    <button class="saveButton">save</button>
   </div>
-</div>
-<div id="presetWrapper" class="popupWrapper hidden" tabindex="-1">
-  <div id="presetEdit" action="" presetid="">
-    <form>
-      <div class="title"></div>
-      <input type="text" class="text" title="presets" />
-      <label class="checkbox">
-        <input type="checkbox" />
-        Change preset to current settings
-      </label>
-      <button type="submit">add</button>
-    </form>
-  </div>
-</div>
+</dialog>
+<dialog id="editPresetModal" class="modalWrapper hidden">
+  <form class="modal">
+    <div class="title"></div>
+    <input type="text" title="presets" />
+    <label class="checkbox">
+      <input type="checkbox" />
+      Change preset to current settings
+    </label>
+    <div class="text"></div>
+    <button type="submit">add</button>
+  </form>
+</dialog>
 <dialog id="shareCustomThemeModal" class="modalWrapper hidden">
   <div class="modal">
     <div class="title">Share custom theme</div>
@@ -951,9 +1032,9 @@
     </div>
   </div>
 </div>
-<div id="versionHistoryWrapper" class="popupWrapper hidden">
-  <div id="versionHistory"></div>
-</div>
+<dialog id="versionHistoryModal" class="modalWrapper hidden">
+  <div class="modal"></div>
+</dialog>
 <dialog id="supportModal" class="modalWrapper hidden">
   <div class="modal">
     <div class="title">Support Monkeytype</div>
@@ -1113,16 +1194,16 @@
   </div>
 </dialog>
 
-<div id="newResultFilterPresetPopupWrapper" class="popupWrapper hidden">
-  <div id="newResultFilterPresetPopup">
-    <div class="title">Add new filter preset</div>
-    <input type="text" value="new preset" />
-    <div class="button">add</div>
-  </div>
-</div>
+<dialog id="newFilterPresetModal" class="modalWrapper hidden">
+  <form class="modal">
+    <div class="title">New filter preset</div>
+    <input type="text" value="" />
+    <button>add</button>
+  </form>
+</dialog>
 
-<div id="editProfilePopupWrapper" class="popupWrapper hidden" tabindex="-1">
-  <form id="editProfilePopup">
+<dialog id="editProfileModal" class="modalWrapper hidden">
+  <form class="modal">
     <div class="title">Edit Profile</div>
     <div>
       <label>avatar</label>
@@ -1133,29 +1214,51 @@
     </div>
     <div>
       <label>bio</label>
-      <textarea class="bio" type="text" autocomplete="off"></textarea>
+      <textarea
+        class="bio"
+        type="text"
+        autocomplete="off"
+        maxlength="250"
+      ></textarea>
     </div>
     <div>
       <label>keyboard</label>
-      <textarea class="keyboard" type="text" autocomplete="off"></textarea>
+      <textarea
+        class="keyboard"
+        type="text"
+        autocomplete="off"
+        maxlength="75"
+      ></textarea>
     </div>
     <div>
       <label>github</label>
       <div class="socialURL">
         <p>https://github.com/</p>
-        <input class="github" type="text" value="" placeholder="username" />
+        <input
+          class="github"
+          type="text"
+          value=""
+          placeholder="username"
+          maxlength="39"
+        />
       </div>
     </div>
     <div>
       <label>twitter</label>
       <div class="socialURL">
-        <p>https://twitter.com/</p>
-        <input class="twitter" type="text" value="" placeholder="username" />
+        <p>https://x.com/</p>
+        <input
+          class="twitter"
+          type="text"
+          value=""
+          placeholder="username"
+          maxlength="20"
+        />
       </div>
     </div>
     <div>
       <label>website</label>
-      <input class="website" type="text" value="" />
+      <input class="website" type="text" value="" maxlength="200" />
     </div>
     <div>
       <label>badge</label>
@@ -1163,4 +1266,4 @@
     </div>
     <button class="edit-profile-submit" type="submit">save</button>
   </form>
-</div>
+</dialog>

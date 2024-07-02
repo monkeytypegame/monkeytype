@@ -1,8 +1,6 @@
 import * as ThemeController from "../controllers/theme-controller";
 import Config from "../config";
 import * as Notifications from "../elements/notifications";
-import * as CustomThemePopup from "../popups/custom-theme-popup";
-import { createErrorMessage } from "../utils/misc";
 import AnimatedModal from "../utils/animated-modal";
 
 type State = {
@@ -52,36 +50,50 @@ async function generateUrl(): Promise<string> {
 async function copy(): Promise<void> {
   const url = await generateUrl();
 
-  navigator.clipboard.writeText(url).then(
-    function () {
-      Notifications.add("URL Copied to clipboard", 1);
-      void modal.hide();
-    },
-    function (e) {
-      Notifications.add(
-        createErrorMessage(e, "Failed to copy to clipboard"),
-        -1
-      );
-      Notifications.add(
-        "Looks like we couldn't copy the link straight to your clipboard. Please copy it manually.",
-        0,
-        {
-          duration: 5,
-        }
-      );
-      void modal.hide();
-      CustomThemePopup.show(url);
-    }
-  );
+  try {
+    await navigator.clipboard.writeText(url);
+    Notifications.add("URL Copied to clipboard", 1);
+    void modal.hide();
+  } catch (e) {
+    Notifications.add(
+      "Looks like we couldn't copy the link straight to your clipboard. Please copy it manually.",
+      0,
+      {
+        duration: 5,
+      }
+    );
+    void urlModal.show({
+      modalChain: modal,
+      focusFirstInput: "focusAndSelect",
+      beforeAnimation: async (m) => {
+        (m.querySelector("input") as HTMLInputElement).value = url;
+      },
+    });
+  }
 }
 
-const modal = new AnimatedModal("shareCustomThemeModal", "popups", undefined, {
-  setup: (modal): void => {
-    modal.querySelector("button")?.addEventListener("click", copy);
-    modal
+const modal = new AnimatedModal({
+  dialogId: "shareCustomThemeModal",
+  setup: async (modalEl): Promise<void> => {
+    modalEl.querySelector("button")?.addEventListener("click", copy);
+    modalEl
       .querySelector("input[type='checkbox']")
       ?.addEventListener("change", (e) => {
         state.includeBackground = (e.target as HTMLInputElement).checked;
       });
+  },
+});
+
+const urlModal = new AnimatedModal({
+  dialogId: "shareCustomThemeUrlModal",
+  customEscapeHandler: async (): Promise<void> => {
+    await urlModal.hide({
+      clearModalChain: true,
+    });
+  },
+  customWrapperClickHandler: async (): Promise<void> => {
+    await urlModal.hide({
+      clearModalChain: true,
+    });
   },
 });

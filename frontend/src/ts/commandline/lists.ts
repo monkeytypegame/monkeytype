@@ -9,11 +9,10 @@ import NumbersCommands from "./lists/numbers";
 import SmoothCaretCommands from "./lists/smooth-caret";
 import QuickRestartCommands from "./lists/quick-restart";
 import RepeatQuotesCommands from "./lists/repeat-quotes";
-import LiveWpmCommands from "./lists/live-wpm";
-import LiveAccCommands from "./lists/live-acc";
-import LiveBurstCommands from "./lists/live-burst";
+import LiveSpeedStyleCommands from "./lists/live-speed-style";
+import LiveAccStyleCommands from "./lists/live-acc-style";
+import LiveBurstStyleCommands from "./lists/live-burst-style";
 import ShowAverageCommands from "./lists/show-average";
-import ShowTimerCommands from "./lists/show-timer";
 import KeyTipsCommands from "./lists/key-tips";
 import FreedomModeCommands from "./lists/freedom-mode";
 import StrictSpaceCommands from "./lists/strict-space";
@@ -57,13 +56,14 @@ import KeymapModeCommands from "./lists/keymap-mode";
 import KeymapStyleCommands from "./lists/keymap-style";
 import KeymapLegendStyleCommands from "./lists/keymap-legend-style";
 import KeymapShowTopRowCommands from "./lists/keymap-show-top-row";
-import PageWidthCommands from "./lists/page-width";
 import EnableAdsCommands from "./lists/enable-ads";
 import MonkeyPowerLevelCommands from "./lists/monkey-power-level";
 import BailOutCommands from "./lists/bail-out";
+import QuoteFavoriteCommands from "./lists/quote-favorites";
 import ResultSavingCommands from "./lists/result-saving";
 import NavigationCommands from "./lists/navigation";
 import FontSizeCommands from "./lists/font-size";
+import MaxLineWidthCommands from "./lists/max-line-width";
 import ResultScreenCommands from "./lists/result-screen";
 import CustomBackgroundSizeCommands from "./lists/background-size";
 import CustomBackgroundFilterCommands from "./lists/background-filter";
@@ -92,17 +92,18 @@ import KeymapLayoutsCommands, {
 
 import Config, * as UpdateConfig from "../config";
 import * as Misc from "../utils/misc";
+import * as JSONData from "../utils/json-data";
 import { randomizeTheme } from "../controllers/theme-controller";
-import * as CustomTextPopup from "../popups/custom-text-popup";
+import * as CustomTextPopup from "../modals/custom-text";
 import * as Settings from "../pages/settings";
 import * as Notifications from "../elements/notifications";
 import * as VideoAdPopup from "../popups/video-ad-popup";
-import * as ShareTestSettingsPopup from "../popups/share-test-settings-popup";
+import * as ShareTestSettingsPopup from "../modals/share-test-settings";
 import * as TestStats from "../test/test-stats";
-import * as QuoteSearchPopup from "../popups/quote-search-popup";
+import * as QuoteSearchModal from "../modals/quote-search";
 import * as FPSCounter from "../elements/fps-counter";
 
-const layoutsPromise = Misc.getLayoutsList();
+const layoutsPromise = JSONData.getLayoutsList();
 layoutsPromise
   .then((layouts) => {
     updateLayoutsCommands(layouts);
@@ -114,7 +115,7 @@ layoutsPromise
     );
   });
 
-const languagesPromise = Misc.getLanguageList();
+const languagesPromise = JSONData.getLanguageList();
 languagesPromise
   .then((languages) => {
     updateLanguagesCommands(languages);
@@ -125,7 +126,7 @@ languagesPromise
     );
   });
 
-const funboxPromise = Misc.getFunboxList();
+const funboxPromise = JSONData.getFunboxList();
 funboxPromise
   .then((funboxes) => {
     updateFunboxCommands(funboxes);
@@ -141,7 +142,7 @@ funboxPromise
     );
   });
 
-const fontsPromise = Misc.getFontsList();
+const fontsPromise = JSONData.getFontsList();
 fontsPromise
   .then((fonts) => {
     updateFontFamilyCommands(fonts);
@@ -152,7 +153,7 @@ fontsPromise
     );
   });
 
-const themesPromise = Misc.getThemesList();
+const themesPromise = JSONData.getThemesList();
 themesPromise
   .then((themes) => {
     updateThemesCommands(themes);
@@ -163,7 +164,7 @@ themesPromise
     );
   });
 
-const challengesPromise = Misc.getChallengeList();
+const challengesPromise = JSONData.getChallengeList();
 challengesPromise
   .then((challenges) => {
     updateLoadChallengeCommands(challenges);
@@ -201,10 +202,11 @@ export const commands: MonkeyTypes.CommandsSubgroup = {
       icon: "fa-search",
       exec: (): void => {
         UpdateConfig.setMode("quote");
-        void QuoteSearchPopup.show();
+        void QuoteSearchModal.show();
       },
       shouldFocusTestUI: false,
     },
+    ...QuoteFavoriteCommands,
     ...BailOutCommands,
     {
       id: "shareTestSettings",
@@ -241,7 +243,7 @@ export const commands: MonkeyTypes.CommandsSubgroup = {
       },
       input: true,
       icon: "fa-tint",
-      exec: (input): void => {
+      exec: ({ input }): void => {
         if (input === undefined) return;
         void UpdateConfig.setCustomLayoutfluid(
           input as MonkeyTypes.CustomLayoutFluidSpaces
@@ -275,6 +277,10 @@ export const commands: MonkeyTypes.CommandsSubgroup = {
 
     //appearence
     ...TimerStyleCommands,
+    ...LiveSpeedStyleCommands,
+    ...LiveAccStyleCommands,
+    ...LiveBurstStyleCommands,
+
     ...TimerColorCommands,
     ...TimerOpacityCommands,
     ...HighlightModeCommands,
@@ -284,9 +290,9 @@ export const commands: MonkeyTypes.CommandsSubgroup = {
     ...TypingSpeedUnitCommands,
     ...AlwaysShowDecimalCommands,
     ...StartGraphsAtZeroCommands,
+    ...MaxLineWidthCommands,
     ...FontSizeCommands,
     ...FontFamilyCommands,
-    ...PageWidthCommands,
     ...KeymapModeCommands,
     ...KeymapStyleCommands,
     ...KeymapLegendStyleCommands,
@@ -308,7 +314,7 @@ export const commands: MonkeyTypes.CommandsSubgroup = {
         return Config.customBackground;
       },
       input: true,
-      exec: (input): void => {
+      exec: ({ input }): void => {
         UpdateConfig.setCustomBackground(input ?? "");
       },
     },
@@ -326,10 +332,6 @@ export const commands: MonkeyTypes.CommandsSubgroup = {
     },
 
     //showhide elements
-    ...LiveWpmCommands,
-    ...LiveAccCommands,
-    ...LiveBurstCommands,
-    ...ShowTimerCommands,
     ...KeyTipsCommands,
     ...OutOfFocusWarningCommands,
     ...CapsLockWarningCommands,
@@ -366,7 +368,7 @@ export const commands: MonkeyTypes.CommandsSubgroup = {
       icon: "fa-cog",
       alias: "import config",
       input: true,
-      exec: async (input): Promise<void> => {
+      exec: async ({ input }): Promise<void> => {
         if (input === undefined || input === "") return;
         try {
           await UpdateConfig.apply(JSON.parse(input));
@@ -501,9 +503,17 @@ export function doesListExist(listName: string): boolean {
   return lists[listName as ListsObjectKeys] !== undefined;
 }
 
-export function getList(
+export async function getList(
   listName: ListsObjectKeys
-): MonkeyTypes.CommandsSubgroup {
+): Promise<MonkeyTypes.CommandsSubgroup> {
+  await Promise.allSettled([
+    layoutsPromise,
+    languagesPromise,
+    funboxPromise,
+    fontsPromise,
+    themesPromise,
+    challengesPromise,
+  ]);
   const list = lists[listName];
   if (!list) {
     Notifications.add(`List not found: ${listName}`, -1);
@@ -553,42 +563,28 @@ export async function getSingleSubgroup(): Promise<MonkeyTypes.CommandsSubgroup>
     challengesPromise,
   ]);
 
-  if (singleList) return singleList;
-
-  // const
-
   const singleCommands: MonkeyTypes.Command[] = [];
-  const beforeListFunctions: (() => void)[] = [];
   for (const command of commands.list) {
     const ret = buildSingleListCommands(command);
-    singleCommands.push(...ret.commands);
-    beforeListFunctions.push(...ret.beforeListFunctions);
+    singleCommands.push(...ret);
   }
 
   singleList = {
     title: "All commands",
     list: singleCommands,
-    beforeList: (): void => {
-      for (const func of beforeListFunctions) {
-        func();
-      }
-    },
   };
   return singleList;
 }
 
-type SingleList = {
-  commands: MonkeyTypes.Command[];
-  beforeListFunctions: (() => void)[];
-};
-
 function buildSingleListCommands(
   command: MonkeyTypes.Command,
   parentCommand?: MonkeyTypes.Command
-): SingleList {
+): MonkeyTypes.Command[] {
   const commands: MonkeyTypes.Command[] = [];
-  const beforeListFunctions: (() => void)[] = [];
   if (command.subgroup) {
+    if (command.subgroup.beforeList) {
+      command.subgroup.beforeList();
+    }
     const currentCommand = {
       ...command,
       subgroup: {
@@ -596,11 +592,8 @@ function buildSingleListCommands(
         list: [],
       },
     };
-    if (command.subgroup.beforeList) {
-      beforeListFunctions.push(command.subgroup.beforeList);
-    }
     for (const cmd of command.subgroup.list) {
-      commands.push(...buildSingleListCommands(cmd, currentCommand).commands);
+      commands.push(...buildSingleListCommands(cmd, currentCommand));
     }
   } else {
     if (parentCommand) {
@@ -644,8 +637,5 @@ function buildSingleListCommands(
       commands.push(command);
     }
   }
-  return {
-    commands,
-    beforeListFunctions,
-  };
+  return commands;
 }

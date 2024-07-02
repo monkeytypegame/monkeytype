@@ -10,6 +10,7 @@ import presets from "./presets";
 import apeKeys from "./ape-keys";
 import admin from "./admin";
 import webhooks from "./webhooks";
+import dev from "./dev";
 import configuration from "./configuration";
 import { version } from "../../version";
 import leaderboards from "./leaderboards";
@@ -25,6 +26,8 @@ import {
   static as expressStatic,
 } from "express";
 import { isDevEnvironment } from "../../utils/misc";
+import { getLiveConfiguration } from "../../init/configuration";
+import Logger from "../../utils/logger";
 
 const pathOverride = process.env["API_PATH_OVERRIDE"];
 const BASE_ROUTE = pathOverride !== undefined ? `/${pathOverride}` : "";
@@ -49,9 +52,6 @@ function addApiRoutes(app: Application): void {
     res.sendStatus(404);
   });
 
-  // Cannot be added to the route map because it needs to be added before the maintenance handler
-  app.use("/configuration", configuration);
-
   if (isDevEnvironment()) {
     //disable csp to allow assets to load from unsecured http
     app.use((req, res, next) => {
@@ -60,12 +60,21 @@ function addApiRoutes(app: Application): void {
     });
     app.use("/configure", expressStatic(join(__dirname, "../../../private")));
 
-    //simulate delay for all requests
-    // app.use(async (req, res, next) => {
-    //   await new Promise((resolve) => setTimeout(resolve, 1000));
-    //   next();
-    // });
+    app.use(async (req, res, next) => {
+      const slowdown = (await getLiveConfiguration()).dev.responseSlowdownMs;
+      if (slowdown > 0) {
+        Logger.info(`Simulating ${slowdown}ms delay for ${req.path}`);
+        await new Promise((resolve) => setTimeout(resolve, slowdown));
+      }
+      next();
+    });
+
+    //enable dev edpoints
+    app.use("/dev", dev);
   }
+
+  // Cannot be added to the route map because it needs to be added before the maintenance handler
+  app.use("/configuration", configuration);
 
   addSwaggerMiddlewares(app);
 

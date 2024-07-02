@@ -1,18 +1,18 @@
-import SettingsGroup from "../settings/settings-group";
+import SettingsGroup from "../elements/settings/settings-group";
 import Config, * as UpdateConfig from "../config";
 import * as Sound from "../controllers/sound-controller";
 import * as Misc from "../utils/misc";
+import * as Strings from "../utils/strings";
+import * as JSONData from "../utils/json-data";
 import * as DB from "../db";
 import { toggleFunbox } from "../test/funbox/funbox";
 import * as TagController from "../controllers/tag-controller";
 import * as PresetController from "../controllers/preset-controller";
-import * as ThemePicker from "../settings/theme-picker";
+import * as ThemePicker from "../elements/settings/theme-picker";
 import * as Notifications from "../elements/notifications";
-import * as ImportExportSettingsPopup from "../popups/import-export-settings-popup";
+import * as ImportExportSettingsModal from "../modals/import-export-settings";
 import * as ConfigEvent from "../observables/config-event";
 import * as ActivePage from "../states/active-page";
-import * as ApeKeysPopup from "../popups/ape-keys-popup";
-import * as CookiePopup from "../popups/cookie-popup";
 import Page from "./page";
 import { getAuthenticatedUser, isAuthenticated } from "../firebase";
 import Ape from "../ape";
@@ -45,29 +45,6 @@ async function initGroups(): Promise<void> {
   groups["quickRestart"] = new SettingsGroup(
     "quickRestart",
     UpdateConfig.setQuickRestartMode,
-    "button"
-  ) as SettingsGroup<SharedTypes.ConfigValue>;
-  groups["showLiveWpm"] = new SettingsGroup(
-    "showLiveWpm",
-    UpdateConfig.setShowLiveWpm,
-    "button",
-    () => {
-      groups["keymapMode"]?.updateUI();
-    }
-  ) as SettingsGroup<SharedTypes.ConfigValue>;
-  groups["showLiveAcc"] = new SettingsGroup(
-    "showLiveAcc",
-    UpdateConfig.setShowLiveAcc,
-    "button"
-  ) as SettingsGroup<SharedTypes.ConfigValue>;
-  groups["showLiveBurst"] = new SettingsGroup(
-    "showLiveBurst",
-    UpdateConfig.setShowLiveBurst,
-    "button"
-  ) as SettingsGroup<SharedTypes.ConfigValue>;
-  groups["showTimerProgress"] = new SettingsGroup(
-    "showTimerProgress",
-    UpdateConfig.setShowTimerProgress,
     "button"
   ) as SettingsGroup<SharedTypes.ConfigValue>;
   groups["showAverage"] = new SettingsGroup(
@@ -336,9 +313,9 @@ async function initGroups(): Promise<void> {
     UpdateConfig.setFontSize,
     "button"
   ) as SettingsGroup<SharedTypes.ConfigValue>;
-  groups["pageWidth"] = new SettingsGroup(
-    "pageWidth",
-    UpdateConfig.setPageWidth,
+  groups["maxLineWidth"] = new SettingsGroup(
+    "maxLineWidth",
+    UpdateConfig.setMaxLineWidth,
     "button"
   ) as SettingsGroup<SharedTypes.ConfigValue>;
   groups["caretStyle"] = new SettingsGroup(
@@ -354,6 +331,21 @@ async function initGroups(): Promise<void> {
   groups["timerStyle"] = new SettingsGroup(
     "timerStyle",
     UpdateConfig.setTimerStyle,
+    "button"
+  ) as SettingsGroup<SharedTypes.ConfigValue>;
+  groups["liveSpeedStyle"] = new SettingsGroup(
+    "liveSpeedStyle",
+    UpdateConfig.setLiveSpeedStyle,
+    "button"
+  ) as SettingsGroup<SharedTypes.ConfigValue>;
+  groups["liveAccStyle"] = new SettingsGroup(
+    "liveAccStyle",
+    UpdateConfig.setLiveAccStyle,
+    "button"
+  ) as SettingsGroup<SharedTypes.ConfigValue>;
+  groups["liveBurstStyle"] = new SettingsGroup(
+    "liveBurstStyle",
+    UpdateConfig.setLiveBurstStyle,
     "button"
   ) as SettingsGroup<SharedTypes.ConfigValue>;
   groups["highlightMode"] = new SettingsGroup(
@@ -442,7 +434,7 @@ async function fillSettingsPage(): Promise<void> {
 
   let languageGroups;
   try {
-    languageGroups = await Misc.getLanguageGroups();
+    languageGroups = await JSONData.getLanguageGroups();
   } catch (e) {
     console.error(
       Misc.createErrorMessage(
@@ -462,7 +454,7 @@ async function fillSettingsPage(): Promise<void> {
       html += `<optgroup label="${group.name}">`;
       for (const language of group.languages) {
         const selected = language === Config.language ? "selected" : "";
-        const text = Misc.getLanguageDisplayString(language);
+        const text = Strings.getLanguageDisplayString(language);
         html += `<option value="${language}" ${selected}>${text}</option>`;
       }
       html += `</optgroup>`;
@@ -478,7 +470,7 @@ async function fillSettingsPage(): Promise<void> {
 
   let layoutsList;
   try {
-    layoutsList = await Misc.getLayoutsList();
+    layoutsList = await JSONData.getLayoutsList();
   } catch (e) {
     console.error(Misc.createErrorMessage(e, "Failed to refresh keymap"));
   }
@@ -521,7 +513,7 @@ async function fillSettingsPage(): Promise<void> {
 
   let themes;
   try {
-    themes = await Misc.getThemesList();
+    themes = await JSONData.getThemesList();
   } catch (e) {
     console.error(
       Misc.createErrorMessage(e, "Failed to load themes into dropdown boxes")
@@ -581,7 +573,7 @@ async function fillSettingsPage(): Promise<void> {
 
   let funboxList;
   try {
-    funboxList = await Misc.getFunboxList();
+    funboxList = await JSONData.getFunboxList();
   } catch (e) {
     console.error(Misc.createErrorMessage(e, "Failed to get funbox list"));
   }
@@ -630,7 +622,7 @@ async function fillSettingsPage(): Promise<void> {
 
   let fontsList;
   try {
-    fontsList = await Misc.getFontsList();
+    fontsList = await JSONData.getFontsList();
   } catch (e) {
     console.error(
       Misc.createErrorMessage(e, "Failed to update fonts settings buttons")
@@ -662,9 +654,14 @@ async function fillSettingsPage(): Promise<void> {
   $(
     ".pageSettings .section[data-config-name='customBackgroundSize'] input"
   ).val(Config.customBackground);
+  updateCustomBackgroundRemoveButtonVisibility();
 
   $(".pageSettings .section[data-config-name='fontSize'] input").val(
     Config.fontSize
+  );
+
+  $(".pageSettings .section[data-config-name='maxLineWidth'] input").val(
+    Config.maxLineWidth
   );
 
   $(".pageSettings .section[data-config-name='customLayoutfluid'] input").val(
@@ -736,15 +733,19 @@ export function updateDiscordSection(): void {
 export function updateAuthSections(): void {
   $(".pageSettings .section.passwordAuthSettings button").addClass("hidden");
   $(".pageSettings .section.googleAuthSettings button").addClass("hidden");
+  $(".pageSettings .section.githubAuthSettings button").addClass("hidden");
 
   if (!isAuthenticated()) return;
   const user = getAuthenticatedUser();
 
-  const passwordProvider = user.providerData.find(
+  const passwordProvider = user.providerData.some(
     (provider) => provider.providerId === "password"
   );
-  const googleProvider = user.providerData.find(
+  const googleProvider = user.providerData.some(
     (provider) => provider.providerId === "google.com"
+  );
+  const githubProvider = user.providerData.some(
+    (provider) => provider.providerId === "github.com"
   );
 
   if (passwordProvider) {
@@ -754,6 +755,11 @@ export function updateAuthSections(): void {
     $(
       ".pageSettings .section.passwordAuthSettings #passPasswordAuth"
     ).removeClass("hidden");
+    if (googleProvider || githubProvider) {
+      $(
+        ".pageSettings .section.passwordAuthSettings #removePasswordAuth"
+      ).removeClass("hidden");
+    }
   } else {
     $(
       ".pageSettings .section.passwordAuthSettings #addPasswordAuth"
@@ -764,7 +770,7 @@ export function updateAuthSections(): void {
     $(
       ".pageSettings .section.googleAuthSettings #removeGoogleAuth"
     ).removeClass("hidden");
-    if (passwordProvider) {
+    if (passwordProvider || githubProvider) {
       $(
         ".pageSettings .section.googleAuthSettings #removeGoogleAuth"
       ).removeClass("disabled");
@@ -778,6 +784,24 @@ export function updateAuthSections(): void {
       "hidden"
     );
   }
+  if (githubProvider) {
+    $(
+      ".pageSettings .section.githubAuthSettings #removeGithubAuth"
+    ).removeClass("hidden");
+    if (passwordProvider || googleProvider) {
+      $(
+        ".pageSettings .section.githubAuthSettings #removeGithubAuth"
+      ).removeClass("disabled");
+    } else {
+      $(".pageSettings .section.githubAuthSettings #removeGithubAuth").addClass(
+        "disabled"
+      );
+    }
+  } else {
+    $(".pageSettings .section.githubAuthSettings #addGithubAuth").removeClass(
+      "hidden"
+    );
+  }
 }
 
 function setActiveFunboxButton(): void {
@@ -787,7 +811,7 @@ function setActiveFunboxButton(): void {
   $(`.pageSettings .section[data-config-name='funbox'] .button`).removeClass(
     "disabled"
   );
-  Misc.getFunboxList()
+  JSONData.getFunboxList()
     .then((funboxModes) => {
       funboxModes.forEach((funbox) => {
         if (
@@ -932,6 +956,11 @@ export async function update(groupUpdate = true): Promise<void> {
       ".pageSettings .section[data-config-name='customBackgroundFilter']"
     ).addClass("hidden");
   }
+  updateCustomBackgroundRemoveButtonVisibility();
+
+  $(
+    ".pageSettings .section[data-config-name='customBackgroundSize'] input"
+  ).val(Config.customBackground);
 
   if (isAuthenticated()) {
     showAccountSection();
@@ -941,20 +970,17 @@ export async function update(groupUpdate = true): Promise<void> {
 
   CustomBackgroundFilter.updateUI();
 
-  const modifierKey = window.navigator.userAgent.toLowerCase().includes("mac")
-    ? "cmd"
-    : "ctrl";
-  if (Config.quickRestart === "esc") {
-    $(".pageSettings .tip").html(`
-    tip: You can also change all these settings quickly using the
-    command line (<key>${modifierKey}</key>+<key>shift</key>+<key>p</key>)`);
-  } else {
-    $(".pageSettings .tip").html(`
-    tip: You can also change all these settings quickly using the
-    command line (<key>esc</key> or <key>${modifierKey}</key>+<key>shift</key>+<key>p</key>)`);
-  }
-}
+  const userAgent = window.navigator.userAgent.toLowerCase();
+  const modifierKey =
+    userAgent.includes("mac") && !userAgent.includes("firefox")
+      ? "cmd"
+      : "ctrl";
 
+  const commandKey = Config.quickRestart === "esc" ? "tab" : "esc";
+  $(".pageSettings .tip").html(`
+    tip: You can also change all these settings quickly using the
+    command line (<key>${commandKey}</key> or <key>${modifierKey}</key> + <key>shift</key> + <key>p</key>)`);
+}
 function toggleSettingsGroup(groupName: string): void {
   const groupEl = $(`.pageSettings .settingsGroup.${groupName}`);
   groupEl.stop(true, true).slideToggle(250).toggleClass("slideup");
@@ -966,6 +992,20 @@ function toggleSettingsGroup(groupName: string): void {
     $(`.pageSettings .sectionGroupTitle[group=${groupName}]`).removeClass(
       "rotateIcon"
     );
+  }
+}
+
+function updateCustomBackgroundRemoveButtonVisibility(): void {
+  const button = $(
+    ".pageSettings .section[data-config-name='customBackgroundSize'] button.remove"
+  );
+  if (
+    Config.customBackground !== undefined &&
+    Config.customBackground.length > 0
+  ) {
+    button.removeClass("hidden");
+  } else {
+    button.addClass("hidden");
   }
 }
 
@@ -1128,7 +1168,7 @@ $(".pageSettings .section.presets").on(
 );
 
 $("#importSettingsButton").on("click", () => {
-  ImportExportSettingsPopup.show("import");
+  ImportExportSettingsModal.show("import");
 });
 
 $("#exportSettingsButton").on("click", () => {
@@ -1138,17 +1178,13 @@ $("#exportSettingsButton").on("click", () => {
       Notifications.add("JSON Copied to clipboard", 0);
     },
     function () {
-      ImportExportSettingsPopup.show("export");
+      ImportExportSettingsModal.show("export");
     }
   );
 });
 
 $(".pageSettings .sectionGroupTitle").on("click", (e) => {
   toggleSettingsGroup($(e.currentTarget).attr("group") as string);
-});
-
-$(".pageSettings .section.apeKeys #showApeKeysPopup").on("click", () => {
-  void ApeKeysPopup.show();
 });
 
 $(
@@ -1159,6 +1195,12 @@ $(
       ".pageSettings .section[data-config-name='customBackgroundSize'] .inputAndButton input"
     ).val() as string
   );
+});
+
+$(
+  ".pageSettings .section[data-config-name='customBackgroundSize'] .inputAndButton button.remove"
+).on("click", () => {
+  UpdateConfig.setCustomBackground("");
 });
 
 $(
@@ -1210,6 +1252,59 @@ $(
 });
 
 $(
+  ".pageSettings .section[data-config-name='maxLineWidth'] .inputAndButton button.save"
+).on("click", () => {
+  const didConfigSave = UpdateConfig.setMaxLineWidth(
+    parseFloat(
+      $(
+        ".pageSettings .section[data-config-name='maxLineWidth'] .inputAndButton input"
+      ).val() as string
+    )
+  );
+  if (didConfigSave) {
+    Notifications.add("Saved", 1, {
+      duration: 1,
+    });
+  }
+});
+
+$(
+  ".pageSettings .section[data-config-name='maxLineWidth'] .inputAndButton input"
+).on("focusout", () => {
+  const didConfigSave = UpdateConfig.setMaxLineWidth(
+    parseFloat(
+      $(
+        ".pageSettings .section[data-config-name='maxLineWidth'] .inputAndButton input"
+      ).val() as string
+    )
+  );
+  if (didConfigSave) {
+    Notifications.add("Saved", 1, {
+      duration: 1,
+    });
+  }
+});
+
+$(
+  ".pageSettings .section[data-config-name='maxLineWidth'] .inputAndButton input"
+).on("keypress", (e) => {
+  if (e.key === "Enter") {
+    const didConfigSave = UpdateConfig.setMaxLineWidth(
+      parseFloat(
+        $(
+          ".pageSettings .section[data-config-name='maxLineWidth'] .inputAndButton input"
+        ).val() as string
+      )
+    );
+    if (didConfigSave) {
+      Notifications.add("Saved", 1, {
+        duration: 1,
+      });
+    }
+  }
+});
+
+$(
   ".pageSettings .section[data-config-name='customLayoutfluid'] .inputAndButton button.save"
 ).on("click", () => {
   void UpdateConfig.setCustomLayoutfluid(
@@ -1247,11 +1342,6 @@ $(".pageSettings .quickNav .links a").on("click", (e) => {
   isOpen && toggleSettingsGroup(settingsGroup);
 });
 
-$(".pageSettings .section.updateCookiePreferences button").on("click", () => {
-  CookiePopup.show();
-  CookiePopup.showSettings();
-});
-
 $(".pageSettings .section.discordIntegration .getLinkAndGoToOauth").on(
   "click",
   () => {
@@ -1277,26 +1367,20 @@ ConfigEvent.subscribe((eventKey) => {
   }
 });
 
-export const page = new Page(
-  "settings",
-  $(".page.pageSettings"),
-  "/settings",
-  async () => {
-    //
-  },
-  async () => {
+export const page = new Page({
+  name: "settings",
+  element: $(".page.pageSettings"),
+  path: "/settings",
+  afterHide: async (): Promise<void> => {
     reset();
     Skeleton.remove("pageSettings");
   },
-  async () => {
+  beforeShow: async (): Promise<void> => {
     Skeleton.append("pageSettings", "main");
     await fillSettingsPage();
     await update(false);
   },
-  async () => {
-    //
-  }
-);
+});
 
 $(async () => {
   Skeleton.save("pageSettings");

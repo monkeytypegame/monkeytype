@@ -30,7 +30,7 @@ async function createDummyData(
     },
   };
 
-  jest.spyOn(UserDal, "getUser").mockResolvedValue(dummyUser);
+  vi.spyOn(UserDal, "getUser").mockResolvedValue(dummyUser);
   const tags: string[] = [];
   if (tag !== undefined) tags.push(tag);
   for (let i = 0; i < count; i++) {

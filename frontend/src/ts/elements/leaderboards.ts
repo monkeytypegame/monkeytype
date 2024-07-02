@@ -1,11 +1,14 @@
 import Ape from "../ape";
 import * as DB from "../db";
 import Config from "../config";
+import * as DateTime from "../utils/date-and-time";
 import * as Misc from "../utils/misc";
+import * as Arrays from "../utils/arrays";
+import * as Numbers from "../utils/numbers";
 import * as Notifications from "./notifications";
-import format from "date-fns/format";
+import { format } from "date-fns/format";
 import { isAuthenticated } from "../firebase";
-import differenceInSeconds from "date-fns/differenceInSeconds";
+import { differenceInSeconds } from "date-fns/differenceInSeconds";
 import { getHTMLById as getBadgeHTMLbyId } from "../controllers/badge-controller";
 import * as ConnectionState from "../states/connection";
 import * as Skeleton from "../utils/skeleton";
@@ -101,7 +104,7 @@ function updateTimerElement(): void {
     const diff = differenceInSeconds(date, dateNow);
 
     $("#leaderboards .subTitle").text(
-      "Next reset in: " + Misc.secondsToString(diff, true)
+      "Next reset in: " + DateTime.secondsToString(diff, true)
     );
   } else {
     const date = new Date();
@@ -109,7 +112,7 @@ function updateTimerElement(): void {
     const secondsToNextUpdate = 60 - date.getSeconds();
     const totalSeconds = minutesToNextUpdate * 60 + secondsToNextUpdate;
     $("#leaderboards .subTitle").text(
-      "Next update in: " + Misc.secondsToString(totalSeconds, true)
+      "Next update in: " + DateTime.secondsToString(totalSeconds, true)
     );
   }
 }
@@ -193,7 +196,7 @@ function updateFooter(lb: LbKey): void {
 
   let toppercent = "";
   if (currentTimeRange === "allTime" && lbRank !== undefined && lbRank?.rank) {
-    const num = Misc.roundTo2(
+    const num = Numbers.roundTo2(
       (lbRank.rank / (currentRank[lb].count as number)) * 100
     );
     if (currentRank[lb].rank === 1) {
@@ -378,6 +381,8 @@ export function hide(): void {
       },
       100,
       () => {
+        languageSelector?.destroy();
+        languageSelector = undefined;
         clearBody("15");
         clearBody("60");
         clearFoot("15");
@@ -525,7 +530,7 @@ async function requestMore(lb: LbKey, prepend = false): Promise<void> {
   if (requesting[lb]) return;
   requesting[lb] = true;
   showLoader(lb);
-  let skipVal = currentData[lb][currentData[lb].length - 1]?.rank as number;
+  let skipVal = Arrays.lastElementFromArray(currentData[lb])?.rank as number;
   if (prepend) {
     skipVal = (currentData[lb][0]?.rank ?? 0) - leaderboardSingleLimit;
   }
@@ -671,6 +676,38 @@ export function show(): void {
     $("#leaderboards table thead tr td:nth-child(3)").html(
       Config.typingSpeedUnit + '<br><div class="sub">accuracy</div>'
     );
+
+    languageSelector = new SlimSelect({
+      select:
+        "#leaderboardsWrapper #leaderboards .leaderboardsTop .buttonGroup.timeRange .languageSelect",
+      settings: {
+        showSearch: false,
+        // contentLocation: document.querySelector(
+        //   "#leaderboardsWrapper"
+        // ) as HTMLElement,
+        // contentPosition: "relative",
+      },
+      data: [
+        "english",
+        "spanish",
+        "german",
+        "french",
+        "portuguese",
+        "indonesian",
+        "italian",
+      ].map((lang) => ({
+        value: lang,
+        text: lang,
+        selected: lang === currentLanguage,
+      })),
+      events: {
+        afterChange: (newVal): void => {
+          currentLanguage = newVal[0]?.value as string;
+          updateTitle();
+          void update();
+        },
+      },
+    });
     $("#leaderboardsWrapper")
       .stop(true, true)
       .css("opacity", 0)
@@ -694,58 +731,57 @@ $("#leaderboardsWrapper").on("click", (e) => {
   }
 });
 
-const languageSelector = new SlimSelect({
-  select:
-    "#leaderboardsWrapper #leaderboards .leaderboardsTop .buttonGroup.timeRange .languageSelect",
-  settings: {
-    showSearch: false,
-    contentLocation: document.querySelector(
-      "#leaderboardsWrapper"
-    ) as HTMLElement,
-  },
-  data: [
-    {
-      value: "english",
-      text: "english",
-      selected: true,
-    },
-    {
-      value: "spanish",
-      text: "spanish",
-    },
-    {
-      value: "german",
-      text: "german",
-    },
-    {
-      value: "french",
-      text: "french",
-    },
-    {
-      value: "portuguese",
-      text: "portuguese",
-    },
-    {
-      value: "indonesian",
-      text: "indonesian",
-    },
-    {
-      value: "italian",
-      text: "italian",
-    },
-    {
-      value: "russian",
-      text: "russian",
-    },
-  ],
-  events: {
-    afterChange: (newVal): void => {
-      currentLanguage = newVal[0]?.value as string;
-      updateTitle();
-      void update();
-    },
-  },
-});
+let languageSelector: SlimSelect | undefined = undefined;
+
+// const languageSelector = new SlimSelect({
+//   select:
+//     "#leaderboardsWrapper #leaderboards .leaderboardsTop .buttonGroup.timeRange .languageSelect",
+//   settings: {
+//     showSearch: false,
+//     // contentLocation: document.querySelector(
+//     //   "#leaderboardsWrapper"
+//     // ) as HTMLElement,
+//     // contentPosition: "relative",
+//   },
+//   data: [
+//     {
+//       value: "english",
+//       text: "english",
+//       selected: true,
+//     },
+//     {
+//       value: "spanish",
+//       text: "spanish",
+//     },
+//     {
+//       value: "german",
+//       text: "german",
+//     },
+//     {
+//       value: "french",
+//       text: "french",
+//     },
+//     {
+//       value: "portuguese",
+//       text: "portuguese",
+//     },
+//     {
+//       value: "indonesian",
+//       text: "indonesian",
+//     },
+//     {
+//       value: "italian",
+//       text: "italian",
+//     },
+//   ],
+//   events: {
+//     afterChange: (newVal): void => {
+//       currentLanguage = newVal[0]?.value as string;
+//       updateTitle();
+//       void update();
+//     },
+//   },
+// });
 
 let leftScrollEnabled = true;
 
@@ -871,8 +907,8 @@ $(
 ).on("click", () => {
   currentTimeRange = "allTime";
   currentLanguage = "english";
-  languageSelector.disable();
-  languageSelector.setSelected("english");
+  languageSelector?.disable();
+  languageSelector?.setSelected("english");
   void update();
 });
 
@@ -881,7 +917,7 @@ $(
 ).on("click", () => {
   currentTimeRange = "daily";
   updateYesterdayButton();
-  languageSelector.enable();
+  languageSelector?.enable();
   void update();
 });
 

@@ -1,6 +1,9 @@
 import * as ThemeColors from "../elements/theme-colors";
 import * as ChartController from "./chart-controller";
 import * as Misc from "../utils/misc";
+import * as Arrays from "../utils/arrays";
+import * as JSONData from "../utils/json-data";
+import { isColorDark, isColorLight } from "../utils/colors";
 import Config, { setAutoSwitchTheme } from "../config";
 import * as BackgroundFilter from "../elements/custom-background-filter";
 import * as ConfigEvent from "../observables/config-event";
@@ -178,10 +181,17 @@ async function apply(
   $("#metaThemeColor").attr("content", colors.bg);
   // }
   updateFooterThemeName(isPreview ? themeName : undefined);
+
+  if (isColorDark(await ThemeColors.get("bg"))) {
+    $("body").addClass("darkMode");
+  } else {
+    $("body").removeClass("darkMode");
+  }
 }
 
 function updateFooterThemeName(nameOverride?: string): void {
   let str = Config.theme;
+  if (randomTheme !== null) str = randomTheme;
   if (Config.customTheme) str = "custom";
   if (nameOverride !== undefined && nameOverride !== "") str = nameOverride;
   str = str.replace(/_/g, " ");
@@ -223,9 +233,10 @@ async function set(
 export async function clearPreview(applyTheme = true): Promise<void> {
   if (isPreviewingTheme) {
     isPreviewingTheme = false;
-    randomTheme = null;
     if (applyTheme) {
-      if (Config.customTheme) {
+      if (randomTheme !== null) {
+        await apply(randomTheme);
+      } else if (Config.customTheme) {
         await apply("custom");
       } else {
         await apply(Config.theme);
@@ -239,7 +250,7 @@ let themesList: string[] = [];
 async function changeThemeList(): Promise<void> {
   let themes;
   try {
-    themes = await Misc.getThemesList();
+    themes = await JSONData.getThemesList();
   } catch (e) {
     console.error(
       Misc.createErrorMessage(e, "Failed to update random theme list")
@@ -251,11 +262,11 @@ async function changeThemeList(): Promise<void> {
     themesList = Config.favThemes;
   } else if (Config.randomTheme === "light") {
     themesList = themes
-      .filter((t) => Misc.isColorLight(t.bgColor))
+      .filter((t) => isColorLight(t.bgColor))
       .map((t) => t.name);
   } else if (Config.randomTheme === "dark") {
     themesList = themes
-      .filter((t) => Misc.isColorDark(t.bgColor))
+      .filter((t) => isColorDark(t.bgColor))
       .map((t) => t.name);
   } else if (Config.randomTheme === "on") {
     themesList = themes.map((t) => {
@@ -264,7 +275,7 @@ async function changeThemeList(): Promise<void> {
   } else if (Config.randomTheme === "custom" && DB.getSnapshot()) {
     themesList = DB.getSnapshot()?.customThemes?.map((ct) => ct._id) ?? [];
   }
-  Misc.shuffle(themesList);
+  Arrays.shuffle(themesList);
   randomThemeIndex = 0;
 }
 
@@ -277,7 +288,7 @@ export async function randomizeTheme(): Promise<void> {
   randomThemeIndex++;
 
   if (randomThemeIndex >= themesList.length) {
-    Misc.shuffle(themesList);
+    Arrays.shuffle(themesList);
     randomThemeIndex = 0;
   }
 
@@ -291,7 +302,7 @@ export async function randomizeTheme(): Promise<void> {
     randomTheme = "custom";
   }
 
-  preview(randomTheme, colorsOverride);
+  await apply(randomTheme, colorsOverride);
 
   if (randomThemeIndex >= themesList.length) {
     let name = randomTheme.replace(/_/g, " ");
@@ -342,7 +353,7 @@ function applyCustomBackground(): void {
     $("#words").addClass("noErrorBorder");
     $("#resultWordsHistory").addClass("noErrorBorder");
     $(".customBackground").html(
-      `<img src="${Config.customBackground}" alt="" />`
+      `<img src="${Config.customBackground}" alt="" onerror="javascript:window.dispatchEvent(new Event('customBackgroundFailed'))" />`
     );
     BackgroundFilter.apply();
     applyCustomBackgroundSize();
@@ -371,10 +382,12 @@ ConfigEvent.subscribe(async (eventKey, eventValue, nosave) => {
     nosave ? preview("custom") : await set("custom");
   }
   if (eventKey === "theme") {
+    await clearRandom();
     await clearPreview(false);
     await set(eventValue as string);
   }
   if (eventKey === "setThemes") {
+    await clearRandom();
     await clearPreview(false);
     if (Config.autoSwitchTheme) {
       if (window.matchMedia?.("(prefers-color-scheme: dark)").matches) {
@@ -421,4 +434,12 @@ ConfigEvent.subscribe(async (eventKey, eventValue, nosave) => {
   ) {
     await set(Config.themeDark, true);
   }
+});
+
+window.addEventListener("customBackgroundFailed", () => {
+  Notifications.add(
+    "Custom background link is either temporairly unavailable or expired. Please make sure the URL is correct or change it",
+    0,
+    { duration: 5 }
+  );
 });

@@ -1,7 +1,7 @@
 import _ from "lodash";
-import { ObjectId } from "mongodb";
 import { updateStreak } from "../../src/dal/user";
 import * as UserDAL from "../../src/dal/user";
+import * as UserTestData from "../__testData__/users";
 
 const mockPersonalBest = {
   acc: 1,
@@ -207,7 +207,6 @@ describe("UserDal", () => {
       "", // empty
       " ".repeat(16), // too long
       ".testName", // cant begin with period
-      "miodec", // profanity
       "asdasdAS$", // invalid characters
     ];
 
@@ -295,7 +294,7 @@ describe("UserDal", () => {
     await UserDAL.addUser(testUser.name, testUser.email, testUser.uid);
 
     // when
-    Date.now = jest.fn(() => 0);
+    Date.now = vi.fn(() => 0);
     await UserDAL.recordAutoBanEvent(testUser.uid, 2, 1);
     await UserDAL.recordAutoBanEvent(testUser.uid, 2, 1);
     await UserDAL.recordAutoBanEvent(testUser.uid, 2, 1);
@@ -317,7 +316,7 @@ describe("UserDal", () => {
     await UserDAL.addUser(testUser.name, testUser.email, testUser.uid);
 
     // when
-    Date.now = jest.fn(() => 0);
+    Date.now = vi.fn(() => 0);
     await UserDAL.recordAutoBanEvent(testUser.uid, 2, 1);
 
     // then
@@ -337,11 +336,11 @@ describe("UserDal", () => {
     await UserDAL.addUser(testUser.name, testUser.email, testUser.uid);
 
     // when
-    Date.now = jest.fn(() => 0);
+    Date.now = vi.fn(() => 0);
     await UserDAL.recordAutoBanEvent(testUser.uid, 2, 1);
     await UserDAL.recordAutoBanEvent(testUser.uid, 2, 1);
 
-    Date.now = jest.fn(() => 36000000);
+    Date.now = vi.fn(() => 36000000);
 
     await UserDAL.recordAutoBanEvent(testUser.uid, 2, 1);
 
@@ -678,7 +677,7 @@ describe("UserDal", () => {
 
     for (const { date, expectedStreak } of testSteps) {
       const milis = new Date(date).getTime();
-      Date.now = jest.fn(() => milis);
+      Date.now = vi.fn(() => milis);
 
       const streak = await updateStreak("TestID", milis);
 
@@ -736,7 +735,7 @@ describe("UserDal", () => {
 
     for (const { date, expectedStreak } of testSteps) {
       const milis = new Date(date).getTime();
-      Date.now = jest.fn(() => milis);
+      Date.now = vi.fn(() => milis);
 
       const streak = await updateStreak("TestID", milis);
 
@@ -778,11 +777,325 @@ describe("UserDal", () => {
 
     for (const { date, expectedStreak } of testSteps) {
       const milis = new Date(date).getTime();
-      Date.now = jest.fn(() => milis);
+      Date.now = vi.fn(() => milis);
 
       const streak = await updateStreak("TestID", milis);
 
       await expect(streak).toBe(expectedStreak);
     }
+  });
+  describe("incrementTestActivity", () => {
+    it("ignores user without migration", async () => {
+      // given
+      const user = await UserTestData.createUserWithoutMigration();
+
+      //when
+      await UserDAL.incrementTestActivity(user, 1712102400000);
+
+      //then
+      const read = await UserDAL.getUser(user.uid, "");
+      expect(read.testActivity).toBeUndefined();
+    });
+    it("increments for new year", async () => {
+      // given
+      const user = await UserTestData.createUser({
+        testActivity: { "2023": [null, 1] },
+      });
+
+      //when
+      await UserDAL.incrementTestActivity(user, 1712102400000);
+
+      //then
+      const read = (await UserDAL.getUser(user.uid, "")).testActivity || {};
+      expect(read).toHaveProperty("2024");
+      const year2024 = read["2024"];
+      expect(year2024).toHaveLength(94);
+      //fill previous days with null
+      expect(year2024.slice(0, 93)).toEqual(new Array(93).fill(null));
+      expect(year2024[93]).toEqual(1);
+    });
+    it("increments for existing year", async () => {
+      // given
+      const user = await UserTestData.createUser({
+        testActivity: { "2024": [null, 5] },
+      });
+
+      //when
+      await UserDAL.incrementTestActivity(user, 1712102400000);
+
+      //then
+      const read = (await UserDAL.getUser(user.uid, "")).testActivity || {};
+      expect(read).toHaveProperty("2024");
+      const year2024 = read["2024"];
+      expect(year2024).toHaveLength(94);
+
+      expect(year2024[0]).toBeNull();
+      expect(year2024[1]).toEqual(5);
+      expect(year2024.slice(2, 91)).toEqual(new Array(89).fill(null));
+      expect(year2024[93]).toEqual(1);
+    });
+    it("increments for existing day", async () => {
+      // given
+      let user = await UserTestData.createUser({ testActivity: {} });
+      await UserDAL.incrementTestActivity(user, 1712102400000);
+      user = await UserDAL.getUser(user.uid, "");
+
+      //when
+      await UserDAL.incrementTestActivity(user, 1712102400000);
+
+      //then
+      const read = (await UserDAL.getUser(user.uid, "")).testActivity || {};
+      const year2024 = read["2024"];
+      expect(year2024[93]).toEqual(2);
+    });
+  });
+  describe("getPartialUser", () => {
+    it("should throw for unknown user", async () => {
+      expect(async () =>
+        UserDAL.getPartialUser("1234", "stack", [])
+      ).rejects.toThrowError("User not found\nStack: stack");
+    });
+
+    it("should get streak", async () => {
+      //GIVEN
+      let user = await UserTestData.createUser({
+        streak: {
+          hourOffset: 1,
+          length: 5,
+          lastResultTimestamp: 4711,
+          maxLength: 23,
+        },
+      });
+
+      //WHEN
+      const partial = await UserDAL.getPartialUser(user.uid, "streak", [
+        "streak",
+      ]);
+
+      //THEN
+      expect(partial).toStrictEqual({
+        _id: user._id,
+        streak: {
+          hourOffset: 1,
+          length: 5,
+          lastResultTimestamp: 4711,
+          maxLength: 23,
+        },
+      });
+    });
+  });
+  describe("updateEmail", () => {
+    it("throws for nonexisting user", async () => {
+      expect(async () =>
+        UserDAL.updateEmail(123, "test@example.com")
+      ).rejects.toThrowError("User not found\nStack: update email");
+    });
+  });
+  describe("updateInbox", () => {
+    it("claims rewards", async () => {
+      //GIVEN
+      const rewardOne: SharedTypes.MonkeyMail = {
+        id: "b5866d4c-0749-41b6-b101-3656249d39b9",
+        body: "test",
+        subject: "reward one",
+        timestamp: 1,
+        read: false,
+        rewards: [
+          { type: "xp", item: 400 },
+          { type: "xp", item: 600 },
+          { type: "badge", item: { id: 4 } },
+        ],
+      };
+      const rewardTwo: SharedTypes.MonkeyMail = {
+        id: "3692b9f5-84fb-4d9b-bd39-9a3217b3a33a",
+        body: "test",
+        subject: "reward two",
+        timestamp: 2,
+        read: false,
+        rewards: [{ type: "xp", item: 2000 }],
+      };
+      const rewardThree: SharedTypes.MonkeyMail = {
+        id: "0d73b3e0-dc79-4abb-bcaf-66fa6b09a58a",
+        body: "test",
+        subject: "reward three",
+        timestamp: 3,
+        read: true,
+        rewards: [{ type: "xp", item: 2000 }],
+      };
+
+      let user = await UserTestData.createUser({
+        xp: 100,
+        inbox: [rewardOne, rewardTwo, rewardThree],
+      });
+
+      //WNEN
+      await UserDAL.updateInbox(
+        user.uid,
+        [rewardOne.id, rewardTwo.id, rewardThree.id],
+        []
+      );
+
+      //THEN
+      const { xp, inbox } = await UserDAL.getUser(user.uid, "");
+      expect(xp).toEqual(3100);
+
+      //inbox is sorted by timestamp
+      expect(inbox).toStrictEqual([
+        { ...rewardThree },
+        { ...rewardTwo, read: true, rewards: [] },
+        { ...rewardOne, read: true, rewards: [] },
+      ]);
+    });
+
+    it("removes", async () => {
+      //GIVEN
+      const rewardOne = {
+        id: "b5866d4c-0749-41b6-b101-3656249d39b9",
+        body: "test",
+        subject: "reward one",
+        timestamp: 0,
+        read: false,
+        rewards: [],
+      };
+      const rewardTwo = {
+        id: "3692b9f5-84fb-4d9b-bd39-9a3217b3a33a",
+        body: "test",
+        subject: "reward two",
+        timestamp: 0,
+        read: true,
+        rewards: [],
+      };
+      const rewardThree = {
+        id: "0d73b3e0-dc79-4abb-bcaf-66fa6b09a58a",
+        body: "test",
+        subject: "reward three",
+        timestamp: 0,
+        read: false,
+        rewards: [],
+      };
+
+      let user = await UserTestData.createUser({
+        xp: 100,
+        inbox: [rewardOne, rewardTwo, rewardThree],
+      });
+
+      //WNEN
+      await UserDAL.updateInbox(user.uid, [], [rewardOne.id, rewardTwo.id]);
+
+      //THEN
+      const { inbox } = await UserDAL.getUser(user.uid, "");
+      expect(inbox).toStrictEqual([rewardThree]);
+    });
+
+    it("updates badge", async () => {
+      //GIVEN
+      const rewardOne: SharedTypes.MonkeyMail = {
+        id: "b5866d4c-0749-41b6-b101-3656249d39b9",
+        body: "test",
+        subject: "reward one",
+        timestamp: 2,
+        read: false,
+        rewards: [
+          { type: "xp", item: 400 },
+          { type: "badge", item: { id: 4 } },
+        ],
+      };
+      const rewardTwo: SharedTypes.MonkeyMail = {
+        id: "3692b9f5-84fb-4d9b-bd39-9a3217b3a33a",
+        body: "test",
+        subject: "reward two",
+        timestamp: 1,
+        read: false,
+        rewards: [{ type: "badge", item: { id: 5 } }],
+      };
+      const rewardThree: SharedTypes.MonkeyMail = {
+        id: "0d73b3e0-dc79-4abb-bcaf-66fa6b09a58a",
+        body: "test",
+        subject: "reward three",
+        timestamp: 0,
+        read: true,
+        rewards: [{ type: "badge", item: { id: 6 } }],
+      };
+
+      let user = await UserTestData.createUser({
+        inbox: [rewardOne, rewardTwo, rewardThree],
+        inventory: { badges: [{ id: 1, selected: true }] },
+      });
+
+      //WNEN
+      await UserDAL.updateInbox(
+        user.uid,
+        [rewardOne.id, rewardTwo.id, rewardThree.id, rewardOne.id],
+        []
+      );
+
+      //THEN
+      const { inbox, inventory } = await UserDAL.getUser(user.uid, "");
+      expect(inbox).toStrictEqual([
+        { ...rewardOne, read: true, rewards: [] },
+        { ...rewardTwo, read: true, rewards: [] },
+        { ...rewardThree },
+      ]);
+      expect(inventory?.badges).toStrictEqual([
+        { id: 1, selected: true },
+        { id: 4 },
+        { id: 5 },
+      ]);
+    });
+
+    it("does not claim reward multiple times", async () => {
+      //GIVEN
+      const rewardOne: SharedTypes.MonkeyMail = {
+        id: "b5866d4c-0749-41b6-b101-3656249d39b9",
+        body: "test",
+        subject: "reward one",
+        timestamp: 0,
+        read: false,
+        rewards: [
+          { type: "xp", item: 400 },
+          { type: "xp", item: 600 },
+          { type: "badge", item: { id: 4 } },
+        ],
+      };
+      const rewardTwo: SharedTypes.MonkeyMail = {
+        id: "3692b9f5-84fb-4d9b-bd39-9a3217b3a33a",
+        body: "test",
+        subject: "reward two",
+        timestamp: 0,
+        read: false,
+        rewards: [{ type: "xp", item: 2000 }],
+      };
+      const rewardThree: SharedTypes.MonkeyMail = {
+        id: "0d73b3e0-dc79-4abb-bcaf-66fa6b09a58a",
+        body: "test",
+        subject: "reward three",
+        timestamp: 0,
+        read: true,
+        rewards: [{ type: "xp", item: 2000 }],
+      };
+
+      let user = await UserTestData.createUser({
+        xp: 100,
+        inbox: [rewardOne, rewardTwo, rewardThree],
+      });
+
+      const count = 100;
+      const calls = new Array(count)
+        .fill(0)
+        .map(() =>
+          UserDAL.updateInbox(
+            user.uid,
+            [rewardOne.id, rewardTwo.id, rewardOne.id, rewardThree.id],
+            []
+          )
+        );
+
+      await Promise.all(calls);
+
+      //THEN
+
+      const { xp } = await UserDAL.getUser(user.uid, "");
+      expect(xp).toEqual(3100);
+    });
   });
 });

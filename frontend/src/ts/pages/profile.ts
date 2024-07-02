@@ -1,10 +1,10 @@
 import Ape from "../ape";
 import Page from "./page";
 import * as Profile from "../elements/profile";
-import * as PbTables from "../account/pb-tables";
+import * as PbTables from "../elements/account/pb-tables";
 import * as Notifications from "../elements/notifications";
 import { checkIfGetParameterExists } from "../utils/misc";
-import * as UserReportPopup from "../popups/user-report-popup";
+import * as UserReportModal from "../modals/user-report";
 import * as Skeleton from "../utils/skeleton";
 
 function reset(): void {
@@ -29,8 +29,8 @@ function reset(): void {
 	          <div class="streak" data-balloon-pos="up">-</div>
           </div>
           <div class="levelAndBar">
-            <div class="level">-</div>
-            <div class="xpBar">
+            <div class="level" data-balloon-pos="up">-</div>
+            <div class="xpBar" data-balloon-pos="up">
               <div class="bar" style="width: 0%;"></div>
             </div>
             <div class="xp" data-balloon-pos="up">-/-</div>
@@ -84,10 +84,12 @@ function reset(): void {
         <div class="group t15">
           <div class="testType">15 seconds</div>
           <div class="pos">-</div>
+          <div class="topPercentage">-</div>
         </div>
         <div class="group t60">
           <div class="testType">60 seconds</div>
           <div class="pos">-</div>
+          <div class="topPercentage">-</div>
         </div>
       </div>
       <div class="pbsWords">
@@ -206,21 +208,18 @@ $(".page.pageProfile").on("click", ".profile .userReportButton", () => {
   const lbOptOut =
     ($(".page.pageProfile .profile").attr("lbOptOut") ?? "false") === "true";
 
-  void UserReportPopup.show({ uid, name, lbOptOut });
+  void UserReportModal.show({ uid, name, lbOptOut });
 });
 
-export const page = new Page<undefined | SharedTypes.UserProfile>(
-  "profile",
-  $(".page.pageProfile"),
-  "/profile",
-  async () => {
-    //
-  },
-  async () => {
+export const page = new Page<undefined | SharedTypes.UserProfile>({
+  name: "profile",
+  element: $(".page.pageProfile"),
+  path: "/profile",
+  afterHide: async (): Promise<void> => {
     Skeleton.remove("pageProfile");
     reset();
   },
-  async (options) => {
+  beforeShow: async (options): Promise<void> => {
     Skeleton.append("pageProfile", "main");
     const uidOrName = options?.params?.["uidOrName"] ?? "";
     if (uidOrName) {
@@ -238,9 +237,6 @@ export const page = new Page<undefined | SharedTypes.UserProfile>(
       $(".page.pageProfile .content").addClass("hidden");
     }
   },
-  async () => {
-    //
-  }
-);
+});
 
 Skeleton.save("pageProfile");

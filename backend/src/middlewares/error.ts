@@ -5,9 +5,13 @@ import MonkeyError from "../utils/error";
 import { incrementBadAuth } from "./rate-limit";
 import { NextFunction, Response } from "express";
 import { MonkeyResponse, handleMonkeyResponse } from "../utils/monkey-response";
-import { recordClientErrorByVersion } from "../utils/prometheus";
+import {
+  recordClientErrorByVersion,
+  recordServerErrorByVersion,
+} from "../utils/prometheus";
 import { isDevEnvironment } from "../utils/misc";
 import { ObjectId } from "mongodb";
+import { version } from "../version";
 
 type DBError = {
   _id: ObjectId;
@@ -61,6 +65,8 @@ async function errorHandlingMiddleware(
       monkeyResponse.status >= 500 &&
       monkeyResponse.status !== 503
     ) {
+      recordServerErrorByVersion(version);
+
       const { uid, errorId } = monkeyResponse.data;
 
       try {

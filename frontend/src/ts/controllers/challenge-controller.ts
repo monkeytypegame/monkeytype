@@ -1,4 +1,5 @@
 import * as Misc from "../utils/misc";
+import * as JSONData from "../utils/json-data";
 import * as Notifications from "../elements/notifications";
 import * as ManualRestart from "../test/manual-restart-tracker";
 import * as CustomText from "../test/custom-text";
@@ -209,7 +210,7 @@ export async function setup(challengeName: string): Promise<boolean> {
 
   let list;
   try {
-    list = await Misc.getChallengeList();
+    list = await JSONData.getChallengeList();
   } catch (e) {
     const message = Misc.createErrorMessage(e, "Failed to setup challenge");
     Notifications.add(message, -1);
@@ -221,7 +222,9 @@ export async function setup(challengeName: string): Promise<boolean> {
     return false;
   }
 
-  const challenge = list.filter((c) => c.name === challengeName)[0];
+  const challenge = list.filter(
+    (c) => c.name.toLowerCase() === challengeName.toLowerCase()
+  )[0];
   let notitext;
   try {
     if (challenge === undefined) {
@@ -247,14 +250,13 @@ export async function setup(challengeName: string): Promise<boolean> {
       UpdateConfig.setMode("words", true);
       UpdateConfig.setDifficulty("normal", true);
     } else if (challenge.type === "customText") {
-      CustomText.setDelimiter(" ");
-      CustomText.setPopupTextareaState(challenge.parameters[0] as string);
       CustomText.setText((challenge.parameters[0] as string).split(" "));
-      CustomText.setIsTimeRandom(false);
-      CustomText.setIsSectionRandom(false);
-      CustomText.setIsWordRandom(challenge.parameters[1] as boolean);
-      CustomText.setWord(challenge.parameters[2] as number);
-      CustomText.setTime(-1);
+      CustomText.setMode(challenge.parameters[1] as SharedTypes.CustomTextMode);
+      CustomText.setLimitValue(challenge.parameters[2] as number);
+      CustomText.setLimitMode(
+        challenge.parameters[3] as SharedTypes.CustomTextLimitMode
+      );
+      CustomText.setPipeDelimiter(challenge.parameters[4] as boolean);
       UpdateConfig.setMode("custom", true);
       UpdateConfig.setDifficulty("normal", true);
     } else if (challenge.type === "script") {
@@ -268,14 +270,10 @@ export async function setup(challengeName: string): Promise<boolean> {
       let text = scriptdata.trim();
       text = text.replace(/[\n\r\t ]/gm, " ");
       text = text.replace(/ +/gm, " ");
-      CustomText.setDelimiter(" ");
-      CustomText.setPopupTextareaState(text);
       CustomText.setText(text.split(" "));
-      CustomText.setIsWordRandom(false);
-      CustomText.setIsSectionRandom(false);
-      CustomText.setIsTimeRandom(false);
-      CustomText.setTime(-1);
-      CustomText.setWord(-1);
+      CustomText.setMode("repeat");
+      CustomText.setLimitMode("word");
+      CustomText.setPipeDelimiter(false);
       UpdateConfig.setMode("custom", true);
       UpdateConfig.setDifficulty("normal", true);
       if (challenge.parameters[1] !== null) {

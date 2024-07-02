@@ -2,7 +2,7 @@ import * as DB from "../../db";
 import * as ModesNotice from "../../elements/modes-notice";
 import * as Settings from "../../pages/settings";
 import * as PresetController from "../../controllers/preset-controller";
-import * as EditPresetPopup from "../../popups/edit-preset-popup";
+import * as EditPresetPopup from "../../modals/edit-preset";
 import { isAuthenticated } from "../../firebase";
 
 const subgroup: MonkeyTypes.CommandsSubgroup = {

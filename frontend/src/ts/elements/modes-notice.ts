@@ -7,7 +7,7 @@ import * as TestWords from "../test/test-words";
 import * as ConfigEvent from "../observables/config-event";
 import { isAuthenticated } from "../firebase";
 import * as CustomTextState from "../states/custom-text-name";
-import { getLanguageDisplayString } from "../utils/misc";
+import { getLanguageDisplayString } from "../utils/strings";
 import Format from "../utils/format";
 
 ConfigEvent.subscribe((eventKey) => {
@@ -62,7 +62,10 @@ export async function update(): Promise<void> {
     }
   }
 
-  if (TestWords.hasNewline && Config.quickRestart === "enter") {
+  if (
+    (TestWords.hasNewline || Config.funbox.includes("58008")) &&
+    Config.quickRestart === "enter"
+  ) {
     $(".pageTest #testModesNotice").append(
       `<div class="textButton noInteraction"><i class="fas fa-level-down-alt fa-rotate-90"></i>shift + enter to restart</div>`
     );

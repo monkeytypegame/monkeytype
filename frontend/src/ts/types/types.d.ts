@@ -109,10 +109,16 @@ declare namespace MonkeyTypes {
     | `wordOrder:${FunboxWordOrder}`;
 
   class Wordset {
-    public words: string[];
-    public length: number;
+    words: string[];
+    length: number;
+    orderedIndex: number;
+    shuffledIndexes: number[];
     constructor(words: string[]);
+    resetIndexes(): void;
     randomWord(mode: MonkeyTypes.FunboxWordsFrequency): string;
+    shuffledWord(): string;
+    generateShuffledIndexes(): void;
+    nextWord(): string;
   }
 
   class Section {
@@ -212,6 +218,7 @@ declare namespace MonkeyTypes {
     | "resultFilterPresets"
     | "tags"
     | "xp"
+    | "testActivity"
   > & {
     typingStats: {
       timeTyping: number;
@@ -230,6 +237,8 @@ declare namespace MonkeyTypes {
     presets: SnapshotPreset[];
     results?: SharedTypes.Result<SharedTypes.Config.Mode>[];
     xp: number;
+    testActivity?: ModifiableTestActivityCalendar;
+    testActivityByYear?: { [key: string]: TestActivityCalendar };
   };
 
   type Group<
@@ -293,6 +302,11 @@ declare namespace MonkeyTypes {
     };
   };
 
+  type CommandExecOptions = {
+    input?: string;
+    commandlineModal?: unknown;
+  };
+
   type Command = {
     id: string;
     display: string;
@@ -306,13 +320,15 @@ declare namespace MonkeyTypes {
     input?: boolean;
     visible?: boolean;
     customStyle?: string;
+    opensModal?: boolean;
     defaultValue?: () => string;
     configKey?: keyof SharedTypes.Config;
     configValue?: string | number | boolean | number[];
     configValueMode?: "include";
-    exec?: (input?: string) => void;
+    exec?: (options: CommandExecOptions) => void;
     hover?: () => void;
     available?: () => boolean;
+    active?: () => boolean;
     shouldFocusTestUI?: boolean;
     customData?: Record<string, string>;
   };
@@ -341,6 +357,10 @@ declare namespace MonkeyTypes {
     group: number;
     language: string;
     textSplit?: string[];
+  };
+
+  type QuoteWithTextSplit = Quote & {
+    textSplit: string[];
   };
 
   type ThemeColors = {
@@ -429,5 +449,25 @@ declare namespace MonkeyTypes {
     fullUnitString: string;
     histogramDataBucketSize: number;
     historyStepSize: number;
+  };
+
+  type TestActivityCalendar = {
+    getMonths: () => TestActivityMonth[];
+    getDays: () => TestActivityDay[];
+  };
+
+  type ModifiableTestActivityCalendar = TestActivityCalendar & {
+    increment: (date: Date) => void;
+    getFullYearCalendar: () => TestActivityCalendar;
+  };
+
+  type TestActivityDay = {
+    level: string;
+    label?: string;
+  };
+
+  type TestActivityMonth = {
+    text: string;
+    weeks: number;
   };
 }

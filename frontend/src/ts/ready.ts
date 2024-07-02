@@ -1,77 +1,34 @@
-import * as ManualRestart from "./test/manual-restart-tracker";
-import Config, * as UpdateConfig from "./config";
+import Config from "./config";
 import * as Misc from "./utils/misc";
 import * as MonkeyPower from "./elements/monkey-power";
-import * as NewVersionNotification from "./elements/version-check";
 import * as Notifications from "./elements/notifications";
-import * as Focus from "./test/focus";
-import * as CookiePopup from "./popups/cookie-popup";
+import * as CookiesModal from "./modals/cookies";
 import * as PSA from "./elements/psa";
 import * as ConnectionState from "./states/connection";
 import * as FunboxList from "./test/funbox/funbox-list";
 //@ts-expect-error
 import Konami from "konami";
-import { log } from "./controllers/analytics-controller";
-import { envConfig } from "./constants/env-config";
 import * as ServerConfiguration from "./ape/server-configuration";
-import * as Skeleton from "./utils/skeleton";
 
-if (Misc.isDevEnvironment()) {
-  $("footer .currentVersion .text").text("localhost");
-  $("body").prepend(
-    `<a class='button configureAPI' href='${envConfig.backendUrl}/configure/' target='_blank' aria-label="Configure API" data-balloon-pos="right"><i class="fas fa-fw fa-server"></i></a>`
-  );
-} else {
-  Misc.getLatestReleaseFromGitHub()
-    .then((v) => {
-      $("footer .currentVersion .text").text(v);
-      void NewVersionNotification.show(v);
-    })
-    .catch((e) => {
-      $("footer .currentVersion .text").text("unknown");
-    });
-}
-
-ManualRestart.set();
-void UpdateConfig.loadFromLocalStorage();
-Focus.set(true, true);
-
-$(document).ready(() => {
+$((): void => {
   Misc.loadCSS("/css/slimselect.min.css", true);
   Misc.loadCSS("/css/balloon.min.css", true);
-  Misc.loadCSS("/css/fa.min.css", true);
 
-  CookiePopup.check();
+  CookiesModal.check();
 
+  //this line goes back to pretty much the beginning of the project and im pretty sure its here
+  //to make sure the initial theme application doesnt animate the background color
   $("body").css("transition", "background .25s, transform .05s");
-  if (Config.quickRestart !== "off") {
-    $("#restartTestButton").addClass("hidden");
-  }
-  // const merchBannerClosed =
-  //   window.localStorage.getItem("merchbannerclosed") === "true";
-  // if (!merchBannerClosed) {
-  //   Notifications.addBanner(
-  //     `Check out our merchandise, available at <a target="_blank" rel="noopener" href="https://monkeytype.store/">monkeytype.store</a>`,
-  //     1,
-  //     "./images/merch2.png",
-  //     false,
-  //     () => {
-  //       window.localStorage.setItem("merchbannerclosed", "true");
-  //     },
-  //     true
-  //   );
-  // }
-
-  const plushieBannerClosed =
-    window.localStorage.getItem("plushieBannerClosed") === "true";
-  if (!plushieBannerClosed) {
+  const merchBannerClosed =
+    window.localStorage.getItem("merchbannerclosed") === "true";
+  if (!merchBannerClosed) {
     Notifications.addBanner(
-      `George Plushie - available now for a limited time! <a target="_blank" rel="noopener" href="https://mktp.co/plushie">monkeytype.store</a>`,
+      `Check out our merchandise, available at <a target="_blank" rel="noopener" href="https://monkeytype.store/">monkeytype.store</a>`,
       1,
-      "./images/plushiebanner.png",
+      "./images/merch2.png",
       false,
       () => {
-        window.localStorage.setItem("plushieBannerClosed", "true");
+        window.localStorage.setItem("merchbannerclosed", "true");
       },
       true
     );
@@ -83,7 +40,7 @@ $(document).ready(() => {
     );
   }, 500); //this approach will probably bite me in the ass at some point
 
-  $("#contentWrapper")
+  $("#app")
     .css("opacity", "0")
     .removeClass("hidden")
     .stop(true, true)
@@ -91,8 +48,11 @@ $(document).ready(() => {
   if (ConnectionState.get()) {
     void PSA.show();
     void ServerConfiguration.sync().then(() => {
-      if (ServerConfiguration.get()?.users.signUp) {
-        $(".signInOut").removeClass("hidden");
+      if (!ServerConfiguration.get()?.users.signUp) {
+        $(".signInOut").addClass("hidden");
+        $(".register").addClass("hidden");
+        $(".login").addClass("hidden");
+        $(".disabledNotification").removeClass("hidden");
       }
     });
   }
@@ -109,30 +69,4 @@ $(document).ready(() => {
         }
       });
   }
-
-  Skeleton.save("commandLine");
 });
-
-window.onerror = function (message, url, line, column, error): void {
-  if (Misc.isDevEnvironment()) {
-    Notifications.add(error?.message ?? "Undefined message", -1, {
-      customTitle: "DEV: Unhandled error",
-      duration: 5,
-    });
-  }
-  void log("error", {
-    error: error?.stack ?? "",
-  });
-};
-
-window.onunhandledrejection = function (e): void {
-  if (Misc.isDevEnvironment()) {
-    Notifications.add(e.reason.message, -1, {
-      customTitle: "DEV: Unhandled rejection",
-      duration: 5,
-    });
-  }
-  void log("error", {
-    error: e.reason.stack ?? "",
-  });
-};

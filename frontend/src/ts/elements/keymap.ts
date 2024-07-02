@@ -4,6 +4,7 @@ import * as SlowTimer from "../states/slow-timer";
 import * as ConfigEvent from "../observables/config-event";
 import * as KeymapEvent from "../observables/keymap-event";
 import * as Misc from "../utils/misc";
+import * as JSONData from "../utils/json-data";
 import * as Hangul from "hangul-js";
 import * as Notifications from "../elements/notifications";
 import * as ActivePage from "../states/active-page";
@@ -115,7 +116,7 @@ export async function refresh(
   try {
     let layouts;
     try {
-      layouts = await Misc.getLayoutsList();
+      layouts = await JSONData.getLayoutsList();
     } catch (e) {
       Notifications.add(
         Misc.createErrorMessage(e, "Failed to refresh keymap"),
@@ -160,6 +161,8 @@ export async function refresh(
       throw new Error("Failed to refresh keymap: layout not found");
     }
 
+    const isISO = lts.type === "iso";
+
     let keymapElement = "";
 
     // ( as (keyof MonkeyTypes.Keys)[]).forEach(
@@ -186,7 +189,7 @@ export async function refresh(
         rowElement += "<div></div>";
       }
 
-      if (row === "row4" && lts.type !== "iso" && !isMatrix && !isSteno) {
+      if (row === "row4" && !isISO && !isMatrix && !isSteno) {
         rowElement += "<div></div>";
       }
 
@@ -216,10 +219,14 @@ export async function refresh(
       } else {
         for (let i = 0; i < rowKeys.length; i++) {
           if (row === "row2" && i === 12) continue;
+          if (row === "row4" && isMatrix && isISO && i === 0) continue;
 
           let colLimit = 10;
           if (lts.matrixShowRightColumn) {
             colLimit = 11;
+          }
+          if (row === "row4" && isMatrix && isISO) {
+            colLimit += 1;
           }
 
           if (
@@ -269,7 +276,7 @@ export async function refresh(
               row === "row4" &&
               (Config.keymapStyle === "split" ||
                 Config.keymapStyle === "alice") &&
-              lts.type === "iso"
+              isISO
             ) {
               if (i === 6) {
                 splitSpacer += `<div class="keymapSplitSpacer"></div>`;
@@ -281,6 +288,10 @@ export async function refresh(
               if (i === 7) {
                 splitSpacer += `<div class="keymapSplitSpacer"></div>`;
               }
+            } else if (row === "row4" && isMatrix && isISO) {
+              if (i === 6) {
+                splitSpacer += `<div class="keymapSplitSpacer"></div>`;
+              }
             } else {
               if (i === 5) {
                 splitSpacer += `<div class="keymapSplitSpacer"></div>`;
@@ -289,10 +300,7 @@ export async function refresh(
           }
 
           if (Config.keymapStyle === "alice" && row === "row4") {
-            if (
-              (lts.type === "iso" && i === 6) ||
-              (lts.type !== "iso" && i === 5)
-            ) {
+            if ((isISO && i === 6) || (!isISO && i === 5)) {
               splitSpacer += `<div class="extraKey"><span class="letter"></span></div>`;
             }
           }

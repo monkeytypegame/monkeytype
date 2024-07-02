@@ -1,9 +1,6 @@
 import Config from "../config";
-import {
-  cachedFetchJson,
-  capitalizeFirstLetterOfEachWord,
-} from "../utils/misc";
-import * as CustomText from "../test/custom-text";
+import { capitalizeFirstLetterOfEachWord } from "../utils/strings";
+import { cachedFetchJson } from "../utils/json-data";
 
 type BritishEnglishReplacement = {
   0: string;
@@ -41,14 +38,7 @@ export async function replace(
 
     if (!replacement) return word;
 
-    if (
-      (Config.mode === "quote" ||
-        (Config.mode === "custom" &&
-          !CustomText.isTimeRandom &&
-          !CustomText.isWordRandom &&
-          !CustomText.isSectionRandom)) &&
-      replacement[2]?.includes(previousWord)
-    ) {
+    if (Config.mode === "quote" && replacement[2]?.includes(previousWord)) {
       return word;
     }
 

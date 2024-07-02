@@ -1,5 +1,6 @@
 import * as TestWords from "./test-words";
-import { mean, roundTo2 } from "../utils/misc";
+import { lastElementFromArray } from "../utils/arrays";
+import { mean, roundTo2 } from "../utils/numbers";
 
 const keysToTrack = [
   "NumpadMultiply",
@@ -167,7 +168,7 @@ class Input {
   }
 
   getHistoryLast(): string | undefined {
-    return this.history[this.history.length - 1];
+    return lastElementFromArray(this.history);
   }
 }
 
@@ -308,7 +309,7 @@ export function forceKeyup(now: number): void {
   for (const keyOrder of keysOrder) {
     recordKeyupTime(now, keyOrder[0]);
   }
-  const last = keysOrder[keysOrder.length - 1]?.[0] as string;
+  const last = lastElementFromArray(keysOrder)?.[0] as string;
   const index = keyDownData[last]?.index;
   if (last !== undefined && index !== undefined) {
     keypressTimings.duration.array[index] = avg;

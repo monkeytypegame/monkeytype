@@ -2,7 +2,7 @@ import * as Misc from "./misc";
 import Config, * as UpdateConfig from "../config";
 import * as Notifications from "../elements/notifications";
 import { decompressFromURI } from "lz-ts";
-import * as QuoteSearchPopup from "../popups/quote-search-popup";
+import * as TestState from "../test/test-state";
 import * as ManualRestart from "../test/manual-restart-tracker";
 import * as CustomText from "../test/custom-text";
 import Ape from "../ape";
@@ -11,6 +11,7 @@ import * as DB from "../db";
 import * as Loader from "../elements/loader";
 import * as AccountButton from "../elements/account-button";
 import { restart as restartTest } from "../test/test-logic";
+import * as ChallengeController from "../controllers/challenge-controller";
 
 export async function linkDiscord(hashOverride: string): Promise<void> {
   if (!hashOverride) return;
@@ -110,7 +111,7 @@ export function loadCustomThemeFromUrl(getOverride?: string): void {
 type SharedTestSettings = [
   SharedTypes.Config.Mode | null,
   SharedTypes.Config.Mode2<SharedTypes.Config.Mode> | null,
-  SharedTypes.CustomText | null,
+  SharedTypes.CustomTextData | null,
   boolean | null,
   boolean | null,
   string | null,
@@ -138,7 +139,7 @@ export function loadTestSettingsFromUrl(getOverride?: string): void {
       UpdateConfig.setWordCount(parseInt(de[1], 10), true);
     } else if (Config.mode === "quote") {
       UpdateConfig.setQuoteLength(-2, false);
-      QuoteSearchPopup.setSelectedId(parseInt(de[1], 10));
+      TestState.setSelectedQuoteId(parseInt(de[1], 10));
       ManualRestart.set();
     }
     applied["mode2"] = de[1];
@@ -146,19 +147,11 @@ export function loadTestSettingsFromUrl(getOverride?: string): void {
 
   if (de[2] !== null) {
     const customTextSettings = de[2];
-    CustomText.setPopupTextareaState(
-      customTextSettings.text.join(customTextSettings.delimiter)
-    );
     CustomText.setText(customTextSettings.text);
-    CustomText.setIsTimeRandom(customTextSettings.isTimeRandom);
-    CustomText.setIsWordRandom(customTextSettings.isWordRandom);
-    if (customTextSettings.isTimeRandom) {
-      CustomText.setTime(customTextSettings.time);
-    }
-    if (customTextSettings.isWordRandom) {
-      CustomText.setWord(customTextSettings.word);
-    }
-    CustomText.setDelimiter(customTextSettings.delimiter);
+    CustomText.setLimitMode(customTextSettings.limit.mode);
+    CustomText.setLimitValue(customTextSettings.limit.value);
+    CustomText.setPipeDelimiter(customTextSettings.pipeDelimiter);
+
     applied["custom text settings"] = "";
   }
 
@@ -187,14 +180,16 @@ export function loadTestSettingsFromUrl(getOverride?: string): void {
     applied["funbox"] = de[7];
   }
 
-  restartTest();
+  restartTest({
+    nosave: true,
+  });
 
   let appliedString = "";
 
   Object.keys(applied).forEach((setKey) => {
     const set = applied[setKey];
     if (set !== undefined) {
-      appliedString += `${setKey}${set ? ": " + set : ""}<br>`;
+      appliedString += `${setKey}${Misc.escapeHTML(set ? ": " + set : "")}<br>`;
     }
   });
 
@@ -204,4 +199,26 @@ export function loadTestSettingsFromUrl(getOverride?: string): void {
       allowHTML: true,
     });
   }
+}
+
+export function loadChallengeFromUrl(getOverride?: string): void {
+  const getValue = (
+    Misc.findGetParameter("challenge", getOverride) ?? ""
+  ).toLowerCase();
+  if (getValue === "") return;
+
+  Notifications.add("Loading challenge", 0);
+  ChallengeController.setup(getValue)
+    .then((result) => {
+      if (result === true) {
+        Notifications.add("Challenge loaded", 1);
+        restartTest({
+          nosave: true,
+        });
+      }
+    })
+    .catch((e) => {
+      Notifications.add("Failed to load challenge", -1);
+      console.error(e);
+    });
 }

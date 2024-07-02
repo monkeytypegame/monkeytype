@@ -1,10 +1,11 @@
 import * as DB from "../../db";
-import * as EditTagsPopup from "../../popups/edit-tags-popup";
+import * as EditTagsPopup from "../../modals/edit-tag";
 import * as ModesNotice from "../../elements/modes-notice";
 import * as TagController from "../../controllers/tag-controller";
 import Config from "../../config";
 import * as PaceCaret from "../../test/pace-caret";
 import { isAuthenticated } from "../../firebase";
+import AnimatedModal from "../../utils/animated-modal";
 
 const subgroup: MonkeyTypes.CommandsSubgroup = {
   title: "Change tags...",
@@ -16,7 +17,6 @@ const subgroup: MonkeyTypes.CommandsSubgroup = {
 
 const commands: MonkeyTypes.Command[] = [
   {
-    visible: false,
     id: "changeTags",
     display: "Tags...",
     icon: "fa-tag",
@@ -40,8 +40,13 @@ function update(): void {
       display: "Create tag",
       icon: "fa-plus",
       shouldFocusTestUI: false,
-      exec: (): void => {
-        EditTagsPopup.show("add");
+      exec: ({ commandlineModal }): void => {
+        EditTagsPopup.show(
+          "add",
+          undefined,
+          undefined,
+          commandlineModal as AnimatedModal
+        );
       },
     });
     return;
@@ -50,6 +55,7 @@ function update(): void {
     id: "clearTags",
     display: `Clear tags`,
     icon: "fa-times",
+    sticky: true,
     exec: (): void => {
       const snapshot = DB.getSnapshot();
       if (!snapshot) return;
@@ -71,6 +77,12 @@ function update(): void {
       id: "toggleTag" + tag._id,
       display: tag.display,
       sticky: true,
+      active: () => {
+        return (
+          DB.getSnapshot()?.tags?.find((t) => t._id === tag._id)?.active ??
+          false
+        );
+      },
       exec: async (): Promise<void> => {
         TagController.toggle(tag._id);
         void ModesNotice.update();
@@ -87,8 +99,14 @@ function update(): void {
     display: "Create tag",
     icon: "fa-plus",
     shouldFocusTestUI: false,
-    exec: (): void => {
-      EditTagsPopup.show("add");
+    opensModal: true,
+    exec: ({ commandlineModal }): void => {
+      EditTagsPopup.show(
+        "add",
+        undefined,
+        undefined,
+        commandlineModal as AnimatedModal
+      );
     },
   });
 }

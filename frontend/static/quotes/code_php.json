@@ -1,0 +1,131 @@
+{
+  "language": "code_php",
+  "groups": [
+    [0, 100],
+    [101, 300],
+    [301, 600],
+    [601, 9999]
+  ],
+  "quotes": [
+    {
+      "text": "abstract class SocialNetworkPoster\n{\n\tabstract public function getSocialNetwork(): SocialNetworkConnector;\n\n\tpublic function post($content): void\n\t{\n\t\t$network = $this->getSocialNetwork();\n\t\t$network->logIn();\n\t\t$network->createPost($content);\n\t\t$network->logout();\n\t}\n}",
+      "source": "refactoring.guru - factory-method",
+      "id": 1,
+      "length": 270
+    },
+    {
+      "text": "class FacebookPoster extends SocialNetworkPoster\n{\n\tprivate $login, $password;\n\n\tpublic function __construct(string $login, string $password)\n\t{\n\t\t$this->login = $login;\n\t\t$this->password = $password;\n\t}\n\n\tpublic function getSocialNetwork(): SocialNetworkConnector\n\t{\n\t\treturn new FacebookConnector($this->login, $this->password);\n\t}\n}",
+      "source": "refactoring.guru - factory-method",
+      "id": 2,
+      "length": 335
+    },
+    {
+      "text": "interface SocialNetworkConnector\n{\n\tpublic function logIn(): void;\n\n\tpublic function logOut(): void;\n\n\tpublic function createPost($content): void;\n}",
+      "source": "refactoring.guru - factory-method",
+      "id": 3,
+      "length": 148
+    },
+    {
+      "text": "class FacebookConnector implements SocialNetworkConnector\n{\n\tprivate $login, $password;\n\n\tpublic function __construct(string $login, string $password)\n\t{\n\t\t$this->login = $login;\n\t\t$this->password = $password;\n\t}\n\n\tpublic function logIn(): void\n\t{\n\t\techo \"Send HTTP API request to log in user $this->login with \" . \"password $this->password\";\n\t}\n\n\tpublic function logOut(): void\n\t{\n\t\techo \"Send HTTP API request to log out user $this->login\";\n\t}\n\n\tpublic function createPost($content): void\n\t{\n\t\techo \"Send HTTP API requests to create a post in Facebook timeline.\";\n\t}\n}",
+      "source": "refactoring.guru - factory-method",
+      "id": 4,
+      "length": 570
+    },
+    {
+      "text": "interface Notification\n{\n\tpublic function send(string $title, string $message);\n}",
+      "source": "refactoring.guru - adapter",
+      "id": 5,
+      "length": 81
+    },
+    {
+      "text": "class EmailNotification implements Notification\n{\n\tprivate $adminEmail;\n\n\tpublic function __construct(string $adminEmail)\n\t{\n\t\t$this->adminEmail = $adminEmail;\n\t}\n\n\tpublic function send(string $title, string $message): void\n\t{\n\t\tmail($this->adminEmail, $title, $message);\n\t\techo \"Sent email with title '$title' to '{$this->adminEmail}' that says '$message'.\";\n\t}\n}",
+      "source": "refactoring.guru - adapter",
+      "id": 6,
+      "length": 364
+    },
+    {
+      "text": "class SlackNotification implements Notification\n{\n\tprivate $slack;\n\tprivate $chatId;\n\n\tpublic function __construct(SlackApi $slack, string $chatId)\n\t{\n\t\t$this->slack = $slack;\n\t\t$this->chatId = $chatId;\n\t}\n\n\tpublic function send(string $title, string $message): void\n\t{\n\t\t$slackMessage = \"#\" . $title . \"# \" . strip_tags($message);\n\t\t$this->slack->logIn();\n\t\t$this->slack->sendMessage($this->chatId, $slackMessage);\n\t}\n}",
+      "source": "refactoring.guru - adapter",
+      "id": 7,
+      "length": 420
+    },
+    {
+      "text": "class Logger implements SplObserver\n{\n\tprivate $filename;\n\n\tpublic function __construct($filename)\n\t{\n\t\t$this->filename = $filename;\n\t\tif (file_exists($this->filename)) {\n\t\t\tunlink($this->filename);\n\t\t}\n\t}\n\n\tpublic function update(SplSubject $repository, string $event = null, $data = null): void\n\t{\n\t\t$entry = date(\"Y-m-d H:i:s\") . \": '$event' with data '\" . json_encode($data) . \"'\";\n\t\tfile_put_contents($this->filename, $entry, FILE_APPEND);\n\t\techo \"Logger: I've written '$event' entry to the log.\";\n\t}\n}",
+      "source": "refactoring.guru - observer",
+      "id": 8,
+      "length": 507
+    },
+    {
+      "text": "class OnboardingNotification implements SplObserver\n{\n\tprivate $adminEmail;\n\n\tpublic function __construct($adminEmail)\n\t{\n\t\t$this->adminEmail = $adminEmail;\n\t}\n\n\tpublic function update(SplSubject $repository, string $event = null, $data = null): void\n\t{\n\t\tmail(\n\t\t\t$this->adminEmail,\n\t\t\t\"Onboarding required\",\n\t\t\t\"We have a new user. Here's his info: \" . json_encode($data)\n\t\t);\n\n\t\techo \"OnboardingNotification: The notification has been emailed!\";\n\t}\n}",
+      "source": "refactoring.guru - observer",
+      "id": 9,
+      "length": 453
+    },
+    {
+      "text": "function bubbleSort(array &$array): void\n{\n\t$n = count($array);\n\tfor ($i = 0; $i < $n - 1; $i++) {\n\t\tfor ($j = 0; $j < $n - $i - 1; $j++) {\n\t\t\tif ($array[$j] > $array[$j + 1]) {\n\t\t\t\t// Swap the elements\n\t\t\t\t$temp = $array[$j];\n\t\t\t\t$array[$j] = $array[$j + 1];\n\t\t\t\t$array[$j + 1] = $temp;\n\t\t\t}\n\t\t}\n\t}\n}",
+      "source": "ChatGPT - bubble-sort",
+      "id": 10,
+      "length": 301
+    },
+    {
+      "text": "function insertionSort(array &$array): void\n{\n\t$n = count($array);\n\tfor ($i = 1; $i < $n; $i++) {\n\t\t$key = $array[$i];\n\t\t$j = $i - 1;\n\t\twhile ($j >= 0 && $array[$j] > $key) {\n\t\t\t$array[$j + 1] = $array[$j];\n\t\t\t$j--;\n\t\t}\n\t\t$array[$j + 1] = $key;\n\t}\n}",
+      "source": "ChatGPT - insertion-sort",
+      "id": 11,
+      "length": 249
+    },
+    {
+      "text": "function mergeSort(array &$array): void\n{\n\tif (count($array) > 1) {\n\t\t$mid = count($array) / 2;\n\t\t$left = array_slice($array, 0, $mid);\n\t\t$right = array_slice($array, $mid);\n\n\t\tmergeSort($left);\n\t\tmergeSort($right);\n\n\t\t$i = $j = $k = 0;\n\n\t\twhile ($i < count($left) && $j < count($right)) {\n\t\t\tif ($left[$i] < $right[$j]) {\n\t\t\t\t$array[$k] = $left[$i];\n\t\t\t\t$i++;\n\t\t\t} else {\n\t\t\t\t$array[$k] = $right[$j];\n\t\t\t\t$j++;\n\t\t\t}\n\t\t\t$k++;\n\t\t}\n\n\t\twhile ($i < count($left)) {\n\t\t\t$array[$k] = $left[$i];\n\t\t\t$i++;\n\t\t\t$k++;\n\t\t}\n\n\t\twhile ($j < count($right)) {\n\t\t\t$array[$k] = $right[$j];\n\t\t\t$j++;\n\t\t\t$k++;\n\t\t}\n\t}\n}",
+      "source": "ChatGPT - merge-sort",
+      "id": 12,
+      "length": 596
+    },
+    {
+      "text": "function fizzBuzz(): void\n{\n\tfor ($i = 1; $i <= 100; $i++) {\n\t\tif ($i % 3 == 0 && $i % 5 == 0) {\n\t\t\techo \"FizzBuzz\";\n\t\t} elseif ($i % 3 == 0) {\n\t\t\techo \"Fizz\";\n\t\t} elseif ($i % 5 == 0) {\n\t\t\techo \"Buzz\";\n\t\t} else {\n\t\t\techo $i . \"\";\n\t\t}\n\t}\n}",
+      "source": "ChatGPT - fizzbuzz",
+      "id": 13,
+      "length": 239
+    },
+    {
+      "text": "function fibonacci(int $n): array\n{\n\t$fib = [0, 1];\n\tfor ($i = 2; $i < $n; $i++) {\n\t\t$fib[] = $fib[$i - 1] + $fib[$i - 2];\n\t}\n\treturn $fib;\n}",
+      "source": "ChatGPT - fibonacci",
+      "id": 14,
+      "length": 141
+    },
+    {
+      "text": "function isPrime(int $num): bool\n{\n\tif ($num <= 1) return false;\n\tfor ($i = 2; $i <= sqrt($num); $i++) {\n\t\tif ($num % $i == 0) return false;\n\t}\n\treturn true;\n}\n\nfunction findPrimes(int $n): array\n{\n\t$primes = [];\n\tfor ($i = 2; $i <= $n; $i++) {\n\t\tif (isPrime($i)) {\n\t\t\t$primes[] = $i;\n\t\t}\n\t}\n\treturn $primes;\n}",
+      "source": "ChatGPT - prime-numbers",
+      "id": 15,
+      "length": 310
+    },
+    {
+      "text": "function findDuplicates(array $arr): array\n{\n\t$counts = array_count_values($arr);\n\t$duplicates = [];\n\tforeach ($counts as $key => $value) {\n\t\tif ($value > 1) {\n\t\t\t$duplicates[] = $key;\n\t\t}\n\t}\n\treturn $duplicates;\n}",
+      "source": "ChatGPT - find-duplicates",
+      "id": 16,
+      "length": 214
+    },
+    {
+      "text": "function mergeSortedArrays(array $arr1, array $arr2): array\n{\n\t$mergedArray = [];\n\t$i = $j = 0;\n\n\twhile ($i < count($arr1) && $j < count($arr2)) {\n\t\tif ($arr1[$i] < $arr2[$j]) {\n\t\t\t$mergedArray[] = $arr1[$i];\n\t\t\t$i++;\n\t\t} else {\n\t\t\t$mergedArray[] = $arr2[$j];\n\t\t\t$j++;\n\t\t}\n\t}\n\n\twhile ($i < count($arr1)) {\n\t\t$mergedArray[] = $arr1[$i];\n\t\t$i++;\n\t}\n\n\twhile ($j < count($arr2)) {\n\t\t$mergedArray[] = $arr2[$j];\n\t\t$j++;\n\t}\n\n\treturn $mergedArray;\n}",
+      "source": "ChatGPT - merge-sorted-arrays",
+      "id": 17,
+      "length": 442
+    },
+    {
+      "text": "function getTotal($products_costs, $tax)\n{\n\t$total = 0.00;\n\n\t$callback = function ($pricePerItem) use ($tax, &$total) {\n\t\t$total += $pricePerItem * ($tax + 1.0);\n\t};\n\n\tarray_walk($products_costs, $callback);\n\treturn round($total, 2);\n}",
+      "source": "php.net - array_walk",
+      "id": 18,
+      "length": 235
+    },
+    {
+      "text": "use Attribute;\n\n#[Attribute]\nclass MyAttribute\n{\n\tconst VALUE = 'value';\n\n\tprivate $value;\n\n\tpublic function __construct($value = null)\n\t{\n\t\t$this->value = $value;\n\t}\n}",
+      "source": "php.net - attributes",
+      "id": 19,
+      "length": 168
+    },
+    {
+      "text": "$age = 18;\n\n$output = match (true) {\n\t$age < 2 => \"Baby\",\n\t$age < 13 => \"Child\",\n\t$age <= 19 => \"Teenager\",\n\t$age > 19 => \"Young adult\",\n\t$age >= 40 => \"Old adult\"\n};\n\nvar_dump($output);",
+      "source": "php.net - match-comparison-operators",
+      "id": 20,
+      "length": 186
+    }
+  ]
+}

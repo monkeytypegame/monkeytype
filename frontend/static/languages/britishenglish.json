@@ -523,6 +523,7 @@
   ["realization", "realisation"],
   ["license", "licence"],
   ["mom", "mum"],
+  ["mom'll", "mum'll"],
   ["favor", "favour"],
   ["favors", "favours"],
   ["favorites", "favourites"],
@@ -631,5 +632,13 @@
   ["emphasizing", "emphasising"],
   ["fetus", "foetus"],
   ["fiber", "fibre"],
-  ["programs", "programmes"]
+  ["programs", "programmes"],
+  ["yogurt", "yoghurt"],
+  ["valor", "valour"],
+  ["moisturize", "moisturise"],
+  ["moisturized", "moisturised"],
+  ["moisturizes", "moisturises"],
+  ["moisturizing", "moisturising"],
+  ["favoring", "favouring"],
+  ["marvelous", "marvellous"]
 ]

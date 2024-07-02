@@ -58,12 +58,15 @@ Chart.defaults.elements.line.tension = 0.3;
 Chart.defaults.elements.line.fill = "origin";
 
 import "chartjs-adapter-date-fns";
-import format from "date-fns/format";
+import { format } from "date-fns/format";
 import Config from "../config";
 import * as ThemeColors from "../elements/theme-colors";
 import * as ConfigEvent from "../observables/config-event";
 import * as TestInput from "../test/test-input";
-import * as Misc from "../utils/misc";
+import * as DateTime from "../utils/date-and-time";
+import * as Arrays from "../utils/arrays";
+import * as Numbers from "../utils/numbers";
+import { blendTwoHexColors } from "../utils/colors";
 
 class ChartWithUpdateColors<
   TType extends ChartType = ChartType,
@@ -242,7 +245,8 @@ export const result = new ChartWithUpdateColors<
 
               const unique = [...new Set(wordsToHighlight)];
               const firstHighlightWordIndex = unique[0];
-              const lastHighlightWordIndex = unique[unique.length - 1];
+              const lastHighlightWordIndex =
+                Arrays.lastElementFromArray(unique);
               if (
                 firstHighlightWordIndex === undefined ||
                 lastHighlightWordIndex === undefined
@@ -496,9 +500,9 @@ export const accountHistory = new ChartWithUpdateColors<
                 const resultData = tooltipItem.dataset.data[
                   tooltipItem.dataIndex
                 ] as MonkeyTypes.AccChartData;
-                return `error rate: ${Misc.roundTo2(
+                return `error rate: ${Numbers.roundTo2(
                   resultData.errorRate
-                )}%\nacc: ${Misc.roundTo2(100 - resultData.errorRate)}%`;
+                )}%\nacc: ${Numbers.roundTo2(100 - resultData.errorRate)}%`;
               }
               const resultData = tooltipItem.dataset.data[
                 tooltipItem.dataIndex
@@ -674,13 +678,13 @@ export const accountActivity = new ChartWithUpdateColors<
               ] as MonkeyTypes.ActivityChartDataPoint;
               switch (tooltipItem.datasetIndex) {
                 case 0:
-                  return `Time Typing: ${Misc.secondsToString(
+                  return `Time Typing: ${DateTime.secondsToString(
                     Math.round(resultData.y * 60),
                     true,
                     true
                   )}\nTests Completed: ${resultData.amount}`;
                 case 1:
-                  return `Average ${Config.typingSpeedUnit}: ${Misc.roundTo2(
+                  return `Average ${Config.typingSpeedUnit}: ${Numbers.roundTo2(
                     resultData.y
                   )}`;
                 default:
@@ -777,7 +781,7 @@ export const accountHistogram = new ChartWithUpdateColors<
           //     ] as MonkeyTypes.ActivityChartDataPoint;
           //     switch (tooltipItem.datasetIndex) {
           //       case 0:
-          //         return `Time Typing: ${Misc.secondsToString(
+          //         return `Time Typing: ${DateTime.secondsToString(
           //           Math.round(resultData.y),
           //           true,
           //           true
@@ -785,7 +789,7 @@ export const accountHistogram = new ChartWithUpdateColors<
           //       case 1:
           //         return `Average ${
           //           Config.typingSpeedUnit
-          //         }: ${Misc.roundTo2(resultData.y)}`;
+          //         }: ${Numbers.roundTo2(resultData.y)}`;
           //       default:
           //         return "";
           //     }
@@ -1113,7 +1117,7 @@ async function updateColors<
   const errorcolor = await ThemeColors.get("error");
   const textcolor = await ThemeColors.get("text");
 
-  const gridcolor = Misc.blendTwoHexColors(bgcolor, subaltcolor, 0.75);
+  const gridcolor = blendTwoHexColors(bgcolor, subaltcolor, 0.75);
 
   //@ts-expect-error
   chart.data.datasets[0].borderColor = (ctx): string => {
@@ -1182,12 +1186,12 @@ async function updateColors<
     const avg10On = Config.accountChart[2] === "on";
     const avg100On = Config.accountChart[3] === "on";
 
-    const text02 = Misc.blendTwoHexColors(bgcolor, textcolor, 0.2);
-    const main02 = Misc.blendTwoHexColors(bgcolor, maincolor, 0.2);
-    const main04 = Misc.blendTwoHexColors(bgcolor, maincolor, 0.4);
+    const text02 = blendTwoHexColors(bgcolor, textcolor, 0.2);
+    const main02 = blendTwoHexColors(bgcolor, maincolor, 0.2);
+    const main04 = blendTwoHexColors(bgcolor, maincolor, 0.4);
 
-    const sub02 = Misc.blendTwoHexColors(bgcolor, subcolor, 0.2);
-    const sub04 = Misc.blendTwoHexColors(bgcolor, subcolor, 0.4);
+    const sub02 = blendTwoHexColors(bgcolor, subcolor, 0.2);
+    const sub04 = blendTwoHexColors(bgcolor, subcolor, 0.4);
 
     const [
       wpmDataset,

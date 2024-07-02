@@ -9,12 +9,16 @@ import * as Caret from "./caret";
 import * as OutOfFocus from "./out-of-focus";
 import * as Replay from "./replay";
 import * as Misc from "../utils/misc";
+import * as Strings from "../utils/strings";
+import * as JSONData from "../utils/json-data";
+import * as Numbers from "../utils/numbers";
+import { blendTwoHexColors } from "../utils/colors";
 import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
 import * as SlowTimer from "../states/slow-timer";
 import * as CompositionState from "../states/composition";
 import * as ConfigEvent from "../observables/config-event";
 import * as Hangul from "hangul-js";
-import format from "date-fns/format";
+import { format } from "date-fns/format";
 import { isAuthenticated } from "../firebase";
 import { skipXpBreakdown } from "../elements/account-button";
 import * as FunboxList from "./funbox/funbox-list";
@@ -29,12 +33,88 @@ async function gethtml2canvas(): Promise<typeof import("html2canvas").default> {
   return (await import("html2canvas")).default;
 }
 
+function createHintsHtml(
+  incorrectLtrIndices: number[][],
+  activeWordLetters: NodeListOf<Element>,
+  inputWord: string
+): string {
+  let hintsHtml = "";
+  for (const adjacentLetters of incorrectLtrIndices) {
+    for (const indx of adjacentLetters) {
+      const blockLeft = (activeWordLetters[indx] as HTMLElement).offsetLeft;
+      const blockWidth = (activeWordLetters[indx] as HTMLElement).offsetWidth;
+      const blockIndices = `[${indx}]`;
+      const blockChars = inputWord[indx];
+
+      hintsHtml +=
+        `<hint data-length=1 data-chars-index=${blockIndices}` +
+        ` style="left: ${blockLeft + blockWidth / 2}px;">${blockChars}</hint>`;
+    }
+  }
+  hintsHtml = `<div class="hints">${hintsHtml}</div>`;
+  return hintsHtml;
+}
+
+async function joinOverlappingHints(
+  incorrectLtrIndices: number[][],
+  activeWordLetters: NodeListOf<Element>,
+  hintElements: HTMLCollection
+): Promise<void> {
+  const currentLanguage = await JSONData.getCurrentLanguage(Config.language);
+  const isLanguageRTL = currentLanguage.rightToLeft;
+
+  let i = 0;
+  for (const adjacentLetters of incorrectLtrIndices) {
+    for (let j = 0; j < adjacentLetters.length - 1; j++) {
+      const block1El = hintElements[i] as HTMLElement;
+      const block2El = hintElements[i + 1] as HTMLElement;
+      const leftBlock = isLanguageRTL ? block2El : block1El;
+      const rightBlock = isLanguageRTL ? block1El : block2El;
+
+      /** HintBlock.offsetLeft is at the center line of corresponding letters
+       * then "transform: translate(-50%)" aligns hints with letters */
+      if (
+        leftBlock.offsetLeft + leftBlock.offsetWidth / 2 >
+        rightBlock.offsetLeft - rightBlock.offsetWidth / 2
+      ) {
+        block1El.dataset["length"] = (
+          parseInt(block1El.dataset["length"] ?? "1") +
+          parseInt(block2El.dataset["length"] ?? "1")
+        ).toString();
+
+        const block1Indices = block1El.dataset["charsIndex"] ?? "[]";
+        const block2Indices = block2El.dataset["charsIndex"] ?? "[]";
+        block1El.dataset["charsIndex"] =
+          block1Indices.slice(0, -1) + "," + block2Indices.slice(1);
+
+        const letter1Index = adjacentLetters[j] ?? 0;
+        const newLeft =
+          (activeWordLetters[letter1Index] as HTMLElement).offsetLeft +
+          (isLanguageRTL
+            ? (activeWordLetters[letter1Index] as HTMLElement).offsetWidth
+            : 0) +
+          (block2El.offsetLeft - block1El.offsetLeft);
+        block1El.style.left = newLeft.toString() + "px";
+
+        block1El.insertAdjacentHTML("beforeend", block2El.innerHTML);
+
+        block2El.remove();
+        adjacentLetters.splice(j + 1, 1);
+        i -= j === 0 ? 1 : 2;
+        j -= j === 0 ? 1 : 2;
+      }
+      i++;
+    }
+    i++;
+  }
+}
+
 const debouncedZipfCheck = debounce(250, async () => {
   const supports = await Misc.checkIfLanguageSupportsZipf(Config.language);
   if (supports === "no") {
     Notifications.add(
-      `${Misc.capitalizeFirstLetter(
-        Misc.getLanguageDisplayString(Config.language)
+      `${Strings.capitalizeFirstLetter(
+        Strings.getLanguageDisplayString(Config.language)
       )} does not support Zipf funbox, because the list is not ordered by frequency. Please try another word list.`,
       0,
       {
@@ -44,8 +124,8 @@ const debouncedZipfCheck = debounce(250, async () => {
   }
   if (supports === "unknown") {
     Notifications.add(
-      `${Misc.capitalizeFirstLetter(
-        Misc.getLanguageDisplayString(Config.language)
+      `${Strings.capitalizeFirstLetter(
+        Strings.getLanguageDisplayString(Config.language)
       )} may not support Zipf funbox, because we don't know if it's ordered by frequency or not. If you would like to add this label, please contact us.`,
       0,
       {
@@ -65,21 +145,25 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
   if (eventKey === "fontSize" && !nosave) {
     OutOfFocus.hide();
     updateWordsHeight(true);
-    updateWordsInputPosition(true);
+    void updateWordsInputPosition(true);
   }
+  if (eventKey === "fontSize" || eventKey === "fontFamily")
+    updateHintsPosition().catch((e) => {
+      console.error(e);
+    });
 
   if (eventKey === "theme") void applyBurstHeatmap();
 
   if (eventValue === undefined) return;
   if (eventKey === "highlightMode") {
     highlightMode(eventValue as SharedTypes.Config.HighlightMode);
-    updateActiveElement();
+    if (ActivePage.get() === "test") updateActiveElement();
   }
 
   if (typeof eventValue !== "boolean") return;
   if (eventKey === "flipTestColors") flipColors(eventValue);
   if (eventKey === "colorfulMode") colorful(eventValue);
-  if (eventKey === "highlightMode") updateWordElement(eventValue);
+  if (eventKey === "highlightMode") void updateWordElement(eventValue);
   if (eventKey === "burstHeatmap") void applyBurstHeatmap();
 });
 
@@ -142,29 +226,85 @@ export function updateActiveElement(
   if (Config.mode === "zen" && backspace) {
     active?.remove();
   } else if (active !== null) {
-    if (Config.highlightMode === "word") {
+    if (
+      ["word", "next_word", "next_two_words", "next_three_words"].includes(
+        Config.highlightMode
+      )
+    ) {
       active.querySelectorAll("letter").forEach((e) => {
         e.classList.remove("correct");
       });
     }
     active.classList.remove("active");
   }
-  try {
-    const activeWord = document.querySelectorAll("#words .word")[
-      currentWordElementIndex
-    ] as Element;
-    activeWord.classList.add("active");
-    activeWord.classList.remove("error");
-    activeWordTop = (document.querySelector("#words .active") as HTMLElement)
-      .offsetTop;
-    if (Config.highlightMode === "word") {
-      activeWord.querySelectorAll("letter").forEach((e) => {
-        e.classList.add("correct");
-      });
-    }
-  } catch (e) {}
+  const activeWord =
+    document.querySelectorAll("#words .word")[currentWordElementIndex];
+
+  if (activeWord == undefined) {
+    throw new Error("activeWord is undefined - can't update active element");
+  }
+
+  activeWord.classList.add("active");
+  activeWord.classList.remove("error");
+  activeWordTop = (document.querySelector("#words .active") as HTMLElement)
+    .offsetTop;
+  if (Config.highlightMode === "word") {
+    activeWord.querySelectorAll("letter").forEach((e) => {
+      e.classList.add("correct");
+    });
+  }
   if (!initial && shouldUpdateWordsInputPosition()) {
-    updateWordsInputPosition();
+    void updateWordsInputPosition();
+  }
+  if (Config.tapeMode !== "off") {
+    scrollTape();
+  }
+}
+
+async function updateHintsPosition(): Promise<void> {
+  if (
+    ActivePage.get() !== "test" ||
+    resultVisible ||
+    Config.indicateTypos !== "below"
+  )
+    return;
+
+  const currentLanguage = await JSONData.getCurrentLanguage(Config.language);
+  const isLanguageRTL = currentLanguage.rightToLeft;
+
+  let wordEl: HTMLElement | undefined;
+  let letterElements: NodeListOf<Element> | undefined;
+
+  const hintElements = document
+    .getElementById("words")
+    ?.querySelectorAll("div.word > div.hints > hint");
+  for (let i = 0; i < (hintElements?.length ?? 0); i++) {
+    const hintEl = hintElements?.[i] as HTMLElement;
+
+    if (!wordEl || hintEl.parentElement?.parentElement !== wordEl) {
+      wordEl = hintEl.parentElement?.parentElement as HTMLElement;
+      letterElements = wordEl?.querySelectorAll("letter");
+    }
+
+    const letterIndices = hintEl.dataset["charsIndex"]
+      ?.slice(1, -1)
+      .split(",")
+      .map((indx) => parseInt(indx));
+    const leftmostIndx = isLanguageRTL
+      ? parseInt(hintEl.dataset["length"] ?? "1") - 1
+      : 0;
+    let newLeft = (
+      letterElements?.[letterIndices?.[leftmostIndx] ?? 0] as HTMLElement
+    ).offsetLeft;
+    const lettersWidth =
+      letterIndices?.reduce(
+        (accum, curr) =>
+          accum + (letterElements?.[curr] as HTMLElement).offsetWidth,
+        0
+      ) ?? 0;
+    newLeft += lettersWidth / 2;
+
+    hintEl.style.left = newLeft.toString() + "px";
   }
 }
 
@@ -222,10 +362,13 @@ export function showWords(): void {
 
   $("#words").html(wordsHTML);
 
+  updateWordsWidth();
   updateWordsHeight(true);
   updateActiveElement(undefined, true);
-  void Caret.updatePosition();
-  updateWordsInputPosition(true);
+  setTimeout(() => {
+    void Caret.updatePosition();
+  }, 125);
+  void updateWordsInputPosition(true);
 }
 
 const posUpdateLangList = ["japanese", "chinese", "korean"];
@@ -234,9 +377,13 @@ function shouldUpdateWordsInputPosition(): boolean {
   return language || (Config.mode !== "time" && Config.showAllLines);
 }
 
-export function updateWordsInputPosition(initial = false): void {
+export async function updateWordsInputPosition(initial = false): Promise<void> {
   if (ActivePage.get() !== "test") return;
   if (Config.tapeMode !== "off" && !initial) return;
+
+  const currentLanguage = await JSONData.getCurrentLanguage(Config.language);
+  const isLanguageRTL = currentLanguage.rightToLeft;
+
   const el = document.querySelector("#wordsInput") as HTMLElement;
   const activeWord = document.querySelector(
     "#words .active"
@@ -252,13 +399,13 @@ export function updateWordsInputPosition(initial = false): void {
   const activeWordMargin =
     parseInt(computed.marginTop) + parseInt(computed.marginBottom);
 
-  const wordsWrapperTop =
-    (document.querySelector("#wordsWrapper") as HTMLElement | null)
-      ?.offsetTop ?? 0;
+  // const wordsWrapperTop =
+  //   (document.querySelector("#wordsWrapper") as HTMLElement | null)
+  //     ?.offsetTop ?? 0;
 
   if (Config.tapeMode !== "off") {
     el.style.top =
-      wordsWrapperTop +
+      // wordsWrapperTop +
       activeWord.offsetHeight +
       activeWordMargin * 0.25 +
       -el.offsetHeight +
@@ -267,27 +414,26 @@ export function updateWordsInputPosition(initial = false): void {
     return;
   }
 
+  if (isLanguageRTL) {
+    el.style.left =
+      activeWord.offsetLeft - el.offsetWidth + activeWord.offsetWidth + "px";
+  } else {
+    el.style.left = activeWord.offsetLeft + "px";
+  }
+
   if (
     initial &&
     !posUpdateLangList.some((l) => Config.language.startsWith(l))
   ) {
-    el.style.left = "0px";
     el.style.top =
-      wordsWrapperTop +
-      activeWord.offsetHeight * 2 +
-      activeWordMargin * 1.5 +
+      activeWord.offsetTop +
+      activeWord.offsetHeight +
       -el.offsetHeight +
+      (activeWord.offsetHeight + activeWordMargin) +
       "px";
   } else {
-    el.style.left = activeWord.offsetLeft + "px";
     el.style.top =
-      activeWord.offsetTop -
-      activeWordMargin +
-      wordsWrapperTop +
-      activeWord.offsetHeight +
-      activeWordMargin +
-      -el.offsetHeight +
-      "px";
+      activeWord.offsetTop + activeWord.offsetHeight + -el.offsetHeight + "px";
   }
 }
 
@@ -304,8 +450,8 @@ function updateWordsHeight(force = false): void {
   if (
     Config.showAllLines &&
     Config.mode !== "time" &&
-    !(CustomText.isWordRandom && CustomText.word === 0) &&
-    !CustomText.isTimeRandom
+    CustomText.getLimitMode() !== "time" &&
+    CustomText.getLimitValue() !== 0
   ) {
     $("#words")
       .css("height", "auto")
@@ -319,7 +465,10 @@ function updateWordsHeight(force = false): void {
     if (nh > wordsHeight) {
       nh = wordsHeight;
     }
-    $(".outOfFocusWarning").css("line-height", nh + "px");
+    $(".outOfFocusWarning").css(
+      "margin-top",
+      wordHeight + Numbers.convertRemToPixels(1) / 2 + "px"
+    );
   } else {
     let finalWordsHeight: number, finalWrapperHeight: number;
 
@@ -362,15 +511,19 @@ function updateWordsHeight(force = false): void {
       .css("overflow", "hidden");
 
     if (Config.tapeMode !== "off") {
-      $("#words").css("width", "200%").css("margin-left", "50%");
+      $("#words").width("200vw");
+      scrollTape();
     } else {
-      $("#words").css("width", "100%").css("margin-left", "unset");
+      $("#words").css({ marginLeft: "unset", width: "" });
     }
 
     $("#wordsWrapper")
       .css("height", finalWrapperHeight + "px")
       .css("overflow", "hidden");
-    $(".outOfFocusWarning").css("line-height", finalWrapperHeight + "px");
+    $(".outOfFocusWarning").css(
+      "margin-top",
+      finalWrapperHeight / 2 - Numbers.convertRemToPixels(1) / 2 + "px"
+    );
   }
 
   if (Config.mode === "zen") {
@@ -405,8 +558,8 @@ export async function screenshot(): Promise<void> {
 
   let revertCookie = false;
   if (
-    Misc.isElementVisible("#cookiePopupWrapper") ||
-    document.contains(document.querySelector("#cookiePopupWrapper"))
+    Misc.isElementVisible("#cookiesModal") ||
+    document.contains(document.querySelector("#cookiesModal"))
   ) {
     revertCookie = true;
   }
@@ -428,7 +581,7 @@ export async function screenshot(): Promise<void> {
     $("#result").removeClass("noBalloons");
     $(".wordInputHighlight").removeClass("hidden");
     $(".highlightContainer").removeClass("hidden");
-    if (revertCookie) $("#cookiePopupWrapper").removeClass("hidden");
+    if (revertCookie) $("#cookiesModal").removeClass("hidden");
     if (revealReplay) $("#resultReplay").removeClass("hidden");
     if (!isAuthenticated()) {
       $(".pageTest .loginTip").removeClass("hidden");
@@ -475,7 +628,7 @@ export async function screenshot(): Promise<void> {
   $("#result").addClass("noBalloons");
   $(".wordInputHighlight").addClass("hidden");
   $(".highlightContainer").addClass("hidden");
-  if (revertCookie) $("#cookiePopupWrapper").addClass("hidden");
+  if (revertCookie) $("#cookiesModal").addClass("hidden");
 
   FunboxList.get(Config.funbox).forEach((f) => f.functions?.clearGlobal?.());
 
@@ -483,7 +636,7 @@ export async function screenshot(): Promise<void> {
   window.scrollTo({
     top: 0,
   });
-  const src = $("#result");
+  const src = $("#result .wrapper");
   const sourceX = src.offset()?.left ?? 0; /*X position from div#target*/
   const sourceY = src.offset()?.top ?? 0; /*Y position from div#target*/
   const sourceWidth = src.outerWidth(
@@ -493,8 +646,8 @@ export async function screenshot(): Promise<void> {
     true
   ) as number; /*clientHeight/offsetHeight from div#target*/
   try {
-    const paddingX = Misc.convertRemToPixels(2);
-    const paddingY = Misc.convertRemToPixels(2);
+    const paddingX = Numbers.convertRemToPixels(2);
+    const paddingY = Numbers.convertRemToPixels(2);
 
     const canvas = await (
       await gethtml2canvas()
@@ -564,15 +717,18 @@ export async function screenshot(): Promise<void> {
   }, 3000);
 }
 
-export function updateWordElement(
+export async function updateWordElement(
   showError = !Config.blindMode,
   inputOverride?: string
-): void {
+): Promise<void> {
   const input = inputOverride ?? TestInput.input.current;
-  const wordAtIndex = document.querySelector("#words .word.active") as Element;
+  const wordAtIndex = document.querySelector(
+    "#words .word.active"
+  ) as HTMLElement;
   const currentWord = TestWords.words.getCurrent();
   if (!currentWord && Config.mode !== "zen") return;
   let ret = "";
+  const hintIndices: number[][] = [];
 
   let newlineafter = false;
 
@@ -634,12 +790,15 @@ export function updateWordElement(
     const funbox = FunboxList.get(Config.funbox).find(
       (f) => f.functions?.getWordHtml
     );
+    const isTts = FunboxList.get(Config.funbox).find((it) => it.name === "tts");
+
     for (let i = 0; i < input.length; i++) {
       const charCorrect = currentWord[i] === input[i];
 
       let correctClass = "correct";
       if (Config.highlightMode === "off") {
         correctClass = "";
+        if (isTts) correctClass = "visible";
       }
 
       let currentLetter = currentWord[i] as string;
@@ -705,8 +864,15 @@ export function updateWordElement(
               ? "_"
               : input[i]
             : currentLetter) +
-          (Config.indicateTypos === "below" ? `<hint>${input[i]}</hint>` : "") +
           "</letter>";
+        if (Config.indicateTypos === "below") {
+          if (!hintIndices?.length) hintIndices.push([i]);
+          else {
+            const lastblock = hintIndices[hintIndices.length - 1];
+            if (lastblock?.[lastblock.length - 1] === i - 1) lastblock.push(i);
+            else hintIndices.push([i]);
+          }
+        }
       }
     }
 
@@ -735,8 +901,21 @@ export function updateWordElement(
       }
     }
   }
+
   wordAtIndex.innerHTML = ret;
+
+  if (hintIndices?.length) {
+    const activeWordLetters = wordAtIndex.querySelectorAll("letter");
+    const hintsHtml = createHintsHtml(hintIndices, activeWordLetters, input);
+    wordAtIndex.insertAdjacentHTML("beforeend", hintsHtml);
+    const hintElements = wordAtIndex.getElementsByTagName("hint");
+    await joinOverlappingHints(hintIndices, activeWordLetters, hintElements);
+  }
+
   if (newlineafter) $("#words").append("<div class='newline'></div>");
+  if (Config.tapeMode !== "off") {
+    scrollTape();
+  }
 }
 
 export function scrollTape(): void {
@@ -796,13 +975,13 @@ export function scrollTape(): void {
 }
 
 export function updatePremid(): void {
-  const mode2 = Misc.getMode2(Config, TestWords.randomQuote);
+  const mode2 = Misc.getMode2(Config, TestWords.currentQuote);
   let fbtext = "";
   if (Config.funbox !== "none") {
     fbtext = " " + Config.funbox.split("#").join(" ");
   }
   $(".pageTest #premidTestMode").text(
-    `${Config.mode} ${mode2} ${Misc.getLanguageDisplayString(
+    `${Config.mode} ${mode2} ${Strings.getLanguageDisplayString(
       Config.language
     )}${fbtext}`
   );
@@ -944,7 +1123,7 @@ async function loadWordsHistory(): Promise<boolean> {
       input?.match(
         /[\uac00-\ud7af]|[\u1100-\u11ff]|[\u3130-\u318f]|[\ua960-\ua97f]|[\ud7b0-\ud7ff]/g
       ) !== null ||
-      word.match(
+      word?.match(
         /[\uac00-\ud7af]|[\u1100-\u11ff]|[\u3130-\u318f]|[\ua960-\ua97f]|[\ud7b0-\ud7ff]/g
       ) !== null;
     let wordEl = "";
@@ -1138,9 +1317,9 @@ export async function applyBurstHeatmap(): Promise<void> {
 
     let colors = [
       themeColors.colorfulError,
-      Misc.blendTwoHexColors(themeColors.colorfulError, themeColors.text, 0.5),
+      blendTwoHexColors(themeColors.colorfulError, themeColors.text, 0.5),
       themeColors.text,
-      Misc.blendTwoHexColors(themeColors.main, themeColors.text, 0.5),
+      blendTwoHexColors(themeColors.main, themeColors.text, 0.5),
       themeColors.main,
     ];
     let unreachedColor = themeColors.sub;
@@ -1148,13 +1327,9 @@ export async function applyBurstHeatmap(): Promise<void> {
     if (themeColors.main === themeColors.text) {
       colors = [
         themeColors.colorfulError,
-        Misc.blendTwoHexColors(
-          themeColors.colorfulError,
-          themeColors.text,
-          0.5
-        ),
+        blendTwoHexColors(themeColors.colorfulError, themeColors.text, 0.5),
         themeColors.sub,
-        Misc.blendTwoHexColors(themeColors.sub, themeColors.text, 0.5),
+        blendTwoHexColors(themeColors.sub, themeColors.text, 0.5),
         themeColors.main,
       ];
       unreachedColor = themeColors.subAlt;
@@ -1236,9 +1411,14 @@ export async function applyBurstHeatmap(): Promise<void> {
   }
 }
 
-export function highlightBadWord(index: number, showError: boolean): void {
-  if (!showError) return;
+export function highlightBadWord(index: number): void {
   $($("#words .word")[index] as HTMLElement).addClass("error");
+}
+
+export function highlightAllLettersAsCorrect(wordIndex: number): void {
+  $($("#words .word")[wordIndex] as HTMLElement)
+    .find("letter")
+    .addClass("correct");
 }
 
 export function highlightMode(mode?: SharedTypes.Config.HighlightMode): void {
@@ -1252,6 +1432,80 @@ export function highlightMode(mode?: SharedTypes.Config.HighlightMode): void {
   }
 
   $("#words").attr("class", existing.join(" "));
+}
+
+function updateWordsWidth(): void {
+  let css: Record<string, string> = {};
+  if (Config.tapeMode === "off") {
+    if (Config.maxLineWidth === 0) {
+      css = {
+        "max-width": "100%",
+      };
+    } else {
+      css = {
+        "max-width": Config.maxLineWidth + "ch",
+      };
+    }
+  } else {
+    if (Config.maxLineWidth === 0) {
+      css = {
+        "max-width": "100%",
+      };
+    } else {
+      css = {
+        "max-width": "100%",
+      };
+    }
+  }
+  const el = $("#typingTest");
+  el.css(css);
+  if (Config.maxLineWidth === 0) {
+    el.removeClass("full-width-padding").addClass("content");
+  } else {
+    el.removeClass("content").addClass("full-width-padding");
+  }
+}
+
+function updateLiveStatsOpacity(value: SharedTypes.Config.TimerOpacity): void {
+  $("#barTimerProgress").css("opacity", parseFloat(value as string));
+  $("#liveStatsTextTop").css("opacity", parseFloat(value as string));
+  $("#liveStatsTextBottom").css("opacity", parseFloat(value as string));
+  $("#liveStatsMini").css("opacity", parseFloat(value as string));
+}
+
+function updateLiveStatsColor(value: SharedTypes.Config.TimerColor): void {
+  $("#barTimerProgress").removeClass("timerSub");
+  $("#barTimerProgress").removeClass("timerText");
+  $("#barTimerProgress").removeClass("timerMain");
+
+  $("#liveStatsTextTop").removeClass("timerSub");
+  $("#liveStatsTextTop").removeClass("timerText");
+  $("#liveStatsTextTop").removeClass("timerMain");
+
+  $("#liveStatsTextBottom").removeClass("timerSub");
+  $("#liveStatsTextBottom").removeClass("timerText");
+  $("#liveStatsTextBottom").removeClass("timerMain");
+
+  $("#liveStatsMini").removeClass("timerSub");
+  $("#liveStatsMini").removeClass("timerText");
+  $("#liveStatsMini").removeClass("timerMain");
+
+  if (value === "main") {
+    $("#barTimerProgress").addClass("timerMain");
+    $("#liveStatsTextTop").addClass("timerMain");
+    $("#liveStatsTextBottom").addClass("timerMain");
+    $("#liveStatsMini").addClass("timerMain");
+  } else if (value === "sub") {
+    $("#barTimerProgress").addClass("timerSub");
+    $("#liveStatsTextTop").addClass("timerSub");
+    $("#liveStatsTextBottom").addClass("timerSub");
+    $("#liveStatsMini").addClass("timerSub");
+  } else if (value === "text") {
+    $("#barTimerProgress").addClass("timerText");
+    $("#liveStatsTextTop").addClass("timerText");
+    $("#liveStatsTextBottom").addClass("timerText");
+    $("#liveStatsMini").addClass("timerText");
+  }
 }
 
 $(".pageTest").on("click", "#saveScreenshotButton", () => {
@@ -1337,7 +1591,9 @@ addEventListener("resize", () => {
   ResultWordHighlight.destroy();
 });
 
-$("#wordsInput").on("focus", () => {
+$("#wordsInput").on("focus", (e) => {
+  const wordsFocused = e.target === document.activeElement;
+  if (!wordsFocused) return;
   if (!resultVisible && Config.showOutOfFocusWarning) {
     OutOfFocus.hide();
   }
@@ -1372,5 +1628,14 @@ ConfigEvent.subscribe((key, value) => {
     } else {
       $(".pageTest #restartTestButton").addClass("hidden");
     }
+  }
+  if (key === "maxLineWidth") {
+    updateWordsWidth();
+  }
+  if (key === "timerOpacity") {
+    updateLiveStatsOpacity(value as SharedTypes.Config.TimerOpacity);
+  }
+  if (key === "timerColor") {
+    updateLiveStatsColor(value as SharedTypes.Config.TimerColor);
   }
 });

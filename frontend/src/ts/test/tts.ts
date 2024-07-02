@@ -1,5 +1,5 @@
 import Config from "../config";
-import * as Misc from "../utils/misc";
+import * as JSONData from "../utils/json-data";
 import * as ConfigEvent from "../observables/config-event";
 import * as TTSEvent from "../observables/tts-event";
 
@@ -7,7 +7,7 @@ let voice: SpeechSynthesisUtterance | undefined;
 
 export async function setLanguage(lang = Config.language): Promise<void> {
   if (!voice) return;
-  const language = await Misc.getLanguage(lang);
+  const language = await JSONData.getLanguage(lang);
   const bcp = language.bcp47 ?? "en-US";
   voice.lang = bcp;
 }

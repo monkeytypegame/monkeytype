@@ -1,10 +1,6 @@
 const fs = require("fs");
-const V = require("jsonschema").Validator;
-const JSONValidator = new V();
-
-function escapeRegExp(str) {
-  return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-}
+const Ajv = require("ajv");
+const ajv = new Ajv();
 
 function findDuplicates(words) {
   const wordFrequencies = {};
@@ -42,12 +38,12 @@ function validateOthers() {
         required: ["name"],
       },
     };
-    const fontsValidator = JSONValidator.validate(fontsData, fontsSchema);
-    if (fontsValidator.valid) {
+    const fontsValidator = ajv.compile(fontsSchema);
+    if (fontsValidator(fontsData)) {
       console.log("Fonts JSON schema is \u001b[32mvalid\u001b[0m");
     } else {
       console.log("Fonts JSON schema is \u001b[31minvalid\u001b[0m");
-      return reject(new Error(fontsValidator.errors));
+      return reject(new Error(fontsValidator.errors[0].message));
     }
 
     //funbox
@@ -70,12 +66,12 @@ function validateOthers() {
         required: ["name", "info", "canGetPb"],
       },
     };
-    const funboxValidator = JSONValidator.validate(funboxData, funboxSchema);
-    if (funboxValidator.valid) {
-      console.log("Funbox JSON schema is \u001b[32mvalid\u001b[0m");
+    const funboxValidator = ajv.compile(funboxSchema);
+    if (funboxValidator(funboxData)) {
+      console.log("Funbox list JSON schema is \u001b[32mvalid\u001b[0m");
     } else {
-      console.log("Funbox JSON schema is \u001b[31minvalid\u001b[0m");
-      return reject(new Error(funboxValidator.errors));
+      console.log("Funbox list JSON schema is \u001b[31minvalid\u001b[0m");
+      return reject(new Error(funboxValidator.errors[0].message));
     }
 
     //themes
@@ -97,12 +93,12 @@ function validateOthers() {
         required: ["name", "bgColor", "mainColor"],
       },
     };
-    const themesValidator = JSONValidator.validate(themesData, themesSchema);
-    if (themesValidator.valid) {
-      console.log("Themes JSON schema is \u001b[32mvalid\u001b[0m");
+    const themesValidator = ajv.compile(themesSchema);
+    if (themesValidator(themesData)) {
+      console.log("Themes list JSON schema is \u001b[32mvalid\u001b[0m");
     } else {
-      console.log("Themes JSON schema is \u001b[31minvalid\u001b[0m");
-      return reject(new Error(themesValidator.errors));
+      console.log("Themes list JSON schema is \u001b[31minvalid\u001b[0m");
+      return reject(new Error(themesValidator.errors[0].message));
     }
     //check if files exist
     for (const theme of themesData) {
@@ -196,15 +192,12 @@ function validateOthers() {
         flag: "r",
       })
     );
-    const challengesValidator = JSONValidator.validate(
-      challengesData,
-      challengesSchema
-    );
-    if (challengesValidator.valid) {
+    const challengesValidator = ajv.compile(challengesSchema);
+    if (challengesValidator(challengesData)) {
       console.log("Challenges list JSON schema is \u001b[32mvalid\u001b[0m");
     } else {
       console.log("Challenges list JSON schema is \u001b[31minvalid\u001b[0m");
-      return reject(new Error(challengesValidator.errors));
+      return reject(new Error(challengesValidator.errors[0].message));
     }
 
     //layouts
@@ -316,16 +309,13 @@ function validateOthers() {
         layoutsAllGood = false;
         layoutsErrors = [msg];
       } else {
-        const layoutsValidator = JSONValidator.validate(
-          layoutData,
-          layoutsSchema[layoutData.type]
-        );
-        if (!layoutsValidator.valid) {
+        const layoutsValidator = ajv.compile(layoutsSchema[layoutData.type]);
+        if (!layoutsValidator(layoutData)) {
           console.log(
             `Layout ${layoutName} JSON schema is \u001b[31minvalid\u001b[0m`
           );
           layoutsAllGood = false;
-          layoutsErrors = layoutsValidator.errors;
+          layoutsErrors = layoutsValidator.errors[0].message;
         }
       }
     });
@@ -395,27 +385,31 @@ function validateQuotes() {
           flag: "r",
         })
       );
-      quoteSchema.properties.language.pattern =
-        "^" + escapeRegExp(quotefilename) + "$";
-      const quoteValidator = JSONValidator.validate(quoteData, quoteSchema);
-      if (!quoteValidator.valid) {
+      if (quoteData.language !== quotefilename) {
+        quoteFilesAllGood = false;
+        quoteFilesErrors = "Name is not " + quotefilename;
+      }
+      const quoteValidator = ajv.compile(quoteSchema);
+      if (!quoteValidator(quoteData)) {
         console.log(
           `Quote ${quotefilename} JSON schema is \u001b[31minvalid\u001b[0m`
         );
         quoteFilesAllGood = false;
-        quoteFilesErrors = quoteValidator.errors;
+        quoteFilesErrors =
+          quoteValidator.errors[0].message +
+          ` (at static/quotes/${quotefilename}.json)`;
+        return;
       }
       const quoteIds = quoteData.quotes.map((quote) => quote.id);
-      const quoteIdsValidator = JSONValidator.validate(
-        quoteIds,
-        quoteIdsSchema
-      );
-      if (!quoteIdsValidator.valid) {
+      const quoteIdsValidator = ajv.compile(quoteIdsSchema);
+      if (!quoteIdsValidator(quoteIds)) {
         console.log(
           `Quote ${quotefilename} IDs are \u001b[31mnot unique\u001b[0m`
         );
         quoteIdsAllGood = false;
-        quoteIdsErrors = quoteIdsValidator.errors;
+        quoteIdsErrors =
+          quoteIdsValidator.errors[0].message +
+          ` (at static/quotes/${quotefilename}.json)`;
       }
       const incorrectQuoteLength = quoteData.quotes.filter(
         (quote) => quote.text.length !== quote.length
@@ -472,15 +466,12 @@ function validateLanguages() {
         type: "string",
       },
     };
-    const languagesValidator = JSONValidator.validate(
-      languagesData,
-      languagesSchema
-    );
-    if (languagesValidator.valid) {
+    const languagesValidator = ajv.compile(languagesSchema);
+    if (languagesValidator(languagesData)) {
       console.log("Languages list JSON schema is \u001b[32mvalid\u001b[0m");
     } else {
       console.log("Languages list JSON schema is \u001b[31minvalid\u001b[0m");
-      return reject(new Error(languagesValidator.errors));
+      return reject(new Error(languagesValidator.errors[0].message));
     }
 
     //languages group
@@ -506,15 +497,12 @@ function validateLanguages() {
         required: ["name", "languages"],
       },
     };
-    const languagesGroupValidator = JSONValidator.validate(
-      languagesGroupData,
-      languagesGroupSchema
-    );
-    if (languagesGroupValidator.valid) {
+    const languagesGroupValidator = ajv.compile(languagesGroupSchema);
+    if (languagesGroupValidator(languagesGroupData)) {
       console.log("Languages groups JSON schema is \u001b[32mvalid\u001b[0m");
     } else {
       console.log("Languages groups JSON schema is \u001b[31minvalid\u001b[0m");
-      return reject(new Error(languagesGroupValidator.errors));
+      return reject(new Error(languagesGroupValidator.errors[0].message));
     }
 
     //language files
@@ -553,18 +541,21 @@ function validateLanguages() {
           flag: "r",
         })
       );
-      languageFileSchema.properties.name.pattern =
-        "^" + escapeRegExp(language) + "$";
-      const languageFileValidator = JSONValidator.validate(
-        languageFileData,
-        languageFileSchema
-      );
-      if (!languageFileValidator.valid) {
+      const languageFileValidator = ajv.compile(languageFileSchema);
+      if (!languageFileValidator(languageFileData)) {
+        console.log(
+          `Language ${language} JSON schema is \u001b[31minvalid\u001b[0m`
+        );
         languageFilesAllGood = false;
-        languageFilesErrors = languageFileValidator.errors;
+        languageFilesErrors =
+          languageFileValidator.errors[0].message +
+          ` (at static/languages/${language}.json`;
         return;
       }
-
+      if (languageFileData.name !== language) {
+        languageFilesAllGood = false;
+        languageFilesErrors = "Name is not " + language;
+      }
       const duplicates = findDuplicates(languageFileData.words);
       const duplicatePercentage =
         (duplicates.length / languageFileData.words.length) * 100;
@@ -591,7 +582,7 @@ function validateLanguages() {
 
     if (languageWordListsAllGood) {
       console.log(
-        `Language word lists duplicate check is  \u001b[32mvalid\u001b[0m`
+        `Language word lists duplicate check is \u001b[32mvalid\u001b[0m`
       );
     } else {
       console.log(

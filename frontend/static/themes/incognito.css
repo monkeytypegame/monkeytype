@@ -1,0 +1,31 @@
+:root {
+  --bg-color: #0e0e0e;
+  --main-color: #ff9900;
+  --caret-color: #ff9900;
+  --sub-color: #555555;
+  --sub-alt-color: #151515;
+  --text-color: #c6c6c6;
+  --error-color: #e44545;
+  --error-extra-color: #e44545;
+  --colorful-error-color: #b13535;
+  --colorful-error-extra-color: #b13535;
+}
+
+header #logo .text {
+  background: linear-gradient(
+    90deg,
+    var(--text-color) 64%,
+    var(--main-color) 36%
+  );
+  -webkit-background-clip: text;
+  color: transparent;
+  padding-bottom: 0.1em;
+}
+
+header #logo .icon svg path {
+  fill: var(--text-color);
+}
+
+header #logo .icon {
+  padding-bottom: 0.1em;
+}

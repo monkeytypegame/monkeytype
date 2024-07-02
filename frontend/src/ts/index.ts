@@ -8,13 +8,16 @@ import "./event-handlers/keymap";
 import "./event-handlers/test";
 import "./event-handlers/about";
 import "./event-handlers/settings";
+import "./event-handlers/account";
+
+import "./modals/google-sign-up";
 
 import "./firebase";
 import * as Logger from "./utils/logger";
 import * as DB from "./db";
 import "./ui";
 import "./controllers/ad-controller";
-import Config from "./config";
+import Config, { loadFromLocalStorage } from "./config";
 import * as TestStats from "./test/test-stats";
 import * as Replay from "./test/replay";
 import * as TestTimer from "./test/test-timer";
@@ -22,20 +25,12 @@ import * as Result from "./test/result";
 import "./controllers/account-controller";
 import { enable } from "./states/glarses-mode";
 import "./test/caps-warning";
-import "./popups/version-popup";
-import "./popups/edit-preset-popup";
-import "./popups/set-streak-hour-offset";
-import "./popups/simple-popups";
+import "./modals/simple-modals";
 import "./controllers/input-controller";
 import "./ready";
 import "./controllers/route-controller";
 import "./pages/about";
-import "./popups/pb-tables-popup";
 import "./elements/scroll-to-top";
-import "./popups/mobile-test-config-popup";
-import "./popups/edit-tags-popup";
-import "./popups/google-sign-up-popup";
-import "./popups/result-tags-popup";
 import * as Account from "./pages/account";
 import "./elements/leaderboards";
 import "./elements/no-css";
@@ -45,6 +40,9 @@ import "./test/tts";
 import "./elements/fps-counter";
 import "./controllers/profile-search-controller";
 import { isDevEnvironment } from "./utils/misc";
+import * as VersionButton from "./elements/version-button";
+import * as Focus from "./test/focus";
+import { getDevOptionsModal } from "./utils/async-modules";
 
 function addToGlobal(items: Record<string, unknown>): void {
   for (const [name, item] of Object.entries(items)) {
@@ -52,6 +50,10 @@ function addToGlobal(items: Record<string, unknown>): void {
     window[name] = item;
   }
 }
+
+void loadFromLocalStorage();
+void VersionButton.update();
+void Focus.set(true, true);
 
 addToGlobal({
   snapshot: DB.getSnapshot,
@@ -70,5 +72,8 @@ addToGlobal({
 if (isDevEnvironment()) {
   void import("jquery").then((jq) => {
     addToGlobal({ $: jq.default });
+  });
+  void getDevOptionsModal().then((module) => {
+    module.appendButton();
   });
 }

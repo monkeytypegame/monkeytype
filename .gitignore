@@ -82,6 +82,7 @@ node_modules_bak/
 .firebaserc
 .firebaserc_copy
 serviceAccountKey*.json
+!docker/serviceAccountKey-example.json
 frontend/src/ts/constants/firebase-config.ts
 frontend/src/ts/constants/firebase-config-live.ts
 
@@ -120,3 +121,7 @@ content-validation.js
 ads.txt
 updateContributors.mjs
 copyAnticheatToDev.sh
+
+
+# ignore generated fonts
+frontend/src/webfonts-generated

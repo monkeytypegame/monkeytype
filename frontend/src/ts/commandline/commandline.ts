@@ -4,8 +4,12 @@ import Config from "../config";
 import * as AnalyticsController from "../controllers/analytics-controller";
 import * as ThemeController from "../controllers/theme-controller";
 import { clearFontPreview } from "../ui";
-import AnimatedModal, { ShowHideOptions } from "../utils/animated-modal";
+import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
 import * as Notifications from "../elements/notifications";
+import * as OutOfFocus from "../test/out-of-focus";
+import * as ActivePage from "../states/active-page";
+import { focusWords } from "../test/test-ui";
+import * as Loader from "../elements/loader";
 
 type CommandlineMode = "search" | "input";
 type InputModeParams = {
@@ -32,7 +36,7 @@ let subgroupOverride: MonkeyTypes.CommandsSubgroup | null = null;
 function removeCommandlineBackground(): void {
   $("#commandLine").addClass("noBackground");
   if (Config.showOutOfFocusWarning) {
-    $("#words").removeClass("blurred");
+    OutOfFocus.hide();
   }
 }
 
@@ -40,7 +44,7 @@ function addCommandlineBackground(): void {
   $("#commandLine").removeClass("noBackground");
   const isWordsFocused = $("#wordsInput").is(":focus");
   if (Config.showOutOfFocusWarning && !isWordsFocused) {
-    $("#words").addClass("blurred");
+    OutOfFocus.show();
   }
 }
 
@@ -51,15 +55,17 @@ type ShowSettings = {
 
 export function show(
   settings?: ShowSettings,
-  modalShowSettings?: ShowHideOptions
+  modalShowSettings?: ShowOptions
 ): void {
   void modal.show({
     ...modalShowSettings,
-    beforeAnimation: async (modal) => {
+    focusFirstInput: true,
+    beforeAnimation: async () => {
       mouseMode = false;
       inputValue = "";
       activeIndex = 0;
       mode = "search";
+      cachedSingleSubgroup = null;
       inputModeParams = {
         command: null,
         placeholder: null,
@@ -72,9 +78,11 @@ export function show(
             settings.subgroupOverride
           );
           if (exists) {
-            subgroupOverride = CommandlineLists.getList(
+            Loader.show();
+            subgroupOverride = await CommandlineLists.getList(
               settings.subgroupOverride as CommandlineLists.ListsObjectKeys
             );
+            Loader.hide();
           } else {
             subgroupOverride = null;
             usingSingleList = Config.singleListCommandLine === "on";
@@ -97,31 +105,30 @@ export function show(
       activeCommand = null;
       Focus.set(false);
       CommandlineLists.setStackToDefault();
-      await beforeList();
       updateInput();
       await filterSubgroup();
       await showCommands();
       await updateActiveCommand();
       setTimeout(() => {
-        // instead of waiting for the animation to finish,
-        // we focus just after it begins to increase responsivenes
-        // (you can type while the animation is running)
-        modal.querySelector("input")?.focus();
         keepActiveCommandInView();
-      }, 0);
-    },
-    afterAnimation: async (modal) => {
-      modal.querySelector("input")?.focus();
+      }, 1);
     },
   });
 }
 
-function hide(): void {
+function hide(clearModalChain = false): void {
   clearFontPreview();
   void ThemeController.clearPreview();
+  if (ActivePage.get() === "test") {
+    focusWords();
+  }
   void modal.hide({
+    clearModalChain,
     afterAnimation: async () => {
       addCommandlineBackground();
+      if (ActivePage.get() === "test") {
+        focusWords();
+      }
     },
   });
 }
@@ -155,8 +162,10 @@ async function goBackOrHide(): Promise<void> {
 }
 
 async function filterSubgroup(): Promise<void> {
-  // const configKey = getSubgroup().configKey;
-  const list = await getList();
+  const subgroup = await getSubgroup();
+  subgroup.beforeList?.();
+  const list = subgroup.list;
+
   const inputNoQuickSingle = inputValue
     .replace(/^>/gi, "")
     .toLowerCase()
@@ -165,19 +174,27 @@ async function filterSubgroup(): Promise<void> {
   const inputSplit =
     inputNoQuickSingle.length === 0 ? [] : inputNoQuickSingle.split(" ");
 
-  const displayMatchCounts: number[] = [];
-  const aliasMatchCounts: number[] = [];
+  const matches: {
+    matchCount: number;
+    matchStrength: number;
+  }[] = [];
+
+  const matchCounts: number[] = [];
   for (const command of list) {
     const isAvailable = command.available?.() ?? true;
     if (!isAvailable) {
-      displayMatchCounts.push(-1);
-      aliasMatchCounts.push(-1);
+      matches.push({
+        matchCount: -1,
+        matchStrength: -1,
+      });
       continue;
     }
 
     if (inputNoQuickSingle.length === 0 || inputSplit.length === 0) {
-      displayMatchCounts.push(0);
-      aliasMatchCounts.push(0);
+      matches.push({
+        matchCount: 0,
+        matchStrength: 0,
+      });
       continue;
     }
 
@@ -188,49 +205,68 @@ async function filterSubgroup(): Promise<void> {
     )
       .toLowerCase()
       .split(" ");
-    const displayMatchArray: (null | number)[] = displaySplit.map(() => null);
     const aliasSplit = command.alias?.toLowerCase().split(" ") ?? [];
-    const aliasMatchArray: (null | number)[] = aliasSplit.map(() => null);
+
+    const displayAliasSplit = displaySplit.concat(aliasSplit);
+    const displayAliasMatchArray: (number | null)[] = displayAliasSplit.map(
+      () => null
+    );
+
+    let matchStrength = 0;
 
     for (const [inputIndex, input] of inputSplit.entries()) {
-      for (const [displayIndex, display] of displaySplit.entries()) {
-        const matchedInputIndex = displayMatchArray[displayIndex] as
+      for (const [
+        displayAliasIndex,
+        displayAlias,
+      ] of displayAliasSplit.entries()) {
+        const matchedInputIndex = displayAliasMatchArray[displayAliasIndex] as
           | null
           | number;
         if (
-          display.startsWith(input) &&
+          displayAlias.startsWith(input) &&
           matchedInputIndex === null &&
-          !displayMatchArray.includes(inputIndex)
+          !displayAliasMatchArray.includes(inputIndex)
         ) {
-          displayMatchArray[displayIndex] = inputIndex;
-        }
-      }
-      for (const [aliasIndex, alias] of aliasSplit.entries()) {
-        const matchedAliasIndex = aliasMatchArray[aliasIndex] as null | number;
-        if (
-          alias.startsWith(input) &&
-          matchedAliasIndex === null &&
-          !aliasMatchArray.includes(inputIndex)
-        ) {
-          aliasMatchArray[aliasIndex] = inputIndex;
+          displayAliasMatchArray[displayAliasIndex] = inputIndex;
+          matchStrength += input.length;
         }
       }
     }
 
-    const displayMatchCount = displayMatchArray.filter(
-      (i) => i !== null
-    ).length;
+    const matchCount = displayAliasMatchArray.filter((i) => i !== null).length;
 
-    const aliasMatchCount = aliasMatchArray.filter((i) => i !== null).length;
+    matchCounts.push(matchCount);
+    matches.push({
+      matchCount,
+      matchStrength,
+    });
+  }
 
-    displayMatchCounts.push(displayMatchCount);
-    aliasMatchCounts.push(aliasMatchCount);
+  const maxMatchStrength = Math.max(...matches.map((m) => m.matchStrength));
+
+  let minMatchCountToShow = inputSplit.length;
+
+  do {
+    const count = matchCounts.filter((m) => m >= minMatchCountToShow).length;
+    if (count > 0) {
+      break;
+    }
+    minMatchCountToShow--;
+  } while (minMatchCountToShow > 0);
+
+  if (minMatchCountToShow === 0) {
+    minMatchCountToShow = 1;
   }
 
   for (const [index, command] of list.entries()) {
+    const match = matches[index];
+    if (match === undefined) {
+      command.found = false;
+      continue;
+    }
     if (
-      (displayMatchCounts[index] as number) >= inputSplit.length ||
-      (aliasMatchCounts[index] as number) >= inputSplit.length
+      match.matchCount >= minMatchCountToShow &&
+      match.matchStrength >= maxMatchStrength
     ) {
       command.found = true;
     } else {
@@ -247,13 +283,19 @@ function hideCommands(): void {
   element.innerHTML = "";
 }
 
+let cachedSingleSubgroup: MonkeyTypes.CommandsSubgroup | null = null;
+
 async function getSubgroup(): Promise<MonkeyTypes.CommandsSubgroup> {
   if (subgroupOverride !== null) {
     return subgroupOverride;
   }
 
   if (usingSingleList) {
-    return CommandlineLists.getSingleSubgroup();
+    if (cachedSingleSubgroup === null) {
+      cachedSingleSubgroup = await CommandlineLists.getSingleSubgroup();
+    } else {
+      return cachedSingleSubgroup;
+    }
   }
 
   return CommandlineLists.getTopOfStack();
@@ -261,10 +303,6 @@ async function getSubgroup(): Promise<MonkeyTypes.CommandsSubgroup> {
 
 async function getList(): Promise<MonkeyTypes.Command[]> {
   return (await getSubgroup()).list;
-}
-
-async function beforeList(): Promise<void> {
-  (await getSubgroup()).beforeList?.();
 }
 
 async function showCommands(): Promise<void> {
@@ -296,7 +334,14 @@ async function showCommands(): Promise<void> {
     }
     let configIcon = "";
     const configKey = command.configKey ?? (await getSubgroup()).configKey;
-    if (configKey !== undefined) {
+    if (command.active !== undefined) {
+      if (command.active()) {
+        firstActive = firstActive ?? index;
+        configIcon = `<i class="fas fa-fw fa-check"></i>`;
+      } else {
+        configIcon = `<i class="fas fa-fw"></i>`;
+      }
+    } else if (configKey !== undefined) {
       const valueIsIncluded =
         command.configValueMode === "include" &&
         (
@@ -406,8 +451,9 @@ function handleInputSubmit(): void {
   if (inputModeParams.command === null) {
     throw new Error("Can't handle input submit - command is null");
   }
-  const value = inputValue;
-  inputModeParams.command.exec?.(value);
+  inputModeParams.command.exec?.({
+    input: inputValue,
+  });
   void AnalyticsController.log("usedCommandLine", {
     command: inputModeParams.command.id,
   });
@@ -429,25 +475,24 @@ async function runActiveCommand(): Promise<void> {
     updateInput(inputModeParams.value as string);
     hideCommands();
   } else if (command.subgroup) {
-    if (command.subgroup.beforeList) {
-      command.subgroup.beforeList();
-    }
     CommandlineLists.pushToStack(
       command.subgroup as MonkeyTypes.CommandsSubgroup
     );
-    await beforeList();
     updateInput("");
     await filterSubgroup();
     await showCommands();
     await updateActiveCommand();
   } else {
-    command.exec?.();
+    command.exec?.({
+      commandlineModal: modal,
+    });
     const isSticky = command.sticky ?? false;
     if (!isSticky) {
       void AnalyticsController.log("usedCommandLine", { command: command.id });
-      hide();
+      if (!command.opensModal) {
+        hide(true);
+      }
     } else {
-      await beforeList();
       await filterSubgroup();
       await showCommands();
       await updateActiveCommand();
@@ -525,15 +570,19 @@ async function decrementActiveIndex(): Promise<void> {
   await updateActiveCommand();
 }
 
-const modal = new AnimatedModal("commandLine", "popups", undefined, {
+const modal = new AnimatedModal({
+  dialogId: "commandLine",
   customEscapeHandler: (): void => {
-    hide();
+    //
   },
   customWrapperClickHandler: (): void => {
     hide();
   },
-  setup: (modal): void => {
-    const input = modal.querySelector("input") as HTMLInputElement;
+  showOptionsWhenInChain: {
+    focusFirstInput: true,
+  },
+  setup: async (modalEl): Promise<void> => {
+    const input = modalEl.querySelector("input") as HTMLInputElement;
 
     input.addEventListener("input", async (e) => {
       inputValue = (e.target as HTMLInputElement).value;
@@ -554,11 +603,11 @@ const modal = new AnimatedModal("commandLine", "popups", undefined, {
 
     input.addEventListener("keydown", async (e) => {
       mouseMode = false;
-      if (e.key === "ArrowUp") {
+      if (e.key === "ArrowUp" || (e.key.toLowerCase() === "k" && e.ctrlKey)) {
         e.preventDefault();
         await decrementActiveIndex();
       }
-      if (e.key === "ArrowDown") {
+      if (e.key === "ArrowDown" || (e.key.toLowerCase() === "j" && e.ctrlKey)) {
         e.preventDefault();
         await incrementActiveIndex();
       }
@@ -585,7 +634,7 @@ const modal = new AnimatedModal("commandLine", "popups", undefined, {
       }
     });
 
-    modal.addEventListener("mousemove", (e) => {
+    modalEl.addEventListener("mousemove", (e) => {
       mouseMode = true;
     });
   },

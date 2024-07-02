@@ -40,7 +40,11 @@
   },
   {
     "name": "portuguese",
-    "languages": ["portuguese", "portuguese_3k", "portuguese_acentos_e_cedilha"]
+    "languages": [
+      "portuguese",
+      "portuguese_3k",
+      "portuguese_acentos_e_cedilha, portuguese_5k"
+    ]
   },
   {
     "name": "arabic",
@@ -270,7 +274,7 @@
   },
   {
     "name": "estonian",
-    "languages": ["estonian", "estonian_1k", "estonian_10k"]
+    "languages": ["estonian", "estonian_1k", "estonian_5k", "estonian_10k"]
   },
   {
     "name": "udmurt",
@@ -380,7 +384,12 @@
   },
   {
     "name": "armenian",
-    "languages": ["armenian_western", "armenian_western_1k"]
+    "languages": [
+      "armenian",
+      "armenian_1k",
+      "armenian_western",
+      "armenian_western_1k"
+    ]
   },
   {
     "name": "myanmar",
@@ -388,7 +397,12 @@
   },
   {
     "name": "japanese",
-    "languages": ["japanese_hiragana", "japanese_katakana"]
+    "languages": [
+      "japanese_hiragana",
+      "japanese_katakana",
+      "japanese_romaji",
+      "japanese_romaji_1k"
+    ]
   },
   {
     "name": "hindi",
@@ -464,6 +478,10 @@
     "languages": ["toki_pona", "toki_pona_ku_suli", "toki_pona_ku_lili"]
   },
   {
+    "name": "xhosa",
+    "languages": ["xhosa"]
+  },
+  {
     "name": "other",
     "languages": [
       "lojban_gismu",
@@ -488,7 +506,7 @@
   },
   {
     "name": "kyrgyz",
-    "languages": ["kyrgyz"]
+    "languages": ["kyrgyz", "kyrgyz_1k"]
   },
   {
     "name": "yiddish",
@@ -505,6 +523,10 @@
   {
     "name": "euskera",
     "languages": ["euskera"]
+  },
+  {
+    "name": "klingon",
+    "languages": ["klingon", "klingon_1k"]
   },
   {
     "name": "lorem_ipsum",
@@ -561,7 +583,9 @@
       "code_gdscript",
       "code_gdscript_2",
       "code_assembly",
-      "code_v"
+      "code_v",
+      "code_ook",
+      "code_typescript"
     ]
   }
 ]

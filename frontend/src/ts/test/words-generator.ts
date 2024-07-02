@@ -3,13 +3,16 @@ import * as FunboxList from "./funbox/funbox-list";
 import * as CustomText from "./custom-text";
 import * as Wordset from "./wordset";
 import QuotesController from "../controllers/quotes-controller";
-import * as QuoteSearchPopup from "../popups/quote-search-popup";
 import * as TestWords from "./test-words";
 import * as BritishEnglish from "./british-english";
 import * as LazyMode from "./lazy-mode";
 import * as EnglishPunctuation from "./english-punctuation";
 import * as PractiseWords from "./practise-words";
 import * as Misc from "../utils/misc";
+import * as Strings from "../utils/strings";
+import * as Arrays from "../utils/arrays";
+import * as TestState from "../test/test-state";
+import * as GetText from "../utils/generate";
 
 function shouldCapitalize(lastChar: string): boolean {
   return /[?!.؟]/.test(lastChar);
@@ -26,7 +29,7 @@ export async function punctuateWord(
 
   const currentLanguage = Config.language.split("_")[0];
 
-  const lastChar = Misc.getLastChar(previousWord);
+  const lastChar = Strings.getLastChar(previousWord);
 
   const funbox = FunboxList.get(Config.funbox).find(
     (f) => f.functions?.punctuateWord
@@ -41,7 +44,7 @@ export async function punctuateWord(
   ) {
     //always capitalise the first word or if there was a dot unless using a code alphabet or the Georgian language
 
-    word = Misc.capitalizeFirstLetterOfEachWord(word);
+    word = Strings.capitalizeFirstLetterOfEachWord(word);
 
     if (currentLanguage === "turkish") {
       word = word.replace(/I/g, "İ");
@@ -74,9 +77,16 @@ export async function punctuateWord(
       if (rand <= 0.8) {
         if (currentLanguage === "kurdish") {
           word += ".";
-        } else if (currentLanguage === "nepali") {
+        } else if (
+          currentLanguage === "nepali" ||
+          currentLanguage === "bangla" ||
+          currentLanguage === "hindi"
+        ) {
           word += "।";
-        } else if (currentLanguage === "japanese") {
+        } else if (
+          currentLanguage === "japanese" ||
+          currentLanguage === "chinese"
+        ) {
           word += "。";
         } else {
           word += ".";
@@ -93,7 +103,10 @@ export async function punctuateWord(
           word += "؟";
         } else if (currentLanguage === "greek") {
           word += ";";
-        } else if (currentLanguage === "japanese") {
+        } else if (
+          currentLanguage === "japanese" ||
+          currentLanguage === "chinese"
+        ) {
           word += "？";
         } else {
           word += "?";
@@ -101,7 +114,10 @@ export async function punctuateWord(
       } else {
         if (currentLanguage === "french") {
           word = "!";
-        } else if (currentLanguage === "japanese") {
+        } else if (
+          currentLanguage === "japanese" ||
+          currentLanguage === "chinese"
+        ) {
           word += "！";
         } else {
           word += "!";
@@ -138,7 +154,10 @@ export async function punctuateWord(
       const bracket = brackets[index] as string;
 
       word = `${bracket[0]}${word}${bracket[1]}`;
-    } else if (currentLanguage === "japanese") {
+    } else if (
+      currentLanguage === "japanese" ||
+      currentLanguage === "chinese"
+    ) {
       word = `（${word}）`;
     } else {
       word = `(${word})`;
@@ -149,12 +168,16 @@ export async function punctuateWord(
     lastChar !== "." &&
     lastChar !== ";" &&
     lastChar !== "؛" &&
-    lastChar !== ":"
+    lastChar !== ":" &&
+    lastChar !== "；" &&
+    lastChar !== "："
   ) {
     if (currentLanguage === "french") {
       word = ":";
     } else if (currentLanguage === "greek") {
       word = "·";
+    } else if (currentLanguage === "chinese") {
+      word += "：";
     } else {
       word += ":";
     }
@@ -171,7 +194,8 @@ export async function punctuateWord(
     lastChar !== "." &&
     lastChar !== ";" &&
     lastChar !== "؛" &&
-    lastChar !== ":"
+    lastChar !== "；" &&
+    lastChar !== "："
   ) {
     if (currentLanguage === "french") {
       word = ";";
@@ -179,6 +203,8 @@ export async function punctuateWord(
       word = "·";
     } else if (currentLanguage === "arabic" || currentLanguage === "kurdish") {
       word += "؛";
+    } else if (currentLanguage === "chinese") {
+      word += "；";
     } else {
       word += ";";
     }
@@ -192,6 +218,8 @@ export async function punctuateWord(
       word += "،";
     } else if (currentLanguage === "japanese") {
       word += "、";
+    } else if (currentLanguage === "chinese") {
+      word += "，";
     } else {
       word += ",";
     }
@@ -237,12 +265,12 @@ export async function punctuateWord(
         !Config.language.startsWith("code_css")) ||
       Config.language.startsWith("code_arduino")
     ) {
-      word = Misc.randomElementFromArray(specialsC);
+      word = Arrays.randomElementFromArray(specialsC);
     } else {
       if (Config.language.startsWith("code_javascript")) {
-        word = Misc.randomElementFromArray([...specials, "`"]);
+        word = Arrays.randomElementFromArray([...specials, "`"]);
       } else {
-        word = Misc.randomElementFromArray(specials);
+        word = Arrays.randomElementFromArray(specials);
       }
     }
   } else if (
@@ -252,6 +280,16 @@ export async function punctuateWord(
   ) {
     word = await applyEnglishPunctuationToWord(word);
   }
+
+  if (word.includes("\t")) {
+    word = word.replace(/\t/g, "");
+    word += "\t";
+  }
+  if (word.includes("\n")) {
+    word = word.replace(/\n/g, "");
+    word += "\n";
+  }
+
   return word;
 }
 
@@ -325,8 +363,8 @@ async function applyBritishEnglishToWord(
   if (!Config.language.includes("english")) return word;
   if (
     Config.mode === "quote" &&
-    TestWords.randomQuote?.britishText !== undefined &&
-    TestWords.randomQuote?.britishText !== ""
+    TestWords.currentQuote?.britishText !== undefined &&
+    TestWords.currentQuote?.britishText !== ""
   ) {
     return word;
   }
@@ -345,7 +383,7 @@ function applyLazyModeToWord(
   return word;
 }
 
-export function getQuoteOrCustomModeWordOrder(): MonkeyTypes.FunboxWordOrder {
+export function getWordOrder(): MonkeyTypes.FunboxWordOrder {
   const wordOrder =
     FunboxList.get(Config.funbox)
       .find((f) => f.properties?.find((fp) => fp.startsWith("wordOrder")))
@@ -359,7 +397,17 @@ export function getQuoteOrCustomModeWordOrder(): MonkeyTypes.FunboxWordOrder {
 }
 
 export function getWordsLimit(): number {
+  if (Config.mode === "zen") {
+    return 0;
+  }
+
   let limit = 100;
+
+  const currentQuote = TestWords.currentQuote;
+
+  if (Config.mode === "quote" && currentQuote === null) {
+    throw new WordGenError("Random quote is null");
+  }
 
   const funboxToPush =
     FunboxList.get(Config.funbox)
@@ -368,14 +416,13 @@ export function getWordsLimit(): number {
 
   if (Config.showAllLines) {
     if (Config.mode === "custom") {
-      if (CustomText.isWordRandom) {
-        limit = CustomText.word;
-      } else if (!CustomText.isTimeRandom && !CustomText.isWordRandom) {
-        limit = CustomText.text.length;
-      }
+      limit = CustomText.getLimitValue();
     }
     if (Config.mode === "words") {
       limit = Config.words;
+    }
+    if (Config.mode === "quote") {
+      limit = (currentQuote as MonkeyTypes.QuoteWithTextSplit).textSplit.length;
     }
   }
 
@@ -383,15 +430,15 @@ export function getWordsLimit(): number {
   if (Config.mode === "words" && Config.words === 0) {
     limit = 100;
   }
-  if (
-    Config.mode === "custom" &&
-    CustomText.isWordRandom &&
-    CustomText.word === 0
-  ) {
-    limit = 100;
-  }
-  if (Config.mode === "custom" && CustomText.delimiter === "|") {
-    limit = 100;
+
+  //custom
+  if (Config.mode === "custom") {
+    if (CustomText.getLimitValue() === 0) {
+      limit = 100;
+    } else {
+      limit =
+        CustomText.getLimitValue() > 100 ? 100 : CustomText.getLimitValue();
+    }
   }
 
   //funboxes
@@ -403,34 +450,21 @@ export function getWordsLimit(): number {
   if (Config.mode === "words" && Config.words !== 0 && Config.words < limit) {
     limit = Config.words;
   }
-  if (
-    Config.mode === "custom" &&
-    !CustomText.isSectionRandom &&
-    !CustomText.isTimeRandom &&
-    CustomText.isWordRandom &&
-    CustomText.word !== 0 &&
-    CustomText.word < limit
-  ) {
-    limit = CustomText.word;
-  }
-  if (
-    Config.mode === "custom" &&
-    !CustomText.isTimeRandom &&
-    !CustomText.isWordRandom &&
-    !CustomText.isSectionRandom &&
-    CustomText.text.length !== 0 &&
-    CustomText.text.length < limit
-  ) {
-    let newLimit = 0;
-    for (const word of CustomText.text) {
-      if (/ /g.test(word)) {
-        newLimit += word.split(" ").length;
-      } else {
-        newLimit++;
-      }
-    }
 
-    limit = newLimit;
+  if (
+    Config.mode === "quote" &&
+    (currentQuote as MonkeyTypes.QuoteWithTextSplit).textSplit.length < limit
+  ) {
+    limit = (currentQuote as MonkeyTypes.QuoteWithTextSplit).textSplit.length;
+  }
+
+  if (
+    Config.mode === "custom" &&
+    CustomText.getLimitMode() === "word" &&
+    CustomText.getLimitValue() < limit &&
+    CustomText.getLimitValue() !== 0
+  ) {
+    limit = CustomText.getLimitValue();
   }
 
   return limit;
@@ -443,118 +477,25 @@ export class WordGenError extends Error {
   }
 }
 
-let currentQuote: string[] = [];
-
-let isCurrentlyUsingFunboxSection = false;
-
-export async function generateWords(
-  language: MonkeyTypes.LanguageObject
-): Promise<{
-  words: string[];
-  sectionIndexes: number[];
-}> {
-  currentQuote = [];
-  currentSection = [];
-  sectionIndex = 0;
-  sectionHistory = [];
-  const ret: {
-    words: string[];
-    sectionIndexes: number[];
-  } = {
-    words: [],
-    sectionIndexes: [],
-  };
-
-  const sectionFunbox = FunboxList.get(Config.funbox).find(
-    (f) => f.functions?.pullSection
-  );
-  isCurrentlyUsingFunboxSection =
-    sectionFunbox?.functions?.pullSection !== undefined;
-
-  const limit = getWordsLimit();
-
-  const wordOrder = getQuoteOrCustomModeWordOrder();
-  console.debug("Word order", wordOrder);
-
-  let wordList = language.words;
-  if (Config.mode === "custom") {
-    if (wordOrder === "reverse") {
-      wordList = CustomText.text.reverse();
-    } else {
-      wordList = CustomText.text;
-    }
-  }
-  const wordset = await Wordset.withWords(wordList);
-
-  if (Config.mode === "quote") {
-    const quoteWords = await generateQuoteWords(language, wordset, limit);
-    if (wordOrder === "reverse") {
-      quoteWords.words.reverse();
-      quoteWords.sectionIndexes.reverse();
-    }
-    return quoteWords;
-  }
-
-  if (
-    Config.mode === "time" ||
-    Config.mode === "words" ||
-    Config.mode === "custom"
-  ) {
-    let stop = false;
-    let i = 0;
-    while (!stop) {
-      const nextWord = await getNextWord(
-        wordset,
-        i,
-        language,
-        limit,
-        Misc.nthElementFromArray(ret.words, -1) ?? "",
-        Misc.nthElementFromArray(ret.words, -2) ?? ""
-      );
-      ret.words.push(nextWord.word);
-      ret.sectionIndexes.push(nextWord.sectionIndex);
-
-      const randomSectionStop =
-        CustomText.isSectionRandom &&
-        CustomText.section !== 0 &&
-        sectionIndex >= CustomText.section;
-
-      const nonRandomSectionStop =
-        !CustomText.isSectionRandom &&
-        !CustomText.isTimeRandom &&
-        sectionIndex >= wordset.length;
-
-      const customModeStop =
-        Config.mode === "custom" &&
-        currentSection.length === 0 &&
-        CustomText.delimiter === "|" &&
-        (randomSectionStop || nonRandomSectionStop);
-
-      if (customModeStop || ret.words.length >= limit) {
-        stop = true;
-      }
-      i++;
-    }
-  }
-  sectionHistory = []; //free up a bit of memory? is that even a thing?
-  return ret;
-}
-
-async function generateQuoteWords(
+async function getQuoteWordList(
   language: MonkeyTypes.LanguageObject,
-  wordset: Wordset.Wordset,
-  limit: number
-): Promise<{
-  words: string[];
-  sectionIndexes: number[];
-}> {
-  const ret: {
-    words: string[];
-    sectionIndexes: number[];
-  } = {
-    words: [],
-    sectionIndexes: [],
-  };
+  wordOrder?: MonkeyTypes.FunboxWordOrder
+): Promise<string[]> {
+  if (TestState.isRepeated) {
+    if (currentWordset === null) {
+      throw new WordGenError("Current wordset is null");
+    }
+
+    TestWords.setCurrentQuote(previousRandomQuote);
+
+    // need to re-reverse the words if the test is repeated
+    // because it will be reversed again in the generateWords function
+    if (wordOrder === "reverse") {
+      return currentWordset.words.reverse();
+    } else {
+      return currentWordset.words;
+    }
+  }
   const languageToGet = language.name.startsWith("swiss_german")
     ? "german"
     : language.name;
@@ -576,12 +517,12 @@ async function generateQuoteWords(
   let rq: MonkeyTypes.Quote;
   if (Config.quoteLength.includes(-2) && Config.quoteLength.length === 1) {
     const targetQuote = QuotesController.getQuoteById(
-      QuoteSearchPopup.selectedId
+      TestState.selectedQuoteId
     );
     if (targetQuote === undefined) {
       UpdateConfig.setQuoteLength(-1);
       throw new WordGenError(
-        `Quote ${QuoteSearchPopup.selectedId} does not exist`
+        `Quote ${TestState.selectedQuoteId} does not exist`
       );
     }
     rq = targetQuote;
@@ -603,7 +544,7 @@ async function generateQuoteWords(
     rq = randomQuote;
   }
 
-  rq.language = Misc.removeLanguageSize(Config.language);
+  rq.language = Strings.removeLanguageSize(Config.language);
   rq.text = rq.text.replace(/ +/gm, " ");
   rq.text = rq.text.replace(/( *(\r\n|\r|\n) *)/g, "\n ");
   rq.text = rq.text.replace(/…/g, "...");
@@ -619,30 +560,130 @@ async function generateQuoteWords(
     rq.textSplit = rq.text.split(" ");
   }
 
-  TestWords.setRandomQuote(rq);
+  TestWords.setCurrentQuote(rq as MonkeyTypes.QuoteWithTextSplit);
 
-  if (TestWords.randomQuote === null) {
+  if (TestWords.currentQuote === null) {
     throw new WordGenError("Random quote is null");
   }
 
-  if (TestWords.randomQuote.textSplit === undefined) {
+  if (TestWords.currentQuote.textSplit === undefined) {
     throw new WordGenError("Random quote textSplit is undefined");
   }
 
-  currentQuote = TestWords.randomQuote.textSplit;
+  return TestWords.currentQuote.textSplit;
+}
 
-  for (let i = 0; i < Math.min(limit, currentQuote.length); i++) {
+let currentWordset: Wordset.Wordset | null = null;
+let currentLanguage: MonkeyTypes.LanguageObject | null = null;
+let isCurrentlyUsingFunboxSection = false;
+
+type GenerateWordsReturn = {
+  words: string[];
+  sectionIndexes: number[];
+  hasTab: boolean;
+  hasNewline: boolean;
+};
+
+let previousRandomQuote: MonkeyTypes.QuoteWithTextSplit | null = null;
+
+export async function generateWords(
+  language: MonkeyTypes.LanguageObject
+): Promise<GenerateWordsReturn> {
+  if (!TestState.isRepeated) {
+    previousGetNextWordReturns = [];
+  }
+  previousRandomQuote = TestWords.currentQuote;
+  TestWords.setCurrentQuote(null);
+  currentSection = [];
+  sectionIndex = 0;
+  sectionHistory = [];
+  currentLanguage = language;
+  const ret: GenerateWordsReturn = {
+    words: [],
+    sectionIndexes: [],
+    hasTab: false,
+    hasNewline: false,
+  };
+
+  const sectionFunbox = FunboxList.get(Config.funbox).find(
+    (f) => f.functions?.pullSection
+  );
+  isCurrentlyUsingFunboxSection =
+    sectionFunbox?.functions?.pullSection !== undefined;
+
+  const wordOrder = getWordOrder();
+  console.debug("Word order", wordOrder);
+
+  let wordList = language.words;
+  if (Config.mode === "custom") {
+    wordList = CustomText.getText();
+  } else if (Config.mode === "quote") {
+    wordList = await getQuoteWordList(language, wordOrder);
+  } else if (Config.mode === "zen") {
+    wordList = [];
+  }
+
+  const limit = getWordsLimit();
+  console.debug("Words limit", limit);
+
+  if (wordOrder === "reverse") {
+    wordList = wordList.reverse();
+  }
+
+  currentWordset = await Wordset.withWords(wordList);
+  console.debug("Wordset", currentWordset);
+
+  if (limit === 0) {
+    return ret;
+  }
+
+  let stop = false;
+  let i = 0;
+  while (!stop) {
     const nextWord = await getNextWord(
-      wordset,
       i,
-      language,
       limit,
-      Misc.nthElementFromArray(ret.words, -1) ?? "",
-      Misc.nthElementFromArray(ret.words, -2) ?? ""
+      Arrays.nthElementFromArray(ret.words, -1) ?? "",
+      Arrays.nthElementFromArray(ret.words, -2) ?? ""
     );
     ret.words.push(nextWord.word);
-    ret.sectionIndexes.push(i);
+    ret.sectionIndexes.push(nextWord.sectionIndex);
+
+    if (Config.mode === "custom" && CustomText.getPipeDelimiter()) {
+      const sectionFinishedAndOverLimit =
+        currentSection.length === 0 &&
+        sectionIndex >= CustomText.getLimitValue();
+      if (sectionFinishedAndOverLimit) {
+        stop = true;
+      }
+    } else if (ret.words.length >= limit) {
+      stop = true;
+    }
+    i++;
   }
+
+  const quote = TestWords.currentQuote;
+
+  if (Config.mode === "quote" && quote === null) {
+    throw new WordGenError("Random quote is null");
+  }
+
+  ret.hasTab =
+    ret.words.some((w) => /\t/.test(w)) ||
+    currentWordset.words.some((w) => /\t/.test(w)) ||
+    (Config.mode === "quote" &&
+      (quote as MonkeyTypes.QuoteWithTextSplit).textSplit.some((w) =>
+        /\t/.test(w)
+      ));
+  ret.hasNewline =
+    ret.words.some((w) => /\n/.test(w)) ||
+    currentWordset.words.some((w) => /\n/.test(w)) ||
+    (Config.mode === "quote" &&
+      (quote as MonkeyTypes.QuoteWithTextSplit).textSplit.some((w) =>
+        /\n/.test(w)
+      ));
+
+  sectionHistory = []; //free up a bit of memory? is that even a thing?
   return ret;
 }
 
@@ -650,58 +691,101 @@ export let sectionIndex = 0;
 export let currentSection: string[] = [];
 let sectionHistory: string[] = [];
 
-//generate next word
-export async function getNextWord(
-  wordset: Wordset.Wordset,
-  wordIndex: number,
-  language: MonkeyTypes.LanguageObject,
-  wordsBound: number,
-  previousWord: string,
-  previousWord2: string
-): Promise<{
+let previousGetNextWordReturns: GetNextWordReturn[] = [];
+
+type GetNextWordReturn = {
   word: string;
   sectionIndex: number;
-}> {
+};
+
+//generate next word
+export async function getNextWord(
+  wordIndex: number,
+  wordsBound: number,
+  previousWord: string,
+  previousWord2: string | undefined
+): Promise<GetNextWordReturn> {
   console.debug("Getting next word", {
-    wordset,
+    isRepeated: TestState.isRepeated,
+    currentWordset,
     wordIndex,
-    language,
+    language: currentLanguage,
     wordsBound,
     previousWord,
     previousWord2,
   });
+
+  if (currentWordset === null) {
+    throw new WordGenError("Current wordset is null");
+  }
+
+  if (currentLanguage === null) {
+    throw new WordGenError("Current language is null");
+  }
+
+  //because quote test can be repeated in the middle of a test
+  //we cant rely on data inside previousGetNextWordReturns
+  //because it might not include the full quote
+  if (TestState.isRepeated && Config.mode !== "quote") {
+    const repeated = previousGetNextWordReturns[wordIndex];
+
+    if (repeated === undefined) {
+      // if the repeated word is undefined, that means we are out of words from the previous test
+      // we need to either throw, or revert to random generation
+      // reverting should only happen in certain cases
+
+      let continueRandomGeneration = false;
+
+      if (
+        Config.mode === "time" ||
+        (Config.mode === "custom" && CustomText.getLimitMode() === "time")
+      ) {
+        continueRandomGeneration = true;
+      }
+
+      if (!continueRandomGeneration) {
+        throw new WordGenError("Repeated word is undefined");
+      } else {
+        console.debug(
+          "Repeated word is undefined but random generation is allowed - getting random word"
+        );
+      }
+    } else {
+      console.debug("Repeated word: ", repeated);
+      return repeated;
+    }
+  }
+
   const funboxFrequency = getFunboxWordsFrequency() ?? "normal";
-  let randomWord = wordset.randomWord(funboxFrequency);
+  let randomWord = currentWordset.randomWord(funboxFrequency);
   const previousWordRaw = previousWord.replace(/[.?!":\-,]/g, "").toLowerCase();
   const previousWord2Raw = previousWord2
-    .replace(/[.?!":\-,']/g, "")
+    ?.replace(/[.?!":\-,']/g, "")
     .toLowerCase();
 
   if (currentSection.length === 0) {
     const funboxSection = await getFunboxSection();
 
     if (Config.mode === "quote") {
-      randomWord = currentQuote[wordIndex] as string;
+      randomWord = currentWordset.nextWord();
+    } else if (Config.mode === "custom" && CustomText.getMode() === "repeat") {
+      randomWord = currentWordset.nextWord();
     } else if (
       Config.mode === "custom" &&
-      !CustomText.isWordRandom &&
-      !CustomText.isTimeRandom &&
-      !CustomText.isSectionRandom
+      CustomText.getMode() === "random" &&
+      (currentWordset.length < 4 || PractiseWords.before.mode !== null)
     ) {
-      randomWord = CustomText.text[sectionIndex] as string;
+      randomWord = currentWordset.randomWord(funboxFrequency);
+    } else if (Config.mode === "custom" && CustomText.getMode() === "shuffle") {
+      randomWord = currentWordset.shuffledWord();
     } else if (
       Config.mode === "custom" &&
-      (CustomText.isWordRandom ||
-        CustomText.isTimeRandom ||
-        CustomText.isSectionRandom) &&
-      (wordset.length < 4 || PractiseWords.before.mode !== null)
+      CustomText.getLimitMode() === "section"
     ) {
-      randomWord = wordset.randomWord(funboxFrequency);
-    } else if (Config.mode === "custom" && CustomText.isSectionRandom) {
-      randomWord = wordset.randomWord(funboxFrequency);
+      randomWord = currentWordset.randomWord(funboxFrequency);
 
-      const previousSection = Misc.nthElementFromArray(sectionHistory, -1);
-      const previousSection2 = Misc.nthElementFromArray(sectionHistory, -2);
+      const previousSection = Arrays.nthElementFromArray(sectionHistory, -1);
+      const previousSection2 = Arrays.nthElementFromArray(sectionHistory, -2);
 
       let regenerationCount = 0;
       while (
@@ -709,17 +793,21 @@ export async function getNextWord(
         (previousSection === randomWord || previousSection2 === randomWord)
       ) {
         regenerationCount++;
-        randomWord = wordset.randomWord(funboxFrequency);
+        randomWord = currentWordset.randomWord(funboxFrequency);
       }
     } else if (isCurrentlyUsingFunboxSection) {
       randomWord = funboxSection.join(" ");
     } else {
       let regenarationCount = 0; //infinite loop emergency stop button
       let firstAfterSplit = (randomWord.split(" ")[0] as string).toLowerCase();
+      let firstAfterSplitLazy = applyLazyModeToWord(
+        firstAfterSplit,
+        currentLanguage
+      );
       while (
         regenarationCount < 100 &&
-        (previousWordRaw === firstAfterSplit ||
-          previousWord2Raw === firstAfterSplit ||
+        (previousWordRaw === firstAfterSplitLazy ||
+          previousWord2Raw === firstAfterSplitLazy ||
           (Config.mode !== "custom" &&
             !Config.punctuation &&
             randomWord === "I") ||
@@ -732,14 +820,18 @@ export async function getNextWord(
             /[0-9]/i.test(randomWord)))
       ) {
         regenarationCount++;
-        randomWord = wordset.randomWord(funboxFrequency);
+        randomWord = currentWordset.randomWord(funboxFrequency);
         firstAfterSplit = randomWord.split(" ")[0] as string;
+        firstAfterSplitLazy = applyLazyModeToWord(
+          firstAfterSplit,
+          currentLanguage
+        );
       }
     }
     randomWord = randomWord.replace(/ +/g, " ");
     randomWord = randomWord.replace(/(^ )|( $)/g, "");
 
-    randomWord = getFunboxWord(randomWord, wordIndex, wordset);
+    randomWord = getFunboxWord(randomWord, wordIndex, currentWordset);
 
     currentSection = [...randomWord.split(" ")];
     sectionHistory.push(randomWord);
@@ -769,6 +861,7 @@ export async function getNextWord(
     !Config.language.startsWith("german") &&
     !Config.language.startsWith("swiss_german") &&
     !Config.language.startsWith("code") &&
+    !Config.language.startsWith("klingon") &&
     !isCurrentlyUsingFunboxSection
   ) {
     randomWord = randomWord.toLowerCase();
@@ -776,16 +869,16 @@ export async function getNextWord(
 
   randomWord = randomWord.replace(/ +/gm, " ");
   randomWord = randomWord.replace(/(^ )|( $)/gm, "");
-  randomWord = applyLazyModeToWord(randomWord, language);
+  randomWord = applyLazyModeToWord(randomWord, currentLanguage);
   randomWord = await applyBritishEnglishToWord(randomWord, previousWordRaw);
 
-  if (Config.language === "swiss_german") {
+  if (Config.language.startsWith("swiss_german")) {
     randomWord = randomWord.replace(/ß/g, "ss");
   }
 
   if (
     Config.punctuation &&
-    !language.originalPunctuation &&
+    !currentLanguage.originalPunctuation &&
     !isCurrentlyUsingFunboxSection
   ) {
     randomWord = await punctuateWord(
@@ -797,12 +890,16 @@ export async function getNextWord(
   }
   if (Config.numbers) {
     if (Math.random() < 0.1) {
-      randomWord = Misc.getNumbers(4);
+      randomWord = GetText.getNumbers(4);
 
       if (Config.language.startsWith("kurdish")) {
         randomWord = Misc.convertNumberToArabic(randomWord);
       } else if (Config.language.startsWith("nepali")) {
         randomWord = Misc.convertNumberToNepali(randomWord);
+      } else if (Config.language.startsWith("bangla")) {
+        randomWord = Misc.convertNumberToBangla(randomWord);
+      } else if (Config.language.startsWith("hindi")) {
+        randomWord = Misc.convertNumberToHindi(randomWord);
       }
     }
   }
@@ -811,8 +908,12 @@ export async function getNextWord(
 
   console.debug("Word:", randomWord);
 
-  return {
+  const ret = {
     word: randomWord,
     sectionIndex: sectionIndex,
   };
+
+  previousGetNextWordReturns.push(ret);
+
+  return ret;
 }
