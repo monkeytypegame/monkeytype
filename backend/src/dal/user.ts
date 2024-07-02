@@ -976,89 +976,80 @@ export async function addToInbox(
   );
 }
 
-function buildRewardUpdates(
-  rewards: SharedTypes.AllRewards[],
-  inventoryIsNull = false
-): UpdateFilter<MonkeyTypes.DBUser> {
-  let totalXp = 0;
-  const newBadges: SharedTypes.Badge[] = [];
-
-  rewards.forEach((reward) => {
-    if (reward.type === "xp") {
-      totalXp += isNaN(reward.item) ? 0 : reward.item;
-    } else if (reward.type === "badge") {
-      const item = _.omit(reward.item, "selected");
-      newBadges.push(item);
-    }
-  });
-
-  const baseUpdate = {
-    $inc: {
-      xp: _.isNumber(totalXp) ? totalXp : 0,
-    },
-  };
-
-  if (inventoryIsNull) {
-    return {
-      ...baseUpdate,
-      $set: {
-        inventory: {
-          badges: newBadges,
-        },
-      },
-    };
-  } else {
-    return {
-      ...baseUpdate,
-      $push: {
-        "inventory.badges": { $each: newBadges },
-      },
-    };
-  }
-}
-
 export async function updateInbox(
   uid: string,
   mailToRead: string[],
   mailToDelete: string[]
 ): Promise<void> {
-  const user = await getPartialUser(uid, "update inbox", [
-    "inbox",
-    "inventory",
+  const readSet = [...new Set(mailToRead)];
+  const deleteSet = [...new Set(mailToDelete)];
+
+  const update = await getUsersCollection().updateOne({ uid }, [
+    {
+      $addFields: {
+        tmp: {
+          $function: {
+            lang: "js",
+            args: ["$_id", "$inbox", "$xp", "$inventory"],
+            body: `
+            function(_id, inbox, xp, inventory) {            
+              var rewards = inbox
+                  .filter(it => it.read === false)
+                  .reduce((arr, current) => {
+                      return arr.concat(current.rewards);
+                  }, []);
+              
+              var xpGain = rewards
+                  .filter(it => it.type === "xp")
+                  .map(it => it.item)
+                  .reduce((s, a) => s + a, 0);
+              
+              //remove deleted mail from inbox, sort by timestamp descending
+              var inboxUpdate = inbox
+                  .filter(it => ${JSON.stringify(
+                    deleteSet
+                  )}.includes(it.id) === false)
+                  .sort((a, b) => b.timestamp - a.timestamp);
+
+              //mark read mail as read, remove rewards
+              inboxUpdate.filter(it => it.read === false && ${JSON.stringify(
+                readSet
+              )}.includes(it.id)).forEach(it => {
+                  it.read = true;
+                  it.rewards = [];
+              });
+
+              var badges = rewards
+                  .filter(it => it.type === "badge")
+                  .map(it => it.item);
+
+              if(inventory === null) inventory = { badges:null };
+              if(inventory.badges === null) inventory.badges = [];
+              inventory.badges.push(...badges);
+              
+              return {
+                  _id,
+                  xp: xp + xpGain,
+                  inbox: inboxUpdate,
+                  inventory: inventory,
+              };
+            }
+            `,
+          },
+        },
+      },
+    },
+    {
+      $set: {
+        xp: "$tmp.xp",
+        inbox: "$tmp.inbox",
+        inventory: "$tmp.inventory",
+      },
+    },
   ]);
 
-  const inbox = user.inbox ?? [];
-
-  const mailToReadSet = new Set(mailToRead);
-  const mailToDeleteSet = new Set(mailToDelete);
-
-  const allRewards: SharedTypes.AllRewards[] = [];
-
-  const newInbox = inbox
-    .filter((mail) => {
-      const { id, rewards } = mail;
-
-      if (mailToReadSet.has(id) && !mail.read) {
-        mail.read = true;
-        if (rewards.length > 0) {
-          allRewards.push(...rewards);
-          mail.rewards = [];
-        }
-      }
-
-      return !mailToDeleteSet.has(id);
-    })
-    .sort((a, b) => b.timestamp - a.timestamp);
-
-  const baseUpdate = {
-    $set: {
-      inbox: newInbox,
-    },
-  };
-  const rewardUpdates = buildRewardUpdates(allRewards, user.inventory === null);
-  const mergedUpdates = _.merge(baseUpdate, rewardUpdates);
-
-  await getUsersCollection().updateOne({ uid }, mergedUpdates);
+  if (update.matchedCount !== 1)
+    throw new MonkeyError(404, "User not found", "update inbox");
 }
 
 export async function updateStreak(
