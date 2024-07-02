@@ -891,4 +891,211 @@ describe("UserDal", () => {
       ).rejects.toThrowError("User not found\nStack: update email");
     });
   });
+  describe("updateInbox", () => {
+    it("claims rewards", async () => {
+      //GIVEN
+      const rewardOne: SharedTypes.MonkeyMail = {
+        id: "b5866d4c-0749-41b6-b101-3656249d39b9",
+        body: "test",
+        subject: "reward one",
+        timestamp: 1,
+        read: false,
+        rewards: [
+          { type: "xp", item: 400 },
+          { type: "xp", item: 600 },
+          { type: "badge", item: { id: 4 } },
+        ],
+      };
+      const rewardTwo: SharedTypes.MonkeyMail = {
+        id: "3692b9f5-84fb-4d9b-bd39-9a3217b3a33a",
+        body: "test",
+        subject: "reward two",
+        timestamp: 2,
+        read: false,
+        rewards: [{ type: "xp", item: 2000 }],
+      };
+      const rewardThree: SharedTypes.MonkeyMail = {
+        id: "0d73b3e0-dc79-4abb-bcaf-66fa6b09a58a",
+        body: "test",
+        subject: "reward three",
+        timestamp: 3,
+        read: true,
+        rewards: [{ type: "xp", item: 2000 }],
+      };
+
+      let user = await UserTestData.createUser({
+        xp: 100,
+        inbox: [rewardOne, rewardTwo, rewardThree],
+      });
+
+      //WNEN
+      await UserDAL.updateInbox(
+        user.uid,
+        [rewardOne.id, rewardTwo.id, rewardThree.id],
+        []
+      );
+
+      //THEN
+      const { xp, inbox } = await UserDAL.getUser(user.uid, "");
+      expect(xp).toEqual(3100);
+
+      //inbox is sorted by timestamp
+      expect(inbox).toStrictEqual([
+        { ...rewardThree },
+        { ...rewardTwo, read: true, rewards: [] },
+        { ...rewardOne, read: true, rewards: [] },
+      ]);
+    });
+
+    it("removes", async () => {
+      //GIVEN
+      const rewardOne = {
+        id: "b5866d4c-0749-41b6-b101-3656249d39b9",
+        body: "test",
+        subject: "reward one",
+        timestamp: 0,
+        read: false,
+        rewards: [],
+      };
+      const rewardTwo = {
+        id: "3692b9f5-84fb-4d9b-bd39-9a3217b3a33a",
+        body: "test",
+        subject: "reward two",
+        timestamp: 0,
+        read: true,
+        rewards: [],
+      };
+      const rewardThree = {
+        id: "0d73b3e0-dc79-4abb-bcaf-66fa6b09a58a",
+        body: "test",
+        subject: "reward three",
+        timestamp: 0,
+        read: false,
+        rewards: [],
+      };
+
+      let user = await UserTestData.createUser({
+        xp: 100,
+        inbox: [rewardOne, rewardTwo, rewardThree],
+      });
+
+      //WNEN
+      await UserDAL.updateInbox(user.uid, [], [rewardOne.id, rewardTwo.id]);
+
+      //THEN
+      const { inbox } = await UserDAL.getUser(user.uid, "");
+      expect(inbox).toStrictEqual([rewardThree]);
+    });
+
+    it("updates badge", async () => {
+      //GIVEN
+      const rewardOne: SharedTypes.MonkeyMail = {
+        id: "b5866d4c-0749-41b6-b101-3656249d39b9",
+        body: "test",
+        subject: "reward one",
+        timestamp: 2,
+        read: false,
+        rewards: [
+          { type: "xp", item: 400 },
+          { type: "badge", item: { id: 4 } },
+        ],
+      };
+      const rewardTwo: SharedTypes.MonkeyMail = {
+        id: "3692b9f5-84fb-4d9b-bd39-9a3217b3a33a",
+        body: "test",
+        subject: "reward two",
+        timestamp: 1,
+        read: false,
+        rewards: [{ type: "badge", item: { id: 5 } }],
+      };
+      const rewardThree: SharedTypes.MonkeyMail = {
+        id: "0d73b3e0-dc79-4abb-bcaf-66fa6b09a58a",
+        body: "test",
+        subject: "reward three",
+        timestamp: 0,
+        read: true,
+        rewards: [{ type: "badge", item: { id: 6 } }],
+      };
+
+      let user = await UserTestData.createUser({
+        inbox: [rewardOne, rewardTwo, rewardThree],
+        inventory: { badges: [{ id: 1, selected: true }] },
+      });
+
+      //WNEN
+      await UserDAL.updateInbox(
+        user.uid,
+        [rewardOne.id, rewardTwo.id, rewardThree.id, rewardOne.id],
+        []
+      );
+
+      //THEN
+      const { inbox, inventory } = await UserDAL.getUser(user.uid, "");
+      expect(inbox).toStrictEqual([
+        { ...rewardOne, read: true, rewards: [] },
+        { ...rewardTwo, read: true, rewards: [] },
+        { ...rewardThree },
+      ]);
+      expect(inventory?.badges).toStrictEqual([
+        { id: 1, selected: true },
+        { id: 4 },
+        { id: 5 },
+      ]);
+    });
+
+    it("does not claim reward multiple times", async () => {
+      //GIVEN
+      const rewardOne: SharedTypes.MonkeyMail = {
+        id: "b5866d4c-0749-41b6-b101-3656249d39b9",
+        body: "test",
+        subject: "reward one",
+        timestamp: 0,
+        read: false,
+        rewards: [
+          { type: "xp", item: 400 },
+          { type: "xp", item: 600 },
+          { type: "badge", item: { id: 4 } },
+        ],
+      };
+      const rewardTwo: SharedTypes.MonkeyMail = {
+        id: "3692b9f5-84fb-4d9b-bd39-9a3217b3a33a",
+        body: "test",
+        subject: "reward two",
+        timestamp: 0,
+        read: false,
+        rewards: [{ type: "xp", item: 2000 }],
+      };
+      const rewardThree: SharedTypes.MonkeyMail = {
+        id: "0d73b3e0-dc79-4abb-bcaf-66fa6b09a58a",
+        body: "test",
+        subject: "reward three",
+        timestamp: 0,
+        read: true,
+        rewards: [{ type: "xp", item: 2000 }],
+      };
+
+      let user = await UserTestData.createUser({
+        xp: 100,
+        inbox: [rewardOne, rewardTwo, rewardThree],
+      });
+
+      const count = 100;
+      const calls = new Array(count)
+        .fill(0)
+        .map(() =>
+          UserDAL.updateInbox(
+            user.uid,
+            [rewardOne.id, rewardTwo.id, rewardOne.id, rewardThree.id],
+            []
+          )
+        );
+
+      await Promise.all(calls);
+
+      //THEN
+
+      const { xp } = await UserDAL.getUser(user.uid, "");
+      expect(xp).toEqual(3100);
+    });
+  });
 });
