@@ -34,10 +34,6 @@ export const MonkeyErrorSchema = MonkeyResponseSchema.extend({
 });
 export type MonkeyErrorType = z.infer<typeof MonkeyErrorSchema>;
 
-export const MonkeyErrorResponseSchema = MonkeyErrorSchema.or(
-  MonkeyValidationErrorSchema
-);
-
 export const StringNumberSchema = z.custom<`${number}`>((val) => {
   return typeof val === "string" ? /^\d+$/.test(val) : false;
 });

@@ -71,12 +71,12 @@ describe("ConfigController", () => {
         .set("authorization", "Uid 123456789")
         .accept("application/json")
         .send({ unknownValue: "unknown" })
-        .expect(400);
+        .expect(422);
 
       //THEN
       expect(body).toStrictEqual({
-        message: `"" Unrecognized key(s) in object: 'unknownValue'`,
-        validationErrors: [`"" Unrecognized key(s) in object: 'unknownValue'`],
+        message: `Unrecognized key(s) in object: 'unknownValue'`,
+        validationErrors: [`Unrecognized key(s) in object: 'unknownValue'`],
       });
 
       expect(saveConfigMock).not.toHaveBeenCalled();
@@ -88,11 +88,11 @@ describe("ConfigController", () => {
         .set("authorization", "Uid 123456789")
         .accept("application/json")
         .send({ autoSwitchTheme: "yes", confidenceMode: "pretty" })
-        .expect(400);
+        .expect(422);
 
       //THEN
       expect(body).toStrictEqual({
-        message: "multiple validation errors",
+        message: `"autoSwitchTheme" Expected boolean, received string`,
         validationErrors: [
           `"autoSwitchTheme" Expected boolean, received string`,
           `"confidenceMode" Invalid enum value. Expected 'off' | 'on' | 'max', received 'pretty'`,

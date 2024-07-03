@@ -61,9 +61,9 @@ import {
   DifficultySchema,
   Metadata,
   ModeSchema,
-  MonkeyErrorResponseSchema,
   MonkeyErrorSchema,
   MonkeyResponseSchema,
+  MonkeyValidationErrorSchema,
 } from "./shared/types";
 import { responseWithNullableData } from "./shared/helpers";
 
@@ -209,7 +209,8 @@ export const configsContract = c.router(
     } as Metadata,
 
     commonResponses: {
-      400: MonkeyErrorResponseSchema,
+      400: MonkeyErrorSchema,
+      422: MonkeyValidationErrorSchema,
       500: MonkeyErrorSchema,
     },
   }

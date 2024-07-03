@@ -9,26 +9,34 @@ function buildApi(timeout: number): (args: ApiFetcherArgs) => Promise<{
   body: unknown;
   headers: Headers;
 }> {
-  return async (args: ApiFetcherArgs) => {
+  return async (request: ApiFetcherArgs) => {
     const token = isAuthenticated()
       ? await getIdToken(getAuthenticatedUser())
       : "";
     try {
-      const result = await fetch(args.path, {
+      const response = await fetch(request.path, {
         signal: AbortSignal.timeout(timeout),
-        method: args.method as Method,
+        method: request.method as Method,
         headers: {
-          ...args.headers,
+          ...request.headers,
           Authorization: `Bearer ${token}`,
           "X-Client-Version": envConfig.clientVersion,
         },
-        body: args.body,
+        body: request.body,
       });
+      const body = await response.json();
+      if (response.status == 422) {
+        console.log(`Client call ${request.method} ${request.path} failed: `, {
+          status: response.status,
+          message: body.message,
+          validationErrors: body.validationErrors,
+        });
+      }
 
       return {
-        status: result.status,
-        body: await result.json(),
-        headers: result.headers ?? new Headers(),
+        status: response.status,
+        body,
+        headers: response.headers ?? new Headers(),
       };
     } catch (e: Error | unknown) {
       return {
