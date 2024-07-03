@@ -18,7 +18,7 @@ const router = Router();
 const tagNameValidation = joi
   .string()
   .required()
-  .regex(/^[0-9a-zA-Z_.-]+$/)
+  .regex(/^[0-9a-zA-Z_-]+$/)
   .max(16)
   .messages({
     "string.pattern.base":
@@ -29,7 +29,7 @@ const tagNameValidation = joi
 const customThemeNameValidation = joi
   .string()
   .max(16)
-  .regex(/^[0-9a-zA-Z_.-]+$/)
+  .regex(/^[0-9a-zA-Z_-]+$/)
   .required()
   .messages({
     "string.max": "The name must not exceed 16 characters",
