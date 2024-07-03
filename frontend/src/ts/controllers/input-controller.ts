@@ -768,15 +768,20 @@ function handleChar(
   const doesCurrentWordHaveTab = /^\t+/.test(TestWords.words.getCurrent());
   const isCurrentCharTab = currentWord[TestInput.input.current.length] === "\t";
 
-  if (
-    thisCharCorrect &&
-    Config.language.startsWith("code") &&
-    doesCurrentWordHaveTab &&
-    isCurrentCharTab
-  ) {
-    const tabEvent = new KeyboardEvent("keydown", { key: "Tab", code: "Tab" });
-    document.dispatchEvent(tabEvent);
-  }
+  setTimeout(() => {
+    if (
+      thisCharCorrect &&
+      Config.language.startsWith("code") &&
+      doesCurrentWordHaveTab &&
+      isCurrentCharTab
+    ) {
+      const tabEvent = new KeyboardEvent("keydown", {
+        key: "Tab",
+        code: "Tab",
+      });
+      document.dispatchEvent(tabEvent);
+    }
+  }, 0);
 
   if (char !== "\n") {
     void Caret.updatePosition();
