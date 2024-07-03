@@ -75,7 +75,7 @@ describe("ConfigController", () => {
 
       //THEN
       expect(body).toStrictEqual({
-        message: `Unrecognized key(s) in object: 'unknownValue'`,
+        message: "Invalid request schema",
         validationErrors: [`Unrecognized key(s) in object: 'unknownValue'`],
       });
 
@@ -92,7 +92,7 @@ describe("ConfigController", () => {
 
       //THEN
       expect(body).toStrictEqual({
-        message: `"autoSwitchTheme" Expected boolean, received string`,
+        message: "Invalid request schema",
         validationErrors: [
           `"autoSwitchTheme" Expected boolean, received string`,
           `"confidenceMode" Invalid enum value. Expected 'off' | 'on' | 'max', received 'pretty'`,
