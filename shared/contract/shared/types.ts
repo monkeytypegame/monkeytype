@@ -28,11 +28,12 @@ export const MonkeyValidationErrorSchema = MonkeyResponseSchema.extend({
 });
 export type MonkeyValidationError = z.infer<typeof MonkeyValidationErrorSchema>;
 
-export const MonkeyErrorSchema = MonkeyResponseSchema.extend({
+export const MonkeyClientError = MonkeyResponseSchema;
+export const MonkeyServerError = MonkeyClientError.extend({
   errorId: z.string(),
-  uid: z.string().optional(),
+  uid: z.string(),
 });
-export type MonkeyErrorType = z.infer<typeof MonkeyErrorSchema>;
+export type MonkeyServerErrorType = z.infer<typeof MonkeyServerError>;
 
 export const StringNumberSchema = z.custom<`${number}`>((val) => {
   return typeof val === "string" ? /^\d+$/.test(val) : false;
