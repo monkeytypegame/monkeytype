@@ -862,9 +862,11 @@ function handleTab(event: JQuery.KeyDownEvent, popupVisible: boolean): void {
       return;
     }
 
-    if (document.activeElement?.id !== "wordsInput") {
-      Focus.set(false);
-    }
+    setTimeout(() => {
+      if (document.activeElement?.id !== "wordsInput") {
+        Focus.set(false);
+      }
+    }, 0);
   }
 }
 
