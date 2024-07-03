@@ -1027,7 +1027,7 @@
   margin-bottom: 1rem;
   .puncAndNum {
     // transition: 0.25s cubic-bezier(0.37, 0, 0.63, 1);
-    overflow: hidden;
+    // overflow: hidden;
     opacity: 1;
   }
   .row {
@@ -1074,25 +1074,14 @@
     .textButton {
       padding: var(--verticalPadding) var(--horizontalPadding);
 
-      box-shadow: none;
-      &:focus-visible {
-        color: var(--text-color);
-        background: none;
-      }
-
-      --double: calc(var(--horizontalPadding) * 2);
-
       &:first-child {
-        padding: var(--verticalPadding) var(--horizontalPadding)
-          var(--verticalPadding) var(--double);
+        margin-left: var(--horizontalPadding);
       }
       &:last-child {
-        padding: var(--verticalPadding) var(--double) var(--verticalPadding)
-          var(--horizontalPadding);
+        margin-right: var(--horizontalPadding);
       }
       &:only-child {
-        padding: var(--verticalPadding) var(--double) var(--verticalPadding)
-          var(--double);
+        margin-inline: var(--horizontalPadding);
       }
     }
   }
@@ -1104,7 +1093,7 @@
   .puncAndNum {
     // width: 100%;
     justify-content: center;
-    overflow: hidden;
+    // overflow: hidden;
   }
   .customText {
     display: grid;
