@@ -876,20 +876,22 @@ export async function updateWordElement(
       }
     }
 
-    for (let i = input.length; i < currentWord.length; i++) {
-      if (funbox?.functions?.getWordHtml) {
-        ret += funbox.functions.getWordHtml(currentWord[i] as string, true);
-      } else if (currentWord[i] === "\t") {
-        ret += `<letter class='tabChar'><i class="fas fa-long-arrow-alt-right fa-fw"></i></letter>`;
-      } else if (currentWord[i] === "\n") {
-        ret += `<letter class='nlChar'><i class="fas fa-level-down-alt fa-rotate-90 fa-fw"></i></letter>`;
-      } else {
-        ret +=
-          `<letter class="${
-            Config.highlightMode === "word" ? wordHighlightClassString : ""
-          }">` +
-          currentWord[i] +
-          "</letter>";
+    if (input !== "\t") {
+      for (let i = input.length; i < currentWord.length; i++) {
+        if (funbox?.functions?.getWordHtml) {
+          ret += funbox.functions.getWordHtml(currentWord[i] as string, true);
+        } else if (currentWord[i] === "\t") {
+          ret += `<letter class='tabChar'><i class="fas fa-long-arrow-alt-right fa-fw"></i></letter>`;
+        } else if (currentWord[i] === "\n") {
+          ret += `<letter class='nlChar'><i class="fas fa-level-down-alt fa-rotate-90 fa-fw"></i></letter>`;
+        } else {
+          ret +=
+            `<letter class="${
+              Config.highlightMode === "word" ? wordHighlightClassString : ""
+            }">` +
+            currentWord[i] +
+            "</letter>";
+        }
       }
     }
 
