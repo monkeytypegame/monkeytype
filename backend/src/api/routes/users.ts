@@ -83,7 +83,7 @@ const usernameValidation = joi
     "string.profanity":
       "The username contains profanity. If you believe this is a mistake, please contact us ",
     "string.pattern.base":
-      "Username invalid. Name cannot use special characters or contain more than 16 characters. Can include _ . and - ",
+      "Username invalid. Name cannot use special characters or contain more than 16 characters. Can include _ and - ",
   });
 
 const languageSchema = joi

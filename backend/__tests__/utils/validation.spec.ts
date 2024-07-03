@@ -17,10 +17,6 @@ describe("Validation", () => {
         expected: true,
       },
       {
-        name: "valid.name",
-        expected: true,
-      },
-      {
         name: "thistagnameistoolong",
         expected: false,
       },
@@ -97,7 +93,7 @@ describe("Validation", () => {
         expected: true,
       },
       {
-        name: "Fe-rotiq._123._",
+        name: "Fe-rotiq_123_",
         expected: true,
       },
       {
