@@ -738,7 +738,11 @@ export async function getNextWord(
 
       if (
         Config.mode === "time" ||
-        (Config.mode === "custom" && CustomText.getLimitMode() === "time")
+        (Config.mode === "custom" && CustomText.getLimitMode() === "time") ||
+        (Config.mode === "custom" &&
+          CustomText.getLimitMode() === "word" &&
+          wordIndex < CustomText.getLimitValue()) ||
+        (Config.mode === "words" && wordIndex < Config.words)
       ) {
         continueRandomGeneration = true;
       }
