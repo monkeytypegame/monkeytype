@@ -15,7 +15,7 @@ async function fill(): Promise<void> {
     list += "<div>No saved custom texts found</div>";
   } else {
     for (const name of names) {
-      list += `<div class="savedText" data-name="${name}">
+      list += `<div class="savedText" data-name="${escapeHTML(name)}">
       <div class="button name">${escapeHTML(name)}</div>
       <div class="button delete">
       <i class="fas fa-fw fa-trash"></i>
@@ -32,7 +32,7 @@ async function fill(): Promise<void> {
     longList += "<div>No saved long custom texts found</div>";
   } else {
     for (const name of longNames) {
-      longList += `<div class="savedLongText" data-name="${name}">
+      longList += `<div class="savedLongText" data-name="${escapeHTML(name)}">
       <div class="button name">${escapeHTML(name)}</div>
       <div class="button ${
         CustomText.getCustomTextLongProgress(name) <= 0 ? "disabled" : ""
