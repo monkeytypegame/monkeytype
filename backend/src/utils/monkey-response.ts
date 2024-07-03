@@ -1,13 +1,6 @@
 import { Response } from "express";
+import { MonkeyResonseType as MonkeyResponseType } from "shared/contract/shared/types";
 import { isCustomCode } from "../constants/monkey-status-codes";
-import {
-  MonkeyResonseType as MonkeyResponseType,
-  StatusCode,
-} from "shared/contract/shared/types";
-
-export type MonkeyStatusAware = {
-  status: number;
-};
 
 export type MonkeyDataAware<T> = {
   data: T | null;
@@ -49,11 +42,7 @@ export function handleMonkeyResponse(
 }
 
 export class MonkeyResponse2<T = null>
-  implements MonkeyResponseType, MonkeyStatusAware, MonkeyDataAware<T>
+  implements MonkeyResponseType, MonkeyDataAware<T>
 {
-  constructor(
-    public message: string,
-    public data: T | null = null,
-    public status: StatusCode = 200
-  ) {}
+  constructor(public message: string, public data: T | null = null) {}
 }

@@ -18,12 +18,8 @@ export type RequestAuthenticationOptions = {
   noCache?: boolean;
 };
 
-const StatusCodeSchema = z.number().int();
-export type StatusCode = z.infer<typeof StatusCodeSchema>;
-
 export const MonkeyResponseSchema = z.object({
   message: z.string(),
-  status: StatusCodeSchema,
 });
 export type MonkeyResonseType = z.infer<typeof MonkeyResponseSchema>;
 

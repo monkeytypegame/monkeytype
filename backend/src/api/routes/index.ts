@@ -85,7 +85,6 @@ function applyTsRestApiRoutes(app: IRouter): void {
       if (err.body?.issues === undefined) return next();
       const issues = err.body?.issues;
       res.status(400).json({
-        status: 400,
         message:
           issues.length === 1
             ? prettyErrorMessage(issues[0])
@@ -188,13 +187,12 @@ export function callController<
   TBody,
   TParams,
   TResponse,
-  TStatus extends number = 200
+  TStatus = 200
 >(
-  handler: Handler<TQuery, TBody, TParams, TResponse>,
-  _status?: TStatus
+  handler: Handler<TQuery, TBody, TParams, TResponse>
 ): (all: RequestType2<TRoute, TQuery, TBody, TParams>) => Promise<{
   status: TStatus;
-  body: { message: string; status: number; data: TResponse };
+  body: { message: string; data: TResponse };
 }> {
   return async (all) => {
     const req: MonkeyTypes.Request2<TQuery, TBody, TParams> = {
@@ -207,10 +205,9 @@ export function callController<
 
     const result = await handler(req);
     const response = {
-      status: result.status as TStatus,
+      status: 200 as TStatus,
       body: {
         message: result.message,
-        status: result.status,
         data: result.data as TResponse,
       },
     };

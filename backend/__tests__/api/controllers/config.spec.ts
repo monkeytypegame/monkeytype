@@ -28,7 +28,6 @@ describe("ConfigController", () => {
 
       //THEN
       expect(body).toStrictEqual({
-        status: 200,
         message: "Configuration retrieved",
         data: { language: "english" },
       });
@@ -57,7 +56,6 @@ describe("ConfigController", () => {
 
       //THEN
       expect(body).toStrictEqual({
-        status: 200,
         message: "Config updated",
         data: null,
       });
@@ -77,7 +75,6 @@ describe("ConfigController", () => {
 
       //THEN
       expect(body).toStrictEqual({
-        status: 400,
         message: `"" Unrecognized key(s) in object: 'unknownValue'`,
         validationErrors: [`"" Unrecognized key(s) in object: 'unknownValue'`],
       });
@@ -95,7 +92,6 @@ describe("ConfigController", () => {
 
       //THEN
       expect(body).toStrictEqual({
-        status: 400,
         message: "multiple validation errors",
         validationErrors: [
           `"autoSwitchTheme" Expected boolean, received string`,
@@ -126,7 +122,6 @@ describe("ConfigController", () => {
 
       //THEN
       expect(body).toStrictEqual({
-        status: 200,
         message: "Config deleted",
         data: null,
       });
