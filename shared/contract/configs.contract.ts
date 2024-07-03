@@ -62,6 +62,7 @@ import {
   Metadata,
   ModeSchema,
   MonkeyErrorResponseSchema,
+  MonkeyErrorSchema,
   MonkeyResponseSchema,
 } from "./shared/types";
 import { responseWithNullableData } from "./shared/helpers";
@@ -176,7 +177,6 @@ export const configsContract = c.router(
       path: "/",
       responses: {
         200: GetConfigResponseSchema,
-        400: MonkeyErrorResponseSchema,
       },
     },
     save: {
@@ -185,7 +185,6 @@ export const configsContract = c.router(
       body: PartialConfigSchema.strict(),
       responses: {
         200: MonkeyResponseSchema,
-        400: MonkeyErrorResponseSchema,
       },
       summary: "update config",
       description:
@@ -197,7 +196,6 @@ export const configsContract = c.router(
       body: c.noBody(),
       responses: {
         200: MonkeyResponseSchema,
-        400: MonkeyErrorResponseSchema,
       },
       summary: "delete config",
       description: "Delete/reset the config for the current user.",
@@ -209,5 +207,10 @@ export const configsContract = c.router(
     metadata: {
       tags: "configs",
     } as Metadata,
+
+    commonResponses: {
+      400: MonkeyErrorResponseSchema,
+      500: MonkeyErrorSchema,
+    },
   }
 );
