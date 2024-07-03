@@ -1,7 +1,6 @@
 import endpoints from "./endpoints";
 import { buildHttpClient } from "./adapters/axios-adapter";
 import { envConfig } from "../constants/env-config";
-import axios from "axios";
 import { buildClient } from "./endpoints/ApeClient";
 import { configsContract } from "shared/contract/configs.contract";
 
@@ -10,15 +9,11 @@ const BASE_URL = envConfig.backendUrl;
 const API_URL = `${BASE_URL}${API_PATH}`;
 
 const httpClient = buildHttpClient(API_URL, 10_000);
-const axiosClient = axios.create({
-  baseURL: "",
-  timeout: 10_000,
-});
 
 // API Endpoints
 const Ape = {
   users: new endpoints.Users(httpClient),
-  configs: buildClient(configsContract, axiosClient, BASE_URL),
+  configs: buildClient(configsContract, BASE_URL, 10_000),
   results: new endpoints.Results(httpClient),
   psas: new endpoints.Psas(httpClient),
   quotes: new endpoints.Quotes(httpClient),

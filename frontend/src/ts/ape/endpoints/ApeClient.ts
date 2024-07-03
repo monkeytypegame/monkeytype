@@ -1,51 +1,41 @@
 import { AppRouter, initClient, type ApiFetcherArgs } from "@ts-rest/core";
-import { Axios, AxiosError, AxiosResponse, Method, isAxiosError } from "axios";
+import { Method } from "axios";
 import { getIdToken } from "firebase/auth";
 import { envConfig } from "../../constants/env-config";
 import { getAuthenticatedUser, isAuthenticated } from "../../firebase";
 
-function buildApi(axios: Axios): (args: ApiFetcherArgs) => Promise<{
+function buildApi(timeout: number): (args: ApiFetcherArgs) => Promise<{
   status: number;
   body: unknown;
   headers: Headers;
 }> {
-  //@ts-expect-error  trust me bro
   return async (args: ApiFetcherArgs) => {
     const token = isAuthenticated()
       ? await getIdToken(getAuthenticatedUser())
       : "";
     try {
-      const result = await axios.request({
+      const result = await fetch(args.path, {
+        signal: AbortSignal.timeout(timeout),
         method: args.method as Method,
-        url: args.path,
         headers: {
           ...args.headers,
           Authorization: `Bearer ${token}`,
           "X-Client-Version": envConfig.clientVersion,
         },
-        data: args.body,
+        body: args.body,
       });
+
       return {
         status: result.status,
-        body: result.data,
-        headers: result.headers,
+        body: await result.json(),
+        headers: result.headers ?? new Headers(),
       };
-    } catch (e: Error | AxiosError | unknown) {
-      if (isAxiosError(e)) {
-        const error = e as AxiosError;
-        const response = error.response as AxiosResponse | undefined;
-
-        const result = {
-          status: response?.status ?? 500,
-          body: {
-            status: response?.status ?? 500,
-            message: response?.data.message ?? e.message,
-          },
-          headers: response?.headers,
-        };
-        return result;
-      }
-      throw e;
+    } catch (e: Error | unknown) {
+      return {
+        status: 500,
+        body: { message: e },
+        headers: new Headers(),
+      };
     }
   };
 }
@@ -53,13 +43,13 @@ function buildApi(axios: Axios): (args: ApiFetcherArgs) => Promise<{
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 export function buildClient<T extends AppRouter>(
   contract: T,
-  axios: Axios,
-  baseUrl: string
+  baseUrl: string,
+  timeout: number = 10_000
 ) {
   return initClient(contract, {
     baseUrl: baseUrl,
     jsonQuery: true,
-    api: buildApi(axios),
+    api: buildApi(timeout),
   });
 }
 /* eslint-enable @typescript-eslint/explicit-function-return-type */
