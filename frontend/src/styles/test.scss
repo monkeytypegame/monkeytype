@@ -1027,7 +1027,7 @@
   margin-bottom: 1rem;
   .puncAndNum {
     // transition: 0.25s cubic-bezier(0.37, 0, 0.63, 1);
-    overflow: hidden;
+    // overflow: hidden;
     opacity: 1;
   }
   .row {
@@ -1039,13 +1039,14 @@
   }
   .spacer {
     height: auto;
-    width: 0.25rem;
+    width: 0.5em;
     border-radius: calc(var(--roundness) / 2);
     background: var(--bg-color);
-    margin: 0.5rem 0;
+    margin: 0.75em 0;
+    transition: 250ms;
     &.scrolled {
+      opacity: 0;
       width: 0;
-      margin: auto 0;
     }
   }
 
@@ -1053,10 +1054,9 @@
   .time,
   .customText {
     .textButton {
-      // line-height: 1.4em;
+      align-self: end;
       span {
-        // height: 1.1em;
-        margin-top: 0.12em;
+        line-height: 1.15;
       }
     }
   }
@@ -1074,19 +1074,14 @@
     .textButton {
       padding: var(--verticalPadding) var(--horizontalPadding);
 
-      --double: calc(var(--horizontalPadding) * 2);
-
       &:first-child {
-        padding: var(--verticalPadding) var(--horizontalPadding)
-          var(--verticalPadding) var(--double);
+        margin-left: var(--horizontalPadding);
       }
       &:last-child {
-        padding: var(--verticalPadding) var(--double) var(--verticalPadding)
-          var(--horizontalPadding);
+        margin-right: var(--horizontalPadding);
       }
       &:only-child {
-        padding: var(--verticalPadding) var(--double) var(--verticalPadding)
-          var(--double);
+        margin-inline: var(--horizontalPadding);
       }
     }
   }
@@ -1094,11 +1089,11 @@
   .wordCount,
   .customText,
   .zen,
-  .quoteLength,
+  .quoteLength {
+    justify-content: end;
+  }
   .puncAndNum {
-    // width: 100%;
-    justify-content: center;
-    overflow: hidden;
+    justify-content: start;
   }
   .customText {
     display: grid;
@@ -1176,7 +1171,7 @@
     user-select: none;
 
     .textButton {
-      margin: 0 0.5rem;
+      padding: 0.5em 1em;
       &.noInteraction {
         pointer-events: none;
       }
