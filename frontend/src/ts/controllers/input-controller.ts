@@ -920,7 +920,7 @@ $(document).on("keydown", async (event) => {
   if (
     allowTyping &&
     !wordsFocused &&
-    !["Enter", "Tab", ...ModifierKeys].includes(event.key)
+    !["Enter", " ", "Escape", "Tab", ...ModifierKeys].includes(event.key)
   ) {
     TestUI.focusWords();
     if (Config.showOutOfFocusWarning && !event.ctrlKey && !event.metaKey) {
