@@ -48,6 +48,7 @@ a:hover {
 }
 
 #logo,
-#typingTest .word letter.correct {
+#words:not(.flipped) .word:has(~ .active) letter,
+#words.highlight-letter:not(.flipped) .word.active letter.correct {
   animation: shadow 5s linear 1 forwards;
 }
