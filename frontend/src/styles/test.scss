@@ -1039,10 +1039,10 @@
   }
   .spacer {
     height: auto;
-    width: 0.25rem;
+    width: 0.5em;
     border-radius: calc(var(--roundness) / 2);
     background: var(--bg-color);
-    margin: 0.5rem 0;
+    margin: 0.75em 0;
     transition: 250ms;
     &.scrolled {
       width: 0;
