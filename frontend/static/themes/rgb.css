@@ -100,16 +100,22 @@ a:hover,
   animation: rgb 5s linear infinite;
 }
 
-/* .word letter.correct{
-  animation: rgb 5s linear infinite;
-
-}  */
-
-#words.flipped .word letter.correct {
+#words.flipped .word:has(~ .active) letter,
+#words.flipped.highlight-next-word .word.active,
+#words.flipped.highlight-next-word .word.active + .word,
+#words.flipped.highlight-next-two-words .word.active,
+#words.flipped.highlight-next-two-words .word.active + .word,
+#words.flipped.highlight-next-two-words .word.active + .word + .word,
+#words.flipped.highlight-next-three-words .word.active,
+#words.flipped.highlight-next-three-words .word.active + .word,
+#words.flipped.highlight-next-three-words .word.active + .word + .word,
+#words.flipped.highlight-next-three-words .word.active + .word + .word + .word {
   color: var(--sub-color);
+  animation: none;
 }
 
-#words:not(.flipped) .word letter.correct {
+#words:not(.flipped) .word:has(~ .active) letter,
+#words.highlight-letter:not(.flipped) .word.active letter.correct {
   animation: rgb 5s linear infinite;
 }
 
