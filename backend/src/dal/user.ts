@@ -364,18 +364,10 @@ export async function removeTag(uid: string, _id: string): Promise<void> {
 }
 
 export async function removeTagPb(uid: string, _id: string): Promise<void> {
-  const user = await getPartialUser(uid, "remove tag pb", ["tags"]);
-  if (
-    user.tags === undefined ||
-    user.tags.filter((t) => t._id.toHexString() === _id).length === 0
-  ) {
-    throw new MonkeyError(404, "Tag not found");
-  }
-  await getUsersCollection().updateOne(
-    {
-      uid: uid,
-      "tags._id": new ObjectId(_id),
-    },
+  const filterId = new ObjectId(_id);
+
+  await updateUser(
+    { uid, "tags._id": filterId },
     {
       $set: {
         "tags.$.personalBests": {
@@ -386,7 +378,8 @@ export async function removeTagPb(uid: string, _id: string): Promise<void> {
           custom: {},
         },
       },
-    }
+    },
+    { statusCode: 404, message: "Unknown user or tag not found" }
   );
 }
 
@@ -397,21 +390,10 @@ export async function updateLbMemory(
   language: string,
   rank: number
 ): Promise<void> {
-  const user = await getPartialUser(uid, "update lb memory", ["lbMemory"]);
-  if (user.lbMemory === undefined) user.lbMemory = {};
-  if (user.lbMemory[mode] === undefined) user.lbMemory[mode] = {};
-  if (user.lbMemory[mode]?.[mode2] === undefined) {
-    //@ts-expect-error guarded above
-    user.lbMemory[mode][mode2] = {};
-  }
-  //@ts-expect-error guarded above
-  user.lbMemory[mode][mode2][language] = rank;
-  await getUsersCollection().updateOne(
-    { uid },
-    {
-      $set: { lbMemory: user.lbMemory },
-    }
-  );
+  const partialUpdate = {};
+  partialUpdate[`lbMemory.${mode}.${mode2}.${language}`] = rank;
+
+  await updateUser({ uid }, { $set: partialUpdate }, "update lb memory");
 }
 
 export async function checkIfPb(

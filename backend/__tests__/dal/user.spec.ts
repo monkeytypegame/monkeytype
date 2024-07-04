@@ -563,19 +563,24 @@ describe("UserDal", () => {
       // when, then
       await expect(
         UserDAL.removeTag("non existing uid", new ObjectId().toHexString())
-      ).rejects.toThrow(); //"Unknown user or custom filter not found");
+      ).rejects.toThrow("Unknown user or tag not found");
     });
 
-    it("should return error if filter is unknown", async () => {
+    it("should return error if tag is unknown", async () => {
       // given
+      const tagOne: MonkeyTypes.DBUserTag = {
+        _id: new ObjectId(),
+        name: "one",
+        personalBests: {} as any,
+      };
       const { uid } = await UserTestData.createUser({
-        resultFilterPresets: [mockDbResultFilter],
+        tags: [tagOne],
       });
 
       // when, then
       await expect(
         UserDAL.removeTag(uid, new ObjectId().toHexString())
-      ).rejects.toThrow(); //"Unknown user or custom filter not found");
+      ).rejects.toThrow("Unknown user or tag not found");
     });
     it("should remove tag", async () => {
       // given
@@ -600,10 +605,83 @@ describe("UserDal", () => {
       });
 
       // when, then
-      await expect(UserDAL.removeTag(uid, tagTwo._id.toHexString())).resolves;
+      await UserDAL.removeTag(uid, tagTwo._id.toHexString());
 
       const read = await UserDAL.getUser(uid, "read");
       expect(read.tags).toStrictEqual([tagOne, tagThree]);
+    });
+  });
+
+  describe("removeTagPb", () => {
+    it("should return error if uuid not found", async () => {
+      // when, then
+      await expect(
+        UserDAL.removeTagPb("non existing uid", new ObjectId().toHexString())
+      ).rejects.toThrow("Unknown user or tag not found");
+    });
+
+    it("should return error if tag is unknown", async () => {
+      // given
+      const tagOne: MonkeyTypes.DBUserTag = {
+        _id: new ObjectId(),
+        name: "one",
+        personalBests: {} as any,
+      };
+      const { uid } = await UserTestData.createUser({
+        tags: [tagOne],
+      });
+
+      // when, then
+      await expect(
+        UserDAL.removeTagPb(uid, new ObjectId().toHexString())
+      ).rejects.toThrow("Unknown user or tag not found");
+    });
+    it("should remove tag pb", async () => {
+      // given
+      const tagOne = {
+        _id: new ObjectId(),
+        name: "tagOne",
+        personalBests: {
+          custom: { custom: [mockPersonalBest] },
+        } as SharedTypes.PersonalBests,
+      };
+      const tagTwo = {
+        _id: new ObjectId(),
+        name: "tagTwo",
+        personalBests: {
+          custom: { custom: [mockPersonalBest] },
+        } as SharedTypes.PersonalBests,
+      };
+      const tagThree = {
+        _id: new ObjectId(),
+        name: "tagThree",
+        personalBests: {
+          custom: { custom: [mockPersonalBest] },
+        } as SharedTypes.PersonalBests,
+      };
+
+      const { uid } = await UserTestData.createUser({
+        tags: [tagOne, tagTwo, tagThree],
+      });
+
+      // when, then
+      await UserDAL.removeTagPb(uid, tagTwo._id.toHexString());
+
+      const read = await UserDAL.getUser(uid, "read");
+      expect(read.tags).toStrictEqual([
+        tagOne,
+        {
+          ...tagTwo,
+          personalBests: {
+            time: {},
+            words: {},
+            quote: {},
+            zen: {},
+            custom: {},
+          },
+        },
+        tagThree,
+      ]);
     });
   });
 
@@ -1410,6 +1488,78 @@ describe("UserDal", () => {
 
       // when, then
       await expect(UserDAL.isDiscordIdAvailable("myId")).resolves.toBe(false);
+    });
+  });
+  describe("updateLbMemory", () => {
+    it("should return error if uuid not found", async () => {
+      // when, then
+      await expect(
+        UserDAL.updateLbMemory(
+          "non existing uid",
+          "time",
+          "15",
+          "english",
+          4711
+        )
+      ).rejects.toThrow("User not found\nStack: update lb memory");
+    });
+
+    it("updates on empty lbMemory", async () => {
+      //GIVEN
+      const { uid } = await UserTestData.createUser({});
+
+      //WHEN
+      await UserDAL.updateLbMemory(uid, "time", "15", "english", 4711);
+
+      //THEN
+      const read = await UserDAL.getUser(uid, "read");
+      expect(read.lbMemory).toStrictEqual({
+        time: {
+          "15": {
+            english: 4711,
+          },
+        },
+      });
+    });
+    it("updates on empty lbMemory.mode", async () => {
+      //GIVEN
+      const { uid } = await UserTestData.createUser({
+        lbMemory: { custom: {} },
+      });
+
+      //WHEN
+      await UserDAL.updateLbMemory(uid, "time", "15", "english", 4711);
+
+      //THEN
+      const read = await UserDAL.getUser(uid, "read");
+      expect(read.lbMemory).toStrictEqual({
+        custom: {},
+        time: {
+          "15": {
+            english: 4711,
+          },
+        },
+      });
+    });
+    it("updates on empty lbMemory.mode.mode2", async () => {
+      //GIVEN
+      const { uid } = await UserTestData.createUser({
+        lbMemory: { time: { "30": {} } },
+      });
+
+      //WHEN
+      await UserDAL.updateLbMemory(uid, "time", "15", "english", 4711);
+
+      //THEN
+      const read = await UserDAL.getUser(uid, "read");
+      expect(read.lbMemory).toStrictEqual({
+        time: {
+          "15": {
+            english: 4711,
+          },
+          "30": {},
+        },
+      });
     });
   });
 });
