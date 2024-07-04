@@ -28,7 +28,7 @@ declare namespace MonkeyTypes {
     | "testActivity"
   > & {
     _id: ObjectId;
-    resultFilterPresets?: WithObjectIdArray<SharedTypes.ResultFilters[]>;
+    resultFilterPresets?: WithObjectId<SharedTypes.ResultFilters>[];
     tags?: DBUserTag[];
     lbPersonalBests?: LbPersonalBests;
     customThemes?: DBCustomTheme[];
@@ -53,11 +53,6 @@ declare namespace MonkeyTypes {
   type WithObjectId<T extends { _id: string }> = Omit<T, "_id"> & {
     _id: ObjectId;
   };
-
-  type WithObjectIdArray<T extends { _id: string }[]> = Omit<T, "_id"> &
-    {
-      _id: ObjectId;
-    }[];
 
   type ApeKeyDB = SharedTypes.ApeKey & {
     _id: ObjectId;

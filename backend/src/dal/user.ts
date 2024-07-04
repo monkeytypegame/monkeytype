@@ -3,12 +3,13 @@ import { containsProfanity, isUsernameValid } from "../utils/validation";
 import { canFunboxGetPb, checkAndUpdatePb } from "../utils/pb";
 import * as db from "../init/db";
 import MonkeyError from "../utils/error";
-import { Collection, ObjectId, Long, UpdateFilter } from "mongodb";
+import { Collection, ObjectId, Long, UpdateFilter, Filter } from "mongodb";
 import Logger from "../utils/logger";
 import { flattenObjectDeep, isToday, isYesterday } from "../utils/misc";
 import { getCachedConfiguration } from "../init/configuration";
 import { getDayOfYear } from "date-fns";
 import { UTCDate } from "@date-fns/utc";
+import { UpdateRequest } from "firebase-admin/lib/auth/auth-config";
 
 const SECONDS_PER_HOUR = 3600;
 
@@ -179,7 +180,7 @@ export async function updateQuoteRatings(
   uid: string,
   quoteRatings: SharedTypes.UserQuoteRatings
 ): Promise<boolean> {
-  await updateUser("update quote ratings", { uid }, { $set: { quoteRatings } });
+  await updateUser({ uid }, { $set: { quoteRatings } }, "update quote ratings");
   return true;
 }
 
@@ -187,7 +188,7 @@ export async function updateEmail(
   uid: string,
   email: string
 ): Promise<boolean> {
-  await updateUser("update email", { uid }, { $set: { email } });
+  await updateUser({ uid }, { $set: { email } }, "update email");
 
   return true;
 }
@@ -264,20 +265,29 @@ export async function addResultFilterPreset(
   resultFilter: SharedTypes.ResultFilters,
   maxFiltersPerUser: number
 ): Promise<ObjectId> {
-  const error = new MonkeyError(
-    409,
-    "Unknown user or maximum number of custom filters reached for user."
-  );
-  if (maxFiltersPerUser === 0) throw error;
+  if (maxFiltersPerUser === 0) {
+    throw new MonkeyError(
+      409,
+      "Unknown user or maximum number of custom filters reached for user."
+    );
+  }
 
   const _id = new ObjectId();
   const filter = { uid };
   filter[`resultFilterPresets.${maxFiltersPerUser - 1}`] = { $exists: false };
 
-  const result = await getUsersCollection().updateOne(filter, {
-    $push: { resultFilterPresets: { ...resultFilter, _id } },
-  });
-  if (result.matchedCount !== 1) throw error;
+  await updateUser(
+    filter,
+    {
+      $push: { resultFilterPresets: { ...resultFilter, _id } },
+    },
+    {
+      statusCode: 406,
+      message:
+        "Unknown user or maximum number of custom filters reached for user.",
+    }
+  );
+
   return _id;
 }
 
@@ -285,24 +295,15 @@ export async function removeResultFilterPreset(
   uid: string,
   _id: string
 ): Promise<void> {
-  const user = await getPartialUser(uid, "remove result filter", [
-    "resultFilterPresets",
-  ]);
   const filterId = new ObjectId(_id);
-  if (
-    user.resultFilterPresets === undefined ||
-    user.resultFilterPresets.filter((t) => t._id.toString() === _id).length ===
-      0
-  ) {
-    throw new MonkeyError(404, "Custom filter not found");
-  }
 
-  await getUsersCollection().updateOne(
+  await updateUser(
     {
       uid,
       "resultFilterPresets._id": filterId,
     },
-    { $pull: { resultFilterPresets: { _id: filterId } } }
+    { $pull: { resultFilterPresets: { _id: filterId } } },
+    { message: "Unknown user or custom filter not found" }
   );
 }
 
@@ -530,7 +531,6 @@ export async function checkIfTagPb(
 
 export async function resetPb(uid: string): Promise<void> {
   await updateUser(
-    "reset pb",
     { uid },
     {
       $set: {
@@ -542,7 +542,8 @@ export async function resetPb(uid: string): Promise<void> {
           custom: {},
         },
       },
-    }
+    },
+    "reset pb"
   );
 }
 
@@ -586,21 +587,14 @@ export async function linkDiscord(
     { discordId, discordAvatar },
     _.identity
   );
-  const result = await getUsersCollection().updateOne(
-    { uid },
-    { $set: updates }
-  );
-
-  if (result.matchedCount === 0) {
-    throw new MonkeyError(404, "User not found");
-  }
+  await updateUser({ uid }, { $set: updates }, "link discord");
 }
 
 export async function unlinkDiscord(uid: string): Promise<void> {
   await updateUser(
-    "unlink discord",
     { uid },
-    { $unset: { discordId: "", discordAvatar: "" } }
+    { $unset: { discordId: "", discordAvatar: "" } },
+    "unlink discord"
   );
 }
 
@@ -1152,11 +1146,18 @@ export async function logIpAddress(
  * @throws MonkeyError if user does not exist
  */
 async function updateUser(
-  stack: string,
-  filter: { uid: string },
-  update: UpdateFilter<MonkeyTypes.DBUser>
+  filter: Filter<MonkeyTypes.DBUser>,
+  update: UpdateFilter<MonkeyTypes.DBUser>,
+  error: string | { statusCode?: number; message?: string }
 ): Promise<void> {
+  const monkeyError =
+    typeof error === "string"
+      ? new MonkeyError(404, "User not found", error)
+      : new MonkeyError(
+          error.statusCode ?? 404,
+          error.message ?? "User not found"
+        );
+
   const result = await getUsersCollection().updateOne(filter, update);
-  if (result.matchedCount !== 1)
-    throw new MonkeyError(404, "User not found", stack);
+  if (result.matchedCount !== 1) throw monkeyError;
 }

@@ -2,6 +2,7 @@ import _ from "lodash";
 import { updateStreak } from "../../src/dal/user";
 import * as UserDAL from "../../src/dal/user";
 import * as UserTestData from "../__testData__/users";
+import { ObjectId } from "mongodb";
 
 const mockPersonalBest = {
   acc: 1,
@@ -79,6 +80,8 @@ const mockResultFilter: SharedTypes.ResultFilters = {
     none: true,
   },
 };
+
+const mockDbResultFilter = { ...mockResultFilter, _id: new ObjectId() };
 
 describe("UserDal", () => {
   it("should be able to insert users", async () => {
@@ -349,11 +352,9 @@ describe("UserDal", () => {
     expect(updatedUser.banned).toBe(undefined);
     expect(updatedUser.autoBanTimestamps).toEqual([36000000]);
   });
+
   describe("addResultFilterPreset", () => {
     it("should return error if uuid not found", async () => {
-      // given
-      await UserDAL.addUser("test name", "test email", "TestID");
-
       // when, then
       await expect(
         UserDAL.addResultFilterPreset("non existing uid", mockResultFilter, 5)
@@ -364,12 +365,13 @@ describe("UserDal", () => {
 
     it("should return error if user has reached maximum", async () => {
       // given
-      await UserDAL.addUser("test name", "test email", "TestID");
-      await UserDAL.addResultFilterPreset("TestID", mockResultFilter, 1);
+      const { uid } = await UserTestData.createUser({
+        resultFilterPresets: [mockDbResultFilter],
+      });
 
       // when, then
       await expect(
-        UserDAL.addResultFilterPreset("TestID", mockResultFilter, 1)
+        UserDAL.addResultFilterPreset(uid, mockResultFilter, 1)
       ).rejects.toThrow(
         "Unknown user or maximum number of custom filters reached for user."
       );
@@ -377,11 +379,11 @@ describe("UserDal", () => {
 
     it("should handle zero maximum", async () => {
       // given
-      await UserDAL.addUser("test name", "test email", "TestID");
+      const { uid } = await UserTestData.createUser();
 
       // when, then
       await expect(
-        UserDAL.addResultFilterPreset("TestID", mockResultFilter, 0)
+        UserDAL.addResultFilterPreset(uid, mockResultFilter, 0)
       ).rejects.toThrow(
         "Unknown user or maximum number of custom filters reached for user."
       );
@@ -389,20 +391,63 @@ describe("UserDal", () => {
 
     it("addResultFilterPreset success", async () => {
       // given
-      await UserDAL.addUser("test name", "test email", "TestID");
+      const { uid } = await UserTestData.createUser({
+        resultFilterPresets: [mockDbResultFilter],
+      });
 
       // when
       const result = await UserDAL.addResultFilterPreset(
-        "TestID",
-        mockResultFilter,
-        1
+        uid,
+        { ...mockResultFilter },
+        2
       );
 
       // then
-      const user = await UserDAL.getUser("TestID", "test add result filters");
-      const createdFilter = user.resultFilterPresets ?? [];
+      const read = await UserDAL.getUser(uid, "test add result filters");
+      const createdFilter = read.resultFilterPresets ?? [];
 
-      expect(result).toStrictEqual(createdFilter[0]?._id);
+      expect(result).toStrictEqual(createdFilter[1]?._id);
+    });
+  });
+
+  describe("removeResultFilterPreset", () => {
+    it("should return error if uuid not found", async () => {
+      // when, then
+      await expect(
+        UserDAL.removeResultFilterPreset(
+          "non existing uid",
+          new ObjectId().toHexString()
+        )
+      ).rejects.toThrow("Unknown user or custom filter not found");
+    });
+
+    it("should return error if filter is unknown", async () => {
+      // given
+      const { uid } = await UserTestData.createUser({
+        resultFilterPresets: [mockDbResultFilter],
+      });
+
+      // when, then
+      await expect(
+        UserDAL.removeResultFilterPreset(uid, new ObjectId().toHexString())
+      ).rejects.toThrow("Unknown user or custom filter not found");
+    });
+    it("should remove filter", async () => {
+      // given
+      const filterOne = { ...mockDbResultFilter, _id: new ObjectId() };
+      const filterTwo = { ...mockDbResultFilter, _id: new ObjectId() };
+      const filterThree = { ...mockDbResultFilter, _id: new ObjectId() };
+      const { uid } = await UserTestData.createUser({
+        resultFilterPresets: [filterOne, filterTwo, filterThree],
+      });
+
+      // when, then
+      await expect(
+        UserDAL.removeResultFilterPreset(uid, filterTwo._id.toHexString())
+      ).resolves;
+
+      const read = await UserDAL.getUser(uid, "read");
+      expect(read.resultFilterPresets).toStrictEqual([filterOne, filterThree]);
     });
   });
 
@@ -904,8 +949,89 @@ describe("UserDal", () => {
   describe("updateEmail", () => {
     it("throws for nonexisting user", async () => {
       expect(async () =>
-        UserDAL.updateEmail(123, "test@example.com")
+        UserDAL.updateEmail("unknown", "test@example.com")
       ).rejects.toThrowError("User not found\nStack: update email");
+    });
+    it("should update", async () => {
+      //given
+      const { uid } = await UserTestData.createUser({ email: "init" });
+
+      //when
+      await expect(UserDAL.updateEmail(uid, "next")).resolves;
+
+      //then
+      const read = await UserDAL.getUser(uid, "read");
+      expect(read.email).toEqual("next");
+    });
+  });
+  describe("resetPb", () => {
+    it("throws for nonexisting user", async () => {
+      expect(async () => UserDAL.resetPb("unknown")).rejects.toThrowError(
+        "User not found\nStack: reset pb"
+      );
+    });
+    it("should reset", async () => {
+      //given
+      const { uid } = await UserTestData.createUser({
+        personalBests: { custom: { custom: [{ acc: 1 } as any] } } as any,
+      });
+
+      //when
+      await expect(UserDAL.resetPb(uid)).resolves;
+
+      //then
+      const read = await UserDAL.getUser(uid, "read");
+      expect(read.personalBests).toStrictEqual({
+        time: {},
+        words: {},
+        quote: {},
+        zen: {},
+        custom: {},
+      });
+    });
+  });
+  describe("linkDiscord", () => {
+    it("throws for nonexisting user", async () => {
+      expect(async () =>
+        UserDAL.linkDiscord("unknown", "", "")
+      ).rejects.toThrowError("User not found\nStack: link discord");
+    });
+    it("should update", async () => {
+      //given
+      const { uid } = await UserTestData.createUser({
+        discordId: "discordId",
+        discordAvatar: "discordAvatar",
+      });
+
+      //when
+      await expect(UserDAL.linkDiscord(uid, "newId", "newAvatar")).resolves;
+
+      //then
+      const read = await UserDAL.getUser(uid, "read");
+      expect(read.discordId).toEqual("newId");
+      expect(read.discordAvatar).toEqual("newAvatar");
+    });
+  });
+  describe("unlinkDiscord", () => {
+    it("throws for nonexisting user", async () => {
+      expect(async () => UserDAL.unlinkDiscord("unknown")).rejects.toThrowError(
+        "User not found\nStack: unlink discord"
+      );
+    });
+    it("should update", async () => {
+      //given
+      const { uid } = await UserTestData.createUser({
+        discordId: "discordId",
+        discordAvatar: "discordAvatar",
+      });
+
+      //when
+      await expect(UserDAL.unlinkDiscord(uid)).resolves;
+
+      //then
+      const read = await UserDAL.getUser(uid, "read");
+      expect(read.discordId).toBeUndefined();
+      expect(read.discordAvatar).toBeUndefined();
     });
   });
   describe("updateInbox", () => {
