@@ -992,18 +992,36 @@ export async function updateInbox(
             lang: "js",
             args: ["$_id", "$inbox", "$xp", "$inventory"],
             body: `
-            function(_id, inbox, xp, inventory) {            
-              var rewards = inbox
+            function(_id, inbox, xp, inventory) {
+              var toBeDeleted = inbox.filter(it => ${JSON.stringify(
+                deleteSet
+              )}.includes(it.id) === true);
+              var toBeRead = inbox.filter(it => ${JSON.stringify(
+                readSet
+              )}.includes(it.id) === true && it.read === false);
+
+              //flatMap rewards
+              var rewards = [...toBeRead, ...toBeDeleted]
                   .filter(it => it.read === false)
                   .reduce((arr, current) => {
                       return arr.concat(current.rewards);
                   }, []);
-              
+
               var xpGain = rewards
                   .filter(it => it.type === "xp")
                   .map(it => it.item)
                   .reduce((s, a) => s + a, 0);
-              
+
+              var badges = rewards
+                  .filter(it => it.type === "badge")
+                  .map(it => it.item);
+
+              if (inventory === null) inventory = {
+                  badges: null
+              };
+              if (inventory.badges === null) inventory.badges = [];
+              inventory.badges.push(...badges);
+
               //remove deleted mail from inbox, sort by timestamp descending
               var inboxUpdate = inbox
                   .filter(it => ${JSON.stringify(
@@ -1012,21 +1030,13 @@ export async function updateInbox(
                   .sort((a, b) => b.timestamp - a.timestamp);
 
               //mark read mail as read, remove rewards
-              inboxUpdate.filter(it => it.read === false && ${JSON.stringify(
-                readSet
-              )}.includes(it.id)).forEach(it => {
+              toBeRead.forEach(it => {
                   it.read = true;
                   it.rewards = [];
               });
 
-              var badges = rewards
-                  .filter(it => it.type === "badge")
-                  .map(it => it.item);
 
-              if(inventory === null) inventory = { badges:null };
-              if(inventory.badges === null) inventory.badges = [];
-              inventory.badges.push(...badges);
-              
+
               return {
                   _id,
                   xp: xp + xpGain,
