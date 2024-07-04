@@ -1045,8 +1045,8 @@
     margin: 0.75em 0;
     transition: 250ms;
     &.scrolled {
+      opacity: 0;
       width: 0;
-      margin: auto 0;
     }
   }
 
