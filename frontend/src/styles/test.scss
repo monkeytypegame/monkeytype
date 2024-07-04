@@ -1043,6 +1043,7 @@
     border-radius: calc(var(--roundness) / 2);
     background: var(--bg-color);
     margin: 0.5rem 0;
+    transition: 250ms;
     &.scrolled {
       width: 0;
       margin: auto 0;
@@ -1089,11 +1090,11 @@
   .wordCount,
   .customText,
   .zen,
-  .quoteLength,
+  .quoteLength {
+    justify-content: end;
+  }
   .puncAndNum {
-    // width: 100%;
-    justify-content: center;
-    // overflow: hidden;
+    justify-content: start;
   }
   .customText {
     display: grid;
