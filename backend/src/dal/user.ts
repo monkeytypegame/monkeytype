@@ -261,27 +261,23 @@ export async function isDiscordIdAvailable(
 
 export async function addResultFilterPreset(
   uid: string,
-  filter: SharedTypes.ResultFilters,
+  resultFilter: SharedTypes.ResultFilters,
   maxFiltersPerUser: number
 ): Promise<ObjectId> {
-  // ensure limit not reached
-  const filtersCount = (
-    (await getPartialUser(uid, "Add Result filter", ["resultFilterPresets"]))
-      .resultFilterPresets ?? []
-  ).length;
-
-  if (filtersCount >= maxFiltersPerUser) {
-    throw new MonkeyError(
-      409,
-      "Maximum number of custom filters reached for user."
-    );
-  }
+  const error = new MonkeyError(
+    409,
+    "Unknown user or maximum number of custom filters reached for user."
+  );
+  if (maxFiltersPerUser === 0) throw error;
 
   const _id = new ObjectId();
-  await getUsersCollection().updateOne(
-    { uid },
-    { $push: { resultFilterPresets: { ...filter, _id } } }
-  );
+  const filter = { uid };
+  filter[`resultFilterPresets.${maxFiltersPerUser - 1}`] = { $exists: false };
+
+  const result = await getUsersCollection().updateOne(filter, {
+    $push: { resultFilterPresets: { ...resultFilter, _id } },
+  });
+  if (result.matchedCount !== 1) throw error;
   return _id;
 }
 

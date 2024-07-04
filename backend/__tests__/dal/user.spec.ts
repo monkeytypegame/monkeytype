@@ -349,44 +349,61 @@ describe("UserDal", () => {
     expect(updatedUser.banned).toBe(undefined);
     expect(updatedUser.autoBanTimestamps).toEqual([36000000]);
   });
+  describe("addResultFilterPreset", () => {
+    it("should return error if uuid not found", async () => {
+      // given
+      await UserDAL.addUser("test name", "test email", "TestID");
 
-  it("addResultFilterPreset should return error if uuid not found", async () => {
-    // given
-    await UserDAL.addUser("test name", "test email", "TestID");
+      // when, then
+      await expect(
+        UserDAL.addResultFilterPreset("non existing uid", mockResultFilter, 5)
+      ).rejects.toThrow(
+        "Unknown user or maximum number of custom filters reached for user."
+      );
+    });
 
-    // when, then
-    await expect(
-      UserDAL.addResultFilterPreset("non existing uid", mockResultFilter, 5)
-    ).rejects.toThrow("User not found");
-  });
+    it("should return error if user has reached maximum", async () => {
+      // given
+      await UserDAL.addUser("test name", "test email", "TestID");
+      await UserDAL.addResultFilterPreset("TestID", mockResultFilter, 1);
 
-  it("UserDAL.addResultFilterPreset should return error if user has reached maximum", async () => {
-    // given
-    await UserDAL.addUser("test name", "test email", "TestID");
-    await UserDAL.addResultFilterPreset("TestID", mockResultFilter, 1);
+      // when, then
+      await expect(
+        UserDAL.addResultFilterPreset("TestID", mockResultFilter, 1)
+      ).rejects.toThrow(
+        "Unknown user or maximum number of custom filters reached for user."
+      );
+    });
 
-    // when, then
-    await expect(
-      UserDAL.addResultFilterPreset("TestID", mockResultFilter, 1)
-    ).rejects.toThrow("Maximum number of custom filters reached for user.");
-  });
+    it("should handle zero maximum", async () => {
+      // given
+      await UserDAL.addUser("test name", "test email", "TestID");
 
-  it("addResultFilterPreset success", async () => {
-    // given
-    await UserDAL.addUser("test name", "test email", "TestID");
+      // when, then
+      await expect(
+        UserDAL.addResultFilterPreset("TestID", mockResultFilter, 0)
+      ).rejects.toThrow(
+        "Unknown user or maximum number of custom filters reached for user."
+      );
+    });
 
-    // when
-    const result = await UserDAL.addResultFilterPreset(
-      "TestID",
-      mockResultFilter,
-      1
-    );
+    it("addResultFilterPreset success", async () => {
+      // given
+      await UserDAL.addUser("test name", "test email", "TestID");
 
-    // then
-    const user = await UserDAL.getUser("TestID", "test add result filters");
-    const createdFilter = user.resultFilterPresets ?? [];
+      // when
+      const result = await UserDAL.addResultFilterPreset(
+        "TestID",
+        mockResultFilter,
+        1
+      );
 
-    expect(result).toStrictEqual(createdFilter[0]?._id);
+      // then
+      const user = await UserDAL.getUser("TestID", "test add result filters");
+      const createdFilter = user.resultFilterPresets ?? [];
+
+      expect(result).toStrictEqual(createdFilter[0]?._id);
+    });
   });
 
   it("updateProfile should appropriately handle multiple profile updates", async () => {
