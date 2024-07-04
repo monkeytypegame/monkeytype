@@ -359,7 +359,7 @@ describe("UserDal", () => {
       await expect(
         UserDAL.addResultFilterPreset("non existing uid", mockResultFilter, 5)
       ).rejects.toThrow(
-        "Unknown user or maximum number of custom filters reached for user."
+        "Unknown user or maximum number of custom filters reached for user"
       );
     });
 
@@ -373,7 +373,7 @@ describe("UserDal", () => {
       await expect(
         UserDAL.addResultFilterPreset(uid, mockResultFilter, 1)
       ).rejects.toThrow(
-        "Unknown user or maximum number of custom filters reached for user."
+        "Unknown user or maximum number of custom filters reached for user"
       );
     });
 
@@ -385,7 +385,7 @@ describe("UserDal", () => {
       await expect(
         UserDAL.addResultFilterPreset(uid, mockResultFilter, 0)
       ).rejects.toThrow(
-        "Unknown user or maximum number of custom filters reached for user."
+        "Unknown user or maximum number of custom filters reached for user"
       );
     });
 
@@ -455,7 +455,7 @@ describe("UserDal", () => {
       await expect(
         UserDAL.addTag("non existing uid", "tagName")
       ).rejects.toThrow(
-        "Unknown user or maximum number of tags reached for user."
+        "Unknown user or maximum number of tags reached for user"
       );
     });
 
@@ -471,7 +471,7 @@ describe("UserDal", () => {
 
       // when, then
       await expect(UserDAL.addTag(uid, "new")).rejects.toThrow(
-        "Unknown user or maximum number of tags reached for user."
+        "Unknown user or maximum number of tags reached for user"
       );
     });
 
@@ -558,6 +558,7 @@ describe("UserDal", () => {
       ]);
     });
   });
+
   describe("removeTag", () => {
     it("should return error if uuid not found", async () => {
       // when, then
@@ -1597,6 +1598,178 @@ describe("UserDal", () => {
       //NOT within 25% of PB
       await UserDAL.incrementBananas(uid, 74);
       expect((await UserDAL.getUser(uid, "read")).bananas).toEqual(2);
+    });
+  });
+
+  describe("addTheme", () => {
+    it("should return error if uuid not found", async () => {
+      // when, then
+      await expect(
+        UserDAL.addTheme("non existing uid", { name: "new", colors: [] })
+      ).rejects.toThrow(
+        "Unknown user or maximum number of custom themes reached for user"
+      );
+    });
+
+    it("should return error if user has reached maximum", async () => {
+      // given
+      const { uid } = await UserTestData.createUser({
+        customThemes: new Array(10).fill(0).map(() => ({
+          _id: new ObjectId(),
+          name: "any",
+          colors: [],
+        })),
+      });
+
+      // when, then
+      await expect(
+        UserDAL.addTheme(uid, { name: "new", colors: [] })
+      ).rejects.toThrow(
+        "Unknown user or maximum number of custom themes reached for user"
+      );
+    });
+
+    it("addTheme success", async () => {
+      // given
+      const themeOne = {
+        _id: new ObjectId(),
+        name: "first",
+        colors: ["green", "white", "red"],
+      };
+      const { uid } = await UserTestData.createUser({
+        customThemes: [themeOne],
+      });
+
+      // when
+      await UserDAL.addTheme(uid, {
+        name: "newTheme",
+        colors: ["red", "white", "blue"],
+      });
+
+      // then
+      const read = await UserDAL.getUser(uid, "read");
+      expect(read.customThemes).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            name: "first",
+            colors: ["green", "white", "red"],
+          }),
+          expect.objectContaining({
+            name: "newTheme",
+            colors: ["red", "white", "blue"],
+          }),
+        ])
+      );
+    });
+  });
+
+  describe("editTheme", () => {
+    it("should return error if uuid not found", async () => {
+      // when, then
+      await expect(
+        UserDAL.editTheme("non existing uid", new ObjectId().toHexString(), {
+          name: "newName",
+          colors: [],
+        })
+      ).rejects.toThrow("Unknown user or custom theme not found");
+    });
+
+    it("should fail if theme not found", async () => {
+      // given
+      const themeOne = {
+        _id: new ObjectId(),
+        name: "first",
+        colors: ["green", "white", "red"],
+      };
+      const { uid } = await UserTestData.createUser({
+        customThemes: [themeOne],
+      });
+
+      // when, then
+      await expect(
+        UserDAL.editTheme(uid, new ObjectId().toHexString(), {
+          name: "newName",
+          colors: [],
+        })
+      ).rejects.toThrow("Unknown user or custom theme not found");
+    });
+
+    it("editTheme success", async () => {
+      // given
+      const themeOne = {
+        _id: new ObjectId(),
+        name: "first",
+        colors: ["green", "white", "red"],
+      };
+      const { uid } = await UserTestData.createUser({
+        customThemes: [themeOne],
+      });
+      // when
+      await UserDAL.editTheme(uid, themeOne._id.toHexString(), {
+        name: "newThemeName",
+        colors: ["red", "white", "blue"],
+      });
+
+      // then
+      const read = await UserDAL.getUser(uid, "read");
+      expect(read.customThemes ?? [][0]).toStrictEqual([
+        { ...themeOne, name: "newThemeName", colors: ["red", "white", "blue"] },
+      ]);
+    });
+  });
+
+  describe("removeTheme", () => {
+    it("should return error if uuid not found", async () => {
+      // when, then
+      await expect(
+        UserDAL.removeTheme("non existing uid", new ObjectId().toHexString())
+      ).rejects.toThrow("Unknown user or custom theme not found");
+    });
+
+    it("should return error if theme is unknown", async () => {
+      // given
+      const themeOne = {
+        _id: new ObjectId(),
+        name: "first",
+        colors: ["green", "white", "red"],
+      };
+      const { uid } = await UserTestData.createUser({
+        customThemes: [themeOne],
+      });
+
+      // when, then
+      await expect(
+        UserDAL.removeTheme(uid, new ObjectId().toHexString())
+      ).rejects.toThrow("Unknown user or custom theme not found");
+    });
+    it("should remove theme", async () => {
+      // given
+      const themeOne = {
+        _id: new ObjectId(),
+        name: "first",
+        colors: [],
+      };
+      const themeTwo = {
+        _id: new ObjectId(),
+        name: "second",
+        colors: [],
+      };
+
+      const themeThree = {
+        _id: new ObjectId(),
+        name: "third",
+        colors: [],
+      };
+
+      const { uid } = await UserTestData.createUser({
+        customThemes: [themeOne, themeTwo, themeThree],
+      });
+
+      // when, then
+      await UserDAL.removeTheme(uid, themeTwo._id.toHexString());
+
+      const read = await UserDAL.getUser(uid, "read");
+      expect(read.customThemes).toStrictEqual([themeOne, themeThree]);
     });
   });
 });

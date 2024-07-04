@@ -270,7 +270,7 @@ export async function addResultFilterPreset(
   if (maxFiltersPerUser === 0) {
     throw new MonkeyError(
       409,
-      "Unknown user or maximum number of custom filters reached for user."
+      "Unknown user or maximum number of custom filters reached for user"
     );
   }
 
@@ -284,7 +284,7 @@ export async function addResultFilterPreset(
     {
       statusCode: 409,
       message:
-        "Unknown user or maximum number of custom filters reached for user.",
+        "Unknown user or maximum number of custom filters reached for user",
     }
   );
 
@@ -325,7 +325,7 @@ export async function addTag(
     { $push: { tags: toPush } },
     {
       statusCode: 400,
-      message: "Unknown user or maximum number of tags reached for user.",
+      message: "Unknown user or maximum number of tags reached for user",
     }
   );
 
@@ -659,68 +659,59 @@ export function themeDoesNotExist(customThemes, id): boolean {
 
 export async function addTheme(
   uid: string,
-  theme
+  { name, colors }: Omit<SharedTypes.CustomTheme, "_id">
 ): Promise<{ _id: ObjectId; name: string }> {
-  const user = await getPartialUser(uid, "add theme", ["customThemes"]);
-
-  if ((user.customThemes ?? []).length >= 10) {
-    throw new MonkeyError(409, "Too many custom themes");
-  }
-
   const _id = new ObjectId();
-  await getUsersCollection().updateOne(
-    { uid },
+
+  await updateUser(
+    { uid, "customThemes.9": { $exists: false } },
     {
       $push: {
         customThemes: {
           _id,
-          name: theme.name,
-          colors: theme.colors,
+          name: name,
+          colors: colors,
         },
       },
+    },
+    {
+      statusCode: 409,
+      message:
+        "Unknown user or maximum number of custom themes reached for user",
     }
   );
 
   return {
     _id,
-    name: theme.name,
+    name,
   };
 }
 
-export async function removeTheme(uid: string, _id): Promise<void> {
-  const user = await getPartialUser(uid, "remove theme", ["customThemes"]);
-
-  if (themeDoesNotExist(user.customThemes, _id)) {
-    throw new MonkeyError(404, "Custom theme not found");
-  }
-
-  await getUsersCollection().updateOne(
-    {
-      uid: uid,
-      "customThemes._id": new ObjectId(_id),
-    },
-    { $pull: { customThemes: { _id: new ObjectId(_id) } } }
+export async function removeTheme(uid: string, id: string): Promise<void> {
+  const filterId = new ObjectId(id);
+  await updateUser(
+    { uid, "customThemes._id": filterId },
+    { $pull: { customThemes: { _id: filterId } } },
+    { statusCode: 404, message: "Unknown user or custom theme not found" }
   );
 }
 
-export async function editTheme(uid: string, _id, theme): Promise<void> {
-  const user = await getPartialUser(uid, "edit theme", ["customThemes"]);
+export async function editTheme(
+  uid: string,
+  id: string,
+  { name, colors }: Omit<SharedTypes.CustomTheme, "_id">
+): Promise<void> {
+  const filterId = new ObjectId(id);
 
-  if (themeDoesNotExist(user.customThemes, _id)) {
-    throw new MonkeyError(404, "Custom Theme not found");
-  }
-
-  await getUsersCollection().updateOne(
-    {
-      uid: uid,
-      "customThemes._id": new ObjectId(_id),
-    },
+  await updateUser(
+    { uid, "customThemes._id": filterId },
     {
       $set: {
-        "customThemes.$.name": theme.name,
-        "customThemes.$.colors": theme.colors,
+        "customThemes.$.name": name,
+        "customThemes.$.colors": colors,
       },
-    }
+    },
+    { statusCode: 404, message: "Unknown user or custom theme not found" }
   );
 }
 
