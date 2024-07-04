@@ -229,8 +229,7 @@ export function updateActiveElement(
     if (
       ["word", "next_word", "next_two_words", "next_three_words"].includes(
         Config.highlightMode
-      ) &&
-      Config.theme !== "shadow"
+      )
     ) {
       active.querySelectorAll("letter").forEach((e) => {
         e.classList.remove("correct");
