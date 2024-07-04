@@ -256,8 +256,11 @@ export async function getUserByName(
 export async function isDiscordIdAvailable(
   discordId: string
 ): Promise<boolean> {
-  const user = await getUsersCollection().findOne({ discordId });
-  return _.isNil(user);
+  const user = await getUsersCollection().findOne(
+    { discordId },
+    { projection: { _id: 1 } }
+  );
+  return user === null;
 }
 
 export async function addResultFilterPreset(
@@ -278,11 +281,9 @@ export async function addResultFilterPreset(
 
   await updateUser(
     filter,
+    { $push: { resultFilterPresets: { ...resultFilter, _id } } },
     {
-      $push: { resultFilterPresets: { ...resultFilter, _id } },
-    },
-    {
-      statusCode: 406,
+      statusCode: 409,
       message:
         "Unknown user or maximum number of custom filters reached for user.",
     }
@@ -298,12 +299,9 @@ export async function removeResultFilterPreset(
   const filterId = new ObjectId(_id);
 
   await updateUser(
-    {
-      uid,
-      "resultFilterPresets._id": filterId,
-    },
+    { uid, "resultFilterPresets._id": filterId },
     { $pull: { resultFilterPresets: { _id: filterId } } },
-    { message: "Unknown user or custom filter not found" }
+    { statusCode: 404, message: "Unknown user or custom filter not found" }
   );
 }
 
@@ -311,15 +309,8 @@ export async function addTag(
   uid: string,
   name: string
 ): Promise<MonkeyTypes.DBUserTag> {
-  const user = await getPartialUser(uid, "add tag", ["tags"]);
-
-  if ((user?.tags?.length ?? 0) >= 15) {
-    throw new MonkeyError(400, "You can only have up to 15 tags");
-  }
-
-  const _id = new ObjectId();
   const toPush = {
-    _id,
+    _id: new ObjectId(),
     name,
     personalBests: {
       time: {},
@@ -330,14 +321,15 @@ export async function addTag(
     },
   };
 
-  await getUsersCollection().updateOne(
-    { uid },
+  await updateUser(
+    { uid, "tags.14": { $exists: false } },
+    { $push: { tags: toPush } },
     {
-      $push: {
-        tags: toPush,
-      },
+      statusCode: 400,
+      message: "Unknown user or maximum number of tags reached for user.",
     }
   );
+
   return toPush;
 }
 
@@ -352,36 +344,22 @@ export async function editTag(
   _id: string,
   name: string
 ): Promise<void> {
-  const user = await getPartialUser(uid, "edit tag", ["tags"]);
-  if (
-    user.tags === undefined ||
-    user.tags.filter((t) => t._id.toHexString() === _id).length === 0
-  ) {
-    throw new MonkeyError(404, "Tag not found");
-  }
-  await getUsersCollection().updateOne(
-    {
-      uid: uid,
-      "tags._id": new ObjectId(_id),
-    },
-    { $set: { "tags.$.name": name } }
+  const filterId = new ObjectId(_id);
+
+  await updateUser(
+    { uid, "tags._id": filterId },
+    { $set: { "tags.$.name": name } },
+    { statusCode: 404, message: "Unknown user or tag not found" }
   );
 }
 
 export async function removeTag(uid: string, _id: string): Promise<void> {
-  const user = await getPartialUser(uid, "remove tag", ["tags"]);
-  if (
-    user.tags === undefined ||
-    user.tags.filter((t) => t._id.toHexString() === _id).length === 0
-  ) {
-    throw new MonkeyError(404, "Tag not found");
-  }
-  await getUsersCollection().updateOne(
-    {
-      uid: uid,
-      "tags._id": new ObjectId(_id),
-    },
-    { $pull: { tags: { _id: new ObjectId(_id) } } }
+  const filterId = new ObjectId(_id);
+
+  await updateUser(
+    { uid, "tags._id": filterId },
+    { $pull: { tags: { _id: filterId } } },
+    { statusCode: 404, message: "Unknown user or tag not found" }
   );
 }
 

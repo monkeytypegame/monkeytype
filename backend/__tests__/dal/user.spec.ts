@@ -403,7 +403,7 @@ describe("UserDal", () => {
       );
 
       // then
-      const read = await UserDAL.getUser(uid, "test add result filters");
+      const read = await UserDAL.getUser(uid, "read");
       const createdFilter = read.resultFilterPresets ?? [];
 
       expect(result).toStrictEqual(createdFilter[1]?._id);
@@ -442,12 +442,168 @@ describe("UserDal", () => {
       });
 
       // when, then
-      await expect(
-        UserDAL.removeResultFilterPreset(uid, filterTwo._id.toHexString())
-      ).resolves;
+      await UserDAL.removeResultFilterPreset(uid, filterTwo._id.toHexString());
 
       const read = await UserDAL.getUser(uid, "read");
       expect(read.resultFilterPresets).toStrictEqual([filterOne, filterThree]);
+    });
+  });
+
+  describe("addTag", () => {
+    it("should return error if uuid not found", async () => {
+      // when, then
+      await expect(
+        UserDAL.addTag("non existing uid", "tagName")
+      ).rejects.toThrow(
+        "Unknown user or maximum number of tags reached for user."
+      );
+    });
+
+    it("should return error if user has reached maximum", async () => {
+      // given
+      const { uid } = await UserTestData.createUser({
+        tags: new Array(15).fill(0).map(() => ({
+          _id: new ObjectId(),
+          name: "any",
+          personalBests: {} as any,
+        })),
+      });
+
+      // when, then
+      await expect(UserDAL.addTag(uid, "new")).rejects.toThrow(
+        "Unknown user or maximum number of tags reached for user."
+      );
+    });
+
+    it("addTag success", async () => {
+      // given
+      const emptyPb: SharedTypes.PersonalBests = {
+        time: {},
+        words: {},
+        quote: {},
+        zen: {},
+        custom: {},
+      };
+      const { uid } = await UserTestData.createUser({
+        tags: [
+          {
+            _id: new ObjectId(),
+            name: "first",
+            personalBests: emptyPb,
+          },
+        ],
+      });
+
+      // when
+      await UserDAL.addTag(uid, "newTag");
+
+      // then
+      const read = await UserDAL.getUser(uid, "read");
+      expect(read.tags).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({ name: "first", personalBests: emptyPb }),
+          expect.objectContaining({ name: "newTag", personalBests: emptyPb }),
+        ])
+      );
+    });
+  });
+
+  describe("editTag", () => {
+    it("should return error if uuid not found", async () => {
+      // when, then
+      await expect(
+        UserDAL.editTag(
+          "non existing uid",
+          new ObjectId().toHexString(),
+          "newName"
+        )
+      ).rejects.toThrow("Unknown user or tag not found");
+    });
+
+    it("should fail if tag not found", async () => {
+      // given
+      const tagOne: MonkeyTypes.DBUserTag = {
+        _id: new ObjectId(),
+        name: "one",
+        personalBests: {} as any,
+      };
+      const { uid } = await UserTestData.createUser({
+        tags: [tagOne],
+      });
+
+      // when, then
+      await expect(
+        UserDAL.editTag(uid, new ObjectId().toHexString(), "newName")
+      ).rejects.toThrow("Unknown user or tag not found");
+    });
+
+    it("editTag success", async () => {
+      // given
+      const tagOne: MonkeyTypes.DBUserTag = {
+        _id: new ObjectId(),
+        name: "one",
+        personalBests: {} as any,
+      };
+      const { uid } = await UserTestData.createUser({
+        tags: [tagOne],
+      });
+
+      // when
+      await UserDAL.editTag(uid, tagOne._id.toHexString(), "newTagName");
+
+      // then
+      const read = await UserDAL.getUser(uid, "read");
+      expect(read.tags ?? [][0]).toStrictEqual([
+        { ...tagOne, name: "newTagName" },
+      ]);
+    });
+  });
+  describe("removeTag", () => {
+    it("should return error if uuid not found", async () => {
+      // when, then
+      await expect(
+        UserDAL.removeTag("non existing uid", new ObjectId().toHexString())
+      ).rejects.toThrow(); //"Unknown user or custom filter not found");
+    });
+
+    it("should return error if filter is unknown", async () => {
+      // given
+      const { uid } = await UserTestData.createUser({
+        resultFilterPresets: [mockDbResultFilter],
+      });
+
+      // when, then
+      await expect(
+        UserDAL.removeTag(uid, new ObjectId().toHexString())
+      ).rejects.toThrow(); //"Unknown user or custom filter not found");
+    });
+    it("should remove tag", async () => {
+      // given
+      const tagOne = {
+        _id: new ObjectId(),
+        name: "tagOne",
+        personalBests: {} as any,
+      };
+      const tagTwo = {
+        _id: new ObjectId(),
+        name: "tagTwo",
+        personalBests: {} as any,
+      };
+      const tagThree = {
+        _id: new ObjectId(),
+        name: "tagThree",
+        personalBests: {} as any,
+      };
+
+      const { uid } = await UserTestData.createUser({
+        tags: [tagOne, tagTwo, tagThree],
+      });
+
+      // when, then
+      await expect(UserDAL.removeTag(uid, tagTwo._id.toHexString())).resolves;
+
+      const read = await UserDAL.getUser(uid, "read");
+      expect(read.tags).toStrictEqual([tagOne, tagThree]);
     });
   });
 
@@ -957,7 +1113,7 @@ describe("UserDal", () => {
       const { uid } = await UserTestData.createUser({ email: "init" });
 
       //when
-      await expect(UserDAL.updateEmail(uid, "next")).resolves;
+      await expect(UserDAL.updateEmail(uid, "next")).resolves.toBe(true);
 
       //then
       const read = await UserDAL.getUser(uid, "read");
@@ -977,7 +1133,7 @@ describe("UserDal", () => {
       });
 
       //when
-      await expect(UserDAL.resetPb(uid)).resolves;
+      await UserDAL.resetPb(uid);
 
       //then
       const read = await UserDAL.getUser(uid, "read");
@@ -1004,7 +1160,7 @@ describe("UserDal", () => {
       });
 
       //when
-      await expect(UserDAL.linkDiscord(uid, "newId", "newAvatar")).resolves;
+      await UserDAL.linkDiscord(uid, "newId", "newAvatar");
 
       //then
       const read = await UserDAL.getUser(uid, "read");
@@ -1026,7 +1182,7 @@ describe("UserDal", () => {
       });
 
       //when
-      await expect(UserDAL.unlinkDiscord(uid)).resolves;
+      await UserDAL.unlinkDiscord(uid);
 
       //then
       const read = await UserDAL.getUser(uid, "read");
@@ -1239,6 +1395,21 @@ describe("UserDal", () => {
 
       const { xp } = await UserDAL.getUser(user.uid, "");
       expect(xp).toEqual(3100);
+    });
+  });
+  describe("isDiscordIdAvailable", () => {
+    it("should return true for available discordId", async () => {
+      await expect(UserDAL.isDiscordIdAvailable("myId")).resolves.toBe(true);
+    });
+
+    it("should return false if discordId is taken", async () => {
+      // given
+      await UserTestData.createUser({
+        discordId: "myId",
+      });
+
+      // when, then
+      await expect(UserDAL.isDiscordIdAvailable("myId")).resolves.toBe(false);
     });
   });
 });
