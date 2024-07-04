@@ -1772,4 +1772,58 @@ describe("UserDal", () => {
       expect(read.customThemes).toStrictEqual([themeOne, themeThree]);
     });
   });
+
+  describe("addFavoriteQuote", () => {
+    it("should return error if uuid not found", async () => {
+      // when, then
+      await expect(
+        UserDAL.addFavoriteQuote("non existing uid", "english", "1", 5)
+      ).rejects.toThrow(
+        "Unknown user or maximum number of favorite quotes reached for user"
+      );
+    });
+
+    it("should return error if user has reached maximum", async () => {
+      // given
+      const { uid } = await UserTestData.createUser({
+        favoriteQuotes: {
+          english: ["1", "2"],
+          german: ["3", "4"],
+          polish: ["5"],
+        },
+      });
+
+      // when, then
+      await expect(
+        UserDAL.addFavoriteQuote(uid, "polish", "6", 5)
+      ).rejects.toThrow(
+        "Unknown user or maximum number of custom themes reached for user"
+      );
+    });
+
+    it("addFavoriteQuote success", async () => {
+      // given
+      const { uid } = await UserTestData.createUser({
+        name: "bob",
+        favoriteQuotes: {
+          english: ["1"],
+          german: ["2"],
+          polish: ["3"],
+        },
+      });
+      // when
+      await UserDAL.addFavoriteQuote(uid, "english", "4", 5);
+
+      // then
+      const read = await UserDAL.getUser(uid, "read");
+      expect(read.name).toEqual("bob");
+      expect(read).not.toHaveProperty("tmp");
+
+      expect(read.favoriteQuotes).toStrictEqual({
+        english: ["1", "4"],
+        german: ["2"],
+        polish: ["3"],
+      });
+    });
+  });
 });

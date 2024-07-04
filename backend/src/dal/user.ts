@@ -651,12 +651,6 @@ export async function incrementTestActivity(
   );
 }
 
-export function themeDoesNotExist(customThemes, id): boolean {
-  return (
-    (customThemes ?? []).filter((t) => t._id.toString() === id).length === 0
-  );
-}
-
 export async function addTheme(
   uid: string,
   { name, colors }: Omit<SharedTypes.CustomTheme, "_id">
@@ -770,6 +764,50 @@ export async function addFavoriteQuote(
   quoteId: string,
   maxQuotes: number
 ): Promise<void> {
+  await updateUser(
+    { uid },
+    [
+      {
+        $addFields: {
+          tmp: {
+            quotes: {
+              $reduce: {
+                input: {
+                  $objectToArray: "$favoriteQuotes",
+                },
+                initialValue: {
+                  sum: 0,
+                },
+                in: {
+                  sum: {
+                    $add: [
+                      "$$value.sum",
+                      {
+                        $size: "$$this.v",
+                      },
+                    ],
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+      {
+        $match: {
+          "tmp.quotes.sum": {
+            $lte: maxQuotes,
+          },
+        },
+      },
+    ],
+    {
+      statusCode: 409,
+      message:
+        "Unknown user or maximum number of favorite quotes reached for user",
+    }
+  );
+
   const user = await getPartialUser(uid, "add favorite quote", [
     "favoriteQuotes",
   ]);
