@@ -1054,10 +1054,9 @@
   .time,
   .customText {
     .textButton {
-      // line-height: 1.4em;
+      align-self: end;
       span {
-        // height: 1.1em;
-        margin-top: 0.12em;
+        line-height: 1.15;
       }
     }
   }
