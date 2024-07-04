@@ -1046,6 +1046,7 @@ export async function updateInbox(
         inventory: "$tmp.inventory",
       },
     },
+    { $unset: "tmp" },
   ]);
 
   if (update.matchedCount !== 1)
