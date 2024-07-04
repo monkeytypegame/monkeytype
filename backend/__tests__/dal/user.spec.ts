@@ -936,7 +936,10 @@ describe("UserDal", () => {
       );
 
       //THEN
-      const { xp, inbox } = await UserDAL.getUser(user.uid, "");
+      const read = await UserDAL.getUser(user.uid, "");
+      expect(read).not.toHaveProperty("tmp");
+
+      const { xp, inbox } = read;
       expect(xp).toEqual(3100);
 
       //inbox is sorted by timestamp
