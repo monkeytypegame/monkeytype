@@ -9,7 +9,6 @@ import { flattenObjectDeep, isToday, isYesterday } from "../utils/misc";
 import { getCachedConfiguration } from "../init/configuration";
 import { getDayOfYear } from "date-fns";
 import { UTCDate } from "@date-fns/utc";
-import { UpdateRequest } from "firebase-admin/lib/auth/auth-config";
 
 const SECONDS_PER_HOUR = 3600;
 
@@ -401,6 +400,7 @@ export async function checkIfPb(
   user: Pick<MonkeyTypes.DBUser, "personalBests" | "lbPersonalBests">,
   result: Result
 ): Promise<boolean> {
+  //check for concurrency
   const { mode } = result;
 
   if (!canFunboxGetPb(result)) return false;
@@ -444,6 +444,7 @@ export async function checkIfTagPb(
   user: Pick<MonkeyTypes.DBUser, "tags">,
   result: Result
 ): Promise<string[]> {
+  //check for concurrency
   if (user.tags === undefined || user.tags.length === 0) {
     return [];
   }
@@ -558,22 +559,65 @@ export async function unlinkDiscord(uid: string): Promise<void> {
   );
 }
 
-export async function incrementBananas(uid: string, wpm): Promise<void> {
-  const user = await getPartialUser(uid, "increment bananas", [
-    "personalBests",
-  ]);
-
-  let best60: number | undefined;
-  const personalBests60 = user.personalBests?.time["60"];
-
-  if (personalBests60) {
-    best60 = Math.max(...personalBests60.map((best) => best.wpm));
-  }
-
-  if (best60 === undefined || wpm >= best60 - best60 * 0.25) {
-    //increment when no record found or wpm is within 25% of the record
-    await getUsersCollection().updateOne({ uid }, { $inc: { bananas: 1 } });
-  }
+export async function incrementBananas(
+  uid: string,
+  wpm: number
+): Promise<void> {
+  await updateUser(
+    { uid },
+    [
+      {
+        $addFields: {
+          tmp: {
+            best60: {
+              $reduce: {
+                input: "$personalBests.time.60",
+                initialValue: {
+                  wpm: 0,
+                },
+                in: {
+                  $cond: [
+                    {
+                      $gte: ["$$this.wpm", "$$value.wpm"],
+                    },
+                    "$$this",
+                    "$$value",
+                  ],
+                },
+              },
+            },
+          },
+        },
+      },
+      {
+        $set: {
+          bananas: {
+            $sum: [
+              {
+                $cond: [
+                  {
+                    $gte: [
+                      wpm,
+                      {
+                        $multiply: ["$tmp.best60.wpm", 0.75],
+                      },
+                    ],
+                  },
+                  1,
+                  0,
+                ],
+              },
+              "$bananas",
+            ],
+          },
+        },
+      },
+      {
+        $unset: "tmp",
+      },
+    ],
+    "increment bananas"
+  );
 }
 
 export async function incrementXp(uid: string, xp: number): Promise<void> {

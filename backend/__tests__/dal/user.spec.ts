@@ -802,7 +802,7 @@ describe("UserDal", () => {
       }
     );
 
-    await UserDAL.incrementBananas("TestID", "100");
+    await UserDAL.incrementBananas("TestID", 100);
     await UserDAL.incrementXp("TestID", 15);
 
     await UserDAL.resetUser("TestID");
@@ -1301,6 +1301,7 @@ describe("UserDal", () => {
       };
 
       let user = await UserTestData.createUser({
+        name: "bob",
         xp: 100,
         inbox: [rewardOne, rewardTwo, rewardThree],
       });
@@ -1560,6 +1561,42 @@ describe("UserDal", () => {
           "30": {},
         },
       });
+    });
+  });
+  describe("incrementBananas", () => {
+    it("should return error if uuid not found", async () => {
+      // when, then
+      await expect(
+        UserDAL.incrementBananas("non existing uid", 60)
+      ).rejects.toThrow("User not found\nStack: increment bananas");
+    });
+
+    it("increments bananas", async () => {
+      //GIVEN
+      const { uid } = await UserTestData.createUser({
+        name: "bob",
+        bananas: 1,
+        personalBests: {
+          time: {
+            "60": [
+              { wpm: 100 } as SharedTypes.PersonalBest,
+              { wpm: 30 } as SharedTypes.PersonalBest, //highest PB should be used
+            ],
+          },
+        } as any,
+      });
+
+      //within 25% of PB
+
+      await UserDAL.incrementBananas(uid, 75);
+      const read = await UserDAL.getUser(uid, "read");
+      expect(read).not.toHaveProperty("tmp");
+      expect(read.bananas).toEqual(2);
+      expect(read.name).toEqual("bob");
+
+      //NOT within 25% of PB
+      await UserDAL.incrementBananas(uid, 74);
+      expect((await UserDAL.getUser(uid, "read")).bananas).toEqual(2);
     });
   });
 });
