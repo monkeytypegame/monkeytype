@@ -567,29 +567,6 @@ export async function incrementBananas(
     { uid },
     [
       {
-        $addFields: {
-          tmp: {
-            best60: {
-              $reduce: {
-                input: "$personalBests.time.60",
-                initialValue: {
-                  wpm: 0,
-                },
-                in: {
-                  $cond: [
-                    {
-                      $gte: ["$$this.wpm", "$$value.wpm"],
-                    },
-                    "$$this",
-                    "$$value",
-                  ],
-                },
-              },
-            },
-          },
-        },
-      },
-      {
         $set: {
           bananas: {
             $sum: [
@@ -599,7 +576,31 @@ export async function incrementBananas(
                     $gte: [
                       wpm,
                       {
-                        $multiply: ["$tmp.best60.wpm", 0.75],
+                        $multiply: [
+                          {
+                            $getField: {
+                              field: "wpm",
+                              input: {
+                                $reduce: {
+                                  input: "$personalBests.time.60",
+                                  initialValue: {
+                                    wpm: 0,
+                                  },
+                                  in: {
+                                    $cond: [
+                                      {
+                                        $gte: ["$$this.wpm", "$$value.wpm"],
+                                      },
+                                      "$$this",
+                                      "$$value",
+                                    ],
+                                  },
+                                },
+                              },
+                            },
+                          },
+                          0.75,
+                        ],
                       },
                     ],
                   },
@@ -611,9 +612,6 @@ export async function incrementBananas(
             ],
           },
         },
-      },
-      {
-        $unset: "tmp",
       },
     ],
     "increment bananas"
@@ -764,6 +762,7 @@ export async function addFavoriteQuote(
   quoteId: string,
   maxQuotes: number
 ): Promise<void> {
+  /*TODO
   await updateUser(
     { uid },
     [
@@ -807,6 +806,7 @@ export async function addFavoriteQuote(
         "Unknown user or maximum number of favorite quotes reached for user",
     }
   );
+  */
 
   const user = await getPartialUser(uid, "add favorite quote", [
     "favoriteQuotes",
