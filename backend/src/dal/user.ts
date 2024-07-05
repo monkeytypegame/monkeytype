@@ -981,8 +981,13 @@ export async function updateInbox(
   mailToRead: string[],
   mailToDelete: string[]
 ): Promise<void> {
-  const readSet = [...new Set(mailToRead)];
   const deleteSet = [...new Set(mailToDelete)];
+
+  //we don't need to read mails that are going to be deleted because
+  //Rewards will be claimed on unread mails on deletion
+  const readSet = [...new Set(mailToRead)].filter(
+    (it) => deleteSet.includes(it) === false
+  );
 
   const update = await getUsersCollection().updateOne({ uid }, [
     {
@@ -993,9 +998,11 @@ export async function updateInbox(
             args: ["$_id", "$inbox", "$xp", "$inventory"],
             body: `
             function(_id, inbox, xp, inventory) {
+
               var toBeDeleted = inbox.filter(it => ${JSON.stringify(
                 deleteSet
               )}.includes(it.id) === true);
+
               var toBeRead = inbox.filter(it => ${JSON.stringify(
                 readSet
               )}.includes(it.id) === true && it.read === false);

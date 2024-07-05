@@ -1062,8 +1062,42 @@ describe("UserDal", () => {
         { id: 5 },
       ]);
     });
+    it("read and delete the same message does not claim reward twice", async () => {
+      //GIVEN
+      const rewardOne: SharedTypes.MonkeyMail = {
+        id: "b5866d4c-0749-41b6-b101-3656249d39b9",
+        body: "test",
+        subject: "reward one",
+        timestamp: 0,
+        read: false,
+        rewards: [{ type: "xp", item: 1000 }],
+      };
+      const rewardTwo: SharedTypes.MonkeyMail = {
+        id: "3692b9f5-84fb-4d9b-bd39-9a3217b3a33a",
+        body: "test",
+        subject: "reward two",
+        timestamp: 0,
+        read: false,
+        rewards: [{ type: "xp", item: 2000 }],
+      };
+      let user = await UserTestData.createUser({
+        xp: 100,
+        inbox: [rewardOne, rewardTwo],
+      });
 
-    it("does not claim reward multiple times", async () => {
+      await UserDAL.updateInbox(
+        user.uid,
+        [rewardOne.id, rewardTwo.id],
+        [rewardOne.id, rewardTwo.id]
+      );
+
+      //THEN
+
+      const { xp } = await UserDAL.getUser(user.uid, "");
+      expect(xp).toEqual(3100);
+    });
+
+    it("concurrent calls dont claim a reward multiple times", async () => {
       //GIVEN
       const rewardOne: SharedTypes.MonkeyMail = {
         id: "b5866d4c-0749-41b6-b101-3656249d39b9",
@@ -1105,7 +1139,7 @@ describe("UserDal", () => {
         .map(() =>
           UserDAL.updateInbox(
             user.uid,
-            [rewardOne.id, rewardTwo.id, rewardOne.id, rewardThree.id],
+            [rewardOne.id, rewardTwo.id, rewardThree.id],
             []
           )
         );
