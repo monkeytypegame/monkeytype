@@ -238,6 +238,9 @@ export function updateActiveElement(
   initial = false
 ): void {
   const active = document.querySelector("#words .active");
+  if (!backspace) {
+    active?.classList.add("typed");
+  }
   if (Config.mode === "zen" && backspace) {
     active?.remove();
   } else if (active !== null) {
@@ -262,6 +265,7 @@ export function updateActiveElement(
 
   activeWord.classList.add("active");
   activeWord.classList.remove("error");
+  activeWord.classList.remove("typed");
   activeWordTop = (document.querySelector("#words .active") as HTMLElement)
     .offsetTop;
   if (Config.highlightMode === "word") {
