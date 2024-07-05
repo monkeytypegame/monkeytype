@@ -981,8 +981,15 @@ export async function updateInbox(
   mailToRead: string[],
   mailToDelete: string[]
 ): Promise<void> {
-  const readSet = [...new Set(mailToRead)];
   const deleteSet = [...new Set(mailToDelete)];
+
+  //we don't need to read mails that are going to be deleted because
+  //Rewards will be claimed on unread mails on deletion
+  const readSet = [...new Set(mailToRead)].filter(
+    (it) => deleteSet.includes(it) === false
+  );
+
+  console.log({ deleteSet, readSet });
 
   const update = await getUsersCollection().updateOne({ uid }, [
     {
@@ -992,17 +999,46 @@ export async function updateInbox(
             lang: "js",
             args: ["$_id", "$inbox", "$xp", "$inventory"],
             body: `
-            function(_id, inbox, xp, inventory) {            
-              var rewards = inbox
+            function(_id, inbox, xp, inventory) {
+
+              var toBeDeleted = inbox.filter(it => ${JSON.stringify(
+                deleteSet
+              )}.includes(it.id) === true);
+
+              var toBeRead = inbox.filter(it => ${JSON.stringify(
+                readSet
+              )}.includes(it.id) === true && it.read === false);
+
+              //flatMap rewards
+              var rewards = [...toBeRead, ...toBeDeleted]
                   .filter(it => it.read === false)
                   .reduce((arr, current) => {
                       return arr.concat(current.rewards);
                   }, []);
-              
+
               var xpGain = rewards
                   .filter(it => it.type === "xp")
                   .map(it => it.item)
                   .reduce((s, a) => s + a, 0);
+
+              var badgesToClaim = rewards
+                  .filter(it => it.type === "badge")
+                  .map(it => it.item);
+
+              if (inventory === null) inventory = {
+                  badges: null
+              };
+              if (inventory.badges === null) inventory.badges = [];
+              
+              const uniqueBadgeIds = new Set();
+              const newBadges = [];
+
+              for(badge of [...inventory.badges, ...badgesToClaim]){
+                  if(uniqueBadgeIds.has(badge.id))continue;
+                  uniqueBadgeIds.add(badge.id);
+                  newBadges.push(badge);
+              }
+              inventory.badges = newBadges;
               
               //remove deleted mail from inbox, sort by timestamp descending
               var inboxUpdate = inbox
@@ -1012,21 +1048,13 @@ export async function updateInbox(
                   .sort((a, b) => b.timestamp - a.timestamp);
 
               //mark read mail as read, remove rewards
-              inboxUpdate.filter(it => it.read === false && ${JSON.stringify(
-                readSet
-              )}.includes(it.id)).forEach(it => {
+              toBeRead.forEach(it => {
                   it.read = true;
                   it.rewards = [];
               });
 
-              var badges = rewards
-                  .filter(it => it.type === "badge")
-                  .map(it => it.item);
 
-              if(inventory === null) inventory = { badges:null };
-              if(inventory.badges === null) inventory.badges = [];
-              inventory.badges.push(...badges);
-              
+
               return {
                   _id,
                   xp: xp + xpGain,
