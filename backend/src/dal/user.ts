@@ -9,7 +9,6 @@ import { flattenObjectDeep, isToday, isYesterday } from "../utils/misc";
 import { getCachedConfiguration } from "../init/configuration";
 import { getDayOfYear } from "date-fns";
 import { UTCDate } from "@date-fns/utc";
-import { wrapMongoFunction } from "../utils/dal";
 
 const SECONDS_PER_HOUR = 3600;
 
@@ -560,30 +559,36 @@ export async function unlinkDiscord(uid: string): Promise<void> {
   );
 }
 
-function _dbIncreaseBananas(
-  bananas: number | null,
-  pb60: SharedTypes.PersonalBest[] | null,
-  wpm: number
-): number {
-  bananas = bananas ?? 0;
-  if (pb60 === null || pb60.length === 0) return bananas;
-
-  const threshold = Math.max(...pb60.map((it) => it.wpm)) * 0.75;
-  if (wpm >= threshold) return bananas + 1;
-  return bananas;
-}
-
-const dbIncBananas = wrapMongoFunction(_dbIncreaseBananas);
-
 export async function incrementBananas(
   uid: string,
   wpm: number
 ): Promise<void> {
-  const fn = dbIncBananas("$bananas", "$personalBests.time.60", wpm);
-
   await updateUser(
     { uid },
-    [{ $set: { bananas: { $function: fn } } }],
+    [
+      {
+        $set: {
+          bananas: {
+            $function: {
+              lang: "js",
+              args: ["$bananas", "$personalBests.time.60", wpm],
+              body: function (
+                bananas: number | null,
+                pb60: SharedTypes.PersonalBest[] | null,
+                wpm: number
+              ): number {
+                bananas = bananas ?? 0;
+                if (pb60 === null || pb60.length === 0) return bananas;
+
+                const threshold = Math.max(...pb60.map((it) => it.wpm)) * 0.75;
+                if (wpm >= threshold) return bananas + 1;
+                return bananas;
+              }.toString(),
+            },
+          },
+        },
+      },
+    ],
     "increment bananas"
   );
 }
@@ -732,81 +737,31 @@ export async function addFavoriteQuote(
   quoteId: string,
   maxQuotes: number
 ): Promise<void> {
-  /*TODO
   await updateUser(
-    { uid },
-    [
-      {
-        $addFields: {
-          tmp: {
-            quotes: {
-              $reduce: {
-                input: {
-                  $objectToArray: "$favoriteQuotes",
-                },
-                initialValue: {
-                  sum: 0,
-                },
-                in: {
-                  sum: {
-                    $add: [
-                      "$$value.sum",
-                      {
-                        $size: "$$this.v",
-                      },
-                    ],
-                  },
-                },
-              },
+    {
+      uid,
+      $expr: {
+        $lt: [
+          {
+            $reduce: {
+              input: { $objectToArray: "$favoriteQuotes" },
+              initialValue: 0,
+              in: { $add: ["$$value", { $size: "$$this.v" }] },
             },
           },
-        },
+          maxQuotes,
+        ],
       },
-      {
-        $match: {
-          "tmp.quotes.sum": {
-            $lte: maxQuotes,
-          },
-        },
+    },
+    {
+      $addToSet: {
+        [`favoriteQuotes.${language}`]: quoteId,
       },
-    ],
+    },
     {
       statusCode: 409,
       message:
         "Unknown user or maximum number of favorite quotes reached for user",
-    }
-  );
-  */
-
-  const user = await getPartialUser(uid, "add favorite quote", [
-    "favoriteQuotes",
-  ]);
-
-  if (user.favoriteQuotes) {
-    if (user.favoriteQuotes[language]?.includes(quoteId)) {
-      return;
-    }
-
-    const quotesLength = _.sumBy(
-      Object.values(user.favoriteQuotes),
-      (favQuotes) => favQuotes.length
-    );
-
-    if (quotesLength >= maxQuotes) {
-      throw new MonkeyError(
-        409,
-        "Too many favorite quotes",
-        "addFavoriteQuote"
-      );
-    }
-  }
-
-  await getUsersCollection().updateOne(
-    { uid },
-    {
-      $push: {
-        [`favoriteQuotes.${language}`]: quoteId,
-      },
     }
   );
 }

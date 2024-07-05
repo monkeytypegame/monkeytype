@@ -1591,7 +1591,6 @@ describe("UserDal", () => {
 
       await UserDAL.incrementBananas(uid, 75);
       const read = await UserDAL.getUser(uid, "read");
-      expect(read).not.toHaveProperty("tmp");
       expect(read.bananas).toEqual(2);
       expect(read.name).toEqual("bob");
 
@@ -1877,6 +1876,7 @@ describe("UserDal", () => {
           polish: ["3"],
         },
       });
+
       // when
       await UserDAL.addFavoriteQuote(uid, "english", "4", 5);
 
@@ -1889,6 +1889,29 @@ describe("UserDal", () => {
         english: ["1", "4"],
         german: ["2"],
         polish: ["3"],
+      });
+    });
+
+    it("should not add a quote twice", async () => {
+      // given
+      const { uid } = await UserTestData.createUser({
+        name: "bob",
+        favoriteQuotes: {
+          english: ["1", "3", "4"],
+          german: ["2"],
+        },
+      });
+      // when
+      await UserDAL.addFavoriteQuote(uid, "english", "4", 5);
+
+      // then
+      const read = await UserDAL.getUser(uid, "read");
+      expect(read.name).toEqual("bob");
+      expect(read).not.toHaveProperty("tmp");
+
+      expect(read.favoriteQuotes).toStrictEqual({
+        english: ["1", "3", "4"],
+        german: ["2"],
       });
     });
   });
