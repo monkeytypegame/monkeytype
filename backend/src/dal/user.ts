@@ -930,80 +930,80 @@ export async function updateInbox(
     (it) => deleteSet.includes(it) === false
   );
 
-  console.log({ deleteSet, readSet });
-
   const update = await getUsersCollection().updateOne({ uid }, [
     {
       $addFields: {
         tmp: {
           $function: {
             lang: "js",
-            args: ["$_id", "$inbox", "$xp", "$inventory"],
-            body: `
-            function(_id, inbox, xp, inventory) {
+            args: ["$inbox", "$xp", "$inventory", deleteSet, readSet],
+            body: function (
+              inbox: SharedTypes.MonkeyMail[],
+              xp: number,
+              inventory: SharedTypes.UserInventory,
+              deletedIds: string[],
+              readIds: string[]
+            ): Pick<MonkeyTypes.DBUser, "xp" | "inventory" | "inbox"> {
+              const toBeDeleted = inbox.filter((it) =>
+                deletedIds.includes(it.id)
+              );
 
-              var toBeDeleted = inbox.filter(it => ${JSON.stringify(
-                deleteSet
-              )}.includes(it.id) === true);
-
-              var toBeRead = inbox.filter(it => ${JSON.stringify(
-                readSet
-              )}.includes(it.id) === true && it.read === false);
+              const toBeRead = inbox.filter(
+                (it) => readIds.includes(it.id) && it.read === false
+              );
 
               //flatMap rewards
-              var rewards = [...toBeRead, ...toBeDeleted]
-                  .filter(it => it.read === false)
-                  .reduce((arr, current) => {
-                      return arr.concat(current.rewards);
-                  }, []);
+              const rewards: SharedTypes.AllRewards[] = [
+                ...toBeRead,
+                ...toBeDeleted,
+              ]
+                .filter((it) => it.read === false)
+                .reduce((arr, current) => {
+                  return [...arr, ...current.rewards];
+                }, []);
 
-              var xpGain = rewards
-                  .filter(it => it.type === "xp")
-                  .map(it => it.item)
-                  .reduce((s, a) => s + a, 0);
+              const xpGain = rewards
+                .filter((it) => it.type === "xp")
+                .map((it) => it.item)
+                .reduce((s, a) => s + a, 0);
 
-              var badgesToClaim = rewards
-                  .filter(it => it.type === "badge")
-                  .map(it => it.item);
+              const badgesToClaim = rewards
+                .filter((it) => it.type === "badge")
+                .map((it) => it.item);
 
-              if (inventory === null) inventory = {
-                  badges: null
-              };
+              if (inventory === null)
+                inventory = {
+                  badges: [],
+                };
               if (inventory.badges === null) inventory.badges = [];
-              
-              const uniqueBadgeIds = new Set();
-              const newBadges = [];
 
-              for(badge of [...inventory.badges, ...badgesToClaim]){
-                  if(uniqueBadgeIds.has(badge.id))continue;
-                  uniqueBadgeIds.add(badge.id);
-                  newBadges.push(badge);
+              const uniqueBadgeIds = new Set();
+              const newBadges: SharedTypes.Badge[] = [];
+
+              for (const badge of [...inventory.badges, ...badgesToClaim]) {
+                if (uniqueBadgeIds.has(badge.id)) continue;
+                uniqueBadgeIds.add(badge.id);
+                newBadges.push(badge);
               }
               inventory.badges = newBadges;
-              
+
               //remove deleted mail from inbox, sort by timestamp descending
-              var inboxUpdate = inbox
-                  .filter(it => ${JSON.stringify(
-                    deleteSet
-                  )}.includes(it.id) === false)
-                  .sort((a, b) => b.timestamp - a.timestamp);
+              const inboxUpdate = inbox
+                .filter((it) => !deletedIds.includes(it.id))
+                .sort((a, b) => b.timestamp - a.timestamp);
 
               //mark read mail as read, remove rewards
-              toBeRead.forEach(it => {
-                  it.read = true;
-                  it.rewards = [];
+              toBeRead.forEach((it) => {
+                it.read = true;
+                it.rewards = [];
               });
 
-
-
               return {
-                  _id,
-                  xp: xp + xpGain,
-                  inbox: inboxUpdate,
-                  inventory: inventory,
+                xp: xp + xpGain,
+                inbox: inboxUpdate,
+                inventory: inventory,
               };
-            }
-            `,
+            }.toString(),
           },
         },
       },
