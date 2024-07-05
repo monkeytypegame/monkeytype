@@ -9,6 +9,7 @@ import { flattenObjectDeep, isToday, isYesterday } from "../utils/misc";
 import { getCachedConfiguration } from "../init/configuration";
 import { getDayOfYear } from "date-fns";
 import { UTCDate } from "@date-fns/utc";
+import { toMongoFunction } from "../utils/dal";
 
 const SECONDS_PER_HOUR = 3600;
 
@@ -559,61 +560,33 @@ export async function unlinkDiscord(uid: string): Promise<void> {
   );
 }
 
+function dbIncrementBananas(
+  bananas: number | null,
+  pb60: SharedTypes.PersonalBest[] | null,
+  wpm: number
+): number {
+  bananas = bananas ?? 0;
+  if (pb60 === null || pb60.length === 0) return bananas;
+
+  const threshold = Math.max(...pb60.map((it) => it.wpm)) * 0.75;
+  if (wpm >= threshold) return bananas + 1;
+  return bananas;
+}
+
+const dbIncrementBananasFn = toMongoFunction(dbIncrementBananas);
+
 export async function incrementBananas(
   uid: string,
   wpm: number
 ): Promise<void> {
+  const fn = {
+    ...dbIncrementBananasFn,
+    args: ["$bananas", "$personalBests.time.60", wpm],
+  };
+
   await updateUser(
     { uid },
-    [
-      {
-        $set: {
-          bananas: {
-            $sum: [
-              {
-                $cond: [
-                  {
-                    $gte: [
-                      wpm,
-                      {
-                        $multiply: [
-                          {
-                            $getField: {
-                              field: "wpm",
-                              input: {
-                                $reduce: {
-                                  input: "$personalBests.time.60",
-                                  initialValue: {
-                                    wpm: 0,
-                                  },
-                                  in: {
-                                    $cond: [
-                                      {
-                                        $gte: ["$$this.wpm", "$$value.wpm"],
-                                      },
-                                      "$$this",
-                                      "$$value",
-                                    ],
-                                  },
-                                },
-                              },
-                            },
-                          },
-                          0.75,
-                        ],
-                      },
-                    ],
-                  },
-                  1,
-                  0,
-                ],
-              },
-              "$bananas",
-            ],
-          },
-        },
-      },
-    ],
+    [{ $set: { bananas: { $function: fn } } }],
     "increment bananas"
   );
 }

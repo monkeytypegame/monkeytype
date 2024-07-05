@@ -1599,6 +1599,76 @@ describe("UserDal", () => {
       await UserDAL.incrementBananas(uid, 74);
       expect((await UserDAL.getUser(uid, "read")).bananas).toEqual(2);
     });
+
+    it("ignores missing personalBests", async () => {
+      //GIVEN
+      const { uid } = await UserTestData.createUser({
+        name: "bob",
+        bananas: 1,
+      });
+
+      //WHEN
+      await UserDAL.incrementBananas(uid, 75);
+
+      //THEM
+      expect((await UserDAL.getUser(uid, "read")).bananas).toBe(1);
+    });
+
+    it("ignores missing personalBests time", async () => {
+      //GIVEN
+      const { uid } = await UserTestData.createUser({
+        name: "bob",
+        bananas: 1,
+        personalBests: {} as any,
+      });
+
+      //WHEN
+      await UserDAL.incrementBananas(uid, 75);
+
+      //THEM
+      expect((await UserDAL.getUser(uid, "read")).bananas).toBe(1);
+    });
+    it("ignores missing personalBests time 60", async () => {
+      //GIVEN
+      const { uid } = await UserTestData.createUser({
+        name: "bob",
+        bananas: 1,
+        personalBests: { time: {} } as any,
+      });
+
+      //WHEN
+      await UserDAL.incrementBananas(uid, 75);
+
+      //THEM
+      expect((await UserDAL.getUser(uid, "read")).bananas).toBe(1);
+    });
+    it("ignores empty personalBests time 60", async () => {
+      //GIVEN
+      const { uid } = await UserTestData.createUser({
+        name: "bob",
+        bananas: 1,
+        personalBests: { time: { "60": [] } } as any,
+      });
+
+      //WHEN
+      await UserDAL.incrementBananas(uid, 75);
+
+      //THEM
+      expect((await UserDAL.getUser(uid, "read")).bananas).toBe(1);
+    });
+    it("should increment missing bananas", async () => {
+      //GIVEN
+      const { uid } = await UserTestData.createUser({
+        name: "bob",
+        personalBests: { time: { "60": [{ wpm: 100 }] } } as any,
+      });
+
+      //WHEN
+      await UserDAL.incrementBananas(uid, 75);
+
+      //THEM
+      expect((await UserDAL.getUser(uid, "read")).bananas).toBe(1);
+    });
   });
 
   describe("addTheme", () => {
