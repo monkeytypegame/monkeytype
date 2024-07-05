@@ -563,33 +563,39 @@ export async function incrementBananas(
   uid: string,
   wpm: number
 ): Promise<void> {
-  await updateUser(
-    { uid },
-    [
-      {
-        $set: {
-          bananas: {
-            $function: {
-              lang: "js",
-              args: ["$bananas", "$personalBests.time.60", wpm],
-              body: function (
-                bananas: number | null,
-                pb60: SharedTypes.PersonalBest[] | null,
-                wpm: number
-              ): number {
-                bananas = bananas ?? 0;
-                if (pb60 === null || pb60.length === 0) return bananas;
-
-                const threshold = Math.max(...pb60.map((it) => it.wpm)) * 0.75;
-                if (wpm >= threshold) return bananas + 1;
-                return bananas;
-              }.toString(),
-            },
+  //don't throw on missing user
+  await getUsersCollection().updateOne(
+    {
+      uid,
+      "personalBests.time.60": { $exists: true, $not: { $size: 0 } },
+      $expr: {
+        // wpm needs to be >= 75% of the the highest  time 60 PB
+        $gte: [
+          wpm,
+          {
+            $multiply: [
+              //highest wpm with 0.75
+              {
+                $reduce: {
+                  //find highest wpm from time 60 PBs
+                  input: "$personalBests.time.60",
+                  initialValue: 0,
+                  in: {
+                    $cond: [
+                      { $gte: ["$$this.wpm", "$$value"] },
+                      "$$this.wpm",
+                      "$$value",
+                    ],
+                  },
+                },
+              },
+              0.75,
+            ],
           },
-        },
+        ],
       },
-    ],
-    "increment bananas"
+    },
+    { $inc: { bananas: 1 } }
   );
 }
 
@@ -964,12 +970,12 @@ export async function updateInbox(
 
               const xpGain = rewards
                 .filter((it) => it.type === "xp")
-                .map((it) => it.item)
+                .map((it) => it.item as number)
                 .reduce((s, a) => s + a, 0);
 
               const badgesToClaim = rewards
                 .filter((it) => it.type === "badge")
-                .map((it) => it.item);
+                .map((it) => it.item as SharedTypes.Badge);
 
               if (inventory === null)
                 inventory = {
@@ -1121,9 +1127,9 @@ export async function logIpAddress(
 
 /**
  * Update user document. Requires the user to exist
- * @param stack stack description used in the error
  * @param filter user filter
  * @param update update document
+ * @param error stack description used in the error or statusCode and message of the error
  * @throws MonkeyError if user does not exist
  */
 async function updateUser(

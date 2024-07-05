@@ -1629,11 +1629,9 @@ describe("UserDal", () => {
     });
   });
   describe("incrementBananas", () => {
-    it("should return error if uuid not found", async () => {
+    it("should not return error if uuid not found", async () => {
       // when, then
-      await expect(
-        UserDAL.incrementBananas("non existing uid", 60)
-      ).rejects.toThrow("User not found\nStack: increment bananas");
+      await UserDAL.incrementBananas("non existing uid", 60);
     });
 
     it("increments bananas", async () => {
