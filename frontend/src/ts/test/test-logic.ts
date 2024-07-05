@@ -1422,7 +1422,6 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
     }
     if (eventKey === "difficulty" && !nosave) restart();
     if (eventKey === "showAllLines" && !nosave) restart();
-    if (eventKey === "tapeMode" && !nosave) restart();
     if (
       eventKey === "customLayoutFluid" &&
       Config.funbox.includes("layoutfluid")
