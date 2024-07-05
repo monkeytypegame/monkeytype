@@ -1,18 +1,22 @@
-import * as Dal from "../../src/utils/dal";
+import { wrapMongoFunction } from "../../src/utils/dal";
 
 describe("dal", () => {
-  describe("topMongoFunction", () => {
+  describe("wrapMongoFunction", () => {
     it("just works", () => {
-      const fn = Dal.toMongoFunction(test1);
+      const wrapped = wrapMongoFunction(test1);
 
+      const fn = wrapped("$some.path", "fixedValue");
+
+      console.log(fn);
       expect(fn).toStrictEqual({
         lang: "js",
-        body: "function test1(a, b) {\n  return a + b.toString();\n}",
+        args: ["$some.path", "fixedValue"],
+        body: "function test1(a, b) {\n  return a + b;\n}",
       });
     });
   });
 });
 
-function test1(a: string, b: number): string {
-  return a + b.toString();
+function test1(a: string, b: string): string {
+  return a + b;
 }

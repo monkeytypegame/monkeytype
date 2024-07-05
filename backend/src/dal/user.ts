@@ -9,7 +9,7 @@ import { flattenObjectDeep, isToday, isYesterday } from "../utils/misc";
 import { getCachedConfiguration } from "../init/configuration";
 import { getDayOfYear } from "date-fns";
 import { UTCDate } from "@date-fns/utc";
-import { toMongoFunction } from "../utils/dal";
+import { wrapMongoFunction } from "../utils/dal";
 
 const SECONDS_PER_HOUR = 3600;
 
@@ -560,7 +560,7 @@ export async function unlinkDiscord(uid: string): Promise<void> {
   );
 }
 
-function dbIncrementBananas(
+function _dbIncreaseBananas(
   bananas: number | null,
   pb60: SharedTypes.PersonalBest[] | null,
   wpm: number
@@ -573,16 +573,13 @@ function dbIncrementBananas(
   return bananas;
 }
 
-const dbIncrementBananasFn = toMongoFunction(dbIncrementBananas);
+const dbIncBananas = wrapMongoFunction(_dbIncreaseBananas);
 
 export async function incrementBananas(
   uid: string,
   wpm: number
 ): Promise<void> {
-  const fn = {
-    ...dbIncrementBananasFn,
-    args: ["$bananas", "$personalBests.time.60", wpm],
-  };
+  const fn = dbIncBananas("$bananas", "$personalBests.time.60", wpm);
 
   await updateUser(
     { uid },
