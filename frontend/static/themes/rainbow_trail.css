@@ -203,16 +203,6 @@ header #logo .top,
   }
 }
 
-/* #logo,
-#typingTest .word letter.correct,
-#typingTest #words.highlight-word .word.typed letter.correct,
-#typingTest #words.highlight-next-word .word.typed letter.correct,
-#typingTest #words.highlight-next-two-words .word.typed letter.correct,
-#typingTest #words.highlight-next-three-words .word.typed letter.correct {
-  color: var(--correct-letter-color);
-  animation: shadow 5s linear 1 forwards;
-} */
-
 @keyframes light-rainbow-infinite-loop {
   0% {
     color: #60b6ce;
