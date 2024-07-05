@@ -156,8 +156,23 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
 
   if (eventValue === undefined) return;
   if (eventKey === "highlightMode") {
-    highlightMode(eventValue as SharedTypes.Config.HighlightMode);
     if (ActivePage.get() === "test") updateActiveElement();
+  }
+
+  if (
+    ["highlightMode", "blindMode", "indicateTypos", "tapeMode"].includes(
+      eventKey
+    )
+  ) {
+    updateWordWrapperClasses();
+  }
+
+  if (eventKey === "tapeMode" && !nosave) {
+    if (eventValue === "off") {
+      $("#words").css("margin-left", "unset");
+    } else {
+      scrollTape();
+    }
   }
 
   if (typeof eventValue !== "boolean") return;
@@ -332,15 +347,21 @@ function getWordHTML(word: string): string {
   return retval;
 }
 
-export function showWords(): void {
-  $("#words").empty();
-
+function updateWordWrapperClasses(): void {
   if (Config.tapeMode !== "off") {
     $("#words").addClass("tape");
     $("#wordsWrapper").addClass("tape");
   } else {
     $("#words").removeClass("tape");
     $("#wordsWrapper").removeClass("tape");
+  }
+
+  if (Config.blindMode) {
+    $("#words").addClass("blind");
+    $("#wordsWrapper").addClass("blind");
+  } else {
+    $("#words").removeClass("blind");
+    $("#wordsWrapper").removeClass("blind");
   }
 
   if (Config.indicateTypos === "below") {
@@ -350,6 +371,23 @@ export function showWords(): void {
     $("#words").removeClass("indicateTyposBelow");
     $("#wordsWrapper").removeClass("indicateTyposBelow");
   }
+
+  const existing =
+    $("#words")
+      ?.attr("class")
+      ?.split(/\s+/)
+      ?.filter((it) => !it.startsWith("highlight-")) ?? [];
+  if (Config.highlightMode != null) {
+    existing.push("highlight-" + Config.highlightMode.replaceAll("_", "-"));
+  }
+
+  $("#words").attr("class", existing.join(" "));
+}
+
+export function showWords(): void {
+  $("#words").empty();
+
+  updateWordWrapperClasses();
 
   let wordsHTML = "";
   if (Config.mode !== "zen") {
@@ -1420,19 +1458,6 @@ export function highlightAllLettersAsCorrect(wordIndex: number): void {
   $($("#words .word")[wordIndex] as HTMLElement)
     .find("letter")
     .addClass("correct");
-}
-
-export function highlightMode(mode?: SharedTypes.Config.HighlightMode): void {
-  const existing =
-    $("#words")
-      ?.attr("class")
-      ?.split(/\s+/)
-      ?.filter((it) => !it.startsWith("highlight-")) ?? [];
-  if (mode != null) {
-    existing.push("highlight-" + mode.replaceAll("_", "-"));
-  }
-
-  $("#words").attr("class", existing.join(" "));
 }
 
 function updateWordsWidth(): void {
