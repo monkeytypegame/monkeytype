@@ -4,6 +4,7 @@ import Config from "../config";
 import * as TestInput from "./test-input";
 import * as SlowTimer from "../states/slow-timer";
 import * as TestState from "../test/test-state";
+import * as TestWords from "./test-words";
 
 export let caretAnimating = true;
 const caret = document.querySelector("#caret") as HTMLElement;
@@ -35,7 +36,9 @@ function getTargetPositionLeft(
   fullWidthCaret: boolean,
   isLanguageRightToLeft: boolean,
   currentLetter: HTMLElement | undefined,
-  previousLetter: HTMLElement | undefined
+  previousLetter: HTMLElement | undefined,
+  lastWordLetter: HTMLElement,
+  inputLenLongerThanWordLen: boolean
 ): number {
   let result = 0;
 
@@ -52,7 +55,9 @@ function getTargetPositionLeft(
         fullWidthOffset;
     }
   } else {
-    if (currentLetter !== undefined) {
+    if (Config.blindMode && inputLenLongerThanWordLen) {
+      result = lastWordLetter.offsetLeft + lastWordLetter.offsetWidth;
+    } else if (currentLetter !== undefined) {
       result = currentLetter.offsetLeft;
     } else if (previousLetter !== undefined) {
       result = previousLetter.offsetLeft + previousLetter.offsetWidth;
@@ -71,8 +76,8 @@ export async function updatePosition(noAnim = false): Promise<void> {
     Config.caretStyle
   );
 
+  const wordLen = TestWords.words.getCurrent().length;
   const inputLen = TestInput.input.current.length;
-  const currentLetterIndex = inputLen;
   const activeWordEl = document?.querySelector("#words .active") as HTMLElement;
   //insert temporary character so the caret will work in zen mode
   const activeWordEmpty = activeWordEl?.children.length === 0;
@@ -89,13 +94,15 @@ export async function updatePosition(noAnim = false): Promise<void> {
 
   if (!currentWordNodeList) return;
 
-  const currentLetter = currentWordNodeList[currentLetterIndex] as
+  const currentLetter = currentWordNodeList[inputLen] as
     | HTMLElement
     | undefined;
 
   const previousLetter: HTMLElement = currentWordNodeList[
-    Math.min(currentLetterIndex - 1, currentWordNodeList.length - 1)
+    inputLen - 1
   ] as HTMLElement;
+
+  const lastWordLetter = currentWordNodeList[wordLen - 1] as HTMLElement;
 
   const currentLanguage = await JSONData.getCurrentLanguage(Config.language);
   const isLanguageRightToLeft = currentLanguage.rightToLeft;
@@ -103,17 +110,26 @@ export async function updatePosition(noAnim = false): Promise<void> {
     fullWidthCaret,
     isLanguageRightToLeft,
     currentLetter,
-    previousLetter
+    previousLetter,
+    lastWordLetter,
+    inputLen > wordLen
   );
 
-  const letterPosTop = currentLetter
-    ? currentLetter.offsetTop
-    : previousLetter.offsetTop;
+  const letterPosTop =
+    currentLetter?.offsetTop ||
+    previousLetter?.offsetTop ||
+    lastWordLetter?.offsetTop;
 
   const letterHeight =
-    currentLetter?.offsetHeight ??
-    previousLetter?.offsetHeight ??
+    currentLetter?.offsetHeight ||
+    previousLetter?.offsetHeight ||
+    lastWordLetter?.offsetHeight ||
     Config.fontSize * Numbers.convertRemToPixels(1);
+
+  const letterWidth =
+    currentLetter?.offsetWidth ||
+    previousLetter?.offsetWidth ||
+    lastWordLetter?.offsetWidth;
 
   const diff = letterHeight - caret.offsetHeight;
 
@@ -149,11 +165,7 @@ export async function updatePosition(noAnim = false): Promise<void> {
         (fullWidthCaret ? 0 : caretWidth / 2);
     }
   }
-  const newWidth = fullWidthCaret
-    ? ((currentLetter
-        ? currentLetter.offsetWidth
-        : previousLetter.offsetWidth) ?? 0) + "px"
-    : "";
+  const newWidth = fullWidthCaret ? (letterWidth ?? 0) + "px" : "";
 
   let smoothlinescroll = $("#words .smoothScroller").height();
   if (smoothlinescroll === undefined) smoothlinescroll = 0;
