@@ -989,6 +989,8 @@ export async function updateInbox(
     (it) => deleteSet.includes(it) === false
   );
 
+  console.log({ deleteSet, readSet });
+
   const update = await getUsersCollection().updateOne({ uid }, [
     {
       $addFields: {
@@ -1019,7 +1021,7 @@ export async function updateInbox(
                   .map(it => it.item)
                   .reduce((s, a) => s + a, 0);
 
-              var badges = rewards
+              var badgesToClaim = rewards
                   .filter(it => it.type === "badge")
                   .map(it => it.item);
 
@@ -1027,8 +1029,17 @@ export async function updateInbox(
                   badges: null
               };
               if (inventory.badges === null) inventory.badges = [];
-              inventory.badges.push(...badges);
+              
+              const uniqueBadgeIds = new Set();
+              const newBadges = [];
 
+              for(badge of [...inventory.badges, ...badgesToClaim]){
+                  if(uniqueBadgeIds.has(badge.id))continue;
+                  uniqueBadgeIds.add(badge.id);
+                  newBadges.push(badge);
+              }
+              inventory.badges = newBadges;
+              
               //remove deleted mail from inbox, sort by timestamp descending
               var inboxUpdate = inbox
                   .filter(it => ${JSON.stringify(

@@ -1026,7 +1026,11 @@ describe("UserDal", () => {
         subject: "reward two",
         timestamp: 1,
         read: false,
-        rewards: [{ type: "badge", item: { id: 5 } }],
+        rewards: [
+          { type: "badge", item: { id: 3 } },
+          { type: "badge", item: { id: 4 } },
+          { type: "badge", item: { id: 5 } },
+        ],
       };
       const rewardThree: SharedTypes.MonkeyMail = {
         id: "0d73b3e0-dc79-4abb-bcaf-66fa6b09a58a",
@@ -1039,7 +1043,12 @@ describe("UserDal", () => {
 
       let user = await UserTestData.createUser({
         inbox: [rewardOne, rewardTwo, rewardThree],
-        inventory: { badges: [{ id: 1, selected: true }] },
+        inventory: {
+          badges: [
+            { id: 1, selected: true },
+            { id: 3, selected: false },
+          ],
+        },
       });
 
       //WNEN
@@ -1057,8 +1066,9 @@ describe("UserDal", () => {
         { ...rewardThree },
       ]);
       expect(inventory?.badges).toStrictEqual([
-        { id: 1, selected: true },
-        { id: 4 },
+        { id: 1, selected: true }, //previously owned
+        { id: 3, selected: false }, // previously owned, no duplicate
+        { id: 4 }, // gets only added once
         { id: 5 },
       ]);
     });
