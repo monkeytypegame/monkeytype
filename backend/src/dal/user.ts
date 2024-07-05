@@ -400,7 +400,7 @@ export async function checkIfPb(
   user: Pick<MonkeyTypes.DBUser, "personalBests" | "lbPersonalBests">,
   result: Result
 ): Promise<boolean> {
-  //check for concurrency
+  //TODO: check for concurrency
   const { mode } = result;
 
   if (!canFunboxGetPb(result)) return false;
@@ -444,7 +444,7 @@ export async function checkIfTagPb(
   user: Pick<MonkeyTypes.DBUser, "tags">,
   result: Result
 ): Promise<string[]> {
-  //check for concurrency
+  //TODO: check for concurrency
   if (user.tags === undefined || user.tags.length === 0) {
     return [];
   }
@@ -771,17 +771,10 @@ export async function removeFavoriteQuote(
   language: string,
   quoteId: string
 ): Promise<void> {
-  const user = await getPartialUser(uid, "remove favorite quote", [
-    "favoriteQuotes",
-  ]);
-
-  if (!user.favoriteQuotes?.[language]?.includes(quoteId)) {
-    return;
-  }
-
-  await getUsersCollection().updateOne(
+  await updateUser(
     { uid },
-    { $pull: { [`favoriteQuotes.${language}`]: quoteId } }
+    { $pull: { [`favoriteQuotes.${language}`]: quoteId } },
+    "remove favorite quote"
   );
 }
 
@@ -1004,6 +997,7 @@ export async function updateStreak(
   uid: string,
   timestamp: number
 ): Promise<number> {
+  //TODO: check for concurrency
   const user = await getPartialUser(uid, "calculate streak", ["streak"]);
   const streak: SharedTypes.UserStreak = {
     lastResultTimestamp: user.streak?.lastResultTimestamp ?? 0,

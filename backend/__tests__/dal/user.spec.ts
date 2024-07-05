@@ -1915,4 +1915,49 @@ describe("UserDal", () => {
       });
     });
   });
+
+  describe("removeFavoriteQuote", () => {
+    it("should return error if uuid not found", async () => {
+      // when, then
+      await expect(
+        UserDAL.removeFavoriteQuote("non existing uid", "english", "0")
+      ).rejects.toThrow("User not found\nStack: remove favorite quote");
+    });
+
+    it("should not fail if quote is not favorite", async () => {
+      // given
+      const { uid } = await UserTestData.createUser({
+        favoriteQuotes: {
+          english: ["1", "2"],
+        },
+      });
+
+      // when
+      await UserDAL.removeFavoriteQuote(uid, "english", "3");
+      await UserDAL.removeFavoriteQuote(uid, "german", "1");
+
+      //then
+      const read = await UserDAL.getUser(uid, "read");
+      expect(read.favoriteQuotes).toStrictEqual({
+        english: ["1", "2"],
+      });
+    });
+    it("should remove", async () => {
+      // given
+      const { uid } = await UserTestData.createUser({
+        favoriteQuotes: {
+          english: ["1", "2", "3"],
+        },
+      });
+
+      // when
+      await UserDAL.removeFavoriteQuote(uid, "english", "2");
+
+      //%hen
+      const read = await UserDAL.getUser(uid, "read");
+      expect(read.favoriteQuotes).toStrictEqual({
+        english: ["1", "3"],
+      });
+    });
+  });
 });
