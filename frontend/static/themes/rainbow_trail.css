@@ -73,6 +73,40 @@ header #logo .top,
   -webkit-text-fill-color: initial;
 }
 
+#words.flipped .word {
+  animation: rainbow-infinite-loop 30s linear infinite;
+}
+
+#words.flipped .word letter.correct {
+  color: var(--sub-color);
+}
+
+#words:not(.flipped) .word letter.correct {
+  animation: rainbow 7.5s ease-in-out forwards;
+}
+
+#liveStatsTextTop.timerMain,
+#liveStatsTextBottom.timerMain,
+#liveStatsMini.timerMain {
+  animation: rainbow-infinite-loop 30s linear infinite;
+}
+
+.word letter.incorrect {
+  animation: error-repeat 1s alternate ease-in-out infinite;
+}
+
+.button:hover {
+  animation: glowing-button 2s alternate ease-in-out infinite;
+}
+
+.row .textButton:not(.active) {
+  color: #999999;
+}
+
+.textButton.active {
+  color: #111111;
+}
+
 @keyframes rainbow {
   0% {
     color: #60b6ce;
@@ -169,39 +203,15 @@ header #logo .top,
   }
 }
 
-#words.flipped .word {
-  animation: rainbow-infinite-loop 30s linear infinite;
-}
-
-#words.flipped .word letter.correct {
-  color: var(--sub-color);
-}
-
-#words:not(.flipped) .word letter.correct {
-  animation: rainbow 7.5s ease-in-out forwards;
-}
-
-#liveStatsTextTop.timerMain,
-#liveStatsTextBottom.timerMain,
-#liveStatsMini.timerMain {
-  animation: rainbow-infinite-loop 30s linear infinite;
-}
-
-.word letter.incorrect {
-  animation: error-repeat 1s alternate ease-in-out infinite;
-}
-
-.button:hover {
-  animation: glowing-button 2s alternate ease-in-out infinite;
-}
-
-.row .textButton:not(.active) {
-  color: #999999;
-}
-
-.textButton.active {
-  color: #111111;
-}
+/* #logo,
+#typingTest .word letter.correct,
+#typingTest #words.highlight-word .word.typed letter.correct,
+#typingTest #words.highlight-next-word .word.typed letter.correct,
+#typingTest #words.highlight-next-two-words .word.typed letter.correct,
+#typingTest #words.highlight-next-three-words .word.typed letter.correct {
+  color: var(--correct-letter-color);
+  animation: shadow 5s linear 1 forwards;
+} */
 
 @keyframes light-rainbow-infinite-loop {
   0% {
