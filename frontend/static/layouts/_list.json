@@ -1463,6 +1463,17 @@
       "row5": [" "]
     }
   },
+  "mirror_nerps": {
+    "keymapShowTopRow": false,
+    "type": "ansi",
+    "keys": {
+      "row1": ["`~", "1!", "2@", "3#", "4$", "5%", "6^", "7&", "8*", "9(", "0)", "-_", "=+"],
+      "row2": [";:", "uU", "oO", "kK", "zZ", "vV", "pP", "dD", "lL", "xX", "[{", "]}", "\\|"],
+      "row3": ["aA", "iI", "eE", "hH", "yY", "gG", "sS", "tT", "rR", "nN", "/?"],
+      "row4": [".>", ",<", "'\"", "fF", "bB", "wW", "cC", "mM", "jJ", "qQ"],
+      "row5": [" "]
+    }
+  },
   "sturdy_angle_ansi": {
     "keymapShowTopRow": false,
     "type": "ansi",
