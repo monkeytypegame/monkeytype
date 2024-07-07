@@ -230,3 +230,12 @@
   font-display: block;
   src: url("/webfonts/CommitMono-400-Regular.otf") format("opentype");
 }
+
+@font-face {
+  font-family: "Mononoki";
+  font-style: normal;
+  font-weight: 400;
+  font-display: block;
+  src: url("/webfonts/mononoki-Regular.ttf") format("truetype"),
+    url("/webfonts/mononoki-Regular.otf") format("opentype");
+}
