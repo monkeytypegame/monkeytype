@@ -95,6 +95,10 @@ header #logo .top,
   animation: rainbow-infinite-loop 30s linear infinite;
 }
 
+#words.highlight-word .word.active:has(letter.incorrect) letter {
+  animation: error-repeat 1s alternate ease-in-out infinite;
+}
+
 #words.flipped .word {
   animation: rainbow-infinite-loop 30s linear infinite;
 }
