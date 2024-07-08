@@ -871,7 +871,13 @@ export async function updateWordElement(
       ) {
         ret += `<letter class="${
           Config.highlightMode === "word" ? wordHighlightClassString : ""
-        } dead">${currentLetter}</letter>`;
+        } dead">${
+          Config.indicateTypos === "replace"
+            ? input[i] === " "
+              ? "_"
+              : input[i]
+            : currentLetter
+        }</letter>`;
       } else if (!showError) {
         if (currentLetter !== undefined) {
           ret += `<letter class="${
