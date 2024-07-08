@@ -73,6 +73,28 @@ header #logo .top,
   -webkit-text-fill-color: initial;
 }
 
+#words.highlight-word .word.active letter {
+  animation: rainbow-infinite-loop 30s linear infinite;
+}
+
+#words.highlight-next-word .word.active letter,
+#words.highlight-next-word .word.active + .word letter {
+  animation: rainbow-infinite-loop 30s linear infinite;
+}
+
+#words.highlight-next-two-words .word.active letter,
+#words.highlight-next-two-words .word.active + .word letter,
+#words.highlight-next-two-words .word.active + .word + .word letter {
+  animation: rainbow-infinite-loop 30s linear infinite;
+}
+
+#words.highlight-next-three-words .word.active letter,
+#words.highlight-next-three-words .word.active + .word letter,
+#words.highlight-next-three-words .word.active + .word + .word letter,
+#words.highlight-next-three-words .word.active + .word + .word + .word letter {
+  animation: rainbow-infinite-loop 30s linear infinite;
+}
+
 #words.flipped .word {
   animation: rainbow-infinite-loop 30s linear infinite;
 }
