@@ -186,13 +186,18 @@
   }
 
   --correct-letter-color: var(--text-color);
+  --correct-letter-animation: none;
   --untyped-letter-color: var(--sub-color);
+  --untyped-letter-animation: none;
   --incorrect-letter-color: var(--error-color);
+  --incorrect-letter-animation: none;
   --extra-letter-color: var(--error-extra-color);
+  --extra-letter-animation: none;
 
   .word {
     letter {
       color: var(--untyped-letter-color);
+      animation: var(--untyped-letter-animation);
       border-bottom-style: solid;
       border-bottom-width: 0.05em;
       border-bottom-color: transparent;
@@ -211,10 +216,12 @@
 
       &.correct {
         color: var(--correct-letter-color);
+        animation: var(--correct-letter-animation);
       }
 
       &.corrected {
         color: var(--correct-letter-color);
+        animation: var(--correct-letter-animation);
         border-bottom: 2px dotted var(--main-color);
       }
 
@@ -224,10 +231,12 @@
 
       &.incorrect {
         color: var(--incorrect-letter-color);
+        animation: var(--incorrect-letter-animation);
       }
 
       &.incorrect.extra {
         color: var(--extra-letter-color);
+        animation: var(--extra-letter-animation);
       }
 
       &.missing {
@@ -238,6 +247,7 @@
       position: absolute;
       bottom: -1.1em;
       color: var(--correct-letter-color);
+      animation: var(--correct-letter-animation);
       line-height: initial;
       font-size: 0.75em;
       text-shadow: none;
@@ -282,6 +292,7 @@
       }
       & letter.incorrect {
         color: var(--correct-letter-color);
+        animation: var(--correct-letter-animation);
       }
     }
   }
@@ -311,6 +322,7 @@
     .word {
       letter.correct {
         color: var(--untyped-letter-color);
+        animation: var(--untyped-letter-animation);
       }
     }
   }
@@ -319,17 +331,20 @@
     .word.typed {
       letter {
         color: var(--untyped-letter-color);
+        animation: var(--untyped-letter-animation);
       }
     }
     .word.active {
       letter {
         color: var(--correct-letter-color);
+        animation: var(--correct-letter-animation);
       }
     }
     .word.typed.error,
     .word.active:has(letter.incorrect) {
       letter {
         color: var(--incorrect-letter-color);
+        animation: var(--incorrect-letter-animation);
       }
     }
   }
@@ -338,18 +353,21 @@
     .word.typed {
       letter {
         color: var(--untyped-letter-color);
+        animation: var(--untyped-letter-animation);
       }
     }
     .word.active,
     .word.active + .word {
       letter {
         color: var(--correct-letter-color);
+        animation: var(--correct-letter-animation);
       }
     }
     .word.typed.error,
     .word.active:has(letter.incorrect) {
       letter {
         color: var(--incorrect-letter-color);
+        animation: var(--incorrect-letter-animation);
       }
     }
   }
@@ -358,6 +376,7 @@
     .word.typed {
       letter {
         color: var(--untyped-letter-color);
+        animation: var(--untyped-letter-animation);
       }
     }
     .word.active,
@@ -365,12 +384,14 @@
     .word.active + .word + .word {
       letter {
         color: var(--correct-letter-color);
+        animation: var(--correct-letter-animation);
       }
     }
     .word.typed.error,
     .word.active:has(letter.incorrect) {
       letter {
         color: var(--incorrect-letter-color);
+        animation: var(--incorrect-letter-animation);
       }
     }
   }
@@ -379,6 +400,7 @@
     .word.typed {
       letter {
         color: var(--untyped-letter-color);
+        animation: var(--untyped-letter-animation);
       }
     }
     .word.active,
@@ -387,12 +409,14 @@
     .word.active + .word + .word + .word {
       letter {
         color: var(--correct-letter-color);
+        animation: var(--correct-letter-animation);
       }
     }
     .word.typed.error,
     .word.active:has(letter.incorrect) {
       letter {
         color: var(--incorrect-letter-color);
+        animation: var(--incorrect-letter-animation);
       }
     }
   }
