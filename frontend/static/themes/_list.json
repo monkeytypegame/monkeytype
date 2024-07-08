@@ -1237,5 +1237,12 @@
     "mainColor": "#b94189",
     "subColor": "#e094c2",
     "textColor": "#5c2954"
+  },
+  {
+    "name": "terrazzo",
+    "bgColor": "#f1e5da",
+    "mainColor": "#e0794e",
+    "subColor": "#688e8f",
+    "textColor": "#023e3b"
   }
 ]

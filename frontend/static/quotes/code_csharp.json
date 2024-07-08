@@ -86,7 +86,7 @@
       "length": 235
     },
     {
-      "text": "public void AddAtIndex(int index, int elem) {\n\tif (index < 0 || index > Size()) {\n\t\tConsole.Writeline(\"index out of bounds\");\n\t}\n\tNode curr = null;\n\tNode newNode = new Node(item);\n\tif (index != 0) {\n\t\tcurr = GetNodeAtIndex(index - 1);\n\t}\n\tSetTail(curr, newNode);\n}",
+      "text": "public void AddAtIndex(int index, int elem) {\n\tif (index < 0 || index > Size()) {\n\t\tConsole.WriteLine(\"index out of bounds\");\n\t}\n\tNode curr = null;\n\tNode newNode = new Node(item);\n\tif (index != 0) {\n\t\tcurr = GetNodeAtIndex(index - 1);\n\t}\n\tSetTail(curr, newNode);\n}",
       "source": "Add an Element at an Index in a Linked List",
       "id": 14,
       "length": 264

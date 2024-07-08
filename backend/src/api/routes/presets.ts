@@ -11,7 +11,7 @@ const router = Router();
 const presetNameSchema = joi
   .string()
   .required()
-  .regex(/^[0-9a-zA-Z_.-]+$/)
+  .regex(/^[0-9a-zA-Z_-]+$/)
   .max(16)
   .messages({
     "string.pattern.base": "Invalid preset name",

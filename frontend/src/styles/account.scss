@@ -391,6 +391,10 @@
       opacity: 1;
     }
   }
+  //remove flashHighlight from .group.History .active
+  .group.history .resultEditTagsButton {
+    animation: none;
+  }
 }
 
 .pageAccount {

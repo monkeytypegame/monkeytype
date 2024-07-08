@@ -768,15 +768,20 @@ function handleChar(
   const doesCurrentWordHaveTab = /^\t+/.test(TestWords.words.getCurrent());
   const isCurrentCharTab = currentWord[TestInput.input.current.length] === "\t";
 
-  if (
-    thisCharCorrect &&
-    Config.language.startsWith("code") &&
-    doesCurrentWordHaveTab &&
-    isCurrentCharTab
-  ) {
-    const tabEvent = new KeyboardEvent("keydown", { key: "Tab", code: "Tab" });
-    document.dispatchEvent(tabEvent);
-  }
+  setTimeout(() => {
+    if (
+      thisCharCorrect &&
+      Config.language.startsWith("code") &&
+      doesCurrentWordHaveTab &&
+      isCurrentCharTab
+    ) {
+      const tabEvent = new KeyboardEvent("keydown", {
+        key: "Tab",
+        code: "Tab",
+      });
+      document.dispatchEvent(tabEvent);
+    }
+  }, 0);
 
   if (char !== "\n") {
     void Caret.updatePosition();
@@ -862,9 +867,11 @@ function handleTab(event: JQuery.KeyDownEvent, popupVisible: boolean): void {
       return;
     }
 
-    if (document.activeElement?.id !== "wordsInput") {
-      Focus.set(false);
-    }
+    setTimeout(() => {
+      if (document.activeElement?.id !== "wordsInput") {
+        Focus.set(false);
+      }
+    }, 0);
   }
 }
 
@@ -920,7 +927,7 @@ $(document).on("keydown", async (event) => {
   if (
     allowTyping &&
     !wordsFocused &&
-    !["Enter", "Tab", ...ModifierKeys].includes(event.key)
+    !["Enter", " ", "Escape", "Tab", ...ModifierKeys].includes(event.key)
   ) {
     TestUI.focusWords();
     if (Config.showOutOfFocusWarning && !event.ctrlKey && !event.metaKey) {

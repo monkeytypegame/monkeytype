@@ -191,6 +191,7 @@ async function apply(
 
 function updateFooterThemeName(nameOverride?: string): void {
   let str = Config.theme;
+  if (randomTheme !== null) str = randomTheme;
   if (Config.customTheme) str = "custom";
   if (nameOverride !== undefined && nameOverride !== "") str = nameOverride;
   str = str.replace(/_/g, " ");
@@ -232,9 +233,10 @@ async function set(
 export async function clearPreview(applyTheme = true): Promise<void> {
   if (isPreviewingTheme) {
     isPreviewingTheme = false;
-    randomTheme = null;
     if (applyTheme) {
-      if (Config.customTheme) {
+      if (randomTheme !== null) {
+        await apply(randomTheme);
+      } else if (Config.customTheme) {
         await apply("custom");
       } else {
         await apply(Config.theme);
@@ -300,7 +302,7 @@ export async function randomizeTheme(): Promise<void> {
     randomTheme = "custom";
   }
 
-  preview(randomTheme, colorsOverride);
+  await apply(randomTheme, colorsOverride);
 
   if (randomThemeIndex >= themesList.length) {
     let name = randomTheme.replace(/_/g, " ");
@@ -380,10 +382,12 @@ ConfigEvent.subscribe(async (eventKey, eventValue, nosave) => {
     nosave ? preview("custom") : await set("custom");
   }
   if (eventKey === "theme") {
+    await clearRandom();
     await clearPreview(false);
     await set(eventValue as string);
   }
   if (eventKey === "setThemes") {
+    await clearRandom();
     await clearPreview(false);
     if (Config.autoSwitchTheme) {
       if (window.matchMedia?.("(prefers-color-scheme: dark)").matches) {
