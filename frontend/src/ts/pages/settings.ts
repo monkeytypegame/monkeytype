@@ -636,7 +636,7 @@ async function fillSettingsPage(): Promise<void> {
         Config.fontFamily === font.name ? " active" : ""
       }" style="font-family:${
         font.display !== undefined ? font.display : font.name
-      }" data-config-value="${font.name.replace(/ /g, "_")}">${
+      } Preview" data-config-value="${font.name.replace(/ /g, "_")}">${
         font.display !== undefined ? font.display : font.name
       }</button>`;
     }

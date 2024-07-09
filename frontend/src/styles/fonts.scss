@@ -105,11 +105,25 @@ $font-defauls: (
 @each $font, $settings in $fonts {
   $config: map-merge($font-defauls, $settings);
   $src: "/webfonts/" + map-get($config, "src") + "." + map-get($config, "ext");
+  $previewDir: "webfonts-preview";
+  @if variable-exists(previewFontsPath) {
+    $previewDir: $previewFontsPath;
+  }
+
   @font-face {
     font-family: $font;
     font-style: map-get($config, "style");
     font-weight: map-get($config, "weight");
     font-display: map-get($config, "display");
     src: url($src) format(map-get($config, "format"));
+  }
+
+  @font-face {
+    font-family: $font + " Preview";
+    font-style: map-get($config, "style");
+    font-weight: map-get($config, "weight");
+    font-display: map-get($config, "display");
+    src: url("/" + $previewDir + "/" + map-get($config, "src") + ".woff2")
+      format("woff2");
   }
 }
