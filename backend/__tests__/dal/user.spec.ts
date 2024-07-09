@@ -1,5 +1,4 @@
 import _ from "lodash";
-import { updateStreak } from "../../src/dal/user";
 import * as UserDAL from "../../src/dal/user";
 import * as UserTestData from "../__testData__/users";
 import { ObjectId } from "mongodb";
@@ -354,7 +353,7 @@ describe("UserDal", () => {
   });
 
   describe("addResultFilterPreset", () => {
-    it("should return error if uuid not found", async () => {
+    it("should return error if uid not found", async () => {
       // when, then
       await expect(
         UserDAL.addResultFilterPreset("non existing uid", mockResultFilter, 5)
@@ -411,7 +410,7 @@ describe("UserDal", () => {
   });
 
   describe("removeResultFilterPreset", () => {
-    it("should return error if uuid not found", async () => {
+    it("should return error if uid not found", async () => {
       // when, then
       await expect(
         UserDAL.removeResultFilterPreset(
@@ -450,7 +449,7 @@ describe("UserDal", () => {
   });
 
   describe("addTag", () => {
-    it("should return error if uuid not found", async () => {
+    it("should return error if uid not found", async () => {
       // when, then
       await expect(
         UserDAL.addTag("non existing uid", "tagName")
@@ -509,7 +508,7 @@ describe("UserDal", () => {
   });
 
   describe("editTag", () => {
-    it("should return error if uuid not found", async () => {
+    it("should return error if uid not found", async () => {
       // when, then
       await expect(
         UserDAL.editTag(
@@ -560,7 +559,7 @@ describe("UserDal", () => {
   });
 
   describe("removeTag", () => {
-    it("should return error if uuid not found", async () => {
+    it("should return error if uid not found", async () => {
       // when, then
       await expect(
         UserDAL.removeTag("non existing uid", new ObjectId().toHexString())
@@ -614,7 +613,7 @@ describe("UserDal", () => {
   });
 
   describe("removeTagPb", () => {
-    it("should return error if uuid not found", async () => {
+    it("should return error if uid not found", async () => {
       // when, then
       await expect(
         UserDAL.removeTagPb("non existing uid", new ObjectId().toHexString())
@@ -942,145 +941,155 @@ describe("UserDal", () => {
     ]);
   });
 
-  it("updateStreak should update streak", async () => {
-    await UserDAL.addUser("testStack", "test email", "TestID");
+  describe("updateStreak", () => {
+    it("should return error if uid not found", async () => {
+      // when, then
+      await expect(UserDAL.updateStreak("non existing uid", 0)).rejects.toThrow(
+        "User not found\nStack: calculate streak"
+      );
+    });
 
-    const testSteps = [
-      {
-        date: "2023/06/07 21:00:00 UTC",
-        expectedStreak: 1,
-      },
-      {
-        date: "2023/06/07 23:00:00 UTC",
-        expectedStreak: 1,
-      },
-      {
-        date: "2023/06/08 00:00:00 UTC",
-        expectedStreak: 2,
-      },
-      {
-        date: "2023/06/08 23:00:00 UTC",
-        expectedStreak: 2,
-      },
-      {
-        date: "2023/06/09 00:00:00 UTC",
-        expectedStreak: 3,
-      },
-      {
-        date: "2023/06/11 00:00:00 UTC",
-        expectedStreak: 1,
-      },
-    ];
+    it("updateStreak should update streak", async () => {
+      const { uid } = await UserTestData.createUser();
 
-    for (const { date, expectedStreak } of testSteps) {
-      const milis = new Date(date).getTime();
-      Date.now = vi.fn(() => milis);
+      const testSteps = [
+        {
+          date: "2023/06/07 21:00:00 UTC",
+          expectedStreak: 1,
+        },
+        {
+          date: "2023/06/07 23:00:00 UTC",
+          expectedStreak: 1,
+        },
+        {
+          date: "2023/06/08 00:00:00 UTC",
+          expectedStreak: 2,
+        },
+        {
+          date: "2023/06/08 23:00:00 UTC",
+          expectedStreak: 2,
+        },
+        {
+          date: "2023/06/09 00:00:00 UTC",
+          expectedStreak: 3,
+        },
+        {
+          date: "2023/06/11 00:00:00 UTC",
+          expectedStreak: 1,
+        },
+      ];
 
-      const streak = await updateStreak("TestID", milis);
+      for (const { date, expectedStreak } of testSteps) {
+        const milis = new Date(date).getTime();
+        Date.now = vi.fn(() => milis);
 
-      await expect(streak).toBe(expectedStreak);
-    }
+        const streak = await UserDAL.updateStreak(uid, milis);
+
+        await expect(streak).toBe(expectedStreak);
+      }
+    });
+
+    it("positive streak offset should award streak correctly", async () => {
+      const { uid } = await UserTestData.createUser({
+        streak: { hourOffset: 10 } as any,
+      });
+
+      const testSteps = [
+        {
+          date: "2023/06/06 21:00:00 UTC",
+          expectedStreak: 1,
+        },
+        {
+          date: "2023/06/07 01:00:00 UTC",
+          expectedStreak: 1,
+        },
+        {
+          date: "2023/06/07 09:00:00 UTC",
+          expectedStreak: 1,
+        },
+        {
+          date: "2023/06/07 10:00:00 UTC",
+          expectedStreak: 2,
+        },
+        {
+          date: "2023/06/07 23:00:00 UTC",
+          expectedStreak: 2,
+        },
+        {
+          date: "2023/06/08 00:00:00 UTC",
+          expectedStreak: 2,
+        },
+        {
+          date: "2023/06/08 01:00:00 UTC",
+          expectedStreak: 2,
+        },
+        {
+          date: "2023/06/08 09:00:00 UTC",
+          expectedStreak: 2,
+        },
+        {
+          date: "2023/06/08 10:00:00 UTC",
+          expectedStreak: 3,
+        },
+        {
+          date: "2023/06/10 10:00:00 UTC",
+          expectedStreak: 1,
+        },
+      ];
+
+      for (const { date, expectedStreak } of testSteps) {
+        const milis = new Date(date).getTime();
+        Date.now = vi.fn(() => milis);
+
+        const streak = await UserDAL.updateStreak(uid, milis);
+
+        await expect(streak).toBe(expectedStreak);
+      }
+    });
+
+    it("negative streak offset should award streak correctly", async () => {
+      const { uid } = await UserTestData.createUser({
+        streak: { hourOffset: -4 } as any,
+      });
+
+      const testSteps = [
+        {
+          date: "2023/06/06 19:00:00 UTC",
+          expectedStreak: 1,
+        },
+        {
+          date: "2023/06/06 20:00:00 UTC",
+          expectedStreak: 2,
+        },
+        {
+          date: "2023/06/07 01:00:00 UTC",
+          expectedStreak: 2,
+        },
+        {
+          date: "2023/06/07 19:00:00 UTC",
+          expectedStreak: 2,
+        },
+        {
+          date: "2023/06/07 20:00:00 UTC",
+          expectedStreak: 3,
+        },
+        {
+          date: "2023/06/09 23:00:00 UTC",
+          expectedStreak: 1,
+        },
+      ];
+
+      for (const { date, expectedStreak } of testSteps) {
+        const milis = new Date(date).getTime();
+        Date.now = vi.fn(() => milis);
+
+        const streak = await UserDAL.updateStreak(uid, milis);
+
+        await expect(streak).toBe(expectedStreak);
+      }
+    });
   });
 
-  it("positive streak offset should award streak correctly", async () => {
-    await UserDAL.addUser("testStack", "test email", "TestID");
-
-    await UserDAL.setStreakHourOffset("TestID", 10);
-
-    const testSteps = [
-      {
-        date: "2023/06/06 21:00:00 UTC",
-        expectedStreak: 1,
-      },
-      {
-        date: "2023/06/07 01:00:00 UTC",
-        expectedStreak: 1,
-      },
-      {
-        date: "2023/06/07 09:00:00 UTC",
-        expectedStreak: 1,
-      },
-      {
-        date: "2023/06/07 10:00:00 UTC",
-        expectedStreak: 2,
-      },
-      {
-        date: "2023/06/07 23:00:00 UTC",
-        expectedStreak: 2,
-      },
-      {
-        date: "2023/06/08 00:00:00 UTC",
-        expectedStreak: 2,
-      },
-      {
-        date: "2023/06/08 01:00:00 UTC",
-        expectedStreak: 2,
-      },
-      {
-        date: "2023/06/08 09:00:00 UTC",
-        expectedStreak: 2,
-      },
-      {
-        date: "2023/06/08 10:00:00 UTC",
-        expectedStreak: 3,
-      },
-      {
-        date: "2023/06/10 10:00:00 UTC",
-        expectedStreak: 1,
-      },
-    ];
-
-    for (const { date, expectedStreak } of testSteps) {
-      const milis = new Date(date).getTime();
-      Date.now = vi.fn(() => milis);
-
-      const streak = await updateStreak("TestID", milis);
-
-      await expect(streak).toBe(expectedStreak);
-    }
-  });
-
-  it("negative streak offset should award streak correctly", async () => {
-    await UserDAL.addUser("testStack", "test email", "TestID");
-
-    await UserDAL.setStreakHourOffset("TestID", -4);
-
-    const testSteps = [
-      {
-        date: "2023/06/06 19:00:00 UTC",
-        expectedStreak: 1,
-      },
-      {
-        date: "2023/06/06 20:00:00 UTC",
-        expectedStreak: 2,
-      },
-      {
-        date: "2023/06/07 01:00:00 UTC",
-        expectedStreak: 2,
-      },
-      {
-        date: "2023/06/07 19:00:00 UTC",
-        expectedStreak: 2,
-      },
-      {
-        date: "2023/06/07 20:00:00 UTC",
-        expectedStreak: 3,
-      },
-      {
-        date: "2023/06/09 23:00:00 UTC",
-        expectedStreak: 1,
-      },
-    ];
-
-    for (const { date, expectedStreak } of testSteps) {
-      const milis = new Date(date).getTime();
-      Date.now = vi.fn(() => milis);
-
-      const streak = await updateStreak("TestID", milis);
-
-      await expect(streak).toBe(expectedStreak);
-    }
-  });
   describe("incrementTestActivity", () => {
     it("ignores user without migration", async () => {
       // given
@@ -1557,7 +1566,7 @@ describe("UserDal", () => {
     });
   });
   describe("updateLbMemory", () => {
-    it("should return error if uuid not found", async () => {
+    it("should return error if uid not found", async () => {
       // when, then
       await expect(
         UserDAL.updateLbMemory(
@@ -1733,7 +1742,7 @@ describe("UserDal", () => {
   });
 
   describe("addTheme", () => {
-    it("should return error if uuid not found", async () => {
+    it("should return error if uid not found", async () => {
       // when, then
       await expect(
         UserDAL.addTheme("non existing uid", { name: "new", colors: [] })
@@ -1795,7 +1804,7 @@ describe("UserDal", () => {
   });
 
   describe("editTheme", () => {
-    it("should return error if uuid not found", async () => {
+    it("should return error if uid not found", async () => {
       // when, then
       await expect(
         UserDAL.editTheme("non existing uid", new ObjectId().toHexString(), {
@@ -1850,7 +1859,7 @@ describe("UserDal", () => {
   });
 
   describe("removeTheme", () => {
-    it("should return error if uuid not found", async () => {
+    it("should return error if uid not found", async () => {
       // when, then
       await expect(
         UserDAL.removeTheme("non existing uid", new ObjectId().toHexString())
@@ -1905,7 +1914,7 @@ describe("UserDal", () => {
   });
 
   describe("addFavoriteQuote", () => {
-    it("should return error if uuid not found", async () => {
+    it("should return error if uid not found", async () => {
       // when, then
       await expect(
         UserDAL.addFavoriteQuote("non existing uid", "english", "1", 5)
@@ -1979,7 +1988,7 @@ describe("UserDal", () => {
   });
 
   describe("removeFavoriteQuote", () => {
-    it("should return error if uuid not found", async () => {
+    it("should return error if uid not found", async () => {
       // when, then
       await expect(
         UserDAL.removeFavoriteQuote("non existing uid", "english", "0")

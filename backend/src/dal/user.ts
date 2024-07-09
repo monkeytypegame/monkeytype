@@ -400,7 +400,6 @@ export async function checkIfPb(
   user: Pick<MonkeyTypes.DBUser, "personalBests" | "lbPersonalBests">,
   result: Result
 ): Promise<boolean> {
-  //TODO: check for concurrency
   const { mode } = result;
 
   if (!canFunboxGetPb(result)) return false;
@@ -444,7 +443,6 @@ export async function checkIfTagPb(
   user: Pick<MonkeyTypes.DBUser, "tags">,
   result: Result
 ): Promise<string[]> {
-  //TODO: check for concurrency
   if (user.tags === undefined || user.tags.length === 0) {
     return [];
   }
@@ -713,18 +711,16 @@ export async function getPersonalBests(
 
 export async function getStats(
   uid: string
-): Promise<Record<string, number | undefined>> {
+): Promise<
+  Pick<MonkeyTypes.DBUser, "startedTests" | "completedTests" | "timeTyping">
+> {
   const user = await getPartialUser(uid, "get stats", [
     "startedTests",
     "completedTests",
     "timeTyping",
   ]);
 
-  return {
-    startedTests: user.startedTests,
-    completedTests: user.completedTests,
-    timeTyping: user.timeTyping,
-  };
+  return user;
 }
 
 export async function getFavoriteQuotes(
@@ -747,6 +743,7 @@ export async function addFavoriteQuote(
     {
       uid,
       $expr: {
+        //total amount of quotes need to be lower than maxQuotes
         $lt: [
           {
             $reduce: {
@@ -761,6 +758,7 @@ export async function addFavoriteQuote(
     },
     {
       $addToSet: {
+        //ensure quoteId is unique in the array
         [`favoriteQuotes.${language}`]: quoteId,
       },
     },
@@ -1032,7 +1030,6 @@ export async function updateStreak(
   uid: string,
   timestamp: number
 ): Promise<number> {
-  //TODO: check for concurrency
   const user = await getPartialUser(uid, "calculate streak", ["streak"]);
   const streak: SharedTypes.UserStreak = {
     lastResultTimestamp: user.streak?.lastResultTimestamp ?? 0,
