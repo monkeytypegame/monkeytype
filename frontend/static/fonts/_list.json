@@ -34,7 +34,8 @@
   },
   {
     "name": "Comic Sans MS",
-    "display": "Helvetica"
+    "display": "Helvetica",
+    "systemFont": true
   },
   {
     "name": "Oxygen"
@@ -46,7 +47,8 @@
     "name": "Itim"
   },
   {
-    "name": "Courier"
+    "name": "Courier",
+    "systemFont": true
   },
   {
     "name": "Comfortaa"
@@ -77,7 +79,8 @@
     "name": "Ubuntu Mono"
   },
   {
-    "name": "Georgia"
+    "name": "Georgia",
+    "systemFont": true
   },
   {
     "name": "Cascadia Mono"
