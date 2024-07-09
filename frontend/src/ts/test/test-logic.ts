@@ -1028,16 +1028,14 @@ export async function finish(difficultyFailed = false): Promise<void> {
     }
   }
 
-  if (!dontSave) {
-    TodayTracker.addSeconds(
-      completedEvent.testDuration +
-        (TestStats.incompleteSeconds < 0
-          ? 0
-          : Numbers.roundTo2(TestStats.incompleteSeconds)) -
-        completedEvent.afkDuration
-    );
-    Result.updateTodayTracker();
-  }
+  TodayTracker.addSeconds(
+    completedEvent.testDuration +
+      (TestStats.incompleteSeconds < 0
+        ? 0
+        : Numbers.roundTo2(TestStats.incompleteSeconds)) -
+      completedEvent.afkDuration
+  );
+  Result.updateTodayTracker();
 
   if (!isAuthenticated()) {
     $(".pageTest #result #rateQuoteButton").addClass("hidden");

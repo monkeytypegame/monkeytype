@@ -337,7 +337,7 @@ function getWordHTML(word: string): string {
   return retval;
 }
 
-function updateWordWrapperClasses(): void {
+function updateWordWrapperClasses(initial = false): void {
   if (Config.tapeMode !== "off") {
     $("#words").addClass("tape");
     $("#wordsWrapper").addClass("tape");
@@ -372,12 +372,14 @@ function updateWordWrapperClasses(): void {
   }
 
   $("#words").attr("class", existing.join(" "));
+
+  updateWordsWidth();
+  updateWordsHeight(true);
+  void updateWordsInputPosition(initial);
 }
 
 export function showWords(): void {
   $("#words").empty();
-
-  updateWordWrapperClasses();
 
   let wordsHTML = "";
   if (Config.mode !== "zen") {
@@ -391,13 +393,12 @@ export function showWords(): void {
 
   $("#words").html(wordsHTML);
 
-  updateWordsWidth();
-  updateWordsHeight(true);
   updateActiveElement(undefined, true);
   setTimeout(() => {
     void Caret.updatePosition();
   }, 125);
-  void updateWordsInputPosition(true);
+
+  updateWordWrapperClasses(true);
 }
 
 const posUpdateLangList = ["japanese", "chinese", "korean"];
@@ -838,7 +839,13 @@ export async function updateWordElement(inputOverride?: string): Promise<void> {
         i >= CompositionState.getStartPos() &&
         !(containsKorean && !correctSoFar)
       ) {
-        ret += `<letter class="dead">${currentLetter}</letter>`;
+        ret += `<letter class="dead">${
+          Config.indicateTypos === "replace"
+            ? input[i] === " "
+              ? "_"
+              : input[i]
+            : currentLetter
+        }</letter>`;
       } else if (currentLetter === undefined) {
         if (!Config.hideExtraLetters) {
           let letter = input[i];
