@@ -110,6 +110,11 @@ header #logo .top,
   animation: glowing-button 2s alternate ease-in-out infinite;
 }
 
+#words.highlight-off .word letter,
+#words.highlight-off .word.typed letter {
+  animation: rainbow-infinite-loop 5s linear infinite;
+}
+
 .row .textButton:not(.active) {
   color: #999999;
 }

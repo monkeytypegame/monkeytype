@@ -90,3 +90,8 @@ a:hover {
 #words.flipped .word.typed letter {
   animation: none;
 }
+
+#words.highlight-off .word letter,
+#words.highlight-off .word.typed letter {
+  animation: aurora 5s linear infinite;
+}
