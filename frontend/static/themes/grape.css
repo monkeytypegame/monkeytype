@@ -65,15 +65,28 @@ header .config .group .buttons .textButton.active,
 #result .stats .group .bottom,
 nav .textButton:hover,
 header .config .group .buttons .textButton:hover,
-a:hover,
-#words.flipped .word {
+a:hover {
   animation: pastel 5s linear infinite;
 }
 
-#words.flipped .word letter.correct {
-  color: var(--sub-color);
+#words {
+  --correct-letter-animation: pastel 5s linear infinite;
 }
 
-#words:not(.flipped) .word letter.correct {
+#words.flipped {
+  --untyped-letter-color: var(--sub-color);
+  --correct-letter-animation: none;
+  --untyped-letter-animation: pastel 5s linear infinite;
+}
+
+#words .word.typed letter.correct,
+#words.highlight-word .word.typed letter,
+#words.highlight-next-word .word.typed letter,
+#words.highlight-next-two-words .word.typed letter,
+#words.highlight-next-three-words .word.typed letter {
   animation: pastel 5s linear infinite;
+}
+
+#words.flipped .word.typed letter {
+  animation: none;
 }
