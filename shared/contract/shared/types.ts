@@ -31,7 +31,7 @@ export type MonkeyValidationError = z.infer<typeof MonkeyValidationErrorSchema>;
 export const MonkeyClientError = MonkeyResponseSchema;
 export const MonkeyServerError = MonkeyClientError.extend({
   errorId: z.string(),
-  uid: z.string(),
+  uid: z.string().optional(),
 });
 export type MonkeyServerErrorType = z.infer<typeof MonkeyServerError>;
 
