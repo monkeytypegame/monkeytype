@@ -1,10 +1,22 @@
 {
   "language": "english",
   "groups": [
-    [0, 100],
-    [101, 300],
-    [301, 600],
-    [601, 9999]
+    [
+      0,
+      100
+    ],
+    [
+      101,
+      300
+    ],
+    [
+      301,
+      600
+    ],
+    [
+      601,
+      9999
+    ]
   ],
   "quotes": [
     {
@@ -38533,10 +38545,16 @@
       "id": 7062
     },
     {
-      "text" : "Why did you make me do this? You're fighting so you can watch everyone around you die! Think, Mark! You'll outlast every fragile, insignificant being on this planet. You'll live to see this world crumble to dust and blow away! Everyone and everything you know will be gone! What will you have after 500 years?",
-      "source" : "Invincible (TV series)",
-      "length" : 309,
-      "id" : 7603
+      "text": "Why did you make me do this? You're fighting so you can watch everyone around you die! Think, Mark! You'll outlast every fragile, insignificant being on this planet. You'll live to see this world crumble to dust and blow away! Everyone and everything you know will be gone! What will you have after 500 years?",
+      "source": "Invincible (TV series)",
+      "length": 309,
+      "id": 7063
+    },
+    {
+      "text": "Fearlessness is what love seeks. Such fearlessness exists only in the complete calm that no longer be shaken by events expected of the future... Hence the only valid tense is the present, the Now",
+      "source": "Hannah Arendt",
+      "length": 195,
+      "id": 7064
     }
   ]
 }
