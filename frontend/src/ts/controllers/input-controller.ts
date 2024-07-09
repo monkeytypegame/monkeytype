@@ -261,7 +261,7 @@ async function handleSpace(): Promise<void> {
       if (Config.stopOnError === "word") {
         dontInsertSpace = false;
         Replay.addReplayEvent("incorrectLetter", "_");
-        void TestUI.updateWordElement(true);
+        void TestUI.updateWordElement();
         void Caret.updatePosition();
       }
       return;
@@ -661,7 +661,7 @@ function handleChar(
     !thisCharCorrect
   ) {
     if (!Config.blindMode) {
-      void TestUI.updateWordElement(undefined, TestInput.input.current + char);
+      void TestUI.updateWordElement(TestInput.input.current + char);
     }
     return;
   }
