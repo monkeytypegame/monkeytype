@@ -454,6 +454,7 @@ declare namespace MonkeyTypes {
   type TestActivityCalendar = {
     getMonths: () => TestActivityMonth[];
     getDays: () => TestActivityDay[];
+    getTotalTests: () => number;
   };
 
   type ModifiableTestActivityCalendar = TestActivityCalendar & {

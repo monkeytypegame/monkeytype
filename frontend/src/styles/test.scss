@@ -1,27 +1,3 @@
-@mixin highlightMode($color) {
-  &.highlight-next-word {
-    .word.active,
-    .word.active + .word {
-      color: $color;
-    }
-  }
-  &.highlight-next-two-words {
-    .word.active,
-    .word.active + .word,
-    .word.active + .word + .word {
-      color: $color;
-    }
-  }
-  &.highlight-next-three-words {
-    .word.active,
-    .word.active + .word,
-    .word.active + .word + .word,
-    .word.active + .word + .word + .word {
-      color: $color;
-    }
-  }
-}
-
 .highlightContainer {
   position: absolute;
   overflow: hidden;
@@ -209,22 +185,84 @@
     width: inherit;
   }
 
-  letter {
-    border-bottom-style: solid;
-    border-bottom-width: 0.05em;
-    border-bottom-color: transparent;
-    &.dead {
+  --correct-letter-color: var(--text-color);
+  --correct-letter-animation: none;
+  --untyped-letter-color: var(--sub-color);
+  --untyped-letter-animation: none;
+  --incorrect-letter-color: var(--error-color);
+  --incorrect-letter-animation: none;
+  --extra-letter-color: var(--error-extra-color);
+  --extra-letter-animation: none;
+
+  .word {
+    letter {
+      color: var(--untyped-letter-color);
+      animation: var(--untyped-letter-animation);
+      border-bottom-style: solid;
       border-bottom-width: 0.05em;
-      border-bottom-color: var(--sub-color);
-    }
-    &.tabChar,
-    &.nlChar {
-      margin: 0 0.25rem;
-      opacity: 0.2;
-      i {
-        line-height: 0;
+      border-bottom-color: transparent;
+      &.dead {
+        border-bottom-width: 0.05em;
+        border-bottom-color: var(--untyped-letter-color);
+      }
+      &.tabChar,
+      &.nlChar {
+        margin: 0 0.25rem;
+        opacity: 0.2;
+        i {
+          line-height: 0;
+        }
+      }
+
+      &.correct {
+        color: var(--correct-letter-color);
+        animation: var(--correct-letter-animation);
+      }
+
+      &.corrected {
+        color: var(--correct-letter-color);
+        animation: var(--correct-letter-animation);
+        border-bottom: 2px dotted var(--main-color);
+      }
+
+      &.extraCorrected {
+        border-right: 2px dotted var(--main-color);
+      }
+
+      &.incorrect {
+        color: var(--incorrect-letter-color);
+        animation: var(--incorrect-letter-animation);
+      }
+
+      &.incorrect.extra {
+        color: var(--extra-letter-color);
+        animation: var(--extra-letter-animation);
+      }
+
+      &.missing {
+        opacity: 0.5;
       }
     }
+    & .hints hint {
+      position: absolute;
+      bottom: -1.1em;
+      color: var(--correct-letter-color);
+      animation: var(--correct-letter-animation);
+      line-height: initial;
+      font-size: 0.75em;
+      text-shadow: none;
+      padding: 1px;
+      left: 0;
+      opacity: 0.5;
+      text-align: center;
+      display: grid;
+      justify-content: center;
+      transform: translate(-50%);
+    }
+  }
+
+  &.tape .word {
+    margin: 0.25em 0.5em 0.75em 0;
   }
 
   /* a little hack for right-to-left languages */
@@ -247,100 +285,141 @@
     -webkit-filter: blur(4px);
   }
 
-  &.flipped {
+  &.blind {
     .word {
-      color: var(--text-color);
-
-      & letter.dead {
-        border-bottom-color: var(--sub-color) !important;
+      & letter.extra {
+        display: none;
       }
-
-      & letter.correct {
-        color: var(--sub-color);
-      }
-
-      & letter.corrected {
-        color: var(--sub-color);
-        border-bottom: 2px dotted var(--main-color);
-      }
-
-      & letter.extraCorrected {
-        border-right: 2px dotted var(--main-color);
+      & letter.incorrect {
+        color: var(--correct-letter-color);
+        animation: var(--correct-letter-animation);
       }
     }
+  }
 
-    @include highlightMode(var(--sub-color));
+  &.flipped {
+    --correct-letter-color: var(--sub-color);
+    --untyped-letter-color: var(--text-color);
+    --incorrect-letter-color: var(--error-color);
+    --extra-letter-color: var(--error-extra-color);
   }
 
   &.colorfulMode {
-    .word {
-      & letter.dead {
-        border-bottom-color: var(--main-color) !important;
-      }
-
-      & letter.correct {
-        color: var(--main-color);
-      }
-
-      & letter.corrected {
-        color: var(--main-color);
-        border-bottom: 2px dotted var(--text-color);
-      }
-
-      & letter.extraCorrected {
-        border-right: 2px dotted var(--text-color);
-      }
-
-      & letter.incorrect {
-        color: var(--colorful-error-color);
-      }
-
-      & letter.incorrect.extra {
-        color: var(--colorful-error-extra-color);
-      }
-    }
-
-    @include highlightMode(var(--main-color));
+    --correct-letter-color: var(--main-color);
+    --untyped-letter-color: var(--sub-color);
+    --incorrect-letter-color: var(--colorful-error-color);
+    --extra-letter-color: var(--colorful-error-extra-color);
   }
 
   &.flipped.colorfulMode {
+    --correct-letter-color: var(--sub-color);
+    --untyped-letter-color: var(--main-color);
+    --incorrect-letter-color: var(--colorful-error-color);
+    --extra-letter-color: var(--colorful-error-extra-color);
+  }
+
+  &.highlight-off {
     .word {
-      color: var(--main-color);
-
-      & letter.dead {
-        border-bottom-color: var(--sub-color) !important;
-      }
-
-      & letter.correct {
-        color: var(--sub-color);
-      }
-
-      & letter.corrected {
-        color: var(--sub-color);
-        border-bottom: 2px dotted var(--main-color);
-      }
-
-      & letter.extraCorrected {
-        border-right: 2px dotted var(--main-color);
-      }
-
-      & letter.incorrect {
-        color: var(--colorful-error-color);
-      }
-
-      & letter.incorrect.extra {
-        color: var(--colorful-error-extra-color);
+      letter.correct {
+        color: var(--untyped-letter-color);
+        animation: var(--untyped-letter-animation);
       }
     }
-
-    @include highlightMode(var(--sub-color));
   }
 
-  &.tape .word {
-    margin: 0.25em 0.5em 0.75em 0;
+  &.highlight-word {
+    .word.typed {
+      letter {
+        color: var(--untyped-letter-color);
+        animation: var(--untyped-letter-animation);
+      }
+    }
+    .word.active {
+      letter {
+        color: var(--correct-letter-color);
+        animation: var(--correct-letter-animation);
+      }
+    }
+    .word.typed.error,
+    .word.active:has(letter.incorrect) {
+      letter {
+        color: var(--incorrect-letter-color);
+        animation: var(--incorrect-letter-animation);
+      }
+    }
   }
 
-  @include highlightMode(var(--text-color));
+  &.highlight-next-word {
+    .word.typed {
+      letter {
+        color: var(--untyped-letter-color);
+        animation: var(--untyped-letter-animation);
+      }
+    }
+    .word.active,
+    .word.active + .word {
+      letter {
+        color: var(--correct-letter-color);
+        animation: var(--correct-letter-animation);
+      }
+    }
+    .word.typed.error,
+    .word.active:has(letter.incorrect) {
+      letter {
+        color: var(--incorrect-letter-color);
+        animation: var(--incorrect-letter-animation);
+      }
+    }
+  }
+
+  &.highlight-next-two-words {
+    .word.typed {
+      letter {
+        color: var(--untyped-letter-color);
+        animation: var(--untyped-letter-animation);
+      }
+    }
+    .word.active,
+    .word.active + .word,
+    .word.active + .word + .word {
+      letter {
+        color: var(--correct-letter-color);
+        animation: var(--correct-letter-animation);
+      }
+    }
+    .word.typed.error,
+    .word.active:has(letter.incorrect) {
+      letter {
+        color: var(--incorrect-letter-color);
+        animation: var(--incorrect-letter-animation);
+      }
+    }
+  }
+
+  &.highlight-next-three-words {
+    .word.typed {
+      letter {
+        color: var(--untyped-letter-color);
+        animation: var(--untyped-letter-animation);
+      }
+    }
+    .word.active,
+    .word.active + .word,
+    .word.active + .word + .word,
+    .word.active + .word + .word + .word {
+      letter {
+        color: var(--correct-letter-color);
+        animation: var(--correct-letter-animation);
+      }
+    }
+    .word.typed.error,
+    .word.active:has(letter.incorrect) {
+      letter {
+        color: var(--incorrect-letter-color);
+        animation: var(--incorrect-letter-animation);
+      }
+    }
+  }
 }
 
 .word {
@@ -348,7 +427,6 @@
   font-size: 1em;
   line-height: 1em;
   margin: 0.25em;
-  color: var(--sub-color);
   font-variant: no-common-ligatures;
   border-bottom: 2px solid transparent;
   letter {
@@ -415,53 +493,6 @@
   .word.error {
     text-shadow: none;
   }
-}
-// .word letter {
-// transition: .1s;
-// height: 1rem;
-// line-height: 1rem;
-/* margin: 0 1px; */
-// }
-
-.word letter.correct {
-  color: var(--text-color);
-}
-
-.word letter.corrected {
-  color: var(--text-color);
-  border-bottom: 2px dotted var(--main-color);
-}
-
-.word letter.extraCorrected {
-  border-right: 2px dotted var(--main-color);
-}
-
-.word letter.incorrect {
-  color: var(--error-color);
-}
-
-.word .hints hint {
-  position: absolute;
-  bottom: -1.1em;
-  color: var(--text-color);
-  line-height: initial;
-  font-size: 0.75em;
-  text-shadow: none;
-  padding: 1px;
-  left: 0;
-  opacity: 0.5;
-  text-align: center;
-  display: grid;
-  justify-content: center;
-  transform: translate(-50%);
-}
-
-.word letter.incorrect.extra {
-  color: var(--error-extra-color);
-}
-
-.word letter.missing {
-  opacity: 0.5;
 }
 
 #words.flipped.colorfulMode .word.error,
@@ -626,13 +657,20 @@
         .word {
           position: relative;
           margin: 0.18rem 0.6rem 0.15rem 0;
-          letter.correct {
+          & letter.corrected {
+            color: var(--text-color);
+            border-bottom: 2px dotted var(--main-color);
+          }
+          & letter.extraCorrected {
+            border-right: 2px dotted var(--main-color);
+          }
+          & letter.correct {
             color: var(--text-color);
           }
-          letter.incorrect {
+          & letter.incorrect {
             color: var(--error-color);
           }
-          letter.incorrect.extra {
+          & letter.incorrect.extra {
             color: var(--error-extra-color);
           }
           &.heatmapInherit letter {
