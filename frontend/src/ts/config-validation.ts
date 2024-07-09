@@ -27,6 +27,10 @@ function invalid(key: string, val: unknown, customMessage?: string): void {
   console.error(`Invalid value key ${key} value ${val} type ${typeof val}`);
 }
 
+function isArray(val: unknown): val is unknown[] {
+  return val instanceof Array;
+}
+
 export function isConfigValueValid<T>(
   key: string,
   val: T,
