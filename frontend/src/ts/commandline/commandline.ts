@@ -378,8 +378,9 @@ async function showCommands(): Promise<void> {
       );
     }
 
-    if (command.id.startsWith("changeTheme") && command.customData) {
-      html += `<div class="command withThemeBubbles" data-command-id="${command.id}" data-index="${index}" style="${customStyle}">
+    if (command.customData !== undefined) {
+      if (command.id.startsWith("changeTheme")) {
+        html += `<div class="command withThemeBubbles" data-command-id="${command.id}" data-index="${index}" style="${customStyle}">
       ${iconHTML}<div>${display}</div>
       <div class="themeBubbles" style="background: ${command.customData["bgColor"]};outline: 0.25rem solid ${command.customData["bgColor"]};">
         <div class="themeBubble" style="background: ${command.customData["mainColor"]}"></div>
@@ -387,6 +388,27 @@ async function showCommands(): Promise<void> {
         <div class="themeBubble" style="background: ${command.customData["textColor"]}"></div>
       </div>
       </div>`;
+      }
+      if (command.id.startsWith("changeFont")) {
+        let fontFamily = command.customData["name"];
+
+        if (fontFamily === "Helvetica") {
+          fontFamily = "Comic Sans MS";
+        }
+
+        if (command.customData["isSystem"] === false) {
+          fontFamily += " Preview";
+        }
+
+        let newDisplay = display;
+        const lastIndexOfI = newDisplay.lastIndexOf("</i>");
+        newDisplay = `${newDisplay.slice(
+          0,
+          lastIndexOfI
+        )}</i><span style="font-family: ${fontFamily}">${command.display}`;
+
+        html += `<div class="command" data-command-id="${command.id}" data-index="${index}">${iconHTML}<div>${newDisplay}</div></div>`;
+      }
     } else {
       html += `<div class="command" data-command-id="${command.id}" data-index="${index}" style="${customStyle}">${iconHTML}<div>${display}</div></div>`;
     }

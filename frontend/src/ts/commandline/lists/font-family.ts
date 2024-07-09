@@ -19,11 +19,22 @@ const commands: MonkeyTypes.Command[] = [
 function update(fonts: MonkeyTypes.FontObject[]): void {
   fonts.forEach((font) => {
     const configVal = font.name.replace(/ /g, "_");
+
+    const customData: Record<string, string | boolean> = {
+      name: font.name,
+    };
+
+    if (font.display !== undefined) {
+      customData["display"] = font.display;
+    }
+
+    customData["isSystem"] = font.systemFont ?? false;
+
     subgroup.list.push({
       id: "changeFont" + font.name.replace(/ /g, "_"),
       display: font.display !== undefined ? font.display : font.name,
       configValue: configVal,
-      customStyle: `font-family: ${font.name}`,
+      customData,
       hover: (): void => {
         UI.previewFontFamily(font.name);
       },
