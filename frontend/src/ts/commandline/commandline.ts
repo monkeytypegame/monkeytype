@@ -603,11 +603,11 @@ const modal = new AnimatedModal({
 
     input.addEventListener("keydown", async (e) => {
       mouseMode = false;
-      if (e.key === "ArrowUp") {
+      if (e.key === "ArrowUp" || (e.key.toLowerCase() === "k" && e.ctrlKey)) {
         e.preventDefault();
         await decrementActiveIndex();
       }
-      if (e.key === "ArrowDown") {
+      if (e.key === "ArrowDown" || (e.key.toLowerCase() === "j" && e.ctrlKey)) {
         e.preventDefault();
         await incrementActiveIndex();
       }

@@ -506,7 +506,7 @@
   },
   {
     "name": "kyrgyz",
-    "languages": ["kyrgyz"]
+    "languages": ["kyrgyz", "kyrgyz_1k"]
   },
   {
     "name": "yiddish",

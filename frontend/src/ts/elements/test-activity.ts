@@ -22,9 +22,12 @@ export function init(
 }
 
 function update(calendar?: MonkeyTypes.TestActivityCalendar): void {
-  const container = document.querySelector(
-    "#testActivity .activity"
-  ) as HTMLElement;
+  const container = document.querySelector("#testActivity .activity");
+
+  if (container === null) {
+    return;
+  }
+
   container.innerHTML = "";
 
   if (calendar === undefined) {

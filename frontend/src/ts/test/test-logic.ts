@@ -1028,16 +1028,14 @@ export async function finish(difficultyFailed = false): Promise<void> {
     }
   }
 
-  if (!dontSave) {
-    TodayTracker.addSeconds(
-      completedEvent.testDuration +
-        (TestStats.incompleteSeconds < 0
-          ? 0
-          : Numbers.roundTo2(TestStats.incompleteSeconds)) -
-        completedEvent.afkDuration
-    );
-    Result.updateTodayTracker();
-  }
+  TodayTracker.addSeconds(
+    completedEvent.testDuration +
+      (TestStats.incompleteSeconds < 0
+        ? 0
+        : Numbers.roundTo2(TestStats.incompleteSeconds)) -
+      completedEvent.afkDuration
+  );
+  Result.updateTodayTracker();
 
   if (!isAuthenticated()) {
     $(".pageTest #result #rateQuoteButton").addClass("hidden");
@@ -1422,7 +1420,6 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
     }
     if (eventKey === "difficulty" && !nosave) restart();
     if (eventKey === "showAllLines" && !nosave) restart();
-    if (eventKey === "tapeMode" && !nosave) restart();
     if (
       eventKey === "customLayoutFluid" &&
       Config.funbox.includes("layoutfluid")

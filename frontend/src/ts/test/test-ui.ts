@@ -156,8 +156,23 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
 
   if (eventValue === undefined) return;
   if (eventKey === "highlightMode") {
-    highlightMode(eventValue as SharedTypes.Config.HighlightMode);
     if (ActivePage.get() === "test") updateActiveElement();
+  }
+
+  if (
+    ["highlightMode", "blindMode", "indicateTypos", "tapeMode"].includes(
+      eventKey
+    )
+  ) {
+    updateWordWrapperClasses();
+  }
+
+  if (eventKey === "tapeMode" && !nosave) {
+    if (eventValue === "off") {
+      $("#words").css("margin-left", "unset");
+    } else {
+      scrollTape();
+    }
   }
 
   if (typeof eventValue !== "boolean") return;
@@ -229,7 +244,8 @@ export function updateActiveElement(
     if (
       ["word", "next_word", "next_two_words", "next_three_words"].includes(
         Config.highlightMode
-      )
+      ) &&
+      Config.theme !== "shadow"
     ) {
       active.querySelectorAll("letter").forEach((e) => {
         e.classList.remove("correct");
@@ -331,15 +347,21 @@ function getWordHTML(word: string): string {
   return retval;
 }
 
-export function showWords(): void {
-  $("#words").empty();
-
+function updateWordWrapperClasses(initial = false): void {
   if (Config.tapeMode !== "off") {
     $("#words").addClass("tape");
     $("#wordsWrapper").addClass("tape");
   } else {
     $("#words").removeClass("tape");
     $("#wordsWrapper").removeClass("tape");
+  }
+
+  if (Config.blindMode) {
+    $("#words").addClass("blind");
+    $("#wordsWrapper").addClass("blind");
+  } else {
+    $("#words").removeClass("blind");
+    $("#wordsWrapper").removeClass("blind");
   }
 
   if (Config.indicateTypos === "below") {
@@ -349,6 +371,25 @@ export function showWords(): void {
     $("#words").removeClass("indicateTyposBelow");
     $("#wordsWrapper").removeClass("indicateTyposBelow");
   }
+
+  const existing =
+    $("#words")
+      ?.attr("class")
+      ?.split(/\s+/)
+      ?.filter((it) => !it.startsWith("highlight-")) ?? [];
+  if (Config.highlightMode != null) {
+    existing.push("highlight-" + Config.highlightMode.replaceAll("_", "-"));
+  }
+
+  $("#words").attr("class", existing.join(" "));
+
+  updateWordsWidth();
+  updateWordsHeight(true);
+  void updateWordsInputPosition(initial);
+}
+
+export function showWords(): void {
+  $("#words").empty();
 
   let wordsHTML = "";
   if (Config.mode !== "zen") {
@@ -362,13 +403,12 @@ export function showWords(): void {
 
   $("#words").html(wordsHTML);
 
-  updateWordsWidth();
-  updateWordsHeight(true);
   updateActiveElement(undefined, true);
   setTimeout(() => {
     void Caret.updatePosition();
   }, 125);
-  void updateWordsInputPosition(true);
+
+  updateWordWrapperClasses(true);
 }
 
 const posUpdateLangList = ["japanese", "chinese", "korean"];
@@ -831,7 +871,13 @@ export async function updateWordElement(
       ) {
         ret += `<letter class="${
           Config.highlightMode === "word" ? wordHighlightClassString : ""
-        } dead">${currentLetter}</letter>`;
+        } dead">${
+          Config.indicateTypos === "replace"
+            ? input[i] === " "
+              ? "_"
+              : input[i]
+            : currentLetter
+        }</letter>`;
       } else if (!showError) {
         if (currentLetter !== undefined) {
           ret += `<letter class="${
@@ -1419,19 +1465,6 @@ export function highlightAllLettersAsCorrect(wordIndex: number): void {
   $($("#words .word")[wordIndex] as HTMLElement)
     .find("letter")
     .addClass("correct");
-}
-
-export function highlightMode(mode?: SharedTypes.Config.HighlightMode): void {
-  const existing =
-    $("#words")
-      ?.attr("class")
-      ?.split(/\s+/)
-      ?.filter((it) => !it.startsWith("highlight-")) ?? [];
-  if (mode != null) {
-    existing.push("highlight-" + mode.replaceAll("_", "-"));
-  }
-
-  $("#words").attr("class", existing.join(" "));
 }
 
 function updateWordsWidth(): void {

@@ -8,17 +8,10 @@ export function inRange(value: number, min: number, max: number): boolean {
   return value >= min && value <= max;
 }
 
-const VALID_NAME_PATTERN = /^[\da-zA-Z_.-]+$/;
+const VALID_NAME_PATTERN = /^[\da-zA-Z_-]+$/;
 
 export function isUsernameValid(name: string): boolean {
   if (_.isNil(name) || !inRange(name.length, 1, 16)) {
-    return false;
-  }
-
-  const normalizedName = name.toLowerCase();
-
-  const beginsWithPeriod = /^\..*/.test(normalizedName);
-  if (beginsWithPeriod) {
     return false;
   }
 

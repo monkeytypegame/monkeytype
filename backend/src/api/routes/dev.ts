@@ -1,5 +1,4 @@
 import { Router } from "express";
-import { authenticateRequest } from "../../middlewares/auth";
 import {
   asyncHandler,
   validateConfiguration,
