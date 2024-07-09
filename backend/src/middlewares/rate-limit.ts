@@ -484,7 +484,7 @@ export const userRequestVerificationEmail = rateLimit({
 });
 
 export const userForgotPasswordEmail = rateLimit({
-  windowMs: ONE_HOUR_MS / 4,
+  windowMs: ONE_HOUR_MS / 60,
   max: 1 * REQUEST_MULTIPLIER,
   keyGenerator: getKeyWithUid,
   handler: customHandler,
