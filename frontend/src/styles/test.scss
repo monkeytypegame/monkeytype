@@ -295,6 +295,15 @@
         animation: var(--correct-letter-animation);
       }
     }
+    // &.highlight-word {
+    //   .word.typed.error,
+    //   .word.active:has(letter.incorrect) {
+    //     letter {
+    //       color: var(--correct-letter-color);
+    //       animation: var(--correct-letter-animation);
+    //     }
+    //   }
+    // }
   }
 
   &.flipped {
@@ -340,8 +349,8 @@
         animation: var(--correct-letter-animation);
       }
     }
-    .word.typed.error,
-    .word.active:has(letter.incorrect) {
+    &:not(.blind) .word.typed.error,
+    &:not(.blind) .word.active:has(letter.incorrect) {
       letter {
         color: var(--incorrect-letter-color);
         animation: var(--incorrect-letter-animation);
@@ -363,8 +372,8 @@
         animation: var(--correct-letter-animation);
       }
     }
-    .word.typed.error,
-    .word.active:has(letter.incorrect) {
+    &:not(.blind) .word.typed.error,
+    &:not(.blind) .word.active:has(letter.incorrect) {
       letter {
         color: var(--incorrect-letter-color);
         animation: var(--incorrect-letter-animation);
@@ -387,8 +396,8 @@
         animation: var(--correct-letter-animation);
       }
     }
-    .word.typed.error,
-    .word.active:has(letter.incorrect) {
+    &:not(.blind) .word.typed.error,
+    &:not(.blind) .word.active:has(letter.incorrect) {
       letter {
         color: var(--incorrect-letter-color);
         animation: var(--incorrect-letter-animation);
@@ -412,8 +421,8 @@
         animation: var(--correct-letter-animation);
       }
     }
-    .word.typed.error,
-    .word.active:has(letter.incorrect) {
+    &:not(.blind) .word.typed.error,
+    &:not(.blind) .word.active:has(letter.incorrect) {
       letter {
         color: var(--incorrect-letter-color);
         animation: var(--incorrect-letter-animation);
