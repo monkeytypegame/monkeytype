@@ -320,7 +320,7 @@
   },
   {
     "name": "serbian",
-    "languages": ["serbian", "serbian_latin"]
+    "languages": ["serbian", "serbian_latin", "serbian_10k", "serbian_latin_10k"]
   },
   {
     "name": "georgian",
