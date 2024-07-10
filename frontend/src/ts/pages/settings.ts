@@ -594,7 +594,7 @@ async function fillSettingsPage(): Promise<void> {
           funbox.name
         }' aria-label="${
           funbox.info
-        }" data-balloon-pos="up" data-balloon-length="fit" style="transform:scaleX(-1) scaleY(-1);">${funbox.name.replace(
+        }" data-balloon-pos="up" data-balloon-length="fit" style="transform:scaleX(-1) scaleY(-1); z-index:1;">${funbox.name.replace(
           /_/g,
           " "
         )}</div>`;
