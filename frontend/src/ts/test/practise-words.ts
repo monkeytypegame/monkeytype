@@ -104,10 +104,10 @@ export function init(missed: boolean, slow: boolean): boolean {
   UpdateConfig.setMode("custom", true);
   CustomText.setText(newCustomText);
   CustomText.setLimitMode("word");
+  CustomText.setMode("shuffle");
   CustomText.setLimitValue(
     (sortableSlowWords.length + sortableMissedWords.length) * 5
   );
-  CustomText.setMode("shuffle");
 
   setCustomTextName("practise", undefined);
 

@@ -178,7 +178,6 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
   if (typeof eventValue !== "boolean") return;
   if (eventKey === "flipTestColors") flipColors(eventValue);
   if (eventKey === "colorfulMode") colorful(eventValue);
-  if (eventKey === "highlightMode") void updateWordElement(eventValue);
   if (eventKey === "burstHeatmap") void applyBurstHeatmap();
 });
 
@@ -238,19 +237,12 @@ export function updateActiveElement(
   initial = false
 ): void {
   const active = document.querySelector("#words .active");
+  if (!backspace) {
+    active?.classList.add("typed");
+  }
   if (Config.mode === "zen" && backspace) {
     active?.remove();
   } else if (active !== null) {
-    if (
-      ["word", "next_word", "next_two_words", "next_three_words"].includes(
-        Config.highlightMode
-      ) &&
-      Config.theme !== "shadow"
-    ) {
-      active.querySelectorAll("letter").forEach((e) => {
-        e.classList.remove("correct");
-      });
-    }
     active.classList.remove("active");
   }
   const activeWord =
@@ -262,13 +254,11 @@ export function updateActiveElement(
 
   activeWord.classList.add("active");
   activeWord.classList.remove("error");
+  activeWord.classList.remove("typed");
+
   activeWordTop = (document.querySelector("#words .active") as HTMLElement)
     .offsetTop;
-  if (Config.highlightMode === "word") {
-    activeWord.querySelectorAll("letter").forEach((e) => {
-      e.classList.add("correct");
-    });
-  }
+
   if (!initial && shouldUpdateWordsInputPosition()) {
     void updateWordsInputPosition();
   }
@@ -347,7 +337,7 @@ function getWordHTML(word: string): string {
   return retval;
 }
 
-function updateWordWrapperClasses(): void {
+function updateWordWrapperClasses(initial = false): void {
   if (Config.tapeMode !== "off") {
     $("#words").addClass("tape");
     $("#wordsWrapper").addClass("tape");
@@ -382,12 +372,14 @@ function updateWordWrapperClasses(): void {
   }
 
   $("#words").attr("class", existing.join(" "));
+
+  updateWordsWidth();
+  updateWordsHeight(true);
+  void updateWordsInputPosition(initial);
 }
 
 export function showWords(): void {
   $("#words").empty();
-
-  updateWordWrapperClasses();
 
   let wordsHTML = "";
   if (Config.mode !== "zen") {
@@ -401,13 +393,12 @@ export function showWords(): void {
 
   $("#words").html(wordsHTML);
 
-  updateWordsWidth();
-  updateWordsHeight(true);
   updateActiveElement(undefined, true);
   setTimeout(() => {
     void Caret.updatePosition();
   }, 125);
-  void updateWordsInputPosition(true);
+
+  updateWordWrapperClasses(true);
 }
 
 const posUpdateLangList = ["japanese", "chinese", "korean"];
@@ -756,10 +747,7 @@ export async function screenshot(): Promise<void> {
   }, 3000);
 }
 
-export async function updateWordElement(
-  showError = !Config.blindMode,
-  inputOverride?: string
-): Promise<void> {
+export async function updateWordElement(inputOverride?: string): Promise<void> {
   const input = inputOverride ?? TestInput.input.current;
   const wordAtIndex = document.querySelector(
     "#words .word.active"
@@ -820,25 +808,12 @@ export async function updateWordElement(
       }
     }
 
-    let wordHighlightClassString = correctSoFar ? "correct" : "incorrect";
-
-    if (Config.blindMode) {
-      wordHighlightClassString = "correct";
-    }
-
     const funbox = FunboxList.get(Config.funbox).find(
       (f) => f.functions?.getWordHtml
     );
-    const isTts = FunboxList.get(Config.funbox).find((it) => it.name === "tts");
 
     for (let i = 0; i < input.length; i++) {
       const charCorrect = currentWord[i] === input[i];
-
-      let correctClass = "correct";
-      if (Config.highlightMode === "off") {
-        correctClass = "";
-        if (isTts) correctClass = "visible";
-      }
 
       let currentLetter = currentWord[i] as string;
       let tabChar = "";
@@ -857,47 +832,31 @@ export async function updateWordElement(
       }
 
       if (charCorrect) {
-        ret += `<letter class="${
-          Config.highlightMode === "word"
-            ? wordHighlightClassString
-            : correctClass
-        } ${tabChar}${nlChar}">${currentLetter}</letter>`;
+        ret += `<letter class="correct ${tabChar}${nlChar}">${currentLetter}</letter>`;
       } else if (
         currentLetter !== undefined &&
         CompositionState.getComposing() &&
         i >= CompositionState.getStartPos() &&
         !(containsKorean && !correctSoFar)
       ) {
-        ret += `<letter class="${
-          Config.highlightMode === "word" ? wordHighlightClassString : ""
-        } dead">${currentLetter}</letter>`;
-      } else if (!showError) {
-        if (currentLetter !== undefined) {
-          ret += `<letter class="${
-            Config.highlightMode === "word"
-              ? wordHighlightClassString
-              : correctClass
-          } ${tabChar}${nlChar}">${currentLetter}</letter>`;
-        }
+        ret += `<letter class="dead">${
+          Config.indicateTypos === "replace"
+            ? input[i] === " "
+              ? "_"
+              : input[i]
+            : currentLetter
+        }</letter>`;
       } else if (currentLetter === undefined) {
         if (!Config.hideExtraLetters) {
           let letter = input[i];
           if (letter === " " || letter === "\t" || letter === "\n") {
             letter = "_";
           }
-          ret += `<letter class="${
-            Config.highlightMode === "word"
-              ? wordHighlightClassString
-              : "incorrect"
-          } extra ${tabChar}${nlChar}">${letter}</letter>`;
+          ret += `<letter class="incorrect extra ${tabChar}${nlChar}">${letter}</letter>`;
         }
       } else {
         ret +=
-          `<letter class="${
-            Config.highlightMode === "word"
-              ? wordHighlightClassString
-              : "incorrect"
-          } ${tabChar}${nlChar}">` +
+          `<letter class="incorrect ${tabChar}${nlChar}">` +
           (Config.indicateTypos === "replace"
             ? input[i] === " "
               ? "_"
@@ -923,12 +882,7 @@ export async function updateWordElement(
       } else if (currentWord[i] === "\n") {
         ret += `<letter class='nlChar'><i class="fas fa-level-down-alt fa-rotate-90 fa-fw"></i></letter>`;
       } else {
-        ret +=
-          `<letter class="${
-            Config.highlightMode === "word" ? wordHighlightClassString : ""
-          }">` +
-          currentWord[i] +
-          "</letter>";
+        ret += `<letter>` + currentWord[i] + "</letter>";
       }
     }
 
