@@ -400,14 +400,7 @@ async function showCommands(): Promise<void> {
           fontFamily += " Preview";
         }
 
-        let newDisplay = display;
-        const lastIndexOfI = newDisplay.lastIndexOf("</i>");
-        newDisplay = `${newDisplay.slice(
-          0,
-          lastIndexOfI
-        )}</i><span style="font-family: ${fontFamily}">${command.display}`;
-
-        html += `<div class="command" data-command-id="${command.id}" data-index="${index}">${iconHTML}<div>${newDisplay}</div></div>`;
+        html += `<div class="command" data-command-id="${command.id}" data-index="${index}" style="font-family: ${fontFamily}">${iconHTML}<div>${display}</div></div>`;
       }
     } else {
       html += `<div class="command" data-command-id="${command.id}" data-index="${index}" style="${customStyle}">${iconHTML}<div>${display}</div></div>`;
