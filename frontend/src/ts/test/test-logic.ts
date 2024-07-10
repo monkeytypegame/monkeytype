@@ -1029,11 +1029,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
   }
 
   TodayTracker.addSeconds(
-    completedEvent.testDuration +
-      (TestStats.incompleteSeconds < 0
-        ? 0
-        : Numbers.roundTo2(TestStats.incompleteSeconds)) -
-      completedEvent.afkDuration
+    completedEvent.testDuration - completedEvent.afkDuration
   );
   Result.updateTodayTracker();
 
