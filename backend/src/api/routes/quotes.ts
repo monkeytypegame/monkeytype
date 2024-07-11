@@ -159,6 +159,7 @@ router.post(
         .string()
         .valid(
           "Grammatical error",
+          "Duplicate quote",
           "Inappropriate content",
           "Low quality content",
           "Incorrect source"
