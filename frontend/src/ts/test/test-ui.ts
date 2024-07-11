@@ -242,7 +242,7 @@ export function updateActiveElement(
   }
   if (Config.mode === "zen" && backspace) {
     active?.remove();
-  } else if (active !== null) {
+  } else if (active !== null && !initial) {
     active.classList.remove("active");
   }
   const activeWord =
