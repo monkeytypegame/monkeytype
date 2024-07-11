@@ -17,7 +17,7 @@ export async function generatePreviewFonts(debug) {
   for (const font of Fonts) {
     if (font.systemFont) continue;
 
-    const display = font.display || font.name;
+    const display = (font.display || font.name) + "Fontfamily";
 
     const fileNames = srcFiles.filter((it) =>
       it.startsWith(font.name.replaceAll(" ", "") + "-")
