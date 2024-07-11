@@ -9,6 +9,7 @@ import * as Notifications from "../elements/notifications";
 import * as ConnectionState from "../states/connection";
 import { escapeHTML } from "../utils/misc";
 import AnimatedModal from "../utils/animated-modal";
+import { updateXp as accountPageUpdateProfile } from "./profile";
 
 let accountAlerts: MonkeyTypes.MonkeyMail[] = [];
 let maxMail = 0;
@@ -88,6 +89,7 @@ function hide(): void {
       if (totalXpClaimed > 0) {
         const snapxp = DB.getSnapshot()?.xp ?? 0;
         void AccountButton.updateXpBar(snapxp, totalXpClaimed);
+        accountPageUpdateProfile(snapxp + totalXpClaimed);
         DB.addXp(totalXpClaimed);
       }
     },
