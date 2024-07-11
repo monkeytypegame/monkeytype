@@ -293,27 +293,7 @@ export async function update(
     }
   }
 
-  const xp = profile.xp ?? 0;
-  const xpDetails = Levels.getXpDetails(xp);
-  const xpForLevel = xpDetails.levelMaxXp;
-  const xpToDisplay = xpDetails.levelCurrentXp;
-  details
-    .find(".level")
-    .text(xpDetails.level)
-    .attr("aria-label", `${formatXp(xp)} total xp`);
-  details
-    .find(".xp")
-    .text(`${formatXp(xpToDisplay)}/${formatXp(xpForLevel)}`)
-    .attr(
-      "aria-label",
-      `${formatXp(xpForLevel - xpToDisplay)} xp until next level`
-    );
-  details
-    .find(".xpBar .bar")
-    .css("width", `${(xpToDisplay / xpForLevel) * 100}%`);
-  details
-    .find(".xpBar")
-    .attr("aria-label", `${((xpToDisplay / xpForLevel) * 100).toFixed(2)}%`);
+  updateXp(profile.xp ?? 0);
   //lbs
 
   if (banned) {
@@ -393,6 +373,31 @@ export async function update(
   } else if (socials && bioAndKey) {
     details.addClass("both");
   }
+}
+
+export function updateXp(xp: number): void {
+  const details = $(" .profile .details .levelAndBar");
+  if (details === undefined || details === null) return;
+  const xpDetails = Levels.getXpDetails(xp);
+  const xpForLevel = xpDetails.levelMaxXp;
+  const xpToDisplay = xpDetails.levelCurrentXp;
+  details
+    .find(".level")
+    .text(xpDetails.level)
+    .attr("aria-label", `${formatXp(xp)} total xp`);
+  details
+    .find(".xp")
+    .text(`${formatXp(xpToDisplay)}/${formatXp(xpForLevel)}`)
+    .attr(
+      "aria-label",
+      `${formatXp(xpForLevel - xpToDisplay)} xp until next level`
+    );
+  details
+    .find(".xpBar .bar")
+    .css("width", `${(xpToDisplay / xpForLevel) * 100}%`);
+  details
+    .find(".xpBar")
+    .attr("aria-label", `${((xpToDisplay / xpForLevel) * 100).toFixed(2)}%`);
 }
 
 export function updateNameFontSize(where: ProfileViewPaths): void {
