@@ -76,7 +76,11 @@ export async function updatePosition(noAnim = false): Promise<void> {
     Config.caretStyle
   );
 
-  const wordLen = TestWords.words.getCurrent().length;
+  const wordLen = (
+    Config.mode === "zen"
+      ? TestInput.input.history
+      : TestWords.words.getCurrent()
+  ).length;
   const inputLen = TestInput.input.current.length;
   const activeWordEl = document?.querySelector("#words .active") as HTMLElement;
   //insert temporary character so the caret will work in zen mode
@@ -98,12 +102,11 @@ export async function updatePosition(noAnim = false): Promise<void> {
     | HTMLElement
     | undefined;
 
-  const previousLetter: HTMLElement = currentWordNodeList[
-    inputLen - 1
-  ] as HTMLElement;
+  const previousLetter = currentWordNodeList[inputLen - 1] as
+    | HTMLElement
+    | undefined;
 
   const lastWordLetter = currentWordNodeList[wordLen - 1] as HTMLElement;
-
   const currentLanguage = await JSONData.getCurrentLanguage(Config.language);
   const isLanguageRightToLeft = currentLanguage.rightToLeft;
   const letterPosLeft = getTargetPositionLeft(
@@ -116,19 +119,19 @@ export async function updatePosition(noAnim = false): Promise<void> {
   );
 
   const letterPosTop =
-    currentLetter?.offsetTop ||
-    previousLetter?.offsetTop ||
+    currentLetter?.offsetTop ??
+    previousLetter?.offsetTop ??
     lastWordLetter?.offsetTop;
 
   const letterHeight =
-    currentLetter?.offsetHeight ||
-    previousLetter?.offsetHeight ||
-    lastWordLetter?.offsetHeight ||
+    currentLetter?.offsetHeight ??
+    previousLetter?.offsetHeight ??
+    lastWordLetter?.offsetHeight ??
     Config.fontSize * Numbers.convertRemToPixels(1);
 
   const letterWidth =
-    currentLetter?.offsetWidth ||
-    previousLetter?.offsetWidth ||
+    currentLetter?.offsetWidth ??
+    previousLetter?.offsetWidth ??
     lastWordLetter?.offsetWidth;
 
   const diff = letterHeight - caret.offsetHeight;
