@@ -337,7 +337,7 @@ function getWordHTML(word: string): string {
   return retval;
 }
 
-function updateWordWrapperClasses(initial = false): void {
+function updateWordWrapperClasses(): void {
   if (Config.tapeMode !== "off") {
     $("#words").addClass("tape");
     $("#wordsWrapper").addClass("tape");
@@ -375,7 +375,9 @@ function updateWordWrapperClasses(initial = false): void {
 
   updateWordsWidth();
   updateWordsHeight(true);
-  void updateWordsInputPosition(initial);
+  setTimeout(() => {
+    void updateWordsInputPosition(true);
+  }, 250);
 }
 
 export function showWords(): void {
@@ -398,7 +400,7 @@ export function showWords(): void {
     void Caret.updatePosition();
   }, 125);
 
-  updateWordWrapperClasses(true);
+  updateWordWrapperClasses();
 }
 
 const posUpdateLangList = ["japanese", "chinese", "korean"];
