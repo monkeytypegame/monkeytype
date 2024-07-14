@@ -41,6 +41,12 @@ async function setup(modalEl: HTMLElement): Promise<void> {
       );
       setMediaQueryDebugLevel(mediaQueryDebugLevel);
     });
+  modalEl
+    .querySelector(".showRealWordsInput")
+    ?.addEventListener("click", () => {
+      $("#wordsInput").css("opacity", "1");
+      void modal.hide();
+    });
 }
 
 const modal = new AnimatedModal({
