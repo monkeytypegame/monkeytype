@@ -1,5 +1,5 @@
 {
-  "name": "serbian_latin",
+  "name": "serbian_latin_10k",
   "additionalAccents": [["đ", "dj"]],
   "words": [
     "je",
