@@ -65,6 +65,9 @@ export function buildClient<T extends AppRouter>(
     baseUrl: baseUrl,
     jsonQuery: true,
     api: buildApi(timeout),
+    baseHeaders: {
+      Accept: "application/json",
+    },
   });
 }
 /* eslint-enable @typescript-eslint/explicit-function-return-type */
