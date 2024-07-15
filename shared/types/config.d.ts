@@ -3,8 +3,8 @@ declare namespace SharedTypes.Config {
   type QuickRestart = import("../schemas/config").QuickRestart;
   type QuoteLength = import("../schemas/config").QuoteLength;
   type CaretStyle = import("../schemas/config").CaretStyle;
-  type Difficulty = import("../schemas/types").Difficulty;
-  type Mode = import("../schemas/types").Mode;
+  type Difficulty = import("../schemas/config").Difficulty;
+  type Mode = import("../schemas/config").Mode;
   type Mode2<M extends Mode> = M extends M ? keyof PersonalBests[M] : never;
   type Mode2Custom<M extends Mode> = Mode2<M> | "custom";
   type ConfidenceMode = import("../schemas/config").ConfidenceMode;

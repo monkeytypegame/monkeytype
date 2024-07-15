@@ -111,11 +111,11 @@ declare namespace SharedTypes {
     };
   }
 
-  type StringNumber = import("../schemas/types").StringNumber;
+  type StringNumber = import("../schemas/util").StringNumber;
 
-  type PersonalBest = import("../schemas/types").PersonalBest;
+  type PersonalBest = import("../schemas/users").PersonalBest;
 
-  type PersonalBests = import("../schemas/types").PersonalBests;
+  type PersonalBests = import("../schemas/users").PersonalBests;
 
   interface IncompleteTest {
     acc: number;

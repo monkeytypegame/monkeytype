@@ -544,7 +544,7 @@ async function fillContent(): Promise<void> {
           histogramChartData.push(0);
         }
       }
-      histogramChartData[bucket]++;
+      (histogramChartData[bucket] as number)++;
 
       let tt = 0;
       if (

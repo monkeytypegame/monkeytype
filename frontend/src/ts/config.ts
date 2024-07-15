@@ -18,7 +18,6 @@ import {
 } from "./test/funbox/funbox-validation";
 import { reloadAfter } from "./utils/misc";
 import * as Config from "shared/schemas/config";
-import * as SharedContractTypes from "shared/schemas/types";
 
 import type {
   PartialConfig,
@@ -111,11 +110,8 @@ export function setPunctuation(punc: boolean, nosave?: boolean): boolean {
   return true;
 }
 
-export function setMode(
-  mode: SharedContractTypes.Mode,
-  nosave?: boolean
-): boolean {
-  if (!isConfigValueValid("mode", mode, SharedContractTypes.ModeSchema)) {
+export function setMode(mode: Config.Mode, nosave?: boolean): boolean {
+  if (!isConfigValueValid("mode", mode, Config.ModeSchema)) {
     return false;
   }
 
@@ -201,16 +197,10 @@ export function setSoundVolume(
 
 //difficulty
 export function setDifficulty(
-  diff: SharedContractTypes.Difficulty,
+  diff: Config.Difficulty,
   nosave?: boolean
 ): boolean {
-  if (
-    !isConfigValueValid(
-      "difficulty",
-      diff,
-      SharedContractTypes.DifficultySchema
-    )
-  ) {
+  if (!isConfigValueValid("difficulty", diff, Config.DifficultySchema)) {
     return false;
   }
 

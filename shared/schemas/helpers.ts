@@ -1,5 +1,5 @@
 import { ZodSchema, ZodString, z } from "zod";
-import { MonkeyResponseSchema } from "./types";
+import { MonkeyResponseSchema } from "./util";
 
 export const token = (): ZodString => z.string().regex(/^[a-zA-Z0-9_]+$/);
 

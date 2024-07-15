@@ -11,6 +11,7 @@ import {
   CustomBackgroundSizeSchema,
   CustomLayoutFluidSchema,
   CustomThemeColorsSchema,
+  DifficultySchema,
   FavThemesSchema,
   FontFamilySchema,
   FontSizeSchema,
@@ -32,6 +33,7 @@ import {
   MinimumBurstCustomSpeedSchema,
   MinimumBurstSchema,
   MinimumWordsPerMinuteSchema,
+  ModeSchema,
   MonkeyPowerLevelSchema,
   OppositeShiftModeSchema,
   PaceCaretCustomSpeedSchema,
@@ -57,16 +59,14 @@ import {
   WordCountSchema,
 } from "../schemas/config";
 
+import { responseWithNullableData } from "../schemas/helpers";
 import {
-  DifficultySchema,
   Metadata,
-  ModeSchema,
   MonkeyClientError,
   MonkeyResponseSchema,
   MonkeyServerError,
   MonkeyValidationErrorSchema,
-} from "../schemas/types";
-import { responseWithNullableData } from "../schemas/helpers";
+} from "../schemas/util";
 
 export const ConfigSchema = z
   .object({
