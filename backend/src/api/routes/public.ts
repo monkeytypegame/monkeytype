@@ -1,7 +1,7 @@
 import { Router } from "express";
 import * as PublicController from "../controllers/public";
 import * as RateLimit from "../../middlewares/rate-limit";
-import { asyncHandler, validateRequest } from "../../middlewares/api-utils";
+import { asyncHandler, validateRequest } from "../../middlewares/utility";
 import joi from "joi";
 
 const GET_MODE_STATS_VALIDATION_SCHEMA = {

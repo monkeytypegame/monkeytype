@@ -3,7 +3,7 @@ import { authenticateRequest } from "../../middlewares/auth";
 import * as PresetController from "../controllers/preset";
 import * as RateLimit from "../../middlewares/rate-limit";
 import configSchema from "../schemas/config-schema";
-import { asyncHandler, validateRequest } from "../../middlewares/api-utils";
+import { asyncHandler, validateRequest } from "../../middlewares/utility";
 import { Router } from "express";
 
 const router = Router();

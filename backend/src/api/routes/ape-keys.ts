@@ -5,7 +5,7 @@ import {
   checkUserPermissions,
   validateConfiguration,
   validateRequest,
-} from "../../middlewares/api-utils";
+} from "../../middlewares/utility";
 import { authenticateRequest } from "../../middlewares/auth";
 import * as ApeKeyController from "../controllers/ape-key";
 import * as RateLimit from "../../middlewares/rate-limit";

@@ -7,7 +7,7 @@ import {
   validateRequest,
   validateConfiguration,
   checkUserPermissions,
-} from "../../middlewares/api-utils";
+} from "../../middlewares/utility";
 import * as RateLimit from "../../middlewares/rate-limit";
 import { withApeRateLimiter } from "../../middlewares/ape-rate-limit";
 import { containsProfanity, isUsernameValid } from "../../utils/validation";

@@ -8,7 +8,7 @@ import {
   asyncHandler,
   validateRequest,
   validateConfiguration,
-} from "../../middlewares/api-utils";
+} from "../../middlewares/utility";
 
 const BASE_LEADERBOARD_VALIDATION_SCHEMA = {
   language: joi

@@ -8,7 +8,7 @@ import {
   checkUserPermissions,
   validateConfiguration,
   validateRequest,
-} from "../../middlewares/api-utils";
+} from "../../middlewares/utility";
 
 const router = Router();
 

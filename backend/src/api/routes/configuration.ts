@@ -5,7 +5,7 @@ import {
   checkIfUserIsAdmin,
   useInProduction,
   validateRequest,
-} from "../../middlewares/api-utils";
+} from "../../middlewares/utility";
 import * as ConfigurationController from "../controllers/configuration";
 import { authenticateRequest } from "../../middlewares/auth";
 import { adminLimit } from "../../middlewares/rate-limit";

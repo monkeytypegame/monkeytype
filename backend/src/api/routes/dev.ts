@@ -3,7 +3,7 @@ import {
   asyncHandler,
   validateConfiguration,
   validateRequest,
-} from "../../middlewares/api-utils";
+} from "../../middlewares/utility";
 import joi from "joi";
 import { createTestData } from "../controllers/dev";
 import { isDevEnvironment } from "../../utils/misc";

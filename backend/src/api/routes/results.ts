@@ -4,7 +4,7 @@ import {
   asyncHandler,
   validateRequest,
   validateConfiguration,
-} from "../../middlewares/api-utils";
+} from "../../middlewares/utility";
 import * as RateLimit from "../../middlewares/rate-limit";
 import { Router } from "express";
 import { authenticateRequest } from "../../middlewares/auth";
