@@ -274,7 +274,7 @@ export async function addResultFilterPreset(
   if (maxFiltersPerUser === 0) {
     throw new MonkeyError(
       409,
-      "Maximum number of custom filters reached for user",
+      "Maximum number of custom filters reached",
       "add result filter preset"
     );
   }
@@ -288,7 +288,7 @@ export async function addResultFilterPreset(
     { $push: { resultFilterPresets: { ...resultFilter, _id } } },
     {
       statusCode: 409,
-      message: "Maximum number of custom filters reached for user",
+      message: "Maximum number of custom filters reached",
       stack: "add result filter preset",
     }
   );
@@ -300,11 +300,11 @@ export async function removeResultFilterPreset(
   uid: string,
   _id: string
 ): Promise<void> {
-  const filterId = new ObjectId(_id);
+  const presetId = new ObjectId(_id);
 
   await updateUser(
-    { uid, "resultFilterPresets._id": filterId },
-    { $pull: { resultFilterPresets: { _id: filterId } } },
+    { uid, "resultFilterPresets._id": presetId },
+    { $pull: { resultFilterPresets: { _id: presetId } } },
     {
       statusCode: 404,
       message: "Custom filter not found",
@@ -334,7 +334,7 @@ export async function addTag(
     { $push: { tags: toPush } },
     {
       statusCode: 400,
-      message: "Maximum number of tags reached for user",
+      message: "Maximum number of tags reached",
       stack: "add tag",
     }
   );
@@ -353,30 +353,30 @@ export async function editTag(
   _id: string,
   name: string
 ): Promise<void> {
-  const filterId = new ObjectId(_id);
+  const tagId = new ObjectId(_id);
 
   await updateUser(
-    { uid, "tags._id": filterId },
+    { uid, "tags._id": tagId },
     { $set: { "tags.$.name": name } },
     { statusCode: 404, message: "Tag not found", stack: "edit tag" }
   );
 }
 
 export async function removeTag(uid: string, _id: string): Promise<void> {
-  const filterId = new ObjectId(_id);
+  const tagId = new ObjectId(_id);
 
   await updateUser(
-    { uid, "tags._id": filterId },
-    { $pull: { tags: { _id: filterId } } },
+    { uid, "tags._id": tagId },
+    { $pull: { tags: { _id: tagId } } },
     { statusCode: 404, message: "Tag not found", stack: "remove tag" }
   );
 }
 
 export async function removeTagPb(uid: string, _id: string): Promise<void> {
-  const filterId = new ObjectId(_id);
+  const tagId = new ObjectId(_id);
 
   await updateUser(
-    { uid, "tags._id": filterId },
+    { uid, "tags._id": tagId },
     {
       $set: {
         "tags.$.personalBests": {
@@ -661,7 +661,7 @@ export async function addTheme(
     },
     {
       statusCode: 409,
-      message: "Maximum number of custom themes reached for user",
+      message: "Maximum number of custom themes reached",
       stack: "add theme",
     }
   );
@@ -673,10 +673,10 @@ export async function addTheme(
 }
 
 export async function removeTheme(uid: string, id: string): Promise<void> {
-  const filterId = new ObjectId(id);
+  const themeId = new ObjectId(id);
   await updateUser(
-    { uid, "customThemes._id": filterId },
-    { $pull: { customThemes: { _id: filterId } } },
+    { uid, "customThemes._id": themeId },
+    { $pull: { customThemes: { _id: themeId } } },
     {
       statusCode: 404,
       message: "Custom theme not found",
@@ -690,10 +690,10 @@ export async function editTheme(
   id: string,
   { name, colors }: Omit<SharedTypes.CustomTheme, "_id">
 ): Promise<void> {
-  const filterId = new ObjectId(id);
+  const themeId = new ObjectId(id);
 
   await updateUser(
-    { uid, "customThemes._id": filterId },
+    { uid, "customThemes._id": themeId },
     {
       $set: {
         "customThemes.$.name": name,
@@ -782,7 +782,7 @@ export async function addFavoriteQuote(
     },
     {
       statusCode: 409,
-      message: "Maximum number of favorite quotes reached for user",
+      message: "Maximum number of favorite quotes reached",
       stack: "add favorite quote",
     }
   );

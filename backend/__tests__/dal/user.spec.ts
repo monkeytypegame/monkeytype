@@ -358,7 +358,7 @@ describe("UserDal", () => {
       await expect(
         UserDAL.addResultFilterPreset("non existing uid", mockResultFilter, 5)
       ).rejects.toThrow(
-        "Maximum number of custom filters reached for user\nStack: add result filter preset"
+        "Maximum number of custom filters reached\nStack: add result filter preset"
       );
     });
 
@@ -372,7 +372,7 @@ describe("UserDal", () => {
       await expect(
         UserDAL.addResultFilterPreset(uid, mockResultFilter, 1)
       ).rejects.toThrow(
-        "Maximum number of custom filters reached for user\nStack: add result filter preset"
+        "Maximum number of custom filters reached\nStack: add result filter preset"
       );
     });
 
@@ -384,7 +384,7 @@ describe("UserDal", () => {
       await expect(
         UserDAL.addResultFilterPreset(uid, mockResultFilter, 0)
       ).rejects.toThrow(
-        "Maximum number of custom filters reached for user\nStack: add result filter preset"
+        "Maximum number of custom filters reached\nStack: add result filter preset"
       );
     });
 
@@ -453,9 +453,7 @@ describe("UserDal", () => {
       // when, then
       await expect(
         UserDAL.addTag("non existing uid", "tagName")
-      ).rejects.toThrow(
-        "Maximum number of tags reached for user\nStack: add tag"
-      );
+      ).rejects.toThrow("Maximum number of tags reached\nStack: add tag");
     });
 
     it("should return error if user has reached maximum", async () => {
@@ -470,7 +468,7 @@ describe("UserDal", () => {
 
       // when, then
       await expect(UserDAL.addTag(uid, "new")).rejects.toThrow(
-        "Maximum number of tags reached for user\nStack: add tag"
+        "Maximum number of tags reached\nStack: add tag"
       );
     });
 
@@ -1747,7 +1745,7 @@ describe("UserDal", () => {
       await expect(
         UserDAL.addTheme("non existing uid", { name: "new", colors: [] })
       ).rejects.toThrow(
-        "Maximum number of custom themes reached for user\nStack: add theme"
+        "Maximum number of custom themes reached\nStack: add theme"
       );
     });
 
@@ -1765,7 +1763,7 @@ describe("UserDal", () => {
       await expect(
         UserDAL.addTheme(uid, { name: "new", colors: [] })
       ).rejects.toThrow(
-        "Maximum number of custom themes reached for user\nStack: add theme"
+        "Maximum number of custom themes reached\nStack: add theme"
       );
     });
 
@@ -1919,7 +1917,7 @@ describe("UserDal", () => {
       await expect(
         UserDAL.addFavoriteQuote("non existing uid", "english", "1", 5)
       ).rejects.toThrow(
-        "Maximum number of favorite quotes reached for user\nStack: add favorite quote"
+        "Maximum number of favorite quotes reached\nStack: add favorite quote"
       );
     });
 
@@ -1937,7 +1935,7 @@ describe("UserDal", () => {
       await expect(
         UserDAL.addFavoriteQuote(uid, "polish", "6", 5)
       ).rejects.toThrow(
-        "Maximum number of favorite quotes reached for user\nStack: add favorite quote"
+        "Maximum number of favorite quotes reached\nStack: add favorite quote"
       );
     });
 
