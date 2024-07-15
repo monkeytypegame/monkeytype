@@ -534,6 +534,10 @@
     "languages": ["lorem_ipsum"]
   },
   {
+    "name": "occitan",
+    "languages": ["occitan", "occitan_1k", "occitan_2k", "occitan_5k", "occitan_10k"]
+  },  
+  {
     "name": "code",
     "languages": [
       "code_python",
