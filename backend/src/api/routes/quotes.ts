@@ -5,7 +5,7 @@ import * as QuoteController from "../controllers/quote";
 import * as RateLimit from "../../middlewares/rate-limit";
 import { checkUserPermissions } from "../../middlewares/permission";
 import { asyncHandler } from "../../middlewares/utility";
-import { validateConfiguration } from "../../middlewares/configuration";
+import { validate } from "../../middlewares/configuration";
 import { validateRequest } from "../../middlewares/validation";
 
 const router = Router();
@@ -38,7 +38,7 @@ router.get(
 
 router.post(
   "/",
-  validateConfiguration({
+  validate({
     criteria: (configuration) => {
       return configuration.quotes.submissionsEnabled;
     },
@@ -138,7 +138,7 @@ const withCustomMessages = joi.string().messages({
 
 router.post(
   "/report",
-  validateConfiguration({
+  validate({
     criteria: (configuration) => {
       return configuration.quotes.reporting.enabled;
     },

@@ -4,7 +4,7 @@ import * as RateLimit from "../../middlewares/rate-limit";
 import { withApeRateLimiter } from "../../middlewares/ape-rate-limit";
 import { authenticateRequest } from "../../middlewares/auth";
 import * as LeaderboardController from "../controllers/leaderboard";
-import { validateConfiguration } from "../../middlewares/configuration";
+import { validate } from "../../middlewares/configuration";
 import { validateRequest } from "../../middlewares/validation";
 import { asyncHandler } from "../../middlewares/utility";
 
@@ -37,7 +37,7 @@ const DAILY_LEADERBOARD_VALIDATION_SCHEMA = {
 
 const router = Router();
 
-const requireDailyLeaderboardsEnabled = validateConfiguration({
+const requireDailyLeaderboardsEnabled = validate({
   criteria: (configuration) => {
     return configuration.dailyLeaderboards.enabled;
   },
@@ -96,7 +96,7 @@ const WEEKLY_XP_LEADERBOARD_VALIDATION_SCHEMA = {
   weeksBefore: joi.number().min(1).max(1),
 };
 
-const requireWeeklyXpLeaderboardEnabled = validateConfiguration({
+const requireWeeklyXpLeaderboardEnabled = validate({
   criteria: (configuration) => {
     return configuration.leaderboards.weeklyXp.enabled;
   },

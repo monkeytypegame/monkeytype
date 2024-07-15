@@ -10,7 +10,7 @@ export type ValidationOptions<T> = {
  * This utility checks that the server's configuration matches
  * the criteria.
  */
-export function validateConfiguration(
+export function validate(
   options: ValidationOptions<SharedTypes.Configuration>
 ): RequestHandler {
   const {

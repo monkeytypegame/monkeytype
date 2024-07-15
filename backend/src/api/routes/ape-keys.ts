@@ -4,7 +4,7 @@ import { authenticateRequest } from "../../middlewares/auth";
 import * as ApeKeyController from "../controllers/ape-key";
 import * as RateLimit from "../../middlewares/rate-limit";
 import { checkUserPermissions } from "../../middlewares/permission";
-import { validateConfiguration } from "../../middlewares/configuration";
+import { validate } from "../../middlewares/configuration";
 import { asyncHandler } from "../../middlewares/utility";
 import { validateRequest } from "../../middlewares/validation";
 
@@ -28,7 +28,7 @@ const checkIfUserCanManageApeKeys = checkUserPermissions({
 const router = Router();
 
 router.use(
-  validateConfiguration({
+  validate({
     criteria: (configuration) => {
       return configuration.apeKeys.endpointsEnabled;
     },

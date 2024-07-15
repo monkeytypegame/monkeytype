@@ -2,14 +2,14 @@ import { Router } from "express";
 import joi from "joi";
 import { createTestData } from "../controllers/dev";
 import { isDevEnvironment } from "../../utils/misc";
-import { validateConfiguration } from "../../middlewares/configuration";
+import { validate } from "../../middlewares/configuration";
 import { validateRequest } from "../../middlewares/validation";
 import { asyncHandler } from "../../middlewares/utility";
 
 const router = Router();
 
 router.use(
-  validateConfiguration({
+  validate({
     criteria: () => {
       return isDevEnvironment();
     },

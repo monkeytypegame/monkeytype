@@ -7,7 +7,7 @@ import joi from "joi";
 import { withApeRateLimiter } from "../../middlewares/ape-rate-limit";
 import { validateRequest } from "../../middlewares/validation";
 import { asyncHandler } from "../../middlewares/utility";
-import { validateConfiguration } from "../../middlewares/configuration";
+import { validate } from "../../middlewares/configuration";
 
 const router = Router();
 
@@ -29,7 +29,7 @@ router.get(
 
 router.post(
   "/",
-  validateConfiguration({
+  validate({
     criteria: (configuration) => {
       return configuration.results.savingEnabled;
     },

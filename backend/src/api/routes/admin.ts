@@ -5,7 +5,7 @@ import * as AdminController from "../controllers/admin";
 import { adminLimit } from "../../middlewares/rate-limit";
 import { sendForgotPasswordEmail, toggleBan } from "../controllers/user";
 import joi from "joi";
-import { validateConfiguration } from "../../middlewares/configuration";
+import { validate } from "../../middlewares/configuration";
 import { checkIfUserIsAdmin } from "../../middlewares/permission";
 import { asyncHandler } from "../../middlewares/utility";
 import { validateRequest } from "../../middlewares/validation";
@@ -13,7 +13,7 @@ import { validateRequest } from "../../middlewares/validation";
 const router = Router();
 
 router.use(
-  validateConfiguration({
+  validate({
     criteria: (configuration) => {
       return configuration.admin.endpointsEnabled;
     },
