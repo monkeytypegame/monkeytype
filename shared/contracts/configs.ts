@@ -206,7 +206,7 @@ export const configsContract = c.router(
     pathPrefix: "/configs",
     strictStatusCodes: true,
     metadata: {
-      tags: "configs",
+      openApiTags: "configs",
     } as Metadata,
 
     commonResponses: {

@@ -90,9 +90,11 @@ function addAuth(metadata: Metadata | undefined): Object {
 }
 
 function addTags(metadata: Metadata | undefined): Object {
-  if (metadata === undefined || metadata.tags === undefined) return {};
+  if (metadata === undefined || metadata.openApiTags === undefined) return {};
   return {
-    tags: Array.isArray(metadata.tags) ? metadata.tags : [metadata.tags],
+    tags: Array.isArray(metadata.openApiTags)
+      ? metadata.openApiTags
+      : [metadata.openApiTags],
   };
 }
 

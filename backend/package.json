@@ -61,7 +61,7 @@
     "zod": "3.23.8"
   },
   "devDependencies": {
-    "@redocly/cli": "1.17.1",
+    "@redocly/cli": "1.18.0",
     "@types/bcrypt": "5.0.0",
     "@types/cors": "2.8.12",
     "@types/cron": "1.7.3",
