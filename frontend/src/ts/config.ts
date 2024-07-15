@@ -17,13 +17,13 @@ import {
   canSetFunboxWithConfig,
 } from "./test/funbox/funbox-validation";
 import { reloadAfter } from "./utils/misc";
-import * as Config from "shared/contract/shared/config";
-import * as SharedContractTypes from "shared/contract/shared/types";
+import * as Config from "shared/schemas/config";
+import * as SharedContractTypes from "shared/schemas/types";
 
 import type {
   PartialConfig,
   Config as ConfigType,
-} from "shared/contract/configs.contract";
+} from "shared/contracts/configs";
 
 export let localStorageConfig: SharedTypes.Config;
 

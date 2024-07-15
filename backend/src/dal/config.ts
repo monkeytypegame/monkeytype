@@ -1,7 +1,7 @@
 import { Collection, UpdateResult } from "mongodb";
 import * as db from "../init/db";
 import _ from "lodash";
-import { Config, PartialConfig } from "shared/contract/configs.contract";
+import { Config, PartialConfig } from "shared/contracts/configs";
 
 const configLegacyProperties = [
   "swapEscAndTab",

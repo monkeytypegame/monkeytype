@@ -55,7 +55,7 @@ import {
   TimerStyleSchema,
   TypingSpeedUnitSchema,
   WordCountSchema,
-} from "./shared/config";
+} from "../schemas/config";
 
 import {
   DifficultySchema,
@@ -65,8 +65,8 @@ import {
   MonkeyResponseSchema,
   MonkeyServerError,
   MonkeyValidationErrorSchema,
-} from "./shared/types";
-import { responseWithNullableData } from "./shared/helpers";
+} from "../schemas/types";
+import { responseWithNullableData } from "../schemas/helpers";
 
 export const ConfigSchema = z
   .object({

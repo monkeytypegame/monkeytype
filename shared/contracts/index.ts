@@ -1,5 +1,5 @@
 import { initContract } from "@ts-rest/core";
-import { configsContract } from "./configs.contract";
+import { configsContract } from "./configs";
 
 const c = initContract();
 

@@ -1,7 +1,4 @@
-import {
-  GetConfigResponse,
-  PartialConfig,
-} from "shared/contract/configs.contract";
+import { GetConfigResponse, PartialConfig } from "shared/contracts/configs";
 import * as ConfigDAL from "../../dal/config";
 import { MonkeyResponse2 } from "../../utils/monkey-response";
 

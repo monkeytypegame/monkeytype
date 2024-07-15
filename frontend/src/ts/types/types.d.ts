@@ -233,7 +233,7 @@ declare namespace MonkeyTypes {
     filterPresets: SharedTypes.ResultFilters[];
     isPremium: boolean;
     streakHourOffset?: number;
-    config: import("shared/contract/configs.contract").Config;
+    config: import("shared/contracts/configs").Config;
     tags: UserTag[];
     presets: SnapshotPreset[];
     results?: SharedTypes.Result<SharedTypes.Config.Mode>[];

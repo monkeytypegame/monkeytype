@@ -1,4 +1,4 @@
-import { Config } from "shared/contract/configs.contract";
+import { Config } from "shared/contracts/configs";
 
 export default {
   theme: "serika_dark",

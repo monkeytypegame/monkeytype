@@ -111,11 +111,11 @@ declare namespace SharedTypes {
     };
   }
 
-  type StringNumber = import("../contract/shared/types").StringNumber;
+  type StringNumber = import("../schemas/types").StringNumber;
 
-  type PersonalBest = import("../contract/shared/types").PersonalBest;
+  type PersonalBest = import("../schemas/types").PersonalBest;
 
-  type PersonalBests = import("../contract/shared/types").PersonalBests;
+  type PersonalBests = import("../schemas/types").PersonalBests;
 
   interface IncompleteTest {
     acc: number;
@@ -329,7 +329,7 @@ declare namespace SharedTypes {
     lastUsedOn: number;
   }
 
-  type Config = import("../contract/configs.contract").Config;
+  type Config = import("../contracts/configs").Config;
 
   type ConfigValue = Config[keyof Config];
 

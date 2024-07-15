@@ -1,7 +1,7 @@
 import { generateOpenApi } from "@ts-rest/open-api";
-import { contract } from "../../shared/contract/index.contract";
+import { contract } from "../../shared/contracts/index";
 import { writeFileSync, mkdirSync } from "fs";
-import { Metadata } from "../../shared/contract/shared/types";
+import { Metadata } from "../../shared/schemas/types";
 
 type SecurityRequirementObject = {
   [name: string]: string[];
