@@ -16,7 +16,7 @@ import { version } from "../../version";
 import leaderboards from "./leaderboards";
 import addSwaggerMiddlewares from "./swagger";
 import { asyncHandler } from "../../middlewares/api-utils";
-import { MonkeyResponse, MonkeyResponse2 } from "../../utils/monkey-response";
+import { MonkeyResponse } from "../../utils/monkey-response";
 import { recordClientVersion } from "../../utils/prometheus";
 import {
   Application,
@@ -29,15 +29,10 @@ import {
 import { isDevEnvironment } from "../../utils/misc";
 import { getLiveConfiguration } from "../../init/configuration";
 import Logger from "../../utils/logger";
-import {
-  TsRestRequest,
-  createExpressEndpoints,
-  initServer,
-} from "@ts-rest/express";
+import { createExpressEndpoints, initServer } from "@ts-rest/express";
 import { configsRoutes } from "./configs";
 import { ZodIssue } from "zod";
 import { MonkeyValidationError } from "shared/schemas/types";
-import { AppRoute, AppRouter } from "@ts-rest/core";
 import { addRedocMiddlewares } from "./redoc";
 import { authenticateTsRestRequest } from "../../middlewares/auth";
 
