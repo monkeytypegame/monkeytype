@@ -33,11 +33,10 @@ function buildApi(timeout: number): (args: ApiFetcherArgs) => Promise<{
         body: request.body,
       });
       const body = await response.json();
-      if (response.status !== 200) {
+      if (response.status >= 400) {
         console.error(`${request.method} ${request.path} failed`, {
           status: response.status,
-          message: body.message,
-          validationErrors: body.validationErrors,
+          ...body,
         });
       }
 
