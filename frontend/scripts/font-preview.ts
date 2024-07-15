@@ -1,13 +1,15 @@
 import * as fs from "fs";
 import * as path from "path";
 import { fileURLToPath } from "url";
-import Fonts from "../static/fonts/_list.json" assert { type: "json" };
+import Fonts from "../static/fonts/_list.json";
 import subsetFont from "subset-font";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-export async function generatePreviewFonts(debug) {
+export async function generatePreviewFonts(
+  debug: boolean = false
+): Promise<void> {
   const srcDir = __dirname + "/../static/webfonts";
   const targetDir = __dirname + "/../static/webfonts-preview";
   fs.mkdirSync(targetDir, { recursive: true });
@@ -17,7 +19,7 @@ export async function generatePreviewFonts(debug) {
   for (const font of Fonts) {
     if (font.systemFont) continue;
 
-    const display = (font.display || font.name) + "Fontfamily";
+    const display = (font.display ?? font.name) + "Fontfamily";
 
     const fileNames = srcFiles.filter((it) =>
       it.startsWith(font.name.replaceAll(" ", "") + "-")
@@ -29,7 +31,7 @@ export async function generatePreviewFonts(debug) {
       );
     const fileName = fileNames[0];
 
-    generateSubset(
+    await generateSubset(
       srcDir + "/" + fileName,
       targetDir + "/" + fileName,
       display
@@ -42,7 +44,7 @@ export async function generatePreviewFonts(debug) {
   }
 }
 
-async function generateSubset(source, target, name, debug) {
+async function generateSubset(source, target, name): Promise<void> {
   const font = fs.readFileSync(source);
   const subset = await subsetFont(font, name, {
     targetFormat: "woff2",
@@ -51,5 +53,5 @@ async function generateSubset(source, target, name, debug) {
 }
 //detect if we run this as a main
 if (import.meta.url.endsWith(process.argv[1])) {
-  generatePreviewFonts(true);
+  await generatePreviewFonts(true);
 }
