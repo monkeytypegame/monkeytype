@@ -5,8 +5,6 @@ import { setLeaderboard } from "../utils/prometheus";
 import { isDevEnvironment } from "../utils/misc";
 import { getCachedConfiguration } from "../init/configuration";
 
-const leaderboardUpdating: Record<string, boolean> = {};
-
 export async function get(
   mode: string,
   mode2: string,
@@ -57,21 +55,28 @@ export async function getRank(
   language: string,
   uid: string
 ): Promise<GetRankResponse | false> {
-  if (leaderboardUpdating[`${language}_${mode}_${mode2}`]) return false;
-  const entry = await db
-    .collection<SharedTypes.LeaderboardEntry>(
-      `leaderboards.${language}.${mode}.${mode2}`
-    )
-    .findOne({ uid });
-  const count = await db
-    .collection(`leaderboards.${language}.${mode}.${mode2}`)
-    .estimatedDocumentCount();
+  try {
+    const entry = await db
+      .collection<SharedTypes.LeaderboardEntry>(
+        `leaderboards.${language}.${mode}.${mode2}`
+      )
+      .findOne({ uid });
+    const count = await db
+      .collection(`leaderboards.${language}.${mode}.${mode2}`)
+      .estimatedDocumentCount();
 
-  return {
-    count,
-    rank: entry ? entry.rank : null,
-    entry,
-  };
+    return {
+      count,
+      rank: entry ? entry.rank : null,
+      entry,
+    };
+  } catch (e) {
+    if (e.error === 175) {
+      //QueryPlanKilled, collection was removed during the query
+      return false;
+    }
+    throw e;
+  }
 }
 
 export async function update(
@@ -84,7 +89,6 @@ export async function update(
 }> {
   const key = `lbPersonalBests.${mode}.${mode2}.${language}`;
   const lbCollectionName = `leaderboards.${language}.${mode}.${mode2}`;
-  leaderboardUpdating[`${language}_${mode}_${mode2}`] = true;
   const lb = db
     .collection<MonkeyTypes.DBUser>("users")
     .aggregate<SharedTypes.LeaderboardEntry>(
@@ -185,7 +189,6 @@ export async function update(
   const start2 = performance.now();
   await db.collection(lbCollectionName).createIndex({ uid: -1 });
   await db.collection(lbCollectionName).createIndex({ rank: 1 });
-  leaderboardUpdating[`${language}_${mode}_${mode2}`] = false;
   const end2 = performance.now();
 
   //update speedStats
