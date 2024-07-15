@@ -32,7 +32,7 @@ import Logger from "../../utils/logger";
 import { createExpressEndpoints, initServer } from "@ts-rest/express";
 import { configsRoutes } from "./configs";
 import { ZodIssue } from "zod";
-import { MonkeyValidationError } from "shared/schemas/types";
+import { MonkeyValidationError } from "shared/schemas/util";
 import { addRedocMiddlewares } from "./redoc";
 import { authenticateTsRestRequest } from "../../middlewares/auth";
 
