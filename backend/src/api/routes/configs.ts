@@ -2,7 +2,7 @@ import { configsContract } from "shared/contracts/configs";
 import { initServer } from "@ts-rest/express";
 import * as RateLimit from "../../middlewares/rate-limit";
 import * as ConfigController from "../controllers/config";
-import { callController } from ".";
+import { callController } from "../ts-rest-adapter";
 
 const s = initServer();
 export const configsRoutes = s.router(configsContract, {
