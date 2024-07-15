@@ -10,6 +10,7 @@ import autoprefixer from "autoprefixer";
 import "dotenv/config";
 import { fontawesomeSubset } from "fontawesome-subset";
 import { getFontawesomeConfig } from "./scripts/fontawesome.mjs";
+import { generatePreviewFonts } from "./scripts/font-preview.mjs";
 
 function pad(numbers, maxLength, fillString) {
   return numbers.map((number) =>
@@ -146,7 +147,10 @@ const DEV_CONFIG = {
   css: {
     preprocessorOptions: {
       scss: {
-        additionalData: `$fontAwesomeOverride:"@fortawesome/fontawesome-free/webfonts";`,
+        additionalData: `
+        $fontAwesomeOverride:"@fortawesome/fontawesome-free/webfonts";
+        $previewFontsPath:"webfonts";
+        `,
       },
     },
   },
@@ -163,6 +167,13 @@ const BUILD_CONFIG = {
         fontawesomeSubset(fontawesomeClasses, "src/webfonts-generated", {
           targetFormats: ["woff2"],
         });
+      },
+    },
+    {
+      name: "vite-plugin-webfonts-preview",
+      apply: "build",
+      buildStart() {
+        generatePreviewFonts();
       },
     },
     splitVendorChunkPlugin(),

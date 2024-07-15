@@ -38,6 +38,12 @@ function update(calendar?: MonkeyTypes.TestActivityCalendar): void {
 
   updateMonths(calendar.getMonths());
   $("#testActivity .nodata").addClass("hidden");
+  const title = document.querySelector("#testActivity .title");
+  {
+    if (title !== null) {
+      title.innerHTML = calendar.getTotalTests() + " tests";
+    }
+  }
 
   for (const day of calendar.getDays()) {
     const elem = document.createElement("div");

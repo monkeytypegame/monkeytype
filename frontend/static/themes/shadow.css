@@ -48,6 +48,11 @@ a:hover {
 }
 
 #logo,
-#typingTest .word letter.correct {
+#typingTest .word letter.correct,
+#typingTest #words.highlight-word .word.typed letter.correct,
+#typingTest #words.highlight-next-word .word.typed letter.correct,
+#typingTest #words.highlight-next-two-words .word.typed letter.correct,
+#typingTest #words.highlight-next-three-words .word.typed letter.correct {
+  color: var(--correct-letter-color);
   animation: shadow 5s linear 1 forwards;
 }

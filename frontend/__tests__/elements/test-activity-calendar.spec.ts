@@ -814,6 +814,23 @@ describe("test-activity-calendar.ts", () => {
       expect(days[370]).toBeFiller();
     });
   });
+  describe("getTotalTests", () => {
+    it("gets amount of tests", () => {
+      //GIVEN
+      const lastDate = getDate("2024-01-02");
+      const calendar = new ModifiableTestActivityCalendar(
+        [1, 2, 3, 4],
+        lastDate
+      );
+
+      //THEN
+      expect(calendar.getTotalTests()).toEqual(1 + 2 + 3 + 4);
+
+      //WHEN
+      const fullYear = calendar.getFullYearCalendar();
+      expect(fullYear.getTotalTests()).toEqual(3 + 4);
+    });
+  });
 });
 
 function getDate(date: string): Date {

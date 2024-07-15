@@ -276,6 +276,7 @@
   ,"oromo_1k"
   ,"oromo_5k"
   ,"wordle"
+  ,"league_of_legends"
   ,"wordle_1k"
   ,"typing_of_the_dead"
   ,"yiddish"
@@ -338,4 +339,6 @@
   ,"code_ook"
   ,"code_typescript"
   ,"xhosa"
+  ,"code_cobol"
+  ,"code_common_lisp"
 ]
