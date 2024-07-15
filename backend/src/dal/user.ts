@@ -3,7 +3,7 @@ import { containsProfanity, isUsernameValid } from "../utils/validation";
 import { canFunboxGetPb, checkAndUpdatePb } from "../utils/pb";
 import * as db from "../init/db";
 import MonkeyError from "../utils/error";
-import { Collection, ObjectId, Long, UpdateFilter } from "mongodb";
+import { Collection, ObjectId, Long, UpdateFilter, Filter } from "mongodb";
 import Logger from "../utils/logger";
 import { flattenObjectDeep, isToday, isYesterday } from "../utils/misc";
 import { getCachedConfiguration } from "../init/configuration";
@@ -179,7 +179,11 @@ export async function updateQuoteRatings(
   uid: string,
   quoteRatings: SharedTypes.UserQuoteRatings
 ): Promise<boolean> {
-  await updateUser("update quote ratings", { uid }, { $set: { quoteRatings } });
+  await updateUser(
+    { uid },
+    { $set: { quoteRatings } },
+    { stack: "update quote ratings" }
+  );
   return true;
 }
 
@@ -187,7 +191,7 @@ export async function updateEmail(
   uid: string,
   email: string
 ): Promise<boolean> {
-  await updateUser("update email", { uid }, { $set: { email } });
+  await updateUser({ uid }, { $set: { email } }, { stack: "update email" });
 
   return true;
 }
@@ -255,33 +259,40 @@ export async function getUserByName(
 export async function isDiscordIdAvailable(
   discordId: string
 ): Promise<boolean> {
-  const user = await getUsersCollection().findOne({ discordId });
-  return _.isNil(user);
+  const user = await getUsersCollection().findOne(
+    { discordId },
+    { projection: { _id: 1 } }
+  );
+  return user === null;
 }
 
 export async function addResultFilterPreset(
   uid: string,
-  filter: SharedTypes.ResultFilters,
+  resultFilter: SharedTypes.ResultFilters,
   maxFiltersPerUser: number
 ): Promise<ObjectId> {
-  // ensure limit not reached
-  const filtersCount = (
-    (await getPartialUser(uid, "Add Result filter", ["resultFilterPresets"]))
-      .resultFilterPresets ?? []
-  ).length;
-
-  if (filtersCount >= maxFiltersPerUser) {
+  if (maxFiltersPerUser === 0) {
     throw new MonkeyError(
       409,
-      "Maximum number of custom filters reached for user."
+      "Maximum number of custom filters reached",
+      "add result filter preset"
     );
   }
 
   const _id = new ObjectId();
-  await getUsersCollection().updateOne(
-    { uid },
-    { $push: { resultFilterPresets: { ...filter, _id } } }
+  const filter = { uid };
+  filter[`resultFilterPresets.${maxFiltersPerUser - 1}`] = { $exists: false };
+
+  await updateUser(
+    filter,
+    { $push: { resultFilterPresets: { ...resultFilter, _id } } },
+    {
+      statusCode: 409,
+      message: "Maximum number of custom filters reached",
+      stack: "add result filter preset",
+    }
   );
+
   return _id;
 }
 
@@ -289,24 +300,16 @@ export async function removeResultFilterPreset(
   uid: string,
   _id: string
 ): Promise<void> {
-  const user = await getPartialUser(uid, "remove result filter", [
-    "resultFilterPresets",
-  ]);
-  const filterId = new ObjectId(_id);
-  if (
-    user.resultFilterPresets === undefined ||
-    user.resultFilterPresets.filter((t) => t._id.toString() === _id).length ===
-      0
-  ) {
-    throw new MonkeyError(404, "Custom filter not found");
-  }
+  const presetId = new ObjectId(_id);
 
-  await getUsersCollection().updateOne(
+  await updateUser(
+    { uid, "resultFilterPresets._id": presetId },
+    { $pull: { resultFilterPresets: { _id: presetId } } },
     {
-      uid,
-      "resultFilterPresets._id": filterId,
-    },
-    { $pull: { resultFilterPresets: { _id: filterId } } }
+      statusCode: 404,
+      message: "Custom filter not found",
+      stack: "remove result filter preset",
+    }
   );
 }
 
@@ -314,15 +317,8 @@ export async function addTag(
   uid: string,
   name: string
 ): Promise<MonkeyTypes.DBUserTag> {
-  const user = await getPartialUser(uid, "add tag", ["tags"]);
-
-  if ((user?.tags?.length ?? 0) >= 15) {
-    throw new MonkeyError(400, "You can only have up to 15 tags");
-  }
-
-  const _id = new ObjectId();
   const toPush = {
-    _id,
+    _id: new ObjectId(),
     name,
     personalBests: {
       time: {},
@@ -333,14 +329,16 @@ export async function addTag(
     },
   };
 
-  await getUsersCollection().updateOne(
-    { uid },
+  await updateUser(
+    { uid, "tags.14": { $exists: false } },
+    { $push: { tags: toPush } },
     {
-      $push: {
-        tags: toPush,
-      },
+      statusCode: 400,
+      message: "Maximum number of tags reached",
+      stack: "add tag",
     }
   );
+
   return toPush;
 }
 
@@ -355,52 +353,30 @@ export async function editTag(
   _id: string,
   name: string
 ): Promise<void> {
-  const user = await getPartialUser(uid, "edit tag", ["tags"]);
-  if (
-    user.tags === undefined ||
-    user.tags.filter((t) => t._id.toHexString() === _id).length === 0
-  ) {
-    throw new MonkeyError(404, "Tag not found");
-  }
-  await getUsersCollection().updateOne(
-    {
-      uid: uid,
-      "tags._id": new ObjectId(_id),
-    },
-    { $set: { "tags.$.name": name } }
+  const tagId = new ObjectId(_id);
+
+  await updateUser(
+    { uid, "tags._id": tagId },
+    { $set: { "tags.$.name": name } },
+    { statusCode: 404, message: "Tag not found", stack: "edit tag" }
   );
 }
 
 export async function removeTag(uid: string, _id: string): Promise<void> {
-  const user = await getPartialUser(uid, "remove tag", ["tags"]);
-  if (
-    user.tags === undefined ||
-    user.tags.filter((t) => t._id.toHexString() === _id).length === 0
-  ) {
-    throw new MonkeyError(404, "Tag not found");
-  }
-  await getUsersCollection().updateOne(
-    {
-      uid: uid,
-      "tags._id": new ObjectId(_id),
-    },
-    { $pull: { tags: { _id: new ObjectId(_id) } } }
+  const tagId = new ObjectId(_id);
+
+  await updateUser(
+    { uid, "tags._id": tagId },
+    { $pull: { tags: { _id: tagId } } },
+    { statusCode: 404, message: "Tag not found", stack: "remove tag" }
   );
 }
 
 export async function removeTagPb(uid: string, _id: string): Promise<void> {
-  const user = await getPartialUser(uid, "remove tag pb", ["tags"]);
-  if (
-    user.tags === undefined ||
-    user.tags.filter((t) => t._id.toHexString() === _id).length === 0
-  ) {
-    throw new MonkeyError(404, "Tag not found");
-  }
-  await getUsersCollection().updateOne(
-    {
-      uid: uid,
-      "tags._id": new ObjectId(_id),
-    },
+  const tagId = new ObjectId(_id);
+
+  await updateUser(
+    { uid, "tags._id": tagId },
     {
       $set: {
         "tags.$.personalBests": {
@@ -411,7 +387,8 @@ export async function removeTagPb(uid: string, _id: string): Promise<void> {
           custom: {},
         },
       },
-    }
+    },
+    { statusCode: 404, message: "Tag not found", stack: "remove tag pb" }
   );
 }
 
@@ -422,20 +399,13 @@ export async function updateLbMemory(
   language: string,
   rank: number
 ): Promise<void> {
-  const user = await getPartialUser(uid, "update lb memory", ["lbMemory"]);
-  if (user.lbMemory === undefined) user.lbMemory = {};
-  if (user.lbMemory[mode] === undefined) user.lbMemory[mode] = {};
-  if (user.lbMemory[mode]?.[mode2] === undefined) {
-    //@ts-expect-error guarded above
-    user.lbMemory[mode][mode2] = {};
-  }
-  //@ts-expect-error guarded above
-  user.lbMemory[mode][mode2][language] = rank;
-  await getUsersCollection().updateOne(
+  const partialUpdate = {};
+  partialUpdate[`lbMemory.${mode}.${mode2}.${language}`] = rank;
+
+  await updateUser(
     { uid },
-    {
-      $set: { lbMemory: user.lbMemory },
-    }
+    { $set: partialUpdate },
+    { stack: "update lb memory" }
   );
 }
 
@@ -534,7 +504,6 @@ export async function checkIfTagPb(
 
 export async function resetPb(uid: string): Promise<void> {
   await updateUser(
-    "reset pb",
     { uid },
     {
       $set: {
@@ -546,7 +515,8 @@ export async function resetPb(uid: string): Promise<void> {
           custom: {},
         },
       },
-    }
+    },
+    { stack: "reset pb" }
   );
 }
 
@@ -590,40 +560,55 @@ export async function linkDiscord(
     { discordId, discordAvatar },
     _.identity
   );
-  const result = await getUsersCollection().updateOne(
-    { uid },
-    { $set: updates }
-  );
-
-  if (result.matchedCount === 0) {
-    throw new MonkeyError(404, "User not found");
-  }
+  await updateUser({ uid }, { $set: updates }, { stack: "link discord" });
 }
 
 export async function unlinkDiscord(uid: string): Promise<void> {
   await updateUser(
-    "unlink discord",
     { uid },
-    { $unset: { discordId: "", discordAvatar: "" } }
+    { $unset: { discordId: "", discordAvatar: "" } },
+    { stack: "unlink discord" }
   );
 }
 
-export async function incrementBananas(uid: string, wpm): Promise<void> {
-  const user = await getPartialUser(uid, "increment bananas", [
-    "personalBests",
-  ]);
-
-  let best60: number | undefined;
-  const personalBests60 = user.personalBests?.time["60"];
-
-  if (personalBests60) {
-    best60 = Math.max(...personalBests60.map((best) => best.wpm));
-  }
-
-  if (best60 === undefined || wpm >= best60 - best60 * 0.25) {
-    //increment when no record found or wpm is within 25% of the record
-    await getUsersCollection().updateOne({ uid }, { $inc: { bananas: 1 } });
-  }
+export async function incrementBananas(
+  uid: string,
+  wpm: number
+): Promise<void> {
+  //don't throw on missing user
+  await getUsersCollection().updateOne(
+    {
+      uid,
+      "personalBests.time.60": { $exists: true, $not: { $size: 0 } },
+      $expr: {
+        // wpm needs to be >= 75% of the the highest  time 60 PB
+        $gte: [
+          wpm,
+          {
+            $multiply: [
+              //highest wpm with 0.75
+              {
+                $reduce: {
+                  //find highest wpm from time 60 PBs
+                  input: "$personalBests.time.60",
+                  initialValue: 0,
+                  in: {
+                    $cond: [
+                      { $gte: ["$$this.wpm", "$$value"] },
+                      "$$this.wpm",
+                      "$$value",
+                    ],
+                  },
+                },
+              },
+              0.75,
+            ],
+          },
+        ],
+      },
+    },
+    { $inc: { bananas: 1 } }
+  );
 }
 
 export async function incrementXp(uid: string, xp: number): Promise<void> {
@@ -657,76 +642,65 @@ export async function incrementTestActivity(
   );
 }
 
-export function themeDoesNotExist(customThemes, id): boolean {
-  return (
-    (customThemes ?? []).filter((t) => t._id.toString() === id).length === 0
-  );
-}
-
 export async function addTheme(
   uid: string,
-  theme
+  { name, colors }: Omit<SharedTypes.CustomTheme, "_id">
 ): Promise<{ _id: ObjectId; name: string }> {
-  const user = await getPartialUser(uid, "add theme", ["customThemes"]);
-
-  if ((user.customThemes ?? []).length >= 10) {
-    throw new MonkeyError(409, "Too many custom themes");
-  }
-
   const _id = new ObjectId();
-  await getUsersCollection().updateOne(
-    { uid },
+
+  await updateUser(
+    { uid, "customThemes.9": { $exists: false } },
     {
       $push: {
         customThemes: {
           _id,
-          name: theme.name,
-          colors: theme.colors,
+          name: name,
+          colors: colors,
         },
       },
+    },
+    {
+      statusCode: 409,
+      message: "Maximum number of custom themes reached",
+      stack: "add theme",
     }
   );
 
   return {
     _id,
-    name: theme.name,
+    name,
   };
 }
 
-export async function removeTheme(uid: string, _id): Promise<void> {
-  const user = await getPartialUser(uid, "remove theme", ["customThemes"]);
-
-  if (themeDoesNotExist(user.customThemes, _id)) {
-    throw new MonkeyError(404, "Custom theme not found");
-  }
-
-  await getUsersCollection().updateOne(
+export async function removeTheme(uid: string, id: string): Promise<void> {
+  const themeId = new ObjectId(id);
+  await updateUser(
+    { uid, "customThemes._id": themeId },
+    { $pull: { customThemes: { _id: themeId } } },
     {
-      uid: uid,
-      "customThemes._id": new ObjectId(_id),
-    },
-    { $pull: { customThemes: { _id: new ObjectId(_id) } } }
+      statusCode: 404,
+      message: "Custom theme not found",
+      stack: "remove theme",
+    }
   );
 }
 
-export async function editTheme(uid: string, _id, theme): Promise<void> {
-  const user = await getPartialUser(uid, "edit theme", ["customThemes"]);
+export async function editTheme(
+  uid: string,
+  id: string,
+  { name, colors }: Omit<SharedTypes.CustomTheme, "_id">
+): Promise<void> {
+  const themeId = new ObjectId(id);
 
-  if (themeDoesNotExist(user.customThemes, _id)) {
-    throw new MonkeyError(404, "Custom Theme not found");
-  }
-
-  await getUsersCollection().updateOne(
-    {
-      uid: uid,
-      "customThemes._id": new ObjectId(_id),
-    },
+  await updateUser(
+    { uid, "customThemes._id": themeId },
     {
       $set: {
-        "customThemes.$.name": theme.name,
-        "customThemes.$.colors": theme.colors,
+        "customThemes.$.name": name,
+        "customThemes.$.colors": colors,
       },
-    }
+    },
+    { statusCode: 404, message: "Custom theme not found", stack: "edit theme" }
   );
 }
 
@@ -755,18 +729,16 @@ export async function getPersonalBests(
 
 export async function getStats(
   uid: string
-): Promise<Record<string, number | undefined>> {
+): Promise<
+  Pick<MonkeyTypes.DBUser, "startedTests" | "completedTests" | "timeTyping">
+> {
   const user = await getPartialUser(uid, "get stats", [
     "startedTests",
     "completedTests",
     "timeTyping",
   ]);
 
-  return {
-    startedTests: user.startedTests,
-    completedTests: user.completedTests,
-    timeTyping: user.timeTyping,
-  };
+  return user;
 }
 
 export async function getFavoriteQuotes(
@@ -785,35 +757,33 @@ export async function addFavoriteQuote(
   quoteId: string,
   maxQuotes: number
 ): Promise<void> {
-  const user = await getPartialUser(uid, "add favorite quote", [
-    "favoriteQuotes",
-  ]);
-
-  if (user.favoriteQuotes) {
-    if (user.favoriteQuotes[language]?.includes(quoteId)) {
-      return;
-    }
-
-    const quotesLength = _.sumBy(
-      Object.values(user.favoriteQuotes),
-      (favQuotes) => favQuotes.length
-    );
-
-    if (quotesLength >= maxQuotes) {
-      throw new MonkeyError(
-        409,
-        "Too many favorite quotes",
-        "addFavoriteQuote"
-      );
-    }
-  }
-
-  await getUsersCollection().updateOne(
-    { uid },
+  await updateUser(
     {
-      $push: {
+      uid,
+      $expr: {
+        //total amount of quotes need to be lower than maxQuotes
+        $lt: [
+          {
+            $reduce: {
+              input: { $objectToArray: "$favoriteQuotes" },
+              initialValue: 0,
+              in: { $add: ["$$value", { $size: "$$this.v" }] },
+            },
+          },
+          maxQuotes,
+        ],
+      },
+    },
+    {
+      $addToSet: {
+        //ensure quoteId is unique in the array
         [`favoriteQuotes.${language}`]: quoteId,
       },
+    },
+    {
+      statusCode: 409,
+      message: "Maximum number of favorite quotes reached",
+      stack: "add favorite quote",
     }
   );
 }
@@ -823,17 +793,10 @@ export async function removeFavoriteQuote(
   language: string,
   quoteId: string
 ): Promise<void> {
-  const user = await getPartialUser(uid, "remove favorite quote", [
-    "favoriteQuotes",
-  ]);
-
-  if (!user.favoriteQuotes?.[language]?.includes(quoteId)) {
-    return;
-  }
-
-  await getUsersCollection().updateOne(
+  await updateUser(
     { uid },
-    { $pull: { [`favoriteQuotes.${language}`]: quoteId } }
+    { $pull: { [`favoriteQuotes.${language}`]: quoteId } },
+    { stack: "remove favorite quote" }
   );
 }
 
@@ -989,80 +952,80 @@ export async function updateInbox(
     (it) => deleteSet.includes(it) === false
   );
 
-  console.log({ deleteSet, readSet });
-
   const update = await getUsersCollection().updateOne({ uid }, [
     {
       $addFields: {
         tmp: {
           $function: {
             lang: "js",
-            args: ["$_id", "$inbox", "$xp", "$inventory"],
-            body: `
-            function(_id, inbox, xp, inventory) {
+            args: ["$inbox", "$xp", "$inventory", deleteSet, readSet],
+            body: function (
+              inbox: SharedTypes.MonkeyMail[],
+              xp: number,
+              inventory: SharedTypes.UserInventory,
+              deletedIds: string[],
+              readIds: string[]
+            ): Pick<MonkeyTypes.DBUser, "xp" | "inventory" | "inbox"> {
+              const toBeDeleted = inbox.filter((it) =>
+                deletedIds.includes(it.id)
+              );
 
-              var toBeDeleted = inbox.filter(it => ${JSON.stringify(
-                deleteSet
-              )}.includes(it.id) === true);
-
-              var toBeRead = inbox.filter(it => ${JSON.stringify(
-                readSet
-              )}.includes(it.id) === true && it.read === false);
+              const toBeRead = inbox.filter(
+                (it) => readIds.includes(it.id) && it.read === false
+              );
 
               //flatMap rewards
-              var rewards = [...toBeRead, ...toBeDeleted]
-                  .filter(it => it.read === false)
-                  .reduce((arr, current) => {
-                      return arr.concat(current.rewards);
-                  }, []);
+              const rewards: SharedTypes.AllRewards[] = [
+                ...toBeRead,
+                ...toBeDeleted,
+              ]
+                .filter((it) => it.read === false)
+                .reduce((arr, current) => {
+                  return [...arr, ...current.rewards];
+                }, []);
 
-              var xpGain = rewards
-                  .filter(it => it.type === "xp")
-                  .map(it => it.item)
-                  .reduce((s, a) => s + a, 0);
+              const xpGain = rewards
+                .filter((it) => it.type === "xp")
+                .map((it) => it.item as number)
+                .reduce((s, a) => s + a, 0);
 
-              var badgesToClaim = rewards
-                  .filter(it => it.type === "badge")
-                  .map(it => it.item);
+              const badgesToClaim = rewards
+                .filter((it) => it.type === "badge")
+                .map((it) => it.item as SharedTypes.Badge);
 
-              if (inventory === null) inventory = {
-                  badges: null
-              };
+              if (inventory === null)
+                inventory = {
+                  badges: [],
+                };
               if (inventory.badges === null) inventory.badges = [];
-              
-              const uniqueBadgeIds = new Set();
-              const newBadges = [];
 
-              for(badge of [...inventory.badges, ...badgesToClaim]){
-                  if(uniqueBadgeIds.has(badge.id))continue;
-                  uniqueBadgeIds.add(badge.id);
-                  newBadges.push(badge);
+              const uniqueBadgeIds = new Set();
+              const newBadges: SharedTypes.Badge[] = [];
+
+              for (const badge of [...inventory.badges, ...badgesToClaim]) {
+                if (uniqueBadgeIds.has(badge.id)) continue;
+                uniqueBadgeIds.add(badge.id);
+                newBadges.push(badge);
               }
               inventory.badges = newBadges;
-              
+
               //remove deleted mail from inbox, sort by timestamp descending
-              var inboxUpdate = inbox
-                  .filter(it => ${JSON.stringify(
-                    deleteSet
-                  )}.includes(it.id) === false)
-                  .sort((a, b) => b.timestamp - a.timestamp);
+              const inboxUpdate = inbox
+                .filter((it) => !deletedIds.includes(it.id))
+                .sort((a, b) => b.timestamp - a.timestamp);
 
               //mark read mail as read, remove rewards
-              toBeRead.forEach(it => {
-                  it.read = true;
-                  it.rewards = [];
+              toBeRead.forEach((it) => {
+                it.read = true;
+                it.rewards = [];
               });
 
-
-
               return {
-                  _id,
-                  xp: xp + xpGain,
-                  inbox: inboxUpdate,
-                  inventory: inventory,
+                xp: xp + xpGain,
+                inbox: inboxUpdate,
+                inventory: inventory,
               };
-            }
-            `,
+            }.toString(),
           },
         },
       },
@@ -1179,17 +1142,22 @@ export async function logIpAddress(
 
 /**
  * Update user document. Requires the user to exist
- * @param stack stack description used in the error
  * @param filter user filter
  * @param update update document
+ * @param error stack description used in the error or statusCode and message of the error
  * @throws MonkeyError if user does not exist
  */
 async function updateUser(
-  stack: string,
-  filter: { uid: string },
-  update: UpdateFilter<MonkeyTypes.DBUser>
+  filter: Filter<MonkeyTypes.DBUser>,
+  update: UpdateFilter<MonkeyTypes.DBUser>,
+  error: { stack: string; statusCode?: number; message?: string }
 ): Promise<void> {
   const result = await getUsersCollection().updateOne(filter, update);
+
   if (result.matchedCount !== 1)
-    throw new MonkeyError(404, "User not found", stack);
+    throw new MonkeyError(
+      error.statusCode ?? 404,
+      error.message ?? "User not found",
+      error.stack
+    );
 }
