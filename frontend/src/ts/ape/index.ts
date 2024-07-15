@@ -1,7 +1,7 @@
 import endpoints from "./endpoints";
 import { buildHttpClient } from "./adapters/axios-adapter";
 import { envConfig } from "../constants/env-config";
-import { buildClient } from "./endpoints/ApeClient";
+import { buildClient } from "./adapters/ts-rest-adapter";
 import { configsContract } from "shared/contracts/configs";
 
 const API_PATH = "";
