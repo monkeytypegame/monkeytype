@@ -85,7 +85,7 @@ function applyTsRestApiRoutes(app: IRouter): void {
       if (err.body?.issues === undefined) return next();
       const issues = err.body?.issues.map(prettyErrorMessage);
       res.status(422).json({
-        message: "Invalid request schema",
+        message: "Invalid request data schema",
         validationErrors: issues,
       } as MonkeyValidationError);
     },
