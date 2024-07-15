@@ -179,7 +179,11 @@ export async function updateQuoteRatings(
   uid: string,
   quoteRatings: SharedTypes.UserQuoteRatings
 ): Promise<boolean> {
-  await updateUser({ uid }, { $set: { quoteRatings } }, "update quote ratings");
+  await updateUser(
+    { uid },
+    { $set: { quoteRatings } },
+    { stack: "update quote ratings" }
+  );
   return true;
 }
 
@@ -187,7 +191,7 @@ export async function updateEmail(
   uid: string,
   email: string
 ): Promise<boolean> {
-  await updateUser({ uid }, { $set: { email } }, "update email");
+  await updateUser({ uid }, { $set: { email } }, { stack: "update email" });
 
   return true;
 }
@@ -270,7 +274,8 @@ export async function addResultFilterPreset(
   if (maxFiltersPerUser === 0) {
     throw new MonkeyError(
       409,
-      "Maximum number of custom filters reached for user"
+      "Maximum number of custom filters reached for user",
+      "add result filter preset"
     );
   }
 
@@ -284,6 +289,7 @@ export async function addResultFilterPreset(
     {
       statusCode: 409,
       message: "Maximum number of custom filters reached for user",
+      stack: "add result filter preset",
     }
   );
 
@@ -299,7 +305,11 @@ export async function removeResultFilterPreset(
   await updateUser(
     { uid, "resultFilterPresets._id": filterId },
     { $pull: { resultFilterPresets: { _id: filterId } } },
-    { statusCode: 404, message: "Custom filter not found" }
+    {
+      statusCode: 404,
+      message: "Custom filter not found",
+      stack: "remove result filter preset",
+    }
   );
 }
 
@@ -325,6 +335,7 @@ export async function addTag(
     {
       statusCode: 400,
       message: "Maximum number of tags reached for user",
+      stack: "add tag",
     }
   );
 
@@ -347,7 +358,7 @@ export async function editTag(
   await updateUser(
     { uid, "tags._id": filterId },
     { $set: { "tags.$.name": name } },
-    { statusCode: 404, message: "Tag not found" }
+    { statusCode: 404, message: "Tag not found", stack: "edit tag" }
   );
 }
 
@@ -357,7 +368,7 @@ export async function removeTag(uid: string, _id: string): Promise<void> {
   await updateUser(
     { uid, "tags._id": filterId },
     { $pull: { tags: { _id: filterId } } },
-    { statusCode: 404, message: "Tag not found" }
+    { statusCode: 404, message: "Tag not found", stack: "remove tag" }
   );
 }
 
@@ -377,7 +388,7 @@ export async function removeTagPb(uid: string, _id: string): Promise<void> {
         },
       },
     },
-    { statusCode: 404, message: "Tag not found" }
+    { statusCode: 404, message: "Tag not found", stack: "remove tag pb" }
   );
 }
 
@@ -391,7 +402,11 @@ export async function updateLbMemory(
   const partialUpdate = {};
   partialUpdate[`lbMemory.${mode}.${mode2}.${language}`] = rank;
 
-  await updateUser({ uid }, { $set: partialUpdate }, "update lb memory");
+  await updateUser(
+    { uid },
+    { $set: partialUpdate },
+    { stack: "update lb memory" }
+  );
 }
 
 export async function checkIfPb(
@@ -501,7 +516,7 @@ export async function resetPb(uid: string): Promise<void> {
         },
       },
     },
-    "reset pb"
+    { stack: "reset pb" }
   );
 }
 
@@ -545,14 +560,14 @@ export async function linkDiscord(
     { discordId, discordAvatar },
     _.identity
   );
-  await updateUser({ uid }, { $set: updates }, "link discord");
+  await updateUser({ uid }, { $set: updates }, { stack: "link discord" });
 }
 
 export async function unlinkDiscord(uid: string): Promise<void> {
   await updateUser(
     { uid },
     { $unset: { discordId: "", discordAvatar: "" } },
-    "unlink discord"
+    { stack: "unlink discord" }
   );
 }
 
@@ -647,6 +662,7 @@ export async function addTheme(
     {
       statusCode: 409,
       message: "Maximum number of custom themes reached for user",
+      stack: "add theme",
     }
   );
 
@@ -661,7 +677,11 @@ export async function removeTheme(uid: string, id: string): Promise<void> {
   await updateUser(
     { uid, "customThemes._id": filterId },
     { $pull: { customThemes: { _id: filterId } } },
-    { statusCode: 404, message: "Custom theme not found" }
+    {
+      statusCode: 404,
+      message: "Custom theme not found",
+      stack: "remove theme",
+    }
   );
 }
 
@@ -680,7 +700,7 @@ export async function editTheme(
         "customThemes.$.colors": colors,
       },
     },
-    { statusCode: 404, message: "Custom theme not found" }
+    { statusCode: 404, message: "Custom theme not found", stack: "edit theme" }
   );
 }
 
@@ -763,6 +783,7 @@ export async function addFavoriteQuote(
     {
       statusCode: 409,
       message: "Maximum number of favorite quotes reached for user",
+      stack: "add favorite quote",
     }
   );
 }
@@ -775,7 +796,7 @@ export async function removeFavoriteQuote(
   await updateUser(
     { uid },
     { $pull: { [`favoriteQuotes.${language}`]: quoteId } },
-    "remove favorite quote"
+    { stack: "remove favorite quote" }
   );
 }
 
@@ -1129,16 +1150,14 @@ export async function logIpAddress(
 async function updateUser(
   filter: Filter<MonkeyTypes.DBUser>,
   update: UpdateFilter<MonkeyTypes.DBUser>,
-  error: string | { statusCode?: number; message?: string }
+  error: { stack: string; statusCode?: number; message?: string }
 ): Promise<void> {
-  const monkeyError =
-    typeof error === "string"
-      ? new MonkeyError(404, "User not found", error)
-      : new MonkeyError(
-          error.statusCode ?? 404,
-          error.message ?? "User not found"
-        );
-
   const result = await getUsersCollection().updateOne(filter, update);
-  if (result.matchedCount !== 1) throw monkeyError;
+
+  if (result.matchedCount !== 1)
+    throw new MonkeyError(
+      error.statusCode ?? 404,
+      error.message ?? "User not found",
+      error.stack
+    );
 }

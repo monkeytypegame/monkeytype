@@ -357,7 +357,9 @@ describe("UserDal", () => {
       // when, then
       await expect(
         UserDAL.addResultFilterPreset("non existing uid", mockResultFilter, 5)
-      ).rejects.toThrow("Maximum number of custom filters reached for user");
+      ).rejects.toThrow(
+        "Maximum number of custom filters reached for user\nStack: add result filter preset"
+      );
     });
 
     it("should return error if user has reached maximum", async () => {
@@ -369,7 +371,9 @@ describe("UserDal", () => {
       // when, then
       await expect(
         UserDAL.addResultFilterPreset(uid, mockResultFilter, 1)
-      ).rejects.toThrow("Maximum number of custom filters reached for user");
+      ).rejects.toThrow(
+        "Maximum number of custom filters reached for user\nStack: add result filter preset"
+      );
     });
 
     it("should handle zero maximum", async () => {
@@ -379,7 +383,9 @@ describe("UserDal", () => {
       // when, then
       await expect(
         UserDAL.addResultFilterPreset(uid, mockResultFilter, 0)
-      ).rejects.toThrow("Maximum number of custom filters reached for user");
+      ).rejects.toThrow(
+        "Maximum number of custom filters reached for user\nStack: add result filter preset"
+      );
     });
 
     it("addResultFilterPreset success", async () => {
@@ -411,7 +417,7 @@ describe("UserDal", () => {
           "non existing uid",
           new ObjectId().toHexString()
         )
-      ).rejects.toThrow("Custom filter not found");
+      ).rejects.toThrow("Custom filter not found\nStack: remove result filter");
     });
 
     it("should return error if filter is unknown", async () => {
@@ -423,7 +429,7 @@ describe("UserDal", () => {
       // when, then
       await expect(
         UserDAL.removeResultFilterPreset(uid, new ObjectId().toHexString())
-      ).rejects.toThrow("Custom filter not found");
+      ).rejects.toThrow("Custom filter not found\nStack: remove result filter");
     });
     it("should remove filter", async () => {
       // given
@@ -447,7 +453,9 @@ describe("UserDal", () => {
       // when, then
       await expect(
         UserDAL.addTag("non existing uid", "tagName")
-      ).rejects.toThrow("Maximum number of tags reached for user");
+      ).rejects.toThrow(
+        "Maximum number of tags reached for user\nStack: add tag"
+      );
     });
 
     it("should return error if user has reached maximum", async () => {
@@ -462,7 +470,7 @@ describe("UserDal", () => {
 
       // when, then
       await expect(UserDAL.addTag(uid, "new")).rejects.toThrow(
-        "Maximum number of tags reached for user"
+        "Maximum number of tags reached for user\nStack: add tag"
       );
     });
 
@@ -508,7 +516,7 @@ describe("UserDal", () => {
           new ObjectId().toHexString(),
           "newName"
         )
-      ).rejects.toThrow("Tag not found");
+      ).rejects.toThrow("Tag not found\nStack: edit tag");
     });
 
     it("should fail if tag not found", async () => {
@@ -525,7 +533,7 @@ describe("UserDal", () => {
       // when, then
       await expect(
         UserDAL.editTag(uid, new ObjectId().toHexString(), "newName")
-      ).rejects.toThrow("Tag not found");
+      ).rejects.toThrow("Tag not found\nStack: edit tag");
     });
 
     it("editTag success", async () => {
@@ -555,7 +563,7 @@ describe("UserDal", () => {
       // when, then
       await expect(
         UserDAL.removeTag("non existing uid", new ObjectId().toHexString())
-      ).rejects.toThrow("Tag not found");
+      ).rejects.toThrow("Tag not found\nStack: remove tag");
     });
 
     it("should return error if tag is unknown", async () => {
@@ -572,7 +580,7 @@ describe("UserDal", () => {
       // when, then
       await expect(
         UserDAL.removeTag(uid, new ObjectId().toHexString())
-      ).rejects.toThrow("Tag not found");
+      ).rejects.toThrow("Tag not found\nStack: remove tag");
     });
     it("should remove tag", async () => {
       // given
@@ -609,7 +617,7 @@ describe("UserDal", () => {
       // when, then
       await expect(
         UserDAL.removeTagPb("non existing uid", new ObjectId().toHexString())
-      ).rejects.toThrow("Tag not found");
+      ).rejects.toThrow("Tag not found\nStack: remove tag pb");
     });
 
     it("should return error if tag is unknown", async () => {
@@ -626,7 +634,7 @@ describe("UserDal", () => {
       // when, then
       await expect(
         UserDAL.removeTagPb(uid, new ObjectId().toHexString())
-      ).rejects.toThrow("Tag not found");
+      ).rejects.toThrow("Tag not found\nStack: remove tag pb");
     });
     it("should remove tag pb", async () => {
       // given
@@ -1738,7 +1746,9 @@ describe("UserDal", () => {
       // when, then
       await expect(
         UserDAL.addTheme("non existing uid", { name: "new", colors: [] })
-      ).rejects.toThrow("Maximum number of custom themes reached for user");
+      ).rejects.toThrow(
+        "Maximum number of custom themes reached for user\nStack: add theme"
+      );
     });
 
     it("should return error if user has reached maximum", async () => {
@@ -1754,7 +1764,9 @@ describe("UserDal", () => {
       // when, then
       await expect(
         UserDAL.addTheme(uid, { name: "new", colors: [] })
-      ).rejects.toThrow("Maximum number of custom themes reached for user");
+      ).rejects.toThrow(
+        "Maximum number of custom themes reached for user\nStack: add theme"
+      );
     });
 
     it("addTheme success", async () => {
@@ -1799,7 +1811,7 @@ describe("UserDal", () => {
           name: "newName",
           colors: [],
         })
-      ).rejects.toThrow("Custom theme not found");
+      ).rejects.toThrow("Custom theme not found\nStack: edit theme");
     });
 
     it("should fail if theme not found", async () => {
@@ -1819,7 +1831,7 @@ describe("UserDal", () => {
           name: "newName",
           colors: [],
         })
-      ).rejects.toThrow("Custom theme not found");
+      ).rejects.toThrow("Custom theme not found\nStack: edit theme");
     });
 
     it("editTheme success", async () => {
@@ -1851,7 +1863,7 @@ describe("UserDal", () => {
       // when, then
       await expect(
         UserDAL.removeTheme("non existing uid", new ObjectId().toHexString())
-      ).rejects.toThrow("Custom theme not found");
+      ).rejects.toThrow("Custom theme not found\nStack: remove theme");
     });
 
     it("should return error if theme is unknown", async () => {
@@ -1868,7 +1880,7 @@ describe("UserDal", () => {
       // when, then
       await expect(
         UserDAL.removeTheme(uid, new ObjectId().toHexString())
-      ).rejects.toThrow("Custom theme not found");
+      ).rejects.toThrow("Custom theme not found\nStack: remove theme");
     });
     it("should remove theme", async () => {
       // given
@@ -1906,7 +1918,9 @@ describe("UserDal", () => {
       // when, then
       await expect(
         UserDAL.addFavoriteQuote("non existing uid", "english", "1", 5)
-      ).rejects.toThrow(); //        "maximum number of favorite quotes reached for user"
+      ).rejects.toThrow(
+        "Maximum number of favorite quotes reached for user\nStack: add favorite quote"
+      );
     });
 
     it("should return error if user has reached maximum", async () => {
@@ -1922,7 +1936,9 @@ describe("UserDal", () => {
       // when, then
       await expect(
         UserDAL.addFavoriteQuote(uid, "polish", "6", 5)
-      ).rejects.toThrow(); // "maximum number of custom themes reached for user"
+      ).rejects.toThrow(
+        "Maximum number of favorite quotes reached for user\nStack: add favorite quote"
+      );
     });
 
     it("addFavoriteQuote success", async () => {
