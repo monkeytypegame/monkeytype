@@ -145,6 +145,15 @@ export class TestActivityCalendar implements MonkeyTypes.TestActivityCalendar {
     return result;
   }
 
+  getTotalTests(): number {
+    const days = differenceInDays(this.endDay, this.startDay);
+    return (
+      this.data.slice(0, days + 1).reduce((a, c) => {
+        return (a ?? 0) + (c ?? 0);
+      }, 0) ?? 0
+    );
+  }
+
   private getBuckets(): number[] {
     const filtered = this.data.filter(
       (it) => it !== null && it !== undefined

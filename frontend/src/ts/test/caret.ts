@@ -116,8 +116,8 @@ export async function updatePosition(noAnim = false): Promise<void> {
   );
 
   const letterPosTop =
-    currentLetter?.offsetTop ||
-    previousLetter?.offsetTop ||
+    currentLetter?.offsetTop ??
+    previousLetter?.offsetTop ??
     lastWordLetter?.offsetTop;
 
   const letterHeight =
@@ -127,8 +127,8 @@ export async function updatePosition(noAnim = false): Promise<void> {
     Config.fontSize * Numbers.convertRemToPixels(1);
 
   const letterWidth =
-    currentLetter?.offsetWidth ||
-    previousLetter?.offsetWidth ||
+    currentLetter?.offsetWidth ??
+    previousLetter?.offsetWidth ??
     lastWordLetter?.offsetWidth;
 
   const diff = letterHeight - caret.offsetHeight;

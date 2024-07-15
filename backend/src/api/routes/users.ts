@@ -514,9 +514,13 @@ router.get(
   withApeRateLimiter(RateLimit.userProfileGet),
   validateRequest({
     params: {
-      uidOrName: joi
-        .alternatives()
-        .try(usernameValidation, joi.string().token().max(50)),
+      uidOrName: joi.alternatives().try(
+        joi
+          .string()
+          .regex(/^[\da-zA-Z._-]+$/)
+          .max(16),
+        joi.string().token().max(50)
+      ),
     },
     query: {
       isUid: joi.string().valid("").messages({

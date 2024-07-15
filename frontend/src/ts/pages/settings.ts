@@ -594,7 +594,7 @@ async function fillSettingsPage(): Promise<void> {
           funbox.name
         }' aria-label="${
           funbox.info
-        }" data-balloon-pos="up" data-balloon-length="fit" style="transform:scaleX(-1) scaleY(-1);">${funbox.name.replace(
+        }" data-balloon-pos="up" data-balloon-length="fit" style="transform:scaleX(-1) scaleY(-1); z-index:1;">${funbox.name.replace(
           /_/g,
           " "
         )}</div>`;
@@ -631,14 +631,20 @@ async function fillSettingsPage(): Promise<void> {
 
   if (fontsList) {
     for (const font of fontsList) {
+      let fontFamily = font.name;
+      if (fontFamily === "Helvetica") {
+        fontFamily = "Comic Sans MS";
+      }
+      if ((font.systemFont ?? false) === false) {
+        fontFamily += " Preview";
+      }
+      const activeClass = Config.fontFamily === font.name ? " active" : "";
+      const display = font.display !== undefined ? font.display : font.name;
       if (Config.fontFamily === font.name) isCustomFont = false;
-      fontsElHTML += `<button class="${
-        Config.fontFamily === font.name ? " active" : ""
-      }" style="font-family:${
-        font.display !== undefined ? font.display : font.name
-      }" data-config-value="${font.name.replace(/ /g, "_")}">${
-        font.display !== undefined ? font.display : font.name
-      }</button>`;
+      fontsElHTML += `<button class="${activeClass}" style="font-family:${fontFamily}" data-config-value="${font.name.replace(
+        / /g,
+        "_"
+      )}">${display}</button>`;
     }
 
     fontsElHTML += isCustomFont
