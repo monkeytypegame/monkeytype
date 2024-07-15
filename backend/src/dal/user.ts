@@ -270,7 +270,7 @@ export async function addResultFilterPreset(
   if (maxFiltersPerUser === 0) {
     throw new MonkeyError(
       409,
-      "Unknown user or maximum number of custom filters reached for user"
+      "Maximum number of custom filters reached for user"
     );
   }
 
@@ -283,8 +283,7 @@ export async function addResultFilterPreset(
     { $push: { resultFilterPresets: { ...resultFilter, _id } } },
     {
       statusCode: 409,
-      message:
-        "Unknown user or maximum number of custom filters reached for user",
+      message: "Maximum number of custom filters reached for user",
     }
   );
 
@@ -300,7 +299,7 @@ export async function removeResultFilterPreset(
   await updateUser(
     { uid, "resultFilterPresets._id": filterId },
     { $pull: { resultFilterPresets: { _id: filterId } } },
-    { statusCode: 404, message: "Unknown user or custom filter not found" }
+    { statusCode: 404, message: "Custom filter not found" }
   );
 }
 
@@ -325,7 +324,7 @@ export async function addTag(
     { $push: { tags: toPush } },
     {
       statusCode: 400,
-      message: "Unknown user or maximum number of tags reached for user",
+      message: "Maximum number of tags reached for user",
     }
   );
 
@@ -348,7 +347,7 @@ export async function editTag(
   await updateUser(
     { uid, "tags._id": filterId },
     { $set: { "tags.$.name": name } },
-    { statusCode: 404, message: "Unknown user or tag not found" }
+    { statusCode: 404, message: "Tag not found" }
   );
 }
 
@@ -358,7 +357,7 @@ export async function removeTag(uid: string, _id: string): Promise<void> {
   await updateUser(
     { uid, "tags._id": filterId },
     { $pull: { tags: { _id: filterId } } },
-    { statusCode: 404, message: "Unknown user or tag not found" }
+    { statusCode: 404, message: "Tag not found" }
   );
 }
 
@@ -378,7 +377,7 @@ export async function removeTagPb(uid: string, _id: string): Promise<void> {
         },
       },
     },
-    { statusCode: 404, message: "Unknown user or tag not found" }
+    { statusCode: 404, message: "Tag not found" }
   );
 }
 
@@ -647,8 +646,7 @@ export async function addTheme(
     },
     {
       statusCode: 409,
-      message:
-        "Unknown user or maximum number of custom themes reached for user",
+      message: "Maximum number of custom themes reached for user",
     }
   );
 
@@ -663,7 +661,7 @@ export async function removeTheme(uid: string, id: string): Promise<void> {
   await updateUser(
     { uid, "customThemes._id": filterId },
     { $pull: { customThemes: { _id: filterId } } },
-    { statusCode: 404, message: "Unknown user or custom theme not found" }
+    { statusCode: 404, message: "Custom theme not found" }
   );
 }
 
@@ -682,7 +680,7 @@ export async function editTheme(
         "customThemes.$.colors": colors,
       },
     },
-    { statusCode: 404, message: "Unknown user or custom theme not found" }
+    { statusCode: 404, message: "Custom theme not found" }
   );
 }
 
@@ -764,8 +762,7 @@ export async function addFavoriteQuote(
     },
     {
       statusCode: 409,
-      message:
-        "Unknown user or maximum number of favorite quotes reached for user",
+      message: "Maximum number of favorite quotes reached for user",
     }
   );
 }
