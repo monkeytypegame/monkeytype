@@ -3,12 +3,10 @@ import { authenticateRequest } from "../../middlewares/auth";
 import { Router } from "express";
 import * as QuoteController from "../controllers/quote";
 import * as RateLimit from "../../middlewares/rate-limit";
-import {
-  asyncHandler,
-  checkUserPermissions,
-  validateConfiguration,
-  validateRequest,
-} from "../../middlewares/api-utils";
+import { checkUserPermissions } from "../../middlewares/permission";
+import { asyncHandler } from "../../middlewares/utility";
+import { validate } from "../../middlewares/configuration";
+import { validateRequest } from "../../middlewares/validation";
 
 const router = Router();
 
@@ -40,7 +38,7 @@ router.get(
 
 router.post(
   "/",
-  validateConfiguration({
+  validate({
     criteria: (configuration) => {
       return configuration.quotes.submissionsEnabled;
     },
@@ -140,7 +138,7 @@ const withCustomMessages = joi.string().messages({
 
 router.post(
   "/report",
-  validateConfiguration({
+  validate({
     criteria: (configuration) => {
       return configuration.quotes.reporting.enabled;
     },

@@ -320,7 +320,7 @@
   },
   {
     "name": "serbian",
-    "languages": ["serbian", "serbian_latin"]
+    "languages": ["serbian", "serbian_latin", "serbian_10k", "serbian_latin_10k"]
   },
   {
     "name": "georgian",
@@ -533,6 +533,10 @@
     "name": "lorem_ipsum",
     "languages": ["lorem_ipsum"]
   },
+  {
+    "name": "occitan",
+    "languages": ["occitan", "occitan_1k", "occitan_2k", "occitan_5k", "occitan_10k"]
+  },  
   {
     "name": "code",
     "languages": [

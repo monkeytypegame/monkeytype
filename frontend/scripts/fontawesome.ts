@@ -1,6 +1,17 @@
 import * as fs from "fs";
 import * as path from "path";
 
+type FontawesomeConfig = {
+  /* used regular icons without `fa-` prefix*/
+  regular: string[];
+  /* used solid icons without `fa-` prefix*/
+  solid: string[];
+  /* used brands icons without `fa-` prefix*/
+  brands: string[];
+};
+
+type FileObject = { name: string; isDirectory: boolean };
+
 const iconSet = {
   solid: parseIcons("solid"),
   regular: parseIcons("regular"),
@@ -40,19 +51,12 @@ const modules2 = {
 };
 
 /**
- * fontawesome icon config
- * @typedef {Object} FontawesomeConfig
- * @property {string[]} solid - used solid icons without `fa-` prefix
- * @property {string[]} brands - used brands icons without `fa-` prefix
- */
-
-/**
  * Detect used fontawesome icons in the directories `src/**` and `static/**{.html|.css}`
  * @param {boolean} debug - Enable debug output
  * @returns {FontawesomeConfig} - used icons
  */
 
-export function getFontawesomeConfig(debug = false) {
+export function getFontawesomeConfig(debug = false): FontawesomeConfig {
   const time = Date.now();
   const srcFiles = findAllFiles(
     "./src",
@@ -66,7 +70,7 @@ export function getFontawesomeConfig(debug = false) {
   );
 
   const allFiles = [...srcFiles, ...staticFiles];
-  const usedClassesSet = new Set();
+  const usedClassesSet: Set<string> = new Set();
 
   const regex = /\bfa-[a-z0-9-]+\b/g;
 
@@ -130,12 +134,15 @@ if (import.meta.url.endsWith(process.argv[1])) {
   getFontawesomeConfig(true);
 }
 
-function toFileAndDir(dir, file) {
+function toFileAndDir(dir, file): FileObject {
   const name = path.join(dir, file);
   return { name, isDirectory: fs.statSync(name).isDirectory() };
 }
 
-function findAllFiles(dir, filter = (filename) => true) {
+function findAllFiles(
+  dir: string,
+  filter: (filename: string) => boolean = (_it): boolean => true
+): string[] {
   return fs
     .readdirSync(dir)
     .map((it) => toFileAndDir(dir, it))
@@ -147,11 +154,12 @@ function findAllFiles(dir, filter = (filename) => true) {
     }, []);
 }
 
-function parseIcons(iconSet) {
-  const file = fs
+function parseIcons(iconSet: string): string[] {
+  const file: string | null = fs
     .readFileSync(`node_modules/@fortawesome/fontawesome-free/js/${iconSet}.js`)
     .toString();
+
   return file
-    .match(/\"(.*)\"\: \[.*\],/g)
-    .map((it) => it.substring(1, it.indexOf(":") - 1));
+    ?.match(/"(.*)": \[.*\],/g)
+    ?.map((it) => it.substring(1, it.indexOf(":") - 1)) as string[];
 }

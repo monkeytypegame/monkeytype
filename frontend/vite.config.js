@@ -9,8 +9,8 @@ import Inspect from "vite-plugin-inspect";
 import autoprefixer from "autoprefixer";
 import "dotenv/config";
 import { fontawesomeSubset } from "fontawesome-subset";
-import { getFontawesomeConfig } from "./scripts/fontawesome.mjs";
-import { generatePreviewFonts } from "./scripts/font-preview.mjs";
+import { getFontawesomeConfig } from "./scripts/fontawesome";
+import { generatePreviewFonts } from "./scripts/font-preview";
 
 function pad(numbers, maxLength, fillString) {
   return numbers.map((number) =>

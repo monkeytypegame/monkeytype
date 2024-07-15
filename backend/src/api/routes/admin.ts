@@ -1,21 +1,19 @@
 // import joi from "joi";
 import { Router } from "express";
 import { authenticateRequest } from "../../middlewares/auth";
-import {
-  asyncHandler,
-  checkIfUserIsAdmin,
-  validateConfiguration,
-  validateRequest,
-} from "../../middlewares/api-utils";
 import * as AdminController from "../controllers/admin";
 import { adminLimit } from "../../middlewares/rate-limit";
 import { sendForgotPasswordEmail, toggleBan } from "../controllers/user";
 import joi from "joi";
+import { validate } from "../../middlewares/configuration";
+import { checkIfUserIsAdmin } from "../../middlewares/permission";
+import { asyncHandler } from "../../middlewares/utility";
+import { validateRequest } from "../../middlewares/validation";
 
 const router = Router();
 
 router.use(
-  validateConfiguration({
+  validate({
     criteria: (configuration) => {
       return configuration.admin.endpointsEnabled;
     },
