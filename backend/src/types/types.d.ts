@@ -7,7 +7,7 @@ type AppRoute = import("@ts-rest/core").AppRoute;
 type AppRouter = import("@ts-rest/core").AppRouter;
 
 declare namespace MonkeyTypes {
-  type DecodedToken = {
+  export type DecodedToken = {
     type: "Bearer" | "ApeKey" | "None";
     uid: string;
     email: string;
