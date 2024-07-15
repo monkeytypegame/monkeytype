@@ -1,15 +1,13 @@
 import * as ResultController from "../controllers/result";
 import resultSchema from "../schemas/result-schema";
-import {
-  asyncHandler,
-  validateRequest,
-  validateConfiguration,
-} from "../../middlewares/utility";
 import * as RateLimit from "../../middlewares/rate-limit";
 import { Router } from "express";
 import { authenticateRequest } from "../../middlewares/auth";
 import joi from "joi";
 import { withApeRateLimiter } from "../../middlewares/ape-rate-limit";
+import { validateRequest } from "../../middlewares/validation";
+import { asyncHandler } from "../../middlewares/utility";
+import { validateConfiguration } from "../../middlewares/configuration";
 
 const router = Router();
 

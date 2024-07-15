@@ -3,12 +3,10 @@ import { authenticateRequest } from "../../middlewares/auth";
 import { Router } from "express";
 import * as QuoteController from "../controllers/quote";
 import * as RateLimit from "../../middlewares/rate-limit";
-import {
-  asyncHandler,
-  checkUserPermissions,
-  validateConfiguration,
-  validateRequest,
-} from "../../middlewares/utility";
+import { checkUserPermissions } from "../../middlewares/permission";
+import { asyncHandler } from "../../middlewares/utility";
+import { validateConfiguration } from "../../middlewares/configuration";
+import { validateRequest } from "../../middlewares/validation";
 
 const router = Router();
 

@@ -4,11 +4,9 @@ import * as RateLimit from "../../middlewares/rate-limit";
 import { withApeRateLimiter } from "../../middlewares/ape-rate-limit";
 import { authenticateRequest } from "../../middlewares/auth";
 import * as LeaderboardController from "../controllers/leaderboard";
-import {
-  asyncHandler,
-  validateRequest,
-  validateConfiguration,
-} from "../../middlewares/utility";
+import { validateConfiguration } from "../../middlewares/configuration";
+import { validateRequest } from "../../middlewares/validation";
+import { asyncHandler } from "../../middlewares/utility";
 
 const BASE_LEADERBOARD_VALIDATION_SCHEMA = {
   language: joi

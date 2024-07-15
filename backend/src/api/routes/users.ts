@@ -2,16 +2,14 @@ import joi from "joi";
 import { authenticateRequest } from "../../middlewares/auth";
 import { Router } from "express";
 import * as UserController from "../controllers/user";
-import {
-  asyncHandler,
-  validateRequest,
-  validateConfiguration,
-  checkUserPermissions,
-} from "../../middlewares/utility";
 import * as RateLimit from "../../middlewares/rate-limit";
 import { withApeRateLimiter } from "../../middlewares/ape-rate-limit";
 import { containsProfanity, isUsernameValid } from "../../utils/validation";
 import filterSchema from "../schemas/filter-schema";
+import { asyncHandler } from "../../middlewares/utility";
+import { validateConfiguration } from "../../middlewares/configuration";
+import { validateRequest } from "../../middlewares/validation";
+import { checkUserPermissions } from "../../middlewares/permission";
 
 const router = Router();
 
