@@ -1,10 +1,10 @@
 {
   "compilerOptions": {
+    "module": "commonjs",
+    "target": "es6",
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "isolatedModules": true,
-    "module": "ESNext", //TODO CommonJS
-    "moduleResolution": "Bundler", //TODO remove?
     "preserveWatchOutput": true,
     "skipLibCheck": true,
     "strict": true,
@@ -13,5 +13,6 @@
     "types": ["node"],
     "declaration": true
   },
+  "include": ["**/*.ts", "**/*.d.ts"],
   "exclude": ["node_modules", "./dist/**/*"]
 }

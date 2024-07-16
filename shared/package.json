@@ -1,9 +1,24 @@
 {
   "name": "shared",
-  "types": "./dist/index.d.ts",
   "dependencies": {
     "@ts-rest/core": "3.45.2",
     "zod": "3.23.8"
+  },
+  "files": [
+    "build/**/*",
+    "src/**/*"
+  ],
+  "types": "./build/index.d.ts",
+  "exports": {
+    "./package.json": "./package.json",
+    "./*": {
+      "types": "./build/*.d.ts",
+      "default": "./build/*.js"
+    },
+    ".": {
+      "types": "./build/index.d.ts",
+      "default": "./build/index.js"
+    }
   },
   "scripts": {
     "build": "tsc",

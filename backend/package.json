@@ -7,7 +7,7 @@
     "build": "npm run gen-docs && tsc --build",
     "watch": "tsc --build --watch",
     "clean": "tsc --build --clean",
-    "start": "npm run build && node ./build/server.js",
+    "start": "npm run build && node ./build/backend/src/server.js",
     "test": "vitest run",
     "test-coverage": "vitest run --coverage",
     "dev": "ts-node-dev --transpile-only --inspect -- ./src/server.ts",
