@@ -1,7 +1,7 @@
 import { generateOpenApi } from "@ts-rest/open-api";
 import { contract } from "../../shared/contracts/index";
 import { writeFileSync, mkdirSync } from "fs";
-import { EndpointMetadata } from "../../shared/schemas/util";
+import { EndpointMetadata } from "../../shared/schemas/api";
 
 type SecurityRequirementObject = {
   [name: string]: string[];
