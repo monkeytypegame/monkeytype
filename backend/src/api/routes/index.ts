@@ -59,6 +59,7 @@ const router = s.router(contract, {
 });
 
 export function addApiRoutes(app: Application): void {
+  applyDevApiRoutes(app);
   applyApiRoutes(app);
   applyTsRestApiRoutes(app);
 
@@ -94,11 +95,7 @@ function prettyErrorMessage(issue: ZodIssue | undefined): string {
   return `${path}${issue.message}`;
 }
 
-function applyApiRoutes(app: Application): void {
-  app.get("/leaderboard", (_req, res) => {
-    res.sendStatus(404);
-  });
-
+function applyDevApiRoutes(app: Application): void {
   if (isDevEnvironment()) {
     //disable csp to allow assets to load from unsecured http
     app.use((req, res, next) => {
@@ -119,6 +116,12 @@ function applyApiRoutes(app: Application): void {
     //enable dev edpoints
     app.use("/dev", dev);
   }
+}
+
+function applyApiRoutes(app: Application): void {
+  app.get("/leaderboard", (_req, res) => {
+    res.sendStatus(404);
+  });
 
   // Cannot be added to the route map because it needs to be added before the maintenance handler
   app.use("/configuration", configuration);
