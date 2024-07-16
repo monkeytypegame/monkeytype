@@ -1,8 +1,12 @@
+import _ from "lodash";
 import { Application } from "express";
 import { getMiddleware as getSwaggerMiddleware } from "swagger-stats";
-import * as swaggerUi from "swagger-ui-express";
-import internalSwaggerSpec from "../../documentation/internal-swagger.json";
+import {
+  serve as serveSwagger,
+  setup as setupSwaggerUi,
+} from "swagger-ui-express";
 import publicSwaggerSpec from "../../documentation/public-swagger.json";
+import internalSwaggerSpec from "../../documentation/internal-swagger.json";
 import { isDevEnvironment } from "../../utils/misc";
 
 const SWAGGER_UI_OPTIONS = {
@@ -27,11 +31,10 @@ function addSwaggerMiddlewares(app: Application): void {
     })
   );
 
-  const options = {};
   app.use(
     ["/documentation", "/docs"],
-    swaggerUi.serveFiles(publicSwaggerSpec, options),
-    swaggerUi.setup(publicSwaggerSpec, SWAGGER_UI_OPTIONS)
+    serveSwagger,
+    setupSwaggerUi(publicSwaggerSpec, SWAGGER_UI_OPTIONS)
   );
 }
 

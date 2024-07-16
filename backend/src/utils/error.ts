@@ -1,8 +1,7 @@
 import { v4 as uuidv4 } from "uuid";
 import { isDevEnvironment } from "./misc";
-import { MonkeyServerErrorType } from "shared/schemas/api";
 
-class MonkeyError extends Error implements MonkeyServerErrorType {
+class MonkeyError extends Error {
   status: number;
   errorId: string;
   uid?: string;

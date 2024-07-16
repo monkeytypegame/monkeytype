@@ -145,7 +145,7 @@ function buildPbHtml(
     if (pbData === undefined) throw new Error("No PB data found");
 
     const date = new Date(pbData.timestamp);
-    if (pbData.timestamp !== undefined && pbData.timestamp > 0) {
+    if (pbData.timestamp) {
       dateText = dateFormat(date, "dd MMM yyyy");
     }
 

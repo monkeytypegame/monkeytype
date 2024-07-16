@@ -20,5 +20,9 @@
     "files": true
   },
   "files": ["../src/ts/types/types.d.ts", "vitest.d.ts"],
-  "include": ["./**/*.spec.ts", "./setup-tests.ts", "../../shared/**/*.d.ts"]
+  "include": [
+    "./**/*.spec.ts",
+    "./setup-tests.ts",
+    "../../shared-types/**/*.d.ts"
+  ]
 }

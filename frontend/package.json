@@ -64,7 +64,6 @@
   },
   "dependencies": {
     "@date-fns/utc": "1.2.0",
-    "@ts-rest/core": "3.45.2",
     "axios": "1.6.4",
     "canvas-confetti": "1.5.1",
     "chart.js": "3.7.1",
@@ -84,11 +83,9 @@
     "konami": "1.6.3",
     "lz-ts": "1.1.2",
     "object-hash": "3.0.0",
-    "shared": "file:../shared",
     "slim-select": "2.8.1",
     "stemmer": "2.0.0",
-    "throttle-debounce": "3.0.1",
-    "zod": "3.23.8"
+    "throttle-debounce": "3.0.1"
   },
   "overrides": {
     "madge": {

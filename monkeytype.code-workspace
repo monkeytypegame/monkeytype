@@ -9,19 +9,19 @@
       "path": "frontend"
     },
     {
-      "name": "shared",
-      "path": "shared"
+      "name": "shared-types",
+      "path": "shared-types"
     },
     {
       "name": "root",
-      "path": "."
+      "path": "./"
     }
   ],
   "settings": {
     "files.exclude": {
       "frontend": true,
       "backend": true,
-      "shared": true
+      "shared-types": true
     },
     "search.exclude": {
       //defaults

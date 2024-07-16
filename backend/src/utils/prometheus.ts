@@ -212,7 +212,7 @@ export function recordAuthTime(
   type: string,
   status: "success" | "failure",
   time: number,
-  req: MonkeyTypes.Request | MonkeyTypes.RequestTsRest
+  req: MonkeyTypes.Request
 ): void {
   const reqPath = req.baseUrl + req.route.path;
 
@@ -234,7 +234,7 @@ const requestCountry = new Counter({
 
 export function recordRequestCountry(
   country: string,
-  req: MonkeyTypes.Request | MonkeyTypes.RequestTsRest
+  req: MonkeyTypes.Request
 ): void {
   const reqPath = req.baseUrl + req.route.path;
 

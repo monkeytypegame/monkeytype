@@ -33,7 +33,6 @@ import AnimatedModal, {
 } from "../utils/animated-modal";
 import { format as dateFormat } from "date-fns/format";
 import { Attributes, buildTag } from "../utils/tag-builder";
-import { CustomThemeColors } from "shared/schemas/config";
 
 type CommonInput<TType, TValue> = {
   type: TType;
@@ -1706,7 +1705,7 @@ list.updateCustomTheme = new SimpleModal({
 
     const newTheme = {
       name: name.replaceAll(" ", "_"),
-      colors: newColors as CustomThemeColors,
+      colors: newColors,
     };
     const validation = await DB.editCustomTheme(customTheme._id, newTheme);
     if (!validation) {
@@ -1715,7 +1714,7 @@ list.updateCustomTheme = new SimpleModal({
         message: "Failed to update custom theme",
       };
     }
-    UpdateConfig.setCustomThemeColors(newColors as CustomThemeColors);
+    UpdateConfig.setCustomThemeColors(newColors);
     void ThemePicker.refreshButtons();
 
     return {
