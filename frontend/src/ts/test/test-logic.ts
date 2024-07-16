@@ -913,6 +913,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
     //the duration might be modified to remove trailing afk time
     //its also not a big deal if the duration is off in those tests
     Notifications.add("Test invalid - inconsistent test duration", 0);
+    console.error("Test duration inconsistent", ce.testDuration, dateDur);
     TestStats.setInvalid();
     dontSave = true;
   } else if (difficultyFailed) {
