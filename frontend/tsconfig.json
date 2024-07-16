@@ -1,15 +1,12 @@
 {
+  "extends": "@monkeytype/typescript-config/base.json",
   "compilerOptions": {
     "target": "ES6",
     "lib": ["ESNext", "DOM", "DOM.Iterable"],
     "module": "ESNext",
-    "moduleResolution": "node",
     "types": ["vite/client", "node", "jquery"],
     "allowUmdGlobalAccess": true,
-    "resolveJsonModule": true,
     "outDir": "./build",
-    "newLine": "lf",
-    "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "strict": true,
     "noEmit": true,

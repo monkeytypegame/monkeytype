@@ -39,6 +39,11 @@
     "node": "18.19.1",
     "npm": "10.2.4"
   },
+  "workspaces": [
+    "packages/*",
+    "frontend",
+    "backend"
+  ],
   "devDependencies": {
     "@commitlint/cli": "17.7.1",
     "@commitlint/config-conventional": "17.7.0",
