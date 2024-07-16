@@ -11,7 +11,6 @@ import * as DB from "../../db";
 import * as ConfigEvent from "../../observables/config-event";
 import { isAuthenticated } from "../../firebase";
 import * as ActivePage from "../../states/active-page";
-import { CustomThemeColors } from "shared/schemas/config";
 
 function updateActiveButton(): void {
   let activeThemeName = Config.theme;
@@ -137,7 +136,6 @@ export async function refreshButtons(): Promise<void> {
 
     customThemes.forEach((customTheme) => {
       // const activeTheme =
-      // const activeTheme =git st
       //   Config.customThemeId === customTheme._id ? "active" : "";
       const bgColor = customTheme.colors[0];
       const mainColor = customTheme.colors[1];
@@ -283,7 +281,7 @@ function saveCustomThemeColors(): void {
       ).attr("value") as string
     );
   }
-  UpdateConfig.setCustomThemeColors(newColors as CustomThemeColors);
+  UpdateConfig.setCustomThemeColors(newColors);
   Notifications.add("Custom theme saved", 1);
 }
 

@@ -69,7 +69,7 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
 
       - name: Install dependencies
-        run: npm ci && (cd shared && npm ci ) && cd backend && npm ci
+        run: npm ci & cd backend && npm ci
 
       - name: Check pretty
         run: npm run pretty-code-be
@@ -100,7 +100,7 @@ jobs:
         run: mv ./firebase-config-example.ts ./firebase-config.ts && cp ./firebase-config.ts ./firebase-config-live.ts
 
       - name: Install dependencies
-        run: npm ci && (cd shared && npm ci ) && cd frontend && npm ci
+        run: npm ci & cd frontend && npm ci
 
       - name: Check pretty
         run: npm run pretty-code-fe

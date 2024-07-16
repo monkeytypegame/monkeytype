@@ -120,12 +120,6 @@ export const configGet = rateLimit({
   keyGenerator: getKeyWithUid,
   handler: customHandler,
 });
-export const configDelete = rateLimit({
-  windowMs: ONE_HOUR_MS,
-  max: 120 * REQUEST_MULTIPLIER,
-  keyGenerator: getKeyWithUid,
-  handler: customHandler,
-});
 
 // Leaderboards Routing
 export const leaderboardsGet = rateLimit({

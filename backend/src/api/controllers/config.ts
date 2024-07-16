@@ -1,33 +1,22 @@
-import { PartialConfig } from "shared/schemas/config";
 import * as ConfigDAL from "../../dal/config";
-import { MonkeyResponse2 } from "../../utils/monkey-response";
-import { GetConfigResponse } from "shared/contracts/configs";
+import { MonkeyResponse } from "../../utils/monkey-response";
 
 export async function getConfig(
-  req: MonkeyTypes.Request2
-): Promise<GetConfigResponse> {
+  req: MonkeyTypes.Request
+): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
-  const data = (await ConfigDAL.getConfig(uid))?.config ?? null;
 
-  return new MonkeyResponse2("Configuration retrieved", data);
+  const data = await ConfigDAL.getConfig(uid);
+  return new MonkeyResponse("Configuration retrieved", data);
 }
 
 export async function saveConfig(
-  req: MonkeyTypes.Request2<undefined, PartialConfig>
-): Promise<MonkeyResponse2> {
-  const config = req.body;
+  req: MonkeyTypes.Request
+): Promise<MonkeyResponse> {
+  const { config } = req.body;
   const { uid } = req.ctx.decodedToken;
 
   await ConfigDAL.saveConfig(uid, config);
 
-  return new MonkeyResponse2("Config updated");
-}
-
-export async function deleteConfig(
-  req: MonkeyTypes.Request2
-): Promise<MonkeyResponse2> {
-  const { uid } = req.ctx.decodedToken;
-
-  await ConfigDAL.deleteConfig(uid);
-  return new MonkeyResponse2("Config deleted");
+  return new MonkeyResponse("Config updated");
 }

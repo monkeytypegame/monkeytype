@@ -1,4 +1,3 @@
 backend/build
 backend/__migration__
-backend/scripts
 docker
