@@ -119,10 +119,6 @@ function applyDevApiRoutes(app: Application): void {
 }
 
 function applyApiRoutes(app: Application): void {
-  app.get("/leaderboard", (_req, res) => {
-    res.sendStatus(404);
-  });
-
   // Cannot be added to the route map because it needs to be added before the maintenance handler
   app.use("/configuration", configuration);
 
@@ -161,6 +157,10 @@ function applyApiRoutes(app: Application): void {
     })
   );
 
+  //legacy routes
+  app.get("/leaderboard", (_req, res) => {
+    res.sendStatus(404);
+  });
   app.get("/psa", (_req, res) => {
     res.json([
       {
