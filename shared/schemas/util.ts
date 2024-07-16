@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z, ZodString } from "zod";
 
 export type OperationTag = "configs";
 
@@ -38,4 +38,7 @@ export type MonkeyServerErrorType = z.infer<typeof MonkeyServerError>;
 export const StringNumberSchema = z.custom<`${number}`>((val) => {
   return typeof val === "string" ? /^\d+$/.test(val) : false;
 });
+
 export type StringNumber = z.infer<typeof StringNumberSchema>;
+
+export const token = (): ZodString => z.string().regex(/^[a-zA-Z0-9_]+$/);

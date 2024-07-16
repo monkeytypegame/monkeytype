@@ -1,7 +1,5 @@
-import { ZodSchema, ZodString, z } from "zod";
+import { ZodSchema, z } from "zod";
 import { MonkeyResponseSchema } from "./util";
-
-export const token = (): ZodString => z.string().regex(/^[a-zA-Z0-9_]+$/);
 
 export function responseWithNullableData<T extends ZodSchema>(
   dataSchema: T
