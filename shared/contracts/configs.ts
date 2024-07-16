@@ -59,13 +59,13 @@ import {
   WordCountSchema,
 } from "../schemas/config";
 
-import { responseWithNullableData } from "../schemas/helpers";
 import {
   EndpointMetadata,
   MonkeyClientError,
   MonkeyResponseSchema,
   MonkeyServerError,
   MonkeyValidationErrorSchema,
+  responseWithNullableData,
 } from "../schemas/util";
 
 export const ConfigSchema = z

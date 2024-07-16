@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { token } from "./helpers";
+import { token } from "./util";
 
 export const SmoothCaretSchema = z.enum(["off", "slow", "medium", "fast"]);
 export type SmoothCaret = z.infer<typeof SmoothCaretSchema>;

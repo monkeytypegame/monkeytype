@@ -1,4 +1,4 @@
-import { z, ZodString } from "zod";
+import { z, ZodSchema, ZodString } from "zod";
 
 export type OperationTag = "configs";
 
@@ -34,6 +34,36 @@ export const MonkeyServerError = MonkeyClientError.extend({
   uid: z.string().optional(),
 });
 export type MonkeyServerErrorType = z.infer<typeof MonkeyServerError>;
+
+export function responseWithNullableData<T extends ZodSchema>(
+  dataSchema: T
+): z.ZodObject<
+  z.objectUtil.extendShape<
+    typeof MonkeyResponseSchema.shape,
+    {
+      data: z.ZodNullable<T>;
+    }
+  >
+> {
+  return MonkeyResponseSchema.extend({
+    data: dataSchema.nullable(),
+  });
+}
+
+export function responseWithData<T extends ZodSchema>(
+  dataSchema: T
+): z.ZodObject<
+  z.objectUtil.extendShape<
+    typeof MonkeyResponseSchema.shape,
+    {
+      data: T;
+    }
+  >
+> {
+  return MonkeyResponseSchema.extend({
+    data: dataSchema,
+  });
+}
 
 export const StringNumberSchema = z.custom<`${number}`>((val) => {
   return typeof val === "string" ? /^\d+$/.test(val) : false;
