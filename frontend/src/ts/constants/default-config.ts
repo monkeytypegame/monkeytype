@@ -1,3 +1,5 @@
+import { Config } from "shared/schemas/config";
+
 export default {
   theme: "serika_dark",
   themeLight: "serika",
@@ -83,7 +85,7 @@ export default {
   oppositeShiftMode: "off",
   customBackground: "",
   customBackgroundSize: "cover",
-  customBackgroundFilter: [0, 1, 1, 1, 1],
+  customBackgroundFilter: [0, 1, 1, 1],
   customLayoutfluid: "qwerty#dvorak#colemak",
   monkeyPowerLevel: "off",
   minBurst: "off",
@@ -94,4 +96,4 @@ export default {
   showAverage: "off",
   tapeMode: "off",
   maxLineWidth: 0,
-} as SharedTypes.Config;
+} as Config;

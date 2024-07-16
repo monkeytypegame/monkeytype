@@ -176,7 +176,6 @@ export class DailyLeaderboard {
 
     const { leaderboardScoresKey, leaderboardResultsKey } =
       this.getTodaysLeaderboardKeys();
-
     // @ts-expect-error
     const [[, rank], [, count], [, result], [, minScore]] = await connection
       .multi()

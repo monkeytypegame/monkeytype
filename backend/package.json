@@ -4,7 +4,7 @@
   "license": "GPL-3.0",
   "private": true,
   "scripts": {
-    "build": "tsc --build",
+    "build": "npm run gen-docs && tsc --build",
     "watch": "tsc --build --watch",
     "clean": "tsc --build --clean",
     "start": "npm run build && node ./build/server.js",
@@ -13,7 +13,8 @@
     "dev": "ts-node-dev --transpile-only --inspect -- ./src/server.ts",
     "knip": "knip",
     "docker-db-only": "docker compose -f docker/compose.db-only.yml up",
-    "docker": "docker compose -f docker/compose.yml up"
+    "docker": "docker compose -f docker/compose.yml up",
+    "gen-docs": "ts-node scripts/openapi.ts build/static/api/openapi.json && redocly build-docs -o build/static/api/internal.html internal@v2 && redocly bundle -o build/static/api/public.json public-filter && redocly build-docs -o build/static/api/public.html public@v2"
   },
   "engines": {
     "node": "18.19.1",
@@ -21,6 +22,9 @@
   },
   "dependencies": {
     "@date-fns/utc": "1.2.0",
+    "@ts-rest/core": "3.45.2",
+    "@ts-rest/express": "3.45.2",
+    "@ts-rest/open-api": "3.45.2",
     "bcrypt": "5.1.1",
     "bullmq": "1.91.1",
     "chalk": "4.1.2",
@@ -46,15 +50,18 @@
     "path": "0.12.7",
     "prom-client": "14.0.1",
     "rate-limiter-flexible": "2.3.7",
+    "shared": "file:../shared",
     "simple-git": "3.16.0",
     "string-similarity": "4.0.4",
     "swagger-stats": "0.99.5",
     "swagger-ui-express": "4.3.0",
     "ua-parser-js": "0.7.28",
     "uuid": "9.0.1",
-    "winston": "3.6.0"
+    "winston": "3.6.0",
+    "zod": "3.23.8"
   },
   "devDependencies": {
+    "@redocly/cli": "1.18.0",
     "@types/bcrypt": "5.0.0",
     "@types/cors": "2.8.12",
     "@types/cron": "1.7.3",

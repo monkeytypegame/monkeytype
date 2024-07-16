@@ -111,28 +111,11 @@ declare namespace SharedTypes {
     };
   }
 
-  type StringNumber = `${number}`;
+  type StringNumber = import("../schemas/util").StringNumber;
 
-  interface PersonalBest {
-    acc: number;
-    consistency?: number;
-    difficulty: SharedTypes.Config.Difficulty;
-    lazyMode?: boolean;
-    language: string;
-    punctuation?: boolean;
-    numbers?: boolean;
-    raw: number;
-    wpm: number;
-    timestamp: number;
-  }
+  type PersonalBest = import("../schemas/users").PersonalBest;
 
-  interface PersonalBests {
-    time: Record<StringNumber, PersonalBest[]>;
-    words: Record<StringNumber, PersonalBest[]>;
-    quote: Record<StringNumber, PersonalBest[]>;
-    custom: Partial<Record<"custom", PersonalBest[]>>;
-    zen: Partial<Record<"zen", PersonalBest[]>>;
-  }
+  type PersonalBests = import("../schemas/users").PersonalBests;
 
   interface IncompleteTest {
     acc: number;
@@ -346,92 +329,7 @@ declare namespace SharedTypes {
     lastUsedOn: number;
   }
 
-  interface Config {
-    theme: string;
-    themeLight: string;
-    themeDark: string;
-    autoSwitchTheme: boolean;
-    customTheme: boolean;
-    customThemeColors: string[];
-    favThemes: string[];
-    showKeyTips: boolean;
-    smoothCaret: SharedTypes.Config.SmoothCaret;
-    quickRestart: SharedTypes.Config.QuickRestart;
-    punctuation: boolean;
-    numbers: boolean;
-    words: number;
-    time: number;
-    mode: SharedTypes.Config.Mode;
-    quoteLength: SharedTypes.Config.QuoteLength[];
-    language: string;
-    fontSize: number;
-    freedomMode: boolean;
-    difficulty: SharedTypes.Config.Difficulty;
-    blindMode: boolean;
-    quickEnd: boolean;
-    caretStyle: SharedTypes.Config.CaretStyle;
-    paceCaretStyle: SharedTypes.Config.CaretStyle;
-    flipTestColors: boolean;
-    layout: string;
-    funbox: string;
-    confidenceMode: SharedTypes.Config.ConfidenceMode;
-    indicateTypos: SharedTypes.Config.IndicateTypos;
-    timerStyle: SharedTypes.Config.TimerStyle;
-    liveSpeedStyle: SharedTypes.Config.LiveSpeedAccBurstStyle;
-    liveAccStyle: SharedTypes.Config.LiveSpeedAccBurstStyle;
-    liveBurstStyle: SharedTypes.Config.LiveSpeedAccBurstStyle;
-    colorfulMode: boolean;
-    randomTheme: SharedTypes.Config.RandomTheme;
-    timerColor: SharedTypes.Config.TimerColor;
-    timerOpacity: SharedTypes.Config.TimerOpacity;
-    stopOnError: SharedTypes.Config.StopOnError;
-    showAllLines: boolean;
-    keymapMode: SharedTypes.Config.KeymapMode;
-    keymapStyle: SharedTypes.Config.KeymapStyle;
-    keymapLegendStyle: SharedTypes.Config.KeymapLegendStyle;
-    keymapLayout: string;
-    keymapShowTopRow: SharedTypes.Config.KeymapShowTopRow;
-    fontFamily: string;
-    smoothLineScroll: boolean;
-    alwaysShowDecimalPlaces: boolean;
-    alwaysShowWordsHistory: boolean;
-    singleListCommandLine: SharedTypes.Config.SingleListCommandLine;
-    capsLockWarning: boolean;
-    playSoundOnError: SharedTypes.Config.PlaySoundOnError;
-    playSoundOnClick: SharedTypes.Config.PlaySoundOnClick;
-    soundVolume: SharedTypes.Config.SoundVolume;
-    startGraphsAtZero: boolean;
-    showOutOfFocusWarning: boolean;
-    paceCaret: SharedTypes.Config.PaceCaret;
-    paceCaretCustomSpeed: number;
-    repeatedPace: boolean;
-    accountChart: SharedTypes.Config.AccountChart;
-    minWpm: SharedTypes.Config.MinimumWordsPerMinute;
-    minWpmCustomSpeed: number;
-    highlightMode: SharedTypes.Config.HighlightMode;
-    typingSpeedUnit: SharedTypes.Config.TypingSpeedUnit;
-    ads: SharedTypes.Config.Ads;
-    hideExtraLetters: boolean;
-    strictSpace: boolean;
-    minAcc: SharedTypes.Config.MinimumAccuracy;
-    minAccCustom: number;
-    monkey: boolean;
-    repeatQuotes: SharedTypes.Config.RepeatQuotes;
-    oppositeShiftMode: SharedTypes.Config.OppositeShiftMode;
-    customBackground: string;
-    customBackgroundSize: SharedTypes.Config.CustomBackgroundSize;
-    customBackgroundFilter: SharedTypes.Config.CustomBackgroundFilter;
-    customLayoutfluid: SharedTypes.Config.CustomLayoutFluid;
-    monkeyPowerLevel: SharedTypes.Config.MonkeyPowerLevel;
-    minBurst: SharedTypes.Config.MinimumBurst;
-    minBurstCustomSpeed: number;
-    burstHeatmap: boolean;
-    britishEnglish: boolean;
-    lazyMode: boolean;
-    showAverage: SharedTypes.Config.ShowAverage;
-    tapeMode: SharedTypes.Config.TapeMode;
-    maxLineWidth: number;
-  }
+  type Config = import("../schemas/config").Config;
 
   type ConfigValue = Config[keyof Config];
 
@@ -500,7 +398,7 @@ declare namespace SharedTypes {
   type CustomTheme = {
     _id: string;
     name: string;
-    colors: string[];
+    colors: Config.CustomThemeColors;
   };
 
   type PremiumInfo = {

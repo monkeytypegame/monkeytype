@@ -1,17 +1,19 @@
 import endpoints from "./endpoints";
 import { buildHttpClient } from "./adapters/axios-adapter";
 import { envConfig } from "../constants/env-config";
+import { buildClient } from "./adapters/ts-rest-adapter";
+import { configsContract } from "shared/contracts/configs";
 
 const API_PATH = "";
 const BASE_URL = envConfig.backendUrl;
 const API_URL = `${BASE_URL}${API_PATH}`;
 
-const httpClient = buildHttpClient(API_URL, 10000);
+const httpClient = buildHttpClient(API_URL, 10_000);
 
 // API Endpoints
 const Ape = {
   users: new endpoints.Users(httpClient),
-  configs: new endpoints.Configs(httpClient),
+  configs: buildClient(configsContract, BASE_URL, 10_000),
   results: new endpoints.Results(httpClient),
   psas: new endpoints.Psas(httpClient),
   quotes: new endpoints.Quotes(httpClient),

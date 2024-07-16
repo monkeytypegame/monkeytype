@@ -179,7 +179,7 @@ declare namespace MonkeyTypes {
 
   type RawCustomTheme = {
     name: string;
-    colors: string[];
+    colors: SharedTypes.Config.CustomThemeColors;
   };
 
   type CustomTheme = {
