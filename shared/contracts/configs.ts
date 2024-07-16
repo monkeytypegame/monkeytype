@@ -61,7 +61,7 @@ import {
 
 import { responseWithNullableData } from "../schemas/helpers";
 import {
-  Metadata,
+  EndpointMetadata,
   MonkeyClientError,
   MonkeyResponseSchema,
   MonkeyServerError,
@@ -207,7 +207,7 @@ export const configsContract = c.router(
     strictStatusCodes: true,
     metadata: {
       openApiTags: "configs",
-    } as Metadata,
+    } as EndpointMetadata,
 
     commonResponses: {
       400: MonkeyClientError,

@@ -3,7 +3,7 @@ import { Method } from "axios";
 import { getIdToken } from "firebase/auth";
 import { envConfig } from "../../constants/env-config";
 import { getAuthenticatedUser, isAuthenticated } from "../../firebase";
-import type { Metadata } from "shared/schemas/util";
+import type { EndpointMetadata } from "shared/schemas/util";
 
 function buildApi(timeout: number): (args: ApiFetcherArgs) => Promise<{
   status: number;
@@ -12,8 +12,8 @@ function buildApi(timeout: number): (args: ApiFetcherArgs) => Promise<{
 }> {
   return async (request: ApiFetcherArgs) => {
     const isPublicEndpoint =
-      (request.route.metadata as Metadata | undefined)?.authenticationOptions
-        ?.isPublic ?? false;
+      (request.route.metadata as EndpointMetadata | undefined)
+        ?.authenticationOptions?.isPublic ?? false;
 
     try {
       const headers: HeadersInit = {

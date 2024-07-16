@@ -2,7 +2,7 @@ import { z } from "zod";
 
 export type OperationTag = "configs";
 
-export type Metadata = {
+export type EndpointMetadata = {
   /** Authentication options, by default a bearer token is required. */
   authenticationOptions?: RequestAuthenticationOptions;
   openApiTags?: OperationTag | OperationTag[];
