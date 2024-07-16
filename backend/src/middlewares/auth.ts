@@ -14,7 +14,7 @@ import crypto from "crypto";
 import { performance } from "perf_hooks";
 import { TsRestRequestHandler } from "@ts-rest/express";
 import { AppRoute, AppRouter } from "@ts-rest/core";
-import { RequestAuthenticationOptions } from "shared/schemas/util";
+import { RequestAuthenticationOptions } from "shared/schemas/api";
 
 const DEFAULT_OPTIONS: RequestAuthenticationOptions = {
   isPublic: false,

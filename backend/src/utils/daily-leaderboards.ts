@@ -176,7 +176,6 @@ export class DailyLeaderboard {
 
     const { leaderboardScoresKey, leaderboardResultsKey } =
       this.getTodaysLeaderboardKeys();
-    // eslint-disable-next-line
     // @ts-expect-error
     const [[, rank], [, count], [, result], [, minScore]] = await connection
       .multi()

@@ -1,5 +1,5 @@
 import { Response } from "express";
-import { MonkeyResponseType } from "shared/schemas/util";
+import { MonkeyResponseType } from "shared/schemas/api";
 import { isCustomCode } from "../constants/monkey-status-codes";
 
 export type MonkeyDataAware<T> = {
