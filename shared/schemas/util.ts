@@ -21,7 +21,7 @@ export type RequestAuthenticationOptions = {
 export const MonkeyResponseSchema = z.object({
   message: z.string(),
 });
-export type MonkeyResonseType = z.infer<typeof MonkeyResponseSchema>;
+export type MonkeyResponseType = z.infer<typeof MonkeyResponseSchema>;
 
 export const MonkeyValidationErrorSchema = MonkeyResponseSchema.extend({
   validationErrors: z.array(z.string()).nonempty(),
