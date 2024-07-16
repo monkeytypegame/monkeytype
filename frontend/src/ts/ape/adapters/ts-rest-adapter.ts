@@ -12,7 +12,8 @@ function buildApi(timeout: number): (args: ApiFetcherArgs) => Promise<{
 }> {
   return async (request: ApiFetcherArgs) => {
     const isPublicEndpoint =
-      (request.route.metadata as Metadata | undefined)?.auth?.isPublic ?? false;
+      (request.route.metadata as Metadata | undefined)?.authenticationOptions
+        ?.isPublic ?? false;
 
     try {
       const headers: HeadersInit = {
