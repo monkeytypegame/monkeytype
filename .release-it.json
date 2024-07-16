@@ -7,7 +7,7 @@
     ],
     "before:release": [
       "sh ./bin/deployBackend.sh",
-      "cd frontend && firebase deploy -P live --only hosting",
+      "cd frontend && npx firebase deploy -P live --only hosting",
       "sh ./bin/purgeCfCache.sh"
     ]
   },
