@@ -189,6 +189,16 @@ export function recordClientErrorByVersion(version: string): void {
   clientErrorByVersion.inc({ version });
 }
 
+const serverErrorByVersion = new Counter({
+  name: "api_server_error_by_version",
+  help: "Server versions which are generating 500 errors",
+  labelNames: ["version"],
+});
+
+export function recordServerErrorByVersion(version: string): void {
+  serverErrorByVersion.inc({ version });
+}
+
 const authTime = new Histogram({
   name: "api_request_auth_time",
   help: "Time spent authenticating",

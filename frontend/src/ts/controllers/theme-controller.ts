@@ -4,7 +4,7 @@ import * as Misc from "../utils/misc";
 import * as Arrays from "../utils/arrays";
 import * as JSONData from "../utils/json-data";
 import { isColorDark, isColorLight } from "../utils/colors";
-import Config, { setAutoSwitchTheme, setCustomBackground } from "../config";
+import Config, { setAutoSwitchTheme } from "../config";
 import * as BackgroundFilter from "../elements/custom-background-filter";
 import * as ConfigEvent from "../observables/config-event";
 import * as DB from "../db";
@@ -181,10 +181,17 @@ async function apply(
   $("#metaThemeColor").attr("content", colors.bg);
   // }
   updateFooterThemeName(isPreview ? themeName : undefined);
+
+  if (isColorDark(await ThemeColors.get("bg"))) {
+    $("body").addClass("darkMode");
+  } else {
+    $("body").removeClass("darkMode");
+  }
 }
 
 function updateFooterThemeName(nameOverride?: string): void {
   let str = Config.theme;
+  if (randomTheme !== null) str = randomTheme;
   if (Config.customTheme) str = "custom";
   if (nameOverride !== undefined && nameOverride !== "") str = nameOverride;
   str = str.replace(/_/g, " ");
@@ -226,9 +233,10 @@ async function set(
 export async function clearPreview(applyTheme = true): Promise<void> {
   if (isPreviewingTheme) {
     isPreviewingTheme = false;
-    randomTheme = null;
     if (applyTheme) {
-      if (Config.customTheme) {
+      if (randomTheme !== null) {
+        await apply(randomTheme);
+      } else if (Config.customTheme) {
         await apply("custom");
       } else {
         await apply(Config.theme);
@@ -294,7 +302,7 @@ export async function randomizeTheme(): Promise<void> {
     randomTheme = "custom";
   }
 
-  preview(randomTheme, colorsOverride);
+  await apply(randomTheme, colorsOverride);
 
   if (randomThemeIndex >= themesList.length) {
     let name = randomTheme.replace(/_/g, " ");
@@ -374,10 +382,12 @@ ConfigEvent.subscribe(async (eventKey, eventValue, nosave) => {
     nosave ? preview("custom") : await set("custom");
   }
   if (eventKey === "theme") {
+    await clearRandom();
     await clearPreview(false);
     await set(eventValue as string);
   }
   if (eventKey === "setThemes") {
+    await clearRandom();
     await clearPreview(false);
     if (Config.autoSwitchTheme) {
       if (window.matchMedia?.("(prefers-color-scheme: dark)").matches) {
@@ -428,7 +438,8 @@ ConfigEvent.subscribe(async (eventKey, eventValue, nosave) => {
 
 window.addEventListener("customBackgroundFailed", () => {
   Notifications.add(
-    "The custom background cannot be loaded and will be removed from your configuration."
+    "Custom background link is either temporairly unavailable or expired. Please make sure the URL is correct or change it",
+    0,
+    { duration: 5 }
   );
-  setCustomBackground("");
 });

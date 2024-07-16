@@ -283,6 +283,16 @@ export async function punctuateWord(
   ) {
     word = await applyEnglishPunctuationToWord(word);
   }
+
+  if (word.includes("\t")) {
+    word = word.replace(/\t/g, "");
+    word += "\t";
+  }
+  if (word.includes("\n")) {
+    word = word.replace(/\n/g, "");
+    word += "\n";
+  }
+
   return word;
 }
 
@@ -699,7 +709,7 @@ export async function getNextWord(
   wordIndex: number,
   wordsBound: number,
   previousWord: string,
-  previousWord2: string
+  previousWord2: string | undefined
 ): Promise<GetNextWordReturn> {
   console.debug("Getting next word", {
     isRepeated: TestState.isRepeated,
@@ -734,7 +744,11 @@ export async function getNextWord(
 
       if (
         Config.mode === "time" ||
-        (Config.mode === "custom" && CustomText.getLimitMode() === "time")
+        (Config.mode === "custom" && CustomText.getLimitMode() === "time") ||
+        (Config.mode === "custom" &&
+          CustomText.getLimitMode() === "word" &&
+          wordIndex < CustomText.getLimitValue()) ||
+        (Config.mode === "words" && wordIndex < Config.words)
       ) {
         continueRandomGeneration = true;
       }
@@ -756,7 +770,7 @@ export async function getNextWord(
   let randomWord = currentWordset.randomWord(funboxFrequency);
   const previousWordRaw = previousWord.replace(/[.?!":\-,]/g, "").toLowerCase();
   const previousWord2Raw = previousWord2
-    .replace(/[.?!":\-,']/g, "")
+    ?.replace(/[.?!":\-,']/g, "")
     .toLowerCase();
 
   if (currentSection.length === 0) {

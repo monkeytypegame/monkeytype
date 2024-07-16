@@ -378,8 +378,9 @@ async function showCommands(): Promise<void> {
       );
     }
 
-    if (command.id.startsWith("changeTheme") && command.customData) {
-      html += `<div class="command withThemeBubbles" data-command-id="${command.id}" data-index="${index}" style="${customStyle}">
+    if (command.customData !== undefined) {
+      if (command.id.startsWith("changeTheme")) {
+        html += `<div class="command withThemeBubbles" data-command-id="${command.id}" data-index="${index}" style="${customStyle}">
       ${iconHTML}<div>${display}</div>
       <div class="themeBubbles" style="background: ${command.customData["bgColor"]};outline: 0.25rem solid ${command.customData["bgColor"]};">
         <div class="themeBubble" style="background: ${command.customData["mainColor"]}"></div>
@@ -387,6 +388,20 @@ async function showCommands(): Promise<void> {
         <div class="themeBubble" style="background: ${command.customData["textColor"]}"></div>
       </div>
       </div>`;
+      }
+      if (command.id.startsWith("changeFont")) {
+        let fontFamily = command.customData["name"];
+
+        if (fontFamily === "Helvetica") {
+          fontFamily = "Comic Sans MS";
+        }
+
+        if (command.customData["isSystem"] === false) {
+          fontFamily += " Preview";
+        }
+
+        html += `<div class="command" data-command-id="${command.id}" data-index="${index}" style="font-family: ${fontFamily}">${iconHTML}<div>${display}</div></div>`;
+      }
     } else {
       html += `<div class="command" data-command-id="${command.id}" data-index="${index}" style="${customStyle}">${iconHTML}<div>${display}</div></div>`;
     }
@@ -603,11 +618,11 @@ const modal = new AnimatedModal({
 
     input.addEventListener("keydown", async (e) => {
       mouseMode = false;
-      if (e.key === "ArrowUp") {
+      if (e.key === "ArrowUp" || (e.key.toLowerCase() === "k" && e.ctrlKey)) {
         e.preventDefault();
         await decrementActiveIndex();
       }
-      if (e.key === "ArrowDown") {
+      if (e.key === "ArrowDown" || (e.key.toLowerCase() === "j" && e.ctrlKey)) {
         e.preventDefault();
         await incrementActiveIndex();
       }

@@ -40,7 +40,11 @@
   },
   {
     "name": "portuguese",
-    "languages": ["portuguese", "portuguese_3k", "portuguese_acentos_e_cedilha"]
+    "languages": [
+      "portuguese",
+      "portuguese_3k",
+      "portuguese_acentos_e_cedilha, portuguese_5k"
+    ]
   },
   {
     "name": "arabic",
@@ -316,7 +320,7 @@
   },
   {
     "name": "serbian",
-    "languages": ["serbian", "serbian_latin"]
+    "languages": ["serbian", "serbian_latin", "serbian_10k", "serbian_latin_10k"]
   },
   {
     "name": "georgian",
@@ -380,7 +384,12 @@
   },
   {
     "name": "armenian",
-    "languages": ["armenian_western", "armenian_western_1k"]
+    "languages": [
+      "armenian",
+      "armenian_1k",
+      "armenian_western",
+      "armenian_western_1k"
+    ]
   },
   {
     "name": "myanmar",
@@ -480,7 +489,8 @@
       "pig_latin",
       "twitch_emotes",
       "git",
-      "typing_of_the_dead"
+      "typing_of_the_dead",
+      "league_of_legends"
     ]
   },
   {
@@ -497,7 +507,7 @@
   },
   {
     "name": "kyrgyz",
-    "languages": ["kyrgyz"]
+    "languages": ["kyrgyz", "kyrgyz_1k"]
   },
   {
     "name": "yiddish",
@@ -523,6 +533,10 @@
     "name": "lorem_ipsum",
     "languages": ["lorem_ipsum"]
   },
+  {
+    "name": "occitan",
+    "languages": ["occitan", "occitan_1k", "occitan_2k", "occitan_5k", "occitan_10k"]
+  },  
   {
     "name": "code",
     "languages": [
@@ -576,7 +590,9 @@
       "code_assembly",
       "code_v",
       "code_ook",
-      "code_typescript"
+      "code_typescript",
+      "code_cobol",
+      "code_common_lisp"
     ]
   }
 ]

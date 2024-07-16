@@ -1,4 +1,4 @@
-import SettingsGroup from "../settings/settings-group";
+import SettingsGroup from "../elements/settings/settings-group";
 import Config, * as UpdateConfig from "../config";
 import * as Sound from "../controllers/sound-controller";
 import * as Misc from "../utils/misc";
@@ -8,7 +8,7 @@ import * as DB from "../db";
 import { toggleFunbox } from "../test/funbox/funbox";
 import * as TagController from "../controllers/tag-controller";
 import * as PresetController from "../controllers/preset-controller";
-import * as ThemePicker from "../settings/theme-picker";
+import * as ThemePicker from "../elements/settings/theme-picker";
 import * as Notifications from "../elements/notifications";
 import * as ImportExportSettingsModal from "../modals/import-export-settings";
 import * as ConfigEvent from "../observables/config-event";
@@ -604,7 +604,7 @@ async function fillSettingsPage(): Promise<void> {
           funbox.name
         }' aria-label="${
           funbox.info
-        }" data-balloon-pos="up" data-balloon-length="fit" style="transform:scaleX(-1) scaleY(-1);">${funbox.name.replace(
+        }" data-balloon-pos="up" data-balloon-length="fit" style="transform:scaleX(-1) scaleY(-1); z-index:1;">${funbox.name.replace(
           /_/g,
           " "
         )}</div>`;
@@ -641,14 +641,20 @@ async function fillSettingsPage(): Promise<void> {
 
   if (fontsList) {
     for (const font of fontsList) {
+      let fontFamily = font.name;
+      if (fontFamily === "Helvetica") {
+        fontFamily = "Comic Sans MS";
+      }
+      if ((font.systemFont ?? false) === false) {
+        fontFamily += " Preview";
+      }
+      const activeClass = Config.fontFamily === font.name ? " active" : "";
+      const display = font.display !== undefined ? font.display : font.name;
       if (Config.fontFamily === font.name) isCustomFont = false;
-      fontsElHTML += `<button class="${
-        Config.fontFamily === font.name ? " active" : ""
-      }" style="font-family:${
-        font.display !== undefined ? font.display : font.name
-      }" data-config-value="${font.name.replace(/ /g, "_")}">${
-        font.display !== undefined ? font.display : font.name
-      }</button>`;
+      fontsElHTML += `<button class="${activeClass}" style="font-family:${fontFamily}" data-config-value="${font.name.replace(
+        / /g,
+        "_"
+      )}">${display}</button>`;
     }
 
     fontsElHTML += isCustomFont
@@ -664,6 +670,7 @@ async function fillSettingsPage(): Promise<void> {
   $(
     ".pageSettings .section[data-config-name='customBackgroundSize'] input"
   ).val(Config.customBackground);
+  updateCustomBackgroundRemoveButtonVisibility();
 
   $(".pageSettings .section[data-config-name='fontSize'] input").val(
     Config.fontSize
@@ -764,6 +771,11 @@ export function updateAuthSections(): void {
     $(
       ".pageSettings .section.passwordAuthSettings #passPasswordAuth"
     ).removeClass("hidden");
+    if (googleProvider || githubProvider) {
+      $(
+        ".pageSettings .section.passwordAuthSettings #removePasswordAuth"
+      ).removeClass("hidden");
+    }
   } else {
     $(
       ".pageSettings .section.passwordAuthSettings #addPasswordAuth"
@@ -960,6 +972,8 @@ export async function update(groupUpdate = true): Promise<void> {
       ".pageSettings .section[data-config-name='customBackgroundFilter']"
     ).addClass("hidden");
   }
+  updateCustomBackgroundRemoveButtonVisibility();
+
   $(
     ".pageSettings .section[data-config-name='customBackgroundSize'] input"
   ).val(Config.customBackground);
@@ -994,6 +1008,20 @@ function toggleSettingsGroup(groupName: string): void {
     $(`.pageSettings .sectionGroupTitle[group=${groupName}]`).removeClass(
       "rotateIcon"
     );
+  }
+}
+
+function updateCustomBackgroundRemoveButtonVisibility(): void {
+  const button = $(
+    ".pageSettings .section[data-config-name='customBackgroundSize'] button.remove"
+  );
+  if (
+    Config.customBackground !== undefined &&
+    Config.customBackground.length > 0
+  ) {
+    button.removeClass("hidden");
+  } else {
+    button.addClass("hidden");
   }
 }
 
@@ -1183,6 +1211,12 @@ $(
       ".pageSettings .section[data-config-name='customBackgroundSize'] .inputAndButton input"
     ).val() as string
   );
+});
+
+$(
+  ".pageSettings .section[data-config-name='customBackgroundSize'] .inputAndButton button.remove"
+).on("click", () => {
+  UpdateConfig.setCustomBackground("");
 });
 
 $(

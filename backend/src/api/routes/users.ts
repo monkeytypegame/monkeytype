@@ -2,23 +2,21 @@ import joi from "joi";
 import { authenticateRequest } from "../../middlewares/auth";
 import { Router } from "express";
 import * as UserController from "../controllers/user";
-import {
-  asyncHandler,
-  validateRequest,
-  validateConfiguration,
-  checkUserPermissions,
-} from "../../middlewares/api-utils";
 import * as RateLimit from "../../middlewares/rate-limit";
 import { withApeRateLimiter } from "../../middlewares/ape-rate-limit";
 import { containsProfanity, isUsernameValid } from "../../utils/validation";
 import filterSchema from "../schemas/filter-schema";
+import { asyncHandler } from "../../middlewares/utility";
+import { validate } from "../../middlewares/configuration";
+import { validateRequest } from "../../middlewares/validation";
+import { checkUserPermissions } from "../../middlewares/permission";
 
 const router = Router();
 
 const tagNameValidation = joi
   .string()
   .required()
-  .regex(/^[0-9a-zA-Z_.-]+$/)
+  .regex(/^[0-9a-zA-Z_-]+$/)
   .max(16)
   .messages({
     "string.pattern.base":
@@ -29,7 +27,7 @@ const tagNameValidation = joi
 const customThemeNameValidation = joi
   .string()
   .max(16)
-  .regex(/^[0-9a-zA-Z_.-]+$/)
+  .regex(/^[0-9a-zA-Z_-]+$/)
   .required()
   .messages({
     "string.max": "The name must not exceed 16 characters",
@@ -69,7 +67,7 @@ const usernameValidation = joi
   .string()
   .required()
   .custom((value, helpers) => {
-    if (containsProfanity(value)) {
+    if (containsProfanity(value, "substring")) {
       return helpers.error("string.profanity");
     }
 
@@ -83,7 +81,7 @@ const usernameValidation = joi
     "string.profanity":
       "The username contains profanity. If you believe this is a mistake, please contact us ",
     "string.pattern.base":
-      "Username invalid. Name cannot use special characters or contain more than 16 characters. Can include _ . and - ",
+      "Username invalid. Name cannot use special characters or contain more than 16 characters. Can include _ and - ",
   });
 
 const languageSchema = joi
@@ -103,7 +101,7 @@ router.get(
 
 router.post(
   "/signup",
-  validateConfiguration({
+  validate({
     criteria: (configuration) => {
       return configuration.users.signUp;
     },
@@ -243,7 +241,7 @@ router.post(
   asyncHandler(UserController.optOutOfLeaderboards)
 );
 
-const requireFilterPresetsEnabled = validateConfiguration({
+const requireFilterPresetsEnabled = validate({
   criteria: (configuration) => {
     return configuration.results.filterPresets.enabled;
   },
@@ -389,7 +387,7 @@ router.patch(
   asyncHandler(UserController.editCustomTheme)
 );
 
-const requireDiscordIntegrationEnabled = validateConfiguration({
+const requireDiscordIntegrationEnabled = validate({
   criteria: (configuration) => {
     return configuration.users.discordIntegration.enabled;
   },
@@ -498,7 +496,7 @@ router.delete(
   asyncHandler(UserController.removeFavoriteQuote)
 );
 
-const requireProfilesEnabled = validateConfiguration({
+const requireProfilesEnabled = validate({
   criteria: (configuration) => {
     return configuration.users.profiles.enabled;
   },
@@ -514,9 +512,13 @@ router.get(
   withApeRateLimiter(RateLimit.userProfileGet),
   validateRequest({
     params: {
-      uidOrName: joi
-        .alternatives()
-        .try(usernameValidation, joi.string().token().max(50)),
+      uidOrName: joi.alternatives().try(
+        joi
+          .string()
+          .regex(/^[\da-zA-Z._-]+$/)
+          .max(16),
+        joi.string().token().max(50)
+      ),
     },
     query: {
       isUid: joi.string().valid("").messages({
@@ -531,14 +533,15 @@ const profileDetailsBase = joi
   .string()
   .allow("")
   .custom((value, helpers) => {
-    if (containsProfanity(value)) {
+    if (containsProfanity(value, "word")) {
       return helpers.error("string.profanity");
     }
 
     return value;
   })
   .messages({
-    "string.profanity": "Profanity detected. Please remove it.",
+    "string.profanity":
+      "Profanity detected. Please remove it. (if you believe this is a mistake, please contact us)",
   });
 
 router.patch(
@@ -572,7 +575,7 @@ router.patch(
 
 const mailIdSchema = joi.array().items(joi.string().guid()).min(1).default([]);
 
-const requireInboxEnabled = validateConfiguration({
+const requireInboxEnabled = validate({
   criteria: (configuration) => {
     return configuration.users.inbox.enabled;
   },
@@ -607,7 +610,7 @@ const withCustomMessages = joi.string().messages({
 
 router.post(
   "/report",
-  validateConfiguration({
+  validate({
     criteria: (configuration) => {
       return configuration.quotes.reporting.enabled;
     },
@@ -680,4 +683,21 @@ router.get(
   asyncHandler(UserController.getTestActivity)
 );
 
+router.get(
+  "/currentTestActivity",
+  authenticateRequest({
+    acceptApeKeys: true,
+  }),
+  withApeRateLimiter(RateLimit.userCurrentTestActivity),
+  asyncHandler(UserController.getCurrentTestActivity)
+);
+
+router.get(
+  "/streak",
+  authenticateRequest({
+    acceptApeKeys: true,
+  }),
+  withApeRateLimiter(RateLimit.userStreak),
+  asyncHandler(UserController.getStreak)
+);
 export default router;

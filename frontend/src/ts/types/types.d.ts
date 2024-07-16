@@ -84,6 +84,7 @@ declare namespace MonkeyTypes {
   type FontObject = {
     name: string;
     display?: string;
+    systemFont?: string;
   };
 
   type FunboxWordsFrequency = "normal" | "zipf";
@@ -331,7 +332,7 @@ declare namespace MonkeyTypes {
     available?: () => boolean;
     active?: () => boolean;
     shouldFocusTestUI?: boolean;
-    customData?: Record<string, string>;
+    customData?: Record<string, string | boolean>;
   };
 
   type CommandsSubgroup = {
@@ -455,6 +456,7 @@ declare namespace MonkeyTypes {
   type TestActivityCalendar = {
     getMonths: () => TestActivityMonth[];
     getDays: () => TestActivityDay[];
+    getTotalTests: () => number;
   };
 
   type ModifiableTestActivityCalendar = TestActivityCalendar & {

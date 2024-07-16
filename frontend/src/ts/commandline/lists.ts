@@ -100,7 +100,7 @@ import * as CustomTextPopup from "../modals/custom-text";
 import * as Settings from "../pages/settings";
 import * as Notifications from "../elements/notifications";
 import * as VideoAdPopup from "../popups/video-ad-popup";
-import * as ShareTestSettingsPopup from "../popups/share-test-settings-popup";
+import * as ShareTestSettingsPopup from "../modals/share-test-settings";
 import * as TestStats from "../test/test-stats";
 import * as QuoteSearchModal from "../modals/quote-search";
 import * as FPSCounter from "../elements/fps-counter";

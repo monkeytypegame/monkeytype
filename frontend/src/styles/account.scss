@@ -391,6 +391,10 @@
       opacity: 1;
     }
   }
+  //remove flashHighlight from .group.History .active
+  .group.history .resultEditTagsButton {
+    animation: none;
+  }
 }
 
 .pageAccount {
@@ -527,8 +531,8 @@
 
   .title {
     grid-area: title;
-    text-align: center;
-    // font-size: 1.5em;
+    text-align: left;
+    font-size: var(--font-size);
     color: var(--sub-color);
     align-self: center;
   }

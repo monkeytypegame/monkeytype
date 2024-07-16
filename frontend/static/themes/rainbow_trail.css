@@ -73,6 +73,56 @@ header #logo .top,
   -webkit-text-fill-color: initial;
 }
 
+#liveStatsTextTop.timerMain,
+#liveStatsTextBottom.timerMain,
+#liveStatsMini.timerMain {
+  animation: rainbow-infinite-loop 30s linear infinite;
+}
+
+#words {
+  --correct-letter-animation: rainbow-infinite-loop 5s linear infinite;
+  --incorrect-letter-animation: error-repeat 1s alternate ease-in-out infinite;
+  --extra-letter-animation: error-repeat 1s alternate ease-in-out infinite;
+}
+
+#words .word.typed letter.correct,
+#words.highlight-word .word.typed letter,
+#words.highlight-next-word .word.typed letter,
+#words.highlight-next-two-words .word.typed letter,
+#words.highlight-next-three-words .word.typed letter {
+  animation: rainbow 7.5s ease-in-out forwards;
+}
+
+#words.highlight-word .word.active letter {
+  animation: var(--correct-letter-animation);
+}
+
+#words.flipped {
+  --correct-letter-animation: none;
+  --untyped-letter-animation: rainbow-infinite-loop 5s linear infinite;
+}
+
+#words.flipped .word.typed letter {
+  animation: none;
+}
+
+.button:hover {
+  animation: glowing-button 2s alternate ease-in-out infinite;
+}
+
+#words.highlight-off .word letter,
+#words.highlight-off .word.typed letter {
+  animation: rainbow-infinite-loop 5s linear infinite;
+}
+
+.row .textButton:not(.active) {
+  color: #999999;
+}
+
+.textButton.active {
+  color: #111111;
+}
+
 @keyframes rainbow {
   0% {
     color: #60b6ce;
@@ -167,40 +217,6 @@ header #logo .top,
   100% {
     color: #ff000075;
   }
-}
-
-#words.flipped .word {
-  animation: rainbow-infinite-loop 30s linear infinite;
-}
-
-#words.flipped .word letter.correct {
-  color: var(--sub-color);
-}
-
-#words:not(.flipped) .word letter.correct {
-  animation: rainbow 7.5s ease-in-out forwards;
-}
-
-#liveStatsTextTop.timerMain,
-#liveStatsTextBottom.timerMain,
-#liveStatsMini.timerMain {
-  animation: rainbow-infinite-loop 30s linear infinite;
-}
-
-.word letter.incorrect {
-  animation: error-repeat 1s alternate ease-in-out infinite;
-}
-
-.button:hover {
-  animation: glowing-button 2s alternate ease-in-out infinite;
-}
-
-.row .textButton:not(.active) {
-  color: #999999;
-}
-
-.textButton.active {
-  color: #111111;
 }
 
 @keyframes light-rainbow-infinite-loop {

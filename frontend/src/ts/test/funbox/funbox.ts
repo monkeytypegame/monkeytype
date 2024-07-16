@@ -417,10 +417,11 @@ FunboxList.setFunboxFunctions("memory", {
   },
   start(): void {
     MemoryTimer.reset();
-    $("#wordsWrapper").addClass("hidden");
+    $("#words").addClass("hidden");
   },
   restart(): void {
     MemoryTimer.start();
+    $("#words").removeClass("hidden");
     if (Config.keymapMode === "next") {
       UpdateConfig.setKeymapMode("react");
     }

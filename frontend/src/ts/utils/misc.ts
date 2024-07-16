@@ -576,14 +576,20 @@ export function isDevEnvironment(): boolean {
   return envConfig.isDevelopment;
 }
 
-export function dreymarIndex(arrayLength: number): number {
-  const n = arrayLength;
-  const g = 0.5772156649;
-  const M = Math.log(n) + g;
+export function zipfyRandomArrayIndex(dictLength: number): number {
+  /**
+   * get random index based on probability distribution of Zipf's law,
+   * where PMF is (1/n)/H_N,
+   * where H_N is the Harmonic number of (N), where N is dictLength
+   * and the harmonic number is approximated using the formula:
+   * H_n = ln(n + 0.5) + gamma
+   */
+  const gamma = 0.5772156649015329; // Euler–Mascheroni constant
+  const H_N = Math.log(dictLength + 0.5) + gamma; // approximation of H_N
   const r = Random.get();
-  const h = Math.exp(r * M - g);
-  const W = Math.ceil(h);
-  return W - 1;
+  /* inverse of CDF where CDF is H_n/H_N */
+  const inverseCDF = Math.exp(r * H_N - gamma) - 0.5;
+  return Math.floor(inverseCDF);
 }
 
 export async function checkIfLanguageSupportsZipf(

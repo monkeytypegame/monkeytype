@@ -353,7 +353,7 @@ export async function addCustomTheme(
 
   const newCustomTheme: MonkeyTypes.CustomTheme = {
     ...theme,
-    _id: response.data._id as string,
+    _id: response.data._id,
   };
 
   dbSnapshot.customThemes.push(newCustomTheme);

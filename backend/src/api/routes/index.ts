@@ -10,11 +10,12 @@ import presets from "./presets";
 import apeKeys from "./ape-keys";
 import admin from "./admin";
 import webhooks from "./webhooks";
+import dev from "./dev";
 import configuration from "./configuration";
 import { version } from "../../version";
 import leaderboards from "./leaderboards";
 import addSwaggerMiddlewares from "./swagger";
-import { asyncHandler } from "../../middlewares/api-utils";
+import { asyncHandler } from "../../middlewares/utility";
 import { MonkeyResponse } from "../../utils/monkey-response";
 import { recordClientVersion } from "../../utils/prometheus";
 import {
@@ -69,6 +70,9 @@ function addApiRoutes(app: Application): void {
       }
       next();
     });
+
+    //enable dev edpoints
+    app.use("/dev", dev);
   }
 
   // Cannot be added to the route map because it needs to be added before the maintenance handler

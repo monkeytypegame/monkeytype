@@ -1,7 +1,7 @@
 import request from "supertest";
 import app from "../../../src/app";
 import * as Configuration from "../../../src/init/configuration";
-import { getCurrentTestActivity } from "../../../src/api/controllers/user";
+import { generateCurrentTestActivity } from "../../../src/api/controllers/user";
 import * as UserDal from "../../../src/dal/user";
 import _ from "lodash";
 import { DecodedIdToken } from "firebase-admin/lib/auth/token-verifier";
@@ -195,7 +195,7 @@ describe("user controller test", () => {
     });
   });
   describe("getTestActivity", () => {
-    const getUserMock = vi.spyOn(UserDal, "getUser");
+    const getUserMock = vi.spyOn(UserDal, "getPartialUser");
     afterAll(() => {
       getUserMock.mockReset();
     });
@@ -203,7 +203,7 @@ describe("user controller test", () => {
       //given
       getUserMock.mockResolvedValue({
         testActivity: { "2023": [1, 2, 3], "2024": [4, 5, 6] },
-      } as unknown as MonkeyTypes.DBUser);
+      } as Partial<MonkeyTypes.DBUser> as MonkeyTypes.DBUser);
 
       //when
       await mockApp
@@ -216,7 +216,7 @@ describe("user controller test", () => {
       //given
       getUserMock.mockResolvedValue({
         testActivity: { "2023": [1, 2, 3], "2024": [4, 5, 6] },
-      } as unknown as MonkeyTypes.DBUser);
+      } as Partial<MonkeyTypes.DBUser> as MonkeyTypes.DBUser);
       vi.spyOn(UserDal, "checkIfUserIsPremium").mockResolvedValue(true);
       await enablePremiumFeatures(true);
 
@@ -234,12 +234,12 @@ describe("user controller test", () => {
     });
   });
 
-  describe("getCurrentTestActivity", () => {
+  describe("generateCurrentTestActivity", () => {
     beforeAll(() => {
       vi.useFakeTimers().setSystemTime(1712102400000);
     });
     it("without any data", () => {
-      expect(getCurrentTestActivity(undefined)).toBeUndefined();
+      expect(generateCurrentTestActivity(undefined)).toBeUndefined();
     });
     it("with current year only", () => {
       //given
@@ -248,7 +248,7 @@ describe("user controller test", () => {
       };
 
       //when
-      const testActivity = getCurrentTestActivity(data);
+      const testActivity = generateCurrentTestActivity(data);
 
       //then
       expect(testActivity?.lastDay).toEqual(1712102400000);
@@ -268,7 +268,7 @@ describe("user controller test", () => {
       };
 
       //when
-      const testActivity = getCurrentTestActivity(data);
+      const testActivity = generateCurrentTestActivity(data);
 
       //then
       expect(testActivity?.lastDay).toEqual(1712102400000);
@@ -288,7 +288,7 @@ describe("user controller test", () => {
       };
 
       //when
-      const testActivity = getCurrentTestActivity(data);
+      const testActivity = generateCurrentTestActivity(data);
 
       //then
       expect(testActivity?.lastDay).toEqual(1712102400000);
@@ -303,7 +303,7 @@ describe("user controller test", () => {
   });
 
   describe("toggle ban", () => {
-    const getUserMock = vi.spyOn(UserDal, "getUser");
+    const getUserMock = vi.spyOn(UserDal, "getPartialUser");
     const setBannedMock = vi.spyOn(UserDal, "setBanned");
     const georgeUserBannedMock = vi.spyOn(GeorgeQueue, "userBanned");
     const isAdminMock = vi.spyOn(AdminUuids, "isAdmin");
@@ -326,7 +326,7 @@ describe("user controller test", () => {
         name: "name",
         email: "email",
         discordId: "discordId",
-      } as unknown as MonkeyTypes.DBUser;
+      } as Partial<MonkeyTypes.DBUser> as MonkeyTypes.DBUser;
       getUserMock.mockResolvedValue(user);
 
       //WHEN
@@ -340,7 +340,10 @@ describe("user controller test", () => {
         .expect(200);
 
       //THEN
-      expect(getUserMock).toHaveBeenLastCalledWith(uid, "toggle ban");
+      expect(getUserMock).toHaveBeenLastCalledWith(uid, "toggle ban", [
+        "banned",
+        "discordId",
+      ]);
       expect(setBannedMock).toHaveBeenCalledWith(uid, true);
       expect(georgeUserBannedMock).toHaveBeenCalledWith("discordId", true);
     });
@@ -352,7 +355,7 @@ describe("user controller test", () => {
         name: "name",
         email: "email",
         discordId: "",
-      } as unknown as MonkeyTypes.DBUser;
+      } as Partial<MonkeyTypes.DBUser> as MonkeyTypes.DBUser;
       getUserMock.mockResolvedValue(user);
 
       //WHEN
@@ -378,7 +381,7 @@ describe("user controller test", () => {
         email: "email",
         discordId: "discordId",
         banned: true,
-      } as unknown as MonkeyTypes.DBUser;
+      } as Partial<MonkeyTypes.DBUser> as MonkeyTypes.DBUser;
       getUserMock.mockResolvedValue(user);
 
       //WHEN
@@ -392,7 +395,10 @@ describe("user controller test", () => {
         .expect(200);
 
       //THEN
-      expect(getUserMock).toHaveBeenLastCalledWith(uid, "toggle ban");
+      expect(getUserMock).toHaveBeenLastCalledWith(uid, "toggle ban", [
+        "banned",
+        "discordId",
+      ]);
       expect(setBannedMock).toHaveBeenCalledWith(uid, false);
       expect(georgeUserBannedMock).toHaveBeenCalledWith("discordId", false);
     });
@@ -406,7 +412,7 @@ describe("user controller test", () => {
         email: "email",
         discordId: "",
         banned: true,
-      } as unknown as MonkeyTypes.DBUser;
+      } as Partial<MonkeyTypes.DBUser> as MonkeyTypes.DBUser;
       getUserMock.mockResolvedValue(user);
 
       //WHEN
@@ -425,7 +431,7 @@ describe("user controller test", () => {
   });
 
   describe("delete user", () => {
-    const getUserMock = vi.spyOn(UserDal, "getUser");
+    const getUserMock = vi.spyOn(UserDal, "getPartialUser");
     const deleteUserMock = vi.spyOn(UserDal, "deleteUser");
     const firebaseDeleteUserMock = vi.spyOn(AuthUtils, "deleteUser");
     const deleteAllApeKeysMock = vi.spyOn(ApeKeys, "deleteAllApeKeys");
@@ -475,7 +481,7 @@ describe("user controller test", () => {
         email: "email",
         discordId: "discordId",
         banned: true,
-      } as unknown as MonkeyTypes.DBUser;
+      } as Partial<MonkeyTypes.DBUser> as MonkeyTypes.DBUser;
       await getUserMock.mockResolvedValue(user);
 
       //WHEN
@@ -509,7 +515,7 @@ describe("user controller test", () => {
         name: "name",
         email: "email",
         discordId: "discordId",
-      } as unknown as MonkeyTypes.DBUser;
+      } as Partial<MonkeyTypes.DBUser> as MonkeyTypes.DBUser;
       getUserMock.mockResolvedValue(user);
 
       //WHEN
@@ -537,7 +543,7 @@ describe("user controller test", () => {
     });
   });
   describe("link discord", () => {
-    const getUserMock = vi.spyOn(UserDal, "getUser");
+    const getUserMock = vi.spyOn(UserDal, "getPartialUser");
     const isDiscordIdAvailableMock = vi.spyOn(UserDal, "isDiscordIdAvailable");
     const isStateValidForUserMock = vi.spyOn(
       DiscordUtils,
@@ -574,7 +580,7 @@ describe("user controller test", () => {
         uid,
         name: "name",
         email: "email",
-      } as unknown as MonkeyTypes.DBUser;
+      } as Partial<MonkeyTypes.DBUser> as MonkeyTypes.DBUser;
       getUserMock.mockResolvedValue(user);
       blocklistContainsMock.mockResolvedValue(true);
 
@@ -597,6 +603,76 @@ describe("user controller test", () => {
 
       expect(blocklistContainsMock).toBeCalledWith({
         discordId: "discordUserId",
+      });
+    });
+  });
+  describe("getCurrentTestActivity", () => {
+    const getUserMock = vi.spyOn(UserDal, "getPartialUser");
+
+    afterEach(() => {
+      getUserMock.mockReset();
+    });
+    it("gets", async () => {
+      //GIVEN
+      vi.useFakeTimers().setSystemTime(1712102400000);
+      const user = {
+        uid: mockDecodedToken.uid,
+        testActivity: {
+          "2024": fillYearWithDay(94),
+        },
+      } as Partial<MonkeyTypes.DBUser> as MonkeyTypes.DBUser;
+      getUserMock.mockResolvedValue(user);
+
+      //WHEN
+      const result = await mockApp
+        .get("/users/currentTestActivity")
+        .set("Authorization", "Bearer 123456789")
+        .send()
+        .expect(200);
+
+      //THEN
+      expect(result.body.data.lastDay).toEqual(1712102400000);
+      const testsByDays = result.body.data.testsByDays;
+      expect(testsByDays).toHaveLength(372);
+      expect(testsByDays[6]).toEqual(null); //2023-04-04
+      expect(testsByDays[277]).toEqual(null); //2023-12-31
+      expect(testsByDays[278]).toEqual(1); //2024-01-01
+      expect(testsByDays[371]).toEqual(94); //2024-01
+    });
+  });
+  describe("getStreak", () => {
+    const getUserMock = vi.spyOn(UserDal, "getPartialUser");
+
+    afterEach(() => {
+      getUserMock.mockReset();
+    });
+    it("gets", async () => {
+      //GIVEN
+      const user = {
+        uid: mockDecodedToken.uid,
+        streak: {
+          lastResultTimestamp: 1712102400000,
+          length: 42,
+          maxLength: 1024,
+          hourOffset: 2,
+        },
+      } as Partial<MonkeyTypes.DBUser> as MonkeyTypes.DBUser;
+      getUserMock.mockResolvedValue(user);
+
+      //WHEN
+      const result = await mockApp
+        .get("/users/streak")
+        .set("Authorization", "Bearer 123456789")
+        .send()
+        .expect(200);
+
+      //THEN
+      const streak: SharedTypes.UserStreak = result.body.data;
+      expect(streak).toEqual({
+        lastResultTimestamp: 1712102400000,
+        length: 42,
+        maxLength: 1024,
+        hourOffset: 2,
       });
     });
   });

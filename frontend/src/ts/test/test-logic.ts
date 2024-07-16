@@ -541,16 +541,8 @@ export async function init(): Promise<void> {
   );
 }
 
-//add word during the test
-export async function addWord(): Promise<void> {
-  let bound = 100; // how many extra words to aim for AFTER the current word
-  const funboxToPush = FunboxList.get(Config.funbox)
-    .find((f) => f.properties?.find((fp) => fp.startsWith("toPush")))
-    ?.properties?.find((fp) => fp.startsWith("toPush:"));
-  const toPushCount = funboxToPush?.split(":")[1];
-  if (toPushCount !== undefined) bound = +toPushCount - 1;
-  if (
-    TestWords.words.length - TestInput.input.history.length > bound ||
+export function areAllTestWordsGenerated(): boolean {
+  return (
     (Config.mode === "words" &&
       TestWords.words.length >= Config.words &&
       Config.words > 0) ||
@@ -566,6 +558,20 @@ export async function addWord(): Promise<void> {
       WordsGenerator.sectionIndex >= CustomText.getLimitValue() &&
       WordsGenerator.currentSection.length === 0 &&
       CustomText.getLimitValue() !== 0)
+  );
+}
+
+//add word during the test
+export async function addWord(): Promise<void> {
+  let bound = 100; // how many extra words to aim for AFTER the current word
+  const funboxToPush = FunboxList.get(Config.funbox)
+    .find((f) => f.properties?.find((fp) => fp.startsWith("toPush")))
+    ?.properties?.find((fp) => fp.startsWith("toPush:"));
+  const toPushCount = funboxToPush?.split(":")[1];
+  if (toPushCount !== undefined) bound = +toPushCount - 1;
+  if (
+    TestWords.words.length - TestInput.input.history.length > bound ||
+    areAllTestWordsGenerated()
   ) {
     return;
   }
@@ -961,6 +967,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
     //the duration might be modified to remove trailing afk time
     //its also not a big deal if the duration is off in those tests
     Notifications.add("Test invalid - inconsistent test duration", 0);
+    console.error("Test duration inconsistent", ce.testDuration, dateDur);
     TestStats.setInvalid();
     dontSave = true;
   } else if (difficultyFailed) {
@@ -1098,16 +1105,10 @@ export async function finish(difficultyFailed = false): Promise<void> {
     }
   }
 
-  if (!dontSave) {
-    TodayTracker.addSeconds(
-      completedEvent.testDuration +
-        (TestStats.incompleteSeconds < 0
-          ? 0
-          : Numbers.roundTo2(TestStats.incompleteSeconds)) -
-        completedEvent.afkDuration
-    );
-    Result.updateTodayTracker();
-  }
+  TodayTracker.addSeconds(
+    completedEvent.testDuration - completedEvent.afkDuration
+  );
+  Result.updateTodayTracker();
 
   if (completedEvent.bailedOut === true) {
     resolve.bailedOut = true;
@@ -1607,7 +1608,6 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
     }
     if (eventKey === "difficulty" && !nosave) restart();
     if (eventKey === "showAllLines" && !nosave) restart();
-    if (eventKey === "tapeMode" && !nosave) restart();
     if (
       eventKey === "customLayoutFluid" &&
       Config.funbox.includes("layoutfluid")

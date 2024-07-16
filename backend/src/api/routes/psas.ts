@@ -1,7 +1,7 @@
 import { Router } from "express";
 import * as PsaController from "../controllers/psa";
 import * as RateLimit from "../../middlewares/rate-limit";
-import { asyncHandler } from "../../middlewares/api-utils";
+import { asyncHandler } from "../../middlewares/utility";
 
 const router = Router();
 

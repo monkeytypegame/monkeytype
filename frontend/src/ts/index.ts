@@ -17,7 +17,7 @@ import * as Logger from "./utils/logger";
 import * as DB from "./db";
 import "./ui";
 import "./controllers/ad-controller";
-import Config from "./config";
+import Config, { loadFromLocalStorage } from "./config";
 import * as TestStats from "./test/test-stats";
 import * as Replay from "./test/replay";
 import * as TestTimer from "./test/test-timer";
@@ -47,6 +47,9 @@ import "./popups/tribe-room-code-popup";
 import "./popups/tribe-browse-public-rooms-popup";
 import "./controllers/profile-search-controller";
 import { isDevEnvironment } from "./utils/misc";
+import * as VersionButton from "./elements/version-button";
+import * as Focus from "./test/focus";
+import { getDevOptionsModal } from "./utils/async-modules";
 
 function addToGlobal(items: Record<string, unknown>): void {
   for (const [name, item] of Object.entries(items)) {
@@ -54,6 +57,10 @@ function addToGlobal(items: Record<string, unknown>): void {
     window[name] = item;
   }
 }
+
+void loadFromLocalStorage();
+void VersionButton.update();
+void Focus.set(true, true);
 
 addToGlobal({
   snapshot: DB.getSnapshot,
@@ -76,5 +83,8 @@ addToGlobal({
 if (isDevEnvironment()) {
   void import("jquery").then((jq) => {
     addToGlobal({ $: jq.default });
+  });
+  void getDevOptionsModal().then((module) => {
+    module.appendButton();
   });
 }

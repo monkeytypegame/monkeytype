@@ -3,15 +3,16 @@ import { authenticateRequest } from "../../middlewares/auth";
 import * as PresetController from "../controllers/preset";
 import * as RateLimit from "../../middlewares/rate-limit";
 import configSchema from "../schemas/config-schema";
-import { asyncHandler, validateRequest } from "../../middlewares/api-utils";
 import { Router } from "express";
+import { asyncHandler } from "../../middlewares/utility";
+import { validateRequest } from "../../middlewares/validation";
 
 const router = Router();
 
 const presetNameSchema = joi
   .string()
   .required()
-  .regex(/^[0-9a-zA-Z_.-]+$/)
+  .regex(/^[0-9a-zA-Z_-]+$/)
   .max(16)
   .messages({
     "string.pattern.base": "Invalid preset name",

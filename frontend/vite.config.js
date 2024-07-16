@@ -8,6 +8,9 @@ import replace from "vite-plugin-filter-replace";
 import Inspect from "vite-plugin-inspect";
 import autoprefixer from "autoprefixer";
 import "dotenv/config";
+import { fontawesomeSubset } from "fontawesome-subset";
+import { getFontawesomeConfig } from "./scripts/fontawesome";
+import { generatePreviewFonts } from "./scripts/font-preview";
 
 function pad(numbers, maxLength, fillString) {
   return numbers.map((number) =>
@@ -91,6 +94,7 @@ const BASE_CONFIG = {
   build: {
     emptyOutDir: true,
     outDir: "../dist",
+    assetsInlineLimit: 0, //dont inline small files as data
     rollupOptions: {
       input: {
         monkeytype: path.resolve(__dirname, "src/index.html"),
@@ -105,6 +109,9 @@ const BASE_CONFIG = {
           let extType = assetInfo.name.split(".").at(1);
           if (/png|jpe?g|svg|gif|tiff|bmp|ico/i.test(extType)) {
             extType = "images";
+          }
+          if (/\.(woff|woff2|eot|ttf|otf)$/.test(assetInfo.name)) {
+            return `webfonts/[name]-[hash].${extType}`;
           }
           return `${extType}/[name].[hash][extname]`;
         },
@@ -131,14 +138,47 @@ const BASE_CONFIG = {
   },
   optimizeDeps: {
     include: ["jquery"],
+    exclude: ["@fortawesome/fontawesome-free"],
+  },
+};
+
+/** @type {import("vite").UserConfig} */
+const DEV_CONFIG = {
+  css: {
+    preprocessorOptions: {
+      scss: {
+        additionalData: `
+        $fontAwesomeOverride:"@fortawesome/fontawesome-free/webfonts";
+        $previewFontsPath:"webfonts";
+        `,
+      },
+    },
   },
 };
 
 /** @type {import("vite").UserConfig} */
 const BUILD_CONFIG = {
   plugins: [
+    {
+      name: "vite-plugin-fontawesome-subset",
+      apply: "build",
+      buildStart() {
+        const fontawesomeClasses = getFontawesomeConfig();
+        fontawesomeSubset(fontawesomeClasses, "src/webfonts-generated", {
+          targetFormats: ["woff2"],
+        });
+      },
+    },
+    {
+      name: "vite-plugin-webfonts-preview",
+      apply: "build",
+      buildStart() {
+        generatePreviewFonts();
+      },
+    },
     splitVendorChunkPlugin(),
     VitePWA({
+      injectRegister: "networkfirst",
       registerType: "autoUpdate",
       manifest: {
         short_name: "Monkeytype",
@@ -199,6 +239,26 @@ const BUILD_CONFIG = {
     CLIENT_VERSION: JSON.stringify(buildClientVersion()),
     RECAPTCHA_SITE_KEY: JSON.stringify(process.env.RECAPTCHA_SITE_KEY),
   },
+  /** Enable for font awesome v6 */
+  /*preprocessorOptions: {
+    scss: {
+      additionalData(source, fp) {
+        if (fp.endsWith("index.scss")) {
+          const fontawesomeClasses = getFontawesomeConfig();
+          return `
+          //inject variables into sass context
+          $fontawesomeBrands: ${sassList(
+            fontawesomeClasses.brands
+          )};             
+          $fontawesomeSolid: ${sassList(fontawesomeClasses.solid)};
+
+          ${source}`;
+        } else {
+          return source;
+        }
+      },
+    },
+  },*/
 };
 
 export default defineConfig(({ command }) => {
@@ -208,6 +268,13 @@ export default defineConfig(({ command }) => {
     }
     return mergeConfig(BASE_CONFIG, BUILD_CONFIG);
   } else {
-    return BASE_CONFIG;
+    return mergeConfig(BASE_CONFIG, DEV_CONFIG);
   }
 });
+
+/** Enable for font awesome v6 */
+/*
+function sassList(values) {
+  return values.map((it) => `"${it}"`).join(",");
+}
+*/
