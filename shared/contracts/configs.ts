@@ -66,7 +66,7 @@ import {
   MonkeyServerError,
   MonkeyValidationErrorSchema,
   responseWithNullableData,
-} from "../schemas/util";
+} from "../schemas/api";
 
 export const ConfigSchema = z
   .object({
