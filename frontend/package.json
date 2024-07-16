@@ -42,6 +42,7 @@
     "ajv": "8.12.0",
     "autoprefixer": "10.4.14",
     "dotenv": "16.4.5",
+    "firebase-tools": "13.13.3",
     "fontawesome-subset": "4.4.0",
     "gulp": "4.0.2",
     "gulp-eslint-new": "1.9.1",
