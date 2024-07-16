@@ -1,0 +1,9 @@
+{
+  "name": "@monkeytype/mono-test",
+  "type": "commonjs",
+  "private": true,
+  "devDependencies": {
+    "typescript": "5.5.3",
+    "@monkeytype/typescript-config": "file:../typescript-config"
+  }
+}
