@@ -29,7 +29,6 @@
     "defaults"
   ],
   "devDependencies": {
-    "@monkeytype/frontend-scripts": "*",
     "@monkeytype/typescript-config": "*",
     "@fortawesome/fontawesome-free": "5.15.4",
     "@types/canvas-confetti": "1.4.3",
