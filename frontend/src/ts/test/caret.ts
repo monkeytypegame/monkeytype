@@ -55,7 +55,10 @@ function getTargetPositionLeft(
         fullWidthOffset;
     }
   } else {
-    if (Config.blindMode && inputLenLongerThanWordLen) {
+    if (
+      (Config.blindMode || Config.hideExtraLetters) &&
+      inputLenLongerThanWordLen
+    ) {
       result = lastWordLetter.offsetLeft + lastWordLetter.offsetWidth;
     } else if (currentLetter !== undefined) {
       result = currentLetter.offsetLeft;
