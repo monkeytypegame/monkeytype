@@ -478,7 +478,7 @@ export const userRequestVerificationEmail = rateLimit({
 });
 
 export const userForgotPasswordEmail = rateLimit({
-  windowMs: ONE_HOUR_MS / 4,
+  windowMs: ONE_HOUR_MS / 60,
   max: 1 * REQUEST_MULTIPLIER,
   keyGenerator: getKeyWithUid,
   handler: customHandler,
@@ -513,6 +513,27 @@ export const userMailGet = rateLimit({
 });
 
 export const userMailUpdate = rateLimit({
+  windowMs: ONE_HOUR_MS,
+  max: 60 * REQUEST_MULTIPLIER,
+  keyGenerator: getKeyWithUid,
+  handler: customHandler,
+});
+
+export const userTestActivity = rateLimit({
+  windowMs: ONE_HOUR_MS,
+  max: 60 * REQUEST_MULTIPLIER,
+  keyGenerator: getKeyWithUid,
+  handler: customHandler,
+});
+
+export const userCurrentTestActivity = rateLimit({
+  windowMs: ONE_HOUR_MS,
+  max: 60 * REQUEST_MULTIPLIER,
+  keyGenerator: getKeyWithUid,
+  handler: customHandler,
+});
+
+export const userStreak = rateLimit({
   windowMs: ONE_HOUR_MS,
   max: 60 * REQUEST_MULTIPLIER,
   keyGenerator: getKeyWithUid,

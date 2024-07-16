@@ -173,6 +173,12 @@ const FunboxList: MonkeyTypes.FunboxMetadata[] = [
   },
   {
     canGetPb: true,
+    difficultyLevel: 1,
+    properties: ["changesWordsVisibility", "toPush:1", "noInfiniteDuration"],
+    name: "plus_zero",
+  },
+  {
+    canGetPb: true,
     difficultyLevel: 0,
     properties: ["changesWordsVisibility", "toPush:3", "noInfiniteDuration"],
     name: "plus_two",

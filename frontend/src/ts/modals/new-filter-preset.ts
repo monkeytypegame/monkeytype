@@ -1,4 +1,4 @@
-import { createFilterPreset } from "../account/result-filters";
+import { createFilterPreset } from "../elements/account/result-filters";
 import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
 import * as Notifications from "../elements/notifications";
 

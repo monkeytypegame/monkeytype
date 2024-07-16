@@ -1,7 +1,7 @@
 import Ape from "../ape";
 import Page from "./page";
 import * as Profile from "../elements/profile";
-import * as PbTables from "../account/pb-tables";
+import * as PbTables from "../elements/account/pb-tables";
 import * as Notifications from "../elements/notifications";
 import { checkIfGetParameterExists } from "../utils/misc";
 import * as UserReportModal from "../modals/user-report";
@@ -29,8 +29,8 @@ function reset(): void {
 	          <div class="streak" data-balloon-pos="up">-</div>
           </div>
           <div class="levelAndBar">
-            <div class="level">-</div>
-            <div class="xpBar">
+            <div class="level" data-balloon-pos="up">-</div>
+            <div class="xpBar" data-balloon-pos="up">
               <div class="bar" style="width: 0%;"></div>
             </div>
             <div class="xp" data-balloon-pos="up">-/-</div>

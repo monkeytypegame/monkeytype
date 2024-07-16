@@ -26,7 +26,8 @@ export default class Users {
   }
 
   async getNameAvailability(name: string): Ape.EndpointResponse<null> {
-    return await this.httpClient.get(`${BASE_PATH}/checkName/${name}`);
+    const encoded = encodeURIComponent(name);
+    return await this.httpClient.get(`${BASE_PATH}/checkName/${encoded}`);
   }
 
   async delete(): Ape.EndpointResponse<null> {
@@ -77,6 +78,12 @@ export default class Users {
     return await this.httpClient.patch(`${BASE_PATH}/email`, { payload });
   }
 
+  async updatePassword(newPassword: string): Ape.EndpointResponse<null> {
+    return await this.httpClient.patch(`${BASE_PATH}/password`, {
+      payload: { newPassword },
+    });
+  }
+
   async deletePersonalBests(): Ape.EndpointResponse<null> {
     return await this.httpClient.delete(`${BASE_PATH}/personalBests`);
   }
@@ -90,8 +97,9 @@ export default class Users {
   }
 
   async removeResultFilterPreset(id: string): Ape.EndpointResponse<null> {
+    const encoded = encodeURIComponent(id);
     return await this.httpClient.delete(
-      `${BASE_PATH}/resultFilterPresets/${id}`
+      `${BASE_PATH}/resultFilterPresets/${encoded}`
     );
   }
 
@@ -111,12 +119,14 @@ export default class Users {
   }
 
   async deleteTag(tagId: string): Ape.EndpointResponse<null> {
-    return await this.httpClient.delete(`${BASE_PATH}/tags/${tagId}`);
+    const encoded = encodeURIComponent(tagId);
+    return await this.httpClient.delete(`${BASE_PATH}/tags/${encoded}`);
   }
 
   async deleteTagPersonalBest(tagId: string): Ape.EndpointResponse<null> {
+    const encoded = encodeURIComponent(tagId);
     return await this.httpClient.delete(
-      `${BASE_PATH}/tags/${tagId}/personalBest`
+      `${BASE_PATH}/tags/${encoded}/personalBest`
     );
   }
 
@@ -197,19 +207,21 @@ export default class Users {
   async getProfileByUid(
     uid: string
   ): Ape.EndpointResponse<SharedTypes.UserProfile> {
-    return await this.httpClient.get(`${BASE_PATH}/${uid}/profile?isUid`);
+    const encoded = encodeURIComponent(uid);
+    return await this.httpClient.get(`${BASE_PATH}/${encoded}/profile?isUid`);
   }
 
   async getProfileByName(
     name: string
   ): Ape.EndpointResponse<SharedTypes.UserProfile> {
-    return await this.httpClient.get(`${BASE_PATH}/${name}/profile`);
+    const encoded = encodeURIComponent(name);
+    return await this.httpClient.get(`${BASE_PATH}/${encoded}/profile`);
   }
 
   async updateProfile(
     profileUpdates: Partial<SharedTypes.UserProfileDetails>,
     selectedBadgeId?: number
-  ): Ape.EndpointResponse<null> {
+  ): Ape.EndpointResponse<SharedTypes.UserProfileDetails> {
     return await this.httpClient.patch(`${BASE_PATH}/profile`, {
       payload: {
         ...profileUpdates,
@@ -267,5 +279,9 @@ export default class Users {
 
   async revokeAllTokens(): Ape.EndpointResponse<null> {
     return await this.httpClient.post(`${BASE_PATH}/revokeAllTokens`);
+  }
+
+  async getTestActivity(): Ape.EndpointResponse<SharedTypes.CountByYearAndDay> {
+    return await this.httpClient.get(`${BASE_PATH}/testActivity`);
   }
 }

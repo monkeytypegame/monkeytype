@@ -9,7 +9,6 @@ import {
 import Ape from "../ape";
 import { createErrorMessage } from "../utils/misc";
 import * as LoginPage from "../pages/login";
-import * as AllTimeStats from "../account/all-time-stats";
 import * as AccountController from "../controllers/account-controller";
 import * as TestLogic from "../test/test-logic";
 import * as CaptchaController from "../controllers/captcha-controller";
@@ -23,6 +22,7 @@ let signedInUser: UserCredential | undefined = undefined;
 
 function show(credential: UserCredential): void {
   void modal.show({
+    mode: "dialog",
     focusFirstInput: true,
     beforeAnimation: async () => {
       CaptchaController.reset("googleSignUpModal");
@@ -85,7 +85,6 @@ async function apply(): Promise<void> {
     if (response.status === 200) {
       await updateProfile(signedInUser.user, { displayName: name });
       await sendEmailVerification(signedInUser.user);
-      AllTimeStats.clear();
       Notifications.add("Account created", 1);
       $("nav .textButton.account .text").text(name);
       LoginPage.enableInputs();

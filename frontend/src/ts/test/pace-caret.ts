@@ -68,7 +68,7 @@ export async function init(): Promise<void> {
   $("#paceCaret").addClass("hidden");
   const mode2 = Misc.getMode2(
     Config,
-    TestWords.randomQuote
+    TestWords.currentQuote
   ) as SharedTypes.Config.Mode2<typeof Config.mode>;
   let wpm;
   if (Config.paceCaret === "pb") {

@@ -18,10 +18,7 @@ export async function instantUpdate(): Promise<void> {
     "active"
   );
 
-  $("#testConfig .puncAndNum").css({
-    maxWidth: 0,
-    opacity: 0,
-  });
+  $("#testConfig .puncAndNum").addClass("hidden");
   $("#testConfig .spacer").addClass("scrolled");
   $("#testConfig .time").addClass("hidden");
   $("#testConfig .wordCount").addClass("hidden");
@@ -30,24 +27,16 @@ export async function instantUpdate(): Promise<void> {
   $("#testConfig .zen").addClass("hidden");
 
   if (Config.mode === "time") {
-    $("#testConfig .puncAndNum").css({
-      maxWidth: "",
-      opacity: 1,
-    });
+    $("#testConfig .puncAndNum").removeClass("hidden");
     $("#testConfig .leftSpacer").removeClass("scrolled");
     $("#testConfig .rightSpacer").removeClass("scrolled");
     $("#testConfig .time").removeClass("hidden");
 
     updateExtras("time", Config.time);
   } else if (Config.mode === "words") {
-    $("#testConfig .puncAndNum").css({
-      maxWidth: "",
-      opacity: 1,
-    });
-
+    $("#testConfig .puncAndNum").removeClass("hidden");
     $("#testConfig .leftSpacer").removeClass("scrolled");
     $("#testConfig .rightSpacer").removeClass("scrolled");
-
     $("#testConfig .wordCount").removeClass("hidden");
 
     updateExtras("words", Config.words);
@@ -57,14 +46,9 @@ export async function instantUpdate(): Promise<void> {
 
     updateExtras("quoteLength", Config.quoteLength);
   } else if (Config.mode === "custom") {
-    $("#testConfig .puncAndNum").css({
-      maxWidth: "",
-      opacity: 1,
-    });
-
+    $("#testConfig .puncAndNum").removeClass("hidden");
     $("#testConfig .leftSpacer").removeClass("scrolled");
     $("#testConfig .rightSpacer").removeClass("scrolled");
-
     $("#testConfig .customText").removeClass("hidden");
   }
 
@@ -94,11 +78,6 @@ export async function update(
     in: "easeInSine",
     out: "easeOutSine",
   };
-  // const easing = {
-  //   both: "linear",
-  //   in: "linear",
-  //   out: "linear",
-  // };
 
   const puncAndNumVisible = {
     time: true,
@@ -110,44 +89,43 @@ export async function update(
 
   const puncAndNumEl = $("#testConfig .puncAndNum");
 
-  if (!puncAndNumVisible[previous] && puncAndNumVisible[current]) {
-    //show
+  if (puncAndNumVisible[current] !== puncAndNumVisible[previous]) {
+    if (!puncAndNumVisible[current]) {
+      $("#testConfig .leftSpacer").addClass("scrolled");
+    } else {
+      $("#testConfig .leftSpacer").removeClass("scrolled");
+    }
 
-    puncAndNumEl.css("maxWidth", "");
+    puncAndNumEl
+      .css({
+        width: "unset",
+        opacity: 1,
+      })
+      .removeClass("hidden");
 
-    const puncAndNumWidth = Math.round(
-      puncAndNumEl[0]?.getBoundingClientRect().width ?? 224
+    const width = Math.round(
+      puncAndNumEl[0]?.getBoundingClientRect().width ?? 0
     );
 
-    $("#testConfig .leftSpacer").removeClass("scrolled");
     puncAndNumEl
       .css({
-        opacity: 0,
-        maxWidth: 0,
+        width: puncAndNumVisible[previous] ? width : 0,
+        opacity: puncAndNumVisible[previous] ? 1 : 0,
       })
       .animate(
         {
-          opacity: 1,
-          maxWidth: puncAndNumWidth,
+          width: puncAndNumVisible[current] ? width : 0,
+          opacity: puncAndNumVisible[current] ? 1 : 0,
         },
         animTime,
-        easing.both
-      );
-  } else if (puncAndNumVisible[previous] && !puncAndNumVisible[current]) {
-    //hide
-    $("#testConfig .leftSpacer").addClass("scrolled");
-    puncAndNumEl
-      .css({
-        opacity: 1,
-        maxWidth: "",
-      })
-      .animate(
-        {
-          opacity: 0,
-          maxWidth: "0",
-        },
-        animTime,
-        easing.both
+        easing.both,
+        () => {
+          if (puncAndNumVisible[current]) {
+            puncAndNumEl.css("width", "unset");
+          } else {
+            puncAndNumEl.addClass("hidden");
+          }
+        }
       );
   }
 

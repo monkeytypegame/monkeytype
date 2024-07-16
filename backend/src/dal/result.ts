@@ -1,5 +1,5 @@
 import _ from "lodash";
-import { DeleteResult, ObjectId, UpdateResult } from "mongodb";
+import { Collection, DeleteResult, ObjectId, UpdateResult } from "mongodb";
 import MonkeyError from "../utils/error";
 import * as db from "../init/db";
 
@@ -9,9 +9,12 @@ type DBResult = MonkeyTypes.WithObjectId<
   SharedTypes.DBResult<SharedTypes.Config.Mode>
 >;
 
+export const getResultCollection = (): Collection<DBResult> =>
+  db.collection<DBResult>("results");
+
 export async function addResult(
   uid: string,
-  result: DBResult
+  result: MonkeyTypes.DBResult
 ): Promise<{ insertedId: ObjectId }> {
   let user: MonkeyTypes.DBUser | null = null;
   try {
@@ -22,14 +25,14 @@ export async function addResult(
   if (!user) throw new MonkeyError(404, "User not found", "add result");
   if (result.uid === undefined) result.uid = uid;
   // result.ir = true;
-  const res = await db.collection<DBResult>("results").insertOne(result);
+  const res = await getResultCollection().insertOne(result);
   return {
     insertedId: res.insertedId,
   };
 }
 
 export async function deleteAll(uid: string): Promise<DeleteResult> {
-  return await db.collection<DBResult>("results").deleteMany({ uid });
+  return await getResultCollection().deleteMany({ uid });
 }
 
 export async function updateTags(
@@ -37,9 +40,10 @@ export async function updateTags(
   resultId: string,
   tags: string[]
 ): Promise<UpdateResult> {
-  const result = await db
-    .collection<DBResult>("results")
-    .findOne({ _id: new ObjectId(resultId), uid });
+  const result = await getResultCollection().findOne({
+    _id: new ObjectId(resultId),
+    uid,
+  });
   if (!result) throw new MonkeyError(404, "Result not found");
   const userTags = await getTags(uid);
   const userTagIds = userTags.map((tag) => tag._id.toString());
@@ -50,24 +54,28 @@ export async function updateTags(
   if (!validTags) {
     throw new MonkeyError(422, "One of the tag id's is not valid");
   }
-  return await db
-    .collection<DBResult>("results")
-    .updateOne({ _id: new ObjectId(resultId), uid }, { $set: { tags } });
+  return await getResultCollection().updateOne(
+    { _id: new ObjectId(resultId), uid },
+    { $set: { tags } }
+  );
 }
 
-export async function getResult(uid: string, id: string): Promise<DBResult> {
-  const result = await db
-    .collection<DBResult>("results")
-    .findOne({ _id: new ObjectId(id), uid });
+export async function getResult(
+  uid: string,
+  id: string
+): Promise<MonkeyTypes.DBResult> {
+  const result = await getResultCollection().findOne({
+    _id: new ObjectId(id),
+    uid,
+  });
   if (!result) throw new MonkeyError(404, "Result not found");
   return result;
 }
 
 export async function getLastResult(
   uid: string
-): Promise<Omit<DBResult, "uid">> {
-  const [lastResult] = await db
-    .collection<DBResult>("results")
+): Promise<Omit<MonkeyTypes.DBResult, "uid">> {
+  const [lastResult] = await getResultCollection()
     .find({ uid })
     .sort({ timestamp: -1 })
     .limit(1)
@@ -79,8 +87,8 @@ export async function getLastResult(
 export async function getResultByTimestamp(
   uid: string,
   timestamp
-): Promise<DBResult | null> {
-  return await db.collection<DBResult>("results").findOne({ uid, timestamp });
+): Promise<MonkeyTypes.DBResult | null> {
+  return await getResultCollection().findOne({ uid, timestamp });
 }
 
 type GetResultsOpts = {
@@ -92,10 +100,9 @@ type GetResultsOpts = {
 export async function getResults(
   uid: string,
   opts?: GetResultsOpts
-): Promise<DBResult[]> {
+): Promise<MonkeyTypes.DBResult[]> {
   const { onOrAfterTimestamp, offset, limit } = opts ?? {};
-  let query = db
-    .collection<DBResult>("results")
+  let query = getResultCollection()
     .find({
       uid,
       ...(!_.isNil(onOrAfterTimestamp) &&

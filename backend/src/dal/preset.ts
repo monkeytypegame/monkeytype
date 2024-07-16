@@ -56,7 +56,7 @@ export async function editPreset(
   uid: string,
   presetId: string,
   name: string,
-  config: SharedTypes.ConfigPreset
+  config: SharedTypes.ConfigPreset | null | undefined
 ): Promise<void> {
   const presetUpdates =
     config !== undefined && config !== null && Object.keys(config).length > 0

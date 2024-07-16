@@ -5,6 +5,7 @@ import * as CaptchaController from "../controllers/captcha-controller";
 import SlimSelect from "slim-select";
 import AnimatedModal from "../utils/animated-modal";
 import { isAuthenticated } from "../firebase";
+import { CharacterCounter } from "../elements/character-counter";
 
 type State = {
   userUid?: string;
@@ -30,6 +31,7 @@ export async function show(options: ShowOptions): Promise<void> {
   }
 
   void modal.show({
+    mode: "dialog",
     focusFirstInput: true,
     beforeAnimation: async (modalEl) => {
       CaptchaController.render(
@@ -45,8 +47,6 @@ export async function show(options: ShowOptions): Promise<void> {
       (modalEl.querySelector(".reason") as HTMLSelectElement).value =
         "Inappropriate name";
       (modalEl.querySelector(".comment") as HTMLTextAreaElement).value = "";
-      (modalEl.querySelector(".characterCount") as HTMLElement).textContent =
-        "-";
 
       select = new SlimSelect({
         select: modalEl.querySelector(".reason") as HTMLElement,
@@ -57,6 +57,11 @@ export async function show(options: ShowOptions): Promise<void> {
       });
     },
   });
+
+  new CharacterCounter(
+    $("#userReportModal .comment") as JQuery<HTMLTextAreaElement>,
+    250
+  );
 }
 
 async function hide(): Promise<void> {
@@ -126,20 +131,6 @@ const modal = new AnimatedModal({
   setup: async (modalEl): Promise<void> => {
     modalEl.querySelector("button")?.addEventListener("click", () => {
       void submitReport();
-    });
-    modalEl.querySelector(".comment")?.addEventListener("input", (e) => {
-      setTimeout(() => {
-        const len = (e.target as HTMLTextAreaElement).value.length;
-        const characterCount = modalEl.querySelector(
-          ".characterCount"
-        ) as HTMLElement;
-        characterCount.textContent = len.toString();
-        if (len > 250) {
-          characterCount.classList.add("red");
-        } else {
-          characterCount.classList.remove("red");
-        }
-      }, 1);
     });
   },
 });

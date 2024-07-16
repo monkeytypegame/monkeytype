@@ -1,232 +1,129 @@
-@font-face {
-  font-family: "Source Code Pro";
-  font-style: normal;
-  font-weight: 400;
-  font-display: block;
-  src: url("/webfonts/SourceCodePro-Regular.ttf") format("truetype");
-}
+@use "sass:map";
+$fonts: (
+  "Source Code Pro": (
+    "src": "SourceCodePro-Regular",
+  ),
+  "JetBrains Mono": (
+    "src": "JetBrainsMono-Regular",
+  ),
+  "Montserrat": (
+    "src": "Montserrat-Regular",
+  ),
+  "Roboto": (
+    "src": "Roboto-Regular",
+  ),
+  "Titillium Web": (
+    "src": "TitilliumWeb-Regular",
+  ),
+  "Oxygen": (
+    "src": "Oxygen-Regular",
+  ),
+  "Itim": (
+    "src": "Itim-Regular",
+  ),
+  "Comfortaa": (
+    "src": "Comfortaa-Regular",
+  ),
+  "Coming Soon": (
+    "src": "ComingSoon-Regular",
+  ),
+  "Atkinson Hyperlegible": (
+    "src": "AtkinsonHyperlegible-Regular",
+  ),
+  "Lato": (
+    "src": "Lato-Regular",
+  ),
+  "Lalezar": (
+    "src": "Lalezar-Regular",
+  ),
+  "Noto Naskh Arabic": (
+    "src": "NotoNaskhArabic-Regular",
+  ),
+  "Vazirmatn": (
+    "src": "Vazirmatn-Regular",
+  ),
+  "Ubuntu": (
+    "src": "Ubuntu-Regular",
+  ),
+  "Ubuntu Mono": (
+    "src": "UbuntuMono-Regular",
+  ),
+  "Inconsolata": (
+    "src": "Inconsolata-Regular",
+  ),
+  "IBM Plex Sans": (
+    "src": "IBMPlexSans-SemiBold",
+    "weight": 600,
+  ),
+  "Lexend Deca": (
+    "src": "LexendDeca-Regular",
+  ),
+  "Fira Code": (
+    "src": "FiraCode-Regular",
+  ),
+  "Nunito": (
+    "src": "Nunito-Bold",
+    "weight": 700,
+  ),
+  "Roboto Mono": (
+    "src": "RobotoMono-Regular",
+  ),
+  "Boon": (
+    "src": "Boon-Regular",
+  ),
+  "Open Dyslexic": (
+    "src": "OpenDyslexic-Regular",
+  ),
+  "Cascadia Mono": (
+    "src": "CascadiaMono-Regular",
+  ),
+  "IBM Plex Mono": (
+    "src": "IBMPlexMono-Regular",
+  ),
+  "Overpass Mono": (
+    "src": "OverpassMono-Regular",
+  ),
+  "Hack": (
+    "src": "Hack-Regular",
+  ),
+  "Commit Mono": (
+    "src": "CommitMono-Regular",
+  ),
+  "Mononoki": (
+    "src": "Mononoki-Regular",
+  ),
+);
 
-@font-face {
-  font-family: "JetBrains Mono";
-  font-style: normal;
-  font-weight: 400;
-  font-display: block;
-  src: url("/webfonts/JetBrainsMono-Regular.ttf") format("truetype");
-}
+$font-defauls: (
+  "style": normal,
+  "weight": 400,
+  "display": block,
+  "format": "woff2",
+  "ext": "woff2",
+);
 
-@font-face {
-  font-family: "Montserrat";
-  font-style: normal;
-  font-weight: 400;
-  font-display: block;
-  src: url("/webfonts/Montserrat-Regular.ttf") format("truetype");
-}
+@each $font, $settings in $fonts {
+  $config: map-merge($font-defauls, $settings);
+  $src: "/webfonts/" + map-get($config, "src") + "." + map-get($config, "ext");
+  $previewDir: "webfonts-preview";
+  @if variable-exists(previewFontsPath) {
+    $previewDir: $previewFontsPath;
+  }
 
-@font-face {
-  font-family: "Roboto";
-  font-style: normal;
-  font-weight: 400;
-  font-display: block;
-  src: url("/webfonts/Roboto-Regular.ttf") format("truetype");
-}
+  @font-face {
+    font-family: $font;
+    font-style: map-get($config, "style");
+    font-weight: map-get($config, "weight");
+    font-display: map-get($config, "display");
+    src: url($src) format(map-get($config, "format"));
+  }
 
-@font-face {
-  font-family: "Titillium Web";
-  font-style: normal;
-  font-weight: 400;
-  font-display: block;
-  src: url("/webfonts/TitilliumWeb-Regular.ttf") format("truetype");
-}
-
-@font-face {
-  font-family: "Oxygen";
-  font-style: normal;
-  font-weight: 400;
-  font-display: block;
-  src: url("/webfonts/Oxygen-Regular.ttf") format("truetype");
-}
-
-@font-face {
-  font-family: "Itim";
-  font-style: normal;
-  font-weight: 400;
-  font-display: block;
-  src: url("/webfonts/Itim-Regular.ttf") format("truetype");
-}
-
-@font-face {
-  font-family: "Comfortaa";
-  font-style: normal;
-  font-weight: 400;
-  font-display: block;
-  src: url("/webfonts/Comfortaa-Regular.ttf") format("truetype");
-}
-
-@font-face {
-  font-family: "Coming Soon";
-  font-style: normal;
-  font-weight: 400;
-  font-display: block;
-  src: url("/webfonts/ComingSoon-Regular.ttf") format("truetype");
-}
-
-@font-face {
-  font-family: "Atkinson Hyperlegible";
-  font-style: normal;
-  font-weight: 400;
-  font-display: block;
-  src: url("/webfonts/AtkinsonHyperlegible-Regular.ttf") format("truetype");
-}
-
-@font-face {
-  font-family: "Lato";
-  font-style: normal;
-  font-weight: 400;
-  font-display: block;
-  src: url("/webfonts/Lato-Regular.ttf") format("truetype");
-}
-
-@font-face {
-  font-family: "Lalezar";
-  font-style: normal;
-  font-weight: 400;
-  font-display: block;
-  src: url("/webfonts/Lalezar-Regular.ttf") format("truetype");
-}
-
-@font-face {
-  font-family: "Noto Naskh Arabic";
-  font-style: normal;
-  font-weight: 400;
-  font-display: block;
-  src: url("/webfonts/NotoNaskhArabic-Regular.ttf") format("truetype");
-}
-
-@font-face {
-  font-family: "Vazirmatn";
-  font-style: normal;
-  font-weight: 400;
-  font-display: block;
-  src: url("/webfonts/Vazirmatn-Regular.ttf") format("truetype");
-}
-
-@font-face {
-  font-family: "Ubuntu";
-  font-style: normal;
-  font-weight: 400;
-  font-display: block;
-  src: url("/webfonts/Ubuntu-Regular.ttf") format("truetype");
-}
-
-@font-face {
-  font-family: "Ubuntu Mono";
-  font-style: normal;
-  font-weight: 400;
-  font-display: block;
-  src: url("/webfonts/UbuntuMono-Regular.ttf") format("truetype");
-}
-
-@font-face {
-  font-family: "Inconsolata";
-  font-style: normal;
-  font-weight: 400;
-  font-display: block;
-  src: url("/webfonts/Inconsolata-Regular.ttf") format("truetype");
-}
-
-@font-face {
-  font-family: "IBM Plex Sans";
-  font-style: normal;
-  font-weight: 600;
-  font-display: block;
-  src: url("/webfonts/IBMPlexSans-SemiBold.ttf") format("truetype");
-}
-
-@font-face {
-  font-family: "Lexend Deca";
-  font-style: normal;
-  font-weight: 400;
-  font-display: block;
-  src: url("/webfonts/LexendDeca-Regular.ttf") format("truetype");
-}
-
-@font-face {
-  font-family: "Fira Code";
-  font-style: normal;
-  font-weight: 400;
-  font-display: block;
-  src: url("/webfonts/FiraCode-Regular.ttf") format("truetype");
-}
-
-@font-face {
-  font-family: "Nunito";
-  font-style: normal;
-  font-weight: 700;
-  font-display: block;
-  src: url("/webfonts/Nunito-Bold.ttf") format("truetype");
-}
-
-@font-face {
-  font-family: "Roboto Mono";
-  font-style: normal;
-  font-weight: 400;
-  font-display: block;
-  src: url("/webfonts/RobotoMono-Regular.ttf") format("truetype");
-}
-
-@font-face {
-  font-family: "Boon";
-  font-style: normal;
-  font-weight: 400;
-  font-display: block;
-  src: url("/webfonts/Boon-400.ttf") format("truetype"),
-    url("/webfonts/Boon-400.otf") format("opentype");
-}
-
-@font-face {
-  font-family: "Open Dyslexic";
-  font-style: normal;
-  font-weight: 400;
-  font-display: block;
-  src: url("/webfonts/OpenDyslexic.otf") format("opentype");
-}
-
-@font-face {
-  font-family: "Cascadia Mono";
-  font-style: normal;
-  font-weight: 400;
-  font-display: block;
-  src: url("/webfonts/CascadiaMono-Regular.ttf") format("truetype");
-}
-
-@font-face {
-  font-family: "IBM Plex Mono";
-  font-style: normal;
-  font-weight: 400;
-  font-display: block;
-  src: url("/webfonts/IBMPlexMono-Regular.ttf") format("truetype");
-}
-
-@font-face {
-  font-family: "Overpass Mono";
-  font-style: normal;
-  font-weight: 400;
-  font-display: block;
-  src: url("/webfonts/OverpassMono-VariableFont_wght.ttf") format("truetype");
-}
-
-@font-face {
-  font-family: "Hack";
-  font-style: normal;
-  font-weight: 400;
-  font-display: block;
-  src: url("/webfonts/HackNerdFont-Regular.ttf") format("truetype");
-}
-
-@font-face {
-  font-family: "CommitMono";
-  font-style: normal;
-  font-weight: 400;
-  font-display: block;
-  src: url("/webfonts/CommitMono-400-Regular.otf") format("opentype");
+  @font-face {
+    font-family: $font + " Preview";
+    font-style: map-get($config, "style");
+    font-weight: map-get($config, "weight");
+    font-display: map-get($config, "display");
+    src: url("/" + $previewDir + "/" + map-get($config, "src") + ".woff2")
+      format("woff2");
+  }
 }

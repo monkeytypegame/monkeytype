@@ -1,9 +1,9 @@
-FROM node:hydrogen-alpine as builder
+FROM node:18.19.1-alpine3.19 as builder
 WORKDIR /app
 
 #ENV
-ENV BACKEND_URL="###MONKEYTYPE_BACKENDURL###"
-ENV RECAPTCHA_SITE_KEY="###RECAPTCHA_SITE_KEY###"
+ENV BACKEND_URL=###MONKEYTYPE_BACKENDURL###
+ENV RECAPTCHA_SITE_KEY=###RECAPTCHA_SITE_KEY###
 
 #COPY
 COPY .eslintrc.json .eslintrc.json

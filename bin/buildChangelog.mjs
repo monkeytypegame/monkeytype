@@ -225,8 +225,6 @@ function buildFooter(logs) {
 //   return `\n### Other\n\n- Various ${finalString} changes`;
 // }
 
-console.log("---------");
-
 function convertStringToLog(logString) {
   let log = [];
   for (let line of logString) {

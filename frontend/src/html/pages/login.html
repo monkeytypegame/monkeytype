@@ -3,10 +3,13 @@
     <i class="fas fa-fw fa-spin fa-circle-notch"></i>
   </div>
   <div class="disabledNotification hidden">
-    <p>Login/Signup is disabled.</p>
+    <p>Login/Signup is disabled or the server is down/under maintenance.</p>
   </div>
   <div class="register side">
-    <div class="title">register</div>
+    <div class="title">
+      <i class="fas fa-user-plus"></i>
+      register
+    </div>
     <form action="" autocomplete="nope">
       <input
         type="text"
@@ -42,14 +45,33 @@
       />
       <button type="submit" disabled>
         <i class="fas fa-user-plus"></i>
-        Sign Up
+        sign up
       </button>
     </form>
   </div>
   <div class="login side">
-    <div class="title">login</div>
-    <button class="text" id="forgotPasswordButton">Forgot password?</button>
+    <div class="title">
+      <i class="fas fa-sign-in-alt"></i>
+      login
+    </div>
+    <div class="providers">
+      <button class="signInWithGoogle">
+        <i class="fab fa-google"></i>
+        <!-- google sign In -->
+        <!-- google -->
+      </button>
+      <button class="signInWithGitHub">
+        <i class="fab fa-github"></i>
+        <!-- github sign In -->
+        <!-- github -->
+      </button>
+    </div>
     <form action="">
+      <div class="orWithLine">
+        <div class="line"></div>
+        <div class="text">or</div>
+        <div class="line"></div>
+      </div>
       <input
         name="current-email"
         type="email"
@@ -65,22 +87,14 @@
       <div>
         <label id="rememberMe" class="checkbox">
           <input type="checkbox" checked />
-          <div>Remember me</div>
+          <div>remember me</div>
         </label>
       </div>
       <button type="submit" class="signIn">
         <i class="fas fa-sign-in-alt"></i>
-        Sign In
-      </button>
-      <div style="font-size: 0.75rem; text-align: center">or</div>
-      <button class="signInWithGoogle">
-        <i class="fab fa-google"></i>
-        Google Sign In
-      </button>
-      <button class="signInWithGitHub">
-        <i class="fab fa-github"></i>
-        GitHub Sign In
+        sign in
       </button>
     </form>
+    <button class="text" id="forgotPasswordButton">forgot password?</button>
   </div>
 </div>

@@ -3,7 +3,10 @@ import * as JSONData from "../utils/json-data";
 import * as CustomText from "../test/custom-text";
 import * as Notifications from "../elements/notifications";
 import SlimSelect from "slim-select";
-import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
+import AnimatedModal, {
+  HideOptions,
+  ShowOptions,
+} from "../utils/animated-modal";
 
 type FilterPreset = {
   display: string;
@@ -179,9 +182,9 @@ export async function show(showOptions?: ShowOptions): Promise<void> {
   });
 }
 
-function hide(clearModalChain?: boolean): void {
+function hide(hideOptions?: HideOptions<OutgoingData>): void {
   void modal.hide({
-    clearModalChain,
+    ...hideOptions,
     afterAnimation: async () => {
       languageSelect?.destroy();
       layoutSelect?.destroy();
@@ -249,16 +252,20 @@ async function apply(set: boolean): Promise<void> {
 
   if (filteredWords.length === 0) {
     Notifications.add("No words found", 0);
-    hide(true);
+    enableButtons();
     return;
   }
 
-  const customText = filteredWords.join(CustomText.delimiter);
-
-  CustomText.setPopupTextareaState(
-    (set ? "" : CustomText.popupTextareaState + " ") + customText
+  const customText = filteredWords.join(
+    CustomText.getPipeDelimiter() ? "|" : " "
   );
-  hide(true);
+
+  hide({
+    modalChainData: {
+      text: customText,
+      set,
+    },
+  });
 }
 
 function disableButtons(): void {
@@ -319,7 +326,12 @@ async function setup(): Promise<void> {
   });
 }
 
-const modal = new AnimatedModal({
+type OutgoingData = {
+  text: string;
+  set: boolean;
+};
+
+const modal = new AnimatedModal<unknown, OutgoingData>({
   dialogId: "wordFilterModal",
   setup,
 });

@@ -1,14 +1,11 @@
 import joi from "joi";
 import { Router } from "express";
-import {
-  asyncHandler,
-  checkIfUserIsAdmin,
-  useInProduction,
-  validateRequest,
-} from "../../middlewares/api-utils";
 import * as ConfigurationController from "../controllers/configuration";
 import { authenticateRequest } from "../../middlewares/auth";
 import { adminLimit } from "../../middlewares/rate-limit";
+import { asyncHandler, useInProduction } from "../../middlewares/utility";
+import { checkIfUserIsAdmin } from "../../middlewares/permission";
+import { validateRequest } from "../../middlewares/validation";
 
 const router = Router();
 

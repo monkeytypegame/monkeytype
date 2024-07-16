@@ -1,4 +1,4 @@
-import SettingsGroup from "../settings/settings-group";
+import SettingsGroup from "../elements/settings/settings-group";
 import Config, * as UpdateConfig from "../config";
 import * as Sound from "../controllers/sound-controller";
 import * as Misc from "../utils/misc";
@@ -8,7 +8,7 @@ import * as DB from "../db";
 import { toggleFunbox } from "../test/funbox/funbox";
 import * as TagController from "../controllers/tag-controller";
 import * as PresetController from "../controllers/preset-controller";
-import * as ThemePicker from "../settings/theme-picker";
+import * as ThemePicker from "../elements/settings/theme-picker";
 import * as Notifications from "../elements/notifications";
 import * as ImportExportSettingsModal from "../modals/import-export-settings";
 import * as ConfigEvent from "../observables/config-event";
@@ -45,29 +45,6 @@ async function initGroups(): Promise<void> {
   groups["quickRestart"] = new SettingsGroup(
     "quickRestart",
     UpdateConfig.setQuickRestartMode,
-    "button"
-  ) as SettingsGroup<SharedTypes.ConfigValue>;
-  groups["showLiveWpm"] = new SettingsGroup(
-    "showLiveWpm",
-    UpdateConfig.setShowLiveWpm,
-    "button",
-    () => {
-      groups["keymapMode"]?.updateUI();
-    }
-  ) as SettingsGroup<SharedTypes.ConfigValue>;
-  groups["showLiveAcc"] = new SettingsGroup(
-    "showLiveAcc",
-    UpdateConfig.setShowLiveAcc,
-    "button"
-  ) as SettingsGroup<SharedTypes.ConfigValue>;
-  groups["showLiveBurst"] = new SettingsGroup(
-    "showLiveBurst",
-    UpdateConfig.setShowLiveBurst,
-    "button"
-  ) as SettingsGroup<SharedTypes.ConfigValue>;
-  groups["showTimerProgress"] = new SettingsGroup(
-    "showTimerProgress",
-    UpdateConfig.setShowTimerProgress,
     "button"
   ) as SettingsGroup<SharedTypes.ConfigValue>;
   groups["showAverage"] = new SettingsGroup(
@@ -336,9 +313,9 @@ async function initGroups(): Promise<void> {
     UpdateConfig.setFontSize,
     "button"
   ) as SettingsGroup<SharedTypes.ConfigValue>;
-  groups["pageWidth"] = new SettingsGroup(
-    "pageWidth",
-    UpdateConfig.setPageWidth,
+  groups["maxLineWidth"] = new SettingsGroup(
+    "maxLineWidth",
+    UpdateConfig.setMaxLineWidth,
     "button"
   ) as SettingsGroup<SharedTypes.ConfigValue>;
   groups["caretStyle"] = new SettingsGroup(
@@ -354,6 +331,21 @@ async function initGroups(): Promise<void> {
   groups["timerStyle"] = new SettingsGroup(
     "timerStyle",
     UpdateConfig.setTimerStyle,
+    "button"
+  ) as SettingsGroup<SharedTypes.ConfigValue>;
+  groups["liveSpeedStyle"] = new SettingsGroup(
+    "liveSpeedStyle",
+    UpdateConfig.setLiveSpeedStyle,
+    "button"
+  ) as SettingsGroup<SharedTypes.ConfigValue>;
+  groups["liveAccStyle"] = new SettingsGroup(
+    "liveAccStyle",
+    UpdateConfig.setLiveAccStyle,
+    "button"
+  ) as SettingsGroup<SharedTypes.ConfigValue>;
+  groups["liveBurstStyle"] = new SettingsGroup(
+    "liveBurstStyle",
+    UpdateConfig.setLiveBurstStyle,
     "button"
   ) as SettingsGroup<SharedTypes.ConfigValue>;
   groups["highlightMode"] = new SettingsGroup(
@@ -602,7 +594,7 @@ async function fillSettingsPage(): Promise<void> {
           funbox.name
         }' aria-label="${
           funbox.info
-        }" data-balloon-pos="up" data-balloon-length="fit" style="transform:scaleX(-1) scaleY(-1);">${funbox.name.replace(
+        }" data-balloon-pos="up" data-balloon-length="fit" style="transform:scaleX(-1) scaleY(-1); z-index:1;">${funbox.name.replace(
           /_/g,
           " "
         )}</div>`;
@@ -639,14 +631,20 @@ async function fillSettingsPage(): Promise<void> {
 
   if (fontsList) {
     for (const font of fontsList) {
+      let fontFamily = font.name;
+      if (fontFamily === "Helvetica") {
+        fontFamily = "Comic Sans MS";
+      }
+      if ((font.systemFont ?? false) === false) {
+        fontFamily += " Preview";
+      }
+      const activeClass = Config.fontFamily === font.name ? " active" : "";
+      const display = font.display !== undefined ? font.display : font.name;
       if (Config.fontFamily === font.name) isCustomFont = false;
-      fontsElHTML += `<button class="${
-        Config.fontFamily === font.name ? " active" : ""
-      }" style="font-family:${
-        font.display !== undefined ? font.display : font.name
-      }" data-config-value="${font.name.replace(/ /g, "_")}">${
-        font.display !== undefined ? font.display : font.name
-      }</button>`;
+      fontsElHTML += `<button class="${activeClass}" style="font-family:${fontFamily}" data-config-value="${font.name.replace(
+        / /g,
+        "_"
+      )}">${display}</button>`;
     }
 
     fontsElHTML += isCustomFont
@@ -662,9 +660,14 @@ async function fillSettingsPage(): Promise<void> {
   $(
     ".pageSettings .section[data-config-name='customBackgroundSize'] input"
   ).val(Config.customBackground);
+  updateCustomBackgroundRemoveButtonVisibility();
 
   $(".pageSettings .section[data-config-name='fontSize'] input").val(
     Config.fontSize
+  );
+
+  $(".pageSettings .section[data-config-name='maxLineWidth'] input").val(
+    Config.maxLineWidth
   );
 
   $(".pageSettings .section[data-config-name='customLayoutfluid'] input").val(
@@ -758,6 +761,11 @@ export function updateAuthSections(): void {
     $(
       ".pageSettings .section.passwordAuthSettings #passPasswordAuth"
     ).removeClass("hidden");
+    if (googleProvider || githubProvider) {
+      $(
+        ".pageSettings .section.passwordAuthSettings #removePasswordAuth"
+      ).removeClass("hidden");
+    }
   } else {
     $(
       ".pageSettings .section.passwordAuthSettings #addPasswordAuth"
@@ -954,6 +962,11 @@ export async function update(groupUpdate = true): Promise<void> {
       ".pageSettings .section[data-config-name='customBackgroundFilter']"
     ).addClass("hidden");
   }
+  updateCustomBackgroundRemoveButtonVisibility();
+
+  $(
+    ".pageSettings .section[data-config-name='customBackgroundSize'] input"
+  ).val(Config.customBackground);
 
   if (isAuthenticated()) {
     showAccountSection();
@@ -963,9 +976,11 @@ export async function update(groupUpdate = true): Promise<void> {
 
   CustomBackgroundFilter.updateUI();
 
-  const modifierKey = window.navigator.userAgent.toLowerCase().includes("mac")
-    ? "cmd"
-    : "ctrl";
+  const userAgent = window.navigator.userAgent.toLowerCase();
+  const modifierKey =
+    userAgent.includes("mac") && !userAgent.includes("firefox")
+      ? "cmd"
+      : "ctrl";
 
   const commandKey = Config.quickRestart === "esc" ? "tab" : "esc";
   $(".pageSettings .tip").html(`
@@ -983,6 +998,20 @@ function toggleSettingsGroup(groupName: string): void {
     $(`.pageSettings .sectionGroupTitle[group=${groupName}]`).removeClass(
       "rotateIcon"
     );
+  }
+}
+
+function updateCustomBackgroundRemoveButtonVisibility(): void {
+  const button = $(
+    ".pageSettings .section[data-config-name='customBackgroundSize'] button.remove"
+  );
+  if (
+    Config.customBackground !== undefined &&
+    Config.customBackground.length > 0
+  ) {
+    button.removeClass("hidden");
+  } else {
+    button.addClass("hidden");
   }
 }
 
@@ -1175,6 +1204,12 @@ $(
 });
 
 $(
+  ".pageSettings .section[data-config-name='customBackgroundSize'] .inputAndButton button.remove"
+).on("click", () => {
+  UpdateConfig.setCustomBackground("");
+});
+
+$(
   ".pageSettings .section[data-config-name='customBackgroundSize'] .inputAndButton input"
 ).on("keypress", (e) => {
   if (e.key === "Enter") {
@@ -1211,6 +1246,59 @@ $(
       parseFloat(
         $(
           ".pageSettings .section[data-config-name='fontSize'] .inputAndButton input"
+        ).val() as string
+      )
+    );
+    if (didConfigSave) {
+      Notifications.add("Saved", 1, {
+        duration: 1,
+      });
+    }
+  }
+});
+
+$(
+  ".pageSettings .section[data-config-name='maxLineWidth'] .inputAndButton button.save"
+).on("click", () => {
+  const didConfigSave = UpdateConfig.setMaxLineWidth(
+    parseFloat(
+      $(
+        ".pageSettings .section[data-config-name='maxLineWidth'] .inputAndButton input"
+      ).val() as string
+    )
+  );
+  if (didConfigSave) {
+    Notifications.add("Saved", 1, {
+      duration: 1,
+    });
+  }
+});
+
+$(
+  ".pageSettings .section[data-config-name='maxLineWidth'] .inputAndButton input"
+).on("focusout", () => {
+  const didConfigSave = UpdateConfig.setMaxLineWidth(
+    parseFloat(
+      $(
+        ".pageSettings .section[data-config-name='maxLineWidth'] .inputAndButton input"
+      ).val() as string
+    )
+  );
+  if (didConfigSave) {
+    Notifications.add("Saved", 1, {
+      duration: 1,
+    });
+  }
+});
+
+$(
+  ".pageSettings .section[data-config-name='maxLineWidth'] .inputAndButton input"
+).on("keypress", (e) => {
+  if (e.key === "Enter") {
+    const didConfigSave = UpdateConfig.setMaxLineWidth(
+      parseFloat(
+        $(
+          ".pageSettings .section[data-config-name='maxLineWidth'] .inputAndButton input"
         ).val() as string
       )
     );

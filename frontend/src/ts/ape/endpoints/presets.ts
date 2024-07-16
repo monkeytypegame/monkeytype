@@ -38,6 +38,7 @@ export default class Presets {
   async delete(
     presetId: string
   ): Ape.EndpointResponse<Ape.Presets.DeltePreset> {
-    return await this.httpClient.delete(`${BASE_PATH}/${presetId}`);
+    const encoded = encodeURIComponent(presetId);
+    return await this.httpClient.delete(`${BASE_PATH}/${encoded}`);
   }
 }

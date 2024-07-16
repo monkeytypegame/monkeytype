@@ -26,11 +26,29 @@ export function convertNumberToArabic(numString: string): string {
   return ret;
 }
 
+export function convertNumberToBangla(numString: string): string {
+  const banglaIndic = "০১২৩৪৫৬৭৮৯";
+  let ret = "";
+  for (const char of numString) {
+    ret += banglaIndic[parseInt(char)];
+  }
+  return ret;
+}
+
 export function convertNumberToNepali(numString: string): string {
   const nepaliIndic = "०१२३४५६७८९";
   let ret = "";
   for (const char of numString) {
     ret += nepaliIndic[parseInt(char)];
+  }
+  return ret;
+}
+
+export function convertNumberToHindi(numString: string): string {
+  const hindiIndic = "०१२३४५६७८९";
+  let ret = "";
+  for (const char of numString) {
+    ret += hindiIndic[parseInt(char)];
   }
   return ret;
 }
@@ -161,28 +179,6 @@ export function escapeHTML(str: string): string {
   return str;
 }
 
-export function cleanTypographySymbols(textToClean: string): string {
-  const specials = {
-    "“": '"', // &ldquo;	&#8220;
-    "”": '"', // &rdquo;	&#8221;
-    "’": "'", // &lsquo;	&#8216;
-    "‘": "'", // &rsquo;	&#8217;
-    ",": ",", // &sbquo;	&#8218;
-    "—": "-", // &mdash;  &#8212;
-    "…": "...", // &hellip; &#8230;
-    "«": "<<",
-    "»": ">>",
-    "–": "-",
-    " ": " ",
-    " ": " ",
-    " ": " ",
-  };
-  return textToClean.replace(
-    /[“”’‘—,…«»–\u2007\u202F\u00A0]/g,
-    (char) => specials[char as keyof typeof specials] || ""
-  );
-}
-
 export function isUsernameValid(name: string): boolean {
   if (name === null || name === undefined || name === "") return false;
   if (name.toLowerCase().includes("miodec")) return false;
@@ -221,29 +217,28 @@ export function canQuickRestart(
   mode: string,
   words: number,
   time: number,
-  CustomText: SharedTypes.CustomText,
+  CustomText: SharedTypes.CustomTextData,
   customTextIsLong: boolean
 ): boolean {
   const wordsLong = mode === "words" && (words >= 1000 || words === 0);
   const timeLong = mode === "time" && (time >= 900 || time === 0);
   const customTextLong = mode === "custom" && customTextIsLong;
+
   const customTextRandomWordsLong =
-    mode === "custom" && CustomText.isWordRandom && CustomText.word >= 1000;
-  const customTextRandomTimeLong =
-    mode === "custom" && CustomText.isTimeRandom && CustomText.time > 900;
-  const customTextNoRandomLong =
     mode === "custom" &&
-    !CustomText.isWordRandom &&
-    !CustomText.isTimeRandom &&
-    CustomText.text.length >= 1000;
+    (CustomText.limit.mode === "word" || CustomText.limit.mode === "section") &&
+    (CustomText.limit.value >= 1000 || CustomText.limit.value === 0);
+  const customTextRandomTimeLong =
+    mode === "custom" &&
+    CustomText.limit.mode === "time" &&
+    (CustomText.limit.value >= 900 || CustomText.limit.value === 0);
 
   if (
     wordsLong ||
     timeLong ||
     customTextLong ||
     customTextRandomWordsLong ||
-    customTextRandomTimeLong ||
-    customTextNoRandomLong
+    customTextRandomTimeLong
   ) {
     return false;
   } else {
@@ -584,14 +579,20 @@ export function isDevEnvironment(): boolean {
   return envConfig.isDevelopment;
 }
 
-export function dreymarIndex(arrayLength: number): number {
-  const n = arrayLength;
-  const g = 0.5772156649;
-  const M = Math.log(n) + g;
+export function zipfyRandomArrayIndex(dictLength: number): number {
+  /**
+   * get random index based on probability distribution of Zipf's law,
+   * where PMF is (1/n)/H_N,
+   * where H_N is the Harmonic number of (N), where N is dictLength
+   * and the harmonic number is approximated using the formula:
+   * H_n = ln(n + 0.5) + gamma
+   */
+  const gamma = 0.5772156649015329; // Euler–Mascheroni constant
+  const H_N = Math.log(dictLength + 0.5) + gamma; // approximation of H_N
   const r = Math.random();
-  const h = Math.exp(r * M - g);
-  const W = Math.ceil(h);
-  return W - 1;
+  /* inverse of CDF where CDF is H_n/H_N */
+  const inverseCDF = Math.exp(r * H_N - gamma) - 0.5;
+  return Math.floor(inverseCDF);
 }
 
 export async function checkIfLanguageSupportsZipf(

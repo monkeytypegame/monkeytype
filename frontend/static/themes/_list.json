@@ -1202,5 +1202,47 @@
     "mainColor": "#ffadad",
     "subColor": "#ff3d8b",
     "textColor": "#f1deef"
+  },
+  {
+    "name": "incognito",
+    "bgColor": "#0e0e0e",
+    "mainColor": "#ff9900",
+    "subColor": "#2f2f2f",
+    "textColor": "#c6c6c6"
+  },
+  {
+    "name": "discord",
+    "bgColor": "#313338",
+    "mainColor": "#5a65ea",
+    "subColor": "#565861",
+    "textColor": "#dcdee3"
+  },
+  {
+    "name": "cy_red",
+    "bgColor": "#6e2626",
+    "mainColor": "#e55050",
+    "subColor": "#ff6060",
+    "textColor": "#ffaaaa"
+  },
+  {
+    "name": "floret",
+    "bgColor": "#00272c",
+    "mainColor": " #ffdd6d",
+    "subColor": "#779097",
+    "textColor": "#E5E5E5"
+  },
+  {
+    "name": "lilac_mist",
+    "bgColor": "#fffbfe",
+    "mainColor": "#b94189",
+    "subColor": "#e094c2",
+    "textColor": "#5c2954"
+  },
+  {
+    "name": "terrazzo",
+    "bgColor": "#f1e5da",
+    "mainColor": "#e0794e",
+    "subColor": "#688e8f",
+    "textColor": "#023e3b"
   }
 ]

@@ -18,29 +18,33 @@ type ConstructorCustomAnimations = {
   hide?: CustomWrapperAndModalAnimations;
 };
 
-type ShowHideOptions = {
+type Animation<T> = (modal: HTMLElement, modalChainData?: T) => Promise<void>;
+
+type ShowHideOptions<T> = {
   animationMode?: "none" | "both" | "modalOnly";
   animationDurationMs?: number;
   customAnimation?: CustomWrapperAndModalAnimations;
-  beforeAnimation?: (modal: HTMLElement) => Promise<void>;
-  afterAnimation?: (modal: HTMLElement) => Promise<void>;
+  beforeAnimation?: Animation<T>;
+  afterAnimation?: Animation<T>;
+  modalChainData?: T;
 };
 
-export type ShowOptions = ShowHideOptions & {
+export type ShowOptions<T = unknown> = ShowHideOptions<T> & {
   mode?: "modal" | "dialog";
   focusFirstInput?: true | "focusAndSelect";
   modalChain?: AnimatedModal;
 };
 
-export type HideOptions = ShowHideOptions & {
+export type HideOptions<T = unknown> = ShowHideOptions<T> & {
   clearModalChain?: boolean;
+  dontShowPreviousModalInchain?: boolean;
 };
 
-type ConstructorParams = {
+type ConstructorParams<T> = {
   dialogId: string;
   appendTo?: Skeleton.SkeletonAppendParents;
   customAnimations?: ConstructorCustomAnimations;
-  showOptionsWhenInChain?: ShowOptions;
+  showOptionsWhenInChain?: ShowOptions<T>;
   customEscapeHandler?: (e: KeyboardEvent) => void;
   customWrapperClickHandler?: (e: MouseEvent) => void;
   setup?: (modal: HTMLElement) => Promise<void>;
@@ -49,14 +53,19 @@ type ConstructorParams = {
 const DEFAULT_ANIMATION_DURATION = 125;
 const MODAL_ONLY_ANIMATION_MULTIPLIER = 0.75;
 
-export default class AnimatedModal {
+export default class AnimatedModal<
+  IncomingModalChainData = unknown,
+  OutgoingModalChainData = unknown
+> {
   private wrapperEl: HTMLDialogElement;
   private modalEl: HTMLElement;
   private dialogId: string;
   private open = false;
   private setupRan = false;
   private previousModalInChain: AnimatedModal | undefined;
-  private showOptionsWhenInChain: ShowOptions | undefined;
+  private showOptionsWhenInChain:
+    | ShowOptions<IncomingModalChainData>
+    | undefined;
   private skeletonAppendParent: Skeleton.SkeletonAppendParents;
   private customShowAnimations: CustomWrapperAndModalAnimations | undefined;
   private customHideAnimations: CustomWrapperAndModalAnimations | undefined;
@@ -65,7 +74,7 @@ export default class AnimatedModal {
   private customWrapperClickHandler: ((e: MouseEvent) => void) | undefined;
   private setup: ((modal: HTMLElement) => Promise<void>) | undefined;
 
-  constructor(constructorParams: ConstructorParams) {
+  constructor(constructorParams: ConstructorParams<IncomingModalChainData>) {
     if (constructorParams.dialogId.startsWith("#")) {
       constructorParams.dialogId = constructorParams.dialogId.slice(1);
     }
@@ -183,7 +192,7 @@ export default class AnimatedModal {
     }
   }
 
-  async show(options?: ShowOptions): Promise<void> {
+  async show(options?: ShowOptions<IncomingModalChainData>): Promise<void> {
     // eslint-disable-next-line no-async-promise-executor
     return new Promise(async (resolve) => {
       if (this.open) return resolve();
@@ -210,6 +219,8 @@ export default class AnimatedModal {
         await this.previousModalInChain.hide({
           animationMode: "modalOnly",
           animationDurationMs: modalAnimationDuration,
+          dontShowPreviousModalInchain:
+            options.modalChain.previousModalInChain !== undefined,
         });
       }
 
@@ -220,7 +231,7 @@ export default class AnimatedModal {
         this.wrapperEl.showModal();
       }
 
-      await options?.beforeAnimation?.(this.modalEl);
+      await options?.beforeAnimation?.(this.modalEl, options?.modalChainData);
 
       //wait until the next event loop to allow the dialog to start animating
       setTimeout(async () => {
@@ -270,7 +281,10 @@ export default class AnimatedModal {
             wrapperAnimation.easing ?? "swing",
             async () => {
               this.focusFirstInput(options?.focusFirstInput);
-              await options?.afterAnimation?.(this.modalEl);
+              await options?.afterAnimation?.(
+                this.modalEl,
+                options?.modalChainData
+              );
               resolve();
             }
           );
@@ -288,7 +302,10 @@ export default class AnimatedModal {
           modalAnimation?.easing ?? "swing",
           async () => {
             this.focusFirstInput(options?.focusFirstInput);
-            await options?.afterAnimation?.(this.modalEl);
+            await options?.afterAnimation?.(
+              this.modalEl,
+              options?.modalChainData
+            );
             resolve();
           }
         );
@@ -296,7 +313,7 @@ export default class AnimatedModal {
     });
   }
 
-  async hide(options?: HideOptions): Promise<void> {
+  async hide(options?: HideOptions<OutgoingModalChainData>): Promise<void> {
     // eslint-disable-next-line no-async-promise-executor
     return new Promise(async (resolve) => {
       if (!isPopupVisible(this.dialogId)) return resolve();
@@ -361,9 +378,13 @@ export default class AnimatedModal {
               this.open = false;
               await options?.afterAnimation?.(this.modalEl);
 
-              if (this.previousModalInChain !== undefined) {
+              if (
+                this.previousModalInChain !== undefined &&
+                !options?.dontShowPreviousModalInchain
+              ) {
                 await this.previousModalInChain.show({
                   animationMode: "modalOnly",
+                  modalChainData: options?.modalChainData,
                   animationDurationMs:
                     modalAnimationDuration * MODAL_ONLY_ANIMATION_MULTIPLIER,
                   ...this.previousModalInChain.showOptionsWhenInChain,
@@ -393,9 +414,13 @@ export default class AnimatedModal {
             this.open = false;
             await options?.afterAnimation?.(this.modalEl);
 
-            if (this.previousModalInChain !== undefined) {
+            if (
+              this.previousModalInChain !== undefined &&
+              !options?.dontShowPreviousModalInchain
+            ) {
               await this.previousModalInChain.show({
                 animationMode: "modalOnly",
+                modalChainData: options?.modalChainData,
                 animationDurationMs:
                   modalAnimationDuration * MODAL_ONLY_ANIMATION_MULTIPLIER,
                 ...this.previousModalInChain.showOptionsWhenInChain,

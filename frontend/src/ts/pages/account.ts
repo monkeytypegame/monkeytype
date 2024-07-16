@@ -1,11 +1,10 @@
 import * as DB from "../db";
-import * as ResultFilters from "../account/result-filters";
+import * as ResultFilters from "../elements/account/result-filters";
 import * as ThemeColors from "../elements/theme-colors";
 import * as ChartController from "../controllers/chart-controller";
 import Config, * as UpdateConfig from "../config";
-import * as MiniResultChart from "../account/mini-result-chart";
-import * as AllTimeStats from "../account/all-time-stats";
-import * as PbTables from "../account/pb-tables";
+import * as MiniResultChart from "../elements/account/mini-result-chart";
+import * as PbTables from "../elements/account/pb-tables";
 import * as LoadingPage from "./loading";
 import * as Focus from "../test/focus";
 import * as TodayTracker from "../test/today-tracker";
@@ -17,7 +16,7 @@ import * as Arrays from "../utils/arrays";
 import * as Numbers from "../utils/numbers";
 import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
 import * as Profile from "../elements/profile";
-import format from "date-fns/format";
+import { format } from "date-fns/format";
 import * as ConnectionState from "../states/connection";
 import * as Skeleton from "../utils/skeleton";
 import type { ScaleChartOptions, LinearScaleOptions } from "chart.js";
@@ -27,6 +26,7 @@ import { Auth } from "../firebase";
 import * as Loader from "../elements/loader";
 import * as ResultBatches from "../elements/result-batches";
 import Format from "../utils/format";
+import * as TestActivity from "../elements/test-activity";
 
 let filterDebug = false;
 //toggle filterdebug
@@ -144,6 +144,8 @@ function loadMoreLines(lineIndex?: number): void {
 
     const charStats = result.charStats.join("/");
 
+    const mode2 = result.mode === "custom" ? "" : result.mode2;
+
     const date = new Date(result.timestamp);
     $(".pageAccount .history table tbody").append(`
     <tr class="resultRow" id="result-${i}">
@@ -155,7 +157,7 @@ function loadMoreLines(lineIndex?: number): void {
       showDecimalPlaces: true,
     })}</td>
     <td>${charStats}</td>
-    <td>${result.mode} ${result.mode2}</td>
+    <td>${result.mode} ${mode2}</td>
     <td class="infoIcons">${icons}</td>
     <td>${resultTagsButton}</td>
     <td>${format(date, "dd MMM yyyy")}<br>
@@ -204,7 +206,6 @@ async function fillContent(): Promise<void> {
   LoadingPage.updateBar(100);
   console.log("updating account page");
   ThemeColors.update();
-  AllTimeStats.update();
 
   const snapshot = DB.getSnapshot();
   if (!snapshot) return;
@@ -212,7 +213,8 @@ async function fillContent(): Promise<void> {
   PbTables.update(snapshot.personalBests);
   void Profile.update("account", snapshot);
 
-  void ResultBatches.update();
+  void TestActivity.init(snapshot.testActivity, new Date(snapshot.addedAt));
+  void void ResultBatches.update();
 
   chartData = [];
   accChartData = [];
@@ -1269,15 +1271,21 @@ export const page = new Page({
   },
   beforeShow: async (): Promise<void> => {
     Skeleton.append("pageAccount", "main");
-    if (DB.getSnapshot()?.results === undefined) {
+    const snapshot = DB.getSnapshot();
+    if (snapshot?.results === undefined) {
       $(".pageLoading .fill, .pageAccount .fill").css("width", "0%");
       $(".pageAccount .content").addClass("hidden");
       $(".pageAccount .preloader").removeClass("hidden");
       await LoadingPage.showBar();
     }
-    await ResultFilters.appendButtons();
+    await ResultFilters.appendButtons(update);
     ResultFilters.updateActive();
     await Misc.sleep(0);
+
+    TestActivity.initYearSelector(
+      "current",
+      snapshot !== undefined ? new Date(snapshot.addedAt).getFullYear() : 2020
+    );
 
     void update().then(() => {
       void updateChartColors();

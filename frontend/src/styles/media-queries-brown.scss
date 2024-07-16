@@ -1,0 +1,60 @@
+//this is very overkill for the modern world so dont worry too much about this width
+@media only screen and (max-width: 425px) {
+  #mediaQueryDebug {
+    background: #8d6e63;
+    &::before {
+      content: "brown";
+    }
+  }
+  header {
+    nav {
+      font-size: 0.8rem;
+      line-height: 0.8rem;
+      gap: 0.1rem;
+    }
+  }
+  .page404 {
+    .content {
+      grid-template-columns: 1fr;
+      grid-auto-flow: unset;
+      gap: 1rem;
+    }
+  }
+  .pageTest {
+    #result .wrapper {
+      grid-template-columns: 1fr;
+      grid-template-areas:
+        "stats" "chart"
+        "morestats";
+      .stats.morestats {
+        justify-items: start;
+        display: grid;
+        grid-template-columns: 1fr;
+        grid-template-rows: unset;
+        grid-auto-flow: unset;
+      }
+    }
+  }
+  .pageAccount {
+    .group.history table thead td:nth-child(3),
+    .group.history table tbody td:nth-child(3),
+    .group.history table thead td:nth-child(5),
+    .group.history table tbody td:nth-child(5) {
+      display: none;
+    }
+  }
+  #keymap .row {
+    height: 1rem;
+    gap: 0.1rem;
+  }
+  #keymap .keymapKey,
+  #keymap.split_matrix .keymapSplitSpacer {
+    width: 1rem;
+    height: 1rem;
+    border-radius: 0.3rem;
+    font-size: 0.5rem;
+  }
+  #testActivity {
+    display: none;
+  }
+}

@@ -7,6 +7,7 @@ import * as JSONData from "../utils/json-data";
 import Config from "../config";
 import SlimSelect from "slim-select";
 import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
+import { CharacterCounter } from "../elements/character-counter";
 
 let dropdownReady = false;
 async function initDropdown(): Promise<void> {
@@ -44,14 +45,13 @@ async function submitQuote(): Promise<void> {
   Notifications.add("Quote submitted.", 1);
   $("#quoteSubmitModal .newQuoteText").val("");
   $("#quoteSubmitModal .newQuoteSource").val("");
-  $("#quoteSubmitModal .characterCount").removeClass("red");
-  $("#quoteSubmitModal .characterCount").text("-");
   CaptchaController.reset("submitQuote");
 }
 
 export async function show(showOptions: ShowOptions): Promise<void> {
   void modal.show({
     ...showOptions,
+    mode: "dialog",
     focusFirstInput: true,
     afterAnimation: async () => {
       CaptchaController.render(
@@ -69,6 +69,11 @@ export async function show(showOptions: ShowOptions): Promise<void> {
       );
       $("#quoteSubmitModal .newQuoteLanguage").trigger("change");
       $("#quoteSubmitModal input").val("");
+
+      new CharacterCounter(
+        $("#quoteSubmitModal .newQuoteText") as JQuery<HTMLTextAreaElement>,
+        250
+      );
     },
   });
 }
@@ -85,15 +90,6 @@ function hide(clearModalChain: boolean): void {
 }
 
 async function setup(modalEl: HTMLElement): Promise<void> {
-  modalEl.querySelector("textarea")?.addEventListener("input", (e) => {
-    const len = (e.target as HTMLTextAreaElement).value.length;
-    $("#quoteSubmitModal .characterCount").text(len);
-    if (len < 60) {
-      $("#quoteSubmitModal .characterCount").addClass("red");
-    } else {
-      $("#quoteSubmitModal .characterCount").removeClass("red");
-    }
-  });
   modalEl.querySelector("button")?.addEventListener("click", () => {
     void submitQuote();
     hide(true);

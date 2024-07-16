@@ -1,14 +1,12 @@
 import joi from "joi";
 import { Router } from "express";
-import {
-  asyncHandler,
-  checkUserPermissions,
-  validateConfiguration,
-  validateRequest,
-} from "../../middlewares/api-utils";
 import { authenticateRequest } from "../../middlewares/auth";
 import * as ApeKeyController from "../controllers/ape-key";
 import * as RateLimit from "../../middlewares/rate-limit";
+import { checkUserPermissions } from "../../middlewares/permission";
+import { validate } from "../../middlewares/configuration";
+import { asyncHandler } from "../../middlewares/utility";
+import { validateRequest } from "../../middlewares/validation";
 
 const apeKeyNameSchema = joi
   .string()
@@ -30,7 +28,7 @@ const checkIfUserCanManageApeKeys = checkUserPermissions({
 const router = Router();
 
 router.use(
-  validateConfiguration({
+  validate({
     criteria: (configuration) => {
       return configuration.apeKeys.endpointsEnabled;
     },

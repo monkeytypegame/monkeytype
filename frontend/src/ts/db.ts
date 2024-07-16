@@ -8,6 +8,12 @@ import * as ConnectionState from "./states/connection";
 import { lastElementFromArray } from "./utils/arrays";
 import { getFunboxList } from "./utils/json-data";
 import { mergeWithDefaultConfig } from "./utils/config";
+import * as Dates from "date-fns";
+import {
+  TestActivityCalendar,
+  ModifiableTestActivityCalendar,
+} from "./elements/test-activity-calendar";
+import * as Loader from "./elements/loader";
 
 let dbSnapshot: MonkeyTypes.Snapshot | undefined;
 
@@ -133,6 +139,13 @@ export async function initSnapshot(): Promise<
     snap.filterPresets = userData.resultFilterPresets ?? [];
     snap.isPremium = userData?.isPremium;
     snap.allTimeLbs = userData.allTimeLbs;
+
+    if (userData.testActivity !== undefined) {
+      snap.testActivity = new ModifiableTestActivityCalendar(
+        userData.testActivity.testsByDays,
+        new Date(userData.testActivity.lastDay)
+      );
+    }
 
     const hourOffset = userData?.streak?.hourOffset;
     snap.streakHourOffset =
@@ -340,7 +353,7 @@ export async function addCustomTheme(
 
   const newCustomTheme: MonkeyTypes.CustomTheme = {
     ...theme,
-    _id: response.data._id as string,
+    _id: response.data._id,
   };
 
   dbSnapshot.customThemes.push(newCustomTheme);
@@ -897,6 +910,11 @@ export function saveLocalResult(
 
     setSnapshot(snapshot);
   }
+
+  if (snapshot.testActivity !== undefined) {
+    snapshot.testActivity.increment(new Date(result.timestamp));
+    setSnapshot(snapshot);
+  }
 }
 
 export function updateLocalStats(started: number, time: number): void {
@@ -952,6 +970,55 @@ export function setStreak(streak: number): void {
   }
 
   setSnapshot(snapshot);
+}
+
+export async function getTestActivityCalendar(
+  yearString: string
+): Promise<MonkeyTypes.TestActivityCalendar | undefined> {
+  if (!isAuthenticated() || dbSnapshot === undefined) return undefined;
+
+  if (yearString === "current") return dbSnapshot.testActivity;
+
+  const currentYear = new Date().getFullYear().toString();
+  if (yearString === currentYear) {
+    return dbSnapshot.testActivity?.getFullYearCalendar();
+  }
+
+  if (dbSnapshot.testActivityByYear === undefined) {
+    if (!ConnectionState.get()) {
+      return undefined;
+    }
+
+    Loader.show();
+    const response = await Ape.users.getTestActivity();
+    if (response.status !== 200) {
+      Notifications.add(
+        "Error getting test activities: " + response.message,
+        -1
+      );
+      Loader.hide();
+      return undefined;
+    }
+
+    dbSnapshot.testActivityByYear = {};
+    for (const year in response.data) {
+      if (year === currentYear) continue;
+      const testsByDays = response.data[year] ?? [];
+      const lastDay = Dates.addDays(
+        new Date(parseInt(year), 0, 1),
+        testsByDays.length
+      );
+
+      dbSnapshot.testActivityByYear[year] = new TestActivityCalendar(
+        testsByDays,
+        lastDay,
+        true
+      );
+    }
+    Loader.hide();
+  }
+
+  return dbSnapshot.testActivityByYear[yearString];
 }
 
 // export async function DB.getLocalTagPB(tagId) {

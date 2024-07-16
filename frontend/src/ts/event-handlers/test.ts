@@ -9,6 +9,7 @@ import * as Notifications from "../elements/notifications";
 import * as QuoteRateModal from "../modals/quote-rate";
 import * as QuoteReportModal from "../modals/quote-report";
 import * as QuoteSearchModal from "../modals/quote-search";
+import * as CustomTextModal from "../modals/custom-text";
 
 $(".pageTest").on("click", "#testModesNotice .textButton", async (event) => {
   const attr = $(event.currentTarget).attr("commands");
@@ -48,19 +49,19 @@ $(".pageTest").on("click", "#mobileTestConfigButton", () => {
 });
 
 $(".pageTest #rateQuoteButton").on("click", async () => {
-  if (TestWords.randomQuote === null) {
+  if (TestWords.currentQuote === null) {
     Notifications.add("Failed to show quote rating popup: no quote", -1);
     return;
   }
-  QuoteRateModal.show(TestWords.randomQuote);
+  QuoteRateModal.show(TestWords.currentQuote);
 });
 
 $(".pageTest #reportQuoteButton").on("click", async () => {
-  if (TestWords.randomQuote === null) {
+  if (TestWords.currentQuote === null) {
     Notifications.add("Failed to show quote report popup: no quote", -1);
     return;
   }
-  void QuoteReportModal.show(TestWords.randomQuote?.id);
+  void QuoteReportModal.show(TestWords.currentQuote?.id);
 });
 
 $(".pageTest").on("click", "#testConfig .quoteLength .textButton", (e) => {
@@ -68,4 +69,8 @@ $(".pageTest").on("click", "#testConfig .quoteLength .textButton", (e) => {
   if (len === -2) {
     void QuoteSearchModal.show();
   }
+});
+
+$(".pageTest").on("click", "#testConfig .customText .textButton", () => {
+  CustomTextModal.show();
 });

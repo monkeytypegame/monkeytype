@@ -5,9 +5,8 @@ import * as UpdateConfig from "../config";
 import * as Loader from "../elements/loader";
 import * as Notifications from "../elements/notifications";
 import * as Settings from "../pages/settings";
-import * as ThemePicker from "../settings/theme-picker";
+import * as ThemePicker from "../elements/settings/theme-picker";
 import * as CustomText from "../test/custom-text";
-import * as SavedTextsPopup from "../popups/saved-texts-popup";
 import * as AccountButton from "../elements/account-button";
 import { FirebaseError } from "firebase/app";
 import { Auth, isAuthenticated, getAuthenticatedUser } from "../firebase";
@@ -19,7 +18,6 @@ import {
   reauthenticateWithCredential,
   reauthenticateWithPopup,
   unlink,
-  updatePassword,
 } from "firebase/auth";
 import {
   createErrorMessage,
@@ -33,15 +31,61 @@ import AnimatedModal, {
   HideOptions,
   ShowOptions,
 } from "../utils/animated-modal";
+import { format as dateFormat } from "date-fns/format";
+import { Attributes, buildTag } from "../utils/tag-builder";
 
-type Input = {
+type CommonInput<TType, TValue> = {
+  type: TType;
+  initVal?: TValue;
   placeholder?: string;
-  type?: string;
-  initVal: string;
   hidden?: boolean;
   disabled?: boolean;
+  optional?: boolean;
   label?: string;
+  oninput?: (event: Event) => void;
 };
+
+type TextInput = CommonInput<"text", string>;
+type TextArea = CommonInput<"textarea", string>;
+type PasswordInput = CommonInput<"password", string>;
+type EmailInput = CommonInput<"email", string>;
+
+type RangeInput = {
+  min: number;
+  max: number;
+  step?: number;
+} & CommonInput<"range", number>;
+
+type DateTimeInput = {
+  min?: Date;
+  max?: Date;
+} & CommonInput<"datetime-local", Date>;
+type DateInput = {
+  min?: Date;
+  max?: Date;
+} & CommonInput<"date", Date>;
+
+type CheckboxInput = {
+  label: string;
+  placeholder?: never;
+  description?: string;
+} & CommonInput<"checkbox", boolean>;
+
+type NumberInput = {
+  min?: number;
+  max?: number;
+} & CommonInput<"number", number>;
+
+type CommonInputType =
+  | TextInput
+  | TextArea
+  | PasswordInput
+  | EmailInput
+  | RangeInput
+  | DateTimeInput
+  | DateInput
+  | CheckboxInput
+  | NumberInput;
 
 let activePopup: SimpleModal | null = null;
 
@@ -60,6 +104,7 @@ type PopupKey =
   | "updatePassword"
   | "removeGoogleAuth"
   | "removeGithubAuth"
+  | "removePasswordAuth"
   | "addPasswordAuth"
   | "deleteAccount"
   | "resetAccount"
@@ -80,7 +125,8 @@ type PopupKey =
   | "resetProgressCustomTextLong"
   | "updateCustomTheme"
   | "deleteCustomTheme"
-  | "forgotPassword";
+  | "forgotPassword"
+  | "devGenerateData";
 
 const list: Record<PopupKey, SimpleModal | undefined> = {
   updateEmail: undefined,
@@ -88,6 +134,7 @@ const list: Record<PopupKey, SimpleModal | undefined> = {
   updatePassword: undefined,
   removeGoogleAuth: undefined,
   removeGithubAuth: undefined,
+  removePasswordAuth: undefined,
   addPasswordAuth: undefined,
   deleteAccount: undefined,
   resetAccount: undefined,
@@ -108,13 +155,13 @@ const list: Record<PopupKey, SimpleModal | undefined> = {
   updateCustomTheme: undefined,
   deleteCustomTheme: undefined,
   forgotPassword: undefined,
+  devGenerateData: undefined,
 };
 
 type SimpleModalOptions = {
   id: string;
-  type: string;
   title: string;
-  inputs?: Input[];
+  inputs?: CommonInputType[];
   text?: string;
   buttonText: string;
   execFn: (thisPopup: SimpleModal, ...params: string[]) => Promise<ExecReturn>;
@@ -123,6 +170,7 @@ type SimpleModalOptions = {
   canClose?: boolean;
   onlineOnly?: boolean;
   hideCallsExec?: boolean;
+  showLabels?: boolean;
 };
 
 const modal = new AnimatedModal({
@@ -146,9 +194,8 @@ class SimpleModal {
   wrapper: HTMLElement;
   element: HTMLElement;
   id: string;
-  type: string;
   title: string;
-  inputs: Input[];
+  inputs: CommonInputType[];
   text?: string;
   buttonText: string;
   execFn: (thisPopup: SimpleModal, ...params: string[]) => Promise<ExecReturn>;
@@ -157,10 +204,10 @@ class SimpleModal {
   canClose: boolean;
   onlineOnly: boolean;
   hideCallsExec: boolean;
+  showLabels: boolean;
   constructor(options: SimpleModalOptions) {
     this.parameters = [];
     this.id = options.id;
-    this.type = options.type;
     this.execFn = options.execFn;
     this.title = options.title;
     this.inputs = options.inputs ?? [];
@@ -173,6 +220,7 @@ class SimpleModal {
     this.canClose = options.canClose ?? true;
     this.onlineOnly = options.onlineOnly ?? false;
     this.hideCallsExec = options.hideCallsExec ?? false;
+    this.showLabels = options.showLabels ?? false;
   }
   reset(): void {
     this.element.innerHTML = `
@@ -216,68 +264,133 @@ class SimpleModal {
       return;
     }
 
-    if (this.type === "number") {
-      this.inputs.forEach((input) => {
-        el.find(".inputs").append(`
-            <input
-              type="number"
-              min="1"
-              value="${input.initVal}"
-              placeholder="${input.placeholder}"
-              class="${input.hidden ? "hidden" : ""}"
-              ${input.hidden ? "" : "required"}
-              autocomplete="off"
-            >
-          `);
-      });
-    } else if (this.type === "text") {
-      this.inputs.forEach((input) => {
-        if (input.type !== undefined && input.type !== "") {
-          if (input.type === "textarea") {
-            el.find(".inputs").append(`
-                <textarea
-                  placeholder="${input.placeholder}"
-                  class="${input.hidden ? "hidden" : ""}"
-                  ${input.hidden ? "" : "required"}
-                  ${input.disabled ? "disabled" : ""}
-                  autocomplete="off"
-                >${input.initVal}</textarea>
-              `);
-          } else if (input.type === "checkbox") {
-            el.find(".inputs").append(`
-              <label class="checkbox">
-                <input type="checkbox" checked="">
-                <div>${input.label}</div>
-              </label>
-              `);
-          } else {
-            el.find(".inputs").append(`
-              <input
-              type="${input.type}"
-              value="${input.initVal}"
-              placeholder="${input.placeholder}"
-              class="${input.hidden ? "hidden" : ""}"
-              ${input.hidden ? "" : "required"}
-              ${input.disabled ? "disabled" : ""}
-              autocomplete="off"
-              >
-              `);
-          }
-        } else {
-          el.find(".inputs").append(`
-              <input
-                type="text"
-                value="${input.initVal}"
-                placeholder="${input.placeholder}"
-                class="${input.hidden ? "hidden" : ""}"
-                ${input.hidden ? "" : "required"}
-                ${input.disabled ? "disabled" : ""}
-                autocomplete="off"
-              >
-            `);
+    const inputs = el.find(".inputs");
+    if (this.showLabels) inputs.addClass("withLabel");
+
+    this.inputs.forEach((input, index) => {
+      const id = `${this.id}_${index}`;
+
+      if (this.showLabels && !input.hidden) {
+        inputs.append(`<label for="${id}">${input.label ?? ""}</label>`);
+      }
+
+      const tagname = input.type === "textarea" ? "textarea" : "input";
+      const classes = input.hidden ? ["hidden"] : undefined;
+      const attributes: Attributes = {
+        id: id,
+        placeholder: input.placeholder ?? "",
+        autocomplete: "off",
+      };
+
+      if (input.type !== "textarea") {
+        attributes["value"] = input.initVal?.toString() ?? "";
+        attributes["type"] = input.type;
+      }
+      if (!input.hidden && !input.optional === true) {
+        attributes["required"] = true;
+      }
+      if (input.disabled) {
+        attributes["disabled"] = true;
+      }
+
+      if (input.type === "textarea") {
+        inputs.append(
+          buildTag({
+            tagname,
+            classes,
+            attributes,
+            innerHTML: input.initVal,
+          })
+        );
+      } else if (input.type === "checkbox") {
+        let html = buildTag({ tagname, classes, attributes });
+
+        if (input.description !== undefined) {
+          html += `<span>${input.description}</span>`;
         }
-      });
-    }
+        if (!this.showLabels) {
+          html = `
+          <label class="checkbox">
+            ${html}
+            <div>${input.label}</div>
+          </label>
+        `;
+        } else {
+          html = `<div>${html}</div>`;
+        }
+        inputs.append(html);
+      } else if (input.type === "range") {
+        inputs.append(`
+          <div>
+            ${buildTag({
+              tagname,
+              classes,
+              attributes: {
+                ...attributes,
+                min: input.min.toString(),
+                max: input.max.toString(),
+                step: input.step?.toString(),
+                oninput: "this.nextElementSibling.innerHTML = this.value",
+              },
+            })}
+            <span>${input.initVal ?? ""}</span>
+          </div>
+          `);
+      } else {
+        switch (input.type) {
+          case "text":
+          case "password":
+          case "email":
+            break;
+
+          case "datetime-local": {
+            if (input.min !== undefined) {
+              attributes["min"] = dateFormat(
+                input.min,
+                "yyyy-MM-dd'T'HH:mm:ss"
+              );
+            }
+            if (input.max !== undefined) {
+              attributes["max"] = dateFormat(
+                input.max,
+                "yyyy-MM-dd'T'HH:mm:ss"
+              );
+            }
+            if (input.initVal !== undefined) {
+              attributes["value"] = dateFormat(
+                input.initVal,
+                "yyyy-MM-dd'T'HH:mm:ss"
+              );
+            }
+            break;
+          }
+          case "date": {
+            if (input.min !== undefined) {
+              attributes["min"] = dateFormat(input.min, "yyyy-MM-dd");
+            }
+            if (input.max !== undefined) {
+              attributes["max"] = dateFormat(input.max, "yyyy-MM-dd");
+            }
+            if (input.initVal !== undefined) {
+              attributes["value"] = dateFormat(input.initVal, "yyyy-MM-dd");
+            }
+            break;
+          }
+          case "number": {
+            attributes["min"] = input.min?.toString();
+            attributes["max"] = input.max?.toString();
+            break;
+          }
+        }
+        inputs.append(buildTag({ tagname, classes, attributes }));
+      }
+      if (input.oninput !== undefined) {
+        (
+          document.querySelector("#" + attributes["id"]) as HTMLElement
+        ).oninput = input.oninput;
+      }
+    });
+
     el.find(".inputs").removeClass("hidden");
   }
 
@@ -292,14 +405,21 @@ class SimpleModal {
       }
     }
 
-    const inputsWithCurrentValue = [];
+    type CommonInputWithCurrentValue = CommonInputType & {
+      currentValue: string | undefined;
+    };
+
+    const inputsWithCurrentValue: CommonInputWithCurrentValue[] = [];
     for (let i = 0; i < this.inputs.length; i++) {
-      inputsWithCurrentValue.push({ ...this.inputs[i], currentValue: vals[i] });
+      inputsWithCurrentValue.push({
+        ...(this.inputs[i] as CommonInputType),
+        currentValue: vals[i],
+      });
     }
 
     if (
       inputsWithCurrentValue
-        .filter((i) => !i.hidden)
+        .filter((i) => i.hidden !== true && i.optional !== true)
         .some((v) => v.currentValue === undefined || v.currentValue === "")
     ) {
       Notifications.add("Please fill in all fields", 0);
@@ -346,8 +466,8 @@ class SimpleModal {
     activePopup = this;
     this.parameters = parameters;
     void modal.show({
-      ...showOptions,
       focusFirstInput: true,
+      ...showOptions,
       beforeAnimation: async () => {
         this.beforeInitFn?.(this);
         this.init();
@@ -496,7 +616,6 @@ async function reauthenticate(
 
 list.updateEmail = new SimpleModal({
   id: "updateEmail",
-  type: "text",
   title: "Update email",
   inputs: [
     {
@@ -505,10 +624,12 @@ list.updateEmail = new SimpleModal({
       initVal: "",
     },
     {
+      type: "text",
       placeholder: "New email",
       initVal: "",
     },
     {
+      type: "text",
       placeholder: "Confirm new email",
       initVal: "",
     },
@@ -567,7 +688,6 @@ list.updateEmail = new SimpleModal({
 
 list.removeGoogleAuth = new SimpleModal({
   id: "removeGoogleAuth",
-  type: "text",
   title: "Remove Google authentication",
   inputs: [
     {
@@ -622,7 +742,6 @@ list.removeGoogleAuth = new SimpleModal({
 
 list.removeGithubAuth = new SimpleModal({
   id: "removeGithubAuth",
-  type: "text",
   title: "Remove GitHub authentication",
   inputs: [
     {
@@ -675,9 +794,56 @@ list.removeGithubAuth = new SimpleModal({
   },
 });
 
+list.removePasswordAuth = new SimpleModal({
+  id: "removePaswordAuth",
+  title: "Remove Password authentication",
+  inputs: [
+    {
+      type: "checkbox",
+      label: `I understand I will lose access to my Monkeytype account if my Google/GitHub account is lost or disabled.`,
+    },
+  ],
+  onlineOnly: true,
+  buttonText: "reauthenticate to remove",
+  execFn: async (_thisPopup): Promise<ExecReturn> => {
+    const reauth = await reauthenticate({
+      excludeMethod: "password",
+    });
+    if (reauth.status !== 1) {
+      return {
+        status: reauth.status,
+        message: reauth.message,
+      };
+    }
+
+    try {
+      await unlink(reauth.user, "password");
+    } catch (e) {
+      const message = createErrorMessage(
+        e,
+        "Failed to remove password authentication"
+      );
+      return {
+        status: -1,
+        message,
+      };
+    }
+
+    Settings.updateAuthSections();
+
+    reloadAfter(3);
+    return {
+      status: 1,
+      message: "Password authentication removed",
+    };
+  },
+  beforeInitFn: (): void => {
+    if (!isAuthenticated()) return;
+  },
+});
+
 list.updateName = new SimpleModal({
   id: "updateName",
-  type: "text",
   title: "Update name",
   inputs: [
     {
@@ -743,7 +909,7 @@ list.updateName = new SimpleModal({
     const snapshot = DB.getSnapshot();
     if (!snapshot) return;
     if (!isUsingPasswordAuthentication()) {
-      (thisPopup.inputs[0] as Input).hidden = true;
+      (thisPopup.inputs[0] as PasswordInput).hidden = true;
       thisPopup.buttonText = "reauthenticate to update";
     }
     if (snapshot.needsToChangeName === true) {
@@ -755,7 +921,6 @@ list.updateName = new SimpleModal({
 
 list.updatePassword = new SimpleModal({
   id: "updatePassword",
-  type: "text",
   title: "Update password",
   inputs: [
     {
@@ -812,17 +977,16 @@ list.updatePassword = new SimpleModal({
       };
     }
 
-    try {
-      await updatePassword(reauth.user, newPass);
-    } catch (e) {
-      const message = createErrorMessage(e, "Failed to update password");
+    const response = await Ape.users.updatePassword(newPass);
+
+    if (response.status !== 200) {
       return {
         status: -1,
-        message,
+        message: "Failed to update password: " + response.message,
       };
     }
 
-    reloadAfter(3);
+    AccountController.signOut();
 
     return {
       status: 1,
@@ -841,7 +1005,6 @@ list.updatePassword = new SimpleModal({
 
 list.addPasswordAuth = new SimpleModal({
   id: "addPasswordAuth",
-  type: "text",
   title: "Add password authentication",
   inputs: [
     {
@@ -933,7 +1096,6 @@ list.addPasswordAuth = new SimpleModal({
 
 list.deleteAccount = new SimpleModal({
   id: "deleteAccount",
-  type: "text",
   title: "Delete account",
   inputs: [
     {
@@ -982,7 +1144,6 @@ list.deleteAccount = new SimpleModal({
 
 list.resetAccount = new SimpleModal({
   id: "resetAccount",
-  type: "text",
   title: "Reset account",
   inputs: [
     {
@@ -1033,7 +1194,6 @@ list.resetAccount = new SimpleModal({
 
 list.optOutOfLeaderboards = new SimpleModal({
   id: "optOutOfLeaderboards",
-  type: "text",
   title: "Opt out of leaderboards",
   inputs: [
     {
@@ -1080,7 +1240,6 @@ list.optOutOfLeaderboards = new SimpleModal({
 
 list.clearTagPb = new SimpleModal({
   id: "clearTagPb",
-  type: "text",
   title: "Clear tag PB",
   text: "Are you sure you want to clear this tags PB?",
   buttonText: "clear",
@@ -1124,9 +1283,8 @@ list.clearTagPb = new SimpleModal({
 
 list.applyCustomFont = new SimpleModal({
   id: "applyCustomFont",
-  type: "text",
   title: "Custom font",
-  inputs: [{ placeholder: "Font name", initVal: "" }],
+  inputs: [{ type: "text", placeholder: "Font name", initVal: "" }],
   text: "Make sure you have the font installed on your computer before applying",
   buttonText: "apply",
   execFn: async (_thisPopup, fontName): Promise<ExecReturn> => {
@@ -1141,7 +1299,6 @@ list.applyCustomFont = new SimpleModal({
 
 list.resetPersonalBests = new SimpleModal({
   id: "resetPersonalBests",
-  type: "text",
   title: "Reset personal bests",
   inputs: [
     {
@@ -1201,7 +1358,6 @@ list.resetPersonalBests = new SimpleModal({
 
 list.resetSettings = new SimpleModal({
   id: "resetSettings",
-  type: "text",
   title: "Reset settings",
   text: "Are you sure you want to reset all your settings?",
   buttonText: "reset",
@@ -1217,7 +1373,6 @@ list.resetSettings = new SimpleModal({
 
 list.revokeAllTokens = new SimpleModal({
   id: "revokeAllTokens",
-  type: "text",
   title: "Revoke all tokens",
   inputs: [
     {
@@ -1258,7 +1413,7 @@ list.revokeAllTokens = new SimpleModal({
     const snapshot = DB.getSnapshot();
     if (!snapshot) return;
     if (!isUsingPasswordAuthentication()) {
-      (thisPopup.inputs[0] as Input).hidden = true;
+      (thisPopup.inputs[0] as PasswordInput).hidden = true;
       thisPopup.buttonText = "reauthenticate to revoke all tokens";
     }
   },
@@ -1266,7 +1421,6 @@ list.revokeAllTokens = new SimpleModal({
 
 list.unlinkDiscord = new SimpleModal({
   id: "unlinkDiscord",
-  type: "text",
   title: "Unlink Discord",
   text: "Are you sure you want to unlink your Discord account?",
   buttonText: "unlink",
@@ -1303,10 +1457,10 @@ list.unlinkDiscord = new SimpleModal({
 
 list.generateApeKey = new SimpleModal({
   id: "generateApeKey",
-  type: "text",
   title: "Generate new Ape key",
   inputs: [
     {
+      type: "text",
       placeholder: "Name",
       initVal: "",
     },
@@ -1345,7 +1499,6 @@ list.generateApeKey = new SimpleModal({
 
 list.viewApeKey = new SimpleModal({
   id: "viewApeKey",
-  type: "text",
   title: "Ape key",
   inputs: [
     {
@@ -1369,7 +1522,7 @@ list.viewApeKey = new SimpleModal({
     };
   },
   beforeInitFn: (_thisPopup): void => {
-    (_thisPopup.inputs[0] as Input).initVal = _thisPopup
+    (_thisPopup.inputs[0] as TextArea).initVal = _thisPopup
       .parameters[0] as string;
   },
   beforeShowFn: (_thisPopup): void => {
@@ -1385,7 +1538,6 @@ list.viewApeKey = new SimpleModal({
 
 list.deleteApeKey = new SimpleModal({
   id: "deleteApeKey",
-  type: "text",
   title: "Delete Ape key",
   text: "Are you sure?",
   buttonText: "delete",
@@ -1411,10 +1563,10 @@ list.deleteApeKey = new SimpleModal({
 
 list.editApeKey = new SimpleModal({
   id: "editApeKey",
-  type: "text",
   title: "Edit Ape key",
   inputs: [
     {
+      type: "text",
       placeholder: "name",
       initVal: "",
     },
@@ -1443,14 +1595,12 @@ list.editApeKey = new SimpleModal({
 
 list.deleteCustomText = new SimpleModal({
   id: "deleteCustomText",
-  type: "text",
   title: "Delete custom text",
   text: "Are you sure?",
   buttonText: "delete",
   execFn: async (_thisPopup): Promise<ExecReturn> => {
     CustomText.deleteCustomText(_thisPopup.parameters[0] as string, false);
     CustomTextState.setCustomTextName("", undefined);
-    void SavedTextsPopup.show(true);
 
     return {
       status: 1,
@@ -1464,14 +1614,12 @@ list.deleteCustomText = new SimpleModal({
 
 list.deleteCustomTextLong = new SimpleModal({
   id: "deleteCustomTextLong",
-  type: "text",
   title: "Delete custom text",
   text: "Are you sure?",
   buttonText: "delete",
   execFn: async (_thisPopup): Promise<ExecReturn> => {
     CustomText.deleteCustomText(_thisPopup.parameters[0] as string, true);
     CustomTextState.setCustomTextName("", undefined);
-    void SavedTextsPopup.show(true);
 
     return {
       status: 1,
@@ -1485,18 +1633,16 @@ list.deleteCustomTextLong = new SimpleModal({
 
 list.resetProgressCustomTextLong = new SimpleModal({
   id: "resetProgressCustomTextLong",
-  type: "text",
   title: "Reset progress for custom text",
   text: "Are you sure?",
   buttonText: "reset",
   execFn: async (_thisPopup): Promise<ExecReturn> => {
     CustomText.setCustomTextLongProgress(_thisPopup.parameters[0] as string, 0);
-    void SavedTextsPopup.show(true);
-    CustomText.setPopupTextareaState(
-      CustomText.getCustomText(_thisPopup.parameters[0] as string, true).join(
-        " "
-      )
+    const text = CustomText.getCustomText(
+      _thisPopup.parameters[0] as string,
+      true
     );
+    CustomText.setText(text);
     return {
       status: 1,
       message: "Custom text progress reset",
@@ -1509,7 +1655,6 @@ list.resetProgressCustomTextLong = new SimpleModal({
 
 list.updateCustomTheme = new SimpleModal({
   id: "updateCustomTheme",
-  type: "text",
   title: "Update custom theme",
   inputs: [
     {
@@ -1519,8 +1664,9 @@ list.updateCustomTheme = new SimpleModal({
     },
     {
       type: "checkbox",
-      initVal: "false",
+      initVal: false,
       label: "Update custom theme to current colors",
+      optional: true,
     },
   ],
   buttonText: "update",
@@ -1584,13 +1730,12 @@ list.updateCustomTheme = new SimpleModal({
       (t) => t._id === _thisPopup.parameters[0]
     );
     if (!customTheme) return;
-    (_thisPopup.inputs[0] as Input).initVal = customTheme.name;
+    (_thisPopup.inputs[0] as TextInput).initVal = customTheme.name;
   },
 });
 
 list.deleteCustomTheme = new SimpleModal({
   id: "deleteCustomTheme",
-  type: "text",
   title: "Delete custom theme",
   text: "Are you sure?",
   buttonText: "delete",
@@ -1608,7 +1753,6 @@ list.deleteCustomTheme = new SimpleModal({
 
 list.forgotPassword = new SimpleModal({
   id: "forgotPassword",
-  type: "text",
   title: "Forgot password",
   inputs: [
     {
@@ -1640,11 +1784,98 @@ list.forgotPassword = new SimpleModal({
       `.pageLogin .login input[name="current-email"]`
     ).val() as string;
     if (inputValue) {
-      (thisPopup.inputs[0] as Input).initVal = inputValue;
+      (thisPopup.inputs[0] as TextInput).initVal = inputValue;
     }
   },
 });
 
+list.devGenerateData = new SimpleModal({
+  id: "devGenerateData",
+  title: "Generate data",
+  showLabels: true,
+  inputs: [
+    {
+      type: "text",
+      label: "username",
+      placeholder: "username",
+      oninput: (event): void => {
+        const target = event.target as HTMLInputElement;
+        const span = document.querySelector(
+          "#devGenerateData_1 + span"
+        ) as HTMLInputElement;
+        span.innerHTML = `if checked, user will be created with ${target.value}@example.com and password: password`;
+        return;
+      },
+    },
+    {
+      type: "checkbox",
+      label: "create user",
+      description:
+        "if checked, user will be created with {username}@example.com and password: password",
+      optional: true,
+    },
+    {
+      type: "date",
+      label: "first test",
+      optional: true,
+    },
+    {
+      type: "date",
+      label: "last test",
+      max: new Date(),
+      optional: true,
+    },
+    {
+      type: "range",
+      label: "min tests per day",
+      initVal: 0,
+      min: 0,
+      max: 200,
+      step: 10,
+    },
+    {
+      type: "range",
+      label: "max tests per day",
+      initVal: 50,
+      min: 0,
+      max: 200,
+      step: 10,
+    },
+  ],
+  buttonText: "generate (might take a while)",
+  execFn: async (
+    _thisPopup,
+    username,
+    createUser,
+    firstTestTimestamp,
+    lastTestTimestamp,
+    minTestsPerDay,
+    maxTestsPerDay
+  ): Promise<ExecReturn> => {
+    const request: Ape.Dev.GenerateData = {
+      username,
+      createUser: createUser === "true",
+    };
+    if (firstTestTimestamp !== undefined && firstTestTimestamp.length > 0)
+      request.firstTestTimestamp = Date.parse(firstTestTimestamp);
+    if (lastTestTimestamp !== undefined && lastTestTimestamp.length > 0)
+      request.lastTestTimestamp = Date.parse(lastTestTimestamp);
+    if (minTestsPerDay !== undefined && minTestsPerDay.length > 0)
+      request.minTestsPerDay = Number.parseInt(minTestsPerDay);
+    if (maxTestsPerDay !== undefined && maxTestsPerDay.length > 0)
+      request.maxTestsPerDay = Number.parseInt(maxTestsPerDay);
+
+    const result = await Ape.dev.generateData(request);
+
+    return {
+      status: result.status === 200 ? 1 : -1,
+      message: result.message,
+      hideOptions: {
+        clearModalChain: true,
+      },
+    };
+  },
+});
 export function showPopup(
   key: PopupKey,
   showParams = [] as string[],
@@ -1680,6 +1911,9 @@ $(".pageSettings #removeGoogleAuth").on("click", () => {
 
 $(".pageSettings #removeGithubAuth").on("click", () => {
   showPopup("removeGithubAuth");
+});
+$(".pageSettings #removePasswordAuth").on("click", () => {
+  showPopup("removePasswordAuth");
 });
 
 $("#resetSettingsButton").on("click", () => {
@@ -1742,34 +1976,9 @@ $(".pageSettings").on(
   (e) => {
     const $parentElement = $(e.currentTarget).parent(".customTheme.button");
     const customThemeId = $parentElement.attr("customThemeId") as string;
-    showPopup("updateCustomTheme", [customThemeId]);
-  }
-);
-
-$("#popups").on(
-  "click",
-  `#savedTextsPopupWrapper .list .savedText .button.delete`,
-  (e) => {
-    const name = $(e.target).siblings(".button.name").text();
-    showPopup("deleteCustomText", [name]);
-  }
-);
-
-$("#popups").on(
-  "click",
-  `#savedTextsPopupWrapper .listLong .savedText .button.delete`,
-  (e) => {
-    const name = $(e.target).siblings(".button.name").text();
-    showPopup("deleteCustomTextLong", [name]);
-  }
-);
-
-$("#popups").on(
-  "click",
-  `#savedTextsPopupWrapper .listLong .savedText .button.resetProgress`,
-  (e) => {
-    const name = $(e.target).siblings(".button.name").text();
-    showPopup("resetProgressCustomTextLong", [name]);
+    showPopup("updateCustomTheme", [customThemeId], {
+      focusFirstInput: "focusAndSelect",
+    });
   }
 );
 

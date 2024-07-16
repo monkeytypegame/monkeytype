@@ -183,16 +183,6 @@ declare namespace SharedTypes {
     punctuation: boolean;
   }
 
-  interface CustomText {
-    text: string[];
-    isWordRandom: boolean;
-    isTimeRandom: boolean;
-    word: number;
-    time: number;
-    delimiter: string;
-    textLen?: number;
-  }
-
   type DBResult<T extends SharedTypes.Config.Mode> = Omit<
     SharedTypes.Result<T>,
     | "bailedOut"
@@ -211,6 +201,7 @@ declare namespace SharedTypes {
     | "customText"
     | "quoteLength"
     | "isPb"
+    | "customText"
   > & {
     correctChars?: number; // --------------
     incorrectChars?: number; // legacy results
@@ -229,7 +220,7 @@ declare namespace SharedTypes {
     incompleteTestSeconds?: number;
     afkDuration?: number;
     tags?: string[];
-    customText?: CustomText;
+    customText?: CustomTextDataWithTextLen;
     quoteLength?: number;
     isPb?: boolean;
   };
@@ -237,7 +228,7 @@ declare namespace SharedTypes {
   interface CompletedEvent extends Result<SharedTypes.Config.Mode> {
     keySpacing: number[] | "toolong";
     keyDuration: number[] | "toolong";
-    customText?: CustomText;
+    customText?: CustomTextDataWithTextLen;
     wpmConsistency: number;
     challenge?: string | null;
     keyOverlap: number;
@@ -246,7 +237,26 @@ declare namespace SharedTypes {
     charTotal: number;
     stringified?: string;
     hash?: string;
+    stopOnLetter: boolean;
   }
+
+  type CustomTextMode = "repeat" | "random" | "shuffle";
+  type CustomTextLimitMode = "word" | "time" | "section";
+  type CustomTextLimit = {
+    value: number;
+    mode: CustomTextLimitMode;
+  };
+
+  type CustomTextData = {
+    text: string[];
+    mode: CustomTextMode;
+    limit: CustomTextLimit;
+    pipeDelimiter: boolean;
+  };
+
+  type CustomTextDataWithTextLen = Omit<CustomTextData, "text"> & {
+    textLen: number;
+  };
 
   interface ResultFilters {
     _id: string;
@@ -345,8 +355,6 @@ declare namespace SharedTypes {
     customThemeColors: string[];
     favThemes: string[];
     showKeyTips: boolean;
-    showLiveWpm: boolean;
-    showTimerProgress: boolean;
     smoothCaret: SharedTypes.Config.SmoothCaret;
     quickRestart: SharedTypes.Config.QuickRestart;
     punctuation: boolean;
@@ -369,6 +377,9 @@ declare namespace SharedTypes {
     confidenceMode: SharedTypes.Config.ConfidenceMode;
     indicateTypos: SharedTypes.Config.IndicateTypos;
     timerStyle: SharedTypes.Config.TimerStyle;
+    liveSpeedStyle: SharedTypes.Config.LiveSpeedAccBurstStyle;
+    liveAccStyle: SharedTypes.Config.LiveSpeedAccBurstStyle;
+    liveBurstStyle: SharedTypes.Config.LiveSpeedAccBurstStyle;
     colorfulMode: boolean;
     randomTheme: SharedTypes.Config.RandomTheme;
     timerColor: SharedTypes.Config.TimerColor;
@@ -394,7 +405,6 @@ declare namespace SharedTypes {
     paceCaret: SharedTypes.Config.PaceCaret;
     paceCaretCustomSpeed: number;
     repeatedPace: boolean;
-    pageWidth: SharedTypes.Config.PageWidth;
     accountChart: SharedTypes.Config.AccountChart;
     minWpm: SharedTypes.Config.MinimumWordsPerMinute;
     minWpmCustomSpeed: number;
@@ -405,8 +415,6 @@ declare namespace SharedTypes {
     strictSpace: boolean;
     minAcc: SharedTypes.Config.MinimumAccuracy;
     minAccCustom: number;
-    showLiveAcc: boolean;
-    showLiveBurst: boolean;
     monkey: boolean;
     repeatQuotes: SharedTypes.Config.RepeatQuotes;
     oppositeShiftMode: SharedTypes.Config.OppositeShiftMode;
@@ -422,6 +430,7 @@ declare namespace SharedTypes {
     lazyMode: boolean;
     showAverage: SharedTypes.Config.ShowAverage;
     tapeMode: SharedTypes.Config.TapeMode;
+    maxLineWidth: number;
   }
 
   type ConfigValue = Config[keyof Config];
@@ -542,6 +551,7 @@ declare namespace SharedTypes {
     needsToChangeName?: boolean;
     quoteMod?: boolean | string;
     resultFilterPresets?: ResultFilters[];
+    testActivity?: TestActivity;
   };
 
   type Reward<T> = {
@@ -612,4 +622,11 @@ declare namespace SharedTypes {
     rank?: number;
     count: number;
   };
+
+  type TestActivity = {
+    testsByDays: (number | null)[];
+    lastDay: number;
+  };
+
+  type CountByYearAndDay = { [key: string]: (number | null)[] };
 }
