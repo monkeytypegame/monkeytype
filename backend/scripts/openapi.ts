@@ -1,7 +1,7 @@
 import { generateOpenApi } from "@ts-rest/open-api";
 import { contract } from "../../shared/contracts/index";
 import { writeFileSync, mkdirSync } from "fs";
-import { Metadata } from "../../shared/schemas/util";
+import { EndpointMetadata } from "../../shared/schemas/util";
 
 type SecurityRequirementObject = {
   [name: string]: string[];
@@ -63,15 +63,15 @@ export function getOpenApi() {
       setOperationId: "concatenated-path",
       operationMapper: (operation, route) => ({
         ...operation,
-        ...addAuth(route.metadata as Metadata),
-        ...addTags(route.metadata as Metadata),
+        ...addAuth(route.metadata as EndpointMetadata),
+        ...addTags(route.metadata as EndpointMetadata),
       }),
     }
   );
   return openApiDocument;
 }
 
-function addAuth(metadata: Metadata | undefined): Object {
+function addAuth(metadata: EndpointMetadata | undefined): Object {
   const auth = metadata?.["authenticationOptions "] ?? {};
   const security: SecurityRequirementObject[] = [];
   if (!auth.isPublic === true) {
@@ -89,7 +89,7 @@ function addAuth(metadata: Metadata | undefined): Object {
   };
 }
 
-function addTags(metadata: Metadata | undefined): Object {
+function addTags(metadata: EndpointMetadata | undefined): Object {
   if (metadata === undefined || metadata.openApiTags === undefined) return {};
   return {
     tags: Array.isArray(metadata.openApiTags)
