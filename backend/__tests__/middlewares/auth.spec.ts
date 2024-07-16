@@ -405,13 +405,13 @@ describe("middlewares/auth", () => {
 
 async function authenticate(
   request: Partial<Request>,
-  auth?: RequestAuthenticationOptions
+  authenticationOptions?: RequestAuthenticationOptions
 ): Promise<{ decodedToken: MonkeyTypes.DecodedToken }> {
   const mergedRequest = {
     ...mockRequest,
     ...request,
     tsRestRoute: {
-      metadata: { auth } as Metadata,
+      metadata: { authenticationOptions } as Metadata,
     },
   } as any;
 

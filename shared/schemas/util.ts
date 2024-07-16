@@ -4,7 +4,7 @@ export type OperationTag = "configs";
 
 export type Metadata = {
   /** Authentication options, by default a bearer token is required. */
-  auth?: RequestAuthenticationOptions;
+  authenticationOptions?: RequestAuthenticationOptions;
   openApiTags?: OperationTag | OperationTag[];
 };
 

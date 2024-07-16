@@ -37,7 +37,7 @@ export function authenticateTsRestRequest<
   ): Promise<void> => {
     const options = {
       ...DEFAULT_OPTIONS,
-      ...(req.tsRestRoute["metadata"]?.["auth"] ?? {}),
+      ...(req.tsRestRoute["metadata"]?.["authenticationOptions"] ?? {}),
     };
     return _authenticateRequestInternal(req, _res, next, options);
   };
