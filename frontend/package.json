@@ -29,8 +29,8 @@
     "defaults"
   ],
   "devDependencies": {
-    "@monkeytype/typescript-config": "*",
     "@fortawesome/fontawesome-free": "5.15.4",
+    "@monkeytype/typescript-config": "file:../packages/typescript-config",
     "@types/canvas-confetti": "1.4.3",
     "@types/chartjs-plugin-trendline": "1.0.1",
     "@types/damerau-levenshtein": "1.0.0",
