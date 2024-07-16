@@ -10,6 +10,7 @@ import MonkeyError from "../../src/utils/error";
 import * as Misc from "../../src/utils/misc";
 import { Metadata, RequestAuthenticationOptions } from "shared/schemas/util";
 import * as Prometheus from "../../src/utils/prometheus";
+import { unknown } from "zod";
 
 const mockDecodedToken: DecodedIdToken = {
   uid: "123456789",
@@ -307,11 +308,7 @@ describe("middlewares/auth", () => {
     it("should allow the request if apeKey is supported", async () => {
       //WHEN
       const result = await authenticate(
-        {
-          headers: {
-            authorization: "ApeKey aWQua2V5",
-          },
-        },
+        { headers: { authorization: "ApeKey aWQua2V5" } },
         { acceptApeKeys: true }
       );
 
@@ -321,6 +318,17 @@ describe("middlewares/auth", () => {
       expect(decodedToken?.email).toBe("");
       expect(decodedToken?.uid).toBe("123");
       expect(nextFunction).toHaveBeenCalledTimes(1);
+    });
+    it("should fail wit apeKey if apeKey is not supported", async () => {
+      //WHEN
+      await expect(() =>
+        authenticate(
+          { headers: { authorization: "ApeKey aWQua2V5" } },
+          { acceptApeKeys: false }
+        )
+      ).rejects.toThrowError("This endpoint does not accept ApeKeys");
+
+      //THEN
     });
     it("should allow the request with authentation on public endpoint", async () => {
       //WHEN
@@ -398,6 +406,85 @@ describe("middlewares/auth", () => {
         authenticate({ headers: { authorization: "Uid 123" } })
       ).rejects.toThrow(
         new MonkeyError(401, "Baerer type uid is not supported")
+      );
+    });
+    it("should fail without authentication", async () => {
+      await expect(() => authenticate({ headers: {} })).rejects.toThrowError(
+        "Unauthorized\nStack: endpoint: /api/v1 no authorization header found"
+      );
+
+      //THEH
+      expect(prometheusIncrementAuthMock).not.toHaveBeenCalled();
+      expect(prometheusRecordAuthTimeMock).toHaveBeenCalledWith(
+        "None",
+        "failure",
+        expect.anything(),
+        expect.anything()
+      );
+    });
+    it("should fail with empty authentication", async () => {
+      await expect(() =>
+        authenticate({ headers: { authorization: "" } })
+      ).rejects.toThrowError(
+        "Unauthorized\nStack: endpoint: /api/v1 no authorization header found"
+      );
+
+      //THEH
+      expect(prometheusIncrementAuthMock).not.toHaveBeenCalled();
+      expect(prometheusRecordAuthTimeMock).toHaveBeenCalledWith(
+        "",
+        "failure",
+        expect.anything(),
+        expect.anything()
+      );
+    });
+    it("should fail with missing authentication token", async () => {
+      await expect(() =>
+        authenticate({ headers: { authorization: "Bearer" } })
+      ).rejects.toThrowError(
+        "Missing authentication token\nStack: authenticateWithAuthHeader"
+      );
+
+      //THEH
+      expect(prometheusIncrementAuthMock).not.toHaveBeenCalled();
+      expect(prometheusRecordAuthTimeMock).toHaveBeenCalledWith(
+        "Bearer",
+        "failure",
+        expect.anything(),
+        expect.anything()
+      );
+    });
+    it("should fail with unknown authentication scheme", async () => {
+      await expect(() =>
+        authenticate({ headers: { authorization: "unknown format" } })
+      ).rejects.toThrowError(
+        'Unknown authentication scheme\nStack: The authentication scheme "unknown" is not implemented'
+      );
+
+      //THEH
+      expect(prometheusIncrementAuthMock).not.toHaveBeenCalled();
+      expect(prometheusRecordAuthTimeMock).toHaveBeenCalledWith(
+        "unknown",
+        "failure",
+        expect.anything(),
+        expect.anything()
+      );
+    });
+    it("should record country if provided", async () => {
+      const prometheusRecordRequestCountryMock = vi.spyOn(
+        Prometheus,
+        "recordRequestCountry"
+      );
+
+      await authenticate(
+        { headers: { "cf-ipcountry": "gb" } },
+        { isPublic: true }
+      );
+
+      //THEN
+      expect(prometheusRecordRequestCountryMock).toHaveBeenCalledWith(
+        "gb",
+        expect.anything()
       );
     });
   });

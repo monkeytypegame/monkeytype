@@ -133,23 +133,7 @@ async function authenticateWithAuthHeader(
   configuration: SharedTypes.Configuration,
   options: RequestAuthenticationOptions
 ): Promise<MonkeyTypes.DecodedToken> {
-  if (authHeader === undefined || authHeader === "") {
-    throw new MonkeyError(
-      401,
-      "Missing authentication header",
-      "authenticateWithAuthHeader"
-    );
-  }
-
   const [authScheme, token] = authHeader.split(" ");
-
-  if (authScheme === undefined) {
-    throw new MonkeyError(
-      401,
-      "Missing authentication scheme",
-      "authenticateWithAuthHeader"
-    );
-  }
 
   if (token === undefined) {
     throw new MonkeyError(
@@ -159,7 +143,7 @@ async function authenticateWithAuthHeader(
     );
   }
 
-  const normalizedAuthScheme = authScheme.trim();
+  const normalizedAuthScheme = authScheme?.trim();
 
   switch (normalizedAuthScheme) {
     case "Bearer":
