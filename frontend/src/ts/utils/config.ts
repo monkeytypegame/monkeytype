@@ -1,4 +1,4 @@
-import { Config, PartialConfig } from "shared/contracts/configs";
+import { Config, PartialConfig } from "shared/schemas/config";
 import DefaultConfig from "../constants/default-config";
 import { typedKeys } from "./misc";
 

@@ -19,11 +19,6 @@ import {
 import { reloadAfter } from "./utils/misc";
 import * as ConfigSchemas from "shared/schemas/config";
 
-import type {
-  PartialConfig,
-  Config as ConfigType,
-} from "shared/contracts/configs";
-
 export let localStorageConfig: SharedTypes.Config;
 
 let loadDone: (value?: unknown) => void;
@@ -2081,9 +2076,9 @@ export async function loadFromLocalStorage(): Promise<void> {
 }
 
 function replaceLegacyValues(
-  configToApply: PartialConfig | MonkeyTypes.ConfigChanges
-): ConfigType | MonkeyTypes.ConfigChanges {
-  const configObj = configToApply as ConfigType;
+  configToApply: ConfigSchemas.PartialConfig | MonkeyTypes.ConfigChanges
+): ConfigSchemas.Config | MonkeyTypes.ConfigChanges {
+  const configObj = configToApply as ConfigSchemas.Config;
 
   //@ts-expect-error
   if (configObj.quickTab === true) {

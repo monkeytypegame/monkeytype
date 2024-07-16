@@ -329,7 +329,7 @@ declare namespace SharedTypes {
     lastUsedOn: number;
   }
 
-  type Config = import("../contracts/configs").Config;
+  type Config = import("../schemas/config").Config;
 
   type ConfigValue = Config[keyof Config];
 
