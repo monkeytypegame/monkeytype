@@ -72,7 +72,7 @@ export function getOpenApi() {
 }
 
 function addAuth(metadata: EndpointMetadata | undefined): Object {
-  const auth = metadata?.["authenticationOptions "] ?? {};
+  const auth = metadata?.["authenticationOptions"] ?? {};
   const security: SecurityRequirementObject[] = [];
   if (!auth.isPublic === true) {
     security.push({ BearerAuth: [] });
