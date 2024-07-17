@@ -8,6 +8,7 @@
     "build": "tsc --build",
     "watch": "tsc --build --watch",
     "clean": "tsc --build --clean",
+    "check-ts": "tsc --noEmit",
     "start": "npm run build && node ./build/server.js",
     "test": "vitest run",
     "test-coverage": "vitest run --coverage",

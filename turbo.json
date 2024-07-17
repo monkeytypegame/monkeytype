@@ -8,6 +8,9 @@
     "lint": {
       "dependsOn": ["^parallel"]
     },
+    "check-ts": {
+      "dependsOn": ["^parallel"]
+    },
     "build": {
       "dependsOn": ["^build"],
       "outputs": ["dist/**", "build/**"]
