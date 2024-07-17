@@ -3,15 +3,15 @@ extends:
 
 apis:
   internal@v2:
-    root: build/static/api/openapi.json
+    root: build/backend/static/api/openapi.json
   public-filter:
-    root: build/static/api/openapi.json
+    root: build/backend/static/api/openapi.json
     decorators:
       filter-in:
         property: x-public
         value: yes
   public@v2:
-    root: build/static/api/public.json
+    root: build/backend/static/api/public.json
 
 features.openapi:
   theme:
