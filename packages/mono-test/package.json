@@ -2,14 +2,27 @@
   "name": "@monkeytype/mono-test",
   "type": "commonjs",
   "private": true,
-  "exports": {
-    ".": "./dist/index.js"
-  },
   "scripts": {
     "build": "tsc"
   },
   "devDependencies": {
     "typescript": "5.5.3",
     "@monkeytype/typescript-config": "file:../typescript-config"
+  },
+  "files": [
+    "dist/**/*",
+    "src/**/*"
+  ],
+  "types": "./dist/index.d.ts",
+  "exports": {
+    "./package.json": "./package.json",
+    "./*": {
+      "types": "./dist/*.d.ts",
+      "default": "./dist/*.js"
+    },
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
   }
 }

@@ -4,6 +4,7 @@
     "target": "ESNext",
     "module": "CommonJS",
     "outDir": "./dist",
-    "declaration": true
+    "declaration": true,
+    "rootDir": "./src"
   }
 }
