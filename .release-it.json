@@ -1,10 +1,6 @@
 {
   "hooks": {
-    "before:init": [
-      "npm run lint",
-      "npm run test",
-      "cd frontend && npm run validate-json && npm run build"
-    ],
+    "before:init": ["npx turbo lint test build validate-json"],
     "before:release": [
       "sh ./bin/deployBackend.sh",
       "cd frontend && npx firebase deploy -P live --only hosting",

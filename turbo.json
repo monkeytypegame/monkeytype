@@ -18,6 +18,9 @@
     "dev": {
       "persistent": true,
       "cache": false
+    },
+    "@monkeytype/frontend#validate-json": {
+      "dependsOn": ["^parallel"]
     }
   }
 }
