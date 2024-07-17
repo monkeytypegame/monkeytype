@@ -5,8 +5,7 @@
       "dependsOn": ["^parallel"]
     },
     "lint": {
-      "dependsOn": ["^parallel"],
-      "outputs": ["frontend/**", "backend/**", "packages/**"]
+      "dependsOn": ["^parallel"]
     },
     "build": {
       "dependsOn": ["^build"],
