@@ -1,8 +1,11 @@
 {
   "$schema": "https://turbo.build/schema.json",
   "tasks": {
+    "parallel": {
+      "dependsOn": ["^parallel"]
+    },
     "lint": {
-      "dependsOn": ["^lint"],
+      "dependsOn": ["^parallel"],
       "outputs": ["frontend/**", "backend/**", "packages/**"]
     },
     "build": {
