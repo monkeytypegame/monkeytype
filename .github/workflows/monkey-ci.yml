@@ -75,13 +75,13 @@ jobs:
         run: npm run pretty-code-be
 
       - name: Check lint
-        run: npm run lint-be
+        run: npx turbo lint --filter @monkeytype/backend
 
       - name: Build
-        run: npm run pr-check-build-be
+        run: npx turbo build --filter @monkeytype/backend
 
       - name: Test
-        run: npm run test-be
+        run: npx turbo test --filter @monkeytype/backend
 
   ci-fe:
     name: ci-fe
@@ -106,13 +106,13 @@ jobs:
         run: npm run pretty-code-fe
 
       - name: Check lint
-        run: npm run lint-fe
+        run: npx turbo lint --filter @monkeytype/frontend
 
       - name: Build
-        run: npm run pr-check-build-fe
+        run: npx turbo build --filter @monkeytype/frontend
 
       - name: Test
-        run: npm run test-fe
+        run: npx turbo test --filter @monkeytype/frontend
 
   ci-assets:
     name: ci-assets
