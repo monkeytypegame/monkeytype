@@ -1,6 +1,6 @@
 {
   "name": "@monkeytype/mono-test",
-  "type": "module",
+  "type": "commonjs",
   "private": true,
   "scripts": {
     "dev": "tsc -w --preserveWatchOutput",
