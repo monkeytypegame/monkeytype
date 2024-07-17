@@ -4,7 +4,8 @@
   "license": "GPL-3.0",
   "private": true,
   "scripts": {
-    "build": "npm run gen-docs && tsc --build",
+    "build": "tsc --build",
+    "postbuild": "npm run copy-assets",
     "watch": "tsc --build --watch",
     "clean": "tsc --build --clean",
     "start": "npm run build && node ./build/backend/src/server.js",
@@ -14,7 +15,8 @@
     "knip": "knip",
     "docker-db-only": "docker compose -f docker/compose.db-only.yml up",
     "docker": "docker compose -f docker/compose.yml up",
-    "gen-docs": "ts-node scripts/openapi.ts build/static/api/openapi.json && redocly build-docs -o build/static/api/internal.html internal@v2 && redocly bundle -o build/static/api/public.json public-filter && redocly build-docs -o build/static/api/public.html public@v2"
+    "gen-docs": "ts-node scripts/openapi.ts build/static/api/openapi.json && redocly build-docs -o build/static/api/internal.html internal@v2 && redocly bundle -o build/static/api/public.json public-filter && redocly build-docs -o build/static/api/public.html public@v2",
+    "copy-assets": "copyfiles --error redis-scripts/*.* build/backend && copyfiles --error email-templates/*.* build/backend"
   },
   "engines": {
     "node": "18.19.1",
@@ -81,6 +83,7 @@
     "@types/ua-parser-js": "0.7.36",
     "@types/uuid": "8.3.4",
     "@vitest/coverage-v8": "1.6.0",
+    "copyfiles": "2.4.1",
     "ioredis-mock": "7.4.0",
     "readline-sync": "1.4.10",
     "supertest": "6.2.3",
