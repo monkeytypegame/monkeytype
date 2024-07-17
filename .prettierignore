@@ -12,3 +12,5 @@ backend/logs
 backend/coverage
 backend/globalConfig.json
 frontend/public
+frontend/dist
+frontend/coverage
