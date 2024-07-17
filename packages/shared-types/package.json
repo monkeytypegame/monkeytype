@@ -3,16 +3,21 @@
   "type": "commonjs",
   "private": true,
   "scripts": {
+    "build": "tsc",
     "check-ts": "tsc --noEmit",
     "lint": "eslint \"./**/*.ts\""
   },
   "devDependencies": {
     "typescript": "5.5.3"
   },
-  "types": "./src/index.ts",
   "exports": {
     ".": {
+      "default": "./dist/index.js",
       "types": "./src/index.ts"
+    },
+    "./*": {
+      "default": "./dist/*.js",
+      "types": "./src/*.ts"
     }
   }
 }

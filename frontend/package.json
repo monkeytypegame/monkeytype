@@ -31,6 +31,7 @@
   ],
   "devDependencies": {
     "@fortawesome/fontawesome-free": "5.15.4",
+    "@monkeytype/shared-types": "*",
     "@monkeytype/eslint-config": "*",
     "@monkeytype/typescript-config": "*",
     "@types/canvas-confetti": "1.4.3",

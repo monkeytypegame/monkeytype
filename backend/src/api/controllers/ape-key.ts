@@ -7,6 +7,20 @@ import { MonkeyResponse } from "../../utils/monkey-response";
 import { base64UrlEncode } from "../../utils/misc";
 import { ObjectId } from "mongodb";
 import { ApeKey } from "@monkeytype/shared-types";
+import { PlaySoundOnError } from "@monkeytype/shared-types/config";
+
+//test code
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const a: ApeKey = {
+  name: "",
+  enabled: false,
+  createdOn: 0,
+  modifiedOn: 0,
+  lastUsedOn: 0,
+};
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const b: PlaySoundOnError = "1";
 
 function cleanApeKey(apeKey: MonkeyTypes.ApeKeyDB): ApeKey {
   return _.omit(apeKey, "hash", "_id", "uid", "useCount");
