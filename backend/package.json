@@ -12,7 +12,7 @@
     "start": "npm run build && node ./build/server.js",
     "test": "vitest run",
     "test-coverage": "vitest run --coverage",
-    "dev": "ts-node-dev --transpile-only --inspect -- ./src/server.ts",
+    "dev": "tsx watch ./src/server.ts",
     "knip": "knip",
     "docker-db-only": "docker compose -f docker/compose.db-only.yml up",
     "docker": "docker compose -f docker/compose.yml up"
@@ -83,7 +83,7 @@
     "ioredis-mock": "7.4.0",
     "readline-sync": "1.4.10",
     "supertest": "6.2.3",
-    "ts-node-dev": "2.0.0",
+    "tsx": "4.16.2",
     "typescript": "5.3.3",
     "vitest": "1.6.0",
     "vitest-mongodb": "1.0.0"
