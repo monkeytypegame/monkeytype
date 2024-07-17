@@ -1,4 +1,4 @@
-import * as MongoDbMock from "vitest-mongodb";
+import * as MongoDbMock from "./vitest-mongodb";
 export async function setup({ provide }): Promise<void> {
   await MongoDbMock.setup({
     serverOptions: {

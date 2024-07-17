@@ -79,14 +79,11 @@
     "@vitest/coverage-v8": "1.6.0",
     "eslint": "8.57.0",
     "ioredis-mock": "7.4.0",
+    "mongodb-memory-server": "9.2.0",
     "readline-sync": "1.4.10",
     "supertest": "6.2.3",
     "ts-node-dev": "2.0.0",
     "typescript": "5.3.3",
-    "vitest": "1.6.0",
-    "vitest-mongodb": "0.0.5"
-  },
-  "overrides": {
-    "mongodb-memory-server": "9.2.0"
+    "vitest": "1.6.0"
   }
 }

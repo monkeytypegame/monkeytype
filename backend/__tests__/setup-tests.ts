@@ -1,6 +1,6 @@
 import { Collection, Db, MongoClient, WithId } from "mongodb";
 import { afterAll, beforeAll, afterEach } from "vitest";
-import * as MongoDbMock from "vitest-mongodb";
+import * as MongoDbMock from "./vitest-mongodb";
 
 process.env["MODE"] = "dev";
 //process.env["MONGOMS_DISTRO"] = "ubuntu-22.04";
