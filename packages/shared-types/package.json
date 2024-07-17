@@ -1,0 +1,18 @@
+{
+  "name": "@monkeytype/shared-types",
+  "type": "commonjs",
+  "private": true,
+  "scripts": {
+    "check-ts": "tsc --noEmit",
+    "lint": "eslint \"./**/*.ts\""
+  },
+  "devDependencies": {
+    "typescript": "5.5.3"
+  },
+  "types": "./src/index.ts",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts"
+    }
+  }
+}
