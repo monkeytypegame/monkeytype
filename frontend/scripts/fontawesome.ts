@@ -1,4 +1,5 @@
 import * as fs from "fs";
+import { createRequire } from "module";
 import * as path from "path";
 
 type FontawesomeConfig = {
@@ -155,9 +156,11 @@ function findAllFiles(
 }
 
 function parseIcons(iconSet: string): string[] {
-  const file: string | null = fs
-    .readFileSync(`node_modules/@fortawesome/fontawesome-free/js/${iconSet}.js`)
-    .toString();
+  const require = createRequire(import.meta.url);
+  const path = require.resolve(
+    `@fortawesome/fontawesome-free/js/${iconSet}.js`
+  );
+  const file: string | null = fs.readFileSync(path).toString();
 
   return file
     ?.match(/"(.*)": \[.*\],/g)
