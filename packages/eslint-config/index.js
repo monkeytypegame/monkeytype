@@ -37,11 +37,19 @@ module.exports = {
       },
     ],
   },
+  settings: {
+    "import/resolver": {
+      typescript: {},
+    },
+  },
   overrides: [
     {
       // enable the rule specifically for TypeScript files
       files: ["*.ts", "*.tsx"],
       extends: [
+        "plugin:import/errors",
+        "plugin:import/warnings",
+        "plugin:import/typescript",
         "plugin:@typescript-eslint/eslint-recommended",
         "plugin:@typescript-eslint/recommended",
         "plugin:@typescript-eslint/strict",
