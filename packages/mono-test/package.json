@@ -8,7 +8,7 @@
   },
   "devDependencies": {
     "typescript": "5.5.3",
-    "@monkeytype/typescript-config": "file:../typescript-config"
+    "@monkeytype/typescript-config": "*"
   },
   "exports": {
     ".": {

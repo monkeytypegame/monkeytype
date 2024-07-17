@@ -30,7 +30,8 @@
   ],
   "devDependencies": {
     "@fortawesome/fontawesome-free": "5.15.4",
-    "@monkeytype/typescript-config": "file:../packages/typescript-config",
+    "@monkeytype/eslint-config": "*",
+    "@monkeytype/typescript-config": "*",
     "@types/canvas-confetti": "1.4.3",
     "@types/chartjs-plugin-trendline": "1.0.1",
     "@types/damerau-levenshtein": "1.0.0",
@@ -44,6 +45,7 @@
     "ajv": "8.12.0",
     "autoprefixer": "10.4.14",
     "dotenv": "16.4.5",
+    "eslint": "8.57.0",
     "firebase-tools": "13.13.3",
     "fontawesome-subset": "4.4.0",
     "gulp": "4.0.2",

@@ -4,6 +4,7 @@
   "license": "GPL-3.0",
   "private": true,
   "scripts": {
+    "lint": "eslint \"./**/*.ts\"",
     "build": "tsc --build",
     "watch": "tsc --build --watch",
     "clean": "tsc --build --clean",
@@ -76,6 +77,7 @@
     "@types/ua-parser-js": "0.7.36",
     "@types/uuid": "8.3.4",
     "@vitest/coverage-v8": "1.6.0",
+    "eslint": "8.57.0",
     "ioredis-mock": "7.4.0",
     "readline-sync": "1.4.10",
     "supertest": "6.2.3",
