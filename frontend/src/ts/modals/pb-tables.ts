@@ -4,12 +4,14 @@ import { getLanguageDisplayString } from "../utils/strings";
 import Config from "../config";
 import Format from "../utils/format";
 import AnimatedModal from "../utils/animated-modal";
+import { PersonalBest } from "@monkeytype/shared-types/user";
+import { Mode, Mode2 } from "@monkeytype/shared-types/config";
 
-type PersonalBest = {
-  mode2: SharedTypes.Config.Mode2<SharedTypes.Config.Mode>;
-} & SharedTypes.PersonalBest;
+type PBWithMode2 = {
+  mode2: Mode2<Mode>;
+} & PersonalBest;
 
-function update(mode: SharedTypes.Config.Mode): void {
+function update(mode: Mode): void {
   const modalEl = modal.getModal();
 
   (modalEl.querySelector("table tbody") as HTMLElement).innerHTML = "";
@@ -23,15 +25,13 @@ function update(mode: SharedTypes.Config.Mode): void {
   if (!snapshot) return;
 
   const allmode2 = snapshot.personalBests?.[mode] as
-    | Record<string, PersonalBest[]>
+    | Record<string, PBWithMode2[]>
     | undefined;
 
   if (allmode2 === undefined) return;
 
-  const list: PersonalBest[] = [];
-  (
-    Object.keys(allmode2) as SharedTypes.Config.Mode2<SharedTypes.Config.Mode>[]
-  ).forEach(function (key) {
+  const list: PBWithMode2[] = [];
+  (Object.keys(allmode2) as Mode2<Mode>[]).forEach(function (key) {
     let pbs = allmode2[key] ?? [];
     pbs = pbs.sort(function (a, b) {
       return b.wpm - a.wpm;
@@ -42,7 +42,7 @@ function update(mode: SharedTypes.Config.Mode): void {
     });
   });
 
-  let mode2memory: SharedTypes.Config.Mode2<SharedTypes.Config.Mode>;
+  let mode2memory: Mode2<Mode>;
 
   list.forEach((pb) => {
     let dateText = `-<br><span class="sub">-</span>`;
@@ -82,7 +82,7 @@ function update(mode: SharedTypes.Config.Mode): void {
   });
 }
 
-export function show(mode: SharedTypes.Config.Mode): void {
+export function show(mode: Mode): void {
   void modal.show({
     beforeAnimation: async () => {
       update(mode);

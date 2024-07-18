@@ -16,6 +16,7 @@ import { debounce } from "throttle-debounce";
 import Format from "../utils/format";
 import SlimSelect from "slim-select";
 import { getHtmlByUserFlags } from "../controllers/user-flag-controller";
+import { LeaderboardEntry } from "@monkeytype/shared-types";
 
 const wrapperId = "leaderboardsWrapper";
 
@@ -26,7 +27,7 @@ let showingYesterday = false;
 type LbKey = "15" | "60";
 
 let currentData: {
-  [key in LbKey]: SharedTypes.LeaderboardEntry[];
+  [key in LbKey]: LeaderboardEntry[];
 } = {
   "15": [],
   "60": [],

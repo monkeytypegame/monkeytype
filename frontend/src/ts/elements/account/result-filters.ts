@@ -7,6 +7,8 @@ import * as Notifications from "../notifications";
 import Ape from "../../ape/index";
 import * as Loader from "../loader";
 import SlimSelect from "slim-select";
+import { ResultFilters } from "@monkeytype/shared-types";
+import { QuoteLength } from "@monkeytype/shared-types/config";
 
 type Option = {
   id: string;
@@ -26,11 +28,9 @@ type Option = {
 };
 
 const groupsUsingSelect = ["language", "funbox", "tags"];
-const groupSelects: Partial<
-  Record<keyof SharedTypes.ResultFilters, SlimSelect>
-> = {};
+const groupSelects: Partial<Record<keyof ResultFilters, SlimSelect>> = {};
 
-export const defaultResultFilters: SharedTypes.ResultFilters = {
+export const defaultResultFilters: ResultFilters = {
   _id: "default-result-filters-id",
   name: "default result filters",
   pb: {
@@ -219,13 +219,11 @@ export async function setFilterPreset(id: string): Promise<void> {
   ).addClass("active");
 }
 
-function deepCopyFilter(
-  filter: SharedTypes.ResultFilters
-): SharedTypes.ResultFilters {
+function deepCopyFilter(filter: ResultFilters): ResultFilters {
   return JSON.parse(JSON.stringify(filter));
 }
 
-function addFilterPresetToSnapshot(filter: SharedTypes.ResultFilters): void {
+function addFilterPresetToSnapshot(filter: ResultFilters): void {
   const snapshot = DB.getSnapshot();
   if (!snapshot) return;
   DB.setSnapshot({
@@ -285,13 +283,11 @@ function deSelectFilterPreset(): void {
   ).removeClass("active");
 }
 
-function getFilters(): SharedTypes.ResultFilters {
+function getFilters(): ResultFilters {
   return filters;
 }
 
-function getGroup<G extends keyof SharedTypes.ResultFilters>(
-  group: G
-): SharedTypes.ResultFilters[G] {
+function getGroup<G extends keyof ResultFilters>(group: G): ResultFilters[G] {
   return filters[group];
 }
 
@@ -299,25 +295,22 @@ function getGroup<G extends keyof SharedTypes.ResultFilters>(
 //   filters[group][filter] = value;
 // }
 
-export function getFilter<G extends keyof SharedTypes.ResultFilters>(
+export function getFilter<G extends keyof ResultFilters>(
   group: G,
   filter: MonkeyTypes.Filter<G>
-): SharedTypes.ResultFilters[G][MonkeyTypes.Filter<G>] {
+): ResultFilters[G][MonkeyTypes.Filter<G>] {
   return filters[group][filter];
 }
 
 function setFilter(
-  group: keyof SharedTypes.ResultFilters,
+  group: keyof ResultFilters,
   filter: MonkeyTypes.Filter<typeof group>,
   value: boolean
 ): void {
   filters[group][filter as keyof typeof filters[typeof group]] = value as never;
 }
 
-function setAllFilters(
-  group: keyof SharedTypes.ResultFilters,
-  value: boolean
-): void {
+function setAllFilters(group: keyof ResultFilters, value: boolean): void {
   Object.keys(getGroup(group)).forEach((filter) => {
     filters[group][filter as keyof typeof filters[typeof group]] =
       value as never;
@@ -336,7 +329,7 @@ export function reset(): void {
 }
 
 type AboveChartDisplay = Partial<
-  Record<keyof SharedTypes.ResultFilters, { all: boolean; array?: string[] }>
+  Record<keyof ResultFilters, { all: boolean; array?: string[] }>
 >;
 
 export function updateActive(): void {
@@ -398,7 +391,7 @@ export function updateActive(): void {
 
   for (const [id, select] of Object.entries(groupSelects)) {
     const ss = select;
-    const group = getGroup(id as keyof SharedTypes.ResultFilters);
+    const group = getGroup(id as keyof ResultFilters);
     const everythingSelected = Object.values(group).every((v) => v === true);
 
     const newData = ss.store.getData();
@@ -442,7 +435,7 @@ export function updateActive(): void {
     }, 0);
   }
 
-  function addText(group: keyof SharedTypes.ResultFilters): string {
+  function addText(group: keyof ResultFilters): string {
     let ret = "";
     ret += "<div class='group'>";
     if (group === "difficulty") {
@@ -540,7 +533,7 @@ export function updateActive(): void {
   }, 0);
 }
 
-function toggle<G extends keyof SharedTypes.ResultFilters>(
+function toggle<G extends keyof ResultFilters>(
   group: G,
   filter: MonkeyTypes.Filter<G>
 ): void {
@@ -554,7 +547,7 @@ function toggle<G extends keyof SharedTypes.ResultFilters>(
     const currentValue = filters[group][filter] as unknown as boolean;
     const newValue = !currentValue;
     filters[group][filter] =
-      newValue as unknown as SharedTypes.ResultFilters[G][MonkeyTypes.Filter<G>];
+      newValue as unknown as ResultFilters[G][MonkeyTypes.Filter<G>];
     save();
   } catch (e) {
     Notifications.add(
@@ -573,7 +566,7 @@ $(
 ).on("click", "button", (e) => {
   const group = $(e.target)
     .parents(".buttons")
-    .attr("group") as keyof SharedTypes.ResultFilters;
+    .attr("group") as keyof ResultFilters;
   const filter = $(e.target).attr("filter") as MonkeyTypes.Filter<typeof group>;
   if ($(e.target).hasClass("allFilters")) {
     Misc.typedKeys(getFilters()).forEach((group) => {
@@ -671,9 +664,7 @@ $(".pageAccount .topFilters button.currentConfigFilter").on("click", () => {
       "thicc",
     ];
     filterName.forEach((ql, index) => {
-      if (
-        Config.quoteLength.includes(index as SharedTypes.Config.QuoteLength)
-      ) {
+      if (Config.quoteLength.includes(index as QuoteLength)) {
         filters.quoteLength[ql] = true;
       } else {
         filters.quoteLength[ql] = false;
@@ -726,7 +717,7 @@ $(".pageAccount .topFilters button.toggleAdvancedFilters").on("click", () => {
 });
 
 function adjustScrollposition(
-  group: keyof SharedTypes.ResultFilters,
+  group: keyof ResultFilters,
   topItem: number = 0
 ): void {
   const slimSelect = groupSelects[group];
@@ -738,7 +729,7 @@ function adjustScrollposition(
 }
 
 function selectBeforeChangeFn(
-  group: keyof SharedTypes.ResultFilters,
+  group: keyof ResultFilters,
   selectedOptions: Option[],
   oldSelectedOptions: Option[]
 ): void | boolean {
@@ -986,12 +977,10 @@ $(".group.presetFilterButtons .filterBtns").on(
   }
 );
 
-function verifyResultFiltersStructure(
-  filterIn: SharedTypes.ResultFilters
-): SharedTypes.ResultFilters {
+function verifyResultFiltersStructure(filterIn: ResultFilters): ResultFilters {
   const filter = deepCopyFilter(filterIn);
   Object.entries(defaultResultFilters).forEach((entry) => {
-    const key = entry[0] as keyof SharedTypes.ResultFilters;
+    const key = entry[0] as keyof ResultFilters;
     const value = entry[1];
     if (filter[key] === undefined) {
       filter[key] = value;

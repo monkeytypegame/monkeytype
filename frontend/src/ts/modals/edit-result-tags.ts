@@ -5,8 +5,10 @@ import * as Notifications from "../elements/notifications";
 import * as AccountPage from "../pages/account";
 import * as ConnectionState from "../states/connection";
 import { areUnsortedArraysEqual } from "../utils/arrays";
-import * as Result from "../test/result";
+import * as TestResult from "../test/result";
 import AnimatedModal from "../utils/animated-modal";
+import { Mode } from "@monkeytype/shared-types/config";
+import { Result } from "@monkeytype/shared-types";
 
 type State = {
   resultId: string;
@@ -126,18 +128,16 @@ async function save(): Promise<void> {
     duration: 2,
   });
 
-  DB.getSnapshot()?.results?.forEach(
-    (result: SharedTypes.Result<SharedTypes.Config.Mode>) => {
-      if (result._id === state.resultId) {
-        result.tags = state.tags;
-      }
+  DB.getSnapshot()?.results?.forEach((result: Result<Mode>) => {
+    if (result._id === state.resultId) {
+      result.tags = state.tags;
     }
-  );
+  });
 
   if (state.source === "accountPage") {
     AccountPage.updateTagsForResult(state.resultId, state.tags);
   } else if (state.source === "resultPage") {
-    Result.updateTagsAfterEdit(state.tags, responseTagPbs);
+    TestResult.updateTagsAfterEdit(state.tags, responseTagPbs);
   }
 }
 

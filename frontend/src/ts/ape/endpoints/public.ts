@@ -1,3 +1,5 @@
+import { PublicTypingStats, SpeedHistogram } from "@monkeytype/shared-types";
+
 const BASE_PATH = "/public";
 
 type SpeedStatsQuery = {
@@ -13,13 +15,13 @@ export default class Public {
 
   async getSpeedHistogram(
     searchQuery: SpeedStatsQuery
-  ): Ape.EndpointResponse<SharedTypes.SpeedHistogram> {
+  ): Ape.EndpointResponse<SpeedHistogram> {
     return await this.httpClient.get(`${BASE_PATH}/speedHistogram`, {
       searchQuery,
     });
   }
 
-  async getTypingStats(): Ape.EndpointResponse<SharedTypes.PublicTypingStats> {
+  async getTypingStats(): Ape.EndpointResponse<PublicTypingStats> {
     return await this.httpClient.get(`${BASE_PATH}/typingStats`);
   }
 }

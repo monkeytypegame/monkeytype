@@ -4,7 +4,7 @@ declare namespace Ape.Configs {
   type GetConfig = {
     _id: string;
     uid: string;
-    config: Partial<SharedTypes.Config>;
+    config: Partial<Config>;
   };
   type PostConfig = null;
 }

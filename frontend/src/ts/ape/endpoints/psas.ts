@@ -1,3 +1,5 @@
+import { PSA } from "@monkeytype/shared-types";
+
 const BASE_PATH = "/psas";
 
 export default class Psas {
@@ -5,7 +7,7 @@ export default class Psas {
     this.httpClient = httpClient;
   }
 
-  async get(): Ape.EndpointResponse<SharedTypes.PSA[]> {
+  async get(): Ape.EndpointResponse<PSA[]> {
     return await this.httpClient.get(BASE_PATH);
   }
 }

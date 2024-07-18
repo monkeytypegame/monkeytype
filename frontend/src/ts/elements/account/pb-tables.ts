@@ -1,6 +1,9 @@
 import Config from "../../config";
 import { format as dateFormat } from "date-fns/format";
 import Format from "../../utils/format";
+import { PersonalBests } from "@monkeytype/shared-types/user";
+import { Mode2 } from "@monkeytype/shared-types/config";
+import { StringNumber } from "@monkeytype/shared-types/util";
 
 function clearTables(isProfile: boolean): void {
   const source = isProfile ? "Profile" : "Account";
@@ -79,10 +82,7 @@ function clearTables(isProfile: boolean): void {
   `);
 }
 
-export function update(
-  personalBests?: SharedTypes.PersonalBests,
-  isProfile = false
-): void {
+export function update(personalBests?: PersonalBests, isProfile = false): void {
   clearTables(isProfile);
 
   if (personalBests === undefined) return;
@@ -93,18 +93,8 @@ export function update(
   $(`.page${source} .profile .pbsTime`).html("");
   $(`.page${source} .profile .pbsWords`).html("");
 
-  const timeMode2s: SharedTypes.Config.Mode2<"time">[] = [
-    "15",
-    "30",
-    "60",
-    "120",
-  ];
-  const wordMode2s: SharedTypes.Config.Mode2<"words">[] = [
-    "10",
-    "25",
-    "50",
-    "100",
-  ];
+  const timeMode2s: Mode2<"time">[] = ["15", "30", "60", "120"];
+  const wordMode2s: Mode2<"words">[] = ["10", "25", "50", "100"];
 
   timeMode2s.forEach((mode2) => {
     text += buildPbHtml(personalBests, "time", mode2);
@@ -131,9 +121,9 @@ export function update(
 }
 
 function buildPbHtml(
-  pbs: SharedTypes.PersonalBests,
+  pbs: PersonalBests,
   mode: "time" | "words",
-  mode2: SharedTypes.StringNumber
+  mode2: StringNumber
 ): string {
   let retval = "";
   let dateText = "";

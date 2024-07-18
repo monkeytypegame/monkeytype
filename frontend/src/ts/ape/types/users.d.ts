@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 // for some reason when using the dot notaion, the types are not being recognized as used
 declare namespace Ape.Users {
-  type GetUser = SharedTypes.User & {
+  type GetUser = User & {
     inboxUnreadSize: number;
     isPremium: boolean;
   };
@@ -13,6 +13,6 @@ declare namespace Ape.Users {
     discordAvatar: string;
   };
   type GetInbox = {
-    inbox: SharedTypes.MonkeyMail[] | undefined;
+    inbox: MonkeyMail[] | undefined;
   };
 }
