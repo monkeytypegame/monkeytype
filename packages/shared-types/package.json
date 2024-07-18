@@ -3,8 +3,8 @@
   "type": "commonjs",
   "private": true,
   "scripts": {
-    "dev": "tsc -w",
-    "build": "tsc",
+    "dev": "tsc --watch ",
+    "build": "tsc --build --clean",
     "check-ts": "tsc --noEmit",
     "lint": "eslint \"./**/*.ts\""
   },
