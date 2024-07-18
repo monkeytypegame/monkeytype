@@ -1,27 +1,27 @@
-import SettingsGroup from "../elements/settings/settings-group";
-import Config, * as UpdateConfig from "../config";
-import * as Sound from "../controllers/sound-controller";
-import * as Misc from "../utils/misc";
-import * as Strings from "../utils/strings";
-import * as JSONData from "../utils/json-data";
-import * as DB from "../db";
-import { toggleFunbox } from "../test/funbox/funbox";
-import * as TagController from "../controllers/tag-controller";
-import * as PresetController from "../controllers/preset-controller";
-import * as ThemePicker from "../elements/settings/theme-picker";
-import * as Notifications from "../elements/notifications";
-import * as ImportExportSettingsModal from "../modals/import-export-settings";
-import * as ConfigEvent from "../observables/config-event";
-import * as ActivePage from "../states/active-page";
-import Page from "./page";
-import { getAuthenticatedUser, isAuthenticated } from "../firebase";
-import Ape from "../ape";
-import { areFunboxesCompatible } from "../test/funbox/funbox-validation";
-import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
+import SettingsGroup from "../elements/settings/settings-group.js";
+import Config, * as UpdateConfig from "../config.js";
+import * as Sound from "../controllers/sound-controller.js";
+import * as Misc from "../utils/misc.js";
+import * as Strings from "../utils/strings.js";
+import * as JSONData from "../utils/json-data.js";
+import * as DB from "../db.js";
+import { toggleFunbox } from "../test/funbox/funbox.js";
+import * as TagController from "../controllers/tag-controller.js";
+import * as PresetController from "../controllers/preset-controller.js";
+import * as ThemePicker from "../elements/settings/theme-picker.js";
+import * as Notifications from "../elements/notifications.js";
+import * as ImportExportSettingsModal from "../modals/import-export-settings.js";
+import * as ConfigEvent from "../observables/config-event.js";
+import * as ActivePage from "../states/active-page.js";
+import Page from "./page.js";
+import { getAuthenticatedUser, isAuthenticated } from "../firebase.js";
+import Ape from "../ape.js";
+import { areFunboxesCompatible } from "../test/funbox/funbox-validation.js";
+import { get as getTypingSpeedUnit } from "../utils/typing-speed-units.js";
 import SlimSelect from "slim-select";
 
-import * as Skeleton from "../utils/skeleton";
-import * as CustomBackgroundFilter from "../elements/custom-background-filter";
+import * as Skeleton from "../utils/skeleton.js";
+import * as CustomBackgroundFilter from "../elements/custom-background-filter.js";
 
 type SettingsGroups<T extends SharedTypes.ConfigValue> = Record<
   string,

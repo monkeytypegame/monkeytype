@@ -1,7 +1,7 @@
-import * as FunboxList from "./funbox-list";
-import * as Notifications from "../../elements/notifications";
-import * as Arrays from "../../utils/arrays";
-import * as Strings from "../../utils/strings";
+import * as FunboxList from "./funbox-list.js";
+import * as Notifications from "../../elements/notifications.js";
+import * as Arrays from "../../utils/arrays.js";
+import * as Strings from "../../utils/strings.js";
 
 export function checkFunboxForcedConfigs(
   key: string,

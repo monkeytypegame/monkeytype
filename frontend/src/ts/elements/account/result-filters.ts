@@ -1,11 +1,11 @@
-import * as Misc from "../../utils/misc";
-import * as Strings from "../../utils/strings";
-import * as JSONData from "../../utils/json-data";
-import * as DB from "../../db";
-import Config from "../../config";
-import * as Notifications from "../notifications";
-import Ape from "../../ape/index";
-import * as Loader from "../loader";
+import * as Misc from "../../utils/misc.js";
+import * as Strings from "../../utils/strings.js";
+import * as JSONData from "../../utils/json-data.js";
+import * as DB from "../../db.js";
+import Config from "../../config.js";
+import * as Notifications from "../notifications.js";
+import Ape from "../../ape/index.js";
+import * as Loader from "../loader.js";
 import SlimSelect from "slim-select";
 
 type Option = {

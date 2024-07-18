@@ -1,4 +1,4 @@
-import { Auth, isAuthenticated } from "../firebase";
+import { Auth, isAuthenticated } from "../firebase.js";
 
 const el = $("header .signInOut");
 

@@ -1,7 +1,7 @@
 import { throttle } from "throttle-debounce";
-import * as Notifications from "../elements/notifications";
-import * as ConnectionEvent from "../observables/connection-event";
-import * as TestState from "../test/test-state";
+import * as Notifications from "../elements/notifications.js";
+import * as ConnectionEvent from "../observables/connection-event.js";
+import * as TestState from "../test/test-state.js";
 
 let state = navigator.onLine;
 

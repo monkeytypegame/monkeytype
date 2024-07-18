@@ -1,7 +1,7 @@
-import * as FunboxList from "./funbox/funbox-list";
-import { zipfyRandomArrayIndex } from "../utils/misc";
-import { randomElementFromArray, shuffle } from "../utils/arrays";
-import Config from "../config";
+import * as FunboxList from "./funbox/funbox-list.js";
+import { zipfyRandomArrayIndex } from "../utils/misc.js";
+import { randomElementFromArray, shuffle } from "../utils/arrays.js";
+import Config from "../config.js";
 
 let currentWordset: MonkeyTypes.Wordset | null = null;
 

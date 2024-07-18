@@ -1,5 +1,5 @@
-import * as UpdateConfig from "../../config";
-import * as TestLogic from "../../test/test-logic";
+import * as UpdateConfig from "../../config.js";
+import * as TestLogic from "../../test/test-logic.js";
 
 const subgroup: MonkeyTypes.CommandsSubgroup = {
   title: "British english...",

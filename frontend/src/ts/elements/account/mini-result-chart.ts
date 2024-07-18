@@ -1,7 +1,7 @@
-import * as ChartController from "../../controllers/chart-controller";
-import Config from "../../config";
-import * as Misc from "../../utils/misc";
-import * as Arrays from "../../utils/arrays";
+import * as ChartController from "../../controllers/chart-controller.js";
+import Config from "../../config.js";
+import * as Misc from "../../utils/misc.js";
+import * as Arrays from "../../utils/arrays.js";
 
 export function updatePosition(x: number, y: number): void {
   $(".pageAccount .miniResultChartWrapper").css({ top: y, left: x });

@@ -1,12 +1,12 @@
-import Ape from "../ape";
-import * as DB from "../db";
-import * as Loader from "../elements/loader";
-import * as Notifications from "../elements/notifications";
-import * as AccountPage from "../pages/account";
-import * as ConnectionState from "../states/connection";
-import { areUnsortedArraysEqual } from "../utils/arrays";
-import * as Result from "../test/result";
-import AnimatedModal from "../utils/animated-modal";
+import Ape from "../ape.js";
+import * as DB from "../db.js";
+import * as Loader from "../elements/loader.js";
+import * as Notifications from "../elements/notifications.js";
+import * as AccountPage from "../pages/account.js";
+import * as ConnectionState from "../states/connection.js";
+import { areUnsortedArraysEqual } from "../utils/arrays.js";
+import * as Result from "../test/result.js";
+import AnimatedModal from "../utils/animated-modal.js";
 
 type State = {
   resultId: string;

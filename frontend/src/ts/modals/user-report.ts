@@ -1,11 +1,11 @@
-import Ape from "../ape";
-import * as Loader from "../elements/loader";
-import * as Notifications from "../elements/notifications";
-import * as CaptchaController from "../controllers/captcha-controller";
+import Ape from "../ape.js";
+import * as Loader from "../elements/loader.js";
+import * as Notifications from "../elements/notifications.js";
+import * as CaptchaController from "../controllers/captcha-controller.js";
 import SlimSelect from "slim-select";
-import AnimatedModal from "../utils/animated-modal";
-import { isAuthenticated } from "../firebase";
-import { CharacterCounter } from "../elements/character-counter";
+import AnimatedModal from "../utils/animated-modal.js";
+import { isAuthenticated } from "../firebase.js";
+import { CharacterCounter } from "../elements/character-counter.js";
 
 type State = {
   userUid?: string;

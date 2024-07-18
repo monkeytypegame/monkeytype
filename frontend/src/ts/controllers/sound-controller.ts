@@ -1,12 +1,11 @@
-import Config from "../config";
-import * as ConfigEvent from "../observables/config-event";
-import { createErrorMessage } from "../utils/misc";
-import { randomElementFromArray } from "../utils/arrays";
-import { randomIntFromRange } from "../utils/numbers";
-import { leftState, rightState } from "../test/shift-tracker";
-import { capsState } from "../test/caps-warning";
-import * as Notifications from "../elements/notifications";
-
+import Config from "../config.js";
+import * as ConfigEvent from "../observables/config-event.js";
+import { createErrorMessage } from "../utils/misc.js";
+import { randomElementFromArray } from "../utils/arrays.js";
+import { randomIntFromRange } from "../utils/numbers.js";
+import { leftState, rightState } from "../test/shift-tracker.js";
+import { capsState } from "../test/caps-warning.js";
+import * as Notifications from "../elements/notifications.js";
 import type { Howl } from "howler";
 
 async function gethowler(): Promise<typeof import("howler")> {

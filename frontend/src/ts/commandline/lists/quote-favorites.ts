@@ -1,10 +1,10 @@
-import Config from "../../config";
-import QuotesController from "../../controllers/quotes-controller";
-import * as Notifications from "../../elements/notifications";
-import { isAuthenticated } from "../../firebase";
-import { createErrorMessage } from "../../utils/misc";
-import * as Loader from "../../elements/loader";
-import * as TestWords from "../../test/test-words";
+import Config from "../../config.js";
+import QuotesController from "../../controllers/quotes-controller.js";
+import * as Notifications from "../../elements/notifications.js";
+import { isAuthenticated } from "../../firebase.js";
+import { createErrorMessage } from "../../utils/misc.js";
+import * as Loader from "../../elements/loader.js";
+import * as TestWords from "../../test/test-words.js";
 
 const commands: MonkeyTypes.Command[] = [
   {

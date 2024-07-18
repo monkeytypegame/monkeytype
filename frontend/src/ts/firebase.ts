@@ -4,9 +4,9 @@ import { getAuth, Auth as AuthType, User } from "firebase/auth";
 // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
 //@ts-ignore
 // eslint-disable-next-line import/no-unresolved
-import { firebaseConfig } from "./constants/firebase-config";
-import * as Notifications from "./elements/notifications";
-import { createErrorMessage, isDevEnvironment } from "./utils/misc";
+import { firebaseConfig } from "./constants/firebase-config.js";
+import * as Notifications from "./elements/notifications.js";
+import { createErrorMessage, isDevEnvironment } from "./utils/misc.js";
 
 // Initialize Firebase
 export let app: FirebaseApp | undefined;

@@ -1,9 +1,9 @@
-import * as CustomText from "../test/custom-text";
-import * as Notifications from "../elements/notifications";
-import * as CustomTextState from "../states/custom-text-name";
-import { InputIndicator } from "../elements/input-indicator";
+import * as CustomText from "../test/custom-text.js";
+import * as Notifications from "../elements/notifications.js";
+import * as CustomTextState from "../states/custom-text-name.js";
+import { InputIndicator } from "../elements/input-indicator.js";
 import { debounce } from "throttle-debounce";
-import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
+import AnimatedModal, { ShowOptions } from "../utils/animated-modal.js";
 
 let indicator: InputIndicator | undefined;
 

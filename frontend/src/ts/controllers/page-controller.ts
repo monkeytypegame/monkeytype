@@ -1,18 +1,18 @@
-import * as Misc from "../utils/misc";
-import * as Strings from "../utils/strings";
-import * as ActivePage from "../states/active-page";
-import * as Settings from "../pages/settings";
-import * as Account from "../pages/account";
-import * as PageTest from "../pages/test";
-import * as PageAbout from "../pages/about";
-import * as PageLogin from "../pages/login";
-import * as PageLoading from "../pages/loading";
-import * as PageProfile from "../pages/profile";
-import * as PageProfileSearch from "../pages/profile-search";
-import * as Page404 from "../pages/404";
-import * as PageTransition from "../states/page-transition";
-import * as AdController from "../controllers/ad-controller";
-import * as Focus from "../test/focus";
+import * as Misc from "../utils/misc.js";
+import * as Strings from "../utils/strings.js";
+import * as ActivePage from "../states/active-page.js";
+import * as Settings from "../pages/settings.js";
+import * as Account from "../pages/account.js";
+import * as PageTest from "../pages/test.js";
+import * as PageAbout from "../pages/about.js";
+import * as PageLogin from "../pages/login.js";
+import * as PageLoading from "../pages/loading.js";
+import * as PageProfile from "../pages/profile.js";
+import * as PageProfileSearch from "../pages/profile-search.js";
+import * as Page404 from "../pages/404.js";
+import * as PageTransition from "../states/page-transition.js";
+import * as AdController from "../controllers/ad-controller.js";
+import * as Focus from "../test/focus.js";
 
 type ChangeOptions = {
   force?: boolean;

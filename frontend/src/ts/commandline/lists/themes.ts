@@ -1,6 +1,6 @@
-import Config, * as UpdateConfig from "../../config";
-import { capitalizeFirstLetterOfEachWord } from "../../utils/strings";
-import * as ThemeController from "../../controllers/theme-controller";
+import Config, * as UpdateConfig from "../../config.js";
+import { capitalizeFirstLetterOfEachWord } from "../../utils/strings.js";
+import * as ThemeController from "../../controllers/theme-controller.js";
 
 const subgroup: MonkeyTypes.CommandsSubgroup = {
   title: "Theme...",

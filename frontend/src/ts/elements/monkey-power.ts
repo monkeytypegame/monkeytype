@@ -1,6 +1,6 @@
-import * as ThemeColors from "./theme-colors";
-import * as SlowTimer from "../states/slow-timer";
-import Config from "../config";
+import * as ThemeColors from "./theme-colors.js";
+import * as SlowTimer from "../states/slow-timer.js";
+import Config from "../config.js";
 
 type Particle = {
   x: number;

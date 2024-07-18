@@ -1,5 +1,5 @@
-import * as CaptchaController from "../controllers/captcha-controller";
-import AnimatedModal from "../utils/animated-modal";
+import * as CaptchaController from "../controllers/captcha-controller.js";
+import AnimatedModal from "../utils/animated-modal.js";
 
 let resolvePromise: (token?: string) => void;
 

@@ -1,5 +1,5 @@
-import Config, * as UpdateConfig from "../../config";
-import { get as getTypingSpeedUnit } from "../../utils/typing-speed-units";
+import Config, * as UpdateConfig from "../../config.js";
+import { get as getTypingSpeedUnit } from "../../utils/typing-speed-units.js";
 
 const subgroup: MonkeyTypes.CommandsSubgroup = {
   title: "Change min burst mode...",

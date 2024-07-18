@@ -1,12 +1,12 @@
-import * as TestStats from "../test/test-stats";
-import * as ManualRestart from "../test/manual-restart-tracker";
-import * as TestLogic from "../test/test-logic";
-import * as Funbox from "../test/funbox/funbox";
-import Page from "./page";
-import { updateFooterAndVerticalAds } from "../controllers/ad-controller";
-import * as ModesNotice from "../elements/modes-notice";
-import * as Keymap from "../elements/keymap";
-import * as TestConfig from "../test/test-config";
+import * as TestStats from "../test/test-stats.js";
+import * as ManualRestart from "../test/manual-restart-tracker.js";
+import * as TestLogic from "../test/test-logic.js";
+import * as Funbox from "../test/funbox/funbox.js";
+import Page from "./page.js";
+import { updateFooterAndVerticalAds } from "../controllers/ad-controller.js";
+import * as ModesNotice from "../elements/modes-notice.js";
+import * as Keymap from "../elements/keymap.js";
+import * as TestConfig from "../test/test-config.js";
 
 export const page = new Page({
   name: "test",

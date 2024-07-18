@@ -1,12 +1,12 @@
-import Config, * as UpdateConfig from "../config";
-import { isAuthenticated } from "../firebase";
-import * as DB from "../db";
-import * as Notifications from "../elements/notifications";
-import { getCommandline } from "../utils/async-modules";
-import * as SupportPopup from "../modals/support";
-import * as ContactModal from "../modals/contact";
-import * as VersionHistoryModal from "../modals/version-history";
-import { envConfig } from "../constants/env-config";
+import Config, * as UpdateConfig from "../config.js";
+import { isAuthenticated } from "../firebase.js";
+import * as DB from "../db.js";
+import * as Notifications from "../elements/notifications.js";
+import { getCommandline } from "../utils/async-modules.js";
+import * as SupportPopup from "../modals/support.js";
+import * as ContactModal from "../modals/contact.js";
+import * as VersionHistoryModal from "../modals/version-history.js";
+import { envConfig } from "../constants/env-config.js";
 
 document
   .querySelector("footer #commandLineMobileButton")

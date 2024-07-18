@@ -1,11 +1,11 @@
 import Hangul from "hangul-js";
-import Config from "../config";
-import * as Strings from "../utils/strings";
-import * as TestInput from "./test-input";
-import * as TestWords from "./test-words";
-import * as FunboxList from "./funbox/funbox-list";
-import * as TestState from "./test-state";
-import * as Numbers from "../utils/numbers";
+import Config from "../config.js";
+import * as Strings from "../utils/strings.js";
+import * as TestInput from "./test-input.js";
+import * as TestWords from "./test-words.js";
+import * as FunboxList from "./funbox/funbox-list.js";
+import * as TestState from "./test-state.js";
+import * as Numbers from "../utils/numbers.js";
 
 type CharCount = {
   spaces: number;

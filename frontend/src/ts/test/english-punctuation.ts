@@ -1,5 +1,5 @@
-import { randomElementFromArray } from "../utils/arrays";
-import { capitalizeFirstLetterOfEachWord } from "../utils/strings";
+import { randomElementFromArray } from "../utils/arrays.js";
+import { capitalizeFirstLetterOfEachWord } from "../utils/strings.js";
 
 type Pair = [string, string[]];
 

@@ -1,5 +1,5 @@
-import { navigate } from "../../controllers/route-controller";
-import { toggleFullscreen } from "../../utils/misc";
+import { navigate } from "../../controllers/route-controller.js";
+import { toggleFullscreen } from "../../utils/misc.js";
 
 const commands: MonkeyTypes.Command[] = [
   {

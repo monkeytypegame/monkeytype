@@ -1,24 +1,24 @@
-import Ape from "../ape";
-import * as Notifications from "../elements/notifications";
-import Config, * as UpdateConfig from "../config";
-import * as AccountButton from "../elements/account-button";
-import * as Misc from "../utils/misc";
-import * as JSONData from "../utils/json-data";
-import * as Settings from "../pages/settings";
-import * as DB from "../db";
-import * as TestLogic from "../test/test-logic";
-import * as Loader from "../elements/loader";
-import * as PageTransition from "../states/page-transition";
-import * as ActivePage from "../states/active-page";
-import * as LoadingPage from "../pages/loading";
-import * as LoginPage from "../pages/login";
-import * as ResultFilters from "../elements/account/result-filters";
-import * as TagController from "./tag-controller";
-import * as RegisterCaptchaModal from "../modals/register-captcha";
-import * as URLHandler from "../utils/url-handler";
-import * as Account from "../pages/account";
-import * as Alerts from "../elements/alerts";
-import * as SignInOutButton from "../elements/sign-in-out-button";
+import Ape from "../ape.js";
+import * as Notifications from "../elements/notifications.js";
+import Config, * as UpdateConfig from "../config.js";
+import * as AccountButton from "../elements/account-button.js";
+import * as Misc from "../utils/misc.js";
+import * as JSONData from "../utils/json-data.js";
+import * as Settings from "../pages/settings.js";
+import * as DB from "../db.js";
+import * as TestLogic from "../test/test-logic.js";
+import * as Loader from "../elements/loader.js";
+import * as PageTransition from "../states/page-transition.js";
+import * as ActivePage from "../states/active-page.js";
+import * as LoadingPage from "../pages/loading.js";
+import * as LoginPage from "../pages/login.js";
+import * as ResultFilters from "../elements/account/result-filters.js";
+import * as TagController from "./tag-controller.js";
+import * as RegisterCaptchaModal from "../modals/register-captcha.js";
+import * as URLHandler from "../utils/url-handler.js";
+import * as Account from "../pages/account.js";
+import * as Alerts from "../elements/alerts.js";
+import * as SignInOutButton from "../elements/sign-in-out-button.js";
 import {
   GoogleAuthProvider,
   GithubAuthProvider,
@@ -35,15 +35,15 @@ import {
   Unsubscribe,
   AuthProvider,
 } from "firebase/auth";
-import { Auth, getAuthenticatedUser, isAuthenticated } from "../firebase";
-import { dispatch as dispatchSignUpEvent } from "../observables/google-sign-up-event";
+import { Auth, getAuthenticatedUser, isAuthenticated } from "../firebase.js";
+import { dispatch as dispatchSignUpEvent } from "../observables/google-sign-up-event.js";
 import {
   hideFavoriteQuoteLength,
   showFavoriteQuoteLength,
 } from "../test/test-config";
-import * as ConnectionState from "../states/connection";
-import { navigate } from "./route-controller";
-import { getHtmlByUserFlags } from "./user-flag-controller";
+import * as ConnectionState from "../states/connection.js";
+import { navigate } from "./route-controller.js";
+import { getHtmlByUserFlags } from "./user-flag-controller.js";
 
 let signedOutThisSession = false;
 

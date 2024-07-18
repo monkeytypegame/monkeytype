@@ -1,14 +1,14 @@
-import Config from "../config";
-import * as ThemeColors from "./theme-colors";
-import * as SlowTimer from "../states/slow-timer";
-import * as ConfigEvent from "../observables/config-event";
-import * as KeymapEvent from "../observables/keymap-event";
-import * as Misc from "../utils/misc";
-import * as JSONData from "../utils/json-data";
+import Config from "../config.js";
+import * as ThemeColors from "./theme-colors.js";
+import * as SlowTimer from "../states/slow-timer.js";
+import * as ConfigEvent from "../observables/config-event.js";
+import * as KeymapEvent from "../observables/keymap-event.js";
+import * as Misc from "../utils/misc.js";
+import * as JSONData from "../utils/json-data.js";
 import * as Hangul from "hangul-js";
-import * as Notifications from "../elements/notifications";
-import * as ActivePage from "../states/active-page";
-import * as TestWords from "../test/test-words";
+import * as Notifications from "../elements/notifications.js";
+import * as ActivePage from "../states/active-page.js";
+import * as TestWords from "../test/test-words.js";
 
 const stenoKeys: MonkeyTypes.Layout = {
   keymapShowTopRow: true,

@@ -1,8 +1,8 @@
-import * as PageController from "./page-controller";
-import * as Leaderboards from "../elements/leaderboards";
-import * as TestUI from "../test/test-ui";
-import * as PageTransition from "../states/page-transition";
-import { Auth, isAuthenticated } from "../firebase";
+import * as PageController from "./page-controller.js";
+import * as Leaderboards from "../elements/leaderboards.js";
+import * as TestUI from "../test/test-ui.js";
+import * as PageTransition from "../states/page-transition.js";
+import { Auth, isAuthenticated } from "../firebase.js";
 
 //source: https://www.youtube.com/watch?v=OstALBk-jTc
 // https://www.youtube.com/watch?v=OstALBk-jTc

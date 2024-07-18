@@ -1,4 +1,4 @@
-import { capitalizeFirstLetter } from "../../utils/strings";
+import { capitalizeFirstLetter } from "../../utils/strings.js";
 
 export function show(): void {
   $("#typingTest #layoutfluidTimer").stop(true, true).animate(

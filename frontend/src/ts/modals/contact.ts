@@ -1,4 +1,4 @@
-import AnimatedModal from "../utils/animated-modal";
+import AnimatedModal from "../utils/animated-modal.js";
 
 export function show(): void {
   void modal.show();

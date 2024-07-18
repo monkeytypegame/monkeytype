@@ -1,5 +1,5 @@
-import * as SupportPopup from "../modals/support";
-import * as ContactModal from "../modals/contact";
+import * as SupportPopup from "../modals/support.js";
+import * as ContactModal from "../modals/contact.js";
 
 document
   .querySelector("#pageAbout #supportMeAboutButton")

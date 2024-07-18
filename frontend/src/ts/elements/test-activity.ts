@@ -1,8 +1,8 @@
 import SlimSelect from "slim-select";
 import type { DataObjectPartial } from "slim-select/dist/store";
-import { getTestActivityCalendar } from "../db";
-import * as ServerConfiguration from "../ape/server-configuration";
-import * as DB from "../db";
+import { getTestActivityCalendar } from "../db.js";
+import * as ServerConfiguration from "../ape/server-configuration.js";
+import * as DB from "../db.js";
 
 let yearSelector: SlimSelect | undefined = undefined;
 

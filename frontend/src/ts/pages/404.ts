@@ -1,5 +1,5 @@
-import Page from "./page";
-import * as Skeleton from "../utils/skeleton";
+import Page from "./page.js";
+import * as Skeleton from "../utils/skeleton.js";
 
 export const page = new Page({
   name: "404",

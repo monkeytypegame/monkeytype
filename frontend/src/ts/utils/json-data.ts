@@ -1,4 +1,4 @@
-import { hexToHSL } from "./colors";
+import { hexToHSL } from "./colors.js";
 
 /**
  * Fetches JSON data from the specified URL using the fetch API.

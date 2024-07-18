@@ -1,6 +1,6 @@
-import Config from "../config";
-import * as ConfigEvent from "../observables/config-event";
-import * as ActivePage from "../states/active-page";
+import Config from "../config.js";
+import * as ConfigEvent from "../observables/config-event.js";
+import * as ActivePage from "../states/active-page.js";
 
 export function show(): void {
   $("#testConfig").removeClass("invisible");

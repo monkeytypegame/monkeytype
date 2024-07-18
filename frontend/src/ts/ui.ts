@@ -1,14 +1,14 @@
-import Config from "./config";
-import * as Caret from "./test/caret";
-import * as Notifications from "./elements/notifications";
-import * as CustomText from "./test/custom-text";
-import * as TestState from "./test/test-state";
-import * as ConfigEvent from "./observables/config-event";
+import Config from "./config.js";
+import * as Caret from "./test/caret.js";
+import * as Notifications from "./elements/notifications.js";
+import * as CustomText from "./test/custom-text.js";
+import * as TestState from "./test/test-state.js";
+import * as ConfigEvent from "./observables/config-event.js";
 import { debounce, throttle } from "throttle-debounce";
-import * as TestUI from "./test/test-ui";
-import { get as getActivePage } from "./states/active-page";
-import { canQuickRestart, isDevEnvironment } from "./utils/misc";
-import { isCustomTextLong } from "./states/custom-text-name";
+import * as TestUI from "./test/test-ui.js";
+import { get as getActivePage } from "./states/active-page.js";
+import { canQuickRestart, isDevEnvironment } from "./utils/misc.js";
+import { isCustomTextLong } from "./states/custom-text-name.js";
 
 let isPreviewingFont = false;
 export function previewFontFamily(font: string): void {

@@ -4,8 +4,8 @@ import {
   logEvent,
   setAnalyticsCollectionEnabled,
 } from "firebase/analytics";
-import { app as firebaseApp } from "../firebase";
-import { createErrorMessage } from "../utils/misc";
+import { app as firebaseApp } from "../firebase.js";
+import { createErrorMessage } from "../utils/misc.js";
 
 let analytics: AnalyticsType;
 

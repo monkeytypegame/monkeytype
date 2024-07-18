@@ -1,10 +1,10 @@
-import Ape from "../ape";
-import * as Loader from "../elements/loader";
-import * as Notifications from "../elements/notifications";
+import Ape from "../ape.js";
+import * as Loader from "../elements/loader.js";
+import * as Notifications from "../elements/notifications.js";
 import { format } from "date-fns/format";
-import * as ConnectionState from "../states/connection";
-import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
-import { showPopup } from "./simple-modals";
+import * as ConnectionState from "../states/connection.js";
+import AnimatedModal, { ShowOptions } from "../utils/animated-modal.js";
+import { showPopup } from "./simple-modals.js";
 
 let apeKeys: Ape.ApeKeys.GetApeKeys | null = {};
 

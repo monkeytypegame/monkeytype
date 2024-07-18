@@ -1,11 +1,11 @@
-import * as CustomText from "../test/custom-text";
-import * as CustomTextState from "../states/custom-text-name";
-import { escapeHTML } from "../utils/misc";
+import * as CustomText from "../test/custom-text.js";
+import * as CustomTextState from "../states/custom-text-name.js";
+import { escapeHTML } from "../utils/misc.js";
 import AnimatedModal, {
   HideOptions,
   ShowOptions,
 } from "../utils/animated-modal";
-import { showPopup } from "./simple-modals";
+import { showPopup } from "./simple-modals.js";
 
 async function fill(): Promise<void> {
   const names = CustomText.getCustomTextNames();

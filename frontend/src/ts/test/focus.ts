@@ -1,9 +1,9 @@
-import * as Caret from "./caret";
-import * as ActivePage from "../states/active-page";
-import * as LiveSpeed from "./live-speed";
-import * as LiveBurst from "./live-burst";
-import * as LiveAcc from "./live-acc";
-import * as TimerProgress from "./timer-progress";
+import * as Caret from "./caret.js";
+import * as ActivePage from "../states/active-page.js";
+import * as LiveSpeed from "./live-speed.js";
+import * as LiveBurst from "./live-burst.js";
+import * as LiveAcc from "./live-acc.js";
+import * as TimerProgress from "./timer-progress.js";
 
 const unfocusPx = 3;
 let state = false;

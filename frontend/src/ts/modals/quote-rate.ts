@@ -1,8 +1,8 @@
-import Ape from "../ape";
-import * as DB from "../db";
-import * as Loader from "../elements/loader";
-import * as Notifications from "../elements/notifications";
-import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
+import Ape from "../ape.js";
+import * as DB from "../db.js";
+import * as Loader from "../elements/loader.js";
+import * as Notifications from "../elements/notifications.js";
+import AnimatedModal, { ShowOptions } from "../utils/animated-modal.js";
 
 let rating = 0;
 

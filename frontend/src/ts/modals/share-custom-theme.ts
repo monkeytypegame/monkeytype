@@ -1,7 +1,7 @@
-import * as ThemeController from "../controllers/theme-controller";
-import Config from "../config";
-import * as Notifications from "../elements/notifications";
-import AnimatedModal from "../utils/animated-modal";
+import * as ThemeController from "../controllers/theme-controller.js";
+import Config from "../config.js";
+import * as Notifications from "../elements/notifications.js";
+import AnimatedModal from "../utils/animated-modal.js";
 
 type State = {
   includeBackground: boolean;

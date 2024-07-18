@@ -1,5 +1,5 @@
-import AnimatedModal from "../utils/animated-modal";
-import { getCommandline } from "../utils/async-modules";
+import AnimatedModal from "../utils/animated-modal.js";
+import { getCommandline } from "../utils/async-modules.js";
 
 export function show(): void {
   void modal.show();

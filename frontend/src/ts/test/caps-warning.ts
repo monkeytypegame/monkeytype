@@ -1,4 +1,4 @@
-import Config from "../config";
+import Config from "../config.js";
 
 const el = document.querySelector("#capsWarning") as HTMLElement;
 const isMacOs = navigator.platform.startsWith("Mac");

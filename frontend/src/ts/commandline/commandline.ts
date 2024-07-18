@@ -1,15 +1,15 @@
-import * as Focus from "../test/focus";
-import * as CommandlineLists from "./lists";
-import Config from "../config";
-import * as AnalyticsController from "../controllers/analytics-controller";
-import * as ThemeController from "../controllers/theme-controller";
-import { clearFontPreview } from "../ui";
-import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
-import * as Notifications from "../elements/notifications";
-import * as OutOfFocus from "../test/out-of-focus";
-import * as ActivePage from "../states/active-page";
-import { focusWords } from "../test/test-ui";
-import * as Loader from "../elements/loader";
+import * as Focus from "../test/focus.js";
+import * as CommandlineLists from "./lists.js";
+import Config from "../config.js";
+import * as AnalyticsController from "../controllers/analytics-controller.js";
+import * as ThemeController from "../controllers/theme-controller.js";
+import { clearFontPreview } from "../ui.js";
+import AnimatedModal, { ShowOptions } from "../utils/animated-modal.js";
+import * as Notifications from "../elements/notifications.js";
+import * as OutOfFocus from "../test/out-of-focus.js";
+import * as ActivePage from "../states/active-page.js";
+import { focusWords } from "../test/test-ui.js";
+import * as Loader from "../elements/loader.js";
 
 type CommandlineMode = "search" | "input";
 type InputModeParams = {

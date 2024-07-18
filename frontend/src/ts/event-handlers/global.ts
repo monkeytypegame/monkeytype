@@ -1,10 +1,10 @@
-import * as Misc from "../utils/misc";
-import * as PageTransition from "../states/page-transition";
-import Config from "../config";
-import * as TestWords from "../test/test-words";
-import { getCommandline } from "../utils/async-modules";
-import { log } from "../controllers/analytics-controller";
-import * as Notifications from "../elements/notifications";
+import * as Misc from "../utils/misc.js";
+import * as PageTransition from "../states/page-transition.js";
+import Config from "../config.js";
+import * as TestWords from "../test/test-words.js";
+import { getCommandline } from "../utils/async-modules.js";
+import { log } from "../controllers/analytics-controller.js";
+import * as Notifications from "../elements/notifications.js";
 
 document.addEventListener("keydown", async (e) => {
   if (PageTransition.get()) return;

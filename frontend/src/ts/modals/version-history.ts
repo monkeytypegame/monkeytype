@@ -1,6 +1,6 @@
 import { format } from "date-fns/format";
-import { getReleasesFromGitHub } from "../utils/json-data";
-import AnimatedModal from "../utils/animated-modal";
+import { getReleasesFromGitHub } from "../utils/json-data.js";
+import AnimatedModal from "../utils/animated-modal.js";
 
 export function show(): void {
   void modal.show({

@@ -1,8 +1,8 @@
-import Config from "../../config";
-import * as CustomText from "../../test/custom-text";
-import * as TestLogic from "../../test/test-logic";
-import * as TestState from "../../test/test-state";
-import * as CustomTextState from "../../states/custom-text-name";
+import Config from "../../config.js";
+import * as CustomText from "../../test/custom-text.js";
+import * as TestLogic from "../../test/test-logic.js";
+import * as TestState from "../../test/test-state.js";
+import * as CustomTextState from "../../states/custom-text-name.js";
 
 function canBailOut(): boolean {
   return (

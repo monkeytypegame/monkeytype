@@ -1,8 +1,8 @@
-import { envConfig } from "../constants/env-config";
-import AnimatedModal from "../utils/animated-modal";
-import { showPopup } from "./simple-modals";
-import * as Notifications from "../elements/notifications";
-import { setMediaQueryDebugLevel } from "../ui";
+import { envConfig } from "../constants/env-config.js";
+import AnimatedModal from "../utils/animated-modal.js";
+import { showPopup } from "./simple-modals.js";
+import * as Notifications from "../elements/notifications.js";
+import { setMediaQueryDebugLevel } from "../ui.js";
 
 let mediaQueryDebugLevel = 0;
 

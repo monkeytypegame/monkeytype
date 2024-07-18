@@ -1,10 +1,10 @@
-import * as Numbers from "../utils/numbers";
-import * as JSONData from "../utils/json-data";
-import Config from "../config";
-import * as TestInput from "./test-input";
-import * as SlowTimer from "../states/slow-timer";
-import * as TestState from "../test/test-state";
-import * as TestWords from "./test-words";
+import * as Numbers from "../utils/numbers.js";
+import * as JSONData from "../utils/json-data.js";
+import Config from "../config.js";
+import * as TestInput from "./test-input.js";
+import * as SlowTimer from "../states/slow-timer.js";
+import * as TestState from "../test/test-state.js";
+import * as TestWords from "./test-words.js";
 
 export let caretAnimating = true;
 const caret = document.querySelector("#caret") as HTMLElement;

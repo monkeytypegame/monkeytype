@@ -1,4 +1,4 @@
-import { randomIntFromRange } from "../utils/numbers";
+import { randomIntFromRange } from "../utils/numbers.js";
 
 function getRandomIPvXaddress(
   bits: number,

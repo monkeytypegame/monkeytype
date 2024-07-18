@@ -1,4 +1,4 @@
-import { randomIntFromRange } from "./numbers";
+import { randomIntFromRange } from "./numbers.js";
 
 /**
  * Applies a smoothing algorithm to an array of numbers.

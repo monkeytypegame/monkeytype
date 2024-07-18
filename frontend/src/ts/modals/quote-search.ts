@@ -1,26 +1,26 @@
-import Config, * as UpdateConfig from "../config";
-import * as DB from "../db";
-import * as ManualRestart from "../test/manual-restart-tracker";
-import * as Notifications from "../elements/notifications";
-import * as QuoteSubmitPopup from "./quote-submit";
-import * as QuoteApprovePopup from "./quote-approve";
-import * as QuoteReportModal from "./quote-report";
+import Config, * as UpdateConfig from "../config.js";
+import * as DB from "../db.js";
+import * as ManualRestart from "../test/manual-restart-tracker.js";
+import * as Notifications from "../elements/notifications.js";
+import * as QuoteSubmitPopup from "./quote-submit.js";
+import * as QuoteApprovePopup from "./quote-approve.js";
+import * as QuoteReportModal from "./quote-report.js";
 import {
   buildSearchService,
   SearchService,
   TextExtractor,
 } from "../utils/search-service";
-import { splitByAndKeep } from "../utils/strings";
-import QuotesController from "../controllers/quotes-controller";
-import { isAuthenticated } from "../firebase";
+import { splitByAndKeep } from "../utils/strings.js";
+import QuotesController from "../controllers/quotes-controller.js";
+import { isAuthenticated } from "../firebase.js";
 import { debounce } from "throttle-debounce";
-import Ape from "../ape";
-import * as Loader from "../elements/loader";
+import Ape from "../ape.js";
+import * as Loader from "../elements/loader.js";
 import SlimSelect from "slim-select";
-import * as TestState from "../test/test-state";
-import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
-import * as TestLogic from "../test/test-logic";
-import { createErrorMessage } from "../utils/misc";
+import * as TestState from "../test/test-state.js";
+import AnimatedModal, { ShowOptions } from "../utils/animated-modal.js";
+import * as TestLogic from "../test/test-logic.js";
+import { createErrorMessage } from "../utils/misc.js";
 
 const searchServiceCache: Record<string, SearchService<MonkeyTypes.Quote>> = {};
 

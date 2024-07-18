@@ -1,15 +1,15 @@
 import { formatDistanceToNowStrict } from "date-fns/formatDistanceToNowStrict";
-import Ape from "../ape";
-import { isAuthenticated } from "../firebase";
-import * as AccountButton from "../elements/account-button";
-import * as DB from "../db";
-import * as NotificationEvent from "../observables/notification-event";
-import * as BadgeController from "../controllers/badge-controller";
-import * as Notifications from "../elements/notifications";
-import * as ConnectionState from "../states/connection";
-import { escapeHTML } from "../utils/misc";
-import AnimatedModal from "../utils/animated-modal";
-import { updateXp as accountPageUpdateProfile } from "./profile";
+import Ape from "../ape.js";
+import { isAuthenticated } from "../firebase.js";
+import * as AccountButton from "../elements/account-button.js";
+import * as DB from "../db.js";
+import * as NotificationEvent from "../observables/notification-event.js";
+import * as BadgeController from "../controllers/badge-controller.js";
+import * as Notifications from "../elements/notifications.js";
+import * as ConnectionState from "../states/connection.js";
+import { escapeHTML } from "../utils/misc.js";
+import AnimatedModal from "../utils/animated-modal.js";
+import { updateXp as accountPageUpdateProfile } from "./profile.js";
 
 let accountAlerts: MonkeyTypes.MonkeyMail[] = [];
 let maxMail = 0;

@@ -1,11 +1,11 @@
-import Ape from "../ape";
-import * as DB from "../db";
-import * as Config from "../config";
-import * as Loader from "../elements/loader";
-import * as Settings from "../pages/settings";
-import * as Notifications from "../elements/notifications";
-import * as ConnectionState from "../states/connection";
-import AnimatedModal from "../utils/animated-modal";
+import Ape from "../ape.js";
+import * as DB from "../db.js";
+import * as Config from "../config.js";
+import * as Loader from "../elements/loader.js";
+import * as Settings from "../pages/settings.js";
+import * as Notifications from "../elements/notifications.js";
+import * as ConnectionState from "../states/connection.js";
+import AnimatedModal from "../utils/animated-modal.js";
 
 export function show(action: string, id?: string, name?: string): void {
   if (!ConnectionState.get()) {

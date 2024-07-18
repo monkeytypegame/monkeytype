@@ -1,7 +1,7 @@
-import * as Loader from "../elements/loader";
-import * as Notifications from "../elements/notifications";
-import { createErrorMessage } from "./misc";
-import * as Skeleton from "../utils/skeleton";
+import * as Loader from "../elements/loader.js";
+import * as Notifications from "../elements/notifications.js";
+import { createErrorMessage } from "./misc.js";
+import * as Skeleton from "../utils/skeleton.js";
 
 Skeleton.save("commandLine");
 

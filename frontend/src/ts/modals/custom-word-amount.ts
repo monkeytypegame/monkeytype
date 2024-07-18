@@ -1,8 +1,8 @@
-import Config, * as UpdateConfig from "../config";
-import * as ManualRestart from "../test/manual-restart-tracker";
-import * as TestLogic from "../test/test-logic";
-import * as Notifications from "../elements/notifications";
-import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
+import Config, * as UpdateConfig from "../config.js";
+import * as ManualRestart from "../test/manual-restart-tracker.js";
+import * as TestLogic from "../test/test-logic.js";
+import * as Notifications from "../elements/notifications.js";
+import AnimatedModal, { ShowOptions } from "../utils/animated-modal.js";
 
 export function show(showOptions?: ShowOptions): void {
   void modal.show({

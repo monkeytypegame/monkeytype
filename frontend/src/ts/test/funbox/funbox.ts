@@ -1,31 +1,31 @@
-import * as Notifications from "../../elements/notifications";
-import * as Misc from "../../utils/misc";
-import * as JSONData from "../../utils/json-data";
-import * as GetText from "../../utils/generate";
-import * as Numbers from "../../utils/numbers";
-import * as Arrays from "../../utils/arrays";
-import * as Strings from "../../utils/strings";
-import * as ManualRestart from "../manual-restart-tracker";
-import Config, * as UpdateConfig from "../../config";
-import * as MemoryTimer from "./memory-funbox-timer";
-import * as FunboxMemory from "./funbox-memory";
-import * as FunboxList from "./funbox-list";
-import { save } from "./funbox-memory";
-import * as TTSEvent from "../../observables/tts-event";
-import * as KeymapEvent from "../../observables/keymap-event";
-import * as TestWords from "../test-words";
-import * as TestInput from "../test-input";
-import * as WeakSpot from "../weak-spot";
-import { getPoem } from "../poetry";
-import { getSection } from "../wikipedia";
-import * as IPGenerator from "../ip-addresses";
+import * as Notifications from "../../elements/notifications.js";
+import * as Misc from "../../utils/misc.js";
+import * as JSONData from "../../utils/json-data.js";
+import * as GetText from "../../utils/generate.js";
+import * as Numbers from "../../utils/numbers.js";
+import * as Arrays from "../../utils/arrays.js";
+import * as Strings from "../../utils/strings.js";
+import * as ManualRestart from "../manual-restart-tracker.js";
+import Config, * as UpdateConfig from "../../config.js";
+import * as MemoryTimer from "./memory-funbox-timer.js";
+import * as FunboxMemory from "./funbox-memory.js";
+import * as FunboxList from "./funbox-list.js";
+import { save } from "./funbox-memory.js";
+import * as TTSEvent from "../../observables/tts-event.js";
+import * as KeymapEvent from "../../observables/keymap-event.js";
+import * as TestWords from "../test-words.js";
+import * as TestInput from "../test-input.js";
+import * as WeakSpot from "../weak-spot.js";
+import { getPoem } from "../poetry.js";
+import { getSection } from "../wikipedia.js";
+import * as IPGenerator from "../ip-addresses.js";
 import {
   areFunboxesCompatible,
   checkFunboxForcedConfigs,
 } from "./funbox-validation";
-import { Wordset } from "../wordset";
-import * as LayoutfluidFunboxTimer from "./layoutfluid-funbox-timer";
-import * as DDR from "../../utils/ddr";
+import { Wordset } from "../wordset.js";
+import * as LayoutfluidFunboxTimer from "./layoutfluid-funbox-timer.js";
+import * as DDR from "../../utils/ddr.js";
 
 const prefixSize = 2;
 

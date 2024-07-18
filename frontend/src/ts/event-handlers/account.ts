@@ -1,10 +1,10 @@
-import * as PbTablesModal from "../modals/pb-tables";
-import * as EditProfileModal from "../modals/edit-profile";
-import { getSnapshot } from "../db";
-import { isAuthenticated } from "../firebase";
-import * as Notifications from "../elements/notifications";
-import * as EditResultTagsModal from "../modals/edit-result-tags";
-import * as AddFilterPresetModal from "../modals/new-filter-preset";
+import * as PbTablesModal from "../modals/pb-tables.js";
+import * as EditProfileModal from "../modals/edit-profile.js";
+import { getSnapshot } from "../db.js";
+import { isAuthenticated } from "../firebase.js";
+import * as Notifications from "../elements/notifications.js";
+import * as EditResultTagsModal from "../modals/edit-result-tags.js";
+import * as AddFilterPresetModal from "../modals/new-filter-preset.js";
 
 const accountPage = document.querySelector("#pageAccount") as HTMLElement;
 

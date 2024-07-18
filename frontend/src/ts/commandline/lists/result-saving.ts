@@ -1,5 +1,5 @@
-import * as TestState from "../../test/test-state";
-import * as ModesNotice from "../../elements/modes-notice";
+import * as TestState from "../../test/test-state.js";
+import * as ModesNotice from "../../elements/modes-notice.js";
 
 const subgroup: MonkeyTypes.CommandsSubgroup = {
   title: "Result saving...",

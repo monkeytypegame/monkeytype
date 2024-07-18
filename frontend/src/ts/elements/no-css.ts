@@ -1,4 +1,4 @@
-import { envConfig } from "../constants/env-config";
+import { envConfig } from "../constants/env-config.js";
 
 $("#nocss .requestedStylesheets").html(
   "Requested stylesheets:<br>" +

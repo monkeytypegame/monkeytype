@@ -1,9 +1,9 @@
-import * as DB from "../db";
+import * as DB from "../db.js";
 import { format } from "date-fns/format";
-import { getLanguageDisplayString } from "../utils/strings";
-import Config from "../config";
-import Format from "../utils/format";
-import AnimatedModal from "../utils/animated-modal";
+import { getLanguageDisplayString } from "../utils/strings.js";
+import Config from "../config.js";
+import Format from "../utils/format.js";
+import AnimatedModal from "../utils/animated-modal.js";
 
 type PersonalBest = {
   mode2: SharedTypes.Config.Mode2<SharedTypes.Config.Mode>;

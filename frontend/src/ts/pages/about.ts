@@ -1,13 +1,13 @@
-import * as Misc from "../utils/misc";
-import * as JSONData from "../utils/json-data";
-import * as Numbers from "../utils/numbers";
-import Page from "./page";
-import Ape from "../ape";
-import * as Notifications from "../elements/notifications";
-import * as ChartController from "../controllers/chart-controller";
-import * as ConnectionState from "../states/connection";
+import * as Misc from "../utils/misc.js";
+import * as JSONData from "../utils/json-data.js";
+import * as Numbers from "../utils/numbers.js";
+import Page from "./page.js";
+import Ape from "../ape.js";
+import * as Notifications from "../elements/notifications.js";
+import * as ChartController from "../controllers/chart-controller.js";
+import * as ConnectionState from "../states/connection.js";
 import { intervalToDuration } from "date-fns/intervalToDuration";
-import * as Skeleton from "../utils/skeleton";
+import * as Skeleton from "../utils/skeleton.js";
 
 function reset(): void {
   $(".pageAbout .contributors").empty();

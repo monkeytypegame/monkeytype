@@ -1,5 +1,5 @@
-import * as UpdateConfig from "../../config";
-import * as SoundController from "../../controllers/sound-controller";
+import * as UpdateConfig from "../../config.js";
+import * as SoundController from "../../controllers/sound-controller.js";
 
 const subgroup: MonkeyTypes.CommandsSubgroup = {
   title: "Sound volume...",

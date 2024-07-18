@@ -1,12 +1,12 @@
-import Config from "../config";
-import * as CustomText from "./custom-text";
-import * as DateTime from "../utils/date-and-time";
-import * as TestWords from "./test-words";
-import * as TestInput from "./test-input";
-import * as Time from "../states/time";
-import * as SlowTimer from "../states/slow-timer";
-import * as TestState from "./test-state";
-import * as ConfigEvent from "../observables/config-event";
+import Config from "../config.js";
+import * as CustomText from "./custom-text.js";
+import * as DateTime from "../utils/date-and-time.js";
+import * as TestWords from "./test-words.js";
+import * as TestInput from "./test-input.js";
+import * as Time from "../states/time.js";
+import * as SlowTimer from "../states/slow-timer.js";
+import * as TestState from "./test-state.js";
+import * as ConfigEvent from "../observables/config-event.js";
 
 const barEl = $("#barTimerProgress .bar");
 const barOpacityEl = $("#barTimerProgress .opacityWrapper");

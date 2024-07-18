@@ -1,11 +1,11 @@
-import * as TestLogic from "../test/test-logic";
-import Config, * as UpdateConfig from "../config";
-import * as ManualRestart from "../test/manual-restart-tracker";
-import * as CustomWordAmountPopup from "./custom-word-amount";
-import * as CustomTestDurationPopup from "./custom-test-duration";
-import * as QuoteSearchModal from "./quote-search";
-import * as CustomTextPopup from "./custom-text";
-import AnimatedModal from "../utils/animated-modal";
+import * as TestLogic from "../test/test-logic.js";
+import Config, * as UpdateConfig from "../config.js";
+import * as ManualRestart from "../test/manual-restart-tracker.js";
+import * as CustomWordAmountPopup from "./custom-word-amount.js";
+import * as CustomTestDurationPopup from "./custom-test-duration.js";
+import * as QuoteSearchModal from "./quote-search.js";
+import * as CustomTextPopup from "./custom-text.js";
+import AnimatedModal from "../utils/animated-modal.js";
 
 function update(): void {
   const el = $("#mobileTestConfigModal");

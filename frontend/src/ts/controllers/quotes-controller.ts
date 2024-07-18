@@ -1,9 +1,9 @@
-import { removeLanguageSize } from "../utils/strings";
-import { randomElementFromArray, shuffle } from "../utils/arrays";
-import { cachedFetchJson } from "../utils/json-data";
-import { subscribe } from "../observables/config-event";
-import * as DB from "../db";
-import Ape from "../ape";
+import { removeLanguageSize } from "../utils/strings.js";
+import { randomElementFromArray, shuffle } from "../utils/arrays.js";
+import { cachedFetchJson } from "../utils/json-data.js";
+import { subscribe } from "../observables/config-event.js";
+import * as DB from "../db.js";
+import Ape from "../ape.js";
 
 type JsonQuote = {
   text: string;

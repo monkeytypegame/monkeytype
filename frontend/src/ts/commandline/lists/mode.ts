@@ -1,6 +1,6 @@
-import * as UpdateConfig from "../../config";
-import * as TestLogic from "../../test/test-logic";
-import * as ManualRestart from "../../test/manual-restart-tracker";
+import * as UpdateConfig from "../../config.js";
+import * as TestLogic from "../../test/test-logic.js";
+import * as ManualRestart from "../../test/manual-restart-tracker.js";
 
 const commands: MonkeyTypes.Command[] = [
   {

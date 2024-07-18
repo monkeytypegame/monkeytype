@@ -1,8 +1,8 @@
-import * as Funbox from "../../test/funbox/funbox";
-import * as TestLogic from "../../test/test-logic";
-import * as ManualRestart from "../../test/manual-restart-tracker";
-import Config from "../../config";
-import { areFunboxesCompatible } from "../../test/funbox/funbox-validation";
+import * as Funbox from "../../test/funbox/funbox.js";
+import * as TestLogic from "../../test/test-logic.js";
+import * as ManualRestart from "../../test/manual-restart-tracker.js";
+import Config from "../../config.js";
+import { areFunboxesCompatible } from "../../test/funbox/funbox-validation.js";
 
 const subgroup: MonkeyTypes.CommandsSubgroup = {
   title: "Funbox...",

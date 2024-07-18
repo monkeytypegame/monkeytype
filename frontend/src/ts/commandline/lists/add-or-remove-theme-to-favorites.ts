@@ -1,5 +1,5 @@
-import Config, * as UpdateConfig from "../../config";
-import { randomTheme } from "../../controllers/theme-controller";
+import Config, * as UpdateConfig from "../../config.js";
+import { randomTheme } from "../../controllers/theme-controller.js";
 
 const commands: MonkeyTypes.Command[] = [
   {

@@ -1,12 +1,12 @@
-import * as TestWords from "./test-words";
-import * as Notifications from "../elements/notifications";
-import Config, * as UpdateConfig from "../config";
-import * as CustomText from "./custom-text";
-import * as TestInput from "./test-input";
-import * as ConfigEvent from "../observables/config-event";
-import { setCustomTextName } from "../states/custom-text-name";
-import * as Skeleton from "../utils/skeleton";
-import { isPopupVisible } from "../utils/misc";
+import * as TestWords from "./test-words.js";
+import * as Notifications from "../elements/notifications.js";
+import Config, * as UpdateConfig from "../config.js";
+import * as CustomText from "./custom-text.js";
+import * as TestInput from "./test-input.js";
+import * as ConfigEvent from "../observables/config-event.js";
+import { setCustomTextName } from "../states/custom-text-name.js";
+import * as Skeleton from "../utils/skeleton.js";
+import { isPopupVisible } from "../utils/misc.js";
 
 const wrapperId = "practiseWordsPopupWrapper";
 

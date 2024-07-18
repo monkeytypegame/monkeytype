@@ -1,21 +1,21 @@
-import Ape from "../ape";
-import * as DB from "../db";
-import Config from "../config";
-import * as DateTime from "../utils/date-and-time";
-import * as Misc from "../utils/misc";
-import * as Arrays from "../utils/arrays";
-import * as Numbers from "../utils/numbers";
-import * as Notifications from "./notifications";
+import Ape from "../ape.js";
+import * as DB from "../db.js";
+import Config from "../config.js";
+import * as DateTime from "../utils/date-and-time.js";
+import * as Misc from "../utils/misc.js";
+import * as Arrays from "../utils/arrays.js";
+import * as Numbers from "../utils/numbers.js";
+import * as Notifications from "./notifications.js";
 import { format } from "date-fns/format";
-import { isAuthenticated } from "../firebase";
+import { isAuthenticated } from "../firebase.js";
 import { differenceInSeconds } from "date-fns/differenceInSeconds";
-import { getHTMLById as getBadgeHTMLbyId } from "../controllers/badge-controller";
-import * as ConnectionState from "../states/connection";
-import * as Skeleton from "../utils/skeleton";
+import { getHTMLById as getBadgeHTMLbyId } from "../controllers/badge-controller.js";
+import * as ConnectionState from "../states/connection.js";
+import * as Skeleton from "../utils/skeleton.js";
 import { debounce } from "throttle-debounce";
-import Format from "../utils/format";
+import Format from "../utils/format.js";
 import SlimSelect from "slim-select";
-import { getHtmlByUserFlags } from "../controllers/user-flag-controller";
+import { getHtmlByUserFlags } from "../controllers/user-flag-controller.js";
 
 const wrapperId = "leaderboardsWrapper";
 

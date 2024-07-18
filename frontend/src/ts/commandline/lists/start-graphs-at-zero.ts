@@ -1,4 +1,4 @@
-import * as UpdateConfig from "../../config";
+import * as UpdateConfig from "../../config.js";
 
 const subgroup: MonkeyTypes.CommandsSubgroup = {
   title: "Start graphs at zero...",

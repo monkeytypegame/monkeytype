@@ -1,5 +1,5 @@
-import * as UpdateConfig from "../config";
-import * as ConfigEvent from "../observables/config-event";
+import * as UpdateConfig from "../config.js";
+import * as ConfigEvent from "../observables/config-event.js";
 import { debounce } from "throttle-debounce";
 
 const filters = {

@@ -1,16 +1,16 @@
-import * as DB from "../db";
+import * as DB from "../db.js";
 import { format } from "date-fns/format";
 import { differenceInDays } from "date-fns/differenceInDays";
-import * as Misc from "../utils/misc";
-import * as Numbers from "../utils/numbers";
-import * as Levels from "../utils/levels";
-import * as DateTime from "../utils/date-and-time";
-import { getHTMLById } from "../controllers/badge-controller";
+import * as Misc from "../utils/misc.js";
+import * as Numbers from "../utils/numbers.js";
+import * as Levels from "../utils/levels.js";
+import * as DateTime from "../utils/date-and-time.js";
+import { getHTMLById } from "../controllers/badge-controller.js";
 import { throttle } from "throttle-debounce";
-import * as ActivePage from "../states/active-page";
+import * as ActivePage from "../states/active-page.js";
 import { formatDistanceToNowStrict } from "date-fns/formatDistanceToNowStrict";
-import { getHtmlByUserFlags } from "../controllers/user-flag-controller";
-import Format from "../utils/format";
+import { getHtmlByUserFlags } from "../controllers/user-flag-controller.js";
+import Format from "../utils/format.js";
 
 type ProfileViewPaths = "profile" | "account";
 type UserProfileOrSnapshot = SharedTypes.UserProfile | MonkeyTypes.Snapshot;

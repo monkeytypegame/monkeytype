@@ -1,5 +1,5 @@
-import * as UpdateConfig from "../../config";
-import * as UI from "../../ui";
+import * as UpdateConfig from "../../config.js";
+import * as UI from "../../ui.js";
 
 const subgroup: MonkeyTypes.CommandsSubgroup = {
   title: "Font family...",

@@ -1,7 +1,7 @@
-import * as Misc from "../utils/misc";
-import * as JSONData from "../utils/json-data";
-import * as CustomText from "../test/custom-text";
-import * as Notifications from "../elements/notifications";
+import * as Misc from "../utils/misc.js";
+import * as JSONData from "../utils/json-data.js";
+import * as CustomText from "../test/custom-text.js";
+import * as Notifications from "../elements/notifications.js";
 import SlimSelect from "slim-select";
 import AnimatedModal, {
   HideOptions,
