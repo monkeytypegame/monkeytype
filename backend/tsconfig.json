@@ -3,12 +3,10 @@
   "compilerOptions": {
     "outDir": "build",
     "target": "ES6",
-    "strict": true,
     "noImplicitAny": false,
     "strictFunctionTypes": false,
     "useUnknownInCatchVariables": false,
     "strictPropertyInitialization": false,
-    "sourceMap": true,
 
     "paths": {
       "@shared/*": ["../shared-types/*"]
