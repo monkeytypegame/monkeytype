@@ -5,8 +5,8 @@ import {
   serve as serveSwagger,
   setup as setupSwaggerUi,
 } from "swagger-ui-express";
-import publicSwaggerSpec from "../../documentation/public-swagger.json";
-import internalSwaggerSpec from "../../documentation/internal-swagger.json";
+import publicSwaggerSpec from "../../documentation/public-swagger.json" assert { type: "json" };
+import internalSwaggerSpec from "../../documentation/internal-swagger.json" assert { type: "json" };
 import { isDevEnvironment } from "../../utils/misc.js";
 
 const SWAGGER_UI_OPTIONS = {
