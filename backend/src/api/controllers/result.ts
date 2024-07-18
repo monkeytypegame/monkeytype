@@ -39,6 +39,11 @@ import * as WeeklyXpLeaderboard from "../../services/weekly-xp-leaderboard.js";
 import { UAParser } from "ua-parser-js";
 import { canFunboxGetPb } from "../../utils/pb.js";
 import { buildDbResult } from "../../utils/result.js";
+import {
+  CompletedEvent,
+  Configuration,
+  PostResultResponse,
+} from "@monkeytype/shared-types";
 
 try {
   if (!anticheatImplemented()) throw new Error("undefined");
@@ -181,10 +186,7 @@ export async function addResult(
     );
   }
 
-  const completedEvent = Object.assign(
-    {},
-    req.body.result
-  ) as SharedTypes.CompletedEvent;
+  const completedEvent = Object.assign({}, req.body.result) as CompletedEvent;
   if (!user.lbOptOut && completedEvent.acc < 75) {
     throw new MonkeyError(
       400,
@@ -603,7 +605,7 @@ export async function addResult(
     );
   }
 
-  const data: Omit<SharedTypes.PostResultResponse, "insertedId"> & {
+  const data: Omit<PostResultResponse, "insertedId"> & {
     insertedId: ObjectId;
   } = {
     isPb,
@@ -635,8 +637,8 @@ type XpResult = {
 };
 
 async function calculateXp(
-  result: SharedTypes.CompletedEvent,
-  xpConfiguration: SharedTypes.Configuration["users"]["xp"],
+  result: CompletedEvent,
+  xpConfiguration: Configuration["users"]["xp"],
   uid: string,
   currentTotalXp: number,
   streak: number

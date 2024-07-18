@@ -13,6 +13,7 @@ import {
 } from "../utils/prometheus.js";
 import crypto from "crypto";
 import { performance } from "perf_hooks";
+import { Configuration } from "@monkeytype/shared-types";
 
 type RequestAuthenticationOptions = {
   isPublic?: boolean;
@@ -105,7 +106,7 @@ function authenticateRequest(authOptions = DEFAULT_OPTIONS): Handler {
 
 async function authenticateWithAuthHeader(
   authHeader: string,
-  configuration: SharedTypes.Configuration,
+  configuration: Configuration,
   options: RequestAuthenticationOptions
 ): Promise<MonkeyTypes.DecodedToken> {
   if (authHeader === undefined || authHeader === "") {
@@ -221,7 +222,7 @@ async function authenticateWithBearerToken(
 
 async function authenticateWithApeKey(
   key: string,
-  configuration: SharedTypes.Configuration,
+  configuration: Configuration,
   options: RequestAuthenticationOptions
 ): Promise<MonkeyTypes.DecodedToken> {
   if (!configuration.apeKeys.acceptKeys) {

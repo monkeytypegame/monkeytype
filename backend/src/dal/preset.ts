@@ -1,10 +1,14 @@
 import MonkeyError from "../utils/error.js";
 import * as db from "../init/db.js";
 import { ObjectId, type Filter, Collection, type WithId } from "mongodb";
+import {
+  ConfigPreset,
+  DBConfigPreset as SharedDBConfigPreset,
+} from "@monkeytype/shared-types";
 
 const MAX_PRESETS = 10;
 
-type DBConfigPreset = MonkeyTypes.WithObjectId<SharedTypes.DBConfigPreset>;
+type DBConfigPreset = MonkeyTypes.WithObjectId<SharedDBConfigPreset>;
 
 function getPresetKeyFilter(
   uid: string,
@@ -34,7 +38,7 @@ export async function getPresets(uid: string): Promise<DBConfigPreset[]> {
 export async function addPreset(
   uid: string,
   name: string,
-  config: SharedTypes.ConfigPreset
+  config: ConfigPreset
 ): Promise<PresetCreationResult> {
   const presets = await getPresets(uid);
   if (presets.length >= MAX_PRESETS) {
@@ -56,7 +60,7 @@ export async function editPreset(
   uid: string,
   presetId: string,
   name: string,
-  config: SharedTypes.ConfigPreset | null | undefined
+  config: ConfigPreset | null | undefined
 ): Promise<void> {
   const presetUpdates =
     config !== undefined && config !== null && Object.keys(config).length > 0

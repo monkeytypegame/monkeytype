@@ -19,6 +19,7 @@ import LaterQueue, {
 } from "../queues/later-queue.js";
 import { recordTimeToCompleteJob } from "../utils/prometheus.js";
 import { WeeklyXpLeaderboard } from "../services/weekly-xp-leaderboard.js";
+import { MonkeyMail } from "@monkeytype/shared-types";
 
 async function handleDailyLeaderboardResults(
   ctx: LaterTaskContexts["daily-leaderboard-results"]
@@ -48,7 +49,7 @@ async function handleDailyLeaderboardResults(
   if (inboxConfig.enabled && xpRewardBrackets.length > 0) {
     const mailEntries: {
       uid: string;
-      mail: SharedTypes.MonkeyMail[];
+      mail: MonkeyMail[];
     }[] = [];
 
     allResults.forEach((entry) => {
@@ -137,7 +138,7 @@ async function handleWeeklyXpLeaderboardResults(
 
   const mailEntries: {
     uid: string;
-    mail: SharedTypes.MonkeyMail[];
+    mail: MonkeyMail[];
   }[] = [];
 
   allResults.forEach((entry) => {

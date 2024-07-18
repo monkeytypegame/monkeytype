@@ -1,12 +1,13 @@
 import * as db from "../init/db.js";
 import { roundTo2 } from "../utils/misc.js";
 import MonkeyError from "../utils/error.js";
+import { PublicTypingStats, SpeedHistogram } from "@monkeytype/shared-types";
 
-type PublicTypingStatsDB = SharedTypes.PublicTypingStats & { _id: "stats" };
+type PublicTypingStatsDB = PublicTypingStats & { _id: "stats" };
 type PublicSpeedStatsDB = {
   _id: "speedStatsHistogram";
-  english_time_15: SharedTypes.SpeedHistogram;
-  english_time_60: SharedTypes.SpeedHistogram;
+  english_time_15: SpeedHistogram;
+  english_time_60: SpeedHistogram;
 };
 
 export async function updateStats(

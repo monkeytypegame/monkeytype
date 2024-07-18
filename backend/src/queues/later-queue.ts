@@ -5,6 +5,7 @@ import {
   getCurrentDayTimestamp,
   getCurrentWeekTimestamp,
 } from "../utils/misc.js";
+import { ValidModeRule } from "@monkeytype/shared-types";
 
 const QUEUE_NAME = "later";
 
@@ -20,7 +21,7 @@ export type LaterTask<T extends LaterTaskType> = {
 export type LaterTaskContexts = {
   "daily-leaderboard-results": {
     yesterdayTimestamp: number;
-    modeRule: SharedTypes.ValidModeRule;
+    modeRule: ValidModeRule;
   };
   "weekly-xp-leaderboard-results": {
     lastWeekTimestamp: number;
@@ -85,7 +86,7 @@ class LaterQueue extends MonkeyQueue<LaterTask<LaterTaskType>> {
   async scheduleForTomorrow(
     taskName: LaterTaskType,
     taskId: string,
-    modeRule: SharedTypes.ValidModeRule
+    modeRule: ValidModeRule
   ): Promise<void> {
     const currentDayTimestamp = getCurrentDayTimestamp();
     const jobId = `${taskName}:${currentDayTimestamp}:${taskId}`;

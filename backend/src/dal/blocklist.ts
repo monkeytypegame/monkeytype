@@ -1,11 +1,9 @@
 import { Collection } from "mongodb";
 import * as db from "../init/db.js";
 import { createHash } from "crypto";
+import { User } from "@monkeytype/shared-types";
 
-type BlocklistEntryProperties = Pick<
-  SharedTypes.User,
-  "name" | "email" | "discordId"
->;
+type BlocklistEntryProperties = Pick<User, "name" | "email" | "discordId">;
 // Export for use in tests
 export const getCollection = (): Collection<MonkeyTypes.DBBlocklistEntry> =>
   db.collection("blocklist");

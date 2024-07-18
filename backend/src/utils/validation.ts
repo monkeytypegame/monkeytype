@@ -3,6 +3,7 @@ import { replaceHomoglyphs } from "../constants/homoglyphs.js";
 import { profanities } from "../constants/profanities.js";
 import { intersect, sanitizeString } from "./misc.js";
 import { default as FunboxList } from "../constants/funbox-list.js";
+import { CompletedEvent } from "@monkeytype/shared-types";
 
 export function inRange(value: number, min: number, max: number): boolean {
   return value >= min && value <= max;
@@ -48,7 +49,7 @@ export function isTagPresetNameValid(name: string): boolean {
   return VALID_NAME_PATTERN.test(name);
 }
 
-export function isTestTooShort(result: SharedTypes.CompletedEvent): boolean {
+export function isTestTooShort(result: CompletedEvent): boolean {
   const { mode, mode2, customText, testDuration, bailedOut } = result;
 
   if (mode === "time") {

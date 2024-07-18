@@ -1,3 +1,4 @@
+import { LeaderboardEntry } from "@monkeytype/shared-types";
 import { type LbEntryWithRank } from "../utils/daily-leaderboards.js";
 import { MonkeyQueue } from "./monkey-queue.js";
 
@@ -61,7 +62,7 @@ class GeorgeQueue extends MonkeyQueue<GeorgeTask> {
   }
 
   async announceLeaderboardUpdate(
-    newRecords: SharedTypes.LeaderboardEntry[],
+    newRecords: LeaderboardEntry[],
     leaderboardId: string
   ): Promise<void> {
     const taskName = "announceLeaderboardUpdate";
