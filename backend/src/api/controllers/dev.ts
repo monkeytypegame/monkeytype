@@ -9,7 +9,7 @@ import { roundTo2 } from "../../utils/misc.js";
 import { ObjectId } from "mongodb";
 import * as LeaderboardDal from "../../dal/leaderboards.js";
 import MonkeyError from "../../utils/error.js";
-import { isNumber } from "lodash";
+import isNumber from "lodash/isNumber.js";
 
 type GenerateDataOptions = {
   firstTestTimestamp: Date;
