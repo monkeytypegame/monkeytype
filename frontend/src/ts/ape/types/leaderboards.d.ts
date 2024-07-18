@@ -20,6 +20,6 @@ declare namespace Ape.Leaderboards {
     minWpm: number;
     count: number;
     rank: number | null;
-    entry: LeaderboardEntry | null;
+    entry: import("@monkeytype/shared-types").LeaderboardEntry | null;
   };
 }
