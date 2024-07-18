@@ -6,11 +6,7 @@
     "noImplicitAny": false,
     "strictFunctionTypes": false,
     "useUnknownInCatchVariables": false,
-    "strictPropertyInitialization": false,
-
-    "paths": {
-      "@shared/*": ["../shared-types/*"]
-    }
+    "strictPropertyInitialization": false
   },
   "ts-node": {
     "files": true
