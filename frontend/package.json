@@ -2,7 +2,6 @@
   "name": "@monkeytype/frontend",
   "license": "GPL-3.0",
   "private": true,
-  "type": "module",
   "scripts": {
     "lint": "eslint \"./**/*.ts\"",
     "validate-json": "npx gulp validate-json-schema",
