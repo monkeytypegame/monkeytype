@@ -2,7 +2,7 @@ name: monkeytype
 services:
   frontend:
     container_name: monkeytype-frontend
-    image: node:18.19.1
+    image: node:18.20.4
     # restart: on-failure
     environment:
       - SERVER_OPEN=false
