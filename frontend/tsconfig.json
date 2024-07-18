@@ -5,17 +5,8 @@
     "types": ["vite/client", "node", "jquery"],
     "allowUmdGlobalAccess": true,
     "target": "ES6",
-    "moduleResolution": "Node",
-    "module": "ESNext",
-    "noEmit": true,
-    "paths": {
-      "@shared/*": ["../shared-types/*"]
-    }
+    "noEmit": true
   },
-  "include": [
-    "./src/**/*.ts",
-    "../shared-types/**/*.d.ts",
-    "./scripts/**/*.ts"
-  ],
+  "include": ["./src/**/*.ts", "./scripts/**/*.ts"],
   "exclude": ["node_modules", "build", "setup-tests.ts", "**/*.spec.ts"]
 }
