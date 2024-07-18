@@ -120,10 +120,7 @@ Its time to run Monkeytype. Just like with the databases, you can run the fronte
 
 ### Dependencies (if running manually)
 
-Run `npm run install-all` in the project root to install all dependencies.
-
-- If you are on Windows, use `npm run install-windows`.
-- If neither works, you will have to run `npm install` in root, frontend, and backend directories.
+Run `npm i` in the project root to install all dependencies.
 
 ### Both Frontend and Backend
 
