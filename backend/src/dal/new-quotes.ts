@@ -7,7 +7,7 @@ import * as db from "../init/db.js";
 import MonkeyError from "../utils/error.js";
 import { compareTwoStrings } from "string-similarity";
 
-const PATH_TO_REPO = "../../../../monkeytype-new-quotes.js";
+const PATH_TO_REPO = "../../../../monkeytype-new-quotes";
 
 let git;
 try {

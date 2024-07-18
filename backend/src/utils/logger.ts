@@ -14,7 +14,7 @@ const warningColor = chalk.yellow.bold;
 const successColor = chalk.green.bold;
 const infoColor = chalk.white;
 
-const logFolderPath = process.env["LOG_FOLDER_PATH"] ?? "./logs.js";
+const logFolderPath = process.env["LOG_FOLDER_PATH"] ?? "./logs";
 const maxLogSize = parseInt(process.env["LOG_FILE_MAX_SIZE"] ?? "10485760");
 
 type Log = {
