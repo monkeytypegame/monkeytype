@@ -1,14 +1,14 @@
-import Config from "./config.js";
-import * as Misc from "./utils/misc.js";
-import * as MonkeyPower from "./elements/monkey-power.js";
-import * as Notifications from "./elements/notifications.js";
-import * as CookiesModal from "./modals/cookies.js";
-import * as PSA from "./elements/psa.js";
-import * as ConnectionState from "./states/connection.js";
-import * as FunboxList from "./test/funbox/funbox-list.js";
+import Config from "./config";
+import * as Misc from "./utils/misc";
+import * as MonkeyPower from "./elements/monkey-power";
+import * as Notifications from "./elements/notifications";
+import * as CookiesModal from "./modals/cookies";
+import * as PSA from "./elements/psa";
+import * as ConnectionState from "./states/connection";
+import * as FunboxList from "./test/funbox/funbox-list";
 //@ts-expect-error
 import Konami from "konami";
-import * as ServerConfiguration from "./ape/server-configuration.js";
+import * as ServerConfiguration from "./ape/server-configuration";
 
 $((): void => {
   Misc.loadCSS("/css/slimselect.min.css", true);

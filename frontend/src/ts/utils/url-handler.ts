@@ -1,17 +1,17 @@
-import * as Misc from "./misc.js";
-import Config, * as UpdateConfig from "../config.js";
-import * as Notifications from "../elements/notifications.js";
+import * as Misc from "./misc";
+import Config, * as UpdateConfig from "../config";
+import * as Notifications from "../elements/notifications";
 import { decompressFromURI } from "lz-ts";
-import * as TestState from "../test/test-state.js";
-import * as ManualRestart from "../test/manual-restart-tracker.js";
-import * as CustomText from "../test/custom-text.js";
-import Ape from "../ape.js";
-import * as Settings from "../pages/settings.js";
-import * as DB from "../db.js";
-import * as Loader from "../elements/loader.js";
-import * as AccountButton from "../elements/account-button.js";
-import { restart as restartTest } from "../test/test-logic.js";
-import * as ChallengeController from "../controllers/challenge-controller.js";
+import * as TestState from "../test/test-state";
+import * as ManualRestart from "../test/manual-restart-tracker";
+import * as CustomText from "../test/custom-text";
+import Ape from "../ape";
+import * as Settings from "../pages/settings";
+import * as DB from "../db";
+import * as Loader from "../elements/loader";
+import * as AccountButton from "../elements/account-button";
+import { restart as restartTest } from "../test/test-logic";
+import * as ChallengeController from "../controllers/challenge-controller";
 
 export async function linkDiscord(hashOverride: string): Promise<void> {
   if (!hashOverride) return;

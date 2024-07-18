@@ -1,6 +1,6 @@
-import * as Misc from "./utils/misc.js.js.js";
-import * as JSONData from "./utils/json-data.js";
-import * as Notifications from "./elements/notifications.js";
+import * as Misc from "./utils/misc";
+import * as JSONData from "./utils/json-data";
+import * as Notifications from "./elements/notifications";
 
 type PossibleType =
   | "string"

@@ -1,7 +1,7 @@
-import * as Notifications from "../elements/notifications.js";
-import * as AdController from "../controllers/ad-controller.js";
-import * as Skeleton from "../utils/skeleton.js";
-import { isPopupVisible } from "../utils/misc.js";
+import * as Notifications from "../elements/notifications";
+import * as AdController from "../controllers/ad-controller";
+import * as Skeleton from "../utils/skeleton";
+import { isPopupVisible } from "../utils/misc";
 
 const wrapperId = "videoAdPopupWrapper";
 

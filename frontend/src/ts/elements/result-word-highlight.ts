@@ -3,9 +3,9 @@
 // to place a highlight (".highlight") on top of the text to be highlighted.
 // Constants for padding around the highlights
 
-import * as Misc from "../utils/misc.js";
-import * as JSONData from "../utils/json-data.js";
-import Config from "../config.js";
+import * as Misc from "../utils/misc";
+import * as JSONData from "../utils/json-data";
+import Config from "../config";
 
 const PADDING_X = 16;
 const PADDING_Y = 12;

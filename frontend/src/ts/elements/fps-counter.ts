@@ -1,4 +1,4 @@
-import { roundTo2 } from "../utils/numbers.js";
+import { roundTo2 } from "../utils/numbers";
 
 let frameCount = 0;
 let fpsInterval: number;

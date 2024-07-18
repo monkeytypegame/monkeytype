@@ -1,4 +1,4 @@
-import { roundTo2 } from "./numbers.js";
+import { roundTo2 } from "./numbers";
 
 /**
  * Returns the current day's timestamp adjusted by the hour offset.

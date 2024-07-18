@@ -1,9 +1,9 @@
-import Config from "../config.js";
-import { currentQuote } from "../test/test-words.js";
-import { getMode2 } from "../utils/misc.js";
-import * as CustomText from "../test/custom-text.js";
+import Config from "../config";
+import { currentQuote } from "../test/test-words";
+import { getMode2 } from "../utils/misc";
+import * as CustomText from "../test/custom-text";
 import { compressToURI } from "lz-ts";
-import AnimatedModal, { ShowOptions } from "../utils/animated-modal.js";
+import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
 
 function getCheckboxValue(checkbox: string): boolean {
   return $(`#shareTestSettingsModal label.${checkbox} input`).prop("checked");

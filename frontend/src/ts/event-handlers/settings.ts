@@ -1,11 +1,11 @@
-import * as ShareCustomThemeModal from "../modals/share-custom-theme.js";
-import * as CookiesModal from "../modals/cookies.js";
-import * as StreakHourOffsetModal from "../modals/streak-hour-offset.js";
-import * as EditPresetPopup from "../modals/edit-preset.js";
-import * as EditTagPopup from "../modals/edit-tag.js";
-import * as ApeKeysModal from "../modals/ape-keys.js";
+import * as ShareCustomThemeModal from "../modals/share-custom-theme";
+import * as CookiesModal from "../modals/cookies";
+import * as StreakHourOffsetModal from "../modals/streak-hour-offset";
+import * as EditPresetPopup from "../modals/edit-preset";
+import * as EditTagPopup from "../modals/edit-tag";
+import * as ApeKeysModal from "../modals/ape-keys";
 
-import * as Notifications from "../elements/notifications.js";
+import * as Notifications from "../elements/notifications";
 
 const settingsPage = document.querySelector("#pageSettings");
 

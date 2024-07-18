@@ -1,14 +1,14 @@
-import * as PaceCaret from "../test/pace-caret.js";
-import * as TestState from "../test/test-state.js";
-import * as DB from "../db.js";
-import * as Last10Average from "../elements/last-10-average.js";
-import Config from "../config.js";
-import * as TestWords from "../test/test-words.js";
-import * as ConfigEvent from "../observables/config-event.js";
-import { isAuthenticated } from "../firebase.js";
-import * as CustomTextState from "../states/custom-text-name.js";
-import { getLanguageDisplayString } from "../utils/strings.js";
-import Format from "../utils/format.js";
+import * as PaceCaret from "../test/pace-caret";
+import * as TestState from "../test/test-state";
+import * as DB from "../db";
+import * as Last10Average from "../elements/last-10-average";
+import Config from "../config";
+import * as TestWords from "../test/test-words";
+import * as ConfigEvent from "../observables/config-event";
+import { isAuthenticated } from "../firebase";
+import * as CustomTextState from "../states/custom-text-name";
+import { getLanguageDisplayString } from "../utils/strings";
+import Format from "../utils/format";
 
 ConfigEvent.subscribe((eventKey) => {
   if (

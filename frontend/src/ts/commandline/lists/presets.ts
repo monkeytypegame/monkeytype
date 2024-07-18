@@ -1,9 +1,9 @@
-import * as DB from "../../db.js";
-import * as ModesNotice from "../../elements/modes-notice.js";
-import * as Settings from "../../pages/settings.js";
-import * as PresetController from "../../controllers/preset-controller.js";
-import * as EditPresetPopup from "../../modals/edit-preset.js";
-import { isAuthenticated } from "../../firebase.js";
+import * as DB from "../../db";
+import * as ModesNotice from "../../elements/modes-notice";
+import * as Settings from "../../pages/settings";
+import * as PresetController from "../../controllers/preset-controller";
+import * as EditPresetPopup from "../../modals/edit-preset";
+import { isAuthenticated } from "../../firebase";
 
 const subgroup: MonkeyTypes.CommandsSubgroup = {
   title: "Presets...",

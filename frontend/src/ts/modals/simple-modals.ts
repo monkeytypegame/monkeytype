@@ -1,16 +1,16 @@
-import Ape from "../ape.js";
-import * as AccountController from "../controllers/account-controller.js";
-import * as DB from "../db.js";
-import * as UpdateConfig from "../config.js";
-import * as Loader from "../elements/loader.js";
-import * as Notifications from "../elements/notifications.js";
-import * as Settings from "../pages/settings.js";
-import * as ThemePicker from "../elements/settings/theme-picker.js";
-import * as CustomText from "../test/custom-text.js";
-import * as AccountButton from "../elements/account-button.js";
+import Ape from "../ape";
+import * as AccountController from "../controllers/account-controller";
+import * as DB from "../db";
+import * as UpdateConfig from "../config";
+import * as Loader from "../elements/loader";
+import * as Notifications from "../elements/notifications";
+import * as Settings from "../pages/settings";
+import * as ThemePicker from "../elements/settings/theme-picker";
+import * as CustomText from "../test/custom-text";
+import * as AccountButton from "../elements/account-button";
 import { FirebaseError } from "firebase/app";
-import { Auth, isAuthenticated, getAuthenticatedUser } from "../firebase.js";
-import * as ConnectionState from "../states/connection.js";
+import { Auth, isAuthenticated, getAuthenticatedUser } from "../firebase";
+import * as ConnectionState from "../states/connection";
 import {
   EmailAuthProvider,
   User,
@@ -25,14 +25,14 @@ import {
   isPasswordStrong,
   reloadAfter,
 } from "../utils/misc";
-import * as CustomTextState from "../states/custom-text-name.js";
-import * as ThemeController from "../controllers/theme-controller.js";
+import * as CustomTextState from "../states/custom-text-name";
+import * as ThemeController from "../controllers/theme-controller";
 import AnimatedModal, {
   HideOptions,
   ShowOptions,
 } from "../utils/animated-modal";
 import { format as dateFormat } from "date-fns/format";
-import { Attributes, buildTag } from "../utils/tag-builder.js";
+import { Attributes, buildTag } from "../utils/tag-builder";
 
 type CommonInput<TType, TValue> = {
   type: TType;

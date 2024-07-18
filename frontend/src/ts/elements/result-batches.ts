@@ -1,8 +1,8 @@
-import * as DB from "../db.js";
-import * as ServerConfiguration from "../ape/server-configuration.js";
-import { mapRange } from "../utils/misc.js";
-import { blendTwoHexColors } from "../utils/colors.js";
-import * as ThemeColors from "../elements/theme-colors.js";
+import * as DB from "../db";
+import * as ServerConfiguration from "../ape/server-configuration";
+import { mapRange } from "../utils/misc";
+import { blendTwoHexColors } from "../utils/colors";
+import * as ThemeColors from "../elements/theme-colors";
 
 export function hide(): void {
   $(".pageAccount .resultBatches").addClass("hidden");

@@ -1,10 +1,10 @@
-import * as TestLogic from "../../test/test-logic.js";
-import * as TestUI from "../../test/test-ui.js";
-import * as PractiseWords from "../../test/practise-words.js";
-import * as Notifications from "../../elements/notifications.js";
-import * as TestInput from "../../test/test-input.js";
-import * as TestWords from "../../test/test-words.js";
-import Config from "../../config.js";
+import * as TestLogic from "../../test/test-logic";
+import * as TestUI from "../../test/test-ui";
+import * as PractiseWords from "../../test/practise-words";
+import * as Notifications from "../../elements/notifications";
+import * as TestInput from "../../test/test-input";
+import * as TestWords from "../../test/test-words";
+import Config from "../../config";
 
 const practiceSubgroup: MonkeyTypes.CommandsSubgroup = {
   title: "Practice words...",

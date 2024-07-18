@@ -1,6 +1,6 @@
-import Config from "../config.js";
-import { capitalizeFirstLetterOfEachWord } from "../utils/strings.js";
-import { cachedFetchJson } from "../utils/json-data.js";
+import Config from "../config";
+import { capitalizeFirstLetterOfEachWord } from "../utils/strings";
+import { cachedFetchJson } from "../utils/json-data";
 
 type BritishEnglishReplacement = {
   0: string;

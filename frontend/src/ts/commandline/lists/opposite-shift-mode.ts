@@ -1,5 +1,5 @@
-import * as UpdateConfig from "../../config.js";
-import * as ModesNotice from "./../../elements/modes-notice.js";
+import * as UpdateConfig from "../../config";
+import * as ModesNotice from "./../../elements/modes-notice";
 
 const subgroup: MonkeyTypes.CommandsSubgroup = {
   title: "Change opposite shift mode...",

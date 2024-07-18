@@ -1,7 +1,7 @@
-import Config from "../config.js";
-import * as TestState from "../test/test-state.js";
-import * as ConfigEvent from "../observables/config-event.js";
-import Format from "../utils/format.js";
+import Config from "../config";
+import * as TestState from "../test/test-state";
+import * as ConfigEvent from "../observables/config-event";
+import Format from "../utils/format";
 
 const textEl = document.querySelector(
   "#liveStatsTextBottom .liveBurst"

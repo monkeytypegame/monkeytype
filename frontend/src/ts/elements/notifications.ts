@@ -1,9 +1,9 @@
 import { debounce } from "throttle-debounce";
-import * as Misc from "../utils/misc.js";
-import * as Numbers from "../utils/numbers.js";
-import * as BannerEvent from "../observables/banner-event.js";
-// import * as Alerts from "./alerts.js";
-import * as NotificationEvent from "../observables/notification-event.js";
+import * as Misc from "../utils/misc";
+import * as Numbers from "../utils/numbers";
+import * as BannerEvent from "../observables/banner-event";
+// import * as Alerts from "./alerts";
+import * as NotificationEvent from "../observables/notification-event";
 
 function updateMargin(): void {
   const height = $("#bannerCenter").height() as number;

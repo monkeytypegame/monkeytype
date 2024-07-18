@@ -1,7 +1,7 @@
-import * as UpdateConfig from "../../config.js";
-import { isAuthenticated } from "../../firebase.js";
-import * as DB from "../../db.js";
-import * as ThemeController from "../../controllers/theme-controller.js";
+import * as UpdateConfig from "../../config";
+import { isAuthenticated } from "../../firebase";
+import * as DB from "../../db";
+import * as ThemeController from "../../controllers/theme-controller";
 
 const subgroup: MonkeyTypes.CommandsSubgroup = {
   title: "Custom themes list...",

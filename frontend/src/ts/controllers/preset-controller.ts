@@ -1,8 +1,8 @@
-import * as UpdateConfig from "../config.js";
-import * as DB from "../db.js";
-import * as Notifications from "../elements/notifications.js";
-import * as TestLogic from "../test/test-logic.js";
-import * as TagController from "./tag-controller.js";
+import * as UpdateConfig from "../config";
+import * as DB from "../db";
+import * as Notifications from "../elements/notifications";
+import * as TestLogic from "../test/test-logic";
+import * as TagController from "./tag-controller";
 
 export async function apply(_id: string): Promise<void> {
   const snapshot = DB.getSnapshot();

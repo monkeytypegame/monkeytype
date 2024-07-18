@@ -1,6 +1,6 @@
-import Config from "../config.js";
-import * as TestState from "../test/test-state.js";
-import * as ConfigEvent from "../observables/config-event.js";
+import Config from "../config";
+import * as TestState from "../test/test-state";
+import * as ConfigEvent from "../observables/config-event";
 
 const textEl = document.querySelector(
   "#liveStatsTextBottom .liveAcc"

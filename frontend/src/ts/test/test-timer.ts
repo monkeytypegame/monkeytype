@@ -1,22 +1,22 @@
 //most of the code is thanks to
 //https://stackoverflow.com/questions/29971898/how-to-create-an-accurate-timer-in-javascript
 
-import Config, * as UpdateConfig from "../config.js";
-import * as CustomText from "./custom-text.js";
-import * as TimerProgress from "./timer-progress.js";
-import * as LiveWpm from "./live-speed.js";
-import * as TestStats from "./test-stats.js";
-import * as TestInput from "./test-input.js";
-import * as TestWords from "./test-words.js";
-import * as Monkey from "./monkey.js";
-import * as Numbers from "../utils/numbers.js";
-import * as Notifications from "../elements/notifications.js";
-import * as Caret from "./caret.js";
-import * as SlowTimer from "../states/slow-timer.js";
-import * as TestState from "./test-state.js";
-import * as Time from "../states/time.js";
-import * as TimerEvent from "../observables/timer-event.js";
-import * as LayoutfluidFunboxTimer from "../test/funbox/layoutfluid-funbox-timer.js";
+import Config, * as UpdateConfig from "../config";
+import * as CustomText from "./custom-text";
+import * as TimerProgress from "./timer-progress";
+import * as LiveWpm from "./live-speed";
+import * as TestStats from "./test-stats";
+import * as TestInput from "./test-input";
+import * as TestWords from "./test-words";
+import * as Monkey from "./monkey";
+import * as Numbers from "../utils/numbers";
+import * as Notifications from "../elements/notifications";
+import * as Caret from "./caret";
+import * as SlowTimer from "../states/slow-timer";
+import * as TestState from "./test-state";
+import * as Time from "../states/time";
+import * as TimerEvent from "../observables/timer-event";
+import * as LayoutfluidFunboxTimer from "../test/funbox/layoutfluid-funbox-timer";
 
 let slowTimerCount = 0;
 let timer: NodeJS.Timeout | null = null;

@@ -1,4 +1,4 @@
-import * as ActivePage from "../states/active-page.js";
+import * as ActivePage from "../states/active-page";
 
 let visible = false;
 

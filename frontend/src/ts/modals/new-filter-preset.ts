@@ -1,6 +1,6 @@
-import { createFilterPreset } from "../elements/account/result-filters.js";
-import AnimatedModal, { ShowOptions } from "../utils/animated-modal.js";
-import * as Notifications from "../elements/notifications.js";
+import { createFilterPreset } from "../elements/account/result-filters";
+import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
+import * as Notifications from "../elements/notifications";
 
 export function show(showOptions?: ShowOptions): void {
   void modal.show({

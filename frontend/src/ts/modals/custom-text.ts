@@ -1,15 +1,15 @@
-import * as CustomText from "../test/custom-text.js";
-import * as CustomTextState from "../states/custom-text-name.js";
-import * as ManualRestart from "../test/manual-restart-tracker.js";
-import * as TestLogic from "../test/test-logic.js";
-import * as ChallengeController from "../controllers/challenge-controller.js";
-import Config, * as UpdateConfig from "../config.js";
-import * as Strings from "../utils/strings.js";
-import * as WordFilterPopup from "./word-filter.js";
-import * as Notifications from "../elements/notifications.js";
-import * as SavedTextsPopup from "./saved-texts.js";
-import * as SaveCustomTextPopup from "./save-custom-text.js";
-import AnimatedModal, { ShowOptions } from "../utils/animated-modal.js";
+import * as CustomText from "../test/custom-text";
+import * as CustomTextState from "../states/custom-text-name";
+import * as ManualRestart from "../test/manual-restart-tracker";
+import * as TestLogic from "../test/test-logic";
+import * as ChallengeController from "../controllers/challenge-controller";
+import Config, * as UpdateConfig from "../config";
+import * as Strings from "../utils/strings";
+import * as WordFilterPopup from "./word-filter";
+import * as Notifications from "../elements/notifications";
+import * as SavedTextsPopup from "./saved-texts";
+import * as SaveCustomTextPopup from "./save-custom-text";
+import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
 
 const popup = "#customTextModal .modal";
 

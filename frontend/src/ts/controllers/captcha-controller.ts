@@ -1,4 +1,4 @@
-import { envConfig } from "../constants/env-config.js";
+import { envConfig } from "../constants/env-config";
 const siteKey = envConfig.recaptchaSiteKey;
 
 const captchas: Record<string, number> = {};

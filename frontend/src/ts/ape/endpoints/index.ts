@@ -1,14 +1,14 @@
-import Configs from "./configs.js";
-import Leaderboards from "./leaderboards.js";
-import Presets from "./presets.js";
-import Psas from "./psas.js";
-import Quotes from "./quotes.js";
-import Results from "./results.js";
-import Users from "./users.js";
-import ApeKeys from "./ape-keys.js";
-import Public from "./public.js";
-import Configuration from "./configuration.js";
-import Dev from "./dev.js";
+import Configs from "./configs";
+import Leaderboards from "./leaderboards";
+import Presets from "./presets";
+import Psas from "./psas";
+import Quotes from "./quotes";
+import Results from "./results";
+import Users from "./users";
+import ApeKeys from "./ape-keys";
+import Public from "./public";
+import Configuration from "./configuration";
+import Dev from "./dev";
 
 export default {
   Configs,

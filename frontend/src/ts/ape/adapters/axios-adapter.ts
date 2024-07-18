@@ -1,8 +1,8 @@
-import { getAuthenticatedUser, isAuthenticated } from "../../firebase.js";
+import { getAuthenticatedUser, isAuthenticated } from "../../firebase";
 import { getIdToken } from "firebase/auth";
 import axios, { AxiosRequestConfig, AxiosResponse, isAxiosError } from "axios";
-import { envConfig } from "../../constants/env-config.js";
-import { createErrorMessage } from "../../utils/misc.js";
+import { envConfig } from "../../constants/env-config";
+import { createErrorMessage } from "../../utils/misc";
 
 type AxiosClientMethod = (
   endpoint: string,

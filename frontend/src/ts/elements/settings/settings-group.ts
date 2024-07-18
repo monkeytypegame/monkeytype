@@ -1,5 +1,5 @@
-import Config from "../../config.js";
-import * as Notifications from "../notifications.js";
+import Config from "../../config";
+import * as Notifications from "../notifications";
 import SlimSelect from "slim-select";
 
 export default class SettingsGroup<T extends SharedTypes.ConfigValue> {

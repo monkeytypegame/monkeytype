@@ -1,13 +1,13 @@
-import * as TestWords from "./test-words.js";
-import * as TestUI from "./test-ui.js";
-import Config from "../config.js";
-import * as DB from "../db.js";
-import * as SlowTimer from "../states/slow-timer.js";
-import * as Misc from "../utils/misc.js";
-import * as Numbers from "../utils/numbers.js";
-import * as JSONData from "../utils/json-data.js";
-import * as TestState from "./test-state.js";
-import * as ConfigEvent from "../observables/config-event.js";
+import * as TestWords from "./test-words";
+import * as TestUI from "./test-ui";
+import Config from "../config";
+import * as DB from "../db";
+import * as SlowTimer from "../states/slow-timer";
+import * as Misc from "../utils/misc";
+import * as Numbers from "../utils/numbers";
+import * as JSONData from "../utils/json-data";
+import * as TestState from "./test-state";
+import * as ConfigEvent from "../observables/config-event";
 
 type Settings = {
   wpm: number;

@@ -1,6 +1,6 @@
-import Config, * as UpdateConfig from "../../config.js";
-import * as TestLogic from "../../test/test-logic.js";
-import { get as getTypingSpeedUnit } from "../../utils/typing-speed-units.js";
+import Config, * as UpdateConfig from "../../config";
+import * as TestLogic from "../../test/test-logic";
+import { get as getTypingSpeedUnit } from "../../utils/typing-speed-units";
 
 const subgroup: MonkeyTypes.CommandsSubgroup = {
   title: "Pace caret mode...",

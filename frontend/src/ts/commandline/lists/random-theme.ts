@@ -1,6 +1,6 @@
-import * as UpdateConfig from "../../config.js";
-import { isAuthenticated } from "../../firebase.js";
-import * as Notifications from "../../elements/notifications.js";
+import * as UpdateConfig from "../../config";
+import { isAuthenticated } from "../../firebase";
+import * as Notifications from "../../elements/notifications";
 
 const subgroup: MonkeyTypes.CommandsSubgroup = {
   title: "Random theme...",

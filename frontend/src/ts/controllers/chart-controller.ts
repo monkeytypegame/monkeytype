@@ -1,4 +1,4 @@
-import * as ResultWordHighlight from "../elements/result-word-highlight.js";
+import * as ResultWordHighlight from "../elements/result-word-highlight";
 
 import {
   BarController,
@@ -32,7 +32,7 @@ import chartAnnotation, {
 } from "chartjs-plugin-annotation";
 import chartTrendline from "chartjs-plugin-trendline";
 
-import * as ActivePage from "../states/active-page.js";
+import * as ActivePage from "../states/active-page";
 
 Chart.register(
   BarController,
@@ -59,14 +59,14 @@ Chart.defaults.elements.line.fill = "origin";
 
 import "chartjs-adapter-date-fns";
 import { format } from "date-fns/format";
-import Config from "../config.js";
-import * as ThemeColors from "../elements/theme-colors.js";
-import * as ConfigEvent from "../observables/config-event.js";
-import * as TestInput from "../test/test-input.js";
-import * as DateTime from "../utils/date-and-time.js";
-import * as Arrays from "../utils/arrays.js";
-import * as Numbers from "../utils/numbers.js";
-import { blendTwoHexColors } from "../utils/colors.js";
+import Config from "../config";
+import * as ThemeColors from "../elements/theme-colors";
+import * as ConfigEvent from "../observables/config-event";
+import * as TestInput from "../test/test-input";
+import * as DateTime from "../utils/date-and-time";
+import * as Arrays from "../utils/arrays";
+import * as Numbers from "../utils/numbers";
+import { blendTwoHexColors } from "../utils/colors";
 
 class ChartWithUpdateColors<
   TType extends ChartType = ChartType,

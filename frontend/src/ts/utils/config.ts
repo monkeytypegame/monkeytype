@@ -1,5 +1,5 @@
-import DefaultConfig from "../constants/default-config.js";
-import { typedKeys } from "./misc.js";
+import DefaultConfig from "../constants/default-config";
+import { typedKeys } from "./misc";
 
 export function mergeWithDefaultConfig(
   config: Partial<SharedTypes.Config>

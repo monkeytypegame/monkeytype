@@ -1,6 +1,6 @@
-import * as UpdateConfig from "../../config.js";
-import * as TestLogic from "../../test/test-logic.js";
-import { isAuthenticated } from "../../firebase.js";
+import * as UpdateConfig from "../../config";
+import * as TestLogic from "../../test/test-logic";
+import { isAuthenticated } from "../../firebase";
 
 const commands: MonkeyTypes.Command[] = [
   {

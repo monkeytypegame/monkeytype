@@ -1,19 +1,19 @@
-import Ape from "./ape.js";
-import * as Notifications from "./elements/notifications.js";
-import * as LoadingPage from "./pages/loading.js";
-import DefaultConfig from "./constants/default-config.js";
-import { isAuthenticated } from "./firebase.js";
-import { defaultSnap } from "./constants/default-snapshot.js";
-import * as ConnectionState from "./states/connection.js";
-import { lastElementFromArray } from "./utils/arrays.js";
-import { getFunboxList } from "./utils/json-data.js";
-import { mergeWithDefaultConfig } from "./utils/config.js";
+import Ape from "./ape";
+import * as Notifications from "./elements/notifications";
+import * as LoadingPage from "./pages/loading";
+import DefaultConfig from "./constants/default-config";
+import { isAuthenticated } from "./firebase";
+import { defaultSnap } from "./constants/default-snapshot";
+import * as ConnectionState from "./states/connection";
+import { lastElementFromArray } from "./utils/arrays";
+import { getFunboxList } from "./utils/json-data";
+import { mergeWithDefaultConfig } from "./utils/config";
 import * as Dates from "date-fns";
 import {
   TestActivityCalendar,
   ModifiableTestActivityCalendar,
 } from "./elements/test-activity-calendar";
-import * as Loader from "./elements/loader.js";
+import * as Loader from "./elements/loader";
 
 let dbSnapshot: MonkeyTypes.Snapshot | undefined;
 

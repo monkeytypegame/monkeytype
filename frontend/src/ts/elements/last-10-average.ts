@@ -1,8 +1,8 @@
-import * as DB from "../db.js";
-import * as Misc from "../utils/misc.js";
-import * as Numbers from "../utils/numbers.js";
-import Config from "../config.js";
-import * as TestWords from "../test/test-words.js";
+import * as DB from "../db";
+import * as Misc from "../utils/misc";
+import * as Numbers from "../utils/numbers";
+import Config from "../config";
+import * as TestWords from "../test/test-words";
 
 let averageWPM = 0;
 let averageAcc = 0;

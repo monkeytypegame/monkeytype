@@ -1,4 +1,4 @@
-import defaultConfig from "./default-config.js";
+import defaultConfig from "./default-config";
 
 export const defaultSnap: MonkeyTypes.Snapshot = {
   results: undefined,

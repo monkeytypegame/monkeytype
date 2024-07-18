@@ -1,11 +1,11 @@
-import Ape from "../ape.js";
-import Page from "./page.js";
-import * as Profile from "../elements/profile.js";
-import * as PbTables from "../elements/account/pb-tables.js";
-import * as Notifications from "../elements/notifications.js";
-import { checkIfGetParameterExists } from "../utils/misc.js";
-import * as UserReportModal from "../modals/user-report.js";
-import * as Skeleton from "../utils/skeleton.js";
+import Ape from "../ape";
+import Page from "./page";
+import * as Profile from "../elements/profile";
+import * as PbTables from "../elements/account/pb-tables";
+import * as Notifications from "../elements/notifications";
+import { checkIfGetParameterExists } from "../utils/misc";
+import * as UserReportModal from "../modals/user-report";
+import * as Skeleton from "../utils/skeleton";
 
 function reset(): void {
   $(".page.pageProfile .preloader").removeClass("hidden");

@@ -1,4 +1,4 @@
-import { getLatestReleaseFromGitHub } from "../utils/json-data.js";
+import { getLatestReleaseFromGitHub } from "../utils/json-data";
 
 const LOCALSTORAGE_KEY = "lastSeenVersion";
 

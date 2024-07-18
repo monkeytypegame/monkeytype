@@ -1,6 +1,6 @@
-import * as UpdateConfig from "../../config.js";
-import * as TestLogic from "../../test/test-logic.js";
-import { capitalizeFirstLetterOfEachWord } from "../../utils/strings.js";
+import * as UpdateConfig from "../../config";
+import * as TestLogic from "../../test/test-logic";
+import { capitalizeFirstLetterOfEachWord } from "../../utils/strings";
 
 const subgroup: MonkeyTypes.CommandsSubgroup = {
   title: "Change keymap layout...",

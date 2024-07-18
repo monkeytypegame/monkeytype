@@ -1,7 +1,7 @@
-import config from "../config.js";
-import * as Sound from "../controllers/sound-controller.js";
-import * as TestInput from "./test-input.js";
-import * as Arrays from "../utils/arrays.js";
+import config from "../config";
+import * as Sound from "../controllers/sound-controller";
+import * as TestInput from "./test-input";
+import * as Arrays from "../utils/arrays";
 
 type ReplayAction =
   | "correctLetter"

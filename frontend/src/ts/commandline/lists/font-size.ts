@@ -1,4 +1,4 @@
-import Config, * as UpdateConfig from "../../config.js";
+import Config, * as UpdateConfig from "../../config";
 
 const commands: MonkeyTypes.Command[] = [
   {

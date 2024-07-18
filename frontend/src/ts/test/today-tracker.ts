@@ -1,5 +1,5 @@
-import * as DateTime from "../utils/date-and-time.js";
-import * as DB from "../db.js";
+import * as DateTime from "../utils/date-and-time";
+import * as DB from "../db";
 
 let seconds = 0;
 let addedAllToday = false;

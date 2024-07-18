@@ -1,5 +1,5 @@
-import { isPopupVisible } from "./misc.js";
-import * as Skeleton from "./skeleton.js";
+import { isPopupVisible } from "./misc";
+import * as Skeleton from "./skeleton";
 
 type CustomAnimation = {
   from: Record<string, string>;

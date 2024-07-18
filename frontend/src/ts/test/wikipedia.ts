@@ -1,8 +1,8 @@
-import * as Loader from "../elements/loader.js";
-import * as Misc from "../utils/misc.js";
-import * as Strings from "../utils/strings.js";
-import * as JSONData from "../utils/json-data.js";
-import { Section } from "../utils/misc.js";
+import * as Loader from "../elements/loader";
+import * as Misc from "../utils/misc";
+import * as Strings from "../utils/strings";
+import * as JSONData from "../utils/json-data";
+import { Section } from "../utils/misc";
 
 export async function getTLD(
   languageGroup: MonkeyTypes.LanguageGroup

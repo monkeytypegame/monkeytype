@@ -1,5 +1,5 @@
 import axios from "axios";
-import { Section } from "../utils/misc.js";
+import { Section } from "../utils/misc";
 
 const bannedChars = ["—", "_", " "];
 const maxWords = 100;

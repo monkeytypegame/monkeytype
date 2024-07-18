@@ -1,4 +1,4 @@
-import * as Misc from "../utils/misc.js";
+import * as Misc from "../utils/misc";
 
 const outOfFocusTimeouts: (number | NodeJS.Timeout)[] = [];
 

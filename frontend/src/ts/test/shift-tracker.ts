@@ -1,7 +1,7 @@
-import Config from "../config.js";
-import * as JSONData from "../utils/json-data.js";
-import { capsState } from "./caps-warning.js";
-import * as Notifications from "../elements/notifications.js";
+import Config from "../config";
+import * as JSONData from "../utils/json-data";
+import { capsState } from "./caps-warning";
+import * as Notifications from "../elements/notifications";
 
 export let leftState = false;
 export let rightState = false;

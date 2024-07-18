@@ -1,12 +1,12 @@
-import Ape from "../ape.js";
-import { getHTMLById } from "../controllers/badge-controller.js";
-import * as DB from "../db.js";
-import * as Loader from "../elements/loader.js";
-import * as Notifications from "../elements/notifications.js";
-import * as ConnectionState from "../states/connection.js";
-import AnimatedModal from "../utils/animated-modal.js";
-import * as Profile from "../elements/profile.js";
-import { CharacterCounter } from "../elements/character-counter.js";
+import Ape from "../ape";
+import { getHTMLById } from "../controllers/badge-controller";
+import * as DB from "../db";
+import * as Loader from "../elements/loader";
+import * as Notifications from "../elements/notifications";
+import * as ConnectionState from "../states/connection";
+import AnimatedModal from "../utils/animated-modal";
+import * as Profile from "../elements/profile";
+import { CharacterCounter } from "../elements/character-counter";
 
 export function show(): void {
   if (!ConnectionState.get()) {

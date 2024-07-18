@@ -1,7 +1,7 @@
-import { mapRange } from "../utils/misc.js";
-import Config from "../config.js";
-import * as ConfigEvent from "../observables/config-event.js";
-import * as TestState from "../test/test-state.js";
+import { mapRange } from "../utils/misc";
+import Config from "../config";
+import * as ConfigEvent from "../observables/config-event";
+import * as TestState from "../test/test-state";
 
 ConfigEvent.subscribe((eventKey) => {
   if (eventKey === "monkey" && TestState.isActive) {

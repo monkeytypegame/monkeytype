@@ -1,11 +1,11 @@
 import { debounce } from "throttle-debounce";
-// import * as Numbers from "../utils/numbers.js";
-import * as ConfigEvent from "../observables/config-event.js";
-import * as BannerEvent from "../observables/banner-event.js";
-import Config from "../config.js";
-import * as TestState from "../test/test-state.js";
-import * as EG from "./eg-ad-controller.js";
-import * as PW from "./pw-ad-controller.js";
+// import * as Numbers from "../utils/numbers";
+import * as ConfigEvent from "../observables/config-event";
+import * as BannerEvent from "../observables/banner-event";
+import Config from "../config";
+import * as TestState from "../test/test-state";
+import * as EG from "./eg-ad-controller";
+import * as PW from "./pw-ad-controller";
 
 const breakpoint = 900;
 let widerThanBreakpoint = true;

@@ -1,6 +1,6 @@
-import * as UpdateConfig from "../config.js";
-import * as Notifications from "../elements/notifications.js";
-import AnimatedModal from "../utils/animated-modal.js";
+import * as UpdateConfig from "../config";
+import * as Notifications from "../elements/notifications";
+import AnimatedModal from "../utils/animated-modal";
 
 type State = {
   mode: "import" | "export";

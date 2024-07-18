@@ -1,7 +1,7 @@
-import { navigate } from "../../controllers/route-controller.js";
-import * as ChallengeController from "../../controllers/challenge-controller.js";
-import * as TestLogic from "../../test/test-logic.js";
-import { capitalizeFirstLetterOfEachWord } from "../../utils/strings.js";
+import { navigate } from "../../controllers/route-controller";
+import * as ChallengeController from "../../controllers/challenge-controller";
+import * as TestLogic from "../../test/test-logic";
+import { capitalizeFirstLetterOfEachWord } from "../../utils/strings";
 
 const subgroup: MonkeyTypes.CommandsSubgroup = {
   title: "Load challenge...",

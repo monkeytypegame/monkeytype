@@ -1,13 +1,13 @@
-import Ape from "../ape.js";
-import * as Loader from "../elements/loader.js";
-import * as Notifications from "../elements/notifications.js";
-import * as CaptchaController from "../controllers/captcha-controller.js";
-import * as Strings from "../utils/strings.js";
-import * as JSONData from "../utils/json-data.js";
-import Config from "../config.js";
+import Ape from "../ape";
+import * as Loader from "../elements/loader";
+import * as Notifications from "../elements/notifications";
+import * as CaptchaController from "../controllers/captcha-controller";
+import * as Strings from "../utils/strings";
+import * as JSONData from "../utils/json-data";
+import Config from "../config";
 import SlimSelect from "slim-select";
-import AnimatedModal, { ShowOptions } from "../utils/animated-modal.js";
-import { CharacterCounter } from "../elements/character-counter.js";
+import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
+import { CharacterCounter } from "../elements/character-counter";
 
 let dropdownReady = false;
 async function initDropdown(): Promise<void> {

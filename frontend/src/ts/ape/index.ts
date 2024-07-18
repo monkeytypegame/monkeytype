@@ -1,6 +1,6 @@
-import endpoints from "./endpoints.js";
-import { buildHttpClient } from "./adapters/axios-adapter.js";
-import { envConfig } from "../constants/env-config.js";
+import endpoints from "./endpoints";
+import { buildHttpClient } from "./adapters/axios-adapter";
+import { envConfig } from "../constants/env-config";
 
 const API_PATH = "";
 const BASE_URL = envConfig.backendUrl;

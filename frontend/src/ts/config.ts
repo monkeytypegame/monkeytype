@@ -1,21 +1,21 @@
-import * as DB from "./db.js";
-import * as OutOfFocus from "./test/out-of-focus.js";
-import * as Notifications from "./elements/notifications.js";
+import * as DB from "./db";
+import * as OutOfFocus from "./test/out-of-focus";
+import * as Notifications from "./elements/notifications";
 import {
   isConfigValueValid,
   isConfigValueValidAsync,
 } from "./config-validation";
-import * as ConfigEvent from "./observables/config-event.js";
-import DefaultConfig from "./constants/default-config.js";
-import { isAuthenticated } from "./firebase.js";
-import * as AnalyticsController from "./controllers/analytics-controller.js";
-import * as AccountButton from "./elements/account-button.js";
+import * as ConfigEvent from "./observables/config-event";
+import DefaultConfig from "./constants/default-config";
+import { isAuthenticated } from "./firebase";
+import * as AnalyticsController from "./controllers/analytics-controller";
+import * as AccountButton from "./elements/account-button";
 import { debounce } from "throttle-debounce";
 import {
   canSetConfigWithCurrentFunboxes,
   canSetFunboxWithConfig,
 } from "./test/funbox/funbox-validation";
-import { reloadAfter } from "./utils/misc.js";
+import { reloadAfter } from "./utils/misc";
 
 export let localStorageConfig: SharedTypes.Config;
 

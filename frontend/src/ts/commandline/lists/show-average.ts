@@ -1,4 +1,4 @@
-import * as UpdateConfig from "../../config.js";
+import * as UpdateConfig from "../../config";
 
 const subgroup: MonkeyTypes.CommandsSubgroup = {
   title: "Show average...",

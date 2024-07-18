@@ -1,6 +1,6 @@
-import Config from "../../config.js";
+import Config from "../../config";
 import { format as dateFormat } from "date-fns/format";
-import Format from "../../utils/format.js";
+import Format from "../../utils/format";
 
 function clearTables(isProfile: boolean): void {
   const source = isProfile ? "Profile" : "Account";

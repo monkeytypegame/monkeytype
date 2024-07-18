@@ -1,9 +1,9 @@
-import { activateAnalytics } from "../controllers/analytics-controller.js";
-import * as Notifications from "../elements/notifications.js";
-import { isPopupVisible } from "../utils/misc.js";
-import * as AdController from "../controllers/ad-controller.js";
-import AnimatedModal from "../utils/animated-modal.js";
-import { focusWords } from "../test/test-ui.js";
+import { activateAnalytics } from "../controllers/analytics-controller";
+import * as Notifications from "../elements/notifications";
+import { isPopupVisible } from "../utils/misc";
+import * as AdController from "../controllers/ad-controller";
+import AnimatedModal from "../utils/animated-modal";
+import { focusWords } from "../test/test-ui";
 
 type Accepted = {
   security: boolean;

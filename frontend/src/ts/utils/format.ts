@@ -1,6 +1,6 @@
-import Config from "../config.js";
-import { get as getTypingSpeedUnit } from "../utils/typing-speed-units.js";
-import * as Numbers from "../utils/numbers.js";
+import Config from "../config";
+import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
+import * as Numbers from "../utils/numbers";
 
 export type FormatOptions = {
   showDecimalPlaces?: boolean;

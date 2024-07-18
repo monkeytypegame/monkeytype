@@ -1,11 +1,11 @@
 import { debounce } from "throttle-debounce";
-import Ape from "../ape.js";
-import Page from "./page.js";
-import * as Notifications from "../elements/notifications.js";
-import { InputIndicator } from "../elements/input-indicator.js";
-import * as Skeleton from "../utils/skeleton.js";
-import * as Misc from "../utils/misc.js";
-import TypoList from "../utils/typo-list.js";
+import Ape from "../ape";
+import Page from "./page";
+import * as Notifications from "../elements/notifications";
+import { InputIndicator } from "../elements/input-indicator";
+import * as Skeleton from "../utils/skeleton";
+import * as Misc from "../utils/misc";
+import TypoList from "../utils/typo-list";
 
 export function enableSignUpButton(): void {
   $(".page.pageLogin .register.side button").prop("disabled", false);

@@ -1,6 +1,6 @@
-import { randomIntFromRange } from "./numbers.js";
-import * as Arrays from "./arrays.js";
-import * as Strings from "./strings.js";
+import { randomIntFromRange } from "./numbers";
+import * as Arrays from "./arrays";
+import * as Strings from "./strings";
 
 /**
  * Generates a random binary string of length 8.

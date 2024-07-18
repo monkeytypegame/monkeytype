@@ -1,5 +1,5 @@
-import { isDevEnvironment } from "../utils/misc.js";
-import * as Version from "../states/version.js";
+import { isDevEnvironment } from "../utils/misc";
+import * as Version from "../states/version";
 
 function setText(text: string): void {
   $("footer .currentVersion .text").text(text);

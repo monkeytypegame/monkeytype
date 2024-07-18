@@ -1,11 +1,11 @@
-import * as DB from "../../db.js";
-import * as EditTagsPopup from "../../modals/edit-tag.js";
-import * as ModesNotice from "../../elements/modes-notice.js";
-import * as TagController from "../../controllers/tag-controller.js";
-import Config from "../../config.js";
-import * as PaceCaret from "../../test/pace-caret.js";
-import { isAuthenticated } from "../../firebase.js";
-import AnimatedModal from "../../utils/animated-modal.js";
+import * as DB from "../../db";
+import * as EditTagsPopup from "../../modals/edit-tag";
+import * as ModesNotice from "../../elements/modes-notice";
+import * as TagController from "../../controllers/tag-controller";
+import Config from "../../config";
+import * as PaceCaret from "../../test/pace-caret";
+import { isAuthenticated } from "../../firebase";
+import AnimatedModal from "../../utils/animated-modal";
 
 const subgroup: MonkeyTypes.CommandsSubgroup = {
   title: "Change tags...",

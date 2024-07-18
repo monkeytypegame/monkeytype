@@ -1,8 +1,8 @@
-import Ape from "../ape.js";
-import * as Loader from "../elements/loader.js";
-import * as Notifications from "../elements/notifications.js";
+import Ape from "../ape";
+import * as Loader from "../elements/loader";
+import * as Notifications from "../elements/notifications";
 import { format } from "date-fns/format";
-import AnimatedModal, { ShowOptions } from "../utils/animated-modal.js";
+import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
 
 let quotes: Ape.Quotes.Quote[] = [];
 

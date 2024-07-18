@@ -1,8 +1,8 @@
 //@ts-nocheck
 
-import Config from "../config.js";
-import * as ActivePage from "../states/active-page.js";
-import * as TestUI from "../test/test-ui.js";
+import Config from "../config";
+import * as ActivePage from "../states/active-page";
+import * as TestUI from "../test/test-ui";
 
 // Step 1: Create the Ramp Object, NOTE: selector id needed for tagged units only
 const resultUnits = [

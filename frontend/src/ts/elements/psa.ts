@@ -1,9 +1,9 @@
-import Ape from "../ape.js";
-import { isDevEnvironment } from "../utils/misc.js";
-import { secondsToString } from "../utils/date-and-time.js";
-import * as Notifications from "./notifications.js";
+import Ape from "../ape";
+import { isDevEnvironment } from "../utils/misc";
+import { secondsToString } from "../utils/date-and-time";
+import * as Notifications from "./notifications";
 import { format } from "date-fns/format";
-import * as Alerts from "./alerts.js";
+import * as Alerts from "./alerts";
 
 function clearMemory(): void {
   window.localStorage.setItem("confirmedPSAs", JSON.stringify([]));

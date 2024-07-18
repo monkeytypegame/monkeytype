@@ -1,6 +1,6 @@
-import * as Misc from "../utils/misc.js";
-import Page from "./page.js";
-import * as Skeleton from "../utils/skeleton.js";
+import * as Misc from "../utils/misc";
+import Page from "./page";
+import * as Skeleton from "../utils/skeleton";
 
 export function updateBar(percentage: number, fast = false): void {
   const speed = fast ? 100 : 1000;

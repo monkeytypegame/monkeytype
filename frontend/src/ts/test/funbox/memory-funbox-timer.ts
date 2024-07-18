@@ -1,4 +1,4 @@
-import * as TestWords from "../test-words.js";
+import * as TestWords from "../test-words";
 
 let memoryTimer: number | null = null;
 let memoryInterval: NodeJS.Timeout | null = null;

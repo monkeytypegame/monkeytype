@@ -1,9 +1,9 @@
-import { getSnapshot } from "../db.js";
-import { isAuthenticated } from "../firebase.js";
-import * as Misc from "../utils/misc.js";
-import * as Levels from "../utils/levels.js";
-import { getAll } from "./theme-colors.js";
-import * as SlowTimer from "../states/slow-timer.js";
+import { getSnapshot } from "../db";
+import { isAuthenticated } from "../firebase";
+import * as Misc from "../utils/misc";
+import * as Levels from "../utils/levels";
+import { getAll } from "./theme-colors";
+import * as SlowTimer from "../states/slow-timer";
 
 let usingAvatar = false;
 

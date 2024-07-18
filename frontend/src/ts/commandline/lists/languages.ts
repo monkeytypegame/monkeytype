@@ -1,4 +1,4 @@
-import * as UpdateConfig from "../../config.js";
+import * as UpdateConfig from "../../config";
 import {
   capitalizeFirstLetterOfEachWord,
   getLanguageDisplayString,

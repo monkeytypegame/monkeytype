@@ -1,4 +1,4 @@
-import { isDevEnvironment } from "./misc.js";
+import { isDevEnvironment } from "./misc";
 
 const nativeLog = console.log;
 const nativeWarn = console.warn;

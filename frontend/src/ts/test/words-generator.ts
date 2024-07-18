@@ -1,18 +1,18 @@
-import Config, * as UpdateConfig from "../config.js";
-import * as FunboxList from "./funbox/funbox-list.js";
-import * as CustomText from "./custom-text.js";
-import * as Wordset from "./wordset.js";
-import QuotesController from "../controllers/quotes-controller.js";
-import * as TestWords from "./test-words.js";
-import * as BritishEnglish from "./british-english.js";
-import * as LazyMode from "./lazy-mode.js";
-import * as EnglishPunctuation from "./english-punctuation.js";
-import * as PractiseWords from "./practise-words.js";
-import * as Misc from "../utils/misc.js";
-import * as Strings from "../utils/strings.js";
-import * as Arrays from "../utils/arrays.js";
-import * as TestState from "../test/test-state.js";
-import * as GetText from "../utils/generate.js";
+import Config, * as UpdateConfig from "../config";
+import * as FunboxList from "./funbox/funbox-list";
+import * as CustomText from "./custom-text";
+import * as Wordset from "./wordset";
+import QuotesController from "../controllers/quotes-controller";
+import * as TestWords from "./test-words";
+import * as BritishEnglish from "./british-english";
+import * as LazyMode from "./lazy-mode";
+import * as EnglishPunctuation from "./english-punctuation";
+import * as PractiseWords from "./practise-words";
+import * as Misc from "../utils/misc";
+import * as Strings from "../utils/strings";
+import * as Arrays from "../utils/arrays";
+import * as TestState from "../test/test-state";
+import * as GetText from "../utils/generate";
 
 function shouldCapitalize(lastChar: string): boolean {
   return /[?!.؟]/.test(lastChar);

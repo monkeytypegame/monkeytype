@@ -1,15 +1,15 @@
-import { getCommandline } from "../utils/async-modules.js";
-import * as CustomWordAmount from "../modals/custom-word-amount.js";
-import * as DB from "../db.js";
-import * as EditResultTagsModal from "../modals/edit-result-tags.js";
-import * as MobileTestConfigModal from "../modals/mobile-test-config.js";
-import * as CustomTestDurationModal from "../modals/custom-test-duration.js";
-import * as TestWords from "../test/test-words.js";
-import * as Notifications from "../elements/notifications.js";
-import * as QuoteRateModal from "../modals/quote-rate.js";
-import * as QuoteReportModal from "../modals/quote-report.js";
-import * as QuoteSearchModal from "../modals/quote-search.js";
-import * as CustomTextModal from "../modals/custom-text.js";
+import { getCommandline } from "../utils/async-modules";
+import * as CustomWordAmount from "../modals/custom-word-amount";
+import * as DB from "../db";
+import * as EditResultTagsModal from "../modals/edit-result-tags";
+import * as MobileTestConfigModal from "../modals/mobile-test-config";
+import * as CustomTestDurationModal from "../modals/custom-test-duration";
+import * as TestWords from "../test/test-words";
+import * as Notifications from "../elements/notifications";
+import * as QuoteRateModal from "../modals/quote-rate";
+import * as QuoteReportModal from "../modals/quote-report";
+import * as QuoteSearchModal from "../modals/quote-search";
+import * as CustomTextModal from "../modals/custom-text";
 
 $(".pageTest").on("click", "#testModesNotice .textButton", async (event) => {
   const attr = $(event.currentTarget).attr("commands");
