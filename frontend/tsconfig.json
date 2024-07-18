@@ -7,7 +7,10 @@
     "target": "ES6",
     "moduleResolution": "Node",
     "module": "ESNext",
-    "noEmit": true
+    "noEmit": true,
+    "paths": {
+      "@shared/*": ["../shared-types/*"]
+    }
   },
   "include": [
     "./src/**/*.ts",
