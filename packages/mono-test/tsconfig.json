@@ -2,7 +2,8 @@
   "extends": "@monkeytype/typescript-config/base.json",
   "compilerOptions": {
     "outDir": "./dist",
-    "rootDir": "./src"
+    "rootDir": "./src",
+    "declaration": true
   },
   "include": ["src"],
   "exclude": ["node_modules", "dist"]
