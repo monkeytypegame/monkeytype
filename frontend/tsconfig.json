@@ -7,11 +7,7 @@
     "target": "ES6",
     "moduleResolution": "Node",
     "module": "ESNext",
-    "noEmit": true,
-    "skipLibCheck": false, //probably remove this
-    "paths": {
-      "@shared/*": ["../shared-types/*"]
-    }
+    "noEmit": true
   },
   "include": [
     "./src/**/*.ts",
