@@ -10,11 +10,14 @@
     "typescript": "5.5.3",
     "@monkeytype/typescript-config": "*"
   },
-  "types": "./src/index.ts",
   "exports": {
     ".": {
-      "types": "./src/index.ts",
-      "default": "./dist/index.js"
+      "default": "./dist/index.js",
+      "types": "./dist/index.ts"
+    },
+    "./*": {
+      "default": "./dist/*.js",
+      "types": "./dist/*.ts"
     }
   }
 }

@@ -8,16 +8,17 @@
     "lint": "eslint \"./**/*.ts\""
   },
   "devDependencies": {
-    "typescript": "5.5.3"
+    "typescript": "5.5.3",
+    "@monkeytype/typescript-config": "*"
   },
   "exports": {
     ".": {
       "default": "./dist/index.js",
-      "types": "./src/index.ts"
+      "types": "./dist/index.ts"
     },
     "./*": {
       "default": "./dist/*.js",
-      "types": "./src/*.ts"
+      "types": "./dist/*.ts"
     }
   }
 }
