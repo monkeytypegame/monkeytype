@@ -3,6 +3,7 @@
   "type": "commonjs",
   "private": true,
   "scripts": {
+    "dev": "tsc -w",
     "build": "tsc",
     "check-ts": "tsc --noEmit",
     "lint": "eslint \"./**/*.ts\""
