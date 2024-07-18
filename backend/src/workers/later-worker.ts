@@ -1,6 +1,6 @@
 import _ from "lodash";
 import IORedis from "ioredis";
-import { Worker, Job, ConnectionOptions } from "bullmq";
+import { Worker, Job, type ConnectionOptions } from "bullmq";
 import Logger from "../utils/logger.js";
 import { addToInboxBulk } from "../dal/user.js";
 import GeorgeQueue from "../queues/george-queue.js";
@@ -13,9 +13,9 @@ import {
   mapRange,
 } from "../utils/misc.js";
 import LaterQueue, {
-  LaterTask,
-  LaterTaskContexts,
-  LaterTaskType,
+  type LaterTask,
+  type LaterTaskContexts,
+  type LaterTaskType,
 } from "../queues/later-queue.js";
 import { recordTimeToCompleteJob } from "../utils/prometheus.js";
 import { WeeklyXpLeaderboard } from "../services/weekly-xp-leaderboard.js";

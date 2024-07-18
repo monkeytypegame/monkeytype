@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from "uuid";
 import Logger from "../utils/logger.js";
 import MonkeyError from "../utils/error.js";
 import { incrementBadAuth } from "./rate-limit.js";
-import { NextFunction, Response } from "express";
+import type { NextFunction, Response } from "express";
 import {
   MonkeyResponse,
   handleMonkeyResponse,

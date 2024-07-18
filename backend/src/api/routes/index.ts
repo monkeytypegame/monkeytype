@@ -19,9 +19,9 @@ import { asyncHandler } from "../../middlewares/utility.js";
 import { MonkeyResponse } from "../../utils/monkey-response.js";
 import { recordClientVersion } from "../../utils/prometheus.js";
 import {
-  Application,
-  NextFunction,
-  Response,
+  type Application,
+  type NextFunction,
+  type Response,
   Router,
   static as expressStatic,
 } from "express";

@@ -1,10 +1,10 @@
 import _ from "lodash";
 import IORedis from "ioredis";
-import { Worker, Job, ConnectionOptions } from "bullmq";
+import { Worker, Job, type ConnectionOptions } from "bullmq";
 import Logger from "../utils/logger.js";
 import EmailQueue, {
-  EmailTaskContexts,
-  EmailType,
+  type EmailTaskContexts,
+  type EmailType,
 } from "../queues/email-queue.js";
 import { sendEmail } from "../init/email-client.js";
 import { recordTimeToCompleteJob } from "../utils/prometheus.js";

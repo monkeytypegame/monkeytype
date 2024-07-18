@@ -1,5 +1,5 @@
 import { getCachedConfiguration } from "../init/configuration.js";
-import { Response, NextFunction } from "express";
+import type { Response, NextFunction } from "express";
 
 async function contextMiddleware(
   req: MonkeyTypes.Request,

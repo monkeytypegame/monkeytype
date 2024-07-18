@@ -5,7 +5,7 @@ import { join } from "path";
 import mjml2html from "mjml";
 import mustache from "mustache";
 import { recordEmail } from "../utils/prometheus.js";
-import { EmailTaskContexts, EmailType } from "../queues/email-queue.js";
+import type { EmailTaskContexts, EmailType } from "../queues/email-queue.js";
 import { isDevEnvironment } from "../utils/misc.js";
 
 type EmailMetadata = {
