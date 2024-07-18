@@ -3,6 +3,7 @@
   "version": "1.14.3",
   "license": "GPL-3.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "lint": "eslint \"./**/*.ts\"",
     "build": "tsc --build",

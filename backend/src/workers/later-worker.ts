@@ -13,8 +13,8 @@ import LaterQueue, {
   LaterTaskContexts,
   LaterTaskType,
 } from "../queues/later-queue";
-import { WeeklyXpLeaderboard } from "../services/weekly-xp-leaderboard";
 import { recordTimeToCompleteJob } from "../utils/prometheus";
+import { WeeklyXpLeaderboard } from "../services/weekly-xp-leaderboard.js";
 
 async function handleDailyLeaderboardResults(
   ctx: LaterTaskContexts["daily-leaderboard-results"]

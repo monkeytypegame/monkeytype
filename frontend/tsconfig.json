@@ -1,9 +1,7 @@
 {
   "extends": "@monkeytype/typescript-config/base.json",
   "compilerOptions": {
-    "target": "ES6",
     "lib": ["ESNext", "DOM", "DOM.Iterable"],
-    "module": "ESNext",
     "types": ["vite/client", "node", "jquery"],
     "allowUmdGlobalAccess": true,
     "outDir": "./build",

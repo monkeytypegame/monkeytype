@@ -3,8 +3,6 @@
   "compilerOptions": {
     "outDir": "build",
     "strict": false,
-    "moduleResolution": "Bundler",
-    "module": "ES2022",
     "noImplicitAny": false,
     "strictFunctionTypes": false,
     "useUnknownInCatchVariables": false,

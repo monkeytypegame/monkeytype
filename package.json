@@ -2,6 +2,7 @@
   "name": "monkeytype",
   "license": "GPL-3.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "prepare": "husky install",
     "pre-commit": "lint-staged",

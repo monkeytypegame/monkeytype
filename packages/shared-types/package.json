@@ -1,6 +1,6 @@
 {
   "name": "@monkeytype/shared-types",
-  "type": "commonjs",
+  "type": "module",
   "private": true,
   "scripts": {
     "build": "tsc",
