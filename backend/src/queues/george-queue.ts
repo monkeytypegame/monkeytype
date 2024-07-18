@@ -1,4 +1,4 @@
-import { LbEntryWithRank } from "../utils/daily-leaderboards.js";
+import { type LbEntryWithRank } from "../utils/daily-leaderboards.js";
 import { MonkeyQueue } from "./monkey-queue.js";
 
 const QUEUE_NAME = "george-tasks";

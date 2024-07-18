@@ -1,10 +1,10 @@
 import IORedis from "ioredis";
 import {
-  BulkJobOptions,
-  ConnectionOptions,
-  JobsOptions,
+  type BulkJobOptions,
+  type ConnectionOptions,
+  type JobsOptions,
   Queue,
-  QueueOptions,
+  type QueueOptions,
   QueueScheduler,
 } from "bullmq";
 

@@ -1,6 +1,6 @@
 import MonkeyError from "../utils/error.js";
 import * as db from "../init/db.js";
-import { ObjectId, Filter, Collection, WithId } from "mongodb";
+import { ObjectId, type Filter, Collection, type WithId } from "mongodb";
 
 const MAX_PRESETS = 10;
 

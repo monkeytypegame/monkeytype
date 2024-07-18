@@ -6,8 +6,8 @@ import MonkeyError from "../../utils/error.js";
 import { MonkeyResponse } from "../../utils/monkey-response.js";
 import { base64UrlEncode } from "../../utils/misc.js";
 import { ObjectId } from "mongodb";
-import { ApeKey } from "@monkeytype/shared-types";
-import { PlaySoundOnError } from "@monkeytype/shared-types/config";
+import { type ApeKey } from "@monkeytype/shared-types";
+import { type PlaySoundOnError } from "@monkeytype/shared-types/config";
 
 //test code
 // eslint-disable-next-line @typescript-eslint/no-unused-vars

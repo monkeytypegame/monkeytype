@@ -11,7 +11,7 @@ import {
   sanitizeString,
 } from "../../utils/misc.js";
 import GeorgeQueue from "../../queues/george-queue.js";
-import admin, { FirebaseError } from "firebase-admin";
+import admin, { type FirebaseError } from "firebase-admin";
 import { deleteAllApeKeys } from "../../dal/ape-keys.js";
 import { deleteAllPresets } from "../../dal/preset.js";
 import { deleteAll as deleteAllResults } from "../../dal/result.js";

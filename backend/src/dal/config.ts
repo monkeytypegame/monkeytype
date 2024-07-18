@@ -1,4 +1,4 @@
-import { UpdateResult } from "mongodb";
+import { type UpdateResult } from "mongodb";
 import * as db from "../init/db.js";
 import _ from "lodash";
 

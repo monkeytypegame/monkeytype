@@ -1,5 +1,10 @@
 import _ from "lodash";
-import { Collection, DeleteResult, ObjectId, UpdateResult } from "mongodb";
+import {
+  Collection,
+  type DeleteResult,
+  ObjectId,
+  type UpdateResult,
+} from "mongodb";
 import MonkeyError from "../utils/error.js";
 import * as db from "../init/db.js";
 

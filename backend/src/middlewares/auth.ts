@@ -3,7 +3,7 @@ import { getApeKey, updateLastUsedOn } from "../dal/ape-keys.js";
 import MonkeyError from "../utils/error.js";
 import { verifyIdToken } from "../utils/auth.js";
 import { base64UrlDecode, isDevEnvironment } from "../utils/misc.js";
-import { NextFunction, Response, Handler } from "express";
+import type { NextFunction, Response, Handler } from "express";
 import statuses from "../constants/monkey-status-codes.js";
 import {
   incrementAuth,

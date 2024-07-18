@@ -1,4 +1,4 @@
-import { Response, NextFunction, RequestHandler } from "express";
+import type { Response, NextFunction, RequestHandler } from "express";
 import MonkeyError from "../utils/error.js";
 
 export type ValidationOptions<T> = {

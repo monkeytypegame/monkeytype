@@ -1,4 +1,4 @@
-import admin, { ServiceAccount } from "firebase-admin";
+import admin, { type ServiceAccount } from "firebase-admin";
 import Logger from "../utils/logger.js";
 import { readFileSync, existsSync } from "fs";
 import MonkeyError from "../utils/error.js";

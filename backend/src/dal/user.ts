@@ -3,7 +3,13 @@ import { containsProfanity, isUsernameValid } from "../utils/validation.js";
 import { canFunboxGetPb, checkAndUpdatePb } from "../utils/pb.js";
 import * as db from "../init/db.js";
 import MonkeyError from "../utils/error.js";
-import { Collection, ObjectId, Long, UpdateFilter, Filter } from "mongodb";
+import {
+  Collection,
+  ObjectId,
+  Long,
+  type UpdateFilter,
+  type Filter,
+} from "mongodb";
 import Logger from "../utils/logger.js";
 import { flattenObjectDeep, isToday, isYesterday } from "../utils/misc.js";
 import { getCachedConfiguration } from "../init/configuration.js";

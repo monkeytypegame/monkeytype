@@ -8,8 +8,8 @@ import * as ResultDal from "../../dal/result.js";
 import { roundTo2 } from "../../utils/misc.js";
 import { ObjectId } from "mongodb";
 import * as LeaderboardDal from "../../dal/leaderboards.js";
-import { isNumber } from "lodash";
 import MonkeyError from "../../utils/error.js";
+import { isNumber } from "lodash";
 
 type GenerateDataOptions = {
   firstTestTimestamp: Date;

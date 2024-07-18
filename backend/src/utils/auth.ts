@@ -5,7 +5,7 @@ import {
   setTokenCacheLength,
   setTokenCacheSize,
 } from "./prometheus.js";
-import { DecodedIdToken, UserRecord } from "firebase-admin/auth";
+import { type DecodedIdToken, UserRecord } from "firebase-admin/auth";
 
 const tokenCache = new LRUCache<string, DecodedIdToken>({
   max: 20000,

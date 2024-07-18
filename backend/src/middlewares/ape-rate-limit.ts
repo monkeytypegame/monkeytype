@@ -1,9 +1,9 @@
 import MonkeyError from "../utils/error.js";
-import { Response, NextFunction, RequestHandler } from "express";
+import type { Response, NextFunction, RequestHandler } from "express";
 import statuses from "../constants/monkey-status-codes.js";
 import rateLimit, {
-  RateLimitRequestHandler,
-  Options,
+  type RateLimitRequestHandler,
+  type Options,
 } from "express-rate-limit";
 import { isDevEnvironment } from "../utils/misc.js";
 

@@ -1,4 +1,4 @@
-import { Response } from "express";
+import { type Response } from "express";
 import { isCustomCode } from "../constants/monkey-status-codes.js";
 
 //TODO FIX ANYS
