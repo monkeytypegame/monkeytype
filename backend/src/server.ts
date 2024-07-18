@@ -12,15 +12,8 @@ import workers from "./workers/index.js";
 import Logger from "./utils/logger.js";
 import * as EmailClient from "./init/email-client.js";
 import { init as initFirebaseAdmin } from "./init/firebase-admin.js";
-
 import { createIndicies as leaderboardDbSetup } from "./dal/leaderboards.js";
 import { createIndicies as blocklistDbSetup } from "./dal/blocklist.js";
-// import { monotest } from "@monkeytype/mono-test";
-import { testNumber } from "@monkeytype/shared-types/tests";
-import { testNumberConfig } from "@monkeytype/shared-types/config";
-
-testNumber();
-testNumberConfig();
 
 async function bootServer(port: number): Promise<Server> {
   try {
