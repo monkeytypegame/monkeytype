@@ -1,5 +1,5 @@
-import { LbEntryWithRank } from "../utils/daily-leaderboards";
-import { MonkeyQueue } from "./monkey-queue";
+import { LbEntryWithRank } from "../utils/daily-leaderboards.js";
+import { MonkeyQueue } from "./monkey-queue.js";
 
 const QUEUE_NAME = "george-tasks";
 

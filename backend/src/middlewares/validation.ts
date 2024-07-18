@@ -1,6 +1,6 @@
 import _ from "lodash";
 import joi from "joi";
-import MonkeyError from "../utils/error";
+import MonkeyError from "../utils/error.js";
 import { Response, NextFunction, RequestHandler } from "express";
 
 type ValidationSchema = {

@@ -1,7 +1,10 @@
 import LRUCache from "lru-cache";
-import Logger from "../utils/logger";
-import { MonkeyQueue } from "./monkey-queue";
-import { getCurrentDayTimestamp, getCurrentWeekTimestamp } from "../utils/misc";
+import Logger from "../utils/logger.js";
+import { MonkeyQueue } from "./monkey-queue.js";
+import {
+  getCurrentDayTimestamp,
+  getCurrentWeekTimestamp,
+} from "../utils/misc.js";
 
 const QUEUE_NAME = "later";
 

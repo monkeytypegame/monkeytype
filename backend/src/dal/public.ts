@@ -1,6 +1,6 @@
-import * as db from "../init/db";
-import { roundTo2 } from "../utils/misc";
-import MonkeyError from "../utils/error";
+import * as db from "../init/db.js";
+import { roundTo2 } from "../utils/misc.js";
+import MonkeyError from "../utils/error.js";
 
 type PublicTypingStatsDB = SharedTypes.PublicTypingStats & { _id: "stats" };
 type PublicSpeedStatsDB = {

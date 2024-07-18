@@ -1,9 +1,9 @@
-import * as db from "../init/db";
-import Logger from "../utils/logger";
+import * as db from "../init/db.js";
+import Logger from "../utils/logger.js";
 import { performance } from "perf_hooks";
-import { setLeaderboard } from "../utils/prometheus";
-import { isDevEnvironment } from "../utils/misc";
-import { getCachedConfiguration } from "../init/configuration";
+import { setLeaderboard } from "../utils/prometheus.js";
+import { isDevEnvironment } from "../utils/misc.js";
+import { getCachedConfiguration } from "../init/configuration.js";
 
 export async function get(
   mode: string,

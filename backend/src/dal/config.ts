@@ -1,5 +1,5 @@
 import { UpdateResult } from "mongodb";
-import * as db from "../init/db";
+import * as db from "../init/db.js";
 import _ from "lodash";
 
 const configLegacyProperties = [

@@ -1,6 +1,6 @@
-import * as RedisClient from "../init/redis";
-import LaterQueue from "../queues/later-queue";
-import { getCurrentWeekTimestamp } from "../utils/misc";
+import * as RedisClient from "../init/redis.js";
+import LaterQueue from "../queues/later-queue.js";
+import { getCurrentWeekTimestamp } from "../utils/misc.js";
 
 type InternalWeeklyXpLeaderboardEntry = {
   uid: string;

@@ -1,12 +1,12 @@
 import joi from "joi";
 import { Router } from "express";
-import * as RateLimit from "../../middlewares/rate-limit";
-import { withApeRateLimiter } from "../../middlewares/ape-rate-limit";
-import { authenticateRequest } from "../../middlewares/auth";
-import * as LeaderboardController from "../controllers/leaderboard";
-import { validate } from "../../middlewares/configuration";
-import { validateRequest } from "../../middlewares/validation";
-import { asyncHandler } from "../../middlewares/utility";
+import * as RateLimit from "../../middlewares/rate-limit.js";
+import { withApeRateLimiter } from "../../middlewares/ape-rate-limit.js";
+import { authenticateRequest } from "../../middlewares/auth.js";
+import * as LeaderboardController from "../controllers/leaderboard.js";
+import { validate } from "../../middlewares/configuration.js";
+import { validateRequest } from "../../middlewares/validation.js";
+import { asyncHandler } from "../../middlewares/utility.js";
 
 const BASE_LEADERBOARD_VALIDATION_SCHEMA = {
   language: joi

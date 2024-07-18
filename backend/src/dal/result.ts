@@ -1,9 +1,9 @@
 import _ from "lodash";
 import { Collection, DeleteResult, ObjectId, UpdateResult } from "mongodb";
-import MonkeyError from "../utils/error";
-import * as db from "../init/db";
+import MonkeyError from "../utils/error.js";
+import * as db from "../init/db.js";
 
-import { getUser, getTags } from "./user";
+import { getUser, getTags } from "./user.js";
 
 type DBResult = MonkeyTypes.WithObjectId<
   SharedTypes.DBResult<SharedTypes.Config.Mode>

@@ -1,5 +1,5 @@
 import { join } from "path";
-import { isDevEnvironment, padNumbers } from "./utils/misc";
+import { isDevEnvironment, padNumbers } from "./utils/misc.js";
 import { readFileSync, writeFileSync, existsSync } from "fs";
 
 const SERVER_VERSION_FILE_PATH = join(__dirname, "./server.version");

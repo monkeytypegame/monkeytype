@@ -1,5 +1,5 @@
 import _ from "lodash";
-import FunboxList from "../constants/funbox-list";
+import FunboxList from "../constants/funbox-list.js";
 
 type CheckAndUpdatePbResult = {
   isPb: boolean;

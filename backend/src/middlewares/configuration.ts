@@ -1,5 +1,5 @@
 import { Response, NextFunction, RequestHandler } from "express";
-import MonkeyError from "../utils/error";
+import MonkeyError from "../utils/error.js";
 
 export type ValidationOptions<T> = {
   criteria: (data: T) => boolean;

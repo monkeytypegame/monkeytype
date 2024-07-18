@@ -1,5 +1,5 @@
 import { Collection } from "mongodb";
-import * as db from "../init/db";
+import * as db from "../init/db.js";
 import { createHash } from "crypto";
 
 type BlocklistEntryProperties = Pick<

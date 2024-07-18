@@ -1,6 +1,6 @@
 import { CronJob } from "cron";
-import * as db from "../init/db";
-import * as Prometheus from "../utils/prometheus";
+import * as db from "../init/db.js";
+import * as Prometheus from "../utils/prometheus.js";
 
 const CRON_SCHEDULE = "0 */5 * * * *";
 

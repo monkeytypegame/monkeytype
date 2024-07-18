@@ -1,9 +1,9 @@
 import admin, { ServiceAccount } from "firebase-admin";
-import Logger from "../utils/logger";
+import Logger from "../utils/logger.js";
 import { readFileSync, existsSync } from "fs";
-import MonkeyError from "../utils/error";
+import MonkeyError from "../utils/error.js";
 import path from "path";
-import { isDevEnvironment } from "../utils/misc";
+import { isDevEnvironment } from "../utils/misc.js";
 
 const SERVICE_ACCOUNT_PATH = path.join(
   __dirname,

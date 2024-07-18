@@ -1,15 +1,15 @@
 import joi from "joi";
-import { authenticateRequest } from "../../middlewares/auth";
+import { authenticateRequest } from "../../middlewares/auth.js";
 import { Router } from "express";
-import * as UserController from "../controllers/user";
-import * as RateLimit from "../../middlewares/rate-limit";
-import { withApeRateLimiter } from "../../middlewares/ape-rate-limit";
-import { containsProfanity, isUsernameValid } from "../../utils/validation";
-import filterSchema from "../schemas/filter-schema";
-import { asyncHandler } from "../../middlewares/utility";
-import { validate } from "../../middlewares/configuration";
-import { validateRequest } from "../../middlewares/validation";
-import { checkUserPermissions } from "../../middlewares/permission";
+import * as UserController from "../controllers/user.js";
+import * as RateLimit from "../../middlewares/rate-limit.js";
+import { withApeRateLimiter } from "../../middlewares/ape-rate-limit.js";
+import { containsProfanity, isUsernameValid } from "../../utils/validation.js";
+import filterSchema from "../schemas/filter-schema.js";
+import { asyncHandler } from "../../middlewares/utility.js";
+import { validate } from "../../middlewares/configuration.js";
+import { validateRequest } from "../../middlewares/validation.js";
+import { checkUserPermissions } from "../../middlewares/permission.js";
 
 const router = Router();
 

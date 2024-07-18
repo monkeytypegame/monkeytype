@@ -1,16 +1,16 @@
 import { compare } from "bcrypt";
-import { getApeKey, updateLastUsedOn } from "../dal/ape-keys";
-import MonkeyError from "../utils/error";
-import { verifyIdToken } from "../utils/auth";
-import { base64UrlDecode, isDevEnvironment } from "../utils/misc";
+import { getApeKey, updateLastUsedOn } from "../dal/ape-keys.js";
+import MonkeyError from "../utils/error.js";
+import { verifyIdToken } from "../utils/auth.js";
+import { base64UrlDecode, isDevEnvironment } from "../utils/misc.js";
 import { NextFunction, Response, Handler } from "express";
-import statuses from "../constants/monkey-status-codes";
+import statuses from "../constants/monkey-status-codes.js";
 import {
   incrementAuth,
   recordAuthTime,
   recordRequestCountry,
   // recordRequestForUid,
-} from "../utils/prometheus";
+} from "../utils/prometheus.js";
 import crypto from "crypto";
 import { performance } from "perf_hooks";
 

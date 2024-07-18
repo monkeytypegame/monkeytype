@@ -1,17 +1,20 @@
-import * as db from "../init/db";
+import * as db from "../init/db.js";
 import { v4 as uuidv4 } from "uuid";
-import Logger from "../utils/logger";
-import MonkeyError from "../utils/error";
-import { incrementBadAuth } from "./rate-limit";
+import Logger from "../utils/logger.js";
+import MonkeyError from "../utils/error.js";
+import { incrementBadAuth } from "./rate-limit.js";
 import { NextFunction, Response } from "express";
-import { MonkeyResponse, handleMonkeyResponse } from "../utils/monkey-response";
+import {
+  MonkeyResponse,
+  handleMonkeyResponse,
+} from "../utils/monkey-response.js";
 import {
   recordClientErrorByVersion,
   recordServerErrorByVersion,
-} from "../utils/prometheus";
-import { isDevEnvironment } from "../utils/misc";
+} from "../utils/prometheus.js";
+import { isDevEnvironment } from "../utils/misc.js";
 import { ObjectId } from "mongodb";
-import { version } from "../version";
+import { version } from "../version.js";
 
 type DBError = {
   _id: ObjectId;

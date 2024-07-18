@@ -1,11 +1,11 @@
 import joi from "joi";
 import { Router } from "express";
-import * as ConfigurationController from "../controllers/configuration";
-import { authenticateRequest } from "../../middlewares/auth";
-import { adminLimit } from "../../middlewares/rate-limit";
-import { asyncHandler, useInProduction } from "../../middlewares/utility";
-import { checkIfUserIsAdmin } from "../../middlewares/permission";
-import { validateRequest } from "../../middlewares/validation";
+import * as ConfigurationController from "../controllers/configuration.js";
+import { authenticateRequest } from "../../middlewares/auth.js";
+import { adminLimit } from "../../middlewares/rate-limit.js";
+import { asyncHandler, useInProduction } from "../../middlewares/utility.js";
+import { checkIfUserIsAdmin } from "../../middlewares/permission.js";
+import { validateRequest } from "../../middlewares/validation.js";
 
 const router = Router();
 

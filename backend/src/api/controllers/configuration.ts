@@ -1,6 +1,6 @@
-import * as Configuration from "../../init/configuration";
-import { MonkeyResponse } from "../../utils/monkey-response";
-import { CONFIGURATION_FORM_SCHEMA } from "../../constants/base-configuration";
+import * as Configuration from "../../init/configuration.js";
+import { MonkeyResponse } from "../../utils/monkey-response.js";
+import { CONFIGURATION_FORM_SCHEMA } from "../../constants/base-configuration.js";
 
 export async function getConfiguration(
   _req: MonkeyTypes.Request

@@ -1,34 +1,34 @@
 import _ from "lodash";
-import * as UserDAL from "../../dal/user";
-import MonkeyError from "../../utils/error";
-import Logger from "../../utils/logger";
-import { MonkeyResponse } from "../../utils/monkey-response";
-import * as DiscordUtils from "../../utils/discord";
+import * as UserDAL from "../../dal/user.js";
+import MonkeyError from "../../utils/error.js";
+import Logger from "../../utils/logger.js";
+import { MonkeyResponse } from "../../utils/monkey-response.js";
+import * as DiscordUtils from "../../utils/discord.js";
 import {
   MILLISECONDS_IN_DAY,
   buildAgentLog,
   isDevEnvironment,
   sanitizeString,
-} from "../../utils/misc";
-import GeorgeQueue from "../../queues/george-queue";
+} from "../../utils/misc.js";
+import GeorgeQueue from "../../queues/george-queue.js";
 import admin, { FirebaseError } from "firebase-admin";
-import { deleteAllApeKeys } from "../../dal/ape-keys";
-import { deleteAllPresets } from "../../dal/preset";
-import { deleteAll as deleteAllResults } from "../../dal/result";
-import { deleteConfig } from "../../dal/config";
-import { verify } from "../../utils/captcha";
-import * as LeaderboardsDAL from "../../dal/leaderboards";
-import { purgeUserFromDailyLeaderboards } from "../../utils/daily-leaderboards";
+import { deleteAllApeKeys } from "../../dal/ape-keys.js";
+import { deleteAllPresets } from "../../dal/preset.js";
+import { deleteAll as deleteAllResults } from "../../dal/result.js";
+import { deleteConfig } from "../../dal/config.js";
+import { verify } from "../../utils/captcha.js";
+import * as LeaderboardsDAL from "../../dal/leaderboards.js";
+import { purgeUserFromDailyLeaderboards } from "../../utils/daily-leaderboards.js";
 import { v4 as uuidv4 } from "uuid";
 import { ObjectId } from "mongodb";
-import * as ReportDAL from "../../dal/report";
-import emailQueue from "../../queues/email-queue";
-import FirebaseAdmin from "../../init/firebase-admin";
-import * as AuthUtil from "../../utils/auth";
+import * as ReportDAL from "../../dal/report.js";
+import emailQueue from "../../queues/email-queue.js";
+import FirebaseAdmin from "../../init/firebase-admin.js";
+import * as AuthUtil from "../../utils/auth.js";
 
 import * as Dates from "date-fns";
 import { UTCDateMini } from "@date-fns/utc";
-import * as BlocklistDal from "../../dal/blocklist";
+import * as BlocklistDal from "../../dal/blocklist.js";
 
 async function verifyCaptcha(captcha: string): Promise<void> {
   if (!(await verify(captcha))) {

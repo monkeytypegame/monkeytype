@@ -1,15 +1,15 @@
-import { MonkeyResponse } from "../../utils/monkey-response";
-import * as UserDal from "../../dal/user";
-import FirebaseAdmin from "../../init/firebase-admin";
-import Logger from "../../utils/logger";
+import { MonkeyResponse } from "../../utils/monkey-response.js";
+import * as UserDal from "../../dal/user.js";
+import FirebaseAdmin from "../../init/firebase-admin.js";
+import Logger from "../../utils/logger.js";
 import * as DateUtils from "date-fns";
 import { UTCDate } from "@date-fns/utc";
-import * as ResultDal from "../../dal/result";
-import { roundTo2 } from "../../utils/misc";
+import * as ResultDal from "../../dal/result.js";
+import { roundTo2 } from "../../utils/misc.js";
 import { ObjectId } from "mongodb";
-import * as LeaderboardDal from "../../dal/leaderboards";
+import * as LeaderboardDal from "../../dal/leaderboards.js";
 import { isNumber } from "lodash";
-import MonkeyError from "../../utils/error";
+import MonkeyError from "../../utils/error.js";
 
 type GenerateDataOptions = {
   firstTestTimestamp: Date;

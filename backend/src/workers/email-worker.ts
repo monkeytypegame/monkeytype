@@ -1,13 +1,13 @@
 import _ from "lodash";
 import IORedis from "ioredis";
 import { Worker, Job, ConnectionOptions } from "bullmq";
-import Logger from "../utils/logger";
+import Logger from "../utils/logger.js";
 import EmailQueue, {
   EmailTaskContexts,
   EmailType,
-} from "../queues/email-queue";
-import { sendEmail } from "../init/email-client";
-import { recordTimeToCompleteJob } from "../utils/prometheus";
+} from "../queues/email-queue.js";
+import { sendEmail } from "../init/email-client.js";
+import { recordTimeToCompleteJob } from "../utils/prometheus.js";
 
 async function jobHandler(job: Job): Promise<void> {
   const type: EmailType = job.data.type;

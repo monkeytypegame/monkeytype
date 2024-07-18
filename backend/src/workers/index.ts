@@ -1,4 +1,4 @@
-import LaterWorker from "./later-worker";
-import EmailWorker from "./email-worker";
+import LaterWorker from "./later-worker.js";
+import EmailWorker from "./email-worker.js";
 
 export default [LaterWorker, EmailWorker];

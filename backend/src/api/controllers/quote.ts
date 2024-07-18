@@ -1,13 +1,13 @@
 import _ from "lodash";
 import { v4 as uuidv4 } from "uuid";
-import { getPartialUser, updateQuoteRatings } from "../../dal/user";
-import * as ReportDAL from "../../dal/report";
-import * as NewQuotesDAL from "../../dal/new-quotes";
-import * as QuoteRatingsDAL from "../../dal/quote-ratings";
-import MonkeyError from "../../utils/error";
-import { verify } from "../../utils/captcha";
-import Logger from "../../utils/logger";
-import { MonkeyResponse } from "../../utils/monkey-response";
+import { getPartialUser, updateQuoteRatings } from "../../dal/user.js";
+import * as ReportDAL from "../../dal/report.js";
+import * as NewQuotesDAL from "../../dal/new-quotes.js";
+import * as QuoteRatingsDAL from "../../dal/quote-ratings.js";
+import MonkeyError from "../../utils/error.js";
+import { verify } from "../../utils/captcha.js";
+import Logger from "../../utils/logger.js";
+import { MonkeyResponse } from "../../utils/monkey-response.js";
 import { ObjectId } from "mongodb";
 
 async function verifyCaptcha(captcha: string): Promise<void> {

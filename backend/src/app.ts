@@ -1,13 +1,13 @@
 import cors from "cors";
 import helmet from "helmet";
-import addApiRoutes from "./api/routes";
+import addApiRoutes from "./api/routes/index.js";
 import express, { urlencoded, json } from "express";
-import contextMiddleware from "./middlewares/context";
-import errorHandlingMiddleware from "./middlewares/error";
+import contextMiddleware from "./middlewares/context.js";
+import errorHandlingMiddleware from "./middlewares/error.js";
 import {
   badAuthRateLimiterHandler,
   rootRateLimiter,
-} from "./middlewares/rate-limit";
+} from "./middlewares/rate-limit.js";
 
 function buildApp(): express.Application {
   const app = express();

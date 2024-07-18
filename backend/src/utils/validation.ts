@@ -1,8 +1,8 @@
 import _ from "lodash";
-import { replaceHomoglyphs } from "../constants/homoglyphs";
-import { profanities } from "../constants/profanities";
-import { intersect, sanitizeString } from "./misc";
-import { default as FunboxList } from "../constants/funbox-list";
+import { replaceHomoglyphs } from "../constants/homoglyphs.js";
+import { profanities } from "../constants/profanities.js";
+import { intersect, sanitizeString } from "./misc.js";
+import { default as FunboxList } from "../constants/funbox-list.js";
 
 export function inRange(value: number, min: number, max: number): boolean {
   return value >= min && value <= max;

@@ -1,4 +1,4 @@
-import * as db from "../init/db";
+import * as db from "../init/db.js";
 
 type PSA = MonkeyTypes.WithObjectId<SharedTypes.PSA>;
 

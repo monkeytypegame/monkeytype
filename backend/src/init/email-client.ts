@@ -1,12 +1,12 @@
 import * as nodemailer from "nodemailer";
-import Logger from "../utils/logger";
+import Logger from "../utils/logger.js";
 import fs from "fs";
 import { join } from "path";
 import mjml2html from "mjml";
 import mustache from "mustache";
-import { recordEmail } from "../utils/prometheus";
-import { EmailTaskContexts, EmailType } from "../queues/email-queue";
-import { isDevEnvironment } from "../utils/misc";
+import { recordEmail } from "../utils/prometheus.js";
+import { EmailTaskContexts, EmailType } from "../queues/email-queue.js";
+import { isDevEnvironment } from "../utils/misc.js";
 
 type EmailMetadata = {
   subject: string;

@@ -3,12 +3,12 @@ import {
   getCurrentDayTimestamp,
   MILLISECONDS_IN_DAY,
   getCurrentWeekTimestamp,
-} from "../../utils/misc";
-import { MonkeyResponse } from "../../utils/monkey-response";
-import * as LeaderboardsDAL from "../../dal/leaderboards";
-import MonkeyError from "../../utils/error";
-import * as DailyLeaderboards from "../../utils/daily-leaderboards";
-import * as WeeklyXpLeaderboard from "../../services/weekly-xp-leaderboard";
+} from "../../utils/misc.js";
+import { MonkeyResponse } from "../../utils/monkey-response.js";
+import * as LeaderboardsDAL from "../../dal/leaderboards.js";
+import MonkeyError from "../../utils/error.js";
+import * as DailyLeaderboards from "../../utils/daily-leaderboards.js";
+import * as WeeklyXpLeaderboard from "../../services/weekly-xp-leaderboard.js";
 
 export async function getLeaderboard(
   req: MonkeyTypes.Request

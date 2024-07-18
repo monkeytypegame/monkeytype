@@ -1,20 +1,20 @@
 import "dotenv/config";
-import * as db from "./init/db";
-import jobs from "./jobs";
-import { getLiveConfiguration } from "./init/configuration";
-import app from "./app";
+import * as db from "./init/db.js";
+import jobs from "./jobs/index.js";
+import { getLiveConfiguration } from "./init/configuration.js";
+import app from "./app.js";
 import { Server } from "http";
-import { version } from "./version";
-import { recordServerVersion } from "./utils/prometheus";
-import * as RedisClient from "./init/redis";
-import queues from "./queues";
-import workers from "./workers";
-import Logger from "./utils/logger";
-import * as EmailClient from "./init/email-client";
-import { init as initFirebaseAdmin } from "./init/firebase-admin";
+import { version } from "./version.js";
+import { recordServerVersion } from "./utils/prometheus.js";
+import * as RedisClient from "./init/redis.js";
+import queues from "./queues/index.js";
+import workers from "./workers/index.js";
+import Logger from "./utils/logger.js";
+import * as EmailClient from "./init/email-client.js";
+import { init as initFirebaseAdmin } from "./init/firebase-admin.js";
 
-import { createIndicies as leaderboardDbSetup } from "./dal/leaderboards";
-import { createIndicies as blocklistDbSetup } from "./dal/blocklist";
+import { createIndicies as leaderboardDbSetup } from "./dal/leaderboards.js";
+import { createIndicies as blocklistDbSetup } from "./dal/blocklist.js";
 import { monotest } from "@monkeytype/mono-test";
 
 monotest();

@@ -2,8 +2,8 @@ import fs from "fs";
 import _ from "lodash";
 import { join } from "path";
 import IORedis from "ioredis";
-import Logger from "../utils/logger";
-import { isDevEnvironment } from "../utils/misc";
+import Logger from "../utils/logger.js";
+import { isDevEnvironment } from "../utils/misc.js";
 
 let connection: IORedis.Redis;
 let connected = false;

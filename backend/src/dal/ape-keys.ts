@@ -1,5 +1,5 @@
 import _ from "lodash";
-import * as db from "../init/db";
+import * as db from "../init/db.js";
 import {
   Filter,
   ObjectId,
@@ -7,7 +7,7 @@ import {
   Collection,
   WithId,
 } from "mongodb";
-import MonkeyError from "../utils/error";
+import MonkeyError from "../utils/error.js";
 
 export const getApeKeysCollection = (): Collection<
   WithId<MonkeyTypes.ApeKeyDB>

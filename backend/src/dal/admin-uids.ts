@@ -1,4 +1,4 @@
-import * as db from "../init/db";
+import * as db from "../init/db.js";
 
 export async function isAdmin(uid: string): Promise<boolean> {
   const doc = await db.collection("admin-uids").findOne({ uid });

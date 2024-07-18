@@ -1,8 +1,7 @@
-import fetch from "node-fetch";
-import { isDevEnvironment } from "./misc";
-import * as RedisClient from "../init/redis";
+import { isDevEnvironment } from "./misc.js";
+import * as RedisClient from "../init/redis.js";
 import { randomBytes } from "crypto";
-import MonkeyError from "./error";
+import MonkeyError from "./error.js";
 
 const BASE_URL = "https://discord.com/api";
 

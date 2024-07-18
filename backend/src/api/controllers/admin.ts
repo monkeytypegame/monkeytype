@@ -1,7 +1,7 @@
-import { MonkeyResponse } from "../../utils/monkey-response";
-import { buildMonkeyMail } from "../../utils/monkey-mail";
-import * as UserDAL from "../../dal/user";
-import * as ReportDAL from "../../dal/report";
+import { MonkeyResponse } from "../../utils/monkey-response.js";
+import { buildMonkeyMail } from "../../utils/monkey-mail.js";
+import * as UserDAL from "../../dal/user.js";
+import * as ReportDAL from "../../dal/report.js";
 
 export async function test(): Promise<MonkeyResponse> {
   return new MonkeyResponse("OK");

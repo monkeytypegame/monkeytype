@@ -1,5 +1,5 @@
 import { Response } from "express";
-import { isCustomCode } from "../constants/monkey-status-codes";
+import { isCustomCode } from "../constants/monkey-status-codes.js";
 
 //TODO FIX ANYS
 
