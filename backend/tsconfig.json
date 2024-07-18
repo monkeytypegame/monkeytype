@@ -2,15 +2,12 @@
   "extends": "@monkeytype/typescript-config/base.json",
   "compilerOptions": {
     "outDir": "build",
-    "target": "es2022",
-    "strict": false,
+    "target": "ES6",
+    "strict": true,
     "noImplicitAny": false,
     "strictFunctionTypes": false,
     "useUnknownInCatchVariables": false,
     "strictPropertyInitialization": false,
-
-    "verbatimModuleSyntax": true,
-
     "sourceMap": true,
 
     "paths": {
