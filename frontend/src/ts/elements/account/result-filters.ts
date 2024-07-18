@@ -7,9 +7,23 @@ import * as Notifications from "../notifications";
 import Ape from "../../ape/index";
 import * as Loader from "../loader";
 import SlimSelect from "slim-select";
-// this is only to make ts happy
-// eslint-disable-next-line import/no-unresolved
-import { Option } from "slim-select/dist/store";
+
+type Option = {
+  id: string;
+  value: string;
+  text: string;
+  html: string;
+  selected: boolean;
+  display: boolean;
+  disabled: boolean;
+  placeholder: boolean;
+  class: string;
+  style: string;
+  data: {
+    [key: string]: string;
+  };
+  mandatory: boolean;
+};
 
 const groupsUsingSelect = ["language", "funbox", "tags"];
 const groupSelects: Partial<
