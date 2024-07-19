@@ -10,7 +10,7 @@
     },
     {
       "name": "shared-types",
-      "path": "shared-types"
+      "path": "packages/shared-types"
     },
     {
       "name": "root",
@@ -32,7 +32,8 @@
       "**/build/**": true,
       "**/dist/**": true,
       "**/public/**": true,
-      "**/coverage/**": true
+      "**/coverage/**": true,
+      "**/logs/**": true
     },
     "editor.defaultFormatter": "esbenp.prettier-vscode",
     "editor.formatOnSaveMode": "file",
