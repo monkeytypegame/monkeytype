@@ -9,7 +9,6 @@ WORKDIR /app
 COPY package.json package.json
 COPY package-lock.json package-lock.json
 COPY turbo.json turbo.json
-COPY shared-types shared-types
 COPY packages packages
 COPY backend backend
 
