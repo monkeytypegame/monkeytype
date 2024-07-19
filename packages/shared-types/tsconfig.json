@@ -4,7 +4,9 @@
     "outDir": "./dist",
     "rootDir": "./src",
     "declaration": true,
-    "declarationMap": true
+    "declarationMap": true,
+    "moduleResolution": "Node",
+    "module": "ES6"
   },
   "include": ["src"],
   "exclude": ["node_modules", "dist"]

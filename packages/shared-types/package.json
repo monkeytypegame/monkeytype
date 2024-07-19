@@ -1,25 +1,25 @@
 {
   "name": "@monkeytype/shared-types",
-  "type": "commonjs",
   "private": true,
   "scripts": {
-    "dev": "tsc --watch ",
-    "build": "tsc --build --clean",
+    "dev": "rimraf ./dist && tsc --watch ",
+    "build": "rimraf ./dist && tsc",
     "check-ts": "tsc --noEmit",
     "lint": "eslint \"./**/*.ts\""
   },
   "devDependencies": {
-    "typescript": "5.5.3",
-    "@monkeytype/typescript-config": "*"
+    "@monkeytype/typescript-config": "*",
+    "rimraf": "5.0.9",
+    "typescript": "5.5.3"
   },
   "exports": {
     ".": {
       "default": "./dist/index.js",
-      "types": "./dist/index.ts"
+      "types": "./dist/index.d.ts"
     },
     "./*": {
       "default": "./dist/*.js",
-      "types": "./dist/*.ts"
+      "types": "./dist/*.d.ts"
     }
   }
 }
