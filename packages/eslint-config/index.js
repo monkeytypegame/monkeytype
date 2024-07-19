@@ -37,11 +37,6 @@ module.exports = {
       },
     ],
   },
-  settings: {
-    "import/resolver": {
-      typescript: {},
-    },
-  },
   overrides: [
     {
       // enable the rule specifically for TypeScript files
@@ -81,6 +76,14 @@ module.exports = {
         "@typescript-eslint/no-unnecessary-condition": "off",
         "@typescript-eslint/consistent-type-definitions": ["warn", "type"],
         "@typescript-eslint/no-invalid-void-type": "off",
+        "import/namespace": "off",
+      },
+      settings: {
+        "import/resolver": {
+          typescript: {
+            project: "./tsconfig.json",
+          },
+        },
       },
       parserOptions: {
         ecmaVersion: 12,
