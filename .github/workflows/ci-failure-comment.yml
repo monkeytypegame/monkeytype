@@ -26,13 +26,8 @@ jobs:
           path: ./pr_num/pr_num.txt
 
       - name: Create comment
-        uses: actions/github-script@v6
+        uses: peter-evans/create-or-update-comment@v4
         with:
-          github-token: ${{ secrets.API_TOKEN }}
-          script: |
-            github.rest.issues.createComment({
-              issue_number: ${{ steps.pr_num_reader.outputs.content }},
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-               body: 'Continuous integration check(s) failed. Please review the failing check\'s logs and make the necessary changes. ' + context.payload.workflow_run.html_url
-            })
+          issue-number: ${{ steps.pr_num_reader.outputs.content }}
+          body: |
+            Continuous integration check(s) failed. Please review the [failing check\'s logs](${{ github.event.workflow_run.html_url }}) and make the necessary changes.
