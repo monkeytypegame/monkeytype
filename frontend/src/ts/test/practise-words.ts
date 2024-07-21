@@ -5,10 +5,7 @@ import * as CustomText from "./custom-text";
 import * as TestInput from "./test-input";
 import * as ConfigEvent from "../observables/config-event";
 import { setCustomTextName } from "../states/custom-text-name";
-import * as Skeleton from "../utils/skeleton";
-import { isPopupVisible } from "../utils/misc";
-
-const wrapperId = "practiseWordsPopupWrapper";
+import * as PractiseWordsModal from "../modals/practise-words";
 
 type Before = {
   mode: SharedTypes.Config.Mode | null;
@@ -24,19 +21,21 @@ export const before: Before = {
   customText: null,
 };
 
-export function init(missed: boolean, slow: boolean): boolean {
+export function init(
+  missed: "off" | "words" | "biwords",
+  slow: boolean
+): boolean {
   if (Config.mode === "zen") return false;
   let limit;
   if ((missed && !slow) || (!missed && slow)) {
     limit = 20;
-  } else if (missed && slow) {
-    limit = 10;
   } else {
+    // (biwords) or (missed and slow)
     limit = 10;
   }
 
   let sortableMissedWords: [string, number][] = [];
-  if (missed) {
+  if (missed === "words") {
     Object.keys(TestInput.missedWords).forEach((missedWord) => {
       const missedWordCount = TestInput.missedWords[missedWord];
       if (missedWordCount !== undefined) {
@@ -49,7 +48,34 @@ export function init(missed: boolean, slow: boolean): boolean {
     sortableMissedWords = sortableMissedWords.slice(0, limit);
   }
 
-  if (missed && !slow && sortableMissedWords.length === 0) {
+  let sortableMissedBiwords: [string, string, number][] = [];
+  if (missed === "biwords") {
+    for (let i = 0; i < TestWords.words.length; i++) {
+      const missedWord = TestWords.words.get(i);
+      const missedWordCount = TestInput.missedWords[missedWord];
+      if (missedWordCount !== undefined) {
+        if (i === 0) {
+          sortableMissedBiwords.push([missedWord, "", missedWordCount]);
+        } else {
+          sortableMissedBiwords.push([
+            missedWord,
+            TestWords.words.get(i - 1),
+            missedWordCount,
+          ]);
+        }
+      }
+    }
+    sortableMissedBiwords.sort((a, b) => {
+      return b[2] - a[2];
+    });
+    sortableMissedBiwords = sortableMissedBiwords.slice(0, limit);
+  }
+
+  if (
+    ((missed === "words" && sortableMissedWords.length === 0) ||
+      (missed === "biwords" && sortableMissedBiwords.length === 0)) &&
+    !slow
+  ) {
     Notifications.add("You haven't missed any words", 0);
     return false;
   }
@@ -66,12 +92,20 @@ export function init(missed: boolean, slow: boolean): boolean {
       0,
       Math.min(limit, Math.round(TestWords.words.length * 0.2))
     );
+    if (sortableSlowWords.length === 0) {
+      Notifications.add("Test too short to classify slow words.", 0);
+    }
   }
 
   // console.log(sortableMissedWords);
+  // console.log(sortableMissedBiwords);
   // console.log(sortableSlowWords);
 
-  if (sortableMissedWords.length === 0 && sortableSlowWords.length === 0) {
+  if (
+    sortableMissedWords.length === 0 &&
+    sortableMissedBiwords.length === 0 &&
+    sortableSlowWords.length === 0
+  ) {
     Notifications.add("Could not start a new custom test", 0);
     return false;
   }
@@ -83,13 +117,20 @@ export function init(missed: boolean, slow: boolean): boolean {
     }
   });
 
+  sortableMissedBiwords.forEach((missedBiwords) => {
+    for (let i = 0; i < missedBiwords[2]; i++) {
+      newCustomText.push(missedBiwords[0]);
+      if (missedBiwords[1] !== "") {
+        newCustomText.push(missedBiwords[1]);
+      }
+    }
+  });
+
   sortableSlowWords.forEach((slow, index) => {
     for (let i = 0; i < sortableSlowWords.length - index; i++) {
       newCustomText.push(slow[0]);
     }
   });
-
-  // console.log(newCustomText);
 
   const mode = before.mode === null ? Config.mode : before.mode;
   const punctuation =
@@ -126,66 +167,14 @@ export function resetBefore(): void {
   before.customText = null;
 }
 
-export function showPopup(): void {
+$(".pageTest").on("click", "#practiseWordsButton", () => {
   if (Config.mode === "zen") {
     Notifications.add("Practice words is unsupported in zen mode", 0);
     return;
   }
-  Skeleton.append(wrapperId, "popups");
-  if (!isPopupVisible(wrapperId)) {
-    $("#practiseWordsPopupWrapper")
-      .stop(true, true)
-      .css("opacity", 0)
-      .removeClass("hidden")
-      .animate({ opacity: 1 }, 100, () => {
-        $(`#${wrapperId}`).trigger("focus");
-      });
-  }
-}
-
-export function hidePopup(): void {
-  if (isPopupVisible(wrapperId)) {
-    $("#practiseWordsPopupWrapper")
-      .stop(true, true)
-      .css("opacity", 1)
-      .animate(
-        {
-          opacity: 0,
-        },
-        100,
-        () => {
-          $("#practiseWordsPopupWrapper").addClass("hidden");
-          Skeleton.remove(wrapperId);
-        }
-      );
-  }
-}
-
-$("#practiseWordsPopupWrapper").on("click", (e) => {
-  if ($(e.target).attr("id") === "practiseWordsPopupWrapper") {
-    hidePopup();
-  }
-});
-
-$("#practiseWordsPopupWrapper .button").on("keypress", (e) => {
-  if (e.key === "Enter") {
-    $(e.currentTarget).trigger("click");
-  }
-});
-
-$(document).on("keydown", (event) => {
-  if (event.key === "Escape" && isPopupVisible(wrapperId)) {
-    hidePopup();
-    event.preventDefault();
-  }
-});
-
-$(".pageTest").on("click", "#practiseWordsButton", () => {
-  showPopup();
+  PractiseWordsModal.show();
 });
 
 ConfigEvent.subscribe((eventKey) => {
   if (eventKey === "mode") resetBefore();
 });
-
-Skeleton.save(wrapperId);
