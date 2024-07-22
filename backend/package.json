@@ -59,7 +59,8 @@
     "winston": "3.6.0"
   },
   "devDependencies": {
-    "@monkeytype/typescript-config": "file:../packages/typescript-config",
+    "@monkeytype/typescript-config": "*",
+    "@monkeytype/eslint-config": "*",
     "@types/bcrypt": "5.0.0",
     "@types/cors": "2.8.12",
     "@types/cron": "1.7.3",

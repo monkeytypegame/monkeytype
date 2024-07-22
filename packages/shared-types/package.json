@@ -8,6 +8,7 @@
     "lint": "eslint \"./**/*.ts\""
   },
   "devDependencies": {
+    "@monkeytype/eslint-config": "*",
     "@monkeytype/typescript-config": "*",
     "rimraf": "5.0.9",
     "typescript": "5.5.3"

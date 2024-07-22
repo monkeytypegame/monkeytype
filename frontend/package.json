@@ -31,7 +31,6 @@
   ],
   "devDependencies": {
     "@fortawesome/fontawesome-free": "5.15.4",
-    "@monkeytype/shared-types": "*",
     "@monkeytype/eslint-config": "*",
     "@monkeytype/typescript-config": "*",
     "@types/canvas-confetti": "1.4.3",
@@ -69,6 +68,7 @@
     "vitest": "1.6.0"
   },
   "dependencies": {
+    "@monkeytype/shared-types": "*",
     "@date-fns/utc": "1.2.0",
     "axios": "1.6.4",
     "canvas-confetti": "1.5.1",
