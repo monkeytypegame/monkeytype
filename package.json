@@ -53,7 +53,7 @@
     "lint-staged": "13.2.3",
     "prettier": "2.5.1",
     "release-it": "16.1.4",
-    "turbo": "2.0.7",
+    "turbo": "2.0.9",
     "typescript": "5.3.3",
     "wait-for-localhost-cli": "3.2.0"
   },
