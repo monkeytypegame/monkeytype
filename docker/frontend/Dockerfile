@@ -14,7 +14,6 @@ COPY frontend frontend
 
 COPY docker/frontend/firebase-config-live.ts frontend/src/ts/constants/firebase-config.ts
 COPY docker/frontend/firebase-config-live.ts frontend/src/ts/constants/firebase-config-live.ts
-COPY docker/frontend/.env frontend/.env
 
 #BUILD
 RUN npm ci
