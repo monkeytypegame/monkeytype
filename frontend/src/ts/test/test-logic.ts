@@ -910,7 +910,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
   if (
     Config.mode !== "zen" &&
     !TestState.bailedOut &&
-    (ce.testDuration < dateDur - 0.05 || ce.testDuration > dateDur + 0.05)
+    (ce.testDuration < dateDur - 0.25 || ce.testDuration > dateDur + 0.25)
   ) {
     //dont bother checking this for zen mode or bailed out tests because
     //the duration might be modified to remove trailing afk time
