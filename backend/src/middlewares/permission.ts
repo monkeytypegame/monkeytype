@@ -1,9 +1,9 @@
 import _ from "lodash";
-import MonkeyError from "../utils/error.js";
+import MonkeyError from "../utils/error";
 import type { Response, NextFunction, RequestHandler } from "express";
-import { getUser } from "../dal/user.js";
-import { isAdmin } from "../dal/admin-uids.js";
-import type { ValidationOptions } from "./configuration.js";
+import { getUser } from "../dal/user";
+import { isAdmin } from "../dal/admin-uids";
+import type { ValidationOptions } from "./configuration";
 
 /**
  * Check if the user is an admin before handling request.

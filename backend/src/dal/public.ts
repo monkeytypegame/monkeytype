@@ -1,6 +1,6 @@
-import * as db from "../init/db.js";
-import { roundTo2 } from "../utils/misc.js";
-import MonkeyError from "../utils/error.js";
+import * as db from "../init/db";
+import { roundTo2 } from "../utils/misc";
+import MonkeyError from "../utils/error";
 import { PublicTypingStats, SpeedHistogram } from "@monkeytype/shared-types";
 
 type PublicTypingStatsDB = PublicTypingStats & { _id: "stats" };

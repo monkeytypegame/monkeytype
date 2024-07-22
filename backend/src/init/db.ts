@@ -6,8 +6,8 @@ import {
   type MongoClientOptions,
   type WithId,
 } from "mongodb";
-import MonkeyError from "../utils/error.js";
-import Logger from "../utils/logger.js";
+import MonkeyError from "../utils/error";
+import Logger from "../utils/logger";
 
 let db: Db;
 let mongoClient: MongoClient;

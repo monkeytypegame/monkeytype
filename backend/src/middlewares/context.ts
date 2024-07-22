@@ -1,4 +1,4 @@
-import { getCachedConfiguration } from "../init/configuration.js";
+import { getCachedConfiguration } from "../init/configuration";
 import type { Response, NextFunction } from "express";
 
 async function contextMiddleware(

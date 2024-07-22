@@ -1,23 +1,23 @@
 import _ from "lodash";
-import psas from "./psas.js";
-import publicStats from "./public.js";
-import users from "./users.js";
+import psas from "./psas";
+import publicStats from "./public";
+import users from "./users";
 import { join } from "path";
-import quotes from "./quotes.js";
-import configs from "./configs.js";
-import results from "./results.js";
-import presets from "./presets.js";
-import apeKeys from "./ape-keys.js";
-import admin from "./admin.js";
-import webhooks from "./webhooks.js";
-import dev from "./dev.js";
-import configuration from "./configuration.js";
-import { version } from "../../version.js";
-import leaderboards from "./leaderboards.js";
-import addSwaggerMiddlewares from "./swagger.js";
-import { asyncHandler } from "../../middlewares/utility.js";
-import { MonkeyResponse } from "../../utils/monkey-response.js";
-import { recordClientVersion } from "../../utils/prometheus.js";
+import quotes from "./quotes";
+import configs from "./configs";
+import results from "./results";
+import presets from "./presets";
+import apeKeys from "./ape-keys";
+import admin from "./admin";
+import webhooks from "./webhooks";
+import dev from "./dev";
+import configuration from "./configuration";
+import { version } from "../../version";
+import leaderboards from "./leaderboards";
+import addSwaggerMiddlewares from "./swagger";
+import { asyncHandler } from "../../middlewares/utility";
+import { MonkeyResponse } from "../../utils/monkey-response";
+import { recordClientVersion } from "../../utils/prometheus";
 import {
   type Application,
   type NextFunction,
@@ -25,9 +25,9 @@ import {
   Router,
   static as expressStatic,
 } from "express";
-import { isDevEnvironment } from "../../utils/misc.js";
-import { getLiveConfiguration } from "../../init/configuration.js";
-import Logger from "../../utils/logger.js";
+import { isDevEnvironment } from "../../utils/misc";
+import { getLiveConfiguration } from "../../init/configuration";
+import Logger from "../../utils/logger";
 
 const pathOverride = process.env["API_PATH_OVERRIDE"];
 const BASE_ROUTE = pathOverride !== undefined ? `/${pathOverride}` : "";

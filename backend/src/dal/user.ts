@@ -1,8 +1,8 @@
 import _ from "lodash";
-import { containsProfanity, isUsernameValid } from "../utils/validation.js";
-import { canFunboxGetPb, checkAndUpdatePb } from "../utils/pb.js";
-import * as db from "../init/db.js";
-import MonkeyError from "../utils/error.js";
+import { containsProfanity, isUsernameValid } from "../utils/validation";
+import { canFunboxGetPb, checkAndUpdatePb } from "../utils/pb";
+import * as db from "../init/db";
+import MonkeyError from "../utils/error";
 import {
   Collection,
   ObjectId,
@@ -10,9 +10,9 @@ import {
   type UpdateFilter,
   type Filter,
 } from "mongodb";
-import Logger from "../utils/logger.js";
-import { flattenObjectDeep, isToday, isYesterday } from "../utils/misc.js";
-import { getCachedConfiguration } from "../init/configuration.js";
+import Logger from "../utils/logger";
+import { flattenObjectDeep, isToday, isYesterday } from "../utils/misc";
+import { getCachedConfiguration } from "../init/configuration";
 import { getDayOfYear } from "date-fns";
 import { UTCDate } from "@date-fns/utc";
 import {

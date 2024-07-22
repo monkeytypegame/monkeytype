@@ -1,14 +1,14 @@
 // import joi from "joi";
 import { Router } from "express";
-import { authenticateRequest } from "../../middlewares/auth.js";
-import * as AdminController from "../controllers/admin.js";
-import { adminLimit } from "../../middlewares/rate-limit.js";
-import { sendForgotPasswordEmail, toggleBan } from "../controllers/user.js";
+import { authenticateRequest } from "../../middlewares/auth";
+import * as AdminController from "../controllers/admin";
+import { adminLimit } from "../../middlewares/rate-limit";
+import { sendForgotPasswordEmail, toggleBan } from "../controllers/user";
 import joi from "joi";
-import { validate } from "../../middlewares/configuration.js";
-import { checkIfUserIsAdmin } from "../../middlewares/permission.js";
-import { asyncHandler } from "../../middlewares/utility.js";
-import { validateRequest } from "../../middlewares/validation.js";
+import { validate } from "../../middlewares/configuration";
+import { checkIfUserIsAdmin } from "../../middlewares/permission";
+import { asyncHandler } from "../../middlewares/utility";
+import { validateRequest } from "../../middlewares/validation";
 
 const router = Router();
 

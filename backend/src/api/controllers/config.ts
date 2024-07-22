@@ -1,5 +1,5 @@
-import * as ConfigDAL from "../../dal/config.js";
-import { MonkeyResponse } from "../../utils/monkey-response.js";
+import * as ConfigDAL from "../../dal/config";
+import { MonkeyResponse } from "../../utils/monkey-response";
 
 export async function getConfig(
   req: MonkeyTypes.Request

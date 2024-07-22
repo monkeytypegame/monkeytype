@@ -1,5 +1,5 @@
-import LaterQueue from "./later-queue.js";
-import GeorgeQueue from "./george-queue.js";
-import EmailQueue from "./email-queue.js";
+import LaterQueue from "./later-queue";
+import GeorgeQueue from "./george-queue";
+import EmailQueue from "./email-queue";
 
 export default [GeorgeQueue, LaterQueue, EmailQueue];

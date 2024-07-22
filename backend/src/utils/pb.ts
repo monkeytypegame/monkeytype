@@ -1,5 +1,5 @@
 import _ from "lodash";
-import FunboxList from "../constants/funbox-list.js";
+import FunboxList from "../constants/funbox-list";
 import { PersonalBest, PersonalBests } from "@monkeytype/shared-types/user";
 import { DBResult } from "@monkeytype/shared-types";
 import { Mode, Mode2 } from "@monkeytype/shared-types/config";

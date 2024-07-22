@@ -1,4 +1,4 @@
-import { MonkeyQueue } from "./monkey-queue.js";
+import { MonkeyQueue } from "./monkey-queue";
 
 const QUEUE_NAME = "email-tasks";
 

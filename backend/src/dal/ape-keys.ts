@@ -1,5 +1,5 @@
 import _ from "lodash";
-import * as db from "../init/db.js";
+import * as db from "../init/db";
 import {
   type Filter,
   type MatchKeysAndValues,
@@ -7,7 +7,7 @@ import {
   ObjectId,
   Collection,
 } from "mongodb";
-import MonkeyError from "../utils/error.js";
+import MonkeyError from "../utils/error";
 
 export const getApeKeysCollection = (): Collection<
   WithId<MonkeyTypes.ApeKeyDB>

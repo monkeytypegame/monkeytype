@@ -1,5 +1,5 @@
 import { type UpdateResult } from "mongodb";
-import * as db from "../init/db.js";
+import * as db from "../init/db";
 import _ from "lodash";
 import { Config } from "@monkeytype/shared-types/config";
 

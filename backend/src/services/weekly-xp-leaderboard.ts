@@ -1,7 +1,7 @@
 import { Configuration } from "@monkeytype/shared-types";
-import * as RedisClient from "../init/redis.js";
-import LaterQueue from "../queues/later-queue.js";
-import { getCurrentWeekTimestamp } from "../utils/misc.js";
+import * as RedisClient from "../init/redis";
+import LaterQueue from "../queues/later-queue";
+import { getCurrentWeekTimestamp } from "../utils/misc";
 
 type InternalWeeklyXpLeaderboardEntry = {
   uid: string;

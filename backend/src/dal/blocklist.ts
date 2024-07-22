@@ -1,5 +1,5 @@
 import { Collection } from "mongodb";
-import * as db from "../init/db.js";
+import * as db from "../init/db";
 import { createHash } from "crypto";
 import { User } from "@monkeytype/shared-types";
 

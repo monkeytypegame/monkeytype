@@ -5,10 +5,10 @@ import {
   ObjectId,
   type UpdateResult,
 } from "mongodb";
-import MonkeyError from "../utils/error.js";
-import * as db from "../init/db.js";
+import MonkeyError from "../utils/error";
+import * as db from "../init/db";
 import { DBResult as SharedDBResult } from "@monkeytype/shared-types";
-import { getUser, getTags } from "./user.js";
+import { getUser, getTags } from "./user";
 import { Mode } from "@monkeytype/shared-types/config";
 
 type DBResult = MonkeyTypes.WithObjectId<SharedDBResult<Mode>>;

@@ -1,9 +1,9 @@
 import { Router } from "express";
-import * as PublicController from "../controllers/public.js";
-import * as RateLimit from "../../middlewares/rate-limit.js";
-import { asyncHandler } from "../../middlewares/utility.js";
+import * as PublicController from "../controllers/public";
+import * as RateLimit from "../../middlewares/rate-limit";
+import { asyncHandler } from "../../middlewares/utility";
 import joi from "joi";
-import { validateRequest } from "../../middlewares/validation.js";
+import { validateRequest } from "../../middlewares/validation";
 
 const GET_MODE_STATS_VALIDATION_SCHEMA = {
   language: joi

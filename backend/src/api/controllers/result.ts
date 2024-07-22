@@ -1,5 +1,5 @@
-import * as ResultDAL from "../../dal/result.js";
-import * as PublicDAL from "../../dal/public.js";
+import * as ResultDAL from "../../dal/result";
+import * as PublicDAL from "../../dal/public";
 import {
   getCurrentDayTimestamp,
   getStartOfDayTimestamp,
@@ -8,37 +8,34 @@ import {
   roundTo2,
   stdDev,
   stringToNumberOrDefault,
-} from "../../utils/misc.js";
+} from "../../utils/misc";
 import objectHash from "object-hash";
-import Logger from "../../utils/logger.js";
+import Logger from "../../utils/logger";
 import "dotenv/config";
-import { MonkeyResponse } from "../../utils/monkey-response.js";
-import MonkeyError from "../../utils/error.js";
-import {
-  areFunboxesCompatible,
-  isTestTooShort,
-} from "../../utils/validation.js";
+import { MonkeyResponse } from "../../utils/monkey-response";
+import MonkeyError from "../../utils/error";
+import { areFunboxesCompatible, isTestTooShort } from "../../utils/validation";
 import {
   implemented as anticheatImplemented,
   validateResult,
   validateKeys,
-} from "../../anticheat/index.js";
-import MonkeyStatusCodes from "../../constants/monkey-status-codes.js";
+} from "../../anticheat/index";
+import MonkeyStatusCodes from "../../constants/monkey-status-codes";
 import {
   incrementResult,
   incrementDailyLeaderboard,
-} from "../../utils/prometheus.js";
-import GeorgeQueue from "../../queues/george-queue.js";
-import { getDailyLeaderboard } from "../../utils/daily-leaderboards.js";
-import AutoRoleList from "../../constants/auto-roles.js";
-import * as UserDAL from "../../dal/user.js";
-import { buildMonkeyMail } from "../../utils/monkey-mail.js";
-import FunboxList from "../../constants/funbox-list.js";
+} from "../../utils/prometheus";
+import GeorgeQueue from "../../queues/george-queue";
+import { getDailyLeaderboard } from "../../utils/daily-leaderboards";
+import AutoRoleList from "../../constants/auto-roles";
+import * as UserDAL from "../../dal/user";
+import { buildMonkeyMail } from "../../utils/monkey-mail";
+import FunboxList from "../../constants/funbox-list";
 import _ from "lodash";
-import * as WeeklyXpLeaderboard from "../../services/weekly-xp-leaderboard.js";
+import * as WeeklyXpLeaderboard from "../../services/weekly-xp-leaderboard";
 import { UAParser } from "ua-parser-js";
-import { canFunboxGetPb } from "../../utils/pb.js";
-import { buildDbResult } from "../../utils/result.js";
+import { canFunboxGetPb } from "../../utils/pb";
+import { buildDbResult } from "../../utils/result";
 import {
   CompletedEvent,
   Configuration,

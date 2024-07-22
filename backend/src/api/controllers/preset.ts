@@ -1,5 +1,5 @@
-import * as PresetDAL from "../../dal/preset.js";
-import { MonkeyResponse } from "../../utils/monkey-response.js";
+import * as PresetDAL from "../../dal/preset";
+import { MonkeyResponse } from "../../utils/monkey-response";
 
 export async function getPresets(
   req: MonkeyTypes.Request

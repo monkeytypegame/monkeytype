@@ -1,4 +1,4 @@
-import * as db from "../init/db.js";
+import * as db from "../init/db";
 import chalk from "chalk";
 import {
   format,

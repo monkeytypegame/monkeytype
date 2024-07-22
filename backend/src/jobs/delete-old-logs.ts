@@ -1,7 +1,7 @@
 import { CronJob } from "cron";
-import * as db from "../init/db.js";
-import Logger from "../utils/logger.js";
-import { getCachedConfiguration } from "../init/configuration.js";
+import * as db from "../init/db";
+import Logger from "../utils/logger";
+import { getCachedConfiguration } from "../init/configuration";
 
 const CRON_SCHEDULE = "0 0 0 * * *";
 const LOG_MAX_AGE_DAYS = 30;

@@ -1,5 +1,5 @@
-import MonkeyError from "../utils/error.js";
-import * as db from "../init/db.js";
+import MonkeyError from "../utils/error";
+import * as db from "../init/db";
 import { ObjectId, type Filter, Collection, type WithId } from "mongodb";
 import {
   ConfigPreset,

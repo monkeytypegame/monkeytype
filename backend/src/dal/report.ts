@@ -1,5 +1,5 @@
-import MonkeyError from "../utils/error.js";
-import * as db from "../init/db.js";
+import MonkeyError from "../utils/error";
+import * as db from "../init/db";
 
 const COLLECTION_NAME = "reports";
 

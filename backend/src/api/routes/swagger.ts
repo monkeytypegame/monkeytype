@@ -7,7 +7,7 @@ import {
 } from "swagger-ui-express";
 import publicSwaggerSpec from "../../documentation/public-swagger.json";
 import internalSwaggerSpec from "../../documentation/internal-swagger.json";
-import { isDevEnvironment } from "../../utils/misc.js";
+import { isDevEnvironment } from "../../utils/misc";
 
 const SWAGGER_UI_OPTIONS = {
   customCss: ".swagger-ui .topbar { display: none } .try-out { display: none }",

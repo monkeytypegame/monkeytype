@@ -1,10 +1,10 @@
 import { Router } from "express";
 import joi from "joi";
-import { createTestData } from "../controllers/dev.js";
-import { isDevEnvironment } from "../../utils/misc.js";
-import { validate } from "../../middlewares/configuration.js";
-import { validateRequest } from "../../middlewares/validation.js";
-import { asyncHandler } from "../../middlewares/utility.js";
+import { createTestData } from "../controllers/dev";
+import { isDevEnvironment } from "../../utils/misc";
+import { validate } from "../../middlewares/configuration";
+import { validateRequest } from "../../middlewares/validation";
+import { asyncHandler } from "../../middlewares/utility";
 
 const router = Router();
 

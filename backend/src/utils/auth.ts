@@ -1,10 +1,10 @@
-import FirebaseAdmin from "./../init/firebase-admin.js";
+import FirebaseAdmin from "./../init/firebase-admin";
 import LRUCache from "lru-cache";
 import {
   recordTokenCacheAccess,
   setTokenCacheLength,
   setTokenCacheSize,
-} from "./prometheus.js";
+} from "./prometheus";
 import { type DecodedIdToken, UserRecord } from "firebase-admin/auth";
 
 const tokenCache = new LRUCache<string, DecodedIdToken>({

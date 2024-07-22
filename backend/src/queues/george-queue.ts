@@ -1,6 +1,6 @@
 import { LeaderboardEntry } from "@monkeytype/shared-types";
-import { type LbEntryWithRank } from "../utils/daily-leaderboards.js";
-import { MonkeyQueue } from "./monkey-queue.js";
+import { type LbEntryWithRank } from "../utils/daily-leaderboards";
+import { MonkeyQueue } from "./monkey-queue";
 
 const QUEUE_NAME = "george-tasks";
 

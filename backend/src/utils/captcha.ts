@@ -1,4 +1,5 @@
-import { isDevEnvironment } from "./misc.js";
+import fetch from "node-fetch";
+import { isDevEnvironment } from "./misc";
 
 type CaptchaData = {
   success: boolean;

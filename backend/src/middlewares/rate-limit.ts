@@ -1,9 +1,9 @@
 import _ from "lodash";
-import MonkeyError from "../utils/error.js";
+import MonkeyError from "../utils/error";
 import type { Response, NextFunction } from "express";
 import { RateLimiterMemory } from "rate-limiter-flexible";
 import rateLimit, { type Options } from "express-rate-limit";
-import { isDevEnvironment } from "../utils/misc.js";
+import { isDevEnvironment } from "../utils/misc";
 
 const REQUEST_MULTIPLIER = isDevEnvironment() ? 100 : 1;
 

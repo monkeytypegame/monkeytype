@@ -1,7 +1,7 @@
 import { CronJob } from "cron";
-import GeorgeQueue from "../queues/george-queue.js";
-import * as LeaderboardsDAL from "../dal/leaderboards.js";
-import { getCachedConfiguration } from "../init/configuration.js";
+import GeorgeQueue from "../queues/george-queue";
+import * as LeaderboardsDAL from "../dal/leaderboards";
+import { getCachedConfiguration } from "../init/configuration";
 import { LeaderboardEntry } from "@monkeytype/shared-types";
 
 const CRON_SCHEDULE = "30 14/15 * * * *";

@@ -1,12 +1,12 @@
 import joi from "joi";
-import { authenticateRequest } from "../../middlewares/auth.js";
+import { authenticateRequest } from "../../middlewares/auth";
 import { Router } from "express";
-import * as QuoteController from "../controllers/quote.js";
-import * as RateLimit from "../../middlewares/rate-limit.js";
-import { checkUserPermissions } from "../../middlewares/permission.js";
-import { asyncHandler } from "../../middlewares/utility.js";
-import { validate } from "../../middlewares/configuration.js";
-import { validateRequest } from "../../middlewares/validation.js";
+import * as QuoteController from "../controllers/quote";
+import * as RateLimit from "../../middlewares/rate-limit";
+import { checkUserPermissions } from "../../middlewares/permission";
+import { asyncHandler } from "../../middlewares/utility";
+import { validate } from "../../middlewares/configuration";
+import { validateRequest } from "../../middlewares/validation";
 
 const router = Router();
 

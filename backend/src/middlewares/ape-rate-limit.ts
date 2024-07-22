@@ -1,11 +1,11 @@
-import MonkeyError from "../utils/error.js";
+import MonkeyError from "../utils/error";
 import type { Response, NextFunction, RequestHandler } from "express";
-import statuses from "../constants/monkey-status-codes.js";
+import statuses from "../constants/monkey-status-codes";
 import rateLimit, {
   type RateLimitRequestHandler,
   type Options,
 } from "express-rate-limit";
-import { isDevEnvironment } from "../utils/misc.js";
+import { isDevEnvironment } from "../utils/misc";
 
 const REQUEST_MULTIPLIER = isDevEnvironment() ? 1 : 1;
 

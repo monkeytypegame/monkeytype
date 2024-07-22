@@ -1,7 +1,7 @@
 import _ from "lodash";
-import * as RedisClient from "../init/redis.js";
-import LaterQueue from "../queues/later-queue.js";
-import { getCurrentDayTimestamp, matchesAPattern, kogascore } from "./misc.js";
+import * as RedisClient from "../init/redis";
+import LaterQueue from "../queues/later-queue";
+import { getCurrentDayTimestamp, matchesAPattern, kogascore } from "./misc";
 import { Configuration, ValidModeRule } from "@monkeytype/shared-types";
 
 type DailyLeaderboardEntry = {

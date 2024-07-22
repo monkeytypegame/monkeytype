@@ -1,5 +1,5 @@
-import * as PublicDAL from "../../dal/public.js";
-import { MonkeyResponse } from "../../utils/monkey-response.js";
+import * as PublicDAL from "../../dal/public";
+import { MonkeyResponse } from "../../utils/monkey-response";
 
 export async function getPublicSpeedHistogram(
   req: MonkeyTypes.Request

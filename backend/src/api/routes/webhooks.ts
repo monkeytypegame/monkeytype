@@ -1,9 +1,9 @@
 // import joi from "joi";
 import { Router } from "express";
-import { authenticateGithubWebhook } from "../../middlewares/auth.js";
-import { asyncHandler } from "../../middlewares/utility.js";
-import { webhookLimit } from "../../middlewares/rate-limit.js";
-import { githubRelease } from "../controllers/webhooks.js";
+import { authenticateGithubWebhook } from "../../middlewares/auth";
+import { asyncHandler } from "../../middlewares/utility";
+import { webhookLimit } from "../../middlewares/rate-limit";
+import { githubRelease } from "../controllers/webhooks";
 
 const router = Router();
 

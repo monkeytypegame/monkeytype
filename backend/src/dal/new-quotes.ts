@@ -3,8 +3,8 @@ import { ObjectId } from "mongodb";
 import path from "path";
 import { existsSync, writeFileSync } from "fs";
 import { readFile } from "node:fs/promises";
-import * as db from "../init/db.js";
-import MonkeyError from "../utils/error.js";
+import * as db from "../init/db";
+import MonkeyError from "../utils/error";
 import { compareTwoStrings } from "string-similarity";
 
 const PATH_TO_REPO = "../../../../monkeytype-new-quotes";

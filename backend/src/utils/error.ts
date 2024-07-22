@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from "uuid";
-import { isDevEnvironment } from "./misc.js";
+import { isDevEnvironment } from "./misc";
 
 class MonkeyError extends Error {
   status: number;

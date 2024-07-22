@@ -1,10 +1,7 @@
 import _ from "lodash";
 import type { Response, NextFunction, RequestHandler } from "express";
-import {
-  handleMonkeyResponse,
-  MonkeyResponse,
-} from "../utils/monkey-response.js";
-import { isDevEnvironment } from "../utils/misc.js";
+import { handleMonkeyResponse, MonkeyResponse } from "../utils/monkey-response";
+import { isDevEnvironment } from "../utils/misc";
 
 export const emptyMiddleware = (
   _req: MonkeyTypes.Request,

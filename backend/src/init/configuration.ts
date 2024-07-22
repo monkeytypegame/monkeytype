@@ -1,9 +1,9 @@
 import _ from "lodash";
-import * as db from "./db.js";
+import * as db from "./db";
 import { ObjectId } from "mongodb";
-import Logger from "../utils/logger.js";
-import { identity } from "../utils/misc.js";
-import { BASE_CONFIGURATION } from "../constants/base-configuration.js";
+import Logger from "../utils/logger";
+import { identity } from "../utils/misc";
+import { BASE_CONFIGURATION } from "../constants/base-configuration";
 import { Configuration } from "@monkeytype/shared-types";
 
 const CONFIG_UPDATE_INTERVAL = 10 * 60 * 1000; // 10 Minutes

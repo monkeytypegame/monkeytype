@@ -1,12 +1,12 @@
 import joi from "joi";
 import { Router } from "express";
-import { authenticateRequest } from "../../middlewares/auth.js";
-import * as ApeKeyController from "../controllers/ape-key.js";
-import * as RateLimit from "../../middlewares/rate-limit.js";
-import { checkUserPermissions } from "../../middlewares/permission.js";
-import { validate } from "../../middlewares/configuration.js";
-import { asyncHandler } from "../../middlewares/utility.js";
-import { validateRequest } from "../../middlewares/validation.js";
+import { authenticateRequest } from "../../middlewares/auth";
+import * as ApeKeyController from "../controllers/ape-key";
+import * as RateLimit from "../../middlewares/rate-limit";
+import { checkUserPermissions } from "../../middlewares/permission";
+import { validate } from "../../middlewares/configuration";
+import { asyncHandler } from "../../middlewares/utility";
+import { validateRequest } from "../../middlewares/validation";
 
 const apeKeyNameSchema = joi
   .string()

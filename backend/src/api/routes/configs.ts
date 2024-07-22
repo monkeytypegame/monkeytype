@@ -1,10 +1,10 @@
 import { Router } from "express";
-import { authenticateRequest } from "../../middlewares/auth.js";
-import configSchema from "../schemas/config-schema.js";
-import * as ConfigController from "../controllers/config.js";
-import * as RateLimit from "../../middlewares/rate-limit.js";
-import { asyncHandler } from "../../middlewares/utility.js";
-import { validateRequest } from "../../middlewares/validation.js";
+import { authenticateRequest } from "../../middlewares/auth";
+import configSchema from "../schemas/config-schema";
+import * as ConfigController from "../controllers/config";
+import * as RateLimit from "../../middlewares/rate-limit";
+import { asyncHandler } from "../../middlewares/utility";
+import { validateRequest } from "../../middlewares/validation";
 
 const router = Router();
 

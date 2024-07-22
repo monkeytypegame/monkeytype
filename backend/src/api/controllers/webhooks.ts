@@ -1,5 +1,5 @@
-import { MonkeyResponse } from "../../utils/monkey-response.js";
-import GeorgeQueue from "../../queues/george-queue.js";
+import { MonkeyResponse } from "../../utils/monkey-response";
+import GeorgeQueue from "../../queues/george-queue";
 
 export async function githubRelease(
   req: MonkeyTypes.Request

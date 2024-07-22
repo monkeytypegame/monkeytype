@@ -1,11 +1,11 @@
 import joi from "joi";
-import { authenticateRequest } from "../../middlewares/auth.js";
-import * as PresetController from "../controllers/preset.js";
-import * as RateLimit from "../../middlewares/rate-limit.js";
-import configSchema from "../schemas/config-schema.js";
+import { authenticateRequest } from "../../middlewares/auth";
+import * as PresetController from "../controllers/preset";
+import * as RateLimit from "../../middlewares/rate-limit";
+import configSchema from "../schemas/config-schema";
 import { Router } from "express";
-import { asyncHandler } from "../../middlewares/utility.js";
-import { validateRequest } from "../../middlewares/validation.js";
+import { asyncHandler } from "../../middlewares/utility";
+import { validateRequest } from "../../middlewares/validation";
 
 const router = Router();
 

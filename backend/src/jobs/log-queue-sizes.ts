@@ -1,6 +1,6 @@
 import { CronJob } from "cron";
-import Queues from "../queues/index.js";
-import { setQueueLength } from "../utils/prometheus.js";
+import Queues from "../queues/index";
+import { setQueueLength } from "../utils/prometheus";
 
 const CRON_SCHEDULE = "0 */5 * * * *";
 

@@ -1,10 +1,10 @@
 import _ from "lodash";
 import { randomBytes } from "crypto";
 import { hash } from "bcrypt";
-import * as ApeKeysDAL from "../../dal/ape-keys.js";
-import MonkeyError from "../../utils/error.js";
-import { MonkeyResponse } from "../../utils/monkey-response.js";
-import { base64UrlEncode } from "../../utils/misc.js";
+import * as ApeKeysDAL from "../../dal/ape-keys";
+import MonkeyError from "../../utils/error";
+import { MonkeyResponse } from "../../utils/monkey-response";
+import { base64UrlEncode } from "../../utils/misc";
 import { ObjectId } from "mongodb";
 import { ApeKey } from "@monkeytype/shared-types";
 

@@ -1,23 +1,19 @@
 import _ from "lodash";
 import IORedis from "ioredis";
 import { Worker, Job, type ConnectionOptions } from "bullmq";
-import Logger from "../utils/logger.js";
-import { addToInboxBulk } from "../dal/user.js";
-import GeorgeQueue from "../queues/george-queue.js";
-import { buildMonkeyMail } from "../utils/monkey-mail.js";
-import { DailyLeaderboard } from "../utils/daily-leaderboards.js";
-import { getCachedConfiguration } from "../init/configuration.js";
-import {
-  formatSeconds,
-  getOrdinalNumberString,
-  mapRange,
-} from "../utils/misc.js";
+import Logger from "../utils/logger";
+import { addToInboxBulk } from "../dal/user";
+import GeorgeQueue from "../queues/george-queue";
+import { buildMonkeyMail } from "../utils/monkey-mail";
+import { DailyLeaderboard } from "../utils/daily-leaderboards";
+import { getCachedConfiguration } from "../init/configuration";
+import { formatSeconds, getOrdinalNumberString, mapRange } from "../utils/misc";
 import LaterQueue, {
   type LaterTask,
   type LaterTaskContexts,
   type LaterTaskType,
-} from "../queues/later-queue.js";
-import { recordTimeToCompleteJob } from "../utils/prometheus.js";
+} from "../queues/later-queue";
+import { recordTimeToCompleteJob } from "../utils/prometheus";
 import { WeeklyXpLeaderboard } from "../services/weekly-xp-leaderboard.js";
 import { MonkeyMail } from "@monkeytype/shared-types";
 
