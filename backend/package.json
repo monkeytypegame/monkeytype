@@ -52,7 +52,7 @@
     "string-similarity": "4.0.4",
     "swagger-stats": "0.99.5",
     "swagger-ui-express": "4.3.0",
-    "ua-parser-js": "0.7.28",
+    "ua-parser-js": "0.7.33",
     "uuid": "9.0.1",
     "winston": "3.6.0"
   },
