@@ -81,13 +81,13 @@ jobs:
         run: npm run pretty-code-be
 
       - name: Check lint
-        run: npx turbo lint --filter @monkeytype/backend
+        run: npm run lint-be
 
       - name: Build
-        run: npx turbo build --filter @monkeytype/backend
+        run: npm run build-be
 
       - name: Test
-        run: npx turbo test --filter @monkeytype/backend
+        run: npm run test-be
 
   ci-fe:
     name: ci-fe
@@ -112,13 +112,13 @@ jobs:
         run: npm run pretty-code-fe
 
       - name: Check lint
-        run: npx turbo lint --filter @monkeytype/frontend
+        run: npm run lint-fe
 
       - name: Build
-        run: npx turbo build --filter @monkeytype/frontend
+        run: npm run build-fe
 
       - name: Test
-        run: npx turbo test --filter @monkeytype/frontend
+        run: npm run test-fe
 
   ci-assets:
     name: ci-assets
@@ -183,13 +183,13 @@ jobs:
         run: npm run pretty-code-packages
 
       - name: Check lint
-        run: npx turbo lint --filter="./packages/*"
+        run: npm run lint-pkg
 
       - name: Build
-        run: npx turbo build --filter="./packages/*"
+        run: npm run build-pkg
 
       - name: Test
-        run: npx turbo test --filter="./packages/*"
+        run: npm run test-pkg
 
   on-failure:
     permissions: write-all
