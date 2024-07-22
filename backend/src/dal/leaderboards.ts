@@ -4,6 +4,7 @@ import { performance } from "perf_hooks";
 import { setLeaderboard } from "../utils/prometheus";
 import { isDevEnvironment } from "../utils/misc";
 import { getCachedConfiguration } from "../init/configuration";
+import { LeaderboardEntry } from "@monkeytype/shared-types";
 
 export async function get(
   mode: string,
@@ -11,16 +12,14 @@ export async function get(
   language: string,
   skip: number,
   limit = 50
-): Promise<SharedTypes.LeaderboardEntry[] | false> {
+): Promise<LeaderboardEntry[] | false> {
   //if (leaderboardUpdating[`${language}_${mode}_${mode2}`]) return false;
 
   if (limit > 50 || limit <= 0) limit = 50;
   if (skip < 0) skip = 0;
   try {
     const preset = await db
-      .collection<SharedTypes.LeaderboardEntry>(
-        `leaderboards.${language}.${mode}.${mode2}`
-      )
+      .collection<LeaderboardEntry>(`leaderboards.${language}.${mode}.${mode2}`)
       .find()
       .sort({ rank: 1 })
       .skip(skip)
@@ -46,7 +45,7 @@ export async function get(
 type GetRankResponse = {
   count: number;
   rank: number | null;
-  entry: SharedTypes.LeaderboardEntry | null;
+  entry: LeaderboardEntry | null;
 };
 
 export async function getRank(
@@ -57,9 +56,7 @@ export async function getRank(
 ): Promise<GetRankResponse | false> {
   try {
     const entry = await db
-      .collection<SharedTypes.LeaderboardEntry>(
-        `leaderboards.${language}.${mode}.${mode2}`
-      )
+      .collection<LeaderboardEntry>(`leaderboards.${language}.${mode}.${mode2}`)
       .findOne({ uid });
     const count = await db
       .collection(`leaderboards.${language}.${mode}.${mode2}`)
@@ -91,7 +88,7 @@ export async function update(
   const lbCollectionName = `leaderboards.${language}.${mode}.${mode2}`;
   const lb = db
     .collection<MonkeyTypes.DBUser>("users")
-    .aggregate<SharedTypes.LeaderboardEntry>(
+    .aggregate<LeaderboardEntry>(
       [
         {
           $match: {

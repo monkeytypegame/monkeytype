@@ -1,7 +1,7 @@
 name: Monkey CI
 
 env:
-  NODE_VERSION: "18.19.1"
+  NODE_VERSION: "18.20.4"
   RECAPTCHA_SITE_KEY: "6Lc-V8McAAAAAJ7s6LGNe7MBZnRiwbsbiWts87aj"
 
 permissions:
@@ -28,6 +28,7 @@ jobs:
     outputs:
       should-build-be: ${{ steps.export-changes.outputs.should-build-be }}
       should-build-fe: ${{ steps.export-changes.outputs.should-build-fe }}
+      should-build-pkg: ${{ steps.export-changes.outputs.should-build-pkg }}
       assets-json: ${{ steps.export-changes.outputs.assets-json }}
 
     steps:
@@ -40,8 +41,12 @@ jobs:
               - 'frontend/**/*.json'
             be-src:
               - 'backend/**/*.{ts,js,json,lua,css,html}'
+              - 'backend/package.json'
             fe-src:
               - 'frontend/**/*.{ts,scss}'
+              - 'frontend/package.json'
+            pkg-src:
+              - 'packages/**/*'
             anti-cheat:
               - 'backend/**/anticheat/**'
 
@@ -52,6 +57,7 @@ jobs:
       - name: Export changes
         id: export-changes
         run: |
+          echo "should-build-pkg=${{ steps.filter.outputs.pkg-src }}" >> $GITHUB_OUTPUT
           echo "should-build-be=${{ steps.filter.outputs.be-src }}" >> $GITHUB_OUTPUT
           echo "should-build-fe=${{ steps.filter.outputs.fe-src }}" >> $GITHUB_OUTPUT
           echo "assets-json=${{ steps.filter.outputs.json }}" >> $GITHUB_OUTPUT
@@ -69,7 +75,7 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
 
       - name: Install dependencies
-        run: npm ci & cd backend && npm ci
+        run: npm ci
 
       - name: Check pretty
         run: npm run pretty-code-be
@@ -78,7 +84,7 @@ jobs:
         run: npm run lint-be
 
       - name: Build
-        run: npm run pr-check-build-be
+        run: npm run build-be
 
       - name: Test
         run: npm run test-be
@@ -100,7 +106,7 @@ jobs:
         run: mv ./firebase-config-example.ts ./firebase-config.ts && cp ./firebase-config.ts ./firebase-config-live.ts
 
       - name: Install dependencies
-        run: npm ci & cd frontend && npm ci
+        run: npm ci
 
       - name: Check pretty
         run: npm run pretty-code-fe
@@ -109,7 +115,7 @@ jobs:
         run: npm run lint-fe
 
       - name: Build
-        run: npm run pr-check-build-fe
+        run: npm run build-fe
 
       - name: Test
         run: npm run test-fe
@@ -141,7 +147,7 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
 
       - name: Install dependencies
-        run: npm ci & cd frontend && npm ci
+        run: npm ci
 
       - name: Lint JSON
         run: npm run pr-check-lint-json
@@ -157,6 +163,33 @@ jobs:
       - name: Validate other JSON
         if: steps.filter.outputs.other-json == 'true'
         run: npm run pr-check-other-json
+
+  ci-pkg:
+    name: ci-pkg
+    needs: [pre-ci]
+    runs-on: ubuntu-latest
+    if: needs.pre-ci.outputs.should-build-pkg == 'true'
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Check pretty
+        run: npm run pretty-code-pkg
+
+      - name: Check lint
+        run: npm run lint-pkg
+
+      - name: Build
+        run: npm run build-pkg
+
+      - name: Test
+        run: npm run test-pkg
 
   on-failure:
     permissions: write-all

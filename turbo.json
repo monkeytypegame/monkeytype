@@ -1,0 +1,34 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "globalDependencies": [".env"],
+  "tasks": {
+    "parallel": {
+      "dependsOn": ["^parallel"]
+    },
+    "lint": {
+      "dependsOn": ["^parallel", "^build"]
+    },
+    "ts-check": {
+      "dependsOn": ["^parallel"]
+    },
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": ["dist/**", "build/**"]
+    },
+    "test": {
+      "cache": false
+    },
+    "dev": {
+      "dependsOn": ["^build"],
+      "persistent": true,
+      "cache": false
+    },
+    "@monkeytype/frontend#validate-json": {
+      "dependsOn": ["^parallel"]
+    },
+    "@monkeytype/frontend#build": {
+      "dependsOn": ["^build"],
+      "env": ["BACKEND_URL", "RECAPTCHA_SITE_KEY"]
+    }
+  }
+}

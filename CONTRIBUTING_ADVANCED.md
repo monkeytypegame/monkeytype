@@ -21,7 +21,7 @@
 
 ## Prerequisites
 
-This contribution guide is for cases in which you need to test the functionality of your changes, or if you need to take screenshots of your changes. You will need a computer with a stable internet connection, a text editor, Git, and NodeJS with version 18.19.1. There are some additional requirements depending on what you're looking to contribute, such as Firebase for authentication, and Mongo and Docker for the backend. Read the below sections to understand how to set up each of these tools.
+This contribution guide is for cases in which you need to test the functionality of your changes, or if you need to take screenshots of your changes. You will need a computer with a stable internet connection, a text editor, Git, and NodeJS with version 18.20.4. There are some additional requirements depending on what you're looking to contribute, such as Firebase for authentication, and Mongo and Docker for the backend. Read the below sections to understand how to set up each of these tools.
 
 ### Git
 
@@ -33,9 +33,9 @@ Git is optional but we recommend you utilize it. Monkeytype uses the Git source 
 
 ### NodeJS and NPM
 
-Currently, the project is using version `18.19.1 LTS`.
+Currently, the project is using version `18.20.4 LTS`.
 
-If you use `nvm` (if you use Windows, use [nvm-windows](https://github.com/coreybutler/nvm-windows)) then you can run `nvm install` and `nvm use` (you might need to specify the exact version eg: `nvm install 18.19.1` then `nvm use 18.19.1`) to use the version of Node.js in the `.nvmrc` file.
+If you use `nvm` (if you use Windows, use [nvm-windows](https://github.com/coreybutler/nvm-windows)) then you can run `nvm install` and `nvm use` (you might need to specify the exact version eg: `nvm install 18.20.4` then `nvm use 18.20.4`) to use the version of Node.js in the `.nvmrc` file.
 
 Alternatively, you can navigate to the NodeJS [website](https://nodejs.org/en/) to download it from there.
 
@@ -120,10 +120,7 @@ Its time to run Monkeytype. Just like with the databases, you can run the fronte
 
 ### Dependencies (if running manually)
 
-Run `npm run install-all` in the project root to install all dependencies.
-
-- If you are on Windows, use `npm run install-windows`.
-- If neither works, you will have to run `npm install` in root, frontend, and backend directories.
+Run `npm i` in the project root to install all dependencies.
 
 ### Both Frontend and Backend
 

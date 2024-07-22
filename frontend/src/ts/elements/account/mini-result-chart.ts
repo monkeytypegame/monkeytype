@@ -2,6 +2,7 @@ import * as ChartController from "../../controllers/chart-controller";
 import Config from "../../config";
 import * as Misc from "../../utils/misc";
 import * as Arrays from "../../utils/arrays";
+import { ChartData } from "@monkeytype/shared-types";
 
 export function updatePosition(x: number, y: number): void {
   $(".pageAccount .miniResultChartWrapper").css({ top: y, left: x });
@@ -17,7 +18,7 @@ function hide(): void {
   $(".pageAccount .miniResultChartBg").stop(true, true).fadeOut(125);
 }
 
-export function updateData(data: SharedTypes.ChartData): void {
+export function updateData(data: ChartData): void {
   // let data = filteredResults[filteredId].chartData;
   let labels = [];
   for (let i = 1; i <= data.wpm.length; i++) {

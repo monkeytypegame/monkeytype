@@ -8,8 +8,10 @@ import * as ResultDal from "../../dal/result";
 import { roundTo2 } from "../../utils/misc";
 import { ObjectId } from "mongodb";
 import * as LeaderboardDal from "../../dal/leaderboards";
-import { isNumber } from "lodash";
 import MonkeyError from "../../utils/error";
+import isNumber from "lodash/isNumber";
+import { Mode } from "@monkeytype/shared-types/config";
+import { PersonalBest, PersonalBests } from "@monkeytype/shared-types/user";
 
 type GenerateDataOptions = {
   firstTestTimestamp: Date;
@@ -113,7 +115,7 @@ function createResult(
   user: MonkeyTypes.DBUser,
   timestamp: Date //evil, we modify this value
 ): MonkeyTypes.DBResult {
-  const mode: SharedTypes.Config.Mode = randomValue(["time", "words"]);
+  const mode: Mode = randomValue(["time", "words"]);
   const mode2: number =
     mode === "time"
       ? randomValue([15, 30, 60, 120])
@@ -129,7 +131,7 @@ function createResult(
     charStats: [131, 0, 0, 0],
     acc: random(80, 100),
     language: "english",
-    mode: mode as SharedTypes.Config.Mode,
+    mode: mode as Mode,
     mode2: mode2 as unknown as never,
     timestamp: timestamp.valueOf(),
     testDuration: testDuration,
@@ -191,7 +193,7 @@ async function updateUser(uid: string): Promise<void> {
     },
   };
 
-  const personalBests: SharedTypes.PersonalBests = {
+  const personalBests: PersonalBests = {
     time: {},
     custom: {},
     words: {},
@@ -228,7 +230,7 @@ async function updateUser(uid: string): Promise<void> {
       wpm: best.wpm,
       numbers: best.numbers,
       timestamp: best.timestamp,
-    } as SharedTypes.PersonalBest;
+    } as PersonalBest;
 
     personalBests[mode.mode][mode.mode2].push(entry);
 
@@ -251,7 +253,7 @@ async function updateUser(uid: string): Promise<void> {
         timeTyping: timeTyping,
         completedTests: completedTests,
         startedTests: Math.round(completedTests * 1.25),
-        personalBests: personalBests as SharedTypes.PersonalBests,
+        personalBests: personalBests as PersonalBests,
         lbPersonalBests: lbPersonalBests,
       },
     }

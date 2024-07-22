@@ -7,14 +7,16 @@ import * as ConfigEvent from "../observables/config-event";
 import { setCustomTextName } from "../states/custom-text-name";
 import * as Skeleton from "../utils/skeleton";
 import { isPopupVisible } from "../utils/misc";
+import { Mode } from "@monkeytype/shared-types/config";
+import { CustomTextData } from "@monkeytype/shared-types";
 
 const wrapperId = "practiseWordsPopupWrapper";
 
 type Before = {
-  mode: SharedTypes.Config.Mode | null;
+  mode: Mode | null;
   punctuation: boolean | null;
   numbers: boolean | null;
-  customText: SharedTypes.CustomTextData | null;
+  customText: CustomTextData | null;
 };
 
 export const before: Before = {

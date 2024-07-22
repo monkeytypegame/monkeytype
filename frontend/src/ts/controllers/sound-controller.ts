@@ -8,6 +8,7 @@ import { capsState } from "../test/caps-warning";
 import * as Notifications from "../elements/notifications";
 
 import type { Howl } from "howler";
+import { PlaySoundOnClick } from "@monkeytype/shared-types/config";
 
 async function gethowler(): Promise<typeof import("howler")> {
   return await import("howler");
@@ -478,10 +479,7 @@ const codeToNote: Record<string, GetNoteFrequencyCallback> = {
   BracketRight: bindToNote(notes.G, 2),
 };
 
-type DynamicClickSounds = Extract<
-  SharedTypes.Config.PlaySoundOnClick,
-  "8" | "9" | "10" | "11"
->;
+type DynamicClickSounds = Extract<PlaySoundOnClick, "8" | "9" | "10" | "11">;
 type SupportedOscillatorTypes = Exclude<OscillatorType, "custom">;
 
 const clickSoundIdsToOscillatorType: Record<
@@ -551,7 +549,7 @@ const defaultScaleData: ScaleData = {
 };
 
 export const scaleConfigurations: Record<
-  Extract<SharedTypes.Config.PlaySoundOnClick, "12" | "13">,
+  Extract<PlaySoundOnClick, "12" | "13">,
   ScaleMeta
 > = {
   "12": {

@@ -23,7 +23,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: "18.19.1"
+          node-version: "18.20.4"
 
       - name: Install dependencies
         run: npm i prettier@2.5.1 --save-dev --save-exact

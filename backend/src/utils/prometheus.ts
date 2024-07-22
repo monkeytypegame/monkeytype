@@ -1,3 +1,5 @@
+import { Result } from "@monkeytype/shared-types";
+import { Mode } from "@monkeytype/shared-types/config";
 import "dotenv/config";
 import { Counter, Histogram, Gauge } from "prom-client";
 
@@ -88,9 +90,7 @@ export function setLeaderboard(
   leaderboardUpdate.set({ language, mode, mode2, step: "index" }, times[3]);
 }
 
-export function incrementResult(
-  res: SharedTypes.Result<SharedTypes.Config.Mode>
-): void {
+export function incrementResult(res: Result<Mode>): void {
   const {
     mode,
     mode2,

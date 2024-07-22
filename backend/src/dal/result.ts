@@ -1,13 +1,17 @@
 import _ from "lodash";
-import { Collection, DeleteResult, ObjectId, UpdateResult } from "mongodb";
+import {
+  Collection,
+  type DeleteResult,
+  ObjectId,
+  type UpdateResult,
+} from "mongodb";
 import MonkeyError from "../utils/error";
 import * as db from "../init/db";
-
+import { DBResult as SharedDBResult } from "@monkeytype/shared-types";
 import { getUser, getTags } from "./user";
+import { Mode } from "@monkeytype/shared-types/config";
 
-type DBResult = MonkeyTypes.WithObjectId<
-  SharedTypes.DBResult<SharedTypes.Config.Mode>
->;
+type DBResult = MonkeyTypes.WithObjectId<SharedDBResult<Mode>>;
 
 export const getResultCollection = (): Collection<DBResult> =>
   db.collection<DBResult>("results");
