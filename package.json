@@ -43,7 +43,6 @@
     "@release-it/conventional-changelog": "7.0.0",
     "@typescript-eslint/eslint-plugin": "7.1.0",
     "@typescript-eslint/parser": "7.1.0",
-    "concurrently": "7.2.1",
     "conventional-changelog": "4.0.0",
     "eslint": "8.57.0",
     "eslint-config-prettier": "9.0.0",
