@@ -31,7 +31,7 @@
     "pretty-code": "prettier --check \"./backend/**/*.{ts,js,json,css,html}\" \"./frontend/**/*.{ts,js}\" \"./packages/**/*.{ts,js,json}\" \"./frontend/src/**/*.scss\" ",
     "pretty-code-be": "prettier --check \"./backend/**/*.{ts,js,json,css,html}\"",
     "pretty-code-fe": "prettier --check \"./frontend/**/*.{ts,js}\" \"./frontend/src/**/*.scss\"",
-    "pretty-code-pkg": "prettier --check \"./packages/src/**/*.{ts,js}\"",
+    "pretty-code-pkg": "prettier --check \"./packages/**/*.{ts,js}\"",
     "pretty-fix": "prettier --write \"./backend/**/*.{ts,json,js,css,html}\" \"./frontend/**/*.{ts,js,scss}\" \"./packages/**/*.{ts,js,json}\" \"./frontend/static/**/*.{json,html,css}\"",
     "pr-check-lint-json": "cd frontend && eslint './static/**/*.json'",
     "pr-check-quote-json": "cd frontend && npx gulp pr-check-quote-json",
