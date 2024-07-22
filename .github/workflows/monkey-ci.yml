@@ -28,7 +28,7 @@ jobs:
     outputs:
       should-build-be: ${{ steps.export-changes.outputs.should-build-be }}
       should-build-fe: ${{ steps.export-changes.outputs.should-build-fe }}
-      should-build-packages: ${{ steps.export-changes.outputs.should-build-packages }}
+      should-build-pkg: ${{ steps.export-changes.outputs.should-build-pkg }}
       assets-json: ${{ steps.export-changes.outputs.assets-json }}
 
     steps:
@@ -45,7 +45,7 @@ jobs:
             fe-src:
               - 'frontend/**/*.{ts,scss}'
               - 'frontend/package.json'
-            packages-src:
+            pkg-src:
               - 'packages/**/*'
             anti-cheat:
               - 'backend/**/anticheat/**'
@@ -57,7 +57,7 @@ jobs:
       - name: Export changes
         id: export-changes
         run: |
-          echo "should-build-packages=${{ steps.filter.outputs.packages-src }}" >> $GITHUB_OUTPUT
+          echo "should-build-pkg=${{ steps.filter.outputs.pkg-src }}" >> $GITHUB_OUTPUT
           echo "should-build-be=${{ steps.filter.outputs.be-src }}" >> $GITHUB_OUTPUT
           echo "should-build-fe=${{ steps.filter.outputs.fe-src }}" >> $GITHUB_OUTPUT
           echo "assets-json=${{ steps.filter.outputs.json }}" >> $GITHUB_OUTPUT
@@ -164,11 +164,11 @@ jobs:
         if: steps.filter.outputs.other-json == 'true'
         run: npm run pr-check-other-json
 
-  ci-packages:
-    name: ci-packages
+  ci-pkg:
+    name: ci-pkg
     needs: [pre-ci]
     runs-on: ubuntu-latest
-    if: needs.pre-ci.outputs.should-build-packages == 'true'
+    if: needs.pre-ci.outputs.should-build-pkg == 'true'
     steps:
       - uses: actions/checkout@v4
       - name: Set up Node.js
@@ -180,7 +180,7 @@ jobs:
         run: npm ci
 
       - name: Check pretty
-        run: npm run pretty-code-packages
+        run: npm run pretty-code-pkg
 
       - name: Check lint
         run: npm run lint-pkg
