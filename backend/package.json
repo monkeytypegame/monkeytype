@@ -23,7 +23,6 @@
   },
   "dependencies": {
     "@date-fns/utc": "1.2.0",
-    "@monkeytype/mono-test": "*",
     "bcrypt": "5.1.1",
     "bullmq": "1.91.1",
     "chalk": "4.1.2",
