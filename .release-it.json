@@ -1,6 +1,6 @@
 {
   "hooks": {
-    "before:init": ["npx turbo lint test build validate-json"],
+    "before:init": ["npx turbo lint test validate-json build"],
     "before:release": [
       "sh ./bin/deployBackend.sh",
       "cd frontend && npx firebase deploy -P live --only hosting",
