@@ -4,7 +4,7 @@
   "license": "GPL-3.0",
   "private": true,
   "scripts": {
-    "lint": "eslint \"./**/*.ts\"",
+    "lint": "eslint \"./src/**/*.ts\"",
     "build": "tsc --build",
     "watch": "tsc --build --watch",
     "clean": "tsc --build --clean",
@@ -12,7 +12,7 @@
     "start": "npm run build && node ./build/server.js",
     "test": "vitest run",
     "test-coverage": "vitest run --coverage",
-    "dev": "tsx watch ./src/server.ts",
+    "dev": "concurrently \"tsx watch --clear-screen=false ./src/server.ts\" \"tsc --preserveWatchOutput --noEmit --watch\" \"npx eslint-watch \"./src/**/*.ts\"\"",
     "knip": "knip",
     "docker-db-only": "docker compose -f docker/compose.db-only.yml up",
     "docker": "docker compose -f docker/compose.yml up"
@@ -80,7 +80,9 @@
     "@types/ua-parser-js": "0.7.36",
     "@types/uuid": "8.3.4",
     "@vitest/coverage-v8": "1.6.0",
+    "concurrently": "8.2.2",
     "eslint": "8.57.0",
+    "eslint-watch": "8.0.0",
     "ioredis-mock": "7.4.0",
     "readline-sync": "1.4.10",
     "supertest": "6.2.3",
