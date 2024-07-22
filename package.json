@@ -8,6 +8,8 @@
     "pre-commit": "lint-staged",
     "lint": "turbo run lint",
     "build": "turbo run build",
+    "build-be": "turbo run build --filter @monkeytype/backend",
+    "build-fe": "turbo run build --filter @monkeytype/frontend",
     "test": "turbo run test",
     "docker": "cd backend && docker compose up",
     "dev": "turbo run dev",
