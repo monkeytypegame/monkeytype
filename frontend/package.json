@@ -8,7 +8,7 @@
     "validate-json": "npx gulp validate-json-schema",
     "audit": "vite-bundle-visualizer",
     "dep-graph": "madge -c -i \"dep-graph.png\" ./src/ts",
-    "check-ts": "tsc --noEmit",
+    "ts-check": "tsc --noEmit",
     "build": "npm run madge && vite build",
     "madge": " madge --circular --extensions ts ./src",
     "live": "npm run build && vite preview --port 3000",

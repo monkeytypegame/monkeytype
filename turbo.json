@@ -8,7 +8,7 @@
     "lint": {
       "dependsOn": ["^parallel", "^build"]
     },
-    "check-ts": {
+    "ts-check": {
       "dependsOn": ["^parallel"]
     },
     "build": {
