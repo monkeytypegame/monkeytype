@@ -41,10 +41,12 @@ jobs:
               - 'frontend/**/*.json'
             be-src:
               - 'backend/**/*.{ts,js,json,lua,css,html}'
+              - 'backend/package.json'
             fe-src:
               - 'frontend/**/*.{ts,scss}'
+              - 'frontend/package.json'
             packages-src:
-              - 'packages/**/*.{ts}'
+              - 'packages/**/*'
             anti-cheat:
               - 'backend/**/anticheat/**'
 
