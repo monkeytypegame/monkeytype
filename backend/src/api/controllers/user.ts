@@ -25,10 +25,18 @@ import * as ReportDAL from "../../dal/report";
 import emailQueue from "../../queues/email-queue";
 import FirebaseAdmin from "../../init/firebase-admin";
 import * as AuthUtil from "../../utils/auth";
-
 import * as Dates from "date-fns";
 import { UTCDateMini } from "@date-fns/utc";
-import * as BlocklistDal from "../../dal/blocklist.js";
+import * as BlocklistDal from "../../dal/blocklist";
+import { Mode, Mode2 } from "@monkeytype/shared-types/config";
+import {
+  AllTimeLbs,
+  CountByYearAndDay,
+  RankAndCount,
+  TestActivity,
+  UserProfile,
+  UserProfileDetails,
+} from "@monkeytype/shared-types";
 
 async function verifyCaptcha(captcha: string): Promise<void> {
   if (!(await verify(captcha))) {

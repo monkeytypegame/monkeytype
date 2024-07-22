@@ -9,7 +9,7 @@ import { roundTo2 } from "../../utils/misc";
 import { ObjectId } from "mongodb";
 import * as LeaderboardDal from "../../dal/leaderboards";
 import MonkeyError from "../../utils/error";
-import isNumber from "lodash/isNumber.js";
+import isNumber from "lodash/isNumber";
 import { Mode } from "@monkeytype/shared-types/config";
 import { PersonalBest, PersonalBests } from "@monkeytype/shared-types/user";
 

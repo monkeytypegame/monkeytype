@@ -1,5 +1,5 @@
 import type { Response, NextFunction, RequestHandler } from "express";
-import MonkeyError from "../utils/error.js";
+import MonkeyError from "../utils/error";
 import { Configuration } from "@monkeytype/shared-types";
 
 export type ValidationOptions<T> = {

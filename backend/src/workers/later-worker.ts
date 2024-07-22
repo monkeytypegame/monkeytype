@@ -14,7 +14,7 @@ import LaterQueue, {
   type LaterTaskType,
 } from "../queues/later-queue";
 import { recordTimeToCompleteJob } from "../utils/prometheus";
-import { WeeklyXpLeaderboard } from "../services/weekly-xp-leaderboard.js";
+import { WeeklyXpLeaderboard } from "../services/weekly-xp-leaderboard";
 import { MonkeyMail } from "@monkeytype/shared-types";
 
 async function handleDailyLeaderboardResults(
