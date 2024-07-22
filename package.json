@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "full-check": "turbo lint ts-check build test validate-json",
     "prepare": "husky install",
     "pre-commit": "lint-staged",
     "lint": "turbo run lint",
