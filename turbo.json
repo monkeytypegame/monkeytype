@@ -6,7 +6,7 @@
       "dependsOn": ["^parallel"]
     },
     "lint": {
-      "dependsOn": ["^parallel"]
+      "dependsOn": ["^parallel", "^build"]
     },
     "check-ts": {
       "dependsOn": ["^parallel"]
