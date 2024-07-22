@@ -18,8 +18,7 @@ COPY docker/frontend/.env frontend/.env
 
 #BUILD
 RUN npm ci
-##TODO: remove ||true
-RUN npm run build || true  
+RUN npm run build
 
 # COPY to target
 FROM nginx:mainline-alpine

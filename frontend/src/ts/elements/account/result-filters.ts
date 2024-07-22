@@ -6,6 +6,7 @@ import Config from "../../config";
 import * as Notifications from "../notifications";
 import Ape from "../../ape/index";
 import * as Loader from "../loader";
+// @ts-expect-error TODO: update slim-select
 import SlimSelect from "slim-select";
 import { ResultFilters } from "@monkeytype/shared-types";
 import { QuoteLength } from "@monkeytype/shared-types/config";
@@ -823,7 +824,9 @@ export async function appendButtons(
         },
         events: {
           beforeChange: (
+            // @ts-expect-error TODO: update slim-select
             selectedOptions,
+            // @ts-expect-error TODO: update slim-select
             oldSelectedOptions
           ): void | boolean => {
             return selectBeforeChangeFn(
@@ -880,7 +883,9 @@ export async function appendButtons(
         },
         events: {
           beforeChange: (
+            // @ts-expect-error TODO: update slim-select
             selectedOptions,
+            // @ts-expect-error TODO: update slim-select
             oldSelectedOptions
           ): void | boolean => {
             return selectBeforeChangeFn(
@@ -933,7 +938,9 @@ export async function appendButtons(
         },
         events: {
           beforeChange: (
+            // @ts-expect-error TODO: update slim-select
             selectedOptions,
+            // @ts-expect-error TODO: update slim-select
             oldSelectedOptions
           ): void | boolean => {
             return selectBeforeChangeFn(

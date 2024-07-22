@@ -18,6 +18,7 @@ import { getAuthenticatedUser, isAuthenticated } from "../firebase";
 import Ape from "../ape";
 import { areFunboxesCompatible } from "../test/funbox/funbox-validation";
 import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
+// @ts-expect-error TODO: update slim-select
 import SlimSelect from "slim-select";
 
 import * as Skeleton from "../utils/skeleton";
@@ -548,6 +549,7 @@ async function fillSettingsPage(): Promise<void> {
   new SlimSelect({
     select: themeSelectLightElement,
     events: {
+      // @ts-expect-error TODO: update slim-select
       afterChange: (newVal): void => {
         UpdateConfig.setThemeLight(newVal[0]?.value as string);
       },
@@ -557,6 +559,7 @@ async function fillSettingsPage(): Promise<void> {
   new SlimSelect({
     select: themeSelectDarkElement,
     events: {
+      // @ts-expect-error TODO: update slim-select
       afterChange: (newVal): void => {
         UpdateConfig.setThemeDark(newVal[0]?.value as string);
       },
