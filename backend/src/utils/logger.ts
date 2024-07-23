@@ -1,6 +1,11 @@
 import * as db from "../init/db";
 import chalk from "chalk";
-import { format, createLogger, transports, Logger } from "winston";
+import {
+  format,
+  createLogger,
+  transports,
+  type Logger as LoggerType,
+} from "winston";
 import { resolve } from "path";
 import { ObjectId } from "mongodb";
 
@@ -107,10 +112,10 @@ const logToDb = async (
 };
 
 const Logger = {
-  error: (message: string): Logger => logger.error(message),
-  warning: (message: string): Logger => logger.warning(message),
-  info: (message: string): Logger => logger.info(message),
-  success: (message: string): Logger => logger.log("success", message),
+  error: (message: string): LoggerType => logger.error(message),
+  warning: (message: string): LoggerType => logger.warning(message),
+  info: (message: string): LoggerType => logger.info(message),
+  success: (message: string): LoggerType => logger.log("success", message),
   logToDb,
 };
 

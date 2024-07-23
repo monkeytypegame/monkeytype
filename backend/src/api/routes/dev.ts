@@ -1,17 +1,15 @@
 import { Router } from "express";
-import {
-  asyncHandler,
-  validateConfiguration,
-  validateRequest,
-} from "../../middlewares/api-utils";
 import joi from "joi";
 import { createTestData } from "../controllers/dev";
 import { isDevEnvironment } from "../../utils/misc";
+import { validate } from "../../middlewares/configuration";
+import { validateRequest } from "../../middlewares/validation";
+import { asyncHandler } from "../../middlewares/utility";
 
 const router = Router();
 
 router.use(
-  validateConfiguration({
+  validate({
     criteria: () => {
       return isDevEnvironment();
     },

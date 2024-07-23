@@ -4,8 +4,7 @@ import { performance } from "perf_hooks";
 import { setLeaderboard } from "../utils/prometheus";
 import { isDevEnvironment } from "../utils/misc";
 import { getCachedConfiguration } from "../init/configuration";
-
-const leaderboardUpdating: Record<string, boolean> = {};
+import { LeaderboardEntry } from "@monkeytype/shared-types";
 
 export async function get(
   mode: string,
@@ -13,16 +12,14 @@ export async function get(
   language: string,
   skip: number,
   limit = 50
-): Promise<SharedTypes.LeaderboardEntry[] | false> {
+): Promise<LeaderboardEntry[] | false> {
   //if (leaderboardUpdating[`${language}_${mode}_${mode2}`]) return false;
 
   if (limit > 50 || limit <= 0) limit = 50;
   if (skip < 0) skip = 0;
   try {
     const preset = await db
-      .collection<SharedTypes.LeaderboardEntry>(
-        `leaderboards.${language}.${mode}.${mode2}`
-      )
+      .collection<LeaderboardEntry>(`leaderboards.${language}.${mode}.${mode2}`)
       .find()
       .sort({ rank: 1 })
       .skip(skip)
@@ -48,7 +45,7 @@ export async function get(
 type GetRankResponse = {
   count: number;
   rank: number | null;
-  entry: SharedTypes.LeaderboardEntry | null;
+  entry: LeaderboardEntry | null;
 };
 
 export async function getRank(
@@ -57,21 +54,26 @@ export async function getRank(
   language: string,
   uid: string
 ): Promise<GetRankResponse | false> {
-  if (leaderboardUpdating[`${language}_${mode}_${mode2}`]) return false;
-  const entry = await db
-    .collection<SharedTypes.LeaderboardEntry>(
-      `leaderboards.${language}.${mode}.${mode2}`
-    )
-    .findOne({ uid });
-  const count = await db
-    .collection(`leaderboards.${language}.${mode}.${mode2}`)
-    .estimatedDocumentCount();
+  try {
+    const entry = await db
+      .collection<LeaderboardEntry>(`leaderboards.${language}.${mode}.${mode2}`)
+      .findOne({ uid });
+    const count = await db
+      .collection(`leaderboards.${language}.${mode}.${mode2}`)
+      .estimatedDocumentCount();
 
-  return {
-    count,
-    rank: entry ? entry.rank : null,
-    entry,
-  };
+    return {
+      count,
+      rank: entry ? entry.rank : null,
+      entry,
+    };
+  } catch (e) {
+    if (e.error === 175) {
+      //QueryPlanKilled, collection was removed during the query
+      return false;
+    }
+    throw e;
+  }
 }
 
 export async function update(
@@ -84,10 +86,9 @@ export async function update(
 }> {
   const key = `lbPersonalBests.${mode}.${mode2}.${language}`;
   const lbCollectionName = `leaderboards.${language}.${mode}.${mode2}`;
-  leaderboardUpdating[`${language}_${mode}_${mode2}`] = true;
   const lb = db
     .collection<MonkeyTypes.DBUser>("users")
-    .aggregate<SharedTypes.LeaderboardEntry>(
+    .aggregate<LeaderboardEntry>(
       [
         {
           $match: {
@@ -185,7 +186,6 @@ export async function update(
   const start2 = performance.now();
   await db.collection(lbCollectionName).createIndex({ uid: -1 });
   await db.collection(lbCollectionName).createIndex({ rank: 1 });
-  leaderboardUpdating[`${language}_${mode}_${mode2}`] = false;
   const end2 = performance.now();
 
   //update speedStats

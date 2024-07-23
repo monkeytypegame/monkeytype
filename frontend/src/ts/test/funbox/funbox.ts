@@ -26,6 +26,7 @@ import {
 import { Wordset } from "../wordset";
 import * as LayoutfluidFunboxTimer from "./layoutfluid-funbox-timer";
 import * as DDR from "../../utils/ddr";
+import { HighlightMode, Mode } from "@monkeytype/shared-types/config";
 
 const prefixSize = 2;
 
@@ -40,7 +41,7 @@ class CharDistribution {
   public addChar(char: string): void {
     this.count++;
     if (char in this.chars) {
-      this.chars[char]++;
+      (this.chars[char] as number)++;
     } else {
       this.chars[char] = 1;
     }
@@ -646,9 +647,7 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
     if (!check.result) {
       if (check.forcedConfigs && check.forcedConfigs.length > 0) {
         if (configKey === "mode") {
-          UpdateConfig.setMode(
-            check.forcedConfigs[0] as SharedTypes.Config.Mode
-          );
+          UpdateConfig.setMode(check.forcedConfigs[0] as Mode);
         }
         if (configKey === "words") {
           UpdateConfig.setWordCount(check.forcedConfigs[0] as number);
@@ -664,7 +663,7 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
         }
         if (configKey === "highlightMode") {
           UpdateConfig.setHighlightMode(
-            check.forcedConfigs[0] as SharedTypes.Config.HighlightMode
+            check.forcedConfigs[0] as HighlightMode
           );
         }
       } else {

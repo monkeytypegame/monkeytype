@@ -28,6 +28,7 @@ import * as ActivePage from "../states/active-page";
 import Format from "../utils/format";
 import * as Loader from "../elements/loader";
 import { getHtmlByUserFlags } from "../controllers/user-flag-controller";
+import { TimerColor, TimerOpacity } from "@monkeytype/shared-types/config";
 
 async function gethtml2canvas(): Promise<typeof import("html2canvas").default> {
   return (await import("html2canvas")).default;
@@ -337,7 +338,7 @@ function getWordHTML(word: string): string {
   return retval;
 }
 
-function updateWordWrapperClasses(initial = false): void {
+function updateWordWrapperClasses(): void {
   if (Config.tapeMode !== "off") {
     $("#words").addClass("tape");
     $("#wordsWrapper").addClass("tape");
@@ -375,7 +376,9 @@ function updateWordWrapperClasses(initial = false): void {
 
   updateWordsWidth();
   updateWordsHeight(true);
-  void updateWordsInputPosition(initial);
+  setTimeout(() => {
+    void updateWordsInputPosition(true);
+  }, 250);
 }
 
 export function showWords(): void {
@@ -398,7 +401,7 @@ export function showWords(): void {
     void Caret.updatePosition();
   }, 125);
 
-  updateWordWrapperClasses(true);
+  updateWordWrapperClasses();
 }
 
 const posUpdateLangList = ["japanese", "chinese", "korean"];
@@ -1446,14 +1449,14 @@ function updateWordsWidth(): void {
   }
 }
 
-function updateLiveStatsOpacity(value: SharedTypes.Config.TimerOpacity): void {
+function updateLiveStatsOpacity(value: TimerOpacity): void {
   $("#barTimerProgress").css("opacity", parseFloat(value as string));
   $("#liveStatsTextTop").css("opacity", parseFloat(value as string));
   $("#liveStatsTextBottom").css("opacity", parseFloat(value as string));
   $("#liveStatsMini").css("opacity", parseFloat(value as string));
 }
 
-function updateLiveStatsColor(value: SharedTypes.Config.TimerColor): void {
+function updateLiveStatsColor(value: TimerColor): void {
   $("#barTimerProgress").removeClass("timerSub");
   $("#barTimerProgress").removeClass("timerText");
   $("#barTimerProgress").removeClass("timerMain");
@@ -1613,9 +1616,9 @@ ConfigEvent.subscribe((key, value) => {
     updateWordsWidth();
   }
   if (key === "timerOpacity") {
-    updateLiveStatsOpacity(value as SharedTypes.Config.TimerOpacity);
+    updateLiveStatsOpacity(value as TimerOpacity);
   }
   if (key === "timerColor") {
-    updateLiveStatsColor(value as SharedTypes.Config.TimerColor);
+    updateLiveStatsColor(value as TimerColor);
   }
 });

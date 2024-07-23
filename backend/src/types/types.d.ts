@@ -10,7 +10,7 @@ declare namespace MonkeyTypes {
   };
 
   type Context = {
-    configuration: SharedTypes.Configuration;
+    configuration: import("@monkeytype/shared-types").Configuration;
     decodedToken: DecodedToken;
   };
 
@@ -19,7 +19,7 @@ declare namespace MonkeyTypes {
   } & ExpressRequest;
 
   type DBUser = Omit<
-    SharedTypes.User,
+    import("@monkeytype/shared-types").User,
     | "resultFilterPresets"
     | "tags"
     | "customThemes"
@@ -28,38 +28,40 @@ declare namespace MonkeyTypes {
     | "testActivity"
   > & {
     _id: ObjectId;
-    resultFilterPresets?: WithObjectIdArray<SharedTypes.ResultFilters[]>;
+    resultFilterPresets?: WithObjectId<
+      import("@monkeytype/shared-types").ResultFilters
+    >[];
     tags?: DBUserTag[];
     lbPersonalBests?: LbPersonalBests;
     customThemes?: DBCustomTheme[];
     autoBanTimestamps?: number[];
-    inbox?: SharedTypes.MonkeyMail[];
+    inbox?: import("@monkeytype/shared-types").MonkeyMail[];
     ips?: string[];
     canReport?: boolean;
     lastNameChange?: number;
     canManageApeKeys?: boolean;
     bananas?: number;
-    testActivity?: SharedTypes.CountByYearAndDay;
+    testActivity?: import("@monkeytype/shared-types").CountByYearAndDay;
   };
 
-  type DBCustomTheme = WithObjectId<SharedTypes.CustomTheme>;
+  type DBCustomTheme = WithObjectId<
+    import("@monkeytype/shared-types").CustomTheme
+  >;
 
-  type DBUserTag = WithObjectId<SharedTypes.UserTag>;
+  type DBUserTag = WithObjectId<import("@monkeytype/shared-types").UserTag>;
 
   type LbPersonalBests = {
-    time: Record<number, Record<string, SharedTypes.PersonalBest>>;
+    time: Record<
+      number,
+      Record<string, import("@monkeytype/shared-types/user").PersonalBest>
+    >;
   };
 
   type WithObjectId<T extends { _id: string }> = Omit<T, "_id"> & {
     _id: ObjectId;
   };
 
-  type WithObjectIdArray<T extends { _id: string }[]> = Omit<T, "_id"> &
-    {
-      _id: ObjectId;
-    }[];
-
-  type ApeKeyDB = SharedTypes.ApeKey & {
+  type ApeKeyDB = import("@monkeytype/shared-types").ApeKey & {
     _id: ObjectId;
     uid: string;
     hash: string;
@@ -108,7 +110,9 @@ declare namespace MonkeyTypes {
   };
 
   type DBResult = MonkeyTypes.WithObjectId<
-    SharedTypes.DBResult<SharedTypes.Config.Mode>
+    import("@monkeytype/shared-types").DBResult<
+      import("@monkeytype/shared-types/config").Mode
+    >
   >;
 
   type BlocklistEntry = {

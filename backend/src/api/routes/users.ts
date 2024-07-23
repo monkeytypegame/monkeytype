@@ -2,16 +2,14 @@ import joi from "joi";
 import { authenticateRequest } from "../../middlewares/auth";
 import { Router } from "express";
 import * as UserController from "../controllers/user";
-import {
-  asyncHandler,
-  validateRequest,
-  validateConfiguration,
-  checkUserPermissions,
-} from "../../middlewares/api-utils";
 import * as RateLimit from "../../middlewares/rate-limit";
 import { withApeRateLimiter } from "../../middlewares/ape-rate-limit";
 import { containsProfanity, isUsernameValid } from "../../utils/validation";
 import filterSchema from "../schemas/filter-schema";
+import { asyncHandler } from "../../middlewares/utility";
+import { validate } from "../../middlewares/configuration";
+import { validateRequest } from "../../middlewares/validation";
+import { checkUserPermissions } from "../../middlewares/permission";
 
 const router = Router();
 
@@ -103,7 +101,7 @@ router.get(
 
 router.post(
   "/signup",
-  validateConfiguration({
+  validate({
     criteria: (configuration) => {
       return configuration.users.signUp;
     },
@@ -243,7 +241,7 @@ router.post(
   asyncHandler(UserController.optOutOfLeaderboards)
 );
 
-const requireFilterPresetsEnabled = validateConfiguration({
+const requireFilterPresetsEnabled = validate({
   criteria: (configuration) => {
     return configuration.results.filterPresets.enabled;
   },
@@ -389,7 +387,7 @@ router.patch(
   asyncHandler(UserController.editCustomTheme)
 );
 
-const requireDiscordIntegrationEnabled = validateConfiguration({
+const requireDiscordIntegrationEnabled = validate({
   criteria: (configuration) => {
     return configuration.users.discordIntegration.enabled;
   },
@@ -498,7 +496,7 @@ router.delete(
   asyncHandler(UserController.removeFavoriteQuote)
 );
 
-const requireProfilesEnabled = validateConfiguration({
+const requireProfilesEnabled = validate({
   criteria: (configuration) => {
     return configuration.users.profiles.enabled;
   },
@@ -514,9 +512,13 @@ router.get(
   withApeRateLimiter(RateLimit.userProfileGet),
   validateRequest({
     params: {
-      uidOrName: joi
-        .alternatives()
-        .try(usernameValidation, joi.string().token().max(50)),
+      uidOrName: joi.alternatives().try(
+        joi
+          .string()
+          .regex(/^[\da-zA-Z._-]+$/)
+          .max(16),
+        joi.string().token().max(50)
+      ),
     },
     query: {
       isUid: joi.string().valid("").messages({
@@ -573,7 +575,7 @@ router.patch(
 
 const mailIdSchema = joi.array().items(joi.string().guid()).min(1).default([]);
 
-const requireInboxEnabled = validateConfiguration({
+const requireInboxEnabled = validate({
   criteria: (configuration) => {
     return configuration.users.inbox.enabled;
   },
@@ -608,7 +610,7 @@ const withCustomMessages = joi.string().messages({
 
 router.post(
   "/report",
-  validateConfiguration({
+  validate({
     criteria: (configuration) => {
       return configuration.quotes.reporting.enabled;
     },

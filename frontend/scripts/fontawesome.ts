@@ -1,5 +1,17 @@
 import * as fs from "fs";
+import { createRequire } from "module";
 import * as path from "path";
+
+type FontawesomeConfig = {
+  /* used regular icons without `fa-` prefix*/
+  regular: string[];
+  /* used solid icons without `fa-` prefix*/
+  solid: string[];
+  /* used brands icons without `fa-` prefix*/
+  brands: string[];
+};
+
+type FileObject = { name: string; isDirectory: boolean };
 
 const iconSet = {
   solid: parseIcons("solid"),
@@ -40,19 +52,12 @@ const modules2 = {
 };
 
 /**
- * fontawesome icon config
- * @typedef {Object} FontawesomeConfig
- * @property {string[]} solid - used solid icons without `fa-` prefix
- * @property {string[]} brands - used brands icons without `fa-` prefix
- */
-
-/**
  * Detect used fontawesome icons in the directories `src/**` and `static/**{.html|.css}`
  * @param {boolean} debug - Enable debug output
  * @returns {FontawesomeConfig} - used icons
  */
 
-export function getFontawesomeConfig(debug = false) {
+export function getFontawesomeConfig(debug = false): FontawesomeConfig {
   const time = Date.now();
   const srcFiles = findAllFiles(
     "./src",
@@ -66,7 +71,7 @@ export function getFontawesomeConfig(debug = false) {
   );
 
   const allFiles = [...srcFiles, ...staticFiles];
-  const usedClassesSet = new Set();
+  const usedClassesSet: Set<string> = new Set();
 
   const regex = /\bfa-[a-z0-9-]+\b/g;
 
@@ -77,7 +82,7 @@ export function getFontawesomeConfig(debug = false) {
     if (matches) {
       matches.forEach((match) => {
         const [icon] = match.split(" ");
-        usedClassesSet.add(icon.substring(3));
+        usedClassesSet.add((icon as string).substring(3));
       });
     }
   }
@@ -126,32 +131,43 @@ export function getFontawesomeConfig(debug = false) {
 }
 
 //detect if we run this as a main
-if (import.meta.url.endsWith(process.argv[1])) {
+if (import.meta.url.endsWith(process.argv[1] as string)) {
   getFontawesomeConfig(true);
 }
 
-function toFileAndDir(dir, file) {
+function toFileAndDir(dir: string, file: string): FileObject {
   const name = path.join(dir, file);
   return { name, isDirectory: fs.statSync(name).isDirectory() };
 }
 
-function findAllFiles(dir, filter = (filename) => true) {
-  return fs
+function findAllFiles(
+  dir: string,
+  filter: (filename: string) => boolean = (_it): boolean => true
+): string[] {
+  const files = fs
     .readdirSync(dir)
     .map((it) => toFileAndDir(dir, it))
-    .filter((file) => file.isDirectory || filter(file.name))
-    .reduce((files, file) => {
-      return file.isDirectory
-        ? [...files, ...findAllFiles(file.name, filter)]
-        : [...files, file.name];
-    }, []);
+    .filter((file) => file.isDirectory || filter(file.name));
+
+  const out: string[] = [];
+  for (const file of files) {
+    if (file.isDirectory) {
+      out.push(...findAllFiles(file.name, filter));
+    } else {
+      out.push(file.name);
+    }
+  }
+  return out;
 }
 
-function parseIcons(iconSet) {
-  const file = fs
-    .readFileSync(`node_modules/@fortawesome/fontawesome-free/js/${iconSet}.js`)
-    .toString();
+function parseIcons(iconSet: string): string[] {
+  const require = createRequire(import.meta.url);
+  const path = require.resolve(
+    `@fortawesome/fontawesome-free/js/${iconSet}.js`
+  );
+  const file: string | null = fs.readFileSync(path).toString();
+
   return file
-    .match(/\"(.*)\"\: \[.*\],/g)
-    .map((it) => it.substring(1, it.indexOf(":") - 1));
+    ?.match(/"(.*)": \[.*\],/g)
+    ?.map((it) => it.substring(1, it.indexOf(":") - 1)) as string[];
 }
