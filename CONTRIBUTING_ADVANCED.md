@@ -134,13 +134,13 @@ npm run dev
 
 | Manual                      | Docker                         |
 | --------------------------- | ------------------------------ |
-| `cd backend && npm run dev` | `cd backend && npm run docker` |
+| `npm run dev-be`            | `cd backend && npm run docker` |
 
 ### Frontend only
 
 | Manual                       | Docker                          |
 | ---------------------------- | ------------------------------- |
-| `cd frontend && npm run dev` | `cd frontend && npm run docker` |
+| `npm run dev-fe`             | `cd frontend && npm run docker` |
 
 These commands will start a local development website on [port 3000](http://localhost:3000) and a local development server on [port 5005](http://localhost:5005). They will automatically rebuild the website/server when you make changes in the `src/` directory. Use <kbd>Ctrl+C</kbd> to stop them.
 
