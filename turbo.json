@@ -36,7 +36,7 @@
     },
     "@monkeytype/backend#dev": {
       "dependsOn": ["^build"],
-      "env": ["DB_URI", "REDIS_URI"]
+      "env": ["DB_URI", "REDIS_URI", "PORT"]
     }
   }
 }
