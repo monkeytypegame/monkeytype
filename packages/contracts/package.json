@@ -2,7 +2,7 @@
   "name": "@monkeytype/contracts",
   "private": true,
   "scripts": {
-    "dev": "rimraf ./dist && node esbuild.config.js && chokidar \"./src/**/*\" -c \"node esbuild.config.js\"",
+    "dev": "rimraf ./dist && node esbuild.config.js --watch",
     "build": "rimraf ./dist && node esbuild.config.js",
     "ts-check": "tsc --noEmit",
     "lint": "eslint \"./**/*.ts\""
@@ -14,7 +14,7 @@
   "devDependencies": {
     "@monkeytype/eslint-config": "*",
     "@monkeytype/typescript-config": "*",
-    "chokidar-cli": "3.0.0",
+    "chokidar": "3.6.0",
     "esbuild": "0.23.0",
     "eslint": "8.57.0",
     "rimraf": "5.0.9",

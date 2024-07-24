@@ -1,6 +1,10 @@
 const esbuild = require("esbuild");
 const { readdirSync, statSync } = require("fs");
 const { join, extname } = require("path");
+const chokidar = require("chokidar");
+
+//check if watch parameter is passed
+const isWatch = process.argv.includes("--watch");
 
 // Recursive function to get all .ts files in a directory
 const getAllFiles = (dirPath, arrayOfFiles = []) => {
@@ -35,8 +39,16 @@ const commonSettings = {
   minify: true,
 };
 
-// Build each file separately
-entryPoints.forEach((entry) => {
+function buildAll(silent) {
+  console.log("Building all files...");
+  entryPoints.forEach((entry) => {
+    build(entry, silent);
+  });
+}
+
+function build(entry, silent = false) {
+  if (!silent) console.log("Building", entry);
+
   // ESM build
   esbuild
     .build({
@@ -45,7 +57,9 @@ entryPoints.forEach((entry) => {
       format: "esm",
       outfile: getOutfile(entry, "esm"),
     })
-    .catch(() => process.exit(1));
+    .catch((e) => {
+      console.log(`Failed to build ${entry} to ESM:`, e);
+    });
 
   // CommonJS build
   esbuild
@@ -55,7 +69,24 @@ entryPoints.forEach((entry) => {
       format: "cjs",
       outfile: getOutfile(entry, "cjs"),
     })
-    .catch(() => process.exit(1));
-});
+    .catch((e) => {
+      console.log(`Failed to build ${entry} to CJS:`, e);
+    });
+}
 
-console.log("Build complete.");
+if (isWatch) {
+  buildAll(true);
+  console.log("Starting watch mode...");
+  chokidar.watch("./src/**/*.ts").on(
+    "change",
+    (path) => {
+      console.log("File change detected...");
+      build(path);
+    },
+    {
+      ignoreInitial: true,
+    }
+  );
+} else {
+  buildAll(false);
+}
