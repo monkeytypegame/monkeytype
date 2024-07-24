@@ -82,6 +82,7 @@ const BASE_CONFIG = {
     port: 3000,
     host: process.env.BACKEND_URL !== undefined,
   },
+  clearScreen: false,
   root: "src",
   publicDir: "../static",
   css: {
