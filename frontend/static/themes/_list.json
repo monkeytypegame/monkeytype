@@ -1244,5 +1244,12 @@
     "mainColor": "#e0794e",
     "subColor": "#688e8f",
     "textColor": "#023e3b"
+  },
+  {
+    "name": "berserk",
+    "bgColor": "#1c1c1c",
+    "mainColor": "#d93600",
+    "subColor": "#aaaaaa",
+    "textColor": "#ffffff",
   }
 ]
