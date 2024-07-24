@@ -85,7 +85,7 @@ export async function initSnapshot(): Promise<
     if (configResponse.status !== 200) {
       // eslint-disable-next-line @typescript-eslint/no-throw-literal
       throw {
-        message: `${configResponse.message} (config)`,
+        message: `${configResponse.body.message} (config)`,
         responseCode: configResponse.status,
       };
     }
@@ -98,7 +98,7 @@ export async function initSnapshot(): Promise<
     }
 
     const userData = userResponse.data;
-    const configData = configResponse.data;
+    const configData = configResponse.body.data;
     const presetsData = presetsResponse.data;
 
     if (userData === null) {
@@ -173,7 +173,7 @@ export async function initSnapshot(): Promise<
         ...DefaultConfig,
       };
     } else {
-      snap.config = mergeWithDefaultConfig(configData.config);
+      snap.config = mergeWithDefaultConfig(configData);
     }
     // if (ActivePage.get() === "loading") {
     //   LoadingPage.updateBar(67.5);
@@ -888,9 +888,18 @@ export async function updateLbMemory<M extends Mode>(
 
 export async function saveConfig(config: Config): Promise<void> {
   if (isAuthenticated()) {
-    const response = await Ape.configs.save(config);
+    const response = await Ape.configs.save({ body: config });
     if (response.status !== 200) {
-      Notifications.add("Failed to save config: " + response.message, -1);
+      Notifications.add("Failed to save config: " + response.body.message, -1);
+    }
+  }
+}
+
+export async function resetConfig(): Promise<void> {
+  if (isAuthenticated()) {
+    const response = await Ape.configs.delete();
+    if (response.status !== 200) {
+      Notifications.add("Failed to reset config: " + response.body.message, -1);
     }
   }
 }

@@ -71,6 +71,7 @@
   },
   "dependencies": {
     "@date-fns/utc": "1.2.0",
+    "@monkeytype/contracts": "*",
     "axios": "1.6.4",
     "canvas-confetti": "1.5.1",
     "chart.js": "3.7.1",

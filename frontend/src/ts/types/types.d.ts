@@ -182,7 +182,7 @@ declare namespace MonkeyTypes {
 
   type RawCustomTheme = {
     name: string;
-    colors: string[];
+    colors: import("@monkeytype/contracts/schemas/configs").CustomThemeColors;
   };
 
   type CustomTheme = {

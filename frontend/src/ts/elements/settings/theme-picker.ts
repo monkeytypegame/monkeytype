@@ -11,6 +11,7 @@ import * as DB from "../../db";
 import * as ConfigEvent from "../../observables/config-event";
 import { isAuthenticated } from "../../firebase";
 import * as ActivePage from "../../states/active-page";
+import { CustomThemeColors } from "@monkeytype/contracts/schemas/configs";
 
 function updateActiveButton(): void {
   let activeThemeName = Config.theme;
@@ -281,7 +282,7 @@ function saveCustomThemeColors(): void {
       ).attr("value") as string
     );
   }
-  UpdateConfig.setCustomThemeColors(newColors);
+  UpdateConfig.setCustomThemeColors(newColors as CustomThemeColors);
   Notifications.add("Custom theme saved", 1);
 }
 

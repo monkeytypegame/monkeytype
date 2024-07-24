@@ -1,14 +1,15 @@
 {
-  "name": "@monkeytype/shared-types",
+  "name": "@monkeytype/contracts",
   "private": true,
   "scripts": {
-    "dev": "rimraf ./dist && tsc --watch --preserveWatchOutput",
+    "dev": "rimraf ./dist && tsc --watch ",
     "build": "rimraf ./dist && tsc",
     "ts-check": "tsc --noEmit",
     "lint": "eslint \"./**/*.ts\""
   },
   "dependencies": {
-    "@monkeytype/contracts": "*"
+    "@ts-rest/core": "3.45.2",
+    "zod": "3.23.8"
   },
   "devDependencies": {
     "@monkeytype/eslint-config": "*",
