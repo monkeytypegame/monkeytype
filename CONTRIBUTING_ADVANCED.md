@@ -12,7 +12,7 @@
     - [Config file](#config-file)
     - [Databases (optional if running frontend only)](#databases-optional-if-running-frontend-only)
   - [Building and Running Monkeytype](#building-and-running-monkeytype)
-    - [Dependencies (if running locally)](#dependencies-if-running-locally)
+    - [Dependencies (if running manually)](#dependencies-if-running-manually)
     - [Both Frontend and Backend](#both-frontend-and-backend)
     - [Backend only](#backend-only)
     - [Frontend only](#frontend-only)
@@ -107,7 +107,7 @@ Follow these steps if you want to work on anything involving the database/accoun
 
 2. Setup the database server
 
-| Locally                                                                                                                                                                                                                            | Docker (recommended)                                                                                                                                                        |
+| Manual                                                                                                                                                                                                                            | Docker (recommended)                                                                                                                                                        |
 | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | <ol><li>Install [MongoDB Community Edition](https://docs.mongodb.com/manual/administration/install-community/)</li><li>Install [Redis](https://redis.io/docs/install/install-redis/)</li><li>Make sure both are running</li></ol> | <ol><li>Install [Docker](http://www.docker.io/gettingstarted/#h_installation) on your machine</li><li>Run `npm run docker-db-only` from the `./backend` directory</li></ol> |
 
@@ -116,15 +116,15 @@ Follow these steps if you want to work on anything involving the database/accoun
 
 ## Building and Running Monkeytype
 
-Its time to run Monkeytype. Just like with the databases, you can run the frontend and backend locally or with Docker.
+Its time to run Monkeytype. Just like with the databases, you can run the frontend and backend manually or with Docker.
 
-### Dependencies (if running locally)
+### Dependencies (if running manually)
 
 Run `npm i` in the project root to install all dependencies.
 
 ### Both Frontend and Backend
 
-Local:
+Manual:
 
 ```
 npm run dev
@@ -132,13 +132,13 @@ npm run dev
 
 ### Backend only
 
-| Locally                     | Docker                         |
+| Manual                      | Docker                         |
 | --------------------------- | ------------------------------ |
 | `npm run dev-be`            | `cd backend && npm run docker` |
 
 ### Frontend only
 
-| Locally                      | Docker                          |
+| Manual                       | Docker                          |
 | ---------------------------- | ------------------------------- |
 | `npm run dev-fe`             | `cd frontend && npm run docker` |
 
