@@ -15,6 +15,8 @@ import { init as initFirebaseAdmin } from "./init/firebase-admin";
 import { createIndicies as leaderboardDbSetup } from "./dal/leaderboards";
 import { createIndicies as blocklistDbSetup } from "./dal/blocklist";
 
+console.log("hello from server");
+
 async function bootServer(port: number): Promise<Server> {
   try {
     Logger.info(`Starting server version ${version}`);
@@ -79,9 +81,16 @@ async function bootServer(port: number): Promise<Server> {
     return process.exit(1);
   }
 
-  return app.listen(PORT, () => {
-    Logger.success(`API server listening on port ${port}`);
-  });
+  try {
+    return app.listen(PORT, () => {
+      Logger.success(`API server listening on port ${port}`);
+    });
+  } catch (error) {
+    Logger.error("Failed to boot server");
+    Logger.error(error.message);
+    console.error(error);
+    return process.exit(1);
+  }
 }
 
 const PORT = parseInt(process.env["PORT"] ?? "5005", 10);

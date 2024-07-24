@@ -1,15 +1,19 @@
 type ObjectId = import("mongodb").ObjectId;
 
 type ExpressRequest = import("express").Request;
-
+/* eslint-disable  @typescript-eslint/no-explicit-any */
+type TsRestRequest = import("@ts-rest/express").TsRestRequest<any>;
+/* eslint-enable  @typescript-eslint/no-explicit-any */
+type AppRoute = import("@ts-rest/core").AppRoute;
+type AppRouter = import("@ts-rest/core").AppRouter;
 declare namespace MonkeyTypes {
-  type DecodedToken = {
+  export type DecodedToken = {
     type: "Bearer" | "ApeKey" | "None";
     uid: string;
     email: string;
   };
 
-  type Context = {
+  export type Context = {
     configuration: import("@monkeytype/shared-types").Configuration;
     decodedToken: DecodedToken;
   };
@@ -17,6 +21,18 @@ declare namespace MonkeyTypes {
   type Request = {
     ctx: Readonly<Context>;
   } & ExpressRequest;
+
+  type Request2<TQuery = undefined, TBody = undefined, TParams = undefined> = {
+    query: Readonly<TQuery>;
+    body: Readonly<TBody>;
+    params: Readonly<TParams>;
+    ctx: Readonly<Context>;
+    raw: Readonly<TsRestRequest>;
+  };
+
+  type RequestTsRest = {
+    ctx: Readonly<Context>;
+  } & TsRestRequest;
 
   type DBUser = Omit<
     import("@monkeytype/shared-types").User,

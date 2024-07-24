@@ -3,24 +3,19 @@ import { getApeKey, updateLastUsedOn } from "../dal/ape-keys";
 import MonkeyError from "../utils/error";
 import { verifyIdToken } from "../utils/auth";
 import { base64UrlDecode, isDevEnvironment } from "../utils/misc";
-import type { NextFunction, Response, Handler } from "express";
+import { NextFunction, Response, Handler } from "express";
 import statuses from "../constants/monkey-status-codes";
 import {
   incrementAuth,
   recordAuthTime,
   recordRequestCountry,
-  // recordRequestForUid,
 } from "../utils/prometheus";
 import crypto from "crypto";
 import { performance } from "perf_hooks";
+import { TsRestRequestHandler } from "@ts-rest/express";
+import { AppRoute, AppRouter } from "@ts-rest/core";
+import { RequestAuthenticationOptions } from "@monkeytype/contracts/schemas/api";
 import { Configuration } from "@monkeytype/shared-types";
-
-type RequestAuthenticationOptions = {
-  isPublic?: boolean;
-  acceptApeKeys?: boolean;
-  requireFreshToken?: boolean;
-  noCache?: boolean;
-};
 
 const DEFAULT_OPTIONS: RequestAuthenticationOptions = {
   isPublic: false,
@@ -28,7 +23,28 @@ const DEFAULT_OPTIONS: RequestAuthenticationOptions = {
   requireFreshToken: false,
 };
 
-function authenticateRequest(authOptions = DEFAULT_OPTIONS): Handler {
+/**
+ * Authenticate request based on the auth settings of the route.
+ * By default a Bearer token with user authentication is required.
+ * @returns
+ */
+export function authenticateTsRestRequest<
+  T extends AppRouter | AppRoute
+>(): TsRestRequestHandler<T> {
+  return async (
+    req: MonkeyTypes.RequestTsRest,
+    _res: Response,
+    next: NextFunction
+  ): Promise<void> => {
+    const options = {
+      ...DEFAULT_OPTIONS,
+      ...(req.tsRestRoute["metadata"]?.["authenticationOptions"] ?? {}),
+    };
+    return _authenticateRequestInternal(req, _res, next, options);
+  };
+}
+
+export function authenticateRequest(authOptions = DEFAULT_OPTIONS): Handler {
   const options = {
     ...DEFAULT_OPTIONS,
     ...authOptions,
@@ -39,69 +55,78 @@ function authenticateRequest(authOptions = DEFAULT_OPTIONS): Handler {
     _res: Response,
     next: NextFunction
   ): Promise<void> => {
-    const startTime = performance.now();
-    let token: MonkeyTypes.DecodedToken;
-    let authType = "None";
+    return _authenticateRequestInternal(req, _res, next, options);
+  };
+}
 
-    const { authorization: authHeader } = req.headers;
+async function _authenticateRequestInternal(
+  req: MonkeyTypes.Request | MonkeyTypes.RequestTsRest,
+  _res: Response,
+  next: NextFunction,
+  options: RequestAuthenticationOptions
+): Promise<void> {
+  const startTime = performance.now();
+  let token: MonkeyTypes.DecodedToken;
+  let authType = "None";
 
-    try {
-      if (authHeader !== undefined && authHeader !== "") {
-        token = await authenticateWithAuthHeader(
-          authHeader,
-          req.ctx.configuration,
-          options
-        );
-      } else if (options.isPublic === true) {
-        token = {
-          type: "None",
-          uid: "",
-          email: "",
-        };
-      } else {
-        throw new MonkeyError(
-          401,
-          "Unauthorized",
-          `endpoint: ${req.baseUrl} no authorization header found`
-        );
-      }
+  const { authorization: authHeader } = req.headers;
 
-      incrementAuth(token.type);
-
-      req.ctx = {
-        ...req.ctx,
-        decodedToken: token,
-      };
-    } catch (error) {
-      authType = authHeader?.split(" ")[0] ?? "None";
-
-      recordAuthTime(
-        authType,
-        "failure",
-        Math.round(performance.now() - startTime),
-        req
+  try {
+    if (authHeader !== undefined && authHeader !== "") {
+      token = await authenticateWithAuthHeader(
+        authHeader,
+        req.ctx.configuration,
+        options
       );
-
-      return next(error);
+    } else if (options.isPublic === true) {
+      token = {
+        type: "None",
+        uid: "",
+        email: "",
+      };
+    } else {
+      throw new MonkeyError(
+        401,
+        "Unauthorized",
+        `endpoint: ${req.baseUrl} no authorization header found`
+      );
     }
+
+    incrementAuth(token.type);
+
+    req.ctx = {
+      ...req.ctx,
+      decodedToken: token,
+    };
+  } catch (error) {
+    authType = authHeader?.split(" ")[0] ?? "None";
+
     recordAuthTime(
-      token.type,
-      "success",
+      authType,
+      "failure",
       Math.round(performance.now() - startTime),
       req
     );
 
-    const country = req.headers["cf-ipcountry"] as string;
-    if (country) {
-      recordRequestCountry(country, req as MonkeyTypes.Request);
-    }
+    return next(error);
+  }
+  recordAuthTime(
+    token.type,
+    "success",
+    Math.round(performance.now() - startTime),
+    req
+  );
 
-    // if (req.method !== "OPTIONS" && req?.ctx?.decodedToken?.uid) {
-    //   recordRequestForUid(req.ctx.decodedToken.uid);
-    // }
+  const country = req.headers["cf-ipcountry"] as string;
+  if (country) {
+    recordRequestCountry(country, req);
+  }
 
-    next();
-  };
+  // if (req.method !== "OPTIONS" && req?.ctx?.decodedToken?.uid) {
+  //   recordRequestForUid(req.ctx.decodedToken.uid);
+  // }
+
+  next();
 }
 
 async function authenticateWithAuthHeader(
@@ -109,23 +134,7 @@ async function authenticateWithAuthHeader(
   configuration: Configuration,
   options: RequestAuthenticationOptions
 ): Promise<MonkeyTypes.DecodedToken> {
-  if (authHeader === undefined || authHeader === "") {
-    throw new MonkeyError(
-      401,
-      "Missing authentication header",
-      "authenticateWithAuthHeader"
-    );
-  }
-
   const [authScheme, token] = authHeader.split(" ");
-
-  if (authScheme === undefined) {
-    throw new MonkeyError(
-      401,
-      "Missing authentication scheme",
-      "authenticateWithAuthHeader"
-    );
-  }
 
   if (token === undefined) {
     throw new MonkeyError(
@@ -135,7 +144,7 @@ async function authenticateWithAuthHeader(
     );
   }
 
-  const normalizedAuthScheme = authScheme.trim();
+  const normalizedAuthScheme = authScheme?.trim();
 
   switch (normalizedAuthScheme) {
     case "Bearer":
@@ -298,7 +307,7 @@ async function authenticateWithUid(
   };
 }
 
-function authenticateGithubWebhook(): Handler {
+export function authenticateGithubWebhook(): Handler {
   return async (
     req: MonkeyTypes.Request,
     _res: Response,
@@ -338,5 +347,3 @@ function authenticateGithubWebhook(): Handler {
     next();
   };
 }
-
-export { authenticateRequest, authenticateGithubWebhook };

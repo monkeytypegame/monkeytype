@@ -1,30 +1,22 @@
-import { Router } from "express";
-import { authenticateRequest } from "../../middlewares/auth";
-import configSchema from "../schemas/config-schema";
-import * as ConfigController from "../controllers/config";
+import { configsContract } from "@monkeytype/contracts/contracts/configs";
+import { initServer } from "@ts-rest/express";
 import * as RateLimit from "../../middlewares/rate-limit";
-import { asyncHandler } from "../../middlewares/utility";
-import { validateRequest } from "../../middlewares/validation";
+import * as ConfigController from "../controllers/config";
+import { callController } from "../ts-rest-adapter";
 
-const router = Router();
+const s = initServer();
+export const configsRoutes = s.router(configsContract, {
+  get: {
+    middleware: [RateLimit.configGet],
+    handler: async (r) => callController(ConfigController.getConfig)(r),
+  },
 
-router.get(
-  "/",
-  authenticateRequest(),
-  RateLimit.configGet,
-  asyncHandler(ConfigController.getConfig)
-);
-
-router.patch(
-  "/",
-  authenticateRequest(),
-  RateLimit.configUpdate,
-  validateRequest({
-    body: {
-      config: configSchema.required(),
-    },
-  }),
-  asyncHandler(ConfigController.saveConfig)
-);
-
-export default router;
+  save: {
+    middleware: [RateLimit.configUpdate],
+    handler: async (r) => callController(ConfigController.saveConfig)(r),
+  },
+  delete: {
+    middleware: [RateLimit.configDelete],
+    handler: async (r) => callController(ConfigController.deleteConfig)(r),
+  },
+});
