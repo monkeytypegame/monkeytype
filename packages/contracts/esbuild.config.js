@@ -39,14 +39,14 @@ const commonSettings = {
   minify: true,
 };
 
-function buildAll(silent) {
+function buildAll(silent, stopOnError) {
   console.log("Building all files...");
   entryPoints.forEach((entry) => {
-    build(entry, silent);
+    build(entry, silent, stopOnError);
   });
 }
 
-function build(entry, silent = false) {
+function build(entry, silent, stopOnError) {
   if (!silent) console.log("Building", entry);
 
   // ESM build
@@ -59,6 +59,7 @@ function build(entry, silent = false) {
     })
     .catch((e) => {
       console.log(`Failed to build ${entry} to ESM:`, e);
+      if (stopOnError) process.exit(1);
     });
 
   // CommonJS build
@@ -71,22 +72,23 @@ function build(entry, silent = false) {
     })
     .catch((e) => {
       console.log(`Failed to build ${entry} to CJS:`, e);
+      if (stopOnError) process.exit(1);
     });
 }
 
 if (isWatch) {
-  buildAll(true);
+  buildAll(true, false);
   console.log("Starting watch mode...");
   chokidar.watch("./src/**/*.ts").on(
     "change",
     (path) => {
       console.log("File change detected...");
-      build(path);
+      build(path, false, false);
     },
     {
       ignoreInitial: true,
     }
   );
 } else {
-  buildAll(false);
+  buildAll(false, true);
 }
