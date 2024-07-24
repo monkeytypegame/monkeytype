@@ -13,10 +13,6 @@
       "path": "packages"
     },
     {
-      "name": "contracts",
-      "path": "packages/contracts"
-    },
-    {
       "name": "root",
       "path": "./"
     }
