@@ -8,10 +8,10 @@ describe("colors.ts", () => {
       expect(hexToRgb("#ff")).toEqual(undefined);
     });
     it("Valid hex value", () => {
-      expect(hexToRgb("#ff0000")).toEqual({
-        r: 255,
-        g: 0,
-        b: 0,
+      expect(hexToRgb("#123456")).toEqual({
+        r: 18,
+        g: 52,
+        b: 86,
       });
     });
   });
