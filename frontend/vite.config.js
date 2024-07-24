@@ -65,7 +65,7 @@ const BASE_CONFIG = {
     },
     checker({
       typescript: {
-        root: path.resolve(__dirname, "./"),
+        tsconfigPath: path.resolve(__dirname, "./tsconfig.json"),
       },
       eslint: {
         lintCommand: `eslint "${path.resolve(__dirname, "./src/ts/**/*.ts")}"`,
