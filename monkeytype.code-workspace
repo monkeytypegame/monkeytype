@@ -9,8 +9,8 @@
       "path": "frontend"
     },
     {
-      "name": "shared-types",
-      "path": "packages/shared-types"
+      "name": "packages",
+      "path": "packages"
     },
     {
       "name": "root",
@@ -21,7 +21,7 @@
     "files.exclude": {
       "frontend": true,
       "backend": true,
-      "shared-types": true
+      "packages": true
     },
     "search.exclude": {
       //defaults

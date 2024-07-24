@@ -3,6 +3,7 @@ services:
   frontend:
     container_name: monkeytype-frontend
     image: node:18.20.4
+    user: "node"    ##this works as long as your local user has uid=1000
     # restart: on-failure
     environment:
       - SERVER_OPEN=false
@@ -10,13 +11,11 @@ services:
     ports:
       - "${DOCKER_HTTP_PORT:-3000}:3000"
     volumes:
-      - root-modules:/monkeytype/node_modules
-      - fe-modules:/monkeytype/frontend/node_modules
       - ../../:/monkeytype
-    entrypoint: 'bash -c "cd /monkeytype && npm install && cd /monkeytype/frontend && npm install && npm run dev"'
-    # entrypoint: "tail -f /dev/null"
+    entrypoint: 'bash -c "echo starting, this may take a while... \
+      && cd /monkeytype \
+      && npm i --prefer-offline --no-audit \
+      && export SERVER_OPEN=false \
+      && npm run dev-fe"'
 
-volumes:
-  root-modules:
-  fe-modules:
 
