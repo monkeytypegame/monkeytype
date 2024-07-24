@@ -9,6 +9,10 @@
       "path": "frontend"
     },
     {
+      "name": "contracts",
+      "path": "packages/contracts"
+    },
+    {
       "name": "packages",
       "path": "packages"
     },
