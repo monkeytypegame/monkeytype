@@ -6,8 +6,6 @@
     "skipLibCheck": true,
     "moduleResolution": "NodeNext",
     "module": "NodeNext",
-    "target": "ES6",
-    "allowUmdGlobalAccess": true,
     "isolatedModules": true,
     "moduleDetection": "force",
     "strict": true,
