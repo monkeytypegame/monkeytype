@@ -2,9 +2,6 @@ const esbuild = require("esbuild");
 const { readdirSync, statSync } = require("fs");
 const { join, extname } = require("path");
 
-// Determine if the script should watch for changes
-const isWatchMode = process.argv.includes("--watch");
-
 // Recursive function to get all .ts files in a directory
 const getAllFiles = (dirPath, arrayOfFiles = []) => {
   const files = readdirSync(dirPath);
@@ -38,19 +35,6 @@ const commonSettings = {
   minify: true,
 };
 
-// If watch mode is enabled, add the watch option
-if (isWatchMode) {
-  commonSettings.watch = {
-    onRebuild(error, result) {
-      if (error) {
-        console.error("Watch build failed:", error);
-      } else {
-        console.log("Watch build succeeded:", result);
-      }
-    },
-  };
-}
-
 // Build each file separately
 entryPoints.forEach((entry) => {
   // ESM build
@@ -74,4 +58,4 @@ entryPoints.forEach((entry) => {
     .catch(() => process.exit(1));
 });
 
-console.log(isWatchMode ? "Watching for changes..." : "Build complete.");
+console.log("Build complete.");
