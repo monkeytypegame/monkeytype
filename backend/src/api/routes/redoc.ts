@@ -1,7 +1,7 @@
 import { Application } from "express";
 
 export function addRedocMiddlewares(app: Application): void {
-  const root = __dirname + "../../../../static";
+  const root = __dirname + "../../../static";
   app.use("/v2/docs-internal", (req, res) => {
     res.sendFile("api/internal.html", { root });
   });
