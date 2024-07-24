@@ -320,7 +320,12 @@
   },
   {
     "name": "serbian",
-    "languages": ["serbian", "serbian_latin", "serbian_10k", "serbian_latin_10k"]
+    "languages": [
+      "serbian",
+      "serbian_latin",
+      "serbian_10k",
+      "serbian_latin_10k"
+    ]
   },
   {
     "name": "georgian",
@@ -535,8 +540,14 @@
   },
   {
     "name": "occitan",
-    "languages": ["occitan", "occitan_1k", "occitan_2k", "occitan_5k", "occitan_10k"]
-  },  
+    "languages": [
+      "occitan",
+      "occitan_1k",
+      "occitan_2k",
+      "occitan_5k",
+      "occitan_10k"
+    ]
+  },
   {
     "name": "code",
     "languages": [

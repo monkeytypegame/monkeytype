@@ -39,11 +39,13 @@ Here is an image showing what all the properties correspond to:
 Change the corresponding hex codes to create your theme. Then, go to `./frontend/static/themes/_list.json` and add the following code to the very end of the file (inside the square brackets):
 
 ```
-,{
+  {
     "name": "theme_name",
     "bgColor": "#ffffff",
-    "mainColor": "#ffffff"
-}
+    "mainColor": "#ffffff",
+    "subColor": "#ffffff",
+    "textColor": "#ffffff"
+  },
 ```
 
 Make sure the name you put matches the name of the file you created (without the `.css` file extension). Add the text color and background color of your theme to their respective fields.

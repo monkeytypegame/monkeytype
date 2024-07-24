@@ -944,14 +944,14 @@ export function scrollTape(): void {
   let currentWordWidth = 0;
   if (Config.tapeMode === "letter") {
     if (TestInput.input.current.length > 0) {
+      const words = document.querySelectorAll("#words .word");
+      const letters =
+        words[currentWordElementIndex]?.querySelectorAll("letter");
+      if (!letters) return;
       for (let i = 0; i < TestInput.input.current.length; i++) {
-        const words = document.querySelectorAll("#words .word");
-        currentWordWidth +=
-          $(
-            words[currentWordElementIndex]?.querySelectorAll("letter")[
-              i
-            ] as HTMLElement
-          ).outerWidth(true) ?? 0;
+        const letter = letters[i] as HTMLElement;
+        if (letter.classList.contains("extra")) return;
+        currentWordWidth += $(letter).outerWidth(true) ?? 0;
       }
     }
   }
