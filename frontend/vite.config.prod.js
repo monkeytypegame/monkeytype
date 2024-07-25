@@ -6,6 +6,7 @@ import replace from "vite-plugin-filter-replace";
 import path from "node:path";
 import { splitVendorChunkPlugin } from "vite";
 import childProcess from "child_process";
+import { checker } from "vite-plugin-checker";
 
 function pad(numbers, maxLength, fillString) {
   return numbers.map((number) =>
@@ -63,6 +64,11 @@ export default {
         generatePreviewFonts();
       },
     },
+    checker({
+      typescript: {
+        tsconfigPath: path.resolve(__dirname, "./tsconfig.json"),
+      },
+    }),
     splitVendorChunkPlugin(),
     VitePWA({
       injectRegister: "networkfirst",
