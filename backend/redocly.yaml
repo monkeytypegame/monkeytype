@@ -16,7 +16,7 @@ apis:
 features.openapi:
   theme:
     logo:
-      gutter: "10px"
+      gutter: "2rem"
     colors:
       primary:
         main: "#e2b714"
