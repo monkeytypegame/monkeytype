@@ -21,7 +21,7 @@ async function bootServer(port: number): Promise<Server> {
     Logger.info(`Starting server in ${process.env["MODE"]} mode`);
     Logger.info(`Connecting to database ${process.env["DB_NAME"]}...`);
     await db.connect();
-    Logger.success("Connected to database 1");
+    Logger.success("Connected to database 11");
 
     Logger.info("Initializing Firebase app instance...");
     initFirebaseAdmin();
