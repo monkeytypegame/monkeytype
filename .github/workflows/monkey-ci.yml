@@ -62,9 +62,32 @@ jobs:
           echo "should-build-fe=${{ steps.filter.outputs.fe-src }}" >> $GITHUB_OUTPUT
           echo "assets-json=${{ steps.filter.outputs.json }}" >> $GITHUB_OUTPUT
 
+  prime-cache:
+    name: prime-cache
+    runs-on: ubuntu-latest
+    if: needs.pre-ci.outputs.should-build-be == 'true' || needs.pre-ci.outputs.should-build-fe == 'true' || needs.pre-ci.outputs.should-build-pkg == 'true' || needs.pre-ci.outputs.assets-json == 'true'
+    steps:
+      - name: Cache node modules
+        id: cache-npm
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-node-modules
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+
+      - if: ${{ steps.cache-npm.outputs.cache-hit != 'true' }}
+        name: List the state of node modules
+        continue-on-error: true
+        run: npm list
+
   ci-be:
     name: ci-be
-    needs: [pre-ci]
+    needs: [pre-ci, prime-cache]
     runs-on: ubuntu-latest
     if: needs.pre-ci.outputs.should-build-be == 'true'
     steps:
@@ -87,11 +110,6 @@ jobs:
             ${{ runner.os }}-build-
             ${{ runner.os }}-
 
-      - if: ${{ steps.cache-npm.outputs.cache-hit != 'true' }}
-        name: List the state of node modules
-        continue-on-error: true
-        run: npm list
-
       - name: Install dependencies
         run: npm install --prefer-offline --no-audit
 
@@ -109,7 +127,7 @@ jobs:
 
   ci-fe:
     name: ci-fe
-    needs: [pre-ci]
+    needs: [pre-ci, prime-cache]
     runs-on: ubuntu-latest
     if: needs.pre-ci.outputs.should-build-fe == 'true'
     steps:
@@ -136,11 +154,6 @@ jobs:
             ${{ runner.os }}-build-
             ${{ runner.os }}-
 
-      - if: ${{ steps.cache-npm.outputs.cache-hit != 'true' }}
-        name: List the state of node modules
-        continue-on-error: true
-        run: npm list
-
       - name: Install dependencies
         run: npm install --prefer-offline --no-audit
 
@@ -158,7 +171,7 @@ jobs:
 
   ci-assets:
     name: ci-assets
-    needs: [pre-ci]
+    needs: [pre-ci, prime-cache]
     runs-on: ubuntu-latest
     if: needs.pre-ci.outputs.assets-json == 'true'
     steps:
@@ -195,11 +208,6 @@ jobs:
             ${{ runner.os }}-build-
             ${{ runner.os }}-
 
-      - if: ${{ steps.cache-npm.outputs.cache-hit != 'true' }}
-        name: List the state of node modules
-        continue-on-error: true
-        run: npm list
-
       - name: Install dependencies
         run: npm install --prefer-offline --no-audit
 
@@ -220,7 +228,7 @@ jobs:
 
   ci-pkg:
     name: ci-pkg
-    needs: [pre-ci]
+    needs: [pre-ci, prime-cache]
     runs-on: ubuntu-latest
     if: needs.pre-ci.outputs.should-build-pkg == 'true'
     steps:
@@ -242,11 +250,6 @@ jobs:
             ${{ runner.os }}-build-${{ env.cache-name }}-
             ${{ runner.os }}-build-
             ${{ runner.os }}-
-
-      - if: ${{ steps.cache-npm.outputs.cache-hit != 'true' }}
-        name: List the state of node modules
-        continue-on-error: true
-        run: npm list
 
       - name: Install dependencies
         run: npm install --prefer-offline --no-audit
