@@ -14,6 +14,8 @@ export type PersonalBest = {
   timestamp: number;
 };
 
+console.log("test");
+
 export type PersonalBests = {
   time: Record<StringNumber, PersonalBest[]>;
   words: Record<StringNumber, PersonalBest[]>;

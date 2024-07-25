@@ -51,6 +51,8 @@ function addToGlobal(items: Record<string, unknown>): void {
   }
 }
 
+console.log("asdf");
+
 void loadFromLocalStorage();
 void VersionButton.update();
 void Focus.set(true, true);
