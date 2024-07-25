@@ -1,5 +1,5 @@
 import { generateOpenApi } from "@ts-rest/open-api";
-import { contract } from "@monkeytype/contracts/contracts/index";
+import { contract } from "@monkeytype/contracts/index";
 import { writeFileSync, mkdirSync } from "fs";
 import { EndpointMetadata } from "@monkeytype/contracts/schemas/api";
 import type { OpenAPIObject } from "openapi3-ts";

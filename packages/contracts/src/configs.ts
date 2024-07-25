@@ -8,8 +8,8 @@ import {
   MonkeyServerError,
   MonkeyValidationErrorSchema,
   responseWithNullableData,
-} from "../schemas/api";
-import { PartialConfigSchema } from "../schemas/configs";
+} from "./schemas/api";
+import { PartialConfigSchema } from "./schemas/configs";
 
 export const GetConfigResponseSchema =
   responseWithNullableData(PartialConfigSchema);

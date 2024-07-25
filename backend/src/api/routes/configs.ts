@@ -1,4 +1,4 @@
-import { configsContract } from "@monkeytype/contracts/contracts/configs";
+import { configsContract } from "@monkeytype/contracts/configs";
 import { initServer } from "@ts-rest/express";
 import * as RateLimit from "../../middlewares/rate-limit";
 import * as ConfigController from "../controllers/config";

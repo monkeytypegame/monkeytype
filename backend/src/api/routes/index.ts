@@ -1,5 +1,5 @@
 import _ from "lodash";
-import { contract } from "@monkeytype/contracts/contracts/index";
+import { contract } from "@monkeytype/contracts/index";
 import psas from "./psas";
 import publicStats from "./public";
 import users from "./users";
