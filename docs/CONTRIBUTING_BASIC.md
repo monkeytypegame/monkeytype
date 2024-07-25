@@ -17,7 +17,7 @@ This file details how to create basic contributions to Monkeytype purely through
 
 Given the above, you should only be using this guide if you plan on making changes that do not impact the functionality of the website. Examples of such cases would be translation fixes, language additions, or quote additions.
 
-For all other changes, please refer to [CONTRIBUTING_ADVANCED.md](./CONTRIBUTING_ADVANCED.md) to learn how to set up the necessary tools to develop on your local environment.
+For all other changes, please refer to [CONTRIBUTING_ADVANCED.md](./docs/CONTRIBUTING_ADVANCED.md) to learn how to set up the necessary tools to develop on your local environment.
 
 ### Prerequisites
 
@@ -53,9 +53,9 @@ You're now ready to make a change. Navigate to the file that you're looking to c
 
 Upon clicking this, you'll have the ability to edit the document itself.
 
-_Note however that some files that are too large might not have this option. In these cases, you will need to download the code and create edits outside of the GitHub web UI. Refer to [CONTRIBUTING_ADVANCED.md](./CONTRIBUTING_ADVANCED.md)_
+_Note however that some files that are too large might not have this option. In these cases, you will need to download the code and create edits outside of the GitHub web UI. Refer to [CONTRIBUTING_ADVANCED.md](./docs/CONTRIBUTING_ADVANCED.md)_
 
-At this point, you should take a look at [CONTRIBUTING.md](./CONTRIBUTING.md) to view guidelines for theme, language, and quote contributions.
+At this point, you should take a look at [CONTRIBUTING.md](./docs/CONTRIBUTING.md) to view guidelines for theme, language, and quote contributions.
 
 Once you've completed your change, you're ready to commit it. At the bottom of the edit file screen, you will find the commit UI. In the first box, you want to put in a title that describes the change you made. Then in the description field, you can put in any additional detail to supplement your title further.
 
