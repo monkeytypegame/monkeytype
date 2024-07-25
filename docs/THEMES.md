@@ -65,4 +65,4 @@ Add some screenshots of your theme to the pull request. Click "create pull reque
 ## Theme Guidelines
 
 Make sure your theme follows the theme guidelines.
-[Theme guidelines](./docs/CONTRIBUTING.md#theme-guidelines)
+[Theme guidelines](./CONTRIBUTING.md#theme-guidelines)
