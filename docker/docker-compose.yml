@@ -43,7 +43,7 @@ services:
       #  read_only: true
       - type: bind
         source: ./backend-configuration.json
-        target: /app/backend/build/backend-configuration.json
+        target: /app/backend/dist/backend-configuration.json
         read_only: true
     depends_on:
       monkeytype-redis:

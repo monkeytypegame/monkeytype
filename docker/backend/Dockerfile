@@ -20,7 +20,7 @@ RUN npm run build
 RUN npm install --install-strategy=nested --omit=dev --workspace=backend --ignore-scripts
 
 ## to build directory
-WORKDIR /app/backend/build
+WORKDIR /app/backend/dist
 
 ## logs 
 RUN mkdir logs

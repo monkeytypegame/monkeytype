@@ -9,7 +9,7 @@
     "watch": "tsc --build --watch",
     "clean": "tsc --build --clean",
     "ts-check": "tsc --noEmit",
-    "start": "npm run build && node ./build/server.js",
+    "start": "npm run build && node ./dist/server.js",
     "test": "vitest run",
     "test-coverage": "vitest run --coverage",
     "dev": "concurrently \"tsx watch --clear-screen=false ./src/server.ts\" \"tsc --preserveWatchOutput --noEmit --watch\" \"npx eslint-watch \"./src/**/*.ts\"\"",
