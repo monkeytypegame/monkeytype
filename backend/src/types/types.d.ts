@@ -30,10 +30,6 @@ declare namespace MonkeyTypes {
     raw: Readonly<TsRestRequest>;
   };
 
-  type RequestTsRest = {
-    ctx: Readonly<Context>;
-  } & TsRestRequest;
-
   type DBUser = Omit<
     import("@monkeytype/shared-types").User,
     | "resultFilterPresets"

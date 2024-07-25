@@ -23,6 +23,10 @@ const DEFAULT_OPTIONS: RequestAuthenticationOptions = {
   requireFreshToken: false,
 };
 
+export type TsRestRequestWithCtx = {
+  ctx: Readonly<MonkeyTypes.Context>;
+} & TsRestRequest;
+
 /**
  * Authenticate request based on the auth settings of the route.
  * By default a Bearer token with user authentication is required.
@@ -32,7 +36,7 @@ export function authenticateTsRestRequest<
   T extends AppRouter | AppRoute
 >(): TsRestRequestHandler<T> {
   return async (
-    req: MonkeyTypes.RequestTsRest,
+    req: TsRestRequestWithCtx,
     _res: Response,
     next: NextFunction
   ): Promise<void> => {
@@ -60,7 +64,7 @@ export function authenticateRequest(authOptions = DEFAULT_OPTIONS): Handler {
 }
 
 async function _authenticateRequestInternal(
-  req: MonkeyTypes.Request | MonkeyTypes.RequestTsRest,
+  req: MonkeyTypes.Request | TsRestRequestWithCtx,
   _res: Response,
   next: NextFunction,
   options: RequestAuthenticationOptions

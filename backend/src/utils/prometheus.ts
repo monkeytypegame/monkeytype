@@ -2,6 +2,7 @@ import { Result } from "@monkeytype/shared-types";
 import { Mode } from "@monkeytype/shared-types/config";
 import "dotenv/config";
 import { Counter, Histogram, Gauge } from "prom-client";
+import { TsRestRequestWithCtx } from "../middlewares/auth";
 
 const auth = new Counter({
   name: "api_request_auth_total",
@@ -212,7 +213,7 @@ export function recordAuthTime(
   type: string,
   status: "success" | "failure",
   time: number,
-  req: MonkeyTypes.Request | MonkeyTypes.RequestTsRest
+  req: MonkeyTypes.Request | TsRestRequestWithCtx
 ): void {
   const reqPath = req.baseUrl + req.route.path;
 
@@ -234,7 +235,7 @@ const requestCountry = new Counter({
 
 export function recordRequestCountry(
   country: string,
-  req: MonkeyTypes.Request | MonkeyTypes.RequestTsRest
+  req: MonkeyTypes.Request | TsRestRequestWithCtx
 ): void {
   const reqPath = req.baseUrl + req.route.path;
 
