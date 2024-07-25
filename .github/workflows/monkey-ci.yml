@@ -93,7 +93,7 @@ jobs:
         run: npm list
 
       - name: Install dependencies
-        run: npm install
+        run: npm install --prefer-offline --no-audit
 
       - name: Check pretty
         run: npm run pretty-code-be
@@ -142,7 +142,7 @@ jobs:
         run: npm list
 
       - name: Install dependencies
-        run: npm install
+        run: npm install --prefer-offline --no-audit
 
       - name: Check pretty
         run: npm run pretty-code-fe
@@ -201,7 +201,7 @@ jobs:
         run: npm list
 
       - name: Install dependencies
-        run: npm install
+        run: npm install --prefer-offline --no-audit
 
       - name: Lint JSON
         run: npm run pr-check-lint-json
@@ -249,7 +249,7 @@ jobs:
         run: npm list
 
       - name: Install dependencies
-        run: npm install
+        run: npm install --prefer-offline --no-audit
 
       - name: Check pretty
         run: npm run pretty-code-pkg
