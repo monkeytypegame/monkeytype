@@ -381,6 +381,9 @@ async function signInWithProvider(provider: AuthProvider): Promise<void> {
         message = "";
         // message = "Popup closed by user";
         // return;
+      } else if (error.code === "auth/popup-blocked") {
+        message =
+          "Sign in popup was blocked by the browser. Check the address bar for a blocked popup icon, or update your browser settings to allow popups.";
       } else if (error.code === "auth/user-cancelled") {
         message = "";
         // message = "User refused to sign in";
