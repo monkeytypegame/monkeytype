@@ -14,7 +14,7 @@ export type PersonalBest = {
   timestamp: number;
 };
 
-console.log("tes1111t1");
+console.log("tes11111t1");
 
 export type PersonalBests = {
   time: Record<StringNumber, PersonalBest[]>;

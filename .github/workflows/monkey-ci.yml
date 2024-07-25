@@ -68,6 +68,8 @@ jobs:
     needs: [pre-ci]
     if: needs.pre-ci.outputs.should-build-be == 'true' || needs.pre-ci.outputs.should-build-fe == 'true' || needs.pre-ci.outputs.should-build-pkg == 'true' || needs.pre-ci.outputs.assets-json == 'true'
     steps:
+      - uses: actions/checkout@v4
+
       - name: Cache node modules
         id: cache-npm
         uses: actions/cache@v3
@@ -82,9 +84,8 @@ jobs:
             ${{ runner.os }}-
 
       - if: ${{ steps.cache-npm.outputs.cache-hit != 'true' }}
-        name: List the state of node modules
-        continue-on-error: true
-        run: npm list
+        name: Install dependencies
+        run: npm install --prefer-offline --no-audit
 
   ci-be:
     name: ci-be
