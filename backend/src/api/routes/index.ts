@@ -122,8 +122,8 @@ function applyApiRoutes(app: Application): void {
   // Cannot be added to the route map because it needs to be added before the maintenance handler
   app.use("/configuration", configuration);
 
-  addSwaggerMiddlewares(app);
   addRedocMiddlewares(app);
+  addSwaggerMiddlewares(app);
 
   app.use(
     (req: MonkeyTypes.Request, res: Response, next: NextFunction): void => {
