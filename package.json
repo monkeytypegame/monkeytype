@@ -24,6 +24,8 @@
     "dev-fe": "turbo run dev --force --filter @monkeytype/frontend",
     "dev-pkg": "turbo run dev ---force -filter=\"./packages/*\"",
     "start": "turbo run start",
+    "start-be": "turbo run start --filter @monkeytype/backend",
+    "start-fe": "turbo run start --filter @monkeytype/frontend",
     "docker": "cd backend && docker compose up",
     "audit-fe": "cd frontend && npm run audit",
     "release": "release-it -c .release-it.json",
