@@ -9,6 +9,7 @@ import results from "./results";
 import presets from "./presets";
 import apeKeys from "./ape-keys";
 import admin from "./admin";
+import docs from "./docs";
 import webhooks from "./webhooks";
 import dev from "./dev";
 import configuration from "./configuration";
@@ -33,7 +34,6 @@ import { createExpressEndpoints, initServer } from "@ts-rest/express";
 import { configsRoutes } from "./configs";
 import { ZodIssue } from "zod";
 import { MonkeyValidationError } from "@monkeytype/contracts/schemas/api";
-import { addRedocMiddlewares } from "./redoc";
 import { authenticateTsRestRequest } from "../../middlewares/auth";
 
 const pathOverride = process.env["API_PATH_OVERRIDE"];
@@ -51,6 +51,7 @@ const API_ROUTE_MAP = {
   "/ape-keys": apeKeys,
   "/admin": admin,
   "/webhooks": webhooks,
+  "/docs": docs,
 };
 
 const s = initServer();
@@ -122,7 +123,6 @@ function applyApiRoutes(app: Application): void {
   // Cannot be added to the route map because it needs to be added before the maintenance handler
   app.use("/configuration", configuration);
 
-  addRedocMiddlewares(app);
   addSwaggerMiddlewares(app);
 
   app.use(
