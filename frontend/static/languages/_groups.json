@@ -546,7 +546,9 @@
       "occitan",
       "occitan_1k",
       "occitan_2k",
+      "occitan_lengadocian_2k",
       "occitan_5k",
+      "occitan_lengadocian_5k",
       "occitan_10k"
     ]
   },
