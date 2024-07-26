@@ -12,6 +12,8 @@ const state: State = {
   slow: false,
 };
 
+console.log("test");
+
 const practiseModal = "#practiseWordsModal .modal";
 
 function updateUI(): void {
