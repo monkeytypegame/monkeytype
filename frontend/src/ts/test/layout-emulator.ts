@@ -4,7 +4,6 @@ import * as JSONData from "../utils/json-data";
 import { capsState } from "./caps-warning";
 import * as Notifications from "../elements/notifications";
 
-let isAltGrPressed = false;
 const isPunctuationPattern = /\p{P}/u;
 
 export async function getCharFromEvent(
@@ -230,13 +229,21 @@ export async function getCharFromEvent(
   }
 }
 
-function updateAltGrState(event: JQuery.KeyboardEventBase): void {
+let isAltGrPressed = false;
+
+export function updateAltGrState(event: JQuery.KeyboardEventBase): void {
   const shouldHandleLeftAlt =
     event.code === "AltLeft" && navigator.userAgent.includes("Mac");
   if (event.code !== "AltRight" && !shouldHandleLeftAlt) return;
   if (event.type === "keydown") isAltGrPressed = true;
   if (event.type === "keyup") isAltGrPressed = false;
 }
+
+export function setIsAltGrPressed(value: boolean): void {
+  isAltGrPressed = value;
+}
+
+export { isAltGrPressed };
 
 $(document).on("keydown", updateAltGrState);
 $(document).on("keyup", updateAltGrState);
