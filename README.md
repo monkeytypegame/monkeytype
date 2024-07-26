@@ -33,11 +33,15 @@ If you encounter a bug or have a feature request, [send us an email](mailto:cont
 
 # Want to Contribute?
 
-Refer to [CONTRIBUTING.md](./CONTRIBUTING.md).
+Refer to [CONTRIBUTING.md](./docs/CONTRIBUTING.md).
 
 # Code of Conduct
 
-Before contributing to this repository, please read the [code of conduct](./CODE_OF_CONDUCT.md).
+Before contributing to this repository, please read the [code of conduct](./docs/CODE_OF_CONDUCT.md).
+
+# Security
+
+To report a security vulnerability, please refer to [SECURITY.md](./docs/SECURITY.md).
 
 # Credits
 

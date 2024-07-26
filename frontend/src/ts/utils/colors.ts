@@ -44,27 +44,27 @@ export function blendTwoHexColors(
  * @param hex The hexadecimal color string (e.g., "#ff0000" or "#f00").
  * @returns An object with 'r', 'g', and 'b' properties representing the red, green, and blue components of the color, or undefined if the input is invalid.
  */
-function hexToRgb(hex: string):
+export function hexToRgb(hex: string):
   | {
       r: number;
       g: number;
       b: number;
     }
   | undefined {
-  if (hex.length !== 4 && hex.length !== 7 && !hex.startsWith("#")) {
+  if ((hex.length !== 4 && hex.length !== 7) || !hex.startsWith("#")) {
     return undefined;
   }
   let r: number;
   let g: number;
   let b: number;
   if (hex.length === 4) {
-    r = ("0x" + hex[1] + hex[1]) as unknown as number;
-    g = ("0x" + hex[2] + hex[2]) as unknown as number;
-    b = ("0x" + hex[3] + hex[3]) as unknown as number;
+    r = Number("0x" + hex[1] + hex[1]);
+    g = Number("0x" + hex[2] + hex[2]);
+    b = Number("0x" + hex[3] + hex[3]);
   } else if (hex.length === 7) {
-    r = ("0x" + hex[1] + hex[2]) as unknown as number;
-    g = ("0x" + hex[3] + hex[4]) as unknown as number;
-    b = ("0x" + hex[5] + hex[6]) as unknown as number;
+    r = Number("0x" + hex[1] + hex[2]);
+    g = Number("0x" + hex[3] + hex[4]);
+    b = Number("0x" + hex[5] + hex[6]);
   } else {
     return undefined;
   }
