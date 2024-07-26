@@ -108,6 +108,7 @@ async function getDataAndInit(): Promise<boolean> {
     Notifications.add("Failed to get user data: " + msg, -1);
     console.error(e);
 
+    LoginPage.enableInputs();
     $("header nav .account").css("opacity", 1);
     return false;
   }
