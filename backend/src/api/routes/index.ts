@@ -157,10 +157,7 @@ function applyApiRoutes(app: Application): void {
     })
   );
 
-  //legacy routes
-  app.get("/leaderboard", (_req, res) => {
-    res.sendStatus(404);
-  });
+  //legacy route
   app.get("/psa", (_req, res) => {
     res.json([
       {
