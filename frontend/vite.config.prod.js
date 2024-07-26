@@ -7,6 +7,7 @@ import path from "node:path";
 import { splitVendorChunkPlugin } from "vite";
 import childProcess from "child_process";
 import { checker } from "vite-plugin-checker";
+import { writeFileSync } from "fs";
 
 function pad(numbers, maxLength, fillString) {
   return numbers.map((number) =>
@@ -31,7 +32,7 @@ function buildClientVersion() {
       .execSync("git rev-parse --short HEAD")
       .toString();
 
-    return `${version}.${commitHash}`;
+    return `${version}.${commitHash}`.replace(/\n/g, "");
   } catch (e) {
     return `${version}.unknown-hash`;
   }
@@ -55,6 +56,17 @@ export default {
         fontawesomeSubset(fontawesomeClasses, "src/webfonts-generated", {
           targetFormats: ["woff2"],
         });
+      },
+    },
+    {
+      name: "generate-version-json",
+      apply: "build",
+
+      closeBundle() {
+        const version = buildClientVersion();
+        const versionJson = JSON.stringify({ version });
+        const versionPath = path.resolve(__dirname, "dist/version.json");
+        writeFileSync(versionPath, versionJson);
       },
     },
     {
