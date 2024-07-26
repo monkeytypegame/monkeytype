@@ -1,19 +1,8 @@
 import * as Config from "../../src/ts/config";
-import * as ConfigValidation from "../../src/ts/config-validation";
 import { CustomThemeColors } from "@monkeytype/contracts/schemas/configs";
 import { randomBytes } from "crypto";
 
 describe("Config", () => {
-  const asyncValidationMock = vi.spyOn(
-    ConfigValidation,
-    "isConfigValueValidAsync"
-  );
-  beforeEach(() => {
-    asyncValidationMock.mockResolvedValue(true);
-  });
-  afterEach(() => {
-    asyncValidationMock.mockReset();
-  });
   it("setMode", () => {
     expect(Config.setMode("zen")).toBe(true);
     expect(Config.setMode("invalid" as any)).toBe(false);

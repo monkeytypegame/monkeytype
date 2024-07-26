@@ -1,6 +1,8 @@
 {
   "extends": "@monkeytype/typescript-config/base.json",
   "compilerOptions": {
+    "moduleResolution": "Bundler",
+    "module": "ESNext",
     "noEmit": true,
     "types": ["vitest/globals"]
   },
