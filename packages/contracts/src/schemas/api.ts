@@ -64,3 +64,14 @@ export function responseWithData<T extends ZodSchema>(
     data: dataSchema,
   });
 }
+
+export const CommonResponses = {
+  400: MonkeyClientError.describe("Generic client error"),
+  401: MonkeyClientError.describe(
+    "Authentication required but not provided or invalid"
+  ),
+  403: MonkeyClientError.describe("Operation not permitted"),
+  422: MonkeyValidationErrorSchema.describe("Request validation failed"),
+  429: MonkeyClientError.describe("Rate limit exceeded"),
+  500: MonkeyServerError.describe("Generic server error"),
+};

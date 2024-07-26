@@ -2,11 +2,9 @@ import { initContract } from "@ts-rest/core";
 import { z } from "zod";
 
 import {
+  CommonResponses,
   EndpointMetadata,
-  MonkeyClientError,
   MonkeyResponseSchema,
-  MonkeyServerError,
-  MonkeyValidationErrorSchema,
   responseWithNullableData,
 } from "./schemas/api";
 import { PartialConfigSchema } from "./schemas/configs";
@@ -58,10 +56,6 @@ export const configsContract = c.router(
       openApiTags: "configs",
     } as EndpointMetadata,
 
-    commonResponses: {
-      400: MonkeyClientError,
-      422: MonkeyValidationErrorSchema,
-      500: MonkeyServerError,
-    },
+    commonResponses: CommonResponses,
   }
 );
