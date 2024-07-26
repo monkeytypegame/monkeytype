@@ -23,7 +23,7 @@
       "persistent": true,
       "cache": false
     },
-    "live": {
+    "start": {
       "dependsOn": ["build"]
     },
     "@monkeytype/frontend#validate-json": {
