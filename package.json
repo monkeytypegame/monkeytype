@@ -23,7 +23,7 @@
     "dev-be": "turbo run dev --force --filter @monkeytype/backend",
     "dev-fe": "turbo run dev --force --filter @monkeytype/frontend",
     "dev-pkg": "turbo run dev ---force -filter=\"./packages/*\"",
-    "live": "concurrently --kill-others \"cd frontend && npm run live\" \"cd backend && npm run start\"",
+    "live": "turbo run live",
     "docker": "cd backend && docker compose up",
     "audit-fe": "cd frontend && npm run audit",
     "release": "release-it -c .release-it.json",

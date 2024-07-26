@@ -23,6 +23,9 @@
       "persistent": true,
       "cache": false
     },
+    "live": {
+      "dependsOn": ["build"]
+    },
     "@monkeytype/frontend#validate-json": {
       "dependsOn": ["^parallel"]
     },
