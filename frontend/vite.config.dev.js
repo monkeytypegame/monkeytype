@@ -38,4 +38,7 @@ export default {
       "6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"
     ),
   },
+  build: {
+    outDir: "../dist",
+  },
 };
