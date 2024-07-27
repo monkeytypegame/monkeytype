@@ -1583,10 +1583,7 @@ export function setKeymapShowTopRow(
   return true;
 }
 
-export function setKeymapSize(
-  keymapSize: number,
-  nosave?: boolean
-): boolean {
+export function setKeymapSize(keymapSize: number, nosave?: boolean): boolean {
   if (!isConfigValueValid("keymap size", keymapSize, ["number"])) {
     return false;
   }
@@ -1600,10 +1597,7 @@ export function setKeymapSize(
 
   config.keymapSize = keymapSize;
 
-  $("#keymap").css(
-    "zoom",
-    keymapSize
-  );
+  $("#keymap").css("zoom", keymapSize);
 
   saveToLocalStorage("keymapSize", nosave);
   ConfigEvent.dispatch("keymapSize", config.keymapSize, nosave);
