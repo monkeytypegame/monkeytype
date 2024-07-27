@@ -123,6 +123,14 @@ export default {
             handler: "NetworkFirst",
             options: {},
           },
+          {
+            urlPattern: (options) => {
+              //disable caching for version.json
+              return options.url.pathname === "/version.json";
+            },
+            handler: "NetworkOnly",
+            options: {},
+          },
         ],
       },
     }),
