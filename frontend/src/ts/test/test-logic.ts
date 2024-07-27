@@ -55,6 +55,7 @@ import * as ConnectionState from "../states/connection";
 import * as FunboxList from "./funbox/funbox-list";
 import * as MemoryFunboxTimer from "./funbox/memory-funbox-timer";
 import * as KeymapEvent from "../observables/keymap-event";
+import * as ScreenReaderPromptEvent from "../observables/screen-reader-prompt-event";
 import * as LayoutfluidFunboxTimer from "../test/funbox/layoutfluid-funbox-timer";
 import * as ArabicLazyMode from "../states/arabic-lazy-mode";
 import Format from "../utils/format";
@@ -496,6 +497,9 @@ export async function init(): Promise<void> {
       generatedSectionIndexes[i] as number
     );
   }
+
+  // Prompt screen reader users to press the next key
+  void ScreenReaderPromptEvent.prompt(TestWords.words.getCurrent(), 0);
 
   if (Config.keymapMode === "next" && Config.mode !== "zen") {
     void KeymapEvent.highlight(
