@@ -71,7 +71,7 @@
 </dialog>
 
 <dialog id="cookiesModal" class="modalWrapper hidden">
-  <div class="extensionMessage">
+  <div class="extensionMessage" aria-hidden="true">
     If you see this text, that means an extension is blocking a cookie consent
     popup. This will cause the website to incorrectly assume its still visible
     and stop you from enjoying Monkeytype. Please disable any extensions that
@@ -87,9 +87,18 @@
         Cookies enhance your experience and help us improve our website.
       </div>
       <div class="buttons">
-        <button class="active acceptAll">accept all</button>
-        <button class="rejectAll">reject non-essential</button>
-        <button class="openSettings">more options</button>
+        <button class="active acceptAll" aria-label="Accept all cookies">
+          accept all
+        </button>
+        <button class="rejectAll" aria-label="Reject non-essential cookies">
+          reject non-essential
+        </button>
+        <button
+          class="openSettings"
+          aria-label="More options regarding cookies"
+        >
+          more options
+        </button>
       </div>
     </div>
     <div class="settings hidden">

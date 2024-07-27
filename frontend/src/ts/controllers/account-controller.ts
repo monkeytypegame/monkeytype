@@ -204,7 +204,7 @@ export async function loadUser(user: UserType): Promise<void> {
   LoginPage.hidePreloader();
 
   $("header .signInOut .icon").html(
-    `<i class="fas fa-fw fa-sign-out-alt"></i>`
+    `<i class="fas fa-fw fa-sign-out-alt" aria-label="Sign out"></i>`
   );
 
   // showFavouriteThemesAtTheTop();

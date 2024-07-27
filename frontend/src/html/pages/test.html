@@ -2,11 +2,17 @@
   <div id="testConfig" class="full-width">
     <div class="row">
       <div class="puncAndNum">
-        <button class="textButton punctuationMode">
+        <button
+          class="textButton punctuationMode"
+          aria-label="Punctuation. Toggle punctuation."
+        >
           <i class="fas fa-fw fa-at"></i>
           punctuation
         </button>
-        <button class="textButton numbersMode">
+        <button
+          class="textButton numbersMode"
+          aria-label="Numbers. Toggle numbers."
+        >
           <i class="fas fa-fw fa-hashtag"></i>
           numbers
         </button>
@@ -15,23 +21,43 @@
       <div class="spacer leftSpacer"></div>
 
       <div class="mode">
-        <button class="textButton" mode="time">
+        <button
+          class="textButton"
+          mode="time"
+          aria-label="Time. Set mode to time."
+        >
           <i class="fas fa-fw fa-clock"></i>
           time
         </button>
-        <button class="textButton" mode="words">
+        <button
+          class="textButton"
+          mode="words"
+          aria-label="Words. Set mode to words."
+        >
           <i class="fas fa-fw fa-font"></i>
           words
         </button>
-        <button class="textButton" mode="quote">
+        <button
+          class="textButton"
+          mode="quote"
+          aria-label="Quote. Set mode to quote."
+        >
           <i class="fas fa-fw fa-quote-left"></i>
           quote
         </button>
-        <button class="textButton" mode="zen">
+        <button
+          class="textButton"
+          mode="zen"
+          aria-label="Zen. Set mode to zen."
+        >
           <i class="fas fa-fw fa-mountain"></i>
           zen
         </button>
-        <button class="textButton" mode="custom">
+        <button
+          class="textButton"
+          mode="custom"
+          aria-label="Custom. Set a custom mode."
+        >
           <i class="fas fa-fw fa-wrench"></i>
           custom
         </button>
@@ -40,35 +66,125 @@
       <div class="spacer rightSpacer"></div>
 
       <div class="time">
-        <button class="textButton" timeConfig="15"><span>15</span></button>
-        <button class="textButton" timeConfig="30"><span>30</span></button>
-        <button class="textButton" timeConfig="60"><span>60</span></button>
-        <button class="textButton" timeConfig="120"><span>120</span></button>
-        <button class="textButton" timeConfig="custom">
+        <button
+          class="textButton"
+          timeConfig="15"
+          aria-label="15 seconds. Set time limit to 15 seconds."
+        >
+          <span>15</span>
+        </button>
+        <button
+          class="textButton"
+          timeConfig="30"
+          aria-label="30 seconds. Set time limit to 30 seconds."
+        >
+          <span>30</span>
+        </button>
+        <button
+          class="textButton"
+          timeConfig="60"
+          aria-label="60 seconds. Set time limit to 60 seconds."
+        >
+          <span>60</span>
+        </button>
+        <button
+          class="textButton"
+          timeConfig="120"
+          aria-label="120 seconds. Set time limit to 120 seconds."
+        >
+          <span>120</span>
+        </button>
+        <button
+          class="textButton"
+          timeConfig="custom"
+          aria-label="Custom. Set a custom time limit."
+        >
           <i class="fas fa-fw fa-tools"></i>
         </button>
       </div>
 
       <div class="wordCount">
-        <button class="textButton" wordCount="10"><span>10</span></button>
-        <button class="textButton" wordCount="25"><span>25</span></button>
-        <button class="textButton" wordCount="50"><span>50</span></button>
-        <button class="textButton" wordCount="100"><span>100</span></button>
-        <button class="textButton" wordCount="custom">
+        <button
+          class="textButton"
+          wordCount="10"
+          aria-label="10 words. Set word amount to 10 words."
+        >
+          <span>10</span>
+        </button>
+        <button
+          class="textButton"
+          wordCount="25"
+          aria-label="25 words. Set word amount to 25 words."
+        >
+          <span>25</span>
+        </button>
+        <button
+          class="textButton"
+          wordCount="50"
+          aria-label="50 words. Set word amount to 50 words."
+        >
+          <span>50</span>
+        </button>
+        <button
+          class="textButton"
+          wordCount="100"
+          aria-label="100 words. Set word amount to 100 words."
+        >
+          <span>100</span>
+        </button>
+        <button
+          class="textButton"
+          wordCount="custom"
+          aria-label="Custom. Set a custom word amount."
+        >
           <i class="fas fa-fw fa-tools"></i>
         </button>
       </div>
 
       <div class="quoteLength">
-        <button class="textButton" quotelength="-1">all</button>
-        <button class="textButton" quotelength="0">short</button>
-        <button class="textButton" quotelength="1">medium</button>
-        <button class="textButton" quotelength="2">long</button>
-        <button class="textButton" quotelength="3">thicc</button>
-        <button class="textButton favorite hidden" quotelength="-3">
+        <button
+          class="textButton"
+          quotelength="-1"
+          aria-label="All. Set quote type to all."
+        >
+          all
+        </button>
+        <button
+          class="textButton"
+          quotelength="0"
+          aria-label="Short. Set quote type to short."
+        >
+          short
+        </button>
+        <button
+          class="textButton"
+          quotelength="1"
+          aria-label="Medium. Set quote type to medium."
+        >
+          medium
+        </button>
+        <button
+          class="textButton"
+          quotelength="2"
+          aria-label="Long. Set quote type to long."
+        >
+          long
+        </button>
+        <button
+          class="textButton"
+          quotelength="3"
+          aria-label="Thick. Set quote type to thick."
+        >
+          thicc
+        </button>
+        <button
+          class="textButton favorite hidden"
+          quotelength="-3"
+          aria-label="Favorites. Set quote type to favorites only."
+        >
           <i class="fas fa-heart"></i>
         </button>
-        <button class="textButton" quotelength="-2">
+        <button class="textButton" quotelength="-2" aria-label="Search quotes.">
           <i class="fas fa-search"></i>
         </button>
       </div>
@@ -89,12 +205,14 @@
       </div>
 
       <div class="customText">
-        <button class="textButton">change</button>
+        <button class="textButton" aria-label="Change custom text.">
+          change
+        </button>
       </div>
     </div>
   </div>
   <div id="mobileTestConfigButton">
-    <button>
+    <button aria-label="Open settings for this typing test.">
       <i class="fas fa-fw fa-cog"></i>
       Test settings
     </button>
@@ -132,6 +250,7 @@
         data-enable-grammarly="false"
         list="autocompleteOff"
         spellcheck="false"
+        aria-label="Start typing test"
       />
       <div class="outOfFocusWarning hidden">
         <i class="fas fa-fw fa-mouse-pointer"></i>
@@ -139,8 +258,17 @@
       </div>
       <div id="paceCaret" class="full-width default hidden"></div>
       <div id="caret" class="full-width default"></div>
-      <div id="words" class="full-width"></div>
+
+      <!-- The words container is hidden for screen readers, because an
+        alternative is provided in #screenReaderPrompt -->
+      <div id="words" class="full-width" aria-hidden="true"></div>
     </div>
+
+    <div
+      id="screenReaderPrompt"
+      class="visuallyHidden"
+      aria-live="assertive"
+    ></div>
 
     <div id="koInputVisualContainer" style="display: none">
       <div id="koInputVisual" aria-label="Korean Input Visual" class=""></div>
@@ -164,7 +292,7 @@
         <div class="liveBurst hidden">1</div>
       </div>
     </div>
-    <div id="screenReaderPrompt" aria-live="assertive"></div>
+
     <div id="monkey" class="hidden">
       <div class="up"></div>
       <div class="left hidden"></div>

@@ -10,8 +10,12 @@ export function update(): void {
   }
 
   if (isAuthenticated()) {
-    el.find(".icon").html(`<i class="fas fa-fw fa-sign-out-alt"></i>`);
+    el.find(".icon").html(
+      `<i class="fas fa-fw fa-sign-out-alt" aria-label="Sign out"></i>`
+    );
   } else {
-    el.find(".icon").html(`<i class="far fa-fw fa-user"></i>`);
+    el.find(".icon").html(
+      `<i class="far fa-fw fa-user" aria-label="Sign in"></i>`
+    );
   }
 }
