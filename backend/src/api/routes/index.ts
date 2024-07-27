@@ -12,6 +12,7 @@ import admin from "./admin";
 import docs from "./docs";
 import webhooks from "./webhooks";
 import dev from "./dev";
+import configs from "./configs";
 import configuration from "./configuration";
 import { version } from "../../version";
 import leaderboards from "./leaderboards";
@@ -31,7 +32,6 @@ import { isDevEnvironment } from "../../utils/misc";
 import { getLiveConfiguration } from "../../init/configuration";
 import Logger from "../../utils/logger";
 import { createExpressEndpoints, initServer } from "@ts-rest/express";
-import { configsRoutes } from "./configs";
 import { ZodIssue } from "zod";
 import { MonkeyValidationError } from "@monkeytype/contracts/schemas/api";
 import { authenticateTsRestRequest } from "../../middlewares/auth";
@@ -56,7 +56,7 @@ const API_ROUTE_MAP = {
 
 const s = initServer();
 const router = s.router(contract, {
-  configs: configsRoutes,
+  configs,
 });
 
 export function addApiRoutes(app: Application): void {

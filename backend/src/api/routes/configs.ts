@@ -5,7 +5,8 @@ import * as ConfigController from "../controllers/config";
 import { callController } from "../ts-rest-adapter";
 
 const s = initServer();
-export const configsRoutes = s.router(configsContract, {
+
+export default s.router(configsContract, {
   get: {
     middleware: [RateLimit.configGet],
     handler: async (r) => callController(ConfigController.getConfig)(r),
