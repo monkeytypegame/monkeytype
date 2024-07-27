@@ -1,5 +1,12 @@
 [
   {
+    "name": "tokyo_night",
+    "bgColor": "#011628",
+    "mainColor": "#cbe0f0",
+    "subColor": "#547998",
+    "textColor": "#cbe0f0"
+  },
+  {
     "name": "dark_note",
     "bgColor": "#1f1f1f",
     "mainColor": "#f2c17b",
