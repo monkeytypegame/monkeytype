@@ -17,22 +17,21 @@ function handleEvent(mode: string, word: string, wordIndex: number): void {
 
   console.debug("ScreenReaderPrompt received event: ", mode, key);
 
-  let promptText = "";
-
-  if (wordIndex == 0) {
-    promptText += "type " + word + ". ";
-  }
-
-  promptText += fmtLetterPrompt(key);
-
   const promtContainer = document.querySelector("#screenReaderPrompt");
-
   if (promtContainer === null) {
     console.error("Could not find element #screenReaderPrompt");
     return;
   }
 
   const promptElement = document.createElement("p");
+
+  if (wordIndex == 0) {
+    const promptText = "type " + word + ". ";
+    promptElement.appendChild(document.createTextNode(promptText));
+  }
+
+  const promptText = fmtLetterPrompt(key);
+
   promptElement.appendChild(document.createTextNode(promptText));
   promtContainer.innerHTML = "";
   promtContainer.appendChild(promptElement);
