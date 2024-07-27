@@ -29,7 +29,7 @@ describe("ConfigController", () => {
       //THEN
       expect(body).toStrictEqual({
         message: "Configuration retrieved",
-        data: { config: { language: "english" } },
+        data: { language: "english" },
       });
 
       expect(getConfigMock).toHaveBeenCalledWith("123456789");

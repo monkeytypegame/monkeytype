@@ -98,7 +98,7 @@ export async function initSnapshot(): Promise<
     }
 
     const userData = userResponse.data;
-    const configData = configResponse.body.data?.config;
+    const configData = configResponse.body.data;
     const presetsData = presetsResponse.data;
 
     if (userData === null) {

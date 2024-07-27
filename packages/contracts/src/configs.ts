@@ -9,9 +9,8 @@ import {
 } from "./schemas/api";
 import { PartialConfigSchema } from "./schemas/configs";
 
-export const GetConfigResponseSchema = responseWithNullableData(
-  z.object({ config: PartialConfigSchema })
-);
+export const GetConfigResponseSchema =
+  responseWithNullableData(PartialConfigSchema);
 
 export type GetConfigResponse = z.infer<typeof GetConfigResponseSchema>;
 

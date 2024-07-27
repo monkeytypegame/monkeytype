@@ -7,12 +7,9 @@ export async function getConfig(
   req: MonkeyTypes.Request2
 ): Promise<GetConfigResponse> {
   const { uid } = req.ctx.decodedToken;
-  const config = (await ConfigDAL.getConfig(uid))?.config ?? null;
+  const data = (await ConfigDAL.getConfig(uid))?.config ?? null;
 
-  return new MonkeyResponse2(
-    "Configuration retrieved",
-    config !== null ? { config } : null
-  );
+  return new MonkeyResponse2("Configuration retrieved", data);
 }
 
 export async function saveConfig(
