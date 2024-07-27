@@ -3,6 +3,7 @@ import AnimatedModal from "../utils/animated-modal";
 import { showPopup } from "./simple-modals";
 import * as Notifications from "../elements/notifications";
 import { setMediaQueryDebugLevel } from "../ui";
+import { signIn } from "../controllers/account-controller";
 
 let mediaQueryDebugLevel = 0;
 
@@ -47,6 +48,20 @@ async function setup(modalEl: HTMLElement): Promise<void> {
       $("#wordsInput").css("opacity", "1");
       void modal.hide();
     });
+  modalEl.querySelector(".quickLogin")?.addEventListener("click", () => {
+    if (
+      envConfig.quickLoginEmail === undefined ||
+      envConfig.quickLoginPassword === undefined
+    ) {
+      Notifications.add(
+        "Quick login credentials not set. Add QUICK_LOGIN_EMAIL and QUICK_LOGIN_PASSWORD to your frontend .env file.",
+        -1
+      );
+      return;
+    }
+    void signIn(envConfig.quickLoginEmail, envConfig.quickLoginPassword);
+    void modal.hide();
+  });
 }
 
 const modal = new AnimatedModal({
