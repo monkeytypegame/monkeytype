@@ -950,7 +950,7 @@ export function scrollTape(): void {
       if (!letters) return;
       for (let i = 0; i < TestInput.input.current.length; i++) {
         const letter = letters[i] as HTMLElement;
-        if (letter.classList.contains("extra")) return;
+        if (Config.blindMode && letter.classList.contains("extra")) return;
         currentWordWidth += $(letter).outerWidth(true) ?? 0;
       }
     }

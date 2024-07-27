@@ -28,7 +28,7 @@
     "audit-fe": "cd frontend && npm run audit",
     "release": "release-it -c .release-it.json",
     "release-fe": "release-it -c .release-it-fe.json",
-    "hotfix": "cd frontend && npm run deploy-live && cd .. && sh ./bin/purgeCfCache.sh",
+    "hotfix": "npm run build-fe && cd frontend && npm run deploy-live && cd .. && sh ./bin/purgeCfCache.sh",
     "pretty": "prettier --check \"./backend/**/*.{ts,json,js,css,html}\" \"./frontend/**/*.{ts,js,scss}\" \"./packages/**/*.{ts,js,json}\" \"./frontend/static/**/*.{json,html,css}\"",
     "pretty-code": "prettier --check \"./backend/**/*.{ts,js,json,css,html}\" \"./frontend/**/*.{ts,js}\" \"./packages/**/*.{ts,js,json}\" \"./frontend/src/**/*.scss\" ",
     "pretty-code-be": "prettier --check \"./backend/**/*.{ts,js,json,css,html}\"",
@@ -81,6 +81,6 @@
     "backend",
     "packages/*"
   ],
-  "version": "24.29.0",
+  "version": "24.30.0",
   "packageManager": "npm@10.2.4"
 }

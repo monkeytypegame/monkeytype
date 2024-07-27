@@ -28,7 +28,8 @@
     },
     "@monkeytype/frontend#build": {
       "dependsOn": ["^build"],
-      "env": ["BACKEND_URL", "RECAPTCHA_SITE_KEY"]
+      "env": ["BACKEND_URL", "RECAPTCHA_SITE_KEY"],
+      "outputs": ["dist/**"]
     },
     "@monkeytype/frontend#dev": {
       "dependsOn": ["^build"],
