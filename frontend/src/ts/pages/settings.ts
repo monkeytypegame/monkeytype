@@ -108,6 +108,11 @@ async function initGroups(): Promise<void> {
     UpdateConfig.setKeymapShowTopRow,
     "button"
   ) as SettingsGroup<ConfigValue>;
+  groups["keymapSize"] = new SettingsGroup(
+    "keymapSize",
+    UpdateConfig.setKeymapSize,
+    "button"
+  ) as SettingsGroup<ConfigValue>;
   groups["showKeyTips"] = new SettingsGroup(
     "showKeyTips",
     UpdateConfig.setKeyTips,
@@ -669,6 +674,10 @@ async function fillSettingsPage(): Promise<void> {
 
   $(".pageSettings .section[data-config-name='maxLineWidth'] input").val(
     Config.maxLineWidth
+  );
+  
+  $(".pageSettings .section[data-config-name='keymapSize'] input").val(
+    Config.keymapSize
   );
 
   $(".pageSettings .section[data-config-name='customLayoutfluid'] input").val(
@@ -1300,6 +1309,59 @@ $(
       parseFloat(
         $(
           ".pageSettings .section[data-config-name='maxLineWidth'] .inputAndButton input"
+        ).val() as string
+      )
+    );
+    if (didConfigSave) {
+      Notifications.add("Saved", 1, {
+        duration: 1,
+      });
+    }
+  }
+});
+
+$(
+  ".pageSettings .section[data-config-name='keymapSize'] .inputAndButton button.save"
+).on("click", () => {
+  const didConfigSave = UpdateConfig.setKeymapSize(
+    parseFloat(
+      $(
+        ".pageSettings .section[data-config-name='keymapSize'] .inputAndButton input"
+      ).val() as string
+    )
+  );
+  if (didConfigSave) {
+    Notifications.add("Saved", 1, {
+      duration: 1,
+    });
+  }
+});
+
+$(
+  ".pageSettings .section[data-config-name='keymapSize'] .inputAndButton input"
+).on("focusout", () => {
+  const didConfigSave = UpdateConfig.setKeymapSize(
+    parseFloat(
+      $(
+        ".pageSettings .section[data-config-name='keymapSize'] .inputAndButton input"
+      ).val() as string
+    )
+  );
+  if (didConfigSave) {
+    Notifications.add("Saved", 1, {
+      duration: 1,
+    });
+  }
+});
+
+$(
+  ".pageSettings .section[data-config-name='keymapSize'] .inputAndButton input"
+).on("keypress", (e) => {
+  if (e.key === "Enter") {
+    const didConfigSave = UpdateConfig.setKeymapSize(
+      parseFloat(
+        $(
+          ".pageSettings .section[data-config-name='keymapSize'] .inputAndButton input"
         ).val() as string
       )
     );

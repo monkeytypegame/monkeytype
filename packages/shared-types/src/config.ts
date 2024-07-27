@@ -129,6 +129,7 @@ export type Config = {
   keymapLegendStyle: KeymapLegendStyle;
   keymapLayout: string;
   keymapShowTopRow: KeymapShowTopRow;
+  keymapSize: number;
   fontFamily: string;
   smoothLineScroll: boolean;
   alwaysShowDecimalPlaces: boolean;
