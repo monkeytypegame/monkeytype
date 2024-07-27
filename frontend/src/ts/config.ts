@@ -16,7 +16,7 @@ import {
   canSetConfigWithCurrentFunboxes,
   canSetFunboxWithConfig,
 } from "./test/funbox/funbox-validation";
-import { reloadAfter } from "./utils/misc";
+import { isDevEnvironment, reloadAfter } from "./utils/misc";
 import * as ConfigSchemas from "@monkeytype/contracts/schemas/configs";
 import { Config } from "@monkeytype/contracts/schemas/configs";
 
@@ -710,9 +710,14 @@ export function setAds(val: ConfigSchemas.Ads, nosave?: boolean): boolean {
     return false;
   }
 
+  if (isDevEnvironment()) {
+    val = "off";
+    console.debug("Ads are disabled in dev environment");
+  }
+
   config.ads = val;
   saveToLocalStorage("ads", nosave);
-  if (!nosave) {
+  if (!nosave && !isDevEnvironment()) {
     reloadAfter(3);
     Notifications.add("Ad settings changed. Refreshing...", 0);
   }

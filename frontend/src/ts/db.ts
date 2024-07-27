@@ -109,6 +109,12 @@ export async function initSnapshot(): Promise<
       };
     }
 
+    if (configData !== null && !("config" in configData)) {
+      throw new Error(
+        "Config data is not in the correct format. Please refresh the page or contact support."
+      );
+    }
+
     snap.name = userData.name;
     snap.personalBests = userData.personalBests;
     snap.personalBests ??= {
