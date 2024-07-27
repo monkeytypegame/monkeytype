@@ -1,17 +1,11 @@
-import { describe, it, expect, afterEach } from "vitest";
+import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import {
   updateAltGrState,
-  setIsAltGrPressed,
   isAltGrPressed,
 } from "../../src/ts/test/layout-emulator";
 
 describe("LayoutEmulator", () => {
   describe("updateAltGrState", () => {
-    afterEach(() => {
-      // Reset isAltGrPressed state after each test
-      setIsAltGrPressed(false);
-    });
-
     const createEvent = (
       code: string,
       type: string
@@ -20,6 +14,11 @@ describe("LayoutEmulator", () => {
         code,
         type,
       } as JQuery.KeyboardEventBase);
+
+    afterEach(() => {
+      // Emulate keyup event to reset isAltGrPressed state after each test
+      updateAltGrState(createEvent("AltRight", "keyup"));
+    });
 
     it("should set isAltGrPressed to true on AltRight keydown", () => {
       const event = createEvent("AltRight", "keydown");
