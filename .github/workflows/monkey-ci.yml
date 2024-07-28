@@ -106,7 +106,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          ref: ${{ github.head_ref }}
 
       - name: Cache node modules
         id: cache-npm
@@ -139,9 +138,9 @@ jobs:
         with:
           commit_message: "Fix prettier"
           commit_options: "--no-verify"
-          commit_user_name: George The Bot # defaults to "github-actions[bot]"
-          commit_user_email: my-github-actions-bot@example.org # defaults to "41898282+github-actions[bot]@users.noreply.github.com"
-          commit_author: George The Bot <monkeytypegeorge@gmail.com> # defaults to "username <username@users.noreply.github.com>", where "username" belongs to the author of the commit that triggered the run
+          commit_user_name: George The Bot
+          commit_user_email: my-github-actions-bot@example.org
+          commit_author: George The Bot <monkeytypegeorge@gmail.com>
 
 
   ci-be:
