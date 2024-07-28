@@ -136,7 +136,7 @@ jobs:
         uses: stefanzweifel/git-auto-commit-action@v5
         if: steps.check-pretty.outcome == 'failure'
         with:
-          commit_message: "Fix prettier"
+          commit_message: "fix prettier"
           commit_options: "--no-verify"
           commit_user_name: George The Bot
           commit_user_email: my-github-actions-bot@example.org
