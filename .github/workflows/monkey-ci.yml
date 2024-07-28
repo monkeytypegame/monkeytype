@@ -106,6 +106,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
+          ref: ${{ github.head_ref }}
 
       - name: Cache node modules
         id: cache-npm
@@ -133,16 +134,11 @@ jobs:
         run: npm run pretty-fix
 
       - name: Commit changes
+        uses: stefanzweifel/git-auto-commit-action@v5
         if: steps.check-pretty.outcome == 'failure'
-        run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add .
-          git commit -m "Fix formatting issues" --no-verify
-          branch=$(echo "${GITHUB_REF#refs/heads/}")
-          git push origin "HEAD:$branch"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          commit_message: "Fix prettier"
+          commit_options: "--no-verify"
 
   ci-be:
     name: ci-be
