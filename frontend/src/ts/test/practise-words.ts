@@ -28,7 +28,7 @@ export function init(
 ): boolean {
   if (Config.mode === "zen") return false;
   let limit;
-  if ((missed === "words" && !slow) || (missed !== "words" && slow)) {
+  if ((missed === "words" && !slow) || (missed === "off" && slow)) {
     limit = 20;
   } else {
     // (biwords) or (missed-words and slow) or (biwords and slow)
@@ -152,7 +152,8 @@ export function init(
   CustomText.setMode("shuffle");
   CustomText.setLimitValue(
     (sortableSlowWords.length +
-      (sortableMissedWords.length || sortableMissedBiwords.length)) *
+      sortableMissedWords.length +
+      sortableMissedBiwords.length) *
       5
   );
 
