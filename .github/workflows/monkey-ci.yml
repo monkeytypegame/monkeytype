@@ -95,8 +95,8 @@ jobs:
         name: Install dependencies
         run: npm install --prefer-offline --no-audit
 
-  check-and-fix-prettier:
-    name: check-and-fix-prettier
+  check-pretty:
+    name: check-pretty
     needs: [pre-ci, prime-cache]
     runs-on: ubuntu-latest
     if: needs.pre-ci.outputs.should-build-be == 'true' || needs.pre-ci.outputs.should-build-fe == 'true' || needs.pre-ci.outputs.should-build-pkg == 'true' || needs.pre-ci.outputs.assets-json == 'true'
@@ -145,7 +145,7 @@ jobs:
 
   ci-be:
     name: ci-be
-    needs: [pre-ci, prime-cache, check-and-fix-prettier]
+    needs: [pre-ci, prime-cache, check-pretty]
     runs-on: ubuntu-latest
     if: needs.pre-ci.outputs.should-build-be == 'true'
     steps:
@@ -182,7 +182,7 @@ jobs:
 
   ci-fe:
     name: ci-fe
-    needs: [pre-ci, prime-cache, check-and-fix-prettier]
+    needs: [pre-ci, prime-cache, check-pretty]
     runs-on: ubuntu-latest
     if: needs.pre-ci.outputs.should-build-fe == 'true'
     steps:
@@ -223,7 +223,7 @@ jobs:
 
   ci-assets:
     name: ci-assets
-    needs: [pre-ci, prime-cache, check-and-fix-prettier]
+    needs: [pre-ci, prime-cache, check-pretty]
     runs-on: ubuntu-latest
     if: needs.pre-ci.outputs.assets-json == 'true'
     steps:
@@ -280,7 +280,7 @@ jobs:
 
   ci-pkg:
     name: ci-pkg
-    needs: [pre-ci, prime-cache,check-and-fix-prettier]
+    needs: [pre-ci, prime-cache,check-pretty]
     runs-on: ubuntu-latest
     if: needs.pre-ci.outputs.should-build-pkg == 'true'
     steps:
