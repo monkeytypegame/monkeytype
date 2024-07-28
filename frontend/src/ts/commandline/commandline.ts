@@ -467,6 +467,7 @@ function handleInputSubmit(): void {
     throw new Error("Can't handle input submit - command is null");
   }
   inputModeParams.command.exec?.({
+    commandlineModal: modal,
     input: inputValue,
   });
   void AnalyticsController.log("usedCommandLine", {
