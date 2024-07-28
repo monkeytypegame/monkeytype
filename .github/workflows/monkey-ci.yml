@@ -95,9 +95,57 @@ jobs:
         name: Install dependencies
         run: npm install --prefer-offline --no-audit
 
+  check-pretty:
+    name: check-pretty
+    needs: [pre-ci, prime-cache]
+    runs-on: ubuntu-latest
+    if: needs.pre-ci.outputs.should-build-be == 'true' || needs.pre-ci.outputs.should-build-fe == 'true' || needs.pre-ci.outputs.should-build-pkg == 'true' || needs.pre-ci.outputs.assets-json == 'true'
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Cache node modules
+        id: cache-npm
+        uses: actions/cache@v4
+        env:
+          cache-name: cache-node-modules
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+
+      - name: Install dependencies
+        run: npm install --prefer-offline --no-audit
+
+      - name: Check pretty (backend)
+        id: check-pretty-be
+        if: needs.pre-ci.outputs.should-build-be == 'true'
+        run: npm run pretty-check-be
+
+      - name: Check pretty (frontend)
+        id: check-pretty-fe
+        if: needs.pre-ci.outputs.should-build-fe == 'true' 
+        run: npm run pretty-check-fe
+      
+      - name: Check pretty (packages)
+        id: check-pretty-pkg
+        if: needs.pre-ci.outputs.should-build-pkg == 'true'
+        run: npm run pretty-check-pkg
+
+      - name: Check pretty (assets)
+        id: check-pretty-assets
+        if: needs.pre-ci.outputs.assets-json == 'true'
+        run: npm run pretty-check-assets
+
   ci-be:
     name: ci-be
-    needs: [pre-ci, prime-cache]
+    needs: [pre-ci, prime-cache, check-pretty]
     runs-on: ubuntu-latest
     if: needs.pre-ci.outputs.should-build-be == 'true'
     steps:
@@ -123,9 +171,6 @@ jobs:
       - name: Install dependencies
         run: npm install --prefer-offline --no-audit
 
-      - name: Check pretty
-        run: npm run pretty-code-be
-
       - name: Check lint
         run: npm run lint-be
 
@@ -137,7 +182,7 @@ jobs:
 
   ci-fe:
     name: ci-fe
-    needs: [pre-ci, prime-cache]
+    needs: [pre-ci, prime-cache, check-pretty]
     runs-on: ubuntu-latest
     if: needs.pre-ci.outputs.should-build-fe == 'true'
     steps:
@@ -167,9 +212,6 @@ jobs:
       - name: Install dependencies
         run: npm install --prefer-offline --no-audit
 
-      - name: Check pretty
-        run: npm run pretty-code-fe
-
       - name: Check lint
         run: npm run lint-fe
 
@@ -181,7 +223,7 @@ jobs:
 
   ci-assets:
     name: ci-assets
-    needs: [pre-ci, prime-cache]
+    needs: [pre-ci, prime-cache, check-pretty]
     runs-on: ubuntu-latest
     if: needs.pre-ci.outputs.assets-json == 'true'
     steps:
@@ -238,7 +280,7 @@ jobs:
 
   ci-pkg:
     name: ci-pkg
-    needs: [pre-ci, prime-cache]
+    needs: [pre-ci, prime-cache,check-pretty]
     runs-on: ubuntu-latest
     if: needs.pre-ci.outputs.should-build-pkg == 'true'
     steps:
@@ -263,9 +305,6 @@ jobs:
 
       - name: Install dependencies
         run: npm install --prefer-offline --no-audit
-
-      - name: Check pretty
-        run: npm run pretty-code-pkg
 
       - name: Check lint
         run: npm run lint-pkg
