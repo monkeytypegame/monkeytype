@@ -122,15 +122,42 @@ jobs:
 
       - name: Install dependencies
         run: npm install --prefer-offline --no-audit
-
-      - name: Check pretty
-        id: check-pretty
-        run: npm run pretty
+        
+      - name: Check pretty (backend)
+        id: check-pretty-be
+        run: npm run pretty-be
         continue-on-error: true
 
-      - name: Fix pretty
-        if: steps.check-pretty.outcome == 'failure'
-        run: npm run pretty-fix
+      - name: Check pretty (frontend)
+        id: check-pretty-fe
+        run: npm run pretty-fe
+        continue-on-error: true
+      
+      - name: Check pretty (packages)
+        id: check-pretty-pkg
+        run: npm run pretty-pkg
+        continue-on-error: true
+
+      - name: Check pretty (assets)
+        id: check-pretty-assets
+        run: npm run pretty-assets
+        continue-on-error: true
+
+      - name: Fix pretty (backend)
+        if: steps.check-pretty-be.outcome == 'failure'
+        run: npm run pretty-fix-be
+
+      - name: Fix pretty (frontend)
+        if: steps.check-pretty-fe.outcome == 'failure'
+        run: npm run pretty-fix-fe
+
+      - name: Fix pretty (packages)
+        if: steps.check-pretty-pkg.outcome == 'failure'
+        run: npm run pretty-fix-pkg
+
+      - name: Fix pretty (assets)
+        if: steps.check-pretty-assets.outcome == 'failure'
+        run: npm run pretty-fix-assets
 
       - name: Commit changes
         uses: stefanzweifel/git-auto-commit-action@v5
