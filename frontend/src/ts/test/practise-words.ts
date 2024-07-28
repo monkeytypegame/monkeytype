@@ -6,12 +6,14 @@ import * as TestInput from "./test-input";
 import * as ConfigEvent from "../observables/config-event";
 import { setCustomTextName } from "../states/custom-text-name";
 import * as PractiseWordsModal from "../modals/practise-words";
+import { Mode } from "@monkeytype/shared-types/config";
+import { CustomTextData } from "@monkeytype/shared-types";
 
 type Before = {
-  mode: SharedTypes.Config.Mode | null;
+  mode: Mode | null;
   punctuation: boolean | null;
   numbers: boolean | null;
-  customText: SharedTypes.CustomTextData | null;
+  customText: CustomTextData | null;
 };
 
 export const before: Before = {

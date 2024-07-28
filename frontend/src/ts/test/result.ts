@@ -36,8 +36,10 @@ import Format from "../utils/format";
 import confetti from "canvas-confetti";
 import type { AnnotationOptions } from "chartjs-plugin-annotation";
 import Ape from "../ape";
+import { Result } from "@monkeytype/shared-types";
+import { Mode } from "@monkeytype/shared-types/config";
 
-let result: SharedTypes.Result<SharedTypes.Config.Mode>;
+let result: Result<Mode>;
 let maxChartVal: number;
 
 let useUnsmoothedRaw = false;
@@ -817,7 +819,7 @@ function updateQuoteSource(randomQuote: MonkeyTypes.Quote | null): void {
 }
 
 export async function update(
-  res: SharedTypes.Result<SharedTypes.Config.Mode>,
+  res: Result<Mode>,
   difficultyFailed: boolean,
   failReason: string,
   afkDetected: boolean,

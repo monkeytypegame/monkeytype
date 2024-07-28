@@ -1,3 +1,5 @@
+import { Config } from "@monkeytype/shared-types/config";
+
 export default {
   theme: "serika_dark",
   themeLight: "serika",
@@ -94,4 +96,4 @@ export default {
   showAverage: "off",
   tapeMode: "off",
   maxLineWidth: 0,
-} as SharedTypes.Config;
+} as Config;

@@ -1,5 +1,5 @@
 import _ from "lodash";
-import { Application } from "express";
+import { type Application } from "express";
 import { getMiddleware as getSwaggerMiddleware } from "swagger-stats";
 import {
   serve as serveSwagger,

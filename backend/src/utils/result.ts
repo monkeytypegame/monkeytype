@@ -1,11 +1,11 @@
+import { CompletedEvent, DBResult } from "@monkeytype/shared-types";
+import { Mode } from "@monkeytype/shared-types/config";
 import { ObjectId } from "mongodb";
 
-type Result = MonkeyTypes.WithObjectId<
-  SharedTypes.DBResult<SharedTypes.Config.Mode>
->;
+type Result = MonkeyTypes.WithObjectId<DBResult<Mode>>;
 
 export function buildDbResult(
-  completedEvent: SharedTypes.CompletedEvent,
+  completedEvent: CompletedEvent,
   userName: string,
   isPb: boolean
 ): Result {

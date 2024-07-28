@@ -14,6 +14,14 @@ import {
   ModifiableTestActivityCalendar,
 } from "./elements/test-activity-calendar";
 import * as Loader from "./elements/loader";
+import { PersonalBest, PersonalBests } from "@monkeytype/shared-types/user";
+import { Badge, DBResult, Result } from "@monkeytype/shared-types";
+import {
+  Config,
+  Difficulty,
+  Mode,
+  Mode2,
+} from "@monkeytype/shared-types/config";
 
 let dbSnapshot: MonkeyTypes.Snapshot | undefined;
 
@@ -101,6 +109,12 @@ export async function initSnapshot(): Promise<
       };
     }
 
+    if (configData !== null && !("config" in configData)) {
+      throw new Error(
+        "Config data is not in the correct format. Please refresh the page or contact support."
+      );
+    }
+
     snap.name = userData.name;
     snap.personalBests = userData.personalBests;
     snap.personalBests ??= {
@@ -112,7 +126,7 @@ export async function initSnapshot(): Promise<
     };
 
     for (const mode of ["time", "words", "quote", "zen", "custom"]) {
-      snap.personalBests[mode as keyof SharedTypes.PersonalBests] ??= {};
+      snap.personalBests[mode as keyof PersonalBests] ??= {};
     }
 
     snap.banned = userData.banned;
@@ -188,7 +202,7 @@ export async function initSnapshot(): Promise<
     //   };
 
     //   for (const mode of ["time", "words", "quote", "zen", "custom"]) {
-    //     tag.personalBests[mode as keyof SharedTypes.PersonalBests] ??= {};
+    //     tag.personalBests[mode as keyof PersonalBests] ??= {};
     //   }
     // });
 
@@ -272,8 +286,7 @@ export async function getUserResults(offset?: number): Promise<boolean> {
     return false;
   }
 
-  const results =
-    response.data as SharedTypes.DBResult<SharedTypes.Config.Mode>[];
+  const results = response.data as DBResult<Mode>[];
   results?.sort((a, b) => b.timestamp - a.timestamp);
   results.forEach((result) => {
     if (result.bailedOut === undefined) result.bailedOut = false;
@@ -311,11 +324,10 @@ export async function getUserResults(offset?: number): Promise<boolean> {
       (it) => it.timestamp < oldestTimestamp
     );
     dbSnapshot.results.push(
-      ...(resultsWithoutDuplicates as unknown as SharedTypes.Result<SharedTypes.Config.Mode>[])
+      ...(resultsWithoutDuplicates as unknown as Result<Mode>[])
     );
   } else {
-    dbSnapshot.results =
-      results as unknown as SharedTypes.Result<SharedTypes.Config.Mode>[];
+    dbSnapshot.results = results as unknown as Result<Mode>[];
   }
   return true;
 }
@@ -417,13 +429,13 @@ export async function deleteCustomTheme(themeId: string): Promise<boolean> {
   return true;
 }
 
-export async function getUserAverage10<M extends SharedTypes.Config.Mode>(
+export async function getUserAverage10<M extends Mode>(
   mode: M,
-  mode2: SharedTypes.Config.Mode2<M>,
+  mode2: Mode2<M>,
   punctuation: boolean,
   numbers: boolean,
   language: string,
-  difficulty: SharedTypes.Config.Difficulty,
+  difficulty: Difficulty,
   lazyMode: boolean
 ): Promise<[number, number]> {
   const snapshot = getSnapshot();
@@ -502,13 +514,13 @@ export async function getUserAverage10<M extends SharedTypes.Config.Mode>(
   return retval;
 }
 
-export async function getUserDailyBest<M extends SharedTypes.Config.Mode>(
+export async function getUserDailyBest<M extends Mode>(
   mode: M,
-  mode2: SharedTypes.Config.Mode2<M>,
+  mode2: Mode2<M>,
   punctuation: boolean,
   numbers: boolean,
   language: string,
-  difficulty: SharedTypes.Config.Difficulty,
+  difficulty: Difficulty,
   lazyMode: boolean
 ): Promise<number> {
   const snapshot = getSnapshot();
@@ -567,13 +579,13 @@ export async function getUserDailyBest<M extends SharedTypes.Config.Mode>(
   return retval;
 }
 
-export async function getLocalPB<M extends SharedTypes.Config.Mode>(
+export async function getLocalPB<M extends Mode>(
   mode: M,
-  mode2: SharedTypes.Config.Mode2<M>,
+  mode2: Mode2<M>,
   punctuation: boolean,
   numbers: boolean,
   language: string,
-  difficulty: SharedTypes.Config.Difficulty,
+  difficulty: Difficulty,
   lazyMode: boolean,
   funbox: string
 ): Promise<number> {
@@ -586,9 +598,7 @@ export async function getLocalPB<M extends SharedTypes.Config.Mode>(
   }
   if (dbSnapshot === null || dbSnapshot?.personalBests === null) return 0;
 
-  const bestsByMode = dbSnapshot?.personalBests[mode][
-    mode2
-  ] as SharedTypes.PersonalBest[];
+  const bestsByMode = dbSnapshot?.personalBests[mode][mode2] as PersonalBest[];
 
   if (bestsByMode === undefined) return 0;
 
@@ -604,13 +614,13 @@ export async function getLocalPB<M extends SharedTypes.Config.Mode>(
   );
 }
 
-export async function saveLocalPB<M extends SharedTypes.Config.Mode>(
+export async function saveLocalPB<M extends Mode>(
   mode: M,
-  mode2: SharedTypes.Config.Mode2<M>,
+  mode2: Mode2<M>,
   punctuation: boolean,
   numbers: boolean,
   language: string,
-  difficulty: SharedTypes.Config.Difficulty,
+  difficulty: Difficulty,
   lazyMode: boolean,
   wpm: number,
   acc: number,
@@ -636,12 +646,10 @@ export async function saveLocalPB<M extends SharedTypes.Config.Mode>(
     };
 
     dbSnapshot.personalBests[mode][mode2] ??=
-      [] as unknown as SharedTypes.PersonalBests[M][SharedTypes.Config.Mode2<M>];
+      [] as unknown as PersonalBests[M][Mode2<M>];
 
     (
-      dbSnapshot.personalBests[mode][
-        mode2
-      ] as unknown as SharedTypes.PersonalBest[]
+      dbSnapshot.personalBests[mode][mode2] as unknown as PersonalBest[]
     ).forEach((pb) => {
       if (
         (pb.punctuation ?? false) === punctuation &&
@@ -661,22 +669,20 @@ export async function saveLocalPB<M extends SharedTypes.Config.Mode>(
     });
     if (!found) {
       //nothing found
-      (
-        dbSnapshot.personalBests[mode][
-          mode2
-        ] as unknown as SharedTypes.PersonalBest[]
-      ).push({
-        language,
-        difficulty,
-        lazyMode,
-        punctuation,
-        numbers,
-        wpm,
-        acc,
-        raw,
-        timestamp: Date.now(),
-        consistency,
-      });
+      (dbSnapshot.personalBests[mode][mode2] as unknown as PersonalBest[]).push(
+        {
+          language,
+          difficulty,
+          lazyMode,
+          punctuation,
+          numbers,
+          wpm,
+          acc,
+          raw,
+          timestamp: Date.now(),
+          consistency,
+        }
+      );
     }
   }
 
@@ -685,14 +691,14 @@ export async function saveLocalPB<M extends SharedTypes.Config.Mode>(
   }
 }
 
-export async function getLocalTagPB<M extends SharedTypes.Config.Mode>(
+export async function getLocalTagPB<M extends Mode>(
   tagId: string,
   mode: M,
-  mode2: SharedTypes.Config.Mode2<M>,
+  mode2: Mode2<M>,
   punctuation: boolean,
   numbers: boolean,
   language: string,
-  difficulty: SharedTypes.Config.Difficulty,
+  difficulty: Difficulty,
   lazyMode: boolean
 ): Promise<number> {
   if (dbSnapshot === null) return 0;
@@ -718,10 +724,10 @@ export async function getLocalTagPB<M extends SharedTypes.Config.Mode>(
   };
 
   filteredtag.personalBests[mode][mode2] ??=
-    [] as unknown as SharedTypes.PersonalBests[M][SharedTypes.Config.Mode2<M>];
+    [] as unknown as PersonalBests[M][Mode2<M>];
 
   const personalBests = (filteredtag.personalBests[mode][mode2] ??
-    []) as SharedTypes.PersonalBest[];
+    []) as PersonalBest[];
 
   ret =
     personalBests.find(
@@ -736,14 +742,14 @@ export async function getLocalTagPB<M extends SharedTypes.Config.Mode>(
   return ret;
 }
 
-export async function saveLocalTagPB<M extends SharedTypes.Config.Mode>(
+export async function saveLocalTagPB<M extends Mode>(
   tagId: string,
   mode: M,
-  mode2: SharedTypes.Config.Mode2<M>,
+  mode2: Mode2<M>,
   punctuation: boolean,
   numbers: boolean,
   language: string,
-  difficulty: SharedTypes.Config.Difficulty,
+  difficulty: Difficulty,
   lazyMode: boolean,
   wpm: number,
   acc: number,
@@ -770,15 +776,13 @@ export async function saveLocalTagPB<M extends SharedTypes.Config.Mode>(
     };
 
     filteredtag.personalBests[mode][mode2] ??=
-      [] as unknown as SharedTypes.PersonalBests[M][SharedTypes.Config.Mode2<M>];
+      [] as unknown as PersonalBests[M][Mode2<M>];
 
     try {
       let found = false;
 
       (
-        filteredtag.personalBests[mode][
-          mode2
-        ] as unknown as SharedTypes.PersonalBest[]
+        filteredtag.personalBests[mode][mode2] as unknown as PersonalBest[]
       ).forEach((pb) => {
         if (
           (pb.punctuation ?? false) === punctuation &&
@@ -799,9 +803,7 @@ export async function saveLocalTagPB<M extends SharedTypes.Config.Mode>(
       if (!found) {
         //nothing found
         (
-          filteredtag.personalBests[mode][
-            mode2
-          ] as unknown as SharedTypes.PersonalBest[]
+          filteredtag.personalBests[mode][mode2] as unknown as PersonalBest[]
         ).push({
           language,
           difficulty,
@@ -837,7 +839,7 @@ export async function saveLocalTagPB<M extends SharedTypes.Config.Mode>(
           timestamp: Date.now(),
           consistency: consistency,
         },
-      ] as unknown as SharedTypes.PersonalBests[M][SharedTypes.Config.Mode2<M>];
+      ] as unknown as PersonalBests[M][Mode2<M>];
     }
   }
 
@@ -848,9 +850,9 @@ export async function saveLocalTagPB<M extends SharedTypes.Config.Mode>(
   return;
 }
 
-export async function updateLbMemory<M extends SharedTypes.Config.Mode>(
+export async function updateLbMemory<M extends Mode>(
   mode: M,
-  mode2: SharedTypes.Config.Mode2<M>,
+  mode2: Mode2<M>,
   language: string,
   rank: number,
   api = false
@@ -890,7 +892,7 @@ export async function updateLbMemory<M extends SharedTypes.Config.Mode>(
   }
 }
 
-export async function saveConfig(config: SharedTypes.Config): Promise<void> {
+export async function saveConfig(config: Config): Promise<void> {
   if (isAuthenticated()) {
     const response = await Ape.configs.save(config);
     if (response.status !== 200) {
@@ -899,9 +901,7 @@ export async function saveConfig(config: SharedTypes.Config): Promise<void> {
   }
 }
 
-export function saveLocalResult(
-  result: SharedTypes.Result<SharedTypes.Config.Mode>
-): void {
+export function saveLocalResult(result: Result<Mode>): void {
   const snapshot = getSnapshot();
   if (!snapshot) return;
 
@@ -946,7 +946,7 @@ export function addXp(xp: number): void {
   setSnapshot(snapshot);
 }
 
-export function addBadge(badge: SharedTypes.Badge): void {
+export function addBadge(badge: Badge): void {
   const snapshot = getSnapshot();
   if (!snapshot) return;
 

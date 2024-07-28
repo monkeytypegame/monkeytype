@@ -1,3 +1,13 @@
+import {
+  CountByYearAndDay,
+  CustomTheme,
+  ResultFilters,
+  UserProfile,
+  UserProfileDetails,
+  UserTag,
+} from "@monkeytype/shared-types";
+import { Mode, Mode2 } from "@monkeytype/shared-types/config";
+
 const BASE_PATH = "/users";
 
 export default class Users {
@@ -48,9 +58,9 @@ export default class Users {
     });
   }
 
-  async updateLeaderboardMemory<M extends SharedTypes.Config.Mode>(
+  async updateLeaderboardMemory<M extends Mode>(
     mode: string,
-    mode2: SharedTypes.Config.Mode2<M>,
+    mode2: Mode2<M>,
     language: string,
     rank: number
   ): Ape.EndpointResponse<null> {
@@ -89,7 +99,7 @@ export default class Users {
   }
 
   async addResultFilterPreset(
-    filter: SharedTypes.ResultFilters
+    filter: ResultFilters
   ): Ape.EndpointResponse<string> {
     return await this.httpClient.post(`${BASE_PATH}/resultFilterPresets`, {
       payload: filter,
@@ -103,7 +113,7 @@ export default class Users {
     );
   }
 
-  async createTag(tagName: string): Ape.EndpointResponse<SharedTypes.UserTag> {
+  async createTag(tagName: string): Ape.EndpointResponse<UserTag> {
     return await this.httpClient.post(`${BASE_PATH}/tags`, {
       payload: { tagName },
     });
@@ -130,7 +140,7 @@ export default class Users {
     );
   }
 
-  async getCustomThemes(): Ape.EndpointResponse<SharedTypes.CustomTheme[]> {
+  async getCustomThemes(): Ape.EndpointResponse<CustomTheme[]> {
     return await this.httpClient.get(`${BASE_PATH}/customThemes`);
   }
 
@@ -161,7 +171,7 @@ export default class Users {
 
   async addCustomTheme(
     newTheme: Partial<MonkeyTypes.CustomTheme>
-  ): Ape.EndpointResponse<SharedTypes.CustomTheme> {
+  ): Ape.EndpointResponse<CustomTheme> {
     const payload = { name: newTheme.name, colors: newTheme.colors };
     return await this.httpClient.post(`${BASE_PATH}/customThemes`, { payload });
   }
@@ -204,24 +214,20 @@ export default class Users {
     });
   }
 
-  async getProfileByUid(
-    uid: string
-  ): Ape.EndpointResponse<SharedTypes.UserProfile> {
+  async getProfileByUid(uid: string): Ape.EndpointResponse<UserProfile> {
     const encoded = encodeURIComponent(uid);
     return await this.httpClient.get(`${BASE_PATH}/${encoded}/profile?isUid`);
   }
 
-  async getProfileByName(
-    name: string
-  ): Ape.EndpointResponse<SharedTypes.UserProfile> {
+  async getProfileByName(name: string): Ape.EndpointResponse<UserProfile> {
     const encoded = encodeURIComponent(name);
     return await this.httpClient.get(`${BASE_PATH}/${encoded}/profile`);
   }
 
   async updateProfile(
-    profileUpdates: Partial<SharedTypes.UserProfileDetails>,
+    profileUpdates: Partial<UserProfileDetails>,
     selectedBadgeId?: number
-  ): Ape.EndpointResponse<SharedTypes.UserProfileDetails> {
+  ): Ape.EndpointResponse<UserProfileDetails> {
     return await this.httpClient.patch(`${BASE_PATH}/profile`, {
       payload: {
         ...profileUpdates,
@@ -281,7 +287,7 @@ export default class Users {
     return await this.httpClient.post(`${BASE_PATH}/revokeAllTokens`);
   }
 
-  async getTestActivity(): Ape.EndpointResponse<SharedTypes.CountByYearAndDay> {
+  async getTestActivity(): Ape.EndpointResponse<CountByYearAndDay> {
     return await this.httpClient.get(`${BASE_PATH}/testActivity`);
   }
 }

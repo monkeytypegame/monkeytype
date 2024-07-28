@@ -1,3 +1,5 @@
+import { Config } from "@monkeytype/shared-types/config";
+
 const BASE_PATH = "/configs";
 
 export default class Configs {
@@ -9,9 +11,7 @@ export default class Configs {
     return await this.httpClient.get(BASE_PATH);
   }
 
-  async save(
-    config: SharedTypes.Config
-  ): Ape.EndpointResponse<Ape.Configs.PostConfig> {
+  async save(config: Config): Ape.EndpointResponse<Ape.Configs.PostConfig> {
     return await this.httpClient.patch(BASE_PATH, { payload: { config } });
   }
 }

@@ -1,0 +1,27 @@
+{
+  "name": "@monkeytype/shared-types",
+  "private": true,
+  "scripts": {
+    "dev": "rimraf ./dist && tsc --watch --preserveWatchOutput",
+    "build": "rimraf ./dist && tsc",
+    "ts-check": "tsc --noEmit",
+    "lint": "eslint \"./**/*.ts\""
+  },
+  "devDependencies": {
+    "@monkeytype/eslint-config": "*",
+    "@monkeytype/typescript-config": "*",
+    "rimraf": "5.0.9",
+    "typescript": "5.5.3",
+    "eslint": "8.57.0"
+  },
+  "exports": {
+    ".": {
+      "default": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./*": {
+      "default": "./dist/*.js",
+      "types": "./dist/*.d.ts"
+    }
+  }
+}

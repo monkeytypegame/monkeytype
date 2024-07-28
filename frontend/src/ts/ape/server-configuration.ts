@@ -1,8 +1,9 @@
+import { Configuration } from "@monkeytype/shared-types";
 import Ape from ".";
 
-let config: SharedTypes.Configuration | undefined = undefined;
+let config: Configuration | undefined = undefined;
 
-export function get(): SharedTypes.Configuration | undefined {
+export function get(): Configuration | undefined {
   return config;
 }
 

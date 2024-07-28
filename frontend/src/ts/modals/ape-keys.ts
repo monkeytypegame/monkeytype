@@ -5,6 +5,7 @@ import { format } from "date-fns/format";
 import * as ConnectionState from "../states/connection";
 import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
 import { showPopup } from "./simple-modals";
+import { ApeKey } from "@monkeytype/shared-types";
 
 let apeKeys: Ape.ApeKeys.GetApeKeys | null = {};
 
@@ -34,7 +35,7 @@ function refreshList(): void {
     return;
   }
   apeKeyIds.forEach((apeKeyId) => {
-    const key = data[apeKeyId] as SharedTypes.ApeKey;
+    const key = data[apeKeyId] as ApeKey;
     table.append(`
       <tr keyId="${apeKeyId}">
         <td>
