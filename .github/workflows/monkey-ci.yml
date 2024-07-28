@@ -125,7 +125,7 @@ jobs:
 
       - name: Check pretty
         id: check-pretty
-        run: npm run pretty || exit 1
+        run: npm run pretty
         continue-on-error: true
 
       - name: Fix pretty
