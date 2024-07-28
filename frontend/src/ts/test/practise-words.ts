@@ -146,11 +146,14 @@ export function init(
   }
 
   UpdateConfig.setMode("custom", true);
+  CustomText.setPipeDelimiter(true);
   CustomText.setText(newCustomText);
-  CustomText.setLimitMode("word");
+  CustomText.setLimitMode("section");
   CustomText.setMode("shuffle");
   CustomText.setLimitValue(
-    (sortableSlowWords.length + sortableMissedWords.length) * 5
+    (sortableSlowWords.length +
+      (sortableMissedWords.length || sortableMissedBiwords.length)) *
+      5
   );
 
   setCustomTextName("practise", undefined);
