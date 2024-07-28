@@ -28,13 +28,14 @@ export function init(
 ): boolean {
   if (Config.mode === "zen") return false;
   let limit;
-  if ((missed && !slow) || (!missed && slow)) {
+  if ((missed === "words" && !slow) || (missed !== "words" && slow)) {
     limit = 20;
   } else {
-    // (biwords) or (missed and slow)
+    // (biwords) or (missed-words and slow) or (biwords and slow)
     limit = 10;
   }
 
+  // missed word, previous word, count
   let sortableMissedWords: [string, number][] = [];
   if (missed === "words") {
     Object.keys(TestInput.missedWords).forEach((missedWord) => {
@@ -120,9 +121,10 @@ export function init(
 
   sortableMissedBiwords.forEach((missedBiwords) => {
     for (let i = 0; i < missedBiwords[2]; i++) {
-      newCustomText.push(missedBiwords[0]);
       if (missedBiwords[1] !== "") {
-        newCustomText.push(missedBiwords[1]);
+        newCustomText.push(missedBiwords[1] + " " + missedBiwords[0]);
+      } else {
+        newCustomText.push(missedBiwords[0]);
       }
     }
   });
