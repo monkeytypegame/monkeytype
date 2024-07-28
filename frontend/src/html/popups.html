@@ -275,27 +275,38 @@
 <dialog id="practiseWordsModal" class="modalWrapper hidden">
   <div class="modal" actions="">
     <div class="title">Practice words</div>
-    <div class="inputs">
-      <div class="group" data-id="missed">
-        <div class="title">missed</div>
-        <div class="groupInputs">
-          <div class="buttonGroup">
-            <button class="missedOff" value="off">off</button>
-            <button class="missedWords" value="words">words</button>
-            <button class="missedBiwords" value="biwords">biwords</button>
-          </div>
-        </div>
+    <!-- <div class="inputs"> -->
+    <div class="group" data-id="missed">
+      <div class="title">
+        <i class="fas fa-times"></i>
+        missed
       </div>
-      <div class="group" data-id="slow">
-        <div class="title">slow</div>
-        <div class="groupInputs">
-          <div class="buttonGroup">
-            <button class="slowOff" value="false">off</button>
-            <button class="slowOn" value="true">on</button>
-          </div>
+      <div class="sub">
+        Generate missed words or biwords (which include the previous word).
+      </div>
+      <div class="groupInputs">
+        <div class="buttonGroup">
+          <button class="missedOff" value="off">off</button>
+          <button class="missedWords" value="words">words</button>
+          <button class="missedBiwords" value="biwords">biwords</button>
         </div>
       </div>
     </div>
+    <div class="group" data-id="slow">
+      <div class="title">
+        <i class="fas fa-tachometer-alt"></i>
+        slow
+      </div>
+      <div class="sub">Generate words which you typed slower than others.</div>
+      <div class="groupInputs">
+        <div class="buttonGroup">
+          <button class="slowOff" value="false">off</button>
+          <button class="slowOn" value="true">on</button>
+        </div>
+      </div>
+    </div>
+    <div></div>
+    <!-- </div> -->
     <button class="start">start</button>
   </div>
 </dialog>

@@ -15,18 +15,14 @@ const state: State = {
 const practiseModal = "#practiseWordsModal .modal";
 
 function updateUI(): void {
-  $(`${practiseModal} .inputs .group[data-id="missed"] button`).removeClass(
-    "active"
-  );
+  $(`${practiseModal} .group[data-id="missed"] button`).removeClass("active");
   $(
-    `${practiseModal} .inputs .group[data-id="missed"] button[value="${state.missed}"]`
+    `${practiseModal} .group[data-id="missed"] button[value="${state.missed}"]`
   ).addClass("active");
 
-  $(`${practiseModal} .inputs .group[data-id="slow"] button`).removeClass(
-    "active"
-  );
+  $(`${practiseModal} .group[data-id="slow"] button`).removeClass("active");
   $(
-    `${practiseModal} .inputs .group[data-id="slow"] button[value="${state.slow}"]`
+    `${practiseModal} .group[data-id="slow"] button[value="${state.slow}"]`
   ).addClass("active");
 
   if (state.missed === "off" && !state.slow) {

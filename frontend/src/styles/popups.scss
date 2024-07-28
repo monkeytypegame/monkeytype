@@ -274,16 +274,24 @@ body.darkMode {
   .modal {
     max-width: 400px;
 
-    .inputs {
+    .group {
+      width: 100%;
       display: grid;
-      gap: 1rem;
-
-      .group {
+      .title {
+        color: var(--sub-color);
+        text-transform: lowercase;
+      }
+      .sub {
+        color: var(--text-color);
+        margin-top: 0.25rem;
+        margin-bottom: 0.5rem;
+      }
+      .buttonGroup {
+        display: flex;
+        gap: 0.5rem;
         width: 100%;
-        display: grid;
-        .title {
-          color: var(--sub-color);
-          text-transform: lowercase;
+        button {
+          flex-grow: 1;
         }
       }
     }
