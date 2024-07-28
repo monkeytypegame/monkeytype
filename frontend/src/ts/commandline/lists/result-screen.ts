@@ -5,7 +5,6 @@ import * as Notifications from "../../elements/notifications";
 import * as TestInput from "../../test/test-input";
 import * as TestWords from "../../test/test-words";
 import Config from "../../config";
-import AnimatedModal from "../../utils/animated-modal";
 
 const commands: MonkeyTypes.Command[] = [
   {
