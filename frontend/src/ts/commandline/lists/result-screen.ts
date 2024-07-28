@@ -5,6 +5,7 @@ import * as Notifications from "../../elements/notifications";
 import * as TestInput from "../../test/test-input";
 import * as TestWords from "../../test/test-words";
 import Config from "../../config";
+import AnimatedModal from "../../utils/animated-modal";
 
 const commands: MonkeyTypes.Command[] = [
   {
@@ -36,8 +37,12 @@ const commands: MonkeyTypes.Command[] = [
     id: "practiseWords",
     display: "Practice words",
     icon: "fa-exclamation-triangle",
-    exec: (): void => {
-      PractiseWordsModal.show();
+    opensModal: true,
+    exec: (options): void => {
+      PractiseWordsModal.show({
+        animationMode: "modalOnly",
+        modalChain: options.commandlineModal,
+      });
     },
     available: (): boolean => {
       return TestUI.resultVisible;

@@ -1,4 +1,4 @@
-import AnimatedModal from "../utils/animated-modal";
+import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
 import * as PractiseWords from "../test/practise-words";
 import * as TestLogic from "../test/test-logic";
 
@@ -66,8 +66,8 @@ async function setup(modalEl: HTMLElement): Promise<void> {
   updateUI();
 }
 
-export function show(): void {
-  void modal.show();
+export function show(showOptions?: ShowOptions): void {
+  void modal.show(showOptions);
 }
 
 function hide(clearChain = false): void {
