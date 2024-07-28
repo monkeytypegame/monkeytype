@@ -108,6 +108,7 @@ async function getDataAndInit(): Promise<boolean> {
     Notifications.add("Failed to get user data: " + msg, -1);
     console.error(e);
 
+    LoginPage.enableInputs();
     $("header nav .account").css("opacity", 1);
     return false;
   }
@@ -275,7 +276,7 @@ if (Auth && ConnectionState.get()) {
   });
 }
 
-async function signIn(): Promise<void> {
+export async function signIn(email: string, password: string): Promise<void> {
   if (Auth === undefined) {
     Notifications.add("Authentication uninitialized", -1);
     return;
@@ -291,8 +292,6 @@ async function signIn(): Promise<void> {
   LoginPage.showPreloader();
   LoginPage.disableInputs();
   LoginPage.disableSignUpButton();
-  const email = ($(".pageLogin .login input")[0] as HTMLInputElement).value;
-  const password = ($(".pageLogin .login input")[1] as HTMLInputElement).value;
 
   if (email === "" || password === "") {
     Notifications.add("Please fill in all fields", 0);
@@ -381,6 +380,9 @@ async function signInWithProvider(provider: AuthProvider): Promise<void> {
         message = "";
         // message = "Popup closed by user";
         // return;
+      } else if (error.code === "auth/popup-blocked") {
+        message =
+          "Sign in popup was blocked by the browser. Check the address bar for a blocked popup icon, or update your browser settings to allow popups.";
       } else if (error.code === "auth/user-cancelled") {
         message = "";
         // message = "User refused to sign in";
@@ -623,7 +625,11 @@ async function signUp(): Promise<void> {
 
 $(".pageLogin .login form").on("submit", (e) => {
   e.preventDefault();
-  void signIn();
+  const email =
+    ($(".pageLogin .login input")[0] as HTMLInputElement).value ?? "";
+  const password =
+    ($(".pageLogin .login input")[1] as HTMLInputElement).value ?? "";
+  void signIn(email, password);
 });
 
 $(".pageLogin .login button.signInWithGoogle").on("click", () => {

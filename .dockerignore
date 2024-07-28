@@ -20,4 +20,4 @@ frontend/.env
 #backend
 backend/src/credentials/*.json
 backend/.env
-backend/build
+backend/dist

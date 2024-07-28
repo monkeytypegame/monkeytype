@@ -52,7 +52,7 @@ jobs:
           password: ${{ secrets.DOCKER_ACCESS_TOKEN }}
           repository: ${{ env.BE_REPO }}
           short-description: Official backend server for monkeytype.com
-          readme-filepath: ./SELF_HOSTING.md
+          readme-filepath: ./docs/SELF_HOSTING.md
 
       - name: Frontend extract metadata (tags, labels)
         id: femeta
@@ -79,4 +79,4 @@ jobs:
           password: ${{ secrets.DOCKER_ACCESS_TOKEN }}
           repository: ${{ env.FE_REPO }}
           short-description: Official frontend server for monkeytype.com
-          readme-filepath: ./SELF_HOSTING.md
+          readme-filepath: ./docs/SELF_HOSTING.md

@@ -1,6 +1,7 @@
-import { UpdateResult } from "mongodb";
+import { type UpdateResult } from "mongodb";
 import * as db from "../init/db";
 import _ from "lodash";
+import { Config } from "@monkeytype/shared-types/config";
 
 const configLegacyProperties = [
   "swapEscAndTab",
@@ -24,7 +25,7 @@ const configLegacyProperties = [
 
 export async function saveConfig(
   uid: string,
-  config: SharedTypes.Config
+  config: Config
 ): Promise<UpdateResult> {
   const configChanges = _.mapKeys(config, (_value, key) => `config.${key}`);
 
@@ -33,7 +34,7 @@ export async function saveConfig(
   ) as Record<string, "">;
 
   return await db
-    .collection<SharedTypes.Config>("configs")
+    .collection<Config>("configs")
     .updateOne(
       { uid },
       { $set: configChanges, $unset: unset },
@@ -41,15 +42,11 @@ export async function saveConfig(
     );
 }
 
-export async function getConfig(
-  uid: string
-): Promise<SharedTypes.Config | null> {
-  const config = await db
-    .collection<SharedTypes.Config>("configs")
-    .findOne({ uid });
+export async function getConfig(uid: string): Promise<Config | null> {
+  const config = await db.collection<Config>("configs").findOne({ uid });
   return config;
 }
 
 export async function deleteConfig(uid: string): Promise<void> {
-  await db.collection<SharedTypes.Config>("configs").deleteOne({ uid });
+  await db.collection<Config>("configs").deleteOne({ uid });
 }

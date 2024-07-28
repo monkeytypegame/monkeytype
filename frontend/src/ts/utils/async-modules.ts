@@ -10,6 +10,7 @@ export async function getCommandline(): Promise<
 > {
   try {
     Loader.show();
+    // eslint-disable-next-line import/no-unresolved
     const module = await import("../commandline/commandline.js");
     Loader.hide();
     return module;
@@ -38,6 +39,7 @@ export async function getDevOptionsModal(): Promise<
 > {
   try {
     Loader.show();
+    // eslint-disable-next-line import/no-unresolved
     const module = await import("../modals/dev-options.js");
     Loader.hide();
     return module;

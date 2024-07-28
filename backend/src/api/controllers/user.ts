@@ -11,7 +11,7 @@ import {
   sanitizeString,
 } from "../../utils/misc";
 import GeorgeQueue from "../../queues/george-queue";
-import admin, { FirebaseError } from "firebase-admin";
+import admin, { type FirebaseError } from "firebase-admin";
 import { deleteAllApeKeys } from "../../dal/ape-keys";
 import { deleteAllPresets } from "../../dal/preset";
 import { deleteAll as deleteAllResults } from "../../dal/result";
@@ -25,10 +25,18 @@ import * as ReportDAL from "../../dal/report";
 import emailQueue from "../../queues/email-queue";
 import FirebaseAdmin from "../../init/firebase-admin";
 import * as AuthUtil from "../../utils/auth";
-
 import * as Dates from "date-fns";
 import { UTCDateMini } from "@date-fns/utc";
 import * as BlocklistDal from "../../dal/blocklist";
+import { Mode, Mode2 } from "@monkeytype/shared-types/config";
+import {
+  AllTimeLbs,
+  CountByYearAndDay,
+  RankAndCount,
+  TestActivity,
+  UserProfile,
+  UserProfileDetails,
+} from "@monkeytype/shared-types";
 
 async function verifyCaptcha(captcha: string): Promise<void> {
   if (!(await verify(captcha))) {
@@ -661,8 +669,7 @@ export async function updateLbMemory(
 ): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
   const { mode, language, rank } = req.body;
-  const mode2 = req.body
-    .mode2 as SharedTypes.Config.Mode2<SharedTypes.Config.Mode>;
+  const mode2 = req.body.mode2 as Mode2<Mode>;
 
   await UserDAL.updateLbMemory(uid, mode, mode2, language, rank);
   return new MonkeyResponse("Leaderboard memory updated");
@@ -837,7 +844,7 @@ export async function getProfile(
     details: profileDetails,
     allTimeLbs,
     uid: user.uid,
-  } as SharedTypes.UserProfile;
+  } as UserProfile;
 
   return new MonkeyResponse("Profile retrieved", profileData);
 }
@@ -865,13 +872,13 @@ export async function updateProfile(
     }
   });
 
-  const profileDetailsUpdates: Partial<SharedTypes.UserProfileDetails> = {
+  const profileDetailsUpdates: Partial<UserProfileDetails> = {
     bio: sanitizeString(bio),
     keyboard: sanitizeString(keyboard),
     socialProfiles: _.mapValues(
       socialProfiles,
       sanitizeString
-    ) as SharedTypes.UserProfileDetails["socialProfiles"],
+    ) as UserProfileDetails["socialProfiles"],
   };
 
   await UserDAL.updateProfile(uid, profileDetailsUpdates, user.inventory);
@@ -986,7 +993,7 @@ export async function revokeAllTokens(
   return new MonkeyResponse("All tokens revoked");
 }
 
-async function getAllTimeLbs(uid: string): Promise<SharedTypes.AllTimeLbs> {
+async function getAllTimeLbs(uid: string): Promise<AllTimeLbs> {
   const allTime15English = await LeaderboardsDAL.getRank(
     "time",
     "15",
@@ -1007,7 +1014,7 @@ async function getAllTimeLbs(uid: string): Promise<SharedTypes.AllTimeLbs> {
       : ({
           rank: allTime15English.rank,
           count: allTime15English.count,
-        } as SharedTypes.RankAndCount);
+        } as RankAndCount);
 
   const english60 =
     allTime60English === false
@@ -1015,7 +1022,7 @@ async function getAllTimeLbs(uid: string): Promise<SharedTypes.AllTimeLbs> {
       : ({
           rank: allTime60English.rank,
           count: allTime60English.count,
-        } as SharedTypes.RankAndCount);
+        } as RankAndCount);
 
   return {
     time: {
@@ -1030,8 +1037,8 @@ async function getAllTimeLbs(uid: string): Promise<SharedTypes.AllTimeLbs> {
 }
 
 export function generateCurrentTestActivity(
-  testActivity: SharedTypes.CountByYearAndDay | undefined
-): SharedTypes.TestActivity | undefined {
+  testActivity: CountByYearAndDay | undefined
+): TestActivity | undefined {
   const thisYear = Dates.startOfYear(new UTCDateMini());
   const lastYear = Dates.startOfYear(Dates.subYears(thisYear, 1));
 

@@ -1,5 +1,6 @@
-import { Response, NextFunction, RequestHandler } from "express";
+import type { Response, NextFunction, RequestHandler } from "express";
 import MonkeyError from "../utils/error";
+import { Configuration } from "@monkeytype/shared-types";
 
 export type ValidationOptions<T> = {
   criteria: (data: T) => boolean;
@@ -11,7 +12,7 @@ export type ValidationOptions<T> = {
  * the criteria.
  */
 export function validate(
-  options: ValidationOptions<SharedTypes.Configuration>
+  options: ValidationOptions<Configuration>
 ): RequestHandler {
   const {
     criteria,

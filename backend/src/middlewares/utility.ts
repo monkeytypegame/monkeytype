@@ -1,5 +1,5 @@
 import _ from "lodash";
-import { Response, NextFunction, RequestHandler } from "express";
+import type { Response, NextFunction, RequestHandler } from "express";
 import { handleMonkeyResponse, MonkeyResponse } from "../utils/monkey-response";
 import { isDevEnvironment } from "../utils/misc";
 

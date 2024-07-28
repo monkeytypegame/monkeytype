@@ -61,7 +61,7 @@ Stop the running docker containers using `docker compose down` before making any
       #uncomment to enable the account system, check the SELF_HOSTING.md file
       - type: bind
         source: ./serviceAccountKey.json
-        target: /src/credentials/serviceAccountKey.json
+        target: /app/backend/src/credentials/serviceAccountKey.json
         read_only: true
     ```
 

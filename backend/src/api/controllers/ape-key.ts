@@ -6,8 +6,9 @@ import MonkeyError from "../../utils/error";
 import { MonkeyResponse } from "../../utils/monkey-response";
 import { base64UrlEncode } from "../../utils/misc";
 import { ObjectId } from "mongodb";
+import { ApeKey } from "@monkeytype/shared-types";
 
-function cleanApeKey(apeKey: MonkeyTypes.ApeKeyDB): SharedTypes.ApeKey {
+function cleanApeKey(apeKey: MonkeyTypes.ApeKeyDB): ApeKey {
   return _.omit(apeKey, "hash", "_id", "uid", "useCount");
 }
 
