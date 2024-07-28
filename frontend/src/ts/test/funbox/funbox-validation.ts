@@ -2,14 +2,15 @@ import * as FunboxList from "./funbox-list";
 import * as Notifications from "../../elements/notifications";
 import * as Arrays from "../../utils/arrays";
 import * as Strings from "../../utils/strings";
+import { Config, ConfigValue } from "@monkeytype/shared-types/config";
 
 export function checkFunboxForcedConfigs(
   key: string,
-  value: SharedTypes.ConfigValue,
+  value: ConfigValue,
   funbox: string
 ): {
   result: boolean;
-  forcedConfigs?: SharedTypes.ConfigValue[];
+  forcedConfigs?: ConfigValue[];
 } {
   if (FunboxList.get(funbox).length === 0) return { result: true };
 
@@ -33,20 +34,18 @@ export function checkFunboxForcedConfigs(
       return { result: true };
     }
   } else {
-    const forcedConfigs: Record<string, SharedTypes.ConfigValue[]> = {};
+    const forcedConfigs: Record<string, ConfigValue[]> = {};
     // collect all forced configs
     for (const fb of FunboxList.get(funbox)) {
       if (fb.forcedConfig) {
         //push keys to forcedConfigs, if they don't exist. if they do, intersect the values
         for (const key in fb.forcedConfig) {
           if (forcedConfigs[key] === undefined) {
-            forcedConfigs[key] = fb.forcedConfig[
-              key
-            ] as SharedTypes.ConfigValue[];
+            forcedConfigs[key] = fb.forcedConfig[key] as ConfigValue[];
           } else {
             forcedConfigs[key] = Arrays.intersect(
-              forcedConfigs[key] as SharedTypes.ConfigValue[],
-              fb.forcedConfig[key] as SharedTypes.ConfigValue[],
+              forcedConfigs[key] as ConfigValue[],
+              fb.forcedConfig[key] as ConfigValue[],
               true
             );
           }
@@ -62,9 +61,7 @@ export function checkFunboxForcedConfigs(
         throw new Error("No intersection of forced configs");
       }
       return {
-        result: (forcedConfigs[key] ?? []).includes(
-          value as SharedTypes.ConfigValue
-        ),
+        result: (forcedConfigs[key] ?? []).includes(value as ConfigValue),
         forcedConfigs: forcedConfigs[key],
       };
     }
@@ -76,7 +73,7 @@ export function checkFunboxForcedConfigs(
 // if it returns false, show a notification and return false
 export function canSetConfigWithCurrentFunboxes(
   key: string,
-  value: SharedTypes.ConfigValue,
+  value: ConfigValue,
   funbox: string,
   noNotification = false
 ): boolean {
@@ -157,7 +154,7 @@ export function canSetConfigWithCurrentFunboxes(
 
 export function canSetFunboxWithConfig(
   funbox: string,
-  config: SharedTypes.Config
+  config: Config
 ): boolean {
   console.log("cansetfunboxwithconfig", funbox, config.mode);
   let funboxToCheck = config.funbox;
@@ -306,8 +303,8 @@ export function areFunboxesCompatible(
       if (allowedConfig[key]) {
         if (
           Arrays.intersect(
-            allowedConfig[key] as SharedTypes.ConfigValue[],
-            f.forcedConfig[key] as SharedTypes.ConfigValue[],
+            allowedConfig[key] as ConfigValue[],
+            f.forcedConfig[key] as ConfigValue[],
             true
           ).length === 0
         ) {
@@ -315,7 +312,7 @@ export function areFunboxesCompatible(
           break;
         }
       } else {
-        allowedConfig[key] = f.forcedConfig[key] as SharedTypes.ConfigValue[];
+        allowedConfig[key] = f.forcedConfig[key] as ConfigValue[];
       }
     }
   }

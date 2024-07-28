@@ -436,7 +436,10 @@ export function getWordsLimit(): number {
 
   //custom
   if (Config.mode === "custom") {
-    if (CustomText.getLimitValue() === 0) {
+    if (
+      CustomText.getLimitValue() === 0 ||
+      CustomText.getLimitMode() === "time"
+    ) {
       limit = 100;
     } else {
       limit =

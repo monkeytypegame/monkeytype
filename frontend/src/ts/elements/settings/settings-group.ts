@@ -1,8 +1,10 @@
+import { ConfigValue } from "@monkeytype/shared-types/config";
 import Config from "../../config";
 import * as Notifications from "../notifications";
+// @ts-expect-error TODO: update slim-select
 import SlimSelect from "slim-select";
 
-export default class SettingsGroup<T extends SharedTypes.ConfigValue> {
+export default class SettingsGroup<T extends ConfigValue> {
   public configName: string;
   public configValue: T;
   public configFunction: (param: T, nosave?: boolean) => boolean;

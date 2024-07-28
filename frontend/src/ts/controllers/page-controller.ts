@@ -96,7 +96,7 @@ export async function change(
             await previousPage?.afterHide();
             await nextPage?.beforeShow({
               params: options.params,
-              // @ts-expect-error
+              //@ts-expect-error
               data: options.data,
               tribeOverride: options.tribeOverride ?? false,
             });

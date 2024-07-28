@@ -3,8 +3,8 @@ import {
   Collection,
   Db,
   MongoClient,
-  MongoClientOptions,
-  WithId,
+  type MongoClientOptions,
+  type WithId,
 } from "mongodb";
 import MonkeyError from "../utils/error";
 import Logger from "../utils/logger";

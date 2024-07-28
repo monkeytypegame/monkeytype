@@ -3,6 +3,9 @@ import * as Random from "../utils/random";
 import { envConfig } from "../constants/env-config";
 import { lastElementFromArray } from "./arrays";
 import * as JSONData from "./json-data";
+import { CustomTextData, Result } from "@monkeytype/shared-types";
+import { PersonalBests } from "@monkeytype/shared-types/user";
+import { Config, Mode, Mode2 } from "@monkeytype/shared-types/config";
 
 export function kogasa(cov: number): number {
   return (
@@ -214,7 +217,7 @@ export function canQuickRestart(
   mode: string,
   words: number,
   time: number,
-  CustomText: SharedTypes.CustomTextData,
+  CustomText: CustomTextData,
   customTextIsLong: boolean
 ): boolean {
   const wordsLong = mode === "words" && (words >= 1000 || words === 0);
@@ -372,10 +375,10 @@ export async function swapElements(
   return;
 }
 
-export function getMode2<M extends keyof SharedTypes.PersonalBests>(
-  config: SharedTypes.Config,
+export function getMode2<M extends keyof PersonalBests>(
+  config: Config,
   randomQuote: MonkeyTypes.Quote | null
-): SharedTypes.Config.Mode2<M> {
+): Mode2<M> {
   const mode = config.mode;
   let retVal: string;
 
@@ -393,12 +396,10 @@ export function getMode2<M extends keyof SharedTypes.PersonalBests>(
     throw new Error("Invalid mode");
   }
 
-  return retVal as SharedTypes.Config.Mode2<M>;
+  return retVal as Mode2<M>;
 }
 
-export async function downloadResultsCSV(
-  array: SharedTypes.Result<SharedTypes.Config.Mode>[]
-): Promise<void> {
+export async function downloadResultsCSV(array: Result<Mode>[]): Promise<void> {
   Loader.show();
   const csvString = [
     [
@@ -427,7 +428,7 @@ export async function downloadResultsCSV(
       "tags",
       "timestamp",
     ],
-    ...array.map((item: SharedTypes.Result<SharedTypes.Config.Mode>) => [
+    ...array.map((item: Result<Mode>) => [
       item._id,
       item.isPb,
       item.wpm,

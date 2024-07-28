@@ -3,7 +3,7 @@
 declare namespace Ape.Leaderboards {
   type Query = {
     language: string;
-    mode: SharedTypes.Config.Mode;
+    mode: Config.Mode;
     mode2: string;
     isDaily?: boolean;
     daysBefore?: number;
@@ -14,12 +14,12 @@ declare namespace Ape.Leaderboards {
     limit?: number;
   } & Query;
 
-  type GetLeaderboard = SharedTypes.LeaderboardEntry[];
+  type GetLeaderboard = LeaderboardEntry[];
 
   type GetRank = {
     minWpm: number;
     count: number;
     rank: number | null;
-    entry: SharedTypes.LeaderboardEntry | null;
+    entry: import("@monkeytype/shared-types").LeaderboardEntry | null;
   };
 }

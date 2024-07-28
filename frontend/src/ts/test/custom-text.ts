@@ -1,6 +1,13 @@
 import * as TribeState from "../tribe/tribe-state";
 import * as TribeConfigSyncEvent from "../observables/tribe-config-sync-event";
 
+import {
+  CustomTextData,
+  CustomTextLimit,
+  CustomTextLimitMode,
+  CustomTextMode,
+} from "@monkeytype/shared-types";
+
 let text: string[] = [
   "The",
   "quick",
@@ -13,8 +20,8 @@ let text: string[] = [
   "dog",
 ];
 
-let mode: SharedTypes.CustomTextMode = "repeat";
-const limit: SharedTypes.CustomTextLimit = {
+let mode: CustomTextMode = "repeat";
+const limit: CustomTextLimit = {
   value: 9,
   mode: "word",
 };
@@ -31,12 +38,12 @@ export function setText(txt: string[], tribeOverride = false): void {
   if (!tribeOverride) TribeConfigSyncEvent.dispatch();
 }
 
-export function getMode(): SharedTypes.CustomTextMode {
+export function getMode(): CustomTextMode {
   return mode;
 }
 
 export function setMode(
-  val: SharedTypes.CustomTextMode,
+  val: CustomTextMode,
   tribeOverride = false
 ): void {
   if (!TribeState.canChangeConfig(tribeOverride)) return;
@@ -45,7 +52,7 @@ export function setMode(
   if (!tribeOverride) TribeConfigSyncEvent.dispatch();
 }
 
-export function getLimit(): SharedTypes.CustomTextLimit {
+export function getLimit(): CustomTextLimit {
   return limit;
 }
 
@@ -53,7 +60,7 @@ export function getLimitValue(): number {
   return limit.value;
 }
 
-export function getLimitMode(): SharedTypes.CustomTextLimitMode {
+export function getLimitMode(): CustomTextLimitMode {
   return limit.mode;
 }
 
@@ -64,7 +71,7 @@ export function setLimitValue(val: number, tribeOverride = false): void {
 }
 
 export function setLimitMode(
-  val: SharedTypes.CustomTextLimitMode,
+  val: CustomTextLimitMode,
   tribeOverride = false
 ): void {
   if (!TribeState.canChangeConfig(tribeOverride)) return;
@@ -82,7 +89,7 @@ export function setPipeDelimiter(val: boolean, tribeOverride = false): void {
   if (!tribeOverride) TribeConfigSyncEvent.dispatch();
 }
 
-export function getData(): SharedTypes.CustomTextData {
+export function getData(): CustomTextData {
   return {
     text,
     mode,

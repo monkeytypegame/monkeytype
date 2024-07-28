@@ -1,11 +1,11 @@
 import _ from "lodash";
 import * as db from "../init/db";
 import {
-  Filter,
+  type Filter,
+  type MatchKeysAndValues,
+  type WithId,
   ObjectId,
-  MatchKeysAndValues,
   Collection,
-  WithId,
 } from "mongodb";
 import MonkeyError from "../utils/error";
 

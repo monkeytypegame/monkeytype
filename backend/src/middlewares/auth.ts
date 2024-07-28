@@ -3,7 +3,7 @@ import { getApeKey, updateLastUsedOn } from "../dal/ape-keys";
 import MonkeyError from "../utils/error";
 import { verifyIdToken } from "../utils/auth";
 import { base64UrlDecode, isDevEnvironment } from "../utils/misc";
-import { NextFunction, Response, Handler } from "express";
+import type { NextFunction, Response, Handler } from "express";
 import statuses from "../constants/monkey-status-codes";
 import {
   incrementAuth,
@@ -13,6 +13,7 @@ import {
 } from "../utils/prometheus";
 import crypto from "crypto";
 import { performance } from "perf_hooks";
+import { Configuration } from "@monkeytype/shared-types";
 
 type RequestAuthenticationOptions = {
   isPublic?: boolean;
@@ -105,7 +106,7 @@ function authenticateRequest(authOptions = DEFAULT_OPTIONS): Handler {
 
 async function authenticateWithAuthHeader(
   authHeader: string,
-  configuration: SharedTypes.Configuration,
+  configuration: Configuration,
   options: RequestAuthenticationOptions
 ): Promise<MonkeyTypes.DecodedToken> {
   if (authHeader === undefined || authHeader === "") {
@@ -221,7 +222,7 @@ async function authenticateWithBearerToken(
 
 async function authenticateWithApeKey(
   key: string,
-  configuration: SharedTypes.Configuration,
+  configuration: Configuration,
   options: RequestAuthenticationOptions
 ): Promise<MonkeyTypes.DecodedToken> {
   if (!configuration.apeKeys.acceptKeys) {

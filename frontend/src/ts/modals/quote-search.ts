@@ -16,11 +16,13 @@ import { isAuthenticated } from "../firebase";
 import { debounce } from "throttle-debounce";
 import Ape from "../ape";
 import * as Loader from "../elements/loader";
+// @ts-expect-error TODO: update slim-select
 import SlimSelect from "slim-select";
 import * as TestState from "../test/test-state";
 import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
 import * as TestLogic from "../test/test-logic";
 import { createErrorMessage } from "../utils/misc";
+import { QuoteLength } from "@monkeytype/shared-types/config";
 
 const searchServiceCache: Record<string, SearchService<MonkeyTypes.Quote>> = {};
 
@@ -327,7 +329,7 @@ function apply(val: number): void {
     );
   }
   if (val !== null && !isNaN(val) && val >= 0) {
-    UpdateConfig.setQuoteLength(-2 as SharedTypes.Config.QuoteLength, false);
+    UpdateConfig.setQuoteLength(-2 as QuoteLength, false);
     TestState.setSelectedQuoteId(val);
     ManualRestart.set();
   } else {

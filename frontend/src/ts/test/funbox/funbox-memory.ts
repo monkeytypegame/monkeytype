@@ -1,3 +1,5 @@
+import { ConfigValue } from "@monkeytype/shared-types/config";
+
 type SetFunction<T> = (
   param: T,
   nosave?: boolean,
@@ -11,24 +13,22 @@ type ValueAndSetFunction<T> = {
 
 type SettingsMemory<T> = Record<string, ValueAndSetFunction<T>>;
 
-let settingsMemory: SettingsMemory<SharedTypes.ConfigValue> = {};
+let settingsMemory: SettingsMemory<ConfigValue> = {};
 
-export function save<T extends SharedTypes.ConfigValue>(
+export function save<T extends ConfigValue>(
   settingName: string,
   value: T,
   setFunction: SetFunction<T>
 ): void {
   settingsMemory[settingName] ??= {
     value,
-    setFunction: setFunction as SetFunction<SharedTypes.ConfigValue>,
+    setFunction: setFunction as SetFunction<ConfigValue>,
   };
 }
 
 export function load(tribeOverride = false): void {
   Object.keys(settingsMemory).forEach((setting) => {
-    const memory = settingsMemory[
-      setting
-    ] as ValueAndSetFunction<SharedTypes.ConfigValue>;
+    const memory = settingsMemory[setting] as ValueAndSetFunction<ConfigValue>;
     memory.setFunction(memory.value, true, tribeOverride);
   });
   settingsMemory = {};

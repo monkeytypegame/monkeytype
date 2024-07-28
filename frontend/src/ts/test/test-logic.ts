@@ -68,11 +68,16 @@ import * as LayoutfluidFunboxTimer from "../test/funbox/layoutfluid-funbox-timer
 import tribeSocket from "../tribe/tribe-socket";
 import * as ArabicLazyMode from "../states/arabic-lazy-mode";
 import Format from "../utils/format";
+import {
+  CompletedEvent,
+  CustomTextDataWithTextLen,
+} from "@monkeytype/shared-types";
+import { Mode, QuoteLength } from "@monkeytype/shared-types/config";
 
 let failReason = "";
 const koInputVisual = document.getElementById("koInputVisual") as HTMLElement;
 
-export let notSignedInLastResult: SharedTypes.CompletedEvent | null = null;
+export let notSignedInLastResult: CompletedEvent | null = null;
 
 export function clearNotSignedInResult(): void {
   notSignedInLastResult = null;
@@ -633,7 +638,7 @@ export async function addWord(): Promise<void> {
 }
 
 type RetrySaving = {
-  completedEvent: SharedTypes.CompletedEvent | null;
+  completedEvent: CompletedEvent | null;
   canRetry: boolean;
 };
 
@@ -678,9 +683,7 @@ export async function retrySavingResult(): Promise<void> {
   await saveResult(completedEvent, tribeChartData, true);
 }
 
-function buildCompletedEvent(
-  difficultyFailed: boolean
-): SharedTypes.CompletedEvent {
+function buildCompletedEvent(difficultyFailed: boolean): CompletedEvent {
   //build completed event object
   let stfk = Numbers.roundTo2(
     TestInput.keypressTimings.spacing.first - TestStats.start
@@ -772,7 +775,7 @@ function buildCompletedEvent(
   const wpmCons = Numbers.roundTo2(Misc.kogasa(stddev3 / avg3));
   const wpmConsistency = isNaN(wpmCons) ? 0 : wpmCons;
 
-  let customText: SharedTypes.CustomTextDataWithTextLen | null = null;
+  let customText: CustomTextDataWithTextLen | null = null;
   if (Config.mode === "custom") {
     const temp = CustomText.getData();
     customText = {
@@ -843,7 +846,7 @@ function buildCompletedEvent(
     testDuration: duration,
     afkDuration: afkDuration,
     stopOnLetter: Config.stopOnError === "letter",
-  } as SharedTypes.CompletedEvent;
+  } as CompletedEvent;
 
   if (completedEvent.mode !== "custom") delete completedEvent.customText;
   if (completedEvent.mode !== "quote") delete completedEvent.quoteLength;
@@ -961,7 +964,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
   if (
     Config.mode !== "zen" &&
     !TestState.bailedOut &&
-    (ce.testDuration < dateDur - 0.05 || ce.testDuration > dateDur + 0.05)
+    (ce.testDuration < dateDur - 0.25 || ce.testDuration > dateDur + 0.25)
   ) {
     //dont bother checking this for zen mode or bailed out tests because
     //the duration might be modified to remove trailing afk time
@@ -1203,7 +1206,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
 }
 
 async function saveResult(
-  completedEvent: SharedTypes.CompletedEvent,
+  completedEvent: CompletedEvent,
   tribeChartData: SharedTypes.ChartData,
   isRetrying: boolean
 ): Promise<void> {
@@ -1503,8 +1506,7 @@ $(".pageTest").on("click", "#restartTestButtonWithSameWordset", () => {
 $(".pageTest").on("click", "#testConfig .mode .textButton", (e) => {
   if (TestUI.testRestarting) return;
   if ($(e.currentTarget).hasClass("active")) return;
-  const mode = ($(e.currentTarget).attr("mode") ??
-    "time") as SharedTypes.Config.Mode;
+  const mode = ($(e.currentTarget).attr("mode") ?? "time") as Mode;
   if (mode === undefined) return;
   UpdateConfig.setMode(mode);
   ManualRestart.set();
@@ -1533,10 +1535,9 @@ $(".pageTest").on("click", "#testConfig .time .textButton", (e) => {
 
 $(".pageTest").on("click", "#testConfig .quoteLength .textButton", (e) => {
   if (TestUI.testRestarting) return;
-  let len: SharedTypes.Config.QuoteLength | SharedTypes.Config.QuoteLength[] =
-    parseInt(
-      $(e.currentTarget).attr("quoteLength") ?? "1"
-    ) as SharedTypes.Config.QuoteLength;
+  let len: QuoteLength | QuoteLength[] = parseInt(
+    $(e.currentTarget).attr("quoteLength") ?? "1"
+  ) as QuoteLength;
   if (len !== -2) {
     if (len === -1) {
       len = [0, 1, 2, 3];

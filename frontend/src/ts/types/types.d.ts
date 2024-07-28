@@ -46,7 +46,7 @@ declare namespace MonkeyTypes {
   type QuoteModes = "short" | "medium" | "long" | "thicc";
 
   type CustomLayoutFluidSpaces =
-    | SharedTypes.Config.CustomLayoutFluid
+    | import("@monkeytype/shared-types/config").CustomLayoutFluid
     | `${string} ${string} ${string}`;
 
   type HistoryChartData = {
@@ -157,7 +157,10 @@ declare namespace MonkeyTypes {
     getWordsFrequencyMode?: () => FunboxWordsFrequency;
   };
 
-  type FunboxForcedConfig = Record<string, SharedTypes.ConfigValue[]>;
+  type FunboxForcedConfig = Record<
+    string,
+    import("@monkeytype/shared-types/config").ConfigValue[]
+  >;
 
   type FunboxMetadata = {
     name: string;
@@ -172,9 +175,9 @@ declare namespace MonkeyTypes {
 
   type PresetConfig = {
     tags: string[];
-  } & SharedTypes.Config;
+  } & import("@monkeytype/shared-types/config").Config;
 
-  type SnapshotPreset = SharedTypes.DBConfigPreset & {
+  type SnapshotPreset = import("@monkeytype/shared-types").DBConfigPreset & {
     display: string;
   };
 
@@ -189,7 +192,7 @@ declare namespace MonkeyTypes {
 
   type ConfigChanges = {
     tags?: string[];
-  } & Partial<SharedTypes.Config>;
+  } & Partial<import("@monkeytype/shared-types/config").Config>;
 
   type LeaderboardMemory = {
     time: {
@@ -199,19 +202,19 @@ declare namespace MonkeyTypes {
 
   type Leaderboards = {
     time: {
-      [key in 15 | 60]: SharedTypes.LeaderboardEntry[];
+      [key in 15 | 60]: import("@monkeytype/shared-types").LeaderboardEntry[];
     };
   };
 
   type QuoteRatings = Record<string, Record<number, number>>;
 
-  type UserTag = SharedTypes.UserTag & {
+  type UserTag = import("@monkeytype/shared-types").UserTag & {
     active?: boolean;
     display: string;
   };
 
   type Snapshot = Omit<
-    SharedTypes.User,
+    import("@monkeytype/shared-types").User,
     | "timeTyping"
     | "startedTests"
     | "completedTests"
@@ -227,29 +230,31 @@ declare namespace MonkeyTypes {
       startedTests: number;
       completedTests: number;
     };
-    details?: SharedTypes.UserProfileDetails;
+    details?: import("@monkeytype/shared-types").UserProfileDetails;
     inboxUnreadSize: number;
     streak: number;
     maxStreak: number;
-    filterPresets: SharedTypes.ResultFilters[];
+    filterPresets: import("@monkeytype/shared-types").ResultFilters[];
     isPremium: boolean;
     streakHourOffset?: number;
-    config: SharedTypes.Config;
+    config: import("@monkeytype/shared-types/config").Config;
     tags: UserTag[];
     presets: SnapshotPreset[];
-    results?: SharedTypes.Result<SharedTypes.Config.Mode>[];
+    results?: import("@monkeytype/shared-types").Result<
+      import("@monkeytype/shared-types/config").Mode
+    >[];
     xp: number;
     testActivity?: ModifiableTestActivityCalendar;
     testActivityByYear?: { [key: string]: TestActivityCalendar };
   };
 
   type Group<
-    G extends keyof SharedTypes.ResultFilters = keyof SharedTypes.ResultFilters
-  > = G extends G ? SharedTypes.ResultFilters[G] : never;
+    G extends keyof import("@monkeytype/shared-types").ResultFilters = keyof import("@monkeytype/shared-types").ResultFilters
+  > = G extends G ? import("@monkeytype/shared-types").ResultFilters[G] : never;
 
   type Filter<G extends Group = Group> =
-    G extends keyof SharedTypes.ResultFilters
-      ? keyof SharedTypes.ResultFilters[G]
+    G extends keyof import("@monkeytype/shared-types").ResultFilters
+      ? keyof import("@monkeytype/shared-types").ResultFilters[G]
       : never;
 
   type TimerStats = {
@@ -324,7 +329,7 @@ declare namespace MonkeyTypes {
     customStyle?: string;
     opensModal?: boolean;
     defaultValue?: () => string;
-    configKey?: keyof SharedTypes.Config;
+    configKey?: keyof import("@monkeytype/shared-types/config").Config;
     configValue?: string | number | boolean | number[];
     configValueMode?: "include";
     exec?: (options: CommandExecOptions) => void;
@@ -337,7 +342,7 @@ declare namespace MonkeyTypes {
 
   type CommandsSubgroup = {
     title: string;
-    configKey?: keyof SharedTypes.Config;
+    configKey?: keyof import("@monkeytype/shared-types/config").Config;
     list: Command[];
     beforeList?: () => void;
   };
@@ -440,8 +445,8 @@ declare namespace MonkeyTypes {
 
   type BadgeReward = {
     type: "badge";
-    item: SharedTypes.Badge;
-  } & Reward<SharedTypes.Badge>;
+    item: import("@monkeytype/shared-types").Badge;
+  } & Reward<import("@monkeytype/shared-types").Badge>;
 
   type AllRewards = XpReward | BadgeReward;
 

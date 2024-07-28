@@ -13,6 +13,8 @@ import * as AccountButton from "../elements/account-button";
 import { restart as restartTest } from "../test/test-logic";
 import * as ChallengeController from "../controllers/challenge-controller";
 import * as Tribe from "../tribe/tribe";
+import { Difficulty, Mode, Mode2 } from "@monkeytype/shared-types/config";
+import { CustomTextData } from "@monkeytype/shared-types";
 
 export async function linkDiscord(hashOverride: string): Promise<void> {
   if (!hashOverride) return;
@@ -110,13 +112,13 @@ export function loadCustomThemeFromUrl(getOverride?: string): void {
 }
 
 type SharedTestSettings = [
-  SharedTypes.Config.Mode | null,
-  SharedTypes.Config.Mode2<SharedTypes.Config.Mode> | null,
-  SharedTypes.CustomTextData | null,
+  Mode | null,
+  Mode2<Mode> | null,
+  CustomTextData | null,
   boolean | null,
   boolean | null,
   string | null,
-  SharedTypes.Config.Difficulty | null,
+  Difficulty | null,
   string | null
 ];
 

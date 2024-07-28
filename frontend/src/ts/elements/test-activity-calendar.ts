@@ -1,4 +1,3 @@
-import type { Interval } from "date-fns/types";
 import { UTCDateMini } from "@date-fns/utc/date/mini";
 import {
   format,
@@ -18,6 +17,7 @@ import {
   nextSaturday,
   isSaturday,
   subWeeks,
+  Interval,
 } from "date-fns";
 
 export class TestActivityCalendar implements MonkeyTypes.TestActivityCalendar {

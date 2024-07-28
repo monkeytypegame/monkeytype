@@ -1,3 +1,6 @@
+import { DBResult, Result } from "@monkeytype/shared-types";
+import { Mode } from "@monkeytype/shared-types/config";
+
 const BASE_PATH = "/results";
 
 export default class Results {
@@ -5,14 +8,12 @@ export default class Results {
     this.httpClient = httpClient;
   }
 
-  async get(
-    offset?: number
-  ): Ape.EndpointResponse<SharedTypes.DBResult<SharedTypes.Config.Mode>[]> {
+  async get(offset?: number): Ape.EndpointResponse<DBResult<Mode>[]> {
     return await this.httpClient.get(BASE_PATH, { searchQuery: { offset } });
   }
 
   async save(
-    result: SharedTypes.Result<SharedTypes.Config.Mode>
+    result: Result<Mode>
   ): Ape.EndpointResponse<Ape.Results.PostResult> {
     return await this.httpClient.post(BASE_PATH, {
       payload: { result },

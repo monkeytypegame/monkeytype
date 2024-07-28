@@ -31,6 +31,7 @@ import * as ActivePage from "../states/active-page";
 import Format from "../utils/format";
 import * as Loader from "../elements/loader";
 import { getHtmlByUserFlags } from "../controllers/user-flag-controller";
+import { TimerColor, TimerOpacity } from "@monkeytype/shared-types/config";
 
 async function gethtml2canvas(): Promise<typeof import("html2canvas").default> {
   return (await import("html2canvas")).default;
@@ -956,14 +957,14 @@ export function scrollTape(): void {
   let currentWordWidth = 0;
   if (Config.tapeMode === "letter") {
     if (TestInput.input.current.length > 0) {
+      const words = document.querySelectorAll("#words .word");
+      const letters =
+        words[currentWordElementIndex]?.querySelectorAll("letter");
+      if (!letters) return;
       for (let i = 0; i < TestInput.input.current.length; i++) {
-        const words = document.querySelectorAll("#words .word");
-        currentWordWidth +=
-          $(
-            words[currentWordElementIndex]?.querySelectorAll("letter")[
-              i
-            ] as HTMLElement
-          ).outerWidth(true) ?? 0;
+        const letter = letters[i] as HTMLElement;
+        if (Config.blindMode && letter.classList.contains("extra")) continue;
+        currentWordWidth += $(letter).outerWidth(true) ?? 0;
       }
     }
   }
@@ -1462,14 +1463,14 @@ function updateWordsWidth(): void {
   }
 }
 
-function updateLiveStatsOpacity(value: SharedTypes.Config.TimerOpacity): void {
+function updateLiveStatsOpacity(value: TimerOpacity): void {
   $("#barTimerProgress").css("opacity", parseFloat(value as string));
   $("#liveStatsTextTop").css("opacity", parseFloat(value as string));
   $("#liveStatsTextBottom").css("opacity", parseFloat(value as string));
   $("#liveStatsMini").css("opacity", parseFloat(value as string));
 }
 
-function updateLiveStatsColor(value: SharedTypes.Config.TimerColor): void {
+function updateLiveStatsColor(value: TimerColor): void {
   $("#barTimerProgress").removeClass("timerSub");
   $("#barTimerProgress").removeClass("timerText");
   $("#barTimerProgress").removeClass("timerMain");
@@ -1640,9 +1641,9 @@ ConfigEvent.subscribe((key, value) => {
     updateWordsWidth();
   }
   if (key === "timerOpacity") {
-    updateLiveStatsOpacity(value as SharedTypes.Config.TimerOpacity);
+    updateLiveStatsOpacity(value as TimerOpacity);
   }
   if (key === "timerColor") {
-    updateLiveStatsColor(value as SharedTypes.Config.TimerColor);
+    updateLiveStatsColor(value as TimerColor);
   }
 });

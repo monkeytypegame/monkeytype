@@ -1,7 +1,7 @@
 name: Monkey CI
 
 env:
-  NODE_VERSION: "18.19.1"
+  NODE_VERSION: "18.20.4"
   RECAPTCHA_SITE_KEY: "6Lc-V8McAAAAAJ7s6LGNe7MBZnRiwbsbiWts87aj"
 
 permissions:
@@ -28,11 +28,12 @@ jobs:
     outputs:
       should-build-be: ${{ steps.export-changes.outputs.should-build-be }}
       should-build-fe: ${{ steps.export-changes.outputs.should-build-fe }}
+      should-build-pkg: ${{ steps.export-changes.outputs.should-build-pkg }}
       assets-json: ${{ steps.export-changes.outputs.assets-json }}
 
     steps:
       - uses: actions/checkout@v4
-      - uses: dorny/paths-filter@v2
+      - uses: dorny/paths-filter@v3
         id: filter
         with:
           filters: |
@@ -40,8 +41,12 @@ jobs:
               - 'frontend/**/*.json'
             be-src:
               - 'backend/**/*.{ts,js,json,lua,css,html}'
+              - 'backend/package.json'
             fe-src:
               - 'frontend/**/*.{ts,scss}'
+              - 'frontend/package.json'
+            pkg-src:
+              - 'packages/**/*'
             anti-cheat:
               - 'backend/**/anticheat/**'
 
@@ -52,46 +57,138 @@ jobs:
       - name: Export changes
         id: export-changes
         run: |
+          echo "should-build-pkg=${{ steps.filter.outputs.pkg-src }}" >> $GITHUB_OUTPUT
           echo "should-build-be=${{ steps.filter.outputs.be-src }}" >> $GITHUB_OUTPUT
           echo "should-build-fe=${{ steps.filter.outputs.fe-src }}" >> $GITHUB_OUTPUT
           echo "assets-json=${{ steps.filter.outputs.json }}" >> $GITHUB_OUTPUT
 
+  prime-cache:
+    name: prime-cache
+    runs-on: ubuntu-latest
+    needs: [pre-ci]
+    if: needs.pre-ci.outputs.should-build-be == 'true' || needs.pre-ci.outputs.should-build-fe == 'true' || needs.pre-ci.outputs.should-build-pkg == 'true' || needs.pre-ci.outputs.assets-json == 'true'
+    steps:
+      - name: Checkout package-lock
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            package-lock.json
+
+      - name: Cache node modules
+        id: cache-npm
+        uses: actions/cache@v4
+        env:
+          cache-name: cache-node-modules
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+
+      - if: ${{ steps.cache-npm.outputs.cache-hit != 'true' }}
+        name: Full checkout
+        uses: actions/checkout@v4
+
+      - if: ${{ steps.cache-npm.outputs.cache-hit != 'true' }}
+        name: Install dependencies
+        run: npm install --prefer-offline --no-audit
+
+  check-pretty:
+    name: check-pretty
+    needs: [pre-ci, prime-cache]
+    runs-on: ubuntu-latest
+    if: needs.pre-ci.outputs.should-build-be == 'true' || needs.pre-ci.outputs.should-build-fe == 'true' || needs.pre-ci.outputs.should-build-pkg == 'true' || needs.pre-ci.outputs.assets-json == 'true'
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Cache node modules
+        id: cache-npm
+        uses: actions/cache@v4
+        env:
+          cache-name: cache-node-modules
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+
+      - name: Install dependencies
+        run: npm install --prefer-offline --no-audit
+
+      - name: Check pretty (backend)
+        id: check-pretty-be
+        if: needs.pre-ci.outputs.should-build-be == 'true'
+        run: npm run pretty-check-be
+
+      - name: Check pretty (frontend)
+        id: check-pretty-fe
+        if: needs.pre-ci.outputs.should-build-fe == 'true' 
+        run: npm run pretty-check-fe
+      
+      - name: Check pretty (packages)
+        id: check-pretty-pkg
+        if: needs.pre-ci.outputs.should-build-pkg == 'true'
+        run: npm run pretty-check-pkg
+
+      - name: Check pretty (assets)
+        id: check-pretty-assets
+        if: needs.pre-ci.outputs.assets-json == 'true'
+        run: npm run pretty-check-assets
+
   ci-be:
     name: ci-be
-    needs: [pre-ci]
+    needs: [pre-ci, prime-cache, check-pretty]
     runs-on: ubuntu-latest
     if: needs.pre-ci.outputs.should-build-be == 'true'
     steps:
       - uses: actions/checkout@v4
       - name: Set up Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
 
-      - name: Install dependencies
-        run: npm ci & cd backend && npm ci
+      - name: Cache node modules
+        id: cache-npm
+        uses: actions/cache@v4
+        env:
+          cache-name: cache-node-modules
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
 
-      - name: Check pretty
-        run: npm run pretty-code-be
+      - name: Install dependencies
+        run: npm install --prefer-offline --no-audit
 
       - name: Check lint
         run: npm run lint-be
 
       - name: Build
-        run: npm run pr-check-build-be
+        run: npm run build-be
 
       - name: Test
         run: npm run test-be
 
   ci-fe:
     name: ci-fe
-    needs: [pre-ci]
+    needs: [pre-ci, prime-cache, check-pretty]
     runs-on: ubuntu-latest
     if: needs.pre-ci.outputs.should-build-fe == 'true'
     steps:
       - uses: actions/checkout@v4
       - name: Set up Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
 
@@ -99,29 +196,39 @@ jobs:
         working-directory: ./frontend/src/ts/constants
         run: mv ./firebase-config-example.ts ./firebase-config.ts && cp ./firebase-config.ts ./firebase-config-live.ts
 
-      - name: Install dependencies
-        run: npm ci & cd frontend && npm ci
+      - name: Cache node modules
+        id: cache-npm
+        uses: actions/cache@v4
+        env:
+          cache-name: cache-node-modules
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
 
-      - name: Check pretty
-        run: npm run pretty-code-fe
+      - name: Install dependencies
+        run: npm install --prefer-offline --no-audit
 
       - name: Check lint
         run: npm run lint-fe
 
       - name: Build
-        run: npm run pr-check-build-fe
+        run: npm run build-fe
 
       - name: Test
         run: npm run test-fe
 
   ci-assets:
     name: ci-assets
-    needs: [pre-ci]
+    needs: [pre-ci, prime-cache, check-pretty]
     runs-on: ubuntu-latest
     if: needs.pre-ci.outputs.assets-json == 'true'
     steps:
       - uses: actions/checkout@v4
-      - uses: dorny/paths-filter@v2
+      - uses: dorny/paths-filter@v3
         id: filter
         with:
           filters: |
@@ -136,12 +243,25 @@ jobs:
               - 'frontend/static/challenges/*.json'
               - 'frontend/static/layouts/*.json'
       - name: Set up Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
 
+      - name: Cache node modules
+        id: cache-npm
+        uses: actions/cache@v4
+        env:
+          cache-name: cache-node-modules
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+
       - name: Install dependencies
-        run: npm ci & cd frontend && npm ci
+        run: npm install --prefer-offline --no-audit
 
       - name: Lint JSON
         run: npm run pr-check-lint-json
@@ -158,11 +278,48 @@ jobs:
         if: steps.filter.outputs.other-json == 'true'
         run: npm run pr-check-other-json
 
+  ci-pkg:
+    name: ci-pkg
+    needs: [pre-ci, prime-cache,check-pretty]
+    runs-on: ubuntu-latest
+    if: needs.pre-ci.outputs.should-build-pkg == 'true'
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Cache node modules
+        id: cache-npm
+        uses: actions/cache@v4
+        env:
+          cache-name: cache-node-modules
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+
+      - name: Install dependencies
+        run: npm install --prefer-offline --no-audit
+
+      - name: Check lint
+        run: npm run lint-pkg
+
+      - name: Build
+        run: npm run build-pkg
+
+      - name: Test
+        run: npm run test-pkg
+
   on-failure:
     permissions: write-all
     name: on-failure
     runs-on: ubuntu-latest
-    needs: [ci-be, ci-fe, ci-assets]
+    needs: [ci-be, ci-fe, ci-assets, ci-pkg]
     if: ${{ always() && contains(needs.*.result, 'failure') && github.ref != 'refs/heads/master' }}
     steps:
       - uses: actions/checkout@v4

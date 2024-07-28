@@ -17,9 +17,10 @@ import {
 } from "./test/funbox/funbox-validation";
 import * as TribeState from "./tribe/tribe-state";
 import * as TribeConfigSyncEvent from "./observables/tribe-config-sync-event";
-import { reloadAfter } from "./utils/misc";
+import { isDevEnvironment, reloadAfter } from "./utils/misc";
+import * as ConfigTypes from "@monkeytype/shared-types/config";
 
-export let localStorageConfig: SharedTypes.Config;
+export let localStorageConfig: ConfigTypes.Config;
 
 let loadDone: (value?: unknown) => void;
 
@@ -27,7 +28,7 @@ const config = {
   ...DefaultConfig,
 };
 
-let configToSend = {} as SharedTypes.Config;
+let configToSend = {} as ConfigTypes.Config;
 const saveToDatabase = debounce(1000, () => {
   if (Object.keys(configToSend).length > 0) {
     AccountButton.loading(true);
@@ -35,11 +36,11 @@ const saveToDatabase = debounce(1000, () => {
       AccountButton.loading(false);
     });
   }
-  configToSend = {} as SharedTypes.Config;
+  configToSend = {} as ConfigTypes.Config;
 });
 
 function saveToLocalStorage(
-  key: keyof SharedTypes.Config,
+  key: keyof ConfigTypes.Config,
   nosave = false,
   noDbCheck = false
 ): void {
@@ -117,11 +118,8 @@ export function setPunctuation(
   return true;
 }
 
-export function setMode(
-  mode: SharedTypes.Config.Mode,
-  nosave?: boolean,
-  tribeOverride = false
-): boolean {
+export function setMode(mode: ConfigTypes.Mode, nosave?: boolean,
+  tribeOverride = false): boolean {
   if (
     !isConfigValueValid("mode", mode, [
       ["time", "words", "quote", "zen", "custom"],
@@ -156,7 +154,7 @@ export function setMode(
 }
 
 export function setPlaySoundOnError(
-  val: SharedTypes.Config.PlaySoundOnError,
+  val: ConfigTypes.PlaySoundOnError,
   nosave?: boolean
 ): boolean {
   if (
@@ -175,7 +173,7 @@ export function setPlaySoundOnError(
 }
 
 export function setPlaySoundOnClick(
-  val: SharedTypes.Config.PlaySoundOnClick,
+  val: ConfigTypes.PlaySoundOnClick,
   nosave?: boolean
 ): boolean {
   if (
@@ -211,7 +209,7 @@ export function setPlaySoundOnClick(
 }
 
 export function setSoundVolume(
-  val: SharedTypes.Config.SoundVolume,
+  val: ConfigTypes.SoundVolume,
   nosave?: boolean
 ): boolean {
   if (!isConfigValueValid("sound volume", val, [["0.1", "0.5", "1.0"]])) {
@@ -227,7 +225,7 @@ export function setSoundVolume(
 
 //difficulty
 export function setDifficulty(
-  diff: SharedTypes.Config.Difficulty,
+  diff: ConfigTypes.Difficulty,
   nosave?: boolean,
   tribeOverride = false
 ): boolean {
@@ -328,7 +326,7 @@ export function setBlindMode(blind: boolean, nosave?: boolean): boolean {
 }
 
 function setAccountChart(
-  array: SharedTypes.Config.AccountChart,
+  array: ConfigTypes.AccountChart,
   nosave?: boolean
 ): boolean {
   if (
@@ -409,7 +407,7 @@ export function setAccountChartAvg100(
 }
 
 export function setStopOnError(
-  soe: SharedTypes.Config.StopOnError,
+  soe: ConfigTypes.StopOnError,
   nosave?: boolean,
   tribeOverride = false
 ): boolean {
@@ -449,7 +447,7 @@ export function setAlwaysShowDecimalPlaces(
 }
 
 export function setTypingSpeedUnit(
-  val: SharedTypes.Config.TypingSpeedUnit,
+  val: ConfigTypes.TypingSpeedUnit,
   nosave?: boolean
 ): boolean {
   if (
@@ -486,7 +484,7 @@ export function setShowOutOfFocusWarning(
 
 //pace caret
 export function setPaceCaret(
-  val: SharedTypes.Config.PaceCaret,
+  val: ConfigTypes.PaceCaret,
   nosave?: boolean
 ): boolean {
   if (
@@ -541,7 +539,7 @@ export function setRepeatedPace(pace: boolean, nosave?: boolean): boolean {
 
 //min wpm
 export function setMinWpm(
-  minwpm: SharedTypes.Config.MinimumWordsPerMinute,
+  minwpm: ConfigTypes.MinimumWordsPerMinute,
   nosave?: boolean,
   tribeOverride = false
 ): boolean {
@@ -578,7 +576,7 @@ export function setMinWpmCustomSpeed(
 
 //min acc
 export function setMinAcc(
-  min: SharedTypes.Config.MinimumAccuracy,
+  min: ConfigTypes.MinimumAccuracy,
   nosave?: boolean,
   tribeOverride = false
 ): boolean {
@@ -612,7 +610,7 @@ export function setMinAccCustom(
 
 //min burst
 export function setMinBurst(
-  min: SharedTypes.Config.MinimumBurst,
+  min: ConfigTypes.MinimumBurst,
   nosave?: boolean,
   tribeOverride = false
 ): boolean {
@@ -665,7 +663,7 @@ export function setAlwaysShowWordsHistory(
 
 //single list command line
 export function setSingleListCommandLine(
-  option: SharedTypes.Config.SingleListCommandLine,
+  option: ConfigTypes.SingleListCommandLine,
   nosave?: boolean
 ): boolean {
   if (
@@ -717,14 +715,19 @@ export function setQuickEnd(qe: boolean, nosave?: boolean): boolean {
   return true;
 }
 
-export function setAds(val: SharedTypes.Config.Ads, nosave?: boolean): boolean {
+export function setAds(val: ConfigTypes.Ads, nosave?: boolean): boolean {
   if (!isConfigValueValid("ads", val, [["off", "result", "on", "sellout"]])) {
     return false;
   }
 
+  if (isDevEnvironment()) {
+    val = "off";
+    console.debug("Ads are disabled in dev environment");
+  }
+
   config.ads = val;
   saveToLocalStorage("ads", nosave);
-  if (!nosave) {
+  if (!nosave && !isDevEnvironment()) {
     reloadAfter(3);
     Notifications.add("Ad settings changed. Refreshing...", 0);
   }
@@ -734,7 +737,7 @@ export function setAds(val: SharedTypes.Config.Ads, nosave?: boolean): boolean {
 }
 
 export function setRepeatQuotes(
-  val: SharedTypes.Config.RepeatQuotes,
+  val: ConfigTypes.RepeatQuotes,
   nosave?: boolean
 ): boolean {
   if (!isConfigValueValid("repeat quotes", val, [["off", "typing"]])) {
@@ -783,7 +786,7 @@ export function setStrictSpace(val: boolean, nosave?: boolean): boolean {
 
 //opposite shift space
 export function setOppositeShiftMode(
-  val: SharedTypes.Config.OppositeShiftMode,
+  val: ConfigTypes.OppositeShiftMode,
   nosave?: boolean
 ): boolean {
   if (
@@ -800,7 +803,7 @@ export function setOppositeShiftMode(
 }
 
 export function setCaretStyle(
-  caretStyle: SharedTypes.Config.CaretStyle,
+  caretStyle: ConfigTypes.CaretStyle,
   nosave?: boolean
 ): boolean {
   if (
@@ -842,7 +845,7 @@ export function setCaretStyle(
 }
 
 export function setPaceCaretStyle(
-  caretStyle: SharedTypes.Config.CaretStyle,
+  caretStyle: ConfigTypes.CaretStyle,
   nosave?: boolean
 ): boolean {
   if (
@@ -882,7 +885,7 @@ export function setPaceCaretStyle(
 }
 
 export function setShowAverage(
-  value: SharedTypes.Config.ShowAverage,
+  value: ConfigTypes.ShowAverage,
   nosave?: boolean
 ): boolean {
   if (
@@ -901,7 +904,7 @@ export function setShowAverage(
 }
 
 export function setHighlightMode(
-  mode: SharedTypes.Config.HighlightMode,
+  mode: ConfigTypes.HighlightMode,
   nosave?: boolean
 ): boolean {
   if (
@@ -931,7 +934,7 @@ export function setHighlightMode(
 }
 
 export function setTapeMode(
-  mode: SharedTypes.Config.TapeMode,
+  mode: ConfigTypes.TapeMode,
   nosave?: boolean
 ): boolean {
   if (!isConfigValueValid("tape mode", mode, [["off", "letter", "word"]])) {
@@ -960,7 +963,7 @@ export function setHideExtraLetters(val: boolean, nosave?: boolean): boolean {
 }
 
 export function setTimerStyle(
-  style: SharedTypes.Config.TimerStyle,
+  style: ConfigTypes.TimerStyle,
   nosave?: boolean
 ): boolean {
   if (
@@ -977,7 +980,7 @@ export function setTimerStyle(
 }
 
 export function setLiveSpeedStyle(
-  style: SharedTypes.Config.LiveSpeedAccBurstStyle,
+  style: ConfigTypes.LiveSpeedAccBurstStyle,
   nosave?: boolean
 ): boolean {
   if (
@@ -994,7 +997,7 @@ export function setLiveSpeedStyle(
 }
 
 export function setLiveAccStyle(
-  style: SharedTypes.Config.LiveSpeedAccBurstStyle,
+  style: ConfigTypes.LiveSpeedAccBurstStyle,
   nosave?: boolean
 ): boolean {
   if (!isConfigValueValid("live acc style", style, [["off", "text", "mini"]])) {
@@ -1009,7 +1012,7 @@ export function setLiveAccStyle(
 }
 
 export function setLiveBurstStyle(
-  style: SharedTypes.Config.LiveSpeedAccBurstStyle,
+  style: ConfigTypes.LiveSpeedAccBurstStyle,
   nosave?: boolean
 ): boolean {
   if (
@@ -1026,7 +1029,7 @@ export function setLiveBurstStyle(
 }
 
 export function setTimerColor(
-  color: SharedTypes.Config.TimerColor,
+  color: ConfigTypes.TimerColor,
   nosave?: boolean
 ): boolean {
   if (
@@ -1045,7 +1048,7 @@ export function setTimerColor(
   return true;
 }
 export function setTimerOpacity(
-  opacity: SharedTypes.Config.TimerOpacity,
+  opacity: ConfigTypes.TimerOpacity,
   nosave?: boolean
 ): boolean {
   if (
@@ -1105,7 +1108,7 @@ export function setTimeConfig(
 
 //quote length
 export function setQuoteLength(
-  len: SharedTypes.Config.QuoteLength[] | SharedTypes.Config.QuoteLength,
+  len: ConfigTypes.QuoteLength[] | ConfigTypes.QuoteLength,
   nosave?: boolean,
   multipleMode?: boolean,
   tribeOverride = false
@@ -1129,7 +1132,7 @@ export function setQuoteLength(
     if (len === null || isNaN(len) || len < -3 || len > 3) {
       len = 1;
     }
-    len = parseInt(len.toString()) as SharedTypes.Config.QuoteLength;
+    len = parseInt(len.toString()) as ConfigTypes.QuoteLength;
 
     if (len === -1) {
       config.quoteLength = [0, 1, 2, 3];
@@ -1179,7 +1182,7 @@ export function setWordCount(
 
 //caret
 export function setSmoothCaret(
-  mode: SharedTypes.Config["smoothCaret"],
+  mode: ConfigTypes.Config["smoothCaret"],
   nosave?: boolean
 ): boolean {
   if (
@@ -1297,7 +1300,7 @@ export function setFreedomMode(freedom: boolean, nosave?: boolean): boolean {
 }
 
 export function setConfidenceMode(
-  cm: SharedTypes.Config.ConfidenceMode,
+  cm: ConfigTypes.ConfidenceMode,
   nosave?: boolean
 ): boolean {
   if (!isConfigValueValid("confidence mode", cm, [["off", "on", "max"]])) {
@@ -1318,7 +1321,7 @@ export function setConfidenceMode(
 }
 
 export function setIndicateTypos(
-  value: SharedTypes.Config.IndicateTypos,
+  value: ConfigTypes.IndicateTypos,
   nosave?: boolean
 ): boolean {
   if (
@@ -1425,7 +1428,7 @@ function setThemes(
 }
 
 export function setRandomTheme(
-  val: SharedTypes.Config.RandomTheme,
+  val: ConfigTypes.RandomTheme,
   nosave?: boolean
 ): boolean {
   if (
@@ -1547,7 +1550,7 @@ export function setMonkey(monkey: boolean, nosave?: boolean): boolean {
 }
 
 export function setKeymapMode(
-  mode: SharedTypes.Config.KeymapMode,
+  mode: ConfigTypes.KeymapMode,
   nosave?: boolean
 ): boolean {
   if (
@@ -1568,7 +1571,7 @@ export function setKeymapMode(
 }
 
 export function setKeymapLegendStyle(
-  style: SharedTypes.Config.KeymapLegendStyle,
+  style: ConfigTypes.KeymapLegendStyle,
   nosave?: boolean
 ): boolean {
   if (
@@ -1610,7 +1613,7 @@ export function setKeymapLegendStyle(
 }
 
 export function setKeymapStyle(
-  style: SharedTypes.Config.KeymapStyle,
+  style: ConfigTypes.KeymapStyle,
   nosave?: boolean
 ): boolean {
   if (
@@ -1648,7 +1651,7 @@ export function setKeymapLayout(layout: string, nosave?: boolean): boolean {
 }
 
 export function setKeymapShowTopRow(
-  show: SharedTypes.Config.KeymapShowTopRow,
+  show: ConfigTypes.KeymapShowTopRow,
   nosave?: boolean
 ): boolean {
   if (
@@ -1798,7 +1801,7 @@ export async function setCustomLayoutfluid(
   const customLayoutfluid = trimmed.replace(
     / /g,
     "#"
-  ) as SharedTypes.Config.CustomLayoutFluid;
+  ) as ConfigTypes.CustomLayoutFluid;
 
   config.customLayoutfluid = customLayoutfluid;
   saveToLocalStorage("customLayoutfluid", nosave);
@@ -1808,7 +1811,7 @@ export async function setCustomLayoutfluid(
 }
 
 export function setCustomBackgroundSize(
-  value: SharedTypes.Config.CustomBackgroundSize,
+  value: ConfigTypes.CustomBackgroundSize,
   nosave?: boolean
 ): boolean {
   if (
@@ -1827,7 +1830,7 @@ export function setCustomBackgroundSize(
 }
 
 export function setCustomBackgroundFilter(
-  array: SharedTypes.Config.CustomBackgroundFilter,
+  array: ConfigTypes.CustomBackgroundFilter,
   nosave?: boolean
 ): boolean {
   if (!isConfigValueValid("custom background filter", array, ["numberArray"])) {
@@ -1842,7 +1845,7 @@ export function setCustomBackgroundFilter(
 }
 
 export function setMonkeyPowerLevel(
-  level: SharedTypes.Config.MonkeyPowerLevel,
+  level: ConfigTypes.MonkeyPowerLevel,
   nosave?: boolean
 ): boolean {
   if (
@@ -1935,7 +1938,7 @@ export function setTribeCarets(
 }
 
 export async function apply(
-  configToApply: SharedTypes.Config | MonkeyTypes.ConfigChanges
+  configToApply: ConfigTypes.Config | MonkeyTypes.ConfigChanges
 ): Promise<void> {
   if (configToApply === undefined) return;
 
@@ -1943,8 +1946,8 @@ export async function apply(
 
   configToApply = replaceLegacyValues(configToApply);
 
-  const configObj = configToApply as SharedTypes.Config;
-  (Object.keys(DefaultConfig) as (keyof SharedTypes.Config)[]).forEach(
+  const configObj = configToApply as ConfigTypes.Config;
+  (Object.keys(DefaultConfig) as (keyof ConfigTypes.Config)[]).forEach(
     (configKey) => {
       if (configObj[configKey] === undefined) {
         const newValue = DefaultConfig[configKey];
@@ -2063,7 +2066,7 @@ export async function reset(): Promise<void> {
 export async function loadFromLocalStorage(): Promise<void> {
   console.log("loading localStorage config");
   const newConfigString = window.localStorage.getItem("config");
-  let newConfig: SharedTypes.Config;
+  let newConfig: ConfigTypes.Config;
   if (
     newConfigString !== undefined &&
     newConfigString !== null &&
@@ -2072,7 +2075,7 @@ export async function loadFromLocalStorage(): Promise<void> {
     try {
       newConfig = JSON.parse(newConfigString);
     } catch (e) {
-      newConfig = {} as SharedTypes.Config;
+      newConfig = {} as ConfigTypes.Config;
     }
     await apply(newConfig);
     localStorageConfig = newConfig;
@@ -2085,9 +2088,9 @@ export async function loadFromLocalStorage(): Promise<void> {
 }
 
 function replaceLegacyValues(
-  configToApply: SharedTypes.Config | MonkeyTypes.ConfigChanges
-): SharedTypes.Config | MonkeyTypes.ConfigChanges {
-  const configObj = configToApply as SharedTypes.Config;
+  configToApply: ConfigTypes.Config | MonkeyTypes.ConfigChanges
+): ConfigTypes.Config | MonkeyTypes.ConfigChanges {
+  const configObj = configToApply as ConfigTypes.Config;
 
   //@ts-expect-error
   if (configObj.quickTab === true) {
@@ -2124,7 +2127,7 @@ function replaceLegacyValues(
 
   //@ts-expect-error
   if (configObj.showLiveWpm === true) {
-    let val: SharedTypes.Config.LiveSpeedAccBurstStyle = "mini";
+    let val: ConfigTypes.LiveSpeedAccBurstStyle = "mini";
     if (configObj.timerStyle !== "bar" && configObj.timerStyle !== "off") {
       val = configObj.timerStyle;
     }
@@ -2133,7 +2136,7 @@ function replaceLegacyValues(
 
   //@ts-expect-error
   if (configObj.showLiveBurst === true) {
-    let val: SharedTypes.Config.LiveSpeedAccBurstStyle = "mini";
+    let val: ConfigTypes.LiveSpeedAccBurstStyle = "mini";
     if (configObj.timerStyle !== "bar" && configObj.timerStyle !== "off") {
       val = configObj.timerStyle;
     }
@@ -2142,7 +2145,7 @@ function replaceLegacyValues(
 
   //@ts-expect-error
   if (configObj.showLiveAcc === true) {
-    let val: SharedTypes.Config.LiveSpeedAccBurstStyle = "mini";
+    let val: ConfigTypes.LiveSpeedAccBurstStyle = "mini";
     if (configObj.timerStyle !== "bar" && configObj.timerStyle !== "off") {
       val = configObj.timerStyle;
     }
@@ -2154,7 +2157,7 @@ function replaceLegacyValues(
 
 export function getConfigChanges(): MonkeyTypes.PresetConfig {
   const configChanges = {} as MonkeyTypes.PresetConfig;
-  (Object.keys(config) as (keyof SharedTypes.Config)[])
+  (Object.keys(config) as (keyof ConfigTypes.Config)[])
     .filter((key) => {
       return config[key] !== DefaultConfig[key];
     })
