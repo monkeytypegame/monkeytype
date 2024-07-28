@@ -30,6 +30,12 @@ module.exports = {
     "no-var": 2,
     "no-duplicate-imports": ["error"],
     "import/no-duplicates": "off",
+    "import/no-unresolved": [
+      "error",
+      {
+        ignore: ["^@monkeytype/"],
+      },
+    ],
     "no-mixed-operators": [
       "error",
       {
