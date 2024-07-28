@@ -270,6 +270,39 @@ body.darkMode {
   }
 }
 
+#practiseWordsModal {
+  .modal {
+    max-width: 400px;
+
+    .group {
+      width: 100%;
+      display: grid;
+      .title {
+        color: var(--sub-color);
+        text-transform: lowercase;
+      }
+      .sub {
+        color: var(--text-color);
+        margin-top: 0.25rem;
+        margin-bottom: 0.5rem;
+      }
+      .buttonGroup {
+        display: flex;
+        gap: 0.5rem;
+        width: 100%;
+        button {
+          flex-grow: 1;
+        }
+      }
+    }
+
+    .text {
+      font-size: 1rem;
+      color: var(--text-color);
+    }
+  }
+}
+
 #savedTextsModal {
   .modal {
     max-width: 500px;
@@ -549,32 +582,6 @@ body.darkMode {
     .tip,
     .preview {
       font-size: 0.75rem;
-      color: var(--text-color);
-    }
-  }
-}
-
-#practiseWordsPopupWrapper {
-  #practiseWordsPopup {
-    background: var(--bg-color);
-    border-radius: var(--roundness);
-    padding: 2rem;
-    display: grid;
-    gap: 1rem;
-    width: 400px;
-
-    .title {
-      font-size: 1.5rem;
-      color: var(--sub-color);
-    }
-
-    .tip {
-      font-size: 0.75rem;
-      color: var(--sub-color);
-    }
-
-    .text {
-      font-size: 1rem;
       color: var(--text-color);
     }
   }

@@ -334,6 +334,14 @@
         animation: var(--untyped-letter-animation);
       }
     }
+    &.blind {
+      .word {
+        letter.incorrect {
+          color: var(--untyped-letter-color);
+          animation: var(--untyped-letter-animation);
+        }
+      }
+    }
   }
 
   &.highlight-word {
