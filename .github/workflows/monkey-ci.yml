@@ -122,7 +122,7 @@ jobs:
 
       - name: Install dependencies
         run: npm install --prefer-offline --no-audit
-        
+
       - name: Check pretty (backend)
         id: check-pretty-be
         run: npm run pretty-be
@@ -161,7 +161,7 @@ jobs:
 
       - name: Commit changes
         uses: stefanzweifel/git-auto-commit-action@v5
-        if: steps.check-pretty.outcome == 'failure'
+        if: steps.check-pretty-be.outcome == 'failure' || steps.check-pretty-fe.outcome == 'failure' || steps.check-pretty-pkg.outcome == 'failure' || steps.check-pretty-assets.outcome == 'failure'
         with:
           commit_message: "fix prettier"
           commit_options: "--no-verify"
