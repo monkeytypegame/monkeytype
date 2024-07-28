@@ -83,6 +83,8 @@ export type MonkeyPowerLevel = "off" | "1" | "2" | "3" | "4";
 export type MinimumBurst = "off" | "fixed" | "flex";
 export type ShowAverage = "off" | "speed" | "acc" | "both";
 export type TapeMode = "off" | "letter" | "word";
+export type TribeDelta = "off" | "text" | "bar";
+export type TribeCarets = "off" | "noNames" | "on";
 
 export type Config = {
   theme: string;
@@ -169,6 +171,8 @@ export type Config = {
   showAverage: ShowAverage;
   tapeMode: TapeMode;
   maxLineWidth: number;
+  tribeDelta: TribeDelta;
+  tribeCarets: TribeCarets;
 };
 
 export type ConfigValue = Config[keyof Config];
