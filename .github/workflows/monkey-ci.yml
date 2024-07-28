@@ -129,11 +129,11 @@ jobs:
         continue-on-error: true
 
       - name: Fix pretty
-        if: steps.pretty.outcome == 'failure'
+        if: steps.check-pretty.outcome == 'failure'
         run: npm run pretty-fix
 
       - name: Commit changes
-        if: steps.pretty.outcome == 'failure'
+        if: steps.check-pretty.outcome == 'failure'
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
