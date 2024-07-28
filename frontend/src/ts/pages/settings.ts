@@ -72,6 +72,9 @@ async function initGroups(): Promise<void> {
         $(
           ".pageSettings .section[data-config-name='keymapShowTopRow']"
         ).addClass("hidden");
+        $(".pageSettings .section[data-config-name='keymapSize']").addClass(
+          "hidden"
+        );
       } else {
         $(".pageSettings .section[data-config-name='keymapStyle']").removeClass(
           "hidden"
@@ -85,6 +88,9 @@ async function initGroups(): Promise<void> {
         $(
           ".pageSettings .section[data-config-name='keymapShowTopRow']"
         ).removeClass("hidden");
+        $(".pageSettings .section[data-config-name='keymapSize']").removeClass(
+          "hidden"
+        );
       }
     }
   ) as SettingsGroup<ConfigValue>;
@@ -675,7 +681,7 @@ async function fillSettingsPage(): Promise<void> {
   $(".pageSettings .section[data-config-name='maxLineWidth'] input").val(
     Config.maxLineWidth
   );
-  
+
   $(".pageSettings .section[data-config-name='keymapSize'] input").val(
     Config.keymapSize
   );
