@@ -5,7 +5,7 @@ env:
   RECAPTCHA_SITE_KEY: "6Lc-V8McAAAAAJ7s6LGNe7MBZnRiwbsbiWts87aj"
 
 permissions:
-  contents: write
+  contents: read
   issues: write
   pull-requests: write
 
