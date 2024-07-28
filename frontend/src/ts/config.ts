@@ -1583,24 +1583,24 @@ export function setKeymapShowTopRow(
   return true;
 }
 
-export function setKeymapSize(keymapSize: number, nosave?: boolean): boolean {
-  if (!isConfigValueValid("keymap size", keymapSize, ["number"])) {
+export function setKeymapScale(keymapScale: number, nosave?: boolean): boolean {
+  if (!isConfigValueValid("keymap size", keymapScale, ["number"])) {
     return false;
   }
 
-  if (keymapSize < 0) {
-    keymapSize = 1;
+  if (keymapScale < 0.5) {
+    keymapScale = 0.5;
   }
-  if (keymapSize > 3.5) {
-    keymapSize = 3.5;
+  if (keymapScale > 3.5) {
+    keymapScale = 3.5;
   }
 
-  config.keymapSize = keymapSize;
+  config.keymapScale = keymapScale;
 
-  $("#keymap").css("zoom", keymapSize);
+  $("#keymap").css("zoom", keymapScale);
 
-  saveToLocalStorage("keymapSize", nosave);
-  ConfigEvent.dispatch("keymapSize", config.keymapSize, nosave);
+  saveToLocalStorage("keymapScale", nosave);
+  ConfigEvent.dispatch("keymapScale", config.keymapScale, nosave);
 
   // trigger a resize event to update the layout - handled in ui.ts:108
   $(window).trigger("resize");
@@ -1876,7 +1876,7 @@ export async function apply(
     setKeymapLegendStyle(configObj.keymapLegendStyle, true);
     setKeymapLayout(configObj.keymapLayout, true);
     setKeymapShowTopRow(configObj.keymapShowTopRow, true);
-    setKeymapSize(configObj.keymapSize, true);
+    setKeymapScale(configObj.keymapScale, true);
     setFontFamily(configObj.fontFamily, true);
     setSmoothCaret(configObj.smoothCaret, true);
     setSmoothLineScroll(configObj.smoothLineScroll, true);

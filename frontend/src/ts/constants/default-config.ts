@@ -56,7 +56,7 @@ export default {
   keymapLegendStyle: "lowercase",
   keymapLayout: "overrideSync",
   keymapShowTopRow: "layout",
-  keymapSize: 1,
+  keymapScale: 1,
   fontFamily: "Roboto_Mono",
   smoothLineScroll: false,
   alwaysShowDecimalPlaces: false,
