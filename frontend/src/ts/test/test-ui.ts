@@ -30,8 +30,7 @@ import * as Loader from "../elements/loader";
 import { getHtmlByUserFlags } from "../controllers/user-flag-controller";
 import { TimerColor, TimerOpacity } from "@monkeytype/shared-types/config";
 
-async function gethtml2canvas(): Promise<typeof import("html2canvas").default> {
-  return (await import("html2canvas")).default;
+async function gethtml2canvas(): Promise<typeof import("html2canvas").default> {return (await import("html2canvas")).default;
 }
 
 function createHintsHtml(
