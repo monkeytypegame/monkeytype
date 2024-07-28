@@ -35,7 +35,7 @@ async function gethtml2canvas(): Promise<typeof import("html2canvas").default> {
 }
 
 function createHintsHtml(
-incorrectLtrIndices: number[][],
+  incorrectLtrIndices: number[][],
   activeWordLetters: NodeListOf<Element>,
   inputWord: string
 ): string {
