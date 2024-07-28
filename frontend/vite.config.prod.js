@@ -180,6 +180,8 @@ export default {
     IS_DEVELOPMENT: JSON.stringify(false),
     CLIENT_VERSION: JSON.stringify(buildClientVersion()),
     RECAPTCHA_SITE_KEY: JSON.stringify(process.env.RECAPTCHA_SITE_KEY),
+    QUICK_LOGIN_EMAIL: undefined,
+    QUICK_LOGIN_PASSWORD: undefined,
   },
   /** Enable for font awesome v6 */
   /*preprocessorOptions: {
