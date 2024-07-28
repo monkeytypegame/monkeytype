@@ -2,17 +2,17 @@ import Config, * as UpdateConfig from "../../config";
 
 const commands: MonkeyTypes.Command[] = [
   {
-    id: "changeKeymapScale",
-    display: "Keymap scale...",
+    id: "changeKeymapSize",
+    display: "Keymap size...",
     icon: "fa-keyboard",
     alias: "keyboard",
     input: true,
     defaultValue: (): string => {
-      return Config.keymapScale.toString();
+      return Config.keymapSize.toString();
     },
     exec: ({ input }): void => {
       if (input === undefined || input === "") return;
-      UpdateConfig.setKeymapScale(parseFloat(input));
+      UpdateConfig.setKeymapSize(parseFloat(input));
     },
   },
 ];

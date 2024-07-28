@@ -56,7 +56,7 @@ import KeymapModeCommands from "./lists/keymap-mode";
 import KeymapStyleCommands from "./lists/keymap-style";
 import KeymapLegendStyleCommands from "./lists/keymap-legend-style";
 import KeymapShowTopRowCommands from "./lists/keymap-show-top-row";
-import KeymapScaleCommands from "./lists/keymap-scale";
+import KeymapSizeCommands from "./lists/keymap-size";
 import EnableAdsCommands from "./lists/enable-ads";
 import MonkeyPowerLevelCommands from "./lists/monkey-power-level";
 import BailOutCommands from "./lists/bail-out";
@@ -297,7 +297,7 @@ export const commands: MonkeyTypes.CommandsSubgroup = {
     ...KeymapModeCommands,
     ...KeymapStyleCommands,
     ...KeymapLegendStyleCommands,
-    ...KeymapScaleCommands,
+    ...KeymapSizeCommands,
     ...KeymapLayoutsCommands,
     ...KeymapShowTopRowCommands,
 
