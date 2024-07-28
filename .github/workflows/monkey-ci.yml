@@ -138,8 +138,9 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git add .
-          git commit -m "Fix formatting issues"
-          git push
+          git commit -m "Fix formatting issues" --no-verify
+          branch=$(echo "${GITHUB_REF#refs/heads/}")
+          git push origin "HEAD:$branch"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
