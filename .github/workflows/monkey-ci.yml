@@ -125,50 +125,23 @@ jobs:
 
       - name: Check pretty (backend)
         id: check-pretty-be
+        if: needs.pre-ci.outputs.should-build-be == 'true'
         run: npm run pretty-be
-        continue-on-error: true
 
       - name: Check pretty (frontend)
         id: check-pretty-fe
+        if: needs.pre-ci.outputs.should-build-fe == 'true' 
         run: npm run pretty-fe
-        continue-on-error: true
       
       - name: Check pretty (packages)
         id: check-pretty-pkg
+        if: needs.pre-ci.outputs.should-build-pkg == 'true'
         run: npm run pretty-pkg
-        continue-on-error: true
 
       - name: Check pretty (assets)
         id: check-pretty-assets
+        if: needs.pre-ci.outputs.assets-json == 'true'
         run: npm run pretty-assets
-        continue-on-error: true
-
-      - name: Fix pretty (backend)
-        if: steps.check-pretty-be.outcome == 'failure'
-        run: npm run pretty-fix-be
-
-      - name: Fix pretty (frontend)
-        if: steps.check-pretty-fe.outcome == 'failure'
-        run: npm run pretty-fix-fe
-
-      - name: Fix pretty (packages)
-        if: steps.check-pretty-pkg.outcome == 'failure'
-        run: npm run pretty-fix-pkg
-
-      - name: Fix pretty (assets)
-        if: steps.check-pretty-assets.outcome == 'failure'
-        run: npm run pretty-fix-assets
-
-      - name: Commit changes
-        uses: stefanzweifel/git-auto-commit-action@v5
-        if: steps.check-pretty-be.outcome == 'failure' || steps.check-pretty-fe.outcome == 'failure' || steps.check-pretty-pkg.outcome == 'failure' || steps.check-pretty-assets.outcome == 'failure'
-        with:
-          commit_message: "fix prettier"
-          commit_options: "--no-verify"
-          commit_user_name: George The Bot
-          commit_user_email: my-github-actions-bot@example.org
-          commit_author: George The Bot <monkeytypegeorge@gmail.com>
-
 
   ci-be:
     name: ci-be
