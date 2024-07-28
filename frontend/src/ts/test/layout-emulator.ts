@@ -239,10 +239,6 @@ export function updateAltGrState(event: JQuery.KeyboardEventBase): void {
   if (event.type === "keyup") isAltGrPressed = false;
 }
 
-export function setIsAltGrPressed(value: boolean): void {
-  isAltGrPressed = value;
-}
-
 export { isAltGrPressed };
 
 $(document).on("keydown", updateAltGrState);
