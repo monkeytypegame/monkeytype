@@ -6,5 +6,3 @@ const c = initContract();
 export const contract = c.router({
   configs: configsContract,
 });
-
-console.log("hello\\o");
