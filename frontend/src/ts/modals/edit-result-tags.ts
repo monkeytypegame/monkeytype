@@ -71,14 +71,20 @@ function appendButtons(): void {
     return;
   }
 
+  const tagIds = new Set([
+    ...(DB.getSnapshot()?.tags.map((tag) => tag._id) ?? []),
+    ...state.tags,
+  ]);
+
   buttonsEl.innerHTML = "";
-  for (const tag of DB.getSnapshot()?.tags ?? []) {
+  for (const tagId of tagIds) {
+    const tag = DB.getSnapshot()?.tags.find((tag) => tag._id === tagId);
     const button = document.createElement("button");
     button.classList.add("toggleTag");
-    button.setAttribute("data-tag-id", tag._id);
-    button.innerHTML = tag.display;
+    button.setAttribute("data-tag-id", tagId);
+    button.innerHTML = tag?.display ?? "unknown tag";
     button.addEventListener("click", (e) => {
-      toggleTag(tag._id);
+      toggleTag(tagId);
       updateActiveButtons();
     });
     buttonsEl.appendChild(button);
