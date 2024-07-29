@@ -53,7 +53,7 @@ function addToGlobal(items: Record<string, unknown>): void {
 
 void loadFromLocalStorage();
 void VersionButton.update();
-void Focus.set(true, true);
+Focus.set(true, true);
 
 addToGlobal({
   snapshot: DB.getSnapshot,
