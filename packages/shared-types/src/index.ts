@@ -184,7 +184,6 @@ export type DBResult<T extends Mode> = Omit<
   | "customText"
   | "quoteLength"
   | "isPb"
-  | "customText"
 > & {
   correctChars?: number; // --------------
   incorrectChars?: number; // legacy results
