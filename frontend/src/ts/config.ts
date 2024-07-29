@@ -19,6 +19,7 @@ import {
 import { isDevEnvironment, reloadAfter } from "./utils/misc";
 import * as ConfigSchemas from "@monkeytype/contracts/schemas/configs";
 import { Config } from "@monkeytype/contracts/schemas/configs";
+import { roundTo1 } from "./utils/numbers";
 
 export let localStorageConfig: Config;
 
@@ -1697,6 +1698,38 @@ export function setKeymapShowTopRow(
   config.keymapShowTopRow = show;
   saveToLocalStorage("keymapShowTopRow", nosave);
   ConfigEvent.dispatch("keymapShowTopRow", config.keymapShowTopRow);
+
+  return true;
+}
+
+export function setKeymapSize(
+  keymapSize: ConfigSchemas.KeymapSize,
+  nosave?: boolean
+): boolean {
+  //auto-fix values to avoid validation errors
+  if (keymapSize < 0.5) keymapSize = 0.5;
+  if (keymapSize > 3.5) keymapSize = 3.5;
+  keymapSize = roundTo1(keymapSize);
+
+  if (
+    !isConfigValueValid(
+      "keymap size",
+      keymapSize,
+      ConfigSchemas.KeymapSizeSchema
+    )
+  ) {
+    return false;
+  }
+
+  config.keymapSize = keymapSize;
+
+  $("#keymap").css("zoom", keymapSize);
+
+  saveToLocalStorage("keymapSize", nosave);
+  ConfigEvent.dispatch("keymapSize", config.keymapSize, nosave);
+
+  // trigger a resize event to update the layout - handled in ui.ts:108
+  $(window).trigger("resize");
 
   return true;
 }
