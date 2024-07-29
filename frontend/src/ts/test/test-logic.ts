@@ -893,7 +893,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
     dontSave = true;
   }
 
-  const completedEvent = JSON.parse(JSON.stringify(ce));
+  const completedEvent = JSON.parse(JSON.stringify(ce)) as CompletedEvent;
 
   ///////// completed event ready
 
@@ -1049,7 +1049,9 @@ export async function finish(difficultyFailed = false): Promise<void> {
 
   $("#result .stats .dailyLeaderboard").addClass("hidden");
 
-  TestStats.setLastResult(JSON.parse(JSON.stringify(completedEvent)));
+  TestStats.setLastResult(
+    JSON.parse(JSON.stringify(completedEvent)) as CompletedEvent
+  );
 
   if (!ConnectionState.get()) {
     ConnectionState.showOfflineBanner();
@@ -1067,6 +1069,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
   );
 
   if (completedEvent.chartData !== "toolong") {
+    // @ts-expect-error TODO: check if this is needed
     delete completedEvent.chartData.unsmoothedRaw;
   }
 
@@ -1089,7 +1092,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
   Result.updateRateQuote(TestWords.currentQuote);
 
   AccountButton.loading(true);
-  if (completedEvent.bailedOut !== true) {
+  if (!completedEvent.bailedOut) {
     completedEvent.challenge = ChallengeContoller.verify(completedEvent);
   }
 
