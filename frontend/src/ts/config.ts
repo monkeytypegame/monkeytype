@@ -19,6 +19,7 @@ import {
 import { isDevEnvironment, reloadAfter } from "./utils/misc";
 import * as ConfigSchemas from "@monkeytype/contracts/schemas/configs";
 import { Config } from "@monkeytype/contracts/schemas/configs";
+import { roundTo1 } from "./utils/numbers";
 
 export let localStorageConfig: Config;
 
@@ -1705,6 +1706,11 @@ export function setKeymapSize(
   keymapSize: ConfigSchemas.KeymapSize,
   nosave?: boolean
 ): boolean {
+  //auto-fix values to avoid validation errors
+  if (keymapSize < 0.5) keymapSize = 0.5;
+  if (keymapSize > 3.5) keymapSize = 3.5;
+  keymapSize = roundTo1(keymapSize);
+
   if (
     !isConfigValueValid(
       "keymap size",
