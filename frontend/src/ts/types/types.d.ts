@@ -310,7 +310,7 @@ declare namespace MonkeyTypes {
 
   type CommandExecOptions = {
     input?: string;
-    commandlineModal?: unknown;
+    commandlineModal: AnimatedModal;
   };
 
   type Command = {
