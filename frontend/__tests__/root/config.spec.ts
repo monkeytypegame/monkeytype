@@ -1,4 +1,5 @@
 import * as Config from "../../src/ts/config";
+
 import { CustomThemeColors } from "@monkeytype/contracts/schemas/configs";
 import { randomBytes } from "crypto";
 
@@ -187,6 +188,22 @@ describe("Config", () => {
     expect(Config.setKeymapShowTopRow("always")).toBe(true);
     expect(Config.setKeymapShowTopRow("never")).toBe(true);
     expect(Config.setKeymapShowTopRow("invalid" as any)).toBe(false);
+  });
+  it("setKeymapSize", () => {
+    expect(Config.setKeymapSize(0.5)).toBe(true);
+    expect(Config.setKeymapSize(2)).toBe(true);
+    expect(Config.setKeymapSize(3.5)).toBe(true);
+    expect(Config.setKeymapSize("invalid" as any)).toBe(false);
+
+    //invalid values being  "auto-fixed"
+    expect(Config.setKeymapSize(0)).toBe(true);
+    expect(Config.default.keymapSize).toBe(0.5);
+    expect(Config.setKeymapSize(4)).toBe(true);
+    expect(Config.default.keymapSize).toBe(3.5);
+    expect(Config.setKeymapSize(1.25)).toBe(true);
+    expect(Config.default.keymapSize).toBe(1.3);
+    expect(Config.setKeymapSize(1.24)).toBe(true);
+    expect(Config.default.keymapSize).toBe(1.2);
   });
   it("setCustomBackgroundSize", () => {
     expect(Config.setCustomBackgroundSize("contain")).toBe(true);

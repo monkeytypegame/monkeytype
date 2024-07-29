@@ -90,6 +90,9 @@ export type KeymapLegendStyle = z.infer<typeof KeymapLegendStyleSchema>;
 export const KeymapShowTopRowSchema = z.enum(["always", "layout", "never"]);
 export type KeymapShowTopRow = z.infer<typeof KeymapShowTopRowSchema>;
 
+export const KeymapSizeSchema = z.number().min(0.5).max(3.5).step(0.1);
+export type KeymapSize = z.infer<typeof KeymapSizeSchema>;
+
 export const SingleListCommandLineSchema = z.enum(["manual", "on"]);
 export type SingleListCommandLine = z.infer<typeof SingleListCommandLineSchema>;
 
@@ -342,6 +345,7 @@ export const ConfigSchema = z
     keymapLegendStyle: KeymapLegendStyleSchema,
     keymapLayout: KeymapLayoutSchema,
     keymapShowTopRow: KeymapShowTopRowSchema,
+    keymapSize: KeymapSizeSchema,
     fontFamily: FontFamilySchema,
     smoothLineScroll: z.boolean(),
     alwaysShowDecimalPlaces: z.boolean(),

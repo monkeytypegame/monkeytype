@@ -142,32 +142,11 @@ export async function updatePosition(noAnim = false): Promise<void> {
     newTop = activeWordEl.offsetTop + letterPosTop - caret.offsetHeight / 2;
   }
 
-  let newLeft =
+  const newLeft =
     activeWordEl.offsetLeft +
     letterPosLeft -
     (fullWidthCaret ? 0 : caretWidth / 2);
 
-  const wordsWrapperWidth =
-    $(document.querySelector("#wordsWrapper") as HTMLElement).width() ?? 0;
-
-  if (Config.tapeMode === "letter") {
-    newLeft = wordsWrapperWidth / 2 - (fullWidthCaret ? 0 : caretWidth / 2);
-  } else if (Config.tapeMode === "word") {
-    if (inputLen === 0) {
-      newLeft = wordsWrapperWidth / 2 - (fullWidthCaret ? 0 : caretWidth / 2);
-    } else {
-      let inputWidth = 0;
-      for (let i = 0; i < inputLen; i++) {
-        inputWidth += $(currentWordNodeList[i] as HTMLElement).outerWidth(
-          true
-        ) as number;
-      }
-      newLeft =
-        wordsWrapperWidth / 2 +
-        inputWidth -
-        (fullWidthCaret ? 0 : caretWidth / 2);
-    }
-  }
   const newWidth = fullWidthCaret ? (letterWidth ?? 0) + "px" : "";
 
   let smoothlinescroll = $("#words .smoothScroller").height();
