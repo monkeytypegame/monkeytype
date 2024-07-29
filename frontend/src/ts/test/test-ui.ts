@@ -387,7 +387,7 @@ export function showWords(): void {
   let wordsHTML = "";
   if (Config.mode !== "zen") {
     for (let i = 0; i < TestWords.words.length; i++) {
-      wordsHTML += getWordHTML(TestWords.words.get(i) as string);
+      wordsHTML += getWordHTML(TestWords.words.get(i));
     }
   } else {
     wordsHTML =
@@ -418,9 +418,7 @@ export async function updateWordsInputPosition(initial = false): Promise<void> {
   const isLanguageRTL = currentLanguage.rightToLeft;
 
   const el = document.querySelector("#wordsInput") as HTMLElement;
-  const activeWord = document.querySelector(
-    "#words .active"
-  ) as HTMLElement | null;
+  const activeWord = document.querySelector<HTMLElement>("#words .active");
 
   if (!activeWord) {
     el.style.top = "0px";
@@ -1382,7 +1380,7 @@ export async function applyBurstHeatmap(): Promise<void> {
       if (wordBurstAttr === undefined) {
         $(word).css("color", unreachedColor);
       } else {
-        let wordBurstVal = parseInt(wordBurstAttr as string);
+        let wordBurstVal = parseInt(wordBurstAttr);
         wordBurstVal = Math.round(
           getTypingSpeedUnit(Config.typingSpeedUnit).fromWpm(wordBurstVal)
         );
@@ -1500,7 +1498,8 @@ $(".pageTest #copyWordsListButton").on("click", async () => {
   if (Config.mode === "zen") {
     words = TestInput.input.history.join(" ");
   } else {
-    words = (TestWords.words.get() as string[])
+    words = TestWords.words
+      .get()
       .slice(0, TestInput.input.history.length)
       .join(" ");
   }
