@@ -240,7 +240,7 @@ export type CustomTextDataWithTextLen = Omit<CustomTextData, "text"> & {
   textLen: number;
 };
 
-export interface ResultFilters {
+export type ResultFilters = {
   _id: string;
   name: string;
   pb: {
@@ -299,7 +299,7 @@ export interface ResultFilters {
   funbox: {
     none?: boolean;
   } & Record<string, boolean>;
-}
+};
 
 export type PSA = {
   _id: string;
