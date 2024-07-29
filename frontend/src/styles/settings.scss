@@ -70,6 +70,12 @@
       }
     }
 
+    .rangeGroup {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 1rem;
+    }
+
     &[data-config-name="autoSwitchThemeInputs"] {
       grid-template-areas: unset;
       grid-template-columns: 1fr 3fr 1fr 3fr;

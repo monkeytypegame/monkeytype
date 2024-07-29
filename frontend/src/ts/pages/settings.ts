@@ -117,7 +117,7 @@ async function initGroups(): Promise<void> {
   groups["keymapSize"] = new SettingsGroup(
     "keymapSize",
     UpdateConfig.setKeymapSize,
-    "button"
+    "range"
   ) as SettingsGroup<ConfigValue>;
   groups["showKeyTips"] = new SettingsGroup(
     "showKeyTips",
