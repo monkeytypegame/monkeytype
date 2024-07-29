@@ -183,7 +183,7 @@ declare namespace MonkeyTypes {
 
   type RawCustomTheme = {
     name: string;
-    colors: string[];
+    colors: import("@monkeytype/contracts/schemas/configs").CustomThemeColors;
   };
 
   type CustomTheme = {
@@ -311,7 +311,7 @@ declare namespace MonkeyTypes {
 
   type CommandExecOptions = {
     input?: string;
-    commandlineModal?: unknown;
+    commandlineModal: AnimatedModal;
   };
 
   type Command = {

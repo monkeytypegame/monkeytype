@@ -1,4 +1,4 @@
-import _ from "lodash";
+import _, { omit } from "lodash";
 import uaparser from "ua-parser-js";
 
 //todo split this file into smaller util files (grouped by functionality)
@@ -311,4 +311,19 @@ export function stringToNumberOrDefault(
 
 export function isDevEnvironment(): boolean {
   return process.env["MODE"] === "dev";
+}
+
+/**
+ * convert database object into api object
+ * @param data  database object with `_id: ObjectId`
+ * @returns api obkect with `id: string`
+ */
+export function replaceObjectId<T extends { _id: ObjectId }>(
+  data: T
+): T & { _id: string } {
+  const result = {
+    _id: data._id.toString(),
+    ...omit(data, "_id"),
+  } as T & { _id: string };
+  return result;
 }

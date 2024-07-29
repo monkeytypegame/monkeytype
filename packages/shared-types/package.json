@@ -7,6 +7,9 @@
     "ts-check": "tsc --noEmit",
     "lint": "eslint \"./**/*.ts\""
   },
+  "dependencies": {
+    "@monkeytype/contracts": "*"
+  },
   "devDependencies": {
     "@monkeytype/eslint-config": "*",
     "@monkeytype/typescript-config": "*",

@@ -1,0 +1,35 @@
+{
+  "name": "@monkeytype/contracts",
+  "private": true,
+  "scripts": {
+    "dev": "rimraf ./dist && node esbuild.config.js --watch",
+    "build": "rimraf ./dist && node esbuild.config.js",
+    "ts-check": "tsc --noEmit",
+    "lint": "eslint \"./**/*.ts\""
+  },
+  "dependencies": {
+    "@ts-rest/core": "3.45.2",
+    "zod": "3.23.8"
+  },
+  "devDependencies": {
+    "@monkeytype/eslint-config": "*",
+    "@monkeytype/typescript-config": "*",
+    "chokidar": "3.6.0",
+    "esbuild": "0.23.0",
+    "eslint": "8.57.0",
+    "rimraf": "5.0.9",
+    "typescript": "5.5.3"
+  },
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
+    },
+    "./*": {
+      "types": "./src/*.ts",
+      "import": "./dist/*.mjs",
+      "require": "./dist/*.cjs"
+    }
+  }
+}

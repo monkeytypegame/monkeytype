@@ -318,19 +318,44 @@
   </div>
 </dialog>
 
-<div id="practiseWordsPopupWrapper" class="popupWrapper hidden" tabindex="-1">
-  <div id="practiseWordsPopup" action="">
+<dialog id="practiseWordsModal" class="modalWrapper hidden">
+  <div class="modal" actions="">
     <div class="title">Practice words</div>
-    <div class="text">
-      This will start a new test in custom mode. Words that you mistyped more
-      often or words that you typed much slower will be weighted higher and
-      appear more often.
+    <!-- <div class="inputs"> -->
+    <div class="group" data-id="missed">
+      <div class="title">
+        <i class="fas fa-times"></i>
+        missed
+      </div>
+      <div class="sub">
+        Include missed words or biwords (which include the previous word).
+      </div>
+      <div class="groupInputs">
+        <div class="buttonGroup">
+          <button class="missedOff" value="off">off</button>
+          <button class="missedWords" value="words">words</button>
+          <button class="missedBiwords" value="biwords">biwords</button>
+        </div>
+      </div>
     </div>
-    <div class="button missed" tabindex="1">Practice missed</div>
-    <div class="button slow" tabindex="1">Practice slow</div>
-    <div class="button both" tabindex="1">Practice both</div>
+    <div class="group" data-id="slow">
+      <div class="title">
+        <i class="fas fa-tachometer-alt"></i>
+        slow
+      </div>
+      <div class="sub">Include words which you typed slower than others.</div>
+      <div class="groupInputs">
+        <div class="buttonGroup">
+          <button class="slowOff" value="false">off</button>
+          <button class="slowOn" value="true">on</button>
+        </div>
+      </div>
+    </div>
+    <div></div>
+    <!-- </div> -->
+    <button class="start">start</button>
   </div>
-</div>
+</dialog>
 
 <dialog id="quoteRateModal" class="modalWrapper hidden">
   <div class="modal">

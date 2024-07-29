@@ -1,4 +1,7 @@
-import { Config } from "@monkeytype/shared-types/config";
+import {
+  Config,
+  CustomThemeColors,
+} from "@monkeytype/contracts/schemas/configs";
 
 export default {
   theme: "serika_dark",
@@ -17,7 +20,7 @@ export default {
     "#7e2a33",
     "#ca4754",
     "#7e2a33",
-  ],
+  ] as CustomThemeColors,
   favThemes: [],
   showKeyTips: true,
   smoothCaret: "medium",
@@ -85,7 +88,7 @@ export default {
   oppositeShiftMode: "off",
   customBackground: "",
   customBackgroundSize: "cover",
-  customBackgroundFilter: [0, 1, 1, 1, 1],
+  customBackgroundFilter: [0, 1, 1, 1],
   customLayoutfluid: "qwerty#dvorak#colemak",
   monkeyPowerLevel: "off",
   minBurst: "off",

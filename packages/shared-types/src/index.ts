@@ -1,4 +1,9 @@
-import { Config, Difficulty, Mode, Mode2 } from "./config";
+import {
+  Config,
+  Difficulty,
+  Mode,
+} from "@monkeytype/contracts/schemas/configs";
+import { Mode2 } from "./config";
 import { PersonalBest, PersonalBests } from "./user";
 
 export type ValidModeRule = {
@@ -389,7 +394,7 @@ export type UserProfileDetails = {
 export type CustomTheme = {
   _id: string;
   name: string;
-  colors: string[];
+  colors: import("@monkeytype/contracts/schemas/configs").CustomThemeColors;
 };
 
 export type PremiumInfo = {

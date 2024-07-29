@@ -33,6 +33,7 @@ import AnimatedModal, {
 } from "../utils/animated-modal";
 import { format as dateFormat } from "date-fns/format";
 import { Attributes, buildTag } from "../utils/tag-builder";
+import { CustomThemeColors } from "@monkeytype/contracts/schemas/configs";
 
 type CommonInput<TType, TValue> = {
   type: TType;
@@ -1705,7 +1706,7 @@ list.updateCustomTheme = new SimpleModal({
 
     const newTheme = {
       name: name.replaceAll(" ", "_"),
-      colors: newColors,
+      colors: newColors as CustomThemeColors,
     };
     const validation = await DB.editCustomTheme(customTheme._id, newTheme);
     if (!validation) {
@@ -1714,7 +1715,7 @@ list.updateCustomTheme = new SimpleModal({
         message: "Failed to update custom theme",
       };
     }
-    UpdateConfig.setCustomThemeColors(newColors);
+    UpdateConfig.setCustomThemeColors(newColors as CustomThemeColors);
     void ThemePicker.refreshButtons();
 
     return {

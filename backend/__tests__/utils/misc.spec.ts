@@ -1,5 +1,6 @@
 import _ from "lodash";
 import * as misc from "../../src/utils/misc";
+import { ObjectId } from "mongodb";
 
 describe("Misc Utils", () => {
   afterAll(() => {
@@ -603,6 +604,21 @@ describe("Misc Utils", () => {
 
     testCases.forEach(({ seconds, expected }) => {
       expect(misc.formatSeconds(seconds)).toBe(expected);
+    });
+  });
+
+  describe("replaceObjectId", () => {
+    it("replaces objecId with string", () => {
+      const fromDatabase = {
+        _id: new ObjectId(),
+        test: "test",
+        number: 1,
+      };
+      expect(misc.replaceObjectId(fromDatabase)).toStrictEqual({
+        _id: fromDatabase._id.toHexString(),
+        test: "test",
+        number: 1,
+      });
     });
   });
 });
