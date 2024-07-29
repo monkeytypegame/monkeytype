@@ -40,9 +40,9 @@ export async function addPreset(
   uid: string,
   preset: Omit<Preset, "_id">
 ): Promise<PresetCreationResult> {
-  const presets = await getPresets(uid);
-  //TODO use new update method
-  if (presets.length >= MAX_PRESETS) {
+  const presets = await getPresetsCollection().countDocuments({ uid });
+
+  if (presets >= MAX_PRESETS) {
     throw new MonkeyError(409, "Too many presets");
   }
 
@@ -56,11 +56,7 @@ export async function addPreset(
   };
 }
 
-export async function editPreset(
-  uid: string,
-
-  preset: Preset
-): Promise<void> {
+export async function editPreset(uid: string, preset: Preset): Promise<void> {
   const config = preset.config;
   const presetUpdates =
     config !== undefined && config !== null && Object.keys(config).length > 0

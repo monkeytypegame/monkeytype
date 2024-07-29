@@ -12,7 +12,7 @@ export const PresetSchema = z.object({
   _id: IdSchema,
   name: PresetNameSchema,
   config: PartialConfigSchema.extend({
-    tags: z.array(TagSchema),
+    tags: z.array(TagSchema).optional(),
   }),
 });
 export type Preset = z.infer<typeof PresetSchema>;
