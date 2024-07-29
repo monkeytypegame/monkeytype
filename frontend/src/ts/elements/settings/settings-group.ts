@@ -67,7 +67,7 @@ export default class SettingsGroup<T extends ConfigValue> {
           let typed = value as T;
           if (typed === "true") typed = true as T;
           if (typed === "false") typed = false as T;
-          this.setValue(typed as T);
+          this.setValue(typed);
         }
       );
     } else if (this.mode === "range") {
@@ -111,7 +111,7 @@ export default class SettingsGroup<T extends ConfigValue> {
     if (this.mode === "select") {
       const select = document.querySelector(
         `.pageSettings .section[data-config-name='${this.configName}'] select`
-      ) as HTMLSelectElement | null;
+      );
 
       if (select === null) {
         return;
@@ -133,10 +133,10 @@ export default class SettingsGroup<T extends ConfigValue> {
     } else if (this.mode === "range") {
       const range = document.querySelector(
         `.pageSettings .section[data-config-name='${this.configName}'] input[type=range]`
-      ) as HTMLInputElement | null;
+      );
       const rangeValue = document.querySelector(
         `.pageSettings .section[data-config-name='${this.configName}'] .value`
-      ) as HTMLSpanElement | null;
+      );
 
       if (range === null || rangeValue === null) {
         return;

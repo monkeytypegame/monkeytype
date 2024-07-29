@@ -246,9 +246,7 @@ export const commands: MonkeyTypes.CommandsSubgroup = {
       icon: "fa-tint",
       exec: ({ input }): void => {
         if (input === undefined) return;
-        void UpdateConfig.setCustomLayoutfluid(
-          input as MonkeyTypes.CustomLayoutFluidSpaces
-        );
+        void UpdateConfig.setCustomLayoutfluid(input);
       },
     },
 

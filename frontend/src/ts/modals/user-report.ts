@@ -60,10 +60,7 @@ export async function show(options: ShowOptions): Promise<void> {
     },
   });
 
-  new CharacterCounter(
-    $("#userReportModal .comment") as JQuery<HTMLTextAreaElement>,
-    250
-  );
+  new CharacterCounter($("#userReportModal .comment"), 250);
 }
 
 async function hide(): Promise<void> {
@@ -85,7 +82,7 @@ async function submitReport(): Promise<void> {
 
   const reason = $("#userReportModal .reason").val() as string;
   const comment = $("#userReportModal .comment").val() as string;
-  const captcha = captchaResponse as string;
+  const captcha = captchaResponse;
 
   if (!reason) {
     Notifications.add("Please select a valid report reason");

@@ -20,7 +20,7 @@ function updateActiveButton(): void {
     Config.randomTheme !== "custom" &&
     ThemeController.randomTheme !== null
   ) {
-    activeThemeName = ThemeController.randomTheme as string;
+    activeThemeName = ThemeController.randomTheme;
   }
 
   document
@@ -169,7 +169,7 @@ export async function refreshButtons(): Promise<void> {
       Config.randomTheme !== "custom" &&
       ThemeController.randomTheme !== null
     ) {
-      activeThemeName = ThemeController.randomTheme as string;
+      activeThemeName = ThemeController.randomTheme;
     }
 
     let themes;

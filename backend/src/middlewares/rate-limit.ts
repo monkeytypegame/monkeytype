@@ -8,10 +8,12 @@ import { isDevEnvironment } from "../utils/misc";
 const REQUEST_MULTIPLIER = isDevEnvironment() ? 100 : 1;
 
 const getKey = (req: MonkeyTypes.Request, _res: Response): string => {
-  return ((req.headers["cf-connecting-ip"] as string) ||
+  return (
+    (req.headers["cf-connecting-ip"] as string) ||
     (req.headers["x-forwarded-for"] as string) ||
     (req.ip as string) ||
-    "255.255.255.255") as string;
+    "255.255.255.255"
+  );
 };
 
 const getKeyWithUid = (req: MonkeyTypes.Request, _res: Response): string => {

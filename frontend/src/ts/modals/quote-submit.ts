@@ -73,10 +73,7 @@ export async function show(showOptions: ShowOptions): Promise<void> {
       $("#quoteSubmitModal .newQuoteLanguage").trigger("change");
       $("#quoteSubmitModal input").val("");
 
-      new CharacterCounter(
-        $("#quoteSubmitModal .newQuoteText") as JQuery<HTMLTextAreaElement>,
-        250
-      );
+      new CharacterCounter($("#quoteSubmitModal .newQuoteText"), 250);
     },
   });
 }

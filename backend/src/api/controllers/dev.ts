@@ -253,7 +253,7 @@ async function updateUser(uid: string): Promise<void> {
         timeTyping: timeTyping,
         completedTests: completedTests,
         startedTests: Math.round(completedTests * 1.25),
-        personalBests: personalBests as PersonalBests,
+        personalBests: personalBests,
         lbPersonalBests: lbPersonalBests,
       },
     }

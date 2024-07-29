@@ -52,10 +52,7 @@ export async function show(
         },
       });
 
-      new CharacterCounter(
-        $("#quoteReportModal .comment") as JQuery<HTMLTextAreaElement>,
-        250
-      );
+      new CharacterCounter($("#quoteReportModal .comment"), 250);
     },
   });
 }
@@ -82,7 +79,7 @@ async function submitReport(): Promise<void> {
   const quoteLanguage = removeLanguageSize(Config.language);
   const reason = $("#quoteReportModal .reason").val() as string;
   const comment = $("#quoteReportModal .comment").val() as string;
-  const captcha = captchaResponse as string;
+  const captcha = captchaResponse;
 
   if (quoteId === undefined || quoteId === "") {
     Notifications.add("Please select a quote");

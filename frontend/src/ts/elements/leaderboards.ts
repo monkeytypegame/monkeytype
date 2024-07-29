@@ -198,9 +198,7 @@ function updateFooter(lb: LbKey): void {
 
   let toppercent = "";
   if (currentTimeRange === "allTime" && lbRank !== undefined && lbRank?.rank) {
-    const num = Numbers.roundTo2(
-      (lbRank.rank / (currentRank[lb].count as number)) * 100
-    );
+    const num = Numbers.roundTo2((lbRank.rank / currentRank[lb].count) * 100);
     if (currentRank[lb].rank === 1) {
       toppercent = "GOAT";
     } else {
