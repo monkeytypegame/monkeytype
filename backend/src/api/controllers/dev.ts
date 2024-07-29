@@ -51,7 +51,7 @@ async function getOrCreateUser(
 
   if (existingUser !== undefined && existingUser !== null) {
     return existingUser;
-  } else if (createUser === false) {
+  } else if (!createUser) {
     throw new MonkeyError(404, `User ${username} does not exist.`);
   }
 

@@ -472,7 +472,7 @@ export async function addResult(
     user.banned !== true &&
     user.lbOptOut !== true &&
     (isDevEnvironment() || (user.timeTyping ?? 0) > 7200) &&
-    completedEvent.stopOnLetter !== true;
+    !completedEvent.stopOnLetter;
 
   const selectedBadgeId = user.inventory?.badges?.find((b) => b.selected)?.id;
   const isPremium =
