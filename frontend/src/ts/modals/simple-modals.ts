@@ -111,7 +111,6 @@ type PopupKey =
   | "resetAccount"
   | "clearTagPb"
   | "optOutOfLeaderboards"
-  | "clearTagPb"
   | "applyCustomFont"
   | "resetPersonalBests"
   | "resetSettings"
