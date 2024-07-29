@@ -32,7 +32,8 @@ async function submitQuote(): Promise<void> {
   const captcha = CaptchaController.getResponse("submitQuote");
 
   if (!text || !source || !language) {
-    return Notifications.add("Please fill in all fields", 0);
+    Notifications.add("Please fill in all fields", 0);
+    return;
   }
 
   Loader.show();
@@ -40,7 +41,8 @@ async function submitQuote(): Promise<void> {
   Loader.hide();
 
   if (response.status !== 200) {
-    return Notifications.add("Failed to submit quote: " + response.message, -1);
+    Notifications.add("Failed to submit quote: " + response.message, -1);
+    return;
   }
 
   Notifications.add("Quote submitted.", 1);

@@ -61,7 +61,8 @@ export async function badAuthRateLimiterHandler(
   const badAuthEnabled =
     req?.ctx?.configuration?.rateLimiting?.badAuthentication?.enabled;
   if (!badAuthEnabled) {
-    return next();
+    next();
+    return;
   }
 
   try {
@@ -75,7 +76,8 @@ export async function badAuthRateLimiterHandler(
       );
     }
   } catch (error) {
-    return next(error);
+    next(error);
+    return;
   }
 
   next();

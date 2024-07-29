@@ -482,10 +482,11 @@ async function update(): Promise<void> {
   if (failedResponses.length > 0) {
     hideLoader("15");
     hideLoader("60");
-    return Notifications.add(
+    Notifications.add(
       "Failed to load leaderboards: " + failedResponses[0]?.message,
       -1
     );
+    return;
   }
 
   const [lb15Data, lb60Data] = responses.map((response) => response.data);

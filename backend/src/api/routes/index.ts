@@ -79,7 +79,10 @@ function applyTsRestApiRoutes(app: IRouter): void {
   createExpressEndpoints(contract, router, app, {
     jsonQuery: true,
     requestValidationErrorHandler(err, req, res, next) {
-      if (err.body?.issues === undefined) return next();
+      if (err.body?.issues === undefined) {
+        next();
+        return;
+      }
       const issues = err.body?.issues.map(prettyErrorMessage);
       res.status(422).json({
         message: "Invalid request data schema",
@@ -101,7 +104,7 @@ function applyDevApiRoutes(app: Application): void {
     //disable csp to allow assets to load from unsecured http
     app.use((req, res, next) => {
       res.setHeader("Content-Security-Policy", "");
-      return next();
+      next();
     });
     app.use("/configure", expressStatic(join(__dirname, "../../../private")));
 
