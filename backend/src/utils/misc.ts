@@ -310,7 +310,7 @@ export function isDevEnvironment(): boolean {
 /**
  * convert database object into api object
  * @param data  database object with `_id: ObjectId`
- * @returns api obkect with `id: string`
+ * @returns api object with `id: string`
  */
 export function replaceObjectId<T extends { _id: ObjectId }>(
   data: T
@@ -320,4 +320,14 @@ export function replaceObjectId<T extends { _id: ObjectId }>(
     ...omit(data, "_id"),
   } as T & { _id: string };
   return result;
+}
+/**
+ * convert database objects into api objects
+ * @param data  database objects with `_id: ObjectId`
+ * @returns api objects with `id: string`
+ */
+export function replaceObjectIds<T extends { _id: ObjectId }>(
+  data: T[]
+): (T & { _id: string })[] {
+  return data.map((it) => replaceObjectId(it));
 }

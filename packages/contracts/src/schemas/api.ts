@@ -1,6 +1,6 @@
 import { z, ZodSchema } from "zod";
 
-export type OperationTag = "configs";
+export type OperationTag = "configs" | "presets";
 
 export type EndpointMetadata = {
   /** Authentication options, by default a bearer token is required. */

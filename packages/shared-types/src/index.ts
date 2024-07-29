@@ -329,17 +329,6 @@ export type ApeKey = {
   lastUsedOn: number;
 };
 
-export type ConfigPreset = Partial<Config> & {
-  tags?: string[];
-};
-
-export type DBConfigPreset = {
-  _id: string;
-  uid: string;
-  name: string;
-  config: ConfigPreset;
-};
-
 export type LeaderboardEntry = {
   _id: string;
   wpm: number;

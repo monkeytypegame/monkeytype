@@ -56,6 +56,11 @@ export function getOpenApi(): OpenAPIObject {
             "User specific configurations like test settings, theme or tags.",
           "x-displayName": "User configuration",
         },
+        {
+          name: "presets",
+          description: "User specific configuration presets.",
+          "x-displayName": "User presets",
+        },
       ],
     },
 
