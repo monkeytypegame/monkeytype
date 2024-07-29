@@ -9,6 +9,10 @@
       "path": "frontend"
     },
     {
+      "name": "contracts",
+      "path": "packages/contracts"
+    },
+    {
       "name": "packages",
       "path": "packages"
     },
@@ -21,7 +25,8 @@
     "files.exclude": {
       "frontend": true,
       "backend": true,
-      "packages": true
+      "packages": true,
+      "contracts": true
     },
     "search.exclude": {
       //defaults

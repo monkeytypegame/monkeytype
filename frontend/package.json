@@ -11,7 +11,7 @@
     "ts-check": "tsc --noEmit",
     "build": "npm run madge && vite build",
     "madge": " madge --circular --extensions ts ./src",
-    "live": "npm run build && vite preview --port 3000",
+    "start": "vite preview --port 3000",
     "dev": "vite dev",
     "deploy-live": "npm run validate-json && npm run build && firebase deploy -P live --only hosting",
     "deploy-preview": "npm run validate-json && npm run build && firebase hosting:channel:deploy preview -P live --expires 2h",
@@ -71,6 +71,7 @@
   },
   "dependencies": {
     "@date-fns/utc": "1.2.0",
+    "@monkeytype/contracts": "*",
     "axios": "1.6.4",
     "canvas-confetti": "1.5.1",
     "chart.js": "3.7.1",

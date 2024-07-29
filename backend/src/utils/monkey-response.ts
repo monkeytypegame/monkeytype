@@ -1,6 +1,10 @@
 import { type Response } from "express";
 import { isCustomCode } from "../constants/monkey-status-codes";
+import { MonkeyResponseType } from "@monkeytype/contracts/schemas/api";
 
+export type MonkeyDataAware<T> = {
+  data: T | null;
+};
 //TODO FIX ANYS
 
 export class MonkeyResponse {
@@ -35,4 +39,16 @@ export function handleMonkeyResponse(
   }
 
   res.json({ message, data });
+}
+
+export class MonkeyResponse2<T = null>
+  implements MonkeyResponseType, MonkeyDataAware<T>
+{
+  public message: string;
+  public data: T | null;
+
+  constructor(message: string, data: T | null = null) {
+    this.message = message;
+    this.data = data;
+  }
 }

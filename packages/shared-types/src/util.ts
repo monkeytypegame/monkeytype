@@ -1,1 +1,2 @@
-export type StringNumber = `${number}`;
+export type StringNumber =
+  import("@monkeytype/contracts/schemas/util").StringNumber;

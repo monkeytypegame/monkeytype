@@ -1,4 +1,3 @@
-import Configs from "./configs";
 import Leaderboards from "./leaderboards";
 import Presets from "./presets";
 import Psas from "./psas";
@@ -11,7 +10,6 @@ import Configuration from "./configuration";
 import Dev from "./dev";
 
 export default {
-  Configs,
   Leaderboards,
   Presets,
   Psas,
