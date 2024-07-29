@@ -322,7 +322,6 @@ export function replaceObjectId<T extends { _id: ObjectId }>(
   return result;
 }
 
-//TODO: test
 /**
  * convert database objects into api objects
  * @param data  database objects with `_id: ObjectId`

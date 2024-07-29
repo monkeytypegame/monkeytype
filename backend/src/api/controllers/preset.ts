@@ -6,7 +6,7 @@ import {
 } from "@monkeytype/contracts/presets";
 import * as PresetDAL from "../../dal/preset";
 import { MonkeyResponse2 } from "../../utils/monkey-response";
-import { replaceObjectIds } from "../../utils/misc";
+import { replaceObjectId } from "../../utils/misc";
 import { Preset } from "@monkeytype/contracts/schemas/presets";
 
 export async function getPresets(
@@ -14,9 +14,14 @@ export async function getPresets(
 ): Promise<GetPresetResponse> {
   const { uid } = req.ctx.decodedToken;
 
-  const data = await PresetDAL.getPresets(uid);
+  const data = (await PresetDAL.getPresets(uid))
+    .map((it) => ({
+      ...it,
+      uid: undefined,
+    }))
+    .map(replaceObjectId);
 
-  return new MonkeyResponse2("Preset retrieved", replaceObjectIds(data));
+  return new MonkeyResponse2("Presets retrieved", data);
 }
 
 export async function addPreset(
@@ -45,7 +50,7 @@ export async function removePreset(
   const { presetId } = req.params;
   const { uid } = req.ctx.decodedToken;
 
-  await PresetDAL.removePreset(uid, presetId as string);
+  await PresetDAL.removePreset(uid, presetId);
 
   return new MonkeyResponse2("Preset deleted", null);
 }
