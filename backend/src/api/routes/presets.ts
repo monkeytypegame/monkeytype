@@ -4,20 +4,22 @@ import * as RateLimit from "../../middlewares/rate-limit";
 import * as PresetController from "../controllers/preset";
 import { callController } from "../ts-rest-adapter";
 
-
-const s =initServer();
+const s = initServer();
 export default s.router(presetsContract, {
-  get:  {
-    middleware: [  RateLimit.presetsGet],
-    handler: async (r)=> callController(PresetController.getPresets)(r),
+  get: {
+    middleware: [RateLimit.presetsGet],
+    handler: async (r) => callController(PresetController.getPresets)(r),
   },
-  add:{middleware: [  RateLimit.presetsAdd],
-    handler: async(r)=>callController(PresetController.addPreset)(r),}
-    ,
-    update: {
-      middleware: [  RateLimit.presetsEdit],
-      handler: async(r)=>callController(PresetController.editPreset)(r),},
-      delete: {
-        middleware: [  RateLimit.presetsRemove],
-        handler: async(r)=> callController(PresetController.removePreset)(r).}
-);
+  add: {
+    middleware: [RateLimit.presetsAdd],
+    handler: async (r) => callController(PresetController.addPreset)(r),
+  },
+  save: {
+    middleware: [RateLimit.presetsEdit],
+    handler: async (r) => callController(PresetController.editPreset)(r),
+  },
+  delete: {
+    middleware: [RateLimit.presetsRemove],
+    handler: async (r) => callController(PresetController.removePreset)(r),
+  },
+});

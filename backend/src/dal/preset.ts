@@ -58,7 +58,7 @@ export async function addPreset(
 
 export async function editPreset(
   uid: string,
-  presetId: string,
+
   preset: Preset
 ): Promise<void> {
   const config = preset.config;
@@ -66,7 +66,8 @@ export async function editPreset(
     config !== undefined && config !== null && Object.keys(config).length > 0
       ? { name: preset.name, config }
       : { name: preset.name };
-  await getPresetsCollection().updateOne(getPresetKeyFilter(uid, presetId), {
+
+  await getPresetsCollection().updateOne(getPresetKeyFilter(uid, preset._id), {
     $set: presetUpdates,
   });
 }

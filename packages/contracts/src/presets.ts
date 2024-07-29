@@ -21,6 +21,11 @@ export const AddPresetResponseSchemna = responseWithData(
 );
 export type AddPresetResponse = z.infer<typeof AddPresetResponseSchemna>;
 
+export const DeletePresetsParamsSchema = z.object({
+  presetId: IdSchema,
+});
+export type DeletePresetsParams = z.infer<typeof DeletePresetsParamsSchema>;
+
 const c = initContract();
 
 export const presetsContract = c.router(
@@ -57,9 +62,7 @@ export const presetsContract = c.router(
     delete: {
       method: "DELETE",
       path: "/:presetId",
-      pathParams: z.object({
-        presetId: IdSchema,
-      }),
+      pathParams: DeletePresetsParamsSchema,
       body: c.noBody(),
       responses: {
         200: MonkeyResponseSchema,

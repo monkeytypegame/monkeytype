@@ -1,14 +1,13 @@
 import {
   AddPresetRequest,
+  AddPresetResponse,
+  DeletePresetsParams,
   GetPresetResponse,
 } from "@monkeytype/contracts/presets";
 import * as PresetDAL from "../../dal/preset";
-import {
-  MonkeyResponse,
-  MonkeyResponse2,
-  MonkeyResponse2NonNull,
-} from "../../utils/monkey-response";
+import { MonkeyResponse2 } from "../../utils/monkey-response";
 import { replaceObjectIds } from "../../utils/misc";
+import { Preset } from "@monkeytype/contracts/schemas/presets";
 
 export async function getPresets(
   req: MonkeyTypes.Request2
@@ -17,13 +16,12 @@ export async function getPresets(
 
   const data = await PresetDAL.getPresets(uid);
 
-  return new MonkeyResponse2NonNull("Preset retrieved", replaceObjectIds(data));
+  return new MonkeyResponse2("Preset retrieved", replaceObjectIds(data));
 }
 
 export async function addPreset(
   req: MonkeyTypes.Request2<undefined, AddPresetRequest>
-): Promise<MonkeyResponse> {
-  const { name, config } = req.body;
+): Promise<AddPresetResponse> {
   const { uid } = req.ctx.decodedToken;
 
   const data = await PresetDAL.addPreset(uid, req.body);
@@ -32,23 +30,22 @@ export async function addPreset(
 }
 
 export async function editPreset(
-  req: MonkeyTypes.Request
-): Promise<MonkeyResponse> {
-  const { _id, name, config } = req.body;
+  req: MonkeyTypes.Request2<undefined, Preset>
+): Promise<MonkeyResponse2> {
   const { uid } = req.ctx.decodedToken;
 
-  await PresetDAL.editPreset(uid, _id, name, config);
+  await PresetDAL.editPreset(uid, req.body);
 
-  return new MonkeyResponse("Preset updated");
+  return new MonkeyResponse2("Preset updated", null);
 }
 
 export async function removePreset(
-  req: MonkeyTypes.Request
-): Promise<MonkeyResponse> {
+  req: MonkeyTypes.Request2<undefined, undefined, DeletePresetsParams>
+): Promise<MonkeyResponse2> {
   const { presetId } = req.params;
   const { uid } = req.ctx.decodedToken;
 
   await PresetDAL.removePreset(uid, presetId as string);
 
-  return new MonkeyResponse("Preset deleted");
+  return new MonkeyResponse2("Preset deleted", null);
 }

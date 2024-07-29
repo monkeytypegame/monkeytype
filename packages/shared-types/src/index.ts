@@ -1,8 +1,4 @@
-import {
-  Config,
-  Difficulty,
-  Mode,
-} from "@monkeytype/contracts/schemas/configs";
+import { Difficulty, Mode } from "@monkeytype/contracts/schemas/configs";
 import { Mode2 } from "./config";
 import { PersonalBest, PersonalBests } from "./user";
 
