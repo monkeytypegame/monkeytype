@@ -23,7 +23,9 @@
     "dev-be": "turbo run dev --force --filter @monkeytype/backend",
     "dev-fe": "turbo run dev --force --filter @monkeytype/frontend",
     "dev-pkg": "turbo run dev ---force -filter=\"./packages/*\"",
-    "live": "concurrently --kill-others \"cd frontend && npm run live\" \"cd backend && npm run start\"",
+    "start": "turbo run start",
+    "start-be": "turbo run start --filter @monkeytype/backend",
+    "start-fe": "turbo run start --filter @monkeytype/frontend",
     "docker": "cd backend && docker compose up",
     "audit-fe": "cd frontend && npm run audit",
     "release": "release-it -c .release-it.json",
@@ -45,8 +47,7 @@
     "pr-check-other-json": "cd frontend && npx gulp pr-check-other-json"
   },
   "engines": {
-    "node": "18.20.4",
-    "npm": "10.7.0"
+    "node": "18.20.4"
   },
   "devDependencies": {
     "@commitlint/cli": "17.7.1",
@@ -85,6 +86,6 @@
     "backend",
     "packages/*"
   ],
-  "version": "24.30.0",
+  "version": "24.31.0",
   "packageManager": "npm@10.2.4"
 }
