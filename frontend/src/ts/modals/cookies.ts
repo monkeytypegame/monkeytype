@@ -109,17 +109,17 @@ const modal = new AnimatedModal({
         }
       });
     modalEl.querySelector(".acceptSelected")?.addEventListener("click", () => {
-      const analytics = (
+      const analyticsChecked = (
         modalEl.querySelector(".cookie.analytics input") as HTMLInputElement
       ).checked;
       const accepted = {
         security: true,
-        analytics,
+        analytics: analyticsChecked,
       };
       setAcceptedObject(accepted);
       void hide();
 
-      if (analytics === true) {
+      if (analyticsChecked) {
         activateAnalytics();
       }
     });

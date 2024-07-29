@@ -286,7 +286,7 @@ class SimpleModal {
         attributes["value"] = input.initVal?.toString() ?? "";
         attributes["type"] = input.type;
       }
-      if (!input.hidden && !input.optional === true) {
+      if (!input.hidden && !input.optional) {
         attributes["required"] = true;
       }
       if (input.disabled) {
@@ -1886,7 +1886,7 @@ export function showPopup(
     Notifications.add("Failed to show popup - popup is not defined", -1);
     return;
   }
-  if (popup.onlineOnly === true && !ConnectionState.get()) {
+  if (popup.onlineOnly && !ConnectionState.get()) {
     Notifications.add("You are offline", 0, { duration: 2 });
     return;
   }

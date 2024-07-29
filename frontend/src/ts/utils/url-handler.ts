@@ -212,7 +212,7 @@ export function loadChallengeFromUrl(getOverride?: string): void {
   Notifications.add("Loading challenge", 0);
   ChallengeController.setup(getValue)
     .then((result) => {
-      if (result === true) {
+      if (result) {
         Notifications.add("Challenge loaded", 1);
         restartTest({
           nosave: true,
