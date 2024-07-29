@@ -17,8 +17,8 @@ import {
 import {
   Config as ConfigType,
   Difficulty,
-  Mode,
-} from "@monkeytype/shared-types/config";
+} from "@monkeytype/contracts/schemas/configs";
+import { Mode } from "@monkeytype/contracts/schemas/shared";
 
 let challengeLoading = false;
 

@@ -9,7 +9,7 @@ import MonkeyError from "../utils/error";
 import * as db from "../init/db";
 import { DBResult as SharedDBResult } from "@monkeytype/shared-types";
 import { getUser, getTags } from "./user";
-import { Mode } from "@monkeytype/shared-types/config";
+import { Mode } from "@monkeytype/contracts/schemas/shared";
 
 type DBResult = MonkeyTypes.WithObjectId<SharedDBResult<Mode>>;
 

@@ -28,7 +28,10 @@ import * as ActivePage from "../states/active-page";
 import Format from "../utils/format";
 import * as Loader from "../elements/loader";
 import { getHtmlByUserFlags } from "../controllers/user-flag-controller";
-import { TimerColor, TimerOpacity } from "@monkeytype/shared-types/config";
+import {
+  TimerColor,
+  TimerOpacity,
+} from "@monkeytype/contracts/schemas/configs";
 
 async function gethtml2canvas(): Promise<typeof import("html2canvas").default> {
   return (await import("html2canvas")).default;

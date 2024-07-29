@@ -16,12 +16,8 @@ import {
 import * as Loader from "./elements/loader";
 import { PersonalBest, PersonalBests } from "@monkeytype/shared-types/user";
 import { Badge, DBResult, Result } from "@monkeytype/shared-types";
-import {
-  Config,
-  Difficulty,
-  Mode,
-  Mode2,
-} from "@monkeytype/shared-types/config";
+import { Config, Difficulty } from "@monkeytype/contracts/schemas/configs";
+import { Mode, Mode2 } from "@monkeytype/contracts/schemas/shared";
 
 let dbSnapshot: MonkeyTypes.Snapshot | undefined;
 

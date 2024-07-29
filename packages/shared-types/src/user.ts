@@ -1,5 +1,5 @@
 export type PersonalBest =
-  import("@monkeytype/contracts/schemas/users").PersonalBest;
+  import("@monkeytype/contracts/schemas/shared").PersonalBest;
 
 export type PersonalBests =
-  import("@monkeytype/contracts/schemas/users").PersonalBests;
+  import("@monkeytype/contracts/schemas/shared").PersonalBests;

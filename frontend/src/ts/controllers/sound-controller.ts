@@ -8,7 +8,7 @@ import { capsState } from "../test/caps-warning";
 import * as Notifications from "../elements/notifications";
 
 import type { Howl } from "howler";
-import { PlaySoundOnClick } from "@monkeytype/shared-types/config";
+import { PlaySoundOnClick } from "@monkeytype/contracts/schemas/configs";
 
 async function gethowler(): Promise<typeof import("howler")> {
   return await import("howler");

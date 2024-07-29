@@ -2,7 +2,7 @@ import * as FunboxList from "./funbox-list";
 import * as Notifications from "../../elements/notifications";
 import * as Arrays from "../../utils/arrays";
 import * as Strings from "../../utils/strings";
-import { Config, ConfigValue } from "@monkeytype/shared-types/config";
+import { Config, ConfigValue } from "@monkeytype/contracts/schemas/configs";
 
 export function checkFunboxForcedConfigs(
   key: string,

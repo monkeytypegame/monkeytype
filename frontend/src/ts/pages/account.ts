@@ -28,7 +28,7 @@ import * as ResultBatches from "../elements/result-batches";
 import Format from "../utils/format";
 import * as TestActivity from "../elements/test-activity";
 import { ChartData, Result } from "@monkeytype/shared-types";
-import { Mode, Mode2, Mode2Custom } from "@monkeytype/shared-types/config";
+import { Mode, Mode2, Mode2Custom } from "@monkeytype/contracts/schemas/shared";
 import { PersonalBests } from "@monkeytype/shared-types/user";
 
 let filterDebug = false;

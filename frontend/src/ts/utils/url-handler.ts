@@ -12,7 +12,8 @@ import * as Loader from "../elements/loader";
 import * as AccountButton from "../elements/account-button";
 import { restart as restartTest } from "../test/test-logic";
 import * as ChallengeController from "../controllers/challenge-controller";
-import { Difficulty, Mode, Mode2 } from "@monkeytype/shared-types/config";
+import { Mode, Mode2 } from "@monkeytype/contracts/schemas/shared";
+import { Difficulty } from "@monkeytype/contracts/schemas/configs";
 import { CustomTextData } from "@monkeytype/shared-types";
 
 export async function linkDiscord(hashOverride: string): Promise<void> {

@@ -37,7 +37,7 @@ import confetti from "canvas-confetti";
 import type { AnnotationOptions } from "chartjs-plugin-annotation";
 import Ape from "../ape";
 import { Result } from "@monkeytype/shared-types";
-import { Mode } from "@monkeytype/shared-types/config";
+import { Mode } from "@monkeytype/contracts/schemas/shared";
 
 let result: Result<Mode>;
 let maxChartVal: number;

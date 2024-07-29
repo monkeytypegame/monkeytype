@@ -1,3 +1,5 @@
+type ConfigValue = import("@monkeytype/contracts/schemas/configs").ConfigValue;
+
 declare namespace MonkeyTypes {
   type PageName =
     | "loading"
