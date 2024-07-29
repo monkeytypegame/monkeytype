@@ -47,8 +47,7 @@
     "pr-check-other-json": "cd frontend && npx gulp pr-check-other-json"
   },
   "engines": {
-    "node": "18.20.4",
-    "npm": "10.7.0"
+    "node": "18.20.4"
   },
   "devDependencies": {
     "@commitlint/cli": "17.7.1",

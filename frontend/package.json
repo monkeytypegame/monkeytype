@@ -23,8 +23,7 @@
     "docker": "docker compose -f docker/compose.dev.yml up"
   },
   "engines": {
-    "node": "18.20.4",
-    "npm": "10.7.0"
+    "node": "18.20.4"
   },
   "browserslist": [
     "defaults"
