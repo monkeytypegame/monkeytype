@@ -75,7 +75,7 @@ jobs:
     if: needs.pre-ci.outputs.should-build-be == 'true' || needs.pre-ci.outputs.should-build-fe == 'true' || needs.pre-ci.outputs.should-build-pkg == 'true' || needs.pre-ci.outputs.assets-json == 'true'
     steps:
 
-      - name: Checkout package-lock
+      - name: Checkout pnpm-lock
         uses: actions/checkout@v4
         with:
           sparse-checkout: |
