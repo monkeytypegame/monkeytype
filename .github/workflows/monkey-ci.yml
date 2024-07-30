@@ -82,7 +82,7 @@ jobs:
         env:
           cache-name: node-modules
         with:
-          path: ~/.npm
+          path: ~/.pnpm
           key: ${{ runner.os }}-${{ env.NODE_VERSION }}-build-${{ env.cache-name }}-${{ hashFiles('pnpm-lock.yaml') }}
 
       - if: ${{ steps.cache-npm.outputs.cache-hit != 'true' }}
