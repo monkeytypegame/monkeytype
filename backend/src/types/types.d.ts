@@ -65,7 +65,10 @@ declare namespace MonkeyTypes {
   type LbPersonalBests = {
     time: Record<
       number,
-      Record<string, import("@monkeytype/shared-types/user").PersonalBest>
+      Record<
+        string,
+        import("@monkeytype/contracts/schemas/shared").PersonalBest
+      >
     >;
   };
 

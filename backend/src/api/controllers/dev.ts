@@ -10,8 +10,11 @@ import { ObjectId } from "mongodb";
 import * as LeaderboardDal from "../../dal/leaderboards";
 import MonkeyError from "../../utils/error";
 import isNumber from "lodash/isNumber";
-import { Mode } from "@monkeytype/contracts/schemas/shared";
-import { PersonalBest, PersonalBests } from "@monkeytype/shared-types/user";
+import {
+  Mode,
+  PersonalBest,
+  PersonalBests,
+} from "@monkeytype/contracts/schemas/shared";
 
 type GenerateDataOptions = {
   firstTestTimestamp: Date;

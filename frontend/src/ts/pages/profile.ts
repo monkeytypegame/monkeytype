@@ -7,7 +7,7 @@ import { checkIfGetParameterExists } from "../utils/misc";
 import * as UserReportModal from "../modals/user-report";
 import * as Skeleton from "../utils/skeleton";
 import { UserProfile } from "@monkeytype/shared-types";
-import { PersonalBests } from "@monkeytype/shared-types/user";
+import { PersonalBests } from "@monkeytype/contracts/schemas/shared";
 
 function reset(): void {
   $(".page.pageProfile .preloader").removeClass("hidden");

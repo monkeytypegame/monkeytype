@@ -1,8 +1,12 @@
 import _ from "lodash";
 import FunboxList from "../constants/funbox-list";
-import { PersonalBest, PersonalBests } from "@monkeytype/shared-types/user";
 import { DBResult } from "@monkeytype/shared-types";
-import { Mode, Mode2 } from "@monkeytype/contracts/schemas/shared";
+import {
+  Mode,
+  Mode2,
+  PersonalBest,
+  PersonalBests,
+} from "@monkeytype/contracts/schemas/shared";
 
 type CheckAndUpdatePbResult = {
   isPb: boolean;
