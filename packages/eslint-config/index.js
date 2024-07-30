@@ -77,12 +77,7 @@ module.exports = {
         "@typescript-eslint/no-unsafe-member-access": "off", //~105
         //
 
-        "@typescript-eslint/no-unnecessary-type-assertion": [
-          "error",
-          {
-            typesToIgnore: ["HTMLElement", "Element"],
-          },
-        ],
+        "@typescript-eslint/no-unnecessary-type-assertion": "error",
         "@typescript-eslint/no-confusing-void-expression": [
           "error",
           { ignoreArrowShorthand: true },
