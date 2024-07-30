@@ -13,8 +13,8 @@
     "zod": "3.23.8"
   },
   "devDependencies": {
-    "@monkeytype/eslint-config": "*",
-    "@monkeytype/typescript-config": "*",
+    "@monkeytype/eslint-config": "workspace:*",
+    "@monkeytype/typescript-config": "workspace:*",
     "chokidar": "3.6.0",
     "esbuild": "0.23.0",
     "eslint": "8.57.0",

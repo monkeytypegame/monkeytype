@@ -23,7 +23,8 @@
   },
   "dependencies": {
     "@date-fns/utc": "1.2.0",
-    "@monkeytype/contracts": "*",
+    "@monkeytype/contracts": "workspace:*",
+    "@ts-rest/core": "3.45.2",
     "@ts-rest/express": "3.45.2",
     "@ts-rest/open-api": "3.45.2",
     "bcrypt": "5.1.1",
@@ -57,12 +58,13 @@
     "swagger-ui-express": "4.3.0",
     "ua-parser-js": "0.7.33",
     "uuid": "9.0.1",
-    "winston": "3.6.0"
+    "winston": "3.6.0",
+    "zod": "3.23.8"
   },
   "devDependencies": {
-    "@monkeytype/eslint-config": "*",
-    "@monkeytype/shared-types": "*",
-    "@monkeytype/typescript-config": "*",
+    "@monkeytype/eslint-config": "workspace:*",
+    "@monkeytype/shared-types": "workspace:*",
+    "@monkeytype/typescript-config": "workspace:*",
     "@redocly/cli": "1.18.1",
     "@types/bcrypt": "5.0.2",
     "@types/cors": "2.8.12",

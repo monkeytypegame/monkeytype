@@ -36,7 +36,8 @@ services:
       - ../../:/monkeytype
     entrypoint: 'bash -c "echo starting, this may take a while... \
       && cd /monkeytype \
-      && npm i --prefer-offline --no-audit \
+      && npm i -g pnpm \
+      && pnpm i \
       && npm run dev-be"'
 
 volumes:

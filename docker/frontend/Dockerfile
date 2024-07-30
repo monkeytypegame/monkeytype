@@ -7,7 +7,8 @@ ENV RECAPTCHA_SITE_KEY=###RECAPTCHA_SITE_KEY###
 
 #COPY
 COPY package.json package.json
-COPY package-lock.json package-lock.json
+COPY pnpm-lock.yaml pnpm-lock.yaml
+COPY pnpm-workspace.yaml pnpm-workspace.yaml
 COPY turbo.json turbo.json
 COPY packages packages
 COPY frontend frontend
@@ -15,8 +16,11 @@ COPY frontend frontend
 COPY docker/frontend/firebase-config-live.ts frontend/src/ts/constants/firebase-config.ts
 COPY docker/frontend/firebase-config-live.ts frontend/src/ts/constants/firebase-config-live.ts
 
-#BUILD
-RUN npm ci
+#gimme pnpm
+RUN npm i -g pnpm
+
+#build
+RUN pnpm i --frozen-lockfile
 RUN npm run build
 
 # COPY to target
