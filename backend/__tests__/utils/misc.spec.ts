@@ -621,4 +621,33 @@ describe("Misc Utils", () => {
       });
     });
   });
+
+  describe("replaceObjectIds", () => {
+    it("replaces objecIds with string", () => {
+      const fromDatabase = {
+        _id: new ObjectId(),
+        test: "test",
+        number: 1,
+      };
+      const fromDatabase2 = {
+        _id: new ObjectId(),
+        test: "bob",
+        number: 2,
+      };
+      expect(
+        misc.replaceObjectIds([fromDatabase, fromDatabase2])
+      ).toStrictEqual([
+        {
+          _id: fromDatabase._id.toHexString(),
+          test: "test",
+          number: 1,
+        },
+        {
+          _id: fromDatabase2._id.toHexString(),
+          test: "bob",
+          number: 2,
+        },
+      ]);
+    });
+  });
 });

@@ -91,8 +91,8 @@
     "lz-ts": "1.1.2",
     "object-hash": "3.0.0",
     "slim-select": "2.8.1",
-    "stemmer": "2.0.0",
-    "throttle-debounce": "5.0.2"
+    "throttle-debounce": "5.0.2",
+    "stemmer": "2.0.1"
   },
   "overrides": {
     "madge": {

@@ -176,9 +176,10 @@ declare namespace MonkeyTypes {
     tags: string[];
   } & import("@monkeytype/shared-types/config").Config;
 
-  type SnapshotPreset = import("@monkeytype/shared-types").DBConfigPreset & {
-    display: string;
-  };
+  type SnapshotPreset =
+    import("@monkeytype/contracts/schemas/presets").Preset & {
+      display: string;
+    };
 
   type RawCustomTheme = {
     name: string;
