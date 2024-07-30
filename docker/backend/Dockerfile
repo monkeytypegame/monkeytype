@@ -15,12 +15,13 @@ COPY backend backend
 #gimme pnpm
 RUN npm i -g pnpm
 
-#build
-RUN pnpm i --filter backend
+#build, install with filter backend and root
+RUN pnpm i
 RUN npm run build
 
 #remove dev dependencies
-RUN pnpm prune --prod --filter backend
+RUN pnpm i --filter backend
+RUN pnpm prune --prod
 
 ## to build directory
 WORKDIR /app/backend/dist
