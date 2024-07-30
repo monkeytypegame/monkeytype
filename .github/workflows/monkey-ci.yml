@@ -88,7 +88,6 @@ jobs:
         with:
           path: ~/.npm
           key: ${{ runner.os }}-${{ env.NODE_VERSION }}-build-${{ env.cache-name }}-${{ hashFiles('package-lock.json') }}
-          restore-keys: ${{ runner.os }}-${{ env.NODE_VERSION }}-build-${{ env.cache-name }}-${{ hashFiles('package-lock.json') }}
 
       - if: ${{ steps.cache-npm.outputs.cache-hit != 'true' }}
         name: Full checkout
@@ -118,7 +117,6 @@ jobs:
         with:
           path: ~/.npm
           key: ${{ runner.os }}-${{ env.NODE_VERSION }}-build-${{ env.cache-name }}-${{ hashFiles('package-lock.json') }}
-          restore-keys: ${{ runner.os }}-${{ env.NODE_VERSION }}-build-${{ env.cache-name }}-${{ hashFiles('package-lock.json') }}
 
       - name: Install dependencies
         run: npm install --prefer-offline --no-audit
@@ -163,7 +161,6 @@ jobs:
         with:
           path: ~/.npm
           key: ${{ runner.os }}-${{ env.NODE_VERSION }}-build-${{ env.cache-name }}-${{ hashFiles('package-lock.json') }}
-          restore-keys: ${{ runner.os }}-${{ env.NODE_VERSION }}-build-${{ env.cache-name }}-${{ hashFiles('package-lock.json') }}
 
       - name: Install dependencies
         run: npm install --prefer-offline --no-audit
@@ -201,7 +198,6 @@ jobs:
         with:
           path: ~/.npm
           key: ${{ runner.os }}-${{ env.NODE_VERSION }}-build-${{ env.cache-name }}-${{ hashFiles('package-lock.json') }}
-          restore-keys: ${{ runner.os }}-${{ env.NODE_VERSION }}-build-${{ env.cache-name }}-${{ hashFiles('package-lock.json') }}
 
       - name: Install dependencies
         run: npm install --prefer-offline --no-audit
@@ -249,7 +245,6 @@ jobs:
         with:
           path: ~/.npm
           key: ${{ runner.os }}-${{ env.NODE_VERSION }}-build-${{ env.cache-name }}-${{ hashFiles('package-lock.json') }}
-          restore-keys: ${{ runner.os }}-${{ env.NODE_VERSION }}-build-${{ env.cache-name }}-${{ hashFiles('package-lock.json') }}
 
       - name: Install dependencies
         run: npm install --prefer-offline --no-audit
@@ -289,7 +284,6 @@ jobs:
         with:
           path: ~/.npm
           key: ${{ runner.os }}-${{ env.NODE_VERSION }}-build-${{ env.cache-name }}-${{ hashFiles('package-lock.json') }}
-          restore-keys: ${{ runner.os }}-${{ env.NODE_VERSION }}-build-${{ env.cache-name }}-${{ hashFiles('package-lock.json') }}
 
       - name: Install dependencies
         run: npm install --prefer-offline --no-audit
