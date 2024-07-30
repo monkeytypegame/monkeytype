@@ -62,6 +62,11 @@ jobs:
           echo "should-build-be=${{ steps.filter.outputs.be-src }}" >> $GITHUB_OUTPUT
           echo "should-build-fe=${{ steps.filter.outputs.fe-src }}" >> $GITHUB_OUTPUT
           echo "assets-json=${{ steps.filter.outputs.json }}" >> $GITHUB_OUTPUT
+      
+      - name: Export pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
 
   prime-cache:
     name: prime-cache
@@ -82,7 +87,7 @@ jobs:
         env:
           cache-name: node-modules
         with:
-          path: ~/.pnpm
+          path: ${{ env.STORE_PATH }}
           key: ${{ runner.os }}-${{ env.NODE_VERSION }}-build-${{ env.cache-name }}-${{ hashFiles('pnpm-lock.yaml') }}
 
       - if: ${{ steps.cache-pnpm.outputs.cache-hit != 'true' }}
@@ -123,7 +128,7 @@ jobs:
         env:
           cache-name: node-modules
         with:
-          path: ~/.pnpm
+          path: ${{ env.STORE_PATH }}
           key: ${{ runner.os }}-${{ env.NODE_VERSION }}-build-${{ env.cache-name }}-${{ hashFiles('pnpm-lock.yaml') }}
 
       - name: Setup pnpm
@@ -174,7 +179,7 @@ jobs:
         env:
           cache-name: node-modules
         with:
-          path: ~/.pnpm
+          path: ${{ env.STORE_PATH }}
           key: ${{ runner.os }}-${{ env.NODE_VERSION }}-build-${{ env.cache-name }}-${{ hashFiles('pnpm-lock.yaml') }}
 
       - name: Setup pnpm
@@ -219,7 +224,7 @@ jobs:
         env:
           cache-name: node-modules
         with:
-          path: ~/.pnpm
+          path: ${{ env.STORE_PATH }}
           key: ${{ runner.os }}-${{ env.NODE_VERSION }}-build-${{ env.cache-name }}-${{ hashFiles('pnpm-lock.yaml') }}
 
       - name: Setup pnpm
@@ -274,7 +279,7 @@ jobs:
         env:
           cache-name: node-modules
         with:
-          path: ~/.pnpm
+          path: ${{ env.STORE_PATH }}
           key: ${{ runner.os }}-${{ env.NODE_VERSION }}-build-${{ env.cache-name }}-${{ hashFiles('pnpm-lock.yaml') }}
 
       - name: Setup pnpm
@@ -321,7 +326,7 @@ jobs:
         env:
           cache-name: node-modules
         with:
-          path: ~/.pnpm
+          path: ${{ env.STORE_PATH }}
           key: ${{ runner.os }}-${{ env.NODE_VERSION }}-build-${{ env.cache-name }}-${{ hashFiles('pnpm-lock.yaml') }}
 
       - name: Setup pnpm
