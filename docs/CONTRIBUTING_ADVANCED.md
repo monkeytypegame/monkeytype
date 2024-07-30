@@ -6,7 +6,7 @@
   - [**Table of Contents**](#table-of-contents)
   - [Prerequisites](#prerequisites)
     - [Git](#git)
-    - [NodeJS and NPM](#nodejs-and-npm)
+    - [NodeJS and PNPM](#nodejs-and-pnpm)
     - [Docker (Recommended but Optional)](#docker-recommended-but-optional)
     - [Firebase (optional)](#firebase-optional)
     - [Config file](#config-file)
@@ -31,13 +31,15 @@ This contribution guide is for cases in which you need to test the functionality
 
 Git is optional but we recommend you utilize it. Monkeytype uses the Git source control management (SCM) system for its version control. Assuming you don't have experience typing commands in the command line, we suggest installing [Sourcetree](https://www.sourcetreeapp.com/). You will be able to utilize the power of Git without needing to remember any cryptic commands. Using a Git client such as Sourcetree won't give you access to the full functionality of Git, but provides an easy-to-understand graphical user interface (GUI). Once you have downloaded Sourcetree, run the installer. While installing Sourcetree, keep your eyes peeled for the option to also install Git with Sourcetree. This is the option you will need to look for in order to install Git. **Make sure to click yes in the installer to install Git with Sourcetree.**
 
-### NodeJS and NPM
+### NodeJS and PNPM
 
 Currently, the project is using version `20.16.0 LTS`.
 
 If you use `nvm` (if you use Windows, use [nvm-windows](https://github.com/coreybutler/nvm-windows)) then you can run `nvm install` and `nvm use` (you might need to specify the exact version eg: `nvm install 20.16.0` then `nvm use 20.16.0`) to use the version of Node.js in the `.nvmrc` file.
 
 Alternatively, you can navigate to the NodeJS [website](https://nodejs.org/en/) to download it from there.
+
+For package management, we use `pnpm` instead of `npm` or `yarn`. You can install it by running `npm install -g pnpm@9.6.0`. This will install `pnpm` globally on your machine.
 
 ### Docker (Recommended but Optional)
 
@@ -65,7 +67,7 @@ The account system will not let you create an account without a Firebase project
    - Click "Generate New Private Key"
    - Save as `serviceAccountKey.json` inside the `backend/src/credentials/` directory.
 
-1. Run `npm install -g firebase-tools` to install the Firebase Command Line Interface.
+1. Run `pnpm install -g firebase-tools` to install the Firebase Command Line Interface.
 1. Run `firebase login` on your terminal to log in to the same Google account you just used to create the project.
 1. Within the `frontend` directory, duplicate `.firebaserc_example`, rename the new file to `.firebaserc` and change the project name to the firebase project id you just created.
 
@@ -120,7 +122,7 @@ Its time to run Monkeytype. Just like with the databases, you can run the fronte
 
 ### Dependencies (if running manually)
 
-Run `npm i` in the project root to install all dependencies.
+Run `pnpm i` in the project root to install all dependencies.
 
 ### Both Frontend and Backend
 

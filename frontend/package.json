@@ -30,9 +30,9 @@
   ],
   "devDependencies": {
     "@fortawesome/fontawesome-free": "5.15.4",
-    "@monkeytype/eslint-config": "*",
-    "@monkeytype/shared-types": "*",
-    "@monkeytype/typescript-config": "*",
+    "@monkeytype/eslint-config": "workspace:*",
+    "@monkeytype/shared-types": "workspace:*",
+    "@monkeytype/typescript-config": "workspace:*",
     "@types/canvas-confetti": "1.4.3",
     "@types/chartjs-plugin-trendline": "1.0.1",
     "@types/damerau-levenshtein": "1.0.0",
@@ -70,7 +70,7 @@
   },
   "dependencies": {
     "@date-fns/utc": "1.2.0",
-    "@monkeytype/contracts": "*",
+    "@monkeytype/contracts": "workspace:*",
     "axios": "1.6.4",
     "canvas-confetti": "1.5.1",
     "chart.js": "3.7.1",

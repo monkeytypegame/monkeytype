@@ -23,7 +23,7 @@
   },
   "dependencies": {
     "@date-fns/utc": "1.2.0",
-    "@monkeytype/contracts": "*",
+    "@monkeytype/contracts": "workspace:*",
     "@ts-rest/express": "3.45.2",
     "@ts-rest/open-api": "3.45.2",
     "bcrypt": "5.1.1",
@@ -60,9 +60,9 @@
     "winston": "3.6.0"
   },
   "devDependencies": {
-    "@monkeytype/shared-types": "*",
-    "@monkeytype/typescript-config": "*",
-    "@monkeytype/eslint-config": "*",
+    "@monkeytype/shared-types": "workspace:*",
+    "@monkeytype/typescript-config": "workspace:*",
+    "@monkeytype/eslint-config": "workspace:*",
     "@redocly/cli": "1.18.1",
     "@types/bcrypt": "5.0.2",
     "@types/cors": "2.8.12",

@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "preinstall": "npx only-allow pnpm",
     "full-check": "turbo lint ts-check build test validate-json",
     "prepare": "husky install",
     "pre-commit": "lint-staged",
@@ -66,6 +67,7 @@
     "husky": "8.0.1",
     "knip": "2.19.2",
     "lint-staged": "13.2.3",
+    "only-allow": "1.2.1",
     "prettier": "2.5.1",
     "release-it": "16.1.4",
     "turbo": "2.0.9",
@@ -87,5 +89,5 @@
     "packages/*"
   ],
   "version": "24.31.0",
-  "packageManager": "npm@10.2.4"
+  "packageManager": "pnpm@9.6.0"
 }

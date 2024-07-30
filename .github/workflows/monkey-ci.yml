@@ -1,6 +1,7 @@
 name: Monkey CI
 
 env:
+  PNPM_VERSION: "9.6.0"
   NODE_VERSION: "20.16.0"
   RECAPTCHA_SITE_KEY: "6Lc-V8McAAAAAJ7s6LGNe7MBZnRiwbsbiWts87aj"
 
@@ -94,9 +95,14 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2.2.4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
       - if: ${{ steps.cache-npm.outputs.cache-hit != 'true' }}
         name: Install dependencies
-        run: npm install --prefer-offline --no-audit
+        run: pnpm install
 
   check-pretty:
     name: check-pretty
@@ -104,8 +110,8 @@ jobs:
     runs-on: ubuntu-latest
     if: needs.pre-ci.outputs.should-build-be == 'true' || needs.pre-ci.outputs.should-build-fe == 'true' || needs.pre-ci.outputs.should-build-pkg == 'true' || needs.pre-ci.outputs.assets-json == 'true'
     steps:
-      - uses: actions/checkout@v4
-      - name: Set up Node.js
+      - if: ${{ steps.cache-npm.outputs.cache-hit != 'true' }}
+        name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
@@ -119,8 +125,14 @@ jobs:
           path: ~/.npm
           key: ${{ runner.os }}-${{ env.NODE_VERSION }}-build-${{ env.cache-name }}-${{ hashFiles('package-lock.json') }}
 
-      - name: Install dependencies
-        run: npm install --prefer-offline --no-audit
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2.2.4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - if: ${{ steps.cache-npm.outputs.cache-hit != 'true' }}
+        name: Install dependencies
+        run: pnpm install
 
       - name: Check pretty (backend)
         id: check-pretty-be
@@ -148,8 +160,8 @@ jobs:
     runs-on: ubuntu-latest
     if: needs.pre-ci.outputs.should-build-be == 'true' || needs.pre-ci.outputs.should-build-pkg == 'true'
     steps:
-      - uses: actions/checkout@v4
-      - name: Set up Node.js
+      - if: ${{ steps.cache-npm.outputs.cache-hit != 'true' }}
+        name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
@@ -163,8 +175,14 @@ jobs:
           path: ~/.npm
           key: ${{ runner.os }}-${{ env.NODE_VERSION }}-build-${{ env.cache-name }}-${{ hashFiles('package-lock.json') }}
 
-      - name: Install dependencies
-        run: npm install --prefer-offline --no-audit
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2.2.4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - if: ${{ steps.cache-npm.outputs.cache-hit != 'true' }}
+        name: Install dependencies
+        run: pnpm install
 
       - name: Check lint
         run: npm run lint-be
@@ -181,11 +199,12 @@ jobs:
     runs-on: ubuntu-latest
     if: needs.pre-ci.outputs.should-build-fe == 'true' || needs.pre-ci.outputs.should-build-pkg == 'true'
     steps:
-      - uses: actions/checkout@v4
-      - name: Set up Node.js
+      - if: ${{ steps.cache-npm.outputs.cache-hit != 'true' }}
+        name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
+
 
       - name: Create stub firebase config
         working-directory: ./frontend/src/ts/constants
@@ -200,8 +219,14 @@ jobs:
           path: ~/.npm
           key: ${{ runner.os }}-${{ env.NODE_VERSION }}-build-${{ env.cache-name }}-${{ hashFiles('package-lock.json') }}
 
-      - name: Install dependencies
-        run: npm install --prefer-offline --no-audit
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2.2.4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - if: ${{ steps.cache-npm.outputs.cache-hit != 'true' }}
+        name: Install dependencies
+        run: pnpm install
 
       - name: Check lint
         run: npm run lint-fe
@@ -233,7 +258,9 @@ jobs:
               - 'frontend/static/themes/*.json'
               - 'frontend/static/challenges/*.json'
               - 'frontend/static/layouts/*.json'
-      - name: Set up Node.js
+
+      - if: ${{ steps.cache-npm.outputs.cache-hit != 'true' }}
+        name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
@@ -247,8 +274,14 @@ jobs:
           path: ~/.npm
           key: ${{ runner.os }}-${{ env.NODE_VERSION }}-build-${{ env.cache-name }}-${{ hashFiles('package-lock.json') }}
 
-      - name: Install dependencies
-        run: npm install --prefer-offline --no-audit
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2.2.4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - if: ${{ steps.cache-npm.outputs.cache-hit != 'true' }}
+        name: Install dependencies
+        run: pnpm install
 
       - name: Lint JSON
         run: npm run pr-check-lint-json
@@ -271,8 +304,8 @@ jobs:
     runs-on: ubuntu-latest
     if: needs.pre-ci.outputs.should-build-pkg == 'true'
     steps:
-      - uses: actions/checkout@v4
-      - name: Set up Node.js
+      - if: ${{ steps.cache-npm.outputs.cache-hit != 'true' }}
+        name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
@@ -286,8 +319,14 @@ jobs:
           path: ~/.npm
           key: ${{ runner.os }}-${{ env.NODE_VERSION }}-build-${{ env.cache-name }}-${{ hashFiles('package-lock.json') }}
 
-      - name: Install dependencies
-        run: npm install --prefer-offline --no-audit
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2.2.4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - if: ${{ steps.cache-npm.outputs.cache-hit != 'true' }}
+        name: Install dependencies
+        run: pnpm install
 
       - name: Check lint
         run: npm run lint-pkg
