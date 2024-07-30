@@ -61,6 +61,11 @@ export function getOpenApi(): OpenAPIObject {
           description: "User specific configuration presets.",
           "x-displayName": "User presets",
         },
+        {
+          name: "ape-keys",
+          description: "User specific configuration presets.",
+          "x-displayName": "User presets",
+        },
       ],
     },
 
