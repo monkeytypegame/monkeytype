@@ -385,3 +385,4 @@ export type Config = z.infer<typeof ConfigSchema>;
 
 export const PartialConfigSchema = ConfigSchema.partial();
 export type PartialConfig = z.infer<typeof PartialConfigSchema>;
+export type ConfigValue = Config[keyof Config];

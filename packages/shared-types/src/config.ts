@@ -1,5 +1,3 @@
-import { PersonalBests } from "@monkeytype/contracts/schemas/users";
-
 export type SmoothCaret =
   import("@monkeytype/contracts/schemas/configs").SmoothCaret;
 export type QuickRestart =
@@ -10,10 +8,9 @@ export type CaretStyle =
   import("@monkeytype/contracts/schemas/configs").CaretStyle;
 export type Difficulty =
   import("@monkeytype/contracts/schemas/configs").Difficulty;
-export type Mode = import("@monkeytype/contracts/schemas/configs").Mode;
-export type Mode2<M extends Mode> = M extends M
-  ? keyof PersonalBests[M]
-  : never;
+export type Mode = import("@monkeytype/contracts/schemas/shared").Mode;
+export type Mode2<M extends Mode> =
+  import("@monkeytype/contracts/schemas/shared").Mode2<M>;
 export type Mode2Custom<M extends Mode> = Mode2<M> | "custom";
 export type ConfidenceMode =
   import("@monkeytype/contracts/schemas/configs").ConfidenceMode;
@@ -81,4 +78,5 @@ export type CustomThemeColors =
   import("@monkeytype/contracts/schemas/configs").CustomThemeColors;
 
 export type Config = import("@monkeytype/contracts/schemas/configs").Config;
-export type ConfigValue = Config[keyof Config];
+export type ConfigValue =
+  import("@monkeytype/contracts/schemas/configs").ConfigValue;
