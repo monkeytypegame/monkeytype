@@ -83,11 +83,6 @@
       "eslint"
     ]
   },
-  "workspaces": [
-    "frontend",
-    "backend",
-    "packages/*"
-  ],
   "version": "24.31.0",
   "packageManager": "pnpm@9.6.0"
 }
