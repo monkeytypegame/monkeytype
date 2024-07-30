@@ -529,8 +529,6 @@ FunboxList.setFunboxFunctions("IPv6", {
         longestSeriesNum = Math.max(longestSeriesNum, currentSeriesNum);
         currentSeriesNum = 0;
 
-        console.log("Number of longest series of zeros: " + longestSeriesNum);
-
         let alreadyUsedDoubleColon = false;
 
         for (let i = 0; i < ipArray.length; i++) {
