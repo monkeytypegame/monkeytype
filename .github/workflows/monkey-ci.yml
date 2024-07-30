@@ -1,7 +1,7 @@
 name: Monkey CI
 
 env:
-  NODE_VERSION: "18.20.4"
+  NODE_VERSION: "20.16.0"
   RECAPTCHA_SITE_KEY: "6Lc-V8McAAAAAJ7s6LGNe7MBZnRiwbsbiWts87aj"
 
 permissions:
