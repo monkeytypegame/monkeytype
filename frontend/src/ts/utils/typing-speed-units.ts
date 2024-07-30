@@ -1,4 +1,4 @@
-import { TypingSpeedUnit } from "@monkeytype/shared-types/config";
+import { TypingSpeedUnit } from "@monkeytype/contracts/schemas/configs";
 
 class Unit implements MonkeyTypes.TypingSpeedUnitSettings {
   unit: TypingSpeedUnit;

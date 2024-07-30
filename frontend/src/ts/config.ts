@@ -20,6 +20,7 @@ import { isDevEnvironment, reloadAfter } from "./utils/misc";
 import * as ConfigSchemas from "@monkeytype/contracts/schemas/configs";
 import { Config } from "@monkeytype/contracts/schemas/configs";
 import { roundTo1 } from "./utils/numbers";
+import { Mode, ModeSchema } from "@monkeytype/contracts/schemas/shared";
 
 export let localStorageConfig: Config;
 
@@ -107,8 +108,8 @@ export function setPunctuation(punc: boolean, nosave?: boolean): boolean {
   return true;
 }
 
-export function setMode(mode: ConfigSchemas.Mode, nosave?: boolean): boolean {
-  if (!isConfigValueValid("mode", mode, ConfigSchemas.ModeSchema)) {
+export function setMode(mode: Mode, nosave?: boolean): boolean {
+  if (!isConfigValueValid("mode", mode, ModeSchema)) {
     return false;
   }
 

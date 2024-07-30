@@ -7,7 +7,7 @@ import * as ConnectionState from "../states/connection";
 import { areUnsortedArraysEqual } from "../utils/arrays";
 import * as TestResult from "../test/result";
 import AnimatedModal from "../utils/animated-modal";
-import { Mode } from "@monkeytype/shared-types/config";
+import { Mode } from "@monkeytype/contracts/schemas/shared";
 import { Result } from "@monkeytype/shared-types";
 
 type State = {

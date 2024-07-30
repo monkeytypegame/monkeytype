@@ -1,4 +1,4 @@
-import { ConfigValue } from "@monkeytype/shared-types/config";
+import { ConfigValue } from "@monkeytype/contracts/schemas/configs";
 import Config from "../../config";
 import * as Notifications from "../notifications";
 // @ts-expect-error TODO: update slim-select

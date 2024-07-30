@@ -9,7 +9,7 @@ import * as Loader from "../loader";
 // @ts-expect-error TODO: update slim-select
 import SlimSelect from "slim-select";
 import { ResultFilters } from "@monkeytype/shared-types";
-import { QuoteLength } from "@monkeytype/shared-types/config";
+import { QuoteLength } from "@monkeytype/contracts/schemas/configs";
 
 type Option = {
   id: string;

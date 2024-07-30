@@ -7,7 +7,7 @@ import * as FunboxList from "./funbox/funbox-list";
 import * as TestState from "./test-state";
 import * as Numbers from "../utils/numbers";
 import { IncompleteTest, Result } from "@monkeytype/shared-types";
-import { Mode } from "@monkeytype/shared-types/config";
+import { Mode } from "@monkeytype/contracts/schemas/shared";
 
 type CharCount = {
   spaces: number;

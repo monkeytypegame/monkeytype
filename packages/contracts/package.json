@@ -3,7 +3,8 @@
   "private": true,
   "scripts": {
     "dev": "rimraf ./dist && node esbuild.config.js --watch",
-    "build": "rimraf ./dist && node esbuild.config.js",
+    "build": "rimraf ./dist && npm run madge && node esbuild.config.js",
+    "madge": " madge --circular --extensions ts ./src",
     "ts-check": "tsc --noEmit",
     "lint": "eslint \"./**/*.ts\""
   },
@@ -17,6 +18,7 @@
     "chokidar": "3.6.0",
     "esbuild": "0.23.0",
     "eslint": "8.57.0",
+    "madge": "6.1.0",
     "rimraf": "5.0.9",
     "typescript": "5.5.3"
   },

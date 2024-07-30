@@ -1,4 +1,4 @@
-import { Config, ConfigValue } from "@monkeytype/shared-types/config";
+import { Config, ConfigValue } from "@monkeytype/contracts/schemas/configs";
 
 type SubscribeFunction = (
   key: string,

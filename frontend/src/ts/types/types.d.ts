@@ -1,3 +1,5 @@
+type ConfigValue = import("@monkeytype/contracts/schemas/configs").ConfigValue;
+
 declare namespace MonkeyTypes {
   type PageName =
     | "loading"
@@ -45,7 +47,7 @@ declare namespace MonkeyTypes {
   type QuoteModes = "short" | "medium" | "long" | "thicc";
 
   type CustomLayoutFluidSpaces =
-    | import("@monkeytype/shared-types/config").CustomLayoutFluid
+    | import("@monkeytype/contracts/schemas/configs").CustomLayoutFluid
     | `${string} ${string} ${string}`;
 
   type HistoryChartData = {
@@ -158,7 +160,7 @@ declare namespace MonkeyTypes {
 
   type FunboxForcedConfig = Record<
     string,
-    import("@monkeytype/shared-types/config").ConfigValue[]
+    import("@monkeytype/contracts/schemas/configs").ConfigValue[]
   >;
 
   type FunboxMetadata = {
@@ -174,7 +176,7 @@ declare namespace MonkeyTypes {
 
   type PresetConfig = {
     tags: string[];
-  } & import("@monkeytype/shared-types/config").Config;
+  } & import("@monkeytype/contracts/schemas/configs").Config;
 
   type SnapshotPreset =
     import("@monkeytype/contracts/schemas/presets").Preset & {
@@ -192,7 +194,7 @@ declare namespace MonkeyTypes {
 
   type ConfigChanges = {
     tags?: string[];
-  } & Partial<import("@monkeytype/shared-types/config").Config>;
+  } & Partial<import("@monkeytype/contracts/schemas/configs").Config>;
 
   type LeaderboardMemory = {
     time: {
@@ -237,11 +239,11 @@ declare namespace MonkeyTypes {
     filterPresets: import("@monkeytype/shared-types").ResultFilters[];
     isPremium: boolean;
     streakHourOffset?: number;
-    config: import("@monkeytype/shared-types/config").Config;
+    config: import("@monkeytype/contracts/schemas/configs").Config;
     tags: UserTag[];
     presets: SnapshotPreset[];
     results?: import("@monkeytype/shared-types").Result<
-      import("@monkeytype/shared-types/config").Mode
+      import("@monkeytype/contracts/schemas/shared").Mode
     >[];
     xp: number;
     testActivity?: ModifiableTestActivityCalendar;
@@ -329,7 +331,7 @@ declare namespace MonkeyTypes {
     customStyle?: string;
     opensModal?: boolean;
     defaultValue?: () => string;
-    configKey?: keyof import("@monkeytype/shared-types/config").Config;
+    configKey?: keyof import("@monkeytype/contracts/schemas/configs").Config;
     configValue?: string | number | boolean | number[];
     configValueMode?: "include";
     exec?: (options: CommandExecOptions) => void;
@@ -342,7 +344,7 @@ declare namespace MonkeyTypes {
 
   type CommandsSubgroup = {
     title: string;
-    configKey?: keyof import("@monkeytype/shared-types/config").Config;
+    configKey?: keyof import("@monkeytype/contracts/schemas/configs").Config;
     list: Command[];
     beforeList?: () => void;
   };

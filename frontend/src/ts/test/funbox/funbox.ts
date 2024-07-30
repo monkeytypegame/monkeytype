@@ -26,7 +26,8 @@ import {
 import { Wordset } from "../wordset";
 import * as LayoutfluidFunboxTimer from "./layoutfluid-funbox-timer";
 import * as DDR from "../../utils/ddr";
-import { HighlightMode, Mode } from "@monkeytype/shared-types/config";
+import { HighlightMode } from "@monkeytype/contracts/schemas/configs";
+import { Mode } from "@monkeytype/contracts/schemas/shared";
 
 const prefixSize = 2;
 

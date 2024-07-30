@@ -28,8 +28,11 @@ import {
   UserQuoteRatings,
   UserStreak,
 } from "@monkeytype/shared-types";
-import { Mode, Mode2 } from "@monkeytype/shared-types/config";
-import { PersonalBest } from "@monkeytype/shared-types/user";
+import {
+  Mode,
+  Mode2,
+  PersonalBest,
+} from "@monkeytype/contracts/schemas/shared";
 
 const SECONDS_PER_HOUR = 3600;
 
