@@ -8,6 +8,7 @@ WORKDIR /app
 #copy
 COPY package.json package.json
 COPY pnpm-lock.yaml pnpm-lock.yaml
+COPY pnpm-workspace.yaml pnpm-workspace.yaml
 COPY turbo.json turbo.json
 COPY packages packages
 COPY backend backend
