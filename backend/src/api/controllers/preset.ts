@@ -15,8 +15,8 @@ export async function getPresets(
   const { uid } = req.ctx.decodedToken;
 
   const data = (await PresetDAL.getPresets(uid))
-    .map((it) => ({
-      ...it,
+    .map((preset) => ({
+      ...preset,
       uid: undefined,
     }))
     .map(replaceObjectId);
