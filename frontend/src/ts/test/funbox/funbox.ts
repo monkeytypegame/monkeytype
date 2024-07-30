@@ -484,11 +484,103 @@ FunboxList.setFunboxFunctions("IPv6", {
     }
     // Compress
     if (w.includes(":")) {
-      w = w
-        .replace(/\b(?:0+:){2,}/, "::")
-        .split(":")
-        .map((a) => a.replace(/\b0+/g, ""))
-        .join(":");
+      const compressIpv6 = (ip: string): string => {
+        let newIp = "";
+
+        // Get each 16bit word of ip
+        let ipArray = ip.split(":");
+        // Replace multiple zeros with single zero
+        ipArray = ipArray.map((ipSection) =>
+          ipSection === "0000" ? "0" : ipSection
+        );
+
+        // According to rule #1, we drop leading zeros
+        ipArray = ipArray.map((word) => {
+          if (word === "0") return word;
+
+          let sawOtherThanZero = false;
+          let newWord = "";
+
+          for (let i = 0; i < word.length; i++) {
+            const char = word[i];
+
+            if (char !== "0") {
+              sawOtherThanZero = true;
+            }
+
+            if (sawOtherThanZero) newWord += char;
+          }
+
+          return newWord ? newWord : "0";
+        });
+
+        // Find the longest series of zeros
+        let longestSeriesNum = 0;
+        let currentSeriesNum = 0;
+
+        for (let i = 0; i < ipArray.length; i++) {
+          if (ipArray[i] === "0") currentSeriesNum++;
+          else {
+            longestSeriesNum = Math.max(longestSeriesNum, currentSeriesNum);
+            currentSeriesNum = 0;
+          }
+        }
+
+        longestSeriesNum = Math.max(longestSeriesNum, currentSeriesNum);
+        currentSeriesNum = 0;
+
+        console.log("Number of longest series of zeros: " + longestSeriesNum);
+
+        let alreadyUsedDoubleColon = false;
+
+        for (let i = 0; i < ipArray.length; i++) {
+          if (alreadyUsedDoubleColon) {
+            newIp += ipArray[i] + ":";
+            continue;
+          }
+
+          if (ipArray[i] === "0") currentSeriesNum++;
+          else {
+            if (currentSeriesNum == 0) {
+              newIp += ipArray[i] + ":";
+              continue;
+            }
+
+            if (currentSeriesNum >= longestSeriesNum) {
+              newIp += "::";
+              alreadyUsedDoubleColon = true;
+              currentSeriesNum = 0;
+              newIp += ipArray[i] + ":";
+              continue;
+            }
+
+            while (currentSeriesNum > 0) {
+              currentSeriesNum--;
+              newIp += "0:";
+            }
+
+            newIp += ipArray[i] + ":";
+          }
+        }
+
+        if (currentSeriesNum >= longestSeriesNum && currentSeriesNum !== 0)
+          newIp += ":::";
+        // Because we remove an extra colon at the end
+        else {
+          while (currentSeriesNum > 0) {
+            currentSeriesNum--;
+            newIp += "0:";
+          }
+        }
+
+        // Remove the last extra colon
+        newIp = newIp.replace(/:{3,}/gm, "::");
+        newIp = newIp.slice(0, -1);
+
+        return newIp;
+      };
+
+      w = compressIpv6(w);
     }
     return w;
   },
