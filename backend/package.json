@@ -60,9 +60,9 @@
     "winston": "3.6.0"
   },
   "devDependencies": {
+    "@monkeytype/eslint-config": "*",
     "@monkeytype/shared-types": "*",
     "@monkeytype/typescript-config": "*",
-    "@monkeytype/eslint-config": "*",
     "@redocly/cli": "1.18.1",
     "@types/bcrypt": "5.0.2",
     "@types/cors": "2.8.12",
@@ -70,6 +70,7 @@
     "@types/express": "4.17.21",
     "@types/ioredis": "4.28.10",
     "@types/lodash": "4.14.178",
+    "@types/mjml": "4.7.4",
     "@types/mustache": "4.2.2",
     "@types/node": "20.14.11",
     "@types/node-fetch": "2.6.1",

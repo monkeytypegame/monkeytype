@@ -109,7 +109,7 @@ export class WeeklyXpLeaderboard {
         entry.uid,
         xpGained,
         JSON.stringify({ ...entry, timeTypedSeconds: totalTimeTypedSeconds })
-      ),
+      ) as Promise<number>,
       LaterQueue.scheduleForNextWeek(
         "weekly-xp-leaderboard-results",
         "weekly-xp"
@@ -155,11 +155,16 @@ export class WeeklyXpLeaderboard {
     }
 
     const resultsWithRanks: WeeklyXpLeaderboardEntry[] = results.map(
-      (resultJSON: string, index: number) => ({
-        ...JSON.parse(resultJSON),
-        rank: minRank + index + 1,
-        totalXp: parseInt(scores[index] as string, 10),
-      })
+      (resultJSON: string, index: number) => {
+        //TODO parse with zod?
+        const parsed = JSON.parse(resultJSON) as WeeklyXpLeaderboardEntry;
+
+        return {
+          ...parsed,
+          rank: minRank + index + 1,
+          totalXp: parseInt(scores[index] as string, 10),
+        };
+      }
     );
 
     return resultsWithRanks;
@@ -193,11 +198,17 @@ export class WeeklyXpLeaderboard {
       return null;
     }
 
+    //TODO parse with zod?
+    const parsed = JSON.parse(result ?? "null") as Omit<
+      WeeklyXpLeaderboardEntry,
+      "rank" | "count" | "totalXp"
+    >;
+
     return {
       rank: rank + 1,
       count: count ?? 0,
       totalXp: parseInt(totalXp, 10),
-      ...JSON.parse(result ?? "null"),
+      ...parsed,
     };
   }
 }

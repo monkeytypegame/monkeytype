@@ -742,10 +742,10 @@ export async function getPersonalBests(
   ]);
 
   if (mode2 !== undefined) {
-    return user.personalBests?.[mode]?.[mode2];
+    return user.personalBests?.[mode]?.[mode2] as PersonalBest;
   }
 
-  return user.personalBests?.[mode];
+  return user.personalBests?.[mode] as PersonalBest;
 }
 
 export async function getStats(

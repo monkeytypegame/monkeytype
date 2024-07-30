@@ -13,7 +13,8 @@ type Accepted = {
 function getAcceptedObject(): Accepted | null {
   const acceptedCookies = localStorage.getItem("acceptedCookies") ?? "";
   if (acceptedCookies) {
-    return JSON.parse(acceptedCookies);
+    //TODO verify with zod?
+    return JSON.parse(acceptedCookies) as Accepted;
   } else {
     return null;
   }

@@ -11,7 +11,12 @@ function clearMemory(): void {
 }
 
 function getMemory(): string[] {
-  return JSON.parse(window.localStorage.getItem("confirmedPSAs") ?? "[]") ?? [];
+  //TODO verify with zod?
+  return (
+    (JSON.parse(
+      window.localStorage.getItem("confirmedPSAs") ?? "[]"
+    ) as string[]) ?? []
+  );
 }
 
 function setMemory(id: string): void {

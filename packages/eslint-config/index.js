@@ -70,7 +70,6 @@ module.exports = {
         "@typescript-eslint/restrict-plus-operands": "off",
 
         // TODO: enable at some point
-        "@typescript-eslint/no-unsafe-return": "off", //~12
         "@typescript-eslint/no-unsafe-assignment": "off", //~63
         "@typescript-eslint/no-unsafe-argument": "off", //~37
         "@typescript-eslint/no-unsafe-call": "off", //~76

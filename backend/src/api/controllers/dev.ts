@@ -185,8 +185,11 @@ async function updateUser(uid: string): Promise<void> {
     ])
     .toArray();
 
-  const timeTyping = stats.reduce((a, c) => a + c["timeTyping"], 0);
-  const completedTests = stats.reduce((a, c) => a + c["completedTests"], 0);
+  const timeTyping = stats.reduce((a, c) => (a + c["timeTyping"]) as number, 0);
+  const completedTests = stats.reduce(
+    (a, c) => (a + c["completedTests"]) as number,
+    0
+  );
 
   //update PBs
   const lbPersonalBests: MonkeyTypes.LbPersonalBests = {
@@ -203,7 +206,15 @@ async function updateUser(uid: string): Promise<void> {
     zen: {},
     quote: {},
   };
-  const modes = stats.map((it) => it["_id"]);
+  const modes = stats.map(
+    (it) =>
+      it["_id"] as {
+        language: string;
+        mode: "time" | "custom" | "words" | "quote" | "zen";
+        mode2: `${number}` | "custom" | "zen";
+      }
+  );
+
   for (const mode of modes) {
     const best = (
       await ResultDal.getResultCollection()

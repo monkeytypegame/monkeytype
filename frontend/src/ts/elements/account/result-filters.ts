@@ -221,7 +221,7 @@ export async function setFilterPreset(id: string): Promise<void> {
 }
 
 function deepCopyFilter(filter: ResultFilters): ResultFilters {
-  return JSON.parse(JSON.stringify(filter));
+  return JSON.parse(JSON.stringify(filter)) as ResultFilters;
 }
 
 function addFilterPresetToSnapshot(filter: ResultFilters): void {

@@ -24,6 +24,8 @@ export async function handleReports(
   accept: boolean
 ): Promise<MonkeyResponse> {
   const { reports } = req.body;
+  // TODO: remove once this gets converted to ts-rest
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
   const reportIds = reports.map(({ reportId }) => reportId);
 
   const reportsFromDb = await ReportDAL.getReports(reportIds);
