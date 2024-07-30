@@ -573,7 +573,6 @@ FunboxList.setFunboxFunctions("IPv6", {
 
         // Remove the last extra colon
         newIp = newIp.replace(/:{3,}/gm, "::");
-        newIp = newIp.slice(0, -1);
 
         return newIp;
       };
