@@ -31,8 +31,8 @@ export const PersonalBestsSchema = z.object({
 export type PersonalBests = z.infer<typeof PersonalBestsSchema>;
 
 //used by user and config
-export type Mode = keyof PersonalBests;
-export const ModeSchema = z.enum(["time", "words", "quote", "custom", "zen"]);
+export const ModeSchema = PersonalBestsSchema.keyof();
+export type Mode = z.infer<typeof ModeSchema>;
 export type Mode2<M extends Mode> = M extends M
   ? keyof PersonalBests[M]
   : never;
