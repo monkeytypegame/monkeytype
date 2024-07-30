@@ -62,11 +62,6 @@ jobs:
           echo "should-build-be=${{ steps.filter.outputs.be-src }}" >> $GITHUB_OUTPUT
           echo "should-build-fe=${{ steps.filter.outputs.fe-src }}" >> $GITHUB_OUTPUT
           echo "assets-json=${{ steps.filter.outputs.json }}" >> $GITHUB_OUTPUT
-      
-      - name: Export pnpm store directory
-        shell: bash
-        run: |
-          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
 
   prime-cache:
     name: prime-cache
@@ -80,6 +75,16 @@ jobs:
         with:
           sparse-checkout: |
             pnpm-lock.yaml
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
 
       - name: Cache node modules
         id: cache-pnpm
@@ -100,11 +105,6 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: ${{ env.PNPM_VERSION }}
-
       - if: ${{ steps.cache-pnpm.outputs.cache-hit != 'true' }}
         name: Install dependencies
         run: pnpm install
@@ -122,6 +122,16 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
       - name: Cache node modules
         id: cache-pnpm
         uses: actions/cache@v4
@@ -130,11 +140,6 @@ jobs:
         with:
           path: ${{ env.STORE_PATH }}
           key: ${{ runner.os }}-${{ env.NODE_VERSION }}-build-${{ env.cache-name }}-${{ hashFiles('pnpm-lock.yaml') }}
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: ${{ env.PNPM_VERSION }}
 
       - if: ${{ steps.cache-pnpm.outputs.cache-hit != 'true' }}
         name: Install dependencies
@@ -173,6 +178,16 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
       - name: Cache node modules
         id: cache-pnpm
         uses: actions/cache@v4
@@ -181,11 +196,6 @@ jobs:
         with:
           path: ${{ env.STORE_PATH }}
           key: ${{ runner.os }}-${{ env.NODE_VERSION }}-build-${{ env.cache-name }}-${{ hashFiles('pnpm-lock.yaml') }}
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: ${{ env.PNPM_VERSION }}
 
       - if: ${{ steps.cache-pnpm.outputs.cache-hit != 'true' }}
         name: Install dependencies
@@ -218,6 +228,16 @@ jobs:
         working-directory: ./frontend/src/ts/constants
         run: mv ./firebase-config-example.ts ./firebase-config.ts && cp ./firebase-config.ts ./firebase-config-live.ts
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
       - name: Cache node modules
         id: cache-pnpm
         uses: actions/cache@v4
@@ -226,11 +246,6 @@ jobs:
         with:
           path: ${{ env.STORE_PATH }}
           key: ${{ runner.os }}-${{ env.NODE_VERSION }}-build-${{ env.cache-name }}-${{ hashFiles('pnpm-lock.yaml') }}
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: ${{ env.PNPM_VERSION }}
 
       - if: ${{ steps.cache-pnpm.outputs.cache-hit != 'true' }}
         name: Install dependencies
@@ -273,6 +288,16 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
       - name: Cache node modules
         id: cache-pnpm
         uses: actions/cache@v4
@@ -281,11 +306,6 @@ jobs:
         with:
           path: ${{ env.STORE_PATH }}
           key: ${{ runner.os }}-${{ env.NODE_VERSION }}-build-${{ env.cache-name }}-${{ hashFiles('pnpm-lock.yaml') }}
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: ${{ env.PNPM_VERSION }}
 
       - if: ${{ steps.cache-pnpm.outputs.cache-hit != 'true' }}
         name: Install dependencies
@@ -320,6 +340,16 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
       - name: Cache node modules
         id: cache-pnpm
         uses: actions/cache@v4
@@ -328,11 +358,6 @@ jobs:
         with:
           path: ${{ env.STORE_PATH }}
           key: ${{ runner.os }}-${{ env.NODE_VERSION }}-build-${{ env.cache-name }}-${{ hashFiles('pnpm-lock.yaml') }}
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: ${{ env.PNPM_VERSION }}
 
       - if: ${{ steps.cache-pnpm.outputs.cache-hit != 'true' }}
         name: Install dependencies
