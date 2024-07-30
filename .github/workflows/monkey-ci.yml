@@ -141,8 +141,7 @@ jobs:
           path: ${{ env.STORE_PATH }}
           key: ${{ runner.os }}-${{ env.NODE_VERSION }}-build-${{ env.cache-name }}-${{ hashFiles('pnpm-lock.yaml') }}
 
-      - if: ${{ steps.cache-pnpm.outputs.cache-hit != 'true' }}
-        name: Install dependencies
+      - name: Install dependencies
         run: pnpm install
 
       - name: Check pretty (backend)
@@ -197,8 +196,7 @@ jobs:
           path: ${{ env.STORE_PATH }}
           key: ${{ runner.os }}-${{ env.NODE_VERSION }}-build-${{ env.cache-name }}-${{ hashFiles('pnpm-lock.yaml') }}
 
-      - if: ${{ steps.cache-pnpm.outputs.cache-hit != 'true' }}
-        name: Install dependencies
+      - name: Install dependencies
         run: pnpm install
 
       - name: Check lint
@@ -247,8 +245,7 @@ jobs:
           path: ${{ env.STORE_PATH }}
           key: ${{ runner.os }}-${{ env.NODE_VERSION }}-build-${{ env.cache-name }}-${{ hashFiles('pnpm-lock.yaml') }}
 
-      - if: ${{ steps.cache-pnpm.outputs.cache-hit != 'true' }}
-        name: Install dependencies
+      - name: Install dependencies
         run: pnpm install
 
       - name: Check lint
@@ -307,8 +304,7 @@ jobs:
           path: ${{ env.STORE_PATH }}
           key: ${{ runner.os }}-${{ env.NODE_VERSION }}-build-${{ env.cache-name }}-${{ hashFiles('pnpm-lock.yaml') }}
 
-      - if: ${{ steps.cache-pnpm.outputs.cache-hit != 'true' }}
-        name: Install dependencies
+      - name: Install dependencies
         run: pnpm install
 
       - name: Lint JSON
@@ -359,8 +355,7 @@ jobs:
           path: ${{ env.STORE_PATH }}
           key: ${{ runner.os }}-${{ env.NODE_VERSION }}-build-${{ env.cache-name }}-${{ hashFiles('pnpm-lock.yaml') }}
 
-      - if: ${{ steps.cache-pnpm.outputs.cache-hit != 'true' }}
-        name: Install dependencies
+      - name: Install dependencies
         run: pnpm install
 
       - name: Check lint
