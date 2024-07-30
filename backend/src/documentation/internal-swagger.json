@@ -1,7 +1,7 @@
 {
   "swagger": "2.0",
   "info": {
-    "description": "These are the set of `internal` endpoints dedicated to the Monkeytype web client. Authentication for these endpoints requires a user account.",
+    "description": "These are the set of `internal` endpoints dedicated to the Monkeytype web client. Authentication for these endpoints requires a user account.\nNote: We are currently re-working our APIs. Some endpoints are documented at https://api.monkeytype.com/docs/v2/internal",
     "version": "1.0.0",
     "title": "Monkeytype",
     "termsOfService": "https://monkeytype.com/terms-of-service",
