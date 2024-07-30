@@ -874,7 +874,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
       return 1;
     } else if (typeof input === "object" && input !== null) {
       return Object.values(input).reduce(
-        (a, b) => a + countUndefined(b),
+        (a, b) => (a + countUndefined(b)) as number,
         0
       ) as number;
     } else {

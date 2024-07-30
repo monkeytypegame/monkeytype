@@ -682,6 +682,12 @@ body.darkMode {
       display: grid;
       gap: 1rem;
     }
+    .title {
+      color: var(--sub-color);
+    }
+    .description {
+      color: var(--text-color);
+    }
     .settings {
       display: grid;
       gap: 1rem;

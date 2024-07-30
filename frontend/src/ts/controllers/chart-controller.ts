@@ -95,6 +95,7 @@ class ChartWithUpdateColors<
     id: DatasetIds extends never ? never : "x" | DatasetIds
   ): DatasetIds extends never ? never : CartesianScaleOptions {
     //@ts-expect-error
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     return this.options.scales[id];
   }
 }

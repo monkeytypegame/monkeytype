@@ -91,7 +91,7 @@ export class DailyLeaderboard {
     const resultScore = kogascore(entry.wpm, entry.acc, entry.timestamp);
 
     // @ts-expect-error
-    const rank = await connection.addResult(
+    const rank = (await connection.addResult(
       2,
       leaderboardScoresKey,
       leaderboardResultsKey,
@@ -100,7 +100,7 @@ export class DailyLeaderboard {
       entry.uid,
       resultScore,
       JSON.stringify(entry)
-    );
+    )) as number;
 
     if (
       isValidModeRule(
@@ -153,10 +153,15 @@ export class DailyLeaderboard {
     }
 
     const resultsWithRanks: LbEntryWithRank[] = results.map(
-      (resultJSON, index) => ({
-        ...JSON.parse(resultJSON),
-        rank: minRank + index + 1,
-      })
+      (resultJSON, index) => {
+        // TODO: parse with zod?
+        const parsed = JSON.parse(resultJSON) as LbEntryWithRank;
+
+        return {
+          ...parsed,
+          rank: minRank + index + 1,
+        };
+      }
     );
 
     if (!premiumFeaturesEnabled) {

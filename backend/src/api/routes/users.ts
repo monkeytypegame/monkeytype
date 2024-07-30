@@ -75,7 +75,7 @@ const usernameValidation = joi
       return helpers.error("string.pattern.base");
     }
 
-    return value;
+    return value as string;
   })
   .messages({
     "string.profanity":
@@ -537,7 +537,7 @@ const profileDetailsBase = joi
       return helpers.error("string.profanity");
     }
 
-    return value;
+    return value as string;
   })
   .messages({
     "string.profanity":

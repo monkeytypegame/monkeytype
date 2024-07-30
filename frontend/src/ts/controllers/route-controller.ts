@@ -28,7 +28,8 @@ function getParams(match: {
     (result) => result[1]
   );
 
-  return Object.fromEntries(keys.map((key, index) => [key, values[index]]));
+  const a = keys.map((key, index) => [key, values[index]]);
+  return Object.fromEntries(a) as Record<string, string>;
 }
 
 type Route = {

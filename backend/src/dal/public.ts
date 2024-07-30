@@ -35,12 +35,21 @@ export async function getSpeedHistogram(
   language: string,
   mode: string,
   mode2: string
-): Promise<Record<string, number>> {
-  const key = `${language}_${mode}_${mode2}`;
+): Promise<SpeedHistogram> {
+  const key = `${language}_${mode}_${mode2}` as keyof PublicSpeedStatsDB;
+
+  if (key === "_id") {
+    throw new MonkeyError(
+      400,
+      "Invalid speed histogram key",
+      "get speed histogram"
+    );
+  }
 
   const stats = await db
     .collection<PublicSpeedStatsDB>("public")
     .findOne({ _id: "speedStatsHistogram" }, { projection: { [key]: 1 } });
+
   return stats?.[key] ?? {};
 }
 

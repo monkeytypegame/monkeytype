@@ -9,7 +9,9 @@ import { Mode, Mode2 } from "@monkeytype/contracts/schemas/shared";
 import { CustomTextData } from "@monkeytype/shared-types";
 
 function getCheckboxValue(checkbox: string): boolean {
-  return $(`#shareTestSettingsModal label.${checkbox} input`).prop("checked");
+  return $(`#shareTestSettingsModal label.${checkbox} input`).prop(
+    "checked"
+  ) as boolean;
 }
 
 type SharedTestSettings = [

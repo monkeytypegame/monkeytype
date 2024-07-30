@@ -101,10 +101,12 @@ function apeifyClientMethod(
       errorMessage = typedError.message;
 
       if (isAxiosError(typedError)) {
+        const data = typedError.response?.data as { data: TData };
+
         return {
           status: typedError.response?.status ?? 500,
           message: typedError.message,
-          ...typedError.response?.data,
+          ...data,
         };
       }
     }
