@@ -84,15 +84,11 @@ jobs:
         id: cache-npm
         uses: actions/cache@v4
         env:
-          cache-name: cache-node-modules
+          cache-name: node-modules
         with:
           path: ~/.npm
           key: ${{ runner.os }}-${{ env.NODE_VERSION }}-build-${{ env.cache-name }}-${{ hashFiles('package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-${{ env.NODE_VERSION }}-build-${{ env.cache-name }}-
-            ${{ runner.os }}-build-${{ env.cache-name }}-
-            ${{ runner.os }}-build-
-            ${{ runner.os }}-
+          restore-keys: ${{ runner.os }}-${{ env.NODE_VERSION }}-build-${{ env.cache-name }}-${{ hashFiles('package-lock.json') }}
 
       - if: ${{ steps.cache-npm.outputs.cache-hit != 'true' }}
         name: Full checkout
@@ -118,15 +114,11 @@ jobs:
         id: cache-npm
         uses: actions/cache@v4
         env:
-          cache-name: cache-node-modules
+          cache-name: node-modules
         with:
           path: ~/.npm
           key: ${{ runner.os }}-${{ env.NODE_VERSION }}-build-${{ env.cache-name }}-${{ hashFiles('package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-${{ env.NODE_VERSION }}-build-${{ env.cache-name }}-
-            ${{ runner.os }}-build-${{ env.cache-name }}-
-            ${{ runner.os }}-build-
-            ${{ runner.os }}-
+          restore-keys: ${{ runner.os }}-${{ env.NODE_VERSION }}-build-${{ env.cache-name }}-${{ hashFiles('package-lock.json') }}
 
       - name: Install dependencies
         run: npm install --prefer-offline --no-audit
@@ -167,15 +159,11 @@ jobs:
         id: cache-npm
         uses: actions/cache@v4
         env:
-          cache-name: cache-node-modules
+          cache-name: node-modules
         with:
           path: ~/.npm
           key: ${{ runner.os }}-${{ env.NODE_VERSION }}-build-${{ env.cache-name }}-${{ hashFiles('package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-${{ env.NODE_VERSION }}-build-${{ env.cache-name }}-
-            ${{ runner.os }}-build-${{ env.cache-name }}-
-            ${{ runner.os }}-build-
-            ${{ runner.os }}-
+          restore-keys: ${{ runner.os }}-${{ env.NODE_VERSION }}-build-${{ env.cache-name }}-${{ hashFiles('package-lock.json') }}
 
       - name: Install dependencies
         run: npm install --prefer-offline --no-audit
@@ -209,15 +197,11 @@ jobs:
         id: cache-npm
         uses: actions/cache@v4
         env:
-          cache-name: cache-node-modules
+          cache-name: node-modules
         with:
           path: ~/.npm
           key: ${{ runner.os }}-${{ env.NODE_VERSION }}-build-${{ env.cache-name }}-${{ hashFiles('package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-${{ env.NODE_VERSION }}-build-${{ env.cache-name }}-
-            ${{ runner.os }}-build-${{ env.cache-name }}-
-            ${{ runner.os }}-build-
-            ${{ runner.os }}-
+          restore-keys: ${{ runner.os }}-${{ env.NODE_VERSION }}-build-${{ env.cache-name }}-${{ hashFiles('package-lock.json') }}
 
       - name: Install dependencies
         run: npm install --prefer-offline --no-audit
@@ -261,15 +245,11 @@ jobs:
         id: cache-npm
         uses: actions/cache@v4
         env:
-          cache-name: cache-node-modules
+          cache-name: node-modules
         with:
           path: ~/.npm
           key: ${{ runner.os }}-${{ env.NODE_VERSION }}-build-${{ env.cache-name }}-${{ hashFiles('package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-${{ env.NODE_VERSION }}-build-${{ env.cache-name }}-
-            ${{ runner.os }}-build-${{ env.cache-name }}-
-            ${{ runner.os }}-build-
-            ${{ runner.os }}-
+          restore-keys: ${{ runner.os }}-${{ env.NODE_VERSION }}-build-${{ env.cache-name }}-${{ hashFiles('package-lock.json') }}
 
       - name: Install dependencies
         run: npm install --prefer-offline --no-audit
@@ -305,15 +285,11 @@ jobs:
         id: cache-npm
         uses: actions/cache@v4
         env:
-          cache-name: cache-node-modules
+          cache-name: node-modules
         with:
           path: ~/.npm
           key: ${{ runner.os }}-${{ env.NODE_VERSION }}-build-${{ env.cache-name }}-${{ hashFiles('package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-${{ env.NODE_VERSION }}-build-${{ env.cache-name }}-
-            ${{ runner.os }}-build-${{ env.cache-name }}-
-            ${{ runner.os }}-build-
-            ${{ runner.os }}-
+          restore-keys: ${{ runner.os }}-${{ env.NODE_VERSION }}-build-${{ env.cache-name }}-${{ hashFiles('package-lock.json') }}
 
       - name: Install dependencies
         run: npm install --prefer-offline --no-audit
