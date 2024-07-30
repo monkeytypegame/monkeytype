@@ -531,7 +531,12 @@ FunboxList.setFunboxFunctions("IPv6", {
 
         ipArray = ipArray.map((word, index) => {
           if (word === "") {
-            if (index >= longestStartIndex && index <= longestEndIndex)
+            // If the index is within those indexes and that this is not a single 16bit zero field
+            if (
+              index >= longestStartIndex &&
+              index <= longestEndIndex &&
+              longestStartIndex !== longestEndIndex
+            )
               return ":";
             else return "0";
           }
