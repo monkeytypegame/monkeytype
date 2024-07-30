@@ -63,8 +63,8 @@ export function getOpenApi(): OpenAPIObject {
         },
         {
           name: "ape-keys",
-          description: "User specific configuration presets.",
-          "x-displayName": "User presets",
+          description: "Ape keys provide access to certain API endpoints.",
+          "x-displayName": "Ape Keys",
         },
       ],
     },
