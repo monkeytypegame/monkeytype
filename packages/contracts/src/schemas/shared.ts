@@ -1,6 +1,9 @@
 import { z } from "zod";
-import { DifficultySchema } from "./configs";
 import { StringNumberSchema } from "./util";
+
+//used by config
+export const DifficultySchema = z.enum(["normal", "expert", "master"]);
+export type Difficulty = z.infer<typeof DifficultySchema>;
 
 //used by user and config
 export const PersonalBestSchema = z.object({

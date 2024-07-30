@@ -206,8 +206,8 @@ export type ShowAverage = z.infer<typeof ShowAverageSchema>;
 export const ColorHexValueSchema = z.string().regex(/^#([\da-f]{3}){1,2}$/i);
 export type ColorHexValue = z.infer<typeof ColorHexValueSchema>;
 
-export const DifficultySchema = z.enum(["normal", "expert", "master"]);
-export type Difficulty = z.infer<typeof DifficultySchema>;
+export const DifficultySchema = Shared.DifficultySchema;
+export type Difficulty = Shared.Difficulty;
 
 export const ModeSchema = Shared.ModeSchema;
 export type Mode = Shared.Mode;
