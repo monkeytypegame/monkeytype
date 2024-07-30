@@ -581,10 +581,11 @@
         <span>sound volume</span>
       </div>
       <div class="text">Change the volume of the sound effects.</div>
-      <div class="buttons">
-        <button data-config-value="0.1">quiet</button>
-        <button data-config-value="0.5">medium</button>
-        <button data-config-value="1.0">loud</button>
+      <div class="group">
+        <div class="volume slider">
+          <div class="value"></div>
+          <input type="range" min="0" max="1" step="0.01" />
+        </div>
       </div>
     </div>
     <div class="section fullWidth" data-config-name="playSoundOnClick">

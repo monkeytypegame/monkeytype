@@ -62,7 +62,7 @@ export default {
   capsLockWarning: true,
   playSoundOnError: "off",
   playSoundOnClick: "off",
-  soundVolume: "0.5",
+  soundVolume: 0.5,
   startGraphsAtZero: true,
   showOutOfFocusWarning: true,
   paceCaret: "off",

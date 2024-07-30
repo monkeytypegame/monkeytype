@@ -54,7 +54,7 @@ declare namespace SharedTypes.Config {
     | "14"
     | "15";
   type PlaySoundOnError = "off" | "1" | "2" | "3" | "4";
-  type SoundVolume = "0.1" | "0.5" | "1.0";
+  type SoundVolume = number;
   type PaceCaret = "off" | "average" | "pb" | "last" | "custom" | "daily";
   type AccountChart = ["off" | "on", "off" | "on", "off" | "on", "off" | "on"];
   type MinimumWordsPerMinute = "off" | "custom";

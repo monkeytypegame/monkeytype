@@ -80,7 +80,7 @@ async function initErrorSound(): Promise<void> {
       },
     ],
   };
-  Howler.volume(parseFloat(Config.soundVolume));
+  Howler.volume(Config.soundVolume);
 }
 
 async function init(): Promise<void> {
@@ -386,7 +386,7 @@ async function init(): Promise<void> {
       },
     ],
   };
-  Howler.volume(parseFloat(Config.soundVolume));
+  Howler.volume(Config.soundVolume);
 }
 
 export async function previewClick(val: string): Promise<void> {
@@ -593,7 +593,7 @@ function playScale(scale: ValidScales, scaleMeta: ScaleData): void {
   const gainNode = audioCtx.createGain();
 
   oscillatorNode.type = "sine";
-  gainNode.gain.value = parseFloat(Config.soundVolume) / 10;
+  gainNode.gain.value = Config.soundVolume / 10;
   oscillatorNode.connect(gainNode);
   gainNode.connect(audioCtx.destination);
   oscillatorNode.frequency.value = currentFrequency;
@@ -628,7 +628,7 @@ export function playNote(
     clickSoundIdsToOscillatorType[
       Config.playSoundOnClick as DynamicClickSounds
     ];
-  gainNode.gain.value = parseFloat(Config.soundVolume) / 10;
+  gainNode.gain.value = Config.soundVolume / 10;
 
   oscillatorNode.connect(gainNode);
   gainNode.connect(audioCtx.destination);
@@ -697,5 +697,7 @@ function setVolume(val: number): void {
 
 ConfigEvent.subscribe((eventKey, eventValue) => {
   if (eventKey === "playSoundOnClick" && eventValue !== "off") void init();
-  if (eventKey === "soundVolume") setVolume(parseFloat(eventValue as string));
+  if (eventKey === "soundVolume") {
+    setVolume(parseFloat(eventValue as string));
+  }
 });

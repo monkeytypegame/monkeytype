@@ -197,7 +197,7 @@ export function setSoundVolume(
   val: SharedTypes.Config.SoundVolume,
   nosave?: boolean
 ): boolean {
-  if (!isConfigValueValid("sound volume", val, [["0.1", "0.5", "1.0"]])) {
+  if (!isConfigValueValid("sound volume", val, ["number"])) {
     return false;
   }
 
@@ -1995,6 +1995,10 @@ function replaceLegacyValues(
       val = configObj.timerStyle;
     }
     configObj.liveAccStyle = val;
+  }
+
+  if (typeof configObj.soundVolume === "string") {
+    configObj.soundVolume = parseFloat(configObj.soundVolume);
   }
 
   return configObj;

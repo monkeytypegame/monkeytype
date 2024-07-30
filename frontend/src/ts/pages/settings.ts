@@ -22,6 +22,7 @@ import SlimSelect from "slim-select";
 
 import * as Skeleton from "../utils/skeleton";
 import * as CustomBackgroundFilter from "../elements/custom-background-filter";
+import * as Volume from "../elements/volume";
 
 type SettingsGroups<T extends SharedTypes.ConfigValue> = Record<
   string,
@@ -240,7 +241,7 @@ async function initGroups(): Promise<void> {
   groups["soundVolume"] = new SettingsGroup(
     "soundVolume",
     UpdateConfig.setSoundVolume,
-    "button"
+    "slider"
   ) as SettingsGroup<SharedTypes.ConfigValue>;
   groups["playSoundOnError"] = new SettingsGroup(
     "playSoundOnError",
@@ -986,6 +987,8 @@ export async function update(groupUpdate = true): Promise<void> {
   $(".pageSettings .tip").html(`
     tip: You can also change all these settings quickly using the
     command line (<key>${commandKey}</key> or <key>${modifierKey}</key> + <key>shift</key> + <key>p</key>)`);
+
+  Volume.update();
 }
 function toggleSettingsGroup(groupName: string): void {
   const groupEl = $(`.pageSettings .settingsGroup.${groupName}`);
