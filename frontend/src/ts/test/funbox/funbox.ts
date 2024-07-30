@@ -485,99 +485,71 @@ FunboxList.setFunboxFunctions("IPv6", {
     // Compress
     if (w.includes(":")) {
       const compressIpv6 = (ip: string): string => {
+        let ipArray = ip.split(":");
         let newIp = "";
 
-        // Get each 16bit word of ip
-        let ipArray = ip.split(":");
-        // Replace multiple zeros with single zero
-        ipArray = ipArray.map((ipSection) =>
-          ipSection === "0000" ? "0" : ipSection
-        );
-
-        // According to rule #1, we drop leading zeros
-        ipArray = ipArray.map((word) => {
-          if (word === "0") return word;
-
-          let sawOtherThanZero = false;
-          let newWord = "";
-
-          for (let i = 0; i < word.length; i++) {
-            const char = word[i];
-
-            if (char !== "0") {
-              sawOtherThanZero = true;
-            }
-
-            if (sawOtherThanZero) newWord += char;
-          }
-
-          return newWord ? newWord : "0";
-        });
+        // Replace the leading zeros using regex
+        ipArray = ipArray.map((word) => word.replace(/^0+/gm, ""));
 
         // Find the longest series of zeros
-        let longestSeriesNum = 0;
-        let currentSeriesNum = 0;
+        let longestSeriesNum = 0,
+          longestStartIndex = -1,
+          longestEndIndex = -1;
+        let currentSeriesNum = 0,
+          currentStartIndex = -1,
+          currentEndIndex = -1;
 
         for (let i = 0; i < ipArray.length; i++) {
-          if (ipArray[i] === "0") currentSeriesNum++;
-          else {
-            longestSeriesNum = Math.max(longestSeriesNum, currentSeriesNum);
+          if (ipArray[i] === "") {
+            if (currentStartIndex === -1) currentStartIndex = i;
+            currentSeriesNum++;
+          } else {
+            // The last empty index was the previous one
+            currentEndIndex = i - 1;
+
+            if (longestSeriesNum < currentSeriesNum) {
+              longestSeriesNum = currentSeriesNum;
+              longestStartIndex = currentStartIndex;
+              longestEndIndex = currentEndIndex;
+            }
+
+            // Reset the values
             currentSeriesNum = 0;
+            currentStartIndex = -1;
+            currentEndIndex = -1;
           }
         }
 
-        longestSeriesNum = Math.max(longestSeriesNum, currentSeriesNum);
-        currentSeriesNum = 0;
-
-        let alreadyUsedDoubleColon = false;
-
-        for (let i = 0; i < ipArray.length; i++) {
-          if (alreadyUsedDoubleColon) {
-            newIp += ipArray[i] + ":";
-            continue;
-          }
-
-          if (ipArray[i] === "0") currentSeriesNum++;
-          else {
-            if (currentSeriesNum == 0) {
-              newIp += ipArray[i] + ":";
-              continue;
-            }
-
-            if (currentSeriesNum >= longestSeriesNum) {
-              newIp += "::";
-              alreadyUsedDoubleColon = true;
-              currentSeriesNum = 0;
-              newIp += ipArray[i] + ":";
-              continue;
-            }
-
-            while (currentSeriesNum > 0) {
-              currentSeriesNum--;
-              newIp += "0:";
-            }
-
-            newIp += ipArray[i] + ":";
-          }
+        if (longestSeriesNum < currentSeriesNum) {
+          longestSeriesNum = currentSeriesNum;
+          longestStartIndex = currentStartIndex;
+          longestEndIndex = ipArray.length - 1;
         }
 
-        if (currentSeriesNum >= longestSeriesNum && currentSeriesNum !== 0)
-          newIp += ":::";
-        // Because we remove an extra colon at the end
-        else {
-          while (currentSeriesNum > 0) {
-            currentSeriesNum--;
-            newIp += "0:";
-          }
-        }
+        // Fill in zeroes in all places except within and including the start and end indexes
+        // In those indexes, use a ':'
 
-        // Remove the last extra colon
+        ipArray = ipArray.map((word, index) => {
+          if (word === "") {
+            if (index >= longestStartIndex && index <= longestEndIndex)
+              return ":";
+            else return "0";
+          }
+
+          return word;
+        });
+
+        newIp = ipArray.join(":");
+        // Replace multiple colons with a double colon.
+        // This should occur only once
         newIp = newIp.replace(/:{3,}/gm, "::");
 
         return newIp;
       };
 
+      // console.log("Original IP: " + w);
       w = compressIpv6(w);
+      // console.log("Compressed IP: " + w);
     }
     return w;
   },
