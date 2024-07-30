@@ -50,7 +50,7 @@ export async function connect(): Promise<void> {
   };
 
   mongoClient = new MongoClient(
-    (DB_URI as string) ?? global.__MONGO_URI__, // Set in tests only
+    DB_URI ?? global.__MONGO_URI__, // Set in tests only
     connectionOptions
   );
 

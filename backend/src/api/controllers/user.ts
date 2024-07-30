@@ -28,7 +28,7 @@ import * as AuthUtil from "../../utils/auth";
 import * as Dates from "date-fns";
 import { UTCDateMini } from "@date-fns/utc";
 import * as BlocklistDal from "../../dal/blocklist";
-import { Mode, Mode2 } from "@monkeytype/shared-types/config";
+import { Mode, Mode2 } from "@monkeytype/contracts/schemas/shared";
 import {
   AllTimeLbs,
   CountByYearAndDay,

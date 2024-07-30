@@ -8,7 +8,7 @@ import * as Numbers from "../utils/numbers";
 import * as JSONData from "../utils/json-data";
 import * as TestState from "./test-state";
 import * as ConfigEvent from "../observables/config-event";
-import { Mode2 } from "@monkeytype/shared-types/config";
+import { Mode2 } from "@monkeytype/contracts/schemas/shared";
 
 type Settings = {
   wpm: number;

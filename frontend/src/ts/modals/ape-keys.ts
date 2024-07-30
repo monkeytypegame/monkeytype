@@ -47,7 +47,7 @@ function refreshList(): void {
             }
           </button>
         </td>
-        <td  onClick=${console.log(key)}>${key.name}</td>
+        <td>${key.name}</td>
         <td>${format(new Date(key.createdOn), "dd MMM yyyy HH:mm")}</td>
         <td>${format(new Date(key.modifiedOn), "dd MMM yyyy HH:mm")}</td>
         <td>${
@@ -116,7 +116,8 @@ async function toggleActiveKey(keyId: string): Promise<void> {
   const response = await Ape.apeKeys.update(keyId, { enabled: !key.enabled });
   Loader.hide();
   if (response.status !== 200) {
-    return Notifications.add("Failed to update key: " + response.message, -1);
+    Notifications.add("Failed to update key: " + response.message, -1);
+    return;
   }
   key.enabled = !key.enabled;
   refreshList();

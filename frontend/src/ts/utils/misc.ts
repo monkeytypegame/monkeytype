@@ -3,8 +3,12 @@ import { envConfig } from "../constants/env-config";
 import { lastElementFromArray } from "./arrays";
 import * as JSONData from "./json-data";
 import { CustomTextData, Result } from "@monkeytype/shared-types";
-import { PersonalBests } from "@monkeytype/shared-types/user";
-import { Config, Mode, Mode2 } from "@monkeytype/shared-types/config";
+import { Config } from "@monkeytype/contracts/schemas/configs";
+import {
+  Mode,
+  Mode2,
+  PersonalBests,
+} from "@monkeytype/contracts/schemas/shared";
 
 export function kogasa(cov: number): number {
   return (

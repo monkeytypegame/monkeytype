@@ -23,7 +23,7 @@ import SlimSelect from "slim-select";
 
 import * as Skeleton from "../utils/skeleton";
 import * as CustomBackgroundFilter from "../elements/custom-background-filter";
-import { ConfigValue } from "@monkeytype/shared-types/config";
+import { ConfigValue } from "@monkeytype/contracts/schemas/configs";
 
 type SettingsGroups<T extends ConfigValue> = Record<string, SettingsGroup<T>>;
 

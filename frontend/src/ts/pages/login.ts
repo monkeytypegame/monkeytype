@@ -260,7 +260,8 @@ $(".page.pageLogin .register.side .usernameInput").on("input", () => {
       ".page.pageLogin .register.side .usernameInput"
     ).val() as string;
     if (val === "") {
-      return nameIndicator.hide();
+      nameIndicator.hide();
+      return;
     } else {
       nameIndicator.show("checking");
       void checkNameDebounced();

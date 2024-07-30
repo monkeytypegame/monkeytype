@@ -1,4 +1,4 @@
-import { ConfigValue } from "@monkeytype/shared-types/config";
+import { ConfigValue } from "@monkeytype/contracts/schemas/configs";
 import Config from "../../config";
 import * as Notifications from "../notifications";
 // @ts-expect-error TODO: update slim-select
@@ -67,7 +67,7 @@ export default class SettingsGroup<T extends ConfigValue> {
           let typed = value as T;
           if (typed === "true") typed = true as T;
           if (typed === "false") typed = false as T;
-          this.setValue(typed as T);
+          this.setValue(typed);
         }
       );
     } else if (this.mode === "range") {
@@ -109,9 +109,9 @@ export default class SettingsGroup<T extends ConfigValue> {
       `.pageSettings .section[data-config-name='${this.configName}'] button`
     ).removeClass("active");
     if (this.mode === "select") {
-      const select = document.querySelector(
+      const select = document.querySelector<HTMLSelectElement>(
         `.pageSettings .section[data-config-name='${this.configName}'] select`
-      ) as HTMLSelectElement | null;
+      );
 
       if (select === null) {
         return;
@@ -131,12 +131,12 @@ export default class SettingsGroup<T extends ConfigValue> {
         `.pageSettings .section[data-config-name='${this.configName}'] button[data-config-value='${this.configValue}']`
       ).addClass("active");
     } else if (this.mode === "range") {
-      const range = document.querySelector(
+      const range = document.querySelector<HTMLInputElement>(
         `.pageSettings .section[data-config-name='${this.configName}'] input[type=range]`
-      ) as HTMLInputElement | null;
+      );
       const rangeValue = document.querySelector(
         `.pageSettings .section[data-config-name='${this.configName}'] .value`
-      ) as HTMLSpanElement | null;
+      );
 
       if (range === null || rangeValue === null) {
         return;

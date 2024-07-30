@@ -102,7 +102,7 @@ export function getFontawesomeConfig(debug = false): FontawesomeConfig {
     throw new Error("unknown icons: " + leftOvers);
   }
 
-  if (debug === true) {
+  if (debug) {
     console.debug(
       "Make sure fontawesome modules are active: ",
       Object.entries(modules2)

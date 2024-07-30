@@ -4,7 +4,8 @@ import { getMode2 } from "../utils/misc";
 import * as CustomText from "../test/custom-text";
 import { compressToURI } from "lz-ts";
 import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
-import { Difficulty, Mode, Mode2 } from "@monkeytype/shared-types/config";
+import { Difficulty } from "@monkeytype/contracts/schemas/configs";
+import { Mode, Mode2 } from "@monkeytype/contracts/schemas/shared";
 import { CustomTextData } from "@monkeytype/shared-types";
 
 function getCheckboxValue(checkbox: string): boolean {

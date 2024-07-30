@@ -62,7 +62,7 @@ function hide(): void {
 
       for (const r of rewardsClaimed) {
         if (r.type === "xp") {
-          totalXpClaimed += r.item as number;
+          totalXpClaimed += r.item;
         } else if (r.type === "badge") {
           const badge = BadgeController.getById(r.item.id);
           if (badge) {

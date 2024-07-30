@@ -215,10 +215,8 @@ export async function loadUser(user: UserType): Promise<void> {
     const response = await Ape.results.save(TestLogic.notSignedInLastResult);
 
     if (response.status !== 200) {
-      return Notifications.add(
-        "Failed to save last result: " + response.message,
-        -1
-      );
+      Notifications.add("Failed to save last result: " + response.message, -1);
+      return;
     }
 
     TestLogic.clearNotSignedInResult();
@@ -491,7 +489,7 @@ async function signUp(): Promise<void> {
     });
     return;
   }
-  await RegisterCaptchaModal.show();
+  RegisterCaptchaModal.show();
   const captchaToken = await RegisterCaptchaModal.promise;
   if (captchaToken === undefined || captchaToken === "") {
     Notifications.add("Please complete the captcha", -1);

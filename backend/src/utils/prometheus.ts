@@ -1,5 +1,5 @@
 import { Result } from "@monkeytype/shared-types";
-import { Mode } from "@monkeytype/shared-types/config";
+import { Mode } from "@monkeytype/contracts/schemas/shared";
 import "dotenv/config";
 import { Counter, Histogram, Gauge } from "prom-client";
 import { TsRestRequestWithCtx } from "../middlewares/auth";

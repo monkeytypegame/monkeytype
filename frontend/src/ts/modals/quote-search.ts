@@ -22,7 +22,7 @@ import * as TestState from "../test/test-state";
 import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
 import * as TestLogic from "../test/test-logic";
 import { createErrorMessage } from "../utils/misc";
-import { QuoteLength } from "@monkeytype/shared-types/config";
+import { QuoteLength } from "@monkeytype/contracts/schemas/configs";
 
 const searchServiceCache: Record<string, SearchService<MonkeyTypes.Quote>> = {};
 
@@ -209,7 +209,7 @@ async function updateResults(searchText: string): Promise<void> {
 
   const searchResults = modal
     .getModal()
-    .querySelectorAll(".searchResult") as NodeListOf<HTMLElement>;
+    .querySelectorAll<HTMLElement>(".searchResult");
   for (const searchResult of searchResults) {
     const quoteId = parseInt(searchResult.dataset["quoteId"] as string);
     searchResult
@@ -325,7 +325,7 @@ function hide(clearChain = false): void {
 function apply(val: number): void {
   if (isNaN(val)) {
     val = parseInt(
-      (document.getElementById("searchBox") as HTMLInputElement).value as string
+      (document.getElementById("searchBox") as HTMLInputElement).value
     );
   }
   if (val !== null && !isNaN(val) && val >= 0) {

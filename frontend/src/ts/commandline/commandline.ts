@@ -491,9 +491,7 @@ async function runActiveCommand(): Promise<void> {
     updateInput(inputModeParams.value as string);
     hideCommands();
   } else if (command.subgroup) {
-    CommandlineLists.pushToStack(
-      command.subgroup as MonkeyTypes.CommandsSubgroup
-    );
+    CommandlineLists.pushToStack(command.subgroup);
     updateInput("");
     await filterSubgroup();
     await showCommands();

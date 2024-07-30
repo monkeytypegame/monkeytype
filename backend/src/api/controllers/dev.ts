@@ -10,8 +10,11 @@ import { ObjectId } from "mongodb";
 import * as LeaderboardDal from "../../dal/leaderboards";
 import MonkeyError from "../../utils/error";
 import isNumber from "lodash/isNumber";
-import { Mode } from "@monkeytype/shared-types/config";
-import { PersonalBest, PersonalBests } from "@monkeytype/shared-types/user";
+import {
+  Mode,
+  PersonalBest,
+  PersonalBests,
+} from "@monkeytype/contracts/schemas/shared";
 
 type GenerateDataOptions = {
   firstTestTimestamp: Date;
@@ -51,7 +54,7 @@ async function getOrCreateUser(
 
   if (existingUser !== undefined && existingUser !== null) {
     return existingUser;
-  } else if (createUser === false) {
+  } else if (!createUser) {
     throw new MonkeyError(404, `User ${username} does not exist.`);
   }
 
@@ -253,7 +256,7 @@ async function updateUser(uid: string): Promise<void> {
         timeTyping: timeTyping,
         completedTests: completedTests,
         startedTests: Math.round(completedTests * 1.25),
-        personalBests: personalBests as PersonalBests,
+        personalBests: personalBests,
         lbPersonalBests: lbPersonalBests,
       },
     }

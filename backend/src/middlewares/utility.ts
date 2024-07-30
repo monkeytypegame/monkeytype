@@ -28,7 +28,7 @@ export function asyncHandler(handler: AsyncHandler): RequestHandler {
   ) => {
     try {
       const handlerData = await handler(req, res);
-      return handleMonkeyResponse(handlerData, res);
+      handleMonkeyResponse(handlerData, res);
     } catch (error) {
       next(error);
     }
