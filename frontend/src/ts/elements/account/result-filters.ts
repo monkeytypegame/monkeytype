@@ -990,6 +990,7 @@ function verifyResultFiltersStructure(filterIn: ResultFilters): ResultFilters {
     const key = entry[0] as keyof ResultFilters;
     const value = entry[1];
     if (filter[key] === undefined) {
+      // @ts-expect-error key and value is based on default filter so this is safe to ignore
       filter[key] = value;
     }
   });
