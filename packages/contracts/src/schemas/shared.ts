@@ -32,7 +32,7 @@ export type PersonalBests = z.infer<typeof PersonalBestsSchema>;
 
 //used by user and config
 export type Mode = keyof PersonalBests;
-export const ModeSchema = z.custom<Mode>();
+export const ModeSchema = z.enum(["time", "words", "quote", "custom", "zen"]);
 export type Mode2<M extends Mode> = M extends M
   ? keyof PersonalBests[M]
   : never;
