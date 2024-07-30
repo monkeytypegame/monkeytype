@@ -20,7 +20,7 @@ COPY docker/frontend/firebase-config-live.ts frontend/src/ts/constants/firebase-
 RUN npm i -g pnpm
 
 #build
-RUN pnpm i
+RUN pnpm i --frozen-lockfile
 RUN npm run build
 
 # COPY to target
