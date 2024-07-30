@@ -3,7 +3,7 @@ import { format as dateFormat } from "date-fns/format";
 import Format from "../../utils/format";
 import { PersonalBests } from "@monkeytype/shared-types/user";
 import { Mode2 } from "@monkeytype/shared-types/config";
-import { StringNumber } from "@monkeytype/shared-types/util";
+import { StringNumber } from "@monkeytype/contracts/schemas/util";
 
 function clearTables(isProfile: boolean): void {
   const source = isProfile ? "Profile" : "Account";

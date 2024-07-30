@@ -92,14 +92,14 @@ export async function initSnapshot(): Promise<
     if (presetsResponse.status !== 200) {
       // eslint-disable-next-line @typescript-eslint/no-throw-literal
       throw {
-        message: `${presetsResponse.message} (presets)`,
+        message: `${presetsResponse.body.message} (presets)`,
         responseCode: presetsResponse.status,
       };
     }
 
     const userData = userResponse.data;
     const configData = configResponse.body.data;
-    const presetsData = presetsResponse.data;
+    const presetsData = presetsResponse.body.data;
 
     if (userData === null) {
       // eslint-disable-next-line @typescript-eslint/no-throw-literal

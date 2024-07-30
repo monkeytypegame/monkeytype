@@ -45,9 +45,9 @@ export class MonkeyResponse2<T = null>
   implements MonkeyResponseType, MonkeyDataAware<T>
 {
   public message: string;
-  public data: T | null;
+  public data: T;
 
-  constructor(message: string, data: T | null = null) {
+  constructor(message: string, data: T) {
     this.message = message;
     this.data = data;
   }

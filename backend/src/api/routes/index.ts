@@ -43,7 +43,6 @@ const APP_START_TIME = Date.now();
 const API_ROUTE_MAP = {
   "/users": users,
   "/results": results,
-  "/presets": presets,
   "/psas": psas,
   "/public": publicStats,
   "/leaderboards": leaderboards,
@@ -57,6 +56,7 @@ const API_ROUTE_MAP = {
 const s = initServer();
 const router = s.router(contract, {
   configs,
+  presets,
 });
 
 export function addApiRoutes(app: Application): void {

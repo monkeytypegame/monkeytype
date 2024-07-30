@@ -20,7 +20,7 @@ export async function saveConfig(
 
   await ConfigDAL.saveConfig(uid, config);
 
-  return new MonkeyResponse2("Config updated");
+  return new MonkeyResponse2("Config updated", null);
 }
 
 export async function deleteConfig(
@@ -29,5 +29,5 @@ export async function deleteConfig(
   const { uid } = req.ctx.decodedToken;
 
   await ConfigDAL.deleteConfig(uid);
-  return new MonkeyResponse2("Config deleted");
+  return new MonkeyResponse2("Config deleted", null);
 }
