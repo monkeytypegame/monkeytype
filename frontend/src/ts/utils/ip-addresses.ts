@@ -66,7 +66,8 @@ export function addressToCIDR(addr: string): string {
 }
 
 export function compressIpv6(ip: string): string {
-  let ipArray = ip.split(":");
+  const ipPortSplit = ip.split("/");
+  let ipArray = (ipPortSplit[0] as string).split(":");
   let newIp = "";
 
   // Replace the leading zeros using regex
@@ -129,6 +130,11 @@ export function compressIpv6(ip: string): string {
   // Replace multiple colons with a double colon.
   // This should occur only once
   newIp = newIp.replace(/:{3,}/gm, "::");
+
+  if (ipPortSplit.length > 1) {
+    // The IP has a port. Add it back
+    newIp += "/" + ipPortSplit[1];
+  }
 
   return newIp;
 }
