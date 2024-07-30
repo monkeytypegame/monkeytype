@@ -12,12 +12,15 @@ COPY turbo.json turbo.json
 COPY packages packages
 COPY backend backend
 
+#gimme pnpm
+RUN npm i -g pnpm
+
 #build
-RUN npm ci
+RUN pnpm i --filter backend
 RUN npm run build
 
-## remove dev dependencies
-RUN npm install --install-strategy=nested --omit=dev --workspace=backend --ignore-scripts
+#remove dev dependencies
+RUN pnpm prune --prod --filter backend
 
 ## to build directory
 WORKDIR /app/backend/dist
