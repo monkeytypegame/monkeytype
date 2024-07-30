@@ -207,7 +207,9 @@ async function updateResults(searchText: string): Promise<void> {
     resultsList.append(quoteSearchResult);
   });
 
-  const searchResults = modal.getModal().querySelectorAll(".searchResult");
+  const searchResults = modal
+    .getModal()
+    .querySelectorAll<HTMLElement>(".searchResult");
   for (const searchResult of searchResults) {
     const quoteId = parseInt(searchResult.dataset["quoteId"] as string);
     searchResult

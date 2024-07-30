@@ -109,7 +109,7 @@ export default class SettingsGroup<T extends ConfigValue> {
       `.pageSettings .section[data-config-name='${this.configName}'] button`
     ).removeClass("active");
     if (this.mode === "select") {
-      const select = document.querySelector(
+      const select = document.querySelector<HTMLSelectElement>(
         `.pageSettings .section[data-config-name='${this.configName}'] select`
       );
 
@@ -131,7 +131,7 @@ export default class SettingsGroup<T extends ConfigValue> {
         `.pageSettings .section[data-config-name='${this.configName}'] button[data-config-value='${this.configValue}']`
       ).addClass("active");
     } else if (this.mode === "range") {
-      const range = document.querySelector(
+      const range = document.querySelector<HTMLInputElement>(
         `.pageSettings .section[data-config-name='${this.configName}'] input[type=range]`
       );
       const rangeValue = document.querySelector(
