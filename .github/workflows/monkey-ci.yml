@@ -77,7 +77,7 @@ jobs:
             pnpm-lock.yaml
 
       - name: Cache node modules
-        id: cache-npm
+        id: cache-pnpm
         uses: actions/cache@v4
         env:
           cache-name: node-modules
@@ -85,11 +85,11 @@ jobs:
           path: ~/.pnpm
           key: ${{ runner.os }}-${{ env.NODE_VERSION }}-build-${{ env.cache-name }}-${{ hashFiles('pnpm-lock.yaml') }}
 
-      - if: ${{ steps.cache-npm.outputs.cache-hit != 'true' }}
+      - if: ${{ steps.cache-pnpm.outputs.cache-hit != 'true' }}
         name: Full checkout
         uses: actions/checkout@v4
 
-      - if: ${{ steps.cache-npm.outputs.cache-hit != 'true' }}
+      - if: ${{ steps.cache-pnpm.outputs.cache-hit != 'true' }}
         name: Set up Node.js
         uses: actions/setup-node@v4
         with:
@@ -100,7 +100,7 @@ jobs:
         with:
           version: ${{ env.PNPM_VERSION }}
 
-      - if: ${{ steps.cache-npm.outputs.cache-hit != 'true' }}
+      - if: ${{ steps.cache-pnpm.outputs.cache-hit != 'true' }}
         name: Install dependencies
         run: pnpm install
 
@@ -118,12 +118,12 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
 
       - name: Cache node modules
-        id: cache-npm
+        id: cache-pnpm
         uses: actions/cache@v4
         env:
           cache-name: node-modules
         with:
-          path: ~/.npm
+          path: ~/.pnpm
           key: ${{ runner.os }}-${{ env.NODE_VERSION }}-build-${{ env.cache-name }}-${{ hashFiles('pnpm-lock.yaml') }}
 
       - name: Setup pnpm
@@ -131,7 +131,7 @@ jobs:
         with:
           version: ${{ env.PNPM_VERSION }}
 
-      - if: ${{ steps.cache-npm.outputs.cache-hit != 'true' }}
+      - if: ${{ steps.cache-pnpm.outputs.cache-hit != 'true' }}
         name: Install dependencies
         run: pnpm install
 
@@ -169,12 +169,12 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
 
       - name: Cache node modules
-        id: cache-npm
+        id: cache-pnpm
         uses: actions/cache@v4
         env:
           cache-name: node-modules
         with:
-          path: ~/.npm
+          path: ~/.pnpm
           key: ${{ runner.os }}-${{ env.NODE_VERSION }}-build-${{ env.cache-name }}-${{ hashFiles('pnpm-lock.yaml') }}
 
       - name: Setup pnpm
@@ -182,7 +182,7 @@ jobs:
         with:
           version: ${{ env.PNPM_VERSION }}
 
-      - if: ${{ steps.cache-npm.outputs.cache-hit != 'true' }}
+      - if: ${{ steps.cache-pnpm.outputs.cache-hit != 'true' }}
         name: Install dependencies
         run: pnpm install
 
@@ -214,12 +214,12 @@ jobs:
         run: mv ./firebase-config-example.ts ./firebase-config.ts && cp ./firebase-config.ts ./firebase-config-live.ts
 
       - name: Cache node modules
-        id: cache-npm
+        id: cache-pnpm
         uses: actions/cache@v4
         env:
           cache-name: node-modules
         with:
-          path: ~/.npm
+          path: ~/.pnpm
           key: ${{ runner.os }}-${{ env.NODE_VERSION }}-build-${{ env.cache-name }}-${{ hashFiles('pnpm-lock.yaml') }}
 
       - name: Setup pnpm
@@ -227,7 +227,7 @@ jobs:
         with:
           version: ${{ env.PNPM_VERSION }}
 
-      - if: ${{ steps.cache-npm.outputs.cache-hit != 'true' }}
+      - if: ${{ steps.cache-pnpm.outputs.cache-hit != 'true' }}
         name: Install dependencies
         run: pnpm install
 
@@ -269,12 +269,12 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
 
       - name: Cache node modules
-        id: cache-npm
+        id: cache-pnpm
         uses: actions/cache@v4
         env:
           cache-name: node-modules
         with:
-          path: ~/.npm
+          path: ~/.pnpm
           key: ${{ runner.os }}-${{ env.NODE_VERSION }}-build-${{ env.cache-name }}-${{ hashFiles('pnpm-lock.yaml') }}
 
       - name: Setup pnpm
@@ -282,7 +282,7 @@ jobs:
         with:
           version: ${{ env.PNPM_VERSION }}
 
-      - if: ${{ steps.cache-npm.outputs.cache-hit != 'true' }}
+      - if: ${{ steps.cache-pnpm.outputs.cache-hit != 'true' }}
         name: Install dependencies
         run: pnpm install
 
@@ -316,12 +316,12 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
 
       - name: Cache node modules
-        id: cache-npm
+        id: cache-pnpm
         uses: actions/cache@v4
         env:
           cache-name: node-modules
         with:
-          path: ~/.npm
+          path: ~/.pnpm
           key: ${{ runner.os }}-${{ env.NODE_VERSION }}-build-${{ env.cache-name }}-${{ hashFiles('pnpm-lock.yaml') }}
 
       - name: Setup pnpm
@@ -329,7 +329,7 @@ jobs:
         with:
           version: ${{ env.PNPM_VERSION }}
 
-      - if: ${{ steps.cache-npm.outputs.cache-hit != 'true' }}
+      - if: ${{ steps.cache-pnpm.outputs.cache-hit != 'true' }}
         name: Install dependencies
         run: pnpm install
 
