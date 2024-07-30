@@ -1,5 +1,7 @@
 import * as IpAddresses from "../../src/ts/utils/ip-addresses";
 
+const IP_GENERATE_COUNT = 10;
+
 describe("IP Addresses", () => {
   describe("Compressing IPv6", () => {
     it("should compress ipv6 according to the official rules", () => {
@@ -28,6 +30,32 @@ describe("IP Addresses", () => {
         expect(IpAddresses.compressIpv6(rawIps[i] as string)).toEqual(
           compressedIps[i]
         );
+      }
+    });
+  });
+
+  describe("Generating IPv4", () => {
+    it("should generate valid IPv4 addresses", () => {
+      // We generate a set number of ip addresses dictated by the constant
+      for (let i = 0; i < IP_GENERATE_COUNT; i++) {
+        const ipAddress = IpAddresses.getRandomIPv4address();
+        const splitIpAddress = ipAddress.split(".");
+
+        expect(splitIpAddress.length, "Make sure there are four parts").toEqual(
+          4
+        );
+
+        for (let j = 0; j < 4; j++) {
+          const currentNumber = Number(splitIpAddress[j]);
+          expect(
+            currentNumber,
+            "Each part of an IPv4 should be >= 0"
+          ).toBeGreaterThanOrEqual(0);
+          expect(
+            currentNumber,
+            "Each part of an IPv4 should be <= 255"
+          ).toBeLessThanOrEqual(255);
+        }
       }
     });
   });
