@@ -1,6 +1,9 @@
 import { z } from "zod";
-import { DifficultySchema } from "./configs";
 import { StringNumberSchema } from "./util";
+
+//used by config and shared
+export const DifficultySchema = z.enum(["normal", "expert", "master"]);
+export type Difficulty = z.infer<typeof DifficultySchema>;
 
 //used by user and config
 export const PersonalBestSchema = z.object({
@@ -31,8 +34,8 @@ export const PersonalBestsSchema = z.object({
 export type PersonalBests = z.infer<typeof PersonalBestsSchema>;
 
 //used by user and config
-export type Mode = keyof PersonalBests;
-export const ModeSchema = z.custom<Mode>();
+export const ModeSchema = PersonalBestsSchema.keyof();
+export type Mode = z.infer<typeof ModeSchema>;
 export type Mode2<M extends Mode> = M extends M
   ? keyof PersonalBests[M]
   : never;

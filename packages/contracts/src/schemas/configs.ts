@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { token } from "./util";
-import { ModeSchema } from "./shared";
+import * as Shared from "./shared";
 
 export const SmoothCaretSchema = z.enum(["off", "slow", "medium", "fast"]);
 export type SmoothCaret = z.infer<typeof SmoothCaretSchema>;
@@ -206,8 +206,8 @@ export type ShowAverage = z.infer<typeof ShowAverageSchema>;
 export const ColorHexValueSchema = z.string().regex(/^#([\da-f]{3}){1,2}$/i);
 export type ColorHexValue = z.infer<typeof ColorHexValueSchema>;
 
-export const DifficultySchema = z.enum(["normal", "expert", "master"]);
-export type Difficulty = z.infer<typeof DifficultySchema>;
+export const DifficultySchema = Shared.DifficultySchema;
+export type Difficulty = Shared.Difficulty;
 
 export const CustomThemeColorsSchema = z.tuple([
   ColorHexValueSchema,
@@ -305,7 +305,7 @@ export const ConfigSchema = z
     numbers: z.boolean(),
     words: WordCountSchema,
     time: TimeConfigSchema,
-    mode: ModeSchema,
+    mode: Shared.ModeSchema,
     quoteLength: QuoteLengthConfigSchema,
     language: LanguageSchema,
     fontSize: FontSizeSchema,
