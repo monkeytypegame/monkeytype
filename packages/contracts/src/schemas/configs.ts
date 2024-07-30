@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { token } from "./util";
+import * as Shared from "./shared";
 
 export const SmoothCaretSchema = z.enum(["off", "slow", "medium", "fast"]);
 export type SmoothCaret = z.infer<typeof SmoothCaretSchema>;
@@ -208,16 +209,8 @@ export type ColorHexValue = z.infer<typeof ColorHexValueSchema>;
 export const DifficultySchema = z.enum(["normal", "expert", "master"]);
 export type Difficulty = z.infer<typeof DifficultySchema>;
 
-export const NumberModeSchema = z.enum(["time", "words", "quote"]);
-export const CustomModeSchema = z.enum(["custom"]);
-export const ZenModeSchema = z.enum(["zen"]);
-
-export const ModeSchema = z.union([
-  NumberModeSchema,
-  CustomModeSchema,
-  ZenModeSchema,
-]);
-export type Mode = z.infer<typeof ModeSchema>;
+export const ModeSchema = Shared.ModeSchema;
+export type Mode = Shared.Mode;
 
 export const CustomThemeColorsSchema = z.tuple([
   ColorHexValueSchema,
