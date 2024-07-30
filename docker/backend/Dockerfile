@@ -1,5 +1,5 @@
 
-FROM node:18.20.4-alpine3.19
+FROM node:20.16.0-alpine3.19
 
 ##install wget, used by the applyConfig script
 RUN apk add wget
