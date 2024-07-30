@@ -18,7 +18,7 @@ import * as TestInput from "../test-input";
 import * as WeakSpot from "../weak-spot";
 import { getPoem } from "../poetry";
 import { getSection } from "../wikipedia";
-import * as IPGenerator from "../ip-addresses";
+import * as IPAddresses from "../../utils/ip-addresses";
 import {
   areFunboxesCompatible,
   checkFunboxForcedConfigs,
@@ -459,12 +459,12 @@ FunboxList.setFunboxFunctions("pseudolang", {
 
 FunboxList.setFunboxFunctions("IPv4", {
   getWord(): string {
-    return IPGenerator.getRandomIPv4address();
+    return IPAddresses.getRandomIPv4address();
   },
   punctuateWord(word: string): string {
     let w = word;
     if (Math.random() < 0.25) {
-      w = IPGenerator.addressToCIDR(word);
+      w = IPAddresses.addressToCIDR(word);
     }
     return w;
   },
@@ -475,17 +475,17 @@ FunboxList.setFunboxFunctions("IPv4", {
 
 FunboxList.setFunboxFunctions("IPv6", {
   getWord(): string {
-    return IPGenerator.getRandomIPv6address();
+    return IPAddresses.getRandomIPv6address();
   },
   punctuateWord(word: string): string {
     let w = word;
     if (Math.random() < 0.25) {
-      w = IPGenerator.addressToCIDR(word);
+      w = IPAddresses.addressToCIDR(word);
     }
     // Compress
     if (w.includes(":")) {
       // console.log("Original IP: " + w);
-      w = Misc.compressIpv6(w);
+      w = IPAddresses.compressIpv6(w);
       // console.log("Compressed IP: " + w);
     }
     return w;
