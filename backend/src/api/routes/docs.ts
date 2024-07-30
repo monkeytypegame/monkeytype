@@ -20,7 +20,7 @@ router.use("/v2/internal.json", (req, res) => {
   res.sendFile("api/openapi.json", { root });
 });
 
-router.use("/v2/public", (req, res) => {
+router.use(["/v2/public", "/v2/"], (req, res) => {
   res.sendFile("api/public.html", { root });
 });
 
