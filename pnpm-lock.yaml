@@ -83,6 +83,9 @@ importers:
       '@monkeytype/contracts':
         specifier: workspace:*
         version: link:../packages/contracts
+      '@ts-rest/core':
+        specifier: 3.45.2
+        version: 3.45.2(zod@3.23.8)
       '@ts-rest/express':
         specifier: 3.45.2
         version: 3.45.2(express@4.19.2)(zod@3.23.8)
@@ -185,6 +188,9 @@ importers:
       winston:
         specifier: 3.6.0
         version: 3.6.0
+      zod:
+        specifier: 3.23.8
+        version: 3.23.8
     devDependencies:
       '@monkeytype/eslint-config':
         specifier: workspace:*
@@ -294,6 +300,9 @@ importers:
       '@monkeytype/contracts':
         specifier: workspace:*
         version: link:../packages/contracts
+      '@ts-rest/core':
+        specifier: 3.45.2
+        version: 3.45.2(zod@3.23.8)
       axios:
         specifier: 1.6.4
         version: 1.6.4(debug@4.3.6)
@@ -360,6 +369,9 @@ importers:
       throttle-debounce:
         specifier: 5.0.2
         version: 5.0.2
+      zod:
+        specifier: 3.23.8
+        version: 3.23.8
     devDependencies:
       '@fortawesome/fontawesome-free':
         specifier: 5.15.4
@@ -11054,7 +11066,7 @@ snapshots:
       '@types/node': 20.5.1
       chalk: 4.1.2
       cosmiconfig: 8.3.6(typescript@5.5.3)
-      cosmiconfig-typescript-loader: 4.4.0(@types/node@20.5.1)(cosmiconfig@8.3.6(typescript@5.3.3))(ts-node@10.9.2(@types/node@20.5.1)(typescript@5.3.3))(typescript@5.5.3)
+      cosmiconfig-typescript-loader: 4.4.0(@types/node@20.5.1)(cosmiconfig@8.3.6(typescript@5.5.3))(ts-node@10.9.2(@types/node@20.5.1)(typescript@5.5.3))(typescript@5.5.3)
       lodash.isplainobject: 4.0.6
       lodash.merge: 4.6.2
       lodash.uniq: 4.5.0
@@ -14238,7 +14250,7 @@ snapshots:
       object-assign: 4.1.1
       vary: 1.1.2
 
-  cosmiconfig-typescript-loader@4.4.0(@types/node@20.5.1)(cosmiconfig@8.3.6(typescript@5.3.3))(ts-node@10.9.2(@types/node@20.5.1)(typescript@5.3.3))(typescript@5.5.3):
+  cosmiconfig-typescript-loader@4.4.0(@types/node@20.5.1)(cosmiconfig@8.3.6(typescript@5.5.3))(ts-node@10.9.2(@types/node@20.5.1)(typescript@5.5.3))(typescript@5.5.3):
     dependencies:
       '@types/node': 20.5.1
       cosmiconfig: 8.3.6(typescript@5.5.3)

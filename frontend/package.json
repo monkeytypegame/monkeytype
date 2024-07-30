@@ -71,6 +71,7 @@
   "dependencies": {
     "@date-fns/utc": "1.2.0",
     "@monkeytype/contracts": "workspace:*",
+    "@ts-rest/core": "3.45.2",
     "axios": "1.6.4",
     "canvas-confetti": "1.5.1",
     "chart.js": "3.7.1",
@@ -91,8 +92,9 @@
     "lz-ts": "1.1.2",
     "object-hash": "3.0.0",
     "slim-select": "2.8.1",
+    "stemmer": "2.0.1",
     "throttle-debounce": "5.0.2",
-    "stemmer": "2.0.1"
+    "zod": "3.23.8"
   },
   "overrides": {
     "madge": {
