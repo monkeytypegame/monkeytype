@@ -1,6 +1,6 @@
 import * as IpAddresses from "../../src/ts/utils/ip-addresses";
 
-const IP_GENERATE_COUNT = 10;
+const IP_GENERATE_COUNT = 1000;
 
 describe("IP Addresses", () => {
   describe("Compressing IPv6", () => {
