@@ -1875,10 +1875,7 @@ export async function setCustomLayoutfluid(
     return false;
   }
 
-  const customLayoutfluid = trimmed.replace(
-    / /g,
-    "#"
-  ) as ConfigSchemas.CustomLayoutFluid;
+  const customLayoutfluid = trimmed.replace(/ /g, "#");
 
   config.customLayoutfluid = customLayoutfluid;
   saveToLocalStorage("customLayoutfluid", nosave);

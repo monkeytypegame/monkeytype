@@ -186,10 +186,8 @@ async function update(options: UpdateOptions): Promise<void> {
       $(".page.pageProfile .error .message").text(message);
     } else if (response.status !== 200) {
       // $(".page.pageProfile .failedToLoad").removeClass("hidden");
-      return Notifications.add(
-        "Failed to load profile: " + response.message,
-        -1
-      );
+      Notifications.add("Failed to load profile: " + response.message, -1);
+      return;
     } else {
       window.history.replaceState(null, "", `/profile/${response.data.name}`);
       await Profile.update("profile", response.data);

@@ -209,7 +209,7 @@ async function updateResults(searchText: string): Promise<void> {
 
   const searchResults = modal
     .getModal()
-    .querySelectorAll(".searchResult") as NodeListOf<HTMLElement>;
+    .querySelectorAll<HTMLElement>(".searchResult");
   for (const searchResult of searchResults) {
     const quoteId = parseInt(searchResult.dataset["quoteId"] as string);
     searchResult
@@ -325,7 +325,7 @@ function hide(clearChain = false): void {
 function apply(val: number): void {
   if (isNaN(val)) {
     val = parseInt(
-      (document.getElementById("searchBox") as HTMLInputElement).value as string
+      (document.getElementById("searchBox") as HTMLInputElement).value
     );
   }
   if (val !== null && !isNaN(val) && val >= 0) {

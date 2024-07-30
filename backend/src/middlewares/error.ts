@@ -98,13 +98,14 @@ async function errorHandlingMiddleware(
       delete monkeyResponse.data.errorId;
     }
 
-    return handleMonkeyResponse(monkeyResponse, res);
+    handleMonkeyResponse(monkeyResponse, res);
+    return;
   } catch (e) {
     Logger.error("Error handling middleware failed.");
     Logger.error(e);
   }
 
-  return handleMonkeyResponse(
+  handleMonkeyResponse(
     new MonkeyResponse(
       "Something went really wrong, please contact support.",
       undefined,

@@ -55,9 +55,7 @@ export function verify(result: Result<Mode>): string | null {
         for (const requirementType in TestState.activeChallenge.requirements) {
           if (!requirementsMet) return null;
           const requirementValue =
-            TestState.activeChallenge.requirements[
-              requirementType as keyof typeof TestState.activeChallenge.requirements
-            ];
+            TestState.activeChallenge.requirements[requirementType];
 
           if (requirementValue === undefined) {
             throw new Error("Requirement value is undefined");
