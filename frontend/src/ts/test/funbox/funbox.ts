@@ -484,9 +484,7 @@ FunboxList.setFunboxFunctions("IPv6", {
     }
     // Compress
     if (w.includes(":")) {
-      // console.log("Original IP: " + w);
       w = IPAddresses.compressIpv6(w);
-      // console.log("Compressed IP: " + w);
     }
     return w;
   },
