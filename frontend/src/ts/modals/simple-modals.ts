@@ -1468,16 +1468,15 @@ list.generateApeKey = new SimpleModal({
   buttonText: "generate",
   onlineOnly: true,
   execFn: async (_thisPopup, name): Promise<ExecReturn> => {
-    const response = await Ape.apeKeys.generate(name, false);
+    const response = await Ape.apeKeys.add({ body: { name, enabled: false } });
     if (response.status !== 200) {
       return {
         status: -1,
-        message: "Failed to generate key: " + response.message,
+        message: "Failed to generate key: " + response.body.message,
       };
     }
 
-    //if response is 200 data is guaranteed to not be null
-    const data = response.data as Ape.ApeKeys.GenerateApeKey;
+    const data = response.body.data;
 
     const modalChain = modal.getPreviousModalInChain();
     return {
@@ -1543,11 +1542,13 @@ list.deleteApeKey = new SimpleModal({
   buttonText: "delete",
   onlineOnly: true,
   execFn: async (_thisPopup): Promise<ExecReturn> => {
-    const response = await Ape.apeKeys.delete(_thisPopup.parameters[0] ?? "");
+    const response = await Ape.apeKeys.delete({
+      params: { apeKeyId: _thisPopup.parameters[0] ?? "" },
+    });
     if (response.status !== 200) {
       return {
         status: -1,
-        message: "Failed to delete key: " + response.message,
+        message: "Failed to delete key: " + response.body.message,
       };
     }
 
@@ -1574,13 +1575,16 @@ list.editApeKey = new SimpleModal({
   buttonText: "edit",
   onlineOnly: true,
   execFn: async (_thisPopup, input): Promise<ExecReturn> => {
-    const response = await Ape.apeKeys.update(_thisPopup.parameters[0] ?? "", {
-      name: input,
+    const response = await Ape.apeKeys.save({
+      params: { apeKeyId: _thisPopup.parameters[0] ?? "" },
+      body: {
+        name: input,
+      },
     });
     if (response.status !== 200) {
       return {
         status: -1,
-        message: "Failed to update key: " + response.message,
+        message: "Failed to update key: " + response.body.message,
       };
     }
     return {

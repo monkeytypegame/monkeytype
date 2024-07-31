@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { IdSchema } from "./util";
 
 export const ApeKeyUserDefinedSchema = z.object({
   name: z
@@ -14,3 +15,6 @@ export const ApeKeySchema = ApeKeyUserDefinedSchema.extend({
   lastUsedOn: z.number().min(0).or(z.literal(-1)),
 });
 export type ApeKey = z.infer<typeof ApeKeySchema>;
+
+export const ApeKeysSchema = z.record(IdSchema, ApeKeySchema);
+export type ApeKeys = z.infer<typeof ApeKeysSchema>;
