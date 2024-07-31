@@ -3,7 +3,7 @@ import { Router } from "express";
 import { authenticateRequest } from "../../middlewares/auth";
 import * as AdminController from "../controllers/admin";
 import { adminLimit } from "../../middlewares/rate-limit";
-import { sendForgotPasswordEmail, toggleBan } from "../controllers/user";
+import { sendForgotPasswordEmail } from "../controllers/user";
 import joi from "joi";
 import { validate } from "../../middlewares/configuration";
 import { checkIfUserIsAdmin } from "../../middlewares/permission";
@@ -43,7 +43,7 @@ router.post(
       uid: joi.string().required().token(),
     },
   }),
-  asyncHandler(toggleBan)
+  asyncHandler(AdminController.toggleBan)
 );
 
 router.post(
@@ -101,7 +101,7 @@ router.post(
       email: joi.string().email().required(),
     },
   }),
-  asyncHandler(sendForgotPasswordEmail)
+  asyncHandler(AdminController.sendForgotPasswordEmail)
 );
 
 export default router;

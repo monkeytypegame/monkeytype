@@ -160,7 +160,13 @@ export async function sendForgotPasswordEmail(
   req: MonkeyTypes.Request
 ): Promise<MonkeyResponse> {
   const { email } = req.body;
+  await doSendForgotPasswordEmail(email);
+  return new MonkeyResponse(
+    "Password reset request received. If the email is valid, you will receive an email shortly."
+  );
+}
 
+export async function doSendForgotPasswordEmail(email: string): Promise<void> {
   try {
     const uid = (await FirebaseAdmin().auth().getUserByEmail(email)).uid;
     const userInfo = await UserDAL.getPartialUser(
@@ -178,14 +184,7 @@ export async function sendForgotPasswordEmail(
       });
 
     await emailQueue.sendForgotPasswordEmail(email, userInfo.name, link);
-  } catch {
-    return new MonkeyResponse(
-      "Password reset request received. If the email is valid, you will receive an email shortly."
-    );
-  }
-  return new MonkeyResponse(
-    "Password reset request received. If the email is valid, you will receive an email shortly."
-  );
+  } catch {}
 }
 
 export async function deleteUser(

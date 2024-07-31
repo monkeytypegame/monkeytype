@@ -1,4 +1,4 @@
-import request from "supertest";
+import request, { Test as SuperTest } from "supertest";
 import app from "../../../src/app";
 import * as ApeKeyDal from "../../../src/dal/ape-keys";
 import { ObjectId } from "mongodb";
@@ -65,31 +65,13 @@ describe("ApeKeyController", () => {
       expect(getApeKeysMock).toHaveBeenCalledWith(uid);
     });
     it("should fail if apeKeys endpoints are disabled", async () => {
-      //GIVEN
-      await enableApeKeysEndpoints(false);
-
-      //WHEN
-      const { body } = await mockApp
-        .get("/ape-keys")
-        .set("authorization", `Uid ${uid}`)
-        .expect(503);
-
-      //THEN
-      expect(body.message).toEqual("ApeKeys are currently disabled.");
+      await expectFailForDisabledEndpoint(
+        mockApp.get("/ape-keys").set("authorization", `Uid ${uid}`)
+      );
     });
     it("should fail if user has no apeKey permissions", async () => {
-      //GIVEN
-
-      getUserMock.mockResolvedValue(user(uid, { canManageApeKeys: false }));
-      //WHEN
-      const { body } = await mockApp
-        .get("/ape-keys")
-        .set("authorization", `Uid ${uid}`)
-        .expect(403);
-
-      //THEN
-      expect(body.message).toEqual(
-        "You have lost access to ape keys, please contact support"
+      await expectFailForNoPermissions(
+        mockApp.get("/ape-keys").set("authorization", `Uid ${uid}`)
       );
     });
   });
@@ -190,33 +172,19 @@ describe("ApeKeyController", () => {
       );
     });
     it("should fail if apeKeys endpoints are disabled", async () => {
-      //GIVEN
-      await enableApeKeysEndpoints(false);
-
-      //WHEN
-      const { body } = await mockApp
-        .post("/ape-keys")
-        .send({ name: "test", enabled: false })
-        .set("authorization", `Uid ${uid}`)
-        .expect(503);
-
-      //THEN
-      expect(body.message).toEqual("ApeKeys are currently disabled.");
+      await expectFailForDisabledEndpoint(
+        mockApp
+          .post("/ape-keys")
+          .send({ name: "test", enabled: false })
+          .set("authorization", `Uid ${uid}`)
+      );
     });
     it("should fail if user has no apeKey permissions", async () => {
-      //GIVEN
-      getUserMock.mockResolvedValue(user(uid, { canManageApeKeys: false }));
-
-      //WHEN
-      const { body } = await mockApp
-        .post("/ape-keys")
-        .send({ name: "test", enabled: false })
-        .set("authorization", `Uid ${uid}`)
-        .expect(403);
-
-      //THEN
-      expect(body.message).toEqual(
-        "You have lost access to ape keys, please contact support"
+      await expectFailForNoPermissions(
+        mockApp
+          .post("/ape-keys")
+          .send({ name: "test", enabled: false })
+          .set("authorization", `Uid ${uid}`)
       );
     });
   });
@@ -290,33 +258,19 @@ describe("ApeKeyController", () => {
       });
     });
     it("should fail if apeKeys endpoints are disabled", async () => {
-      //GIVEN
-      await enableApeKeysEndpoints(false);
-
-      //WHEN
-      const { body } = await mockApp
-        .patch(`/ape-keys/${apeKeyId}`)
-        .send({ name: "test", enabled: false })
-        .set("authorization", `Uid ${uid}`)
-        .expect(503);
-
-      //THEN
-      expect(body.message).toEqual("ApeKeys are currently disabled.");
+      await expectFailForDisabledEndpoint(
+        mockApp
+          .patch(`/ape-keys/${apeKeyId}`)
+          .send({ name: "test", enabled: false })
+          .set("authorization", `Uid ${uid}`)
+      );
     });
     it("should fail if user has no apeKey permissions", async () => {
-      //GIVEN
-      getUserMock.mockResolvedValue(user(uid, { canManageApeKeys: false }));
-
-      //WHEN
-      const { body } = await mockApp
-        .patch(`/ape-keys/${apeKeyId}`)
-        .send({ name: "test", enabled: false })
-        .set("authorization", `Uid ${uid}`)
-        .expect(403);
-
-      //THEN
-      expect(body.message).toEqual(
-        "You have lost access to ape keys, please contact support"
+      await expectFailForNoPermissions(
+        mockApp
+          .patch(`/ape-keys/${apeKeyId}`)
+          .send({ name: "test", enabled: false })
+          .set("authorization", `Uid ${uid}`)
       );
     });
   });
@@ -352,35 +306,33 @@ describe("ApeKeyController", () => {
         .expect(404);
     });
     it("should fail if apeKeys endpoints are disabled", async () => {
-      //GIVEN
-      await enableApeKeysEndpoints(false);
-
-      //WHEN
-      const { body } = await mockApp
-        .delete(`/ape-keys/${apeKeyId}`)
-        .set("authorization", `Uid ${uid}`)
-        .expect(503);
-
-      //THEN
-      expect(body.message).toEqual("ApeKeys are currently disabled.");
+      await expectFailForDisabledEndpoint(
+        mockApp
+          .delete(`/ape-keys/${apeKeyId}`)
+          .set("authorization", `Uid ${uid}`)
+      );
     });
 
     it("should fail if user has no apeKey permissions", async () => {
-      //GIVEN
-      getUserMock.mockResolvedValue(user(uid, { canManageApeKeys: false }));
-
-      //WHEN
-      const { body } = await mockApp
-        .delete(`/ape-keys/${apeKeyId}`)
-        .set("authorization", `Uid ${uid}`)
-        .expect(403);
-
-      //THEN
-      expect(body.message).toEqual(
-        "You have lost access to ape keys, please contact support"
+      await expectFailForNoPermissions(
+        mockApp
+          .delete(`/ape-keys/${apeKeyId}`)
+          .set("authorization", `Uid ${uid}`)
       );
     });
   });
+  async function expectFailForNoPermissions(call: SuperTest): Promise<void> {
+    getUserMock.mockResolvedValue(user(uid, { canManageApeKeys: false }));
+    const { body } = await call.expect(403);
+    expect(body.message).toEqual(
+      "You have lost access to ape keys, please contact support"
+    );
+  }
+  async function expectFailForDisabledEndpoint(call: SuperTest): Promise<void> {
+    await enableApeKeysEndpoints(false);
+    const { body } = await call.expect(503);
+    expect(body.message).toEqual("ApeKeys are currently disabled.");
+  }
 });
 
 function apeKeyDb(
