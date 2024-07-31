@@ -66,6 +66,8 @@ export async function editApeKey(
   name?: string,
   enabled?: boolean
 ): Promise<void> {
+  //check if there is a change
+  if (name === undefined && enabled === undefined) return;
   const apeKeyUpdates = {
     name,
     enabled,

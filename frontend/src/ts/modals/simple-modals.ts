@@ -214,7 +214,7 @@ class SimpleModal {
     this.title = options.title;
     this.inputs = options.inputs ?? [];
     this.text = options.text;
-    this.textAllowHtml = options.textAllowHtml === true;
+    this.textAllowHtml = options.textAllowHtml ?? false;
     this.wrapper = modal.getWrapper();
     this.element = modal.getModal();
     this.buttonText = options.buttonText;
