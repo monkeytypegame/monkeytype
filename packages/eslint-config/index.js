@@ -29,6 +29,8 @@ module.exports = {
     "no-empty": ["error", { allowEmptyCatch: true }],
     "no-var": 2,
     "no-duplicate-imports": ["error"],
+    "no-constant-condition": ["error"],
+    "no-constant-binary-expression": "error",
     "import/no-duplicates": "off",
     "import/no-unresolved": [
       "error",
