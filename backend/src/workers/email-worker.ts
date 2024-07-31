@@ -8,6 +8,7 @@ import EmailQueue, {
 } from "../queues/email-queue";
 import { sendEmail } from "../init/email-client";
 import { recordTimeToCompleteJob } from "../utils/prometheus";
+import { addLog } from "../dal/logs";
 
 async function jobHandler(job: Job): Promise<void> {
   const type: EmailType = job.data.type;
@@ -21,7 +22,7 @@ async function jobHandler(job: Job): Promise<void> {
   const result = await sendEmail(type, email, ctx);
 
   if (!result.success) {
-    void Logger.logToDb("error_sending_email", {
+    void addLog("error_sending_email", {
       type,
       email,
       ctx: JSON.stringify(ctx),
