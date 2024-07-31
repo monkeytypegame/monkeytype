@@ -163,6 +163,7 @@ type SimpleModalOptions = {
   title: string;
   inputs?: CommonInputType[];
   text?: string;
+  textAllowHtml?: boolean;
   buttonText: string;
   execFn: (thisPopup: SimpleModal, ...params: string[]) => Promise<ExecReturn>;
   beforeInitFn?: (thisPopup: SimpleModal) => void;
@@ -197,6 +198,7 @@ class SimpleModal {
   title: string;
   inputs: CommonInputType[];
   text?: string;
+  textAllowHtml: boolean;
   buttonText: string;
   execFn: (thisPopup: SimpleModal, ...params: string[]) => Promise<ExecReturn>;
   beforeInitFn: ((thisPopup: SimpleModal) => void) | undefined;
@@ -212,6 +214,7 @@ class SimpleModal {
     this.title = options.title;
     this.inputs = options.inputs ?? [];
     this.text = options.text;
+    this.textAllowHtml = options.textAllowHtml === true;
     this.wrapper = modal.getWrapper();
     this.element = modal.getModal();
     this.buttonText = options.buttonText;
@@ -236,7 +239,11 @@ class SimpleModal {
     this.reset();
     el.attr("data-popup-id", this.id);
     el.find(".title").text(this.title);
-    el.find(".text").text(this.text ?? "");
+    if (this.textAllowHtml) {
+      el.find(".text").html(this.text ?? "");
+    } else {
+      el.find(".text").text(this.text ?? "");
+    }
 
     this.initInputs();
 
@@ -1507,7 +1514,10 @@ list.viewApeKey = new SimpleModal({
       initVal: "",
     },
   ],
-  text: "This is your new Ape Key. Please keep it safe. You will only see it once!\nNote: Ape Keys are disabled by default, you need to enable them before they can be used.",
+  textAllowHtml: true,
+  text: `
+    This is your new Ape Key. Please keep it safe. You will only see it once!<br><br>
+    <strong>Note:</strong> Ape Keys are disabled by default, you need to enable them before they can be used.`,
   buttonText: "close",
   hideCallsExec: true,
   execFn: async (_thisPopup): Promise<ExecReturn> => {
