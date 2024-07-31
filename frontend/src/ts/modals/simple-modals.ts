@@ -1507,7 +1507,7 @@ list.viewApeKey = new SimpleModal({
       initVal: "",
     },
   ],
-  text: "This is your new Ape Key. Please keep it safe. You will only see it once!",
+  text: "This is your new Ape Key. Please keep it safe. You will only see it once!\nNote: Ape Keys are disabled by default, you need to enable them before they can be used.",
   buttonText: "close",
   hideCallsExec: true,
   execFn: async (_thisPopup): Promise<ExecReturn> => {
