@@ -34,8 +34,7 @@ export async function getApeKey(
 }
 
 export async function countApeKeysForUser(uid: string): Promise<number> {
-  const apeKeys = await getApeKeys(uid);
-  return _.size(apeKeys);
+  return getApeKeysCollection().countDocuments({ uid });
 }
 
 export async function addApeKey(apeKey: MonkeyTypes.ApeKeyDB): Promise<string> {
