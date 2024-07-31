@@ -159,7 +159,13 @@ export async function sendForgotPasswordEmail(
   req: MonkeyTypes.Request
 ): Promise<MonkeyResponse> {
   const { email } = req.body;
+  await doSendForgotPasswordEmail(email);
+  return new MonkeyResponse(
+    "Password reset request received. If the email is valid, you will receive an email shortly."
+  );
+}
 
+export async function doSendForgotPasswordEmail(email: string): Promise<void> {
   try {
     const uid = (await FirebaseAdmin().auth().getUserByEmail(email)).uid;
     const userInfo = await UserDAL.getPartialUser(
@@ -177,14 +183,7 @@ export async function sendForgotPasswordEmail(
       });
 
     await emailQueue.sendForgotPasswordEmail(email, userInfo.name, link);
-  } catch {
-    return new MonkeyResponse(
-      "Password reset request received. If the email is valid, you will receive an email shortly."
-    );
-  }
-  return new MonkeyResponse(
-    "Password reset request received. If the email is valid, you will receive an email shortly."
-  );
+  } catch {}
 }
 
 export async function deleteUser(
@@ -958,31 +957,6 @@ export async function setStreakHourOffset(
   await UserDAL.setStreakHourOffset(uid, hourOffset);
 
   return new MonkeyResponse("Streak hour offset set");
-}
-
-export async function toggleBan(
-  req: MonkeyTypes.Request
-): Promise<MonkeyResponse> {
-  const { uid } = req.body;
-
-  const user = await UserDAL.getPartialUser(uid, "toggle ban", [
-    "banned",
-    "discordId",
-  ]);
-  const discordId = user.discordId;
-  const discordIdIsValid = discordId !== undefined && discordId !== "";
-
-  if (user.banned) {
-    await UserDAL.setBanned(uid, false);
-    if (discordIdIsValid) await GeorgeQueue.userBanned(discordId, false);
-  } else {
-    await UserDAL.setBanned(uid, true);
-    if (discordIdIsValid) await GeorgeQueue.userBanned(discordId, true);
-  }
-
-  return new MonkeyResponse(`Ban toggled`, {
-    banned: !user.banned,
-  });
 }
 
 export async function revokeAllTokens(

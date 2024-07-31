@@ -2,9 +2,31 @@ import { MonkeyResponse } from "../../utils/monkey-response";
 import { buildMonkeyMail } from "../../utils/monkey-mail";
 import * as UserDAL from "../../dal/user";
 import * as ReportDAL from "../../dal/report";
+import GeorgeQueue from "../../queues/george-queue";
+import { doSendForgotPasswordEmail } from "./user";
 
 export async function test(): Promise<MonkeyResponse> {
   return new MonkeyResponse("OK");
+}
+
+export async function toggleBan(
+  req: MonkeyTypes.Request
+): Promise<MonkeyResponse> {
+  const { uid } = req.body;
+
+  const user = await UserDAL.getPartialUser(uid, "toggle ban", [
+    "banned",
+    "discordId",
+  ]);
+  const discordId = user.discordId;
+  const discordIdIsValid = discordId !== undefined && discordId !== "";
+
+  await UserDAL.setBanned(uid, !user.banned);
+  if (discordIdIsValid) await GeorgeQueue.userBanned(discordId, !user.banned);
+
+  return new MonkeyResponse(`Ban toggled`, {
+    banned: !user.banned,
+  });
 }
 
 export async function acceptReports(
@@ -85,4 +107,14 @@ export async function handleReports(
     }
   }
   return new MonkeyResponse("Reports removed and users notified.");
+}
+
+export async function sendForgotPasswordEmail(
+  req: MonkeyTypes.Request
+): Promise<MonkeyResponse> {
+  const { email } = req.body;
+  await doSendForgotPasswordEmail(email);
+  return new MonkeyResponse(
+    "Password reset request received. If the email is valid, you will receive an email shortly."
+  );
 }
