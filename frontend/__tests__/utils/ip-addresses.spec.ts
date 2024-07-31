@@ -116,7 +116,7 @@ describe("IP Addresses", () => {
     });
 
     it("should convert an IPv6 address to CIDR notation", () => {
-      const ip = "2001:db8:85a3::8a2e:370:7334";
+      const ip = "b70b:ad23:3d4b:23a9:8000:0000:0000:0000";
       const cidr = IpAddresses.addressToCIDR(ip);
       const ipParts = cidr.split("/");
       expect(
