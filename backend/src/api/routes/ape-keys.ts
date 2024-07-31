@@ -15,8 +15,7 @@ const commonMiddleware = [
   }),
   checkUserPermissions({
     criteria: (user) => {
-      // Must be an exact check
-      return user.canManageApeKeys !== false;
+      return user.canManageApeKeys ?? false;
     },
     invalidMessage: "You have lost access to ape keys, please contact support",
   }),
