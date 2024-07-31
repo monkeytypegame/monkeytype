@@ -8,33 +8,45 @@ import {
 } from "./schemas/api";
 import { IdSchema } from "./schemas/util";
 
-export const ToggleBanRequestSchema = z.object({
-  uid: IdSchema,
-});
+export const ToggleBanRequestSchema = z
+  .object({
+    uid: IdSchema,
+  })
+  .strict();
 export type ToggleBanRequest = z.infer<typeof ToggleBanRequestSchema>;
 
 export const ToggleBanResponseSchema = responseWithData(
   z.object({
     banned: z.boolean(),
   })
-);
+).strict();
 export type ToggleBanResponse = z.infer<typeof ToggleBanResponseSchema>;
 
 export const AcceptReportsRequestSchema = z
-  .array(z.object({ reportId: z.string() }).strict())
-  .nonempty();
+  .object({
+    reports: z.array(z.object({ reportId: z.string() }).strict()).nonempty(),
+  })
+  .strict();
 export type AcceptReportsRequest = z.infer<typeof AcceptReportsRequestSchema>;
 
 export const RejectReportsRequestSchema = z
-  .array(
-    z.object({ reportId: z.string(), reason: z.string().optional() }).strict()
-  )
-  .nonempty();
+  .object({
+    reports: z
+      .array(
+        z
+          .object({ reportId: z.string(), reason: z.string().optional() })
+          .strict()
+      )
+      .nonempty(),
+  })
+  .strict();
 export type RejectReportsRequest = z.infer<typeof RejectReportsRequestSchema>;
 
-export const SendForgotPasswordEmailRequestSchema = z.object({
-  email: z.string().email(),
-});
+export const SendForgotPasswordEmailRequestSchema = z
+  .object({
+    email: z.string().email(),
+  })
+  .strict();
 export type SendForgotPasswordEmailRequest = z.infer<
   typeof SendForgotPasswordEmailRequestSchema
 >;
@@ -56,7 +68,7 @@ export const adminContract = c.router(
       description: "Ban an unbanned user or unban a banned user.",
       method: "POST",
       path: "/toggleBan",
-      body: ToggleBanRequestSchema.strict(),
+      body: ToggleBanRequestSchema,
       responses: {
         200: ToggleBanResponseSchema,
       },
@@ -86,7 +98,7 @@ export const adminContract = c.router(
       description: "Send a forgot password email to the given user email",
       method: "POST",
       path: "/sendForgotPasswordEmail",
-      body: SendForgotPasswordEmailRequestSchema.strict(),
+      body: SendForgotPasswordEmailRequestSchema,
       responses: {
         200: MonkeyResponseSchema,
       },
