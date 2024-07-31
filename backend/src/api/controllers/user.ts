@@ -207,6 +207,7 @@ export async function deleteUser(
   //cleanup database
   await Promise.all([
     UserDAL.deleteUser(uid),
+    deleteUserLogs(uid),
     deleteAllApeKeys(uid),
     deleteAllPresets(uid),
     deleteConfig(uid),
@@ -246,7 +247,6 @@ export async function resetUser(
 
   const promises = [
     UserDAL.resetUser(uid),
-    deleteUserLogs(uid),
     deleteAllApeKeys(uid),
     deleteAllPresets(uid),
     deleteAllResults(uid),
