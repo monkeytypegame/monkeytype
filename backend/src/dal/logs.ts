@@ -51,6 +51,6 @@ export async function addImportantLog(
   await insertIntoDb(event, message, uid, true);
 }
 
-export function deleteUserLogs(uid: string): void {
-  void getLogsCollection().deleteMany({ uid });
+export async function deleteUserLogs(uid: string): Promise<void> {
+  await getLogsCollection().deleteMany({ uid });
 }

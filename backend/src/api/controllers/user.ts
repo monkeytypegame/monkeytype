@@ -37,7 +37,7 @@ import {
   UserProfile,
   UserProfileDetails,
 } from "@monkeytype/shared-types";
-import { addImportantLog, addLog } from "../../dal/logs";
+import { addImportantLog, addLog, deleteUserLogs } from "../../dal/logs";
 
 async function verifyCaptcha(captcha: string): Promise<void> {
   if (!(await verify(captcha))) {
@@ -246,6 +246,7 @@ export async function resetUser(
 
   const promises = [
     UserDAL.resetUser(uid),
+    deleteUserLogs(uid),
     deleteAllApeKeys(uid),
     deleteAllPresets(uid),
     deleteAllResults(uid),
