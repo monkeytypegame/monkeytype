@@ -759,6 +759,7 @@ export async function getNextWord(
       }
     } else {
       console.debug("Repeated word: ", repeated);
+      sectionIndex++;
       return repeated;
     }
   }
