@@ -153,11 +153,10 @@ describe("ApeKeyController", () => {
         .expect(422);
 
       //THEN
-      /*TODO: expect(body).toStrictEqual({
-          message: "Invalid request data schema",
-          validationErrors: [],
-        });
-        */
+      expect(body).toStrictEqual({
+        message: "Invalid request data schema",
+        validationErrors: [`"name" Required`, `"enabled" Required`],
+      });
     });
     it("should fail with extra properties", async () => {
       //WHEN
@@ -168,11 +167,10 @@ describe("ApeKeyController", () => {
         .expect(422);
 
       //THEN
-      /*TODO: expect(body).toStrictEqual({
-          message: "Invalid request data schema",
-          validationErrors: [],
-        });
-        */
+      expect(body).toStrictEqual({
+        message: "Invalid request data schema",
+        validationErrors: ["Unrecognized key(s) in object: 'extra'"],
+      });
     });
 
     it("should fail if max apeKeys is reached", async () => {
@@ -286,11 +284,10 @@ describe("ApeKeyController", () => {
         .expect(422);
 
       //THEN
-      /*TODO: expect(body).toStrictEqual({
-          message: "Invalid request data schema",
-          validationErrors: [],
-        });
-        */
+      expect(body).toStrictEqual({
+        message: "Invalid request data schema",
+        validationErrors: ["Unrecognized key(s) in object: 'extra'"],
+      });
     });
     it("should fail if apeKeys endpoints are disabled", async () => {
       //GIVEN
@@ -367,6 +364,7 @@ describe("ApeKeyController", () => {
       //THEN
       expect(body.message).toEqual("ApeKeys are currently disabled.");
     });
+
     it("should fail if user has no apeKey permissions", async () => {
       //GIVEN
       getUserMock.mockResolvedValue(user(uid, { canManageApeKeys: false }));

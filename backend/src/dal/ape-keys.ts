@@ -63,8 +63,8 @@ async function updateApeKey(
 export async function editApeKey(
   uid: string,
   keyId: string,
-  name: string,
-  enabled: boolean
+  name?: string,
+  enabled?: boolean
 ): Promise<void> {
   const apeKeyUpdates = {
     name,
