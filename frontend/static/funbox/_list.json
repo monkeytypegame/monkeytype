@@ -85,8 +85,13 @@
     "canGetPb": false
   },
   {
+    "name": "plus_zero",
+    "info": "React quickly! Only the current word is visible.",
+    "canGetPb": true
+  },
+  {
     "name": "plus_one",
-    "info": "React quickly! Only one future word is visible.",
+    "info": "Only one future word is visible.",
     "canGetPb": true
   },
   {

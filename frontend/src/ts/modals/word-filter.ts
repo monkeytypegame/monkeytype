@@ -2,6 +2,7 @@ import * as Misc from "../utils/misc";
 import * as JSONData from "../utils/json-data";
 import * as CustomText from "../test/custom-text";
 import * as Notifications from "../elements/notifications";
+// @ts-expect-error TODO: update slim-select
 import SlimSelect from "slim-select";
 import AnimatedModal, {
   HideOptions,
@@ -256,7 +257,9 @@ async function apply(set: boolean): Promise<void> {
     return;
   }
 
-  const customText = filteredWords.join(CustomText.delimiter);
+  const customText = filteredWords.join(
+    CustomText.getPipeDelimiter() ? "|" : " "
+  );
 
   hide({
     modalChainData: {

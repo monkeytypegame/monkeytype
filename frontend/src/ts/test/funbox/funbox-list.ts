@@ -117,8 +117,13 @@ const list: MonkeyTypes.FunboxMetadata[] = [
     },
   },
   {
+    name: "plus_zero",
+    info: "React quickly! Only the current word is visible.",
+    properties: ["changesWordsVisibility", "toPush:1", "noInfiniteDuration"],
+  },
+  {
     name: "plus_one",
-    info: "React quickly! Only one future word is visible.",
+    info: "Only one future word is visible.",
     properties: ["changesWordsVisibility", "toPush:2", "noInfiniteDuration"],
   },
   {

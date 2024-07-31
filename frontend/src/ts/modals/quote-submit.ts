@@ -5,8 +5,10 @@ import * as CaptchaController from "../controllers/captcha-controller";
 import * as Strings from "../utils/strings";
 import * as JSONData from "../utils/json-data";
 import Config from "../config";
+// @ts-expect-error TODO: update slim-select
 import SlimSelect from "slim-select";
 import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
+import { CharacterCounter } from "../elements/character-counter";
 
 let dropdownReady = false;
 async function initDropdown(): Promise<void> {
@@ -30,7 +32,8 @@ async function submitQuote(): Promise<void> {
   const captcha = CaptchaController.getResponse("submitQuote");
 
   if (!text || !source || !language) {
-    return Notifications.add("Please fill in all fields", 0);
+    Notifications.add("Please fill in all fields", 0);
+    return;
   }
 
   Loader.show();
@@ -38,14 +41,13 @@ async function submitQuote(): Promise<void> {
   Loader.hide();
 
   if (response.status !== 200) {
-    return Notifications.add("Failed to submit quote: " + response.message, -1);
+    Notifications.add("Failed to submit quote: " + response.message, -1);
+    return;
   }
 
   Notifications.add("Quote submitted.", 1);
   $("#quoteSubmitModal .newQuoteText").val("");
   $("#quoteSubmitModal .newQuoteSource").val("");
-  $("#quoteSubmitModal .characterCount").removeClass("red");
-  $("#quoteSubmitModal .characterCount").text("-");
   CaptchaController.reset("submitQuote");
 }
 
@@ -70,6 +72,8 @@ export async function show(showOptions: ShowOptions): Promise<void> {
       );
       $("#quoteSubmitModal .newQuoteLanguage").trigger("change");
       $("#quoteSubmitModal input").val("");
+
+      new CharacterCounter($("#quoteSubmitModal .newQuoteText"), 250);
     },
   });
 }
@@ -86,15 +90,6 @@ function hide(clearModalChain: boolean): void {
 }
 
 async function setup(modalEl: HTMLElement): Promise<void> {
-  modalEl.querySelector("textarea")?.addEventListener("input", (e) => {
-    const len = (e.target as HTMLTextAreaElement).value.length;
-    $("#quoteSubmitModal .characterCount").text(len);
-    if (len < 60) {
-      $("#quoteSubmitModal .characterCount").addClass("red");
-    } else {
-      $("#quoteSubmitModal .characterCount").removeClass("red");
-    }
-  });
   modalEl.querySelector("button")?.addEventListener("click", () => {
     void submitQuote();
     hide(true);

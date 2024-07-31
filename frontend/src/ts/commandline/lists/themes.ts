@@ -21,7 +21,7 @@ function update(themes: MonkeyTypes.Theme[]): void {
   subgroup.list = [];
   const favs: MonkeyTypes.Command[] = [];
   themes.forEach((theme) => {
-    if ((Config.favThemes as string[]).includes(theme.name)) {
+    if (Config.favThemes.includes(theme.name)) {
       favs.push({
         id: "changeTheme" + capitalizeFirstLetterOfEachWord(theme.name),
         display: theme.name.replace(/_/g, " "),

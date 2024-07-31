@@ -9,7 +9,6 @@ import {
 import Ape from "../ape";
 import { createErrorMessage } from "../utils/misc";
 import * as LoginPage from "../pages/login";
-import * as AllTimeStats from "../account/all-time-stats";
 import * as AccountController from "../controllers/account-controller";
 import * as TestLogic from "../test/test-logic";
 import * as CaptchaController from "../controllers/captcha-controller";
@@ -60,15 +59,17 @@ async function hide(): Promise<void> {
 
 async function apply(): Promise<void> {
   if (!signedInUser) {
-    return Notifications.add(
+    Notifications.add(
       "Missing user credential. Please close the popup and try again.",
       -1
     );
+    return;
   }
 
   const captcha = CaptchaController.getResponse("googleSignUpModal");
   if (!captcha) {
-    return Notifications.add("Please complete the captcha", 0);
+    Notifications.add("Please complete the captcha", 0);
+    return;
   }
 
   disableInput();
@@ -86,7 +87,6 @@ async function apply(): Promise<void> {
     if (response.status === 200) {
       await updateProfile(signedInUser.user, { displayName: name });
       await sendEmailVerification(signedInUser.user);
-      AllTimeStats.clear();
       Notifications.add("Account created", 1);
       $("nav .textButton.account .text").text(name);
       LoginPage.enableInputs();
@@ -192,10 +192,11 @@ const checkNameDebounced = debounce(1000, async () => {
 
   if (response.status !== 200) {
     nameIndicator.show("unavailable");
-    return Notifications.add(
+    Notifications.add(
       "Failed to check name availability: " + response.message,
       -1
     );
+    return;
   }
 });
 
@@ -208,7 +209,8 @@ async function setup(modalEl: HTMLElement): Promise<void> {
     disableButton();
     const val = $("#googleSignUpModal input").val() as string;
     if (val === "") {
-      return nameIndicator.hide();
+      nameIndicator.hide();
+      return;
     } else {
       nameIndicator.show("checking");
       void checkNameDebounced();

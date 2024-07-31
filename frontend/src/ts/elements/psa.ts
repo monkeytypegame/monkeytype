@@ -2,15 +2,21 @@ import Ape from "../ape";
 import { isDevEnvironment } from "../utils/misc";
 import { secondsToString } from "../utils/date-and-time";
 import * as Notifications from "./notifications";
-import format from "date-fns/format";
+import { format } from "date-fns/format";
 import * as Alerts from "./alerts";
+import { PSA } from "@monkeytype/shared-types";
 
 function clearMemory(): void {
   window.localStorage.setItem("confirmedPSAs", JSON.stringify([]));
 }
 
 function getMemory(): string[] {
-  return JSON.parse(window.localStorage.getItem("confirmedPSAs") ?? "[]") ?? [];
+  //TODO verify with zod?
+  return (
+    (JSON.parse(
+      window.localStorage.getItem("confirmedPSAs") ?? "[]"
+    ) as string[]) ?? []
+  );
 }
 
 function setMemory(id: string): void {
@@ -19,20 +25,20 @@ function setMemory(id: string): void {
   window.localStorage.setItem("confirmedPSAs", JSON.stringify(list));
 }
 
-async function getLatest(): Promise<SharedTypes.PSA[] | null> {
+async function getLatest(): Promise<PSA[] | null> {
   const response = await Ape.psas.get();
 
   if (response.status === 500) {
     if (isDevEnvironment()) {
-      Notifications.addBanner(
+      Notifications.addPSA(
         "Dev Info: Backend server not running",
         0,
         "exclamation-triangle",
         false
       );
     } else {
-      Notifications.addBanner(
-        "Looks like the server is experiencing maintenance or some unexpected down time.<br>Check the <a target= '_blank' href='https://monkeytype.instatus.com/'>status page</a> or <a target= '_blank' href='https://twitter.com/monkeytypegame'>Twitter</a> for more information.",
+      Notifications.addPSA(
+        "Looks like the server is experiencing maintenance or some unexpected down time.<br>Check the <a target= '_blank' href='https://monkeytype.instatus.com/'>status page</a> or <a target= '_blank' href='https://x.com/monkeytype'>Twitter</a> for more information.",
         -1,
         "exclamation-triangle",
         false,
@@ -43,7 +49,7 @@ async function getLatest(): Promise<SharedTypes.PSA[] | null> {
 
     return null;
   } else if (response.status === 503) {
-    Notifications.addBanner(
+    Notifications.addPSA(
       "Server is currently under maintenance. <a target= '_blank' href='https://monkeytype.instatus.com/'>Check the status page</a> for more info.",
       -1,
       "bullhorn",
@@ -95,7 +101,7 @@ export async function show(): Promise<void> {
       return;
     }
 
-    Notifications.addBanner(
+    Notifications.addPSA(
       psa.message,
       psa.level,
       "bullhorn",

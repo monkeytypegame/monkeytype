@@ -1,5 +1,8 @@
+import { Result } from "@monkeytype/shared-types";
+import { Mode } from "@monkeytype/contracts/schemas/shared";
 import "dotenv/config";
 import { Counter, Histogram, Gauge } from "prom-client";
+import { TsRestRequestWithCtx } from "../middlewares/auth";
 
 const auth = new Counter({
   name: "api_request_auth_total",
@@ -88,9 +91,7 @@ export function setLeaderboard(
   leaderboardUpdate.set({ language, mode, mode2, step: "index" }, times[3]);
 }
 
-export function incrementResult(
-  res: SharedTypes.Result<SharedTypes.Config.Mode>
-): void {
+export function incrementResult(res: Result<Mode>): void {
   const {
     mode,
     mode2,
@@ -189,6 +190,16 @@ export function recordClientErrorByVersion(version: string): void {
   clientErrorByVersion.inc({ version });
 }
 
+const serverErrorByVersion = new Counter({
+  name: "api_server_error_by_version",
+  help: "Server versions which are generating 500 errors",
+  labelNames: ["version"],
+});
+
+export function recordServerErrorByVersion(version: string): void {
+  serverErrorByVersion.inc({ version });
+}
+
 const authTime = new Histogram({
   name: "api_request_auth_time",
   help: "Time spent authenticating",
@@ -202,7 +213,7 @@ export function recordAuthTime(
   type: string,
   status: "success" | "failure",
   time: number,
-  req: MonkeyTypes.Request
+  req: MonkeyTypes.Request | TsRestRequestWithCtx
 ): void {
   const reqPath = req.baseUrl + req.route.path;
 
@@ -224,7 +235,7 @@ const requestCountry = new Counter({
 
 export function recordRequestCountry(
   country: string,
-  req: MonkeyTypes.Request
+  req: MonkeyTypes.Request | TsRestRequestWithCtx
 ): void {
   const reqPath = req.baseUrl + req.route.path;
 

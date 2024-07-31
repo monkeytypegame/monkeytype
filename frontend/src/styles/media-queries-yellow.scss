@@ -1,0 +1,67 @@
+@media only screen and (max-width: calc(1280px + 5rem)) {
+  #mediaQueryDebug {
+    background: #ffee58;
+    &::before {
+      content: "yellow";
+    }
+  }
+  .content-grid {
+    --content-max-width: 1024px;
+  }
+  .pageSettings {
+    .section {
+      grid-template-columns: 1.5fr 1fr;
+    }
+  }
+  .pageAccount {
+    .group.chart .below {
+      grid-template-columns: auto 250px;
+      .buttons {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+  }
+  .pageTest {
+    #liveStatsTextTop,
+    #liveStatsTextBottom {
+      font-size: 9rem;
+    }
+  }
+  #leaderboardsWrapper #leaderboards {
+    table thead tr td:nth-child(4),
+    table tbody tr td:nth-child(4),
+    table tfoot tr td:nth-child(4) {
+      display: none;
+    }
+    .mainTitle {
+      font-size: 2rem;
+    }
+  }
+  #customTextModal {
+    .modal {
+      .buttonsTop {
+        grid-template-columns: 1fr 1fr;
+      }
+      textarea {
+        min-height: 426px;
+      }
+    }
+  }
+  #testActivity {
+    --box-size: 0.9em;
+    --font-size: 0.9em;
+    // .days {
+    //   font-size: 0.8em;
+    // }
+    .activity div,
+    .legend div {
+      height: var(--box-size);
+    }
+    .days {
+      display: grid;
+    }
+    .daysFull {
+      display: none;
+    }
+  }
+}

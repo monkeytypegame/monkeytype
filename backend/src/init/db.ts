@@ -3,13 +3,14 @@ import {
   Collection,
   Db,
   MongoClient,
-  MongoClientOptions,
-  WithId,
+  type MongoClientOptions,
+  type WithId,
 } from "mongodb";
 import MonkeyError from "../utils/error";
 import Logger from "../utils/logger";
 
 let db: Db;
+let mongoClient: MongoClient;
 
 export async function connect(): Promise<void> {
   const {
@@ -48,8 +49,8 @@ export async function connect(): Promise<void> {
     authSource: DB_AUTH_SOURCE,
   };
 
-  const mongoClient = new MongoClient(
-    (DB_URI as string) ?? global.__MONGO_URI__, // Set in tests only
+  mongoClient = new MongoClient(
+    DB_URI ?? global.__MONGO_URI__, // Set in tests only
     connectionOptions
   );
 
@@ -73,4 +74,7 @@ export function collection<T>(collectionName: string): Collection<WithId<T>> {
   }
 
   return db.collection<WithId<T>>(collectionName);
+}
+export async function close(): Promise<void> {
+  await mongoClient?.close();
 }

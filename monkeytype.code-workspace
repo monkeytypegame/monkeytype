@@ -9,8 +9,12 @@
       "path": "frontend"
     },
     {
-      "name": "shared-types",
-      "path": "shared-types"
+      "name": "contracts",
+      "path": "packages/contracts"
+    },
+    {
+      "name": "packages",
+      "path": "packages"
     },
     {
       "name": "root",
@@ -21,7 +25,8 @@
     "files.exclude": {
       "frontend": true,
       "backend": true,
-      "shared-types": true
+      "packages": true,
+      "contracts": true
     },
     "search.exclude": {
       //defaults
@@ -32,15 +37,34 @@
       "**/build/**": true,
       "**/dist/**": true,
       "**/public/**": true,
-      "**/coverage/**": true
+      "**/coverage/**": true,
+      "**/logs/**": true
     },
-    "jest.disabledWorkspaceFolders": ["root", "shared-types", "frontend"],
-    "vitest.enable": true,
-    "vitest.watchOnStartup": true,
-    "coverage-gutters.coverageBaseDir": "**/coverage",
     "editor.defaultFormatter": "esbenp.prettier-vscode",
     "editor.formatOnSaveMode": "file",
     "editor.formatOnSave": true,
     "testing.openTesting": "neverOpen"
+  },
+
+  "launch": {
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "type": "node",
+        "request": "attach",
+        "name": "Debug attach backend",
+        "port": 9229,
+        "skipFiles": ["<node_internals>/**"]
+      },
+      {
+        "name": "Vite Debugger",
+        "type": "chrome",
+        "request": "launch",
+        "port": 9222,
+        "url": "http://localhost:3000",
+        "webRoot": "${workspaceFolder}/frontend/src"
+      }
+    ],
+    "compounds": []
   }
 }

@@ -1,12 +1,11 @@
 import FirebaseAdmin from "./../init/firebase-admin";
-import { UserRecord } from "firebase-admin/lib/auth/user-record";
-import { DecodedIdToken } from "firebase-admin/lib/auth/token-verifier";
 import LRUCache from "lru-cache";
 import {
   recordTokenCacheAccess,
   setTokenCacheLength,
   setTokenCacheSize,
 } from "./prometheus";
+import { type DecodedIdToken, UserRecord } from "firebase-admin/auth";
 
 const tokenCache = new LRUCache<string, DecodedIdToken>({
   max: 20000,
@@ -53,18 +52,30 @@ export async function updateUserEmail(
   uid: string,
   email: string
 ): Promise<UserRecord> {
+  await revokeTokensByUid(uid);
   return await FirebaseAdmin().auth().updateUser(uid, {
     email,
     emailVerified: false,
   });
 }
 
-export async function deleteUser(uid: string): Promise<void> {
-  await FirebaseAdmin().auth().deleteUser(uid);
-  removeTokensFromCacheByUid(uid);
+export async function updateUserPassword(
+  uid: string,
+  password: string
+): Promise<UserRecord> {
+  await revokeTokensByUid(uid);
+  return await FirebaseAdmin().auth().updateUser(uid, {
+    password,
+  });
 }
 
-export function removeTokensFromCacheByUid(uid: string): void {
+export async function deleteUser(uid: string): Promise<void> {
+  await revokeTokensByUid(uid);
+  await FirebaseAdmin().auth().deleteUser(uid);
+}
+
+export async function revokeTokensByUid(uid: string): Promise<void> {
+  await FirebaseAdmin().auth().revokeRefreshTokens(uid);
   for (const entry of tokenCache.entries()) {
     if (entry[1].uid === uid) {
       tokenCache.delete(entry[0]);

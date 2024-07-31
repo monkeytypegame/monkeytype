@@ -1,6 +1,6 @@
 import * as DB from "../db";
-import format from "date-fns/format";
-import differenceInDays from "date-fns/differenceInDays";
+import { format } from "date-fns/format";
+import { differenceInDays } from "date-fns/differenceInDays";
 import * as Misc from "../utils/misc";
 import * as Numbers from "../utils/numbers";
 import * as Levels from "../utils/levels";
@@ -8,12 +8,13 @@ import * as DateTime from "../utils/date-and-time";
 import { getHTMLById } from "../controllers/badge-controller";
 import { throttle } from "throttle-debounce";
 import * as ActivePage from "../states/active-page";
-import formatDistanceToNowStrict from "date-fns/formatDistanceToNowStrict";
+import { formatDistanceToNowStrict } from "date-fns/formatDistanceToNowStrict";
 import { getHtmlByUserFlags } from "../controllers/user-flag-controller";
 import Format from "../utils/format";
+import { RankAndCount, UserProfile } from "@monkeytype/shared-types";
 
 type ProfileViewPaths = "profile" | "account";
-type UserProfileOrSnapshot = SharedTypes.UserProfile | MonkeyTypes.Snapshot;
+type UserProfileOrSnapshot = UserProfile | MonkeyTypes.Snapshot;
 
 //this is probably the dirtiest code ive ever written
 
@@ -174,9 +175,12 @@ export async function update(
       if (isToday) {
         hoverText += `\nClaimed today: yes`;
         hoverText += `\nCome back in: ${timeDif} ${offsetString}`;
-      } else {
+      } else if (isYesterday) {
         hoverText += `\nClaimed today: no`;
         hoverText += `\nStreak lost in: ${timeDif} ${offsetString}`;
+      } else {
+        hoverText += `\nStreak lost ${timeDif} ${offsetString} ago`;
+        hoverText += `\nIt will be removed from your profile on the next result save`;
       }
 
       console.debug(hoverText);
@@ -264,7 +268,7 @@ export async function update(
       const twitter = profile.details?.socialProfiles.twitter ?? "";
       if (twitter) {
         socialsEl.append(
-          `<a href='https://twitter.com/${Misc.escapeHTML(
+          `<a href='https://x.com/${Misc.escapeHTML(
             twitter
           )}' target="_blank" rel="nofollow me" aria-label="${Misc.escapeHTML(
             twitter
@@ -290,34 +294,7 @@ export async function update(
     }
   }
 
-  const xp = profile.xp ?? 0;
-  const levelFraction = Levels.getLevel(xp);
-  const level = Math.floor(levelFraction);
-  const xpForLevel = Levels.getXpForLevel(level);
-  const xpToDisplay = Math.round(xpForLevel * (levelFraction % 1));
-  details
-    .find(".level")
-    .text(level)
-    .attr("aria-label", `${Numbers.abbreviateNumber(xp)} total xp`);
-  details
-    .find(".xp")
-    .text(
-      `${Numbers.abbreviateNumber(xpToDisplay)}/${Numbers.abbreviateNumber(
-        xpForLevel
-      )}`
-    )
-    .attr(
-      "aria-label",
-      `${Numbers.abbreviateNumber(
-        xpForLevel - xpToDisplay
-      )} xp until next level`
-    );
-  details
-    .find(".xpBar .bar")
-    .css("width", `${(xpToDisplay / xpForLevel) * 100}%`);
-  details
-    .find(".xpBar")
-    .attr("aria-label", `${((xpToDisplay / xpForLevel) * 100).toFixed(2)}%`);
+  updateXp(profile.xp ?? 0);
   //lbs
 
   if (banned) {
@@ -399,6 +376,31 @@ export async function update(
   }
 }
 
+export function updateXp(xp: number): void {
+  const details = $(" .profile .details .levelAndBar");
+  if (details === undefined || details === null) return;
+  const xpDetails = Levels.getXpDetails(xp);
+  const xpForLevel = xpDetails.levelMaxXp;
+  const xpToDisplay = xpDetails.levelCurrentXp;
+  details
+    .find(".level")
+    .text(xpDetails.level)
+    .attr("aria-label", `${formatXp(xp)} total xp`);
+  details
+    .find(".xp")
+    .text(`${formatXp(xpToDisplay)}/${formatXp(xpForLevel)}`)
+    .attr(
+      "aria-label",
+      `${formatXp(xpForLevel - xpToDisplay)} xp until next level`
+    );
+  details
+    .find(".xpBar .bar")
+    .css("width", `${(xpToDisplay / xpForLevel) * 100}%`);
+  details
+    .find(".xpBar")
+    .attr("aria-label", `${((xpToDisplay / xpForLevel) * 100).toFixed(2)}%`);
+}
+
 export function updateNameFontSize(where: ProfileViewPaths): void {
   //dont run this function in safari because OH MY GOD IT IS SO SLOW
   const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
@@ -438,8 +440,16 @@ $(window).on("resize", () => {
   throttledEvent();
 });
 
-function formatTopPercentage(lbRank: SharedTypes.RankAndCount): string {
+function formatTopPercentage(lbRank: RankAndCount): string {
   if (lbRank.rank === undefined) return "-";
   if (lbRank.rank === 1) return "GOAT";
   return "Top " + Numbers.roundTo2((lbRank.rank / lbRank.count) * 100) + "%";
+}
+
+function formatXp(xp: number): string {
+  if (xp < 1000) {
+    return Math.round(xp).toString();
+  } else {
+    return Numbers.abbreviateNumber(xp);
+  }
 }

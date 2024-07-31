@@ -1,6 +1,4 @@
 .pageSettings {
-  display: flex;
-  flex-direction: column;
   gap: 2rem;
 
   .tip {
@@ -31,9 +29,13 @@
     display: grid;
     gap: 2rem;
     &.quickNav .links {
-      display: grid;
-      grid-auto-flow: column;
+      width: 100%;
+      display: flex;
+      flex-wrap: wrap;
       text-align: center;
+      a {
+        flex-grow: 1;
+      }
     }
   }
 
@@ -55,6 +57,10 @@
       gap: 0.5rem;
       margin-bottom: 0.5rem;
 
+      span {
+        display: flex;
+        gap: 0.5rem;
+      }
       .button {
         height: auto;
 
@@ -62,6 +68,12 @@
           margin-right: 0rem;
         }
       }
+    }
+
+    .rangeGroup {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 1rem;
     }
 
     &[data-config-name="autoSwitchThemeInputs"] {
@@ -405,7 +417,7 @@
         margin-left: 0;
         grid-auto-flow: dense;
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr)) !important;
+        grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr)) !important;
         gap: 0.5rem;
         .button {
           transition: transform 0.125s;
@@ -449,6 +461,18 @@
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(13.5rem, 1fr));
         gap: 0.5rem;
+      }
+    }
+
+    &.passwordAuthSettings {
+      .buttons {
+        grid-template-rows: repeat(auto-fill, 1fr);
+        grid-template-columns: repeat(2, minmax(4.5rem, 1fr));
+
+        #removePasswordAuth,
+        #addPasswordAuth {
+          grid-column: span 2;
+        }
       }
     }
   }

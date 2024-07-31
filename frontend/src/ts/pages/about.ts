@@ -6,8 +6,9 @@ import Ape from "../ape";
 import * as Notifications from "../elements/notifications";
 import * as ChartController from "../controllers/chart-controller";
 import * as ConnectionState from "../states/connection";
-import intervalToDuration from "date-fns/intervalToDuration";
+import { intervalToDuration } from "date-fns/intervalToDuration";
 import * as Skeleton from "../utils/skeleton";
+import { PublicTypingStats, SpeedHistogram } from "@monkeytype/shared-types";
 
 function reset(): void {
   $(".pageAbout .contributors").empty();
@@ -17,8 +18,8 @@ function reset(): void {
   void ChartController.globalSpeedHistogram.updateColors();
 }
 
-let speedHistogramResponseData: SharedTypes.SpeedHistogram | null;
-let typingStatsResponseData: SharedTypes.PublicTypingStats | null;
+let speedHistogramResponseData: SpeedHistogram | null;
+let typingStatsResponseData: PublicTypingStats | null;
 
 function updateStatsAndHistogram(): void {
   if (speedHistogramResponseData) {

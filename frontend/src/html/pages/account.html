@@ -1,5 +1,5 @@
-<div class="page pageAccount hidden" id="pageAccount">
-  <div class="scrollToTopButton">
+<div class="page pageAccount hidden full-width" id="pageAccount">
+  <div class="scrollToTopButton invisible">
     <i class="fas fa-angle-double-up"></i>
   </div>
   <div class="preloader hidden">
@@ -13,7 +13,7 @@
       <div class="text">‎</div>
     </div>
   </div>
-  <div class="content">
+  <div class="content full-width content-grid">
     <div class="miniResultChartWrapper">
       <canvas id="miniResultChart"></canvas>
     </div>
@@ -35,10 +35,10 @@
             </div>
             <div class="badges"></div>
             <div class="allBadges"></div>
-            <div class="joined" data-balloon-pos="up">-</div>
+            <div class="joined" data-balloon-pos="right">-</div>
             <div
               class="streak"
-              data-balloon-pos="up"
+              data-balloon-pos="right"
               data-balloon-length="large"
             >
               -
@@ -300,11 +300,50 @@
 
     <!-- <div class="group createdDate">Account created on -</div> -->
 
-    <div id="ad-account-1-wrapper" class="ad ad-h">
+    <div id="testActivity" class="hidden">
+      <div class="wrapper">
+        <div class="top">
+          <div class="year"><select class="yearSelect"></select></div>
+          <div class="title"></div>
+          <div class="legend">
+            <span>less</span>
+            <div data-level="0"></div>
+            <div data-level="1"></div>
+            <div data-level="2"></div>
+            <div data-level="3"></div>
+            <div data-level="4"></div>
+            <span>more</span>
+          </div>
+        </div>
+        <div class="activity"></div>
+        <div class="months"></div>
+        <div class="daysFull">
+          <div></div>
+          <div><div class="text">monday</div></div>
+          <div></div>
+          <div><div class="text">wednesday</div></div>
+          <div></div>
+          <div><div class="text">friday</div></div>
+          <div></div>
+        </div>
+        <div class="days">
+          <div></div>
+          <div><div class="text">mon</div></div>
+          <div></div>
+          <div><div class="text">wed</div></div>
+          <div></div>
+          <div><div class="text">fri</div></div>
+          <div></div>
+        </div>
+        <div class="nodata hidden">No data found.</div>
+      </div>
+    </div>
+
+    <div id="ad-account-1-wrapper" class="ad full-width advertisement ad-h">
       <div class="icon"><i class="fas fa-ad"></i></div>
       <div id="ad-account-1"></div>
     </div>
-    <div id="ad-account-1-small-wrapper" class="ad ad-h-s">
+    <div id="ad-account-1-small-wrapper" class="ad advertisement ad-h-s">
       <div class="icon small"><i class="fas fa-ad"></i></div>
       <div id="ad-account-1-small"></div>
     </div>
@@ -333,7 +372,10 @@
 
     <div class="group presetFilterButtons hidden">
       <div class="buttonsAndTitle">
-        <div class="title">filter presets</div>
+        <div class="title">
+          <i class="fas fa-sliders-h"></i>
+          filter presets
+        </div>
         <div class="buttons filterBtns" style="grid-column: 1/3"></div>
       </div>
     </div>
@@ -346,7 +388,10 @@
         set filters to current settings
       </div> -->
       <div class="buttonsAndTitle" style="grid-column: 1/3">
-        <div class="title">filters</div>
+        <div class="title">
+          <i class="fas fa-filter"></i>
+          filters
+        </div>
         <div class="buttons">
           <button class="allFilters">all</button>
           <button class="currentConfigFilter">current settings</button>
@@ -370,13 +415,19 @@
     </div>
     <div class="group filterButtons" style="display: none">
       <div class="buttonsAndTitle" style="grid-column: 1/-1">
-        <div class="title">advanced filters</div>
+        <div class="title">
+          <i class="fas fa-tools"></i>
+          advanced filters
+        </div>
         <div class="buttons">
           <button class="noFilters">clear filters</button>
         </div>
       </div>
       <div class="buttonsAndTitle">
-        <div class="title">difficulty</div>
+        <div class="title">
+          <i class="fas fa-star"></i>
+          difficulty
+        </div>
         <div class="buttons filterGroup" group="difficulty">
           <button filter="normal">normal</button>
           <button filter="expert">expert</button>
@@ -384,14 +435,20 @@
         </div>
       </div>
       <div class="buttonsAndTitle">
-        <div class="title">personal best</div>
+        <div class="title">
+          <i class="fas fa-crown"></i>
+          personal best
+        </div>
         <div class="buttons filterGroup" group="pb">
           <button filter="no">no</button>
           <button filter="yes">yes</button>
         </div>
       </div>
       <div class="buttonsAndTitle">
-        <div class="title">mode</div>
+        <div class="title">
+          <i class="fas fa fa-bars"></i>
+          mode
+        </div>
         <div class="buttons filterGroup" group="mode">
           <button filter="words">words</button>
           <button filter="time">time</button>
@@ -401,7 +458,10 @@
         </div>
       </div>
       <div class="buttonsAndTitle">
-        <div class="title">quote length</div>
+        <div class="title">
+          <i class="fas fa-quote-right"></i>
+          quote length
+        </div>
         <div class="buttons filterGroup" group="quoteLength">
           <button filter="short">short</button>
           <button filter="medium">medium</button>
@@ -410,7 +470,10 @@
         </div>
       </div>
       <div class="buttonsAndTitle">
-        <div class="title">words</div>
+        <div class="title">
+          <i class="fas fa-font"></i>
+          words
+        </div>
         <div class="buttons filterGroup" group="words">
           <button filter="10">10</button>
           <button filter="25">25</button>
@@ -420,7 +483,10 @@
         </div>
       </div>
       <div class="buttonsAndTitle">
-        <div class="title">time</div>
+        <div class="title">
+          <i class="fas fa-clock"></i>
+          time
+        </div>
         <div class="buttons filterGroup" group="time">
           <button filter="15">15</button>
           <button filter="30">30</button>
@@ -430,14 +496,20 @@
         </div>
       </div>
       <div class="buttonsAndTitle">
-        <div class="title">punctuation</div>
+        <div class="title">
+          <i class="fas fa-at"></i>
+          punctuation
+        </div>
         <div class="buttons filterGroup" group="punctuation">
           <button filter="on">on</button>
           <button filter="off">off</button>
         </div>
       </div>
       <div class="buttonsAndTitle">
-        <div class="title">numbers</div>
+        <div class="title">
+          <i class="fas fa-hashtag"></i>
+          numbers
+        </div>
         <div class="buttons filterGroup" group="numbers">
           <button filter="on">on</button>
           <button filter="off">off</button>
@@ -445,15 +517,24 @@
       </div>
       <div class="tripleSelectsColumn">
         <div class="buttonsAndTitle tags">
-          <div class="title">tags</div>
+          <div class="title">
+            <i class="fas fa-tag"></i>
+            tags
+          </div>
           <div class="select filterGroup" group="tags"></div>
         </div>
         <div class="buttonsAndTitle funbox">
-          <div class="title">funbox</div>
+          <div class="title">
+            <i class="fas fa-gamepad"></i>
+            funbox
+          </div>
           <div class="select filterGroup" group="funbox"></div>
         </div>
         <div class="buttonsAndTitle languages">
-          <div class="title">language</div>
+          <div class="title">
+            <i class="fas fa-globe-americas"></i>
+            language
+          </div>
           <div class="select filterGroup" group="language"></div>
         </div>
       </div>
@@ -608,7 +689,7 @@
         Export CSV
       </div>
     </div>
-    <div id="ad-account-2-wrapper" class="ad advertisement ad-h">
+    <div id="ad-account-2-wrapper" class="ad full-width advertisement ad-h">
       <div class="icon"><i class="fas fa-ad"></i></div>
       <div id="ad-account-2"></div>
     </div>

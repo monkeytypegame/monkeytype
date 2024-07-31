@@ -1,11 +1,13 @@
 import Ape from "../ape";
 import Page from "./page";
 import * as Profile from "../elements/profile";
-import * as PbTables from "../account/pb-tables";
+import * as PbTables from "../elements/account/pb-tables";
 import * as Notifications from "../elements/notifications";
 import { checkIfGetParameterExists } from "../utils/misc";
 import * as UserReportModal from "../modals/user-report";
 import * as Skeleton from "../utils/skeleton";
+import { UserProfile } from "@monkeytype/shared-types";
+import { PersonalBests } from "@monkeytype/contracts/schemas/shared";
 
 function reset(): void {
   $(".page.pageProfile .preloader").removeClass("hidden");
@@ -156,7 +158,7 @@ function reset(): void {
 
 type UpdateOptions = {
   uidOrName?: string;
-  data?: undefined | SharedTypes.UserProfile;
+  data?: undefined | UserProfile;
 };
 
 async function update(options: UpdateOptions): Promise<void> {
@@ -166,7 +168,7 @@ async function update(options: UpdateOptions): Promise<void> {
     await Profile.update("profile", options.data);
     PbTables.update(
       // this cast is fine because pb tables can handle the partial data inside user profiles
-      options.data.personalBests as unknown as SharedTypes.PersonalBests,
+      options.data.personalBests as unknown as PersonalBests,
       true
     );
   } else if (options.uidOrName !== undefined && options.uidOrName !== "") {
@@ -184,16 +186,14 @@ async function update(options: UpdateOptions): Promise<void> {
       $(".page.pageProfile .error .message").text(message);
     } else if (response.status !== 200) {
       // $(".page.pageProfile .failedToLoad").removeClass("hidden");
-      return Notifications.add(
-        "Failed to load profile: " + response.message,
-        -1
-      );
+      Notifications.add("Failed to load profile: " + response.message, -1);
+      return;
     } else {
       window.history.replaceState(null, "", `/profile/${response.data.name}`);
       await Profile.update("profile", response.data);
       // this cast is fine because pb tables can handle the partial data inside user profiles
       PbTables.update(
-        response.data.personalBests as unknown as SharedTypes.PersonalBests,
+        response.data.personalBests as unknown as PersonalBests,
         true
       );
     }
@@ -211,7 +211,7 @@ $(".page.pageProfile").on("click", ".profile .userReportButton", () => {
   void UserReportModal.show({ uid, name, lbOptOut });
 });
 
-export const page = new Page<undefined | SharedTypes.UserProfile>({
+export const page = new Page<undefined | UserProfile>({
   name: "profile",
   element: $(".page.pageProfile"),
   path: "/profile",

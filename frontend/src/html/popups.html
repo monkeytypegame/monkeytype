@@ -4,6 +4,17 @@
   </div>
 </dialog>
 
+<dialog id="devOptionsModal" class="modalWrapper hidden">
+  <div class="modal">
+    <div class="title">Dev options</div>
+    <button class="generateData">generate data</button>
+    <button class="quickLogin">quick login</button>
+    <button class="toggleMediaQueryDebug">toggle media query debug</button>
+    <button class="showTestNotifications">show test notifications</button>
+    <button class="showRealWordsInput">show real words input</button>
+  </div>
+</dialog>
+
 <dialog id="alertsPopup" class="modalWrapper hidden">
   <div class="modal">
     <button class="mobileClose">
@@ -68,7 +79,7 @@
   </div>
   <div class="modal">
     <div class="title">
-      <i class="fas far fa-cookie-bite"></i>
+      <i class="fas fa-cookie-bite"></i>
       We use cookies by the way
     </div>
     <div class="main">
@@ -124,8 +135,9 @@
   </div>
 </dialog>
 
-<div id="shareTestSettingsPopupWrapper" class="popupWrapper hidden">
-  <div id="shareTestSettingsPopup">
+<dialog id="shareTestSettingsModal" class="modalWrapper hidden">
+  <!-- <div id="shareTestSettingsPopup"> -->
+  <div class="modal">
     <div class="title">Share test settings</div>
     <label class="checkboxWithSub mode">
       <input type="checkbox" setting="mode" />
@@ -177,8 +189,9 @@
       <i class="fas fa-fw fa-exclamation-triangle"></i>
       <span>The URL is over 2000 characters long - it might not work</span>
     </div>
+    <!-- </div> -->
   </div>
-</div>
+</dialog>
 
 <dialog id="mobileTestConfigModal" class="modalWrapper hidden">
   <div class="modal">
@@ -259,19 +272,44 @@
   </div>
 </dialog>
 
-<div id="practiseWordsPopupWrapper" class="popupWrapper hidden" tabindex="-1">
-  <div id="practiseWordsPopup" action="">
+<dialog id="practiseWordsModal" class="modalWrapper hidden">
+  <div class="modal" actions="">
     <div class="title">Practice words</div>
-    <div class="text">
-      This will start a new test in custom mode. Words that you mistyped more
-      often or words that you typed much slower will be weighted higher and
-      appear more often.
+    <!-- <div class="inputs"> -->
+    <div class="group" data-id="missed">
+      <div class="title">
+        <i class="fas fa-times"></i>
+        missed
+      </div>
+      <div class="sub">
+        Include missed words or biwords (which include the previous word).
+      </div>
+      <div class="groupInputs">
+        <div class="buttonGroup">
+          <button class="missedOff" value="off">off</button>
+          <button class="missedWords" value="words">words</button>
+          <button class="missedBiwords" value="biwords">biwords</button>
+        </div>
+      </div>
     </div>
-    <div class="button missed" tabindex="1">Practice missed</div>
-    <div class="button slow" tabindex="1">Practice slow</div>
-    <div class="button both" tabindex="1">Practice both</div>
+    <div class="group" data-id="slow">
+      <div class="title">
+        <i class="fas fa-tachometer-alt"></i>
+        slow
+      </div>
+      <div class="sub">Include words which you typed slower than others.</div>
+      <div class="groupInputs">
+        <div class="buttonGroup">
+          <button class="slowOff" value="false">off</button>
+          <button class="slowOn" value="true">on</button>
+        </div>
+      </div>
+    </div>
+    <div></div>
+    <!-- </div> -->
+    <button class="start">start</button>
   </div>
-</div>
+</dialog>
 
 <dialog id="quoteRateModal" class="modalWrapper hidden">
   <div class="modal">
@@ -372,20 +410,20 @@
     <div class="buttonsTop">
       <div class="button saveCustomText">
         <i class="fas fa-save"></i>
-        Save
+        save
       </div>
       <div class="button showSavedTexts">
         <i class="fas fa-folder"></i>
-        Show saved texts
+        saved texts
       </div>
       <input id="fileInput" type="file" class="hidden" accept=".txt" />
       <label for="fileInput" class="button importText">
         <i class="fas fa-file-import"></i>
-        Open file
+        open file
       </label>
       <div class="button wordfilter">
         <i class="fas fa-filter"></i>
-        Words filter
+        words filter
       </div>
     </div>
     <div class="savedTexts hidden" style="display: none">
@@ -405,67 +443,135 @@
           <p class="small">Click anywhere to start editing the text.</p>
         </div>
       </div>
+      <div class="challengeWarning">
+        <div>
+          <p>
+            A challenge is currently loaded.
+            <br />
+            Editing the settings will clear the challenge.
+            <br />
+            <br />
+          </p>
+          <p class="small">Click anywhere to edit.</p>
+        </div>
+      </div>
       <textarea class="textarea"></textarea>
     </div>
     <div class="inputs">
-      <label class="checkboxWithSub randomWordsCheckbox">
-        <input type="checkbox" />
-        <div>Random</div>
-        <div class="sub">
-          Randomize the above words, and control how many words are generated.
+      <div class="group" data-id="mode">
+        <div class="title">
+          <i class="fas fa-fw fa-cog"></i>
+          Mode
         </div>
-      </label>
-      <div class="randomInputFields disabled">
-        <label class="wordcount">
-          Words
-          <input type="number" value="" min="1" max="10000" />
-        </label>
-        <label class="sectioncount hidden">
-          Sections
-          <input type="number" value="" min="1" max="10000" />
-        </label>
-        <div style="color: var(--sub-color)">or</div>
-        <label class="time">
-          Time
-          <input type="number" value="" min="1" max="10000" />
-        </label>
-        <!-- <div style="color: var(--sub-color)">or</div> -->
+        <div class="sub">Change the way words are generated.</div>
+        <div class="groupInputs">
+          <div class="buttonGroup">
+            <button value="simple">simple</button>
+            <button value="repeat">repeat</button>
+            <button value="shuffle">shuffle</button>
+            <button value="random">random</button>
+          </div>
+        </div>
       </div>
-      <label class="checkboxWithSub typographyCheck">
-        <input type="checkbox" checked />
-        <div>Remove fancy typography</div>
+      <div class="group" data-id="limit">
+        <div class="title">
+          <i class="fas fa-fw fa-step-forward"></i>
+          Limit
+        </div>
+        <div class="sub">
+          Control how many words to generate or for how long you want to type.
+        </div>
+        <div class="groupInputs limitInputs">
+          <input
+            class="words"
+            type="number"
+            value=""
+            min="0"
+            placeholder="words"
+          />
+          <input
+            class="sections hidden"
+            type="number"
+            value=""
+            min="0"
+            placeholder="sections"
+          />
+          <div class="or">or</div>
+          <input
+            class="time"
+            type="number"
+            value=""
+            min="0"
+            placeholder="time"
+          />
+        </div>
+      </div>
+
+      <div class="group" data-id="fancy">
+        <div class="title">
+          <i class="fas fa-fw fa-pen-fancy"></i>
+          Remove fancy typography
+        </div>
         <div class="sub">
           Standardises typography symbols (for example “ and ” become ")
         </div>
-      </label>
-      <label class="checkboxWithSub replaceControlCharacters">
-        <input type="checkbox" checked />
-        <div>Replace control characters</div>
+        <div class="groupInputs">
+          <div class="buttonGroup">
+            <button value="false">no</button>
+            <button value="true">yes</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="group" data-id="control">
+        <div class="title">
+          <i class="fas fa-fw fa-code"></i>
+          Replace control characters
+        </div>
         <div class="sub">
           Replace control characters (\n becomes a new line and \t becomes a
           tab)
         </div>
-      </label>
-      <label class="checkboxWithSub delimiterCheck">
-        <input type="checkbox" />
-        <div>Pipe delimiter</div>
+        <div class="groupInputs">
+          <div class="buttonGroup">
+            <button value="false">no</button>
+            <button value="true">yes</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="group" data-id="delimiter">
+        <div class="title">
+          <i class="fas fa-fw fa-grip-lines-vertical"></i>
+          Word delimiter
+        </div>
         <div class="sub">
           Change how words are separated. Using the pipe delimiter allows you to
           randomize groups of words.
         </div>
-      </label>
-      <label class="checkboxWithSub replaceNewlineWithSpace">
-        <input type="checkbox" />
-        <div>Replace new lines with spaces</div>
+        <div class="groupInputs">
+          <div class="buttonGroup">
+            <button value="true">pipe</button>
+            <button value="false">space</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="group" data-id="newlines">
+        <div class="title">
+          <i class="fas fa-fw fa-level-down-alt fa-rotate-90"></i>
+          Replace new lines with spaces
+        </div>
         <div class="sub">
           Replace all new line characters with spaces. Can automatically add
           periods to the end of lines if you wish.
         </div>
-      </label>
-      <div class="replaceNewLinesButtons">
-        <div class="buttonGroup">
-          <div class="button active noPeriods">no periods</div>
-          <div class="button periods">periods</div>
+        <div class="groupInputs">
+          <div class="buttonGroup">
+            <button value="off">off</button>
+            <button value="space">space</button>
+            <button value="periodSpace">period + space</button>
+          </div>
         </div>
       </div>
     </div>
@@ -615,7 +721,15 @@
       <br />
       <br />
       You can start an infinite test by inputting 0. Then, to stop the test, use
-      the Bail Out feature (esc or ctrl/cmd + shift + p > Bail Out)
+      the Bail Out feature (
+      <key>esc</key>
+      or
+      <key>ctrl/cmd</key>
+      +
+      <key>shift</key>
+      +
+      <key>p</key>
+      > Bail Out)
     </div>
     <button>ok</button>
   </form>
@@ -682,10 +796,7 @@
       </li>
     </ul>
     <label>quote</label>
-    <div style="position: relative">
-      <textarea class="newQuoteText" type="text" autocomplete="off"></textarea>
-      <div class="characterCount">-</div>
-    </div>
+    <textarea class="newQuoteText" type="text" autocomplete="off"></textarea>
     <label>source</label>
     <input class="newQuoteSource" type="text" autocomplete="off" />
     <label>language</label>
@@ -733,15 +844,13 @@
     <label>reason</label>
     <select name="report-reason" class="reason" title="reason">
       <option value="Grammatical error">Grammatical error</option>
+      <option value="Duplicate quote">Duplicate quote</option>
       <option value="Inappropriate content">Inappropriate content</option>
       <option value="Low quality content">Low quality content</option>
       <option value="Incorrect source">Incorrect source</option>
     </select>
     <label>comment</label>
-    <div style="position: relative">
-      <textarea class="comment" type="text" autocomplete="off"></textarea>
-      <div class="characterCount">-</div>
-    </div>
+    <textarea class="comment" type="text" autocomplete="off"></textarea>
     <div
       class="g-recaptcha"
       data-sitekey="6Lc-V8McAAAAAJ7s6LGNe7MBZnRiwbsbiWts87aj"
@@ -768,10 +877,7 @@
       <option value="Suspected cheating">Suspected cheating</option>
     </select>
     <label>comment</label>
-    <div style="position: relative">
-      <textarea class="comment" type="text" autocomplete="off"></textarea>
-      <div class="characterCount">-</div>
-    </div>
+    <textarea class="comment" type="text" autocomplete="off"></textarea>
     <div
       class="g-recaptcha"
       data-sitekey="6Lc-V8McAAAAAJ7s6LGNe7MBZnRiwbsbiWts87aj"
@@ -1136,29 +1242,51 @@
     </div>
     <div>
       <label>bio</label>
-      <textarea class="bio" type="text" autocomplete="off"></textarea>
+      <textarea
+        class="bio"
+        type="text"
+        autocomplete="off"
+        maxlength="250"
+      ></textarea>
     </div>
     <div>
       <label>keyboard</label>
-      <textarea class="keyboard" type="text" autocomplete="off"></textarea>
+      <textarea
+        class="keyboard"
+        type="text"
+        autocomplete="off"
+        maxlength="75"
+      ></textarea>
     </div>
     <div>
       <label>github</label>
       <div class="socialURL">
         <p>https://github.com/</p>
-        <input class="github" type="text" value="" placeholder="username" />
+        <input
+          class="github"
+          type="text"
+          value=""
+          placeholder="username"
+          maxlength="39"
+        />
       </div>
     </div>
     <div>
       <label>twitter</label>
       <div class="socialURL">
-        <p>https://twitter.com/</p>
-        <input class="twitter" type="text" value="" placeholder="username" />
+        <p>https://x.com/</p>
+        <input
+          class="twitter"
+          type="text"
+          value=""
+          placeholder="username"
+          maxlength="20"
+        />
       </div>
     </div>
     <div>
       <label>website</label>
-      <input class="website" type="text" value="" />
+      <input class="website" type="text" value="" maxlength="200" />
     </div>
     <div>
       <label>badge</label>

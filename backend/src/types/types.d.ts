@@ -1,16 +1,20 @@
 type ObjectId = import("mongodb").ObjectId;
 
 type ExpressRequest = import("express").Request;
-
+/* eslint-disable  @typescript-eslint/no-explicit-any */
+type TsRestRequest = import("@ts-rest/express").TsRestRequest<any>;
+/* eslint-enable  @typescript-eslint/no-explicit-any */
+type AppRoute = import("@ts-rest/core").AppRoute;
+type AppRouter = import("@ts-rest/core").AppRouter;
 declare namespace MonkeyTypes {
-  type DecodedToken = {
+  export type DecodedToken = {
     type: "Bearer" | "ApeKey" | "None";
     uid: string;
     email: string;
   };
 
-  type Context = {
-    configuration: SharedTypes.Configuration;
+  export type Context = {
+    configuration: import("@monkeytype/shared-types").Configuration;
     decodedToken: DecodedToken;
   };
 
@@ -18,42 +22,61 @@ declare namespace MonkeyTypes {
     ctx: Readonly<Context>;
   } & ExpressRequest;
 
+  type Request2<TQuery = undefined, TBody = undefined, TParams = undefined> = {
+    query: Readonly<TQuery>;
+    body: Readonly<TBody>;
+    params: Readonly<TParams>;
+    ctx: Readonly<Context>;
+    raw: Readonly<TsRestRequest>;
+  };
+
   type DBUser = Omit<
-    SharedTypes.User,
-    "resultFilterPresets" | "tags" | "customThemes" | "isPremium" | "allTimeLbs"
+    import("@monkeytype/shared-types").User,
+    | "resultFilterPresets"
+    | "tags"
+    | "customThemes"
+    | "isPremium"
+    | "allTimeLbs"
+    | "testActivity"
   > & {
     _id: ObjectId;
-    resultFilterPresets?: WithObjectIdArray<SharedTypes.ResultFilters[]>;
+    resultFilterPresets?: WithObjectId<
+      import("@monkeytype/shared-types").ResultFilters
+    >[];
     tags?: DBUserTag[];
     lbPersonalBests?: LbPersonalBests;
     customThemes?: DBCustomTheme[];
     autoBanTimestamps?: number[];
-    inbox?: SharedTypes.MonkeyMail[];
+    inbox?: import("@monkeytype/shared-types").MonkeyMail[];
     ips?: string[];
     canReport?: boolean;
     lastNameChange?: number;
     canManageApeKeys?: boolean;
     bananas?: number;
+    testActivity?: import("@monkeytype/shared-types").CountByYearAndDay;
   };
 
-  type DBCustomTheme = WithObjectId<SharedTypes.CustomTheme>;
+  type DBCustomTheme = WithObjectId<
+    import("@monkeytype/shared-types").CustomTheme
+  >;
 
-  type DBUserTag = WithObjectId<SharedTypes.UserTag>;
+  type DBUserTag = WithObjectId<import("@monkeytype/shared-types").UserTag>;
 
   type LbPersonalBests = {
-    time: Record<number, Record<string, SharedTypes.PersonalBest>>;
+    time: Record<
+      number,
+      Record<
+        string,
+        import("@monkeytype/contracts/schemas/shared").PersonalBest
+      >
+    >;
   };
 
   type WithObjectId<T extends { _id: string }> = Omit<T, "_id"> & {
     _id: ObjectId;
   };
 
-  type WithObjectIdArray<T extends { _id: string }[]> = Omit<T, "_id"> &
-    {
-      _id: ObjectId;
-    }[];
-
-  type ApeKeyDB = SharedTypes.ApeKey & {
+  type ApeKeyDB = import("@monkeytype/shared-types").ApeKey & {
     _id: ObjectId;
     uid: string;
     hash: string;
@@ -100,4 +123,20 @@ declare namespace MonkeyTypes {
     frontendForcedConfig?: Record<string, string[] | boolean[]>;
     frontendFunctions?: string[];
   };
+
+  type DBResult = MonkeyTypes.WithObjectId<
+    import("@monkeytype/shared-types").DBResult<
+      import("@monkeytype/contracts/schemas/shared").Mode
+    >
+  >;
+
+  type BlocklistEntry = {
+    _id: string;
+    usernameHash?: string;
+    emailHash?: string;
+    discordIdHash?: string;
+    timestamp: number;
+  };
+
+  type DBBlocklistEntry = WithObjectId<MonkeyTypes.BlocklistEntry>;
 }

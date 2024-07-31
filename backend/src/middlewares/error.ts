@@ -3,11 +3,15 @@ import { v4 as uuidv4 } from "uuid";
 import Logger from "../utils/logger";
 import MonkeyError from "../utils/error";
 import { incrementBadAuth } from "./rate-limit";
-import { NextFunction, Response } from "express";
+import type { NextFunction, Response } from "express";
 import { MonkeyResponse, handleMonkeyResponse } from "../utils/monkey-response";
-import { recordClientErrorByVersion } from "../utils/prometheus";
+import {
+  recordClientErrorByVersion,
+  recordServerErrorByVersion,
+} from "../utils/prometheus";
 import { isDevEnvironment } from "../utils/misc";
 import { ObjectId } from "mongodb";
+import { version } from "../version";
 
 type DBError = {
   _id: ObjectId;
@@ -61,6 +65,8 @@ async function errorHandlingMiddleware(
       monkeyResponse.status >= 500 &&
       monkeyResponse.status !== 503
     ) {
+      recordServerErrorByVersion(version);
+
       const { uid, errorId } = monkeyResponse.data;
 
       try {
@@ -92,13 +98,14 @@ async function errorHandlingMiddleware(
       delete monkeyResponse.data.errorId;
     }
 
-    return handleMonkeyResponse(monkeyResponse, res);
+    handleMonkeyResponse(monkeyResponse, res);
+    return;
   } catch (e) {
     Logger.error("Error handling middleware failed.");
     Logger.error(e);
   }
 
-  return handleMonkeyResponse(
+  handleMonkeyResponse(
     new MonkeyResponse(
       "Something went really wrong, please contact support.",
       undefined,

@@ -1,10 +1,11 @@
 import Ape from "../ape";
 import * as Loader from "../elements/loader";
 import * as Notifications from "../elements/notifications";
-import format from "date-fns/format";
+import { format } from "date-fns/format";
 import * as ConnectionState from "../states/connection";
 import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
 import { showPopup } from "./simple-modals";
+import { ApeKey } from "@monkeytype/shared-types";
 
 let apeKeys: Ape.ApeKeys.GetApeKeys | null = {};
 
@@ -34,7 +35,7 @@ function refreshList(): void {
     return;
   }
   apeKeyIds.forEach((apeKeyId) => {
-    const key = data[apeKeyId] as SharedTypes.ApeKey;
+    const key = data[apeKeyId] as ApeKey;
     table.append(`
       <tr keyId="${apeKeyId}">
         <td>
@@ -46,7 +47,7 @@ function refreshList(): void {
             }
           </button>
         </td>
-        <td  onClick=${console.log(key)}>${key.name}</td>
+        <td>${key.name}</td>
         <td>${format(new Date(key.createdOn), "dd MMM yyyy HH:mm")}</td>
         <td>${format(new Date(key.modifiedOn), "dd MMM yyyy HH:mm")}</td>
         <td>${
@@ -115,7 +116,8 @@ async function toggleActiveKey(keyId: string): Promise<void> {
   const response = await Ape.apeKeys.update(keyId, { enabled: !key.enabled });
   Loader.hide();
   if (response.status !== 200) {
-    return Notifications.add("Failed to update key: " + response.message, -1);
+    Notifications.add("Failed to update key: " + response.message, -1);
+    return;
   }
   key.enabled = !key.enabled;
   refreshList();

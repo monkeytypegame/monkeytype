@@ -6,16 +6,18 @@ import * as Misc from "../utils/misc";
 import * as Arrays from "../utils/arrays";
 import * as Numbers from "../utils/numbers";
 import * as Notifications from "./notifications";
-import format from "date-fns/format";
+import { format } from "date-fns/format";
 import { isAuthenticated } from "../firebase";
-import differenceInSeconds from "date-fns/differenceInSeconds";
+import { differenceInSeconds } from "date-fns/differenceInSeconds";
 import { getHTMLById as getBadgeHTMLbyId } from "../controllers/badge-controller";
 import * as ConnectionState from "../states/connection";
 import * as Skeleton from "../utils/skeleton";
 import { debounce } from "throttle-debounce";
 import Format from "../utils/format";
+// @ts-expect-error TODO: update slim-select
 import SlimSelect from "slim-select";
 import { getHtmlByUserFlags } from "../controllers/user-flag-controller";
+import { LeaderboardEntry } from "@monkeytype/shared-types";
 
 const wrapperId = "leaderboardsWrapper";
 
@@ -26,7 +28,7 @@ let showingYesterday = false;
 type LbKey = "15" | "60";
 
 let currentData: {
-  [key in LbKey]: SharedTypes.LeaderboardEntry[];
+  [key in LbKey]: LeaderboardEntry[];
 } = {
   "15": [],
   "60": [],
@@ -196,9 +198,7 @@ function updateFooter(lb: LbKey): void {
 
   let toppercent = "";
   if (currentTimeRange === "allTime" && lbRank !== undefined && lbRank?.rank) {
-    const num = Numbers.roundTo2(
-      (lbRank.rank / (currentRank[lb].count as number)) * 100
-    );
+    const num = Numbers.roundTo2((lbRank.rank / currentRank[lb].count) * 100);
     if (currentRank[lb].rank === 1) {
       toppercent = "GOAT";
     } else {
@@ -381,6 +381,8 @@ export function hide(): void {
       },
       100,
       () => {
+        languageSelector?.destroy();
+        languageSelector = undefined;
         clearBody("15");
         clearBody("60");
         clearFoot("15");
@@ -478,10 +480,11 @@ async function update(): Promise<void> {
   if (failedResponses.length > 0) {
     hideLoader("15");
     hideLoader("60");
-    return Notifications.add(
+    Notifications.add(
       "Failed to load leaderboards: " + failedResponses[0]?.message,
       -1
     );
+    return;
   }
 
   const [lb15Data, lb60Data] = responses.map((response) => response.data);
@@ -674,6 +677,39 @@ export function show(): void {
     $("#leaderboards table thead tr td:nth-child(3)").html(
       Config.typingSpeedUnit + '<br><div class="sub">accuracy</div>'
     );
+
+    languageSelector = new SlimSelect({
+      select:
+        "#leaderboardsWrapper #leaderboards .leaderboardsTop .buttonGroup.timeRange .languageSelect",
+      settings: {
+        showSearch: false,
+        // contentLocation: document.querySelector(
+        //   "#leaderboardsWrapper"
+        // ) as HTMLElement,
+        // contentPosition: "relative",
+      },
+      data: [
+        "english",
+        "spanish",
+        "german",
+        "french",
+        "portuguese",
+        "indonesian",
+        "italian",
+      ].map((lang) => ({
+        value: lang,
+        text: lang,
+        selected: lang === currentLanguage,
+      })),
+      events: {
+        // @ts-expect-error TODO: update slim-select
+        afterChange: (newVal): void => {
+          currentLanguage = newVal[0]?.value as string;
+          updateTitle();
+          void update();
+        },
+      },
+    });
     $("#leaderboardsWrapper")
       .stop(true, true)
       .css("opacity", 0)
@@ -697,58 +733,57 @@ $("#leaderboardsWrapper").on("click", (e) => {
   }
 });
 
-const languageSelector = new SlimSelect({
-  select:
-    "#leaderboardsWrapper #leaderboards .leaderboardsTop .buttonGroup.timeRange .languageSelect",
-  settings: {
-    showSearch: false,
-    contentLocation: document.querySelector(
-      "#leaderboardsWrapper"
-    ) as HTMLElement,
-  },
-  data: [
-    {
-      value: "english",
-      text: "english",
-      selected: true,
-    },
-    {
-      value: "spanish",
-      text: "spanish",
-    },
-    {
-      value: "german",
-      text: "german",
-    },
-    {
-      value: "french",
-      text: "french",
-    },
-    {
-      value: "portuguese",
-      text: "portuguese",
-    },
-    {
-      value: "indonesian",
-      text: "indonesian",
-    },
-    {
-      value: "italian",
-      text: "italian",
-    },
-    {
-      value: "russian",
-      text: "russian",
-    },
-  ],
-  events: {
-    afterChange: (newVal): void => {
-      currentLanguage = newVal[0]?.value as string;
-      updateTitle();
-      void update();
-    },
-  },
-});
+let languageSelector: SlimSelect | undefined = undefined;
+
+// const languageSelector = new SlimSelect({
+//   select:
+//     "#leaderboardsWrapper #leaderboards .leaderboardsTop .buttonGroup.timeRange .languageSelect",
+//   settings: {
+//     showSearch: false,
+//     // contentLocation: document.querySelector(
+//     //   "#leaderboardsWrapper"
+//     // ) as HTMLElement,
+//     // contentPosition: "relative",
+//   },
+//   data: [
+//     {
+//       value: "english",
+//       text: "english",
+//       selected: true,
+//     },
+//     {
+//       value: "spanish",
+//       text: "spanish",
+//     },
+//     {
+//       value: "german",
+//       text: "german",
+//     },
+//     {
+//       value: "french",
+//       text: "french",
+//     },
+//     {
+//       value: "portuguese",
+//       text: "portuguese",
+//     },
+//     {
+//       value: "indonesian",
+//       text: "indonesian",
+//     },
+//     {
+//       value: "italian",
+//       text: "italian",
+//     },
+//   ],
+//   events: {
+//     afterChange: (newVal): void => {
+//       currentLanguage = newVal[0]?.value as string;
+//       updateTitle();
+//       void update();
+//     },
+//   },
+// });
 
 let leftScrollEnabled = true;
 
@@ -874,8 +909,8 @@ $(
 ).on("click", () => {
   currentTimeRange = "allTime";
   currentLanguage = "english";
-  languageSelector.disable();
-  languageSelector.setSelected("english");
+  languageSelector?.disable();
+  languageSelector?.setSelected("english");
   void update();
 });
 
@@ -884,7 +919,7 @@ $(
 ).on("click", () => {
   currentTimeRange = "daily";
   updateYesterdayButton();
-  languageSelector.enable();
+  languageSelector?.enable();
   void update();
 });
 

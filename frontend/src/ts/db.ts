@@ -8,6 +8,21 @@ import * as ConnectionState from "./states/connection";
 import { lastElementFromArray } from "./utils/arrays";
 import { getFunboxList } from "./utils/json-data";
 import { mergeWithDefaultConfig } from "./utils/config";
+import * as Dates from "date-fns";
+import {
+  TestActivityCalendar,
+  ModifiableTestActivityCalendar,
+} from "./elements/test-activity-calendar";
+import * as Loader from "./elements/loader";
+
+import { Badge, DBResult, Result } from "@monkeytype/shared-types";
+import { Config, Difficulty } from "@monkeytype/contracts/schemas/configs";
+import {
+  Mode,
+  Mode2,
+  PersonalBest,
+  PersonalBests,
+} from "@monkeytype/contracts/schemas/shared";
 
 let dbSnapshot: MonkeyTypes.Snapshot | undefined;
 
@@ -71,21 +86,21 @@ export async function initSnapshot(): Promise<
     if (configResponse.status !== 200) {
       // eslint-disable-next-line @typescript-eslint/no-throw-literal
       throw {
-        message: `${configResponse.message} (config)`,
+        message: `${configResponse.body.message} (config)`,
         responseCode: configResponse.status,
       };
     }
     if (presetsResponse.status !== 200) {
       // eslint-disable-next-line @typescript-eslint/no-throw-literal
       throw {
-        message: `${presetsResponse.message} (presets)`,
+        message: `${presetsResponse.body.message} (presets)`,
         responseCode: presetsResponse.status,
       };
     }
 
     const userData = userResponse.data;
-    const configData = configResponse.data;
-    const presetsData = presetsResponse.data;
+    const configData = configResponse.body.data;
+    const presetsData = presetsResponse.body.data;
 
     if (userData === null) {
       // eslint-disable-next-line @typescript-eslint/no-throw-literal
@@ -93,6 +108,12 @@ export async function initSnapshot(): Promise<
         message: "Request was successful but user data is null",
         responseCode: 200,
       };
+    }
+
+    if (configData !== null && "config" in configData) {
+      throw new Error(
+        "Config data is not in the correct format. Please refresh the page or contact support."
+      );
     }
 
     snap.name = userData.name;
@@ -106,7 +127,7 @@ export async function initSnapshot(): Promise<
     };
 
     for (const mode of ["time", "words", "quote", "zen", "custom"]) {
-      snap.personalBests[mode as keyof SharedTypes.PersonalBests] ??= {};
+      snap.personalBests[mode as keyof PersonalBests] ??= {};
     }
 
     snap.banned = userData.banned;
@@ -134,6 +155,13 @@ export async function initSnapshot(): Promise<
     snap.isPremium = userData?.isPremium;
     snap.allTimeLbs = userData.allTimeLbs;
 
+    if (userData.testActivity !== undefined) {
+      snap.testActivity = new ModifiableTestActivityCalendar(
+        userData.testActivity.testsByDays,
+        new Date(userData.testActivity.lastDay)
+      );
+    }
+
     const hourOffset = userData?.streak?.hourOffset;
     snap.streakHourOffset =
       hourOffset === undefined || hourOffset === null ? undefined : hourOffset;
@@ -152,7 +180,7 @@ export async function initSnapshot(): Promise<
         ...DefaultConfig,
       };
     } else {
-      snap.config = mergeWithDefaultConfig(configData.config);
+      snap.config = mergeWithDefaultConfig(configData);
     }
     // if (ActivePage.get() === "loading") {
     //   LoadingPage.updateBar(67.5);
@@ -175,7 +203,7 @@ export async function initSnapshot(): Promise<
     //   };
 
     //   for (const mode of ["time", "words", "quote", "zen", "custom"]) {
-    //     tag.personalBests[mode as keyof SharedTypes.PersonalBests] ??= {};
+    //     tag.personalBests[mode as keyof PersonalBests] ??= {};
     //   }
     // });
 
@@ -259,8 +287,7 @@ export async function getUserResults(offset?: number): Promise<boolean> {
     return false;
   }
 
-  const results =
-    response.data as SharedTypes.DBResult<SharedTypes.Config.Mode>[];
+  const results = response.data as DBResult<Mode>[];
   results?.sort((a, b) => b.timestamp - a.timestamp);
   results.forEach((result) => {
     if (result.bailedOut === undefined) result.bailedOut = false;
@@ -298,11 +325,10 @@ export async function getUserResults(offset?: number): Promise<boolean> {
       (it) => it.timestamp < oldestTimestamp
     );
     dbSnapshot.results.push(
-      ...(resultsWithoutDuplicates as unknown as SharedTypes.Result<SharedTypes.Config.Mode>[])
+      ...(resultsWithoutDuplicates as unknown as Result<Mode>[])
     );
   } else {
-    dbSnapshot.results =
-      results as unknown as SharedTypes.Result<SharedTypes.Config.Mode>[];
+    dbSnapshot.results = results as unknown as Result<Mode>[];
   }
   return true;
 }
@@ -340,7 +366,7 @@ export async function addCustomTheme(
 
   const newCustomTheme: MonkeyTypes.CustomTheme = {
     ...theme,
-    _id: response.data._id as string,
+    _id: response.data._id,
   };
 
   dbSnapshot.customThemes.push(newCustomTheme);
@@ -404,13 +430,13 @@ export async function deleteCustomTheme(themeId: string): Promise<boolean> {
   return true;
 }
 
-export async function getUserAverage10<M extends SharedTypes.Config.Mode>(
+export async function getUserAverage10<M extends Mode>(
   mode: M,
-  mode2: SharedTypes.Config.Mode2<M>,
+  mode2: Mode2<M>,
   punctuation: boolean,
   numbers: boolean,
   language: string,
-  difficulty: SharedTypes.Config.Difficulty,
+  difficulty: Difficulty,
   lazyMode: boolean
 ): Promise<[number, number]> {
   const snapshot = getSnapshot();
@@ -489,13 +515,13 @@ export async function getUserAverage10<M extends SharedTypes.Config.Mode>(
   return retval;
 }
 
-export async function getUserDailyBest<M extends SharedTypes.Config.Mode>(
+export async function getUserDailyBest<M extends Mode>(
   mode: M,
-  mode2: SharedTypes.Config.Mode2<M>,
+  mode2: Mode2<M>,
   punctuation: boolean,
   numbers: boolean,
   language: string,
-  difficulty: SharedTypes.Config.Difficulty,
+  difficulty: Difficulty,
   lazyMode: boolean
 ): Promise<number> {
   const snapshot = getSnapshot();
@@ -554,13 +580,13 @@ export async function getUserDailyBest<M extends SharedTypes.Config.Mode>(
   return retval;
 }
 
-export async function getLocalPB<M extends SharedTypes.Config.Mode>(
+export async function getLocalPB<M extends Mode>(
   mode: M,
-  mode2: SharedTypes.Config.Mode2<M>,
+  mode2: Mode2<M>,
   punctuation: boolean,
   numbers: boolean,
   language: string,
-  difficulty: SharedTypes.Config.Difficulty,
+  difficulty: Difficulty,
   lazyMode: boolean,
   funbox: string
 ): Promise<number> {
@@ -573,9 +599,7 @@ export async function getLocalPB<M extends SharedTypes.Config.Mode>(
   }
   if (dbSnapshot === null || dbSnapshot?.personalBests === null) return 0;
 
-  const bestsByMode = dbSnapshot?.personalBests[mode][
-    mode2
-  ] as SharedTypes.PersonalBest[];
+  const bestsByMode = dbSnapshot?.personalBests[mode][mode2] as PersonalBest[];
 
   if (bestsByMode === undefined) return 0;
 
@@ -591,13 +615,13 @@ export async function getLocalPB<M extends SharedTypes.Config.Mode>(
   );
 }
 
-export async function saveLocalPB<M extends SharedTypes.Config.Mode>(
+export async function saveLocalPB<M extends Mode>(
   mode: M,
-  mode2: SharedTypes.Config.Mode2<M>,
+  mode2: Mode2<M>,
   punctuation: boolean,
   numbers: boolean,
   language: string,
-  difficulty: SharedTypes.Config.Difficulty,
+  difficulty: Difficulty,
   lazyMode: boolean,
   wpm: number,
   acc: number,
@@ -623,12 +647,10 @@ export async function saveLocalPB<M extends SharedTypes.Config.Mode>(
     };
 
     dbSnapshot.personalBests[mode][mode2] ??=
-      [] as unknown as SharedTypes.PersonalBests[M][SharedTypes.Config.Mode2<M>];
+      [] as unknown as PersonalBests[M][Mode2<M>];
 
     (
-      dbSnapshot.personalBests[mode][
-        mode2
-      ] as unknown as SharedTypes.PersonalBest[]
+      dbSnapshot.personalBests[mode][mode2] as unknown as PersonalBest[]
     ).forEach((pb) => {
       if (
         (pb.punctuation ?? false) === punctuation &&
@@ -648,22 +670,20 @@ export async function saveLocalPB<M extends SharedTypes.Config.Mode>(
     });
     if (!found) {
       //nothing found
-      (
-        dbSnapshot.personalBests[mode][
-          mode2
-        ] as unknown as SharedTypes.PersonalBest[]
-      ).push({
-        language,
-        difficulty,
-        lazyMode,
-        punctuation,
-        numbers,
-        wpm,
-        acc,
-        raw,
-        timestamp: Date.now(),
-        consistency,
-      });
+      (dbSnapshot.personalBests[mode][mode2] as unknown as PersonalBest[]).push(
+        {
+          language,
+          difficulty,
+          lazyMode,
+          punctuation,
+          numbers,
+          wpm,
+          acc,
+          raw,
+          timestamp: Date.now(),
+          consistency,
+        }
+      );
     }
   }
 
@@ -672,14 +692,14 @@ export async function saveLocalPB<M extends SharedTypes.Config.Mode>(
   }
 }
 
-export async function getLocalTagPB<M extends SharedTypes.Config.Mode>(
+export async function getLocalTagPB<M extends Mode>(
   tagId: string,
   mode: M,
-  mode2: SharedTypes.Config.Mode2<M>,
+  mode2: Mode2<M>,
   punctuation: boolean,
   numbers: boolean,
   language: string,
-  difficulty: SharedTypes.Config.Difficulty,
+  difficulty: Difficulty,
   lazyMode: boolean
 ): Promise<number> {
   if (dbSnapshot === null) return 0;
@@ -705,10 +725,10 @@ export async function getLocalTagPB<M extends SharedTypes.Config.Mode>(
   };
 
   filteredtag.personalBests[mode][mode2] ??=
-    [] as unknown as SharedTypes.PersonalBests[M][SharedTypes.Config.Mode2<M>];
+    [] as unknown as PersonalBests[M][Mode2<M>];
 
   const personalBests = (filteredtag.personalBests[mode][mode2] ??
-    []) as SharedTypes.PersonalBest[];
+    []) as PersonalBest[];
 
   ret =
     personalBests.find(
@@ -723,14 +743,14 @@ export async function getLocalTagPB<M extends SharedTypes.Config.Mode>(
   return ret;
 }
 
-export async function saveLocalTagPB<M extends SharedTypes.Config.Mode>(
+export async function saveLocalTagPB<M extends Mode>(
   tagId: string,
   mode: M,
-  mode2: SharedTypes.Config.Mode2<M>,
+  mode2: Mode2<M>,
   punctuation: boolean,
   numbers: boolean,
   language: string,
-  difficulty: SharedTypes.Config.Difficulty,
+  difficulty: Difficulty,
   lazyMode: boolean,
   wpm: number,
   acc: number,
@@ -757,15 +777,13 @@ export async function saveLocalTagPB<M extends SharedTypes.Config.Mode>(
     };
 
     filteredtag.personalBests[mode][mode2] ??=
-      [] as unknown as SharedTypes.PersonalBests[M][SharedTypes.Config.Mode2<M>];
+      [] as unknown as PersonalBests[M][Mode2<M>];
 
     try {
       let found = false;
 
       (
-        filteredtag.personalBests[mode][
-          mode2
-        ] as unknown as SharedTypes.PersonalBest[]
+        filteredtag.personalBests[mode][mode2] as unknown as PersonalBest[]
       ).forEach((pb) => {
         if (
           (pb.punctuation ?? false) === punctuation &&
@@ -786,9 +804,7 @@ export async function saveLocalTagPB<M extends SharedTypes.Config.Mode>(
       if (!found) {
         //nothing found
         (
-          filteredtag.personalBests[mode][
-            mode2
-          ] as unknown as SharedTypes.PersonalBest[]
+          filteredtag.personalBests[mode][mode2] as unknown as PersonalBest[]
         ).push({
           language,
           difficulty,
@@ -824,7 +840,7 @@ export async function saveLocalTagPB<M extends SharedTypes.Config.Mode>(
           timestamp: Date.now(),
           consistency: consistency,
         },
-      ] as unknown as SharedTypes.PersonalBests[M][SharedTypes.Config.Mode2<M>];
+      ] as unknown as PersonalBests[M][Mode2<M>];
     }
   }
 
@@ -835,9 +851,9 @@ export async function saveLocalTagPB<M extends SharedTypes.Config.Mode>(
   return;
 }
 
-export async function updateLbMemory<M extends SharedTypes.Config.Mode>(
+export async function updateLbMemory<M extends Mode>(
   mode: M,
-  mode2: SharedTypes.Config.Mode2<M>,
+  mode2: Mode2<M>,
   language: string,
   rank: number,
   api = false
@@ -877,24 +893,36 @@ export async function updateLbMemory<M extends SharedTypes.Config.Mode>(
   }
 }
 
-export async function saveConfig(config: SharedTypes.Config): Promise<void> {
+export async function saveConfig(config: Config): Promise<void> {
   if (isAuthenticated()) {
-    const response = await Ape.configs.save(config);
+    const response = await Ape.configs.save({ body: config });
     if (response.status !== 200) {
-      Notifications.add("Failed to save config: " + response.message, -1);
+      Notifications.add("Failed to save config: " + response.body.message, -1);
     }
   }
 }
 
-export function saveLocalResult(
-  result: SharedTypes.Result<SharedTypes.Config.Mode>
-): void {
+export async function resetConfig(): Promise<void> {
+  if (isAuthenticated()) {
+    const response = await Ape.configs.delete();
+    if (response.status !== 200) {
+      Notifications.add("Failed to reset config: " + response.body.message, -1);
+    }
+  }
+}
+
+export function saveLocalResult(result: Result<Mode>): void {
   const snapshot = getSnapshot();
   if (!snapshot) return;
 
   if (snapshot?.results !== undefined) {
     snapshot.results.unshift(result);
 
+    setSnapshot(snapshot);
+  }
+
+  if (snapshot.testActivity !== undefined) {
+    snapshot.testActivity.increment(new Date(result.timestamp));
     setSnapshot(snapshot);
   }
 }
@@ -928,7 +956,7 @@ export function addXp(xp: number): void {
   setSnapshot(snapshot);
 }
 
-export function addBadge(badge: SharedTypes.Badge): void {
+export function addBadge(badge: Badge): void {
   const snapshot = getSnapshot();
   if (!snapshot) return;
 
@@ -952,6 +980,55 @@ export function setStreak(streak: number): void {
   }
 
   setSnapshot(snapshot);
+}
+
+export async function getTestActivityCalendar(
+  yearString: string
+): Promise<MonkeyTypes.TestActivityCalendar | undefined> {
+  if (!isAuthenticated() || dbSnapshot === undefined) return undefined;
+
+  if (yearString === "current") return dbSnapshot.testActivity;
+
+  const currentYear = new Date().getFullYear().toString();
+  if (yearString === currentYear) {
+    return dbSnapshot.testActivity?.getFullYearCalendar();
+  }
+
+  if (dbSnapshot.testActivityByYear === undefined) {
+    if (!ConnectionState.get()) {
+      return undefined;
+    }
+
+    Loader.show();
+    const response = await Ape.users.getTestActivity();
+    if (response.status !== 200) {
+      Notifications.add(
+        "Error getting test activities: " + response.message,
+        -1
+      );
+      Loader.hide();
+      return undefined;
+    }
+
+    dbSnapshot.testActivityByYear = {};
+    for (const year in response.data) {
+      if (year === currentYear) continue;
+      const testsByDays = response.data[year] ?? [];
+      const lastDay = Dates.addDays(
+        new Date(parseInt(year), 0, 1),
+        testsByDays.length
+      );
+
+      dbSnapshot.testActivityByYear[year] = new TestActivityCalendar(
+        testsByDays,
+        lastDay,
+        true
+      );
+    }
+    Loader.hide();
+  }
+
+  return dbSnapshot.testActivityByYear[yearString];
 }
 
 // export async function DB.getLocalTagPB(tagId) {

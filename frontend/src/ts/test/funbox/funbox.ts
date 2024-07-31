@@ -18,7 +18,7 @@ import * as TestInput from "../test-input";
 import * as WeakSpot from "../weak-spot";
 import { getPoem } from "../poetry";
 import { getSection } from "../wikipedia";
-import * as IPGenerator from "../ip-addresses";
+import * as IPAddresses from "../../utils/ip-addresses";
 import {
   areFunboxesCompatible,
   checkFunboxForcedConfigs,
@@ -26,6 +26,8 @@ import {
 import { Wordset } from "../wordset";
 import * as LayoutfluidFunboxTimer from "./layoutfluid-funbox-timer";
 import * as DDR from "../../utils/ddr";
+import { HighlightMode } from "@monkeytype/contracts/schemas/configs";
+import { Mode } from "@monkeytype/contracts/schemas/shared";
 
 const prefixSize = 2;
 
@@ -40,7 +42,7 @@ class CharDistribution {
   public addChar(char: string): void {
     this.count++;
     if (char in this.chars) {
-      this.chars[char]++;
+      (this.chars[char] as number)++;
     } else {
       this.chars[char] = 1;
     }
@@ -412,10 +414,11 @@ FunboxList.setFunboxFunctions("memory", {
   },
   start(): void {
     MemoryTimer.reset();
-    $("#wordsWrapper").addClass("hidden");
+    $("#words").addClass("hidden");
   },
   restart(): void {
     MemoryTimer.start();
+    $("#words").removeClass("hidden");
     if (Config.keymapMode === "next") {
       UpdateConfig.setKeymapMode("react");
     }
@@ -456,12 +459,12 @@ FunboxList.setFunboxFunctions("pseudolang", {
 
 FunboxList.setFunboxFunctions("IPv4", {
   getWord(): string {
-    return IPGenerator.getRandomIPv4address();
+    return IPAddresses.getRandomIPv4address();
   },
   punctuateWord(word: string): string {
     let w = word;
     if (Math.random() < 0.25) {
-      w = IPGenerator.addressToCIDR(word);
+      w = IPAddresses.addressToCIDR(word);
     }
     return w;
   },
@@ -472,20 +475,16 @@ FunboxList.setFunboxFunctions("IPv4", {
 
 FunboxList.setFunboxFunctions("IPv6", {
   getWord(): string {
-    return IPGenerator.getRandomIPv6address();
+    return IPAddresses.getRandomIPv6address();
   },
   punctuateWord(word: string): string {
     let w = word;
     if (Math.random() < 0.25) {
-      w = IPGenerator.addressToCIDR(word);
+      w = IPAddresses.addressToCIDR(word);
     }
     // Compress
     if (w.includes(":")) {
-      w = w
-        .replace(/\b(?:0+:){2,}/, "::")
-        .split(":")
-        .map((a) => a.replace(/\b0+/g, ""))
-        .join(":");
+      w = IPAddresses.compressIpv6(w);
     }
     return w;
   },
@@ -645,9 +644,7 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
     if (!check.result) {
       if (check.forcedConfigs && check.forcedConfigs.length > 0) {
         if (configKey === "mode") {
-          UpdateConfig.setMode(
-            check.forcedConfigs[0] as SharedTypes.Config.Mode
-          );
+          UpdateConfig.setMode(check.forcedConfigs[0] as Mode);
         }
         if (configKey === "words") {
           UpdateConfig.setWordCount(check.forcedConfigs[0] as number);
@@ -663,7 +660,7 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
         }
         if (configKey === "highlightMode") {
           UpdateConfig.setHighlightMode(
-            check.forcedConfigs[0] as SharedTypes.Config.HighlightMode
+            check.forcedConfigs[0] as HighlightMode
           );
         }
       } else {

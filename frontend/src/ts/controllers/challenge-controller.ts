@@ -9,6 +9,16 @@ import * as TestUI from "../test/test-ui";
 import * as ConfigEvent from "../observables/config-event";
 import * as TestState from "../test/test-state";
 import * as Loader from "../elements/loader";
+import {
+  CustomTextLimitMode,
+  CustomTextMode,
+  Result,
+} from "@monkeytype/shared-types";
+import {
+  Config as ConfigType,
+  Difficulty,
+} from "@monkeytype/contracts/schemas/configs";
+import { Mode } from "@monkeytype/contracts/schemas/shared";
 
 let challengeLoading = false;
 
@@ -23,9 +33,7 @@ export function clearActive(): void {
   }
 }
 
-export function verify(
-  result: SharedTypes.Result<SharedTypes.Config.Mode>
-): string | null {
+export function verify(result: Result<Mode>): string | null {
   try {
     if (TestState.activeChallenge) {
       const afk = (result.afkDuration / result.testDuration) * 100;
@@ -47,9 +55,7 @@ export function verify(
         for (const requirementType in TestState.activeChallenge.requirements) {
           if (!requirementsMet) return null;
           const requirementValue =
-            TestState.activeChallenge.requirements[
-              requirementType as keyof typeof TestState.activeChallenge.requirements
-            ];
+            TestState.activeChallenge.requirements[requirementType];
 
           if (requirementValue === undefined) {
             throw new Error("Requirement value is undefined");
@@ -156,9 +162,7 @@ export function verify(
           } else if (requirementType === "config") {
             for (const configKey in requirementValue) {
               const configValue = requirementValue[configKey];
-              if (
-                Config[configKey as keyof SharedTypes.Config] !== configValue
-              ) {
+              if (Config[configKey as keyof ConfigType] !== configValue) {
                 requirementsMet = false;
                 failReasons.push(`${configKey} not set to ${configValue}`);
               }
@@ -222,7 +226,9 @@ export async function setup(challengeName: string): Promise<boolean> {
     return false;
   }
 
-  const challenge = list.filter((c) => c.name === challengeName)[0];
+  const challenge = list.filter(
+    (c) => c.name.toLowerCase() === challengeName.toLowerCase()
+  )[0];
   let notitext;
   try {
     if (challenge === undefined) {
@@ -248,13 +254,11 @@ export async function setup(challengeName: string): Promise<boolean> {
       UpdateConfig.setMode("words", true);
       UpdateConfig.setDifficulty("normal", true);
     } else if (challenge.type === "customText") {
-      CustomText.setDelimiter(" ");
       CustomText.setText((challenge.parameters[0] as string).split(" "));
-      CustomText.setIsTimeRandom(false);
-      CustomText.setIsSectionRandom(false);
-      CustomText.setIsWordRandom(challenge.parameters[1] as boolean);
-      CustomText.setWord(challenge.parameters[2] as number);
-      CustomText.setTime(-1);
+      CustomText.setMode(challenge.parameters[1] as CustomTextMode);
+      CustomText.setLimitValue(challenge.parameters[2] as number);
+      CustomText.setLimitMode(challenge.parameters[3] as CustomTextLimitMode);
+      CustomText.setPipeDelimiter(challenge.parameters[4] as boolean);
       UpdateConfig.setMode("custom", true);
       UpdateConfig.setDifficulty("normal", true);
     } else if (challenge.type === "script") {
@@ -268,13 +272,10 @@ export async function setup(challengeName: string): Promise<boolean> {
       let text = scriptdata.trim();
       text = text.replace(/[\n\r\t ]/gm, " ");
       text = text.replace(/ +/gm, " ");
-      CustomText.setDelimiter(" ");
       CustomText.setText(text.split(" "));
-      CustomText.setIsWordRandom(false);
-      CustomText.setIsSectionRandom(false);
-      CustomText.setIsTimeRandom(false);
-      CustomText.setTime(-1);
-      CustomText.setWord(-1);
+      CustomText.setMode("repeat");
+      CustomText.setLimitMode("word");
+      CustomText.setPipeDelimiter(false);
       UpdateConfig.setMode("custom", true);
       UpdateConfig.setDifficulty("normal", true);
       if (challenge.parameters[1] !== null) {
@@ -295,15 +296,9 @@ export async function setup(challengeName: string): Promise<boolean> {
       } else if (challenge.parameters[1] === "time") {
         UpdateConfig.setTimeConfig(challenge.parameters[2] as number, true);
       }
-      UpdateConfig.setMode(
-        challenge.parameters[1] as SharedTypes.Config.Mode,
-        true
-      );
+      UpdateConfig.setMode(challenge.parameters[1] as Mode, true);
       if (challenge.parameters[3] !== undefined) {
-        UpdateConfig.setDifficulty(
-          challenge.parameters[3] as SharedTypes.Config.Difficulty,
-          true
-        );
+        UpdateConfig.setDifficulty(challenge.parameters[3] as Difficulty, true);
       }
     } else if (challenge.type === "special") {
       if (challenge.name === "semimak") {

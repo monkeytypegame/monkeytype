@@ -281,8 +281,8 @@ function convertStringToLog(logString) {
         body: body || "",
       });
     } else {
-      console.log({ hash, shortHash, title, body });
-      console.warn("skipping line due to invalid format: " + line);
+      // console.log({ hash, shortHash, title, body });
+      // console.warn("skipping line due to invalid format: " + line);
     }
   }
   return log;

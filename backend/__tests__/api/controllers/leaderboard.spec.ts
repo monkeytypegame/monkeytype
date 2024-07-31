@@ -6,7 +6,7 @@ const mockApp = request(app);
 
 describe("leaderboards controller test", () => {
   it("GET /leaderboards/xp/weekly", async () => {
-    const configSpy = jest
+    const configSpy = vi
       .spyOn(Configuration, "getCachedConfiguration")
       .mockResolvedValue({
         leaderboards: {

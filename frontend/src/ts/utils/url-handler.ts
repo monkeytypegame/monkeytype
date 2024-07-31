@@ -11,6 +11,10 @@ import * as DB from "../db";
 import * as Loader from "../elements/loader";
 import * as AccountButton from "../elements/account-button";
 import { restart as restartTest } from "../test/test-logic";
+import * as ChallengeController from "../controllers/challenge-controller";
+import { Mode, Mode2 } from "@monkeytype/contracts/schemas/shared";
+import { Difficulty } from "@monkeytype/contracts/schemas/configs";
+import { CustomTextData } from "@monkeytype/shared-types";
 
 export async function linkDiscord(hashOverride: string): Promise<void> {
   if (!hashOverride) return;
@@ -26,17 +30,13 @@ export async function linkDiscord(hashOverride: string): Promise<void> {
     Loader.hide();
 
     if (response.status !== 200) {
-      return Notifications.add(
-        "Failed to link Discord: " + response.message,
-        -1
-      );
+      Notifications.add("Failed to link Discord: " + response.message, -1);
+      return;
     }
 
     if (response.data === null) {
-      return Notifications.add(
-        "Failed to link Discord: data returned was null",
-        -1
-      );
+      Notifications.add("Failed to link Discord: data returned was null", -1);
+      return;
     }
 
     Notifications.add(response.message, 1);
@@ -67,7 +67,8 @@ export function loadCustomThemeFromUrl(getOverride?: string): void {
   try {
     decoded = JSON.parse(atob(getValue));
   } catch (e) {
-    return Notifications.add("Invalid custom theme ", 0);
+    Notifications.add("Invalid custom theme ", 0);
+    return;
   }
 
   let colorArray = [];
@@ -83,7 +84,8 @@ export function loadCustomThemeFromUrl(getOverride?: string): void {
   }
 
   if (colorArray.length === 0) {
-    return Notifications.add("Invalid custom theme ", 0);
+    Notifications.add("Invalid custom theme ", 0);
+    return;
   }
 
   const oldCustomTheme = Config.customTheme;
@@ -108,13 +110,13 @@ export function loadCustomThemeFromUrl(getOverride?: string): void {
 }
 
 type SharedTestSettings = [
-  SharedTypes.Config.Mode | null,
-  SharedTypes.Config.Mode2<SharedTypes.Config.Mode> | null,
-  SharedTypes.CustomText | null,
+  Mode | null,
+  Mode2<Mode> | null,
+  CustomTextData | null,
   boolean | null,
   boolean | null,
   string | null,
-  SharedTypes.Config.Difficulty | null,
+  Difficulty | null,
   string | null
 ];
 
@@ -147,15 +149,10 @@ export function loadTestSettingsFromUrl(getOverride?: string): void {
   if (de[2] !== null) {
     const customTextSettings = de[2];
     CustomText.setText(customTextSettings.text);
-    CustomText.setIsTimeRandom(customTextSettings.isTimeRandom);
-    CustomText.setIsWordRandom(customTextSettings.isWordRandom);
-    if (customTextSettings.isTimeRandom) {
-      CustomText.setTime(customTextSettings.time);
-    }
-    if (customTextSettings.isWordRandom) {
-      CustomText.setWord(customTextSettings.word);
-    }
-    CustomText.setDelimiter(customTextSettings.delimiter);
+    CustomText.setLimitMode(customTextSettings.limit.mode);
+    CustomText.setLimitValue(customTextSettings.limit.value);
+    CustomText.setPipeDelimiter(customTextSettings.pipeDelimiter);
+
     applied["custom text settings"] = "";
   }
 
@@ -184,14 +181,16 @@ export function loadTestSettingsFromUrl(getOverride?: string): void {
     applied["funbox"] = de[7];
   }
 
-  restartTest();
+  restartTest({
+    nosave: true,
+  });
 
   let appliedString = "";
 
   Object.keys(applied).forEach((setKey) => {
     const set = applied[setKey];
     if (set !== undefined) {
-      appliedString += `${setKey}${set ? ": " + set : ""}<br>`;
+      appliedString += `${setKey}${Misc.escapeHTML(set ? ": " + set : "")}<br>`;
     }
   });
 
@@ -201,4 +200,26 @@ export function loadTestSettingsFromUrl(getOverride?: string): void {
       allowHTML: true,
     });
   }
+}
+
+export function loadChallengeFromUrl(getOverride?: string): void {
+  const getValue = (
+    Misc.findGetParameter("challenge", getOverride) ?? ""
+  ).toLowerCase();
+  if (getValue === "") return;
+
+  Notifications.add("Loading challenge", 0);
+  ChallengeController.setup(getValue)
+    .then((result) => {
+      if (result) {
+        Notifications.add("Challenge loaded", 1);
+        restartTest({
+          nosave: true,
+        });
+      }
+    })
+    .catch((e) => {
+      Notifications.add("Failed to load challenge", -1);
+      console.error(e);
+    });
 }

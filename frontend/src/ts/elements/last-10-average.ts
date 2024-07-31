@@ -8,7 +8,7 @@ let averageWPM = 0;
 let averageAcc = 0;
 
 export async function update(): Promise<void> {
-  const mode2 = Misc.getMode2(Config, TestWords.randomQuote);
+  const mode2 = Misc.getMode2(Config, TestWords.currentQuote);
 
   const [wpm, acc] = (
     await DB.getUserAverage10(

@@ -1,7 +1,3 @@
-/* #words {
-  opacity: 0 !important;
-} */
-
-#words .word {
-  color: transparent !important;
+#words {
+  --untyped-letter-color: transparent !important;
 }

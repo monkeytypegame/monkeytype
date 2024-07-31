@@ -4,27 +4,132 @@ import * as ManualRestart from "../test/manual-restart-tracker";
 import * as TestLogic from "../test/test-logic";
 import * as ChallengeController from "../controllers/challenge-controller";
 import Config, * as UpdateConfig from "../config";
-import * as Misc from "../utils/misc";
+import * as Strings from "../utils/strings";
 import * as WordFilterPopup from "./word-filter";
 import * as Notifications from "../elements/notifications";
 import * as SavedTextsPopup from "./saved-texts";
 import * as SaveCustomTextPopup from "./save-custom-text";
 import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
+import { CustomTextMode } from "@monkeytype/shared-types";
 
 const popup = "#customTextModal .modal";
 
 type State = {
   textarea: string;
-  lastSavedTextareaState: string;
+  longCustomTextWarning: boolean;
+  challengeWarning: boolean;
+
+  customTextMode: "simple" | CustomTextMode;
+  customTextLimits: {
+    word: string;
+    time: string;
+    section: string;
+  };
+  removeFancyTypographyEnabled: boolean;
+  replaceControlCharactersEnabled: boolean;
+  customTextPipeDelimiter: boolean;
+  replaceNewlines: "off" | "space" | "periodSpace";
 };
 
 const state: State = {
-  textarea: CustomText.text.join(" "),
-  lastSavedTextareaState: CustomText.text.join(" "),
+  textarea: CustomText.getText().join(
+    CustomText.getPipeDelimiter() ? "|" : " "
+  ),
+  longCustomTextWarning: false,
+  challengeWarning: false,
+  customTextMode: "simple",
+  customTextLimits: {
+    word: "",
+    time: "",
+    section: "",
+  },
+  removeFancyTypographyEnabled: true,
+  replaceControlCharactersEnabled: true,
+  customTextPipeDelimiter: false,
+  replaceNewlines: "off",
 };
 
-function updateLongTextWarning(): void {
-  if (CustomTextState.isCustomTextLong() === true) {
+function updateUI(): void {
+  $(`${popup} .inputs .group[data-id="mode"] button`).removeClass("active");
+  $(
+    `${popup} .inputs .group[data-id="mode"] button[value="${state.customTextMode}"]`
+  ).addClass("active");
+
+  $(`${popup} .inputs .group[data-id="limit"] input.words`).addClass("hidden");
+  $(`${popup} .inputs .group[data-id="limit"] input.sections`).addClass(
+    "hidden"
+  );
+
+  $(`${popup} .inputs .group[data-id="limit"] input.words`).val(
+    state.customTextLimits.word
+  );
+  $(`${popup} .inputs .group[data-id="limit"] input.time`).val(
+    state.customTextLimits.time
+  );
+  $(`${popup} .inputs .group[data-id="limit"] input.sections`).val(
+    state.customTextLimits.section
+  );
+  if (state.customTextLimits.word !== "") {
+    $(`${popup} .inputs .group[data-id="limit"] input.words`).removeClass(
+      "hidden"
+    );
+  }
+  if (state.customTextLimits.section !== "") {
+    $(`${popup} .inputs .group[data-id="limit"] input.sections`).removeClass(
+      "hidden"
+    );
+  }
+
+  if (state.customTextPipeDelimiter) {
+    $(`${popup} .inputs .group[data-id="limit"] input.sections`).removeClass(
+      "hidden"
+    );
+    $(`${popup} .inputs .group[data-id="limit"] input.words`).addClass(
+      "hidden"
+    );
+  } else {
+    $(`${popup} .inputs .group[data-id="limit"] input.words`).removeClass(
+      "hidden"
+    );
+    $(`${popup} .inputs .group[data-id="limit"] input.sections`).addClass(
+      "hidden"
+    );
+  }
+
+  if (state.customTextMode === "simple") {
+    $(`${popup} .inputs .group[data-id="limit"]`).addClass("disabled");
+    $(`${popup} .inputs .group[data-id="limit"] input`).val("");
+    $(`${popup} .inputs .group[data-id="limit"] input`).prop("disabled", true);
+  } else {
+    $(`${popup} .inputs .group[data-id="limit"]`).removeClass("disabled");
+    $(`${popup} .inputs .group[data-id="limit"] input`).prop("disabled", false);
+  }
+
+  $(`${popup} .inputs .group[data-id="fancy"] button`).removeClass("active");
+  $(
+    `${popup} .inputs .group[data-id="fancy"] button[value="${state.removeFancyTypographyEnabled}"]`
+  ).addClass("active");
+
+  $(`${popup} .inputs .group[data-id="control"] button`).removeClass("active");
+  $(
+    `${popup} .inputs .group[data-id="control"] button[value="${state.replaceControlCharactersEnabled}"]`
+  ).addClass("active");
+
+  $(`${popup} .inputs .group[data-id="delimiter"] button`).removeClass(
+    "active"
+  );
+  $(
+    `${popup} .inputs .group[data-id="delimiter"] button[value="${state.customTextPipeDelimiter}"]`
+  ).addClass("active");
+
+  $(`${popup} .inputs .group[data-id="newlines"] button`).removeClass("active");
+  $(
+    `${popup} .inputs .group[data-id="newlines"] button[value="${state.replaceNewlines}"]`
+  ).addClass("active");
+
+  $(`${popup} textarea`).val(state.textarea);
+
+  if (state.longCustomTextWarning) {
     $(`${popup} .longCustomTextWarning`).removeClass("hidden");
     $(`${popup} .randomWordsCheckbox input`).prop("checked", false);
     $(`${popup} .delimiterCheck input`).prop("checked", false);
@@ -35,47 +140,47 @@ function updateLongTextWarning(): void {
     $(`${popup} .longCustomTextWarning`).addClass("hidden");
     $(`${popup} .inputs`).removeClass("disabled");
   }
-}
 
-//todo: rewrite this file to use a state object instead of constantly directly accessing the DOM
+  if (state.challengeWarning) {
+    $(`${popup} .challengeWarning`).removeClass("hidden");
+    $(`${popup} .randomWordsCheckbox input`).prop("checked", false);
+    $(`${popup} .delimiterCheck input`).prop("checked", false);
+    $(`${popup} .typographyCheck`).prop("checked", true);
+    $(`${popup} .replaceNewlineWithSpace input`).prop("checked", false);
+    $(`${popup} .inputs`).addClass("disabled");
+  } else {
+    $(`${popup} .challengeWarning`).addClass("hidden");
+    $(`${popup} .inputs`).removeClass("disabled");
+  }
+}
 
 async function beforeAnimation(
   modalEl: HTMLElement,
   modalChainData?: IncomingData
 ): Promise<void> {
-  updateLongTextWarning();
+  state.customTextMode = CustomText.getMode();
 
   if (
-    CustomText.isSectionRandom ||
-    CustomText.isTimeRandom ||
-    CustomText.isWordRandom
+    state.customTextMode === "repeat" &&
+    CustomText.getLimitMode() === "word" &&
+    CustomText.getLimitValue() === CustomText.getText().length
   ) {
-    $(`${popup} .randomWordsCheckbox input`).prop("checked", true);
-  } else {
-    $(`${popup} .randomWordsCheckbox input`).prop("checked", false);
+    state.customTextMode = "simple";
   }
 
-  if (CustomText.delimiter === "|") {
-    $(`${popup} .delimiterCheck input`).prop("checked", true);
-  } else {
-    $(`${popup} .delimiterCheck input`).prop("checked", false);
+  state.customTextLimits.word = "";
+  state.customTextLimits.time = "";
+  state.customTextLimits.section = "";
+  if (CustomText.getLimitMode() === "word") {
+    state.customTextLimits.word = `${CustomText.getLimitValue()}`;
+  } else if (CustomText.getLimitMode() === "time") {
+    state.customTextLimits.time = `${CustomText.getLimitValue()}`;
+  } else if (CustomText.getLimitMode() === "section") {
+    state.customTextLimits.section = `${CustomText.getLimitValue()}`;
   }
+  state.customTextPipeDelimiter = CustomText.getPipeDelimiter();
 
-  if ($(`${popup} .randomWordsCheckbox input`).prop("checked") as boolean) {
-    $(`${popup} .inputs .randomInputFields`).removeClass("disabled");
-  } else {
-    $(`${popup} .inputs .randomInputFields`).addClass("disabled");
-  }
-  if ($(`${popup} .replaceNewlineWithSpace input`).prop("checked") as boolean) {
-    $(`${popup} .inputs .replaceNewLinesButtons`).removeClass("disabled");
-  } else {
-    $(`${popup} .inputs .replaceNewLinesButtons`).addClass("disabled");
-  }
-
-  if (CustomTextState.isCustomTextLong()) {
-    // if we are in long custom text mode, always reset the textarea state to the current text
-    state.textarea = CustomText.text.join(" ");
-  }
+  state.longCustomTextWarning = CustomTextState.isCustomTextLong() ?? false;
 
   if (modalChainData?.text !== undefined) {
     if (modalChainData.long !== true && CustomTextState.isCustomTextLong()) {
@@ -83,7 +188,7 @@ async function beforeAnimation(
       Notifications.add("Disabled long custom text progress tracking", 0, {
         duration: 5,
       });
-      updateLongTextWarning();
+      state.longCustomTextWarning = false;
     }
 
     const newText =
@@ -91,23 +196,25 @@ async function beforeAnimation(
         ? modalChainData.text
         : state.textarea + " " + modalChainData.text;
     state.textarea = newText;
+    state.customTextMode = "simple";
+    state.customTextLimits.word = `${cleanUpText().length}`;
+    state.customTextLimits.time = "";
+    state.customTextLimits.section = "";
   }
-  $(`${popup} textarea`).val(state.textarea);
 
-  $(`${popup} .wordcount input`).val(
-    CustomText.word === -1 ? "" : CustomText.word
-  );
-  $(`${popup} .time input`).val(CustomText.time === -1 ? "" : CustomText.time);
+  updateUI();
 }
 
 async function afterAnimation(): Promise<void> {
-  if (!CustomTextState.isCustomTextLong()) {
+  if (!state.challengeWarning && !state.longCustomTextWarning) {
     $(`${popup} textarea`).trigger("focus");
   }
 }
 
 export function show(showOptions?: ShowOptions): void {
-  state.textarea = state.lastSavedTextareaState;
+  state.textarea = CustomText.getText().join(
+    CustomText.getPipeDelimiter() ? "|" : " "
+  );
   void modal.show({
     ...(showOptions as ShowOptions<IncomingData>),
     beforeAnimation,
@@ -117,39 +224,6 @@ export function show(showOptions?: ShowOptions): void {
 
 function hide(): void {
   void modal.hide();
-}
-
-function handleDelimiterChange(): void {
-  let delimiter;
-  if ($(`${popup} .delimiterCheck input`).prop("checked") as boolean) {
-    delimiter = "|";
-
-    $(`${popup} .randomInputFields .sectioncount `).removeClass("hidden");
-
-    $(`${popup} .randomInputFields .wordcount input `).val("");
-    $(`${popup} .randomInputFields .wordcount `).addClass("hidden");
-  } else {
-    delimiter = " ";
-    $(`${popup} .randomInputFields .sectioncount input `).val("");
-    $(`${popup} .randomInputFields .sectioncount `).addClass("hidden");
-    $(`${popup} .randomInputFields .wordcount `).removeClass("hidden");
-  }
-  if (
-    $(`${popup} textarea`).val() !== CustomText.text.join(CustomText.delimiter)
-  ) {
-    const currentText = $(`${popup} textarea`).val() as string;
-    const currentTextSplit = currentText.split(CustomText.delimiter);
-    let newtext = currentTextSplit.join(delimiter);
-    newtext = newtext.replace(/\n /g, "\n");
-    $(`${popup} textarea`).val(newtext);
-    state.textarea = newtext;
-  } else {
-    let newtext = CustomText.text.join(delimiter);
-    newtext = newtext.replace(/\n /g, "\n");
-    $(`${popup} textarea`).val(newtext);
-    state.textarea = newtext;
-  }
-  CustomText.setDelimiter(delimiter);
 }
 
 function handleFileOpen(): void {
@@ -167,8 +241,8 @@ function handleFileOpen(): void {
 
     reader.onload = (readerEvent): void => {
       const content = readerEvent.target?.result as string;
-      $(`${popup} textarea`).val(content);
       state.textarea = content;
+      updateUI();
       $(`#fileInput`).val("");
     };
     reader.onerror = (): void => {
@@ -193,10 +267,9 @@ function cleanUpText(): string[] {
   //replace zero width characters
   text = text.replace(/[\u200B-\u200D\u2060\uFEFF]/g, "");
 
-  if (
-    $(`${popup} .replaceControlCharacters input`).prop("checked") as boolean
-  ) {
+  if (state.replaceControlCharactersEnabled) {
     text = text.replace(/([^\\]|^)\\t/gm, "$1\t");
+    text = text.replace(/\\n/g, " \n");
     text = text.replace(/([^\\]|^)\\n/gm, "$1\n");
     text = text.replace(/\\\\t/gm, "\\t");
     text = text.replace(/\\\\n/gm, "\\n");
@@ -204,19 +277,12 @@ function cleanUpText(): string[] {
 
   text = text.replace(/ +/gm, " ");
   text = text.replace(/( *(\r\n|\r|\n) *)/g, "\n ");
-  if ($(`${popup} .typographyCheck input`).prop("checked") as boolean) {
-    text = Misc.cleanTypographySymbols(text);
+  if (state.removeFancyTypographyEnabled) {
+    text = Strings.cleanTypographySymbols(text);
   }
-  if ($(`${popup} .replaceNewlineWithSpace input`).prop("checked") as boolean) {
-    let periods = true;
-    if (
-      $(
-        $(`${popup} .replaceNewLinesButtons .button`)[0] as HTMLElement
-      ).hasClass("active")
-    ) {
-      periods = false;
-    }
 
+  if (state.replaceNewlines !== "off") {
+    const periods = state.replaceNewlines === "periodSpace";
     if (periods) {
       text = text.replace(/\n/gm, ". ");
       text = text.replace(/\.\. /gm, ". ");
@@ -227,7 +293,9 @@ function cleanUpText(): string[] {
     }
   }
 
-  const words = text.split(CustomText.delimiter).filter((word) => word !== "");
+  const words = text
+    .split(state.customTextPipeDelimiter ? "|" : " ")
+    .filter((word) => word !== "");
   return words;
 }
 
@@ -237,74 +305,68 @@ function apply(): void {
     return;
   }
 
-  state.lastSavedTextareaState = state.textarea;
-
-  CustomText.setText(cleanUpText());
-
-  CustomText.setWord(
-    parseInt(($(`${popup} .wordcount input`).val() as string) || "-1")
-  );
-  CustomText.setTime(
-    parseInt(($(`${popup} .time input`).val() as string) || "-1")
-  );
-
-  CustomText.setSection(
-    parseInt(($(`${popup} .sectioncount input`).val() as string) || "-1")
-  );
-  CustomText.setIsWordRandom(
-    ($(`${popup} .randomWordsCheckbox input`).prop("checked") as boolean) &&
-      CustomText.word > -1
-  );
-  CustomText.setIsTimeRandom(
-    ($(`${popup} .randomWordsCheckbox input`).prop("checked") as boolean) &&
-      CustomText.time > -1
-  );
-  CustomText.setIsSectionRandom(
-    ($(`${popup} .randomWordsCheckbox input`).prop("checked") as boolean) &&
-      CustomText.section > -1
-  );
   if (
-    ($(`${popup} .randomWordsCheckbox input`).prop("checked") as boolean) &&
-    !CustomText.isTimeRandom &&
-    !CustomText.isWordRandom &&
-    !CustomText.isSectionRandom
+    [
+      state.customTextLimits.word,
+      state.customTextLimits.time,
+      state.customTextLimits.section,
+    ].filter((limit) => limit !== "").length > 1
   ) {
-    Notifications.add(
-      "You need to specify word count or time in seconds to start a random custom test",
-      0,
-      {
-        duration: 5,
-      }
-    );
+    Notifications.add("You can only specify one limit", 0, {
+      duration: 5,
+    });
     return;
   }
 
   if (
-    ($(`${popup} .randomWordsCheckbox input`).prop("checked") as boolean) &&
-    CustomText.isTimeRandom &&
-    CustomText.isWordRandom
+    state.customTextMode !== "simple" &&
+    state.customTextLimits.word === "" &&
+    state.customTextLimits.time === "" &&
+    state.customTextLimits.section === ""
   ) {
-    Notifications.add(
-      "You need to pick between word count or time in seconds to start a random custom test",
-      0,
-      {
-        duration: 5,
-      }
-    );
+    Notifications.add("You need to specify a limit", 0, {
+      duration: 5,
+    });
     return;
   }
 
   if (
-    (CustomText.isWordRandom && CustomText.word === 0) ||
-    (CustomText.isTimeRandom && CustomText.time === 0)
+    state.customTextLimits.section === "0" ||
+    state.customTextLimits.word === "0" ||
+    state.customTextLimits.time === "0"
   ) {
     Notifications.add(
-      "Infinite words! Make sure to use Bail Out from the command line to save your result.",
+      "Infinite test! Make sure to use Bail Out from the command line to save your result.",
       0,
       {
         duration: 7,
       }
     );
+  }
+
+  const text = cleanUpText();
+
+  if (state.customTextMode === "simple") {
+    CustomText.setMode("repeat");
+    state.customTextLimits.word = `${text.length}`;
+    state.customTextLimits.time = "";
+    state.customTextLimits.section = "";
+  } else {
+    CustomText.setMode(state.customTextMode);
+  }
+
+  CustomText.setPipeDelimiter(state.customTextPipeDelimiter);
+  CustomText.setText(text);
+
+  if (state.customTextLimits.word !== "") {
+    CustomText.setLimitMode("word");
+    CustomText.setLimitValue(parseInt(state.customTextLimits.word));
+  } else if (state.customTextLimits.time !== "") {
+    CustomText.setLimitMode("time");
+    CustomText.setLimitValue(parseInt(state.customTextLimits.time));
+  } else if (state.customTextLimits.section !== "") {
+    CustomText.setLimitMode("section");
+    CustomText.setLimitValue(parseInt(state.customTextLimits.section));
   }
 
   ChallengeController.clearActive();
@@ -314,42 +376,115 @@ function apply(): void {
   hide();
 }
 
+function handleDelimiterChange(): void {
+  let newtext = state.textarea
+    .split(state.customTextPipeDelimiter ? " " : "|")
+    .join(state.customTextPipeDelimiter ? "|" : " ");
+  newtext = newtext.replace(/\n /g, "\n");
+  state.textarea = newtext;
+}
+
 async function setup(modalEl: HTMLElement): Promise<void> {
-  modalEl
-    .querySelector(".delimiterCheck input")
-    ?.addEventListener("change", handleDelimiterChange);
   modalEl
     .querySelector("#fileInput")
     ?.addEventListener("change", handleFileOpen);
-  modalEl
-    .querySelector(".randomWordsCheckbox input")
-    ?.addEventListener("change", () => {
-      if ($(`${popup} .randomWordsCheckbox input`).prop("checked") as boolean) {
-        $(`${popup} .inputs .randomInputFields`).removeClass("disabled");
-      } else {
-        $(`${popup} .inputs .randomInputFields`).addClass("disabled");
+
+  const buttons = modalEl.querySelectorAll(".group[data-id='mode'] button");
+  for (const button of buttons) {
+    button.addEventListener("click", (e) => {
+      state.customTextMode = (e.target as HTMLButtonElement).value as
+        | "simple"
+        | "repeat"
+        | "random";
+      if (state.customTextMode === "simple") {
+        const text = cleanUpText();
+        state.customTextLimits.word = `${text.length}`;
+        state.customTextLimits.time = "";
+        state.customTextLimits.section = "";
       }
-    });
-  modalEl
-    .querySelector(".replaceNewlineWithSpace input")
-    ?.addEventListener("change", () => {
-      if (
-        $(`${popup} .replaceNewlineWithSpace input`).prop("checked") as boolean
-      ) {
-        $(`${popup} .inputs .replaceNewLinesButtons`).removeClass("disabled");
-      } else {
-        $(`${popup} .inputs .replaceNewLinesButtons`).addClass("disabled");
-      }
-    });
-  const replaceNewLinesButtons = modalEl.querySelectorAll(
-    ".replaceNewLinesButtons .button"
-  );
-  for (const button of replaceNewLinesButtons) {
-    button.addEventListener("click", () => {
-      $(`${popup} .replaceNewLinesButtons .button`).removeClass("active");
-      $(button).addClass("active");
+      updateUI();
     });
   }
+
+  for (const button of modalEl.querySelectorAll(
+    ".group[data-id='fancy'] button"
+  )) {
+    button.addEventListener("click", (e) => {
+      state.removeFancyTypographyEnabled =
+        (e.target as HTMLButtonElement).value === "true" ? true : false;
+      updateUI();
+    });
+  }
+
+  for (const button of modalEl.querySelectorAll(
+    ".group[data-id='control'] button"
+  )) {
+    button.addEventListener("click", (e) => {
+      state.replaceControlCharactersEnabled =
+        (e.target as HTMLButtonElement).value === "true" ? true : false;
+      updateUI();
+    });
+  }
+
+  for (const button of modalEl.querySelectorAll(
+    ".group[data-id='delimiter'] button"
+  )) {
+    button.addEventListener("click", (e) => {
+      state.customTextPipeDelimiter =
+        (e.target as HTMLButtonElement).value === "true" ? true : false;
+      if (state.customTextPipeDelimiter && state.customTextLimits.word !== "") {
+        state.customTextLimits.word = "";
+      }
+      if (
+        !state.customTextPipeDelimiter &&
+        state.customTextLimits.section !== ""
+      ) {
+        state.customTextLimits.section = "";
+      }
+      handleDelimiterChange();
+      updateUI();
+    });
+  }
+
+  for (const button of modalEl.querySelectorAll(
+    ".group[data-id='newlines'] button"
+  )) {
+    button.addEventListener("click", (e) => {
+      state.replaceNewlines = (e.target as HTMLButtonElement).value as
+        | "off"
+        | "space"
+        | "periodSpace";
+      updateUI();
+    });
+  }
+
+  modalEl
+    .querySelector(".group[data-id='limit'] input.words")
+    ?.addEventListener("input", (e) => {
+      state.customTextLimits.word = (e.target as HTMLInputElement).value;
+      state.customTextLimits.time = "";
+      state.customTextLimits.section = "";
+      updateUI();
+    });
+
+  modalEl
+    .querySelector(".group[data-id='limit'] input.time")
+    ?.addEventListener("input", (e) => {
+      state.customTextLimits.time = (e.target as HTMLInputElement).value;
+      state.customTextLimits.word = "";
+      state.customTextLimits.section = "";
+      updateUI();
+    });
+
+  modalEl
+    .querySelector(".group[data-id='limit'] input.sections")
+    ?.addEventListener("input", (e) => {
+      state.customTextLimits.section = (e.target as HTMLInputElement).value;
+      state.customTextLimits.word = "";
+      state.customTextLimits.time = "";
+      updateUI();
+    });
+
   const textarea = modalEl.querySelector("textarea");
   textarea?.addEventListener("input", (e) => {
     state.textarea = (e.target as HTMLTextAreaElement).value;
@@ -372,7 +507,7 @@ async function setup(modalEl: HTMLElement): Promise<void> {
     state.textarea = area.value;
   });
   textarea?.addEventListener("keypress", (e) => {
-    if (Misc.isElementVisible(`#customTextModal .longCustomTextWarning`)) {
+    if (state.longCustomTextWarning || state.challengeWarning) {
       e.preventDefault();
       return;
     }
@@ -384,30 +519,12 @@ async function setup(modalEl: HTMLElement): Promise<void> {
       CustomTextState.getCustomTextName() !== ""
     ) {
       CustomTextState.setCustomTextName("", undefined);
+      state.longCustomTextWarning = false;
       Notifications.add("Disabled long custom text progress tracking", 0, {
         duration: 5,
       });
-      updateLongTextWarning();
     }
   });
-  modalEl
-    .querySelector(".randomInputFields .wordcount input")
-    ?.addEventListener("keypress", (e) => {
-      $(`${popup} .randomInputFields .time input`).val("");
-      $(`${popup} .randomInputFields .sectioncount input`).val("");
-    });
-  modalEl
-    .querySelector(".randomInputFields .time input")
-    ?.addEventListener("keypress", (e) => {
-      $(`${popup} .randomInputFields .wordcount input`).val("");
-      $(`${popup} .randomInputFields .sectioncount input`).val("");
-    });
-  modalEl
-    .querySelector(".randomInputFields .sectioncount input")
-    ?.addEventListener("keypress", (e) => {
-      $(`${popup} .randomInputFields .time input`).val("");
-      $(`${popup} .randomInputFields .wordcount input`).val("");
-    });
   modalEl.querySelector(".button.apply")?.addEventListener("click", () => {
     apply();
   });
@@ -434,8 +551,13 @@ async function setup(modalEl: HTMLElement): Promise<void> {
   modalEl
     .querySelector(".longCustomTextWarning")
     ?.addEventListener("click", () => {
-      $(`#customTextModal .longCustomTextWarning`).addClass("hidden");
+      state.longCustomTextWarning = false;
+      updateUI();
     });
+  modalEl.querySelector(".challengeWarning")?.addEventListener("click", () => {
+    state.challengeWarning = false;
+    updateUI();
+  });
 }
 
 type IncomingData = {

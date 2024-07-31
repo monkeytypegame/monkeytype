@@ -1,24 +1,28 @@
 import _ from "lodash";
+import { contract } from "@monkeytype/contracts/index";
 import psas from "./psas";
 import publicStats from "./public";
 import users from "./users";
 import { join } from "path";
 import quotes from "./quotes";
-import configs from "./configs";
 import results from "./results";
 import presets from "./presets";
 import apeKeys from "./ape-keys";
 import admin from "./admin";
+import docs from "./docs";
 import webhooks from "./webhooks";
+import dev from "./dev";
+import configs from "./configs";
 import configuration from "./configuration";
 import { version } from "../../version";
 import leaderboards from "./leaderboards";
 import addSwaggerMiddlewares from "./swagger";
-import { asyncHandler } from "../../middlewares/api-utils";
+import { asyncHandler } from "../../middlewares/utility";
 import { MonkeyResponse } from "../../utils/monkey-response";
 import { recordClientVersion } from "../../utils/prometheus";
 import {
   Application,
+  IRouter,
   NextFunction,
   Response,
   Router,
@@ -27,6 +31,10 @@ import {
 import { isDevEnvironment } from "../../utils/misc";
 import { getLiveConfiguration } from "../../init/configuration";
 import Logger from "../../utils/logger";
+import { createExpressEndpoints, initServer } from "@ts-rest/express";
+import { ZodIssue } from "zod";
+import { MonkeyValidationError } from "@monkeytype/contracts/schemas/api";
+import { authenticateTsRestRequest } from "../../middlewares/auth";
 
 const pathOverride = process.env["API_PATH_OVERRIDE"];
 const BASE_ROUTE = pathOverride !== undefined ? `/${pathOverride}` : "";
@@ -34,9 +42,7 @@ const APP_START_TIME = Date.now();
 
 const API_ROUTE_MAP = {
   "/users": users,
-  "/configs": configs,
   "/results": results,
-  "/presets": presets,
   "/psas": psas,
   "/public": publicStats,
   "/leaderboards": leaderboards,
@@ -44,18 +50,61 @@ const API_ROUTE_MAP = {
   "/ape-keys": apeKeys,
   "/admin": admin,
   "/webhooks": webhooks,
+  "/docs": docs,
 };
 
-function addApiRoutes(app: Application): void {
-  app.get("/leaderboard", (_req, res) => {
-    res.sendStatus(404);
-  });
+const s = initServer();
+const router = s.router(contract, {
+  configs,
+  presets,
+});
 
+export function addApiRoutes(app: Application): void {
+  applyDevApiRoutes(app);
+  applyApiRoutes(app);
+  applyTsRestApiRoutes(app);
+
+  app.use(
+    asyncHandler(async (req, _res) => {
+      return new MonkeyResponse(
+        `Unknown request URL (${req.method}: ${req.path})`,
+        null,
+        404
+      );
+    })
+  );
+}
+
+function applyTsRestApiRoutes(app: IRouter): void {
+  createExpressEndpoints(contract, router, app, {
+    jsonQuery: true,
+    requestValidationErrorHandler(err, req, res, next) {
+      if (err.body?.issues === undefined) {
+        next();
+        return;
+      }
+      const issues = err.body?.issues.map(prettyErrorMessage);
+      res.status(422).json({
+        message: "Invalid request data schema",
+        validationErrors: issues,
+      } as MonkeyValidationError);
+    },
+    globalMiddleware: [authenticateTsRestRequest()],
+  });
+}
+
+function prettyErrorMessage(issue: ZodIssue | undefined): string {
+  if (issue === undefined) return "";
+  const path = issue.path.length > 0 ? `"${issue.path.join(".")}" ` : "";
+  return `${path}${issue.message}`;
+}
+
+function applyDevApiRoutes(app: Application): void {
   if (isDevEnvironment()) {
     //disable csp to allow assets to load from unsecured http
     app.use((req, res, next) => {
       res.setHeader("Content-Security-Policy", "");
-      return next();
+      next();
     });
     app.use("/configure", expressStatic(join(__dirname, "../../../private")));
 
@@ -67,8 +116,13 @@ function addApiRoutes(app: Application): void {
       }
       next();
     });
-  }
 
+    //enable dev edpoints
+    app.use("/dev", dev);
+  }
+}
+
+function applyApiRoutes(app: Application): void {
   // Cannot be added to the route map because it needs to be added before the maintenance handler
   app.use("/configuration", configuration);
 
@@ -106,6 +160,7 @@ function addApiRoutes(app: Application): void {
     })
   );
 
+  //legacy route
   app.get("/psa", (_req, res) => {
     res.json([
       {
@@ -120,16 +175,4 @@ function addApiRoutes(app: Application): void {
     const apiRoute = `${BASE_ROUTE}${route}`;
     app.use(apiRoute, router);
   });
-
-  app.use(
-    asyncHandler(async (req, _res) => {
-      return new MonkeyResponse(
-        `Unknown request URL (${req.method}: ${req.path})`,
-        null,
-        404
-      );
-    })
-  );
 }
-
-export default addApiRoutes;

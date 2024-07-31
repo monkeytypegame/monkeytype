@@ -36,8 +36,10 @@ import Format from "../utils/format";
 import confetti from "canvas-confetti";
 import type { AnnotationOptions } from "chartjs-plugin-annotation";
 import Ape from "../ape";
+import { Result } from "@monkeytype/shared-types";
+import { Mode } from "@monkeytype/contracts/schemas/shared";
 
-let result: SharedTypes.Result<SharedTypes.Config.Mode>;
+let result: Result<Mode>;
 let maxChartVal: number;
 
 let useUnsmoothedRaw = false;
@@ -363,8 +365,134 @@ function updateKey(): void {
   );
 }
 
-export function showCrown(): void {
+export function showCrown(type: PbCrown.CrownType): void {
   PbCrown.show();
+  PbCrown.update(type);
+}
+
+export function updateCrownType(type: PbCrown.CrownType): void {
+  PbCrown.update(type);
+}
+
+export async function updateCrown(dontSave: boolean): Promise<void> {
+  if (Config.mode === "quote" || dontSave) {
+    hideCrown();
+    return;
+  }
+
+  let pbDiff = 0;
+  const canGetPb = await resultCanGetPb();
+
+  if (canGetPb.value) {
+    const lpb = await DB.getLocalPB(
+      Config.mode,
+      result.mode2,
+      Config.punctuation,
+      Config.numbers,
+      Config.language,
+      Config.difficulty,
+      Config.lazyMode,
+      Config.funbox
+    );
+    pbDiff = result.wpm - lpb;
+    if (pbDiff <= 0) {
+      hideCrown();
+    } else {
+      //show half crown as the pb is not confirmed by the server
+      showCrown("pending");
+      $("#result .stats .wpm .crown").attr(
+        "aria-label",
+        "+" + Format.typingSpeed(pbDiff, { showDecimalPlaces: true })
+      );
+    }
+  } else {
+    const lpb = await DB.getLocalPB(
+      Config.mode,
+      result.mode2,
+      Config.punctuation,
+      Config.numbers,
+      Config.language,
+      Config.difficulty,
+      Config.lazyMode,
+      "none"
+    );
+    pbDiff = result.wpm - lpb;
+    if (pbDiff <= 0) {
+      // hideCrown();
+      showCrown("warning");
+      $("#result .stats .wpm .crown").attr(
+        "aria-label",
+        `This result is not eligible for a new PB (${canGetPb.reason})`
+      );
+    } else {
+      showCrown("ineligible");
+      $("#result .stats .wpm .crown").attr(
+        "aria-label",
+        `You could've gotten a new PB (+${Format.typingSpeed(pbDiff, {
+          showDecimalPlaces: true,
+        })}), but your config does not allow it (${canGetPb.reason})`
+      );
+    }
+  }
+}
+
+export function hideCrown(): void {
+  PbCrown.hide();
+  $("#result .stats .wpm .crown").attr("aria-label", "");
+}
+
+export function showErrorCrownIfNeeded(): void {
+  if (PbCrown.getCurrentType() !== "pending") return;
+  PbCrown.show();
+  PbCrown.update("error");
+  $("#result .stats .wpm .crown").attr(
+    "aria-label",
+    `Local PB data is out of sync with the server - please refresh (pb mismatch)`
+  );
+}
+
+type CanGetPbObject =
+  | {
+      value: true;
+    }
+  | {
+      value: false;
+      reason: string;
+    };
+
+async function resultCanGetPb(): Promise<CanGetPbObject> {
+  const funboxes = result.funbox?.split("#") ?? [];
+  const funboxObjects = await Promise.all(
+    funboxes.map(async (f) => JSONData.getFunbox(f))
+  );
+  const allFunboxesCanGetPb = funboxObjects.every((f) => f?.canGetPb);
+
+  const funboxesOk =
+    result.funbox === "none" || funboxes.length === 0 || allFunboxesCanGetPb;
+  const notUsingStopOnLetter = Config.stopOnError !== "letter";
+
+  if (funboxesOk && notUsingStopOnLetter) {
+    return {
+      value: true,
+    };
+  } else {
+    if (!funboxesOk) {
+      return {
+        value: false,
+        reason: "funbox",
+      };
+    }
+    if (!notUsingStopOnLetter) {
+      return {
+        value: false,
+        reason: "stop on letter",
+      };
+    }
+    return {
+      value: false,
+      reason: "unknown",
+    };
+  }
 }
 
 export function showConfetti(): void {
@@ -399,30 +527,6 @@ export function showConfetti(): void {
   })();
 }
 
-export function hideCrown(): void {
-  PbCrown.hide();
-  $("#result .stats .wpm .crown").attr("aria-label", "");
-}
-
-export async function updateCrown(): Promise<void> {
-  let pbDiff = 0;
-  const lpb = await DB.getLocalPB(
-    Config.mode,
-    result.mode2,
-    Config.punctuation,
-    Config.numbers,
-    Config.language,
-    Config.difficulty,
-    Config.lazyMode,
-    Config.funbox
-  );
-  pbDiff = Math.abs(result.wpm - lpb);
-  $("#result .stats .wpm .crown").attr(
-    "aria-label",
-    "+" + Format.typingSpeed(pbDiff, { showDecimalPlaces: true })
-  );
-}
-
 async function updateTags(dontSave: boolean): Promise<void> {
   const activeTags: MonkeyTypes.UserTag[] = [];
   const userTagsCount = DB.getSnapshot()?.tags?.length ?? 0;
@@ -451,14 +555,6 @@ async function updateTags(dontSave: boolean): Promise<void> {
   );
   $("#result .stats .tags .editTagsButton").addClass("invisible");
 
-  const funboxes = result.funbox?.split("#") ?? [];
-
-  const funboxObjects = await Promise.all(
-    funboxes.map(async (f) => JSONData.getFunbox(f))
-  );
-
-  const allFunboxesCanGetPb = funboxObjects.every((f) => f?.canGetPb);
-
   let annotationSide = "start";
   let labelAdjust = 15;
   activeTags.forEach(async (tag) => {
@@ -479,7 +575,7 @@ async function updateTags(dontSave: boolean): Promise<void> {
     if (
       Config.mode !== "quote" &&
       !dontSave &&
-      (result.funbox === "none" || funboxes.length === 0 || allFunboxesCanGetPb)
+      (await resultCanGetPb()).value
     ) {
       if (tpb < result.wpm) {
         //new pb for that tag
@@ -723,7 +819,7 @@ function updateQuoteSource(randomQuote: MonkeyTypes.Quote | null): void {
 }
 
 export async function update(
-  res: SharedTypes.Result<SharedTypes.Config.Mode>,
+  res: Result<Mode>,
   difficultyFailed: boolean,
   failReason: string,
   afkDetected: boolean,
@@ -763,6 +859,7 @@ export async function update(
   updateTestType(randomQuote);
   updateQuoteSource(randomQuote);
   updateQuoteFavorite(randomQuote);
+  await updateCrown(dontSave);
   await updateGraph();
   await updateGraphPBLine();
   await updateTags(dontSave);
@@ -855,7 +952,7 @@ export async function update(
         Config.mode,
         Config.words,
         Config.time,
-        CustomText,
+        CustomText.getData(),
         CustomTextState.isCustomTextLong() ?? false
       );
 

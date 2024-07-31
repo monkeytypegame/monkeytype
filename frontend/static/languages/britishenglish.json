@@ -197,6 +197,7 @@
   ["cognizant", "cognisant"],
   ["skeptic", "sceptic"],
   ["fiber", "fibre"],
+  ["fibers", "fibres"],
   ["labeled", "labelled"],
   ["analyze", "analyse"],
   ["disorganization", "disorganisation"],
@@ -631,8 +632,13 @@
   ["emphasizes", "emphasises"],
   ["emphasizing", "emphasising"],
   ["fetus", "foetus"],
-  ["fiber", "fibre"],
   ["programs", "programmes"],
   ["yogurt", "yoghurt"],
-  ["valor", "valour"]
+  ["valor", "valour"],
+  ["moisturize", "moisturise"],
+  ["moisturized", "moisturised"],
+  ["moisturizes", "moisturises"],
+  ["moisturizing", "moisturising"],
+  ["favoring", "favouring"],
+  ["marvelous", "marvellous"]
 ]

@@ -398,12 +398,6 @@
       "id": 69
     },
     {
-      "text": "Cuando las leyes de la matemática se refieren a la realidad, no son ciertas; cuando son ciertas, no se refieren a la realidad.",
-      "source": "Albert Einstein",
-      "length": 126,
-      "id": 70
-    },
-    {
       "text": "Las proposiciones matemáticas, en cuanto tienen que ver con la realidad, no son ciertas; y en cuanto que son ciertas, no tienen nada que ver con la realidad.",
       "source": "Albert Einstein",
       "length": 157,
@@ -711,7 +705,7 @@
     },
     {
       "text": "Dos cosas son infinitas: la estupidez humana y el Universo; y no estoy seguro de lo segundo.",
-      "source": "Albert Einstain",
+      "source": "Albert Einstein",
       "length": 92,
       "id": 124
     },
@@ -830,8 +824,8 @@
       "id": 144
     },
     {
-      "text": "Me llamo Maximo Décimo Meridio, Comandante de los ejércitos del Norte, General de las legiones felix, Leal servidor del verdadero emperador Marco Aurelio, Padre de un hijo asesinado, Marido de una mujer asesinada y alcanzaré mi venganza en esta vida o en la otra.",
-      "source": "Maximo Décimo Meridio - Gladiator",
+      "text": "Me llamo Máximo Décimo Meridio, comandante de los ejércitos del Norte, general de las legiones Félix, leal servidor del verdadero emperador Marco Aurelio, padre de un hijo asesinado, marido de una mujer asesinada y alcanzaré mi venganza en esta vida o en la otra.",
+      "source": "Máximo Décimo Meridio - Gladiator",
       "length": 263,
       "id": 145
     },
@@ -848,9 +842,9 @@
       "id": 147
     },
     {
-      "text": "Por mucho que lo intentes, por mucho que te esfuerces, es posible que todo salga mal. De hecho, es probable que la mayor parte de las cosas que creías que iban a salir de una manera, salgan de otra. Porque la realidad va su aire. No puedes gobernarla tanto como crees.",
+      "text": "Por mucho que lo intentes, por mucho que te esfuerces, es posible que todo salga mal. De hecho, es probable que la mayor parte de las cosas que creías que iban a salir de una manera, salgan de otra. Porque la realidad va a su aire. No puedes gobernarla tanto como crees.",
       "source": "Así es la put* vida - Jordi Wild",
-      "length": 268,
+      "length": 270,
       "id": 148
     },
     {
@@ -860,9 +854,9 @@
       "id": 149
     },
     {
-      "text": "Errar es humano, pero más lo es culpar de ello a otros",
+      "text": "Errar es humano, pero más lo es culpar de ello a otros.",
       "source": "Baltasar Gracián",
-      "length": 54,
+      "length": 55,
       "id": 150
     },
     {
@@ -908,9 +902,9 @@
       "id": 157
     },
     {
-      "text": "De hecho son varias las canciones que hablan de ti y ni si quiera sé porqué escribo esto si apenas nos conocemos, sin embargo, he estado tan cerca del cielo cuando tus fauces conocí. Estoy muy sonriente, creo que debería dejar de pensar en ti.",
+      "text": "De hecho son varias las canciones que hablan de ti y ni si quiera sé por qué escribo esto si apenas nos conocemos, sin embargo, he estado tan cerca del cielo cuando tus fauces conocí. Estoy muy sonriente, creo que debería dejar de pensar en ti.",
       "source": "Eduardo Gómez - No solo una",
-      "length": 243,
+      "length": 244,
       "id": 158
     },
     {
@@ -948,6 +942,72 @@
       "source": "Anónimo",
       "length": 62,
       "id": 164
+    },
+    {
+      "text": "No me arrepiento de este amor, aunque me cueste el corazón. Amar es un milagro, y yo te ame como nunca jamas me imaginé.",
+      "source": "Attaque 77 - No Me Arrepiento De Este Amor",
+      "length": 120,
+      "id": 165
+    },
+    {
+      "text": "Había una vez una niñita en un pueblo, la más bonita que jamás se hubiera visto; su madre estaba enloquecida con ella y su abuela mucho más todavía. Esta buena mujer le había mandado hacer una caperucita roja y le sentaba tanto que todos la llamaban Caperucita Roja.",
+      "source": "Charles Perrault - Caperucita Roja",
+      "length": 266,
+      "id": 166
+    },
+    {
+      "text": "Tal vez no pensaba golpearlo, pero desgraciadamente le dio con precisión en la cabeza, de tal forma que el pobre Grillo apenas tuvo fuerzas para decir cri-cri-cri, quedando allí mismo tieso y pegado a la pared.",
+      "source": "Carlo Collodi - Las Aventuras De Pinocho",
+      "length": 210,
+      "id": 167
+    },
+    {
+      "text": "Una zorra hambrienta, como viera unos racimos colgar de una parra, quiso apoderarse de ellos y no pudo. Marchándose, dijo para sí: \"Están verdes\".",
+      "source": "Esopo - La Zorra y Las Uvas",
+      "length": 146,
+      "id": 168
+    },
+    {
+      "text": "Un lobo que se había atragantado con un hueso iba de un lado a otro buscando a quien lo curara. Al encontrarse con una garza, le pidió que le sacase el hueso a cambio de una retribución. Y aquélla metió su propia cabeza en la garganta del lobo, sacó el hueso y le reclamó la paga acordada. Él, respondiendo, dijo: \"¡Eh tú!, ¿no te contentas con haber sacado sana tu cabeza de la boca del lobo, sino que también pides paga?\".",
+      "source": "Esopo - El Lobo y la Garza",
+      "length": 424,
+      "id": 169
+    },
+    {
+      "text": "El espejo que da su reflejo. En todo lo pinta tal como es. Mi cuerpo, que no tiene peso. Si escucho tu voz llamándome.",
+      "source": "Eres para mí - Julieta Venegas",
+      "length": 118,
+      "id": 170
+    },
+    {
+      "text": "Hoy he seguido a Lima y a Belano durante todo el día. Hemos caminado, hemos tomado el metro, camiones, un pesero, hemos vuelto a caminar y durante todo el rato no hemos dejado de hablar. De vez en cuando ellos se detenían y entraban en casas particulares y yo entonces me tenía que quedar en la calle esperándolos. Cuando les pregunté qué era lo que hacían me dijeron que llevaban a cabo una investigación.",
+      "source": "Roberto Bolaño - Los Detectives Salvajes",
+      "length": 406,
+      "id": 171
+    },
+    {
+      "text": "La cólera canta, oh diosa, del Pelida Aquiles, maldita, que causó a los aqueos incontables dolores, precipitó al Hades muchas valientes vidas de héroes y a ellos mismos los hizo presa para los perros y para todas las aves -y así cumplía el plan de Zeus-, desde que por primera vez se separaron tras haber reñido el Atrida, soberano de hombres, y Aquiles, de la casta de Zeus.",
+      "source": "Homero - Ilíada",
+      "length": 375,
+      "id": 172
+    },
+    {
+      "text": "Musa, dime del hábil varón que en su largo extravío, tras haber arrasado el alcázar sagrado de Troya, conoció las ciudades y el genio de innúmeras gentes. Muchos males pasó por las rutas marinas luchando por sí mismo y su vida y la vuelta al hogar de sus hombres, pero a estos no pudo salvarlos con todo su empeño, que en las propias locuras hallaron la muerte.",
+      "source": "Homero - Odisea",
+      "length": 361,
+      "id": 173
+    },
+    {
+      "text": "Mientras Macondo celebraba la reconquista de los recuerdos, José Arcadio Buendía y Melquíades le sacudieron el polvo a su vieja amistad. El gitano iba dispuesto a quedarse en el pueblo. Había estado en la muerte, en efecto, pero había regresado porque no pudo soportar la soledad. Repudiado por su tribu, desprovisto de toda facultad sobrenatural como castigo por su fidelidad a la vida, decidió refugiarse en aquel rincón del mundo todavía no descubierto por la muerte, dedicado a la explotación de un laboratorio de daguerrotipia.",
+      "source": "Cien Años de Soledad - Gabriel García Márquez",
+      "length": 532,
+      "id": 174
+    },
+    {
+      "text": "Calla, he dicho. ¿No hay nadie aquí? Debía contestarme mi hijo. Pero mi hijo es ya un brazado de flores secas. Mi hijo es ya una voz oscura detrás de los montes. ¿Te quieres callar? No quiero llantos en esta casa. Vuestras lágrimas son lágrimas de los ojos nada más, y las mías vendrán cuando yo esté sola, de las plantas de mis pies, de mis raíces, y serán más ardientes que la sangre.",
+      "source": "Federico García Lorca - Bodas de Sangre",
+      "length": 386,
+      "id": 175
     }
   ]
 }

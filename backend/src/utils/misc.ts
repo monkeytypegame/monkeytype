@@ -1,4 +1,4 @@
-import _ from "lodash";
+import _, { omit } from "lodash";
 import uaparser from "ua-parser-js";
 
 //todo split this file into smaller util files (grouped by functionality)
@@ -160,6 +160,7 @@ export function sanitizeString(str: string | undefined): string | undefined {
   return str
     .replace(/[\u0300-\u036F]/g, "")
     .trim()
+    .replace(/\n{3,}/g, "\n\n")
     .replace(/\s{3,}/g, "  ");
 }
 
@@ -304,4 +305,30 @@ export function stringToNumberOrDefault(
 
 export function isDevEnvironment(): boolean {
   return process.env["MODE"] === "dev";
+}
+
+/**
+ * convert database object into api object
+ * @param data  database object with `_id: ObjectId`
+ * @returns api object with `id: string`
+ */
+export function replaceObjectId<T extends { _id: ObjectId }>(
+  data: T
+): T & { _id: string } {
+  const result = {
+    _id: data._id.toString(),
+    ...omit(data, "_id"),
+  } as T & { _id: string };
+  return result;
+}
+
+/**
+ * convert database objects into api objects
+ * @param data  database objects with `_id: ObjectId`
+ * @returns api objects with `id: string`
+ */
+export function replaceObjectIds<T extends { _id: ObjectId }>(
+  data: T[]
+): (T & { _id: string })[] {
+  return data.map((it) => replaceObjectId(it));
 }

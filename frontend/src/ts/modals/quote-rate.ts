@@ -131,7 +131,8 @@ function hide(clearChain = false): void {
 
 async function submit(): Promise<void> {
   if (rating === 0) {
-    return Notifications.add("Please select a rating");
+    Notifications.add("Please select a rating");
+    return;
   }
   if (!currentQuote) {
     return;
@@ -143,10 +144,8 @@ async function submit(): Promise<void> {
   Loader.hide();
 
   if (response.status !== 200) {
-    return Notifications.add(
-      "Failed to submit quote rating: " + response.message,
-      -1
-    );
+    Notifications.add("Failed to submit quote rating: " + response.message, -1);
+    return;
   }
 
   const snapshot = DB.getSnapshot();

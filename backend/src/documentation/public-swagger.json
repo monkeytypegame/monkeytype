@@ -1,7 +1,7 @@
 {
   "swagger": "2.0",
   "info": {
-    "description": "Documentation for the public endpoints provided by the Monkeytype API server.\n\nNote that authentication is performed with the Authorization HTTP header in the format `Authorization: ApeKey YOUR_APE_KEY`\n\nThere is a rate limit of `30 requests per minute` across all endpoints with some endpoints being more strict. Rate limit rates are shared across all ape keys.",
+    "description": "Documentation for the public endpoints provided by the Monkeytype API server.\n\nNote that authentication is performed with the Authorization HTTP header in the format `Authorization: ApeKey YOUR_APE_KEY`\n\nThere is a rate limit of `30 requests per minute` across all endpoints with some endpoints being more strict. Rate limit rates are shared across all ape keys.\n\nNote: We are currently re-working our APIs. Some endpoints are documented at https://api.monkeytype.com/docs/v2/public",
     "version": "1.0.0",
     "title": "Monkeytype API",
     "termsOfService": "https://monkeytype.com/terms-of-service",
@@ -115,6 +115,34 @@
             "description": "",
             "schema": {
               "$ref": "#/definitions/Profile"
+            }
+          }
+        }
+      }
+    },
+    "/users/currentTestActivity": {
+      "get": {
+        "tags": ["users"],
+        "summary": "Gets a user's test activity data for the last ~52 weeks",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/CurrentTestActivity"
+            }
+          }
+        }
+      }
+    },
+    "/users/streak": {
+      "get": {
+        "tags": ["users"],
+        "summary": "Gets a user's streak",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/UserStreak"
             }
           }
         }
@@ -784,6 +812,42 @@
               "example": 19.65
             }
           }
+        }
+      }
+    },
+    "CurrentTestActivity": {
+      "type": "object",
+      "properties": {
+        "testByDays": {
+          "type": "array",
+          "items": {
+            "type": "number",
+            "nullable": true
+          },
+          "example": [null, null, null, 1, 2, 3, null, 4],
+          "description": "Test activity by day. Last element of the array are the tests on the date specified by the `lastDay` property. All dates are in UTC."
+        },
+        "lastDay": {
+          "type": "integer",
+          "example": 1712140496000
+        }
+      }
+    },
+    "UserStreak": {
+      "type": "object",
+      "properties": {
+        "lastResultTimestamp": {
+          "type": "integer"
+        },
+        "length": {
+          "type": "integer"
+        },
+        "maxLength": {
+          "type": "integer"
+        },
+        "hourOffset": {
+          "type": "integer",
+          "nullable": true
         }
       }
     }

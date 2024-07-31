@@ -2,6 +2,7 @@ import _ from "lodash";
 import * as RedisClient from "../init/redis";
 import LaterQueue from "../queues/later-queue";
 import { getCurrentDayTimestamp, matchesAPattern, kogascore } from "./misc";
+import { Configuration, ValidModeRule } from "@monkeytype/shared-types";
 
 type DailyLeaderboardEntry = {
   uid: string;
@@ -37,9 +38,9 @@ export class DailyLeaderboard {
   private leaderboardScoresKeyName: string;
   private leaderboardModeKey: string;
   private customTime: number;
-  private modeRule: SharedTypes.ValidModeRule;
+  private modeRule: ValidModeRule;
 
-  constructor(modeRule: SharedTypes.ValidModeRule, customTime = -1) {
+  constructor(modeRule: ValidModeRule, customTime = -1) {
     const { language, mode, mode2 } = modeRule;
 
     this.leaderboardModeKey = `${language}:${mode}:${mode2}`;
@@ -68,7 +69,7 @@ export class DailyLeaderboard {
 
   public async addResult(
     entry: DailyLeaderboardEntry,
-    dailyLeaderboardsConfig: SharedTypes.Configuration["dailyLeaderboards"]
+    dailyLeaderboardsConfig: Configuration["dailyLeaderboards"]
   ): Promise<number> {
     const connection = RedisClient.getConnection();
     if (!connection || !dailyLeaderboardsConfig.enabled) {
@@ -90,7 +91,7 @@ export class DailyLeaderboard {
     const resultScore = kogascore(entry.wpm, entry.acc, entry.timestamp);
 
     // @ts-expect-error
-    const rank = await connection.addResult(
+    const rank = (await connection.addResult(
       2,
       leaderboardScoresKey,
       leaderboardResultsKey,
@@ -99,7 +100,7 @@ export class DailyLeaderboard {
       entry.uid,
       resultScore,
       JSON.stringify(entry)
-    );
+    )) as number;
 
     if (
       isValidModeRule(
@@ -124,7 +125,7 @@ export class DailyLeaderboard {
   public async getResults(
     minRank: number,
     maxRank: number,
-    dailyLeaderboardsConfig: SharedTypes.Configuration["dailyLeaderboards"],
+    dailyLeaderboardsConfig: Configuration["dailyLeaderboards"],
     premiumFeaturesEnabled: boolean
   ): Promise<LbEntryWithRank[]> {
     const connection = RedisClient.getConnection();
@@ -152,10 +153,15 @@ export class DailyLeaderboard {
     }
 
     const resultsWithRanks: LbEntryWithRank[] = results.map(
-      (resultJSON, index) => ({
-        ...JSON.parse(resultJSON),
-        rank: minRank + index + 1,
-      })
+      (resultJSON, index) => {
+        // TODO: parse with zod?
+        const parsed = JSON.parse(resultJSON) as LbEntryWithRank;
+
+        return {
+          ...parsed,
+          rank: minRank + index + 1,
+        };
+      }
     );
 
     if (!premiumFeaturesEnabled) {
@@ -167,7 +173,7 @@ export class DailyLeaderboard {
 
   public async getRank(
     uid: string,
-    dailyLeaderboardsConfig: SharedTypes.Configuration["dailyLeaderboards"]
+    dailyLeaderboardsConfig: Configuration["dailyLeaderboards"]
   ): Promise<GetRankResponse | null> {
     const connection = RedisClient.getConnection();
     if (!connection || !dailyLeaderboardsConfig.enabled) {
@@ -210,7 +216,7 @@ export class DailyLeaderboard {
 
 export async function purgeUserFromDailyLeaderboards(
   uid: string,
-  configuration: SharedTypes.Configuration["dailyLeaderboards"]
+  configuration: Configuration["dailyLeaderboards"]
 ): Promise<void> {
   const connection = RedisClient.getConnection();
   if (!connection || !configuration.enabled) {
@@ -222,8 +228,8 @@ export async function purgeUserFromDailyLeaderboards(
 }
 
 function isValidModeRule(
-  modeRule: SharedTypes.ValidModeRule,
-  modeRules: SharedTypes.ValidModeRule[]
+  modeRule: ValidModeRule,
+  modeRules: ValidModeRule[]
 ): boolean {
   const { language, mode, mode2 } = modeRule;
 
@@ -239,7 +245,7 @@ export function getDailyLeaderboard(
   language: string,
   mode: string,
   mode2: string,
-  dailyLeaderboardsConfig: SharedTypes.Configuration["dailyLeaderboards"],
+  dailyLeaderboardsConfig: Configuration["dailyLeaderboards"],
   customTimestamp = -1
 ): DailyLeaderboard | null {
   const { validModeRules, enabled } = dailyLeaderboardsConfig;

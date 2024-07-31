@@ -1,9 +1,11 @@
+import { Config, ConfigValue } from "@monkeytype/contracts/schemas/configs";
+
 type SubscribeFunction = (
   key: string,
-  newValue?: SharedTypes.ConfigValue,
+  newValue?: ConfigValue,
   nosave?: boolean,
-  previousValue?: SharedTypes.ConfigValue,
-  fullConfig?: SharedTypes.Config
+  previousValue?: ConfigValue,
+  fullConfig?: Config
 ) => void;
 
 const subscribers: SubscribeFunction[] = [];
@@ -14,10 +16,10 @@ export function subscribe(fn: SubscribeFunction): void {
 
 export function dispatch(
   key: string,
-  newValue?: SharedTypes.ConfigValue,
+  newValue?: ConfigValue,
   nosave?: boolean,
-  previousValue?: SharedTypes.ConfigValue,
-  fullConfig?: SharedTypes.Config
+  previousValue?: ConfigValue,
+  fullConfig?: Config
 ): void {
   subscribers.forEach((fn) => {
     try {

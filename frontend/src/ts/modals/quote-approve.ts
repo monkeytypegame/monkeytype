@@ -1,7 +1,7 @@
 import Ape from "../ape";
 import * as Loader from "../elements/loader";
 import * as Notifications from "../elements/notifications";
-import format from "date-fns/format";
+import { format } from "date-fns/format";
 import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
 
 let quotes: Ape.Quotes.Quote[] = [];
@@ -96,10 +96,8 @@ async function getQuotes(): Promise<void> {
   Loader.hide();
 
   if (response.status !== 200) {
-    return Notifications.add(
-      "Failed to get new quotes: " + response.message,
-      -1
-    );
+    Notifications.add("Failed to get new quotes: " + response.message, -1);
+    return;
   }
 
   quotes = response.data ?? [];
@@ -158,10 +156,8 @@ async function approveQuote(index: number, dbid: string): Promise<void> {
   if (response.status !== 200) {
     resetButtons(index);
     quote.find("textarea, input").prop("disabled", false);
-    return Notifications.add(
-      "Failed to approve quote: " + response.message,
-      -1
-    );
+    Notifications.add("Failed to approve quote: " + response.message, -1);
+    return;
   }
 
   Notifications.add(`Quote approved. ${response.message ?? ""}`, 1);
@@ -182,7 +178,8 @@ async function refuseQuote(index: number, dbid: string): Promise<void> {
   if (response.status !== 200) {
     resetButtons(index);
     quote.find("textarea, input").prop("disabled", false);
-    return Notifications.add("Failed to refuse quote: " + response.message, -1);
+    Notifications.add("Failed to refuse quote: " + response.message, -1);
+    return;
   }
 
   Notifications.add("Quote refused.", 1);
@@ -213,10 +210,8 @@ async function editQuote(index: number, dbid: string): Promise<void> {
   if (response.status !== 200) {
     resetButtons(index);
     quote.find("textarea, input").prop("disabled", false);
-    return Notifications.add(
-      "Failed to approve quote: " + response.message,
-      -1
-    );
+    Notifications.add("Failed to approve quote: " + response.message, -1);
+    return;
   }
 
   Notifications.add(`Quote edited and approved. ${response.message ?? ""}`, 1);

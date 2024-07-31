@@ -6,6 +6,8 @@ import * as Notifications from "../elements/notifications";
 import * as ConnectionState from "../states/connection";
 import AnimatedModal from "../utils/animated-modal";
 import * as Profile from "../elements/profile";
+import { CharacterCounter } from "../elements/character-counter";
+import { Badge, UserProfileDetails } from "@monkeytype/shared-types";
 
 export function show(): void {
   if (!ConnectionState.get()) {
@@ -18,6 +20,7 @@ export function show(): void {
   void modal.show({
     beforeAnimation: async () => {
       hydrateInputs();
+      initializeCharacterCounters();
     },
   });
 }
@@ -32,8 +35,10 @@ function hide(): void {
   });
 }
 
-const bioInput = $("#editProfileModal .bio");
-const keyboardInput = $("#editProfileModal .keyboard");
+const bioInput: JQuery<HTMLTextAreaElement> = $("#editProfileModal .bio");
+const keyboardInput: JQuery<HTMLTextAreaElement> = $(
+  "#editProfileModal .keyboard"
+);
 const twitterInput = $("#editProfileModal .twitter");
 const githubInput = $("#editProfileModal .github");
 const websiteInput = $("#editProfileModal .website");
@@ -55,7 +60,7 @@ function hydrateInputs(): void {
   websiteInput.val(socialProfiles?.website ?? "");
   badgeIdsSelect.html("");
 
-  badges?.forEach((badge: SharedTypes.Badge) => {
+  badges?.forEach((badge: Badge) => {
     if (badge.selected) {
       currentSelectedBadgeId = badge.id;
     }
@@ -87,14 +92,19 @@ function hydrateInputs(): void {
   });
 }
 
-function buildUpdatesFromInputs(): SharedTypes.UserProfileDetails {
+function initializeCharacterCounters(): void {
+  new CharacterCounter(bioInput, 250);
+  new CharacterCounter(keyboardInput, 75);
+}
+
+function buildUpdatesFromInputs(): UserProfileDetails {
   const bio = (bioInput.val() ?? "") as string;
   const keyboard = (keyboardInput.val() ?? "") as string;
   const twitter = (twitterInput.val() ?? "") as string;
   const github = (githubInput.val() ?? "") as string;
   const website = (websiteInput.val() ?? "") as string;
 
-  const profileUpdates: SharedTypes.UserProfileDetails = {
+  const profileUpdates: UserProfileDetails = {
     bio,
     keyboard,
     socialProfiles: {
@@ -149,7 +159,7 @@ async function updateProfile(): Promise<void> {
     return;
   }
 
-  snapshot.details = updates;
+  snapshot.details = response.data ?? updates;
   snapshot.inventory?.badges.forEach((badge) => {
     if (badge.id === currentSelectedBadgeId) {
       badge.selected = true;
