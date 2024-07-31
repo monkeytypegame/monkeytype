@@ -862,7 +862,8 @@ export async function recordAutoBanEvent(
   void Logger.logToDb(
     "user_auto_banned",
     { autoBanTimestamps, banningUser },
-    uid
+    uid,
+    true
   );
   return ret;
 }
@@ -1077,7 +1078,12 @@ export async function updateStreak(
   if (isYesterday(streak.lastResultTimestamp, streak.hourOffset ?? 0)) {
     streak.length += 1;
   } else if (!isToday(streak.lastResultTimestamp, streak.hourOffset ?? 0)) {
-    void Logger.logToDb("streak_lost", JSON.parse(JSON.stringify(streak)), uid);
+    void Logger.logToDb(
+      "streak_lost",
+      JSON.parse(JSON.stringify(streak)),
+      uid,
+      true
+    );
     streak.length = 1;
   }
 
