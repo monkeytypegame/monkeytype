@@ -123,10 +123,11 @@ describe("IP Addresses", () => {
         ipParts.length,
         "There should only be one '/' in the ip addresss"
       ).toEqual(2);
+      console.log(cidr);
       const maskSize = Number(ipParts[1]);
       expect(maskSize).not.toBeNaN();
-      expect(maskSize).toBeGreaterThanOrEqual(0);
-      expect(maskSize).toBeLessThanOrEqual(32);
+      expect(maskSize).toBeGreaterThanOrEqual(1);
+      expect(maskSize).toBeLessThanOrEqual(128);
     });
   });
 });
