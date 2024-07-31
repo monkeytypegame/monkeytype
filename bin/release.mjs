@@ -28,6 +28,34 @@ const runCommand = (command, force) => {
   }
 };
 
+const checkBranchSync = () => {
+  console.log("Checking if local master branch is in sync with origin...");
+
+  if (isDryRun) {
+    console.log("[Dry Run] Checking sync...");
+  } else {
+    try {
+      // Fetch the latest changes from the remote repository
+      runCommand("git fetch origin");
+
+      // Get the commit hashes of the local and remote master branches
+      const localMaster = runCommand("git rev-parse master").trim();
+      const remoteMaster = runCommand("git rev-parse origin/master").trim();
+
+      if (localMaster !== remoteMaster) {
+        console.error(
+          "Local master branch is not in sync with origin. Please pull the latest changes before proceeding."
+        );
+        process.exit(1);
+      }
+    } catch (error) {
+      console.error("Error checking branch sync status.");
+      console.error(error);
+      process.exit(1);
+    }
+  }
+};
+
 const getCurrentVersion = () => {
   console.log("Getting current version...");
   const packageJson = JSON.parse(readFileSync("./package.json", "utf-8"));
@@ -153,6 +181,9 @@ const createGithubRelease = async (version, changelogContent) => {
 
 const main = async () => {
   console.log("Starting release process...");
+
+  checkBranchSync();
+
   checkUncommittedChanges();
 
   const changelogContent = await generateChangelog();
