@@ -11,7 +11,9 @@ import {
 import { IdSchema } from "./schemas/util";
 import { ApeKeySchema, ApeKeyUserDefinedSchema } from "./schemas/ape-keys";
 
-export const GetApeKeyResponseSchema = responseWithData(z.array(ApeKeySchema));
+export const GetApeKeyResponseSchema = responseWithData(
+  z.record(IdSchema, ApeKeySchema)
+);
 export type GetApeKeyResponse = z.infer<typeof GetApeKeyResponseSchema>;
 
 export const AddApeKeyRequestSchema = ApeKeyUserDefinedSchema;
@@ -63,7 +65,7 @@ export const apeKeysContract = c.router(
       method: "PATCH",
       path: "/:apeKeyId",
       pathParams: ApeKeyParamsSchema,
-      body: EditApeKeyRequestSchema,
+      body: EditApeKeyRequestSchema.strict(),
       responses: {
         200: MonkeyResponseSchema,
       },
