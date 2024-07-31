@@ -69,6 +69,7 @@
     "lint-staged": "13.2.3",
     "only-allow": "1.2.1",
     "prettier": "2.5.1",
+    "readline-sync": "1.4.10",
     "release-it": "16.1.4",
     "turbo": "2.0.9",
     "typescript": "5.3.3",
