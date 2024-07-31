@@ -129,9 +129,12 @@ describe("ApeKeyController", () => {
         .expect(422);
 
       //THEN
-      expect(body.message).toEqual('"uid" is required (undefined)');
+      expect(body).toEqual({
+        message: "Invalid request data schema",
+        validationErrors: ['"uid" Required'],
+      });
     });
-    it("should fail without unknown properties", async () => {
+    it("should fail with unknown properties", async () => {
       //GIVEN
 
       //WHEN
@@ -142,7 +145,10 @@ describe("ApeKeyController", () => {
         .expect(422);
 
       //THEN
-      expect(body.message).toEqual('"extra" is not allowed (value)');
+      expect(body).toEqual({
+        message: "Invalid request data schema",
+        validationErrors: ["Unrecognized key(s) in object: 'extra'"],
+      });
     });
     it("should fail if user is no admin", async () => {
       await expectFailForNonAdmin(
@@ -161,197 +167,245 @@ describe("ApeKeyController", () => {
           .set("authorization", `Uid ${uid}`)
       );
     });
-    describe("accept reports", () => {
-      const getReportsMock = vi.spyOn(ReportDal, "getReports");
-      const deleteReportsMock = vi.spyOn(ReportDal, "deleteReports");
-      const addToInboxMock = vi.spyOn(UserDal, "addToInbox");
+  });
+  describe("accept reports", () => {
+    const getReportsMock = vi.spyOn(ReportDal, "getReports");
+    const deleteReportsMock = vi.spyOn(ReportDal, "deleteReports");
+    const addToInboxMock = vi.spyOn(UserDal, "addToInbox");
 
-      beforeEach(() => {
-        [getReportsMock, deleteReportsMock, addToInboxMock].forEach((it) =>
-          it.mockReset()
-        );
-      });
-
-      it("should accept reports", async () => {
-        //GIVEN
-        const reportOne = {
-          id: "1",
-          reason: "one",
-        } as any as MonkeyTypes.Report;
-        const reportTwo = {
-          id: "2",
-          reason: "two",
-        } as any as MonkeyTypes.Report;
-        getReportsMock.mockResolvedValue([reportOne, reportTwo]);
-
-        //WHEN
-        const { body } = await mockApp
-          .post("/admin/report/accept")
-          .send({
-            reports: [{ reportId: reportOne.id }, { reportId: reportTwo.id }],
-          })
-          .set("authorization", `Uid ${uid}`)
-          .expect(200);
-
-        expect(body).toEqual({
-          message: "Reports removed and users notified.",
-          data: null,
-        });
-
-        expect(addToInboxMock).toBeCalledTimes(2);
-        expect(deleteReportsMock).toHaveBeenCalledWith(["1", "2"]);
-      });
-      it("should fail wihtout mandatory properties", async () => {
-        //WHEN
-        const { body } = await mockApp
-          .post("/admin/report/accept")
-          .send({})
-          .set("authorization", `Uid ${uid}`)
-          .expect(422);
-
-        expect(body.message).toEqual('"reports" is required (undefined)');
-      });
-      it("should fail with unknown properties", async () => {
-        //WHEN
-        const { body } = await mockApp
-          .post("/admin/report/accept")
-          .send({ reports: [], extra: "value" })
-          .set("authorization", `Uid ${uid}`)
-          .expect(422);
-
-        expect(body.message).toEqual('"extra" is not allowed (value)');
-      });
-      it("should fail if user is no admin", async () => {
-        await expectFailForNonAdmin(
-          mockApp
-            .post("/admin/report/accept")
-            .send({ reports: [] })
-            .set("authorization", `Uid ${uid}`)
-        );
-      });
-      it("should fail if admin endpoints are disabled", async () => {
-        //GIVEN
-        await expectFailForDisabledEndpoint(
-          mockApp
-            .post("/admin/report/accept")
-            .send({ reports: [] })
-            .set("authorization", `Uid ${uid}`)
-        );
-      });
-    });
-    describe("reject reports", () => {
-      const getReportsMock = vi.spyOn(ReportDal, "getReports");
-      const deleteReportsMock = vi.spyOn(ReportDal, "deleteReports");
-      const addToInboxMock = vi.spyOn(UserDal, "addToInbox");
-
-      beforeEach(() => {
-        [getReportsMock, deleteReportsMock, addToInboxMock].forEach((it) =>
-          it.mockReset()
-        );
-      });
-
-      it("should reject reports", async () => {
-        //GIVEN
-        const reportOne = {
-          id: "1",
-          reason: "one",
-        } as any as MonkeyTypes.Report;
-        const reportTwo = {
-          id: "2",
-          reason: "two",
-        } as any as MonkeyTypes.Report;
-        getReportsMock.mockResolvedValue([reportOne, reportTwo]);
-
-        //WHEN
-        const { body } = await mockApp
-          .post("/admin/report/reject")
-          .send({
-            reports: [
-              { reportId: reportOne.id, reason: "test" },
-              { reportId: reportTwo.id },
-            ],
-          })
-          .set("authorization", `Uid ${uid}`)
-          .expect(200);
-
-        expect(body).toEqual({
-          message: "Reports removed and users notified.",
-          data: null,
-        });
-
-        expect(addToInboxMock).toHaveBeenCalledTimes(2);
-        expect(deleteReportsMock).toHaveBeenCalledWith(["1", "2"]);
-      });
-      it("should fail wihtout mandatory properties", async () => {
-        //WHEN
-        const { body } = await mockApp
-          .post("/admin/report/reject")
-          .send({})
-          .set("authorization", `Uid ${uid}`)
-          .expect(422);
-
-        expect(body.message).toEqual('"reports" is required (undefined)');
-      });
-      it("should fail with unknown properties", async () => {
-        //WHEN
-        const { body } = await mockApp
-          .post("/admin/report/reject")
-          .send({ reports: [], extra: "value" })
-          .set("authorization", `Uid ${uid}`)
-          .expect(422);
-
-        expect(body.message).toEqual('"extra" is not allowed (value)');
-      });
-      it("should fail if user is no admin", async () => {
-        await expectFailForNonAdmin(
-          mockApp
-            .post("/admin/report/reject")
-            .send({ reports: [] })
-            .set("authorization", `Uid ${uid}`)
-        );
-      });
-      it("should fail if admin endpoints are disabled", async () => {
-        //GIVEN
-        await expectFailForDisabledEndpoint(
-          mockApp
-            .post("/admin/report/reject")
-            .send({ reports: [] })
-            .set("authorization", `Uid ${uid}`)
-        );
-      });
-    });
-    describe("send forgot password email", () => {
-      //endpoint delegates to user controller which should be tested in the user test cases
-      const sendForgotPasswordEmailMock = vi.spyOn(
-        UserController,
-        "doSendForgotPasswordEmail"
+    beforeEach(() => {
+      [getReportsMock, deleteReportsMock, addToInboxMock].forEach((it) =>
+        it.mockReset()
       );
+    });
 
-      beforeEach(() => {
-        sendForgotPasswordEmailMock.mockReset();
+    it("should accept reports", async () => {
+      //GIVEN
+      const reportOne = {
+        id: "1",
+        reason: "one",
+      } as any as MonkeyTypes.Report;
+      const reportTwo = {
+        id: "2",
+        reason: "two",
+      } as any as MonkeyTypes.Report;
+      getReportsMock.mockResolvedValue([reportOne, reportTwo]);
+
+      //WHEN
+      const { body } = await mockApp
+        .post("/admin/report/accept")
+        .send({
+          reports: [{ reportId: reportOne.id }, { reportId: reportTwo.id }],
+        })
+        .set("authorization", `Uid ${uid}`)
+        .expect(200);
+
+      expect(body).toEqual({
+        message: "Reports removed and users notified.",
+        data: null,
       });
 
-      it("should send forgot password link", async () => {
-        //GIVEN
+      expect(addToInboxMock).toBeCalledTimes(2);
+      expect(deleteReportsMock).toHaveBeenCalledWith(["1", "2"]);
+    });
+    it("should fail wihtout mandatory properties", async () => {
+      //WHEN
+      const { body } = await mockApp
+        .post("/admin/report/accept")
+        .send({})
+        .set("authorization", `Uid ${uid}`)
+        .expect(422);
 
-        //WHEN
-        const { body } = await mockApp
-          .post("/admin/sendForgotPasswordEmail")
-          .send({ email: "meowdec@example.com" })
+      expect(body).toEqual({
+        message: "Invalid request data schema",
+        validationErrors: ['"reports" Required'],
+      });
+    });
+    it("should fail with empty reports", async () => {
+      //WHEN
+      const { body } = await mockApp
+        .post("/admin/report/accept")
+        .send({ reports: [] })
+        .set("authorization", `Uid ${uid}`)
+        .expect(422);
+
+      expect(body).toEqual({
+        message: "Invalid request data schema",
+        validationErrors: [
+          '"reports" Array must contain at least 1 element(s)',
+        ],
+      });
+    });
+    it("should fail with unknown properties", async () => {
+      //WHEN
+      const { body } = await mockApp
+        .post("/admin/report/accept")
+        .send({ reports: [{ reportId: "1", extra2: "value" }], extra: "value" })
+        .set("authorization", `Uid ${uid}`)
+        .expect(422);
+
+      expect(body).toEqual({
+        message: "Invalid request data schema",
+        validationErrors: [
+          `"reports.0" Unrecognized key(s) in object: 'extra2'`,
+          "Unrecognized key(s) in object: 'extra'",
+        ],
+      });
+    });
+    it("should fail if user is no admin", async () => {
+      await expectFailForNonAdmin(
+        mockApp
+          .post("/admin/report/accept")
+          .send({ reports: [] })
           .set("authorization", `Uid ${uid}`)
-          .expect(200);
+      );
+    });
+    it("should fail if admin endpoints are disabled", async () => {
+      //GIVEN
+      await expectFailForDisabledEndpoint(
+        mockApp
+          .post("/admin/report/accept")
+          .send({ reports: [] })
+          .set("authorization", `Uid ${uid}`)
+      );
+    });
+  });
+  describe("reject reports", () => {
+    const getReportsMock = vi.spyOn(ReportDal, "getReports");
+    const deleteReportsMock = vi.spyOn(ReportDal, "deleteReports");
+    const addToInboxMock = vi.spyOn(UserDal, "addToInbox");
 
-        //THEN
-        expect(body).toEqual({
-          message:
-            "Password reset request received. If the email is valid, you will receive an email shortly.",
-          data: null,
-        });
+    beforeEach(() => {
+      [getReportsMock, deleteReportsMock, addToInboxMock].forEach((it) =>
+        it.mockReset()
+      );
+    });
 
-        expect(sendForgotPasswordEmailMock).toHaveBeenCalledWith(
-          "meowdec@example.com"
-        );
+    it("should reject reports", async () => {
+      //GIVEN
+      const reportOne = {
+        id: "1",
+        reason: "one",
+      } as any as MonkeyTypes.Report;
+      const reportTwo = {
+        id: "2",
+        reason: "two",
+      } as any as MonkeyTypes.Report;
+      getReportsMock.mockResolvedValue([reportOne, reportTwo]);
+
+      //WHEN
+      const { body } = await mockApp
+        .post("/admin/report/reject")
+        .send({
+          reports: [
+            { reportId: reportOne.id, reason: "test" },
+            { reportId: reportTwo.id },
+          ],
+        })
+        .set("authorization", `Uid ${uid}`)
+        .expect(200);
+
+      expect(body).toEqual({
+        message: "Reports removed and users notified.",
+        data: null,
       });
+
+      expect(addToInboxMock).toHaveBeenCalledTimes(2);
+      expect(deleteReportsMock).toHaveBeenCalledWith(["1", "2"]);
+    });
+    it("should fail wihtout mandatory properties", async () => {
+      //WHEN
+      const { body } = await mockApp
+        .post("/admin/report/reject")
+        .send({})
+        .set("authorization", `Uid ${uid}`)
+        .expect(422);
+
+      expect(body).toEqual({
+        message: "Invalid request data schema",
+        validationErrors: ['"reports" Required'],
+      });
+    });
+    it("should fail with empty reports", async () => {
+      //WHEN
+      const { body } = await mockApp
+        .post("/admin/report/reject")
+        .send({ reports: [] })
+        .set("authorization", `Uid ${uid}`)
+        .expect(422);
+
+      expect(body).toEqual({
+        message: "Invalid request data schema",
+        validationErrors: [
+          '"reports" Array must contain at least 1 element(s)',
+        ],
+      });
+    });
+    it("should fail with unknown properties", async () => {
+      //WHEN
+      const { body } = await mockApp
+        .post("/admin/report/reject")
+        .send({ reports: [{ reportId: "1", extra2: "value" }], extra: "value" })
+        .set("authorization", `Uid ${uid}`)
+        .expect(422);
+
+      expect(body).toEqual({
+        message: "Invalid request data schema",
+        validationErrors: [
+          `"reports.0" Unrecognized key(s) in object: 'extra2'`,
+          "Unrecognized key(s) in object: 'extra'",
+        ],
+      });
+    });
+    it("should fail if user is no admin", async () => {
+      await expectFailForNonAdmin(
+        mockApp
+          .post("/admin/report/reject")
+          .send({ reports: [] })
+          .set("authorization", `Uid ${uid}`)
+      );
+    });
+    it("should fail if admin endpoints are disabled", async () => {
+      //GIVEN
+      await expectFailForDisabledEndpoint(
+        mockApp
+          .post("/admin/report/reject")
+          .send({ reports: [] })
+          .set("authorization", `Uid ${uid}`)
+      );
+    });
+  });
+  describe("send forgot password email", () => {
+    //endpoint delegates to user controller which should be tested in the user test cases
+    const sendForgotPasswordEmailMock = vi.spyOn(
+      UserController,
+      "doSendForgotPasswordEmail"
+    );
+
+    beforeEach(() => {
+      sendForgotPasswordEmailMock.mockReset();
+    });
+
+    it("should send forgot password link", async () => {
+      //GIVEN
+
+      //WHEN
+      const { body } = await mockApp
+        .post("/admin/sendForgotPasswordEmail")
+        .send({ email: "meowdec@example.com" })
+        .set("authorization", `Uid ${uid}`)
+        .expect(200);
+
+      //THEN
+      expect(body).toEqual({
+        message:
+          "Password reset request received. If the email is valid, you will receive an email shortly.",
+        data: null,
+      });
+
+      expect(sendForgotPasswordEmailMock).toHaveBeenCalledWith(
+        "meowdec@example.com"
+      );
     });
   });
 

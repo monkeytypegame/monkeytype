@@ -1,17 +1,28 @@
-import { MonkeyResponse } from "../../utils/monkey-response";
+import { MonkeyResponse2 } from "../../utils/monkey-response";
 import { buildMonkeyMail } from "../../utils/monkey-mail";
 import * as UserDAL from "../../dal/user";
 import * as ReportDAL from "../../dal/report";
 import GeorgeQueue from "../../queues/george-queue";
 import { doSendForgotPasswordEmail } from "./user";
+import {
+  AcceptReportsRequest,
+  RejectReportsRequest,
+  SendForgotPasswordEmailRequest,
+  ToggleBanRequest,
+  ToggleBanResponse,
+} from "@monkeytype/contracts/admin";
+import MonkeyError from "../../utils/error";
+import { Configuration } from "@monkeytype/shared-types";
 
-export async function test(): Promise<MonkeyResponse> {
-  return new MonkeyResponse("OK");
+export async function test(
+  _req: MonkeyTypes.Request2
+): Promise<MonkeyResponse2> {
+  return new MonkeyResponse2("OK", null);
 }
 
 export async function toggleBan(
-  req: MonkeyTypes.Request
-): Promise<MonkeyResponse> {
+  req: MonkeyTypes.Request2<undefined, ToggleBanRequest>
+): Promise<ToggleBanResponse> {
   const { uid } = req.body;
 
   const user = await UserDAL.getPartialUser(uid, "toggle ban", [
@@ -24,30 +35,39 @@ export async function toggleBan(
   await UserDAL.setBanned(uid, !user.banned);
   if (discordIdIsValid) await GeorgeQueue.userBanned(discordId, !user.banned);
 
-  return new MonkeyResponse(`Ban toggled`, {
+  return new MonkeyResponse2(`Ban toggled`, {
     banned: !user.banned,
   });
 }
 
 export async function acceptReports(
-  req: MonkeyTypes.Request
-): Promise<MonkeyResponse> {
-  return handleReports(req, true);
+  req: MonkeyTypes.Request2<undefined, AcceptReportsRequest>
+): Promise<MonkeyResponse2> {
+  await handleReports(
+    req.body.reports.map((it) => ({ ...it })),
+    true,
+    req.ctx.configuration.users.inbox
+  );
+  return new MonkeyResponse2("Reports removed and users notified.", null);
 }
 
 export async function rejectReports(
-  req: MonkeyTypes.Request
-): Promise<MonkeyResponse> {
-  return handleReports(req, false);
+  req: MonkeyTypes.Request2<undefined, RejectReportsRequest>
+): Promise<MonkeyResponse2> {
+  await handleReports(
+    req.body.reports.map((it) => ({ ...it })),
+    false,
+    req.ctx.configuration.users.inbox
+  );
+  return new MonkeyResponse2("Reports removed and users notified.", null);
 }
 
 export async function handleReports(
-  req: MonkeyTypes.Request,
-  accept: boolean
-): Promise<MonkeyResponse> {
-  const { reports } = req.body;
-  // TODO: remove once this gets converted to ts-rest
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+  reports: { reportId: string; reason?: string }[],
+  accept: boolean,
+  inboxConfig: Configuration["users"]["inbox"]
+): Promise<void> {
+  console.log(reports);
   const reportIds = reports.map(({ reportId }) => reportId);
 
   const reportsFromDb = await ReportDAL.getReports(reportIds);
@@ -59,10 +79,9 @@ export async function handleReports(
   );
 
   if (missingReportIds.length > 0) {
-    return new MonkeyResponse(
-      `Reports not found for some IDs`,
-      missingReportIds,
-      404
+    throw new MonkeyError(
+      404,
+      `Reports not found for some IDs ${missingReportIds.join(",")}`
     );
   }
 
@@ -72,11 +91,7 @@ export async function handleReports(
     try {
       const report = reportById.get(reportId);
       if (!report) {
-        return new MonkeyResponse(
-          `Report not found for ID: ${reportId}`,
-          null,
-          404
-        );
+        throw new MonkeyError(404, `Report not found for ID: ${reportId}`);
       }
 
       let mailBody = "";
@@ -97,24 +112,20 @@ export async function handleReports(
         subject: mailSubject,
         body: mailBody,
       });
-      await UserDAL.addToInbox(
-        report.uid,
-        [mail],
-        req.ctx.configuration.users.inbox
-      );
+      await UserDAL.addToInbox(report.uid, [mail], inboxConfig);
     } catch (e) {
-      return new MonkeyResponse(e.message, null, e.status);
+      throw new MonkeyError(e.status, e.message);
     }
   }
-  return new MonkeyResponse("Reports removed and users notified.");
 }
 
 export async function sendForgotPasswordEmail(
-  req: MonkeyTypes.Request
-): Promise<MonkeyResponse> {
+  req: MonkeyTypes.Request2<undefined, SendForgotPasswordEmailRequest>
+): Promise<MonkeyResponse2> {
   const { email } = req.body;
   await doSendForgotPasswordEmail(email);
-  return new MonkeyResponse(
-    "Password reset request received. If the email is valid, you will receive an email shortly."
+  return new MonkeyResponse2(
+    "Password reset request received. If the email is valid, you will receive an email shortly.",
+    null
   );
 }
