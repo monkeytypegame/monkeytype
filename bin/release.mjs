@@ -3,6 +3,8 @@ import { Octokit } from "@octokit/rest";
 import dotenv from "dotenv";
 import { readFileSync } from "fs";
 import readlineSync from "readline-sync";
+import path, { dirname } from "path";
+import fs from "fs";
 
 dotenv.config();
 
@@ -86,7 +88,7 @@ const updatePackage = (newVersion) => {
     console.log(`[Dry Run] Updated package.json to version ${newVersion}`);
     return;
   }
-  const packagePath = path.resolve(__dirname, "package.json");
+  const packagePath = path.resolve(__dirname, "../package.json");
 
   // Read the package.json file
   const packageJson = JSON.parse(fs.readFileSync(packagePath, "utf8"));
@@ -95,7 +97,11 @@ const updatePackage = (newVersion) => {
   packageJson.version = newVersion.replace("v", "");
 
   // Write the updated JSON back to package.json
-  fs.writeFileSync(packagePath, JSON.stringify(packageJson, null, 2), "utf8");
+  fs.writeFileSync(
+    packagePath,
+    JSON.stringify(packageJson, null, 2) + "\n",
+    "utf8"
+  );
 
   console.log(`Updated package.json to version ${newVersion}`);
 };
