@@ -36,7 +36,7 @@ jobs:
             style
             test
           requireScope: false
-          subjectPattern:  ^.*\(.+\)$
+          subjectPattern:  ^.+ \(@[^,]+(, @[^,]+)*\)$
           subjectPatternError: |
             The subject "{subject}" found in the pull request title "{title}"
             didn't match the configured pattern. Please ensure that the subject
