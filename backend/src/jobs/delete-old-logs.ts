@@ -2,6 +2,7 @@ import { CronJob } from "cron";
 import * as db from "../init/db";
 import Logger from "../utils/logger";
 import { getCachedConfiguration } from "../init/configuration";
+import { addLog } from "../dal/logs";
 
 const CRON_SCHEDULE = "0 0 0 * * *";
 const LOG_MAX_AGE_DAYS = 30;
@@ -18,7 +19,7 @@ async function deleteOldLogs(): Promise<void> {
     $or: [{ important: false }, { important: { $exists: false } }],
   });
 
-  void Logger.logToDb(
+  void addLog(
     "system_logs_deleted",
     `${data.deletedCount} logs deleted older than ${LOG_MAX_AGE_DAYS} day(s)`,
     undefined
