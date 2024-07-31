@@ -109,10 +109,10 @@ describe("IP Addresses", () => {
         ipParts.length,
         "There should only be one '/' in the ip addresss"
       ).toEqual(2);
-      const portNumber = Number(ipParts[1]);
-      expect(portNumber).not.toBeNaN();
-      expect(portNumber).toBeGreaterThanOrEqual(0);
-      expect(portNumber).toBeLessThanOrEqual(65535);
+      const maskSize = Number(ipParts[1]);
+      expect(maskSize).not.toBeNaN();
+      expect(maskSize).toBeGreaterThanOrEqual(0);
+      expect(maskSize).toBeLessThanOrEqual(32);
     });
 
     it("should convert an IPv6 address to CIDR notation", () => {
@@ -123,10 +123,10 @@ describe("IP Addresses", () => {
         ipParts.length,
         "There should only be one '/' in the ip addresss"
       ).toEqual(2);
-      const portNumber = Number(ipParts[1]);
-      expect(portNumber).not.toBeNaN();
-      expect(portNumber).toBeGreaterThanOrEqual(0);
-      expect(portNumber).toBeLessThanOrEqual(255);
+      const maskSize = Number(ipParts[1]);
+      expect(maskSize).not.toBeNaN();
+      expect(maskSize).toBeGreaterThanOrEqual(0);
+      expect(maskSize).toBeLessThanOrEqual(32);
     });
   });
 });
