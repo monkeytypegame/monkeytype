@@ -9,11 +9,13 @@ import {
 } from "./schemas/api";
 
 import { IdSchema } from "./schemas/util";
-import { ApeKeySchema, ApeKeyUserDefinedSchema } from "./schemas/ape-keys";
+import {
+  ApeKeySchema,
+  ApeKeysSchema,
+  ApeKeyUserDefinedSchema,
+} from "./schemas/ape-keys";
 
-export const GetApeKeyResponseSchema = responseWithData(
-  z.record(IdSchema, ApeKeySchema)
-);
+export const GetApeKeyResponseSchema = responseWithData(ApeKeysSchema);
 export type GetApeKeyResponse = z.infer<typeof GetApeKeyResponseSchema>;
 
 export const AddApeKeyRequestSchema = ApeKeyUserDefinedSchema;
