@@ -21,7 +21,7 @@ async function insertIntoDb(
   uid = "",
   important = false
 ): Promise<void> {
-  const dbLog = {
+  const dbLog: DbLog = {
     _id: new ObjectId(),
     timestamp: Date.now(),
     uid: uid ?? "",
@@ -29,6 +29,8 @@ async function insertIntoDb(
     message: message,
     important: important,
   };
+
+  if (!important) delete dbLog.important;
 
   Logger.info(`${event}\t${uid}\t${JSON.stringify(message)}`);
 
