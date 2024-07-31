@@ -1,3 +1,8 @@
+import {
+  Config,
+  CustomThemeColors,
+} from "@monkeytype/contracts/schemas/configs";
+
 export default {
   theme: "serika_dark",
   themeLight: "serika",
@@ -15,7 +20,7 @@ export default {
     "#7e2a33",
     "#ca4754",
     "#7e2a33",
-  ],
+  ] as CustomThemeColors,
   favThemes: [],
   showKeyTips: true,
   smoothCaret: "medium",
@@ -54,6 +59,7 @@ export default {
   keymapLegendStyle: "lowercase",
   keymapLayout: "overrideSync",
   keymapShowTopRow: "layout",
+  keymapSize: 1,
   fontFamily: "Roboto_Mono",
   smoothLineScroll: false,
   alwaysShowDecimalPlaces: false,
@@ -83,7 +89,7 @@ export default {
   oppositeShiftMode: "off",
   customBackground: "",
   customBackgroundSize: "cover",
-  customBackgroundFilter: [0, 1, 1, 1, 1],
+  customBackgroundFilter: [0, 1, 1, 1],
   customLayoutfluid: "qwerty#dvorak#colemak",
   monkeyPowerLevel: "off",
   minBurst: "off",
@@ -94,4 +100,4 @@ export default {
   showAverage: "off",
   tapeMode: "off",
   maxLineWidth: 0,
-} as SharedTypes.Config;
+} as Config;

@@ -9,8 +9,12 @@
       "path": "frontend"
     },
     {
-      "name": "shared-types",
-      "path": "shared-types"
+      "name": "contracts",
+      "path": "packages/contracts"
+    },
+    {
+      "name": "packages",
+      "path": "packages"
     },
     {
       "name": "root",
@@ -21,7 +25,8 @@
     "files.exclude": {
       "frontend": true,
       "backend": true,
-      "shared-types": true
+      "packages": true,
+      "contracts": true
     },
     "search.exclude": {
       //defaults
@@ -32,7 +37,8 @@
       "**/build/**": true,
       "**/dist/**": true,
       "**/public/**": true,
-      "**/coverage/**": true
+      "**/coverage/**": true,
+      "**/logs/**": true
     },
     "editor.defaultFormatter": "esbenp.prettier-vscode",
     "editor.formatOnSaveMode": "file",

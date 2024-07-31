@@ -4,13 +4,19 @@ import { secondsToString } from "../utils/date-and-time";
 import * as Notifications from "./notifications";
 import { format } from "date-fns/format";
 import * as Alerts from "./alerts";
+import { PSA } from "@monkeytype/shared-types";
 
 function clearMemory(): void {
   window.localStorage.setItem("confirmedPSAs", JSON.stringify([]));
 }
 
 function getMemory(): string[] {
-  return JSON.parse(window.localStorage.getItem("confirmedPSAs") ?? "[]") ?? [];
+  //TODO verify with zod?
+  return (
+    (JSON.parse(
+      window.localStorage.getItem("confirmedPSAs") ?? "[]"
+    ) as string[]) ?? []
+  );
 }
 
 function setMemory(id: string): void {
@@ -19,7 +25,7 @@ function setMemory(id: string): void {
   window.localStorage.setItem("confirmedPSAs", JSON.stringify(list));
 }
 
-async function getLatest(): Promise<SharedTypes.PSA[] | null> {
+async function getLatest(): Promise<PSA[] | null> {
   const response = await Ape.psas.get();
 
   if (response.status === 500) {

@@ -824,8 +824,8 @@
       "id": 144
     },
     {
-      "text": "Me llamo Maximo Décimo Meridio, Comandante de los ejércitos del Norte, General de las legiones felix, Leal servidor del verdadero emperador Marco Aurelio, Padre de un hijo asesinado, Marido de una mujer asesinada y alcanzaré mi venganza en esta vida o en la otra.",
-      "source": "Maximo Décimo Meridio - Gladiator",
+      "text": "Me llamo Máximo Décimo Meridio, comandante de los ejércitos del Norte, general de las legiones Félix, leal servidor del verdadero emperador Marco Aurelio, padre de un hijo asesinado, marido de una mujer asesinada y alcanzaré mi venganza en esta vida o en la otra.",
+      "source": "Máximo Décimo Meridio - Gladiator",
       "length": 263,
       "id": 145
     },
@@ -854,9 +854,9 @@
       "id": 149
     },
     {
-      "text": "Errar es humano, pero más lo es culpar de ello a otros",
+      "text": "Errar es humano, pero más lo es culpar de ello a otros.",
       "source": "Baltasar Gracián",
-      "length": 54,
+      "length": 55,
       "id": 150
     },
     {
@@ -944,9 +944,9 @@
       "id": 164
     },
     {
-      "text": "No me arrepiento de este amor aun que me cueste el corazón amar es un milagro y yo te ame como nunca jamas me imagine",
+      "text": "No me arrepiento de este amor, aunque me cueste el corazón. Amar es un milagro, y yo te ame como nunca jamas me imaginé.",
       "source": "Attaque 77 - No Me Arrepiento De Este Amor",
-      "length": 117,
+      "length": 120,
       "id": 165
     },
     {
@@ -978,6 +978,36 @@
       "source": "Eres para mí - Julieta Venegas",
       "length": 118,
       "id": 170
+    },
+    {
+      "text": "Hoy he seguido a Lima y a Belano durante todo el día. Hemos caminado, hemos tomado el metro, camiones, un pesero, hemos vuelto a caminar y durante todo el rato no hemos dejado de hablar. De vez en cuando ellos se detenían y entraban en casas particulares y yo entonces me tenía que quedar en la calle esperándolos. Cuando les pregunté qué era lo que hacían me dijeron que llevaban a cabo una investigación.",
+      "source": "Roberto Bolaño - Los Detectives Salvajes",
+      "length": 406,
+      "id": 171
+    },
+    {
+      "text": "La cólera canta, oh diosa, del Pelida Aquiles, maldita, que causó a los aqueos incontables dolores, precipitó al Hades muchas valientes vidas de héroes y a ellos mismos los hizo presa para los perros y para todas las aves -y así cumplía el plan de Zeus-, desde que por primera vez se separaron tras haber reñido el Atrida, soberano de hombres, y Aquiles, de la casta de Zeus.",
+      "source": "Homero - Ilíada",
+      "length": 375,
+      "id": 172
+    },
+    {
+      "text": "Musa, dime del hábil varón que en su largo extravío, tras haber arrasado el alcázar sagrado de Troya, conoció las ciudades y el genio de innúmeras gentes. Muchos males pasó por las rutas marinas luchando por sí mismo y su vida y la vuelta al hogar de sus hombres, pero a estos no pudo salvarlos con todo su empeño, que en las propias locuras hallaron la muerte.",
+      "source": "Homero - Odisea",
+      "length": 361,
+      "id": 173
+    },
+    {
+      "text": "Mientras Macondo celebraba la reconquista de los recuerdos, José Arcadio Buendía y Melquíades le sacudieron el polvo a su vieja amistad. El gitano iba dispuesto a quedarse en el pueblo. Había estado en la muerte, en efecto, pero había regresado porque no pudo soportar la soledad. Repudiado por su tribu, desprovisto de toda facultad sobrenatural como castigo por su fidelidad a la vida, decidió refugiarse en aquel rincón del mundo todavía no descubierto por la muerte, dedicado a la explotación de un laboratorio de daguerrotipia.",
+      "source": "Cien Años de Soledad - Gabriel García Márquez",
+      "length": 532,
+      "id": 174
+    },
+    {
+      "text": "Calla, he dicho. ¿No hay nadie aquí? Debía contestarme mi hijo. Pero mi hijo es ya un brazado de flores secas. Mi hijo es ya una voz oscura detrás de los montes. ¿Te quieres callar? No quiero llantos en esta casa. Vuestras lágrimas son lágrimas de los ojos nada más, y las mías vendrán cuando yo esté sola, de las plantas de mis pies, de mis raíces, y serán más ardientes que la sangre.",
+      "source": "Federico García Lorca - Bodas de Sangre",
+      "length": 386,
+      "id": 175
     }
   ]
 }

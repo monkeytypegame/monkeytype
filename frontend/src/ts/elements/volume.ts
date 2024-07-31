@@ -1,6 +1,7 @@
 import { debounce } from "throttle-debounce";
 import * as UpdateConfig from "../config";
 import * as ConfigEvent from "../observables/config-event";
+import { SoundVolume } from "@monkeytype/contracts/schemas/configs";
 
 let volume: number = 0.5;
 
@@ -41,6 +42,6 @@ const debouncedSave = debounce(100, async () => {
 
 ConfigEvent.subscribe((eventKey, eventValue) => {
   if (eventKey === "soundVolume" && (eventValue as boolean)) {
-    volume = eventValue as SharedTypes.Config.SoundVolume;
+    volume = eventValue as SoundVolume;
   }
 });

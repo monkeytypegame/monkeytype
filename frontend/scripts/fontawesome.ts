@@ -1,4 +1,5 @@
 import * as fs from "fs";
+import { createRequire } from "module";
 import * as path from "path";
 
 type FontawesomeConfig = {
@@ -81,7 +82,7 @@ export function getFontawesomeConfig(debug = false): FontawesomeConfig {
     if (matches) {
       matches.forEach((match) => {
         const [icon] = match.split(" ");
-        usedClassesSet.add(icon.substring(3));
+        usedClassesSet.add((icon as string).substring(3));
       });
     }
   }
@@ -101,7 +102,7 @@ export function getFontawesomeConfig(debug = false): FontawesomeConfig {
     throw new Error("unknown icons: " + leftOvers);
   }
 
-  if (debug === true) {
+  if (debug) {
     console.debug(
       "Make sure fontawesome modules are active: ",
       Object.entries(modules2)
@@ -130,11 +131,11 @@ export function getFontawesomeConfig(debug = false): FontawesomeConfig {
 }
 
 //detect if we run this as a main
-if (import.meta.url.endsWith(process.argv[1])) {
+if (import.meta.url.endsWith(process.argv[1] as string)) {
   getFontawesomeConfig(true);
 }
 
-function toFileAndDir(dir, file): FileObject {
+function toFileAndDir(dir: string, file: string): FileObject {
   const name = path.join(dir, file);
   return { name, isDirectory: fs.statSync(name).isDirectory() };
 }
@@ -143,21 +144,28 @@ function findAllFiles(
   dir: string,
   filter: (filename: string) => boolean = (_it): boolean => true
 ): string[] {
-  return fs
+  const files = fs
     .readdirSync(dir)
     .map((it) => toFileAndDir(dir, it))
-    .filter((file) => file.isDirectory || filter(file.name))
-    .reduce((files, file) => {
-      return file.isDirectory
-        ? [...files, ...findAllFiles(file.name, filter)]
-        : [...files, file.name];
-    }, []);
+    .filter((file) => file.isDirectory || filter(file.name));
+
+  const out: string[] = [];
+  for (const file of files) {
+    if (file.isDirectory) {
+      out.push(...findAllFiles(file.name, filter));
+    } else {
+      out.push(file.name);
+    }
+  }
+  return out;
 }
 
 function parseIcons(iconSet: string): string[] {
-  const file: string | null = fs
-    .readFileSync(`node_modules/@fortawesome/fontawesome-free/js/${iconSet}.js`)
-    .toString();
+  const require = createRequire(import.meta.url);
+  const path = require.resolve(
+    `@fortawesome/fontawesome-free/js/${iconSet}.js`
+  );
+  const file: string | null = fs.readFileSync(path).toString();
 
   return file
     ?.match(/"(.*)": \[.*\],/g)

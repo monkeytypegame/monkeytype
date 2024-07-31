@@ -81,7 +81,7 @@ const checkEmail = (): void => {
   const email = $(".page.pageLogin .register.side .emailInput").val() as string;
   const emailRegex =
     /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-  const educationRegex = /@.*(education|\.edu$|\.edu\.|\.ac\.|\.sch\.)/i;
+  const educationRegex = /@.*(education|school|\.edu$|\.edu\.|\.ac\.|\.sch\.)/i;
 
   const emailHasTypo = TypoList.some((typo) => {
     return email.endsWith(typo);
@@ -96,7 +96,7 @@ const checkEmail = (): void => {
     } else if (educationRegex.test(email)) {
       emailIndicator.show(
         "edu",
-        "Some education emails will fail to receive our messages. Consider using a personal email address."
+        "Some education emails will fail to receive our messages, or disable the account as soon as you graduate. Consider using a personal email address."
       );
     } else {
       emailIndicator.show("valid");
@@ -260,7 +260,8 @@ $(".page.pageLogin .register.side .usernameInput").on("input", () => {
       ".page.pageLogin .register.side .usernameInput"
     ).val() as string;
     if (val === "") {
-      return nameIndicator.hide();
+      nameIndicator.hide();
+      return;
     } else {
       nameIndicator.show("checking");
       void checkNameDebounced();

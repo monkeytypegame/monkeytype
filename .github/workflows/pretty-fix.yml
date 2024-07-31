@@ -21,9 +21,9 @@ jobs:
           echo "PR_TITLE=Prettier Fix - $(date)" >> $GITHUB_ENV
 
       - name: Set up Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: "18.19.1"
+          node-version: "20.16.0"
 
       - name: Install dependencies
         run: npm i prettier@2.5.1 --save-dev --save-exact

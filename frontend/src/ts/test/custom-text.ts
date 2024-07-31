@@ -1,3 +1,10 @@
+import {
+  CustomTextData,
+  CustomTextLimit,
+  CustomTextLimitMode,
+  CustomTextMode,
+} from "@monkeytype/shared-types";
+
 let text: string[] = [
   "The",
   "quick",
@@ -10,8 +17,8 @@ let text: string[] = [
   "dog",
 ];
 
-let mode: SharedTypes.CustomTextMode = "repeat";
-const limit: SharedTypes.CustomTextLimit = {
+let mode: CustomTextMode = "repeat";
+const limit: CustomTextLimit = {
   value: 9,
   mode: "word",
 };
@@ -26,16 +33,16 @@ export function setText(txt: string[]): void {
   limit.value = text.length;
 }
 
-export function getMode(): SharedTypes.CustomTextMode {
+export function getMode(): CustomTextMode {
   return mode;
 }
 
-export function setMode(val: SharedTypes.CustomTextMode): void {
+export function setMode(val: CustomTextMode): void {
   mode = val;
   limit.value = text.length;
 }
 
-export function getLimit(): SharedTypes.CustomTextLimit {
+export function getLimit(): CustomTextLimit {
   return limit;
 }
 
@@ -43,7 +50,7 @@ export function getLimitValue(): number {
   return limit.value;
 }
 
-export function getLimitMode(): SharedTypes.CustomTextLimitMode {
+export function getLimitMode(): CustomTextLimitMode {
   return limit.mode;
 }
 
@@ -51,7 +58,7 @@ export function setLimitValue(val: number): void {
   limit.value = val;
 }
 
-export function setLimitMode(val: SharedTypes.CustomTextLimitMode): void {
+export function setLimitMode(val: CustomTextLimitMode): void {
   limit.mode = val;
 }
 
@@ -63,7 +70,7 @@ export function setPipeDelimiter(val: boolean): void {
   pipeDelimiter = val;
 }
 
-export function getData(): SharedTypes.CustomTextData {
+export function getData(): CustomTextData {
   return {
     text,
     mode,
@@ -162,11 +169,15 @@ export function setCustomTextLongProgress(
 }
 
 function getLocalStorage(): CustomTextObject {
-  return JSON.parse(window.localStorage.getItem("customText") ?? "{}");
+  return JSON.parse(
+    window.localStorage.getItem("customText") ?? "{}"
+  ) as CustomTextObject;
 }
 
 function getLocalStorageLong(): CustomTextLongObject {
-  return JSON.parse(window.localStorage.getItem("customTextLong") ?? "{}");
+  return JSON.parse(
+    window.localStorage.getItem("customTextLong") ?? "{}"
+  ) as CustomTextLongObject;
 }
 
 function setLocalStorage(data: CustomTextObject): void {

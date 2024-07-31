@@ -13,7 +13,8 @@ type Accepted = {
 function getAcceptedObject(): Accepted | null {
   const acceptedCookies = localStorage.getItem("acceptedCookies") ?? "";
   if (acceptedCookies) {
-    return JSON.parse(acceptedCookies);
+    //TODO verify with zod?
+    return JSON.parse(acceptedCookies) as Accepted;
   } else {
     return null;
   }
@@ -109,17 +110,17 @@ const modal = new AnimatedModal({
         }
       });
     modalEl.querySelector(".acceptSelected")?.addEventListener("click", () => {
-      const analytics = (
+      const analyticsChecked = (
         modalEl.querySelector(".cookie.analytics input") as HTMLInputElement
       ).checked;
       const accepted = {
         security: true,
-        analytics,
+        analytics: analyticsChecked,
       };
       setAcceptedObject(accepted);
       void hide();
 
-      if (analytics === true) {
+      if (analyticsChecked) {
         activateAnalytics();
       }
     });

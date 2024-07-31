@@ -6,6 +6,8 @@ import * as TestWords from "./test-words";
 import * as FunboxList from "./funbox/funbox-list";
 import * as TestState from "./test-state";
 import * as Numbers from "../utils/numbers";
+import { IncompleteTest, Result } from "@monkeytype/shared-types";
+import { Mode } from "@monkeytype/contracts/schemas/shared";
 
 type CharCount = {
   spaces: number;
@@ -37,11 +39,9 @@ export let start2: number, end2: number;
 export let start3: number, end3: number;
 export let lastSecondNotRound = false;
 
-export let lastResult: SharedTypes.Result<SharedTypes.Config.Mode>;
+export let lastResult: Result<Mode>;
 
-export function setLastResult(
-  result: SharedTypes.Result<SharedTypes.Config.Mode>
-): void {
+export function setLastResult(result: Result<Mode>): void {
   lastResult = result;
 }
 
@@ -69,13 +69,13 @@ export function getStats(): unknown {
   try {
     // @ts-expect-error
     ret.keypressTimings.spacing.average =
-      (TestInput.keypressTimings.spacing.array as number[]).reduce(
+      TestInput.keypressTimings.spacing.array.reduce(
         (previous, current) => (current += previous)
       ) / TestInput.keypressTimings.spacing.array.length;
 
     // @ts-expect-error
     ret.keypressTimings.spacing.sd = Numbers.stdDev(
-      TestInput.keypressTimings.spacing.array as number[]
+      TestInput.keypressTimings.spacing.array
     );
   } catch (e) {
     //
@@ -83,13 +83,13 @@ export function getStats(): unknown {
   try {
     // @ts-expect-error
     ret.keypressTimings.duration.average =
-      (TestInput.keypressTimings.duration.array as number[]).reduce(
+      TestInput.keypressTimings.duration.array.reduce(
         (previous, current) => (current += previous)
       ) / TestInput.keypressTimings.duration.array.length;
 
     // @ts-expect-error
     ret.keypressTimings.duration.sd = Numbers.stdDev(
-      TestInput.keypressTimings.duration.array as number[]
+      TestInput.keypressTimings.duration.array
     );
   } catch (e) {
     //
@@ -108,7 +108,7 @@ export function restart(): void {
 export let restartCount = 0;
 export let incompleteSeconds = 0;
 
-export let incompleteTests: SharedTypes.IncompleteTest[] = [];
+export let incompleteTests: IncompleteTest[] = [];
 
 export function incrementRestartCount(): void {
   restartCount++;
@@ -295,7 +295,7 @@ function countChars(): CharCount {
       correctChars += targetWord.length;
       if (
         i < inputWords.length - 1 &&
-        Strings.getLastChar(inputWord as string) !== "\n"
+        Strings.getLastChar(inputWord) !== "\n"
       ) {
         correctspaces++;
       }

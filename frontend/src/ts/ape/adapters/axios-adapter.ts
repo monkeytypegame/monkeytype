@@ -1,6 +1,6 @@
 import { getAuthenticatedUser, isAuthenticated } from "../../firebase";
 import { getIdToken } from "firebase/auth";
-import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
+import axios, { AxiosRequestConfig, AxiosResponse, isAxiosError } from "axios";
 import { envConfig } from "../../constants/env-config";
 import { createErrorMessage } from "../../utils/misc";
 
@@ -100,11 +100,13 @@ function apeifyClientMethod(
       const typedError = error as Error;
       errorMessage = typedError.message;
 
-      if (axios.isAxiosError(typedError)) {
+      if (isAxiosError(typedError)) {
+        const data = typedError.response?.data as { data: TData };
+
         return {
           status: typedError.response?.status ?? 500,
           message: typedError.message,
-          ...typedError.response?.data,
+          ...data,
         };
       }
     }

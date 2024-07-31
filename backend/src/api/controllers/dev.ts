@@ -8,8 +8,13 @@ import * as ResultDal from "../../dal/result";
 import { roundTo2 } from "../../utils/misc";
 import { ObjectId } from "mongodb";
 import * as LeaderboardDal from "../../dal/leaderboards";
-import { isNumber } from "lodash";
 import MonkeyError from "../../utils/error";
+import isNumber from "lodash/isNumber";
+import {
+  Mode,
+  PersonalBest,
+  PersonalBests,
+} from "@monkeytype/contracts/schemas/shared";
 
 type GenerateDataOptions = {
   firstTestTimestamp: Date;
@@ -49,7 +54,7 @@ async function getOrCreateUser(
 
   if (existingUser !== undefined && existingUser !== null) {
     return existingUser;
-  } else if (createUser === false) {
+  } else if (!createUser) {
     throw new MonkeyError(404, `User ${username} does not exist.`);
   }
 
@@ -113,7 +118,7 @@ function createResult(
   user: MonkeyTypes.DBUser,
   timestamp: Date //evil, we modify this value
 ): MonkeyTypes.DBResult {
-  const mode: SharedTypes.Config.Mode = randomValue(["time", "words"]);
+  const mode: Mode = randomValue(["time", "words"]);
   const mode2: number =
     mode === "time"
       ? randomValue([15, 30, 60, 120])
@@ -129,7 +134,7 @@ function createResult(
     charStats: [131, 0, 0, 0],
     acc: random(80, 100),
     language: "english",
-    mode: mode as SharedTypes.Config.Mode,
+    mode: mode as Mode,
     mode2: mode2 as unknown as never,
     timestamp: timestamp.valueOf(),
     testDuration: testDuration,
@@ -180,8 +185,11 @@ async function updateUser(uid: string): Promise<void> {
     ])
     .toArray();
 
-  const timeTyping = stats.reduce((a, c) => a + c["timeTyping"], 0);
-  const completedTests = stats.reduce((a, c) => a + c["completedTests"], 0);
+  const timeTyping = stats.reduce((a, c) => (a + c["timeTyping"]) as number, 0);
+  const completedTests = stats.reduce(
+    (a, c) => (a + c["completedTests"]) as number,
+    0
+  );
 
   //update PBs
   const lbPersonalBests: MonkeyTypes.LbPersonalBests = {
@@ -191,14 +199,22 @@ async function updateUser(uid: string): Promise<void> {
     },
   };
 
-  const personalBests: SharedTypes.PersonalBests = {
+  const personalBests: PersonalBests = {
     time: {},
     custom: {},
     words: {},
     zen: {},
     quote: {},
   };
-  const modes = stats.map((it) => it["_id"]);
+  const modes = stats.map(
+    (it) =>
+      it["_id"] as {
+        language: string;
+        mode: "time" | "custom" | "words" | "quote" | "zen";
+        mode2: `${number}` | "custom" | "zen";
+      }
+  );
+
   for (const mode of modes) {
     const best = (
       await ResultDal.getResultCollection()
@@ -228,7 +244,7 @@ async function updateUser(uid: string): Promise<void> {
       wpm: best.wpm,
       numbers: best.numbers,
       timestamp: best.timestamp,
-    } as SharedTypes.PersonalBest;
+    } as PersonalBest;
 
     personalBests[mode.mode][mode.mode2].push(entry);
 
@@ -251,7 +267,7 @@ async function updateUser(uid: string): Promise<void> {
         timeTyping: timeTyping,
         completedTests: completedTests,
         startedTests: Math.round(completedTests * 1.25),
-        personalBests: personalBests as SharedTypes.PersonalBests,
+        personalBests: personalBests,
         lbPersonalBests: lbPersonalBests,
       },
     }

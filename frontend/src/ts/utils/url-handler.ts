@@ -12,6 +12,9 @@ import * as Loader from "../elements/loader";
 import * as AccountButton from "../elements/account-button";
 import { restart as restartTest } from "../test/test-logic";
 import * as ChallengeController from "../controllers/challenge-controller";
+import { Mode, Mode2 } from "@monkeytype/contracts/schemas/shared";
+import { Difficulty } from "@monkeytype/contracts/schemas/configs";
+import { CustomTextData } from "@monkeytype/shared-types";
 
 export async function linkDiscord(hashOverride: string): Promise<void> {
   if (!hashOverride) return;
@@ -27,17 +30,13 @@ export async function linkDiscord(hashOverride: string): Promise<void> {
     Loader.hide();
 
     if (response.status !== 200) {
-      return Notifications.add(
-        "Failed to link Discord: " + response.message,
-        -1
-      );
+      Notifications.add("Failed to link Discord: " + response.message, -1);
+      return;
     }
 
     if (response.data === null) {
-      return Notifications.add(
-        "Failed to link Discord: data returned was null",
-        -1
-      );
+      Notifications.add("Failed to link Discord: data returned was null", -1);
+      return;
     }
 
     Notifications.add(response.message, 1);
@@ -68,7 +67,8 @@ export function loadCustomThemeFromUrl(getOverride?: string): void {
   try {
     decoded = JSON.parse(atob(getValue));
   } catch (e) {
-    return Notifications.add("Invalid custom theme ", 0);
+    Notifications.add("Invalid custom theme ", 0);
+    return;
   }
 
   let colorArray = [];
@@ -84,7 +84,8 @@ export function loadCustomThemeFromUrl(getOverride?: string): void {
   }
 
   if (colorArray.length === 0) {
-    return Notifications.add("Invalid custom theme ", 0);
+    Notifications.add("Invalid custom theme ", 0);
+    return;
   }
 
   const oldCustomTheme = Config.customTheme;
@@ -109,13 +110,13 @@ export function loadCustomThemeFromUrl(getOverride?: string): void {
 }
 
 type SharedTestSettings = [
-  SharedTypes.Config.Mode | null,
-  SharedTypes.Config.Mode2<SharedTypes.Config.Mode> | null,
-  SharedTypes.CustomTextData | null,
+  Mode | null,
+  Mode2<Mode> | null,
+  CustomTextData | null,
   boolean | null,
   boolean | null,
   string | null,
-  SharedTypes.Config.Difficulty | null,
+  Difficulty | null,
   string | null
 ];
 
@@ -210,7 +211,7 @@ export function loadChallengeFromUrl(getOverride?: string): void {
   Notifications.add("Loading challenge", 0);
   ChallengeController.setup(getValue)
     .then((result) => {
-      if (result === true) {
+      if (result) {
         Notifications.add("Challenge loaded", 1);
         restartTest({
           nosave: true,

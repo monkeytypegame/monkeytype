@@ -1,18 +1,23 @@
+import { ConfigValue } from "@monkeytype/contracts/schemas/configs";
 import Config from "../../config";
 import * as Notifications from "../notifications";
+// @ts-expect-error TODO: update slim-select
 import SlimSelect from "slim-select";
+import { debounce } from "throttle-debounce";
 
-export default class SettingsGroup<T extends SharedTypes.ConfigValue> {
+type Mode = "select" | "button" | "range";
+
+export default class SettingsGroup<T extends ConfigValue> {
   public configName: string;
   public configValue: T;
   public configFunction: (param: T, nosave?: boolean) => boolean;
-  public mode: string;
+  public mode: Mode;
   public setCallback?: () => void;
   public updateCallback?: () => void;
   constructor(
     configName: string,
     configFunction: (param: T, nosave?: boolean) => boolean,
-    mode: string,
+    mode: Mode,
     setCallback?: () => void,
     updateCallback?: () => void
   ) {
@@ -62,9 +67,32 @@ export default class SettingsGroup<T extends SharedTypes.ConfigValue> {
           let typed = value as T;
           if (typed === "true") typed = true as T;
           if (typed === "false") typed = false as T;
-          this.setValue(typed as T);
+          this.setValue(typed);
         }
       );
+    } else if (this.mode === "range") {
+      const rangeElement = document.querySelector(
+        `.pageSettings .section[data-config-name=${this.configName}] input[type=range]`
+      );
+
+      if (!rangeElement) {
+        Notifications.add(`Failed to find range element for ${configName}`, -1);
+        return;
+      }
+
+      const debounced = debounce(250, (val) => {
+        this.setValue(val);
+      });
+
+      rangeElement.addEventListener("input", (e) => {
+        const target = $(e.target as HTMLInputElement);
+        if (target.hasClass("disabled") || target.hasClass("no-auto-handle")) {
+          return;
+        }
+        const val = parseFloat(target.val() as string) as unknown as T;
+        this.updateUI(val);
+        debounced(val);
+      });
     }
   }
 
@@ -74,15 +102,16 @@ export default class SettingsGroup<T extends SharedTypes.ConfigValue> {
     if (this.setCallback) this.setCallback();
   }
 
-  updateUI(): void {
-    this.configValue = Config[this.configName as keyof typeof Config] as T;
+  updateUI(valueOverride?: T): void {
+    this.configValue =
+      valueOverride ?? (Config[this.configName as keyof typeof Config] as T);
     $(
       `.pageSettings .section[data-config-name='${this.configName}'] button`
     ).removeClass("active");
     if (this.mode === "select") {
-      const select = document.querySelector(
+      const select = document.querySelector<HTMLSelectElement>(
         `.pageSettings .section[data-config-name='${this.configName}'] select`
-      ) as HTMLSelectElement | null;
+      );
 
       if (select === null) {
         return;
@@ -101,6 +130,20 @@ export default class SettingsGroup<T extends SharedTypes.ConfigValue> {
         // eslint-disable-next-line @typescript-eslint/no-base-to-string
         `.pageSettings .section[data-config-name='${this.configName}'] button[data-config-value='${this.configValue}']`
       ).addClass("active");
+    } else if (this.mode === "range") {
+      const range = document.querySelector<HTMLInputElement>(
+        `.pageSettings .section[data-config-name='${this.configName}'] input[type=range]`
+      );
+      const rangeValue = document.querySelector(
+        `.pageSettings .section[data-config-name='${this.configName}'] .value`
+      );
+
+      if (range === null || rangeValue === null) {
+        return;
+      }
+
+      range.value = this.configValue as unknown as string;
+      rangeValue.textContent = `${(this.configValue as number).toFixed(1)}`;
     }
     if (this.updateCallback) this.updateCallback();
   }

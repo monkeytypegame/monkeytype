@@ -56,6 +56,7 @@ import KeymapModeCommands from "./lists/keymap-mode";
 import KeymapStyleCommands from "./lists/keymap-style";
 import KeymapLegendStyleCommands from "./lists/keymap-legend-style";
 import KeymapShowTopRowCommands from "./lists/keymap-show-top-row";
+import KeymapSizeCommands from "./lists/keymap-size";
 import EnableAdsCommands from "./lists/enable-ads";
 import MonkeyPowerLevelCommands from "./lists/monkey-power-level";
 import BailOutCommands from "./lists/bail-out";
@@ -245,9 +246,7 @@ export const commands: MonkeyTypes.CommandsSubgroup = {
       icon: "fa-tint",
       exec: ({ input }): void => {
         if (input === undefined) return;
-        void UpdateConfig.setCustomLayoutfluid(
-          input as MonkeyTypes.CustomLayoutFluidSpaces
-        );
+        void UpdateConfig.setCustomLayoutfluid(input);
       },
     },
 
@@ -296,6 +295,7 @@ export const commands: MonkeyTypes.CommandsSubgroup = {
     ...KeymapModeCommands,
     ...KeymapStyleCommands,
     ...KeymapLegendStyleCommands,
+    ...KeymapSizeCommands,
     ...KeymapLayoutsCommands,
     ...KeymapShowTopRowCommands,
 

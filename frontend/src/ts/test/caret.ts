@@ -130,8 +130,8 @@ export async function updatePosition(noAnim = false): Promise<void> {
     Config.fontSize * Numbers.convertRemToPixels(1);
 
   const letterWidth =
-    currentLetter?.offsetWidth ??
-    previousLetter?.offsetWidth ??
+    currentLetter?.offsetWidth ||
+    previousLetter?.offsetWidth ||
     lastWordLetter?.offsetWidth;
 
   const diff = letterHeight - caret.offsetHeight;
@@ -152,22 +152,8 @@ export async function updatePosition(noAnim = false): Promise<void> {
 
   if (Config.tapeMode === "letter") {
     newLeft = wordsWrapperWidth / 2 - (fullWidthCaret ? 0 : caretWidth / 2);
-  } else if (Config.tapeMode === "word") {
-    if (inputLen === 0) {
-      newLeft = wordsWrapperWidth / 2 - (fullWidthCaret ? 0 : caretWidth / 2);
-    } else {
-      let inputWidth = 0;
-      for (let i = 0; i < inputLen; i++) {
-        inputWidth += $(currentWordNodeList[i] as HTMLElement).outerWidth(
-          true
-        ) as number;
-      }
-      newLeft =
-        wordsWrapperWidth / 2 +
-        inputWidth -
-        (fullWidthCaret ? 0 : caretWidth / 2);
-    }
   }
+
   const newWidth = fullWidthCaret ? (letterWidth ?? 0) + "px" : "";
 
   let smoothlinescroll = $("#words .smoothScroller").height();

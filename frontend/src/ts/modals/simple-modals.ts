@@ -33,6 +33,7 @@ import AnimatedModal, {
 } from "../utils/animated-modal";
 import { format as dateFormat } from "date-fns/format";
 import { Attributes, buildTag } from "../utils/tag-builder";
+import { CustomThemeColors } from "@monkeytype/contracts/schemas/configs";
 
 type CommonInput<TType, TValue> = {
   type: TType;
@@ -110,7 +111,6 @@ type PopupKey =
   | "resetAccount"
   | "clearTagPb"
   | "optOutOfLeaderboards"
-  | "clearTagPb"
   | "applyCustomFont"
   | "resetPersonalBests"
   | "resetSettings"
@@ -286,7 +286,7 @@ class SimpleModal {
         attributes["value"] = input.initVal?.toString() ?? "";
         attributes["type"] = input.type;
       }
-      if (!input.hidden && !input.optional === true) {
+      if (!input.hidden && !input.optional) {
         attributes["required"] = true;
       }
       if (input.disabled) {
@@ -1705,7 +1705,7 @@ list.updateCustomTheme = new SimpleModal({
 
     const newTheme = {
       name: name.replaceAll(" ", "_"),
-      colors: newColors,
+      colors: newColors as CustomThemeColors,
     };
     const validation = await DB.editCustomTheme(customTheme._id, newTheme);
     if (!validation) {
@@ -1714,7 +1714,7 @@ list.updateCustomTheme = new SimpleModal({
         message: "Failed to update custom theme",
       };
     }
-    UpdateConfig.setCustomThemeColors(newColors);
+    UpdateConfig.setCustomThemeColors(newColors as CustomThemeColors);
     void ThemePicker.refreshButtons();
 
     return {
@@ -1886,7 +1886,7 @@ export function showPopup(
     Notifications.add("Failed to show popup - popup is not defined", -1);
     return;
   }
-  if (popup.onlineOnly === true && !ConnectionState.get()) {
+  if (popup.onlineOnly && !ConnectionState.get()) {
     Notifications.add("You are offline", 0, { duration: 2 });
     return;
   }

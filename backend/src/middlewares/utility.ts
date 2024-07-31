@@ -1,5 +1,5 @@
 import _ from "lodash";
-import { Response, NextFunction, RequestHandler } from "express";
+import type { Response, NextFunction, RequestHandler } from "express";
 import { handleMonkeyResponse, MonkeyResponse } from "../utils/monkey-response";
 import { isDevEnvironment } from "../utils/misc";
 
@@ -28,7 +28,7 @@ export function asyncHandler(handler: AsyncHandler): RequestHandler {
   ) => {
     try {
       const handlerData = await handler(req, res);
-      return handleMonkeyResponse(handlerData, res);
+      handleMonkeyResponse(handlerData, res);
     } catch (error) {
       next(error);
     }

@@ -5,6 +5,7 @@ import * as Notifications from "../elements/notifications";
 import QuotesController from "../controllers/quotes-controller";
 import * as CaptchaController from "../controllers/captcha-controller";
 import { removeLanguageSize } from "../utils/strings";
+// @ts-expect-error TODO: update slim-select
 import SlimSelect from "slim-select";
 import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
 import { CharacterCounter } from "../elements/character-counter";
@@ -51,10 +52,7 @@ export async function show(
         },
       });
 
-      new CharacterCounter(
-        $("#quoteReportModal .comment") as JQuery<HTMLTextAreaElement>,
-        250
-      );
+      new CharacterCounter($("#quoteReportModal .comment"), 250);
     },
   });
 }
@@ -73,32 +71,37 @@ async function hide(clearChain = false): Promise<void> {
 async function submitReport(): Promise<void> {
   const captchaResponse = CaptchaController.getResponse("quoteReportModal");
   if (!captchaResponse) {
-    return Notifications.add("Please complete the captcha");
+    Notifications.add("Please complete the captcha");
+    return;
   }
 
   const quoteId = state.quoteToReport?.id.toString();
   const quoteLanguage = removeLanguageSize(Config.language);
   const reason = $("#quoteReportModal .reason").val() as string;
   const comment = $("#quoteReportModal .comment").val() as string;
-  const captcha = captchaResponse as string;
+  const captcha = captchaResponse;
 
   if (quoteId === undefined || quoteId === "") {
-    return Notifications.add("Please select a quote");
+    Notifications.add("Please select a quote");
+    return;
   }
 
   if (!reason) {
-    return Notifications.add("Please select a valid report reason");
+    Notifications.add("Please select a valid report reason");
+    return;
   }
 
   if (!comment) {
-    return Notifications.add("Please provide a comment");
+    Notifications.add("Please provide a comment");
+    return;
   }
 
   const characterDifference = comment.length - 250;
   if (characterDifference > 0) {
-    return Notifications.add(
+    Notifications.add(
       `Report comment is ${characterDifference} character(s) too long`
     );
+    return;
   }
 
   Loader.show();
@@ -112,7 +115,8 @@ async function submitReport(): Promise<void> {
   Loader.hide();
 
   if (response.status !== 200) {
-    return Notifications.add("Failed to report quote: " + response.message, -1);
+    Notifications.add("Failed to report quote: " + response.message, -1);
+    return;
   }
 
   Notifications.add("Report submitted. Thank you!", 1);
