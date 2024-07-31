@@ -158,9 +158,9 @@ const generateChangelog = async () => {
 const createCommitAndTag = (version) => {
   console.log("Creating commit and tag... Pushing to Github...");
   runCommand(`git add .`);
-  runCommand(`git commit -m "chore: release ${version}"`);
+  runCommand(`git commit -m "chore: release ${version}" --no-verify`);
   runCommand(`git tag ${version}`);
-  runCommand(`git push origin master --tags`);
+  runCommand(`git push origin master --tags --no-verify`);
 };
 
 const createGithubRelease = async (version, changelogContent) => {
