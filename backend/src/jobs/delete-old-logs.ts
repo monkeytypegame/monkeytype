@@ -1,6 +1,5 @@
 import { CronJob } from "cron";
 import * as db from "../init/db";
-import Logger from "../utils/logger";
 import { getCachedConfiguration } from "../init/configuration";
 import { addLog } from "../dal/logs";
 
