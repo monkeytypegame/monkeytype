@@ -59,4 +59,74 @@ describe("IP Addresses", () => {
       }
     });
   });
+
+  describe("Generating IPv6", () => {
+    it("should generate valid IPv6 addresses", () => {
+      for (let i = 0; i < IP_GENERATE_COUNT; i++) {
+        const ipAddress = IpAddresses.getRandomIPv6address();
+        const splitIpAddress = ipAddress.split(":");
+
+        expect(
+          splitIpAddress.length,
+          "Make sure there are eight parts"
+        ).toEqual(8);
+
+        for (let j = 0; j < 8; j++) {
+          const currentPart = splitIpAddress[j] as string;
+          expect(
+            currentPart.length,
+            "Each part of an IPv6 should be between 1 and 4 characters"
+          ).toBeGreaterThanOrEqual(1);
+          expect(
+            currentPart.length,
+            "Each part of an IPv6 should be between 1 and 4 characters"
+          ).toBeLessThanOrEqual(4);
+
+          const currentNumber = parseInt(currentPart, 16);
+          expect(
+            currentNumber,
+            "Each part of an IPv6 should be a valid hexadecimal number"
+          ).not.toBeNaN();
+          expect(
+            currentNumber,
+            "Each part of an IPv6 should be >= 0"
+          ).toBeGreaterThanOrEqual(0);
+          expect(
+            currentNumber,
+            "Each part of an IPv6 should be <= 65535"
+          ).toBeLessThanOrEqual(65535);
+        }
+      }
+    });
+  });
+
+  describe("Address to CIDR", () => {
+    it("should convert an IPv4 address to CIDR notation", () => {
+      const ip = "192.168.1.1";
+      const cidr = IpAddresses.addressToCIDR(ip);
+      const ipParts = cidr.split("/");
+      expect(
+        ipParts.length,
+        "There should only be one '/' in the ip addresss"
+      ).toEqual(2);
+      const portNumber = Number(ipParts[1]);
+      expect(portNumber).not.toBeNaN();
+      expect(portNumber).toBeGreaterThanOrEqual(0);
+      expect(portNumber).toBeLessThanOrEqual(65535);
+    });
+
+    it("should convert an IPv6 address to CIDR notation", () => {
+      const ip = "2001:db8:85a3::8a2e:370:7334";
+      const cidr = IpAddresses.addressToCIDR(ip);
+      const ipParts = cidr.split("/");
+      expect(
+        ipParts.length,
+        "There should only be one '/' in the ip addresss"
+      ).toEqual(2);
+      const portNumber = Number(ipParts[1]);
+      expect(portNumber).not.toBeNaN();
+      expect(portNumber).toBeGreaterThanOrEqual(0);
+      expect(portNumber).toBeLessThanOrEqual(65535);
+    });
+  });
 });
