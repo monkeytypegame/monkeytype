@@ -142,10 +142,17 @@ export async function updatePosition(noAnim = false): Promise<void> {
     newTop = activeWordEl.offsetTop + letterPosTop - caret.offsetHeight / 2;
   }
 
-  const newLeft =
+  let newLeft =
     activeWordEl.offsetLeft +
     letterPosLeft -
     (fullWidthCaret ? 0 : caretWidth / 2);
+
+  const wordsWrapperWidth =
+    $(document.querySelector("#wordsWrapper") as HTMLElement).width() ?? 0;
+
+  if (Config.tapeMode === "letter") {
+    newLeft = wordsWrapperWidth / 2 - (fullWidthCaret ? 0 : caretWidth / 2);
+  }
 
   const newWidth = fullWidthCaret ? (letterWidth ?? 0) + "px" : "";
 
