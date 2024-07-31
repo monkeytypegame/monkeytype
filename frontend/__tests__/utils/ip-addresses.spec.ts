@@ -126,7 +126,7 @@ describe("IP Addresses", () => {
       const portNumber = Number(ipParts[1]);
       expect(portNumber).not.toBeNaN();
       expect(portNumber).toBeGreaterThanOrEqual(0);
-      expect(portNumber).toBeLessThanOrEqual(65535);
+      expect(portNumber).toBeLessThanOrEqual(255);
     });
   });
 });
