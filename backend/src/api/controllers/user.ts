@@ -68,7 +68,7 @@ export async function createNewUser(
     }
 
     await UserDAL.addUser(name, email, uid);
-    void Logger.logToDb("user_created", `${name} ${email}`, uid);
+    void Logger.logToDb("user_created", `${name} ${email}`, uid, true);
 
     return new MonkeyResponse("User created");
   } catch (e) {
@@ -222,7 +222,8 @@ export async function deleteUser(
   void Logger.logToDb(
     "user_deleted",
     `${userInfo.email} ${userInfo.name}`,
-    uid
+    uid,
+    true
   );
 
   return new MonkeyResponse("User deleted");
@@ -259,7 +260,12 @@ export async function resetUser(
     promises.push(GeorgeQueue.unlinkDiscord(userInfo.discordId, uid));
   }
   await Promise.all(promises);
-  void Logger.logToDb("user_reset", `${userInfo.email} ${userInfo.name}`, uid);
+  void Logger.logToDb(
+    "user_reset",
+    `${userInfo.email} ${userInfo.name}`,
+    uid,
+    true
+  );
 
   return new MonkeyResponse("User reset");
 }
@@ -292,7 +298,8 @@ export async function updateName(
   void Logger.logToDb(
     "user_name_updated",
     `changed name from ${user.name} to ${name}`,
-    uid
+    uid,
+    true
   );
 
   return new MonkeyResponse("User's name updated");
@@ -308,7 +315,7 @@ export async function clearPb(
     uid,
     req.ctx.configuration.dailyLeaderboards
   );
-  void Logger.logToDb("user_cleared_pbs", "", uid);
+  void Logger.logToDb("user_cleared_pbs", "", uid, true);
 
   return new MonkeyResponse("User's PB cleared");
 }
@@ -323,7 +330,7 @@ export async function optOutOfLeaderboards(
     uid,
     req.ctx.configuration.dailyLeaderboards
   );
-  void Logger.logToDb("user_opted_out_of_leaderboards", "", uid);
+  void Logger.logToDb("user_opted_out_of_leaderboards", "", uid, true);
 
   return new MonkeyResponse("User opted out of leaderboards");
 }
@@ -380,7 +387,8 @@ export async function updateEmail(
   void Logger.logToDb(
     "user_email_updated",
     `changed email to ${newEmail}`,
-    uid
+    uid,
+    true
   );
 
   return new MonkeyResponse("Email updated");
@@ -556,7 +564,7 @@ export async function linkDiscord(
   await UserDAL.linkDiscord(uid, discordId, discordAvatar);
 
   await GeorgeQueue.linkDiscord(discordId, uid);
-  void Logger.logToDb("user_discord_link", `linked to ${discordId}`, uid);
+  void Logger.logToDb("user_discord_link", `linked to ${discordId}`, uid, true);
 
   return new MonkeyResponse("Discord account linked", {
     discordId,
@@ -585,7 +593,7 @@ export async function unlinkDiscord(
 
   await GeorgeQueue.unlinkDiscord(discordId, uid);
   await UserDAL.unlinkDiscord(uid);
-  void Logger.logToDb("user_discord_unlinked", discordId, uid);
+  void Logger.logToDb("user_discord_unlinked", discordId, uid, true);
 
   return new MonkeyResponse("Discord account unlinked");
 }
@@ -957,6 +965,8 @@ export async function setStreakHourOffset(
 
   await UserDAL.setStreakHourOffset(uid, hourOffset);
 
+  void Logger.logToDb("user_streak_hour_offset_set", { hourOffset }, uid, true);
+
   return new MonkeyResponse("Streak hour offset set");
 }
 
@@ -980,6 +990,8 @@ export async function toggleBan(
     if (discordIdIsValid) await GeorgeQueue.userBanned(discordId, true);
   }
 
+  void Logger.logToDb("user_ban_toggled", { banned: !user.banned }, uid, true);
+
   return new MonkeyResponse(`Ban toggled`, {
     banned: !user.banned,
   });
@@ -990,6 +1002,7 @@ export async function revokeAllTokens(
 ): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
   await AuthUtil.revokeTokensByUid(uid);
+  void Logger.logToDb("user_tokens_revoked", "", uid, true);
   return new MonkeyResponse("All tokens revoked");
 }
 

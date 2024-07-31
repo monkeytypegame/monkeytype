@@ -13,9 +13,10 @@ async function deleteOldLogs(): Promise<void> {
     return;
   }
 
-  const data = await db
-    .collection("logs")
-    .deleteMany({ timestamp: { $lt: Date.now() - LOG_MAX_AGE_MILLISECONDS } });
+  const data = await db.collection("logs").deleteMany({
+    timestamp: { $lt: Date.now() - LOG_MAX_AGE_MILLISECONDS },
+    important: false,
+  });
 
   void Logger.logToDb(
     "system_logs_deleted",
