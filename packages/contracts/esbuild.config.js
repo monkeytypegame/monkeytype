@@ -27,7 +27,7 @@ const entryPoints = getAllFiles("./src");
 
 // Function to generate output file names
 const getOutfile = (entryPoint, format) => {
-  const relativePath = entryPoint.replace("src/", "");
+  const relativePath = entryPoint.replace(/src[/\\]/, "");
   const fileBaseName = relativePath.replace(".ts", "");
   return `./dist/${fileBaseName}.${format === "esm" ? "mjs" : "cjs"}`;
 };

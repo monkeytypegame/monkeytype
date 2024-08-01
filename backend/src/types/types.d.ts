@@ -76,7 +76,7 @@ declare namespace MonkeyTypes {
     _id: ObjectId;
   };
 
-  type ApeKeyDB = import("@monkeytype/shared-types").ApeKey & {
+  type ApeKeyDB = import("@monkeytype/contracts/schemas/ape-keys").ApeKey & {
     _id: ObjectId;
     uid: string;
     hash: string;

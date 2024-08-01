@@ -320,14 +320,6 @@ export type PublicTypingStats = {
   testsStarted: number;
 };
 
-export type ApeKey = {
-  name: string;
-  enabled: boolean;
-  createdOn: number;
-  modifiedOn: number;
-  lastUsedOn: number;
-};
-
 export type LeaderboardEntry = {
   _id: string;
   wpm: number;
