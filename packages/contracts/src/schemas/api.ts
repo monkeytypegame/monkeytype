@@ -1,6 +1,6 @@
 import { z, ZodSchema } from "zod";
 
-export type OpenApiTag = "configs" | "presets" | "ape-keys" | "admin";
+export type OpenApiTag = "configs" | "presets" | "ape-keys" | "admin" | "psas";
 
 export type EndpointMetadata = {
   /** Authentication options, by default a bearer token is required. */
@@ -74,4 +74,7 @@ export const CommonResponses = {
   422: MonkeyValidationErrorSchema.describe("Request validation failed"),
   429: MonkeyClientError.describe("Rate limit exceeded"),
   500: MonkeyServerError.describe("Generic server error"),
+  503: MonkeyServerError.describe(
+    "Endpoint disabled or server is under maintenance"
+  ),
 };

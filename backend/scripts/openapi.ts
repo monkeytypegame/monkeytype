@@ -67,6 +67,11 @@ export function getOpenApi(): OpenAPIObject {
           "x-displayName": "Ape Keys",
         },
         {
+          name: "psas",
+          description: "Public service announcements.",
+          "x-displayName": "PSAs",
+        },
+        {
           name: "admin",
           description:
             "Various administrative endpoints. Require user to have admin permissions.",

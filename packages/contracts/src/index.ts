@@ -3,6 +3,7 @@ import { adminContract } from "./admin";
 import { apeKeysContract } from "./ape-keys";
 import { configsContract } from "./configs";
 import { presetsContract } from "./presets";
+import { psaContract } from "./psas";
 
 const c = initContract();
 
@@ -11,4 +12,5 @@ export const contract = c.router({
   apeKeys: apeKeysContract,
   configs: configsContract,
   presets: presetsContract,
+  psas: psaContract,
 });
