@@ -5,6 +5,19 @@ import { envConfig } from "../../constants/env-config";
 import { getAuthenticatedUser, isAuthenticated } from "../../firebase";
 import { EndpointMetadata } from "@monkeytype/contracts/schemas/api";
 
+async function fetchWithTimeout(
+  url: string,
+  options: RequestInit,
+  timeout: number
+): Promise<Response> {
+  return Promise.race([
+    fetch(url, options),
+    new Promise<Response>((_, reject) =>
+      setTimeout(() => reject(new Error("Request timed out")), timeout)
+    ),
+  ]);
+}
+
 function buildApi(timeout: number): (args: ApiFetcherArgs) => Promise<{
   status: number;
   body: unknown;
@@ -27,12 +40,22 @@ function buildApi(timeout: number): (args: ApiFetcherArgs) => Promise<{
 
         headers["Authorization"] = `Bearer ${token}`;
       }
-      const response = await fetch(request.path, {
-        signal: AbortSignal?.timeout?.(timeout),
+
+      const fetchOptions: RequestInit = {
         method: request.method as Method,
         headers,
         body: request.body,
-      });
+      };
+
+      const useAbortSignal = typeof AbortController === "function";
+
+      const response = useAbortSignal
+        ? await fetch(request.path, {
+            ...fetchOptions,
+            signal: AbortSignal.timeout(timeout),
+          })
+        : await fetchWithTimeout(request.path, fetchOptions, timeout);
+
       const body = await response.json();
       if (response.status >= 400) {
         console.error(`${request.method} ${request.path} failed`, {
@@ -49,7 +72,7 @@ function buildApi(timeout: number): (args: ApiFetcherArgs) => Promise<{
     } catch (e: Error | unknown) {
       return {
         status: 500,
-        body: { message: e },
+        body: { message: e instanceof Error ? e.message : "Unknown error" },
         headers: new Headers(),
       };
     }
