@@ -28,10 +28,6 @@
       "description": "Public service announcements"
     },
     {
-      "name": "ape-keys",
-      "description": "ApeKey data and related operations"
-    },
-    {
       "name": "leaderboards",
       "description": "Leaderboard data"
     },
@@ -424,92 +420,6 @@
       "get": {
         "tags": ["psas"],
         "summary": "Gets the latest public service announcements",
-        "responses": {
-          "default": {
-            "description": "",
-            "schema": {
-              "$ref": "#/definitions/Response"
-            }
-          }
-        }
-      }
-    },
-    "/ape-keys": {
-      "get": {
-        "tags": ["ape-keys"],
-        "summary": "Gets ApeKeys created by a user",
-        "responses": {
-          "default": {
-            "description": "",
-            "schema": {
-              "$ref": "#/definitions/Response"
-            }
-          }
-        }
-      },
-      "post": {
-        "tags": ["ape-keys"],
-        "summary": "Creates an ApeKey",
-        "parameters": [
-          {
-            "in": "body",
-            "name": "body",
-            "required": true,
-            "schema": {
-              "type": "object",
-              "properties": {
-                "name": {
-                  "type": "string"
-                },
-                "enabled": {
-                  "type": "boolean"
-                }
-              }
-            }
-          }
-        ],
-        "responses": {
-          "default": {
-            "description": "",
-            "schema": {
-              "$ref": "#/definitions/Response"
-            }
-          }
-        }
-      }
-    },
-    "/ape-keys/{apeKeyId}": {
-      "patch": {
-        "tags": ["ape-keys"],
-        "summary": "Updates an ApeKey",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "apeKeyId",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "default": {
-            "description": "",
-            "schema": {
-              "$ref": "#/definitions/Response"
-            }
-          }
-        }
-      },
-      "delete": {
-        "tags": ["ape-keys"],
-        "summary": "Deletes an ApeKey",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "apeKeyId",
-            "required": true,
-            "type": "string"
-          }
-        ],
         "responses": {
           "default": {
             "description": "",

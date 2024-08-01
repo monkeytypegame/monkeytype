@@ -12,6 +12,7 @@ import {
 import { isDevEnvironment } from "../utils/misc";
 import { ObjectId } from "mongodb";
 import { version } from "../version";
+import { addLog } from "../dal/logs";
 
 type DBError = {
   _id: ObjectId;
@@ -70,7 +71,7 @@ async function errorHandlingMiddleware(
       const { uid, errorId } = monkeyResponse.data;
 
       try {
-        await Logger.logToDb(
+        await addLog(
           "system_error",
           `${monkeyResponse.status} ${errorId} ${error.message} ${error.stack}`,
           uid

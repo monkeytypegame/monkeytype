@@ -47,7 +47,6 @@ const API_ROUTE_MAP = {
   "/public": publicStats,
   "/leaderboards": leaderboards,
   "/quotes": quotes,
-  "/ape-keys": apeKeys,
   "/admin": admin,
   "/webhooks": webhooks,
   "/docs": docs,
@@ -55,6 +54,7 @@ const API_ROUTE_MAP = {
 
 const s = initServer();
 const router = s.router(contract, {
+  apeKeys,
   configs,
   presets,
 });
