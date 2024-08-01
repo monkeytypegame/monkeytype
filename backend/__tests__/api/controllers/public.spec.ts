@@ -36,11 +36,11 @@ describe("PublicController", () => {
     });
 
     it("gets for mode", async () => {
-      for (const mode in ["time", "words", "quote", "zen", "custom"]) {
-        await mockApp
+      for (const mode of ["time", "words", "quote", "zen", "custom"]) {
+        const response = await mockApp
           .get("/public/speedHistogram")
-          .query({ language: "english", mode, mode2: "custom" })
-          .expect(200);
+          .query({ language: "english", mode, mode2: "custom" });
+        expect(response.status, "for mode " + mode).toEqual(200);
       }
     });
 
@@ -57,22 +57,45 @@ describe("PublicController", () => {
         "zen",
         "custom",
       ]) {
-        await mockApp
+        const response = await mockApp
           .get("/public/speedHistogram")
-          .query({ language: "english", mode: "words", mode2 })
-          .expect(200);
+          .query({ language: "english", mode: "words", mode2 });
+
+        expect(response.status, "for mode2 " + mode2).toEqual(200);
       }
     });
-
     it("fails for missing query", async () => {
       const { body } = await mockApp.get("/public/speedHistogram").expect(422);
 
       //TODO
-      /*expect(body).toEqual({
-        message: "...",
-        data: null,
+      expect(body).toEqual({
+        message: "Invalid query",
+        validationErrors: [
+          '"language" Required',
+          '"mode" Required',
+          '"mode2" Needs to be either a number, "zen" or "custom."',
+        ],
       });
-      */
+    });
+    it("fails for invalid query", async () => {
+      const { body } = await mockApp
+        .get("/public/speedHistogram")
+        .query({
+          language: "en?gli.sh",
+          mode: "unknownMode",
+          mode2: "unknownMode2",
+        })
+        .expect(422);
+
+      //TODO
+      expect(body).toEqual({
+        message: "Invalid query",
+        validationErrors: [
+          '"language" Invalid',
+          `"mode" Invalid enum value. Expected 'time' | 'words' | 'quote' | 'custom' | 'zen', received 'unknownMode'`,
+          '"mode2" Needs to be either a number, "zen" or "custom."',
+        ],
+      });
     });
     it("fails for unknown query", async () => {
       const { body } = await mockApp
@@ -85,12 +108,10 @@ describe("PublicController", () => {
         })
         .expect(422);
 
-      //TODO
-      /*expect(body).toEqual({
-          message: "...",
-          data: null,
-        });
-        */
+      expect(body).toEqual({
+        message: "Invalid query",
+        validationErrors: ["Unrecognized key(s) in object: 'extra'"],
+      });
     });
   });
   describe("get typing stats", () => {

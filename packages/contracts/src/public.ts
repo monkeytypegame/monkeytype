@@ -9,11 +9,13 @@ import { SpeedHistogramSchema, TypingStatsSchema } from "./schemas/public";
 import { Mode2Schema, ModeSchema } from "./schemas/shared";
 import { LanguageSchema } from "./schemas/util";
 
-export const GetSpeedHistogramQuerySchema = z.object({
-  language: LanguageSchema,
-  mode: ModeSchema,
-  mode2: Mode2Schema,
-});
+export const GetSpeedHistogramQuerySchema = z
+  .object({
+    language: LanguageSchema,
+    mode: ModeSchema,
+    mode2: Mode2Schema,
+  })
+  .strict();
 export type GetSpeedHistogramQuery = z.infer<
   typeof GetSpeedHistogramQuerySchema
 >;

@@ -41,7 +41,7 @@ export const Mode2Schema = z.union(
   [StringNumberSchema, literal("zen"), literal("custom")],
   {
     errorMap: () => ({
-      message: 'Needs to be either a number, "zen" or "custom"',
+      message: 'Needs to be either a number, "zen" or "custom."',
     }),
   }
 );
