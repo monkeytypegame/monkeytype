@@ -9,6 +9,7 @@ import { verify } from "../../utils/captcha";
 import Logger from "../../utils/logger";
 import { MonkeyResponse } from "../../utils/monkey-response";
 import { ObjectId } from "mongodb";
+import { addLog } from "../../dal/logs";
 
 async function verifyCaptcha(captcha: string): Promise<void> {
   if (!(await verify(captcha))) {
@@ -70,7 +71,7 @@ export async function approveQuote(
   }
 
   const data = await NewQuotesDAL.approve(quoteId, editText, editSource, name);
-  void Logger.logToDb("system_quote_approved", data, uid);
+  void addLog("system_quote_approved", data, uid);
 
   return new MonkeyResponse(data.message, data.quote);
 }
