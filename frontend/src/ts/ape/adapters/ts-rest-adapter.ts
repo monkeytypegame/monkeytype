@@ -28,7 +28,7 @@ function buildApi(timeout: number): (args: ApiFetcherArgs) => Promise<{
         headers["Authorization"] = `Bearer ${token}`;
       }
       const response = await fetch(request.path, {
-        signal: AbortSignal.timeout(timeout),
+        signal: AbortSignal?.timeout?.(timeout),
         method: request.method as Method,
         headers,
         body: request.body,
