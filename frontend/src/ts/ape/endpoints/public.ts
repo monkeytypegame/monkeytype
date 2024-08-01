@@ -1,4 +1,7 @@
-import { PublicTypingStats, SpeedHistogram } from "@monkeytype/shared-types";
+import {
+  TypingStats,
+  SpeedHistogram,
+} from "@monkeytype/contracts/schemas/public";
 
 const BASE_PATH = "/public";
 
@@ -21,7 +24,7 @@ export default class Public {
     });
   }
 
-  async getTypingStats(): Ape.EndpointResponse<PublicTypingStats> {
+  async getTypingStats(): Ape.EndpointResponse<TypingStats> {
     return await this.httpClient.get(`${BASE_PATH}/typingStats`);
   }
 }

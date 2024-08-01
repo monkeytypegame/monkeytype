@@ -43,7 +43,6 @@ const APP_START_TIME = Date.now();
 const API_ROUTE_MAP = {
   "/users": users,
   "/results": results,
-  "/public": publicStats,
   "/leaderboards": leaderboards,
   "/quotes": quotes,
   "/webhooks": webhooks,
@@ -57,6 +56,7 @@ const router = s.router(contract, {
   configs,
   presets,
   psas,
+  public: publicStats,
 });
 
 export function addApiRoutes(app: Application): void {
@@ -78,16 +78,29 @@ export function addApiRoutes(app: Application): void {
 function applyTsRestApiRoutes(app: IRouter): void {
   createExpressEndpoints(contract, router, app, {
     jsonQuery: true,
-    requestValidationErrorHandler(err, req, res, next) {
-      if (err.body?.issues === undefined) {
+    requestValidationErrorHandler(err, _req, res, next) {
+      let message: string | undefined = undefined;
+      let validationErrors: string[] | undefined = undefined;
+
+      if (err.pathParams?.issues !== undefined) {
+        message = "Invalid path parameters";
+        validationErrors = err.pathParams.issues.map(prettyErrorMessage);
+      } else if (err.query?.issues !== undefined) {
+        message = "Invalid query";
+        validationErrors = err.query.issues.map(prettyErrorMessage);
+      } else if (err.body?.issues !== undefined) {
+        message = "Invalid request data schema";
+        validationErrors = err.body.issues.map(prettyErrorMessage);
+      }
+
+      if (message !== undefined) {
+        res
+          .status(422)
+          .json({ message, validationErrors } as MonkeyValidationError);
+      } else {
         next();
         return;
       }
-      const issues = err.body?.issues.map(prettyErrorMessage);
-      res.status(422).json({
-        message: "Invalid request data schema",
-        validationErrors: issues,
-      } as MonkeyValidationError);
     },
     globalMiddleware: [authenticateTsRestRequest()],
   });

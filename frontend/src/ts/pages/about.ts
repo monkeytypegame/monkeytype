@@ -8,7 +8,10 @@ import * as ChartController from "../controllers/chart-controller";
 import * as ConnectionState from "../states/connection";
 import { intervalToDuration } from "date-fns/intervalToDuration";
 import * as Skeleton from "../utils/skeleton";
-import { PublicTypingStats, SpeedHistogram } from "@monkeytype/shared-types";
+import {
+  TypingStats,
+  SpeedHistogram,
+} from "@monkeytype/contracts/schemas/public";
 
 function reset(): void {
   $(".pageAbout .contributors").empty();
@@ -19,7 +22,7 @@ function reset(): void {
 }
 
 let speedHistogramResponseData: SpeedHistogram | null;
-let typingStatsResponseData: PublicTypingStats | null;
+let typingStatsResponseData: TypingStats | null;
 
 function updateStatsAndHistogram(): void {
   if (speedHistogramResponseData) {

@@ -1,9 +1,12 @@
 import * as db from "../init/db";
 import { roundTo2 } from "../utils/misc";
 import MonkeyError from "../utils/error";
-import { PublicTypingStats, SpeedHistogram } from "@monkeytype/shared-types";
+import {
+  TypingStats,
+  SpeedHistogram,
+} from "@monkeytype/contracts/schemas/public";
 
-export type PublicTypingStatsDB = PublicTypingStats & { _id: "stats" };
+export type PublicTypingStatsDB = TypingStats & { _id: "stats" };
 export type PublicSpeedStatsDB = {
   _id: "speedStatsHistogram";
   english_time_15: SpeedHistogram;
