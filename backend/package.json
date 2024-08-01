@@ -12,7 +12,7 @@
     "start": "node ./dist/server.js",
     "test": "vitest run",
     "test-coverage": "vitest run --coverage",
-    "dev": "concurrently \"tsx watch --clear-screen=false ./src/server.ts\" \"tsc --preserveWatchOutput --noEmit --watch\" \"npx eslint-watch \"./src/**/*.ts\"\"",
+    "dev": "concurrently \"tsx watch --clear-screen=false --inspect ./src/server.ts\" \"tsc --preserveWatchOutput --noEmit --watch\" \"npx eslint-watch \"./src/**/*.ts\"\"",
     "knip": "knip",
     "docker-db-only": "docker compose -f docker/compose.db-only.yml up",
     "docker": "docker compose -f docker/compose.yml up",
