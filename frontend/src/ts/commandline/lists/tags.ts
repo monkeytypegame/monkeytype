@@ -87,7 +87,7 @@ function update(): void {
         TagController.toggle(tag._id);
         void ModesNotice.update();
 
-        if (Config.paceCaret === "average") {
+        if (Config.paceCaret === "average" || Config.paceCaret === "tagsPB") {
           await PaceCaret.init();
           void ModesNotice.update();
         }

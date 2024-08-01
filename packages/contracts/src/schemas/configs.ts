@@ -127,6 +127,7 @@ export const PaceCaretSchema = z.enum([
   "off",
   "average",
   "pb",
+  "tagsPB",
   "last",
   "custom",
   "daily",

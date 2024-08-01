@@ -137,6 +137,8 @@ export async function update(): Promise<void> {
           ? "average"
           : Config.paceCaret === "pb"
           ? "pb"
+          : Config.paceCaret === "tagsPB"
+          ? "tags pb"
           : Config.paceCaret === "last"
           ? "last"
           : Config.paceCaret === "daily"

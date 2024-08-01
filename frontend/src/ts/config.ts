@@ -469,8 +469,11 @@ export function setPaceCaret(
   }
 
   if (document.readyState === "complete") {
-    if (val === "pb" && !isAuthenticated()) {
-      Notifications.add("PB pace caret is unavailable without an account", 0);
+    if ((val === "pb" || val === "tagsPB") && !isAuthenticated()) {
+      Notifications.add(
+        "PB and tags pace caret are unavailable without an account",
+        0
+      );
       return false;
     }
   }

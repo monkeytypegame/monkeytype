@@ -580,6 +580,73 @@ export async function getUserDailyBest<M extends Mode>(
   return retval;
 }
 
+export async function getActiveTagsPB<M extends Mode>(
+  mode: M,
+  mode2: Mode2<M>,
+  punctuation: boolean,
+  numbers: boolean,
+  language: string,
+  difficulty: Difficulty,
+  lazyMode: boolean,
+  anyTag?: boolean
+): Promise<number> {
+  await getUserResults();
+
+  const snapshot = getSnapshot();
+  if (!snapshot || !snapshot.results) return 0;
+
+  const activeTagIds: string[] = [];
+  snapshot.tags?.forEach((tag) => {
+    if (tag.active === true) activeTagIds.push(tag._id);
+  });
+
+  let highestWpm = 0;
+
+  if (anyTag && activeTagIds.length > 0) {
+    for (const tagId of activeTagIds) {
+      const currTagPB = await getLocalTagPB(
+        tagId,
+        mode,
+        mode2,
+        punctuation,
+        numbers,
+        language,
+        difficulty,
+        lazyMode
+      );
+      if (currTagPB > highestWpm) highestWpm = currTagPB;
+    }
+  } else {
+    for (const result of snapshot.results) {
+      if (
+        result.mode === mode &&
+        (result.punctuation ?? false) === punctuation &&
+        (result.numbers ?? false) === numbers &&
+        result.language === language &&
+        result.difficulty === difficulty &&
+        (result.lazyMode ?? false) === lazyMode &&
+        activeTagIds.every((tagId) => result.tags.includes(tagId))
+      ) {
+        // Continue if the there are no active tags but the result has some tags
+        if (activeTagIds.length === 0 && result.tags.length !== 0) continue;
+
+        // Continue if the mode2 doesn't match and it's not a quote
+        if (
+          `${result.mode2}` !== `${mode2 as string | number}` &&
+          mode !== "quote"
+        ) {
+          //using template strings because legacy results might use numbers in mode2
+          continue;
+        }
+
+        if (result.wpm > highestWpm) highestWpm = result.wpm;
+      }
+    }
+  }
+
+  return highestWpm;
+}
+
 export async function getLocalPB<M extends Mode>(
   mode: M,
   mode2: Mode2<M>,
