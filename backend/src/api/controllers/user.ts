@@ -1,7 +1,6 @@
 import _ from "lodash";
 import * as UserDAL from "../../dal/user";
 import MonkeyError from "../../utils/error";
-import Logger from "../../utils/logger";
 import { MonkeyResponse } from "../../utils/monkey-response";
 import * as DiscordUtils from "../../utils/discord";
 import {

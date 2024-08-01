@@ -10,7 +10,6 @@ import {
   type UpdateFilter,
   type Filter,
 } from "mongodb";
-import Logger from "../utils/logger";
 import { flattenObjectDeep, isToday, isYesterday } from "../utils/misc";
 import { getCachedConfiguration } from "../init/configuration";
 import { getDayOfYear } from "date-fns";
