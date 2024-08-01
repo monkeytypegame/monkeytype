@@ -5,17 +5,10 @@ import { envConfig } from "../../constants/env-config";
 import { getAuthenticatedUser, isAuthenticated } from "../../firebase";
 import { EndpointMetadata } from "@monkeytype/contracts/schemas/api";
 
-async function fetchWithTimeout(
-  url: string,
-  options: RequestInit,
-  timeout: number
-): Promise<Response> {
-  return Promise.race([
-    fetch(url, options),
-    new Promise<Response>((_, reject) =>
-      setTimeout(() => reject(new Error("Request timed out")), timeout)
-    ),
-  ]);
+function timeoutSignal(ms: number): AbortSignal {
+  const ctrl = new AbortController();
+  setTimeout(() => ctrl.abort(new Error("request timed out")), ms);
+  return ctrl.signal;
 }
 
 function buildApi(timeout: number): (args: ApiFetcherArgs) => Promise<{
@@ -47,14 +40,14 @@ function buildApi(timeout: number): (args: ApiFetcherArgs) => Promise<{
         body: request.body,
       };
 
-      const useAbortSignal = typeof AbortController === "function";
+      const usePolyfill = typeof AbortController === "undefined";
 
-      const response = useAbortSignal
-        ? await fetch(request.path, {
-            ...fetchOptions,
-            signal: AbortSignal.timeout(timeout),
-          })
-        : await fetchWithTimeout(request.path, fetchOptions, timeout);
+      const response = await fetch(request.path, {
+        ...fetchOptions,
+        signal: usePolyfill
+          ? timeoutSignal(timeout)
+          : AbortSignal.timeout(timeout),
+      });
 
       const body = await response.json();
       if (response.status >= 400) {
@@ -70,9 +63,21 @@ function buildApi(timeout: number): (args: ApiFetcherArgs) => Promise<{
         headers: response.headers ?? new Headers(),
       };
     } catch (e: Error | unknown) {
+      console.error("e", e);
+
+      let message = "Unknown error";
+
+      if (e instanceof Error) {
+        if (e.message.includes("timed out")) {
+          message = "request took too long to complete";
+        } else {
+          message = e.message;
+        }
+      }
+
       return {
         status: 500,
-        body: { message: e instanceof Error ? e.message : "Unknown error" },
+        body: { message },
         headers: new Headers(),
       };
     }
