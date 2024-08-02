@@ -4,7 +4,7 @@ import {
   GetTypingStatsResponse,
 } from "@monkeytype/contracts/public";
 import * as PublicDAL from "../../dal/public";
-import { MonkeyResponse, MonkeyResponse2 } from "../../utils/monkey-response";
+import { MonkeyResponse2 } from "../../utils/monkey-response";
 
 export async function getSpeedHistogram(
   req: MonkeyTypes.Request2<GetSpeedHistogramQuery>
@@ -19,5 +19,5 @@ export async function getTypingStats(
   _req: MonkeyTypes.Request2
 ): Promise<GetTypingStatsResponse> {
   const data = await PublicDAL.getTypingStats();
-  return new MonkeyResponse("Public typing stats retrieved", data);
+  return new MonkeyResponse2("Public typing stats retrieved", data);
 }
