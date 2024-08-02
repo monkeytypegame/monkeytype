@@ -355,7 +355,7 @@ async function handleSpace(): Promise<void> {
     }
 
     if (nextTop > currentTop) {
-      TestUI.lineJump(currentTop);
+      void TestUI.lineJump(currentTop);
     }
   } //end of line wrap
 
@@ -744,7 +744,7 @@ function handleChar(
           TestUI.currentWordElementIndex - 1
         ]?.offsetTop ?? 0
       );
-      if (!Config.showAllLines) TestUI.lineJump(currentTop);
+      if (!Config.showAllLines) void TestUI.lineJump(currentTop);
     } else {
       TestInput.input.current = TestInput.input.current.slice(0, -1);
       void TestUI.updateWordElement();
