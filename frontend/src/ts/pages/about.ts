@@ -101,24 +101,26 @@ async function getStatsAndHistogramData(): Promise<void> {
   }
 
   const speedStats = await Ape.publicStats.getSpeedHistogram({
-    language: "english",
-    mode: "time",
-    mode2: "60",
+    query: {
+      language: "english",
+      mode: "time",
+      mode2: "60",
+    },
   });
-  if (speedStats.status >= 200 && speedStats.status < 300) {
-    speedHistogramResponseData = speedStats.data;
+  if (speedStats.status === 200) {
+    speedHistogramResponseData = speedStats.body.data;
   } else {
     Notifications.add(
-      `Failed to get global speed stats for histogram: ${speedStats.message}`,
+      `Failed to get global speed stats for histogram: ${speedStats.body.message}`,
       -1
     );
   }
   const typingStats = await Ape.publicStats.getTypingStats();
-  if (typingStats.status >= 200 && typingStats.status < 300) {
-    typingStatsResponseData = typingStats.data;
+  if (typingStats.status === 200) {
+    typingStatsResponseData = typingStats.body.data;
   } else {
     Notifications.add(
-      `Failed to get global typing stats: ${speedStats.message}`,
+      `Failed to get global typing stats: ${speedStats.body.message}`,
       -1
     );
   }
