@@ -63,8 +63,6 @@ function buildApi(timeout: number): (args: ApiFetcherArgs) => Promise<{
         headers: response.headers ?? new Headers(),
       };
     } catch (e: Error | unknown) {
-      console.error("e", e);
-
       let message = "Unknown error";
 
       if (e instanceof Error) {
