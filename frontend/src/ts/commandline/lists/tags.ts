@@ -56,7 +56,7 @@ function update(): void {
     display: `Clear tags`,
     icon: "fa-times",
     sticky: true,
-    exec: (): void => {
+    exec: async (): Promise<void> => {
       const snapshot = DB.getSnapshot();
       if (!snapshot) return;
 
@@ -67,6 +67,13 @@ function update(): void {
       });
 
       DB.setSnapshot(snapshot);
+      if (
+        Config.paceCaret === "average" ||
+        Config.paceCaret === "tagsPB" ||
+        Config.paceCaret === "daily"
+      ) {
+        await PaceCaret.init();
+      }
       void ModesNotice.update();
       TagController.saveActiveToLocalStorage();
     },
@@ -85,12 +92,15 @@ function update(): void {
       },
       exec: async (): Promise<void> => {
         TagController.toggle(tag._id);
-        void ModesNotice.update();
 
-        if (Config.paceCaret === "average" || Config.paceCaret === "tagsPB") {
+        if (
+          Config.paceCaret === "average" ||
+          Config.paceCaret === "tagsPB" ||
+          Config.paceCaret === "daily"
+        ) {
           await PaceCaret.init();
-          void ModesNotice.update();
         }
+        void ModesNotice.update();
       },
     });
   }

@@ -587,25 +587,35 @@ export async function getActiveTagsPB<M extends Mode>(
   numbers: boolean,
   language: string,
   difficulty: Difficulty,
-  lazyMode: boolean,
-  anyTag?: boolean
+  lazyMode: boolean
 ): Promise<number> {
-  await getUserResults();
-
   const snapshot = getSnapshot();
-  if (!snapshot || !snapshot.results) return 0;
+  if (!snapshot) return 0;
 
-  const activeTagIds: string[] = [];
-  snapshot.tags?.forEach((tag) => {
-    if (tag.active === true) activeTagIds.push(tag._id);
-  });
+  const tagPbWpm = (
+    await Promise.all(
+      snapshot.tags
+        ?.filter((it) => it.active)
+        .map(async (it) =>
+          getLocalTagPB(
+            it._id,
+            mode,
+            mode2,
+            punctuation,
+            numbers,
+            language,
+            difficulty,
+            lazyMode
+          )
+        )
+    )
+  ).reduce((acc, cur) => Math.max(acc, cur), 0);
 
   let highestWpm = 0;
-
-  if (anyTag && activeTagIds.length > 0) {
-    for (const tagId of activeTagIds) {
+  for (const tag of snapshot.tags) {
+    if (tag.active) {
       const currTagPB = await getLocalTagPB(
-        tagId,
+        tag._id,
         mode,
         mode2,
         punctuation,
@@ -616,35 +626,9 @@ export async function getActiveTagsPB<M extends Mode>(
       );
       if (currTagPB > highestWpm) highestWpm = currTagPB;
     }
-  } else {
-    for (const result of snapshot.results) {
-      if (
-        result.mode === mode &&
-        (result.punctuation ?? false) === punctuation &&
-        (result.numbers ?? false) === numbers &&
-        result.language === language &&
-        result.difficulty === difficulty &&
-        (result.lazyMode ?? false) === lazyMode &&
-        activeTagIds.every((tagId) => result.tags.includes(tagId))
-      ) {
-        // Continue if the there are no active tags but the result has some tags
-        if (activeTagIds.length === 0 && result.tags.length !== 0) continue;
-
-        // Continue if the mode2 doesn't match and it's not a quote
-        if (
-          `${result.mode2}` !== `${mode2 as string | number}` &&
-          mode !== "quote"
-        ) {
-          //using template strings because legacy results might use numbers in mode2
-          continue;
-        }
-
-        if (result.wpm > highestWpm) highestWpm = result.wpm;
-      }
-    }
   }
 
-  return highestWpm;
+  return tagPbWpm;
 }
 
 export async function getLocalPB<M extends Mode>(
