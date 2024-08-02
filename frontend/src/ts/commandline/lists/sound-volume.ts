@@ -36,9 +36,9 @@ const subgroup: MonkeyTypes.CommandsSubgroup = {
       id: "setSoundVolumeCustom",
       display: "custom...",
       input: true,
-      exec: ({ input: adjustedVolume }): void => {
-        if (adjustedVolume === undefined || adjustedVolume === "") return;
-        UpdateConfig.setSoundVolume(parseFloat(adjustedVolume) / 100);
+      exec: ({ input }): void => {
+        if (input === undefined || input === "") return;
+        UpdateConfig.setSoundVolume(parseFloat(input));
         void SoundController.playClick();
       },
     },
