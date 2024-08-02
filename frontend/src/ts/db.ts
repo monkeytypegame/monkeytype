@@ -594,19 +594,18 @@ export async function getActiveTagsPB<M extends Mode>(
 
   let tagPbWpm = 0;
   for (const tag of snapshot.tags) {
-    if (tag.active) {
-      const currTagPB = await getLocalTagPB(
-        tag._id,
-        mode,
-        mode2,
-        punctuation,
-        numbers,
-        language,
-        difficulty,
-        lazyMode
-      );
-      if (currTagPB > tagPbWpm) tagPbWpm = currTagPB;
-    }
+    if (!tag.active) continue;
+    const currTagPB = await getLocalTagPB(
+      tag._id,
+      mode,
+      mode2,
+      punctuation,
+      numbers,
+      language,
+      difficulty,
+      lazyMode
+    );
+    if (currTagPB > tagPbWpm) tagPbWpm = currTagPB;
   }
 
   return tagPbWpm;
