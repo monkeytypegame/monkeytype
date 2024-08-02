@@ -40,7 +40,7 @@ function buildApi(timeout: number): (args: ApiFetcherArgs) => Promise<{
         body: request.body,
       };
 
-      const usePolyfill = typeof AbortController === "undefined";
+      const usePolyfill = AbortSignal?.timeout === undefined;
 
       const response = await fetch(request.path, {
         ...fetchOptions,
