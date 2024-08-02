@@ -23,7 +23,6 @@ import SlimSelect from "slim-select";
 
 import * as Skeleton from "../utils/skeleton";
 import * as CustomBackgroundFilter from "../elements/custom-background-filter";
-import * as Volume from "../elements/volume";
 import { ConfigValue } from "@monkeytype/contracts/schemas/configs";
 
 type SettingsGroups<T extends ConfigValue> = Record<string, SettingsGroup<T>>;
@@ -251,7 +250,7 @@ async function initGroups(): Promise<void> {
   groups["soundVolume"] = new SettingsGroup(
     "soundVolume",
     UpdateConfig.setSoundVolume,
-    "button"
+    "range"
   ) as SettingsGroup<ConfigValue>;
   groups["playSoundOnError"] = new SettingsGroup(
     "playSoundOnError",
@@ -1003,8 +1002,6 @@ export async function update(groupUpdate = true): Promise<void> {
   $(".pageSettings .tip").html(`
     tip: You can also change all these settings quickly using the
     command line (<key>${commandKey}</key> or <key>${modifierKey}</key> + <key>shift</key> + <key>p</key>)`);
-
-  Volume.update();
 }
 function toggleSettingsGroup(groupName: string): void {
   const groupEl = $(`.pageSettings .settingsGroup.${groupName}`);

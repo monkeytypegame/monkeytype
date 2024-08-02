@@ -479,21 +479,12 @@
       .group {
         display: flex;
         align-items: center;
-        gap: 1rem;
-
         .volume.slider {
           display: flex;
-          align-items: center;
           width: 100%;
 
           .value {
             margin-right: 1rem;
-          }
-
-          input[type="range"] {
-            flex-grow: 1;
-            width: 100%;
-            margin: 0;
           }
         }
       }
