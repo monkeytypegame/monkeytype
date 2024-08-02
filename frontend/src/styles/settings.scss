@@ -475,20 +475,6 @@
         }
       }
     }
-    &[data-config-name="soundVolume"] {
-      .group {
-        display: flex;
-        align-items: center;
-        .volume.slider {
-          display: flex;
-          width: 100%;
-
-          .value {
-            margin-right: 1rem;
-          }
-        }
-      }
-    }
   }
 }
 
