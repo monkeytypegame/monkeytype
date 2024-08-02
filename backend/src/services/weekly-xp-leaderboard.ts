@@ -12,7 +12,7 @@ type InternalWeeklyXpLeaderboardEntry = {
   lastActivityTimestamp: number;
 };
 
-type WeeklyXpLeaderboardEntry = {
+export type WeeklyXpLeaderboardEntry = {
   totalXp: number;
   rank: number;
   count?: number;

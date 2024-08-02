@@ -167,6 +167,7 @@ export async function getWeeklyXpLeaderboardRank(
   req: MonkeyTypes.Request
 ): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
+  console.log("8n8");
 
   const weeklyXpLeaderboard = getWeeklyXpLeaderboardWithError(req);
   const rankEntry = await weeklyXpLeaderboard.getRank(

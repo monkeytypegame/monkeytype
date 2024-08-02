@@ -4,6 +4,7 @@ import request from "supertest";
 import app from "../../../src/app";
 import * as LeaderboardDal from "../../../src/dal/leaderboards";
 import * as DailyLeaderboards from "../../../src/utils/daily-leaderboards";
+import * as WeeklyXpLeaderboard from "../../../src/services/weekly-xp-leaderboard";
 import * as Configuration from "../../../src/init/configuration";
 import { mockAuthenticateWithApeKey } from "../../__testData__/auth";
 
@@ -19,7 +20,7 @@ describe("Loaderboard Controller", () => {
       getLeaderboardMock.mockReset();
     });
 
-    it("gets for english time 60", async () => {
+    it("shoult get for english time 60", async () => {
       //GIVEN
 
       const resultData = [
@@ -72,7 +73,7 @@ describe("Loaderboard Controller", () => {
       );
     });
 
-    it("gets for english time 60 with skip and limit", async () => {
+    it("should get for english time 60 with skip and limit", async () => {
       //GIVEN
       getLeaderboardMock.mockResolvedValue([]);
       const skip = 23;
@@ -106,7 +107,7 @@ describe("Loaderboard Controller", () => {
       );
     });
 
-    it("gets for mode", async () => {
+    it("should get for mode", async () => {
       getLeaderboardMock.mockResolvedValue([]);
       for (const mode of ["time", "words", "quote", "zen", "custom"]) {
         const response = await mockApp
@@ -116,7 +117,7 @@ describe("Loaderboard Controller", () => {
       }
     });
 
-    it("gets for mode2", async () => {
+    it("should get for mode2", async () => {
       getLeaderboardMock.mockResolvedValue([]);
       for (const mode2 of [
         "10",
@@ -228,7 +229,7 @@ describe("Loaderboard Controller", () => {
         .expect(401);
     });
 
-    it("gets for english time 60", async () => {
+    it("should get for english time 60", async () => {
       //GIVEN
 
       const entryId = new ObjectId();
@@ -273,7 +274,7 @@ describe("Loaderboard Controller", () => {
         uid
       );
     });
-    it("gets with ape key", async () => {
+    it("should get with ape key", async () => {
       await acceptApeKeys(true);
       const apeKey = await mockAuthenticateWithApeKey(uid, await configuration);
 
@@ -283,7 +284,7 @@ describe("Loaderboard Controller", () => {
         .set("authorization", "ApeKey " + apeKey)
         .expect(200);
     });
-    it("gets for mode", async () => {
+    it("should get for mode", async () => {
       getLeaderboardRankMock.mockResolvedValue({} as any);
       for (const mode of ["time", "words", "quote", "zen", "custom"]) {
         const response = await mockApp
@@ -294,7 +295,7 @@ describe("Loaderboard Controller", () => {
       }
     });
 
-    it("gets for mode2", async () => {
+    it("should get for mode2", async () => {
       getLeaderboardRankMock.mockResolvedValue({} as any);
       for (const mode2 of [
         "10",
@@ -418,7 +419,7 @@ describe("Loaderboard Controller", () => {
       vi.useRealTimers();
     });
 
-    it("gets for english time 60", async () => {
+    it("should get for english time 60", async () => {
       //GIVEN
       const lbConf = (await configuration).dailyLeaderboards;
       const premiumEnabled = (await configuration).users.premium.enabled;
@@ -477,7 +478,7 @@ describe("Loaderboard Controller", () => {
       expect(getResultMock).toHaveBeenCalledWith(0, 49, lbConf, premiumEnabled);
     });
 
-    it("gets for english time 60 for yesterday", async () => {
+    it("should get for english time 60 for yesterday", async () => {
       //GIVEN
       const lbConf = (await configuration).dailyLeaderboards;
 
@@ -507,7 +508,7 @@ describe("Loaderboard Controller", () => {
       );
     });
 
-    it("gets for english time 60 with skip and limit", async () => {
+    it("should get for english time 60 with skip and limit", async () => {
       //GIVEN
       const lbConf = (await configuration).dailyLeaderboards;
       const premiumEnabled = (await configuration).users.premium.enabled;
@@ -582,7 +583,7 @@ describe("Loaderboard Controller", () => {
       );
     });
 
-    it("gets for mode", async () => {
+    it("should get for mode", async () => {
       for (const mode of ["time", "words", "quote", "zen", "custom"]) {
         const response = await mockApp
           .get("/leaderboards/daily")
@@ -591,7 +592,7 @@ describe("Loaderboard Controller", () => {
       }
     });
 
-    it("gets for mode2", async () => {
+    it("should get for mode2", async () => {
       for (const mode2 of [
         "10",
         "25",
@@ -712,7 +713,7 @@ describe("Loaderboard Controller", () => {
         .query({ language: "english", mode: "time", mode2: "60" })
         .expect(401);
     });
-    it("gets for english time 60", async () => {
+    it("should get for english time 60", async () => {
       //GIVEN
       const lbConf = (await configuration).dailyLeaderboards;
       const rankData = {
@@ -760,7 +761,18 @@ describe("Loaderboard Controller", () => {
 
       expect(getRankMock).toHaveBeenCalledWith(uid, lbConf);
     });
-    it("gets for mode", async () => {
+    it("fails if daily leaderboards are disabled", async () => {
+      await dailyLeaderboardEnabled(false);
+
+      const { body } = await mockApp
+        .get("/leaderboards/daily/rank")
+        .expect(503);
+
+      expect(body.message).toEqual(
+        "Daily leaderboards are not available at this time."
+      );
+    });
+    it("should get for mode", async () => {
       for (const mode of ["time", "words", "quote", "zen", "custom"]) {
         const response = await mockApp
           .get("/leaderboards/daily/rank")
@@ -769,8 +781,7 @@ describe("Loaderboard Controller", () => {
         expect(response.status, "for mode " + mode).toEqual(200);
       }
     });
-
-    it("gets for mode2", async () => {
+    it("should get for mode2", async () => {
       for (const mode2 of [
         "10",
         "25",
@@ -873,32 +884,183 @@ describe("Loaderboard Controller", () => {
     });
   });
 
-  it("GET /leaderboards/xp/weekly", async () => {
-    const configSpy = vi
-      .spyOn(Configuration, "getCachedConfiguration")
-      .mockResolvedValue({
-        leaderboards: {
-          weeklyXp: {
-            enabled: true,
-            expirationTimeInDays: 15,
-            xpRewardBrackets: [],
-          },
-        },
+  describe("get xp weekly leaderboard", () => {
+    const getXpWeeklyLeaderboardMock = vi.spyOn(WeeklyXpLeaderboard, "get");
+
+    beforeEach(async () => {
+      vi.useFakeTimers();
+      vi.setSystemTime(1722606812000);
+      await weeklyLeaderboardEnabled(true);
+
+      getXpWeeklyLeaderboardMock.mockReturnValue({
+        getResults: () => Promise.resolve([]),
       } as any);
-
-    const response = await mockApp
-      .get("/leaderboards/xp/weekly")
-      .set({
-        Accept: "application/json",
-      })
-      .expect(200);
-
-    expect(response.body).toEqual({
-      message: "Weekly xp leaderboard retrieved",
-      data: [],
     });
 
-    configSpy.mockRestore();
+    afterEach(() => {
+      getXpWeeklyLeaderboardMock.mockReset();
+      vi.useRealTimers();
+    });
+
+    it("should get", async () => {
+      //GIVEN
+      const lbConf = (await configuration).leaderboards.weeklyXp;
+
+      const resultData: WeeklyXpLeaderboard.WeeklyXpLeaderboardEntry[] = [
+        {
+          totalXp: 100,
+          rank: 1,
+          count: 1,
+          timeTypedSeconds: 100,
+          uid: "user1",
+          name: "user1",
+          discordId: "discordId",
+          discordAvatar: "discordAvatar",
+          lastActivityTimestamp: 1000,
+        },
+        {
+          totalXp: 75,
+          rank: 2,
+          count: 2,
+          timeTypedSeconds: 200,
+          uid: "user2",
+          name: "user2",
+          discordId: "discordId2",
+          discordAvatar: "discordAvatar2",
+          lastActivityTimestamp: 2000,
+        },
+      ];
+
+      const getResultMock = vi.fn();
+      getResultMock.mockResolvedValue(resultData);
+      getXpWeeklyLeaderboardMock.mockReturnValue({
+        getResults: getResultMock,
+      } as any);
+
+      //WHEN
+      const { body } = await mockApp.get("/leaderboards/xp/weekly").query({});
+      // .expect(200);
+
+      //THEN
+      expect(body).toEqual({
+        message: "Weekly xp leaderboard retrieved",
+        data: resultData,
+      });
+
+      expect(getXpWeeklyLeaderboardMock).toHaveBeenCalledWith(lbConf, -1);
+
+      expect(getResultMock).toHaveBeenCalledWith(0, 49, lbConf);
+    });
+
+    it("should get for last week", async () => {
+      //GIVEN
+      const lbConf = (await configuration).leaderboards.weeklyXp;
+
+      //WHEN
+      const { body } = await mockApp
+        .get("/leaderboards/xp/weekly")
+        .query({
+          weeksBefore: 1,
+        })
+        .expect(200);
+
+      //THEN
+      expect(body).toEqual({
+        message: "Weekly xp leaderboard retrieved",
+        data: [],
+      });
+
+      expect(getXpWeeklyLeaderboardMock).toHaveBeenCalledWith(
+        lbConf,
+        1721606400000
+      );
+    });
+
+    it("should get with skip and limit", async () => {
+      //GIVEN
+      const lbConf = (await configuration).leaderboards.weeklyXp;
+      const limit = 23;
+      const skip = 42;
+
+      const getResultMock = vi.fn();
+      getResultMock.mockResolvedValue([]);
+      getXpWeeklyLeaderboardMock.mockReturnValue({
+        getResults: getResultMock,
+      } as any);
+
+      //WHEN
+      const { body } = await mockApp
+        .get("/leaderboards/xp/weekly")
+        .query({
+          skip,
+          limit,
+        })
+        .expect(200);
+
+      //THEN
+      expect(body).toEqual({
+        message: "Weekly xp leaderboard retrieved",
+        data: [],
+      });
+
+      expect(getXpWeeklyLeaderboardMock).toHaveBeenCalledWith(lbConf, -1);
+
+      expect(getResultMock).toHaveBeenCalledWith(
+        skip,
+        skip + limit - 1,
+        lbConf
+      );
+    });
+
+    it("fails if daily leaderboards are disabled", async () => {
+      await weeklyLeaderboardEnabled(false);
+
+      const { body } = await mockApp.get("/leaderboards/xp/weekly").expect(503);
+
+      expect(body.message).toEqual(
+        "Weekly XP leaderboards are not available at this time."
+      );
+    });
+
+    it("fails for weeksBefore not one", async () => {
+      const { body } = await mockApp
+        .get("/leaderboards/xp/weekly")
+        .query({
+          weeksBefore: 2,
+        })
+        .expect(422);
+
+      //TODO
+      /*
+      expect(body).toEqual(
+        
+      );*/
+    });
+    it("fails for unknown query", async () => {
+      const { body } = await mockApp
+        .get("/leaderboards/xp/weekly")
+        .query({
+          extra: "value",
+        })
+        .expect(422);
+
+      //TODO
+      /*
+        expect(body).toEqual({
+          message: "Invalid query",
+          validationErrors: ["Unrecognized key(s) in object: 'extra'"],
+        });
+        */
+    });
+    it("fails while leaderboard is missing", async () => {
+      //GIVEN
+      getXpWeeklyLeaderboardMock.mockReturnValue(null);
+
+      //WHEN
+      const { body } = await mockApp.get("/leaderboards/xp/weekly").expect(404);
+
+      expect(body.message).toEqual("XP leaderboard for this week not found.");
+    });
   });
 });
 
@@ -915,6 +1077,15 @@ async function acceptApeKeys(enabled: boolean): Promise<void> {
 async function dailyLeaderboardEnabled(enabled: boolean): Promise<void> {
   const mockConfig = _.merge(await configuration, {
     dailyLeaderboards: { enabled: enabled },
+  });
+
+  vi.spyOn(Configuration, "getCachedConfiguration").mockResolvedValue(
+    mockConfig
+  );
+}
+async function weeklyLeaderboardEnabled(enabled: boolean): Promise<void> {
+  const mockConfig = _.merge(await configuration, {
+    leaderboards: { weeklyXp: { enabled } },
   });
 
   vi.spyOn(Configuration, "getCachedConfiguration").mockResolvedValue(
