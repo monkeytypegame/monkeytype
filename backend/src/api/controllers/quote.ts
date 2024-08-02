@@ -6,7 +6,6 @@ import * as NewQuotesDAL from "../../dal/new-quotes";
 import * as QuoteRatingsDAL from "../../dal/quote-ratings";
 import MonkeyError from "../../utils/error";
 import { verify } from "../../utils/captcha";
-import Logger from "../../utils/logger";
 import { MonkeyResponse } from "../../utils/monkey-response";
 import { ObjectId } from "mongodb";
 import { addLog } from "../../dal/logs";

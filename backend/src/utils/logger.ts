@@ -1,4 +1,3 @@
-import * as db from "../init/db";
 import chalk from "chalk";
 import {
   format,
@@ -7,7 +6,6 @@ import {
   type Logger as LoggerType,
 } from "winston";
 import { resolve } from "path";
-import { ObjectId } from "mongodb";
 
 const errorColor = chalk.red.bold;
 const warningColor = chalk.yellow.bold;
