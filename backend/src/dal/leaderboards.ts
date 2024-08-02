@@ -6,6 +6,20 @@ import { isDevEnvironment } from "../utils/misc";
 import { getCachedConfiguration } from "../init/configuration";
 import { LeaderboardEntry } from "@monkeytype/shared-types";
 import { addLog } from "./logs";
+import { Collection } from "mongodb";
+
+export type DBLeaderboardEntry = LeaderboardEntry & {
+  _id: ObjectId;
+};
+
+export const getCollection = (key: {
+  language: string;
+  mode: string;
+  mode2: string;
+}): Collection<DBLeaderboardEntry> =>
+  db.collection<DBLeaderboardEntry>(
+    `leaderboards.${key.language}.${key.mode}.${key.mode2}`
+  );
 
 export async function get(
   mode: string,
@@ -13,14 +27,13 @@ export async function get(
   language: string,
   skip: number,
   limit = 50
-): Promise<LeaderboardEntry[] | false> {
+): Promise<DBLeaderboardEntry[] | false> {
   //if (leaderboardUpdating[`${language}_${mode}_${mode2}`]) return false;
 
   if (limit > 50 || limit <= 0) limit = 50;
   if (skip < 0) skip = 0;
   try {
-    const preset = await db
-      .collection<LeaderboardEntry>(`leaderboards.${language}.${mode}.${mode2}`)
+    const preset = await getCollection({ language, mode, mode2 })
       .find()
       .sort({ rank: 1 })
       .skip(skip)
@@ -46,7 +59,7 @@ export async function get(
 type GetRankResponse = {
   count: number;
   rank: number | null;
-  entry: LeaderboardEntry | null;
+  entry: DBLeaderboardEntry | null;
 };
 
 export async function getRank(
@@ -56,12 +69,14 @@ export async function getRank(
   uid: string
 ): Promise<GetRankResponse | false> {
   try {
-    const entry = await db
-      .collection<LeaderboardEntry>(`leaderboards.${language}.${mode}.${mode2}`)
-      .findOne({ uid });
-    const count = await db
-      .collection(`leaderboards.${language}.${mode}.${mode2}`)
-      .estimatedDocumentCount();
+    const entry = await getCollection({ language, mode, mode2 }).findOne({
+      uid,
+    });
+    const count = await getCollection({
+      language,
+      mode,
+      mode2,
+    }).estimatedDocumentCount();
 
     return {
       count,

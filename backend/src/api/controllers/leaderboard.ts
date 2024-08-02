@@ -14,7 +14,6 @@ export async function getLeaderboard(
   req: MonkeyTypes.Request
 ): Promise<MonkeyResponse> {
   const { language, mode, mode2, skip, limit = 50 } = req.query;
-  const { uid } = req.ctx.decodedToken;
 
   const queryLimit = Math.min(parseInt(limit as string, 10), 50);
 
@@ -34,11 +33,7 @@ export async function getLeaderboard(
     );
   }
 
-  const normalizedLeaderboard = _.map(leaderboard, (entry) => {
-    return uid && entry.uid === uid
-      ? entry
-      : _.omit(entry, ["_id", "difficulty", "language"]);
-  });
+  const normalizedLeaderboard = leaderboard.map((it) => _.omit(it, ["_id"]));
 
   return new MonkeyResponse("Leaderboard retrieved", normalizedLeaderboard);
 }

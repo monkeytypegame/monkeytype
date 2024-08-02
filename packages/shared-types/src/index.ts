@@ -302,7 +302,6 @@ export type ResultFilters = {
 };
 
 export type LeaderboardEntry = {
-  _id: string;
   wpm: number;
   acc: number;
   timestamp: number;

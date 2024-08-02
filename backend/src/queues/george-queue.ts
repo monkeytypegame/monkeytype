@@ -62,7 +62,7 @@ class GeorgeQueue extends MonkeyQueue<GeorgeTask> {
   }
 
   async announceLeaderboardUpdate(
-    newRecords: LeaderboardEntry[],
+    newRecords: Omit<LeaderboardEntry, "_id">[],
     leaderboardId: string
   ): Promise<void> {
     const taskName = "announceLeaderboardUpdate";
