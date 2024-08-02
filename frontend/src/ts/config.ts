@@ -469,9 +469,9 @@ export function setPaceCaret(
   }
 
   if (document.readyState === "complete") {
-    if ((val === "pb" || val === "tagsPB") && !isAuthenticated()) {
+    if ((val === "pb" || val === "tagPb") && !isAuthenticated()) {
       Notifications.add(
-        "PB and tags pace caret are unavailable without an account",
+        `Pace caret "pb" and "tag pb" are unavailable without an account`,
         0
       );
       return false;

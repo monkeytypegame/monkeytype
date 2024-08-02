@@ -82,7 +82,7 @@ export async function init(): Promise<void> {
       Config.lazyMode,
       Config.funbox
     );
-  } else if (Config.paceCaret === "tagsPB") {
+  } else if (Config.paceCaret === "tagPb") {
     wpm = await DB.getActiveTagsPB(
       Config.mode,
       mode2,

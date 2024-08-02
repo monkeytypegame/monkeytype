@@ -1248,7 +1248,7 @@ list.optOutOfLeaderboards = new SimpleModal({
 list.clearTagPb = new SimpleModal({
   id: "clearTagPb",
   title: "Clear tag PB",
-  text: "Are you sure you want to clear this tag's PB?",
+  text: "Are you sure you want to clear this tags PB?",
   buttonText: "clear",
   execFn: async (thisPopup): Promise<ExecReturn> => {
     const tagId = thisPopup.parameters[0] as string;

@@ -69,7 +69,7 @@ function update(): void {
       DB.setSnapshot(snapshot);
       if (
         Config.paceCaret === "average" ||
-        Config.paceCaret === "tagsPB" ||
+        Config.paceCaret === "tagPb" ||
         Config.paceCaret === "daily"
       ) {
         await PaceCaret.init();
@@ -95,7 +95,7 @@ function update(): void {
 
         if (
           Config.paceCaret === "average" ||
-          Config.paceCaret === "tagsPB" ||
+          Config.paceCaret === "tagPb" ||
           Config.paceCaret === "daily"
         ) {
           await PaceCaret.init();

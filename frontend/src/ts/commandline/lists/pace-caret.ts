@@ -25,11 +25,11 @@ const subgroup: MonkeyTypes.CommandsSubgroup = {
       },
     },
     {
-      id: "setPaceCaretPb",
-      display: "tags pb",
-      configValue: "tagsPB",
+      id: "setPaceCaretTagPb",
+      display: "tag pb",
+      configValue: "tagPb",
       exec: (): void => {
-        UpdateConfig.setPaceCaret("tagsPB");
+        UpdateConfig.setPaceCaret("tagPb");
         TestLogic.restart();
       },
     },
