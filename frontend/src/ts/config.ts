@@ -182,6 +182,11 @@ export function setSoundVolume(
   val: ConfigSchemas.SoundVolume,
   nosave?: boolean
 ): boolean {
+  if (val < 0 || val > 1) {
+    Notifications.add("Sound volume must be between 0 and 1", 0);
+    val = 0.5;
+  }
+
   if (
     !isConfigValueValid("sound volume", val, ConfigSchemas.SoundVolumeSchema)
   ) {
@@ -2174,6 +2179,10 @@ function replaceLegacyValues(
       val = configObj.timerStyle;
     }
     configObj.liveAccStyle = val;
+  }
+
+  if (typeof configObj.soundVolume === "string") {
+    configObj.soundVolume = parseFloat(configObj.soundVolume);
   }
 
   return configObj;

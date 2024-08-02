@@ -250,7 +250,7 @@ async function initGroups(): Promise<void> {
   groups["soundVolume"] = new SettingsGroup(
     "soundVolume",
     UpdateConfig.setSoundVolume,
-    "button"
+    "range"
   ) as SettingsGroup<ConfigValue>;
   groups["playSoundOnError"] = new SettingsGroup(
     "playSoundOnError",
