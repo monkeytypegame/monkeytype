@@ -592,26 +592,7 @@ export async function getActiveTagsPB<M extends Mode>(
   const snapshot = getSnapshot();
   if (!snapshot) return 0;
 
-  const tagPbWpm = (
-    await Promise.all(
-      snapshot.tags
-        ?.filter((it) => it.active)
-        .map(async (it) =>
-          getLocalTagPB(
-            it._id,
-            mode,
-            mode2,
-            punctuation,
-            numbers,
-            language,
-            difficulty,
-            lazyMode
-          )
-        )
-    )
-  ).reduce((acc, cur) => Math.max(acc, cur), 0);
-
-  let highestWpm = 0;
+  let tagPbWpm = 0;
   for (const tag of snapshot.tags) {
     if (tag.active) {
       const currTagPB = await getLocalTagPB(
@@ -624,7 +605,7 @@ export async function getActiveTagsPB<M extends Mode>(
         difficulty,
         lazyMode
       );
-      if (currTagPB > highestWpm) highestWpm = currTagPB;
+      if (currTagPB > tagPbWpm) tagPbWpm = currTagPB;
     }
   }
 
