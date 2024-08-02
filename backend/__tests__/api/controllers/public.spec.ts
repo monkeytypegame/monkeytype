@@ -67,7 +67,6 @@ describe("PublicController", () => {
     it("fails for missing query", async () => {
       const { body } = await mockApp.get("/public/speedHistogram").expect(422);
 
-      //TODO
       expect(body).toEqual({
         message: "Invalid query",
         validationErrors: [
@@ -87,7 +86,6 @@ describe("PublicController", () => {
         })
         .expect(422);
 
-      //TODO
       expect(body).toEqual({
         message: "Invalid query",
         validationErrors: [
