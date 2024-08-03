@@ -15,7 +15,11 @@ function buildApp(): express.Application {
   app.use(urlencoded({ extended: true }));
   app.use(json());
   app.use(cors());
-  app.use(helmet());
+  app.use(
+    helmet({
+      contentSecurityPolicy: false,
+    })
+  );
 
   app.set("trust proxy", 1);
 
