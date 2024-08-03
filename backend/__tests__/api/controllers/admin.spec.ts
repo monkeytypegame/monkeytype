@@ -6,7 +6,7 @@ import * as AdminUuidDal from "../../../src/dal/admin-uids";
 import * as UserDal from "../../../src/dal/user";
 import * as ReportDal from "../../../src/dal/report";
 import GeorgeQueue from "../../../src/queues/george-queue";
-import * as UserController from "../../../src/api/controllers/user";
+import * as AuthUtil from "../../../src/utils/auth";
 import _ from "lodash";
 
 const mockApp = request(app);
@@ -378,8 +378,8 @@ describe("ApeKeyController", () => {
   describe("send forgot password email", () => {
     //endpoint delegates to user controller which should be tested in the user test cases
     const sendForgotPasswordEmailMock = vi.spyOn(
-      UserController,
-      "doSendForgotPasswordEmail"
+      AuthUtil,
+      "sendForgotPasswordEmail"
     );
 
     beforeEach(() => {
