@@ -7,6 +7,7 @@ import { presetsContract } from "@monkeytype/contracts/presets";
 import { apeKeysContract } from "@monkeytype/contracts/ape-keys";
 import { psasContract } from "@monkeytype/contracts/psas";
 import { publicContract } from "@monkeytype/contracts/public";
+import { leaderboardsContract } from "@monkeytype/contracts/leaderboards";
 
 const API_PATH = "";
 const BASE_URL = envConfig.backendUrl;
@@ -21,7 +22,7 @@ const Ape = {
   results: new endpoints.Results(httpClient),
   psas: buildClient(psasContract, BASE_URL, 10_000),
   quotes: new endpoints.Quotes(httpClient),
-  leaderboards: new endpoints.Leaderboards(httpClient),
+  leaderboards: buildClient(leaderboardsContract, BASE_URL, 10_000),
   presets: buildClient(presetsContract, BASE_URL, 10_000),
   publicStats: buildClient(publicContract, BASE_URL, 10_000),
   apeKeys: buildClient(apeKeysContract, BASE_URL, 10_000),

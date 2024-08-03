@@ -1,7 +1,6 @@
 import { z, ZodString } from "zod";
 
 export const StringNumberSchema = z
-
   .custom<`${number}`>((val) => {
     if (typeof val === "number") val = val.toString();
     return typeof val === "string" ? /^\d+$/.test(val) : false;

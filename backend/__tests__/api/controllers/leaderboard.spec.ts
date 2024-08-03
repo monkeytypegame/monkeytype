@@ -7,7 +7,11 @@ import * as DailyLeaderboards from "../../../src/utils/daily-leaderboards";
 import * as WeeklyXpLeaderboard from "../../../src/services/weekly-xp-leaderboard";
 import * as Configuration from "../../../src/init/configuration";
 import { mockAuthenticateWithApeKey } from "../../__testData__/auth";
-import { LeaderboardEntry } from "@monkeytype/contracts/schemas/leaderboards";
+import {
+  LeaderboardEntry,
+  XpLeaderboardEntry,
+  XpLeaderboardRank,
+} from "@monkeytype/contracts/schemas/leaderboards";
 
 const mockApp = request(app);
 const configuration = Configuration.getCachedConfiguration();
@@ -245,7 +249,7 @@ describe("Loaderboard Controller", () => {
       getLeaderboardRankMock.mockResolvedValue({
         count: 1000,
         rank: 50,
-        entry: { ...resultEntry, _id: entryId },
+        entry: resultEntry,
       });
 
       //WHEN
@@ -903,11 +907,10 @@ describe("Loaderboard Controller", () => {
       //GIVEN
       const lbConf = (await configuration).leaderboards.weeklyXp;
 
-      const resultData: WeeklyXpLeaderboard.WeeklyXpLeaderboardEntry[] = [
+      const resultData: XpLeaderboardEntry[] = [
         {
           totalXp: 100,
           rank: 1,
-          count: 1,
           timeTypedSeconds: 100,
           uid: "user1",
           name: "user1",
@@ -918,7 +921,6 @@ describe("Loaderboard Controller", () => {
         {
           totalXp: 75,
           rank: 2,
-          count: 2,
           timeTypedSeconds: 200,
           uid: "user2",
           name: "user2",
@@ -1078,10 +1080,10 @@ describe("Loaderboard Controller", () => {
       //GIVEN
       const lbConf = (await configuration).leaderboards.weeklyXp;
 
-      const resultData: WeeklyXpLeaderboard.WeeklyXpLeaderboardEntry = {
+      const resultData: XpLeaderboardRank = {
         totalXp: 100,
         rank: 1,
-        count: 1,
+        count: 100,
         timeTypedSeconds: 100,
         uid: "user1",
         name: "user1",
