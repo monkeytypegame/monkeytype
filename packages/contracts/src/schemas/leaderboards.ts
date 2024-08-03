@@ -27,3 +27,21 @@ export const DailyLeaderboardRankSchema = LeaderboardRankSchema.extend({
   minWpm: z.number().nonnegative(),
 });
 export type DailyLeaderboardRank = z.infer<typeof DailyLeaderboardRankSchema>;
+
+export const XpLeaderboardEntrySchema = z.object({
+  uid: z.string(),
+  name: z.string(),
+  discordId: z.string().optional(),
+  discordAvatar: z.string().optional(),
+  badgeId: z.number().int().optional(),
+  lastActivityTimestamp: z.number().int().nonnegative(),
+  timeTypedSeconds: z.number().nonnegative(),
+  rank: z.number().nonnegative().int(),
+  totalXp: z.number().nonnegative().int(),
+});
+export type XpLeaderboardEntry = z.infer<typeof XpLeaderboardEntrySchema>;
+
+export const XpLeaderboardRankSchema = XpLeaderboardEntrySchema.extend({
+  count: z.number().int().nonnegative(),
+});
+export type XpLeaderboardRank = z.infer<typeof XpLeaderboardRankSchema>;

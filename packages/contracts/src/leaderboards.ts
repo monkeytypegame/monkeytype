@@ -3,11 +3,14 @@ import {
   CommonResponses,
   EndpointMetadata,
   responseWithData,
+  responseWithNullableData,
 } from "./schemas/api";
 import {
   DailyLeaderboardRankSchema,
   LeaderboardEntrySchema,
   LeaderboardRankSchema,
+  XpLeaderboardEntrySchema,
+  XpLeaderboardRankSchema,
 } from "./schemas/leaderboards";
 import { LanguageSchema } from "./schemas/util";
 import { Mode2Schema, ModeSchema } from "./schemas/shared";
@@ -63,6 +66,26 @@ export type GetLeaderboardDailyRankResponse = z.infer<
   typeof GetLeaderboardDailyRankResponseSchema
 >;
 
+export const GetWeeklyXpLeaderboardQuerySchema = PaginationQuerySchema.extend({
+  weeksBefore: z.literal(1).optional(),
+});
+export type GetWeeklyXpLeaderboardQuery = z.infer<
+  typeof GetWeeklyXpLeaderboardQuerySchema
+>;
+
+export const GetWeeklyXpLeaderboardResponseSchema = responseWithData(
+  z.array(XpLeaderboardEntrySchema)
+);
+export type GetWeeklyXpLeaderboardResponse = z.infer<
+  typeof GetWeeklyXpLeaderboardResponseSchema
+>;
+
+export const GetWeeklyXpLeaderboardRankResponseSchema =
+  responseWithNullableData(XpLeaderboardRankSchema.partial());
+export type GetWeeklyXpLeaderboardRankResponse = z.infer<
+  typeof GetWeeklyXpLeaderboardRankResponseSchema
+>;
+
 const c = initContract();
 export const leaderboardsContract = c.router(
   {
@@ -81,7 +104,8 @@ export const leaderboardsContract = c.router(
     },
     getRank: {
       summary: "get leaderboard rank",
-      description: "Get your rank on the all-time leaderboard",
+      description:
+        "Get the rank of the current user on the all-time leaderboard",
       method: "GET",
       path: "/rank",
       query: LanguageAndModeQuerySchema.strict(),
@@ -107,12 +131,35 @@ export const leaderboardsContract = c.router(
     },
     getDailyRank: {
       summary: "get daily leaderboard rank",
-      description: "Get your rank on the daily leaderboard",
+      description: "Get the rank of the current user on the daily leaderboard",
       method: "GET",
       path: "/daily/rank",
       query: GetDailyLeaderboardRankQuerySchema.strict(),
       responses: {
         200: GetLeaderboardDailyRankResponseSchema,
+      },
+    },
+    getWeeklyXp: {
+      summary: "get weekly xp leaderboard",
+      description: "Get weekly xp leaderboard",
+      method: "GET",
+      path: "/xp/weekly",
+      query: GetWeeklyXpLeaderboardQuerySchema.strict(),
+      responses: {
+        200: GetWeeklyXpLeaderboardResponseSchema,
+      },
+      metadata: {
+        authenticationOptions: { isPublic: true },
+      } as EndpointMetadata,
+    },
+    getWeeklyXpRank: {
+      summary: "get weekly xp leaderboard rank",
+      description:
+        "Get teh rank of the current user on the weekly xp leaderboard",
+      method: "GET",
+      path: "/xp/weekly/rank",
+      responses: {
+        200: GetWeeklyXpLeaderboardRankResponseSchema,
       },
     },
   },

@@ -43,26 +43,14 @@ export default s.router(leaderboardsContract, {
     handler: async (r) =>
       callController(LeaderboardController.getDailyLeaderboardRank)(r),
   },
+  getWeeklyXp: {
+    middleware: [requireWeeklyXpLeaderboardEnabled, RateLimit.leaderboardsGet],
+    handler: async (r) =>
+      callController(LeaderboardController.getWeeklyXpLeaderboardResults)(r),
+  },
+  getWeeklyXpRank: {
+    middleware: [requireWeeklyXpLeaderboardEnabled, RateLimit.leaderboardsGet],
+    handler: async (r) =>
+      callController(LeaderboardController.getWeeklyXpLeaderboardRank)(r),
+  },
 });
-
-/*
-
-router.get(
-  "/xp/weekly",
-  requireWeeklyXpLeaderboardEnabled,
-  authenticateRequest({ isPublic: true }),
-  withApeRateLimiter(RateLimit.leaderboardsGet),
-  validateRequest({
-    query: WEEKLY_XP_LEADERBOARD_VALIDATION_SCHEMA,
-  }),
-  asyncHandler(LeaderboardController.getWeeklyXpLeaderboardResults)
-);
-
-router.get(
-  "/xp/weekly/rank",
-  requireWeeklyXpLeaderboardEnabled,
-  authenticateRequest(),
-  withApeRateLimiter(RateLimit.leaderboardsGet),
-  asyncHandler(LeaderboardController.getWeeklyXpLeaderboardRank)
-);
-*/
