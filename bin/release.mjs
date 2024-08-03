@@ -3,8 +3,13 @@ import { Octokit } from "@octokit/rest";
 import dotenv from "dotenv";
 import { readFileSync } from "fs";
 import readlineSync from "readline-sync";
-import path, { dirname } from "path";
+import path from "path";
 import fs from "fs";
+import { fileURLToPath } from "url";
+import { dirname } from "path";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 dotenv.config();
 

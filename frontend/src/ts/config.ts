@@ -182,6 +182,11 @@ export function setSoundVolume(
   val: ConfigSchemas.SoundVolume,
   nosave?: boolean
 ): boolean {
+  if (val < 0 || val > 1) {
+    Notifications.add("Sound volume must be between 0 and 1", 0);
+    val = 0.5;
+  }
+
   if (
     !isConfigValueValid("sound volume", val, ConfigSchemas.SoundVolumeSchema)
   ) {
@@ -469,8 +474,11 @@ export function setPaceCaret(
   }
 
   if (document.readyState === "complete") {
-    if (val === "pb" && !isAuthenticated()) {
-      Notifications.add("PB pace caret is unavailable without an account", 0);
+    if ((val === "pb" || val === "tagPb") && !isAuthenticated()) {
+      Notifications.add(
+        `Pace caret "pb" and "tag pb" are unavailable without an account`,
+        0
+      );
       return false;
     }
   }
@@ -2174,6 +2182,10 @@ function replaceLegacyValues(
       val = configObj.timerStyle;
     }
     configObj.liveAccStyle = val;
+  }
+
+  if (typeof configObj.soundVolume === "string") {
+    configObj.soundVolume = parseFloat(configObj.soundVolume);
   }
 
   return configObj;

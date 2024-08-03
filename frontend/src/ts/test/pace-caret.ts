@@ -82,6 +82,16 @@ export async function init(): Promise<void> {
       Config.lazyMode,
       Config.funbox
     );
+  } else if (Config.paceCaret === "tagPb") {
+    wpm = await DB.getActiveTagsPB(
+      Config.mode,
+      mode2,
+      Config.punctuation,
+      Config.numbers,
+      Config.language,
+      Config.difficulty,
+      Config.lazyMode
+    );
   } else if (Config.paceCaret === "average") {
     [wpm] = await DB.getUserAverage10(
       Config.mode,

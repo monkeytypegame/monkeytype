@@ -580,6 +580,37 @@ export async function getUserDailyBest<M extends Mode>(
   return retval;
 }
 
+export async function getActiveTagsPB<M extends Mode>(
+  mode: M,
+  mode2: Mode2<M>,
+  punctuation: boolean,
+  numbers: boolean,
+  language: string,
+  difficulty: Difficulty,
+  lazyMode: boolean
+): Promise<number> {
+  const snapshot = getSnapshot();
+  if (!snapshot) return 0;
+
+  let tagPbWpm = 0;
+  for (const tag of snapshot.tags) {
+    if (!tag.active) continue;
+    const currTagPB = await getLocalTagPB(
+      tag._id,
+      mode,
+      mode2,
+      punctuation,
+      numbers,
+      language,
+      difficulty,
+      lazyMode
+    );
+    if (currTagPB > tagPbWpm) tagPbWpm = currTagPB;
+  }
+
+  return tagPbWpm;
+}
+
 export async function getLocalPB<M extends Mode>(
   mode: M,
   mode2: Mode2<M>,

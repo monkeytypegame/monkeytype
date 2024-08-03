@@ -150,7 +150,10 @@ export async function updatePosition(noAnim = false): Promise<void> {
   const wordsWrapperWidth =
     $(document.querySelector("#wordsWrapper") as HTMLElement).width() ?? 0;
 
-  if (Config.tapeMode === "letter") {
+  if (
+    Config.tapeMode === "letter" ||
+    (Config.tapeMode === "word" && inputLen === 0)
+  ) {
     newLeft = wordsWrapperWidth / 2 - (fullWidthCaret ? 0 : caretWidth / 2);
   }
 
