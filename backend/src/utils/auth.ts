@@ -6,6 +6,9 @@ import {
   setTokenCacheSize,
 } from "./prometheus";
 import { type DecodedIdToken, UserRecord } from "firebase-admin/auth";
+import { isDevEnvironment } from "./misc";
+import emailQueue from "../queues/email-queue";
+import * as UserDAL from "../dal/user";
 
 const tokenCache = new LRUCache<string, DecodedIdToken>({
   max: 20000,
@@ -81,4 +84,25 @@ export async function revokeTokensByUid(uid: string): Promise<void> {
       tokenCache.delete(entry[0]);
     }
   }
+}
+
+export async function sendForgotPasswordEmail(email: string): Promise<void> {
+  try {
+    const uid = (await FirebaseAdmin().auth().getUserByEmail(email)).uid;
+    const { name } = await UserDAL.getPartialUser(
+      uid,
+      "request forgot password email",
+      ["name"]
+    );
+
+    const link = await FirebaseAdmin()
+      .auth()
+      .generatePasswordResetLink(email, {
+        url: isDevEnvironment()
+          ? "http://localhost:3000"
+          : "https://monkeytype.com",
+      });
+
+    await emailQueue.sendForgotPasswordEmail(email, name, link);
+  } catch {}
 }

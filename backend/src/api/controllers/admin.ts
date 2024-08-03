@@ -3,7 +3,7 @@ import { buildMonkeyMail } from "../../utils/monkey-mail";
 import * as UserDAL from "../../dal/user";
 import * as ReportDAL from "../../dal/report";
 import GeorgeQueue from "../../queues/george-queue";
-import { doSendForgotPasswordEmail } from "./user";
+import { sendForgotPasswordEmail as authSendForgotPasswordEmail } from "../../utils/auth";
 import {
   AcceptReportsRequest,
   RejectReportsRequest,
@@ -67,7 +67,6 @@ export async function handleReports(
   accept: boolean,
   inboxConfig: Configuration["users"]["inbox"]
 ): Promise<void> {
-  console.log(reports);
   const reportIds = reports.map(({ reportId }) => reportId);
 
   const reportsFromDb = await ReportDAL.getReports(reportIds);
@@ -123,7 +122,7 @@ export async function sendForgotPasswordEmail(
   req: MonkeyTypes.Request2<undefined, SendForgotPasswordEmailRequest>
 ): Promise<MonkeyResponse2> {
   const { email } = req.body;
-  await doSendForgotPasswordEmail(email);
+  await authSendForgotPasswordEmail(email);
   return new MonkeyResponse2(
     "Password reset request received. If the email is valid, you will receive an email shortly.",
     null
