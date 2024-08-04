@@ -236,6 +236,14 @@ const list: MonkeyTypes.FunboxMetadata[] = [
     },
   },
   {
+    name: "hexadecimal",
+    info: "0x38 0x20 0x74 0x69 0x6D 0x65 0x73 0x20 0x6D 0x6F 0x72 0x65 0x20 0x62 0x6F 0x6F 0x70 0x21",
+    properties: ["ignoresLanguage", "ignoresLayout", "noLetters"],
+    forcedConfig: {
+      numbers: [false],
+    },
+  },
+  {
     name: "zipf",
     alias: "frequency",
     info: "Words are generated according to Zipf's law. (not all languages will produce Zipfy results, use with caution)",
