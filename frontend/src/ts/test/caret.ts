@@ -142,20 +142,35 @@ export async function updatePosition(noAnim = false): Promise<void> {
     newTop = activeWordEl.offsetTop + letterPosTop - caret.offsetHeight / 2;
   }
 
-  let newLeft =
-    activeWordEl.offsetLeft +
-    letterPosLeft -
-    (fullWidthCaret ? 0 : caretWidth / 2);
+  let newLeftBeforeLineCaret = activeWordEl.offsetLeft + letterPosLeft;
 
   const wordsWrapperWidth =
     $(document.querySelector("#wordsWrapper") as HTMLElement).width() ?? 0;
 
-  if (
-    Config.tapeMode === "letter" ||
-    (Config.tapeMode === "word" && inputLen === 0)
-  ) {
-    newLeft = wordsWrapperWidth / 2 - (fullWidthCaret ? 0 : caretWidth / 2);
+  if (Config.tapeMode !== "off") {
+    newLeftBeforeLineCaret =
+      wordsWrapperWidth / 2 -
+      (fullWidthCaret && isLanguageRightToLeft
+        ? currentLetter?.offsetWidth ?? previousLetter?.offsetWidth ?? 0
+        : 0);
+
+    if (Config.tapeMode === "word" && inputLen > 0) {
+      const letters = activeWordEl?.querySelectorAll("letter");
+      if (letters?.length) {
+        let currentWordWidth = 0;
+        for (let i = 0; i < inputLen; i++) {
+          const letter = letters[i] as HTMLElement;
+          if (Config.blindMode && letter.classList.contains("extra")) continue;
+          currentWordWidth += $(letter).outerWidth(true) ?? 0;
+        }
+        if (isLanguageRightToLeft) currentWordWidth *= -1;
+        newLeftBeforeLineCaret += currentWordWidth;
+      }
+    }
   }
+
+  const newLeft =
+    newLeftBeforeLineCaret - (fullWidthCaret ? 0 : caretWidth / 2);
 
   const newWidth = fullWidthCaret ? (letterWidth ?? 0) + "px" : "";
 
