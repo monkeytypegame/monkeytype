@@ -129,10 +129,11 @@ export async function updatePosition(noAnim = false): Promise<void> {
     lastWordLetter?.offsetHeight ||
     Config.fontSize * Numbers.convertRemToPixels(1);
 
-  const letterWidth =
-    currentLetter?.offsetWidth ||
-    previousLetter?.offsetWidth ||
-    lastWordLetter?.offsetWidth;
+  let letterWidth = 0;
+  for (let i = inputLen; i >= 0; i--) {
+    const letter = currentWordNodeList[i] as HTMLElement;
+    if ((letterWidth = letter?.offsetWidth)) break;
+  }
 
   const diff = letterHeight - caret.offsetHeight;
 
