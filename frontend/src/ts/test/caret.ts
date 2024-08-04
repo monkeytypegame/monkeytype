@@ -125,7 +125,7 @@ export async function updatePosition(noAnim = false): Promise<void> {
   const previousLetter = currentWordNodeList[inputLen - 1] as HTMLElement;
   const lastWordLetter = currentWordNodeList[wordLen - 1] as HTMLElement;
 
-  const spaceWidth = getSpaceWidth();
+  const spaceWidth = getSpaceWidth(activeWordEl);
 
   const currentLanguage = await JSONData.getCurrentLanguage(Config.language);
   const isLanguageRightToLeft = currentLanguage.rightToLeft;
