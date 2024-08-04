@@ -32,45 +32,63 @@ export function hide(): void {
   caret.classList.add("hidden");
 }
 
+export function getSpaceWidth(wordElement?: HTMLElement): number {
+  if (!wordElement)
+    wordElement = document
+      .getElementById("words")
+      ?.querySelectorAll(".word")?.[0] as HTMLElement | undefined;
+  if (!wordElement) return 0;
+  const wordComputedStyle = window.getComputedStyle(wordElement);
+  return (
+    parseInt(wordComputedStyle.marginRight) +
+    parseInt(wordComputedStyle.marginLeft)
+  );
+}
+
 function getTargetPositionLeft(
   fullWidthCaret: boolean,
   isLanguageRightToLeft: boolean,
-  currentLetter: HTMLElement | undefined,
-  previousLetter: HTMLElement | undefined,
-  lastWordLetter: HTMLElement,
-  inputLenLongerThanWordLen: boolean
+  currentWordNodeList: NodeListOf<Element>,
+  spaceWidth: number,
+  wordLen: number,
+  inputLen: number
 ): number {
   let result = 0;
 
+  const currentLetter = currentWordNodeList[inputLen] as
+    | HTMLElement
+    | undefined;
+  const lastWordLetter = currentWordNodeList[wordLen - 1] as HTMLElement;
+  const lastInputLetter = currentWordNodeList[inputLen - 1] as
+    | HTMLElement
+    | undefined;
+
   if (isLanguageRightToLeft) {
-    const fullWidthOffset = fullWidthCaret
-      ? 0
-      : currentLetter?.offsetWidth ?? previousLetter?.offsetWidth ?? 0;
-    if (
-      (Config.blindMode || Config.hideExtraLetters) &&
-      inputLenLongerThanWordLen
-    ) {
+    let positiveLetterWidth = 0;
+    for (let i = inputLen; i >= 0; i--) {
+      const letter = currentWordNodeList[i] as HTMLElement;
+      if ((positiveLetterWidth = letter?.offsetWidth ?? 0)) break;
+    }
+
+    if (inputLen < wordLen && currentLetter) {
       result =
-        lastWordLetter.offsetLeft -
-        (fullWidthCaret ? lastWordLetter.offsetWidth : 0);
-    } else if (currentLetter !== undefined) {
-      result = currentLetter.offsetLeft + fullWidthOffset;
-    } else if (previousLetter !== undefined) {
+        currentLetter.offsetLeft + (fullWidthCaret ? 0 : positiveLetterWidth);
+    } else if (Config.blindMode || Config.hideExtraLetters) {
+      result = lastWordLetter.offsetLeft - (fullWidthCaret ? spaceWidth : 0);
+    } else {
       result =
-        previousLetter.offsetLeft -
-        previousLetter.offsetWidth +
-        fullWidthOffset;
+        (lastInputLetter?.offsetLeft ?? lastWordLetter.offsetLeft) -
+        (fullWidthCaret ? spaceWidth : 0);
     }
   } else {
-    if (
-      (Config.blindMode || Config.hideExtraLetters) &&
-      inputLenLongerThanWordLen
-    ) {
-      result = lastWordLetter.offsetLeft + lastWordLetter.offsetWidth;
-    } else if (currentLetter !== undefined) {
+    if (inputLen < wordLen && currentLetter) {
       result = currentLetter.offsetLeft;
-    } else if (previousLetter !== undefined) {
-      result = previousLetter.offsetLeft + previousLetter.offsetWidth;
+    } else if (Config.blindMode || Config.hideExtraLetters) {
+      result = lastWordLetter.offsetLeft + lastWordLetter.offsetWidth;
+    } else {
+      result =
+        (lastInputLetter?.offsetLeft ?? lastWordLetter.offsetLeft) +
+        (lastInputLetter?.offsetWidth ?? lastWordLetter.offsetWidth);
     }
   }
 
@@ -98,37 +116,37 @@ export async function updatePosition(noAnim = false): Promise<void> {
     );
   }
 
-  const currentWordNodeList = document
-    ?.querySelector("#words .active")
-    ?.querySelectorAll("letter");
-
-  if (!currentWordNodeList) return;
-
+  const currentWordNodeList = activeWordEl?.querySelectorAll("letter");
+  if (!currentWordNodeList?.length) return;
   const currentLetter = currentWordNodeList[inputLen] as
     | HTMLElement
     | undefined;
-
-  const previousLetter: HTMLElement = currentWordNodeList[
-    inputLen - 1
-  ] as HTMLElement;
-
+  console.log("current letter in updatePosition", currentLetter);
+  const previousLetter = currentWordNodeList[inputLen - 1] as HTMLElement;
   const lastWordLetter = currentWordNodeList[wordLen - 1] as HTMLElement;
+
+  const spaceWidth = getSpaceWidth();
 
   const currentLanguage = await JSONData.getCurrentLanguage(Config.language);
   const isLanguageRightToLeft = currentLanguage.rightToLeft;
+
   const letterPosLeft = getTargetPositionLeft(
     fullWidthCaret,
     isLanguageRightToLeft,
-    currentLetter,
-    previousLetter,
-    lastWordLetter,
-    inputLen > wordLen
+    currentWordNodeList,
+    spaceWidth,
+    wordLen,
+    inputLen
   );
 
-  const letterPosTop =
+  let letterPosTop =
     currentLetter?.offsetTop ??
     previousLetter?.offsetTop ??
     lastWordLetter?.offsetTop;
+  // in blind mode extra letters have zero dimensions,
+  // but in hide extra letters they are undefined
+  if (Config.blindMode && inputLen > wordLen)
+    letterPosTop = lastWordLetter?.offsetTop;
 
   const letterHeight =
     currentLetter?.offsetHeight ||
@@ -136,10 +154,18 @@ export async function updatePosition(noAnim = false): Promise<void> {
     lastWordLetter?.offsetHeight ||
     Config.fontSize * Numbers.convertRemToPixels(1);
 
-  let letterWidth = 0;
-  for (let i = inputLen; i >= 0; i--) {
-    const letter = currentWordNodeList[i] as HTMLElement;
-    if ((letterWidth = letter?.offsetWidth)) break;
+  let letterWidth = currentLetter?.offsetWidth || spaceWidth;
+  if (
+    currentLetter?.offsetWidth === 0 &&
+    !(Config.blindMode && inputLen > wordLen)
+  ) {
+    // other than in extra letters in blind mode, it could be zero
+    // if current letter is a zero-wwidth character e.g, diacritics)
+    letterWidth = 0;
+    for (let i = inputLen; i >= 0; i--) {
+      const letter = currentWordNodeList[i] as HTMLElement;
+      if ((letterWidth = letter?.offsetWidth)) break;
+    }
   }
 
   const diff = letterHeight - caret.offsetHeight;
@@ -158,9 +184,7 @@ export async function updatePosition(noAnim = false): Promise<void> {
   if (Config.tapeMode !== "off") {
     newLeftBeforeLineCaret =
       wordsWrapperWidth / 2 -
-      (fullWidthCaret && isLanguageRightToLeft
-        ? currentLetter?.offsetWidth ?? previousLetter?.offsetWidth ?? 0
-        : 0);
+      (fullWidthCaret && isLanguageRightToLeft ? letterWidth : 0);
 
     if (Config.tapeMode === "word" && inputLen > 0) {
       const letters = activeWordEl?.querySelectorAll("letter");
