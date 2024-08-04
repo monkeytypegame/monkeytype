@@ -46,7 +46,14 @@ function getTargetPositionLeft(
     const fullWidthOffset = fullWidthCaret
       ? 0
       : currentLetter?.offsetWidth ?? previousLetter?.offsetWidth ?? 0;
-    if (currentLetter !== undefined) {
+    if (
+      (Config.blindMode || Config.hideExtraLetters) &&
+      inputLenLongerThanWordLen
+    ) {
+      result =
+        lastWordLetter.offsetLeft -
+        (fullWidthCaret ? lastWordLetter.offsetWidth : 0);
+    } else if (currentLetter !== undefined) {
       result = currentLetter.offsetLeft + fullWidthOffset;
     } else if (previousLetter !== undefined) {
       result =
