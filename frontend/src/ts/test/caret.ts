@@ -160,9 +160,10 @@ export async function updatePosition(noAnim = false): Promise<void> {
     currentLetter?.offsetTop ??
     previousLetter?.offsetTop ??
     lastWordLetter?.offsetTop;
-  // in blind mode extra letters have zero dimensions,
-  // but in hide extra letters they are undefined
-  if (Config.blindMode && inputLen > wordLen)
+  // in blind mode extra letters have zero dimensions, but
+  // in hide extra letters they are undefined, but we are
+  // checking for hide extra letters too in case of future changes
+  if ((Config.blindMode || Config.hideExtraLetters) && inputLen > wordLen)
     letterPosTop = lastWordLetter?.offsetTop;
 
   const letterHeight =
