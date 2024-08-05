@@ -92,7 +92,7 @@ export function startTest(now: number): boolean {
   }
 
   TestState.setActive(true);
-Replay.startReplayRecording();
+  Replay.startReplayRecording();
   Replay.replayGetWordsList(TestWords.words.list);
   TestInput.resetKeypressTimings();
   TimerProgress.show();

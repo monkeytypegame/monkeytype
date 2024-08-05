@@ -30,7 +30,7 @@ async function bootServer(port: number): Promise<Server> {
     await getLiveConfiguration();
     Logger.success("Live configuration fetched");
 
-  Logger.info("Initializing email client...");
+    Logger.info("Initializing email client...");
     await EmailClient.init();
 
     Logger.info("Connecting to redis...");
