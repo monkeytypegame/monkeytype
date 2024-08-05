@@ -81,7 +81,8 @@ const checkEmail = (): void => {
   const email = $(".page.pageLogin .register.side .emailInput").val() as string;
   const emailRegex =
     /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-  const educationRegex = /@.*(education|school|\.edu$|\.edu\.|\.ac\.|\.sch\.)/i;
+  const educationRegex =
+    /@.*(student|education|school|\.edu$|\.edu\.|\.ac\.|\.sch\.)/i;
 
   const emailHasTypo = TypoList.some((typo) => {
     return email.endsWith(typo);
