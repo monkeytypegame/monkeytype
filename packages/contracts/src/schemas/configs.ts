@@ -289,6 +289,9 @@ export const CustomBackgroundSchema = z
   .or(z.literal(""));
 export type CustomBackground = z.infer<typeof CustomBackgroundSchema>;
 
+export const TribeDeltaSchema = z.enum(["off", "text", "bar"]);
+export const TribeCaretsSchema = z.enum(["off", "noNames", "on"]);
+
 export const ConfigSchema = z
   .object({
     theme: ThemeNameSchema,
@@ -377,6 +380,8 @@ export const ConfigSchema = z
     lazyMode: z.boolean(),
     showAverage: ShowAverageSchema,
     maxLineWidth: MaxLineWidthSchema,
+    tribeDelta: TribeDeltaSchema,
+    tribeCarets: TribeCaretsSchema,
   })
   .strict();
 export type Config = z.infer<typeof ConfigSchema>;
