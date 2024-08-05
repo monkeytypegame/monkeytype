@@ -370,10 +370,6 @@ export function showCrown(type: PbCrown.CrownType): void {
   PbCrown.update(type);
 }
 
-export function updateCrownType(type: PbCrown.CrownType): void {
-  PbCrown.update(type);
-}
-
 export async function updateCrown(dontSave: boolean): Promise<void> {
   if (Config.mode === "quote" || dontSave) {
     hideCrown();
