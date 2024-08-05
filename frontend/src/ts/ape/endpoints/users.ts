@@ -6,7 +6,7 @@ import {
   UserProfileDetails,
   UserTag,
 } from "@monkeytype/shared-types";
-import { Mode, Mode2 } from "@monkeytype/shared-types/config";
+import { Mode, Mode2 } from "@monkeytype/contracts/schemas/shared";
 
 const BASE_PATH = "/users";
 

@@ -38,12 +38,14 @@ export async function change(
       console.debug(
         `change page to ${pageName} stopped, page transition is true`
       );
-      return resolve(false);
+      resolve(false);
+      return;
     }
 
     if (!options.force && ActivePage.get() === pageName) {
       console.debug(`change page ${pageName} stoped, page already active`);
-      return resolve(false);
+      resolve(false);
+      return;
     } else {
       console.log(`changing page ${pageName}`);
     }

@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { token } from "./util";
+import * as Shared from "./shared";
 
 export const SmoothCaretSchema = z.enum(["off", "slow", "medium", "fast"]);
 export type SmoothCaret = z.infer<typeof SmoothCaretSchema>;
@@ -90,6 +91,9 @@ export type KeymapLegendStyle = z.infer<typeof KeymapLegendStyleSchema>;
 export const KeymapShowTopRowSchema = z.enum(["always", "layout", "never"]);
 export type KeymapShowTopRow = z.infer<typeof KeymapShowTopRowSchema>;
 
+export const KeymapSizeSchema = z.number().min(0.5).max(3.5).step(0.1);
+export type KeymapSize = z.infer<typeof KeymapSizeSchema>;
+
 export const SingleListCommandLineSchema = z.enum(["manual", "on"]);
 export type SingleListCommandLine = z.infer<typeof SingleListCommandLineSchema>;
 
@@ -116,13 +120,14 @@ export const PlaySoundOnClickSchema = z.enum([
 ]);
 export type PlaySoundOnClick = z.infer<typeof PlaySoundOnClickSchema>;
 
-export const SoundVolumeSchema = z.enum(["0.1", "0.5", "1.0"]);
+export const SoundVolumeSchema = z.number().min(0).max(1);
 export type SoundVolume = z.infer<typeof SoundVolumeSchema>;
 
 export const PaceCaretSchema = z.enum([
   "off",
   "average",
   "pb",
+  "tagPb",
   "last",
   "custom",
   "daily",
@@ -202,19 +207,8 @@ export type ShowAverage = z.infer<typeof ShowAverageSchema>;
 export const ColorHexValueSchema = z.string().regex(/^#([\da-f]{3}){1,2}$/i);
 export type ColorHexValue = z.infer<typeof ColorHexValueSchema>;
 
-export const DifficultySchema = z.enum(["normal", "expert", "master"]);
-export type Difficulty = z.infer<typeof DifficultySchema>;
-
-export const NumberModeSchema = z.enum(["time", "words", "quote"]);
-export const CustomModeSchema = z.enum(["custom"]);
-export const ZenModeSchema = z.enum(["zen"]);
-
-export const ModeSchema = z.union([
-  NumberModeSchema,
-  CustomModeSchema,
-  ZenModeSchema,
-]);
-export type Mode = z.infer<typeof ModeSchema>;
+export const DifficultySchema = Shared.DifficultySchema;
+export type Difficulty = Shared.Difficulty;
 
 export const CustomThemeColorsSchema = z.tuple([
   ColorHexValueSchema,
@@ -312,7 +306,7 @@ export const ConfigSchema = z
     numbers: z.boolean(),
     words: WordCountSchema,
     time: TimeConfigSchema,
-    mode: ModeSchema,
+    mode: Shared.ModeSchema,
     quoteLength: QuoteLengthConfigSchema,
     language: LanguageSchema,
     fontSize: FontSizeSchema,
@@ -342,6 +336,7 @@ export const ConfigSchema = z
     keymapLegendStyle: KeymapLegendStyleSchema,
     keymapLayout: KeymapLayoutSchema,
     keymapShowTopRow: KeymapShowTopRowSchema,
+    keymapSize: KeymapSizeSchema,
     fontFamily: FontFamilySchema,
     smoothLineScroll: z.boolean(),
     alwaysShowDecimalPlaces: z.boolean(),
@@ -388,3 +383,5 @@ export type Config = z.infer<typeof ConfigSchema>;
 
 export const PartialConfigSchema = ConfigSchema.partial();
 export type PartialConfig = z.infer<typeof PartialConfigSchema>;
+
+export type ConfigValue = Config[keyof Config];

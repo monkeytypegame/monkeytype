@@ -75,7 +75,7 @@ const usernameValidation = joi
       return helpers.error("string.pattern.base");
     }
 
-    return value;
+    return value as string;
   })
   .messages({
     "string.profanity":
@@ -217,7 +217,7 @@ router.patch(
   RateLimit.userUpdateEmail,
   validateRequest({
     body: {
-      newPassword: joi.string().required(),
+      newPassword: joi.string().min(6).required(),
     },
   }),
   asyncHandler(UserController.updatePassword)
@@ -537,7 +537,7 @@ const profileDetailsBase = joi
       return helpers.error("string.profanity");
     }
 
-    return value;
+    return value as string;
   })
   .messages({
     "string.profanity":

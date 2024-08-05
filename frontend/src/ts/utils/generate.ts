@@ -12,6 +12,19 @@ export function getBinary(): string {
 }
 
 /**
+ * Generates a random hexadecimal string between 1 and 8 bytes.
+ * @returns The generated hexadecimal string.
+ */
+export function getHexadecimal(): string {
+  const randLen = randomIntFromRange(1, 4);
+  return Array.from({ length: randLen }, () => {
+    return Math.floor(Math.random() * 256)
+      .toString(16)
+      .padStart(2, "0");
+  }).join("");
+}
+
+/**
  * Converts a word to Morse code.
  * @param word The word to convert to Morse code.
  * @returns The Morse code representation of the word.

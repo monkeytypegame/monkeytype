@@ -1,4 +1,4 @@
-import { ConfigValue } from "@monkeytype/shared-types/config";
+import { ConfigValue } from "@monkeytype/contracts/schemas/configs";
 
 type SetFunction<T> = (
   param: T,

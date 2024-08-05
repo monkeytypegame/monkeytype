@@ -7,7 +7,7 @@ import { checkIfGetParameterExists } from "../utils/misc";
 import * as UserReportModal from "../modals/user-report";
 import * as Skeleton from "../utils/skeleton";
 import { UserProfile } from "@monkeytype/shared-types";
-import { PersonalBests } from "@monkeytype/shared-types/user";
+import { PersonalBests } from "@monkeytype/contracts/schemas/shared";
 
 function reset(): void {
   $(".page.pageProfile .preloader").removeClass("hidden");
@@ -193,10 +193,8 @@ async function update(options: UpdateOptions): Promise<void> {
       $(".page.pageProfile .error .message").text(message);
     } else if (response.status !== 200) {
       // $(".page.pageProfile .failedToLoad").removeClass("hidden");
-      return Notifications.add(
-        "Failed to load profile: " + response.message,
-        -1
-      );
+      Notifications.add("Failed to load profile: " + response.message, -1);
+      return;
     } else {
       window.history.replaceState(null, "", `/profile/${response.data.name}`);
       await Profile.update("profile", response.data);

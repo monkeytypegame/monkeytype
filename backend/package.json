@@ -12,18 +12,19 @@
     "start": "node ./dist/server.js",
     "test": "vitest run",
     "test-coverage": "vitest run --coverage",
-    "dev": "concurrently \"tsx watch --clear-screen=false ./src/server.ts\" \"tsc --preserveWatchOutput --noEmit --watch\" \"npx eslint-watch \"./src/**/*.ts\"\"",
+    "dev": "concurrently \"tsx watch --clear-screen=false --inspect ./src/server.ts\" \"tsc --preserveWatchOutput --noEmit --watch\" \"npx eslint-watch \"./src/**/*.ts\"\"",
     "knip": "knip",
     "docker-db-only": "docker compose -f docker/compose.db-only.yml up",
     "docker": "docker compose -f docker/compose.yml up",
     "gen-docs": "tsx scripts/openapi.ts dist/static/api/openapi.json && redocly build-docs -o dist/static/api/internal.html internal@v2 && redocly bundle -o dist/static/api/public.json public-filter && redocly build-docs -o dist/static/api/public.html public@v2"
   },
   "engines": {
-    "node": "18.20.4"
+    "node": "20.16.0"
   },
   "dependencies": {
     "@date-fns/utc": "1.2.0",
-    "@monkeytype/contracts": "*",
+    "@monkeytype/contracts": "workspace:*",
+    "@ts-rest/core": "3.45.2",
     "@ts-rest/express": "3.45.2",
     "@ts-rest/open-api": "3.45.2",
     "bcrypt": "5.1.1",
@@ -57,19 +58,21 @@
     "swagger-ui-express": "4.3.0",
     "ua-parser-js": "0.7.33",
     "uuid": "9.0.1",
-    "winston": "3.6.0"
+    "winston": "3.6.0",
+    "zod": "3.23.8"
   },
   "devDependencies": {
-    "@monkeytype/shared-types": "*",
-    "@monkeytype/typescript-config": "*",
-    "@monkeytype/eslint-config": "*",
+    "@monkeytype/eslint-config": "workspace:*",
+    "@monkeytype/shared-types": "workspace:*",
+    "@monkeytype/typescript-config": "workspace:*",
     "@redocly/cli": "1.18.1",
-    "@types/bcrypt": "5.0.0",
+    "@types/bcrypt": "5.0.2",
     "@types/cors": "2.8.12",
     "@types/cron": "1.7.3",
     "@types/express": "4.17.21",
     "@types/ioredis": "4.28.10",
     "@types/lodash": "4.14.178",
+    "@types/mjml": "4.7.4",
     "@types/mustache": "4.2.2",
     "@types/node": "20.14.11",
     "@types/node-fetch": "2.6.1",

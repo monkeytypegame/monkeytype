@@ -45,12 +45,10 @@ const APP_START_TIME = Date.now();
 const API_ROUTE_MAP = {
   "/users": users,
   "/results": results,
-  "/presets": presets,
   "/psas": psas,
   "/public": publicStats,
   "/leaderboards": leaderboards,
   "/quotes": quotes,
-  "/ape-keys": apeKeys,
   "/admin": admin,
   "/webhooks": webhooks,
   "/docs": docs,
@@ -58,7 +56,9 @@ const API_ROUTE_MAP = {
 
 const s = initServer();
 const router = s.router(contract, {
+  apeKeys,
   configs,
+  presets,
 });
 
 export function addApiRoutes(app: Application): void {
@@ -81,7 +81,10 @@ function applyTsRestApiRoutes(app: IRouter): void {
   createExpressEndpoints(contract, router, app, {
     jsonQuery: true,
     requestValidationErrorHandler(err, req, res, next) {
-      if (err.body?.issues === undefined) return next();
+      if (err.body?.issues === undefined) {
+        next();
+        return;
+      }
       const issues = err.body?.issues.map(prettyErrorMessage);
       res.status(422).json({
         message: "Invalid request data schema",
@@ -103,7 +106,7 @@ function applyDevApiRoutes(app: Application): void {
     //disable csp to allow assets to load from unsecured http
     app.use((req, res, next) => {
       res.setHeader("Content-Security-Policy", "");
-      return next();
+      next();
     });
     app.use("/configure", expressStatic(join(__dirname, "../../../private")));
 
@@ -143,6 +146,13 @@ function applyApiRoutes(app: Application): void {
           (req.headers["x-client-version"] as string) ||
           req.headers["client-version"];
         recordClientVersion(clientVersion?.toString() ?? "unknown");
+      }
+
+      if (req.path.startsWith("/docs")) {
+        res.setHeader(
+          "Content-Security-Policy",
+          "default-src 'self';base-uri 'self';block-all-mixed-content;font-src 'self' https: data:;frame-ancestors 'self';img-src 'self' monkeytype.com cdn.redoc.ly data:;object-src 'none';script-src 'self' cdn.redoc.ly 'unsafe-inline'; worker-src blob: data;script-src-attr 'none';style-src 'self' https: 'unsafe-inline';upgrade-insecure-requests"
+        );
       }
 
       next();

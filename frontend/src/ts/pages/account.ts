@@ -28,8 +28,12 @@ import * as ResultBatches from "../elements/result-batches";
 import Format from "../utils/format";
 import * as TestActivity from "../elements/test-activity";
 import { ChartData, Result } from "@monkeytype/shared-types";
-import { Mode, Mode2, Mode2Custom } from "@monkeytype/shared-types/config";
-import { PersonalBests } from "@monkeytype/shared-types/user";
+import {
+  Mode,
+  Mode2,
+  Mode2Custom,
+  PersonalBests,
+} from "@monkeytype/contracts/schemas/shared";
 
 let filterDebug = false;
 //toggle filterdebug
@@ -216,8 +220,8 @@ async function fillContent(): Promise<void> {
   PbTables.update(snapshot.personalBests);
   void Profile.update("account", snapshot);
 
-  void TestActivity.init(snapshot.testActivity, new Date(snapshot.addedAt));
-  void void ResultBatches.update();
+  TestActivity.init(snapshot.testActivity, new Date(snapshot.addedAt));
+  void ResultBatches.update();
 
   chartData = [];
   accChartData = [];

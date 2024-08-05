@@ -195,7 +195,10 @@ export default class AnimatedModal<
   async show(options?: ShowOptions<IncomingModalChainData>): Promise<void> {
     // eslint-disable-next-line no-async-promise-executor
     return new Promise(async (resolve) => {
-      if (this.open) return resolve();
+      if (this.open) {
+        resolve();
+        return;
+      }
       Skeleton.append(this.dialogId, this.skeletonAppendParent);
 
       if (!this.setupRan) {
@@ -203,7 +206,10 @@ export default class AnimatedModal<
         this.setupRan = true;
       }
 
-      if (isPopupVisible(this.dialogId)) return resolve();
+      if (isPopupVisible(this.dialogId)) {
+        resolve();
+        return;
+      }
 
       const modalAnimationDuration =
         (options?.customAnimation?.modal?.durationMs ??
@@ -316,7 +322,10 @@ export default class AnimatedModal<
   async hide(options?: HideOptions<OutgoingModalChainData>): Promise<void> {
     // eslint-disable-next-line no-async-promise-executor
     return new Promise(async (resolve) => {
-      if (!isPopupVisible(this.dialogId)) return resolve();
+      if (!isPopupVisible(this.dialogId)) {
+        resolve();
+        return;
+      }
 
       if (options?.clearModalChain) {
         this.previousModalInChain = undefined;

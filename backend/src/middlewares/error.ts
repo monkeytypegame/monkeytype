@@ -12,6 +12,7 @@ import {
 import { isDevEnvironment } from "../utils/misc";
 import { ObjectId } from "mongodb";
 import { version } from "../version";
+import { addLog } from "../dal/logs";
 
 type DBError = {
   _id: ObjectId;
@@ -70,7 +71,7 @@ async function errorHandlingMiddleware(
       const { uid, errorId } = monkeyResponse.data;
 
       try {
-        await Logger.logToDb(
+        await addLog(
           "system_error",
           `${monkeyResponse.status} ${errorId} ${error.message} ${error.stack}`,
           uid
@@ -98,13 +99,14 @@ async function errorHandlingMiddleware(
       delete monkeyResponse.data.errorId;
     }
 
-    return handleMonkeyResponse(monkeyResponse, res);
+    handleMonkeyResponse(monkeyResponse, res);
+    return;
   } catch (e) {
     Logger.error("Error handling middleware failed.");
     Logger.error(e);
   }
 
-  return handleMonkeyResponse(
+  handleMonkeyResponse(
     new MonkeyResponse(
       "Something went really wrong, please contact support.",
       undefined,

@@ -1,8 +1,8 @@
 import {
   ConfigValue,
-  Mode,
   QuoteLength,
-} from "@monkeytype/shared-types/config";
+} from "@monkeytype/contracts/schemas/configs";
+import { Mode } from "@monkeytype/contracts/schemas/shared";
 import Config from "../config";
 import * as ConfigEvent from "../observables/config-event";
 import * as ActivePage from "../states/active-page";

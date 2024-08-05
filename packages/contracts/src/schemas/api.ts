@@ -1,11 +1,11 @@
 import { z, ZodSchema } from "zod";
 
-export type OperationTag = "configs";
+export type OpenApiTag = "configs" | "presets" | "ape-keys";
 
 export type EndpointMetadata = {
   /** Authentication options, by default a bearer token is required. */
   authenticationOptions?: RequestAuthenticationOptions;
-  openApiTags?: OperationTag | OperationTag[];
+  openApiTags?: OpenApiTag | OpenApiTag[];
 };
 
 export type RequestAuthenticationOptions = {

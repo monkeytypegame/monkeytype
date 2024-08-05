@@ -35,7 +35,7 @@ settingsPage
       EditPresetPopup.show("add");
     } else if (target.classList.contains("editButton")) {
       const presetid = target.parentElement?.getAttribute("data-id");
-      const name = target.parentElement?.getAttribute("data-name");
+      const name = target.parentElement?.getAttribute("data-display");
       if (
         presetid === undefined ||
         name === undefined ||
@@ -53,7 +53,7 @@ settingsPage
       EditPresetPopup.show("edit", presetid, name);
     } else if (target.classList.contains("removeButton")) {
       const presetid = target.parentElement?.getAttribute("data-id");
-      const name = target.parentElement?.getAttribute("data-name");
+      const name = target.parentElement?.getAttribute("data-display");
       if (
         presetid === undefined ||
         name === undefined ||

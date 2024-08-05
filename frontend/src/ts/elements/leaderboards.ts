@@ -198,9 +198,7 @@ function updateFooter(lb: LbKey): void {
 
   let toppercent = "";
   if (currentTimeRange === "allTime" && lbRank !== undefined && lbRank?.rank) {
-    const num = Numbers.roundTo2(
-      (lbRank.rank / (currentRank[lb].count as number)) * 100
-    );
+    const num = Numbers.roundTo2((lbRank.rank / currentRank[lb].count) * 100);
     if (currentRank[lb].rank === 1) {
       toppercent = "GOAT";
     } else {
@@ -482,10 +480,11 @@ async function update(): Promise<void> {
   if (failedResponses.length > 0) {
     hideLoader("15");
     hideLoader("60");
-    return Notifications.add(
+    Notifications.add(
       "Failed to load leaderboards: " + failedResponses[0]?.message,
       -1
     );
+    return;
   }
 
   const [lb15Data, lb60Data] = responses.map((response) => response.data);

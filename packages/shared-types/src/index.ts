@@ -1,10 +1,10 @@
-import {
-  Config,
-  Difficulty,
-  Mode,
-} from "@monkeytype/contracts/schemas/configs";
-import { Mode2 } from "./config";
-import { PersonalBest, PersonalBests } from "./user";
+type Difficulty = import("@monkeytype/contracts/schemas/configs").Difficulty;
+type Mode = import("@monkeytype/contracts/schemas/shared").Mode;
+type Mode2<M extends Mode> =
+  import("@monkeytype/contracts/schemas/shared").Mode2<M>;
+type PersonalBest = import("@monkeytype/contracts/schemas/shared").PersonalBest;
+type PersonalBests =
+  import("@monkeytype/contracts/schemas/shared").PersonalBests;
 
 export type ValidModeRule = {
   language: string;
@@ -184,7 +184,6 @@ export type DBResult<T extends Mode> = Omit<
   | "customText"
   | "quoteLength"
   | "isPb"
-  | "customText"
 > & {
   correctChars?: number; // --------------
   incorrectChars?: number; // legacy results
@@ -241,7 +240,7 @@ export type CustomTextDataWithTextLen = Omit<CustomTextData, "text"> & {
   textLen: number;
 };
 
-export interface ResultFilters {
+export type ResultFilters = {
   _id: string;
   name: string;
   pb: {
@@ -300,7 +299,7 @@ export interface ResultFilters {
   funbox: {
     none?: boolean;
   } & Record<string, boolean>;
-}
+};
 
 export type PSA = {
   _id: string;
@@ -319,25 +318,6 @@ export type PublicTypingStats = {
   timeTyping: number;
   testsCompleted: number;
   testsStarted: number;
-};
-
-export type ApeKey = {
-  name: string;
-  enabled: boolean;
-  createdOn: number;
-  modifiedOn: number;
-  lastUsedOn: number;
-};
-
-export type ConfigPreset = Partial<Config> & {
-  tags?: string[];
-};
-
-export type DBConfigPreset = {
-  _id: string;
-  uid: string;
-  name: string;
-  config: ConfigPreset;
 };
 
 export type LeaderboardEntry = {

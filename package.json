@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "preinstall": "npx only-allow pnpm",
     "full-check": "turbo lint ts-check build test validate-json",
     "prepare": "husky install",
     "pre-commit": "lint-staged",
@@ -28,8 +29,11 @@
     "start-fe": "turbo run start --filter @monkeytype/frontend",
     "docker": "cd backend && docker compose up",
     "audit-fe": "cd frontend && npm run audit",
-    "release": "release-it -c .release-it.json",
-    "release-fe": "release-it -c .release-it-fe.json",
+    "release": "node ./bin/release.mjs",
+    "release-fe": "node ./bin/release.mjs --fe",
+    "release-be": "node ./bin/release.mjs --be",
+    "release-no-deploy": "node ./bin/release.mjs --no-deploy",
+    "release-dry": "node ./bin/release.mjs --dry",
     "hotfix": "npm run build-fe && cd frontend && npm run deploy-live && cd .. && sh ./bin/purgeCfCache.sh",
     "deploy-dev": "cd frontend && npm run deploy-dev && cd .. && sh ./bin/purgeCfCache.sh",
     "pretty-check": "prettier --check .",
@@ -48,13 +52,11 @@
     "pr-check-other-json": "cd frontend && npx gulp pr-check-other-json"
   },
   "engines": {
-    "node": "18.20.4"
+    "node": "20.16.0"
   },
   "devDependencies": {
     "@commitlint/cli": "17.7.1",
     "@commitlint/config-conventional": "17.7.0",
-    "@csmith/release-it-calver-plugin": "2023.9.0",
-    "@release-it/conventional-changelog": "7.0.0",
     "@typescript-eslint/eslint-plugin": "7.1.0",
     "@typescript-eslint/parser": "7.1.0",
     "conventional-changelog": "4.0.0",
@@ -67,8 +69,9 @@
     "husky": "8.0.1",
     "knip": "2.19.2",
     "lint-staged": "13.2.3",
+    "only-allow": "1.2.1",
     "prettier": "2.5.1",
-    "release-it": "16.1.4",
+    "readline-sync": "1.4.10",
     "turbo": "2.0.9",
     "typescript": "5.3.3",
     "wait-for-localhost-cli": "3.2.0"
@@ -82,11 +85,6 @@
       "eslint"
     ]
   },
-  "workspaces": [
-    "frontend",
-    "backend",
-    "packages/*"
-  ],
-  "version": "24.31.0",
-  "packageManager": "npm@10.2.4"
+  "version": "24.31.3",
+  "packageManager": "pnpm@9.6.0"
 }

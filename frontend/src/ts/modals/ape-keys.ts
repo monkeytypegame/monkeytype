@@ -5,9 +5,9 @@ import { format } from "date-fns/format";
 import * as ConnectionState from "../states/connection";
 import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
 import { showPopup } from "./simple-modals";
-import { ApeKey } from "@monkeytype/shared-types";
+import { ApeKey, ApeKeys } from "@monkeytype/contracts/schemas/ape-keys";
 
-let apeKeys: Ape.ApeKeys.GetApeKeys | null = {};
+let apeKeys: ApeKeys | null = {};
 
 async function getData(): Promise<void> {
   Loader.show();
@@ -15,11 +15,11 @@ async function getData(): Promise<void> {
   Loader.hide();
 
   if (response.status !== 200) {
-    Notifications.add("Error getting ape keys: " + response.message, -1);
+    Notifications.add("Error getting ape keys: " + response.body.message, -1);
     return undefined;
   }
 
-  apeKeys = response.data;
+  apeKeys = response.body.data;
 }
 
 function refreshList(): void {
@@ -47,7 +47,7 @@ function refreshList(): void {
             }
           </button>
         </td>
-        <td  onClick=${console.log(key)}>${key.name}</td>
+        <td>${key.name}</td>
         <td>${format(new Date(key.createdOn), "dd MMM yyyy HH:mm")}</td>
         <td>${format(new Date(key.modifiedOn), "dd MMM yyyy HH:mm")}</td>
         <td>${
@@ -113,10 +113,14 @@ async function toggleActiveKey(keyId: string): Promise<void> {
   const key = apeKeys?.[keyId];
   if (!key || apeKeys === undefined) return;
   Loader.show();
-  const response = await Ape.apeKeys.update(keyId, { enabled: !key.enabled });
+  const response = await Ape.apeKeys.save({
+    params: { apeKeyId: keyId },
+    body: { enabled: !key.enabled },
+  });
   Loader.hide();
   if (response.status !== 200) {
-    return Notifications.add("Failed to update key: " + response.message, -1);
+    Notifications.add("Failed to update key: " + response.body.message, -1);
+    return;
   }
   key.enabled = !key.enabled;
   refreshList();

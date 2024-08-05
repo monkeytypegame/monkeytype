@@ -308,6 +308,16 @@ const FunboxList: MonkeyTypes.FunboxMetadata[] = [
   },
   {
     canGetPb: false,
+    difficultyLevel: 1,
+    properties: ["ignoresLanguage", "ignoresLayout", "noLetters"],
+    frontendForcedConfig: {
+      numbers: [false],
+    },
+    frontendFunctions: ["getWord", "punctuateWord", "rememberSettings"],
+    name: "hexadecimal",
+  },
+  {
+    canGetPb: false,
     difficultyLevel: 0,
     properties: ["changesWordsFrequency"],
     frontendFunctions: ["getWordsFrequencyMode"],

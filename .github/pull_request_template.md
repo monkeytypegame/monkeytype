@@ -12,9 +12,9 @@
     - Also please add a screenshot of the theme, it would be extra awesome if you do so!
 - [ ] Check if any open issues are related to this PR; if so, be sure to tag them below.
 - [ ] Make sure the PR title follows the Conventional Commits standard. (https://www.conventionalcommits.org for more info)
-- [ ] Make sure to include your GitHub username inside parentheses at the end of the PR title
+- [ ] Make sure to include your GitHub username prefixed with @ inside parentheses at the end of the PR title.
 
-<!-- label(optional scope): pull request title (your_github_username) -->
+<!-- label(optional scope): pull request title (@your_github_username) -->
 
 <!-- I know I know they seem boring but please do them, they help us and you will find out it also helps you.-->
 

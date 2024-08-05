@@ -56,6 +56,16 @@ export function getOpenApi(): OpenAPIObject {
             "User specific configurations like test settings, theme or tags.",
           "x-displayName": "User configuration",
         },
+        {
+          name: "presets",
+          description: "User specific configuration presets.",
+          "x-displayName": "User presets",
+        },
+        {
+          name: "ape-keys",
+          description: "Ape keys provide access to certain API endpoints.",
+          "x-displayName": "Ape Keys",
+        },
       ],
     },
 

@@ -21,6 +21,8 @@ import * as TribeConfigSyncEvent from "./observables/tribe-config-sync-event";
 import { isDevEnvironment, reloadAfter } from "./utils/misc";
 import * as ConfigSchemas from "@monkeytype/contracts/schemas/configs";
 import { Config } from "@monkeytype/contracts/schemas/configs";
+import { roundTo1 } from "./utils/numbers";
+import { Mode, ModeSchema } from "@monkeytype/contracts/schemas/shared";
 
 export let localStorageConfig: Config;
 
@@ -130,18 +132,8 @@ export function setPunctuation(punc: boolean, nosave?: boolean): boolean {
   return true;
 }
 
-<<<<<<< HEAD
-export function setMode(mode: ConfigTypes.Mode, nosave?: boolean,
-  tribeOverride = false): boolean {
-  if (
-    !isConfigValueValid("mode", mode, [
-      ["time", "words", "quote", "zen", "custom"],
-    ])
-  ) {
-=======
-export function setMode(mode: ConfigSchemas.Mode, nosave?: boolean): boolean {
-  if (!isConfigValueValid("mode", mode, ConfigSchemas.ModeSchema)) {
->>>>>>> master
+export function setMode(mode: Mode, nosave?: boolean, tribeOverride = false): boolean {
+  if (!isConfigValueValid("mode", mode, ModeSchema)) {
     return false;
   }
   if (!TribeState.canChangeConfig(tribeOverride)) return false;
@@ -216,6 +208,11 @@ export function setSoundVolume(
   val: ConfigSchemas.SoundVolume,
   nosave?: boolean
 ): boolean {
+  if (val < 0 || val > 1) {
+    Notifications.add("Sound volume must be between 0 and 1", 0);
+    val = 0.5;
+  }
+
   if (
     !isConfigValueValid("sound volume", val, ConfigSchemas.SoundVolumeSchema)
   ) {
@@ -539,8 +536,11 @@ export function setPaceCaret(
   }
 
   if (document.readyState === "complete") {
-    if (val === "pb" && !isAuthenticated()) {
-      Notifications.add("PB pace caret is unavailable without an account", 0);
+    if ((val === "pb" || val === "tagPb") && !isAuthenticated()) {
+      Notifications.add(
+        `Pace caret "pb" and "tag pb" are unavailable without an account`,
+        0
+      );
       return false;
     }
   }
@@ -1885,6 +1885,38 @@ export function setKeymapShowTopRow(
   return true;
 }
 
+export function setKeymapSize(
+  keymapSize: ConfigSchemas.KeymapSize,
+  nosave?: boolean
+): boolean {
+  //auto-fix values to avoid validation errors
+  if (keymapSize < 0.5) keymapSize = 0.5;
+  if (keymapSize > 3.5) keymapSize = 3.5;
+  keymapSize = roundTo1(keymapSize);
+
+  if (
+    !isConfigValueValid(
+      "keymap size",
+      keymapSize,
+      ConfigSchemas.KeymapSizeSchema
+    )
+  ) {
+    return false;
+  }
+
+  config.keymapSize = keymapSize;
+
+  $("#keymap").css("zoom", keymapSize);
+
+  saveToLocalStorage("keymapSize", nosave);
+  ConfigEvent.dispatch("keymapSize", config.keymapSize, nosave);
+
+  // trigger a resize event to update the layout - handled in ui.ts:108
+  $(window).trigger("resize");
+
+  return true;
+}
+
 export function setLayout(
   layout: ConfigSchemas.Layout,
   nosave?: boolean
@@ -2028,10 +2060,7 @@ export async function setCustomLayoutfluid(
     return false;
   }
 
-  const customLayoutfluid = trimmed.replace(
-    / /g,
-    "#"
-  ) as ConfigSchemas.CustomLayoutFluid;
+  const customLayoutfluid = trimmed.replace(/ /g, "#");
 
   config.customLayoutfluid = customLayoutfluid;
   saveToLocalStorage("customLayoutfluid", nosave);
@@ -2241,6 +2270,7 @@ export async function apply(
     setKeymapLegendStyle(configObj.keymapLegendStyle, true);
     setKeymapLayout(configObj.keymapLayout, true);
     setKeymapShowTopRow(configObj.keymapShowTopRow, true);
+    setKeymapSize(configObj.keymapSize, true);
     setFontFamily(configObj.fontFamily, true);
     setSmoothCaret(configObj.smoothCaret, true);
     setSmoothLineScroll(configObj.smoothLineScroll, true);
@@ -2392,6 +2422,10 @@ function replaceLegacyValues(
       val = configObj.timerStyle;
     }
     configObj.liveAccStyle = val;
+  }
+
+  if (typeof configObj.soundVolume === "string") {
+    configObj.soundVolume = parseFloat(configObj.soundVolume);
   }
 
   return configObj;

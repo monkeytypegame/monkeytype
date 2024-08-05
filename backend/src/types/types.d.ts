@@ -65,7 +65,10 @@ declare namespace MonkeyTypes {
   type LbPersonalBests = {
     time: Record<
       number,
-      Record<string, import("@monkeytype/shared-types/user").PersonalBest>
+      Record<
+        string,
+        import("@monkeytype/contracts/schemas/shared").PersonalBest
+      >
     >;
   };
 
@@ -73,7 +76,7 @@ declare namespace MonkeyTypes {
     _id: ObjectId;
   };
 
-  type ApeKeyDB = import("@monkeytype/shared-types").ApeKey & {
+  type ApeKeyDB = import("@monkeytype/contracts/schemas/ape-keys").ApeKey & {
     _id: ObjectId;
     uid: string;
     hash: string;
@@ -123,7 +126,7 @@ declare namespace MonkeyTypes {
 
   type DBResult = MonkeyTypes.WithObjectId<
     import("@monkeytype/shared-types").DBResult<
-      import("@monkeytype/shared-types/config").Mode
+      import("@monkeytype/contracts/schemas/shared").Mode
     >
   >;
 

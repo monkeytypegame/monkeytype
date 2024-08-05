@@ -59,15 +59,17 @@ async function hide(): Promise<void> {
 
 async function apply(): Promise<void> {
   if (!signedInUser) {
-    return Notifications.add(
+    Notifications.add(
       "Missing user credential. Please close the popup and try again.",
       -1
     );
+    return;
   }
 
   const captcha = CaptchaController.getResponse("googleSignUpModal");
   if (!captcha) {
-    return Notifications.add("Please complete the captcha", 0);
+    Notifications.add("Please complete the captcha", 0);
+    return;
   }
 
   disableInput();
@@ -190,10 +192,11 @@ const checkNameDebounced = debounce(1000, async () => {
 
   if (response.status !== 200) {
     nameIndicator.show("unavailable");
-    return Notifications.add(
+    Notifications.add(
       "Failed to check name availability: " + response.message,
       -1
     );
+    return;
   }
 });
 
@@ -206,7 +209,8 @@ async function setup(modalEl: HTMLElement): Promise<void> {
     disableButton();
     const val = $("#googleSignUpModal input").val() as string;
     if (val === "") {
-      return nameIndicator.hide();
+      nameIndicator.hide();
+      return;
     } else {
       nameIndicator.show("checking");
       void checkNameDebounced();

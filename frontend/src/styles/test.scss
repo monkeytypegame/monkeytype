@@ -917,12 +917,12 @@
               opacity: 0;
             }
 
-            &.half {
+            &.pending {
               --main: var(--bg-color);
               --alt: var(--main-color);
               outline: 0.2em solid var(--main-color);
             }
-            &.broken {
+            &.ineligible {
               --main: var(--sub-color);
               --alt: var(--bg-color);
               .fa-slash {

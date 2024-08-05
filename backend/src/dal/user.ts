@@ -10,7 +10,6 @@ import {
   type UpdateFilter,
   type Filter,
 } from "mongodb";
-import Logger from "../utils/logger";
 import { flattenObjectDeep, isToday, isYesterday } from "../utils/misc";
 import { getCachedConfiguration } from "../init/configuration";
 import { getDayOfYear } from "date-fns";
@@ -28,8 +27,12 @@ import {
   UserQuoteRatings,
   UserStreak,
 } from "@monkeytype/shared-types";
-import { Mode, Mode2 } from "@monkeytype/shared-types/config";
-import { PersonalBest } from "@monkeytype/shared-types/user";
+import {
+  Mode,
+  Mode2,
+  PersonalBest,
+} from "@monkeytype/contracts/schemas/shared";
+import { addImportantLog } from "./logs";
 
 const SECONDS_PER_HOUR = 3600;
 
@@ -739,10 +742,10 @@ export async function getPersonalBests(
   ]);
 
   if (mode2 !== undefined) {
-    return user.personalBests?.[mode]?.[mode2];
+    return user.personalBests?.[mode]?.[mode2] as PersonalBest;
   }
 
-  return user.personalBests?.[mode];
+  return user.personalBests?.[mode] as PersonalBest;
 }
 
 export async function getStats(
@@ -856,7 +859,7 @@ export async function recordAutoBanEvent(
   }
 
   await getUsersCollection().updateOne({ uid }, { $set: updateObj });
-  void Logger.logToDb(
+  void addImportantLog(
     "user_auto_banned",
     { autoBanTimestamps, banningUser },
     uid
@@ -967,7 +970,7 @@ export async function updateInbox(
   //we don't need to read mails that are going to be deleted because
   //Rewards will be claimed on unread mails on deletion
   const readSet = [...new Set(mailToRead)].filter(
-    (it) => deleteSet.includes(it) === false
+    (it) => !deleteSet.includes(it)
   );
 
   const update = await getUsersCollection().updateOne({ uid }, [
@@ -989,12 +992,12 @@ export async function updateInbox(
               );
 
               const toBeRead = inbox.filter(
-                (it) => readIds.includes(it.id) && it.read === false
+                (it) => readIds.includes(it.id) && !it.read
               );
 
               //flatMap rewards
               const rewards: AllRewards[] = [...toBeRead, ...toBeDeleted]
-                .filter((it) => it.read === false)
+                .filter((it) => !it.read)
                 .reduce((arr, current) => {
                   return [...arr, ...current.rewards];
                 }, []);
@@ -1074,7 +1077,11 @@ export async function updateStreak(
   if (isYesterday(streak.lastResultTimestamp, streak.hourOffset ?? 0)) {
     streak.length += 1;
   } else if (!isToday(streak.lastResultTimestamp, streak.hourOffset ?? 0)) {
-    void Logger.logToDb("streak_lost", JSON.parse(JSON.stringify(streak)), uid);
+    void addImportantLog(
+      "streak_lost",
+      JSON.parse(JSON.stringify(streak)),
+      uid
+    );
     streak.length = 1;
   }
 
@@ -1123,7 +1130,7 @@ export async function checkIfUserIsPremium(
 ): Promise<boolean> {
   const premiumFeaturesEnabled = (await getCachedConfiguration(true)).users
     .premium.enabled;
-  if (premiumFeaturesEnabled !== true) {
+  if (!premiumFeaturesEnabled) {
     return false;
   }
   const user =

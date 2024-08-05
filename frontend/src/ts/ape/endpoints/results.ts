@@ -1,5 +1,5 @@
 import { DBResult, Result } from "@monkeytype/shared-types";
-import { Mode } from "@monkeytype/shared-types/config";
+import { Mode } from "@monkeytype/contracts/schemas/shared";
 
 const BASE_PATH = "/results";
 

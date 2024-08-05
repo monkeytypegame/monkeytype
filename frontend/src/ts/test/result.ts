@@ -43,7 +43,7 @@ import Format from "../utils/format";
 import confetti from "canvas-confetti";
 import type { AnnotationOptions } from "chartjs-plugin-annotation";
 import { Result } from "@monkeytype/shared-types";
-import { Mode } from "@monkeytype/shared-types/config";
+import { Mode } from "@monkeytype/contracts/schemas/shared";
 
 let result: Result<Mode>;
 let maxChartVal: number;
@@ -376,8 +376,12 @@ export function showCrown(type: PbCrown.CrownType): void {
   PbCrown.update(type);
 }
 
-export function updateCrownType(type: PbCrown.CrownType): void {
-  PbCrown.update(type);
+export function updateCrownText(text: string, wide = false): void {
+  $("#result .stats .wpm .crown").attr("aria-label", text);
+  $("#result .stats .wpm .crown").attr(
+    "data-balloon-length",
+    wide ? "medium" : ""
+  );
 }
 
 export async function updateCrown(dontSave: boolean): Promise<void> {
@@ -406,8 +410,7 @@ export async function updateCrown(dontSave: boolean): Promise<void> {
     } else {
       //show half crown as the pb is not confirmed by the server
       showCrown("pending");
-      $("#result .stats .wpm .crown").attr(
-        "aria-label",
+      updateCrownText(
         "+" + Format.typingSpeed(pbDiff, { showDecimalPlaces: true })
       );
     }
@@ -426,17 +429,17 @@ export async function updateCrown(dontSave: boolean): Promise<void> {
     if (pbDiff <= 0) {
       // hideCrown();
       showCrown("warning");
-      $("#result .stats .wpm .crown").attr(
-        "aria-label",
-        `This result is not eligible for a new PB (${canGetPb.reason})`
+      updateCrownText(
+        `This result is not eligible for a new PB (${canGetPb.reason})`,
+        true
       );
     } else {
       showCrown("ineligible");
-      $("#result .stats .wpm .crown").attr(
-        "aria-label",
+      updateCrownText(
         `You could've gotten a new PB (+${Format.typingSpeed(pbDiff, {
           showDecimalPlaces: true,
-        })}), but your config does not allow it (${canGetPb.reason})`
+        })}), but your config does not allow it (${canGetPb.reason})`,
+        true
       );
     }
   }
@@ -444,16 +447,16 @@ export async function updateCrown(dontSave: boolean): Promise<void> {
 
 export function hideCrown(): void {
   PbCrown.hide();
-  $("#result .stats .wpm .crown").attr("aria-label", "");
+  updateCrownText("");
 }
 
 export function showErrorCrownIfNeeded(): void {
   if (PbCrown.getCurrentType() !== "pending") return;
   PbCrown.show();
   PbCrown.update("error");
-  $("#result .stats .wpm .crown").attr(
-    "aria-label",
-    `Local PB data is out of sync with the server - please refresh (pb mismatch)`
+  updateCrownText(
+    `Local PB data is out of sync with the server - please refresh (pb mismatch)`,
+    true
   );
 }
 

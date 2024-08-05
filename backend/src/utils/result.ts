@@ -1,5 +1,5 @@
 import { CompletedEvent, DBResult } from "@monkeytype/shared-types";
-import { Mode } from "@monkeytype/shared-types/config";
+import { Mode } from "@monkeytype/contracts/schemas/shared";
 import { ObjectId } from "mongodb";
 
 type Result = MonkeyTypes.WithObjectId<DBResult<Mode>>;

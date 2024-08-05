@@ -2,7 +2,7 @@ name: monkeytype
 services:
   frontend:
     container_name: monkeytype-frontend
-    image: node:18.20.4
+    image: node:20.16.0
     user: "node"    ##this works as long as your local user has uid=1000
     # restart: on-failure
     environment:
@@ -14,7 +14,8 @@ services:
       - ../../:/monkeytype
     entrypoint: 'bash -c "echo starting, this may take a while... \
       && cd /monkeytype \
-      && npm i --prefer-offline --no-audit \
+      && npm i -g pnpm \
+      && pnpm i \
       && export SERVER_OPEN=false \
       && npm run dev-fe"'
 

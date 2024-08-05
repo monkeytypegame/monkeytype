@@ -35,7 +35,8 @@ export function handleMonkeyResponse(
   //@ts-expect-error ignored so that we can see message in swagger stats
   res.monkeyMessage = message;
   if ([301, 302].includes(status)) {
-    return res.redirect(data);
+    res.redirect(data);
+    return;
   }
 
   res.json({ message, data });
@@ -45,9 +46,9 @@ export class MonkeyResponse2<T = null>
   implements MonkeyResponseType, MonkeyDataAware<T>
 {
   public message: string;
-  public data: T | null;
+  public data: T;
 
-  constructor(message: string, data: T | null = null) {
+  constructor(message: string, data: T) {
     this.message = message;
     this.data = data;
   }

@@ -23,7 +23,7 @@ import SlimSelect from "slim-select";
 
 import * as Skeleton from "../utils/skeleton";
 import * as CustomBackgroundFilter from "../elements/custom-background-filter";
-import { ConfigValue } from "@monkeytype/shared-types/config";
+import { ConfigValue } from "@monkeytype/contracts/schemas/configs";
 
 type SettingsGroups<T extends ConfigValue> = Record<string, SettingsGroup<T>>;
 
@@ -72,6 +72,9 @@ async function initGroups(): Promise<void> {
         $(
           ".pageSettings .section[data-config-name='keymapShowTopRow']"
         ).addClass("hidden");
+        $(".pageSettings .section[data-config-name='keymapSize']").addClass(
+          "hidden"
+        );
       } else {
         $(".pageSettings .section[data-config-name='keymapStyle']").removeClass(
           "hidden"
@@ -85,6 +88,9 @@ async function initGroups(): Promise<void> {
         $(
           ".pageSettings .section[data-config-name='keymapShowTopRow']"
         ).removeClass("hidden");
+        $(".pageSettings .section[data-config-name='keymapSize']").removeClass(
+          "hidden"
+        );
       }
     }
   ) as SettingsGroup<ConfigValue>;
@@ -107,6 +113,11 @@ async function initGroups(): Promise<void> {
     "keymapShowTopRow",
     UpdateConfig.setKeymapShowTopRow,
     "button"
+  ) as SettingsGroup<ConfigValue>;
+  groups["keymapSize"] = new SettingsGroup(
+    "keymapSize",
+    UpdateConfig.setKeymapSize,
+    "range"
   ) as SettingsGroup<ConfigValue>;
   groups["showKeyTips"] = new SettingsGroup(
     "showKeyTips",
@@ -239,7 +250,7 @@ async function initGroups(): Promise<void> {
   groups["soundVolume"] = new SettingsGroup(
     "soundVolume",
     UpdateConfig.setSoundVolume,
-    "button"
+    "range"
   ) as SettingsGroup<ConfigValue>;
   groups["playSoundOnError"] = new SettingsGroup(
     "playSoundOnError",
@@ -679,6 +690,10 @@ async function fillSettingsPage(): Promise<void> {
 
   $(".pageSettings .section[data-config-name='maxLineWidth'] input").val(
     Config.maxLineWidth
+  );
+
+  $(".pageSettings .section[data-config-name='keymapSize'] input").val(
+    Config.keymapSize
   );
 
   $(".pageSettings .section[data-config-name='customLayoutfluid'] input").val(
@@ -1310,6 +1325,59 @@ $(
       parseFloat(
         $(
           ".pageSettings .section[data-config-name='maxLineWidth'] .inputAndButton input"
+        ).val() as string
+      )
+    );
+    if (didConfigSave) {
+      Notifications.add("Saved", 1, {
+        duration: 1,
+      });
+    }
+  }
+});
+
+$(
+  ".pageSettings .section[data-config-name='keymapSize'] .inputAndButton button.save"
+).on("click", () => {
+  const didConfigSave = UpdateConfig.setKeymapSize(
+    parseFloat(
+      $(
+        ".pageSettings .section[data-config-name='keymapSize'] .inputAndButton input"
+      ).val() as string
+    )
+  );
+  if (didConfigSave) {
+    Notifications.add("Saved", 1, {
+      duration: 1,
+    });
+  }
+});
+
+$(
+  ".pageSettings .section[data-config-name='keymapSize'] .inputAndButton input"
+).on("focusout", () => {
+  const didConfigSave = UpdateConfig.setKeymapSize(
+    parseFloat(
+      $(
+        ".pageSettings .section[data-config-name='keymapSize'] .inputAndButton input"
+      ).val() as string
+    )
+  );
+  if (didConfigSave) {
+    Notifications.add("Saved", 1, {
+      duration: 1,
+    });
+  }
+});
+
+$(
+  ".pageSettings .section[data-config-name='keymapSize'] .inputAndButton input"
+).on("keypress", (e) => {
+  if (e.key === "Enter") {
+    const didConfigSave = UpdateConfig.setKeymapSize(
+      parseFloat(
+        $(
+          ".pageSettings .section[data-config-name='keymapSize'] .inputAndButton input"
         ).val() as string
       )
     );

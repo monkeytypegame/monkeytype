@@ -28,7 +28,7 @@ export function callController<
       status: 200 as TStatus,
       body: {
         message: result.message,
-        data: result.data as TResponse,
+        data: result.data,
       },
     };
 

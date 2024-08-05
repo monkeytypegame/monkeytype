@@ -188,11 +188,15 @@ export function setCustomTextLongProgress(
 }
 
 function getLocalStorage(): CustomTextObject {
-  return JSON.parse(window.localStorage.getItem("customText") ?? "{}");
+  return JSON.parse(
+    window.localStorage.getItem("customText") ?? "{}"
+  ) as CustomTextObject;
 }
 
 function getLocalStorageLong(): CustomTextLongObject {
-  return JSON.parse(window.localStorage.getItem("customTextLong") ?? "{}");
+  return JSON.parse(
+    window.localStorage.getItem("customTextLong") ?? "{}"
+  ) as CustomTextLongObject;
 }
 
 function setLocalStorage(data: CustomTextObject): void {

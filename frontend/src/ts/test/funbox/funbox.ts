@@ -18,8 +18,12 @@ import * as TestInput from "../test-input";
 import * as WeakSpot from "../weak-spot";
 import { getPoem } from "../poetry";
 import { getSection } from "../wikipedia";
+<<<<<<< HEAD
 import * as TribeState from "../../tribe/tribe-state";
 import * as IPGenerator from "../ip-addresses";
+=======
+import * as IPAddresses from "../../utils/ip-addresses";
+>>>>>>> master
 import {
   areFunboxesCompatible,
   checkFunboxForcedConfigs,
@@ -28,8 +32,13 @@ import * as TribeConfigSyncEvent from "../../observables/tribe-config-sync-event
 import { Wordset } from "../wordset";
 import * as LayoutfluidFunboxTimer from "./layoutfluid-funbox-timer";
 import * as DDR from "../../utils/ddr";
+<<<<<<< HEAD
 import * as Random from "../../utils/random";
 import { HighlightMode, Mode } from "@monkeytype/shared-types/config";
+=======
+import { HighlightMode } from "@monkeytype/contracts/schemas/configs";
+import { Mode } from "@monkeytype/contracts/schemas/shared";
+>>>>>>> master
 
 const prefixSize = 2;
 
@@ -463,12 +472,17 @@ FunboxList.setFunboxFunctions("pseudolang", {
 
 FunboxList.setFunboxFunctions("IPv4", {
   getWord(): string {
-    return IPGenerator.getRandomIPv4address();
+    return IPAddresses.getRandomIPv4address();
   },
   punctuateWord(word: string): string {
     let w = word;
+<<<<<<< HEAD
     if (Random.get() < 0.25) {
       w = IPGenerator.addressToCIDR(word);
+=======
+    if (Math.random() < 0.25) {
+      w = IPAddresses.addressToCIDR(word);
+>>>>>>> master
     }
     return w;
   },
@@ -479,20 +493,21 @@ FunboxList.setFunboxFunctions("IPv4", {
 
 FunboxList.setFunboxFunctions("IPv6", {
   getWord(): string {
-    return IPGenerator.getRandomIPv6address();
+    return IPAddresses.getRandomIPv6address();
   },
   punctuateWord(word: string): string {
     let w = word;
+<<<<<<< HEAD
     if (Random.get() < 0.25) {
       w = IPGenerator.addressToCIDR(word);
+=======
+    if (Math.random() < 0.25) {
+      w = IPAddresses.addressToCIDR(word);
+>>>>>>> master
     }
     // Compress
     if (w.includes(":")) {
-      w = w
-        .replace(/\b(?:0+:){2,}/, "::")
-        .split(":")
-        .map((a) => a.replace(/\b0+/g, ""))
-        .join(":");
+      w = IPAddresses.compressIpv6(w);
     }
     return w;
   },
@@ -504,6 +519,18 @@ FunboxList.setFunboxFunctions("IPv6", {
 FunboxList.setFunboxFunctions("binary", {
   getWord(): string {
     return GetText.getBinary();
+  },
+});
+
+FunboxList.setFunboxFunctions("hexadecimal", {
+  getWord(): string {
+    return GetText.getHexadecimal();
+  },
+  punctuateWord(word: string): string {
+    return `0x${word}`;
+  },
+  rememberSettings(): void {
+    save("punctuation", Config.punctuation, UpdateConfig.setPunctuation);
   },
 });
 

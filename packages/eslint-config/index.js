@@ -29,6 +29,8 @@ module.exports = {
     "no-empty": ["error", { allowEmptyCatch: true }],
     "no-var": 2,
     "no-duplicate-imports": ["error"],
+    "no-constant-condition": ["error"],
+    "no-constant-binary-expression": "error",
     "import/no-duplicates": "off",
     "import/no-unresolved": [
       "error",
@@ -54,9 +56,33 @@ module.exports = {
         "plugin:@typescript-eslint/eslint-recommended",
         "plugin:@typescript-eslint/recommended",
         "plugin:@typescript-eslint/strict",
-        // "plugin:@typescript-eslint/recommended-requiring-type-checking"
+        "plugin:@typescript-eslint/strict-type-checked",
       ],
       rules: {
+        //strict type checked
+        "@typescript-eslint/require-await": "off",
+        "@typescript-eslint/unbound-method": "off",
+        "@typescript-eslint/await-thenable": "off",
+        "@typescript-eslint/no-useless-template-literals": "off",
+        "@typescript-eslint/prefer-promise-reject-errors": "off",
+        "@typescript-eslint/no-this-alias": "off",
+        "@typescript-eslint/no-unnecessary-type-arguments": "off",
+        "@typescript-eslint/restrict-template-expressions": "off",
+        "@typescript-eslint/no-redundant-type-constituents": "off",
+        "@typescript-eslint/restrict-plus-operands": "off",
+
+        // TODO: enable at some point
+        "@typescript-eslint/no-unsafe-assignment": "off", //~63
+        "@typescript-eslint/no-unsafe-argument": "off", //~37
+        "@typescript-eslint/no-unsafe-call": "off", //~76
+        "@typescript-eslint/no-unsafe-member-access": "off", //~105
+        //
+
+        "@typescript-eslint/no-unnecessary-type-assertion": "error",
+        "@typescript-eslint/no-confusing-void-expression": [
+          "error",
+          { ignoreArrowShorthand: true },
+        ],
         "@typescript-eslint/explicit-function-return-type": ["error"],
         "@typescript-eslint/ban-ts-comment": "off",
         "@typescript-eslint/no-empty-function": "warn",

@@ -28,7 +28,8 @@ let select: SlimSelect | undefined = undefined;
 
 export async function show(options: ShowOptions): Promise<void> {
   if (!isAuthenticated()) {
-    return Notifications.add("You must be logged in to submit a report", 0);
+    Notifications.add("You must be logged in to submit a report", 0);
+    return;
   }
 
   void modal.show({
@@ -59,10 +60,7 @@ export async function show(options: ShowOptions): Promise<void> {
     },
   });
 
-  new CharacterCounter(
-    $("#userReportModal .comment") as JQuery<HTMLTextAreaElement>,
-    250
-  );
+  new CharacterCounter($("#userReportModal .comment"), 250);
 }
 
 async function hide(): Promise<void> {
@@ -78,36 +76,41 @@ async function hide(): Promise<void> {
 async function submitReport(): Promise<void> {
   const captchaResponse = CaptchaController.getResponse("userReportModal");
   if (!captchaResponse) {
-    return Notifications.add("Please complete the captcha");
+    Notifications.add("Please complete the captcha");
+    return;
   }
 
   const reason = $("#userReportModal .reason").val() as string;
   const comment = $("#userReportModal .comment").val() as string;
-  const captcha = captchaResponse as string;
+  const captcha = captchaResponse;
 
   if (!reason) {
-    return Notifications.add("Please select a valid report reason");
+    Notifications.add("Please select a valid report reason");
+    return;
   }
 
   if (!comment) {
-    return Notifications.add("Please provide a comment");
+    Notifications.add("Please provide a comment");
+    return;
   }
 
   if (reason === "Suspected cheating" && state.lbOptOut) {
-    return Notifications.add(
+    Notifications.add(
       "You cannot report this user for suspected cheating as they have opted out of the leaderboards.",
       0,
       {
         duration: 10,
       }
     );
+    return;
   }
 
   const characterDifference = comment.length - 250;
   if (characterDifference > 0) {
-    return Notifications.add(
+    Notifications.add(
       `Report comment is ${characterDifference} character(s) too long`
     );
+    return;
   }
 
   Loader.show();
@@ -120,7 +123,8 @@ async function submitReport(): Promise<void> {
   Loader.hide();
 
   if (response.status !== 200) {
-    return Notifications.add("Failed to report user: " + response.message, -1);
+    Notifications.add("Failed to report user: " + response.message, -1);
+    return;
   }
 
   Notifications.add("Report submitted. Thank you!", 1);

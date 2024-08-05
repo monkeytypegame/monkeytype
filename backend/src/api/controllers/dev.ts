@@ -10,8 +10,11 @@ import { ObjectId } from "mongodb";
 import * as LeaderboardDal from "../../dal/leaderboards";
 import MonkeyError from "../../utils/error";
 import isNumber from "lodash/isNumber";
-import { Mode } from "@monkeytype/shared-types/config";
-import { PersonalBest, PersonalBests } from "@monkeytype/shared-types/user";
+import {
+  Mode,
+  PersonalBest,
+  PersonalBests,
+} from "@monkeytype/contracts/schemas/shared";
 
 type GenerateDataOptions = {
   firstTestTimestamp: Date;
@@ -51,7 +54,7 @@ async function getOrCreateUser(
 
   if (existingUser !== undefined && existingUser !== null) {
     return existingUser;
-  } else if (createUser === false) {
+  } else if (!createUser) {
     throw new MonkeyError(404, `User ${username} does not exist.`);
   }
 
@@ -182,8 +185,11 @@ async function updateUser(uid: string): Promise<void> {
     ])
     .toArray();
 
-  const timeTyping = stats.reduce((a, c) => a + c["timeTyping"], 0);
-  const completedTests = stats.reduce((a, c) => a + c["completedTests"], 0);
+  const timeTyping = stats.reduce((a, c) => (a + c["timeTyping"]) as number, 0);
+  const completedTests = stats.reduce(
+    (a, c) => (a + c["completedTests"]) as number,
+    0
+  );
 
   //update PBs
   const lbPersonalBests: MonkeyTypes.LbPersonalBests = {
@@ -200,7 +206,15 @@ async function updateUser(uid: string): Promise<void> {
     zen: {},
     quote: {},
   };
-  const modes = stats.map((it) => it["_id"]);
+  const modes = stats.map(
+    (it) =>
+      it["_id"] as {
+        language: string;
+        mode: "time" | "custom" | "words" | "quote" | "zen";
+        mode2: `${number}` | "custom" | "zen";
+      }
+  );
+
   for (const mode of modes) {
     const best = (
       await ResultDal.getResultCollection()
@@ -253,7 +267,7 @@ async function updateUser(uid: string): Promise<void> {
         timeTyping: timeTyping,
         completedTests: completedTests,
         startedTests: Math.round(completedTests * 1.25),
-        personalBests: personalBests as PersonalBests,
+        personalBests: personalBests,
         lbPersonalBests: lbPersonalBests,
       },
     }

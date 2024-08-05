@@ -750,7 +750,7 @@ function handleChar(
           document.querySelectorAll<HTMLElement>("#words .word")[
             TestUI.currentWordElementIndex - 1
           ]?.offsetTop ?? 0
-        ) as number;
+        );
         if (!Config.showAllLines) TestUI.lineJump(currentTop);
       } else {
         TestInput.input.current = TestInput.input.current.slice(0, -1);

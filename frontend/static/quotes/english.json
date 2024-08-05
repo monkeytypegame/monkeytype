@@ -1293,7 +1293,7 @@
     },
     {
       "text": "It is not the mountain we conquer but ourselves.",
-      "source": "That's Life: Wild Wit & Wisdom",
+      "source": "Edmund Hillary",
       "id": 225,
       "length": 48
     },
@@ -24689,7 +24689,7 @@
     },
     {
       "text": "It is still early morning as I pass Denver on the I-70 and begin the steep climb up the Front Range. The unexpected mass of the mountains makes me feel I am putting a physical barrier between myself and the shifting spaces that connect me to my previous life as a high school English teacher in a small eastern city.",
-      "source": "A Cup of Water",
+      "source": "A Cup of Water by Trevor Payne",
       "id": 4417,
       "length": 316
     },
@@ -30023,12 +30023,6 @@
       "id": 5411
     },
     {
-      "text": "No man or woman alive, magical or not, has ever escaped some form of injury, whether physical, mental, or emotional.",
-      "source": "J. K. Rowling, The Tales of Beedle the Bard",
-      "length": 116,
-      "id": 5413
-    },
-    {
       "text": "The heroes and heroines who triumph in his stories are not those with the most powerful magic, but rather those who demonstrate the most kindness, common sense and ingenuity.",
       "source": "J. K. Rowling, The Tales of Beedle the Bard",
       "length": 174,
@@ -31254,7 +31248,7 @@
       "id": 5680
     },
     {
-      "text": "Hello? No this isn't the bird man of Bikini bottom. What? No! I don't live in a bird cage! Who is this? Joe Mama? Well listen up Joe, I hate to break it to you but flying is impossible. I have to go now. My head just hit the ceiling. Huh?",
+      "text": "Hello? No this isn't the bird man of Bikini Bottom. What? No! I don't live in a bird cage! Who is this? Joe Mama? Well listen up Joe, I hate to break it to you but flying is impossible. I have to go now. My head just hit the ceiling. Huh?",
       "source": "Spongebob SquarePants",
       "length": 238,
       "id": 5681
@@ -33423,7 +33417,7 @@
       "id": 6201
     },
     {
-      "text": "Wake up to reality! Nothing ever goes as planned in this accursed world. The longer you live, the more you realize that the only things that truly exist in this reality are merely pain, suffering and futility. Listen, everywhere you look in this world, wherever there is light, there will always be shadows to be found as well. As long as there is a concept of victors, the vanquished will also exist. The selfish intent of wanting to preserve peace, initiates war and hatred is born in order to protect love. There are nexuses - causal relationships that cannot be separated.",
+      "text": "Wake up to reality! Nothing ever goes as planned in this accursed world. The longer you live, the more you realize that the only things that truly exist in this reality are merely pain, suffering and futility. Listen, everywhere you look in this world, wherever there is light, there will always be shadows to be found as well. As long as there is a concept of victors, the vanquished will also exist. The selfish intent of wanting to preserve peace, initiates war and hatred is born in order to protect love. There are nexuses - casual relationships that cannot be separated.",
       "source": "Uchiha Madara - Naruto",
       "length": 576,
       "id": 6202
@@ -38519,6 +38513,30 @@
       "source": "The Walking Dead",
       "length": 362,
       "id": 7605
+    },
+    {
+      "text": "This whole time, I thought changing the world was something you did, an act you performed, something you fought for. I don't know if that's true anymore. What if changing the world was just about being here, by showing up no matter how many times we get told we don't belong, by staying true even when we're shamed into being false, by believing in ourselves even when we're told we're too different? And if we all held on to that, if we refuse to budge and fall in line, if we stood our ground for long enough, just maybe... The world can't help but change around us.",
+      "source": "Mr. Robot",
+      "length": 568,
+      "id": 7606
+    },
+    {
+      "text": "At oh-eight-hundred hours, station time, the Romulan Empire formally declared war against the Dominion. They have already struck fifteen bases along the Cardassian border. So, this is a huge victory for the good guys. This may even be the turning point of the entire war. There's even a 'Welcome to the Fight' party tonight in the wardroom. So I lied, I cheated, I bribed men to cover the crimes of other men. I am an accessory to murder. But most damning thing of all, I think I can live with it. And if I had to do it all over again, I would. Garak was right about one thing. A guilty conscience is a small price to pay for the safety of the Alpha Quadrant, so I will learn to live with it. Because I can live with it. I can live with it. Computer, erase that entire personal log.",
+      "source": "Captain Benjamin Sisko, Star Trek: Deep Space Nine",
+      "length": 782,
+      "id": 7607
+    },
+    {
+      "text": "Captain's log, stardate 57436.2. The Cerritos is docked at Douglas Station for routine maintenance and resupply. We will soon set course for the capital planet on the Galar system, where we're scheduled to make second contact with the Galardonian high council. First contact is a delicate, high-stakes operation of diplomacy. One must be ready for anything when humanity is interacting with an alien race for the first time. But we don't do that. Our specialty is second contact. Still pretty important. We get all the paperwork signed, make sure we're spelling the name of the planet right, get to know all the good places to eat.",
+      "source": "Ensign Bradward Boimler, Star Trek: Lower Decks",
+      "length": 631,
+      "id": 7608
+    },
+    {
+      "text": "I've lost many friends. Some heroically, some tragically. The randomness of death is merely a reflection of the unexpected joys we find in life.",
+      "source": "Captain Hikaru Sulu, Star Trek: Lower Decks",
+      "length": 144,
+      "id": 7609
     }
   ]
 }

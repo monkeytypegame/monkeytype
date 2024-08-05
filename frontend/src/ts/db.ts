@@ -14,14 +14,15 @@ import {
   ModifiableTestActivityCalendar,
 } from "./elements/test-activity-calendar";
 import * as Loader from "./elements/loader";
-import { PersonalBest, PersonalBests } from "@monkeytype/shared-types/user";
+
 import { Badge, DBResult, Result } from "@monkeytype/shared-types";
+import { Config, Difficulty } from "@monkeytype/contracts/schemas/configs";
 import {
-  Config,
-  Difficulty,
   Mode,
   Mode2,
-} from "@monkeytype/shared-types/config";
+  PersonalBest,
+  PersonalBests,
+} from "@monkeytype/contracts/schemas/shared";
 
 let dbSnapshot: MonkeyTypes.Snapshot | undefined;
 
@@ -92,14 +93,14 @@ export async function initSnapshot(): Promise<
     if (presetsResponse.status !== 200) {
       // eslint-disable-next-line @typescript-eslint/no-throw-literal
       throw {
-        message: `${presetsResponse.message} (presets)`,
+        message: `${presetsResponse.body.message} (presets)`,
         responseCode: presetsResponse.status,
       };
     }
 
     const userData = userResponse.data;
     const configData = configResponse.body.data;
-    const presetsData = presetsResponse.data;
+    const presetsData = presetsResponse.body.data;
 
     if (userData === null) {
       // eslint-disable-next-line @typescript-eslint/no-throw-literal
@@ -577,6 +578,37 @@ export async function getUserDailyBest<M extends Mode>(
     snapshot === null || (await getUserResults()) === null ? 0 : cont();
 
   return retval;
+}
+
+export async function getActiveTagsPB<M extends Mode>(
+  mode: M,
+  mode2: Mode2<M>,
+  punctuation: boolean,
+  numbers: boolean,
+  language: string,
+  difficulty: Difficulty,
+  lazyMode: boolean
+): Promise<number> {
+  const snapshot = getSnapshot();
+  if (!snapshot) return 0;
+
+  let tagPbWpm = 0;
+  for (const tag of snapshot.tags) {
+    if (!tag.active) continue;
+    const currTagPB = await getLocalTagPB(
+      tag._id,
+      mode,
+      mode2,
+      punctuation,
+      numbers,
+      language,
+      difficulty,
+      lazyMode
+    );
+    if (currTagPB > tagPbWpm) tagPbWpm = currTagPB;
+  }
+
+  return tagPbWpm;
 }
 
 export async function getLocalPB<M extends Mode>(

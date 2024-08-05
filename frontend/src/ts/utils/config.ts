@@ -1,7 +1,10 @@
-import { Config, ConfigValue } from "@monkeytype/shared-types/config";
+import {
+  Config,
+  ConfigValue,
+  PartialConfig,
+} from "@monkeytype/contracts/schemas/configs";
 import DefaultConfig from "../constants/default-config";
 import { typedKeys } from "./misc";
-import { PartialConfig } from "@monkeytype/contracts/schemas/configs";
 
 export function mergeWithDefaultConfig(config: PartialConfig): Config {
   const mergedConfig = {} as Config;

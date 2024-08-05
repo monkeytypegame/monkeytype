@@ -21,7 +21,7 @@ services:
 
   api-server:
     container_name: monkeytype-api-server
-    image: node:18.20.4
+    image: node:20.16.0
     user: "node"    ##this works as long as your local user has uid=1000
     restart: on-failure
     depends_on:
@@ -36,7 +36,8 @@ services:
       - ../../:/monkeytype
     entrypoint: 'bash -c "echo starting, this may take a while... \
       && cd /monkeytype \
-      && npm i --prefer-offline --no-audit \
+      && npm i -g pnpm \
+      && pnpm i \
       && npm run dev-be"'
 
 volumes:

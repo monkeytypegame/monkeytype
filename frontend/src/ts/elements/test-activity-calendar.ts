@@ -57,7 +57,9 @@ export class TestActivityCalendar implements MonkeyTypes.TestActivityCalendar {
     lastDay: Date
   ): (number | null | undefined)[] {
     //fill calendar with enough values
-    const values = new Array(Math.max(0, 386 - data.length)).fill(undefined);
+    const values: (number | null | undefined)[] = new Array(
+      Math.max(0, 386 - data.length)
+    ).fill(undefined);
     values.push(...data);
 
     //discard values outside the calendar range

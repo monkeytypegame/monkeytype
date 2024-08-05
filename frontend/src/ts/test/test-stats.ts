@@ -7,7 +7,7 @@ import * as FunboxList from "./funbox/funbox-list";
 import * as TestState from "./test-state";
 import * as Numbers from "../utils/numbers";
 import { IncompleteTest, Result } from "@monkeytype/shared-types";
-import { Mode } from "@monkeytype/shared-types/config";
+import { Mode } from "@monkeytype/contracts/schemas/shared";
 
 type CharCount = {
   spaces: number;
@@ -69,13 +69,13 @@ export function getStats(): unknown {
   try {
     // @ts-expect-error
     ret.keypressTimings.spacing.average =
-      (TestInput.keypressTimings.spacing.array as number[]).reduce(
+      TestInput.keypressTimings.spacing.array.reduce(
         (previous, current) => (current += previous)
       ) / TestInput.keypressTimings.spacing.array.length;
 
     // @ts-expect-error
     ret.keypressTimings.spacing.sd = Numbers.stdDev(
-      TestInput.keypressTimings.spacing.array as number[]
+      TestInput.keypressTimings.spacing.array
     );
   } catch (e) {
     //
@@ -83,13 +83,13 @@ export function getStats(): unknown {
   try {
     // @ts-expect-error
     ret.keypressTimings.duration.average =
-      (TestInput.keypressTimings.duration.array as number[]).reduce(
+      TestInput.keypressTimings.duration.array.reduce(
         (previous, current) => (current += previous)
       ) / TestInput.keypressTimings.duration.array.length;
 
     // @ts-expect-error
     ret.keypressTimings.duration.sd = Numbers.stdDev(
-      TestInput.keypressTimings.duration.array as number[]
+      TestInput.keypressTimings.duration.array
     );
   } catch (e) {
     //
@@ -295,7 +295,7 @@ function countChars(): CharCount {
       correctChars += targetWord.length;
       if (
         i < inputWords.length - 1 &&
-        Strings.getLastChar(inputWord as string) !== "\n"
+        Strings.getLastChar(inputWord) !== "\n"
       ) {
         correctspaces++;
       }

@@ -112,7 +112,8 @@ async function _authenticateRequestInternal(
       req
     );
 
-    return next(error);
+    next(error);
+    return;
   }
   recordAuthTime(
     token.type,
@@ -345,7 +346,8 @@ export function authenticateGithubWebhook(): Handler {
         }
       }
     } catch (e) {
-      return next(e);
+      next(e);
+      return;
     }
 
     next();

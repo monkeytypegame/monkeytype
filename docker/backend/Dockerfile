@@ -1,23 +1,36 @@
+FROM node:20.16.0-alpine3.19 AS builder
 
-FROM node:18.20.4-alpine3.19
-
-##install wget, used by the applyConfig script
-RUN apk add wget
 WORKDIR /app
 
 #copy
 COPY package.json package.json
-COPY package-lock.json package-lock.json
+COPY pnpm-lock.yaml pnpm-lock.yaml
+COPY pnpm-workspace.yaml pnpm-workspace.yaml
 COPY turbo.json turbo.json
 COPY packages packages
 COPY backend backend
 
+#gimme pnpm
+RUN npm i -g pnpm
+
 #build
-RUN npm ci
+RUN pnpm i --frozen-lockfile
 RUN npm run build
 
-## remove dev dependencies
-RUN npm install --install-strategy=nested --omit=dev --workspace=backend --ignore-scripts
+#deploy (install all non-dev dependencies in a single node_module folder)
+RUN pnpm deploy --filter backend --prod /prod/backend
+
+## target image
+FROM node:20.16.0-alpine3.19
+
+##install wget, used by the applyConfig script
+RUN apk add wget
+
+# COPY to target
+COPY --from=builder /prod/backend/node_modules /app/backend/node_modules
+COPY --from=builder /prod/backend/dist /app/backend/dist
+COPY --from=builder /prod/backend/email-templates /app/backend/email-templates
+COPY --from=builder /prod/backend/redis-scripts /app/backend/redis-scripts
 
 ## to build directory
 WORKDIR /app/backend/dist
