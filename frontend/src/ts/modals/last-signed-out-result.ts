@@ -115,7 +115,7 @@ async function saveLastResult(): Promise<void> {
     TestLogic.notSignedInLastResult as CompletedEvent
   );
   if (response.status !== 200) {
-    Notifications.add("Failed to save last result: " + response.messag, -1);
+    Notifications.add("Failed to save last result: " + response.message, -1);
     return;
   }
 
