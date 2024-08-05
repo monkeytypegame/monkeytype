@@ -118,10 +118,10 @@ export async function updatePosition(noAnim = false): Promise<void> {
 
   const currentWordNodeList = activeWordEl?.querySelectorAll("letter");
   if (!currentWordNodeList?.length) return;
+
   const currentLetter = currentWordNodeList[inputLen] as
     | HTMLElement
     | undefined;
-  console.log("current letter in updatePosition", currentLetter);
   const previousLetter = currentWordNodeList[inputLen - 1] as HTMLElement;
   const lastWordLetter = currentWordNodeList[wordLen - 1] as HTMLElement;
 
@@ -163,8 +163,8 @@ export async function updatePosition(noAnim = false): Promise<void> {
     // if current letter is a zero-wwidth character e.g, diacritics)
     letterWidth = 0;
     for (let i = inputLen; i >= 0; i--) {
-      const letter = currentWordNodeList[i] as HTMLElement;
-      if ((letterWidth = letter?.offsetWidth)) break;
+      letterWidth = (currentWordNodeList[i] as HTMLElement)?.offsetWidth;
+      if (letterWidth) break;
     }
   }
 
