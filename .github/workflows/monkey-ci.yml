@@ -127,22 +127,8 @@ jobs:
         with:
           version: ${{ env.PNPM_VERSION }}
 
-      - name: Get pnpm store directory
-        shell: bash
-        run: |
-          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
-
-      - name: Cache node modules
-        id: cache-pnpm
-        uses: actions/cache@v4
-        env:
-          cache-name: node-modules
-        with:
-          path: ${{ env.STORE_PATH }}
-          key: ${{ runner.os }}-${{ env.NODE_VERSION }}-build-${{ env.cache-name }}-${{ hashFiles('pnpm-lock.yaml') }}
-
-      - name: Install dependencies
-        run: pnpm install
+      - name: Install prettier
+        run: pnpm add -g prettier
 
       - name: Get changed files
         id: get-changed-files
