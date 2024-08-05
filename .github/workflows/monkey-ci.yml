@@ -167,26 +167,6 @@ jobs:
             pnpm prettier --check $CHANGED_FILES
           fi
 
-      # - name: Check pretty (backend)
-      #   id: check-pretty-be
-      #   if: needs.pre-ci.outputs.should-build-be == 'true'
-      #   run: npm run pretty-check-be
-
-      # - name: Check pretty (frontend)
-      #   id: check-pretty-fe
-      #   if: needs.pre-ci.outputs.should-build-fe == 'true' 
-      #   run: npm run pretty-check-fe
-      
-      # - name: Check pretty (packages)
-      #   id: check-pretty-pkg
-      #   if: needs.pre-ci.outputs.should-build-pkg == 'true'
-      #   run: npm run pretty-check-pkg
-
-      # - name: Check pretty (assets)
-      #   id: check-pretty-assets
-      #   if: needs.pre-ci.outputs.assets-json == 'true'
-      #   run: npm run pretty-check-assets
-
   ci-be:
     name: ci-be
     needs: [pre-ci, prime-cache, check-pretty]
