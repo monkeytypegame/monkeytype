@@ -398,8 +398,7 @@ describe("ApeKeyController", () => {
 
       //THEN
       expect(body).toEqual({
-        message:
-          "Password reset request received. If the email is valid, you will receive an email shortly.",
+        message: "Password reset request email sent.",
         data: null,
       });
 

@@ -13,6 +13,7 @@ import {
 } from "@monkeytype/contracts/admin";
 import MonkeyError from "../../utils/error";
 import { Configuration } from "@monkeytype/shared-types";
+import { addImportantLog } from "../../dal/logs";
 
 export async function test(
   _req: MonkeyTypes.Request2
@@ -34,6 +35,8 @@ export async function toggleBan(
 
   await UserDAL.setBanned(uid, !user.banned);
   if (discordIdIsValid) await GeorgeQueue.userBanned(discordId, !user.banned);
+
+  void addImportantLog("user_ban_toggled", { banned: !user.banned }, uid);
 
   return new MonkeyResponse2(`Ban toggled`, {
     banned: !user.banned,
@@ -123,8 +126,5 @@ export async function sendForgotPasswordEmail(
 ): Promise<MonkeyResponse2> {
   const { email } = req.body;
   await authSendForgotPasswordEmail(email);
-  return new MonkeyResponse2(
-    "Password reset request received. If the email is valid, you will receive an email shortly.",
-    null
-  );
+  return new MonkeyResponse2("Password reset request email sent.", null);
 }

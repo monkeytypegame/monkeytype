@@ -109,7 +109,7 @@ export const adminContract = c.router(
     strictStatusCodes: true,
     metadata: {
       openApiTags: "admin",
-      authenticationOptions: { noCache: true }, //TODO test
+      authenticationOptions: { noCache: true },
     } as EndpointMetadata,
 
     commonResponses: CommonResponses,
