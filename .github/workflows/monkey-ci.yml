@@ -144,6 +144,21 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
+      - name: Get changed files
+        id: get-changed-files
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const changedFiles = await github.paginate(
+              github.rest.pulls.listFiles,
+              {
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: context.payload.pull_request.number,
+              }
+            );
+            return changedFiles.map(file => file.filename).join(' ');
+
       - name: Check pretty (changed files)
         id: check-pretty
         run: |
@@ -283,6 +298,7 @@ jobs:
         with:
           sparse-checkout: |
             frontend
+            packages
 
       - uses: dorny/paths-filter@v3
         id: filter
