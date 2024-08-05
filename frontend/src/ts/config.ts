@@ -75,17 +75,12 @@ export function saveFullConfigToLocalStorage(noDbCheck = false): void {
 }
 
 //numbers
-<<<<<<< HEAD
 export function setNumbers(
   numb: boolean,
   nosave?: boolean,
   tribeOverride = false
 ): boolean {
-  if (!isConfigValueValid("numbers", numb, ["boolean"])) return false;
-=======
-export function setNumbers(numb: boolean, nosave?: boolean): boolean {
   if (!isConfigValueValidBoolean("numbers", numb)) return false;
->>>>>>> master
 
   if (!canSetConfigWithCurrentFunboxes("numbers", numb, config.funbox)) {
     return false;
@@ -104,17 +99,12 @@ export function setNumbers(numb: boolean, nosave?: boolean): boolean {
 }
 
 //punctuation
-<<<<<<< HEAD
 export function setPunctuation(
   punc: boolean,
   nosave?: boolean,
   tribeOverride = false
 ): boolean {
-  if (!isConfigValueValid("punctuation", punc, ["boolean"])) return false;
-=======
-export function setPunctuation(punc: boolean, nosave?: boolean): boolean {
   if (!isConfigValueValidBoolean("punctuation", punc)) return false;
->>>>>>> master
 
   if (!canSetConfigWithCurrentFunboxes("punctuation", punc, config.funbox)) {
     return false;
@@ -132,7 +122,11 @@ export function setPunctuation(punc: boolean, nosave?: boolean): boolean {
   return true;
 }
 
-export function setMode(mode: Mode, nosave?: boolean, tribeOverride = false): boolean {
+export function setMode(
+  mode: Mode,
+  nosave?: boolean,
+  tribeOverride = false
+): boolean {
   if (!isConfigValueValid("mode", mode, ModeSchema)) {
     return false;
   }
@@ -228,14 +222,9 @@ export function setSoundVolume(
 
 //difficulty
 export function setDifficulty(
-<<<<<<< HEAD
-  diff: ConfigTypes.Difficulty,
+  diff: ConfigSchemas.Difficulty,
   nosave?: boolean,
   tribeOverride = false
-=======
-  diff: ConfigSchemas.Difficulty,
-  nosave?: boolean
->>>>>>> master
 ): boolean {
   if (!isConfigValueValid("difficulty", diff, ConfigSchemas.DifficultySchema)) {
     return false;
@@ -272,20 +261,13 @@ export function setFavThemes(
 }
 
 export function setFunbox(
-<<<<<<< HEAD
-  funbox: string,
+  funbox: ConfigSchemas.Funbox,
   nosave?: boolean,
   tribeOverride = false
 ): boolean {
-  if (!isConfigValueValid("funbox", funbox, ["string"])) return false;
-  if (!TribeState.canChangeConfig(tribeOverride)) return false;
-=======
-  funbox: ConfigSchemas.Funbox,
-  nosave?: boolean
-): boolean {
   if (!isConfigValueValid("funbox", funbox, ConfigSchemas.FunboxSchema))
     return false;
->>>>>>> master
+  if (!TribeState.canChangeConfig(tribeOverride)) return false;
 
   for (const funbox of config.funbox.split("#")) {
     if (!canSetFunboxWithConfig(funbox, config)) {
@@ -303,20 +285,13 @@ export function setFunbox(
 }
 
 export function toggleFunbox(
-<<<<<<< HEAD
-  funbox: string,
+  funbox: ConfigSchemas.Funbox,
   nosave?: boolean,
   tribeOverride = false
 ): number | boolean {
-  if (!isConfigValueValid("funbox", funbox, ["string"])) return false;
-  if (!TribeState.canChangeConfig(tribeOverride)) return false;
-=======
-  funbox: ConfigSchemas.Funbox,
-  nosave?: boolean
-): number | boolean {
   if (!isConfigValueValid("funbox", funbox, ConfigSchemas.FunboxSchema))
     return false;
->>>>>>> master
+  if (!TribeState.canChangeConfig(tribeOverride)) return false;
 
   let r;
 
@@ -442,14 +417,9 @@ export function setAccountChartAvg100(
 }
 
 export function setStopOnError(
-<<<<<<< HEAD
-  soe: ConfigTypes.StopOnError,
+  soe: ConfigSchemas.StopOnError,
   nosave?: boolean,
   tribeOverride = false
-=======
-  soe: ConfigSchemas.StopOnError,
-  nosave?: boolean
->>>>>>> master
 ): boolean {
   if (
     !isConfigValueValid("stop on error", soe, ConfigSchemas.StopOnErrorSchema)
@@ -588,14 +558,9 @@ export function setRepeatedPace(pace: boolean, nosave?: boolean): boolean {
 
 //min wpm
 export function setMinWpm(
-<<<<<<< HEAD
-  minwpm: ConfigTypes.MinimumWordsPerMinute,
+  minwpm: ConfigSchemas.MinimumWordsPerMinute,
   nosave?: boolean,
   tribeOverride = false
-=======
-  minwpm: ConfigSchemas.MinimumWordsPerMinute,
-  nosave?: boolean
->>>>>>> master
 ): boolean {
   if (
     !isConfigValueValid(
@@ -617,15 +582,9 @@ export function setMinWpm(
 }
 
 export function setMinWpmCustomSpeed(
-<<<<<<< HEAD
-  val: number,
+  val: ConfigSchemas.MinWpmCustomSpeed,
   nosave?: boolean,
   tribeOverride = false
-): boolean {
-  if (!isConfigValueValid("min speed custom", val, ["number"])) {
-=======
-  val: ConfigSchemas.MinWpmCustomSpeed,
-  nosave?: boolean
 ): boolean {
   if (
     !isConfigValueValid(
@@ -634,7 +593,6 @@ export function setMinWpmCustomSpeed(
       ConfigSchemas.MinWpmCustomSpeedSchema
     )
   ) {
->>>>>>> master
     return false;
   }
   if (!TribeState.canChangeConfig(tribeOverride)) return false;
@@ -649,20 +607,13 @@ export function setMinWpmCustomSpeed(
 
 //min acc
 export function setMinAcc(
-<<<<<<< HEAD
-  min: ConfigTypes.MinimumAccuracy,
+  min: ConfigSchemas.MinimumAccuracy,
   nosave?: boolean,
   tribeOverride = false
 ): boolean {
-  if (!isConfigValueValid("min acc", min, [["off", "custom"]])) return false;
-  if (!TribeState.canChangeConfig(tribeOverride)) return false;
-=======
-  min: ConfigSchemas.MinimumAccuracy,
-  nosave?: boolean
-): boolean {
   if (!isConfigValueValid("min acc", min, ConfigSchemas.MinimumAccuracySchema))
     return false;
->>>>>>> master
+  if (!TribeState.canChangeConfig(tribeOverride)) return false;
 
   config.minAcc = min;
   saveToLocalStorage("minAcc", nosave);
@@ -673,19 +624,12 @@ export function setMinAcc(
 }
 
 export function setMinAccCustom(
-<<<<<<< HEAD
-  val: number,
+  val: ConfigSchemas.MinimumAccuracyCustom,
   nosave?: boolean,
   tribeOverride = false
 ): boolean {
-  if (!isConfigValueValid("min acc custom", val, ["number"])) return false;
   if (!TribeState.canChangeConfig(tribeOverride)) return false;
-=======
-  val: ConfigSchemas.MinimumAccuracyCustom,
-  nosave?: boolean
-): boolean {
   //migrate legacy configs
->>>>>>> master
   if (val > 100) val = 100;
   if (
     !isConfigValueValid(
@@ -706,14 +650,9 @@ export function setMinAccCustom(
 
 //min burst
 export function setMinBurst(
-<<<<<<< HEAD
-  min: ConfigTypes.MinimumBurst,
+  min: ConfigSchemas.MinimumBurst,
   nosave?: boolean,
   tribeOverride = false
-=======
-  min: ConfigSchemas.MinimumBurst,
-  nosave?: boolean
->>>>>>> master
 ): boolean {
   if (!isConfigValueValid("min burst", min, ConfigSchemas.MinimumBurstSchema)) {
     return false;
@@ -729,15 +668,9 @@ export function setMinBurst(
 }
 
 export function setMinBurstCustomSpeed(
-<<<<<<< HEAD
-  val: number,
+  val: ConfigSchemas.MinimumBurstCustomSpeed,
   nosave?: boolean,
   tribeOverride = false
-): boolean {
-  if (!isConfigValueValid("min burst custom speed", val, ["number"])) {
-=======
-  val: ConfigSchemas.MinimumBurstCustomSpeed,
-  nosave?: boolean
 ): boolean {
   if (
     !isConfigValueValid(
@@ -746,7 +679,6 @@ export function setMinBurstCustomSpeed(
       ConfigSchemas.MinimumBurstCustomSpeedSchema
     )
   ) {
->>>>>>> master
     return false;
   }
   if (!TribeState.canChangeConfig(tribeOverride)) return false;
@@ -1219,20 +1151,13 @@ export function setKeyTips(keyTips: boolean, nosave?: boolean): boolean {
 
 //mode
 export function setTimeConfig(
-<<<<<<< HEAD
-  time: number,
+  time: ConfigSchemas.TimeConfig,
   nosave?: boolean,
   tribeOverride = false
-): boolean {
-  if (!isConfigValueValid("time", time, ["number"])) return false;
-=======
-  time: ConfigSchemas.TimeConfig,
-  nosave?: boolean
 ): boolean {
   time = isNaN(time) || time < 0 ? DefaultConfig.time : time;
   if (!isConfigValueValid("time", time, ConfigSchemas.TimeConfigSchema))
     return false;
->>>>>>> master
 
   if (!canSetConfigWithCurrentFunboxes("words", time, config.funbox)) {
     return false;
@@ -1253,19 +1178,7 @@ export function setQuoteLength(
   multipleMode?: boolean,
   tribeOverride = false
 ): boolean {
-<<<<<<< HEAD
-  if (
-    !isConfigValueValid("quote length", len, [
-      [-3, -2, -1, 0, 1, 2, 3],
-      "numberArray",
-    ])
-  ) {
-    return false;
-  }
   if (!TribeState.canChangeConfig(tribeOverride)) return false;
-
-=======
->>>>>>> master
   if (Array.isArray(len)) {
     if (
       !isConfigValueValid(
@@ -1316,22 +1229,15 @@ export function setQuoteLength(
 }
 
 export function setWordCount(
-<<<<<<< HEAD
-  wordCount: number,
+  wordCount: ConfigSchemas.WordCount,
   nosave?: boolean,
   tribeOverride = false
-): boolean {
-  if (!isConfigValueValid("words", wordCount, ["number"])) return false;
-=======
-  wordCount: ConfigSchemas.WordCount,
-  nosave?: boolean
 ): boolean {
   wordCount =
     wordCount < 0 || wordCount > 100000 ? DefaultConfig.words : wordCount;
 
   if (!isConfigValueValid("words", wordCount, ConfigSchemas.WordCountSchema))
     return false;
->>>>>>> master
 
   if (!canSetConfigWithCurrentFunboxes("words", wordCount, config.funbox)) {
     return false;
@@ -1665,18 +1571,13 @@ export function setBritishEnglish(val: boolean, nosave?: boolean): boolean {
   return true;
 }
 
-<<<<<<< HEAD
 export function setLazyMode(
   val: boolean,
   nosave?: boolean,
   tribeOverride = false
 ): boolean {
-  if (!isConfigValueValid("lazy mode", val, ["boolean"])) return false;
-  if (!TribeState.canChangeConfig(tribeOverride)) return false;
-=======
-export function setLazyMode(val: boolean, nosave?: boolean): boolean {
   if (!isConfigValueValidBoolean("lazy mode", val)) return false;
->>>>>>> master
+  if (!TribeState.canChangeConfig(tribeOverride)) return false;
 
   if (!val) {
     val = false;
@@ -1729,20 +1630,13 @@ export function setCustomThemeColors(
 }
 
 export function setLanguage(
-<<<<<<< HEAD
-  language: string,
+  language: ConfigSchemas.Language,
   nosave?: boolean,
   tribeOverride = false
 ): boolean {
-  if (!isConfigValueValid("language", language, ["string"])) return false;
-  if (!TribeState.canChangeConfig(tribeOverride)) return false;
-=======
-  language: ConfigSchemas.Language,
-  nosave?: boolean
-): boolean {
   if (!isConfigValueValid("language", language, ConfigSchemas.LanguageSchema))
     return false;
->>>>>>> master
+  if (!TribeState.canChangeConfig(tribeOverride)) return false;
 
   config.language = language;
   void AnalyticsController.log("changedLanguage", { language });
@@ -2150,10 +2044,12 @@ export function setBurstHeatmap(value: boolean, nosave?: boolean): boolean {
 }
 
 export function setTribeDelta(
-  value: MonkeyTypes.TribeDelta,
+  value: ConfigSchemas.TribeDelta,
   nosave?: boolean
 ): boolean {
-  if (!isConfigValueValid("tribe delta", value, [["off", "text", "bar"]])) {
+  if (
+    !isConfigValueValid("tribe delta", value, ConfigSchemas.TribeDeltaSchema)
+  ) {
     return false;
   }
 
@@ -2165,40 +2061,12 @@ export function setTribeDelta(
 }
 
 export function setTribeCarets(
-  value: MonkeyTypes.TribeCarets,
+  value: ConfigSchemas.TribeCarets,
   nosave?: boolean
 ): boolean {
-  if (!isConfigValueValid("tribe carets", value, [["off", "noNames", "on"]])) {
-    return false;
-  }
-
-  config.tribeCarets = value;
-  saveToLocalStorage("tribeCarets", nosave);
-  ConfigEvent.dispatch("tribeCarets", config.tribeCarets, nosave);
-
-  return true;
-}
-
-export function setTribeDelta(
-  value: MonkeyTypes.TribeDelta,
-  nosave?: boolean
-): boolean {
-  if (!isConfigValueValid("tribe delta", value, [["off", "text", "bar"]])) {
-    return false;
-  }
-
-  config.tribeDelta = value;
-  saveToLocalStorage("tribeDelta", nosave);
-  ConfigEvent.dispatch("tribeDelta", config.tribeDelta, nosave);
-
-  return true;
-}
-
-export function setTribeCarets(
-  value: MonkeyTypes.TribeCarets,
-  nosave?: boolean
-): boolean {
-  if (!isConfigValueValid("tribe carets", value, [["off", "noNames", "on"]])) {
+  if (
+    !isConfigValueValid("tribe carets", value, ConfigSchemas.TribeCaretsSchema)
+  ) {
     return false;
   }
 

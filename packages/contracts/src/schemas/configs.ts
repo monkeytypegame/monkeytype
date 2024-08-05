@@ -290,7 +290,10 @@ export const CustomBackgroundSchema = z
 export type CustomBackground = z.infer<typeof CustomBackgroundSchema>;
 
 export const TribeDeltaSchema = z.enum(["off", "text", "bar"]);
+export type TribeDelta = z.infer<typeof TribeDeltaSchema>;
+
 export const TribeCaretsSchema = z.enum(["off", "noNames", "on"]);
+export type TribeCarets = z.infer<typeof TribeCaretsSchema>;
 
 export const ConfigSchema = z
   .object({
