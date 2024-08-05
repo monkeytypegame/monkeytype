@@ -171,7 +171,8 @@ jobs:
     if: needs.pre-ci.outputs.should-build-be == 'true' || needs.pre-ci.outputs.should-build-pkg == 'true'
     steps:
       - uses: actions/checkout@v4
-        sparse-checkout: |
+        with:
+          sparse-checkout: |
             backend
 
       - name: Set up Node.js
@@ -218,7 +219,8 @@ jobs:
     steps:
 
       - uses: actions/checkout@v4
-        sparse-checkout: |
+        with:
+          sparse-checkout: |
             frontend
 
       - name: Set up Node.js
@@ -268,7 +270,8 @@ jobs:
     if: needs.pre-ci.outputs.assets-json == 'true'
     steps:
       - uses: actions/checkout@v4
-        sparse-checkout: |
+        with:
+          sparse-checkout: |
             frontend
 
       - uses: dorny/paths-filter@v3
@@ -336,7 +339,8 @@ jobs:
     steps:
 
       - uses: actions/checkout@v4
-        sparse-checkout: |
+        with:
+          sparse-checkout: |
             packages
 
       - name: Set up Node.js
