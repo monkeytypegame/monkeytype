@@ -127,42 +127,31 @@ jobs:
         with:
           version: ${{ env.PNPM_VERSION }}
 
-      - name: Get pnpm store directory
-        shell: bash
-        run: |
-          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+      - name: Install prettier
+        run: pnpm add -g prettier@2.5.1
 
-      - name: Cache node modules
-        id: cache-pnpm
-        uses: actions/cache@v4
-        env:
-          cache-name: node-modules
+      - name: Get changed files
+        id: get-changed-files
+        uses: actions/github-script@v7
         with:
-          path: ${{ env.STORE_PATH }}
-          key: ${{ runner.os }}-${{ env.NODE_VERSION }}-build-${{ env.cache-name }}-${{ hashFiles('pnpm-lock.yaml') }}
+          script: |
+            const changedFiles = await github.paginate(
+              github.rest.pulls.listFiles,
+              {
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: context.payload.pull_request.number,
+              }
+            );
+            return changedFiles.map(file => file.filename).join(' ');
 
-      - name: Install dependencies
-        run: pnpm install
-
-      - name: Check pretty (backend)
-        id: check-pretty-be
-        if: needs.pre-ci.outputs.should-build-be == 'true'
-        run: npm run pretty-check-be
-
-      - name: Check pretty (frontend)
-        id: check-pretty-fe
-        if: needs.pre-ci.outputs.should-build-fe == 'true' 
-        run: npm run pretty-check-fe
-      
-      - name: Check pretty (packages)
-        id: check-pretty-pkg
-        if: needs.pre-ci.outputs.should-build-pkg == 'true'
-        run: npm run pretty-check-pkg
-
-      - name: Check pretty (assets)
-        id: check-pretty-assets
-        if: needs.pre-ci.outputs.assets-json == 'true'
-        run: npm run pretty-check-assets
+      - name: Check pretty (changed files)
+        id: check-pretty
+        run: |
+          CHANGED_FILES=$(echo ${{ steps.get-changed-files.outputs.result }})
+          if [ -n "$CHANGED_FILES" ]; then
+            pnpm prettier --check $CHANGED_FILES
+          fi
 
   ci-be:
     name: ci-be
@@ -171,6 +160,10 @@ jobs:
     if: needs.pre-ci.outputs.should-build-be == 'true' || needs.pre-ci.outputs.should-build-pkg == 'true'
     steps:
       - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            backend
+            packages
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -216,6 +209,10 @@ jobs:
     steps:
 
       - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            frontend
+            packages
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -264,6 +261,10 @@ jobs:
     if: needs.pre-ci.outputs.assets-json == 'true'
     steps:
       - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            frontend
+            packages
 
       - uses: dorny/paths-filter@v3
         id: filter
@@ -330,6 +331,9 @@ jobs:
     steps:
 
       - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            packages
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -374,7 +378,6 @@ jobs:
     needs: [ci-be, ci-fe, ci-assets, ci-pkg]
     if: ${{ always() && contains(needs.*.result, 'failure') && github.ref != 'refs/heads/master' }}
     steps:
-      - uses: actions/checkout@v4
       - name: Save the PR number in an artifact
         shell: bash
         env:
