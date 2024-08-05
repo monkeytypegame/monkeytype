@@ -18,6 +18,7 @@ import { createIndicies as blocklistDbSetup } from "./dal/blocklist";
 async function bootServer(port: number): Promise<Server> {
   try {
     Logger.info(`Starting server version ${version}`);
+
     Logger.info(`Starting server in ${process.env["MODE"]} mode`);
     Logger.info(`Connecting to database ${process.env["DB_NAME"]}...`);
     await db.connect();
