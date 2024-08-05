@@ -15,6 +15,7 @@ import * as LoginPage from "../pages/login";
 import * as ResultFilters from "../elements/account/result-filters";
 import * as TagController from "./tag-controller";
 import * as RegisterCaptchaModal from "../modals/register-captcha";
+import * as LastSignedOutResultModal from "../modals/last-signed-out-result";
 import * as URLHandler from "../utils/url-handler";
 import * as Account from "../pages/account";
 import * as Alerts from "../elements/alerts";
@@ -44,8 +45,6 @@ import {
 import * as ConnectionState from "../states/connection";
 import { navigate } from "./route-controller";
 import { getHtmlByUserFlags } from "./user-flag-controller";
-
-let signedOutThisSession = false;
 
 export const gmailProvider = new GoogleAuthProvider();
 export const githubProvider = new GithubAuthProvider();
@@ -209,18 +208,9 @@ export async function loadUser(user: UserType): Promise<void> {
 
   // showFavouriteThemesAtTheTop();
 
-  if (TestLogic.notSignedInLastResult !== null && !signedOutThisSession) {
+  if (TestLogic.notSignedInLastResult !== null) {
     TestLogic.setNotSignedInUid(user.uid);
-
-    const response = await Ape.results.save(TestLogic.notSignedInLastResult);
-
-    if (response.status !== 200) {
-      Notifications.add("Failed to save last result: " + response.message, -1);
-      return;
-    }
-
-    TestLogic.clearNotSignedInResult();
-    Notifications.add("Last test result saved", 1);
+    LastSignedOutResultModal.show();
   }
 }
 
@@ -647,7 +637,6 @@ $("header .signInOut").on("click", () => {
   }
   if (isAuthenticated()) {
     signOut();
-    signedOutThisSession = true;
   } else {
     navigate("/login");
   }

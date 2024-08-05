@@ -499,6 +499,18 @@ FunboxList.setFunboxFunctions("binary", {
   },
 });
 
+FunboxList.setFunboxFunctions("hexadecimal", {
+  getWord(): string {
+    return GetText.getHexadecimal();
+  },
+  punctuateWord(word: string): string {
+    return `0x${word}`;
+  },
+  rememberSettings(): void {
+    save("punctuation", Config.punctuation, UpdateConfig.setPunctuation);
+  },
+});
+
 FunboxList.setFunboxFunctions("zipf", {
   getWordsFrequencyMode(): MonkeyTypes.FunboxWordsFrequency {
     return "zipf";
