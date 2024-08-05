@@ -93,7 +93,7 @@
     "readline-sync": "1.4.10",
     "supertest": "6.2.3",
     "tsx": "4.16.2",
-    "typescript": "5.5.3",
+    "typescript": "5.5.4",
     "vitest": "1.6.0",
     "vitest-mongodb": "1.0.0"
   }
