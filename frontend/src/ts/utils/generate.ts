@@ -16,7 +16,7 @@ export function getBinary(): string {
  * @returns The generated hexadecimal string.
  */
 export function getHexadecimal(): string {
-  const randLen = randomIntFromRange(1, 8);
+  const randLen = randomIntFromRange(1, 4);
   return Array.from({ length: randLen }, () => {
     return Math.floor(Math.random() * 256)
       .toString(16)
