@@ -107,6 +107,7 @@ export function show(): void {
 
 function hide(): void {
   void modal.hide();
+  //
 }
 
 async function saveLastResult(): Promise<void> {
