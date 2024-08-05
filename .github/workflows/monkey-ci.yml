@@ -131,6 +131,7 @@ jobs:
         run: pnpm add -g prettier@2.5.1
 
       - name: Get changed files
+        if: github.event_name == 'pull_request'
         id: get-changed-files
         uses: actions/github-script@v7
         with:
@@ -146,12 +147,17 @@ jobs:
             return changedFiles.map(file => file.filename).join(' ');
 
       - name: Check pretty (changed files)
+        if: github.event_name == 'pull_request'
         id: check-pretty
         run: |
           CHANGED_FILES=$(echo ${{ steps.get-changed-files.outputs.result }})
           if [ -n "$CHANGED_FILES" ]; then
             pnpm prettier --check $CHANGED_FILES
           fi
+
+      - name: Check pretty (all files)
+        if: github.event_name == 'push'
+        run: pnpm prettier --check .
 
   ci-be:
     name: ci-be
