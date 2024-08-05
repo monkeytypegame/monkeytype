@@ -65,7 +65,9 @@ import {
 import { QuoteLength } from "@monkeytype/contracts/schemas/configs";
 import { Mode } from "@monkeytype/contracts/schemas/shared";
 let failReason = "";
-const koInputVisual = document.getElementById("koInputVisual") as HTMLElement;
+const koInputVisual = document.getElementById(
+  "koInputVisual asdf"
+) as HTMLElement;
 
 //
 
