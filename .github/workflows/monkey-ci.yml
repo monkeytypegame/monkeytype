@@ -171,6 +171,8 @@ jobs:
     if: needs.pre-ci.outputs.should-build-be == 'true' || needs.pre-ci.outputs.should-build-pkg == 'true'
     steps:
       - uses: actions/checkout@v4
+        sparse-checkout: |
+            backend
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -216,6 +218,8 @@ jobs:
     steps:
 
       - uses: actions/checkout@v4
+        sparse-checkout: |
+            frontend
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -264,6 +268,8 @@ jobs:
     if: needs.pre-ci.outputs.assets-json == 'true'
     steps:
       - uses: actions/checkout@v4
+        sparse-checkout: |
+            frontend
 
       - uses: dorny/paths-filter@v3
         id: filter
@@ -330,6 +336,8 @@ jobs:
     steps:
 
       - uses: actions/checkout@v4
+        sparse-checkout: |
+            packages
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -374,7 +382,6 @@ jobs:
     needs: [ci-be, ci-fe, ci-assets, ci-pkg]
     if: ${{ always() && contains(needs.*.result, 'failure') && github.ref != 'refs/heads/master' }}
     steps:
-      - uses: actions/checkout@v4
       - name: Save the PR number in an artifact
         shell: bash
         env:
