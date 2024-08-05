@@ -48,6 +48,7 @@ export function getSpaceWidth(wordElement?: HTMLElement): number {
 function getTargetPositionLeft(
   fullWidthCaret: boolean,
   isLanguageRightToLeft: boolean,
+  hiddenExtraLetter: boolean,
   activeWordElement: HTMLElement,
   currentWordNodeList: NodeListOf<Element>,
   letterWidth: number,
@@ -76,7 +77,7 @@ function getTargetPositionLeft(
       if (inputLen < wordLen && currentLetter) {
         positionOffsetToWord =
           currentLetter.offsetLeft + (fullWidthCaret ? 0 : positiveLetterWidth);
-      } else if (Config.blindMode || Config.hideExtraLetters) {
+      } else if (hiddenExtraLetter) {
         positionOffsetToWord =
           lastWordLetter.offsetLeft - (fullWidthCaret ? letterWidth : 0);
       } else {
@@ -87,7 +88,7 @@ function getTargetPositionLeft(
     } else {
       if (inputLen < wordLen && currentLetter) {
         positionOffsetToWord = currentLetter.offsetLeft;
-      } else if (Config.blindMode || Config.hideExtraLetters) {
+      } else if (hiddenExtraLetter) {
         positionOffsetToWord =
           lastWordLetter.offsetLeft + lastWordLetter.offsetWidth;
       } else {
@@ -109,7 +110,7 @@ function getTargetPositionLeft(
         let currentWordWidth = 0;
         for (let i = 0; i < inputLen; i++) {
           const letter = currentWordNodeList[i] as HTMLElement;
-          if (Config.blindMode && letter.classList.contains("extra")) continue;
+          if (hiddenExtraLetter) continue;
           currentWordWidth += $(letter).outerWidth(true) ?? 0;
         }
         if (isLanguageRightToLeft) currentWordWidth *= -1;
@@ -132,6 +133,8 @@ export async function updatePosition(noAnim = false): Promise<void> {
 
   const wordLen = TestWords.words.getCurrent().length;
   const inputLen = TestInput.input.current.length;
+  const hiddenExtraLetter =
+    (Config.blindMode || Config.hideExtraLetters) && inputLen > wordLen;
   const activeWordEl = document?.querySelector("#words .active") as HTMLElement;
   //insert temporary character so the caret will work in zen mode
   const activeWordEmpty = activeWordEl?.children.length === 0;
@@ -160,11 +163,8 @@ export async function updatePosition(noAnim = false): Promise<void> {
     currentLetter?.offsetTop ??
     previousLetter?.offsetTop ??
     lastWordLetter?.offsetTop;
-  // in blind mode extra letters have zero dimensions, but
-  // in hide extra letters they are undefined, but we are
-  // checking for hide extra letters too in case of future changes
-  if ((Config.blindMode || Config.hideExtraLetters) && inputLen > wordLen)
-    letterPosTop = lastWordLetter?.offsetTop;
+  // in blind mode, and hide extra letters, extra letters have zero dimensions
+  if (hiddenExtraLetter) letterPosTop = lastWordLetter?.offsetTop;
 
   const letterHeight =
     currentLetter?.offsetHeight ||
@@ -173,10 +173,7 @@ export async function updatePosition(noAnim = false): Promise<void> {
     Config.fontSize * Numbers.convertRemToPixels(1);
 
   let letterWidth = currentLetter?.offsetWidth || spaceWidth;
-  if (
-    currentLetter?.offsetWidth === 0 &&
-    !(Config.blindMode && inputLen > wordLen)
-  ) {
+  if (currentLetter?.offsetWidth === 0 && !hiddenExtraLetter) {
     // other than in extra letters in blind mode, it could be zero
     // if current letter is a zero-wwidth character e.g, diacritics)
     letterWidth = 0;
@@ -189,6 +186,7 @@ export async function updatePosition(noAnim = false): Promise<void> {
   const letterPosLeft = getTargetPositionLeft(
     fullWidthCaret,
     isLanguageRightToLeft,
+    hiddenExtraLetter,
     activeWordEl,
     currentWordNodeList,
     letterWidth,
