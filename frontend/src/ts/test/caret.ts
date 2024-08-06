@@ -54,7 +54,7 @@ function getTargetPositionLeft(
   wordLen: number,
   inputLen: number
 ): number {
-  const invisibleExtraLetter = Config.blindMode || Config.hideExtraLetters;
+  const invisibleExtraLetters = Config.blindMode || Config.hideExtraLetters;
   let result = 0;
 
   if (Config.tapeMode === "off") {
@@ -69,7 +69,7 @@ function getTargetPositionLeft(
 
     if (inputLen < wordLen && currentLetter) {
       positionOffsetToWord = currentLetter?.offsetLeft;
-    } else if (!invisibleExtraLetter) {
+    } else if (!invisibleExtraLetters) {
       positionOffsetToWord = lastInputLetter.offsetLeft;
       widthOffset = lastInputLetter.offsetWidth;
     } else {
@@ -94,8 +94,7 @@ function getTargetPositionLeft(
         let currentWordWidth = 0;
         for (let i = 0; i < inputLen; i++) {
           const letter = currentWordNodeList[i] as HTMLElement;
-          if ((Config.blindMode || Config.hideExtraLetters) && i >= wordLen)
-            continue;
+          if (invisibleExtraLetters && i >= wordLen) continue;
           currentWordWidth += $(letter).outerWidth(true) ?? 0;
         }
         if (isLanguageRightToLeft) currentWordWidth *= -1;
@@ -118,7 +117,7 @@ export async function updatePosition(noAnim = false): Promise<void> {
 
   const wordLen = TestWords.words.getCurrent().length;
   const inputLen = TestInput.input.current.length;
-  const invisibleExtraLetter =
+  const letterIsInvisibleExtra =
     (Config.blindMode || Config.hideExtraLetters) && inputLen > wordLen;
   const activeWordEl = document?.querySelector("#words .active") as HTMLElement;
   //insert temporary character so the caret will work in zen mode
@@ -149,7 +148,7 @@ export async function updatePosition(noAnim = false): Promise<void> {
     previousLetter?.offsetTop ??
     lastWordLetter?.offsetTop;
   // in blind mode, and hide extra letters, extra letters have zero dimensions
-  if (invisibleExtraLetter) letterPosTop = lastWordLetter?.offsetTop;
+  if (letterIsInvisibleExtra) letterPosTop = lastWordLetter?.offsetTop;
 
   const letterHeight =
     currentLetter?.offsetHeight ||
@@ -158,7 +157,7 @@ export async function updatePosition(noAnim = false): Promise<void> {
     Config.fontSize * Numbers.convertRemToPixels(1);
 
   let letterWidth = currentLetter?.offsetWidth || spaceWidth;
-  if (currentLetter?.offsetWidth === 0 && !invisibleExtraLetter) {
+  if (currentLetter?.offsetWidth === 0 && !letterIsInvisibleExtra) {
     // other than in extra letters in blind mode, it could be zero
     // if current letter is a zero-wwidth character e.g, diacritics)
     letterWidth = 0;
