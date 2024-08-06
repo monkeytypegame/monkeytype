@@ -311,6 +311,10 @@ describe("test-activity-calendar.ts", () => {
 
         expect(calendar.getMonths()).toEqual([
           {
+            text: "",
+            weeks: 1,
+          },
+          {
             text: "jun",
             weeks: 4,
           },
