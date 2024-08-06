@@ -328,8 +328,7 @@ export async function addResult(
     completedEvent.wpm > 130 &&
     completedEvent.testDuration < 122 &&
     (user.verified === false || user.verified === undefined) &&
-    user.lbOptOut !== true &&
-    user.banned !== true //no need to check again if user is already banned
+    user.lbOptOut !== true
   ) {
     if (!completedEvent.keySpacingStats || !completedEvent.keyDurationStats) {
       const status = MonkeyStatusCodes.MISSING_KEY_DATA;
