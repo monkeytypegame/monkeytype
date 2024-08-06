@@ -76,22 +76,23 @@ export async function initSnapshot(): Promise<
     ]);
 
     //these objects are explicitly handled so its ok to throw that way
+    //todo: maybe throw a custom error instead?
     if (userResponse.status !== 200) {
-      // eslint-disable-next-line @typescript-eslint/no-throw-literal
+      // eslint-disable-next-line @typescript-eslint/only-throw-error
       throw {
         message: `${userResponse.message} (user)`,
         responseCode: userResponse.status,
       };
     }
     if (configResponse.status !== 200) {
-      // eslint-disable-next-line @typescript-eslint/no-throw-literal
+      // eslint-disable-next-line @typescript-eslint/only-throw-error
       throw {
         message: `${configResponse.body.message} (config)`,
         responseCode: configResponse.status,
       };
     }
     if (presetsResponse.status !== 200) {
-      // eslint-disable-next-line @typescript-eslint/no-throw-literal
+      // eslint-disable-next-line @typescript-eslint/only-throw-error
       throw {
         message: `${presetsResponse.body.message} (presets)`,
         responseCode: presetsResponse.status,
@@ -103,7 +104,7 @@ export async function initSnapshot(): Promise<
     const presetsData = presetsResponse.body.data;
 
     if (userData === null) {
-      // eslint-disable-next-line @typescript-eslint/no-throw-literal
+      // eslint-disable-next-line @typescript-eslint/only-throw-error
       throw {
         message: "Request was successful but user data is null",
         responseCode: 200,
@@ -890,7 +891,7 @@ export async function updateLbMemory<M extends Mode>(
   api = false
 ): Promise<void> {
   if (mode === "time") {
-    const timeMode = mode as "time";
+    const timeMode = mode;
     const timeMode2 = mode2 as "15" | "60";
 
     const snapshot = getSnapshot();

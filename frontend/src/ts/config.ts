@@ -16,7 +16,7 @@ import {
   canSetConfigWithCurrentFunboxes,
   canSetFunboxWithConfig,
 } from "./test/funbox/funbox-validation";
-import { isDevEnvironment, reloadAfter } from "./utils/misc";
+import { isDevEnvironment, reloadAfter, typedKeys } from "./utils/misc";
 import * as ConfigSchemas from "@monkeytype/contracts/schemas/configs";
 import { Config } from "@monkeytype/contracts/schemas/configs";
 import { roundTo1 } from "./utils/numbers";
@@ -53,7 +53,8 @@ function saveToLocalStorage(
   const localToSaveStringified = JSON.stringify(localToSave);
   window.localStorage.setItem("config", localToSaveStringified);
   if (!noDbCheck) {
-    (configToSend[key] as typeof config[typeof key]) = config[key];
+    //@ts-expect-error this is fine
+    configToSend[key] = config[key];
     saveToDatabase();
   }
   ConfigEvent.dispatch("saveToLocalStorage", localToSaveStringified);
@@ -2193,12 +2194,13 @@ function replaceLegacyValues(
 
 export function getConfigChanges(): MonkeyTypes.PresetConfig {
   const configChanges = {} as MonkeyTypes.PresetConfig;
-  (Object.keys(config) as (keyof Config)[])
+  typedKeys(config)
     .filter((key) => {
       return config[key] !== DefaultConfig[key];
     })
     .forEach((key) => {
-      (configChanges[key] as typeof config[typeof key]) = config[key];
+      //@ts-expect-error this is fine
+      configChanges[key] = config[key];
     });
   return configChanges;
 }

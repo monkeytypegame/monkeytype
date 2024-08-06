@@ -152,7 +152,7 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
     void updateWordsInputPosition(true);
   }
   if (eventKey === "fontSize" || eventKey === "fontFamily")
-    updateHintsPosition().catch((e) => {
+    updateHintsPosition().catch((e: unknown) => {
       console.error(e);
     });
 

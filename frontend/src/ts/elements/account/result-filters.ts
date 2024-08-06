@@ -145,7 +145,7 @@ export async function load(): Promise<void> {
 
     Object.keys(defaultResultFilters.tags).forEach((tag) => {
       if (filters.tags[tag] !== undefined) {
-        newTags[tag] = filters.tags[tag] as boolean;
+        newTags[tag] = filters.tags[tag];
       } else {
         newTags[tag] = true;
       }

@@ -61,7 +61,7 @@ export function checkFunboxForcedConfigs(
         throw new Error("No intersection of forced configs");
       }
       return {
-        result: (forcedConfigs[key] ?? []).includes(value as ConfigValue),
+        result: (forcedConfigs[key] ?? []).includes(value),
         forcedConfigs: forcedConfigs[key],
       };
     }

@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unnecessary-type-parameters */
+// ignoring as it might be used in the future
 import { AppRoute, AppRouter } from "@ts-rest/core";
 import { TsRestRequest } from "@ts-rest/express";
 import { MonkeyResponse2 } from "../utils/monkey-response";

@@ -45,6 +45,7 @@ const commands: MonkeyTypes.Command[] = [
     alias: "navigate go to stats",
     icon: "fa-user",
     exec: (): void => {
+      //todo probably base this on some state instead of the dom
       $("header nav .textButton.view-account").hasClass("hidden")
         ? navigate("/login")
         : navigate("/account");

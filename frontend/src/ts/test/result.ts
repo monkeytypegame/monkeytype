@@ -777,7 +777,7 @@ export function updateRateQuote(randomQuote: MonkeyTypes.Quote | null): void {
           quoteStats?.average?.toFixed(1) ?? ""
         );
       })
-      .catch((e) => {
+      .catch((e: unknown) => {
         $(".pageTest #result #rateQuoteButton .rating").text("?");
       });
     $(".pageTest #result #rateQuoteButton")
@@ -1010,7 +1010,7 @@ export function updateTagsAfterEdit(
 
     tagIds.forEach((tag, index) => {
       if (checked.includes(tag)) return;
-      if (tagPbIds.includes(tag) as boolean) {
+      if (tagPbIds.includes(tag)) {
         html += `<div tagid="${tag}" data-balloon-pos="up">${tagNames[index]}<i class="fas fa-crown"></i></div>`;
       } else {
         html += `<div tagid="${tag}">${tagNames[index]}</div>`;
