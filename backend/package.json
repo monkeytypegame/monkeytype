@@ -47,7 +47,7 @@
     "mustache": "4.2.0",
     "node-fetch": "2.6.7",
     "nodemailer": "6.9.9",
-    "nodemon": "3.0.1",
+    "nodemon": "3.1.4",
     "object-hash": "3.0.0",
     "path": "0.12.7",
     "prom-client": "14.0.1",
