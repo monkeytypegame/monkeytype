@@ -138,7 +138,7 @@ jobs:
           sparse-checkout: |
             .prettieritnore
             .prettierrc
-            ${{ join(fromJSON(steps.get-changed-files.outputs.result), '\n') }}
+            ${{ join(fromJSON(steps.get-changed-files.outputs.result), ' ') }}
 
       - name: Checkout (all files)
         uses: actions/checkout@v4
