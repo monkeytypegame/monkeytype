@@ -134,14 +134,15 @@ jobs:
       - name: Checkout (changed files)
         uses: actions/checkout@v4
         if: github.event_name == 'pull_request'
+        env: 
+          CHANGED_FILES: |-
+            ${{ join(fromJSON(steps.get-changed-files.outputs.result),'
+            ') }}   
         with:
           sparse-checkout: |
             .prettieritnore
             .prettierrc
-            .github/workflows/monkey-ci.yml
-            backend/src/server.ts
-            frontend/static/languages/english.json
-            ${{ join(fromJSON(steps.get-changed-files.outputs.result), ' ') }}
+            ${{ env.CHANGED_FILES}}
 
       - name: Checkout (all files)
         uses: actions/checkout@v4
