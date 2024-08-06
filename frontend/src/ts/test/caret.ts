@@ -50,7 +50,7 @@ function getTargetPositionLeft(
   isLanguageRightToLeft: boolean,
   activeWordElement: HTMLElement,
   currentWordNodeList: NodeListOf<Element>,
-  letterWidth: number,
+  fullWidthCaretWidth: number,
   wordLen: number,
   inputLen: number
 ): number {
@@ -59,7 +59,6 @@ function getTargetPositionLeft(
 
   if (Config.tapeMode === "off") {
     let positionOffsetToWord = 0;
-    let widthOffset = 0;
 
     const currentLetter = currentWordNodeList[inputLen] as
       | HTMLElement
@@ -67,27 +66,38 @@ function getTargetPositionLeft(
     const lastWordLetter = currentWordNodeList[wordLen - 1] as HTMLElement;
     const lastInputLetter = currentWordNodeList[inputLen - 1] as HTMLElement;
 
-    if (inputLen < wordLen && currentLetter) {
-      positionOffsetToWord = currentLetter?.offsetLeft;
-    } else if (!invisibleExtraLetters) {
-      positionOffsetToWord = lastInputLetter.offsetLeft;
-      widthOffset = lastInputLetter.offsetWidth;
+    if (isLanguageRightToLeft) {
+      if (inputLen < wordLen && currentLetter) {
+        positionOffsetToWord =
+          currentLetter?.offsetLeft +
+          (fullWidthCaret ? 0 : fullWidthCaretWidth);
+      } else if (!invisibleExtraLetters) {
+        positionOffsetToWord =
+          lastInputLetter.offsetLeft -
+          (fullWidthCaret ? fullWidthCaretWidth : 0);
+      } else {
+        positionOffsetToWord =
+          lastWordLetter.offsetLeft -
+          (fullWidthCaret ? fullWidthCaretWidth : 0);
+      }
     } else {
-      positionOffsetToWord = lastWordLetter.offsetLeft;
-      widthOffset = lastWordLetter.offsetWidth;
+      if (inputLen < wordLen && currentLetter) {
+        positionOffsetToWord = currentLetter?.offsetLeft;
+      } else if (!invisibleExtraLetters) {
+        positionOffsetToWord =
+          lastInputLetter.offsetLeft + lastInputLetter.offsetWidth;
+      } else {
+        positionOffsetToWord =
+          lastWordLetter.offsetLeft + lastWordLetter.offsetWidth;
+      }
     }
-
-    if (isLanguageRightToLeft)
-      positionOffsetToWord += (fullWidthCaret ? 0 : letterWidth) - widthOffset;
-    else positionOffsetToWord += widthOffset;
-
     result = activeWordElement.offsetLeft + positionOffsetToWord;
   } else {
     const wordsWrapperWidth =
       $(document.querySelector("#wordsWrapper") as HTMLElement).width() ?? 0;
     result =
       wordsWrapperWidth / 2 -
-      (fullWidthCaret && isLanguageRightToLeft ? letterWidth : 0);
+      (fullWidthCaret && isLanguageRightToLeft ? fullWidthCaretWidth : 0);
 
     if (Config.tapeMode === "word" && inputLen > 0) {
       if (currentWordNodeList?.length) {
