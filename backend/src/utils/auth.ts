@@ -104,5 +104,9 @@ export async function sendForgotPasswordEmail(email: string): Promise<void> {
       });
 
     await emailQueue.sendForgotPasswordEmail(email, name, link);
-  } catch {}
+  } catch (err) {
+    if (err.errorInfo?.code !== "auth/user-not-found") {
+      throw err;
+    }
+  }
 }

@@ -376,7 +376,6 @@ describe("ApeKeyController", () => {
     });
   });
   describe("send forgot password email", () => {
-    //endpoint delegates to user controller which should be tested in the user test cases
     const sendForgotPasswordEmailMock = vi.spyOn(
       AuthUtil,
       "sendForgotPasswordEmail"
