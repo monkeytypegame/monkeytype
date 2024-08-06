@@ -17,6 +17,19 @@ const mockApp = request(app);
 const configuration = Configuration.getCachedConfiguration();
 const uid = new ObjectId().toHexString();
 
+const allModes = [
+  "10",
+  "25",
+  "50",
+  "100",
+  "15",
+  "30",
+  "60",
+  "120",
+  "zen",
+  "custom",
+];
+
 describe("Loaderboard Controller", () => {
   describe("get leaderboard", () => {
     const getLeaderboardMock = vi.spyOn(LeaderboardDal, "get");
@@ -73,7 +86,7 @@ describe("Loaderboard Controller", () => {
         "time",
         "60",
         "english",
-        0, //TODO test with postman
+        0,
         50
       );
     });
@@ -124,21 +137,12 @@ describe("Loaderboard Controller", () => {
 
     it("should get for mode2", async () => {
       getLeaderboardMock.mockResolvedValue([]);
-      for (const mode2 of [
-        "10",
-        "25",
-        "50",
-        "100",
-        "15",
-        "30",
-        "60",
-        "120",
-        "zen",
-        "custom",
-      ]) {
-        const response = await mockApp
-          .get("/leaderboards")
-          .query({ language: "english", mode: "words", mode2 });
+      for (const mode2 of allModes) {
+        const response = await mockApp.get("/leaderboards").query({
+          language: "english",
+          mode: "words",
+          mode2,
+        });
 
         expect(response.status, "for mode2 " + mode2).toEqual(200);
       }
@@ -146,15 +150,14 @@ describe("Loaderboard Controller", () => {
     it("fails for missing query", async () => {
       const { body } = await mockApp.get("/leaderboards").expect(422);
 
-      //TODO
-      /*expect(body).toEqual({
+      expect(body).toEqual({
         message: "Invalid query",
         validationErrors: [
           '"language" Required',
           '"mode" Required',
           '"mode2" Needs to be either a number, "zen" or "custom."',
         ],
-      });*/
+      });
     });
     it("fails for invalid query", async () => {
       const { body } = await mockApp
@@ -168,16 +171,16 @@ describe("Loaderboard Controller", () => {
         })
         .expect(422);
 
-      //TODO
-      /*expect(body).toEqual({
+      expect(body).toEqual({
         message: "Invalid query",
         validationErrors: [
-          '"language" Invalid',
+          '"language" Can only contain letters [a-zA-Z0-9_+]',
           `"mode" Invalid enum value. Expected 'time' | 'words' | 'quote' | 'custom' | 'zen', received 'unknownMode'`,
-          '"mode2" Needs to be either a number, "zen" or "custom."',
+          '"mode2" Needs to be a number wrapped as string, e.g. "10"',
+          '"skip" Number must be greater than or equal to 0',
+          '"limit" Number must be less than or equal to 50',
         ],
       });
-      */
     });
     it("fails for unknown query", async () => {
       const { body } = await mockApp
@@ -190,13 +193,10 @@ describe("Loaderboard Controller", () => {
         })
         .expect(422);
 
-      //TODO
-      /*
       expect(body).toEqual({
         message: "Invalid query",
         validationErrors: ["Unrecognized key(s) in object: 'extra'"],
       });
-      */
     });
     it("fails while leaderboard is updating", async () => {
       //GIVEN
@@ -300,18 +300,7 @@ describe("Loaderboard Controller", () => {
 
     it("should get for mode2", async () => {
       getLeaderboardRankMock.mockResolvedValue({} as any);
-      for (const mode2 of [
-        "10",
-        "25",
-        "50",
-        "100",
-        "15",
-        "30",
-        "60",
-        "120",
-        "zen",
-        "custom",
-      ]) {
+      for (const mode2 of allModes) {
         const response = await mockApp
           .get("/leaderboards/rank")
           .set("authorization", `Uid ${uid}`)
@@ -326,15 +315,14 @@ describe("Loaderboard Controller", () => {
         .set("authorization", `Uid ${uid}`)
         .expect(422);
 
-      //TODO
-      /*expect(body).toEqual({
-          message: "Invalid query",
-          validationErrors: [
-            '"language" Required',
-            '"mode" Required',
-            '"mode2" Needs to be either a number, "zen" or "custom."',
-          ],
-        });*/
+      expect(body).toEqual({
+        message: "Invalid query",
+        validationErrors: [
+          '"language" Required',
+          '"mode" Required',
+          '"mode2" Needs to be either a number, "zen" or "custom."',
+        ],
+      });
     });
     it("fails for invalid query", async () => {
       const { body } = await mockApp
@@ -347,16 +335,14 @@ describe("Loaderboard Controller", () => {
         .set("authorization", `Uid ${uid}`)
         .expect(422);
 
-      //TODO
-      /*expect(body).toEqual({
-          message: "Invalid query",
-          validationErrors: [
-            '"language" Invalid',
-            `"mode" Invalid enum value. Expected 'time' | 'words' | 'quote' | 'custom' | 'zen', received 'unknownMode'`,
-            '"mode2" Needs to be either a number, "zen" or "custom."',
-          ],
-        });
-        */
+      expect(body).toEqual({
+        message: "Invalid query",
+        validationErrors: [
+          '"language" Can only contain letters [a-zA-Z0-9_+]',
+          `"mode" Invalid enum value. Expected 'time' | 'words' | 'quote' | 'custom' | 'zen', received 'unknownMode'`,
+          '"mode2" Needs to be a number wrapped as string, e.g. "10"',
+        ],
+      });
     });
     it("fails for unknown query", async () => {
       const { body } = await mockApp
@@ -370,13 +356,10 @@ describe("Loaderboard Controller", () => {
         .set("authorization", `Uid ${uid}`)
         .expect(422);
 
-      //TODO
-      /*
-        expect(body).toEqual({
-          message: "Invalid query",
-          validationErrors: ["Unrecognized key(s) in object: 'extra'"],
-        });
-        */
+      expect(body).toEqual({
+        message: "Invalid query",
+        validationErrors: ["Unrecognized key(s) in object: 'extra'"],
+      });
     });
     it("fails while leaderboard is updating", async () => {
       //GIVEN
@@ -566,11 +549,10 @@ describe("Loaderboard Controller", () => {
         })
         .expect(422);
 
-      //TODO
-      /*
-      expect(body).toEqual(
-        
-      );*/
+      expect(body).toEqual({
+        message: "Invalid query",
+        validationErrors: ['"daysBefore" Invalid literal value, expected 1'],
+      });
     });
 
     it("fails if daily leaderboards are disabled", async () => {
@@ -593,18 +575,7 @@ describe("Loaderboard Controller", () => {
     });
 
     it("should get for mode2", async () => {
-      for (const mode2 of [
-        "10",
-        "25",
-        "50",
-        "100",
-        "15",
-        "30",
-        "60",
-        "120",
-        "zen",
-        "custom",
-      ]) {
+      for (const mode2 of allModes) {
         const response = await mockApp
           .get("/leaderboards/daily")
           .query({ language: "english", mode: "words", mode2 });
@@ -615,15 +586,14 @@ describe("Loaderboard Controller", () => {
     it("fails for missing query", async () => {
       const { body } = await mockApp.get("/leaderboards").expect(422);
 
-      //TODO
-      /*expect(body).toEqual({
-          message: "Invalid query",
-          validationErrors: [
-            '"language" Required',
-            '"mode" Required',
-            '"mode2" Needs to be either a number, "zen" or "custom."',
-          ],
-        });*/
+      expect(body).toEqual({
+        message: "Invalid query",
+        validationErrors: [
+          '"language" Required',
+          '"mode" Required',
+          '"mode2" Needs to be either a number, "zen" or "custom."',
+        ],
+      });
     });
     it("fails for invalid query", async () => {
       const { body } = await mockApp
@@ -635,16 +605,14 @@ describe("Loaderboard Controller", () => {
         })
         .expect(422);
 
-      //TODO
-      /*expect(body).toEqual({
-          message: "Invalid query",
-          validationErrors: [
-            '"language" Invalid',
-            `"mode" Invalid enum value. Expected 'time' | 'words' | 'quote' | 'custom' | 'zen', received 'unknownMode'`,
-            '"mode2" Needs to be either a number, "zen" or "custom."',
-          ],
-        });
-        */
+      expect(body).toEqual({
+        message: "Invalid query",
+        validationErrors: [
+          '"language" Can only contain letters [a-zA-Z0-9_+]',
+          `"mode" Invalid enum value. Expected 'time' | 'words' | 'quote' | 'custom' | 'zen', received 'unknownMode'`,
+          '"mode2" Needs to be a number wrapped as string, e.g. "10"',
+        ],
+      });
     });
     it("fails for unknown query", async () => {
       const { body } = await mockApp
@@ -657,13 +625,10 @@ describe("Loaderboard Controller", () => {
         })
         .expect(422);
 
-      //TODO
-      /*
-        expect(body).toEqual({
-          message: "Invalid query",
-          validationErrors: ["Unrecognized key(s) in object: 'extra'"],
-        });
-        */
+      expect(body).toEqual({
+        message: "Invalid query",
+        validationErrors: ["Unrecognized key(s) in object: 'extra'"],
+      });
     });
     it("fails while leaderboard is missing", async () => {
       //GIVEN
@@ -783,18 +748,7 @@ describe("Loaderboard Controller", () => {
       }
     });
     it("should get for mode2", async () => {
-      for (const mode2 of [
-        "10",
-        "25",
-        "50",
-        "100",
-        "15",
-        "30",
-        "60",
-        "120",
-        "zen",
-        "custom",
-      ]) {
+      for (const mode2 of allModes) {
         const response = await mockApp
           .get("/leaderboards/daily/rank")
           .set("authorization", `Uid ${uid}`)
@@ -809,15 +763,14 @@ describe("Loaderboard Controller", () => {
         .set("authorization", `Uid ${uid}`)
         .expect(422);
 
-      //TODO
-      /*expect(body).toEqual({
-          message: "Invalid query",
-          validationErrors: [
-            '"language" Required',
-            '"mode" Required',
-            '"mode2" Needs to be either a number, "zen" or "custom."',
-          ],
-        });*/
+      expect(body).toEqual({
+        message: "Invalid query",
+        validationErrors: [
+          '"language" Required',
+          '"mode" Required',
+          '"mode2" Needs to be either a number, "zen" or "custom."',
+        ],
+      });
     });
     it("fails for invalid query", async () => {
       const { body } = await mockApp
@@ -826,23 +779,18 @@ describe("Loaderboard Controller", () => {
           language: "en?gli.sh",
           mode: "unknownMode",
           mode2: "unknownMode2",
-          dayBefore: 2,
-          limit: 100,
-          skip: -1,
         })
         .set("authorization", `Uid ${uid}`)
         .expect(422);
 
-      //TODO
-      /*expect(body).toEqual({
-          message: "Invalid query",
-          validationErrors: [
-            '"language" Invalid',
-            `"mode" Invalid enum value. Expected 'time' | 'words' | 'quote' | 'custom' | 'zen', received 'unknownMode'`,
-            '"mode2" Needs to be either a number, "zen" or "custom."',
-          ],
-        });
-        */
+      expect(body).toEqual({
+        message: "Invalid query",
+        validationErrors: [
+          '"language" Can only contain letters [a-zA-Z0-9_+]',
+          `"mode" Invalid enum value. Expected 'time' | 'words' | 'quote' | 'custom' | 'zen', received 'unknownMode'`,
+          '"mode2" Needs to be a number wrapped as string, e.g. "10"',
+        ],
+      });
     });
     it("fails for unknown query", async () => {
       const { body } = await mockApp
@@ -856,13 +804,10 @@ describe("Loaderboard Controller", () => {
         .set("authorization", `Uid ${uid}`)
         .expect(422);
 
-      //TODO
-      /*
-        expect(body).toEqual({
-          message: "Invalid query",
-          validationErrors: ["Unrecognized key(s) in object: 'extra'"],
-        });
-        */
+      expect(body).toEqual({
+        message: "Invalid query",
+        validationErrors: ["Unrecognized key(s) in object: 'extra'"],
+      });
     });
     it("fails while leaderboard is missing", async () => {
       //GIVEN
@@ -1031,11 +976,10 @@ describe("Loaderboard Controller", () => {
         })
         .expect(422);
 
-      //TODO
-      /*
-      expect(body).toEqual(
-        
-      );*/
+      expect(body).toEqual({
+        message: "Invalid query",
+        validationErrors: ['"weeksBefore" Invalid literal value, expected 1'],
+      });
     });
     it("fails for unknown query", async () => {
       const { body } = await mockApp
@@ -1045,13 +989,10 @@ describe("Loaderboard Controller", () => {
         })
         .expect(422);
 
-      //TODO
-      /*
-        expect(body).toEqual({
-          message: "Invalid query",
-          validationErrors: ["Unrecognized key(s) in object: 'extra'"],
-        });
-        */
+      expect(body).toEqual({
+        message: "Invalid query",
+        validationErrors: ["Unrecognized key(s) in object: 'extra'"],
+      });
     });
     it("fails while leaderboard is missing", async () => {
       //GIVEN
@@ -1126,21 +1067,6 @@ describe("Loaderboard Controller", () => {
       );
     });
 
-    it("fails for unknown query", async () => {
-      const { body } = await mockApp
-        .get("/leaderboards/xp/weekly/rank")
-        .query({ extra: "value" })
-        .set("authorization", `Uid ${uid}`);
-      //TODO .expect(422);
-
-      //TODO
-      /*
-        expect(body).toEqual({
-          message: "Invalid query",
-          validationErrors: ["Unrecognized key(s) in object: 'extra'"],
-        });
-        */
-    });
     it("fails while leaderboard is missing", async () => {
       //GIVEN
       getXpWeeklyLeaderboardMock.mockReturnValue(null);
