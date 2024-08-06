@@ -198,13 +198,13 @@ declare namespace MonkeyTypes {
 
   type LeaderboardMemory = {
     time: {
-      [key in "15" | "60"]: Record<string, number>;
+      [_key in "15" | "60"]: Record<string, number>;
     };
   };
 
   type Leaderboards = {
     time: {
-      [key in 15 | 60]: import("@monkeytype/shared-types").LeaderboardEntry[];
+      [_key in 15 | 60]: import("@monkeytype/shared-types").LeaderboardEntry[];
     };
   };
 

@@ -912,10 +912,7 @@ export async function updateLbMemory<M extends Mode>(
     const current = snapshot.lbMemory?.[timeMode]?.[timeMode2]?.[language];
 
     //this is protected above so not sure why it would be undefined
-    const mem = snapshot.lbMemory[timeMode][timeMode2] as Record<
-      string,
-      number
-    >;
+    const mem = snapshot.lbMemory[timeMode][timeMode2];
     mem[language] = rank;
     if (api && current !== rank) {
       await Ape.users.updateLeaderboardMemory(mode, mode2, language, rank);
