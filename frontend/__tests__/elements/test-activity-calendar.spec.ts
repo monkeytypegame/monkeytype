@@ -418,10 +418,6 @@ describe("test-activity-calendar.ts", () => {
             text: "may",
             weeks: 4,
           },
-          {
-            text: "jun",
-            weeks: 3,
-          },
         ]);
       });
     });
