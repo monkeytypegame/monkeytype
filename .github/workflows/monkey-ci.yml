@@ -99,6 +99,7 @@ jobs:
         with:
           path: ${{ env.STORE_PATH }}
           key: ${{ runner.os }}-${{ env.NODE_VERSION }}-build-${{ env.cache-name }}-${{ hashFiles('pnpm-lock.yaml') }}
+          lookup-only: true
 
       - if: ${{ steps.cache-pnpm.outputs.cache-hit != 'true' }}
         name: Full checkout
