@@ -35,7 +35,7 @@ jobs:
     steps:
       - name: Full checkout
         uses: actions/checkout@v4
-        # For pull requests it's not necessary to checkout the code
+        # paths filter doesn't need checkout on pr
         if: github.event_name != 'pull_request'
 
       - name: Detect changes
