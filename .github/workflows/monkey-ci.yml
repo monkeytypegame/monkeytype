@@ -115,21 +115,6 @@ jobs:
     runs-on: ubuntu-latest
     if: needs.pre-ci.outputs.should-build-be == 'true' || needs.pre-ci.outputs.should-build-fe == 'true' || needs.pre-ci.outputs.should-build-pkg == 'true' || needs.pre-ci.outputs.assets-json == 'true'
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: ${{ env.PNPM_VERSION }}
-
-      - name: Install prettier
-        run: pnpm add -g prettier@2.5.1
-
       - name: Get changed files
         if: github.event_name == 'pull_request'
         id: get-changed-files
@@ -144,20 +129,32 @@ jobs:
                 pull_number: context.payload.pull_request.number,
               }
             );
-            return changedFiles.map(file => file.filename).join(' ');
+            return changedFiles.map(file => file.filename).join('\n');
 
-      - name: Check pretty (changed files)
+      - name: Checkout (changed files)
+        uses: actions/checkout@v4
         if: github.event_name == 'pull_request'
-        id: check-pretty
-        run: |
-          CHANGED_FILES=$(echo ${{ steps.get-changed-files.outputs.result }})
-          if [ -n "$CHANGED_FILES" ]; then
-            pnpm prettier --check $CHANGED_FILES
-          fi
+        with:
+          sparse-checkout: |
+            .prettieritnore
+            .prettierrc
+            ${{ steps.get-changed-files.outputs.result }}
 
-      - name: Check pretty (all files)
+      - name: Checkout (all files)
+        uses: actions/checkout@v4
         if: github.event_name == 'push'
-        run: pnpm prettier --check .
+
+      - name: list
+        run: ls -al 
+      
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Check pretty
+        id: check-pretty
+        run: npx -y prettier@2.5.1 --check .
 
   ci-be:
     name: ci-be
