@@ -153,12 +153,11 @@ export async function updatePosition(noAnim = false): Promise<void> {
   const currentLanguage = await JSONData.getCurrentLanguage(Config.language);
   const isLanguageRightToLeft = currentLanguage.rightToLeft;
 
-  let letterPosTop =
-    currentLetter?.offsetTop ??
-    previousLetter?.offsetTop ??
+  // in blind mode, and hide extra letters, extra letters have zero offsets
+  const letterPosTop =
+    currentLetter?.offsetTop ||
+    previousLetter?.offsetTop ||
     lastWordLetter?.offsetTop;
-  // in blind mode, and hide extra letters, extra letters have zero dimensions
-  if (letterIsInvisibleExtra) letterPosTop = lastWordLetter?.offsetTop;
 
   const letterHeight =
     currentLetter?.offsetHeight ||
