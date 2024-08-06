@@ -138,6 +138,9 @@ jobs:
           sparse-checkout: |
             .prettieritnore
             .prettierrc
+            .github/workflows/monkey-ci.yml
+            backend/src/server.ts
+            frontend/static/languages/english.json
             ${{ join(fromJSON(steps.get-changed-files.outputs.result), ' ') }}
 
       - name: Checkout (all files)
