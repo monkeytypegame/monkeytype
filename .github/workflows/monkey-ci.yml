@@ -33,8 +33,13 @@ jobs:
       assets-json: ${{ steps.export-changes.outputs.assets-json }}
 
     steps:
-      - uses: actions/checkout@v4
-      - uses: dorny/paths-filter@v3
+      - name: Full checkout
+        uses: actions/checkout@v4
+        # For pull requests it's not necessary to checkout the code
+        if: github.event_name != 'pull_request'
+
+      - name: Detect changes
+        uses: dorny/paths-filter@v3
         id: filter
         with:
           filters: |
