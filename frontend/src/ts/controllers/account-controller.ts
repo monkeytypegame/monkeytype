@@ -392,7 +392,9 @@ async function signInWithProvider(provider: AuthProvider): Promise<void> {
             "Account already exists, but its using a different authentication method. Try signing in with a different method";
         }
       }
-      Notifications.add(message, -1);
+      if (message !== "") {
+        Notifications.add(message, -1);
+      }
       LoginPage.hidePreloader();
       LoginPage.enableInputs();
       LoginPage.updateSignupButton();
