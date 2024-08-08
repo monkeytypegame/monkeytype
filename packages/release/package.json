@@ -9,13 +9,15 @@
   },
   "devDependencies": {
     "@monkeytype/eslint-config": "workspace:*",
-    "@octokit/rest": "21.0.1",
-    "dotenv": "16.4.5",
     "eslint": "8.57.0",
-    "nodemon": "3.1.4",
-    "readline-sync": "1.4.10"
+    "nodemon": "3.1.4"
   },
   "bin": {
     "monkeytype-release": "./src/index.js"
+  },
+  "dependencies": {
+    "@octokit/rest": "20.1.1",
+    "dotenv": "16.4.5",
+    "readline-sync": "1.4.10"
   }
 }
