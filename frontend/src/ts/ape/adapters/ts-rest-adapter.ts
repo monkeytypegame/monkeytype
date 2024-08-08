@@ -3,7 +3,6 @@ import { Method } from "axios";
 import { getIdToken } from "firebase/auth";
 import { envConfig } from "../../constants/env-config";
 import { getAuthenticatedUser, isAuthenticated } from "../../firebase";
-import { EndpointMetadata } from "@monkeytype/contracts/schemas/api";
 
 function timeoutSignal(ms: number): AbortSignal {
   const ctrl = new AbortController();
