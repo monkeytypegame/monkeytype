@@ -1,6 +1,11 @@
 #!/bin/bash
 
-source .env
+# Determine the directory of the script
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# Source the .env file from the parent directory of the script's directory
+source "$SCRIPT_DIR/../.env"
+
 echo "Deploying backend to $BE_HOST with script $BE_SCRIPT_PATH"
 
 # Connect to SSH and execute remote script
