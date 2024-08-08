@@ -1,5 +1,6 @@
 import * as MongoDbMock from "vitest-mongodb";
-export async function setup({ provide }): Promise<void> {
+export async function setup(): Promise<void> {
+  process.env.TZ = "UTC";
   await MongoDbMock.setup({
     serverOptions: {
       binary: {
