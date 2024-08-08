@@ -58,7 +58,7 @@ export const adminContract = c.router(
       summary: "test permission",
       description: "Check for admin permission for the current user",
       method: "GET",
-      path: "/",
+      path: "",
       responses: {
         200: MonkeyResponseSchema,
       },

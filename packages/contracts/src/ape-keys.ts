@@ -46,7 +46,7 @@ export const apeKeysContract = c.router(
       summary: "get ape keys",
       description: "Get ape keys of the current user.",
       method: "GET",
-      path: "/",
+      path: "",
       responses: {
         200: GetApeKeyResponseSchema,
       },
@@ -55,7 +55,7 @@ export const apeKeysContract = c.router(
       summary: "add ape key",
       description: "Add an ape key for the current user.",
       method: "POST",
-      path: "/",
+      path: "",
       body: AddApeKeyRequestSchema.strict(),
       responses: {
         200: AddApeKeyResponseSchema,
