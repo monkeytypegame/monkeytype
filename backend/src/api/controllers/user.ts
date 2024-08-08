@@ -37,6 +37,7 @@ import {
   UserProfileDetails,
 } from "@monkeytype/shared-types";
 import { addImportantLog, addLog, deleteUserLogs } from "../../dal/logs";
+import { sendForgotPasswordEmail as authSendForgotPasswordEmail } from "../../utils/auth";
 
 async function verifyCaptcha(captcha: string): Promise<void> {
   if (!(await verify(captcha))) {
@@ -159,29 +160,7 @@ export async function sendForgotPasswordEmail(
   req: MonkeyTypes.Request
 ): Promise<MonkeyResponse> {
   const { email } = req.body;
-
-  try {
-    const uid = (await FirebaseAdmin().auth().getUserByEmail(email)).uid;
-    const userInfo = await UserDAL.getPartialUser(
-      uid,
-      "request forgot password email",
-      ["name"]
-    );
-
-    const link = await FirebaseAdmin()
-      .auth()
-      .generatePasswordResetLink(email, {
-        url: isDevEnvironment()
-          ? "http://localhost:3000"
-          : "https://monkeytype.com",
-      });
-
-    await emailQueue.sendForgotPasswordEmail(email, userInfo.name, link);
-  } catch {
-    return new MonkeyResponse(
-      "Password reset request received. If the email is valid, you will receive an email shortly."
-    );
-  }
+  await authSendForgotPasswordEmail(email);
   return new MonkeyResponse(
     "Password reset request received. If the email is valid, you will receive an email shortly."
   );
