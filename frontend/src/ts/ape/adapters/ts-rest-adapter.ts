@@ -17,22 +17,17 @@ function buildApi(timeout: number): (args: ApiFetcherArgs) => Promise<{
   headers: Headers;
 }> {
   return async (request: ApiFetcherArgs) => {
-    const isPublicEndpoint =
-      (request.route.metadata as EndpointMetadata | undefined)
-        ?.authenticationOptions?.isPublic ?? false;
-
     try {
       const headers: HeadersInit = {
         ...request.headers,
         "X-Client-Version": envConfig.clientVersion,
       };
-      if (!isPublicEndpoint) {
-        const token = isAuthenticated()
-          ? await getIdToken(getAuthenticatedUser())
-          : "";
 
-        headers["Authorization"] = `Bearer ${token}`;
-      }
+      const token = isAuthenticated()
+        ? await getIdToken(getAuthenticatedUser())
+        : "";
+
+      headers["Authorization"] = `Bearer ${token}`;
 
       const fetchOptions: RequestInit = {
         method: request.method as Method,
