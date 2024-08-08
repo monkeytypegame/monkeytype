@@ -58,7 +58,7 @@
     "postcss": "8.4.31",
     "sass": "1.70.0",
     "subset-font": "2.3.0",
-    "typescript": "5.3.3",
+    "typescript": "5.5.4",
     "vite": "5.1.7",
     "vite-bundle-visualizer": "1.0.1",
     "vite-plugin-checker": "0.6.4",
@@ -95,10 +95,5 @@
     "stemmer": "2.0.1",
     "throttle-debounce": "5.0.2",
     "zod": "3.23.8"
-  },
-  "overrides": {
-    "madge": {
-      "@typescript-eslint/typescript-estree": "7.1.0"
-    }
   }
 }

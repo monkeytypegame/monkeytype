@@ -82,10 +82,10 @@ type MailResult = {
   message: string;
 };
 
-export async function sendEmail<M extends EmailType>(
+export async function sendEmail(
   templateName: EmailType,
   to: string,
-  data: EmailTaskContexts[M]
+  data: EmailTaskContexts[EmailType]
 ): Promise<MailResult> {
   if (!isInitialized()) {
     return {
