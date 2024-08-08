@@ -217,7 +217,7 @@ router.patch(
   RateLimit.userUpdateEmail,
   validateRequest({
     body: {
-      newPassword: joi.string().required(),
+      newPassword: joi.string().min(6).required(),
     },
   }),
   asyncHandler(UserController.updatePassword)

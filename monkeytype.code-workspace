@@ -38,7 +38,9 @@
       "**/dist/**": true,
       "**/public/**": true,
       "**/coverage/**": true,
-      "**/logs/**": true
+      "**/logs/**": true,
+      "**/.firebase/**": true,
+      "**/.turbo/**": true
     },
     "editor.defaultFormatter": "esbenp.prettier-vscode",
     "editor.formatOnSaveMode": "file",
