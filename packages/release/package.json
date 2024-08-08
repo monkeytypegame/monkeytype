@@ -1,0 +1,23 @@
+{
+  "name": "@monkeytype/release",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "nodemon --watch src --exec 'node ./src/index.js --dry'",
+    "dev-changelog": "nodemon ./src/buildChangelog.js",
+    "lint": "eslint \"./**/*.js\""
+  },
+  "devDependencies": {
+    "@monkeytype/eslint-config": "workspace:*",
+    "eslint": "8.57.0",
+    "nodemon": "3.1.4"
+  },
+  "bin": {
+    "monkeytype-release": "./src/index.js"
+  },
+  "dependencies": {
+    "@octokit/rest": "20.1.1",
+    "dotenv": "16.4.5",
+    "readline-sync": "1.4.10"
+  }
+}

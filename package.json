@@ -29,11 +29,11 @@
     "start-fe": "turbo run start --filter @monkeytype/frontend",
     "docker": "cd backend && docker compose up",
     "audit-fe": "cd frontend && npm run audit",
-    "release": "node ./bin/release.mjs",
-    "release-fe": "node ./bin/release.mjs --fe",
-    "release-be": "node ./bin/release.mjs --be",
-    "release-no-deploy": "node ./bin/release.mjs --no-deploy",
-    "release-dry": "node ./bin/release.mjs --dry",
+    "release": "monkeytype-release",
+    "release-fe": "monkeytype-release --fe",
+    "release-be": "monkeytype-release --be",
+    "release-no-deploy": "monkeytype-release --no-deploy",
+    "release-dry": "monkeytype-release --dry",
     "hotfix": "npm run build-fe && cd frontend && npm run deploy-live && cd .. && sh ./bin/purgeCfCache.sh",
     "pretty-check": "prettier --check .",
     "pretty-check-be": "prettier --check ./backend",
@@ -54,6 +54,7 @@
     "node": "20.16.0"
   },
   "devDependencies": {
+    "@monkeytype/release": "workspace:*",
     "@commitlint/cli": "17.7.1",
     "@commitlint/config-conventional": "17.7.0",
     "conventional-changelog": "4.0.0",
@@ -68,7 +69,6 @@
     "lint-staged": "13.2.3",
     "only-allow": "1.2.1",
     "prettier": "2.5.1",
-    "readline-sync": "1.4.10",
     "turbo": "2.0.9",
     "typescript": "5.5.4",
     "wait-for-localhost-cli": "3.2.0"
