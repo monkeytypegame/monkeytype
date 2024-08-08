@@ -6,7 +6,7 @@ describe("AdminUidsDal", () => {
     it("should return true for existing admin user", async () => {
       //GIVEN
       const uid = new ObjectId().toHexString();
-      AdminUidsDal.getCollection().insertOne({
+      await AdminUidsDal.getCollection().insertOne({
         _id: new ObjectId(),
         uid: uid,
       });
@@ -17,7 +17,7 @@ describe("AdminUidsDal", () => {
 
     it("should return false for non-existing admin user", async () => {
       //GIVEN
-      AdminUidsDal.getCollection().insertOne({
+      await AdminUidsDal.getCollection().insertOne({
         _id: new ObjectId(),
         uid: "admin",
       });

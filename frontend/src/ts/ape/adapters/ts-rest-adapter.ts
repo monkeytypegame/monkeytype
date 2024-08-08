@@ -3,7 +3,6 @@ import { Method } from "axios";
 import { getIdToken } from "firebase/auth";
 import { envConfig } from "../../constants/env-config";
 import { getAuthenticatedUser, isAuthenticated } from "../../firebase";
-import { EndpointMetadata } from "@monkeytype/contracts/schemas/api";
 
 function timeoutSignal(ms: number): AbortSignal {
   const ctrl = new AbortController();
@@ -17,20 +16,14 @@ function buildApi(timeout: number): (args: ApiFetcherArgs) => Promise<{
   headers: Headers;
 }> {
   return async (request: ApiFetcherArgs) => {
-    const isPublicEndpoint =
-      (request.route.metadata as EndpointMetadata | undefined)
-        ?.authenticationOptions?.isPublic ?? false;
-
     try {
       const headers: HeadersInit = {
         ...request.headers,
         "X-Client-Version": envConfig.clientVersion,
       };
-      if (!isPublicEndpoint) {
-        const token = isAuthenticated()
-          ? await getIdToken(getAuthenticatedUser())
-          : "";
 
+      if (isAuthenticated()) {
+        const token = await getIdToken(getAuthenticatedUser());
         headers["Authorization"] = `Bearer ${token}`;
       }
 

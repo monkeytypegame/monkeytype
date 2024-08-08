@@ -1,5 +1,11 @@
 #!/bin/bash
-source .env
+
+# Determine the directory of the script
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# Source the .env file from the parent directory of the script's directory
+source "$SCRIPT_DIR/../.env"
+
 echo "Purging Cloudflare cache for zone $CF_ZONE_ID"
 response=$(curl -s -X POST "https://api.cloudflare.com/client/v4/zones/$CF_ZONE_ID/purge_cache" \
      -H "Authorization: Bearer $CF_API_KEY" \

@@ -1,4 +1,3 @@
-import conventionalChangelog from "conventional-changelog";
 import { exec } from "child_process";
 
 // const stream = conventionalChangelog(
@@ -41,7 +40,7 @@ async function getLog() {
   return new Promise((resolve, reject) => {
     exec(
       `git log --oneline $(git describe --tags --abbrev=0 @^)..@ --pretty="format:${lineDelimiter}%H${logDelimiter}%h${logDelimiter}%s${logDelimiter}%b"`,
-      (err, stdout, stderr) => {
+      (err, stdout, _stderr) => {
         if (err) {
           reject(err);
         }
@@ -250,7 +249,7 @@ function convertStringToLog(logString) {
 
     //split message using regex based on fix(language): spelling mistakes in Nepali wordlist and quotes (sapradhan) (#4528)
     //scope is optional, username is optional, pr number is optional
-    const [__, type, scope, message, message2, message3] = title.split(
+    const [_, type, scope, message, message2, message3] = title.split(
       /^(\w+)(?:\(([^)]+)\))?:\s+(.+?)\s*(?:\(([^)]+)\))?(?:\s+\(([^)]+)\))?(?:\s+\(([^)]+)\))?$/
     );
 

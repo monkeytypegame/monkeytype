@@ -34,7 +34,7 @@ export const presetsContract = c.router(
       summary: "get presets",
       description: "Get presets of the current user.",
       method: "GET",
-      path: "/",
+      path: "",
       responses: {
         200: GetPresetResponseSchema,
       },
@@ -43,7 +43,7 @@ export const presetsContract = c.router(
       summary: "add preset",
       description: "Add a new preset for the current user.",
       method: "POST",
-      path: "/",
+      path: "",
       body: AddPresetRequestSchema.strict(),
       responses: {
         200: AddPresetResponseSchemna,
@@ -53,7 +53,7 @@ export const presetsContract = c.router(
       summary: "update preset",
       description: "Update an existing preset for the current user.",
       method: "PATCH",
-      path: "/",
+      path: "",
       body: PresetSchema.strict(),
       responses: {
         200: MonkeyResponseSchema,
