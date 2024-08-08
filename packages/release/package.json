@@ -15,7 +15,8 @@
   },
   "bin": {
     "monkeytype-release": "./src/index.js",
-    "monkeytype-purge": "./bin/purgeCfCache.sh"
+    "monkeytype-purge": "./bin/purgeCfCache.sh",
+    "monkeytype-deploy-be": "./bin/deployBackend.sh"
   },
   "dependencies": {
     "@octokit/rest": "20.1.1",
