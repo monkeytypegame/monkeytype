@@ -1004,12 +1004,12 @@ export async function updateInbox(
 
               const xpGain = rewards
                 .filter((it) => it.type === "xp")
-                .map((it) => it.item as number)
+                .map((it) => it.item)
                 .reduce((s, a) => s + a, 0);
 
               const badgesToClaim = rewards
                 .filter((it) => it.type === "badge")
-                .map((it) => it.item as Badge);
+                .map((it) => it.item);
 
               if (inventory === null)
                 inventory = {

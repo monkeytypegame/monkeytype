@@ -47,13 +47,13 @@ const API_ROUTE_MAP = {
   "/public": publicStats,
   "/leaderboards": leaderboards,
   "/quotes": quotes,
-  "/admin": admin,
   "/webhooks": webhooks,
   "/docs": docs,
 };
 
 const s = initServer();
 const router = s.router(contract, {
+  admin,
   apeKeys,
   configs,
   presets,

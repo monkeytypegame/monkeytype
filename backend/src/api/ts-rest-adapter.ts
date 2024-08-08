@@ -7,6 +7,8 @@ export function callController<
   TBody,
   TParams,
   TResponse,
+  //ignoring as it might be used in the future
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-parameters
   TStatus = 200
 >(
   handler: Handler<TQuery, TBody, TParams, TResponse>
