@@ -6,6 +6,7 @@ import Page from "./page";
 import { updateFooterAndVerticalAds } from "../controllers/ad-controller";
 import * as ModesNotice from "../elements/modes-notice";
 import * as Keymap from "../elements/keymap";
+import * as ScreenReaderPrompt from "../elements/screen-reader-prompt";
 import * as TestConfig from "../test/test-config";
 
 export const page = new Page({
@@ -32,5 +33,6 @@ export const page = new Page({
     void TestConfig.instantUpdate();
     void Funbox.activate();
     void Keymap.refresh();
+    void ScreenReaderPrompt.initialize();
   },
 });

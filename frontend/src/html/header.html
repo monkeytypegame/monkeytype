@@ -1,5 +1,5 @@
 <header>
-  <a id="logo" href="/" router-link>
+  <a id="logo" href="/" aria-label="Go to homepage" router-link>
     <div class="icon">
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -51,6 +51,7 @@
       onclick="this.blur();"
       router-link
       title="start test"
+      aria-label="Start typing test"
     >
       <div class="icon">
         <i class="fas fa-fw fa-keyboard"></i>
@@ -60,6 +61,7 @@
       class="textButton leaderboards view-leaderboards"
       onclick="this.blur();"
       title="leaderboard"
+      aria-label="Leaderboard"
     >
       <div class="icon">
         <i class="fas fa-fw fa-crown"></i>
@@ -71,6 +73,7 @@
       onclick="this.blur();"
       router-link
       title="about"
+      aria-label="About"
     >
       <div class="icon">
         <i class="fas fa-fw fa-info"></i>
@@ -93,6 +96,7 @@
       onclick="this.blur();"
       router-link
       title="settings"
+      aria-label="Settings"
     >
       <div class="icon">
         <i class="fas fa-fw fa-cog"></i>
@@ -104,6 +108,7 @@
       href="/account"
       onclick="this.blur();"
       router-link
+      aria-label="Your account"
     >
       <div class="loading hidden">
         <i class="fas fa-fw fa-spin fa-circle-notch"></i>
@@ -123,14 +128,14 @@
       </div>
     </a>
     <button class="text showAlerts" onclick="this.blur();">
-      <div class="icon">
+      <div class="icon" aria-label="Notifications">
         <i class="fas fa-fw fa-bell"></i>
       </div>
       <div class="notificationBubble hidden">5</div>
     </button>
     <button class="text signInOut" onclick="this.blur();">
       <div class="icon">
-        <i class="fas fa-fw fa-sign-in-alt"></i>
+        <i class="fas fa-fw fa-sign-in-alt" aria-label="Sign in"></i>
       </div>
     </button>
   </nav>

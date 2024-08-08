@@ -31,6 +31,7 @@ import * as Hangul from "hangul-js";
 import * as CustomTextState from "../states/custom-text-name";
 import * as FunboxList from "../test/funbox/funbox-list";
 import * as KeymapEvent from "../observables/keymap-event";
+import * as ScreenReaderPromptEvent from "../observables/screen-reader-prompt-event";
 import { IgnoredKeys } from "../constants/ignored-keys";
 import { ModifierKeys } from "../constants/modifier-keys";
 import { navigate } from "./route-controller";
@@ -57,6 +58,12 @@ function setWordsInput(value: string): void {
 function updateUI(): void {
   const acc: number = Numbers.roundTo2(TestStats.calculateAccuracy());
   if (!isNaN(acc)) LiveAcc.update(acc);
+
+  // Prompt screen reader users to press the next key
+  void ScreenReaderPromptEvent.prompt(
+    TestWords.words.getCurrent(),
+    TestInput.input.current.length
+  );
 
   if (Config.keymapMode === "next" && Config.mode !== "zen") {
     if (!Config.language.startsWith("korean")) {
