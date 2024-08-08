@@ -79,9 +79,7 @@ function updateUI(): void {
       );
       const inputGroupLength: number = koCurrInput.length - 1;
       if (koCurrInput[inputGroupLength]) {
-        const inputCharLength: number = (
-          koCurrInput[inputGroupLength] as string[]
-        ).length;
+        const inputCharLength: number = koCurrInput[inputGroupLength].length;
         //at the end of the word, it will throw a (reading '0') this will be the space
         try {
           //if it overflows and returns undefined (e.g input [ㄱ,ㅏ,ㄷ]),

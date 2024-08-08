@@ -45,6 +45,7 @@ import {
 import * as ConnectionState from "../states/connection";
 import { navigate } from "./route-controller";
 import { getHtmlByUserFlags } from "./user-flag-controller";
+import { FirebaseError } from "firebase/app";
 
 export const gmailProvider = new GoogleAuthProvider();
 export const githubProvider = new GithubAuthProvider();
@@ -85,30 +86,33 @@ async function getDataAndInit(): Promise<boolean> {
     await LoadingPage.showBar();
     await DB.initSnapshot();
   } catch (error) {
-    const e = error as { message: string; responseCode: number };
+    console.error(error);
     AccountButton.loading(false);
-    if (e.responseCode === 429) {
-      Notifications.add(
-        "Doing so will save you bandwidth, make the next test be ready faster and will not sign you out (which could mean your new personal best would not save to your account).",
-        0,
-        {
-          duration: 0,
-        }
-      );
-      Notifications.add(
-        "You will run into this error if you refresh the website to restart the test. It is NOT recommended to do that. Instead, use tab + enter or just tab (with quick tab mode enabled) to restart the test.",
-        0,
-        {
-          duration: 0,
-        }
-      );
-    }
-    const msg = e.message || "Unknown error";
-    Notifications.add("Failed to get user data: " + msg, -1);
-    console.error(e);
-
     LoginPage.enableInputs();
     $("header nav .account").css("opacity", 1);
+    if (error instanceof DB.SnapshotInitError) {
+      if (error.responseCode === 429) {
+        Notifications.add(
+          "Doing so will save you bandwidth, make the next test be ready faster and will not sign you out (which could mean your new personal best would not save to your account).",
+          0,
+          {
+            duration: 0,
+          }
+        );
+        Notifications.add(
+          "You will run into this error if you refresh the website to restart the test. It is NOT recommended to do that. Instead, use tab + enter or just tab (with quick tab mode enabled) to restart the test.",
+          0,
+          {
+            duration: 0,
+          }
+        );
+      }
+
+      Notifications.add("Failed to get user data: " + error.message, -1);
+    } else {
+      const message = Misc.createErrorMessage(error, "Failed to get user data");
+      Notifications.add(message, -1);
+    }
     return false;
   }
   if (ActivePage.get() === "loading") {
@@ -138,7 +142,7 @@ async function getDataAndInit(): Promise<boolean> {
       // filters = defaultResultFilters;
       void ResultFilters.load();
     })
-    .catch((e) => {
+    .catch((e: unknown) => {
       console.log(
         Misc.createErrorMessage(
           e,
@@ -300,19 +304,24 @@ export async function signIn(email: string, password: string): Promise<void> {
     .then(async (e) => {
       await loadUser(e.user);
     })
-    .catch(function (error) {
+    .catch(function (error: unknown) {
       console.error(error);
-      let message = error.message;
-      if (error.code === "auth/wrong-password") {
-        message = "Incorrect password";
-      } else if (error.code === "auth/user-not-found") {
-        message = "User not found";
-      } else if (error.code === "auth/invalid-email") {
-        message =
-          "Invalid email format (make sure you are using your email to login - not your username)";
-      } else if (error.code === "auth/invalid-credential") {
-        message =
-          "Email/password is incorrect or your account does not have password authentication enabled.";
+      let message = Misc.createErrorMessage(
+        error,
+        "Failed to sign in with email and password"
+      );
+      if (error instanceof FirebaseError) {
+        if (error.code === "auth/wrong-password") {
+          message = "Incorrect password";
+        } else if (error.code === "auth/user-not-found") {
+          message = "User not found";
+        } else if (error.code === "auth/invalid-email") {
+          message =
+            "Invalid email format (make sure you are using your email to login - not your username)";
+        } else if (error.code === "auth/invalid-credential") {
+          message =
+            "Email/password is incorrect or your account does not have password authentication enabled.";
+        }
       }
       Notifications.add(message, -1);
       LoginPage.hidePreloader();
@@ -354,32 +363,37 @@ async function signInWithProvider(provider: AuthProvider): Promise<void> {
         await loadUser(signedInUser.user);
       }
     })
-    .catch((error) => {
+    .catch((error: unknown) => {
       console.log(error);
-      let message = error.message;
-      if (error.code === "auth/wrong-password") {
-        message = "Incorrect password";
-      } else if (error.code === "auth/user-not-found") {
-        message = "User not found";
-      } else if (error.code === "auth/invalid-email") {
-        message =
-          "Invalid email format (make sure you are using your email to login - not your username)";
-      } else if (error.code === "auth/popup-closed-by-user") {
-        message = "";
-        // message = "Popup closed by user";
-        // return;
-      } else if (error.code === "auth/popup-blocked") {
-        message =
-          "Sign in popup was blocked by the browser. Check the address bar for a blocked popup icon, or update your browser settings to allow popups.";
-      } else if (error.code === "auth/user-cancelled") {
-        message = "";
-        // message = "User refused to sign in";
-        // return;
-      } else if (
-        error.code === "auth/account-exists-with-different-credential"
-      ) {
-        message =
-          "Account already exists, but its using a different authentication method. Try signing in with a different method";
+      let message = Misc.createErrorMessage(
+        error,
+        "Failed to sign in with popup"
+      );
+      if (error instanceof FirebaseError) {
+        if (error.code === "auth/wrong-password") {
+          message = "Incorrect password";
+        } else if (error.code === "auth/user-not-found") {
+          message = "User not found";
+        } else if (error.code === "auth/invalid-email") {
+          message =
+            "Invalid email format (make sure you are using your email to login - not your username)";
+        } else if (error.code === "auth/popup-closed-by-user") {
+          message = "";
+          // message = "Popup closed by user";
+          // return;
+        } else if (error.code === "auth/popup-blocked") {
+          message =
+            "Sign in popup was blocked by the browser. Check the address bar for a blocked popup icon, or update your browser settings to allow popups.";
+        } else if (error.code === "auth/user-cancelled") {
+          message = "";
+          // message = "User refused to sign in";
+          // return;
+        } else if (
+          error.code === "auth/account-exists-with-different-credential"
+        ) {
+          message =
+            "Account already exists, but its using a different authentication method. Try signing in with a different method";
+        }
       }
       if (message !== "") {
         Notifications.add(message, -1);
@@ -430,12 +444,13 @@ async function addAuthProvider(
       Notifications.add(`${providerName} authentication added`, 1);
       Settings.updateAuthSections();
     })
-    .catch(function (error) {
+    .catch(function (error: unknown) {
       Loader.hide();
-      Notifications.add(
-        `Failed to add ${providerName} authentication: ` + error.message,
-        -1
+      const message = Misc.createErrorMessage(
+        error,
+        `Failed to add ${providerName} authentication`
       );
+      Notifications.add(message, -1);
     });
 }
 
@@ -461,8 +476,9 @@ export function signOut(): void {
         hideFavoriteQuoteLength();
       }, 125);
     })
-    .catch(function (error) {
-      Notifications.add(error.message, -1);
+    .catch(function (error: unknown) {
+      const message = Misc.createErrorMessage(error, `Failed to sign out`);
+      Notifications.add(message, -1);
     });
 }
 

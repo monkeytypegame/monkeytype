@@ -157,9 +157,7 @@ export class TestActivityCalendar implements MonkeyTypes.TestActivityCalendar {
   }
 
   private getBuckets(): number[] {
-    const filtered = this.data.filter(
-      (it) => it !== null && it !== undefined
-    ) as number[];
+    const filtered = this.data.filter((it) => it !== null && it !== undefined);
     const sorted = filtered.sort((a, b) => a - b);
 
     const trimmed = sorted.slice(

@@ -56,8 +56,6 @@
   "devDependencies": {
     "@commitlint/cli": "17.7.1",
     "@commitlint/config-conventional": "17.7.0",
-    "@typescript-eslint/eslint-plugin": "7.1.0",
-    "@typescript-eslint/parser": "7.1.0",
     "conventional-changelog": "4.0.0",
     "eslint": "8.57.0",
     "eslint-config-prettier": "9.0.0",
@@ -72,7 +70,7 @@
     "prettier": "2.5.1",
     "readline-sync": "1.4.10",
     "turbo": "2.0.9",
-    "typescript": "5.3.3",
+    "typescript": "5.5.4",
     "wait-for-localhost-cli": "3.2.0"
   },
   "lint-staged": {

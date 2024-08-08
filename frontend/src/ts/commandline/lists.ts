@@ -110,7 +110,7 @@ layoutsPromise
     updateLayoutsCommands(layouts);
     updateKeymapLayoutsCommands(layouts);
   })
-  .catch((e) => {
+  .catch((e: unknown) => {
     console.error(
       Misc.createErrorMessage(e, "Failed to update layouts commands")
     );
@@ -121,7 +121,7 @@ languagesPromise
   .then((languages) => {
     updateLanguagesCommands(languages);
   })
-  .catch((e) => {
+  .catch((e: unknown) => {
     console.error(
       Misc.createErrorMessage(e, "Failed to update language commands")
     );
@@ -137,7 +137,7 @@ funboxPromise
       };
     }
   })
-  .catch((e) => {
+  .catch((e: unknown) => {
     console.error(
       Misc.createErrorMessage(e, "Failed to update funbox commands")
     );
@@ -148,7 +148,7 @@ fontsPromise
   .then((fonts) => {
     updateFontFamilyCommands(fonts);
   })
-  .catch((e) => {
+  .catch((e: unknown) => {
     console.error(
       Misc.createErrorMessage(e, "Failed to update fonts commands")
     );
@@ -159,7 +159,7 @@ themesPromise
   .then((themes) => {
     updateThemesCommands(themes);
   })
-  .catch((e) => {
+  .catch((e: unknown) => {
     console.error(
       Misc.createErrorMessage(e, "Failed to update themes commands")
     );
@@ -170,7 +170,7 @@ challengesPromise
   .then((challenges) => {
     updateLoadChallengeCommands(challenges);
   })
-  .catch((e) => {
+  .catch((e: unknown) => {
     console.error(
       Misc.createErrorMessage(e, "Failed to update challenges commands")
     );
@@ -432,7 +432,7 @@ export const commands: MonkeyTypes.CommandsSubgroup = {
           .then(() => {
             Notifications.add("Copied to clipboard", 1);
           })
-          .catch((e) => {
+          .catch((e: unknown) => {
             Notifications.add("Failed to copy to clipboard: " + e, -1);
           });
       },

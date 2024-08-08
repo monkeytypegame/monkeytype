@@ -44,7 +44,7 @@ export function checkFunboxForcedConfigs(
             forcedConfigs[key] = fb.forcedConfig[key] as ConfigValue[];
           } else {
             forcedConfigs[key] = Arrays.intersect(
-              forcedConfigs[key] as ConfigValue[],
+              forcedConfigs[key],
               fb.forcedConfig[key] as ConfigValue[],
               true
             );
@@ -61,7 +61,7 @@ export function checkFunboxForcedConfigs(
         throw new Error("No intersection of forced configs");
       }
       return {
-        result: (forcedConfigs[key] ?? []).includes(value as ConfigValue),
+        result: (forcedConfigs[key] ?? []).includes(value),
         forcedConfigs: forcedConfigs[key],
       };
     }
@@ -303,7 +303,7 @@ export function areFunboxesCompatible(
       if (allowedConfig[key]) {
         if (
           Arrays.intersect(
-            allowedConfig[key] as ConfigValue[],
+            allowedConfig[key],
             f.forcedConfig[key] as ConfigValue[],
             true
           ).length === 0

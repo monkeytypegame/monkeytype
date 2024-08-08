@@ -20,7 +20,7 @@
     "eslint": "8.57.0",
     "madge": "6.1.0",
     "rimraf": "6.0.1",
-    "typescript": "5.5.3"
+    "typescript": "5.5.4"
   },
   "exports": {
     ".": {
