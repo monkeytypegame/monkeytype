@@ -1,5 +1,4 @@
 import Leaderboards from "./leaderboards";
-import Psas from "./psas";
 import Quotes from "./quotes";
 import Results from "./results";
 import Users from "./users";
@@ -9,7 +8,6 @@ import Dev from "./dev";
 
 export default {
   Leaderboards,
-  Psas,
   Public,
   Quotes,
   Results,

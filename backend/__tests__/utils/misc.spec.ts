@@ -649,5 +649,8 @@ describe("Misc Utils", () => {
         },
       ]);
     });
+    it("handles undefined", () => {
+      expect(misc.replaceObjectIds(undefined as any)).toBeUndefined();
+    });
   });
 });
