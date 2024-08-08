@@ -204,7 +204,9 @@ declare namespace MonkeyTypes {
 
   type Leaderboards = {
     time: {
-      [_key in 15 | 60]: import("@monkeytype/shared-types").LeaderboardEntry[];
+      [_key in
+        | 15
+        | 60]: import("@monkeytype/contracts/schemas/leaderboards").LeaderboardEntry[];
     };
   };
 

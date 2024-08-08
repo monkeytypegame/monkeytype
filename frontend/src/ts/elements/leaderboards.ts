@@ -17,7 +17,7 @@ import Format from "../utils/format";
 // @ts-expect-error TODO: update slim-select
 import SlimSelect from "slim-select";
 import { getHtmlByUserFlags } from "../controllers/user-flag-controller";
-import { LeaderboardEntry } from "@monkeytype/shared-types";
+import { LeaderboardEntry } from "@monkeytype/contracts/schemas/leaderboards";
 
 const wrapperId = "leaderboardsWrapper";
 

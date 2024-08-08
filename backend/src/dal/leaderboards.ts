@@ -4,9 +4,13 @@ import { performance } from "perf_hooks";
 import { setLeaderboard } from "../utils/prometheus";
 import { isDevEnvironment } from "../utils/misc";
 import { getCachedConfiguration } from "../init/configuration";
-import { LeaderboardEntry } from "@monkeytype/shared-types";
+
 import { addLog } from "./logs";
 import { Collection } from "mongodb";
+import {
+  LeaderboardEntry,
+  LeaderboardRank,
+} from "@monkeytype/contracts/schemas/leaderboards";
 
 export type DBLeaderboardEntry = LeaderboardEntry & {
   _id: ObjectId;
@@ -56,18 +60,12 @@ export async function get(
   }
 }
 
-type GetRankResponse = {
-  count: number;
-  rank: number | null;
-  entry: DBLeaderboardEntry | null;
-};
-
 export async function getRank(
   mode: string,
   mode2: string,
   language: string,
   uid: string
-): Promise<GetRankResponse | false> {
+): Promise<LeaderboardRank | false> {
   try {
     const entry = await getCollection({ language, mode, mode2 }).findOne({
       uid,
@@ -80,8 +78,8 @@ export async function getRank(
 
     return {
       count,
-      rank: entry ? entry.rank : null,
-      entry,
+      rank: entry?.rank,
+      entry: entry !== null ? entry : undefined,
     };
   } catch (e) {
     if (e.error === 175) {

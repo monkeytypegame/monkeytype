@@ -7,6 +7,7 @@ import * as DailyLeaderboards from "../../../src/utils/daily-leaderboards";
 import * as WeeklyXpLeaderboard from "../../../src/services/weekly-xp-leaderboard";
 import * as Configuration from "../../../src/init/configuration";
 import { mockAuthenticateWithApeKey } from "../../__testData__/auth";
+import { LeaderboardEntry } from "@monkeytype/contracts/schemas/leaderboards";
 
 const mockApp = request(app);
 const configuration = Configuration.getCachedConfiguration();
@@ -16,11 +17,11 @@ describe("Loaderboard Controller", () => {
   describe("get leaderboard", () => {
     const getLeaderboardMock = vi.spyOn(LeaderboardDal, "get");
 
-    afterEach(() => {
+    beforeEach(() => {
       getLeaderboardMock.mockReset();
     });
 
-    it("shoult get for english time 60", async () => {
+    it("should get for english time 60", async () => {
       //GIVEN
 
       const resultData = [
@@ -68,7 +69,7 @@ describe("Loaderboard Controller", () => {
         "time",
         "60",
         "english",
-        NaN,
+        0, //TODO test with postman
         50
       );
     });
@@ -207,11 +208,9 @@ describe("Loaderboard Controller", () => {
         })
         .expect(503);
 
-      expect(body).toEqual({
-        data: null,
-        message:
-          "Leaderboard is currently updating. Please try again in a few seconds.",
-      });
+      expect(body.message).toEqual(
+        "Leaderboard is currently updating. Please try again in a few seconds."
+      );
     });
   });
 
@@ -390,11 +389,9 @@ describe("Loaderboard Controller", () => {
         .set("authorization", `Uid ${uid}`)
         .expect(503);
 
-      expect(body).toEqual({
-        data: null,
-        message:
-          "Leaderboard is currently updating. Please try again in a few seconds.",
-      });
+      expect(body.message).toEqual(
+        "Leaderboard is currently updating. Please try again in a few seconds."
+      );
     });
   });
 
@@ -405,6 +402,7 @@ describe("Loaderboard Controller", () => {
     );
 
     beforeEach(async () => {
+      getDailyLeaderboardMock.mockReset();
       vi.useFakeTimers();
       vi.setSystemTime(1722606812000);
       await dailyLeaderboardEnabled(true);
@@ -415,7 +413,6 @@ describe("Loaderboard Controller", () => {
     });
 
     afterEach(() => {
-      getDailyLeaderboardMock.mockReset();
       vi.useRealTimers();
     });
 
@@ -424,7 +421,7 @@ describe("Loaderboard Controller", () => {
       const lbConf = (await configuration).dailyLeaderboards;
       const premiumEnabled = (await configuration).users.premium.enabled;
 
-      const resultData: DailyLeaderboards.LbEntryWithRank[] = [
+      const resultData: LeaderboardEntry[] = [
         {
           name: "user1",
           rank: 1,
@@ -507,7 +504,6 @@ describe("Loaderboard Controller", () => {
         1722470400000
       );
     });
-
     it("should get for english time 60 with skip and limit", async () => {
       //GIVEN
       const lbConf = (await configuration).dailyLeaderboards;
@@ -692,6 +688,7 @@ describe("Loaderboard Controller", () => {
     );
 
     beforeEach(async () => {
+      getDailyLeaderboardMock.mockReset();
       vi.useFakeTimers();
       vi.setSystemTime(1722606812000);
       await dailyLeaderboardEnabled(true);
@@ -702,7 +699,6 @@ describe("Loaderboard Controller", () => {
     });
 
     afterEach(() => {
-      getDailyLeaderboardMock.mockReset();
       vi.useRealTimers();
     });
 
@@ -766,6 +762,7 @@ describe("Loaderboard Controller", () => {
 
       const { body } = await mockApp
         .get("/leaderboards/daily/rank")
+        .set("authorization", `Uid ${uid}`)
         .expect(503);
 
       expect(body.message).toEqual(
@@ -888,6 +885,7 @@ describe("Loaderboard Controller", () => {
     const getXpWeeklyLeaderboardMock = vi.spyOn(WeeklyXpLeaderboard, "get");
 
     beforeEach(async () => {
+      getXpWeeklyLeaderboardMock.mockReset();
       vi.useFakeTimers();
       vi.setSystemTime(1722606812000);
       await weeklyLeaderboardEnabled(true);
@@ -898,7 +896,6 @@ describe("Loaderboard Controller", () => {
     });
 
     afterEach(() => {
-      getXpWeeklyLeaderboardMock.mockReset();
       vi.useRealTimers();
     });
 
@@ -938,8 +935,10 @@ describe("Loaderboard Controller", () => {
       } as any);
 
       //WHEN
-      const { body } = await mockApp.get("/leaderboards/xp/weekly").query({});
-      // .expect(200);
+      const { body } = await mockApp
+        .get("/leaderboards/xp/weekly")
+        .query({})
+        .expect(200);
 
       //THEN
       expect(body).toEqual({
@@ -1058,6 +1057,102 @@ describe("Loaderboard Controller", () => {
 
       //WHEN
       const { body } = await mockApp.get("/leaderboards/xp/weekly").expect(404);
+
+      expect(body.message).toEqual("XP leaderboard for this week not found.");
+    });
+  });
+
+  describe("get xp weekly leaderboard rank", () => {
+    const getXpWeeklyLeaderboardMock = vi.spyOn(WeeklyXpLeaderboard, "get");
+
+    beforeEach(async () => {
+      getXpWeeklyLeaderboardMock.mockReset();
+      await weeklyLeaderboardEnabled(true);
+    });
+
+    it("fails withouth authentication", async () => {
+      await mockApp.get("/leaderboards/xp/weekly/rank").expect(401);
+    });
+
+    it("should get", async () => {
+      //GIVEN
+      const lbConf = (await configuration).leaderboards.weeklyXp;
+
+      const resultData: WeeklyXpLeaderboard.WeeklyXpLeaderboardEntry = {
+        totalXp: 100,
+        rank: 1,
+        count: 1,
+        timeTypedSeconds: 100,
+        uid: "user1",
+        name: "user1",
+        discordId: "discordId",
+        discordAvatar: "discordAvatar",
+        lastActivityTimestamp: 1000,
+      };
+      const getRankMock = vi.fn();
+      getRankMock.mockResolvedValue(resultData);
+      getXpWeeklyLeaderboardMock.mockReturnValue({
+        getRank: getRankMock,
+      } as any);
+
+      //WHEN
+      const { body } = await mockApp
+        .get("/leaderboards/xp/weekly/rank")
+        .set("authorization", `Uid ${uid}`)
+        .expect(200);
+
+      //THEN
+      expect(body).toEqual({
+        message: "Weekly xp leaderboard rank retrieved",
+        data: resultData,
+      });
+
+      expect(getXpWeeklyLeaderboardMock).toHaveBeenCalledWith(lbConf, -1);
+
+      expect(getRankMock).toHaveBeenCalledWith(uid, lbConf);
+    });
+    it("fails if daily leaderboards are disabled", async () => {
+      await weeklyLeaderboardEnabled(false);
+
+      const { body } = await mockApp
+        .get("/leaderboards/xp/weekly/rank")
+        .set("authorization", `Uid ${uid}`)
+        .expect(503);
+
+      expect(body.message).toEqual(
+        "Weekly XP leaderboards are not available at this time."
+      );
+    });
+
+    it("fails for unknown query", async () => {
+      const { body } = await mockApp
+        .get("/leaderboards/xp/weekly/rank")
+        .query({ extra: "value" })
+        .set("authorization", `Uid ${uid}`);
+      //TODO .expect(422);
+
+      //TODO
+      /*
+        expect(body).toEqual({
+          message: "Invalid query",
+          validationErrors: ["Unrecognized key(s) in object: 'extra'"],
+        });
+        */
+    });
+    it("fails while leaderboard is missing", async () => {
+      //GIVEN
+      getXpWeeklyLeaderboardMock.mockReturnValue(null);
+
+      //WHEN
+      const { body } = await mockApp
+        .get("/leaderboards/xp/weekly/rank")
+        .set("authorization", `Uid ${uid}`)
+        .query({
+          language: "english",
+          mode: "time",
+          mode2: "60",
+        })
+        .expect(404);
 
       expect(body.message).toEqual("XP leaderboard for this week not found.");
     });

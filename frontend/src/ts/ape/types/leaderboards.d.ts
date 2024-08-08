@@ -20,6 +20,8 @@ declare namespace Ape.Leaderboards {
     minWpm: number;
     count: number;
     rank: number | null;
-    entry: import("@monkeytype/shared-types").LeaderboardEntry | null;
+    entry:
+      | import("@monkeytype/contracts/schemas/leaderboards").LeaderboardEntry
+      | null;
   };
 }
