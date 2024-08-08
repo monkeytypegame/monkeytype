@@ -22,11 +22,10 @@ function buildApi(timeout: number): (args: ApiFetcherArgs) => Promise<{
         "X-Client-Version": envConfig.clientVersion,
       };
 
-      const token = isAuthenticated()
-        ? await getIdToken(getAuthenticatedUser())
-        : "";
-
-      headers["Authorization"] = `Bearer ${token}`;
+      if (isAuthenticated()) {
+        const token = await getIdToken(getAuthenticatedUser());
+        headers["Authorization"] = `Bearer ${token}`;
+      }
 
       const fetchOptions: RequestInit = {
         method: request.method as Method,
