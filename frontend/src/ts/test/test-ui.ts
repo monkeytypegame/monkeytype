@@ -1027,26 +1027,32 @@ export async function lineJump(currentTop: number): Promise<void> {
 
     const toHide: HTMLElement[] = [];
     const words = document.getElementById("words") as HTMLElement;
-    const wordElements = words.querySelectorAll("word");
+    const wordElements = words.querySelectorAll(".word");
+
     for (let i = 0; i < currentWordElementIndex; i++) {
-      const el = $(wordElements[i] as HTMLElement);
-      if (el.hasClass("hidden")) continue;
-      const forWordTop = Math.floor((el[0] as HTMLElement).offsetTop);
+      const el = wordElements[i] as HTMLElement;
+      if (el.classList.contains("hidden")) continue;
       if (
-        forWordTop <
+        Math.floor(el.offsetTop) <
         (Config.tapeMode === "off" ? hideBound - 10 : hideBound + 10)
       ) {
         toHide.push(wordElements[i] as HTMLElement);
       }
     }
-    const wordHeight = $(
-      document.querySelector(".word") as Element
-    ).outerHeight(true) as number;
+
+    const wordHeight = $(wordElements[0] as HTMLElement).outerHeight(
+      true
+    ) as number;
+    const paceCaretElement = document.querySelector(
+      "#paceCaret"
+    ) as HTMLElement;
+
     if (Config.smoothLineScroll && toHide.length > 0) {
       lineTransition = true;
       const smoothScroller = $("#words .smoothScroller");
       if (smoothScroller.length === 0) {
-        $("#words").prepend(
+        words.insertAdjacentHTML(
+          "afterbegin",
           `<div class="smoothScroller" style="position: fixed;height:${wordHeight}px;width:100%"></div>`
         );
       } else {
@@ -1070,9 +1076,7 @@ export async function lineJump(currentTop: number): Promise<void> {
         .stop(true, false)
         .animate(
           {
-            top:
-              (document.querySelector("#paceCaret") as HTMLElement)?.offsetTop -
-              wordHeight,
+            top: paceCaretElement?.offsetTop - wordHeight,
           },
           SlowTimer.get() ? 0 : 125
         );
@@ -1086,7 +1090,7 @@ export async function lineJump(currentTop: number): Promise<void> {
         const isLanguageRTL = currentLang.rightToLeft;
 
         const wordsWrapperWidth = (
-          document.querySelector("#wordsWrapper") as HTMLElement
+          document.getElementById("wordsWrapper") as HTMLElement
         ).offsetWidth;
         let newMargin = wordsWrapperWidth / 2;
         if (isLanguageRTL)
@@ -1100,23 +1104,20 @@ export async function lineJump(currentTop: number): Promise<void> {
         .stop(true, false)
         .animate(newCss, SlowTimer.get() ? 0 : 125, () => {
           currentLinesAnimating = 0;
-          activeWordTop = (
-            document.querySelector("#words .active") as HTMLElement
-          ).offsetTop;
+          activeWordTop = (words.querySelector(".active") as HTMLElement)
+            .offsetTop;
 
           currentWordElementIndex -= toHide.length;
           lineTransition = false;
           toHide.forEach((el) => el.remove());
-          $("#words").css("marginTop", "0");
+          words.style.marginTop = "0";
         });
     } else {
       toHide.forEach((el) => el.remove());
       currentWordElementIndex -= toHide.length;
-      $("#paceCaret").css({
-        top:
-          (document.querySelector("#paceCaret") as HTMLElement).offsetTop -
-          wordHeight,
-      });
+      paceCaretElement.style.top = `${
+        paceCaretElement.offsetTop - wordHeight
+      }px`;
     }
   }
   currentTestLine++;
