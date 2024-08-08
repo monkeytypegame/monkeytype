@@ -1,0 +1,25 @@
+{
+  "name": "@monkeytype/release",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "nodemon --watch src --exec 'npm run release-dry'",
+    "release": "node ./src/index.js",
+    "release-fe": "node ./src/index.js --fe",
+    "release-be": "node ./src/index.js --be",
+    "release-no-deploy": "node ./src/index.js --no-deploy",
+    "release-dry": "node ./src/index.js --dry",
+    "lint": "eslint \"./**/*.js\""
+  },
+  "devDependencies": {
+    "@monkeytype/eslint-config": "workspace:*",
+    "eslint": "8.57.0"
+  },
+  "bin": {
+    "monkeytype-release": "./src/index.js"
+  },
+  "dependencies": {
+    "nodemon": "3.1.4",
+    "readline-sync": "1.4.10"
+  }
+}

@@ -1,12 +1,10 @@
 import { execSync } from "child_process";
 import { Octokit } from "@octokit/rest";
 import dotenv from "dotenv";
-import { readFileSync } from "fs";
+import fs, { readFileSync } from "fs";
 import readlineSync from "readline-sync";
-import path from "path";
-import fs from "fs";
+import path, { dirname } from "path";
 import { fileURLToPath } from "url";
-import { dirname } from "path";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -65,8 +63,12 @@ const checkBranchSync = () => {
 
 const getCurrentVersion = () => {
   console.log("Getting current version...");
-  const packageJson = JSON.parse(readFileSync("./package.json", "utf-8"));
-  return packageJson.version;
+
+  const rootPackageJson = JSON.parse(
+    readFileSync(path.resolve(__dirname, "../../../package.json"), "utf-8")
+  );
+
+  return rootPackageJson.version;
 };
 
 const incrementVersion = (currentVersion) => {
@@ -155,7 +157,9 @@ const purgeCache = () => {
 const generateChangelog = async () => {
   console.log("Generating changelog...");
 
-  const changelog = runCommand("node bin/buildChangelog.mjs", true);
+  const p = path.resolve(__dirname, "./buildChangelog.js");
+
+  const changelog = runCommand(`node ${p}`, true);
 
   return changelog;
 };

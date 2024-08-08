@@ -14,6 +14,9 @@ importers:
       '@commitlint/config-conventional':
         specifier: 17.7.0
         version: 17.7.0
+      '@monkeytype/release':
+        specifier: workspace:*
+        version: link:packages/release
       conventional-changelog:
         specifier: 4.0.0
         version: 4.0.0
@@ -50,9 +53,6 @@ importers:
       prettier:
         specifier: 2.5.1
         version: 2.5.1
-      readline-sync:
-        specifier: 1.4.10
-        version: 1.4.10
       turbo:
         specifier: 2.0.9
         version: 2.0.9
@@ -524,6 +524,22 @@ importers:
       eslint-config-prettier:
         specifier: 9.1.0
         version: 9.1.0(eslint@8.57.0)
+
+  packages/release:
+    dependencies:
+      nodemon:
+        specifier: 3.1.4
+        version: 3.1.4
+      readline-sync:
+        specifier: 1.4.10
+        version: 1.4.10
+    devDependencies:
+      '@monkeytype/eslint-config':
+        specifier: workspace:*
+        version: link:../eslint-config
+      eslint:
+        specifier: 8.57.0
+        version: 8.57.0
 
   packages/shared-types:
     dependencies:

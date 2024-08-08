@@ -31,6 +31,14 @@ module.exports = {
     "no-duplicate-imports": ["error"],
     "no-constant-condition": ["error"],
     "no-constant-binary-expression": "error",
+    "no-unused-vars": [
+      "warn",
+      {
+        argsIgnorePattern: "^(_|e|event)",
+        caughtErrorsIgnorePattern: "^(_|e|error)",
+        varsIgnorePattern: "^_",
+      },
+    ],
     "import/no-duplicates": "off",
     "import/no-unresolved": [
       "error",
