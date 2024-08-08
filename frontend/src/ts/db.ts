@@ -26,6 +26,14 @@ import {
 
 let dbSnapshot: MonkeyTypes.Snapshot | undefined;
 
+export class SnapshotInitError extends Error {
+  constructor(message: string, public responseCode: number) {
+    super(message);
+    this.name = "SnapshotInitError";
+    this.responseCode = responseCode;
+  }
+}
+
 export function getSnapshot(): MonkeyTypes.Snapshot | undefined {
   return dbSnapshot;
 }
@@ -75,28 +83,23 @@ export async function initSnapshot(): Promise<
       Ape.presets.get(),
     ]);
 
-    //these objects are explicitly handled so its ok to throw that way
-    //todo: maybe throw a custom error instead?
     if (userResponse.status !== 200) {
-      // eslint-disable-next-line @typescript-eslint/only-throw-error
-      throw {
-        message: `${userResponse.message} (user)`,
-        responseCode: userResponse.status,
-      };
+      throw new SnapshotInitError(
+        `${userResponse.message} (user)`,
+        userResponse.status
+      );
     }
     if (configResponse.status !== 200) {
-      // eslint-disable-next-line @typescript-eslint/only-throw-error
-      throw {
-        message: `${configResponse.body.message} (config)`,
-        responseCode: configResponse.status,
-      };
+      throw new SnapshotInitError(
+        `${configResponse.body.message} (config)`,
+        configResponse.status
+      );
     }
     if (presetsResponse.status !== 200) {
-      // eslint-disable-next-line @typescript-eslint/only-throw-error
-      throw {
-        message: `${presetsResponse.body.message} (presets)`,
-        responseCode: presetsResponse.status,
-      };
+      throw new SnapshotInitError(
+        `${presetsResponse.body.message} (presets)`,
+        presetsResponse.status
+      );
     }
 
     const userData = userResponse.data;
@@ -104,11 +107,10 @@ export async function initSnapshot(): Promise<
     const presetsData = presetsResponse.body.data;
 
     if (userData === null) {
-      // eslint-disable-next-line @typescript-eslint/only-throw-error
-      throw {
-        message: "Request was successful but user data is null",
-        responseCode: 200,
-      };
+      throw new SnapshotInitError(
+        `Request was successful but user data is null`,
+        200
+      );
     }
 
     if (configData !== null && "config" in configData) {

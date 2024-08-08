@@ -86,30 +86,33 @@ async function getDataAndInit(): Promise<boolean> {
     await LoadingPage.showBar();
     await DB.initSnapshot();
   } catch (error) {
-    const e = error as { message: string; responseCode: number };
+    console.error(error);
     AccountButton.loading(false);
-    if (e.responseCode === 429) {
-      Notifications.add(
-        "Doing so will save you bandwidth, make the next test be ready faster and will not sign you out (which could mean your new personal best would not save to your account).",
-        0,
-        {
-          duration: 0,
-        }
-      );
-      Notifications.add(
-        "You will run into this error if you refresh the website to restart the test. It is NOT recommended to do that. Instead, use tab + enter or just tab (with quick tab mode enabled) to restart the test.",
-        0,
-        {
-          duration: 0,
-        }
-      );
-    }
-    const msg = e.message || "Unknown error";
-    Notifications.add("Failed to get user data: " + msg, -1);
-    console.error(e);
-
     LoginPage.enableInputs();
     $("header nav .account").css("opacity", 1);
+    if (error instanceof DB.SnapshotInitError) {
+      if (error.responseCode === 429) {
+        Notifications.add(
+          "Doing so will save you bandwidth, make the next test be ready faster and will not sign you out (which could mean your new personal best would not save to your account).",
+          0,
+          {
+            duration: 0,
+          }
+        );
+        Notifications.add(
+          "You will run into this error if you refresh the website to restart the test. It is NOT recommended to do that. Instead, use tab + enter or just tab (with quick tab mode enabled) to restart the test.",
+          0,
+          {
+            duration: 0,
+          }
+        );
+      }
+
+      Notifications.add("Failed to get user data: " + error.message, -1);
+    } else {
+      const message = Misc.createErrorMessage(error, "Failed to get user data");
+      Notifications.add(message, -1);
+    }
     return false;
   }
   if (ActivePage.get() === "loading") {
