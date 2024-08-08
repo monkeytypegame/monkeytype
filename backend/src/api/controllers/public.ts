@@ -9,7 +9,6 @@ import { MonkeyResponse2 } from "../../utils/monkey-response";
 export async function getSpeedHistogram(
   req: MonkeyTypes.Request2<GetSpeedHistogramQuery>
 ): Promise<GetSpeedHistogramResponse> {
-  console.log("get speed", { q: req.query });
   const { language, mode, mode2 } = req.query;
   const data = await PublicDAL.getSpeedHistogram(language, mode, mode2);
   return new MonkeyResponse2("Public speed histogram retrieved", data);

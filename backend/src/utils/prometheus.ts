@@ -105,7 +105,7 @@ export function incrementResult(res: Result<Mode>): void {
     punctuation,
   } = res;
 
-  let m2 = mode2 as string;
+  let m2 = mode2;
   if (mode === "time" && !["15", "30", "60", "120"].includes(mode2)) {
     m2 = "custom";
   }

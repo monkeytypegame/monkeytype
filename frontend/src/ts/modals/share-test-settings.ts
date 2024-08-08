@@ -43,7 +43,7 @@ function updateURL(): void {
   }
 
   if (getCheckboxValue("mode2")) {
-    settings[1] = getMode2(Config, currentQuote) as Mode2<Mode>;
+    settings[1] = getMode2(Config, currentQuote);
   }
 
   if (getCheckboxValue("customText")) {
