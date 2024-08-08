@@ -5,11 +5,6 @@
   "scripts": {
     "dev": "nodemon --watch src --exec 'node ./src/index.js --dry'",
     "dev-changelog": "nodemon ./src/buildChangelog.js",
-    "release": "node ./src/index.js",
-    "release-fe": "node ./src/index.js --fe",
-    "release-be": "node ./src/index.js --be",
-    "release-no-deploy": "node ./src/index.js --no-deploy",
-    "release-dry": "node ./src/index.js --dry",
     "lint": "eslint \"./**/*.js\""
   },
   "devDependencies": {
