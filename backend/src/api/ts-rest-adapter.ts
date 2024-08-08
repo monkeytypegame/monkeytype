@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unnecessary-type-parameters */
-// ignoring as it might be used in the future
 import { AppRoute, AppRouter } from "@ts-rest/core";
 import { TsRestRequest } from "@ts-rest/express";
 import { MonkeyResponse2 } from "../utils/monkey-response";
@@ -9,6 +7,8 @@ export function callController<
   TBody,
   TParams,
   TResponse,
+  //ignoring as it might be used in the future
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-parameters
   TStatus = 200
 >(
   handler: Handler<TQuery, TBody, TParams, TResponse>
