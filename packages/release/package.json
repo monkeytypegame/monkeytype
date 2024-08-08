@@ -4,6 +4,7 @@
   "type": "module",
   "scripts": {
     "dev": "nodemon --watch src --exec 'npm run release-dry'",
+    "dev-changelog": "nodemon ./src/buildChangelog.js",
     "release": "node ./src/index.js",
     "release-fe": "node ./src/index.js --fe",
     "release-be": "node ./src/index.js --be",
