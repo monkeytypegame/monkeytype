@@ -40,8 +40,18 @@ import { addImportantLog, addLog, deleteUserLogs } from "../../dal/logs";
 import { sendForgotPasswordEmail as authSendForgotPasswordEmail } from "../../utils/auth";
 
 async function verifyCaptcha(captcha: string): Promise<void> {
-  if (!(await verify(captcha))) {
-    throw new MonkeyError(422, "Captcha check failed");
+  let verified = false;
+  try {
+    verified = await verify(captcha);
+  } catch (e) {
+    //fetch to recaptcha api can sometimes fail
+    throw new MonkeyError(
+      422,
+      "Request to the Captcha API failed, please try again later"
+    );
+  }
+  if (!verified) {
+    throw new MonkeyError(422, "Captcha challenge failed");
   }
 }
 
