@@ -331,5 +331,6 @@ export function replaceObjectId<T extends { _id: ObjectId }>(
 export function replaceObjectIds<T extends { _id: ObjectId }>(
   data: T[]
 ): (T & { _id: string })[] {
+  if (data === undefined) return data;
   return data.map((it) => replaceObjectId(it));
 }

@@ -301,14 +301,6 @@ export type ResultFilters = {
   } & Record<string, boolean>;
 };
 
-export type PSA = {
-  _id: string;
-  message: string;
-  sticky?: boolean;
-  level?: number;
-  date?: number;
-};
-
 export type SpeedHistogram = {
   [key: string]: number;
 };
