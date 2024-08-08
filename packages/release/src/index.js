@@ -16,6 +16,9 @@ const isFrontend = args.includes("--fe");
 const noDeploy = args.includes("--no-deploy");
 const isBackend = args.includes("--be");
 const isDryRun = args.includes("--dry");
+const noSyncCheck = args.includes("--no-sync-check");
+
+const PROJECT_ROOT = path.resolve(__dirname, "../../../");
 
 const runCommand = (command, force) => {
   if (isDryRun && !force) {
@@ -33,19 +36,41 @@ const runCommand = (command, force) => {
   }
 };
 
+const runProjectRootCommand = (command, force) => {
+  if (isDryRun && !force) {
+    console.log(`[Dry Run] Command: ${command}`);
+    return "[Dry Run] Command executed.";
+  } else {
+    try {
+      const output = execSync(`cd ${PROJECT_ROOT} && ${command}`, {
+        stdio: "pipe",
+      }).toString();
+      return output;
+    } catch (error) {
+      console.error(`Error executing command ${command}`);
+      console.error(error);
+      process.exit(1);
+    }
+  }
+};
+
 const checkBranchSync = () => {
   console.log("Checking if local master branch is in sync with origin...");
 
-  if (isDryRun) {
+  if (noSyncCheck) {
+    console.log("Skipping sync check.");
+  } else if (isDryRun) {
     console.log("[Dry Run] Checking sync...");
   } else {
     try {
       // Fetch the latest changes from the remote repository
-      runCommand("git fetch origin");
+      runProjectRootCommand("git fetch origin");
 
       // Get the commit hashes of the local and remote master branches
-      const localMaster = runCommand("git rev-parse master").trim();
-      const remoteMaster = runCommand("git rev-parse origin/master").trim();
+      const localMaster = runProjectRootCommand("git rev-parse master").trim();
+      const remoteMaster = runProjectRootCommand(
+        "git rev-parse origin/master"
+      ).trim();
 
       if (localMaster !== remoteMaster) {
         console.error(
@@ -65,7 +90,7 @@ const getCurrentVersion = () => {
   console.log("Getting current version...");
 
   const rootPackageJson = JSON.parse(
-    readFileSync(path.resolve(__dirname, "../../../package.json"), "utf-8")
+    readFileSync(`${PROJECT_ROOT}/package.json`, "utf-8")
   );
 
   return rootPackageJson.version;
@@ -136,7 +161,7 @@ const buildProject = () => {
     filter = "--filter @monkeytype/backend";
   }
 
-  runCommand("npx turbo lint test validate-json build " + filter);
+  runProjectRootCommand("npx turbo lint test validate-json build " + filter);
 };
 
 const deployBackend = () => {
@@ -146,7 +171,9 @@ const deployBackend = () => {
 
 const deployFrontend = () => {
   console.log("Deploying frontend...");
-  runCommand("cd frontend && npx firebase deploy -P live --only hosting");
+  runProjectRootCommand(
+    "cd frontend && npx firebase deploy -P live --only hosting"
+  );
 };
 
 const purgeCache = () => {
