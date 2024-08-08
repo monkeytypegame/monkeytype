@@ -150,7 +150,7 @@ jobs:
                 pull_number: context.payload.pull_request.number,
               }
             );
-            return changedFiles.map(file => file.filename).join(' ');
+            return changedFiles.filter(file=> file.status !== "removed").map(file => file.filename).join(' ');
 
       - name: Check pretty (changed files)
         if: github.event_name == 'pull_request'
