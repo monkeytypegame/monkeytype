@@ -17,7 +17,7 @@ export const psasContract = c.router(
       summary: "get psas",
       description: "Get list of public service announcements",
       method: "GET",
-      path: "/",
+      path: "",
       responses: {
         200: GetPsaResponseSchema,
       },
