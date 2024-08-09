@@ -179,7 +179,7 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
     if (eventValue === "off") {
       $("#words").css("margin-left", "unset");
     } else {
-      scrollTape();
+      void scrollTape();
     }
   }
 
@@ -271,7 +271,7 @@ export function updateActiveElement(
     void updateWordsInputPosition();
   }
   if (Config.tapeMode !== "off") {
-    scrollTape();
+    void scrollTape();
   }
 }
 
@@ -449,6 +449,13 @@ export async function updateWordsInputPosition(initial = false): Promise<void> {
   //   (document.querySelector("#wordsWrapper") as HTMLElement | null)
   //     ?.offsetTop ?? 0;
 
+  if (isLanguageRTL) {
+    el.style.left =
+      activeWord.offsetLeft - el.offsetWidth + activeWord.offsetWidth + "px";
+  } else {
+    el.style.left = activeWord.offsetLeft + "px";
+  }
+
   if (Config.tapeMode !== "off") {
     el.style.top =
       // wordsWrapperTop +
@@ -456,15 +463,7 @@ export async function updateWordsInputPosition(initial = false): Promise<void> {
       activeWordMargin * 0.25 +
       -el.offsetHeight +
       "px";
-    el.style.left = activeWord.offsetLeft + "px";
     return;
-  }
-
-  if (isLanguageRTL) {
-    el.style.left =
-      activeWord.offsetLeft - el.offsetWidth + activeWord.offsetWidth + "px";
-  } else {
-    el.style.left = activeWord.offsetLeft + "px";
   }
 
   if (
@@ -558,7 +557,7 @@ function updateWordsHeight(force = false): void {
 
     if (Config.tapeMode !== "off") {
       $("#words").width("200vw");
-      scrollTape();
+      void scrollTape();
     } else {
       $("#words").css({ marginLeft: "unset", width: "" });
     }
@@ -921,57 +920,73 @@ export async function updateWordElement(inputOverride?: string): Promise<void> {
 
   if (newlineafter) $("#words").append("<div class='newline'></div>");
   if (Config.tapeMode !== "off") {
-    scrollTape();
+    void scrollTape();
   }
 }
 
-export function scrollTape(): void {
+export async function scrollTape(): Promise<void> {
+  const currentLang = await JSONData.getCurrentLanguage(Config.language);
+  const isLanguageRTL = currentLang.rightToLeft;
+
   const wordsWrapperWidth = (
-    document.querySelector("#wordsWrapper") as HTMLElement
+    document.getElementById("wordsWrapper") as HTMLElement
   ).offsetWidth;
+  const words = document.getElementById("words") as HTMLElement;
+  const wordElements = words.querySelectorAll(".word");
+
   let fullWordsWidth = 0;
-  const toHide: JQuery[] = [];
   let widthToHide = 0;
-  if (currentWordElementIndex > 0) {
-    for (let i = 0; i < currentWordElementIndex; i++) {
-      const word = document.querySelectorAll("#words .word")[i] as HTMLElement;
-      fullWordsWidth += $(word).outerWidth(true) ?? 0;
-      const forWordLeft = Math.floor(word.offsetLeft);
-      const forWordWidth = Math.floor(word.offsetWidth);
-      if (forWordLeft < 0 - forWordWidth) {
-        const toPush = $($("#words .word")[i] as HTMLElement);
-        toHide.push(toPush);
-        widthToHide += toPush.outerWidth(true) ?? 0;
-      }
-    }
-    if (toHide.length > 0) {
-      currentWordElementIndex -= toHide.length;
-      toHide.forEach((e) => e.remove());
-      fullWordsWidth -= widthToHide;
-      const currentMargin = parseInt($("#words").css("margin-left"), 10);
-      $("#words").css("margin-left", `${currentMargin + widthToHide}px`);
+  const toHide: HTMLElement[] = [];
+
+  for (let i = 0; i < currentWordElementIndex; i++) {
+    const word = wordElements[i] as HTMLElement;
+    const wordOuterWidth = $(word).outerWidth(true) ?? 0;
+    fullWordsWidth += wordOuterWidth;
+    const forWordLeft = Math.floor(word.offsetLeft);
+    const forWordWidth = Math.floor(word.offsetWidth);
+    if (
+      (!isLanguageRTL && forWordLeft < 0 - forWordWidth) ||
+      (isLanguageRTL && forWordLeft > wordsWrapperWidth)
+    ) {
+      toHide.push(word);
+      widthToHide += wordOuterWidth;
     }
   }
   let currentWordWidth = 0;
-  if (Config.tapeMode === "letter") {
-    if (TestInput.input.current.length > 0) {
-      const words = document.querySelectorAll("#words .word");
-      const letters =
-        words[currentWordElementIndex]?.querySelectorAll("letter");
-      if (!letters) return;
-      for (let i = 0; i < TestInput.input.current.length; i++) {
-        const letter = letters[i] as HTMLElement;
-        if (
-          (Config.blindMode || Config.hideExtraLetters) &&
-          letter.classList.contains("extra")
-        ) {
-          continue;
-        }
-        currentWordWidth += $(letter).outerWidth(true) ?? 0;
+  if (Config.tapeMode === "letter" && TestInput.input.current.length > 0) {
+    const letters =
+      wordElements[currentWordElementIndex]?.querySelectorAll("letter");
+    if (!letters) return;
+    let lastPositiveLetterWidth = 0;
+    for (let i = 0; i < TestInput.input.current.length; i++) {
+      const letter = letters[i] as HTMLElement;
+      if (
+        (Config.blindMode || Config.hideExtraLetters) &&
+        letter.classList.contains("extra")
+      ) {
+        continue;
       }
+      const letterOuterWidth = $(letter).outerWidth(true) ?? 0;
+      currentWordWidth += letterOuterWidth;
+      if (letterOuterWidth > 0) lastPositiveLetterWidth = letterOuterWidth;
     }
+    // if current letter has zero width move the tape to previous positive width letter
+    if (
+      $(letters[TestInput.input.current.length] as Element).outerWidth(true) ===
+      0
+    )
+      currentWordWidth -= lastPositiveLetterWidth;
   }
-  const newMargin = wordsWrapperWidth / 2 - (fullWordsWidth + currentWordWidth);
+
+  let newMargin = wordsWrapperWidth / 2;
+  if (isLanguageRTL)
+    newMargin +=
+      fullWordsWidth +
+      currentWordWidth -
+      words.offsetWidth +
+      (Caret.getSpaceWidth(wordElements[0] as HTMLElement) ?? 0);
+  else newMargin -= fullWordsWidth + currentWordWidth;
+
   if (Config.smoothLineScroll) {
     $("#words")
       .stop(true, false)
@@ -979,10 +994,20 @@ export function scrollTape(): void {
         {
           marginLeft: newMargin,
         },
-        SlowTimer.get() ? 0 : 125
+        {
+          duration: SlowTimer.get() ? 0 : 125,
+          complete: () => {
+            if (!toHide.length) return;
+            currentWordElementIndex -= toHide.length;
+            toHide.forEach((e) => e.remove());
+            fullWordsWidth -= widthToHide;
+            if (isLanguageRTL) widthToHide *= -1;
+            words.style.marginLeft = `${newMargin + widthToHide}px`;
+          },
+        }
       );
   } else {
-    $("#words").css("margin-left", `${newMargin}px`);
+    words.style.marginLeft = `${newMargin}px`;
   }
 }
 
@@ -1002,7 +1027,7 @@ export function updatePremid(): void {
 
 let currentLinesAnimating = 0;
 
-export function lineJump(currentTop: number): void {
+export async function lineJump(currentTop: number): Promise<void> {
   //last word of the line
   if (
     (Config.tapeMode === "off" && currentTestLine > 0) ||
@@ -1010,27 +1035,34 @@ export function lineJump(currentTop: number): void {
   ) {
     const hideBound = currentTop;
 
-    const toHide: JQuery[] = [];
-    const wordElements = $("#words .word");
+    const toHide: HTMLElement[] = [];
+    const words = document.getElementById("words") as HTMLElement;
+    const wordElements = words.querySelectorAll(".word");
+
     for (let i = 0; i < currentWordElementIndex; i++) {
-      const el = $(wordElements[i] as HTMLElement);
-      if (el.hasClass("hidden")) continue;
-      const forWordTop = Math.floor((el[0] as HTMLElement).offsetTop);
+      const el = wordElements[i] as HTMLElement;
+      if (el.classList.contains("hidden")) continue;
       if (
-        forWordTop <
+        Math.floor(el.offsetTop) <
         (Config.tapeMode === "off" ? hideBound - 10 : hideBound + 10)
       ) {
-        toHide.push($($("#words .word")[i] as HTMLElement));
+        toHide.push(wordElements[i] as HTMLElement);
       }
     }
-    const wordHeight = $(
-      document.querySelector(".word") as Element
-    ).outerHeight(true) as number;
+
+    const wordHeight = $(wordElements[0] as HTMLElement).outerHeight(
+      true
+    ) as number;
+    const paceCaretElement = document.querySelector(
+      "#paceCaret"
+    ) as HTMLElement;
+
     if (Config.smoothLineScroll && toHide.length > 0) {
       lineTransition = true;
       const smoothScroller = $("#words .smoothScroller");
       if (smoothScroller.length === 0) {
-        $("#words").prepend(
+        words.insertAdjacentHTML(
+          "afterbegin",
           `<div class="smoothScroller" style="position: fixed;height:${wordHeight}px;width:100%"></div>`
         );
       } else {
@@ -1054,9 +1086,7 @@ export function lineJump(currentTop: number): void {
         .stop(true, false)
         .animate(
           {
-            top:
-              (document.querySelector("#paceCaret") as HTMLElement)?.offsetTop -
-              wordHeight,
+            top: paceCaretElement?.offsetTop - wordHeight,
           },
           SlowTimer.get() ? 0 : 125
         );
@@ -1066,10 +1096,17 @@ export function lineJump(currentTop: number): void {
       };
 
       if (Config.tapeMode !== "off") {
+        const currentLang = await JSONData.getCurrentLanguage(Config.language);
+        const isLanguageRTL = currentLang.rightToLeft;
+
         const wordsWrapperWidth = (
-          document.querySelector("#wordsWrapper") as HTMLElement
+          document.getElementById("wordsWrapper") as HTMLElement
         ).offsetWidth;
-        const newMargin = wordsWrapperWidth / 2;
+        let newMargin = wordsWrapperWidth / 2;
+        if (isLanguageRTL)
+          newMargin +=
+            (Caret.getSpaceWidth(wordElements[0] as HTMLElement) ?? 0) -
+            words.offsetWidth;
         newCss["marginLeft"] = `${newMargin}px`;
       }
       currentLinesAnimating++;
@@ -1077,23 +1114,20 @@ export function lineJump(currentTop: number): void {
         .stop(true, false)
         .animate(newCss, SlowTimer.get() ? 0 : 125, () => {
           currentLinesAnimating = 0;
-          activeWordTop = (
-            document.querySelector("#words .active") as HTMLElement
-          ).offsetTop;
+          activeWordTop = (words.querySelector(".active") as HTMLElement)
+            .offsetTop;
 
           currentWordElementIndex -= toHide.length;
           lineTransition = false;
           toHide.forEach((el) => el.remove());
-          $("#words").css("marginTop", "0");
+          words.style.marginTop = "0";
         });
     } else {
       toHide.forEach((el) => el.remove());
       currentWordElementIndex -= toHide.length;
-      $("#paceCaret").css({
-        top:
-          (document.querySelector("#paceCaret") as HTMLElement).offsetTop -
-          wordHeight,
-      });
+      paceCaretElement.style.top = `${
+        paceCaretElement.offsetTop - wordHeight
+      }px`;
     }
   }
   currentTestLine++;
