@@ -9,11 +9,11 @@ const BASE_URL = envConfig.backendUrl;
 const API_URL = `${BASE_URL}${API_PATH}`;
 
 const httpClient = buildHttpClient(API_URL, 10_000);
-const defaultClient = buildClient(contract, BASE_URL, 10_000);
+const tsRestClient = buildClient(contract, BASE_URL, 10_000);
 
 // API Endpoints
 const Ape = {
-  ...defaultClient,
+  ...tsRestClient,
   users: new endpoints.Users(httpClient),
   results: new endpoints.Results(httpClient),
   quotes: new endpoints.Quotes(httpClient),
