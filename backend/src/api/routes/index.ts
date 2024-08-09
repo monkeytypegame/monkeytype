@@ -83,10 +83,10 @@ function applyTsRestApiRoutes(app: IRouter): void {
       let validationErrors: string[] | undefined = undefined;
 
       if (err.pathParams?.issues !== undefined) {
-        message = "Invalid path parameters";
+        message = "Invalid path parameter schema";
         validationErrors = err.pathParams.issues.map(prettyErrorMessage);
       } else if (err.query?.issues !== undefined) {
-        message = "Invalid query";
+        message = "Invalid query schema";
         validationErrors = err.query.issues.map(prettyErrorMessage);
       } else if (err.body?.issues !== undefined) {
         message = "Invalid request data schema";

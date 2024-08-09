@@ -68,7 +68,7 @@ describe("PublicController", () => {
       const { body } = await mockApp.get("/public/speedHistogram").expect(422);
 
       expect(body).toEqual({
-        message: "Invalid query",
+        message: "Invalid query schema",
         validationErrors: [
           '"language" Required',
           '"mode" Required',
@@ -87,7 +87,7 @@ describe("PublicController", () => {
         .expect(422);
 
       expect(body).toEqual({
-        message: "Invalid query",
+        message: "Invalid query schema",
         validationErrors: [
           '"language" Invalid',
           `"mode" Invalid enum value. Expected 'time' | 'words' | 'quote' | 'custom' | 'zen', received 'unknownMode'`,
@@ -107,7 +107,7 @@ describe("PublicController", () => {
         .expect(422);
 
       expect(body).toEqual({
-        message: "Invalid query",
+        message: "Invalid query schema",
         validationErrors: ["Unrecognized key(s) in object: 'extra'"],
       });
     });

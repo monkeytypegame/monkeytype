@@ -5,9 +5,8 @@ export const StringNumberSchema = z
   .custom<`${number}`>((val) => {
     if (typeof val === "number") val = val.toString();
     return typeof val === "string" ? /^\d+$/.test(val) : false;
-  }, "Needs to be a number represented as a string.")
-  .transform(String)
-  .describe('number wrapped as string, e.g. "10"');
+  }, 'Needs to be a number or a number represented as a string e.g. "10".')
+  .transform(String);
 
 export type StringNumber = z.infer<typeof StringNumberSchema>;
 
