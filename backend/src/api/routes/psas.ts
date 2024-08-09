@@ -3,7 +3,7 @@ import { initServer } from "@ts-rest/express";
 import * as RateLimit from "../../middlewares/rate-limit";
 import * as PsaController from "../controllers/psa";
 import { callController } from "../ts-rest-adapter";
-import { recordClientVersion } from "../../middlewares/record-client-version";
+import { recordClientVersion } from "../../middlewares/utility";
 
 const s = initServer();
 export default s.router(psasContract, {
