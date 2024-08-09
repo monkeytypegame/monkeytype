@@ -16,6 +16,7 @@ export function previewFontFamily(font: string): void {
     "--font",
     '"' + font.replace(/_/g, " ") + '", "Roboto Mono", "Vazirmatn"'
   );
+  void TestUI.updateHintsPosition();
   isPreviewingFont = true;
 }
 
