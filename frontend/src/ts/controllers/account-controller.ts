@@ -46,6 +46,7 @@ import * as ConnectionState from "../states/connection";
 import { navigate } from "./route-controller";
 import { getHtmlByUserFlags } from "./user-flag-controller";
 import { FirebaseError } from "firebase/app";
+import * as PSA from "../elements/psa";
 
 export const gmailProvider = new GoogleAuthProvider();
 export const githubProvider = new GithubAuthProvider();
@@ -226,6 +227,7 @@ async function readyFunction(
   const hash = window.location.hash;
   console.debug(`account controller ready`);
   if (authInitialisedAndConnected) {
+    void PSA.show();
     console.debug(`auth state changed, user ${user ? true : false}`);
     console.debug(user);
     if (user) {

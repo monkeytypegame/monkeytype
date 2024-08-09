@@ -312,7 +312,6 @@ export const profanities = [
   "feces",
   "felcher",
   "ficken",
-  "fitt",
   "flikker",
   "foreskin",
   "fotze",
