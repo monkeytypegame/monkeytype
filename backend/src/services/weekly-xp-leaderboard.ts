@@ -182,6 +182,7 @@ export class WeeklyXpLeaderboard {
     const { weeklyXpLeaderboardScoresKey, weeklyXpLeaderboardResultsKey } =
       this.getThisWeeksXpLeaderboardKeys();
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
     connection.set;
 
     // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error

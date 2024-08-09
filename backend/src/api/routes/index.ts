@@ -45,20 +45,20 @@ const APP_START_TIME = Date.now();
 const API_ROUTE_MAP = {
   "/users": users,
   "/results": results,
-  "/psas": psas,
   "/public": publicStats,
   "/leaderboards": leaderboards,
   "/quotes": quotes,
-  "/admin": admin,
   "/webhooks": webhooks,
   "/docs": docs,
 };
 
 const s = initServer();
 const router = s.router(contract, {
+  admin,
   apeKeys,
   configs,
   presets,
+  psas,
 });
 
 export function addApiRoutes(app: Application): void {

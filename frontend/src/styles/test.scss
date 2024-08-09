@@ -306,6 +306,14 @@
     // }
   }
 
+  &.hideExtraLetters {
+    .word {
+      & letter.extra {
+        display: none;
+      }
+    }
+  }
+
   &.flipped {
     --correct-letter-color: var(--sub-color);
     --untyped-letter-color: var(--text-color);

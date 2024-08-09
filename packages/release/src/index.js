@@ -1,12 +1,10 @@
 import { execSync } from "child_process";
 import { Octokit } from "@octokit/rest";
 import dotenv from "dotenv";
-import { readFileSync } from "fs";
+import fs, { readFileSync } from "fs";
 import readlineSync from "readline-sync";
-import path from "path";
-import fs from "fs";
+import path, { dirname } from "path";
 import { fileURLToPath } from "url";
-import { dirname } from "path";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -18,6 +16,9 @@ const isFrontend = args.includes("--fe");
 const noDeploy = args.includes("--no-deploy");
 const isBackend = args.includes("--be");
 const isDryRun = args.includes("--dry");
+const noSyncCheck = args.includes("--no-sync-check");
+
+const PROJECT_ROOT = path.resolve(__dirname, "../../../");
 
 const runCommand = (command, force) => {
   if (isDryRun && !force) {
@@ -35,19 +36,41 @@ const runCommand = (command, force) => {
   }
 };
 
+const runProjectRootCommand = (command, force) => {
+  if (isDryRun && !force) {
+    console.log(`[Dry Run] Command: ${command}`);
+    return "[Dry Run] Command executed.";
+  } else {
+    try {
+      const output = execSync(`cd ${PROJECT_ROOT} && ${command}`, {
+        stdio: "pipe",
+      }).toString();
+      return output;
+    } catch (error) {
+      console.error(`Error executing command ${command}`);
+      console.error(error);
+      process.exit(1);
+    }
+  }
+};
+
 const checkBranchSync = () => {
   console.log("Checking if local master branch is in sync with origin...");
 
-  if (isDryRun) {
+  if (noSyncCheck) {
+    console.log("Skipping sync check.");
+  } else if (isDryRun) {
     console.log("[Dry Run] Checking sync...");
   } else {
     try {
       // Fetch the latest changes from the remote repository
-      runCommand("git fetch origin");
+      runProjectRootCommand("git fetch origin");
 
       // Get the commit hashes of the local and remote master branches
-      const localMaster = runCommand("git rev-parse master").trim();
-      const remoteMaster = runCommand("git rev-parse origin/master").trim();
+      const localMaster = runProjectRootCommand("git rev-parse master").trim();
+      const remoteMaster = runProjectRootCommand(
+        "git rev-parse origin/master"
+      ).trim();
 
       if (localMaster !== remoteMaster) {
         console.error(
@@ -65,8 +88,12 @@ const checkBranchSync = () => {
 
 const getCurrentVersion = () => {
   console.log("Getting current version...");
-  const packageJson = JSON.parse(readFileSync("./package.json", "utf-8"));
-  return packageJson.version;
+
+  const rootPackageJson = JSON.parse(
+    readFileSync(`${PROJECT_ROOT}/package.json`, "utf-8")
+  );
+
+  return rootPackageJson.version;
 };
 
 const incrementVersion = (currentVersion) => {
@@ -134,28 +161,32 @@ const buildProject = () => {
     filter = "--filter @monkeytype/backend";
   }
 
-  runCommand("npx turbo lint test validate-json build " + filter);
+  runProjectRootCommand("npx turbo lint test validate-json build " + filter);
 };
 
 const deployBackend = () => {
   console.log("Deploying backend...");
-  runCommand("sh ./bin/deployBackend.sh");
+  runCommand("sh ../bin/deployBackend.sh");
 };
 
 const deployFrontend = () => {
   console.log("Deploying frontend...");
-  runCommand("cd frontend && npx firebase deploy -P live --only hosting");
+  runProjectRootCommand(
+    "cd frontend && npx firebase deploy -P live --only hosting"
+  );
 };
 
 const purgeCache = () => {
   console.log("Purging Cloudflare cache...");
-  runCommand("sh ./bin/purgeCfCache.sh");
+  runCommand("sh ../bin/purgeCfCache.sh");
 };
 
 const generateChangelog = async () => {
   console.log("Generating changelog...");
 
-  const changelog = runCommand("node bin/buildChangelog.mjs", true);
+  const p = path.resolve(__dirname, "./buildChangelog.js");
+
+  const changelog = runCommand(`node ${p}`, true);
 
   return changelog;
 };

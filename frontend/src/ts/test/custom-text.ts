@@ -42,10 +42,7 @@ export function getMode(): CustomTextMode {
   return mode;
 }
 
-export function setMode(
-  val: CustomTextMode,
-  tribeOverride = false
-): void {
+export function setMode(val: CustomTextMode, tribeOverride = false): void {
   if (!TribeState.canChangeConfig(tribeOverride)) return;
   mode = val;
   limit.value = text.length;

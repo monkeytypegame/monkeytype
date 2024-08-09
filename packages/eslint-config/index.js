@@ -31,6 +31,14 @@ module.exports = {
     "no-duplicate-imports": ["error"],
     "no-constant-condition": ["error"],
     "no-constant-binary-expression": "error",
+    "no-unused-vars": [
+      "warn",
+      {
+        argsIgnorePattern: "^(_|e|event)",
+        caughtErrorsIgnorePattern: "^(_|e|error)",
+        varsIgnorePattern: "^_",
+      },
+    ],
     "import/no-duplicates": "off",
     "import/no-unresolved": [
       "error",
@@ -63,7 +71,7 @@ module.exports = {
         "@typescript-eslint/require-await": "off",
         "@typescript-eslint/unbound-method": "off",
         "@typescript-eslint/await-thenable": "off",
-        "@typescript-eslint/no-useless-template-literals": "off",
+        "@typescript-eslint/no-unnecessary-template-expression": "off",
         "@typescript-eslint/prefer-promise-reject-errors": "off",
         "@typescript-eslint/no-this-alias": "off",
         "@typescript-eslint/no-unnecessary-type-arguments": "off",
@@ -88,7 +96,17 @@ module.exports = {
         "@typescript-eslint/no-empty-function": "warn",
         "@typescript-eslint/no-unused-vars": [
           "warn",
-          { argsIgnorePattern: "^(_|e|event)", varsIgnorePattern: "^_" },
+          {
+            argsIgnorePattern: "^(_|e|event)",
+            caughtErrorsIgnorePattern: "^(_|e|error)",
+            varsIgnorePattern: "^_",
+          },
+        ],
+        "@typescript-eslint/no-unused-expressions": [
+          "error",
+          {
+            allowTernary: true,
+          },
         ],
         "@typescript-eslint/no-var-requires": "error",
         "@typescript-eslint/no-this-alias": "off",

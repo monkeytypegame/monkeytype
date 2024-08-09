@@ -286,6 +286,7 @@ export function formatSeconds(
 
 export function intersect<T>(a: T[], b: T[], removeDuplicates = false): T[] {
   let t;
+  // eslint-disable-next-line @typescript-eslint/no-unused-expressions
   if (b.length > a.length) (t = b), (b = a), (a = t); // indexOf to loop over shorter
   const filtered = a.filter(function (e) {
     return b.includes(e);
@@ -336,5 +337,6 @@ export function replaceObjectId<T extends { _id: ObjectId }>(
 export function replaceObjectIds<T extends { _id: ObjectId }>(
   data: T[]
 ): (T & { _id: string })[] {
+  if (data === undefined) return data;
   return data.map((it) => replaceObjectId(it));
 }

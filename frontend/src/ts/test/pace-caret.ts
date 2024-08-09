@@ -236,7 +236,6 @@ export async function update(expectedStepEnd: number): Promise<void> {
         word.offsetTop +
         currentLetter.offsetTop -
         Config.fontSize * Numbers.convertRemToPixels(1) * 0.1;
-      newLeft;
       if (settings.currentLetterIndex === -1) {
         newLeft =
           word.offsetLeft +

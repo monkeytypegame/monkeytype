@@ -5,7 +5,7 @@ apis:
   internal@v2:
     root: dist/static/api/openapi.json
   public-filter:
-    root: dist/static/api/openapi.json
+    root: dist/static/api/openapi-tagged.json
     decorators:
       filter-in:
         property: x-public

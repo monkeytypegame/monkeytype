@@ -5,6 +5,7 @@ import { buildClient } from "./adapters/ts-rest-adapter";
 import { configsContract } from "@monkeytype/contracts/configs";
 import { presetsContract } from "@monkeytype/contracts/presets";
 import { apeKeysContract } from "@monkeytype/contracts/ape-keys";
+import { psasContract } from "@monkeytype/contracts/psas";
 
 const API_PATH = "";
 const BASE_URL = envConfig.backendUrl;
@@ -17,7 +18,7 @@ const Ape = {
   users: new endpoints.Users(httpClient),
   configs: buildClient(configsContract, BASE_URL, 10_000),
   results: new endpoints.Results(httpClient),
-  psas: new endpoints.Psas(httpClient),
+  psas: buildClient(psasContract, BASE_URL, 10_000),
   quotes: new endpoints.Quotes(httpClient),
   leaderboards: new endpoints.Leaderboards(httpClient),
   presets: buildClient(presetsContract, BASE_URL, 10_000),

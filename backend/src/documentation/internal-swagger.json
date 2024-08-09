@@ -24,10 +24,6 @@
       "description": "User data and related operations"
     },
     {
-      "name": "psas",
-      "description": "Public service announcements"
-    },
-    {
       "name": "leaderboards",
       "description": "Leaderboard data"
     },
@@ -406,20 +402,6 @@
             "type": "string"
           }
         ],
-        "responses": {
-          "default": {
-            "description": "",
-            "schema": {
-              "$ref": "#/definitions/Response"
-            }
-          }
-        }
-      }
-    },
-    "/psas": {
-      "get": {
-        "tags": ["psas"],
-        "summary": "Gets the latest public service announcements",
         "responses": {
           "default": {
             "description": "",

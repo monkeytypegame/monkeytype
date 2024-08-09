@@ -19,7 +19,7 @@ type ValidationHandlingOptions = {
 };
 
 type ValidationSchemaOptions = {
-  [schema in keyof ValidationSchema]?: ValidationSchemaOption;
+  [_schema in keyof ValidationSchema]?: ValidationSchemaOption;
 } & ValidationHandlingOptions;
 
 const VALIDATION_SCHEMA_DEFAULT_OPTIONS: ValidationSchemaOptions = {

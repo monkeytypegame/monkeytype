@@ -155,7 +155,7 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
     void updateWordsInputPosition(true);
   }
   if (eventKey === "fontSize" || eventKey === "fontFamily")
-    updateHintsPosition().catch((e) => {
+    updateHintsPosition().catch((e: unknown) => {
       console.error(e);
     });
 
@@ -167,9 +167,13 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
   }
 
   if (
-    ["highlightMode", "blindMode", "indicateTypos", "tapeMode"].includes(
-      eventKey
-    )
+    [
+      "highlightMode",
+      "blindMode",
+      "indicateTypos",
+      "tapeMode",
+      "hideExtraLetters",
+    ].includes(eventKey)
   ) {
     updateWordWrapperClasses();
   }
@@ -367,6 +371,14 @@ function updateWordWrapperClasses(): void {
   } else {
     $("#words").removeClass("indicateTyposBelow");
     $("#wordsWrapper").removeClass("indicateTyposBelow");
+  }
+
+  if (Config.hideExtraLetters) {
+    $("#words").addClass("hideExtraLetters");
+    $("#wordsWrapper").addClass("hideExtraLetters");
+  } else {
+    $("#words").removeClass("hideExtraLetters");
+    $("#wordsWrapper").removeClass("hideExtraLetters");
   }
 
   const existing =
@@ -864,13 +876,11 @@ export async function updateWordElement(inputOverride?: string): Promise<void> {
             : currentLetter
         }</letter>`;
       } else if (currentLetter === undefined) {
-        if (!Config.hideExtraLetters) {
-          let letter = input[i];
-          if (letter === " " || letter === "\t" || letter === "\n") {
-            letter = "_";
-          }
-          ret += `<letter class="incorrect extra ${tabChar}${nlChar}">${letter}</letter>`;
+        let letter = input[i];
+        if (letter === " " || letter === "\t" || letter === "\n") {
+          letter = "_";
         }
+        ret += `<letter class="incorrect extra ${tabChar}${nlChar}">${letter}</letter>`;
       } else {
         ret +=
           `<letter class="incorrect ${tabChar}${nlChar}">` +
@@ -903,7 +913,7 @@ export async function updateWordElement(inputOverride?: string): Promise<void> {
       }
     }
 
-    if (Config.highlightMode === "letter" && Config.hideExtraLetters) {
+    if (Config.highlightMode === "letter") {
       if (input.length > currentWord.length && !Config.blindMode) {
         wordAtIndex.classList.add("error");
       } else if (input.length === currentWord.length) {
@@ -964,7 +974,12 @@ export function scrollTape(): void {
       if (!letters) return;
       for (let i = 0; i < TestInput.input.current.length; i++) {
         const letter = letters[i] as HTMLElement;
-        if (Config.blindMode && letter.classList.contains("extra")) continue;
+        if (
+          (Config.blindMode || Config.hideExtraLetters) &&
+          letter.classList.contains("extra")
+        ) {
+          continue;
+        }
         currentWordWidth += $(letter).outerWidth(true) ?? 0;
       }
     }

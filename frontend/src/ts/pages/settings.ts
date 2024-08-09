@@ -856,8 +856,12 @@ function setActiveFunboxButton(): void {
         }
       });
     })
-    .catch((e) => {
-      Notifications.add(`Failed to update funbox buttons: ${e.message}`, -1);
+    .catch((e: unknown) => {
+      const message = Misc.createErrorMessage(
+        e,
+        "Failed to update funbox buttons"
+      );
+      Notifications.add(message, -1);
     });
   Config.funbox.split("#").forEach((funbox) => {
     $(
@@ -1421,10 +1425,12 @@ $(
 
 $(".pageSettings .quickNav .links a").on("click", (e) => {
   const settingsGroup = e.target.innerText;
-  const isOpen = $(`.pageSettings .settingsGroup.${settingsGroup}`).hasClass(
+  const isClosed = $(`.pageSettings .settingsGroup.${settingsGroup}`).hasClass(
     "slideup"
   );
-  isOpen && toggleSettingsGroup(settingsGroup);
+  if (isClosed) {
+    toggleSettingsGroup(settingsGroup);
+  }
 });
 
 $(".pageSettings .section.discordIntegration .getLinkAndGoToOauth").on(

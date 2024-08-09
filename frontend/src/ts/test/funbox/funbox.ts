@@ -18,12 +18,8 @@ import * as TestInput from "../test-input";
 import * as WeakSpot from "../weak-spot";
 import { getPoem } from "../poetry";
 import { getSection } from "../wikipedia";
-<<<<<<< HEAD
 import * as TribeState from "../../tribe/tribe-state";
-import * as IPGenerator from "../ip-addresses";
-=======
 import * as IPAddresses from "../../utils/ip-addresses";
->>>>>>> master
 import {
   areFunboxesCompatible,
   checkFunboxForcedConfigs,
@@ -32,13 +28,9 @@ import * as TribeConfigSyncEvent from "../../observables/tribe-config-sync-event
 import { Wordset } from "../wordset";
 import * as LayoutfluidFunboxTimer from "./layoutfluid-funbox-timer";
 import * as DDR from "../../utils/ddr";
-<<<<<<< HEAD
 import * as Random from "../../utils/random";
-import { HighlightMode, Mode } from "@monkeytype/shared-types/config";
-=======
 import { HighlightMode } from "@monkeytype/contracts/schemas/configs";
 import { Mode } from "@monkeytype/contracts/schemas/shared";
->>>>>>> master
 
 const prefixSize = 2;
 
@@ -476,13 +468,8 @@ FunboxList.setFunboxFunctions("IPv4", {
   },
   punctuateWord(word: string): string {
     let w = word;
-<<<<<<< HEAD
     if (Random.get() < 0.25) {
-      w = IPGenerator.addressToCIDR(word);
-=======
-    if (Math.random() < 0.25) {
       w = IPAddresses.addressToCIDR(word);
->>>>>>> master
     }
     return w;
   },
@@ -497,13 +484,8 @@ FunboxList.setFunboxFunctions("IPv6", {
   },
   punctuateWord(word: string): string {
     let w = word;
-<<<<<<< HEAD
     if (Random.get() < 0.25) {
-      w = IPGenerator.addressToCIDR(word);
-=======
-    if (Math.random() < 0.25) {
       w = IPAddresses.addressToCIDR(word);
->>>>>>> master
     }
     // Compress
     if (w.includes(":")) {

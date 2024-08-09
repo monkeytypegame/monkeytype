@@ -26,6 +26,14 @@ import {
 
 let dbSnapshot: MonkeyTypes.Snapshot | undefined;
 
+export class SnapshotInitError extends Error {
+  constructor(message: string, public responseCode: number) {
+    super(message);
+    this.name = "SnapshotInitError";
+    this.responseCode = responseCode;
+  }
+}
+
 export function getSnapshot(): MonkeyTypes.Snapshot | undefined {
   return dbSnapshot;
 }
@@ -75,27 +83,23 @@ export async function initSnapshot(): Promise<
       Ape.presets.get(),
     ]);
 
-    //these objects are explicitly handled so its ok to throw that way
     if (userResponse.status !== 200) {
-      // eslint-disable-next-line @typescript-eslint/no-throw-literal
-      throw {
-        message: `${userResponse.message} (user)`,
-        responseCode: userResponse.status,
-      };
+      throw new SnapshotInitError(
+        `${userResponse.message} (user)`,
+        userResponse.status
+      );
     }
     if (configResponse.status !== 200) {
-      // eslint-disable-next-line @typescript-eslint/no-throw-literal
-      throw {
-        message: `${configResponse.body.message} (config)`,
-        responseCode: configResponse.status,
-      };
+      throw new SnapshotInitError(
+        `${configResponse.body.message} (config)`,
+        configResponse.status
+      );
     }
     if (presetsResponse.status !== 200) {
-      // eslint-disable-next-line @typescript-eslint/no-throw-literal
-      throw {
-        message: `${presetsResponse.body.message} (presets)`,
-        responseCode: presetsResponse.status,
-      };
+      throw new SnapshotInitError(
+        `${presetsResponse.body.message} (presets)`,
+        presetsResponse.status
+      );
     }
 
     const userData = userResponse.data;
@@ -103,11 +107,10 @@ export async function initSnapshot(): Promise<
     const presetsData = presetsResponse.body.data;
 
     if (userData === null) {
-      // eslint-disable-next-line @typescript-eslint/no-throw-literal
-      throw {
-        message: "Request was successful but user data is null",
-        responseCode: 200,
-      };
+      throw new SnapshotInitError(
+        `Request was successful but user data is null`,
+        200
+      );
     }
 
     if (configData !== null && "config" in configData) {
@@ -890,7 +893,7 @@ export async function updateLbMemory<M extends Mode>(
   api = false
 ): Promise<void> {
   if (mode === "time") {
-    const timeMode = mode as "time";
+    const timeMode = mode;
     const timeMode2 = mode2 as "15" | "60";
 
     const snapshot = getSnapshot();
@@ -912,10 +915,7 @@ export async function updateLbMemory<M extends Mode>(
     const current = snapshot.lbMemory?.[timeMode]?.[timeMode2]?.[language];
 
     //this is protected above so not sure why it would be undefined
-    const mem = snapshot.lbMemory[timeMode][timeMode2] as Record<
-      string,
-      number
-    >;
+    const mem = snapshot.lbMemory[timeMode][timeMode2];
     mem[language] = rank;
     if (api && current !== rank) {
       await Ape.users.updateLeaderboardMemory(mode, mode2, language, rank);

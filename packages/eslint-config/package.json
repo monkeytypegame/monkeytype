@@ -2,8 +2,8 @@
   "name": "@monkeytype/eslint-config",
   "private": true,
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "7.1.0",
-    "@typescript-eslint/parser": "7.1.0",
+    "@typescript-eslint/eslint-plugin": "8.0.1",
+    "@typescript-eslint/parser": "8.0.1",
     "eslint-config-prettier": "9.1.0"
   }
 }

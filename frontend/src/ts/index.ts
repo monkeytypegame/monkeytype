@@ -77,7 +77,7 @@ addToGlobal({
   tribe: Tribe,
   tribeState: TribeState,
   tribeCarets: TribeCarets,
-  createTribeRoom: TribeSocket.default.out.room.create
+  createTribeRoom: TribeSocket.default.out.room.create,
 });
 
 if (isDevEnvironment()) {
