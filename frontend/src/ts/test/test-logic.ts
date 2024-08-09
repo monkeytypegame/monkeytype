@@ -64,6 +64,7 @@ import {
 } from "@monkeytype/shared-types";
 import { QuoteLength } from "@monkeytype/contracts/schemas/configs";
 import { Mode } from "@monkeytype/contracts/schemas/shared";
+
 let failReason = "";
 const koInputVisual = document.getElementById("koInputVisual") as HTMLElement;
 
@@ -1196,22 +1197,30 @@ async function saveResult(
 
   if (response?.data?.isPb !== undefined && response.data.isPb) {
     //new pb
-    if (
-      //@ts-expect-error TODO fix this
-      // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
-      DB.getSnapshot()?.personalBests?.[Config.mode]?.[completedEvent.mode2]
-    ) {
+    const localPb = await DB.getLocalPB(
+      completedEvent.mode,
+      completedEvent.mode2,
+      completedEvent.punctuation,
+      completedEvent.numbers,
+      completedEvent.language,
+      completedEvent.difficulty,
+      completedEvent.lazyMode,
+      completedEvent.funbox
+    );
+
+    if (localPb !== undefined) {
       Result.showConfetti();
     }
     Result.showCrown("normal");
+
     await DB.saveLocalPB(
-      Config.mode,
+      completedEvent.mode,
       completedEvent.mode2,
-      Config.punctuation,
-      Config.numbers,
-      Config.language,
-      Config.difficulty,
-      Config.lazyMode,
+      completedEvent.punctuation,
+      completedEvent.numbers,
+      completedEvent.language,
+      completedEvent.difficulty,
+      completedEvent.lazyMode,
       completedEvent.wpm,
       completedEvent.acc,
       completedEvent.rawWpm,

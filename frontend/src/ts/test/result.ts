@@ -170,7 +170,7 @@ async function updateGraph(): Promise<void> {
 
 export async function updateGraphPBLine(): Promise<void> {
   const themecolors = await ThemeColors.getAll();
-  const lpb = await DB.getLocalPB(
+  const localPb = await DB.getLocalPB(
     result.mode,
     result.mode2,
     result.punctuation ?? false,
@@ -180,9 +180,12 @@ export async function updateGraphPBLine(): Promise<void> {
     result.lazyMode ?? false,
     result.funbox ?? "none"
   );
-  if (lpb === 0) return;
+  const localPbWpm = localPb?.wpm ?? 0;
+  if (localPbWpm === 0) return;
   const typingSpeedUnit = getTypingSpeedUnit(Config.typingSpeedUnit);
-  const chartlpb = Numbers.roundTo2(typingSpeedUnit.fromWpm(lpb)).toFixed(2);
+  const chartlpb = Numbers.roundTo2(
+    typingSpeedUnit.fromWpm(localPbWpm)
+  ).toFixed(2);
   resultAnnotation.push({
     display: true,
     type: "line",
@@ -388,7 +391,7 @@ export async function updateCrown(dontSave: boolean): Promise<void> {
   const canGetPb = await resultCanGetPb();
 
   if (canGetPb.value) {
-    const lpb = await DB.getLocalPB(
+    const localPb = await DB.getLocalPB(
       Config.mode,
       result.mode2,
       Config.punctuation,
@@ -398,7 +401,8 @@ export async function updateCrown(dontSave: boolean): Promise<void> {
       Config.lazyMode,
       Config.funbox
     );
-    pbDiff = result.wpm - lpb;
+    const localPbWpm = localPb?.wpm ?? 0;
+    pbDiff = result.wpm - localPbWpm;
     if (pbDiff <= 0) {
       hideCrown();
     } else {
@@ -409,7 +413,7 @@ export async function updateCrown(dontSave: boolean): Promise<void> {
       );
     }
   } else {
-    const lpb = await DB.getLocalPB(
+    const localPb = await DB.getLocalPB(
       Config.mode,
       result.mode2,
       Config.punctuation,
@@ -419,7 +423,8 @@ export async function updateCrown(dontSave: boolean): Promise<void> {
       Config.lazyMode,
       "none"
     );
-    pbDiff = result.wpm - lpb;
+    const localPbWpm = localPb?.wpm ?? 0;
+    pbDiff = result.wpm - localPbWpm;
     if (pbDiff <= 0) {
       // hideCrown();
       showCrown("warning");

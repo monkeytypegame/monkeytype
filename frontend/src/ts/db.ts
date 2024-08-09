@@ -623,29 +623,26 @@ export async function getLocalPB<M extends Mode>(
   difficulty: Difficulty,
   lazyMode: boolean,
   funbox: string
-): Promise<number> {
+): Promise<PersonalBest | undefined> {
   const funboxes = (await getFunboxList()).filter((fb) => {
     return funbox?.split("#").includes(fb.name);
   });
 
   if (!funboxes.every((f) => f.canGetPb)) {
-    return 0;
+    return undefined;
   }
-  if (dbSnapshot === null || dbSnapshot?.personalBests === null) return 0;
 
-  const bestsByMode = dbSnapshot?.personalBests[mode][mode2] as PersonalBest[];
+  const pbs = dbSnapshot?.personalBests?.[mode]?.[mode2] as
+    | PersonalBest[]
+    | undefined;
 
-  if (bestsByMode === undefined) return 0;
-
-  return (
-    bestsByMode.find(
-      (pb) =>
-        (pb.punctuation ?? false) === punctuation &&
-        (pb.numbers ?? false) === numbers &&
-        pb.difficulty === difficulty &&
-        pb.language === language &&
-        (pb.lazyMode ?? false) === lazyMode
-    )?.wpm ?? 0
+  return pbs?.find(
+    (pb) =>
+      (pb.punctuation ?? false) === punctuation &&
+      (pb.numbers ?? false) === numbers &&
+      pb.difficulty === difficulty &&
+      pb.language === language &&
+      (pb.lazyMode ?? false) === lazyMode
   );
 }
 
