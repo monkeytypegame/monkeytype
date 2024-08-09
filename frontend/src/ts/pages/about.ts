@@ -100,7 +100,7 @@ async function getStatsAndHistogramData(): Promise<void> {
     return;
   }
 
-  const speedStats = await Ape.publicStats.getSpeedHistogram({
+  const speedStats = await Ape.public.getSpeedHistogram({
     query: {
       language: "english",
       mode: "time",
@@ -115,7 +115,7 @@ async function getStatsAndHistogramData(): Promise<void> {
       -1
     );
   }
-  const typingStats = await Ape.publicStats.getTypingStats();
+  const typingStats = await Ape.public.getTypingStats();
   if (typingStats.status === 200) {
     typingStatsResponseData = typingStats.body.data;
   } else {
