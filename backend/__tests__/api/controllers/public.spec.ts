@@ -91,7 +91,7 @@ describe("PublicController", () => {
         validationErrors: [
           '"language" Can only contain letters [a-zA-Z0-9_+]',
           `"mode" Invalid enum value. Expected 'time' | 'words' | 'quote' | 'custom' | 'zen', received 'unknownMode'`,
-          '"mode2" Needs to be a number wrapped as string, e.g. "10"',
+          '"mode2" Needs to be a number or a number represented as a string e.g. "10".',
         ],
       });
     });

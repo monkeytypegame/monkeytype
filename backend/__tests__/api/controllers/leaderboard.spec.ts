@@ -151,7 +151,7 @@ describe("Loaderboard Controller", () => {
       const { body } = await mockApp.get("/leaderboards").expect(422);
 
       expect(body).toEqual({
-        message: "Invalid query",
+        message: "Invalid query schema",
         validationErrors: [
           '"language" Required',
           '"mode" Required',
@@ -172,11 +172,11 @@ describe("Loaderboard Controller", () => {
         .expect(422);
 
       expect(body).toEqual({
-        message: "Invalid query",
+        message: "Invalid query schema",
         validationErrors: [
           '"language" Can only contain letters [a-zA-Z0-9_+]',
           `"mode" Invalid enum value. Expected 'time' | 'words' | 'quote' | 'custom' | 'zen', received 'unknownMode'`,
-          '"mode2" Needs to be a number wrapped as string, e.g. "10"',
+          '"mode2" Needs to be a number or a number represented as a string e.g. "10".',
           '"skip" Number must be greater than or equal to 0',
           '"limit" Number must be less than or equal to 50',
         ],
@@ -194,7 +194,7 @@ describe("Loaderboard Controller", () => {
         .expect(422);
 
       expect(body).toEqual({
-        message: "Invalid query",
+        message: "Invalid query schema",
         validationErrors: ["Unrecognized key(s) in object: 'extra'"],
       });
     });
@@ -316,7 +316,7 @@ describe("Loaderboard Controller", () => {
         .expect(422);
 
       expect(body).toEqual({
-        message: "Invalid query",
+        message: "Invalid query schema",
         validationErrors: [
           '"language" Required',
           '"mode" Required',
@@ -336,11 +336,11 @@ describe("Loaderboard Controller", () => {
         .expect(422);
 
       expect(body).toEqual({
-        message: "Invalid query",
+        message: "Invalid query schema",
         validationErrors: [
           '"language" Can only contain letters [a-zA-Z0-9_+]',
           `"mode" Invalid enum value. Expected 'time' | 'words' | 'quote' | 'custom' | 'zen', received 'unknownMode'`,
-          '"mode2" Needs to be a number wrapped as string, e.g. "10"',
+          '"mode2" Needs to be a number or a number represented as a string e.g. "10".',
         ],
       });
     });
@@ -357,7 +357,7 @@ describe("Loaderboard Controller", () => {
         .expect(422);
 
       expect(body).toEqual({
-        message: "Invalid query",
+        message: "Invalid query schema",
         validationErrors: ["Unrecognized key(s) in object: 'extra'"],
       });
     });
@@ -550,7 +550,7 @@ describe("Loaderboard Controller", () => {
         .expect(422);
 
       expect(body).toEqual({
-        message: "Invalid query",
+        message: "Invalid query schema",
         validationErrors: ['"daysBefore" Invalid literal value, expected 1'],
       });
     });
@@ -587,7 +587,7 @@ describe("Loaderboard Controller", () => {
       const { body } = await mockApp.get("/leaderboards").expect(422);
 
       expect(body).toEqual({
-        message: "Invalid query",
+        message: "Invalid query schema",
         validationErrors: [
           '"language" Required',
           '"mode" Required',
@@ -606,11 +606,11 @@ describe("Loaderboard Controller", () => {
         .expect(422);
 
       expect(body).toEqual({
-        message: "Invalid query",
+        message: "Invalid query schema",
         validationErrors: [
           '"language" Can only contain letters [a-zA-Z0-9_+]',
           `"mode" Invalid enum value. Expected 'time' | 'words' | 'quote' | 'custom' | 'zen', received 'unknownMode'`,
-          '"mode2" Needs to be a number wrapped as string, e.g. "10"',
+          '"mode2" Needs to be a number or a number represented as a string e.g. "10".',
         ],
       });
     });
@@ -626,7 +626,7 @@ describe("Loaderboard Controller", () => {
         .expect(422);
 
       expect(body).toEqual({
-        message: "Invalid query",
+        message: "Invalid query schema",
         validationErrors: ["Unrecognized key(s) in object: 'extra'"],
       });
     });
@@ -764,7 +764,7 @@ describe("Loaderboard Controller", () => {
         .expect(422);
 
       expect(body).toEqual({
-        message: "Invalid query",
+        message: "Invalid query schema",
         validationErrors: [
           '"language" Required',
           '"mode" Required',
@@ -784,11 +784,11 @@ describe("Loaderboard Controller", () => {
         .expect(422);
 
       expect(body).toEqual({
-        message: "Invalid query",
+        message: "Invalid query schema",
         validationErrors: [
           '"language" Can only contain letters [a-zA-Z0-9_+]',
           `"mode" Invalid enum value. Expected 'time' | 'words' | 'quote' | 'custom' | 'zen', received 'unknownMode'`,
-          '"mode2" Needs to be a number wrapped as string, e.g. "10"',
+          '"mode2" Needs to be a number or a number represented as a string e.g. "10".',
         ],
       });
     });
@@ -805,7 +805,7 @@ describe("Loaderboard Controller", () => {
         .expect(422);
 
       expect(body).toEqual({
-        message: "Invalid query",
+        message: "Invalid query schema",
         validationErrors: ["Unrecognized key(s) in object: 'extra'"],
       });
     });
@@ -977,7 +977,7 @@ describe("Loaderboard Controller", () => {
         .expect(422);
 
       expect(body).toEqual({
-        message: "Invalid query",
+        message: "Invalid query schema",
         validationErrors: ['"weeksBefore" Invalid literal value, expected 1'],
       });
     });
@@ -990,7 +990,7 @@ describe("Loaderboard Controller", () => {
         .expect(422);
 
       expect(body).toEqual({
-        message: "Invalid query",
+        message: "Invalid query schema",
         validationErrors: ["Unrecognized key(s) in object: 'extra'"],
       });
     });
