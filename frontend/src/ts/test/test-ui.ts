@@ -957,6 +957,7 @@ export async function scrollTape(): Promise<void> {
     const letters =
       wordElements[currentWordElementIndex]?.querySelectorAll("letter");
     if (!letters) return;
+    let lastPositiveLetterWidth = 0;
     for (let i = 0; i < TestInput.input.current.length; i++) {
       const letter = letters[i] as HTMLElement;
       if (
@@ -965,8 +966,16 @@ export async function scrollTape(): Promise<void> {
       ) {
         continue;
       }
-      currentWordWidth += $(letter).outerWidth(true) ?? 0;
+      const letterOuterWidth = $(letter).outerWidth(true) ?? 0;
+      currentWordWidth += letterOuterWidth;
+      if (letterOuterWidth > 0) lastPositiveLetterWidth = letterOuterWidth;
     }
+    // if current letter has zero width move the tape to previous positive width letter
+    if (
+      $(letters[TestInput.input.current.length] as Element).outerWidth(true) ===
+      0
+    )
+      currentWordWidth -= lastPositiveLetterWidth;
   }
 
   let newMargin = wordsWrapperWidth / 2;
@@ -977,6 +986,7 @@ export async function scrollTape(): Promise<void> {
       words.offsetWidth +
       (Caret.getSpaceWidth(wordElements[0] as HTMLElement) ?? 0);
   else newMargin -= fullWordsWidth + currentWordWidth;
+
   if (Config.smoothLineScroll) {
     $("#words")
       .stop(true, false)
