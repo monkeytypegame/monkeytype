@@ -67,6 +67,11 @@ export function getOpenApi(): OpenAPIObject {
           "x-displayName": "Ape Keys",
         },
         {
+          name: "public",
+          description: "Public endpoints such as typing stats.",
+          "x-displayName": "public",
+        },
+        {
           name: "psas",
           description: "Public service announcements.",
           "x-displayName": "PSAs",

@@ -34,7 +34,7 @@ function update(mode: Mode): void {
   if (allmode2 === undefined) return;
 
   const list: PBWithMode2[] = [];
-  (Object.keys(allmode2) as Mode2<Mode>[]).forEach(function (key) {
+  Object.keys(allmode2).forEach(function (key) {
     let pbs = allmode2[key] ?? [];
     pbs = pbs.sort(function (a, b) {
       return b.wpm - a.wpm;
