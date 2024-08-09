@@ -301,22 +301,6 @@ export type ResultFilters = {
   } & Record<string, boolean>;
 };
 
-export type LeaderboardEntry = {
-  _id: string;
-  wpm: number;
-  acc: number;
-  timestamp: number;
-  raw: number;
-  consistency?: number;
-  uid: string;
-  name: string;
-  discordId?: string;
-  discordAvatar?: string;
-  rank: number;
-  badgeId?: number;
-  isPremium?: boolean;
-};
-
 export type PostResultResponse = {
   isPb: boolean;
   tagPbs: string[];

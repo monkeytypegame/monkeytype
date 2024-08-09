@@ -65,7 +65,7 @@
     "@monkeytype/eslint-config": "workspace:*",
     "@monkeytype/shared-types": "workspace:*",
     "@monkeytype/typescript-config": "workspace:*",
-    "@redocly/cli": "1.18.1",
+    "@redocly/cli": "1.19.0",
     "@types/bcrypt": "5.0.2",
     "@types/cors": "2.8.12",
     "@types/cron": "1.7.3",

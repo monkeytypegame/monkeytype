@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { token } from "./util";
+import { LanguageSchema, token } from "./util";
 import * as Shared from "./shared";
 
 export const SmoothCaretSchema = z.enum(["off", "slow", "medium", "fast"]);
@@ -261,12 +261,6 @@ export type FontFamily = z.infer<typeof FontFamilySchema>;
 
 export const ThemeNameSchema = token().max(50);
 export type ThemeName = z.infer<typeof ThemeNameSchema>;
-
-export const LanguageSchema = z
-  .string()
-  .max(50)
-  .regex(/^[a-zA-Z0-9_+]+$/);
-export type Language = z.infer<typeof LanguageSchema>;
 
 export const KeymapLayoutSchema = z
   .string()

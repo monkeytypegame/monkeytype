@@ -21,6 +21,7 @@ import * as ConfigSchemas from "@monkeytype/contracts/schemas/configs";
 import { Config } from "@monkeytype/contracts/schemas/configs";
 import { roundTo1 } from "./utils/numbers";
 import { Mode, ModeSchema } from "@monkeytype/contracts/schemas/shared";
+import { Language, LanguageSchema } from "@monkeytype/contracts/schemas/util";
 
 export let localStorageConfig: Config;
 
@@ -1565,12 +1566,8 @@ export function setCustomThemeColors(
   return true;
 }
 
-export function setLanguage(
-  language: ConfigSchemas.Language,
-  nosave?: boolean
-): boolean {
-  if (!isConfigValueValid("language", language, ConfigSchemas.LanguageSchema))
-    return false;
+export function setLanguage(language: Language, nosave?: boolean): boolean {
+  if (!isConfigValueValid("language", language, LanguageSchema)) return false;
 
   config.language = language;
   void AnalyticsController.log("changedLanguage", { language });
