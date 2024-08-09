@@ -20,24 +20,6 @@ importers:
       conventional-changelog:
         specifier: 4.0.0
         version: 4.0.0
-      eslint:
-        specifier: 8.57.0
-        version: 8.57.0
-      eslint-config-prettier:
-        specifier: 9.0.0
-        version: 9.0.0(eslint@8.57.0)
-      eslint-import-resolver-typescript:
-        specifier: 3.6.1
-        version: 3.6.1(eslint-plugin-import@2.29.0)(eslint@8.57.0)
-      eslint-plugin-import:
-        specifier: 2.29.0
-        version: 2.29.0(eslint-import-resolver-typescript@3.6.1)(eslint@8.57.0)
-      eslint-plugin-json:
-        specifier: 2.1.2
-        version: 2.1.2
-      eslint-plugin-require-path-exists:
-        specifier: 1.1.9
-        version: 1.1.9
       husky:
         specifier: 8.0.1
         version: 8.0.1
@@ -56,12 +38,6 @@ importers:
       turbo:
         specifier: 2.0.9
         version: 2.0.9
-      typescript:
-        specifier: 5.5.4
-        version: 5.5.4
-      wait-for-localhost-cli:
-        specifier: 3.2.0
-        version: 3.2.0
 
   backend:
     dependencies:
@@ -527,6 +503,18 @@ importers:
       eslint-config-prettier:
         specifier: 9.1.0
         version: 9.1.0(eslint@8.57.0)
+      eslint-import-resolver-typescript:
+        specifier: 3.6.1
+        version: 3.6.1(@typescript-eslint/parser@8.0.1(eslint@8.57.0)(typescript@5.5.4))(eslint-plugin-import@2.29.0)(eslint@8.57.0)
+      eslint-plugin-import:
+        specifier: 2.29.0
+        version: 2.29.0(@typescript-eslint/parser@8.0.1(eslint@8.57.0)(typescript@5.5.4))(eslint-import-resolver-typescript@3.6.1)(eslint@8.57.0)
+      eslint-plugin-json:
+        specifier: 3.1.0
+        version: 3.1.0
+      eslint-plugin-require-path-exists:
+        specifier: 1.1.9
+        version: 1.1.9
 
   packages/release:
     dependencies:
@@ -3386,10 +3374,6 @@ packages:
     resolution: {integrity: sha512-YrwaA0vEKazPBkn0ipTiMpSajYDSe+KjQfrjhcBMxJt/znbvlHd8Pw/Vamaz5EB4Wfhs3SUR3Z9mwRu/P3s3Yg==}
     engines: {node: '>=8'}
 
-  camelcase-keys@7.0.2:
-    resolution: {integrity: sha512-Rjs1H+A9R+Ig+4E/9oyB66UC5Mj9Xq3N//vcLf2WzgdTi/3gUu3Z9KoqmlrEG4VuuLK8wJHofxzdQXz/knhiYg==}
-    engines: {node: '>=12'}
-
   camelcase@3.0.0:
     resolution: {integrity: sha512-4nhGqUkc4BqbBBB4Q6zLuD7lzzrHYrjKGeYaEji/3tFR5VdJu9v+LilhGIVe8wxEJPPOeWo7eg8dwY13TZ1BNg==}
     engines: {node: '>=0.10.0'}
@@ -3979,10 +3963,6 @@ packages:
     resolution: {integrity: sha512-z2S+W9X73hAUUki+N+9Za2lBlun89zigOyGrsax+KUQ6wKW4ZoWpEYBkGhQjwAjjDCkWxhY0VKEhk8wzY7F5cA==}
     engines: {node: '>=0.10.0'}
 
-  decamelize@5.0.1:
-    resolution: {integrity: sha512-VfxadyCECXgQlkoEAjeghAr5gY3Hf+IKjKb+X8tGVDtveCjN+USwprd2q3QXBR9T1+x2DG0XZF5/w+7HAtSaXA==}
-    engines: {node: '>=10'}
-
   decko@1.2.0:
     resolution: {integrity: sha512-m8FnyHXV1QX+S1cl+KPFDIl6NMkxtKsy6+U/aYyjrOqWMuwAwYWu7ePqrsUHtDR5Y8Yk2pi/KIDSgF+vT4cPOQ==}
 
@@ -4421,12 +4401,6 @@ packages:
     engines: {node: '>=6.0'}
     hasBin: true
 
-  eslint-config-prettier@9.0.0:
-    resolution: {integrity: sha512-IcJsTkJae2S35pRsRAwoCE+925rJJStOdkKnLVgtE+tEpqU0EVVM7OqrwxqgptKdX29NUwC82I5pXsGFIgSevw==}
-    hasBin: true
-    peerDependencies:
-      eslint: '>=7.0.0'
-
   eslint-config-prettier@9.1.0:
     resolution: {integrity: sha512-NSWl5BFQWEPi1j4TjVNItzYV7dZXZ+wP6I6ZhrBGpChQhZRUaElihE9uRRkcbRnNb76UMKDF3r+WTmNcGPKsqw==}
     hasBin: true
@@ -4474,9 +4448,9 @@ packages:
       '@typescript-eslint/parser':
         optional: true
 
-  eslint-plugin-json@2.1.2:
-    resolution: {integrity: sha512-isM/fsUxS4wN1+nLsWoV5T4gLgBQnsql3nMTr8u+cEls1bL8rRQO5CP5GtxJxaOfbcKqnz401styw+H/P+e78Q==}
-    engines: {node: '>=8.10.0'}
+  eslint-plugin-json@3.1.0:
+    resolution: {integrity: sha512-MrlG2ynFEHe7wDGwbUuFPsaT2b1uhuEFhJ+W1f1u+1C2EkXmTYJp4B1aAdQQ8M+CC3t//N/oRKiIVw14L2HR1g==}
+    engines: {node: '>=12.0'}
 
   eslint-plugin-require-path-exists@1.1.9:
     resolution: {integrity: sha512-moZRfrPr4GFyT/W8PHzjzC7D4Hnj7Us+GYj0fbVKQoPvP4xIF8VG702L1jzyhqE8eIYkcs8p1CoqSfjk9WkxBg==}
@@ -5426,10 +5400,6 @@ packages:
   indent-string@4.0.0:
     resolution: {integrity: sha512-EdDDZu4A2OyIK7Lr/2zG+w5jmbuk1DVBnEwREQvBzspBJkCEbRa8GxU1lghYcaGJCnRWibjDXlq779X1/y5xwg==}
     engines: {node: '>=8'}
-
-  indent-string@5.0.0:
-    resolution: {integrity: sha512-m6FAo/spmsW2Ab2fU35JTYwtOKa2yAwXSwgjSv1TJzh4Mh7mC3lzAOVLBprb72XsTrgkEIsl7YrFNAiDiRhIGg==}
-    engines: {node: '>=12'}
 
   indexes-of@1.0.1:
     resolution: {integrity: sha512-bup+4tap3Hympa+JBJUG7XuOsdNQ6fxt0MHyXMKuLBKn0OqsTfvUxkUrroEX1+B2VsSHvCjiIcZVxRtYa4nllA==}
@@ -6388,10 +6358,6 @@ packages:
 
   mensch@0.3.4:
     resolution: {integrity: sha512-IAeFvcOnV9V0Yk+bFhYR07O3yNina9ANIN5MoXBKYJ/RLYPurd2d0yw14MDhpr9/momp0WofT1bPUh3hkzdi/g==}
-
-  meow@10.1.5:
-    resolution: {integrity: sha512-/d+PQ4GKmGvM9Bee/DPa8z3mXs/pkvJE2KEThngVNOqtmljC6K7NMPxtc2JeZYTmpWb9k/TmxjeL18ez3h7vCw==}
-    engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
 
   meow@8.1.2:
     resolution: {integrity: sha512-r85E3NdZ+mpYk1C6RjPFEMSE+s1iZMuHtsHAqY0DT3jZczl0diWUZ8g6oU7h0M9cD2EL+PzaYghhCLzR0ZNn5Q==}
@@ -7630,10 +7596,6 @@ packages:
     resolution: {integrity: sha512-ARhCpm70fzdcvNQfPoy49IaanKkTlRWF2JMzqhcJbhSFRZv7nPTvZJdcY7301IPmvW+/p0RgIWnQDLJxifsQ7g==}
     engines: {node: '>=8'}
 
-  quick-lru@5.1.1:
-    resolution: {integrity: sha512-WuyALRjWPDGtt/wzJiadO5AXY+8hZ80hVpe6MyivgraREW751X3SbhRvG3eLKOYN+8VEvqLcf3wdnt44Z4S4SA==}
-    engines: {node: '>=10'}
-
   quote-unquote@1.0.0:
     resolution: {integrity: sha512-twwRO/ilhlG/FIgYeKGFqyHhoEhqgnKVkcmqMKi2r524gz3ZbDTcyFt38E9xjJI2vT+KbRNHVbnJ/e0I25Azwg==}
 
@@ -7709,10 +7671,6 @@ packages:
     resolution: {integrity: sha512-zK0TB7Xd6JpCLmlLmufqykGE+/TlOePD6qKClNW7hHDKFh/J7/7gCWGR7joEQEW1bKq3a3yUZSObOoWLFQ4ohg==}
     engines: {node: '>=8'}
 
-  read-pkg-up@8.0.0:
-    resolution: {integrity: sha512-snVCqPczksT0HS2EC+SxUndvSzn6LRCwpfSvLrIfR5BKDQQZMaI6jPRC9dYvYFDRAuFEAnkwww8kBBNE/3VvzQ==}
-    engines: {node: '>=12'}
-
   read-pkg@1.1.0:
     resolution: {integrity: sha512-7BGwRHqt4s/uVbuyoeejRn4YmFnYZiFl4AuaeXHlgZf3sONF0SOGlxs2Pw8g6hCKupo08RafIO5YXFNOKTfwsQ==}
     engines: {node: '>=0.10.0'}
@@ -7724,10 +7682,6 @@ packages:
   read-pkg@5.2.0:
     resolution: {integrity: sha512-Ug69mNOpfvKDAc2Q8DRpMjjzdtrnv9HcSMX+4VsZxD1aZ6ZzrIE7rlzXBtWTyhULSMKg076AW6WR5iZpD0JiOg==}
     engines: {node: '>=8'}
-
-  read-pkg@6.0.0:
-    resolution: {integrity: sha512-X1Fu3dPuk/8ZLsMhEj5f4wFAF0DWoK7qhGJvgaijocXxBmSToKfbFtqbxMO7bVjNA1dmE5huAzjXj/ey86iw9Q==}
-    engines: {node: '>=12'}
 
   readable-stream@2.3.8:
     resolution: {integrity: sha512-8p0AUk4XODgIewSi0l8Epjs+EVnWiK7NoDIEGU0HhE7+ZyY8D1IMY7odu5lRrFXGg71L15KG8QrPmum45RTtdA==}
@@ -7762,10 +7716,6 @@ packages:
   redent@3.0.0:
     resolution: {integrity: sha512-6tDA8g98We0zd0GvVeMT9arEOnTw9qM03L9cJXaCjrip1OO764RDBLBfrB4cwzNGDj5OA5ioymC9GkizgWJDUg==}
     engines: {node: '>=8'}
-
-  redent@4.0.0:
-    resolution: {integrity: sha512-tYkDkVVtYkSVhuQ4zBgfvciymHaeuel+zFKXShfDnFP5SyVEP7qo70Rf1jTOTCx3vGNAbnEi/xFkcfQVMIBWag==}
-    engines: {node: '>=12'}
 
   redeyed@2.1.1:
     resolution: {integrity: sha512-FNpGGo1DycYAdnrKFxCMmKYgo/mILAqtRYbkdQD8Ep/Hk2PQ5+aEAEx+IU713RTDmuBaH0c8P5ZozurNu5ObRQ==}
@@ -8496,10 +8446,6 @@ packages:
     resolution: {integrity: sha512-laJTa3Jb+VQpaC6DseHhF7dXVqHTfJPCRDaEbid/drOhgitgYku/letMUqOXFoWV0zIIUbjpdH2t+tYj4bQMRQ==}
     engines: {node: '>=8'}
 
-  strip-indent@4.0.0:
-    resolution: {integrity: sha512-mnVSV2l+Zv6BLpSD/8V87CW/y9EmmbYzGCIavsnsI6/nwn26DwffM/yztm30Z/I2DY9wdS3vXVCMnHDgZaVNoA==}
-    engines: {node: '>=12'}
-
   strip-json-comments@2.0.1:
     resolution: {integrity: sha512-4gB8na07fecVVkOI6Rs4e7T6NOTki5EmL7TUduTs6bu3EdnSycntVJ4re8kgZA+wx9IueI2Y11bfbgwtzuE0KQ==}
     engines: {node: '>=0.10.0'}
@@ -8787,10 +8733,6 @@ packages:
     resolution: {integrity: sha512-c1PTsA3tYrIsLGkJkzHF+w9F2EyxfXGo4UyJc4pFL++FMjnq0HJS69T3M7d//gKrFKwy429bouPescbjecU+Zw==}
     engines: {node: '>=8'}
 
-  trim-newlines@4.1.1:
-    resolution: {integrity: sha512-jRKj0n0jXWo6kh62nA5TEh3+4igKDXLvzBJcPpiizP7oOolUrYIxmVBG9TOtHYFHoddUk6YvAkGeGoSVTXfQXQ==}
-    engines: {node: '>=12'}
-
   triple-beam@1.4.1:
     resolution: {integrity: sha512-aZbgViZrg1QNcG+LULa7nhZpJTZSLm/mXnHXnbAbjmN5aSa0y7V+wvv6+4WaBtpISJzThKy+PIPxc1Nq1EJ9mg==}
     engines: {node: '>= 14.0.0'}
@@ -8915,10 +8857,6 @@ packages:
   type-fest@0.8.1:
     resolution: {integrity: sha512-4dbzIzqvjtgiM5rw1k5rEHtBANKmdudhGyBEajN01fEyhaAIhsoKNy6y7+IN93IfpFtwY9iqi7kD+xwKhQsNJA==}
     engines: {node: '>=8'}
-
-  type-fest@1.4.0:
-    resolution: {integrity: sha512-yGSza74xk0UG8k+pLh5oeoYirvIiWo5t0/o3zHHAO2tRDiZcxWP7fywNlXhqb6/r6sWvwi+RsyQMWhVLe4BVuA==}
-    engines: {node: '>=10'}
 
   type-is@1.6.18:
     resolution: {integrity: sha512-TkRKr9sUTxEH8MdfuCSP7VizJyzRNMjj2J2do2Jr3Kym598JVdEksuzPQCnlFPW4ky9Q+iA+ma9BGm06XQBy8g==}
@@ -9314,8 +9252,8 @@ packages:
   vlq@0.2.3:
     resolution: {integrity: sha512-DRibZL6DsNhIgYQ+wNdWDL2SL3bKPlVrRiBqV5yuMm++op8W4kGFtaQfCs4KEJn0wBZcHVHJ3eoywX8983k1ow==}
 
-  vscode-json-languageservice@3.11.0:
-    resolution: {integrity: sha512-QxI+qV97uD7HHOCjh3MrM1TfbdwmTXrMckri5Tus1/FQiG3baDZb2C9Y0y8QThs7PwHYBIQXcAc59ZveCRZKPA==}
+  vscode-json-languageservice@4.2.1:
+    resolution: {integrity: sha512-xGmv9QIWs2H8obGbWg+sIPI/3/pFgj/5OWBhNzs00BkYQ9UaB2F6JJaGB/2/YOZJ3BvLXQTC4Q7muqU25QgAhA==}
 
   vscode-jsonrpc@6.0.0:
     resolution: {integrity: sha512-wnJA4BnEjOSyFMvjZdpiOwhSq9uDoK8e/kpRJDTaMYzwlkrhG1fwDIZI94CLsLzlCK5cIbMMtFlJlfR57Lavmg==}
@@ -9334,9 +9272,6 @@ packages:
   vscode-languageserver-types@3.16.0:
     resolution: {integrity: sha512-k8luDIWJWyenLc5ToFQQMaSrqCHiLwyKPHKPQZ5zz21vM+vIVUSvsRpcbiECH4WR88K2XZqc4ScRcZ7nk/jbeA==}
 
-  vscode-languageserver-types@3.16.0-next.2:
-    resolution: {integrity: sha512-QjXB7CKIfFzKbiCJC4OWC8xUncLsxo19FzGVp/ADFvvi87PlmBSCAtZI5xwGjF5qE0xkLf0jjKUn3DzmpDP52Q==}
-
   vscode-languageserver@7.0.0:
     resolution: {integrity: sha512-60HTx5ID+fLRcgdHfmz0LDZAXYEV68fzwG0JWwEPBode9NuMYTIxuYXPg4ngO8i8+Ou0lM7y6GzaYWbiDL0drw==}
     hasBin: true
@@ -9344,20 +9279,8 @@ packages:
   vscode-nls@5.2.0:
     resolution: {integrity: sha512-RAaHx7B14ZU04EU31pT+rKz2/zSl7xMsfIZuo8pd+KZO6PXtQmpevpq3vxvWNcrGbdmhM/rr5Uw5Mz+NBfhVng==}
 
-  vscode-uri@2.1.2:
-    resolution: {integrity: sha512-8TEXQxlldWAuIODdukIb+TR5s+9Ds40eSJrw+1iDDA9IFORPjMELarNQE3myz5XIkWWpdprmJjm1/SxMlWOC8A==}
-
   vscode-uri@3.0.8:
     resolution: {integrity: sha512-AyFQ0EVmsOZOlAnxoFOGOq1SQDWAB7C6aqMGS23svWAllfOaxbuFvcT8D1i8z3Gyn8fraVeZNNmN6e9bxxXkKw==}
-
-  wait-for-localhost-cli@3.2.0:
-    resolution: {integrity: sha512-Qeb/137B3PSiQSddXMGS40i7w2G2pWJ/01bJLQ4pk+WZ7V3+i7fIbKajf6/MPcBqYPJvNdYWAuTJ53ahhqZBog==}
-    engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
-    hasBin: true
-
-  wait-for-localhost@4.1.0:
-    resolution: {integrity: sha512-i3yX7qgAnxFXWOS6Om7SNi19HRygFvCGh0iy0nOsrYOSiIlhUqoUuzLoW4jHVYS4dzNGzRU100uwTyluOMWcjw==}
-    engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
 
   walkdir@0.4.1:
     resolution: {integrity: sha512-3eBwRyEln6E1MSzcxcVpQIhRG8Q1jLvEqRmCZqS3dsfXEDR/AhOF4d+jHg1qvDCpYaVRZjENPQyrVxAkQqxPgQ==}
@@ -12922,13 +12845,6 @@ snapshots:
       map-obj: 4.3.0
       quick-lru: 4.0.1
 
-  camelcase-keys@7.0.2:
-    dependencies:
-      camelcase: 6.3.0
-      map-obj: 4.3.0
-      quick-lru: 5.1.1
-      type-fest: 1.4.0
-
   camelcase@3.0.0: {}
 
   camelcase@5.3.1: {}
@@ -13548,8 +13464,6 @@ snapshots:
 
   decamelize@1.2.0: {}
 
-  decamelize@5.0.1: {}
-
   decko@1.2.0: {}
 
   decode-uri-component@0.2.2: {}
@@ -14142,10 +14056,6 @@ snapshots:
     optionalDependencies:
       source-map: 0.6.1
 
-  eslint-config-prettier@9.0.0(eslint@8.57.0):
-    dependencies:
-      eslint: 8.57.0
-
   eslint-config-prettier@9.1.0(eslint@8.57.0):
     dependencies:
       eslint: 8.57.0
@@ -14158,13 +14068,13 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  eslint-import-resolver-typescript@3.6.1(eslint-plugin-import@2.29.0)(eslint@8.57.0):
+  eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@8.0.1(eslint@8.57.0)(typescript@5.5.4))(eslint-plugin-import@2.29.0)(eslint@8.57.0):
     dependencies:
       debug: 4.3.6(supports-color@5.5.0)
       enhanced-resolve: 5.17.1
       eslint: 8.57.0
-      eslint-module-utils: 2.8.1(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1(eslint-plugin-import@2.29.0)(eslint@8.57.0))(eslint@8.57.0)
-      eslint-plugin-import: 2.29.0(eslint-import-resolver-typescript@3.6.1)(eslint@8.57.0)
+      eslint-module-utils: 2.8.1(@typescript-eslint/parser@8.0.1(eslint@8.57.0)(typescript@5.5.4))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@8.0.1(eslint@8.57.0)(typescript@5.5.4))(eslint-plugin-import@2.29.0)(eslint@8.57.0))(eslint@8.57.0)
+      eslint-plugin-import: 2.29.0(@typescript-eslint/parser@8.0.1(eslint@8.57.0)(typescript@5.5.4))(eslint-import-resolver-typescript@3.6.1)(eslint@8.57.0)
       fast-glob: 3.3.2
       get-tsconfig: 4.7.6
       is-core-module: 2.15.0
@@ -14175,17 +14085,18 @@ snapshots:
       - eslint-import-resolver-webpack
       - supports-color
 
-  eslint-module-utils@2.8.1(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1(eslint-plugin-import@2.29.0)(eslint@8.57.0))(eslint@8.57.0):
+  eslint-module-utils@2.8.1(@typescript-eslint/parser@8.0.1(eslint@8.57.0)(typescript@5.5.4))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@8.0.1(eslint@8.57.0)(typescript@5.5.4))(eslint-plugin-import@2.29.0)(eslint@8.57.0))(eslint@8.57.0):
     dependencies:
       debug: 3.2.7
     optionalDependencies:
+      '@typescript-eslint/parser': 8.0.1(eslint@8.57.0)(typescript@5.5.4)
       eslint: 8.57.0
       eslint-import-resolver-node: 0.3.9
-      eslint-import-resolver-typescript: 3.6.1(eslint-plugin-import@2.29.0)(eslint@8.57.0)
+      eslint-import-resolver-typescript: 3.6.1(@typescript-eslint/parser@8.0.1(eslint@8.57.0)(typescript@5.5.4))(eslint-plugin-import@2.29.0)(eslint@8.57.0)
     transitivePeerDependencies:
       - supports-color
 
-  eslint-plugin-import@2.29.0(eslint-import-resolver-typescript@3.6.1)(eslint@8.57.0):
+  eslint-plugin-import@2.29.0(@typescript-eslint/parser@8.0.1(eslint@8.57.0)(typescript@5.5.4))(eslint-import-resolver-typescript@3.6.1)(eslint@8.57.0):
     dependencies:
       array-includes: 3.1.8
       array.prototype.findlastindex: 1.2.5
@@ -14195,7 +14106,7 @@ snapshots:
       doctrine: 2.1.0
       eslint: 8.57.0
       eslint-import-resolver-node: 0.3.9
-      eslint-module-utils: 2.8.1(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1(eslint-plugin-import@2.29.0)(eslint@8.57.0))(eslint@8.57.0)
+      eslint-module-utils: 2.8.1(@typescript-eslint/parser@8.0.1(eslint@8.57.0)(typescript@5.5.4))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@8.0.1(eslint@8.57.0)(typescript@5.5.4))(eslint-plugin-import@2.29.0)(eslint@8.57.0))(eslint@8.57.0)
       hasown: 2.0.2
       is-core-module: 2.15.0
       is-glob: 4.0.3
@@ -14205,15 +14116,17 @@ snapshots:
       object.values: 1.2.0
       semver: 6.3.1
       tsconfig-paths: 3.15.0
+    optionalDependencies:
+      '@typescript-eslint/parser': 8.0.1(eslint@8.57.0)(typescript@5.5.4)
     transitivePeerDependencies:
       - eslint-import-resolver-typescript
       - eslint-import-resolver-webpack
       - supports-color
 
-  eslint-plugin-json@2.1.2:
+  eslint-plugin-json@3.1.0:
     dependencies:
       lodash: 4.17.21
-      vscode-json-languageservice: 3.11.0
+      vscode-json-languageservice: 4.2.1
 
   eslint-plugin-require-path-exists@1.1.9:
     dependencies:
@@ -15625,8 +15538,6 @@ snapshots:
 
   indent-string@4.0.0: {}
 
-  indent-string@5.0.0: {}
-
   indexes-of@1.0.1: {}
 
   inflight@1.0.6:
@@ -16618,21 +16529,6 @@ snapshots:
   memory-pager@1.5.0: {}
 
   mensch@0.3.4: {}
-
-  meow@10.1.5:
-    dependencies:
-      '@types/minimist': 1.2.5
-      camelcase-keys: 7.0.2
-      decamelize: 5.0.1
-      decamelize-keys: 1.1.1
-      hard-rejection: 2.1.0
-      minimist-options: 4.1.0
-      normalize-package-data: 3.0.3
-      read-pkg-up: 8.0.0
-      redent: 4.0.0
-      trim-newlines: 4.1.1
-      type-fest: 1.4.0
-      yargs-parser: 20.2.9
 
   meow@8.1.2:
     dependencies:
@@ -18134,8 +18030,6 @@ snapshots:
 
   quick-lru@4.0.1: {}
 
-  quick-lru@5.1.1: {}
-
   quote-unquote@1.0.0: {}
 
   raf@3.4.1:
@@ -18227,12 +18121,6 @@ snapshots:
       read-pkg: 5.2.0
       type-fest: 0.8.1
 
-  read-pkg-up@8.0.0:
-    dependencies:
-      find-up: 5.0.0
-      read-pkg: 6.0.0
-      type-fest: 1.4.0
-
   read-pkg@1.1.0:
     dependencies:
       load-json-file: 1.1.0
@@ -18251,13 +18139,6 @@ snapshots:
       normalize-package-data: 2.5.0
       parse-json: 5.2.0
       type-fest: 0.6.0
-
-  read-pkg@6.0.0:
-    dependencies:
-      '@types/normalize-package-data': 2.4.4
-      normalize-package-data: 3.0.3
-      parse-json: 5.2.0
-      type-fest: 1.4.0
 
   readable-stream@2.3.8:
     dependencies:
@@ -18309,11 +18190,6 @@ snapshots:
     dependencies:
       indent-string: 4.0.0
       strip-indent: 3.0.0
-
-  redent@4.0.0:
-    dependencies:
-      indent-string: 5.0.0
-      strip-indent: 4.0.0
 
   redeyed@2.1.1:
     dependencies:
@@ -19132,10 +19008,6 @@ snapshots:
     dependencies:
       min-indent: 1.0.1
 
-  strip-indent@4.0.0:
-    dependencies:
-      min-indent: 1.0.1
-
   strip-json-comments@2.0.1: {}
 
   strip-json-comments@3.1.1: {}
@@ -19496,8 +19368,6 @@ snapshots:
 
   trim-newlines@3.0.1: {}
 
-  trim-newlines@4.1.1: {}
-
   triple-beam@1.4.1: {}
 
   ts-api-utils@1.3.0(typescript@5.5.4):
@@ -19602,8 +19472,6 @@ snapshots:
   type-fest@0.6.0: {}
 
   type-fest@0.8.1: {}
-
-  type-fest@1.4.0: {}
 
   type-is@1.6.18:
     dependencies:
@@ -20065,13 +19933,13 @@ snapshots:
 
   vlq@0.2.3: {}
 
-  vscode-json-languageservice@3.11.0:
+  vscode-json-languageservice@4.2.1:
     dependencies:
       jsonc-parser: 3.3.1
       vscode-languageserver-textdocument: 1.0.11
-      vscode-languageserver-types: 3.16.0-next.2
+      vscode-languageserver-types: 3.16.0
       vscode-nls: 5.2.0
-      vscode-uri: 2.1.2
+      vscode-uri: 3.0.8
 
   vscode-jsonrpc@6.0.0: {}
 
@@ -20090,24 +19958,13 @@ snapshots:
 
   vscode-languageserver-types@3.16.0: {}
 
-  vscode-languageserver-types@3.16.0-next.2: {}
-
   vscode-languageserver@7.0.0:
     dependencies:
       vscode-languageserver-protocol: 3.16.0
 
   vscode-nls@5.2.0: {}
 
-  vscode-uri@2.1.2: {}
-
   vscode-uri@3.0.8: {}
-
-  wait-for-localhost-cli@3.2.0:
-    dependencies:
-      meow: 10.1.5
-      wait-for-localhost: 4.1.0
-
-  wait-for-localhost@4.1.0: {}
 
   walkdir@0.4.1: {}
 

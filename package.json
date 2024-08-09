@@ -56,24 +56,16 @@
     "node": "20.16.0"
   },
   "devDependencies": {
-    "@monkeytype/release": "workspace:*",
     "@commitlint/cli": "17.7.1",
     "@commitlint/config-conventional": "17.7.0",
+    "@monkeytype/release": "workspace:*",
     "conventional-changelog": "4.0.0",
-    "eslint": "8.57.0",
-    "eslint-config-prettier": "9.0.0",
-    "eslint-import-resolver-typescript": "3.6.1",
-    "eslint-plugin-import": "2.29.0",
-    "eslint-plugin-json": "2.1.2",
-    "eslint-plugin-require-path-exists": "1.1.9",
     "husky": "8.0.1",
     "knip": "2.19.2",
     "lint-staged": "13.2.3",
     "only-allow": "1.2.1",
     "prettier": "2.5.1",
-    "turbo": "2.0.9",
-    "typescript": "5.5.4",
-    "wait-for-localhost-cli": "3.2.0"
+    "turbo": "2.0.9"
   },
   "lint-staged": {
     "*.{json,scss,css,html}": [
