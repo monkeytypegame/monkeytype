@@ -3,7 +3,6 @@ import * as Misc from "./utils/misc";
 import * as MonkeyPower from "./elements/monkey-power";
 import * as Notifications from "./elements/notifications";
 import * as CookiesModal from "./modals/cookies";
-import * as PSA from "./elements/psa";
 import * as ConnectionState from "./states/connection";
 import * as FunboxList from "./test/funbox/funbox-list";
 //@ts-expect-error
@@ -46,7 +45,6 @@ $((): void => {
     .stop(true, true)
     .animate({ opacity: 1 }, 250);
   if (ConnectionState.get()) {
-    void PSA.show();
     void ServerConfiguration.sync().then(() => {
       if (!ServerConfiguration.get()?.users.signUp) {
         $(".signInOut").addClass("hidden");
