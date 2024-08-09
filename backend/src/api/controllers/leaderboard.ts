@@ -4,7 +4,7 @@ import {
   MILLISECONDS_IN_DAY,
   getCurrentWeekTimestamp,
 } from "../../utils/misc";
-import { MonkeyResponse, MonkeyResponse2 } from "../../utils/monkey-response";
+import { MonkeyResponse2 } from "../../utils/monkey-response";
 import * as LeaderboardsDAL from "../../dal/leaderboards";
 import MonkeyError from "../../utils/error";
 import * as DailyLeaderboards from "../../utils/daily-leaderboards";
@@ -12,6 +12,7 @@ import * as WeeklyXpLeaderboard from "../../services/weekly-xp-leaderboard";
 import {
   GetDailyLeaderboardQuery,
   GetDailyLeaderboardRankQuery,
+  GetLeaderboardDailyRankResponse,
   GetLeaderboardQuery,
   GetLeaderboardRankResponse,
   GetLeaderboardResponse as GetLeaderboardResponse,
@@ -89,7 +90,7 @@ function getDailyLeaderboardWithError(
 
 export async function getDailyLeaderboard(
   req: MonkeyTypes.Request2<GetDailyLeaderboardQuery>
-): Promise<MonkeyResponse> {
+): Promise<GetLeaderboardResponse> {
   const { skip = 0, limit = 50 } = req.query;
 
   const dailyLeaderboard = getDailyLeaderboardWithError(
@@ -107,12 +108,12 @@ export async function getDailyLeaderboard(
     req.ctx.configuration.users.premium.enabled
   );
 
-  return new MonkeyResponse("Daily leaderboard retrieved", topResults);
+  return new MonkeyResponse2("Daily leaderboard retrieved", topResults);
 }
 
 export async function getDailyLeaderboardRank(
   req: MonkeyTypes.Request2<GetDailyLeaderboardRankQuery>
-): Promise<MonkeyResponse> {
+): Promise<GetLeaderboardDailyRankResponse> {
   const { uid } = req.ctx.decodedToken;
 
   const dailyLeaderboard = getDailyLeaderboardWithError(
@@ -125,7 +126,7 @@ export async function getDailyLeaderboardRank(
     req.ctx.configuration.dailyLeaderboards
   );
 
-  return new MonkeyResponse("Daily leaderboard rank retrieved", rank);
+  return new MonkeyResponse2("Daily leaderboard rank retrieved", rank);
 }
 
 function getWeeklyXpLeaderboardWithError(

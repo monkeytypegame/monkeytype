@@ -7,6 +7,7 @@ import {
   DailyLeaderboardRank,
   LeaderboardEntry,
 } from "@monkeytype/contracts/schemas/leaderboards";
+import MonkeyError from "./error";
 
 const dailyLeaderboardNamespace = "monkeytype:dailyleaderboard";
 const scoresNamespace = `${dailyLeaderboardNamespace}:scores`;
@@ -153,10 +154,10 @@ export class DailyLeaderboard {
   public async getRank(
     uid: string,
     dailyLeaderboardsConfig: Configuration["dailyLeaderboards"]
-  ): Promise<DailyLeaderboardRank | null> {
+  ): Promise<DailyLeaderboardRank> {
     const connection = RedisClient.getConnection();
     if (!connection || !dailyLeaderboardsConfig.enabled) {
-      return null;
+      throw new MonkeyError(500, "Redis connnection is unavailable");
     }
 
     const { leaderboardScoresKey, leaderboardResultsKey } =
