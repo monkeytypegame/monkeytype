@@ -8,6 +8,7 @@
     "full-check": "turbo lint ts-check build test validate-json",
     "prepare": "husky install",
     "pre-commit": "lint-staged",
+    "ts-check": "turbo run ts-check",
     "lint": "turbo run lint",
     "lint-be": "turbo run lint --filter @monkeytype/backend",
     "lint-fe": "turbo run lint --filter @monkeytype/frontend",
