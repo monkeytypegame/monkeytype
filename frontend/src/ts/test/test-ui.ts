@@ -280,7 +280,7 @@ export function updateActiveElement(
   }
 }
 
-async function updateHintsPosition(): Promise<void> {
+export async function updateHintsPosition(): Promise<void> {
   if (
     ActivePage.get() !== "test" ||
     resultVisible ||
