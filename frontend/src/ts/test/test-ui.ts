@@ -504,12 +504,14 @@ function updateWordsHeight(force = false): void {
     CustomText.getLimitMode() !== "time" &&
     CustomText.getLimitValue() !== 0
   ) {
+    // overflow-x should not be visible in tape mode, but since showAllLines can't
+    // be enabled simultaneously with tape mode we don' need to check it's off
     $("#words")
       .css("height", "auto")
-      .css("overflow", "hidden")
+      .css("overflow", "visible clip")
       .css("width", "100%")
       .css("margin-left", "unset");
-    $("#wordsWrapper").css("height", "auto").css("overflow", "hidden");
+    $("#wordsWrapper").css("height", "auto").css("overflow", "visible clip");
 
     let nh = wordHeight * 3;
 
@@ -557,20 +559,22 @@ function updateWordsHeight(force = false): void {
       finalWrapperHeight = wrapperHeight;
     }
 
-    $("#words")
-      .css("height", finalWordsHeight + "px")
-      .css("overflow", "hidden");
+    $("#words").css("height", finalWordsHeight + "px");
+    $("#wordsWrapper").css("height", finalWrapperHeight + "px");
 
     if (Config.tapeMode !== "off") {
-      $("#words").width("200vw");
+      $("#words").css({ overflow: "hidden", width: "200vw" });
+      $("#wordsWrapper").css({ overflow: "hidden" });
       scrollTape();
     } else {
-      $("#words").css({ marginLeft: "unset", width: "" });
+      $("#words").css({
+        overflow: "visible clip",
+        marginLeft: "unset",
+        width: "",
+      });
+      $("#wordsWrapper").css({ overflow: "visible clip" });
     }
 
-    $("#wordsWrapper")
-      .css("height", finalWrapperHeight + "px")
-      .css("overflow", "hidden");
     $(".outOfFocusWarning").css(
       "margin-top",
       finalWrapperHeight / 2 - Numbers.convertRemToPixels(1) / 2 + "px"
