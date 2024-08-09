@@ -151,10 +151,15 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
     updateWordsHeight(true);
     void updateWordsInputPosition(true);
   }
-  if (eventKey === "fontSize" || eventKey === "fontFamily")
+  if (
+    ["fontSize", "fontFamily", "blindMode", "hideExtraLetters"].includes(
+      eventKey
+    )
+  ) {
     updateHintsPosition().catch((e: unknown) => {
       console.error(e);
     });
+  }
 
   if (eventKey === "theme") void applyBurstHeatmap();
 
