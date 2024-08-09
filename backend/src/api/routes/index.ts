@@ -139,13 +139,6 @@ function applyApiRoutes(app: Application): void {
         return;
       }
 
-      if (req.path === "/psas") {
-        const clientVersion =
-          (req.headers["x-client-version"] as string) ||
-          req.headers["client-version"];
-        recordClientVersion(clientVersion?.toString() ?? "unknown");
-      }
-
       if (req.path.startsWith("/docs")) {
         res.setHeader(
           "Content-Security-Policy",
