@@ -19,7 +19,6 @@ import leaderboards from "./leaderboards";
 import addSwaggerMiddlewares from "./swagger";
 import { asyncHandler } from "../../middlewares/utility";
 import { MonkeyResponse } from "../../utils/monkey-response";
-import { recordClientVersion } from "../../utils/prometheus";
 import {
   Application,
   IRouter,
