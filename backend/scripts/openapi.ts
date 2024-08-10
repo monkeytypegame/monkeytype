@@ -69,7 +69,7 @@ export function getOpenApi(): OpenAPIObject {
         {
           name: "public",
           description: "Public endpoints such as typing stats.",
-          "x-displayName": "public",
+          "x-displayName": "Public",
         },
         {
           name: "leaderboards",

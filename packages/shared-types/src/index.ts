@@ -127,7 +127,7 @@ export type ChartData = {
   raw: number[];
   err: number[];
 };
-
+//TODO moved
 export type KeyStats = {
   average: number;
   sd: number;
@@ -168,22 +168,22 @@ export type Result<M extends Mode> = {
 
 export type DBResult<T extends Mode> = Omit<
   Result<T>,
-  | "bailedOut"
-  | "blindMode"
-  | "lazyMode"
-  | "difficulty"
-  | "funbox"
-  | "language"
-  | "numbers"
-  | "punctuation"
-  | "restartCount"
-  | "incompleteTestSeconds"
-  | "afkDuration"
-  | "tags"
-  | "incompleteTests"
+  | "bailedOut" //
+  | "blindMode" //
+  | "lazyMode" //
+  | "difficulty" //
+  | "funbox" //
+  | "language" //
+  | "numbers" //
+  | "punctuation" //
+  | "restartCount" //
+  | "incompleteTestSeconds" //
+  | "afkDuration" //
+  | "tags" //
+  | "incompleteTests" //
   | "customText"
-  | "quoteLength"
-  | "isPb"
+  | "quoteLength" //not needed
+  | "isPb" //
 > & {
   correctChars?: number; // --------------
   incorrectChars?: number; // legacy results
@@ -207,6 +207,7 @@ export type DBResult<T extends Mode> = Omit<
   isPb?: boolean;
 };
 
+//TODO result + PostOnly
 export type CompletedEvent = Result<Mode> & {
   keySpacing: number[] | "toolong";
   keyDuration: number[] | "toolong";
@@ -222,8 +223,10 @@ export type CompletedEvent = Result<Mode> & {
   stopOnLetter: boolean;
 };
 
-export type CustomTextMode = "repeat" | "random" | "shuffle";
-export type CustomTextLimitMode = "word" | "time" | "section";
+export type CustomTextMode =
+  import("@monkeytype/contracts/schemas/util").CustomTextMode;
+export type CustomTextLimitMode =
+  import("@monkeytype/contracts/schemas/util").CustomTextLimitMode;
 export type CustomTextLimit = {
   value: number;
   mode: CustomTextLimitMode;

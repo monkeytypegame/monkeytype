@@ -130,6 +130,17 @@ declare namespace MonkeyTypes {
     >
   >;
 
+  type KeyStats = {
+    average: number;
+    sd: number;
+  };
+
+  type DBResultNew = {} & {
+    //DB only
+    keySpacingStats?: KeyStats;
+    keyDurationStats?: KeyStats;
+  };
+
   type BlocklistEntry = {
     _id: string;
     usernameHash?: string;

@@ -2,14 +2,14 @@ import joi from "joi";
 
 const RESULT_SCHEMA = joi
   .object({
-    acc: joi.number().min(50).max(100).required(),
-    afkDuration: joi.number().min(0).required(),
-    bailedOut: joi.boolean().required(),
-    blindMode: joi.boolean().required(),
-    challenge: joi.string().max(100).token(),
-    charStats: joi.array().items(joi.number().min(0)).length(4).required(),
-    charTotal: joi.number().min(0),
-    chartData: joi
+    acc: joi.number().min(50).max(100).required(), //
+    afkDuration: joi.number().min(0).required(), //
+    bailedOut: joi.boolean().required(), //
+    blindMode: joi.boolean().required(), //
+    challenge: joi.string().max(100).token(), //
+    charStats: joi.array().items(joi.number().min(0)).length(4).required(), //
+    charTotal: joi.number().min(0), //
+    chartData: joi //
       .alternatives()
       .try(
         joi.object({
@@ -20,8 +20,9 @@ const RESULT_SCHEMA = joi
         joi.string().valid("toolong")
       )
       .required(),
-    consistency: joi.number().min(0).max(100).required(),
+    consistency: joi.number().min(0).max(100).required(), //
     customText: joi.object({
+      //
       textLen: joi.number().required(),
       mode: joi.string().valid("repeat", "random", "shuffle").required(),
       pipeDelimiter: joi.boolean().required(),
@@ -30,15 +31,15 @@ const RESULT_SCHEMA = joi
         value: joi.number().min(0).required(),
       }),
     }),
-    difficulty: joi.string().valid("normal", "expert", "master").required(),
-    funbox: joi
+    difficulty: joi.string().valid("normal", "expert", "master").required(), //
+    funbox: joi //
       .string()
       .max(100)
       .regex(/[\w#]+/)
       .required(),
-    hash: joi.string().max(100).token().required(),
-    incompleteTestSeconds: joi.number().min(0).required(),
-    incompleteTests: joi
+    hash: joi.string().max(100).token().required(), //
+    incompleteTestSeconds: joi.number().min(0).required(), //
+    incompleteTests: joi //
       .array()
       .items(
         joi.object({
@@ -47,49 +48,49 @@ const RESULT_SCHEMA = joi
         })
       )
       .required(),
-    keyConsistency: joi.number().min(0).max(100).required(),
-    keyDuration: joi
+    keyConsistency: joi.number().min(0).max(100).required(), //
+    keyDuration: joi //
       .alternatives()
       .try(
         joi.array().items(joi.number().min(0)),
         joi.string().valid("toolong")
       ),
-    keySpacing: joi
+    keySpacing: joi //
       .alternatives()
       .try(
         joi.array().items(joi.number().min(0)),
         joi.string().valid("toolong")
       ),
-    keyOverlap: joi.number().min(0),
-    lastKeyToEnd: joi.number().min(0),
-    startToFirstKey: joi.number().min(0),
-    language: joi
+    keyOverlap: joi.number().min(0), //  required on backend?
+    lastKeyToEnd: joi.number().min(0), //required on backend?
+    startToFirstKey: joi.number().min(0), //required on backend?
+    language: joi //
       .string()
       .max(100)
       .regex(/[\w+]+/)
       .required(),
-    lazyMode: joi.boolean().required(),
-    mode: joi
+    lazyMode: joi.boolean().required(), //
+    mode: joi //
       .string()
       .valid("time", "words", "quote", "zen", "custom")
       .required(),
-    mode2: joi
+    mode2: joi //
       .string()
       .regex(/^(\d)+|custom|zen/)
       .required(),
-    numbers: joi.boolean().required(),
-    punctuation: joi.boolean().required(),
-    quoteLength: joi.number().min(0).max(3),
-    rawWpm: joi.number().min(0).max(420).required(),
-    restartCount: joi.number().required(),
-    tags: joi
+    numbers: joi.boolean().required(), //
+    punctuation: joi.boolean().required(), //
+    quoteLength: joi.number().min(0).max(3), //
+    rawWpm: joi.number().min(0).max(420).required(), //
+    restartCount: joi.number().required(), //
+    tags: joi //
       .array()
       .items(joi.string().regex(/^[a-f\d]{24}$/i))
       .required(),
-    testDuration: joi.number().required().min(1),
-    timestamp: joi.date().timestamp().required(),
-    uid: joi.string().max(100).token().required(),
-    wpm: joi.number().min(0).max(420).required(),
+    testDuration: joi.number().required().min(1), //
+    timestamp: joi.date().timestamp().required(), //
+    uid: joi.string().max(100).token().required(), //
+    wpm: joi.number().min(0).max(420).required(), //
     wpmConsistency: joi.number().min(0).max(100).required(),
     stopOnLetter: joi.boolean().required(),
   })
