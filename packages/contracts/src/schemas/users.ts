@@ -59,3 +59,8 @@ export const ResultFiltersSchema = z.object({
   funbox: z.record(z.boolean()),
 });
 export type ResultFilters = z.infer<typeof ResultFiltersSchema>;
+
+export type ResultFiltersGroup = keyof ResultFilters;
+
+export type ResultFiltersGroupItem<T extends ResultFiltersGroup> =
+  keyof ResultFilters[T];

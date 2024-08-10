@@ -12,6 +12,8 @@ import { QuoteLength } from "@monkeytype/contracts/schemas/configs";
 import {
   ResultFilters,
   ResultFiltersSchema,
+  ResultFiltersGroup,
+  ResultFiltersGroupItem,
 } from "@monkeytype/contracts/schemas/users";
 import { LocalStorageWithSchema } from "../../utils/local-storage-with-schema";
 
@@ -103,7 +105,7 @@ type Option = {
 };
 
 const groupsUsingSelect = ["language", "funbox", "tags"];
-const groupSelects: Partial<Record<keyof ResultFilters, SlimSelect>> = {};
+const groupSelects: Partial<Record<ResultFiltersGroup, SlimSelect>> = {};
 
 // current activated filter
 let filters = defaultResultFilters;
@@ -261,7 +263,7 @@ function getFilters(): ResultFilters {
   return filters;
 }
 
-function getGroup<G extends keyof ResultFilters>(group: G): ResultFilters[G] {
+function getGroup<G extends ResultFiltersGroup>(group: G): ResultFilters[G] {
   return filters[group];
 }
 
@@ -269,22 +271,22 @@ function getGroup<G extends keyof ResultFilters>(group: G): ResultFilters[G] {
 //   filters[group][filter] = value;
 // }
 
-export function getFilter<G extends keyof ResultFilters>(
+export function getFilter<G extends ResultFiltersGroup>(
   group: G,
-  filter: MonkeyTypes.Filter<G>
-): ResultFilters[G][MonkeyTypes.Filter<G>] {
+  filter: ResultFiltersGroupItem<G>
+): ResultFilters[G][ResultFiltersGroupItem<G>] {
   return filters[group][filter];
 }
 
-function setFilter(
-  group: keyof ResultFilters,
-  filter: MonkeyTypes.Filter<typeof group>,
+function setFilter<G extends ResultFiltersGroup>(
+  group: G,
+  filter: ResultFiltersGroupItem<G>,
   value: boolean
 ): void {
-  filters[group][filter as keyof typeof filters[typeof group]] = value as never;
+  filters[group][filter] = value as typeof filters[G][typeof filter];
 }
 
-function setAllFilters(group: keyof ResultFilters, value: boolean): void {
+function setAllFilters(group: ResultFiltersGroup, value: boolean): void {
   Object.keys(getGroup(group)).forEach((filter) => {
     filters[group][filter as keyof typeof filters[typeof group]] =
       value as never;
@@ -303,7 +305,7 @@ export function reset(): void {
 }
 
 type AboveChartDisplay = Partial<
-  Record<keyof ResultFilters, { all: boolean; array?: string[] }>
+  Record<ResultFiltersGroup, { all: boolean; array?: string[] }>
 >;
 
 export function updateActive(): void {
@@ -325,7 +327,10 @@ export function updateActive(): void {
 
       if (groupAboveChartDisplay === undefined) continue;
 
-      const filterValue = getFilter(group, filter);
+      const filterValue = getFilter(
+        group,
+        filter as ResultFiltersGroupItem<typeof group>
+      );
       if (filterValue === true) {
         groupAboveChartDisplay.array?.push(filter);
       } else {
@@ -365,7 +370,7 @@ export function updateActive(): void {
 
   for (const [id, select] of Object.entries(groupSelects)) {
     const ss = select;
-    const group = getGroup(id as keyof ResultFilters);
+    const group = getGroup(id as ResultFiltersGroup);
     const everythingSelected = Object.values(group).every((v) => v === true);
 
     const newData = ss.store.getData();
@@ -409,7 +414,7 @@ export function updateActive(): void {
     }, 0);
   }
 
-  function addText(group: keyof ResultFilters): string {
+  function addText(group: ResultFiltersGroup): string {
     let ret = "";
     ret += "<div class='group'>";
     if (group === "difficulty") {
@@ -507,9 +512,9 @@ export function updateActive(): void {
   }, 0);
 }
 
-function toggle<G extends keyof ResultFilters>(
+function toggle<G extends ResultFiltersGroup>(
   group: G,
-  filter: MonkeyTypes.Filter<G>
+  filter: ResultFiltersGroupItem<G>
 ): void {
   // user is changing the filters -> current filter is no longer a filter preset
   deSelectFilterPreset();
@@ -521,7 +526,7 @@ function toggle<G extends keyof ResultFilters>(
     const currentValue = filters[group][filter] as unknown as boolean;
     const newValue = !currentValue;
     filters[group][filter] =
-      newValue as unknown as ResultFilters[G][MonkeyTypes.Filter<G>];
+      newValue as ResultFilters[G][ResultFiltersGroupItem<G>];
     save();
   } catch (e) {
     Notifications.add(
@@ -540,8 +545,10 @@ $(
 ).on("click", "button", (e) => {
   const group = $(e.target)
     .parents(".buttons")
-    .attr("group") as keyof ResultFilters;
-  const filter = $(e.target).attr("filter") as MonkeyTypes.Filter<typeof group>;
+    .attr("group") as ResultFiltersGroup;
+  const filter = $(e.target).attr("filter") as ResultFiltersGroupItem<
+    typeof group
+  >;
   if ($(e.target).hasClass("allFilters")) {
     Misc.typedKeys(getFilters()).forEach((group) => {
       // id and name field do not correspond to any ui elements, no need to update
@@ -567,8 +574,8 @@ $(
   } else if ($(e.target).is("button")) {
     if (e.shiftKey) {
       setAllFilters(group, false);
-      filters[group][filter as keyof typeof filters[typeof group]] =
-        true as never;
+      filters[group][filter] =
+        true as ResultFilters[typeof group][typeof filter];
     } else {
       toggle(group, filter);
       // filters[group][filter] = !filters[group][filter];
@@ -631,7 +638,7 @@ $(".pageAccount .topFilters button.currentConfigFilter").on("click", () => {
       filters.words.custom = true;
     }
   } else if (Config.mode === "quote") {
-    const filterName: MonkeyTypes.Filter<"quoteLength">[] = [
+    const filterName: ResultFiltersGroupItem<"quoteLength">[] = [
       "short",
       "medium",
       "long",
@@ -691,7 +698,7 @@ $(".pageAccount .topFilters button.toggleAdvancedFilters").on("click", () => {
 });
 
 function adjustScrollposition(
-  group: keyof ResultFilters,
+  group: ResultFiltersGroup,
   topItem: number = 0
 ): void {
   const slimSelect = groupSelects[group];
@@ -703,7 +710,7 @@ function adjustScrollposition(
 }
 
 function selectBeforeChangeFn(
-  group: keyof ResultFilters,
+  group: ResultFiltersGroup,
   selectedOptions: Option[],
   oldSelectedOptions: Option[]
 ): void | boolean {
@@ -740,7 +747,11 @@ function selectBeforeChangeFn(
       break;
     }
 
-    setFilter(group, selectedOption.value, true);
+    setFilter(
+      group,
+      selectedOption.value as ResultFiltersGroupItem<typeof group>,
+      true
+    );
   }
 
   updateActive();
@@ -960,7 +971,7 @@ $(".group.presetFilterButtons .filterBtns").on(
 function verifyResultFiltersStructure(filterIn: ResultFilters): ResultFilters {
   const filter = deepCopyFilter(filterIn);
   Object.entries(defaultResultFilters).forEach((entry) => {
-    const key = entry[0] as keyof ResultFilters;
+    const key = entry[0] as ResultFiltersGroup;
     const value = entry[1];
     if (filter[key] === undefined) {
       // @ts-expect-error key and value is based on default filter so this is safe to ignore

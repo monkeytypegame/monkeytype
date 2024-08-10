@@ -29,10 +29,15 @@ const configLS = new LocalStorageWithSchema(
   "config",
   ConfigSchemas.ConfigSchema,
   DefaultConfig,
-  (object) => {
+  (object, issues) => {
+    console.log("LSWS - Schema validation failed, migrating", object, issues);
     const configWithoutLegacyValues = replaceLegacyValues(object as Config);
+    console.log("LSWS - legacy values replaced", configWithoutLegacyValues);
 
-    return mergeWithDefaultConfig(configWithoutLegacyValues);
+    const merged = mergeWithDefaultConfig(configWithoutLegacyValues);
+    console.log("LSWS - merged with default", merged);
+
+    return merged;
   }
 );
 
