@@ -33,6 +33,11 @@ const BASE_CONFIG = {
     open: process.env.SERVER_OPEN !== "false",
     port: 3000,
     host: process.env.BACKEND_URL !== undefined,
+    watch: {
+      //we rebuild the whole contracts package when a file changes
+      //so we only want to watch one file
+      ignored: [/.*\/packages\/contracts\/dist\/(?!configs).*/],
+    },
   },
   clearScreen: false,
   root: "src",

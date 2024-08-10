@@ -2,6 +2,9 @@
   "recommendations": [
     "esbenp.prettier-vscode",
     "vitest.explorer",
-    "huntertran.auto-markdown-toc"
+    "huntertran.auto-markdown-toc",
+    "ms-vscode.vscode-typescript-next",
+    "dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode"
   ]
 }
