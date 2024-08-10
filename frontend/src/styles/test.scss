@@ -262,7 +262,7 @@
   }
 
   &.tape .word {
-    margin: 0.25em 0.5em 0.75em 0;
+    margin: 0.25em 0.6em 0.75em 0;
   }
 
   /* a little hack for right-to-left languages */
@@ -451,7 +451,7 @@
   position: relative;
   font-size: 1em;
   line-height: 1em;
-  margin: 0.25em;
+  margin: 0.25em 0.3em;
   font-variant: no-common-ligatures;
   border-bottom: 2px solid transparent;
   letter {
