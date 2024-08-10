@@ -558,6 +558,7 @@ describe("result controller test", () => {
           },
         })
         .expect(200);
+      console.log(body);
 
       expect(body.message).toEqual("Result saved");
       expect(body.data).toEqual(

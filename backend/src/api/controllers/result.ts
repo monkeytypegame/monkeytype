@@ -5,14 +5,15 @@ import {
   getStartOfDayTimestamp,
   isDevEnvironment,
   mapRange,
+  replaceObjectId,
+  replaceObjectIds,
   roundTo2,
   stdDev,
-  stringToNumberOrDefault,
 } from "../../utils/misc";
 import objectHash from "object-hash";
 import Logger from "../../utils/logger";
 import "dotenv/config";
-import { MonkeyResponse } from "../../utils/monkey-response";
+import { MonkeyResponse2 } from "../../utils/monkey-response";
 import MonkeyError from "../../utils/error";
 import { areFunboxesCompatible, isTestTooShort } from "../../utils/validation";
 import {
@@ -42,6 +43,15 @@ import {
   PostResultResponse,
 } from "@monkeytype/shared-types";
 import { addLog } from "../../dal/logs";
+import {
+  AddResultRequest,
+  AddResultResponse,
+  GetLastResultResponse,
+  GetResultsQuery,
+  GetResultsResponse,
+  UpdateResultTagsRequest,
+  UpdateResultTagsResponse,
+} from "@monkeytype/contracts/results";
 
 try {
   if (!anticheatImplemented()) throw new Error("undefined");
@@ -60,10 +70,11 @@ try {
 }
 
 export async function getResults(
-  req: MonkeyTypes.Request
-): Promise<MonkeyResponse> {
+  req: MonkeyTypes.Request2<GetResultsQuery>
+): Promise<GetResultsResponse> {
   const { uid } = req.ctx.decodedToken;
   const premiumFeaturesEnabled = req.ctx.configuration.users.premium.enabled;
+  const { onOrAfterTimestamp = NaN, offset = 0 } = req.query;
   const userHasPremium = await UserDAL.checkIfUserIsPremium(uid);
 
   const maxLimit =
@@ -71,15 +82,9 @@ export async function getResults(
       ? req.ctx.configuration.results.limits.premiumUser
       : req.ctx.configuration.results.limits.regularUser;
 
-  const onOrAfterTimestamp = parseInt(
-    req.query["onOrAfterTimestamp"] as string,
-    10
-  );
-  let limit = stringToNumberOrDefault(
-    req.query["limit"] as string,
-    Math.min(req.ctx.configuration.results.maxBatchSize, maxLimit)
-  );
-  const offset = stringToNumberOrDefault(req.query["offset"] as string, 0);
+  let limit =
+    req.query.limit ??
+    Math.min(req.ctx.configuration.results.maxBatchSize, maxLimit);
 
   //check if premium features are disabled and current call exceeds the limit for regular users
   if (
@@ -114,30 +119,30 @@ export async function getResults(
     },
     uid
   );
-  return new MonkeyResponse("Results retrieved", results);
+  return new MonkeyResponse2("Results retrieved", replaceObjectIds(results));
 }
 
 export async function getLastResult(
-  req: MonkeyTypes.Request
-): Promise<MonkeyResponse> {
+  req: MonkeyTypes.Request2
+): Promise<GetLastResultResponse> {
   const { uid } = req.ctx.decodedToken;
   const results = await ResultDAL.getLastResult(uid);
-  return new MonkeyResponse("Result retrieved", results);
+  return new MonkeyResponse2("Result retrieved", replaceObjectId(results));
 }
 
 export async function deleteAll(
-  req: MonkeyTypes.Request
-): Promise<MonkeyResponse> {
+  req: MonkeyTypes.Request2
+): Promise<MonkeyResponse2> {
   const { uid } = req.ctx.decodedToken;
 
   await ResultDAL.deleteAll(uid);
   void addLog("user_results_deleted", "", uid);
-  return new MonkeyResponse("All results deleted");
+  return new MonkeyResponse2("All results deleted", null);
 }
 
 export async function updateTags(
-  req: MonkeyTypes.Request
-): Promise<MonkeyResponse> {
+  req: MonkeyTypes.Request2<undefined, UpdateResultTagsRequest>
+): Promise<UpdateResultTagsResponse> {
   const { uid } = req.ctx.decodedToken;
   const { tagIds, resultId } = req.body;
 
@@ -165,14 +170,14 @@ export async function updateTags(
 
   const user = await UserDAL.getPartialUser(uid, "update tags", ["tags"]);
   const tagPbs = await UserDAL.checkIfTagPb(uid, user, result);
-  return new MonkeyResponse("Result tags updated", {
+  return new MonkeyResponse2("Result tags updated", {
     tagPbs,
   });
 }
 
 export async function addResult(
-  req: MonkeyTypes.Request
-): Promise<MonkeyResponse> {
+  req: MonkeyTypes.Request2<undefined, AddResultRequest>
+): Promise<AddResultResponse> {
   const { uid } = req.ctx.decodedToken;
 
   const user = await UserDAL.getUser(uid, "add result");
@@ -261,9 +266,9 @@ export async function addResult(
     if (
       !validateResult(
         completedEvent,
-        ((req.headers["x-client-version"] as string) ||
-          req.headers["client-version"]) as string,
-        JSON.stringify(new UAParser(req.headers["user-agent"]).getResult()),
+        ((req.raw.headers["x-client-version"] as string) ||
+          req.raw.headers["client-version"]) as string,
+        JSON.stringify(new UAParser(req.raw.headers["user-agent"]).getResult()),
         user.lbOptOut === true
       )
     ) {
@@ -624,13 +629,13 @@ export async function addResult(
 
   incrementResult(completedEvent);
 
-  return new MonkeyResponse("Result saved", data);
+  return new MonkeyResponse2("Result saved", data);
 }
 
 type XpResult = {
   xp: number;
   dailyBonus?: boolean;
-  breakdown?: Record<string, number>;
+  breakdown?: Record<string, number>; //TODO define type for xpBreakdown
 };
 
 async function calculateXp(

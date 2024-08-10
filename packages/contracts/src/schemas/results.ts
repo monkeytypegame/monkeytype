@@ -83,11 +83,11 @@ const ResultOptionalPropertiesSchema = z.object({
 
 //created by the backend
 const ResultGeneratedPropertiesSchema = z.object({
-  keySpacingStats: KeyStatsSchema,
-  keyDurationStats: KeyStatsSchema,
+  keySpacingStats: KeyStatsSchema.optional(),
+  keyDurationStats: KeyStatsSchema.optional(),
   name: z.string(),
-  correctChars: z.number(), //legacy result
-  incorrectChars: z.number(), //legacy result
+  correctChars: z.number().optional(), //legacy result
+  incorrectChars: z.number().optional(), //legacy result
 });
 
 const ResultPostOnlySchema = z.object({
@@ -104,10 +104,12 @@ const ResultPostOnlySchema = z.object({
   stopOnLetter: z.boolean(),
 });
 
-export const ResultSchema = ResultBaseSchema.and(
-  ResultOptionalPropertiesSchema.partial()
-  //TODO test
-).and(ResultGeneratedPropertiesSchema);
+export const ResultSchema = ResultBaseSchema.strict()
+  .and(
+    ResultOptionalPropertiesSchema.partial().strict()
+    //TODO test
+  )
+  .and(ResultGeneratedPropertiesSchema.strict());
 
 export type Result<M extends Mode> = Omit<
   z.infer<typeof ResultSchema>,
@@ -117,7 +119,7 @@ export type Result<M extends Mode> = Omit<
   mode2: Mode2<M>;
 };
 
-export const PostResultSchema = ResultBaseSchema.and(
-  ResultOptionalPropertiesSchema
-).and(ResultPostOnlySchema);
-export type CompletedEvent = z.infer<typeof PostResultSchema>;
+export const CompletedEventSchema = ResultBaseSchema.strict()
+  .and(ResultOptionalPropertiesSchema.strict())
+  .and(ResultPostOnlySchema.strict());
+export type CompletedEvent = z.infer<typeof CompletedEventSchema>;

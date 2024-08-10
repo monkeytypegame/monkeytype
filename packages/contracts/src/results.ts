@@ -6,7 +6,7 @@ import {
   MonkeyResponseSchema,
   responseWithData,
 } from "./schemas/api";
-import { PostResultSchema, ResultSchema } from "./schemas/results";
+import { CompletedEventSchema, ResultSchema } from "./schemas/results";
 import { IdSchema } from "./schemas/util";
 
 export const GetResultsQuerySchema = z.object({
@@ -37,7 +37,12 @@ export type GetResultsQuery = z.infer<typeof GetResultsQuerySchema>;
 export const GetResultsResponseSchema = responseWithData(z.array(ResultSchema));
 export type GetResultsResponse = z.infer<typeof GetResultsResponseSchema>;
 
-export const PostResultResponseSchema = responseWithData(
+export const AddResultRequestSchema = z.object({
+  result: CompletedEventSchema,
+});
+export type AddResultRequest = z.infer<typeof AddResultRequestSchema>;
+
+export const AddResultResponseSchema = responseWithData(
   z.object({
     isPb: z.boolean(),
     tagPbs: z.array(IdSchema),
@@ -49,7 +54,7 @@ export const PostResultResponseSchema = responseWithData(
     streak: z.number().int().nonnegative(),
   })
 );
-export type PostResultResponse = z.infer<typeof PostResultResponseSchema>;
+export type AddResultResponse = z.infer<typeof AddResultResponseSchema>;
 
 export const UpdateResultTagsRequestSchema = z.object({
   tagIds: z.array(IdSchema),
@@ -94,9 +99,9 @@ export const resultsContract = c.router(
       description: "add a test result for the current user",
       method: "POST",
       path: "",
-      body: PostResultSchema,
+      body: AddResultRequestSchema,
       responses: {
-        200: PostResultResponseSchema,
+        200: AddResultResponseSchema,
       },
     },
     updateTags: {

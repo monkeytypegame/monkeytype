@@ -78,14 +78,14 @@ export async function getResult(
 
 export async function getLastResult(
   uid: string
-): Promise<Omit<MonkeyTypes.DBResult, "uid">> {
+): Promise<MonkeyTypes.DBResult> {
   const [lastResult] = await getResultCollection()
     .find({ uid })
     .sort({ timestamp: -1 })
     .limit(1)
     .toArray();
   if (!lastResult) throw new MonkeyError(404, "No results found");
-  return _.omit(lastResult, "uid");
+  return lastResult;
 }
 
 export async function getResultByTimestamp(
