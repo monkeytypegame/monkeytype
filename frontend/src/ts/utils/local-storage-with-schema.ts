@@ -7,23 +7,37 @@ export class LocalStorageWithSchema<T> {
     this.schema = schema;
   }
 
-  public get(): T | undefined {
+  public get(onSchemaFail?: (value: unknown) => T): T | undefined {
     const value = window.localStorage.getItem(this.key);
 
     if (value === null) {
       return undefined;
     }
 
+    let jsonParsed;
     try {
-      const parsed = this.schema.parse(JSON.parse(value));
-      return parsed;
+      jsonParsed = JSON.parse(value);
     } catch (e) {
-      console.error(
-        `Failed to get ${this.key} from localStorage, removing entry`,
-        e
-      );
+      console.error(`Failed to parse ${this.key} from localStorage`, e);
       window.localStorage.removeItem(this.key);
       return undefined;
+    }
+
+    const schemaParsed = this.schema.safeParse(jsonParsed);
+
+    if (schemaParsed.success) {
+      return schemaParsed.data;
+    } else {
+      if (onSchemaFail) {
+        return onSchemaFail(jsonParsed);
+      } else {
+        console.error(
+          `Value from localStorage (${this.key}) failed schema validation, removing entry`,
+          schemaParsed.error
+        );
+        window.localStorage.removeItem(this.key);
+        return undefined;
+      }
     }
   }
 
