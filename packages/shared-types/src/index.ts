@@ -133,6 +133,7 @@ export type KeyStats = {
   sd: number;
 };
 
+//TODO replace
 export type Result<M extends Mode> = {
   _id: string;
   wpm: number;
@@ -223,6 +224,7 @@ export type CompletedEvent = Result<Mode> & {
   stopOnLetter: boolean;
 };
 
+//TODO remove
 export type CustomTextMode =
   import("@monkeytype/contracts/schemas/util").CustomTextMode;
 export type CustomTextLimitMode =

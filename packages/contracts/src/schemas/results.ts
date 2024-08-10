@@ -7,7 +7,7 @@ import {
   token,
   WpmSchema,
 } from "./util";
-import { Mode2Schema, ModeSchema } from "./shared";
+import { Mode, Mode2, Mode2Schema, ModeSchema } from "./shared";
 import { DifficultySchema, FunboxSchema, LanguageSchema } from "./configs";
 
 export const IncompleteTestSchema = z.object({
@@ -104,16 +104,20 @@ const ResultPostOnlySchema = z.object({
   stopOnLetter: z.boolean(),
 });
 
-export const ResultSchema = z.union([
-  ResultBaseSchema,
-  ResultOptionalPropertiesSchema.partial(), //TODO test
-  ResultGeneratedPropertiesSchema,
-]);
-export type Result = z.infer<typeof ResultSchema>;
+export const ResultSchema = ResultBaseSchema.and(
+  ResultOptionalPropertiesSchema.partial()
+  //TODO test
+).and(ResultGeneratedPropertiesSchema);
 
-export const ResultPostSchema = z.union([
-  ResultBaseSchema,
-  ResultOptionalPropertiesSchema,
-  ResultPostOnlySchema,
-]);
-export type CompletedEvent = z.infer<typeof ResultPostSchema>;
+export type Result<M extends Mode> = Omit<
+  z.infer<typeof ResultSchema>,
+  "mode" | "mode2"
+> & {
+  mode: M;
+  mode2: Mode2<M>;
+};
+
+export const PostResultSchema = ResultBaseSchema.and(
+  ResultOptionalPropertiesSchema
+).and(ResultPostOnlySchema);
+export type CompletedEvent = z.infer<typeof PostResultSchema>;

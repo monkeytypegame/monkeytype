@@ -5,11 +5,11 @@ apis:
   internal@v2:
     root: dist/static/api/openapi.json
   public-filter:
-    root: dist/static/api/openapi-tagged.json
+    root: dist/static/api/openapi.json
     decorators:
       filter-in:
         property: x-public
-        value: yes
+        value: [yes, true]
   public@v2:
     root: dist/static/api/public.json
 

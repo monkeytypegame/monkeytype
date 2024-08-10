@@ -55,21 +55,31 @@ export function getOpenApi(): OpenAPIObject {
           description:
             "User specific configurations like test settings, theme or tags.",
           "x-displayName": "User configuration",
+          "x-public": "no",
         },
         {
           name: "presets",
           description: "User specific configuration presets.",
           "x-displayName": "User presets",
+          "x-public": "no",
+        },
+        {
+          name: "results",
+          description: "User test results",
+          "x-displayName": "Test results",
+          "x-public": "yes",
         },
         {
           name: "ape-keys",
           description: "Ape keys provide access to certain API endpoints.",
           "x-displayName": "Ape Keys",
+          "x-public": "no",
         },
         {
           name: "public",
           description: "Public endpoints such as typing stats.",
           "x-displayName": "Public",
+          "x-public": "yes",
         },
         {
           name: "leaderboards",
@@ -80,12 +90,14 @@ export function getOpenApi(): OpenAPIObject {
           name: "psas",
           description: "Public service announcements.",
           "x-displayName": "PSAs",
+          "x-public": "yes",
         },
         {
           name: "admin",
           description:
             "Various administrative endpoints. Require user to have admin permissions.",
           "x-displayName": "Admin",
+          "x-public": "no",
         },
       ],
     },
