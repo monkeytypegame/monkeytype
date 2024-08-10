@@ -5,7 +5,8 @@ import { LocalStorageWithSchema } from "../utils/local-storage-with-schema";
 
 const activeTagsLS = new LocalStorageWithSchema(
   "activeTags",
-  z.array(z.string())
+  z.array(z.string()),
+  []
 );
 
 export function saveActiveToLocalStorage(): void {
@@ -67,7 +68,7 @@ export function toggle(tagid: string, nosave = false): void {
 }
 
 export function loadActiveFromLocalStorage(): void {
-  const newTags = activeTagsLS.get() ?? [];
+  const newTags = activeTagsLS.get();
   for (const tag of newTags) {
     toggle(tag, true);
   }

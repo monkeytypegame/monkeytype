@@ -10,7 +10,8 @@ import { LocalStorageWithSchema } from "../utils/local-storage-with-schema";
 
 const confirmedPSAs = new LocalStorageWithSchema(
   "confirmedPSAs",
-  z.array(z.string())
+  z.array(z.string()),
+  []
 );
 
 function clearMemory(): void {
@@ -18,7 +19,7 @@ function clearMemory(): void {
 }
 
 function getMemory(): string[] {
-  return confirmedPSAs.get() ?? [];
+  return confirmedPSAs.get();
 }
 
 function setMemory(id: string): void {

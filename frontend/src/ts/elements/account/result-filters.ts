@@ -15,31 +15,6 @@ import {
 } from "@monkeytype/contracts/schemas/users";
 import { LocalStorageWithSchema } from "../../utils/local-storage-with-schema";
 
-const resultFiltersLS = new LocalStorageWithSchema(
-  "resultFilters",
-  ResultFiltersSchema
-);
-
-type Option = {
-  id: string;
-  value: string;
-  text: string;
-  html: string;
-  selected: boolean;
-  display: boolean;
-  disabled: boolean;
-  placeholder: boolean;
-  class: string;
-  style: string;
-  data: {
-    [key: string]: string;
-  };
-  mandatory: boolean;
-};
-
-const groupsUsingSelect = ["language", "funbox", "tags"];
-const groupSelects: Partial<Record<keyof ResultFilters, SlimSelect>> = {};
-
 export const defaultResultFilters: ResultFilters = {
   _id: "default-result-filters-id",
   name: "default result filters",
@@ -103,6 +78,33 @@ export const defaultResultFilters: ResultFilters = {
   },
 };
 
+const resultFiltersLS = new LocalStorageWithSchema(
+  "resultFilters",
+  ResultFiltersSchema,
+  defaultResultFilters
+  //todo add migration
+);
+
+type Option = {
+  id: string;
+  value: string;
+  text: string;
+  html: string;
+  selected: boolean;
+  display: boolean;
+  disabled: boolean;
+  placeholder: boolean;
+  class: string;
+  style: string;
+  data: {
+    [key: string]: string;
+  };
+  mandatory: boolean;
+};
+
+const groupsUsingSelect = ["language", "funbox", "tags"];
+const groupSelects: Partial<Record<keyof ResultFilters, SlimSelect>> = {};
+
 // current activated filter
 let filters = defaultResultFilters;
 
@@ -112,7 +114,7 @@ function save(): void {
 
 export async function load(): Promise<void> {
   try {
-    const filters = resultFiltersLS.get() ?? defaultResultFilters;
+    const filters = resultFiltersLS.get();
 
     const newTags: Record<string, boolean> = { none: false };
     Object.keys(defaultResultFilters.tags).forEach((tag) => {

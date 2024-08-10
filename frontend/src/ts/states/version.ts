@@ -2,7 +2,7 @@ import { z } from "zod";
 import { getLatestReleaseFromGitHub } from "../utils/json-data";
 import { LocalStorageWithSchema } from "../utils/local-storage-with-schema";
 
-const memoryLS = new LocalStorageWithSchema("lastSeenVersion", z.string());
+const memoryLS = new LocalStorageWithSchema("lastSeenVersion", z.string(), "");
 
 let version: null | string = null;
 let isVersionNew: null | boolean = null;
@@ -12,7 +12,7 @@ function setMemory(v: string): void {
 }
 
 function getMemory(): string {
-  return memoryLS.get() ?? "";
+  return memoryLS.get();
 }
 
 async function check(): Promise<void> {

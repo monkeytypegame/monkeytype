@@ -18,12 +18,14 @@ type CustomTextLongObject = z.infer<typeof CustomTextLongObjectSchema>;
 
 const customTextLS = new LocalStorageWithSchema(
   "customText",
-  CustomTextObjectSchema
+  CustomTextObjectSchema,
+  {}
 );
-
+//todo maybe add migrations here?
 const customTextLongLS = new LocalStorageWithSchema(
   "customTextLong",
-  CustomTextLongObjectSchema
+  CustomTextLongObjectSchema,
+  {}
 );
 
 // function setLocalStorage(data: CustomTextObject): void {
@@ -192,11 +194,11 @@ export function setCustomTextLongProgress(
 }
 
 function getLocalStorage(): CustomTextObject {
-  return customTextLS.get() ?? {};
+  return customTextLS.get();
 }
 
 function getLocalStorageLong(): CustomTextLongObject {
-  return customTextLongLS.get() ?? {};
+  return customTextLongLS.get();
 }
 
 function setLocalStorage(data: CustomTextObject): void {

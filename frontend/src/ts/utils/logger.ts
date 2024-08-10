@@ -6,9 +6,9 @@ const nativeLog = console.log;
 const nativeWarn = console.warn;
 const nativeError = console.error;
 
-const debugLogsLS = new LocalStorageWithSchema("debugLogs", z.boolean());
+const debugLogsLS = new LocalStorageWithSchema("debugLogs", z.boolean(), false);
 
-let debugLogs = debugLogsLS.get() ?? false;
+let debugLogs = debugLogsLS.get();
 
 if (isDevEnvironment()) {
   debugLogs = true;

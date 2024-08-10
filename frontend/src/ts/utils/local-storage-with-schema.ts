@@ -1,44 +1,49 @@
 export class LocalStorageWithSchema<T> {
   private key: string;
   private schema: Zod.Schema<T>;
+  private fallback: T;
+  private migrate?: (value: unknown) => T;
 
-  constructor(key: string, schema: Zod.Schema<T>) {
+  constructor(
+    key: string,
+    schema: Zod.Schema<T>,
+    fallback: T,
+    migrate?: (value: unknown) => T
+  ) {
     this.key = key;
     this.schema = schema;
+    this.fallback = fallback;
+    this.migrate = migrate;
   }
 
-  public get(onSchemaFail?: (value: unknown) => T): T | undefined {
+  public get(): T {
     const value = window.localStorage.getItem(this.key);
 
     if (value === null) {
-      return undefined;
+      return this.fallback;
     }
 
     let jsonParsed;
     try {
       jsonParsed = JSON.parse(value);
     } catch (e) {
-      console.error(`Failed to parse ${this.key} from localStorage`, e);
       window.localStorage.removeItem(this.key);
-      return undefined;
+      return this.fallback;
     }
 
     const schemaParsed = this.schema.safeParse(jsonParsed);
 
     if (schemaParsed.success) {
       return schemaParsed.data;
-    } else {
-      if (onSchemaFail) {
-        return onSchemaFail(jsonParsed);
-      } else {
-        console.error(
-          `Value from localStorage (${this.key}) failed schema validation, removing entry`,
-          schemaParsed.error
-        );
-        window.localStorage.removeItem(this.key);
-        return undefined;
-      }
     }
+
+    console.error(
+      `Value from localStorage ${this.key} failed schema validation, migrating`,
+      schemaParsed.error
+    );
+    const newValue = this.migrate?.(jsonParsed) ?? this.fallback;
+    window.localStorage.setItem(this.key, JSON.stringify(newValue));
+    return newValue;
   }
 
   public set(data: T): boolean {

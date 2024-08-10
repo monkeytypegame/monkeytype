@@ -15,7 +15,11 @@ type Accepted = z.infer<typeof AcceptedSchema>;
 
 const acceptedCookiesLS = new LocalStorageWithSchema(
   "acceptedCookies",
-  AcceptedSchema
+  AcceptedSchema,
+  {
+    security: false,
+    analytics: false,
+  }
 );
 
 function setAcceptedObject(obj: Accepted): void {
