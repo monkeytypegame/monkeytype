@@ -18,7 +18,7 @@ describe("local-storage-with-schema.ts", () => {
     const ls = new LocalStorageWithSchema(
       "config",
       objectSchema,
-      () => defaultObject
+      defaultObject
     );
 
     const getItemMock = vi.fn();
@@ -59,20 +59,23 @@ describe("local-storage-with-schema.ts", () => {
       expect(res).toBe(false);
     });
 
-    it("should return undefined if localstorage json is malformed and remove from localstorage", () => {
+    it("should revert to the fallback value if localstorage is null", () => {
+      getItemMock.mockReturnValue(null);
+
+      const res = ls.get();
+
+      expect(localStorage.getItem).toHaveBeenCalledWith("config");
+      expect(res).toEqual(defaultObject);
+    });
+
+    it("should revert to the fallback value and remove if localstorage json is malformed", () => {
       getItemMock.mockReturnValue("badjson");
 
       const res = ls.get();
 
       expect(localStorage.getItem).toHaveBeenCalledWith("config");
       expect(localStorage.removeItem).toHaveBeenCalledWith("config");
-      expect(res).toEqual(undefined);
-
-      const res2 = ls.get();
-
-      expect(localStorage.getItem).toHaveBeenCalledWith("config");
-      expect(localStorage.removeItem).toHaveBeenCalledWith("config");
-      expect(res2).toEqual(undefined);
+      expect(res).toEqual(defaultObject);
     });
 
     it("should get from localStorage", () => {
@@ -84,8 +87,13 @@ describe("local-storage-with-schema.ts", () => {
       expect(res).toEqual(defaultObject);
     });
 
-    it("should call onSchemaFail if provided", () => {
+    it("should revert to fallback value if no migrate function and schema failed", () => {
       getItemMock.mockReturnValue(JSON.stringify({ hi: "hello" }));
+      const ls = new LocalStorageWithSchema(
+        "config",
+        objectSchema,
+        defaultObject
+      );
 
       const res = ls.get();
 
@@ -93,30 +101,27 @@ describe("local-storage-with-schema.ts", () => {
       expect(res).toEqual(defaultObject);
     });
 
-    it("should return undefined on schema fail and if no onSchemaFail was provided remove from localstorage", () => {
-      const ls = new LocalStorageWithSchema("config", objectSchema);
+    it("should migrate (when function is provided) if schema failed", () => {
       getItemMock.mockReturnValue(JSON.stringify({ hi: "hello" }));
 
-      const res = ls.get();
-
-      expect(localStorage.getItem).toHaveBeenCalledWith("config");
-      expect(localStorage.removeItem).toHaveBeenCalledWith("config");
-      expect(res).toEqual(undefined);
-    });
-
-    it("should remove from localStorage if onSchemaFail returned undefined", () => {
+      const migrated = {
+        punctuation: false,
+        mode: "time",
+        fontSize: 1,
+      };
       const ls = new LocalStorageWithSchema(
         "config",
         objectSchema,
-        () => undefined
+        defaultObject,
+        () => {
+          return migrated;
+        }
       );
-      getItemMock.mockReturnValue(JSON.stringify({ hi: "hello" }));
 
       const res = ls.get();
 
       expect(localStorage.getItem).toHaveBeenCalledWith("config");
-      expect(localStorage.removeItem).toHaveBeenCalledWith("config");
-      expect(res).toEqual(undefined);
+      expect(res).toEqual(migrated);
     });
   });
 });
