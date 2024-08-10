@@ -93,7 +93,7 @@ export const leaderboardsContract = c.router(
       summary: "get leaderboard",
       description: "Get all-time leaderboard.",
       method: "GET",
-      path: "/",
+      path: "",
       query: GetLeaderboardQuerySchema.strict(),
       responses: {
         200: GetLeaderboardResponseSchema,
@@ -155,7 +155,7 @@ export const leaderboardsContract = c.router(
     getWeeklyXpRank: {
       summary: "get weekly xp leaderboard rank",
       description:
-        "Get teh rank of the current user on the weekly xp leaderboard",
+        "Get the rank of the current user on the weekly xp leaderboard",
       method: "GET",
       path: "/xp/weekly/rank",
       responses: {
