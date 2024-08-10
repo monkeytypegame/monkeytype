@@ -8,8 +8,17 @@ import Ape from "../../ape/index";
 import * as Loader from "../loader";
 // @ts-expect-error TODO: update slim-select
 import SlimSelect from "slim-select";
-import { ResultFilters } from "@monkeytype/shared-types";
 import { QuoteLength } from "@monkeytype/contracts/schemas/configs";
+import {
+  ResultFilters,
+  ResultFiltersSchema,
+} from "@monkeytype/contracts/schemas/users";
+import { LocalStorageWithSchema } from "../../utils/local-storage-with-schema";
+
+const resultFiltersLS = new LocalStorageWithSchema(
+  "resultFilters",
+  ResultFiltersSchema
+);
 
 type Option = {
   id: string;
@@ -98,51 +107,14 @@ export const defaultResultFilters: ResultFilters = {
 let filters = defaultResultFilters;
 
 function save(): void {
-  window.localStorage.setItem("resultFilters", JSON.stringify(filters));
+  resultFiltersLS.set(filters);
 }
 
 export async function load(): Promise<void> {
   try {
-    const newResultFilters = window.localStorage.getItem("resultFilters") ?? "";
-
-    if (!newResultFilters) {
-      filters = defaultResultFilters;
-    } else {
-      const newFiltersObject = JSON.parse(newResultFilters);
-
-      let reset = false;
-      for (const key of Object.keys(defaultResultFilters)) {
-        if (reset) break;
-        if (newFiltersObject[key] === undefined) {
-          reset = true;
-          break;
-        }
-
-        if (
-          typeof defaultResultFilters[
-            key as keyof typeof defaultResultFilters
-          ] === "object"
-        ) {
-          for (const subKey of Object.keys(
-            defaultResultFilters[key as keyof typeof defaultResultFilters]
-          )) {
-            if (newFiltersObject[key][subKey] === undefined) {
-              reset = true;
-              break;
-            }
-          }
-        }
-      }
-
-      if (reset) {
-        filters = defaultResultFilters;
-      } else {
-        filters = newFiltersObject;
-      }
-    }
+    const filters = resultFiltersLS.get() ?? defaultResultFilters;
 
     const newTags: Record<string, boolean> = { none: false };
-
     Object.keys(defaultResultFilters.tags).forEach((tag) => {
       if (filters.tags[tag] !== undefined) {
         newTags[tag] = filters.tags[tag];
@@ -152,7 +124,6 @@ export async function load(): Promise<void> {
     });
 
     filters.tags = newTags;
-    // await updateFilterPresets();
     save();
   } catch {
     console.log("error in loading result filters");
@@ -689,7 +660,7 @@ $(".pageAccount .topFilters button.currentConfigFilter").on("click", () => {
   }
 
   if (Config.funbox === "none") {
-    filters.funbox.none = true;
+    filters.funbox["none"] = true;
   } else {
     for (const f of Config.funbox.split("#")) {
       filters.funbox[f] = true;

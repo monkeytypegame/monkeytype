@@ -21,8 +21,13 @@ import * as ConfigSchemas from "@monkeytype/contracts/schemas/configs";
 import { Config } from "@monkeytype/contracts/schemas/configs";
 import { roundTo1 } from "./utils/numbers";
 import { Mode, ModeSchema } from "@monkeytype/contracts/schemas/shared";
+import { LocalStorageWithSchema } from "./utils/local-storage-with-schema";
 
-export let localStorageConfig: Config;
+//todo what if the config schema changes? how do we handle that here?
+const configLS = new LocalStorageWithSchema(
+  "config",
+  ConfigSchemas.ConfigSchema
+);
 
 let loadDone: (value?: unknown) => void;
 
@@ -47,29 +52,25 @@ function saveToLocalStorage(
   noDbCheck = false
 ): void {
   if (nosave) return;
-
-  const localToSave = config;
-
-  const localToSaveStringified = JSON.stringify(localToSave);
-  window.localStorage.setItem("config", localToSaveStringified);
+  configLS.set(config);
   if (!noDbCheck) {
     //@ts-expect-error this is fine
     configToSend[key] = config[key];
     saveToDatabase();
   }
+  const localToSaveStringified = JSON.stringify(config);
   ConfigEvent.dispatch("saveToLocalStorage", localToSaveStringified);
 }
 
 export function saveFullConfigToLocalStorage(noDbCheck = false): void {
   console.log("saving full config to localStorage");
-  const save = config;
-  const stringified = JSON.stringify(save);
-  window.localStorage.setItem("config", stringified);
+  configLS.set(config);
   if (!noDbCheck) {
     AccountButton.loading(true);
-    void DB.saveConfig(save);
+    void DB.saveConfig(config);
     AccountButton.loading(false);
   }
+  const stringified = JSON.stringify(config);
   ConfigEvent.dispatch("saveToLocalStorage", stringified);
 }
 
@@ -2098,25 +2099,13 @@ export async function reset(): Promise<void> {
 
 export async function loadFromLocalStorage(): Promise<void> {
   console.log("loading localStorage config");
-  const newConfigString = window.localStorage.getItem("config");
-  let newConfig: Config;
-  if (
-    newConfigString !== undefined &&
-    newConfigString !== null &&
-    newConfigString !== ""
-  ) {
-    try {
-      newConfig = JSON.parse(newConfigString);
-    } catch (e) {
-      newConfig = {} as Config;
-    }
-    await apply(newConfig);
-    localStorageConfig = newConfig;
-    saveFullConfigToLocalStorage(true);
-  } else {
+  const newConfig = configLS.get();
+  if (newConfig === undefined) {
     await reset();
+  } else {
+    await apply(newConfig);
+    saveFullConfigToLocalStorage(true);
   }
-  // TestLogic.restart(false, true);
   loadDone();
 }
 

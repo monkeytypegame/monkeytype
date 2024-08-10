@@ -5,24 +5,26 @@ import * as Notifications from "./notifications";
 import { format } from "date-fns/format";
 import * as Alerts from "./alerts";
 import { PSA } from "@monkeytype/contracts/schemas/psas";
+import { z } from "zod";
+import { LocalStorageWithSchema } from "../utils/local-storage-with-schema";
+
+const confirmedPSAs = new LocalStorageWithSchema(
+  "confirmedPSAs",
+  z.array(z.string())
+);
 
 function clearMemory(): void {
-  window.localStorage.setItem("confirmedPSAs", JSON.stringify([]));
+  confirmedPSAs.set([]);
 }
 
 function getMemory(): string[] {
-  //TODO verify with zod?
-  return (
-    (JSON.parse(
-      window.localStorage.getItem("confirmedPSAs") ?? "[]"
-    ) as string[]) ?? []
-  );
+  return confirmedPSAs.get() ?? [];
 }
 
 function setMemory(id: string): void {
   const list = getMemory();
   list.push(id);
-  window.localStorage.setItem("confirmedPSAs", JSON.stringify(list));
+  confirmedPSAs.set(list);
 }
 
 async function getLatest(): Promise<PSA[] | null> {

@@ -1,10 +1,14 @@
+import { z } from "zod";
+import { LocalStorageWithSchema } from "./local-storage-with-schema";
 import { isDevEnvironment } from "./misc";
 
 const nativeLog = console.log;
 const nativeWarn = console.warn;
 const nativeError = console.error;
 
-let debugLogs = localStorage.getItem("debugLogs") === "true";
+const debugLogsLS = new LocalStorageWithSchema("debugLogs", z.boolean());
+
+let debugLogs = debugLogsLS.get() ?? false;
 
 if (isDevEnvironment()) {
   debugLogs = true;
@@ -14,7 +18,7 @@ if (isDevEnvironment()) {
 export function toggleDebugLogs(): void {
   debugLogs = !debugLogs;
   info(`Debug logs ${debugLogs ? "enabled" : "disabled"}`);
-  localStorage.setItem("debugLogs", debugLogs.toString());
+  debugLogsLS.set(debugLogs);
 }
 
 function info(...args: unknown[]): void {
