@@ -8,10 +8,11 @@ import { LocalStorageWithSchema } from "../utils/local-storage-with-schema";
 import { z } from "zod";
 
 //zod schema for an object with string keys and string values
-const CustomTextObjectSchema = z.record(z.string());
+const CustomTextObjectSchema = z.record(z.string(), z.string());
 type CustomTextObject = z.infer<typeof CustomTextObjectSchema>;
 
 const CustomTextLongObjectSchema = z.record(
+  z.string(),
   z.object({ text: z.string(), progress: z.number() })
 );
 type CustomTextLongObject = z.infer<typeof CustomTextLongObjectSchema>;
