@@ -22,7 +22,7 @@ import { Config } from "@monkeytype/contracts/schemas/configs";
 import { roundTo1 } from "./utils/numbers";
 import { Mode, ModeSchema } from "@monkeytype/contracts/schemas/shared";
 import { LocalStorageWithSchema } from "./utils/local-storage-with-schema";
-import { mergeWithDefaultConfig, replaceLegacyValues } from "./utils/config";
+import { mergeWithDefaultConfig } from "./utils/config";
 
 const configLS = new LocalStorageWithSchema(
   "config",
@@ -2125,6 +2125,76 @@ export function getConfigChanges(): MonkeyTypes.PresetConfig {
       configChanges[key] = config[key];
     });
   return configChanges;
+}
+
+export function replaceLegacyValues(
+  configObj: ConfigSchemas.PartialConfig
+): ConfigSchemas.PartialConfig {
+  //@ts-expect-error
+  if (configObj.quickTab === true) {
+    configObj.quickRestart = "tab";
+  }
+
+  if (typeof configObj.smoothCaret === "boolean") {
+    configObj.smoothCaret = configObj.smoothCaret ? "medium" : "off";
+  }
+
+  //@ts-expect-error
+  if (configObj.swapEscAndTab === true) {
+    configObj.quickRestart = "esc";
+  }
+
+  //@ts-expect-error
+  if (configObj.alwaysShowCPM === true) {
+    configObj.typingSpeedUnit = "cpm";
+  }
+
+  //@ts-expect-error
+  if (configObj.showAverage === "wpm") {
+    configObj.showAverage = "speed";
+  }
+
+  if (typeof configObj.playSoundOnError === "boolean") {
+    configObj.playSoundOnError = configObj.playSoundOnError ? "1" : "off";
+  }
+
+  //@ts-expect-error
+  if (configObj.showTimerProgress === false) {
+    configObj.timerStyle = "off";
+  }
+
+  //@ts-expect-error
+  if (configObj.showLiveWpm === true) {
+    let val: ConfigSchemas.LiveSpeedAccBurstStyle = "mini";
+    if (configObj.timerStyle !== "bar" && configObj.timerStyle !== "off") {
+      val = configObj.timerStyle as ConfigSchemas.LiveSpeedAccBurstStyle;
+    }
+    configObj.liveSpeedStyle = val;
+  }
+
+  //@ts-expect-error
+  if (configObj.showLiveBurst === true) {
+    let val: ConfigSchemas.LiveSpeedAccBurstStyle = "mini";
+    if (configObj.timerStyle !== "bar" && configObj.timerStyle !== "off") {
+      val = configObj.timerStyle as ConfigSchemas.LiveSpeedAccBurstStyle;
+    }
+    configObj.liveBurstStyle = val;
+  }
+
+  //@ts-expect-error
+  if (configObj.showLiveAcc === true) {
+    let val: ConfigSchemas.LiveSpeedAccBurstStyle = "mini";
+    if (configObj.timerStyle !== "bar" && configObj.timerStyle !== "off") {
+      val = configObj.timerStyle as ConfigSchemas.LiveSpeedAccBurstStyle;
+    }
+    configObj.liveAccStyle = val;
+  }
+
+  if (typeof configObj.soundVolume === "string") {
+    configObj.soundVolume = parseFloat(configObj.soundVolume);
+  }
+
+  return configObj;
 }
 
 export const loadPromise = new Promise((v) => {
