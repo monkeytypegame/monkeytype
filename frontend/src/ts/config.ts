@@ -2123,19 +2123,6 @@ export async function loadFromLocalStorage(): Promise<void> {
   loadDone();
 }
 
-export function getConfigChanges(): MonkeyTypes.PresetConfig {
-  const configChanges = {} as MonkeyTypes.PresetConfig;
-  typedKeys(config)
-    .filter((key) => {
-      return config[key] !== DefaultConfig[key];
-    })
-    .forEach((key) => {
-      //@ts-expect-error this is fine
-      configChanges[key] = config[key];
-    });
-  return configChanges;
-}
-
 export function replaceLegacyValues(
   configObj: ConfigSchemas.PartialConfig
 ): ConfigSchemas.PartialConfig {
@@ -2204,6 +2191,19 @@ export function replaceLegacyValues(
   }
 
   return configObj;
+}
+
+export function getConfigChanges(): MonkeyTypes.PresetConfig {
+  const configChanges = {} as MonkeyTypes.PresetConfig;
+  typedKeys(config)
+    .filter((key) => {
+      return config[key] !== DefaultConfig[key];
+    })
+    .forEach((key) => {
+      //@ts-expect-error this is fine
+      configChanges[key] = config[key];
+    });
+  return configChanges;
 }
 
 export const loadPromise = new Promise((v) => {
