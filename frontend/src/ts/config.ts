@@ -16,7 +16,12 @@ import {
   canSetConfigWithCurrentFunboxes,
   canSetFunboxWithConfig,
 } from "./test/funbox/funbox-validation";
-import { isDevEnvironment, reloadAfter, typedKeys } from "./utils/misc";
+import {
+  isDevEnvironment,
+  isObject,
+  reloadAfter,
+  typedKeys,
+} from "./utils/misc";
 import * as ConfigSchemas from "@monkeytype/contracts/schemas/configs";
 import { Config } from "@monkeytype/contracts/schemas/configs";
 import { roundTo1 } from "./utils/numbers";
@@ -28,8 +33,12 @@ const configLS = new LocalStorageWithSchema(
   "config",
   ConfigSchemas.ConfigSchema,
   DefaultConfig,
-  (object, _issues) => {
-    const configWithoutLegacyValues = replaceLegacyValues(object as Config);
+  (value, _issues) => {
+    if (!isObject(value)) {
+      return DefaultConfig;
+    }
+
+    const configWithoutLegacyValues = replaceLegacyValues(value);
     const merged = mergeWithDefaultConfig(configWithoutLegacyValues);
 
     return merged;
