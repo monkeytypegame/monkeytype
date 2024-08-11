@@ -2103,7 +2103,7 @@ export async function reset(): Promise<void> {
 }
 
 export async function loadFromLocalStorage(): Promise<void> {
-  console.log("loading localStori doage config");
+  console.log("loading localStorage config");
   const newConfig = configLS.get();
   if (newConfig === undefined) {
     await reset();
