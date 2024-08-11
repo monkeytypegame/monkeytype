@@ -24,7 +24,6 @@ import { Mode, ModeSchema } from "@monkeytype/contracts/schemas/shared";
 import { LocalStorageWithSchema } from "./utils/local-storage-with-schema";
 import { mergeWithDefaultConfig, replaceLegacyValues } from "./utils/config";
 
-//todo what if the config schema changes? how do we handle that here?
 const configLS = new LocalStorageWithSchema(
   "config",
   ConfigSchemas.ConfigSchema,
