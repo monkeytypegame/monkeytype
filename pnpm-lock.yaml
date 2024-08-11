@@ -274,8 +274,8 @@ importers:
         specifier: workspace:*
         version: link:../packages/contracts
       '@ts-rest/core':
-        specifier: 3.45.2
-        version: 3.45.2(zod@3.23.8)
+        specifier: 3.49.3
+        version: 3.49.3(zod@3.23.8)
       axios:
         specifier: 1.7.4
         version: 1.7.4(debug@4.3.6)
@@ -2516,14 +2516,6 @@ packages:
   '@ts-graphviz/core@2.0.3':
     resolution: {integrity: sha512-EZ+XlSwjdLtscoBOnA/Ba6QBrmoxAR73tJFjnWxaJQsZxWBQv6bLUrDgZUdXkXRAOSkRHn0uXY6Wq/3SsV2WtQ==}
     engines: {node: '>=18'}
-
-  '@ts-rest/core@3.45.2':
-    resolution: {integrity: sha512-Eiv+Sa23MbsAd1Gx9vNJ+IFCDyLZNdJ+UuGMKbFvb+/NmgcBR1VL1UIVtEkd5DJxpYMMd8SLvW91RgB2TS8iPw==}
-    peerDependencies:
-      zod: ^3.22.3
-    peerDependenciesMeta:
-      zod:
-        optional: true
 
   '@ts-rest/core@3.49.3':
     resolution: {integrity: sha512-h/4aSH7SGsQfBZ5LcF2k8+TVtFSITYG4qI91tdf0YMddPsSZJho2OV9jhvycNEt+sosPsw/FDV2QFKBAUEr22w==}
@@ -11709,10 +11701,6 @@ snapshots:
     dependencies:
       '@ts-graphviz/ast': 2.0.3
       '@ts-graphviz/common': 2.1.2
-
-  '@ts-rest/core@3.45.2(zod@3.23.8)':
-    optionalDependencies:
-      zod: 3.23.8
 
   '@ts-rest/core@3.49.3(zod@3.23.8)':
     optionalDependencies:

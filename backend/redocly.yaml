@@ -9,7 +9,7 @@ apis:
     decorators:
       filter-in:
         property: x-public
-        value: [yes, true]
+        value: yes
   public@v2:
     root: dist/static/api/public.json
 

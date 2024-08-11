@@ -6,8 +6,6 @@ import * as RateLimit from "../../middlewares/rate-limit";
 import * as ResultController from "../controllers/result";
 import { callController } from "../ts-rest-adapter";
 
-const s = initServer();
-
 const validateResultSavingEnabled = validate({
   criteria: (configuration) => {
     return configuration.results.savingEnabled;
@@ -15,6 +13,7 @@ const validateResultSavingEnabled = validate({
   invalidMessage: "Results are not being saved at this time.",
 });
 
+const s = initServer();
 export default s.router(resultsContract, {
   get: {
     middleware: [
