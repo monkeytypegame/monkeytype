@@ -15,7 +15,7 @@ describe("ApeKeyController", () => {
 
   beforeEach(async () => {
     await enableApeKeysEndpoints(true);
-    getUserMock.mockResolvedValue(user(uid, { canManageApeKeys: true }));
+    getUserMock.mockResolvedValue(user(uid, {}));
     vi.useFakeTimers();
     vi.setSystemTime(1000);
   });
