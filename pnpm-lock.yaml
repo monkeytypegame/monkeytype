@@ -17,6 +17,9 @@ importers:
       '@monkeytype/release':
         specifier: workspace:*
         version: link:packages/release
+      '@vitest/coverage-v8':
+        specifier: 1.6.0
+        version: 1.6.0(vitest@1.6.0(@types/node@20.5.1)(happy-dom@13.4.1)(sass@1.70.0)(terser@5.31.3))
       conventional-changelog:
         specifier: 4.0.0
         version: 4.0.0
@@ -12185,6 +12188,25 @@ snapshots:
       strip-literal: 2.1.0
       test-exclude: 6.0.0
       vitest: 1.6.0(@types/node@20.14.11)(happy-dom@13.4.1)(sass@1.70.0)(terser@5.31.3)
+    transitivePeerDependencies:
+      - supports-color
+
+  '@vitest/coverage-v8@1.6.0(vitest@1.6.0(@types/node@20.5.1)(happy-dom@13.4.1)(sass@1.70.0)(terser@5.31.3))':
+    dependencies:
+      '@ampproject/remapping': 2.3.0
+      '@bcoe/v8-coverage': 0.2.3
+      debug: 4.3.6(supports-color@5.5.0)
+      istanbul-lib-coverage: 3.2.2
+      istanbul-lib-report: 3.0.1
+      istanbul-lib-source-maps: 5.0.6
+      istanbul-reports: 3.1.7
+      magic-string: 0.30.11
+      magicast: 0.3.4
+      picocolors: 1.0.1
+      std-env: 3.7.0
+      strip-literal: 2.1.0
+      test-exclude: 6.0.0
+      vitest: 1.6.0(@types/node@20.5.1)(happy-dom@13.4.1)(sass@1.70.0)(terser@5.31.3)
     transitivePeerDependencies:
       - supports-color
 
