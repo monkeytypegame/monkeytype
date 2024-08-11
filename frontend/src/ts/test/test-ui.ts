@@ -899,14 +899,6 @@ export async function updateWordElement(inputOverride?: string): Promise<void> {
         ret += `<letter>` + currentWord[i] + "</letter>";
       }
     }
-
-    if (Config.highlightMode === "letter") {
-      if (input.length > currentWord.length && !Config.blindMode) {
-        wordAtIndex.classList.add("error");
-      } else if (input.length === currentWord.length) {
-        wordAtIndex.classList.remove("error");
-      }
-    }
   }
 
   wordAtIndex.innerHTML = ret;
