@@ -91,7 +91,12 @@ module.exports = {
           "error",
           { ignoreArrowShorthand: true },
         ],
-        "@typescript-eslint/explicit-function-return-type": ["error"],
+        "@typescript-eslint/explicit-function-return-type": [
+          "error",
+          {
+            allowExpressions: true,
+          },
+        ],
         "@typescript-eslint/ban-ts-comment": "off",
         "@typescript-eslint/no-empty-function": "error",
         "@typescript-eslint/no-unused-vars": [

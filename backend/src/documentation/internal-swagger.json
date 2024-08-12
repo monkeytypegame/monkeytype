@@ -24,10 +24,6 @@
       "description": "User data and related operations"
     },
     {
-      "name": "leaderboards",
-      "description": "Leaderboard data"
-    },
-    {
       "name": "results",
       "description": "Result data and related operations"
     },
@@ -399,78 +395,6 @@
             "in": "path",
             "name": "tagId",
             "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "default": {
-            "description": "",
-            "schema": {
-              "$ref": "#/definitions/Response"
-            }
-          }
-        }
-      }
-    },
-    "/leaderboards": {
-      "get": {
-        "tags": ["leaderboards"],
-        "summary": "Gets a leaderboard",
-        "parameters": [
-          {
-            "in": "query",
-            "name": "language",
-            "type": "string"
-          },
-          {
-            "in": "query",
-            "name": "mode",
-            "type": "string"
-          },
-          {
-            "in": "query",
-            "name": "mode2",
-            "type": "string"
-          },
-          {
-            "in": "query",
-            "name": "skip",
-            "type": "number"
-          },
-          {
-            "in": "query",
-            "name": "limit",
-            "type": "number"
-          }
-        ],
-        "responses": {
-          "default": {
-            "description": "",
-            "schema": {
-              "$ref": "#/definitions/Response"
-            }
-          }
-        }
-      }
-    },
-    "/leaderboards/rank": {
-      "get": {
-        "tags": ["leaderboards"],
-        "summary": "Gets a user's rank from a leaderboard",
-        "parameters": [
-          {
-            "in": "query",
-            "name": "language",
-            "type": "string"
-          },
-          {
-            "in": "query",
-            "name": "mode",
-            "type": "string"
-          },
-          {
-            "in": "query",
-            "name": "mode2",
             "type": "string"
           }
         ],

@@ -17,6 +17,9 @@ importers:
       '@monkeytype/release':
         specifier: workspace:*
         version: link:packages/release
+      '@vitest/coverage-v8':
+        specifier: 1.6.0
+        version: 1.6.0(vitest@1.6.0(@types/node@20.5.1)(happy-dom@13.4.1)(sass@1.70.0)(terser@5.31.3))
       conventional-changelog:
         specifier: 4.0.0
         version: 4.0.0
@@ -169,8 +172,8 @@ importers:
         specifier: workspace:*
         version: link:../packages/typescript-config
       '@redocly/cli':
-        specifier: 1.18.1
-        version: 1.18.1(encoding@0.1.13)(enzyme@3.11.0)
+        specifier: 1.19.0
+        version: 1.19.0(encoding@0.1.13)(enzyme@3.11.0)
       '@types/bcrypt':
         specifier: 5.0.2
         version: 5.0.2
@@ -2324,16 +2327,16 @@ packages:
   '@redocly/ajv@8.11.0':
     resolution: {integrity: sha512-9GWx27t7xWhDIR02PA18nzBdLcKQRgc46xNQvjFkrYk4UOmvKhJ/dawwiX0cCOeetN5LcaaiqQbVOWYK62SGHw==}
 
-  '@redocly/cli@1.18.1':
-    resolution: {integrity: sha512-+bRKj46R9wvTzMdnoYfMueJ9/ek0NprEsQNowV7XcHgOXifeFFikRtBFcpkwqCNxaQ/nWAJn4LHZaFcssbcHow==}
+  '@redocly/cli@1.19.0':
+    resolution: {integrity: sha512-ev6J0eD+quprvW9PVCl9JmRFZbj6cuK+mnYPAjcrPvesy2RF752fflcpgQjGnyFaGb1Cj+DiwDi3dYr3EAp04A==}
     engines: {node: '>=14.19.0', npm: '>=7.0.0'}
     hasBin: true
 
   '@redocly/config@0.7.0':
     resolution: {integrity: sha512-6GKxTo/9df0654Mtivvr4lQnMOp+pRj9neVywmI5+BwfZLTtkJnj2qB3D6d8FHTr4apsNOf6zTa5FojX0Evh4g==}
 
-  '@redocly/openapi-core@1.18.1':
-    resolution: {integrity: sha512-y2ZR3aaVF80XRVoFP0Dp2z5DeCOilPTuS7V4HnHIYZdBTfsqzjkO169h5JqAaifnaLsLBhe3YArdgLb7W7wW6Q==}
+  '@redocly/openapi-core@1.19.0':
+    resolution: {integrity: sha512-ezK6qr80sXvjDgHNrk/zmRs9vwpIAeHa0T/qmo96S+ib4ThQ5a8f3qjwEqxMeVxkxCTbkaY9sYSJKOxv4ejg5w==}
     engines: {node: '>=14.19.0', npm: '>=7.0.0'}
 
   '@rollup/plugin-babel@5.3.1':
@@ -11650,9 +11653,9 @@ snapshots:
       require-from-string: 2.0.2
       uri-js: 4.4.1
 
-  '@redocly/cli@1.18.1(encoding@0.1.13)(enzyme@3.11.0)':
+  '@redocly/cli@1.19.0(encoding@0.1.13)(enzyme@3.11.0)':
     dependencies:
-      '@redocly/openapi-core': 1.18.1(encoding@0.1.13)
+      '@redocly/openapi-core': 1.19.0(encoding@0.1.13)
       abort-controller: 3.0.0
       chokidar: 3.6.0
       colorette: 1.4.0
@@ -11681,7 +11684,7 @@ snapshots:
 
   '@redocly/config@0.7.0': {}
 
-  '@redocly/openapi-core@1.18.1(encoding@0.1.13)':
+  '@redocly/openapi-core@1.19.0(encoding@0.1.13)':
     dependencies:
       '@redocly/ajv': 8.11.0
       '@redocly/config': 0.7.0
@@ -12185,6 +12188,25 @@ snapshots:
       strip-literal: 2.1.0
       test-exclude: 6.0.0
       vitest: 1.6.0(@types/node@20.14.11)(happy-dom@13.4.1)(sass@1.70.0)(terser@5.31.3)
+    transitivePeerDependencies:
+      - supports-color
+
+  '@vitest/coverage-v8@1.6.0(vitest@1.6.0(@types/node@20.5.1)(happy-dom@13.4.1)(sass@1.70.0)(terser@5.31.3))':
+    dependencies:
+      '@ampproject/remapping': 2.3.0
+      '@bcoe/v8-coverage': 0.2.3
+      debug: 4.3.6(supports-color@5.5.0)
+      istanbul-lib-coverage: 3.2.2
+      istanbul-lib-report: 3.0.1
+      istanbul-lib-source-maps: 5.0.6
+      istanbul-reports: 3.1.7
+      magic-string: 0.30.11
+      magicast: 0.3.4
+      picocolors: 1.0.1
+      std-env: 3.7.0
+      strip-literal: 2.1.0
+      test-exclude: 6.0.0
+      vitest: 1.6.0(@types/node@20.5.1)(happy-dom@13.4.1)(sass@1.70.0)(terser@5.31.3)
     transitivePeerDependencies:
       - supports-color
 
@@ -18209,7 +18231,7 @@ snapshots:
   redoc@2.1.5(core-js@3.37.1)(encoding@0.1.13)(enzyme@3.11.0)(mobx@6.13.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(styled-components@6.1.12(react-dom@18.3.1(react@18.3.1))(react@18.3.1)):
     dependencies:
       '@cfaester/enzyme-adapter-react-18': 0.8.0(enzyme@3.11.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      '@redocly/openapi-core': 1.18.1(encoding@0.1.13)
+      '@redocly/openapi-core': 1.19.0(encoding@0.1.13)
       classnames: 2.5.1
       core-js: 3.37.1
       decko: 1.2.0
