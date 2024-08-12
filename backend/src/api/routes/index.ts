@@ -123,7 +123,9 @@ function applyDevApiRoutes(app: Application): void {
     app.use(async (req, res, next) => {
       const slowdown = (await getLiveConfiguration()).dev.responseSlowdownMs;
       if (slowdown > 0) {
-        Logger.info(`Simulating ${slowdown}ms delay for ${req.path}`);
+        Logger.info(
+          `Simulating ${slowdown}ms delay for ${req.method} ${req.path}`
+        );
         await new Promise((resolve) => setTimeout(resolve, slowdown));
       }
       next();
