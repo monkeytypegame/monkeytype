@@ -16,14 +16,35 @@ import {
   canSetConfigWithCurrentFunboxes,
   canSetFunboxWithConfig,
 } from "./test/funbox/funbox-validation";
-import { isDevEnvironment, reloadAfter, typedKeys } from "./utils/misc";
+import {
+  isDevEnvironment,
+  isObject,
+  reloadAfter,
+  typedKeys,
+} from "./utils/misc";
 import * as ConfigSchemas from "@monkeytype/contracts/schemas/configs";
 import { Config } from "@monkeytype/contracts/schemas/configs";
 import { roundTo1 } from "./utils/numbers";
 import { Mode, ModeSchema } from "@monkeytype/contracts/schemas/shared";
 import { Language, LanguageSchema } from "@monkeytype/contracts/schemas/util";
+import { LocalStorageWithSchema } from "./utils/local-storage-with-schema";
+import { mergeWithDefaultConfig } from "./utils/config";
 
-export let localStorageConfig: Config;
+const configLS = new LocalStorageWithSchema({
+  key: "config",
+  schema: ConfigSchemas.ConfigSchema,
+  fallback: DefaultConfig,
+  migrate: (value, _issues) => {
+    if (!isObject(value)) {
+      return DefaultConfig;
+    }
+
+    const configWithoutLegacyValues = replaceLegacyValues(value);
+    const merged = mergeWithDefaultConfig(configWithoutLegacyValues);
+
+    return merged;
+  },
+});
 
 let loadDone: (value?: unknown) => void;
 
@@ -48,29 +69,25 @@ function saveToLocalStorage(
   noDbCheck = false
 ): void {
   if (nosave) return;
-
-  const localToSave = config;
-
-  const localToSaveStringified = JSON.stringify(localToSave);
-  window.localStorage.setItem("config", localToSaveStringified);
+  configLS.set(config);
   if (!noDbCheck) {
     //@ts-expect-error this is fine
     configToSend[key] = config[key];
     saveToDatabase();
   }
+  const localToSaveStringified = JSON.stringify(config);
   ConfigEvent.dispatch("saveToLocalStorage", localToSaveStringified);
 }
 
 export function saveFullConfigToLocalStorage(noDbCheck = false): void {
   console.log("saving full config to localStorage");
-  const save = config;
-  const stringified = JSON.stringify(save);
-  window.localStorage.setItem("config", stringified);
+  configLS.set(config);
   if (!noDbCheck) {
     AccountButton.loading(true);
-    void DB.saveConfig(save);
+    void DB.saveConfig(config);
     AccountButton.loading(false);
   }
+  const stringified = JSON.stringify(config);
   ConfigEvent.dispatch("saveToLocalStorage", stringified);
 }
 
@@ -1977,8 +1994,6 @@ export async function apply(
 
   ConfigEvent.dispatch("fullConfigChange");
 
-  configToApply = replaceLegacyValues(configToApply);
-
   const configObj = configToApply as Config;
   (Object.keys(DefaultConfig) as (keyof Config)[]).forEach((configKey) => {
     if (configObj[configKey] === undefined) {
@@ -2095,33 +2110,19 @@ export async function reset(): Promise<void> {
 
 export async function loadFromLocalStorage(): Promise<void> {
   console.log("loading localStorage config");
-  const newConfigString = window.localStorage.getItem("config");
-  let newConfig: Config;
-  if (
-    newConfigString !== undefined &&
-    newConfigString !== null &&
-    newConfigString !== ""
-  ) {
-    try {
-      newConfig = JSON.parse(newConfigString);
-    } catch (e) {
-      newConfig = {} as Config;
-    }
-    await apply(newConfig);
-    localStorageConfig = newConfig;
-    saveFullConfigToLocalStorage(true);
-  } else {
+  const newConfig = configLS.get();
+  if (newConfig === undefined) {
     await reset();
+  } else {
+    await apply(newConfig);
+    saveFullConfigToLocalStorage(true);
   }
-  // TestLogic.restart(false, true);
   loadDone();
 }
 
-function replaceLegacyValues(
-  configToApply: ConfigSchemas.PartialConfig | MonkeyTypes.ConfigChanges
-): ConfigSchemas.Config | MonkeyTypes.ConfigChanges {
-  const configObj = configToApply as ConfigSchemas.Config;
-
+export function replaceLegacyValues(
+  configObj: ConfigSchemas.PartialConfig
+): ConfigSchemas.PartialConfig {
   //@ts-expect-error
   if (configObj.quickTab === true) {
     configObj.quickRestart = "tab";
@@ -2159,7 +2160,7 @@ function replaceLegacyValues(
   if (configObj.showLiveWpm === true) {
     let val: ConfigSchemas.LiveSpeedAccBurstStyle = "mini";
     if (configObj.timerStyle !== "bar" && configObj.timerStyle !== "off") {
-      val = configObj.timerStyle;
+      val = configObj.timerStyle as ConfigSchemas.LiveSpeedAccBurstStyle;
     }
     configObj.liveSpeedStyle = val;
   }
@@ -2168,7 +2169,7 @@ function replaceLegacyValues(
   if (configObj.showLiveBurst === true) {
     let val: ConfigSchemas.LiveSpeedAccBurstStyle = "mini";
     if (configObj.timerStyle !== "bar" && configObj.timerStyle !== "off") {
-      val = configObj.timerStyle;
+      val = configObj.timerStyle as ConfigSchemas.LiveSpeedAccBurstStyle;
     }
     configObj.liveBurstStyle = val;
   }
@@ -2177,7 +2178,7 @@ function replaceLegacyValues(
   if (configObj.showLiveAcc === true) {
     let val: ConfigSchemas.LiveSpeedAccBurstStyle = "mini";
     if (configObj.timerStyle !== "bar" && configObj.timerStyle !== "off") {
-      val = configObj.timerStyle;
+      val = configObj.timerStyle as ConfigSchemas.LiveSpeedAccBurstStyle;
     }
     configObj.liveAccStyle = val;
   }
