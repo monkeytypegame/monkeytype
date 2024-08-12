@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { IdSchema } from "./util";
+import { ModeSchema } from "./shared";
 
 export const ResultFiltersSchema = z.object({
   _id: IdSchema,
@@ -13,13 +14,7 @@ export const ResultFiltersSchema = z.object({
     expert: z.boolean(),
     master: z.boolean(),
   }),
-  mode: z.object({
-    words: z.boolean(),
-    time: z.boolean(),
-    quote: z.boolean(),
-    zen: z.boolean(),
-    custom: z.boolean(),
-  }),
+  mode: z.record(ModeSchema, z.boolean()),
   words: z.object({
     "10": z.boolean(),
     "25": z.boolean(),
