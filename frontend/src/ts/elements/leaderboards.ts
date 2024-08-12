@@ -17,7 +17,11 @@ import Format from "../utils/format";
 // @ts-expect-error TODO: update slim-select
 import SlimSelect from "slim-select";
 import { getHtmlByUserFlags } from "../controllers/user-flag-controller";
-import { LeaderboardEntry } from "@monkeytype/shared-types";
+import {
+  LeaderboardEntry,
+  LeaderboardRank,
+} from "@monkeytype/contracts/schemas/leaderboards";
+import { Mode } from "@monkeytype/contracts/schemas/shared";
 
 const wrapperId = "leaderboardsWrapper";
 
@@ -35,7 +39,9 @@ let currentData: {
 };
 
 let currentRank: {
-  [_key in LbKey]: Ape.Leaderboards.GetRank | Record<string, never>;
+  [_key in LbKey]:
+    | (LeaderboardRank & { minWpm?: number }) //Daily LB rank has minWpm
+    | Record<string, never>;
 } = {
   "15": {},
   "60": {},
@@ -425,10 +431,10 @@ function updateYesterdayButton(): void {
   }
 }
 
-function getDailyLeaderboardQuery(): { isDaily: boolean; daysBefore: number } {
+function getDailyLeaderboardQuery(): { isDaily: boolean; daysBefore?: 1 } {
   const isDaily = currentTimeRange === "daily";
   const isViewingDailyAndButtonIsActive = isDaily && showingYesterday;
-  const daysBefore = isViewingDailyAndButtonIsActive ? 1 : 0;
+  const daysBefore = isViewingDailyAndButtonIsActive ? 1 : undefined;
 
   return {
     isDaily,
@@ -443,57 +449,59 @@ async function update(): Promise<void> {
   showLoader("15");
   showLoader("60");
 
-  const timeModes = ["15", "60"];
+  const { isDaily, daysBefore } = getDailyLeaderboardQuery();
+  const requestData = isDaily
+    ? Ape.leaderboards.getDaily
+    : Ape.leaderboards.get;
+  const requestRank = isDaily
+    ? Ape.leaderboards.getDailyRank
+    : Ape.leaderboards.getRank;
 
-  const lbDataRequests = timeModes.map(async (mode2) => {
-    return Ape.leaderboards.get({
-      language: currentLanguage,
-      mode: "time",
-      mode2,
-      ...getDailyLeaderboardQuery(),
-    });
-  });
+  const baseQuery = {
+    language: currentLanguage,
+    mode: "time" as Mode,
+    daysBefore,
+  };
 
-  const lbRankRequests: Promise<
-    Ape.HttpClientResponse<Ape.Leaderboards.GetRank>
-  >[] = [];
-  if (isAuthenticated()) {
-    lbRankRequests.push(
-      ...timeModes.map(async (mode2) => {
-        return Ape.leaderboards.getRank({
-          language: currentLanguage,
-          mode: "time",
-          mode2,
-          ...getDailyLeaderboardQuery(),
-        });
-      })
+  const fallbackResponse = { status: 200, body: { message: "", data: null } };
+
+  const lbRank15Request = isAuthenticated()
+    ? requestRank({ query: { ...baseQuery, mode2: "15" } })
+    : fallbackResponse;
+
+  const lbRank60Request = isAuthenticated()
+    ? requestRank({ query: { ...baseQuery, mode2: "60" } })
+    : fallbackResponse;
+  const [lb15Data, lb60Data, lb15Rank, lb60Rank] = await Promise.all([
+    requestData({ query: { ...baseQuery, mode2: "15" } }),
+    requestData({ query: { ...baseQuery, mode2: "60" } }),
+    lbRank15Request,
+    lbRank60Request,
+  ]);
+
+  if (
+    lb15Data.status !== 200 ||
+    lb60Data.status !== 200 ||
+    lb15Rank.status !== 200 ||
+    lb60Rank.status !== 200
+  ) {
+    const failedResponses = [lb15Data, lb60Data, lb15Rank, lb60Rank].filter(
+      (it) => it.status !== 200
     );
-  }
 
-  const responses = await Promise.all(lbDataRequests);
-  const rankResponses = await Promise.all(lbRankRequests);
-
-  const failedResponses = [
-    ...(responses.filter((response) => response.status !== 200) ?? []),
-    ...(rankResponses.filter((response) => response.status !== 200) ?? []),
-  ];
-  if (failedResponses.length > 0) {
     hideLoader("15");
     hideLoader("60");
     Notifications.add(
-      "Failed to load leaderboards: " + failedResponses[0]?.message,
+      "Failed to load leaderboards: " + failedResponses[0]?.body.message,
       -1
     );
     return;
   }
 
-  const [lb15Data, lb60Data] = responses.map((response) => response.data);
-  const [lb15Rank, lb60Rank] = rankResponses.map((response) => response.data);
-
-  if (lb15Data !== undefined && lb15Data !== null) currentData["15"] = lb15Data;
-  if (lb60Data !== undefined && lb60Data !== null) currentData["60"] = lb60Data;
-  if (lb15Rank !== undefined && lb15Rank !== null) currentRank["15"] = lb15Rank;
-  if (lb60Rank !== undefined && lb60Rank !== null) currentRank["60"] = lb60Rank;
+  if (lb15Data.body.data !== null) currentData["15"] = lb15Data.body.data;
+  if (lb60Data.body.data !== null) currentData["60"] = lb60Data.body.data;
+  if (lb15Rank.body.data !== null) currentRank["15"] = lb15Rank.body.data;
+  if (lb60Rank.body.data !== null) currentRank["60"] = lb60Rank.body.data;
 
   const leaderboardKeys: LbKey[] = ["15", "60"];
 
@@ -541,21 +549,34 @@ async function requestMore(lb: LbKey, prepend = false): Promise<void> {
     skipVal = 0;
   }
 
-  const response = await Ape.leaderboards.get({
-    language: currentLanguage,
-    mode: "time",
-    mode2: lb,
-    skip: skipVal,
-    limit: limitVal,
-    ...getDailyLeaderboardQuery(),
-  });
-  const data = response.data;
+  const { isDaily, daysBefore } = getDailyLeaderboardQuery();
 
-  if (response.status !== 200 || data === null || data.length === 0) {
+  const requestData = isDaily
+    ? Ape.leaderboards.getDaily
+    : Ape.leaderboards.get;
+
+  const response = await requestData({
+    query: {
+      language: currentLanguage,
+      mode: "time",
+      mode2: lb,
+      skip: skipVal,
+      limit: limitVal,
+      daysBefore,
+    },
+  });
+
+  if (
+    response.status !== 200 ||
+    response.body.data === null ||
+    response.body.data.length === 0
+  ) {
     hideLoader(lb);
     requesting[lb] = false;
     return;
   }
+  const data = response.body.data;
+
   if (prepend) {
     currentData[lb].unshift(...data);
   } else {
@@ -582,14 +603,21 @@ async function requestMore(lb: LbKey, prepend = false): Promise<void> {
 async function requestNew(lb: LbKey, skip: number): Promise<void> {
   showLoader(lb);
 
-  const response = await Ape.leaderboards.get({
-    language: currentLanguage,
-    mode: "time",
-    mode2: lb,
-    skip,
-    ...getDailyLeaderboardQuery(),
+  const { isDaily, daysBefore } = getDailyLeaderboardQuery();
+
+  const requestData = isDaily
+    ? Ape.leaderboards.getDaily
+    : Ape.leaderboards.get;
+
+  const response = await requestData({
+    query: {
+      language: currentLanguage,
+      mode: "time",
+      mode2: lb,
+      skip,
+      daysBefore,
+    },
   });
-  const data = response.data;
 
   if (response.status === 503) {
     Notifications.add(
@@ -602,10 +630,16 @@ async function requestNew(lb: LbKey, skip: number): Promise<void> {
   clearBody(lb);
   currentData[lb] = [];
   currentAvatars[lb] = [];
-  if (response.status !== 200 || data === null || data.length === 0) {
+  if (
+    response.status !== 200 ||
+    response.body.data === null ||
+    response.body.data.length === 0
+  ) {
     hideLoader(lb);
     return;
   }
+
+  const data = response.body.data;
   currentData[lb] = data;
   await fillTable(lb);
 
@@ -618,7 +652,7 @@ async function requestNew(lb: LbKey, skip: number): Promise<void> {
 }
 
 async function getAvatarUrls(
-  data: Ape.Leaderboards.GetLeaderboard
+  data: LeaderboardEntry[]
 ): Promise<(string | null)[]> {
   return Promise.allSettled(
     data.map(async (entry) =>

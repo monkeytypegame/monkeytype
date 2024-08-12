@@ -21,10 +21,6 @@
       "description": "User data and related operations"
     },
     {
-      "name": "leaderboards",
-      "description": "Leaderboard data and related operations"
-    },
-    {
       "name": "results",
       "description": "User results data and related operations"
     }
@@ -197,97 +193,6 @@
             "description": "",
             "schema": {
               "$ref": "#/definitions/Result"
-            }
-          }
-        }
-      }
-    },
-    "/leaderboards": {
-      "get": {
-        "tags": ["leaderboards"],
-        "summary": "Gets global leaderboard data",
-        "parameters": [
-          {
-            "name": "language",
-            "in": "query",
-            "description": "The leaderboard's language (i.e., english)",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "mode",
-            "in": "query",
-            "description": "The primary mode (i.e., time)",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "mode2",
-            "in": "query",
-            "description": "The secondary mode (i.e., 60)",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "skip",
-            "in": "query",
-            "description": "How many leaderboard entries to skip",
-            "required": false,
-            "type": "number",
-            "minimum": 0
-          },
-          {
-            "name": "limit",
-            "in": "query",
-            "description": "How many leaderboard entries to request",
-            "required": false,
-            "type": "number",
-            "minimum": 0,
-            "maximum": 50
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "schema": {
-              "$ref": "#/definitions/LeaderboardEntry"
-            }
-          }
-        }
-      }
-    },
-    "/leaderboards/rank": {
-      "get": {
-        "tags": ["leaderboards"],
-        "summary": "Gets your qualifying rank from a leaderboard",
-        "parameters": [
-          {
-            "name": "language",
-            "in": "query",
-            "description": "The leaderboard's language (i.e., english)",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "mode",
-            "in": "query",
-            "description": "The primary mode (i.e., time)",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "mode2",
-            "in": "query",
-            "description": "The secondary mode (i.e., 60)",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "schema": {
-              "$ref": "#/definitions/LeaderboardEntry"
             }
           }
         }
@@ -602,70 +507,6 @@
                 }
               }
             }
-          }
-        }
-      }
-    },
-    "LeaderboardEntry": {
-      "type": "object",
-      "properties": {
-        "uid": {
-          "type": "string",
-          "example": "6226b17aebc27a4a8d1ce04b"
-        },
-        "acc": {
-          "type": "number",
-          "format": "double",
-          "example": 97.96
-        },
-        "consistency": {
-          "type": "number",
-          "format": "double",
-          "example": 83.29
-        },
-        "lazyMode": {
-          "type": "boolean",
-          "example": false
-        },
-        "name": {
-          "type": "string",
-          "example": "Miodec"
-        },
-        "punctuation": {
-          "type": "boolean",
-          "example": false
-        },
-        "rank": {
-          "type": "integer",
-          "example": 3506
-        },
-        "raw": {
-          "type": "number",
-          "format": "double",
-          "example": 145.18
-        },
-        "wpm": {
-          "type": "number",
-          "format": "double",
-          "example": 141.18
-        },
-        "timestamp": {
-          "type": "integer",
-          "example": 1644438189583
-        },
-        "discordId": {
-          "type": "string",
-          "example": "974761412044437307"
-        },
-        "discordAvatar": {
-          "type": "string",
-          "example": "6226b17aebc27a4a8d1ce04b"
-        },
-        "badgeIds": {
-          "type": "array",
-          "items": {
-            "type": "integer",
-            "example": 1
           }
         }
       }

@@ -17,7 +17,6 @@ const Ape = {
   users: new endpoints.Users(httpClient),
   results: new endpoints.Results(httpClient),
   quotes: new endpoints.Quotes(httpClient),
-  leaderboards: new endpoints.Leaderboards(httpClient),
   configuration: new endpoints.Configuration(httpClient),
   dev: new endpoints.Dev(buildHttpClient(API_URL, 240_000)),
 };
