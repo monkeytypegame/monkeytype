@@ -125,7 +125,7 @@ declare namespace MonkeyTypes {
   };
 
   type DBResult = MonkeyTypes.WithObjectId<
-    import("@monkeytype/shared-types").DBResult<
+    import("@monkeytype/contracts/schemas/results").Result<
       import("@monkeytype/contracts/schemas/shared").Mode
     >
   >;

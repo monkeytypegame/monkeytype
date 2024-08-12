@@ -121,4 +121,11 @@ export const CompletedEventSchema = ResultBaseSchema.merge(
 )
   .merge(ResultPostOnlySchema)
   .strict();
-export type CompletedEvent = z.infer<typeof CompletedEventSchema>;
+
+export type CompletedEvent<M extends Mode> = Omit<
+  z.infer<typeof CompletedEventSchema>,
+  "mode" | "mode2"
+> & {
+  mode: M;
+  mode2: Mode2<M>;
+};

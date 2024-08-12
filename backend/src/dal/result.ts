@@ -7,14 +7,11 @@ import {
 } from "mongodb";
 import MonkeyError from "../utils/error";
 import * as db from "../init/db";
-import { DBResult as SharedDBResult } from "@monkeytype/shared-types";
+
 import { getUser, getTags } from "./user";
-import { Mode } from "@monkeytype/contracts/schemas/shared";
 
-type DBResult = MonkeyTypes.WithObjectId<SharedDBResult<Mode>>;
-
-export const getResultCollection = (): Collection<DBResult> =>
-  db.collection<DBResult>("results");
+export const getResultCollection = (): Collection<MonkeyTypes.DBResult> =>
+  db.collection<MonkeyTypes.DBResult>("results");
 
 export async function addResult(
   uid: string,

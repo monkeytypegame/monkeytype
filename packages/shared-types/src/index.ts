@@ -134,95 +134,15 @@ export type KeyStats = {
 };
 
 //TODO replace
-export type Result<M extends Mode> = {
-  _id: string;
-  wpm: number;
-  rawWpm: number;
-  charStats: [number, number, number, number];
-  acc: number;
-  mode: M;
-  mode2: Mode2<M>;
-  quoteLength?: number;
-  timestamp: number;
-  restartCount: number;
-  incompleteTestSeconds: number;
-  incompleteTests: IncompleteTest[];
-  testDuration: number;
-  afkDuration: number;
-  tags: string[];
-  consistency: number;
-  keyConsistency: number;
-  chartData: ChartData | "toolong";
-  uid: string;
-  keySpacingStats?: KeyStats;
-  keyDurationStats?: KeyStats;
-  isPb: boolean;
-  bailedOut: boolean;
-  blindMode: boolean;
-  lazyMode: boolean;
-  difficulty: Difficulty;
-  funbox: string;
-  language: string;
-  numbers: boolean;
-  punctuation: boolean;
-};
+export type Result<M extends Mode> =
+  import("@monkeytype/contracts/schemas/results").CompletedEvent<M>;
 
-export type DBResult<T extends Mode> = Omit<
-  Result<T>,
-  | "bailedOut" //
-  | "blindMode" //
-  | "lazyMode" //
-  | "difficulty" //
-  | "funbox" //
-  | "language" //
-  | "numbers" //
-  | "punctuation" //
-  | "restartCount" //
-  | "incompleteTestSeconds" //
-  | "afkDuration" //
-  | "tags" //
-  | "incompleteTests" //
-  | "customText"
-  | "quoteLength" //not needed
-  | "isPb" //
-> & {
-  correctChars?: number; // --------------
-  incorrectChars?: number; // legacy results
-  // --------------
-  name: string;
-  // -------------- fields that might be removed to save space
-  bailedOut?: boolean;
-  blindMode?: boolean;
-  lazyMode?: boolean;
-  difficulty?: Difficulty;
-  funbox?: string;
-  language?: string;
-  numbers?: boolean;
-  punctuation?: boolean;
-  restartCount?: number;
-  incompleteTestSeconds?: number;
-  afkDuration?: number;
-  tags?: string[];
-  customText?: CustomTextDataWithTextLen;
-  quoteLength?: number;
-  isPb?: boolean;
-};
+export type DBResult<M extends Mode> =
+  import("@monkeytype/contracts/schemas/results").Result<M>;
 
 //TODO result + PostOnly
-export type CompletedEvent = Result<Mode> & {
-  keySpacing: number[] | "toolong";
-  keyDuration: number[] | "toolong";
-  customText?: CustomTextDataWithTextLen;
-  wpmConsistency: number;
-  challenge?: string | null;
-  keyOverlap: number;
-  lastKeyToEnd: number;
-  startToFirstKey: number;
-  charTotal: number;
-  stringified?: string; //obsolete?
-  hash?: string;
-  stopOnLetter: boolean;
-};
+export type CompletedEvent<M extends Mode> =
+  import("@monkeytype/contracts/schemas/results").CompletedEvent<M>;
 
 //TODO remove
 export type CustomTextMode =

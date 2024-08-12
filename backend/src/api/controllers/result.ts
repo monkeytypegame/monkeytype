@@ -52,6 +52,9 @@ import {
   UpdateResultTagsRequest,
   UpdateResultTagsResponse,
 } from "@monkeytype/contracts/results";
+import { Mode } from "@monkeytype/contracts/schemas/shared";
+
+type IntermediateCompletedEvent<M extends Mode> = CompletedEvent<M>;
 
 try {
   if (!anticheatImplemented()) throw new Error("undefined");
@@ -189,7 +192,10 @@ export async function addResult(
     );
   }
 
-  const completedEvent = Object.assign({}, req.body.result) as CompletedEvent;
+  const completedEvent = Object.assign(
+    {},
+    req.body.result
+  ) as IntermediateCompletedEvent<typeof req.body.result.mode>;
   if (!user.lbOptOut && completedEvent.acc < 75) {
     throw new MonkeyError(
       400,

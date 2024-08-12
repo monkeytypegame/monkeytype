@@ -4,11 +4,11 @@ import { ObjectId } from "mongodb";
 
 type Result = MonkeyTypes.WithObjectId<DBResult<Mode>>;
 
-export function buildDbResult(
-  completedEvent: CompletedEvent,
+export function buildDbResult<M extends Mode>(
+  completedEvent: CompletedEvent<M>,
   userName: string,
   isPb: boolean
-): Result {
+): MonkeyTypes.DBResult {
   const ce = completedEvent;
   const res: Result = {
     _id: new ObjectId(),

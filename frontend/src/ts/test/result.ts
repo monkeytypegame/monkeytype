@@ -39,10 +39,10 @@ import type {
   LabelPosition,
 } from "chartjs-plugin-annotation";
 import Ape from "../ape";
-import { Result } from "@monkeytype/shared-types";
+import { CompletedEvent } from "@monkeytype/shared-types";
 import { Mode } from "@monkeytype/contracts/schemas/shared";
 
-let result: Result<Mode>;
+let result: CompletedEvent;
 let maxChartVal: number;
 
 let useUnsmoothedRaw = false;
@@ -830,7 +830,7 @@ function updateQuoteSource(randomQuote: MonkeyTypes.Quote | null): void {
 }
 
 export async function update(
-  res: Result<Mode>,
+  res: CompletedEvent,
   difficultyFailed: boolean,
   failReason: string,
   afkDetected: boolean,
