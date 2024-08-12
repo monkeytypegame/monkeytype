@@ -1,6 +1,7 @@
 import { format } from "date-fns/format";
 import { getReleasesFromGitHub } from "../utils/json-data";
 import AnimatedModal from "../utils/animated-modal";
+import { createErrorMessage } from "../utils/misc";
 
 export function show(): void {
   void modal.show({
@@ -44,9 +45,10 @@ export function show(): void {
             }
           });
         })
-        .catch((e) => {
+        .catch((e: unknown) => {
+          const msg = createErrorMessage(e, "Failed to fetch version history");
           $("#versionHistoryModal .modal").html(
-            `<div class="releases">Failed to fetch version history:<br>${e.message}</div`
+            `<div class="releases">Failed to fetch version history:<br>${msg}</div`
           );
         });
       $("#newVersionIndicator").addClass("hidden");

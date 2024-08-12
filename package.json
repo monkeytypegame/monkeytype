@@ -8,6 +8,7 @@
     "full-check": "turbo lint ts-check build test validate-json",
     "prepare": "husky install",
     "pre-commit": "lint-staged",
+    "ts-check": "turbo run ts-check",
     "lint": "turbo run lint",
     "lint-be": "turbo run lint --filter @monkeytype/backend",
     "lint-fe": "turbo run lint --filter @monkeytype/frontend",
@@ -29,12 +30,13 @@
     "start-fe": "turbo run start --filter @monkeytype/frontend",
     "docker": "cd backend && docker compose up",
     "audit-fe": "cd frontend && npm run audit",
-    "release": "node ./bin/release.mjs",
-    "release-fe": "node ./bin/release.mjs --fe",
-    "release-be": "node ./bin/release.mjs --be",
-    "release-no-deploy": "node ./bin/release.mjs --no-deploy",
-    "release-dry": "node ./bin/release.mjs --dry",
-    "hotfix": "npm run build-fe && cd frontend && npm run deploy-live && cd .. && sh ./bin/purgeCfCache.sh",
+    "release": "monkeytype-release",
+    "release-fe": "monkeytype-release --fe",
+    "release-be": "monkeytype-release --be",
+    "release-no-deploy": "monkeytype-release --no-deploy",
+    "release-dry": "monkeytype-release --dry",
+    "hotfix-fe": "npm run build-fe && cd frontend && npm run deploy-live && monkeytype-purge",
+    "hotfix-be": "monkeytype-deploy-be",
     "pretty-check": "prettier --check .",
     "pretty-check-be": "prettier --check ./backend",
     "pretty-check-fe": "prettier --check ./frontend/src",
@@ -56,24 +58,16 @@
   "devDependencies": {
     "@commitlint/cli": "17.7.1",
     "@commitlint/config-conventional": "17.7.0",
-    "@typescript-eslint/eslint-plugin": "7.1.0",
-    "@typescript-eslint/parser": "7.1.0",
+    "@vitest/coverage-v8": "1.6.0",
+    "@monkeytype/release": "workspace:*",
     "conventional-changelog": "4.0.0",
-    "eslint": "8.57.0",
-    "eslint-config-prettier": "9.0.0",
-    "eslint-import-resolver-typescript": "3.6.1",
-    "eslint-plugin-import": "2.29.0",
-    "eslint-plugin-json": "2.1.2",
-    "eslint-plugin-require-path-exists": "1.1.9",
     "husky": "8.0.1",
     "knip": "2.19.2",
     "lint-staged": "13.2.3",
     "only-allow": "1.2.1",
     "prettier": "2.5.1",
-    "readline-sync": "1.4.10",
     "turbo": "2.0.9",
-    "typescript": "5.3.3",
-    "wait-for-localhost-cli": "3.2.0"
+    "vitest": "1.6.0"
   },
   "lint-staged": {
     "*.{json,scss,css,html}": [
@@ -84,6 +78,6 @@
       "eslint"
     ]
   },
-  "version": "24.31.2",
+  "version": "24.32.0",
   "packageManager": "pnpm@9.6.0"
 }

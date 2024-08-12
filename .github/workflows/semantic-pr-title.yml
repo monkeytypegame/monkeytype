@@ -6,6 +6,7 @@ on:
       - opened
       - edited
       - synchronize
+      - reopened
 
 permissions:
   pull-requests: write
@@ -15,7 +16,8 @@ jobs:
     name: check
     runs-on: ubuntu-latest
     steps:
-      - uses: amannn/action-semantic-pull-request@v5
+      - name: Lint and verify PR title
+        uses: amannn/action-semantic-pull-request@v5
         id: lint_pr_title
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -34,7 +36,16 @@ jobs:
             style
             test
           requireScope: false
-
+          subjectPattern:  ^.+ \(@[^ ,]+(, @[^ ,]+)*\)$
+          subjectPatternError: |
+            Title "{title}"
+            didn't match the configured pattern. Please ensure that the title
+            contains your name so that you can be credited in our changelog.
+            A correct version would look something like: 
+            
+            feat: add new feature (@github-username)
+            fix: resolve bug (@github-username)
+            
       - uses: marocchino/sticky-pull-request-comment@v2
         # When the previous steps fails, the workflow would stop. By adding this
         # condition you can continue the execution with the populated error message.
@@ -44,7 +55,7 @@ jobs:
           message: |
             Hey there and thank you for opening this pull request! 👋🏼
 
-            We require pull request titles to follow the [Conventional Commits specification](https://www.conventionalcommits.org/en/v1.0.0/) and it looks like your proposed title needs to be adjusted.
+            We require pull request titles to follow the [Conventional Commits specification](https://www.conventionalcommits.org/en/v1.0.0/) and also include the author name at the end inside round brackets. It looks like your proposed title needs to be adjusted.
 
             Details:
 

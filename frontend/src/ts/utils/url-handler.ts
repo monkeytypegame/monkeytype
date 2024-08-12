@@ -218,7 +218,7 @@ export function loadChallengeFromUrl(getOverride?: string): void {
         });
       }
     })
-    .catch((e) => {
+    .catch((e: unknown) => {
       Notifications.add("Failed to load challenge", -1);
       console.error(e);
     });

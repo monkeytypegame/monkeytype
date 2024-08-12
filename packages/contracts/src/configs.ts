@@ -22,14 +22,14 @@ export const configsContract = c.router(
       summary: "get config",
       description: "Get config of the current user.",
       method: "GET",
-      path: "/",
+      path: "",
       responses: {
         200: GetConfigResponseSchema,
       },
     },
     save: {
       method: "PATCH",
-      path: "/",
+      path: "",
       body: PartialConfigSchema.strict(),
       responses: {
         200: MonkeyResponseSchema,
@@ -40,7 +40,7 @@ export const configsContract = c.router(
     },
     delete: {
       method: "DELETE",
-      path: "/",
+      path: "",
       body: c.noBody(),
       responses: {
         200: MonkeyResponseSchema,

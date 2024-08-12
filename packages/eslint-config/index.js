@@ -31,6 +31,14 @@ module.exports = {
     "no-duplicate-imports": ["error"],
     "no-constant-condition": ["error"],
     "no-constant-binary-expression": "error",
+    "no-unused-vars": [
+      "error",
+      {
+        argsIgnorePattern: "^(_|e|event)",
+        caughtErrorsIgnorePattern: "^(_|e|error)",
+        varsIgnorePattern: "^_",
+      },
+    ],
     "import/no-duplicates": "off",
     "import/no-unresolved": [
       "error",
@@ -63,7 +71,7 @@ module.exports = {
         "@typescript-eslint/require-await": "off",
         "@typescript-eslint/unbound-method": "off",
         "@typescript-eslint/await-thenable": "off",
-        "@typescript-eslint/no-useless-template-literals": "off",
+        "@typescript-eslint/no-unnecessary-template-expression": "off",
         "@typescript-eslint/prefer-promise-reject-errors": "off",
         "@typescript-eslint/no-this-alias": "off",
         "@typescript-eslint/no-unnecessary-type-arguments": "off",
@@ -85,10 +93,20 @@ module.exports = {
         ],
         "@typescript-eslint/explicit-function-return-type": ["error"],
         "@typescript-eslint/ban-ts-comment": "off",
-        "@typescript-eslint/no-empty-function": "warn",
+        "@typescript-eslint/no-empty-function": "error",
         "@typescript-eslint/no-unused-vars": [
-          "warn",
-          { argsIgnorePattern: "^(_|e|event)", varsIgnorePattern: "^_" },
+          "error",
+          {
+            argsIgnorePattern: "^(_|e|event)",
+            caughtErrorsIgnorePattern: "^(_|e|error)",
+            varsIgnorePattern: "^_",
+          },
+        ],
+        "@typescript-eslint/no-unused-expressions": [
+          "error",
+          {
+            allowTernary: true,
+          },
         ],
         "@typescript-eslint/no-var-requires": "error",
         "@typescript-eslint/no-this-alias": "off",
@@ -98,7 +116,7 @@ module.exports = {
             checksVoidReturn: false,
           },
         ],
-        "@typescript-eslint/promise-function-async": "warn",
+        "@typescript-eslint/promise-function-async": "error",
         "@typescript-eslint/no-floating-promises": "error",
         "@typescript-eslint/strict-boolean-expressions": [
           "error",
@@ -106,7 +124,7 @@ module.exports = {
         ],
         "@typescript-eslint/non-nullable-type-assertion-style": "off",
         "@typescript-eslint/no-unnecessary-condition": "off",
-        "@typescript-eslint/consistent-type-definitions": ["warn", "type"],
+        "@typescript-eslint/consistent-type-definitions": ["error", "type"],
         "@typescript-eslint/no-invalid-void-type": "off",
         "import/namespace": "off",
       },

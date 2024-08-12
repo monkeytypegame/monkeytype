@@ -1,6 +1,7 @@
 export default [
   "gmaill.com",
   "gamil.com",
+  "gmali.com",
   "gnail.com",
   "gmil.com",
   "gamail.com",

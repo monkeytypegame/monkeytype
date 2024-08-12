@@ -16,7 +16,7 @@ import {
   canSetConfigWithCurrentFunboxes,
   canSetFunboxWithConfig,
 } from "./test/funbox/funbox-validation";
-import { isDevEnvironment, reloadAfter } from "./utils/misc";
+import { isDevEnvironment, reloadAfter, typedKeys } from "./utils/misc";
 import * as ConfigSchemas from "@monkeytype/contracts/schemas/configs";
 import { Config } from "@monkeytype/contracts/schemas/configs";
 import { roundTo1 } from "./utils/numbers";
@@ -53,7 +53,8 @@ function saveToLocalStorage(
   const localToSaveStringified = JSON.stringify(localToSave);
   window.localStorage.setItem("config", localToSaveStringified);
   if (!noDbCheck) {
-    (configToSend[key] as typeof config[typeof key]) = config[key];
+    //@ts-expect-error this is fine
+    configToSend[key] = config[key];
     saveToDatabase();
   }
   ConfigEvent.dispatch("saveToLocalStorage", localToSaveStringified);
@@ -182,6 +183,11 @@ export function setSoundVolume(
   val: ConfigSchemas.SoundVolume,
   nosave?: boolean
 ): boolean {
+  if (val < 0 || val > 1) {
+    Notifications.add("Sound volume must be between 0 and 1", 0);
+    val = 0.5;
+  }
+
   if (
     !isConfigValueValid("sound volume", val, ConfigSchemas.SoundVolumeSchema)
   ) {
@@ -469,8 +475,11 @@ export function setPaceCaret(
   }
 
   if (document.readyState === "complete") {
-    if (val === "pb" && !isAuthenticated()) {
-      Notifications.add("PB pace caret is unavailable without an account", 0);
+    if ((val === "pb" || val === "tagPb") && !isAuthenticated()) {
+      Notifications.add(
+        `Pace caret "pb" and "tag pb" are unavailable without an account`,
+        0
+      );
       return false;
     }
   }
@@ -2176,17 +2185,22 @@ function replaceLegacyValues(
     configObj.liveAccStyle = val;
   }
 
+  if (typeof configObj.soundVolume === "string") {
+    configObj.soundVolume = parseFloat(configObj.soundVolume);
+  }
+
   return configObj;
 }
 
 export function getConfigChanges(): MonkeyTypes.PresetConfig {
   const configChanges = {} as MonkeyTypes.PresetConfig;
-  (Object.keys(config) as (keyof Config)[])
+  typedKeys(config)
     .filter((key) => {
       return config[key] !== DefaultConfig[key];
     })
     .forEach((key) => {
-      (configChanges[key] as typeof config[typeof key]) = config[key];
+      //@ts-expect-error this is fine
+      configChanges[key] = config[key];
     });
   return configChanges;
 }

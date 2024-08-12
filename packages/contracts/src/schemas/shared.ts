@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { literal, z } from "zod";
 import { StringNumberSchema } from "./util";
 
 //used by config and shared
@@ -33,9 +33,19 @@ export const PersonalBestsSchema = z.object({
 });
 export type PersonalBests = z.infer<typeof PersonalBestsSchema>;
 
-//used by user and config
+//used by user, config, public
 export const ModeSchema = PersonalBestsSchema.keyof();
 export type Mode = z.infer<typeof ModeSchema>;
+
+export const Mode2Schema = z.union(
+  [StringNumberSchema, literal("zen"), literal("custom")],
+  {
+    errorMap: () => ({
+      message: 'Needs to be either a number, "zen" or "custom."',
+    }),
+  }
+);
+
 export type Mode2<M extends Mode> = M extends M
   ? keyof PersonalBests[M]
   : never;

@@ -301,33 +301,6 @@ export type ResultFilters = {
   } & Record<string, boolean>;
 };
 
-export type PSA = {
-  _id: string;
-  message: string;
-  sticky?: boolean;
-  level?: number;
-  date?: number;
-};
-
-export type SpeedHistogram = {
-  [key: string]: number;
-};
-
-export type PublicTypingStats = {
-  type: string;
-  timeTyping: number;
-  testsCompleted: number;
-  testsStarted: number;
-};
-
-export type ApeKey = {
-  name: string;
-  enabled: boolean;
-  createdOn: number;
-  modifiedOn: number;
-  lastUsedOn: number;
-};
-
 export type LeaderboardEntry = {
   _id: string;
   wpm: number;

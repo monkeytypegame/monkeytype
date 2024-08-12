@@ -27,7 +27,7 @@ const entryPoints = getAllFiles("./src");
 
 // Function to generate output file names
 const getOutfile = (entryPoint, format) => {
-  const relativePath = entryPoint.replace("src/", "");
+  const relativePath = entryPoint.replace(/src[/\\]/, "");
   const fileBaseName = relativePath.replace(".ts", "");
   return `./dist/${fileBaseName}.${format === "esm" ? "mjs" : "cjs"}`;
 };
@@ -81,9 +81,10 @@ if (isWatch) {
   console.log("Starting watch mode...");
   chokidar.watch("./src/**/*.ts").on(
     "change",
-    (path) => {
+    (_path) => {
       console.log("File change detected...");
-      build(path, false, false);
+      // build(path, false, false);
+      buildAll(false, false);
     },
     {
       ignoreInitial: true,

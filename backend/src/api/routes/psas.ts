@@ -1,10 +1,14 @@
-import { Router } from "express";
-import * as PsaController from "../controllers/psa";
+import { psasContract } from "@monkeytype/contracts/psas";
+import { initServer } from "@ts-rest/express";
 import * as RateLimit from "../../middlewares/rate-limit";
-import { asyncHandler } from "../../middlewares/utility";
+import * as PsaController from "../controllers/psa";
+import { callController } from "../ts-rest-adapter";
+import { recordClientVersion } from "../../middlewares/utility";
 
-const router = Router();
-
-router.get("/", RateLimit.psaGet, asyncHandler(PsaController.getPsas));
-
-export default router;
+const s = initServer();
+export default s.router(psasContract, {
+  get: {
+    middleware: [recordClientVersion(), RateLimit.psaGet],
+    handler: async (r) => callController(PsaController.getPsas)(r),
+  },
+});

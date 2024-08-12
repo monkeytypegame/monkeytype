@@ -10,7 +10,6 @@ import {
   type UpdateFilter,
   type Filter,
 } from "mongodb";
-import Logger from "../utils/logger";
 import { flattenObjectDeep, isToday, isYesterday } from "../utils/misc";
 import { getCachedConfiguration } from "../init/configuration";
 import { getDayOfYear } from "date-fns";
@@ -33,6 +32,7 @@ import {
   Mode2,
   PersonalBest,
 } from "@monkeytype/contracts/schemas/shared";
+import { addImportantLog } from "./logs";
 
 const SECONDS_PER_HOUR = 3600;
 
@@ -859,7 +859,7 @@ export async function recordAutoBanEvent(
   }
 
   await getUsersCollection().updateOne({ uid }, { $set: updateObj });
-  void Logger.logToDb(
+  void addImportantLog(
     "user_auto_banned",
     { autoBanTimestamps, banningUser },
     uid
@@ -1004,12 +1004,12 @@ export async function updateInbox(
 
               const xpGain = rewards
                 .filter((it) => it.type === "xp")
-                .map((it) => it.item as number)
+                .map((it) => it.item)
                 .reduce((s, a) => s + a, 0);
 
               const badgesToClaim = rewards
                 .filter((it) => it.type === "badge")
-                .map((it) => it.item as Badge);
+                .map((it) => it.item);
 
               if (inventory === null)
                 inventory = {
@@ -1077,7 +1077,11 @@ export async function updateStreak(
   if (isYesterday(streak.lastResultTimestamp, streak.hourOffset ?? 0)) {
     streak.length += 1;
   } else if (!isToday(streak.lastResultTimestamp, streak.hourOffset ?? 0)) {
-    void Logger.logToDb("streak_lost", JSON.parse(JSON.stringify(streak)), uid);
+    void addImportantLog(
+      "streak_lost",
+      JSON.parse(JSON.stringify(streak)),
+      uid
+    );
     streak.length = 1;
   }
 

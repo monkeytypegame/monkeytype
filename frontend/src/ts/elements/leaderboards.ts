@@ -28,21 +28,21 @@ let showingYesterday = false;
 type LbKey = "15" | "60";
 
 let currentData: {
-  [key in LbKey]: LeaderboardEntry[];
+  [_key in LbKey]: LeaderboardEntry[];
 } = {
   "15": [],
   "60": [],
 };
 
 let currentRank: {
-  [key in LbKey]: Ape.Leaderboards.GetRank | Record<string, never>;
+  [_key in LbKey]: Ape.Leaderboards.GetRank | Record<string, never>;
 } = {
   "15": {},
   "60": {},
 };
 
 let currentAvatars: {
-  [key in LbKey]: (string | null)[];
+  [_key in LbKey]: (string | null)[];
 } = {
   "15": [],
   "60": [],

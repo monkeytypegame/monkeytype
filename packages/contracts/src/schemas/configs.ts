@@ -120,13 +120,14 @@ export const PlaySoundOnClickSchema = z.enum([
 ]);
 export type PlaySoundOnClick = z.infer<typeof PlaySoundOnClickSchema>;
 
-export const SoundVolumeSchema = z.enum(["0.1", "0.5", "1.0"]);
+export const SoundVolumeSchema = z.number().min(0).max(1);
 export type SoundVolume = z.infer<typeof SoundVolumeSchema>;
 
 export const PaceCaretSchema = z.enum([
   "off",
   "average",
   "pb",
+  "tagPb",
   "last",
   "custom",
   "daily",

@@ -19,8 +19,8 @@ describe("Config", () => {
     expect(Config.setPlaySoundOnClick("invalid" as any)).toBe(false);
   });
   it("setSoundVolume", () => {
-    expect(Config.setSoundVolume("0.1")).toBe(true);
-    expect(Config.setSoundVolume("1.0")).toBe(true);
+    expect(Config.setSoundVolume(0.1)).toBe(true);
+    expect(Config.setSoundVolume(1.0)).toBe(true);
     expect(Config.setSoundVolume("invalid" as any)).toBe(false);
   });
   it("setDifficulty", () => {

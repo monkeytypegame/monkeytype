@@ -61,6 +61,27 @@ export function getOpenApi(): OpenAPIObject {
           description: "User specific configuration presets.",
           "x-displayName": "User presets",
         },
+        {
+          name: "ape-keys",
+          description: "Ape keys provide access to certain API endpoints.",
+          "x-displayName": "Ape Keys",
+        },
+        {
+          name: "public",
+          description: "Public endpoints such as typing stats.",
+          "x-displayName": "public",
+        },
+        {
+          name: "psas",
+          description: "Public service announcements.",
+          "x-displayName": "PSAs",
+        },
+        {
+          name: "admin",
+          description:
+            "Various administrative endpoints. Require user to have admin permissions.",
+          "x-displayName": "Admin",
+        },
       ],
     },
 

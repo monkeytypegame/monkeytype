@@ -4,7 +4,7 @@ import { secondsToString } from "../utils/date-and-time";
 import * as Notifications from "./notifications";
 import { format } from "date-fns/format";
 import * as Alerts from "./alerts";
-import { PSA } from "@monkeytype/shared-types";
+import { PSA } from "@monkeytype/contracts/schemas/psas";
 
 function clearMemory(): void {
   window.localStorage.setItem("confirmedPSAs", JSON.stringify([]));
@@ -61,7 +61,7 @@ async function getLatest(): Promise<PSA[] | null> {
   } else if (response.status !== 200) {
     return null;
   }
-  return response.data;
+  return response.body.data;
 }
 
 export async function show(): Promise<void> {

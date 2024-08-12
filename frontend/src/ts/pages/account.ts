@@ -581,9 +581,9 @@ async function fillContent(): Promise<void> {
       last10++;
       wpmLast10total += result.wpm;
       totalAcc10 += result.acc;
-      result.consistency !== undefined
-        ? (totalCons10 += result.consistency)
-        : 0;
+      if (result.consistency !== undefined) {
+        totalCons10 += result.consistency;
+      }
     }
     testCount++;
 
@@ -624,7 +624,7 @@ async function fillContent(): Promise<void> {
       acc: result.acc,
       mode: result.mode,
       mode2: result.mode2,
-      punctuation: result.punctuation as boolean,
+      punctuation: result.punctuation,
       language: result.language,
       timestamp: result.timestamp,
       difficulty: result.difficulty,

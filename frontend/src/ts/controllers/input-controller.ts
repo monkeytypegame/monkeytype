@@ -79,9 +79,7 @@ function updateUI(): void {
       );
       const inputGroupLength: number = koCurrInput.length - 1;
       if (koCurrInput[inputGroupLength]) {
-        const inputCharLength: number = (
-          koCurrInput[inputGroupLength] as string[]
-        ).length;
+        const inputCharLength: number = koCurrInput[inputGroupLength].length;
         //at the end of the word, it will throw a (reading '0') this will be the space
         try {
           //if it overflows and returns undefined (e.g input [ㄱ,ㅏ,ㄷ]),
@@ -731,27 +729,25 @@ function handleChar(
   )?.offsetTop as number;
   void TestUI.updateWordElement();
 
-  if (!Config.hideExtraLetters) {
-    const newActiveTop = document.querySelector<HTMLElement>(
-      "#words .word.active"
-    )?.offsetTop as number;
-    //stop the word jump by slicing off the last character, update word again
-    if (
-      activeWordTopBeforeJump < newActiveTop &&
-      !TestUI.lineTransition &&
-      TestInput.input.current.length > 1
-    ) {
-      if (Config.mode === "zen") {
-        const currentTop = Math.floor(
-          document.querySelectorAll<HTMLElement>("#words .word")[
-            TestUI.currentWordElementIndex - 1
-          ]?.offsetTop ?? 0
-        );
-        if (!Config.showAllLines) TestUI.lineJump(currentTop);
-      } else {
-        TestInput.input.current = TestInput.input.current.slice(0, -1);
-        void TestUI.updateWordElement();
-      }
+  const newActiveTop = document.querySelector<HTMLElement>(
+    "#words .word.active"
+  )?.offsetTop as number;
+  //stop the word jump by slicing off the last character, update word again
+  if (
+    activeWordTopBeforeJump < newActiveTop &&
+    !TestUI.lineTransition &&
+    TestInput.input.current.length > 1
+  ) {
+    if (Config.mode === "zen") {
+      const currentTop = Math.floor(
+        document.querySelectorAll<HTMLElement>("#words .word")[
+          TestUI.currentWordElementIndex - 1
+        ]?.offsetTop ?? 0
+      );
+      if (!Config.showAllLines) TestUI.lineJump(currentTop);
+    } else {
+      TestInput.input.current = TestInput.input.current.slice(0, -1);
+      void TestUI.updateWordElement();
     }
   }
 

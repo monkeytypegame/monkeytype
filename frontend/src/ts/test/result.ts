@@ -170,7 +170,7 @@ async function updateGraph(): Promise<void> {
 
 export async function updateGraphPBLine(): Promise<void> {
   const themecolors = await ThemeColors.getAll();
-  const lpb = await DB.getLocalPB(
+  const localPb = await DB.getLocalPB(
     result.mode,
     result.mode2,
     result.punctuation ?? false,
@@ -180,9 +180,12 @@ export async function updateGraphPBLine(): Promise<void> {
     result.lazyMode ?? false,
     result.funbox ?? "none"
   );
-  if (lpb === 0) return;
+  const localPbWpm = localPb?.wpm ?? 0;
+  if (localPbWpm === 0) return;
   const typingSpeedUnit = getTypingSpeedUnit(Config.typingSpeedUnit);
-  const chartlpb = Numbers.roundTo2(typingSpeedUnit.fromWpm(lpb)).toFixed(2);
+  const chartlpb = Numbers.roundTo2(
+    typingSpeedUnit.fromWpm(localPbWpm)
+  ).toFixed(2);
   resultAnnotation.push({
     display: true,
     type: "line",
@@ -370,8 +373,12 @@ export function showCrown(type: PbCrown.CrownType): void {
   PbCrown.update(type);
 }
 
-export function updateCrownType(type: PbCrown.CrownType): void {
-  PbCrown.update(type);
+export function updateCrownText(text: string, wide = false): void {
+  $("#result .stats .wpm .crown").attr("aria-label", text);
+  $("#result .stats .wpm .crown").attr(
+    "data-balloon-length",
+    wide ? "medium" : ""
+  );
 }
 
 export async function updateCrown(dontSave: boolean): Promise<void> {
@@ -384,7 +391,7 @@ export async function updateCrown(dontSave: boolean): Promise<void> {
   const canGetPb = await resultCanGetPb();
 
   if (canGetPb.value) {
-    const lpb = await DB.getLocalPB(
+    const localPb = await DB.getLocalPB(
       Config.mode,
       result.mode2,
       Config.punctuation,
@@ -394,19 +401,19 @@ export async function updateCrown(dontSave: boolean): Promise<void> {
       Config.lazyMode,
       Config.funbox
     );
-    pbDiff = result.wpm - lpb;
+    const localPbWpm = localPb?.wpm ?? 0;
+    pbDiff = result.wpm - localPbWpm;
     if (pbDiff <= 0) {
       hideCrown();
     } else {
       //show half crown as the pb is not confirmed by the server
       showCrown("pending");
-      $("#result .stats .wpm .crown").attr(
-        "aria-label",
+      updateCrownText(
         "+" + Format.typingSpeed(pbDiff, { showDecimalPlaces: true })
       );
     }
   } else {
-    const lpb = await DB.getLocalPB(
+    const localPb = await DB.getLocalPB(
       Config.mode,
       result.mode2,
       Config.punctuation,
@@ -416,21 +423,22 @@ export async function updateCrown(dontSave: boolean): Promise<void> {
       Config.lazyMode,
       "none"
     );
-    pbDiff = result.wpm - lpb;
+    const localPbWpm = localPb?.wpm ?? 0;
+    pbDiff = result.wpm - localPbWpm;
     if (pbDiff <= 0) {
       // hideCrown();
       showCrown("warning");
-      $("#result .stats .wpm .crown").attr(
-        "aria-label",
-        `This result is not eligible for a new PB (${canGetPb.reason})`
+      updateCrownText(
+        `This result is not eligible for a new PB (${canGetPb.reason})`,
+        true
       );
     } else {
       showCrown("ineligible");
-      $("#result .stats .wpm .crown").attr(
-        "aria-label",
+      updateCrownText(
         `You could've gotten a new PB (+${Format.typingSpeed(pbDiff, {
           showDecimalPlaces: true,
-        })}), but your config does not allow it (${canGetPb.reason})`
+        })}), but your config does not allow it (${canGetPb.reason})`,
+        true
       );
     }
   }
@@ -438,16 +446,16 @@ export async function updateCrown(dontSave: boolean): Promise<void> {
 
 export function hideCrown(): void {
   PbCrown.hide();
-  $("#result .stats .wpm .crown").attr("aria-label", "");
+  updateCrownText("");
 }
 
 export function showErrorCrownIfNeeded(): void {
   if (PbCrown.getCurrentType() !== "pending") return;
   PbCrown.show();
   PbCrown.update("error");
-  $("#result .stats .wpm .crown").attr(
-    "aria-label",
-    `Local PB data is out of sync with the server - please refresh (pb mismatch)`
+  updateCrownText(
+    `Local PB data is out of sync with the server - please refresh (pb mismatch)`,
+    true
   );
 }
 
@@ -774,7 +782,7 @@ export function updateRateQuote(randomQuote: MonkeyTypes.Quote | null): void {
           quoteStats?.average?.toFixed(1) ?? ""
         );
       })
-      .catch((e) => {
+      .catch((e: unknown) => {
         $(".pageTest #result #rateQuoteButton .rating").text("?");
       });
     $(".pageTest #result #rateQuoteButton")
@@ -1007,7 +1015,7 @@ export function updateTagsAfterEdit(
 
     tagIds.forEach((tag, index) => {
       if (checked.includes(tag)) return;
-      if (tagPbIds.includes(tag) as boolean) {
+      if (tagPbIds.includes(tag)) {
         html += `<div tagid="${tag}" data-balloon-pos="up">${tagNames[index]}<i class="fas fa-crown"></i></div>`;
       } else {
         html += `<div tagid="${tag}">${tagNames[index]}</div>`;

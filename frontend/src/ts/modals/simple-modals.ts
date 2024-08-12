@@ -163,6 +163,7 @@ type SimpleModalOptions = {
   title: string;
   inputs?: CommonInputType[];
   text?: string;
+  textAllowHtml?: boolean;
   buttonText: string;
   execFn: (thisPopup: SimpleModal, ...params: string[]) => Promise<ExecReturn>;
   beforeInitFn?: (thisPopup: SimpleModal) => void;
@@ -197,6 +198,7 @@ class SimpleModal {
   title: string;
   inputs: CommonInputType[];
   text?: string;
+  textAllowHtml: boolean;
   buttonText: string;
   execFn: (thisPopup: SimpleModal, ...params: string[]) => Promise<ExecReturn>;
   beforeInitFn: ((thisPopup: SimpleModal) => void) | undefined;
@@ -212,6 +214,7 @@ class SimpleModal {
     this.title = options.title;
     this.inputs = options.inputs ?? [];
     this.text = options.text;
+    this.textAllowHtml = options.textAllowHtml ?? false;
     this.wrapper = modal.getWrapper();
     this.element = modal.getModal();
     this.buttonText = options.buttonText;
@@ -236,7 +239,11 @@ class SimpleModal {
     this.reset();
     el.attr("data-popup-id", this.id);
     el.find(".title").text(this.title);
-    el.find(".text").text(this.text ?? "");
+    if (this.textAllowHtml) {
+      el.find(".text").html(this.text ?? "");
+    } else {
+      el.find(".text").text(this.text ?? "");
+    }
 
     this.initInputs();
 
@@ -1468,16 +1475,15 @@ list.generateApeKey = new SimpleModal({
   buttonText: "generate",
   onlineOnly: true,
   execFn: async (_thisPopup, name): Promise<ExecReturn> => {
-    const response = await Ape.apeKeys.generate(name, false);
+    const response = await Ape.apeKeys.add({ body: { name, enabled: false } });
     if (response.status !== 200) {
       return {
         status: -1,
-        message: "Failed to generate key: " + response.message,
+        message: "Failed to generate key: " + response.body.message,
       };
     }
 
-    //if response is 200 data is guaranteed to not be null
-    const data = response.data as Ape.ApeKeys.GenerateApeKey;
+    const data = response.body.data;
 
     const modalChain = modal.getPreviousModalInChain();
     return {
@@ -1508,7 +1514,10 @@ list.viewApeKey = new SimpleModal({
       initVal: "",
     },
   ],
-  text: "This is your new Ape Key. Please keep it safe. You will only see it once!",
+  textAllowHtml: true,
+  text: `
+    This is your new Ape Key. Please keep it safe. You will only see it once!<br><br>
+    <strong>Note:</strong> Ape Keys are disabled by default, you need to enable them before they can be used.`,
   buttonText: "close",
   hideCallsExec: true,
   execFn: async (_thisPopup): Promise<ExecReturn> => {
@@ -1543,11 +1552,13 @@ list.deleteApeKey = new SimpleModal({
   buttonText: "delete",
   onlineOnly: true,
   execFn: async (_thisPopup): Promise<ExecReturn> => {
-    const response = await Ape.apeKeys.delete(_thisPopup.parameters[0] ?? "");
+    const response = await Ape.apeKeys.delete({
+      params: { apeKeyId: _thisPopup.parameters[0] ?? "" },
+    });
     if (response.status !== 200) {
       return {
         status: -1,
-        message: "Failed to delete key: " + response.message,
+        message: "Failed to delete key: " + response.body.message,
       };
     }
 
@@ -1574,13 +1585,16 @@ list.editApeKey = new SimpleModal({
   buttonText: "edit",
   onlineOnly: true,
   execFn: async (_thisPopup, input): Promise<ExecReturn> => {
-    const response = await Ape.apeKeys.update(_thisPopup.parameters[0] ?? "", {
-      name: input,
+    const response = await Ape.apeKeys.save({
+      params: { apeKeyId: _thisPopup.parameters[0] ?? "" },
+      body: {
+        name: input,
+      },
     });
     if (response.status !== 200) {
       return {
         status: -1,
-        message: "Failed to update key: " + response.message,
+        message: "Failed to update key: " + response.body.message,
       };
     }
     return {

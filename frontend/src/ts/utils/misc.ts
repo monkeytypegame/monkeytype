@@ -484,13 +484,16 @@ export function createErrorMessage(error: unknown, message: string): string {
     return `${message}: ${error.message}`;
   }
 
-  const objectWithMessage = error as { message?: string };
+  if (error instanceof Object && "message" in error) {
+    const objectWithMessage = error as { message?: string };
 
-  if (objectWithMessage?.message !== undefined) {
-    return `${message}: ${objectWithMessage.message}`;
+    if (objectWithMessage?.message !== undefined) {
+      return `${message}: ${objectWithMessage.message}`;
+    }
   }
 
-  return message;
+  console.error("Unknown error", error);
+  return `${message}: Unknown error`;
 }
 
 export function isElementVisible(query: string): boolean {

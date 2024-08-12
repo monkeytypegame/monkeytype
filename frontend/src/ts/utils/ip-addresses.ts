@@ -36,7 +36,7 @@ function getIPCidr(
     bitsLeft -= b;
     if (bitsLeft < 0) {
       if (-bitsLeft <= b) {
-        addr[i] &= (2 ** b - 1) ^ (2 ** -bitsLeft - 1);
+        (addr[i] as number) &= (2 ** b - 1) ^ (2 ** -bitsLeft - 1);
       } else {
         addr[i] = 0;
       }

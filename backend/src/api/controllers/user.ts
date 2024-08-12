@@ -1,7 +1,6 @@
 import _ from "lodash";
 import * as UserDAL from "../../dal/user";
 import MonkeyError from "../../utils/error";
-import Logger from "../../utils/logger";
 import { MonkeyResponse } from "../../utils/monkey-response";
 import * as DiscordUtils from "../../utils/discord";
 import {
@@ -37,10 +36,22 @@ import {
   UserProfile,
   UserProfileDetails,
 } from "@monkeytype/shared-types";
+import { addImportantLog, addLog, deleteUserLogs } from "../../dal/logs";
+import { sendForgotPasswordEmail as authSendForgotPasswordEmail } from "../../utils/auth";
 
 async function verifyCaptcha(captcha: string): Promise<void> {
-  if (!(await verify(captcha))) {
-    throw new MonkeyError(422, "Captcha check failed");
+  let verified = false;
+  try {
+    verified = await verify(captcha);
+  } catch (e) {
+    //fetch to recaptcha api can sometimes fail
+    throw new MonkeyError(
+      422,
+      "Request to the Captcha API failed, please try again later"
+    );
+  }
+  if (!verified) {
+    throw new MonkeyError(422, "Captcha challenge failed");
   }
 }
 
@@ -68,7 +79,7 @@ export async function createNewUser(
     }
 
     await UserDAL.addUser(name, email, uid);
-    void Logger.logToDb("user_created", `${name} ${email}`, uid);
+    void addImportantLog("user_created", `${name} ${email}`, uid);
 
     return new MonkeyResponse("User created");
   } catch (e) {
@@ -86,11 +97,15 @@ export async function sendVerificationEmail(
     await admin
       .auth()
       .getUser(uid)
-      .catch((e) => {
+      .catch((e: unknown) => {
         throw new MonkeyError(
           500, // this should never happen, but it does. it mightve been caused by auth token cache, will see if disabling cache fixes it
           "Auth user not found, even though the token got decoded",
-          JSON.stringify({ uid, email, stack: e.stack }),
+          JSON.stringify({
+            uid,
+            email,
+            stack: e instanceof Error ? e.stack : JSON.stringify(e),
+          }),
           uid
         );
       })
@@ -159,29 +174,7 @@ export async function sendForgotPasswordEmail(
   req: MonkeyTypes.Request
 ): Promise<MonkeyResponse> {
   const { email } = req.body;
-
-  try {
-    const uid = (await FirebaseAdmin().auth().getUserByEmail(email)).uid;
-    const userInfo = await UserDAL.getPartialUser(
-      uid,
-      "request forgot password email",
-      ["name"]
-    );
-
-    const link = await FirebaseAdmin()
-      .auth()
-      .generatePasswordResetLink(email, {
-        url: isDevEnvironment()
-          ? "http://localhost:3000"
-          : "https://monkeytype.com",
-      });
-
-    await emailQueue.sendForgotPasswordEmail(email, userInfo.name, link);
-  } catch {
-    return new MonkeyResponse(
-      "Password reset request received. If the email is valid, you will receive an email shortly."
-    );
-  }
+  await authSendForgotPasswordEmail(email);
   return new MonkeyResponse(
     "Password reset request received. If the email is valid, you will receive an email shortly."
   );
@@ -206,6 +199,7 @@ export async function deleteUser(
   //cleanup database
   await Promise.all([
     UserDAL.deleteUser(uid),
+    deleteUserLogs(uid),
     deleteAllApeKeys(uid),
     deleteAllPresets(uid),
     deleteConfig(uid),
@@ -219,7 +213,7 @@ export async function deleteUser(
   //delete user from
   await AuthUtil.deleteUser(uid);
 
-  void Logger.logToDb(
+  void addImportantLog(
     "user_deleted",
     `${userInfo.email} ${userInfo.name}`,
     uid
@@ -259,7 +253,7 @@ export async function resetUser(
     promises.push(GeorgeQueue.unlinkDiscord(userInfo.discordId, uid));
   }
   await Promise.all(promises);
-  void Logger.logToDb("user_reset", `${userInfo.email} ${userInfo.name}`, uid);
+  void addImportantLog("user_reset", `${userInfo.email} ${userInfo.name}`, uid);
 
   return new MonkeyResponse("User reset");
 }
@@ -289,7 +283,7 @@ export async function updateName(
   }
 
   await UserDAL.updateName(uid, name, user.name);
-  void Logger.logToDb(
+  void addImportantLog(
     "user_name_updated",
     `changed name from ${user.name} to ${name}`,
     uid
@@ -308,7 +302,7 @@ export async function clearPb(
     uid,
     req.ctx.configuration.dailyLeaderboards
   );
-  void Logger.logToDb("user_cleared_pbs", "", uid);
+  void addImportantLog("user_cleared_pbs", "", uid);
 
   return new MonkeyResponse("User's PB cleared");
 }
@@ -323,7 +317,7 @@ export async function optOutOfLeaderboards(
     uid,
     req.ctx.configuration.dailyLeaderboards
   );
-  void Logger.logToDb("user_opted_out_of_leaderboards", "", uid);
+  void addImportantLog("user_opted_out_of_leaderboards", "", uid);
 
   return new MonkeyResponse("User opted out of leaderboards");
 }
@@ -377,7 +371,7 @@ export async function updateEmail(
     }
   }
 
-  void Logger.logToDb(
+  void addImportantLog(
     "user_email_updated",
     `changed email to ${newEmail}`,
     uid
@@ -461,7 +455,7 @@ export async function getUser(
   };
 
   const agentLog = buildAgentLog(req);
-  void Logger.logToDb("user_data_requested", agentLog, uid);
+  void addLog("user_data_requested", agentLog, uid);
   void UserDAL.logIpAddress(uid, agentLog.ip, userInfo);
 
   let inboxUnreadSize = 0;
@@ -556,7 +550,7 @@ export async function linkDiscord(
   await UserDAL.linkDiscord(uid, discordId, discordAvatar);
 
   await GeorgeQueue.linkDiscord(discordId, uid);
-  void Logger.logToDb("user_discord_link", `linked to ${discordId}`, uid);
+  void addImportantLog("user_discord_link", `linked to ${discordId}`, uid);
 
   return new MonkeyResponse("Discord account linked", {
     discordId,
@@ -585,7 +579,7 @@ export async function unlinkDiscord(
 
   await GeorgeQueue.unlinkDiscord(discordId, uid);
   await UserDAL.unlinkDiscord(uid);
-  void Logger.logToDb("user_discord_unlinked", discordId, uid);
+  void addImportantLog("user_discord_unlinked", discordId, uid);
 
   return new MonkeyResponse("Discord account unlinked");
 }
@@ -957,6 +951,8 @@ export async function setStreakHourOffset(
 
   await UserDAL.setStreakHourOffset(uid, hourOffset);
 
+  void addImportantLog("user_streak_hour_offset_set", { hourOffset }, uid);
+
   return new MonkeyResponse("Streak hour offset set");
 }
 
@@ -980,6 +976,8 @@ export async function toggleBan(
     if (discordIdIsValid) await GeorgeQueue.userBanned(discordId, true);
   }
 
+  void addImportantLog("user_ban_toggled", { banned: !user.banned }, uid);
+
   return new MonkeyResponse(`Ban toggled`, {
     banned: !user.banned,
   });
@@ -990,6 +988,7 @@ export async function revokeAllTokens(
 ): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
   await AuthUtil.revokeTokensByUid(uid);
+  void addImportantLog("user_tokens_revoked", "", uid);
   return new MonkeyResponse("All tokens revoked");
 }
 

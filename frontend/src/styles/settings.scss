@@ -227,6 +227,12 @@
       }
     }
 
+    &[data-config-name="paceCaret"] {
+      .buttons {
+        grid-template-columns: repeat(auto-fit, minmax(6rem, 1fr));
+      }
+    }
+
     &.discordIntegration {
       .info {
         grid-area: buttons;
