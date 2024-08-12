@@ -58,7 +58,7 @@
   "devDependencies": {
     "@commitlint/cli": "17.7.1",
     "@commitlint/config-conventional": "17.7.0",
-    "@vitest/coverage-v8": "1.6.0",
+    "@vitest/coverage-v8": "2.0.5",
     "@monkeytype/release": "workspace:*",
     "conventional-changelog": "4.0.0",
     "husky": "8.0.1",
@@ -67,7 +67,7 @@
     "only-allow": "1.2.1",
     "prettier": "2.5.1",
     "turbo": "2.0.9",
-    "vitest": "1.6.0"
+    "vitest": "2.0.5"
   },
   "lint-staged": {
     "*.{json,scss,css,html}": [
