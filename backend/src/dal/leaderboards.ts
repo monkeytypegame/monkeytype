@@ -38,7 +38,7 @@ export async function get(
   if (limit > 50 || limit <= 0) limit = 50;
   if (skip < 0) skip = 0;
   try {
-    let preset = await getCollection({ language, mode, mode2 })
+    const preset = await getCollection({ language, mode, mode2 })
       .find()
       .sort({ rank: 1 })
       .skip(skip)
@@ -49,8 +49,9 @@ export async function get(
       .premium.enabled;
 
     if (!premiumFeaturesEnabled) {
-      preset = preset.map((it) => omit(it, "isPremium"));
+      return preset.map((it) => omit(it, "isPremium"));
     }
+
     return preset;
   } catch (e) {
     if (e.error === 175) {

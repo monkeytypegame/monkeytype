@@ -132,7 +132,7 @@ export class DailyLeaderboard {
       );
     }
 
-    let resultsWithRanks: LeaderboardEntry[] = results.map(
+    const resultsWithRanks: LeaderboardEntry[] = results.map(
       (resultJSON, index) => {
         // TODO: parse with zod?
         const parsed = JSON.parse(resultJSON) as LeaderboardEntry;
@@ -145,7 +145,7 @@ export class DailyLeaderboard {
     );
 
     if (!premiumFeaturesEnabled) {
-      resultsWithRanks = resultsWithRanks.map((it) => omit(it, "isPremium"));
+      return resultsWithRanks.map((it) => omit(it, "isPremium"));
     }
 
     return resultsWithRanks;
