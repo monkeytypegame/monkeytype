@@ -50,7 +50,7 @@ const ResultBaseSchema = z.object({
     z.number().int().nonnegative(),
     z.number().int().nonnegative(),
   ]),
-  acc: PercentageSchema.min(50), //TODO test
+  acc: PercentageSchema.min(75), //TODO test
   mode: ModeSchema,
   mode2: Mode2Schema,
   quoteLength: z.number().int().nonnegative().max(3).optional(),
@@ -79,34 +79,17 @@ const ResultOptionalPropertiesSchema = z.object({
   punctuation: z.boolean(),
 });
 
-//created by the backend
-const ResultGeneratedPropertiesSchema = z.object({
+export const ResultSchema = ResultBaseSchema.merge(
+  ResultOptionalPropertiesSchema.partial()
+).extend({
   _id: IdSchema,
   keySpacingStats: KeyStatsSchema.optional(),
   keyDurationStats: KeyStatsSchema.optional(),
   name: z.string(),
   correctChars: z.number().optional(), //legacy result
   incorrectChars: z.number().optional(), //legacy result
-  isPb: z.boolean().optional(), //legacy result
+  isPb: z.boolean().optional(), //true or undefined
 });
-
-const ResultPostOnlySchema = z.object({
-  charTotal: z.number().int().nonnegative(), //was optional in result-schema but mandatory on server
-  challenge: token().max(100).optional(),
-  customText: CustomTextSchema.optional(),
-  hash: token().max(100),
-  keyDuration: z.array(z.number().nonnegative()).or(z.literal("toolong")), //was optional in result-schema but mandatory on server
-  keySpacing: z.array(z.number().nonnegative()).or(z.literal("toolong")), //was optional in result-schema but mandatory on server
-  keyOverlap: z.number().nonnegative(), //was optional in result-schema but mandatory on server
-  lastKeyToEnd: z.number().nonnegative(), //was optional in result-schema but mandatory on server
-  startToFirstKey: z.number().nonnegative(), //was optional in result-schema but mandatory on server
-  wpmConsistency: PercentageSchema,
-  stopOnLetter: z.boolean(),
-});
-
-export const ResultSchema = ResultBaseSchema.merge(
-  ResultOptionalPropertiesSchema.partial()
-).merge(ResultGeneratedPropertiesSchema);
 
 export type Result<M extends Mode> = Omit<
   z.infer<typeof ResultSchema>,
@@ -119,7 +102,19 @@ export type Result<M extends Mode> = Omit<
 export const CompletedEventSchema = ResultBaseSchema.merge(
   ResultOptionalPropertiesSchema
 )
-  .merge(ResultPostOnlySchema)
+  .extend({
+    charTotal: z.number().int().nonnegative(), //was optional in result-schema but mandatory on server
+    challenge: token().max(100).optional(),
+    customText: CustomTextSchema.optional(),
+    hash: token().max(100),
+    keyDuration: z.array(z.number().nonnegative()).or(z.literal("toolong")), //was optional in result-schema but mandatory on server
+    keySpacing: z.array(z.number().nonnegative()).or(z.literal("toolong")), //was optional in result-schema but mandatory on server
+    keyOverlap: z.number().nonnegative(), //was optional in result-schema but mandatory on server
+    lastKeyToEnd: z.number().nonnegative(), //was optional in result-schema but mandatory on server
+    startToFirstKey: z.number().nonnegative(), //was optional in result-schema but mandatory on server
+    wpmConsistency: PercentageSchema,
+    stopOnLetter: z.boolean(),
+  })
   .strict();
 
 export type CompletedEvent<M extends Mode> = Omit<
