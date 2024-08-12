@@ -463,11 +463,20 @@ async function update(): Promise<void> {
     daysBefore,
   };
 
+  const fallbackResponse = { status: 200, body: { message: "", data: null } };
+
+  const lbRank15Request = isAuthenticated()
+    ? requestRank({ query: { ...baseQuery, mode2: "15" } })
+    : fallbackResponse;
+
+  const lbRank60Request = isAuthenticated()
+    ? requestRank({ query: { ...baseQuery, mode2: "60" } })
+    : fallbackResponse;
   const [lb15Data, lb60Data, lb15Rank, lb60Rank] = await Promise.all([
     requestData({ query: { ...baseQuery, mode2: "15" } }),
     requestData({ query: { ...baseQuery, mode2: "60" } }),
-    requestRank({ query: { ...baseQuery, mode2: "15" } }),
-    requestRank({ query: { ...baseQuery, mode2: "60" } }),
+    lbRank15Request,
+    lbRank60Request,
   ]);
 
   if (
@@ -643,7 +652,7 @@ async function requestNew(lb: LbKey, skip: number): Promise<void> {
 }
 
 async function getAvatarUrls(
-  data: { discordId?: string; discordAvatar?: string }[]
+  data: LeaderboardEntry[]
 ): Promise<(string | null)[]> {
   return Promise.allSettled(
     data.map(async (entry) =>

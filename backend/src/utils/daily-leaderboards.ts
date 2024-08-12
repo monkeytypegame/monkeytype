@@ -1,4 +1,4 @@
-import _ from "lodash";
+import _, { omit } from "lodash";
 import * as RedisClient from "../init/redis";
 import LaterQueue from "../queues/later-queue";
 import { getCurrentDayTimestamp, matchesAPattern, kogascore } from "./misc";
@@ -132,7 +132,7 @@ export class DailyLeaderboard {
       );
     }
 
-    const resultsWithRanks: LeaderboardEntry[] = results.map(
+    let resultsWithRanks: LeaderboardEntry[] = results.map(
       (resultJSON, index) => {
         // TODO: parse with zod?
         const parsed = JSON.parse(resultJSON) as LeaderboardEntry;
@@ -145,7 +145,7 @@ export class DailyLeaderboard {
     );
 
     if (!premiumFeaturesEnabled) {
-      resultsWithRanks.forEach((it) => (it.isPremium = undefined));
+      resultsWithRanks = resultsWithRanks.map((it) => omit(it, "isPremium"));
     }
 
     return resultsWithRanks;

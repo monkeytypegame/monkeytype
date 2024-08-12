@@ -202,14 +202,6 @@ declare namespace MonkeyTypes {
     };
   };
 
-  type Leaderboards = {
-    time: {
-      [_key in
-        | 15
-        | 60]: import("@monkeytype/contracts/schemas/leaderboards").LeaderboardEntry[];
-    };
-  };
-
   type QuoteRatings = Record<string, Record<number, number>>;
 
   type UserTag = import("@monkeytype/shared-types").UserTag & {

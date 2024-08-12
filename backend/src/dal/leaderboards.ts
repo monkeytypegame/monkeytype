@@ -11,6 +11,7 @@ import {
   LeaderboardEntry,
   LeaderboardRank,
 } from "@monkeytype/contracts/schemas/leaderboards";
+import { omit } from "lodash";
 
 export type DBLeaderboardEntry = LeaderboardEntry & {
   _id: ObjectId;
@@ -37,7 +38,7 @@ export async function get(
   if (limit > 50 || limit <= 0) limit = 50;
   if (skip < 0) skip = 0;
   try {
-    const preset = await getCollection({ language, mode, mode2 })
+    let preset = await getCollection({ language, mode, mode2 })
       .find()
       .sort({ rank: 1 })
       .skip(skip)
@@ -48,7 +49,7 @@ export async function get(
       .premium.enabled;
 
     if (!premiumFeaturesEnabled) {
-      preset.forEach((it) => (it.isPremium = undefined));
+      preset = preset.map((it) => omit(it, "isPremium"));
     }
     return preset;
   } catch (e) {
