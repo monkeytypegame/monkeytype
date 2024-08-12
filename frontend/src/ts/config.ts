@@ -29,11 +29,11 @@ import { Mode, ModeSchema } from "@monkeytype/contracts/schemas/shared";
 import { LocalStorageWithSchema } from "./utils/local-storage-with-schema";
 import { mergeWithDefaultConfig } from "./utils/config";
 
-const configLS = new LocalStorageWithSchema(
-  "config",
-  ConfigSchemas.ConfigSchema,
-  DefaultConfig,
-  (value, _issues) => {
+const configLS = new LocalStorageWithSchema({
+  key: "config",
+  schema: ConfigSchemas.ConfigSchema,
+  fallback: DefaultConfig,
+  migrate: (value, _issues) => {
     if (!isObject(value)) {
       return DefaultConfig;
     }
@@ -42,8 +42,8 @@ const configLS = new LocalStorageWithSchema(
     const merged = mergeWithDefaultConfig(configWithoutLegacyValues);
 
     return merged;
-  }
-);
+  },
+});
 
 let loadDone: (value?: unknown) => void;
 

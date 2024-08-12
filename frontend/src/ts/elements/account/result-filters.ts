@@ -80,12 +80,12 @@ export const defaultResultFilters: ResultFilters = {
   },
 };
 
-const resultFiltersLS = new LocalStorageWithSchema(
-  "resultFilters",
-  ResultFiltersSchema,
-  defaultResultFilters
+const resultFiltersLS = new LocalStorageWithSchema({
+  key: "resultFilters",
+  schema: ResultFiltersSchema,
+  fallback: defaultResultFilters,
   //todo add migration
-);
+});
 
 type Option = {
   id: string;

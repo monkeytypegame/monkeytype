@@ -2,11 +2,11 @@ import { z } from "zod";
 import { LocalStorageWithSchema } from "../utils/local-storage-with-schema";
 import * as Notifications from "./notifications";
 
-const closed = new LocalStorageWithSchema(
-  "merchBannerClosed",
-  z.boolean(),
-  false
-);
+const closed = new LocalStorageWithSchema({
+  key: "merchBannerClosed",
+  schema: z.boolean(),
+  fallback: false,
+});
 
 export function showIfNotClosedBefore(): void {
   if (!closed.get()) {

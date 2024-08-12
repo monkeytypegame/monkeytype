@@ -6,7 +6,11 @@ const nativeLog = console.log;
 const nativeWarn = console.warn;
 const nativeError = console.error;
 
-const debugLogsLS = new LocalStorageWithSchema("debugLogs", z.boolean(), false);
+const debugLogsLS = new LocalStorageWithSchema({
+  key: "debugLogs",
+  schema: z.boolean(),
+  fallback: false,
+});
 
 let debugLogs = debugLogsLS.get();
 

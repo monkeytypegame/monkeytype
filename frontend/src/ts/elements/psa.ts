@@ -7,12 +7,13 @@ import * as Alerts from "./alerts";
 import { PSA } from "@monkeytype/contracts/schemas/psas";
 import { z } from "zod";
 import { LocalStorageWithSchema } from "../utils/local-storage-with-schema";
+import { IdSchema } from "@monkeytype/contracts/schemas/util";
 
-const confirmedPSAs = new LocalStorageWithSchema(
-  "confirmedPSAs",
-  z.array(z.string()),
-  []
-);
+const confirmedPSAs = new LocalStorageWithSchema({
+  key: "confirmedPSAs",
+  schema: z.array(IdSchema),
+  fallback: [],
+});
 
 function clearMemory(): void {
   confirmedPSAs.set([]);

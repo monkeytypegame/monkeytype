@@ -17,17 +17,17 @@ const CustomTextLongObjectSchema = z.record(
 );
 type CustomTextLongObject = z.infer<typeof CustomTextLongObjectSchema>;
 
-const customTextLS = new LocalStorageWithSchema(
-  "customText",
-  CustomTextObjectSchema,
-  {}
-);
+const customTextLS = new LocalStorageWithSchema({
+  key: "customText",
+  schema: CustomTextObjectSchema,
+  fallback: {},
+});
 //todo maybe add migrations here?
-const customTextLongLS = new LocalStorageWithSchema(
-  "customTextLong",
-  CustomTextLongObjectSchema,
-  {}
-);
+const customTextLongLS = new LocalStorageWithSchema({
+  key: "customTextLong",
+  schema: CustomTextLongObjectSchema,
+  fallback: {},
+});
 
 // function setLocalStorage(data: CustomTextObject): void {
 //   window.localStorage.setItem("customText", JSON.stringify(data));

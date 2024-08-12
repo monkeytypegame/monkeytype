@@ -2,7 +2,11 @@ import { z } from "zod";
 import { getLatestReleaseFromGitHub } from "../utils/json-data";
 import { LocalStorageWithSchema } from "../utils/local-storage-with-schema";
 
-const memoryLS = new LocalStorageWithSchema("lastSeenVersion", z.string(), "");
+const memoryLS = new LocalStorageWithSchema({
+  key: "lastSeenVersion",
+  schema: z.string(),
+  fallback: "",
+});
 
 let version: null | string = null;
 let isVersionNew: null | boolean = null;

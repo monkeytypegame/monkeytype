@@ -6,16 +6,16 @@ export class LocalStorageWithSchema<T> {
   private fallback: T;
   private migrate?: (value: unknown, zodIssues: ZodIssue[]) => T;
 
-  constructor(
-    key: string,
-    schema: Zod.Schema<T>,
-    fallback: T,
-    migrate?: (value: unknown, zodIssues: ZodIssue[]) => T
-  ) {
-    this.key = key;
-    this.schema = schema;
-    this.fallback = fallback;
-    this.migrate = migrate;
+  constructor(options: {
+    key: string;
+    schema: Zod.Schema<T>;
+    fallback: T;
+    migrate?: (value: unknown, zodIssues: ZodIssue[]) => T;
+  }) {
+    this.key = options.key;
+    this.schema = options.schema;
+    this.fallback = options.fallback;
+    this.migrate = options.migrate;
   }
 
   public get(): T {

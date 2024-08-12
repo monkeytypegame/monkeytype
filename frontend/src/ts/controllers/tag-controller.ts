@@ -2,12 +2,13 @@ import { z } from "zod";
 import * as DB from "../db";
 import * as ModesNotice from "../elements/modes-notice";
 import { LocalStorageWithSchema } from "../utils/local-storage-with-schema";
+import { IdSchema } from "@monkeytype/contracts/schemas/util";
 
-const activeTagsLS = new LocalStorageWithSchema(
-  "activeTags",
-  z.array(z.string()),
-  []
-);
+const activeTagsLS = new LocalStorageWithSchema({
+  key: "activeTags",
+  schema: z.array(IdSchema),
+  fallback: [],
+});
 
 export function saveActiveToLocalStorage(): void {
   const tags: string[] = [];

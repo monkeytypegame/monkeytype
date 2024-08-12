@@ -15,11 +15,11 @@ describe("local-storage-with-schema.ts", () => {
       fontSize: 16,
     };
 
-    const ls = new LocalStorageWithSchema(
-      "config",
-      objectSchema,
-      defaultObject
-    );
+    const ls = new LocalStorageWithSchema({
+      key: "config",
+      schema: objectSchema,
+      fallback: defaultObject,
+    });
 
     const getItemMock = vi.fn();
     const setItemMock = vi.fn();
@@ -88,11 +88,11 @@ describe("local-storage-with-schema.ts", () => {
 
     it("should revert to fallback value if no migrate function and schema failed", () => {
       getItemMock.mockReturnValue(JSON.stringify({ hi: "hello" }));
-      const ls = new LocalStorageWithSchema(
-        "config",
-        objectSchema,
-        defaultObject
-      );
+      const ls = new LocalStorageWithSchema({
+        key: "config",
+        schema: objectSchema,
+        fallback: defaultObject,
+      });
 
       const res = ls.get();
 
@@ -108,14 +108,14 @@ describe("local-storage-with-schema.ts", () => {
         mode: "time",
         fontSize: 1,
       };
-      const ls = new LocalStorageWithSchema(
-        "config",
-        objectSchema,
-        defaultObject,
-        () => {
+      const ls = new LocalStorageWithSchema({
+        key: "config",
+        schema: objectSchema,
+        fallback: defaultObject,
+        migrate: () => {
           return migrated;
-        }
-      );
+        },
+      });
 
       const res = ls.get();
 
