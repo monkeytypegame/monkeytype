@@ -17,6 +17,9 @@ const subgroup: MonkeyTypes.CommandsSubgroup = {
       id: "setPlaySoundOnError1",
       display: "damage",
       configValue: "1",
+      hover: (): void => {
+        void SoundController.previewError("1");
+      },
       exec: (): void => {
         UpdateConfig.setPlaySoundOnError("1");
         void SoundController.playError();
@@ -26,6 +29,9 @@ const subgroup: MonkeyTypes.CommandsSubgroup = {
       id: "setPlaySoundOnError2",
       display: "triangle",
       configValue: "2",
+      hover: (): void => {
+        void SoundController.previewError("2");
+      },
       exec: (): void => {
         UpdateConfig.setPlaySoundOnError("2");
         void SoundController.playError();
@@ -35,6 +41,9 @@ const subgroup: MonkeyTypes.CommandsSubgroup = {
       id: "setPlaySoundOnError3",
       display: "square",
       configValue: "3",
+      hover: (): void => {
+        void SoundController.previewError("3");
+      },
       exec: (): void => {
         UpdateConfig.setPlaySoundOnError("3");
         void SoundController.playError();
@@ -44,6 +53,9 @@ const subgroup: MonkeyTypes.CommandsSubgroup = {
       id: "setPlaySoundOnError3",
       display: "punch miss",
       configValue: "4",
+      hover: (): void => {
+        void SoundController.previewError("4");
+      },
       exec: (): void => {
         UpdateConfig.setPlaySoundOnError("4");
         void SoundController.playError();
