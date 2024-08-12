@@ -404,6 +404,20 @@ export async function previewClick(val: string): Promise<void> {
   safeClickSounds[val][0].sounds[0].play();
 }
 
+export async function previewError(val: string): Promise<void> {
+  if (errorSounds === null) await initErrorSound();
+
+  const errorClickSounds = errorSounds as ErrorSounds;
+
+  const clickSoundIds = Object.keys(errorClickSounds);
+  if (!clickSoundIds.includes(val)) return;
+
+  //@ts-expect-error
+  errorClickSounds[val][0].sounds[0].seek(0);
+  //@ts-expect-error
+  errorClickSounds[val][0].sounds[0].play();
+}
+
 let currentCode = "KeyA";
 
 $(document).on("keydown", (event) => {
