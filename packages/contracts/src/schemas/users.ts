@@ -1,7 +1,8 @@
 import { z } from "zod";
+import { IdSchema } from "./util";
 
 export const ResultFiltersSchema = z.object({
-  _id: z.string(),
+  _id: IdSchema,
   name: z.string(),
   pb: z.object({
     no: z.boolean(),
