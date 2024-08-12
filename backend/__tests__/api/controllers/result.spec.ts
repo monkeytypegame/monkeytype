@@ -191,9 +191,10 @@ describe("result controller test", () => {
         .expect(422);
 
       //THEN
-      expect(body.message).toEqual(
-        '"limit" must be less than or equal to 1000 (2000)'
-      );
+      expect(body).toEqual({
+        message: "Invalid query schema",
+        validationErrors: ['"limit" Number must be less than or equal to 1000'],
+      });
     });
     it("should fail exceeding maxlimit for premium user", async () => {
       //GIVEN
@@ -312,6 +313,8 @@ describe("result controller test", () => {
       //GIVEN
       await acceptApeKeys(true);
       const apeKey = await mockAuthenticateWithApeKey(uid, await configuration);
+      const result = givenDbResult(uid);
+      getLastResultMock.mockResolvedValue(result);
 
       //WHEN
       await mockApp
@@ -499,25 +502,27 @@ describe("result controller test", () => {
   });
   describe("addResult", () => {
     //TODO improve test coverage for addResult
+    const insertedId = new ObjectId();
     const getUserMock = vi.spyOn(UserDal, "getUser");
     const updateStreakMock = vi.spyOn(UserDal, "updateStreak");
     const checkIfTagPbMock = vi.spyOn(UserDal, "checkIfTagPb");
+    const addResultMock = vi.spyOn(ResultDal, "addResult");
 
     beforeEach(async () => {
       await enableResultsSaving(true);
-      getUserMock.mockReset();
-      updateStreakMock.mockReset();
-      checkIfTagPbMock.mockReset();
 
-      getUserMock.mockResolvedValue({} as any);
+      [getUserMock, updateStreakMock, checkIfTagPbMock, addResultMock].forEach(
+        (it) => it.mockReset()
+      );
+
+      getUserMock.mockResolvedValue({ name: "bob" } as any);
       updateStreakMock.mockResolvedValue(0);
       checkIfTagPbMock.mockResolvedValue([]);
+      addResultMock.mockResolvedValue({ insertedId });
     });
 
     it("should add result", async () => {
       //GIVEN
-      getUserMock.mockResolvedValue({} as any);
-      const result = givenDbResult(uid);
 
       //WHEN
       const { body } = await mockApp
@@ -525,50 +530,88 @@ describe("result controller test", () => {
         .set("Authorization", `Bearer ${uid}`)
         .send({
           result: {
-            acc: result.acc,
+            acc: 86,
             afkDuration: 5,
             bailedOut: false,
             blindMode: false,
-            charStats: result.charStats,
-            chartData: result.chartData,
-            consistency: result.consistency,
+            charStats: [100, 2, 3, 5],
+            chartData: { wpm: [1, 2, 3], raw: [50, 55, 56], err: [0, 2, 0] },
+            consistency: 23.5,
             difficulty: "normal",
             funbox: "none",
             hash: "hash",
             incompleteTestSeconds: 2,
             incompleteTests: [{ acc: 75, seconds: 10 }],
-            keyConsistency: result.keyConsistency,
+            keyConsistency: 12,
             keyDuration: [0, 3, 5],
             keySpacing: [0, 2, 4],
             language: "english",
             lazyMode: false,
-            mode: result.mode,
-            mode2: result.mode2,
+            mode: "time",
+            mode2: "15",
             numbers: false,
             punctuation: false,
-            rawWpm: result.rawWpm,
+            rawWpm: 99,
             restartCount: 4,
-            tags: [new ObjectId().toHexString()],
-            testDuration: result.testDuration,
-            timestamp: result.timestamp,
-            uid: result.uid,
+            tags: ["tagOneId", "tagTwoId"],
+            testDuration: 15.1,
+            timestamp: 1000,
+            uid,
             wpmConsistency: 55,
-            wpm: result.wpm,
+            wpm: 80,
             stopOnLetter: false,
+            //new required
+            charTotal: 5,
+            keyOverlap: 7,
+            lastKeyToEnd: 9,
+            startToFirstKey: 11,
           },
         })
         .expect(200);
-      console.log(body);
 
       expect(body.message).toEqual("Result saved");
-      expect(body.data).toEqual(
+      expect(body.data).toEqual({
+        isPb: true,
+        tagPbs: [],
+        xp: 0,
+        dailyXpBonus: false,
+        xpBreakdown: {},
+        streak: 0,
+        insertedId: insertedId.toHexString(),
+      });
+
+      expect(addResultMock).toHaveBeenCalledWith(
+        uid,
         expect.objectContaining({
+          acc: 86,
+          afkDuration: 5,
+          charStats: [100, 2, 3, 5],
+          chartData: {
+            err: [0, 2, 0],
+            raw: [50, 55, 56],
+            wpm: [1, 2, 3],
+          },
+          consistency: 23.5,
+          incompleteTestSeconds: 2,
           isPb: true,
-          tagPbs: [],
-          xp: 0,
-          dailyXpBonus: false,
-          xpBreakdown: {},
-          streak: 0,
+          keyConsistency: 12,
+          keyDurationStats: {
+            average: 2.67,
+            sd: 2.05,
+          },
+          keySpacingStats: {
+            average: 2,
+            sd: 1.63,
+          },
+          mode: "time",
+          mode2: "15",
+          name: "bob",
+          rawWpm: 99,
+          restartCount: 4,
+          tags: ["tagOneId", "tagTwoId"],
+          testDuration: 15.1,
+          uid: "123456",
+          wpm: 80,
         })
       );
     });
@@ -651,16 +694,16 @@ function givenDbResult(uid: string): MonkeyTypes.DBResult {
     wpm: Math.random() * 100,
     rawWpm: Math.random() * 100,
     charStats: [
-      Math.random() * 10,
-      Math.random() * 10,
-      Math.random() * 10,
-      Math.random() * 10,
+      Math.round(Math.random() * 10),
+      Math.round(Math.random() * 10),
+      Math.round(Math.random() * 10),
+      Math.round(Math.random() * 10),
     ],
     acc: 80 + Math.random() * 20, //min accuracy is 75%
     mode: "time",
     mode2: "60",
-    timestamp: Math.random() * 100,
-    testDuration: Math.random() * 100,
+    timestamp: Math.round(Math.random() * 100),
+    testDuration: 1 + Math.random() * 100,
     consistency: Math.random() * 100,
     keyConsistency: Math.random() * 100,
     uid,

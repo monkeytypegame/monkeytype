@@ -219,7 +219,7 @@ export type CompletedEvent = Result<Mode> & {
   lastKeyToEnd: number;
   startToFirstKey: number;
   charTotal: number;
-  stringified?: string;
+  stringified?: string; //obsolete?
   hash?: string;
   stopOnLetter: boolean;
 };
