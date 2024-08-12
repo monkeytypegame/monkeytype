@@ -1,4 +1,4 @@
-import { ResultFilters } from "@monkeytype/shared-types";
+import { ResultFilters } from "@monkeytype/contracts/schemas/users";
 
 const object: ResultFilters = {
   _id: "default-result-filters-id",

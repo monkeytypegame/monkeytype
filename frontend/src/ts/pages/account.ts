@@ -34,6 +34,7 @@ import {
   Mode2Custom,
   PersonalBests,
 } from "@monkeytype/contracts/schemas/shared";
+import { ResultFiltersGroupItem } from "@monkeytype/contracts/schemas/users";
 
 let filterDebug = false;
 //toggle filterdebug
@@ -386,7 +387,7 @@ async function fillContent(): Promise<void> {
         return;
       }
 
-      let puncfilter: MonkeyTypes.Filter<"punctuation"> = "off";
+      let puncfilter: ResultFiltersGroupItem<"punctuation"> = "off";
       if (result.punctuation) {
         puncfilter = "on";
       }
@@ -397,7 +398,7 @@ async function fillContent(): Promise<void> {
         return;
       }
 
-      let numfilter: MonkeyTypes.Filter<"numbers"> = "off";
+      let numfilter: ResultFiltersGroupItem<"numbers"> = "off";
       if (result.numbers) {
         numfilter = "on";
       }

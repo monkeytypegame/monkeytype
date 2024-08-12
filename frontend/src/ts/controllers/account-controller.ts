@@ -167,7 +167,7 @@ async function getDataAndInit(): Promise<boolean> {
   const areConfigsEqual =
     JSON.stringify(Config) === JSON.stringify(snapshot.config);
 
-  if (UpdateConfig.localStorageConfig === undefined || !areConfigsEqual) {
+  if (Config === undefined || !areConfigsEqual) {
     console.log(
       "no local config or local and db configs are different - applying db"
     );
