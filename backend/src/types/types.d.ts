@@ -128,17 +128,15 @@ declare namespace MonkeyTypes {
     import("@monkeytype/contracts/schemas/results").Result<
       import("@monkeytype/contracts/schemas/shared").Mode
     >
-  >;
+  > & {
+    //legacy values
+    correctChars?: number;
+    incorrectChars?: number;
+  };
 
   type KeyStats = {
     average: number;
     sd: number;
-  };
-
-  type DBResultNew = {} & {
-    //DB only
-    keySpacingStats?: KeyStats;
-    keyDurationStats?: KeyStats;
   };
 
   type BlocklistEntry = {

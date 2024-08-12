@@ -1,8 +1,7 @@
-import { CompletedEvent, DBResult } from "@monkeytype/shared-types";
+import { CompletedEvent } from "@monkeytype/contracts/schemas/results";
 import { Mode } from "@monkeytype/contracts/schemas/shared";
-import { ObjectId } from "mongodb";
 
-type Result = MonkeyTypes.WithObjectId<DBResult<Mode>>;
+import { ObjectId } from "mongodb";
 
 export function buildDbResult<M extends Mode>(
   completedEvent: CompletedEvent<M>,
@@ -10,7 +9,7 @@ export function buildDbResult<M extends Mode>(
   isPb: boolean
 ): MonkeyTypes.DBResult {
   const ce = completedEvent;
-  const res: Result = {
+  const res: MonkeyTypes.DBResult = {
     _id: new ObjectId(),
     uid: ce.uid,
     wpm: ce.wpm,
@@ -35,8 +34,8 @@ export function buildDbResult<M extends Mode>(
     funbox: ce.funbox,
     numbers: ce.numbers,
     punctuation: ce.punctuation,
-    keySpacingStats: ce.keySpacingStats,
-    keyDurationStats: ce.keyDurationStats,
+    //TODO keySpacingStats: ce.keySpacingStats,
+    //TODO keyDurationStats: ce.keyDurationStats,
     isPb: isPb,
     bailedOut: ce.bailedOut,
     blindMode: ce.blindMode,
@@ -51,15 +50,14 @@ export function buildDbResult<M extends Mode>(
   if (ce.language === "english") delete res.language;
   if (!ce.numbers) delete res.numbers;
   if (!ce.punctuation) delete res.punctuation;
-  if (ce.mode !== "custom") delete res.customText;
   if (ce.mode !== "quote") delete res.quoteLength;
   if (ce.restartCount === 0) delete res.restartCount;
   if (ce.incompleteTestSeconds === 0) delete res.incompleteTestSeconds;
   if (ce.afkDuration === 0) delete res.afkDuration;
   if (ce.tags.length === 0) delete res.tags;
 
-  if (ce.keySpacingStats === undefined) delete res.keySpacingStats;
-  if (ce.keyDurationStats === undefined) delete res.keyDurationStats;
+  //if (ce.keySpacingStats === undefined) delete res.keySpacingStats;
+  //if (ce.keyDurationStats === undefined) delete res.keyDurationStats;
 
   if (res.isPb === false) delete res.isPb;
 

@@ -86,8 +86,8 @@ export const ResultSchema = ResultBaseSchema.merge(
   keySpacingStats: KeyStatsSchema.optional(),
   keyDurationStats: KeyStatsSchema.optional(),
   name: z.string(),
-  correctChars: z.number().optional(), //legacy result
-  incorrectChars: z.number().optional(), //legacy result
+  //correctChars: z.number().optional(), //legacy result
+  //incorrectChars: z.number().optional(), //legacy result
   isPb: z.boolean().optional(), //true or undefined
 });
 

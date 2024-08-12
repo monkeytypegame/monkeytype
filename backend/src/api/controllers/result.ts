@@ -37,11 +37,7 @@ import * as WeeklyXpLeaderboard from "../../services/weekly-xp-leaderboard";
 import { UAParser } from "ua-parser-js";
 import { canFunboxGetPb } from "../../utils/pb";
 import { buildDbResult } from "../../utils/result";
-import {
-  CompletedEvent,
-  Configuration,
-  PostResultResponse,
-} from "@monkeytype/shared-types";
+import { Configuration, PostResultResponse } from "@monkeytype/shared-types";
 import { addLog } from "../../dal/logs";
 import {
   AddResultRequest,
@@ -52,9 +48,11 @@ import {
   UpdateResultTagsRequest,
   UpdateResultTagsResponse,
 } from "@monkeytype/contracts/results";
+import {
+  CompletedEvent,
+  KeyStats,
+} from "@monkeytype/contracts/schemas/results";
 import { Mode } from "@monkeytype/contracts/schemas/shared";
-
-type IntermediateCompletedEvent<M extends Mode> = CompletedEvent<M>;
 
 try {
   if (!anticheatImplemented()) throw new Error("undefined");
@@ -192,10 +190,8 @@ export async function addResult(
     );
   }
 
-  const completedEvent = Object.assign(
-    {},
-    req.body.result
-  ) as IntermediateCompletedEvent<typeof req.body.result.mode>;
+  const completedEvent = req.body.result;
+
   if (!user.lbOptOut && completedEvent.acc < 75) {
     throw new MonkeyError(
       400,
@@ -212,8 +208,8 @@ export async function addResult(
   if (resulthash === undefined || resulthash === "") {
     throw new MonkeyError(400, "Missing result hash");
   }
-  delete completedEvent.hash;
-  delete completedEvent.stringified;
+  //delete completedEvent.hash;
+  //delete completedEvent.stringified;
   if (req.ctx.configuration.results.objectHashCheckEnabled) {
     const serverhash = objectHash(completedEvent);
     if (serverhash !== resulthash) {
@@ -242,11 +238,12 @@ export async function addResult(
     throw new MonkeyError(400, "Impossible funbox combination");
   }
 
+  let keySpacingStats: KeyStats | undefined = undefined;
   if (
     completedEvent.keySpacing !== "toolong" &&
     completedEvent.keySpacing.length > 0
   ) {
-    completedEvent.keySpacingStats = {
+    keySpacingStats = {
       average:
         completedEvent.keySpacing.reduce(
           (previous, current) => (current += previous)
@@ -255,11 +252,12 @@ export async function addResult(
     };
   }
 
+  let keyDurationStats: KeyStats | undefined = undefined;
   if (
     completedEvent.keyDuration !== "toolong" &&
     completedEvent.keyDuration.length > 0
   ) {
-    completedEvent.keyDurationStats = {
+    keyDurationStats = {
       average:
         completedEvent.keyDuration.reduce(
           (previous, current) => (current += previous)
@@ -341,7 +339,7 @@ export async function addResult(
     (user.verified === false || user.verified === undefined) &&
     user.lbOptOut !== true
   ) {
-    if (!completedEvent.keySpacingStats || !completedEvent.keyDurationStats) {
+    if (!keySpacingStats || !keyDurationStats) {
       const status = MonkeyStatusCodes.MISSING_KEY_DATA;
       throw new MonkeyError(status.code, "Missing key data");
     }
@@ -408,21 +406,13 @@ export async function addResult(
     }
   }
 
-  if (completedEvent.keyDurationStats) {
-    completedEvent.keyDurationStats.average = roundTo2(
-      completedEvent.keyDurationStats.average
-    );
-    completedEvent.keyDurationStats.sd = roundTo2(
-      completedEvent.keyDurationStats.sd
-    );
+  if (keyDurationStats) {
+    keyDurationStats.average = roundTo2(keyDurationStats.average);
+    keyDurationStats.sd = roundTo2(keyDurationStats.sd);
   }
-  if (completedEvent.keySpacingStats) {
-    completedEvent.keySpacingStats.average = roundTo2(
-      completedEvent.keySpacingStats.average
-    );
-    completedEvent.keySpacingStats.sd = roundTo2(
-      completedEvent.keySpacingStats.sd
-    );
+  if (keySpacingStats) {
+    keySpacingStats.average = roundTo2(keySpacingStats.average);
+    keySpacingStats.sd = roundTo2(keySpacingStats.sd);
   }
 
   let isPb = false;
@@ -596,6 +586,9 @@ export async function addResult(
   }
 
   const dbresult = buildDbResult(completedEvent, user.name, isPb);
+  dbresult.keySpacingStats = keySpacingStats;
+  dbresult.keyDurationStats = keyDurationStats;
+
   const addedResult = await ResultDAL.addResult(uid, dbresult);
 
   await UserDAL.incrementXp(uid, xpGained.xp);
@@ -633,7 +626,7 @@ export async function addResult(
     data.weeklyXpLeaderboardRank = weeklyXpLeaderboardRank;
   }
 
-  incrementResult(completedEvent);
+  incrementResult(completedEvent, dbresult.isPb);
 
   return new MonkeyResponse2("Result saved", data);
 }
@@ -644,8 +637,8 @@ type XpResult = {
   breakdown?: Record<string, number>; //TODO define type for xpBreakdown
 };
 
-async function calculateXp(
-  result: CompletedEvent,
+async function calculateXp<M extends Mode>(
+  result: CompletedEvent<M>,
   xpConfiguration: Configuration["users"]["xp"],
   uid: string,
   currentTotalXp: number,

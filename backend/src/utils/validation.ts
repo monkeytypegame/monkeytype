@@ -4,6 +4,7 @@ import { profanities } from "../constants/profanities";
 import { intersect, sanitizeString } from "./misc";
 import { default as FunboxList } from "../constants/funbox-list";
 import { CompletedEvent } from "@monkeytype/shared-types";
+import { Mode } from "@monkeytype/contracts/schemas/shared";
 
 export function inRange(value: number, min: number, max: number): boolean {
   return value >= min && value <= max;
@@ -49,7 +50,9 @@ export function isTagPresetNameValid(name: string): boolean {
   return VALID_NAME_PATTERN.test(name);
 }
 
-export function isTestTooShort(result: CompletedEvent): boolean {
+export function isTestTooShort<M extends Mode>(
+  result: CompletedEvent<M>
+): boolean {
   const { mode, mode2, customText, testDuration, bailedOut } = result;
 
   if (mode === "time") {
