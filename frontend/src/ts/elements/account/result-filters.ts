@@ -80,11 +80,38 @@ export const defaultResultFilters: ResultFilters = {
   },
 };
 
+export function mergeWithDefaultFilters(
+  filters: Partial<ResultFilters>
+): ResultFilters {
+  try {
+    const merged = {} as ResultFilters;
+    for (const groupKey of Misc.typedKeys(defaultResultFilters)) {
+      if (groupKey === "_id" || groupKey === "name") {
+        merged[groupKey] = filters[groupKey] ?? defaultResultFilters[groupKey];
+      } else {
+        // @ts-expect-error i cant figure this out
+        merged[groupKey] = {
+          ...defaultResultFilters[groupKey],
+          ...filters[groupKey],
+        };
+      }
+    }
+    return merged;
+  } catch (e) {
+    return defaultResultFilters;
+  }
+}
+
 const resultFiltersLS = new LocalStorageWithSchema({
   key: "resultFilters",
   schema: ResultFiltersSchema,
   fallback: defaultResultFilters,
-  //todo add migration
+  migrate: (unknown, _issues) => {
+    if (!Misc.isObject(unknown)) {
+      return defaultResultFilters;
+    }
+    return mergeWithDefaultFilters(unknown as ResultFilters);
+  },
 });
 
 type Option = {
