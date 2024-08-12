@@ -52,8 +52,7 @@ describe("local-storage-with-schema.ts", () => {
         hi: "hello",
       };
 
-      //@ts-expect-error
-      const res = ls.set(obj);
+      const res = ls.set(obj as any);
 
       expect(localStorage.setItem).not.toHaveBeenCalled();
       expect(res).toBe(false);
