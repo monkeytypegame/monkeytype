@@ -40,7 +40,6 @@ import type {
 } from "chartjs-plugin-annotation";
 import Ape from "../ape";
 import { CompletedEvent } from "@monkeytype/shared-types";
-import { Mode } from "@monkeytype/contracts/schemas/shared";
 
 let result: CompletedEvent;
 let maxChartVal: number;

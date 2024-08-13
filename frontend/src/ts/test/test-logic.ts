@@ -1182,11 +1182,12 @@ async function saveResult(
   }
 
   if (response?.data?.insertedId !== undefined) {
-    completedEvent._id = response.data.insertedId;
+    const result: FullResult<Mode> = JSON.parse(JSON.stringify(completedEvent));
+    result._id = response.data.insertedId;
     if (response?.data?.isPb !== undefined && response.data.isPb) {
-      completedEvent.isPb = true;
+      result.isPb = true;
     }
-    DB.saveLocalResult(completedEvent);
+    DB.saveLocalResult(result);
     DB.updateLocalStats(
       completedEvent.incompleteTests.length + 1,
       completedEvent.testDuration +

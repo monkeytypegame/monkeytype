@@ -2,7 +2,7 @@ import * as ChartController from "../../controllers/chart-controller";
 import Config from "../../config";
 import * as Misc from "../../utils/misc";
 import * as Arrays from "../../utils/arrays";
-import { ChartData } from "@monkeytype/shared-types";
+import { ChartData } from "@monkeytype/contracts/schemas/results";
 
 export function updatePosition(x: number, y: number): void {
   $(".pageAccount .miniResultChartWrapper").css({ top: y, left: x });

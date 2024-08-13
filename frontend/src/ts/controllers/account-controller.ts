@@ -48,6 +48,7 @@ import { getHtmlByUserFlags } from "./user-flag-controller";
 import { FirebaseError } from "firebase/app";
 import * as PSA from "../elements/psa";
 import defaultResultFilters from "../constants/default-result-filters";
+import { syncNotSignedInLastResult } from "../utils/results";
 
 export const gmailProvider = new GoogleAuthProvider();
 export const githubProvider = new GithubAuthProvider();
@@ -592,22 +593,8 @@ async function signUp(): Promise<void> {
     $("nav .textButton.account .text").text(nname);
     LoginPage.hidePreloader();
     await loadUser(createdAuthUser.user);
-    if (TestLogic.notSignedInLastResult !== null) {
-      TestLogic.setNotSignedInUid(createdAuthUser.user.uid);
+    await syncNotSignedInLastResult(createdAuthUser.user.uid);
 
-      const response = await Ape.results.save(TestLogic.notSignedInLastResult);
-
-      if (response.status === 200) {
-        const result = TestLogic.notSignedInLastResult;
-        DB.saveLocalResult(result);
-        DB.updateLocalStats(
-          1,
-          result.testDuration +
-            result.incompleteTestSeconds -
-            result.afkDuration
-        );
-      }
-    }
     Notifications.add("Account created", 1);
   } catch (e) {
     let message = Misc.createErrorMessage(e, "Failed to create account");

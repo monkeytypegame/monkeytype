@@ -1,5 +1,7 @@
 type ConfigValue = import("@monkeytype/contracts/schemas/configs").ConfigValue;
 type Mode = import("@monkeytype/contracts/schemas/shared").Mode;
+type Result<M extends Mode> =
+  import("@monkeytype/contracts/schemas/results").Result<M>;
 
 declare namespace MonkeyTypes {
   type PageName =
@@ -237,7 +239,7 @@ declare namespace MonkeyTypes {
     config: import("@monkeytype/contracts/schemas/configs").Config;
     tags: UserTag[];
     presets: SnapshotPreset[];
-    results?: FullResult[];
+    results?: FullResult<Mode>[];
     xp: number;
     testActivity?: ModifiableTestActivityCalendar;
     testActivityByYear?: { [key: string]: TestActivityCalendar };
@@ -464,32 +466,35 @@ declare namespace MonkeyTypes {
     text: string;
     weeks: number;
   };
-}
 
-type FullResult<M extends Mode> = Omit<
-  import("@monkeytype/contracts/schema/results").Result<M>,
-  "bailedOut" | "blindMode",
-  | "lazyMode"
-  | "difficulty"
-  | "funbox"
-  | "language"
-  | "numbers"
-  | "quoteLength"
-  | "restartCount"
-  | "incompleteTestSeconds"
-  | "afkDuration"
-  | "tags"
-> & {
-  bailedOut: boolean;
-  blindMode: boolean;
-  lazyMode: boolean;
-  difficulty: import("@monkeytype/contracts/schemas/shared").Difficulty;
-  funbox: string;
-  language: string;
-  numbers: boolean;
-  quoteLength: number;
-  restartCount: number;
-  incompleteTestSeconds: number;
-  afkDuration: number;
-  tags: string[];
-};
+  type FullResult<M extends Mode> = Omit<
+    Result<M>,
+    | "restartCount"
+    | "incompleteTestSeconds"
+    | "incompleteTest"
+    | "afkDuration"
+    | "tags"
+    | "bailedOut"
+    | "blindMode"
+    | "lazyMode"
+    | "funbox"
+    | "language"
+    | "difficulty"
+    | "numbers"
+    | "punctuation"
+  > & {
+    restartCount: number;
+    incompleteTestSeconds: number;
+    incompleteTest: import("@monkeytype/contracts/schemas/results").IncompleteTest[];
+    afkDuration: number;
+    tags: string[];
+    bailedOut: boolean;
+    blindMode: boolean;
+    lazyMode: boolean;
+    funbox: string;
+    language: string;
+    difficulty: import("@monkeytype/contracts/schemas/shared").Difficulty;
+    numbers: boolean;
+    punctuation: boolean;
+  };
+}

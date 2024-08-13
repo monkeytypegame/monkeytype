@@ -6,9 +6,10 @@ import {
   PercentageSchema,
   token,
   WpmSchema,
+  LanguageSchema,
 } from "./util";
 import { Mode, Mode2, Mode2Schema, ModeSchema } from "./shared";
-import { DifficultySchema, FunboxSchema, LanguageSchema } from "./configs";
+import { DifficultySchema, FunboxSchema } from "./configs";
 
 export const IncompleteTestSchema = z.object({
   acc: PercentageSchema,
@@ -16,13 +17,11 @@ export const IncompleteTestSchema = z.object({
 });
 export type IncompleteTest = z.infer<typeof IncompleteTestSchema>;
 
-export const ChartDataSchema = z
-  .object({
-    wpm: z.array(z.number().nonnegative()).max(122),
-    raw: z.array(z.number().nonnegative()).max(122),
-    err: z.array(z.number().nonnegative()).max(122),
-  })
-  .or(z.literal("toolong"));
+export const ChartDataSchema = z.object({
+  wpm: z.array(z.number().nonnegative()).max(122),
+  raw: z.array(z.number().nonnegative()).max(122),
+  err: z.array(z.number().nonnegative()).max(122),
+});
 export type ChartData = z.infer<typeof ChartDataSchema>;
 
 export const KeyStatsSchema = z.object({
@@ -62,7 +61,7 @@ const ResultBaseSchema = z.object({
   testDuration: z.number().min(1),
   consistency: PercentageSchema,
   keyConsistency: PercentageSchema,
-  chartData: ChartDataSchema,
+  chartData: ChartDataSchema.or(z.literal("toolong")),
   uid: IdSchema,
 });
 

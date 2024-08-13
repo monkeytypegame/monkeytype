@@ -119,7 +119,8 @@ export function verify(result: FullResult<Mode>): string | undefined {
               requirementsMet = false;
               for (const f of funboxMode.split("#")) {
                 if (
-                  result.funbox?.split("#").find((rf) => rf === f) === undefined
+                  result.funbox?.split("#").find((rf: string) => rf === f) ===
+                  undefined
                 ) {
                   failReasons.push(`${f} funbox not active`);
                 }

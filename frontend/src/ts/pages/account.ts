@@ -276,7 +276,7 @@ async function fillContent(): Promise<void> {
   filteredResults = [];
   $(".pageAccount .history table tbody").empty();
 
-  DB.getSnapshot()?.results?.forEach((result: Result<Mode>) => {
+  DB.getSnapshot()?.results?.forEach((result) => {
     // totalSeconds += tt;
 
     //apply filters
@@ -446,7 +446,7 @@ async function fillContent(): Promise<void> {
 
         if (validTags === undefined) return;
 
-        result.tags.forEach((tag) => {
+        result.tags.forEach((tag: string) => {
           //check if i even need to check tags anymore
           if (!tagHide) return;
           //check if tag is valid
