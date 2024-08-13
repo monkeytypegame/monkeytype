@@ -203,12 +203,6 @@ declare namespace MonkeyTypes {
     };
   };
 
-  type Leaderboards = {
-    time: {
-      [_key in 15 | 60]: import("@monkeytype/shared-types").LeaderboardEntry[];
-    };
-  };
-
   type QuoteRatings = Record<string, Record<number, number>>;
 
   type UserTag = import("@monkeytype/shared-types").UserTag & {
@@ -237,7 +231,7 @@ declare namespace MonkeyTypes {
     inboxUnreadSize: number;
     streak: number;
     maxStreak: number;
-    filterPresets: import("@monkeytype/shared-types").ResultFilters[];
+    filterPresets: import("@monkeytype/contracts/schemas/users").ResultFilters[];
     isPremium: boolean;
     streakHourOffset?: number;
     config: import("@monkeytype/contracts/schemas/configs").Config;
@@ -250,15 +244,6 @@ declare namespace MonkeyTypes {
     testActivity?: ModifiableTestActivityCalendar;
     testActivityByYear?: { [key: string]: TestActivityCalendar };
   };
-
-  type Group<
-    G extends keyof import("@monkeytype/shared-types").ResultFilters = keyof import("@monkeytype/shared-types").ResultFilters
-  > = G extends G ? import("@monkeytype/shared-types").ResultFilters[G] : never;
-
-  type Filter<G extends Group = Group> =
-    G extends keyof import("@monkeytype/shared-types").ResultFilters
-      ? keyof import("@monkeytype/shared-types").ResultFilters[G]
-      : never;
 
   type TimerStats = {
     dateNow: number;

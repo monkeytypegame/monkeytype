@@ -1,33 +1,13 @@
-import _ from "lodash";
+import _, { omit } from "lodash";
 import * as RedisClient from "../init/redis";
 import LaterQueue from "../queues/later-queue";
 import { getCurrentDayTimestamp, matchesAPattern, kogascore } from "./misc";
 import { Configuration, ValidModeRule } from "@monkeytype/shared-types";
-
-type DailyLeaderboardEntry = {
-  uid: string;
-  name: string;
-  wpm: number;
-  raw: number;
-  acc: number;
-  consistency: number;
-  timestamp: number;
-  discordAvatar?: string;
-  discordId?: string;
-  badgeId?: number;
-  isPremium?: boolean;
-};
-
-type GetRankResponse = {
-  minWpm: number;
-  count: number;
-  rank: number | null;
-  entry: DailyLeaderboardEntry | null;
-};
-
-export type LbEntryWithRank = {
-  rank: number;
-} & DailyLeaderboardEntry;
+import {
+  DailyLeaderboardRank,
+  LeaderboardEntry,
+} from "@monkeytype/contracts/schemas/leaderboards";
+import MonkeyError from "./error";
 
 const dailyLeaderboardNamespace = "monkeytype:dailyleaderboard";
 const scoresNamespace = `${dailyLeaderboardNamespace}:scores`;
@@ -68,7 +48,7 @@ export class DailyLeaderboard {
   }
 
   public async addResult(
-    entry: DailyLeaderboardEntry,
+    entry: Omit<LeaderboardEntry, "rank">,
     dailyLeaderboardsConfig: Configuration["dailyLeaderboards"]
   ): Promise<number> {
     const connection = RedisClient.getConnection();
@@ -127,7 +107,7 @@ export class DailyLeaderboard {
     maxRank: number,
     dailyLeaderboardsConfig: Configuration["dailyLeaderboards"],
     premiumFeaturesEnabled: boolean
-  ): Promise<LbEntryWithRank[]> {
+  ): Promise<LeaderboardEntry[]> {
     const connection = RedisClient.getConnection();
     if (!connection || !dailyLeaderboardsConfig.enabled) {
       return [];
@@ -152,10 +132,10 @@ export class DailyLeaderboard {
       );
     }
 
-    const resultsWithRanks: LbEntryWithRank[] = results.map(
+    const resultsWithRanks: LeaderboardEntry[] = results.map(
       (resultJSON, index) => {
         // TODO: parse with zod?
-        const parsed = JSON.parse(resultJSON) as LbEntryWithRank;
+        const parsed = JSON.parse(resultJSON) as LeaderboardEntry;
 
         return {
           ...parsed,
@@ -165,7 +145,7 @@ export class DailyLeaderboard {
     );
 
     if (!premiumFeaturesEnabled) {
-      resultsWithRanks.forEach((it) => (it.isPremium = undefined));
+      return resultsWithRanks.map((it) => omit(it, "isPremium"));
     }
 
     return resultsWithRanks;
@@ -174,10 +154,10 @@ export class DailyLeaderboard {
   public async getRank(
     uid: string,
     dailyLeaderboardsConfig: Configuration["dailyLeaderboards"]
-  ): Promise<GetRankResponse | null> {
+  ): Promise<DailyLeaderboardRank> {
     const connection = RedisClient.getConnection();
     if (!connection || !dailyLeaderboardsConfig.enabled) {
-      return null;
+      throw new MonkeyError(500, "Redis connnection is unavailable");
     }
 
     const { leaderboardScoresKey, leaderboardResultsKey } =
@@ -198,8 +178,6 @@ export class DailyLeaderboard {
       return {
         minWpm,
         count: count ?? 0,
-        rank: null,
-        entry: null,
       };
     }
 

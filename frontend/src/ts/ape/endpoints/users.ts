@@ -1,12 +1,12 @@
 import {
   CountByYearAndDay,
   CustomTheme,
-  ResultFilters,
   UserProfile,
   UserProfileDetails,
   UserTag,
 } from "@monkeytype/shared-types";
 import { Mode, Mode2 } from "@monkeytype/contracts/schemas/shared";
+import { ResultFilters } from "@monkeytype/contracts/schemas/users";
 
 const BASE_PATH = "/users";
 

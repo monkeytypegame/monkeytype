@@ -32,7 +32,7 @@ module.exports = {
     "no-constant-condition": ["error"],
     "no-constant-binary-expression": "error",
     "no-unused-vars": [
-      "warn",
+      "error",
       {
         argsIgnorePattern: "^(_|e|event)",
         caughtErrorsIgnorePattern: "^(_|e|error)",
@@ -91,11 +91,16 @@ module.exports = {
           "error",
           { ignoreArrowShorthand: true },
         ],
-        "@typescript-eslint/explicit-function-return-type": ["error"],
+        "@typescript-eslint/explicit-function-return-type": [
+          "error",
+          {
+            allowExpressions: true,
+          },
+        ],
         "@typescript-eslint/ban-ts-comment": "off",
-        "@typescript-eslint/no-empty-function": "warn",
+        "@typescript-eslint/no-empty-function": "error",
         "@typescript-eslint/no-unused-vars": [
-          "warn",
+          "error",
           {
             argsIgnorePattern: "^(_|e|event)",
             caughtErrorsIgnorePattern: "^(_|e|error)",
@@ -116,7 +121,7 @@ module.exports = {
             checksVoidReturn: false,
           },
         ],
-        "@typescript-eslint/promise-function-async": "warn",
+        "@typescript-eslint/promise-function-async": "error",
         "@typescript-eslint/no-floating-promises": "error",
         "@typescript-eslint/strict-boolean-expressions": [
           "error",
@@ -124,7 +129,7 @@ module.exports = {
         ],
         "@typescript-eslint/non-nullable-type-assertion-style": "off",
         "@typescript-eslint/no-unnecessary-condition": "off",
-        "@typescript-eslint/consistent-type-definitions": ["warn", "type"],
+        "@typescript-eslint/consistent-type-definitions": ["error", "type"],
         "@typescript-eslint/no-invalid-void-type": "off",
         "import/namespace": "off",
       },

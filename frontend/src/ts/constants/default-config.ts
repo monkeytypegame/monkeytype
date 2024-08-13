@@ -3,7 +3,7 @@ import {
   CustomThemeColors,
 } from "@monkeytype/contracts/schemas/configs";
 
-export default {
+const obj = {
   theme: "serika_dark",
   themeLight: "serika",
   themeDark: "serika_dark",
@@ -103,3 +103,5 @@ export default {
   tribeDelta: "bar",
   tribeCarets: "on",
 } as Config;
+
+export default JSON.parse(JSON.stringify(obj)) as Config;

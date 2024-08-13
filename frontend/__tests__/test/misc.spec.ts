@@ -1,7 +1,10 @@
+import { isObject } from "../../src/ts/utils/misc";
 import {
   getLanguageDisplayString,
   removeLanguageSize,
 } from "../../src/ts/utils/strings";
+
+//todo this file is in the wrong place
 
 describe("misc.ts", () => {
   describe("getLanguageDisplayString", () => {
@@ -68,6 +71,49 @@ describe("misc.ts", () => {
 
       tests.forEach((test) => {
         const result = removeLanguageSize(test.input);
+        expect(result).toBe(test.expected);
+      });
+    });
+  });
+  describe("isObject", () => {
+    it("should correctly identify objects", () => {
+      const tests = [
+        {
+          input: {},
+          expected: true,
+        },
+        {
+          input: { a: 1 },
+          expected: true,
+        },
+        {
+          input: [],
+          expected: false,
+        },
+        {
+          input: [1, 2, 3],
+          expected: false,
+        },
+        {
+          input: "string",
+          expected: false,
+        },
+        {
+          input: 1,
+          expected: false,
+        },
+        {
+          input: null,
+          expected: false,
+        },
+        {
+          input: undefined,
+          expected: false,
+        },
+      ];
+
+      tests.forEach((test) => {
+        const result = isObject(test.input);
         expect(result).toBe(test.expected);
       });
     });

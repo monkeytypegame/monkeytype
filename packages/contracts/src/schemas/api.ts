@@ -1,6 +1,13 @@
 import { z, ZodSchema } from "zod";
 
-export type OpenApiTag = "configs" | "presets" | "ape-keys" | "admin" | "psas";
+export type OpenApiTag =
+  | "configs"
+  | "presets"
+  | "ape-keys"
+  | "admin"
+  | "psas"
+  | "public"
+  | "leaderboards";
 
 export type EndpointMetadata = {
   /** Authentication options, by default a bearer token is required. */

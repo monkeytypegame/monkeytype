@@ -3,7 +3,6 @@ import FunboxList from "../constants/funbox-list";
 import { DBResult } from "@monkeytype/shared-types";
 import {
   Mode,
-  Mode2,
   PersonalBest,
   PersonalBests,
 } from "@monkeytype/contracts/schemas/shared";
@@ -39,7 +38,7 @@ export function checkAndUpdatePb(
   result: Result
 ): CheckAndUpdatePbResult {
   const mode = result.mode;
-  const mode2 = result.mode2 as Mode2<"time">;
+  const mode2 = result.mode2;
 
   const userPb = userPersonalBests ?? {};
   userPb[mode] ??= {};
@@ -175,7 +174,7 @@ function updateLeaderboardPersonalBests(
   }
 
   const mode = result.mode;
-  const mode2 = result.mode2 as Mode2<"time">;
+  const mode2 = result.mode2;
 
   lbPersonalBests[mode] = lbPersonalBests[mode] ?? {};
   const lbMode2 = lbPersonalBests[mode][mode2] as MonkeyTypes.LbPersonalBests;

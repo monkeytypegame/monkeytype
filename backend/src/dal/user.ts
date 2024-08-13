@@ -21,7 +21,6 @@ import {
   CustomTheme,
   DBResult,
   MonkeyMail,
-  ResultFilters,
   UserInventory,
   UserProfileDetails,
   UserQuoteRatings,
@@ -33,6 +32,7 @@ import {
   PersonalBest,
 } from "@monkeytype/contracts/schemas/shared";
 import { addImportantLog } from "./logs";
+import { ResultFilters } from "@monkeytype/contracts/schemas/users";
 
 const SECONDS_PER_HOUR = 3600;
 

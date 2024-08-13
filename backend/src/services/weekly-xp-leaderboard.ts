@@ -2,25 +2,21 @@ import { Configuration } from "@monkeytype/shared-types";
 import * as RedisClient from "../init/redis";
 import LaterQueue from "../queues/later-queue";
 import { getCurrentWeekTimestamp } from "../utils/misc";
-
-type InternalWeeklyXpLeaderboardEntry = {
-  uid: string;
-  name: string;
-  discordAvatar?: string;
-  discordId?: string;
-  badgeId?: number;
-  lastActivityTimestamp: number;
-};
-
-type WeeklyXpLeaderboardEntry = {
-  totalXp: number;
-  rank: number;
-  count?: number;
-  timeTypedSeconds: number;
-} & InternalWeeklyXpLeaderboardEntry;
+import {
+  XpLeaderboardEntry,
+  XpLeaderboardRank,
+} from "@monkeytype/contracts/schemas/leaderboards";
 
 type AddResultOpts = {
-  entry: InternalWeeklyXpLeaderboardEntry;
+  entry: Pick<
+    XpLeaderboardEntry,
+    | "uid"
+    | "name"
+    | "discordId"
+    | "discordAvatar"
+    | "badgeId"
+    | "lastActivityTimestamp"
+  >;
   xpGained: number;
   timeTypedSeconds: number;
 };
@@ -123,7 +119,7 @@ export class WeeklyXpLeaderboard {
     minRank: number,
     maxRank: number,
     weeklyXpLeaderboardConfig: Configuration["leaderboards"]["weeklyXp"]
-  ): Promise<WeeklyXpLeaderboardEntry[]> {
+  ): Promise<XpLeaderboardEntry[]> {
     const connection = RedisClient.getConnection();
     if (!connection || !weeklyXpLeaderboardConfig.enabled) {
       return [];
@@ -154,10 +150,10 @@ export class WeeklyXpLeaderboard {
       );
     }
 
-    const resultsWithRanks: WeeklyXpLeaderboardEntry[] = results.map(
+    const resultsWithRanks: XpLeaderboardEntry[] = results.map(
       (resultJSON: string, index: number) => {
         //TODO parse with zod?
-        const parsed = JSON.parse(resultJSON) as WeeklyXpLeaderboardEntry;
+        const parsed = JSON.parse(resultJSON) as XpLeaderboardEntry;
 
         return {
           ...parsed,
@@ -173,7 +169,7 @@ export class WeeklyXpLeaderboard {
   public async getRank(
     uid: string,
     weeklyXpLeaderboardConfig: Configuration["leaderboards"]["weeklyXp"]
-  ): Promise<WeeklyXpLeaderboardEntry | null> {
+  ): Promise<XpLeaderboardRank | null> {
     const connection = RedisClient.getConnection();
     if (!connection || !weeklyXpLeaderboardConfig.enabled) {
       return null;
@@ -201,7 +197,7 @@ export class WeeklyXpLeaderboard {
 
     //TODO parse with zod?
     const parsed = JSON.parse(result ?? "null") as Omit<
-      WeeklyXpLeaderboardEntry,
+      XpLeaderboardEntry,
       "rank" | "count" | "totalXp"
     >;
 

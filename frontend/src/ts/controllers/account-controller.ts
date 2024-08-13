@@ -47,6 +47,7 @@ import { navigate } from "./route-controller";
 import { getHtmlByUserFlags } from "./user-flag-controller";
 import { FirebaseError } from "firebase/app";
 import * as PSA from "../elements/psa";
+import defaultResultFilters from "../constants/default-result-filters";
 
 export const gmailProvider = new GoogleAuthProvider();
 export const githubProvider = new GithubAuthProvider();
@@ -135,10 +136,10 @@ async function getDataAndInit(): Promise<boolean> {
     .then((values) => {
       const [languages, funboxes] = values;
       languages.forEach((language) => {
-        ResultFilters.defaultResultFilters.language[language] = true;
+        defaultResultFilters.language[language] = true;
       });
       funboxes.forEach((funbox) => {
-        ResultFilters.defaultResultFilters.funbox[funbox.name] = true;
+        defaultResultFilters.funbox[funbox.name] = true;
       });
       // filters = defaultResultFilters;
       void ResultFilters.load();
@@ -166,7 +167,7 @@ async function getDataAndInit(): Promise<boolean> {
   const areConfigsEqual =
     JSON.stringify(Config) === JSON.stringify(snapshot.config);
 
-  if (UpdateConfig.localStorageConfig === undefined || !areConfigsEqual) {
+  if (Config === undefined || !areConfigsEqual) {
     console.log(
       "no local config or local and db configs are different - applying db"
     );

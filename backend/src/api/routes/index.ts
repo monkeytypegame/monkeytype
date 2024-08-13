@@ -19,7 +19,6 @@ import leaderboards from "./leaderboards";
 import addSwaggerMiddlewares from "./swagger";
 import { asyncHandler } from "../../middlewares/utility";
 import { MonkeyResponse } from "../../utils/monkey-response";
-import { recordClientVersion } from "../../utils/prometheus";
 import {
   Application,
   IRouter,
@@ -45,8 +44,6 @@ const APP_START_TIME = Date.now();
 const API_ROUTE_MAP = {
   "/users": users,
   "/results": results,
-  "/public": publicStats,
-  "/leaderboards": leaderboards,
   "/quotes": quotes,
   "/webhooks": webhooks,
   "/docs": docs,
@@ -59,6 +56,8 @@ const router = s.router(contract, {
   configs,
   presets,
   psas,
+  public: publicStats,
+  leaderboards,
 });
 
 export function addApiRoutes(app: Application): void {
@@ -80,16 +79,29 @@ export function addApiRoutes(app: Application): void {
 function applyTsRestApiRoutes(app: IRouter): void {
   createExpressEndpoints(contract, router, app, {
     jsonQuery: true,
-    requestValidationErrorHandler(err, req, res, next) {
-      if (err.body?.issues === undefined) {
+    requestValidationErrorHandler(err, _req, res, next) {
+      let message: string | undefined = undefined;
+      let validationErrors: string[] | undefined = undefined;
+
+      if (err.pathParams?.issues !== undefined) {
+        message = "Invalid path parameter schema";
+        validationErrors = err.pathParams.issues.map(prettyErrorMessage);
+      } else if (err.query?.issues !== undefined) {
+        message = "Invalid query schema";
+        validationErrors = err.query.issues.map(prettyErrorMessage);
+      } else if (err.body?.issues !== undefined) {
+        message = "Invalid request data schema";
+        validationErrors = err.body.issues.map(prettyErrorMessage);
+      }
+
+      if (message !== undefined) {
+        res
+          .status(422)
+          .json({ message, validationErrors } as MonkeyValidationError);
+      } else {
         next();
         return;
       }
-      const issues = err.body?.issues.map(prettyErrorMessage);
-      res.status(422).json({
-        message: "Invalid request data schema",
-        validationErrors: issues,
-      } as MonkeyValidationError);
     },
     globalMiddleware: [authenticateTsRestRequest()],
   });
@@ -113,7 +125,9 @@ function applyDevApiRoutes(app: Application): void {
     app.use(async (req, res, next) => {
       const slowdown = (await getLiveConfiguration()).dev.responseSlowdownMs;
       if (slowdown > 0) {
-        Logger.info(`Simulating ${slowdown}ms delay for ${req.path}`);
+        Logger.info(
+          `Simulating ${slowdown}ms delay for ${req.method} ${req.path}`
+        );
         await new Promise((resolve) => setTimeout(resolve, slowdown));
       }
       next();
@@ -139,20 +153,6 @@ function applyApiRoutes(app: Application): void {
       if (inMaintenance) {
         res.status(503).json({ message: "Server is down for maintenance" });
         return;
-      }
-
-      if (req.path === "/psas") {
-        const clientVersion =
-          (req.headers["x-client-version"] as string) ||
-          req.headers["client-version"];
-        recordClientVersion(clientVersion?.toString() ?? "unknown");
-      }
-
-      if (req.path.startsWith("/docs")) {
-        res.setHeader(
-          "Content-Security-Policy",
-          "default-src 'self';base-uri 'self';block-all-mixed-content;font-src 'self' https: data:;frame-ancestors 'self';img-src 'self' monkeytype.com cdn.redoc.ly data:;object-src 'none';script-src 'self' cdn.redoc.ly 'unsafe-inline'; worker-src blob: data;script-src-attr 'none';style-src 'self' https: 'unsafe-inline';upgrade-insecure-requests"
-        );
       }
 
       next();
