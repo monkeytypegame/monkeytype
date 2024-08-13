@@ -1244,5 +1244,12 @@
     "mainColor": "#e0794e",
     "subColor": "#688e8f",
     "textColor": "#023e3b"
+  },
+  {
+    "name": "zen_huhn",
+    "bgColor": "#122830",
+    "mainColor": "#00ffff",
+    "subColor": "#777777",
+    "textColor": "#ffffff"
   }
 ]
