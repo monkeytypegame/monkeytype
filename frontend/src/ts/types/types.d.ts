@@ -1,4 +1,5 @@
 type ConfigValue = import("@monkeytype/contracts/schemas/configs").ConfigValue;
+type Mode = import("@monkeytype/contracts/schemas/shared").Mode;
 
 declare namespace MonkeyTypes {
   type PageName =
@@ -236,9 +237,7 @@ declare namespace MonkeyTypes {
     config: import("@monkeytype/contracts/schemas/configs").Config;
     tags: UserTag[];
     presets: SnapshotPreset[];
-    results?: import("@monkeytype/shared-types").Result<
-      import("@monkeytype/contracts/schemas/shared").Mode
-    >[];
+    results?: FullResult[];
     xp: number;
     testActivity?: ModifiableTestActivityCalendar;
     testActivityByYear?: { [key: string]: TestActivityCalendar };
@@ -466,3 +465,31 @@ declare namespace MonkeyTypes {
     weeks: number;
   };
 }
+
+type FullResult<M extends Mode> = Omit<
+  import("@monkeytype/contracts/schema/results").Result<M>,
+  "bailedOut" | "blindMode",
+  | "lazyMode"
+  | "difficulty"
+  | "funbox"
+  | "language"
+  | "numbers"
+  | "quoteLength"
+  | "restartCount"
+  | "incompleteTestSeconds"
+  | "afkDuration"
+  | "tags"
+> & {
+  bailedOut: boolean;
+  blindMode: boolean;
+  lazyMode: boolean;
+  difficulty: import("@monkeytype/contracts/schemas/shared").Difficulty;
+  funbox: string;
+  language: string;
+  numbers: boolean;
+  quoteLength: number;
+  restartCount: number;
+  incompleteTestSeconds: number;
+  afkDuration: number;
+  tags: string[];
+};

@@ -285,6 +285,44 @@ describe("result controller test", () => {
         validationErrors: [],
       });*/
     });
+    it("should get results with legacy values", async () => {
+      //GIVEN
+      const resultOne = givenDbResult(uid, {
+        charStats: undefined,
+        incorrectChars: 5,
+        correctChars: 12,
+      });
+      const resultTwo = givenDbResult(uid, {
+        charStats: undefined,
+        incorrectChars: 7,
+        correctChars: 15,
+      });
+      resultMock.mockResolvedValue([resultOne, resultTwo]);
+
+      //WHEN
+      const { body } = await mockApp
+        .get("/results")
+        .set("Authorization", `Bearer ${uid}`)
+        .send()
+        .expect(200);
+
+      //THEN
+
+      expect(body.message).toEqual("Results retrieved");
+      expect(body.data[0]).toMatchObject({
+        _id: resultOne._id.toHexString(),
+        charStats: [12, 5, 0, 0],
+      });
+      expect(body.data[0]).not.toHaveProperty("correctChars");
+      expect(body.data[0]).not.toHaveProperty("incorrectChars");
+
+      expect(body.data[1]).toMatchObject({
+        _id: resultTwo._id.toHexString(),
+        charStats: [15, 7, 0, 0],
+      });
+      expect(body.data[1]).not.toHaveProperty("correctChars");
+      expect(body.data[1]).not.toHaveProperty("incorrectChars");
+    });
   });
   describe("getLastResult", () => {
     const getLastResultMock = vi.spyOn(ResultDal, "getLastResult");
@@ -322,6 +360,31 @@ describe("result controller test", () => {
         .set("Authorization", `ApeKey ${apeKey}`)
         .send()
         .expect(200);
+    });
+    it("should get last result with legacy values", async () => {
+      //GIVEN
+      const result = givenDbResult(uid, {
+        charStats: undefined,
+        incorrectChars: 5,
+        correctChars: 12,
+      });
+      getLastResultMock.mockResolvedValue(result);
+
+      //WHEN
+      const { body } = await mockApp
+        .get("/results/last")
+        .set("Authorization", `Bearer ${uid}`)
+        .send()
+        .expect(200);
+
+      //THEN
+      expect(body.message).toEqual("Result retrieved");
+      expect(body.data).toMatchObject({
+        _id: result._id.toHexString(),
+        charStats: [12, 5, 0, 0],
+      });
+      expect(body.data).not.toHaveProperty("correctChars");
+      expect(body.data).not.toHaveProperty("incorrectChars");
     });
   });
   describe("deleteAll", () => {
@@ -688,7 +751,10 @@ async function enablePremiumFeatures(premium: boolean): Promise<void> {
     mockConfig
   );
 }
-function givenDbResult(uid: string): MonkeyTypes.DBResult {
+function givenDbResult(
+  uid: string,
+  customize?: Partial<MonkeyTypes.DBResult>
+): MonkeyTypes.DBResult {
   return {
     _id: new ObjectId(),
     wpm: Math.random() * 100,
@@ -716,6 +782,7 @@ function givenDbResult(uid: string): MonkeyTypes.DBResult {
       err: [Math.random() * 100],
     },
     name: "testName",
+    ...customize,
   };
 }
 

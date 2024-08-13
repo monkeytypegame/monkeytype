@@ -15,7 +15,7 @@ import {
 } from "./elements/test-activity-calendar";
 import * as Loader from "./elements/loader";
 
-import { Badge, DBResult, Result } from "@monkeytype/shared-types";
+import { Badge, Result } from "@monkeytype/shared-types";
 import { Config, Difficulty } from "@monkeytype/contracts/schemas/configs";
 import {
   Mode,
@@ -290,7 +290,7 @@ export async function getUserResults(offset?: number): Promise<boolean> {
     return false;
   }
 
-  const results = response.data as DBResult<Mode>[];
+  const results = response.data as FullResult<Mode>[];
   results?.sort((a, b) => b.timestamp - a.timestamp);
   results.forEach((result) => {
     if (result.bailedOut === undefined) result.bailedOut = false;
@@ -311,13 +311,6 @@ export async function getUserResults(offset?: number): Promise<boolean> {
     }
     if (result.afkDuration === undefined) result.afkDuration = 0;
     if (result.tags === undefined) result.tags = [];
-
-    if (
-      result.correctChars !== undefined &&
-      result.incorrectChars !== undefined
-    ) {
-      result.charStats = [result.correctChars, result.incorrectChars, 0, 0];
-    }
   });
 
   if (dbSnapshot.results !== undefined && dbSnapshot.results.length > 0) {

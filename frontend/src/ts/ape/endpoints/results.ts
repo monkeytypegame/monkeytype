@@ -1,5 +1,6 @@
-import { DBResult, Result } from "@monkeytype/shared-types";
+import { DBResult } from "@monkeytype/shared-types";
 import { Mode } from "@monkeytype/contracts/schemas/shared";
+import { CompletedEvent } from "@monkeytype/contracts/schemas/results";
 
 const BASE_PATH = "/results";
 
@@ -13,7 +14,7 @@ export default class Results {
   }
 
   async save(
-    result: Result<Mode>
+    result: CompletedEvent
   ): Ape.EndpointResponse<Ape.Results.PostResult> {
     return await this.httpClient.post(BASE_PATH, {
       payload: { result },

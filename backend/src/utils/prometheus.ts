@@ -1,4 +1,3 @@
-import { Mode, Mode2Custom } from "@monkeytype/contracts/schemas/shared";
 import "dotenv/config";
 import { Counter, Histogram, Gauge } from "prom-client";
 import { TsRestRequestWithCtx } from "../middlewares/auth";
@@ -91,10 +90,7 @@ export function setLeaderboard(
   leaderboardUpdate.set({ language, mode, mode2, step: "index" }, times[3]);
 }
 
-export function incrementResult<M extends Mode>(
-  res: CompletedEvent<M>,
-  isPb?: boolean
-): void {
+export function incrementResult(res: CompletedEvent, isPb?: boolean): void {
   const {
     mode,
     mode2,
@@ -107,15 +103,13 @@ export function incrementResult<M extends Mode>(
     punctuation,
   } = res;
 
-  let m2: Mode2Custom<M> = mode2;
+  let m2 = mode2;
   if (mode === "time" && !["15", "30", "60", "120"].includes(mode2)) {
     m2 = "custom";
   }
   if (mode === "words" && !["10", "25", "50", "100"].includes(mode2)) {
     m2 = "custom";
   }
-  //TODO:
-  //@ts-expect-error
   if (mode === "quote" || mode === "zen" || mode === "custom") m2 = mode;
 
   result.inc({

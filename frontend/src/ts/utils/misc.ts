@@ -2,7 +2,7 @@ import * as Loader from "../elements/loader";
 import { envConfig } from "../constants/env-config";
 import { lastElementFromArray } from "./arrays";
 import * as JSONData from "./json-data";
-import { CustomTextData, Result } from "@monkeytype/shared-types";
+import { CustomTextData } from "@monkeytype/shared-types";
 import { Config } from "@monkeytype/contracts/schemas/configs";
 import {
   Mode,
@@ -406,7 +406,9 @@ export function getMode2<M extends keyof PersonalBests>(
   return retVal as Mode2<M>;
 }
 
-export async function downloadResultsCSV(array: Result<Mode>[]): Promise<void> {
+export async function downloadResultsCSV(
+  array: FullResult<Mode>[]
+): Promise<void> {
   Loader.show();
   const csvString = [
     [
@@ -435,32 +437,35 @@ export async function downloadResultsCSV(array: Result<Mode>[]): Promise<void> {
       "tags",
       "timestamp",
     ],
-    ...array.map((item: Result<Mode>) => [
-      item._id,
-      item.isPb,
-      item.wpm,
-      item.acc,
-      item.rawWpm,
-      item.consistency,
-      item.charStats.join(";"),
-      item.mode,
-      item.mode2,
-      item.quoteLength,
-      item.restartCount,
-      item.testDuration,
-      item.afkDuration,
-      item.incompleteTestSeconds,
-      item.punctuation,
-      item.numbers,
-      item.language,
-      item.funbox,
-      item.difficulty,
-      item.lazyMode,
-      item.blindMode,
-      item.bailedOut,
-      item.tags.join(";"),
-      item.timestamp,
-    ]),
+    ...array.map(
+      (item: FullResult<Mode>) =>
+        [
+          item._id,
+          item.isPb,
+          item.wpm,
+          item.acc,
+          item.rawWpm,
+          item.consistency,
+          item.charStats.join(";"),
+          item.mode,
+          item.mode2,
+          item.quoteLength,
+          item.restartCount,
+          item.testDuration,
+          item.afkDuration,
+          item.incompleteTestSeconds,
+          item.punctuation,
+          item.numbers,
+          item.language,
+          item.funbox,
+          item.difficulty,
+          item.lazyMode,
+          item.blindMode,
+          item.bailedOut,
+          item.tags.join(";"),
+          item.timestamp,
+        ] as object[]
+    ),
   ]
     .map((e) => e.join(","))
     .join("\n");

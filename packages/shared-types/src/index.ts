@@ -1,7 +1,4 @@
-type Difficulty = import("@monkeytype/contracts/schemas/configs").Difficulty;
 type Mode = import("@monkeytype/contracts/schemas/shared").Mode;
-type Mode2<M extends Mode> =
-  import("@monkeytype/contracts/schemas/shared").Mode2<M>;
 type PersonalBest = import("@monkeytype/contracts/schemas/shared").PersonalBest;
 type PersonalBests =
   import("@monkeytype/contracts/schemas/shared").PersonalBests;
@@ -135,14 +132,14 @@ export type KeyStats = {
 
 //TODO replace
 export type Result<M extends Mode> =
-  import("@monkeytype/contracts/schemas/results").CompletedEvent<M>;
+  import("@monkeytype/contracts/schemas/results").Result<M>;
 
 export type DBResult<M extends Mode> =
   import("@monkeytype/contracts/schemas/results").Result<M>;
 
 //TODO result + PostOnly
-export type CompletedEvent<M extends Mode> =
-  import("@monkeytype/contracts/schemas/results").CompletedEvent<M>;
+export type CompletedEvent =
+  import("@monkeytype/contracts/schemas/results").CompletedEvent;
 
 //TODO remove
 export type CustomTextMode =

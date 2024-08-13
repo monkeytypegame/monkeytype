@@ -6,7 +6,6 @@ import {
   isDevEnvironment,
   mapRange,
   replaceObjectId,
-  replaceObjectIds,
   roundTo2,
   stdDev,
 } from "../../utils/misc";
@@ -32,7 +31,7 @@ import AutoRoleList from "../../constants/auto-roles";
 import * as UserDAL from "../../dal/user";
 import { buildMonkeyMail } from "../../utils/monkey-mail";
 import FunboxList from "../../constants/funbox-list";
-import _ from "lodash";
+import _, { omit } from "lodash";
 import * as WeeklyXpLeaderboard from "../../services/weekly-xp-leaderboard";
 import { UAParser } from "ua-parser-js";
 import { canFunboxGetPb } from "../../utils/pb";
@@ -51,6 +50,7 @@ import {
 import {
   CompletedEvent,
   KeyStats,
+  Result,
 } from "@monkeytype/contracts/schemas/results";
 import { Mode } from "@monkeytype/contracts/schemas/shared";
 
@@ -120,7 +120,7 @@ export async function getResults(
     },
     uid
   );
-  return new MonkeyResponse2("Results retrieved", replaceObjectIds(results));
+  return new MonkeyResponse2("Results retrieved", results.map(convertResult));
 }
 
 export async function getLastResult(
@@ -128,7 +128,7 @@ export async function getLastResult(
 ): Promise<GetLastResultResponse> {
   const { uid } = req.ctx.decodedToken;
   const results = await ResultDAL.getLastResult(uid);
-  return new MonkeyResponse2("Result retrieved", replaceObjectId(results));
+  return new MonkeyResponse2("Result retrieved", convertResult(results));
 }
 
 export async function deleteAll(
@@ -637,8 +637,8 @@ type XpResult = {
   breakdown?: Record<string, number>; //TODO define type for xpBreakdown
 };
 
-async function calculateXp<M extends Mode>(
-  result: CompletedEvent<M>,
+async function calculateXp(
+  result: CompletedEvent,
   xpConfiguration: Configuration["users"]["xp"],
   uid: string,
   currentTotalXp: number,
@@ -798,4 +798,14 @@ async function calculateXp<M extends Mode>(
     dailyBonus: isAwardingDailyBonus,
     breakdown,
   };
+}
+
+function convertResult<M extends Mode>(db: MonkeyTypes.DBResult): Result<M> {
+  const result = replaceObjectId(omit(db, "correctChars", "incorrectChars"));
+
+  //convert legacy values
+  if (db.correctChars !== undefined && db.incorrectChars !== undefined) {
+    result.charStats = [db.correctChars, db.incorrectChars, 0, 0];
+  }
+  return result as unknown as Result<M>;
 }

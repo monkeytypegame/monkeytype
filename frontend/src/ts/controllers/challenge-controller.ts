@@ -9,11 +9,7 @@ import * as TestUI from "../test/test-ui";
 import * as ConfigEvent from "../observables/config-event";
 import * as TestState from "../test/test-state";
 import * as Loader from "../elements/loader";
-import {
-  CustomTextLimitMode,
-  CustomTextMode,
-  Result,
-} from "@monkeytype/shared-types";
+import { CustomTextLimitMode, CustomTextMode } from "@monkeytype/shared-types";
 import {
   Config as ConfigType,
   Difficulty,
@@ -33,14 +29,14 @@ export function clearActive(): void {
   }
 }
 
-export function verify(result: Result<Mode>): string | null {
+export function verify(result: FullResult<Mode>): string | undefined {
   try {
     if (TestState.activeChallenge) {
       const afk = (result.afkDuration / result.testDuration) * 100;
 
       if (afk > 10) {
         Notifications.add(`Challenge failed: AFK time is greater than 10%`, 0);
-        return null;
+        return undefined;
       }
 
       if (TestState.activeChallenge.requirements === undefined) {
@@ -53,7 +49,7 @@ export function verify(result: Result<Mode>): string | null {
         let requirementsMet = true;
         const failReasons = [];
         for (const requirementType in TestState.activeChallenge.requirements) {
-          if (!requirementsMet) return null;
+          if (!requirementsMet) return undefined;
           const requirementValue =
             TestState.activeChallenge.requirements[requirementType];
 
@@ -191,11 +187,11 @@ export function verify(result: Result<Mode>): string | null {
             } challenge failed: ${failReasons.join(", ")}`,
             0
           );
-          return null;
+          return undefined;
         }
       }
     } else {
-      return null;
+      return undefined;
     }
   } catch (e) {
     console.error(e);
@@ -203,7 +199,7 @@ export function verify(result: Result<Mode>): string | null {
       `Something went wrong when verifying challenge: ${(e as Error).message}`,
       0
     );
-    return null;
+    return undefined;
   }
 }
 

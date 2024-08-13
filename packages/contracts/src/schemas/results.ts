@@ -40,16 +40,20 @@ export const CustomTextSchema = z.object({
     value: z.number().nonnegative(),
   }),
 });
+export type CustomTextDataWithTextLen = z.infer<typeof CustomTextSchema>;
+
+export const CharStatsSchema = z.tuple([
+  z.number().int().nonnegative(),
+  z.number().int().nonnegative(),
+  z.number().int().nonnegative(),
+  z.number().int().nonnegative(),
+]);
+export type CharStats = z.infer<typeof CharStatsSchema>;
 
 const ResultBaseSchema = z.object({
   wpm: WpmSchema,
   rawWpm: WpmSchema,
-  charStats: z.tuple([
-    z.number().int().nonnegative(),
-    z.number().int().nonnegative(),
-    z.number().int().nonnegative(),
-    z.number().int().nonnegative(),
-  ]),
+  charStats: CharStatsSchema,
   acc: PercentageSchema.min(75), //TODO test
   mode: ModeSchema,
   mode2: Mode2Schema,
@@ -86,8 +90,6 @@ export const ResultSchema = ResultBaseSchema.merge(
   keySpacingStats: KeyStatsSchema.optional(),
   keyDurationStats: KeyStatsSchema.optional(),
   name: z.string(),
-  //correctChars: z.number().optional(), //legacy result
-  //incorrectChars: z.number().optional(), //legacy result
   isPb: z.boolean().optional(), //true or undefined
 });
 
@@ -117,10 +119,4 @@ export const CompletedEventSchema = ResultBaseSchema.merge(
   })
   .strict();
 
-export type CompletedEvent<M extends Mode> = Omit<
-  z.infer<typeof CompletedEventSchema>,
-  "mode" | "mode2"
-> & {
-  mode: M;
-  mode2: Mode2<M>;
-};
+export type CompletedEvent = z.infer<typeof CompletedEventSchema>;

@@ -8,7 +8,7 @@ import { areUnsortedArraysEqual } from "../utils/arrays";
 import * as TestResult from "../test/result";
 import AnimatedModal from "../utils/animated-modal";
 import { Mode } from "@monkeytype/contracts/schemas/shared";
-import { Result } from "@monkeytype/shared-types";
+import { Result } from "@monkeytype/contracts/schemas/results";
 
 type State = {
   resultId: string;

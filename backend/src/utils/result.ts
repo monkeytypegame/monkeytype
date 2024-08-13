@@ -1,10 +1,8 @@
 import { CompletedEvent } from "@monkeytype/contracts/schemas/results";
-import { Mode } from "@monkeytype/contracts/schemas/shared";
-
 import { ObjectId } from "mongodb";
 
-export function buildDbResult<M extends Mode>(
-  completedEvent: CompletedEvent<M>,
+export function buildDbResult(
+  completedEvent: CompletedEvent,
   userName: string,
   isPb: boolean
 ): MonkeyTypes.DBResult {

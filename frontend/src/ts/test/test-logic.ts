@@ -58,12 +58,13 @@ import * as KeymapEvent from "../observables/keymap-event";
 import * as LayoutfluidFunboxTimer from "../test/funbox/layoutfluid-funbox-timer";
 import * as ArabicLazyMode from "../states/arabic-lazy-mode";
 import Format from "../utils/format";
+import { QuoteLength } from "@monkeytype/contracts/schemas/configs";
+import { Mode } from "@monkeytype/contracts/schemas/shared";
 import {
   CompletedEvent,
   CustomTextDataWithTextLen,
-} from "@monkeytype/shared-types";
-import { QuoteLength } from "@monkeytype/contracts/schemas/configs";
-import { Mode } from "@monkeytype/contracts/schemas/shared";
+  CharStats,
+} from "@monkeytype/contracts/schemas/results";
 
 let failReason = "";
 const koInputVisual = document.getElementById("koInputVisual") as HTMLElement;
@@ -77,7 +78,7 @@ export function clearNotSignedInResult(): void {
 export function setNotSignedInUid(uid: string): void {
   if (notSignedInLastResult === null) return;
   notSignedInLastResult.uid = uid;
-  delete notSignedInLastResult.hash;
+
   notSignedInLastResult.hash = objectHash(notSignedInLastResult);
 }
 
@@ -773,7 +774,7 @@ function buildCompletedEvent(difficultyFailed: boolean): CompletedEvent {
       stats.incorrectChars,
       stats.extraChars,
       stats.missedChars,
-    ],
+    ] as CharStats,
     charTotal: stats.allChars,
     acc: stats.acc,
     mode: Config.mode,
@@ -804,14 +805,16 @@ function buildCompletedEvent(difficultyFailed: boolean): CompletedEvent {
     funbox: Config.funbox,
     bailedOut: TestState.bailedOut,
     chartData: chartData,
-    customText: customText,
+    customText: customText ?? undefined,
     testDuration: duration,
     afkDuration: afkDuration,
     stopOnLetter: Config.stopOnError === "letter",
-  } as CompletedEvent;
+    hash: "invalid",
+    uid: "invalid",
+  };
 
-  if (completedEvent.mode !== "custom") delete completedEvent.customText;
-  if (completedEvent.mode !== "quote") delete completedEvent.quoteLength;
+  //TODO if (completedEvent.mode !== "custom") delete completedEvent.customText;
+  //TODO if (completedEvent.mode !== "quote") delete completedEvent.quoteLength;
 
   return completedEvent;
 }
