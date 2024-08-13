@@ -407,7 +407,7 @@ export function getMode2<M extends keyof PersonalBests>(
 }
 
 export async function downloadResultsCSV(
-  array: FullResult<Mode>[]
+  array: MonkeyTypes.FullResult<Mode>[]
 ): Promise<void> {
   Loader.show();
   const csvString = [
@@ -437,35 +437,32 @@ export async function downloadResultsCSV(
       "tags",
       "timestamp",
     ],
-    ...array.map(
-      (item: FullResult<Mode>) =>
-        [
-          item._id,
-          item.isPb,
-          item.wpm,
-          item.acc,
-          item.rawWpm,
-          item.consistency,
-          item.charStats.join(";"),
-          item.mode,
-          item.mode2,
-          item.quoteLength,
-          item.restartCount,
-          item.testDuration,
-          item.afkDuration,
-          item.incompleteTestSeconds,
-          item.punctuation,
-          item.numbers,
-          item.language,
-          item.funbox,
-          item.difficulty,
-          item.lazyMode,
-          item.blindMode,
-          item.bailedOut,
-          item.tags.join(";"),
-          item.timestamp,
-        ] as object[]
-    ),
+    ...array.map((item: MonkeyTypes.FullResult<Mode>) => [
+      item._id,
+      item.isPb,
+      item.wpm,
+      item.acc,
+      item.rawWpm,
+      item.consistency,
+      item.charStats.join(";"),
+      item.mode,
+      item.mode2,
+      item.quoteLength,
+      item.restartCount,
+      item.testDuration,
+      item.afkDuration,
+      item.incompleteTestSeconds,
+      item.punctuation,
+      item.numbers,
+      item.language,
+      item.funbox,
+      item.difficulty,
+      item.lazyMode,
+      item.blindMode,
+      item.bailedOut,
+      item.tags.join(";"),
+      item.timestamp,
+    ]),
   ]
     .map((e) => e.join(","))
     .join("\n");

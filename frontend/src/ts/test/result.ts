@@ -39,7 +39,7 @@ import type {
   LabelPosition,
 } from "chartjs-plugin-annotation";
 import Ape from "../ape";
-import { CompletedEvent } from "@monkeytype/shared-types";
+import { CompletedEvent } from "@monkeytype/contracts/schemas/results";
 
 let result: CompletedEvent;
 let maxChartVal: number;

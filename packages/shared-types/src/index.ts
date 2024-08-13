@@ -1,4 +1,3 @@
-type Mode = import("@monkeytype/contracts/schemas/shared").Mode;
 type PersonalBest = import("@monkeytype/contracts/schemas/shared").PersonalBest;
 type PersonalBests =
   import("@monkeytype/contracts/schemas/shared").PersonalBests;
@@ -114,46 +113,19 @@ export type Configuration = {
   };
 };
 
-export type IncompleteTest =
-  import("@monkeytype/contracts/schemas/results").IncompleteTest;
-
-export type ChartData =
-  import("@monkeytype/contracts/schemas/results").ChartData;
-//TODO moved
-export type KeyStats = import("@monkeytype/contracts/schemas/results").KeyStats;
-
-//TODO replace
-export type Result<M extends Mode> =
-  import("@monkeytype/contracts/schemas/results").Result<M>;
-
-export type DBResult<M extends Mode> =
-  import("@monkeytype/contracts/schemas/results").Result<M>;
-
-//TODO result + PostOnly
-export type CompletedEvent =
-  import("@monkeytype/contracts/schemas/results").CompletedEvent;
-
-//TODO remove
-export type CustomTextMode =
-  import("@monkeytype/contracts/schemas/util").CustomTextMode;
-export type CustomTextLimitMode =
-  import("@monkeytype/contracts/schemas/util").CustomTextLimitMode;
 export type CustomTextLimit = {
   value: number;
-  mode: CustomTextLimitMode;
+  mode: import("@monkeytype/contracts/schemas/util").CustomTextLimitMode;
 };
 
-export type CustomTextData = {
+export type CustomTextData = Omit<
+  import("@monkeytype/contracts/schemas/results").CustomTextDataWithTextLen,
+  "textLen"
+> & {
   text: string[];
-  mode: CustomTextMode;
-  limit: CustomTextLimit;
-  pipeDelimiter: boolean;
 };
 
-export type CustomTextDataWithTextLen = Omit<CustomTextData, "text"> & {
-  textLen: number;
-};
-
+//TODO obsolete
 export type PostResultResponse = {
   isPb: boolean;
   tagPbs: string[];

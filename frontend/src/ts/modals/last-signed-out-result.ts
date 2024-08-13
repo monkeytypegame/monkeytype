@@ -2,7 +2,7 @@ import AnimatedModal from "../utils/animated-modal";
 import Ape from "../ape";
 import * as TestLogic from "../test/test-logic";
 import * as Notifications from "../elements/notifications";
-import { CompletedEvent } from "@monkeytype/shared-types";
+import { CompletedEvent } from "@monkeytype/contracts/schemas/results";
 
 function reset(): void {
   (modal.getModal().querySelector(".result") as HTMLElement).innerHTML = `

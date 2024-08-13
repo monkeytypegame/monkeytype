@@ -9,12 +9,16 @@ import * as TestUI from "../test/test-ui";
 import * as ConfigEvent from "../observables/config-event";
 import * as TestState from "../test/test-state";
 import * as Loader from "../elements/loader";
-import { CustomTextLimitMode, CustomTextMode } from "@monkeytype/shared-types";
+import {
+  CustomTextLimitMode,
+  CustomTextMode,
+} from "@monkeytype/contracts/schemas/util";
 import {
   Config as ConfigType,
   Difficulty,
 } from "@monkeytype/contracts/schemas/configs";
 import { Mode } from "@monkeytype/contracts/schemas/shared";
+import { CompletedEvent } from "@monkeytype/contracts/schemas/results";
 
 let challengeLoading = false;
 
@@ -29,7 +33,7 @@ export function clearActive(): void {
   }
 }
 
-export function verify(result: FullResult<Mode>): string | undefined {
+export function verify(result: CompletedEvent): string | undefined {
   try {
     if (TestState.activeChallenge) {
       const afk = (result.afkDuration / result.testDuration) * 100;

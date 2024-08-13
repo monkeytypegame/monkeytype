@@ -10,10 +10,12 @@ export async function syncNotSignedInLastResult(uid: string): Promise<void> {
 
   const resultsSaveResponse = await Ape.results.save(notSignedInLastResult);
   if (resultsSaveResponse.status === 200) {
-    const result: FullResult<Mode> = JSON.parse(
+    const result: MonkeyTypes.FullResult<Mode> = JSON.parse(
       JSON.stringify(notSignedInLastResult)
     );
-    result._id = resultsSaveResponse.data?.insertedId;
+    //TODO data is never null
+    //@ts-expect-error
+    result._id = resultsSaveResponse.data.insertedId;
     if (resultsSaveResponse.data?.isPb) {
       result.isPb = true;
     }

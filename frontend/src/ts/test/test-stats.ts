@@ -6,7 +6,10 @@ import * as TestWords from "./test-words";
 import * as FunboxList from "./funbox/funbox-list";
 import * as TestState from "./test-state";
 import * as Numbers from "../utils/numbers";
-import { CompletedEvent, IncompleteTest } from "@monkeytype/shared-types";
+import {
+  CompletedEvent,
+  IncompleteTest,
+} from "@monkeytype/contracts/schemas/results";
 
 type CharCount = {
   spaces: number;

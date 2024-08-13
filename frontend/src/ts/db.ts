@@ -16,7 +16,6 @@ import {
 import * as Loader from "./elements/loader";
 
 import { Badge } from "@monkeytype/shared-types";
-import { Result } from "@monkeytype/contracts/schemas/results";
 import { Config, Difficulty } from "@monkeytype/contracts/schemas/configs";
 import {
   Mode,
@@ -291,7 +290,7 @@ export async function getUserResults(offset?: number): Promise<boolean> {
     return false;
   }
 
-  const results = response.data as FullResult<Mode>[];
+  const results = response.data as MonkeyTypes.FullResult<Mode>[];
   results?.sort((a, b) => b.timestamp - a.timestamp);
   results.forEach((result) => {
     if (result.bailedOut === undefined) result.bailedOut = false;
@@ -321,11 +320,9 @@ export async function getUserResults(offset?: number): Promise<boolean> {
     const resultsWithoutDuplicates = results.filter(
       (it) => it.timestamp < oldestTimestamp
     );
-    dbSnapshot.results.push(
-      ...(resultsWithoutDuplicates as unknown as Result<Mode>[])
-    );
+    dbSnapshot.results.push(...resultsWithoutDuplicates);
   } else {
-    dbSnapshot.results = results as unknown as Result<Mode>[];
+    dbSnapshot.results = results;
   }
   return true;
 }
@@ -933,7 +930,7 @@ export async function resetConfig(): Promise<void> {
   }
 }
 
-export function saveLocalResult(result: Result<Mode>): void {
+export function saveLocalResult(result: MonkeyTypes.FullResult<Mode>): void {
   const snapshot = getSnapshot();
   if (!snapshot) return;
 

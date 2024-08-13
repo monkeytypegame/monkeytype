@@ -1,6 +1,5 @@
-import { DBResult } from "@monkeytype/shared-types";
 import { Mode } from "@monkeytype/contracts/schemas/shared";
-import { CompletedEvent } from "@monkeytype/contracts/schemas/results";
+import { Result, CompletedEvent } from "@monkeytype/contracts/schemas/results";
 
 const BASE_PATH = "/results";
 
@@ -9,7 +8,7 @@ export default class Results {
     this.httpClient = httpClient;
   }
 
-  async get(offset?: number): Ape.EndpointResponse<DBResult<Mode>[]> {
+  async get(offset?: number): Ape.EndpointResponse<Result<Mode>[]> {
     return await this.httpClient.get(BASE_PATH, { searchQuery: { offset } });
   }
 

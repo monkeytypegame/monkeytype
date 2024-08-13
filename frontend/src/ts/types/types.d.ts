@@ -2,6 +2,8 @@ type ConfigValue = import("@monkeytype/contracts/schemas/configs").ConfigValue;
 type Mode = import("@monkeytype/contracts/schemas/shared").Mode;
 type Result<M extends Mode> =
   import("@monkeytype/contracts/schemas/results").Result<M>;
+type IncompleteTest =
+  import("@monkeytype/contracts/schemas/results").IncompleteTest;
 
 declare namespace MonkeyTypes {
   type PageName =
@@ -239,7 +241,7 @@ declare namespace MonkeyTypes {
     config: import("@monkeytype/contracts/schemas/configs").Config;
     tags: UserTag[];
     presets: SnapshotPreset[];
-    results?: FullResult<Mode>[];
+    results?: MonkeyTypes.FullResult<Mode>[];
     xp: number;
     testActivity?: ModifiableTestActivityCalendar;
     testActivityByYear?: { [key: string]: TestActivityCalendar };
@@ -485,7 +487,7 @@ declare namespace MonkeyTypes {
   > & {
     restartCount: number;
     incompleteTestSeconds: number;
-    incompleteTest: import("@monkeytype/contracts/schemas/results").IncompleteTest[];
+    incompleteTest: IncompleteTest[];
     afkDuration: number;
     tags: string[];
     bailedOut: boolean;

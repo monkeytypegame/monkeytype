@@ -1182,7 +1182,9 @@ async function saveResult(
   }
 
   if (response?.data?.insertedId !== undefined) {
-    const result: FullResult<Mode> = JSON.parse(JSON.stringify(completedEvent));
+    const result: MonkeyTypes.FullResult<Mode> = JSON.parse(
+      JSON.stringify(completedEvent)
+    );
     result._id = response.data.insertedId;
     if (response?.data?.isPb !== undefined && response.data.isPb) {
       result.isPb = true;
