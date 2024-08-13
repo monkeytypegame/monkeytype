@@ -114,21 +114,13 @@ export type Configuration = {
   };
 };
 
-export type IncompleteTest = {
-  acc: number;
-  seconds: number;
-};
+export type IncompleteTest =
+  import("@monkeytype/contracts/schemas/results").IncompleteTest;
 
-export type ChartData = {
-  wpm: number[];
-  raw: number[];
-  err: number[];
-};
+export type ChartData =
+  import("@monkeytype/contracts/schemas/results").ChartData;
 //TODO moved
-export type KeyStats = {
-  average: number;
-  sd: number;
-};
+export type KeyStats = import("@monkeytype/contracts/schemas/results").KeyStats;
 
 //TODO replace
 export type Result<M extends Mode> =

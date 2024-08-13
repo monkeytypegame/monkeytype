@@ -78,7 +78,6 @@ export function clearNotSignedInResult(): void {
 export function setNotSignedInUid(uid: string): void {
   if (notSignedInLastResult === null) return;
   notSignedInLastResult.uid = uid;
-
   notSignedInLastResult.hash = objectHash(notSignedInLastResult);
 }
 
@@ -1054,7 +1053,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
   $("#result .stats .dailyLeaderboard").addClass("hidden");
 
   TestStats.setLastResult(
-    JSON.parse(JSON.stringify(completedEvent)) as CompletedEvent
+    JSON.parse(JSON.stringify(completedEvent)) as unknown as CompletedEvent
   );
 
   if (!ConnectionState.get()) {
