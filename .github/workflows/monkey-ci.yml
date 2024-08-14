@@ -23,7 +23,7 @@ concurrency:
 
 jobs:
   pre-ci:
-    if: github.event.pull_request.draft == false || contains(github.event.pull_request.labels.*.name, 'force-ci')
+    if: github.event.pull_request.draft == false || contains(github.event.pull_request.labels.*.name, 'force-ci') || contains(github.event.pull_request.labels.*.name, 'force-full-ci')
     name: pre-ci
     runs-on: ubuntu-latest
     outputs:
