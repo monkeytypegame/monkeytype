@@ -45,7 +45,7 @@ export class LocalStorageWithSchema<T> {
 
     console.log(
       `Value from localStorage ${this.key} failed schema validation, migrating`,
-      schemaParsed.error
+      schemaParsed.error.issues
     );
 
     let newValue = this.fallback;
