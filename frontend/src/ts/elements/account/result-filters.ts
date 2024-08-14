@@ -87,7 +87,7 @@ function save(): void {
 
 export async function load(): Promise<void> {
   try {
-    const filters = resultFiltersLS.get();
+    filters = resultFiltersLS.get();
 
     const newTags: Record<string, boolean> = { none: false };
     Object.keys(defaultResultFilters.tags).forEach((tag) => {
