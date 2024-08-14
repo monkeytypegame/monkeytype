@@ -24,7 +24,13 @@ export function mergeWithDefaultFilters(
   try {
     const merged = {} as ResultFilters;
     for (const groupKey of Misc.typedKeys(defaultResultFilters)) {
-      if (groupKey === "_id" || groupKey === "name") {
+      if (groupKey === "_id") {
+        let id = filters[groupKey] ?? defaultResultFilters[groupKey];
+        if (id === "default-result-filters-id" || id === "") {
+          id = "default";
+        }
+        merged[groupKey] = id;
+      } else if (groupKey === "name") {
         merged[groupKey] = filters[groupKey] ?? defaultResultFilters[groupKey];
       } else {
         // @ts-expect-error i cant figure this out
