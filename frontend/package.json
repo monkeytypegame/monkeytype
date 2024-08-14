@@ -53,7 +53,7 @@
     "gulp": "4.0.2",
     "gulp-eslint-new": "1.9.1",
     "happy-dom": "13.4.1",
-    "madge": "6.1.0",
+    "madge": "8.0.0",
     "normalize.css": "8.0.1",
     "postcss": "8.4.31",
     "sass": "1.70.0",
