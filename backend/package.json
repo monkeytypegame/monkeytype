@@ -79,7 +79,7 @@
     "@types/nodemailer": "6.4.15",
     "@types/object-hash": "2.2.1",
     "@types/readline-sync": "1.4.8",
-    "@types/string-similarity": "4.0.0",
+    "@types/string-similarity": "4.0.2",
     "@types/supertest": "2.0.12",
     "@types/swagger-stats": "0.95.11",
     "@types/swagger-ui-express": "4.1.3",
