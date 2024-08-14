@@ -134,11 +134,6 @@ declare namespace MonkeyTypes {
     incorrectChars?: number;
   };
 
-  type KeyStats = {
-    average: number;
-    sd: number;
-  };
-
   type BlocklistEntry = {
     _id: string;
     usernameHash?: string;

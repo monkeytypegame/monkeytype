@@ -66,7 +66,7 @@ const ResultBaseSchema = z.object({
 });
 
 //required on POST but optional in the database and might be removed to save space
-const ResultOptionalPropertiesSchema = z.object({
+const ResultOmittableDefaultPropertiesSchema = z.object({
   restartCount: z.number().int().nonnegative(),
   incompleteTestSeconds: z.number().nonnegative(),
   incompleteTests: z.array(IncompleteTestSchema),
@@ -83,7 +83,7 @@ const ResultOptionalPropertiesSchema = z.object({
 });
 
 export const ResultSchema = ResultBaseSchema.merge(
-  ResultOptionalPropertiesSchema.partial()
+  ResultOmittableDefaultPropertiesSchema.partial() //missing on GET if the values are the default values
 ).extend({
   _id: IdSchema,
   keySpacingStats: KeyStatsSchema.optional(),
@@ -101,21 +101,34 @@ export type Result<M extends Mode> = Omit<
 };
 
 export const CompletedEventSchema = ResultBaseSchema.merge(
-  ResultOptionalPropertiesSchema
+  ResultOmittableDefaultPropertiesSchema //mandatory on POST
 )
   .extend({
-    charTotal: z.number().int().nonnegative(), //was optional in result-schema but mandatory on server
+    charTotal: z.number().int().nonnegative(),
     challenge: token().max(100).optional(),
     customText: CustomTextSchema.optional(),
     hash: token().max(100),
-    keyDuration: z.array(z.number().nonnegative()).or(z.literal("toolong")), //was optional in result-schema but mandatory on server
-    keySpacing: z.array(z.number().nonnegative()).or(z.literal("toolong")), //was optional in result-schema but mandatory on server
-    keyOverlap: z.number().nonnegative(), //was optional in result-schema but mandatory on server
-    lastKeyToEnd: z.number().nonnegative(), //was optional in result-schema but mandatory on server
-    startToFirstKey: z.number().nonnegative(), //was optional in result-schema but mandatory on server
+    keyDuration: z.array(z.number().nonnegative()).or(z.literal("toolong")),
+    keySpacing: z.array(z.number().nonnegative()).or(z.literal("toolong")),
+    keyOverlap: z.number().nonnegative(),
+    lastKeyToEnd: z.number().nonnegative(),
+    startToFirstKey: z.number().nonnegative(),
     wpmConsistency: PercentageSchema,
     stopOnLetter: z.boolean(),
   })
   .strict();
 
 export type CompletedEvent = z.infer<typeof CompletedEventSchema>;
+
+export const PostResultResponseSchema = z.object({
+  insertedId: IdSchema,
+  isPb: z.boolean(),
+  tagPbs: z.array(IdSchema),
+  dailyLeaderboardRank: z.number().int().nonnegative().optional(),
+  weeklyXpLeaderboardRank: z.number().int().nonnegative().optional(),
+  xp: z.number().int().nonnegative(),
+  dailyXpBonus: z.boolean(),
+  xpBreakdown: z.record(z.string(), z.number().int().nonnegative()), //TODO define type for xpBreakdown
+  streak: z.number().int().nonnegative(),
+});
+export type PostResultResponse = z.infer<typeof PostResultResponseSchema>;

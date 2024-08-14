@@ -37,10 +37,10 @@ const apeRateLimiter = rateLimit({
   handler: customHandler,
 });
 
-export function withApeRateLimiter(
+export function withApeRateLimiter<T extends AppRouter | AppRoute>(
   defaultRateLimiter: RateLimitRequestHandler,
   apeRateLimiterOverride?: RateLimitRequestHandler
-): RequestHandler {
+): RequestHandler | TsRestRequestHandler<T> {
   return (req: MonkeyTypes.Request, res: Response, next: NextFunction) => {
     if (req.ctx.decodedToken.type === "ApeKey") {
       const rateLimiter = apeRateLimiterOverride ?? apeRateLimiter;

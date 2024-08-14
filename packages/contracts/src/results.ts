@@ -6,7 +6,11 @@ import {
   MonkeyResponseSchema,
   responseWithData,
 } from "./schemas/api";
-import { CompletedEventSchema, ResultSchema } from "./schemas/results";
+import {
+  CompletedEventSchema,
+  PostResultResponseSchema,
+  ResultSchema,
+} from "./schemas/results";
 import { IdSchema } from "./schemas/util";
 
 export const GetResultsQuerySchema = z.object({
@@ -43,16 +47,7 @@ export const AddResultRequestSchema = z.object({
 export type AddResultRequest = z.infer<typeof AddResultRequestSchema>;
 
 export const AddResultResponseSchema = responseWithData(
-  z.object({
-    isPb: z.boolean(),
-    tagPbs: z.array(IdSchema),
-    dailyLeaderboardRank: z.number().int().nonnegative().optional(),
-    weeklyXpLeaderboardRank: z.number().int().nonnegative().optional(),
-    xp: z.number().int().nonnegative(),
-    dailyXpBonus: z.boolean(),
-    xpBreakdown: z.record(z.string(), z.number().int().nonnegative()), //TODO define type for xpBreakdown
-    streak: z.number().int().nonnegative(),
-  })
+  PostResultResponseSchema
 );
 export type AddResultResponse = z.infer<typeof AddResultResponseSchema>;
 

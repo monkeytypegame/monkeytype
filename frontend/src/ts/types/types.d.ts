@@ -1,4 +1,3 @@
-type ConfigValue = import("@monkeytype/contracts/schemas/configs").ConfigValue;
 type Mode = import("@monkeytype/contracts/schemas/shared").Mode;
 type Result<M extends Mode> =
   import("@monkeytype/contracts/schemas/results").Result<M>;
@@ -469,6 +468,9 @@ declare namespace MonkeyTypes {
     weeks: number;
   };
 
+  /**
+   * Result from the rest api but all omittable default values are set (and non optional)
+   */
   type FullResult<M extends Mode> = Omit<
     Result<M>,
     | "restartCount"

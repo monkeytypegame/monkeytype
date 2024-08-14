@@ -441,7 +441,7 @@ async function fillContent(): Promise<void> {
 
         if (validTags === undefined) return;
 
-        result.tags.forEach((tag: string) => {
+        result.tags.forEach((tag) => {
           //check if i even need to check tags anymore
           if (!tagHide) return;
           //check if tag is valid

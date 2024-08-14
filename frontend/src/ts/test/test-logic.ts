@@ -63,7 +63,6 @@ import { Mode } from "@monkeytype/contracts/schemas/shared";
 import {
   CompletedEvent,
   CustomTextDataWithTextLen,
-  CharStats,
 } from "@monkeytype/contracts/schemas/results";
 
 let failReason = "";
@@ -737,7 +736,7 @@ function buildCompletedEvent(difficultyFailed: boolean): CompletedEvent {
   const wpmCons = Numbers.roundTo2(Misc.kogasa(stddev3 / avg3));
   const wpmConsistency = isNaN(wpmCons) ? 0 : wpmCons;
 
-  let customText: CustomTextDataWithTextLen | null = null;
+  let customText: CustomTextDataWithTextLen | undefined = undefined;
   if (Config.mode === "custom") {
     const temp = CustomText.getData();
     customText = {
@@ -765,7 +764,7 @@ function buildCompletedEvent(difficultyFailed: boolean): CompletedEvent {
 
   const quoteLength = TestWords.currentQuote?.group ?? -1;
 
-  const completedEvent = {
+  const completedEvent: CompletedEvent = {
     wpm: stats.wpm,
     rawWpm: stats.wpmRaw,
     charStats: [
@@ -773,7 +772,7 @@ function buildCompletedEvent(difficultyFailed: boolean): CompletedEvent {
       stats.incorrectChars,
       stats.extraChars,
       stats.missedChars,
-    ] as CharStats,
+    ],
     charTotal: stats.allChars,
     acc: stats.acc,
     mode: Config.mode,
@@ -804,7 +803,7 @@ function buildCompletedEvent(difficultyFailed: boolean): CompletedEvent {
     funbox: Config.funbox,
     bailedOut: TestState.bailedOut,
     chartData: chartData,
-    customText: customText ?? undefined,
+    customText: customText,
     testDuration: duration,
     afkDuration: afkDuration,
     stopOnLetter: Config.stopOnError === "letter",
@@ -812,8 +811,8 @@ function buildCompletedEvent(difficultyFailed: boolean): CompletedEvent {
     uid: "invalid",
   };
 
-  //TODO if (completedEvent.mode !== "custom") delete completedEvent.customText;
-  //TODO if (completedEvent.mode !== "quote") delete completedEvent.quoteLength;
+  if (completedEvent.mode !== "custom") delete completedEvent.customText;
+  if (completedEvent.mode !== "quote") delete completedEvent.quoteLength;
 
   return completedEvent;
 }
@@ -1052,9 +1051,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
 
   $("#result .stats .dailyLeaderboard").addClass("hidden");
 
-  TestStats.setLastResult(
-    JSON.parse(JSON.stringify(completedEvent)) as unknown as CompletedEvent
-  );
+  TestStats.setLastResult(JSON.parse(JSON.stringify(completedEvent)));
 
   if (!ConnectionState.get()) {
     ConnectionState.showOfflineBanner();
@@ -1098,8 +1095,6 @@ export async function finish(difficultyFailed = false): Promise<void> {
   if (!completedEvent.bailedOut) {
     completedEvent.challenge = ChallengeContoller.verify(completedEvent);
   }
-
-  if (completedEvent.challenge === null) delete completedEvent?.challenge;
 
   completedEvent.hash = objectHash(completedEvent);
 

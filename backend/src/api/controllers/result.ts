@@ -36,7 +36,7 @@ import * as WeeklyXpLeaderboard from "../../services/weekly-xp-leaderboard";
 import { UAParser } from "ua-parser-js";
 import { canFunboxGetPb } from "../../utils/pb";
 import { buildDbResult } from "../../utils/result";
-import { Configuration, PostResultResponse } from "@monkeytype/shared-types";
+import { Configuration } from "@monkeytype/shared-types";
 import { addLog } from "../../dal/logs";
 import {
   AddResultRequest,
@@ -51,6 +51,7 @@ import {
   CompletedEvent,
   KeyStats,
   Result,
+  PostResultResponse,
 } from "@monkeytype/contracts/schemas/results";
 import { Mode } from "@monkeytype/contracts/schemas/shared";
 
@@ -191,25 +192,14 @@ export async function addResult(
   }
 
   const completedEvent = req.body.result;
-
-  if (!user.lbOptOut && completedEvent.acc < 75) {
-    throw new MonkeyError(
-      400,
-      "Cannot submit a result with less than 75% accuracy"
-    );
-  }
   completedEvent.uid = uid;
+
   if (isTestTooShort(completedEvent)) {
     const status = MonkeyStatusCodes.TEST_TOO_SHORT;
     throw new MonkeyError(status.code, status.message);
   }
 
   const resulthash = completedEvent.hash;
-  if (resulthash === undefined || resulthash === "") {
-    throw new MonkeyError(400, "Missing result hash");
-  }
-  //delete completedEvent.hash;
-  //delete completedEvent.stringified;
   if (req.ctx.configuration.results.objectHashCheckEnabled) {
     const serverhash = objectHash(completedEvent);
     if (serverhash !== resulthash) {
@@ -606,12 +596,10 @@ export async function addResult(
     );
   }
 
-  const data: Omit<PostResultResponse, "insertedId"> & {
-    insertedId: ObjectId;
-  } = {
+  const data: PostResultResponse = {
     isPb,
     tagPbs,
-    insertedId: addedResult.insertedId,
+    insertedId: addedResult.insertedId.toHexString(),
     xp: xpGained.xp,
     dailyXpBonus: xpGained.dailyBonus ?? false,
     xpBreakdown: xpGained.breakdown ?? {},
@@ -800,12 +788,12 @@ async function calculateXp(
   };
 }
 
-function convertResult<M extends Mode>(db: MonkeyTypes.DBResult): Result<M> {
+function convertResult(db: MonkeyTypes.DBResult): Result<Mode> {
   const result = replaceObjectId(omit(db, "correctChars", "incorrectChars"));
 
   //convert legacy values
   if (db.correctChars !== undefined && db.incorrectChars !== undefined) {
     result.charStats = [db.correctChars, db.incorrectChars, 0, 0];
   }
-  return result as unknown as Result<M>;
+  return result;
 }
