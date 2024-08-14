@@ -166,7 +166,8 @@ const buildProject = () => {
 
 const deployBackend = () => {
   console.log("Deploying backend...");
-  runCommand("sh ../bin/deployBackend.sh");
+  const p = path.resolve(__dirname, "../bin/deployBackend.sh");
+  runCommand(`sh ${p}`);
 };
 
 const deployFrontend = () => {
@@ -178,7 +179,8 @@ const deployFrontend = () => {
 
 const purgeCache = () => {
   console.log("Purging Cloudflare cache...");
-  runCommand("sh ../bin/purgeCfCache.sh");
+  const p = path.resolve(__dirname, "../bin/purgeCfCache.sh");
+  runCommand(`sh ${p}`);
 };
 
 const generateChangelog = async () => {
@@ -258,7 +260,12 @@ const main = async () => {
   if (!noDeploy) purgeCache();
   updatePackage(newVersion);
   createCommitAndTag(newVersion);
-  await createGithubRelease(newVersion, changelogContent);
+  try {
+    await createGithubRelease(newVersion, changelogContent);
+  } catch (e) {
+    console.error(`Failed to create release on GitHub: ${e}`);
+    console.log("Please create the release manually.");
+  }
 
   console.log(`Release ${newVersion} completed successfully.`);
   process.exit(0);
