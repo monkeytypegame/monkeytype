@@ -72,7 +72,7 @@
     "@date-fns/utc": "1.2.0",
     "@monkeytype/contracts": "workspace:*",
     "@ts-rest/core": "3.45.2",
-    "axios": "1.6.4",
+    "axios": "1.7.4",
     "canvas-confetti": "1.5.1",
     "chart.js": "3.7.1",
     "chartjs-adapter-date-fns": "2.0.0",
