@@ -64,6 +64,7 @@ describe("local-storage-with-schema.ts", () => {
       const res = ls.get();
 
       expect(localStorage.getItem).toHaveBeenCalledWith("config");
+      expect(localStorage.setItem).not.toHaveBeenCalled();
       expect(res).toEqual(defaultObject);
     });
 
@@ -74,6 +75,7 @@ describe("local-storage-with-schema.ts", () => {
 
       expect(localStorage.getItem).toHaveBeenCalledWith("config");
       expect(localStorage.removeItem).toHaveBeenCalledWith("config");
+      expect(localStorage.setItem).not.toHaveBeenCalled();
       expect(res).toEqual(defaultObject);
     });
 
@@ -83,6 +85,7 @@ describe("local-storage-with-schema.ts", () => {
       const res = ls.get();
 
       expect(localStorage.getItem).toHaveBeenCalledWith("config");
+      expect(localStorage.setItem).not.toHaveBeenCalled();
       expect(res).toEqual(defaultObject);
     });
 
@@ -97,30 +100,79 @@ describe("local-storage-with-schema.ts", () => {
       const res = ls.get();
 
       expect(localStorage.getItem).toHaveBeenCalledWith("config");
+      expect(localStorage.setItem).toHaveBeenCalledWith(
+        "config",
+        JSON.stringify(defaultObject)
+      );
       expect(res).toEqual(defaultObject);
     });
 
     it("should migrate (when function is provided) if schema failed", () => {
-      getItemMock.mockReturnValue(JSON.stringify({ hi: "hello" }));
+      const existingValue = { hi: "hello" };
+
+      getItemMock.mockReturnValue(JSON.stringify(existingValue));
 
       const migrated = {
         punctuation: false,
         mode: "time",
         fontSize: 1,
       };
+
+      const migrateFnMock = vi.fn(() => migrated as any);
+
       const ls = new LocalStorageWithSchema({
         key: "config",
         schema: objectSchema,
         fallback: defaultObject,
-        migrate: () => {
-          return migrated;
-        },
+        migrate: migrateFnMock,
       });
 
       const res = ls.get();
 
       expect(localStorage.getItem).toHaveBeenCalledWith("config");
+      expect(migrateFnMock).toHaveBeenCalledWith(
+        existingValue,
+        expect.any(Array)
+      );
+      expect(localStorage.setItem).toHaveBeenCalledWith(
+        "config",
+        JSON.stringify(migrated)
+      );
       expect(res).toEqual(migrated);
+    });
+
+    it("should revert to fallback if migration ran but schema still failed", () => {
+      const existingValue = { hi: "hello" };
+
+      getItemMock.mockReturnValue(JSON.stringify(existingValue));
+
+      const invalidMigrated = {
+        punctuation: 1,
+        mode: "time",
+        fontSize: 1,
+      };
+
+      const migrateFnMock = vi.fn(() => invalidMigrated as any);
+
+      const ls = new LocalStorageWithSchema({
+        key: "config",
+        schema: objectSchema,
+        fallback: defaultObject,
+        migrate: migrateFnMock,
+      });
+
+      const res = ls.get();
+
+      expect(localStorage.getItem).toHaveBeenCalledWith("config");
+      expect(migrateFnMock).toHaveBeenCalledWith(
+        existingValue,
+        expect.any(Array)
+      );
+      expect(localStorage.setItem).toHaveBeenCalledWith(
+        "config",
+        JSON.stringify(defaultObject)
+      );
+      expect(res).toEqual(defaultObject);
     });
   });
 });

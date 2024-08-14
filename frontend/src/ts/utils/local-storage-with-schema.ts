@@ -1,4 +1,4 @@
-import { ZodIssue } from "zod";
+import { ZodError, ZodIssue } from "zod";
 
 export class LocalStorageWithSchema<T> {
   private key: string;
@@ -29,7 +29,7 @@ export class LocalStorageWithSchema<T> {
     try {
       jsonParsed = JSON.parse(value);
     } catch (e) {
-      console.error(
+      console.log(
         `Value from localStorage ${this.key} was not a valid JSON, using fallback`,
         e
       );
@@ -43,12 +43,25 @@ export class LocalStorageWithSchema<T> {
       return schemaParsed.data;
     }
 
-    console.error(
+    console.log(
       `Value from localStorage ${this.key} failed schema validation, migrating`,
       schemaParsed.error
     );
-    const newValue =
-      this.migrate?.(jsonParsed, schemaParsed.error.issues) ?? this.fallback;
+
+    let newValue = this.fallback;
+    if (this.migrate) {
+      const migrated = this.migrate(jsonParsed, schemaParsed.error.issues);
+      const parse = this.schema.safeParse(migrated);
+      if (parse.success) {
+        newValue = migrated;
+      } else {
+        console.error(
+          `Value from localStorage ${this.key} failed schema validation after migration! This is very bad!`,
+          parse.error.issues
+        );
+      }
+    }
+
     window.localStorage.setItem(this.key, JSON.stringify(newValue));
     return newValue;
   }
@@ -59,7 +72,11 @@ export class LocalStorageWithSchema<T> {
       window.localStorage.setItem(this.key, JSON.stringify(parsed));
       return true;
     } catch (e) {
-      console.error(`Failed to set ${this.key} in localStorage`, e);
+      console.error(
+        `Failed to set ${this.key} in localStorage`,
+        data,
+        (e as ZodError).issues
+      );
       return false;
     }
   }
