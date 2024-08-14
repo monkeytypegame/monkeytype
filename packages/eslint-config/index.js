@@ -132,6 +132,10 @@ module.exports = {
         "@typescript-eslint/consistent-type-definitions": ["error", "type"],
         "@typescript-eslint/no-invalid-void-type": "off",
         "import/namespace": "off",
+        // Disallow variable declarations from shadowing variables declared in the outer scope.
+        // Note: you must disable the base rule as it can report incorrect errors
+        "no-shadow": "off",
+        "@typescript-eslint/no-shadow": "warn",
       },
       settings: {
         "import/resolver": {
