@@ -576,8 +576,12 @@ export async function addResult(
   }
 
   const dbresult = buildDbResult(completedEvent, user.name, isPb);
-  dbresult.keySpacingStats = keySpacingStats;
-  dbresult.keyDurationStats = keyDurationStats;
+  if (keySpacingStats !== undefined) {
+    dbresult.keySpacingStats = keySpacingStats;
+  }
+  if (keyDurationStats !== undefined) {
+    dbresult.keyDurationStats = keyDurationStats;
+  }
 
   const addedResult = await ResultDAL.addResult(uid, dbresult);
 
