@@ -19,6 +19,7 @@ jobs:
       - name: Lint and verify PR title
         uses: amannn/action-semantic-pull-request@v5
         id: lint_pr_title
+        if: github.actor != 'dependabot[bot]'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
@@ -49,7 +50,7 @@ jobs:
       - uses: marocchino/sticky-pull-request-comment@v2
         # When the previous steps fails, the workflow would stop. By adding this
         # condition you can continue the execution with the populated error message.
-        if: always() && (steps.lint_pr_title.outputs.error_message != null)
+        if: always() && (github.actor != 'dependabot[bot]') && (steps.lint_pr_title.outputs.error_message != null) 
         with:
           header: pr-title-lint-error
           message: |
