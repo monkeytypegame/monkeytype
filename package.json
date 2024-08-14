@@ -66,7 +66,7 @@
     "lint-staged": "13.2.3",
     "only-allow": "1.2.1",
     "prettier": "2.5.1",
-    "turbo": "2.0.9",
+    "turbo": "2.0.12",
     "vitest": "2.0.5"
   },
   "lint-staged": {
