@@ -25,7 +25,6 @@ import {
 } from "@monkeytype/contracts/schemas/shared";
 
 let dbSnapshot: MonkeyTypes.Snapshot | undefined;
-
 export class SnapshotInitError extends Error {
   constructor(message: string, public responseCode: number) {
     super(message);
