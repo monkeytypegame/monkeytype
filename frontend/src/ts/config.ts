@@ -1994,6 +1994,9 @@ export async function apply(
 
   ConfigEvent.dispatch("fullConfigChange");
 
+  //config from localStorage is already migrated, but config from import/backend might not
+  configToApply = replaceLegacyValues(configToApply);
+
   const configObj = configToApply as Config;
   (Object.keys(DefaultConfig) as (keyof Config)[]).forEach((configKey) => {
     if (configObj[configKey] === undefined) {
