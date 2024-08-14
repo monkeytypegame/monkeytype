@@ -166,7 +166,8 @@ const buildProject = () => {
 
 const deployBackend = () => {
   console.log("Deploying backend...");
-  runCommand("sh ../bin/deployBackend.sh");
+  const p = path.resolve(__dirname, "../bin/deployBackend.sh");
+  runCommand(`sh ${p}`);
 };
 
 const deployFrontend = () => {
@@ -178,7 +179,8 @@ const deployFrontend = () => {
 
 const purgeCache = () => {
   console.log("Purging Cloudflare cache...");
-  runCommand("sh ../bin/purgeCfCache.sh");
+  const p = path.resolve(__dirname, "../bin/purgeCfCache.sh");
+  runCommand(`sh ${p}`);
 };
 
 const generateChangelog = async () => {
