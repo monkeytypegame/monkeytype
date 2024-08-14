@@ -280,8 +280,8 @@ importers:
         specifier: 3.45.2
         version: 3.45.2(zod@3.23.8)
       axios:
-        specifier: 1.6.4
-        version: 1.6.4(debug@4.3.6)
+        specifier: 1.7.4
+        version: 1.7.4(debug@4.3.6)
       canvas-confetti:
         specifier: 1.5.1
         version: 1.5.1
@@ -3180,8 +3180,8 @@ packages:
   avvio@7.2.5:
     resolution: {integrity: sha512-AOhBxyLVdpOad3TujtC9kL/9r3HnTkxwQ5ggOsYrvvZP1cCFvzHWJd5XxZDFuTn+IN8vkKSG5SEJrd27vCSbeA==}
 
-  axios@1.6.4:
-    resolution: {integrity: sha512-heJnIs6N4aa1eSthhN9M5ioILu8Wi8vmQW9iHQ9NUvfkJb0lEEDUiIdQNAuBtfUt3FxReaKdpQA5DbmMOqzF/A==}
+  axios@1.7.4:
+    resolution: {integrity: sha512-DukmaFRnY6AzAALSH4J2M3k6PkaC+MfaAGdEERRWcC9q3/TWQwLpHR8ZRLKTdQ3aBDL64EdluRDjJqKw+BPZEw==}
 
   b4a@1.6.6:
     resolution: {integrity: sha512-5Tk1HLk6b6ctmjIkAcU/Ujv/1WqiDl0F0JdRCR80VsOcUlHcu7pWeWRlOqQLHfDEsVx9YH/aif5AG4ehoCtTmg==}
@@ -12541,7 +12541,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  axios@1.6.4(debug@4.3.6):
+  axios@1.7.4(debug@4.3.6):
     dependencies:
       follow-redirects: 1.15.6(debug@4.3.6)
       form-data: 4.0.0
@@ -18985,7 +18985,7 @@ snapshots:
 
   swagger-stats@0.99.5(prom-client@14.0.1):
     dependencies:
-      axios: 1.6.4(debug@4.3.6)
+      axios: 1.7.4(debug@4.3.6)
       basic-auth: 2.0.1
       cookies: 0.8.0
       debug: 4.3.6(supports-color@5.5.0)
