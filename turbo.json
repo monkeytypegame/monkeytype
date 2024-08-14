@@ -37,11 +37,13 @@
     },
     "@monkeytype/frontend#dev": {
       "dependsOn": ["^build"],
-      "env": ["BACKEND_URL", "RECAPTCHA_SITE_KEY", "SERVER_OPEN"]
+      "env": ["BACKEND_URL", "RECAPTCHA_SITE_KEY", "SERVER_OPEN"],
+      "persistent": true
     },
     "@monkeytype/backend#dev": {
       "dependsOn": ["^build"],
-      "env": ["DB_URI", "REDIS_URI", "PORT"]
+      "env": ["DB_URI", "REDIS_URI", "PORT"],
+      "persistent": true
     }
   }
 }
