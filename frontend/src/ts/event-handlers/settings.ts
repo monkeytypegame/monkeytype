@@ -1,6 +1,5 @@
 import * as ShareCustomThemeModal from "../modals/share-custom-theme";
 import * as CookiesModal from "../modals/cookies";
-import * as StreakHourOffsetModal from "../modals/streak-hour-offset";
 import * as EditPresetPopup from "../modals/edit-preset";
 import * as EditTagPopup from "../modals/edit-tag";
 import * as ApeKeysModal from "../modals/ape-keys";
@@ -19,12 +18,6 @@ settingsPage
   ?.querySelector(".section.updateCookiePreferences button")
   ?.addEventListener("click", () => {
     CookiesModal.show(true);
-  });
-
-settingsPage
-  ?.querySelector("#setStreakHourOffset")
-  ?.addEventListener("click", () => {
-    StreakHourOffsetModal.show();
   });
 
 settingsPage

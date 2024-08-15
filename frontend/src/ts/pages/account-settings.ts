@@ -5,6 +5,7 @@ import * as ActivePage from "../states/active-page";
 import { swapElements } from "../utils/misc";
 import { getSnapshot } from "../db";
 import Ape from "../ape";
+import * as StreakHourOffsetModal from "../modals/streak-hour-offset";
 import * as Loader from "../elements/loader";
 
 const pageElement = $(".page.pageAccountSettings");
@@ -154,6 +155,10 @@ $(
   void Ape.users.getOauthLink().then((res) => {
     window.open(res.data?.url as string, "_self");
   });
+});
+
+$(".page.pageAccountSettings #setStreakHourOffset").on("click", () => {
+  StreakHourOffsetModal.show();
 });
 
 export const page = new Page({
