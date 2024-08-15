@@ -1937,7 +1937,7 @@ $(".pageAccountSettings").on("click", "#revokeAllTokens", () => {
   showPopup("revokeAllTokens");
 });
 
-$("#resetPersonalBestsButton").on("click", () => {
+$(".pageAccountSettings").on("click", "#resetPersonalBestsButton", () => {
   showPopup("resetPersonalBests");
 });
 
