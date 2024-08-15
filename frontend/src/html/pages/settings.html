@@ -15,7 +15,6 @@
   </div>
   <div class="settingsGroup quickNav">
     <div class="links">
-      <a class="textButton accountTitleLink" href="#group_account">account</a>
       <a class="textButton" href="#group_behavior">behavior</a>
       <a class="textButton" href="#group_input">input</a>
       <a class="textButton" href="#group_sound">sound</a>
@@ -36,7 +35,7 @@
     <div id="ad-settings-1-small"></div>
   </div>
 
-  <button
+  <!-- <button
     id="group_account"
     class="text sectionGroupTitle hidden"
     group="account"
@@ -45,7 +44,56 @@
     <span>account</span>
   </button>
   <div class="settingsGroup account hidden">
-    <div class="section tags">
+    <div class="section">
+      <div class="groupTitle">
+        <i class="fas fa-user"></i>
+        <span>account settings</span>
+      </div>
+      <div class="text">
+        Account settings have moved. You can now access them by hovering over
+        the account button in the top right corner, then clicking "Account
+        settings".
+      </div>
+      <div class="buttons">
+        <a class="button" href="/account-settings" router-link>
+          go to account settings
+        </a>
+      </div>
+    </div>
+    <div class="sectionSpacer"></div>
+  </div> -->
+  <!-- 
+  <div class="section needsAccount">
+    <div class="groupTitle">
+      <i class="fas fa-user"></i>
+      <span>account settings</span>
+    </div>
+    <div class="text">
+      Account settings have moved. You can now access them by hovering over the
+      account button in the top right corner, then clicking "Account settings".
+    </div>
+    <div class="buttons">
+      <a class="button" href="/account-settings" router-link>
+        go to account settings
+      </a>
+    </div>
+  </div> -->
+
+  <div class="accountSettingsNotice">
+    <i class="fas icon fa-user"></i>
+    <p>
+      Account settings have moved. You can now access them by hovering over the
+      account button in the top right corner, then clicking "Account settings".
+    </p>
+    <button class="dismissAndGo">go to account settings</button>
+  </div>
+
+  <button id="group_behavior" class="text sectionGroupTitle" group="behavior">
+    <i class="fas fa-chevron-down"></i>
+    <span>behavior</span>
+  </button>
+  <div class="settingsGroup behavior">
+    <div class="section tags needsAccount">
       <div class="groupTitle">
         <i class="fas fa-tag"></i>
         <span>tags</span>
@@ -60,7 +108,7 @@
         <button class="addTagButton fullWidth">add tag</button>
       </div>
     </div>
-    <div class="section presets">
+    <div class="section presets needsAccount">
       <div class="groupTitle">
         <i class="fas fa-sliders-h"></i>
         <span>presets</span>
@@ -74,28 +122,6 @@
         <button class="addPresetButton fullWidth">add preset</button>
       </div>
     </div>
-    <div class="section">
-      <div class="groupTitle">
-        <i class="fas fa-user"></i>
-        <span>more account settings</span>
-      </div>
-      <div class="text">
-        You can access more account settings (such as changing your name,
-        password, resetting or deleting your account) in the danger zone
-        section.
-      </div>
-      <div class="buttons">
-        <a class="button" href="#group_dangerZone">go to the danger zone</a>
-      </div>
-    </div>
-    <div class="sectionSpacer"></div>
-  </div>
-
-  <button id="group_behavior" class="text sectionGroupTitle" group="behavior">
-    <i class="fas fa-chevron-down"></i>
-    <span>behavior</span>
-  </button>
-  <div class="settingsGroup behavior">
     <div class="section" data-config-name="difficulty">
       <div class="groupTitle">
         <i class="fas fa-star"></i>
@@ -1546,6 +1572,15 @@
       <div class="buttons">
         <button class="danger" id="resetSettingsButton">reset settings</button>
       </div>
+    </div>
+    <div class="accountSettingsNotice">
+      <i class="fas icon fa-user"></i>
+      <p>
+        Account settings have moved. You can now access them by hovering over
+        the account button in the top right corner, then clicking "Account
+        settings".
+      </p>
+      <button class="dismissAndGo">go to account settings</button>
     </div>
   </div>
 </div>
