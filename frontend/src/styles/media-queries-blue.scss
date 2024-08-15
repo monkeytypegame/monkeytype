@@ -109,6 +109,11 @@
     }
   }
   .pageSettings {
+    .accountSettingsNotice {
+      button {
+        grid-column: -1/1;
+      }
+    }
     .section {
       grid-template-columns: 1fr;
       grid-template-areas:
