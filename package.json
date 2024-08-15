@@ -60,7 +60,7 @@
     "@commitlint/config-conventional": "17.7.0",
     "@vitest/coverage-v8": "2.0.5",
     "@monkeytype/release": "workspace:*",
-    "conventional-changelog": "4.0.0",
+    "conventional-changelog": "6.0.0",
     "husky": "8.0.1",
     "knip": "2.19.2",
     "lint-staged": "13.2.3",

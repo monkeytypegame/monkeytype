@@ -260,7 +260,12 @@ const main = async () => {
   if (!noDeploy) purgeCache();
   updatePackage(newVersion);
   createCommitAndTag(newVersion);
-  await createGithubRelease(newVersion, changelogContent);
+  try {
+    await createGithubRelease(newVersion, changelogContent);
+  } catch (e) {
+    console.error(`Failed to create release on GitHub: ${e}`);
+    console.log("Please create the release manually.");
+  }
 
   console.log(`Release ${newVersion} completed successfully.`);
   process.exit(0);

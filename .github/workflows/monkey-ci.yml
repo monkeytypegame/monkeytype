@@ -23,7 +23,7 @@ concurrency:
 
 jobs:
   pre-ci:
-    if: github.event.pull_request.draft == false
+    if: github.event.pull_request.draft == false || contains(github.event.pull_request.labels.*.name, 'force-ci') || contains(github.event.pull_request.labels.*.name, 'force-full-ci')
     name: pre-ci
     runs-on: ubuntu-latest
     outputs:
@@ -72,7 +72,7 @@ jobs:
     name: prime-cache
     runs-on: ubuntu-latest
     needs: [pre-ci]
-    if: needs.pre-ci.outputs.should-build-be == 'true' || needs.pre-ci.outputs.should-build-fe == 'true' || needs.pre-ci.outputs.should-build-pkg == 'true' || needs.pre-ci.outputs.assets-json == 'true'
+    if: needs.pre-ci.outputs.should-build-be == 'true' || needs.pre-ci.outputs.should-build-fe == 'true' || needs.pre-ci.outputs.should-build-pkg == 'true' || needs.pre-ci.outputs.assets-json == 'true' || contains(github.event.pull_request.labels.*.name, 'force-full-ci')
     steps:
 
       - name: Checkout pnpm-lock
@@ -119,7 +119,7 @@ jobs:
     name: check-pretty
     needs: [pre-ci, prime-cache]
     runs-on: ubuntu-latest
-    if: needs.pre-ci.outputs.should-build-be == 'true' || needs.pre-ci.outputs.should-build-fe == 'true' || needs.pre-ci.outputs.should-build-pkg == 'true' || needs.pre-ci.outputs.assets-json == 'true'
+    if: needs.pre-ci.outputs.should-build-be == 'true' || needs.pre-ci.outputs.should-build-fe == 'true' || needs.pre-ci.outputs.should-build-pkg == 'true' || needs.pre-ci.outputs.assets-json == 'true' || contains(github.event.pull_request.labels.*.name, 'force-full-ci')
     steps:
       - uses: actions/checkout@v4
 
@@ -169,7 +169,7 @@ jobs:
     name: ci-be
     needs: [pre-ci, prime-cache, check-pretty]
     runs-on: ubuntu-latest
-    if: needs.pre-ci.outputs.should-build-be == 'true' || needs.pre-ci.outputs.should-build-pkg == 'true'
+    if: needs.pre-ci.outputs.should-build-be == 'true' || needs.pre-ci.outputs.should-build-pkg == 'true' || contains(github.event.pull_request.labels.*.name, 'force-full-ci')
     steps:
       - uses: actions/checkout@v4
         with:
@@ -217,7 +217,7 @@ jobs:
     name: ci-fe
     needs: [pre-ci, prime-cache, check-pretty]
     runs-on: ubuntu-latest
-    if: needs.pre-ci.outputs.should-build-fe == 'true' || needs.pre-ci.outputs.should-build-pkg == 'true'
+    if: needs.pre-ci.outputs.should-build-fe == 'true' || needs.pre-ci.outputs.should-build-pkg == 'true' || contains(github.event.pull_request.labels.*.name, 'force-full-ci')
     steps:
 
       - uses: actions/checkout@v4
@@ -270,7 +270,7 @@ jobs:
     name: ci-assets
     needs: [pre-ci, prime-cache, check-pretty]
     runs-on: ubuntu-latest
-    if: needs.pre-ci.outputs.assets-json == 'true'
+    if: needs.pre-ci.outputs.assets-json == 'true' || contains(github.event.pull_request.labels.*.name, 'force-full-ci')
     steps:
       - uses: actions/checkout@v4
         with:
@@ -339,7 +339,7 @@ jobs:
     name: ci-pkg
     needs: [pre-ci, prime-cache,check-pretty]
     runs-on: ubuntu-latest
-    if: needs.pre-ci.outputs.should-build-pkg == 'true'
+    if: needs.pre-ci.outputs.should-build-pkg == 'true' || contains(github.event.pull_request.labels.*.name, 'force-full-ci')
     steps:
 
       - uses: actions/checkout@v4
