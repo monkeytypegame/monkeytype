@@ -35,6 +35,7 @@ import { format as dateFormat } from "date-fns/format";
 import { Attributes, buildTag } from "../utils/tag-builder";
 import { CustomThemeColors } from "@monkeytype/contracts/schemas/configs";
 import * as AccountSettings from "../pages/account-settings";
+import * as ApeKeyTable from "../elements/account-settings/ape-key-table";
 
 type CommonInput<TType, TValue> = {
   type: TType;
@@ -1487,6 +1488,9 @@ list.generateApeKey = new SimpleModal({
     const data = response.body.data;
 
     const modalChain = modal.getPreviousModalInChain();
+
+    void ApeKeyTable.update();
+
     return {
       status: 1,
       message: "Key generated",
@@ -1971,6 +1975,10 @@ $(".pageAccountSettings").on("click", "#resetAccount", () => {
 
 $(".pageAccountSettings").on("click", "#optOutOfLeaderboardsButton", () => {
   showPopup("optOutOfLeaderboards");
+});
+
+$(".pageAccountSettings").on("click", "#generateNewApeKey", () => {
+  showPopup("generateApeKey");
 });
 
 $(".pageSettings").on(

@@ -1,18 +1,20 @@
-import Ape from "../ape";
-import * as Loader from "../elements/loader";
-import * as Notifications from "../elements/notifications";
-import { format } from "date-fns/format";
-import * as ConnectionState from "../states/connection";
-import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
-import { showPopup } from "./simple-modals";
+import * as Loader from "../../elements/loader";
+import * as Notifications from "../../elements/notifications";
+import Ape from "../../ape";
 import { ApeKey, ApeKeys } from "@monkeytype/contracts/schemas/ape-keys";
+import { format } from "date-fns/format";
 
 let apeKeys: ApeKeys | null = {};
 
+const element = $("#pageAccountSettings .tab[data-tab='api']");
+
+//todo handle no ape key permission
+
+//todo edit and delete
+
 async function getData(): Promise<boolean> {
-  Loader.show();
+  showLoaderRow();
   const response = await Ape.apeKeys.get();
-  Loader.hide();
 
   if (response.status !== 200) {
     Notifications.add("Error getting ape keys: " + response.body.message, -1);
@@ -23,10 +25,19 @@ async function getData(): Promise<boolean> {
   return true;
 }
 
+function showLoaderRow(): void {
+  const table = element.find("table tbody");
+
+  table.empty();
+  table.append(
+    "<tr><td colspan='6' style='text-align: center;font-size:1rem;'><i class='fas fa-spin fa-circle-notch'></i></td></tr>"
+  );
+}
+
 function refreshList(): void {
   const data = apeKeys;
   if (data === undefined || data === null) return;
-  const table = $("#apeKeysModal table tbody");
+  const table = element.find("table tbody");
   table.empty();
   const apeKeyIds = Object.keys(data);
   if (apeKeyIds.length === 0) {
@@ -40,7 +51,7 @@ function refreshList(): void {
     table.append(`
       <tr keyId="${apeKeyId}">
         <td>
-          <button class="textButton toggleActive">
+          <button class="textButton toggleActive" style="font-size: 1.25rem">
             ${
               key.enabled
                 ? `<i class="fas fa-fw fa-check-square"></i>`
@@ -71,44 +82,10 @@ function refreshList(): void {
   });
   for (const tr of table.find("tr")) {
     const keyid = tr.getAttribute("keyid") as string;
-    tr.querySelector("button.deleteButton")?.addEventListener("click", (e) => {
-      showPopup("deleteApeKey", [keyid], {
-        modalChain: modal,
-      });
-    });
-    tr.querySelector("button.editButton")?.addEventListener("click", (e) => {
-      showPopup("editApeKey", [keyid], {
-        modalChain: modal,
-      });
-    });
     tr.querySelector("button.toggleActive")?.addEventListener("click", (e) => {
       void toggleActiveKey(keyid);
     });
   }
-}
-
-// function hide(clearModalChain = false): void {
-//   void modal.hide({
-//     clearModalChain,
-//   });
-// }
-
-//show the popup
-export async function show(showOptions?: ShowOptions): Promise<void> {
-  if (!ConnectionState.get()) {
-    Notifications.add("You are offline", 0, {
-      duration: 2,
-    });
-    return;
-  }
-  const cont = await getData();
-  if (!cont) return;
-  void modal.show({
-    ...showOptions,
-    beforeAnimation: async () => {
-      refreshList();
-    },
-  });
 }
 
 async function toggleActiveKey(keyId: string): Promise<void> {
@@ -133,17 +110,7 @@ async function toggleActiveKey(keyId: string): Promise<void> {
   }
 }
 
-async function setup(modalEl: HTMLElement): Promise<void> {
-  modalEl
-    .querySelector(".generateApeKey")
-    ?.addEventListener("click", async () => {
-      showPopup("generateApeKey", [], {
-        modalChain: modal,
-      });
-    });
+export async function update(): Promise<void> {
+  await getData();
+  refreshList();
 }
-
-const modal = new AnimatedModal({
-  dialogId: "apeKeysModal",
-  setup,
-});

@@ -7,7 +7,8 @@ import { getSnapshot } from "../db";
 import Ape from "../ape";
 import * as StreakHourOffsetModal from "../modals/streak-hour-offset";
 import * as Loader from "../elements/loader";
-import * as ApeKeysModal from "../modals/ape-keys";
+// import * as ApeKeysModal from "../modals/ape-keys";
+import * as ApeKeyTable from "../elements/account-settings/ape-key-table";
 
 const pageElement = $(".page.pageAccountSettings");
 
@@ -141,6 +142,7 @@ export function updateUI(): void {
   if (ActivePage.get() !== "accountSettings") return;
   updateAuthenticationSections();
   updateIntegrationSections();
+  void ApeKeyTable.update();
 
   //todo instead of removing, show a message
   if (getSnapshot()?.lbOptOut === true) {
@@ -168,9 +170,9 @@ $(".page.pageAccountSettings #setStreakHourOffset").on("click", () => {
   StreakHourOffsetModal.show();
 });
 
-$(".page.pageAccountSettings #showApeKeysPopup").on("click", () => {
-  void ApeKeysModal.show();
-});
+// $(".page.pageAccountSettings #showApeKeysPopup").on("click", () => {
+//   void ApeKeysModal.show();
+// });
 
 export const page = new Page({
   name: "accountSettings",
