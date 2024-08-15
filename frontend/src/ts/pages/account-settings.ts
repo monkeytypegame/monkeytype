@@ -3,15 +3,18 @@ import * as Skeleton from "../utils/skeleton";
 import { getAuthenticatedUser, isAuthenticated } from "../firebase";
 import * as ActivePage from "../states/active-page";
 import { swapElements } from "../utils/misc";
+import { getSnapshot } from "../db";
+import Ape from "../ape";
+import * as Loader from "../elements/loader";
 
 const pageElement = $(".page.pageAccountSettings");
 
 type State = {
-  activeTab: "authentication" | "integrations" | "api" | "dangerZone";
+  activeTab: "authentication" | "general" | "api" | "dangerZone";
 };
 
 const state: State = {
-  activeTab: "authentication",
+  activeTab: "general",
 };
 
 function updateAuthenticationSections(): void {
@@ -88,6 +91,31 @@ function updateAuthenticationSections(): void {
   }
 }
 
+function updateIntegrationSections(): void {
+  //no code and no discord
+  if (!isAuthenticated()) {
+    pageElement.find(".section.discordIntegration").addClass("hidden");
+  } else {
+    if (!getSnapshot()) return;
+    pageElement.find(".section.discordIntegration").removeClass("hidden");
+
+    if (getSnapshot()?.discordId === undefined) {
+      //show button
+      pageElement
+        .find(".section.discordIntegration .buttons")
+        .removeClass("hidden");
+      pageElement.find(".section.discordIntegration .info").addClass("hidden");
+    } else {
+      pageElement
+        .find(".section.discordIntegration .buttons")
+        .addClass("hidden");
+      pageElement
+        .find(".section.discordIntegration .info")
+        .removeClass("hidden");
+    }
+  }
+}
+
 function updateTabs(): void {
   void swapElements(
     pageElement.find(".tab.active"),
@@ -107,16 +135,26 @@ function updateTabs(): void {
   pageElement.find(`button[data-tab="${state.activeTab}"]`).addClass("active");
 }
 
+export function updateUI(): void {
+  if (ActivePage.get() !== "accountSettings") return;
+  updateAuthenticationSections();
+  updateIntegrationSections();
+  updateTabs();
+}
+
 $(".page.pageAccountSettings").on("click", ".tabs button", (event) => {
   state.activeTab = $(event.target).data("tab");
   updateTabs();
 });
 
-export function updateUI(): void {
-  if (ActivePage.get() !== "accountSettings") return;
-  updateAuthenticationSections();
-  updateTabs();
-}
+$(
+  ".page.pageAccountSettings .section.discordIntegration .getLinkAndGoToOauth"
+).on("click", () => {
+  Loader.show();
+  void Ape.users.getOauthLink().then((res) => {
+    window.open(res.data?.url as string, "_self");
+  });
+});
 
 export const page = new Page({
   name: "accountSettings",

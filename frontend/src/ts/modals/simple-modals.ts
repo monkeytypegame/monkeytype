@@ -1454,7 +1454,7 @@ list.unlinkDiscord = new SimpleModal({
     snap.discordId = undefined;
     AccountButton.updateAvatar(undefined, undefined);
     DB.setSnapshot(snap);
-    Settings.updateDiscordSection();
+    AccountSettings.updateUI();
 
     return {
       status: 1,
@@ -1913,12 +1913,9 @@ $(".pageLogin #forgotPasswordButton").on("click", () => {
   showPopup("forgotPassword");
 });
 
-$(".pageSettings .section.discordIntegration #unlinkDiscordButton").on(
-  "click",
-  () => {
-    showPopup("unlinkDiscord");
-  }
-);
+$(".pageAccountSettings").on("click", "#unlinkDiscordButton", () => {
+  showPopup("unlinkDiscord");
+});
 
 $(".pageAccountSettings").on("click", "#removeGoogleAuth", () => {
   showPopup("removeGoogleAuth");

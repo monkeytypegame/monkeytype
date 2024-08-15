@@ -93,15 +93,19 @@
       grid-template-columns: 1fr;
     }
   }
+  .pageAccountSettings {
+    .section {
+      &.discordIntegration .info {
+        margin: 1rem 0;
+      }
+    }
+  }
   .pageSettings {
     .section {
       grid-template-columns: 1fr;
       grid-template-areas:
         "title"
         "text" "buttons";
-      &.discordIntegration .info {
-        margin: 1rem 0;
-      }
       .customThemeEdit {
         .spacer {
           display: none;

@@ -15,7 +15,6 @@ import * as ConfigEvent from "../observables/config-event";
 import * as ActivePage from "../states/active-page";
 import Page from "./page";
 import { isAuthenticated } from "../firebase";
-import Ape from "../ape";
 import { areFunboxesCompatible } from "../test/funbox/funbox-validation";
 import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
 // @ts-expect-error TODO: update slim-select
@@ -720,35 +719,9 @@ function showAccountSection(): void {
   $(".pageSettings .quickNav .accountTitleLink").removeClass("hidden");
   refreshTagsSettingsSection();
   refreshPresetsSettingsSection();
-  updateDiscordSection();
 
   if (DB.getSnapshot()?.lbOptOut === true) {
     $(".pageSettings .section.optOutOfLeaderboards").remove();
-  }
-}
-
-export function updateDiscordSection(): void {
-  //no code and no discord
-  if (!isAuthenticated()) {
-    $(".pageSettings .section.discordIntegration").addClass("hidden");
-  } else {
-    if (!DB.getSnapshot()) return;
-    $(".pageSettings .section.discordIntegration").removeClass("hidden");
-
-    if (DB.getSnapshot()?.discordId === undefined) {
-      //show button
-      $(".pageSettings .section.discordIntegration .buttons").removeClass(
-        "hidden"
-      );
-      $(".pageSettings .section.discordIntegration .info").addClass("hidden");
-    } else {
-      $(".pageSettings .section.discordIntegration .buttons").addClass(
-        "hidden"
-      );
-      $(".pageSettings .section.discordIntegration .info").removeClass(
-        "hidden"
-      );
-    }
   }
 }
 
@@ -858,7 +831,6 @@ export async function update(groupUpdate = true): Promise<void> {
   refreshPresetsSettingsSection();
   // LanguagePicker.setActiveGroup(); Shifted from grouped btns to combo-box
   setActiveFunboxButton();
-  updateDiscordSection();
   await Misc.sleep(0);
   ThemePicker.updateActiveTab(true);
   ThemePicker.setCustomInputs(true);
@@ -1347,15 +1319,6 @@ $(".pageSettings .quickNav .links a").on("click", (e) => {
     toggleSettingsGroup(settingsGroup);
   }
 });
-
-$(".pageSettings .section.discordIntegration .getLinkAndGoToOauth").on(
-  "click",
-  () => {
-    void Ape.users.getOauthLink().then((res) => {
-      window.open(res.data?.url as string, "_self");
-    });
-  }
-);
 
 let configEventDisabled = false;
 export function setEventDisabled(value: boolean): void {

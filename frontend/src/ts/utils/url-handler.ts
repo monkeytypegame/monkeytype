@@ -6,7 +6,7 @@ import * as TestState from "../test/test-state";
 import * as ManualRestart from "../test/manual-restart-tracker";
 import * as CustomText from "../test/custom-text";
 import Ape from "../ape";
-import * as Settings from "../pages/settings";
+import * as AccountSettings from "../pages/account-settings";
 import * as DB from "../db";
 import * as Loader from "../elements/loader";
 import * as AccountButton from "../elements/account-button";
@@ -52,10 +52,8 @@ export async function linkDiscord(hashOverride: string): Promise<void> {
     }
 
     DB.setSnapshot(snapshot);
-
     AccountButton.updateAvatar(discordId, discordAvatar);
-
-    Settings.updateDiscordSection();
+    AccountSettings.updateUI();
   }
 }
 
