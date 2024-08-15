@@ -12,7 +12,7 @@ import * as ConfigSchemas from "@monkeytype/contracts/schemas/configs";
  * @param config partial or possible outdated config
  * @returns
  */
-export function convertToFullConfig(config: PartialConfig | object): Config {
+export function migrateConfig(config: PartialConfig | object): Config {
   return mergeWithDefaultConfig(replaceLegacyValues(config));
 }
 

@@ -28,7 +28,7 @@ import { roundTo1 } from "./utils/numbers";
 import { Mode, ModeSchema } from "@monkeytype/contracts/schemas/shared";
 import { Language, LanguageSchema } from "@monkeytype/contracts/schemas/util";
 import { LocalStorageWithSchema } from "./utils/local-storage-with-schema";
-import { convertToFullConfig } from "./utils/config";
+import { migrateConfig } from "./utils/config";
 
 const configLS = new LocalStorageWithSchema({
   key: "config",
@@ -39,7 +39,7 @@ const configLS = new LocalStorageWithSchema({
       return DefaultConfig;
     }
 
-    return convertToFullConfig(value);
+    return migrateConfig(value);
   },
 });
 
