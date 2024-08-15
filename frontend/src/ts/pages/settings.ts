@@ -719,10 +719,6 @@ function showAccountSection(): void {
   $(".pageSettings .quickNav .accountTitleLink").removeClass("hidden");
   refreshTagsSettingsSection();
   refreshPresetsSettingsSection();
-
-  if (DB.getSnapshot()?.lbOptOut === true) {
-    $(".pageSettings .section.optOutOfLeaderboards").remove();
-  }
 }
 
 function setActiveFunboxButton(): void {

@@ -1969,7 +1969,7 @@ $("#resetAccount").on("click", () => {
   showPopup("resetAccount");
 });
 
-$("#optOutOfLeaderboardsButton").on("click", () => {
+$(".pageAccountSettings").on("click", "#optOutOfLeaderboardsButton", () => {
   showPopup("optOutOfLeaderboards");
 });
 

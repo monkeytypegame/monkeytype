@@ -140,6 +140,12 @@ export function updateUI(): void {
   if (ActivePage.get() !== "accountSettings") return;
   updateAuthenticationSections();
   updateIntegrationSections();
+
+  //todo instead of removing, show a message
+  if (getSnapshot()?.lbOptOut === true) {
+    pageElement.find(".section.optOutOfLeaderboards").remove();
+  }
+
   updateTabs();
 }
 
