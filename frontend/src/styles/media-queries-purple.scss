@@ -93,6 +93,11 @@
     }
   }
   .pageAccount {
+    .accountVerificatinNotice {
+      button {
+        grid-column: -1 / 1;
+      }
+    }
     .group.resultBatches {
       gap: 1rem;
       grid-template-areas: "bar" "button" "text";
