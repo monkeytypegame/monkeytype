@@ -1961,11 +1961,11 @@ $(".pageAccountSettings").on("click", "#passPasswordAuth", () => {
   showPopup("updatePassword");
 });
 
-$("#deleteAccount").on("click", () => {
+$(".pageAccountSettings").on("click", "#deleteAccount", () => {
   showPopup("deleteAccount");
 });
 
-$("#resetAccount").on("click", () => {
+$(".pageAccountSettings").on("click", "#resetAccount", () => {
   showPopup("resetAccount");
 });
 

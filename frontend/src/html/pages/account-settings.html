@@ -25,19 +25,6 @@
       </div>
       <div class="right">
         <div class="tab" data-tab="general">
-          <div class="section updateAccountName">
-            <div class="title">
-              <i class="fas fa-user"></i>
-              <span>update account name</span>
-            </div>
-            <div class="text">
-              Change the name of your account.
-              <span class="red">You can only do this once every 30 days.</span>
-            </div>
-            <div class="buttons">
-              <button id="updateAccountName">update name</button>
-            </div>
-          </div>
           <div class="section discordIntegration">
             <div class="title">
               <i class="fab fa-discord"></i>
@@ -72,6 +59,19 @@
                   Unlink
                 </button>
               </div>
+            </div>
+          </div>
+          <div class="section updateAccountName">
+            <div class="title">
+              <i class="fas fa-user"></i>
+              <span>update account name</span>
+            </div>
+            <div class="text">
+              Change the name of your account.
+              <span class="red">You can only do this once every 30 days.</span>
+            </div>
+            <div class="buttons">
+              <button id="updateAccountName">update name</button>
             </div>
           </div>
           <div class="section setStreakHourOffset">
@@ -188,7 +188,36 @@
             </div>
           </div>
         </div>
-        <div class="tab hidden" data-tab="dangerZone">dangerzone</div>
+        <div class="tab hidden" data-tab="dangerZone">
+          <div class="section resetAccount">
+            <div class="title">
+              <i class="fas fa-redo-alt"></i>
+              <span>reset account</span>
+            </div>
+            <div class="text">
+              Completely resets your account to a blank state.
+              <br />
+              <span class="red">You can't undo this action!</span>
+            </div>
+            <div class="buttons">
+              <button class="danger" id="resetAccount">reset account</button>
+            </div>
+          </div>
+          <div class="section deleteAccount">
+            <div class="title">
+              <i class="fas fa-trash"></i>
+              <span>delete account</span>
+            </div>
+            <div class="text">
+              Deletes your account and all data connected to it.
+              <br />
+              <span class="red">You can't undo this action!</span>
+            </div>
+            <div class="buttons">
+              <button class="danger" id="deleteAccount">delete account</button>
+            </div>
+          </div>
+        </div>
         <!-- end of tabs -->
       </div>
     </div>
