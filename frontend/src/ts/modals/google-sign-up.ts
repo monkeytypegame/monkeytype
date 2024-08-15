@@ -88,7 +88,6 @@ async function apply(): Promise<void> {
       await updateProfile(signedInUser.user, { displayName: name });
       await sendEmailVerification(signedInUser.user);
       Notifications.add("Account created", 1);
-      $("nav .textButton.account .text").text(name);
       LoginPage.enableInputs();
       LoginPage.hidePreloader();
       await AccountController.loadUser(signedInUser.user);
