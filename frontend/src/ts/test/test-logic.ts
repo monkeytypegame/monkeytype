@@ -1130,7 +1130,7 @@ async function saveResult(
     return;
   }
 
-  const response = await Ape.results.save(completedEvent);
+  const response = await Ape.results.add({ body: { result: completedEvent } });
 
   AccountButton.loading(false);
 
@@ -1144,44 +1144,43 @@ async function saveResult(
       }
     }
     console.log("Error saving result", completedEvent);
-    if (response.message === "Old key data format") {
-      response.message =
+    if (response.body.message === "Old key data format") {
+      response.body.message =
         "Old key data format. Please refresh the page to download the new update. If the problem persists, please contact support.";
     }
-    if (/"result\..+" is (not allowed|required)/gi.test(response.message)) {
-      response.message =
+    if (
+      /"result\..+" is (not allowed|required)/gi.test(response.body.message)
+    ) {
+      response.body.message =
         "Looks like your result data is using an incorrect schema. Please refresh the page to download the new update. If the problem persists, please contact support.";
     }
-    Notifications.add("Failed to save result: " + response.message, -1);
+    Notifications.add("Failed to save result: " + response.body.message, -1);
     return;
   }
 
+  const data = response.body.data;
   $("#result .stats .tags .editTagsButton").attr(
     "data-result-id",
-    response.data?.insertedId as string //if status is 200 then response.data is not null or undefined
+    data.insertedId
   );
   $("#result .stats .tags .editTagsButton").removeClass("invisible");
 
-  if (response?.data?.xp !== undefined) {
+  if (data.xp !== undefined) {
     const snapxp = DB.getSnapshot()?.xp ?? 0;
-    void AccountButton.updateXpBar(
-      snapxp,
-      response.data.xp,
-      response.data.xpBreakdown
-    );
-    DB.addXp(response.data.xp);
+    void AccountButton.updateXpBar(snapxp, data.xp, data.xpBreakdown);
+    DB.addXp(data.xp);
   }
 
-  if (response?.data?.streak !== undefined) {
-    DB.setStreak(response.data.streak);
+  if (data.streak !== undefined) {
+    DB.setStreak(data.streak);
   }
 
-  if (response?.data?.insertedId !== undefined) {
+  if (data.insertedId !== undefined) {
     const result: MonkeyTypes.FullResult<Mode> = JSON.parse(
       JSON.stringify(completedEvent)
     );
-    result._id = response.data.insertedId;
-    if (response?.data?.isPb !== undefined && response.data.isPb) {
+    result._id = data.insertedId;
+    if (data.isPb !== undefined && data.isPb) {
       result.isPb = true;
     }
     DB.saveLocalResult(result);
@@ -1195,7 +1194,7 @@ async function saveResult(
 
   void AnalyticsController.log("testCompleted");
 
-  if (response?.data?.isPb !== undefined && response.data.isPb) {
+  if (data.isPb !== undefined && data.isPb) {
     //new pb
     const localPb = await DB.getLocalPB(
       completedEvent.mode,
@@ -1241,7 +1240,7 @@ async function saveResult(
   //   );
   // }
 
-  if (response?.data?.dailyLeaderboardRank === undefined) {
+  if (data.dailyLeaderboardRank === undefined) {
     $("#result .stats .dailyLeaderboard").addClass("hidden");
   } else {
     $("#result .stats .dailyLeaderboard")
@@ -1258,7 +1257,7 @@ async function saveResult(
         500
       );
     $("#result .stats .dailyLeaderboard .bottom").html(
-      Format.rank(response.data.dailyLeaderboardRank, { fallback: "" })
+      Format.rank(data.dailyLeaderboardRank, { fallback: "" })
     );
   }
 

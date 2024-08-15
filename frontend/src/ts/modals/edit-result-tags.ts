@@ -112,7 +112,9 @@ function toggleTag(tagId: string): void {
 
 async function save(): Promise<void> {
   Loader.show();
-  const response = await Ape.results.updateTags(state.resultId, state.tags);
+  const response = await Ape.results.updateTags({
+    body: { resultId: state.resultId, tagIds: state.tags },
+  });
   Loader.hide();
 
   //if got no freaking idea why this is needed
@@ -121,12 +123,15 @@ async function save(): Promise<void> {
   state.tags = state.tags.filter((el) => el !== undefined);
 
   if (response.status !== 200) {
-    Notifications.add("Failed to update result tags: " + response.message, -1);
+    Notifications.add(
+      "Failed to update result tags: " + response.body.message,
+      -1
+    );
     return;
   }
 
   //can do this because the response will not be null if the status is 200
-  const responseTagPbs = response.data?.tagPbs ?? [];
+  const responseTagPbs = response.body.data?.tagPbs ?? [];
 
   Notifications.add("Tags updated", 1, {
     duration: 2,

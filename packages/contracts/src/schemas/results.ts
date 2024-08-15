@@ -69,7 +69,6 @@ const ResultBaseSchema = z.object({
 const ResultOmittableDefaultPropertiesSchema = z.object({
   restartCount: z.number().int().nonnegative(),
   incompleteTestSeconds: z.number().nonnegative(),
-  incompleteTests: z.array(IncompleteTestSchema),
   afkDuration: z.number().nonnegative(),
   tags: z.array(IdSchema),
   bailedOut: z.boolean(),
@@ -115,6 +114,7 @@ export const CompletedEventSchema = ResultBaseSchema.merge(
     startToFirstKey: z.number().nonnegative(),
     wpmConsistency: PercentageSchema,
     stopOnLetter: z.boolean(),
+    incompleteTests: z.array(IncompleteTestSchema),
   })
   .strict();
 

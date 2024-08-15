@@ -8,15 +8,15 @@ export async function syncNotSignedInLastResult(uid: string): Promise<void> {
 
   TestLogic.setNotSignedInUid(uid);
 
-  const resultsSaveResponse = await Ape.results.save(notSignedInLastResult);
+  const resultsSaveResponse = await Ape.results.add({
+    body: { result: notSignedInLastResult },
+  });
   if (resultsSaveResponse.status === 200) {
     const result: MonkeyTypes.FullResult<Mode> = JSON.parse(
       JSON.stringify(notSignedInLastResult)
     );
-    //TODO data is never null
-    //@ts-expect-error
-    result._id = resultsSaveResponse.data.insertedId;
-    if (resultsSaveResponse.data?.isPb) {
+    result._id = resultsSaveResponse.body.data.insertedId;
+    if (resultsSaveResponse.body.data.isPb) {
       result.isPb = true;
     }
     DB.saveLocalResult(result);

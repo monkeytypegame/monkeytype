@@ -110,18 +110,24 @@ function hide(): void {
 }
 
 async function saveLastResult(): Promise<void> {
-  //safe because we check if it exists before showing the modal
-  const response = await Ape.results.save(
-    TestLogic.notSignedInLastResult as CompletedEvent
-  );
+  const result = TestLogic.notSignedInLastResult;
+  if (result == null) return;
+
+  const response = await Ape.results.add({
+    body: { result },
+  });
+
   if (response.status !== 200) {
-    Notifications.add("Failed to save last result: " + response.message, -1);
+    Notifications.add(
+      "Failed to save last result: " + response.body.message,
+      -1
+    );
     return;
   }
 
   TestLogic.clearNotSignedInResult();
   Notifications.add(
-    `Last test result saved ${response.data?.isPb ? `(new pb!)` : ""}`,
+    `Last test result saved ${response.body.data?.isPb ? `(new pb!)` : ""}`,
     1
   );
 }

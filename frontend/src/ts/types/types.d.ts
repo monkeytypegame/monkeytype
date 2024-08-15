@@ -475,7 +475,6 @@ declare namespace MonkeyTypes {
     Result<M>,
     | "restartCount"
     | "incompleteTestSeconds"
-    | "incompleteTest"
     | "afkDuration"
     | "tags"
     | "bailedOut"
@@ -489,7 +488,6 @@ declare namespace MonkeyTypes {
   > & {
     restartCount: number;
     incompleteTestSeconds: number;
-    incompleteTest: IncompleteTest[];
     afkDuration: number;
     tags: string[];
     bailedOut: boolean;
