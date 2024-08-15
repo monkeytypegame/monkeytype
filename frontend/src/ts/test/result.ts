@@ -34,7 +34,10 @@ import * as Funbox from "./funbox/funbox";
 import Format from "../utils/format";
 
 import confetti from "canvas-confetti";
-import type { AnnotationOptions } from "chartjs-plugin-annotation";
+import type {
+  AnnotationOptions,
+  LabelPosition,
+} from "chartjs-plugin-annotation";
 import Ape from "../ape";
 import { Result } from "@monkeytype/shared-types";
 import { Mode } from "@monkeytype/contracts/schemas/shared";
@@ -155,7 +158,7 @@ async function updateGraph(): Promise<void> {
         padding: 3,
         borderRadius: 3,
         position: "start",
-        enabled: true,
+        display: true,
         content: `${content}`,
       },
     });
@@ -208,8 +211,8 @@ export async function updateGraphPBLine(): Promise<void> {
       padding: 3,
       borderRadius: 3,
       position: "center",
-      enabled: true,
       content: `PB: ${chartlpb}`,
+      display: true,
     },
   });
   const lpbRange = typingSpeedUnit.fromWpm(20);
@@ -563,7 +566,7 @@ async function updateTags(dontSave: boolean): Promise<void> {
   );
   $("#result .stats .tags .editTagsButton").addClass("invisible");
 
-  let annotationSide = "start";
+  let annotationSide: LabelPosition = "start";
   let labelAdjust = 15;
   activeTags.forEach(async (tag) => {
     const tpb = await DB.getLocalTagPB(
@@ -634,7 +637,7 @@ async function updateTags(dontSave: boolean): Promise<void> {
             borderRadius: 3,
             position: annotationSide,
             xAdjust: labelAdjust,
-            enabled: true,
+            display: true,
             content: `${tag.display} PB: ${Numbers.roundTo2(
               typingSpeedUnit.fromWpm(tpb)
             ).toFixed(2)}`,
