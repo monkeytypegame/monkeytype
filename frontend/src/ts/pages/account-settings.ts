@@ -7,6 +7,7 @@ import { getSnapshot } from "../db";
 import Ape from "../ape";
 import * as StreakHourOffsetModal from "../modals/streak-hour-offset";
 import * as Loader from "../elements/loader";
+import * as ApeKeysModal from "../modals/ape-keys";
 
 const pageElement = $(".page.pageAccountSettings");
 
@@ -165,6 +166,10 @@ $(
 
 $(".page.pageAccountSettings #setStreakHourOffset").on("click", () => {
   StreakHourOffsetModal.show();
+});
+
+$(".page.pageAccountSettings #showApeKeysPopup").on("click", () => {
+  void ApeKeysModal.show();
 });
 
 export const page = new Page({

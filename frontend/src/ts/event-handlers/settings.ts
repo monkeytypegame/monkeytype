@@ -2,7 +2,6 @@ import * as ShareCustomThemeModal from "../modals/share-custom-theme";
 import * as CookiesModal from "../modals/cookies";
 import * as EditPresetPopup from "../modals/edit-preset";
 import * as EditTagPopup from "../modals/edit-tag";
-import * as ApeKeysModal from "../modals/ape-keys";
 
 import * as Notifications from "../elements/notifications";
 
@@ -125,9 +124,3 @@ settingsPage?.querySelector(".section.tags")?.addEventListener("click", (e) => {
     EditTagPopup.show("remove", tagid, name);
   }
 });
-
-settingsPage
-  ?.querySelector(".section.apeKeys #showApeKeysPopup")
-  ?.addEventListener("click", () => {
-    void ApeKeysModal.show();
-  });
