@@ -2,6 +2,7 @@ import Page from "./page";
 import * as Skeleton from "../utils/skeleton";
 import { getAuthenticatedUser, isAuthenticated } from "../firebase";
 import * as ActivePage from "../states/active-page";
+import { swapElements } from "../utils/misc";
 
 const pageElement = $(".page.pageAccountSettings");
 
@@ -88,8 +89,20 @@ function updateAuthenticationSections(): void {
 }
 
 function updateTabs(): void {
-  pageElement.find(".tab").addClass("hidden");
-  pageElement.find(`.tab[data-tab="${state.activeTab}"]`).removeClass("hidden");
+  void swapElements(
+    pageElement.find(".tab.active"),
+    pageElement.find(`.tab[data-tab="${state.activeTab}"]`),
+    250,
+    async () => {
+      //
+    },
+    async () => {
+      pageElement.find(".tab").removeClass("active");
+      pageElement
+        .find(`.tab[data-tab="${state.activeTab}"]`)
+        .addClass("active");
+    }
+  );
   pageElement.find("button").removeClass("active");
   pageElement.find(`button[data-tab="${state.activeTab}"]`).addClass("active");
 }
