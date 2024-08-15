@@ -9,17 +9,18 @@ import { ApeKey, ApeKeys } from "@monkeytype/contracts/schemas/ape-keys";
 
 let apeKeys: ApeKeys | null = {};
 
-async function getData(): Promise<void> {
+async function getData(): Promise<boolean> {
   Loader.show();
   const response = await Ape.apeKeys.get();
   Loader.hide();
 
   if (response.status !== 200) {
     Notifications.add("Error getting ape keys: " + response.body.message, -1);
-    return undefined;
+    return false;
   }
 
   apeKeys = response.body.data;
+  return true;
 }
 
 function refreshList(): void {
@@ -100,10 +101,11 @@ export async function show(showOptions?: ShowOptions): Promise<void> {
     });
     return;
   }
+  const cont = await getData();
+  if (!cont) return;
   void modal.show({
     ...showOptions,
     beforeAnimation: async () => {
-      await getData();
       refreshList();
     },
   });
