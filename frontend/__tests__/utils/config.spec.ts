@@ -36,6 +36,50 @@ describe("config.ts", () => {
       expect(result.time).toEqual(120);
       expect(result.accountChart).toEqual(["off", "off", "off", "off"]);
     });
+    it("should not convert legacy values if current values are already present", () => {
+      const testCases = [
+        {
+          given: { showLiveAcc: true, timerStyle: "mini", liveAccStyle: "off" },
+          expected: { liveAccStyle: "off" },
+        },
+        {
+          given: {
+            showLiveBurst: true,
+            timerStyle: "mini",
+            liveBurstStyle: "off",
+          },
+          expected: { liveBurstStyle: "off" },
+        },
+        {
+          given: { quickTab: true, quickRestart: "enter" },
+          expected: { quickRestart: "enter" },
+        },
+        {
+          given: { swapEscAndTab: true, quickRestart: "enter" },
+          expected: { quickRestart: "enter" },
+        },
+        {
+          given: { alwaysShowCPM: true, typingSpeedUnit: "wpm" },
+          expected: { typingSpeedUnit: "wpm" },
+        },
+        {
+          given: { showTimerProgress: true, timerStyle: "mini" },
+          expected: { timerStyle: "mini" },
+        },
+      ];
+
+      //WHEN
+      testCases.forEach((test) => {
+        const description = `given: ${JSON.stringify(
+          test.given
+        )}, expected: ${JSON.stringify(test.expected)} `;
+
+        const result = migrateConfig(test.given);
+        expect(result, description).toEqual(
+          expect.objectContaining(test.expected)
+        );
+      });
+    });
     it("should convert legacy values", () => {
       const testCases = [
         { given: { quickTab: true }, expected: { quickRestart: "tab" } },
