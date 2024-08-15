@@ -25,8 +25,10 @@ export function loading(state: boolean): void {
     $("header nav .account").css("opacity", 1).css("pointer-events", "none");
 
     if (usingAvatar) {
-      $("header nav .account .loading").css("opacity", 1).removeClass("hidden");
-      $("header nav .account .avatar")
+      $("header nav .view-account .loading")
+        .css("opacity", 1)
+        .removeClass("hidden");
+      $("header nav .view-account .avatar")
         .stop(true, true)
         .css({ opacity: 1 })
         .animate(
@@ -35,11 +37,11 @@ export function loading(state: boolean): void {
           },
           100,
           () => {
-            $("header nav .account .avatar").addClass("hidden");
+            $("header nav .view-account .avatar").addClass("hidden");
           }
         );
     } else {
-      $("header nav .account .loading")
+      $("header nav .view-account .loading")
         .stop(true, true)
         .removeClass("hidden")
         .css({ opacity: 0 })
@@ -49,7 +51,7 @@ export function loading(state: boolean): void {
           },
           100
         );
-      $("header nav .account .user")
+      $("header nav .view-account .user")
         .stop(true, true)
         .css({ opacity: 1 })
         .animate(
@@ -58,7 +60,7 @@ export function loading(state: boolean): void {
           },
           100,
           () => {
-            $("header nav .account .user").addClass("hidden");
+            $("header nav .view-account .user").addClass("hidden");
           }
         );
     }
@@ -66,8 +68,10 @@ export function loading(state: boolean): void {
     $("header nav .account").css("opacity", 1).css("pointer-events", "auto");
 
     if (usingAvatar) {
-      $("header nav .account .loading").css("opacity", 1).addClass("hidden");
-      $("header nav .account .avatar")
+      $("header nav .view-account .loading")
+        .css("opacity", 1)
+        .addClass("hidden");
+      $("header nav .view-account .avatar")
         .stop(true, true)
         .removeClass("hidden")
         .css({ opacity: 0 })
@@ -78,7 +82,7 @@ export function loading(state: boolean): void {
           100
         );
     } else {
-      $("header nav .account .loading")
+      $("header nav .view-account .loading")
         .stop(true, true)
         .css({ opacity: 1 })
         .animate(
@@ -87,10 +91,10 @@ export function loading(state: boolean): void {
           },
           100,
           () => {
-            $("header nav .account .loading").addClass("hidden");
+            $("header nav .view-account .loading").addClass("hidden");
           }
         );
-      $("header nav .account .user")
+      $("header nav .view-account .user")
         .stop(true, true)
         .removeClass("hidden")
         .css({ opacity: 0 })
@@ -105,7 +109,7 @@ export function loading(state: boolean): void {
 }
 
 export function updateName(name: string): void {
-  $("header nav .account > .text").text(name);
+  $("header nav .view-account > .text").text(name);
 }
 
 function updateFlags(flags: SupportsFlags): void {
@@ -131,20 +135,20 @@ export function updateAvatar(
     void Misc.getDiscordAvatarUrl(discordId, discordAvatar).then(
       (discordAvatarUrl) => {
         if (discordAvatarUrl !== null) {
-          $("header nav .account .avatar").css(
+          $("header nav .view-account .avatar").css(
             "background-image",
             `url(${discordAvatarUrl})`
           );
           usingAvatar = true;
 
-          $("header nav .account .user").addClass("hidden");
-          $("header nav .account .avatar").removeClass("hidden");
+          $("header nav .view-account .user").addClass("hidden");
+          $("header nav .view-account .avatar").removeClass("hidden");
         }
       }
     );
   } else {
-    $("header nav .account .avatar").addClass("hidden");
-    $("header nav .account .user").removeClass("hidden");
+    $("header nav .view-account .avatar").addClass("hidden");
+    $("header nav .view-account .user").removeClass("hidden");
   }
 }
 

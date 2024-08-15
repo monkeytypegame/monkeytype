@@ -89,7 +89,7 @@ async function getDataAndInit(): Promise<boolean> {
     console.error(error);
     AccountButton.loading(false);
     LoginPage.enableInputs();
-    $("header nav .account").css("opacity", 1);
+    $("header nav .view-account").css("opacity", 1);
     if (error instanceof DB.SnapshotInitError) {
       if (error.responseCode === 429) {
         Notifications.add(
