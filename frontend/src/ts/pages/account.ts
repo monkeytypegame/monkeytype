@@ -1104,19 +1104,27 @@ function sortAndRefreshHistory(
 }
 
 $(".pageAccount button.toggleResultsOnChart").on("click", () => {
-  UpdateConfig.setAccountChartResults(!(Config.accountChart[0] === "on"));
+  const newValue = Config.accountChart;
+  newValue[0] = newValue[0] === "on" ? "off" : "on";
+  UpdateConfig.setAccountChart(newValue);
 });
 
 $(".pageAccount button.toggleAccuracyOnChart").on("click", () => {
-  UpdateConfig.setAccountChartAccuracy(!(Config.accountChart[1] === "on"));
+  const newValue = Config.accountChart;
+  newValue[1] = newValue[1] === "on" ? "off" : "on";
+  UpdateConfig.setAccountChart(newValue);
 });
 
 $(".pageAccount button.toggleAverage10OnChart").on("click", () => {
-  UpdateConfig.setAccountChartAvg10(!(Config.accountChart[2] === "on"));
+  const newValue = Config.accountChart;
+  newValue[2] = newValue[2] === "on" ? "off" : "on";
+  UpdateConfig.setAccountChart(newValue);
 });
 
 $(".pageAccount button.toggleAverage100OnChart").on("click", () => {
-  UpdateConfig.setAccountChartAvg100(!(Config.accountChart[3] === "on"));
+  const newValue = Config.accountChart;
+  newValue[3] = newValue[3] === "on" ? "off" : "on";
+  UpdateConfig.setAccountChart(newValue);
 });
 
 $(".pageAccount .loadMoreButton").on("click", () => {
