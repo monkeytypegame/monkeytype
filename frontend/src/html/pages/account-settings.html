@@ -1,3 +1,66 @@
 <div class="page pageAccountSettings hidden" id="pageAccountSettings">
-  <div class="content">account settings</div>
+  <div class="content">
+    <!-- <div class="title">
+      <i class="fas fa-cog"></i>
+      account settings
+    </div> -->
+    <div class="main">
+      <div class="tabs">
+        <button class="text active" data-tab="authentication">
+          <i class="fas fa-key"></i>
+          authentication
+        </button>
+        <button class="text" data-tab="integrations">
+          <i class="fas fa-link"></i>
+          integrations
+        </button>
+        <button class="text">
+          <i class="fas fa-code"></i>
+          api
+        </button>
+        <button class="text">
+          <i class="fas fa-exclamation-triangle"></i>
+          danger zone
+        </button>
+      </div>
+      <div class="right">
+        <div class="tab" data-tab="authentication">
+          <!-- <div class="title">
+            <i class="fas fa-key"></i>
+            authentication
+          </div> -->
+          <div class="section passwordAuthSettings">
+            <div class="title">
+              <i class="fas fa-lock"></i>
+              <span>password authentication settings</span>
+            </div>
+            <div class="text">
+              Add password authentication, update your password or email.
+            </div>
+            <div class="buttons vertical">
+              <button id="addPasswordAuth">add password authentication</button>
+              <button id="emailPasswordAuth">update email</button>
+              <button id="passPasswordAuth">update password</button>
+              <button id="removePasswordAuth">
+                remove password authentication
+              </button>
+            </div>
+          </div>
+          <div class="section googleAuthSettings needsAccount">
+            <div class="title">
+              <i class="fab fa-google"></i>
+              <span>google authentication settings</span>
+            </div>
+            <div class="text">Add or remove Google authentication.</div>
+            <div class="buttons vertical">
+              <button id="addGoogleAuth">add google authentication</button>
+              <button id="removeGoogleAuth">
+                remove google authentication
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
