@@ -7,6 +7,18 @@ import * as Notifications from "../elements/notifications";
 import * as ConnectionState from "../states/connection";
 import AnimatedModal from "../utils/animated-modal";
 
+enum SettingGroup {
+  behaviour = "behaviour",
+  input = "input",
+  sound = "sound",
+  caret = "caret",
+  theme = "theme",
+  hideElements = "hide elements",
+  tags = "tags",
+}
+
+const state = new Map(Object.values(SettingGroup).map((key) => [key, true]));
+
 export function show(action: string, id?: string, name?: string): void {
   if (!ConnectionState.get()) {
     Notifications.add("You are offline", 0, {
@@ -21,16 +33,16 @@ export function show(action: string, id?: string, name?: string): void {
       $("#editPresetModal .modal .text").addClass("hidden");
       if (action === "add") {
         $("#editPresetModal .modal").attr("data-action", "add");
-        $("#editPresetModal .modal .title").html("Add new preset");
-        $("#editPresetModal .modal button").html(`add`);
+        $("#editPresetModal .modal .popupTitle").html("Add new preset");
+        $("#editPresetModal .modal submit").html(`add`);
         $("#editPresetModal .modal input").val("");
         $("#editPresetModal .modal input").removeClass("hidden");
         $("#editPresetModal .modal label").addClass("hidden");
       } else if (action === "edit" && id !== undefined && name !== undefined) {
         $("#editPresetModal .modal").attr("data-action", "edit");
         $("#editPresetModal .modal").attr("data-preset-id", id);
-        $("#editPresetModal .modal .title").html("Edit preset");
-        $("#editPresetModal .modal button").html(`save`);
+        $("#editPresetModal .modal .popupTitle").html("Edit preset");
+        $("#editPresetModal .modal submit").html(`save`);
         $("#editPresetModal .modal input").val(name);
         $("#editPresetModal .modal input").removeClass("hidden");
         $("#editPresetModal .modal label input").prop("checked", false);
@@ -51,7 +63,21 @@ export function show(action: string, id?: string, name?: string): void {
           `Are you sure you want to delete the preset ${name}?`
         );
       }
+      updateUI();
     },
+  });
+}
+
+function updateUI(): void {
+  Object.values(SettingGroup).forEach((settingGroup: SettingGroup) => {
+    $(
+      `#editPresetModal .modal .group[data-id="${settingGroup.toString()}"] button`
+    ).removeClass("active");
+    $(
+      `#editPresetModal .modal .group[data-id="${settingGroup.toString()}"] button[value="${state.get(
+        settingGroup
+      )}"]`
+    ).addClass("active");
   });
 }
 
@@ -157,13 +183,27 @@ async function apply(): Promise<void> {
   void Settings.update();
   Loader.hide();
 }
+async function setup(modalEl: HTMLElement): Promise<void> {
+  modalEl.addEventListener("submit", (e) => {
+    e.preventDefault();
+    void apply();
+  });
 
+  Object.values(SettingGroup).forEach((settingGroup: SettingGroup) => {
+    for (const button of modalEl.querySelectorAll(
+      `.group[data-id='${settingGroup.toString()}'] button`
+    )) {
+      button.addEventListener("click", (e) => {
+        state.set(
+          settingGroup,
+          (e.target as HTMLButtonElement).value === "true" ? true : false
+        );
+        updateUI();
+      });
+    }
+  });
+}
 const modal = new AnimatedModal({
   dialogId: "editPresetModal",
-  setup: async (modalEl): Promise<void> => {
-    modalEl.addEventListener("submit", (e) => {
-      e.preventDefault();
-      void apply();
-    });
-  },
+  setup,
 });
