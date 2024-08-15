@@ -28,7 +28,7 @@ import { roundTo1 } from "./utils/numbers";
 import { Mode, ModeSchema } from "@monkeytype/contracts/schemas/shared";
 import { Language, LanguageSchema } from "@monkeytype/contracts/schemas/util";
 import { LocalStorageWithSchema } from "./utils/local-storage-with-schema";
-import { mergeWithDefaultConfig } from "./utils/config";
+import { convertToFullConfig } from "./utils/config";
 
 const configLS = new LocalStorageWithSchema({
   key: "config",
@@ -39,10 +39,7 @@ const configLS = new LocalStorageWithSchema({
       return DefaultConfig;
     }
 
-    const configWithoutLegacyValues = replaceLegacyValues(value);
-    const merged = mergeWithDefaultConfig(configWithoutLegacyValues);
-
-    return merged;
+    return convertToFullConfig(value);
   },
 });
 
@@ -1994,9 +1991,6 @@ export async function apply(
 
   ConfigEvent.dispatch("fullConfigChange");
 
-  //config from localStorage is already migrated, but config from import/backend might not
-  configToApply = replaceLegacyValues(configToApply);
-
   const configObj = configToApply as Config;
   (Object.keys(DefaultConfig) as (keyof Config)[]).forEach((configKey) => {
     if (configObj[configKey] === undefined) {
@@ -2121,76 +2115,6 @@ export async function loadFromLocalStorage(): Promise<void> {
     saveFullConfigToLocalStorage(true);
   }
   loadDone();
-}
-
-export function replaceLegacyValues(
-  configObj: ConfigSchemas.PartialConfig
-): ConfigSchemas.PartialConfig {
-  //@ts-expect-error
-  if (configObj.quickTab === true) {
-    configObj.quickRestart = "tab";
-  }
-
-  if (typeof configObj.smoothCaret === "boolean") {
-    configObj.smoothCaret = configObj.smoothCaret ? "medium" : "off";
-  }
-
-  //@ts-expect-error
-  if (configObj.swapEscAndTab === true) {
-    configObj.quickRestart = "esc";
-  }
-
-  //@ts-expect-error
-  if (configObj.alwaysShowCPM === true) {
-    configObj.typingSpeedUnit = "cpm";
-  }
-
-  //@ts-expect-error
-  if (configObj.showAverage === "wpm") {
-    configObj.showAverage = "speed";
-  }
-
-  if (typeof configObj.playSoundOnError === "boolean") {
-    configObj.playSoundOnError = configObj.playSoundOnError ? "1" : "off";
-  }
-
-  //@ts-expect-error
-  if (configObj.showTimerProgress === false) {
-    configObj.timerStyle = "off";
-  }
-
-  //@ts-expect-error
-  if (configObj.showLiveWpm === true) {
-    let val: ConfigSchemas.LiveSpeedAccBurstStyle = "mini";
-    if (configObj.timerStyle !== "bar" && configObj.timerStyle !== "off") {
-      val = configObj.timerStyle as ConfigSchemas.LiveSpeedAccBurstStyle;
-    }
-    configObj.liveSpeedStyle = val;
-  }
-
-  //@ts-expect-error
-  if (configObj.showLiveBurst === true) {
-    let val: ConfigSchemas.LiveSpeedAccBurstStyle = "mini";
-    if (configObj.timerStyle !== "bar" && configObj.timerStyle !== "off") {
-      val = configObj.timerStyle as ConfigSchemas.LiveSpeedAccBurstStyle;
-    }
-    configObj.liveBurstStyle = val;
-  }
-
-  //@ts-expect-error
-  if (configObj.showLiveAcc === true) {
-    let val: ConfigSchemas.LiveSpeedAccBurstStyle = "mini";
-    if (configObj.timerStyle !== "bar" && configObj.timerStyle !== "off") {
-      val = configObj.timerStyle as ConfigSchemas.LiveSpeedAccBurstStyle;
-    }
-    configObj.liveAccStyle = val;
-  }
-
-  if (typeof configObj.soundVolume === "string") {
-    configObj.soundVolume = parseFloat(configObj.soundVolume);
-  }
-
-  return configObj;
 }
 
 export function getConfigChanges(): MonkeyTypes.PresetConfig {
