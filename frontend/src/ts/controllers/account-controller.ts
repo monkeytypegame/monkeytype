@@ -19,6 +19,7 @@ import * as LastSignedOutResultModal from "../modals/last-signed-out-result";
 import * as URLHandler from "../utils/url-handler";
 import * as Account from "../pages/account";
 import * as Alerts from "../elements/alerts";
+import * as AccountSettings from "../pages/account-settings";
 import {
   GoogleAuthProvider,
   GithubAuthProvider,
@@ -243,7 +244,7 @@ async function readyFunction(
   URLHandler.loadChallengeFromUrl(search);
   void URLHandler.linkDiscord(hash);
 
-  Settings.updateAuthSections();
+  AccountSettings.updateUI();
 }
 
 let disableAuthListener: Unsubscribe;
@@ -432,7 +433,7 @@ async function addAuthProvider(
     .then(function () {
       Loader.hide();
       Notifications.add(`${providerName} authentication added`, 1);
-      Settings.updateAuthSections();
+      AccountSettings.updateUI();
     })
     .catch(function (error: unknown) {
       Loader.hide();

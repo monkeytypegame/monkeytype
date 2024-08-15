@@ -14,7 +14,7 @@ import * as ImportExportSettingsModal from "../modals/import-export-settings";
 import * as ConfigEvent from "../observables/config-event";
 import * as ActivePage from "../states/active-page";
 import Page from "./page";
-import { getAuthenticatedUser, isAuthenticated } from "../firebase";
+import { isAuthenticated } from "../firebase";
 import Ape from "../ape";
 import { areFunboxesCompatible } from "../test/funbox/funbox-validation";
 import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
@@ -752,80 +752,6 @@ export function updateDiscordSection(): void {
   }
 }
 
-export function updateAuthSections(): void {
-  $(".pageSettings .section.passwordAuthSettings button").addClass("hidden");
-  $(".pageSettings .section.googleAuthSettings button").addClass("hidden");
-  $(".pageSettings .section.githubAuthSettings button").addClass("hidden");
-
-  if (!isAuthenticated()) return;
-  const user = getAuthenticatedUser();
-
-  const passwordProvider = user.providerData.some(
-    (provider) => provider.providerId === "password"
-  );
-  const googleProvider = user.providerData.some(
-    (provider) => provider.providerId === "google.com"
-  );
-  const githubProvider = user.providerData.some(
-    (provider) => provider.providerId === "github.com"
-  );
-
-  if (passwordProvider) {
-    $(
-      ".pageSettings .section.passwordAuthSettings #emailPasswordAuth"
-    ).removeClass("hidden");
-    $(
-      ".pageSettings .section.passwordAuthSettings #passPasswordAuth"
-    ).removeClass("hidden");
-    if (googleProvider || githubProvider) {
-      $(
-        ".pageSettings .section.passwordAuthSettings #removePasswordAuth"
-      ).removeClass("hidden");
-    }
-  } else {
-    $(
-      ".pageSettings .section.passwordAuthSettings #addPasswordAuth"
-    ).removeClass("hidden");
-  }
-
-  if (googleProvider) {
-    $(
-      ".pageSettings .section.googleAuthSettings #removeGoogleAuth"
-    ).removeClass("hidden");
-    if (passwordProvider || githubProvider) {
-      $(
-        ".pageSettings .section.googleAuthSettings #removeGoogleAuth"
-      ).removeClass("disabled");
-    } else {
-      $(".pageSettings .section.googleAuthSettings #removeGoogleAuth").addClass(
-        "disabled"
-      );
-    }
-  } else {
-    $(".pageSettings .section.googleAuthSettings #addGoogleAuth").removeClass(
-      "hidden"
-    );
-  }
-  if (githubProvider) {
-    $(
-      ".pageSettings .section.githubAuthSettings #removeGithubAuth"
-    ).removeClass("hidden");
-    if (passwordProvider || googleProvider) {
-      $(
-        ".pageSettings .section.githubAuthSettings #removeGithubAuth"
-      ).removeClass("disabled");
-    } else {
-      $(".pageSettings .section.githubAuthSettings #removeGithubAuth").addClass(
-        "disabled"
-      );
-    }
-  } else {
-    $(".pageSettings .section.githubAuthSettings #addGithubAuth").removeClass(
-      "hidden"
-    );
-  }
-}
-
 function setActiveFunboxButton(): void {
   $(`.pageSettings .section[data-config-name='funbox'] .button`).removeClass(
     "active"
@@ -933,7 +859,6 @@ export async function update(groupUpdate = true): Promise<void> {
   // LanguagePicker.setActiveGroup(); Shifted from grouped btns to combo-box
   setActiveFunboxButton();
   updateDiscordSection();
-  updateAuthSections();
   await Misc.sleep(0);
   ThemePicker.updateActiveTab(true);
   ThemePicker.setCustomInputs(true);

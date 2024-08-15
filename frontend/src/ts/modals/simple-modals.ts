@@ -34,6 +34,7 @@ import AnimatedModal, {
 import { format as dateFormat } from "date-fns/format";
 import { Attributes, buildTag } from "../utils/tag-builder";
 import { CustomThemeColors } from "@monkeytype/contracts/schemas/configs";
+import * as AccountSettings from "../pages/account-settings";
 
 type CommonInput<TType, TValue> = {
   type: TType;
@@ -727,7 +728,7 @@ list.removeGoogleAuth = new SimpleModal({
       };
     }
 
-    Settings.updateAuthSections();
+    AccountSettings.updateUI();
 
     reloadAfter(3);
     return {
@@ -781,7 +782,7 @@ list.removeGithubAuth = new SimpleModal({
       };
     }
 
-    Settings.updateAuthSections();
+    AccountSettings.updateUI();
 
     reloadAfter(3);
     return {
@@ -836,7 +837,7 @@ list.removePasswordAuth = new SimpleModal({
       };
     }
 
-    Settings.updateAuthSections();
+    AccountSettings.updateUI();
 
     reloadAfter(3);
     return {
@@ -1093,7 +1094,7 @@ list.addPasswordAuth = new SimpleModal({
       };
     }
 
-    Settings.updateAuthSections();
+    AccountSettings.updateUI();
     return {
       status: 1,
       message: "Password authentication added",
@@ -1919,14 +1920,14 @@ $(".pageSettings .section.discordIntegration #unlinkDiscordButton").on(
   }
 );
 
-$(".pageSettings #removeGoogleAuth").on("click", () => {
+$("#removeGoogleAuth").on("click", () => {
   showPopup("removeGoogleAuth");
 });
 
-$(".pageSettings #removeGithubAuth").on("click", () => {
+$("#removeGithubAuth").on("click", () => {
   showPopup("removeGithubAuth");
 });
-$(".pageSettings #removePasswordAuth").on("click", () => {
+$("#removePasswordAuth").on("click", () => {
   showPopup("removePasswordAuth");
 });
 
@@ -1938,11 +1939,11 @@ $("#revokeAllTokens").on("click", () => {
   showPopup("revokeAllTokens");
 });
 
-$(".pageSettings #resetPersonalBestsButton").on("click", () => {
+$("#resetPersonalBestsButton").on("click", () => {
   showPopup("resetPersonalBests");
 });
 
-$(".pageSettings #updateAccountName").on("click", () => {
+$("#updateAccountName").on("click", () => {
   showPopup("updateName");
 });
 
@@ -1950,27 +1951,27 @@ $("#bannerCenter").on("click", ".banner .text .openNameChange", () => {
   showPopup("updateName");
 });
 
-$(".pageSettings #addPasswordAuth").on("click", () => {
+$("#addPasswordAuth").on("click", () => {
   showPopup("addPasswordAuth");
 });
 
-$(".pageSettings #emailPasswordAuth").on("click", () => {
+$(".pageAccountSettings").on("click", "#emailPasswordAuth", () => {
   showPopup("updateEmail");
 });
 
-$(".pageSettings #passPasswordAuth").on("click", () => {
+$("#passPasswordAuth").on("click", () => {
   showPopup("updatePassword");
 });
 
-$(".pageSettings #deleteAccount").on("click", () => {
+$("#deleteAccount").on("click", () => {
   showPopup("deleteAccount");
 });
 
-$(".pageSettings #resetAccount").on("click", () => {
+$("#resetAccount").on("click", () => {
   showPopup("resetAccount");
 });
 
-$(".pageSettings #optOutOfLeaderboardsButton").on("click", () => {
+$("#optOutOfLeaderboardsButton").on("click", () => {
   showPopup("optOutOfLeaderboards");
 });
 

@@ -46,7 +46,7 @@
               </button>
             </div>
           </div>
-          <div class="section googleAuthSettings needsAccount">
+          <div class="section googleAuthSettings">
             <div class="title">
               <i class="fab fa-google"></i>
               <span>google authentication settings</span>
@@ -59,7 +59,38 @@
               </button>
             </div>
           </div>
+          <div class="section githubAuthSettings">
+            <div class="title">
+              <i class="fab fa-github"></i>
+              <span>github authentication settings</span>
+            </div>
+            <div class="text">Add or remove GitHub authentication.</div>
+            <div class="buttons vertical">
+              <button id="addGithubAuth">add github authentication</button>
+              <button id="removeGithubAuth">
+                remove github authentication
+              </button>
+            </div>
+          </div>
+          <div class="section revokeAllTokens">
+            <div class="title">
+              <i class="fas fa-user-slash"></i>
+              <span>revoke all tokens</span>
+            </div>
+            <div class="text">
+              Revokes all tokens connected to your account. Do this if you think
+              someone else has access to your account.
+              <br />
+              <span class="red">This will log you out of all devices.</span>
+            </div>
+            <div class="buttons">
+              <button class="danger" id="revokeAllTokens">
+                revoke all tokens
+              </button>
+            </div>
+          </div>
         </div>
+        <div class="tab" data-tab="integrations">integrations</div>
       </div>
     </div>
   </div>
