@@ -7,7 +7,7 @@ import { defaultSnap } from "./constants/default-snapshot";
 import * as ConnectionState from "./states/connection";
 import { lastElementFromArray } from "./utils/arrays";
 import { getFunboxList } from "./utils/json-data";
-import { mergeWithDefaultConfig } from "./utils/config";
+import { migrateConfig } from "./utils/config";
 import * as Dates from "date-fns";
 import {
   TestActivityCalendar,
@@ -183,7 +183,7 @@ export async function initSnapshot(): Promise<
         ...DefaultConfig,
       };
     } else {
-      snap.config = mergeWithDefaultConfig(configData);
+      snap.config = migrateConfig(configData);
     }
     // if (ActivePage.get() === "loading") {
     //   LoadingPage.updateBar(67.5);
