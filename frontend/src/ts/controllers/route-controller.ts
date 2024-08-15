@@ -108,6 +108,18 @@ const routes: Route[] = [
     },
   },
   {
+    path: "/account-settings",
+    load: (_params, options): void => {
+      if (!Auth) {
+        navigate("/");
+        return;
+      }
+      void PageController.change("accountSettings", {
+        data: options.data,
+      });
+    },
+  },
+  {
     path: "/profile",
     load: (_params): void => {
       void PageController.change("profileSearch");
