@@ -53,7 +53,7 @@ export async function linkDiscord(hashOverride: string): Promise<void> {
 
     DB.setSnapshot(snapshot);
 
-    void AccountButton.update(undefined, discordId, discordAvatar);
+    AccountButton.updateAvatar(discordId, discordAvatar);
 
     Settings.updateDiscordSection();
   }

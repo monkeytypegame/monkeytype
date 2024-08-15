@@ -124,6 +124,8 @@ async function getDataAndInit(): Promise<boolean> {
   LoadingPage.updateText("Applying settings...");
   const snapshot = DB.getSnapshot() as MonkeyTypes.Snapshot;
   SignInOutButton.update();
+  AccountButton.update(snapshot);
+  Alerts.setNotificationBubbleVisible(snapshot.inboxUnreadSize > 0);
   showFavoriteQuoteLength();
 
   ResultFilters.loadTags(snapshot.tags);
@@ -191,10 +193,7 @@ export async function loadUser(user: UserType): Promise<void> {
   if (!(await getDataAndInit())) {
     signOut();
   }
-  const { discordId, discordAvatar, xp, inboxUnreadSize } =
-    DB.getSnapshot() as MonkeyTypes.Snapshot;
-  void AccountButton.update(xp, discordId, discordAvatar);
-  Alerts.setNotificationBubbleVisible(inboxUnreadSize > 0);
+
   // var displayName = user.displayName;
   // var email = user.email;
   // var emailVerified = user.emailVerified;
@@ -464,6 +463,7 @@ export function signOut(): void {
       });
       Settings.hideAccountSection();
       SignInOutButton.update();
+      AccountButton.update(undefined);
       navigate("/login");
       DB.setSnapshot(undefined);
       setTimeout(() => {
