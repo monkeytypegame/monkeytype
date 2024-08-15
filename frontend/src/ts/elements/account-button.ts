@@ -5,6 +5,10 @@ import * as Levels from "../utils/levels";
 import { getAll } from "./theme-colors";
 import * as SlowTimer from "../states/slow-timer";
 import { XpBreakdown } from "@monkeytype/contracts/schemas/results";
+import {
+  getHtmlByUserFlags,
+  SupportsFlags,
+} from "../controllers/user-flag-controller";
 
 let usingAvatar = false;
 
@@ -95,6 +99,16 @@ export function loading(state: boolean): void {
         );
     }
   }
+}
+
+export function updateName(name: string): void {
+  $("header nav .account > .text").text(name);
+}
+
+export function updateFlags(flags: SupportsFlags): void {
+  $("nav .textButton.account > .text").append(
+    getHtmlByUserFlags(flags, { iconsOnly: true })
+  );
 }
 
 export async function update(

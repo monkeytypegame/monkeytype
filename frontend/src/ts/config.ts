@@ -336,67 +336,13 @@ export function setAccountChart(
     return false;
   }
 
+  // if both speed and accuracy are off, set speed to on
+  // i dedicate this fix to AshesOfAFallen and our 2 collective brain cells
+  if (array[0] === "off" && array[1] === "off") {
+    array[0] = "on";
+  }
+
   config.accountChart = array;
-  saveToLocalStorage("accountChart", nosave);
-  ConfigEvent.dispatch("accountChart", config.accountChart);
-
-  return true;
-}
-
-export function setAccountChartResults(
-  value: boolean,
-  nosave?: boolean
-): boolean {
-  if (!isConfigValueValidBoolean("account chart results", value)) {
-    return false;
-  }
-
-  config.accountChart[0] = value ? "on" : "off";
-  saveToLocalStorage("accountChart", nosave);
-  ConfigEvent.dispatch("accountChart", config.accountChart);
-
-  return true;
-}
-
-export function setAccountChartAccuracy(
-  value: boolean,
-  nosave?: boolean
-): boolean {
-  if (!isConfigValueValidBoolean("account chart accuracy", value)) {
-    return false;
-  }
-
-  config.accountChart[1] = value ? "on" : "off";
-  saveToLocalStorage("accountChart", nosave);
-  ConfigEvent.dispatch("accountChart", config.accountChart);
-
-  return true;
-}
-
-export function setAccountChartAvg10(
-  value: boolean,
-  nosave?: boolean
-): boolean {
-  if (!isConfigValueValidBoolean("account chart avg 10", value)) {
-    return false;
-  }
-
-  config.accountChart[2] = value ? "on" : "off";
-  saveToLocalStorage("accountChart", nosave);
-  ConfigEvent.dispatch("accountChart", config.accountChart);
-
-  return true;
-}
-
-export function setAccountChartAvg100(
-  value: boolean,
-  nosave?: boolean
-): boolean {
-  if (!isConfigValueValidBoolean("account chart avg 100", value)) {
-    return false;
-  }
-
-  config.accountChart[3] = value ? "on" : "off";
   saveToLocalStorage("accountChart", nosave);
   ConfigEvent.dispatch("accountChart", config.accountChart);
 

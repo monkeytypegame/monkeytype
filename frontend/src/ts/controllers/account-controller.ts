@@ -44,7 +44,6 @@ import {
 } from "../test/test-config";
 import * as ConnectionState from "../states/connection";
 import { navigate } from "./route-controller";
-import { getHtmlByUserFlags } from "./user-flag-controller";
 import { FirebaseError } from "firebase/app";
 import * as PSA from "../elements/psa";
 import defaultResultFilters from "../constants/default-result-filters";
@@ -125,10 +124,8 @@ async function getDataAndInit(): Promise<boolean> {
   }
   LoadingPage.updateText("Applying settings...");
   const snapshot = DB.getSnapshot() as MonkeyTypes.Snapshot;
-  $("nav .textButton.account > .text").text(snapshot.name);
-  $("nav .textButton.account > .text").append(
-    getHtmlByUserFlags(snapshot, { iconsOnly: true })
-  );
+  AccountButton.updateName(snapshot.name);
+  AccountButton.updateFlags(snapshot);
   showFavoriteQuoteLength();
 
   ResultFilters.loadTags(snapshot.tags);
@@ -590,7 +587,6 @@ async function signUp(): Promise<void> {
 
     await updateProfile(createdAuthUser.user, { displayName: nname });
     await sendVerificationEmail();
-    $("nav .textButton.account .text").text(nname);
     LoginPage.hidePreloader();
     await loadUser(createdAuthUser.user);
     await syncNotSignedInLastResult(createdAuthUser.user.uid);

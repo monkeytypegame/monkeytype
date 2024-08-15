@@ -904,7 +904,7 @@ list.updateName = new SimpleModal({
         reloadAfter(2);
       }
     }
-    $("nav .textButton.account .text").text(newName);
+    AccountButton.updateName(newName);
 
     return {
       status: 1,
