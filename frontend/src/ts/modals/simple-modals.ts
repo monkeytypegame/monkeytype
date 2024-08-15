@@ -1941,7 +1941,7 @@ $("#resetPersonalBestsButton").on("click", () => {
   showPopup("resetPersonalBests");
 });
 
-$("#updateAccountName").on("click", () => {
+$(".pageAccountSettings").on("click", "#updateAccountName", () => {
   showPopup("updateName");
 });
 
