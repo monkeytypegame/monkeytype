@@ -120,6 +120,22 @@ export const CompletedEventSchema = ResultBaseSchema.merge(
 
 export type CompletedEvent = z.infer<typeof CompletedEventSchema>;
 
+export const XpBreakdownSchema = z.object({
+  base: z.number().int().optional(),
+  "100%": z.number().int().optional(),
+  quote: z.number().int().optional(),
+  corrected: z.number().int().optional(),
+  punctuation: z.number().int().optional(),
+  numbers: z.number().int().optional(),
+  funbox: z.number().int().optional(),
+  streak: z.number().int().optional(),
+  incomplete: z.number().int().optional(),
+  daily: z.number().int().optional(),
+  accPenalty: z.number().int().optional(),
+  configMultiplier: z.number().int().optional(),
+});
+export type XpBreakdown = z.infer<typeof XpBreakdownSchema>;
+
 export const PostResultResponseSchema = z.object({
   insertedId: IdSchema,
   isPb: z.boolean(),
@@ -128,7 +144,7 @@ export const PostResultResponseSchema = z.object({
   weeklyXpLeaderboardRank: z.number().int().nonnegative().optional(),
   xp: z.number().int().nonnegative(),
   dailyXpBonus: z.boolean(),
-  xpBreakdown: z.record(z.string(), z.number().int().nonnegative()), //TODO define type for xpBreakdown
+  xpBreakdown: XpBreakdownSchema,
   streak: z.number().int().nonnegative(),
 });
 export type PostResultResponse = z.infer<typeof PostResultResponseSchema>;
