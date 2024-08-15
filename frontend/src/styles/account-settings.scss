@@ -55,6 +55,9 @@
           .text {
             grid-area: text;
             align-self: normal;
+            .red {
+              color: var(--error-color);
+            }
           }
           .buttons {
             grid-area: buttons;
