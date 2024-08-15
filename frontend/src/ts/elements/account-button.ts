@@ -167,16 +167,6 @@ export function update(snapshot: MonkeyTypes.Snapshot | undefined): void {
       "href",
       `/profile/${name}`
     );
-
-    // $("nav .textButton.view-account")
-    //   .removeClass("hidden")
-    //   .css({ opacity: 0 })
-    //   .animate(
-    //     {
-    //       opacity: 1,
-    //     },
-    //     125
-    //   );
     void Misc.swapElements(
       $("nav .textButton.view-login"),
       $("nav .accountButtonAndMenu"),
@@ -194,22 +184,6 @@ export function update(snapshot: MonkeyTypes.Snapshot | undefined): void {
         updateAvatar(undefined, undefined);
       }
     );
-    // $("nav .textButton.view-account")
-    //   .css({ opacity: 1 })
-    //   .animate(
-    //     {
-    //       opacity: 0,
-    //     },
-    //     125,
-    //     () => {
-    //       $("nav .textButton.view-account").addClass("hidden");
-
-    //       updateName("");
-    //       updateFlags({});
-    //       updateXp(0);
-    //       updateAvatar(undefined, undefined);
-    //     }
-    //   );
   }
 }
 
