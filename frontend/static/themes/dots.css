@@ -88,7 +88,7 @@ header.focus nav .textButton.discord::after {
   border-color: transparent;
 }
 
-nav .textButton.account .xpBar {
+nav .textButton.view-account .xpBar {
   bottom: -0.75rem !important;
 }
 
@@ -127,6 +127,6 @@ body.crtmode header.focus nav .textButton {
     -3px 0 var(--crt-sub-color-glow);
 }
 
-body.crtmode header.focus nav .textButton.account {
+body.crtmode header.focus nav .textButton.view-account {
   box-shadow: none;
 }

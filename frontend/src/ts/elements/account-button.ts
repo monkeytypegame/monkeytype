@@ -15,6 +15,11 @@ export function skipXpBreakdown(): void {
   skipBreakdown = true;
 }
 
+export function hide(): void {
+  $("nav .accountButtonAndMenu").addClass("hidden");
+  $("nav .textButton.view-login").addClass("hidden");
+}
+
 export function loading(state: boolean): void {
   if (state) {
     $("header nav .account").css("opacity", 1).css("pointer-events", "none");
@@ -104,7 +109,7 @@ export function updateName(name: string): void {
 }
 
 function updateFlags(flags: SupportsFlags): void {
-  $("nav .textButton.account > .text").append(
+  $("nav .textButton.view-account > .text").append(
     getHtmlByUserFlags(flags, { iconsOnly: true })
   );
 }
@@ -154,32 +159,53 @@ export function update(snapshot: MonkeyTypes.Snapshot | undefined): void {
     updateXp(xp);
     updateAvatar(discordId ?? "", discordAvatar ?? "");
 
-    $("nav .textButton.account")
-      .removeClass("hidden")
-      .css({ opacity: 0 })
-      .animate(
-        {
-          opacity: 1,
-        },
-        125
-      );
-  } else {
-    $("nav .textButton.account")
-      .css({ opacity: 1 })
-      .animate(
-        {
-          opacity: 0,
-        },
-        125,
-        () => {
-          $("nav .textButton.account").addClass("hidden");
+    $("nav .accountButtonAndMenu .menu .items .goToProfile").attr(
+      "href",
+      `/profile/${name}`
+    );
 
-          updateName("");
-          updateFlags({});
-          updateXp(0);
-          updateAvatar(undefined, undefined);
-        }
-      );
+    // $("nav .textButton.view-account")
+    //   .removeClass("hidden")
+    //   .css({ opacity: 0 })
+    //   .animate(
+    //     {
+    //       opacity: 1,
+    //     },
+    //     125
+    //   );
+    void Misc.swapElements(
+      $("nav .textButton.view-login"),
+      $("nav .accountButtonAndMenu"),
+      250
+    );
+  } else {
+    void Misc.swapElements(
+      $("nav .accountButtonAndMenu"),
+      $("nav .textButton.view-login"),
+      250,
+      async () => {
+        updateName("");
+        updateFlags({});
+        updateXp(0);
+        updateAvatar(undefined, undefined);
+      }
+    );
+    // $("nav .textButton.view-account")
+    //   .css({ opacity: 1 })
+    //   .animate(
+    //     {
+    //       opacity: 0,
+    //     },
+    //     125,
+    //     () => {
+    //       $("nav .textButton.view-account").addClass("hidden");
+
+    //       updateName("");
+    //       updateFlags({});
+    //       updateXp(0);
+    //       updateAvatar(undefined, undefined);
+    //     }
+    //   );
   }
 }
 
@@ -504,4 +530,9 @@ async function flashLevel(): Promise<void> {
         },
       }
     );
+}
+
+const coarse = window.matchMedia("(pointer:coarse)")?.matches;
+if (coarse) {
+  $("nav .accountButtonAndMenu .textButton.view-account").attr("href", "");
 }

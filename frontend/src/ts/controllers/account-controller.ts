@@ -19,7 +19,6 @@ import * as LastSignedOutResultModal from "../modals/last-signed-out-result";
 import * as URLHandler from "../utils/url-handler";
 import * as Account from "../pages/account";
 import * as Alerts from "../elements/alerts";
-import * as SignInOutButton from "../elements/sign-in-out-button";
 import {
   GoogleAuthProvider,
   GithubAuthProvider,
@@ -123,7 +122,6 @@ async function getDataAndInit(): Promise<boolean> {
   }
   LoadingPage.updateText("Applying settings...");
   const snapshot = DB.getSnapshot() as MonkeyTypes.Snapshot;
-  SignInOutButton.update();
   AccountButton.update(snapshot);
   Alerts.setNotificationBubbleVisible(snapshot.inboxUnreadSize > 0);
   showFavoriteQuoteLength();
@@ -239,8 +237,6 @@ async function readyFunction(
     PageTransition.set(false);
     navigate();
   }
-
-  SignInOutButton.update();
 
   URLHandler.loadCustomThemeFromUrl(search);
   URLHandler.loadTestSettingsFromUrl(search);
@@ -462,7 +458,6 @@ export function signOut(): void {
         duration: 2,
       });
       Settings.hideAccountSection();
-      SignInOutButton.update();
       AccountButton.update(undefined);
       navigate("/login");
       DB.setSnapshot(undefined);
@@ -637,18 +632,14 @@ $(".pageLogin .login button.signInWithGitHub").on("click", () => {
   void signInWithGitHub();
 });
 
-$("header .signInOut").on("click", () => {
+$("nav .accountButtonAndMenu .menu button.signOut").on("click", () => {
   if (Auth === undefined) {
     Notifications.add("Authentication uninitialized", -1, {
       duration: 3,
     });
     return;
   }
-  if (isAuthenticated()) {
-    signOut();
-  } else {
-    navigate("/login");
-  }
+  signOut();
 });
 
 $(".pageLogin .register form").on("submit", (e) => {
