@@ -94,9 +94,17 @@
     }
   }
   .pageAccountSettings {
-    .section {
-      &.discordIntegration .info {
-        margin: 1rem 0;
+    .main {
+      grid-template-columns: 1fr;
+      grid-template-rows: auto auto;
+      .tabs {
+        padding: 0;
+        display: grid;
+        grid-auto-flow: column;
+        button {
+          justify-content: center;
+          padding: 1em 0.5em;
+        }
       }
     }
   }
