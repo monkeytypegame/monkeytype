@@ -292,8 +292,8 @@ importers:
         specifier: 3.0.0
         version: 3.0.0(chart.js@3.7.1)(date-fns@3.6.0)
       chartjs-plugin-annotation:
-        specifier: 1.4.0
-        version: 1.4.0(chart.js@3.7.1)
+        specifier: 3.0.1
+        version: 3.0.1(chart.js@3.7.1)
       chartjs-plugin-trendline:
         specifier: 1.0.2
         version: 1.0.2
@@ -3453,10 +3453,10 @@ packages:
       chart.js: '>=2.8.0'
       date-fns: '>=2.0.0'
 
-  chartjs-plugin-annotation@1.4.0:
-    resolution: {integrity: sha512-OC0eGoVvdxTtGGi8mV3Dr+G1YmMhtYYQWqGMb2uWcgcnyiBslaRKPofKwAYWPbh7ABnmQNsNDQLIKPH+XiaZLA==}
+  chartjs-plugin-annotation@3.0.1:
+    resolution: {integrity: sha512-hlIrXXKqSDgb+ZjVYHefmlZUXK8KbkCPiynSVrTb/HjTMkT62cOInaT1NTQCKtxKKOm9oHp958DY3RTAFKtkHg==}
     peerDependencies:
-      chart.js: ^3.1.0
+      chart.js: '>=4.0.0'
 
   chartjs-plugin-trendline@1.0.2:
     resolution: {integrity: sha512-1yaWvaW3WvaikITgrc6JEyvWZWDN9Opjz65fCkgQr/dRdKuXcYzOMl45jylPiJyC9dWWL6HCYiL2HuwItjI8RQ==}
@@ -12865,7 +12865,7 @@ snapshots:
       chart.js: 3.7.1
       date-fns: 3.6.0
 
-  chartjs-plugin-annotation@1.4.0(chart.js@3.7.1):
+  chartjs-plugin-annotation@3.0.1(chart.js@3.7.1):
     dependencies:
       chart.js: 3.7.1
 
