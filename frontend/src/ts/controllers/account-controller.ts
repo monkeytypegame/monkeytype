@@ -648,11 +648,10 @@ $(".pageLogin .register form").on("submit", (e) => {
   void signUp();
 });
 
-$(".pageSettings #addGoogleAuth").on("click", async () => {
+$(".pageAccountSettings").on("click", "#addGoogleAuth", () => {
   void addGoogleAuth();
 });
-
-$(".pageSettings #addGithubAuth").on("click", async () => {
+$(".pageAccountSettings").on("click", "#addGithubAuth", () => {
   void addGithubAuth();
 });
 

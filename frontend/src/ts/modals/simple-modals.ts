@@ -1920,14 +1920,15 @@ $(".pageSettings .section.discordIntegration #unlinkDiscordButton").on(
   }
 );
 
-$("#removeGoogleAuth").on("click", () => {
+$(".pageAccountSettings").on("click", "#removeGoogleAuth", () => {
   showPopup("removeGoogleAuth");
 });
 
-$("#removeGithubAuth").on("click", () => {
+$(".pageAccountSettings").on("click", "#removeGithubAuth", () => {
   showPopup("removeGithubAuth");
 });
-$("#removePasswordAuth").on("click", () => {
+
+$(".pageAccountSettings").on("click", "#removePasswordAuth", () => {
   showPopup("removePasswordAuth");
 });
 
@@ -1935,7 +1936,7 @@ $("#resetSettingsButton").on("click", () => {
   showPopup("resetSettings");
 });
 
-$("#revokeAllTokens").on("click", () => {
+$(".pageAccountSettings").on("click", "#revokeAllTokens", () => {
   showPopup("revokeAllTokens");
 });
 
@@ -1951,7 +1952,7 @@ $("#bannerCenter").on("click", ".banner .text .openNameChange", () => {
   showPopup("updateName");
 });
 
-$("#addPasswordAuth").on("click", () => {
+$(".pageAccountSettings").on("click", "#addPasswordAuth", () => {
   showPopup("addPasswordAuth");
 });
 
@@ -1959,7 +1960,7 @@ $(".pageAccountSettings").on("click", "#emailPasswordAuth", () => {
   showPopup("updateEmail");
 });
 
-$("#passPasswordAuth").on("click", () => {
+$(".pageAccountSettings").on("click", "#passPasswordAuth", () => {
   showPopup("updatePassword");
 });
 
