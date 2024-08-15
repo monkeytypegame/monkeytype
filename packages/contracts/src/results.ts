@@ -94,7 +94,7 @@ export const resultsContract = c.router(
       description: "add a test result for the current user",
       method: "POST",
       path: "",
-      body: AddResultRequestSchema,
+      body: AddResultRequestSchema.strict(),
       responses: {
         200: AddResultResponseSchema,
       },

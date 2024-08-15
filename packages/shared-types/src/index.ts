@@ -125,19 +125,6 @@ export type CustomTextData = Omit<
   text: string[];
 };
 
-//TODO obsolete
-export type PostResultResponse = {
-  isPb: boolean;
-  tagPbs: string[];
-  insertedId: string;
-  dailyLeaderboardRank?: number;
-  weeklyXpLeaderboardRank?: number;
-  xp: number;
-  dailyXpBonus: boolean;
-  xpBreakdown: Record<string, number>;
-  streak: number;
-};
-
 export type UserStreak = {
   lastResultTimestamp: number;
   length: number;

@@ -53,7 +53,7 @@ const ResultBaseSchema = z.object({
   wpm: WpmSchema,
   rawWpm: WpmSchema,
   charStats: CharStatsSchema,
-  acc: PercentageSchema.min(75), //TODO test
+  acc: PercentageSchema.min(75),
   mode: ModeSchema,
   mode2: Mode2Schema,
   quoteLength: z.number().int().nonnegative().max(3).optional(),

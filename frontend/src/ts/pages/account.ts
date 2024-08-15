@@ -1088,7 +1088,6 @@ function sortAndRefreshHistory(
       }
     }
 
-    //TODO
     //@ts-expect-error
     temp.push(filteredResults[idx]);
     parsedIndexes.push(idx);

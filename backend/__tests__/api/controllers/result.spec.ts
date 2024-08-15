@@ -279,11 +279,10 @@ describe("result controller test", () => {
         .expect(422);
 
       //THEN
-      //TODO
-      /*expect(body).toEqual({
-        message: "",
-        validationErrors: [],
-      });*/
+      expect(body).toEqual({
+        message: "Invalid query schema",
+        validationErrors: ["Unrecognized key(s) in object: 'extra'"],
+      });
     });
     it("should get results with legacy values", async () => {
       //GIVEN
@@ -535,15 +534,12 @@ describe("result controller test", () => {
         .expect(422);
 
       //THEN
-      //TODO
-      /*
       expect(body).toEqual({
-        message: "",
-        validationErrors: [],
+        message: "Invalid request data schema",
+        validationErrors: ['"tagIds" Required', '"resultId" Required'],
       });
-      */
     });
-    it("should fail with unknownproperties", async () => {
+    it("should fail with unknown properties", async () => {
       //GIVEN
 
       //WHEN
@@ -554,13 +550,14 @@ describe("result controller test", () => {
         .expect(422);
 
       //THEN
-      //TODO
-      /*
       expect(body).toEqual({
-        message: "",
-        validationErrors: [],
+        message: "Invalid request data schema",
+        validationErrors: [
+          '"tagIds" Required',
+          '"resultId" Required',
+          "Unrecognized key(s) in object: 'extra'",
+        ],
       });
-      */
     });
   });
   describe("addResult", () => {
@@ -703,9 +700,10 @@ describe("result controller test", () => {
         .expect(422);
 
       //THEN
-      //TODO
-      //expect(body.message).toEqual("Results are not being saved at this time.");
-      //expect(body.validationErrors).toEqual([]);
+      expect(body).toEqual({
+        message: "Invalid request data schema",
+        validationErrors: ['"result" Required'],
+      });
     });
     it("should fail with unknown properties", async () => {
       //GIVEN
@@ -714,13 +712,57 @@ describe("result controller test", () => {
       const { body } = await mockApp
         .post("/results")
         .set("Authorization", `Bearer ${uid}`)
-        .send({ extra: "value" })
+        .send({
+          result: {
+            acc: 86,
+            afkDuration: 5,
+            bailedOut: false,
+            blindMode: false,
+            charStats: [100, 2, 3, 5],
+            chartData: { wpm: [1, 2, 3], raw: [50, 55, 56], err: [0, 2, 0] },
+            consistency: 23.5,
+            difficulty: "normal",
+            funbox: "none",
+            hash: "hash",
+            incompleteTestSeconds: 2,
+            incompleteTests: [{ acc: 75, seconds: 10 }],
+            keyConsistency: 12,
+            keyDuration: [0, 3, 5],
+            keySpacing: [0, 2, 4],
+            language: "english",
+            lazyMode: false,
+            mode: "time",
+            mode2: "15",
+            numbers: false,
+            punctuation: false,
+            rawWpm: 99,
+            restartCount: 4,
+            tags: ["tagOneId", "tagTwoId"],
+            testDuration: 15.1,
+            timestamp: 1000,
+            uid,
+            wpmConsistency: 55,
+            wpm: 80,
+            stopOnLetter: false,
+            //new required
+            charTotal: 5,
+            keyOverlap: 7,
+            lastKeyToEnd: 9,
+            startToFirstKey: 11,
+            extra2: "value",
+          },
+          extra: "value",
+        })
         .expect(422);
 
       //THEN
-      //TODO
-      //expect(body.message).toEqual("Results are not being saved at this time.");
-      //expect(body.validationErrors).toEqual([]);
+      expect(body).toEqual({
+        message: "Invalid request data schema",
+        validationErrors: [
+          `"result" Unrecognized key(s) in object: 'extra2'`,
+          "Unrecognized key(s) in object: 'extra'",
+        ],
+      });
     });
 
     it("should fail invalid properties", async () => {
@@ -731,13 +773,17 @@ describe("result controller test", () => {
         .post("/results")
         .set("Authorization", `Bearer ${uid}`)
         //TODO add all properties
-        .send({ acc: 25 })
+        .send({ result: { acc: 25 } })
         .expect(422);
 
       //THEN
-      //TODO
-      //expect(body.message).toEqual("Results are not being saved at this time.");
-      //expect(body.validationErrors).toEqual([]);
+      /*
+      expect(body).toEqual({
+        message: "Invalid request data schema",
+        validationErrors: [
+        ],
+      });
+      */
     });
   });
 });
