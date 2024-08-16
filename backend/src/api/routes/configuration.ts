@@ -11,7 +11,9 @@ import { RequestHandler } from "express";
 const s = initServer();
 
 const requireAdminUser = (): RequestHandler => {
-  if (isDevEnvironment()) return emptyMiddleware;
+  if (isDevEnvironment()) {
+    return emptyMiddleware;
+  }
   return checkIfUserIsAdmin();
 };
 
@@ -22,12 +24,12 @@ export default s.router(configurationsContract, {
   },
 
   update: {
-    middleware: [requireAdminUser, RateLimit.adminLimit],
+    middleware: [requireAdminUser(), RateLimit.adminLimit],
     handler: async (r) =>
       callController(ConfigurationController.updateConfiguration)(r),
   },
   getSchema: {
-    middleware: [requireAdminUser, RateLimit.adminLimit],
+    middleware: [requireAdminUser(), RateLimit.adminLimit],
     handler: async (r) => callController(ConfigurationController.getSchema)(r),
   },
 });

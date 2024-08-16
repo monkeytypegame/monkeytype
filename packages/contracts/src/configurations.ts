@@ -5,21 +5,29 @@ import {
   CommonResponses,
   EndpointMetadata,
   MonkeyResponseSchema,
-  responseWithNullableData,
+  responseWithData,
 } from "./schemas/api";
 import { ConfigurationSchema } from "./schemas/configurations";
 
 export const GetConfigurationResponseSchema =
-  responseWithNullableData(ConfigurationSchema);
+  responseWithData(ConfigurationSchema);
 
 export type GetConfigurationResponse = z.infer<
   typeof GetConfigurationResponseSchema
 >;
 
-export const PatchConfigurationRequestSchema =
-  ConfigurationSchema.partial().strict();
+export const PatchConfigurationRequestSchema = z
+  .object({
+    configuration: ConfigurationSchema.partial().strict(),
+  })
+  .strict();
 export type PatchConfigurationRequest = z.infer<
   typeof PatchConfigurationRequestSchema
+>;
+
+export const ConfigurationSchemaResponseSchema = responseWithData(z.object({})); //TODO define schema?
+export type ConfigurationSchemaResponse = z.infer<
+  typeof ConfigurationSchemaResponseSchema
 >;
 
 const c = initContract();
@@ -63,7 +71,7 @@ export const configurationsContract = c.router(
       method: "GET",
       path: "/schema",
       responses: {
-        200: z.object({}), //any object for now
+        200: ConfigurationSchemaResponseSchema,
       },
       metadata: {
         authenticationOptions: {

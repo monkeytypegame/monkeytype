@@ -4,7 +4,7 @@ import { ObjectId } from "mongodb";
 import Logger from "../utils/logger";
 import { identity } from "../utils/misc";
 import { BASE_CONFIGURATION } from "../constants/base-configuration";
-import { Configuration } from "@monkeytype/shared-types";
+import { Configuration } from "@monkeytype/contracts/schemas/configurations";
 import { addLog } from "../dal/logs";
 
 const CONFIG_UPDATE_INTERVAL = 10 * 60 * 1000; // 10 Minutes
