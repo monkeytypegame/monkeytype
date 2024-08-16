@@ -5,16 +5,22 @@ import { callController } from "../ts-rest-adapter";
 import { configurationsContract } from "@monkeytype/contracts/configurations";
 import { checkIfUserIsAdmin } from "../../middlewares/permission";
 import { isDevEnvironment } from "../../utils/misc";
-import { emptyMiddleware } from "../../middlewares/utility";
-import { RequestHandler } from "express";
+
+import { NextFunction, RequestHandler, Response } from "express";
 
 const s = initServer();
 
 const requireAdminUser = (): RequestHandler => {
-  if (isDevEnvironment()) {
-    return emptyMiddleware;
-  }
-  return checkIfUserIsAdmin();
+  return async (
+    req: MonkeyTypes.Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    if (!isDevEnvironment()) {
+      checkIfUserIsAdmin()(req, res, next);
+    }
+    next();
+  };
 };
 
 export default s.router(configurationsContract, {

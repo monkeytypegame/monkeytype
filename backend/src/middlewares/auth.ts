@@ -72,6 +72,8 @@ async function _authenticateRequestInternal(
   const startTime = performance.now();
   let token: MonkeyTypes.DecodedToken;
   let authType = "None";
+
+  //TODO add test case
   const isPublic =
     options.isPublic || (options.publicOnDev && isDevEnvironment());
 
