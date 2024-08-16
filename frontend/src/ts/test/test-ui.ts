@@ -484,7 +484,7 @@ export async function updateWordsInputPosition(initial = false): Promise<void> {
 }
 
 function updateWordsHeight(force = false): void {
-  if (ActivePage.get() !== "test") return;
+  if (ActivePage.get() !== "test" || resultVisible) return;
   if (!force && Config.mode !== "custom") return;
   $("#wordsWrapper").removeClass("hidden");
   const wordHeight = $(document.querySelector(".word") as Element).outerHeight(
