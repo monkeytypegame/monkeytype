@@ -1,43 +1,33 @@
-import joi from "joi";
-import { Router } from "express";
+import { initServer } from "@ts-rest/express";
+import * as RateLimit from "../../middlewares/rate-limit";
 import * as ConfigurationController from "../controllers/configuration";
-import { authenticateRequest } from "../../middlewares/auth";
-import { adminLimit } from "../../middlewares/rate-limit";
-import { asyncHandler, useInProduction } from "../../middlewares/utility";
+import { callController } from "../ts-rest-adapter";
+import { configurationsContract } from "@monkeytype/contracts/configurations";
 import { checkIfUserIsAdmin } from "../../middlewares/permission";
-import { validateRequest } from "../../middlewares/validation";
+import { isDevEnvironment } from "../../utils/misc";
+import { emptyMiddleware } from "../../middlewares/utility";
+import { RequestHandler } from "express";
 
-const router = Router();
+const s = initServer();
 
-router.get("/", asyncHandler(ConfigurationController.getConfiguration));
+const requireAdminUser = (): RequestHandler => {
+  if (isDevEnvironment()) return emptyMiddleware;
+  return checkIfUserIsAdmin();
+};
 
-router.patch(
-  "/",
-  adminLimit,
-  useInProduction([
-    authenticateRequest({
-      noCache: true,
-    }),
-    checkIfUserIsAdmin(),
-  ]),
-  validateRequest({
-    body: {
-      configuration: joi.object(),
-    },
-  }),
-  asyncHandler(ConfigurationController.updateConfiguration)
-);
+export default s.router(configurationsContract, {
+  get: {
+    handler: async (r) =>
+      callController(ConfigurationController.getConfiguration)(r),
+  },
 
-router.get(
-  "/schema",
-  adminLimit,
-  useInProduction([
-    authenticateRequest({
-      noCache: true,
-    }),
-    checkIfUserIsAdmin(),
-  ]),
-  asyncHandler(ConfigurationController.getSchema)
-);
-
-export default router;
+  update: {
+    middleware: [requireAdminUser, RateLimit.adminLimit],
+    handler: async (r) =>
+      callController(ConfigurationController.updateConfiguration)(r),
+  },
+  getSchema: {
+    middleware: [requireAdminUser, RateLimit.adminLimit],
+    handler: async (r) => callController(ConfigurationController.getSchema)(r),
+  },
+});

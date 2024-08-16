@@ -42,8 +42,9 @@ export function asyncHandler(handler: AsyncHandler): RequestHandler {
 export function useInProduction(
   middlewares: RequestHandler[]
 ): RequestHandler[] {
+  const devMode = isDevEnvironment();
   return middlewares.map((middleware) =>
-    isDevEnvironment() ? emptyMiddleware : middleware
+    devMode ? emptyMiddleware : middleware
   );
 }
 

@@ -8,7 +8,8 @@ export type OpenApiTag =
   | "psas"
   | "public"
   | "leaderboards"
-  | "results";
+  | "results"
+  | "configurations";
 
 export type EndpointMetadata = {
   /** Authentication options, by default a bearer token is required. */
@@ -24,6 +25,8 @@ export type RequestAuthenticationOptions = {
   /** Endpoint requires an authentication token which is younger than one minute.  */
   requireFreshToken?: boolean;
   noCache?: boolean;
+  /** Allow unauthenticated requests on dev  */
+  publicOnDev?: boolean;
 };
 
 export const MonkeyResponseSchema = z.object({

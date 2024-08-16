@@ -72,6 +72,8 @@ async function _authenticateRequestInternal(
   const startTime = performance.now();
   let token: MonkeyTypes.DecodedToken;
   let authType = "None";
+  const isPublic =
+    options.isPublic || (options.publicOnDev && isDevEnvironment());
 
   const { authorization: authHeader } = req.headers;
 
@@ -82,7 +84,7 @@ async function _authenticateRequestInternal(
         req.ctx.configuration,
         options
       );
-    } else if (options.isPublic === true) {
+    } else if (isPublic === true) {
       token = {
         type: "None",
         uid: "",

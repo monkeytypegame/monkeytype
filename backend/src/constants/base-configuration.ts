@@ -1,4 +1,4 @@
-import { Configuration } from "@monkeytype/shared-types";
+import { Configuration } from "@monkeytype/contracts/schemas/configurations";
 
 /**
  * This is the base schema for the configuration of the API backend.
