@@ -1297,7 +1297,7 @@ export const page = new Page({
 
     void update().then(() => {
       void updateChartColors();
-      $(".pageAccount .content p.accountVerificatinNotice").remove();
+      $(".pageAccount .content .accountVerificatinNotice").remove();
       if (Auth?.currentUser?.emailVerified === false) {
         $(".pageAccount .content").prepend(
           `<div class="accountVerificatinNotice"><i class="fas icon fa-exclamation-triangle"></i><p>Your email address is still not verified</p><button class="sendVerificationEmail">resend verification email</button></div>`
