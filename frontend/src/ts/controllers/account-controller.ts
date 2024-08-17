@@ -44,7 +44,6 @@ import {
 } from "../test/test-config";
 import * as ConnectionState from "../states/connection";
 import { navigate } from "./route-controller";
-import { getHtmlByUserFlags } from "./user-flag-controller";
 import { FirebaseError } from "firebase/app";
 import * as PSA from "../elements/psa";
 import defaultResultFilters from "../constants/default-result-filters";
@@ -124,10 +123,9 @@ async function getDataAndInit(): Promise<boolean> {
   }
   LoadingPage.updateText("Applying settings...");
   const snapshot = DB.getSnapshot() as MonkeyTypes.Snapshot;
-  $("nav .textButton.account > .text").text(snapshot.name);
-  $("nav .textButton.account > .text").append(
-    getHtmlByUserFlags(snapshot, { iconsOnly: true })
-  );
+  SignInOutButton.update();
+  AccountButton.update(snapshot);
+  Alerts.setNotificationBubbleVisible(snapshot.inboxUnreadSize > 0);
   showFavoriteQuoteLength();
 
   ResultFilters.loadTags(snapshot.tags);
@@ -195,10 +193,7 @@ export async function loadUser(user: UserType): Promise<void> {
   if (!(await getDataAndInit())) {
     signOut();
   }
-  const { discordId, discordAvatar, xp, inboxUnreadSize } =
-    DB.getSnapshot() as MonkeyTypes.Snapshot;
-  void AccountButton.update(xp, discordId, discordAvatar);
-  Alerts.setNotificationBubbleVisible(inboxUnreadSize > 0);
+
   // var displayName = user.displayName;
   // var email = user.email;
   // var emailVerified = user.emailVerified;
@@ -207,10 +202,6 @@ export async function loadUser(user: UserType): Promise<void> {
   // var uid = user.uid;
   // var providerData = user.providerData;
   LoginPage.hidePreloader();
-
-  $("header .signInOut .icon").html(
-    `<i class="fas fa-fw fa-sign-out-alt"></i>`
-  );
 
   // showFavouriteThemesAtTheTop();
 
@@ -471,10 +462,10 @@ export function signOut(): void {
         duration: 2,
       });
       Settings.hideAccountSection();
-      void AccountButton.update();
+      SignInOutButton.update();
+      AccountButton.update(undefined);
       navigate("/login");
       DB.setSnapshot(undefined);
-      $("header .signInOut .icon").html(`<i class="far fa-fw fa-user"></i>`);
       setTimeout(() => {
         hideFavoriteQuoteLength();
       }, 125);
@@ -589,7 +580,6 @@ async function signUp(): Promise<void> {
 
     await updateProfile(createdAuthUser.user, { displayName: nname });
     await sendVerificationEmail();
-    $("nav .textButton.account .text").text(nname);
     LoginPage.hidePreloader();
     await loadUser(createdAuthUser.user);
     if (TestLogic.notSignedInLastResult !== null) {

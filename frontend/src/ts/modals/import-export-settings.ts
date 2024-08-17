@@ -1,6 +1,7 @@
 import * as UpdateConfig from "../config";
 import * as Notifications from "../elements/notifications";
 import AnimatedModal from "../utils/animated-modal";
+import { migrateConfig } from "../utils/config";
 
 type State = {
   mode: "import" | "export";
@@ -45,7 +46,7 @@ const modal = new AnimatedModal({
         return;
       }
       try {
-        await UpdateConfig.apply(JSON.parse(state.value));
+        await UpdateConfig.apply(migrateConfig(JSON.parse(state.value)));
       } catch (e) {
         Notifications.add("Failed to import settings: " + e, -1);
       }
