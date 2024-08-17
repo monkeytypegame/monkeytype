@@ -3,6 +3,157 @@ import * as Notifications from "../../elements/notifications";
 import Ape from "../../ape";
 import { ApeKey, ApeKeys } from "@monkeytype/contracts/schemas/ape-keys";
 import { format } from "date-fns/format";
+import { SimpleModal, TextArea } from "../../utils/simple-modal";
+
+const editApeKey = new SimpleModal({
+  id: "editApeKey",
+  title: "Edit Ape key",
+  inputs: [
+    {
+      type: "text",
+      placeholder: "name",
+      initVal: "",
+    },
+  ],
+  buttonText: "edit",
+  onlineOnly: true,
+  execFn: async (_thisPopup, input) => {
+    const response = await Ape.apeKeys.save({
+      params: { apeKeyId: _thisPopup.parameters[0] ?? "" },
+      body: {
+        name: input,
+      },
+    });
+    if (response.status !== 200) {
+      return {
+        status: -1,
+        message: "Failed to update key: " + response.body.message,
+      };
+    }
+    return {
+      status: 1,
+      message: "Key updated",
+      hideOptions: {
+        clearModalChain: true,
+      },
+    };
+  },
+});
+
+const deleteApeKeyModal = new SimpleModal({
+  id: "deleteApeKey",
+  title: "Delete Ape key",
+  text: "Are you sure?",
+  buttonText: "delete",
+  onlineOnly: true,
+  execFn: async (_thisPopup) => {
+    const response = await Ape.apeKeys.delete({
+      params: { apeKeyId: _thisPopup.parameters[0] ?? "" },
+    });
+    if (response.status !== 200) {
+      return {
+        status: -1,
+        message: "Failed to delete key: " + response.body.message,
+      };
+    }
+
+    onApeKeyChange();
+
+    return {
+      status: 1,
+      message: "Key deleted",
+      hideOptions: {
+        clearModalChain: true,
+      },
+    };
+  },
+});
+
+const viewApeKey = new SimpleModal({
+  id: "viewApeKey",
+  title: "Ape key",
+  inputs: [
+    {
+      type: "textarea",
+      disabled: true,
+      placeholder: "key",
+      initVal: "",
+    },
+  ],
+  textAllowHtml: true,
+  text: `
+    This is your new Ape Key. Please keep it safe. You will only see it once!<br><br>
+    <strong>Note:</strong> Ape Keys are disabled by default, you need to enable them before they can be used.`,
+  buttonText: "close",
+  hideCallsExec: true,
+  execFn: async (_thisPopup) => {
+    return {
+      status: 1,
+      message: "Key generated",
+      showNotification: false,
+      hideOptions: {
+        clearModalChain: true,
+      },
+    };
+  },
+  beforeInitFn: (_thisPopup): void => {
+    (_thisPopup.inputs[0] as TextArea).initVal = _thisPopup
+      .parameters[0] as string;
+  },
+  beforeShowFn: (_thisPopup): void => {
+    _thisPopup.canClose = false;
+    $("#simpleModal textarea").css("height", "110px");
+    $("#simpleModal .submitButton").addClass("hidden");
+    setTimeout(() => {
+      _thisPopup.canClose = true;
+      $("#simpleModal .submitButton").removeClass("hidden");
+    }, 5000);
+  },
+});
+
+const generateApeKey = new SimpleModal({
+  id: "generateApeKey",
+  title: "Generate new Ape key",
+  inputs: [
+    {
+      type: "text",
+      placeholder: "Name",
+      initVal: "",
+    },
+  ],
+  buttonText: "generate",
+  onlineOnly: true,
+  execFn: async (thisPopup, name) => {
+    const response = await Ape.apeKeys.add({ body: { name, enabled: false } });
+    if (response.status !== 200) {
+      return {
+        status: -1,
+        message: "Failed to generate key: " + response.body.message,
+      };
+    }
+
+    const data = response.body.data;
+
+    const modalChain = thisPopup.modal.getPreviousModalInChain();
+
+    onApeKeyChange();
+
+    return {
+      status: 1,
+      message: "Key generated",
+      hideOptions: {
+        clearModalChain: true,
+        animationMode: "modalOnly",
+      },
+      afterHide: (): void => {
+        viewApeKey.show([data.apeKey], {
+          modalChain,
+          animationMode: "modalOnly",
+        });
+      },
+    };
+  },
+});
 
 let apeKeys: ApeKeys | null = {};
 
@@ -85,6 +236,12 @@ function refreshList(): void {
     tr.querySelector("button.toggleActive")?.addEventListener("click", (e) => {
       void toggleActiveKey(keyid);
     });
+    tr.querySelector("button.deleteButton")?.addEventListener("click", (e) => {
+      deleteApeKeyModal.show([keyid], {});
+    });
+    tr.querySelector("button.editButton")?.addEventListener("click", (e) => {
+      editApeKey.show([keyid], {});
+    });
   }
 }
 
@@ -110,7 +267,16 @@ async function toggleActiveKey(keyId: string): Promise<void> {
   }
 }
 
-export async function update(): Promise<void> {
+let onApeKeyChange = (): void => {
+  //
+};
+
+export async function update(onApeKeyChangee: () => void): Promise<void> {
+  onApeKeyChange = onApeKeyChangee;
   await getData();
   refreshList();
 }
+
+$(".pageAccountSettings").on("click", "#generateNewApeKey", () => {
+  generateApeKey.show([], {});
+});

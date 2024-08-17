@@ -161,7 +161,7 @@ export function updateUI(): void {
   updateAuthenticationSections();
   updateIntegrationSections();
   updateAccountSections();
-  void ApeKeyTable.update();
+  void ApeKeyTable.update(updateUI);
   updateTabs();
 }
 
