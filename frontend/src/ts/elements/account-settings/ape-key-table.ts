@@ -159,8 +159,6 @@ let apeKeys: ApeKeys | null = {};
 
 const element = $("#pageAccountSettings .tab[data-tab='api']");
 
-//todo handle no ape key permission
-
 async function getData(): Promise<boolean> {
   showLoaderRow();
   const response = await Ape.apeKeys.get();
