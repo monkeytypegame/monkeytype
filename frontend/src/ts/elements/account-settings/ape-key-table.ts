@@ -161,8 +161,6 @@ const element = $("#pageAccountSettings .tab[data-tab='api']");
 
 //todo handle no ape key permission
 
-//todo edit and delete
-
 async function getData(): Promise<boolean> {
   showLoaderRow();
   const response = await Ape.apeKeys.get();
