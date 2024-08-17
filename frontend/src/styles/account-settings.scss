@@ -94,6 +94,13 @@
               color: var(--text-color);
             }
           }
+          &.optOutOfLeaderboards {
+            .optedOut {
+              grid-area: buttons;
+              text-align: center;
+              color: var(--sub-color);
+            }
+          }
         }
         &[data-tab="api"] {
           table {

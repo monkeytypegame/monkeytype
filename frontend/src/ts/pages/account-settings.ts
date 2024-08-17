@@ -138,17 +138,30 @@ function updateTabs(): void {
   pageElement.find(`button[data-tab="${state.activeTab}"]`).addClass("active");
 }
 
+function updateAccountSections(): void {
+  //todo instead of removing, show a message
+  pageElement
+    .find(".section.optOutOfLeaderboards .optedOut")
+    .addClass("hidden");
+  pageElement
+    .find(".section.optOutOfLeaderboards .buttons")
+    .removeClass("hidden");
+  if (getSnapshot()?.lbOptOut === true) {
+    pageElement
+      .find(".section.optOutOfLeaderboards .optedOut")
+      .removeClass("hidden");
+    pageElement
+      .find(".section.optOutOfLeaderboards .buttons")
+      .addClass("hidden");
+  }
+}
+
 export function updateUI(): void {
   if (ActivePage.get() !== "accountSettings") return;
   updateAuthenticationSections();
   updateIntegrationSections();
+  updateAccountSections();
   void ApeKeyTable.update();
-
-  //todo instead of removing, show a message
-  if (getSnapshot()?.lbOptOut === true) {
-    pageElement.find(".section.optOutOfLeaderboards").remove();
-  }
-
   updateTabs();
 }
 
