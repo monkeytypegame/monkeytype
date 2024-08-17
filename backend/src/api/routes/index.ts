@@ -152,6 +152,7 @@ function applyApiRoutes(app: Application): void {
 
   addSwaggerMiddlewares(app);
 
+  //TODO move to globalMiddleware when all endpoints use tsrest
   app.use(
     (req: MonkeyTypes.Request, res: Response, next: NextFunction): void => {
       if (req.path.startsWith("/configuration")) {
