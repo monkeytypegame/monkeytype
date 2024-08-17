@@ -146,10 +146,6 @@ function applyDevApiRoutes(app: Application): void {
 }
 
 function applyApiRoutes(app: Application): void {
-  //TODO
-  // Cannot be added to the route map because it needs to be added before the maintenance handler
-  //app.use("/configuration", configuration);
-
   addSwaggerMiddlewares(app);
 
   //TODO move to globalMiddleware when all endpoints use tsrest

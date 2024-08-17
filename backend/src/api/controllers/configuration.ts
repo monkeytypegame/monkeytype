@@ -1,11 +1,12 @@
 import * as Configuration from "../../init/configuration";
-import { MonkeyResponse, MonkeyResponse2 } from "../../utils/monkey-response";
+import { MonkeyResponse2 } from "../../utils/monkey-response";
 import { CONFIGURATION_FORM_SCHEMA } from "../../constants/base-configuration";
 import {
   ConfigurationSchemaResponse,
   GetConfigurationResponse,
   PatchConfigurationRequest,
 } from "@monkeytype/contracts/configurations";
+import MonkeyError from "../../utils/error";
 
 export async function getConfiguration(
   _req: MonkeyTypes.Request2
@@ -30,7 +31,7 @@ export async function updateConfiguration(
   const success = await Configuration.patchConfiguration(configuration);
 
   if (!success) {
-    return new MonkeyResponse("Configuration update failed", {}, 500);
+    throw new MonkeyError(500, "Configuration update failed");
   }
 
   return new MonkeyResponse2("Configuration updated", null);
