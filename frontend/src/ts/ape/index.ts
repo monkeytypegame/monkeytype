@@ -16,7 +16,6 @@ const Ape = {
   ...tsRestClient,
   users: new endpoints.Users(httpClient),
   quotes: new endpoints.Quotes(httpClient),
-  configuration: new endpoints.Configuration(httpClient),
   dev: new endpoints.Dev(buildHttpClient(API_URL, 240_000)),
 };
 
