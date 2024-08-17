@@ -114,6 +114,10 @@ const routes: Route[] = [
         navigate("/");
         return;
       }
+      if (!isAuthenticated()) {
+        navigate("/login");
+        return;
+      }
       void PageController.change("accountSettings", {
         data: options.data,
       });
