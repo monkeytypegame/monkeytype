@@ -1,5 +1,3 @@
-import { getSnapshot } from "../db";
-import { isAuthenticated } from "../firebase";
 import * as Misc from "../utils/misc";
 import * as Levels from "../utils/levels";
 import { getAll } from "./theme-colors";
@@ -9,6 +7,7 @@ import {
   getHtmlByUserFlags,
   SupportsFlags,
 } from "../controllers/user-flag-controller";
+import { isAuthenticated } from "../firebase";
 
 let usingAvatar = false;
 
@@ -105,46 +104,57 @@ export function updateName(name: string): void {
   $("header nav .account > .text").text(name);
 }
 
-export function updateFlags(flags: SupportsFlags): void {
+function updateFlags(flags: SupportsFlags): void {
   $("nav .textButton.account > .text").append(
     getHtmlByUserFlags(flags, { iconsOnly: true })
   );
 }
 
-export async function update(
-  xp?: number,
-  discordId?: string,
-  discordAvatar?: string
-): Promise<void> {
-  if (isAuthenticated()) {
-    if (xp !== undefined) {
-      const xpDetails = Levels.getXpDetails(xp);
-      const levelCompletionRatio =
-        xpDetails.levelCurrentXp / xpDetails.levelMaxXp;
-      $("header nav .level").text(xpDetails.level);
-      $("header nav .bar").css({
-        width: levelCompletionRatio * 100 + "%",
-      });
-    }
-    if ((discordAvatar ?? "") && (discordId ?? "")) {
-      void Misc.getDiscordAvatarUrl(discordId, discordAvatar).then(
-        (discordAvatarUrl) => {
-          if (discordAvatarUrl !== null) {
-            $("header nav .account .avatar").css(
-              "background-image",
-              `url(${discordAvatarUrl})`
-            );
-            usingAvatar = true;
+function updateXp(xp: number): void {
+  const xpDetails = Levels.getXpDetails(xp);
+  const levelCompletionRatio = xpDetails.levelCurrentXp / xpDetails.levelMaxXp;
+  $("header nav .level").text(xpDetails.level);
+  $("header nav .bar").css({
+    width: levelCompletionRatio * 100 + "%",
+  });
+}
 
-            $("header nav .account .user").addClass("hidden");
-            $("header nav .account .avatar").removeClass("hidden");
-          }
+export function updateAvatar(
+  discordId: string | undefined,
+  discordAvatar: string | undefined
+): void {
+  if ((discordAvatar ?? "") && (discordId ?? "")) {
+    void Misc.getDiscordAvatarUrl(discordId, discordAvatar).then(
+      (discordAvatarUrl) => {
+        if (discordAvatarUrl !== null) {
+          $("header nav .account .avatar").css(
+            "background-image",
+            `url(${discordAvatarUrl})`
+          );
+          usingAvatar = true;
+
+          $("header nav .account .user").addClass("hidden");
+          $("header nav .account .avatar").removeClass("hidden");
         }
-      );
-    } else {
-      $("header nav .account .avatar").addClass("hidden");
-      $("header nav .account .user").removeClass("hidden");
-    }
+      }
+    );
+  } else {
+    $("header nav .account .avatar").addClass("hidden");
+    $("header nav .account .user").removeClass("hidden");
+  }
+}
+
+export function update(snapshot: MonkeyTypes.Snapshot | undefined): void {
+  if (isAuthenticated()) {
+    // this function is called after the snapshot is loaded (awaited), so it should be fine
+    const { xp, discordId, discordAvatar, name } =
+      snapshot as MonkeyTypes.Snapshot;
+
+    updateName(name);
+    updateFlags(snapshot ?? {});
+    updateXp(xp);
+    updateAvatar(discordId ?? "", discordAvatar ?? "");
+
     $("nav .textButton.account")
       .removeClass("hidden")
       .css({ opacity: 0 })
@@ -164,6 +174,11 @@ export async function update(
         125,
         () => {
           $("nav .textButton.account").addClass("hidden");
+
+          updateName("");
+          updateFlags({});
+          updateXp(0);
+          updateAvatar(undefined, undefined);
         }
       );
   }
@@ -182,9 +197,6 @@ export async function updateXpBar(
   const endingLevel =
     endingXp.level + endingXp.levelCurrentXp / endingXp.levelMaxXp;
 
-  const snapshot = getSnapshot();
-  if (!snapshot) return;
-
   if (!skipBreakdown) {
     const xpBarPromise = animateXpBar(startingLevel, endingLevel);
     const xpBreakdownPromise = animateXpBreakdown(addedXp, breakdown);
@@ -193,7 +205,7 @@ export async function updateXpBar(
     await Misc.sleep(2000);
   }
 
-  $("nav .level").text(Levels.getLevelFromTotalXp(snapshot.xp));
+  $("nav .level").text(Levels.getLevelFromTotalXp(currentXp + addedXp));
   $("nav .xpBar")
     .stop(true, true)
     .css("opacity", 1)

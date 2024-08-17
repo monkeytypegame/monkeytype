@@ -30,7 +30,7 @@ function replaceLegacyValues(
   configObj: ConfigSchemas.PartialConfig
 ): ConfigSchemas.PartialConfig {
   //@ts-expect-error
-  if (configObj.quickTab === true) {
+  if (configObj.quickTab === true && configObj.quickRestart === undefined) {
     configObj.quickRestart = "tab";
   }
 
@@ -38,13 +38,19 @@ function replaceLegacyValues(
     configObj.smoothCaret = configObj.smoothCaret ? "medium" : "off";
   }
 
-  //@ts-expect-error
-  if (configObj.swapEscAndTab === true) {
+  if (
+    //@ts-expect-error
+    configObj.swapEscAndTab === true &&
+    configObj.quickRestart === undefined
+  ) {
     configObj.quickRestart = "esc";
   }
 
-  //@ts-expect-error
-  if (configObj.alwaysShowCPM === true) {
+  if (
+    //@ts-expect-error
+    configObj.alwaysShowCPM === true &&
+    configObj.typingSpeedUnit === undefined
+  ) {
     configObj.typingSpeedUnit = "cpm";
   }
 
@@ -57,13 +63,19 @@ function replaceLegacyValues(
     configObj.playSoundOnError = configObj.playSoundOnError ? "1" : "off";
   }
 
-  //@ts-expect-error
-  if (configObj.showTimerProgress === false) {
+  if (
+    //@ts-expect-error
+    configObj.showTimerProgress === false &&
+    configObj.timerStyle === undefined
+  ) {
     configObj.timerStyle = "off";
   }
 
-  //@ts-expect-error
-  if (configObj.showLiveWpm === true) {
+  if (
+    //@ts-expect-error
+    configObj.showLiveWpm === true &&
+    configObj.liveSpeedStyle === undefined
+  ) {
     let val: ConfigSchemas.LiveSpeedAccBurstStyle = "mini";
     if (configObj.timerStyle !== "bar" && configObj.timerStyle !== "off") {
       val = configObj.timerStyle as ConfigSchemas.LiveSpeedAccBurstStyle;
@@ -71,8 +83,11 @@ function replaceLegacyValues(
     configObj.liveSpeedStyle = val;
   }
 
-  //@ts-expect-error
-  if (configObj.showLiveBurst === true) {
+  if (
+    //@ts-expect-error
+    configObj.showLiveBurst === true &&
+    configObj.liveBurstStyle === undefined
+  ) {
     let val: ConfigSchemas.LiveSpeedAccBurstStyle = "mini";
     if (configObj.timerStyle !== "bar" && configObj.timerStyle !== "off") {
       val = configObj.timerStyle as ConfigSchemas.LiveSpeedAccBurstStyle;
@@ -80,8 +95,11 @@ function replaceLegacyValues(
     configObj.liveBurstStyle = val;
   }
 
-  //@ts-expect-error
-  if (configObj.showLiveAcc === true) {
+  if (
+    //@ts-expect-error
+    configObj.showLiveAcc === true &&
+    configObj.liveAccStyle === undefined
+  ) {
     let val: ConfigSchemas.LiveSpeedAccBurstStyle = "mini";
     if (configObj.timerStyle !== "bar" && configObj.timerStyle !== "off") {
       val = configObj.timerStyle as ConfigSchemas.LiveSpeedAccBurstStyle;

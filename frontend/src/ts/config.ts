@@ -38,6 +38,7 @@ const configLS = new LocalStorageWithSchema({
     if (!isObject(value)) {
       return DefaultConfig;
     }
+    //todo maybe send a full config to db so that it removes legacy values
 
     return migrateConfig(value);
   },

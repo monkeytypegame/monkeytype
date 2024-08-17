@@ -124,8 +124,9 @@ async function getDataAndInit(): Promise<boolean> {
   }
   LoadingPage.updateText("Applying settings...");
   const snapshot = DB.getSnapshot() as MonkeyTypes.Snapshot;
-  AccountButton.updateName(snapshot.name);
-  AccountButton.updateFlags(snapshot);
+  SignInOutButton.update();
+  AccountButton.update(snapshot);
+  Alerts.setNotificationBubbleVisible(snapshot.inboxUnreadSize > 0);
   showFavoriteQuoteLength();
 
   ResultFilters.loadTags(snapshot.tags);
@@ -193,10 +194,7 @@ export async function loadUser(user: UserType): Promise<void> {
   if (!(await getDataAndInit())) {
     signOut();
   }
-  const { discordId, discordAvatar, xp, inboxUnreadSize } =
-    DB.getSnapshot() as MonkeyTypes.Snapshot;
-  void AccountButton.update(xp, discordId, discordAvatar);
-  Alerts.setNotificationBubbleVisible(inboxUnreadSize > 0);
+
   // var displayName = user.displayName;
   // var email = user.email;
   // var emailVerified = user.emailVerified;
@@ -205,10 +203,6 @@ export async function loadUser(user: UserType): Promise<void> {
   // var uid = user.uid;
   // var providerData = user.providerData;
   LoginPage.hidePreloader();
-
-  $("header .signInOut .icon").html(
-    `<i class="fas fa-fw fa-sign-out-alt"></i>`
-  );
 
   // showFavouriteThemesAtTheTop();
 
@@ -469,10 +463,10 @@ export function signOut(): void {
         duration: 2,
       });
       Settings.hideAccountSection();
-      void AccountButton.update();
+      SignInOutButton.update();
+      AccountButton.update(undefined);
       navigate("/login");
       DB.setSnapshot(undefined);
-      $("header .signInOut .icon").html(`<i class="far fa-fw fa-user"></i>`);
       setTimeout(() => {
         hideFavoriteQuoteLength();
       }, 125);

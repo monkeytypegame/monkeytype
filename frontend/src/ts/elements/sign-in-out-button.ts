@@ -1,5 +1,4 @@
 import { Auth, isAuthenticated } from "../firebase";
-
 const el = $("header .signInOut");
 
 export function update(): void {
@@ -14,4 +13,8 @@ export function update(): void {
   } else {
     el.find(".icon").html(`<i class="far fa-fw fa-user"></i>`);
   }
+}
+
+export function hide(): void {
+  el.addClass("hidden");
 }
