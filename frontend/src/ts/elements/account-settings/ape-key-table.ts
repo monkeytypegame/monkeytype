@@ -57,7 +57,7 @@ const deleteApeKeyModal = new SimpleModal({
       };
     }
 
-    onApeKeyChange();
+    onApeKeyChange?.();
 
     return {
       status: 1,
@@ -136,7 +136,7 @@ const generateApeKey = new SimpleModal({
 
     const modalChain = thisPopup.modal.getPreviousModalInChain();
 
-    onApeKeyChange();
+    onApeKeyChange?.();
 
     return {
       status: 1,
@@ -166,6 +166,14 @@ async function getData(): Promise<boolean> {
   const response = await Ape.apeKeys.get();
 
   if (response.status !== 200) {
+    if (
+      response.body.message ===
+      "You have lost access to ape keys, please contact support"
+    ) {
+      lostAccess = true;
+      void update();
+      return false;
+    }
     Notifications.add("Error getting ape keys: " + response.body.message, -1);
     return false;
   }
@@ -265,11 +273,19 @@ async function toggleActiveKey(keyId: string): Promise<void> {
   }
 }
 
-let onApeKeyChange = (): void => {
-  //
-};
+let onApeKeyChange: (() => void) | undefined = undefined;
 
-export async function update(onApeKeyChangee: () => void): Promise<void> {
+let lostAccess = false;
+
+export async function update(onApeKeyChangee?: () => void): Promise<void> {
+  if (lostAccess) {
+    $(".pageAccountSettings .tab[data-tab='api'] table").remove();
+    $(".pageAccountSettings .section.apeKeys .buttons").remove();
+    $(".pageAccountSettings .section.apeKeys .lostAccess").removeClass(
+      "hidden"
+    );
+    return;
+  }
   onApeKeyChange = onApeKeyChangee;
   await getData();
   refreshList();
