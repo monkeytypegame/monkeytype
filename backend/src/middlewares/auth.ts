@@ -15,12 +15,13 @@ import { performance } from "perf_hooks";
 import { TsRestRequestHandler } from "@ts-rest/express";
 import { AppRoute, AppRouter } from "@ts-rest/core";
 import { RequestAuthenticationOptions } from "@monkeytype/contracts/schemas/api";
-import { Configuration } from "@monkeytype/shared-types";
+import { Configuration } from "@monkeytype/contracts/schemas/configurations";
 
 const DEFAULT_OPTIONS: RequestAuthenticationOptions = {
   isPublic: false,
   acceptApeKeys: false,
   requireFreshToken: false,
+  isPublicOnDev: false,
 };
 
 export type TsRestRequestWithCtx = {
@@ -73,9 +74,8 @@ async function _authenticateRequestInternal(
   let token: MonkeyTypes.DecodedToken;
   let authType = "None";
 
-  //TODO add test case
   const isPublic =
-    options.isPublic || (options.publicOnDev && isDevEnvironment());
+    options.isPublic || (options.isPublicOnDev && isDevEnvironment());
 
   const { authorization: authHeader } = req.headers;
 
@@ -243,12 +243,17 @@ async function authenticateWithApeKey(
   configuration: Configuration,
   options: RequestAuthenticationOptions
 ): Promise<MonkeyTypes.DecodedToken> {
-  if (!configuration.apeKeys.acceptKeys) {
-    throw new MonkeyError(503, "ApeKeys are not being accepted at this time");
-  }
+  const isPublic =
+    options.isPublic || (options.isPublicOnDev && isDevEnvironment());
 
-  if (!options.acceptApeKeys && !options.isPublic) {
-    throw new MonkeyError(401, "This endpoint does not accept ApeKeys");
+  if (!isPublic) {
+    if (!configuration.apeKeys.acceptKeys) {
+      throw new MonkeyError(503, "ApeKeys are not being accepted at this time");
+    }
+
+    if (!options.acceptApeKeys) {
+      throw new MonkeyError(401, "This endpoint does not accept ApeKeys");
+    }
   }
 
   try {

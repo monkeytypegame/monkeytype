@@ -2,14 +2,6 @@ type PersonalBest = import("@monkeytype/contracts/schemas/shared").PersonalBest;
 type PersonalBests =
   import("@monkeytype/contracts/schemas/shared").PersonalBests;
 
-//TODO replace
-export type ValidModeRule =
-  import("@monkeytype/contracts/schemas/configurations").ValidModeRule;
-export type RewardBracket =
-  import("@monkeytype/contracts/schemas/configurations").RewardBracket;
-export type Configuration =
-  import("@monkeytype/contracts/schemas/configurations").Configuration;
-
 export type CustomTextLimit = {
   value: number;
   mode: import("@monkeytype/contracts/schemas/util").CustomTextLimitMode;

@@ -1,4 +1,4 @@
-import { Configuration } from "@monkeytype/shared-types";
+import { Configuration } from "@monkeytype/contracts/schemas/configurations";
 
 export default class Root {
   constructor(private httpClient: Ape.HttpClient) {

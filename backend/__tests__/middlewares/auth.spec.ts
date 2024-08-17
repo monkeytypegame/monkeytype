@@ -86,22 +86,15 @@ describe("middlewares/auth", () => {
         requireFreshToken: true,
       });
 
-      let result;
-
-      try {
-        result = await authenticateRequest(
+      expect(() =>
+        authenticateRequest(
           mockRequest as Request,
           mockResponse as Response,
           nextFunction
-        );
-      } catch (e) {
-        result = e;
-      }
-
-      expect(result.message).toBe(
+        )
+      ).rejects.toThrowError(
         "Unauthorized\nStack: This endpoint requires a fresh token"
       );
-      expect(nextFunction).toHaveBeenCalledTimes(1);
     });
     it("should allow the request if token is fresh", async () => {
       Date.now = vi.fn(() => 10000);
@@ -321,7 +314,7 @@ describe("middlewares/auth", () => {
       expect(decodedToken?.uid).toBe("123");
       expect(nextFunction).toHaveBeenCalledTimes(1);
     });
-    it("should fail wit apeKey if apeKey is not supported", async () => {
+    it("should fail with apeKey if apeKey is not supported", async () => {
       //WHEN
       await expect(() =>
         authenticate(
@@ -329,6 +322,22 @@ describe("middlewares/auth", () => {
           { acceptApeKeys: false }
         )
       ).rejects.toThrowError("This endpoint does not accept ApeKeys");
+
+      //THEN
+    });
+    it("should fail with apeKey if apeKeys are disabled", async () => {
+      //GIVEN
+
+      //@ts-expect-error
+      mockRequest.ctx.configuration.apeKeys.acceptKeys = false;
+
+      //WHEN
+      await expect(() =>
+        authenticate(
+          { headers: { authorization: "ApeKey aWQua2V5" } },
+          { acceptApeKeys: false }
+        )
+      ).rejects.toThrowError("ApeKeys are not being accepted at this time");
 
       //THEN
     });
@@ -488,6 +497,112 @@ describe("middlewares/auth", () => {
         "gb",
         expect.anything()
       );
+    });
+    it("should allow the request with authentation on dev public endpoint", async () => {
+      //WHEN
+      const result = await authenticate({}, { isPublicOnDev: true });
+
+      //THEN
+      const decodedToken = result.decodedToken;
+      expect(decodedToken?.type).toBe("Bearer");
+      expect(decodedToken?.email).toBe(mockDecodedToken.email);
+      expect(decodedToken?.uid).toBe(mockDecodedToken.uid);
+      expect(nextFunction).toHaveBeenCalledTimes(1);
+    });
+    it("should allow the request without authentication on dev public endpoint", async () => {
+      //WHEN
+      const result = await authenticate(
+        { headers: {} },
+        { isPublicOnDev: true }
+      );
+
+      //THEN
+      const decodedToken = result.decodedToken;
+      expect(decodedToken?.type).toBe("None");
+      expect(decodedToken?.email).toBe("");
+      expect(decodedToken?.uid).toBe("");
+      expect(nextFunction).toHaveBeenCalledTimes(1);
+
+      expect(prometheusIncrementAuthMock).toHaveBeenCalledWith("None");
+      expect(prometheusRecordAuthTimeMock).toHaveBeenCalledOnce();
+    });
+    it("should allow the request with apeKey on dev public endpoint", async () => {
+      //WHEN
+      const result = await authenticate(
+        { headers: { authorization: "ApeKey aWQua2V5" } },
+        { acceptApeKeys: true, isPublicOnDev: true }
+      );
+
+      //THEN
+      const decodedToken = result.decodedToken;
+      expect(decodedToken?.type).toBe("ApeKey");
+      expect(decodedToken?.email).toBe("");
+      expect(decodedToken?.uid).toBe("123");
+      expect(nextFunction).toHaveBeenCalledTimes(1);
+
+      expect(prometheusIncrementAuthMock).toHaveBeenCalledWith("ApeKey");
+      expect(prometheusRecordAuthTimeMock).toHaveBeenCalledOnce();
+    });
+    it("should allow with apeKey if apeKeys are disabled on dev public endpoint", async () => {
+      //GIVEN
+
+      //@ts-expect-error
+      mockRequest.ctx.configuration.apeKeys.acceptKeys = false;
+
+      //WHEN
+      const result = await authenticate(
+        { headers: { authorization: "ApeKey aWQua2V5" } },
+        { acceptApeKeys: true, isPublicOnDev: true }
+      );
+
+      //THEN
+      const decodedToken = result.decodedToken;
+      expect(decodedToken?.type).toBe("ApeKey");
+      expect(decodedToken?.email).toBe("");
+      expect(decodedToken?.uid).toBe("123");
+      expect(nextFunction).toHaveBeenCalledTimes(1);
+
+      expect(prometheusIncrementAuthMock).toHaveBeenCalledWith("ApeKey");
+      expect(prometheusRecordAuthTimeMock).toHaveBeenCalledOnce();
+    });
+    it("should allow the request with authentation on dev public endpoint in production", async () => {
+      //WHEN
+      isDevModeMock.mockReturnValue(false);
+      const result = await authenticate({}, { isPublicOnDev: true });
+
+      //THEN
+      const decodedToken = result.decodedToken;
+      expect(decodedToken?.type).toBe("Bearer");
+      expect(decodedToken?.email).toBe(mockDecodedToken.email);
+      expect(decodedToken?.uid).toBe(mockDecodedToken.uid);
+      expect(nextFunction).toHaveBeenCalledTimes(1);
+    });
+    it("should fail without authentication on dev public endpoint in production", async () => {
+      //WHEN
+      isDevModeMock.mockReturnValue(false);
+
+      //THEN
+      await expect(() =>
+        authenticate({ headers: {} }, { isPublicOnDev: true })
+      ).rejects.toThrowError("Unauthorized");
+    });
+    it("should allow with apeKey on dev public endpoint in production", async () => {
+      //WHEN
+      isDevModeMock.mockReturnValue(false);
+      const result = await authenticate(
+        { headers: { authorization: "ApeKey aWQua2V5" } },
+        { acceptApeKeys: true, isPublicOnDev: true }
+      );
+
+      //THEN
+      const decodedToken = result.decodedToken;
+      expect(decodedToken?.type).toBe("ApeKey");
+      expect(decodedToken?.email).toBe("");
+      expect(decodedToken?.uid).toBe("123");
+      expect(nextFunction).toHaveBeenCalledTimes(1);
+
+      expect(prometheusIncrementAuthMock).toHaveBeenCalledWith("ApeKey");
+      expect(prometheusRecordAuthTimeMock).toHaveBeenCalledOnce();
     });
   });
 });

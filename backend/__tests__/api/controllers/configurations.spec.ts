@@ -7,10 +7,33 @@ import {
 import * as Configuration from "../../../src/init/configuration";
 import type { Configuration as ConfigurationType } from "@monkeytype/contracts/schemas/configurations";
 import { ObjectId } from "mongodb";
+import * as Misc from "../../../src/utils/misc";
+import { DecodedIdToken } from "firebase-admin/auth";
+import * as AuthUtils from "../../../src/utils/auth";
+import * as AdminUuids from "../../../src/dal/admin-uids";
+
 const mockApp = request(app);
 const uid = new ObjectId().toHexString();
+const mockDecodedToken = {
+  uid,
+  email: "newuser@mail.com",
+  iat: 0,
+} as DecodedIdToken;
 
 describe("Configuration Controller", () => {
+  const isDevEnvironmentMock = vi.spyOn(Misc, "isDevEnvironment");
+  const verifyIdTokenMock = vi.spyOn(AuthUtils, "verifyIdToken");
+  const isAdminMock = vi.spyOn(AdminUuids, "isAdmin");
+
+  beforeEach(() => {
+    isAdminMock.mockReset();
+    verifyIdTokenMock.mockReset();
+    isDevEnvironmentMock.mockReset();
+
+    isDevEnvironmentMock.mockReturnValue(true);
+    isAdminMock.mockResolvedValue(true);
+  });
+
   describe("getConfiguration", () => {
     it("should get without authentication", async () => {
       //GIVEN
@@ -27,7 +50,7 @@ describe("Configuration Controller", () => {
   });
 
   describe("getConfigurationSchema", () => {
-    it("should get without authentication", async () => {
+    it("should get without authentication on dev", async () => {
       //GIVEN
 
       //WHEN
@@ -38,6 +61,50 @@ describe("Configuration Controller", () => {
         message: "Configuration schema retrieved",
         data: CONFIGURATION_FORM_SCHEMA,
       });
+    });
+
+    it("should fail without authentication on prod", async () => {
+      //GIVEN
+      isDevEnvironmentMock.mockReturnValue(false);
+
+      //WHEN
+      await mockApp.get("/configuration/schema").expect(401);
+    });
+    it("should get with authentication on prod", async () => {
+      //GIVEN
+      isDevEnvironmentMock.mockReturnValue(false);
+      verifyIdTokenMock.mockResolvedValue(mockDecodedToken);
+
+      //WHEN
+      const { body } = await mockApp
+        .get("/configuration/schema")
+        .set("Authorization", "Bearer 123456789")
+        .expect(200);
+
+      //THEN
+      expect(body).toEqual({
+        message: "Configuration schema retrieved",
+        data: CONFIGURATION_FORM_SCHEMA,
+      });
+
+      expect(verifyIdTokenMock).toHaveBeenCalled();
+    });
+    it("should fail with non-admin user on prod", async () => {
+      //GIVEN
+      isDevEnvironmentMock.mockReturnValue(false);
+      verifyIdTokenMock.mockResolvedValue(mockDecodedToken);
+      isAdminMock.mockResolvedValue(false);
+
+      //WHEN
+      const { body } = await mockApp
+        .get("/configuration/schema")
+        .set("Authorization", "Bearer 123456789")
+        .expect(403);
+
+      //THEN
+      expect(body.message).toEqual("You don't have permission to do this.");
+      expect(verifyIdTokenMock).toHaveBeenCalled();
+      expect(isAdminMock).toHaveBeenCalledWith(uid);
     });
   });
 
@@ -51,7 +118,7 @@ describe("Configuration Controller", () => {
       patchConfigurationMock.mockResolvedValue(true);
     });
 
-    it("patches configuration", async () => {
+    it("should update without authentication on dev", async () => {
       //GIVEN
       const patch = {
         users: {
@@ -64,8 +131,8 @@ describe("Configuration Controller", () => {
       //WHEN
       const { body } = await mockApp
         .patch("/configuration")
-        .send({ configuration: patch });
-      //.expect(200);
+        .send({ configuration: patch })
+        .expect(200);
 
       //THEN
       expect(body).toEqual({
@@ -76,20 +143,52 @@ describe("Configuration Controller", () => {
       expect(patchConfigurationMock).toHaveBeenCalledWith(patch);
     });
 
-    it("should fail wihtouth authentication", async () => {
-      await request(app).patch("/configuration").send({}).expect(401);
-    });
-
-    it("should fail for non admin users", async () => {
+    it("should fail update without authentication on prod", async () => {
       //GIVEN
+      isDevEnvironmentMock.mockReturnValue(false);
 
       //WHEN
-      const { body } = await mockApp
+      await request(app)
         .patch("/configuration")
-        .send({})
+        .send({ configuration: {} })
+        .expect(401);
+
+      //THEN
+      expect(patchConfigurationMock).not.toHaveBeenCalled();
+    });
+    it("should update with authentication on prod", async () => {
+      //GIVEN
+      isDevEnvironmentMock.mockReturnValue(false);
+      verifyIdTokenMock.mockResolvedValue(mockDecodedToken);
+
+      //WHEN
+      await mockApp
+        .patch("/configuration")
+        .set("Authorization", "Bearer 123456789")
+        .send({ configuration: {} })
+        .expect(200);
+
+      //THEN
+      expect(patchConfigurationMock).toHaveBeenCalled();
+      expect(verifyIdTokenMock).toHaveBeenCalled();
+    });
+
+    it("should fail for non admin users on prod", async () => {
+      //GIVEN
+      isDevEnvironmentMock.mockReturnValue(false);
+      isAdminMock.mockResolvedValue(false);
+      verifyIdTokenMock.mockResolvedValue(mockDecodedToken);
+
+      //WHEN
+      await mockApp
+        .patch("/configuration")
+        .set("Authorization", "Bearer 123456789")
+        .send({ configuration: {} })
         .expect(403);
 
       //THEN
+      expect(patchConfigurationMock).not.toHaveBeenCalled();
+      expect(isAdminMock).toHaveBeenCalledWith(uid);
     });
   });
 });

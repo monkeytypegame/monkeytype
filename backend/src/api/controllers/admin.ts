@@ -12,7 +12,7 @@ import {
   ToggleBanResponse,
 } from "@monkeytype/contracts/admin";
 import MonkeyError from "../../utils/error";
-import { Configuration } from "@monkeytype/shared-types";
+import { Configuration } from "@monkeytype/contracts/schemas/configurations";
 import { addImportantLog } from "../../dal/logs";
 
 export async function test(

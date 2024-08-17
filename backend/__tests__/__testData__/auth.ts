@@ -1,4 +1,4 @@
-import { Configuration } from "@monkeytype/shared-types";
+import { Configuration } from "@monkeytype/contracts/schemas/configurations";
 import { randomBytes } from "crypto";
 import { hash } from "bcrypt";
 import { ObjectId } from "mongodb";

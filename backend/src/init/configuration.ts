@@ -6,12 +6,13 @@ import { identity } from "../utils/misc";
 import { BASE_CONFIGURATION } from "../constants/base-configuration";
 import { Configuration } from "@monkeytype/contracts/schemas/configurations";
 import { addLog } from "../dal/logs";
+import { PartialConfiguration } from "@monkeytype/contracts/configurations";
 
 const CONFIG_UPDATE_INTERVAL = 10 * 60 * 1000; // 10 Minutes
 
 function mergeConfigurations(
   baseConfiguration: Configuration,
-  liveConfiguration: Partial<Configuration>
+  liveConfiguration: PartialConfiguration
 ): void {
   if (
     !_.isPlainObject(baseConfiguration) ||
@@ -111,7 +112,7 @@ async function pushConfiguration(configuration: Configuration): Promise<void> {
 }
 
 export async function patchConfiguration(
-  configurationUpdates: Partial<Configuration>
+  configurationUpdates: PartialConfiguration
 ): Promise<boolean> {
   try {
     const currentConfiguration = _.cloneDeep(configuration);

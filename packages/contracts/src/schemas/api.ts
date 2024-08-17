@@ -26,7 +26,7 @@ export type RequestAuthenticationOptions = {
   requireFreshToken?: boolean;
   noCache?: boolean;
   /** Allow unauthenticated requests on dev  */
-  publicOnDev?: boolean;
+  isPublicOnDev?: boolean;
 };
 
 export const MonkeyResponseSchema = z.object({

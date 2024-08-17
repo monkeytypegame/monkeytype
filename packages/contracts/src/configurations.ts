@@ -16,9 +16,12 @@ export type GetConfigurationResponse = z.infer<
   typeof GetConfigurationResponseSchema
 >;
 
+export const PartialConfigurationSchema = ConfigurationSchema.deepPartial();
+export type PartialConfiguration = z.infer<typeof PartialConfigurationSchema>;
+
 export const PatchConfigurationRequestSchema = z
   .object({
-    configuration: ConfigurationSchema.partial().strict(),
+    configuration: PartialConfigurationSchema.strict(),
   })
   .strict();
 export type PatchConfigurationRequest = z.infer<
@@ -60,8 +63,8 @@ export const configurationsContract = c.router(
       },
       metadata: {
         authenticationOptions: {
-          publicOnDev: true,
           noCache: true,
+          isPublicOnDev: true,
         },
       } as EndpointMetadata,
     },
@@ -75,7 +78,7 @@ export const configurationsContract = c.router(
       },
       metadata: {
         authenticationOptions: {
-          publicOnDev: true,
+          isPublicOnDev: true,
           noCache: true,
         },
       } as EndpointMetadata,

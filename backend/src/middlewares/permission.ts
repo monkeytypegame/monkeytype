@@ -4,29 +4,39 @@ import type { Response, NextFunction, RequestHandler } from "express";
 import { getPartialUser } from "../dal/user";
 import { isAdmin } from "../dal/admin-uids";
 import type { ValidationOptions } from "./configuration";
+import { TsRestRequestHandler } from "@ts-rest/express";
+import { TsRestRequestWithCtx } from "./auth";
+import { RequestAuthenticationOptions } from "@monkeytype/contracts/schemas/api";
+import { isDevEnvironment } from "../utils/misc";
 
 /**
  * Check if the user is an admin before handling request.
  * Note that this middleware must be used after authentication in the middleware stack.
  */
-export function checkIfUserIsAdmin(): RequestHandler {
+export function checkIfUserIsAdmin<
+  T extends AppRouter | AppRoute
+>(): TsRestRequestHandler<T> {
   return async (
-    req: MonkeyTypes.Request,
+    req: TsRestRequestWithCtx,
     _res: Response,
     next: NextFunction
   ) => {
-    try {
-      const { uid } = req.ctx.decodedToken;
-      const admin = await isAdmin(uid);
+    const options: RequestAuthenticationOptions =
+      req.tsRestRoute["metadata"]?.["authenticationOptions"] ?? {};
 
-      if (!admin) {
-        throw new MonkeyError(403, "You don't have permission to do this.");
-      }
-    } catch (error) {
-      next(error);
+    if (options.isPublicOnDev && isDevEnvironment()) {
+      next();
+      return;
     }
 
-    next();
+    const { uid } = req.ctx.decodedToken;
+    const admin = await isAdmin(uid);
+
+    if (!admin) {
+      next(new MonkeyError(403, "You don't have permission to do this."));
+    } else {
+      next();
+    }
   };
 }
 

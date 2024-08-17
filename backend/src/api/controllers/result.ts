@@ -36,7 +36,7 @@ import * as WeeklyXpLeaderboard from "../../services/weekly-xp-leaderboard";
 import { UAParser } from "ua-parser-js";
 import { canFunboxGetPb } from "../../utils/pb";
 import { buildDbResult, replaceLegacyValues } from "../../utils/result";
-import { Configuration } from "@monkeytype/shared-types";
+import { Configuration } from "@monkeytype/contracts/schemas/configurations";
 import { addLog } from "../../dal/logs";
 import {
   AddResultRequest,
