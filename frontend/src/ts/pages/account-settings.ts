@@ -7,7 +7,6 @@ import { getSnapshot } from "../db";
 import Ape from "../ape";
 import * as StreakHourOffsetModal from "../modals/streak-hour-offset";
 import * as Loader from "../elements/loader";
-// import * as ApeKeysModal from "../modals/ape-keys";
 import * as ApeKeyTable from "../elements/account-settings/ape-key-table";
 
 const pageElement = $(".page.pageAccountSettings");
@@ -139,7 +138,6 @@ function updateTabs(): void {
 }
 
 function updateAccountSections(): void {
-  //todo instead of removing, show a message
   pageElement
     .find(".section.optOutOfLeaderboards .optedOut")
     .addClass("hidden");
@@ -182,10 +180,6 @@ $(
 $(".page.pageAccountSettings #setStreakHourOffset").on("click", () => {
   StreakHourOffsetModal.show();
 });
-
-// $(".page.pageAccountSettings #showApeKeysPopup").on("click", () => {
-//   void ApeKeysModal.show();
-// });
 
 export const page = new Page({
   name: "accountSettings",
