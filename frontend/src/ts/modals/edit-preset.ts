@@ -6,16 +6,10 @@ import * as Settings from "../pages/settings";
 import * as Notifications from "../elements/notifications";
 import * as ConnectionState from "../states/connection";
 import AnimatedModal from "../utils/animated-modal";
-
-enum SettingGroup {
-  behaviour = "behaviour",
-  input = "input",
-  sound = "sound",
-  caret = "caret",
-  theme = "theme",
-  hideElements = "hide elements",
-  tags = "tags",
-}
+import {
+  activeSettingGroupsSchema,
+  SettingGroup,
+} from "@monkeytype/contracts/schemas/presets";
 
 const state = new Map(Object.values(SettingGroup).map((key) => [key, true]));
 
@@ -38,6 +32,10 @@ export function show(action: string, id?: string, name?: string): void {
         $("#editPresetModal .modal input").val("");
         $("#editPresetModal .modal input").removeClass("hidden");
         $("#editPresetModal .modal label").addClass("hidden");
+        $("#editPresetModal .modal .inputs").removeClass("hidden");
+        for (const key of state.keys()) {
+          state.set(key, true);
+        }
       } else if (action === "edit" && id !== undefined && name !== undefined) {
         $("#editPresetModal .modal").attr("data-action", "edit");
         $("#editPresetModal .modal").attr("data-preset-id", id);
@@ -47,6 +45,7 @@ export function show(action: string, id?: string, name?: string): void {
         $("#editPresetModal .modal input").removeClass("hidden");
         $("#editPresetModal .modal label input").prop("checked", false);
         $("#editPresetModal .modal label").removeClass("hidden");
+        $("#editPresetModal .modal .inputs").removeClass("hidden");
       } else if (
         action === "remove" &&
         id !== undefined &&
@@ -55,13 +54,15 @@ export function show(action: string, id?: string, name?: string): void {
         $("#editPresetModal .modal").attr("data-action", "remove");
         $("#editPresetModal .modal").attr("data-preset-id", id);
         $("#editPresetModal .modal .title").html("Delete preset");
-        $("#editPresetModal .modal button").html("delete");
+        $("#editPresetModal .modal submit").html("delete"); //fix
         $("#editPresetModal .modal input").addClass("hidden");
         $("#editPresetModal .modal label").addClass("hidden");
         $("#editPresetModal .modal .text").removeClass("hidden");
-        $("#editPresetModal .modal .text").text(
+        $("#editPresetModal .modal .deletePrompt").text(
+          // TODO:ask kashish about fix
           `Are you sure you want to delete the preset ${name}?`
         );
+        $("#editPresetModal .modal .inputs").addClass("hidden");
       }
       updateUI();
     },
@@ -97,19 +98,6 @@ async function apply(): Promise<void> {
     "checked"
   );
 
-  let configChanges: MonkeyTypes.ConfigChanges = {};
-
-  if ((updateConfig && action === "edit") || action === "add") {
-    configChanges = Config.getConfigChanges();
-
-    const tags = DB.getSnapshot()?.tags ?? [];
-
-    const activeTagIds: string[] = tags
-      .filter((tag: MonkeyTypes.UserTag) => tag.active)
-      .map((tag: MonkeyTypes.UserTag) => tag._id);
-    configChanges.tags = activeTagIds;
-  }
-
   const snapshotPresets = DB.getSnapshot()?.presets ?? [];
 
   hide();
@@ -117,6 +105,7 @@ async function apply(): Promise<void> {
   Loader.show();
 
   if (action === "add") {
+    const configChanges = getConfigChanges();
     const response = await Ape.presets.add({
       body: { name: presetName, config: configChanges },
     });
@@ -139,6 +128,7 @@ async function apply(): Promise<void> {
       } as MonkeyTypes.SnapshotPreset);
     }
   } else if (action === "edit") {
+    const configChanges = getConfigChanges();
     const response = await Ape.presets.save({
       body: {
         _id: presetId,
@@ -183,6 +173,25 @@ async function apply(): Promise<void> {
   void Settings.update();
   Loader.hide();
 }
+function getConfigChanges(): MonkeyTypes.ConfigChanges {
+  const presetConfig = Config.getConfigChanges();
+  const tags = DB.getSnapshot()?.tags ?? [];
+
+  const activeTagIds: string[] = tags
+    .filter((tag: MonkeyTypes.UserTag) => tag.active)
+    .map((tag: MonkeyTypes.UserTag) => tag._id);
+  return {
+    ...presetConfig,
+    tags: activeTagIds,
+    settingGroups: activeSettingGroupsSchema.parse(
+      Array.from(state.entries())
+        .filter(([, value]) => value)
+        .map(([key]) => key)
+    ),
+    // TODO: Set notifications for no selected
+  };
+}
+
 async function setup(modalEl: HTMLElement): Promise<void> {
   modalEl.addEventListener("submit", (e) => {
     e.preventDefault();
