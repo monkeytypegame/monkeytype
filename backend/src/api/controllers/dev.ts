@@ -9,7 +9,7 @@ import { roundTo2 } from "../../utils/misc";
 import { ObjectId } from "mongodb";
 import * as LeaderboardDal from "../../dal/leaderboards";
 import MonkeyError from "../../utils/error";
-import isNumber from "lodash/isNumber";
+
 import {
   Mode,
   PersonalBest,
@@ -20,16 +20,9 @@ import {
   GenerateDataResponse,
 } from "@monkeytype/contracts/dev";
 
-type GenerateDataOptions = {
-  firstTestTimestamp: Date | number;
-  lastTestTimestamp: Date | number;
-  minTestsPerDay: number;
-  maxTestsPerDay: number;
-};
-
-const CREATE_RESULT_DEFAULT_OPTIONS: GenerateDataOptions = {
-  firstTestTimestamp: DateUtils.startOfDay(new UTCDate(Date.now())),
-  lastTestTimestamp: DateUtils.endOfDay(new UTCDate(Date.now())),
+const CREATE_RESULT_DEFAULT_OPTIONS: Partial<GenerateDataRequest> = {
+  firstTestTimestamp: DateUtils.startOfDay(new UTCDate(Date.now())).valueOf(),
+  lastTestTimestamp: DateUtils.endOfDay(new UTCDate(Date.now())).valueOf(),
   minTestsPerDay: 0,
   maxTestsPerDay: 50,
 };
@@ -77,23 +70,23 @@ async function getOrCreateUser(
 
 async function createTestResults(
   user: MonkeyTypes.DBUser,
-  configOptions: Partial<GenerateDataOptions>
+  configOptions: GenerateDataRequest
 ): Promise<void> {
   const config = {
     ...CREATE_RESULT_DEFAULT_OPTIONS,
     ...configOptions,
   };
-  if (isNumber(config.firstTestTimestamp))
-    config.firstTestTimestamp = toDate(config.firstTestTimestamp);
-  if (isNumber(config.lastTestTimestamp))
-    config.lastTestTimestamp = toDate(config.lastTestTimestamp);
+  const start = toDate(config.firstTestTimestamp as number);
+  const end = toDate(config.lastTestTimestamp as number);
 
   const days = DateUtils.eachDayOfInterval({
-    start: config.firstTestTimestamp,
-    end: config.lastTestTimestamp,
+    start,
+    end,
   }).map((day) => ({
     timestamp: DateUtils.startOfDay(day),
-    amount: Math.round(random(config.minTestsPerDay, config.maxTestsPerDay)),
+    amount: Math.round(
+      random(config.minTestsPerDay as number, config.maxTestsPerDay as number)
+    ),
   }));
 
   for (const day of days) {

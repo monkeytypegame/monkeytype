@@ -2,6 +2,7 @@ import _ from "lodash";
 import type { Request, Response, NextFunction, RequestHandler } from "express";
 import { handleMonkeyResponse, MonkeyResponse } from "../utils/monkey-response";
 import { recordClientVersion as prometheusRecordClientVersion } from "../utils/prometheus";
+import { validate } from "./configuration";
 
 export const emptyMiddleware = (
   _req: MonkeyTypes.Request,
@@ -48,4 +49,13 @@ export function recordClientVersion(): RequestHandler {
 
     next();
   };
+}
+
+export function onlyAvailableOnDev(): RequestHandler {
+  return validate({
+    criteria: () => {
+      return isDevEnvironment();
+    },
+    invalidMessage: "Development endpoints are only available in DEV mode.",
+  });
 }
