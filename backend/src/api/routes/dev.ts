@@ -1,35 +1,22 @@
-import { Router } from "express";
-import joi from "joi";
-import { createTestData } from "../controllers/dev";
-import { isDevEnvironment } from "../../utils/misc";
+import { devContract } from "@monkeytype/contracts/dev";
+import { initServer } from "@ts-rest/express";
 import { validate } from "../../middlewares/configuration";
-import { validateRequest } from "../../middlewares/validation";
-import { asyncHandler } from "../../middlewares/utility";
+import { isDevEnvironment } from "../../utils/misc";
+import * as DevController from "../controllers/dev";
+import { callController } from "../ts-rest-adapter";
 
-const router = Router();
+const onlyAvailableOnDev = validate({
+  criteria: () => {
+    return isDevEnvironment();
+  },
+  invalidMessage: "Development endpoints are only available in DEV mode.",
+});
 
-router.use(
-  validate({
-    criteria: () => {
-      return isDevEnvironment();
-    },
-    invalidMessage: "Development endpoints are only available in DEV mode.",
-  })
-);
+const s = initServer();
 
-router.post(
-  "/generateData",
-  validateRequest({
-    body: {
-      username: joi.string().required(),
-      createUser: joi.boolean().optional(),
-      firstTestTimestamp: joi.number().optional(),
-      lastTestTimestamp: joi.number().optional(),
-      minTestsPerDay: joi.number().optional(),
-      maxTestsPerDay: joi.number().optional(),
-    },
-  }),
-  asyncHandler(createTestData)
-);
-
-export default router;
+export default s.router(devContract, {
+  generateData: {
+    middleware: [onlyAvailableOnDev],
+    handler: async (r) => callController(DevController.createTestData)(r),
+  },
+});

@@ -1,4 +1,4 @@
-import { MonkeyResponse } from "../../utils/monkey-response";
+import { MonkeyResponse2 } from "../../utils/monkey-response";
 import * as UserDal from "../../dal/user";
 import FirebaseAdmin from "../../init/firebase-admin";
 import Logger from "../../utils/logger";
@@ -15,10 +15,14 @@ import {
   PersonalBest,
   PersonalBests,
 } from "@monkeytype/contracts/schemas/shared";
+import {
+  GenerateDataRequest,
+  GenerateDataResponse,
+} from "@monkeytype/contracts/dev";
 
 type GenerateDataOptions = {
-  firstTestTimestamp: Date;
-  lastTestTimestamp: Date;
+  firstTestTimestamp: Date | number;
+  lastTestTimestamp: Date | number;
   minTestsPerDay: number;
   maxTestsPerDay: number;
 };
@@ -31,8 +35,8 @@ const CREATE_RESULT_DEFAULT_OPTIONS: GenerateDataOptions = {
 };
 
 export async function createTestData(
-  req: MonkeyTypes.Request
-): Promise<MonkeyResponse> {
+  req: MonkeyTypes.Request2<undefined, GenerateDataRequest>
+): Promise<GenerateDataResponse> {
   const { username, createUser } = req.body;
   const user = await getOrCreateUser(username, "password", createUser);
 
@@ -42,7 +46,7 @@ export async function createTestData(
   await updateUser(uid);
   await updateLeaderboard();
 
-  return new MonkeyResponse("test data created", { uid, email }, 200);
+  return new MonkeyResponse2("test data created", { uid, email });
 }
 
 async function getOrCreateUser(

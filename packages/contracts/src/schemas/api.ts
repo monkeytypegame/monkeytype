@@ -9,7 +9,8 @@ export type OpenApiTag =
   | "public"
   | "leaderboards"
   | "results"
-  | "configuration";
+  | "configuration"
+  | "dev";
 
 export type EndpointMetadata = {
   /** Authentication options, by default a bearer token is required. */
@@ -18,7 +19,7 @@ export type EndpointMetadata = {
 };
 
 export type RequestAuthenticationOptions = {
-  /** Endpoint is accessible without any authentication. If `false` bearer authentication is required. */
+  /** Endpoint is accessible without any authentication. If `false` bearer authentication is requuired. */
   isPublic?: boolean;
   /** Endpoint is accessible with ape key authentication in  _addition_ to the bearer authentication. */
   acceptApeKeys?: boolean;
