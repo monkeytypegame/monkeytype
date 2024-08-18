@@ -10,6 +10,7 @@ import {
   activeSettingGroupsSchema,
   SettingGroup,
 } from "@monkeytype/contracts/schemas/presets";
+import { getPreset } from "../controllers/preset-controller";
 
 const state = new Map(Object.values(SettingGroup).map((key) => [key, true]));
 
@@ -37,6 +38,15 @@ export function show(action: string, id?: string, name?: string): void {
           state.set(key, true);
         }
       } else if (action === "edit" && id !== undefined && name !== undefined) {
+        for (const key of state.keys()) {
+          state.set(key, false);
+        }
+        const presetSettingGroups = await getPreset(id);
+        presetSettingGroups?.config.settingGroups.forEach(
+          (currentActiveSettingGroup) =>
+            state.set(currentActiveSettingGroup, true)
+        );
+        //TODO: change settingGroup to activeSettingGroup
         $("#editPresetModal .modal").attr("data-action", "edit");
         $("#editPresetModal .modal").attr("data-preset-id", id);
         $("#editPresetModal .modal .popupTitle").html("Edit preset");
@@ -54,7 +64,7 @@ export function show(action: string, id?: string, name?: string): void {
         $("#editPresetModal .modal").attr("data-action", "remove");
         $("#editPresetModal .modal").attr("data-preset-id", id);
         $("#editPresetModal .modal .title").html("Delete preset");
-        $("#editPresetModal .modal submit").html("delete"); //fix
+        $("#editPresetModal .modal submit").html("delete"); //TODO:fix
         $("#editPresetModal .modal input").addClass("hidden");
         $("#editPresetModal .modal label").addClass("hidden");
         $("#editPresetModal .modal .text").removeClass("hidden");

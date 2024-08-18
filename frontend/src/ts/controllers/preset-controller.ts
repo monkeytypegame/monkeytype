@@ -1,3 +1,4 @@
+import { Preset } from "@monkeytype/contracts/schemas/presets";
 import * as UpdateConfig from "../config";
 import * as DB from "../db";
 import * as Notifications from "../elements/notifications";
@@ -29,4 +30,20 @@ export async function apply(_id: string): Promise<void> {
     duration: 2,
   });
   UpdateConfig.saveFullConfigToLocalStorage();
+}
+
+export async function getPreset(_id: string): Promise<Preset | undefined> {
+  const snapshot = DB.getSnapshot();
+  if (!snapshot) {
+    return;
+    //TODO: fix
+  }
+
+  const preset = snapshot.presets?.find((preset) => preset._id === _id);
+
+  if (preset === undefined) {
+    Notifications.add("Preset not found", 0);
+    return;
+  }
+  return preset;
 }
