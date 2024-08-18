@@ -26,7 +26,7 @@ export async function getQuotes(
   let quoteModString: string;
   if (quoteMod === true) {
     quoteModString = "all";
-  } else if (quoteMod !== false && quoteMod !== undefined) {
+  } else if (quoteMod !== false && quoteMod !== undefined && quoteMod !== "") {
     quoteModString = quoteMod;
   } else {
     throw new MonkeyError(403, "You are not allowed to view submitted quotes");

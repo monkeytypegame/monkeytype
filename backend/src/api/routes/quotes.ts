@@ -10,6 +10,7 @@ import { validateRequest } from "../../middlewares/validation";
 
 const router = Router();
 
+//TODO: permission check could be removed, the controller already checks the same
 const checkIfUserIsQuoteMod = checkUserPermissions({
   criteria: (user) => {
     return (
