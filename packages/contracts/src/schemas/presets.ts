@@ -8,33 +8,38 @@ export const PresetNameSchema = z
   .max(16);
 export type PresentName = z.infer<typeof PresetNameSchema>;
 
-export enum SettingGroup {
-  behaviour = "behaviour",
-  input = "input",
-  sound = "sound",
-  caret = "caret",
-  theme = "theme",
-  hideElements = "hide elements",
-  tags = "tags",
-  ads = "ads",
-}
-export const presetSettingGroupSchema = z.nativeEnum(SettingGroup);
+export const presetSettingGroupSchema = z.enum([
+  "test",
+  "account",
+  "behaviour",
+  "input",
+  "sound",
+  "caret",
+  "appearance",
+  "theme",
+  "hide elements",
+  "ads",
+]);
 export type PresetSettingGroup = z.infer<typeof presetSettingGroupSchema>;
 export const activeSettingGroupsSchema = z
-  .array(presetSettingGroupSchema) //add unique property here
+  .array(presetSettingGroupSchema)
   .min(1)
   .superRefine((settingList, ctx) => {
-    settingList.forEach((val1, ind1) => {
-      settingList.forEach((val2, ind2) => {
-        if (ind1 === ind2) return;
-        if (val1 === val2) {
+    presetSettingGroupSchema.options.forEach(
+      (presetSettingGroup: PresetSettingGroup) => {
+        const duplicateElemExits: boolean =
+          settingList.filter(
+            (settingGroup: PresetSettingGroup) =>
+              settingGroup === presetSettingGroup
+          ).length > 1;
+        if (duplicateElemExits) {
           ctx.addIssue({
             code: z.ZodIssueCode.custom,
             message: `No duplicates allowed.`,
           });
         }
-      });
-    });
+      }
+    );
   });
 export type ActiveSettingGroups = z.infer<typeof activeSettingGroupsSchema>;
 

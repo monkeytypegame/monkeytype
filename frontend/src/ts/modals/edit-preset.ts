@@ -8,11 +8,14 @@ import * as ConnectionState from "../states/connection";
 import AnimatedModal from "../utils/animated-modal";
 import {
   activeSettingGroupsSchema,
-  SettingGroup,
+  PresetSettingGroup,
+  presetSettingGroupSchema,
 } from "@monkeytype/contracts/schemas/presets";
 import { getPreset } from "../controllers/preset-controller";
 
-const state = new Map(Object.values(SettingGroup).map((key) => [key, true]));
+const state = new Map(
+  presetSettingGroupSchema.options.map((key) => [key, true])
+);
 
 export function show(action: string, id?: string, name?: string): void {
   if (!ConnectionState.get()) {
@@ -80,16 +83,19 @@ export function show(action: string, id?: string, name?: string): void {
 }
 
 function updateUI(): void {
-  Object.values(SettingGroup).forEach((settingGroup: SettingGroup) => {
-    $(
-      `#editPresetModal .modal .group[data-id="${settingGroup.toString()}"] button`
-    ).removeClass("active");
-    $(
-      `#editPresetModal .modal .group[data-id="${settingGroup.toString()}"] button[value="${state.get(
-        settingGroup
-      )}"]`
-    ).addClass("active");
-  });
+  console.log(state);
+  presetSettingGroupSchema.options.forEach(
+    (settingGroup: PresetSettingGroup) => {
+      $(
+        `#editPresetModal .modal .group[data-id="${settingGroup.toString()}"] button`
+      ).removeClass("active");
+      $(
+        `#editPresetModal .modal .group[data-id="${settingGroup.toString()}"] button[value="${state.get(
+          settingGroup
+        )}"]`
+      ).addClass("active");
+    }
+  );
 }
 
 function hide(): void {
@@ -139,6 +145,7 @@ async function apply(): Promise<void> {
     }
   } else if (action === "edit") {
     const configChanges = getConfigChanges();
+    console.log(configChanges);
     const response = await Ape.presets.save({
       body: {
         _id: presetId,
@@ -156,6 +163,7 @@ async function apply(): Promise<void> {
       )[0] as MonkeyTypes.SnapshotPreset;
       preset.name = presetName;
       preset.display = presetName.replace(/_/g, " ");
+      preset.config.settingGroups = configChanges.settingGroups;
       if (updateConfig) {
         preset.config = configChanges;
       }
@@ -183,21 +191,150 @@ async function apply(): Promise<void> {
   void Settings.update();
   Loader.hide();
 }
-function getConfigChanges(): MonkeyTypes.ConfigChanges {
+
+function getSettingGroup(configFieldName: string): PresetSettingGroup {
+  switch (configFieldName) {
+    case "theme":
+    case "themeLight":
+    case "themeDark":
+    case "autoSwitchTheme":
+    case "customTheme":
+    case "customThemeColors":
+    case "favThemes":
+    case "flipTestColors":
+    case "colorfulMode":
+    case "randomTheme":
+    case "customBackground":
+    case "customBackgroundSize":
+    case "customBackgroundFilter":
+      return presetSettingGroupSchema.Enum.theme;
+
+    case "showKeyTips":
+    case "capsLockWarning":
+    case "showOutOfFocusWarning":
+    case "showAverage":
+      return presetSettingGroupSchema.Enum["hide elements"];
+
+    case "smoothCaret":
+    case "caretStyle":
+    case "paceCaretStyle":
+    case "paceCaret":
+    case "paceCaretCustomSpeed":
+    case "repeatedPace":
+      return presetSettingGroupSchema.Enum.caret;
+
+    case "quickRestart":
+    case "difficulty":
+    case "blindMode":
+    case "funbox":
+    case "alwaysShowWordsHistory":
+    case "singleListCommandLine":
+    case "minWpm":
+    case "minWpmCustomSpeed":
+    case "minAcc":
+    case "minAccCustom":
+    case "repeatQuotes":
+    case "customLayoutfluid":
+    case "minBurst":
+    case "minBurstCustomSpeed":
+    case "burstHeatmap": //not sure
+    case "britishEnglish":
+      return presetSettingGroupSchema.Enum.behaviour;
+
+    case "punctuation":
+    case "words":
+    case "time":
+    case "numbers":
+    case "mode":
+    case "quoteLength":
+    case "language":
+      return presetSettingGroupSchema.Enum.test;
+
+    case "fontSize":
+    case "timerStyle":
+    case "liveSpeedStyle":
+    case "liveAccStyle":
+    case "liveBurstStyle":
+    case "timerColor":
+    case "timerOpacity":
+    case "showAllLines":
+    case "keymapMode":
+    case "keymapStyle":
+    case "keymapLegendStyle":
+    case "keymapLayout":
+    case "keymapShowTopRow":
+    case "keymapSize":
+    case "fontFamily":
+    case "smoothLineScroll":
+    case "alwaysShowDecimalPlaces":
+    case "startGraphsAtZero":
+    case "highlightMode":
+    case "tapeMode":
+    case "typingSpeedUnit":
+    case "monkey": //can only be accessed from commandline seems appropriate here
+    case "monkeyPowerLevel": //same as monkey
+    case "maxLineWidth":
+      return presetSettingGroupSchema.Enum.appearance;
+
+    case "freedomMode":
+    case "quickEnd":
+    case "layout":
+    case "confidenceMode":
+    case "indicateTypos":
+    case "stopOnError":
+    case "hideExtraLetters":
+    case "strictSpace":
+    case "oppositeShiftMode":
+    case "lazyMode":
+      return presetSettingGroupSchema.Enum.input;
+
+    case "playSoundOnError":
+    case "playSoundOnClick":
+    case "soundVolume":
+      return presetSettingGroupSchema.Enum.sound;
+
+    case "accountChart":
+      return presetSettingGroupSchema.Enum.account;
+
+    case "ads":
+      return presetSettingGroupSchema.Enum.ads;
+    default:
+      break;
+  }
+  throw new Error("Some setting not part of any setting group");
+}
+
+function getActiveConfigChanges(): MonkeyTypes.ConfigChanges {
   const presetConfig = Config.getConfigChanges();
+  const activeConfigChanges = {} as MonkeyTypes.PresetConfig;
+  Object.keys(presetConfig)
+    .filter((settingName) => state.get(getSettingGroup(settingName)) === true)
+    .forEach((settingName) => {
+      //@ts-expect-error this is fine
+      activeConfigChanges[settingName] = presetConfig[settingName];
+    });
+  return activeConfigChanges;
+}
+function getConfigChanges(): MonkeyTypes.ConfigChanges {
+  const activeConfigChanges = getActiveConfigChanges();
   const tags = DB.getSnapshot()?.tags ?? [];
 
   const activeTagIds: string[] = tags
     .filter((tag: MonkeyTypes.UserTag) => tag.active)
     .map((tag: MonkeyTypes.UserTag) => tag._id);
+
+  console.log("activeConfigChanges", activeConfigChanges);
   return {
-    ...presetConfig,
-    tags: activeTagIds,
+    ...activeConfigChanges,
     settingGroups: activeSettingGroupsSchema.parse(
       Array.from(state.entries())
         .filter(([, value]) => value)
         .map(([key]) => key)
     ),
+    ...(state.get(presetSettingGroupSchema.Enum.account) === true && {
+      tags: activeTagIds,
+    }),
+
     // TODO: Set notifications for no selected
   };
 }
@@ -208,19 +345,21 @@ async function setup(modalEl: HTMLElement): Promise<void> {
     void apply();
   });
 
-  Object.values(SettingGroup).forEach((settingGroup: SettingGroup) => {
-    for (const button of modalEl.querySelectorAll(
-      `.group[data-id='${settingGroup.toString()}'] button`
-    )) {
-      button.addEventListener("click", (e) => {
-        state.set(
-          settingGroup,
-          (e.target as HTMLButtonElement).value === "true" ? true : false
-        );
-        updateUI();
-      });
+  presetSettingGroupSchema.options.forEach(
+    (settingGroup: PresetSettingGroup) => {
+      for (const button of modalEl.querySelectorAll(
+        `.group[data-id='${settingGroup.toString()}'] button`
+      )) {
+        button.addEventListener("click", (e) => {
+          state.set(
+            settingGroup,
+            (e.target as HTMLButtonElement).value === "true" ? true : false
+          );
+          updateUI();
+        });
+      }
     }
-  });
+  );
 }
 const modal = new AnimatedModal({
   dialogId: "editPresetModal",
