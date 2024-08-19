@@ -7,7 +7,8 @@ export type OpenApiTag =
   | "admin"
   | "psas"
   | "public"
-  | "leaderboards";
+  | "leaderboards"
+  | "quotes";
 
 export type EndpointMetadata = {
   /** Authentication options, by default a bearer token is required. */

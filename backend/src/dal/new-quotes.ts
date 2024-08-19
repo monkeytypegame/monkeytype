@@ -6,6 +6,7 @@ import { readFile } from "node:fs/promises";
 import * as db from "../init/db";
 import MonkeyError from "../utils/error";
 import { compareTwoStrings } from "string-similarity";
+import { Quote } from "@monkeytype/contracts/schemas/quotes";
 
 const PATH_TO_REPO = "../../../../monkeytype-new-quotes";
 
@@ -106,14 +107,6 @@ export async function get(language: string): Promise<MonkeyTypes.NewQuote[]> {
     .limit(10)
     .toArray();
 }
-
-type Quote = {
-  id?: number;
-  text: string;
-  source: string;
-  length: number;
-  approvedBy: string;
-};
 
 type ApproveReturn = {
   quote: Quote;

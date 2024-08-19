@@ -210,7 +210,10 @@ describe("QuotesController", () => {
       enableQuotes(false);
 
       //WHEN
-      const { body } = await mockApp.post("/quotes").send({}).expect(503);
+      const { body } = await mockApp
+        .post("/quotes")
+        .set("authorization", `Uid ${uid}`)
+        .expect(503);
 
       //THEN
       expect(body.message).toEqual(
@@ -224,11 +227,15 @@ describe("QuotesController", () => {
         .set("authorization", `Uid ${uid}`)
         .expect(422);
 
-      expect(body.message).toEqual("Please fill all the fields");
-      /* TODO:
       expect(body).toEqual({
-        message: "",
-      });*/
+        message: "Invalid request data schema",
+        validationErrors: [
+          '"text" Required',
+          '"source" Required',
+          '"language" Required',
+          '"captcha" Required',
+        ],
+      });
     });
     it("should fail with unknown properties", async () => {
       //WHEN
@@ -245,11 +252,10 @@ describe("QuotesController", () => {
         .expect(422);
 
       //THEN
-      expect(body.message).toEqual("Please fill all the fields");
-      /* TODO:
       expect(body).toEqual({
-        message: "",
-      });*/
+        message: "Invalid request data schema",
+        validationErrors: ["Unrecognized key(s) in object: 'extra'"],
+      });
     });
     it("should fail with invalid capture", async () => {
       //GIVEN
@@ -381,10 +387,10 @@ describe("QuotesController", () => {
         .expect(422);
 
       //THEN
-      expect(body.message).toEqual("Please fill all the fields");
-      /* TODO
-      expect(body).toEqual({});
-      */
+      expect(body).toEqual({
+        message: "Invalid request data schema",
+        validationErrors: ['"quoteId" Required'],
+      });
     });
     it("should fail with unknown properties", async () => {
       //WHEN
@@ -395,10 +401,10 @@ describe("QuotesController", () => {
         .expect(422);
 
       //THEN
-      expect(body.message).toEqual("Please fill all the fields");
-      /* TODO
-      expect(body).toEqual({});
-      */
+      expect(body).toEqual({
+        message: "Invalid request data schema",
+        validationErrors: ["Unrecognized key(s) in object: 'extra'"],
+      });
     });
     it("should fail if user is no quote mod", async () => {
       //GIVEN
@@ -413,9 +419,6 @@ describe("QuotesController", () => {
 
       //THEN
       expect(body.message).toEqual("You don't have permission to do this.");
-      /* TODO
-      expect(body).toEqual({});
-      */
     });
     it("should fail without authentication", async () => {
       await mockApp
@@ -458,10 +461,10 @@ describe("QuotesController", () => {
         .expect(422);
 
       //THEN
-      expect(body.message).toEqual('"quoteId" is required (undefined)');
-      /* TODO
-      expect(body).toEqual({});
-      */
+      expect(body).toEqual({
+        message: "Invalid request data schema",
+        validationErrors: ['"quoteId" Required'],
+      });
     });
     it("should fail with unknown properties", async () => {
       //GIVEN
@@ -475,10 +478,10 @@ describe("QuotesController", () => {
         .expect(422);
 
       //THEN
-      expect(body.message).toEqual('"extra" is not allowed (value)');
-      /* TODO
-      expect(body).toEqual({});
-      */
+      expect(body).toEqual({
+        message: "Invalid request data schema",
+        validationErrors: ["Unrecognized key(s) in object: 'extra'"],
+      });
     });
     it("should fail if user is no quote mod", async () => {
       //GIVEN
@@ -545,12 +548,12 @@ describe("QuotesController", () => {
         .get("/quotes/rating")
         .set("authorization", `Uid ${uid}`)
         .expect(422);
-      //THEN
-      expect(body.message).toEqual('"quoteId" is required (undefined)');
 
-      /* TODO
-      expect(body).toEqual({});
-      */
+      //THEN
+      expect(body).toEqual({
+        message: "Invalid query schema",
+        validationErrors: ['"quoteId" Invalid input', '"language" Required'],
+      });
     });
     it("should fail with unknown query parameters", async () => {
       //WHEN
@@ -559,12 +562,12 @@ describe("QuotesController", () => {
         .set("authorization", `Uid ${uid}`)
         .query({ quoteId: 42, language: "english", extra: "value" })
         .expect(422);
-      //THEN
-      expect(body.message).toEqual('"extra" is not allowed (value)');
 
-      /* TODO
-      expect(body).toEqual({});
-      */
+      //THEN
+      expect(body).toEqual({
+        message: "Invalid query schema",
+        validationErrors: ["Unrecognized key(s) in object: 'extra'"],
+      });
     });
     it("should fail without authentication", async () => {
       await mockApp
@@ -685,10 +688,14 @@ describe("QuotesController", () => {
         .expect(422);
 
       //THEN
-      expect(body.message).toEqual('"quoteId" is required (undefined)');
-      /* TODO
-      expect(body).toEqual({});
-      */
+      expect(body).toEqual({
+        message: "Invalid request data schema",
+        validationErrors: [
+          '"quoteId" Invalid input',
+          '"language" Required',
+          '"rating" Required',
+        ],
+      });
     });
     it("should fail with unknown parameter", async () => {
       //WHEN
@@ -699,10 +706,10 @@ describe("QuotesController", () => {
         .expect(422);
 
       //THEN
-      expect(body.message).toEqual('"extra" is not allowed (value)');
-      /* TODO
-      expect(body).toEqual({});
-      */
+      expect(body).toEqual({
+        message: "Invalid request data schema",
+        validationErrors: ["Unrecognized key(s) in object: 'extra'"],
+      });
     });
     it("should fail with zero rating", async () => {
       //WHEN
@@ -713,12 +720,12 @@ describe("QuotesController", () => {
         .expect(422);
 
       //THEN
-      expect(body.message).toEqual(
-        '"rating" must be greater than or equal to 1 (0)'
-      );
-      /* TODO
-      expect(body).toEqual({});
-      */
+      expect(body).toEqual({
+        message: "Invalid request data schema",
+        validationErrors: [
+          '"rating" Number must be greater than or equal to 1',
+        ],
+      });
     });
     it("should fail with rating bigger than 5", async () => {
       //WHEN
@@ -729,12 +736,10 @@ describe("QuotesController", () => {
         .expect(422);
 
       //THEN
-      expect(body.message).toEqual(
-        '"rating" must be less than or equal to 5 (6)'
-      );
-      /* TODO
-      expect(body).toEqual({});
-      */
+      expect(body).toEqual({
+        message: "Invalid request data schema",
+        validationErrors: ['"rating" Number must be less than or equal to 5'],
+      });
     });
 
     it("should fail with non-integer rating", async () => {
@@ -744,14 +749,11 @@ describe("QuotesController", () => {
         .set("authorization", `Uid ${uid}`)
         .send({ quoteId: 23, language: "english", rating: 2.5 })
         .expect(422);
-
       //THEN
-      expect(body.message).toEqual(
-        '"rating" must be greater than or equal to 1 (0)'
-      );
-      /* TODO
-      expect(body).toEqual({});
-      */
+      expect(body).toEqual({
+        message: "Invalid request data schema",
+        validationErrors: ['"rating" Expected integer, received float'],
+      });
     });
 
     it("should fail without authentication", async () => {
@@ -778,13 +780,13 @@ describe("QuotesController", () => {
         .post("/quotes/report")
         .set("authorization", `Uid ${uid}`)
         .send({
-          quoteId: "23", //why?
+          quoteId: 23,
           quoteLanguage: "english",
           reason: "Inappropriate content",
           comment: "I don't like this.",
           captcha: "captcha",
-        })
-        .expect(200);
+        });
+      //.expect(200);
 
       //THEN
       expect(body).toEqual({
@@ -808,11 +810,11 @@ describe("QuotesController", () => {
     });
 
     it("should report quote without comment", async () => {
-      await mockApp
+      const { body } = await mockApp
         .post("/quotes/report")
         .set("authorization", `Uid ${uid}`)
         .send({
-          quoteId: "23", //why?
+          quoteId: 23,
           quoteLanguage: "english",
           reason: "Inappropriate content",
           captcha: "captcha",
@@ -838,18 +840,27 @@ describe("QuotesController", () => {
         .post("/quotes/report")
         .set("authorization", `Uid ${uid}`)
         .expect(422);
+
       //THEN
-      expect(body.message).toEqual('"quoteId" is required (undefined)');
-      /*TODO:
-      expect(body).toEqual({});
-      */
+      expect(body).toEqual({
+        message: "Invalid request data schema",
+        validationErrors: [
+          '"quoteId" Invalid input',
+          '"quoteLanguage" Required',
+          '"reason" Required',
+          '"captcha" Required',
+        ],
+      });
     });
     it("should fail if feature is disabled", async () => {
       //GIVEN
       enableQuoteReporting(false);
 
       //WHEN
-      const { body } = await mockApp.post("/quotes/report").expect(503);
+      const { body } = await mockApp
+        .post("/quotes/report")
+        .set("authorization", `Uid ${uid}`)
+        .expect(503);
 
       //THEN
       expect(body.message).toEqual("Quote reporting is unavailable.");

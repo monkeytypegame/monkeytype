@@ -83,6 +83,7 @@ declare namespace MonkeyTypes {
     useCount: number;
   };
 
+  //TODO replaced
   type NewQuote = {
     _id: ObjectId;
     text: string;
@@ -106,6 +107,7 @@ declare namespace MonkeyTypes {
     comment: string;
   };
 
+  //TODO replaced
   type QuoteRating = {
     _id: string;
     average: number;
