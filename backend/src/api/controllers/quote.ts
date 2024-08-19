@@ -61,7 +61,12 @@ export async function approveQuote(
   req: MonkeyTypes.Request
 ): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
-  const { quoteId, editText, editSource } = req.body;
+  const { quoteId } = req.body;
+  let { editText, editSource } = req.body;
+
+  //TODO replace with zod transform
+  editText = editText !== null ? editText : undefined;
+  editSource = editSource !== null ? editSource : undefined;
 
   const { name } = await getPartialUser(uid, "approve quote", ["name"]);
 

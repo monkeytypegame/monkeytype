@@ -122,8 +122,8 @@ type ApproveReturn = {
 
 export async function approve(
   quoteId: string,
-  editQuote: string,
-  editSource: string,
+  editQuote: string | undefined,
+  editSource: string | undefined,
   name: string
 ): Promise<ApproveReturn> {
   if (git === undefined) throw new MonkeyError(500, "Git not available.");
@@ -139,8 +139,8 @@ export async function approve(
   }
   const language = targetQuote.language;
   const quote: Quote = {
-    text: editQuote ? editQuote : targetQuote.text,
-    source: editSource ? editSource : targetQuote.source,
+    text: editQuote ?? targetQuote.text,
+    source: editSource ?? targetQuote.source,
     length: targetQuote.text.length,
     approvedBy: name,
   };

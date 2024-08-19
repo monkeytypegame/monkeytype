@@ -147,9 +147,14 @@ router.post(
   }),
   authenticateRequest(),
   RateLimit.quoteReportSubmit,
+  checkUserPermissions({
+    criteria: (user) => {
+      return user.canReport !== false;
+    },
+  }),
   validateRequest({
     body: {
-      quoteId: withCustomMessages.regex(/\d+/).required(),
+      quoteId: withCustomMessages.regex(/\d+/).required(), //WHY?
       quoteLanguage: withCustomMessages
         .regex(/^[\w+]+$/)
         .max(50)
@@ -170,11 +175,6 @@ router.post(
         .max(250)
         .required(),
       captcha: withCustomMessages.regex(/[\w-_]+/).required(),
-    },
-  }),
-  checkUserPermissions({
-    criteria: (user) => {
-      return user.canReport !== false;
     },
   }),
   asyncHandler(QuoteController.reportQuote)
