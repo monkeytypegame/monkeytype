@@ -12,6 +12,7 @@ import {
   presetSettingGroupSchema,
 } from "@monkeytype/contracts/schemas/presets";
 import { getPreset } from "../controllers/preset-controller";
+import defaultConfig from "../constants/default-config";
 
 const state = new Map(
   presetSettingGroupSchema.options.map((key) => [key, true])
@@ -121,6 +122,10 @@ async function apply(): Promise<void> {
   Loader.show();
 
   if (action === "add") {
+    if (Object.values(state).filter((val) => val).length > 0) {
+      Notifications.add("Atleast one setting group must be active.");
+      return;
+    }
     const configChanges = getConfigChanges();
     const response = await Ape.presets.add({
       body: { name: presetName, config: configChanges },
@@ -144,6 +149,10 @@ async function apply(): Promise<void> {
       } as MonkeyTypes.SnapshotPreset);
     }
   } else if (action === "edit") {
+    if (Object.values(state).filter((val) => val).length > 0) {
+      Notifications.add("Atleast one setting group must be active.");
+      return;
+    }
     const configChanges = getConfigChanges();
     console.log(configChanges);
     const response = await Ape.presets.save({
@@ -163,6 +172,7 @@ async function apply(): Promise<void> {
       )[0] as MonkeyTypes.SnapshotPreset;
       preset.name = presetName;
       preset.display = presetName.replace(/_/g, " ");
+      preset.config = getActiveConfigChanges(preset.config);
       preset.config.settingGroups = configChanges.settingGroups;
       if (updateConfig) {
         preset.config = configChanges;
@@ -304,26 +314,33 @@ function getSettingGroup(configFieldName: string): PresetSettingGroup {
   throw new Error("Some setting not part of any setting group");
 }
 
-function getActiveConfigChanges(): MonkeyTypes.ConfigChanges {
-  const presetConfig = Config.getConfigChanges();
+function getActiveConfigChanges(
+  presetConfig: MonkeyTypes.PresetConfig | MonkeyTypes.ConfigChanges
+): MonkeyTypes.ConfigChanges {
   const activeConfigChanges = {} as MonkeyTypes.PresetConfig;
-  Object.keys(presetConfig)
+  Object.keys(defaultConfig)
     .filter((settingName) => state.get(getSettingGroup(settingName)) === true)
     .forEach((settingName) => {
       //@ts-expect-error this is fine
-      activeConfigChanges[settingName] = presetConfig[settingName];
+      activeConfigChanges[settingName] =
+        //@ts-expect-error this is fine
+        presetConfig[settingName] !== undefined
+          ? //@ts-expect-error this is fine
+            presetConfig[settingName]
+          : //@ts-expect-error this is fine
+            defaultConfig[settingName];
     });
+  console.log("active", activeConfigChanges);
   return activeConfigChanges;
 }
 function getConfigChanges(): MonkeyTypes.ConfigChanges {
-  const activeConfigChanges = getActiveConfigChanges();
+  const activeConfigChanges = getActiveConfigChanges(Config.getConfigChanges());
   const tags = DB.getSnapshot()?.tags ?? [];
 
   const activeTagIds: string[] = tags
     .filter((tag: MonkeyTypes.UserTag) => tag.active)
     .map((tag: MonkeyTypes.UserTag) => tag._id);
 
-  console.log("activeConfigChanges", activeConfigChanges);
   return {
     ...activeConfigChanges,
     settingGroups: activeSettingGroupsSchema.parse(

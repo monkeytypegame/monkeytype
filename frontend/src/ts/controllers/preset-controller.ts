@@ -3,7 +3,7 @@ import * as UpdateConfig from "../config";
 import * as DB from "../db";
 import * as Notifications from "../elements/notifications";
 import * as TestLogic from "../test/test-logic";
-import { migrateConfig } from "../utils/config";
+import { replaceLegacyValues } from "../utils/config";
 import * as TagController from "./tag-controller";
 
 export async function apply(_id: string): Promise<void> {
@@ -17,7 +17,10 @@ export async function apply(_id: string): Promise<void> {
     return;
   }
 
-  await UpdateConfig.apply(migrateConfig(presetToApply.config));
+  await UpdateConfig.selectiveApply(
+    replaceLegacyValues(presetToApply.config),
+    UpdateConfig.getConfigChanges()
+  );
   TagController.clear(true);
   if (presetToApply.config.tags) {
     for (const tagId of presetToApply.config.tags) {

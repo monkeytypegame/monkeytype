@@ -2081,4 +2081,20 @@ export const loadPromise = new Promise((v) => {
   loadDone = v;
 });
 
+export async function selectiveApply(
+  configToApply: ConfigSchemas.PartialConfig | MonkeyTypes.ConfigChanges,
+  backupConfigToApply: Config | MonkeyTypes.ConfigChanges
+): Promise<void> {
+  const configObj = configToApply as Config;
+  (Object.keys(backupConfigToApply) as (keyof Config)[]).forEach(
+    (configKey) => {
+      if (configObj[configKey] === undefined) {
+        const newValue = backupConfigToApply[configKey];
+        (configObj[configKey] as typeof newValue) = newValue;
+      }
+    }
+  );
+  await apply(configObj);
+}
+
 export default config;
