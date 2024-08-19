@@ -15,6 +15,7 @@ describe("DevController", () => {
       isDevEnvironmentMock.mockReset();
       isDevEnvironmentMock.mockReturnValue(true);
     });
+
     it("should fail on prod", async () => {
       //GIVEN
       isDevEnvironmentMock.mockReturnValue(false);
@@ -27,6 +28,32 @@ describe("DevController", () => {
       expect(body.message).toEqual(
         "Development endpoints are only available in DEV mode."
       );
+    });
+    it("should fail without mandatory properties", async () => {
+      //WHEN
+      const { body } = await mockApp
+        .post("/dev/generateData")
+        .send({})
+        .expect(422);
+
+      //THEN
+      expect(body).toEqual({
+        message: "Invalid request data schema",
+        validationErrors: [`"username" Required`],
+      });
+    });
+    it("should fail with unknown properties", async () => {
+      //WHEN
+      const { body } = await mockApp
+        .post("/dev/generateData")
+        .send({ username: "Bob", extra: "value" })
+        .expect(422);
+
+      //THEN
+      expect(body).toEqual({
+        message: "Invalid request data schema",
+        validationErrors: ["Unrecognized key(s) in object: 'extra'"],
+      });
     });
   });
 });
