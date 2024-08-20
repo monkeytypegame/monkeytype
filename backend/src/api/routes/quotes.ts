@@ -6,7 +6,6 @@ import * as RateLimit from "../../middlewares/rate-limit";
 import * as QuoteController from "../controllers/quote";
 import { callController } from "../ts-rest-adapter";
 
-//TODO: permission check could be removed, the controller already checks the same
 const checkIfUserIsQuoteMod = checkUserPermissions({
   criteria: (user) => {
     return (
@@ -19,7 +18,6 @@ const checkIfUserIsQuoteMod = checkUserPermissions({
 const s = initServer();
 export default s.router(quotesContract, {
   get: {
-    //TODO removed checkIfUserIsQuoteMod, this is checked in the controller already
     middleware: [RateLimit.newQuotesGet],
     handler: async (r) => callController(QuoteController.getQuotes)(r),
   },

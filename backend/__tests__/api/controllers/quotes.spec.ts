@@ -3,11 +3,13 @@ import app from "../../../src/app";
 import * as Configuration from "../../../src/init/configuration";
 import * as UserDal from "../../../src/dal/user";
 import * as NewQuotesDal from "../../../src/dal/new-quotes";
+import type { DBNewQuote } from "../../../src/dal/new-quotes";
 import * as QuoteRatingsDal from "../../../src/dal/quote-ratings";
 import * as ReportDal from "../../../src/dal/report";
 import * as Captcha from "../../../src/utils/captcha";
 import { ObjectId } from "mongodb";
 import _ from "lodash";
+import { ApproveQuote } from "@monkeytype/contracts/schemas/quotes";
 
 const mockApp = request(app);
 const configuration = Configuration.getCachedConfiguration();
@@ -37,7 +39,7 @@ describe("QuotesController", () => {
     });
     it("should return quotes", async () => {
       //GIVEN
-      const quoteOne = {
+      const quoteOne: DBNewQuote = {
         _id: new ObjectId(),
         text: "test",
         source: "Bob",
@@ -46,7 +48,7 @@ describe("QuotesController", () => {
         timestamp: 1000,
         approved: true,
       };
-      const quoteTwo = {
+      const quoteTwo: DBNewQuote = {
         _id: new ObjectId(),
         text: "test2",
         source: "Stuart",
@@ -290,7 +292,7 @@ describe("QuotesController", () => {
     it("should approve", async () => {
       //GiVEN
       const quoteId = new ObjectId().toHexString();
-      const quote = {
+      const quote: ApproveQuote = {
         id: 100,
         text: "text",
         source: "source",
@@ -500,9 +502,6 @@ describe("QuotesController", () => {
 
       //THEN
       expect(body.message).toEqual("You don't have permission to do this.");
-      /* TODO
-      expect(body).toEqual({});
-      */
     });
     it("should fail without authentication", async () => {
       await mockApp
@@ -783,7 +782,7 @@ describe("QuotesController", () => {
         .post("/quotes/report")
         .set("authorization", `Uid ${uid}`)
         .send({
-          quoteId: 23,
+          quoteId: "23", //quoteId is string on this endpoint
           quoteLanguage: "english",
           reason: "Inappropriate content",
           comment: "I don't like this.",
@@ -807,17 +806,17 @@ describe("QuotesController", () => {
           reason: "Inappropriate content",
           comment: "I don't like this.",
         }),
-        10,
-        20
+        10, //configuration maxReport
+        20 //configuration contentReportLimit
       );
     });
 
     it("should report quote without comment", async () => {
-      const { body } = await mockApp
+      await mockApp
         .post("/quotes/report")
         .set("authorization", `Uid ${uid}`)
         .send({
-          quoteId: 23,
+          quoteId: "23", //quoteId is string on this endpoint
           quoteLanguage: "english",
           reason: "Inappropriate content",
           captcha: "captcha",
@@ -829,7 +828,7 @@ describe("QuotesController", () => {
         .post("/quotes/report")
         .set("authorization", `Uid ${uid}`)
         .send({
-          quoteId: "23", //why?
+          quoteId: "23", //quoteId is string on this endpoint
           quoteLanguage: "english",
           reason: "Inappropriate content",
           comment: "",

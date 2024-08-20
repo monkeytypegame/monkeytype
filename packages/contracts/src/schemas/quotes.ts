@@ -13,7 +13,7 @@ export const ApproveQuoteSchema = z.object({
   text: z.string(),
   source: z.string(),
   length: z.number().int().positive(),
-  approvedBy: z.string(), //TODO: is this a name or uid?
+  approvedBy: z.string().describe("The approvers name"),
 });
 export type ApproveQuote = z.infer<typeof ApproveQuoteSchema>;
 
@@ -22,7 +22,7 @@ export const QuoteSchema = z.object({
   text: z.string(),
   source: z.string(),
   language: LanguageSchema,
-  submittedBy: z.string(), //TODO: is this a name or a uid?
+  submittedBy: IdSchema.describe("uid of the submitter"),
   timestamp: z.number().int().nonnegative(),
   approved: z.boolean(),
 });

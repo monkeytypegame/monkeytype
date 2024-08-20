@@ -24,7 +24,7 @@ type AddQuoteReturn = {
   similarityScore?: number;
 };
 
-type DBNewQuote = MonkeyTypes.WithObjectId<Quote>;
+export type DBNewQuote = MonkeyTypes.WithObjectId<Quote>;
 
 // Export for use in tests
 export const getNewQuoteCollection = (): Collection<DBNewQuote> =>
