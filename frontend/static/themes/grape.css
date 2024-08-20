@@ -64,8 +64,9 @@ header .button.discord.dotHidden::after {
 header .config .group .buttons .textButton.active,
 #result .stats .group .bottom,
 nav .textButton:hover,
+nav button.text:hover,
 header .config .group .buttons .textButton:hover,
-a:hover {
+a:not(.button):hover {
   animation: pastel 5s linear infinite;
 }
 
