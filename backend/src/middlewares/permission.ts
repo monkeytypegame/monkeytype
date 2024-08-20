@@ -1,7 +1,7 @@
 import _ from "lodash";
 import MonkeyError from "../utils/error";
 import type { Response, NextFunction, RequestHandler } from "express";
-import { getUser } from "../dal/user";
+import { getPartialUser } from "../dal/user";
 import { isAdmin } from "../dal/admin-uids";
 import type { ValidationOptions } from "./configuration";
 
@@ -34,8 +34,9 @@ export function checkIfUserIsAdmin(): RequestHandler {
  * Check user permissions before handling request.
  * Note that this middleware must be used after authentication in the middleware stack.
  */
-export function checkUserPermissions(
-  options: ValidationOptions<MonkeyTypes.DBUser>
+export function checkUserPermissions<K extends keyof MonkeyTypes.DBUser>(
+  fields: K[],
+  options: ValidationOptions<Pick<MonkeyTypes.DBUser, K>>
 ): RequestHandler {
   const { criteria, invalidMessage = "You don't have permission to do this." } =
     options;
@@ -48,7 +49,11 @@ export function checkUserPermissions(
     try {
       const { uid } = req.ctx.decodedToken;
 
-      const userData = await getUser(uid, "check user permissions");
+      const userData = await getPartialUser(
+        uid,
+        "check user permissions",
+        fields
+      );
       const hasPermission = criteria(userData);
 
       if (!hasPermission) {
