@@ -1,7 +1,6 @@
 {
   "name": "thai",
   "noLazyMode": true,
-  "ligatures": true,
   "bcp47": "th-TH",
   "words": [
     "ที่",
