@@ -144,12 +144,30 @@ function updateAccountSections(): void {
   pageElement
     .find(".section.optOutOfLeaderboards .buttons")
     .removeClass("hidden");
-  if (getSnapshot()?.lbOptOut === true) {
+  pageElement.find(".section.setStreakHourOffset .info").addClass("hidden");
+  pageElement
+    .find(".section.setStreakHourOffset .buttons")
+    .removeClass("hidden");
+
+  const snapshot = getSnapshot();
+  if (snapshot?.lbOptOut === true) {
     pageElement
       .find(".section.optOutOfLeaderboards .optedOut")
       .removeClass("hidden");
     pageElement
       .find(".section.optOutOfLeaderboards .buttons")
+      .addClass("hidden");
+  }
+  if (snapshot?.streakHourOffset !== undefined) {
+    pageElement
+      .find(".section.setStreakHourOffset .info")
+      .removeClass("hidden");
+    const sign = snapshot?.streakHourOffset > 0 ? "+" : "";
+    pageElement
+      .find(".section.setStreakHourOffset .info span")
+      .text(sign + snapshot?.streakHourOffset);
+    pageElement
+      .find(".section.setStreakHourOffset .buttons")
       .addClass("hidden");
   }
 }

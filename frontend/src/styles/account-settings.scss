@@ -101,6 +101,13 @@
               color: var(--sub-color);
             }
           }
+          &.setStreakHourOffset {
+            .info {
+              grid-area: buttons;
+              text-align: center;
+              color: var(--sub-color);
+            }
+          }
           &.apeKeys {
             .lostAccess {
               grid-area: buttons;
