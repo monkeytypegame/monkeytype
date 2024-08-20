@@ -19,8 +19,8 @@ const checkIfUserIsQuoteMod = checkUserPermissions({
 const s = initServer();
 export default s.router(quotesContract, {
   get: {
-    //TODO remove checkIfUserIsQuoteMod, this is checked twice
-    middleware: [checkIfUserIsQuoteMod, RateLimit.newQuotesGet],
+    //TODO removed checkIfUserIsQuoteMod, this is checked in the controller already
+    middleware: [RateLimit.newQuotesGet],
     handler: async (r) => callController(QuoteController.getQuotes)(r),
   },
   isSubmissionEnabled: {

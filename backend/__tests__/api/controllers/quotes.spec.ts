@@ -6,9 +6,8 @@ import * as NewQuotesDal from "../../../src/dal/new-quotes";
 import * as QuoteRatingsDal from "../../../src/dal/quote-ratings";
 import * as ReportDal from "../../../src/dal/report";
 import * as Captcha from "../../../src/utils/captcha";
-import { ObjectId, Timestamp } from "mongodb";
+import { ObjectId } from "mongodb";
 import _ from "lodash";
-import exp from "constants";
 
 const mockApp = request(app);
 const configuration = Configuration.getCachedConfiguration();
@@ -38,7 +37,7 @@ describe("QuotesController", () => {
     });
     it("should return quotes", async () => {
       //GIVEN
-      const quoteOne: MonkeyTypes.NewQuote = {
+      const quoteOne = {
         _id: new ObjectId(),
         text: "test",
         source: "Bob",
@@ -47,7 +46,7 @@ describe("QuotesController", () => {
         timestamp: 1000,
         approved: true,
       };
-      const quoteTwo: MonkeyTypes.NewQuote = {
+      const quoteTwo = {
         _id: new ObjectId(),
         text: "test2",
         source: "Stuart",
@@ -102,7 +101,9 @@ describe("QuotesController", () => {
         .expect(403);
 
       //THEN
-      expect(body.message).toEqual("You don't have permission to do this.");
+      expect(body.message).toEqual(
+        "You are not allowed to view submitted quotes"
+      );
 
       expect(getQuotesMock).not.toHaveBeenCalled();
     });
@@ -118,7 +119,9 @@ describe("QuotesController", () => {
         .expect(403);
 
       //THEN
-      expect(body.message).toEqual("You don't have permission to do this.");
+      expect(body.message).toEqual(
+        "You are not allowed to view submitted quotes"
+      );
 
       expect(getQuotesMock).not.toHaveBeenCalled();
     });
@@ -517,8 +520,8 @@ describe("QuotesController", () => {
 
     it("should get", async () => {
       //GIVEN
-      const quoteRating: MonkeyTypes.QuoteRating = {
-        _id: new ObjectId().toHexString(),
+      const quoteRating = {
+        _id: new ObjectId(),
         average: 2,
         language: "english",
         quoteId: 23,
@@ -537,7 +540,7 @@ describe("QuotesController", () => {
       //THEN
       expect(body).toEqual({
         message: "Rating retrieved",
-        data: quoteRating,
+        data: { ...quoteRating, _id: quoteRating._id.toHexString() },
       });
 
       expect(getRatingMock).toHaveBeenCalledWith(42, "english");

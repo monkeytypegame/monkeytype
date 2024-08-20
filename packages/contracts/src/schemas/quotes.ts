@@ -10,6 +10,7 @@ export const NewQuoteSchema = z.object({
   timestamp: z.number().int().nonnegative(),
   approved: z.boolean(),
 });
+export type NewQuote = z.infer<typeof NewQuoteSchema>;
 
 export const QuoteIdSchema = z
   .number()

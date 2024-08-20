@@ -14,14 +14,14 @@ import {
   AddQuoteRequest,
   ApproveQuoteRequest,
   ApproveQuoteResponse,
-  GetQuoteRatingQuery as GetQuoteRatingQuery,
+  GetQuoteRatingQuery,
   GetQuoteRatingResponse,
   GetQuotesResponse,
   IsSubmissionEnabledResponse,
   RejectQuoteRequest,
   ReportQuoteRequest,
 } from "@monkeytype/contracts/quotes";
-import { replaceObjectIds } from "../../utils/misc";
+import { replaceObjectIdNullable, replaceObjectIds } from "../../utils/misc";
 
 async function verifyCaptcha(captcha: string): Promise<void> {
   if (!(await verify(captcha))) {
@@ -106,7 +106,7 @@ export async function getRating(
 
   const data = await QuoteRatingsDAL.get(quoteId, language);
 
-  return new MonkeyResponse2("Rating retrieved", data);
+  return new MonkeyResponse2("Rating retrieved", replaceObjectIdNullable(data));
 }
 
 export async function submitRating(

@@ -324,6 +324,18 @@ export function replaceObjectId<T extends { _id: ObjectId }>(
 }
 
 /**
+ * convert nullable database object into api object
+ * @param data  database object with `_id: ObjectId` or null
+ * @returns api object with `id: string` or null
+ */
+export function replaceObjectIdNullable<T extends { _id: ObjectId }>(
+  data: T | null
+): (T & { _id: string }) | null {
+  if (data === null) return null;
+  return replaceObjectId(data);
+}
+
+/**
  * convert database objects into api objects
  * @param data  database objects with `_id: ObjectId`
  * @returns api objects with `id: string`

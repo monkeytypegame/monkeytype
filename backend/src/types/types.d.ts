@@ -83,17 +83,6 @@ declare namespace MonkeyTypes {
     useCount: number;
   };
 
-  //TODO replaced
-  type NewQuote = {
-    _id: ObjectId;
-    text: string;
-    source: string;
-    language: string;
-    submittedBy: string;
-    timestamp: number;
-    approved: boolean;
-  };
-
   type ReportTypes = "quote" | "user";
 
   type Report = {
@@ -105,16 +94,6 @@ declare namespace MonkeyTypes {
     contentId: string;
     reason: string;
     comment: string;
-  };
-
-  //TODO replaced
-  type QuoteRating = {
-    _id: string;
-    average: number;
-    language: string;
-    quoteId: number;
-    ratings: number;
-    totalRating: number;
   };
 
   type FunboxMetadata = {
