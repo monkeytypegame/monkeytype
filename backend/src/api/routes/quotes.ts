@@ -10,7 +10,7 @@ import { validateRequest } from "../../middlewares/validation";
 
 const router = Router();
 
-const checkIfUserIsQuoteMod = checkUserPermissions({
+const checkIfUserIsQuoteMod = checkUserPermissions(["quoteMod"], {
   criteria: (user) => {
     return (
       user.quoteMod === true ||
@@ -171,7 +171,7 @@ router.post(
       captcha: withCustomMessages.regex(/[\w-_]+/).required(),
     },
   }),
-  checkUserPermissions({
+  checkUserPermissions(["canReport"], {
     criteria: (user) => {
       return user.canReport !== false;
     },

@@ -638,7 +638,7 @@ router.post(
       captcha: withCustomMessages.regex(/[\w-_]+/).required(),
     },
   }),
-  checkUserPermissions({
+  checkUserPermissions(["canReport"], {
     criteria: (user) => {
       return user.canReport !== false;
     },

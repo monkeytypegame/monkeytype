@@ -484,7 +484,7 @@ export async function updateWordsInputPosition(initial = false): Promise<void> {
 }
 
 function updateWordsHeight(force = false): void {
-  if (ActivePage.get() !== "test") return;
+  if (ActivePage.get() !== "test" || resultVisible) return;
   if (!force && Config.mode !== "custom") return;
   $("#wordsWrapper").removeClass("hidden");
   const wordHeight = $(document.querySelector(".word") as Element).outerHeight(
@@ -552,9 +552,7 @@ function updateWordsHeight(force = false): void {
       finalWrapperHeight = wrapperHeight;
     }
 
-    $("#words")
-      .css("height", finalWordsHeight + "px")
-      .css("overflow", "hidden");
+    $("#words").css("height", "0px");
 
     if (Config.tapeMode !== "off") {
       $("#words").width("200vw");
@@ -563,13 +561,18 @@ function updateWordsHeight(force = false): void {
       $("#words").css({ marginLeft: "unset", width: "" });
     }
 
-    $("#wordsWrapper")
-      .css("height", finalWrapperHeight + "px")
-      .css("overflow", "hidden");
-    $(".outOfFocusWarning").css(
-      "margin-top",
-      finalWrapperHeight / 2 - Numbers.convertRemToPixels(1) / 2 + "px"
-    );
+    setTimeout(() => {
+      $("#wordsWrapper")
+        .css("height", finalWrapperHeight + "px")
+        .css("overflow", "hidden");
+      $("#words")
+        .css("height", finalWordsHeight + "px")
+        .css("overflow", "hidden");
+      $(".outOfFocusWarning").css(
+        "margin-top",
+        finalWrapperHeight / 2 - Numbers.convertRemToPixels(1) / 2 + "px"
+      );
+    }, 0);
   }
 
   if (Config.mode === "zen") {
@@ -918,6 +921,7 @@ export async function updateWordElement(inputOverride?: string): Promise<void> {
 }
 
 export function scrollTape(): void {
+  if (ActivePage.get() !== "test" || resultVisible) return;
   const wordsWrapperWidth = (
     document.querySelector("#wordsWrapper") as HTMLElement
   ).offsetWidth;

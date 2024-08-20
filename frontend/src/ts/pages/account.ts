@@ -1297,10 +1297,10 @@ export const page = new Page({
 
     void update().then(() => {
       void updateChartColors();
-      $(".pageAccount .content p.accountVerificatinNotice").remove();
+      $(".pageAccount .content .accountVerificatinNotice").remove();
       if (Auth?.currentUser?.emailVerified === false) {
         $(".pageAccount .content").prepend(
-          `<p class="accountVerificatinNotice" style="text-align:center">Your account is not verified - <button class="sendVerificationEmail">send the verification email again</button>`
+          `<div class="accountVerificatinNotice"><i class="fas icon fa-exclamation-triangle"></i><p>Your email address is still not verified</p><button class="sendVerificationEmail">resend verification email</button></div>`
         );
       }
       ResultBatches.showOrHideIfNeeded();
