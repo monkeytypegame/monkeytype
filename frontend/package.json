@@ -39,7 +39,7 @@
     "@types/howler": "2.2.7",
     "@types/jquery": "3.5.14",
     "@types/node": "20.14.11",
-    "@types/object-hash": "2.2.1",
+    "@types/object-hash": "3.0.6",
     "@types/subset-font": "1.4.3",
     "@types/throttle-debounce": "2.1.0",
     "@vitest/coverage-v8": "2.0.5",

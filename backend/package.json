@@ -77,7 +77,7 @@
     "@types/node": "20.14.11",
     "@types/node-fetch": "2.6.1",
     "@types/nodemailer": "6.4.15",
-    "@types/object-hash": "2.2.1",
+    "@types/object-hash": "3.0.6",
     "@types/readline-sync": "1.4.8",
     "@types/string-similarity": "4.0.2",
     "@types/supertest": "2.0.12",
