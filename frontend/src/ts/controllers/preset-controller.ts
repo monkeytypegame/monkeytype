@@ -21,6 +21,7 @@ export async function apply(_id: string): Promise<void> {
     replaceLegacyValues(presetToApply.config),
     UpdateConfig.getConfigChanges()
   );
+  //TODO: check commandline apply
   TagController.clear(true);
   if (presetToApply.config.tags) {
     for (const tagId of presetToApply.config.tags) {
@@ -38,6 +39,7 @@ export async function apply(_id: string): Promise<void> {
 export async function getPreset(_id: string): Promise<Preset | undefined> {
   const snapshot = DB.getSnapshot();
   if (!snapshot) {
+    Notifications.add("Preset not found", 0);
     return;
     //TODO: fix
   }
