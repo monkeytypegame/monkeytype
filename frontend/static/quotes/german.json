@@ -1,10 +1,22 @@
 {
   "language": "german",
   "groups": [
-    [0, 100],
-    [101, 300],
-    [301, 600],
-    [601, 9999]
+    [
+      0,
+      100
+    ],
+    [
+      101,
+      300
+    ],
+    [
+      301,
+      600
+    ],
+    [
+      601,
+      9999
+    ]
   ],
   "quotes": [
     {
@@ -836,7 +848,7 @@
       "id": 145
     },
     {
-      "text": "Weißt du, was passiert, wenn man sich immer alle Türen offen hält? Dann zieht’s, mein Freund. Dann wird man krank.",
+      "text": "Weißt du, was passiert, wenn man sich immer alle Türen offen hält? Dann zieht's, mein Freund. Dann wird man krank.",
       "source": "Marc-Uwe Kling",
       "length": 114,
       "id": 146
@@ -1136,9 +1148,9 @@
       "id": 197
     },
     {
-      "text": "Aber negativ zu sein hat keinen Vorteil! Der Optimist irrt sich ganz sicher genauso oft wie der Pessimist, aber er lebt dabei glücklicher und hat den Sinn offen für Lösungen! ",
-      "source": "Adrian Pallmer - Das Siegel von Arlon ",
-      "length": 175,
+      "text": "Aber negativ zu sein hat keinen Vorteil! Der Optimist irrt sich ganz sicher genauso oft wie der Pessimist, aber er lebt dabei glücklicher und hat den Sinn offen für Lösungen!",
+      "source": "Adrian Pallmer - Das Siegel von Arlon",
+      "length": 174,
       "id": 198
     },
     {
@@ -1376,9 +1388,9 @@
       "id": 239
     },
     {
-      "text": "Jenny, ich weiß nicht, ob Mama Recht hatte oder ob Leutnant Dan Recht hatte. Ich weiß nicht, ob jeder von uns sein Schicksal hat oder nur zufällig dahintreibt wie ein Blatt im Wind. Aber ich denke, es stimmt vielleicht beides.  Vielleicht passiert ja beides zur selben Zeit. Du fehlst mir so, Jenny.",
+      "text": "Jenny, ich weiß nicht, ob Mama Recht hatte oder ob Leutnant Dan Recht hatte. Ich weiß nicht, ob jeder von uns sein Schicksal hat oder nur zufällig dahintreibt wie ein Blatt im Wind. Aber ich denke, es stimmt vielleicht beides. Vielleicht passiert ja beides zur selben Zeit. Du fehlst mir so, Jenny.",
       "source": "Forrest Gump",
-      "length": 299,
+      "length": 298,
       "id": 240
     },
     {
@@ -1460,9 +1472,9 @@
       "id": 254
     },
     {
-      "text": "Weil es das ist, was nötig ist. Weil die Wahrheit manchmal nicht gut genug ist. Manchmal verdienen die Menschen mehr. Manchmal verdienen die Menschen, dass ihr Vertrauen belohnt wird…",
+      "text": "Weil es das ist, was nötig ist. Weil die Wahrheit manchmal nicht gut genug ist. Manchmal verdienen die Menschen mehr. Manchmal verdienen die Menschen, dass ihr Vertrauen belohnt wird...",
       "source": "Batman – The Dark Knight",
-      "length": 183,
+      "length": 185,
       "id": 256
     },
     {
@@ -1772,7 +1784,7 @@
       "id": 307
     },
     {
-      "text": "Ich mag sie. Durch sie probierst du neue Sachen aus, das tut dir gut. Ich mein’s ernst – du wirkst als hättest du weniger Angst, wenn du bei ihr bist. Das ist schön und es macht mich auch irgendwie traurig.",
+      "text": "Ich mag sie. Durch sie probierst du neue Sachen aus, das tut dir gut. Ich mein's ernst – du wirkst als hättest du weniger Angst, wenn du bei ihr bist. Das ist schön und es macht mich auch irgendwie traurig.",
       "source": "Tote Mädchen lügen nicht",
       "length": 206,
       "id": 308
@@ -2373,7 +2385,7 @@
     },
     {
       "text": "Es war einmal, da lag ein Engel im Nebel und rang mit dem Tod. Und ein Teufel kniete über ihm und lächelte.",
-      "source": "Zwischen den Welten – Daughter of Smoke and Bone ",
+      "source": "Zwischen den Welten – Daughter of Smoke and Bone",
       "length": 107,
       "id": 414
     },
@@ -2720,9 +2732,9 @@
       "id": 472
     },
     {
-      "text": "Du musst mit deinem Schicksal klar kommen wie jeder andere auf dieser beschissenen Welt auch. Du hast Fähigkeiten, für die manch einer töten würde, ob es dir nun gefällt oder nicht.  Du hast eine Mutter, die dich liebt, und ein schönes Zuhause. Scheiß auf deine hinterwäldlerischen, ignoranten Nachbarn, die auf dich herabsehen, weil du ohne Vater aufgewachsen bist. Die Welt ist groß und du hast eine wichtige Rolle in ihr zu spielen. Glaubst du, allen anderen geht es immer nur gut? Glaubst du, alle anderen können sich ihr Schicksal aussuchen? Tut mir leid, Süße, aber so läuft das nicht. Du kümmerst dich um die, die dir nahestehen, und kämpfst die Schlachten, die du gewinnen kannst, und das, Kätzchen, ist das Leben.",
+      "text": "Du musst mit deinem Schicksal klar kommen wie jeder andere auf dieser beschissenen Welt auch. Du hast Fähigkeiten, für die manch einer töten würde, ob es dir nun gefällt oder nicht. Du hast eine Mutter, die dich liebt, und ein schönes Zuhause. Scheiß auf deine hinterwäldlerischen, ignoranten Nachbarn, die auf dich herabsehen, weil du ohne Vater aufgewachsen bist. Die Welt ist groß und du hast eine wichtige Rolle in ihr zu spielen. Glaubst du, allen anderen geht es immer nur gut? Glaubst du, alle anderen können sich ihr Schicksal aussuchen? Tut mir leid, Süße, aber so läuft das nicht. Du kümmerst dich um die, die dir nahestehen, und kämpfst die Schlachten, die du gewinnen kannst, und das, Kätzchen, ist das Leben.",
       "source": "Nighthuntress – Blutrote Küsse",
-      "length": 722,
+      "length": 721,
       "id": 473
     },
     {
@@ -2966,9 +2978,9 @@
       "id": 514
     },
     {
-      "text": "Wer Blut vergossen hat und Blut getrunken hat wird mit Blut bezahlen. Keine drei Tage vergehen, dann wird eins im anderen sterben, und dann stirbt etwas in jedem. Langsam werden sie sterben, Stück um Stück… Und wenn am Ende die eisernen Stiefel durchgelaufen sind und die Tränen trocken, dann stirbt das wenige, was bleibt. Es stirbt sogar das, was niemals stirbt.",
+      "text": "Wer Blut vergossen hat und Blut getrunken hat wird mit Blut bezahlen. Keine drei Tage vergehen, dann wird eins im anderen sterben, und dann stirbt etwas in jedem. Langsam werden sie sterben, Stück um Stück... Und wenn am Ende die eisernen Stiefel durchgelaufen sind und die Tränen trocken, dann stirbt das wenige, was bleibt. Es stirbt sogar das, was niemals stirbt.",
       "source": "Geralt-Saga - Feuertaufe - Weissagung",
-      "length": 364,
+      "length": 366,
       "id": 515
     },
     {

@@ -1,10 +1,22 @@
 {
   "language": "french",
   "groups": [
-    [0, 100],
-    [101, 300],
-    [301, 600],
-    [601, 9999]
+    [
+      0,
+      100
+    ],
+    [
+      101,
+      300
+    ],
+    [
+      301,
+      600
+    ],
+    [
+      601,
+      9999
+    ]
   ],
   "quotes": [
     {
@@ -38,7 +50,7 @@
       "id": 5
     },
     {
-      "text": "CHERUB est un département secret des services de renseignement britanniques composé d’agents âgés de dix à dix-sept ans recrutés dans les orphelinats du pays. Soumis à un entraînement intensif, ils sont chargés de remplir des missions d'espionnage visant à mettre en échec les entreprises criminelles et terroristes qui menacent le Royaume-Uni. Ils vivent au quartier général de CHERUB, une base aussi appelée «campus» dissimulée au coeur de la campagne anglaise.",
+      "text": "CHERUB est un département secret des services de renseignement britanniques composé d'agents âgés de dix à dix-sept ans recrutés dans les orphelinats du pays. Soumis à un entraînement intensif, ils sont chargés de remplir des missions d'espionnage visant à mettre en échec les entreprises criminelles et terroristes qui menacent le Royaume-Uni. Ils vivent au quartier général de CHERUB, une base aussi appelée «campus» dissimulée au coeur de la campagne anglaise.",
       "source": "CHERUB, Avant-propos",
       "length": 463,
       "id": 6
@@ -62,9 +74,9 @@
       "id": 9
     },
     {
-      "text": "Dans le temps on levait les yeux en se cherchant une place parmi les étoiles… Là on fait que baisser les yeux et se soucier de trouver notre place dans la gadoue.",
+      "text": "Dans le temps on levait les yeux en se cherchant une place parmi les étoiles... Là on fait que baisser les yeux et se soucier de trouver notre place dans la gadoue.",
       "source": "Interstellar",
-      "length": 162,
+      "length": 164,
       "id": 10
     },
     {
@@ -116,7 +128,7 @@
       "id": 18
     },
     {
-      "text": "La principale critique vient du fait que l’arrangement AZERTY provient du QWERTY, lui-même optimisé pour pallier les contraintes mécaniques des premières machines à écrire et non pas pour la langue anglaise. L’origine de l’AZERTY est plutôt sombre mais il est clair qu’il n’a pas été pensé pour la langue française.",
+      "text": "La principale critique vient du fait que l'arrangement AZERTY provient du QWERTY, lui-même optimisé pour pallier les contraintes mécaniques des premières machines à écrire et non pas pour la langue anglaise. L'origine de l'AZERTY est plutôt sombre mais il est clair qu'il n'a pas été pensé pour la langue française.",
       "source": "Wikipedia - AZERTY",
       "length": 315,
       "id": 19
@@ -128,7 +140,7 @@
       "id": 20
     },
     {
-      "text": "On vous l’a sûrement déjà dit, il faut apprendre à bien choisir ses lectures. Mal les choisir peut nuire gravement à la santé. Un exemple. Vous vous baladez en montagne et, tout en marchant, vous lisez les oeuvres complètes d’Hérodote au lieu de lire : ATTENTION, RAVIN. Vous n’irez pas au bout de cette lecture. Vous n’avez pas fait le bon choix.",
+      "text": "On vous l'a sûrement déjà dit, il faut apprendre à bien choisir ses lectures. Mal les choisir peut nuire gravement à la santé. Un exemple. Vous vous baladez en montagne et, tout en marchant, vous lisez les oeuvres complètes d'Hérodote au lieu de lire : ATTENTION, RAVIN. Vous n'irez pas au bout de cette lecture. Vous n'avez pas fait le bon choix.",
       "source": "Lemony Snicket - Les Désastreuses aventures des orphelins Baudelaire, tome 7",
       "length": 347,
       "id": 21
@@ -140,9 +152,9 @@
       "id": 22
     },
     {
-      "text": "Ce qui est élevé est destiné à être aplani… Ce qui est dense deviendra fluide… L'entropie fait son oeuvre et, en définitive, toute chose tend vers l'uniformisation. C'est une loi inévitable et irréversible d'équilibre. L'homme croit toujours pouvoir inverser ce fleuve cosmique. Mais il n'est qu'un fétu de paille emporté par les flots.",
+      "text": "Ce qui est élevé est destiné à être aplani... Ce qui est dense deviendra fluide... L'entropie fait son oeuvre et, en définitive, toute chose tend vers l'uniformisation. C'est une loi inévitable et irréversible d'équilibre. L'homme croit toujours pouvoir inverser ce fleuve cosmique. Mais il n'est qu'un fétu de paille emporté par les flots.",
       "source": "Katsuhiro Otomo - Akira, tome 4",
-      "length": 336,
+      "length": 340,
       "id": 23
     },
     {
@@ -152,15 +164,15 @@
       "id": 24
     },
     {
-      "text": "Le Gouvernement français a demandé à l’ennemi à quelles conditions honorables un cessez-le-feu était possible. Il a déclaré que, si ces conditions étaient contraires à l’honneur, la dignité et l’indépendance de la France, la lutte devait continuer.",
+      "text": "Le Gouvernement français a demandé à l'ennemi à quelles conditions honorables un cessez-le-feu était possible. Il a déclaré que, si ces conditions étaient contraires à l'honneur, la dignité et l'indépendance de la France, la lutte devait continuer.",
       "source": "Charles de Gaulle - Appel du 18 Juin",
       "length": 248,
       "id": 25
     },
     {
-      "text": "Je trouve que la plus belle chose qui puisse arriver à un auteur - pour reprendre la métaphore de la cartographie - c'est de continuer à explorer et à cartographier son imaginaire. Le problème, c'est que tout est là pour vous fossiliser, les gens attendent que vous fassiez le même livre parce qu'ils l'ont aimé. Et toi, tu DOIS les décevoir pour pouvoir survivre. C'est une telle équation ! Et tellement douloureuse ! Les gens me disent : est-ce que tu ne pourrais pas me dessiner quelques immeubles, quelques bâtiments Art Nouveau, etc… Et j'ai envie de leur répondre : c'est presque vulgaire, ce que vous me demandez ! Pour moi, tout ça, c'est le résultat de récits et de personnages, mais ça ne m'intéresse pas de dessiner des briques !",
+      "text": "Je trouve que la plus belle chose qui puisse arriver à un auteur - pour reprendre la métaphore de la cartographie - c'est de continuer à explorer et à cartographier son imaginaire. Le problème, c'est que tout est là pour vous fossiliser, les gens attendent que vous fassiez le même livre parce qu'ils l'ont aimé. Et toi, tu DOIS les décevoir pour pouvoir survivre. C'est une telle équation ! Et tellement douloureuse ! Les gens me disent : est-ce que tu ne pourrais pas me dessiner quelques immeubles, quelques bâtiments Art Nouveau, etc... Et j'ai envie de leur répondre : c'est presque vulgaire, ce que vous me demandez ! Pour moi, tout ça, c'est le résultat de récits et de personnages, mais ça ne m'intéresse pas de dessiner des briques !",
       "source": "François Schuiten - « Interview de François Schuiten à l'occasion de la sortie de \"La Frontière Invisible\" »",
-      "length": 740,
+      "length": 742,
       "id": 26
     },
     {
@@ -176,9 +188,9 @@
       "id": 28
     },
     {
-      "text": "J'ai le sentiment qu'aujourd'hui un dessinateur de BD vit de moins en moins bien de son art. Moi-même, au fur et à mesure de ma carrière, j'ai dû me diversifier. Je me suis tourné vers l'illustration, l'affiche, la scénographie. Pour financer la création longue de mes BD, j'ai dû parfois avoir recours à la vente d'originaux. C'est une équation que je n'arrive plus à résoudre. C'est pour cette raison que j'ai envie de tirer le signal d'alarme pour moi comme pour les autres dessinateurs. Le scénariste Yann disait il y a peu que \"les dessinateurs de BD étaient la variable d'ajustement de la création\"… Je vois un système qui s'affole… Cela m'inquiète fortement.",
+      "text": "J'ai le sentiment qu'aujourd'hui un dessinateur de BD vit de moins en moins bien de son art. Moi-même, au fur et à mesure de ma carrière, j'ai dû me diversifier. Je me suis tourné vers l'illustration, l'affiche, la scénographie. Pour financer la création longue de mes BD, j'ai dû parfois avoir recours à la vente d'originaux. C'est une équation que je n'arrive plus à résoudre. C'est pour cette raison que j'ai envie de tirer le signal d'alarme pour moi comme pour les autres dessinateurs. Le scénariste Yann disait il y a peu que \"les dessinateurs de BD étaient la variable d'ajustement de la création\"... Je vois un système qui s'affole... Cela m'inquiète fortement.",
       "source": "François Schuiten - « Arrêter la BD ? Il ne faut jamais dire jamais ! »",
-      "length": 665,
+      "length": 669,
       "id": 29
     },
     {
@@ -230,9 +242,9 @@
       "id": 38
     },
     {
-      "text": "Notre refus de la transmission a engendré ce qui ressemble parfois à une société d'enfants sauvages. Développement des incivilités, distension de tous les liens, consumérisme irresponsable, difficultés quotidiennes dans la vie en collectivité, échec de l'insertion sociale et de l'engagement citoyen, rupture du dialogue entre les générations, explosion de la délinquance… Partout, nous voyons l'homme \"dégradé, insociable, grossier\" --- partout, nous voyons l'homme inhumain. Au coeur de nos pays \"développés\", nous avons le sentiment de voir resurgir la barbarie. Et nous n'arrivons pas à nous l'expliquer.",
+      "text": "Notre refus de la transmission a engendré ce qui ressemble parfois à une société d'enfants sauvages. Développement des incivilités, distension de tous les liens, consumérisme irresponsable, difficultés quotidiennes dans la vie en collectivité, échec de l'insertion sociale et de l'engagement citoyen, rupture du dialogue entre les générations, explosion de la délinquance... Partout, nous voyons l'homme \"dégradé, insociable, grossier\" --- partout, nous voyons l'homme inhumain. Au coeur de nos pays \"développés\", nous avons le sentiment de voir resurgir la barbarie. Et nous n'arrivons pas à nous l'expliquer.",
       "source": "François-Xavier Bellamy - Les Déshérités",
-      "length": 608,
+      "length": 610,
       "id": 39
     },
     {
@@ -386,9 +398,9 @@
       "id": 65
     },
     {
-      "text": "Leur non-violence les a menés à la mort. L'être humain est obligé de se défendre, mais il est aussi appelé à pardonner. Pas de paix sans pardon… Le pardon, oui, pour ceux qui sont encore là et qui le peuvent. En ce qui me concerne, je le peux toujours.",
+      "text": "Leur non-violence les a menés à la mort. L'être humain est obligé de se défendre, mais il est aussi appelé à pardonner. Pas de paix sans pardon... Le pardon, oui, pour ceux qui sont encore là et qui le peuvent. En ce qui me concerne, je le peux toujours.",
       "source": "Bernard Le Solleu - « Le père de la bombe livre enfin ses secrets »",
-      "length": 252,
+      "length": 254,
       "id": 66
     },
     {
@@ -452,9 +464,9 @@
       "id": 76
     },
     {
-      "text": "La vérité n'est plus séduisante…  Le mensonge, triomphant, conduit en maître les affaires du monde.",
+      "text": "La vérité n'est plus séduisante... Le mensonge, triomphant, conduit en maître les affaires du monde.",
       "source": "Boubou Hama - Contes et légendes du Niger",
-      "length": 99,
+      "length": 100,
       "id": 77
     },
     {
@@ -698,7 +710,7 @@
       "id": 119
     },
     {
-      "text": "Ta chambre est la plus belle des iles désertes, et Paris est un désert que nul n’a jamais traversé. Tu n’as besoin de rien d’autre que de ce calme, de ce sommeil, que de ce silence, que de cette torpeur. Que les jours commencent et que les jours finissent, que le temps s’écoule, que ta bouche se ferme, que les muscles de ta nuque, de ta machoire, de ton menton, se relachent tout à fait, que seuls les soulèvements de ta cage thoracique, les battements de ton coeur témoignent encore de ta patiente survie.",
+      "text": "Ta chambre est la plus belle des iles désertes, et Paris est un désert que nul n'a jamais traversé. Tu n'as besoin de rien d'autre que de ce calme, de ce sommeil, que de ce silence, que de cette torpeur. Que les jours commencent et que les jours finissent, que le temps s'écoule, que ta bouche se ferme, que les muscles de ta nuque, de ta machoire, de ton menton, se relachent tout à fait, que seuls les soulèvements de ta cage thoracique, les battements de ton coeur témoignent encore de ta patiente survie.",
       "source": "Un homme qui dort de Georges Perec",
       "length": 508,
       "id": 120
@@ -764,7 +776,7 @@
       "id": 130
     },
     {
-      "text": "Mais, vous savez, moi je ne crois pas qu’il y ait de bonne ou de mauvaise situation. Moi, si je devais résumer ma vie aujourd’hui avec vous, je dirais que c’est d’abord des rencontres, des gens qui m’ont tendu la main, peut-être à un moment où je ne pouvais pas, où j’étais seul chez moi. Et c’est assez curieux de se dire que les hasards, les rencontres forgent une destinée. Parce que quand on a le goût de la chose, quand on a le goût de la chose bien faite, le beau geste, parfois on ne trouve pas l’interlocuteur en face, je dirais, le miroir qui vous aide à avancer. Alors ce n’est pas mon cas, comme je le disais là, puisque moi au contraire, j’ai pu ; et je dis merci à la vie, je lui dis merci, je chante la vie, je danse la vie. Je ne suis qu’amour ! Et finalement, quand beaucoup de gens aujourd’hui me disent : \"Mais comment fais-tu pour avoir cette humanité ?\" Eh bien je leur réponds très simplement, je leur dis que c’est ce goût de l’amour, ce goût donc qui m’a poussé aujourd’hui à entreprendre une construction mécanique, mais demain, qui sait, peut-être simplement à me mettre au service de la communauté, à faire le don, le don de soi.",
+      "text": "Mais, vous savez, moi je ne crois pas qu'il y ait de bonne ou de mauvaise situation. Moi, si je devais résumer ma vie aujourd'hui avec vous, je dirais que c'est d'abord des rencontres, des gens qui m'ont tendu la main, peut-être à un moment où je ne pouvais pas, où j'étais seul chez moi. Et c'est assez curieux de se dire que les hasards, les rencontres forgent une destinée. Parce que quand on a le goût de la chose, quand on a le goût de la chose bien faite, le beau geste, parfois on ne trouve pas l'interlocuteur en face, je dirais, le miroir qui vous aide à avancer. Alors ce n'est pas mon cas, comme je le disais là, puisque moi au contraire, j'ai pu ; et je dis merci à la vie, je lui dis merci, je chante la vie, je danse la vie. Je ne suis qu'amour ! Et finalement, quand beaucoup de gens aujourd'hui me disent : \"Mais comment fais-tu pour avoir cette humanité ?\" Eh bien je leur réponds très simplement, je leur dis que c'est ce goût de l'amour, ce goût donc qui m'a poussé aujourd'hui à entreprendre une construction mécanique, mais demain, qui sait, peut-être simplement à me mettre au service de la communauté, à faire le don, le don de soi.",
       "source": "Otis - Astérix et Obélix : Mission Cléopâtre",
       "length": 1155,
       "id": 131
@@ -794,7 +806,7 @@
       "id": 135
     },
     {
-      "text": "J’ai gâché des péloches, Avenue Foch, c’est moche, loupé le coche deux mioches, sur une roche, main dans les poches.",
+      "text": "J'ai gâché des péloches, Avenue Foch, c'est moche, loupé le coche deux mioches, sur une roche, main dans les poches.",
       "source": "MC Solaar - Zoom",
       "length": 116,
       "id": 136
@@ -824,9 +836,9 @@
       "id": 141
     },
     {
-      "text": "Et puis, surtout, c'est reposant, la tragédie, parce qu'on sait qu'il n'y a plus d'espoir, le sale espoir; qu'on est pris, qu'on est enfin pris comme un rat, avec tout le ciel sur son dos, et qu'on n'a plus qu'à crier, — pas à gémir, non, pas à se plaindre, —  à gueuler à pleine voix ce qu'on avait à dire, qu'on n'avait jamais dit et qu'on ne savait peut-être même pas encore. Et pour rien : pour se le dire à soi, pour l'apprendre, soi. Dans le drame, on se débat parce qu'on espère en sortir. C'est ignoble, c'est utilitaire. Là, c'est gratuit. C'est pour les rois. Et il n'y a plus rien à tenter, enfin !",
+      "text": "Et puis, surtout, c'est reposant, la tragédie, parce qu'on sait qu'il n'y a plus d'espoir, le sale espoir; qu'on est pris, qu'on est enfin pris comme un rat, avec tout le ciel sur son dos, et qu'on n'a plus qu'à crier, — pas à gémir, non, pas à se plaindre, — à gueuler à pleine voix ce qu'on avait à dire, qu'on n'avait jamais dit et qu'on ne savait peut-être même pas encore. Et pour rien : pour se le dire à soi, pour l'apprendre, soi. Dans le drame, on se débat parce qu'on espère en sortir. C'est ignoble, c'est utilitaire. Là, c'est gratuit. C'est pour les rois. Et il n'y a plus rien à tenter, enfin !",
       "source": "Antigone - Jean Anouilh",
-      "length": 609,
+      "length": 608,
       "id": 142
     },
     {
@@ -842,13 +854,13 @@
       "id": 144
     },
     {
-      "text": "Vous me dégoûtez tous avec votre bonheur ! Avec votre vie qu’il faut aimer coûte que coûte. On dirait des chiens qui lèchent tout ce qu’ils trouvent. Et cette petite chance pour tous les jours, si on n’est pas trop exigeant. Moi, je veux tout, tout de suite, – et que ce soit entier,- ou alors je refuse !",
+      "text": "Vous me dégoûtez tous avec votre bonheur ! Avec votre vie qu'il faut aimer coûte que coûte. On dirait des chiens qui lèchent tout ce qu'ils trouvent. Et cette petite chance pour tous les jours, si on n'est pas trop exigeant. Moi, je veux tout, tout de suite, – et que ce soit entier,- ou alors je refuse !",
       "source": "Antigone - Jean Anouilh",
       "length": 305,
       "id": 145
     },
     {
-      "text": "Pour dire oui, il faut suer et retrousser ses manches, empoigner la vie à pleines mains et s’en mettre jusqu’aux coudes. C’est facile de dire non, même si on doit mourir, Il n’y a qu’à ne pas bouger et attendre. Attendre pour vivre, attendre même pour qu’on vous tue. C’est trop lâche. C’est une invention des hommes. Tu imagines un monde où les arbres aussi auraient dit non contre la sève, où les bêtes auraient dit non contre l’instinct de la chasse ou de l’amour ? Les bêtes, elles au moins, sont bonnes et simples et dures. Elles vont, se poussant les unes après les autres, courageusement, sur le même chemin, et si elles tombent, les autres passent et il peut s’en perdre autant que l’on veut, il en restera toujours une de chaque espèce prête à refaire des petits et à reprendre le même chemin avec le même courage, toute pareille à celles qui sont passées avant.",
+      "text": "Pour dire oui, il faut suer et retrousser ses manches, empoigner la vie à pleines mains et s'en mettre jusqu'aux coudes. C'est facile de dire non, même si on doit mourir, Il n'y a qu'à ne pas bouger et attendre. Attendre pour vivre, attendre même pour qu'on vous tue. C'est trop lâche. C'est une invention des hommes. Tu imagines un monde où les arbres aussi auraient dit non contre la sève, où les bêtes auraient dit non contre l'instinct de la chasse ou de l'amour ? Les bêtes, elles au moins, sont bonnes et simples et dures. Elles vont, se poussant les unes après les autres, courageusement, sur le même chemin, et si elles tombent, les autres passent et il peut s'en perdre autant que l'on veut, il en restera toujours une de chaque espèce prête à refaire des petits et à reprendre le même chemin avec le même courage, toute pareille à celles qui sont passées avant.",
       "source": "Antigone - Jean Anouilh",
       "length": 871,
       "id": 146
@@ -860,7 +872,7 @@
       "id": 147
     },
     {
-      "text": "Et voilà. Sans la petite Antigone, c’est vrai, ils auraient tous été bien tranquilles. Mais maintenant, c'est fini. Ils sont tout de même tranquilles. Tous ceux qui avaient à mourir sont morts. Ceux qui croyaient une chose, et puis ceux qui croyaient le contraire - même ceux qui ne croyaient rien et qui se sont retrouvés dans l'histoire sans rien y comprendre. Morts pareils, tous, bien raides, bien inutiles, bien pourris. Et ceux qui vivent encore vont commencer tout doucement à les oublier et à confondre leurs noms. C'est fini. Antigone est calmée maintenant, nous ne saurons jamais de quelle fièvre. Son devoir lui est remis. Un grand apaisement triste tombe sur Thèbes et sur le palais vide où Créon va commencer à attendre la mort...",
+      "text": "Et voilà. Sans la petite Antigone, c'est vrai, ils auraient tous été bien tranquilles. Mais maintenant, c'est fini. Ils sont tout de même tranquilles. Tous ceux qui avaient à mourir sont morts. Ceux qui croyaient une chose, et puis ceux qui croyaient le contraire - même ceux qui ne croyaient rien et qui se sont retrouvés dans l'histoire sans rien y comprendre. Morts pareils, tous, bien raides, bien inutiles, bien pourris. Et ceux qui vivent encore vont commencer tout doucement à les oublier et à confondre leurs noms. C'est fini. Antigone est calmée maintenant, nous ne saurons jamais de quelle fièvre. Son devoir lui est remis. Un grand apaisement triste tombe sur Thèbes et sur le palais vide où Créon va commencer à attendre la mort...",
       "source": "Antigone - Jean Anouilh",
       "length": 743,
       "id": 148
@@ -1118,7 +1130,7 @@
       "id": 194
     },
     {
-      "text": "Ah non, ça c’est que nous. Parce qu’il faut être capable de passer pour des cons en un temps record. Ah non, là-dessus on a une avance considérable.",
+      "text": "Ah non, ça c'est que nous. Parce qu'il faut être capable de passer pour des cons en un temps record. Ah non, là-dessus on a une avance considérable.",
       "source": "Kaamelott, Livre I, La Dent de requin",
       "length": 148,
       "id": 195
@@ -1142,13 +1154,13 @@
       "id": 198
     },
     {
-      "text": "Il ne peut pas le savoir, mais moi j’en suis sûr. Sa voix est un miracle, la promesse rare d’un don exceptionnel.",
+      "text": "Il ne peut pas le savoir, mais moi j'en suis sûr. Sa voix est un miracle, la promesse rare d'un don exceptionnel.",
       "source": "Mathieu, Les Choristes",
       "length": 113,
       "id": 199
     },
     {
-      "text": "Pepinot avait raison d’y croire, le jour du renvoi de Mathieu c’était un samedi.",
+      "text": "Pepinot avait raison d'y croire, le jour du renvoi de Mathieu c'était un samedi.",
       "source": "Les Choristes",
       "length": 80,
       "id": 200
@@ -3530,9 +3542,9 @@
       "id": 599
     },
     {
-      "text": "Je voudrais écrire comme je t'aime. En une très longue lettre. Je voudrais faire ce progrès vers toi, réduire autant que c'est possible la distance entre nous, l'ignorance qui la cause (…) J'écris pour être lucide, j'écris pour mieux t'aimer. Ce ne sont pas des raisons d'écrivain, mais des raisons d'amoureuse.",
+      "text": "Je voudrais écrire comme je t'aime. En une très longue lettre. Je voudrais faire ce progrès vers toi, réduire autant que c'est possible la distance entre nous, l'ignorance qui la cause (...) J'écris pour être lucide, j'écris pour mieux t'aimer. Ce ne sont pas des raisons d'écrivain, mais des raisons d'amoureuse.",
       "source": "Mireille Sorgue - L' Amant",
-      "length": 311,
+      "length": 313,
       "id": 600
     },
     {
@@ -3764,7 +3776,7 @@
       "id": 638
     },
     {
-      "text": "Je ne manque nulle part, je ne laisse pas de vide. Les métros sont bondés, les restaurants comblés, les têtes bourrées à craquer de petits soucis. J’ai glissé hors du monde et il est resté plein. Comme un oeuf. Il faut croire que je n’étais pas indispensable. J’aurais voulu être indispensable. À quelque chose ou à quelqu’un. À propos, je t’aimais. Je te le dis à présent parce que ça n’a plus d'importance.",
+      "text": "Je ne manque nulle part, je ne laisse pas de vide. Les métros sont bondés, les restaurants comblés, les têtes bourrées à craquer de petits soucis. J'ai glissé hors du monde et il est resté plein. Comme un oeuf. Il faut croire que je n'étais pas indispensable. J'aurais voulu être indispensable. À quelque chose ou à quelqu'un. À propos, je t'aimais. Je te le dis à présent parce que ça n'a plus d'importance.",
       "source": "Jean-Paul Sartre - Les mots",
       "length": 408,
       "id": 639
@@ -3776,7 +3788,7 @@
       "id": 640
     },
     {
-      "text": "Je ne connais pas la moitié d’entre vous à moitié autant que je le voudrais, et j’aime moins que la moitié d’entre vous à moitié aussi bien que vous le méritiez. (Il y eut ça et là quelques applaudissements, mais la plupart de l’assistance s’efforçait de démêler s’il s’agissait d’un compliment).",
+      "text": "Je ne connais pas la moitié d'entre vous à moitié autant que je le voudrais, et j'aime moins que la moitié d'entre vous à moitié aussi bien que vous le méritiez. (Il y eut ça et là quelques applaudissements, mais la plupart de l'assistance s'efforçait de démêler s'il s'agissait d'un compliment).",
       "source": "J.R.R Tolkien - Discours d'adieu de Bilbon Baggins",
       "length": 296,
       "id": 641
@@ -5096,9 +5108,9 @@
       "id": 860
     },
     {
-      "text": "Vous la voyez, ce coup-là, l'embrouille ? Dans le monde des caves, on appelle ça un cas de conscience.  Nous on dit : un point d'honneur. Entre vous et les Volfoni, il va faire vilain temps. En supposant que ça tourne à l'orage, Bastien et moi, on est sûr de se retrouver face à face, flingue en pogne, avec l'honnêteté qui commande de tirer. Ah non, un truc à décimer une famille.",
+      "text": "Vous la voyez, ce coup-là, l'embrouille ? Dans le monde des caves, on appelle ça un cas de conscience. Nous on dit : un point d'honneur. Entre vous et les Volfoni, il va faire vilain temps. En supposant que ça tourne à l'orage, Bastien et moi, on est sûr de se retrouver face à face, flingue en pogne, avec l'honnêteté qui commande de tirer. Ah non, un truc à décimer une famille.",
       "source": "Michel Audiard - Tontons flingueurs (8)",
-      "length": 381,
+      "length": 380,
       "id": 861
     },
     {
@@ -5198,7 +5210,7 @@
       "id": 877
     },
     {
-      "text": "Tous les matins il vérifiait le contenu de sa besace. C’était comme un rituel quotidien. Puis il levait le regard vers le Nord. La montagne était là, depuis que les nuages avaient disparu. Malgré trois jours de marche, nous ne semblions pas nous en approcher, tellement elle semblait immense, et nous si minuscules. Puis, le « En route ! » suivait.",
+      "text": "Tous les matins il vérifiait le contenu de sa besace. C'était comme un rituel quotidien. Puis il levait le regard vers le Nord. La montagne était là, depuis que les nuages avaient disparu. Malgré trois jours de marche, nous ne semblions pas nous en approcher, tellement elle semblait immense, et nous si minuscules. Puis, le « En route ! » suivait.",
       "source": "Mike Diop - Mémoires d'Asie (Ninkynanka)",
       "length": 348,
       "id": 878
@@ -5468,7 +5480,7 @@
       "id": 922
     },
     {
-      "text": "On choisit pas ses parents, on choisit pas sa famille. On choisit pas non plus les trottoirs de Manille, de Paris ou d’Alger, pour apprendre à marcher. Être né quelque part. Pour celui qui est né, c'est toujours un hasard. Y a des oiseaux de basse cour et des oiseaux de passage. Ils savent où sont leur nids. Quand ils rentrent de voyage ou qu’ils restent chez eux. Ils savent où sont leurs oeufs.",
+      "text": "On choisit pas ses parents, on choisit pas sa famille. On choisit pas non plus les trottoirs de Manille, de Paris ou d'Alger, pour apprendre à marcher. Être né quelque part. Pour celui qui est né, c'est toujours un hasard. Y a des oiseaux de basse cour et des oiseaux de passage. Ils savent où sont leur nids. Quand ils rentrent de voyage ou qu'ils restent chez eux. Ils savent où sont leurs oeufs.",
       "source": "Maxime Le Forestier - Né quelque part",
       "length": 398,
       "id": 923
@@ -6098,7 +6110,7 @@
       "id": 1027
     },
     {
-      "text": "Le dalaï-lama est reconnu par les Tibétains de confession bouddhiste comme le plus haut chef spirituel du Tibet et une émanation du bodhisattva de la compassion. La lignée des dalaï-lamas (ou Dalai Lama) est la plus importante lignée de réincarnation (tulkou) dans le bouddhisme tibétain et dans l’histoire du Tibet. Outre son autorité spirituelle a exercé le pouvoir temporel à la tête du gouvernement tibétain de la période Ganden Phodrang (1642 - 1959) mis en place par le Lobsang Gyatso, 5e dala.",
+      "text": "Le dalaï-lama est reconnu par les Tibétains de confession bouddhiste comme le plus haut chef spirituel du Tibet et une émanation du bodhisattva de la compassion. La lignée des dalaï-lamas (ou Dalai Lama) est la plus importante lignée de réincarnation (tulkou) dans le bouddhisme tibétain et dans l'histoire du Tibet. Outre son autorité spirituelle a exercé le pouvoir temporel à la tête du gouvernement tibétain de la période Ganden Phodrang (1642 - 1959) mis en place par le Lobsang Gyatso, 5e dala.",
       "source": "Svami Prajnanpad",
       "length": 500,
       "id": 1028
@@ -6452,7 +6464,7 @@
       "id": 1086
     },
     {
-      "text": "Le BÉPO est une disposition de symboles et de caractères conçue pour les claviers d’ordinateur afin de faciliter la saisie du français, des éléments typographiques, sans oublier les symboles de programmation. Elle donne accès à de nombreux caractères d’autres langues. Ce projet est fondé sur la méthode établie par August Dvorak, qui a conçu une disposition éponyme pour les Américains.",
+      "text": "Le BÉPO est une disposition de symboles et de caractères conçue pour les claviers d'ordinateur afin de faciliter la saisie du français, des éléments typographiques, sans oublier les symboles de programmation. Elle donne accès à de nombreux caractères d'autres langues. Ce projet est fondé sur la méthode établie par August Dvorak, qui a conçu une disposition éponyme pour les Américains.",
       "source": "bepo.fr - Qu’est-ce que le BÉPO?",
       "length": 387,
       "id": 1087
@@ -6464,7 +6476,7 @@
       "id": 1088
     },
     {
-      "text": "Ma mère-grand, que vous avez de grandes jambes ! C’est pour mieux courir, mon enfant. Ma mère-grand, que vous avez de grandes oreilles ! C’est pour mieux écouter, mon enfant. Ma mère-grand, que vous avez de grands yeux ! C’est pour mieux voir, mon enfant. Ma mère-grand, que vous avez de grandes dents ! C’est pour te manger. Et en disant ces mots, ce méchant Loup se jeta sur le Petit Chaperon rouge, et la mangea.",
+      "text": "Ma mère-grand, que vous avez de grandes jambes ! C'est pour mieux courir, mon enfant. Ma mère-grand, que vous avez de grandes oreilles ! C'est pour mieux écouter, mon enfant. Ma mère-grand, que vous avez de grands yeux ! C'est pour mieux voir, mon enfant. Ma mère-grand, que vous avez de grandes dents ! C'est pour te manger. Et en disant ces mots, ce méchant Loup se jeta sur le Petit Chaperon rouge, et la mangea.",
       "source": "Charles Perrault - Le Petit Chaperon rouge",
       "length": 415,
       "id": 1089
@@ -6530,13 +6542,13 @@
       "id": 1099
     },
     {
-      "text": "Réfléchissez, voyons, vous vous rendez bien compte que nous avons une philosophie que ces animaux n’ont pas, un système de valeurs irremplaçable. Des siècles de civilisation humaine l’ont bâti !",
+      "text": "Réfléchissez, voyons, vous vous rendez bien compte que nous avons une philosophie que ces animaux n'ont pas, un système de valeurs irremplaçable. Des siècles de civilisation humaine l'ont bâti !",
       "source": "Ionesco - Rhinocéros",
       "length": 194,
       "id": 1100
     },
     {
-      "text": "Écoute, chacun a son but, n’est-ce pas ? Moi, je me foutais de l’argent, de l’amour. Je voulais être un homme. Un dur. J’ai tout misé sur le même cheval. Est-ce que c’est possible qu’on soit un lâche quand on a choisi les chemins les plus dangereux ? Peut-on juger une vie sur un seul acte ?",
+      "text": "Écoute, chacun a son but, n'est-ce pas ? Moi, je me foutais de l'argent, de l'amour. Je voulais être un homme. Un dur. J'ai tout misé sur le même cheval. Est-ce que c'est possible qu'on soit un lâche quand on a choisi les chemins les plus dangereux ? Peut-on juger une vie sur un seul acte ?",
       "source": "Jean-Paul Sartre - Huis-clos",
       "length": 291,
       "id": 1101
@@ -6548,7 +6560,7 @@
       "id": 1102
     },
     {
-      "text": "Le Québec est une province du Canada. A ce titre, il constitue un État fédéré dont la capitale est Québec et la métropole, Montréal. Par sa langue qui est le français, sa culture et ses institutions, le peuple québécois forme une nation. Situé au nord-est de l'Amérique du Nord, entre l’Ontario et les provinces de l'Atlantique, le Québec partage sa frontière méridionale avec les États-Unis.",
+      "text": "Le Québec est une province du Canada. A ce titre, il constitue un État fédéré dont la capitale est Québec et la métropole, Montréal. Par sa langue qui est le français, sa culture et ses institutions, le peuple québécois forme une nation. Situé au nord-est de l'Amérique du Nord, entre l'Ontario et les provinces de l'Atlantique, le Québec partage sa frontière méridionale avec les États-Unis.",
       "source": "Wikipedia.org",
       "length": 392,
       "id": 1103
@@ -6620,7 +6632,7 @@
       "id": 1114
     },
     {
-      "text": "Donner avec ostentation, ce n’est pas très joli ; mais ne rien donner avec discrétion, ça ne vaut guère mieux.",
+      "text": "Donner avec ostentation, ce n'est pas très joli ; mais ne rien donner avec discrétion, ça ne vaut guère mieux.",
       "source": "Pierre Dac",
       "length": 110,
       "id": 1115

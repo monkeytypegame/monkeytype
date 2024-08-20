@@ -1,10 +1,22 @@
 {
   "language": "italian",
   "groups": [
-    [0, 100],
-    [101, 300],
-    [301, 600],
-    [601, 9999]
+    [
+      0,
+      100
+    ],
+    [
+      101,
+      300
+    ],
+    [
+      301,
+      600
+    ],
+    [
+      601,
+      9999
+    ]
   ],
   "quotes": [
     {
@@ -44,7 +56,7 @@
       "id": 7
     },
     {
-      "text": "Vedo il mondo mutarsi lentamente in un deserto, odo sempre più forte l’avvicinarsi del rombo che ucciderà anche noi, partecipo al dolore di milioni di uomini, eppure, quando guardo il cielo, penso che tutto volgerà nuovamente al bene, che anche questa spietata durezza cesserà, che ritorneranno l’ordine, la pace e la serenità..",
+      "text": "Vedo il mondo mutarsi lentamente in un deserto, odo sempre più forte l'avvicinarsi del rombo che ucciderà anche noi, partecipo al dolore di milioni di uomini, eppure, quando guardo il cielo, penso che tutto volgerà nuovamente al bene, che anche questa spietata durezza cesserà, che ritorneranno l'ordine, la pace e la serenità..",
       "source": "Anne Frank, Diario",
       "length": 328,
       "id": 8
@@ -92,7 +104,7 @@
       "id": 15
     },
     {
-      "text": "Il più bello dei mari è quello che non navigammo. Il più bello dei nostri figli non è ancora cresciuto. I più belli dei nostri giorni non li abbiamo ancora vissuti. E quello che vorrei dirti di più bello non te l’ho ancora detto..",
+      "text": "Il più bello dei mari è quello che non navigammo. Il più bello dei nostri figli non è ancora cresciuto. I più belli dei nostri giorni non li abbiamo ancora vissuti. E quello che vorrei dirti di più bello non te l'ho ancora detto..",
       "source": "Nazim Hikmet",
       "length": 230,
       "id": 16
@@ -164,25 +176,25 @@
       "id": 27
     },
     {
-      "text": "Io appartengo all’unica razza che conosco: quella umana.",
+      "text": "Io appartengo all'unica razza che conosco: quella umana.",
       "source": "Albert Einstein",
       "length": 56,
       "id": 28
     },
     {
-      "text": "Senza crisi non ci sono sfide, senza sfide la vita è routine, una lenta agonia… L’unica crisi minacciosa è la tragedia di non voler lottare per superarla.",
+      "text": "Senza crisi non ci sono sfide, senza sfide la vita è routine, una lenta agonia... L'unica crisi minacciosa è la tragedia di non voler lottare per superarla.",
       "source": "Albert Einstein",
-      "length": 154,
+      "length": 156,
       "id": 29
     },
     {
-      "text": "L’uomo ha scoperto la bomba atomica, però nessun topo al mondo costruirebbe una trappola per topi.",
+      "text": "L'uomo ha scoperto la bomba atomica, però nessun topo al mondo costruirebbe una trappola per topi.",
       "source": "Albert Einstein",
       "length": 98,
       "id": 30
     },
     {
-      "text": "C’è una forza motrice più forte del vapore, dell’elettricità e dell’energia atomica: la volontà.",
+      "text": "C'è una forza motrice più forte del vapore, dell'elettricità e dell'energia atomica: la volontà.",
       "source": "Albert Einstein",
       "length": 96,
       "id": 31
@@ -200,7 +212,7 @@
       "id": 33
     },
     {
-      "text": "Lo spreco della vita si trova nell’amore che non si è saputo dare, nel potere che non si è saputo utilizzare, nell’egoistica prudenza che ci ha impedito di rischiare e che, evitandoci un dispiacere, ci ha fatto mancare la felicità.",
+      "text": "Lo spreco della vita si trova nell'amore che non si è saputo dare, nel potere che non si è saputo utilizzare, nell'egoistica prudenza che ci ha impedito di rischiare e che, evitandoci un dispiacere, ci ha fatto mancare la felicità.",
       "source": "Oscar Wilde",
       "length": 231,
       "id": 34
@@ -236,13 +248,13 @@
       "id": 39
     },
     {
-      "text": "Noi siamo l’incarnazione locale di un Cosmo cresciuto fino all’autocoscienza. Abbiamo incominciato a comprendere la nostra origine: siamo materia stellare che medita sulle stelle.",
+      "text": "Noi siamo l'incarnazione locale di un Cosmo cresciuto fino all'autocoscienza. Abbiamo incominciato a comprendere la nostra origine: siamo materia stellare che medita sulle stelle.",
       "source": "Carl Sagan",
       "length": 179,
       "id": 40
     },
     {
-      "text": "Per quanto difficile possa essere la vita, c’è sempre qualcosa che è possibile fare. Guardate le stelle invece dei vostri piedi.",
+      "text": "Per quanto difficile possa essere la vita, c'è sempre qualcosa che è possibile fare. Guardate le stelle invece dei vostri piedi.",
       "source": "Stephen Hawking",
       "length": 128,
       "id": 41
@@ -284,7 +296,7 @@
       "id": 47
     },
     {
-      "text": "L’amore fugge come un’ombra l’amore reale che l’insegue, inseguendo chi lo fugge, fuggendo chi l’insegue.",
+      "text": "L'amore fugge come un'ombra l'amore reale che l'insegue, inseguendo chi lo fugge, fuggendo chi l'insegue.",
       "source": "William Shakespeare",
       "length": 105,
       "id": 48
@@ -296,7 +308,7 @@
       "id": 49
     },
     {
-      "text": "D’ora in avanti tu chiamami “Amore”, ed io sarò per te non più Romeo, perché m’avrai così ribattezzato.",
+      "text": "D'ora in avanti tu chiamami \"Amore\", ed io sarò per te non più Romeo, perché m'avrai così ribattezzato.",
       "source": "William Shakespeare",
       "length": 103,
       "id": 50
@@ -404,7 +416,7 @@
       "id": 76
     },
     {
-      "text": "Se la vita va inevitabilmente verso una fine, dobbiamo, durante la nostra, colorarla con i colori dell’amore e della speranza.",
+      "text": "Se la vita va inevitabilmente verso una fine, dobbiamo, durante la nostra, colorarla con i colori dell'amore e della speranza.",
       "source": "Marc Chagall",
       "length": 126,
       "id": 77
@@ -434,7 +446,7 @@
       "id": 81
     },
     {
-      "text": "Quando qualcuno dice: questo lo so fare anch’io, vuol dire che lo sa rifare altrimenti lo avrebbe già fatto prima.",
+      "text": "Quando qualcuno dice: questo lo so fare anch'io, vuol dire che lo sa rifare altrimenti lo avrebbe già fatto prima.",
       "source": "Bruno Munari",
       "length": 114,
       "id": 82
@@ -458,19 +470,19 @@
       "id": 85
     },
     {
-      "text": "Se un uomo apre la portiera dell’auto alla moglie, o è nuova l’auto o è nuova la moglie.",
+      "text": "Se un uomo apre la portiera dell'auto alla moglie, o è nuova l'auto o è nuova la moglie.",
       "source": "Filippo di Edimburgo",
       "length": 88,
       "id": 86
     },
     {
-      "text": "Chi è bravo a inventare scuse difficilmente è bravo in qualcos’altro.",
+      "text": "Chi è bravo a inventare scuse difficilmente è bravo in qualcos'altro.",
       "source": "Benjamin Franklin",
       "length": 69,
       "id": 87
     },
     {
-      "text": "Nella vita c’è di più che aumentarne la velocità.",
+      "text": "Nella vita c'è di più che aumentarne la velocità.",
       "source": "Mahatma Ghandi",
       "length": 49,
       "id": 88
@@ -488,13 +500,13 @@
       "id": 90
     },
     {
-      "text": "C’è una linea sottile che separa il genio dal folle: io quella linea l’ho cancellata.",
+      "text": "C'è una linea sottile che separa il genio dal folle: io quella linea l'ho cancellata.",
       "source": "Oscar Levant",
       "length": 85,
       "id": 91
     },
     {
-      "text": "Il paradiso lo preferisco per il clima, l’inferno per la compagnia.",
+      "text": "Il paradiso lo preferisco per il clima, l'inferno per la compagnia.",
       "source": "Mark Twain",
       "length": 67,
       "id": 92
@@ -506,13 +518,13 @@
       "id": 93
     },
     {
-      "text": "Diffida della falsa conoscenza, è molto peggiore dell’ignoranza.",
+      "text": "Diffida della falsa conoscenza, è molto peggiore dell'ignoranza.",
       "source": "George Bernard Shaw",
       "length": 64,
       "id": 94
     },
     {
-      "text": "Tutti gli uomini sono degli imbroglioni. L’unica differenza tra loro è che alcuni lo ammettono. Io stesso lo nego.",
+      "text": "Tutti gli uomini sono degli imbroglioni. L'unica differenza tra loro è che alcuni lo ammettono. Io stesso lo nego.",
       "source": "Henry Louis Mencken",
       "length": 114,
       "id": 95
@@ -566,7 +578,7 @@
       "id": 103
     },
     {
-      "text": "Quando i gas velenosi non basteranno più, un uomo fatto come tutti gli altri, nel segreto di una stanza di questo mondo, inventerà un esplosivo incomparabile, in confronto al quale gli esplosivi attualmente esistenti saranno considerati quali innocui giocattoli. Ed un altro uomo fatto anche lui come tutti gli altri, ma degli altri un po’ più ammalato, ruberà tale esplosivo e s’arrampicherà al centro della terra per porlo nel punto ove il suo effetto potrà essere il massimo. Ci sarà un’esplosione enorme che nessuno udrà e la terra ritornata alla forma di nebulosa errerà nei cieli priva di parassiti e di malattie.",
+      "text": "Quando i gas velenosi non basteranno più, un uomo fatto come tutti gli altri, nel segreto di una stanza di questo mondo, inventerà un esplosivo incomparabile, in confronto al quale gli esplosivi attualmente esistenti saranno considerati quali innocui giocattoli. Ed un altro uomo fatto anche lui come tutti gli altri, ma degli altri un po' più ammalato, ruberà tale esplosivo e s'arrampicherà al centro della terra per porlo nel punto ove il suo effetto potrà essere il massimo. Ci sarà un'esplosione enorme che nessuno udrà e la terra ritornata alla forma di nebulosa errerà nei cieli priva di parassiti e di malattie.",
       "source": "Italo Svevo, La Coscienza di Zeno",
       "length": 619,
       "id": 104
@@ -590,7 +602,7 @@
       "id": 108
     },
     {
-      "text": "L’uomo passa la prima metà della sua vita a rovinarsi la salute e la seconda metà alla ricerca di guarire.",
+      "text": "L'uomo passa la prima metà della sua vita a rovinarsi la salute e la seconda metà alla ricerca di guarire.",
       "source": "Leonardo da Vinci",
       "length": 106,
       "id": 109
@@ -608,13 +620,13 @@
       "id": 111
     },
     {
-      "text": "Lei e Mattia erano uniti da un filo elastico e invisibile, sepolto sotto un mucchio di cose di poca importanza, un filo che poteva esistere soltanto fra due come loro: due che avevano riconosciuto la propria solitudine l’uno nell’altra.",
+      "text": "Lei e Mattia erano uniti da un filo elastico e invisibile, sepolto sotto un mucchio di cose di poca importanza, un filo che poteva esistere soltanto fra due come loro: due che avevano riconosciuto la propria solitudine l'uno nell'altra.",
       "source": "Paolo Giordano, La solitudine dei numeri primi",
       "length": 236,
       "id": 112
     },
     {
-      "text": "Se non c’è amore, non solo inaridisce la vita delle persone, ma anche quella delle città.",
+      "text": "Se non c'è amore, non solo inaridisce la vita delle persone, ma anche quella delle città.",
       "source": "Elena Ferrante, L'amica geniale",
       "length": 89,
       "id": 113
@@ -632,7 +644,7 @@
       "id": 115
     },
     {
-      "text": "Dà ancora uno sguardo fuori della finestra, una brevissima occhiata, per l’ultima sua porzione di stelle. Poi nel buio, benché nessuno lo veda, sorride.",
+      "text": "Dà ancora uno sguardo fuori della finestra, una brevissima occhiata, per l'ultima sua porzione di stelle. Poi nel buio, benché nessuno lo veda, sorride.",
       "source": "Dino Buzzati, Il deserto dei tartari",
       "length": 152,
       "id": 116
@@ -662,25 +674,25 @@
       "id": 120
     },
     {
-      "text": "E' davvero strano il sistema economico da cui ci si aspetta oggi la salvezza del mondo! Nessuno fabbrica più nulla con le proprie mani, nessuno s’ingegna più a fare una pentola, uno zufolo o a inventare un carretto; l’idea più brillante che si possa avere quella di andare in qualche parte della terra a comprare qualcosa da rivendere altrove, con profitto.",
+      "text": "E' davvero strano il sistema economico da cui ci si aspetta oggi la salvezza del mondo! Nessuno fabbrica più nulla con le proprie mani, nessuno s'ingegna più a fare una pentola, uno zufolo o a inventare un carretto; l'idea più brillante che si possa avere quella di andare in qualche parte della terra a comprare qualcosa da rivendere altrove, con profitto.",
       "source": "Tiziano Terzani",
       "length": 357,
       "id": 121
     },
     {
-      "text": "In ogni gara c’è sempre l’amico senza volto che ha esattamente il tuo passo. Stai pronto a lasciare il vecchio per quello nuovo e concentrati sul tuo obiettivo: tagliare il traguardo con il sorriso sulle labbra.",
+      "text": "In ogni gara c'è sempre l'amico senza volto che ha esattamente il tuo passo. Stai pronto a lasciare il vecchio per quello nuovo e concentrati sul tuo obiettivo: tagliare il traguardo con il sorriso sulle labbra.",
       "source": "Stefano Baldini, Maratona per tutti",
       "length": 211,
       "id": 122
     },
     {
-      "text": "Più di una volta, aveva constatato la incredibile potenza dell’amore, capace di riannodare, con infinita sagacia e pazienza, attraverso vertiginose catene di apparenti casi, due sottilissimi fili che si erano persi nella confusione della vita, da un capo all'altro del mondo.",
+      "text": "Più di una volta, aveva constatato la incredibile potenza dell'amore, capace di riannodare, con infinita sagacia e pazienza, attraverso vertiginose catene di apparenti casi, due sottilissimi fili che si erano persi nella confusione della vita, da un capo all'altro del mondo.",
       "source": "Dino Buzzati",
       "length": 275,
       "id": 123
     },
     {
-      "text": "Tutto l’affetto dei genitori si risolve in piccole premure, nelle stesse preoccupazioni che i suoi elencavano al telefono ogni mercoledì: il mangiare, il caldo e il freddo, la stanchezza, a volte i soldi. Tutto il resto giaceva come sommerso a profondità irraggiungibili, in una massa cementificata di discorsi mai affrontati, di scuse da fare e da ricevere e di ricordi da correggere, che sarebbero rimasti tali.",
+      "text": "Tutto l'affetto dei genitori si risolve in piccole premure, nelle stesse preoccupazioni che i suoi elencavano al telefono ogni mercoledì: il mangiare, il caldo e il freddo, la stanchezza, a volte i soldi. Tutto il resto giaceva come sommerso a profondità irraggiungibili, in una massa cementificata di discorsi mai affrontati, di scuse da fare e da ricevere e di ricordi da correggere, che sarebbero rimasti tali.",
       "source": "Paolo Giordano, La solitudine dei numeri primi",
       "length": 413,
       "id": 124
@@ -782,7 +794,7 @@
       "id": 140
     },
     {
-      "text": "Se non ci siamo anche noi, quelli ti combinano la repubblica in quattro e quattr’otto. Se vogliamo che tutto rimanga com’è, bisogna che tutto cambi.",
+      "text": "Se non ci siamo anche noi, quelli ti combinano la repubblica in quattro e quattr'otto. Se vogliamo che tutto rimanga com'è, bisogna che tutto cambi.",
       "source": "Il gattopardo",
       "length": 148,
       "id": 141
@@ -836,7 +848,7 @@
       "id": 149
     },
     {
-      "text": "L’ozio rende lente le ore e veloci gli anni. L’operosità rapide le ore e lenti gli anni.",
+      "text": "L'ozio rende lente le ore e veloci gli anni. L'operosità rapide le ore e lenti gli anni.",
       "source": "Il mestiere di vivere - Cesare Pavese",
       "length": 88,
       "id": 150

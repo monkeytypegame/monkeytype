@@ -1,10 +1,22 @@
 {
   "language": "turkish",
   "groups": [
-    [0, 100],
-    [101, 300],
-    [301, 600],
-    [601, 9999]
+    [
+      0,
+      100
+    ],
+    [
+      101,
+      300
+    ],
+    [
+      301,
+      600
+    ],
+    [
+      601,
+      9999
+    ]
   ],
   "quotes": [
     {
@@ -14,7 +26,7 @@
       "id": 1
     },
     {
-      "text": "Bileklerimizi morartmış yeni Alman kelepçeleri, otobüsün kaloriferleri bozuldu Kaman’dan sonra. Sekiz saat oluyor karbonatlı bir çay bile içemedik, başımızda prensip sahibi bir başçavuş. Niğde üzerinden Adana Cezaevine gidiyoruz... Bi sen eksiktin ayışığı, gümüş bir tüy dikmek için manzaraya!",
+      "text": "Bileklerimizi morartmış yeni Alman kelepçeleri, otobüsün kaloriferleri bozuldu Kaman'dan sonra. Sekiz saat oluyor karbonatlı bir çay bile içemedik, başımızda prensip sahibi bir başçavuş. Niğde üzerinden Adana Cezaevine gidiyoruz... Bi sen eksiktin ayışığı, gümüş bir tüy dikmek için manzaraya!",
       "source": "Bir Sen Eksiktin Ay Işığı - Can Yücel",
       "length": 293,
       "id": 6
@@ -152,13 +164,13 @@
       "id": 30
     },
     {
-      "text": "Ahırın avlusunda oynarken aşağıda, gümüş söğütler altında görünmeyen derenin hazin şırıltısını duyardık. Evimiz iç çitin büyük kestane ağaçları arkasında kaybolmuş gibiydi. Annem İstanbul’a gittiği için benden bir yaş küçük kardeşim Hasan’la artık Dadaruh’un yanından hiç ayrılmıyorduk. Bu, babamın seyisi yaşlı bir adamdı. Sabahleyin erkenden ahıra koşuyorduk. En sevdiğimiz şey atlardı. Dadaruh’la beraber onları suya götürmek, çıplak sırtlarına binmek ne doyulmaz bir zevkti. Hasan korkar, yalnız binmezdi. Dadaruh, onu kendi önüne alırdı. Torbalara arpa koymak, yemliklere ot doldurmak, ahırı süpürmek, gübreleri kaldırmak en eğlenceli oyundan bile daha çok hoşumuza gidiyordu. Hele tımar… bu, en zevkli şeydi.",
+      "text": "Ahırın avlusunda oynarken aşağıda, gümüş söğütler altında görünmeyen derenin hazin şırıltısını duyardık. Evimiz iç çitin büyük kestane ağaçları arkasında kaybolmuş gibiydi. Annem İstanbul'a gittiği için benden bir yaş küçük kardeşim Hasan'la artık Dadaruh'un yanından hiç ayrılmıyorduk. Bu, babamın seyisi yaşlı bir adamdı. Sabahleyin erkenden ahıra koşuyorduk. En sevdiğimiz şey atlardı. Dadaruh'la beraber onları suya götürmek, çıplak sırtlarına binmek ne doyulmaz bir zevkti. Hasan korkar, yalnız binmezdi. Dadaruh, onu kendi önüne alırdı. Torbalara arpa koymak, yemliklere ot doldurmak, ahırı süpürmek, gübreleri kaldırmak en eğlenceli oyundan bile daha çok hoşumuza gidiyordu. Hele tımar... bu, en zevkli şeydi.",
       "source": "Kaşağı - Ömer Seyfettin",
-      "length": 714,
+      "length": 716,
       "id": 31
     },
     {
-      "text": "At, ahır işlerinde sadece tımarı beceremiyordum. Boyum karnına bile varmıyordu. Ama en keyifli, en eğlenceli şey buydu. Sanki kaşağının muntazam tıkırtısı Tosun’un hoşuna gidiyor, kulaklarını kısıyor, kuyruğunu kocaman bir püskül gibi sallıyordu.",
+      "text": "At, ahır işlerinde sadece tımarı beceremiyordum. Boyum karnına bile varmıyordu. Ama en keyifli, en eğlenceli şey buydu. Sanki kaşağının muntazam tıkırtısı Tosun'un hoşuna gidiyor, kulaklarını kısıyor, kuyruğunu kocaman bir püskül gibi sallıyordu.",
       "source": "Kaşağı - Ömer Seyfettin",
       "length": 246,
       "id": 32
@@ -422,7 +434,7 @@
       "id": 76
     },
     {
-      "text": "Bazı üstü örtülü olaylar, küçük ya da büyük bazı topluluklara gösterilen ilgisizlikler, tarihin tozlu raflarında unutulduğu için hemen önemi sezilmeyen yaşantılar ve yanlış yorumlamalar nedeniyle sınıflamalarda alt katta kalmış insanlar güneş ışığına çıkarılabilseydi Selim’in yalnızlığının sadece bir görünüşten ibaret olduğu anlaşılacaktı. Tarih, işine gelmeyen bütün belgeleri, Selim ve Selim gibilerden gizlemişti.",
+      "text": "Bazı üstü örtülü olaylar, küçük ya da büyük bazı topluluklara gösterilen ilgisizlikler, tarihin tozlu raflarında unutulduğu için hemen önemi sezilmeyen yaşantılar ve yanlış yorumlamalar nedeniyle sınıflamalarda alt katta kalmış insanlar güneş ışığına çıkarılabilseydi Selim'in yalnızlığının sadece bir görünüşten ibaret olduğu anlaşılacaktı. Tarih, işine gelmeyen bütün belgeleri, Selim ve Selim gibilerden gizlemişti.",
       "source": "Oğuz Atay - Tutunamayanlar",
       "length": 418,
       "id": 77
@@ -686,7 +698,7 @@
       "id": 129
     },
     {
-      "text": "Böylelikle, dünyayla iyi geçinilmez, genellikle sonunda, edepsiz Voltaire'in dediği duruma gelinir: “Sadece iki günümüz var yaşamak için: Bu günleri de aşağılık heriflerin önünde diz çökerek geçirmeye değmez.“",
+      "text": "Böylelikle, dünyayla iyi geçinilmez, genellikle sonunda, edepsiz Voltaire'in dediği duruma gelinir: \"Sadece iki günümüz var yaşamak için: Bu günleri de aşağılık heriflerin önünde diz çökerek geçirmeye değmez.\"",
       "source": "Arthur Schopenhauer - Yaşam Bilgeliği Üzerine Aforizmalar",
       "length": 209,
       "id": 130

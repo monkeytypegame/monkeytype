@@ -1,10 +1,22 @@
 {
   "language": "indonesian",
   "groups": [
-    [0, 100],
-    [101, 300],
-    [301, 600],
-    [601, 9999]
+    [
+      0,
+      100
+    ],
+    [
+      101,
+      300
+    ],
+    [
+      301,
+      600
+    ],
+    [
+      601,
+      9999
+    ]
   ],
   "quotes": [
     {
@@ -213,7 +225,7 @@
     },
     {
       "text": "Ketika Anda jatuh cinta, kebahagiaan akan membuat Anda sulit tertidur karena kenyataan lebih baik dibandingkan mimpi Anda.",
-      "source": " Dr. Suess",
+      "source": "Dr. Suess",
       "length": 122,
       "id": 38
     },
@@ -590,9 +602,9 @@
       "id": 101
     },
     {
-      "text": "Aku, biarlah seperti bumi. Menopang meski diinjak, memberi meski dihujani, diam meski dipanasi. Sampai kau sadar, jika aku hancur… kau juga.",
+      "text": "Aku, biarlah seperti bumi. Menopang meski diinjak, memberi meski dihujani, diam meski dipanasi. Sampai kau sadar, jika aku hancur... kau juga.",
       "source": "Fiersa Besari",
-      "length": 140,
+      "length": 142,
       "id": 102
     },
     {

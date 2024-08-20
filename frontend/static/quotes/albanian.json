@@ -1,10 +1,22 @@
 {
   "language": "albanian",
   "groups": [
-    [0, 100],
-    [101, 300],
-    [301, 600],
-    [601, 9999]
+    [
+      0,
+      100
+    ],
+    [
+      101,
+      300
+    ],
+    [
+      301,
+      600
+    ],
+    [
+      601,
+      9999
+    ]
   ],
   "quotes": [
     {
@@ -38,7 +50,7 @@
       "id": 5
     },
     {
-      "text": "Vritmëni, po ma ruani gjakun se do t’u duhet nipërve dhe stërnipërve tuaj të shkruajnë gjuhën shqipe.",
+      "text": "Vritmëni, po ma ruani gjakun se do t'u duhet nipërve dhe stërnipërve tuaj të shkruajnë gjuhën shqipe.",
       "source": "Petro Nini Luarasi",
       "length": 101,
       "id": 6
@@ -50,19 +62,19 @@
       "id": 7
     },
     {
-      "text": "Le të sulemi nën flamurin e kuq në flakë të luftës, që të na drithërohet trupi nga dehja e barutit, që të na ndizet shpirti nga zjarri i shenjtë i lirisë dhe le të vdesirn duke thirrur: “Rroftë Shqipëria“.",
+      "text": "Le të sulemi nën flamurin e kuq në flakë të luftës, që të na drithërohet trupi nga dehja e barutit, që të na ndizet shpirti nga zjarri i shenjtë i lirisë dhe le të vdesirn duke thirrur: \"Rroftë Shqipëria\".",
       "source": "Fan Noli",
       "length": 205,
       "id": 8
     },
     {
-      "text": "“Kujdestar surrat patate, mirë ja bëmë zotërisë sate.” “Ç’ti bëj drejtorit që është zemërmirë, pa jua tregoja unëqejfin juve.”",
+      "text": "\"Kujdestar surrat patate, mirë ja bëmë zotërisë sate.\" \"Ç'ti bëj drejtorit që është zemërmirë, pa jua tregoja unëqejfin juve.\"",
       "source": "Lulekuqe mbi mure",
       "length": 126,
       "id": 9
     },
     {
-      "text": "“Shitën gomarin, blenë biçikleta e çoç u duket vetja.” “Po si jeni ? C'thonë këta katundaret këtej. Marrin ndonjëçikë erë nga jeta?”",
+      "text": "\"Shitën gomarin, blenë biçikleta e çoç u duket vetja.\" \"Po si jeni ? C'thonë këta katundaret këtej. Marrin ndonjëçikë erë nga jeta?\"",
       "source": "Zonja nga Qyteti",
       "length": 132,
       "id": 10
@@ -92,13 +104,13 @@
       "id": 14
     },
     {
-      "text": "Çe ke në terezi ti, i fut një tralala edhe…“Po kjo tona, kjo tona thuaj,  që nuk hahet as me vaj e as me uthull.“Krushqi me Jovan Bregun? Pu pu pu…“Irenkë pse të djeg miza moj xhan?“Po kur u bë dhe Sandër Mafishja, i biri i tetos të bëjë dashuriçka poshtë e përpjetë, mos ngeltë njeri më këmbë.“S’kisha bërë ndonjëherë nga këto anonimet, thashë ta provoja njëherë.“A drejtor, a drejtor. O të bëj krushk , o plaça në vend plaça!“Me kë ishe të keqen xhaxhi? Me një shoqe me pantallona eee?“O Fredi, është babai im ai. Pse ai që shani ju, nuk është i imi ai?“I zbret shkallët fap e fap e fap, flutur që iu bëftë mamaja.“Po qan ti? Epo qaj plas. Irena mos qaj ti Irena, mos qaj.“Desh ju lashë dhe juve pa fejuar.“Po unë zgjodha njerinë o ba.“Plasën çokollatat edhe këndeja. Po pse mo kaq budallenj jeni ju djemtë e fisit tonë?“Të kam ndjekur, të kam vëzhguar e, të kam studiuar ee.“Po mi shoqe po. Po jo mi shoqe jo. Vani, po qenkan thyer vezët mor i uruar! – Po jo moj Liri, ishin ca si të buta vetë.",
+      "text": "Çe ke në terezi ti, i fut një tralala edhe...\"Po kjo tona, kjo tona thuaj, që nuk hahet as me vaj e as me uthull.\"Krushqi me Jovan Bregun? Pu pu pu...\"Irenkë pse të djeg miza moj xhan?\"Po kur u bë dhe Sandër Mafishja, i biri i tetos të bëjë dashuriçka poshtë e përpjetë, mos ngeltë njeri më këmbë.\"S'kisha bërë ndonjëherë nga këto anonimet, thashë ta provoja njëherë.\"A drejtor, a drejtor. O të bëj krushk , o plaça në vend plaça!\"Me kë ishe të keqen xhaxhi? Me një shoqe me pantallona eee?\"O Fredi, është babai im ai. Pse ai që shani ju, nuk është i imi ai?\"I zbret shkallët fap e fap e fap, flutur që iu bëftë mamaja.\"Po qan ti? Epo qaj plas. Irena mos qaj ti Irena, mos qaj.\"Desh ju lashë dhe juve pa fejuar.\"Po unë zgjodha njerinë o ba.\"Plasën çokollatat edhe këndeja. Po pse mo kaq budallenj jeni ju djemtë e fisit tonë?\"Të kam ndjekur, të kam vëzhguar e, të kam studiuar ee.\"Po mi shoqe po. Po jo mi shoqe jo. Vani, po qenkan thyer vezët mor i uruar! – Po jo moj Liri, ishin ca si të buta vetë.",
       "source": "Pallati 176",
-      "length": 997,
+      "length": 1000,
       "id": 15
     },
     {
-      "text": "E gjetëm Vangjel Gjino, u poqën fiqtë Po bota, ç’do thotë bota? Ka ligj, por ka dhe Maliq. E hodhët dobiçin në ferrë dhe tani vini të na bëni budallaçka ne. Është fati im, më ra nga qielli. Jam grua e martuar, kam një burrë. Bëri ç’bëri, mori atë që deshi.",
+      "text": "E gjetëm Vangjel Gjino, u poqën fiqtë Po bota, ç'do thotë bota? Ka ligj, por ka dhe Maliq. E hodhët dobiçin në ferrë dhe tani vini të na bëni budallaçka ne. Është fati im, më ra nga qielli. Jam grua e martuar, kam një burrë. Bëri ç'bëri, mori atë që deshi.",
       "source": "Përrallë nga e kaluara",
       "length": 256,
       "id": 16
@@ -146,9 +158,9 @@
       "id": 23
     },
     {
-      "text": "Mund të flasësh për dikë me vite, përditë, dhë prapë nuk ndihesh njësoj sikur të qëndrosh përballë dikujt, pa thënë asnjë fjalë, dhe sërish të ndjesh për atë person me gjithë zemrën tënde. Ndihesh sikur e njeh atë njeri prej kohësh… Lidhjet krijohen me zemër, jo me gjuhë",
+      "text": "Mund të flasësh për dikë me vite, përditë, dhë prapë nuk ndihesh njësoj sikur të qëndrosh përballë dikujt, pa thënë asnjë fjalë, dhe sërish të ndjesh për atë person me gjithë zemrën tënde. Ndihesh sikur e njeh atë njeri prej kohësh... Lidhjet krijohen me zemër, jo me gjuhë",
       "source": "C JoyBell C",
-      "length": 271,
+      "length": 273,
       "id": 24
     },
     {

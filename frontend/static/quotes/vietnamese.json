@@ -1,10 +1,22 @@
 {
   "language": "vietnamese",
   "groups": [
-    [0, 100],
-    [101, 300],
-    [301, 600],
-    [601, 9999]
+    [
+      0,
+      100
+    ],
+    [
+      101,
+      300
+    ],
+    [
+      301,
+      600
+    ],
+    [
+      601,
+      9999
+    ]
   ],
   "quotes": [
     {
@@ -344,9 +356,9 @@
       "id": 56
     },
     {
-      "text": "Cháu lấy những con số, mỗi ngày báo về \"nhà\" bằng máy bộ đàm: bốn giờ, mười một giờ, bảy giờ tối, lại một giờ sáng. Bản báo ấy trong ngành gọi là \"ốp\". Công việc nói chung dễ, chỉ cần chính xác. Gian khổ nhất là lần ghi và báo về lúc một giờ sáng. Rét, bác ạ. Ở đây có cả mưa tuyết đấy. Nửa đêm đang nằm trong chăn, nghe chuông đồng hồ chỉ muốn đưa tay tắt đi. Chui ra khỏi chăn, ngọn đèn bão vặn to đến cỡ nào vẫn thấy là không đủ sáng. Xách đèn ra vườn, gió tuyết và lặng im ở bên ngoài như chỉ chực mình ra là ào ào xô tới. Cái lặng im lúc đó mới thật dễ sợ: nó như bị chặt ra từng khúc, mà gió thì giống những nhát chổi muốn quét đi tất cả, ném vứt lung tung… Những lúc im lặng lạnh cóng mà lại hừng hực như cháy. Xong việc, trở vào, không thể nào ngủ lại được.",
+      "text": "Cháu lấy những con số, mỗi ngày báo về \"nhà\" bằng máy bộ đàm: bốn giờ, mười một giờ, bảy giờ tối, lại một giờ sáng. Bản báo ấy trong ngành gọi là \"ốp\". Công việc nói chung dễ, chỉ cần chính xác. Gian khổ nhất là lần ghi và báo về lúc một giờ sáng. Rét, bác ạ. Ở đây có cả mưa tuyết đấy. Nửa đêm đang nằm trong chăn, nghe chuông đồng hồ chỉ muốn đưa tay tắt đi. Chui ra khỏi chăn, ngọn đèn bão vặn to đến cỡ nào vẫn thấy là không đủ sáng. Xách đèn ra vườn, gió tuyết và lặng im ở bên ngoài như chỉ chực mình ra là ào ào xô tới. Cái lặng im lúc đó mới thật dễ sợ: nó như bị chặt ra từng khúc, mà gió thì giống những nhát chổi muốn quét đi tất cả, ném vứt lung tung... Những lúc im lặng lạnh cóng mà lại hừng hực như cháy. Xong việc, trở vào, không thể nào ngủ lại được.",
       "source": "Lặng lẽ Sapa, Nguyễn Thành Long",
-      "length": 765,
+      "length": 767,
       "id": 57
     },
     {

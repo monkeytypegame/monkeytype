@@ -1,10 +1,22 @@
 {
   "language": "danish",
   "groups": [
-    [0, 100],
-    [101, 300],
-    [301, 600],
-    [601, 9999]
+    [
+      0,
+      100
+    ],
+    [
+      101,
+      300
+    ],
+    [
+      301,
+      600
+    ],
+    [
+      601,
+      9999
+    ]
   ],
   "quotes": [
     {
@@ -68,9 +80,9 @@
       "id": 10
     },
     {
-      "text": "Jeg bruger små stykker kul til at tegne motivet på totempælen. Nederst skal der være et fundament på et par meter, som jeg senere har tænkt mig at grave ned i jorden. Fra jorden skal der så være en sokkel på en halv meter og  derefter et cirka to meter højt æg, i virkeligheden et rytmeæg, men det vil man ikke kunne se med det blotte øje, medmindre man kendte min far, og det var der, sådan som jeg tidligere har været inde på, ingen der gjorde. Altså vil man ikke kunne se det. En tilfældig forbipasserende vil tro, at dette er et helt almindeligt æg, og det kan jeg godt leve med. På toppen af dette rytmeæg skal min far sidde med benene trukket op under hagen og armene ud til siderne, og på min fars hoved skal jeg selv sidde.",
+      "text": "Jeg bruger små stykker kul til at tegne motivet på totempælen. Nederst skal der være et fundament på et par meter, som jeg senere har tænkt mig at grave ned i jorden. Fra jorden skal der så være en sokkel på en halv meter og derefter et cirka to meter højt æg, i virkeligheden et rytmeæg, men det vil man ikke kunne se med det blotte øje, medmindre man kendte min far, og det var der, sådan som jeg tidligere har været inde på, ingen der gjorde. Altså vil man ikke kunne se det. En tilfældig forbipasserende vil tro, at dette er et helt almindeligt æg, og det kan jeg godt leve med. På toppen af dette rytmeæg skal min far sidde med benene trukket op under hagen og armene ud til siderne, og på min fars hoved skal jeg selv sidde.",
       "source": "Erlend Loe, Doppler",
-      "length": 731,
+      "length": 730,
       "id": 11
     },
     {

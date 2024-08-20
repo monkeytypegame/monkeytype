@@ -1,10 +1,22 @@
 {
   "language": "swedish",
   "groups": [
-    [0, 100],
-    [101, 300],
-    [301, 600],
-    [601, 9999]
+    [
+      0,
+      100
+    ],
+    [
+      101,
+      300
+    ],
+    [
+      301,
+      600
+    ],
+    [
+      601,
+      9999
+    ]
   ],
   "quotes": [
     {
@@ -290,9 +302,9 @@
       "id": 47
     },
     {
-      "text": "Inget ont om de vackra pilfinkarna, men nog slår ens hjärta häftigare för gråsparvarna! Kanske för att de hör ihop med barndomen, då det ännu låg hästskit på grusvägarna och  enkupiga tegelpannor på taken, mat och husrum för otaliga gråsparvar.",
+      "text": "Inget ont om de vackra pilfinkarna, men nog slår ens hjärta häftigare för gråsparvarna! Kanske för att de hör ihop med barndomen, då det ännu låg hästskit på grusvägarna och enkupiga tegelpannor på taken, mat och husrum för otaliga gråsparvar.",
       "source": "Bengt Anderberg, Under molnen",
-      "length": 244,
+      "length": 243,
       "id": 48
     },
     {
@@ -416,9 +428,9 @@
       "id": 68
     },
     {
-      "text": "Nej, men asså, den är mer som… tänk dig såhär att du har en såhär avlång ballong som du fyller med vatten. Och den fylls upp såhär, så den blir värsta grymma… men det är liksom som att den blir för tung för sig själv. Så sen bara hänger den.",
+      "text": "Nej, men asså, den är mer som... tänk dig såhär att du har en såhär avlång ballong som du fyller med vatten. Och den fylls upp såhär, så den blir värsta grymma... men det är liksom som att den blir för tung för sig själv. Så sen bara hänger den.",
       "source": "Måns, Jalla! Jalla!",
-      "length": 241,
+      "length": 245,
       "id": 69
     },
     {
@@ -608,7 +620,7 @@
       "id": 100
     },
     {
-      "text": "Tacksamhet! Hur kan en vuxen människa ta det ordet i mun utan att vämjas! Den som blivit född till en gärning, han måste komma i vägen för många. ”Livet är inte av gröt”, säger Goethe. Livet är hårt och ska väl så vara. Vill du ha tack, får du gå i ditt eget bröst.",
+      "text": "Tacksamhet! Hur kan en vuxen människa ta det ordet i mun utan att vämjas! Den som blivit född till en gärning, han måste komma i vägen för många. \"Livet är inte av gröt\", säger Goethe. Livet är hårt och ska väl så vara. Vill du ha tack, får du gå i ditt eget bröst.",
       "source": "Vilhelm Ekelund",
       "length": 265,
       "id": 101
