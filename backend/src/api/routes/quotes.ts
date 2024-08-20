@@ -41,11 +41,11 @@ export default s.router(quotesContract, {
     ],
     handler: async (r) => callController(QuoteController.addQuote)(r),
   },
-  approve: {
+  approveSubmission: {
     middleware: [checkIfUserIsQuoteMod, RateLimit.newQuotesAction],
     handler: async (r) => callController(QuoteController.approveQuote)(r),
   },
-  reject: {
+  rejectSubmission: {
     middleware: [checkIfUserIsQuoteMod, RateLimit.newQuotesAction],
     handler: async (r) => callController(QuoteController.refuseQuote)(r),
   },

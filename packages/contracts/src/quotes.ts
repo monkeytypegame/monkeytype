@@ -9,16 +9,15 @@ import {
   responseWithNullableData,
 } from "./schemas/api";
 import {
-  NewQuoteSchema,
+  ApproveQuoteSchema,
   QuoteIdSchema,
   QuoteRatingSchema,
+  QuoteReportReasonSchema,
   QuoteSchema,
 } from "./schemas/quotes";
 import { IdSchema, LanguageSchema, NullableStringSchema } from "./schemas/util";
 
-export const GetQuotesResponseSchema = responseWithData(
-  z.array(NewQuoteSchema)
-);
+export const GetQuotesResponseSchema = responseWithData(z.array(QuoteSchema));
 export type GetQuotesResponse = z.infer<typeof GetQuotesResponseSchema>;
 
 export const IsSubmissionEnabledResponseSchema = responseWithData(
@@ -45,7 +44,7 @@ export const ApproveQuoteRequestSchema = z.object({
 });
 export type ApproveQuoteRequest = z.infer<typeof ApproveQuoteRequestSchema>;
 
-export const ApproveQuoteResponseSchema = responseWithData(QuoteSchema);
+export const ApproveQuoteResponseSchema = responseWithData(ApproveQuoteSchema);
 export type ApproveQuoteResponse = z.infer<typeof ApproveQuoteResponseSchema>;
 
 export const RejectQuoteRequestSchema = z.object({
@@ -75,13 +74,7 @@ export type AddQuoteRatingRequest = z.infer<typeof AddQuoteRatingRequestSchema>;
 export const ReportQuoteRequestSchema = z.object({
   quoteId: QuoteIdSchema,
   quoteLanguage: LanguageSchema,
-  reason: z.enum([
-    "Grammatical error",
-    "Duplicate quote",
-    "Inappropriate content",
-    "Low quality content",
-    "Incorrect source",
-  ]),
+  reason: QuoteReportReasonSchema,
   comment: z
     .string()
     .regex(/^([.]|[^/<>])+$/)
@@ -126,7 +119,7 @@ export const quotesContract = c.router(
         200: MonkeyResponseSchema,
       },
     },
-    approve: {
+    approveSubmission: {
       summary: "submit quote",
       description: "Add a quote submission",
       method: "POST",
@@ -136,7 +129,7 @@ export const quotesContract = c.router(
         200: ApproveQuoteResponseSchema,
       },
     },
-    reject: {
+    rejectSubmission: {
       summary: "reject quote",
       description: "Reject a quote submission",
       method: "POST",

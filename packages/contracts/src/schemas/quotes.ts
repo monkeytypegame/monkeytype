@@ -1,17 +1,6 @@
 import { z } from "zod";
 import { IdSchema, LanguageSchema } from "./util";
 
-export const NewQuoteSchema = z.object({
-  _id: IdSchema,
-  text: z.string(),
-  source: z.string(),
-  language: LanguageSchema,
-  submittedBy: z.string(),
-  timestamp: z.number().int().nonnegative(),
-  approved: z.boolean(),
-});
-export type NewQuote = z.infer<typeof NewQuoteSchema>;
-
 export const QuoteIdSchema = z
   .number()
   .int()
@@ -19,17 +8,28 @@ export const QuoteIdSchema = z
   .or(z.string().regex(/^\d+$/).transform(Number));
 export type QuoteId = z.infer<typeof QuoteIdSchema>;
 
-export const QuoteSchema = z.object({
+export const ApproveQuoteSchema = z.object({
   id: QuoteIdSchema.optional(),
   text: z.string(),
   source: z.string(),
   length: z.number().int().positive(),
-  approvedBy: z.string(), //TODO: is this a name or a uid?
+  approvedBy: z.string(), //TODO: is this a name or uid?
+});
+export type ApproveQuote = z.infer<typeof ApproveQuoteSchema>;
+
+export const QuoteSchema = z.object({
+  _id: IdSchema,
+  text: z.string(),
+  source: z.string(),
+  language: LanguageSchema,
+  submittedBy: z.string(), //TODO: is this a name or a uid?
+  timestamp: z.number().int().nonnegative(),
+  approved: z.boolean(),
 });
 export type Quote = z.infer<typeof QuoteSchema>;
 
 export const QuoteRatingSchema = z.object({
-  _id: IdSchema, //TODO omit?
+  _id: IdSchema,
   language: LanguageSchema,
   quoteId: QuoteIdSchema,
   average: z.number().nonnegative(),
@@ -37,3 +37,12 @@ export const QuoteRatingSchema = z.object({
   totalRating: z.number().nonnegative(),
 });
 export type QuoteRating = z.infer<typeof QuoteRatingSchema>;
+
+export const QuoteReportReasonSchema = z.enum([
+  "Grammatical error",
+  "Duplicate quote",
+  "Inappropriate content",
+  "Low quality content",
+  "Incorrect source",
+]);
+export type QuoteReportReason = z.infer<typeof QuoteReportReasonSchema>;

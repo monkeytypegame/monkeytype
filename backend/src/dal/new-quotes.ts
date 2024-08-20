@@ -6,7 +6,7 @@ import { readFile } from "node:fs/promises";
 import * as db from "../init/db";
 import MonkeyError from "../utils/error";
 import { compareTwoStrings } from "string-similarity";
-import { NewQuote, Quote } from "@monkeytype/contracts/schemas/quotes";
+import { ApproveQuote, Quote } from "@monkeytype/contracts/schemas/quotes";
 
 const PATH_TO_REPO = "../../../../monkeytype-new-quotes";
 
@@ -24,7 +24,7 @@ type AddQuoteReturn = {
   similarityScore?: number;
 };
 
-type DBNewQuote = MonkeyTypes.WithObjectId<NewQuote>;
+type DBNewQuote = MonkeyTypes.WithObjectId<Quote>;
 
 // Export for use in tests
 export const getNewQuoteCollection = (): Collection<DBNewQuote> =>
@@ -114,7 +114,7 @@ export async function get(language: string): Promise<DBNewQuote[]> {
 }
 
 type ApproveReturn = {
-  quote: Quote;
+  quote: ApproveQuote;
   message: string;
 };
 
@@ -136,7 +136,7 @@ export async function approve(
     );
   }
   const language = targetQuote.language;
-  const quote: Quote = {
+  const quote: ApproveQuote = {
     text: editQuote ?? targetQuote.text,
     source: editSource ?? targetQuote.source,
     length: targetQuote.text.length,
