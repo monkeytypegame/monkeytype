@@ -35,6 +35,7 @@ header #logo .top,
   -webkit-text-fill-color: initial;
 }
 
+button.text:hover,
 .textButton:hover,
 #restartTestButton:hover > i,
 #restartTestButton:hover > i,
@@ -106,7 +107,8 @@ header #logo .top,
   animation: none;
 }
 
-.button:hover {
+.button:hover,
+button:not(.textButton):not(.text):hover {
   animation: glowing-button 2s alternate ease-in-out infinite;
 }
 
