@@ -38538,6 +38538,13 @@
       "length": 87,
       "approvedBy": "test6",
       "id": 7607
+    },
+    {
+      "text": "This is another test. This is another test. This is another test. This is another test.This is another test. This is another test. This is another test. This isThis is another test. This is another test. This is another test. This is another test.",
+      "source": "me",
+      "length": 247,
+      "approvedBy": "test6",
+      "id": 7608
     }
   ]
 }
