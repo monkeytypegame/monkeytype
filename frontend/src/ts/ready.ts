@@ -4,8 +4,8 @@ import * as MonkeyPower from "./elements/monkey-power";
 import * as MerchBanner from "./elements/merch-banner";
 import * as CookiesModal from "./modals/cookies";
 import * as ConnectionState from "./states/connection";
+import * as AccountButton from "./elements/account-button";
 import * as FunboxList from "./test/funbox/funbox-list";
-import * as SignInOutButton from "./elements/sign-in-out-button";
 //@ts-expect-error
 import Konami from "konami";
 import * as ServerConfiguration from "./ape/server-configuration";
@@ -34,7 +34,7 @@ $((): void => {
   if (ConnectionState.get()) {
     void ServerConfiguration.sync().then(() => {
       if (!ServerConfiguration.get()?.users.signUp) {
-        SignInOutButton.hide();
+        AccountButton.hide();
         $(".register").addClass("hidden");
         $(".login").addClass("hidden");
         $(".disabledNotification").removeClass("hidden");

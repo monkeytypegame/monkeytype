@@ -19,7 +19,7 @@ import * as LastSignedOutResultModal from "../modals/last-signed-out-result";
 import * as URLHandler from "../utils/url-handler";
 import * as Account from "../pages/account";
 import * as Alerts from "../elements/alerts";
-import * as SignInOutButton from "../elements/sign-in-out-button";
+import * as AccountSettings from "../pages/account-settings";
 import {
   GoogleAuthProvider,
   GithubAuthProvider,
@@ -91,7 +91,7 @@ async function getDataAndInit(): Promise<boolean> {
     console.error(error);
     AccountButton.loading(false);
     LoginPage.enableInputs();
-    $("header nav .account").css("opacity", 1);
+    $("header nav .view-account").css("opacity", 1);
     if (error instanceof DB.SnapshotInitError) {
       if (error.responseCode === 429) {
         Notifications.add(
@@ -124,7 +124,6 @@ async function getDataAndInit(): Promise<boolean> {
   }
   LoadingPage.updateText("Applying settings...");
   const snapshot = DB.getSnapshot() as MonkeyTypes.Snapshot;
-  SignInOutButton.update();
   AccountButton.update(snapshot);
   Alerts.setNotificationBubbleVisible(snapshot.inboxUnreadSize > 0);
   showFavoriteQuoteLength();
@@ -241,14 +240,12 @@ async function readyFunction(
     navigate();
   }
 
-  SignInOutButton.update();
-
   URLHandler.loadCustomThemeFromUrl(search);
   URLHandler.loadTestSettingsFromUrl(search);
   URLHandler.loadChallengeFromUrl(search);
   void URLHandler.linkDiscord(hash);
 
-  Settings.updateAuthSections();
+  AccountSettings.updateUI();
 }
 
 let disableAuthListener: Unsubscribe;
@@ -437,7 +434,7 @@ async function addAuthProvider(
     .then(function () {
       Loader.hide();
       Notifications.add(`${providerName} authentication added`, 1);
-      Settings.updateAuthSections();
+      AccountSettings.updateUI();
     })
     .catch(function (error: unknown) {
       Loader.hide();
@@ -463,7 +460,6 @@ export function signOut(): void {
         duration: 2,
       });
       Settings.hideAccountSection();
-      SignInOutButton.update();
       AccountButton.update(undefined);
       navigate("/login");
       DB.setSnapshot(undefined);
@@ -624,18 +620,14 @@ $(".pageLogin .login button.signInWithGitHub").on("click", () => {
   void signInWithGitHub();
 });
 
-$("header .signInOut").on("click", () => {
+$("nav .accountButtonAndMenu .menu button.signOut").on("click", () => {
   if (Auth === undefined) {
     Notifications.add("Authentication uninitialized", -1, {
       duration: 3,
     });
     return;
   }
-  if (isAuthenticated()) {
-    signOut();
-  } else {
-    navigate("/login");
-  }
+  signOut();
 });
 
 $(".pageLogin .register form").on("submit", (e) => {
@@ -643,11 +635,10 @@ $(".pageLogin .register form").on("submit", (e) => {
   void signUp();
 });
 
-$(".pageSettings #addGoogleAuth").on("click", async () => {
+$(".pageAccountSettings").on("click", "#addGoogleAuth", () => {
   void addGoogleAuth();
 });
-
-$(".pageSettings #addGithubAuth").on("click", async () => {
+$(".pageAccountSettings").on("click", "#addGithubAuth", () => {
   void addGithubAuth();
 });
 
