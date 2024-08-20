@@ -89,9 +89,9 @@ describe("PublicController", () => {
       expect(body).toEqual({
         message: "Invalid query schema",
         validationErrors: [
-          '"language" Invalid',
+          '"language" Can only contain letters [a-zA-Z0-9_+]',
           `"mode" Invalid enum value. Expected 'time' | 'words' | 'quote' | 'custom' | 'zen', received 'unknownMode'`,
-          '"mode2" Needs to be either a number, "zen" or "custom."',
+          '"mode2" Needs to be a number or a number represented as a string e.g. "10".',
         ],
       });
     });

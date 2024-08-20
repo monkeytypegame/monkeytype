@@ -11,11 +11,11 @@ const configuration = Configuration.getCachedConfiguration();
 const uid = new ObjectId().toHexString();
 
 describe("ApeKeyController", () => {
-  const getUserMock = vi.spyOn(UserDal, "getUser");
+  const getUserMock = vi.spyOn(UserDal, "getPartialUser");
 
   beforeEach(async () => {
     await enableApeKeysEndpoints(true);
-    getUserMock.mockResolvedValue(user(uid, { canManageApeKeys: true }));
+    getUserMock.mockResolvedValue(user(uid, {}));
     vi.useFakeTimers();
     vi.setSystemTime(1000);
   });

@@ -35,10 +35,6 @@ describe("Config", () => {
       false
     );
   });
-  it("setAccountChartResults", () => {
-    expect(Config.setAccountChartResults(true)).toBe(true);
-    expect(Config.setAccountChartResults("on" as any)).toBe(false);
-  });
   it("setStopOnError", () => {
     expect(Config.setStopOnError("off")).toBe(true);
     expect(Config.setStopOnError("word")).toBe(true);
@@ -254,17 +250,12 @@ describe("Config", () => {
   it("setBlindMode", () => {
     testBoolean(Config.setBlindMode);
   });
-  it("setAccountChartResults", () => {
-    testBoolean(Config.setAccountChartResults);
-  });
-  it("setAccountChartAccuracy", () => {
-    testBoolean(Config.setAccountChartAccuracy);
-  });
-  it("setAccountChartAvg10", () => {
-    testBoolean(Config.setAccountChartAvg10);
-  });
-  it("setAccountChartAvg100", () => {
-    testBoolean(Config.setAccountChartAvg100);
+  it("setAccountChart", () => {
+    expect(Config.setAccountChart(["on", "off", "off", "on"])).toBe(true);
+    expect(Config.setAccountChart(["on", "off"] as any)).toBe(true);
+    expect(Config.setAccountChart(["on", "off", "on", "true"] as any)).toBe(
+      false
+    );
   });
   it("setAlwaysShowDecimalPlaces", () => {
     testBoolean(Config.setAlwaysShowDecimalPlaces);

@@ -16,13 +16,33 @@ import {
   canSetConfigWithCurrentFunboxes,
   canSetFunboxWithConfig,
 } from "./test/funbox/funbox-validation";
-import { isDevEnvironment, reloadAfter, typedKeys } from "./utils/misc";
+import {
+  isDevEnvironment,
+  isObject,
+  reloadAfter,
+  typedKeys,
+} from "./utils/misc";
 import * as ConfigSchemas from "@monkeytype/contracts/schemas/configs";
 import { Config } from "@monkeytype/contracts/schemas/configs";
 import { roundTo1 } from "./utils/numbers";
 import { Mode, ModeSchema } from "@monkeytype/contracts/schemas/shared";
+import { Language, LanguageSchema } from "@monkeytype/contracts/schemas/util";
+import { LocalStorageWithSchema } from "./utils/local-storage-with-schema";
+import { migrateConfig } from "./utils/config";
 
-export let localStorageConfig: Config;
+const configLS = new LocalStorageWithSchema({
+  key: "config",
+  schema: ConfigSchemas.ConfigSchema,
+  fallback: DefaultConfig,
+  migrate: (value, _issues) => {
+    if (!isObject(value)) {
+      return DefaultConfig;
+    }
+    //todo maybe send a full config to db so that it removes legacy values
+
+    return migrateConfig(value);
+  },
+});
 
 let loadDone: (value?: unknown) => void;
 
@@ -47,29 +67,25 @@ function saveToLocalStorage(
   noDbCheck = false
 ): void {
   if (nosave) return;
-
-  const localToSave = config;
-
-  const localToSaveStringified = JSON.stringify(localToSave);
-  window.localStorage.setItem("config", localToSaveStringified);
+  configLS.set(config);
   if (!noDbCheck) {
     //@ts-expect-error this is fine
     configToSend[key] = config[key];
     saveToDatabase();
   }
+  const localToSaveStringified = JSON.stringify(config);
   ConfigEvent.dispatch("saveToLocalStorage", localToSaveStringified);
 }
 
 export function saveFullConfigToLocalStorage(noDbCheck = false): void {
   console.log("saving full config to localStorage");
-  const save = config;
-  const stringified = JSON.stringify(save);
-  window.localStorage.setItem("config", stringified);
+  configLS.set(config);
   if (!noDbCheck) {
     AccountButton.loading(true);
-    void DB.saveConfig(save);
+    void DB.saveConfig(config);
     AccountButton.loading(false);
   }
+  const stringified = JSON.stringify(config);
   ConfigEvent.dispatch("saveToLocalStorage", stringified);
 }
 
@@ -321,67 +337,13 @@ export function setAccountChart(
     return false;
   }
 
+  // if both speed and accuracy are off, set speed to on
+  // i dedicate this fix to AshesOfAFallen and our 2 collective brain cells
+  if (array[0] === "off" && array[1] === "off") {
+    array[0] = "on";
+  }
+
   config.accountChart = array;
-  saveToLocalStorage("accountChart", nosave);
-  ConfigEvent.dispatch("accountChart", config.accountChart);
-
-  return true;
-}
-
-export function setAccountChartResults(
-  value: boolean,
-  nosave?: boolean
-): boolean {
-  if (!isConfigValueValidBoolean("account chart results", value)) {
-    return false;
-  }
-
-  config.accountChart[0] = value ? "on" : "off";
-  saveToLocalStorage("accountChart", nosave);
-  ConfigEvent.dispatch("accountChart", config.accountChart);
-
-  return true;
-}
-
-export function setAccountChartAccuracy(
-  value: boolean,
-  nosave?: boolean
-): boolean {
-  if (!isConfigValueValidBoolean("account chart accuracy", value)) {
-    return false;
-  }
-
-  config.accountChart[1] = value ? "on" : "off";
-  saveToLocalStorage("accountChart", nosave);
-  ConfigEvent.dispatch("accountChart", config.accountChart);
-
-  return true;
-}
-
-export function setAccountChartAvg10(
-  value: boolean,
-  nosave?: boolean
-): boolean {
-  if (!isConfigValueValidBoolean("account chart avg 10", value)) {
-    return false;
-  }
-
-  config.accountChart[2] = value ? "on" : "off";
-  saveToLocalStorage("accountChart", nosave);
-  ConfigEvent.dispatch("accountChart", config.accountChart);
-
-  return true;
-}
-
-export function setAccountChartAvg100(
-  value: boolean,
-  nosave?: boolean
-): boolean {
-  if (!isConfigValueValidBoolean("account chart avg 100", value)) {
-    return false;
-  }
-
-  config.accountChart[3] = value ? "on" : "off";
   saveToLocalStorage("accountChart", nosave);
   ConfigEvent.dispatch("accountChart", config.accountChart);
 
@@ -1565,12 +1527,8 @@ export function setCustomThemeColors(
   return true;
 }
 
-export function setLanguage(
-  language: ConfigSchemas.Language,
-  nosave?: boolean
-): boolean {
-  if (!isConfigValueValid("language", language, ConfigSchemas.LanguageSchema))
-    return false;
+export function setLanguage(language: Language, nosave?: boolean): boolean {
+  if (!isConfigValueValid("language", language, LanguageSchema)) return false;
 
   config.language = language;
   void AnalyticsController.log("changedLanguage", { language });
@@ -1980,8 +1938,6 @@ export async function apply(
 
   ConfigEvent.dispatch("fullConfigChange");
 
-  configToApply = replaceLegacyValues(configToApply);
-
   const configObj = configToApply as Config;
   (Object.keys(DefaultConfig) as (keyof Config)[]).forEach((configKey) => {
     if (configObj[configKey] === undefined) {
@@ -2098,98 +2054,14 @@ export async function reset(): Promise<void> {
 
 export async function loadFromLocalStorage(): Promise<void> {
   console.log("loading localStorage config");
-  const newConfigString = window.localStorage.getItem("config");
-  let newConfig: Config;
-  if (
-    newConfigString !== undefined &&
-    newConfigString !== null &&
-    newConfigString !== ""
-  ) {
-    try {
-      newConfig = JSON.parse(newConfigString);
-    } catch (e) {
-      newConfig = {} as Config;
-    }
-    await apply(newConfig);
-    localStorageConfig = newConfig;
-    saveFullConfigToLocalStorage(true);
-  } else {
+  const newConfig = configLS.get();
+  if (newConfig === undefined) {
     await reset();
+  } else {
+    await apply(newConfig);
+    saveFullConfigToLocalStorage(true);
   }
-  // TestLogic.restart(false, true);
   loadDone();
-}
-
-function replaceLegacyValues(
-  configToApply: ConfigSchemas.PartialConfig | MonkeyTypes.ConfigChanges
-): ConfigSchemas.Config | MonkeyTypes.ConfigChanges {
-  const configObj = configToApply as ConfigSchemas.Config;
-
-  //@ts-expect-error
-  if (configObj.quickTab === true) {
-    configObj.quickRestart = "tab";
-  }
-
-  if (typeof configObj.smoothCaret === "boolean") {
-    configObj.smoothCaret = configObj.smoothCaret ? "medium" : "off";
-  }
-
-  //@ts-expect-error
-  if (configObj.swapEscAndTab === true) {
-    configObj.quickRestart = "esc";
-  }
-
-  //@ts-expect-error
-  if (configObj.alwaysShowCPM === true) {
-    configObj.typingSpeedUnit = "cpm";
-  }
-
-  //@ts-expect-error
-  if (configObj.showAverage === "wpm") {
-    configObj.showAverage = "speed";
-  }
-
-  if (typeof configObj.playSoundOnError === "boolean") {
-    configObj.playSoundOnError = configObj.playSoundOnError ? "1" : "off";
-  }
-
-  //@ts-expect-error
-  if (configObj.showTimerProgress === false) {
-    configObj.timerStyle = "off";
-  }
-
-  //@ts-expect-error
-  if (configObj.showLiveWpm === true) {
-    let val: ConfigSchemas.LiveSpeedAccBurstStyle = "mini";
-    if (configObj.timerStyle !== "bar" && configObj.timerStyle !== "off") {
-      val = configObj.timerStyle;
-    }
-    configObj.liveSpeedStyle = val;
-  }
-
-  //@ts-expect-error
-  if (configObj.showLiveBurst === true) {
-    let val: ConfigSchemas.LiveSpeedAccBurstStyle = "mini";
-    if (configObj.timerStyle !== "bar" && configObj.timerStyle !== "off") {
-      val = configObj.timerStyle;
-    }
-    configObj.liveBurstStyle = val;
-  }
-
-  //@ts-expect-error
-  if (configObj.showLiveAcc === true) {
-    let val: ConfigSchemas.LiveSpeedAccBurstStyle = "mini";
-    if (configObj.timerStyle !== "bar" && configObj.timerStyle !== "off") {
-      val = configObj.timerStyle;
-    }
-    configObj.liveAccStyle = val;
-  }
-
-  if (typeof configObj.soundVolume === "string") {
-    configObj.soundVolume = parseFloat(configObj.soundVolume);
-  }
-
-  return configObj;
 }
 
 export function getConfigChanges(): MonkeyTypes.PresetConfig {

@@ -58,7 +58,7 @@ function updateIndicatorAndButton(): void {
 
   if (!val) {
     indicator?.hide();
-    $("#saveCustomTextModal button.save").addClass("disabled");
+    $("#saveCustomTextModal button.save").prop("disabled", true);
   } else {
     const names = CustomText.getCustomTextNames(checkbox);
     if (names.includes(val)) {

@@ -63,8 +63,12 @@ function getTargetPositionLeft(
     const currentLetter = currentWordNodeList[inputLen] as
       | HTMLElement
       | undefined;
-    const lastWordLetter = currentWordNodeList[wordLen - 1] as HTMLElement;
-    const lastInputLetter = currentWordNodeList[inputLen - 1] as HTMLElement;
+    const lastWordLetter = currentWordNodeList[wordLen - 1] as
+      | HTMLElement
+      | undefined;
+    const lastInputLetter = currentWordNodeList[inputLen - 1] as
+      | HTMLElement
+      | undefined;
 
     if (isLanguageRightToLeft) {
       if (inputLen < wordLen && currentLetter) {
@@ -73,11 +77,11 @@ function getTargetPositionLeft(
           (fullWidthCaret ? 0 : fullWidthCaretWidth);
       } else if (!invisibleExtraLetters) {
         positionOffsetToWord =
-          lastInputLetter.offsetLeft -
+          (lastInputLetter?.offsetLeft ?? 0) -
           (fullWidthCaret ? fullWidthCaretWidth : 0);
       } else {
         positionOffsetToWord =
-          lastWordLetter.offsetLeft -
+          (lastWordLetter?.offsetLeft ?? 0) -
           (fullWidthCaret ? fullWidthCaretWidth : 0);
       }
     } else {
@@ -85,10 +89,12 @@ function getTargetPositionLeft(
         positionOffsetToWord = currentLetter?.offsetLeft;
       } else if (!invisibleExtraLetters) {
         positionOffsetToWord =
-          lastInputLetter.offsetLeft + lastInputLetter.offsetWidth;
+          (lastInputLetter?.offsetLeft ?? 0) +
+          (lastInputLetter?.offsetWidth ?? 0);
       } else {
         positionOffsetToWord =
-          lastWordLetter.offsetLeft + lastWordLetter.offsetWidth;
+          (lastWordLetter?.offsetLeft ?? 0) +
+          (lastWordLetter?.offsetWidth ?? 0);
       }
     }
     result = activeWordElement.offsetLeft + positionOffsetToWord;
@@ -143,7 +149,9 @@ export async function updatePosition(noAnim = false): Promise<void> {
   const currentLetter = currentWordNodeList[inputLen] as
     | HTMLElement
     | undefined;
-  const lastWordLetter = currentWordNodeList[wordLen - 1] as HTMLElement;
+  const lastWordLetter = currentWordNodeList[wordLen - 1] as
+    | HTMLElement
+    | undefined;
 
   const spaceWidth = getSpaceWidth(activeWordEl);
 
@@ -156,7 +164,7 @@ export async function updatePosition(noAnim = false): Promise<void> {
     lastWordLetter?.offsetHeight ||
     Config.fontSize * Numbers.convertRemToPixels(1);
 
-  const letterPosTop = lastWordLetter.offsetTop;
+  const letterPosTop = lastWordLetter?.offsetTop ?? 0;
   const diff = letterHeight - caret.offsetHeight;
   let newTop = activeWordEl.offsetTop + letterPosTop + diff / 2;
   if (Config.caretStyle === "underline") {

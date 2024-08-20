@@ -240,83 +240,6 @@ export type CustomTextDataWithTextLen = Omit<CustomTextData, "text"> & {
   textLen: number;
 };
 
-export type ResultFilters = {
-  _id: string;
-  name: string;
-  pb: {
-    no: boolean;
-    yes: boolean;
-  };
-  difficulty: {
-    normal: boolean;
-    expert: boolean;
-    master: boolean;
-  };
-  mode: {
-    words: boolean;
-    time: boolean;
-    quote: boolean;
-    zen: boolean;
-    custom: boolean;
-  };
-  words: {
-    "10": boolean;
-    "25": boolean;
-    "50": boolean;
-    "100": boolean;
-    custom: boolean;
-  };
-  time: {
-    "15": boolean;
-    "30": boolean;
-    "60": boolean;
-    "120": boolean;
-    custom: boolean;
-  };
-  quoteLength: {
-    short: boolean;
-    medium: boolean;
-    long: boolean;
-    thicc: boolean;
-  };
-  punctuation: {
-    on: boolean;
-    off: boolean;
-  };
-  numbers: {
-    on: boolean;
-    off: boolean;
-  };
-  date: {
-    last_day: boolean;
-    last_week: boolean;
-    last_month: boolean;
-    last_3months: boolean;
-    all: boolean;
-  };
-  tags: Record<string, boolean>;
-  language: Record<string, boolean>;
-  funbox: {
-    none?: boolean;
-  } & Record<string, boolean>;
-};
-
-export type LeaderboardEntry = {
-  _id: string;
-  wpm: number;
-  acc: number;
-  timestamp: number;
-  raw: number;
-  consistency?: number;
-  uid: string;
-  name: string;
-  discordId?: string;
-  discordAvatar?: string;
-  rank: number;
-  badgeId?: number;
-  isPremium?: boolean;
-};
-
 export type PostResultResponse = {
   isPb: boolean;
   tagPbs: string[];
@@ -408,7 +331,7 @@ export type User = {
   verified?: boolean;
   needsToChangeName?: boolean;
   quoteMod?: boolean | string;
-  resultFilterPresets?: ResultFilters[];
+  resultFilterPresets?: import("@monkeytype/contracts/schemas/users").ResultFilters[];
   testActivity?: TestActivity;
 };
 

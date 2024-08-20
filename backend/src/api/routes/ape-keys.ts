@@ -13,9 +13,9 @@ const commonMiddleware = [
     },
     invalidMessage: "ApeKeys are currently disabled.",
   }),
-  checkUserPermissions({
+  checkUserPermissions(["canManageApeKeys"], {
     criteria: (user) => {
-      return user.canManageApeKeys ?? false;
+      return user.canManageApeKeys ?? true;
     },
     invalidMessage: "You have lost access to ape keys, please contact support",
   }),

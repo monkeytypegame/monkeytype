@@ -42,7 +42,6 @@ const APP_START_TIME = Date.now();
 const API_ROUTE_MAP = {
   "/users": users,
   "/results": results,
-  "/leaderboards": leaderboards,
   "/quotes": quotes,
   "/webhooks": webhooks,
   "/docs": docs,
@@ -56,6 +55,7 @@ const router = s.router(contract, {
   presets,
   psas,
   public: publicStats,
+  leaderboards,
 });
 
 export function addApiRoutes(app: Application): void {
@@ -77,7 +77,7 @@ export function addApiRoutes(app: Application): void {
 function applyTsRestApiRoutes(app: IRouter): void {
   createExpressEndpoints(contract, router, app, {
     jsonQuery: true,
-    requestValidationErrorHandler(err, _req, res, next) {
+    requestValidationErrorHandler(err, req, res, _next) {
       let message: string | undefined = undefined;
       let validationErrors: string[] | undefined = undefined;
 
@@ -90,16 +90,24 @@ function applyTsRestApiRoutes(app: IRouter): void {
       } else if (err.body?.issues !== undefined) {
         message = "Invalid request data schema";
         validationErrors = err.body.issues.map(prettyErrorMessage);
-      }
-
-      if (message !== undefined) {
-        res
-          .status(422)
-          .json({ message, validationErrors } as MonkeyValidationError);
+      } else if (err.headers?.issues !== undefined) {
+        message = "Invalid header schema";
+        validationErrors = err.headers.issues.map(prettyErrorMessage);
       } else {
-        next();
+        Logger.error(
+          `Unknown validation error for ${req.method} ${
+            req.path
+          }: ${JSON.stringify(err)}`
+        );
+        res
+          .status(500)
+          .json({ message: "Unknown validation error. Contact support." });
         return;
       }
+
+      res
+        .status(422)
+        .json({ message, validationErrors } as MonkeyValidationError);
     },
     globalMiddleware: [authenticateTsRestRequest()],
   });
@@ -123,7 +131,9 @@ function applyDevApiRoutes(app: Application): void {
     app.use(async (req, res, next) => {
       const slowdown = (await getLiveConfiguration()).dev.responseSlowdownMs;
       if (slowdown > 0) {
-        Logger.info(`Simulating ${slowdown}ms delay for ${req.path}`);
+        Logger.info(
+          `Simulating ${slowdown}ms delay for ${req.method} ${req.path}`
+        );
         await new Promise((resolve) => setTimeout(resolve, slowdown));
       }
       next();

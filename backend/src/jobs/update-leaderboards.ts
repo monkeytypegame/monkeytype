@@ -2,20 +2,21 @@ import { CronJob } from "cron";
 import GeorgeQueue from "../queues/george-queue";
 import * as LeaderboardsDAL from "../dal/leaderboards";
 import { getCachedConfiguration } from "../init/configuration";
-import { LeaderboardEntry } from "@monkeytype/shared-types";
 
 const CRON_SCHEDULE = "30 14/15 * * * *";
 const RECENT_AGE_MINUTES = 10;
 const RECENT_AGE_MILLISECONDS = RECENT_AGE_MINUTES * 60 * 1000;
 
-async function getTop10(leaderboardTime: string): Promise<LeaderboardEntry[]> {
+async function getTop10(
+  leaderboardTime: string
+): Promise<LeaderboardsDAL.DBLeaderboardEntry[]> {
   return (await LeaderboardsDAL.get(
     "time",
     leaderboardTime,
     "english",
     0,
     10
-  )) as LeaderboardEntry[]; //can do that because gettop10 will not be called during an update
+  )) as LeaderboardsDAL.DBLeaderboardEntry[]; //can do that because gettop10 will not be called during an update
 }
 
 async function updateLeaderboardAndNotifyChanges(

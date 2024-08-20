@@ -904,7 +904,7 @@ list.updateName = new SimpleModal({
         reloadAfter(2);
       }
     }
-    $("nav .textButton.account .text").text(newName);
+    AccountButton.updateName(newName);
 
     return {
       status: 1,
@@ -1451,7 +1451,7 @@ list.unlinkDiscord = new SimpleModal({
 
     snap.discordAvatar = undefined;
     snap.discordId = undefined;
-    void AccountButton.update();
+    AccountButton.updateAvatar(undefined, undefined);
     DB.setSnapshot(snap);
     Settings.updateDiscordSection();
 

@@ -489,7 +489,7 @@ export async function updateWordsInputPosition(initial = false): Promise<void> {
 }
 
 function updateWordsHeight(force = false): void {
-  if (ActivePage.get() !== "test") return;
+  if (ActivePage.get() !== "test" || resultVisible) return;
   if (!force && Config.mode !== "custom") return;
   $("#wordsWrapper").removeClass("hidden");
   const wordHeight = $(document.querySelector(".word") as Element).outerHeight(
@@ -559,8 +559,7 @@ function updateWordsHeight(force = false): void {
       finalWrapperHeight = wrapperHeight;
     }
 
-    $("#words").css("height", finalWordsHeight + "px");
-    $("#wordsWrapper").css("height", finalWrapperHeight + "px");
+    $("#words").css("height", "0px");
 
     if (Config.tapeMode !== "off") {
       $("#words").css({ overflow: "hidden", width: "200vw" });
@@ -575,10 +574,14 @@ function updateWordsHeight(force = false): void {
       $("#wordsWrapper").css({ overflow: "visible clip" });
     }
 
-    $(".outOfFocusWarning").css(
-      "margin-top",
-      finalWrapperHeight / 2 - Numbers.convertRemToPixels(1) / 2 + "px"
-    );
+    setTimeout(() => {
+      $("#words").css("height", finalWordsHeight + "px");
+      $("#wordsWrapper").css("height", finalWrapperHeight + "px");
+      $(".outOfFocusWarning").css(
+        "margin-top",
+        finalWrapperHeight / 2 - Numbers.convertRemToPixels(1) / 2 + "px"
+      );
+    }, 0);
   }
 
   if (Config.mode === "zen") {
@@ -908,14 +911,6 @@ export async function updateWordElement(inputOverride?: string): Promise<void> {
         ret += `<letter>` + currentWord[i] + "</letter>";
       }
     }
-
-    if (Config.highlightMode === "letter") {
-      if (input.length > currentWord.length && !Config.blindMode) {
-        wordAtIndex.classList.add("error");
-      } else if (input.length === currentWord.length) {
-        wordAtIndex.classList.remove("error");
-      }
-    }
   }
 
   wordAtIndex.innerHTML = ret;
@@ -935,6 +930,7 @@ export async function updateWordElement(inputOverride?: string): Promise<void> {
 }
 
 export function scrollTape(): void {
+  if (ActivePage.get() !== "test" || resultVisible) return;
   const wordsWrapperWidth = (
     document.querySelector("#wordsWrapper") as HTMLElement
   ).offsetWidth;

@@ -1,16 +1,22 @@
+import { z } from "zod";
 import { getLatestReleaseFromGitHub } from "../utils/json-data";
+import { LocalStorageWithSchema } from "../utils/local-storage-with-schema";
 
-const LOCALSTORAGE_KEY = "lastSeenVersion";
+const memoryLS = new LocalStorageWithSchema({
+  key: "lastSeenVersion",
+  schema: z.string(),
+  fallback: "",
+});
 
 let version: null | string = null;
 let isVersionNew: null | boolean = null;
 
 function setMemory(v: string): void {
-  window.localStorage.setItem(LOCALSTORAGE_KEY, v);
+  memoryLS.set(v);
 }
 
 function getMemory(): string {
-  return window.localStorage.getItem(LOCALSTORAGE_KEY) ?? "";
+  return memoryLS.get();
 }
 
 async function check(): Promise<void> {

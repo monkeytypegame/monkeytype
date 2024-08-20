@@ -1,10 +1,11 @@
 import Config from "./config";
 import * as Misc from "./utils/misc";
 import * as MonkeyPower from "./elements/monkey-power";
-import * as Notifications from "./elements/notifications";
+import * as MerchBanner from "./elements/merch-banner";
 import * as CookiesModal from "./modals/cookies";
 import * as ConnectionState from "./states/connection";
 import * as FunboxList from "./test/funbox/funbox-list";
+import * as SignInOutButton from "./elements/sign-in-out-button";
 //@ts-expect-error
 import Konami from "konami";
 import * as ServerConfiguration from "./ape/server-configuration";
@@ -18,21 +19,7 @@ $((): void => {
   //this line goes back to pretty much the beginning of the project and im pretty sure its here
   //to make sure the initial theme application doesnt animate the background color
   $("body").css("transition", "background .25s, transform .05s");
-  const merchBannerClosed =
-    window.localStorage.getItem("merchbannerclosed") === "true";
-  if (!merchBannerClosed) {
-    Notifications.addBanner(
-      `Check out our merchandise, available at <a target="_blank" rel="noopener" href="https://monkeytype.store/">monkeytype.store</a>`,
-      1,
-      "./images/merch2.png",
-      false,
-      () => {
-        window.localStorage.setItem("merchbannerclosed", "true");
-      },
-      true
-    );
-  }
-
+  MerchBanner.showIfNotClosedBefore();
   setTimeout(() => {
     FunboxList.get(Config.funbox).forEach((it) =>
       it.functions?.applyGlobalCSS?.()
@@ -47,7 +34,7 @@ $((): void => {
   if (ConnectionState.get()) {
     void ServerConfiguration.sync().then(() => {
       if (!ServerConfiguration.get()?.users.signUp) {
-        $(".signInOut").addClass("hidden");
+        SignInOutButton.hide();
         $(".register").addClass("hidden");
         $(".login").addClass("hidden");
         $(".disabledNotification").removeClass("hidden");
