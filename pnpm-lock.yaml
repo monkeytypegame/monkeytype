@@ -208,8 +208,8 @@ importers:
         specifier: 6.4.15
         version: 6.4.15
       '@types/object-hash':
-        specifier: 2.2.1
-        version: 2.2.1
+        specifier: 3.0.6
+        version: 3.0.6
       '@types/readline-sync':
         specifier: 1.4.8
         version: 1.4.8
@@ -380,8 +380,8 @@ importers:
         specifier: 20.14.11
         version: 20.14.11
       '@types/object-hash':
-        specifier: 2.2.1
-        version: 2.2.1
+        specifier: 3.0.6
+        version: 3.0.6
       '@types/subset-font':
         specifier: 1.4.3
         version: 1.4.3
@@ -2666,8 +2666,8 @@ packages:
   '@types/normalize-package-data@2.4.4':
     resolution: {integrity: sha512-37i+OaWTh9qeK4LSHPsyRC7NahnGotNuZvjLSgcPzblpHB3rrCJxAOgI5gCdKm7coonsaX1Of0ILiTcnZjbfxA==}
 
-  '@types/object-hash@2.2.1':
-    resolution: {integrity: sha512-i/rtaJFCsPljrZvP/akBqEwUP2y5cZLOmvO+JaYnz01aPknrQ+hB5MRcO7iqCUsFaYfTG8kGfKUyboA07xeDHQ==}
+  '@types/object-hash@3.0.6':
+    resolution: {integrity: sha512-fOBV8C1FIu2ELinoILQ+ApxcUKz4ngq+IWUYrxSGjXzzjUALijilampwkMgEtJ+h2njAW3pi853QpzNVCHB73w==}
 
   '@types/qs@6.9.15':
     resolution: {integrity: sha512-uXHQKES6DQKKCLh441Xv/dwxOq1TVS3JPUMlEqoEglvlhR6Mxnlew/Xq/LRVHpLyk7iK3zODe1qYHIMltO7XGg==}
@@ -11915,7 +11915,7 @@ snapshots:
 
   '@types/normalize-package-data@2.4.4': {}
 
-  '@types/object-hash@2.2.1': {}
+  '@types/object-hash@3.0.6': {}
 
   '@types/qs@6.9.15': {}
 
