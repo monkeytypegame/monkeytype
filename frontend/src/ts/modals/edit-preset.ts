@@ -142,7 +142,6 @@ function hide(): void {
 }
 
 async function apply(): Promise<void> {
-  console.log(state);
   const action = $("#editPresetModal .modal").attr("data-action");
   const propPresetName = $("#editPresetModal .modal input").val() as string;
   const presetName = propPresetName.replaceAll(" ", "_");
@@ -193,7 +192,6 @@ async function apply(): Promise<void> {
       return;
     }
     const configChanges = getConfigChanges();
-    console.log(configChanges);
     const response = await Ape.presets.save({
       body: {
         _id: presetId,
@@ -370,7 +368,6 @@ function getActiveConfigChanges(
           : //@ts-expect-error this is fine
             defaultConfig[settingName];
     });
-  console.log("active", activeConfigChanges);
   return activeConfigChanges;
 }
 function getConfigChanges(): MonkeyTypes.ConfigChanges {
