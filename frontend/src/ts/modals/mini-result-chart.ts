@@ -1,24 +1,10 @@
-import * as ChartController from "../../controllers/chart-controller";
-import Config from "../../config";
-import * as Misc from "../../utils/misc";
-import * as Arrays from "../../utils/arrays";
 import { ChartData } from "@monkeytype/shared-types";
+import AnimatedModal from "../utils/animated-modal";
+import * as ChartController from "../controllers/chart-controller";
+import Config from "../config";
+import * as Arrays from "../utils/arrays";
 
-export function updatePosition(x: number, y: number): void {
-  $(".pageAccount .miniResultChartWrapper").css({ top: y, left: x });
-}
-
-export function show(): void {
-  $(".pageAccount .miniResultChartWrapper").stop(true, true).fadeIn(125);
-  $(".pageAccount .miniResultChartBg").stop(true, true).fadeIn(125);
-}
-
-function hide(): void {
-  $(".pageAccount .miniResultChartWrapper").stop(true, true).fadeOut(125);
-  $(".pageAccount .miniResultChartBg").stop(true, true).fadeOut(125);
-}
-
-export function updateData(data: ChartData): void {
+function updateData(data: ChartData): void {
   // let data = filteredResults[filteredId].chartData;
   let labels = [];
   for (let i = 1; i <= data.wpm.length; i++) {
@@ -59,16 +45,11 @@ export function updateData(data: ChartData): void {
   void ChartController.miniResult.updateColors();
 }
 
-$(document).on("keydown", (event) => {
-  if (
-    event.key === "Escape" &&
-    Misc.isElementVisible(".pageAccount .miniResultChartWrapper")
-  ) {
-    hide();
-    event.preventDefault();
-  }
-});
+export function show(data: ChartData): void {
+  updateData(data);
+  void modal.show();
+}
 
-$(".pageAccount").on("click", ".miniResultChartBg", () => {
-  hide();
+const modal = new AnimatedModal({
+  dialogId: "miniResultChartModal",
 });
