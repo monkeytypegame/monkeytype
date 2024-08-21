@@ -86,6 +86,7 @@ export function getOpenApi(): OpenAPIObject {
           name: "quotes",
           description: "Quote submissions for new quotes and quote ratings.",
           "x-displayName": "Quotes",
+          "x-public": "yes",
         },
         {
           name: "admin",
