@@ -10,7 +10,8 @@ declare namespace MonkeyTypes {
     | "login"
     | "profile"
     | "profileSearch"
-    | "404";
+    | "404"
+    | "accountSettings";
 
   type LanguageGroup = {
     name: string;

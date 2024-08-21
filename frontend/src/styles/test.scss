@@ -294,6 +294,9 @@
         color: var(--correct-letter-color);
         animation: var(--correct-letter-animation);
       }
+      & .hints hint {
+        display: none;
+      }
     }
     // &.highlight-word {
     //   .word.typed.error,

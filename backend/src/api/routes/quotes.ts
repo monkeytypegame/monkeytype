@@ -6,7 +6,7 @@ import * as RateLimit from "../../middlewares/rate-limit";
 import * as QuoteController from "../controllers/quote";
 import { callController } from "../ts-rest-adapter";
 
-const checkIfUserIsQuoteMod = checkUserPermissions({
+const checkIfUserIsQuoteMod = checkUserPermissions(["quoteMod"], {
   criteria: (user) => {
     return (
       user.quoteMod === true ||
@@ -64,7 +64,7 @@ export default s.router(quotesContract, {
         invalidMessage: "Quote reporting is unavailable.",
       }),
       RateLimit.quoteReportSubmit,
-      checkUserPermissions({
+      checkUserPermissions(["canReport"],{
         criteria: (user) => {
           return user.canReport !== false;
         },

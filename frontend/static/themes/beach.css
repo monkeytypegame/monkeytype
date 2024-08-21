@@ -11,11 +11,11 @@
   --colorful-error-extra-color: #ff6f69;
 }
 
-nav .textButton:nth-child(1),
-nav .textButton:nth-child(2),
-nav .textButton:nth-child(3),
-nav .textButton:nth-child(4),
-nav .textButton:nth-child(5),
-nav .textButton:nth-child(6) {
+nav > .textButton:nth-child(1),
+nav > .textButton:nth-child(2),
+nav > .textButton:nth-child(3),
+nav > .textButton:nth-child(4),
+nav > .textButton:nth-child(5),
+nav > .textButton:nth-child(6) {
   color: #ff6f69;
 }

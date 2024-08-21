@@ -13,7 +13,7 @@ const commonMiddleware = [
     },
     invalidMessage: "ApeKeys are currently disabled.",
   }),
-  checkUserPermissions({
+  checkUserPermissions(["canManageApeKeys"], {
     criteria: (user) => {
       return user.canManageApeKeys ?? true;
     },

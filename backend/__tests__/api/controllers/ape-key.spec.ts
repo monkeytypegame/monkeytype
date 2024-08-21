@@ -11,7 +11,7 @@ const configuration = Configuration.getCachedConfiguration();
 const uid = new ObjectId().toHexString();
 
 describe("ApeKeyController", () => {
-  const getUserMock = vi.spyOn(UserDal, "getUser");
+  const getUserMock = vi.spyOn(UserDal, "getPartialUser");
 
   beforeEach(async () => {
     await enableApeKeysEndpoints(true);

@@ -4,6 +4,12 @@
   </div>
 </dialog>
 
+<dialog id="miniResultChartModal" class="modalWrapper hidden">
+  <div class="modal">
+    <canvas></canvas>
+  </div>
+</dialog>
+
 <dialog id="lastSignedOutResult" class="modalWrapper hidden">
   <div class="modal">
     <div class="title">Last signed out result</div>
@@ -843,30 +849,6 @@
     <button>submit</button>
   </div>
 </dialog>
-<dialog id="apeKeysModal" class="hidden modalWrapper">
-  <div class="modal">
-    <div class="top">
-      <div class="title">Ape Keys</div>
-      <button class="generateApeKey">
-        <i class="fas fa-plus"></i>
-        Generate new key
-      </button>
-    </div>
-    <table>
-      <thead>
-        <tr>
-          <td width="1px">active</td>
-          <td>name</td>
-          <td>created on</td>
-          <td>modified on</td>
-          <td>last used on</td>
-          <td width="1px"></td>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-  </div>
-</dialog>
 <dialog id="quoteReportModal" class="modalWrapper hidden">
   <div class="modal">
     <div class="title">Report a quote</div>
@@ -1272,10 +1254,18 @@
   <form class="modal">
     <div class="title">Edit Profile</div>
     <div>
+      <label>name</label>
+      <div>
+        To update your name, go to Account Settings > Account > Update account
+        name
+      </div>
+    </div>
+    <div>
       <label>avatar</label>
       <div>
         To update your avatar make sure your Discord account is linked, then go
-        to Settings > Account > Discord Integration and click "Update Avatar"
+        to Account Settings > Account > Discord Integration and click "Update
+        Avatar"
       </div>
     </div>
     <div>

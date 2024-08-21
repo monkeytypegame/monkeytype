@@ -33,8 +33,11 @@ nav {
       display: grid;
       place-content: center center;
     }
+  }
 
-    &.account {
+  .accountButtonAndMenu {
+    position: relative;
+    .view-account {
       position: relative;
       align-items: center;
       gap: 0.33em;
@@ -118,6 +121,66 @@ nav {
           color: var(--text-color);
         }
       }
+      &:focus-within {
+        z-index: 10;
+      }
+    }
+    .menu {
+      // display: none;
+      pointer-events: none;
+      z-index: 5;
+      opacity: 0;
+      position: absolute;
+      top: 99%;
+      right: 0;
+      font-size: 0.75rem;
+      min-width: 23ch;
+      width: 100%;
+      transition: opacity 0.125s;
+
+      .spacer {
+        width: 100%;
+        height: 0.5em;
+        background: transparent;
+      }
+
+      .items {
+        box-shadow: 0 0 0 0.5em var(--bg-color);
+        background: var(--sub-alt-color);
+        display: grid;
+        border-radius: var(--roundness);
+        gap: 0.25em;
+
+        * {
+          justify-content: left;
+          padding-left: 0;
+          border-radius: 0;
+          gap: 0;
+          i {
+            margin-right: 0.7em;
+            margin-left: 0.9em;
+          }
+          &:last-child {
+            border-radius: 0 0 var(--roundness) var(--roundness);
+          }
+          &:first-child {
+            border-radius: var(--roundness) var(--roundness) 0 0;
+          }
+          &:focus-visible {
+            border-radius: var(--roundness);
+          }
+        }
+      }
+    }
+    &:hover,
+    &:focus-within {
+      & .menu {
+        pointer-events: all;
+        opacity: 1;
+      }
+      // .view-account {
+      // background: var(--sub-alt-color);
+      // }
     }
   }
 

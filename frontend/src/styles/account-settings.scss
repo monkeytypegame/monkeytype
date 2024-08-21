@@ -1,0 +1,195 @@
+.pageAccountSettings {
+  & > .content > .title {
+    font-size: 2rem;
+    color: var(--sub-color);
+    display: inline-flex;
+    align-items: baseline;
+    margin-bottom: 1em;
+    i {
+      margin-right: 0.5em;
+    }
+  }
+  .main {
+    display: grid;
+    grid-template-columns: 15rem 1fr;
+    gap: 4rem;
+    .tabs {
+      background: var(--sub-alt-color);
+      border-radius: calc(var(--roundness) * 2);
+      padding: 1rem 0;
+      display: flex;
+      flex-direction: column;
+      height: max-content;
+      button {
+        padding: 1em 2em;
+        width: 100%;
+        justify-content: flex-start;
+        &.active {
+          color: var(--text-color);
+        }
+      }
+    }
+    .right {
+      padding-top: 1rem;
+      .tab {
+        display: grid;
+        gap: 2rem;
+
+        & > .title {
+          color: var(--sub-color);
+          font-size: 2rem;
+          margin-bottom: 2rem;
+        }
+
+        .section {
+          display: grid;
+          grid-template-areas: "title buttons" "text buttons";
+          grid-template-columns: 2fr 1fr;
+          grid-template-rows: auto 1fr;
+          column-gap: 2rem;
+          row-gap: 0.5rem;
+          align-items: center;
+          .title {
+            color: var(--sub-color);
+            grid-area: title;
+          }
+          .text {
+            grid-area: text;
+            align-self: normal;
+            .red {
+              color: var(--error-color);
+            }
+          }
+          .buttons {
+            grid-area: buttons;
+            display: grid;
+            &.vertical {
+              grid-auto-flow: row;
+              gap: 0.5rem;
+            }
+          }
+          &.discordIntegration {
+            .info {
+              grid-area: buttons;
+              text-align: center;
+              color: var(--main-color);
+            }
+
+            #discordButtonGroup {
+              display: grid;
+              grid-auto-flow: column;
+              justify-content: center;
+              gap: 0.5rem;
+            }
+
+            #unlinkDiscordButton,
+            #updateDiscordAvatarButton {
+              margin: 0.5rem auto 0 auto;
+              font-size: 0.75rem;
+              line-height: 0.7rem;
+            }
+
+            .howto {
+              margin-top: 1rem;
+              color: var(--text-color);
+            }
+          }
+          &.optOutOfLeaderboards {
+            .optedOut {
+              grid-area: buttons;
+              text-align: center;
+              color: var(--sub-color);
+            }
+          }
+          &.setStreakHourOffset {
+            .info {
+              grid-area: buttons;
+              text-align: center;
+              color: var(--sub-color);
+            }
+          }
+          &.apeKeys {
+            .lostAccess {
+              grid-area: buttons;
+              text-align: center;
+              color: var(--error-color);
+            }
+          }
+        }
+        &[data-tab="api"] {
+          table {
+            width: 100%;
+            border-spacing: 0;
+            border-collapse: collapse;
+
+            tr td:first-child {
+              text-align: center;
+            }
+
+            tr.me {
+              td {
+                color: var(--main-color);
+                // font-weight: 900;
+              }
+            }
+
+            td {
+              padding: 0.5rem 0.5rem;
+            }
+
+            thead {
+              color: var(--sub-color);
+              font-size: 0.75rem;
+
+              td {
+                padding: 0.5rem;
+                background: var(--bg-color);
+                position: -webkit-sticky;
+                position: sticky;
+                top: 0;
+                z-index: 99;
+              }
+            }
+
+            tbody {
+              color: var(--text-color);
+
+              tr:nth-child(odd) td {
+                background: var(--sub-alt-color);
+              }
+            }
+
+            tfoot {
+              td {
+                padding: 1rem 0.5rem;
+                position: -webkit-sticky;
+                position: sticky;
+                bottom: -5px;
+                background: var(--bg-color);
+                color: var(--main-color);
+                z-index: 4;
+              }
+            }
+
+            tr {
+              td:first-child {
+                padding-left: 1rem;
+              }
+              td:last-child {
+                padding-right: 1rem;
+              }
+            }
+            .keyButtons {
+              display: flex;
+              gap: 0.5rem;
+            }
+          }
+        }
+      }
+    }
+    // .right {
+    //   background: var(--sub-alt-color);
+    //   border-radius: calc(var(--roundness) * 2);
+    // }
+  }
+}
