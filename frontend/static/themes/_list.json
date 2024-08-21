@@ -1244,5 +1244,12 @@
     "mainColor": "#e0794e",
     "subColor": "#688e8f",
     "textColor": "#023e3b"
+  },
+  {
+    "name": "kessoku",
+    "bgColor": "#000000",
+    "mainColor": "#d85e8e",
+    "subColor": "#dcdcdc",
+    "textColor": "#76cfe0"
   }
 ]

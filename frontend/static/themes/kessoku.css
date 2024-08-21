@@ -1,0 +1,116 @@
+:root {
+  --bg-color: #000000;
+  --main-color: #d85e8e;
+  --caret-color: #d85e8e;
+  --sub-color: #dcdcdc;
+  --sub-alt-color: #10193a;
+  --text-color: #76cfe0;
+  --error-color: #d73533;
+  --error-extra-color: #d85e8e;
+  --colorful-error-color: #326bf5;
+  --colorful-error-extra-color: #f2ca48;
+
+  /* colors based from kessoku band members*/
+  --kita: #d73533;
+  --ryo: #326bf5;
+  --hitori: #d85e8e;
+  --nijika: #f2ca48;
+}
+
+@keyframes hoverup {
+  0% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-8px);
+  }
+
+  100% {
+    transform: translateY(0);
+  }
+}
+
+@keyframes kessoku-text {
+  0% {
+    color: var(--kita);
+  }
+
+  25% {
+    color: var(--ryo);
+  }
+
+  50% {
+    color: var(--hitori);
+  }
+
+  75% {
+    color: var(--nijika);
+  }
+
+  100% {
+    color: var(--kita);
+  }
+}
+
+/* customize monkeytype logo colors */
+header #logo .icon svg g path:nth-child(1) {
+  fill: var(--text-color);
+}
+header #logo .icon svg g path:nth-child(2) {
+  fill: var(--nijika);
+}
+header #logo .icon svg g path:nth-child(4) {
+  fill: var(--kita);
+}
+header #logo .icon svg g path:nth-child(5) {
+  fill: var(--hitori);
+}
+header #logo .icon svg g path:nth-child(6),
+header #logo .icon svg g path:nth-child(8) {
+  fill: var(--ryo);
+}
+header #logo .icon svg g path:nth-child(7) {
+  fill: var(--text-color);
+}
+header #logo .icon svg g path:nth-child(9) {
+  fill: var(--text-color);
+}
+
+header #logo .text {
+  color: var(--sub-color);
+}
+
+header.focus nav > .textButton {
+  position: relative;
+}
+header nav > .textButton {
+  border-radius: 100%;
+  color: var(--text-color);
+}
+
+header nav > .textButton:hover {
+  animation: hoverup 800ms infinite;
+}
+
+/* customizes the background color of header nav */
+header nav > .view-start,
+header nav > .view-start:hover {
+  background-color: var(--kita);
+  color: var(--bg-color);
+}
+header nav > .view-leaderboards,
+header nav > .view-leaderboards:hover {
+  background-color: var(--ryo);
+  color: var(--bg-color);
+}
+header nav > .view-about,
+header nav > .view-about:hover {
+  background-color: var(--hitori);
+  color: var(--bg-color);
+}
+header nav > .view-settings,
+header nav > .view-settings:hover {
+  background-color: var(--nijika);
+  color: var(--bg-color);
+}
