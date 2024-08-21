@@ -1486,7 +1486,6 @@ body.darkMode {
     align-items: center;
     justify-items: left;
     height: min-content;
-    // margin: 1rem 0;
     font-size: 0.75rem;
     align-items: start;
 
@@ -1510,13 +1509,6 @@ body.darkMode {
           }
         }
       }
-    }
-
-    &.disabled {
-      opacity: 0.5;
-      -webkit-user-select: none;
-      user-select: none;
-      pointer-events: none;
     }
   }
 }
