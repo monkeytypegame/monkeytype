@@ -81,6 +81,16 @@ body.darkMode {
   }
 }
 
+#miniResultChartModal {
+  .modal {
+    overflow: hidden;
+    max-width: 70rem;
+    canvas {
+      height: 200px;
+    }
+  }
+}
+
 #customTextModal {
   .modal {
     max-width: 1200px;

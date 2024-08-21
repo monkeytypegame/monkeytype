@@ -4,6 +4,7 @@ import { showPopup } from "./simple-modals";
 import * as Notifications from "../elements/notifications";
 import { setMediaQueryDebugLevel } from "../ui";
 import { signIn } from "../controllers/account-controller";
+import * as Loader from "../elements/loader";
 
 let mediaQueryDebugLevel = 0;
 
@@ -59,7 +60,12 @@ async function setup(modalEl: HTMLElement): Promise<void> {
       );
       return;
     }
-    void signIn(envConfig.quickLoginEmail, envConfig.quickLoginPassword);
+    Loader.show();
+    void signIn(envConfig.quickLoginEmail, envConfig.quickLoginPassword).then(
+      () => {
+        Loader.hide();
+      }
+    );
     void modal.hide();
   });
 }

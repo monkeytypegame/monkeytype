@@ -57,7 +57,7 @@
   },
   "devDependencies": {
     "@commitlint/cli": "17.7.1",
-    "@commitlint/config-conventional": "17.7.0",
+    "@commitlint/config-conventional": "19.2.2",
     "@vitest/coverage-v8": "2.0.5",
     "@monkeytype/release": "workspace:*",
     "conventional-changelog": "6.0.0",

@@ -115,11 +115,11 @@ body.crtmode #logo .icon {
 }
 
 body.crtmode .avatars,
-body.crtmode nav .account .avatar,
+body.crtmode nav .view-account .avatar,
 /* Adding `filter` style to .levelAndBar would make it
 the containing block for the absolute positioned .xpBar */
-body.crtmode nav .account .levelAndBar .level,
-body.crtmode nav .account .levelAndBar .xpBar,
+body.crtmode nav .view-account .levelAndBar .level,
+body.crtmode nav .view-account .levelAndBar .xpBar,
 body.crtmode header.focus #logo .icon {
   filter: drop-shadow(3px 0px 1px var(--crt-sub-color-glow))
     drop-shadow(-3px 0px 0px var(--crt-sub-color-glow));
