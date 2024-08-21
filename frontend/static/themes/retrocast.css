@@ -11,23 +11,23 @@
   --colorful-error-extra-color: #c04455;
 }
 
-nav .textButton:nth-child(1) {
+nav > .textButton:nth-child(1) {
   color: #88dbdf;
 }
 
-nav .textButton:nth-child(2) {
+nav > .textButton:nth-child(2) {
   color: #88dbdf;
 }
 
-nav .textButton:nth-child(3) {
+nav > .textButton:nth-child(3) {
   color: #88dbdf;
 }
 
-nav .textButton:nth-child(4) {
+nav > .textButton:nth-child(4) {
   color: #ff585d;
 }
 
-nav .textButton:nth-child(5),
-nav .textButton:nth-child(6) {
+nav > .textButton:nth-child(5),
+nav > .textButton:nth-child(6) {
   color: #f3e03b;
 }

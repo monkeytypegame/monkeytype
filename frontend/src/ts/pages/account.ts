@@ -3,7 +3,7 @@ import * as ResultFilters from "../elements/account/result-filters";
 import * as ThemeColors from "../elements/theme-colors";
 import * as ChartController from "../controllers/chart-controller";
 import Config, * as UpdateConfig from "../config";
-import * as MiniResultChart from "../elements/account/mini-result-chart";
+import * as MiniResultChartModal from "../modals/mini-result-chart";
 import * as PbTables from "../elements/account/pb-tables";
 import * as LoadingPage from "./loading";
 import * as Focus from "../test/focus";
@@ -1152,13 +1152,8 @@ $(".pageAccount").on("click", ".miniResultChartButton", (event) => {
   console.log("updating");
   const filteredId = $(event.currentTarget).attr("filteredResultsId");
   if (filteredId === undefined) return;
-  MiniResultChart.updateData(
+  MiniResultChartModal.show(
     filteredResults[parseInt(filteredId)]?.chartData as ChartData
-  );
-  MiniResultChart.show();
-  MiniResultChart.updatePosition(
-    event.pageX - ($(".pageAccount .miniResultChartWrapper").outerWidth() ?? 0),
-    event.pageY + 30
   );
 });
 

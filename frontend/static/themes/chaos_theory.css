@@ -13,7 +13,7 @@
 }
 
 header #logo .text {
-  -webkit-transform: rotateY(180deg);
+  transform: rotateY(180deg);
   unicode-bidi: bidi-override;
   transition: 0.5s;
 }
@@ -23,19 +23,19 @@ header #logo .top {
 }
 
 header #logo .icon {
-  -webkit-transform: rotateX(180deg);
+  transform: rotateX(180deg);
   transition: 0.5s;
 }
 
 #words .incorrect.extra {
-  -webkit-transform: rotateY(180deg);
+  transform: rotateY(180deg);
   unicode-bidi: bidi-override;
   direction: rtl;
 }
 
-footer .leftright .right .current-theme .text {
-  /* font-family: "Comic Sans MS", "Comic Sans", cursive; */
-}
+/* footer .leftright .right .current-theme .text { */
+/* font-family: "Comic Sans MS", "Comic Sans", cursive; */
+/* } */
 
 #caret {
   background-image: url(https://i.imgur.com/yN31JmJ.png) !important;
@@ -50,14 +50,14 @@ footer .leftright .right .current-theme .text {
 }
 
 .config .toggleButton {
-  -webkit-transform: rotateY(180deg);
+  transform: rotateY(180deg);
   unicode-bidi: bidi-override;
   direction: rtl;
   align-content: right;
 }
 
 .config .mode .textButton {
-  -webkit-transform: rotateY(180deg);
+  transform: rotateY(180deg);
   unicode-bidi: bidi-override;
   direction: rtl;
   align-content: right;
@@ -67,7 +67,7 @@ footer .leftright .right .current-theme .text {
 .config .time .textButton,
 .config .quoteLength .textButton,
 .config .customText .textButton {
-  -webkit-transform: rotateY(180deg);
+  transform: rotateY(180deg);
   unicode-bidi: bidi-override;
   direction: rtl;
   align-content: right;
@@ -77,25 +77,25 @@ header.focus nav .textButton,
 header.focus nav:before,
 header.focus nav:after {
   background: var(--sub-color);
-  -webkit-transform: rotateY(180deg) !important;
+  transform: rotateY(180deg) !important;
 }
 
 header.focus #logo .text,
 header.focus #logo:before,
 header.focus #logo:after {
-  -webkit-transform: rotateY(0deg);
+  transform: rotateY(0deg);
   direction: ltr;
 }
 
 header.focus #logo .icon,
 header.focus #logo:before,
 header.focus #logo:after {
-  -webkit-transform: rotateX(0deg);
+  transform: rotateX(0deg);
   direction: ltr;
 }
 
 footer .leftright .right .current-theme:hover .fas.fa-fw.fa-palette {
-  -webkit-transform: rotateY(180deg);
+  transform: rotateY(180deg);
   transition: 0.5s;
 }
 
@@ -103,41 +103,41 @@ nav {
   gap: 0.5rem;
 }
 
-nav .textButton {
+nav > .textButton {
   border-radius: 10rem i !important;
   color: var(--bg-color);
   transition: 0.5s;
 }
 
-nav .textButton:nth-child(1) {
+nav > .textButton:nth-child(1) {
   background: #ab92e1;
 }
 
-nav .textButton:nth-child(2) {
+nav > .textButton:nth-child(2) {
   background: #f3ea5d;
 }
 
-nav .textButton:nth-child(3) {
+nav > .textButton:nth-child(3) {
   background: #7ae1bf;
 }
 
-nav .textButton:nth-child(4) {
+nav > .textButton:nth-child(4) {
   background: #ff5869;
 }
 
-nav .textButton:nth-child(5) {
+nav > .textButton:nth-child(5) {
   background: #fc76d9;
 }
 
-nav .textButton:nth-child(6) {
+nav > .textButton:nth-child(6) {
   background: #fc76d9;
 }
 
-nav .textButton:nth-child(7) {
+nav > .textButton:nth-child(7) {
   background: #ab92e1;
 }
 
-nav .textButton:nth-child(8) {
+nav > .textButton:nth-child(8) {
   background: #f3ea5d;
 }
 
