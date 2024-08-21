@@ -84,6 +84,23 @@ export function show(action: string, id?: string, name?: string): void {
   });
 }
 
+function addCheckboxListeners(): void {
+  presetSettingGroupSchema.options.forEach(
+    (settingGroup: PresetSettingGroup) => {
+      $(
+        `#editPresetModal .modal .checkboxList .checkboxTitlePair[data-id="${settingGroup}"] input`
+      ).on("change", (e) => {
+        state.set(
+          settingGroup,
+          $(
+            `#editPresetModal .modal .checkboxList .checkboxTitlePair[data-id="${settingGroup}"] input`
+          ).prop("checked")
+        );
+      });
+    }
+  );
+}
+
 function addCheckBoxes(): void {
   const settingGroupList = presetSettingGroupSchema.options;
   const settingGroupListEl = $(
@@ -107,6 +124,8 @@ function addCheckBoxes(): void {
       `<div class="checkboxGroupRow">` + rowElem + `<div>`
     );
   }
+  addCheckboxListeners();
+  updateUI();
 }
 
 function updateUI(): void {
@@ -325,6 +344,7 @@ function getSettingGroup(configFieldName: string): PresetSettingGroup {
       return presetSettingGroupSchema.Enum.sound;
 
     case "accountChart":
+    case "tags":
       return presetSettingGroupSchema.Enum.account;
 
     case "ads":
@@ -380,23 +400,6 @@ async function setup(modalEl: HTMLElement): Promise<void> {
     e.preventDefault();
     void apply();
   });
-
-  presetSettingGroupSchema.options.forEach(
-    (settingGroup: PresetSettingGroup) => {
-      const checkbox = $(
-        `#editPresetModal .modal .checkboxList .checkboxTitlePair[data-id="${settingGroup}"] input`
-      );
-      checkbox.on("change", () => {
-        state.set(
-          settingGroup,
-          $(
-            `#editPresetModal .modal .checkboxList .checkboxTitlePair[data-id="${settingGroup}"] input`
-          ).prop("checked")
-        );
-        updateUI();
-      });
-    }
-  );
 }
 const modal = new AnimatedModal({
   dialogId: "editPresetModal",
