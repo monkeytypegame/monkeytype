@@ -31,28 +31,6 @@
   }
 }
 
-@keyframes kessoku-text {
-  0% {
-    color: var(--kita);
-  }
-
-  25% {
-    color: var(--ryo);
-  }
-
-  50% {
-    color: var(--hitori);
-  }
-
-  75% {
-    color: var(--nijika);
-  }
-
-  100% {
-    color: var(--kita);
-  }
-}
-
 /* customize monkeytype logo colors */
 header #logo .icon svg g path:nth-child(1) {
   fill: var(--text-color);
