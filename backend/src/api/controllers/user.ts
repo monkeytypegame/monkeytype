@@ -10,7 +10,7 @@ import {
   sanitizeString,
 } from "../../utils/misc";
 import GeorgeQueue from "../../queues/george-queue";
-import admin, { type FirebaseError } from "firebase-admin";
+import { type FirebaseError } from "firebase-admin";
 import { deleteAllApeKeys } from "../../dal/ape-keys";
 import { deleteAllPresets } from "../../dal/preset";
 import { deleteAll as deleteAllResults } from "../../dal/result";
@@ -94,7 +94,7 @@ export async function sendVerificationEmail(
 ): Promise<MonkeyResponse> {
   const { email, uid } = req.ctx.decodedToken;
   const isVerified = (
-    await admin
+    await FirebaseAdmin() //TODO correct?
       .auth()
       .getUser(uid)
       .catch((e: unknown) => {
@@ -164,7 +164,6 @@ export async function sendVerificationEmail(
       );
     }
   }
-
   await emailQueue.sendVerificationEmail(email, userInfo.name, link);
 
   return new MonkeyResponse("Email sent");
@@ -655,7 +654,7 @@ export async function getTags(
   const { uid } = req.ctx.decodedToken;
 
   const tags = await UserDAL.getTags(uid);
-  return new MonkeyResponse("Tags retrieved", tags ?? []);
+  return new MonkeyResponse("Tags retrieved", tags);
 }
 
 export async function updateLbMemory(
@@ -954,33 +953,6 @@ export async function setStreakHourOffset(
   void addImportantLog("user_streak_hour_offset_set", { hourOffset }, uid);
 
   return new MonkeyResponse("Streak hour offset set");
-}
-
-export async function toggleBan(
-  req: MonkeyTypes.Request
-): Promise<MonkeyResponse> {
-  const { uid } = req.body;
-
-  const user = await UserDAL.getPartialUser(uid, "toggle ban", [
-    "banned",
-    "discordId",
-  ]);
-  const discordId = user.discordId;
-  const discordIdIsValid = discordId !== undefined && discordId !== "";
-
-  if (user.banned) {
-    await UserDAL.setBanned(uid, false);
-    if (discordIdIsValid) await GeorgeQueue.userBanned(discordId, false);
-  } else {
-    await UserDAL.setBanned(uid, true);
-    if (discordIdIsValid) await GeorgeQueue.userBanned(discordId, true);
-  }
-
-  void addImportantLog("user_ban_toggled", { banned: !user.banned }, uid);
-
-  return new MonkeyResponse(`Ban toggled`, {
-    banned: !user.banned,
-  });
 }
 
 export async function revokeAllTokens(

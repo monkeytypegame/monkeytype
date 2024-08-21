@@ -84,7 +84,7 @@ export type User = {
   premium?: PremiumInfo;
   isPremium?: boolean;
   quoteRatings?: UserQuoteRatings;
-  favoriteQuotes?: Record<string, string[]>;
+  favoriteQuotes?: Record<string, string[]>; //Record<language, array with quoteIds as string
   lbMemory?: UserLbMemory;
   allTimeLbs: AllTimeLbs;
   inventory?: UserInventory;
