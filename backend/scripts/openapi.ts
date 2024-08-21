@@ -103,6 +103,7 @@ export function getOpenApi(): OpenAPIObject {
           name: "configurations",
           description: "Server configurations",
           "x-displayName": "Server configurations",
+          "x-public": "yes",
         },
       ],
     },
