@@ -2,6 +2,8 @@ import request from "supertest";
 import app from "../../../src/app";
 import * as PresetDal from "../../../src/dal/preset";
 import { ObjectId } from "mongodb";
+import { presetSettingGroupSchema } from "@monkeytype/contracts/schemas/presets";
+import { ShowAverageSchema } from "@monkeytype/contracts/schemas/configs";
 const mockApp = request(app);
 
 describe("PresetController", () => {
@@ -18,13 +20,25 @@ describe("PresetController", () => {
         _id: new ObjectId(),
         uid: "123456789",
         name: "test1",
-        config: { language: "english" },
+        config: {
+          showKeyTips: true,
+          capsLockWarning: true,
+          showOutOfFocusWarning: true,
+          showAverage: ShowAverageSchema.Enum.off,
+          settingGroups: [presetSettingGroupSchema.enum["hide elements"]],
+        },
       };
       const presetTwo = {
         _id: new ObjectId(),
         uid: "123456789",
         name: "test2",
-        config: { language: "polish" },
+        config: {
+          showKeyTips: true,
+          capsLockWarning: true,
+          showOutOfFocusWarning: true,
+          showAverage: ShowAverageSchema.Enum.off,
+          settingGroups: [presetSettingGroupSchema.enum["hide elements"]],
+        },
       };
 
       getPresetsMock.mockResolvedValue([presetOne, presetTwo]);
@@ -42,12 +56,24 @@ describe("PresetController", () => {
           {
             _id: presetOne._id.toHexString(),
             name: "test1",
-            config: { language: "english" },
+            config: {
+              showKeyTips: true,
+              capsLockWarning: true,
+              showOutOfFocusWarning: true,
+              showAverage: ShowAverageSchema.Enum.off,
+              settingGroups: [presetSettingGroupSchema.enum["hide elements"]],
+            },
           },
           {
             _id: presetTwo._id.toHexString(),
             name: "test2",
-            config: { language: "polish" },
+            config: {
+              showKeyTips: true,
+              capsLockWarning: true,
+              showOutOfFocusWarning: true,
+              showAverage: ShowAverageSchema.Enum.off,
+              settingGroups: [presetSettingGroupSchema.enum["hide elements"]],
+            },
           },
         ],
       });
@@ -93,8 +119,11 @@ describe("PresetController", () => {
         .send({
           name: "new",
           config: {
-            language: "english",
-            tags: ["one", "two"],
+            showKeyTips: true,
+            capsLockWarning: true,
+            showOutOfFocusWarning: true,
+            showAverage: ShowAverageSchema.Enum.off,
+            settingGroups: [presetSettingGroupSchema.enum["hide elements"]],
           },
         })
         .expect(200);
@@ -107,33 +136,16 @@ describe("PresetController", () => {
 
       expect(addPresetMock).toHaveBeenCalledWith("123456789", {
         name: "new",
-        config: { language: "english", tags: ["one", "two"] },
+        config: {
+          showKeyTips: true,
+          capsLockWarning: true,
+          showOutOfFocusWarning: true,
+          showAverage: ShowAverageSchema.Enum.off,
+          settingGroups: [presetSettingGroupSchema.enum["hide elements"]],
+        },
       });
     });
-    it("should not fail with emtpy config", async () => {
-      //GIVEN
 
-      addPresetMock.mockResolvedValue({ presetId: "1" });
-
-      //WHEN
-      const { body } = await mockApp
-        .post("/presets")
-        .set("authorization", "Uid 123456789")
-        .accept("application/json")
-        .send({ name: "new", config: {} })
-        .expect(200);
-
-      //THEN
-      expect(body).toStrictEqual({
-        message: "Preset created",
-        data: { presetId: "1" },
-      });
-
-      expect(addPresetMock).toHaveBeenCalledWith("123456789", {
-        name: "new",
-        config: {},
-      });
-    });
     it("should fail with missing mandatory properties", async () => {
       //WHEN
       const { body } = await mockApp
@@ -149,35 +161,22 @@ describe("PresetController", () => {
       });
       expect(addPresetMock).not.toHaveBeenCalled();
     });
-    it("should not fail with invalid preset", async () => {
+    it("should fail with missing settingGroups properties", async () => {
       //WHEN
       const { body } = await mockApp
         .post("/presets")
         .set("authorization", "Uid 123456789")
         .accept("application/json")
         .send({
-          _id: "1",
           name: "update",
-          extra: "extra",
-          config: {
-            extra: "extra",
-            autoSwitchTheme: "yes",
-            confidenceMode: "pretty",
-          },
+          config: {},
         })
         .expect(422);
 
-      //THEN
       expect(body).toStrictEqual({
         message: "Invalid request data schema",
-        validationErrors: [
-          `"config.autoSwitchTheme" Expected boolean, received string`,
-          `"config.confidenceMode" Invalid enum value. Expected 'off' | 'on' | 'max', received 'pretty'`,
-          `"config" Unrecognized key(s) in object: 'extra'`,
-          `Unrecognized key(s) in object: '_id', 'extra'`,
-        ],
+        validationErrors: [`"config.settingGroups" Required`],
       });
-
       expect(addPresetMock).not.toHaveBeenCalled();
     });
   });
@@ -202,8 +201,11 @@ describe("PresetController", () => {
           _id: "1",
           name: "new",
           config: {
-            language: "english",
-            tags: ["one", "two"],
+            showKeyTips: true,
+            capsLockWarning: true,
+            showOutOfFocusWarning: true,
+            showAverage: ShowAverageSchema.Enum.off,
+            settingGroups: [presetSettingGroupSchema.enum["hide elements"]],
           },
         })
         .expect(200);
@@ -217,32 +219,13 @@ describe("PresetController", () => {
       expect(editPresetMock).toHaveBeenCalledWith("123456789", {
         _id: "1",
         name: "new",
-        config: { language: "english", tags: ["one", "two"] },
-      });
-    });
-    it("should not fail with emtpy config", async () => {
-      //GIVEN
-
-      editPresetMock.mockResolvedValue({} as any);
-
-      //WHEN
-      const { body } = await mockApp
-        .patch("/presets")
-        .set("authorization", "Uid 123456789")
-        .accept("application/json")
-        .send({ _id: "1", name: "new", config: {} })
-        .expect(200);
-
-      //THEN
-      expect(body).toStrictEqual({
-        message: "Preset updated",
-        data: null,
-      });
-
-      expect(editPresetMock).toHaveBeenCalledWith("123456789", {
-        _id: "1",
-        name: "new",
-        config: {},
+        config: {
+          showKeyTips: true,
+          capsLockWarning: true,
+          showOutOfFocusWarning: true,
+          showAverage: ShowAverageSchema.Enum.off,
+          settingGroups: [presetSettingGroupSchema.enum["hide elements"]],
+        },
       });
     });
     it("should fail with missing mandatory properties", async () => {
@@ -278,6 +261,11 @@ describe("PresetController", () => {
             extra: "extra",
             autoSwitchTheme: "yes",
             confidenceMode: "pretty",
+            showKeyTips: true,
+            capsLockWarning: true,
+            showOutOfFocusWarning: true,
+            showAverage: ShowAverageSchema.Enum.off,
+            settingGroups: [presetSettingGroupSchema.enum["hide elements"]],
           },
         })
         .expect(422);
