@@ -52,7 +52,6 @@ export function show(action: string, id?: string, name?: string): void {
           (currentActiveSettingGroup) =>
             state.set(currentActiveSettingGroup, true)
         );
-        //TODO: change settingGroup to activeSettingGroup
         $("#editPresetModal .modal").attr("data-action", "edit");
         $("#editPresetModal .modal").attr("data-preset-id", id);
         $("#editPresetModal .modal .popupTitle").html("Edit preset");
