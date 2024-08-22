@@ -31,7 +31,7 @@ import AutoRoleList from "../../constants/auto-roles";
 import * as UserDAL from "../../dal/user";
 import { buildMonkeyMail } from "../../utils/monkey-mail";
 import FunboxList from "../../constants/funbox-list";
-import _ from "lodash";
+import _, { omit } from "lodash";
 import * as WeeklyXpLeaderboard from "../../services/weekly-xp-leaderboard";
 import { UAParser } from "ua-parser-js";
 import { canFunboxGetPb } from "../../utils/pb";
@@ -202,7 +202,9 @@ export async function addResult(
 
   const resulthash = completedEvent.hash;
   if (req.ctx.configuration.results.objectHashCheckEnabled) {
-    const serverhash = objectHash(completedEvent);
+    const objectToHash = omit(completedEvent, "hash");
+    console.log("###", { completedEvent });
+    const serverhash = objectHash(objectToHash);
     if (serverhash !== resulthash) {
       void addLog(
         "incorrect_result_hash",
