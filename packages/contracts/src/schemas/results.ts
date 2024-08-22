@@ -122,7 +122,7 @@ export type CompletedEvent = z.infer<typeof CompletedEventSchema>;
 
 export const XpBreakdownSchema = z.object({
   base: z.number().int().optional(),
-  "100%": z.number().int().optional(),
+  fullAccuracy: z.number().int().optional(),
   quote: z.number().int().optional(),
   corrected: z.number().int().optional(),
   punctuation: z.number().int().optional(),

@@ -678,7 +678,7 @@ async function calculateXp(
 
   if (acc === 100) {
     modifier += 0.5;
-    breakdown["100%"] = Math.round(baseXp * 0.5);
+    breakdown.fullAccuracy = Math.round(baseXp * 0.5);
   } else if (correctedEverything) {
     // corrected everything bonus
     modifier += 0.25;
