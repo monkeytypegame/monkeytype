@@ -1478,11 +1478,18 @@ body.darkMode {
 #editPresetModal {
   .modal {
     max-width: 450px;
+    gap: 1rem;
+    .presetNameTitle {
+      font-size: 0.75rem;
+      color: var(--sub-color);
+      text-transform: lowercase;
+    }
   }
+
   .inputs {
     display: grid;
     grid-template-columns: 1fr;
-    gap: 1rem;
+    gap: 0.5rem;
     justify-items: left;
     height: min-content;
     font-size: 0.75rem;
@@ -1491,23 +1498,29 @@ body.darkMode {
       color: var(--sub-color);
       text-transform: lowercase;
     }
-    .checkboxList {
+    .partialPresetGroups {
       display: grid;
-      gap: 1rem;
+      gap: 0.5rem;
       align-items: center;
       width: 100%;
-      .title {
-        color: var(--text-color);
-        text-transform: lowercase;
-      }
-      .checkboxGroupRow {
-        display: flex;
-        .checkboxTitlePair {
+      .checkboxList {
+        display: grid;
+        gap: 1rem;
+        align-items: center;
+        width: 100%;
+        .title {
+          color: var(--text-color);
+          text-transform: lowercase;
+        }
+        .checkboxGroupRow {
           display: flex;
-          width: 100%;
-          gap: 0.5rem;
-          button {
-            flex-grow: 1;
+          .checkboxTitlePair {
+            display: flex;
+            width: 100%;
+            gap: 0.5rem;
+            button {
+              flex-grow: 1;
+            }
           }
         }
       }

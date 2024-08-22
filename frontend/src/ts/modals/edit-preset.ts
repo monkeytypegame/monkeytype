@@ -188,9 +188,9 @@ function updateUI(): void {
   $(
     `#editPresetModal .modal .presetType button[value="${state.presetType}"]`
   ).addClass("active");
-  $(`#editPresetModal .modal .checkboxList`).removeClass("hidden");
+  $(`#editPresetModal .modal .partialPresetGroups`).removeClass("hidden");
   if (state.presetType === "full") {
-    $(`#editPresetModal .modal .checkboxList`).addClass("hidden");
+    $(`#editPresetModal .modal .partialPresetGroups`).addClass("hidden");
   }
 }
 
