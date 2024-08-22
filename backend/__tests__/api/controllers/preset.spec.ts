@@ -2,7 +2,7 @@ import request from "supertest";
 import app from "../../../src/app";
 import * as PresetDal from "../../../src/dal/preset";
 import { ObjectId } from "mongodb";
-import { presetSettingGroupSchema } from "@monkeytype/contracts/schemas/presets";
+import { PresetSettingGroupSchema } from "@monkeytype/contracts/schemas/presets";
 import { ShowAverageSchema } from "@monkeytype/contracts/schemas/configs";
 const mockApp = request(app);
 
@@ -25,7 +25,7 @@ describe("PresetController", () => {
           capsLockWarning: true,
           showOutOfFocusWarning: true,
           showAverage: ShowAverageSchema.Enum.off,
-          settingGroups: [presetSettingGroupSchema.enum["hide elements"]],
+          settingGroups: [PresetSettingGroupSchema.enum["hide elements"]],
         },
       };
       const presetTwo = {
@@ -37,7 +37,7 @@ describe("PresetController", () => {
           capsLockWarning: true,
           showOutOfFocusWarning: true,
           showAverage: ShowAverageSchema.Enum.off,
-          settingGroups: [presetSettingGroupSchema.enum["hide elements"]],
+          settingGroups: [PresetSettingGroupSchema.enum["hide elements"]],
         },
       };
 
@@ -61,7 +61,7 @@ describe("PresetController", () => {
               capsLockWarning: true,
               showOutOfFocusWarning: true,
               showAverage: ShowAverageSchema.Enum.off,
-              settingGroups: [presetSettingGroupSchema.enum["hide elements"]],
+              settingGroups: [PresetSettingGroupSchema.enum["hide elements"]],
             },
           },
           {
@@ -72,7 +72,7 @@ describe("PresetController", () => {
               capsLockWarning: true,
               showOutOfFocusWarning: true,
               showAverage: ShowAverageSchema.Enum.off,
-              settingGroups: [presetSettingGroupSchema.enum["hide elements"]],
+              settingGroups: [PresetSettingGroupSchema.enum["hide elements"]],
             },
           },
         ],
@@ -123,7 +123,7 @@ describe("PresetController", () => {
             capsLockWarning: true,
             showOutOfFocusWarning: true,
             showAverage: ShowAverageSchema.Enum.off,
-            settingGroups: [presetSettingGroupSchema.enum["hide elements"]],
+            settingGroups: [PresetSettingGroupSchema.enum["hide elements"]],
           },
         })
         .expect(200);
@@ -141,11 +141,10 @@ describe("PresetController", () => {
           capsLockWarning: true,
           showOutOfFocusWarning: true,
           showAverage: ShowAverageSchema.Enum.off,
-          settingGroups: [presetSettingGroupSchema.enum["hide elements"]],
+          settingGroups: [PresetSettingGroupSchema.enum["hide elements"]],
         },
       });
     });
-
     it("should fail with missing mandatory properties", async () => {
       //WHEN
       const { body } = await mockApp
@@ -205,7 +204,7 @@ describe("PresetController", () => {
             capsLockWarning: true,
             showOutOfFocusWarning: true,
             showAverage: ShowAverageSchema.Enum.off,
-            settingGroups: [presetSettingGroupSchema.enum["hide elements"]],
+            settingGroups: [PresetSettingGroupSchema.enum["hide elements"]],
           },
         })
         .expect(200);
@@ -224,7 +223,7 @@ describe("PresetController", () => {
           capsLockWarning: true,
           showOutOfFocusWarning: true,
           showAverage: ShowAverageSchema.Enum.off,
-          settingGroups: [presetSettingGroupSchema.enum["hide elements"]],
+          settingGroups: [PresetSettingGroupSchema.enum["hide elements"]],
         },
       });
     });
@@ -265,7 +264,7 @@ describe("PresetController", () => {
             capsLockWarning: true,
             showOutOfFocusWarning: true,
             showAverage: ShowAverageSchema.Enum.off,
-            settingGroups: [presetSettingGroupSchema.enum["hide elements"]],
+            settingGroups: [PresetSettingGroupSchema.enum["hide elements"]],
           },
         })
         .expect(422);

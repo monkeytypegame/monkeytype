@@ -8,24 +8,27 @@ export const PresetNameSchema = z
   .max(16);
 export type PresentName = z.infer<typeof PresetNameSchema>;
 
-export const presetSettingGroupSchema = z.enum([
+export const PresetTypeSchema = z.enum(["full", "partial"]);
+export type PresetType = z.infer<typeof PresetTypeSchema>;
+
+export const PresetSettingGroupSchema = z.enum([
   "test",
-  "account",
-  "behaviour",
+  "behavior",
   "input",
   "sound",
   "caret",
   "appearance",
   "theme",
-  "hide elements",
+  "hideElements",
   "ads",
+  "hidden",
 ]);
-export type PresetSettingGroup = z.infer<typeof presetSettingGroupSchema>;
-export const activeSettingGroupsSchema = z
-  .array(presetSettingGroupSchema)
+export type PresetSettingGroup = z.infer<typeof PresetSettingGroupSchema>;
+export const ActiveSettingGroupsSchema = z
+  .array(PresetSettingGroupSchema)
   .min(1)
   .superRefine((settingList, ctx) => {
-    presetSettingGroupSchema.options.forEach(
+    PresetSettingGroupSchema.options.forEach(
       (presetSettingGroup: PresetSettingGroup) => {
         const duplicateElemExits: boolean =
           settingList.filter(
@@ -41,14 +44,14 @@ export const activeSettingGroupsSchema = z
       }
     );
   });
-export type ActiveSettingGroups = z.infer<typeof activeSettingGroupsSchema>;
+export type ActiveSettingGroups = z.infer<typeof ActiveSettingGroupsSchema>;
 
 export const PresetSchema = z.object({
   _id: IdSchema,
   name: PresetNameSchema,
   config: PartialConfigSchema.extend({
     tags: z.array(TagSchema).optional(),
-    settingGroups: activeSettingGroupsSchema,
+    settingGroups: ActiveSettingGroupsSchema,
   }),
 });
 export type Preset = z.infer<typeof PresetSchema>;

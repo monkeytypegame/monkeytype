@@ -7,16 +7,24 @@ import * as Notifications from "../elements/notifications";
 import * as ConnectionState from "../states/connection";
 import AnimatedModal from "../utils/animated-modal";
 import {
-  activeSettingGroupsSchema,
+  ActiveSettingGroupsSchema,
   PresetSettingGroup,
-  presetSettingGroupSchema,
+  PresetSettingGroupSchema,
+  PresetType,
+  PresetTypeSchema,
 } from "@monkeytype/contracts/schemas/presets";
 import { getPreset } from "../controllers/preset-controller";
 import defaultConfig from "../constants/default-config";
 
-const state = new Map(
-  presetSettingGroupSchema.options.map((key) => [key, true])
-);
+const state = {
+  presetType: "full" as PresetType,
+  checkboxes: new Map(
+    PresetSettingGroupSchema.options.map((key: PresetSettingGroup) => [
+      key,
+      true,
+    ])
+  ),
+};
 
 export function show(action: string, id?: string, name?: string): void {
   if (!ConnectionState.get()) {
@@ -38,20 +46,11 @@ export function show(action: string, id?: string, name?: string): void {
         $("#editPresetModal .modal input").removeClass("hidden");
         $("#editPresetModal .modal label").addClass("hidden");
         $("#editPresetModal .modal .inputs").removeClass("hidden");
+        $("#editPresetModal .modal .presetType").removeClass("hidden");
+        state.presetType = "full";
         addCheckBoxes();
-        for (const key of state.keys()) {
-          state.set(key, true);
-        }
+        addPresetTypeEventListeners();
       } else if (action === "edit" && id !== undefined && name !== undefined) {
-        addCheckBoxes();
-        for (const key of state.keys()) {
-          state.set(key, false);
-        }
-        const presetSettingGroups = await getPreset(id);
-        presetSettingGroups?.config.settingGroups.forEach(
-          (currentActiveSettingGroup) =>
-            state.set(currentActiveSettingGroup, true)
-        );
         $("#editPresetModal .modal").attr("data-action", "edit");
         $("#editPresetModal .modal").attr("data-preset-id", id);
         $("#editPresetModal .modal .popupTitle").html("Edit preset");
@@ -61,6 +60,10 @@ export function show(action: string, id?: string, name?: string): void {
         $("#editPresetModal .modal label input").prop("checked", false);
         $("#editPresetModal .modal label").removeClass("hidden");
         $("#editPresetModal .modal .inputs").removeClass("hidden");
+        $("#editPresetModal .modal .presetType").removeClass("hidden");
+        addCheckBoxes();
+        await initializeEditState(id);
+        addPresetTypeEventListeners();
       } else if (
         action === "remove" &&
         id !== undefined &&
@@ -77,19 +80,51 @@ export function show(action: string, id?: string, name?: string): void {
           `Are you sure you want to delete the preset ${name}?`
         );
         $("#editPresetModal .modal .inputs").addClass("hidden");
+        $("#editPresetModal .modal .presetType").addClass("hidden");
       }
       updateUI();
     },
   });
 }
 
+function addPresetTypeEventListeners(): void {
+  PresetTypeSchema.options.forEach((presetType) => {
+    $(`#editPresetModal .modal .presetType button[value="${presetType}"]`).on(
+      "click",
+      () => {
+        state.presetType = presetType;
+        updateUI();
+      }
+    );
+  });
+}
+
+async function initializeEditState(id: string): Promise<void> {
+  for (const key of state.checkboxes.keys()) {
+    state.checkboxes.set(key, false);
+  }
+  const edittedPreset = await getPreset(id);
+  if (edittedPreset === undefined) {
+    Notifications.add("Preset not found", -1);
+    return;
+  }
+  if (edittedPreset.config.settingGroups === undefined) {
+    state.presetType = "full";
+  } else {
+    state.presetType = "partial";
+    edittedPreset.config.settingGroups.forEach((currentActiveSettingGroup) =>
+      state.checkboxes.set(currentActiveSettingGroup, true)
+    );
+  }
+}
+
 function addCheckboxListeners(): void {
-  presetSettingGroupSchema.options.forEach(
+  PresetSettingGroupSchema.options.forEach(
     (settingGroup: PresetSettingGroup) => {
       $(
         `#editPresetModal .modal .checkboxList .checkboxTitlePair[data-id="${settingGroup}"] input`
       ).on("change", (e) => {
-        state.set(
+        state.checkboxes.set(
           settingGroup,
           $(
             `#editPresetModal .modal .checkboxList .checkboxTitlePair[data-id="${settingGroup}"] input`
@@ -101,40 +136,62 @@ function addCheckboxListeners(): void {
 }
 
 function addCheckBoxes(): void {
-  const settingGroupList = presetSettingGroupSchema.options;
+  function camelCaseToSpaced(input: string): string {
+    return input.replace(/([a-z])([A-Z])/g, "$1 $2");
+  }
+  const settingGroupList = PresetSettingGroupSchema.options;
   const settingGroupListEl = $(
     "#editPresetModal .modal .inputs .checkboxList"
   ).empty();
   for (let index = 0; index < settingGroupList.length; index += 2) {
     const currSettingGroup = settingGroupList[index];
+    if (currSettingGroup === undefined) {
+      throw new Error("Error Occured While showing Setting Group Checkboxes");
+    }
+    const currSettingGroupTitle = camelCaseToSpaced(currSettingGroup);
     let rowElem: string = `<div class="checkboxTitlePair" data-id="${currSettingGroup}">
               <input type="checkbox" />
-              <div class="title">${currSettingGroup}</div>
+              <div class="title">${currSettingGroupTitle}</div>
             </div>`;
     if (index !== settingGroupList.length - 1) {
       const nextSettingGroup = settingGroupList[index + 1];
+      if (nextSettingGroup === undefined) {
+        throw new Error("Error Occured While showing Setting Group Checkboxes");
+      }
+      const nextSettingGroupTitle = camelCaseToSpaced(nextSettingGroup);
       rowElem = rowElem.concat(`
             <div class="checkboxTitlePair" data-id="${nextSettingGroup}">
               <input type="checkbox" />
-              <div class="title">${nextSettingGroup}</div>
+              <div class="title">${nextSettingGroupTitle}</div>
           </div>`);
     }
     settingGroupListEl.append(
       `<div class="checkboxGroupRow">` + rowElem + `<div>`
     );
   }
+  for (const key of state.checkboxes.keys()) {
+    state.checkboxes.set(key, true);
+  }
   addCheckboxListeners();
   updateUI();
 }
 
 function updateUI(): void {
-  presetSettingGroupSchema.options.forEach(
+  PresetSettingGroupSchema.options.forEach(
     (settingGroup: PresetSettingGroup) => {
       $(
         `#editPresetModal .modal .checkboxList .checkboxTitlePair[data-id="${settingGroup}"] input`
-      ).prop("checked", state.get(settingGroup));
+      ).prop("checked", state.checkboxes.get(settingGroup));
     }
   );
+  $(`#editPresetModal .modal .presetType button`).removeClass("active");
+  $(
+    `#editPresetModal .modal .presetType button[value="${state.presetType}"]`
+  ).addClass("active");
+  $(`#editPresetModal .modal .checkboxList`).removeClass("hidden");
+  if (state.presetType === "full") {
+    $(`#editPresetModal .modal .checkboxList`).addClass("hidden");
+  }
 }
 
 function hide(): void {
@@ -160,7 +217,7 @@ async function apply(): Promise<void> {
   Loader.show();
 
   if (action === "add") {
-    if (Object.values(state).filter((val) => val).length > 0) {
+    if (Object.values(state.checkboxes).filter((val) => val).length > 0) {
       Notifications.add("Atleast one setting group must be active.");
       return;
     }
@@ -187,7 +244,7 @@ async function apply(): Promise<void> {
       } as MonkeyTypes.SnapshotPreset);
     }
   } else if (action === "edit") {
-    if (Object.values(state).filter((val) => val).length > 0) {
+    if (Object.values(state.checkboxes).filter((val) => val).length > 0) {
       Notifications.add("Atleast one setting group must be active.");
       return;
     }
@@ -254,13 +311,13 @@ function getSettingGroup(configFieldName: string): PresetSettingGroup {
     case "customBackground":
     case "customBackgroundSize":
     case "customBackgroundFilter":
-      return presetSettingGroupSchema.Enum.theme;
+      return "theme";
 
     case "showKeyTips":
     case "capsLockWarning":
     case "showOutOfFocusWarning":
     case "showAverage":
-      return presetSettingGroupSchema.Enum["hide elements"];
+      return "hideElements";
 
     case "smoothCaret":
     case "caretStyle":
@@ -268,7 +325,7 @@ function getSettingGroup(configFieldName: string): PresetSettingGroup {
     case "paceCaret":
     case "paceCaretCustomSpeed":
     case "repeatedPace":
-      return presetSettingGroupSchema.Enum.caret;
+      return "caret";
 
     case "quickRestart":
     case "difficulty":
@@ -286,7 +343,8 @@ function getSettingGroup(configFieldName: string): PresetSettingGroup {
     case "minBurstCustomSpeed":
     case "burstHeatmap": //not sure
     case "britishEnglish":
-      return presetSettingGroupSchema.Enum.behaviour;
+    case "tags":
+      return "behaviour";
 
     case "punctuation":
     case "words":
@@ -295,7 +353,7 @@ function getSettingGroup(configFieldName: string): PresetSettingGroup {
     case "mode":
     case "quoteLength":
     case "language":
-      return presetSettingGroupSchema.Enum.test;
+      return "test";
 
     case "fontSize":
     case "timerStyle":
@@ -318,10 +376,8 @@ function getSettingGroup(configFieldName: string): PresetSettingGroup {
     case "highlightMode":
     case "tapeMode":
     case "typingSpeedUnit":
-    case "monkey": //can only be accessed from commandline seems appropriate here
-    case "monkeyPowerLevel": //same as monkey
     case "maxLineWidth":
-      return presetSettingGroupSchema.Enum.appearance;
+      return "appearance";
 
     case "freedomMode":
     case "quickEnd":
@@ -333,19 +389,20 @@ function getSettingGroup(configFieldName: string): PresetSettingGroup {
     case "strictSpace":
     case "oppositeShiftMode":
     case "lazyMode":
-      return presetSettingGroupSchema.Enum.input;
+      return "input";
 
     case "playSoundOnError":
     case "playSoundOnClick":
     case "soundVolume":
-      return presetSettingGroupSchema.Enum.sound;
+      return "sound";
 
     case "accountChart":
-    case "tags":
-      return presetSettingGroupSchema.Enum.account;
+    case "monkey":
+    case "monkeyPowerLevel":
+      return "hidden";
 
     case "ads":
-      return presetSettingGroupSchema.Enum.ads;
+      return "ads";
     default:
       break;
   }
@@ -357,7 +414,10 @@ function getActiveConfigChanges(
 ): MonkeyTypes.ConfigChanges {
   const activeConfigChanges = {} as MonkeyTypes.PresetConfig;
   Object.keys(defaultConfig)
-    .filter((settingName) => state.get(getSettingGroup(settingName)) === true)
+    .filter(
+      (settingName) =>
+        state.checkboxes.get(getSettingGroup(settingName)) === true
+    )
     .forEach((settingName) => {
       //@ts-expect-error this is fine
       activeConfigChanges[settingName] =
@@ -380,12 +440,12 @@ function getConfigChanges(): MonkeyTypes.ConfigChanges {
 
   return {
     ...activeConfigChanges,
-    settingGroups: activeSettingGroupsSchema.parse(
-      Array.from(state.entries())
+    settingGroups: ActiveSettingGroupsSchema.parse(
+      Array.from(state.checkboxes.entries())
         .filter(([, value]) => value)
         .map(([key]) => key)
     ),
-    ...(state.get(presetSettingGroupSchema.Enum.account) === true && {
+    ...(state.checkboxes.get("behaviour") === true && {
       tags: activeTagIds,
     }),
   };

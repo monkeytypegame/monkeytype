@@ -1483,19 +1483,21 @@ body.darkMode {
     display: grid;
     grid-template-columns: 1fr;
     gap: 1rem;
-    align-items: center;
     justify-items: left;
     height: min-content;
     font-size: 0.75rem;
     align-items: start;
-
+    .title {
+      color: var(--sub-color);
+      text-transform: lowercase;
+    }
     .checkboxList {
       display: grid;
       gap: 1rem;
       align-items: center;
       width: 100%;
       .title {
-        color: var(--sub-color);
+        color: var(--text-color);
         text-transform: lowercase;
       }
       .checkboxGroupRow {
@@ -1507,6 +1509,20 @@ body.darkMode {
           button {
             flex-grow: 1;
           }
+        }
+      }
+    }
+    .presetType {
+      display: grid;
+      gap: 0.5rem;
+      align-items: center;
+      width: 100%;
+      .presetTypeButtonGroup {
+        display: flex;
+        width: 100%;
+        gap: 0.5rem;
+        button {
+          flex-grow: 1;
         }
       }
     }

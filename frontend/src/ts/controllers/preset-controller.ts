@@ -1,6 +1,6 @@
 import {
   Preset,
-  presetSettingGroupSchema,
+  PresetSettingGroupSchema,
 } from "@monkeytype/contracts/schemas/presets";
 import * as UpdateConfig from "../config";
 import * as DB from "../db";
@@ -51,7 +51,7 @@ function migrateLegacyPresets(presetToApply: MonkeyTypes.SnapshotPreset): void {
         defaultConfig[settingFieldName];
     }
   });
-  presetToApply.config.settingGroups = presetSettingGroupSchema.options;
+  presetToApply.config.settingGroups = PresetSettingGroupSchema.options;
 }
 
 export async function getPreset(_id: string): Promise<Preset | undefined> {
