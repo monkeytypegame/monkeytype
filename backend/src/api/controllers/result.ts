@@ -218,6 +218,8 @@ export async function addResult(
       const status = MonkeyStatusCodes.RESULT_HASH_INVALID;
       throw new MonkeyError(status.code, "Incorrect result hash");
     }
+  } else {
+    Logger.warning("Object hash check is disabled, skipping hash check");
   }
 
   if (completedEvent.funbox) {
