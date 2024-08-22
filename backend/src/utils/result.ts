@@ -39,7 +39,7 @@ export function buildDbResult(
   };
 
   //compress object by omitting default values. Frontend will add them back after reading
-  //redices object size on the database and on the rest api
+  //reduces object size on the database and on the rest api
   if (!ce.bailedOut) delete res.bailedOut;
   if (!ce.blindMode) delete res.blindMode;
   if (!ce.lazyMode) delete res.lazyMode;
@@ -56,4 +56,24 @@ export function buildDbResult(
   if (res.isPb === false) delete res.isPb;
 
   return res;
+}
+
+/**
+ * Convert legacy values
+ * @param result
+ * @returns
+ */
+export function replaceLegacyValues(
+  result: MonkeyTypes.DBResult
+): MonkeyTypes.DBResult {
+  //convert legacy values
+  if (
+    result.correctChars !== undefined &&
+    result.incorrectChars !== undefined
+  ) {
+    result.charStats = [result.correctChars, result.incorrectChars, 0, 0];
+    delete result.correctChars;
+    delete result.incorrectChars;
+  }
+  return result;
 }

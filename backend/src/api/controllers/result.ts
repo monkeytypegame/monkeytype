@@ -31,11 +31,11 @@ import AutoRoleList from "../../constants/auto-roles";
 import * as UserDAL from "../../dal/user";
 import { buildMonkeyMail } from "../../utils/monkey-mail";
 import FunboxList from "../../constants/funbox-list";
-import _, { omit } from "lodash";
+import _ from "lodash";
 import * as WeeklyXpLeaderboard from "../../services/weekly-xp-leaderboard";
 import { UAParser } from "ua-parser-js";
 import { canFunboxGetPb } from "../../utils/pb";
-import { buildDbResult } from "../../utils/result";
+import { buildDbResult, replaceLegacyValues } from "../../utils/result";
 import { Configuration } from "@monkeytype/shared-types";
 import { addLog } from "../../dal/logs";
 import {
@@ -794,11 +794,5 @@ async function calculateXp(
 }
 
 function convertResult(db: MonkeyTypes.DBResult): Result<Mode> {
-  const result = replaceObjectId(omit(db, "correctChars", "incorrectChars"));
-
-  //convert legacy values
-  if (db.correctChars !== undefined && db.incorrectChars !== undefined) {
-    result.charStats = [db.correctChars, db.incorrectChars, 0, 0];
-  }
-  return result;
+  return replaceObjectId(replaceLegacyValues(db));
 }
