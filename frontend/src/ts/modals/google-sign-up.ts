@@ -15,7 +15,6 @@ import * as Loader from "../elements/loader";
 import { subscribe as subscribeToSignUpEvent } from "../observables/google-sign-up-event";
 import { InputIndicator } from "../elements/input-indicator";
 import AnimatedModal from "../utils/animated-modal";
-import { syncNotSignedInLastResult } from "../utils/results";
 
 let signedInUser: UserCredential | undefined = undefined;
 
@@ -90,8 +89,6 @@ async function apply(): Promise<void> {
       LoginPage.enableInputs();
       LoginPage.hidePreloader();
       await AccountController.loadUser(signedInUser.user);
-
-      await syncNotSignedInLastResult(signedInUser.user.uid);
 
       signedInUser = undefined;
       Loader.hide();

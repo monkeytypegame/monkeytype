@@ -47,7 +47,6 @@ import { navigate } from "./route-controller";
 import { FirebaseError } from "firebase/app";
 import * as PSA from "../elements/psa";
 import defaultResultFilters from "../constants/default-result-filters";
-import { syncNotSignedInLastResult } from "../utils/results";
 
 export const gmailProvider = new GoogleAuthProvider();
 export const githubProvider = new GithubAuthProvider();
@@ -186,7 +185,7 @@ async function getDataAndInit(): Promise<boolean> {
   return true;
 }
 
-export async function loadUser(user: UserType): Promise<void> {
+export async function loadUser(_user: UserType): Promise<void> {
   // User is signed in.
   PageTransition.set(false);
   AccountButton.loading(true);
@@ -206,7 +205,6 @@ export async function loadUser(user: UserType): Promise<void> {
   // showFavouriteThemesAtTheTop();
 
   if (TestLogic.notSignedInLastResult !== null) {
-    TestLogic.setNotSignedInUid(user.uid);
     LastSignedOutResultModal.show();
   }
 }
@@ -579,7 +577,6 @@ async function signUp(): Promise<void> {
     await sendVerificationEmail();
     LoginPage.hidePreloader();
     await loadUser(createdAuthUser.user);
-    await syncNotSignedInLastResult(createdAuthUser.user.uid);
 
     Notifications.add("Account created", 1);
   } catch (e) {
