@@ -644,7 +644,9 @@ export async function retrySavingResult(): Promise<void> {
   await saveResult(completedEvent, true);
 }
 
-function buildCompletedEvent(difficultyFailed: boolean): CompletedEvent {
+function buildCompletedEvent(
+  difficultyFailed: boolean
+): Omit<CompletedEvent, "hash" | "uid"> {
   //build completed event object
   let stfk = Numbers.roundTo2(
     TestInput.keypressTimings.spacing.first - TestStats.start
@@ -764,7 +766,7 @@ function buildCompletedEvent(difficultyFailed: boolean): CompletedEvent {
 
   const quoteLength = TestWords.currentQuote?.group ?? -1;
 
-  const completedEvent: CompletedEvent = {
+  const completedEvent: Omit<CompletedEvent, "hash" | "uid"> = {
     wpm: stats.wpm,
     rawWpm: stats.wpmRaw,
     charStats: [
@@ -807,8 +809,6 @@ function buildCompletedEvent(difficultyFailed: boolean): CompletedEvent {
     testDuration: duration,
     afkDuration: afkDuration,
     stopOnLetter: Config.stopOnError === "letter",
-    hash: "invalid",
-    uid: "invalid",
   };
 
   if (completedEvent.mode !== "custom") delete completedEvent.customText;
@@ -1096,6 +1096,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
     completedEvent.challenge = ChallengeContoller.verify(completedEvent);
   }
 
+  console.log("####", { completedEvent });
   completedEvent.hash = objectHash(completedEvent);
 
   await saveResult(completedEvent, false);
