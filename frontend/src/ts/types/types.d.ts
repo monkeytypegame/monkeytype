@@ -196,7 +196,7 @@ declare namespace MonkeyTypes {
 
   type ConfigChanges = {
     tags?: string[];
-    settingGroups: import("@monkeytype/contracts/schemas/presets").ActiveSettingGroups;
+    settingGroups?: import("@monkeytype/contracts/schemas/presets").ActiveSettingGroups;
   } & Partial<import("@monkeytype/contracts/schemas/configs").Config>;
 
   type LeaderboardMemory = {

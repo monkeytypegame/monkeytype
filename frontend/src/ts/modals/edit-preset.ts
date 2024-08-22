@@ -217,7 +217,10 @@ async function apply(): Promise<void> {
   Loader.show();
 
   if (action === "add") {
-    if (Object.values(state.checkboxes).filter((val) => val).length > 0) {
+    if (
+      state.presetType === "partial" &&
+      Object.values(state.checkboxes).filter((val) => val).length > 0
+    ) {
       Notifications.add("Atleast one setting group must be active.");
       return;
     }
@@ -266,8 +269,12 @@ async function apply(): Promise<void> {
       )[0] as MonkeyTypes.SnapshotPreset;
       preset.name = presetName;
       preset.display = presetName.replace(/_/g, " ");
-      preset.config = getActiveConfigChanges(preset.config);
-      preset.config.settingGroups = configChanges.settingGroups;
+      if (state.presetType === "partial") {
+        preset.config = getPartialConfigChanges(preset.config);
+        preset.config.settingGroups = configChanges.settingGroups;
+      } else {
+        preset.config.settingGroups = undefined;
+      }
       if (updateConfig) {
         preset.config = configChanges;
       }
@@ -409,7 +416,7 @@ function getSettingGroup(configFieldName: string): PresetSettingGroup {
   throw new Error(`${configFieldName} setting not part of any setting group`);
 }
 
-function getActiveConfigChanges(
+function getPartialConfigChanges(
   presetConfig: MonkeyTypes.PresetConfig | MonkeyTypes.ConfigChanges
 ): MonkeyTypes.ConfigChanges {
   const activeConfigChanges = {} as MonkeyTypes.PresetConfig;
@@ -431,21 +438,28 @@ function getActiveConfigChanges(
   return activeConfigChanges;
 }
 function getConfigChanges(): MonkeyTypes.ConfigChanges {
-  const activeConfigChanges = getActiveConfigChanges(Config.getConfigChanges());
+  const activeConfigChanges =
+    state.presetType === "partial"
+      ? getPartialConfigChanges(Config.getConfigChanges())
+      : Config.getConfigChanges();
   const tags = DB.getSnapshot()?.tags ?? [];
 
   const activeTagIds: string[] = tags
     .filter((tag: MonkeyTypes.UserTag) => tag.active)
     .map((tag: MonkeyTypes.UserTag) => tag._id);
 
+  const setTags: boolean =
+    state.presetType === "full" || state.checkboxes.get("behavior") === true;
   return {
     ...activeConfigChanges,
-    settingGroups: ActiveSettingGroupsSchema.parse(
-      Array.from(state.checkboxes.entries())
-        .filter(([, value]) => value)
-        .map(([key]) => key)
-    ),
-    ...(state.checkboxes.get("behavior") === true && {
+    ...(state.presetType === "partial" && {
+      settingGroups: ActiveSettingGroupsSchema.parse(
+        Array.from(state.checkboxes.entries())
+          .filter(([, value]) => value)
+          .map(([key]) => key)
+      ),
+    }),
+    ...(setTags && {
       tags: activeTagIds,
     }),
   };
