@@ -344,7 +344,7 @@ function getSettingGroup(configFieldName: string): PresetSettingGroup {
     case "burstHeatmap": //not sure
     case "britishEnglish":
     case "tags":
-      return "behaviour";
+      return "behavior";
 
     case "punctuation":
     case "words":
@@ -445,7 +445,7 @@ function getConfigChanges(): MonkeyTypes.ConfigChanges {
         .filter(([, value]) => value)
         .map(([key]) => key)
     ),
-    ...(state.checkboxes.get("behaviour") === true && {
+    ...(state.checkboxes.get("behavior") === true && {
       tags: activeTagIds,
     }),
   };
