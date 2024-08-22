@@ -41,7 +41,7 @@ export let start2: number, end2: number;
 export let start3: number, end3: number;
 export let lastSecondNotRound = false;
 
-export let lastResult: CompletedEvent;
+export let lastResult: Omit<CompletedEvent, "hash" | "uid">;
 
 export function setLastResult(result: CompletedEvent): void {
   lastResult = result;
