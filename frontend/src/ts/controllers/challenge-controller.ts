@@ -33,14 +33,14 @@ export function clearActive(): void {
   }
 }
 
-export function verify(result: CompletedEvent): string | undefined {
+export function verify(result: CompletedEvent): string | null {
   try {
     if (TestState.activeChallenge) {
       const afk = (result.afkDuration / result.testDuration) * 100;
 
       if (afk > 10) {
         Notifications.add(`Challenge failed: AFK time is greater than 10%`, 0);
-        return undefined;
+        return null;
       }
 
       if (TestState.activeChallenge.requirements === undefined) {
@@ -53,7 +53,7 @@ export function verify(result: CompletedEvent): string | undefined {
         let requirementsMet = true;
         const failReasons = [];
         for (const requirementType in TestState.activeChallenge.requirements) {
-          if (!requirementsMet) return undefined;
+          if (!requirementsMet) return null;
           const requirementValue =
             TestState.activeChallenge.requirements[requirementType];
 
@@ -192,11 +192,11 @@ export function verify(result: CompletedEvent): string | undefined {
             } challenge failed: ${failReasons.join(", ")}`,
             0
           );
-          return undefined;
+          return null;
         }
       }
     } else {
-      return undefined;
+      return null;
     }
   } catch (e) {
     console.error(e);
@@ -204,7 +204,7 @@ export function verify(result: CompletedEvent): string | undefined {
       `Something went wrong when verifying challenge: ${(e as Error).message}`,
       0
     );
-    return undefined;
+    return null;
   }
 }
 

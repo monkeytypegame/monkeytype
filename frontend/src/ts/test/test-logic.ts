@@ -1085,18 +1085,18 @@ export async function finish(difficultyFailed = false): Promise<void> {
   }
 
   // user is logged in
-
   TestStats.resetIncomplete();
 
   completedEvent.uid = Auth?.currentUser?.uid as string;
   Result.updateRateQuote(TestWords.currentQuote);
 
   AccountButton.loading(true);
+
   if (!completedEvent.bailedOut) {
-    completedEvent.challenge = ChallengeContoller.verify(completedEvent);
+    const challenge = ChallengeContoller.verify(completedEvent);
+    if (challenge !== null) completedEvent.challenge = challenge;
   }
 
-  console.log("####", { completedEvent });
   completedEvent.hash = objectHash(completedEvent);
 
   await saveResult(completedEvent, false);

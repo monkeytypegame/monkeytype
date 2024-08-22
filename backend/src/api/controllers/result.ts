@@ -203,7 +203,6 @@ export async function addResult(
   const resulthash = completedEvent.hash;
   if (req.ctx.configuration.results.objectHashCheckEnabled) {
     const objectToHash = omit(completedEvent, "hash");
-    console.log("###", { completedEvent });
     const serverhash = objectHash(objectToHash);
     if (serverhash !== resulthash) {
       void addLog(
