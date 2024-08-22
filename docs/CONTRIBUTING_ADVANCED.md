@@ -129,20 +129,20 @@ Run `pnpm i` in the project root to install all dependencies.
 Manual:
 
 ```
-npm run dev
+pnpm run dev
 ```
 
 ### Backend only
 
 | Manual                      | Docker                         |
 | --------------------------- | ------------------------------ |
-| `npm run dev-be`            | `cd backend && npm run docker` |
+| `pnpm run dev-be`            | `cd backend && pnpm run docker` |
 
 ### Frontend only
 
 | Manual                       | Docker                          |
 | ---------------------------- | ------------------------------- |
-| `npm run dev-fe`             | `cd frontend && npm run docker` |
+| `pnpm run dev-fe`             | `cd frontend && pnpm run docker` |
 
 These commands will start a local development website on [port 3000](http://localhost:3000) and a local development server on [port 5005](http://localhost:5005). They will automatically rebuild the website/server when you make changes in the `src/` directory. Use <kbd>Ctrl+C</kbd> to stop them.
 
