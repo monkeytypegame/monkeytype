@@ -24,10 +24,7 @@ document.addEventListener("keydown", async (e) => {
   ) {
     e.preventDefault();
     const popupVisible = Misc.isAnyPopupVisible();
-    const miniResultPopupVisible = Misc.isElementVisible(
-      ".pageAccount .miniResultChartWrapper"
-    );
-    if (!popupVisible && !miniResultPopupVisible) {
+    if (!popupVisible) {
       (await getCommandline()).show();
     }
   }
