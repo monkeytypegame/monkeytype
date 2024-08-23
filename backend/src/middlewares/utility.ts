@@ -1,7 +1,6 @@
 import _ from "lodash";
 import type { Request, Response, NextFunction, RequestHandler } from "express";
 import { handleMonkeyResponse, MonkeyResponse } from "../utils/monkey-response";
-import { isDevEnvironment } from "../utils/misc";
 import { recordClientVersion as prometheusRecordClientVersion } from "../utils/prometheus";
 
 export const emptyMiddleware = (
@@ -34,17 +33,6 @@ export function asyncHandler(handler: AsyncHandler): RequestHandler {
       next(error);
     }
   };
-}
-
-/**
- * Uses the middlewares only in production. Otherwise, uses an empty middleware.
- */
-export function useInProduction(
-  middlewares: RequestHandler[]
-): RequestHandler[] {
-  return middlewares.map((middleware) =>
-    isDevEnvironment() ? emptyMiddleware : middleware
-  );
 }
 
 /**

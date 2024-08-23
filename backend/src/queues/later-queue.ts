@@ -2,7 +2,7 @@ import LRUCache from "lru-cache";
 import Logger from "../utils/logger";
 import { MonkeyQueue } from "./monkey-queue";
 import { getCurrentDayTimestamp, getCurrentWeekTimestamp } from "../utils/misc";
-import { ValidModeRule } from "@monkeytype/shared-types";
+import { ValidModeRule } from "@monkeytype/contracts/schemas/configuration";
 
 const QUEUE_NAME = "later";
 

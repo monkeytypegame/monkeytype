@@ -53,8 +53,8 @@ export function getOpenApi(): OpenAPIObject {
         {
           name: "configs",
           description:
-            "User specific configurations like test settings, theme or tags.",
-          "x-displayName": "User configuration",
+            "User specific configs like test settings, theme or tags.",
+          "x-displayName": "User configs",
           "x-public": "no",
         },
         {
@@ -98,6 +98,12 @@ export function getOpenApi(): OpenAPIObject {
             "Various administrative endpoints. Require user to have admin permissions.",
           "x-displayName": "Admin",
           "x-public": "no",
+        },
+        {
+          name: "configuration",
+          description: "Server configuration",
+          "x-displayName": "Server configuration",
+          "x-public": "yes",
         },
       ],
     },

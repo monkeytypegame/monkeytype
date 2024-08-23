@@ -17,7 +17,6 @@ import { UTCDate } from "@date-fns/utc";
 import {
   AllRewards,
   Badge,
-  Configuration,
   CustomTheme,
   MonkeyMail,
   UserInventory,
@@ -33,6 +32,7 @@ import {
 import { addImportantLog } from "./logs";
 import { ResultFilters } from "@monkeytype/contracts/schemas/users";
 import { Result as ResultType } from "@monkeytype/contracts/schemas/results";
+import { Configuration } from "@monkeytype/contracts/schemas/configuration";
 
 const SECONDS_PER_HOUR = 3600;
 
