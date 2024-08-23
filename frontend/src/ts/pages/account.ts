@@ -27,13 +27,8 @@ import * as Loader from "../elements/loader";
 import * as ResultBatches from "../elements/result-batches";
 import Format from "../utils/format";
 import * as TestActivity from "../elements/test-activity";
-import { ChartData, Result } from "@monkeytype/shared-types";
-import {
-  Mode,
-  Mode2,
-  Mode2Custom,
-  PersonalBests,
-} from "@monkeytype/contracts/schemas/shared";
+import { ChartData } from "@monkeytype/contracts/schemas/results";
+import { Mode, Mode2, Mode2Custom } from "@monkeytype/contracts/schemas/shared";
 import { ResultFiltersGroupItem } from "@monkeytype/contracts/schemas/users";
 
 let filterDebug = false;
@@ -45,7 +40,7 @@ export function toggleFilterDebug(): void {
   }
 }
 
-let filteredResults: Result<Mode>[] = [];
+let filteredResults: MonkeyTypes.FullResult<Mode>[] = [];
 let visibleTableLines = 0;
 
 function loadMoreLines(lineIndex?: number): void {
@@ -276,7 +271,7 @@ async function fillContent(): Promise<void> {
   filteredResults = [];
   $(".pageAccount .history table tbody").empty();
 
-  DB.getSnapshot()?.results?.forEach((result: Result<Mode>) => {
+  DB.getSnapshot()?.results?.forEach((result) => {
     // totalSeconds += tt;
 
     //apply filters
@@ -1069,7 +1064,7 @@ function sortAndRefreshHistory(
     $(headerClass).append('<i class="fas fa-sort-up", aria-hidden="true"></i>');
   }
 
-  const temp = [];
+  const temp: MonkeyTypes.FullResult<Mode>[] = [];
   const parsedIndexes: number[] = [];
 
   while (temp.length < filteredResults.length) {
@@ -1093,10 +1088,11 @@ function sortAndRefreshHistory(
       }
     }
 
+    //@ts-expect-error
     temp.push(filteredResults[idx]);
     parsedIndexes.push(idx);
   }
-  filteredResults = temp as Result<keyof PersonalBests>[];
+  filteredResults = temp;
 
   $(".pageAccount .history table tbody").empty();
   visibleTableLines = 0;

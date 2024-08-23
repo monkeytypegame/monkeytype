@@ -12,6 +12,7 @@
   }
 }
 
-letter {
-  animation: woah 2s infinite linear;
+#words {
+  --correct-letter-animation: woah 2s infinite linear;
+  --untyped-letter-animation: woah 2s infinite linear;
 }

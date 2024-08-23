@@ -2,12 +2,16 @@ import _, { omit } from "lodash";
 import * as RedisClient from "../init/redis";
 import LaterQueue from "../queues/later-queue";
 import { getCurrentDayTimestamp, matchesAPattern, kogascore } from "./misc";
-import { Configuration, ValidModeRule } from "@monkeytype/shared-types";
+import {
+  Configuration,
+  ValidModeRule,
+} from "@monkeytype/contracts/schemas/configuration";
 import {
   DailyLeaderboardRank,
   LeaderboardEntry,
 } from "@monkeytype/contracts/schemas/leaderboards";
 import MonkeyError from "./error";
+import { Mode, Mode2 } from "@monkeytype/contracts/schemas/shared";
 
 const dailyLeaderboardNamespace = "monkeytype:dailyleaderboard";
 const scoresNamespace = `${dailyLeaderboardNamespace}:scores`;
@@ -221,14 +225,14 @@ function isValidModeRule(
 
 export function getDailyLeaderboard(
   language: string,
-  mode: string,
-  mode2: string,
+  mode: Mode,
+  mode2: Mode2<Mode>,
   dailyLeaderboardsConfig: Configuration["dailyLeaderboards"],
   customTimestamp = -1
 ): DailyLeaderboard | null {
   const { validModeRules, enabled } = dailyLeaderboardsConfig;
 
-  const modeRule = { language, mode, mode2 };
+  const modeRule: ValidModeRule = { language, mode, mode2 };
   const isValidMode = isValidModeRule(modeRule, validModeRules);
 
   if (!enabled || !isValidMode) {

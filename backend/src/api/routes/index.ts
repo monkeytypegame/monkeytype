@@ -41,7 +41,6 @@ const APP_START_TIME = Date.now();
 
 const API_ROUTE_MAP = {
   "/users": users,
-  "/results": results,
   "/quotes": quotes,
   "/webhooks": webhooks,
   "/docs": docs,
@@ -56,6 +55,9 @@ const router = s.router(contract, {
   psas,
   public: publicStats,
   leaderboards,
+  results,
+  configuration,
+  dev,
 });
 
 export function addApiRoutes(app: Application): void {
@@ -138,20 +140,20 @@ function applyDevApiRoutes(app: Application): void {
       }
       next();
     });
-
-    //enable dev edpoints
-    app.use("/dev", dev);
   }
 }
 
 function applyApiRoutes(app: Application): void {
-  // Cannot be added to the route map because it needs to be added before the maintenance handler
-  app.use("/configuration", configuration);
-
   addSwaggerMiddlewares(app);
 
+  //TODO move to globalMiddleware when all endpoints use tsrest
   app.use(
     (req: MonkeyTypes.Request, res: Response, next: NextFunction): void => {
+      if (req.path.startsWith("/configuration")) {
+        next();
+        return;
+      }
+
       const inMaintenance =
         process.env["MAINTENANCE"] === "true" ||
         req.ctx.configuration.maintenance;

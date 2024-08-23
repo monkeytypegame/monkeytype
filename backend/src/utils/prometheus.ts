@@ -1,8 +1,7 @@
-import { Result } from "@monkeytype/shared-types";
-import { Mode } from "@monkeytype/contracts/schemas/shared";
 import "dotenv/config";
 import { Counter, Histogram, Gauge } from "prom-client";
 import { TsRestRequestWithCtx } from "../middlewares/auth";
+import { CompletedEvent } from "@monkeytype/contracts/schemas/results";
 
 const auth = new Counter({
   name: "api_request_auth_total",
@@ -91,11 +90,10 @@ export function setLeaderboard(
   leaderboardUpdate.set({ language, mode, mode2, step: "index" }, times[3]);
 }
 
-export function incrementResult(res: Result<Mode>): void {
+export function incrementResult(res: CompletedEvent, isPb?: boolean): void {
   const {
     mode,
     mode2,
-    isPb,
     blindMode,
     lazyMode,
     difficulty,

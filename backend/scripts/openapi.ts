@@ -53,23 +53,33 @@ export function getOpenApi(): OpenAPIObject {
         {
           name: "configs",
           description:
-            "User specific configurations like test settings, theme or tags.",
-          "x-displayName": "User configuration",
+            "User specific configs like test settings, theme or tags.",
+          "x-displayName": "User configs",
+          "x-public": "no",
         },
         {
           name: "presets",
           description: "User specific configuration presets.",
           "x-displayName": "User presets",
+          "x-public": "no",
+        },
+        {
+          name: "results",
+          description: "User test results",
+          "x-displayName": "Test results",
+          "x-public": "yes",
         },
         {
           name: "ape-keys",
           description: "Ape keys provide access to certain API endpoints.",
           "x-displayName": "Ape Keys",
+          "x-public": "no",
         },
         {
           name: "public",
           description: "Public endpoints such as typing stats.",
-          "x-displayName": "public",
+          "x-displayName": "Public",
+          "x-public": "yes",
         },
         {
           name: "leaderboards",
@@ -80,12 +90,27 @@ export function getOpenApi(): OpenAPIObject {
           name: "psas",
           description: "Public service announcements.",
           "x-displayName": "PSAs",
+          "x-public": "yes",
         },
         {
           name: "admin",
           description:
             "Various administrative endpoints. Require user to have admin permissions.",
           "x-displayName": "Admin",
+          "x-public": "no",
+        },
+        {
+          name: "configuration",
+          description: "Server configuration",
+          "x-displayName": "Server configuration",
+          "x-public": "yes",
+        },
+        {
+          name: "dev",
+          description:
+            "Development related endpoints. Only available on dev environment",
+          "x-displayName": "Development",
+          "x-public": "no",
         },
       ],
     },

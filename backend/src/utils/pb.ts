@@ -1,11 +1,12 @@
 import _ from "lodash";
 import FunboxList from "../constants/funbox-list";
-import { DBResult } from "@monkeytype/shared-types";
+
 import {
   Mode,
   PersonalBest,
   PersonalBests,
 } from "@monkeytype/contracts/schemas/shared";
+import { Result as ResultType } from "@monkeytype/contracts/schemas/results";
 
 type CheckAndUpdatePbResult = {
   isPb: boolean;
@@ -13,7 +14,7 @@ type CheckAndUpdatePbResult = {
   lbPersonalBests?: MonkeyTypes.LbPersonalBests;
 };
 
-type Result = Omit<DBResult<Mode>, "_id" | "name">;
+type Result = Omit<ResultType<Mode>, "_id" | "name">;
 
 export function canFunboxGetPb(result: Result): boolean {
   const funbox = result.funbox;
