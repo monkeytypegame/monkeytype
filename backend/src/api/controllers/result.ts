@@ -339,7 +339,9 @@ export async function addResult(
       throw new MonkeyError(400, "Old key data format");
     }
     if (anticheatImplemented()) {
-      if (!validateKeys(completedEvent, uid)) {
+      if (
+        !validateKeys(completedEvent, keySpacingStats, keyDurationStats, uid)
+      ) {
         //autoban
         const autoBanConfig = req.ctx.configuration.users.autoBan;
         if (autoBanConfig.enabled) {

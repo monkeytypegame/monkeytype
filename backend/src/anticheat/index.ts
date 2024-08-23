@@ -1,3 +1,8 @@
+import {
+  CompletedEvent,
+  KeyStats,
+} from "@monkeytype/contracts/schemas/results";
+
 export function implemented(): boolean {
   return false;
 }
@@ -11,6 +16,11 @@ export function validateResult(
   return true;
 }
 
-export function validateKeys(_result: object, _uid: string): boolean {
+export function validateKeys(
+  _result: CompletedEvent,
+  _keySpacingStats: KeyStats,
+  _keyDurationStats: KeyStats,
+  _uid: string
+): boolean {
   return true;
 }
