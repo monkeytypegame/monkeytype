@@ -110,6 +110,7 @@ export function getOpenApi(): OpenAPIObject {
           description:
             "Development related endpoints. Only available on dev environment",
           "x-displayName": "Development",
+          "x-public": "no",
         },
       ],
     },

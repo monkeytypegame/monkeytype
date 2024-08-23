@@ -20,7 +20,7 @@ import {
   GenerateDataResponse,
 } from "@monkeytype/contracts/dev";
 
-const CREATE_RESULT_DEFAULT_OPTIONS: Partial<GenerateDataRequest> = {
+const CREATE_RESULT_DEFAULT_OPTIONS = {
   firstTestTimestamp: DateUtils.startOfDay(new UTCDate(Date.now())).valueOf(),
   lastTestTimestamp: DateUtils.endOfDay(new UTCDate(Date.now())).valueOf(),
   minTestsPerDay: 0,
@@ -76,17 +76,15 @@ async function createTestResults(
     ...CREATE_RESULT_DEFAULT_OPTIONS,
     ...configOptions,
   };
-  const start = toDate(config.firstTestTimestamp as number);
-  const end = toDate(config.lastTestTimestamp as number);
+  const start = toDate(config.firstTestTimestamp);
+  const end = toDate(config.lastTestTimestamp);
 
   const days = DateUtils.eachDayOfInterval({
     start,
     end,
   }).map((day) => ({
     timestamp: DateUtils.startOfDay(day),
-    amount: Math.round(
-      random(config.minTestsPerDay as number, config.maxTestsPerDay as number)
-    ),
+    amount: Math.round(random(config.minTestsPerDay, config.maxTestsPerDay)),
   }));
 
   for (const day of days) {

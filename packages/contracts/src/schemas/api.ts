@@ -19,7 +19,7 @@ export type EndpointMetadata = {
 };
 
 export type RequestAuthenticationOptions = {
-  /** Endpoint is accessible without any authentication. If `false` bearer authentication is requuired. */
+  /** Endpoint is accessible without any authentication. If `false` bearer authentication is required. */
   isPublic?: boolean;
   /** Endpoint is accessible with ape key authentication in  _addition_ to the bearer authentication. */
   acceptApeKeys?: boolean;
