@@ -26,7 +26,13 @@ describe("PresetController", () => {
         _id: new ObjectId(),
         uid: "123456789",
         name: "test2",
-        config: { language: "polish" },
+        config: {
+          showKeyTips: true,
+          capsLockWarning: true,
+          showOutOfFocusWarning: true,
+          showAverage: ShowAverageSchema.Enum.off,
+          settingGroups: [PresetSettingGroupSchema.Enum.hideElements],
+        },
       };
 
       getPresetsMock.mockResolvedValue([presetOne, presetTwo]);
@@ -49,7 +55,13 @@ describe("PresetController", () => {
           {
             _id: presetTwo._id.toHexString(),
             name: "test2",
-            config: { language: "polish" },
+            config: {
+              showKeyTips: true,
+              capsLockWarning: true,
+              showOutOfFocusWarning: true,
+              showAverage: ShowAverageSchema.Enum.off,
+              settingGroups: ["hideElements"],
+            },
           },
         ],
       });
@@ -278,6 +290,46 @@ describe("PresetController", () => {
         _id: "1",
         name: "new",
         config: { language: "english", tags: ["one", "two"] },
+      });
+    });
+    it("should update the users partial preset", async () => {
+      //GIVEN
+      editPresetMock.mockResolvedValue({} as any);
+
+      //WHEN
+      const { body } = await mockApp
+        .patch("/presets")
+        .set("authorization", "Uid 123456789")
+        .accept("application/json")
+        .send({
+          _id: "1",
+          name: "new",
+          config: {
+            showKeyTips: true,
+            capsLockWarning: true,
+            showOutOfFocusWarning: true,
+            showAverage: ShowAverageSchema.Enum.off,
+            settingGroups: [PresetSettingGroupSchema.Enum.hideElements],
+          },
+        })
+        .expect(200);
+
+      //THEN
+      expect(body).toStrictEqual({
+        message: "Preset updated",
+        data: null,
+      });
+
+      expect(editPresetMock).toHaveBeenCalledWith("123456789", {
+        _id: "1",
+        name: "new",
+        config: {
+          showKeyTips: true,
+          capsLockWarning: true,
+          showOutOfFocusWarning: true,
+          showAverage: ShowAverageSchema.Enum.off,
+          settingGroups: [PresetSettingGroupSchema.Enum.hideElements],
+        },
       });
     });
     it("should not fail with emtpy config", async () => {
