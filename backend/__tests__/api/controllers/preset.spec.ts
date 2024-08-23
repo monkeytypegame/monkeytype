@@ -324,7 +324,7 @@ describe("PresetController", () => {
       });
       expect(editPresetMock).not.toHaveBeenCalled();
     });
-    it("should not fail with invalid preset", async () => {
+    it("should fail with invalid preset", async () => {
       //WHEN
       const { body } = await mockApp
         .patch("/presets")
@@ -338,6 +338,7 @@ describe("PresetController", () => {
             extra: "extra",
             autoSwitchTheme: "yes",
             confidenceMode: "pretty",
+            settingGroups: ["mappers"],
           },
         })
         .expect(422);
@@ -348,6 +349,7 @@ describe("PresetController", () => {
         validationErrors: [
           `"config.autoSwitchTheme" Expected boolean, received string`,
           `"config.confidenceMode" Invalid enum value. Expected 'off' | 'on' | 'max', received 'pretty'`,
+          `"config.settingGroups.0" Invalid enum value. Expected 'test' | 'behavior' | 'input' | 'sound' | 'caret' | 'appearance' | 'theme' | 'hideElements' | 'ads' | 'hidden', received 'mappers'`,
           `"config" Unrecognized key(s) in object: 'extra'`,
           `Unrecognized key(s) in object: 'extra'`,
         ],
