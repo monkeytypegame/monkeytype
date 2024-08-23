@@ -5,7 +5,7 @@ import { getCurrentDayTimestamp, matchesAPattern, kogascore } from "./misc";
 import {
   Configuration,
   ValidModeRule,
-} from "@monkeytype/contracts/schemas/configurations";
+} from "@monkeytype/contracts/schemas/configuration";
 import {
   DailyLeaderboardRank,
   LeaderboardEntry,

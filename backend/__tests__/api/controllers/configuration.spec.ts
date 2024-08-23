@@ -5,7 +5,7 @@ import {
   CONFIGURATION_FORM_SCHEMA,
 } from "../../../src/constants/base-configuration";
 import * as Configuration from "../../../src/init/configuration";
-import type { Configuration as ConfigurationType } from "@monkeytype/contracts/schemas/configurations";
+import type { Configuration as ConfigurationType } from "@monkeytype/contracts/schemas/configuration";
 import { ObjectId } from "mongodb";
 import * as Misc from "../../../src/utils/misc";
 import { DecodedIdToken } from "firebase-admin/auth";

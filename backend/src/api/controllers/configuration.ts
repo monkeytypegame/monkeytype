@@ -5,7 +5,7 @@ import {
   ConfigurationSchemaResponse,
   GetConfigurationResponse,
   PatchConfigurationRequest,
-} from "@monkeytype/contracts/configurations";
+} from "@monkeytype/contracts/configuration";
 import MonkeyError from "../../utils/error";
 
 export async function getConfiguration(

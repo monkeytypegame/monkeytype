@@ -1,4 +1,4 @@
-import { configurationsContract } from "@monkeytype/contracts/configurations";
+import { configurationContract } from "@monkeytype/contracts/configuration";
 import { initServer } from "@ts-rest/express";
 import { checkIfUserIsAdmin } from "../../middlewares/permission";
 import * as RateLimit from "../../middlewares/rate-limit";
@@ -7,7 +7,7 @@ import { callController } from "../ts-rest-adapter";
 
 const s = initServer();
 
-export default s.router(configurationsContract, {
+export default s.router(configurationContract, {
   get: {
     handler: async (r) =>
       callController(ConfigurationController.getConfiguration)(r),

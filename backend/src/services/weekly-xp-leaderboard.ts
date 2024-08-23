@@ -1,4 +1,4 @@
-import { Configuration } from "@monkeytype/contracts/schemas/configurations";
+import { Configuration } from "@monkeytype/contracts/schemas/configuration";
 import * as RedisClient from "../init/redis";
 import LaterQueue from "../queues/later-queue";
 import { getCurrentWeekTimestamp } from "../utils/misc";

@@ -1,6 +1,6 @@
 import type { Response, NextFunction, RequestHandler } from "express";
 import MonkeyError from "../utils/error";
-import { Configuration } from "@monkeytype/contracts/schemas/configurations";
+import { Configuration } from "@monkeytype/contracts/schemas/configuration";
 
 export type ValidationOptions<T> = {
   criteria: (data: T) => boolean;

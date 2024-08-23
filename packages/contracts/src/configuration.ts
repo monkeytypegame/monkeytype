@@ -7,7 +7,7 @@ import {
   MonkeyResponseSchema,
   responseWithData,
 } from "./schemas/api";
-import { ConfigurationSchema } from "./schemas/configurations";
+import { ConfigurationSchema } from "./schemas/configuration";
 
 export const GetConfigurationResponseSchema =
   responseWithData(ConfigurationSchema);
@@ -35,7 +35,7 @@ export type ConfigurationSchemaResponse = z.infer<
 
 const c = initContract();
 
-export const configurationsContract = c.router(
+export const configurationContract = c.router(
   {
     get: {
       summary: "get configuration",

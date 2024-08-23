@@ -15,7 +15,7 @@ import { performance } from "perf_hooks";
 import { TsRestRequestHandler } from "@ts-rest/express";
 import { AppRoute, AppRouter } from "@ts-rest/core";
 import { RequestAuthenticationOptions } from "@monkeytype/contracts/schemas/api";
-import { Configuration } from "@monkeytype/contracts/schemas/configurations";
+import { Configuration } from "@monkeytype/contracts/schemas/configuration";
 
 const DEFAULT_OPTIONS: RequestAuthenticationOptions = {
   isPublic: false,

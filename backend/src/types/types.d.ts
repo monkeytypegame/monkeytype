@@ -14,7 +14,7 @@ declare namespace MonkeyTypes {
   };
 
   export type Context = {
-    configuration: import("@monkeytype/contracts/schemas/configurations").Configuration;
+    configuration: import("@monkeytype/contracts/schemas/configuration").Configuration;
     decodedToken: DecodedToken;
   };
 

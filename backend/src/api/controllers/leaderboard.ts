@@ -21,7 +21,7 @@ import {
   GetWeeklyXpLeaderboardResponse,
   LanguageAndModeQuery,
 } from "@monkeytype/contracts/leaderboards";
-import { Configuration } from "@monkeytype/contracts/schemas/configurations";
+import { Configuration } from "@monkeytype/contracts/schemas/configuration";
 
 export async function getLeaderboard(
   req: MonkeyTypes.Request2<GetLeaderboardQuery>
