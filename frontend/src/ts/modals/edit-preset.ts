@@ -38,6 +38,7 @@ export function show(action: string, id?: string, name?: string): void {
     focusFirstInput: true,
     beforeAnimation: async () => {
       $("#editPresetModal .modal .text").addClass("hidden");
+      addCheckBoxes();
       if (action === "add") {
         $("#editPresetModal .modal").attr("data-action", "add");
         $("#editPresetModal .modal .popupTitle").html("Add new preset");
@@ -47,9 +48,8 @@ export function show(action: string, id?: string, name?: string): void {
         $("#editPresetModal .modal label").addClass("hidden");
         $("#editPresetModal .modal .inputs").removeClass("hidden");
         $("#editPresetModal .modal .presetType").removeClass("hidden");
+        $("#editPresetModal .modal .presetNameTitle").removeClass("hidden");
         state.presetType = "full";
-        addCheckBoxes();
-        addPresetTypeEventListeners();
       } else if (action === "edit" && id !== undefined && name !== undefined) {
         $("#editPresetModal .modal").attr("data-action", "edit");
         $("#editPresetModal .modal").attr("data-preset-id", id);
@@ -61,9 +61,8 @@ export function show(action: string, id?: string, name?: string): void {
         $("#editPresetModal .modal label").removeClass("hidden");
         $("#editPresetModal .modal .inputs").removeClass("hidden");
         $("#editPresetModal .modal .presetType").removeClass("hidden");
-        addCheckBoxes();
+        $("#editPresetModal .modal .presetNameTitle").removeClass("hidden");
         await initializeEditState(id);
-        addPresetTypeEventListeners();
       } else if (
         action === "remove" &&
         id !== undefined &&
@@ -81,21 +80,10 @@ export function show(action: string, id?: string, name?: string): void {
         );
         $("#editPresetModal .modal .inputs").addClass("hidden");
         $("#editPresetModal .modal .presetType").addClass("hidden");
+        $("#editPresetModal .modal .presetNameTitle").addClass("hidden");
       }
       updateUI();
     },
-  });
-}
-
-function addPresetTypeEventListeners(): void {
-  PresetTypeSchema.options.forEach((presetType) => {
-    $(`#editPresetModal .modal .presetType button[value="${presetType}"]`).on(
-      "click",
-      () => {
-        state.presetType = presetType;
-        updateUI();
-      }
-    );
   });
 }
 
@@ -110,6 +98,9 @@ async function initializeEditState(id: string): Promise<void> {
   }
   if (edittedPreset.config.settingGroups === undefined) {
     state.presetType = "full";
+    for (const key of state.checkboxes.keys()) {
+      state.checkboxes.set(key, true);
+    }
   } else {
     state.presetType = "partial";
     edittedPreset.config.settingGroups.forEach((currentActiveSettingGroup) =>
@@ -173,7 +164,6 @@ function addCheckBoxes(): void {
     state.checkboxes.set(key, true);
   }
   addCheckboxListeners();
-  updateUI();
 }
 
 function updateUI(): void {
@@ -212,18 +202,35 @@ async function apply(): Promise<void> {
 
   const snapshotPresets = DB.getSnapshot()?.presets ?? [];
 
+  if (action === undefined) {
+    return;
+  }
+
+  const noPartialGroupSelected: boolean =
+    ["add", "edit"].includes(action) &&
+    state.presetType === "partial" &&
+    Array.from(state.checkboxes.values()).every((val: boolean) => !val);
+  if (noPartialGroupSelected) {
+    Notifications.add(
+      "At least one setting group must be active while saving partial presets",
+      0
+    );
+    return;
+  }
+
+  const noPresetName: boolean =
+    ["add", "edit"].includes(action) &&
+    presetName.replace(/^_+|_+$/g, "").length === 0; //all whitespace names are rejected
+  if (noPresetName) {
+    Notifications.add("Preset name cannot be empty", 0);
+    return;
+  }
+
   hide();
 
   Loader.show();
 
   if (action === "add") {
-    if (
-      state.presetType === "partial" &&
-      Object.values(state.checkboxes).filter((val) => val).length > 0
-    ) {
-      Notifications.add("Atleast one setting group must be active.");
-      return;
-    }
     const configChanges = getConfigChanges();
     const response = await Ape.presets.add({
       body: { name: presetName, config: configChanges },
@@ -247,10 +254,6 @@ async function apply(): Promise<void> {
       } as MonkeyTypes.SnapshotPreset);
     }
   } else if (action === "edit") {
-    if (Object.values(state.checkboxes).filter((val) => val).length > 0) {
-      Notifications.add("Atleast one setting group must be active.");
-      return;
-    }
     const configChanges = getConfigChanges();
     const response = await Ape.presets.save({
       body: {
@@ -469,6 +472,17 @@ async function setup(modalEl: HTMLElement): Promise<void> {
   modalEl.addEventListener("submit", (e) => {
     e.preventDefault();
     void apply();
+  });
+  PresetTypeSchema.options.forEach((presetType) => {
+    const presetOption = modalEl.querySelector(
+      `.presetType button[value="${presetType}"]`
+    );
+    if (presetOption === null) return;
+
+    presetOption.addEventListener("click", () => {
+      state.presetType = presetType;
+      updateUI();
+    });
   });
 }
 const modal = new AnimatedModal({
