@@ -53,8 +53,8 @@ export function getOpenApi(): OpenAPIObject {
         {
           name: "configs",
           description:
-            "User specific configurations like test settings, theme or tags.",
-          "x-displayName": "User configurations",
+            "User specific configs like test settings, theme or tags.",
+          "x-displayName": "User configs",
           "x-public": "no",
         },
         {
@@ -100,9 +100,9 @@ export function getOpenApi(): OpenAPIObject {
           "x-public": "no",
         },
         {
-          name: "configurations",
-          description: "Server configurations",
-          "x-displayName": "Server configurations",
+          name: "configuration",
+          description: "Server configuration",
+          "x-displayName": "Server configuration",
           "x-public": "yes",
         },
       ],

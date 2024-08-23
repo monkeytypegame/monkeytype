@@ -88,7 +88,7 @@ export const configurationContract = c.router(
     pathPrefix: "/configuration",
     strictStatusCodes: true,
     metadata: {
-      openApiTags: "configurations",
+      openApiTags: "configuration",
     } as EndpointMetadata,
 
     commonResponses: CommonResponses,
