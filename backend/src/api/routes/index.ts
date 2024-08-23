@@ -57,6 +57,7 @@ const router = s.router(contract, {
   leaderboards,
   results,
   configuration,
+  dev,
 });
 
 export function addApiRoutes(app: Application): void {
@@ -139,9 +140,6 @@ function applyDevApiRoutes(app: Application): void {
       }
       next();
     });
-
-    //enable dev edpoints
-    app.use("/dev", dev);
   }
 }
 

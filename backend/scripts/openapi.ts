@@ -105,6 +105,13 @@ export function getOpenApi(): OpenAPIObject {
           "x-displayName": "Server configuration",
           "x-public": "yes",
         },
+        {
+          name: "dev",
+          description:
+            "Development related endpoints. Only available on dev environment",
+          "x-displayName": "Development",
+          "x-public": "no",
+        },
       ],
     },
 
