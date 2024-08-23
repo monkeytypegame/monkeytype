@@ -54,14 +54,14 @@ importers:
         specifier: workspace:*
         version: link:../packages/contracts
       '@ts-rest/core':
-        specifier: 3.45.2
-        version: 3.45.2(zod@3.23.8)
+        specifier: 3.49.3
+        version: 3.49.3(zod@3.23.8)
       '@ts-rest/express':
-        specifier: 3.45.2
-        version: 3.45.2(express@4.19.2)(zod@3.23.8)
+        specifier: 3.49.3
+        version: 3.49.3(@ts-rest/core@3.49.3(zod@3.23.8))(express@4.19.2)(zod@3.23.8)
       '@ts-rest/open-api':
-        specifier: 3.45.2
-        version: 3.45.2(zod@3.23.8)
+        specifier: 3.49.3
+        version: 3.49.3(@ts-rest/core@3.49.3(zod@3.23.8))(zod@3.23.8)
       bcrypt:
         specifier: 5.1.1
         version: 5.1.1(encoding@0.1.13)
@@ -246,9 +246,6 @@ importers:
       ioredis-mock:
         specifier: 7.4.0
         version: 7.4.0(ioredis@4.28.5)
-      openapi-recursive-tagging:
-        specifier: 0.0.6
-        version: 0.0.6
       readline-sync:
         specifier: 1.4.10
         version: 1.4.10
@@ -277,8 +274,8 @@ importers:
         specifier: workspace:*
         version: link:../packages/contracts
       '@ts-rest/core':
-        specifier: 3.45.2
-        version: 3.45.2(zod@3.23.8)
+        specifier: 3.49.3
+        version: 3.49.3(zod@3.23.8)
       axios:
         specifier: 1.7.4
         version: 1.7.4(debug@4.3.6)
@@ -467,8 +464,8 @@ importers:
   packages/contracts:
     dependencies:
       '@ts-rest/core':
-        specifier: 3.45.2
-        version: 3.45.2(zod@3.23.8)
+        specifier: 3.49.3
+        version: 3.49.3(zod@3.23.8)
       zod:
         specifier: 3.23.8
         version: 3.23.8
@@ -2524,26 +2521,28 @@ packages:
     resolution: {integrity: sha512-EZ+XlSwjdLtscoBOnA/Ba6QBrmoxAR73tJFjnWxaJQsZxWBQv6bLUrDgZUdXkXRAOSkRHn0uXY6Wq/3SsV2WtQ==}
     engines: {node: '>=18'}
 
-  '@ts-rest/core@3.45.2':
-    resolution: {integrity: sha512-Eiv+Sa23MbsAd1Gx9vNJ+IFCDyLZNdJ+UuGMKbFvb+/NmgcBR1VL1UIVtEkd5DJxpYMMd8SLvW91RgB2TS8iPw==}
+  '@ts-rest/core@3.49.3':
+    resolution: {integrity: sha512-h/4aSH7SGsQfBZ5LcF2k8+TVtFSITYG4qI91tdf0YMddPsSZJho2OV9jhvycNEt+sosPsw/FDV2QFKBAUEr22w==}
     peerDependencies:
       zod: ^3.22.3
     peerDependenciesMeta:
       zod:
         optional: true
 
-  '@ts-rest/express@3.45.2':
-    resolution: {integrity: sha512-GypL5auYuh3WS2xCc58J9OpgpYYJoPY2NvBxJxHOLdhMOoGHhYI8oIUtxfxIxWZcPJOAokrrQJ2zb2hrPUuR1A==}
+  '@ts-rest/express@3.49.3':
+    resolution: {integrity: sha512-+ybB1yvzyPclxlSLMoZGuEL26DqxH/bLbWShWC2C28kRq0k768xYe8EvDD9VRrZMJqmnO+sndXdcGq40hvhcKA==}
     peerDependencies:
+      '@ts-rest/core': ~3.49.0
       express: ^4.0.0
       zod: ^3.22.3
     peerDependenciesMeta:
       zod:
         optional: true
 
-  '@ts-rest/open-api@3.45.2':
-    resolution: {integrity: sha512-TG5GvD0eyicMR3HjEAMTO2ulO7x/ADSn5bfLF/ZDdVXla48PiQdwhG4NsjVbsUDCghwx+6y5u2aTYjypzdiXQg==}
+  '@ts-rest/open-api@3.49.3':
+    resolution: {integrity: sha512-5N71UP/5KtjOyagc076arPwGkemDBlqGv7c42AbV2ca4dj1dlveis41VIpHsfWOdsFS548X+C9b0td7YVCdpqA==}
     peerDependencies:
+      '@ts-rest/core': ~3.49.0
       zod: ^3.22.3
 
   '@tsconfig/node10@1.0.11':
@@ -2971,10 +2970,6 @@ packages:
   ansi-regex@2.1.1:
     resolution: {integrity: sha512-TIGnTpdo+E3+pCyAluZvtED5p5wCqLdezCyhPZzKPcxvFplEt4i+W7OONCKgeZFT3+y5NZZfOOS/Bdcanm1MYA==}
     engines: {node: '>=0.10.0'}
-
-  ansi-regex@4.1.1:
-    resolution: {integrity: sha512-ILlv4k/3f6vfQ4OoP2AGvirOktlQ98ZEL1k9FaQjxa3L1abBgbuTDAdPOpvbGncC0BTVQrl+OM8xZGK6tWXt7g==}
-    engines: {node: '>=6'}
 
   ansi-regex@5.0.1:
     resolution: {integrity: sha512-quJQXlTSUGL2LH9SUXo8VwsY4soanhgo6LNSm84E1LBcE8s3O0wpdiRzyR9z/ZZJMlMWv37qOOb9pdJlMUEKFQ==}
@@ -3573,9 +3568,6 @@ packages:
 
   cliui@3.2.0:
     resolution: {integrity: sha512-0yayqDxWQbqk3ojkYqUKqaAQ6AfNKeKWRNA8kR0WXzAsdHpP4BIaOmMAG87JGuO6qcobyW4GjxHd9PmhEd+T9w==}
-
-  cliui@5.0.0:
-    resolution: {integrity: sha512-PYeGSEmmHM6zvoef2w8TPzlrnNpXIjTipYK780YswmIP9vjxmd6Y2a3CB2Ks6/AU8NHjZugXvo8w3oWM2qnwXA==}
 
   cliui@7.0.4:
     resolution: {integrity: sha512-OcRE68cOsVMXp1Yvonl/fzkQOyjLSu/8bhPDfQt0e0/Eb283TKP20Fs2MqoPsr9SwA595rRCA+QMzYc9nBP+JQ==}
@@ -4285,9 +4277,6 @@ packages:
   electron-to-chromium@1.5.5:
     resolution: {integrity: sha512-QR7/A7ZkMS8tZuoftC/jfqNkZLQO779SSW3YuZHP4eXpj3EffGLFcB/Xu9AAZQzLccTiCV+EmUo3ha4mQ9wnlA==}
 
-  emoji-regex@7.0.3:
-    resolution: {integrity: sha512-CwBLREIQ7LvYFB0WyRvwhq5N5qPhc6PMjD6bYggFlI5YyDgl+0vxq5VHbMOFqLg7hfWzmu8T5Z1QofhmTIhItA==}
-
   emoji-regex@8.0.0:
     resolution: {integrity: sha512-MSjYzcWNOA0ewAHpz0MxpYFvwg6yjy1NG3xteoqz644VCo/RPgnr1/GGt+ic3iJTzQ8Eu3TdM14SawnVUmGE6A==}
 
@@ -4764,10 +4753,6 @@ packages:
   find-up@1.1.2:
     resolution: {integrity: sha512-jvElSjyuo4EMQGoTwo1uJU5pQMwTW5lS1x05zzfJuTIyLR3zwO27LYrxNg+dlvKpGOuGy/MzBdXh80g0ve5+HA==}
     engines: {node: '>=0.10.0'}
-
-  find-up@3.0.0:
-    resolution: {integrity: sha512-1yD6RmLI1XBfxugvORwlck6f75tYL+iR0jqwsOrOxMZyGYqUuDhJ0l4AXdO1iX/FTs9cBAMEk1gWSEx1kSbylg==}
-    engines: {node: '>=6'}
 
   find-up@4.1.0:
     resolution: {integrity: sha512-PpOwAdQ/YlXQ2vj8a3h8IipDuYRi3wceVQQGYWxNINccq40Anw7BlsEXCMbt1Zt+OLA6Fq9suIpIWD0OsnISlw==}
@@ -5592,10 +5577,6 @@ packages:
     resolution: {integrity: sha512-1pqUqRjkhPJ9miNq9SwMfdvi6lBJcd6eFxvfaivQhaH3SgisfiuudvFntdKOmxuee/77l+FPjKrQjWvmPjWrRw==}
     engines: {node: '>=0.10.0'}
 
-  is-fullwidth-code-point@2.0.0:
-    resolution: {integrity: sha512-VHskAKYM8RfSFXwee5t5cbN5PZeq1Wrh6qd5bkyiXIf6UQcN6w/A0eXM9r6t8d+GYOh+o6ZhiEnb88LN/Y8m2w==}
-    engines: {node: '>=4'}
-
   is-fullwidth-code-point@3.0.0:
     resolution: {integrity: sha512-zymm5+u+sCsSWyD9qNaejV3DFvhCKclKdizYaJUuHA83RLjb7nSuGnddCHGv0hk+KY7BMAlsWeK4Ueg6EV6XQg==}
     engines: {node: '>=8'}
@@ -6095,10 +6076,6 @@ packages:
   load-json-file@1.1.0:
     resolution: {integrity: sha512-cy7ZdNRXdablkXYNI049pthVeXFurRyb9+hA/dZzerZ0pGTx42z+y+ssxBaVV2l70t1muq5IdKhn4UtcoGUY9A==}
     engines: {node: '>=0.10.0'}
-
-  locate-path@3.0.0:
-    resolution: {integrity: sha512-7AO748wWnIhNqAuaty2ZWHkQHRSNfPVIsPIfwEOWO22AmaoVrWavlOcMR5nzTLNYvp36X220/maaRsrec1G65A==}
-    engines: {node: '>=6'}
 
   locate-path@5.0.0:
     resolution: {integrity: sha512-t7hw9pI+WvuwNJXwk5zVHpyhIqzg2qTlklJOf0mVxGSbe3Fp2VieZcduNYjaLDoy6p9uGpQEGWG87WpMKlNq8g==}
@@ -7055,10 +7032,6 @@ packages:
     resolution: {integrity: sha512-7x81NCL719oNbsq/3mh+hVrAWmFuEYUqrq/Iw3kUzH8ReypT9QQ0BLoJS7/G9k6N81XjW4qHWtjWwe/9eLy1EQ==}
     engines: {node: '>=12'}
 
-  openapi-recursive-tagging@0.0.6:
-    resolution: {integrity: sha512-ZtHR0jHeIMTuyeenbee7j0fK58Uf9ZMFGTXv3abQvsdjImfdEXfmmNlMNgpW27DmoomOgwwpGNGldUUQd0oJ4g==}
-    hasBin: true
-
   openapi-sampler@1.5.1:
     resolution: {integrity: sha512-tIWIrZUKNAsbqf3bd9U1oH6JEXo8LNYuDlXw26By67EygpjT+ArFnsxxyTMjFWRfbqo5ozkvgSQDK69Gd8CddA==}
 
@@ -7098,10 +7071,6 @@ packages:
   p-limit@3.1.0:
     resolution: {integrity: sha512-TYOanM3wGwNGsZN2cVTYPArw454xnXj5qmWF1bEoAc4+cU/ol7GVh7odevjp1FNHduHc3KZMcFduxU5Xc6uJRQ==}
     engines: {node: '>=10'}
-
-  p-locate@3.0.0:
-    resolution: {integrity: sha512-x+12w/To+4GFfgJhBEpiDcLozRJGegY+Ei7/z0tSLkMmxGZNybVMSfWj9aJn8Z5Fc7dBUNJOOVgPv2H7IwulSQ==}
-    engines: {node: '>=6'}
 
   p-locate@4.1.0:
     resolution: {integrity: sha512-R79ZZ/0wAxKGu3oYMlz8jy/kbhsNrS7SKZ7PxEHBgJ5+F2mtFW2fK2cOtBh1cHYkQsbzFV7I+EoRKe6Yt0oK7A==}
@@ -7212,10 +7181,6 @@ packages:
   path-exists@2.1.0:
     resolution: {integrity: sha512-yTltuKuhtNeFJKa1PiRzfLAU5182q1y4Eb4XCJ3PBqyzEDkAZRzBrKKBct682ls9reBVHf9udYLN5Nd+K1B9BQ==}
     engines: {node: '>=0.10.0'}
-
-  path-exists@3.0.0:
-    resolution: {integrity: sha512-bpC7GYwiDYQ4wYLe+FA8lhRjhQCMcQGuSgGGqDkg/QerRWw9CmGRT0iSOVRSZJ29NMLZgIzqaljJ63oaL4NIJQ==}
-    engines: {node: '>=4'}
 
   path-exists@4.0.0:
     resolution: {integrity: sha512-ak9Qy5Q7jYb2Wwcey5Fpvg2KoAc/ZIhLSLOSBmRmygPsGwkVVt0fZa0qrtMz+m6tJTAHfZQ8FnmB4MG4LWy7/w==}
@@ -7789,9 +7754,6 @@ packages:
   require-main-filename@1.0.1:
     resolution: {integrity: sha512-IqSUtOVP4ksd1C/ej5zeEh/BIP2ajqpn8c5x+q99gvcIG/Qf0cud5raVnE/Dwd0ua9TXYDoDc0RE5hBSdz22Ug==}
 
-  require-main-filename@2.0.0:
-    resolution: {integrity: sha512-NKN5kMDylKuldxYLSUfrbo5Tuzh4hd+2E8NPPX02mZtn1VuREQToYe/ZdlJy+J3uCpfaiGF05e7B8W0iXbQHmg==}
-
   requirejs-config-file@4.0.0:
     resolution: {integrity: sha512-jnIre8cbWOyvr8a5F2KuqBnY+SDA4NXr/hzEZJG79Mxm2WiFQz2dzhC8ibtPJS7zkmBEl1mxSwp5HhC1W4qpxw==}
     engines: {node: '>=10.13.0'}
@@ -8329,10 +8291,6 @@ packages:
     resolution: {integrity: sha512-0XsVpQLnVCXHJfyEs8tC0zpTVIr5PKKsQtkT29IwupnPTjtPmQ3xT/4yCREF9hYkV/3M3kzcUTSAZT6a6h81tw==}
     engines: {node: '>=0.10.0'}
 
-  string-width@3.1.0:
-    resolution: {integrity: sha512-vafcv6KjVZKSgz06oM/H6GDBrAtz8vdhQakGjFIvNrHA6y3HCF1CInLy+QLq8dTJPQ1b+KDUqDFctkdRW44e1w==}
-    engines: {node: '>=6'}
-
   string-width@4.2.3:
     resolution: {integrity: sha512-wKyQRQpjJ0sIp62ErSZdGsjMJWsap5oRNihHhu6G7JVO/9jIB6UyevL+tXuOqrng8j/cxKTWyWUwvSTriiZz/g==}
     engines: {node: '>=8'}
@@ -8372,10 +8330,6 @@ packages:
   strip-ansi@3.0.1:
     resolution: {integrity: sha512-VhumSSbBqDTP8p2ZLKj40UjBCV4+v8bUSEpUb4KjRgWk9pbqGF4REFj6KEagidb2f/M6AzC0EmFyDNGaw9OCzg==}
     engines: {node: '>=0.10.0'}
-
-  strip-ansi@5.2.0:
-    resolution: {integrity: sha512-DuRs1gKbBqsMKIZlrffwlug8MHkcnpjs5VPmL1PAh+mA30U0DTotfDZ0d2UUsXpPmPmMMJ6W773MaA3J+lbiWA==}
-    engines: {node: '>=6'}
 
   strip-ansi@6.0.1:
     resolution: {integrity: sha512-Y38VPSHcqkFrCpFnQ9vuSXmquuv5oXOKpGeT6aGrr3o3Gc9AlVa6JBfUSOCnbxGGZF+/0ooI7KrPuUSztUdU5A==}
@@ -9303,9 +9257,6 @@ packages:
   which-module@1.0.0:
     resolution: {integrity: sha512-F6+WgncZi/mJDrammbTuHe1q0R5hOXv/mBaiNA2TCNT/LTHusX0V+CJnj9XT8ki5ln2UZyyddDgHfCzyrOH7MQ==}
 
-  which-module@2.0.1:
-    resolution: {integrity: sha512-iBdZ57RDvnOR9AGBhML2vFZf7h8vmBjhoaZqODJBFWHVtKkDmKuHai3cx5PgVMrX5YDNp27AofYbAwctSS+vhQ==}
-
   which-pm-runs@1.1.0:
     resolution: {integrity: sha512-n1brCuqClxfFfq/Rb0ICg9giSZqCS+pLtccdag6C2HyufBrh3fBOiy9nb6ggRMvWOVH5GrdJskj5iGTZNxd7SA==}
     engines: {node: '>=4'}
@@ -9411,10 +9362,6 @@ packages:
     resolution: {integrity: sha512-vAaEaDM946gbNpH5pLVNR+vX2ht6n0Bt3GXwVB1AuAqZosOvHNF3P7wDnh8KLkSqgUh0uh77le7Owgoz+Z9XBw==}
     engines: {node: '>=0.10.0'}
 
-  wrap-ansi@5.1.0:
-    resolution: {integrity: sha512-QC1/iN/2/RPVJ5jYK8BGttj5z83LmSKmvbvrXPNCLZSEb32KKVDJDl/MOt2N01qU2H/FkzEa9PKto1BqDjtd7Q==}
-    engines: {node: '>=6'}
-
   wrap-ansi@6.2.0:
     resolution: {integrity: sha512-r6lPcBGxZXlIcymEu7InxDMhdW0KDxpLgoFLcguasxCaJ/SOIZwINatK9KY/tf+ZrlywOKU0UDj3ATXUBfxJXA==}
     engines: {node: '>=8'}
@@ -9456,9 +9403,6 @@ packages:
   y18n@3.2.2:
     resolution: {integrity: sha512-uGZHXkHnhF0XeeAPgnKfPv1bgKAYyVvmNL1xlKsPYZPaIHxGti2hHqvOCQv71XMsLxu1QjergkqogUnms5D3YQ==}
 
-  y18n@4.0.3:
-    resolution: {integrity: sha512-JKhqTOwSrqNA1NY5lSztJ1GrBiUodLMmIZuLiDaMRJ+itFd+ABVE8XBjOvIWL+rSqNDC74LCSFmlb/U4UZ4hJQ==}
-
   y18n@5.0.8:
     resolution: {integrity: sha512-0pfFzegeDWJHJIAmTLRP2DwHjdF5s7jo9tuztdQxAhINCdvS+3nGINqPd00AphqJR/0LhANUS6/+7SCb98YOfA==}
     engines: {node: '>=10'}
@@ -9481,9 +9425,6 @@ packages:
     engines: {node: '>= 14'}
     hasBin: true
 
-  yargs-parser@15.0.3:
-    resolution: {integrity: sha512-/MVEVjTXy/cGAjdtQf8dW3V9b97bPN7rNn8ETj6BmAQL7ibC7O1Q9SPJbGjgh3SlwoBNXMzj/ZGIj8mBgl12YA==}
-
   yargs-parser@20.2.9:
     resolution: {integrity: sha512-y11nGElTIV+CT3Zv9t7VKl+Q3hTQoT9a1Qzezhhl6Rp21gJ/IVTW7Z3y9EWXhuUBC2Shnf+DX0antecpAwSP8w==}
     engines: {node: '>=10'}
@@ -9494,9 +9435,6 @@ packages:
 
   yargs-parser@5.0.1:
     resolution: {integrity: sha512-wpav5XYiddjXxirPoCTUPbqM0PXvJ9hiBMvuJgInvo4/lAOTZzUprArw17q2O1P2+GHhbBr18/iQwjL5Z9BqfA==}
-
-  yargs@14.2.3:
-    resolution: {integrity: sha512-ZbotRWhF+lkjijC/VhmOT9wSgyBQ7+zr13+YLkhfsSiTriYsMzkTUFP18pFhWwBeMa5gUc1MzbhrO6/VB7c9Xg==}
 
   yargs@16.2.0:
     resolution: {integrity: sha512-D1mvvtDG0L5ft/jGWkLpG1+m0eQxOfaBvTNELraWj22wSVUMWxZUvYgJYcKh6jGGIkJFhH4IZPQhR4TKpc8mBw==}
@@ -11801,19 +11739,21 @@ snapshots:
       '@ts-graphviz/ast': 2.0.3
       '@ts-graphviz/common': 2.1.2
 
-  '@ts-rest/core@3.45.2(zod@3.23.8)':
+  '@ts-rest/core@3.49.3(zod@3.23.8)':
     optionalDependencies:
       zod: 3.23.8
 
-  '@ts-rest/express@3.45.2(express@4.19.2)(zod@3.23.8)':
+  '@ts-rest/express@3.49.3(@ts-rest/core@3.49.3(zod@3.23.8))(express@4.19.2)(zod@3.23.8)':
     dependencies:
+      '@ts-rest/core': 3.49.3(zod@3.23.8)
       express: 4.19.2
     optionalDependencies:
       zod: 3.23.8
 
-  '@ts-rest/open-api@3.45.2(zod@3.23.8)':
+  '@ts-rest/open-api@3.49.3(@ts-rest/core@3.49.3(zod@3.23.8))(zod@3.23.8)':
     dependencies:
       '@anatine/zod-openapi': 1.14.2(openapi3-ts@2.0.2)(zod@3.23.8)
+      '@ts-rest/core': 3.49.3(zod@3.23.8)
       openapi3-ts: 2.0.2
       zod: 3.23.8
 
@@ -12352,8 +12292,6 @@ snapshots:
       ansi-wrap: 0.1.0
 
   ansi-regex@2.1.1: {}
-
-  ansi-regex@4.1.1: {}
 
   ansi-regex@5.0.1: {}
 
@@ -13057,12 +12995,6 @@ snapshots:
       string-width: 1.0.2
       strip-ansi: 3.0.1
       wrap-ansi: 2.1.0
-
-  cliui@5.0.0:
-    dependencies:
-      string-width: 3.1.0
-      strip-ansi: 5.2.0
-      wrap-ansi: 5.1.0
 
   cliui@7.0.4:
     dependencies:
@@ -13782,8 +13714,6 @@ snapshots:
       jake: 10.9.2
 
   electron-to-chromium@1.5.5: {}
-
-  emoji-regex@7.0.3: {}
 
   emoji-regex@8.0.0: {}
 
@@ -14594,10 +14524,6 @@ snapshots:
     dependencies:
       path-exists: 2.1.0
       pinkie-promise: 2.0.1
-
-  find-up@3.0.0:
-    dependencies:
-      locate-path: 3.0.0
 
   find-up@4.1.0:
     dependencies:
@@ -15715,8 +15641,6 @@ snapshots:
     dependencies:
       number-is-nan: 1.0.1
 
-  is-fullwidth-code-point@2.0.0: {}
-
   is-fullwidth-code-point@3.0.0: {}
 
   is-fullwidth-code-point@4.0.0: {}
@@ -16229,11 +16153,6 @@ snapshots:
       pify: 2.3.0
       pinkie-promise: 2.0.1
       strip-bom: 2.0.0
-
-  locate-path@3.0.0:
-    dependencies:
-      p-locate: 3.0.0
-      path-exists: 3.0.0
 
   locate-path@5.0.0:
     dependencies:
@@ -17422,12 +17341,6 @@ snapshots:
       is-docker: 2.2.1
       is-wsl: 2.2.0
 
-  openapi-recursive-tagging@0.0.6:
-    dependencies:
-      reftools: 1.1.9
-      yaml: 1.10.2
-      yargs: 14.2.3
-
   openapi-sampler@1.5.1:
     dependencies:
       '@types/json-schema': 7.0.15
@@ -17481,10 +17394,6 @@ snapshots:
   p-limit@3.1.0:
     dependencies:
       yocto-queue: 0.1.0
-
-  p-locate@3.0.0:
-    dependencies:
-      p-limit: 2.3.0
 
   p-locate@4.1.0:
     dependencies:
@@ -17593,8 +17502,6 @@ snapshots:
   path-exists@2.1.0:
     dependencies:
       pinkie-promise: 2.0.1
-
-  path-exists@3.0.0: {}
 
   path-exists@4.0.0: {}
 
@@ -18223,8 +18130,6 @@ snapshots:
 
   require-main-filename@1.0.1: {}
 
-  require-main-filename@2.0.0: {}
-
   requirejs-config-file@4.0.0:
     dependencies:
       esprima: 4.0.1
@@ -18811,12 +18716,6 @@ snapshots:
       is-fullwidth-code-point: 1.0.0
       strip-ansi: 3.0.1
 
-  string-width@3.1.0:
-    dependencies:
-      emoji-regex: 7.0.3
-      is-fullwidth-code-point: 2.0.0
-      strip-ansi: 5.2.0
-
   string-width@4.2.3:
     dependencies:
       emoji-regex: 8.0.0
@@ -18882,10 +18781,6 @@ snapshots:
   strip-ansi@3.0.1:
     dependencies:
       ansi-regex: 2.1.1
-
-  strip-ansi@5.2.0:
-    dependencies:
-      ansi-regex: 4.1.1
 
   strip-ansi@6.0.1:
     dependencies:
@@ -19996,8 +19891,6 @@ snapshots:
 
   which-module@1.0.0: {}
 
-  which-module@2.0.1: {}
-
   which-pm-runs@1.1.0: {}
 
   which-typed-array@1.1.15:
@@ -20179,12 +20072,6 @@ snapshots:
       string-width: 1.0.2
       strip-ansi: 3.0.1
 
-  wrap-ansi@5.1.0:
-    dependencies:
-      ansi-styles: 3.2.1
-      string-width: 3.1.0
-      strip-ansi: 5.2.0
-
   wrap-ansi@6.2.0:
     dependencies:
       ansi-styles: 4.3.0
@@ -20220,8 +20107,6 @@ snapshots:
 
   y18n@3.2.2: {}
 
-  y18n@4.0.3: {}
-
   y18n@5.0.8: {}
 
   yallist@3.1.1: {}
@@ -20234,11 +20119,6 @@ snapshots:
 
   yaml@2.5.0: {}
 
-  yargs-parser@15.0.3:
-    dependencies:
-      camelcase: 5.3.1
-      decamelize: 1.2.0
-
   yargs-parser@20.2.9: {}
 
   yargs-parser@21.1.1: {}
@@ -20247,20 +20127,6 @@ snapshots:
     dependencies:
       camelcase: 3.0.0
       object.assign: 4.1.5
-
-  yargs@14.2.3:
-    dependencies:
-      cliui: 5.0.0
-      decamelize: 1.2.0
-      find-up: 3.0.0
-      get-caller-file: 2.0.5
-      require-directory: 2.1.1
-      require-main-filename: 2.0.0
-      set-blocking: 2.0.0
-      string-width: 3.1.0
-      which-module: 2.0.1
-      y18n: 4.0.3
-      yargs-parser: 15.0.3
 
   yargs@16.2.0:
     dependencies:

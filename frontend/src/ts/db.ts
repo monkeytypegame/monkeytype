@@ -15,7 +15,7 @@ import {
 } from "./elements/test-activity-calendar";
 import * as Loader from "./elements/loader";
 
-import { Badge, DBResult, Result } from "@monkeytype/shared-types";
+import { Badge } from "@monkeytype/shared-types";
 import { Config, Difficulty } from "@monkeytype/contracts/schemas/configs";
 import {
   Mode,
@@ -283,42 +283,37 @@ export async function getUserResults(offset?: number): Promise<boolean> {
     LoadingPage.updateBar(90);
   }
 
-  const response = await Ape.results.get(offset);
+  const response = await Ape.results.get({ query: { offset } });
 
   if (response.status !== 200) {
-    Notifications.add("Error getting results: " + response.message, -1);
+    Notifications.add("Error getting results: " + response.body.message, -1);
     return false;
   }
 
-  const results = response.data as DBResult<Mode>[];
+  const results: MonkeyTypes.FullResult<Mode>[] = response.body.data.map(
+    (result) => {
+      if (result.bailedOut === undefined) result.bailedOut = false;
+      if (result.blindMode === undefined) result.blindMode = false;
+      if (result.lazyMode === undefined) result.lazyMode = false;
+      if (result.difficulty === undefined) result.difficulty = "normal";
+      if (result.funbox === undefined) result.funbox = "none";
+      if (result.language === undefined || result.language === null) {
+        result.language = "english";
+      }
+      if (result.numbers === undefined) result.numbers = false;
+      if (result.punctuation === undefined) result.punctuation = false;
+      if (result.numbers === undefined) result.numbers = false;
+      if (result.quoteLength === undefined) result.quoteLength = -1;
+      if (result.restartCount === undefined) result.restartCount = 0;
+      if (result.incompleteTestSeconds === undefined) {
+        result.incompleteTestSeconds = 0;
+      }
+      if (result.afkDuration === undefined) result.afkDuration = 0;
+      if (result.tags === undefined) result.tags = [];
+      return result as MonkeyTypes.FullResult<Mode>;
+    }
+  );
   results?.sort((a, b) => b.timestamp - a.timestamp);
-  results.forEach((result) => {
-    if (result.bailedOut === undefined) result.bailedOut = false;
-    if (result.blindMode === undefined) result.blindMode = false;
-    if (result.lazyMode === undefined) result.lazyMode = false;
-    if (result.difficulty === undefined) result.difficulty = "normal";
-    if (result.funbox === undefined) result.funbox = "none";
-    if (result.language === undefined || result.language === null) {
-      result.language = "english";
-    }
-    if (result.numbers === undefined) result.numbers = false;
-    if (result.punctuation === undefined) result.punctuation = false;
-    if (result.numbers === undefined) result.numbers = false;
-    if (result.quoteLength === undefined) result.quoteLength = -1;
-    if (result.restartCount === undefined) result.restartCount = 0;
-    if (result.incompleteTestSeconds === undefined) {
-      result.incompleteTestSeconds = 0;
-    }
-    if (result.afkDuration === undefined) result.afkDuration = 0;
-    if (result.tags === undefined) result.tags = [];
-
-    if (
-      result.correctChars !== undefined &&
-      result.incorrectChars !== undefined
-    ) {
-      result.charStats = [result.correctChars, result.incorrectChars, 0, 0];
-    }
-  });
 
   if (dbSnapshot.results !== undefined && dbSnapshot.results.length > 0) {
     //merge
@@ -327,11 +322,9 @@ export async function getUserResults(offset?: number): Promise<boolean> {
     const resultsWithoutDuplicates = results.filter(
       (it) => it.timestamp < oldestTimestamp
     );
-    dbSnapshot.results.push(
-      ...(resultsWithoutDuplicates as unknown as Result<Mode>[])
-    );
+    dbSnapshot.results.push(...resultsWithoutDuplicates);
   } else {
-    dbSnapshot.results = results as unknown as Result<Mode>[];
+    dbSnapshot.results = results;
   }
   return true;
 }
@@ -939,7 +932,7 @@ export async function resetConfig(): Promise<void> {
   }
 }
 
-export function saveLocalResult(result: Result<Mode>): void {
+export function saveLocalResult(result: MonkeyTypes.FullResult<Mode>): void {
   const snapshot = getSnapshot();
   if (!snapshot) return;
 

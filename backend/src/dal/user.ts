@@ -19,7 +19,6 @@ import {
   Badge,
   Configuration,
   CustomTheme,
-  DBResult,
   MonkeyMail,
   UserInventory,
   UserProfileDetails,
@@ -33,10 +32,11 @@ import {
 } from "@monkeytype/contracts/schemas/shared";
 import { addImportantLog } from "./logs";
 import { ResultFilters } from "@monkeytype/contracts/schemas/users";
+import { Result as ResultType } from "@monkeytype/contracts/schemas/results";
 
 const SECONDS_PER_HOUR = 3600;
 
-type Result = Omit<DBResult<Mode>, "_id" | "name">;
+type Result = Omit<ResultType<Mode>, "_id" | "name">;
 
 // Export for use in tests
 export const getUsersCollection = (): Collection<MonkeyTypes.DBUser> =>

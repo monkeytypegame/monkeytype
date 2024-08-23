@@ -1,7 +1,3 @@
-type Difficulty = import("@monkeytype/contracts/schemas/configs").Difficulty;
-type Mode = import("@monkeytype/contracts/schemas/shared").Mode;
-type Mode2<M extends Mode> =
-  import("@monkeytype/contracts/schemas/shared").Mode2<M>;
 type PersonalBest = import("@monkeytype/contracts/schemas/shared").PersonalBest;
 type PersonalBests =
   import("@monkeytype/contracts/schemas/shared").PersonalBests;
@@ -117,139 +113,16 @@ export type Configuration = {
   };
 };
 
-export type IncompleteTest = {
-  acc: number;
-  seconds: number;
-};
-
-export type ChartData = {
-  wpm: number[];
-  raw: number[];
-  err: number[];
-};
-
-export type KeyStats = {
-  average: number;
-  sd: number;
-};
-
-export type Result<M extends Mode> = {
-  _id: string;
-  wpm: number;
-  rawWpm: number;
-  charStats: [number, number, number, number];
-  acc: number;
-  mode: M;
-  mode2: Mode2<M>;
-  quoteLength?: number;
-  timestamp: number;
-  restartCount: number;
-  incompleteTestSeconds: number;
-  incompleteTests: IncompleteTest[];
-  testDuration: number;
-  afkDuration: number;
-  tags: string[];
-  consistency: number;
-  keyConsistency: number;
-  chartData: ChartData | "toolong";
-  uid: string;
-  keySpacingStats?: KeyStats;
-  keyDurationStats?: KeyStats;
-  isPb: boolean;
-  bailedOut: boolean;
-  blindMode: boolean;
-  lazyMode: boolean;
-  difficulty: Difficulty;
-  funbox: string;
-  language: string;
-  numbers: boolean;
-  punctuation: boolean;
-};
-
-export type DBResult<T extends Mode> = Omit<
-  Result<T>,
-  | "bailedOut"
-  | "blindMode"
-  | "lazyMode"
-  | "difficulty"
-  | "funbox"
-  | "language"
-  | "numbers"
-  | "punctuation"
-  | "restartCount"
-  | "incompleteTestSeconds"
-  | "afkDuration"
-  | "tags"
-  | "incompleteTests"
-  | "customText"
-  | "quoteLength"
-  | "isPb"
-> & {
-  correctChars?: number; // --------------
-  incorrectChars?: number; // legacy results
-  // --------------
-  name: string;
-  // -------------- fields that might be removed to save space
-  bailedOut?: boolean;
-  blindMode?: boolean;
-  lazyMode?: boolean;
-  difficulty?: Difficulty;
-  funbox?: string;
-  language?: string;
-  numbers?: boolean;
-  punctuation?: boolean;
-  restartCount?: number;
-  incompleteTestSeconds?: number;
-  afkDuration?: number;
-  tags?: string[];
-  customText?: CustomTextDataWithTextLen;
-  quoteLength?: number;
-  isPb?: boolean;
-};
-
-export type CompletedEvent = Result<Mode> & {
-  keySpacing: number[] | "toolong";
-  keyDuration: number[] | "toolong";
-  customText?: CustomTextDataWithTextLen;
-  wpmConsistency: number;
-  challenge?: string | null;
-  keyOverlap: number;
-  lastKeyToEnd: number;
-  startToFirstKey: number;
-  charTotal: number;
-  stringified?: string;
-  hash?: string;
-  stopOnLetter: boolean;
-};
-
-export type CustomTextMode = "repeat" | "random" | "shuffle";
-export type CustomTextLimitMode = "word" | "time" | "section";
 export type CustomTextLimit = {
   value: number;
-  mode: CustomTextLimitMode;
+  mode: import("@monkeytype/contracts/schemas/util").CustomTextLimitMode;
 };
 
-export type CustomTextData = {
+export type CustomTextData = Omit<
+  import("@monkeytype/contracts/schemas/results").CustomTextDataWithTextLen,
+  "textLen"
+> & {
   text: string[];
-  mode: CustomTextMode;
-  limit: CustomTextLimit;
-  pipeDelimiter: boolean;
-};
-
-export type CustomTextDataWithTextLen = Omit<CustomTextData, "text"> & {
-  textLen: number;
-};
-
-export type PostResultResponse = {
-  isPb: boolean;
-  tagPbs: string[];
-  insertedId: string;
-  dailyLeaderboardRank?: number;
-  weeklyXpLeaderboardRank?: number;
-  xp: number;
-  dailyXpBonus: boolean;
-  xpBreakdown: Record<string, number>;
-  streak: number;
 };
 
 export type UserStreak = {

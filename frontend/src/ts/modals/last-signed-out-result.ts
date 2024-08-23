@@ -1,8 +1,10 @@
 import AnimatedModal from "../utils/animated-modal";
-import Ape from "../ape";
+
 import * as TestLogic from "../test/test-logic";
 import * as Notifications from "../elements/notifications";
-import { CompletedEvent } from "@monkeytype/shared-types";
+import { CompletedEvent } from "@monkeytype/contracts/schemas/results";
+import { Auth } from "../firebase";
+import { syncNotSignedInLastResult } from "../utils/results";
 
 function reset(): void {
   (modal.getModal().querySelector(".result") as HTMLElement).innerHTML = `
@@ -109,30 +111,13 @@ function hide(): void {
   void modal.hide();
 }
 
-async function saveLastResult(): Promise<void> {
-  //safe because we check if it exists before showing the modal
-  const response = await Ape.results.save(
-    TestLogic.notSignedInLastResult as CompletedEvent
-  );
-  if (response.status !== 200) {
-    Notifications.add("Failed to save last result: " + response.message, -1);
-    return;
-  }
-
-  TestLogic.clearNotSignedInResult();
-  Notifications.add(
-    `Last test result saved ${response.data?.isPb ? `(new pb!)` : ""}`,
-    1
-  );
-}
-
 const modal = new AnimatedModal({
   dialogId: "lastSignedOutResult",
   setup: async (modalEl): Promise<void> => {
     modalEl
       .querySelector("button.save")
       ?.addEventListener("click", async (e) => {
-        void saveLastResult();
+        void syncNotSignedInLastResult(Auth?.currentUser?.uid as string);
         hide();
       });
     modalEl.querySelector("button.discard")?.addEventListener("click", (e) => {

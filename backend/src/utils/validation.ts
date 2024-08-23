@@ -3,7 +3,7 @@ import { replaceHomoglyphs } from "../constants/homoglyphs";
 import { profanities } from "../constants/profanities";
 import { intersect, sanitizeString } from "./misc";
 import { default as FunboxList } from "../constants/funbox-list";
-import { CompletedEvent } from "@monkeytype/shared-types";
+import { CompletedEvent } from "@monkeytype/contracts/schemas/results";
 
 export function inRange(value: number, min: number, max: number): boolean {
   return value >= min && value <= max;

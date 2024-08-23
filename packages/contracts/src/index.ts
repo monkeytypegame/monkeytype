@@ -6,6 +6,7 @@ import { presetsContract } from "./presets";
 import { psasContract } from "./psas";
 import { publicContract } from "./public";
 import { leaderboardsContract } from "./leaderboards";
+import { resultsContract } from "./results";
 
 const c = initContract();
 
@@ -17,4 +18,5 @@ export const contract = c.router({
   psas: psasContract,
   public: publicContract,
   leaderboards: leaderboardsContract,
+  results: resultsContract,
 });

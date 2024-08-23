@@ -2,6 +2,7 @@ import * as Misc from "../utils/misc";
 import * as Levels from "../utils/levels";
 import { getAll } from "./theme-colors";
 import * as SlowTimer from "../states/slow-timer";
+import { XpBreakdown } from "@monkeytype/contracts/schemas/results";
 import {
   getHtmlByUserFlags,
   SupportsFlags,
@@ -219,7 +220,7 @@ export async function updateXpBar(
 
 async function animateXpBreakdown(
   addedXp: number,
-  breakdown?: Record<string, number>
+  breakdown?: XpBreakdown
 ): Promise<void> {
   if (!breakdown) {
     $("nav .xpBar .xpGain").text(`+${addedXp}`);
@@ -289,84 +290,84 @@ async function animateXpBreakdown(
 
   xpGain.text(`+0`);
   xpBreakdown.append(
-    `<div class='text next'>time typing +${breakdown["base"]}</div>`
+    `<div class='text next'>time typing +${breakdown.base}</div>`
   );
   total += breakdown["base"] ?? 0;
-  if (breakdown["100%"]) {
+  if (breakdown.fullAccuracy) {
     await Misc.sleep(delay);
-    await append(`perfect +${breakdown["100%"]}`);
-    total += breakdown["100%"];
-  } else if (breakdown["corrected"]) {
+    await append(`perfect +${breakdown.fullAccuracy}`);
+    total += breakdown.fullAccuracy;
+  } else if (breakdown.corrected) {
     await Misc.sleep(delay);
-    await append(`clean +${breakdown["corrected"]}`);
-    total += breakdown["corrected"];
+    await append(`clean +${breakdown.corrected}`);
+    total += breakdown.corrected;
   }
 
   if (skipBreakdown) return;
 
-  if (breakdown["quote"]) {
+  if (breakdown.quote) {
     await Misc.sleep(delay);
-    await append(`quote +${breakdown["quote"]}`);
-    total += breakdown["quote"];
+    await append(`quote +${breakdown.quote}`);
+    total += breakdown.quote;
   } else {
-    if (breakdown["punctuation"]) {
+    if (breakdown.punctuation) {
       await Misc.sleep(delay);
-      await append(`punctuation +${breakdown["punctuation"]}`);
-      total += breakdown["punctuation"];
+      await append(`punctuation +${breakdown.punctuation}`);
+      total += breakdown.punctuation;
     }
-    if (breakdown["numbers"]) {
+    if (breakdown.numbers) {
       await Misc.sleep(delay);
-      await append(`numbers +${breakdown["numbers"]}`);
-      total += breakdown["numbers"];
+      await append(`numbers +${breakdown.numbers}`);
+      total += breakdown.numbers;
     }
   }
 
   if (skipBreakdown) return;
 
-  if (breakdown["funbox"]) {
+  if (breakdown.funbox) {
     await Misc.sleep(delay);
-    await append(`funbox +${breakdown["funbox"]}`);
-    total += breakdown["funbox"];
+    await append(`funbox +${breakdown.funbox}`);
+    total += breakdown.funbox;
   }
 
   if (skipBreakdown) return;
 
-  if (breakdown["streak"]) {
+  if (breakdown.streak) {
     await Misc.sleep(delay);
-    await append(`streak +${breakdown["streak"]}`);
-    total += breakdown["streak"];
+    await append(`streak +${breakdown.streak}`);
+    total += breakdown.streak;
   }
 
   if (skipBreakdown) return;
 
-  if (breakdown["accPenalty"]) {
+  if (breakdown.accPenalty) {
     await Misc.sleep(delay);
-    await append(`accuracy penalty -${breakdown["accPenalty"]}`);
-    total -= breakdown["accPenalty"];
+    await append(`accuracy penalty -${breakdown.accPenalty}`);
+    total -= breakdown.accPenalty;
   }
 
   if (skipBreakdown) return;
 
-  if (breakdown["incomplete"]) {
+  if (breakdown.incomplete) {
     await Misc.sleep(delay);
-    await append(`incomplete tests +${breakdown["incomplete"]}`);
-    total += breakdown["incomplete"];
+    await append(`incomplete tests +${breakdown.incomplete}`);
+    total += breakdown.incomplete;
   }
 
   if (skipBreakdown) return;
 
-  if (breakdown["configMultiplier"]) {
+  if (breakdown.configMultiplier) {
     await Misc.sleep(delay);
-    await append(`global multiplier x${breakdown["configMultiplier"]}`);
-    total *= breakdown["configMultiplier"];
+    await append(`global multiplier x${breakdown.configMultiplier}`);
+    total *= breakdown.configMultiplier;
   }
 
   if (skipBreakdown) return;
 
-  if (breakdown["daily"]) {
+  if (breakdown.daily) {
     await Misc.sleep(delay);
-    await append(`daily bonus +${breakdown["daily"]}`);
-    total += breakdown["daily"];
+    await append(`daily bonus +${breakdown.daily}`);
+    total += breakdown.daily;
   }
 
   if (skipBreakdown) return;
