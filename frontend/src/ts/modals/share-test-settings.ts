@@ -32,21 +32,21 @@ function updateURL(): void {
   ) as SharedTestSettings;
 
   const settingsMap = [
-    { key: "mode", value: () => Config.mode },
-    { key: "mode2", value: () => getMode2(Config, currentQuote) },
-    { key: "customText", value: () => CustomText.getData() },
-    { key: "punctuation", value: () => Config.punctuation },
-    { key: "numbers", value: () => Config.numbers },
-    { key: "language", value: () => Config.language },
-    { key: "difficulty", value: () => Config.difficulty },
-    { key: "funbox", value: () => Config.funbox },
+    { key: "mode", getValue: () => Config.mode },
+    { key: "mode2", getValue: () => getMode2(Config, currentQuote) },
+    { key: "customText", getValue: () => CustomText.getData() },
+    { key: "punctuation", getValue: () => Config.punctuation },
+    { key: "numbers", getValue: () => Config.numbers },
+    { key: "language", getValue: () => Config.language },
+    { key: "difficulty", getValue: () => Config.difficulty },
+    { key: "funbox", getValue: () => Config.funbox },
   ];
 
-  settingsMap.forEach(({ key, value }, index) => {
+  for (const [index, { key, getValue }] of settingsMap.entries()) {
     if (getCheckboxValue(key)) {
-      settings[index] = value();
+      settings[index] = getValue();
     }
-  });
+  }
 
   const compressed = compressToURI(JSON.stringify(settings));
   const url = baseUrl + compressed;
