@@ -21,22 +21,26 @@ export function checkIfUserIsAdmin<
     _res: Response,
     next: NextFunction
   ) => {
-    const options: RequestAuthenticationOptions =
-      req.tsRestRoute["metadata"]?.["authenticationOptions"] ?? {};
+    try {
+      const options: RequestAuthenticationOptions =
+        req.tsRestRoute["metadata"]?.["authenticationOptions"] ?? {};
 
-    if (options.isPublicOnDev && isDevEnvironment()) {
-      next();
-      return;
+      if (options.isPublicOnDev && isDevEnvironment()) {
+        next();
+        return;
+      }
+
+      const { uid } = req.ctx.decodedToken;
+      const admin = await isAdmin(uid);
+
+      if (!admin) {
+        throw new MonkeyError(403, "You don't have permission to do this.");
+      }
+    } catch (error) {
+      next(error);
     }
 
-    const { uid } = req.ctx.decodedToken;
-    const admin = await isAdmin(uid);
-
-    if (!admin) {
-      next(new MonkeyError(403, "You don't have permission to do this."));
-    } else {
-      next();
-    }
+    next();
   };
 }
 
