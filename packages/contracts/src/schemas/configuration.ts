@@ -1,12 +1,11 @@
 import { z } from "zod";
-import { LanguageSchema } from "./util";
-import { Mode2Schema, ModeSchema } from "./shared";
 
+/* ValidModeRuleSchema allows complex rules like `"mode2": "(15|60)"`. We don't want a strict validation here. */
 export const ValidModeRuleSchema = z
   .object({
-    language: LanguageSchema,
-    mode: ModeSchema,
-    mode2: Mode2Schema,
+    language: z.string(),
+    mode: z.string(),
+    mode2: z.string(),
   })
   .strict();
 export type ValidModeRule = z.infer<typeof ValidModeRuleSchema>;
