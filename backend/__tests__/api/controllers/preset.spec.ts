@@ -221,7 +221,7 @@ describe("PresetController", () => {
       });
       expect(addPresetMock).not.toHaveBeenCalled();
     });
-    it("should not fail with invalid preset", async () => {
+    it("should fail with invalid preset", async () => {
       //WHEN
       const { body } = await mockApp
         .post("/presets")
@@ -248,6 +248,32 @@ describe("PresetController", () => {
           `"config" Unrecognized key(s) in object: 'extra'`,
           `Unrecognized key(s) in object: '_id', 'extra'`,
         ],
+      });
+
+      expect(addPresetMock).not.toHaveBeenCalled();
+    });
+    it("should fail with duplicate group settings in partial preset", async () => {
+      //WHEN
+      const { body } = await mockApp
+        .post("/presets")
+        .set("authorization", "Uid 123456789")
+        .accept("application/json")
+        .send({
+          name: "new",
+          config: {
+            showKeyTips: true,
+            capsLockWarning: true,
+            showOutOfFocusWarning: true,
+            showAverage: ShowAverageSchema.Enum.off,
+            settingGroups: ["hideElements", "hideElements"],
+          },
+        })
+        .expect(422);
+
+      //THEN
+      expect(body).toStrictEqual({
+        message: "Invalid request data schema",
+        validationErrors: [`"config.settingGroups" No duplicates allowed.`],
       });
 
       expect(addPresetMock).not.toHaveBeenCalled();
@@ -405,6 +431,33 @@ describe("PresetController", () => {
           `"config" Unrecognized key(s) in object: 'extra'`,
           `Unrecognized key(s) in object: 'extra'`,
         ],
+      });
+
+      expect(editPresetMock).not.toHaveBeenCalled();
+    });
+    it("should fail with duplicate group settings in partial preset", async () => {
+      //WHEN
+      const { body } = await mockApp
+        .patch("/presets")
+        .set("authorization", "Uid 123456789")
+        .accept("application/json")
+        .send({
+          _id: "1",
+          name: "new",
+          config: {
+            showKeyTips: true,
+            capsLockWarning: true,
+            showOutOfFocusWarning: true,
+            showAverage: ShowAverageSchema.Enum.off,
+            settingGroups: ["hideElements", "hideElements"],
+          },
+        })
+        .expect(422);
+
+      //THEN
+      expect(body).toStrictEqual({
+        message: "Invalid request data schema",
+        validationErrors: [`"config.settingGroups" No duplicates allowed.`],
       });
 
       expect(editPresetMock).not.toHaveBeenCalled();
