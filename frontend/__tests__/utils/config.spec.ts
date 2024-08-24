@@ -1,6 +1,10 @@
 import { migrateConfig } from "../../src/ts/utils/config";
 import DefaultConfig from "../../src/ts/constants/default-config";
-import { PartialConfig } from "@monkeytype/contracts/schemas/configs";
+import {
+  PartialConfig,
+  ShowAverageSchema,
+} from "@monkeytype/contracts/schemas/configs";
+import * as Config from "../../src/ts/config";
 
 describe("config.ts", () => {
   describe("migrateConfig", () => {
@@ -153,6 +157,39 @@ describe("config.ts", () => {
           expect.objectContaining(test.expected)
         );
       });
+    });
+  });
+  describe("selectiveApply", () => {
+    it("should combine configToApply and backupConfigToApply correctly", async () => {
+      const configToApply = {
+        showKeyTips: false,
+        capsLockWarning: false,
+        showOutOfFocusWarning: false,
+        showAverage: "acc",
+        settingGroups: ["hideElements"],
+      } as PartialConfig;
+
+      const backupConfigToApply = {
+        showKeyTips: true,
+        capsLockWarning: true,
+        showOutOfFocusWarning: true,
+        quickRestart: "esc",
+      } as PartialConfig;
+
+      const expectedCombinedConfig = {
+        showKeyTips: false,
+        capsLockWarning: false,
+        showOutOfFocusWarning: false,
+        showAverage: "acc",
+        settingGroups: ["hideElements"],
+        quickRestart: "esc",
+      };
+
+      const applyMock = vi.spyOn(Config, "apply");
+
+      await Config.selectiveApply(configToApply, backupConfigToApply);
+
+      expect(applyMock).toHaveBeenCalledWith(expectedCombinedConfig);
     });
   });
 });
