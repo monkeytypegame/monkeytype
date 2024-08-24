@@ -559,7 +559,7 @@ export async function addWord(): Promise<void> {
         Config.language
       );
 
-      if (section === false) {
+      if (section === undefined || section === false) {
         Notifications.add(
           "Error while getting section. Please try again later",
           -1
@@ -569,15 +569,11 @@ export async function addWord(): Promise<void> {
         return;
       }
 
-      if (section === undefined) return;
-
-      let wordCount = 0;
       for (let i = 0; i < section.words.length; i++) {
         const word = section.words[i] as string;
-        if (wordCount >= Config.words && Config.mode === "words") {
+        if (i >= Config.words && Config.mode === "words") {
           break;
         }
-        wordCount++;
         TestWords.words.push(word, i);
         TestUI.addWord(word);
       }

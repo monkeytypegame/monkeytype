@@ -320,14 +320,6 @@ async function handleSpace(): Promise<void> {
   ) {
     TimerProgress.update();
   }
-  if (
-    Config.mode === "time" ||
-    Config.mode === "words" ||
-    Config.mode === "custom" ||
-    Config.mode === "quote"
-  ) {
-    await TestLogic.addWord();
-  }
   TestUI.setCurrentWordElementIndex(TestUI.currentWordElementIndex + 1);
   TestUI.updateActiveElement();
   void Caret.updatePosition();
@@ -368,6 +360,15 @@ async function handleSpace(): Promise<void> {
   //   //send a tab event using jquery
   //   $("#wordsInput").trigger($.Event("keydown", { key: "Tab", code: "Tab" }));
   // }
+  // await for addWord should not hold other actions within this function hence should be called last
+  if (
+    Config.mode === "time" ||
+    Config.mode === "words" ||
+    Config.mode === "custom" ||
+    Config.mode === "quote"
+  ) {
+    await TestLogic.addWord();
+  }
 }
 
 function isCharCorrect(char: string, charIndex: number): boolean {
