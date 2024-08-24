@@ -3,19 +3,40 @@ import { containsProfanity, isUsernameValid } from "../utils/validation";
 import { canFunboxGetPb, checkAndUpdatePb } from "../utils/pb";
 import * as db from "../init/db";
 import MonkeyError from "../utils/error";
-import { Collection, ObjectId, Long, UpdateFilter, Filter } from "mongodb";
-import Logger from "../utils/logger";
+import {
+  Collection,
+  ObjectId,
+  Long,
+  type UpdateFilter,
+  type Filter,
+} from "mongodb";
 import { flattenObjectDeep, isToday, isYesterday } from "../utils/misc";
 import { getCachedConfiguration } from "../init/configuration";
 import { getDayOfYear } from "date-fns";
 import { UTCDate } from "@date-fns/utc";
+import {
+  AllRewards,
+  Badge,
+  CustomTheme,
+  MonkeyMail,
+  UserInventory,
+  UserProfileDetails,
+  UserQuoteRatings,
+  UserStreak,
+} from "@monkeytype/shared-types";
+import {
+  Mode,
+  Mode2,
+  PersonalBest,
+} from "@monkeytype/contracts/schemas/shared";
+import { addImportantLog } from "./logs";
+import { ResultFilters } from "@monkeytype/contracts/schemas/users";
+import { Result as ResultType } from "@monkeytype/contracts/schemas/results";
+import { Configuration } from "@monkeytype/contracts/schemas/configuration";
 
 const SECONDS_PER_HOUR = 3600;
 
-type Result = Omit<
-  SharedTypes.DBResult<SharedTypes.Config.Mode>,
-  "_id" | "name"
->;
+type Result = Omit<ResultType<Mode>, "_id" | "name">;
 
 // Export for use in tests
 export const getUsersCollection = (): Collection<MonkeyTypes.DBUser> =>
@@ -177,7 +198,7 @@ export async function optOutOfLeaderboards(uid: string): Promise<void> {
 
 export async function updateQuoteRatings(
   uid: string,
-  quoteRatings: SharedTypes.UserQuoteRatings
+  quoteRatings: UserQuoteRatings
 ): Promise<boolean> {
   await updateUser(
     { uid },
@@ -268,7 +289,7 @@ export async function isDiscordIdAvailable(
 
 export async function addResultFilterPreset(
   uid: string,
-  resultFilter: SharedTypes.ResultFilters,
+  resultFilter: ResultFilters,
   maxFiltersPerUser: number
 ): Promise<ObjectId> {
   if (maxFiltersPerUser === 0) {
@@ -394,8 +415,8 @@ export async function removeTagPb(uid: string, _id: string): Promise<void> {
 
 export async function updateLbMemory(
   uid: string,
-  mode: SharedTypes.Config.Mode,
-  mode2: SharedTypes.Config.Mode2<SharedTypes.Config.Mode>,
+  mode: Mode,
+  mode2: Mode2<Mode>,
   language: string,
   rank: number
 ): Promise<void> {
@@ -644,7 +665,7 @@ export async function incrementTestActivity(
 
 export async function addTheme(
   uid: string,
-  { name, colors }: Omit<SharedTypes.CustomTheme, "_id">
+  { name, colors }: Omit<CustomTheme, "_id">
 ): Promise<{ _id: ObjectId; name: string }> {
   const _id = new ObjectId();
 
@@ -688,7 +709,7 @@ export async function removeTheme(uid: string, id: string): Promise<void> {
 export async function editTheme(
   uid: string,
   id: string,
-  { name, colors }: Omit<SharedTypes.CustomTheme, "_id">
+  { name, colors }: Omit<CustomTheme, "_id">
 ): Promise<void> {
   const themeId = new ObjectId(id);
 
@@ -715,16 +736,16 @@ export async function getPersonalBests(
   uid: string,
   mode: string,
   mode2?: string
-): Promise<SharedTypes.PersonalBest> {
+): Promise<PersonalBest> {
   const user = await getPartialUser(uid, "get personal bests", [
     "personalBests",
   ]);
 
   if (mode2 !== undefined) {
-    return user.personalBests?.[mode]?.[mode2];
+    return user.personalBests?.[mode]?.[mode2] as PersonalBest;
   }
 
-  return user.personalBests?.[mode];
+  return user.personalBests?.[mode] as PersonalBest;
 }
 
 export async function getStats(
@@ -838,7 +859,7 @@ export async function recordAutoBanEvent(
   }
 
   await getUsersCollection().updateOne({ uid }, { $set: updateObj });
-  void Logger.logToDb(
+  void addImportantLog(
     "user_auto_banned",
     { autoBanTimestamps, banningUser },
     uid
@@ -848,8 +869,8 @@ export async function recordAutoBanEvent(
 
 export async function updateProfile(
   uid: string,
-  profileDetailUpdates: Partial<SharedTypes.UserProfileDetails>,
-  inventory?: SharedTypes.UserInventory
+  profileDetailUpdates: Partial<UserProfileDetails>,
+  inventory?: UserInventory
 ): Promise<void> {
   const profileUpdates = _.omitBy(
     flattenObjectDeep(profileDetailUpdates, "profileDetails"),
@@ -882,12 +903,12 @@ export async function getInbox(
 
 type AddToInboxBulkEntry = {
   uid: string;
-  mail: SharedTypes.MonkeyMail[];
+  mail: MonkeyMail[];
 };
 
 export async function addToInboxBulk(
   entries: AddToInboxBulkEntry[],
-  inboxConfig: SharedTypes.Configuration["users"]["inbox"]
+  inboxConfig: Configuration["users"]["inbox"]
 ): Promise<void> {
   const { enabled, maxMail } = inboxConfig;
 
@@ -914,8 +935,8 @@ export async function addToInboxBulk(
 
 export async function addToInbox(
   uid: string,
-  mail: SharedTypes.MonkeyMail[],
-  inboxConfig: SharedTypes.Configuration["users"]["inbox"]
+  mail: MonkeyMail[],
+  inboxConfig: Configuration["users"]["inbox"]
 ): Promise<void> {
   const { enabled, maxMail } = inboxConfig;
 
@@ -949,7 +970,7 @@ export async function updateInbox(
   //we don't need to read mails that are going to be deleted because
   //Rewards will be claimed on unread mails on deletion
   const readSet = [...new Set(mailToRead)].filter(
-    (it) => deleteSet.includes(it) === false
+    (it) => !deleteSet.includes(it)
   );
 
   const update = await getUsersCollection().updateOne({ uid }, [
@@ -960,9 +981,9 @@ export async function updateInbox(
             lang: "js",
             args: ["$inbox", "$xp", "$inventory", deleteSet, readSet],
             body: function (
-              inbox: SharedTypes.MonkeyMail[],
+              inbox: MonkeyMail[],
               xp: number,
-              inventory: SharedTypes.UserInventory,
+              inventory: UserInventory,
               deletedIds: string[],
               readIds: string[]
             ): Pick<MonkeyTypes.DBUser, "xp" | "inventory" | "inbox"> {
@@ -971,27 +992,24 @@ export async function updateInbox(
               );
 
               const toBeRead = inbox.filter(
-                (it) => readIds.includes(it.id) && it.read === false
+                (it) => readIds.includes(it.id) && !it.read
               );
 
               //flatMap rewards
-              const rewards: SharedTypes.AllRewards[] = [
-                ...toBeRead,
-                ...toBeDeleted,
-              ]
-                .filter((it) => it.read === false)
+              const rewards: AllRewards[] = [...toBeRead, ...toBeDeleted]
+                .filter((it) => !it.read)
                 .reduce((arr, current) => {
                   return [...arr, ...current.rewards];
                 }, []);
 
               const xpGain = rewards
                 .filter((it) => it.type === "xp")
-                .map((it) => it.item as number)
+                .map((it) => it.item)
                 .reduce((s, a) => s + a, 0);
 
               const badgesToClaim = rewards
                 .filter((it) => it.type === "badge")
-                .map((it) => it.item as SharedTypes.Badge);
+                .map((it) => it.item);
 
               if (inventory === null)
                 inventory = {
@@ -1000,7 +1018,7 @@ export async function updateInbox(
               if (inventory.badges === null) inventory.badges = [];
 
               const uniqueBadgeIds = new Set();
-              const newBadges: SharedTypes.Badge[] = [];
+              const newBadges: Badge[] = [];
 
               for (const badge of [...inventory.badges, ...badgesToClaim]) {
                 if (uniqueBadgeIds.has(badge.id)) continue;
@@ -1049,7 +1067,7 @@ export async function updateStreak(
   timestamp: number
 ): Promise<number> {
   const user = await getPartialUser(uid, "calculate streak", ["streak"]);
-  const streak: SharedTypes.UserStreak = {
+  const streak: UserStreak = {
     lastResultTimestamp: user.streak?.lastResultTimestamp ?? 0,
     length: user.streak?.length ?? 0,
     maxLength: user.streak?.maxLength ?? 0,
@@ -1059,7 +1077,11 @@ export async function updateStreak(
   if (isYesterday(streak.lastResultTimestamp, streak.hourOffset ?? 0)) {
     streak.length += 1;
   } else if (!isToday(streak.lastResultTimestamp, streak.hourOffset ?? 0)) {
-    void Logger.logToDb("streak_lost", JSON.parse(JSON.stringify(streak)), uid);
+    void addImportantLog(
+      "streak_lost",
+      JSON.parse(JSON.stringify(streak)),
+      uid
+    );
     streak.length = 1;
   }
 
@@ -1108,7 +1130,7 @@ export async function checkIfUserIsPremium(
 ): Promise<boolean> {
   const premiumFeaturesEnabled = (await getCachedConfiguration(true)).users
     .premium.enabled;
-  if (premiumFeaturesEnabled !== true) {
+  if (!premiumFeaturesEnabled) {
     return false;
   }
   const user =

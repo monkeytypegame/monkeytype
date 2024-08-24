@@ -10,6 +10,7 @@ import * as Notifications from "../elements/notifications";
 import * as SavedTextsPopup from "./saved-texts";
 import * as SaveCustomTextPopup from "./save-custom-text";
 import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
+import { CustomTextMode } from "@monkeytype/contracts/schemas/util";
 
 const popup = "#customTextModal .modal";
 
@@ -18,7 +19,7 @@ type State = {
   longCustomTextWarning: boolean;
   challengeWarning: boolean;
 
-  customTextMode: "simple" | SharedTypes.CustomTextMode;
+  customTextMode: "simple" | CustomTextMode;
   customTextLimits: {
     word: string;
     time: string;

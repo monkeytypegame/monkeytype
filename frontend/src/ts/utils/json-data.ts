@@ -11,7 +11,7 @@ async function fetchJson<T>(url: string): Promise<T> {
     if (!url) throw new Error("No URL");
     const res = await fetch(url);
     if (res.ok) {
-      return await res.json();
+      return (await res.json()) as T;
     } else {
       throw new Error(`${res.status} ${res.statusText}`);
     }

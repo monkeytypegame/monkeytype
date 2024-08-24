@@ -1,6 +1,10 @@
-import { Response } from "express";
+import { type Response } from "express";
 import { isCustomCode } from "../constants/monkey-status-codes";
+import { MonkeyResponseType } from "@monkeytype/contracts/schemas/api";
 
+export type MonkeyDataAware<T> = {
+  data: T | null;
+};
 //TODO FIX ANYS
 
 export class MonkeyResponse {
@@ -31,8 +35,21 @@ export function handleMonkeyResponse(
   //@ts-expect-error ignored so that we can see message in swagger stats
   res.monkeyMessage = message;
   if ([301, 302].includes(status)) {
-    return res.redirect(data);
+    res.redirect(data);
+    return;
   }
 
   res.json({ message, data });
+}
+
+export class MonkeyResponse2<T = null>
+  implements MonkeyResponseType, MonkeyDataAware<T>
+{
+  public message: string;
+  public data: T;
+
+  constructor(message: string, data: T) {
+    this.message = message;
+    this.data = data;
+  }
 }

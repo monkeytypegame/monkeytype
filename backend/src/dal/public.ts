@@ -1,12 +1,16 @@
 import * as db from "../init/db";
 import { roundTo2 } from "../utils/misc";
 import MonkeyError from "../utils/error";
+import {
+  TypingStats,
+  SpeedHistogram,
+} from "@monkeytype/contracts/schemas/public";
 
-type PublicTypingStatsDB = SharedTypes.PublicTypingStats & { _id: "stats" };
-type PublicSpeedStatsDB = {
+export type PublicTypingStatsDB = TypingStats & { _id: "stats" };
+export type PublicSpeedStatsDB = {
   _id: "speedStatsHistogram";
-  english_time_15: SharedTypes.SpeedHistogram;
-  english_time_60: SharedTypes.SpeedHistogram;
+  english_time_15: SpeedHistogram;
+  english_time_60: SpeedHistogram;
 };
 
 export async function updateStats(
@@ -34,12 +38,21 @@ export async function getSpeedHistogram(
   language: string,
   mode: string,
   mode2: string
-): Promise<Record<string, number>> {
-  const key = `${language}_${mode}_${mode2}`;
+): Promise<SpeedHistogram> {
+  const key = `${language}_${mode}_${mode2}` as keyof PublicSpeedStatsDB;
+
+  if (key === "_id") {
+    throw new MonkeyError(
+      400,
+      "Invalid speed histogram key",
+      "get speed histogram"
+    );
+  }
 
   const stats = await db
     .collection<PublicSpeedStatsDB>("public")
     .findOne({ _id: "speedStatsHistogram" }, { projection: { [key]: 1 } });
+
   return stats?.[key] ?? {};
 }
 

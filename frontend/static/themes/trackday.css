@@ -11,14 +11,14 @@
   --colorful-error-extra-color: #bb2525;
 }
 
-nav .textButton:nth-child(1) {
+nav > .textButton:nth-child(1) {
   color: #e0513e;
 }
 
-nav .textButton:nth-child(3) {
+nav > .textButton:nth-child(3) {
   color: #cfcfcf;
 }
 
-nav .textButton:nth-child(2) {
+nav > .textButton:nth-child(2) {
   color: #ccc500;
 }

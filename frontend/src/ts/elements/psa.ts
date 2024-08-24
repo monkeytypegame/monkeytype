@@ -4,22 +4,32 @@ import { secondsToString } from "../utils/date-and-time";
 import * as Notifications from "./notifications";
 import { format } from "date-fns/format";
 import * as Alerts from "./alerts";
+import { PSA } from "@monkeytype/contracts/schemas/psas";
+import { z } from "zod";
+import { LocalStorageWithSchema } from "../utils/local-storage-with-schema";
+import { IdSchema } from "@monkeytype/contracts/schemas/util";
+
+const confirmedPSAs = new LocalStorageWithSchema({
+  key: "confirmedPSAs",
+  schema: z.array(IdSchema),
+  fallback: [],
+});
 
 function clearMemory(): void {
-  window.localStorage.setItem("confirmedPSAs", JSON.stringify([]));
+  confirmedPSAs.set([]);
 }
 
 function getMemory(): string[] {
-  return JSON.parse(window.localStorage.getItem("confirmedPSAs") ?? "[]") ?? [];
+  return confirmedPSAs.get();
 }
 
 function setMemory(id: string): void {
   const list = getMemory();
   list.push(id);
-  window.localStorage.setItem("confirmedPSAs", JSON.stringify(list));
+  confirmedPSAs.set(list);
 }
 
-async function getLatest(): Promise<SharedTypes.PSA[] | null> {
+async function getLatest(): Promise<PSA[] | null> {
   const response = await Ape.psas.get();
 
   if (response.status === 500) {
@@ -55,7 +65,7 @@ async function getLatest(): Promise<SharedTypes.PSA[] | null> {
   } else if (response.status !== 200) {
     return null;
   }
-  return response.data;
+  return response.body.data;
 }
 
 export async function show(): Promise<void> {

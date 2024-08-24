@@ -58,11 +58,17 @@ import * as KeymapEvent from "../observables/keymap-event";
 import * as LayoutfluidFunboxTimer from "../test/funbox/layoutfluid-funbox-timer";
 import * as ArabicLazyMode from "../states/arabic-lazy-mode";
 import Format from "../utils/format";
+import { QuoteLength } from "@monkeytype/contracts/schemas/configs";
+import { Mode } from "@monkeytype/contracts/schemas/shared";
+import {
+  CompletedEvent,
+  CustomTextDataWithTextLen,
+} from "@monkeytype/contracts/schemas/results";
 
 let failReason = "";
 const koInputVisual = document.getElementById("koInputVisual") as HTMLElement;
 
-export let notSignedInLastResult: SharedTypes.CompletedEvent | null = null;
+export let notSignedInLastResult: CompletedEvent | null = null;
 
 export function clearNotSignedInResult(): void {
   notSignedInLastResult = null;
@@ -71,6 +77,7 @@ export function clearNotSignedInResult(): void {
 export function setNotSignedInUid(uid: string): void {
   if (notSignedInLastResult === null) return;
   notSignedInLastResult.uid = uid;
+  //@ts-expect-error
   delete notSignedInLastResult.hash;
   notSignedInLastResult.hash = objectHash(notSignedInLastResult);
 }
@@ -600,7 +607,7 @@ export async function addWord(): Promise<void> {
 }
 
 type RetrySaving = {
-  completedEvent: SharedTypes.CompletedEvent | null;
+  completedEvent: CompletedEvent | null;
   canRetry: boolean;
 };
 
@@ -641,7 +648,7 @@ export async function retrySavingResult(): Promise<void> {
 
 function buildCompletedEvent(
   difficultyFailed: boolean
-): SharedTypes.CompletedEvent {
+): Omit<CompletedEvent, "hash" | "uid"> {
   //build completed event object
   let stfk = Numbers.roundTo2(
     TestInput.keypressTimings.spacing.first - TestStats.start
@@ -733,7 +740,7 @@ function buildCompletedEvent(
   const wpmCons = Numbers.roundTo2(Misc.kogasa(stddev3 / avg3));
   const wpmConsistency = isNaN(wpmCons) ? 0 : wpmCons;
 
-  let customText: SharedTypes.CustomTextDataWithTextLen | null = null;
+  let customText: CustomTextDataWithTextLen | undefined = undefined;
   if (Config.mode === "custom") {
     const temp = CustomText.getData();
     customText = {
@@ -761,7 +768,7 @@ function buildCompletedEvent(
 
   const quoteLength = TestWords.currentQuote?.group ?? -1;
 
-  const completedEvent = {
+  const completedEvent: Omit<CompletedEvent, "hash" | "uid"> = {
     wpm: stats.wpm,
     rawWpm: stats.wpmRaw,
     charStats: [
@@ -804,7 +811,7 @@ function buildCompletedEvent(
     testDuration: duration,
     afkDuration: afkDuration,
     stopOnLetter: Config.stopOnError === "letter",
-  } as SharedTypes.CompletedEvent;
+  };
 
   if (completedEvent.mode !== "custom") delete completedEvent.customText;
   if (completedEvent.mode !== "quote") delete completedEvent.quoteLength;
@@ -871,7 +878,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
       return 1;
     } else if (typeof input === "object" && input !== null) {
       return Object.values(input).reduce(
-        (a, b) => a + countUndefined(b),
+        (a, b) => (a + countUndefined(b)) as number,
         0
       ) as number;
     } else {
@@ -890,7 +897,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
     dontSave = true;
   }
 
-  const completedEvent = JSON.parse(JSON.stringify(ce));
+  const completedEvent = JSON.parse(JSON.stringify(ce)) as CompletedEvent;
 
   ///////// completed event ready
 
@@ -1005,7 +1012,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
     ) {
       // They bailed out
 
-      const historyLength = TestInput.input.getHistory()?.length as number;
+      const historyLength = TestInput.input.getHistory()?.length;
       const newProgress =
         CustomText.getCustomTextLongProgress(customTextName) + historyLength;
       CustomText.setCustomTextLongProgress(customTextName, newProgress);
@@ -1064,6 +1071,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
   );
 
   if (completedEvent.chartData !== "toolong") {
+    // @ts-expect-error TODO: check if this is needed
     delete completedEvent.chartData.unsmoothedRaw;
   }
 
@@ -1079,18 +1087,17 @@ export async function finish(difficultyFailed = false): Promise<void> {
   }
 
   // user is logged in
-
   TestStats.resetIncomplete();
 
   completedEvent.uid = Auth?.currentUser?.uid as string;
   Result.updateRateQuote(TestWords.currentQuote);
 
   AccountButton.loading(true);
-  if (completedEvent.bailedOut !== true) {
-    completedEvent.challenge = ChallengeContoller.verify(completedEvent);
-  }
 
-  if (completedEvent.challenge === null) delete completedEvent?.challenge;
+  if (!completedEvent.bailedOut) {
+    const challenge = ChallengeContoller.verify(completedEvent);
+    if (challenge !== null) completedEvent.challenge = challenge;
+  }
 
   completedEvent.hash = objectHash(completedEvent);
 
@@ -1098,7 +1105,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
 }
 
 async function saveResult(
-  completedEvent: SharedTypes.CompletedEvent,
+  completedEvent: CompletedEvent,
   isRetrying: boolean
 ): Promise<void> {
   if (!TestState.savingEnabled) {
@@ -1126,7 +1133,7 @@ async function saveResult(
     return;
   }
 
-  const response = await Ape.results.save(completedEvent);
+  const response = await Ape.results.add({ body: { result: completedEvent } });
 
   AccountButton.loading(false);
 
@@ -1140,43 +1147,46 @@ async function saveResult(
       }
     }
     console.log("Error saving result", completedEvent);
-    if (response.message === "Old key data format") {
-      response.message =
+    if (response.body.message === "Old key data format") {
+      response.body.message =
         "Old key data format. Please refresh the page to download the new update. If the problem persists, please contact support.";
     }
-    if (/"result\..+" is (not allowed|required)/gi.test(response.message)) {
-      response.message =
+    if (
+      /"result\..+" is (not allowed|required)/gi.test(response.body.message)
+    ) {
+      response.body.message =
         "Looks like your result data is using an incorrect schema. Please refresh the page to download the new update. If the problem persists, please contact support.";
     }
-    return Notifications.add("Failed to save result: " + response.message, -1);
+    Notifications.add("Failed to save result: " + response.body.message, -1);
+    return;
   }
 
+  const data = response.body.data;
   $("#result .stats .tags .editTagsButton").attr(
     "data-result-id",
-    response.data?.insertedId as string //if status is 200 then response.data is not null or undefined
+    data.insertedId
   );
   $("#result .stats .tags .editTagsButton").removeClass("invisible");
 
-  if (response?.data?.xp !== undefined) {
+  if (data.xp !== undefined) {
     const snapxp = DB.getSnapshot()?.xp ?? 0;
-    void AccountButton.updateXpBar(
-      snapxp,
-      response.data.xp,
-      response.data.xpBreakdown
+    void AccountButton.updateXpBar(snapxp, data.xp, data.xpBreakdown);
+    DB.addXp(data.xp);
+  }
+
+  if (data.streak !== undefined) {
+    DB.setStreak(data.streak);
+  }
+
+  if (data.insertedId !== undefined) {
+    const result: MonkeyTypes.FullResult<Mode> = JSON.parse(
+      JSON.stringify(completedEvent)
     );
-    DB.addXp(response.data.xp);
-  }
-
-  if (response?.data?.streak !== undefined) {
-    DB.setStreak(response.data.streak);
-  }
-
-  if (response?.data?.insertedId !== undefined) {
-    completedEvent._id = response.data.insertedId;
-    if (response?.data?.isPb !== undefined && response.data.isPb) {
-      completedEvent.isPb = true;
+    result._id = data.insertedId;
+    if (data.isPb !== undefined && data.isPb) {
+      result.isPb = true;
     }
-    DB.saveLocalResult(completedEvent);
+    DB.saveLocalResult(result);
     DB.updateLocalStats(
       completedEvent.incompleteTests.length + 1,
       completedEvent.testDuration +
@@ -1187,24 +1197,32 @@ async function saveResult(
 
   void AnalyticsController.log("testCompleted");
 
-  if (response?.data?.isPb !== undefined && response.data.isPb) {
+  if (data.isPb !== undefined && data.isPb) {
     //new pb
-    if (
-      //@ts-expect-error TODO fix this
-      // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
-      DB.getSnapshot()?.personalBests?.[Config.mode]?.[completedEvent.mode2]
-    ) {
+    const localPb = await DB.getLocalPB(
+      completedEvent.mode,
+      completedEvent.mode2,
+      completedEvent.punctuation,
+      completedEvent.numbers,
+      completedEvent.language,
+      completedEvent.difficulty,
+      completedEvent.lazyMode,
+      completedEvent.funbox
+    );
+
+    if (localPb !== undefined) {
       Result.showConfetti();
     }
     Result.showCrown("normal");
+
     await DB.saveLocalPB(
-      Config.mode,
+      completedEvent.mode,
       completedEvent.mode2,
-      Config.punctuation,
-      Config.numbers,
-      Config.language,
-      Config.difficulty,
-      Config.lazyMode,
+      completedEvent.punctuation,
+      completedEvent.numbers,
+      completedEvent.language,
+      completedEvent.difficulty,
+      completedEvent.lazyMode,
       completedEvent.wpm,
       completedEvent.acc,
       completedEvent.rawWpm,
@@ -1225,7 +1243,7 @@ async function saveResult(
   //   );
   // }
 
-  if (response?.data?.dailyLeaderboardRank === undefined) {
+  if (data.dailyLeaderboardRank === undefined) {
     $("#result .stats .dailyLeaderboard").addClass("hidden");
   } else {
     $("#result .stats .dailyLeaderboard")
@@ -1242,7 +1260,7 @@ async function saveResult(
         500
       );
     $("#result .stats .dailyLeaderboard .bottom").html(
-      Format.rank(response.data.dailyLeaderboardRank, { fallback: "" })
+      Format.rank(data.dailyLeaderboardRank, { fallback: "" })
     );
   }
 
@@ -1312,8 +1330,7 @@ $(".pageTest").on("click", "#restartTestButtonWithSameWordset", () => {
 $(".pageTest").on("click", "#testConfig .mode .textButton", (e) => {
   if (TestUI.testRestarting) return;
   if ($(e.currentTarget).hasClass("active")) return;
-  const mode = ($(e.currentTarget).attr("mode") ??
-    "time") as SharedTypes.Config.Mode;
+  const mode = ($(e.currentTarget).attr("mode") ?? "time") as Mode;
   if (mode === undefined) return;
   UpdateConfig.setMode(mode);
   ManualRestart.set();
@@ -1342,10 +1359,9 @@ $(".pageTest").on("click", "#testConfig .time .textButton", (e) => {
 
 $(".pageTest").on("click", "#testConfig .quoteLength .textButton", (e) => {
   if (TestUI.testRestarting) return;
-  let len: SharedTypes.Config.QuoteLength | SharedTypes.Config.QuoteLength[] =
-    parseInt(
-      $(e.currentTarget).attr("quoteLength") ?? "1"
-    ) as SharedTypes.Config.QuoteLength;
+  let len: QuoteLength | QuoteLength[] = parseInt(
+    $(e.currentTarget).attr("quoteLength") ?? "1"
+  ) as QuoteLength;
   if (len !== -2) {
     if (len === -1) {
       len = [0, 1, 2, 3];
@@ -1368,33 +1384,6 @@ $(".pageTest").on("click", "#testConfig .numbersMode.textButton", () => {
   UpdateConfig.setNumbers(!Config.numbers);
   ManualRestart.set();
   restart();
-});
-
-$("#popups").on("click", "#practiseWordsPopup .button.missed", () => {
-  if (PractiseWords.init(true, false)) {
-    PractiseWords.hidePopup();
-    restart({
-      practiseMissed: true,
-    });
-  }
-});
-
-$("#popups").on("click", "#practiseWordsPopup .button.slow", () => {
-  if (PractiseWords.init(false, true)) {
-    PractiseWords.hidePopup();
-    restart({
-      practiseMissed: true,
-    });
-  }
-});
-
-$("#popups").on("click", "#practiseWordsPopup .button.both", () => {
-  if (PractiseWords.init(true, true)) {
-    PractiseWords.hidePopup();
-    restart({
-      practiseMissed: true,
-    });
-  }
 });
 
 $("header").on("click", "nav #startTestButton, #logo", () => {

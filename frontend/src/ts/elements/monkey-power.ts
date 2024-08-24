@@ -90,8 +90,8 @@ function updateParticle(particle: Particle): void {
   particle.prev.x = particle.x;
   particle.prev.y = particle.y;
   // Update pos
-  particle.x += particle.vel.x * (ctx.deltaTime as number);
-  particle.y += particle.vel.y * (ctx.deltaTime as number);
+  particle.x += particle.vel.x * ctx.deltaTime;
+  particle.y += particle.vel.y * ctx.deltaTime;
 
   if (particle.x > ctx.canvas.width) {
     particle.vel.x *= -particleBounceMod;

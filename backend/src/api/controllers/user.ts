@@ -1,7 +1,6 @@
 import _ from "lodash";
 import * as UserDAL from "../../dal/user";
 import MonkeyError from "../../utils/error";
-import Logger from "../../utils/logger";
 import { MonkeyResponse } from "../../utils/monkey-response";
 import * as DiscordUtils from "../../utils/discord";
 import {
@@ -11,7 +10,7 @@ import {
   sanitizeString,
 } from "../../utils/misc";
 import GeorgeQueue from "../../queues/george-queue";
-import admin, { FirebaseError } from "firebase-admin";
+import admin, { type FirebaseError } from "firebase-admin";
 import { deleteAllApeKeys } from "../../dal/ape-keys";
 import { deleteAllPresets } from "../../dal/preset";
 import { deleteAll as deleteAllResults } from "../../dal/result";
@@ -25,14 +24,34 @@ import * as ReportDAL from "../../dal/report";
 import emailQueue from "../../queues/email-queue";
 import FirebaseAdmin from "../../init/firebase-admin";
 import * as AuthUtil from "../../utils/auth";
-
 import * as Dates from "date-fns";
 import { UTCDateMini } from "@date-fns/utc";
 import * as BlocklistDal from "../../dal/blocklist";
+import { Mode, Mode2 } from "@monkeytype/contracts/schemas/shared";
+import {
+  AllTimeLbs,
+  CountByYearAndDay,
+  RankAndCount,
+  TestActivity,
+  UserProfile,
+  UserProfileDetails,
+} from "@monkeytype/shared-types";
+import { addImportantLog, addLog, deleteUserLogs } from "../../dal/logs";
+import { sendForgotPasswordEmail as authSendForgotPasswordEmail } from "../../utils/auth";
 
 async function verifyCaptcha(captcha: string): Promise<void> {
-  if (!(await verify(captcha))) {
-    throw new MonkeyError(422, "Captcha check failed");
+  let verified = false;
+  try {
+    verified = await verify(captcha);
+  } catch (e) {
+    //fetch to recaptcha api can sometimes fail
+    throw new MonkeyError(
+      422,
+      "Request to the Captcha API failed, please try again later"
+    );
+  }
+  if (!verified) {
+    throw new MonkeyError(422, "Captcha challenge failed");
   }
 }
 
@@ -60,7 +79,7 @@ export async function createNewUser(
     }
 
     await UserDAL.addUser(name, email, uid);
-    void Logger.logToDb("user_created", `${name} ${email}`, uid);
+    void addImportantLog("user_created", `${name} ${email}`, uid);
 
     return new MonkeyResponse("User created");
   } catch (e) {
@@ -78,11 +97,15 @@ export async function sendVerificationEmail(
     await admin
       .auth()
       .getUser(uid)
-      .catch((e) => {
+      .catch((e: unknown) => {
         throw new MonkeyError(
           500, // this should never happen, but it does. it mightve been caused by auth token cache, will see if disabling cache fixes it
           "Auth user not found, even though the token got decoded",
-          JSON.stringify({ uid, email, stack: e.stack }),
+          JSON.stringify({
+            uid,
+            email,
+            stack: e instanceof Error ? e.stack : JSON.stringify(e),
+          }),
           uid
         );
       })
@@ -151,29 +174,7 @@ export async function sendForgotPasswordEmail(
   req: MonkeyTypes.Request
 ): Promise<MonkeyResponse> {
   const { email } = req.body;
-
-  try {
-    const uid = (await FirebaseAdmin().auth().getUserByEmail(email)).uid;
-    const userInfo = await UserDAL.getPartialUser(
-      uid,
-      "request forgot password email",
-      ["name"]
-    );
-
-    const link = await FirebaseAdmin()
-      .auth()
-      .generatePasswordResetLink(email, {
-        url: isDevEnvironment()
-          ? "http://localhost:3000"
-          : "https://monkeytype.com",
-      });
-
-    await emailQueue.sendForgotPasswordEmail(email, userInfo.name, link);
-  } catch {
-    return new MonkeyResponse(
-      "Password reset request received. If the email is valid, you will receive an email shortly."
-    );
-  }
+  await authSendForgotPasswordEmail(email);
   return new MonkeyResponse(
     "Password reset request received. If the email is valid, you will receive an email shortly."
   );
@@ -198,6 +199,7 @@ export async function deleteUser(
   //cleanup database
   await Promise.all([
     UserDAL.deleteUser(uid),
+    deleteUserLogs(uid),
     deleteAllApeKeys(uid),
     deleteAllPresets(uid),
     deleteConfig(uid),
@@ -211,7 +213,7 @@ export async function deleteUser(
   //delete user from
   await AuthUtil.deleteUser(uid);
 
-  void Logger.logToDb(
+  void addImportantLog(
     "user_deleted",
     `${userInfo.email} ${userInfo.name}`,
     uid
@@ -251,7 +253,7 @@ export async function resetUser(
     promises.push(GeorgeQueue.unlinkDiscord(userInfo.discordId, uid));
   }
   await Promise.all(promises);
-  void Logger.logToDb("user_reset", `${userInfo.email} ${userInfo.name}`, uid);
+  void addImportantLog("user_reset", `${userInfo.email} ${userInfo.name}`, uid);
 
   return new MonkeyResponse("User reset");
 }
@@ -281,7 +283,7 @@ export async function updateName(
   }
 
   await UserDAL.updateName(uid, name, user.name);
-  void Logger.logToDb(
+  void addImportantLog(
     "user_name_updated",
     `changed name from ${user.name} to ${name}`,
     uid
@@ -300,7 +302,7 @@ export async function clearPb(
     uid,
     req.ctx.configuration.dailyLeaderboards
   );
-  void Logger.logToDb("user_cleared_pbs", "", uid);
+  void addImportantLog("user_cleared_pbs", "", uid);
 
   return new MonkeyResponse("User's PB cleared");
 }
@@ -315,7 +317,7 @@ export async function optOutOfLeaderboards(
     uid,
     req.ctx.configuration.dailyLeaderboards
   );
-  void Logger.logToDb("user_opted_out_of_leaderboards", "", uid);
+  void addImportantLog("user_opted_out_of_leaderboards", "", uid);
 
   return new MonkeyResponse("User opted out of leaderboards");
 }
@@ -369,7 +371,7 @@ export async function updateEmail(
     }
   }
 
-  void Logger.logToDb(
+  void addImportantLog(
     "user_email_updated",
     `changed email to ${newEmail}`,
     uid
@@ -453,7 +455,7 @@ export async function getUser(
   };
 
   const agentLog = buildAgentLog(req);
-  void Logger.logToDb("user_data_requested", agentLog, uid);
+  void addLog("user_data_requested", agentLog, uid);
   void UserDAL.logIpAddress(uid, agentLog.ip, userInfo);
 
   let inboxUnreadSize = 0;
@@ -548,7 +550,7 @@ export async function linkDiscord(
   await UserDAL.linkDiscord(uid, discordId, discordAvatar);
 
   await GeorgeQueue.linkDiscord(discordId, uid);
-  void Logger.logToDb("user_discord_link", `linked to ${discordId}`, uid);
+  void addImportantLog("user_discord_link", `linked to ${discordId}`, uid);
 
   return new MonkeyResponse("Discord account linked", {
     discordId,
@@ -577,7 +579,7 @@ export async function unlinkDiscord(
 
   await GeorgeQueue.unlinkDiscord(discordId, uid);
   await UserDAL.unlinkDiscord(uid);
-  void Logger.logToDb("user_discord_unlinked", discordId, uid);
+  void addImportantLog("user_discord_unlinked", discordId, uid);
 
   return new MonkeyResponse("Discord account unlinked");
 }
@@ -661,8 +663,7 @@ export async function updateLbMemory(
 ): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
   const { mode, language, rank } = req.body;
-  const mode2 = req.body
-    .mode2 as SharedTypes.Config.Mode2<SharedTypes.Config.Mode>;
+  const mode2 = req.body.mode2 as Mode2<Mode>;
 
   await UserDAL.updateLbMemory(uid, mode, mode2, language, rank);
   return new MonkeyResponse("Leaderboard memory updated");
@@ -837,7 +838,7 @@ export async function getProfile(
     details: profileDetails,
     allTimeLbs,
     uid: user.uid,
-  } as SharedTypes.UserProfile;
+  } as UserProfile;
 
   return new MonkeyResponse("Profile retrieved", profileData);
 }
@@ -865,13 +866,13 @@ export async function updateProfile(
     }
   });
 
-  const profileDetailsUpdates: Partial<SharedTypes.UserProfileDetails> = {
+  const profileDetailsUpdates: Partial<UserProfileDetails> = {
     bio: sanitizeString(bio),
     keyboard: sanitizeString(keyboard),
     socialProfiles: _.mapValues(
       socialProfiles,
       sanitizeString
-    ) as SharedTypes.UserProfileDetails["socialProfiles"],
+    ) as UserProfileDetails["socialProfiles"],
   };
 
   await UserDAL.updateProfile(uid, profileDetailsUpdates, user.inventory);
@@ -950,6 +951,8 @@ export async function setStreakHourOffset(
 
   await UserDAL.setStreakHourOffset(uid, hourOffset);
 
+  void addImportantLog("user_streak_hour_offset_set", { hourOffset }, uid);
+
   return new MonkeyResponse("Streak hour offset set");
 }
 
@@ -973,6 +976,8 @@ export async function toggleBan(
     if (discordIdIsValid) await GeorgeQueue.userBanned(discordId, true);
   }
 
+  void addImportantLog("user_ban_toggled", { banned: !user.banned }, uid);
+
   return new MonkeyResponse(`Ban toggled`, {
     banned: !user.banned,
   });
@@ -983,10 +988,11 @@ export async function revokeAllTokens(
 ): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
   await AuthUtil.revokeTokensByUid(uid);
+  void addImportantLog("user_tokens_revoked", "", uid);
   return new MonkeyResponse("All tokens revoked");
 }
 
-async function getAllTimeLbs(uid: string): Promise<SharedTypes.AllTimeLbs> {
+async function getAllTimeLbs(uid: string): Promise<AllTimeLbs> {
   const allTime15English = await LeaderboardsDAL.getRank(
     "time",
     "15",
@@ -1007,7 +1013,7 @@ async function getAllTimeLbs(uid: string): Promise<SharedTypes.AllTimeLbs> {
       : ({
           rank: allTime15English.rank,
           count: allTime15English.count,
-        } as SharedTypes.RankAndCount);
+        } as RankAndCount);
 
   const english60 =
     allTime60English === false
@@ -1015,7 +1021,7 @@ async function getAllTimeLbs(uid: string): Promise<SharedTypes.AllTimeLbs> {
       : ({
           rank: allTime60English.rank,
           count: allTime60English.count,
-        } as SharedTypes.RankAndCount);
+        } as RankAndCount);
 
   return {
     time: {
@@ -1030,8 +1036,8 @@ async function getAllTimeLbs(uid: string): Promise<SharedTypes.AllTimeLbs> {
 }
 
 export function generateCurrentTestActivity(
-  testActivity: SharedTypes.CountByYearAndDay | undefined
-): SharedTypes.TestActivity | undefined {
+  testActivity: CountByYearAndDay | undefined
+): TestActivity | undefined {
   const thisYear = Dates.startOfYear(new UTCDateMini());
   const lastYear = Dates.startOfYear(Dates.subYears(thisYear, 1));
 

@@ -7,6 +7,7 @@ import * as ConnectionState from "../states/connection";
 import AnimatedModal from "../utils/animated-modal";
 import * as Profile from "../elements/profile";
 import { CharacterCounter } from "../elements/character-counter";
+import { Badge, UserProfileDetails } from "@monkeytype/shared-types";
 
 export function show(): void {
   if (!ConnectionState.get()) {
@@ -59,7 +60,7 @@ function hydrateInputs(): void {
   websiteInput.val(socialProfiles?.website ?? "");
   badgeIdsSelect.html("");
 
-  badges?.forEach((badge: SharedTypes.Badge) => {
+  badges?.forEach((badge: Badge) => {
     if (badge.selected) {
       currentSelectedBadgeId = badge.id;
     }
@@ -96,14 +97,14 @@ function initializeCharacterCounters(): void {
   new CharacterCounter(keyboardInput, 75);
 }
 
-function buildUpdatesFromInputs(): SharedTypes.UserProfileDetails {
+function buildUpdatesFromInputs(): UserProfileDetails {
   const bio = (bioInput.val() ?? "") as string;
   const keyboard = (keyboardInput.val() ?? "") as string;
   const twitter = (twitterInput.val() ?? "") as string;
   const github = (githubInput.val() ?? "") as string;
   const website = (websiteInput.val() ?? "") as string;
 
-  const profileUpdates: SharedTypes.UserProfileDetails = {
+  const profileUpdates: UserProfileDetails = {
     bio,
     keyboard,
     socialProfiles: {

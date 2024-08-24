@@ -1,36 +1,18 @@
 {
+  "extends": "@monkeytype/typescript-config/base.json",
   "compilerOptions": {
-    "incremental": true,
-    "module": "commonjs",
-    "target": "es6",
-    "sourceMap": false,
-    "allowJs": false,
-    "checkJs": false,
-    "outDir": "build",
-    "moduleResolution": "node",
-    "resolveJsonModule": true,
-    "allowSyntheticDefaultImports": true,
-    "esModuleInterop": true,
-    "strictNullChecks": true,
-    "skipLibCheck": false,
-    "noUncheckedIndexedAccess": true,
-    "noImplicitReturns": true,
-    "noPropertyAccessFromIndexSignature": true,
-    "noFallthroughCasesInSwitch": true,
-    "forceConsistentCasingInFileNames": true,
-    "paths": {
-      "@shared/*": ["../shared-types/*"]
-    }
+    "outDir": "dist",
+    "target": "ES6",
+    "noImplicitAny": false,
+    "strictFunctionTypes": false,
+    "useUnknownInCatchVariables": false,
+    "strictPropertyInitialization": false
   },
   "ts-node": {
     "files": true
   },
-  "files": [
-    "./src/types/types.d.ts",
-    "../shared-types/types.d.ts",
-    "../shared-types/config.d.ts"
-  ],
-  "include": ["./src/**/*", "../shared-types/**/*.d.ts"],
+  "files": ["./src/types/types.d.ts"],
+  "include": ["./src/**/*"],
   "exclude": [
     "node_modules",
     "build",

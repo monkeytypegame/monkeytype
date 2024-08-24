@@ -9,6 +9,16 @@ import * as TestUI from "../test/test-ui";
 import * as ConfigEvent from "../observables/config-event";
 import * as TestState from "../test/test-state";
 import * as Loader from "../elements/loader";
+import {
+  CustomTextLimitMode,
+  CustomTextMode,
+} from "@monkeytype/contracts/schemas/util";
+import {
+  Config as ConfigType,
+  Difficulty,
+} from "@monkeytype/contracts/schemas/configs";
+import { Mode } from "@monkeytype/contracts/schemas/shared";
+import { CompletedEvent } from "@monkeytype/contracts/schemas/results";
 
 let challengeLoading = false;
 
@@ -23,9 +33,7 @@ export function clearActive(): void {
   }
 }
 
-export function verify(
-  result: SharedTypes.Result<SharedTypes.Config.Mode>
-): string | null {
+export function verify(result: CompletedEvent): string | null {
   try {
     if (TestState.activeChallenge) {
       const afk = (result.afkDuration / result.testDuration) * 100;
@@ -47,9 +55,7 @@ export function verify(
         for (const requirementType in TestState.activeChallenge.requirements) {
           if (!requirementsMet) return null;
           const requirementValue =
-            TestState.activeChallenge.requirements[
-              requirementType as keyof typeof TestState.activeChallenge.requirements
-            ];
+            TestState.activeChallenge.requirements[requirementType];
 
           if (requirementValue === undefined) {
             throw new Error("Requirement value is undefined");
@@ -117,7 +123,8 @@ export function verify(
               requirementsMet = false;
               for (const f of funboxMode.split("#")) {
                 if (
-                  result.funbox?.split("#").find((rf) => rf === f) === undefined
+                  result.funbox?.split("#").find((rf: string) => rf === f) ===
+                  undefined
                 ) {
                   failReasons.push(`${f} funbox not active`);
                 }
@@ -156,9 +163,7 @@ export function verify(
           } else if (requirementType === "config") {
             for (const configKey in requirementValue) {
               const configValue = requirementValue[configKey];
-              if (
-                Config[configKey as keyof SharedTypes.Config] !== configValue
-              ) {
+              if (Config[configKey as keyof ConfigType] !== configValue) {
                 requirementsMet = false;
                 failReasons.push(`${configKey} not set to ${configValue}`);
               }
@@ -251,11 +256,9 @@ export async function setup(challengeName: string): Promise<boolean> {
       UpdateConfig.setDifficulty("normal", true);
     } else if (challenge.type === "customText") {
       CustomText.setText((challenge.parameters[0] as string).split(" "));
-      CustomText.setMode(challenge.parameters[1] as SharedTypes.CustomTextMode);
+      CustomText.setMode(challenge.parameters[1] as CustomTextMode);
       CustomText.setLimitValue(challenge.parameters[2] as number);
-      CustomText.setLimitMode(
-        challenge.parameters[3] as SharedTypes.CustomTextLimitMode
-      );
+      CustomText.setLimitMode(challenge.parameters[3] as CustomTextLimitMode);
       CustomText.setPipeDelimiter(challenge.parameters[4] as boolean);
       UpdateConfig.setMode("custom", true);
       UpdateConfig.setDifficulty("normal", true);
@@ -294,15 +297,9 @@ export async function setup(challengeName: string): Promise<boolean> {
       } else if (challenge.parameters[1] === "time") {
         UpdateConfig.setTimeConfig(challenge.parameters[2] as number, true);
       }
-      UpdateConfig.setMode(
-        challenge.parameters[1] as SharedTypes.Config.Mode,
-        true
-      );
+      UpdateConfig.setMode(challenge.parameters[1] as Mode, true);
       if (challenge.parameters[3] !== undefined) {
-        UpdateConfig.setDifficulty(
-          challenge.parameters[3] as SharedTypes.Config.Difficulty,
-          true
-        );
+        UpdateConfig.setDifficulty(challenge.parameters[3] as Difficulty, true);
       }
     } else if (challenge.type === "special") {
       if (challenge.name === "semimak") {

@@ -1,4 +1,3 @@
-import type { Interval } from "date-fns/types";
 import { UTCDateMini } from "@date-fns/utc/date/mini";
 import {
   format,
@@ -18,6 +17,7 @@ import {
   nextSaturday,
   isSaturday,
   subWeeks,
+  Interval,
 } from "date-fns";
 
 export class TestActivityCalendar implements MonkeyTypes.TestActivityCalendar {
@@ -57,7 +57,9 @@ export class TestActivityCalendar implements MonkeyTypes.TestActivityCalendar {
     lastDay: Date
   ): (number | null | undefined)[] {
     //fill calendar with enough values
-    const values = new Array(Math.max(0, 386 - data.length)).fill(undefined);
+    const values: (number | null | undefined)[] = new Array(
+      Math.max(0, 386 - data.length)
+    ).fill(undefined);
     values.push(...data);
 
     //discard values outside the calendar range
@@ -155,9 +157,7 @@ export class TestActivityCalendar implements MonkeyTypes.TestActivityCalendar {
   }
 
   private getBuckets(): number[] {
-    const filtered = this.data.filter(
-      (it) => it !== null && it !== undefined
-    ) as number[];
+    const filtered = this.data.filter((it) => it !== null && it !== undefined);
     const sorted = filtered.sort((a, b) => a - b);
 
     const trimmed = sorted.slice(

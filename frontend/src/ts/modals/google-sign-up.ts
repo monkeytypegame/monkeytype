@@ -10,9 +10,7 @@ import Ape from "../ape";
 import { createErrorMessage } from "../utils/misc";
 import * as LoginPage from "../pages/login";
 import * as AccountController from "../controllers/account-controller";
-import * as TestLogic from "../test/test-logic";
 import * as CaptchaController from "../controllers/captcha-controller";
-import * as DB from "../db";
 import * as Loader from "../elements/loader";
 import { subscribe as subscribeToSignUpEvent } from "../observables/google-sign-up-event";
 import { InputIndicator } from "../elements/input-indicator";
@@ -59,15 +57,17 @@ async function hide(): Promise<void> {
 
 async function apply(): Promise<void> {
   if (!signedInUser) {
-    return Notifications.add(
+    Notifications.add(
       "Missing user credential. Please close the popup and try again.",
       -1
     );
+    return;
   }
 
   const captcha = CaptchaController.getResponse("googleSignUpModal");
   if (!captcha) {
-    return Notifications.add("Please complete the captcha", 0);
+    Notifications.add("Please complete the captcha", 0);
+    return;
   }
 
   disableInput();
@@ -86,28 +86,10 @@ async function apply(): Promise<void> {
       await updateProfile(signedInUser.user, { displayName: name });
       await sendEmailVerification(signedInUser.user);
       Notifications.add("Account created", 1);
-      $("nav .textButton.account .text").text(name);
       LoginPage.enableInputs();
       LoginPage.hidePreloader();
       await AccountController.loadUser(signedInUser.user);
-      if (TestLogic.notSignedInLastResult !== null) {
-        TestLogic.setNotSignedInUid(signedInUser.user.uid);
 
-        const resultsSaveResponse = await Ape.results.save(
-          TestLogic.notSignedInLastResult
-        );
-
-        if (resultsSaveResponse.status === 200) {
-          const result = TestLogic.notSignedInLastResult;
-          DB.saveLocalResult(result);
-          DB.updateLocalStats(
-            1,
-            result.testDuration +
-              result.incompleteTestSeconds -
-              result.afkDuration
-          );
-        }
-      }
       signedInUser = undefined;
       Loader.hide();
       void hide();
@@ -190,10 +172,11 @@ const checkNameDebounced = debounce(1000, async () => {
 
   if (response.status !== 200) {
     nameIndicator.show("unavailable");
-    return Notifications.add(
+    Notifications.add(
       "Failed to check name availability: " + response.message,
       -1
     );
+    return;
   }
 });
 
@@ -206,7 +189,8 @@ async function setup(modalEl: HTMLElement): Promise<void> {
     disableButton();
     const val = $("#googleSignUpModal input").val() as string;
     if (val === "") {
-      return nameIndicator.hide();
+      nameIndicator.hide();
+      return;
     } else {
       nameIndicator.show("checking");
       void checkNameDebounced();

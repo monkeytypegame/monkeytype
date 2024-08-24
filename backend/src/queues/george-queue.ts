@@ -1,4 +1,4 @@
-import { LbEntryWithRank } from "../utils/daily-leaderboards";
+import { LeaderboardEntry } from "@monkeytype/contracts/schemas/leaderboards";
 import { MonkeyQueue } from "./monkey-queue";
 
 const QUEUE_NAME = "george-tasks";
@@ -61,7 +61,7 @@ class GeorgeQueue extends MonkeyQueue<GeorgeTask> {
   }
 
   async announceLeaderboardUpdate(
-    newRecords: SharedTypes.LeaderboardEntry[],
+    newRecords: Omit<LeaderboardEntry, "_id">[],
     leaderboardId: string
   ): Promise<void> {
     const taskName = "announceLeaderboardUpdate";
@@ -89,7 +89,7 @@ class GeorgeQueue extends MonkeyQueue<GeorgeTask> {
   async announceDailyLeaderboardTopResults(
     leaderboardId: string,
     leaderboardTimestamp: number,
-    topResults: LbEntryWithRank[]
+    topResults: LeaderboardEntry[]
   ): Promise<void> {
     const taskName = "announceDailyLeaderboardTopResults";
 

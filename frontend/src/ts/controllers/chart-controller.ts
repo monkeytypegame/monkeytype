@@ -95,6 +95,7 @@ class ChartWithUpdateColors<
     id: DatasetIds extends never ? never : "x" | DatasetIds
   ): DatasetIds extends never ? never : CartesianScaleOptions {
     //@ts-expect-error
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     return this.options.scales[id];
   }
 }
@@ -878,135 +879,132 @@ export const miniResult = new ChartWithUpdateColors<
   number[],
   string,
   "wpm" | "raw" | "error"
->(
-  document.querySelector(".pageAccount #miniResultChart") as HTMLCanvasElement,
-  {
-    type: "line",
-    data: {
-      labels: [],
-      datasets: [
-        {
-          label: "wpm",
-          data: [],
-          borderColor: "rgba(125, 125, 125, 1)",
-          borderWidth: 2,
-          yAxisID: "wpm",
-          order: 2,
-          pointRadius: 2,
+>(document.querySelector("#miniResultChartModal canvas") as HTMLCanvasElement, {
+  type: "line",
+  data: {
+    labels: [],
+    datasets: [
+      {
+        label: "wpm",
+        data: [],
+        borderColor: "rgba(125, 125, 125, 1)",
+        borderWidth: 2,
+        yAxisID: "wpm",
+        order: 2,
+        pointRadius: 2,
+      },
+      {
+        label: "raw",
+        data: [],
+        borderColor: "rgba(125, 125, 125, 1)",
+        borderWidth: 2,
+        yAxisID: "raw",
+        order: 3,
+        pointRadius: 2,
+      },
+      {
+        label: "errors",
+        data: [],
+        borderColor: "rgba(255, 125, 125, 1)",
+        pointBackgroundColor: "rgba(255, 125, 125, 1)",
+        borderWidth: 2,
+        order: 1,
+        yAxisID: "error",
+        type: "scatter",
+        pointStyle: "crossRot",
+        pointRadius: function (context): number {
+          const index = context.dataIndex;
+          const value = context.dataset.data[index] as number;
+          return (value ?? 0) <= 0 ? 0 : 3;
         },
-        {
-          label: "raw",
-          data: [],
-          borderColor: "rgba(125, 125, 125, 1)",
-          borderWidth: 2,
-          yAxisID: "raw",
-          order: 3,
-          pointRadius: 2,
+        pointHoverRadius: function (context): number {
+          const index = context.dataIndex;
+          const value = context.dataset.data[index] as number;
+          return (value ?? 0) <= 0 ? 0 : 5;
         },
-        {
-          label: "errors",
-          data: [],
-          borderColor: "rgba(255, 125, 125, 1)",
-          pointBackgroundColor: "rgba(255, 125, 125, 1)",
-          borderWidth: 2,
-          order: 1,
-          yAxisID: "error",
-          type: "scatter",
-          pointStyle: "crossRot",
-          pointRadius: function (context): number {
-            const index = context.dataIndex;
-            const value = context.dataset.data[index] as number;
-            return (value ?? 0) <= 0 ? 0 : 3;
-          },
-          pointHoverRadius: function (context): number {
-            const index = context.dataIndex;
-            const value = context.dataset.data[index] as number;
-            return (value ?? 0) <= 0 ? 0 : 5;
-          },
+      },
+    ],
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    scales: {
+      x: {
+        axis: "x",
+        ticks: {
+          autoSkip: true,
+          autoSkipPadding: 20,
         },
-      ],
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      scales: {
-        x: {
-          axis: "x",
-          ticks: {
-            autoSkip: true,
-            autoSkipPadding: 20,
-          },
-          display: true,
-          title: {
-            display: false,
-            text: "Seconds",
-          },
-        },
-        wpm: {
-          axis: "y",
-          display: true,
-          title: {
-            display: true,
-            text: "Words per Minute",
-          },
-          beginAtZero: true,
-          min: 0,
-          ticks: {
-            autoSkip: true,
-            autoSkipPadding: 20,
-          },
-          grid: {
-            display: true,
-          },
-        },
-        raw: {
-          axis: "y",
+        display: true,
+        title: {
           display: false,
-          title: {
-            display: true,
-            text: "Raw Words per Minute",
-          },
-          beginAtZero: true,
-          min: 0,
-          ticks: {
-            autoSkip: true,
-            autoSkipPadding: 20,
-          },
-          grid: {
-            display: false,
-          },
-        },
-        error: {
-          display: true,
-          position: "right",
-          title: {
-            display: true,
-            text: "Errors",
-          },
-          beginAtZero: true,
-          ticks: {
-            precision: 0,
-            autoSkip: true,
-            autoSkipPadding: 20,
-          },
-          grid: {
-            display: false,
-          },
+          text: "Seconds",
         },
       },
-      plugins: {
-        annotation: {
-          annotations: [],
+      wpm: {
+        axis: "y",
+        display: true,
+        title: {
+          display: true,
+          text: "Words per Minute",
         },
-        tooltip: {
-          animation: { duration: 250 },
-          mode: "index",
-          intersect: false,
+        beginAtZero: true,
+        min: 0,
+        ticks: {
+          autoSkip: true,
+          autoSkipPadding: 20,
+        },
+        grid: {
+          display: true,
+        },
+      },
+      raw: {
+        axis: "y",
+        display: false,
+        title: {
+          display: true,
+          text: "Raw Words per Minute",
+        },
+        beginAtZero: true,
+        min: 0,
+        ticks: {
+          autoSkip: true,
+          autoSkipPadding: 20,
+        },
+        grid: {
+          display: false,
+        },
+      },
+      error: {
+        display: true,
+        position: "right",
+        title: {
+          display: true,
+          text: "Errors",
+        },
+        beginAtZero: true,
+        ticks: {
+          precision: 0,
+          autoSkip: true,
+          autoSkipPadding: 20,
+        },
+        grid: {
+          display: false,
         },
       },
     },
-  }
-);
+    plugins: {
+      annotation: {
+        annotations: [],
+      },
+      tooltip: {
+        animation: { duration: 250 },
+        mode: "index",
+        intersect: false,
+      },
+    },
+  },
+});
 
 type ButtonBelowChart =
   | ".toggleResultsOnChart"

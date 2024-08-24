@@ -2,6 +2,7 @@ import LRUCache from "lru-cache";
 import Logger from "../utils/logger";
 import { MonkeyQueue } from "./monkey-queue";
 import { getCurrentDayTimestamp, getCurrentWeekTimestamp } from "../utils/misc";
+import { ValidModeRule } from "@monkeytype/contracts/schemas/configuration";
 
 const QUEUE_NAME = "later";
 
@@ -17,7 +18,7 @@ export type LaterTask<T extends LaterTaskType> = {
 export type LaterTaskContexts = {
   "daily-leaderboard-results": {
     yesterdayTimestamp: number;
-    modeRule: SharedTypes.ValidModeRule;
+    modeRule: ValidModeRule;
   };
   "weekly-xp-leaderboard-results": {
     lastWeekTimestamp: number;
@@ -82,7 +83,7 @@ class LaterQueue extends MonkeyQueue<LaterTask<LaterTaskType>> {
   async scheduleForTomorrow(
     taskName: LaterTaskType,
     taskId: string,
-    modeRule: SharedTypes.ValidModeRule
+    modeRule: ValidModeRule
   ): Promise<void> {
     const currentDayTimestamp = getCurrentDayTimestamp();
     const jobId = `${taskName}:${currentDayTimestamp}:${taskId}`;

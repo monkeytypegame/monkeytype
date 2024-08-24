@@ -6,6 +6,8 @@ import * as CustomTestDurationPopup from "./custom-test-duration";
 import * as QuoteSearchModal from "./quote-search";
 import * as CustomTextPopup from "./custom-text";
 import AnimatedModal from "../utils/animated-modal";
+import { QuoteLength } from "@monkeytype/contracts/schemas/configs";
+import { Mode } from "@monkeytype/contracts/schemas/shared";
 
 function update(): void {
   const el = $("#mobileTestConfigModal");
@@ -95,7 +97,7 @@ async function setup(modalEl: HTMLElement): Promise<void> {
       const target = e.currentTarget as HTMLElement;
       const mode = target.getAttribute("data-mode");
       if (mode === Config.mode) return;
-      UpdateConfig.setMode(mode as SharedTypes.Config.Mode);
+      UpdateConfig.setMode(mode as Mode);
       ManualRestart.set();
       TestLogic.restart();
     });
@@ -136,9 +138,7 @@ async function setup(modalEl: HTMLElement): Promise<void> {
           newVal = [0, 1, 2, 3];
         }
         UpdateConfig.setQuoteLength(
-          newVal as
-            | SharedTypes.Config.QuoteLength
-            | SharedTypes.Config.QuoteLength[],
+          newVal as QuoteLength | QuoteLength[],
           false,
           (e as MouseEvent).shiftKey
         );

@@ -26,6 +26,15 @@
       }
     }
   }
+  header {
+    nav {
+      .textButton.view-account {
+        .text {
+          display: none;
+        }
+      }
+    }
+  }
   .page404 {
     .content {
       grid-template-columns: 300px;
@@ -80,16 +89,36 @@
     .group.history table tbody td:nth-child(7) {
       display: none;
     }
+    .group.filterButtons {
+      grid-template-columns: 1fr;
+    }
+  }
+  .pageAccountSettings {
+    .main {
+      grid-template-columns: 1fr;
+      grid-template-rows: auto auto;
+      .tabs {
+        padding: 0;
+        display: grid;
+        grid-auto-flow: column;
+        button {
+          justify-content: center;
+          padding: 1em 0.5em;
+        }
+      }
+    }
   }
   .pageSettings {
+    .accountSettingsNotice {
+      button {
+        grid-column: -1/1;
+      }
+    }
     .section {
       grid-template-columns: 1fr;
       grid-template-areas:
         "title"
         "text" "buttons";
-      &.discordIntegration .info {
-        margin: 1rem 0;
-      }
       .customThemeEdit {
         .spacer {
           display: none;

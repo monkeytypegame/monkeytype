@@ -1,12 +1,14 @@
+import { TypingSpeedUnit } from "@monkeytype/contracts/schemas/configs";
+
 class Unit implements MonkeyTypes.TypingSpeedUnitSettings {
-  unit: SharedTypes.Config.TypingSpeedUnit;
+  unit: TypingSpeedUnit;
   convertFactor: number;
   fullUnitString: string;
   histogramDataBucketSize: number;
   historyStepSize: number;
 
   constructor(
-    unit: SharedTypes.Config.TypingSpeedUnit,
+    unit: TypingSpeedUnit,
     convertFactor: number,
     fullUnitString: string,
     histogramDataBucketSize: number,
@@ -28,7 +30,7 @@ class Unit implements MonkeyTypes.TypingSpeedUnitSettings {
   }
 }
 
-const typingSpeedUnits: Record<SharedTypes.Config.TypingSpeedUnit, Unit> = {
+const typingSpeedUnits: Record<TypingSpeedUnit, Unit> = {
   wpm: new Unit("wpm", 1, "Words per Minute", 10, 10),
   cpm: new Unit("cpm", 5, "Characters per Minute", 50, 100),
   wps: new Unit("wps", 1 / 60, "Words per Second", 0.5, 2),
@@ -37,7 +39,7 @@ const typingSpeedUnits: Record<SharedTypes.Config.TypingSpeedUnit, Unit> = {
 };
 
 export function get(
-  unit: SharedTypes.Config.TypingSpeedUnit
+  unit: TypingSpeedUnit
 ): MonkeyTypes.TypingSpeedUnitSettings {
   return typingSpeedUnits[unit];
 }

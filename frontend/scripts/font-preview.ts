@@ -44,7 +44,11 @@ export async function generatePreviewFonts(
   }
 }
 
-async function generateSubset(source, target, name): Promise<void> {
+async function generateSubset(
+  source: string,
+  target: string,
+  name: string
+): Promise<void> {
   const font = fs.readFileSync(source);
   const subset = await subsetFont(font, name, {
     targetFormat: "woff2",
@@ -52,6 +56,6 @@ async function generateSubset(source, target, name): Promise<void> {
   fs.writeFileSync(target, subset);
 }
 //detect if we run this as a main
-if (import.meta.url.endsWith(process.argv[1])) {
-  await generatePreviewFonts(true);
+if (import.meta.url.endsWith(process.argv[1] as string)) {
+  void generatePreviewFonts(true);
 }

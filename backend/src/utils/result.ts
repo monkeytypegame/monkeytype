@@ -1,16 +1,13 @@
+import { CompletedEvent } from "@monkeytype/contracts/schemas/results";
 import { ObjectId } from "mongodb";
 
-type Result = MonkeyTypes.WithObjectId<
-  SharedTypes.DBResult<SharedTypes.Config.Mode>
->;
-
 export function buildDbResult(
-  completedEvent: SharedTypes.CompletedEvent,
+  completedEvent: CompletedEvent,
   userName: string,
   isPb: boolean
-): Result {
+): MonkeyTypes.DBResult {
   const ce = completedEvent;
-  const res: Result = {
+  const res: MonkeyTypes.DBResult = {
     _id: new ObjectId(),
     uid: ce.uid,
     wpm: ce.wpm,
@@ -35,14 +32,14 @@ export function buildDbResult(
     funbox: ce.funbox,
     numbers: ce.numbers,
     punctuation: ce.punctuation,
-    keySpacingStats: ce.keySpacingStats,
-    keyDurationStats: ce.keyDurationStats,
     isPb: isPb,
     bailedOut: ce.bailedOut,
     blindMode: ce.blindMode,
     name: userName,
   };
 
+  //compress object by omitting default values. Frontend will add them back after reading
+  //reduces object size on the database and on the rest api
   if (!ce.bailedOut) delete res.bailedOut;
   if (!ce.blindMode) delete res.blindMode;
   if (!ce.lazyMode) delete res.lazyMode;
@@ -51,17 +48,32 @@ export function buildDbResult(
   if (ce.language === "english") delete res.language;
   if (!ce.numbers) delete res.numbers;
   if (!ce.punctuation) delete res.punctuation;
-  if (ce.mode !== "custom") delete res.customText;
   if (ce.mode !== "quote") delete res.quoteLength;
   if (ce.restartCount === 0) delete res.restartCount;
   if (ce.incompleteTestSeconds === 0) delete res.incompleteTestSeconds;
   if (ce.afkDuration === 0) delete res.afkDuration;
   if (ce.tags.length === 0) delete res.tags;
-
-  if (ce.keySpacingStats === undefined) delete res.keySpacingStats;
-  if (ce.keyDurationStats === undefined) delete res.keyDurationStats;
-
   if (res.isPb === false) delete res.isPb;
 
   return res;
+}
+
+/**
+ * Convert legacy values
+ * @param result
+ * @returns
+ */
+export function replaceLegacyValues(
+  result: MonkeyTypes.DBResult
+): MonkeyTypes.DBResult {
+  //convert legacy values
+  if (
+    result.correctChars !== undefined &&
+    result.incorrectChars !== undefined
+  ) {
+    result.charStats = [result.correctChars, result.incorrectChars, 0, 0];
+    delete result.correctChars;
+    delete result.incorrectChars;
+  }
+  return result;
 }

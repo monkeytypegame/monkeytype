@@ -1,6 +1,7 @@
-import Config from "../config";
 import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
 import * as Numbers from "../utils/numbers";
+import { Config as ConfigType } from "@monkeytype/contracts/schemas/configs";
+import Config from "../config";
 
 export type FormatOptions = {
   showDecimalPlaces?: boolean;
@@ -20,7 +21,7 @@ export type FallbackOptions = {
 };
 
 export class Formatting {
-  constructor(private config: SharedTypes.Config) {}
+  constructor(private config: ConfigType) {}
 
   typingSpeed(
     wpm: number | null | undefined,

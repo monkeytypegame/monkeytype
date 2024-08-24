@@ -1,41 +1,18 @@
 {
+  "extends": "@monkeytype/typescript-config/base.json",
   "compilerOptions": {
-    "target": "ES6",
     "lib": ["ESNext", "DOM", "DOM.Iterable"],
-    "module": "ESNext",
-    "moduleResolution": "node",
     "types": ["vite/client", "node", "jquery"],
+    "moduleResolution": "Bundler",
+    "module": "ESNext",
     "allowUmdGlobalAccess": true,
-    "resolveJsonModule": true,
-    "outDir": "./build",
-    "newLine": "lf",
-    "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,
-    "strict": true,
-    "noEmit": true,
-    "noImplicitAny": true,
-    "strictNullChecks": true,
-    "strictFunctionTypes": true,
-    "strictBindCallApply": true,
-    "strictPropertyInitialization": true,
-    "noImplicitThis": true,
-    "useUnknownInCatchVariables": true,
-    "alwaysStrict": true,
-    "noUnusedLocals": false,
-    "noUnusedParameters": false,
-    "exactOptionalPropertyTypes": false,
-    "noImplicitReturns": true,
-    "noFallthroughCasesInSwitch": true,
-    "noUncheckedIndexedAccess": true,
-    "noImplicitOverride": true,
-    "noPropertyAccessFromIndexSignature": true,
-    "allowUnusedLabels": false,
-    "allowUnreachableCode": false,
-    "skipLibCheck": false,
-    "paths": {
-      "@shared/*": ["../shared-types/*"]
-    }
+    "target": "ES6",
+    "noEmit": true
   },
-  "include": ["./src/**/*.ts", "../shared-types/**/*.d.ts"],
+  "include": [
+    "./src/**/*.ts",
+    "./scripts/**/*.ts",
+    "./src/ts/ape/types/*.d.ts"
+  ],
   "exclude": ["node_modules", "build", "setup-tests.ts", "**/*.spec.ts"]
 }

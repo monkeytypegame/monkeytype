@@ -30,11 +30,22 @@
       }
     }
     nav {
-      .textButton.account {
+      .textButton.view-account {
         gap: 0.5em;
-        .text {
-          display: none;
-        }
+      }
+    }
+  }
+  .pageAccountSettings .main {
+    gap: 2rem;
+    .right .tab .section {
+      grid-template-columns: 1fr;
+      grid-template-areas:
+        "title"
+        "text" "buttons";
+      &.discordIntegration .info {
+        height: 8rem;
+        display: grid;
+        align-content: center;
       }
     }
   }
@@ -59,6 +70,12 @@
   .pageSettings {
     .section {
       grid-template-columns: 1fr 1fr;
+
+      &[data-config-name="customBackgroundFilter"] {
+        .groups {
+          grid-template-columns: 1fr;
+        }
+      }
     }
     .settingsGroup.quickNav .links {
       display: grid;

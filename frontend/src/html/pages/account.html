@@ -14,11 +14,6 @@
     </div>
   </div>
   <div class="content full-width content-grid">
-    <div class="miniResultChartWrapper">
-      <canvas id="miniResultChart"></canvas>
-    </div>
-    <div class="miniResultChartBg"></div>
-
     <div class="profile">
       <div class="details both">
         <div class="avatarAndName">
@@ -372,7 +367,10 @@
 
     <div class="group presetFilterButtons hidden">
       <div class="buttonsAndTitle">
-        <div class="title">filter presets</div>
+        <div class="title">
+          <i class="fas fa-sliders-h"></i>
+          filter presets
+        </div>
         <div class="buttons filterBtns" style="grid-column: 1/3"></div>
       </div>
     </div>
@@ -385,7 +383,10 @@
         set filters to current settings
       </div> -->
       <div class="buttonsAndTitle" style="grid-column: 1/3">
-        <div class="title">filters</div>
+        <div class="title">
+          <i class="fas fa-filter"></i>
+          filters
+        </div>
         <div class="buttons">
           <button class="allFilters">all</button>
           <button class="currentConfigFilter">current settings</button>
@@ -409,13 +410,19 @@
     </div>
     <div class="group filterButtons" style="display: none">
       <div class="buttonsAndTitle" style="grid-column: 1/-1">
-        <div class="title">advanced filters</div>
+        <div class="title">
+          <i class="fas fa-tools"></i>
+          advanced filters
+        </div>
         <div class="buttons">
           <button class="noFilters">clear filters</button>
         </div>
       </div>
       <div class="buttonsAndTitle">
-        <div class="title">difficulty</div>
+        <div class="title">
+          <i class="fas fa-star"></i>
+          difficulty
+        </div>
         <div class="buttons filterGroup" group="difficulty">
           <button filter="normal">normal</button>
           <button filter="expert">expert</button>
@@ -423,14 +430,20 @@
         </div>
       </div>
       <div class="buttonsAndTitle">
-        <div class="title">personal best</div>
+        <div class="title">
+          <i class="fas fa-crown"></i>
+          personal best
+        </div>
         <div class="buttons filterGroup" group="pb">
           <button filter="no">no</button>
           <button filter="yes">yes</button>
         </div>
       </div>
       <div class="buttonsAndTitle">
-        <div class="title">mode</div>
+        <div class="title">
+          <i class="fas fa fa-bars"></i>
+          mode
+        </div>
         <div class="buttons filterGroup" group="mode">
           <button filter="words">words</button>
           <button filter="time">time</button>
@@ -440,7 +453,10 @@
         </div>
       </div>
       <div class="buttonsAndTitle">
-        <div class="title">quote length</div>
+        <div class="title">
+          <i class="fas fa-quote-right"></i>
+          quote length
+        </div>
         <div class="buttons filterGroup" group="quoteLength">
           <button filter="short">short</button>
           <button filter="medium">medium</button>
@@ -449,7 +465,10 @@
         </div>
       </div>
       <div class="buttonsAndTitle">
-        <div class="title">words</div>
+        <div class="title">
+          <i class="fas fa-font"></i>
+          words
+        </div>
         <div class="buttons filterGroup" group="words">
           <button filter="10">10</button>
           <button filter="25">25</button>
@@ -459,7 +478,10 @@
         </div>
       </div>
       <div class="buttonsAndTitle">
-        <div class="title">time</div>
+        <div class="title">
+          <i class="fas fa-clock"></i>
+          time
+        </div>
         <div class="buttons filterGroup" group="time">
           <button filter="15">15</button>
           <button filter="30">30</button>
@@ -469,14 +491,20 @@
         </div>
       </div>
       <div class="buttonsAndTitle">
-        <div class="title">punctuation</div>
+        <div class="title">
+          <i class="fas fa-at"></i>
+          punctuation
+        </div>
         <div class="buttons filterGroup" group="punctuation">
           <button filter="on">on</button>
           <button filter="off">off</button>
         </div>
       </div>
       <div class="buttonsAndTitle">
-        <div class="title">numbers</div>
+        <div class="title">
+          <i class="fas fa-hashtag"></i>
+          numbers
+        </div>
         <div class="buttons filterGroup" group="numbers">
           <button filter="on">on</button>
           <button filter="off">off</button>
@@ -484,15 +512,24 @@
       </div>
       <div class="tripleSelectsColumn">
         <div class="buttonsAndTitle tags">
-          <div class="title">tags</div>
+          <div class="title">
+            <i class="fas fa-tag"></i>
+            tags
+          </div>
           <div class="select filterGroup" group="tags"></div>
         </div>
         <div class="buttonsAndTitle funbox">
-          <div class="title">funbox</div>
+          <div class="title">
+            <i class="fas fa-gamepad"></i>
+            funbox
+          </div>
           <div class="select filterGroup" group="funbox"></div>
         </div>
         <div class="buttonsAndTitle languages">
-          <div class="title">language</div>
+          <div class="title">
+            <i class="fas fa-globe-americas"></i>
+            language
+          </div>
           <div class="select filterGroup" group="language"></div>
         </div>
       </div>
@@ -513,8 +550,8 @@
         <div class="text"></div>
         <div class="buttons">
           <button class="toggleResultsOnChart">
-            <i class="fas fa-keyboard"></i>
-            Results
+            <i class="fas fa-tachometer-alt"></i>
+            Speed
           </button>
           <button class="toggleAccuracyOnChart">
             <i class="fas fa-bullseye"></i>

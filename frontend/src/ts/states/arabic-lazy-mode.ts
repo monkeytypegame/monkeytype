@@ -1,7 +1,16 @@
+import { z } from "zod";
+import { LocalStorageWithSchema } from "../utils/local-storage-with-schema";
+
+const ls = new LocalStorageWithSchema({
+  key: "prefersArabicLazyMode",
+  schema: z.boolean(),
+  fallback: true,
+});
+
 export function get(): boolean {
-  return (localStorage.getItem("prefersArabicLazyMode") ?? "true") === "true";
+  return ls.get();
 }
 
 export function set(value: boolean): void {
-  localStorage.setItem("prefersArabicLazyMode", value ? "true" : "false");
+  ls.set(value);
 }

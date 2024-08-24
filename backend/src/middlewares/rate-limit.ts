@@ -1,17 +1,19 @@
 import _ from "lodash";
 import MonkeyError from "../utils/error";
-import { Response, NextFunction } from "express";
+import type { Response, NextFunction } from "express";
 import { RateLimiterMemory } from "rate-limiter-flexible";
-import rateLimit, { Options } from "express-rate-limit";
+import rateLimit, { type Options } from "express-rate-limit";
 import { isDevEnvironment } from "../utils/misc";
 
 const REQUEST_MULTIPLIER = isDevEnvironment() ? 100 : 1;
 
 const getKey = (req: MonkeyTypes.Request, _res: Response): string => {
-  return ((req.headers["cf-connecting-ip"] as string) ||
+  return (
+    (req.headers["cf-connecting-ip"] as string) ||
     (req.headers["x-forwarded-for"] as string) ||
     (req.ip as string) ||
-    "255.255.255.255") as string;
+    "255.255.255.255"
+  );
 };
 
 const getKeyWithUid = (req: MonkeyTypes.Request, _res: Response): string => {
@@ -61,7 +63,8 @@ export async function badAuthRateLimiterHandler(
   const badAuthEnabled =
     req?.ctx?.configuration?.rateLimiting?.badAuthentication?.enabled;
   if (!badAuthEnabled) {
-    return next();
+    next();
+    return;
   }
 
   try {
@@ -75,7 +78,8 @@ export async function badAuthRateLimiterHandler(
       );
     }
   } catch (error) {
-    return next(error);
+    next(error);
+    return;
   }
 
   next();
@@ -115,6 +119,13 @@ export const configUpdate = rateLimit({
 });
 
 export const configGet = rateLimit({
+  windowMs: ONE_HOUR_MS,
+  max: 120 * REQUEST_MULTIPLIER,
+  keyGenerator: getKeyWithUid,
+  handler: customHandler,
+});
+
+export const configDelete = rateLimit({
   windowMs: ONE_HOUR_MS,
   max: 120 * REQUEST_MULTIPLIER,
   keyGenerator: getKeyWithUid,

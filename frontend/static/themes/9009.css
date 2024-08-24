@@ -28,14 +28,14 @@ key {
   background-color: var(--main-color);
 }
 
-nav .textButton {
+nav > .textButton {
   color: var(--main-color);
 }
 
-nav .textButton:nth-child(1) {
+nav > .textButton:nth-child(1) {
   color: var(--error-color);
 }
 
-nav .textButton:nth-child(4) {
+nav > .textButton:nth-child(4) {
   color: var(--caret-color);
 }

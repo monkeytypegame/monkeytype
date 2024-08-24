@@ -1,46 +1,10 @@
 import * as TestLogic from "../../test/test-logic";
 import * as TestUI from "../../test/test-ui";
-import * as PractiseWords from "../../test/practise-words";
+import * as PractiseWordsModal from "../../modals/practise-words";
 import * as Notifications from "../../elements/notifications";
 import * as TestInput from "../../test/test-input";
 import * as TestWords from "../../test/test-words";
 import Config from "../../config";
-
-const practiceSubgroup: MonkeyTypes.CommandsSubgroup = {
-  title: "Practice words...",
-  list: [
-    {
-      id: "practiseWordsMissed",
-      display: "missed",
-      exec: (): void => {
-        PractiseWords.init(true, false);
-        TestLogic.restart({
-          practiseMissed: true,
-        });
-      },
-    },
-    {
-      id: "practiseWordsSlow",
-      display: "slow",
-      exec: (): void => {
-        PractiseWords.init(false, true);
-        TestLogic.restart({
-          practiseMissed: true,
-        });
-      },
-    },
-    {
-      id: "practiseWordsBoth",
-      display: "both",
-      exec: (): void => {
-        PractiseWords.init(true, true);
-        TestLogic.restart({
-          practiseMissed: true,
-        });
-      },
-    },
-  ],
-};
 
 const commands: MonkeyTypes.Command[] = [
   {
@@ -70,9 +34,15 @@ const commands: MonkeyTypes.Command[] = [
   },
   {
     id: "practiseWords",
-    display: "Practice words...",
+    display: "Practice words",
     icon: "fa-exclamation-triangle",
-    subgroup: practiceSubgroup,
+    opensModal: true,
+    exec: (options): void => {
+      PractiseWordsModal.show({
+        animationMode: "modalOnly",
+        modalChain: options.commandlineModal,
+      });
+    },
     available: (): boolean => {
       return TestUI.resultVisible;
     },

@@ -1,8 +1,11 @@
-import * as db from "../init/db";
 import chalk from "chalk";
-import { format, createLogger, transports, Logger } from "winston";
+import {
+  format,
+  createLogger,
+  transports,
+  type Logger as LoggerType,
+} from "winston";
 import { resolve } from "path";
-import { ObjectId } from "mongodb";
 
 const errorColor = chalk.red.bold;
 const warningColor = chalk.yellow.bold;
@@ -11,14 +14,6 @@ const infoColor = chalk.white;
 
 const logFolderPath = process.env["LOG_FOLDER_PATH"] ?? "./logs";
 const maxLogSize = parseInt(process.env["LOG_FILE_MAX_SIZE"] ?? "10485760");
-
-type Log = {
-  type?: string;
-  timestamp: number;
-  uid: string;
-  event: string;
-  message: string | Record<string, unknown>;
-};
 
 const customLevels = {
   error: 0,
@@ -75,6 +70,7 @@ const logger = createLogger({
     new transports.Console({
       level: "success",
       format: consoleFormat,
+      handleExceptions: true,
     }),
   ],
   exceptionHandlers: [
@@ -85,33 +81,11 @@ const logger = createLogger({
   ],
 });
 
-const logToDb = async (
-  event: string,
-  message: string | Record<string, unknown>,
-  uid?: string
-): Promise<void> => {
-  const logsCollection = db.collection<Log>("logs");
-
-  logger.info(`${event}\t${uid}\t${JSON.stringify(message)}`);
-  logsCollection
-    .insertOne({
-      _id: new ObjectId(),
-      timestamp: Date.now(),
-      uid: uid ?? "",
-      event,
-      message,
-    })
-    .catch((error) => {
-      logger.error(`Could not log to db: ${error.message}`);
-    });
-};
-
 const Logger = {
-  error: (message: string): Logger => logger.error(message),
-  warning: (message: string): Logger => logger.warning(message),
-  info: (message: string): Logger => logger.info(message),
-  success: (message: string): Logger => logger.log("success", message),
-  logToDb,
+  error: (message: string): LoggerType => logger.error(message),
+  warning: (message: string): LoggerType => logger.warning(message),
+  info: (message: string): LoggerType => logger.info(message),
+  success: (message: string): LoggerType => logger.log("success", message),
 };
 
 export default Logger;

@@ -126,3 +126,5 @@ copyAnticheatToDev.sh
 # ignore generated fonts
 frontend/src/webfonts-generated
 frontend/static/webfonts-preview
+
+.turbo

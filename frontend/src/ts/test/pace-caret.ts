@@ -66,21 +66,31 @@ async function resetCaretPosition(): Promise<void> {
 
 export async function init(): Promise<void> {
   $("#paceCaret").addClass("hidden");
-  const mode2 = Misc.getMode2(
-    Config,
-    TestWords.currentQuote
-  ) as SharedTypes.Config.Mode2<typeof Config.mode>;
-  let wpm;
+  const mode2 = Misc.getMode2(Config, TestWords.currentQuote);
+  let wpm = 0;
   if (Config.paceCaret === "pb") {
-    wpm = await DB.getLocalPB(
+    wpm =
+      (
+        await DB.getLocalPB(
+          Config.mode,
+          mode2,
+          Config.punctuation,
+          Config.numbers,
+          Config.language,
+          Config.difficulty,
+          Config.lazyMode,
+          Config.funbox
+        )
+      )?.wpm ?? 0;
+  } else if (Config.paceCaret === "tagPb") {
+    wpm = await DB.getActiveTagsPB(
       Config.mode,
       mode2,
       Config.punctuation,
       Config.numbers,
       Config.language,
       Config.difficulty,
-      Config.lazyMode,
-      Config.funbox
+      Config.lazyMode
     );
   } else if (Config.paceCaret === "average") {
     [wpm] = await DB.getUserAverage10(
@@ -226,7 +236,6 @@ export async function update(expectedStepEnd: number): Promise<void> {
         word.offsetTop +
         currentLetter.offsetTop -
         Config.fontSize * Numbers.convertRemToPixels(1) * 0.1;
-      newLeft;
       if (settings.currentLetterIndex === -1) {
         newLeft =
           word.offsetLeft +

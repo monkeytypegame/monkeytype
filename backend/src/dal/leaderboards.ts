@@ -5,22 +5,40 @@ import { setLeaderboard } from "../utils/prometheus";
 import { isDevEnvironment } from "../utils/misc";
 import { getCachedConfiguration } from "../init/configuration";
 
+import { addLog } from "./logs";
+import { Collection } from "mongodb";
+import {
+  LeaderboardEntry,
+  LeaderboardRank,
+} from "@monkeytype/contracts/schemas/leaderboards";
+import { omit } from "lodash";
+
+export type DBLeaderboardEntry = LeaderboardEntry & {
+  _id: ObjectId;
+};
+
+export const getCollection = (key: {
+  language: string;
+  mode: string;
+  mode2: string;
+}): Collection<DBLeaderboardEntry> =>
+  db.collection<DBLeaderboardEntry>(
+    `leaderboards.${key.language}.${key.mode}.${key.mode2}`
+  );
+
 export async function get(
   mode: string,
   mode2: string,
   language: string,
   skip: number,
   limit = 50
-): Promise<SharedTypes.LeaderboardEntry[] | false> {
+): Promise<DBLeaderboardEntry[] | false> {
   //if (leaderboardUpdating[`${language}_${mode}_${mode2}`]) return false;
 
   if (limit > 50 || limit <= 0) limit = 50;
   if (skip < 0) skip = 0;
   try {
-    const preset = await db
-      .collection<SharedTypes.LeaderboardEntry>(
-        `leaderboards.${language}.${mode}.${mode2}`
-      )
+    const preset = await getCollection({ language, mode, mode2 })
       .find()
       .sort({ rank: 1 })
       .skip(skip)
@@ -31,8 +49,9 @@ export async function get(
       .premium.enabled;
 
     if (!premiumFeaturesEnabled) {
-      preset.forEach((it) => (it.isPremium = undefined));
+      return preset.map((it) => omit(it, "isPremium"));
     }
+
     return preset;
   } catch (e) {
     if (e.error === 175) {
@@ -43,32 +62,26 @@ export async function get(
   }
 }
 
-type GetRankResponse = {
-  count: number;
-  rank: number | null;
-  entry: SharedTypes.LeaderboardEntry | null;
-};
-
 export async function getRank(
   mode: string,
   mode2: string,
   language: string,
   uid: string
-): Promise<GetRankResponse | false> {
+): Promise<LeaderboardRank | false> {
   try {
-    const entry = await db
-      .collection<SharedTypes.LeaderboardEntry>(
-        `leaderboards.${language}.${mode}.${mode2}`
-      )
-      .findOne({ uid });
-    const count = await db
-      .collection(`leaderboards.${language}.${mode}.${mode2}`)
-      .estimatedDocumentCount();
+    const entry = await getCollection({ language, mode, mode2 }).findOne({
+      uid,
+    });
+    const count = await getCollection({
+      language,
+      mode,
+      mode2,
+    }).estimatedDocumentCount();
 
     return {
       count,
-      rank: entry ? entry.rank : null,
-      entry,
+      rank: entry?.rank,
+      entry: entry !== null ? entry : undefined,
     };
   } catch (e) {
     if (e.error === 175) {
@@ -91,7 +104,7 @@ export async function update(
   const lbCollectionName = `leaderboards.${language}.${mode}.${mode2}`;
   const lb = db
     .collection<MonkeyTypes.DBUser>("users")
-    .aggregate<SharedTypes.LeaderboardEntry>(
+    .aggregate<LeaderboardEntry>(
       [
         {
           $match: {
@@ -238,7 +251,7 @@ export async function update(
   const timeToRunIndex = (end2 - start2) / 1000;
   const timeToSaveHistogram = (end3 - start3) / 1000; // not sent to prometheus yet
 
-  void Logger.logToDb(
+  void addLog(
     `system_lb_update_${language}_${mode}_${mode2}`,
     `Aggregate ${timeToRunAggregate}s, loop 0s, insert 0s, index ${timeToRunIndex}s, histogram ${timeToSaveHistogram}`
   );

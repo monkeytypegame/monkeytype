@@ -28,7 +28,8 @@ function getParams(match: {
     (result) => result[1]
   );
 
-  return Object.fromEntries(keys.map((key, index) => [key, values[index]]));
+  const a = keys.map((key, index) => [key, values[index]]);
+  return Object.fromEntries(a) as Record<string, string>;
 }
 
 type Route = {
@@ -102,6 +103,22 @@ const routes: Route[] = [
         return;
       }
       void PageController.change("account", {
+        data: options.data,
+      });
+    },
+  },
+  {
+    path: "/account-settings",
+    load: (_params, options): void => {
+      if (!Auth) {
+        navigate("/");
+        return;
+      }
+      if (!isAuthenticated()) {
+        navigate("/login");
+        return;
+      }
+      void PageController.change("accountSettings", {
         data: options.data,
       });
     },

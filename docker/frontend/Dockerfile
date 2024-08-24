@@ -1,4 +1,4 @@
-FROM node:18.19.1-alpine3.19 as builder
+FROM node:20.16.0-alpine3.19 AS builder
 WORKDIR /app
 
 #ENV
@@ -6,19 +6,22 @@ ENV BACKEND_URL=###MONKEYTYPE_BACKENDURL###
 ENV RECAPTCHA_SITE_KEY=###RECAPTCHA_SITE_KEY###
 
 #COPY
-COPY .eslintrc.json .eslintrc.json
 COPY package.json package.json
-COPY package-lock.json package-lock.json
-COPY shared-types shared-types
+COPY pnpm-lock.yaml pnpm-lock.yaml
+COPY pnpm-workspace.yaml pnpm-workspace.yaml
+COPY turbo.json turbo.json
+COPY packages packages
 COPY frontend frontend
+
 COPY docker/frontend/firebase-config-live.ts frontend/src/ts/constants/firebase-config.ts
 COPY docker/frontend/firebase-config-live.ts frontend/src/ts/constants/firebase-config-live.ts
 
-#BUILD
-RUN npm ci
-RUN cd frontend && npm ci
-RUN cd frontend && npx vite build
+#gimme pnpm
+RUN npm i -g pnpm
 
+#build
+RUN pnpm i --frozen-lockfile
+RUN npm run build
 
 # COPY to target
 FROM nginx:mainline-alpine

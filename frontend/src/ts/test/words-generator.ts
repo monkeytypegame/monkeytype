@@ -433,7 +433,10 @@ export function getWordsLimit(): number {
 
   //custom
   if (Config.mode === "custom") {
-    if (CustomText.getLimitValue() === 0) {
+    if (
+      CustomText.getLimitValue() === 0 ||
+      CustomText.getLimitMode() === "time"
+    ) {
       limit = 100;
     } else {
       limit =
@@ -669,18 +672,18 @@ export async function generateWords(
   }
 
   ret.hasTab =
-    ret.words.some((w) => /\t/.test(w)) ||
-    currentWordset.words.some((w) => /\t/.test(w)) ||
+    ret.words.some((w) => w.includes("\t")) ||
+    currentWordset.words.some((w) => w.includes("\t")) ||
     (Config.mode === "quote" &&
       (quote as MonkeyTypes.QuoteWithTextSplit).textSplit.some((w) =>
-        /\t/.test(w)
+        w.includes("\t")
       ));
   ret.hasNewline =
-    ret.words.some((w) => /\n/.test(w)) ||
-    currentWordset.words.some((w) => /\n/.test(w)) ||
+    ret.words.some((w) => w.includes("\n")) ||
+    currentWordset.words.some((w) => w.includes("\n")) ||
     (Config.mode === "quote" &&
       (quote as MonkeyTypes.QuoteWithTextSplit).textSplit.some((w) =>
-        /\n/.test(w)
+        w.includes("\n")
       ));
 
   sectionHistory = []; //free up a bit of memory? is that even a thing?
@@ -756,6 +759,7 @@ export async function getNextWord(
       }
     } else {
       console.debug("Repeated word: ", repeated);
+      sectionIndex++;
       return repeated;
     }
   }

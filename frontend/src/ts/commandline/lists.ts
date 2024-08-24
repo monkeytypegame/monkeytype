@@ -56,6 +56,7 @@ import KeymapModeCommands from "./lists/keymap-mode";
 import KeymapStyleCommands from "./lists/keymap-style";
 import KeymapLegendStyleCommands from "./lists/keymap-legend-style";
 import KeymapShowTopRowCommands from "./lists/keymap-show-top-row";
+import KeymapSizeCommands from "./lists/keymap-size";
 import EnableAdsCommands from "./lists/enable-ads";
 import MonkeyPowerLevelCommands from "./lists/monkey-power-level";
 import BailOutCommands from "./lists/bail-out";
@@ -102,6 +103,7 @@ import * as ShareTestSettingsPopup from "../modals/share-test-settings";
 import * as TestStats from "../test/test-stats";
 import * as QuoteSearchModal from "../modals/quote-search";
 import * as FPSCounter from "../elements/fps-counter";
+import { migrateConfig } from "../utils/config";
 
 const layoutsPromise = JSONData.getLayoutsList();
 layoutsPromise
@@ -109,7 +111,7 @@ layoutsPromise
     updateLayoutsCommands(layouts);
     updateKeymapLayoutsCommands(layouts);
   })
-  .catch((e) => {
+  .catch((e: unknown) => {
     console.error(
       Misc.createErrorMessage(e, "Failed to update layouts commands")
     );
@@ -120,7 +122,7 @@ languagesPromise
   .then((languages) => {
     updateLanguagesCommands(languages);
   })
-  .catch((e) => {
+  .catch((e: unknown) => {
     console.error(
       Misc.createErrorMessage(e, "Failed to update language commands")
     );
@@ -136,7 +138,7 @@ funboxPromise
       };
     }
   })
-  .catch((e) => {
+  .catch((e: unknown) => {
     console.error(
       Misc.createErrorMessage(e, "Failed to update funbox commands")
     );
@@ -147,7 +149,7 @@ fontsPromise
   .then((fonts) => {
     updateFontFamilyCommands(fonts);
   })
-  .catch((e) => {
+  .catch((e: unknown) => {
     console.error(
       Misc.createErrorMessage(e, "Failed to update fonts commands")
     );
@@ -158,7 +160,7 @@ themesPromise
   .then((themes) => {
     updateThemesCommands(themes);
   })
-  .catch((e) => {
+  .catch((e: unknown) => {
     console.error(
       Misc.createErrorMessage(e, "Failed to update themes commands")
     );
@@ -169,7 +171,7 @@ challengesPromise
   .then((challenges) => {
     updateLoadChallengeCommands(challenges);
   })
-  .catch((e) => {
+  .catch((e: unknown) => {
     console.error(
       Misc.createErrorMessage(e, "Failed to update challenges commands")
     );
@@ -245,9 +247,7 @@ export const commands: MonkeyTypes.CommandsSubgroup = {
       icon: "fa-tint",
       exec: ({ input }): void => {
         if (input === undefined) return;
-        void UpdateConfig.setCustomLayoutfluid(
-          input as MonkeyTypes.CustomLayoutFluidSpaces
-        );
+        void UpdateConfig.setCustomLayoutfluid(input);
       },
     },
 
@@ -296,6 +296,7 @@ export const commands: MonkeyTypes.CommandsSubgroup = {
     ...KeymapModeCommands,
     ...KeymapStyleCommands,
     ...KeymapLegendStyleCommands,
+    ...KeymapSizeCommands,
     ...KeymapLayoutsCommands,
     ...KeymapShowTopRowCommands,
 
@@ -371,7 +372,7 @@ export const commands: MonkeyTypes.CommandsSubgroup = {
       exec: async ({ input }): Promise<void> => {
         if (input === undefined || input === "") return;
         try {
-          await UpdateConfig.apply(JSON.parse(input));
+          await UpdateConfig.apply(migrateConfig(JSON.parse(input)));
           UpdateConfig.saveFullConfigToLocalStorage();
           void Settings.update();
           Notifications.add("Done", 1);
@@ -432,7 +433,7 @@ export const commands: MonkeyTypes.CommandsSubgroup = {
           .then(() => {
             Notifications.add("Copied to clipboard", 1);
           })
-          .catch((e) => {
+          .catch((e: unknown) => {
             Notifications.add("Failed to copy to clipboard: " + e, -1);
           });
       },

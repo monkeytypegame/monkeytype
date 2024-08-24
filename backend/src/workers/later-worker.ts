@@ -1,6 +1,6 @@
 import _ from "lodash";
 import IORedis from "ioredis";
-import { Worker, Job, ConnectionOptions } from "bullmq";
+import { Worker, Job, type ConnectionOptions } from "bullmq";
 import Logger from "../utils/logger";
 import { addToInboxBulk } from "../dal/user";
 import GeorgeQueue from "../queues/george-queue";
@@ -9,12 +9,13 @@ import { DailyLeaderboard } from "../utils/daily-leaderboards";
 import { getCachedConfiguration } from "../init/configuration";
 import { formatSeconds, getOrdinalNumberString, mapRange } from "../utils/misc";
 import LaterQueue, {
-  LaterTask,
-  LaterTaskContexts,
-  LaterTaskType,
+  type LaterTask,
+  type LaterTaskContexts,
+  type LaterTaskType,
 } from "../queues/later-queue";
-import { WeeklyXpLeaderboard } from "../services/weekly-xp-leaderboard";
 import { recordTimeToCompleteJob } from "../utils/prometheus";
+import { WeeklyXpLeaderboard } from "../services/weekly-xp-leaderboard";
+import { MonkeyMail } from "@monkeytype/shared-types";
 
 async function handleDailyLeaderboardResults(
   ctx: LaterTaskContexts["daily-leaderboard-results"]
@@ -44,7 +45,7 @@ async function handleDailyLeaderboardResults(
   if (inboxConfig.enabled && xpRewardBrackets.length > 0) {
     const mailEntries: {
       uid: string;
-      mail: SharedTypes.MonkeyMail[];
+      mail: MonkeyMail[];
     }[] = [];
 
     allResults.forEach((entry) => {
@@ -133,7 +134,7 @@ async function handleWeeklyXpLeaderboardResults(
 
   const mailEntries: {
     uid: string;
-    mail: SharedTypes.MonkeyMail[];
+    mail: MonkeyMail[];
   }[] = [];
 
   allResults.forEach((entry) => {

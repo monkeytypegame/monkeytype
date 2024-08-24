@@ -133,11 +133,11 @@ export async function refresh(
         lts = layouts["qwerty"];
         layoutString = "default";
       } else {
-        lts = layouts[Config.layout as keyof typeof layouts];
+        lts = layouts[Config.layout];
         layoutString = Config.layout;
       }
     } else {
-      lts = layouts[Config.keymapLayout as keyof typeof layouts];
+      lts = layouts[Config.keymapLayout];
       layoutString = Config.keymapLayout;
     }
 

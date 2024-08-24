@@ -1,7 +1,7 @@
 import _ from "lodash";
 import joi from "joi";
 import MonkeyError from "../utils/error";
-import { Response, NextFunction, RequestHandler } from "express";
+import type { Response, NextFunction, RequestHandler } from "express";
 
 type ValidationSchema = {
   body?: object;
@@ -19,7 +19,7 @@ type ValidationHandlingOptions = {
 };
 
 type ValidationSchemaOptions = {
-  [schema in keyof ValidationSchema]?: ValidationSchemaOption;
+  [_schema in keyof ValidationSchema]?: ValidationSchemaOption;
 } & ValidationHandlingOptions;
 
 const VALIDATION_SCHEMA_DEFAULT_OPTIONS: ValidationSchemaOptions = {

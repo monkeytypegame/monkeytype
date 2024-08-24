@@ -99,39 +99,75 @@
       </div>
     </a>
     <div></div>
-    <a
-      class="textButton hidden account view-account"
-      href="/account"
-      onclick="this.blur();"
-      router-link
-    >
-      <div class="loading hidden">
-        <i class="fas fa-fw fa-spin fa-circle-notch"></i>
-      </div>
-      <div class="user">
-        <i class="fas fa-fw fa-user"></i>
-      </div>
-      <div class="avatar hidden"></div>
-      <div class="text"></div>
-      <div class="levelAndBar">
-        <div class="level" data-balloon-pos="up">1</div>
-        <div class="xpBar">
-          <div class="bar"></div>
-          <div class="xpGain"></div>
-          <div class="xpBreakdown"></div>
-        </div>
-      </div>
-    </a>
     <button class="text showAlerts" onclick="this.blur();">
       <div class="icon">
         <i class="fas fa-fw fa-bell"></i>
       </div>
       <div class="notificationBubble hidden">5</div>
     </button>
-    <button class="text signInOut" onclick="this.blur();">
-      <div class="icon">
-        <i class="fas fa-fw fa-sign-in-alt"></i>
+    <a
+      class="textButton view-login"
+      href="/login"
+      onclick="this.blur();"
+      router-link
+    >
+      <i class="far fa-fw fa-user"></i>
+    </a>
+    <div class="accountButtonAndMenu hidden">
+      <a
+        class="textButton view-account"
+        href="/account"
+        onclick="this.blur();"
+        router-link
+      >
+        <div class="loading hidden">
+          <i class="fas fa-fw fa-spin fa-circle-notch"></i>
+        </div>
+        <div class="user">
+          <i class="fas fa-fw fa-user"></i>
+        </div>
+        <div class="avatar hidden"></div>
+        <div class="text"></div>
+        <div class="levelAndBar">
+          <div class="level" data-balloon-pos="up">1</div>
+          <div class="xpBar">
+            <div class="bar"></div>
+            <div class="xpGain"></div>
+            <div class="xpBreakdown"></div>
+          </div>
+        </div>
+      </a>
+      <div class="menu">
+        <div class="spacer"></div>
+        <div class="items">
+          <a href="/account" class="button" onclick="this.blur();" router-link>
+            <i class="fas fa-fw fa-chart-line"></i>
+            User stats
+          </a>
+          <a
+            href="/404"
+            class="button goToProfile"
+            onclick="this.blur();"
+            router-link
+          >
+            <i class="fas fa-fw fa-globe-americas"></i>
+            Public profile
+          </a>
+          <a
+            href="/account-settings"
+            class="button"
+            onclick="this.blur();"
+            router-link
+          >
+            <i class="fas fa-fw fa-cog"></i>
+            Account settings
+          </a>
+          <button class="signOut" onclick="this.blur();">
+            <i class="fas fa-fw fa-sign-out-alt"></i>
+            Sign out
+          </button>
+        </div>
       </div>
-    </button>
+    </div>
   </nav>
 </header>

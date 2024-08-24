@@ -1,4 +1,5 @@
 import { navigate } from "../../controllers/route-controller";
+import { isAuthenticated } from "../../firebase";
 import { toggleFullscreen } from "../../utils/misc";
 
 const commands: MonkeyTypes.Command[] = [
@@ -45,9 +46,7 @@ const commands: MonkeyTypes.Command[] = [
     alias: "navigate go to stats",
     icon: "fa-user",
     exec: (): void => {
-      $("header nav .textButton.view-account").hasClass("hidden")
-        ? navigate("/login")
-        : navigate("/account");
+      isAuthenticated() ? navigate("/account") : navigate("/login");
     },
   },
   {

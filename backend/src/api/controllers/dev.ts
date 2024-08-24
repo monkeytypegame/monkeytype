@@ -1,4 +1,4 @@
-import { MonkeyResponse } from "../../utils/monkey-response";
+import { MonkeyResponse2 } from "../../utils/monkey-response";
 import * as UserDal from "../../dal/user";
 import FirebaseAdmin from "../../init/firebase-admin";
 import Logger from "../../utils/logger";
@@ -8,26 +8,28 @@ import * as ResultDal from "../../dal/result";
 import { roundTo2 } from "../../utils/misc";
 import { ObjectId } from "mongodb";
 import * as LeaderboardDal from "../../dal/leaderboards";
-import { isNumber } from "lodash";
 import MonkeyError from "../../utils/error";
 
-type GenerateDataOptions = {
-  firstTestTimestamp: Date;
-  lastTestTimestamp: Date;
-  minTestsPerDay: number;
-  maxTestsPerDay: number;
-};
+import {
+  Mode,
+  PersonalBest,
+  PersonalBests,
+} from "@monkeytype/contracts/schemas/shared";
+import {
+  GenerateDataRequest,
+  GenerateDataResponse,
+} from "@monkeytype/contracts/dev";
 
-const CREATE_RESULT_DEFAULT_OPTIONS: GenerateDataOptions = {
-  firstTestTimestamp: DateUtils.startOfDay(new UTCDate(Date.now())),
-  lastTestTimestamp: DateUtils.endOfDay(new UTCDate(Date.now())),
+const CREATE_RESULT_DEFAULT_OPTIONS = {
+  firstTestTimestamp: DateUtils.startOfDay(new UTCDate(Date.now())).valueOf(),
+  lastTestTimestamp: DateUtils.endOfDay(new UTCDate(Date.now())).valueOf(),
   minTestsPerDay: 0,
   maxTestsPerDay: 50,
 };
 
 export async function createTestData(
-  req: MonkeyTypes.Request
-): Promise<MonkeyResponse> {
+  req: MonkeyTypes.Request2<undefined, GenerateDataRequest>
+): Promise<GenerateDataResponse> {
   const { username, createUser } = req.body;
   const user = await getOrCreateUser(username, "password", createUser);
 
@@ -37,7 +39,7 @@ export async function createTestData(
   await updateUser(uid);
   await updateLeaderboard();
 
-  return new MonkeyResponse("test data created", { uid, email }, 200);
+  return new MonkeyResponse2("test data created", { uid, email });
 }
 
 async function getOrCreateUser(
@@ -49,7 +51,7 @@ async function getOrCreateUser(
 
   if (existingUser !== undefined && existingUser !== null) {
     return existingUser;
-  } else if (createUser === false) {
+  } else if (!createUser) {
     throw new MonkeyError(404, `User ${username} does not exist.`);
   }
 
@@ -68,20 +70,18 @@ async function getOrCreateUser(
 
 async function createTestResults(
   user: MonkeyTypes.DBUser,
-  configOptions: Partial<GenerateDataOptions>
+  configOptions: GenerateDataRequest
 ): Promise<void> {
   const config = {
     ...CREATE_RESULT_DEFAULT_OPTIONS,
     ...configOptions,
   };
-  if (isNumber(config.firstTestTimestamp))
-    config.firstTestTimestamp = toDate(config.firstTestTimestamp);
-  if (isNumber(config.lastTestTimestamp))
-    config.lastTestTimestamp = toDate(config.lastTestTimestamp);
+  const start = toDate(config.firstTestTimestamp);
+  const end = toDate(config.lastTestTimestamp);
 
   const days = DateUtils.eachDayOfInterval({
-    start: config.firstTestTimestamp,
-    end: config.lastTestTimestamp,
+    start,
+    end,
   }).map((day) => ({
     timestamp: DateUtils.startOfDay(day),
     amount: Math.round(random(config.minTestsPerDay, config.maxTestsPerDay)),
@@ -113,7 +113,7 @@ function createResult(
   user: MonkeyTypes.DBUser,
   timestamp: Date //evil, we modify this value
 ): MonkeyTypes.DBResult {
-  const mode: SharedTypes.Config.Mode = randomValue(["time", "words"]);
+  const mode: Mode = randomValue(["time", "words"]);
   const mode2: number =
     mode === "time"
       ? randomValue([15, 30, 60, 120])
@@ -129,7 +129,7 @@ function createResult(
     charStats: [131, 0, 0, 0],
     acc: random(80, 100),
     language: "english",
-    mode: mode as SharedTypes.Config.Mode,
+    mode: mode as Mode,
     mode2: mode2 as unknown as never,
     timestamp: timestamp.valueOf(),
     testDuration: testDuration,
@@ -180,8 +180,11 @@ async function updateUser(uid: string): Promise<void> {
     ])
     .toArray();
 
-  const timeTyping = stats.reduce((a, c) => a + c["timeTyping"], 0);
-  const completedTests = stats.reduce((a, c) => a + c["completedTests"], 0);
+  const timeTyping = stats.reduce((a, c) => (a + c["timeTyping"]) as number, 0);
+  const completedTests = stats.reduce(
+    (a, c) => (a + c["completedTests"]) as number,
+    0
+  );
 
   //update PBs
   const lbPersonalBests: MonkeyTypes.LbPersonalBests = {
@@ -191,14 +194,22 @@ async function updateUser(uid: string): Promise<void> {
     },
   };
 
-  const personalBests: SharedTypes.PersonalBests = {
+  const personalBests: PersonalBests = {
     time: {},
     custom: {},
     words: {},
     zen: {},
     quote: {},
   };
-  const modes = stats.map((it) => it["_id"]);
+  const modes = stats.map(
+    (it) =>
+      it["_id"] as {
+        language: string;
+        mode: "time" | "custom" | "words" | "quote" | "zen";
+        mode2: `${number}` | "custom" | "zen";
+      }
+  );
+
   for (const mode of modes) {
     const best = (
       await ResultDal.getResultCollection()
@@ -228,7 +239,7 @@ async function updateUser(uid: string): Promise<void> {
       wpm: best.wpm,
       numbers: best.numbers,
       timestamp: best.timestamp,
-    } as SharedTypes.PersonalBest;
+    } as PersonalBest;
 
     personalBests[mode.mode][mode.mode2].push(entry);
 
@@ -251,7 +262,7 @@ async function updateUser(uid: string): Promise<void> {
         timeTyping: timeTyping,
         completedTests: completedTests,
         startedTests: Math.round(completedTests * 1.25),
-        personalBests: personalBests as SharedTypes.PersonalBests,
+        personalBests: personalBests,
         lbPersonalBests: lbPersonalBests,
       },
     }

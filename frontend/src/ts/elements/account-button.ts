@@ -1,9 +1,13 @@
-import { getSnapshot } from "../db";
-import { isAuthenticated } from "../firebase";
 import * as Misc from "../utils/misc";
 import * as Levels from "../utils/levels";
 import { getAll } from "./theme-colors";
 import * as SlowTimer from "../states/slow-timer";
+import { XpBreakdown } from "@monkeytype/contracts/schemas/results";
+import {
+  getHtmlByUserFlags,
+  SupportsFlags,
+} from "../controllers/user-flag-controller";
+import { isAuthenticated } from "../firebase";
 
 let usingAvatar = false;
 
@@ -12,13 +16,20 @@ export function skipXpBreakdown(): void {
   skipBreakdown = true;
 }
 
+export function hide(): void {
+  $("nav .accountButtonAndMenu").addClass("hidden");
+  $("nav .textButton.view-login").addClass("hidden");
+}
+
 export function loading(state: boolean): void {
   if (state) {
     $("header nav .account").css("opacity", 1).css("pointer-events", "none");
 
     if (usingAvatar) {
-      $("header nav .account .loading").css("opacity", 1).removeClass("hidden");
-      $("header nav .account .avatar")
+      $("header nav .view-account .loading")
+        .css("opacity", 1)
+        .removeClass("hidden");
+      $("header nav .view-account .avatar")
         .stop(true, true)
         .css({ opacity: 1 })
         .animate(
@@ -27,11 +38,11 @@ export function loading(state: boolean): void {
           },
           100,
           () => {
-            $("header nav .account .avatar").addClass("hidden");
+            $("header nav .view-account .avatar").addClass("hidden");
           }
         );
     } else {
-      $("header nav .account .loading")
+      $("header nav .view-account .loading")
         .stop(true, true)
         .removeClass("hidden")
         .css({ opacity: 0 })
@@ -41,7 +52,7 @@ export function loading(state: boolean): void {
           },
           100
         );
-      $("header nav .account .user")
+      $("header nav .view-account .user")
         .stop(true, true)
         .css({ opacity: 1 })
         .animate(
@@ -50,7 +61,7 @@ export function loading(state: boolean): void {
           },
           100,
           () => {
-            $("header nav .account .user").addClass("hidden");
+            $("header nav .view-account .user").addClass("hidden");
           }
         );
     }
@@ -58,8 +69,10 @@ export function loading(state: boolean): void {
     $("header nav .account").css("opacity", 1).css("pointer-events", "auto");
 
     if (usingAvatar) {
-      $("header nav .account .loading").css("opacity", 1).addClass("hidden");
-      $("header nav .account .avatar")
+      $("header nav .view-account .loading")
+        .css("opacity", 1)
+        .addClass("hidden");
+      $("header nav .view-account .avatar")
         .stop(true, true)
         .removeClass("hidden")
         .css({ opacity: 0 })
@@ -70,7 +83,7 @@ export function loading(state: boolean): void {
           100
         );
     } else {
-      $("header nav .account .loading")
+      $("header nav .view-account .loading")
         .stop(true, true)
         .css({ opacity: 1 })
         .animate(
@@ -79,10 +92,10 @@ export function loading(state: boolean): void {
           },
           100,
           () => {
-            $("header nav .account .loading").addClass("hidden");
+            $("header nav .view-account .loading").addClass("hidden");
           }
         );
-      $("header nav .account .user")
+      $("header nav .view-account .user")
         .stop(true, true)
         .removeClass("hidden")
         .css({ opacity: 0 })
@@ -96,61 +109,82 @@ export function loading(state: boolean): void {
   }
 }
 
-export async function update(
-  xp?: number,
-  discordId?: string,
-  discordAvatar?: string
-): Promise<void> {
-  if (isAuthenticated()) {
-    if (xp !== undefined) {
-      const xpDetails = Levels.getXpDetails(xp);
-      const levelCompletionRatio =
-        xpDetails.levelCurrentXp / xpDetails.levelMaxXp;
-      $("header nav .level").text(xpDetails.level);
-      $("header nav .bar").css({
-        width: levelCompletionRatio * 100 + "%",
-      });
-    }
-    if ((discordAvatar ?? "") && (discordId ?? "")) {
-      void Misc.getDiscordAvatarUrl(discordId, discordAvatar).then(
-        (discordAvatarUrl) => {
-          if (discordAvatarUrl !== null) {
-            $("header nav .account .avatar").css(
-              "background-image",
-              `url(${discordAvatarUrl})`
-            );
-            usingAvatar = true;
+export function updateName(name: string): void {
+  $("header nav .view-account > .text").text(name);
+}
 
-            $("header nav .account .user").addClass("hidden");
-            $("header nav .account .avatar").removeClass("hidden");
-          }
+function updateFlags(flags: SupportsFlags): void {
+  $("nav .textButton.view-account > .text").append(
+    getHtmlByUserFlags(flags, { iconsOnly: true })
+  );
+}
+
+function updateXp(xp: number): void {
+  const xpDetails = Levels.getXpDetails(xp);
+  const levelCompletionRatio = xpDetails.levelCurrentXp / xpDetails.levelMaxXp;
+  $("header nav .level").text(xpDetails.level);
+  $("header nav .bar").css({
+    width: levelCompletionRatio * 100 + "%",
+  });
+}
+
+export function updateAvatar(
+  discordId: string | undefined,
+  discordAvatar: string | undefined
+): void {
+  if ((discordAvatar ?? "") && (discordId ?? "")) {
+    void Misc.getDiscordAvatarUrl(discordId, discordAvatar).then(
+      (discordAvatarUrl) => {
+        if (discordAvatarUrl !== null) {
+          $("header nav .view-account .avatar").css(
+            "background-image",
+            `url(${discordAvatarUrl})`
+          );
+          usingAvatar = true;
+
+          $("header nav .view-account .user").addClass("hidden");
+          $("header nav .view-account .avatar").removeClass("hidden");
         }
-      );
-    } else {
-      $("header nav .account .avatar").addClass("hidden");
-      $("header nav .account .user").removeClass("hidden");
-    }
-    $("nav .textButton.account")
-      .removeClass("hidden")
-      .css({ opacity: 0 })
-      .animate(
-        {
-          opacity: 1,
-        },
-        125
-      );
+      }
+    );
   } else {
-    $("nav .textButton.account")
-      .css({ opacity: 1 })
-      .animate(
-        {
-          opacity: 0,
-        },
-        125,
-        () => {
-          $("nav .textButton.account").addClass("hidden");
-        }
-      );
+    $("header nav .view-account .avatar").addClass("hidden");
+    $("header nav .view-account .user").removeClass("hidden");
+  }
+}
+
+export function update(snapshot: MonkeyTypes.Snapshot | undefined): void {
+  if (isAuthenticated()) {
+    // this function is called after the snapshot is loaded (awaited), so it should be fine
+    const { xp, discordId, discordAvatar, name } =
+      snapshot as MonkeyTypes.Snapshot;
+
+    updateName(name);
+    updateFlags(snapshot ?? {});
+    updateXp(xp);
+    updateAvatar(discordId ?? "", discordAvatar ?? "");
+
+    $("nav .accountButtonAndMenu .menu .items .goToProfile").attr(
+      "href",
+      `/profile/${name}`
+    );
+    void Misc.swapElements(
+      $("nav .textButton.view-login"),
+      $("nav .accountButtonAndMenu"),
+      250
+    );
+  } else {
+    void Misc.swapElements(
+      $("nav .accountButtonAndMenu"),
+      $("nav .textButton.view-login"),
+      250,
+      async () => {
+        updateName("");
+        updateFlags({});
+        updateXp(0);
+        updateAvatar(undefined, undefined);
+      }
+    );
   }
 }
 
@@ -167,9 +201,6 @@ export async function updateXpBar(
   const endingLevel =
     endingXp.level + endingXp.levelCurrentXp / endingXp.levelMaxXp;
 
-  const snapshot = getSnapshot();
-  if (!snapshot) return;
-
   if (!skipBreakdown) {
     const xpBarPromise = animateXpBar(startingLevel, endingLevel);
     const xpBreakdownPromise = animateXpBreakdown(addedXp, breakdown);
@@ -178,7 +209,7 @@ export async function updateXpBar(
     await Misc.sleep(2000);
   }
 
-  $("nav .level").text(Levels.getLevelFromTotalXp(snapshot.xp));
+  $("nav .level").text(Levels.getLevelFromTotalXp(currentXp + addedXp));
   $("nav .xpBar")
     .stop(true, true)
     .css("opacity", 1)
@@ -189,7 +220,7 @@ export async function updateXpBar(
 
 async function animateXpBreakdown(
   addedXp: number,
-  breakdown?: Record<string, number>
+  breakdown?: XpBreakdown
 ): Promise<void> {
   if (!breakdown) {
     $("nav .xpBar .xpGain").text(`+${addedXp}`);
@@ -259,84 +290,84 @@ async function animateXpBreakdown(
 
   xpGain.text(`+0`);
   xpBreakdown.append(
-    `<div class='text next'>time typing +${breakdown["base"]}</div>`
+    `<div class='text next'>time typing +${breakdown.base}</div>`
   );
   total += breakdown["base"] ?? 0;
-  if (breakdown["100%"]) {
+  if (breakdown.fullAccuracy) {
     await Misc.sleep(delay);
-    await append(`perfect +${breakdown["100%"]}`);
-    total += breakdown["100%"];
-  } else if (breakdown["corrected"]) {
+    await append(`perfect +${breakdown.fullAccuracy}`);
+    total += breakdown.fullAccuracy;
+  } else if (breakdown.corrected) {
     await Misc.sleep(delay);
-    await append(`clean +${breakdown["corrected"]}`);
-    total += breakdown["corrected"];
+    await append(`clean +${breakdown.corrected}`);
+    total += breakdown.corrected;
   }
 
   if (skipBreakdown) return;
 
-  if (breakdown["quote"]) {
+  if (breakdown.quote) {
     await Misc.sleep(delay);
-    await append(`quote +${breakdown["quote"]}`);
-    total += breakdown["quote"];
+    await append(`quote +${breakdown.quote}`);
+    total += breakdown.quote;
   } else {
-    if (breakdown["punctuation"]) {
+    if (breakdown.punctuation) {
       await Misc.sleep(delay);
-      await append(`punctuation +${breakdown["punctuation"]}`);
-      total += breakdown["punctuation"];
+      await append(`punctuation +${breakdown.punctuation}`);
+      total += breakdown.punctuation;
     }
-    if (breakdown["numbers"]) {
+    if (breakdown.numbers) {
       await Misc.sleep(delay);
-      await append(`numbers +${breakdown["numbers"]}`);
-      total += breakdown["numbers"];
+      await append(`numbers +${breakdown.numbers}`);
+      total += breakdown.numbers;
     }
   }
 
   if (skipBreakdown) return;
 
-  if (breakdown["funbox"]) {
+  if (breakdown.funbox) {
     await Misc.sleep(delay);
-    await append(`funbox +${breakdown["funbox"]}`);
-    total += breakdown["funbox"];
+    await append(`funbox +${breakdown.funbox}`);
+    total += breakdown.funbox;
   }
 
   if (skipBreakdown) return;
 
-  if (breakdown["streak"]) {
+  if (breakdown.streak) {
     await Misc.sleep(delay);
-    await append(`streak +${breakdown["streak"]}`);
-    total += breakdown["streak"];
+    await append(`streak +${breakdown.streak}`);
+    total += breakdown.streak;
   }
 
   if (skipBreakdown) return;
 
-  if (breakdown["accPenalty"]) {
+  if (breakdown.accPenalty) {
     await Misc.sleep(delay);
-    await append(`accuracy penalty -${breakdown["accPenalty"]}`);
-    total -= breakdown["accPenalty"];
+    await append(`accuracy penalty -${breakdown.accPenalty}`);
+    total -= breakdown.accPenalty;
   }
 
   if (skipBreakdown) return;
 
-  if (breakdown["incomplete"]) {
+  if (breakdown.incomplete) {
     await Misc.sleep(delay);
-    await append(`incomplete tests +${breakdown["incomplete"]}`);
-    total += breakdown["incomplete"];
+    await append(`incomplete tests +${breakdown.incomplete}`);
+    total += breakdown.incomplete;
   }
 
   if (skipBreakdown) return;
 
-  if (breakdown["configMultiplier"]) {
+  if (breakdown.configMultiplier) {
     await Misc.sleep(delay);
-    await append(`global multiplier x${breakdown["configMultiplier"]}`);
-    total *= breakdown["configMultiplier"];
+    await append(`global multiplier x${breakdown.configMultiplier}`);
+    total *= breakdown.configMultiplier;
   }
 
   if (skipBreakdown) return;
 
-  if (breakdown["daily"]) {
+  if (breakdown.daily) {
     await Misc.sleep(delay);
-    await append(`daily bonus +${breakdown["daily"]}`);
-    total += breakdown["daily"];
+    await append(`daily bonus +${breakdown.daily}`);
+    total += breakdown.daily;
   }
 
   if (skipBreakdown) return;
@@ -478,4 +509,9 @@ async function flashLevel(): Promise<void> {
         },
       }
     );
+}
+
+const coarse = window.matchMedia("(pointer:coarse)")?.matches;
+if (coarse) {
+  $("nav .accountButtonAndMenu .textButton.view-account").attr("href", "");
 }

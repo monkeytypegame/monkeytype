@@ -1,7 +1,10 @@
 // Import the functions you need from the SDKs you need
 import { FirebaseApp, initializeApp } from "firebase/app";
 import { getAuth, Auth as AuthType, User } from "firebase/auth";
-import { firebaseConfig } from "./constants/firebase-config"; // eslint-disable-line require-path-exists/exists
+// eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
+//@ts-ignore
+// eslint-disable-next-line import/no-unresolved
+import { firebaseConfig } from "./constants/firebase-config";
 import * as Notifications from "./elements/notifications";
 import { createErrorMessage, isDevEnvironment } from "./utils/misc";
 

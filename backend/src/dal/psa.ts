@@ -1,7 +1,8 @@
+import { PSA } from "@monkeytype/contracts/schemas/psas";
 import * as db from "../init/db";
 
-type PSA = MonkeyTypes.WithObjectId<SharedTypes.PSA>;
+export type DBPSA = MonkeyTypes.WithObjectId<PSA>;
 
-export async function get(): Promise<PSA[]> {
-  return await db.collection<PSA>("psa").find().toArray();
+export async function get(): Promise<DBPSA[]> {
+  return await db.collection<DBPSA>("psa").find().toArray();
 }

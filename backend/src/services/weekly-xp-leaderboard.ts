@@ -1,25 +1,22 @@
+import { Configuration } from "@monkeytype/contracts/schemas/configuration";
 import * as RedisClient from "../init/redis";
 import LaterQueue from "../queues/later-queue";
 import { getCurrentWeekTimestamp } from "../utils/misc";
-
-type InternalWeeklyXpLeaderboardEntry = {
-  uid: string;
-  name: string;
-  discordAvatar?: string;
-  discordId?: string;
-  badgeId?: number;
-  lastActivityTimestamp: number;
-};
-
-type WeeklyXpLeaderboardEntry = {
-  totalXp: number;
-  rank: number;
-  count?: number;
-  timeTypedSeconds: number;
-} & InternalWeeklyXpLeaderboardEntry;
+import {
+  XpLeaderboardEntry,
+  XpLeaderboardRank,
+} from "@monkeytype/contracts/schemas/leaderboards";
 
 type AddResultOpts = {
-  entry: InternalWeeklyXpLeaderboardEntry;
+  entry: Pick<
+    XpLeaderboardEntry,
+    | "uid"
+    | "name"
+    | "discordId"
+    | "discordAvatar"
+    | "badgeId"
+    | "lastActivityTimestamp"
+  >;
   xpGained: number;
   timeTypedSeconds: number;
 };
@@ -59,7 +56,7 @@ export class WeeklyXpLeaderboard {
   }
 
   public async addResult(
-    weeklyXpLeaderboardConfig: SharedTypes.Configuration["leaderboards"]["weeklyXp"],
+    weeklyXpLeaderboardConfig: Configuration["leaderboards"]["weeklyXp"],
     opts: AddResultOpts
   ): Promise<number> {
     const { entry, xpGained, timeTypedSeconds } = opts;
@@ -108,7 +105,7 @@ export class WeeklyXpLeaderboard {
         entry.uid,
         xpGained,
         JSON.stringify({ ...entry, timeTypedSeconds: totalTimeTypedSeconds })
-      ),
+      ) as Promise<number>,
       LaterQueue.scheduleForNextWeek(
         "weekly-xp-leaderboard-results",
         "weekly-xp"
@@ -121,8 +118,8 @@ export class WeeklyXpLeaderboard {
   public async getResults(
     minRank: number,
     maxRank: number,
-    weeklyXpLeaderboardConfig: SharedTypes.Configuration["leaderboards"]["weeklyXp"]
-  ): Promise<WeeklyXpLeaderboardEntry[]> {
+    weeklyXpLeaderboardConfig: Configuration["leaderboards"]["weeklyXp"]
+  ): Promise<XpLeaderboardEntry[]> {
     const connection = RedisClient.getConnection();
     if (!connection || !weeklyXpLeaderboardConfig.enabled) {
       return [];
@@ -153,12 +150,17 @@ export class WeeklyXpLeaderboard {
       );
     }
 
-    const resultsWithRanks: WeeklyXpLeaderboardEntry[] = results.map(
-      (resultJSON: string, index: number) => ({
-        ...JSON.parse(resultJSON),
-        rank: minRank + index + 1,
-        totalXp: parseInt(scores[index] as string, 10),
-      })
+    const resultsWithRanks: XpLeaderboardEntry[] = results.map(
+      (resultJSON: string, index: number) => {
+        //TODO parse with zod?
+        const parsed = JSON.parse(resultJSON) as XpLeaderboardEntry;
+
+        return {
+          ...parsed,
+          rank: minRank + index + 1,
+          totalXp: parseInt(scores[index] as string, 10),
+        };
+      }
     );
 
     return resultsWithRanks;
@@ -166,8 +168,8 @@ export class WeeklyXpLeaderboard {
 
   public async getRank(
     uid: string,
-    weeklyXpLeaderboardConfig: SharedTypes.Configuration["leaderboards"]["weeklyXp"]
-  ): Promise<WeeklyXpLeaderboardEntry | null> {
+    weeklyXpLeaderboardConfig: Configuration["leaderboards"]["weeklyXp"]
+  ): Promise<XpLeaderboardRank | null> {
     const connection = RedisClient.getConnection();
     if (!connection || !weeklyXpLeaderboardConfig.enabled) {
       return null;
@@ -176,6 +178,7 @@ export class WeeklyXpLeaderboard {
     const { weeklyXpLeaderboardScoresKey, weeklyXpLeaderboardResultsKey } =
       this.getThisWeeksXpLeaderboardKeys();
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
     connection.set;
 
     // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
@@ -192,17 +195,23 @@ export class WeeklyXpLeaderboard {
       return null;
     }
 
+    //TODO parse with zod?
+    const parsed = JSON.parse(result ?? "null") as Omit<
+      XpLeaderboardEntry,
+      "rank" | "count" | "totalXp"
+    >;
+
     return {
       rank: rank + 1,
       count: count ?? 0,
       totalXp: parseInt(totalXp, 10),
-      ...JSON.parse(result ?? "null"),
+      ...parsed,
     };
   }
 }
 
 export function get(
-  weeklyXpLeaderboardConfig: SharedTypes.Configuration["leaderboards"]["weeklyXp"],
+  weeklyXpLeaderboardConfig: Configuration["leaderboards"]["weeklyXp"],
   customTimestamp?: number
 ): WeeklyXpLeaderboard | null {
   const { enabled } = weeklyXpLeaderboardConfig;

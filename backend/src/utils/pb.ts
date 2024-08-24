@@ -1,16 +1,20 @@
 import _ from "lodash";
 import FunboxList from "../constants/funbox-list";
 
+import {
+  Mode,
+  PersonalBest,
+  PersonalBests,
+} from "@monkeytype/contracts/schemas/shared";
+import { Result as ResultType } from "@monkeytype/contracts/schemas/results";
+
 type CheckAndUpdatePbResult = {
   isPb: boolean;
-  personalBests: SharedTypes.PersonalBests;
+  personalBests: PersonalBests;
   lbPersonalBests?: MonkeyTypes.LbPersonalBests;
 };
 
-type Result = Omit<
-  SharedTypes.DBResult<SharedTypes.Config.Mode>,
-  "_id" | "name"
->;
+type Result = Omit<ResultType<Mode>, "_id" | "name">;
 
 export function canFunboxGetPb(result: Result): boolean {
   const funbox = result.funbox;
@@ -30,20 +34,20 @@ export function canFunboxGetPb(result: Result): boolean {
 }
 
 export function checkAndUpdatePb(
-  userPersonalBests: SharedTypes.PersonalBests,
+  userPersonalBests: PersonalBests,
   lbPersonalBests: MonkeyTypes.LbPersonalBests | undefined,
   result: Result
 ): CheckAndUpdatePbResult {
   const mode = result.mode;
-  const mode2 = result.mode2 as SharedTypes.Config.Mode2<"time">;
+  const mode2 = result.mode2;
 
   const userPb = userPersonalBests ?? {};
   userPb[mode] ??= {};
   userPb[mode][mode2] ??= [];
 
-  const personalBestMatch = (
-    userPb[mode][mode2] as SharedTypes.PersonalBest[]
-  ).find((pb) => matchesPersonalBest(result, pb));
+  const personalBestMatch = (userPb[mode][mode2] as PersonalBest[]).find((pb) =>
+    matchesPersonalBest(result, pb)
+  );
 
   let isPb = true;
 
@@ -67,7 +71,7 @@ export function checkAndUpdatePb(
 
 function matchesPersonalBest(
   result: Result,
-  personalBest: SharedTypes.PersonalBest
+  personalBest: PersonalBest
 ): boolean {
   if (
     result.difficulty === undefined ||
@@ -98,7 +102,7 @@ function matchesPersonalBest(
 }
 
 function updatePersonalBest(
-  personalBest: SharedTypes.PersonalBest,
+  personalBest: PersonalBest,
   result: Result
 ): boolean {
   if (personalBest.wpm >= result.wpm) {
@@ -133,7 +137,7 @@ function updatePersonalBest(
   return true;
 }
 
-function buildPersonalBest(result: Result): SharedTypes.PersonalBest {
+function buildPersonalBest(result: Result): PersonalBest {
   if (
     result.difficulty === undefined ||
     result.language === undefined ||
@@ -162,7 +166,7 @@ function buildPersonalBest(result: Result): SharedTypes.PersonalBest {
 }
 
 function updateLeaderboardPersonalBests(
-  userPersonalBests: SharedTypes.PersonalBests,
+  userPersonalBests: PersonalBests,
   lbPersonalBests: MonkeyTypes.LbPersonalBests,
   result: Result
 ): void {
@@ -171,7 +175,7 @@ function updateLeaderboardPersonalBests(
   }
 
   const mode = result.mode;
-  const mode2 = result.mode2 as SharedTypes.Config.Mode2<"time">;
+  const mode2 = result.mode2;
 
   lbPersonalBests[mode] = lbPersonalBests[mode] ?? {};
   const lbMode2 = lbPersonalBests[mode][mode2] as MonkeyTypes.LbPersonalBests;
@@ -181,7 +185,7 @@ function updateLeaderboardPersonalBests(
 
   const bestForEveryLanguage = {};
 
-  userPersonalBests[mode][mode2].forEach((pb: SharedTypes.PersonalBest) => {
+  userPersonalBests[mode][mode2].forEach((pb: PersonalBest) => {
     const language = pb.language;
     if (
       bestForEveryLanguage[language] === undefined ||
@@ -191,20 +195,17 @@ function updateLeaderboardPersonalBests(
     }
   });
 
-  _.each(
-    bestForEveryLanguage,
-    (pb: SharedTypes.PersonalBest, language: string) => {
-      const languageDoesNotExist =
-        lbPersonalBests[mode][mode2][language] === undefined;
+  _.each(bestForEveryLanguage, (pb: PersonalBest, language: string) => {
+    const languageDoesNotExist =
+      lbPersonalBests[mode][mode2][language] === undefined;
 
-      if (
-        languageDoesNotExist ||
-        lbPersonalBests[mode][mode2][language].wpm < pb.wpm
-      ) {
-        lbPersonalBests[mode][mode2][language] = pb;
-      }
+    if (
+      languageDoesNotExist ||
+      lbPersonalBests[mode][mode2][language].wpm < pb.wpm
+    ) {
+      lbPersonalBests[mode][mode2][language] = pb;
     }
-  );
+  });
 }
 
 function shouldUpdateLeaderboardPersonalBests(result: Result): boolean {

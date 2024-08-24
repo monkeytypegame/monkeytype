@@ -1,4 +1,9 @@
-export default {
+import {
+  Config,
+  CustomThemeColors,
+} from "@monkeytype/contracts/schemas/configs";
+
+const obj = {
   theme: "serika_dark",
   themeLight: "serika",
   themeDark: "serika_dark",
@@ -15,7 +20,7 @@ export default {
     "#7e2a33",
     "#ca4754",
     "#7e2a33",
-  ],
+  ] as CustomThemeColors,
   favThemes: [],
   showKeyTips: true,
   smoothCaret: "medium",
@@ -54,6 +59,7 @@ export default {
   keymapLegendStyle: "lowercase",
   keymapLayout: "overrideSync",
   keymapShowTopRow: "layout",
+  keymapSize: 1,
   fontFamily: "Roboto_Mono",
   smoothLineScroll: false,
   alwaysShowDecimalPlaces: false,
@@ -62,7 +68,7 @@ export default {
   capsLockWarning: true,
   playSoundOnError: "off",
   playSoundOnClick: "off",
-  soundVolume: "0.5",
+  soundVolume: 0.5,
   startGraphsAtZero: true,
   showOutOfFocusWarning: true,
   paceCaret: "off",
@@ -83,7 +89,7 @@ export default {
   oppositeShiftMode: "off",
   customBackground: "",
   customBackgroundSize: "cover",
-  customBackgroundFilter: [0, 1, 1, 1, 1],
+  customBackgroundFilter: [0, 1, 1, 1],
   customLayoutfluid: "qwerty#dvorak#colemak",
   monkeyPowerLevel: "off",
   minBurst: "off",
@@ -94,4 +100,6 @@ export default {
   showAverage: "off",
   tapeMode: "off",
   maxLineWidth: 0,
-} as SharedTypes.Config;
+} as Config;
+
+export default JSON.parse(JSON.stringify(obj)) as Config;

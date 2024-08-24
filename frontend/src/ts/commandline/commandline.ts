@@ -467,6 +467,7 @@ function handleInputSubmit(): void {
     throw new Error("Can't handle input submit - command is null");
   }
   inputModeParams.command.exec?.({
+    commandlineModal: modal,
     input: inputValue,
   });
   void AnalyticsController.log("usedCommandLine", {
@@ -490,9 +491,7 @@ async function runActiveCommand(): Promise<void> {
     updateInput(inputModeParams.value as string);
     hideCommands();
   } else if (command.subgroup) {
-    CommandlineLists.pushToStack(
-      command.subgroup as MonkeyTypes.CommandsSubgroup
-    );
+    CommandlineLists.pushToStack(command.subgroup);
     updateInput("");
     await filterSubgroup();
     await showCommands();

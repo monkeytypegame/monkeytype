@@ -21,7 +21,8 @@ services:
 
   api-server:
     container_name: monkeytype-api-server
-    image: node:18.19.1
+    image: node:20.16.0
+    user: "node"    ##this works as long as your local user has uid=1000
     restart: on-failure
     depends_on:
       - redis
@@ -32,11 +33,13 @@ services:
     ports:
       - "${DOCKER_SERVER_PORT:-5005}:5005"
     volumes:
-      - be-modules:/monkeytype/backend/node_modules
       - ../../:/monkeytype
-    entrypoint: 'bash -c "cd /monkeytype/backend && npm install && npm run dev"'
+    entrypoint: 'bash -c "echo starting, this may take a while... \
+      && cd /monkeytype \
+      && npm i -g pnpm \
+      && pnpm i \
+      && npm run dev-be"'
 
 volumes:
   mongo-data:
   redis-data:
-  be-modules:

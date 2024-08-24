@@ -1,3 +1,8 @@
+import {
+  ConfigValue,
+  QuoteLength,
+} from "@monkeytype/contracts/schemas/configs";
+import { Mode } from "@monkeytype/contracts/schemas/shared";
 import Config from "../config";
 import * as ConfigEvent from "../observables/config-event";
 import * as ActivePage from "../states/active-page";
@@ -56,10 +61,7 @@ export async function instantUpdate(): Promise<void> {
   updateExtras("punctuation", Config.punctuation);
 }
 
-export async function update(
-  previous: SharedTypes.Config.Mode,
-  current: SharedTypes.Config.Mode
-): Promise<void> {
+export async function update(previous: Mode, current: Mode): Promise<void> {
   if (previous === current) return;
   $("#testConfig .mode .textButton").removeClass("active");
   $("#testConfig .mode .textButton[mode='" + current + "']").addClass("active");
@@ -198,10 +200,7 @@ export async function update(
     );
 }
 
-export function updateExtras(
-  key: string,
-  value: SharedTypes.ConfigValue
-): void {
+export function updateExtras(key: string, value: ConfigValue): void {
   if (key === "time") {
     $("#testConfig .time .textButton").removeClass("active");
     const timeCustom = ![15, 30, 60, 120].includes(value as number)
@@ -222,7 +221,7 @@ export function updateExtras(
     ).addClass("active");
   } else if (key === "quoteLength") {
     $("#testConfig .quoteLength .textButton").removeClass("active");
-    (value as SharedTypes.Config.QuoteLength[]).forEach((ql) => {
+    (value as QuoteLength[]).forEach((ql) => {
       $(
         "#testConfig .quoteLength .textButton[quoteLength='" + ql + "']"
       ).addClass("active");
@@ -253,10 +252,7 @@ export function hideFavoriteQuoteLength(): void {
 ConfigEvent.subscribe((eventKey, eventValue, _nosave, eventPreviousValue) => {
   if (ActivePage.get() !== "test") return;
   if (eventKey === "mode") {
-    void update(
-      eventPreviousValue as SharedTypes.Config.Mode,
-      eventValue as SharedTypes.Config.Mode
-    );
+    void update(eventPreviousValue as Mode, eventValue as Mode);
 
     let m2;
 

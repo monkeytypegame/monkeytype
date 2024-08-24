@@ -1,17 +1,17 @@
 @use "sass:list";
 @use "sass:map";
-@import "node_modules/@fortawesome/fontawesome-free/scss/_functions.scss";
+@import "@fortawesome/fontawesome-free/scss/_functions.scss";
 
-@import "node_modules/@fortawesome/fontawesome-free/scss/_variables.scss";
-@import "node_modules/@fortawesome/fontawesome-free/scss/_mixins.scss";
-@import "node_modules/@fortawesome/fontawesome-free/scss/_core.scss";
+@import "@fortawesome/fontawesome-free/scss/_variables.scss";
+@import "@fortawesome/fontawesome-free/scss/_mixins.scss";
+@import "@fortawesome/fontawesome-free/scss/_core.scss";
 
 /** fixed-with **/
-@import "node_modules/@fortawesome/fontawesome-free/scss/_fixed-width.scss"; //fa-fw
+@import "@fortawesome/fontawesome-free/scss/_fixed-width.scss"; //fa-fw
 /** animated **/
-@import "node_modules/@fortawesome/fontawesome-free/scss/_animated.scss"; //fa-spin
+@import "@fortawesome/fontawesome-free/scss/_animated.scss"; //fa-spin
 /** rotated **/
-@import "node_modules/@fortawesome/fontawesome-free/scss/_rotated-flipped.scss"; //fa-rotate-90
+@import "@fortawesome/fontawesome-free/scss/_rotated-flipped.scss"; //fa-rotate-90
 
 @font-face {
   font-family: "Font Awesome";

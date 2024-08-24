@@ -1,32 +1,17 @@
-import _ from "lodash";
+import _, { omit } from "lodash";
 import * as RedisClient from "../init/redis";
 import LaterQueue from "../queues/later-queue";
 import { getCurrentDayTimestamp, matchesAPattern, kogascore } from "./misc";
-
-type DailyLeaderboardEntry = {
-  uid: string;
-  name: string;
-  wpm: number;
-  raw: number;
-  acc: number;
-  consistency: number;
-  timestamp: number;
-  discordAvatar?: string;
-  discordId?: string;
-  badgeId?: number;
-  isPremium?: boolean;
-};
-
-type GetRankResponse = {
-  minWpm: number;
-  count: number;
-  rank: number | null;
-  entry: DailyLeaderboardEntry | null;
-};
-
-export type LbEntryWithRank = {
-  rank: number;
-} & DailyLeaderboardEntry;
+import {
+  Configuration,
+  ValidModeRule,
+} from "@monkeytype/contracts/schemas/configuration";
+import {
+  DailyLeaderboardRank,
+  LeaderboardEntry,
+} from "@monkeytype/contracts/schemas/leaderboards";
+import MonkeyError from "./error";
+import { Mode, Mode2 } from "@monkeytype/contracts/schemas/shared";
 
 const dailyLeaderboardNamespace = "monkeytype:dailyleaderboard";
 const scoresNamespace = `${dailyLeaderboardNamespace}:scores`;
@@ -37,9 +22,9 @@ export class DailyLeaderboard {
   private leaderboardScoresKeyName: string;
   private leaderboardModeKey: string;
   private customTime: number;
-  private modeRule: SharedTypes.ValidModeRule;
+  private modeRule: ValidModeRule;
 
-  constructor(modeRule: SharedTypes.ValidModeRule, customTime = -1) {
+  constructor(modeRule: ValidModeRule, customTime = -1) {
     const { language, mode, mode2 } = modeRule;
 
     this.leaderboardModeKey = `${language}:${mode}:${mode2}`;
@@ -67,8 +52,8 @@ export class DailyLeaderboard {
   }
 
   public async addResult(
-    entry: DailyLeaderboardEntry,
-    dailyLeaderboardsConfig: SharedTypes.Configuration["dailyLeaderboards"]
+    entry: Omit<LeaderboardEntry, "rank">,
+    dailyLeaderboardsConfig: Configuration["dailyLeaderboards"]
   ): Promise<number> {
     const connection = RedisClient.getConnection();
     if (!connection || !dailyLeaderboardsConfig.enabled) {
@@ -90,7 +75,7 @@ export class DailyLeaderboard {
     const resultScore = kogascore(entry.wpm, entry.acc, entry.timestamp);
 
     // @ts-expect-error
-    const rank = await connection.addResult(
+    const rank = (await connection.addResult(
       2,
       leaderboardScoresKey,
       leaderboardResultsKey,
@@ -99,7 +84,7 @@ export class DailyLeaderboard {
       entry.uid,
       resultScore,
       JSON.stringify(entry)
-    );
+    )) as number;
 
     if (
       isValidModeRule(
@@ -124,9 +109,9 @@ export class DailyLeaderboard {
   public async getResults(
     minRank: number,
     maxRank: number,
-    dailyLeaderboardsConfig: SharedTypes.Configuration["dailyLeaderboards"],
+    dailyLeaderboardsConfig: Configuration["dailyLeaderboards"],
     premiumFeaturesEnabled: boolean
-  ): Promise<LbEntryWithRank[]> {
+  ): Promise<LeaderboardEntry[]> {
     const connection = RedisClient.getConnection();
     if (!connection || !dailyLeaderboardsConfig.enabled) {
       return [];
@@ -151,15 +136,20 @@ export class DailyLeaderboard {
       );
     }
 
-    const resultsWithRanks: LbEntryWithRank[] = results.map(
-      (resultJSON, index) => ({
-        ...JSON.parse(resultJSON),
-        rank: minRank + index + 1,
-      })
+    const resultsWithRanks: LeaderboardEntry[] = results.map(
+      (resultJSON, index) => {
+        // TODO: parse with zod?
+        const parsed = JSON.parse(resultJSON) as LeaderboardEntry;
+
+        return {
+          ...parsed,
+          rank: minRank + index + 1,
+        };
+      }
     );
 
     if (!premiumFeaturesEnabled) {
-      resultsWithRanks.forEach((it) => (it.isPremium = undefined));
+      return resultsWithRanks.map((it) => omit(it, "isPremium"));
     }
 
     return resultsWithRanks;
@@ -167,11 +157,11 @@ export class DailyLeaderboard {
 
   public async getRank(
     uid: string,
-    dailyLeaderboardsConfig: SharedTypes.Configuration["dailyLeaderboards"]
-  ): Promise<GetRankResponse | null> {
+    dailyLeaderboardsConfig: Configuration["dailyLeaderboards"]
+  ): Promise<DailyLeaderboardRank> {
     const connection = RedisClient.getConnection();
     if (!connection || !dailyLeaderboardsConfig.enabled) {
-      return null;
+      throw new MonkeyError(500, "Redis connnection is unavailable");
     }
 
     const { leaderboardScoresKey, leaderboardResultsKey } =
@@ -192,8 +182,6 @@ export class DailyLeaderboard {
       return {
         minWpm,
         count: count ?? 0,
-        rank: null,
-        entry: null,
       };
     }
 
@@ -210,7 +198,7 @@ export class DailyLeaderboard {
 
 export async function purgeUserFromDailyLeaderboards(
   uid: string,
-  configuration: SharedTypes.Configuration["dailyLeaderboards"]
+  configuration: Configuration["dailyLeaderboards"]
 ): Promise<void> {
   const connection = RedisClient.getConnection();
   if (!connection || !configuration.enabled) {
@@ -222,8 +210,8 @@ export async function purgeUserFromDailyLeaderboards(
 }
 
 function isValidModeRule(
-  modeRule: SharedTypes.ValidModeRule,
-  modeRules: SharedTypes.ValidModeRule[]
+  modeRule: ValidModeRule,
+  modeRules: ValidModeRule[]
 ): boolean {
   const { language, mode, mode2 } = modeRule;
 
@@ -237,14 +225,14 @@ function isValidModeRule(
 
 export function getDailyLeaderboard(
   language: string,
-  mode: string,
-  mode2: string,
-  dailyLeaderboardsConfig: SharedTypes.Configuration["dailyLeaderboards"],
+  mode: Mode,
+  mode2: Mode2<Mode>,
+  dailyLeaderboardsConfig: Configuration["dailyLeaderboards"],
   customTimestamp = -1
 ): DailyLeaderboard | null {
   const { validModeRules, enabled } = dailyLeaderboardsConfig;
 
-  const modeRule = { language, mode, mode2 };
+  const modeRule: ValidModeRule = { language, mode, mode2 };
   const isValidMode = isValidModeRule(modeRule, validModeRules);
 
   if (!enabled || !isValidMode) {

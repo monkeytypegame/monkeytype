@@ -91,12 +91,14 @@ async function apply(): Promise<void> {
   Loader.show();
 
   if (action === "add") {
-    const response = await Ape.presets.add(presetName, configChanges);
+    const response = await Ape.presets.add({
+      body: { name: presetName, config: configChanges },
+    });
 
-    if (response.status !== 200 || response.data === null) {
+    if (response.status !== 200 || response.body.data === null) {
       Notifications.add(
         "Failed to add preset: " +
-          response.message.replace(presetName, propPresetName),
+          response.body.message.replace(presetName, propPresetName),
         -1
       );
     } else {
@@ -107,18 +109,20 @@ async function apply(): Promise<void> {
         name: presetName,
         config: configChanges,
         display: propPresetName,
-        _id: response.data.presetId,
+        _id: response.body.data.presetId,
       } as MonkeyTypes.SnapshotPreset);
     }
   } else if (action === "edit") {
-    const response = await Ape.presets.edit(
-      presetId,
-      presetName,
-      configChanges
-    );
+    const response = await Ape.presets.save({
+      body: {
+        _id: presetId,
+        name: presetName,
+        config: configChanges,
+      },
+    });
 
     if (response.status !== 200) {
-      Notifications.add("Failed to edit preset: " + response.message, -1);
+      Notifications.add("Failed to edit preset: " + response.body.message, -1);
     } else {
       Notifications.add("Preset updated", 1);
       const preset = snapshotPresets.filter(
@@ -131,10 +135,13 @@ async function apply(): Promise<void> {
       }
     }
   } else if (action === "remove") {
-    const response = await Ape.presets.delete(presetId);
+    const response = await Ape.presets.delete({ params: { presetId } });
 
     if (response.status !== 200) {
-      Notifications.add("Failed to remove preset: " + response.message, -1);
+      Notifications.add(
+        "Failed to remove preset: " + response.body.message,
+        -1
+      );
     } else {
       Notifications.add("Preset removed", 1);
       snapshotPresets.forEach(

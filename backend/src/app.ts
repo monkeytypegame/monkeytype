@@ -1,6 +1,6 @@
 import cors from "cors";
 import helmet from "helmet";
-import addApiRoutes from "./api/routes";
+import { addApiRoutes } from "./api/routes";
 import express, { urlencoded, json } from "express";
 import contextMiddleware from "./middlewares/context";
 import errorHandlingMiddleware from "./middlewares/error";

@@ -36,5 +36,6 @@ export function getResponse(id: string): string {
   }
 
   //@ts-expect-error
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
   return grecaptcha.getResponse(captchas[id]);
 }

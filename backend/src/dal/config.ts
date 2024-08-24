@@ -1,6 +1,7 @@
-import { UpdateResult } from "mongodb";
+import { Collection, UpdateResult } from "mongodb";
 import * as db from "../init/db";
 import _ from "lodash";
+import { Config, PartialConfig } from "@monkeytype/contracts/schemas/configs";
 
 const configLegacyProperties = [
   "swapEscAndTab",
@@ -22,9 +23,19 @@ const configLegacyProperties = [
   "enableAds",
 ];
 
+type DBConfig = {
+  _id: ObjectId;
+  uid: string;
+  config: PartialConfig;
+};
+
+// Export for use in tests
+export const getConfigCollection = (): Collection<DBConfig> =>
+  db.collection<DBConfig>("configs");
+
 export async function saveConfig(
   uid: string,
-  config: SharedTypes.Config
+  config: Partial<Config>
 ): Promise<UpdateResult> {
   const configChanges = _.mapKeys(config, (_value, key) => `config.${key}`);
 
@@ -32,24 +43,18 @@ export async function saveConfig(
     _.map(configLegacyProperties, (key) => [`config.${key}`, ""])
   ) as Record<string, "">;
 
-  return await db
-    .collection<SharedTypes.Config>("configs")
-    .updateOne(
-      { uid },
-      { $set: configChanges, $unset: unset },
-      { upsert: true }
-    );
+  return await getConfigCollection().updateOne(
+    { uid },
+    { $set: configChanges, $unset: unset },
+    { upsert: true }
+  );
 }
 
-export async function getConfig(
-  uid: string
-): Promise<SharedTypes.Config | null> {
-  const config = await db
-    .collection<SharedTypes.Config>("configs")
-    .findOne({ uid });
+export async function getConfig(uid: string): Promise<DBConfig | null> {
+  const config = await getConfigCollection().findOne({ uid });
   return config;
 }
 
 export async function deleteConfig(uid: string): Promise<void> {
-  await db.collection<SharedTypes.Config>("configs").deleteOne({ uid });
+  await getConfigCollection().deleteOne({ uid });
 }

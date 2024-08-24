@@ -1,11 +1,11 @@
 import _ from "lodash";
 import * as db from "../init/db";
 import {
-  Filter,
+  type Filter,
+  type MatchKeysAndValues,
+  type WithId,
   ObjectId,
-  MatchKeysAndValues,
   Collection,
-  WithId,
 } from "mongodb";
 import MonkeyError from "../utils/error";
 
@@ -34,8 +34,7 @@ export async function getApeKey(
 }
 
 export async function countApeKeysForUser(uid: string): Promise<number> {
-  const apeKeys = await getApeKeys(uid);
-  return _.size(apeKeys);
+  return getApeKeysCollection().countDocuments({ uid });
 }
 
 export async function addApeKey(apeKey: MonkeyTypes.ApeKeyDB): Promise<string> {
@@ -64,9 +63,11 @@ async function updateApeKey(
 export async function editApeKey(
   uid: string,
   keyId: string,
-  name: string,
-  enabled: boolean
+  name?: string,
+  enabled?: boolean
 ): Promise<void> {
+  //check if there is a change
+  if (name === undefined && enabled === undefined) return;
   const apeKeyUpdates = {
     name,
     enabled,

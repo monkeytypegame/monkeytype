@@ -2,6 +2,13 @@ import * as Loader from "../elements/loader";
 import { envConfig } from "../constants/env-config";
 import { lastElementFromArray } from "./arrays";
 import * as JSONData from "./json-data";
+import { CustomTextData } from "@monkeytype/shared-types";
+import { Config } from "@monkeytype/contracts/schemas/configs";
+import {
+  Mode,
+  Mode2,
+  PersonalBests,
+} from "@monkeytype/contracts/schemas/shared";
 
 export function kogasa(cov: number): number {
   return (
@@ -217,7 +224,7 @@ export function canQuickRestart(
   mode: string,
   words: number,
   time: number,
-  CustomText: SharedTypes.CustomTextData,
+  CustomText: CustomTextData,
   customTextIsLong: boolean
 ): boolean {
   const wordsLong = mode === "words" && (words >= 1000 || words === 0);
@@ -375,10 +382,10 @@ export async function swapElements(
   return;
 }
 
-export function getMode2<M extends keyof SharedTypes.PersonalBests>(
-  config: SharedTypes.Config,
+export function getMode2<M extends keyof PersonalBests>(
+  config: Config,
   randomQuote: MonkeyTypes.Quote | null
-): SharedTypes.Config.Mode2<M> {
+): Mode2<M> {
   const mode = config.mode;
   let retVal: string;
 
@@ -396,11 +403,11 @@ export function getMode2<M extends keyof SharedTypes.PersonalBests>(
     throw new Error("Invalid mode");
   }
 
-  return retVal as SharedTypes.Config.Mode2<M>;
+  return retVal as Mode2<M>;
 }
 
 export async function downloadResultsCSV(
-  array: SharedTypes.Result<SharedTypes.Config.Mode>[]
+  array: MonkeyTypes.FullResult<Mode>[]
 ): Promise<void> {
   Loader.show();
   const csvString = [
@@ -430,7 +437,7 @@ export async function downloadResultsCSV(
       "tags",
       "timestamp",
     ],
-    ...array.map((item: SharedTypes.Result<SharedTypes.Config.Mode>) => [
+    ...array.map((item: MonkeyTypes.FullResult<Mode>) => [
       item._id,
       item.isPb,
       item.wpm,
@@ -479,13 +486,16 @@ export function createErrorMessage(error: unknown, message: string): string {
     return `${message}: ${error.message}`;
   }
 
-  const objectWithMessage = error as { message?: string };
+  if (error instanceof Object && "message" in error) {
+    const objectWithMessage = error as { message?: string };
 
-  if (objectWithMessage?.message !== undefined) {
-    return `${message}: ${objectWithMessage.message}`;
+    if (objectWithMessage?.message !== undefined) {
+      return `${message}: ${objectWithMessage.message}`;
+    }
   }
 
-  return message;
+  console.error("Unknown error", error);
+  return `${message}: Unknown error`;
 }
 
 export function isElementVisible(query: string): boolean {
@@ -666,6 +676,10 @@ export function updateTitle(title?: string): void {
   } else {
     document.title = local + title;
   }
+}
+
+export function isObject(obj: unknown): obj is Record<string, unknown> {
+  return typeof obj === "object" && !Array.isArray(obj) && obj !== null;
 }
 
 // DO NOT ALTER GLOBAL OBJECTSONSTRUCTOR, IT WILL BREAK RESULT HASHES

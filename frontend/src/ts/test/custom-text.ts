@@ -1,3 +1,39 @@
+import { CustomTextData, CustomTextLimit } from "@monkeytype/shared-types";
+import {
+  CustomTextLimitMode,
+  CustomTextMode,
+} from "@monkeytype/contracts/schemas/util";
+import { LocalStorageWithSchema } from "../utils/local-storage-with-schema";
+import { z } from "zod";
+
+//zod schema for an object with string keys and string values
+const CustomTextObjectSchema = z.record(z.string(), z.string());
+type CustomTextObject = z.infer<typeof CustomTextObjectSchema>;
+
+const CustomTextLongObjectSchema = z.record(
+  z.string(),
+  z.object({ text: z.string(), progress: z.number() })
+);
+type CustomTextLongObject = z.infer<typeof CustomTextLongObjectSchema>;
+
+const customTextLS = new LocalStorageWithSchema({
+  key: "customText",
+  schema: CustomTextObjectSchema,
+  fallback: {},
+});
+//todo maybe add migrations here?
+const customTextLongLS = new LocalStorageWithSchema({
+  key: "customTextLong",
+  schema: CustomTextLongObjectSchema,
+  fallback: {},
+});
+
+// function setLocalStorage(data: CustomTextObject): void {
+//   window.localStorage.setItem("customText", JSON.stringify(data));
+// }
+
+// function setLocalStorageLong(data: CustomTextLongObject): void {
+
 let text: string[] = [
   "The",
   "quick",
@@ -10,8 +46,8 @@ let text: string[] = [
   "dog",
 ];
 
-let mode: SharedTypes.CustomTextMode = "repeat";
-const limit: SharedTypes.CustomTextLimit = {
+let mode: CustomTextMode = "repeat";
+const limit: CustomTextLimit = {
   value: 9,
   mode: "word",
 };
@@ -26,16 +62,16 @@ export function setText(txt: string[]): void {
   limit.value = text.length;
 }
 
-export function getMode(): SharedTypes.CustomTextMode {
+export function getMode(): CustomTextMode {
   return mode;
 }
 
-export function setMode(val: SharedTypes.CustomTextMode): void {
+export function setMode(val: CustomTextMode): void {
   mode = val;
   limit.value = text.length;
 }
 
-export function getLimit(): SharedTypes.CustomTextLimit {
+export function getLimit(): CustomTextLimit {
   return limit;
 }
 
@@ -43,7 +79,7 @@ export function getLimitValue(): number {
   return limit.value;
 }
 
-export function getLimitMode(): SharedTypes.CustomTextLimitMode {
+export function getLimitMode(): CustomTextLimitMode {
   return limit.mode;
 }
 
@@ -51,7 +87,7 @@ export function setLimitValue(val: number): void {
   limit.value = val;
 }
 
-export function setLimitMode(val: SharedTypes.CustomTextLimitMode): void {
+export function setLimitMode(val: CustomTextLimitMode): void {
   limit.mode = val;
 }
 
@@ -63,7 +99,7 @@ export function setPipeDelimiter(val: boolean): void {
   pipeDelimiter = val;
 }
 
-export function getData(): SharedTypes.CustomTextData {
+export function getData(): CustomTextData {
   return {
     text,
     mode,
@@ -71,10 +107,6 @@ export function getData(): SharedTypes.CustomTextData {
     pipeDelimiter,
   };
 }
-
-type CustomTextObject = Record<string, string>;
-
-type CustomTextLongObject = Record<string, { text: string; progress: number }>;
 
 export function getCustomText(name: string, long = false): string[] {
   if (long) {
@@ -162,19 +194,19 @@ export function setCustomTextLongProgress(
 }
 
 function getLocalStorage(): CustomTextObject {
-  return JSON.parse(window.localStorage.getItem("customText") ?? "{}");
+  return customTextLS.get();
 }
 
 function getLocalStorageLong(): CustomTextLongObject {
-  return JSON.parse(window.localStorage.getItem("customTextLong") ?? "{}");
+  return customTextLongLS.get();
 }
 
 function setLocalStorage(data: CustomTextObject): void {
-  window.localStorage.setItem("customText", JSON.stringify(data));
+  customTextLS.set(data);
 }
 
 function setLocalStorageLong(data: CustomTextLongObject): void {
-  window.localStorage.setItem("customTextLong", JSON.stringify(data));
+  customTextLongLS.set(data);
 }
 
 export function getCustomTextNames(long = false): string[] {

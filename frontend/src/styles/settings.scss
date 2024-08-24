@@ -1,6 +1,28 @@
 .pageSettings {
   gap: 2rem;
 
+  .accountSettingsNotice {
+    background: var(--bg-color);
+    border-radius: var(--roundness);
+    box-shadow: 0 0 0 0.2rem var(--sub-alt-color);
+    // background: color-mix(in srgb, var(--sub-alt-color) 50%, transparent);
+    // background: var(--sub-alt-color);
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    .icon {
+      font-size: 2rem;
+      margin-left: 1rem;
+      margin-right: 1rem;
+      color: var(--sub-color);
+    }
+    button {
+      padding: 1rem;
+    }
+  }
+
   .tip {
     color: var(--sub-color);
     text-align: center;
@@ -68,6 +90,12 @@
           margin-right: 0rem;
         }
       }
+    }
+
+    .rangeGroup {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 1rem;
     }
 
     &[data-config-name="autoSwitchThemeInputs"] {
@@ -221,30 +249,9 @@
       }
     }
 
-    &.discordIntegration {
-      .info {
-        grid-area: buttons;
-        text-align: center;
-        color: var(--main-color);
-      }
-
-      #discordButtonGroup {
-        display: grid;
-        grid-auto-flow: column;
-        justify-content: center;
-        gap: 0.5rem;
-      }
-
-      #unlinkDiscordButton,
-      #updateDiscordAvatarButton {
-        margin: 0.5rem auto 0 auto;
-        font-size: 0.75rem;
-        line-height: 0.7rem;
-      }
-
-      .howto {
-        margin-top: 1rem;
-        color: var(--text-color);
+    &[data-config-name="paceCaret"] {
+      .buttons {
+        grid-template-columns: repeat(auto-fit, minmax(6rem, 1fr));
       }
     }
 

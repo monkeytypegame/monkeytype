@@ -15,12 +15,19 @@
   .ad.ad-h-s {
     display: grid;
   }
+  .pageAccountSettings {
+    .main {
+      .tabs {
+        grid-auto-flow: row;
+      }
+    }
+  }
   header {
     nav {
       font-size: 0.9rem;
       line-height: 0.9rem;
       gap: 0.25rem;
-      .account {
+      .view-account {
         .text {
           display: none;
         }
@@ -86,6 +93,11 @@
     }
   }
   .pageAccount {
+    .accountVerificatinNotice {
+      button {
+        grid-column: -1 / 1;
+      }
+    }
     .group.resultBatches {
       gap: 1rem;
       grid-template-areas: "bar" "button" "text";
