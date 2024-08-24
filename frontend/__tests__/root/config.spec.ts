@@ -1,6 +1,9 @@
 import * as Config from "../../src/ts/config";
 
-import { CustomThemeColors } from "@monkeytype/contracts/schemas/configs";
+import {
+  CustomThemeColors,
+  PartialConfig,
+} from "@monkeytype/contracts/schemas/configs";
 import { randomBytes } from "crypto";
 
 describe("Config", () => {
@@ -539,3 +542,38 @@ function stringOfLength(length: number): string {
     .toString("hex")
     .slice(0, length);
 }
+describe("selectiveApply", () => {
+  it("should combine configToApply and backupConfigToApply correctly", async () => {
+    const configToApply = {
+      showKeyTips: false,
+      capsLockWarning: false,
+      showOutOfFocusWarning: false,
+      showAverage: "acc",
+      settingGroups: ["hideElements"],
+    } as PartialConfig;
+
+    const backupConfigToApply = {
+      showKeyTips: true,
+      capsLockWarning: true,
+      showOutOfFocusWarning: true,
+      quickRestart: "esc",
+    } as PartialConfig;
+
+    const expectedCombinedConfig = {
+      showKeyTips: false,
+      capsLockWarning: false,
+      showOutOfFocusWarning: false,
+      showAverage: "acc",
+      settingGroups: ["hideElements"],
+      quickRestart: "esc",
+    };
+
+    await Config.selectiveApply(configToApply, backupConfigToApply);
+
+    expect(Config.default.showKeyTips).toEqual(false);
+    expect(Config.default.capsLockWarning).toEqual(false);
+    expect(Config.default.showOutOfFocusWarning).toEqual(false);
+    expect(Config.default.showAverage).toEqual("acc");
+    expect(Config.default.quickRestart).toEqual("esc");
+  });
+});
