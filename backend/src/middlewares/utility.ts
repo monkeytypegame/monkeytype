@@ -1,8 +1,9 @@
 import _ from "lodash";
 import type { Request, Response, NextFunction, RequestHandler } from "express";
 import { handleMonkeyResponse, MonkeyResponse } from "../utils/monkey-response";
-import { isDevEnvironment } from "../utils/misc";
 import { recordClientVersion as prometheusRecordClientVersion } from "../utils/prometheus";
+import { validate } from "./configuration";
+import { isDevEnvironment } from "../utils/misc";
 
 export const emptyMiddleware = (
   _req: MonkeyTypes.Request,
@@ -37,17 +38,6 @@ export function asyncHandler(handler: AsyncHandler): RequestHandler {
 }
 
 /**
- * Uses the middlewares only in production. Otherwise, uses an empty middleware.
- */
-export function useInProduction(
-  middlewares: RequestHandler[]
-): RequestHandler[] {
-  return middlewares.map((middleware) =>
-    isDevEnvironment() ? emptyMiddleware : middleware
-  );
-}
-
-/**
  * record the client version from the `x-client-version`  or ` client-version` header to prometheus
  */
 export function recordClientVersion(): RequestHandler {
@@ -60,4 +50,13 @@ export function recordClientVersion(): RequestHandler {
 
     next();
   };
+}
+
+export function onlyAvailableOnDev(): RequestHandler {
+  return validate({
+    criteria: () => {
+      return isDevEnvironment();
+    },
+    invalidMessage: "Development endpoints are only available in DEV mode.",
+  });
 }

@@ -10,9 +10,7 @@ import Ape from "../ape";
 import { createErrorMessage } from "../utils/misc";
 import * as LoginPage from "../pages/login";
 import * as AccountController from "../controllers/account-controller";
-import * as TestLogic from "../test/test-logic";
 import * as CaptchaController from "../controllers/captcha-controller";
-import * as DB from "../db";
 import * as Loader from "../elements/loader";
 import { subscribe as subscribeToSignUpEvent } from "../observables/google-sign-up-event";
 import { InputIndicator } from "../elements/input-indicator";
@@ -91,24 +89,7 @@ async function apply(): Promise<void> {
       LoginPage.enableInputs();
       LoginPage.hidePreloader();
       await AccountController.loadUser(signedInUser.user);
-      if (TestLogic.notSignedInLastResult !== null) {
-        TestLogic.setNotSignedInUid(signedInUser.user.uid);
 
-        const resultsSaveResponse = await Ape.results.save(
-          TestLogic.notSignedInLastResult
-        );
-
-        if (resultsSaveResponse.status === 200) {
-          const result = TestLogic.notSignedInLastResult;
-          DB.saveLocalResult(result);
-          DB.updateLocalStats(
-            1,
-            result.testDuration +
-              result.incompleteTestSeconds -
-              result.afkDuration
-          );
-        }
-      }
       signedInUser = undefined;
       Loader.hide();
       void hide();

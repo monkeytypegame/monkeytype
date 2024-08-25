@@ -23,10 +23,6 @@
       "name": "users",
       "description": "User data and related operations"
     },
-    {
-      "name": "results",
-      "description": "Result data and related operations"
-    }
   ],
   "paths": {
     "/": {
@@ -404,94 +400,6 @@
         }
       }
     },
-    "/results": {
-      "get": {
-        "tags": ["results"],
-        "summary": "Gets a history of a user's results",
-        "responses": {
-          "default": {
-            "description": "",
-            "schema": {
-              "$ref": "#/definitions/Response"
-            }
-          }
-        }
-      },
-      "post": {
-        "tags": ["results"],
-        "summary": "Save a user's result",
-        "parameters": [
-          {
-            "in": "body",
-            "name": "body",
-            "required": true,
-            "schema": {
-              "type": "object",
-              "properties": {
-                "result": {
-                  "type": "object"
-                }
-              }
-            }
-          }
-        ],
-        "responses": {
-          "default": {
-            "description": "",
-            "schema": {
-              "$ref": "#/definitions/Response"
-            }
-          }
-        }
-      },
-      "delete": {
-        "tags": ["results"],
-        "summary": "Deletes all results",
-        "responses": {
-          "default": {
-            "description": "",
-            "schema": {
-              "$ref": "#/definitions/Response"
-            }
-          }
-        }
-      }
-    },
-    "/results/tags": {
-      "patch": {
-        "tags": ["results"],
-        "summary": "Labels a result with the specified tags",
-        "parameters": [
-          {
-            "in": "body",
-            "name": "body",
-            "required": true,
-            "schema": {
-              "type": "object",
-              "properties": {
-                "tagIds": {
-                  "type": "array",
-                  "items": {
-                    "type": "string"
-                  }
-                },
-                "resultId": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        ],
-        "responses": {
-          "default": {
-            "description": "",
-            "schema": {
-              "$ref": "#/definitions/Response"
-            }
-          }
-        }
-      }
-    }
   },
   "definitions": {
     "Response": {

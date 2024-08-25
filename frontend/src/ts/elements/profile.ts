@@ -152,7 +152,7 @@ export async function update(
     );
     console.debug("profile.streakHourOffset", streakOffset);
 
-    if (lastResult) {
+    if (lastResult !== undefined) {
       //check if the last result is from today
       const isToday = DateTime.isToday(lastResult.timestamp, streakOffset);
       const isYesterday = DateTime.isYesterday(

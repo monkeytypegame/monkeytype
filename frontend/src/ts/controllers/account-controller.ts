@@ -185,7 +185,7 @@ async function getDataAndInit(): Promise<boolean> {
   return true;
 }
 
-export async function loadUser(user: UserType): Promise<void> {
+export async function loadUser(_user: UserType): Promise<void> {
   // User is signed in.
   PageTransition.set(false);
   AccountButton.loading(true);
@@ -205,7 +205,6 @@ export async function loadUser(user: UserType): Promise<void> {
   // showFavouriteThemesAtTheTop();
 
   if (TestLogic.notSignedInLastResult !== null) {
-    TestLogic.setNotSignedInUid(user.uid);
     LastSignedOutResultModal.show();
   }
 }
@@ -578,22 +577,7 @@ async function signUp(): Promise<void> {
     await sendVerificationEmail();
     LoginPage.hidePreloader();
     await loadUser(createdAuthUser.user);
-    if (TestLogic.notSignedInLastResult !== null) {
-      TestLogic.setNotSignedInUid(createdAuthUser.user.uid);
 
-      const response = await Ape.results.save(TestLogic.notSignedInLastResult);
-
-      if (response.status === 200) {
-        const result = TestLogic.notSignedInLastResult;
-        DB.saveLocalResult(result);
-        DB.updateLocalStats(
-          1,
-          result.testDuration +
-            result.incompleteTestSeconds -
-            result.afkDuration
-        );
-      }
-    }
     Notifications.add("Account created", 1);
   } catch (e) {
     let message = Misc.createErrorMessage(e, "Failed to create account");

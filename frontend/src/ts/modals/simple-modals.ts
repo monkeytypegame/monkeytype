@@ -34,6 +34,7 @@ import {
   TextInput,
 } from "../utils/simple-modal";
 import { ShowOptions } from "../utils/animated-modal";
+import { GenerateDataRequest } from "@monkeytype/contracts/dev";
 
 type PopupKey =
   | "updateEmail"
@@ -1308,7 +1309,7 @@ list.devGenerateData = new SimpleModal({
     minTestsPerDay,
     maxTestsPerDay
   ): Promise<ExecReturn> => {
-    const request: Ape.Dev.GenerateData = {
+    const request: GenerateDataRequest = {
       username,
       createUser: createUser === "true",
     };
@@ -1321,11 +1322,11 @@ list.devGenerateData = new SimpleModal({
     if (maxTestsPerDay !== undefined && maxTestsPerDay.length > 0)
       request.maxTestsPerDay = Number.parseInt(maxTestsPerDay);
 
-    const result = await Ape.dev.generateData(request);
+    const result = await Ape.dev.generateData({ body: request });
 
     return {
       status: result.status === 200 ? 1 : -1,
-      message: result.message,
+      message: result.body.message,
       hideOptions: {
         clearModalChain: true,
       },

@@ -1,9 +1,8 @@
+import { CustomTextData, CustomTextLimit } from "@monkeytype/shared-types";
 import {
-  CustomTextData,
-  CustomTextLimit,
   CustomTextLimitMode,
   CustomTextMode,
-} from "@monkeytype/shared-types";
+} from "@monkeytype/contracts/schemas/util";
 import { LocalStorageWithSchema } from "../utils/local-storage-with-schema";
 import { z } from "zod";
 
