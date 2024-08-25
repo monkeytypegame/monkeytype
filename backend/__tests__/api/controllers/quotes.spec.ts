@@ -18,16 +18,12 @@ const uid = new ObjectId().toHexString();
 
 describe("QuotesController", () => {
   const getPartialUserMock = vi.spyOn(UserDal, "getPartialUser");
-  const getUserMock = vi.spyOn(UserDal, "getUser"); //TODO remove
 
   beforeEach(() => {
     enableQuotes(true);
 
     const user = { quoteMod: true, name: "Bob" } as any;
-    getPartialUserMock.mockReset();
-    getPartialUserMock.mockResolvedValue(user);
-    getUserMock.mockReset();
-    getUserMock.mockResolvedValue(user);
+    getPartialUserMock.mockReset().mockResolvedValue(user);
   });
 
   describe("getQuotes", () => {
@@ -79,7 +75,9 @@ describe("QuotesController", () => {
     });
     it("should return quotes with quoteMod", async () => {
       //GIVEN
-      getPartialUserMock.mockResolvedValue({ quoteMod: "english" } as any);
+      getPartialUserMock
+        .mockReset()
+        .mockResolvedValue({ quoteMod: "english" } as any);
 
       //WHEN
       await mockApp
@@ -93,8 +91,9 @@ describe("QuotesController", () => {
     });
     it("should fail with quoteMod false", async () => {
       //GIVEN
-      getPartialUserMock.mockResolvedValue({ quoteMod: false } as any);
-      getUserMock.mockResolvedValue({ quoteMod: false } as any);
+      getPartialUserMock
+        .mockReset()
+        .mockResolvedValue({ quoteMod: false } as any);
 
       //WHEN
       const { body } = await mockApp
@@ -111,8 +110,7 @@ describe("QuotesController", () => {
     });
     it("should fail with quoteMod empty", async () => {
       //GIVEN
-      getPartialUserMock.mockResolvedValue({ quoteMod: "" } as any);
-      getUserMock.mockResolvedValue({ quoteMod: false } as any);
+      getPartialUserMock.mockReset().mockResolvedValue({ quoteMod: "" } as any);
 
       //WHEN
       const { body } = await mockApp
@@ -162,15 +160,11 @@ describe("QuotesController", () => {
   });
   describe("addQuote", () => {
     const addQuoteMock = vi.spyOn(NewQuotesDal, "add");
-    const getPartialUserMock = vi.spyOn(UserDal, "getPartialUser");
     const verifyCaptchaMock = vi.spyOn(Captcha, "verify");
 
     beforeEach(() => {
       addQuoteMock.mockReset();
       addQuoteMock.mockResolvedValue({} as any);
-
-      getPartialUserMock.mockReset();
-      getPartialUserMock.mockResolvedValue({ name: "Bob" } as any);
 
       verifyCaptchaMock.mockReset();
       verifyCaptchaMock.mockResolvedValue(true);
@@ -413,7 +407,7 @@ describe("QuotesController", () => {
     });
     it("should fail if user is no quote mod", async () => {
       //GIVEN
-      getUserMock.mockResolvedValue({} as any);
+      getPartialUserMock.mockReset().mockResolvedValue({} as any);
 
       //WHEN
       const { body } = await mockApp
@@ -490,7 +484,7 @@ describe("QuotesController", () => {
     });
     it("should fail if user is no quote mod", async () => {
       //GIVEN
-      getUserMock.mockResolvedValue({} as any);
+      getPartialUserMock.mockReset().mockResolvedValue({} as any);
       const quoteId = new ObjectId().toHexString();
 
       //WHEN
@@ -581,11 +575,11 @@ describe("QuotesController", () => {
   describe("submitRating", () => {
     const updateQuotesRatingsMock = vi.spyOn(UserDal, "updateQuoteRatings");
     const submitQuoteRating = vi.spyOn(QuoteRatingsDal, "submit");
-    const getPartialUserMock = vi.spyOn(UserDal, "getPartialUser");
 
     beforeEach(() => {
-      getPartialUserMock.mockReset();
-      getPartialUserMock.mockResolvedValue({ quoteRatings: null } as any);
+      getPartialUserMock
+        .mockReset()
+        .mockResolvedValue({ quoteRatings: null } as any);
 
       updateQuotesRatingsMock.mockReset();
       submitQuoteRating.mockReset();
@@ -619,8 +613,7 @@ describe("QuotesController", () => {
     it("should update existing rating", async () => {
       //GIVEN
 
-      getPartialUserMock.mockReset();
-      getPartialUserMock.mockResolvedValue({
+      getPartialUserMock.mockReset().mockResolvedValue({
         quoteRatings: { german: { "4": 1 }, english: { "5": 5, "23": 4 } },
       } as any);
 
@@ -652,8 +645,7 @@ describe("QuotesController", () => {
     it("should update existing rating with same rating", async () => {
       //GIVEN
 
-      getPartialUserMock.mockReset();
-      getPartialUserMock.mockResolvedValue({
+      getPartialUserMock.mockReset().mockResolvedValue({
         quoteRatings: { german: { "4": 1 }, english: { "5": 5, "23": 4 } },
       } as any);
 
@@ -869,8 +861,9 @@ describe("QuotesController", () => {
     });
     it("should fail if user cannot report", async () => {
       //GIVEN
-      getPartialUserMock.mockResolvedValue({ canReport: false } as any);
-      getUserMock.mockResolvedValue({ canReport: false } as any); //TODO remove
+      getPartialUserMock
+        .mockReset()
+        .mockResolvedValue({ canReport: false } as any);
 
       //WHEN
       const { body } = await mockApp

@@ -64,7 +64,7 @@ export default s.router(quotesContract, {
         invalidMessage: "Quote reporting is unavailable.",
       }),
       RateLimit.quoteReportSubmit,
-      checkUserPermissions(["canReport"],{
+      checkUserPermissions(["canReport"], {
         criteria: (user) => {
           return user.canReport !== false;
         },

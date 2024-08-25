@@ -22,7 +22,7 @@
     {
       "name": "users",
       "description": "User data and related operations"
-    },
+    }
   ],
   "paths": {
     "/": {
@@ -399,7 +399,7 @@
           }
         }
       }
-    },
+    }
   },
   "definitions": {
     "Response": {
