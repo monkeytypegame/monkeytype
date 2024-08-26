@@ -151,9 +151,6 @@ export async function updatePosition(noAnim = false): Promise<void> {
   const currentLetter = currentWordNodeList[inputLen] as
     | HTMLElement
     | undefined;
-  const previousLetter = currentWordNodeList[inputLen - 1] as
-    | HTMLElement
-    | undefined;
   const lastWordLetter = currentWordNodeList[wordLen - 1] as
     | HTMLElement
     | undefined;
@@ -165,15 +162,11 @@ export async function updatePosition(noAnim = false): Promise<void> {
   // offsetTop and offsetHeight is the same for all visible letters
   const letterHeight =
     currentLetter?.offsetHeight ||
-    previousLetter?.offsetHeight ||
     lastWordLetter?.offsetHeight ||
     Config.fontSize * Numbers.convertRemToPixels(1);
 
   const letterPosTop =
-    currentLetter?.offsetTop ||
-    previousLetter?.offsetTop ||
-    lastWordLetter?.offsetTop ||
-    0;
+    currentLetter?.offsetTop || lastWordLetter?.offsetTop || 0;
   const diff = letterHeight - caret.offsetHeight;
   let newTop = activeWordEl.offsetTop + letterPosTop + diff / 2;
   if (Config.caretStyle === "underline") {
