@@ -132,8 +132,9 @@ export async function updatePosition(noAnim = false): Promise<void> {
     Config.caretStyle
   );
 
-  const wordLen = TestWords.words.getCurrent().length;
+  let wordLen = TestWords.words.getCurrent().length;
   const inputLen = TestInput.input.current.length;
+  if (Config.mode === "zen") wordLen = inputLen;
   const activeWordEl = document?.querySelector("#words .active") as HTMLElement;
   //insert temporary character so the caret will work in zen mode
   const activeWordEmpty = activeWordEl?.children.length === 0;
