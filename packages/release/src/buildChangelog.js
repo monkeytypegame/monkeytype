@@ -37,18 +37,20 @@ const logDelimiter =
   "thisismylogdelimiterthatwilldefinitelynotappearintheactualcommitmessage";
 
 async function getLog() {
-  return new Promise((resolve, reject) => {
-    exec(
-      `git log --oneline $(git describe --tags --abbrev=0 @^)..@ --pretty="format:${lineDelimiter}%H${logDelimiter}%h${logDelimiter}%s${logDelimiter}%b"`,
-      (err, stdout, _stderr) => {
-        if (err) {
-          reject(err);
-        }
-
+  function execPromise(command) {
+    return new Promise((resolve, reject) => {
+      exec(command, (err, stdout, _stderr) => {
+        if (err) reject(err);
         resolve(stdout);
-      }
-    );
-  });
+      });
+    });
+  }
+
+  return execPromise(`git describe --tags --abbrev=0 HEAD^`).then((lastTag) =>
+    execPromise(
+      `git log --oneline ${lastTag.trim()}..HEAD --pretty="format:${lineDelimiter}%H${logDelimiter}%h${logDelimiter}%s${logDelimiter}%b"`
+    )
+  );
 }
 
 function itemIsAddingQuotes(item) {
