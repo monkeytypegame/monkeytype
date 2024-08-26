@@ -209,6 +209,48 @@ describe("user controller test", () => {
       //THEN
       expect(body.message).toEqual("Captcha challenge failed");
     });
+    it("should fail if username too long", async () => {
+      //GIVEN
+      const newUser = {
+        uid: "123456789",
+        email: "newuser@mail.com",
+        captcha: "captcha",
+      };
+
+      //WHEN
+      const { body } = await mockApp
+        .post("/users/signup")
+        .set("authorization", "Uid 123456789|newuser@mail.com")
+        .send({ ...newUser, name: new Array(17).fill("x").join("") })
+        .expect(422);
+
+      //THEN
+      expect(body.message).toEqual(
+        "Username invalid. Name cannot use special characters or contain more than 16 characters. Can include _ and -  (xxxxxxxxxxxxxxxxx)"
+      );
+      /*  TODO expect(body).toEqual({}); */
+    });
+    it("should fail if username contains profanity", async () => {
+      //GIVEN
+      const newUser = {
+        uid: "123456789",
+        email: "newuser@mail.com",
+        captcha: "captcha",
+      };
+
+      //WHEN
+      const { body } = await mockApp
+        .post("/users/signup")
+        .set("authorization", "Uid 123456789|newuser@mail.com")
+        .send({ ...newUser, name: "miodec" })
+        .expect(422);
+
+      //THEN
+      expect(body.message).toEqual(
+        "The username contains profanity. If you believe this is a mistake, please contact us  (miodec)"
+      );
+      /*  TODO expect(body).toEqual({}); */
+    });
   });
   describe("sendVerificationEmail", () => {
     const adminGetUserMock = vi.fn();

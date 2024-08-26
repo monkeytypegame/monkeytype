@@ -51,6 +51,12 @@ export function getOpenApi(): OpenAPIObject {
       },
       tags: [
         {
+          name: "users",
+          description: "User account data.",
+          "x-displayName": "Users",
+          "x-public": "yes",
+        },
+        {
           name: "configs",
           description:
             "User specific configs like test settings, theme or tags.",

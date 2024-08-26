@@ -9,6 +9,7 @@ import { leaderboardsContract } from "./leaderboards";
 import { resultsContract } from "./results";
 import { configurationContract } from "./configuration";
 import { devContract } from "./dev";
+import { usersContract } from "./users";
 
 const c = initContract();
 
@@ -23,4 +24,5 @@ export const contract = c.router({
   results: resultsContract,
   configuration: configurationContract,
   dev: devContract,
+  users: usersContract,
 });

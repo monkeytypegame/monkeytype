@@ -14,6 +14,7 @@ export type CustomTextData = Omit<
   text: string[];
 };
 
+//replaced
 export type UserStreak = {
   lastResultTimestamp: number;
   length: number;
@@ -21,12 +22,14 @@ export type UserStreak = {
   hourOffset?: number;
 };
 
+//replaced
 export type UserTag = {
   _id: string;
   name: string;
   personalBests: PersonalBests;
 };
 
+//replaced
 export type UserProfileDetails = {
   bio?: string;
   keyboard?: string;
@@ -37,33 +40,40 @@ export type UserProfileDetails = {
   };
 };
 
+//replaced
 export type CustomTheme = {
   _id: string;
   name: string;
   colors: import("@monkeytype/contracts/schemas/configs").CustomThemeColors;
 };
 
+//replaced
 export type PremiumInfo = {
   startTimestamp: number;
   expirationTimestamp: number;
 };
 
+//replaced (quotespr)
 export type UserQuoteRatings = Record<string, Record<string, number>>;
 
+//replaced
 export type UserLbMemory = Record<
   string,
   Record<string, Record<string, number>>
 >;
 
+//replaced
 export type UserInventory = {
   badges: Badge[];
 };
 
+//repaced
 export type Badge = {
   id: number;
   selected?: boolean;
 };
 
+//replaced
 export type User = {
   name: string;
   email: string;
@@ -154,15 +164,18 @@ export type UserProfile = Pick<
   };
 };
 
+//replaced
 export type AllTimeLbs = {
   time: Record<string, Record<string, RankAndCount | undefined>>;
 };
 
+//unused
 export type RankAndCount = {
   rank?: number;
   count: number;
 };
 
+//replaced
 export type TestActivity = {
   testsByDays: (number | null)[];
   lastDay: number;
