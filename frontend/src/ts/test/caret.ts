@@ -49,6 +49,7 @@ function getTargetPositionLeft(
   fullWidthCaret: boolean,
   isLanguageRightToLeft: boolean,
   activeWordElement: HTMLElement,
+  activeWordEmpty: boolean,
   currentWordNodeList: NodeListOf<Element>,
   fullWidthCaretWidth: number,
   wordLen: number,
@@ -98,6 +99,8 @@ function getTargetPositionLeft(
       }
     }
     result = activeWordElement.offsetLeft + positionOffsetToWord;
+    if (activeWordEmpty && isLanguageRightToLeft)
+      result += activeWordElement.offsetWidth;
   } else {
     const wordsWrapperWidth =
       $(document.querySelector("#wordsWrapper") as HTMLElement).width() ?? 0;
@@ -131,8 +134,6 @@ export async function updatePosition(noAnim = false): Promise<void> {
 
   const wordLen = TestWords.words.getCurrent().length;
   const inputLen = TestInput.input.current.length;
-  const letterIsInvisibleExtra =
-    (Config.blindMode || Config.hideExtraLetters) && inputLen > wordLen;
   const activeWordEl = document?.querySelector("#words .active") as HTMLElement;
   //insert temporary character so the caret will work in zen mode
   const activeWordEmpty = activeWordEl?.children.length === 0;
@@ -149,11 +150,12 @@ export async function updatePosition(noAnim = false): Promise<void> {
   const currentLetter = currentWordNodeList[inputLen] as
     | HTMLElement
     | undefined;
+  const previousLetter = currentWordNodeList[inputLen - 1] as
+    | HTMLElement
+    | undefined;
   const lastWordLetter = currentWordNodeList[wordLen - 1] as
     | HTMLElement
     | undefined;
-
-  const spaceWidth = getSpaceWidth(activeWordEl);
 
   const currentLanguage = await JSONData.getCurrentLanguage(Config.language);
   const isLanguageRightToLeft = currentLanguage.rightToLeft;
@@ -161,20 +163,27 @@ export async function updatePosition(noAnim = false): Promise<void> {
   // in blind mode, and hide extra letters, extra letters have zero offsets
   // offsetTop and offsetHeight is the same for all visible letters
   const letterHeight =
+    currentLetter?.offsetHeight ||
+    previousLetter?.offsetHeight ||
     lastWordLetter?.offsetHeight ||
     Config.fontSize * Numbers.convertRemToPixels(1);
 
-  const letterPosTop = lastWordLetter?.offsetTop ?? 0;
+  const letterPosTop =
+    currentLetter?.offsetTop ||
+    previousLetter?.offsetTop ||
+    lastWordLetter?.offsetTop ||
+    0;
   const diff = letterHeight - caret.offsetHeight;
   let newTop = activeWordEl.offsetTop + letterPosTop + diff / 2;
   if (Config.caretStyle === "underline") {
     newTop = activeWordEl.offsetTop + letterPosTop - caret.offsetHeight / 2;
   }
 
-  let letterWidth = currentLetter?.offsetWidth || spaceWidth;
-  if (currentLetter?.offsetWidth === 0 && !letterIsInvisibleExtra) {
-    // other than in extra letters in blind mode, it could be zero
-    // if current letter is a zero-width character e.g, diacritics)
+  let letterWidth = currentLetter?.offsetWidth;
+  if (letterWidth === undefined || activeWordEmpty) {
+    letterWidth = getSpaceWidth(activeWordEl);
+  } else if (letterWidth === 0) {
+    // current letter is a zero-width character e.g, diacritics)
     letterWidth = 0;
     for (let i = inputLen; i >= 0; i--) {
       letterWidth = (currentWordNodeList[i] as HTMLElement)?.offsetWidth;
@@ -187,6 +196,7 @@ export async function updatePosition(noAnim = false): Promise<void> {
     fullWidthCaret,
     isLanguageRightToLeft,
     activeWordEl,
+    activeWordEmpty,
     currentWordNodeList,
     letterWidth,
     wordLen,
