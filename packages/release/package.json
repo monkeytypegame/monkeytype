@@ -22,6 +22,5 @@
     "@octokit/rest": "20.1.1",
     "dotenv": "16.4.5",
     "readline-sync": "1.4.10"
-  },
-  "version": "24.34.0"
+  }
 }

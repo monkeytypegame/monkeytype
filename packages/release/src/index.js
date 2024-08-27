@@ -120,24 +120,20 @@ const updatePackage = (newVersion) => {
     console.log(`[Dry Run] Updated package.json to version ${newVersion}`);
     return;
   }
-  const packageDirs = [path.resolve(__dirname, "../"), PROJECT_ROOT];
+  const packagePath = `${PROJECT_ROOT}/package.json`;
 
-  for (const packageDir of packageDirs) {
-    const packagePath = `${packageDir}/package.json`;
+  // Read the package.json file
+  const packageJson = JSON.parse(fs.readFileSync(packagePath, "utf8"));
 
-    // Read the package.json file
-    const packageJson = JSON.parse(fs.readFileSync(packagePath, "utf8"));
+  // Update the version field
+  packageJson.version = newVersion.replace("v", "");
 
-    // Update the version field
-    packageJson.version = newVersion.replace("v", "");
-
-    // Write the updated JSON back to package.json
-    fs.writeFileSync(
-      packagePath,
-      JSON.stringify(packageJson, null, 2) + "\n",
-      "utf8"
-    );
-  }
+  // Write the updated JSON back to package.json
+  fs.writeFileSync(
+    packagePath,
+    JSON.stringify(packageJson, null, 2) + "\n",
+    "utf8"
+  );
 
   console.log(`Updated package.json to version ${newVersion}`);
 };
