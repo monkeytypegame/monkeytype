@@ -251,19 +251,11 @@ function convertStringToLog(logString) {
 
     //split message using regex based on fix(language): spelling mistakes in Nepali wordlist and quotes (sapradhan) (#4528)
     //scope is optional, username is optional, pr number is optional
-    const [_, type, scope, message, message2, message3] = title.split(
-      /^(\w+)(?:\(([^)]+)\))?:\s+(.+?)\s*(?:\(([^)]+)\))?(?:\s+\(([^)]+)\))?(?:\s+\(([^)]+)\))?$/
+    const [_, type, scope, message, username, pr] = title.split(
+      /^(\w+)(?:\(([^)]+)\))?:\s+(.+?)(?:\s*\((@[^)]+)\))?(?:\s+\((#[^)]+)\))?$/
     );
 
-    const usernames = message2 && message3 ? message2.split(", ") : [];
-
-    let pr;
-    if (message2 && message3) {
-      pr = message3;
-    } else if (message2 && !message3) {
-      pr = message2;
-    }
-
+    const usernames = username ? username.split(", ") : [];
     const prs = pr ? pr.split(", ") : [];
 
     if (type && message) {
@@ -278,7 +270,7 @@ function convertStringToLog(logString) {
         scope,
         message,
         usernames: usernames || [],
-        prs,
+        prs: prs || [],
         body: body || "",
       });
     } else {
