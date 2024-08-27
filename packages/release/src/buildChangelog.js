@@ -86,7 +86,7 @@ const titles = {
 
 function getPrLink(pr) {
   const prNum = pr.replace("#", "");
-  return `[#${prNum}](https://github.com/monkeytypegame/monkeytype/issues/${prNum})`;
+  return `[#${prNum}](https://github.com/monkeytypegame/monkeytype/pull/${prNum})`;
 }
 
 function getCommitLink(hash, longHash) {
