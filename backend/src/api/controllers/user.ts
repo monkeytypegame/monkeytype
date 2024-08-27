@@ -1062,7 +1062,10 @@ export async function getTestActivity(
     throw new MonkeyError(503, "User does not have premium");
   }
 
-  return new MonkeyResponse("Test activity data retrieved", user.testActivity);
+  return new MonkeyResponse(
+    "Test activity data retrieved",
+    user.testActivity ?? null
+  );
 }
 
 async function firebaseDeleteUserIgnoreError(uid: string): Promise<void> {
@@ -1082,7 +1085,10 @@ export async function getCurrentTestActivity(
     "testActivity",
   ]);
   const data = generateCurrentTestActivity(user.testActivity);
-  return new MonkeyResponse("Current test activity data retrieved", data);
+  return new MonkeyResponse(
+    "Current test activity data retrieved",
+    data ?? null
+  );
 }
 
 export async function getStreak(
@@ -1092,5 +1098,5 @@ export async function getStreak(
 
   const user = await UserDAL.getPartialUser(uid, "streak", ["streak"]);
 
-  return new MonkeyResponse("Streak data retrieved", user.streak);
+  return new MonkeyResponse("Streak data retrieved", user.streak ?? null);
 }

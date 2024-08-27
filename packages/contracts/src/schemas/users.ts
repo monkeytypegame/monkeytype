@@ -85,7 +85,7 @@ export const UserStreakSchema = z
     lastResultTimestamp: z.number().int().nonnegative(),
     length: z.number().int().nonnegative(),
     maxLength: z.number().int().nonnegative(),
-    hourOffset: StreakHourOffsetSchema,
+    hourOffset: StreakHourOffsetSchema.optional(),
   })
   .strict();
 export type UserStreak = z.infer<typeof UserStreakSchema>;
@@ -211,6 +211,19 @@ export const TestActivitySchema = z
   })
   .strict();
 export type TestActivity = z.infer<typeof TestActivitySchema>;
+
+export const CountByYearAndDaySchema = z.record(
+  StringNumberSchema.describe("year"),
+  z.array(
+    z
+      .number()
+      .int()
+      .nonnegative()
+      .nullable()
+      .describe("number of tests, position in the array is the day of the year")
+  )
+);
+export type CountByYearAndDay = z.infer<typeof CountByYearAndDaySchema>;
 
 //Record<language, array with quoteIds as string
 export const FavoriteQuotesSchema = z.record(

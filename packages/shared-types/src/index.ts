@@ -187,4 +187,5 @@ export type TestActivity = {
   lastDay: number;
 };
 
+//replaced
 export type CountByYearAndDay = { [key: string]: (number | null)[] };

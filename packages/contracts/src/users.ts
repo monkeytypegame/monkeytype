@@ -8,6 +8,7 @@ import {
   responseWithNullableData,
 } from "./schemas/api";
 import {
+  CountByYearAndDaySchema,
   CustomThemeNameSchema,
   CustomThemeSchema,
   FavoriteQuotesSchema,
@@ -15,9 +16,11 @@ import {
   ResultFiltersSchema,
   StreakHourOffsetSchema,
   TagNameSchema,
+  TestActivitySchema,
   UserProfileDetailsSchema,
   UserProfileSchema,
   UserSchema,
+  UserStreakSchema,
   UserTagSchema,
 } from "./schemas/users";
 import { Mode2Schema, ModeSchema, PersonalBestsSchema } from "./schemas/shared";
@@ -222,9 +225,11 @@ export const GetProfilePathParamsSchema = z.object({
 });
 export type GetProfilePathParams = z.infer<typeof GetProfilePathParamsSchema>;
 
+//TODO test?!
 export const GetProfileQuerySchema = z.object({
   isUid: z
-    .literal("")
+    .string()
+    .length(0)
     .transform((it) => it === "")
     .transform(Boolean)
     .or(z.boolean()),
@@ -262,6 +267,48 @@ export type UpdateUserInboxRequest = z.infer<
   typeof UpdateUserInboxRequestSchema
 >;
 
+export const ReportUserRequestSchema = z.object({
+  uid: z.string(),
+  reason: z.enum([
+    "Inappropriate name",
+    "Inappropriate bio",
+    "Inappropriate social links",
+    "Suspected cheating",
+  ]),
+  comment: z
+    .string()
+    .regex(/^([.]|[^/<>])+$/)
+    .max(250)
+    .optional()
+    .or(z.string().length(0)),
+  captcha: z.string(), //we don't generate the captcha so there should be no validation
+});
+export type ReportUserRequest = z.infer<typeof ReportUserRequestSchema>;
+
+export const ForgotPasswordEmailRequestSchema = z.object({
+  email: z.string().email(),
+});
+export type ForgotPasswordEmailRequest = z.infer<
+  typeof ForgotPasswordEmailRequestSchema
+>;
+
+export const GetTestActivityResponseSchema = responseWithNullableData(
+  CountByYearAndDaySchema
+);
+export type GetTestActivityResponse = z.infer<
+  typeof GetTestActivityResponseSchema
+>;
+
+export const GetCurrentTestActivityResponseSchema =
+  responseWithNullableData(TestActivitySchema);
+export type GetCurrentTestActivityResponse = z.infer<
+  typeof GetCurrentTestActivityResponseSchema
+>;
+
+export const GetStreakResponseSchema =
+  responseWithNullableData(UserStreakSchema);
+export type GetStreakResponseSchema = z.infer<typeof GetStreakResponseSchema>;
+
 const c = initContract();
 
 export const usersContract = c.router(
@@ -296,9 +343,7 @@ export const usersContract = c.router(
         400: MonkeyResponseSchema.describe("Name is not available"),
       },
       metadata: {
-        authenticationOptions: {
-          isPublic: true,
-        },
+        authenticationOptions: { isPublic: true },
       } as EndpointMetadata,
     },
     delete: {
@@ -311,9 +356,7 @@ export const usersContract = c.router(
         200: MonkeyResponseSchema,
       },
       metadata: {
-        authenticationOptions: {
-          requireFreshToken: true,
-        },
+        authenticationOptions: { requireFreshToken: true },
       } as EndpointMetadata,
     },
     reset: {
@@ -326,9 +369,7 @@ export const usersContract = c.router(
         200: MonkeyResponseSchema,
       },
       metadata: {
-        authenticationOptions: {
-          requireFreshToken: true,
-        },
+        authenticationOptions: { requireFreshToken: true },
       } as EndpointMetadata,
     },
     updateName: {
@@ -341,9 +382,7 @@ export const usersContract = c.router(
         200: MonkeyResponseSchema,
       },
       metadata: {
-        authenticationOptions: {
-          requireFreshToken: true,
-        },
+        authenticationOptions: { requireFreshToken: true },
       } as EndpointMetadata,
     },
     updateLeaderboardMemory: {
@@ -366,9 +405,7 @@ export const usersContract = c.router(
         200: MonkeyResponseSchema,
       },
       metadata: {
-        authenticationOptions: {
-          requireFreshToken: true,
-        },
+        authenticationOptions: { requireFreshToken: true },
       } as EndpointMetadata,
     },
     updatePassword: {
@@ -381,9 +418,7 @@ export const usersContract = c.router(
         200: MonkeyResponseSchema,
       },
       metadata: {
-        authenticationOptions: {
-          requireFreshToken: true,
-        },
+        authenticationOptions: { requireFreshToken: true },
       } as EndpointMetadata,
     },
     getPersonalBests: {
@@ -396,9 +431,7 @@ export const usersContract = c.router(
         200: GetPersonalBestsResponseSchema,
       },
       metadata: {
-        authenticationOptions: {
-          acceptApeKeys: true,
-        },
+        authenticationOptions: { acceptApeKeys: true },
       } as EndpointMetadata,
     },
     deletePersonalBests: {
@@ -411,9 +444,7 @@ export const usersContract = c.router(
         200: MonkeyResponseSchema,
       },
       metadata: {
-        authenticationOptions: {
-          requireFreshToken: true,
-        },
+        authenticationOptions: { requireFreshToken: true },
       } as EndpointMetadata,
     },
     optOutOfLeaderboards: {
@@ -426,9 +457,7 @@ export const usersContract = c.router(
         200: MonkeyResponseSchema,
       },
       metadata: {
-        authenticationOptions: {
-          requireFreshToken: true,
-        },
+        authenticationOptions: { requireFreshToken: true },
       } as EndpointMetadata,
     },
     addResultFilterPreset: {
@@ -461,9 +490,7 @@ export const usersContract = c.router(
         200: GetTagsResponseSchema,
       },
       metadata: {
-        authenticationOptions: {
-          acceptApeKeys: true,
-        },
+        authenticationOptions: { acceptApeKeys: true },
       } as EndpointMetadata,
     },
     createTag: {
@@ -585,9 +612,7 @@ export const usersContract = c.router(
         200: GetStatsResponseSchema,
       },
       metadata: {
-        authenticationOptions: {
-          acceptApeKeys: true,
-        },
+        authenticationOptions: { acceptApeKeys: true },
       } as EndpointMetadata,
     },
     setStreakHourOffset: {
@@ -640,9 +665,7 @@ export const usersContract = c.router(
         200: GetProfileResponseSchema,
       },
       metadata: {
-        authenticationOptions: {
-          isPublic: true,
-        },
+        authenticationOptions: { isPublic: true },
       } as EndpointMetadata,
     },
     updateProfile: {
@@ -673,6 +696,89 @@ export const usersContract = c.router(
       responses: {
         200: MonkeyResponseSchema,
       },
+    },
+    report: {
+      summary: "report user",
+      description: "Report a user",
+      method: "POST",
+      path: "/report",
+      body: ReportUserRequestSchema.strict(),
+      responses: {
+        200: MonkeyResponseSchema,
+      },
+    },
+    verificationEmail: {
+      summary: "send verification email",
+      description: "Send a verification email",
+      method: "POST",
+      path: "/verificationEmail",
+      body: c.noBody(),
+      responses: {
+        200: MonkeyResponseSchema,
+      },
+      metadata: {
+        authenticationOptions: { noCache: true },
+      } as EndpointMetadata,
+    },
+    forgotPasswordEmail: {
+      summary: "send forgot password email",
+      description: "Send a forgot password email",
+      method: "POST",
+      path: "/forgotPasswordEmail",
+      body: ForgotPasswordEmailRequestSchema.strict(),
+      responses: {
+        200: MonkeyResponseSchema,
+      },
+      metadata: {
+        authenticationOptions: { isPublic: true },
+      } as EndpointMetadata,
+    },
+    revokeAllTokens: {
+      summary: "revoke all tokens",
+      description: "Revoke all tokens for the current user.",
+      method: "POST",
+      path: "/revokeAllTokens",
+      body: c.noBody(),
+      responses: {
+        200: MonkeyResponseSchema,
+      },
+      metadata: {
+        authenticationOptions: { requireFreshToken: true, noCache: true },
+      } as EndpointMetadata,
+    },
+    getTestActivity: {
+      summary: "get test activity",
+      description: "Get user's test activity",
+      method: "GET",
+      path: "/testActivity",
+      responses: {
+        200: GetTestActivityResponseSchema,
+      },
+    },
+    getCurrentTestActivity: {
+      summary: "get current test activity",
+      description:
+        "Get test activity for the last up to 372 days for the current user ",
+      method: "GET",
+      path: "/currentTestActivity",
+      responses: {
+        200: GetCurrentTestActivityResponseSchema,
+      },
+      metadata: {
+        authenticationOptions: { acceptApeKeys: true },
+      } as EndpointMetadata,
+    },
+    getStreak: {
+      summary: "get streak",
+      description: "Get user's streak data",
+      method: "GET",
+      path: "/streak",
+      responses: {
+        200: GetStreakResponseSchema,
+      },
+      metadata: {
+        authenticationOptions: { acceptApeKeys: true },
+      } as EndpointMetadata,
     },
   },
   {
