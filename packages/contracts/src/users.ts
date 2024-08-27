@@ -23,12 +23,21 @@ import {
   UserStreakSchema,
   UserTagSchema,
 } from "./schemas/users";
-import { Mode2Schema, ModeSchema, PersonalBestsSchema } from "./schemas/shared";
-import { IdSchema, LanguageSchema } from "./schemas/util";
+import {
+  Mode2Schema,
+  ModeSchema,
+  PersonalBestSchema,
+  PersonalBestsSchema,
+} from "./schemas/shared";
+import { IdSchema, LanguageSchema, StringNumberSchema } from "./schemas/util";
 import { CustomThemeColorsSchema } from "./schemas/configs";
 import { QuoteIdSchema } from "./schemas/quotes";
 
-export const GetUserResponseSchema = responseWithData(UserSchema);
+export const GetUserResponseSchema = responseWithData(
+  UserSchema.extend({
+    inboxUnreadSize: z.number().int().nonnegative(),
+  })
+);
 export type GetUserResponse = z.infer<typeof GetUserResponseSchema>;
 
 const UserNameSchema = z
@@ -85,7 +94,7 @@ export const GetPersonalBestsQuerySchema = z.object({
 export type GetPersonalBestsQuery = z.infer<typeof GetPersonalBestsQuerySchema>;
 
 export const GetPersonalBestsResponseSchema =
-  responseWithNullableData(PersonalBestsSchema);
+  responseWithNullableData(PersonalBestSchema);
 export type GetPersonalBestsResponse = z.infer<
   typeof GetPersonalBestsResponseSchema
 >;
@@ -117,12 +126,13 @@ export const AddTagRequestSchema = z.object({
 export type AddTagRequest = z.infer<typeof AddTagRequestSchema>;
 
 export const AddTagResponseSchema = responseWithData(UserTagSchema);
-export type AddTagResponse = z.infer<typeof AddTagRequestSchema>;
+export type AddTagResponse = z.infer<typeof AddTagResponseSchema>;
 
 export const EditTagRequestSchema = z.object({
   tagId: IdSchema,
   newName: TagNameSchema,
 });
+export type EditTagRequest = z.infer<typeof EditTagRequestSchema>;
 
 export const TagIdPathParamsSchema = z.object({
   tagId: IdSchema,
@@ -181,6 +191,7 @@ export type LinkDiscordRequest = z.infer<typeof LinkDiscordRequestSchema>;
 export const LinkDiscordResponseSchema = responseWithData(
   UserSchema.pick({ discordId: true, discordAvatar: true })
 );
+export type LinkDiscordResponse = z.infer<typeof LinkDiscordResponseSchema>;
 
 export const GetStatsResponseSchema = responseWithData(
   UserSchema.pick({
@@ -206,7 +217,7 @@ export type GetFavoriteQuotesResponse = z.infer<
 
 export const AddFavoriteQuoteRequestSchema = z.object({
   language: LanguageSchema,
-  quoteId: QuoteIdSchema,
+  quoteId: StringNumberSchema,
 });
 export type AddFavoriteQuoteRequest = z.infer<
   typeof AddFavoriteQuoteRequestSchema
@@ -214,7 +225,7 @@ export type AddFavoriteQuoteRequest = z.infer<
 
 export const RemoveFavoriteQuoteRequestSchema = z.object({
   language: LanguageSchema,
-  quoteId: QuoteIdSchema,
+  quoteId: StringNumberSchema,
 });
 export type RemoveFavoriteQuoteRequest = z.infer<
   typeof RemoveFavoriteQuoteRequestSchema
@@ -236,10 +247,19 @@ export const GetProfileQuerySchema = z.object({
 });
 export type GetProfileQuery = z.infer<typeof GetProfileQuerySchema>;
 
-export const GetProfileResponseSchema = responseWithData(UserProfileSchema);
+export const GetProfileResponseSchema = responseWithData(
+  UserProfileSchema.partial({
+    inventory: true,
+    details: true,
+    allTimeLbs: true,
+    uid: true,
+  })
+);
 export type GetProfileResponse = z.infer<typeof GetProfileResponseSchema>;
 
-export const UpdateUserProfileRequestSchema = UserProfileDetailsSchema;
+export const UpdateUserProfileRequestSchema = UserProfileDetailsSchema.extend({
+  selectedBadgeId: z.number().int().nonnegative().optional(),
+});
 export type UpdateUserProfileRequest = z.infer<
   typeof UpdateUserProfileRequestSchema
 >;
@@ -260,8 +280,8 @@ export const GetUserInboxResponseSchema = responseWithData(
 export type GetUserInboxResponse = z.infer<typeof GetUserInboxResponseSchema>;
 
 export const UpdateUserInboxRequestSchema = z.object({
-  mailIdsToDelete: z.array(z.string().uuid()).min(0).optional(),
-  mailIdsToRead: z.array(z.string().uuid()).min(0).optional(),
+  mailIdsToDelete: z.array(z.string().uuid()).min(0).optional().default([]),
+  mailIdsToMarkRead: z.array(z.string().uuid()).min(0).optional().default([]),
 });
 export type UpdateUserInboxRequest = z.infer<
   typeof UpdateUserInboxRequestSchema
@@ -592,6 +612,7 @@ export const usersContract = c.router(
       responses: {
         200: LinkDiscordResponseSchema,
       },
+      metadata: {} as EndpointMetadata,
     },
     unlinkDiscord: {
       summary: "unlink discord",

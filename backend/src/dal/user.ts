@@ -764,7 +764,7 @@ export async function getStats(
 
 export async function getFavoriteQuotes(
   uid
-): Promise<MonkeyTypes.DBUser["favoriteQuotes"]> {
+): Promise<NonNullable<MonkeyTypes.DBUser["favoriteQuotes"]>> {
   const user = await getPartialUser(uid, "get favorite quotes", [
     "favoriteQuotes",
   ]);
@@ -896,7 +896,7 @@ export async function updateProfile(
 
 export async function getInbox(
   uid: string
-): Promise<MonkeyTypes.DBUser["inbox"]> {
+): Promise<NonNullable<MonkeyTypes.DBUser["inbox"]>> {
   const user = await getPartialUser(uid, "get inbox", ["inbox"]);
   return user.inbox ?? [];
 }

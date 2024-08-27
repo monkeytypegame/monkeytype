@@ -128,7 +128,8 @@ export const UserProfileDetailsSchema = z
         ),
         website: profileDetailsBase((it) => it.url().max(200)), //https?
       })
-      .strict(),
+      .strict()
+      .optional(),
   })
   .strict();
 export type UserProfileDetails = z.infer<typeof UserProfileDetailsSchema>;
@@ -166,10 +167,12 @@ export const AllTimeLbsSchema = z.object({
     Mode2Schema,
     z.record(
       LanguageSchema,
-      z.object({
-        rank: z.number().int().nonnegative().optional(),
-        count: z.number().int().nonnegative(),
-      })
+      z
+        .object({
+          rank: z.number().int().nonnegative().optional(),
+          count: z.number().int().nonnegative(),
+        })
+        .optional()
     )
   ),
 });
