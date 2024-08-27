@@ -107,23 +107,28 @@ export type User = {
   testActivity?: TestActivity;
 };
 
+//replaced
 export type Reward<T> = {
   type: string;
   item: T;
 };
 
+//replaced
 export type XpReward = {
   type: "xp";
   item: number;
 } & Reward<number>;
 
+//replaced
 export type BadgeReward = {
   type: "badge";
   item: Badge;
 } & Reward<Badge>;
 
+//replaced
 export type AllRewards = XpReward | BadgeReward;
 
+//replaced
 export type MonkeyMail = {
   id: string;
   subject: string;
@@ -133,6 +138,7 @@ export type MonkeyMail = {
   rewards: AllRewards[];
 };
 
+//replaced
 export type UserProfile = Pick<
   User,
   | "name"

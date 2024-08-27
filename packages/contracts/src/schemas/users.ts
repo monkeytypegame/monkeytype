@@ -26,19 +26,19 @@ export const ResultFiltersSchema = z.object({
   mode: z.record(ModeSchema, z.boolean()),
   words: z
     .object({
-      "10": z.boolean(),
-      "25": z.boolean(),
-      "50": z.boolean(),
-      "100": z.boolean(),
+      10: z.boolean(),
+      25: z.boolean(),
+      50: z.boolean(),
+      100: z.boolean(),
       custom: z.boolean(),
     })
     .strict(),
   time: z
     .object({
-      "15": z.boolean(),
-      "30": z.boolean(),
-      "60": z.boolean(),
-      "120": z.boolean(),
+      15: z.boolean(),
+      30: z.boolean(),
+      60: z.boolean(),
+      120: z.boolean(),
       custom: z.boolean(),
     })
     .strict(),
@@ -212,6 +212,13 @@ export const TestActivitySchema = z
   .strict();
 export type TestActivity = z.infer<typeof TestActivitySchema>;
 
+//Record<language, array with quoteIds as string
+export const FavoriteQuotesSchema = z.record(
+  LanguageSchema,
+  z.array(StringNumberSchema)
+);
+export type FavoriteQuotes = z.infer<typeof FavoriteQuotesSchema>;
+
 export const UserSchema = z.object({
   name: z.string(),
   email: z.string().email(),
@@ -225,16 +232,14 @@ export const UserSchema = z.object({
   streak: UserStreakSchema.optional(),
   xp: z.number().int().nonnegative().optional(),
   discordId: z.string().optional(),
-  discordAvator: z.string().optional(),
+  discordAvatar: z.string().optional(),
   tags: z.array(UserTagSchema).optional(),
   profileDetails: UserProfileDetailsSchema.optional(),
   customThemes: CustomThemeSchema.optional(),
   premium: PremiumInfoSchema.optional(),
   isPremium: z.boolean().optional(),
   quoteRatings: QuoteRatingSchema.optional(),
-  favoriteQuotes: z
-    .record(LanguageSchema, z.array(StringNumberSchema))
-    .optional(), //Record<language, array with quoteIds as string
+  favoriteQuotes: FavoriteQuotesSchema.optional(),
   lbMemory: UserLbMemorySchema.optional(),
   allTimeLbs: AllTimeLbsSchema,
   inventory: UserInventorySchema.optional(),
@@ -246,8 +251,78 @@ export const UserSchema = z.object({
   resultFilterPresets: z.array(ResultFiltersSchema).optional(),
   testActicity: TestActivitySchema.optional(),
 });
+export type User = z.infer<typeof UserSchema>;
 
 export type ResultFiltersGroup = keyof ResultFilters;
 
 export type ResultFiltersGroupItem<T extends ResultFiltersGroup> =
   keyof ResultFilters[T];
+
+export const TagNameSchema = z
+  .string()
+  .regex(/^[0-9a-zA-Z_.-]+$/)
+  .max(16);
+export type TagName = z.infer<typeof TagNameSchema>;
+
+export const CustomThemeNameSchema = z
+  .string()
+  .regex(/^[0-9a-zA-Z_-]+$/)
+  .max(16);
+export type CustomThemeName = z.infer<typeof CustomThemeNameSchema>;
+
+export const TypingStatsSchema = z.object({
+  completedTests: z.number().int().nonnegative().optional(),
+  startedTests: z.number().int().nonnegative().optional(),
+  timeTyping: z.number().int().nonnegative().optional(),
+});
+export type TypingStats = z.infer<typeof TypingStatsSchema>;
+
+export const UserProfileSchema = UserSchema.pick({
+  uid: true,
+  name: true,
+  banned: true,
+  addedAt: true,
+  discordId: true,
+  discordAvatar: true,
+  xp: true,
+  lbOptOut: true,
+  isPremium: true,
+  inventory: true,
+  allTimeLbs: true,
+}).extend({
+  typingStats: TypingStatsSchema,
+  personalBests: PersonalBestsSchema.pick({ time: true, words: true }),
+  streak: z.number().int().nonnegative(),
+  maxStreak: z.number().int().nonnegative(),
+
+  details: UserProfileDetailsSchema,
+});
+export type UserProfile = z.infer<typeof UserProfileSchema>;
+
+export const RewardTypeSchema = z.enum(["xp", "badge"]);
+export type RewardType = z.infer<typeof RewardTypeSchema>;
+
+export const XpRewardSchema = z.object({
+  type: z.literal(RewardTypeSchema.enum.xp),
+  item: z.number().int(),
+});
+export type XpReward = z.infer<typeof XpRewardSchema>;
+
+export const BadgeRewardSchema = z.object({
+  type: z.literal(RewardTypeSchema.enum.badge),
+  item: BadgeSchema,
+});
+export type BadgeReward = z.infer<typeof BadgeRewardSchema>;
+
+export const AllRewardsSchema = XpRewardSchema.or(BadgeRewardSchema);
+export type AllRewards = z.infer<typeof AllRewardsSchema>;
+
+export const MonkeyMailSchema = z.object({
+  id: IdSchema,
+  subject: z.string(),
+  body: z.string(),
+  timestamp: z.number().int().nonnegative(),
+  read: z.boolean(),
+  rewards: z.array(AllRewardsSchema),
+});
+export type MonkeyMail = z.infer<typeof MonkeyMailSchema>;

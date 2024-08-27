@@ -30,6 +30,7 @@ declare namespace MonkeyTypes {
     raw: Readonly<TsRestRequest>;
   };
 
+  //TODOO replace shared types
   type DBUser = Omit<
     import("@monkeytype/shared-types").User,
     | "resultFilterPresets"
