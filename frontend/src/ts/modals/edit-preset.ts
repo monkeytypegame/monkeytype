@@ -307,115 +307,125 @@ async function apply(): Promise<void> {
 }
 
 function getSettingGroup(configFieldName: string): PresetSettingGroup {
-  switch (configFieldName) {
-    case "theme":
-    case "themeLight":
-    case "themeDark":
-    case "autoSwitchTheme":
-    case "customTheme":
-    case "customThemeColors":
-    case "favThemes":
-    case "flipTestColors":
-    case "colorfulMode":
-    case "randomTheme":
-    case "customBackground":
-    case "customBackgroundSize":
-    case "customBackgroundFilter":
-      return "theme";
+  const themeSettings = [
+    "theme",
+    "themeLight",
+    "themeDark",
+    "autoSwitchTheme",
+    "customTheme",
+    "customThemeColors",
+    "favThemes",
+    "flipTestColors",
+    "colorfulMode",
+    "randomTheme",
+    "customBackground",
+    "customBackgroundSize",
+    "customBackgroundFilter",
+  ];
+  const hideElementsSettings = [
+    "showKeyTips",
+    "capsLockWarning",
+    "showOutOfFocusWarning",
+    "showAverage",
+  ];
+  const caretSettings = [
+    "smoothCaret",
+    "caretStyle",
+    "paceCaretStyle",
+    "paceCaret",
+    "paceCaretCustomSpeed",
+    "repeatedPace",
+  ];
+  const behaviorSettings = [
+    "quickRestart",
+    "difficulty",
+    "blindMode",
+    "funbox",
+    "alwaysShowWordsHistory",
+    "singleListCommandLine",
+    "minWpm",
+    "minWpmCustomSpeed",
+    "minAcc",
+    "minAccCustom",
+    "repeatQuotes",
+    "customLayoutfluid",
+    "minBurst",
+    "minBurstCustomSpeed",
+    "britishEnglish",
+    "tags",
+  ];
+  const testSettings = [
+    "punctuation",
+    "words",
+    "time",
+    "numbers",
+    "mode",
+    "quoteLength",
+    "language",
+    "burstHeatmap",
+  ];
+  const appearanceSettings = [
+    "fontSize",
+    "timerStyle",
+    "liveSpeedStyle",
+    "liveAccStyle",
+    "liveBurstStyle",
+    "timerColor",
+    "timerOpacity",
+    "showAllLines",
+    "keymapMode",
+    "keymapStyle",
+    "keymapLegendStyle",
+    "keymapLayout",
+    "keymapShowTopRow",
+    "keymapSize",
+    "fontFamily",
+    "smoothLineScroll",
+    "alwaysShowDecimalPlaces",
+    "startGraphsAtZero",
+    "highlightMode",
+    "tapeMode",
+    "typingSpeedUnit",
+    "maxLineWidth",
+  ];
+  const inputSettings = [
+    "freedomMode",
+    "quickEnd",
+    "layout",
+    "confidenceMode",
+    "indicateTypos",
+    "stopOnError",
+    "hideExtraLetters",
+    "strictSpace",
+    "oppositeShiftMode",
+    "lazyMode",
+  ];
+  const soundSettings = ["playSoundOnError", "playSoundOnClick", "soundVolume"];
+  const hiddenSettings = ["accountChart", "monkey", "monkeyPowerLevel"];
+  const adsSettings = ["ads"];
 
-    case "showKeyTips":
-    case "capsLockWarning":
-    case "showOutOfFocusWarning":
-    case "showAverage":
-      return "hideElements";
-
-    case "smoothCaret":
-    case "caretStyle":
-    case "paceCaretStyle":
-    case "paceCaret":
-    case "paceCaretCustomSpeed":
-    case "repeatedPace":
-      return "caret";
-
-    case "quickRestart":
-    case "difficulty":
-    case "blindMode":
-    case "funbox":
-    case "alwaysShowWordsHistory":
-    case "singleListCommandLine":
-    case "minWpm":
-    case "minWpmCustomSpeed":
-    case "minAcc":
-    case "minAccCustom":
-    case "repeatQuotes":
-    case "customLayoutfluid":
-    case "minBurst":
-    case "minBurstCustomSpeed":
-    case "burstHeatmap": //not sure
-    case "britishEnglish":
-    case "tags":
-      return "behavior";
-
-    case "punctuation":
-    case "words":
-    case "time":
-    case "numbers":
-    case "mode":
-    case "quoteLength":
-    case "language":
-      return "test";
-
-    case "fontSize":
-    case "timerStyle":
-    case "liveSpeedStyle":
-    case "liveAccStyle":
-    case "liveBurstStyle":
-    case "timerColor":
-    case "timerOpacity":
-    case "showAllLines":
-    case "keymapMode":
-    case "keymapStyle":
-    case "keymapLegendStyle":
-    case "keymapLayout":
-    case "keymapShowTopRow":
-    case "keymapSize":
-    case "fontFamily":
-    case "smoothLineScroll":
-    case "alwaysShowDecimalPlaces":
-    case "startGraphsAtZero":
-    case "highlightMode":
-    case "tapeMode":
-    case "typingSpeedUnit":
-    case "maxLineWidth":
-      return "appearance";
-
-    case "freedomMode":
-    case "quickEnd":
-    case "layout":
-    case "confidenceMode":
-    case "indicateTypos":
-    case "stopOnError":
-    case "hideExtraLetters":
-    case "strictSpace":
-    case "oppositeShiftMode":
-    case "lazyMode":
-      return "input";
-
-    case "playSoundOnError":
-    case "playSoundOnClick":
-    case "soundVolume":
-      return "sound";
-
-    case "accountChart":
-    case "monkey":
-    case "monkeyPowerLevel":
-      return "hidden";
-
-    case "ads":
-      return "ads";
-    default:
-      break;
+  if (themeSettings.includes(configFieldName)) {
+    return "theme";
+  } else if (hideElementsSettings.includes(configFieldName)) {
+    return "hideElements";
+  } else if (caretSettings.includes(configFieldName)) {
+    return "caret";
+  } else if (behaviorSettings.includes(configFieldName)) {
+    return "behavior";
+  } else if (testSettings.includes(configFieldName)) {
+    return "test";
+  } else if (appearanceSettings.includes(configFieldName)) {
+    return "appearance";
+  } else if (inputSettings.includes(configFieldName)) {
+    return "input";
+  } else if (soundSettings.includes(configFieldName)) {
+    return "sound";
+  } else if (hiddenSettings.includes(configFieldName)) {
+    return "hidden";
+  } else if (adsSettings.includes(configFieldName)) {
+    return "ads";
   }
+
   throw new Error(`${configFieldName} setting not part of any setting group`);
 }
 
