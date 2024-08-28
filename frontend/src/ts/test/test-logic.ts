@@ -388,7 +388,7 @@ export async function init(): Promise<void> {
   MonkeyPower.reset();
   Replay.stopReplayRecording();
   TestWords.words.reset();
-  TestUI.setCurrentWordElementIndex(0);
+  TestUI.setActiveWordElementIndex(0);
   TestInput.input.resetHistory();
   TestInput.input.resetCurrent();
 
