@@ -193,38 +193,6 @@ describe("UserDal", () => {
     ).rejects.toThrow("Username already taken");
   });
 
-  it("updatename should not allow invalid usernames", async () => {
-    // given
-    const testUser = {
-      name: "Test",
-      email: "mockemail@email.com",
-      uid: "userId",
-    };
-
-    await UserDAL.addUser(testUser.name, testUser.email, testUser.uid);
-
-    const invalidNames = [
-      null, // falsy
-      undefined, // falsy
-      "", // empty
-      " ".repeat(16), // too long
-      ".testName", // cant begin with period
-      "asdasdAS$", // invalid characters
-    ];
-
-    // when, then
-    invalidNames.forEach(
-      async (invalidName) =>
-        await expect(
-          UserDAL.updateName(
-            testUser.uid,
-            invalidName as unknown as string,
-            testUser.name
-          )
-        ).rejects.toThrow("Invalid username")
-    );
-  });
-
   it("UserDAL.updateName should change the name of a user", async () => {
     // given
     const testUser = {

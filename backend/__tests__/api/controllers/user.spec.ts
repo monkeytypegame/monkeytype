@@ -223,10 +223,12 @@ describe("user controller test", () => {
         .expect(422);
 
       //THEN
-      expect(body.message).toEqual(
-        "Username invalid. Name cannot use special characters or contain more than 16 characters. Can include _ and -  (xxxxxxxxxxxxxxxxx)"
-      );
-      /*  TODO expect(body).toEqual({}); */
+      expect(body).toEqual({
+        message: "Invalid request data schema",
+        validationErrors: [
+          '"name" String must contain at most 16 character(s)',
+        ],
+      });
     });
     it("should fail if username contains profanity", async () => {
       //GIVEN
@@ -244,10 +246,12 @@ describe("user controller test", () => {
         .expect(422);
 
       //THEN
-      expect(body.message).toEqual(
-        "The username contains profanity. If you believe this is a mistake, please contact us  (miodec)"
-      );
-      /*  TODO expect(body).toEqual({}); */
+      expect(body).toEqual({
+        message: "Invalid request data schema",
+        validationErrors: [
+          '"name" Profanity detected. Please remove it. If you believe this is a mistake, please contact us. (miodec)',
+        ],
+      });
     });
   });
   describe("sendVerificationEmail", () => {
@@ -435,10 +439,10 @@ describe("user controller test", () => {
         .expect(422);
 
       //THEN
-      expect(body.message).toEqual('"email" is required (undefined)');
-      /* TODO
-      expect(body).toEqual({});
-      */
+      expect(body).toEqual({
+        message: "Invalid request data schema",
+        validationErrors: ['"email" Required'],
+      });
     });
     it("should fail without unknown properties", async () => {
       //WHEN
@@ -448,10 +452,10 @@ describe("user controller test", () => {
         .expect(422);
 
       //THEN
-      expect(body.message).toEqual('"extra" is not allowed (value)');
-      /* TODO
-      expect(body).toEqual({});
-      */
+      expect(body).toEqual({
+        message: "Invalid request data schema",
+        validationErrors: ["Unrecognized key(s) in object: 'extra'"],
+      });
     });
   });
   describe("getTestActivity", () => {
@@ -760,21 +764,6 @@ describe("user controller test", () => {
       //THEN
       expect(body.message).toEqual("Banned users cannot reset their account");
     });
-    it("should fail with unknown properties", async () => {
-      //GIVEN
-
-      //WHEN
-      const { body } = await mockApp
-        .patch("/users/reset")
-        .send({ extra: "value" })
-        .set("authorization", `Uid ${uid}`);
-      //TODO .expect(422);
-
-      //THEN
-      /*TODO
-      expect(body).toEqual({});
-      */
-    });
   });
   describe("update name", () => {
     const getPartialUserMock = vi.spyOn(UserDal, "getPartialUser");
@@ -877,10 +866,10 @@ describe("user controller test", () => {
         .expect(422);
 
       //THEN
-      expect(body.message).toEqual('"name" is required (undefined)');
-      /* TODO: 
-      expect(body).toEqual({});
-      */
+      expect(body).toEqual({
+        message: "Invalid request data schema",
+        validationErrors: ['"name" Required'],
+      });
     });
     it("should fail without unknown properties", async () => {
       //WHEN
@@ -891,10 +880,10 @@ describe("user controller test", () => {
         .expect(422);
 
       //THEN
-      expect(body.message).toEqual('"extra" is not allowed (value)');
-      /* TODO: 
-      expect(body).toEqual({});
-      */
+      expect(body).toEqual({
+        message: "Invalid request data schema",
+        validationErrors: ["Unrecognized key(s) in object: 'extra'"],
+      });
     });
     it("should fail if username contains profanity", async () => {
       //WHEN
@@ -905,10 +894,12 @@ describe("user controller test", () => {
         .expect(422);
 
       //THEN
-      expect(body.message).toEqual('"extra" is not allowed (value)');
-      /* TODO: 
-      expect(body).toEqual({});
-      */
+      expect(body).toEqual({
+        message: "Invalid request data schema",
+        validationErrors: [
+          '"name" Profanity detected. Please remove it. If you believe this is a mistake, please contact us. (miodec)',
+        ],
+      });
     });
   });
   describe("clear PBs", () => {
@@ -1171,10 +1162,10 @@ describe("user controller test", () => {
         .set("authorization", `Uid ${uid}`)
         .expect(422);
 
-      expect(body.message).toEqual('"newEmail" is required (undefined)');
-      /* TODO
-      expect(body).toEqual({});
-      */
+      expect(body).toEqual({
+        message: "Invalid request data schema",
+        validationErrors: ['"newEmail" Required', '"previousEmail" Required'],
+      });
     });
     it("should fail with unknown properties", async () => {
       //WHEN
@@ -1188,10 +1179,10 @@ describe("user controller test", () => {
         })
         .expect(422);
 
-      expect(body.message).toEqual('"extra" is not allowed (value)');
-      /* TODO
-      expect(body).toEqual({});
-      */
+      expect(body).toEqual({
+        message: "Invalid request data schema",
+        validationErrors: ["Unrecognized key(s) in object: 'extra'"],
+      });
     });
   });
   describe("update password", () => {
@@ -1224,10 +1215,10 @@ describe("user controller test", () => {
         .expect(422);
 
       //THEN
-      expect(body.message).toEqual('"newPassword" is required (undefined)');
-      /*TODO:
-      expect(body).toEqual({});
-      */
+      expect(body).toEqual({
+        message: "Invalid request data schema",
+        validationErrors: ['"newPassword" Required'],
+      });
     });
     it("should fail with unknown properties", async () => {
       //WHEN
@@ -1238,10 +1229,10 @@ describe("user controller test", () => {
         .expect(422);
 
       //THEN
-      expect(body.message).toEqual('"extra" is not allowed (value)');
-      /*TODO:
-      expect(body).toEqual({});
-      */
+      expect(body).toEqual({
+        message: "Invalid request data schema",
+        validationErrors: ["Unrecognized key(s) in object: 'extra'"],
+      });
     });
     it("should fail with password too short", async () => {
       //WHEN
@@ -1252,12 +1243,12 @@ describe("user controller test", () => {
         .expect(422);
 
       //THEN
-      expect(body.message).toEqual(
-        '"newPassword" length must be at least 6 characters long (test)'
-      );
-      /*TODO:
-      expect(body).toEqual({});
-      */
+      expect(body).toEqual({
+        message: "Invalid request data schema",
+        validationErrors: [
+          '"newPassword" String must contain at least 6 character(s)',
+        ],
+      });
     });
   });
   describe("get oauth link", () => {
@@ -1536,8 +1527,24 @@ describe("user controller test", () => {
         discordId: "discordUserId",
       });
     });
-
     it("should fail without mandatory properties", async () => {
+      //WHEN
+      const { body } = await mockApp
+        .post("/users/discord/link")
+        .set("Authorization", `Uid ${uid}`)
+        .expect(422);
+
+      //THEN
+      expect(body).toEqual({
+        message: "Invalid request data schema",
+        validationErrors: [
+          '"tokenType" Required',
+          '"accessToken" Required',
+          '"state" Required',
+        ],
+      });
+    });
+    it("should fail with unknown properties", async () => {
       //WHEN
       const { body } = await mockApp
         .post("/users/discord/link")
@@ -1551,25 +1558,10 @@ describe("user controller test", () => {
         .expect(422);
 
       //THEN
-      expect(body.message).toEqual('"extra" is not allowed (value)');
-
-      /* TODO:
-      expect(body).toEqual({});
-      */
-    });
-    it("should fail with unknown properties", async () => {
-      //WHEN
-      const { body } = await mockApp
-        .post("/users/discord/link")
-        .set("Authorization", `Uid ${uid}`)
-        .expect(422);
-
-      //THEN
-      expect(body.message).toEqual('"tokenType" is required (undefined)');
-
-      /* TODO:
-      expect(body).toEqual({});
-      */
+      expect(body).toEqual({
+        message: "Invalid request data schema",
+        validationErrors: ["Unrecognized key(s) in object: 'extra'"],
+      });
     });
   });
   describe("unlink discord", () => {
@@ -1745,10 +1737,25 @@ describe("user controller test", () => {
         .expect(422);
 
       //THEN
-      expect(body.message).toEqual('"_id" is required (undefined)');
-      /* TODO:
-      expect(body).toEqual({});
-      */
+      expect(body).toEqual({
+        message: "Invalid request data schema",
+        validationErrors: [
+          '"_id" Required',
+          '"name" Required',
+          '"pb" Required',
+          '"difficulty" Required',
+          '"mode" Required',
+          '"words" Required',
+          '"time" Required',
+          '"quoteLength" Required',
+          '"punctuation" Required',
+          '"numbers" Required',
+          '"date" Required',
+          '"tags" Required',
+          '"language" Required',
+          '"funbox" Required',
+        ],
+      });
     });
     it("should fail with unknown properties", async () => {
       //WHEN
@@ -1759,10 +1766,10 @@ describe("user controller test", () => {
         .expect(422);
 
       //THEN
-      expect(body.message).toEqual('"extra" is not allowed (value)');
-      /* TODO:
-      expect(body).toEqual({});
-      */
+      expect(body).toEqual({
+        message: "Invalid request data schema",
+        validationErrors: ["Unrecognized key(s) in object: 'extra'"],
+      });
     });
     it("should fail if feature is disabled", async () => {
       //GIVEN
@@ -1778,9 +1785,6 @@ describe("user controller test", () => {
       expect(body.message).toEqual(
         "Result filter presets are not available at this time."
       );
-      /* TODO:
-      expect(body).toEqual({});
-      */
     });
   });
   describe("remove result filter preset", () => {
@@ -1869,10 +1873,10 @@ describe("user controller test", () => {
         .expect(422);
 
       //THEN
-      expect(body.message).toEqual('"tagName" is required (undefined)');
-      /* TODO
-      expect(body).toEqual({});
-      */
+      expect(body).toEqual({
+        message: "Invalid request data schema",
+        validationErrors: ['"tagName" Required'],
+      });
     });
     it("should fail with unknown properties", async () => {
       //GIVEN
@@ -1885,10 +1889,10 @@ describe("user controller test", () => {
         .expect(422);
 
       //THEN
-      expect(body.message).toEqual('"extra" is not allowed (value)');
-      /* TODO
-      expect(body).toEqual({});
-      */
+      expect(body).toEqual({
+        message: "Invalid request data schema",
+        validationErrors: ["Unrecognized key(s) in object: 'extra'"],
+      });
     });
   });
   describe("clear tag pb", () => {
@@ -1948,10 +1952,10 @@ describe("user controller test", () => {
         .expect(422);
 
       //THEN
-      expect(body.message).toEqual('"tagId" is required (undefined)');
-      /* TODO:
-      expect(body).toEqual({});
-      */
+      expect(body).toEqual({
+        message: "Invalid request data schema",
+        validationErrors: ['"tagId" Required', '"newName" Required'],
+      });
     });
     it("should fail with unknown properties", async () => {
       //WHEN
@@ -1966,10 +1970,10 @@ describe("user controller test", () => {
         .expect(422);
 
       //THEN
-      expect(body.message).toEqual('"extra" is not allowed (value)');
-      /* TODO:
-      expect(body).toEqual({});
-      */
+      expect(body).toEqual({
+        message: "Invalid request data schema",
+        validationErrors: ["Unrecognized key(s) in object: 'extra'"],
+      });
     });
   });
   describe("remove tag", () => {
@@ -2079,10 +2083,15 @@ describe("user controller test", () => {
         .expect(422);
 
       //THEN
-      expect(body.message).toEqual('"mode" is required (undefined)');
-      /* TODO;
-        expect(body).toEqual({});
-        */
+      expect(body).toEqual({
+        message: "Invalid request data schema",
+        validationErrors: [
+          '"mode" Required',
+          '"mode2" Needs to be either a number, "zen" or "custom".',
+          '"language" Required',
+          '"rank" Required',
+        ],
+      });
     });
     it("should fail with unknown properties", async () => {
       //WHEN
@@ -2099,10 +2108,10 @@ describe("user controller test", () => {
         .expect(422);
 
       //THEN
-      expect(body.message).toEqual('"extra" is not allowed (value)');
-      /* TODO;
-        expect(body).toEqual({});
-        */
+      expect(body).toEqual({
+        message: "Invalid request data schema",
+        validationErrors: ["Unrecognized key(s) in object: 'extra'"],
+      });
     });
   });
   describe("get custom themes", () => {
@@ -2183,10 +2192,10 @@ describe("user controller test", () => {
         .expect(422);
 
       //THEN
-      expect(body.message).toEqual('"name" is required (undefined)');
-      /* TODO:
-      expect(body).toEqual({});
-      */
+      expect(body).toEqual({
+        message: "Invalid request data schema",
+        validationErrors: ['"name" Required', '"colors" Required'],
+      });
     });
     it("should fail with unknown properties", async () => {
       //WHEN
@@ -2201,10 +2210,10 @@ describe("user controller test", () => {
         .expect(422);
 
       //THEN
-      expect(body.message).toEqual('"extra" is not allowed (value)');
-      /* TODO:
-      expect(body).toEqual({});
-      */
+      expect(body).toEqual({
+        message: "Invalid request data schema",
+        validationErrors: ["Unrecognized key(s) in object: 'extra'"],
+      });
     });
     it("should fail with invalid properties", async () => {
       //WHEN
@@ -2218,12 +2227,13 @@ describe("user controller test", () => {
         .expect(422);
 
       //THEN
-      expect(body.message).toEqual(
-        "The name must not exceed 16 characters (customThemecustomThemecustomThemecustomTheme)"
-      );
-      /* TODO:
-      expect(body).toEqual({});
-      */
+      expect(body).toEqual({
+        message: "Invalid request data schema",
+        validationErrors: [
+          '"name" String must contain at most 16 character(s)',
+          '"colors" Array must contain at least 10 element(s)',
+        ],
+      });
     });
   });
   describe("remove custom theme", () => {
@@ -2259,10 +2269,10 @@ describe("user controller test", () => {
         .expect(422);
 
       //THEN
-      expect(body.message).toEqual('"themeId" is required (undefined)');
-      /* TODO:
-      expect(body).toEqual({});
-      */
+      expect(body).toEqual({
+        message: "Invalid request data schema",
+        validationErrors: ['"themeId" Required'],
+      });
     });
     it("should fail with unknown properties", async () => {
       //WHEN
@@ -2273,10 +2283,10 @@ describe("user controller test", () => {
         .expect(422);
 
       //THEN
-      expect(body.message).toEqual('"extra" is not allowed (value)');
-      /* TODO:
-      expect(body).toEqual({});
-      */
+      expect(body).toEqual({
+        message: "Invalid request data schema",
+        validationErrors: ["Unrecognized key(s) in object: 'extra'"],
+      });
     });
   });
   describe("edit custom theme", () => {
@@ -2318,10 +2328,10 @@ describe("user controller test", () => {
         .expect(422);
 
       //THEN
-      expect(body.message).toEqual('"themeId" is required (undefined)');
-      /* TODO:
-      expect(body).toEqual({});
-      */
+      expect(body).toEqual({
+        message: "Invalid request data schema",
+        validationErrors: ['"themeId" Required', '"theme" Required'],
+      });
     });
     it("should fail with unknown properties", async () => {
       //WHEN
@@ -2340,10 +2350,13 @@ describe("user controller test", () => {
         .expect(422);
 
       //THEN
-      expect(body.message).toEqual('"theme.extra2" is not allowed (value)');
-      /* TODO:
-      expect(body).toEqual({});
-      */
+      expect(body).toEqual({
+        message: "Invalid request data schema",
+        validationErrors: [
+          `"theme" Unrecognized key(s) in object: 'extra2'`,
+          "Unrecognized key(s) in object: 'extra'",
+        ],
+      });
     });
   });
   describe("get personal bests", () => {
@@ -2391,10 +2404,13 @@ describe("user controller test", () => {
         .expect(422);
 
       //THEN
-      expect(body.message).toEqual('"mode" is required (undefined)');
-      /* TODO:
-        expect(body).toEqual({});
-        */
+      expect(body).toEqual({
+        message: "Invalid query schema",
+        validationErrors: [
+          '"mode" Required',
+          '"mode2" Needs to be either a number, "zen" or "custom".',
+        ],
+      });
     });
     it("should fail with unknown query parameters", async () => {
       //WHEN
@@ -2405,10 +2421,10 @@ describe("user controller test", () => {
         .expect(422);
 
       //THEN
-      expect(body.message).toEqual('"extra" is not allowed (value)');
-      /* TODO:
-        expect(body).toEqual({});
-        */
+      expect(body).toEqual({
+        message: "Invalid query schema",
+        validationErrors: ["Unrecognized key(s) in object: 'extra'"],
+      });
     });
     it("should fail with invalid query parameters", async () => {
       //WHEN
@@ -2420,12 +2436,13 @@ describe("user controller test", () => {
         .expect(422);
 
       //THEN
-      expect(body.message).toEqual(
-        '"mode" must be one of [time, words, quote, zen, custom] (mood)'
-      );
-      /* TODO:
-        expect(body).toEqual({});
-        */
+      expect(body).toEqual({
+        message: "Invalid query schema",
+        validationErrors: [
+          `"mode" Invalid enum value. Expected 'time' | 'words' | 'quote' | 'custom' | 'zen', received 'mood'`,
+          `"mode2" Needs to be a number or a number represented as a string e.g. "10".`,
+        ],
+      });
     });
   });
   describe("get stats", () => {
@@ -2533,10 +2550,10 @@ describe("user controller test", () => {
         .expect(422);
 
       //THEN
-      expect(body.message).toEqual('"language" is required (undefined)');
-      /* TODO;
-      expect(body).toEqual({});
-      */
+      expect(body).toEqual({
+        message: "Invalid request data schema",
+        validationErrors: ['"language" Required', '"quoteId" Invalid input'],
+      });
     });
     it("should fail unknown properties", async () => {
       //WHEN
@@ -2547,10 +2564,10 @@ describe("user controller test", () => {
         .expect(422);
 
       //THEN
-      expect(body.message).toEqual('"extra" is not allowed (value)');
-      /* TODO;
-        expect(body).toEqual({});
-        */
+      expect(body).toEqual({
+        message: "Invalid request data schema",
+        validationErrors: ["Unrecognized key(s) in object: 'extra'"],
+      });
     });
   });
   describe("remove favorite quote", () => {
@@ -2582,10 +2599,10 @@ describe("user controller test", () => {
         .expect(422);
 
       //THEN
-      expect(body.message).toEqual('"language" is required (undefined)');
-      /* TODO;
-      expect(body).toEqual({});
-      */
+      expect(body).toEqual({
+        message: "Invalid request data schema",
+        validationErrors: ['"language" Required', '"quoteId" Invalid input'],
+      });
     });
     it("should fail unknown properties", async () => {
       //WHEN
@@ -2596,10 +2613,10 @@ describe("user controller test", () => {
         .expect(422);
 
       //THEN
-      expect(body.message).toEqual('"extra" is not allowed (value)');
-      /* TODO;
-        expect(body).toEqual({});
-        */
+      expect(body).toEqual({
+        message: "Invalid request data schema",
+        validationErrors: ["Unrecognized key(s) in object: 'extra'"],
+      });
     });
   });
   describe("get profile", () => {
@@ -2878,12 +2895,13 @@ describe("user controller test", () => {
         .expect(422);
 
       //THEN
-      expect(body.message).toEqual(
-        '"socialProfiles.extra2" is not allowed (value)'
-      );
-      /* TODO
-      expect(body).toEqual({});
-      */
+      expect(body).toEqual({
+        message: "Invalid request data schema",
+        validationErrors: [
+          `"socialProfiles" Unrecognized key(s) in object: 'extra2'`,
+          "Unrecognized key(s) in object: 'extra'",
+        ],
+      });
     });
     it("should sanitize inputs", async () => {
       //WHEN
@@ -2924,12 +2942,16 @@ describe("user controller test", () => {
         .expect(422);
 
       //THEN
-      expect(body.message).toEqual(
-        "Profanity detected. Please remove it. (if you believe this is a mistake, please contact us) (miodec)"
-      );
-      /*'TODO:
-      expect(body).toEqual({});
-      */
+      expect(body).toEqual({
+        message: "Invalid request data schema",
+        validationErrors: [
+          '"bio" Profanity detected. Please remove it. If you believe this is a mistake, please contact us. (miodec)',
+          '"keyboard" Profanity detected. Please remove it. If you believe this is a mistake, please contact us. (miodec)',
+          '"socialProfiles.twitter" Profanity detected. Please remove it. If you believe this is a mistake, please contact us. (miodec)',
+          '"socialProfiles.github" Profanity detected. Please remove it. If you believe this is a mistake, please contact us. (miodec)',
+          '"socialProfiles.website" Profanity detected. Please remove it. If you believe this is a mistake, please contact us. (https://i-luv-miodec.com)',
+        ],
+      });
     });
     it("should fail with properties exceeding max lengths", async () => {
       //WHEN
@@ -2940,21 +2962,26 @@ describe("user controller test", () => {
           bio: new Array(251).fill("x").join(""),
           keyboard: new Array(76).fill("x").join(""),
           socialProfiles: {
-            twitter: new Array(20).fill("x").join(""),
-            github: new Array(39).fill("x").join(""),
+            twitter: new Array(21).fill("x").join(""),
+            github: new Array(40).fill("x").join(""),
             website:
-              "https:" + new Array(201 - "https:".length).fill("x").join(""),
+              "https://" +
+              new Array(201 - "https://".length).fill("x").join(""),
           },
         })
         .expect(422);
 
       //THEN
-      expect(body.message).toEqual(
-        '"bio" length must be less than or equal to 250 characters long (xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx)'
-      );
-      /*'TODO:
-      expect(body).toEqual({});
-      */
+      expect(body).toEqual({
+        message: "Invalid request data schema",
+        validationErrors: [
+          '"bio" String must contain at most 250 character(s)',
+          '"keyboard" String must contain at most 75 character(s)',
+          '"socialProfiles.twitter" String must contain at most 20 character(s)',
+          '"socialProfiles.github" String must contain at most 39 character(s)',
+          '"socialProfiles.website" String must contain at most 200 character(s)',
+        ],
+      });
     });
     it("should fail with website not using https", async () => {
       //WHEN
@@ -2969,12 +2996,12 @@ describe("user controller test", () => {
         .expect(422);
 
       //THEN
-      expect(body.message).toEqual(
-        '"socialProfiles.website" must be a valid uri with a scheme matching the https pattern (http://monkeytype.com)'
-      );
-      /*'TODO:
-      expect(body).toEqual({});
-      */
+      expect(body).toEqual({
+        message: "Invalid request data schema",
+        validationErrors: [
+          '"socialProfiles.website" Invalid input: must start with "https://"',
+        ],
+      });
     });
     it("should fail if feature is disabled", async () => {
       //GIVEN
@@ -2989,9 +3016,6 @@ describe("user controller test", () => {
 
       //THEN
       expect(body.message).toEqual("Profiles are not available at this time");
-      /* TODO
-      expect(body).toEqual({});
-      */
     });
   });
   describe("get inbox", () => {
@@ -3089,8 +3113,9 @@ describe("user controller test", () => {
       //WHEN
       const { body } = await mockApp
         .patch("/users/inbox")
-        .set("Authorization", `Uid ${uid}`)
-        .expect(200);
+        .set("Authorization", `Uid ${uid}`);
+      //.expect(200);
+      console.log(body);
 
       //THEN
       expect(body).toEqual({
@@ -3113,12 +3138,13 @@ describe("user controller test", () => {
         .expect(422);
 
       //THEN
-      expect(body.message).toEqual(
-        '"mailIdsToDelete" must contain at least 1 items ()'
-      );
-      /* TODO:
-      expect(body).toEqual({});
-      */
+      expect(body).toEqual({
+        message: "Invalid request data schema",
+        validationErrors: [
+          '"mailIdsToDelete" Array must contain at least 1 element(s)',
+          '"mailIdsToMarkRead" Array must contain at least 1 element(s)',
+        ],
+      });
     });
     it("should fail if feature is disabled", async () => {
       //GIVEN
@@ -3195,10 +3221,14 @@ describe("user controller test", () => {
         .expect(422);
 
       //THEN
-      expect(body.message).toEqual('"uid" is required (undefined)');
-      /* TODO
-      expect(body).toEqual({});
-      */
+      expect(body).toEqual({
+        message: "Invalid request data schema",
+        validationErrors: [
+          '"uid" Required',
+          '"reason" Required',
+          '"captcha" Required',
+        ],
+      });
     });
     it("should fail with unknown properties", async () => {
       //WHEN
@@ -3215,10 +3245,10 @@ describe("user controller test", () => {
         .expect(422);
 
       //THEN
-      expect(body.message).toEqual('"extra" is not allowed (value)');
-      /* TODO
-      expect(body).toEqual({});
-      */
+      expect(body).toEqual({
+        message: "Invalid request data schema",
+        validationErrors: ["Unrecognized key(s) in object: 'extra'"],
+      });
     });
     it("should fail with invalid captcha", async () => {
       //GIVEN
@@ -3256,12 +3286,13 @@ describe("user controller test", () => {
         .expect(422);
 
       //THEN
-      expect(body.message).toEqual(
-        '"uid" length must be less than or equal to 50 characters long (xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx)'
-      );
-      /* TODO
-      expect(body).toEqual({});
-      */
+      expect(body).toEqual({
+        message: "Invalid request data schema",
+        validationErrors: [
+          `"reason" Invalid enum value. Expected 'Inappropriate name' | 'Inappropriate bio' | 'Inappropriate social links' | 'Suspected cheating', received 'unfriendly'`,
+          '"comment" String must contain at most 250 character(s)',
+        ],
+      });
     });
     it("should fail if user can not report", async () => {
       //GIVEN
@@ -3360,10 +3391,10 @@ describe("user controller test", () => {
         .expect(422);
 
       //THEN
-      expect(body.message).toEqual('"hourOffset" is required (undefined)');
-      /* TODO:
-        expect(body).toEqual({});
-        */
+      expect(body).toEqual({
+        message: "Invalid request data schema",
+        validationErrors: ['"hourOffset" Required'],
+      });
     });
     it("should fail with invalid offset", async () => {
       await mockApp

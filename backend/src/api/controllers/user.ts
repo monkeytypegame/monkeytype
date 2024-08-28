@@ -857,9 +857,7 @@ export async function getProfile(
 ): Promise<GetProfileResponse> {
   const { uidOrName } = req.params;
 
-  const isUid: boolean = req.query.isUid;
-
-  const user = isUid
+  const user = req.query.isUid
     ? await UserDAL.getUser(uidOrName, "get user profile")
     : await UserDAL.getUserByName(uidOrName, "get user profile");
 

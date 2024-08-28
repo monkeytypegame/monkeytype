@@ -99,11 +99,7 @@ export const UserTagSchema = z
   .strict();
 export type UserTag = z.infer<typeof UserTagSchema>;
 
-function profileDetailsBase(
-  customizer: (schema: ZodString) => void
-): z.ZodEffects<ZodTypeAny> {
-  const schema = z.string();
-  customizer(schema);
+function profileDetailsBase(schema: ZodString): z.ZodEffects<ZodTypeAny> {
   return doesNotContainProfanity("word", schema)
     .nullable()
     .optional()
@@ -112,17 +108,25 @@ function profileDetailsBase(
 
 export const UserProfileDetailsSchema = z
   .object({
-    bio: profileDetailsBase((it) => it.max(255)),
-    keyboard: profileDetailsBase((it) => it.max(75)),
+    bio: profileDetailsBase(z.string().max(250)),
+    keyboard: profileDetailsBase(z.string().max(75)),
     socialProfiles: z
       .object({
-        twitter: profileDetailsBase((it) =>
-          it.max(20).regex(/^[0-9a-zA-Z_.-]+$/)
+        twitter: profileDetailsBase(
+          z
+            .string()
+            .max(20)
+            .regex(/^[0-9a-zA-Z_.-]+$/)
         ),
-        github: profileDetailsBase((it) =>
-          it.max(39).regex(/^[0-9a-zA-Z_.-]+$/)
+        github: profileDetailsBase(
+          z
+            .string()
+            .max(39)
+            .regex(/^[0-9a-zA-Z_.-]+$/)
         ),
-        website: profileDetailsBase((it) => it.url().max(200)), //https?
+        website: profileDetailsBase(
+          z.string().url().max(200).startsWith("https://")
+        ),
       })
       .strict()
       .optional(),
