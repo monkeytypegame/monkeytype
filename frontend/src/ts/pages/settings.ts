@@ -1326,14 +1326,14 @@ ConfigEvent.subscribe((eventKey) => {
   }
 });
 
-ConfigEvent.subscribe((eventKey, name) => {
+ConfigEvent.subscribe((eventKey, eventValue) => {
   if (eventKey === "themeLight") {
     $(
-      `.pageSettings .section[data-config-name='autoSwitchThemeInputs'] select.light option[value="${name}"]`
+      `.pageSettings .section[data-config-name='autoSwitchThemeInputs'] select.light option[value="${eventValue}"]`
     ).attr("selected", "true");
   } else if (eventKey === "themeDark") {
     $(
-      `.pageSettings .section[data-config-name='autoSwitchThemeInputs'] select.dark option[value="${name}"]`
+      `.pageSettings .section[data-config-name='autoSwitchThemeInputs'] select.dark option[value="${eventValue}"]`
     ).attr("selected", "true");
   }
 });
