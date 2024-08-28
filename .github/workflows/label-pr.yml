@@ -16,9 +16,6 @@ jobs:
   manage-labels:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
       - name: Set up GitHub CLI
         uses: cli/cli@v2
         with:
