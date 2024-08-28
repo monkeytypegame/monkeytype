@@ -6,7 +6,7 @@ permissions:
 
 on:
   pull_request:
-    types: [review_requested, review_requested]
+    types: [review_requested]
   pull_request_review:
     types: [submitted]
   issue_comment:
