@@ -779,9 +779,6 @@ export async function updateActiveWordLetters(
   inputOverride?: string
 ): Promise<void> {
   const input = inputOverride ?? TestInput.input.current;
-  const wordAtIndex = document.querySelector(
-    "#words .word.active"
-  ) as HTMLElement;
   const currentWord = TestWords.words.getCurrent();
   if (!currentWord && Config.mode !== "zen") return;
   let ret = "";
@@ -915,13 +912,17 @@ export async function updateActiveWordLetters(
     }
   }
 
-  wordAtIndex.innerHTML = ret;
+  const activeWord = document.querySelectorAll("#words .word")?.[
+    activeWordElementIndex
+  ] as HTMLElement;
+
+  activeWord.innerHTML = ret;
 
   if (hintIndices?.length) {
-    const activeWordLetters = wordAtIndex.querySelectorAll("letter");
+    const activeWordLetters = activeWord.querySelectorAll("letter");
     const hintsHtml = createHintsHtml(hintIndices, activeWordLetters, input);
-    wordAtIndex.insertAdjacentHTML("beforeend", hintsHtml);
-    const hintElements = wordAtIndex.getElementsByTagName("hint");
+    activeWord.insertAdjacentHTML("beforeend", hintsHtml);
+    const hintElements = activeWord.getElementsByTagName("hint");
     await joinOverlappingHints(hintIndices, activeWordLetters, hintElements);
   }
 
