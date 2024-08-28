@@ -34,12 +34,14 @@ import * as KeymapEvent from "../observables/keymap-event";
 import { IgnoredKeys } from "../constants/ignored-keys";
 import { ModifierKeys } from "../constants/modifier-keys";
 import { navigate } from "./route-controller";
+import * as Loader from "../elements/loader";
 
 let dontInsertSpace = false;
 let correctShiftUsed = true;
 let isKoCompiling = false;
 let isBackspace: boolean;
 let incorrectShiftsInARow = 0;
+let awaitingNextWord = false;
 
 const wordsInput = document.getElementById("wordsInput") as HTMLInputElement;
 const koInputVisual = document.getElementById("koInputVisual") as HTMLElement;
@@ -283,10 +285,8 @@ async function handleSpace(): Promise<void> {
     }
   }
 
-  if (
-    TestLogic.areAllTestWordsGenerated() &&
-    TestWords.words.currentIndex === TestWords.words.length
-  ) {
+  const isLastWord = TestWords.words.currentIndex === TestWords.words.length;
+  if (TestLogic.areAllTestWordsGenerated() && isLastWord) {
     void TestLogic.finish();
     return;
   }
@@ -326,7 +326,15 @@ async function handleSpace(): Promise<void> {
     Config.mode === "custom" ||
     Config.mode === "quote"
   ) {
-    await TestLogic.addWord();
+    if (isLastWord) {
+      awaitingNextWord = true;
+      Loader.show();
+      await TestLogic.addWord();
+      Loader.hide();
+      awaitingNextWord = false;
+    } else {
+      void TestLogic.addWord();
+    }
   }
   TestUI.setActiveWordElementIndex(TestUI.activeWordElementIndex + 1);
   TestUI.updateActiveElement();
@@ -882,7 +890,8 @@ $("#wordsInput").on("keydown", (event) => {
     !leaderboardsVisible &&
     !popupVisible &&
     !TestUI.resultVisible &&
-    event.key !== "Enter";
+    event.key !== "Enter" &&
+    !awaitingNextWord;
 
   if (!allowTyping) {
     event.preventDefault();
@@ -918,7 +927,8 @@ $(document).on("keydown", async (event) => {
     !leaderboardsVisible &&
     !popupVisible &&
     !TestUI.resultVisible &&
-    (wordsFocused || event.key !== "Enter");
+    (wordsFocused || event.key !== "Enter") &&
+    !awaitingNextWord;
 
   if (
     allowTyping &&
