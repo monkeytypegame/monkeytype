@@ -29,7 +29,7 @@ export const customHandler = (
   _next: NextFunction,
   _options: Options
 ): void => {
-  throw new MonkeyError(429, "Too many attempts, please try again later.");
+  throw new MonkeyError(429, "Request limit reached, please try again later.");
 };
 
 const ONE_HOUR_SECONDS = 60 * 60;
@@ -277,7 +277,7 @@ export const resultsGetApe = rateLimit({
 
 export const resultsAdd = rateLimit({
   windowMs: ONE_HOUR_MS,
-  max: 500 * REQUEST_MULTIPLIER,
+  max: 300 * REQUEST_MULTIPLIER,
   keyGenerator: getKeyWithUid,
   handler: customHandler,
 });
