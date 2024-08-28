@@ -1380,13 +1380,6 @@ export function setThemeLight(
   saveToLocalStorage("themeLight", nosave);
   ConfigEvent.dispatch("themeLight", config.themeLight, nosave);
 
-  $(
-    ".pageSettings .section[data-config-name='autoSwitchThemeInputs'] select.light option[selected]"
-  ).removeAttr("selected");
-  $(
-    `.pageSettings .section[data-config-name='autoSwitchThemeInputs'] select.light option[value="${name}"]`
-  ).attr("selected", "true");
-
   return true;
 }
 
@@ -1400,13 +1393,6 @@ export function setThemeDark(
   config.themeDark = name;
   saveToLocalStorage("themeDark", nosave);
   ConfigEvent.dispatch("themeDark", config.themeDark, nosave);
-
-  $(
-    ".pageSettings .section[data-config-name='autoSwitchThemeInputs'] select.dark option[selected]"
-  ).removeAttr("selected");
-  $(
-    `.pageSettings .section[data-config-name='autoSwitchThemeInputs'] select.dark option[value="${name}"]`
-  ).attr("selected", "true");
 
   return true;
 }

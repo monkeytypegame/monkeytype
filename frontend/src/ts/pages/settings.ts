@@ -1326,6 +1326,18 @@ ConfigEvent.subscribe((eventKey) => {
   }
 });
 
+ConfigEvent.subscribe((eventKey, name) => {
+  if (eventKey === "themeLight") {
+    $(
+      `.pageSettings .section[data-config-name='autoSwitchThemeInputs'] select.light option[value="${name}"]`
+    ).attr("selected", "true");
+  } else if (eventKey === "themeDark") {
+    $(
+      `.pageSettings .section[data-config-name='autoSwitchThemeInputs'] select.dark option[value="${name}"]`
+    ).attr("selected", "true");
+  }
+});
+
 export const page = new Page({
   name: "settings",
   element: $(".page.pageSettings"),
