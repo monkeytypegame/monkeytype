@@ -29,13 +29,17 @@ import * as AuthUtil from "../../utils/auth";
 import * as Dates from "date-fns";
 import { UTCDateMini } from "@date-fns/utc";
 import * as BlocklistDal from "../../dal/blocklist";
-import { Mode, Mode2 } from "@monkeytype/contracts/schemas/shared";
 import {
   CountByYearAndDay,
   TestActivity,
   UserProfileDetails,
 } from "@monkeytype/shared-types";
-import { AllTimeLbs, UserProfile } from "@monkeytype/contracts/schemas/users";
+import {
+  AllTimeLbs,
+  ResultFilters,
+  User,
+  UserProfile,
+} from "@monkeytype/contracts/schemas/users";
 import { addImportantLog, addLog, deleteUserLogs } from "../../dal/logs";
 import { sendForgotPasswordEmail as authSendForgotPasswordEmail } from "../../utils/auth";
 import {
@@ -372,7 +376,7 @@ export async function checkName(
   const { name } = req.params;
   const { uid } = req.ctx.decodedToken;
 
-  const available = await UserDAL.isNameAvailable(name as string, uid);
+  const available = await UserDAL.isNameAvailable(name, uid);
   if (!available) {
     throw new MonkeyError(409, "Username unavailable");
   }
@@ -443,7 +447,7 @@ type RelevantUserInfo = Omit<
   | "nameHistory"
   | "lastNameChange"
   | "_id"
-  | "lastResultHashes"
+  | "lastReultHashes" //TODO fix typo
   | "note"
   | "ips"
   | "testActivity"
@@ -457,7 +461,7 @@ function getRelevantUserInfo(user: MonkeyTypes.DBUser): RelevantUserInfo {
     "nameHistory",
     "lastNameChange",
     "_id",
-    "lastResultHashes",
+    "lastReultHashes", //TODO fix typo
     "note",
     "ips",
     "testActivity",
@@ -528,17 +532,35 @@ export async function getUser(
 
   const allTimeLbs = await getAllTimeLbs(uid);
   const testActivity = generateCurrentTestActivity(userInfo.testActivity);
+  const relevantUserInfo = getRelevantUserInfo(userInfo);
 
-  const userData = {
-    _id: userInfo._id.toHexString(),
-    ...getRelevantUserInfo(userInfo),
-    inboxUnreadSize: inboxUnreadSize,
+  const resultFilterPresets: ResultFilters[] = (
+    relevantUserInfo.resultFilterPresets ?? []
+  ).map(replaceObjectId);
+  delete relevantUserInfo.resultFilterPresets;
+
+  const tags = (relevantUserInfo.tags ?? []).map(replaceObjectId);
+  delete relevantUserInfo.tags;
+
+  const customThemes = (relevantUserInfo.customThemes ?? []).map(
+    replaceObjectId
+  );
+  delete relevantUserInfo.customThemes;
+
+  const userData: User = {
+    ...relevantUserInfo,
+    resultFilterPresets,
+    tags,
+    customThemes,
     isPremium,
     allTimeLbs,
     testActivity,
   };
 
-  return new MonkeyResponse2("User data retrieved", userData);
+  return new MonkeyResponse2("User data retrieved", {
+    ...userData,
+    inboxUnreadSize: inboxUnreadSize,
+  });
 }
 
 export async function getOauthLink(
@@ -727,7 +749,7 @@ export async function updateLbMemory(
 ): Promise<MonkeyResponse2> {
   const { uid } = req.ctx.decodedToken;
   const { mode, language, rank } = req.body;
-  const mode2 = req.body.mode2 as Mode2<Mode>;
+  const mode2 = req.body.mode2;
 
   await UserDAL.updateLbMemory(uid, mode, mode2, language, rank);
   return new MonkeyResponse2("Leaderboard memory updated", null);
@@ -779,12 +801,7 @@ export async function getPersonalBests(
   const { uid } = req.ctx.decodedToken;
   const { mode, mode2 } = req.query;
 
-  const data =
-    (await UserDAL.getPersonalBests(
-      uid,
-      mode as string,
-      mode2 as string | undefined
-    )) ?? null;
+  const data = (await UserDAL.getPersonalBests(uid, mode, mode2)) ?? null;
   return new MonkeyResponse2("Personal bests retrieved", data);
 }
 
@@ -843,8 +860,8 @@ export async function getProfile(
   const isUid: boolean = req.query.isUid;
 
   const user = isUid
-    ? await UserDAL.getUser(uidOrName as string, "get user profile")
-    : await UserDAL.getUserByName(uidOrName as string, "get user profile");
+    ? await UserDAL.getUser(uidOrName, "get user profile")
+    : await UserDAL.getUserByName(uidOrName, "get user profile");
 
   const {
     name,

@@ -23,15 +23,10 @@ import {
   UserStreakSchema,
   UserTagSchema,
 } from "./schemas/users";
-import {
-  Mode2Schema,
-  ModeSchema,
-  PersonalBestSchema,
-  PersonalBestsSchema,
-} from "./schemas/shared";
+import { Mode2Schema, ModeSchema, PersonalBestSchema } from "./schemas/shared";
 import { IdSchema, LanguageSchema, StringNumberSchema } from "./schemas/util";
 import { CustomThemeColorsSchema } from "./schemas/configs";
-import { QuoteIdSchema } from "./schemas/quotes";
+import { doesNotContainProfanity } from "./validation/validation";
 
 export const GetUserResponseSchema = responseWithData(
   UserSchema.extend({
@@ -40,11 +35,14 @@ export const GetUserResponseSchema = responseWithData(
 );
 export type GetUserResponse = z.infer<typeof GetUserResponseSchema>;
 
-const UserNameSchema = z
-  .string()
-  .min(1)
-  .max(16)
-  .regex(/^[\da-zA-Z_-]+$/); //todo profanity
+const UserNameSchema = doesNotContainProfanity(
+  "substring",
+  z
+    .string()
+    .min(1)
+    .max(16)
+    .regex(/^[\da-zA-Z_-]+$/)
+);
 
 export const CreateUserRequestSchema = z.object({
   email: z.string().email(),
@@ -356,7 +354,7 @@ export const usersContract = c.router(
       summary: "check name",
       description: "Checks to see if a username is available",
       method: "GET",
-      path: "/checkName:name",
+      path: "/checkName/:name",
       pathParams: CheckNamePathParametersSchema.strict(),
       responses: {
         200: MonkeyResponseSchema.describe("Name is available"),
@@ -731,9 +729,8 @@ export const usersContract = c.router(
     verificationEmail: {
       summary: "send verification email",
       description: "Send a verification email",
-      method: "POST",
+      method: "GET",
       path: "/verificationEmail",
-      body: c.noBody(),
       responses: {
         200: MonkeyResponseSchema,
       },

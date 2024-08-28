@@ -53,8 +53,9 @@ export type PremiumInfo = {
   expirationTimestamp: number;
 };
 
-//replaced (quotespr)
-export type UserQuoteRatings = Record<string, Record<string, number>>;
+//replaced
+export type UserQuoteRatings =
+  import("@monkeytype/contracts/schemas/users").UserQuoteRatings;
 
 //replaced
 export type UserLbMemory = Record<

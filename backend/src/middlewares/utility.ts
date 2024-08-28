@@ -52,7 +52,7 @@ export function recordClientVersion(): RequestHandler {
   };
 }
 
-export function onlyAvailableOnDev(): RequestHandler {
+export function onlyAvailableOnDev(): MonkeyTypes.RequestHandler {
   return validate({
     criteria: () => {
       return isDevEnvironment();

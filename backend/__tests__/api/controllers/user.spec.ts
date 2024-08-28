@@ -3,7 +3,6 @@ import app from "../../../src/app";
 import * as Configuration from "../../../src/init/configuration";
 import { generateCurrentTestActivity } from "../../../src/api/controllers/user";
 import * as UserDal from "../../../src/dal/user";
-import _, { update } from "lodash";
 import { DecodedIdToken } from "firebase-admin/auth";
 import * as AuthUtils from "../../../src/utils/auth";
 import * as BlocklistDal from "../../../src/dal/blocklist";
@@ -15,7 +14,6 @@ import * as ReportDal from "../../../src/dal/report";
 import * as DailyLeaderboards from "../../../src/utils/daily-leaderboards";
 import * as LeaderboardDal from "../../../src/dal/leaderboards";
 import GeorgeQueue from "../../../src/queues/george-queue";
-import * as AdminUuids from "../../../src/dal/admin-uids";
 import * as DiscordUtils from "../../../src/utils/discord";
 import * as Captcha from "../../../src/utils/captcha";
 import * as FirebaseAdmin from "../../../src/init/firebase-admin";
@@ -23,12 +21,12 @@ import { FirebaseError } from "firebase-admin";
 import * as ApeKeysDal from "../../../src/dal/ape-keys";
 import * as LogDal from "../../../src/dal/logs";
 import { ObjectId } from "mongodb";
-import { userCustomThemeEdit } from "../../../src/middlewares/rate-limit";
 import { PersonalBest } from "@monkeytype/contracts/schemas/shared";
 import { pb } from "../../dal/leaderboards.spec";
 import { mockAuthenticateWithApeKey } from "../../__testData__/auth";
 import { LeaderboardRank } from "@monkeytype/contracts/schemas/leaderboards";
 import { randomUUID } from "node:crypto";
+import _ from "lodash";
 
 const mockApp = request(app);
 const configuration = Configuration.getCachedConfiguration();
@@ -890,6 +888,20 @@ describe("user controller test", () => {
         .patch("/users/name")
         .set("authorization", `Uid ${uid}`)
         .send({ name: "newName", extra: "value" })
+        .expect(422);
+
+      //THEN
+      expect(body.message).toEqual('"extra" is not allowed (value)');
+      /* TODO: 
+      expect(body).toEqual({});
+      */
+    });
+    it("should fail if username contains profanity", async () => {
+      //WHEN
+      const { body } = await mockApp
+        .patch("/users/name")
+        .set("authorization", `Uid ${uid}`)
+        .send({ name: "miodec" })
         .expect(422);
 
       //THEN

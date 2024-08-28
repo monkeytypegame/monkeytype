@@ -30,6 +30,10 @@ declare namespace MonkeyTypes {
     raw: Readonly<TsRestRequest>;
   };
 
+  /* eslint-disable  @typescript-eslint/no-explicit-any */
+  type RequestHandler = import("@ts-rest/core").TsRestRequestHandler<any>;
+  /* eslint-enable  @typescript-eslint/no-explicit-any */
+
   //TODOO replace shared types
   type DBUser = Omit<
     import("@monkeytype/shared-types").User,
@@ -42,7 +46,7 @@ declare namespace MonkeyTypes {
   > & {
     _id: ObjectId;
     resultFilterPresets?: WithObjectId<
-      import("@monkeytype/shared-types").ResultFilters
+      import("@monkeytype/contracts/schemas/users").ResultFilters
     >[];
     tags?: DBUserTag[];
     lbPersonalBests?: LbPersonalBests;
@@ -58,7 +62,7 @@ declare namespace MonkeyTypes {
   };
 
   type DBCustomTheme = WithObjectId<
-    import("@monkeytype/shared-types").CustomTheme
+    import("@monkeytype/contracts/schemas/users").CustomTheme
   >;
 
   type DBUserTag = WithObjectId<import("@monkeytype/shared-types").UserTag>;

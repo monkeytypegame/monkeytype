@@ -1,5 +1,3 @@
-import _ from "lodash";
-
 // Sorry for the bad words
 export const profanities = [
   "miodec",
@@ -390,15 +388,3 @@ export const profanities = [
   "wichser",
   "zabourah",
 ];
-
-export const regexProfanities = profanities.map((profanity) => {
-  const normalizedProfanity = _.escapeRegExp(profanity.toLowerCase());
-  return `${normalizedProfanity}.*`;
-});
-
-export function findProfanities(string: string): string[] {
-  const filtered = profanities.filter((profanity) =>
-    string.includes(profanity)
-  );
-  return filtered ?? [];
-}

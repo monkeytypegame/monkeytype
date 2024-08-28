@@ -2,7 +2,6 @@ import type { Response, NextFunction } from "express";
 import MonkeyError from "../utils/error";
 import { Configuration } from "@monkeytype/contracts/schemas/configuration";
 import { TsRestRequestWithCtx } from "./auth";
-import { TsRestRequestHandler } from "@ts-rest/express";
 
 export type ValidationOptions<T> = {
   criteria: (data: T) => boolean;
@@ -13,9 +12,9 @@ export type ValidationOptions<T> = {
  * This utility checks that the server's configuration matches
  * the criteria.
  */
-export function validate<T extends AppRouter | AppRoute>(
+export function validate(
   options: ValidationOptions<Configuration>
-): TsRestRequestHandler<T> {
+): MonkeyTypes.RequestHandler {
   const {
     criteria,
     invalidMessage = "This service is currently unavailable.",

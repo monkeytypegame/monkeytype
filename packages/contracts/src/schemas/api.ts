@@ -37,7 +37,7 @@ export const MonkeyResponseSchema = z.object({
 export type MonkeyResponseType = z.infer<typeof MonkeyResponseSchema>;
 
 export const MonkeyValidationErrorSchema = MonkeyResponseSchema.extend({
-  validationErrors: z.array(z.string()).nonempty(),
+  validationErrors: z.array(z.string()),
 });
 export type MonkeyValidationError = z.infer<typeof MonkeyValidationErrorSchema>;
 

@@ -1,8 +1,8 @@
-import { z, ZodString } from "zod";
+import { z, ZodString, ZodTypeAny } from "zod";
 import { IdSchema, LanguageSchema, StringNumberSchema, token } from "./util";
 import { ModeSchema, Mode2Schema, PersonalBestsSchema } from "./shared";
 import { CustomThemeColorsSchema } from "./configs";
-import { QuoteRatingSchema } from "./quotes";
+import { doesNotContainProfanity } from "../validation/validation";
 
 export const ResultFiltersSchema = z.object({
   _id: IdSchema,
@@ -26,19 +26,19 @@ export const ResultFiltersSchema = z.object({
   mode: z.record(ModeSchema, z.boolean()),
   words: z
     .object({
-      10: z.boolean(),
-      25: z.boolean(),
-      50: z.boolean(),
-      100: z.boolean(),
+      "10": z.boolean(),
+      "25": z.boolean(),
+      "50": z.boolean(),
+      "100": z.boolean(),
       custom: z.boolean(),
     })
     .strict(),
   time: z
     .object({
-      15: z.boolean(),
-      30: z.boolean(),
-      60: z.boolean(),
-      120: z.boolean(),
+      "15": z.boolean(),
+      "30": z.boolean(),
+      "60": z.boolean(),
+      "120": z.boolean(),
       custom: z.boolean(),
     })
     .strict(),
@@ -101,15 +101,11 @@ export type UserTag = z.infer<typeof UserTagSchema>;
 
 function profileDetailsBase(
   customizer: (schema: ZodString) => void
-): z.ZodEffects<
-  z.ZodOptional<z.ZodNullable<z.ZodString>>,
-  string | undefined,
-  string | null | undefined
-> {
+): z.ZodEffects<ZodTypeAny> {
   const schema = z.string();
   customizer(schema);
-  return schema
-    .nullable() //TODO profanity check
+  return doesNotContainProfanity("word", schema)
+    .nullable()
     .optional()
     .transform((value) => value ?? undefined);
 }
@@ -141,7 +137,7 @@ export const CustomThemeSchema = z
     colors: CustomThemeColorsSchema,
   })
   .strict();
-export type CustomTheme = z.infer<typeof CustomThemeColorsSchema>;
+export type CustomTheme = z.infer<typeof CustomThemeSchema>;
 
 export const PremiumInfoSchema = z.object({
   startTimestamp: z.number().int().nonnegative(),
@@ -152,6 +148,15 @@ export const PremiumInfoSchema = z.object({
     .or(z.literal(-1).describe("lifetime premium")),
 });
 export type PremiumInfo = z.infer<typeof PremiumInfoSchema>;
+
+export const UserQuoteRatingsSchema = z.record(
+  LanguageSchema,
+  z.record(
+    StringNumberSchema.describe("quoteId as string"),
+    z.number().nonnegative()
+  )
+);
+export type UserQuoteRatings = z.infer<typeof UserQuoteRatingsSchema>;
 
 export const UserLbMemorySchema = z.record(
   ModeSchema,
@@ -194,9 +199,9 @@ export const UserInventorySchema = z
 export type UserInventory = z.infer<typeof UserInventorySchema>;
 
 export const QuoteModSchema = z
-  .literal(true)
-  .describe("Admin for all languages")
-  .or(LanguageSchema.describe("Admiin for the given language"));
+  .boolean()
+  .describe("Admin for all languages if true")
+  .or(LanguageSchema.describe("Admin for the given language"));
 export type QuoteMod = z.infer<typeof QuoteModSchema>;
 
 export const TestActivitySchema = z
@@ -241,7 +246,6 @@ export const UserSchema = z.object({
   uid: z.string(), //defined by firebase, no validation should be applied
   addedAt: z.number().int().nonnegative(),
   personalBests: PersonalBestsSchema,
-  lastResultHashes: z.array(z.string()).optional(),
   completedTests: z.number().int().nonnegative().optional(),
   startedTests: z.number().int().nonnegative().optional(),
   timeTyping: z.number().int().nonnegative().optional(),
@@ -251,10 +255,10 @@ export const UserSchema = z.object({
   discordAvatar: z.string().optional(),
   tags: z.array(UserTagSchema).optional(),
   profileDetails: UserProfileDetailsSchema.optional(),
-  customThemes: CustomThemeSchema.optional(),
+  customThemes: z.array(CustomThemeSchema).optional(),
   premium: PremiumInfoSchema.optional(),
   isPremium: z.boolean().optional(),
-  quoteRatings: QuoteRatingSchema.optional(),
+  quoteRatings: UserQuoteRatingsSchema.optional(),
   favoriteQuotes: FavoriteQuotesSchema.optional(),
   lbMemory: UserLbMemorySchema.optional(),
   allTimeLbs: AllTimeLbsSchema,
@@ -265,7 +269,7 @@ export const UserSchema = z.object({
   needsToChangeName: z.boolean().optional(),
   quoteMod: QuoteModSchema.optional(),
   resultFilterPresets: z.array(ResultFiltersSchema).optional(),
-  testActicity: TestActivitySchema.optional(),
+  testActivity: TestActivitySchema.optional(),
 });
 export type User = z.infer<typeof UserSchema>;
 
