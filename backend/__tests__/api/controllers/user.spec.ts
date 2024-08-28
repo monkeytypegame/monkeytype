@@ -3123,8 +3123,7 @@ describe("user controller test", () => {
         data: null,
       });
 
-      //old validation hat default defined but doesn't seem to work
-      expect(updateInboxMock).toHaveBeenCalledWith(uid, undefined, undefined);
+      expect(updateInboxMock).toHaveBeenCalledWith(uid, [], []);
     });
     it("should fail with empty arrays", async () => {
       //WHEN

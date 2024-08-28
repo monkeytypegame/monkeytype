@@ -980,7 +980,11 @@ export async function updateInbox(
   const { uid } = req.ctx.decodedToken;
   const { mailIdsToMarkRead, mailIdsToDelete } = req.body;
 
-  await UserDAL.updateInbox(uid, mailIdsToMarkRead, mailIdsToDelete);
+  await UserDAL.updateInbox(
+    uid,
+    mailIdsToMarkRead ?? [],
+    mailIdsToDelete ?? []
+  );
 
   return new MonkeyResponse2("Inbox updated", null);
 }
