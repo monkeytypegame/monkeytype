@@ -1,11 +1,12 @@
 import { simpleGit } from "simple-git";
-import { ObjectId } from "mongodb";
+import { Collection, ObjectId } from "mongodb";
 import path from "path";
 import { existsSync, writeFileSync } from "fs";
 import { readFile } from "node:fs/promises";
 import * as db from "../init/db";
 import MonkeyError from "../utils/error";
 import { compareTwoStrings } from "string-similarity";
+import { ApproveQuote, Quote } from "@monkeytype/contracts/schemas/quotes";
 
 const PATH_TO_REPO = "../../../../monkeytype-new-quotes";
 
@@ -22,6 +23,12 @@ type AddQuoteReturn = {
   duplicateId?: number;
   similarityScore?: number;
 };
+
+export type DBNewQuote = MonkeyTypes.WithObjectId<Quote>;
+
+// Export for use in tests
+export const getNewQuoteCollection = (): Collection<DBNewQuote> =>
+  db.collection<DBNewQuote>("new-quotes");
 
 export async function add(
   text: string,
@@ -44,9 +51,9 @@ export async function add(
     throw new MonkeyError(500, `Invalid language name`, language);
   }
 
-  const count = await db
-    .collection("new-quotes")
-    .countDocuments({ language: language });
+  const count = await getNewQuoteCollection().countDocuments({
+    language: language,
+  });
 
   if (count >= 100) {
     throw new MonkeyError(
@@ -83,7 +90,7 @@ export async function add(
   return undefined;
 }
 
-export async function get(language: string): Promise<MonkeyTypes.NewQuote[]> {
+export async function get(language: string): Promise<DBNewQuote[]> {
   if (git === undefined) throw new MonkeyError(500, "Git not available.");
   const where: {
     approved: boolean;
@@ -99,38 +106,29 @@ export async function get(language: string): Promise<MonkeyTypes.NewQuote[]> {
   if (language !== "all") {
     where.language = language;
   }
-  return await db
-    .collection<MonkeyTypes.NewQuote>("new-quotes")
+  return await getNewQuoteCollection()
     .find(where)
     .sort({ timestamp: 1 })
     .limit(10)
     .toArray();
 }
 
-type Quote = {
-  id?: number;
-  text: string;
-  source: string;
-  length: number;
-  approvedBy: string;
-};
-
 type ApproveReturn = {
-  quote: Quote;
+  quote: ApproveQuote;
   message: string;
 };
 
 export async function approve(
   quoteId: string,
-  editQuote: string,
-  editSource: string,
+  editQuote: string | undefined,
+  editSource: string | undefined,
   name: string
 ): Promise<ApproveReturn> {
   if (git === undefined) throw new MonkeyError(500, "Git not available.");
   //check mod status
-  const targetQuote = await db
-    .collection<MonkeyTypes.NewQuote>("new-quotes")
-    .findOne({ _id: new ObjectId(quoteId) });
+  const targetQuote = await getNewQuoteCollection().findOne({
+    _id: new ObjectId(quoteId),
+  });
   if (!targetQuote) {
     throw new MonkeyError(
       404,
@@ -138,9 +136,9 @@ export async function approve(
     );
   }
   const language = targetQuote.language;
-  const quote: Quote = {
-    text: editQuote ? editQuote : targetQuote.text,
-    source: editSource ? editSource : targetQuote.source,
+  const quote: ApproveQuote = {
+    text: editQuote ?? targetQuote.text,
+    source: editSource ?? targetQuote.source,
     length: targetQuote.text.length,
     approvedBy: name,
   };
@@ -194,11 +192,11 @@ export async function approve(
   await git.add([`frontend/static/quotes/${language}.json`]);
   await git.commit(`Added quote to ${language}.json`);
   await git.push("origin", "master");
-  await db.collection("new-quotes").deleteOne({ _id: new ObjectId(quoteId) });
+  await getNewQuoteCollection().deleteOne({ _id: new ObjectId(quoteId) });
   return { quote, message };
 }
 
 export async function refuse(quoteId: string): Promise<void> {
   if (git === undefined) throw new MonkeyError(500, "Git not available.");
-  await db.collection("new-quotes").deleteOne({ _id: new ObjectId(quoteId) });
+  await getNewQuoteCollection().deleteOne({ _id: new ObjectId(quoteId) });
 }
