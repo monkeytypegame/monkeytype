@@ -86,7 +86,6 @@ export function getOpenApi(): OpenAPIObject {
           description: "All-time and daily leaderboards of the fastest typers.",
           "x-displayName": "Leaderboards",
         },
-
         {
           name: "psas",
           description: "Public service announcements.",
@@ -95,7 +94,7 @@ export function getOpenApi(): OpenAPIObject {
         },
         {
           name: "quotes",
-          description: "Quote submissions for new quotes and quote ratings.",
+          description: "Quote ratings and new quote submissions",
           "x-displayName": "Quotes",
           "x-public": "yes",
         },

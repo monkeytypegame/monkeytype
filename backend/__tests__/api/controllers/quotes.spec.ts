@@ -102,9 +102,7 @@ describe("QuotesController", () => {
         .expect(403);
 
       //THEN
-      expect(body.message).toEqual(
-        "You are not allowed to view submitted quotes"
-      );
+      expect(body.message).toEqual("You don't have permission to do this.");
 
       expect(getQuotesMock).not.toHaveBeenCalled();
     });
@@ -119,9 +117,7 @@ describe("QuotesController", () => {
         .expect(403);
 
       //THEN
-      expect(body.message).toEqual(
-        "You are not allowed to view submitted quotes"
-      );
+      expect(body.message).toEqual("You don't have permission to do this.");
 
       expect(getQuotesMock).not.toHaveBeenCalled();
     });

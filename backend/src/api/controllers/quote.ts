@@ -35,14 +35,8 @@ export async function getQuotes(
   const { uid } = req.ctx.decodedToken;
   const quoteMod = (await getPartialUser(uid, "get quotes", ["quoteMod"]))
     .quoteMod;
-  let quoteModString: string;
-  if (quoteMod === true) {
-    quoteModString = "all";
-  } else if (quoteMod !== false && quoteMod !== undefined && quoteMod !== "") {
-    quoteModString = quoteMod;
-  } else {
-    throw new MonkeyError(403, "You are not allowed to view submitted quotes");
-  }
+  const quoteModString = quoteMod === true ? "all" : (quoteMod as string);
+
   const data = await NewQuotesDAL.get(quoteModString);
   return new MonkeyResponse2(
     "Quote submissions retrieved",
