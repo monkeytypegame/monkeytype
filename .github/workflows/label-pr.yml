@@ -1,4 +1,4 @@
-name: Label PRs "waiting for review/update"
+name: Update PR labels
 
 permissions:
   contents: read
@@ -6,35 +6,55 @@ permissions:
 
 on:
   pull_request:
-    types: [review_requested]
-  pull_request_review:
+    types: [review_requested, review_request_removed]
+  pull_request_review: 
     types: [submitted]
+  pull_request_review_comment: 
+    types: [created]
   issue_comment:
     types: [created]
 
 jobs:
-  manage-labels:
+  update-pr-labels:
+    name: Update PR Labels Based on Events
     runs-on: ubuntu-latest
     steps:
-      - name: Set up GitHub CLI
-        uses: cli/cli@v2
+      - name: Remove "waiting for update" label if comment is by PR author or a review is requested
+        if: ${{ (github.event.issue.pull_request && github.event_name == 'issue_comment' && github.event.comment.user.login == github.event.issue.user.login) || (github.event.action == 'review_requested') }}
+        uses: actions-ecosystem/action-remove-labels@v1
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          labels: waiting for update
+        env:
+          NUMBER: ${{ github.event.issue.number }}
 
-      - name: Add 'waiting for review' label if review is requested
-        if: github.event_name == 'pull_request' && github.event.action == 'review_requested'
-        run: |
-          gh pr edit ${{ github.event.pull_request.number }} --add-label "waiting for review"
+      - name: Add "waiting for review" if a review is requested
+        if: github.event.action == 'review_requested'
+        uses: actions-ecosystem/action-add-labels@v1
+        with:
+          labels: waiting for review
+        env:
+          NUMBER: ${{ github.event.pull_request.number }}
 
-      - name: Add 'waiting for update' label if changes are requested
-        if: github.event_name == 'pull_request_review' && github.event.review.state == 'changes_requested'
-        run: |
-          gh pr edit ${{ github.event.pull_request.number }} --add-label "waiting for update"
+      - name: Remove "waiting for review" label if review request is removed
+        if: github.event.action == 'review_request_removed'
+        uses: actions-ecosystem/action-remove-labels@v1
+        with:
+          labels: waiting for review
+        env:
+          NUMBER: ${{ github.event.issue.number }}
 
-      - name: Remove 'waiting for update' label if a comment is made by the author
-        if: github.event_name == 'issue_comment'
-        run: |
-          comment_author=$(gh pr view ${{ github.event.issue.number }} --json author --jq '.author.login')
-          if [ "$comment_author" == "${{ github.actor }}" ]; then
-            gh pr edit ${{ github.event.issue.number }} --remove-label "waiting for update"
-          fi
+      - name: Add "waiting for update" if changes are requested
+        if: ${{ github.event_name == 'pull_request_review_comment'}}
+        uses: actions-ecosystem/action-add-labels@v1
+        with:
+          labels: waiting for update
+        env:
+          NUMBER: ${{ github.event.pull_request.number }}
+
+      - name: Remove "waiting for review" label after review
+        if: ${{ github.event_name == 'pull_request_review_comment' || github.event_name == 'pull_request_review' }}
+        uses: actions-ecosystem/action-remove-labels@v1
+        with:
+          labels: waiting for review
+        env:
+          NUMBER: ${{ github.event.issue.number }}
