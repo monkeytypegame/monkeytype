@@ -93,6 +93,12 @@ export function getOpenApi(): OpenAPIObject {
           "x-public": "yes",
         },
         {
+          name: "quotes",
+          description: "Quote ratings and new quote submissions",
+          "x-displayName": "Quotes",
+          "x-public": "yes",
+        },
+        {
           name: "admin",
           description:
             "Various administrative endpoints. Require user to have admin permissions.",

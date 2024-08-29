@@ -420,8 +420,11 @@ async function setup(modalEl: HTMLElement): Promise<void> {
     .querySelector(".goToQuoteSubmit")
     ?.addEventListener("click", async (e) => {
       Loader.show();
+      const getSubmissionEnabled = await Ape.quotes.isSubmissionEnabled();
       const isSubmissionEnabled =
-        (await Ape.quotes.isSubmissionEnabled()).data?.isEnabled ?? false;
+        (getSubmissionEnabled.status === 200 &&
+          getSubmissionEnabled.body.data?.isEnabled) ??
+        false;
       Loader.hide();
       if (!isSubmissionEnabled) {
         Notifications.add(

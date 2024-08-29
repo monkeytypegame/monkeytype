@@ -41,7 +41,6 @@ const APP_START_TIME = Date.now();
 
 const API_ROUTE_MAP = {
   "/users": users,
-  "/quotes": quotes,
   "/webhooks": webhooks,
   "/docs": docs,
 };
@@ -58,6 +57,7 @@ const router = s.router(contract, {
   results,
   configuration,
   dev,
+  quotes,
 });
 
 export function addApiRoutes(app: Application): void {

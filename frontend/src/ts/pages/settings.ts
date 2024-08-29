@@ -1315,10 +1315,18 @@ export function setEventDisabled(value: boolean): void {
   configEventDisabled = value;
 }
 
-ConfigEvent.subscribe((eventKey) => {
+ConfigEvent.subscribe((eventKey, eventValue) => {
   if (eventKey === "fullConfigChange") setEventDisabled(true);
   if (eventKey === "fullConfigChangeFinished") setEventDisabled(false);
-
+  if (eventKey === "themeLight") {
+    $(
+      `.pageSettings .section[data-config-name='autoSwitchThemeInputs'] select.light option[value="${eventValue}"]`
+    ).attr("selected", "true");
+  } else if (eventKey === "themeDark") {
+    $(
+      `.pageSettings .section[data-config-name='autoSwitchThemeInputs'] select.dark option[value="${eventValue}"]`
+    ).attr("selected", "true");
+  }
   //make sure the page doesnt update a billion times when applying a preset/config at once
   if (configEventDisabled || eventKey === "saveToLocalStorage") return;
   if (ActivePage.get() === "settings" && eventKey !== "theme") {
