@@ -14,7 +14,7 @@ export async function apply(_id: string): Promise<void> {
   if (presetToApply === undefined) {
     return;
   }
-  if (presetToApply.config.settingGroups !== undefined) {
+  if (isPartialPreset(presetToApply)) {
     //checks if preset is full or partial
     await UpdateConfig.selectiveApply(
       replaceLegacyValues(presetToApply.config),
@@ -23,19 +23,26 @@ export async function apply(_id: string): Promise<void> {
   } else {
     await UpdateConfig.apply(presetToApply.config);
   }
-
-  TagController.clear(true);
-  if (presetToApply.config.tags) {
-    for (const tagId of presetToApply.config.tags) {
-      TagController.set(tagId, true, false);
+  if (
+    !isPartialPreset(presetToApply) ||
+    presetToApply.config.settingGroups?.includes("behavior")
+  ) {
+    TagController.clear(true);
+    if (presetToApply.config.tags) {
+      for (const tagId of presetToApply.config.tags) {
+        TagController.set(tagId, true, false);
+      }
+      TagController.saveActiveToLocalStorage();
     }
-    TagController.saveActiveToLocalStorage();
   }
   TestLogic.restart();
   Notifications.add("Preset applied", 1, {
     duration: 2,
   });
   UpdateConfig.saveFullConfigToLocalStorage();
+}
+function isPartialPreset(preset: MonkeyTypes.SnapshotPreset): boolean {
+  return preset.config.settingGroups !== undefined;
 }
 
 export async function getPreset(_id: string): Promise<Preset | undefined> {

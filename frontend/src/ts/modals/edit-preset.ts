@@ -24,6 +24,7 @@ const state = {
       true,
     ])
   ),
+  setPresetToCurrent: false,
 };
 
 export function show(action: string, id?: string, name?: string): void {
@@ -60,15 +61,11 @@ export function show(action: string, id?: string, name?: string): void {
         $("#editPresetModal .modal input").val(name);
         $("#editPresetModal .modal input").removeClass("hidden");
         $(
-          "#editPresetModal .modal label.changePresetToCurrentCheckbox input"
-        ).prop("checked", false);
-        $(
           "#editPresetModal .modal label.changePresetToCurrentCheckbox"
         ).removeClass("hidden");
-        $("#editPresetModal .modal .inputs").removeClass("hidden");
-        $("#editPresetModal .modal .presetType").removeClass("hidden");
         $("#editPresetModal .modal .presetNameTitle").removeClass("hidden");
-        await initializeEditState(id);
+        state.setPresetToCurrent = false;
+        await updateEditPresetUI();
       } else if (
         action === "remove" &&
         id !== undefined &&
@@ -110,29 +107,33 @@ async function initializeEditState(id: string): Promise<void> {
       state.checkboxes.set(key, true);
     }
   } else {
-    state.presetType = "partial";
     edittedPreset.config.settingGroups.forEach((currentActiveSettingGroup) =>
       state.checkboxes.set(currentActiveSettingGroup, true)
     );
   }
+  state.setPresetToCurrent = false;
+  updateUI();
 }
 
 function addCheckboxListeners(): void {
   PresetSettingGroupSchema.options.forEach(
     (settingGroup: PresetSettingGroup) => {
-      $(
+      const checkboxInput = $(
         `#editPresetModal .modal .checkboxList .checkboxTitlePair[data-id="${settingGroup}"] input`
-      ).on("change", (e) => {
-        state.checkboxes.set(
-          settingGroup,
-          $(
-            `#editPresetModal .modal .checkboxList .checkboxTitlePair[data-id="${settingGroup}"] input`
-          ).prop("checked")
-        );
-        console.log(state);
+      );
+      checkboxInput.on("change", (e) => {
+        state.checkboxes.set(settingGroup, checkboxInput.prop("checked"));
       });
     }
   );
+
+  const presetToCurrentCheckbox = $(
+    `#editPresetModal .modal .changePresetToCurrentCheckbox input`
+  );
+  presetToCurrentCheckbox.on("change", async () => {
+    state.setPresetToCurrent = presetToCurrentCheckbox.prop("checked");
+    await updateEditPresetUI();
+  });
 }
 
 function addCheckBoxes(): void {
@@ -171,6 +172,24 @@ function updateUI(): void {
   $(`#editPresetModal .modal .partialPresetGroups`).removeClass("hidden");
   if (state.presetType === "full") {
     $(`#editPresetModal .modal .partialPresetGroups`).addClass("hidden");
+  }
+}
+async function updateEditPresetUI(): Promise<void> {
+  $("#editPresetModal .modal label.changePresetToCurrentCheckbox input").prop(
+    "checked",
+    state.setPresetToCurrent
+  );
+  if (state.setPresetToCurrent) {
+    const presetId = $("#editPresetModal .modal").attr(
+      "data-preset-id"
+    ) as string;
+    state.presetType = "full";
+    await initializeEditState(presetId);
+    $("#editPresetModal .modal .inputs").removeClass("hidden");
+    $("#editPresetModal .modal .presetType").removeClass("hidden");
+  } else {
+    $("#editPresetModal .modal .inputs").addClass("hidden");
+    $("#editPresetModal .modal .presetType").addClass("hidden");
   }
 }
 

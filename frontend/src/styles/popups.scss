@@ -1490,10 +1490,7 @@ body.darkMode {
     display: grid;
     grid-template-columns: 1fr;
     gap: 0.5rem;
-    justify-items: left;
-    height: min-content;
     font-size: 0.75rem;
-    align-items: start;
     .title {
       color: var(--sub-color);
       text-transform: lowercase;
@@ -1501,13 +1498,9 @@ body.darkMode {
     .partialPresetGroups {
       display: grid;
       gap: 0.5rem;
-      align-items: center;
-      width: 100%;
       .checkboxList {
         display: grid;
         gap: 1rem;
-        align-items: center;
-        width: 100%;
         grid-template-columns: 1fr 1fr;
         .title {
           color: var(--text-color);
@@ -1515,7 +1508,6 @@ body.darkMode {
         }
         .checkboxTitlePair {
           display: flex;
-          width: 100%;
           gap: 0.5rem;
           button {
             flex-grow: 1;
