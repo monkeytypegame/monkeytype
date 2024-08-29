@@ -315,7 +315,16 @@ export function isDevEnvironment(): boolean {
  */
 export function replaceObjectId<T extends { _id: ObjectId }>(
   data: T
-): T & { _id: string } {
+): T & { _id: string };
+export function replaceObjectId<T extends { _id: ObjectId }>(
+  data: T | null
+): (T & { _id: string }) | null;
+export function replaceObjectId<T extends { _id: ObjectId }>(
+  data: T | null
+): (T & { _id: string }) | null {
+  if (data === null) {
+    return null;
+  }
   const result = {
     _id: data._id.toString(),
     ...omit(data, "_id"),

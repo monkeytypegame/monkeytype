@@ -9,6 +9,7 @@ import { removeLanguageSize } from "../utils/strings";
 import SlimSelect from "slim-select";
 import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
 import { CharacterCounter } from "../elements/character-counter";
+import { QuoteReportReason } from "@monkeytype/contracts/schemas/quotes";
 
 type State = {
   quoteToReport?: MonkeyTypes.Quote;
@@ -77,7 +78,7 @@ async function submitReport(): Promise<void> {
 
   const quoteId = state.quoteToReport?.id.toString();
   const quoteLanguage = removeLanguageSize(Config.language);
-  const reason = $("#quoteReportModal .reason").val() as string;
+  const reason = $("#quoteReportModal .reason").val() as QuoteReportReason;
   const comment = $("#quoteReportModal .comment").val() as string;
   const captcha = captchaResponse;
 
@@ -105,17 +106,19 @@ async function submitReport(): Promise<void> {
   }
 
   Loader.show();
-  const response = await Ape.quotes.report(
-    quoteId,
-    quoteLanguage,
-    reason,
-    comment,
-    captcha
-  );
+  const response = await Ape.quotes.report({
+    body: {
+      quoteId,
+      quoteLanguage,
+      reason,
+      comment,
+      captcha,
+    },
+  });
   Loader.hide();
 
   if (response.status !== 200) {
-    Notifications.add("Failed to report quote: " + response.message, -1);
+    Notifications.add("Failed to report quote: " + response.body.message, -1);
     return;
   }
 

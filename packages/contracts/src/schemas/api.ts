@@ -11,7 +11,9 @@ export type OpenApiTag =
   | "results"
   | "configuration"
   | "dev"
-  | "users";
+  | "users"
+  | "quotes";
+
 
 export type EndpointMetadata = {
   /** Authentication options, by default a bearer token is required. */

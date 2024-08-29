@@ -40,7 +40,6 @@ const BASE_ROUTE = pathOverride !== undefined ? `/${pathOverride}` : "";
 const APP_START_TIME = Date.now();
 
 const API_ROUTE_MAP = {
-  "/quotes": quotes,
   "/webhooks": webhooks,
   "/docs": docs,
 };
@@ -58,6 +57,7 @@ const router = s.router(contract, {
   configuration,
   dev,
   users,
+  quotes,
 });
 
 export function addApiRoutes(app: Application): void {

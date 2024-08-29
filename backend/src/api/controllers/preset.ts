@@ -19,7 +19,7 @@ export async function getPresets(
       ...preset,
       uid: undefined,
     }))
-    .map(replaceObjectId);
+    .map((it) => replaceObjectId(it));
 
   return new MonkeyResponse2("Presets retrieved", data);
 }

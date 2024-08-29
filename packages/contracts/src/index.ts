@@ -10,6 +10,7 @@ import { resultsContract } from "./results";
 import { configurationContract } from "./configuration";
 import { devContract } from "./dev";
 import { usersContract } from "./users";
+import { quotesContract } from "./quotes";
 
 const c = initContract();
 
@@ -25,4 +26,5 @@ export const contract = c.router({
   configuration: configurationContract,
   dev: devContract,
   users: usersContract,
+  quotes: quotesContract,
 });
