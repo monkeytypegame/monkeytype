@@ -44,7 +44,7 @@ jobs:
           NUMBER: ${{ github.event.issue.number }}
 
       - name: Add "waiting for update" if changes are requested
-        if: ${{ github.event_name == 'pull_request_review_comment'}}
+        if: ${{ (github.event_name == 'pull_request_review_comment') || (github.event_name == 'pull_request_review' && github.event.review.state == 'changes_requested')}}
         uses: actions-ecosystem/action-add-labels@v1
         with:
           labels: waiting for update
