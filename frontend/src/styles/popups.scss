@@ -1508,19 +1508,17 @@ body.darkMode {
         gap: 1rem;
         align-items: center;
         width: 100%;
+        grid-template-columns: 1fr 1fr;
         .title {
           color: var(--text-color);
           text-transform: lowercase;
         }
-        .checkboxGroupRow {
+        .checkboxTitlePair {
           display: flex;
-          .checkboxTitlePair {
-            display: flex;
-            width: 100%;
-            gap: 0.5rem;
-            button {
-              flex-grow: 1;
-            }
+          width: 100%;
+          gap: 0.5rem;
+          button {
+            flex-grow: 1;
           }
         }
       }

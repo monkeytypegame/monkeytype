@@ -45,7 +45,9 @@ export function show(action: string, id?: string, name?: string): void {
         $("#editPresetModal .modal .submit").html(`add`);
         $("#editPresetModal .modal input").val("");
         $("#editPresetModal .modal input").removeClass("hidden");
-        $("#editPresetModal .modal label").addClass("hidden");
+        $(
+          "#editPresetModal .modal label.changePresetToCurrentCheckbox"
+        ).addClass("hidden");
         $("#editPresetModal .modal .inputs").removeClass("hidden");
         $("#editPresetModal .modal .presetType").removeClass("hidden");
         $("#editPresetModal .modal .presetNameTitle").removeClass("hidden");
@@ -57,8 +59,12 @@ export function show(action: string, id?: string, name?: string): void {
         $("#editPresetModal .modal .submit").html(`save`);
         $("#editPresetModal .modal input").val(name);
         $("#editPresetModal .modal input").removeClass("hidden");
-        $("#editPresetModal .modal label input").prop("checked", false);
-        $("#editPresetModal .modal label").removeClass("hidden");
+        $(
+          "#editPresetModal .modal label.changePresetToCurrentCheckbox input"
+        ).prop("checked", false);
+        $(
+          "#editPresetModal .modal label.changePresetToCurrentCheckbox"
+        ).removeClass("hidden");
         $("#editPresetModal .modal .inputs").removeClass("hidden");
         $("#editPresetModal .modal .presetType").removeClass("hidden");
         $("#editPresetModal .modal .presetNameTitle").removeClass("hidden");
@@ -73,7 +79,9 @@ export function show(action: string, id?: string, name?: string): void {
         $("#editPresetModal .modal .popupTitle").html("Delete preset");
         $("#editPresetModal .modal .submit").html("delete");
         $("#editPresetModal .modal input").addClass("hidden");
-        $("#editPresetModal .modal label").addClass("hidden");
+        $(
+          "#editPresetModal .modal label.changePresetToCurrentCheckbox"
+        ).addClass("hidden");
         $("#editPresetModal .modal .text").removeClass("hidden");
         $("#editPresetModal .modal .deletePrompt").text(
           `Are you sure you want to delete the preset ${name}?`
@@ -121,6 +129,7 @@ function addCheckboxListeners(): void {
             `#editPresetModal .modal .checkboxList .checkboxTitlePair[data-id="${settingGroup}"] input`
           ).prop("checked")
         );
+        console.log(state);
       });
     }
   );
@@ -130,36 +139,17 @@ function addCheckBoxes(): void {
   function camelCaseToSpaced(input: string): string {
     return input.replace(/([a-z])([A-Z])/g, "$1 $2");
   }
-  const settingGroupList = PresetSettingGroupSchema.options;
   const settingGroupListEl = $(
     "#editPresetModal .modal .inputs .checkboxList"
   ).empty();
-  for (let index = 0; index < settingGroupList.length; index += 2) {
-    const currSettingGroup = settingGroupList[index];
-    if (currSettingGroup === undefined) {
-      throw new Error("Error Occured While showing Setting Group Checkboxes");
-    }
+  PresetSettingGroupSchema.options.forEach((currSettingGroup) => {
     const currSettingGroupTitle = camelCaseToSpaced(currSettingGroup);
-    let rowElem: string = `<div class="checkboxTitlePair" data-id="${currSettingGroup}">
+    const settingGroupCheckbox: string = `<label class="checkboxTitlePair" data-id="${currSettingGroup}">
               <input type="checkbox" />
               <div class="title">${currSettingGroupTitle}</div>
-            </div>`;
-    if (index !== settingGroupList.length - 1) {
-      const nextSettingGroup = settingGroupList[index + 1];
-      if (nextSettingGroup === undefined) {
-        throw new Error("Error Occured While showing Setting Group Checkboxes");
-      }
-      const nextSettingGroupTitle = camelCaseToSpaced(nextSettingGroup);
-      rowElem = rowElem.concat(`
-            <div class="checkboxTitlePair" data-id="${nextSettingGroup}">
-              <input type="checkbox" />
-              <div class="title">${nextSettingGroupTitle}</div>
-          </div>`);
-    }
-    settingGroupListEl.append(
-      `<div class="checkboxGroupRow">` + rowElem + `<div>`
-    );
-  }
+              </label>`;
+    settingGroupListEl.append(settingGroupCheckbox);
+  });
   for (const key of state.checkboxes.keys()) {
     state.checkboxes.set(key, true);
   }
