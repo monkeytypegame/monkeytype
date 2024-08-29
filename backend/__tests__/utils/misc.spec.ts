@@ -621,7 +621,7 @@ describe("Misc Utils", () => {
       });
     });
     it("ignores null values", () => {
-      expect(misc.replaceObjectIdNullable(null)).toBeNull();
+      expect(misc.replaceObjectId(null)).toBeNull();
     });
   });
 

@@ -315,24 +315,21 @@ export function isDevEnvironment(): boolean {
  */
 export function replaceObjectId<T extends { _id: ObjectId }>(
   data: T
-): T & { _id: string } {
+): T & { _id: string };
+export function replaceObjectId<T extends { _id: ObjectId }>(
+  data: T | null
+): (T & { _id: string }) | null;
+export function replaceObjectId<T extends { _id: ObjectId }>(
+  data: T | null
+): (T & { _id: string }) | null {
+  if (data === null) {
+    return null;
+  }
   const result = {
     _id: data._id.toString(),
     ...omit(data, "_id"),
   } as T & { _id: string };
   return result;
-}
-
-/**
- * convert nullable database object into api object
- * @param data  database object with `_id: ObjectId` or null
- * @returns api object with `id: string` or null
- */
-export function replaceObjectIdNullable<T extends { _id: ObjectId }>(
-  data: T | null
-): (T & { _id: string }) | null {
-  if (data === null) return null;
-  return replaceObjectId(data);
 }
 
 /**

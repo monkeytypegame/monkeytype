@@ -21,7 +21,7 @@ import {
   RejectQuoteRequest,
   ReportQuoteRequest,
 } from "@monkeytype/contracts/quotes";
-import { replaceObjectIdNullable, replaceObjectIds } from "../../utils/misc";
+import { replaceObjectId, replaceObjectIds } from "../../utils/misc";
 
 async function verifyCaptcha(captcha: string): Promise<void> {
   if (!(await verify(captcha))) {
@@ -106,7 +106,7 @@ export async function getRating(
 
   const data = await QuoteRatingsDAL.get(quoteId, language);
 
-  return new MonkeyResponse2("Rating retrieved", replaceObjectIdNullable(data));
+  return new MonkeyResponse2("Rating retrieved", replaceObjectId(data));
 }
 
 export async function submitRating(
