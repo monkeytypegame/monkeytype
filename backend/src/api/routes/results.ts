@@ -22,7 +22,7 @@ export default s.router(resultsContract, {
     handler: async (r) => callController(ResultController.getResults)(r),
   },
   add: {
-    middleware: [validateResultSavingEnabled, RateLimit.resultsTagsUpdate],
+    middleware: [validateResultSavingEnabled, RateLimit.resultsAdd],
     handler: async (r) => callController(ResultController.addResult)(r),
   },
   updateTags: {

@@ -34,12 +34,14 @@ import * as KeymapEvent from "../observables/keymap-event";
 import { IgnoredKeys } from "../constants/ignored-keys";
 import { ModifierKeys } from "../constants/modifier-keys";
 import { navigate } from "./route-controller";
+import * as Loader from "../elements/loader";
 
 let dontInsertSpace = false;
 let correctShiftUsed = true;
 let isKoCompiling = false;
 let isBackspace: boolean;
 let incorrectShiftsInARow = 0;
+let awaitingNextWord = false;
 
 const wordsInput = document.getElementById("wordsInput") as HTMLInputElement;
 const koInputVisual = document.getElementById("koInputVisual") as HTMLElement;
@@ -113,7 +115,7 @@ function backspaceToPrevious(): void {
 
   if (
     TestInput.input.history.length === 0 ||
-    TestUI.currentWordElementIndex === 0
+    TestUI.activeWordElementIndex === 0
   ) {
     return;
   }
@@ -137,7 +139,7 @@ function backspaceToPrevious(): void {
       "incorrect"
     );
   if (Config.stopOnError === "letter" && incorrectLetterBackspaced) {
-    void TestUI.updateWordElement();
+    void TestUI.updateActiveWordLetters();
   }
 
   TestInput.input.current = TestInput.input.popHistory();
@@ -149,10 +151,10 @@ function backspaceToPrevious(): void {
     setWordsInput(" " + TestInput.input.current + " ");
   }
   TestWords.words.decreaseCurrentIndex();
-  TestUI.setCurrentWordElementIndex(TestUI.currentWordElementIndex - 1);
+  TestUI.setActiveWordElementIndex(TestUI.activeWordElementIndex - 1);
   TestUI.updateActiveElement(true);
   Funbox.toggleScript(TestWords.words.getCurrent());
-  void TestUI.updateWordElement();
+  void TestUI.updateActiveWordLetters();
 
   if (Config.mode === "zen") {
     TimerProgress.update();
@@ -217,7 +219,7 @@ async function handleSpace(): Promise<void> {
   TestInput.incrementAccuracy(isWordCorrect);
   if (isWordCorrect) {
     if (Config.stopOnError === "letter") {
-      void TestUI.updateWordElement();
+      void TestUI.updateActiveWordLetters();
     }
     PaceCaret.handleSpace(true, currentWord);
     TestInput.input.pushHistory();
@@ -259,7 +261,7 @@ async function handleSpace(): Promise<void> {
       if (Config.stopOnError === "word") {
         dontInsertSpace = false;
         Replay.addReplayEvent("incorrectLetter", "_");
-        void TestUI.updateWordElement();
+        void TestUI.updateActiveWordLetters();
         void Caret.updatePosition();
       }
       return;
@@ -267,10 +269,10 @@ async function handleSpace(): Promise<void> {
     PaceCaret.handleSpace(false, currentWord);
     if (Config.blindMode) {
       if (Config.highlightMode !== "off") {
-        TestUI.highlightAllLettersAsCorrect(TestUI.currentWordElementIndex);
+        TestUI.highlightAllLettersAsCorrect(TestUI.activeWordElementIndex);
       }
     } else {
-      TestUI.highlightBadWord(TestUI.currentWordElementIndex);
+      TestUI.highlightBadWord(TestUI.activeWordElementIndex);
     }
     TestInput.input.pushHistory();
     TestWords.words.increaseCurrentIndex();
@@ -283,10 +285,8 @@ async function handleSpace(): Promise<void> {
     }
   }
 
-  if (
-    TestLogic.areAllTestWordsGenerated() &&
-    TestWords.words.currentIndex === TestWords.words.length
-  ) {
+  const isLastWord = TestWords.words.currentIndex === TestWords.words.length;
+  if (TestLogic.areAllTestWordsGenerated() && isLastWord) {
     void TestLogic.finish();
     return;
   }
@@ -326,9 +326,17 @@ async function handleSpace(): Promise<void> {
     Config.mode === "custom" ||
     Config.mode === "quote"
   ) {
-    await TestLogic.addWord();
+    if (isLastWord) {
+      awaitingNextWord = true;
+      Loader.show();
+      await TestLogic.addWord();
+      Loader.hide();
+      awaitingNextWord = false;
+    } else {
+      void TestLogic.addWord();
+    }
   }
-  TestUI.setCurrentWordElementIndex(TestUI.currentWordElementIndex + 1);
+  TestUI.setActiveWordElementIndex(TestUI.activeWordElementIndex + 1);
   TestUI.updateActiveElement();
   void Caret.updatePosition();
 
@@ -340,14 +348,14 @@ async function handleSpace(): Promise<void> {
   ) {
     const currentTop: number = Math.floor(
       document.querySelectorAll<HTMLElement>("#words .word")[
-        TestUI.currentWordElementIndex - 1
+        TestUI.activeWordElementIndex - 1
       ]?.offsetTop ?? 0
     );
     let nextTop: number;
     try {
       nextTop = Math.floor(
         document.querySelectorAll<HTMLElement>("#words .word")[
-          TestUI.currentWordElementIndex
+          TestUI.activeWordElementIndex
         ]?.offsetTop ?? 0
       );
     } catch (e) {
@@ -578,7 +586,7 @@ function handleChar(
     !Config.language.startsWith("korean")
   ) {
     TestInput.input.current = resultingWord;
-    void TestUI.updateWordElement();
+    void TestUI.updateActiveWordLetters();
     void Caret.updatePosition();
     return;
   }
@@ -659,7 +667,7 @@ function handleChar(
     !thisCharCorrect
   ) {
     if (!Config.blindMode) {
-      void TestUI.updateWordElement(TestInput.input.current + char);
+      void TestUI.updateActiveWordLetters(TestInput.input.current + char);
     }
     return;
   }
@@ -727,7 +735,7 @@ function handleChar(
   const activeWordTopBeforeJump = document.querySelector<HTMLElement>(
     "#words .word.active"
   )?.offsetTop as number;
-  void TestUI.updateWordElement();
+  void TestUI.updateActiveWordLetters();
 
   const newActiveTop = document.querySelector<HTMLElement>(
     "#words .word.active"
@@ -741,13 +749,13 @@ function handleChar(
     if (Config.mode === "zen") {
       const currentTop = Math.floor(
         document.querySelectorAll<HTMLElement>("#words .word")[
-          TestUI.currentWordElementIndex - 1
+          TestUI.activeWordElementIndex - 1
         ]?.offsetTop ?? 0
       );
       if (!Config.showAllLines) TestUI.lineJump(currentTop);
     } else {
       TestInput.input.current = TestInput.input.current.slice(0, -1);
-      void TestUI.updateWordElement();
+      void TestUI.updateActiveWordLetters();
     }
   }
 
@@ -882,7 +890,8 @@ $("#wordsInput").on("keydown", (event) => {
     !leaderboardsVisible &&
     !popupVisible &&
     !TestUI.resultVisible &&
-    event.key !== "Enter";
+    event.key !== "Enter" &&
+    !awaitingNextWord;
 
   if (!allowTyping) {
     event.preventDefault();
@@ -918,7 +927,8 @@ $(document).on("keydown", async (event) => {
     !leaderboardsVisible &&
     !popupVisible &&
     !TestUI.resultVisible &&
-    (wordsFocused || event.key !== "Enter");
+    (wordsFocused || event.key !== "Enter") &&
+    !awaitingNextWord;
 
   if (
     allowTyping &&
@@ -1343,7 +1353,7 @@ $("#wordsInput").on("input", (event) => {
       TestInput.input.current = inputValue;
     }
 
-    void TestUI.updateWordElement();
+    void TestUI.updateActiveWordLetters();
     void Caret.updatePosition();
     if (!CompositionState.getComposing()) {
       const keyStroke = event?.originalEvent as InputEvent;
@@ -1381,7 +1391,7 @@ $("#wordsInput").on("input", (event) => {
 
     const stateafter = CompositionState.getComposing();
     if (statebefore !== stateafter) {
-      void TestUI.updateWordElement();
+      void TestUI.updateActiveWordLetters();
     }
 
     // force caret at end of input
