@@ -9,8 +9,6 @@ on:
     types: [review_requested, review_request_removed]
   pull_request_review: 
     types: [submitted]
-  pull_request_review_comment: 
-    types: [created]
   issue_comment:
     types: [created]
 
@@ -44,7 +42,7 @@ jobs:
           NUMBER: ${{ github.event.issue.number }}
 
       - name: Add "waiting for update" if changes are requested
-        if: ${{ (github.event_name == 'pull_request_review_comment') || (github.event_name == 'pull_request_review' && github.event.review.state == 'changes_requested')}}
+        if: ${{(github.event_name == 'pull_request_review' && github.event.review.state == 'changes_requested')}}
         uses: actions-ecosystem/action-add-labels@v1
         with:
           labels: waiting for update
@@ -52,7 +50,7 @@ jobs:
           NUMBER: ${{ github.event.pull_request.number }}
 
       - name: Remove "waiting for review" label after review
-        if: ${{ github.event_name == 'pull_request_review_comment' || github.event_name == 'pull_request_review' }}
+        if: ${{github.event_name == 'pull_request_review' }}
         uses: actions-ecosystem/action-remove-labels@v1
         with:
           labels: waiting for review
