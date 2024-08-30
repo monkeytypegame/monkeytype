@@ -1,62 +1,68 @@
 :root {
-    --bg-color: #3b4a62;
-    --main-color: #bef0ff;
-    --caret-color: #bef0ff;
-    --sub-color: #fe9841;
-    --sub-alt-color: #313e55;
-    --text-color: #7fafe5;
-    --error-color: #ed2939;
-    --error-extra-color: #ce122c;
-    --colorful-error-color: #ed2939;
-    --colorful-error-extra-color: #ce122c;
+  --bg-color: #3b4a62;
+  --main-color: #bef0ff;
+  --caret-color: #bef0ff;
+  --sub-color: #fe9841;
+  --sub-alt-color: #313e55;
+  --text-color: #f5fefd;
+  --error-color: #ed2939;
+  --error-extra-color: #ce122c;
+  --colorful-error-color: #ed2939;
+  --colorful-error-extra-color: #ce122c;
+}
+
+@keyframes hoverup {
+  0% {
+    transform: translateY(0);
   }
-  
-  @keyframes hoverup {
-    0% {
-      transform: translateY(0);
-    }
-    50% {
-      transform: translateY(-8px);
-    }
-    100% {
-      transform: translateY(0);
-    }
+  50% {
+    transform: translateY(-8px);
   }
-  
-  header #logo .text {
-    background: linear-gradient(120deg, var(--main-color), var(--sub-color));
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
+  100% {
+    transform: translateY(0);
   }
-  
-  /* customize the logo colors on focus */
-  header.focus #logo .text {
-    background: linear-gradient(-120deg, var(--main-color), var(--sub-color));
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-  }
-  
-  header.focus nav > .textButton {
-    background: none;
-  }
-  header nav > .textButton {
-    border-radius: 150px 150px 32px 32px;
-    color: var(--text-color);
-  }
-  header nav > .textButton {
-    background-color: var(--sub-alt-color);
-    color: var(--text-color);
-  }
-  header nav > .textButton:hover {
-    animation: hoverup 800ms infinite;
-    background-color: var(--sub-alt-color);
-  }
-  header nav > .view-start,
-  header nav > .view-start:hover {
-    color: var(--main-color);
-  }
-  header nav > .view-leaderboards,
-  header nav > .view-leaderboards:hover {
-    color: var(--sub-color);
-  }
-  
+}
+
+header #logo .text {
+  background: linear-gradient(120deg, var(--main-color), var(--sub-color));
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* customize the logo colors on focus */
+header.focus #logo .text {
+  background: linear-gradient(-120deg, var(--main-color), var(--sub-color));
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+header.focus nav > .textButton,
+header.focus nav > .accountButtonAndMenu .textButton {
+  background: none;
+}
+header nav > .textButton {
+  border-radius: 150px 150px 32px 32px;
+  background-color: var(--sub-alt-color);
+  color: var(--text-color);
+}
+header nav > .textButton:hover {
+  animation: hoverup 800ms infinite;
+  background-color: var(--sub-alt-color);
+}
+header nav > .view-start,
+header nav > .view-start:hover {
+  color: var(--main-color);
+}
+header nav > .view-leaderboards,
+header nav > .view-leaderboards:hover {
+  color: var(--sub-color);
+}
+header nav > .showAlerts {
+  color: var(--text-color);
+}
+header nav > .showAlerts:hover {
+  color: var(--sub-color);
+}
+header nav > .accountButtonAndMenu .textButton {
+  border-radius: 8px;
+  background-color: var(--sub-alt-color);
+}
