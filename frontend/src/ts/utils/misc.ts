@@ -176,6 +176,9 @@ export function escapeRegExp(str: string): string {
 }
 
 export function escapeHTML(str: string): string {
+  if (str === null || str === undefined) {
+    return str;
+  }
   str = str
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")

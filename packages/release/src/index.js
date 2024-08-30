@@ -120,7 +120,7 @@ const updatePackage = (newVersion) => {
     console.log(`[Dry Run] Updated package.json to version ${newVersion}`);
     return;
   }
-  const packagePath = path.resolve(__dirname, "../package.json");
+  const packagePath = `${PROJECT_ROOT}/package.json`;
 
   // Read the package.json file
   const packageJson = JSON.parse(fs.readFileSync(packagePath, "utf8"));

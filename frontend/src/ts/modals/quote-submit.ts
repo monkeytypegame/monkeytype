@@ -37,11 +37,13 @@ async function submitQuote(): Promise<void> {
   }
 
   Loader.show();
-  const response = await Ape.quotes.submit(text, source, language, captcha);
+  const response = await Ape.quotes.add({
+    body: { text, source, language, captcha },
+  });
   Loader.hide();
 
   if (response.status !== 200) {
-    Notifications.add("Failed to submit quote: " + response.message, -1);
+    Notifications.add("Failed to submit quote: " + response.body.message, -1);
     return;
   }
 

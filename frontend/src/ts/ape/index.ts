@@ -17,7 +17,6 @@ const devClient = buildClient(devContract, BASE_URL, 240_000);
 const Ape = {
   ...tsRestClient,
   users: new endpoints.Users(httpClient),
-  quotes: new endpoints.Quotes(httpClient),
   dev: devClient,
 };
 

@@ -63,27 +63,23 @@ const ResultBaseSchema = z.object({
   keyConsistency: PercentageSchema,
   chartData: ChartDataSchema.or(z.literal("toolong")),
   uid: IdSchema,
+
+  //required on POST but optional in the database and might be removed to save space
+  restartCount: z.number().int().nonnegative().optional(),
+  incompleteTestSeconds: z.number().nonnegative().optional(),
+  afkDuration: z.number().nonnegative().optional(),
+  tags: z.array(IdSchema).optional(),
+  bailedOut: z.boolean().optional(),
+  blindMode: z.boolean().optional(),
+  lazyMode: z.boolean().optional(),
+  funbox: FunboxSchema.optional(),
+  language: LanguageSchema.optional(),
+  difficulty: DifficultySchema.optional(),
+  numbers: z.boolean().optional(),
+  punctuation: z.boolean().optional(),
 });
 
-//required on POST but optional in the database and might be removed to save space
-const ResultOmittableDefaultPropertiesSchema = z.object({
-  restartCount: z.number().int().nonnegative(),
-  incompleteTestSeconds: z.number().nonnegative(),
-  afkDuration: z.number().nonnegative(),
-  tags: z.array(IdSchema),
-  bailedOut: z.boolean(),
-  blindMode: z.boolean(),
-  lazyMode: z.boolean(),
-  funbox: FunboxSchema,
-  language: LanguageSchema,
-  difficulty: DifficultySchema,
-  numbers: z.boolean(),
-  punctuation: z.boolean(),
-});
-
-export const ResultSchema = ResultBaseSchema.merge(
-  ResultOmittableDefaultPropertiesSchema.partial() //missing on GET if the values are the default values
-).extend({
+export const ResultSchema = ResultBaseSchema.extend({
   _id: IdSchema,
   keySpacingStats: KeyStatsSchema.optional(),
   keyDurationStats: KeyStatsSchema.optional(),
@@ -99,9 +95,20 @@ export type Result<M extends Mode> = Omit<
   mode2: Mode2<M>;
 };
 
-export const CompletedEventSchema = ResultBaseSchema.merge(
-  ResultOmittableDefaultPropertiesSchema //mandatory on POST
-)
+export const CompletedEventSchema = ResultBaseSchema.required({
+  restartCount: true,
+  incompleteTestSeconds: true,
+  afkDuration: true,
+  tags: true,
+  bailedOut: true,
+  blindMode: true,
+  lazyMode: true,
+  funbox: true,
+  language: true,
+  difficulty: true,
+  numbers: true,
+  punctuation: true,
+})
   .extend({
     charTotal: z.number().int().nonnegative(),
     challenge: token().max(100).optional(),
