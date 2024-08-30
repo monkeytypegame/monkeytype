@@ -49,7 +49,7 @@ function getTargetPositionLeft(
   fullWidthCaret: boolean,
   isLanguageRightToLeft: boolean,
   activeWordElement: HTMLElement,
-  activeWordEmpty: boolean,
+  underscoreAdded: boolean,
   currentWordNodeList: NodeListOf<Element>,
   fullWidthCaretWidth: number,
   wordLen: number,
@@ -99,7 +99,7 @@ function getTargetPositionLeft(
       }
     }
     result = activeWordElement.offsetLeft + positionOffsetToWord;
-    if (activeWordEmpty && isLanguageRightToLeft)
+    if (underscoreAdded && isLanguageRightToLeft)
       result += activeWordElement.offsetWidth;
   } else {
     const wordsWrapperWidth =
