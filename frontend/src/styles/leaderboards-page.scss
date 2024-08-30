@@ -1,0 +1,169 @@
+.pageLeaderboards {
+  .content {
+    display: grid;
+    gap: 2rem;
+    grid-template-columns: 1fr 15rem;
+    grid-template-areas: "table buttons";
+    height: 100%;
+
+    .bigtitle {
+      font-size: 2rem;
+      margin-bottom: 2rem;
+    }
+
+    .table {
+      grid-area: table;
+      gap: 1rem;
+
+      .titleAndButtons {
+        font-size: 1rem;
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        justify-content: space-between;
+        button {
+          width: 3rem;
+        }
+        .title {
+          font-size: 1.25rem;
+          color: var(--sub-color);
+        }
+        .pageButtons {
+          display: grid;
+          grid-template-columns: 3rem 15rem 3rem;
+          place-items: center center;
+          justify-self: center;
+          .text {
+            color: var(--sub-color);
+          }
+        }
+        .jumpButtons {
+          justify-self: end;
+        }
+      }
+
+      & > .title {
+        font-size: 1.25rem;
+        color: var(--sub-color);
+      }
+      .bigUser {
+        height: 5rem;
+        margin-bottom: 2rem;
+        margin-top: 1rem;
+        background: var(--sub-alt-color);
+        padding: 1rem 2rem;
+        border-radius: var(--roundness);
+        font-size: 1.25rem;
+        display: grid;
+        align-items: center;
+        gap: 2rem;
+        grid-template-columns: auto 1fr auto auto auto auto auto;
+        .rank {
+          width: 6ch;
+          text-align: center;
+        }
+        .stat {
+          .title {
+            font-size: 0.5em;
+            color: var(--sub-color);
+          }
+        }
+        .date {
+          font-size: 0.75em;
+          // color: var(--sub-color);
+          .sub {
+            font-size: 0.75em;
+            color: var(--sub-color);
+          }
+        }
+        &.you {
+          .userInfo {
+            .bottom {
+              font-size: 0.5em;
+              color: var(--sub-color);
+            }
+          }
+          //   font-size: 1rem;
+          //   .stat .title {
+          //     font-size: 0.8em;
+          //   }
+        }
+      }
+      .avatarNameBadge {
+        display: grid;
+        grid-template-columns: min-content max-content auto;
+        gap: 0.5rem;
+        place-items: center left;
+        .avatarPlaceholder {
+          color: var(--sub-color);
+        }
+      }
+      table {
+        width: 100%;
+        border-spacing: 0;
+        border-collapse: collapse;
+
+        td {
+          padding: 1rem 1.5rem;
+        }
+
+        td:first-child {
+          padding: 0;
+          width: 8ch;
+          text-align: center;
+        }
+
+        thead {
+          color: var(--sub-color);
+          font-size: 0.75rem;
+
+          td {
+            background: var(--bg-color);
+            position: -webkit-sticky;
+            position: sticky;
+            top: 0;
+            z-index: 99;
+            &.wide {
+              width: 7ch;
+            }
+          }
+        }
+
+        tbody {
+          color: var(--text-color);
+
+          tr:nth-child(odd) td {
+            background: var(--sub-alt-color);
+          }
+          td:nth-child(1) {
+            border-radius: calc(var(--roundness) / 2) 0 0
+              calc(var(--roundness) / 2);
+          }
+          td:last-child {
+            border-radius: 0 calc(var(--roundness) / 2)
+              calc(var(--roundness) / 2) 0;
+          }
+        }
+      }
+    }
+    .buttons {
+      grid-area: buttons;
+      display: grid;
+      gap: 2rem;
+      align-content: start;
+      button {
+        justify-content: start;
+        padding-left: 0.75em;
+      }
+      .divider {
+        background: var(--sub-alt-color);
+        width: 100%;
+        height: 0.25em;
+        border-radius: var(--roundness);
+      }
+      .buttonGroup {
+        display: grid;
+        gap: 1rem;
+      }
+    }
+  }
+}

@@ -15,7 +15,8 @@ declare namespace MonkeyTypes {
     | "profile"
     | "profileSearch"
     | "404"
-    | "accountSettings";
+    | "accountSettings"
+    | "leaderboards";
 
   type LanguageGroup = {
     name: string;

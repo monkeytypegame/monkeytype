@@ -60,15 +60,12 @@ const routes: Route[] = [
       void PageController.change("test");
     },
   },
-  // {
-  //   path: "/leaderboards",
-  //   load: (): void => {
-  //     if (ActivePage.get() === "loading") {
-  //       PageController.change(PageTest.page);
-  //     }
-  //     Leaderboards.show();
-  //   },
-  // },
+  {
+    path: "/leaderboards",
+    load: (): void => {
+      void PageController.change("leaderboards");
+    },
+  },
   {
     path: "/about",
     load: (): void => {
