@@ -34,9 +34,8 @@ declare namespace MonkeyTypes {
   type RequestHandler = import("@ts-rest/core").TsRestRequestHandler<any>;
   /* eslint-enable  @typescript-eslint/no-explicit-any */
 
-  //TODOO replace shared types
   type DBUser = Omit<
-    import("@monkeytype/shared-types").User,
+    import("@monkeytype/contracts/schemas/users").User,
     | "resultFilterPresets"
     | "tags"
     | "customThemes"
@@ -52,20 +51,22 @@ declare namespace MonkeyTypes {
     lbPersonalBests?: LbPersonalBests;
     customThemes?: DBCustomTheme[];
     autoBanTimestamps?: number[];
-    inbox?: import("@monkeytype/shared-types").MonkeyMail[];
+    inbox?: import("@monkeytype/contracts/schemas/users").MonkeyMail[];
     ips?: string[];
     canReport?: boolean;
     lastNameChange?: number;
     canManageApeKeys?: boolean;
     bananas?: number;
-    testActivity?: import("@monkeytype/shared-types").CountByYearAndDay;
+    testActivity?: import("@monkeytype/contracts/schemas/users").CountByYearAndDay;
   };
 
   type DBCustomTheme = WithObjectId<
     import("@monkeytype/contracts/schemas/users").CustomTheme
   >;
 
-  type DBUserTag = WithObjectId<import("@monkeytype/shared-types").UserTag>;
+  type DBUserTag = WithObjectId<
+    import("@monkeytype/contracts/schemas/users").UserTag
+  >;
 
   type LbPersonalBests = {
     time: Record<

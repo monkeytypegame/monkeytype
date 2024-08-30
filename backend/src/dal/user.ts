@@ -22,14 +22,14 @@ import {
   UserProfileDetails,
   UserQuoteRatings,
   UserStreak,
-} from "@monkeytype/shared-types";
+  ResultFilters,
+} from "@monkeytype/contracts/schemas/users";
 import {
   Mode,
   Mode2,
   PersonalBest,
 } from "@monkeytype/contracts/schemas/shared";
 import { addImportantLog } from "./logs";
-import { ResultFilters } from "@monkeytype/contracts/schemas/users";
 import { Result as ResultType } from "@monkeytype/contracts/schemas/results";
 import { Configuration } from "@monkeytype/contracts/schemas/configuration";
 
@@ -542,7 +542,7 @@ export async function updateLastHashes(
     { uid },
     {
       $set: {
-        lastReultHashes: lastHashes,
+        lastReultHashes: lastHashes, //TODO fix typo
       },
     }
   );

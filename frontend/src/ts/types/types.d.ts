@@ -209,13 +209,13 @@ declare namespace MonkeyTypes {
 
   type QuoteRatings = Record<string, Record<number, number>>;
 
-  type UserTag = import("@monkeytype/shared-types").UserTag & {
+  type UserTag = import("@monkeytype/contracts/schemas/users").UserTag & {
     active?: boolean;
     display: string;
   };
 
   type Snapshot = Omit<
-    import("@monkeytype/shared-types").User,
+    import("@monkeytype/contracts/schemas/users").User,
     | "timeTyping"
     | "startedTests"
     | "completedTests"
@@ -435,8 +435,8 @@ declare namespace MonkeyTypes {
 
   type BadgeReward = {
     type: "badge";
-    item: import("@monkeytype/shared-types").Badge;
-  } & Reward<import("@monkeytype/shared-types").Badge>;
+    item: import("@monkeytype/contracts/schemas/users").Badge;
+  } & Reward<import("@monkeytype/contracts/schemas/users").Badge>;
 
   type AllRewards = XpReward | BadgeReward;
 
@@ -499,5 +499,16 @@ declare namespace MonkeyTypes {
     difficulty: import("@monkeytype/contracts/schemas/shared").Difficulty;
     numbers: boolean;
     punctuation: boolean;
+  };
+  type CustomTextLimit = {
+    value: number;
+    mode: import("@monkeytype/contracts/schemas/util").CustomTextLimitMode;
+  };
+
+  type CustomTextData = Omit<
+    import("@monkeytype/contracts/schemas/results").CustomTextDataWithTextLen,
+    "textLen"
+  > & {
+    text: string[];
   };
 }

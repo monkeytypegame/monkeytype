@@ -178,18 +178,16 @@ export const UserLbMemorySchema = z.record(
 );
 export type UserLbMemory = z.infer<typeof UserLbMemorySchema>;
 
+export const RankAndCountSchema = z.object({
+  rank: z.number().int().nonnegative().optional(),
+  count: z.number().int().nonnegative(),
+});
+export type RankAndCount = z.infer<typeof RankAndCountSchema>;
+
 export const AllTimeLbsSchema = z.object({
   time: z.record(
     Mode2Schema,
-    z.record(
-      LanguageSchema,
-      z
-        .object({
-          rank: z.number().int().nonnegative().optional(),
-          count: z.number().int().nonnegative(),
-        })
-        .optional()
-    )
+    z.record(LanguageSchema, RankAndCountSchema.optional())
   ),
 });
 export type AllTimeLbs = z.infer<typeof AllTimeLbsSchema>;
@@ -257,6 +255,7 @@ export const UserSchema = z.object({
   uid: z.string(), //defined by firebase, no validation should be applied
   addedAt: z.number().int().nonnegative(),
   personalBests: PersonalBestsSchema,
+  lastReultHashes: z.array(z.string()).optional(), //todo: fix typo (its in the db too)
   completedTests: z.number().int().nonnegative().optional(),
   startedTests: z.number().int().nonnegative().optional(),
   timeTyping: z

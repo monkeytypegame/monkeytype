@@ -30,15 +30,13 @@ import * as Dates from "date-fns";
 import { UTCDateMini } from "@date-fns/utc";
 import * as BlocklistDal from "../../dal/blocklist";
 import {
-  CountByYearAndDay,
-  TestActivity,
-  UserProfileDetails,
-} from "@monkeytype/shared-types";
-import {
   AllTimeLbs,
   ResultFilters,
   User,
   UserProfile,
+  CountByYearAndDay,
+  TestActivity,
+  UserProfileDetails,
 } from "@monkeytype/contracts/schemas/users";
 import { addImportantLog, addLog, deleteUserLogs } from "../../dal/logs";
 import { sendForgotPasswordEmail as authSendForgotPasswordEmail } from "../../utils/auth";

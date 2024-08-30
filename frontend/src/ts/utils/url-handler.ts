@@ -13,7 +13,6 @@ import { restart as restartTest } from "../test/test-logic";
 import * as ChallengeController from "../controllers/challenge-controller";
 import { Mode, Mode2 } from "@monkeytype/contracts/schemas/shared";
 import { Difficulty } from "@monkeytype/contracts/schemas/configs";
-import { CustomTextData } from "@monkeytype/shared-types";
 
 export async function linkDiscord(hashOverride: string): Promise<void> {
   if (!hashOverride) return;
@@ -110,7 +109,7 @@ export function loadCustomThemeFromUrl(getOverride?: string): void {
 type SharedTestSettings = [
   Mode | null,
   Mode2<Mode> | null,
-  CustomTextData | null,
+  MonkeyTypes.CustomTextData | null,
   boolean | null,
   boolean | null,
   string | null,
