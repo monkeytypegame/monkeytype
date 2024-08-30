@@ -1,14 +1,10 @@
-import joi from "joi";
-import { authenticateRequest } from "../../middlewares/auth";
-import { Router } from "express";
-import * as QuoteController from "../controllers/quote";
-import * as RateLimit from "../../middlewares/rate-limit";
-import { checkUserPermissions } from "../../middlewares/permission";
-import { asyncHandler } from "../../middlewares/utility";
+import { quotesContract } from "@monkeytype/contracts/quotes";
+import { initServer } from "@ts-rest/express";
 import { validate } from "../../middlewares/configuration";
-import { validateRequest } from "../../middlewares/validation";
-
-const router = Router();
+import { checkUserPermissions } from "../../middlewares/permission";
+import * as RateLimit from "../../middlewares/rate-limit";
+import * as QuoteController from "../controllers/quote";
+import { callController } from "../ts-rest-adapter";
 
 const checkIfUserIsQuoteMod = checkUserPermissions(["quoteMod"], {
   criteria: (user) => {
@@ -19,164 +15,61 @@ const checkIfUserIsQuoteMod = checkUserPermissions(["quoteMod"], {
   },
 });
 
-router.get(
-  "/",
-  authenticateRequest(),
-  RateLimit.newQuotesGet,
-  checkIfUserIsQuoteMod,
-  asyncHandler(QuoteController.getQuotes)
-);
-
-router.get(
-  "/isSubmissionEnabled",
-  authenticateRequest({
-    isPublic: true,
-  }),
-  RateLimit.newQuotesIsSubmissionEnabled,
-  asyncHandler(QuoteController.isSubmissionEnabled)
-);
-
-router.post(
-  "/",
-  validate({
-    criteria: (configuration) => {
-      return configuration.quotes.submissionsEnabled;
-    },
-    invalidMessage:
-      "Quote submission is disabled temporarily. The queue is quite long and we need some time to catch up.",
-  }),
-  authenticateRequest(),
-  RateLimit.newQuotesAdd,
-  validateRequest(
-    {
-      body: {
-        text: joi.string().min(60).required(),
-        source: joi.string().required(),
-        language: joi
-          .string()
-          .regex(/^[\w+]+$/)
-          .required(),
-        captcha: joi
-          .string()
-          .regex(/[\w-_]+/)
-          .required(),
-      },
-    },
-    { validationErrorMessage: "Please fill all the fields" }
-  ),
-  asyncHandler(QuoteController.addQuote)
-);
-
-router.post(
-  "/approve",
-  authenticateRequest(),
-  RateLimit.newQuotesAction,
-  validateRequest(
-    {
-      body: {
-        quoteId: joi.string().required(),
-        editText: joi.string().allow(null),
-        editSource: joi.string().allow(null),
-      },
-    },
-    { validationErrorMessage: "Please fill all the fields" }
-  ),
-  checkIfUserIsQuoteMod,
-  asyncHandler(QuoteController.approveQuote)
-);
-
-router.post(
-  "/reject",
-  authenticateRequest(),
-  RateLimit.newQuotesAction,
-  validateRequest({
-    body: {
-      quoteId: joi.string().required(),
-    },
-  }),
-  checkIfUserIsQuoteMod,
-  asyncHandler(QuoteController.refuseQuote)
-);
-
-router.get(
-  "/rating",
-  authenticateRequest(),
-  RateLimit.quoteRatingsGet,
-  validateRequest({
-    query: {
-      quoteId: joi.string().regex(/^\d+$/).required(),
-      language: joi
-        .string()
-        .regex(/^[\w+]+$/)
-        .required(),
-    },
-  }),
-  asyncHandler(QuoteController.getRating)
-);
-
-router.post(
-  "/rating",
-  authenticateRequest(),
-  RateLimit.quoteRatingsSubmit,
-  validateRequest({
-    body: {
-      quoteId: joi.number().required(),
-      rating: joi.number().min(1).max(5).required(),
-      language: joi
-        .string()
-        .regex(/^[\w+]+$/)
-        .max(50)
-        .required(),
-    },
-  }),
-  asyncHandler(QuoteController.submitRating)
-);
-
-const withCustomMessages = joi.string().messages({
-  "string.pattern.base": "Invalid parameter format",
+const s = initServer();
+export default s.router(quotesContract, {
+  get: {
+    middleware: [checkIfUserIsQuoteMod, RateLimit.newQuotesGet],
+    handler: async (r) => callController(QuoteController.getQuotes)(r),
+  },
+  isSubmissionEnabled: {
+    middleware: [RateLimit.newQuotesIsSubmissionEnabled],
+    handler: async (r) =>
+      callController(QuoteController.isSubmissionEnabled)(r),
+  },
+  add: {
+    middleware: [
+      validate({
+        criteria: (configuration) => {
+          return configuration.quotes.submissionsEnabled;
+        },
+        invalidMessage:
+          "Quote submission is disabled temporarily. The queue is quite long and we need some time to catch up.",
+      }),
+      RateLimit.newQuotesAdd,
+    ],
+    handler: async (r) => callController(QuoteController.addQuote)(r),
+  },
+  approveSubmission: {
+    middleware: [checkIfUserIsQuoteMod, RateLimit.newQuotesAction],
+    handler: async (r) => callController(QuoteController.approveQuote)(r),
+  },
+  rejectSubmission: {
+    middleware: [checkIfUserIsQuoteMod, RateLimit.newQuotesAction],
+    handler: async (r) => callController(QuoteController.refuseQuote)(r),
+  },
+  getRating: {
+    middleware: [RateLimit.quoteRatingsGet],
+    handler: async (r) => callController(QuoteController.getRating)(r),
+  },
+  addRating: {
+    middleware: [RateLimit.quoteRatingsSubmit],
+    handler: async (r) => callController(QuoteController.submitRating)(r),
+  },
+  report: {
+    middleware: [
+      validate({
+        criteria: (configuration) => {
+          return configuration.quotes.reporting.enabled;
+        },
+        invalidMessage: "Quote reporting is unavailable.",
+      }),
+      RateLimit.quoteReportSubmit,
+      checkUserPermissions(["canReport"], {
+        criteria: (user) => {
+          return user.canReport !== false;
+        },
+      }),
+    ],
+    handler: async (r) => callController(QuoteController.reportQuote)(r),
+  },
 });
-
-router.post(
-  "/report",
-  validate({
-    criteria: (configuration) => {
-      return configuration.quotes.reporting.enabled;
-    },
-    invalidMessage: "Quote reporting is unavailable.",
-  }),
-  authenticateRequest(),
-  RateLimit.quoteReportSubmit,
-  validateRequest({
-    body: {
-      quoteId: withCustomMessages.regex(/\d+/).required(),
-      quoteLanguage: withCustomMessages
-        .regex(/^[\w+]+$/)
-        .max(50)
-        .required(),
-      reason: joi
-        .string()
-        .valid(
-          "Grammatical error",
-          "Duplicate quote",
-          "Inappropriate content",
-          "Low quality content",
-          "Incorrect source"
-        )
-        .required(),
-      comment: withCustomMessages
-        .allow("")
-        .regex(/^([.]|[^/<>])+$/)
-        .max(250)
-        .required(),
-      captcha: withCustomMessages.regex(/[\w-_]+/).required(),
-    },
-  }),
-  checkUserPermissions(["canReport"], {
-    criteria: (user) => {
-      return user.canReport !== false;
-    },
-  }),
-  asyncHandler(QuoteController.reportQuote)
-);
-
-export default router;

@@ -86,7 +86,7 @@ body.darkMode {
     overflow: hidden;
     max-width: 70rem;
     canvas {
-      height: 200px;
+      max-height: 200px;
     }
   }
 }

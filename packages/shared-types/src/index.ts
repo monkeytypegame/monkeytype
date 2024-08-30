@@ -48,6 +48,7 @@ export type PremiumInfo = {
   expirationTimestamp: number;
 };
 
+// Record<Language, Record<QuoteIdString, Rating>>
 export type UserQuoteRatings = Record<string, Record<string, number>>;
 
 export type UserLbMemory = Record<
