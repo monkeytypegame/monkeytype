@@ -563,7 +563,8 @@ function updateWordsHeight(force = false): void {
       finalWrapperHeight = wrapperHeight;
     }
 
-    $("#words").css("height", "0px");
+    // $("#words").css("height", "0px");
+    // not sure why this was here, wonder if removing it will break anything
 
     if (Config.tapeMode !== "off") {
       $("#words").css({ overflow: "hidden", width: "200vw" });
