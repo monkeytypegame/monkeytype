@@ -16,7 +16,7 @@ export function getOpenApi(): OpenAPIObject {
       info: {
         title: "Monkeytype API",
         description:
-          "Documentation for the public endpoints provided by the Monkeytype API server.\n\nNote that authentication is performed with the Authorization HTTP header in the format `Authorization: ApeKey YOUR_APE_KEY`\n\nThere is a rate limit of `30 requests per minute` across all endpoints with some endpoints being more strict. Rate limit rates are shared across all ape keys.",
+          "Documentation for the endpoints provided by the Monkeytype API server.\n\nNote that authentication is performed with the Authorization HTTP header in the format `Authorization: ApeKey YOUR_APE_KEY`\n\nThere is a rate limit of `30 requests per minute` across all endpoints with some endpoints being more strict. Rate limit rates are shared across all ape keys.",
         version: "2.0.0",
         termsOfService: "https://monkeytype.com/terms-of-service",
         contact: {
@@ -118,7 +118,7 @@ export function getOpenApi(): OpenAPIObject {
           "x-public": "yes",
         },
         {
-          name: "dev",
+          name: "development",
           description:
             "Development related endpoints. Only available on dev environment",
           "x-displayName": "Development",
@@ -143,7 +143,7 @@ export function getOpenApi(): OpenAPIObject {
 function addAuth(metadata: EndpointMetadata | undefined): object {
   const auth = metadata?.["authenticationOptions"] ?? {};
   const security: SecurityRequirementObject[] = [];
-  if (!auth.isPublic === true) {
+  if (!auth.isPublic === true && !auth.isPublicOnDev === true) {
     security.push({ BearerAuth: [] });
 
     if (auth.acceptApeKeys === true) {

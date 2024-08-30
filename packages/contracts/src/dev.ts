@@ -48,9 +48,9 @@ export const devContract = c.router(
     pathPrefix: "/dev",
     strictStatusCodes: true,
     metadata: {
-      openApiTags: "dev",
+      openApiTags: "development",
       authenticationOptions: {
-        isPublic: true,
+        isPublicOnDev: true,
       },
     } as EndpointMetadata,
     commonResponses: CommonResponses,
