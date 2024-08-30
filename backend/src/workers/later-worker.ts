@@ -15,7 +15,7 @@ import LaterQueue, {
 } from "../queues/later-queue";
 import { recordTimeToCompleteJob } from "../utils/prometheus";
 import { WeeklyXpLeaderboard } from "../services/weekly-xp-leaderboard";
-import { MonkeyMail } from "@monkeytype/shared-types";
+import { MonkeyMail } from "@monkeytype/contracts/schemas/users";
 
 async function handleDailyLeaderboardResults(
   ctx: LaterTaskContexts["daily-leaderboard-results"]

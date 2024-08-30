@@ -1,6 +1,5 @@
 import { Application } from "express";
 import { getMiddleware as getSwaggerMiddleware } from "swagger-stats";
-import internalSwaggerSpec from "../../documentation/internal-swagger.json";
 import { isDevEnvironment } from "../../utils/misc";
 
 function addSwaggerMiddlewares(app: Application): void {
@@ -10,7 +9,7 @@ function addSwaggerMiddlewares(app: Application): void {
       uriPath: "/stats",
       authentication: !isDevEnvironment(),
       apdexThreshold: 100,
-      swaggerSpec: internalSwaggerSpec,
+      //swaggerSpec: internalSwaggerSpec,
       onAuthenticate: (_req, username, password) => {
         return (
           username === process.env["STATS_USERNAME"] &&

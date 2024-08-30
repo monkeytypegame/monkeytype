@@ -146,9 +146,6 @@ importers:
       swagger-stats:
         specifier: 0.99.7
         version: 0.99.7(prom-client@15.1.3)
-      swagger-ui-express:
-        specifier: 4.3.0
-        version: 4.3.0(express@4.19.2)
       ua-parser-js:
         specifier: 0.7.33
         version: 0.7.33
@@ -165,9 +162,6 @@ importers:
       '@monkeytype/eslint-config':
         specifier: workspace:*
         version: link:../packages/eslint-config
-      '@monkeytype/shared-types':
-        specifier: workspace:*
-        version: link:../packages/shared-types
       '@monkeytype/typescript-config':
         specifier: workspace:*
         version: link:../packages/typescript-config
@@ -222,9 +216,6 @@ importers:
       '@types/swagger-stats':
         specifier: 0.95.11
         version: 0.95.11
-      '@types/swagger-ui-express':
-        specifier: 4.1.3
-        version: 4.1.3
       '@types/ua-parser-js':
         specifier: 0.7.36
         version: 0.7.36
@@ -352,9 +343,6 @@ importers:
       '@monkeytype/eslint-config':
         specifier: workspace:*
         version: link:../packages/eslint-config
-      '@monkeytype/shared-types':
-        specifier: workspace:*
-        version: link:../packages/shared-types
       '@monkeytype/typescript-config':
         specifier: workspace:*
         version: link:../packages/typescript-config
@@ -543,28 +531,6 @@ importers:
       nodemon:
         specifier: 3.1.4
         version: 3.1.4
-
-  packages/shared-types:
-    dependencies:
-      '@monkeytype/contracts':
-        specifier: workspace:*
-        version: link:../contracts
-    devDependencies:
-      '@monkeytype/eslint-config':
-        specifier: workspace:*
-        version: link:../eslint-config
-      '@monkeytype/typescript-config':
-        specifier: workspace:*
-        version: link:../typescript-config
-      eslint:
-        specifier: 8.57.0
-        version: 8.57.0
-      rimraf:
-        specifier: 6.0.1
-        version: 6.0.1
-      typescript:
-        specifier: 5.5.4
-        version: 5.5.4
 
   packages/typescript-config: {}
 
@@ -2715,9 +2681,6 @@ packages:
 
   '@types/swagger-stats@0.95.11':
     resolution: {integrity: sha512-npTTS5lv0FmkgKeChxUrp9nTqiFdFP5XRlewfGP7JVeFwV7u1yE0SOUh8eXMrgVLE/mJNJuhGoAoVClHc+rsGA==}
-
-  '@types/swagger-ui-express@4.1.3':
-    resolution: {integrity: sha512-jqCjGU/tGEaqIplPy3WyQg+Nrp6y80DCFnDEAvVKWkJyv0VivSSDCChkppHRHAablvInZe6pijDFMnavtN0vqA==}
 
   '@types/throttle-debounce@2.1.0':
     resolution: {integrity: sha512-5eQEtSCoESnh2FsiLTxE121IiE60hnMqcb435fShf4bpLRjEu1Eoekht23y6zXS9Ts3l+Szu3TARnTsA0GkOkQ==}
@@ -8447,15 +8410,6 @@ packages:
     peerDependencies:
       prom-client: '>= 10 <= 14'
 
-  swagger-ui-dist@5.17.14:
-    resolution: {integrity: sha512-CVbSfaLpstV65OnSjbXfVd6Sta3q3F7Cj/yYuvHMp1P90LztOLs6PfUnKEVAeiIVQt9u2SaPwv0LiH/OyMjHRw==}
-
-  swagger-ui-express@4.3.0:
-    resolution: {integrity: sha512-jN46SEEe9EoXa3ZgZoKgnSF6z0w3tnM1yqhO4Y+Q4iZVc8JOQB960EZpIAz6rNROrDApVDwcMHR0mhlnc/5Omw==}
-    engines: {node: '>= v0.10.32'}
-    peerDependencies:
-      express: '>=4.0.0'
-
   swagger2openapi@7.0.8:
     resolution: {integrity: sha512-upi/0ZGkYgEcLeGieoz8gT74oWHA0E7JivX7aN9mAf+Tc7BQoRBvnIGHoPDw+f9TXTW4s6kGYCZJtauP6OYp7g==}
     hasBin: true
@@ -11943,11 +11897,6 @@ snapshots:
       prom-client: 15.1.3
     transitivePeerDependencies:
       - supports-color
-
-  '@types/swagger-ui-express@4.1.3':
-    dependencies:
-      '@types/express': 4.17.21
-      '@types/serve-static': 1.15.7
 
   '@types/throttle-debounce@2.1.0': {}
 
@@ -18936,13 +18885,6 @@ snapshots:
       uuid: 9.0.1
     transitivePeerDependencies:
       - supports-color
-
-  swagger-ui-dist@5.17.14: {}
-
-  swagger-ui-express@4.3.0(express@4.19.2):
-    dependencies:
-      express: 4.19.2
-      swagger-ui-dist: 5.17.14
 
   swagger2openapi@7.0.8(encoding@0.1.13):
     dependencies:
