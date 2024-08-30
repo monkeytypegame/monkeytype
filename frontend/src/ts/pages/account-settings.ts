@@ -8,6 +8,7 @@ import Ape from "../ape";
 import * as StreakHourOffsetModal from "../modals/streak-hour-offset";
 import * as Loader from "../elements/loader";
 import * as ApeKeyTable from "../elements/account-settings/ape-key-table";
+import * as Notifications from "../elements/notifications";
 
 const pageElement = $(".page.pageAccountSettings");
 
@@ -190,8 +191,12 @@ $(
   ".page.pageAccountSettings .section.discordIntegration .getLinkAndGoToOauth"
 ).on("click", () => {
   Loader.show();
-  void Ape.users.getOauthLink().then((res) => {
-    window.open(res.data?.url as string, "_self");
+  void Ape.users.getDiscordOAuth().then((response) => {
+    if (response.status === 200) {
+      window.open(response.body.data.url, "_self");
+    } else {
+      Notifications.add("Failed to edit tag: " + response.body.message, -1);
+    }
   });
 });
 

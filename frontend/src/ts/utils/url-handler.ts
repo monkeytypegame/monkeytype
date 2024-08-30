@@ -25,25 +25,27 @@ export async function linkDiscord(hashOverride: string): Promise<void> {
     const state = fragment.get("state") as string;
 
     Loader.show();
-    const response = await Ape.users.linkDiscord(tokenType, accessToken, state);
+    const response = await Ape.users.linkDiscord({
+      body: { tokenType, accessToken, state },
+    });
     Loader.hide();
 
     if (response.status !== 200) {
-      Notifications.add("Failed to link Discord: " + response.message, -1);
+      Notifications.add("Failed to link Discord: " + response.body.message, -1);
       return;
     }
 
-    if (response.data === null) {
+    if (response.body.data === null) {
       Notifications.add("Failed to link Discord: data returned was null", -1);
       return;
     }
 
-    Notifications.add(response.message, 1);
+    Notifications.add(response.body.message, 1);
 
     const snapshot = DB.getSnapshot();
     if (!snapshot) return;
 
-    const { discordId, discordAvatar } = response.data;
+    const { discordId, discordAvatar } = response.body.data;
     if (discordId !== undefined) {
       snapshot.discordId = discordId;
     } else {

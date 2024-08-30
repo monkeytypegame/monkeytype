@@ -77,9 +77,9 @@ async function apply(): Promise<void> {
   const name = $("#googleSignUpModal input").val() as string;
   try {
     if (name.length === 0) throw new Error("Name cannot be empty");
-    const response = await Ape.users.create(name, captcha);
+    const response = await Ape.users.create({ body: { name, captcha } });
     if (response.status !== 200) {
-      throw new Error(`Failed to create user: ${response.message}`);
+      throw new Error(`Failed to create user: ${response.body.message}`);
     }
 
     if (response.status === 200) {
@@ -152,31 +152,23 @@ const nameIndicator = new InputIndicator($("#googleSignUpModal input"), {
 const checkNameDebounced = debounce(1000, async () => {
   const val = $("#googleSignUpModal input").val() as string;
   if (!val) return;
-  const response = await Ape.users.getNameAvailability(val);
+  const response = await Ape.users.getNameAvailability({
+    params: { name: val },
+  });
 
   if (response.status === 200) {
-    nameIndicator.show("available", response.message);
+    nameIndicator.show("available", response.body.message);
     enableButton();
-    return;
-  }
-
-  if (response.status === 422) {
-    nameIndicator.show("unavailable", response.message);
-    return;
-  }
-
-  if (response.status === 409) {
-    nameIndicator.show("taken", response.message);
-    return;
-  }
-
-  if (response.status !== 200) {
+  } else if (response.status === 422) {
+    nameIndicator.show("unavailable", response.body.message);
+  } else if (response.status === 409) {
+    nameIndicator.show("taken", response.body.message);
+  } else {
     nameIndicator.show("unavailable");
     Notifications.add(
-      "Failed to check name availability: " + response.message,
+      "Failed to check name availability: " + response.body.message,
       -1
     );
-    return;
   }
 });
 

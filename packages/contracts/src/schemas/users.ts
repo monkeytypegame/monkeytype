@@ -1,4 +1,4 @@
-import { z, ZodString, ZodTypeAny } from "zod";
+import { z, ZodEffects, ZodOptional, ZodString } from "zod";
 import { IdSchema, LanguageSchema, StringNumberSchema } from "./util";
 import { ModeSchema, Mode2Schema, PersonalBestsSchema } from "./shared";
 import { CustomThemeColorsSchema } from "./configs";
@@ -99,11 +99,12 @@ export const UserTagSchema = z
   .strict();
 export type UserTag = z.infer<typeof UserTagSchema>;
 
-function profileDetailsBase(schema: ZodString): z.ZodEffects<ZodTypeAny> {
+function profileDetailsBase(
+  schema: ZodString
+): ZodEffects<ZodOptional<ZodEffects<ZodString>>> {
   return doesNotContainProfanity("word", schema)
-    .nullable()
     .optional()
-    .transform((value) => value ?? undefined);
+    .transform((value) => (value === null ? undefined : value));
 }
 
 export const UserProfileDetailsSchema = z
@@ -317,14 +318,21 @@ export const UserProfileSchema = UserSchema.pick({
   isPremium: true,
   inventory: true,
   allTimeLbs: true,
-}).extend({
-  typingStats: TypingStatsSchema,
-  personalBests: PersonalBestsSchema.pick({ time: true, words: true }),
-  streak: z.number().int().nonnegative(),
-  maxStreak: z.number().int().nonnegative(),
-
-  details: UserProfileDetailsSchema,
-});
+})
+  .extend({
+    typingStats: TypingStatsSchema,
+    personalBests: PersonalBestsSchema.pick({ time: true, words: true }),
+    streak: z.number().int().nonnegative(),
+    maxStreak: z.number().int().nonnegative(),
+    details: UserProfileDetailsSchema,
+  })
+  .partial({
+    //omitted for banned users
+    inventory: true,
+    details: true,
+    allTimeLbs: true,
+    uid: true,
+  });
 export type UserProfile = z.infer<typeof UserProfileSchema>;
 
 export const RewardTypeSchema = z.enum(["xp", "badge"]);
@@ -354,3 +362,11 @@ export const MonkeyMailSchema = z.object({
   rewards: z.array(AllRewardsSchema),
 });
 export type MonkeyMail = z.infer<typeof MonkeyMailSchema>;
+
+export const ReportUserReasonSchema = z.enum([
+  "Inappropriate name",
+  "Inappropriate bio",
+  "Inappropriate social links",
+  "Suspected cheating",
+]);
+export type ReportUserReason = z.infer<typeof ReportUserReasonSchema>;

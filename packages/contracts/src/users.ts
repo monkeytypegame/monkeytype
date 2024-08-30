@@ -3,6 +3,7 @@ import { z } from "zod";
 import {
   CommonResponses,
   EndpointMetadata,
+  MonkeyClientError,
   MonkeyResponseSchema,
   responseWithData,
   responseWithNullableData,
@@ -19,6 +20,7 @@ import {
   TestActivitySchema,
   UserProfileDetailsSchema,
   UserProfileSchema,
+  ReportUserReasonSchema,
   UserSchema,
   UserStreakSchema,
   UserTagSchema,
@@ -45,9 +47,9 @@ const UserNameSchema = doesNotContainProfanity(
 );
 
 export const CreateUserRequestSchema = z.object({
-  email: z.string().email(),
+  email: z.string().email().optional(),
   name: UserNameSchema,
-  uid: z.string(), //defined by firebase, no validation should be applied
+  uid: z.string().optional(), //defined by firebase, no validation should be applied
   captcha: z.string(), //defined by google recaptcha, no validation should be applied
 });
 export type CreateUserRequest = z.infer<typeof CreateUserRequestSchema>;
@@ -245,14 +247,7 @@ export const GetProfileQuerySchema = z.object({
 });
 export type GetProfileQuery = z.infer<typeof GetProfileQuerySchema>;
 
-export const GetProfileResponseSchema = responseWithData(
-  UserProfileSchema.partial({
-    inventory: true,
-    details: true,
-    allTimeLbs: true,
-    uid: true,
-  })
-);
+export const GetProfileResponseSchema = responseWithData(UserProfileSchema);
 export type GetProfileResponse = z.infer<typeof GetProfileResponseSchema>;
 
 export const UpdateUserProfileRequestSchema = UserProfileDetailsSchema.extend({
@@ -292,12 +287,7 @@ export type UpdateUserInboxRequest = z.infer<
 
 export const ReportUserRequestSchema = z.object({
   uid: z.string(),
-  reason: z.enum([
-    "Inappropriate name",
-    "Inappropriate bio",
-    "Inappropriate social links",
-    "Suspected cheating",
-  ]),
+  reason: ReportUserReasonSchema,
   comment: z
     .string()
     .regex(/^([.]|[^/<>])+$/)
@@ -363,7 +353,7 @@ export const usersContract = c.router(
       pathParams: CheckNamePathParametersSchema.strict(),
       responses: {
         200: MonkeyResponseSchema.describe("Name is available"),
-        400: MonkeyResponseSchema.describe("Name is not available"),
+        409: MonkeyResponseSchema.describe("Name is not available"),
       },
       metadata: {
         authenticationOptions: { isPublic: true },
@@ -687,6 +677,7 @@ export const usersContract = c.router(
       query: GetProfileQuerySchema.strict(),
       responses: {
         200: GetProfileResponseSchema,
+        404: MonkeyClientError.describe("User not found"),
       },
       metadata: {
         authenticationOptions: { isPublic: true },

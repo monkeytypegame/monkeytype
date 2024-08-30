@@ -148,18 +148,20 @@ async function updateProfile(): Promise<void> {
   }
 
   Loader.show();
-  const response = await Ape.users.updateProfile(
-    updates,
-    currentSelectedBadgeId
-  );
+  const response = await Ape.users.updateProfile({
+    body: {
+      ...updates,
+      selectedBadgeId: currentSelectedBadgeId,
+    },
+  });
   Loader.hide();
 
   if (response.status !== 200) {
-    Notifications.add("Failed to update profile: " + response.message, -1);
+    Notifications.add("Failed to update profile: " + response.body.message, -1);
     return;
   }
 
-  snapshot.details = response.data ?? updates;
+  snapshot.details = response.body.data ?? updates;
   snapshot.inventory?.badges.forEach((badge) => {
     if (badge.id === currentSelectedBadgeId) {
       badge.selected = true;

@@ -231,7 +231,7 @@ declare namespace MonkeyTypes {
       startedTests: number;
       completedTests: number;
     };
-    details?: import("@monkeytype/shared-types").UserProfileDetails;
+    details?: import("@monkeytype/contracts/schemas/users").UserProfileDetails;
     inboxUnreadSize: number;
     streak: number;
     maxStreak: number;
