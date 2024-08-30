@@ -536,14 +536,14 @@ export async function getUser(
 
   const resultFilterPresets: ResultFilters[] = (
     relevantUserInfo.resultFilterPresets ?? []
-  ).map(replaceObjectId);
+  ).map((it) => replaceObjectId(it));
   delete relevantUserInfo.resultFilterPresets;
 
-  const tags = (relevantUserInfo.tags ?? []).map(replaceObjectId);
+  const tags = (relevantUserInfo.tags ?? []).map((it) => replaceObjectId(it));
   delete relevantUserInfo.tags;
 
-  const customThemes = (relevantUserInfo.customThemes ?? []).map(
-    replaceObjectId
+  const customThemes = (relevantUserInfo.customThemes ?? []).map((it) =>
+    replaceObjectId(it)
   );
   delete relevantUserInfo.customThemes;
 

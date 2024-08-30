@@ -256,7 +256,12 @@ export const GetProfileResponseSchema = responseWithData(
 export type GetProfileResponse = z.infer<typeof GetProfileResponseSchema>;
 
 export const UpdateUserProfileRequestSchema = UserProfileDetailsSchema.extend({
-  selectedBadgeId: z.number().int().nonnegative().optional(),
+  selectedBadgeId: z
+    .number()
+    .int()
+    .nonnegative()
+    .optional()
+    .or(z.literal(-1).describe("no badge selected")), //TODO remove the -1, use optional?
 });
 export type UpdateUserProfileRequest = z.infer<
   typeof UpdateUserProfileRequestSchema

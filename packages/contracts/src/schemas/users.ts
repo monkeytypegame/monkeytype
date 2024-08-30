@@ -1,5 +1,5 @@
 import { z, ZodString, ZodTypeAny } from "zod";
-import { IdSchema, LanguageSchema, StringNumberSchema, token } from "./util";
+import { IdSchema, LanguageSchema, StringNumberSchema } from "./util";
 import { ModeSchema, Mode2Schema, PersonalBestsSchema } from "./shared";
 import { CustomThemeColorsSchema } from "./configs";
 import { doesNotContainProfanity } from "../validation/validation";
@@ -134,10 +134,16 @@ export const UserProfileDetailsSchema = z
   .strict();
 export type UserProfileDetails = z.infer<typeof UserProfileDetailsSchema>;
 
+export const CustomThemeNameSchema = z
+  .string()
+  .regex(/^[0-9a-zA-Z_-]+$/)
+  .max(16);
+export type CustomThemeName = z.infer<typeof CustomThemeNameSchema>;
+
 export const CustomThemeSchema = z
   .object({
     _id: IdSchema,
-    name: token(),
+    name: CustomThemeNameSchema,
     colors: CustomThemeColorsSchema,
   })
   .strict();
@@ -252,7 +258,11 @@ export const UserSchema = z.object({
   personalBests: PersonalBestsSchema,
   completedTests: z.number().int().nonnegative().optional(),
   startedTests: z.number().int().nonnegative().optional(),
-  timeTyping: z.number().int().nonnegative().optional(),
+  timeTyping: z
+    .number()
+    .nonnegative()
+    .optional()
+    .describe("time typing in seconds"),
   streak: UserStreakSchema.optional(),
   xp: z.number().int().nonnegative().optional(),
   discordId: z.string().optional(),
@@ -287,12 +297,6 @@ export const TagNameSchema = z
   .regex(/^[0-9a-zA-Z_.-]+$/)
   .max(16);
 export type TagName = z.infer<typeof TagNameSchema>;
-
-export const CustomThemeNameSchema = z
-  .string()
-  .regex(/^[0-9a-zA-Z_-]+$/)
-  .max(16);
-export type CustomThemeName = z.infer<typeof CustomThemeNameSchema>;
 
 export const TypingStatsSchema = z.object({
   completedTests: z.number().int().nonnegative().optional(),
