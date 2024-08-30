@@ -438,7 +438,10 @@ export async function updateWordsInputPosition(initial = false): Promise<void> {
   const isLanguageRTL = currentLanguage.rightToLeft;
 
   const el = document.querySelector("#wordsInput") as HTMLElement;
-  const activeWord = document.querySelector<HTMLElement>("#words .active");
+  const activeWord =
+    document.querySelectorAll<HTMLElement>("#words .word")[
+      activeWordElementIndex
+    ];
 
   if (!activeWord) {
     el.style.top = "0px";
@@ -1086,8 +1089,10 @@ export function lineJump(currentTop: number): void {
         .animate(newCss, SlowTimer.get() ? 0 : 125, () => {
           currentLinesAnimating = 0;
           activeWordTop = (
-            document.querySelector("#words .active") as HTMLElement
-          ).offsetTop;
+            document.querySelectorAll("#words .word")?.[
+              activeWordElementIndex
+            ] as HTMLElement
+          )?.offsetTop;
 
           activeWordElementIndex -= toHide.length;
           lineTransition = false;
