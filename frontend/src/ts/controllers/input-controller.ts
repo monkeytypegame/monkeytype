@@ -737,9 +737,7 @@ function handleChar(
   const activeWordTopBeforeJump = activeWord?.offsetTop;
   void TestUI.updateActiveWordLetters();
 
-  const newActiveTop = document.querySelectorAll<HTMLElement>("#words .word")?.[
-    TestUI.activeWordElementIndex
-  ]?.offsetTop as number;
+  const newActiveTop = activeWord?.offsetTop;
   //stop the word jump by slicing off the last character, update word again
   if (
     activeWordTopBeforeJump < newActiveTop &&
