@@ -8,10 +8,5 @@
     "files": true
   },
   "files": ["../src/types/types.d.ts"],
-  "include": [
-    "./**/*.ts",
-    "./**/*.spec.ts",
-    "./setup-tests.ts",
-    "../../shared-types/**/*.d.ts"
-  ]
+  "include": ["./**/*.ts", "./**/*.spec.ts", "./setup-tests.ts"]
 }
