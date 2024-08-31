@@ -745,12 +745,7 @@ function handleChar(
     TestInput.input.current.length > 1
   ) {
     if (Config.mode === "zen") {
-      const currentTop = Math.floor(
-        document.querySelectorAll<HTMLElement>("#words .word")[
-          TestUI.activeWordElementIndex - 1
-        ]?.offsetTop ?? 0
-      );
-      if (!Config.showAllLines) TestUI.lineJump(currentTop);
+      if (!Config.showAllLines) TestUI.lineJump(activeWordTopBeforeJump);
     } else {
       TestInput.input.current = TestInput.input.current.slice(0, -1);
       void TestUI.updateActiveWordLetters();
