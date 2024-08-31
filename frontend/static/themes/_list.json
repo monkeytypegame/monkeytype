@@ -1244,5 +1244,12 @@
     "mainColor": "#e0794e",
     "subColor": "#688e8f",
     "textColor": "#023e3b"
+  },
+  {
+    "name": "neon",
+    "bgColor": "#2b213a",
+    "mainColor": "#ff71ce",
+    "subColor": "#01cdfe",
+    "textColor": "#fffb96"
   }
 ]
