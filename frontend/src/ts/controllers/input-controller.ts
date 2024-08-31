@@ -1101,14 +1101,14 @@ $(document).on("keydown", async (event) => {
   //show dead keys
   if (event.key === "Dead" && !CompositionState.getComposing()) {
     void Sound.playClick();
-    const word: HTMLElement | null = document.querySelectorAll(
+    const activeWord: HTMLElement | null = document.querySelectorAll(
       "#words .word"
     )?.[TestUI.activeWordElementIndex] as HTMLElement;
     const len: number = TestInput.input.current.length; // have to do this because prettier wraps the line and causes an error
 
     // Check to see if the letter actually exists to toggle it as dead
     const deadLetter: Element | undefined =
-      word?.querySelectorAll("letter")[len];
+      activeWord?.querySelectorAll("letter")[len];
     if (deadLetter) {
       deadLetter.classList.toggle("dead");
     }
