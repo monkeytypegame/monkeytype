@@ -56,13 +56,17 @@ jobs:
           message: |
             Hey there and thank you for opening this pull request! 👋🏼
 
-            We require pull request titles to follow the [Conventional Commits specification](https://www.conventionalcommits.org/en/v1.0.0/) and also include the author name at the end inside round brackets. It looks like your proposed title needs to be adjusted.
+            We require pull request titles to follow the [Conventional Commits specification](https://www.conventionalcommits.org/en/v1.0.0/) and also include the author name at the end inside parenthesis. It looks like your proposed title needs to be adjusted.
 
             Details:
 
             ```
             ${{ steps.lint_pr_title.outputs.error_message }}
             ```
+            A correct version would look something like: 
+
+            feat: add new feature (@github-username)
+            fix: resolve bug (@github-username)
 
       # Delete a previous comment when the issue has been resolved
       - if: ${{ steps.lint_pr_title.outputs.error_message == null }}

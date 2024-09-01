@@ -1,0 +1,48 @@
+name: Write label on PR/issue
+
+permissions:
+  pull-requests: write
+  issues: write
+
+on:
+  workflow_run:
+    workflows: [Check labels to update]
+    types: [completed]
+
+jobs:
+  write-labels:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - name: Download workflow artifact
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          run-id: ${{ github.event.workflow_run.id }}
+
+      - name: Read json file
+        run: echo "JSON_TEXT=`cat ./result_json/result.json`" >> $GITHUB_ENV
+
+      - name: Populate variables from JSON values
+        run: |
+          echo "WAITING_FOR_REVIEW=${{ fromJSON(env.JSON_TEXT).waiting_for_review }}" >> $GITHUB_ENV
+          echo "WAITING_FOR_UPDATE=${{ fromJSON(env.JSON_TEXT).waiting_for_update }}" >> $GITHUB_ENV
+          echo "PR_URL=${{ fromJSON(env.JSON_TEXT).pr_url }}" >> $GITHUB_ENV
+
+      - name: Add 'waiting for review' label
+        if: env.WAITING_FOR_REVIEW == 1
+        run: gh pr edit ${{ env.PR_URL }} --add-label "waiting for review"
+
+      - name: Remove 'waiting for review' label
+        if: env.WAITING_FOR_REVIEW == -1
+        run: gh pr edit ${{ env.PR_URL }} --remove-label "waiting for review"
+      
+      - name: Add 'waiting for update' label
+        if: env.WAITING_FOR_UPDATE == 1
+        run: gh pr edit ${{ env.PR_URL }} --add-label "waiting for update"
+
+      - name: Remove 'waiting for update' label
+        if: env.WAITING_FOR_UPDATE == -1
+        run: gh pr edit ${{ env.PR_URL }} --remove-label "waiting for update"
