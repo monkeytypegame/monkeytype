@@ -27,6 +27,7 @@ import { mockAuthenticateWithApeKey } from "../../__testData__/auth";
 import { LeaderboardRank } from "@monkeytype/contracts/schemas/leaderboards";
 import { randomUUID } from "node:crypto";
 import _ from "lodash";
+import { MonkeyMail, UserStreak } from "@monkeytype/contracts/schemas/users";
 
 const mockApp = request(app);
 const configuration = Configuration.getCachedConfiguration();
@@ -3028,21 +3029,21 @@ describe("user controller test", () => {
 
     it("shold get inbox", async () => {
       //GIVEN
-      const mailOne: SharedTypes.MonkeyMail = {
+      const mailOne: MonkeyMail = {
         id: randomUUID(),
         subject: "subjectOne",
         body: "bodyOne",
         timestamp: 100,
         read: false,
-        rewawrds: [],
+        rewards: [],
       };
-      const mailTwo: SharedTypes.MonkeyMail = {
+      const mailTwo: MonkeyMail = {
         id: randomUUID(),
         subject: "subjectTwo",
         body: "bodyTwo",
         timestamp: 100,
         read: false,
-        rewawrds: [],
+        rewards: [],
       };
       getInboxMock.mockResolvedValue([mailOne, mailTwo]);
 
@@ -3504,7 +3505,7 @@ describe("user controller test", () => {
         .expect(200);
 
       //THEN
-      const streak: SharedTypes.UserStreak = result.body.data;
+      const streak: UserStreak = result.body.data;
       expect(streak).toEqual({
         lastResultTimestamp: 1712102400000,
         length: 42,

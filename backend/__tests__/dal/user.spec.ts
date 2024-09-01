@@ -2,6 +2,12 @@ import _ from "lodash";
 import * as UserDAL from "../../src/dal/user";
 import * as UserTestData from "../__testData__/users";
 import { ObjectId } from "mongodb";
+import { MonkeyMail, ResultFilters } from "@monkeytype/contracts/schemas/users";
+import {
+  PersonalBest,
+  PersonalBests,
+} from "@monkeytype/contracts/schemas/shared";
+import { CustomThemeColors } from "@monkeytype/contracts/schemas/configs";
 
 const mockPersonalBest = {
   acc: 1,
@@ -15,7 +21,7 @@ const mockPersonalBest = {
   timestamp: 13123123,
 };
 
-const mockResultFilter: SharedTypes.ResultFilters = {
+const mockResultFilter: ResultFilters = {
   _id: "id",
   name: "sfdkjhgdf",
   pb: {
@@ -442,7 +448,7 @@ describe("UserDal", () => {
 
     it("addTag success", async () => {
       // given
-      const emptyPb: SharedTypes.PersonalBests = {
+      const emptyPb: PersonalBests = {
         time: {},
         words: {},
         quote: {},
@@ -609,21 +615,21 @@ describe("UserDal", () => {
         name: "tagOne",
         personalBests: {
           custom: { custom: [mockPersonalBest] },
-        } as SharedTypes.PersonalBests,
+        } as PersonalBests,
       };
       const tagTwo = {
         _id: new ObjectId(),
         name: "tagTwo",
         personalBests: {
           custom: { custom: [mockPersonalBest] },
-        } as SharedTypes.PersonalBests,
+        } as PersonalBests,
       };
       const tagThree = {
         _id: new ObjectId(),
         name: "tagThree",
         personalBests: {
           custom: { custom: [mockPersonalBest] },
-        } as SharedTypes.PersonalBests,
+        } as PersonalBests,
       };
 
       const { uid } = await UserTestData.createUser({
@@ -1080,7 +1086,7 @@ describe("UserDal", () => {
       //then
       const read = (await UserDAL.getUser(user.uid, "")).testActivity || {};
       expect(read).toHaveProperty("2024");
-      const year2024 = read["2024"];
+      const year2024 = read["2024"] as any;
       expect(year2024).toHaveLength(94);
       //fill previous days with null
       expect(year2024.slice(0, 93)).toEqual(new Array(93).fill(null));
@@ -1098,7 +1104,7 @@ describe("UserDal", () => {
       //then
       const read = (await UserDAL.getUser(user.uid, "")).testActivity || {};
       expect(read).toHaveProperty("2024");
-      const year2024 = read["2024"];
+      const year2024 = read["2024"] as any;
       expect(year2024).toHaveLength(94);
 
       expect(year2024[0]).toBeNull();
@@ -1117,7 +1123,7 @@ describe("UserDal", () => {
 
       //then
       const read = (await UserDAL.getUser(user.uid, "")).testActivity || {};
-      const year2024 = read["2024"];
+      const year2024 = read["2024"] as any;
       expect(year2024[93]).toEqual(2);
     });
   });
@@ -1247,7 +1253,7 @@ describe("UserDal", () => {
   describe("updateInbox", () => {
     it("claims rewards on read", async () => {
       //GIVEN
-      const rewardOne: SharedTypes.MonkeyMail = {
+      const rewardOne: MonkeyMail = {
         id: "b5866d4c-0749-41b6-b101-3656249d39b9",
         body: "test",
         subject: "reward one",
@@ -1259,7 +1265,7 @@ describe("UserDal", () => {
           { type: "badge", item: { id: 4 } },
         ],
       };
-      const rewardTwo: SharedTypes.MonkeyMail = {
+      const rewardTwo: MonkeyMail = {
         id: "3692b9f5-84fb-4d9b-bd39-9a3217b3a33a",
         body: "test",
         subject: "reward two",
@@ -1267,7 +1273,7 @@ describe("UserDal", () => {
         read: false,
         rewards: [{ type: "xp", item: 2000 }],
       };
-      const rewardThree: SharedTypes.MonkeyMail = {
+      const rewardThree: MonkeyMail = {
         id: "0d73b3e0-dc79-4abb-bcaf-66fa6b09a58a",
         body: "test",
         subject: "reward three",
@@ -1275,7 +1281,7 @@ describe("UserDal", () => {
         read: true,
         rewards: [{ type: "xp", item: 3000 }],
       };
-      const rewardFour: SharedTypes.MonkeyMail = {
+      const rewardFour: MonkeyMail = {
         id: "d852d2cf-1802-4cd0-9fb4-336650fc470a",
         body: "test",
         subject: "reward four",
@@ -1317,7 +1323,7 @@ describe("UserDal", () => {
     it("claims rewards on delete", async () => {
       //GIVEN
       //GIVEN
-      const rewardOne: SharedTypes.MonkeyMail = {
+      const rewardOne: MonkeyMail = {
         id: "b5866d4c-0749-41b6-b101-3656249d39b9",
         body: "test",
         subject: "reward one",
@@ -1329,7 +1335,7 @@ describe("UserDal", () => {
           { type: "badge", item: { id: 4 } },
         ],
       };
-      const rewardTwo: SharedTypes.MonkeyMail = {
+      const rewardTwo: MonkeyMail = {
         id: "3692b9f5-84fb-4d9b-bd39-9a3217b3a33a",
         body: "test",
         subject: "reward two",
@@ -1338,7 +1344,7 @@ describe("UserDal", () => {
         rewards: [{ type: "xp", item: 2000 }],
       };
 
-      const rewardThree: SharedTypes.MonkeyMail = {
+      const rewardThree: MonkeyMail = {
         id: "0d73b3e0-dc79-4abb-bcaf-66fa6b09a58a",
         body: "test",
         subject: "reward three",
@@ -1363,7 +1369,7 @@ describe("UserDal", () => {
 
     it("updates badge", async () => {
       //GIVEN
-      const rewardOne: SharedTypes.MonkeyMail = {
+      const rewardOne: MonkeyMail = {
         id: "b5866d4c-0749-41b6-b101-3656249d39b9",
         body: "test",
         subject: "reward one",
@@ -1374,7 +1380,7 @@ describe("UserDal", () => {
           { type: "badge", item: { id: 4 } },
         ],
       };
-      const rewardTwo: SharedTypes.MonkeyMail = {
+      const rewardTwo: MonkeyMail = {
         id: "3692b9f5-84fb-4d9b-bd39-9a3217b3a33a",
         body: "test",
         subject: "reward two",
@@ -1386,7 +1392,7 @@ describe("UserDal", () => {
           { type: "badge", item: { id: 5 } },
         ],
       };
-      const rewardThree: SharedTypes.MonkeyMail = {
+      const rewardThree: MonkeyMail = {
         id: "0d73b3e0-dc79-4abb-bcaf-66fa6b09a58a",
         body: "test",
         subject: "reward three",
@@ -1428,7 +1434,7 @@ describe("UserDal", () => {
     });
     it("read and delete the same message does not claim reward twice", async () => {
       //GIVEN
-      const rewardOne: SharedTypes.MonkeyMail = {
+      const rewardOne: MonkeyMail = {
         id: "b5866d4c-0749-41b6-b101-3656249d39b9",
         body: "test",
         subject: "reward one",
@@ -1436,7 +1442,7 @@ describe("UserDal", () => {
         read: false,
         rewards: [{ type: "xp", item: 1000 }],
       };
-      const rewardTwo: SharedTypes.MonkeyMail = {
+      const rewardTwo: MonkeyMail = {
         id: "3692b9f5-84fb-4d9b-bd39-9a3217b3a33a",
         body: "test",
         subject: "reward two",
@@ -1463,7 +1469,7 @@ describe("UserDal", () => {
 
     it("concurrent calls dont claim a reward multiple times", async () => {
       //GIVEN
-      const rewardOne: SharedTypes.MonkeyMail = {
+      const rewardOne: MonkeyMail = {
         id: "b5866d4c-0749-41b6-b101-3656249d39b9",
         body: "test",
         subject: "reward one",
@@ -1475,7 +1481,7 @@ describe("UserDal", () => {
           { type: "badge", item: { id: 4 } },
         ],
       };
-      const rewardTwo: SharedTypes.MonkeyMail = {
+      const rewardTwo: MonkeyMail = {
         id: "3692b9f5-84fb-4d9b-bd39-9a3217b3a33a",
         body: "test",
         subject: "reward two",
@@ -1483,7 +1489,7 @@ describe("UserDal", () => {
         read: false,
         rewards: [{ type: "xp", item: 2000 }],
       };
-      const rewardThree: SharedTypes.MonkeyMail = {
+      const rewardThree: MonkeyMail = {
         id: "0d73b3e0-dc79-4abb-bcaf-66fa6b09a58a",
         body: "test",
         subject: "reward three",
@@ -1617,8 +1623,8 @@ describe("UserDal", () => {
         personalBests: {
           time: {
             "60": [
-              { wpm: 100 } as SharedTypes.PersonalBest,
-              { wpm: 30 } as SharedTypes.PersonalBest, //highest PB should be used
+              { wpm: 100 } as PersonalBest,
+              { wpm: 30 } as PersonalBest, //highest PB should be used
             ],
           },
         } as any,
@@ -1711,7 +1717,10 @@ describe("UserDal", () => {
     it("should return error if uid not found", async () => {
       // when, then
       await expect(
-        UserDAL.addTheme("non existing uid", { name: "new", colors: [] })
+        UserDAL.addTheme("non existing uid", {
+          name: "new",
+          colors: [] as any,
+        })
       ).rejects.toThrow(
         "Maximum number of custom themes reached\nStack: add theme"
       );
@@ -1723,13 +1732,13 @@ describe("UserDal", () => {
         customThemes: new Array(10).fill(0).map(() => ({
           _id: new ObjectId(),
           name: "any",
-          colors: [],
+          colors: [] as any,
         })),
       });
 
       // when, then
       await expect(
-        UserDAL.addTheme(uid, { name: "new", colors: [] })
+        UserDAL.addTheme(uid, { name: "new", colors: [] as any })
       ).rejects.toThrow(
         "Maximum number of custom themes reached\nStack: add theme"
       );
@@ -1740,17 +1749,18 @@ describe("UserDal", () => {
       const themeOne = {
         _id: new ObjectId(),
         name: "first",
-        colors: ["green", "white", "red"],
+        colors: new Array(10).fill("#123456") as CustomThemeColors,
       };
       const { uid } = await UserTestData.createUser({
         customThemes: [themeOne],
       });
 
-      // when
-      await UserDAL.addTheme(uid, {
+      const newTheme = {
         name: "newTheme",
-        colors: ["red", "white", "blue"],
-      });
+        colors: new Array(10).fill("#000000") as CustomThemeColors,
+      };
+      // when
+      await UserDAL.addTheme(uid, { ...newTheme });
 
       // then
       const read = await UserDAL.getUser(uid, "read");
@@ -1758,11 +1768,11 @@ describe("UserDal", () => {
         expect.arrayContaining([
           expect.objectContaining({
             name: "first",
-            colors: ["green", "white", "red"],
+            colors: themeOne.colors,
           }),
           expect.objectContaining({
             name: "newTheme",
-            colors: ["red", "white", "blue"],
+            colors: newTheme.colors,
           }),
         ])
       );
@@ -1775,7 +1785,7 @@ describe("UserDal", () => {
       await expect(
         UserDAL.editTheme("non existing uid", new ObjectId().toHexString(), {
           name: "newName",
-          colors: [],
+          colors: [] as any,
         })
       ).rejects.toThrow("Custom theme not found\nStack: edit theme");
     });
@@ -1785,7 +1795,7 @@ describe("UserDal", () => {
       const themeOne = {
         _id: new ObjectId(),
         name: "first",
-        colors: ["green", "white", "red"],
+        colors: ["green", "white", "red"] as any,
       };
       const { uid } = await UserTestData.createUser({
         customThemes: [themeOne],
@@ -1795,7 +1805,7 @@ describe("UserDal", () => {
       await expect(
         UserDAL.editTheme(uid, new ObjectId().toHexString(), {
           name: "newName",
-          colors: [],
+          colors: [] as any,
         })
       ).rejects.toThrow("Custom theme not found\nStack: edit theme");
     });
@@ -1805,7 +1815,7 @@ describe("UserDal", () => {
       const themeOne = {
         _id: new ObjectId(),
         name: "first",
-        colors: ["green", "white", "red"],
+        colors: ["green", "white", "red"] as any,
       };
       const { uid } = await UserTestData.createUser({
         customThemes: [themeOne],
@@ -1813,7 +1823,7 @@ describe("UserDal", () => {
       // when
       await UserDAL.editTheme(uid, themeOne._id.toHexString(), {
         name: "newThemeName",
-        colors: ["red", "white", "blue"],
+        colors: ["red", "white", "blue"] as any,
       });
 
       // then
@@ -1837,7 +1847,7 @@ describe("UserDal", () => {
       const themeOne = {
         _id: new ObjectId(),
         name: "first",
-        colors: ["green", "white", "red"],
+        colors: ["green", "white", "red"] as any,
       };
       const { uid } = await UserTestData.createUser({
         customThemes: [themeOne],
@@ -1853,18 +1863,18 @@ describe("UserDal", () => {
       const themeOne = {
         _id: new ObjectId(),
         name: "first",
-        colors: [],
+        colors: [] as any,
       };
       const themeTwo = {
         _id: new ObjectId(),
         name: "second",
-        colors: [],
+        colors: [] as any,
       };
 
       const themeThree = {
         _id: new ObjectId(),
         name: "third",
-        colors: [],
+        colors: [] as any,
       };
 
       const { uid } = await UserTestData.createUser({
