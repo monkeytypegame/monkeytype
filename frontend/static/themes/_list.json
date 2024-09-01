@@ -1244,5 +1244,13 @@
     "mainColor": "#e0794e",
     "subColor": "#688e8f",
     "textColor": "#023e3b"
+  },
+
+  {
+    "name": "mockingbird",
+    "bgColor": "#f5f5f5",
+    "mainColor": "#dcdcdc",
+    "subColor": "#808080",
+    "textColor": "#2f4f4f"
   }
 ]

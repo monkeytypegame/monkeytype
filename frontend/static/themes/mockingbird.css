@@ -1,0 +1,13 @@
+:root {
+    --bg-color: #f5f5f5; /* Light grey resembling the soft feathers */
+    --main-color: #dcdcdc; /* Pale grey like the mockingbird’s body */
+    --caret-color: #a9a9a9; /* Dark grey for accents */
+    --sub-color: #808080; /* Neutral grey for sub-elements */
+    --sub-alt-color: #b0b0b0; /* Slightly lighter grey for alternative sub-elements */
+    --text-color: #2f4f4f; /* Dark slate grey for readable text */
+    --error-color: #8b0000; /* Deep red for errors, contrasting but subtle */
+    --error-extra-color: #cd5c5c; /* Rosy brown for secondary error details */
+    --colorful-error-color: #8b0000; /* Deep red consistent with minimalism */
+    --colorful-error-extra-color: #cd5c5c; /* Rosy brown for a soft contrast */
+  }
+  
