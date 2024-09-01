@@ -78,9 +78,6 @@ jobs:
             contains(fromJSON('["created", "edited"]'), github.event.action) &&
             github.event.comment.user.id == github.event.issue.user.id
           )
-        env:
-          GITHUB_EVENT_NAME_CONTEXT: ${{ toJson(github.event_name) }}
-          GITHUB_EVENT_ACTION_CONTEXT: ${{ toJson(github.event.action) }}
         run: echo "UPDATE=-1" >> $GITHUB_ENV
 
       - name: Save result in a JSON file
