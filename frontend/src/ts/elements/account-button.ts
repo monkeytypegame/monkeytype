@@ -350,8 +350,8 @@ async function animateXpBreakdown(
 
   if (breakdown.incomplete) {
     await Misc.sleep(delay);
-    await append(`incomplete tests +${breakdown.incomplete}`);
-    total += breakdown.incomplete;
+    await append(`incomplete tests -${breakdown.incomplete}`);
+    total -= breakdown.incomplete;
   }
 
   if (skipBreakdown) return;

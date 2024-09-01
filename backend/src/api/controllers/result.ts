@@ -779,7 +779,7 @@ async function calculateXp(
   breakdown.accPenalty = xpWithModifiers - xpAfterAccuracy;
 
   const totalXp =
-    Math.round((xpAfterAccuracy + incompleteXp) * gainMultiplier) + dailyBonus;
+    Math.round((xpAfterAccuracy - incompleteXp) * gainMultiplier) + dailyBonus;
 
   if (gainMultiplier > 1) {
     // breakdown.push([
