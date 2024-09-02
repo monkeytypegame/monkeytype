@@ -422,6 +422,10 @@ export function showWords(): void {
   }, 125);
 
   updateWordWrapperClasses();
+
+  if (Config.mode === "zen") {
+    $(document.querySelector(".word") as Element).remove();
+  }
 }
 
 const posUpdateLangList = ["japanese", "chinese", "korean"];
@@ -508,7 +512,7 @@ function updateWordsHeight(force = false): void {
     CustomText.getLimitValue() !== 0
   ) {
     // overflow-x should not be visible in tape mode, but since showAllLines can't
-    // be enabled simultaneously with tape mode we don' need to check it's off
+    // be enabled simultaneously with tape mode we don't need to check it's off
     $("#words")
       .css("height", "auto")
       .css("overflow", "visible clip")
@@ -586,10 +590,6 @@ function updateWordsHeight(force = false): void {
         finalWrapperHeight / 2 - Numbers.convertRemToPixels(1) / 2 + "px"
       );
     }, 0);
-  }
-
-  if (Config.mode === "zen") {
-    $(document.querySelector(".word") as Element).remove();
   }
 }
 
