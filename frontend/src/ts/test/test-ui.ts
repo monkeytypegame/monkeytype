@@ -422,6 +422,10 @@ export function showWords(): void {
   }, 125);
 
   updateWordWrapperClasses();
+
+  if (Config.mode === "zen") {
+    $(document.querySelector(".word") as Element).remove();
+  }
 }
 
 const posUpdateLangList = ["japanese", "chinese", "korean"];
@@ -438,7 +442,10 @@ export async function updateWordsInputPosition(initial = false): Promise<void> {
   const isLanguageRTL = currentLanguage.rightToLeft;
 
   const el = document.querySelector("#wordsInput") as HTMLElement;
-  const activeWord = document.querySelector<HTMLElement>("#words .active");
+  const activeWord =
+    document.querySelectorAll<HTMLElement>("#words .word")[
+      activeWordElementIndex
+    ];
 
   if (!activeWord) {
     el.style.top = "0px";
@@ -505,7 +512,7 @@ function updateWordsHeight(force = false): void {
     CustomText.getLimitValue() !== 0
   ) {
     // overflow-x should not be visible in tape mode, but since showAllLines can't
-    // be enabled simultaneously with tape mode we don' need to check it's off
+    // be enabled simultaneously with tape mode we don't need to check it's off
     $("#words")
       .css("height", "auto")
       .css("overflow", "visible clip")
@@ -559,7 +566,8 @@ function updateWordsHeight(force = false): void {
       finalWrapperHeight = wrapperHeight;
     }
 
-    $("#words").css("height", "0px");
+    // $("#words").css("height", "0px");
+    // not sure why this was here, wonder if removing it will break anything
 
     if (Config.tapeMode !== "off") {
       $("#words").css({ overflow: "hidden", width: "200vw" });
@@ -582,10 +590,6 @@ function updateWordsHeight(force = false): void {
         finalWrapperHeight / 2 - Numbers.convertRemToPixels(1) / 2 + "px"
       );
     }, 0);
-  }
-
-  if (Config.mode === "zen") {
-    $(document.querySelector(".word") as Element).remove();
   }
 }
 
@@ -1085,8 +1089,10 @@ export function lineJump(currentTop: number): void {
         .animate(newCss, SlowTimer.get() ? 0 : 125, () => {
           currentLinesAnimating = 0;
           activeWordTop = (
-            document.querySelector("#words .active") as HTMLElement
-          ).offsetTop;
+            document.querySelectorAll("#words .word")?.[
+              activeWordElementIndex
+            ] as HTMLElement
+          )?.offsetTop;
 
           activeWordElementIndex -= toHide.length;
           lineTransition = false;
