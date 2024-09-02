@@ -27,12 +27,26 @@ jobs:
         with:
           path: ./labels/write-labels.json
 
-      - name: Add/remove labels
-        if: env.ADD_LABELS != '' || env.REMOVE_LABELS != ''
+      - name: Add `waiting for review` label
+        if: fromJSON(steps.json_reader.outputs.content).waiting_for_review == 1
+        run: echo "ADD_LABELS=${ADD_LABELS}waiting for review," >> $GITHUB_ENV
+
+      - name: Remove `waiting for review` label
+        if: fromJSON(steps.json_reader.outputs.content).waiting_for_review == -1
+        run: echo "REMOVE_LABELS=${REMOVE_LABELS}waiting for review," >> $GITHUB_ENV
+
+      - name: Add `waiting for update` label
+        if: fromJSON(steps.json_reader.outputs.content).waiting_for_update == 1
+        run: echo "ADD_LABELS=${ADD_LABELS}waiting for update," >> $GITHUB_ENV
+
+      - name: Remove `waiting for update` label
+        if: fromJSON(steps.json_reader.outputs.content).waiting_for_update == -1
+        run: echo "REMOVE_LABELS=${REMOVE_LABELS}waiting for update," >> $GITHUB_ENV
+
+      - name: Apply label changes
+        if: env.ADD_LABELS || env.REMOVE_LABELS
         env:
           PR_NUM: ${{ fromJSON(steps.json_reader.outputs.content).pr_num }}
-          ADD_LABELS: ${{ fromJSON(steps.json_reader.outputs.content).add_labels }}
-          REMOVE_LABELS: ${{ fromJSON(steps.json_reader.outputs.content).remove_labels }}
         uses: PauMAVA/add-remove-label-action@v1.0.3
         with:
           issue_number: ${{ env.PR_NUM }}
