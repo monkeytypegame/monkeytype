@@ -13,6 +13,7 @@ jobs:
   write-labels:
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
+
     steps:
       - name: Download workflow artifact
         uses: actions/download-artifact@v4
@@ -28,8 +29,12 @@ jobs:
 
       - name: Add/remove labels
         if: env.ADD_LABELS != '' || env.REMOVE_LABELS != ''
+        env:
+          PR_NUM: ${{ fromJSON(steps.json_reader.outputs.content).pr_num }}
+          ADD_LABELS: ${{ fromJSON(steps.json_reader.outputs.content).add_labels }}
+          REMOVE_LABELS: ${{ fromJSON(steps.json_reader.outputs.content).remove_labels }}
         uses: PauMAVA/add-remove-label-action@v1.0.3
         with:
-          issue_number: ${{ fromJSON(steps.json_reader.outputs.content).pr_num }}
-          add: ${{ fromJSON(steps.json_reader.outputs.content).add_labels }}
-          remove: ${{ fromJSON(steps.json_reader.outputs.content).remove_labels }}
+          issue_number: ${{ env.PR_NUM }}
+          add: ${{ env.ADD_LABELS }}
+          remove: ${{ env.REMOVE_LABELS }}

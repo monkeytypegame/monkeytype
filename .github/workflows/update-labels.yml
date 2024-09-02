@@ -23,6 +23,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       PR_NUM: ${{ github.event.pull_request.number || github.event.issue.number }}
+
     steps:
       - name: Set up varibles
         run: |
