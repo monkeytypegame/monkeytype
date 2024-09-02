@@ -12,6 +12,9 @@ on:
         edited,
       ]
   pull_request_review:
+    types: [submitted, edited, dismissed]
+  pull_request_review_comment:
+    types: [created, edited]
   issue_comment:
     types: [created, edited]
 
@@ -19,19 +22,19 @@ jobs:
   update-labels:
     runs-on: ubuntu-latest
     env:
-      PR_URL: ${{ github.event.pull_request.html_url || github.event.issue.html_url }}
+      PR_NUM: ${{ github.event.pull_request.number || github.event.issue.number }}
     steps:
       - name: Set up varibles
         run: |
-          echo "REVIEW=0" >> $GITHUB_ENV
-          echo "UPDATE=0" >> $GITHUB_ENV
+          echo "ADD=" >> $GITHUB_ENV
+          echo "REMOVE=" >> $GITHUB_ENV
 
       - name: Add 'waiting for review' label
         # when a review is requested or if the PR is converted from a draft
         if: |
           github.event_name == 'pull_request_target' &&
           contains(fromJSON('["review_requested", "ready_for_review"]'), github.event.action)
-        run: echo "REVIEW=1" >> $GITHUB_ENV
+        run: echo "ADD=${ADD}waiting for review," >> $GITHUB_ENV
 
       - name: Remove 'waiting for review' label
         # when a review request is removed or if the PR is converted to a draft
@@ -46,7 +49,7 @@ jobs:
             contains(fromJSON('["submitted", "edited"]'), github.event.action) &&
             contains(fromJSON('["OWNER", "MEMBER", "COLLABORATOR"]'), github.event.review.author_association)
           )
-        run: echo "REVIEW=-1" >> $GITHUB_ENV
+        run: echo "REMOVE=${REMOVE}waiting for review," >> $GITHUB_ENV
 
       - name: Add 'waiting for update' label
         # when a review by one of {owner, member, collaborator} requests changes
@@ -54,7 +57,7 @@ jobs:
           github.event_name == 'pull_request_review' &&
           github.event.review.state == 'changes_requested' &&
           contains(fromJSON('["OWNER", "MEMBER", "COLLABORATOR"]'), github.event.review.author_association)
-        run: echo "UPDATE=1" >> $GITHUB_ENV
+        run: echo "ADD=${ADD}waiting for update," >> $GITHUB_ENV
 
       - name: Remove 'waiting for update' label from PR/issue
         # when PR is commited to or if the PR is edited or if a review is requested or dismissed
@@ -78,15 +81,15 @@ jobs:
             contains(fromJSON('["created", "edited"]'), github.event.action) &&
             github.event.comment.user.id == github.event.issue.user.id
           )
-        run: echo "UPDATE=-1" >> $GITHUB_ENV
+        run: echo "REMOVE=${REMOVE}waiting for update," >> $GITHUB_ENV
 
       - name: Save result in a JSON file
         env:
-          RESULT_JSON: ${{ format('{{"waiting_for_review"{0} {1}, "waiting_for_update"{0} {2}, "pr_url"{0} "{3}"}}', ':', env.REVIEW, env.UPDATE, env.PR_URL) }}
-        run: echo $RESULT_JSON > result.json
+          LABELS_JSON: ${{ format('{{"add_labels"{0} "{1}", "remove_labels"{0} "{2}", "pr_num"{0} "{3}"}}', ':', env.ADD, env.REMOVE, env.PR_NUM) }}
+        run: echo $LABELS_JSON > write-labels.json
 
       - name: Upload the JSON file
         uses: actions/upload-artifact@v4
         with:
-          name: result_json
-          path: ./result.json
+          name: labels
+          path: ./write-labels.json
