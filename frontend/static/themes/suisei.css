@@ -4,7 +4,7 @@
   --caret-color: #bef0ff;
   --sub-color: #fe9841;
   --sub-alt-color: #313e55;
-  --text-color: #f5fefd;
+  --text-color: #dbdeeb;
   --error-color: #ed2939;
   --error-extra-color: #ce122c;
   --colorful-error-color: #ed2939;
@@ -24,45 +24,28 @@
 }
 
 header #logo .text {
-  background: linear-gradient(120deg, var(--main-color), var(--sub-color));
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
+  color: var(--main-color);
 }
-
-/* customize the logo colors on focus */
-header.focus #logo .text {
-  background: linear-gradient(-120deg, var(--main-color), var(--sub-color));
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
+header #logo .icon svg g path{
+  fill: var(--sub-color);
 }
 header.focus nav > .textButton,
-header.focus nav > .accountButtonAndMenu .textButton {
+header.focus nav > .showAlerts {
   background: none;
 }
-header nav > .textButton {
+header nav > .textButton,
+header nav > .showAlerts {
   border-radius: 150px 150px 32px 32px;
   background-color: var(--sub-alt-color);
-  color: var(--text-color);
-}
-header nav > .textButton:hover {
-  animation: hoverup 800ms infinite;
-  background-color: var(--sub-alt-color);
-}
-header nav > .view-start,
-header nav > .view-start:hover {
   color: var(--main-color);
+}
+header nav > .textButton:hover,
+header nav > .showAlerts:hover {
+  animation: hoverup 800ms cubic-bezier(.22, .57, .41, .98) infinite;
+  color: var(--main-color);
+  background-color: var(--sub-alt-color);
 }
 header nav > .view-leaderboards,
 header nav > .view-leaderboards:hover {
   color: var(--sub-color);
-}
-header nav > .showAlerts {
-  color: var(--text-color);
-}
-header nav > .showAlerts:hover {
-  color: var(--sub-color);
-}
-header nav > .accountButtonAndMenu .textButton {
-  border-radius: 8px;
-  background-color: var(--sub-alt-color);
 }
