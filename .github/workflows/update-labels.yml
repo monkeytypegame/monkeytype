@@ -25,7 +25,7 @@ jobs:
       PR_NUM: ${{ github.event.pull_request.number || github.event.issue.number }}
 
     steps:
-      - name: set up varibles
+      - name: Set up varibles
         run: |
           echo "REVIEW=0" >> $GITHUB_ENV
           echo "UPDATE=0" >> $GITHUB_ENV
