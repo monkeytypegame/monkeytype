@@ -21,18 +21,15 @@ jobs:
           run-id: ${{ github.event.workflow_run.id }}
 
       - name: Read json file
-        run: echo "LABELS_JSON=`cat ./labels/write-labels.json`" >> $GITHUB_ENV
-
-      - name: Populate variables from JSON values
-        run: |
-          echo "PR_NUM=${{ fromJSON(env.LABELS_JSON).pr_num }}" >> $GITHUB_ENV
-          echo "ADD_LABELS=${{ fromJSON(env.LABELS_JSON).add_labels }}" >> $GITHUB_ENV
-          echo "REMOVE_LABELS=${{ fromJSON(env.LABELS_JSON).remove_labels }}" >> $GITHUB_ENV
+        id: json_reader
+        uses: juliangruber/read-file-action@v1.1.7
+        with:
+          path: ./labels/write-labels.json
 
       - name: Add/remove labels
         if: env.ADD_LABELS != '' || env.REMOVE_LABELS != ''
         uses: PauMAVA/add-remove-label-action@v1.0.3
         with:
-          issue_number: ${{ env.PR_NUM }}
-          add: ${{ env.ADD_LABELS }}
-          remove: ${{ env.REMOVE_LABELS }}
+          issue_number: ${{ fromJSON(steps.json_reader.outputs.content).pr_num }}
+          add: ${{ fromJSON(steps.json_reader.outputs.content).add_labels }}
+          remove: ${{ fromJSON(steps.json_reader.outputs.content).remove_labels }}
