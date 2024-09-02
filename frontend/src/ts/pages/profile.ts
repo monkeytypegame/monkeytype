@@ -161,7 +161,6 @@ type UpdateOptions = {
   data?: undefined | UserProfile;
 };
 
-//TODO test with name and uid
 async function update(options: UpdateOptions): Promise<void> {
   const getParamExists = checkIfGetParameterExists("isUid");
   if (options.data) {

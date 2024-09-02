@@ -140,7 +140,7 @@ export async function sendVerificationEmail(
 ): Promise<MonkeyResponse2> {
   const { email, uid } = req.ctx.decodedToken;
   const isVerified = (
-    await FirebaseAdmin() //TODO correct?
+    await FirebaseAdmin()
       .auth()
       .getUser(uid)
       .catch((e: unknown) => {
