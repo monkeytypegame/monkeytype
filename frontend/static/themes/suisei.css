@@ -24,10 +24,21 @@
 }
 
 header #logo .text {
+  background: linear-gradient(120deg, var(--main-color), var(--sub-color));
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  padding-bottom: 0.1em;
+}
+header #logo .text .top {
   color: var(--main-color);
 }
-header #logo .icon svg g path{
-  fill: var(--sub-color);
+header.focus #logo .text {
+  background: linear-gradient(-120deg, var(--main-color), var(--sub-color));
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  padding-bottom: 0.1em;
 }
 header.focus nav > .textButton,
 header.focus nav > .showAlerts {
