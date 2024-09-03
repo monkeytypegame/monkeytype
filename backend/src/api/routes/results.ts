@@ -16,13 +16,10 @@ const validateResultSavingEnabled = validate({
 const s = initServer();
 export default s.router(resultsContract, {
   get: {
-    middleware: [
-      withApeRateLimiter(RateLimit.resultsGet, RateLimit.resultsGetApe),
-    ],
     handler: async (r) => callController(ResultController.getResults)(r),
   },
   add: {
-    middleware: [validateResultSavingEnabled, RateLimit.resultsAdd],
+    middleware: [validateResultSavingEnabled],
     handler: async (r) => callController(ResultController.addResult)(r),
   },
   updateTags: {
