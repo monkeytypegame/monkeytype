@@ -144,7 +144,7 @@ export async function refresh(
     const showTopRow =
       (TestWords.hasNumbers && Config.keymapMode === "next") ||
       Config.keymapShowTopRow === "always" ||
-      ((lts as typeof layouts["qwerty"]).keymapShowTopRow &&
+      ((lts as (typeof layouts)["qwerty"]).keymapShowTopRow &&
         Config.keymapShowTopRow !== "never");
 
     const isMatrix =

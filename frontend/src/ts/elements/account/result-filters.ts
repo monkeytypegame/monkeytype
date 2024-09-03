@@ -264,12 +264,12 @@ function setFilter<G extends ResultFiltersGroup>(
   filter: ResultFiltersGroupItem<G>,
   value: boolean
 ): void {
-  filters[group][filter] = value as typeof filters[G][typeof filter];
+  filters[group][filter] = value as (typeof filters)[G][typeof filter];
 }
 
 function setAllFilters(group: ResultFiltersGroup, value: boolean): void {
   Object.keys(getGroup(group)).forEach((filter) => {
-    filters[group][filter as keyof typeof filters[typeof group]] =
+    filters[group][filter as keyof (typeof filters)[typeof group]] =
       value as never;
   });
 }
