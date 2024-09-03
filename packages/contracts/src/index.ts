@@ -11,6 +11,7 @@ import { configurationContract } from "./configuration";
 import { devContract } from "./dev";
 import { usersContract } from "./users";
 import { quotesContract } from "./quotes";
+import { EndpointMetadata } from "./schemas/api";
 
 const c = initContract();
 
@@ -28,3 +29,7 @@ export const contract = c.router({
   users: usersContract,
   quotes: quotesContract,
 });
+
+export function meta(meta: EndpointMetadata): EndpointMetadata {
+  return meta;
+}

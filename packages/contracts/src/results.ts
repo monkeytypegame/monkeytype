@@ -87,6 +87,10 @@ export const resultsContract = c.router(
         authenticationOptions: {
           acceptApeKeys: true,
         },
+        rateLimit: {
+          limiter: "resultsGet",
+          apeKeyLimiter: "resultsGetApe",
+        },
       } as EndpointMetadata,
     },
     add: {
@@ -98,6 +102,9 @@ export const resultsContract = c.router(
       responses: {
         200: AddResultResponseSchema,
       },
+      metadata: {
+        rateLimit: "resultsAdd",
+      } as EndpointMetadata,
     },
     updateTags: {
       summary: "update result tags",

@@ -65,7 +65,7 @@
     "knip": "2.19.2",
     "lint-staged": "13.2.3",
     "only-allow": "1.2.1",
-    "prettier": "2.5.1",
+    "prettier": "2.8.8",
     "turbo": "2.0.12",
     "vitest": "2.0.5"
   },

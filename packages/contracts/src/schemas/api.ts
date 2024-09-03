@@ -1,4 +1,5 @@
 import { z, ZodSchema } from "zod";
+import { RateLimit } from "../rate-limit";
 
 export type OpenApiTag =
   | "configs"
@@ -17,7 +18,15 @@ export type OpenApiTag =
 export type EndpointMetadata = {
   /** Authentication options, by default a bearer token is required. */
   authenticationOptions?: RequestAuthenticationOptions;
+
   openApiTags?: OpenApiTag | OpenApiTag[];
+
+  rateLimit?:
+    | RateLimit
+    | {
+        limiter: RateLimit;
+        apeKeyLimiter: RateLimit;
+      };
 };
 
 export type RequestAuthenticationOptions = {

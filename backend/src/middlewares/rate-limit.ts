@@ -35,6 +35,7 @@ export const customHandler = (
 const ONE_HOUR_SECONDS = 60 * 60;
 const ONE_HOUR_MS = 1000 * ONE_HOUR_SECONDS;
 const ONE_DAY_MS = 24 * ONE_HOUR_MS;
+const ONE_MINUTE_MS = 1000 * 60;
 
 // Root Rate Limit
 export const rootRateLimiter = rateLimit({
@@ -149,7 +150,7 @@ export const newQuotesGet = rateLimit({
 });
 
 export const newQuotesIsSubmissionEnabled = rateLimit({
-  windowMs: 60 * 1000,
+  windowMs: ONE_MINUTE_MS,
   max: 60 * REQUEST_MULTIPLIER,
   keyGenerator: getKeyWithUid,
   handler: customHandler,
@@ -186,7 +187,7 @@ export const quoteRatingsSubmit = rateLimit({
 
 // Quote reporting
 export const quoteReportSubmit = rateLimit({
-  windowMs: 30 * 60 * 1000, // 30 min
+  windowMs: 30 * ONE_MINUTE_MS, // 30 min
   max: 50 * REQUEST_MULTIPLIER,
   keyGenerator: getKeyWithUid,
   handler: customHandler,
@@ -194,21 +195,21 @@ export const quoteReportSubmit = rateLimit({
 
 // Quote favorites
 export const quoteFavoriteGet = rateLimit({
-  windowMs: 30 * 60 * 1000, // 30 min
+  windowMs: 30 * ONE_MINUTE_MS, // 30 min
   max: 50 * REQUEST_MULTIPLIER,
   keyGenerator: getKeyWithUid,
   handler: customHandler,
 });
 
 export const quoteFavoritePost = rateLimit({
-  windowMs: 30 * 60 * 1000, // 30 min
+  windowMs: 30 * ONE_MINUTE_MS, // 30 min
   max: 50 * REQUEST_MULTIPLIER,
   keyGenerator: getKeyWithUid,
   handler: customHandler,
 });
 
 export const quoteFavoriteDelete = rateLimit({
-  windowMs: 30 * 60 * 1000, // 30 min
+  windowMs: 30 * ONE_MINUTE_MS, // 30 min
   max: 50 * REQUEST_MULTIPLIER,
   keyGenerator: getKeyWithUid,
   handler: customHandler,
@@ -245,7 +246,7 @@ export const presetsEdit = rateLimit({
 
 // PSA (Public Service Announcement) Routing
 export const psaGet = rateLimit({
-  windowMs: 60 * 1000,
+  windowMs: ONE_MINUTE_MS,
   max: 60 * REQUEST_MULTIPLIER,
   keyGenerator: getKeyWithUid,
   handler: customHandler,
@@ -253,7 +254,7 @@ export const psaGet = rateLimit({
 
 // get public speed stats
 export const publicStatsGet = rateLimit({
-  windowMs: 60 * 1000,
+  windowMs: ONE_MINUTE_MS,
   max: 60 * REQUEST_MULTIPLIER,
   keyGenerator: getKeyWithUid,
   handler: customHandler,
@@ -326,7 +327,7 @@ export const setStreakHourOffset = rateLimit({
 });
 
 export const userSignup = rateLimit({
-  windowMs: 24 * ONE_HOUR_MS, // 1 day
+  windowMs: ONE_DAY_MS,
   max: 2 * REQUEST_MULTIPLIER,
   keyGenerator: getKey,
   handler: customHandler,
@@ -347,7 +348,7 @@ export const userReset = rateLimit({
 });
 
 export const userCheckName = rateLimit({
-  windowMs: 60 * 1000,
+  windowMs: ONE_MINUTE_MS,
   max: 60 * REQUEST_MULTIPLIER,
   keyGenerator: getKeyWithUid,
   handler: customHandler,
@@ -361,7 +362,7 @@ export const userUpdateName = rateLimit({
 });
 
 export const userUpdateLBMemory = rateLimit({
-  windowMs: 60 * 1000,
+  windowMs: ONE_MINUTE_MS,
   max: 60 * REQUEST_MULTIPLIER,
   keyGenerator: getKeyWithUid,
   handler: customHandler,
@@ -489,7 +490,7 @@ export const userRequestVerificationEmail = rateLimit({
 });
 
 export const userForgotPasswordEmail = rateLimit({
-  windowMs: ONE_HOUR_MS / 60,
+  windowMs: ONE_MINUTE_MS,
   max: 1 * REQUEST_MULTIPLIER,
   keyGenerator: getKeyWithUid,
   handler: customHandler,
