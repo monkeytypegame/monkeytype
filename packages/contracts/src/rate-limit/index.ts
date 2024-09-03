@@ -26,3 +26,21 @@ export const limits = {
 } satisfies Record<string, RateLimitOptions>;
 
 export type RateLimit = keyof typeof limits;
+export type ApeKeyRateLimit = {
+  limiter: RateLimit;
+  apeKeyLimiter?: RateLimit;
+};
+
+export function getLimits(limit: RateLimit | ApeKeyRateLimit): {
+  limiter: RateLimitOptions;
+  apeKeyLimiter?: RateLimitOptions;
+} {
+  const isApeKeyLimiter = typeof limit === "object";
+  const limiter = isApeKeyLimiter ? limit.limiter : limit;
+  const apeLimiter = isApeKeyLimiter ? limit.apeKeyLimiter : undefined;
+
+  return {
+    limiter: limits[limiter],
+    apeKeyLimiter: apeLimiter !== undefined ? limits[apeLimiter] : undefined,
+  };
+}

@@ -48,6 +48,7 @@ export default s.router(quotesContract, {
     handler: async (r) => callController(QuoteController.refuseQuote)(r),
   },
   getRating: {
+    //@ts-expect-error
     middleware: [RateLimit.quoteRatingsGet],
     handler: async (r) => callController(QuoteController.getRating)(r),
   },

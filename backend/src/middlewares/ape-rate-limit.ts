@@ -1,7 +1,8 @@
 import MonkeyError from "../utils/error";
 import type { Response, NextFunction, RequestHandler } from "express";
 import statuses from "../constants/monkey-status-codes";
-import rateLimit, {
+import {
+  rateLimit,
   type RateLimitRequestHandler,
   type Options,
 } from "express-rate-limit";
@@ -13,8 +14,6 @@ const REQUEST_MULTIPLIER = isDevEnvironment() ? 1 : 1;
 const getKey = (req: MonkeyTypes.Request, _res: Response): string => {
   return req?.ctx?.decodedToken?.uid;
 };
-
-const ONE_MINUTE = 1000 * 60;
 
 const {
   APE_KEY_RATE_LIMIT_EXCEEDED: { message, code },
@@ -30,7 +29,7 @@ export const customHandler = (
 };
 
 const apeRateLimiter = rateLimit({
-  windowMs: ONE_MINUTE,
+  windowMs: 1000 * 60,
   max: 30 * REQUEST_MULTIPLIER,
   keyGenerator: getKey,
   handler: customHandler,
@@ -43,13 +42,11 @@ export function withApeRateLimiter(
   return (req: MonkeyTypes.Request, res: Response, next: NextFunction) => {
     if (req.ctx.decodedToken.type === "ApeKey") {
       const rateLimiter = apeRateLimiterOverride ?? apeRateLimiter;
-      // TODO: bump version?
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-      return rateLimiter(req, res, next);
+      rateLimiter(req, res, next);
+      return;
     }
-
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-    return defaultRateLimiter(req, res, next);
+    defaultRateLimiter(req, res, next);
+    return;
   };
 }
 
@@ -60,12 +57,12 @@ export function withApeRateLimiter2(
   return (req: TsRestRequestWithCtx, res: Response, next: NextFunction) => {
     if (req.ctx.decodedToken.type === "ApeKey") {
       const rateLimiter = apeRateLimiterOverride ?? apeRateLimiter;
-      // TODO: bump version?
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-      return rateLimiter(req, res, next);
+
+      rateLimiter(req as ExpressRequest, res, next);
+      return;
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-    return defaultRateLimiter(req, res, next);
+    defaultRateLimiter(req as ExpressRequest, res, next);
+    return;
   };
 }

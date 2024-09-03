@@ -24,6 +24,7 @@ const requireWeeklyXpLeaderboardEnabled = validate({
 const s = initServer();
 export default s.router(leaderboardsContract, {
   get: {
+    //@ts-expect-error
     middleware: [RateLimit.leaderboardsGet],
     handler: async (r) =>
       callController(LeaderboardController.getLeaderboard)(r),

@@ -2,10 +2,43 @@ import _ from "lodash";
 import MonkeyError from "../utils/error";
 import type { Response, NextFunction } from "express";
 import { RateLimiterMemory } from "rate-limiter-flexible";
-import rateLimit, { type Options } from "express-rate-limit";
+import {
+  rateLimit,
+  RateLimitRequestHandler,
+  type Options,
+} from "express-rate-limit";
 import { isDevEnvironment } from "../utils/misc";
+import { EndpointMetadata } from "@monkeytype/contracts/schemas/api";
+import { TsRestRequestWithCtx } from "./auth";
+import { TsRestRequestHandler } from "@ts-rest/express";
+import {
+  limits,
+  RateLimit,
+  RateLimitOptions,
+  Window,
+} from "@monkeytype/contracts/rate-limit/index";
+import statuses from "../constants/monkey-status-codes";
 
-const REQUEST_MULTIPLIER = isDevEnvironment() ? 100 : 1;
+const REQUEST_MULTIPLIER = isDevEnvironment() ? 1 : 1;
+
+const ONE_MINUTE_MS = 1000 * 60;
+const ONE_HOUR_MS = 60 * ONE_MINUTE_MS;
+const ONE_DAY_MS = 24 * ONE_HOUR_MS;
+
+export const customHandler = (
+  req: MonkeyTypes.ExpressRequestWithContext,
+  _res: Response,
+  _next: NextFunction,
+  _options: Options
+): void => {
+  if (req.ctx.decodedToken.type === "ApeKey") {
+    throw new MonkeyError(
+      statuses.APE_KEY_RATE_LIMIT_EXCEEDED.code,
+      statuses.APE_KEY_RATE_LIMIT_EXCEEDED.message
+    );
+  }
+  throw new MonkeyError(429, "Request limit reached, please try again later.");
+};
 
 const getKey = (req: MonkeyTypes.Request, _res: Response): string => {
   return (
@@ -23,19 +56,77 @@ const getKeyWithUid = (req: MonkeyTypes.Request, _res: Response): string => {
   return useUid ? uid : getKey(req, _res);
 };
 
-export const customHandler = (
-  _req: MonkeyTypes.Request,
-  _res: Response,
-  _next: NextFunction,
-  _options: Options
-): void => {
-  throw new MonkeyError(429, "Request limit reached, please try again later.");
-};
+const defaultApeRateLimiter = rateLimit({
+  windowMs: ONE_MINUTE_MS,
+  max: 30 * REQUEST_MULTIPLIER,
+  keyGenerator: getKey,
+  handler: customHandler,
+});
 
-const ONE_HOUR_SECONDS = 60 * 60;
-const ONE_HOUR_MS = 1000 * ONE_HOUR_SECONDS;
-const ONE_DAY_MS = 24 * ONE_HOUR_MS;
-const ONE_MINUTE_MS = 1000 * 60;
+function initialiseLimiters(): Record<RateLimit, RateLimitRequestHandler> {
+  const keys = Object.keys(limits) as RateLimit[];
+
+  const convert = (options: RateLimitOptions): RateLimitRequestHandler => {
+    return rateLimit({
+      windowMs: convertWindowToMs(options.window),
+      max: options.max * REQUEST_MULTIPLIER,
+      handler: customHandler,
+      keyGenerator: getKeyWithUid,
+    });
+  };
+
+  //@ts-expect-error
+  return keys.reduce(
+    (output, key) => ({ ...output, [key]: convert(limits[key]) }),
+    {}
+  );
+}
+
+function convertWindowToMs(window: Window): number {
+  if (typeof window === "number") return window;
+  switch (window) {
+    case "per-second":
+      return 1000;
+    case "per-minute":
+      return ONE_MINUTE_MS;
+    case "hourly":
+      return ONE_HOUR_MS;
+    case "daily":
+      return ONE_DAY_MS;
+  }
+}
+
+const requestLimiters: Record<RateLimit, RateLimitRequestHandler> =
+  initialiseLimiters();
+
+export function rateLimitRequest<
+  T extends AppRouter | AppRoute
+>(): TsRestRequestHandler<T> {
+  return async (
+    req: TsRestRequestWithCtx,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
+    const limit = (req.tsRestRoute["metadata"] as EndpointMetadata)?.rateLimit;
+    if (limit === undefined) {
+      next();
+      return;
+    }
+
+    const isApeKeyLimiter = typeof limit === "object";
+    let requestLimiter;
+    if (req.ctx.decodedToken.type === "ApeKey") {
+      const key = isApeKeyLimiter ? limit.apeKeyLimiter : undefined;
+      requestLimiter =
+        key !== undefined ? requestLimiters[key] : defaultApeRateLimiter;
+    } else {
+      const key = isApeKeyLimiter ? limit.limiter : limit;
+      requestLimiter = requestLimiters[key];
+    }
+    requestLimiter(req, res, next);
+    return;
+  };
+}
 
 // Root Rate Limit
 export const rootRateLimiter = rateLimit({
@@ -53,7 +144,7 @@ export const rootRateLimiter = rateLimit({
 // Bad Authentication Rate Limiter
 const badAuthRateLimiter = new RateLimiterMemory({
   points: 30 * REQUEST_MULTIPLIER,
-  duration: ONE_HOUR_SECONDS,
+  duration: 60 * 60, //one hour seconds
 });
 
 export async function badAuthRateLimiterHandler(
@@ -313,6 +404,7 @@ export const resultsLeaderboardQualificationGet = rateLimit({
 
 // Users Routing
 export const userGet = rateLimit({
+  standardHeaders: "draft-7",
   windowMs: ONE_HOUR_MS,
   max: 60 * REQUEST_MULTIPLIER,
   keyGenerator: getKeyWithUid,

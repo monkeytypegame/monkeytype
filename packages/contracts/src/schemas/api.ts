@@ -1,5 +1,5 @@
 import { z, ZodSchema } from "zod";
-import { RateLimit } from "../rate-limit";
+import { ApeKeyRateLimit, RateLimit } from "../rate-limit";
 
 export type OpenApiTag =
   | "configs"
@@ -21,12 +21,7 @@ export type EndpointMetadata = {
 
   openApiTags?: OpenApiTag | OpenApiTag[];
 
-  rateLimit?:
-    | RateLimit
-    | {
-        limiter: RateLimit;
-        apeKeyLimiter: RateLimit;
-      };
+  rateLimit?: RateLimit | ApeKeyRateLimit;
 };
 
 export type RequestAuthenticationOptions = {
