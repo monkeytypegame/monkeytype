@@ -12,6 +12,7 @@ import {
   RateLimit,
   Window,
 } from "@monkeytype/contracts/rate-limit/index";
+import { formatDuration } from "date-fns";
 
 type SecurityRequirementObject = {
   [name: string]: string[];
@@ -227,7 +228,16 @@ function getRateLimitDescription(limit: RateLimit | ApeKeyRateLimit): string {
 }
 
 function formatWindow(window: Window): string {
-  if (typeof window === "number") return `every ${window} milliseconds`;
+  if (typeof window === "number") {
+    const seconds = Math.floor(window / 1000);
+    const duration = formatDuration({
+      hours: Math.floor(seconds / 3600),
+      minutes: Math.floor(seconds / 60) % 60,
+      seconds: seconds % 60,
+    });
+
+    return `every ${duration}`;
+  }
   switch (window) {
     case "per-second":
       return "per second";
