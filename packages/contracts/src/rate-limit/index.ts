@@ -27,7 +27,9 @@ export const limits = {
 
 export type RateLimit = keyof typeof limits;
 export type ApeKeyRateLimit = {
+  /** rate limiter options for bearer requests */
   limiter: RateLimit;
+  /** optional rate limiter options for apeKey requests. If missing a default limiter with 30 requests/minute is used, */
   apeKeyLimiter?: RateLimit;
 };
 

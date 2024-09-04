@@ -75,11 +75,10 @@ function initialiseLimiters(): Record<RateLimit, RateLimitRequestHandler> {
     });
   };
 
-  //@ts-expect-error
   return keys.reduce(
     (output, key) => ({ ...output, [key]: convert(limits[key]) }),
     {}
-  );
+  ) as Record<RateLimit, RateLimitRequestHandler>;
 }
 
 function convertWindowToMs(window: Window): number {

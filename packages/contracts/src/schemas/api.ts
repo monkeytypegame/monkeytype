@@ -21,6 +21,9 @@ export type EndpointMetadata = {
 
   openApiTags?: OpenApiTag | OpenApiTag[];
 
+  /** Rate limit options or apeKey rate limit options.
+   * Only specifying RateLimit/limiter will use  a default limiter with 30 requests/minute for ApeKey requests.
+   */
   rateLimit?: RateLimit | ApeKeyRateLimit;
 };
 
