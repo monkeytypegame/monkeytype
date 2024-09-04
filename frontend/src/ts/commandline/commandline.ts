@@ -22,6 +22,8 @@ type InputModeParams = {
 let activeIndex = 0;
 let usingSingleList = false;
 let inputValue = "";
+let savedInput = "";
+let saveInput = true;
 let activeCommand: MonkeyTypes.Command | null = null;
 let mouseMode = false;
 let mode: CommandlineMode = "search";
@@ -62,7 +64,8 @@ export function show(
     focusFirstInput: true,
     beforeAnimation: async () => {
       mouseMode = false;
-      inputValue = "";
+      inputValue = savedInput;
+      saveInput = true;
       activeIndex = 0;
       mode = "search";
       cachedSingleSubgroup = null;
@@ -73,6 +76,7 @@ export function show(
         icon: null,
       };
       if (settings?.subgroupOverride !== undefined) {
+        inputValue = "";
         if (typeof settings.subgroupOverride === "string") {
           const exists = CommandlineLists.doesListExist(
             settings.subgroupOverride
@@ -143,7 +147,8 @@ async function goBackOrHide(): Promise<void> {
       value: null,
       icon: null,
     };
-    updateInput("");
+    saveInput = true;
+    updateInput(savedInput);
     await filterSubgroup();
     await showCommands();
     await updateActiveCommand();
@@ -153,7 +158,8 @@ async function goBackOrHide(): Promise<void> {
   if (CommandlineLists.getStackLength() > 1) {
     CommandlineLists.popFromStack();
     activeIndex = 0;
-    updateInput("");
+    saveInput = true;
+    updateInput(savedInput);
     await filterSubgroup();
     await showCommands();
     await updateActiveCommand();
@@ -489,10 +495,12 @@ async function runActiveCommand(): Promise<void> {
       value: command.defaultValue?.() ?? "",
       icon: command.icon ?? "fa-chevron-right",
     };
+    saveInput = false;
     updateInput(inputModeParams.value as string);
     hideCommands();
   } else if (command.subgroup) {
     CommandlineLists.pushToStack(command.subgroup);
+    saveInput = false;
     updateInput("");
     await filterSubgroup();
     await showCommands();
@@ -547,9 +555,14 @@ function updateInput(setInput?: string): void {
 
   if (setInput !== undefined) {
     inputValue = setInput;
+    if (saveInput) {
+      savedInput = inputValue;
+    }
   }
 
   element.value = inputValue;
+  //select the text inside
+  element.setSelectionRange(0, element.value.length);
 
   if (mode === "input") {
     if (inputModeParams.icon !== null) {
@@ -601,6 +614,9 @@ const modal = new AnimatedModal({
 
     input.addEventListener("input", async (e) => {
       inputValue = (e.target as HTMLInputElement).value;
+      if (saveInput) {
+        savedInput = inputValue;
+      }
       if (subgroupOverride === null) {
         if (Config.singleListCommandLine === "on") {
           usingSingleList = true;
