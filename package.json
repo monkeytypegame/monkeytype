@@ -24,7 +24,7 @@
     "dev": "turbo run dev --force",
     "dev-be": "turbo run dev --force --filter @monkeytype/backend",
     "dev-fe": "turbo run dev --force --filter @monkeytype/frontend",
-    "dev-pkg": "turbo run dev ---force -filter=\"./packages/*\"",
+    "dev-pkg": "turbo run dev --force --filter=\"./packages/*\"",
     "start": "turbo run start",
     "start-be": "turbo run start --filter @monkeytype/backend",
     "start-fe": "turbo run start --filter @monkeytype/frontend",
@@ -78,6 +78,6 @@
       "eslint"
     ]
   },
-  "version": "24.32.0",
+  "version": "24.34.0",
   "packageManager": "pnpm@9.6.0"
 }

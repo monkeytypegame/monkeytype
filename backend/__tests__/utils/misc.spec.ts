@@ -620,6 +620,9 @@ describe("Misc Utils", () => {
         number: 1,
       });
     });
+    it("ignores null values", () => {
+      expect(misc.replaceObjectId(null)).toBeNull();
+    });
   });
 
   describe("replaceObjectIds", () => {

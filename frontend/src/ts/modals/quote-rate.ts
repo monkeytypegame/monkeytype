@@ -46,19 +46,24 @@ export async function getQuoteStats(
   }
 
   currentQuote = quote;
-  const response = await Ape.quotes.getRating(currentQuote);
+  const response = await Ape.quotes.getRating({
+    query: { quoteId: currentQuote.id, language: currentQuote.language },
+  });
   Loader.hide();
 
   if (response.status !== 200) {
-    Notifications.add("Failed to get quote ratings: " + response.message, -1);
+    Notifications.add(
+      "Failed to get quote ratings: " + response.body.message,
+      -1
+    );
     return;
   }
 
-  if (response.data === null) {
+  if (response.body.data === null) {
     return {} as QuoteStats;
   }
 
-  quoteStats = response.data as QuoteStats;
+  quoteStats = response.body.data as QuoteStats;
   if (quoteStats !== undefined && !quoteStats.average) {
     quoteStats.average = getRatingAverage(quoteStats);
   }
@@ -140,11 +145,16 @@ async function submit(): Promise<void> {
 
   hide(true);
 
-  const response = await Ape.quotes.addRating(currentQuote, rating);
+  const response = await Ape.quotes.addRating({
+    body: { quoteId: currentQuote.id, language: currentQuote.language, rating },
+  });
   Loader.hide();
 
   if (response.status !== 200) {
-    Notifications.add("Failed to submit quote rating: " + response.message, -1);
+    Notifications.add(
+      "Failed to submit quote rating: " + response.body.message,
+      -1
+    );
     return;
   }
 

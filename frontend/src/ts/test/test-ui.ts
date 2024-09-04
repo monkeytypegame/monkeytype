@@ -194,7 +194,7 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
   if (eventKey === "burstHeatmap") void applyBurstHeatmap();
 });
 
-export let currentWordElementIndex = 0;
+export let activeWordElementIndex = 0;
 export let resultVisible = false;
 export let activeWordTop = 0;
 export let testRestarting = false;
@@ -207,8 +207,8 @@ export function setResultVisible(val: boolean): void {
   resultVisible = val;
 }
 
-export function setCurrentWordElementIndex(val: number): void {
-  currentWordElementIndex = val;
+export function setActiveWordElementIndex(val: number): void {
+  activeWordElementIndex = val;
 }
 
 export function setActiveWordTop(val: number): void {
@@ -234,7 +234,7 @@ export function setResultCalculating(val: boolean): void {
 
 export function reset(): void {
   currentTestLine = 0;
-  currentWordElementIndex = 0;
+  activeWordElementIndex = 0;
 }
 
 export function focusWords(): void {
@@ -258,19 +258,19 @@ export function updateActiveElement(
   } else if (active !== null && !initial) {
     active.classList.remove("active");
   }
-  const activeWord =
-    document.querySelectorAll("#words .word")[currentWordElementIndex];
+  const newActiveWord = document.querySelectorAll("#words .word")[
+    activeWordElementIndex
+  ] as HTMLElement | undefined;
 
-  if (activeWord == undefined) {
+  if (newActiveWord == undefined) {
     throw new Error("activeWord is undefined - can't update active element");
   }
 
-  activeWord.classList.add("active");
-  activeWord.classList.remove("error");
-  activeWord.classList.remove("typed");
+  newActiveWord.classList.add("active");
+  newActiveWord.classList.remove("error");
+  newActiveWord.classList.remove("typed");
 
-  activeWordTop = (document.querySelector("#words .active") as HTMLElement)
-    .offsetTop;
+  activeWordTop = newActiveWord.offsetTop;
 
   if (!initial && shouldUpdateWordsInputPosition()) {
     void updateWordsInputPosition();
@@ -422,6 +422,10 @@ export function showWords(): void {
   }, 125);
 
   updateWordWrapperClasses();
+
+  if (Config.mode === "zen") {
+    $(document.querySelector(".word") as Element).remove();
+  }
 }
 
 const posUpdateLangList = ["japanese", "chinese", "korean"];
@@ -438,7 +442,10 @@ export async function updateWordsInputPosition(initial = false): Promise<void> {
   const isLanguageRTL = currentLanguage.rightToLeft;
 
   const el = document.querySelector("#wordsInput") as HTMLElement;
-  const activeWord = document.querySelector<HTMLElement>("#words .active");
+  const activeWord =
+    document.querySelectorAll<HTMLElement>("#words .word")[
+      activeWordElementIndex
+    ];
 
   if (!activeWord) {
     el.style.top = "0px";
@@ -505,7 +512,7 @@ function updateWordsHeight(force = false): void {
     CustomText.getLimitValue() !== 0
   ) {
     // overflow-x should not be visible in tape mode, but since showAllLines can't
-    // be enabled simultaneously with tape mode we don' need to check it's off
+    // be enabled simultaneously with tape mode we don't need to check it's off
     $("#words")
       .css("height", "auto")
       .css("overflow", "visible clip")
@@ -559,7 +566,8 @@ function updateWordsHeight(force = false): void {
       finalWrapperHeight = wrapperHeight;
     }
 
-    $("#words").css("height", "0px");
+    // $("#words").css("height", "0px");
+    // not sure why this was here, wonder if removing it will break anything
 
     if (Config.tapeMode !== "off") {
       $("#words").css({ overflow: "hidden", width: "200vw" });
@@ -582,10 +590,6 @@ function updateWordsHeight(force = false): void {
         finalWrapperHeight / 2 - Numbers.convertRemToPixels(1) / 2 + "px"
       );
     }, 0);
-  }
-
-  if (Config.mode === "zen") {
-    $(document.querySelector(".word") as Element).remove();
   }
 }
 
@@ -775,11 +779,10 @@ export async function screenshot(): Promise<void> {
   }, 3000);
 }
 
-export async function updateWordElement(inputOverride?: string): Promise<void> {
+export async function updateActiveWordLetters(
+  inputOverride?: string
+): Promise<void> {
   const input = inputOverride ?? TestInput.input.current;
-  const wordAtIndex = document.querySelector(
-    "#words .word.active"
-  ) as HTMLElement;
   const currentWord = TestWords.words.getCurrent();
   if (!currentWord && Config.mode !== "zen") return;
   let ret = "";
@@ -913,13 +916,17 @@ export async function updateWordElement(inputOverride?: string): Promise<void> {
     }
   }
 
-  wordAtIndex.innerHTML = ret;
+  const activeWord = document.querySelectorAll("#words .word")?.[
+    activeWordElementIndex
+  ] as HTMLElement;
+
+  activeWord.innerHTML = ret;
 
   if (hintIndices?.length) {
-    const activeWordLetters = wordAtIndex.querySelectorAll("letter");
+    const activeWordLetters = activeWord.querySelectorAll("letter");
     const hintsHtml = createHintsHtml(hintIndices, activeWordLetters, input);
-    wordAtIndex.insertAdjacentHTML("beforeend", hintsHtml);
-    const hintElements = wordAtIndex.getElementsByTagName("hint");
+    activeWord.insertAdjacentHTML("beforeend", hintsHtml);
+    const hintElements = activeWord.getElementsByTagName("hint");
     await joinOverlappingHints(hintIndices, activeWordLetters, hintElements);
   }
 
@@ -937,8 +944,8 @@ export function scrollTape(): void {
   let fullWordsWidth = 0;
   const toHide: JQuery[] = [];
   let widthToHide = 0;
-  if (currentWordElementIndex > 0) {
-    for (let i = 0; i < currentWordElementIndex; i++) {
+  if (activeWordElementIndex > 0) {
+    for (let i = 0; i < activeWordElementIndex; i++) {
       const word = document.querySelectorAll("#words .word")[i] as HTMLElement;
       fullWordsWidth += $(word).outerWidth(true) ?? 0;
       const forWordLeft = Math.floor(word.offsetLeft);
@@ -950,7 +957,7 @@ export function scrollTape(): void {
       }
     }
     if (toHide.length > 0) {
-      currentWordElementIndex -= toHide.length;
+      activeWordElementIndex -= toHide.length;
       toHide.forEach((e) => e.remove());
       fullWordsWidth -= widthToHide;
       const currentMargin = parseInt($("#words").css("margin-left"), 10);
@@ -961,8 +968,7 @@ export function scrollTape(): void {
   if (Config.tapeMode === "letter") {
     if (TestInput.input.current.length > 0) {
       const words = document.querySelectorAll("#words .word");
-      const letters =
-        words[currentWordElementIndex]?.querySelectorAll("letter");
+      const letters = words[activeWordElementIndex]?.querySelectorAll("letter");
       if (!letters) return;
       for (let i = 0; i < TestInput.input.current.length; i++) {
         const letter = letters[i] as HTMLElement;
@@ -1017,7 +1023,7 @@ export function lineJump(currentTop: number): void {
 
     const toHide: JQuery[] = [];
     const wordElements = $("#words .word");
-    for (let i = 0; i < currentWordElementIndex; i++) {
+    for (let i = 0; i < activeWordElementIndex; i++) {
       const el = $(wordElements[i] as HTMLElement);
       if (el.hasClass("hidden")) continue;
       const forWordTop = Math.floor((el[0] as HTMLElement).offsetTop);
@@ -1083,17 +1089,19 @@ export function lineJump(currentTop: number): void {
         .animate(newCss, SlowTimer.get() ? 0 : 125, () => {
           currentLinesAnimating = 0;
           activeWordTop = (
-            document.querySelector("#words .active") as HTMLElement
-          ).offsetTop;
+            document.querySelectorAll("#words .word")?.[
+              activeWordElementIndex
+            ] as HTMLElement
+          )?.offsetTop;
 
-          currentWordElementIndex -= toHide.length;
+          activeWordElementIndex -= toHide.length;
           lineTransition = false;
           toHide.forEach((el) => el.remove());
           $("#words").css("marginTop", "0");
         });
     } else {
       toHide.forEach((el) => el.remove());
-      currentWordElementIndex -= toHide.length;
+      activeWordElementIndex -= toHide.length;
       $("#paceCaret").css({
         top:
           (document.querySelector("#paceCaret") as HTMLElement).offsetTop -

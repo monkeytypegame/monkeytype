@@ -23,6 +23,13 @@ export const LanguageSchema = z
   .regex(/^[a-zA-Z0-9_+]+$/, "Can only contain letters [a-zA-Z0-9_+]");
 export type Language = z.infer<typeof LanguageSchema>;
 
+export const NullableStringSchema = z
+  .string()
+  .nullable()
+  .optional()
+  .transform((value) => value ?? undefined);
+export type NullableString = z.infer<typeof NullableStringSchema>;
+
 export const PercentageSchema = z.number().nonnegative().max(100);
 export type Percentage = z.infer<typeof PercentageSchema>;
 
