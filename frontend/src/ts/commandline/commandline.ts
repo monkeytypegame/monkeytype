@@ -68,7 +68,6 @@ export function show(
       saveInput = true;
       activeIndex = 0;
       mode = "search";
-      cachedSingleSubgroup = null;
       inputModeParams = {
         command: null,
         placeholder: null,
@@ -77,6 +76,7 @@ export function show(
       };
       if (settings?.subgroupOverride !== undefined) {
         inputValue = "";
+        saveInput = false;
         if (typeof settings.subgroupOverride === "string") {
           const exists = CommandlineLists.doesListExist(
             settings.subgroupOverride
@@ -264,7 +264,6 @@ async function filterSubgroup(): Promise<void> {
   if (minMatchCountToShow === 0) {
     minMatchCountToShow = 1;
   }
-
   for (const [index, command] of list.entries()) {
     const match = matches[index];
     if (match === undefined) {
@@ -417,6 +416,7 @@ async function showCommands(): Promise<void> {
   if (firstActive !== null && !usingSingleList) {
     activeIndex = firstActive;
   }
+
   element.innerHTML = html;
 
   for (const command of element.querySelectorAll(".command")) {
