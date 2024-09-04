@@ -27,6 +27,10 @@ export type EndpointMetadata = {
   rateLimit?: RateLimit | ApeKeyRateLimit;
 };
 
+export function meta(meta: EndpointMetadata): EndpointMetadata {
+  return meta;
+}
+
 export type RequestAuthenticationOptions = {
   /** Endpoint is accessible without any authentication. If `false` bearer authentication is required. */
   isPublic?: boolean;

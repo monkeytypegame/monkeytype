@@ -2,7 +2,7 @@ import { initContract } from "@ts-rest/core";
 import { z } from "zod";
 import {
   CommonResponses,
-  EndpointMetadata,
+  meta,
   MonkeyClientError,
   MonkeyResponseSchema,
   responseWithData,
@@ -334,6 +334,9 @@ export const usersContract = c.router(
       responses: {
         200: GetUserResponseSchema,
       },
+      metadata: meta({
+        rateLimit: "userGet",
+      }),
     },
     create: {
       summary: "create user",
@@ -344,6 +347,9 @@ export const usersContract = c.router(
       responses: {
         200: MonkeyResponseSchema,
       },
+      metadata: meta({
+        rateLimit: "userSignup",
+      }),
     },
     getNameAvailability: {
       summary: "check name",
@@ -355,9 +361,10 @@ export const usersContract = c.router(
         200: MonkeyResponseSchema.describe("Name is available"),
         409: MonkeyResponseSchema.describe("Name is not available"),
       },
-      metadata: {
+      metadata: meta({
         authenticationOptions: { isPublic: true },
-      } as EndpointMetadata,
+        rateLimit: "userCheckName",
+      }),
     },
     delete: {
       summary: "delete user",
@@ -368,9 +375,10 @@ export const usersContract = c.router(
       responses: {
         200: MonkeyResponseSchema,
       },
-      metadata: {
+      metadata: meta({
         authenticationOptions: { requireFreshToken: true },
-      } as EndpointMetadata,
+        rateLimit: "userDelete",
+      }),
     },
     reset: {
       summary: "reset user",
@@ -381,9 +389,10 @@ export const usersContract = c.router(
       responses: {
         200: MonkeyResponseSchema,
       },
-      metadata: {
+      metadata: meta({
         authenticationOptions: { requireFreshToken: true },
-      } as EndpointMetadata,
+        rateLimit: "userReset",
+      }),
     },
     updateName: {
       summary: "update username",
@@ -394,9 +403,10 @@ export const usersContract = c.router(
       responses: {
         200: MonkeyResponseSchema,
       },
-      metadata: {
+      metadata: meta({
         authenticationOptions: { requireFreshToken: true },
-      } as EndpointMetadata,
+        rateLimit: "userUpdateName",
+      }),
     },
     updateLeaderboardMemory: {
       summary: "update lbMemory",
@@ -407,6 +417,9 @@ export const usersContract = c.router(
       responses: {
         200: MonkeyResponseSchema,
       },
+      metadata: meta({
+        rateLimit: "userUpdateLBMemory",
+      }),
     },
     updateEmail: {
       summary: "update email",
@@ -417,9 +430,10 @@ export const usersContract = c.router(
       responses: {
         200: MonkeyResponseSchema,
       },
-      metadata: {
+      metadata: meta({
         authenticationOptions: { requireFreshToken: true },
-      } as EndpointMetadata,
+        rateLimit: "userUpdateEmail",
+      }),
     },
     updatePassword: {
       summary: "update password",
@@ -430,9 +444,10 @@ export const usersContract = c.router(
       responses: {
         200: MonkeyResponseSchema,
       },
-      metadata: {
+      metadata: meta({
         authenticationOptions: { requireFreshToken: true },
-      } as EndpointMetadata,
+        rateLimit: "userUpdateEmail",
+      }),
     },
     getPersonalBests: {
       summary: "get personal bests",
@@ -443,9 +458,10 @@ export const usersContract = c.router(
       responses: {
         200: GetPersonalBestsResponseSchema,
       },
-      metadata: {
+      metadata: meta({
         authenticationOptions: { acceptApeKeys: true },
-      } as EndpointMetadata,
+        rateLimit: "userGet",
+      }),
     },
     deletePersonalBests: {
       summary: "delete personal bests",
@@ -456,9 +472,10 @@ export const usersContract = c.router(
       responses: {
         200: MonkeyResponseSchema,
       },
-      metadata: {
+      metadata: meta({
         authenticationOptions: { requireFreshToken: true },
-      } as EndpointMetadata,
+        rateLimit: "userClearPB",
+      }),
     },
     optOutOfLeaderboards: {
       summary: "leaderboards opt out",
@@ -469,9 +486,10 @@ export const usersContract = c.router(
       responses: {
         200: MonkeyResponseSchema,
       },
-      metadata: {
+      metadata: meta({
         authenticationOptions: { requireFreshToken: true },
-      } as EndpointMetadata,
+        rateLimit: "userOptOutOfLeaderboards",
+      }),
     },
     addResultFilterPreset: {
       summary: "add result filter preset",
@@ -482,6 +500,9 @@ export const usersContract = c.router(
       responses: {
         200: AddResultFilterPresetResponseSchema,
       },
+      metadata: meta({
+        rateLimit: "userCustomFilterAdd",
+      }),
     },
     removeResultFilterPreset: {
       summary: "remove result filter preset",
@@ -493,6 +514,9 @@ export const usersContract = c.router(
       responses: {
         200: MonkeyResponseSchema,
       },
+      metadata: meta({
+        rateLimit: "userCustomFilterRemove",
+      }),
     },
     getTags: {
       summary: "get tags",
@@ -502,9 +526,10 @@ export const usersContract = c.router(
       responses: {
         200: GetTagsResponseSchema,
       },
-      metadata: {
+      metadata: meta({
         authenticationOptions: { acceptApeKeys: true },
-      } as EndpointMetadata,
+        rateLimit: "userTagsGet",
+      }),
     },
     createTag: {
       summary: "add tag",
@@ -515,6 +540,9 @@ export const usersContract = c.router(
       responses: {
         200: AddTagResponseSchema,
       },
+      metadata: meta({
+        rateLimit: "userTagsAdd",
+      }),
     },
     editTag: {
       summary: "edit tag",
@@ -525,6 +553,9 @@ export const usersContract = c.router(
       responses: {
         200: MonkeyResponseSchema,
       },
+      metadata: meta({
+        rateLimit: "userTagsEdit",
+      }),
     },
     deleteTag: {
       summary: "delete tag",
@@ -536,6 +567,9 @@ export const usersContract = c.router(
       responses: {
         200: MonkeyResponseSchema,
       },
+      metadata: meta({
+        rateLimit: "userTagsRemove",
+      }),
     },
     deleteTagPersonalBest: {
       summary: "delete tag PBs",
@@ -547,6 +581,9 @@ export const usersContract = c.router(
       responses: {
         200: MonkeyResponseSchema,
       },
+      metadata: meta({
+        rateLimit: "userTagsClearPB",
+      }),
     },
     getCustomThemes: {
       summary: "get custom themes",
@@ -556,6 +593,9 @@ export const usersContract = c.router(
       responses: {
         200: GetCustomThemesResponseSchema,
       },
+      metadata: meta({
+        rateLimit: "userCustomThemeGet",
+      }),
     },
     addCustomTheme: {
       summary: "add custom themes",
@@ -566,6 +606,9 @@ export const usersContract = c.router(
       responses: {
         200: AddCustomThemeResponseSchema,
       },
+      metadata: meta({
+        rateLimit: "userCustomThemeAdd",
+      }),
     },
     deleteCustomTheme: {
       summary: "delete custom themes",
@@ -576,6 +619,9 @@ export const usersContract = c.router(
       responses: {
         200: MonkeyResponseSchema,
       },
+      metadata: meta({
+        rateLimit: "userCustomThemeRemove",
+      }),
     },
     editCustomTheme: {
       summary: "edit custom themes",
@@ -586,6 +632,9 @@ export const usersContract = c.router(
       responses: {
         200: MonkeyResponseSchema,
       },
+      metadata: meta({
+        rateLimit: "userCustomThemeEdit",
+      }),
     },
     getDiscordOAuth: {
       summary: "discord oauth",
@@ -595,6 +644,9 @@ export const usersContract = c.router(
       responses: {
         200: GetDiscordOauthLinkResponseSchema,
       },
+      metadata: meta({
+        rateLimit: "userDiscordLink",
+      }),
     },
     linkDiscord: {
       summary: "link with discord",
@@ -605,7 +657,9 @@ export const usersContract = c.router(
       responses: {
         200: LinkDiscordResponseSchema,
       },
-      metadata: {} as EndpointMetadata,
+      metadata: meta({
+        rateLimit: "userDiscordLink",
+      }),
     },
     unlinkDiscord: {
       summary: "unlink discord",
@@ -616,6 +670,9 @@ export const usersContract = c.router(
       responses: {
         200: MonkeyResponseSchema,
       },
+      metadata: meta({
+        rateLimit: "userDiscordUnlink",
+      }),
     },
     getStats: {
       summary: "get stats",
@@ -625,9 +682,10 @@ export const usersContract = c.router(
       responses: {
         200: GetStatsResponseSchema,
       },
-      metadata: {
+      metadata: meta({
         authenticationOptions: { acceptApeKeys: true },
-      } as EndpointMetadata,
+        rateLimit: "userGet",
+      }),
     },
     setStreakHourOffset: {
       summary: "set streak hour offset",
@@ -638,6 +696,9 @@ export const usersContract = c.router(
       responses: {
         200: MonkeyResponseSchema,
       },
+      metadata: meta({
+        rateLimit: "setStreakHourOffset",
+      }),
     },
     getFavoriteQuotes: {
       summary: "get favorite quotes",
@@ -647,6 +708,9 @@ export const usersContract = c.router(
       responses: {
         200: GetFavoriteQuotesResponseSchema,
       },
+      metadata: meta({
+        rateLimit: "quoteFavoriteGet",
+      }),
     },
     addQuoteToFavorites: {
       summary: "add favorite quotes",
@@ -657,6 +721,9 @@ export const usersContract = c.router(
       responses: {
         200: MonkeyResponseSchema,
       },
+      metadata: meta({
+        rateLimit: "quoteFavoritePost",
+      }),
     },
     removeQuoteFromFavorites: {
       summary: "remove favorite quotes",
@@ -667,6 +734,9 @@ export const usersContract = c.router(
       responses: {
         200: MonkeyResponseSchema,
       },
+      metadata: meta({
+        rateLimit: "quoteFavoriteDelete",
+      }),
     },
     getProfile: {
       summary: "get profile",
@@ -679,9 +749,10 @@ export const usersContract = c.router(
         200: GetProfileResponseSchema,
         404: MonkeyClientError.describe("User not found"),
       },
-      metadata: {
+      metadata: meta({
         authenticationOptions: { isPublic: true },
-      } as EndpointMetadata,
+        rateLimit: "userProfileGet",
+      }),
     },
     updateProfile: {
       summary: "update profile",
@@ -692,6 +763,9 @@ export const usersContract = c.router(
       responses: {
         200: UpdateUserProfileResponseSchema,
       },
+      metadata: meta({
+        rateLimit: "userProfileUpdate",
+      }),
     },
     getInbox: {
       summary: "get inbox",
@@ -701,6 +775,9 @@ export const usersContract = c.router(
       responses: {
         200: GetUserInboxResponseSchema,
       },
+      metadata: meta({
+        rateLimit: "userMailGet",
+      }),
     },
     updateInbox: {
       summary: "update inbox",
@@ -711,6 +788,9 @@ export const usersContract = c.router(
       responses: {
         200: MonkeyResponseSchema,
       },
+      metadata: meta({
+        rateLimit: "userMailUpdate",
+      }),
     },
     report: {
       summary: "report user",
@@ -721,6 +801,9 @@ export const usersContract = c.router(
       responses: {
         200: MonkeyResponseSchema,
       },
+      metadata: meta({
+        rateLimit: "quoteReportSubmit",
+      }),
     },
     verificationEmail: {
       summary: "send verification email",
@@ -730,9 +813,10 @@ export const usersContract = c.router(
       responses: {
         200: MonkeyResponseSchema,
       },
-      metadata: {
+      metadata: meta({
         authenticationOptions: { noCache: true },
-      } as EndpointMetadata,
+        rateLimit: "userRequestVerificationEmail",
+      }),
     },
     forgotPasswordEmail: {
       summary: "send forgot password email",
@@ -743,9 +827,10 @@ export const usersContract = c.router(
       responses: {
         200: MonkeyResponseSchema,
       },
-      metadata: {
+      metadata: meta({
         authenticationOptions: { isPublic: true },
-      } as EndpointMetadata,
+        rateLimit: "userForgotPasswordEmail",
+      }),
     },
     revokeAllTokens: {
       summary: "revoke all tokens",
@@ -756,9 +841,10 @@ export const usersContract = c.router(
       responses: {
         200: MonkeyResponseSchema,
       },
-      metadata: {
+      metadata: meta({
         authenticationOptions: { requireFreshToken: true, noCache: true },
-      } as EndpointMetadata,
+        rateLimit: "userRevokeAllTokens",
+      }),
     },
     getTestActivity: {
       summary: "get test activity",
@@ -768,6 +854,9 @@ export const usersContract = c.router(
       responses: {
         200: GetTestActivityResponseSchema,
       },
+      metadata: meta({
+        rateLimit: "userTestActivity",
+      }),
     },
     getCurrentTestActivity: {
       summary: "get current test activity",
@@ -778,9 +867,10 @@ export const usersContract = c.router(
       responses: {
         200: GetCurrentTestActivityResponseSchema,
       },
-      metadata: {
+      metadata: meta({
         authenticationOptions: { acceptApeKeys: true },
-      } as EndpointMetadata,
+        rateLimit: "userCurrentTestActivity",
+      }),
     },
     getStreak: {
       summary: "get streak",
@@ -790,17 +880,18 @@ export const usersContract = c.router(
       responses: {
         200: GetStreakResponseSchema,
       },
-      metadata: {
+      metadata: meta({
         authenticationOptions: { acceptApeKeys: true },
-      } as EndpointMetadata,
+        rateLimit: "userStreak",
+      }),
     },
   },
   {
     pathPrefix: "/users",
     strictStatusCodes: true,
-    metadata: {
+    metadata: meta({
       openApiTags: "users",
-    } as EndpointMetadata,
+    }),
 
     commonResponses: CommonResponses,
   }

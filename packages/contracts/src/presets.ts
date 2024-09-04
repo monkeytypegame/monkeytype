@@ -3,7 +3,7 @@ import { z } from "zod";
 
 import {
   CommonResponses,
-  EndpointMetadata,
+  meta,
   MonkeyResponseSchema,
   responseWithData,
 } from "./schemas/api";
@@ -38,6 +38,9 @@ export const presetsContract = c.router(
       responses: {
         200: GetPresetResponseSchema,
       },
+      metadata: meta({
+        rateLimit: "presetsGet",
+      }),
     },
     add: {
       summary: "add preset",
@@ -48,6 +51,9 @@ export const presetsContract = c.router(
       responses: {
         200: AddPresetResponseSchemna,
       },
+      metadata: meta({
+        rateLimit: "presetsAdd",
+      }),
     },
     save: {
       summary: "update preset",
@@ -58,8 +64,13 @@ export const presetsContract = c.router(
       responses: {
         200: MonkeyResponseSchema,
       },
+      metadata: meta({
+        rateLimit: "presetsEdit",
+      }),
     },
     delete: {
+      summary: "delete preset",
+      description: "Delete preset by id.",
       method: "DELETE",
       path: "/:presetId",
       pathParams: DeletePresetsParamsSchema,
@@ -67,16 +78,17 @@ export const presetsContract = c.router(
       responses: {
         200: MonkeyResponseSchema,
       },
-      summary: "delete preset",
-      description: "Delete preset by id.",
+      metadata: meta({
+        rateLimit: "presetsRemove",
+      }),
     },
   },
   {
     pathPrefix: "/presets",
     strictStatusCodes: true,
-    metadata: {
+    metadata: meta({
       openApiTags: "presets",
-    } as EndpointMetadata,
+    }),
 
     commonResponses: CommonResponses,
   }
