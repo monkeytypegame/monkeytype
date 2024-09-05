@@ -354,6 +354,13 @@ const FunboxList: MonkeyTypes.FunboxMetadata[] = [
     frontendFunctions: ["alterText"],
     name: "ddoouubblleedd",
   },
+  {
+    canGetPb: false,
+    difficultyLevel: 1,
+    properties: ["changesCapitalisation"],
+    frontendFunctions: ["alterText"],
+    name: "instant_messaging",
+  },
 ];
 
 export default FunboxList;

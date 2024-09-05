@@ -523,6 +523,15 @@ FunboxList.setFunboxFunctions("ddoouubblleedd", {
   },
 });
 
+FunboxList.setFunboxFunctions("instant_messaging", {
+  alterText(word: string): string {
+    return word
+      .toLocaleLowerCase()
+      .replace(/\./g, "\n") //replace . with enter
+      .replace(/\n+/g, "\n"); //make sure there is only one enter
+  },
+});
+
 export function toggleScript(...params: string[]): void {
   FunboxList.get(Config.funbox).forEach((funbox) => {
     if (funbox.functions?.toggleScript) funbox.functions.toggleScript(params);
