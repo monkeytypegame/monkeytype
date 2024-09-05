@@ -112,7 +112,7 @@ function applyTsRestApiRoutes(app: IRouter): void {
         .status(422)
         .json({ message, validationErrors } as MonkeyValidationError);
     },
-    globalMiddleware: [rateLimitRequest(), authenticateTsRestRequest()],
+    globalMiddleware: [authenticateTsRestRequest(), rateLimitRequest()],
   });
 }
 

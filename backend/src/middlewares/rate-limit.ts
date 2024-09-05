@@ -19,7 +19,7 @@ import {
 } from "@monkeytype/contracts/rate-limit/index";
 import statuses from "../constants/monkey-status-codes";
 
-const REQUEST_MULTIPLIER = isDevEnvironment() ? 1 : 1;
+const REQUEST_MULTIPLIER = isDevEnvironment() ? 100 : 1;
 
 export const customHandler = (
   req: MonkeyTypes.ExpressRequestWithContext,
