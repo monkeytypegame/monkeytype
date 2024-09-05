@@ -217,10 +217,12 @@ class QuotesController {
 
     if (!isFavorite) {
       // Remove from favorites
-      const response = await Ape.users.removeQuoteFromFavorites(
-        quote.language,
-        `${quote.id}`
-      );
+      const response = await Ape.users.removeQuoteFromFavorites({
+        body: {
+          language: quote.language,
+          quoteId: `${quote.id}`,
+        },
+      });
 
       if (response.status === 200) {
         const quoteIndex = snapshot.favoriteQuotes?.[quote.language]?.indexOf(
@@ -228,14 +230,16 @@ class QuotesController {
         ) as number;
         snapshot.favoriteQuotes?.[quote.language]?.splice(quoteIndex, 1);
       } else {
-        throw new Error(response.message);
+        throw new Error(response.body.message);
       }
     } else {
       // Remove from favorites
-      const response = await Ape.users.addQuoteToFavorites(
-        quote.language,
-        `${quote.id}`
-      );
+      const response = await Ape.users.addQuoteToFavorites({
+        body: {
+          language: quote.language,
+          quoteId: `${quote.id}`,
+        },
+      });
 
       if (response.status === 200) {
         if (snapshot.favoriteQuotes === undefined) {
@@ -246,7 +250,7 @@ class QuotesController {
         }
         snapshot.favoriteQuotes[quote.language]?.push(`${quote.id}`);
       } else {
-        throw new Error(response.message);
+        throw new Error(response.body.message);
       }
     }
   }

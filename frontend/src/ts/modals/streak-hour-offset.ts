@@ -82,11 +82,13 @@ async function apply(): Promise<void> {
 
   Loader.show();
 
-  const response = await Ape.users.setStreakHourOffset(value);
+  const response = await Ape.users.setStreakHourOffset({
+    body: { hourOffset: value },
+  });
   Loader.hide();
   if (response.status !== 200) {
     Notifications.add(
-      "Failed to set streak hour offset: " + response.message,
+      "Failed to set streak hour offset: " + response.body.message,
       -1
     );
   } else {

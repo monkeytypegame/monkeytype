@@ -34,7 +34,7 @@ const obj = {
 
 export function replaceHomoglyphs(str: string): string {
   for (const key in obj) {
-    obj[key].forEach((value) => {
+    obj[key as keyof typeof obj].forEach((value) => {
       str = str.replace(value, key);
     });
   }

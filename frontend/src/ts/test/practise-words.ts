@@ -6,13 +6,12 @@ import * as TestInput from "./test-input";
 import * as ConfigEvent from "../observables/config-event";
 import { setCustomTextName } from "../states/custom-text-name";
 import { Mode } from "@monkeytype/contracts/schemas/shared";
-import { CustomTextData } from "@monkeytype/shared-types";
 
 type Before = {
   mode: Mode | null;
   punctuation: boolean | null;
   numbers: boolean | null;
-  customText: CustomTextData | null;
+  customText: MonkeyTypes.CustomTextData | null;
 };
 
 export const before: Before = {

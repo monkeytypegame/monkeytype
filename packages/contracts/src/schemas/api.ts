@@ -10,7 +10,8 @@ export type OpenApiTag =
   | "leaderboards"
   | "results"
   | "configuration"
-  | "dev"
+  | "development"
+  | "users"
   | "quotes";
 
 export type EndpointMetadata = {
@@ -37,7 +38,7 @@ export const MonkeyResponseSchema = z.object({
 export type MonkeyResponseType = z.infer<typeof MonkeyResponseSchema>;
 
 export const MonkeyValidationErrorSchema = MonkeyResponseSchema.extend({
-  validationErrors: z.array(z.string()).nonempty(),
+  validationErrors: z.array(z.string()),
 });
 export type MonkeyValidationError = z.infer<typeof MonkeyValidationErrorSchema>;
 

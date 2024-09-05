@@ -7,7 +7,7 @@ import * as ConnectionState from "../states/connection";
 import AnimatedModal from "../utils/animated-modal";
 import * as Profile from "../elements/profile";
 import { CharacterCounter } from "../elements/character-counter";
-import { Badge, UserProfileDetails } from "@monkeytype/shared-types";
+import { Badge, UserProfileDetails } from "@monkeytype/contracts/schemas/users";
 
 export function show(): void {
   if (!ConnectionState.get()) {
@@ -125,8 +125,8 @@ async function updateProfile(): Promise<void> {
   // check for length resctrictions before sending server requests
   const githubLengthLimit = 39;
   if (
-    updates.socialProfiles.github !== undefined &&
-    updates.socialProfiles.github.length > githubLengthLimit
+    updates.socialProfiles?.github !== undefined &&
+    updates.socialProfiles?.github.length > githubLengthLimit
   ) {
     Notifications.add(
       `GitHub username exceeds maximum allowed length (${githubLengthLimit} characters).`,
@@ -137,8 +137,8 @@ async function updateProfile(): Promise<void> {
 
   const twitterLengthLimit = 20;
   if (
-    updates.socialProfiles.twitter !== undefined &&
-    updates.socialProfiles.twitter.length > twitterLengthLimit
+    updates.socialProfiles?.twitter !== undefined &&
+    updates.socialProfiles?.twitter.length > twitterLengthLimit
   ) {
     Notifications.add(
       `Twitter username exceeds maximum allowed length (${twitterLengthLimit} characters).`,
@@ -148,18 +148,20 @@ async function updateProfile(): Promise<void> {
   }
 
   Loader.show();
-  const response = await Ape.users.updateProfile(
-    updates,
-    currentSelectedBadgeId
-  );
+  const response = await Ape.users.updateProfile({
+    body: {
+      ...updates,
+      selectedBadgeId: currentSelectedBadgeId,
+    },
+  });
   Loader.hide();
 
   if (response.status !== 200) {
-    Notifications.add("Failed to update profile: " + response.message, -1);
+    Notifications.add("Failed to update profile: " + response.body.message, -1);
     return;
   }
 
-  snapshot.details = response.data ?? updates;
+  snapshot.details = response.body.data ?? updates;
   snapshot.inventory?.badges.forEach((badge) => {
     if (badge.id === currentSelectedBadgeId) {
       badge.selected = true;

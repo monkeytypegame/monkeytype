@@ -6,7 +6,6 @@ import rateLimit, {
   type Options,
 } from "express-rate-limit";
 import { isDevEnvironment } from "../utils/misc";
-import { TsRestRequestHandler } from "@ts-rest/express";
 import { TsRestRequestWithCtx } from "./auth";
 
 const REQUEST_MULTIPLIER = isDevEnvironment() ? 1 : 1;
@@ -54,10 +53,10 @@ export function withApeRateLimiter(
   };
 }
 
-export function withApeRateLimiter2<T extends AppRouter | AppRoute>(
+export function withApeRateLimiter2(
   defaultRateLimiter: RateLimitRequestHandler,
   apeRateLimiterOverride?: RateLimitRequestHandler
-): TsRestRequestHandler<T> {
+): MonkeyTypes.RequestHandler {
   return (req: TsRestRequestWithCtx, res: Response, next: NextFunction) => {
     if (req.ctx.decodedToken.type === "ApeKey") {
       const rateLimiter = apeRateLimiterOverride ?? apeRateLimiter;
