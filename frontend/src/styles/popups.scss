@@ -1486,18 +1486,27 @@ body.darkMode {
     }
   }
 
+  .group {
+    display: grid;
+    gap: 0.5rem;
+    align-items: center;
+    width: 100%;
+  }
+
+  input[type="text"] {
+    width: 100%;
+  }
+
   .inputs {
     display: grid;
     grid-template-columns: 1fr;
-    gap: 0.5rem;
+    gap: 1rem;
     font-size: 0.75rem;
     .title {
       color: var(--sub-color);
       text-transform: lowercase;
     }
     .partialPresetGroups {
-      display: grid;
-      gap: 0.5rem;
       .checkboxList {
         display: grid;
         gap: 1rem;
@@ -1516,10 +1525,6 @@ body.darkMode {
       }
     }
     .presetType {
-      display: grid;
-      gap: 0.5rem;
-      align-items: center;
-      width: 100%;
       .presetTypeButtonGroup {
         display: flex;
         width: 100%;

@@ -954,25 +954,27 @@
 <dialog id="editPresetModal" class="modalWrapper hidden">
   <form class="modal">
     <div class="title popupTitle"></div>
-    <div class="presetNameTitle">name</div>
-    <input type="text" title="presets" />
+    <div class="group">
+      <div class="presetNameTitle">name</div>
+      <input type="text" title="presets" />
+    </div>
+    <label class="changePresetToCurrentCheckbox checkbox">
+      <input type="checkbox" />
+      Change preset to current settings
+    </label>
     <div class="inputs">
-      <div class="presetType" data-id="presetType">
+      <div class="presetType group" data-id="presetType">
         <div class="title">Preset Type</div>
         <div class="presetTypeButtonGroup">
           <button value="full" type="button">full</button>
           <button value="partial" type="button">partial</button>
         </div>
       </div>
-      <div class="partialPresetGroups">
+      <div class="partialPresetGroups group">
         <div class="title">partial groups</div>
         <div class="checkboxList"></div>
       </div>
     </div>
-    <label class="changePresetToCurrentCheckbox">
-      <input type="checkbox" />
-      Change preset to current settings
-    </label>
     <div class="text deletePrompt"></div>
     <button class="submit" type="submit">add</button>
   </form>
