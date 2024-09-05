@@ -1,22 +1,27 @@
 import { Configuration } from "../schemas/configuration";
+
 type BooleanPaths<T, P extends string = ""> = {
   [K in keyof T]: T[K] extends boolean
     ? P extends ""
       ? K
       : `${P}.${Extract<K, string | number>}`
     : T[K] extends object
-    ? BooleanPaths<
-        T[K],
-        P extends ""
-          ? Extract<K, string | number>
-          : `${P}.${Extract<K, string | number>}`
-      >
+    ? `${P}.${Extract<K, string | number>}` extends infer D
+      ? D extends string
+        ? BooleanPaths<T[K], D>
+        : never
+      : never
     : never;
 }[keyof T];
 
-type ConfigurationValue = BooleanPaths<Configuration>;
+// Helper type to remove leading dot
+type RemoveLeadingDot<T> = T extends `.${infer U}` ? U : T;
+
+export type ConfigurationPath = RemoveLeadingDot<BooleanPaths<Configuration>>;
 
 export type RequireConfiguration = {
-  value: ConfigurationValue;
+  /** path to the configuration, needs to be a boolean value */
+  path: ConfigurationPath;
+  /** message of the ErrorResponse in case the value is `false` */
   invalidMessage?: string;
 };

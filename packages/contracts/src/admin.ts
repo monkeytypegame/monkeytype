@@ -113,7 +113,7 @@ export const adminContract = c.router(
       rateLimit: "adminLimit",
       requirePermission: "admin",
       requireConfiguration: {
-        value: "users.inbox.enabled",
+        path: "admin.endpointsEnabled",
         invalidMessage: "Admin endpoints are currently disabled.",
       },
     }),
