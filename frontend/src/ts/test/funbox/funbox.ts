@@ -526,8 +526,9 @@ FunboxList.setFunboxFunctions("ddoouubblleedd", {
 FunboxList.setFunboxFunctions("instant_messaging", {
   alterText(word: string): string {
     return word
-      .toLocaleLowerCase()
-      .replace(/\./g, "\n") //replace . with enter
+      .toLowerCase()
+      .replace(/[.!?]$/g, "\n") //replace .?! with enter
+      .replace(/[().'"]/g, "") //remove special characters
       .replace(/\n+/g, "\n"); //make sure there is only one enter
   },
 });
