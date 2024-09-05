@@ -261,9 +261,16 @@
     }
   }
 
-  &.tape .word {
-    margin: 0.25em 0.6em 0.75em 0;
-    white-space: nowrap;
+  &.tape {
+    display: block;
+    text-wrap: nowrap;
+    .word {
+      margin: 0.25em 0.6em 0.75em 0;
+      display: inline-block;
+    }
+    .afterNewline {
+      display: inline-block;
+    }
   }
 
   /* a little hack for right-to-left languages */
@@ -564,9 +571,9 @@
   pointer-events: none;
   top: -2.5rem;
 
-  &.focus {
-    // top: 0rem;
-  }
+  //&.focus {
+  // top: 0rem;
+  //}
 
   i {
     margin-right: 0.5rem;
