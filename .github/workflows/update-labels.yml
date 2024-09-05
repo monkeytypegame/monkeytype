@@ -1,0 +1,96 @@
+name: Check labels to update
+
+on:
+  pull_request_target:
+    types:
+      [
+        review_requested,
+        ready_for_review,
+        review_request_removed,
+        converted_to_draft,
+        synchronize,
+        edited,
+      ]
+  pull_request_review:
+    types: [submitted, edited, dismissed]
+  pull_request_review_comment:
+    types: [created, edited]
+  issue_comment:
+    types: [created, edited]
+
+jobs:
+  update-labels:
+    runs-on: ubuntu-latest
+    env:
+      PR_NUM: ${{ github.event.pull_request.number || github.event.issue.number }}
+
+    steps:
+      - name: Set up varibles
+        run: |
+          echo "REVIEW=0" >> $GITHUB_ENV
+          echo "UPDATE=0" >> $GITHUB_ENV
+
+      - name: Add 'waiting for review' label
+        # when a review is requested or if the PR is converted from a draft
+        if: |
+          github.event_name == 'pull_request_target' &&
+          contains(fromJSON('["review_requested", "ready_for_review"]'), github.event.action)
+        run: echo "REVIEW=1" >> $GITHUB_ENV
+
+      - name: Remove 'waiting for review' label
+        # when a review request is removed or if the PR is converted to a draft
+        # or when the PR is reviewed by the owner, a member or a collaborator
+        if: |
+          (
+            github.event_name == 'pull_request_target' &&
+            contains(fromJSON('["review_request_removed", "converted_to_draft"]'), github.event.action)
+          ) ||
+          (
+            github.event_name == 'pull_request_review' &&
+            contains(fromJSON('["submitted", "edited"]'), github.event.action) &&
+            contains(fromJSON('["OWNER", "MEMBER", "COLLABORATOR"]'), github.event.review.author_association)
+          )
+        run: echo "REVIEW=-1" >> $GITHUB_ENV
+
+      - name: Add 'waiting for update' label
+        # when a review by one of {owner, member, collaborator} requests changes
+        if: |
+          github.event_name == 'pull_request_review' &&
+          github.event.review.state == 'changes_requested' &&
+          contains(fromJSON('["OWNER", "MEMBER", "COLLABORATOR"]'), github.event.review.author_association)
+        run: echo "UPDATE=1" >> $GITHUB_ENV
+
+      - name: Remove 'waiting for update' label from PR/issue
+        # when PR is commited to or if the PR is edited or if a review is requested or dismissed
+        # or when a comment is added by the author to the review or to the main PR thread
+        if: |
+          (
+            github.event_name == 'pull_request_target' &&
+            contains(fromJSON('["synchronize", "edited", "review_requested"]'), github.event.action)
+          ) ||
+          (
+            github.event_name == 'pull_request_review' &&
+            github.event.action == 'dismissed'
+          ) ||
+          (
+            github.event_name == 'pull_request_review_comment' &&
+            contains(fromJSON('["created", "edited"]'), github.event.action) &&
+            github.event.comment.user.id == github.event.pull_request.user.id
+          ) ||
+          (
+            github.event_name == 'issue_comment' &&
+            contains(fromJSON('["created", "edited"]'), github.event.action) &&
+            github.event.comment.user.id == github.event.issue.user.id
+          )
+        run: echo "UPDATE=-1" >> $GITHUB_ENV
+
+      - name: Save result in a JSON file
+        env:
+          LABELS_JSON: ${{ format('{{"waiting_for_review"{0} "{1}", "waiting_for_update"{0} "{2}", "pr_num"{0} "{3}"}}', ':', env.REVIEW, env.UPDATE, env.PR_NUM) }}
+        run: echo $LABELS_JSON > write-labels.json
+
+      - name: Upload the JSON file
+        uses: actions/upload-artifact@v4
+        with:
+          name: labels
+          path: ./write-labels.json

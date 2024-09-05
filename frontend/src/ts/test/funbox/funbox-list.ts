@@ -273,6 +273,11 @@ const list: MonkeyTypes.FunboxMetadata[] = [
     info: "TTyyppee eevveerryytthhiinngg ttwwiiccee..",
     properties: ["noLigatures"],
   },
+  {
+    name: "instant_messaging",
+    info: "Who needs shift anyway?",
+    properties: ["changesCapitalisation"],
+  },
 ];
 
 export function getAll(): MonkeyTypes.FunboxMetadata[] {

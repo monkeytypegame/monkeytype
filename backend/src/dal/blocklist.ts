@@ -1,7 +1,7 @@
 import { Collection } from "mongodb";
 import * as db from "../init/db";
 import { createHash } from "crypto";
-import { User } from "@monkeytype/shared-types";
+import { User } from "@monkeytype/contracts/schemas/users";
 
 type BlocklistEntryProperties = Pick<User, "name" | "email" | "discordId">;
 // Export for use in tests

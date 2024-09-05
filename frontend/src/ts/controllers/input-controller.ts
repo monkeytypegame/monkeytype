@@ -677,14 +677,16 @@ function handleChar(
     char
   );
 
+  const activeWord = document.querySelectorAll("#words .word")?.[
+    TestUI.activeWordElementIndex
+  ] as HTMLElement;
+
   const testInputLength: number = !isCharKorean
     ? TestInput.input.current.length
     : Hangul.disassemble(TestInput.input.current).length;
   //update the active word top, but only once
   if (testInputLength === 1 && TestWords.words.currentIndex === 0) {
-    TestUI.setActiveWordTop(
-      (document.querySelector("#words .active") as HTMLElement)?.offsetTop
-    );
+    TestUI.setActiveWordTop(activeWord?.offsetTop);
   }
 
   //max length of the input is 20 unless in zen mode then its 30
@@ -732,14 +734,10 @@ function handleChar(
     }
   }
 
-  const activeWordTopBeforeJump = document.querySelector<HTMLElement>(
-    "#words .word.active"
-  )?.offsetTop as number;
+  const activeWordTopBeforeJump = activeWord?.offsetTop;
   void TestUI.updateActiveWordLetters();
 
-  const newActiveTop = document.querySelector<HTMLElement>(
-    "#words .word.active"
-  )?.offsetTop as number;
+  const newActiveTop = activeWord?.offsetTop;
   //stop the word jump by slicing off the last character, update word again
   if (
     activeWordTopBeforeJump < newActiveTop &&
@@ -747,12 +745,7 @@ function handleChar(
     TestInput.input.current.length > 1
   ) {
     if (Config.mode === "zen") {
-      const currentTop = Math.floor(
-        document.querySelectorAll<HTMLElement>("#words .word")[
-          TestUI.activeWordElementIndex - 1
-        ]?.offsetTop ?? 0
-      );
-      if (!Config.showAllLines) TestUI.lineJump(currentTop);
+      if (!Config.showAllLines) TestUI.lineJump(activeWordTopBeforeJump);
     } else {
       TestInput.input.current = TestInput.input.current.slice(0, -1);
       void TestUI.updateActiveWordLetters();
@@ -1103,14 +1096,14 @@ $(document).on("keydown", async (event) => {
   //show dead keys
   if (event.key === "Dead" && !CompositionState.getComposing()) {
     void Sound.playClick();
-    const word: HTMLElement | null = document.querySelector<HTMLElement>(
-      "#words .word.active"
-    );
+    const activeWord: HTMLElement | null = document.querySelectorAll(
+      "#words .word"
+    )?.[TestUI.activeWordElementIndex] as HTMLElement;
     const len: number = TestInput.input.current.length; // have to do this because prettier wraps the line and causes an error
 
     // Check to see if the letter actually exists to toggle it as dead
     const deadLetter: Element | undefined =
-      word?.querySelectorAll("letter")[len];
+      activeWord?.querySelectorAll("letter")[len];
     if (deadLetter) {
       deadLetter.classList.toggle("dead");
     }

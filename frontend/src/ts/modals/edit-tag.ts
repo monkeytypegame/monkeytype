@@ -86,15 +86,16 @@ async function apply(): Promise<void> {
   Loader.show();
 
   if (action === "add") {
-    const response = await Ape.users.createTag(tagName);
+    const response = await Ape.users.createTag({ body: { tagName } });
 
     if (response.status !== 200) {
       Notifications.add(
-        "Failed to add tag: " + response.message.replace(tagName, propTagName),
+        "Failed to add tag: " +
+          response.body.message.replace(tagName, propTagName),
         -1
       );
     } else {
-      if (response.data === null) {
+      if (response.body.data === null) {
         Notifications.add("Tag was added but data returned was null", -1);
         Loader.hide();
         return;
@@ -103,8 +104,8 @@ async function apply(): Promise<void> {
       Notifications.add("Tag added", 1);
       DB.getSnapshot()?.tags?.push({
         display: propTagName,
-        name: response.data.name,
-        _id: response.data._id,
+        name: response.body.data.name,
+        _id: response.body.data._id,
         personalBests: {
           time: {},
           words: {},
@@ -116,10 +117,12 @@ async function apply(): Promise<void> {
       void Settings.update();
     }
   } else if (action === "edit") {
-    const response = await Ape.users.editTag(tagId, tagName);
+    const response = await Ape.users.editTag({
+      body: { tagId, newName: tagName },
+    });
 
     if (response.status !== 200) {
-      Notifications.add("Failed to edit tag: " + response.message, -1);
+      Notifications.add("Failed to edit tag: " + response.body.message, -1);
     } else {
       Notifications.add("Tag updated", 1);
       DB.getSnapshot()?.tags?.forEach((tag) => {
@@ -131,10 +134,10 @@ async function apply(): Promise<void> {
       void Settings.update();
     }
   } else if (action === "remove") {
-    const response = await Ape.users.deleteTag(tagId);
+    const response = await Ape.users.deleteTag({ params: { tagId } });
 
     if (response.status !== 200) {
-      Notifications.add("Failed to remove tag: " + response.message, -1);
+      Notifications.add("Failed to remove tag: " + response.body.message, -1);
     } else {
       Notifications.add("Tag removed", 1);
       DB.getSnapshot()?.tags?.forEach((tag, index: number) => {
@@ -145,10 +148,12 @@ async function apply(): Promise<void> {
       void Settings.update();
     }
   } else if (action === "clearPb") {
-    const response = await Ape.users.deleteTagPersonalBest(tagId);
+    const response = await Ape.users.deleteTagPersonalBest({
+      params: { tagId },
+    });
 
     if (response.status !== 200) {
-      Notifications.add("Failed to clear tag pb: " + response.message, -1);
+      Notifications.add("Failed to clear tag pb: " + response.body.message, -1);
     } else {
       Notifications.add("Tag PB cleared", 1);
       DB.getSnapshot()?.tags?.forEach((tag) => {

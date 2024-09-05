@@ -72,7 +72,7 @@ describe("PublicController", () => {
         validationErrors: [
           '"language" Required',
           '"mode" Required',
-          '"mode2" Needs to be either a number, "zen" or "custom."',
+          '"mode2" Needs to be either a number, "zen" or "custom".',
         ],
       });
     });

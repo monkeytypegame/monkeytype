@@ -39,13 +39,15 @@ function hide(): void {
       if (mailToMarkRead.length === 0 && mailToDelete.length === 0) return;
 
       const updateResponse = await Ape.users.updateInbox({
-        mailIdsToMarkRead:
-          mailToMarkRead.length > 0 ? mailToMarkRead : undefined,
-        mailIdsToDelete: mailToDelete.length > 0 ? mailToDelete : undefined,
+        body: {
+          mailIdsToMarkRead:
+            mailToMarkRead.length > 0 ? mailToMarkRead : undefined,
+          mailIdsToDelete: mailToDelete.length > 0 ? mailToDelete : undefined,
+        },
       });
 
       const status = updateResponse.status;
-      const message = updateResponse.message;
+      const message = updateResponse.body.message;
       if (status !== 200) {
         Notifications.add(`Failed to update inbox: ${message}`, -1);
         return;
@@ -146,15 +148,12 @@ async function getAccountAlerts(): Promise<void> {
   } else if (inboxResponse.status !== 200) {
     $("#alertsPopup .accountAlerts .list").html(`
     <div class="nothing">
-    Error getting inbox: ${inboxResponse.message} Please try again later
+    Error getting inbox: ${inboxResponse.body.message} Please try again later
     </div>
     `);
     return;
   }
-  const inboxData = inboxResponse.data as {
-    inbox: MonkeyTypes.MonkeyMail[];
-    maxMail: number;
-  };
+  const inboxData = inboxResponse.body.data;
 
   accountAlerts = inboxData.inbox;
 

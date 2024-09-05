@@ -323,7 +323,7 @@ function lbBests(
   return result;
 }
 
-function pb(
+export function pb(
   wpm: number,
   acc: number = 90,
   timestamp: number = 1

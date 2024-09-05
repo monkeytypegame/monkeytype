@@ -11,7 +11,7 @@ import * as ActivePage from "../states/active-page";
 import { formatDistanceToNowStrict } from "date-fns/formatDistanceToNowStrict";
 import { getHtmlByUserFlags } from "../controllers/user-flag-controller";
 import Format from "../utils/format";
-import { RankAndCount, UserProfile } from "@monkeytype/shared-types";
+import { UserProfile, RankAndCount } from "@monkeytype/contracts/schemas/users";
 
 type ProfileViewPaths = "profile" | "account";
 type UserProfileOrSnapshot = UserProfile | MonkeyTypes.Snapshot;
@@ -246,9 +246,9 @@ export async function update(
     details.find(".keyboard .value").text(profile.details?.keyboard ?? "");
 
     if (
-      profile.details?.socialProfiles.github !== undefined ||
-      profile.details?.socialProfiles.twitter !== undefined ||
-      profile.details?.socialProfiles.website !== undefined
+      profile.details?.socialProfiles?.github !== undefined ||
+      profile.details?.socialProfiles?.twitter !== undefined ||
+      profile.details?.socialProfiles?.website !== undefined
     ) {
       socials = true;
       const socialsEl = details.find(".socials .value");
@@ -302,8 +302,8 @@ export async function update(
   } else {
     profileElement.find(".leaderboardsPositions").removeClass("hidden");
 
-    const t15 = profile.allTimeLbs.time?.["15"]?.["english"] ?? null;
-    const t60 = profile.allTimeLbs.time?.["60"]?.["english"] ?? null;
+    const t15 = profile.allTimeLbs?.time?.["15"]?.["english"] ?? null;
+    const t60 = profile.allTimeLbs?.time?.["60"]?.["english"] ?? null;
 
     if (t15 === null && t60 === null) {
       profileElement.find(".leaderboardsPositions").addClass("hidden");
