@@ -1,5 +1,7 @@
 import _ from "lodash";
 import * as pb from "../../src/utils/pb";
+import { Mode, PersonalBests } from "@monkeytype/contracts/schemas/shared";
+import { Result } from "@monkeytype/contracts/schemas/results";
 
 describe("Pb Utils", () => {
   it("funboxCatGetPb", () => {
@@ -34,7 +36,7 @@ describe("Pb Utils", () => {
   });
   describe("checkAndUpdatePb", () => {
     it("should update personal best", () => {
-      const userPbs: SharedTypes.PersonalBests = {
+      const userPbs: PersonalBests = {
         time: {},
         words: {},
         custom: {},
@@ -53,7 +55,7 @@ describe("Pb Utils", () => {
         numbers: false,
         mode: "time",
         mode2: "15",
-      } as unknown as SharedTypes.Result<SharedTypes.Config.Mode>;
+      } as unknown as Result<Mode>;
 
       const run = pb.checkAndUpdatePb(userPbs, undefined, result);
 
@@ -61,7 +63,7 @@ describe("Pb Utils", () => {
       expect(run.personalBests?.["time"]?.["15"]?.[0]).not.toBe(undefined);
     });
     it("should not override default pb when saving numbers test", () => {
-      const userPbs: SharedTypes.PersonalBests = {
+      const userPbs: PersonalBests = {
         time: {
           "15": [
             {
@@ -95,7 +97,7 @@ describe("Pb Utils", () => {
         numbers: true,
         mode: "time",
         mode2: "15",
-      } as unknown as SharedTypes.Result<SharedTypes.Config.Mode>;
+      } as unknown as Result<Mode>;
 
       const run = pb.checkAndUpdatePb(userPbs, undefined, result);
 
