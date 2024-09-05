@@ -767,13 +767,13 @@ function refreshTagsSettingsSection(): void {
       }">
           ${tag.display}
         </button>
-        <button class="clearPbButton">
+        <button class="clearPbButton" aria-label="clear tags personal bests" data-balloon-pos="left" >
           <i class="fas fa-crown fa-fw"></i>
         </button>
-        <button class="editButton">
+        <button class="editButton" aria-label="rename tag" data-balloon-pos="left" >
           <i class="fas fa-pen fa-fw"></i>
         </button>
-        <button class="removeButton">
+        <button class="removeButton" aria-label="remove tag"  data-balloon-pos="left" >
           <i class="fas fa-trash fa-fw"></i>
         </button>
       </div>
