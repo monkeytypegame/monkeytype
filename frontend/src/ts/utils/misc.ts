@@ -2,7 +2,6 @@ import * as Loader from "../elements/loader";
 import { envConfig } from "../constants/env-config";
 import { lastElementFromArray } from "./arrays";
 import * as JSONData from "./json-data";
-import { CustomTextData } from "@monkeytype/shared-types";
 import { Config } from "@monkeytype/contracts/schemas/configs";
 import {
   Mode,
@@ -227,7 +226,7 @@ export function canQuickRestart(
   mode: string,
   words: number,
   time: number,
-  CustomText: CustomTextData,
+  CustomText: MonkeyTypes.CustomTextData,
   customTextIsLong: boolean
 ): boolean {
   const wordsLong = mode === "words" && (words >= 1000 || words === 0);

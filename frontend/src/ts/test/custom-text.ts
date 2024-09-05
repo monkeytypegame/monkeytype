@@ -1,4 +1,3 @@
-import { CustomTextData, CustomTextLimit } from "@monkeytype/shared-types";
 import {
   CustomTextLimitMode,
   CustomTextMode,
@@ -47,7 +46,7 @@ let text: string[] = [
 ];
 
 let mode: CustomTextMode = "repeat";
-const limit: CustomTextLimit = {
+const limit: MonkeyTypes.CustomTextLimit = {
   value: 9,
   mode: "word",
 };
@@ -71,7 +70,7 @@ export function setMode(val: CustomTextMode): void {
   limit.value = text.length;
 }
 
-export function getLimit(): CustomTextLimit {
+export function getLimit(): MonkeyTypes.CustomTextLimit {
   return limit;
 }
 
@@ -99,7 +98,7 @@ export function setPipeDelimiter(val: boolean): void {
   pipeDelimiter = val;
 }
 
-export function getData(): CustomTextData {
+export function getData(): MonkeyTypes.CustomTextData {
   return {
     text,
     mode,
