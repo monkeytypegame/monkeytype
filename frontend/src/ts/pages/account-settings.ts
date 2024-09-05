@@ -195,7 +195,10 @@ $(
     if (response.status === 200) {
       window.open(response.body.data.url, "_self");
     } else {
-      Notifications.add("Failed to edit tag: " + response.body.message, -1);
+      Notifications.add(
+        "Failed to get OAuth from discord: " + response.body.message,
+        -1
+      );
     }
   });
 });

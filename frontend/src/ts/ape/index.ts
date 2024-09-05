@@ -12,7 +12,6 @@ const devClient = buildClient(devContract, BASE_URL, 240_000);
 const Ape = {
   ...tsRestClient,
   dev: devClient,
-  users: tsRestClient.users,
 };
 
 export default Ape;

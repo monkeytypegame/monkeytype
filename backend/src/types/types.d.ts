@@ -30,9 +30,8 @@ declare namespace MonkeyTypes {
     raw: Readonly<TsRestRequest>;
   };
 
-  /* eslint-disable  @typescript-eslint/no-explicit-any */
+  /* eslint-disable-next-line  @typescript-eslint/no-explicit-any */
   type RequestHandler = import("@ts-rest/core").TsRestRequestHandler<any>;
-  /* eslint-enable  @typescript-eslint/no-explicit-any */
 
   type DBUser = Omit<
     import("@monkeytype/contracts/schemas/users").User,
