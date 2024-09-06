@@ -263,6 +263,7 @@
 
   &.tape .word {
     margin: 0.25em 0.6em 0.75em 0;
+    white-space: nowrap;
   }
 
   /* a little hack for right-to-left languages */
