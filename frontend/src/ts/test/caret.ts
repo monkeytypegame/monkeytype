@@ -165,8 +165,9 @@ export async function updatePosition(noAnim = false): Promise<void> {
     lastWordLetter?.offsetHeight ||
     Config.fontSize * Numbers.convertRemToPixels(1);
 
-  const letterPosTop =
-    currentLetter?.offsetTop || lastWordLetter?.offsetTop || 0;
+  let letterPosTop = currentLetter?.offsetTop ?? lastWordLetter?.offsetTop ?? 0;
+  if ((Config.blindMode || Config.hideExtraLetters) && inputLen > wordLen)
+    letterPosTop = lastWordLetter?.offsetTop ?? 0;
   const diff = letterHeight - caret.offsetHeight;
   let newTop = activeWordEl.offsetTop + letterPosTop + diff / 2;
   if (Config.caretStyle === "underline") {
