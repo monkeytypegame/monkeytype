@@ -351,21 +351,21 @@ export const limits = {
   },
 } satisfies Record<string, RateLimitOptions>;
 
-export type RateLimit = keyof typeof limits;
-export type ApeKeyRateLimit = {
-  /** rate limiter options for bearer requests */
-  limiter: RateLimit;
-  /** optional rate limiter options for apeKey requests. If missing a default limiter with 30 requests/minute is used, */
-  apeKeyLimiter?: RateLimit;
+export type RateLimiterId = keyof typeof limits;
+export type RateLimitIds = {
+  /** rate limiter options for non-apeKey requests */
+  normal: RateLimiterId;
+  /** Rate limiter options for apeKey requests */
+  apeKey: RateLimiterId;
 };
 
-export function getLimits(limit: RateLimit | ApeKeyRateLimit): {
+export function getLimits(limit: RateLimiterId | RateLimitIds): {
   limiter: RateLimitOptions;
   apeKeyLimiter?: RateLimitOptions;
 } {
   const isApeKeyLimiter = typeof limit === "object";
-  const limiter = isApeKeyLimiter ? limit.limiter : limit;
-  const apeLimiter = isApeKeyLimiter ? limit.apeKeyLimiter : undefined;
+  const limiter = isApeKeyLimiter ? limit.normal : limit;
+  const apeLimiter = isApeKeyLimiter ? limit.apeKey : undefined;
 
   return {
     limiter: limits[limiter],

@@ -13,7 +13,7 @@ import { TsRestRequestWithCtx } from "./auth";
 import { TsRestRequestHandler } from "@ts-rest/express";
 import {
   limits,
-  RateLimit,
+  RateLimiterId,
   RateLimitOptions,
   Window,
 } from "@monkeytype/contracts/rate-limit/index";
@@ -52,8 +52,8 @@ const getKeyWithUid = (req: MonkeyTypes.Request, _res: Response): string => {
   return useUid ? uid : getKey(req, _res);
 };
 
-function initialiseLimiters(): Record<RateLimit, RateLimitRequestHandler> {
-  const keys = Object.keys(limits) as RateLimit[];
+function initialiseLimiters(): Record<RateLimiterId, RateLimitRequestHandler> {
+  const keys = Object.keys(limits) as RateLimiterId[];
 
   const convert = (options: RateLimitOptions): RateLimitRequestHandler => {
     return rateLimit({
@@ -67,7 +67,7 @@ function initialiseLimiters(): Record<RateLimit, RateLimitRequestHandler> {
   return keys.reduce(
     (output, key) => ({ ...output, [key]: convert(limits[key]) }),
     {}
-  ) as Record<RateLimit, RateLimitRequestHandler>;
+  ) as Record<RateLimiterId, RateLimitRequestHandler>;
 }
 
 function convertWindowToMs(window: Window): number {
@@ -85,7 +85,7 @@ function convertWindowToMs(window: Window): number {
 }
 
 //visible for testing
-export const requestLimiters: Record<RateLimit, RateLimitRequestHandler> =
+export const requestLimiters: Record<RateLimiterId, RateLimitRequestHandler> =
   initialiseLimiters();
 
 export function rateLimitRequest<
@@ -105,10 +105,10 @@ export function rateLimitRequest<
     const isApeKeyLimiter = typeof limit === "object";
     let requestLimiter;
     if (req.ctx.decodedToken.type === "ApeKey") {
-      const key = isApeKeyLimiter ? limit.apeKeyLimiter : undefined;
+      const key = isApeKeyLimiter ? limit.apeKey : undefined;
       requestLimiter = requestLimiters[key ?? "defaultApeRateLimit"];
     } else {
-      const key = isApeKeyLimiter ? limit.limiter : limit;
+      const key = isApeKeyLimiter ? limit.normal : limit;
       requestLimiter = requestLimiters[key];
     }
     requestLimiter(req, res, next);

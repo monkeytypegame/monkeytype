@@ -88,8 +88,8 @@ export const resultsContract = c.router(
           acceptApeKeys: true,
         },
         rateLimit: {
-          limiter: "resultsGet",
-          apeKeyLimiter: "resultsGetApe",
+          normal: "resultsGet",
+          apeKey: "resultsGetApe",
         },
       }),
     },

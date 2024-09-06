@@ -1,5 +1,5 @@
 import { z, ZodSchema } from "zod";
-import { ApeKeyRateLimit, RateLimit } from "../rate-limit";
+import { RateLimitIds, RateLimiterId } from "../rate-limit";
 
 export type OpenApiTag =
   | "configs"
@@ -21,12 +21,18 @@ export type EndpointMetadata = {
 
   openApiTags?: OpenApiTag | OpenApiTag[];
 
-  /** Rate limit options or apeKey rate limit options.
-   * Only specifying RateLimit/limiter will use  a default limiter with 30 requests/minute for ApeKey requests.
+  /** RateLimitId or RateLimitIds.
+   * Only specifying RateLimiterId will use  a default limiter with 30 requests/minute for ApeKey requests.
    */
-  rateLimit?: RateLimit | ApeKeyRateLimit;
+  rateLimit?: RateLimiterId | RateLimitIds;
 };
 
+/**
+ *
+ * @param meta Ensure the type of metadata is `EndpointMetadata`.
+ * Ts-rest does not allow to specify the type of `metadata`.
+ * @returns
+ */
 export function meta(meta: EndpointMetadata): EndpointMetadata {
   return meta;
 }
