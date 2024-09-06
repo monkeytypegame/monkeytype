@@ -159,14 +159,15 @@ export async function updatePosition(noAnim = false): Promise<void> {
   const isLanguageRightToLeft = currentLanguage.rightToLeft;
 
   // in blind mode, and hide extra letters, extra letters have zero offsets
-  // offsetTop and offsetHeight is the same for all visible letters
+  // offsetHeight is the same for all visible letters
+  // so is offsetTop (for same line letters)
   const letterHeight =
     currentLetter?.offsetHeight ||
     lastWordLetter?.offsetHeight ||
     Config.fontSize * Numbers.convertRemToPixels(1);
 
   const letterPosTop =
-    currentLetter?.offsetTop || lastWordLetter?.offsetTop || 0;
+    currentLetter?.offsetTop ?? lastWordLetter?.offsetTop ?? 0;
   const diff = letterHeight - caret.offsetHeight;
   let newTop = activeWordEl.offsetTop + letterPosTop + diff / 2;
   if (Config.caretStyle === "underline") {
