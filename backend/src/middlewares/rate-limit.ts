@@ -19,7 +19,7 @@ import {
 } from "@monkeytype/contracts/rate-limit/index";
 import statuses from "../constants/monkey-status-codes";
 
-const REQUEST_MULTIPLIER = isDevEnvironment() ? 100 : 1;
+export const REQUEST_MULTIPLIER = isDevEnvironment() ? 100 : 1;
 
 export const customHandler = (
   req: MonkeyTypes.ExpressRequestWithContext,
@@ -84,7 +84,8 @@ function convertWindowToMs(window: Window): number {
   }
 }
 
-const requestLimiters: Record<RateLimit, RateLimitRequestHandler> =
+//visible for testing
+export const requestLimiters: Record<RateLimit, RateLimitRequestHandler> =
   initialiseLimiters();
 
 export function rateLimitRequest<

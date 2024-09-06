@@ -9,6 +9,7 @@ import * as AuthUtils from "../../../src/utils/auth";
 import { DecodedIdToken } from "firebase-admin/lib/auth/token-verifier";
 import { ObjectId } from "mongodb";
 import { mockAuthenticateWithApeKey } from "../../__testData__/auth";
+import { enableRateLimitExpects } from "../../__testData__/rate-limit";
 const uid = "123456";
 
 const mockDecodedToken: DecodedIdToken = {
@@ -20,6 +21,7 @@ const mockDecodedToken: DecodedIdToken = {
 const mockApp = request(app);
 
 const configuration = Configuration.getCachedConfiguration();
+enableRateLimitExpects();
 
 describe("result controller test", () => {
   const verifyIdTokenMock = vi.spyOn(AuthUtils, "verifyIdToken");
@@ -321,6 +323,21 @@ describe("result controller test", () => {
       });
       expect(body.data[1]).not.toHaveProperty("correctChars");
       expect(body.data[1]).not.toHaveProperty("incorrectChars");
+    });
+    it("should be rate limited", async () => {
+      await expect(
+        mockApp.get("/results").set("Authorization", `Bearer ${uid}`)
+      ).toBeRateLimited({ max: 60, windowMs: 60 * 60 * 1000 });
+    });
+    it("should be rate limited for ape keys", async () => {
+      //GIVEN
+      await acceptApeKeys(true);
+      const apeKey = await mockAuthenticateWithApeKey(uid, await configuration);
+
+      //WHEN
+      await expect(
+        mockApp.get("/results").set("Authorization", `ApeKey ${apeKey}`)
+      ).toBeRateLimited({ max: 30, windowMs: 24 * 60 * 60 * 1000 });
     });
   });
   describe("getLastResult", () => {
