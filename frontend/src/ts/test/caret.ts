@@ -159,7 +159,8 @@ export async function updatePosition(noAnim = false): Promise<void> {
   const isLanguageRightToLeft = currentLanguage.rightToLeft;
 
   // in blind mode, and hide extra letters, extra letters have zero offsets
-  // offsetTop and offsetHeight is the same for all visible letters
+  // offsetHeight is the same for all visible letters
+  // so is offsetTop (for same line letters)
   const letterHeight =
     currentLetter?.offsetHeight ||
     lastWordLetter?.offsetHeight ||
