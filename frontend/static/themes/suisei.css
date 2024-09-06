@@ -52,7 +52,7 @@ header nav > .showAlerts {
 }
 header nav > .textButton:hover,
 header nav > .showAlerts:hover {
-  animation: hoverup 800ms cubic-bezier(.22, .57, .41, .98) infinite;
+  animation: hoverup 800ms cubic-bezier(0.22, 0.57, 0.41, 0.98) infinite;
   color: var(--main-color);
   background-color: var(--sub-alt-color);
 }
