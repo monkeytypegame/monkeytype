@@ -453,21 +453,29 @@ export async function updateWordsInputPosition(initial = false): Promise<void> {
     return;
   }
 
-  const computed = window.getComputedStyle(activeWord);
-  const activeWordMargin =
-    parseInt(computed.marginTop) + parseInt(computed.marginBottom);
+  let letter = activeWord.querySelector<HTMLElement>("letter");
+  let letterHeight = letter?.getBoundingClientRect().height;
+  if (!letterHeight) {
+    activeWord.insertAdjacentHTML(
+      "beforeend",
+      '<letter style="opacity: 0;">_</letter>'
+    );
+    letter = activeWord.querySelector("letter") as HTMLElement;
+    letterHeight = letter.getBoundingClientRect().height;
+    activeWord.replaceChildren();
+  }
 
-  // const wordsWrapperTop =
-  //   (document.querySelector("#wordsWrapper") as HTMLElement | null)
-  //     ?.offsetTop ?? 0;
+  const activeWordOuterHeight = $(activeWord).outerHeight(true) as number;
+  const activeWordOffsetHeight = $(activeWord).outerHeight() as number;
+  const activeWordContentHeight = $(activeWord).height() as number;
+  const activeWordMargin = activeWordOuterHeight - activeWordOffsetHeight;
+  // this is the same as activeWord.offsetHeight in single-line words
+  const activeWordHeight =
+    activeWordOffsetHeight - activeWordContentHeight + letterHeight;
 
   if (Config.tapeMode !== "off") {
     el.style.top =
-      // wordsWrapperTop +
-      activeWord.offsetHeight +
-      activeWordMargin * 0.25 +
-      -el.offsetHeight +
-      "px";
+      activeWordHeight + activeWordMargin * 0.25 + -el.offsetHeight + "px";
     el.style.left = activeWord.offsetLeft + "px";
     return;
   }
@@ -485,13 +493,13 @@ export async function updateWordsInputPosition(initial = false): Promise<void> {
   ) {
     el.style.top =
       activeWord.offsetTop +
-      activeWord.offsetHeight +
+      activeWordHeight +
       -el.offsetHeight +
-      (activeWord.offsetHeight + activeWordMargin) +
+      (activeWordHeight + activeWordMargin) +
       "px";
   } else {
     el.style.top =
-      activeWord.offsetTop + activeWord.offsetHeight + -el.offsetHeight + "px";
+      activeWord.offsetTop + activeWordHeight + -el.offsetHeight + "px";
   }
 }
 
