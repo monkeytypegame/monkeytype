@@ -453,25 +453,20 @@ export async function updateWordsInputPosition(initial = false): Promise<void> {
     return;
   }
 
-  let letter = activeWord.querySelector<HTMLElement>("letter");
-  let letterHeight = letter?.getBoundingClientRect().height;
-  if (!letterHeight) {
-    activeWord.insertAdjacentHTML(
-      "beforeend",
-      '<letter style="opacity: 0;">_</letter>'
-    );
-    letter = activeWord.querySelector("letter") as HTMLElement;
-    letterHeight = letter.getBoundingClientRect().height;
-    activeWord.replaceChildren();
-  }
+  const letterHeight = activeWord
+    .querySelector("letter")
+    ?.getBoundingClientRect().height;
 
   const activeWordOuterHeight = $(activeWord).outerHeight(true) as number;
   const activeWordOffsetHeight = $(activeWord).outerHeight() as number;
   const activeWordContentHeight = $(activeWord).height() as number;
   const activeWordMargin = activeWordOuterHeight - activeWordOffsetHeight;
   // this is the same as activeWord.offsetHeight in single-line words
-  const activeWordHeight =
-    activeWordOffsetHeight - activeWordContentHeight + letterHeight;
+  let activeWordHeight;
+  if (letterHeight)
+    activeWordHeight =
+      activeWordOffsetHeight - activeWordContentHeight + letterHeight;
+  else activeWordHeight = activeWordOffsetHeight;
 
   if (Config.tapeMode !== "off") {
     el.style.top =
