@@ -150,8 +150,7 @@ export function getOpenApi(): OpenAPIObject {
           ...addAuth(metadata),
           ...addTags(metadata),
         };
-        if (route.path.includes("user")) {
-        }
+
         return result;
       },
     }
@@ -196,6 +195,7 @@ function addRateLimit(operation, metadata: EndpointMetadata | undefined): void {
   operation.description += getRateLimitDescription(metadata.rateLimit);
 
   okResponse["headers"] = {
+    ...okResponse["headers"],
     "x-ratelimit-limit": {
       schema: { type: "integer" },
       description: "The number of allowed requests in the current period",
