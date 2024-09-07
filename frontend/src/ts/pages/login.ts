@@ -58,18 +58,20 @@ const checkNameDebounced = debounce(1000, async () => {
     updateSignupButton();
     return;
   }
-  const response = await Ape.users.getNameAvailability(val);
+  const response = await Ape.users.getNameAvailability({
+    params: { name: val },
+  });
 
   if (response.status === 200) {
-    nameIndicator.show("available", response.message);
+    nameIndicator.show("available", response.body.message);
   } else if (response.status === 422) {
-    nameIndicator.show("unavailable", response.message);
+    nameIndicator.show("unavailable", response.body.message);
   } else if (response.status === 409) {
-    nameIndicator.show("taken", response.message);
+    nameIndicator.show("taken", response.body.message);
   } else {
-    nameIndicator.show("unavailable", response.message);
+    nameIndicator.show("unavailable", response.body.message);
     Notifications.add(
-      "Failed to check name availability: " + response.message,
+      "Failed to check name availability: " + response.body.message,
       -1
     );
   }

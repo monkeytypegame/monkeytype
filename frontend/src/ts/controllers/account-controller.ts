@@ -66,7 +66,7 @@ async function sendVerificationEmail(): Promise<void> {
   if (result.status !== 200) {
     Loader.hide();
     Notifications.add(
-      "Failed to request verification email: " + result.message,
+      "Failed to request verification email: " + result.body.message,
       -1
     );
   } else {
@@ -563,14 +563,16 @@ async function signUp(): Promise<void> {
       password
     );
 
-    const signInResponse = await Ape.users.create(
-      nname,
-      captchaToken,
-      email,
-      createdAuthUser.user.uid
-    );
+    const signInResponse = await Ape.users.create({
+      body: {
+        name: nname,
+        captcha: captchaToken,
+        email,
+        uid: createdAuthUser.user.uid,
+      },
+    });
     if (signInResponse.status !== 200) {
-      throw new Error(`Failed to sign in: ${signInResponse.message}`);
+      throw new Error(`Failed to sign in: ${signInResponse.body.message}`);
     }
 
     await updateProfile(createdAuthUser.user, { displayName: nname });

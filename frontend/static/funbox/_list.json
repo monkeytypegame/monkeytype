@@ -195,5 +195,10 @@
     "name": "ddoouubblleedd",
     "info": "TTyyppee eevveerryytthhiinngg ttwwiiccee..",
     "canGetPb": true
+  },
+  {
+    "name": "instant_messaging",
+    "info": "Who needs shift anyway?",
+    "canGetPb": false
   }
 ]

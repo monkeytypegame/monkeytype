@@ -1,0 +1,52 @@
+name: Write label on PR/issue
+
+permissions:
+  pull-requests: write
+  issues: write
+
+on:
+  workflow_run:
+    workflows: [Check labels to update]
+    types: [completed]
+
+jobs:
+  write-labels:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download workflow artifact
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          run-id: ${{ github.event.workflow_run.id }}
+
+      - name: Read json file
+        id: json_reader
+        uses: juliangruber/read-file-action@v1.1.7
+        with:
+          path: ./labels/write-labels.json
+
+      - name: Add `waiting for review` label
+        if: fromJSON(steps.json_reader.outputs.content).waiting_for_review == 1
+        run: echo "ADD_LABELS=${ADD_LABELS}waiting for review," >> $GITHUB_ENV
+
+      - name: Remove `waiting for review` label
+        if: fromJSON(steps.json_reader.outputs.content).waiting_for_review == -1
+        run: echo "REMOVE_LABELS=${REMOVE_LABELS}waiting for review," >> $GITHUB_ENV
+
+      - name: Add `waiting for update` label
+        if: fromJSON(steps.json_reader.outputs.content).waiting_for_update == 1
+        run: echo "ADD_LABELS=${ADD_LABELS}waiting for update," >> $GITHUB_ENV
+
+      - name: Remove `waiting for update` label
+        if: fromJSON(steps.json_reader.outputs.content).waiting_for_update == -1
+        run: echo "REMOVE_LABELS=${REMOVE_LABELS}waiting for update," >> $GITHUB_ENV
+
+      - name: Apply label changes
+        if: env.ADD_LABELS || env.REMOVE_LABELS
+        uses: PauMAVA/add-remove-label-action@v1.0.3
+        with:
+          issue_number: ${{ fromJSON(steps.json_reader.outputs.content).pr_num }}
+          add: ${{ env.ADD_LABELS }}
+          remove: ${{ env.REMOVE_LABELS }}
