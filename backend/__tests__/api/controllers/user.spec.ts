@@ -2407,10 +2407,7 @@ describe("user controller test", () => {
       //THEN
       expect(body).toEqual({
         message: "Invalid query schema",
-        validationErrors: [
-          '"mode" Required',
-          '"mode2" Needs to be either a number, "zen" or "custom".',
-        ],
+        validationErrors: ['"mode" Required'],
       });
     });
     it("should fail with unknown query parameters", async () => {
@@ -2879,6 +2876,50 @@ describe("user controller test", () => {
         },
         {
           badges: [{ id: 4 }, { id: 2, selected: true }, { id: 3 }],
+        }
+      );
+    });
+    it("should update with empty strings", async () => {
+      //GIVEN
+      const newProfile = {
+        bio: "",
+        keyboard: "",
+
+        socialProfiles: {
+          github: "",
+          twitter: "",
+          website: "",
+        },
+      };
+
+      //WHEN
+      const { body } = await mockApp
+        .patch("/users/profile")
+        .set("Authorization", `Uid ${uid}`)
+        .send({
+          ...newProfile,
+          selectedBadgeId: -1,
+        })
+        .expect(200);
+
+      //THEN
+      expect(body).toEqual({
+        message: "Profile updated",
+        data: newProfile,
+      });
+      expect(updateProfileMock).toHaveBeenCalledWith(
+        uid,
+        {
+          bio: "",
+          keyboard: "",
+          socialProfiles: {
+            github: "",
+            twitter: "",
+            website: "",
+          },
+        },
+        {
+          badges: [{ id: 4 }, { id: 2 }, { id: 3 }],
         }
       );
     });

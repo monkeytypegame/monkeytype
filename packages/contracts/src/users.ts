@@ -89,7 +89,7 @@ export type UpdatePasswordRequest = z.infer<typeof UpdatePasswordRequestSchema>;
 
 export const GetPersonalBestsQuerySchema = z.object({
   mode: ModeSchema,
-  mode2: Mode2Schema,
+  mode2: Mode2Schema.optional(),
 });
 export type GetPersonalBestsQuery = z.infer<typeof GetPersonalBestsQuerySchema>;
 
