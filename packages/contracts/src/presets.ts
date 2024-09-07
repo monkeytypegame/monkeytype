@@ -52,7 +52,7 @@ export const presetsContract = c.router(
     save: {
       summary: "update preset",
       description: "Update an existing preset for the current user.",
-      method: "PUT",
+      method: "PATCH",
       path: "",
       body: PresetSchema.strict(),
       responses: {
