@@ -13,7 +13,6 @@ import { restart as restartTest } from "../test/test-logic";
 import * as ChallengeController from "../controllers/challenge-controller";
 import { Mode, Mode2 } from "@monkeytype/contracts/schemas/shared";
 import { Difficulty } from "@monkeytype/contracts/schemas/configs";
-import { CustomTextData } from "@monkeytype/shared-types";
 
 export async function linkDiscord(hashOverride: string): Promise<void> {
   if (!hashOverride) return;
@@ -25,25 +24,27 @@ export async function linkDiscord(hashOverride: string): Promise<void> {
     const state = fragment.get("state") as string;
 
     Loader.show();
-    const response = await Ape.users.linkDiscord(tokenType, accessToken, state);
+    const response = await Ape.users.linkDiscord({
+      body: { tokenType, accessToken, state },
+    });
     Loader.hide();
 
     if (response.status !== 200) {
-      Notifications.add("Failed to link Discord: " + response.message, -1);
+      Notifications.add("Failed to link Discord: " + response.body.message, -1);
       return;
     }
 
-    if (response.data === null) {
+    if (response.body.data === null) {
       Notifications.add("Failed to link Discord: data returned was null", -1);
       return;
     }
 
-    Notifications.add(response.message, 1);
+    Notifications.add(response.body.message, 1);
 
     const snapshot = DB.getSnapshot();
     if (!snapshot) return;
 
-    const { discordId, discordAvatar } = response.data;
+    const { discordId, discordAvatar } = response.body.data;
     if (discordId !== undefined) {
       snapshot.discordId = discordId;
     } else {
@@ -108,7 +109,7 @@ export function loadCustomThemeFromUrl(getOverride?: string): void {
 type SharedTestSettings = [
   Mode | null,
   Mode2<Mode> | null,
-  CustomTextData | null,
+  MonkeyTypes.CustomTextData | null,
   boolean | null,
   boolean | null,
   string | null,

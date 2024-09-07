@@ -51,7 +51,7 @@ type AgentLog = {
   device?: string;
 };
 
-export function buildAgentLog(req: MonkeyTypes.Request): AgentLog {
+export function buildAgentLog(req: TsRestRequest): AgentLog {
   const agent = uaparser(req.headers["user-agent"]);
 
   const agentLog: AgentLog = {

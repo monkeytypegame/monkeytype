@@ -2,10 +2,6 @@ import * as ResultDal from "../../src/dal/result";
 import { ObjectId } from "mongodb";
 import * as UserDal from "../../src/dal/user";
 
-type MonkeyTypesResult = MonkeyTypes.WithObjectId<
-  SharedTypes.DBResult<SharedTypes.Config.Mode>
->;
-
 let uid: string = "";
 const timestamp = Date.now() - 60000;
 
@@ -60,7 +56,7 @@ async function createDummyData(
       language: "english",
       isPb: false,
       name: "Test",
-    } as MonkeyTypesResult);
+    } as MonkeyTypes.DBResult);
   }
 }
 describe("ResultDal", () => {

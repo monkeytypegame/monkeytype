@@ -183,15 +183,20 @@ function addFilterPresetToSnapshot(filter: ResultFilters): void {
 export async function createFilterPreset(name: string): Promise<void> {
   name = name.replace(/ /g, "_");
   Loader.show();
-  const result = await Ape.users.addResultFilterPreset({ ...filters, name });
+  const result = await Ape.users.addResultFilterPreset({
+    body: { ...filters, name },
+  });
   Loader.hide();
   if (result.status === 200) {
-    addFilterPresetToSnapshot({ ...filters, name, _id: result.data as string });
+    addFilterPresetToSnapshot({ ...filters, name, _id: result.body.data });
     void updateFilterPresets();
     Notifications.add("Filter preset created", 1);
   } else {
-    Notifications.add("Error creating filter preset: " + result.message, -1);
-    console.log("error creating filter preset: " + result.message);
+    Notifications.add(
+      "Error creating filter preset: " + result.body.message,
+      -1
+    );
+    console.log("error creating filter preset: " + result.body.message);
   }
 }
 
@@ -210,7 +215,9 @@ function removeFilterPresetFromSnapshot(id: string): void {
 // deletes the currently selected filter preset
 async function deleteFilterPreset(id: string): Promise<void> {
   Loader.show();
-  const result = await Ape.users.removeResultFilterPreset(id);
+  const result = await Ape.users.removeResultFilterPreset({
+    params: { presetId: id },
+  });
   Loader.hide();
   if (result.status === 200) {
     removeFilterPresetFromSnapshot(id);
@@ -218,8 +225,11 @@ async function deleteFilterPreset(id: string): Promise<void> {
     reset();
     Notifications.add("Filter preset deleted", 1);
   } else {
-    Notifications.add("Error deleting filter preset: " + result.message, -1);
-    console.log("error deleting filter preset", result.message);
+    Notifications.add(
+      "Error deleting filter preset: " + result.body.message,
+      -1
+    );
+    console.log("error deleting filter preset", result.body.message);
   }
 }
 

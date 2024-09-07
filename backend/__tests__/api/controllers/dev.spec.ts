@@ -1,13 +1,24 @@
 import request from "supertest";
 import app from "../../../src/app";
-
+import * as AuthUtils from "../../../src/utils/auth";
 import { ObjectId } from "mongodb";
 import * as Misc from "../../../src/utils/misc";
+import { DecodedIdToken } from "firebase-admin/auth";
 
 const uid = new ObjectId().toHexString();
+const mockDecodedToken = {
+  uid,
+  email: "newuser@mail.com",
+  iat: 0,
+} as DecodedIdToken;
 const mockApp = request(app);
 
 describe("DevController", () => {
+  const verifyIdTokenMock = vi.spyOn(AuthUtils, "verifyIdToken");
+  beforeEach(() => {
+    verifyIdTokenMock.mockReset().mockResolvedValue(mockDecodedToken);
+  });
+
   describe("generate testData", () => {
     const isDevEnvironmentMock = vi.spyOn(Misc, "isDevEnvironment");
 
@@ -22,6 +33,7 @@ describe("DevController", () => {
       //WHEN
       const { body } = await mockApp
         .post("/dev/generateData")
+        .set("Authorization", "Bearer 123456789")
         .send({ username: "test" })
         .expect(503);
       //THEN
