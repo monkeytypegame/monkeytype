@@ -2879,6 +2879,50 @@ describe("user controller test", () => {
         }
       );
     });
+    it("should update with empty strings", async () => {
+      //GIVEN
+      const newProfile = {
+        bio: "",
+        keyboard: "",
+
+        socialProfiles: {
+          github: "",
+          twitter: "",
+          website: "",
+        },
+      };
+
+      //WHEN
+      const { body } = await mockApp
+        .patch("/users/profile")
+        .set("Authorization", `Uid ${uid}`)
+        .send({
+          ...newProfile,
+          selectedBadgeId: -1,
+        })
+        .expect(200);
+
+      //THEN
+      expect(body).toEqual({
+        message: "Profile updated",
+        data: newProfile,
+      });
+      expect(updateProfileMock).toHaveBeenCalledWith(
+        uid,
+        {
+          bio: "",
+          keyboard: "",
+          socialProfiles: {
+            github: "",
+            twitter: "",
+            website: "",
+          },
+        },
+        {
+          badges: [{ id: 4 }, { id: 2 }, { id: 3 }],
+        }
+      );
+    });
     it("should fail with unknown properties", async () => {
       //WHEN
       const { body } = await mockApp
