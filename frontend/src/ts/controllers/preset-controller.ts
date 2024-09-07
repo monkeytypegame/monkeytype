@@ -25,7 +25,7 @@ export async function apply(_id: string): Promise<void> {
   }
   if (
     !isPartialPreset(presetToApply) ||
-    presetToApply.config.settingGroups?.includes("behavior")
+    presetToApply.settingGroups?.includes("behavior")
   ) {
     TagController.clear(true);
     if (presetToApply.config.tags) {
@@ -42,7 +42,7 @@ export async function apply(_id: string): Promise<void> {
   UpdateConfig.saveFullConfigToLocalStorage();
 }
 function isPartialPreset(preset: MonkeyTypes.SnapshotPreset): boolean {
-  return preset.config.settingGroups !== undefined;
+  return preset.settingGroups !== undefined;
 }
 
 export async function getPreset(_id: string): Promise<Preset | undefined> {

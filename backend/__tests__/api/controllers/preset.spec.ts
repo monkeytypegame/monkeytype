@@ -26,12 +26,12 @@ describe("PresetController", () => {
         _id: new ObjectId(),
         uid: "123456789",
         name: "test2",
+        settingGroups: [PresetSettingGroupSchema.Enum.hideElements],
         config: {
           showKeyTips: true,
           capsLockWarning: true,
           showOutOfFocusWarning: true,
           showAverage: ShowAverageSchema.Enum.off,
-          settingGroups: [PresetSettingGroupSchema.Enum.hideElements],
         },
       };
 
@@ -55,12 +55,12 @@ describe("PresetController", () => {
           {
             _id: presetTwo._id.toHexString(),
             name: "test2",
+            settingGroups: ["hideElements"],
             config: {
               showKeyTips: true,
               capsLockWarning: true,
               showOutOfFocusWarning: true,
               showAverage: ShowAverageSchema.Enum.off,
-              settingGroups: ["hideElements"],
             },
           },
         ],
@@ -135,12 +135,12 @@ describe("PresetController", () => {
         .accept("application/json")
         .send({
           name: "new",
+          settingGroups: ["hideElements"],
           config: {
             showKeyTips: true,
             capsLockWarning: true,
             showOutOfFocusWarning: true,
             showAverage: ShowAverageSchema.Enum.off,
-            settingGroups: ["hideElements"],
           },
         })
         .expect(200);
@@ -153,12 +153,12 @@ describe("PresetController", () => {
 
       expect(addPresetMock).toHaveBeenCalledWith("123456789", {
         name: "new",
+        settingGroups: ["hideElements"],
         config: {
           showKeyTips: true,
           capsLockWarning: true,
           showOutOfFocusWarning: true,
           showAverage: ShowAverageSchema.Enum.off,
-          settingGroups: ["hideElements"],
         },
       });
     });
@@ -170,14 +170,15 @@ describe("PresetController", () => {
         .accept("application/json")
         .send({
           name: "update",
-          config: { settingGroups: [] },
+          settingGroups: [],
+          config: {},
         })
         .expect(422);
 
       expect(body).toStrictEqual({
         message: "Invalid request data schema",
         validationErrors: [
-          `"config.settingGroups" Array must contain at least 1 element(s)`,
+          `"settingGroups" Array must contain at least 1 element(s)`,
         ],
       });
       expect(addPresetMock).not.toHaveBeenCalled();
@@ -260,12 +261,12 @@ describe("PresetController", () => {
         .accept("application/json")
         .send({
           name: "new",
+          settingGroups: ["hideElements", "hideElements"],
           config: {
             showKeyTips: true,
             capsLockWarning: true,
             showOutOfFocusWarning: true,
             showAverage: ShowAverageSchema.Enum.off,
-            settingGroups: ["hideElements", "hideElements"],
           },
         })
         .expect(422);
@@ -273,7 +274,7 @@ describe("PresetController", () => {
       //THEN
       expect(body).toStrictEqual({
         message: "Invalid request data schema",
-        validationErrors: [`"config.settingGroups" No duplicates allowed.`],
+        validationErrors: [`"settingGroups" No duplicates allowed.`],
       });
 
       expect(addPresetMock).not.toHaveBeenCalled();
@@ -330,12 +331,12 @@ describe("PresetController", () => {
         .send({
           _id: "1",
           name: "new",
+          settingGroups: [PresetSettingGroupSchema.Enum.hideElements],
           config: {
             showKeyTips: true,
             capsLockWarning: true,
             showOutOfFocusWarning: true,
             showAverage: ShowAverageSchema.Enum.off,
-            settingGroups: [PresetSettingGroupSchema.Enum.hideElements],
           },
         })
         .expect(200);
@@ -349,12 +350,12 @@ describe("PresetController", () => {
       expect(editPresetMock).toHaveBeenCalledWith("123456789", {
         _id: "1",
         name: "new",
+        settingGroups: [PresetSettingGroupSchema.Enum.hideElements],
         config: {
           showKeyTips: true,
           capsLockWarning: true,
           showOutOfFocusWarning: true,
           showAverage: ShowAverageSchema.Enum.off,
-          settingGroups: [PresetSettingGroupSchema.Enum.hideElements],
         },
       });
     });
@@ -412,11 +413,11 @@ describe("PresetController", () => {
           _id: "1",
           name: "update",
           extra: "extra",
+          settingGroups: ["mappers"],
           config: {
             extra: "extra",
             autoSwitchTheme: "yes",
             confidenceMode: "pretty",
-            settingGroups: ["mappers"],
           },
         })
         .expect(422);
@@ -425,9 +426,9 @@ describe("PresetController", () => {
       expect(body).toStrictEqual({
         message: "Invalid request data schema",
         validationErrors: [
+          `"settingGroups.0" Invalid enum value. Expected 'test' | 'behavior' | 'input' | 'sound' | 'caret' | 'appearance' | 'theme' | 'hideElements' | 'ads' | 'hidden', received 'mappers'`,
           `"config.autoSwitchTheme" Expected boolean, received string`,
           `"config.confidenceMode" Invalid enum value. Expected 'off' | 'on' | 'max', received 'pretty'`,
-          `"config.settingGroups.0" Invalid enum value. Expected 'test' | 'behavior' | 'input' | 'sound' | 'caret' | 'appearance' | 'theme' | 'hideElements' | 'ads' | 'hidden', received 'mappers'`,
           `"config" Unrecognized key(s) in object: 'extra'`,
           `Unrecognized key(s) in object: 'extra'`,
         ],
@@ -444,12 +445,12 @@ describe("PresetController", () => {
         .send({
           _id: "1",
           name: "new",
+          settingGroups: ["hideElements", "hideElements"],
           config: {
             showKeyTips: true,
             capsLockWarning: true,
             showOutOfFocusWarning: true,
             showAverage: ShowAverageSchema.Enum.off,
-            settingGroups: ["hideElements", "hideElements"],
           },
         })
         .expect(422);
@@ -457,7 +458,7 @@ describe("PresetController", () => {
       //THEN
       expect(body).toStrictEqual({
         message: "Invalid request data schema",
-        validationErrors: [`"config.settingGroups" No duplicates allowed.`],
+        validationErrors: [`"settingGroups" No duplicates allowed.`],
       });
 
       expect(editPresetMock).not.toHaveBeenCalled();

@@ -7,6 +7,7 @@ import * as Notifications from "../elements/notifications";
 import * as ConnectionState from "../states/connection";
 import AnimatedModal from "../utils/animated-modal";
 import {
+  ActiveSettingGroups,
   ActiveSettingGroupsSchema,
   PresetSettingGroup,
   PresetSettingGroupSchema,
@@ -101,14 +102,14 @@ async function initializeEditState(id: string): Promise<void> {
     Notifications.add("Preset not found", -1);
     return;
   }
-  if (edittedPreset.config.settingGroups === undefined) {
+  if (edittedPreset.settingGroups === undefined) {
     state.presetType = "full";
     for (const key of state.checkboxes.keys()) {
       state.checkboxes.set(key, true);
     }
   } else {
     state.presetType = "partial";
-    edittedPreset.config.settingGroups.forEach((currentActiveSettingGroup) =>
+    edittedPreset.settingGroups.forEach((currentActiveSettingGroup) =>
       state.checkboxes.set(currentActiveSettingGroup, true)
     );
   }
@@ -242,8 +243,15 @@ async function apply(): Promise<void> {
 
   if (action === "add") {
     const configChanges = getConfigChanges();
+    const activeSettingGroups = getActiveSettingGroupsFromState();
     const response = await Ape.presets.add({
-      body: { name: presetName, config: configChanges },
+      body: {
+        name: presetName,
+        config: configChanges,
+        ...(state.presetType === "partial" && {
+          settingGroups: activeSettingGroups,
+        }),
+      },
     });
 
     if (response.status !== 200 || response.body.data === null) {
@@ -259,37 +267,60 @@ async function apply(): Promise<void> {
       snapshotPresets.push({
         name: presetName,
         config: configChanges,
+        ...(state.presetType === "partial" && {
+          settingGroups: activeSettingGroups,
+        }),
         display: propPresetName,
         _id: response.body.data.presetId,
       } as MonkeyTypes.SnapshotPreset);
     }
   } else if (action === "edit") {
-    const configChanges = getConfigChanges();
+    const preset = snapshotPresets.filter(
+      (preset: MonkeyTypes.SnapshotPreset) => preset._id === presetId
+    )[0] as MonkeyTypes.SnapshotPreset;
+    if (preset === undefined) {
+      Notifications.add("Preset not found", -1);
+      return;
+    }
+    let configChanges = getConfigChanges();
+    let activeSettingGroups: ActiveSettingGroups | undefined =
+      state.presetType === "partial"
+        ? getActiveSettingGroupsFromState()
+        : undefined;
+    if (!updateConfig) {
+      configChanges = preset.config;
+      activeSettingGroups = preset.settingGroups;
+    }
+    console.log({
+      _id: presetId,
+      name: presetName,
+      config: configChanges,
+      settingGroups: activeSettingGroups,
+    });
     const response = await Ape.presets.save({
       body: {
         _id: presetId,
         name: presetName,
         config: configChanges,
+        settingGroups: activeSettingGroups,
       },
     });
+    console.log(response);
 
     if (response.status !== 200) {
       Notifications.add("Failed to edit preset: " + response.body.message, -1);
     } else {
       Notifications.add("Preset updated", 1);
-      const preset = snapshotPresets.filter(
-        (preset: MonkeyTypes.SnapshotPreset) => preset._id === presetId
-      )[0] as MonkeyTypes.SnapshotPreset;
+
       preset.name = presetName;
       preset.display = presetName.replace(/_/g, " ");
-      if (state.presetType === "partial") {
-        preset.config = getPartialConfigChanges(preset.config);
-        preset.config.settingGroups = configChanges.settingGroups;
-      } else {
-        preset.config.settingGroups = undefined;
-      }
       if (updateConfig) {
         preset.config = configChanges;
+        if (state.presetType === "partial") {
+          preset.settingGroups = getActiveSettingGroupsFromState();
+        } else {
+          preset.settingGroups = undefined;
+        }
       }
     }
   } else if (action === "remove") {
@@ -460,6 +491,13 @@ function getPartialConfigChanges(
     });
   return activeConfigChanges;
 }
+function getActiveSettingGroupsFromState(): ActiveSettingGroups {
+  return ActiveSettingGroupsSchema.parse(
+    Array.from(state.checkboxes.entries())
+      .filter(([, value]) => value)
+      .map(([key]) => key)
+  );
+}
 function getConfigChanges(): MonkeyTypes.ConfigChanges {
   const activeConfigChanges =
     state.presetType === "partial"
@@ -469,19 +507,13 @@ function getConfigChanges(): MonkeyTypes.ConfigChanges {
 
   const activeTagIds: string[] = tags
     .filter((tag: MonkeyTypes.UserTag) => tag.active)
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     .map((tag: MonkeyTypes.UserTag) => tag._id);
 
   const setTags: boolean =
     state.presetType === "full" || state.checkboxes.get("behavior") === true;
   return {
     ...activeConfigChanges,
-    ...(state.presetType === "partial" && {
-      settingGroups: ActiveSettingGroupsSchema.parse(
-        Array.from(state.checkboxes.entries())
-          .filter(([, value]) => value)
-          .map(([key]) => key)
-      ),
-    }),
     ...(setTags && {
       tags: activeTagIds,
     }),

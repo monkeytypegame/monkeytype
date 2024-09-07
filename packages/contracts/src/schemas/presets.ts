@@ -49,9 +49,9 @@ export type ActiveSettingGroups = z.infer<typeof ActiveSettingGroupsSchema>;
 export const PresetSchema = z.object({
   _id: IdSchema,
   name: PresetNameSchema,
+  settingGroups: ActiveSettingGroupsSchema.optional(),
   config: PartialConfigSchema.extend({
     tags: z.array(TagSchema).optional(),
-    settingGroups: ActiveSettingGroupsSchema.optional(),
   }),
 });
 export type Preset = z.infer<typeof PresetSchema>;
