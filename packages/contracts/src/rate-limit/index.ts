@@ -1,4 +1,4 @@
-export type Window = "per-second" | "per-minute" | "hourly" | "daily" | number;
+export type Window = "second" | "minute" | "hour" | "day" | number;
 export type RateLimitOptions = {
   /** Timeframe or time in milliseconds */
   window: Window;
@@ -8,7 +8,7 @@ export type RateLimitOptions = {
 
 export const limits = {
   defaultApeRateLimit: {
-    window: "per-minute",
+    window: "minute",
     max: 30,
   },
 
@@ -19,55 +19,55 @@ export const limits = {
 
   // Config Routing
   configUpdate: {
-    window: "hourly",
+    window: "hour",
     max: 500,
   },
 
   configGet: {
-    window: "hourly",
+    window: "hour",
     max: 120,
   },
 
   configDelete: {
-    window: "hourly",
+    window: "hour",
     max: 120,
   },
 
   // Leaderboards Routing
   leaderboardsGet: {
-    window: "hourly",
+    window: "hour",
     max: 500,
   },
 
   // New Quotes Routing
   newQuotesGet: {
-    window: "hourly",
+    window: "hour",
     max: 500,
   },
 
   newQuotesIsSubmissionEnabled: {
-    window: "per-minute",
+    window: "minute",
     max: 60,
   },
 
   newQuotesAdd: {
-    window: "hourly",
+    window: "hour",
     max: 60,
   },
 
   newQuotesAction: {
-    window: "hourly",
+    window: "hour",
     max: 500,
   },
 
   // Quote Ratings Routing
   quoteRatingsGet: {
-    window: "hourly",
+    window: "hour",
     max: 500,
   },
 
   quoteRatingsSubmit: {
-    window: "hourly",
+    window: "hour",
     max: 500,
   },
 
@@ -95,192 +95,192 @@ export const limits = {
 
   // Presets Routing
   presetsGet: {
-    window: "hourly",
+    window: "hour",
     max: 60,
   },
 
   presetsAdd: {
-    window: "hourly",
+    window: "hour",
     max: 60,
   },
 
   presetsRemove: {
-    window: "hourly",
+    window: "hour",
     max: 60,
   },
 
   presetsEdit: {
-    window: "hourly",
+    window: "hour",
     max: 60,
   },
 
   // PSA (Public Service Announcement) Routing
   psaGet: {
-    window: "per-minute",
+    window: "minute",
     max: 60,
   },
 
   // get public speed stats
   publicStatsGet: {
-    window: "per-minute",
+    window: "minute",
     max: 60,
   },
 
   // Results Routing
   resultsGet: {
-    window: "hourly",
+    window: "hour",
     max: 60,
   },
 
   // Results Routing
   resultsGetApe: {
-    window: "daily",
+    window: "day",
     max: 30,
   },
 
   resultsAdd: {
-    window: "hourly",
+    window: "hour",
     max: 300,
   },
 
   resultsTagsUpdate: {
-    window: "hourly",
+    window: "hour",
     max: 100,
   },
 
   resultsDeleteAll: {
-    window: "hourly",
+    window: "hour",
     max: 10,
   },
 
   resultsLeaderboardGet: {
-    window: "hourly",
+    window: "hour",
     max: 60,
   },
 
   resultsLeaderboardQualificationGet: {
-    window: "hourly",
+    window: "hour",
     max: 60,
   },
 
   // Users Routing
   userGet: {
-    window: "hourly",
+    window: "hour",
     max: 60,
   },
 
   setStreakHourOffset: {
-    window: "hourly",
+    window: "hour",
     max: 5,
   },
 
   userSignup: {
-    window: "daily",
+    window: "day",
     max: 2,
   },
 
   userDelete: {
-    window: "daily",
+    window: "day",
     max: 3,
   },
 
   userReset: {
-    window: "daily",
+    window: "day",
     max: 3,
   },
 
   userCheckName: {
-    window: "per-minute",
+    window: "minute",
     max: 60,
   },
 
   userUpdateName: {
-    window: "daily",
+    window: "day",
     max: 3,
   },
 
   userUpdateLBMemory: {
-    window: "per-minute",
+    window: "minute",
     max: 60,
   },
 
   userUpdateEmail: {
-    window: "hourly",
+    window: "hour",
     max: 60,
   },
 
   userClearPB: {
-    window: "hourly",
+    window: "hour",
     max: 60,
   },
 
   userOptOutOfLeaderboards: {
-    window: "hourly",
+    window: "hour",
     max: 10,
   },
 
   userCustomFilterAdd: {
-    window: "hourly",
+    window: "hour",
     max: 60,
   },
 
   userCustomFilterRemove: {
-    window: "hourly",
+    window: "hour",
     max: 60,
   },
 
   userTagsGet: {
-    window: "hourly",
+    window: "hour",
     max: 60,
   },
 
   userTagsRemove: {
-    window: "hourly",
+    window: "hour",
     max: 30,
   },
 
   userTagsClearPB: {
-    window: "hourly",
+    window: "hour",
     max: 60,
   },
 
   userTagsEdit: {
-    window: "hourly",
+    window: "hour",
     max: 30,
   },
 
   userTagsAdd: {
-    window: "hourly",
+    window: "hour",
     max: 30,
   },
 
   userCustomThemeGet: {
-    window: "hourly",
+    window: "hour",
     max: 30,
   },
 
   userCustomThemeAdd: {
-    window: "hourly",
+    window: "hour",
     max: 30,
   },
 
   userCustomThemeRemove: {
-    window: "hourly",
+    window: "hour",
     max: 30,
   },
 
   userCustomThemeEdit: {
-    window: "hourly",
+    window: "hour",
     max: 30,
   },
 
   userDiscordLink: {
-    window: "hourly",
+    window: "hour",
     max: 15,
   },
 
   userDiscordUnlink: {
-    window: "hourly",
+    window: "hour",
     max: 15,
   },
 
@@ -290,63 +290,63 @@ export const limits = {
   },
 
   userForgotPasswordEmail: {
-    window: "per-minute",
+    window: "minute",
     max: 1,
   },
 
   userRevokeAllTokens: {
-    window: "hourly",
+    window: "hour",
     max: 10,
   },
 
   userProfileGet: {
-    window: "hourly",
+    window: "hour",
     max: 100,
   },
 
   userProfileUpdate: {
-    window: "hourly",
+    window: "hour",
     max: 60,
   },
 
   userMailGet: {
-    window: "hourly",
+    window: "hour",
     max: 60,
   },
 
   userMailUpdate: {
-    window: "hourly",
+    window: "hour",
     max: 60,
   },
 
   userTestActivity: {
-    window: "hourly",
+    window: "hour",
     max: 60,
   },
 
   userCurrentTestActivity: {
-    window: "hourly",
+    window: "hour",
     max: 60,
   },
 
   userStreak: {
-    window: "hourly",
+    window: "hour",
     max: 60,
   },
 
   // ApeKeys Routing
   apeKeysGet: {
-    window: "hourly",
+    window: "hour",
     max: 120,
   },
 
   apeKeysGenerate: {
-    window: "hourly",
+    window: "hour",
     max: 15,
   },
 
   webhookLimit: {
-    window: "per-second",
+    window: "second",
     max: 1,
   },
 } satisfies Record<string, RateLimitOptions>;

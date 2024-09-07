@@ -75,8 +75,7 @@ export const resultsContract = c.router(
   {
     get: {
       summary: "get results",
-      description:
-        "Gets up to 1000 results (endpoint limited to 30 requests per day for ape keys)",
+      description: "Gets up to 1000 results",
       method: "GET",
       path: "",
       query: GetResultsQuerySchema.strict(),

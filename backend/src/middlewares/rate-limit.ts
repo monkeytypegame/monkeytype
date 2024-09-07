@@ -73,13 +73,13 @@ function initialiseLimiters(): Record<RateLimiterId, RateLimitRequestHandler> {
 function convertWindowToMs(window: Window): number {
   if (typeof window === "number") return window;
   switch (window) {
-    case "per-second":
+    case "second":
       return 1000;
-    case "per-minute":
+    case "minute":
       return 60 * 1000;
-    case "hourly":
+    case "hour":
       return 60 * 60 * 1000;
-    case "daily":
+    case "day":
       return 24 * 60 * 60 * 1000;
   }
 }

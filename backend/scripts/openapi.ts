@@ -238,18 +238,7 @@ function formatWindow(window: Window): string {
 
     return `every ${duration}`;
   }
-  switch (window) {
-    case "per-second":
-      return "per second";
-    case "per-minute":
-      return "per minute";
-    case "hourly":
-      return "per hour";
-    case "daily":
-      return "per day";
-    default:
-      return window;
-  }
+  return "per " + window;
 }
 
 //detect if we run this as a main
