@@ -2,7 +2,7 @@ import { ResultFilters } from "@monkeytype/contracts/schemas/users";
 
 const object: ResultFilters = {
   _id: "default",
-  name: "default result filters",
+  name: "defaults",
   pb: {
     no: true,
     yes: true,
