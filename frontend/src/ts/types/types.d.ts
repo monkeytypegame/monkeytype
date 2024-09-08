@@ -301,7 +301,7 @@ declare namespace MonkeyTypes {
 
   type CommandExecOptions = {
     input?: string;
-    commandlineModal: AnimatedModal;
+    commandlineModal: import("../utils/animated-modal").default;
   };
 
   type Command = {
