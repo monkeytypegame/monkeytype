@@ -123,7 +123,7 @@ export function rateLimitRequest<
         )
       );
     } else {
-      rateLimiter(req as ExpressRequest, res, next);
+      rateLimiter(req, res, next);
     }
   };
 }
