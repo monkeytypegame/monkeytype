@@ -96,26 +96,30 @@ export function rateLimitRequest<
     res: Response,
     next: NextFunction
   ): Promise<void> => {
-    const limit = (req.tsRestRoute["metadata"] as EndpointMetadata)?.rateLimit;
-    if (limit === undefined) {
+    const rateLimit = (req.tsRestRoute["metadata"] as EndpointMetadata)
+      ?.rateLimit;
+    if (rateLimit === undefined) {
       next();
       return;
     }
 
-    const isApeKeyLimiter = typeof limit === "object";
-    let rateLimiterKey;
+    const hasApeKeyLimiterId = typeof rateLimit === "object";
+    let rateLimiterId: keyof typeof requestLimiters;
+
     if (req.ctx.decodedToken.type === "ApeKey") {
-      rateLimiterKey = isApeKeyLimiter ? limit.apeKey : "defaultApeRateLimit";
+      rateLimiterId = hasApeKeyLimiterId
+        ? rateLimit.apeKey
+        : "defaultApeRateLimit";
     } else {
-      rateLimiterKey = isApeKeyLimiter ? limit.normal : limit;
+      rateLimiterId = hasApeKeyLimiterId ? rateLimit.normal : rateLimit;
     }
 
-    const rateLimiter = requestLimiters[rateLimiterKey];
+    const rateLimiter = requestLimiters[rateLimiterId];
     if (rateLimiter === undefined) {
       next(
         new MonkeyError(
           500,
-          `Unknown rateLimiterKey '${rateLimiterKey}', how did you manage to do this?`
+          `Unknown rateLimiterId '${rateLimiterId}', how did you manage to do this?`
         )
       );
     } else {
