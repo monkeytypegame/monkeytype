@@ -1,6 +1,7 @@
 import { ObjectId } from "mongodb";
 import * as PresetDal from "../../src/dal/preset";
 import _ from "lodash";
+import { ShowAverageSchema } from "@monkeytype/contracts/schemas/configs";
 
 describe("PresetDal", () => {
   describe("readPreset", () => {
@@ -13,8 +14,12 @@ describe("PresetDal", () => {
       });
       const second = await PresetDal.addPreset(uid, {
         name: "second",
+        settingGroups: ["hideElements"],
         config: {
-          ads: "result",
+          showKeyTips: true,
+          capsLockWarning: true,
+          showOutOfFocusWarning: true,
+          showAverage: ShowAverageSchema.Enum.off,
         },
       });
       await PresetDal.addPreset("unknown", { name: "unknown", config: {} });
@@ -36,7 +41,13 @@ describe("PresetDal", () => {
             _id: new ObjectId(second.presetId),
             uid: uid,
             name: "second",
-            config: { ads: "result" },
+            settingGroups: ["hideElements"],
+            config: {
+              showKeyTips: true,
+              capsLockWarning: true,
+              showOutOfFocusWarning: true,
+              showAverage: ShowAverageSchema.Enum.off,
+            },
           }),
         ])
       );
@@ -215,6 +226,150 @@ describe("PresetDal", () => {
             uid: uid,
             name: "first",
             config: { ads: "sellout" },
+          }),
+        ])
+      );
+    });
+    it("should edit when partial is editted to full", async () => {
+      //GIVEN
+      const uid = new ObjectId().toHexString();
+      const decoyUid = new ObjectId().toHexString();
+      const first = (
+        await PresetDal.addPreset(uid, {
+          name: "first",
+          settingGroups: ["hideElements"],
+          config: {
+            showKeyTips: true,
+            capsLockWarning: true,
+            showOutOfFocusWarning: true,
+            showAverage: ShowAverageSchema.Enum.off,
+          },
+        })
+      ).presetId;
+      const second = (
+        await PresetDal.addPreset(uid, {
+          name: "second",
+          config: {
+            ads: "result",
+          },
+        })
+      ).presetId;
+      const decoy = (
+        await PresetDal.addPreset(decoyUid, {
+          name: "unknown",
+          config: { ads: "result" },
+        })
+      ).presetId;
+
+      //WHEN
+      await PresetDal.editPreset(uid, {
+        _id: first,
+        name: "newName",
+        config: { ads: "off" },
+      });
+
+      //THEN
+      const read = await PresetDal.getPresets(uid);
+      expect(read).toHaveLength(2);
+      expect(read).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            _id: new ObjectId(first),
+            uid: uid,
+            name: "newName",
+            config: { ads: "off" },
+          }),
+          expect.objectContaining({
+            _id: new ObjectId(second),
+            uid: uid,
+            name: "second",
+            config: { ads: "result" },
+          }),
+        ])
+      );
+      expect(await PresetDal.getPresets(decoyUid)).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            _id: new ObjectId(decoy),
+            uid: decoyUid,
+            name: "unknown",
+            config: { ads: "result" },
+          }),
+        ])
+      );
+    });
+    it("should edit when full is editted to partial", async () => {
+      //GIVEN
+      const uid = new ObjectId().toHexString();
+      const decoyUid = new ObjectId().toHexString();
+      const first = (
+        await PresetDal.addPreset(uid, {
+          name: "first",
+          config: {
+            ads: "result",
+          },
+        })
+      ).presetId;
+      const second = (
+        await PresetDal.addPreset(uid, {
+          name: "second",
+          config: {
+            ads: "result",
+          },
+        })
+      ).presetId;
+      const decoy = (
+        await PresetDal.addPreset(decoyUid, {
+          name: "unknown",
+          config: { ads: "result" },
+        })
+      ).presetId;
+
+      //WHEN
+      await PresetDal.editPreset(uid, {
+        _id: first,
+        name: "newName",
+        settingGroups: ["hideElements"],
+        config: {
+          showKeyTips: true,
+          capsLockWarning: true,
+          showOutOfFocusWarning: true,
+          showAverage: ShowAverageSchema.Enum.off,
+        },
+      });
+
+      //THEN
+      const read = await PresetDal.getPresets(uid);
+      expect(read).toHaveLength(2);
+      expect(read).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            _id: new ObjectId(first),
+            uid: uid,
+            name: "newName",
+            settingGroups: ["hideElements"],
+            config: {
+              showKeyTips: true,
+              capsLockWarning: true,
+              showOutOfFocusWarning: true,
+              showAverage: ShowAverageSchema.Enum.off,
+            },
+          }),
+          expect.objectContaining({
+            _id: new ObjectId(second),
+            uid: uid,
+            name: "second",
+            config: { ads: "result" },
+          }),
+        ])
+      );
+      expect(await PresetDal.getPresets(decoyUid)).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            _id: new ObjectId(decoy),
+            uid: decoyUid,
+            name: "unknown",
+            config: { ads: "result" },
           }),
         ])
       );

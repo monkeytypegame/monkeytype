@@ -102,7 +102,10 @@ async function initializeEditState(id: string): Promise<void> {
     Notifications.add("Preset not found", -1);
     return;
   }
-  if (edittedPreset.settingGroups === undefined) {
+  if (
+    edittedPreset.settingGroups === undefined ||
+    edittedPreset.settingGroups === null
+  ) {
     state.presetType = "full";
     for (const key of state.checkboxes.keys()) {
       state.checkboxes.set(key, true);
@@ -185,7 +188,6 @@ async function updateEditPresetUI(): Promise<void> {
     const presetId = $("#editPresetModal .modal").attr(
       "data-preset-id"
     ) as string;
-    state.presetType = "full";
     await initializeEditState(presetId);
     $("#editPresetModal .modal .inputs").removeClass("hidden");
     $("#editPresetModal .modal .presetType").removeClass("hidden");
@@ -305,7 +307,6 @@ async function apply(): Promise<void> {
         settingGroups: activeSettingGroups,
       },
     });
-    console.log(response);
 
     if (response.status !== 200) {
       Notifications.add("Failed to edit preset: " + response.body.message, -1);

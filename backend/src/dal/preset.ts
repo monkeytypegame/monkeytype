@@ -60,7 +60,7 @@ export async function editPreset(uid: string, preset: Preset): Promise<void> {
   const config = preset.config;
   const presetUpdates =
     config !== undefined && config !== null && Object.keys(config).length > 0
-      ? { name: preset.name, config }
+      ? { name: preset.name, config, settingGroups: preset.settingGroups }
       : { name: preset.name };
 
   await getPresetsCollection().updateOne(getPresetKeyFilter(uid, preset._id), {

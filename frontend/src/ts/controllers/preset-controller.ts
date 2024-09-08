@@ -42,7 +42,7 @@ export async function apply(_id: string): Promise<void> {
   UpdateConfig.saveFullConfigToLocalStorage();
 }
 function isPartialPreset(preset: MonkeyTypes.SnapshotPreset): boolean {
-  return preset.settingGroups !== undefined;
+  return preset.settingGroups !== undefined && preset.settingGroups !== null;
 }
 
 export async function getPreset(_id: string): Promise<Preset | undefined> {
