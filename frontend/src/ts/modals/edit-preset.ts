@@ -284,27 +284,19 @@ async function apply(): Promise<void> {
       Notifications.add("Preset not found", -1);
       return;
     }
-    let configChanges = getConfigChanges();
-    let activeSettingGroups: ActiveSettingGroups | undefined =
+    const configChanges = getConfigChanges();
+    const activeSettingGroups: ActiveSettingGroups | undefined =
       state.presetType === "partial"
         ? getActiveSettingGroupsFromState()
         : undefined;
-    if (!updateConfig) {
-      configChanges = preset.config;
-      activeSettingGroups = preset.settingGroups;
-    }
-    console.log({
-      _id: presetId,
-      name: presetName,
-      config: configChanges,
-      settingGroups: activeSettingGroups,
-    });
     const response = await Ape.presets.save({
       body: {
         _id: presetId,
         name: presetName,
-        config: configChanges,
-        settingGroups: activeSettingGroups,
+        ...(updateConfig && {
+          config: configChanges,
+          settingGroups: activeSettingGroups,
+        }),
       },
     });
 

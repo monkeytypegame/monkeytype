@@ -55,3 +55,9 @@ export const PresetSchema = z.object({
   }),
 });
 export type Preset = z.infer<typeof PresetSchema>;
+
+export const EditPresetRequestSchema = PresetSchema.extend({
+  config: PresetSchema.shape.config.optional(),
+});
+
+export type EditPresetRequest = z.infer<typeof EditPresetRequestSchema>;

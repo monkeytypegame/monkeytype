@@ -1,7 +1,10 @@
 import MonkeyError from "../utils/error";
 import * as db from "../init/db";
 import { ObjectId, type Filter, Collection, type WithId } from "mongodb";
-import { Preset } from "@monkeytype/contracts/schemas/presets";
+import {
+  EditPresetRequest,
+  Preset,
+} from "@monkeytype/contracts/schemas/presets";
 
 const MAX_PRESETS = 10;
 
@@ -56,7 +59,10 @@ export async function addPreset(
   };
 }
 
-export async function editPreset(uid: string, preset: Preset): Promise<void> {
+export async function editPreset(
+  uid: string,
+  preset: EditPresetRequest
+): Promise<void> {
   const config = preset.config;
   const presetUpdates =
     config !== undefined && config !== null && Object.keys(config).length > 0
