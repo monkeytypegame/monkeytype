@@ -530,8 +530,10 @@
 }
 
 #wordsInput {
-  font-size: 1rem;
-  opacity: 0;
+  width: 1ch;
+  font-size: 1em;
+  height: 1em;
+  // opacity: 0;
   padding: 0;
   margin: 0 auto;
   border: none;

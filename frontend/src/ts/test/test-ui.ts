@@ -438,9 +438,6 @@ export async function updateWordsInputPosition(initial = false): Promise<void> {
   if (ActivePage.get() !== "test") return;
   if (Config.tapeMode !== "off" && !initial) return;
 
-  const currentLanguage = await JSONData.getCurrentLanguage(Config.language);
-  const isLanguageRTL = currentLanguage.rightToLeft;
-
   const el = document.querySelector("#wordsInput") as HTMLElement;
   const activeWord =
     document.querySelectorAll<HTMLElement>("#words .word")[
@@ -453,50 +450,41 @@ export async function updateWordsInputPosition(initial = false): Promise<void> {
     return;
   }
 
-  const letterHeight = activeWord
-    .querySelector("letter")
-    ?.getBoundingClientRect().height;
+  const computed = window.getComputedStyle(activeWord);
+  const activeWordMargin =
+    parseInt(computed.marginTop) + parseInt(computed.marginBottom);
 
-  const activeWordOuterHeight = $(activeWord).outerHeight(true) as number;
-  const activeWordOffsetHeight = $(activeWord).outerHeight() as number;
-  const activeWordContentHeight = $(activeWord).height() as number;
-  const activeWordMargin = activeWordOuterHeight - activeWordOffsetHeight;
-  // this is the same as activeWord.offsetHeight in single-line words
-  let activeWordHeight;
-  if (letterHeight) {
-    activeWordHeight =
-      activeWordOffsetHeight - activeWordContentHeight + letterHeight;
+  const letterHeight = Numbers.convertRemToPixels(Config.fontSize);
+  const activeWordTopNoMargin = activeWord.offsetTop - activeWordMargin / 2;
+  const targetTop =
+    activeWordTopNoMargin +
+    letterHeight / 2 -
+    el.offsetHeight / 2 +
+    activeWordMargin / 2 +
+    1; //+1 for half of border
+
+  if (activeWord.offsetWidth < letterHeight) {
+    el.style.width = letterHeight + "px";
   } else {
-    activeWordHeight = activeWordOffsetHeight;
+    el.style.width = activeWord.offsetWidth + "px";
   }
 
   if (Config.tapeMode !== "off") {
-    el.style.top =
-      activeWordHeight + activeWordMargin * 0.25 + -el.offsetHeight + "px";
+    el.style.top = targetTop + "px";
     el.style.left = activeWord.offsetLeft + "px";
     return;
   }
 
-  if (isLanguageRTL) {
-    el.style.left =
-      activeWord.offsetLeft - el.offsetWidth + activeWord.offsetWidth + "px";
+  if (initial) {
+    el.style.top = targetTop + letterHeight + activeWordMargin + 4 + "px";
   } else {
-    el.style.left = activeWord.offsetLeft + "px";
+    el.style.top = targetTop + "px";
   }
 
-  if (
-    initial &&
-    !posUpdateLangList.some((l) => Config.language.startsWith(l))
-  ) {
-    el.style.top =
-      activeWord.offsetTop +
-      activeWordHeight +
-      -el.offsetHeight +
-      (activeWordHeight + activeWordMargin) +
-      "px";
+  if (activeWord.offsetWidth < letterHeight) {
+    el.style.left = activeWord.offsetLeft - letterHeight + "px";
   } else {
-    el.style.top =
-      activeWord.offsetTop + activeWordHeight + -el.offsetHeight + "px";
+    el.style.left = activeWord.offsetLeft + "px";
   }
 }
 
