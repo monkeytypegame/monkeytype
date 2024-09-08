@@ -457,11 +457,7 @@ export async function updateWordsInputPosition(initial = false): Promise<void> {
   const letterHeight = Numbers.convertRemToPixels(Config.fontSize);
   const activeWordTopNoMargin = activeWord.offsetTop - activeWordMargin / 2;
   const targetTop =
-    activeWordTopNoMargin +
-    letterHeight / 2 -
-    el.offsetHeight / 2 +
-    activeWordMargin / 2 +
-    1; //+1 for half of border
+    activeWord.offsetTop + letterHeight / 2 - el.offsetHeight / 2 + 1; //+1 for half of border
 
   if (activeWord.offsetWidth < letterHeight) {
     el.style.width = letterHeight + "px";
