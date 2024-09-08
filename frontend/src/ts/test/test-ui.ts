@@ -455,7 +455,6 @@ export async function updateWordsInputPosition(initial = false): Promise<void> {
     parseInt(computed.marginTop) + parseInt(computed.marginBottom);
 
   const letterHeight = Numbers.convertRemToPixels(Config.fontSize);
-  const activeWordTopNoMargin = activeWord.offsetTop - activeWordMargin / 2;
   const targetTop =
     activeWord.offsetTop + letterHeight / 2 - el.offsetHeight / 2 + 1; //+1 for half of border
 
