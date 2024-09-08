@@ -463,10 +463,12 @@ export async function updateWordsInputPosition(initial = false): Promise<void> {
   const activeWordMargin = activeWordOuterHeight - activeWordOffsetHeight;
   // this is the same as activeWord.offsetHeight in single-line words
   let activeWordHeight;
-  if (letterHeight)
+  if (letterHeight) {
     activeWordHeight =
       activeWordOffsetHeight - activeWordContentHeight + letterHeight;
-  else activeWordHeight = activeWordOffsetHeight;
+  } else {
+    activeWordHeight = activeWordOffsetHeight;
+  }
 
   if (Config.tapeMode !== "off") {
     el.style.top =
