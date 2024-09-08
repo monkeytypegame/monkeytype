@@ -104,7 +104,7 @@ export function rateLimitRequest<
     }
 
     const hasApeKeyLimiterId = typeof rateLimit === "object";
-    let rateLimiterId: keyof typeof requestLimiters;
+    let rateLimiterId: RateLimiterId;
 
     if (req.ctx.decodedToken.type === "ApeKey") {
       rateLimiterId = hasApeKeyLimiterId
