@@ -105,8 +105,7 @@ export function rateLimitRequest<
     const isApeKeyLimiter = typeof limit === "object";
     let rateLimiterKey;
     if (req.ctx.decodedToken.type === "ApeKey") {
-      const apeKey = isApeKeyLimiter ? limit.apeKey : undefined;
-      rateLimiterKey = apeKey ?? "defaultApeRateLimit";
+      rateLimiterKey = isApeKeyLimiter ? limit.apeKey : "defaultApeRateLimit";
     } else {
       rateLimiterKey = isApeKeyLimiter ? limit.normal : limit;
     }

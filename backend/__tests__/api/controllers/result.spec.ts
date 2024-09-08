@@ -402,6 +402,22 @@ describe("result controller test", () => {
       expect(body.data).not.toHaveProperty("correctChars");
       expect(body.data).not.toHaveProperty("incorrectChars");
     });
+    it("should rate limit get last result with ape key", async () => {
+      //GIVEN
+      const result = givenDbResult(uid, {
+        charStats: undefined,
+        incorrectChars: 5,
+        correctChars: 12,
+      });
+      getLastResultMock.mockResolvedValue(result);
+      await acceptApeKeys(true);
+      const apeKey = await mockAuthenticateWithApeKey(uid, await configuration);
+
+      //WHEN
+      await expect(
+        mockApp.get("/results/last").set("Authorization", `ApeKey ${apeKey}`)
+      ).toBeRateLimited({ max: 30, windowMs: 60 * 1000 }); //should use defaultApeRateLimit
+    });
   });
   describe("deleteAll", () => {
     const deleteAllMock = vi.spyOn(ResultDal, "deleteAll");
