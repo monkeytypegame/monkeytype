@@ -103,16 +103,25 @@ export function rateLimitRequest<
     }
 
     const isApeKeyLimiter = typeof limit === "object";
-    let requestLimiter;
+    let rateLimiterKey;
     if (req.ctx.decodedToken.type === "ApeKey") {
-      const key = isApeKeyLimiter ? limit.apeKey : undefined;
-      requestLimiter = requestLimiters[key ?? "defaultApeRateLimit"];
+      const apeKey = isApeKeyLimiter ? limit.apeKey : undefined;
+      rateLimiterKey = apeKey ?? "defaultApeRateLimit";
     } else {
-      const key = isApeKeyLimiter ? limit.normal : limit;
-      requestLimiter = requestLimiters[key];
+      rateLimiterKey = isApeKeyLimiter ? limit.normal : limit;
     }
-    requestLimiter(req, res, next);
-    return;
+
+    const rateLimiter = requestLimiters[rateLimiterKey];
+    if (rateLimiter === undefined) {
+      next(
+        new MonkeyError(
+          500,
+          `Unknown rateLimiterKey '${rateLimiterKey}', how did you manage to do this?`
+        )
+      );
+    } else {
+      rateLimiter(req, res, next);
+    }
   };
 }
 
