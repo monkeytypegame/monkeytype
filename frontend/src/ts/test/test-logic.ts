@@ -935,6 +935,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
     Notifications.add("Test invalid - repeated", 0);
     dontSave = true;
   } else if (
+    completedEvent.testDuration < 1 ||
     (Config.mode === "time" && mode2Number < 15 && mode2Number > 0) ||
     (Config.mode === "time" &&
       mode2Number === 0 &&
