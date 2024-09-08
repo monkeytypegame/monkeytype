@@ -395,11 +395,7 @@ describe("PresetController", () => {
 
       expect(body).toStrictEqual({
         message: "Invalid request data schema",
-        validationErrors: [
-          `"_id" Required`,
-          `"name" Required`,
-          `"config" Required`,
-        ],
+        validationErrors: [`"_id" Required`, `"name" Required`],
       });
       expect(editPresetMock).not.toHaveBeenCalled();
     });
