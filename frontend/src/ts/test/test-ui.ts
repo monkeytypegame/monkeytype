@@ -438,6 +438,9 @@ export async function updateWordsInputPosition(initial = false): Promise<void> {
   if (ActivePage.get() !== "test") return;
   if (Config.tapeMode !== "off" && !initial) return;
 
+  const currentLanguage = await JSONData.getCurrentLanguage(Config.language);
+  const isLanguageRTL = currentLanguage.rightToLeft;
+
   const el = document.querySelector("#wordsInput") as HTMLElement;
   const activeWord =
     document.querySelectorAll<HTMLElement>("#words .word")[
@@ -476,7 +479,7 @@ export async function updateWordsInputPosition(initial = false): Promise<void> {
     el.style.top = targetTop + "px";
   }
 
-  if (activeWord.offsetWidth < letterHeight) {
+  if (activeWord.offsetWidth < letterHeight && isLanguageRTL) {
     el.style.left = activeWord.offsetLeft - letterHeight + "px";
   } else {
     el.style.left = activeWord.offsetLeft + "px";
