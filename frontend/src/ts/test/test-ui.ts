@@ -457,41 +457,32 @@ export async function updateWordsInputPosition(initial = false): Promise<void> {
   const activeWordMargin =
     parseInt(computed.marginTop) + parseInt(computed.marginBottom);
 
-  // const wordsWrapperTop =
-  //   (document.querySelector("#wordsWrapper") as HTMLElement | null)
-  //     ?.offsetTop ?? 0;
+  const letterHeight = Numbers.convertRemToPixels(Config.fontSize);
+  const targetTop =
+    activeWord.offsetTop + letterHeight / 2 - el.offsetHeight / 2 + 1; //+1 for half of border
+
+  if (activeWord.offsetWidth < letterHeight) {
+    el.style.width = letterHeight + "px";
+  } else {
+    el.style.width = activeWord.offsetWidth + "px";
+  }
 
   if (Config.tapeMode !== "off") {
-    el.style.top =
-      // wordsWrapperTop +
-      activeWord.offsetHeight +
-      activeWordMargin * 0.25 +
-      -el.offsetHeight +
-      "px";
+    el.style.top = targetTop + "px";
     el.style.left = activeWord.offsetLeft + "px";
     return;
   }
 
-  if (isLanguageRTL) {
-    el.style.left =
-      activeWord.offsetLeft - el.offsetWidth + activeWord.offsetWidth + "px";
+  if (initial) {
+    el.style.top = targetTop + letterHeight + activeWordMargin + 4 + "px";
   } else {
-    el.style.left = activeWord.offsetLeft + "px";
+    el.style.top = targetTop + "px";
   }
 
-  if (
-    initial &&
-    !posUpdateLangList.some((l) => Config.language.startsWith(l))
-  ) {
-    el.style.top =
-      activeWord.offsetTop +
-      activeWord.offsetHeight +
-      -el.offsetHeight +
-      (activeWord.offsetHeight + activeWordMargin) +
-      "px";
+  if (activeWord.offsetWidth < letterHeight && isLanguageRTL) {
+    el.style.left = activeWord.offsetLeft - letterHeight + "px";
   } else {
-    el.style.top =
-      activeWord.offsetTop + activeWord.offsetHeight + -el.offsetHeight + "px";
+    el.style.left = activeWord.offsetLeft + "px";
   }
 }
 
