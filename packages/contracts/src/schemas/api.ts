@@ -15,8 +15,11 @@ export type OpenApiTag =
   | "users"
   | "quotes";
 
-export type UserPermission = "quoteMod" | "canReport" | "canManageApeKeys";
-export type Permission = UserPermission | "admin";
+export type PermissionId =
+  | "quoteMod"
+  | "canReport"
+  | "canManageApeKeys"
+  | "admin";
 
 export type EndpointMetadata = {
   /** Authentication options, by default a bearer token is required. */
@@ -30,7 +33,7 @@ export type EndpointMetadata = {
   rateLimit?: RateLimiterId | RateLimitIds;
 
   /** Role/Rples needed to  access the endpoint*/
-  requirePermission?: Permission | Permission[];
+  requirePermission?: PermissionId | PermissionId[];
 };
 
 /**

@@ -8,16 +8,27 @@ import { TsRestRequestWithCtx } from "./auth";
 import {
   EndpointMetadata,
   RequestAuthenticationOptions,
-  Permission,
-  UserPermission,
+  PermissionId,
 } from "@monkeytype/contracts/schemas/api";
 import { isDevEnvironment } from "../utils/misc";
 
+type RequestPermissionCheck = {
+  type: "request";
+  criteria: (
+    req: TsRestRequestWithCtx,
+    metadata: EndpointMetadata | undefined
+  ) => Promise<boolean>;
+  invalidMessage?: string;
+};
+
 type UserPermissionCheck = {
+  type: "user";
   fields: (keyof MonkeyTypes.DBUser)[];
   criteria: (user: MonkeyTypes.DBUser) => boolean;
   invalidMessage: string;
 };
+
+type PermissionCheck = UserPermissionCheck | RequestPermissionCheck;
 
 function buildUserPermission<K extends keyof MonkeyTypes.DBUser>(
   fields: K[],
@@ -25,20 +36,29 @@ function buildUserPermission<K extends keyof MonkeyTypes.DBUser>(
   invalidMessage?: string
 ): UserPermissionCheck {
   return {
+    type: "user",
     fields,
     criteria,
     invalidMessage: invalidMessage ?? "You don't have permission to do this.",
   };
 }
 
-const permissionChecks: Record<UserPermission, UserPermissionCheck> = {
+const permissionChecks: Record<PermissionId, PermissionCheck> = {
+  admin: {
+    type: "request",
+    criteria: async (req, metadata) =>
+      await checkIfUserIsAdmin(
+        req.ctx.decodedToken,
+        metadata?.authenticationOptions
+      ),
+    invalidMessage: "You don't have permission to do this.",
+  },
   quoteMod: buildUserPermission(
     ["quoteMod"],
     (user) =>
       user.quoteMod === true ||
       (typeof user.quoteMod === "string" && user.quoteMod !== "")
   ),
-
   canReport: buildUserPermission(
     ["canReport"],
     (user) => user.canReport !== false
@@ -62,26 +82,27 @@ export function checkRequiredPermission<
       | EndpointMetadata
       | undefined;
     const requiredPermissions = getRequiredPermissions(metadata);
-    if (requiredPermissions === undefined) {
+    if (requiredPermissions === undefined || requiredPermissions.length === 0) {
       next();
       return;
     }
 
-    if (requiredPermissions.includes("admin")) {
-      if (
-        !(await checkIfUserIsAdmin(
-          req.ctx.decodedToken,
-          metadata?.authenticationOptions
-        ))
-      ) {
-        next(new MonkeyError(403, "You don't have permission to do this."));
+    const checks = requiredPermissions.map((it) => permissionChecks[it]);
+
+    //handle request checks
+    const requestChecks = checks.filter((it) => it.type === "request");
+    for (const check of requestChecks) {
+      if (!(await check.criteria(req, metadata))) {
+        next(new MonkeyError(403, check.invalidMessage));
         return;
       }
     }
 
+    //handle user checks
+    const userChecks = checks.filter((it) => it.type === "user");
     const invalidMessage = await checkUserPermissions(
       req.ctx.decodedToken,
-      requiredPermissions.filter((it) => it !== "admin")
+      userChecks
     );
     if (invalidMessage !== undefined) {
       next(new MonkeyError(403, invalidMessage));
@@ -96,7 +117,7 @@ export function checkRequiredPermission<
 
 function getRequiredPermissions(
   metadata: EndpointMetadata | undefined
-): Permission[] | undefined {
+): PermissionId[] | undefined {
   if (metadata === undefined || metadata.requirePermission === undefined)
     return undefined;
 
@@ -117,12 +138,10 @@ async function checkIfUserIsAdmin(
 
 async function checkUserPermissions(
   decodedToken: MonkeyTypes.DecodedToken | undefined,
-  permissions: UserPermission[]
+  checks: UserPermissionCheck[]
 ): Promise<string | undefined> {
-  if (permissions === undefined || permissions.length === 0) return undefined;
+  if (checks === undefined || checks.length === 0) return undefined;
   if (decodedToken === undefined) return "Authentication missing.";
-
-  const checks = permissions.map((it) => permissionChecks[it]);
 
   const user = (await getPartialUser(
     decodedToken.uid,
