@@ -22,6 +22,10 @@ describe("permission middleware", () => {
     isDevMock.mockReset().mockReturnValue(false);
     isAdminMock.mockReset().mockResolvedValue(false);
   });
+  afterEach(() => {
+    //next function must only be called once
+    expect(next).toHaveBeenCalledOnce();
+  });
 
   it("should bypass without requiredPermission", async () => {
     //GIVEN
@@ -38,8 +42,7 @@ describe("permission middleware", () => {
     //WHEN
     await handler(req, res, next);
 
-    //THEN
-    expect(next).toHaveBeenCalledOnce();
+    //THE
     expect(next).toHaveBeenCalledWith();
   });
 
@@ -55,7 +58,6 @@ describe("permission middleware", () => {
       await handler(req, res, next);
 
       //THEN
-      expect(next).toHaveBeenCalledOnce();
       expect(next).toHaveBeenCalledWith(
         new MonkeyError(403, "You don't have permission to do this.")
       );
@@ -74,7 +76,6 @@ describe("permission middleware", () => {
       await handler(req, res, next);
 
       //THEN
-      expect(next).toHaveBeenCalledOnce();
       expect(next).toHaveBeenCalledWith();
     });
     it("should fail without authentication if publicOnDev on prod ", async () => {
@@ -90,7 +91,6 @@ describe("permission middleware", () => {
       await handler(req, res, next);
 
       //THEN
-      expect(next).toHaveBeenCalledOnce();
       expect(next).toHaveBeenCalledWith(
         new MonkeyError(403, "You don't have permission to do this.")
       );
@@ -103,7 +103,6 @@ describe("permission middleware", () => {
       await handler(req, res, next);
 
       //THEN
-      expect(next).toHaveBeenCalledOnce();
       expect(next).toHaveBeenCalledWith(
         new MonkeyError(403, "You don't have permission to do this.")
       );
@@ -141,7 +140,6 @@ describe("permission middleware", () => {
       await handler(req, res, next);
 
       //THEN
-      expect(next).toHaveBeenCalledOnce();
       expect(next).toHaveBeenCalledWith(
         new MonkeyError(403, "Authentication missing.")
       );
@@ -161,7 +159,6 @@ describe("permission middleware", () => {
       await handler(req, res, next);
 
       //THEN
-      expect(next).toHaveBeenCalledOnce();
       expect(next).toHaveBeenCalledWith();
       expect(getPartialUserMock).toHaveBeenCalledWith(
         uid,
@@ -178,7 +175,6 @@ describe("permission middleware", () => {
       await handler(req, res, next);
 
       //THEN
-      expect(next).toHaveBeenCalledOnce();
       expect(next).toHaveBeenCalledWith();
       expect(getPartialUserMock).toHaveBeenCalledWith(
         uid,
@@ -195,7 +191,6 @@ describe("permission middleware", () => {
       await handler(req, res, next);
 
       //THEN
-      expect(next).toHaveBeenCalledOnce();
       expect(next).toHaveBeenCalledWith(
         new MonkeyError(403, "You don't have permission to do this.")
       );
@@ -209,7 +204,6 @@ describe("permission middleware", () => {
       await handler(req, res, next);
 
       //THEN
-      expect(next).toHaveBeenCalledOnce();
       expect(next).toHaveBeenCalledWith(
         new MonkeyError(403, "You don't have permission to do this.")
       );
@@ -229,7 +223,6 @@ describe("permission middleware", () => {
       await handler(req, res, next);
 
       //THEN
-      expect(next).toHaveBeenCalledOnce();
       expect(next).toHaveBeenCalledWith(
         new MonkeyError(403, "You don't have permission to do this.")
       );
@@ -248,7 +241,6 @@ describe("permission middleware", () => {
       await handler(req, res, next);
 
       //THEN
-      expect(next).toHaveBeenCalledOnce();
       expect(next).toHaveBeenCalledWith();
     });
     it("should pass if canReport is not set", async () => {
@@ -260,7 +252,6 @@ describe("permission middleware", () => {
       await handler(req, res, next);
 
       //THEN
-      expect(next).toHaveBeenCalledOnce();
       expect(next).toHaveBeenCalledWith();
     });
   });
@@ -278,7 +269,6 @@ describe("permission middleware", () => {
       await handler(req, res, next);
 
       //THEN
-      expect(next).toHaveBeenCalledOnce();
       expect(next).toHaveBeenCalledWith(
         new MonkeyError(
           403,
@@ -300,7 +290,6 @@ describe("permission middleware", () => {
       await handler(req, res, next);
 
       //THEN
-      expect(next).toHaveBeenCalledOnce();
       expect(next).toHaveBeenCalledWith();
     });
     it("should pass if canManageApeKeys is not set", async () => {
@@ -312,7 +301,6 @@ describe("permission middleware", () => {
       await handler(req, res, next);
 
       //THEN
-      expect(next).toHaveBeenCalledOnce();
       expect(next).toHaveBeenCalledWith();
     });
   });
