@@ -1,7 +1,6 @@
 import { ObjectId } from "mongodb";
 import * as PresetDal from "../../src/dal/preset";
 import _ from "lodash";
-import { ShowAverageSchema } from "@monkeytype/contracts/schemas/configs";
 
 describe("PresetDal", () => {
   describe("readPreset", () => {
@@ -19,7 +18,7 @@ describe("PresetDal", () => {
           showKeyTips: true,
           capsLockWarning: true,
           showOutOfFocusWarning: true,
-          showAverage: ShowAverageSchema.Enum.off,
+          showAverage: "off",
         },
       });
       await PresetDal.addPreset("unknown", { name: "unknown", config: {} });
@@ -46,7 +45,7 @@ describe("PresetDal", () => {
               showKeyTips: true,
               capsLockWarning: true,
               showOutOfFocusWarning: true,
-              showAverage: ShowAverageSchema.Enum.off,
+              showAverage: "off",
             },
           }),
         ])
@@ -171,7 +170,7 @@ describe("PresetDal", () => {
       );
     });
 
-    it("should edit with name only", async () => {
+    it("should edit with name only - full preset", async () => {
       //GIVEN
       const uid = new ObjectId().toHexString();
       const first = (
@@ -185,7 +184,6 @@ describe("PresetDal", () => {
       await PresetDal.editPreset(uid, {
         _id: first,
         name: "newName",
-        config: {},
       });
       expect(await PresetDal.getPresets(uid)).toEqual(
         expect.arrayContaining([
@@ -194,6 +192,44 @@ describe("PresetDal", () => {
             uid: uid,
             name: "newName",
             config: { ads: "sellout" },
+          }),
+        ])
+      );
+    });
+    it("should edit with name only - partial preset", async () => {
+      //GIVEN
+      const uid = new ObjectId().toHexString();
+      const first = (
+        await PresetDal.addPreset(uid, {
+          name: "first",
+          settingGroups: ["hideElements"],
+          config: {
+            showKeyTips: true,
+            capsLockWarning: true,
+            showOutOfFocusWarning: true,
+            showAverage: "off",
+          },
+        })
+      ).presetId;
+
+      //WHEN empty
+      await PresetDal.editPreset(uid, {
+        _id: first,
+        name: "newName",
+      });
+      expect(await PresetDal.getPresets(uid)).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            _id: new ObjectId(first),
+            uid: uid,
+            name: "newName",
+            settingGroups: ["hideElements"],
+            config: {
+              showKeyTips: true,
+              capsLockWarning: true,
+              showOutOfFocusWarning: true,
+              showAverage: "off",
+            },
           }),
         ])
       );
@@ -230,7 +266,7 @@ describe("PresetDal", () => {
         ])
       );
     });
-    it("should edit when partial is editted to full", async () => {
+    it("should edit when partial is edited to full", async () => {
       //GIVEN
       const uid = new ObjectId().toHexString();
       const decoyUid = new ObjectId().toHexString();
@@ -242,7 +278,7 @@ describe("PresetDal", () => {
             showKeyTips: true,
             capsLockWarning: true,
             showOutOfFocusWarning: true,
-            showAverage: ShowAverageSchema.Enum.off,
+            showAverage: "off",
           },
         })
       ).presetId;
@@ -278,6 +314,7 @@ describe("PresetDal", () => {
             uid: uid,
             name: "newName",
             config: { ads: "off" },
+            settingGroups: null,
           }),
           expect.objectContaining({
             _id: new ObjectId(second),
@@ -298,7 +335,7 @@ describe("PresetDal", () => {
         ])
       );
     });
-    it("should edit when full is editted to partial", async () => {
+    it("should edit when full is edited to partial", async () => {
       //GIVEN
       const uid = new ObjectId().toHexString();
       const decoyUid = new ObjectId().toHexString();
@@ -334,7 +371,7 @@ describe("PresetDal", () => {
           showKeyTips: true,
           capsLockWarning: true,
           showOutOfFocusWarning: true,
-          showAverage: ShowAverageSchema.Enum.off,
+          showAverage: "off",
         },
       });
 
@@ -352,7 +389,7 @@ describe("PresetDal", () => {
               showKeyTips: true,
               capsLockWarning: true,
               showOutOfFocusWarning: true,
-              showAverage: ShowAverageSchema.Enum.off,
+              showAverage: "off",
             },
           }),
           expect.objectContaining({

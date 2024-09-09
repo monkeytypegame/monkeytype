@@ -71,9 +71,10 @@ export async function editPreset(
     Object.keys(preset.config).length === 0
   ) {
     delete update.config;
+  } else if (preset.settingGroups === undefined) {
+    update.settingGroups = undefined;
+    //need to do this otherwise it doesnt change partial presets to full
   }
-  if (preset.settingGroups === undefined) update.settingGroups = undefined;
-  //need to do this otherwise it doesnt change partial presets to full
   await getPresetsCollection().updateOne(getPresetKeyFilter(uid, preset._id), {
     $set: update,
   });

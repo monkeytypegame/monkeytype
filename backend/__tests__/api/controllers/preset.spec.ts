@@ -2,8 +2,6 @@ import request from "supertest";
 import app from "../../../src/app";
 import * as PresetDal from "../../../src/dal/preset";
 import { ObjectId } from "mongodb";
-import { PresetSettingGroupSchema } from "@monkeytype/contracts/schemas/presets";
-import { ShowAverageSchema } from "@monkeytype/contracts/schemas/configs";
 const mockApp = request(app);
 
 describe("PresetController", () => {
@@ -26,15 +24,15 @@ describe("PresetController", () => {
         _id: new ObjectId(),
         uid: "123456789",
         name: "test2",
-        settingGroups: [PresetSettingGroupSchema.Enum.hideElements],
+        settingGroups: ["hideElements"],
         config: {
           showKeyTips: true,
           capsLockWarning: true,
           showOutOfFocusWarning: true,
-          showAverage: ShowAverageSchema.Enum.off,
+          showAverage: "off",
         },
       };
-
+      //@ts-expect-error
       getPresetsMock.mockResolvedValue([presetOne, presetTwo]);
 
       //WHEN
@@ -60,7 +58,7 @@ describe("PresetController", () => {
               showKeyTips: true,
               capsLockWarning: true,
               showOutOfFocusWarning: true,
-              showAverage: ShowAverageSchema.Enum.off,
+              showAverage: "off",
             },
           },
         ],
@@ -140,7 +138,7 @@ describe("PresetController", () => {
             showKeyTips: true,
             capsLockWarning: true,
             showOutOfFocusWarning: true,
-            showAverage: ShowAverageSchema.Enum.off,
+            showAverage: "off",
           },
         })
         .expect(200);
@@ -158,7 +156,7 @@ describe("PresetController", () => {
           showKeyTips: true,
           capsLockWarning: true,
           showOutOfFocusWarning: true,
-          showAverage: ShowAverageSchema.Enum.off,
+          showAverage: "off",
         },
       });
     });
@@ -266,7 +264,7 @@ describe("PresetController", () => {
             showKeyTips: true,
             capsLockWarning: true,
             showOutOfFocusWarning: true,
-            showAverage: ShowAverageSchema.Enum.off,
+            showAverage: "off",
           },
         })
         .expect(422);
@@ -331,12 +329,12 @@ describe("PresetController", () => {
         .send({
           _id: "1",
           name: "new",
-          settingGroups: [PresetSettingGroupSchema.Enum.hideElements],
+          settingGroups: ["hideElements"],
           config: {
             showKeyTips: true,
             capsLockWarning: true,
             showOutOfFocusWarning: true,
-            showAverage: ShowAverageSchema.Enum.off,
+            showAverage: "off",
           },
         })
         .expect(200);
@@ -350,12 +348,12 @@ describe("PresetController", () => {
       expect(editPresetMock).toHaveBeenCalledWith("123456789", {
         _id: "1",
         name: "new",
-        settingGroups: [PresetSettingGroupSchema.Enum.hideElements],
+        settingGroups: ["hideElements"],
         config: {
           showKeyTips: true,
           capsLockWarning: true,
           showOutOfFocusWarning: true,
-          showAverage: ShowAverageSchema.Enum.off,
+          showAverage: "off",
         },
       });
     });
@@ -446,7 +444,7 @@ describe("PresetController", () => {
             showKeyTips: true,
             capsLockWarning: true,
             showOutOfFocusWarning: true,
-            showAverage: ShowAverageSchema.Enum.off,
+            showAverage: "off",
           },
         })
         .expect(422);
