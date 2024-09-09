@@ -25,7 +25,7 @@ type UserPermissionCheck = {
   type: "user";
   fields: (keyof MonkeyTypes.DBUser)[];
   criteria: (user: MonkeyTypes.DBUser) => boolean;
-  invalidMessage: string;
+  invalidMessage?: string;
 };
 
 type PermissionCheck = UserPermissionCheck | RequestPermissionCheck;
@@ -39,7 +39,7 @@ function buildUserPermission<K extends keyof MonkeyTypes.DBUser>(
     type: "user",
     fields,
     criteria,
-    invalidMessage: invalidMessage ?? "You don't have permission to do this.",
+    invalidMessage: invalidMessage,
   };
 }
 
@@ -51,7 +51,6 @@ const permissionChecks: Record<PermissionId, PermissionCheck> = {
         req.ctx.decodedToken,
         metadata?.authenticationOptions
       ),
-    invalidMessage: "You don't have permission to do this.",
   },
   quoteMod: buildUserPermission(
     ["quoteMod"],
@@ -101,7 +100,12 @@ export function verifyPermissions<
     const requestChecks = checks.filter((it) => it.type === "request");
     for (const check of requestChecks) {
       if (!(await check.criteria(req, metadata))) {
-        next(new MonkeyError(403, check.invalidMessage));
+        next(
+          new MonkeyError(
+            403,
+            check.invalidMessage ?? "You don't have permission to do this."
+          )
+        );
         return;
       }
     }
@@ -113,7 +117,12 @@ export function verifyPermissions<
       userChecks
     );
     if (invalidMessage !== undefined) {
-      next(new MonkeyError(403, invalidMessage));
+      next(
+        new MonkeyError(
+          403,
+          invalidMessage ?? "You don't have permission to do this."
+        )
+      );
       return;
     }
 
