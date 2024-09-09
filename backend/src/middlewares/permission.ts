@@ -70,7 +70,7 @@ const permissionChecks: Record<PermissionId, PermissionCheck> = {
   ),
 };
 
-export function checkRequiredPermission<
+export function verifyPermissions<
   T extends AppRouter | AppRoute
 >(): TsRestRequestHandler<T> {
   return async (
