@@ -81,13 +81,16 @@ export function checkRequiredPermission<
     const metadata = req.tsRestRoute["metadata"] as
       | EndpointMetadata
       | undefined;
-    const requiredPermissions = getRequiredPermissions(metadata);
-    if (requiredPermissions === undefined || requiredPermissions.length === 0) {
+    const requiredPermissionIds = getRequiredPermissionIds(metadata);
+    if (
+      requiredPermissionIds === undefined ||
+      requiredPermissionIds.length === 0
+    ) {
       next();
       return;
     }
 
-    const checks = requiredPermissions.map((it) => permissionChecks[it]);
+    const checks = requiredPermissionIds.map((it) => permissionChecks[it]);
 
     //handle request checks
     const requestChecks = checks.filter((it) => it.type === "request");
@@ -115,7 +118,7 @@ export function checkRequiredPermission<
   };
 }
 
-function getRequiredPermissions(
+function getRequiredPermissionIds(
   metadata: EndpointMetadata | undefined
 ): PermissionId[] | undefined {
   if (metadata === undefined || metadata.requirePermission === undefined)
