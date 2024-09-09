@@ -89,7 +89,7 @@ export function verifyPermissions<
       return;
     }
 
-    const checks = requiredPermissionIds.map((it) => permissionChecks[it]);
+    const checks = requiredPermissionIds.map((id) => permissionChecks[id]);
 
     if (checks.some((it) => it === undefined)) {
       next(new MonkeyError(500, "Unknown permission id."));
