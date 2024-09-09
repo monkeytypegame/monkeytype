@@ -92,6 +92,11 @@ export function checkRequiredPermission<
 
     const checks = requiredPermissionIds.map((it) => permissionChecks[it]);
 
+    if (checks.some((it) => it === undefined)) {
+      next(new MonkeyError(500, "Unknown permission id."));
+      return;
+    }
+
     //handle request checks
     const requestChecks = checks.filter((it) => it.type === "request");
     for (const check of requestChecks) {
