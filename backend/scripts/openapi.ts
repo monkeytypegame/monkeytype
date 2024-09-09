@@ -1,8 +1,18 @@
 import { generateOpenApi } from "@ts-rest/open-api";
 import { contract } from "@monkeytype/contracts/index";
 import { writeFileSync, mkdirSync } from "fs";
-import { EndpointMetadata } from "@monkeytype/contracts/schemas/api";
+import {
+  ApeKeyRateLimit,
+  EndpointMetadata,
+} from "@monkeytype/contracts/schemas/api";
 import type { OpenAPIObject } from "openapi3-ts";
+import {
+  getLimits,
+  limits,
+  RateLimit,
+  Window,
+} from "@monkeytype/contracts/rate-limit/index";
+import { formatDuration } from "date-fns";
 
 type SecurityRequirementObject = {
   [name: string]: string[];
@@ -130,11 +140,19 @@ export function getOpenApi(): OpenAPIObject {
     {
       jsonQuery: true,
       setOperationId: "concatenated-path",
-      operationMapper: (operation, route) => ({
-        ...operation,
-        ...addAuth(route.metadata as EndpointMetadata),
-        ...addTags(route.metadata as EndpointMetadata),
-      }),
+      operationMapper: (operation, route) => {
+        const metadata = route.metadata as EndpointMetadata;
+
+        addRateLimit(operation, metadata);
+
+        const result = {
+          ...operation,
+          ...addAuth(metadata),
+          ...addTags(metadata),
+        };
+
+        return result;
+      },
     }
   );
   return openApiDocument;
@@ -165,6 +183,62 @@ function addTags(metadata: EndpointMetadata | undefined): object {
       ? metadata.openApiTags
       : [metadata.openApiTags],
   };
+}
+
+function addRateLimit(operation, metadata: EndpointMetadata | undefined): void {
+  if (metadata === undefined || metadata.rateLimit === undefined) return;
+  const okResponse = operation.responses["200"];
+  if (okResponse === undefined) return;
+
+  if (!operation.description.trim().endsWith(".")) operation.description += ".";
+
+  operation.description += getRateLimitDescription(metadata.rateLimit);
+
+  okResponse["headers"] = {
+    ...okResponse["headers"],
+    "x-ratelimit-limit": {
+      schema: { type: "integer" },
+      description: "The number of allowed requests in the current period",
+    },
+    "x-ratelimit-remaining": {
+      schema: { type: "integer" },
+      description: "The number of remaining requests in the current period",
+    },
+    "x-ratelimit-reset": {
+      schema: { type: "integer" },
+      description: "The timestamp of the start of the next period",
+    },
+  };
+}
+
+function getRateLimitDescription(limit: RateLimit | ApeKeyRateLimit): string {
+  const limits = getLimits(limit);
+
+  let result = ` This operation can be called up to ${
+    limits.limiter.max
+  } times ${formatWindow(limits.limiter.window)} for regular users`;
+
+  if (limits.apeKeyLimiter !== undefined) {
+    result += ` and up to ${limits.apeKeyLimiter.max} times ${formatWindow(
+      limits.apeKeyLimiter.window
+    )} with ApeKeys`;
+  }
+
+  return result + ".";
+}
+
+function formatWindow(window: Window): string {
+  if (typeof window === "number") {
+    const seconds = Math.floor(window / 1000);
+    const duration = formatDuration({
+      hours: Math.floor(seconds / 3600),
+      minutes: Math.floor(seconds / 60) % 60,
+      seconds: seconds % 60,
+    });
+
+    return `every ${duration}`;
+  }
+  return "per " + window;
 }
 
 //detect if we run this as a main

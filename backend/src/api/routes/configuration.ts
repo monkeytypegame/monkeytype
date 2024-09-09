@@ -1,7 +1,6 @@
 import { configurationContract } from "@monkeytype/contracts/configuration";
 import { initServer } from "@ts-rest/express";
 import { checkIfUserIsAdmin } from "../../middlewares/permission";
-import * as RateLimit from "../../middlewares/rate-limit";
 import * as ConfigurationController from "../controllers/configuration";
 import { callController } from "../ts-rest-adapter";
 
@@ -14,12 +13,12 @@ export default s.router(configurationContract, {
   },
 
   update: {
-    middleware: [checkIfUserIsAdmin(), RateLimit.adminLimit],
+    middleware: [checkIfUserIsAdmin()],
     handler: async (r) =>
       callController(ConfigurationController.updateConfiguration)(r),
   },
   getSchema: {
-    middleware: [checkIfUserIsAdmin(), RateLimit.adminLimit],
+    middleware: [checkIfUserIsAdmin()],
     handler: async (r) => callController(ConfigurationController.getSchema)(r),
   },
 });

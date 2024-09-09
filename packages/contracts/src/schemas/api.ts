@@ -1,4 +1,5 @@
 import { z, ZodSchema } from "zod";
+import { RateLimitIds, RateLimiterId } from "../rate-limit";
 
 export type OpenApiTag =
   | "configs"
@@ -17,8 +18,24 @@ export type OpenApiTag =
 export type EndpointMetadata = {
   /** Authentication options, by default a bearer token is required. */
   authenticationOptions?: RequestAuthenticationOptions;
+
   openApiTags?: OpenApiTag | OpenApiTag[];
+
+  /** RateLimitId or RateLimitIds.
+   * Only specifying RateLimiterId will use  a default limiter with 30 requests/minute for ApeKey requests.
+   */
+  rateLimit?: RateLimiterId | RateLimitIds;
 };
+
+/**
+ *
+ * @param meta Ensure the type of metadata is `EndpointMetadata`.
+ * Ts-rest does not allow to specify the type of `metadata`.
+ * @returns
+ */
+export function meta(meta: EndpointMetadata): EndpointMetadata {
+  return meta;
+}
 
 export type RequestAuthenticationOptions = {
   /** Endpoint is accessible without any authentication. If `false` bearer authentication is required. */

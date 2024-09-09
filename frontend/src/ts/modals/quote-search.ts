@@ -40,7 +40,7 @@ function getSearchService<T>(
 
   const newSearchService = buildSearchService<T>(data, textExtractor);
   searchServiceCache[language] =
-    newSearchService as unknown as typeof searchServiceCache[typeof language];
+    newSearchService as unknown as (typeof searchServiceCache)[typeof language];
 
   return newSearchService;
 }

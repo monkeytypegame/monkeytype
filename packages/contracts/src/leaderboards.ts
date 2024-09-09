@@ -1,7 +1,7 @@
 import { z } from "zod";
 import {
   CommonResponses,
-  EndpointMetadata,
+  meta,
   responseWithData,
   responseWithNullableData,
 } from "./schemas/api";
@@ -98,9 +98,9 @@ export const leaderboardsContract = c.router(
       responses: {
         200: GetLeaderboardResponseSchema,
       },
-      metadata: {
+      metadata: meta({
         authenticationOptions: { isPublic: true },
-      } as EndpointMetadata,
+      }),
     },
     getRank: {
       summary: "get leaderboard rank",
@@ -112,9 +112,9 @@ export const leaderboardsContract = c.router(
       responses: {
         200: GetLeaderboardRankResponseSchema,
       },
-      metadata: {
+      metadata: meta({
         authenticationOptions: { acceptApeKeys: true },
-      } as EndpointMetadata,
+      }),
     },
     getDaily: {
       summary: "get daily leaderboard",
@@ -125,9 +125,9 @@ export const leaderboardsContract = c.router(
       responses: {
         200: GetLeaderboardResponseSchema,
       },
-      metadata: {
+      metadata: meta({
         authenticationOptions: { isPublic: true },
-      } as EndpointMetadata,
+      }),
     },
     getDailyRank: {
       summary: "get daily leaderboard rank",
@@ -148,9 +148,9 @@ export const leaderboardsContract = c.router(
       responses: {
         200: GetWeeklyXpLeaderboardResponseSchema,
       },
-      metadata: {
+      metadata: meta({
         authenticationOptions: { isPublic: true },
-      } as EndpointMetadata,
+      }),
     },
     getWeeklyXpRank: {
       summary: "get weekly xp leaderboard rank",
@@ -166,9 +166,10 @@ export const leaderboardsContract = c.router(
   {
     pathPrefix: "/leaderboards",
     strictStatusCodes: true,
-    metadata: {
+    metadata: meta({
       openApiTags: "leaderboards",
-    } as EndpointMetadata,
+      rateLimit: "leaderboardsGet",
+    }),
     commonResponses: CommonResponses,
   }
 );
