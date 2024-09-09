@@ -35,6 +35,7 @@ import { ZodIssue } from "zod";
 import { MonkeyValidationError } from "@monkeytype/contracts/schemas/api";
 import { authenticateTsRestRequest } from "../../middlewares/auth";
 import { rateLimitRequest } from "../../middlewares/rate-limit";
+import { checkRequiredRole } from "../../middlewares/permission";
 
 const pathOverride = process.env["API_PATH_OVERRIDE"];
 const BASE_ROUTE = pathOverride !== undefined ? `/${pathOverride}` : "";
@@ -112,7 +113,11 @@ function applyTsRestApiRoutes(app: IRouter): void {
         .status(422)
         .json({ message, validationErrors } as MonkeyValidationError);
     },
-    globalMiddleware: [authenticateTsRestRequest(), rateLimitRequest()],
+    globalMiddleware: [
+      authenticateTsRestRequest(),
+      rateLimitRequest(),
+      checkRequiredRole(),
+    ],
   });
 }
 

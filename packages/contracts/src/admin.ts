@@ -111,6 +111,7 @@ export const adminContract = c.router(
       openApiTags: "admin",
       authenticationOptions: { noCache: true },
       rateLimit: "adminLimit",
+      requireRole: "admin",
     }),
 
     commonResponses: CommonResponses,

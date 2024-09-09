@@ -803,6 +803,7 @@ export const usersContract = c.router(
       },
       metadata: meta({
         rateLimit: "quoteReportSubmit",
+        requireRole: "canReport",
       }),
     },
     verificationEmail: {

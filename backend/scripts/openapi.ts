@@ -1,15 +1,12 @@
 import { generateOpenApi } from "@ts-rest/open-api";
 import { contract } from "@monkeytype/contracts/index";
 import { writeFileSync, mkdirSync } from "fs";
+import { EndpointMetadata, Role } from "@monkeytype/contracts/schemas/api";
+import type { OpenAPIObject, OperationObject } from "openapi3-ts";
 import {
-  ApeKeyRateLimit,
-  EndpointMetadata,
-} from "@monkeytype/contracts/schemas/api";
-import type { OpenAPIObject } from "openapi3-ts";
-import {
+  RateLimitIds,
   getLimits,
-  limits,
-  RateLimit,
+  RateLimiterId,
   Window,
 } from "@monkeytype/contracts/rate-limit/index";
 import { formatDuration } from "date-fns";
@@ -143,54 +140,72 @@ export function getOpenApi(): OpenAPIObject {
       operationMapper: (operation, route) => {
         const metadata = route.metadata as EndpointMetadata;
 
+        if (!operation.description?.trim()?.endsWith("."))
+          operation.description += ".";
+        operation.description += "\n\n";
+
+        addAuth(operation, metadata);
         addRateLimit(operation, metadata);
+        addTags(operation, metadata);
 
-        const result = {
-          ...operation,
-          ...addAuth(metadata),
-          ...addTags(metadata),
-        };
-
-        return result;
+        return operation;
       },
     }
   );
   return openApiDocument;
 }
 
-function addAuth(metadata: EndpointMetadata | undefined): object {
-  const auth = metadata?.["authenticationOptions"] ?? {};
+function addAuth(
+  operation: OperationObject,
+  metadata: EndpointMetadata | undefined
+): void {
+  const auth = metadata?.authenticationOptions ?? {};
+  const roles = getRequiredRoles(metadata) ?? [];
   const security: SecurityRequirementObject[] = [];
-  if (!auth.isPublic === true && !auth.isPublicOnDev === true) {
-    security.push({ BearerAuth: [] });
+  if (!auth.isPublic && !auth.isPublicOnDev) {
+    security.push({ BearerAuth: roles });
 
     if (auth.acceptApeKeys === true) {
-      security.push({ ApeKey: [] });
+      security.push({ ApeKey: roles });
     }
   }
 
   const includeInPublic = auth.isPublic === true || auth.acceptApeKeys === true;
-  return {
-    "x-public": includeInPublic ? "yes" : "no",
-    security,
-  };
+  operation["x-public"] = includeInPublic ? "yes" : "no";
+  operation.security = security;
+
+  if (roles.length !== 0) {
+    operation.description += `**Required roles:** ${roles.join(", ")}\n\n`;
+  }
 }
 
-function addTags(metadata: EndpointMetadata | undefined): object {
-  if (metadata === undefined || metadata.openApiTags === undefined) return {};
-  return {
-    tags: Array.isArray(metadata.openApiTags)
-      ? metadata.openApiTags
-      : [metadata.openApiTags],
-  };
+function getRequiredRoles(
+  metadata: EndpointMetadata | undefined
+): Role[] | undefined {
+  if (metadata === undefined || metadata.requireRole === undefined)
+    return undefined;
+
+  if (Array.isArray(metadata.requireRole)) return metadata.requireRole;
+  return [metadata.requireRole];
 }
 
-function addRateLimit(operation, metadata: EndpointMetadata | undefined): void {
+function addTags(
+  operation: OperationObject,
+  metadata: EndpointMetadata | undefined
+): void {
+  if (metadata === undefined || metadata.openApiTags === undefined) return;
+  operation.tags = Array.isArray(metadata.openApiTags)
+    ? metadata.openApiTags
+    : [metadata.openApiTags];
+}
+
+function addRateLimit(
+  operation: OperationObject,
+  metadata: EndpointMetadata | undefined
+): void {
   if (metadata === undefined || metadata.rateLimit === undefined) return;
   const okResponse = operation.responses["200"];
   if (okResponse === undefined) return;
-
-  if (!operation.description.trim().endsWith(".")) operation.description += ".";
 
   operation.description += getRateLimitDescription(metadata.rateLimit);
 
@@ -211,10 +226,10 @@ function addRateLimit(operation, metadata: EndpointMetadata | undefined): void {
   };
 }
 
-function getRateLimitDescription(limit: RateLimit | ApeKeyRateLimit): string {
+function getRateLimitDescription(limit: RateLimiterId | RateLimitIds): string {
   const limits = getLimits(limit);
 
-  let result = ` This operation can be called up to ${
+  let result = `**Rate limit:** This operation can be called up to ${
     limits.limiter.max
   } times ${formatWindow(limits.limiter.window)} for regular users`;
 
@@ -224,7 +239,7 @@ function getRateLimitDescription(limit: RateLimit | ApeKeyRateLimit): string {
     )} with ApeKeys`;
   }
 
-  return result + ".";
+  return result + ".\n\n";
 }
 
 function formatWindow(window: Window): string {

@@ -98,6 +98,7 @@ export const quotesContract = c.router(
       },
       metadata: meta({
         rateLimit: "newQuotesGet",
+        requireRole: "quoteMod",
       }),
     },
     isSubmissionEnabled: {
@@ -137,6 +138,7 @@ export const quotesContract = c.router(
       },
       metadata: meta({
         rateLimit: "newQuotesAction",
+        requireRole: "quoteMod",
       }),
     },
     rejectSubmission: {
@@ -150,6 +152,7 @@ export const quotesContract = c.router(
       },
       metadata: meta({
         rateLimit: "newQuotesAction",
+        requireRole: "quoteMod",
       }),
     },
     getRating: {
@@ -189,6 +192,7 @@ export const quotesContract = c.router(
       },
       metadata: meta({
         rateLimit: "quoteReportSubmit",
+        requireRole: "canReport",
       }),
     },
   },
