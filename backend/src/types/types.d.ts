@@ -22,6 +22,10 @@ declare namespace MonkeyTypes {
     ctx: Readonly<Context>;
   } & ExpressRequest;
 
+  type ExpressRequestWithContext = {
+    ctx: Readonly<Context>;
+  } & ExpressRequest;
+
   type Request2<TQuery = undefined, TBody = undefined, TParams = undefined> = {
     query: Readonly<TQuery>;
     body: Readonly<TBody>;

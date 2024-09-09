@@ -26,7 +26,8 @@ const DEFAULT_OPTIONS: RequestAuthenticationOptions = {
 
 export type TsRestRequestWithCtx = {
   ctx: Readonly<MonkeyTypes.Context>;
-} & TsRestRequest;
+} & TsRestRequest &
+  ExpressRequest;
 
 /**
  * Authenticate request based on the auth settings of the route.

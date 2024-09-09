@@ -1,5 +1,5 @@
 // import joi from "joi";
-import { adminLimit } from "../../middlewares/rate-limit";
+
 import * as AdminController from "../controllers/admin";
 
 import { adminContract } from "@monkeytype/contracts/admin";
@@ -9,8 +9,6 @@ import { checkIfUserIsAdmin } from "../../middlewares/permission";
 import { callController } from "../ts-rest-adapter";
 
 const commonMiddleware = [
-  adminLimit,
-
   validate({
     criteria: (configuration) => {
       return configuration.admin.endpointsEnabled;
