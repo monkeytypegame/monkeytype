@@ -1,5 +1,5 @@
 import { Response } from "express";
-import { checkRequiredPermission } from "../../src/middlewares/permission";
+import { verifyPermissions } from "../../src/middlewares/permission";
 import { EndpointMetadata } from "@monkeytype/contracts/schemas/api";
 import * as Misc from "../../src/utils/misc";
 import * as AdminUids from "../../src/dal/admin-uids";
@@ -9,7 +9,7 @@ import MonkeyError from "../../src/utils/error";
 const uid = "123456789";
 
 describe("permission middleware", () => {
-  const handler = checkRequiredPermission();
+  const handler = verifyPermissions();
   const res: Response = {} as any;
   const next = vi.fn();
   const getPartialUserMock = vi.spyOn(UserDal, "getPartialUser");

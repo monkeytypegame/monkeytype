@@ -117,12 +117,7 @@ export function verifyPermissions<
       userChecks
     );
     if (invalidMessage !== undefined) {
-      next(
-        new MonkeyError(
-          403,
-          invalidMessage ?? "You don't have permission to do this."
-        )
-      );
+      next(new MonkeyError(403, invalidMessage));
       return;
     }
 
@@ -167,7 +162,8 @@ async function checkUserPermissions(
   )) as MonkeyTypes.DBUser;
 
   for (const check of checks) {
-    if (!check.criteria(user)) return check.invalidMessage;
+    if (!check.criteria(user))
+      return check.invalidMessage ?? "You don't have permission to do this.";
   }
   return undefined;
 }
