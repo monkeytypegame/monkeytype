@@ -5,6 +5,7 @@ import {
   EditPresetRequest,
   Preset,
 } from "@monkeytype/contracts/schemas/presets";
+import { omit } from "lodash";
 
 const MAX_PRESETS = 10;
 
@@ -63,14 +64,18 @@ export async function editPreset(
   uid: string,
   preset: EditPresetRequest
 ): Promise<void> {
-  const config = preset.config;
-  const presetUpdates =
-    config !== undefined && config !== null && Object.keys(config).length > 0
-      ? { name: preset.name, config, settingGroups: preset.settingGroups }
-      : { name: preset.name };
-
+  const update: Partial<Omit<Preset, "_id">> = omit(preset, "_id");
+  if (
+    preset.config === undefined ||
+    preset.config === null ||
+    Object.keys(preset.config).length === 0
+  ) {
+    delete update.config;
+  }
+  if (preset.settingGroups === undefined) update.settingGroups = undefined;
+  //need to do this otherwise it doesnt change partial presets to full
   await getPresetsCollection().updateOne(getPresetKeyFilter(uid, preset._id), {
-    $set: presetUpdates,
+    $set: update,
   });
 }
 
