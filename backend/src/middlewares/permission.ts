@@ -8,7 +8,7 @@ import { TsRestRequestWithCtx } from "./auth";
 import {
   EndpointMetadata,
   RequestAuthenticationOptions,
-  Role,
+  Permission,
   UserPermission,
 } from "@monkeytype/contracts/schemas/api";
 import { isDevEnvironment } from "../utils/misc";
@@ -50,7 +50,7 @@ const permissionChecks: Record<UserPermission, UserPermissionCheck> = {
   ),
 };
 
-export function checkRequiredRole<
+export function checkRequiredPermission<
   T extends AppRouter | AppRoute
 >(): TsRestRequestHandler<T> {
   return async (
@@ -61,13 +61,13 @@ export function checkRequiredRole<
     const metadata = req.tsRestRoute["metadata"] as
       | EndpointMetadata
       | undefined;
-    const requiredRoles = getRequiredRoles(metadata);
-    if (requiredRoles === undefined) {
+    const requiredPermissions = getRequiredPermissions(metadata);
+    if (requiredPermissions === undefined) {
       next();
       return;
     }
 
-    if (requiredRoles.includes("admin")) {
+    if (requiredPermissions.includes("admin")) {
       if (
         !(await checkIfUserIsAdmin(
           req.ctx.decodedToken,
@@ -81,7 +81,7 @@ export function checkRequiredRole<
 
     const invalidMessage = await checkUserPermissions(
       req.ctx.decodedToken,
-      requiredRoles.filter((it) => it !== "admin")
+      requiredPermissions.filter((it) => it !== "admin")
     );
     if (invalidMessage !== undefined) {
       next(new MonkeyError(403, invalidMessage));
@@ -94,14 +94,15 @@ export function checkRequiredRole<
   };
 }
 
-function getRequiredRoles(
+function getRequiredPermissions(
   metadata: EndpointMetadata | undefined
-): Role[] | undefined {
-  if (metadata === undefined || metadata.requireRole === undefined)
+): Permission[] | undefined {
+  if (metadata === undefined || metadata.requirePermission === undefined)
     return undefined;
 
-  if (Array.isArray(metadata.requireRole)) return metadata.requireRole;
-  return [metadata.requireRole];
+  if (Array.isArray(metadata.requirePermission))
+    return metadata.requirePermission;
+  return [metadata.requirePermission];
 }
 
 async function checkIfUserIsAdmin(
@@ -116,12 +117,12 @@ async function checkIfUserIsAdmin(
 
 async function checkUserPermissions(
   decodedToken: MonkeyTypes.DecodedToken | undefined,
-  roles: UserPermission[]
+  permissions: UserPermission[]
 ): Promise<string | undefined> {
-  if (roles === undefined || roles.length === 0) return undefined;
+  if (permissions === undefined || permissions.length === 0) return undefined;
   if (decodedToken === undefined) return "Authentication missing.";
 
-  const checks = roles.map((it) => permissionChecks[it]);
+  const checks = permissions.map((it) => permissionChecks[it]);
 
   const user = (await getPartialUser(
     decodedToken.uid,

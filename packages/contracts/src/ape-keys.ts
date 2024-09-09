@@ -101,7 +101,7 @@ export const apeKeysContract = c.router(
     strictStatusCodes: true,
     metadata: meta({
       openApiTags: "ape-keys",
-      requireRole: "canManageApeKeys",
+      requirePermission: "canManageApeKeys",
     }),
 
     commonResponses: CommonResponses,

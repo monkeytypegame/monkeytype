@@ -1,7 +1,10 @@
 import { generateOpenApi } from "@ts-rest/open-api";
 import { contract } from "@monkeytype/contracts/index";
 import { writeFileSync, mkdirSync } from "fs";
-import { EndpointMetadata, Role } from "@monkeytype/contracts/schemas/api";
+import {
+  EndpointMetadata,
+  Permission,
+} from "@monkeytype/contracts/schemas/api";
 import type { OpenAPIObject, OperationObject } from "openapi3-ts";
 import {
   RateLimitIds,
@@ -160,13 +163,13 @@ function addAuth(
   metadata: EndpointMetadata | undefined
 ): void {
   const auth = metadata?.authenticationOptions ?? {};
-  const roles = getRequiredRoles(metadata) ?? [];
+  const permissions = getRequiredPermissions(metadata) ?? [];
   const security: SecurityRequirementObject[] = [];
   if (!auth.isPublic && !auth.isPublicOnDev) {
-    security.push({ BearerAuth: roles });
+    security.push({ BearerAuth: permissions });
 
     if (auth.acceptApeKeys === true) {
-      security.push({ ApeKey: roles });
+      security.push({ ApeKey: permissions });
     }
   }
 
@@ -174,19 +177,22 @@ function addAuth(
   operation["x-public"] = includeInPublic ? "yes" : "no";
   operation.security = security;
 
-  if (roles.length !== 0) {
-    operation.description += `**Required roles:** ${roles.join(", ")}\n\n`;
+  if (permissions.length !== 0) {
+    operation.description += `**Required permissions:** ${permissions.join(
+      ", "
+    )}\n\n`;
   }
 }
 
-function getRequiredRoles(
+function getRequiredPermissions(
   metadata: EndpointMetadata | undefined
-): Role[] | undefined {
-  if (metadata === undefined || metadata.requireRole === undefined)
+): Permission[] | undefined {
+  if (metadata === undefined || metadata.requirePermission === undefined)
     return undefined;
 
-  if (Array.isArray(metadata.requireRole)) return metadata.requireRole;
-  return [metadata.requireRole];
+  if (Array.isArray(metadata.requirePermission))
+    return metadata.requirePermission;
+  return [metadata.requirePermission];
 }
 
 function addTags(

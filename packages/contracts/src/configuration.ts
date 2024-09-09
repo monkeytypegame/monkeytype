@@ -67,7 +67,7 @@ export const configurationContract = c.router(
           isPublicOnDev: true,
         },
         rateLimit: "adminLimit",
-        requireRole: "admin",
+        requirePermission: "admin",
       }),
     },
     getSchema: {
@@ -84,7 +84,7 @@ export const configurationContract = c.router(
           noCache: true,
         },
         rateLimit: "adminLimit",
-        requireRole: "admin",
+        requirePermission: "admin",
       }),
     },
   },
