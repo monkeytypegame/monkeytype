@@ -15,6 +15,12 @@ export type OpenApiTag =
   | "users"
   | "quotes";
 
+export type PermissionId =
+  | "quoteMod"
+  | "canReport"
+  | "canManageApeKeys"
+  | "admin";
+
 export type EndpointMetadata = {
   /** Authentication options, by default a bearer token is required. */
   authenticationOptions?: RequestAuthenticationOptions;
@@ -25,6 +31,9 @@ export type EndpointMetadata = {
    * Only specifying RateLimiterId will use  a default limiter with 30 requests/minute for ApeKey requests.
    */
   rateLimit?: RateLimiterId | RateLimitIds;
+
+  /** Role/Rples needed to  access the endpoint*/
+  requirePermission?: PermissionId | PermissionId[];
 };
 
 /**

@@ -54,14 +54,14 @@ importers:
         specifier: workspace:*
         version: link:../packages/contracts
       '@ts-rest/core':
-        specifier: 3.49.3
-        version: 3.49.3(zod@3.23.8)
+        specifier: 3.51.0
+        version: 3.51.0(@types/node@20.14.11)(zod@3.23.8)
       '@ts-rest/express':
-        specifier: 3.49.3
-        version: 3.49.3(@ts-rest/core@3.49.3(zod@3.23.8))(express@4.19.2)(zod@3.23.8)
+        specifier: 3.51.0
+        version: 3.51.0(@ts-rest/core@3.51.0(@types/node@20.14.11)(zod@3.23.8))(express@4.19.2)(zod@3.23.8)
       '@ts-rest/open-api':
-        specifier: 3.49.3
-        version: 3.49.3(@ts-rest/core@3.49.3(zod@3.23.8))(zod@3.23.8)
+        specifier: 3.51.0
+        version: 3.51.0(@ts-rest/core@3.51.0(@types/node@20.14.11)(zod@3.23.8))(zod@3.23.8)
       bcrypt:
         specifier: 5.1.1
         version: 5.1.1(encoding@0.1.13)
@@ -237,6 +237,9 @@ importers:
       ioredis-mock:
         specifier: 7.4.0
         version: 7.4.0(ioredis@4.28.5)
+      openapi3-ts:
+        specifier: 2.0.2
+        version: 2.0.2
       readline-sync:
         specifier: 1.4.10
         version: 1.4.10
@@ -265,8 +268,8 @@ importers:
         specifier: workspace:*
         version: link:../packages/contracts
       '@ts-rest/core':
-        specifier: 3.49.3
-        version: 3.49.3(zod@3.23.8)
+        specifier: 3.51.0
+        version: 3.51.0(@types/node@20.14.11)(zod@3.23.8)
       axios:
         specifier: 1.7.4
         version: 1.7.4(debug@4.3.6)
@@ -452,8 +455,8 @@ importers:
   packages/contracts:
     dependencies:
       '@ts-rest/core':
-        specifier: 3.49.3
-        version: 3.49.3(zod@3.23.8)
+        specifier: 3.51.0
+        version: 3.51.0(@types/node@20.14.11)(zod@3.23.8)
       zod:
         specifier: 3.23.8
         version: 3.23.8
@@ -2490,28 +2493,31 @@ packages:
     resolution: {integrity: sha512-EZ+XlSwjdLtscoBOnA/Ba6QBrmoxAR73tJFjnWxaJQsZxWBQv6bLUrDgZUdXkXRAOSkRHn0uXY6Wq/3SsV2WtQ==}
     engines: {node: '>=18'}
 
-  '@ts-rest/core@3.49.3':
-    resolution: {integrity: sha512-h/4aSH7SGsQfBZ5LcF2k8+TVtFSITYG4qI91tdf0YMddPsSZJho2OV9jhvycNEt+sosPsw/FDV2QFKBAUEr22w==}
+  '@ts-rest/core@3.51.0':
+    resolution: {integrity: sha512-v6lnWEcpZj1UgN9wb84XQ+EORP1QEtncFumoXMJjno5ZUV6vdjKze3MYcQN0C6vjBpIJPQEaI/gab2jr4/0KzQ==}
     peerDependencies:
+      '@types/node': ^18.18.7 || >=20.8.4
       zod: ^3.22.3
     peerDependenciesMeta:
+      '@types/node':
+        optional: true
       zod:
         optional: true
 
-  '@ts-rest/express@3.49.3':
-    resolution: {integrity: sha512-+ybB1yvzyPclxlSLMoZGuEL26DqxH/bLbWShWC2C28kRq0k768xYe8EvDD9VRrZMJqmnO+sndXdcGq40hvhcKA==}
+  '@ts-rest/express@3.51.0':
+    resolution: {integrity: sha512-osOo040EHoCMNMFBbEwZ6XheeEhG/zJGF4k3FOYUtaYSdxxYp5XkP8jQoV6I+Lu+O5jopnOQWoCpmNrrraIO8g==}
     peerDependencies:
-      '@ts-rest/core': ~3.49.0
+      '@ts-rest/core': ~3.51.0
       express: ^4.0.0
       zod: ^3.22.3
     peerDependenciesMeta:
       zod:
         optional: true
 
-  '@ts-rest/open-api@3.49.3':
-    resolution: {integrity: sha512-5N71UP/5KtjOyagc076arPwGkemDBlqGv7c42AbV2ca4dj1dlveis41VIpHsfWOdsFS548X+C9b0td7YVCdpqA==}
+  '@ts-rest/open-api@3.51.0':
+    resolution: {integrity: sha512-fvpvRr6HIbAMNZR//QQQi75z5qTxMEBMRtmbaBXVi5e1WVVwOK7P6YBaGWTQp6DXSvsZVULX5VZXmsDd1Z1dew==}
     peerDependencies:
-      '@ts-rest/core': ~3.49.0
+      '@ts-rest/core': ~3.51.0
       zod: ^3.22.3
 
   '@tsconfig/node10@1.0.11':
@@ -11696,21 +11702,22 @@ snapshots:
       '@ts-graphviz/ast': 2.0.3
       '@ts-graphviz/common': 2.1.2
 
-  '@ts-rest/core@3.49.3(zod@3.23.8)':
+  '@ts-rest/core@3.51.0(@types/node@20.14.11)(zod@3.23.8)':
     optionalDependencies:
+      '@types/node': 20.14.11
       zod: 3.23.8
 
-  '@ts-rest/express@3.49.3(@ts-rest/core@3.49.3(zod@3.23.8))(express@4.19.2)(zod@3.23.8)':
+  '@ts-rest/express@3.51.0(@ts-rest/core@3.51.0(@types/node@20.14.11)(zod@3.23.8))(express@4.19.2)(zod@3.23.8)':
     dependencies:
-      '@ts-rest/core': 3.49.3(zod@3.23.8)
+      '@ts-rest/core': 3.51.0(@types/node@20.14.11)(zod@3.23.8)
       express: 4.19.2
     optionalDependencies:
       zod: 3.23.8
 
-  '@ts-rest/open-api@3.49.3(@ts-rest/core@3.49.3(zod@3.23.8))(zod@3.23.8)':
+  '@ts-rest/open-api@3.51.0(@ts-rest/core@3.51.0(@types/node@20.14.11)(zod@3.23.8))(zod@3.23.8)':
     dependencies:
       '@anatine/zod-openapi': 1.14.2(openapi3-ts@2.0.2)(zod@3.23.8)
-      '@ts-rest/core': 3.49.3(zod@3.23.8)
+      '@ts-rest/core': 3.51.0(@types/node@20.14.11)(zod@3.23.8)
       openapi3-ts: 2.0.2
       zod: 3.23.8
 

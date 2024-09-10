@@ -5,7 +5,6 @@ import * as AdminController from "../controllers/admin";
 import { adminContract } from "@monkeytype/contracts/admin";
 import { initServer } from "@ts-rest/express";
 import { validate } from "../../middlewares/configuration";
-import { checkIfUserIsAdmin } from "../../middlewares/permission";
 import { callController } from "../ts-rest-adapter";
 
 const commonMiddleware = [
@@ -15,7 +14,6 @@ const commonMiddleware = [
     },
     invalidMessage: "Admin endpoints are currently disabled.",
   }),
-  checkIfUserIsAdmin(),
 ];
 
 const s = initServer();
