@@ -344,7 +344,7 @@ export function replaceObjectIds<T extends { _id: ObjectId }>(
   return data.map((it) => replaceObjectId(it));
 }
 
-type MapLimitIteratee<T, V> = (element: T, index: number) => V;
+type MapLimitIteratee<T, V> = (element: T, index: number) => Promise<V>;
 
 export async function mapLimit<T, V>(
   input: T[],

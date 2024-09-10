@@ -59,9 +59,7 @@ async function deleteUsers(): Promise<void> {
     return;
   }
 
-  await mapLimit(softDeletedUsers, CONCURRENT_DELETIONS, async (user) => {
-    await deleteUser(user.uid);
-  });
+  await mapLimit(softDeletedUsers, CONCURRENT_DELETIONS, async (user) => deleteUser(user.uid));
 }
 
 export default new CronJob(CRON_SCHEDULE, deleteUsers);
