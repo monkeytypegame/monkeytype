@@ -102,7 +102,7 @@ const debouncedEvent = debounce(250, () => {
   void Caret.updatePosition();
   if (getActivePage() === "test" && !TestUI.resultVisible) {
     if (Config.tapeMode !== "off") {
-      TestUI.scrollTape();
+      void TestUI.scrollTape();
     } else {
       TestUI.updateTestLine();
     }
