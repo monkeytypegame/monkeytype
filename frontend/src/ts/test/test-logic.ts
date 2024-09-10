@@ -1054,7 +1054,9 @@ export async function finish(difficultyFailed = false): Promise<void> {
 
   $("#result .stats .dailyLeaderboard").addClass("hidden");
 
-  TestStats.setLastResult(JSON.parse(JSON.stringify(completedEvent)));
+  TestStats.setLastResult(
+    JSON.parse(JSON.stringify(completedEvent)) as CompletedEvent
+  );
 
   if (!ConnectionState.get()) {
     ConnectionState.showOfflineBanner();

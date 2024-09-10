@@ -1138,7 +1138,11 @@ $(document).on("keydown", async (event) => {
   );
   if (funbox?.functions?.preventDefaultEvent) {
     if (
-      await funbox.functions.preventDefaultEvent(event as JQuery.KeyDownEvent)
+      await funbox.functions.preventDefaultEvent(
+        //i cant figure this type out, but it works fine
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+        event as JQuery.KeyDownEvent
+      )
     ) {
       event.preventDefault();
       handleChar(event.key, TestInput.input.current.length);

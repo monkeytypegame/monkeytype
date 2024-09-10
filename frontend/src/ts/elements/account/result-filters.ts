@@ -796,7 +796,9 @@ export async function appendButtons(
           ): void | boolean => {
             return selectBeforeChangeFn(
               "language",
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
               selectedOptions,
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
               oldSelectedOptions
             );
           },
@@ -855,7 +857,9 @@ export async function appendButtons(
           ): void | boolean => {
             return selectBeforeChangeFn(
               "funbox",
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
               selectedOptions,
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
               oldSelectedOptions
             );
           },
@@ -910,7 +914,9 @@ export async function appendButtons(
           ): void | boolean => {
             return selectBeforeChangeFn(
               "tags",
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
               selectedOptions,
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
               oldSelectedOptions
             );
           },
@@ -945,7 +951,7 @@ $(".group.presetFilterButtons .filterBtns").on(
   "click",
   ".filterPresets .delete-filter-preset",
   (e) => {
-    void deleteFilterPreset($(e.currentTarget).data("id"));
+    void deleteFilterPreset($(e.currentTarget).data("id") as string);
   }
 );
 

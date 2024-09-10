@@ -1217,7 +1217,7 @@ $(".pageAccount .group.presetFilterButtons").on(
   "click",
   ".filterBtns .filterPresets .select-filter-preset",
   async (e) => {
-    await ResultFilters.setFilterPreset($(e.target).data("id"));
+    await ResultFilters.setFilterPreset($(e.target).data("id") as string);
     void update();
   }
 );
