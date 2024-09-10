@@ -285,10 +285,8 @@ async function apply(): Promise<void> {
       return;
     }
     const configChanges = getConfigChanges();
-    const activeSettingGroups: ActiveSettingGroups | undefined =
-      state.presetType === "partial"
-        ? getActiveSettingGroupsFromState()
-        : undefined;
+    const activeSettingGroups: ActiveSettingGroups | null =
+      state.presetType === "partial" ? getActiveSettingGroupsFromState() : null;
     const response = await Ape.presets.save({
       body: {
         _id: presetId,

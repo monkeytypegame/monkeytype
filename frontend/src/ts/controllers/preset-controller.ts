@@ -3,7 +3,7 @@ import * as UpdateConfig from "../config";
 import * as DB from "../db";
 import * as Notifications from "../elements/notifications";
 import * as TestLogic from "../test/test-logic";
-import { replaceLegacyValues } from "../utils/config";
+import { migrateConfig, replaceLegacyValues } from "../utils/config";
 import * as TagController from "./tag-controller";
 
 export async function apply(_id: string): Promise<void> {
@@ -16,12 +16,13 @@ export async function apply(_id: string): Promise<void> {
   }
   if (isPartialPreset(presetToApply)) {
     //checks if preset is full or partial
-    await UpdateConfig.selectiveApply(
-      replaceLegacyValues(presetToApply.config),
-      UpdateConfig.getConfigChanges()
-    );
+    const combinedConfig = {
+      ...UpdateConfig.getConfigChanges(),
+      ...replaceLegacyValues(presetToApply.config),
+    };
+    await UpdateConfig.apply(migrateConfig(combinedConfig));
   } else {
-    await UpdateConfig.apply(presetToApply.config);
+    await UpdateConfig.apply(migrateConfig(presetToApply.config));
   }
   if (
     !isPartialPreset(presetToApply) ||

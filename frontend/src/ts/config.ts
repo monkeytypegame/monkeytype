@@ -2081,20 +2081,4 @@ export const loadPromise = new Promise((v) => {
   loadDone = v;
 });
 
-export async function selectiveApply(
-  configToApply: ConfigSchemas.PartialConfig | MonkeyTypes.ConfigChanges,
-  backupConfigToApply: Config | MonkeyTypes.ConfigChanges
-): Promise<void> {
-  const combinedConfig = structuredClone(configToApply) as Config;
-  (Object.keys(backupConfigToApply) as (keyof Config)[]).forEach(
-    (configKey) => {
-      if (combinedConfig[configKey] === undefined) {
-        const newValue = backupConfigToApply[configKey];
-        (combinedConfig[configKey] as typeof newValue) = newValue;
-      }
-    }
-  );
-  await apply(combinedConfig);
-}
-
 export default config;

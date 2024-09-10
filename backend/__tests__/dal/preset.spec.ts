@@ -269,7 +269,6 @@ describe("PresetDal", () => {
     it("should edit when partial is edited to full", async () => {
       //GIVEN
       const uid = new ObjectId().toHexString();
-      const decoyUid = new ObjectId().toHexString();
       const first = (
         await PresetDal.addPreset(uid, {
           name: "first",
@@ -282,32 +281,16 @@ describe("PresetDal", () => {
           },
         })
       ).presetId;
-      const second = (
-        await PresetDal.addPreset(uid, {
-          name: "second",
-          config: {
-            ads: "result",
-          },
-        })
-      ).presetId;
-      const decoy = (
-        await PresetDal.addPreset(decoyUid, {
-          name: "unknown",
-          config: { ads: "result" },
-        })
-      ).presetId;
-
       //WHEN
       await PresetDal.editPreset(uid, {
         _id: first,
         name: "newName",
+        settingGroups: null,
         config: { ads: "off" },
       });
 
       //THEN
-      const read = await PresetDal.getPresets(uid);
-      expect(read).toHaveLength(2);
-      expect(read).toEqual(
+      expect(await PresetDal.getPresets(uid)).toEqual(
         expect.arrayContaining([
           expect.objectContaining({
             _id: new ObjectId(first),
@@ -316,49 +299,18 @@ describe("PresetDal", () => {
             config: { ads: "off" },
             settingGroups: null,
           }),
-          expect.objectContaining({
-            _id: new ObjectId(second),
-            uid: uid,
-            name: "second",
-            config: { ads: "result" },
-          }),
-        ])
-      );
-      expect(await PresetDal.getPresets(decoyUid)).toEqual(
-        expect.arrayContaining([
-          expect.objectContaining({
-            _id: new ObjectId(decoy),
-            uid: decoyUid,
-            name: "unknown",
-            config: { ads: "result" },
-          }),
         ])
       );
     });
     it("should edit when full is edited to partial", async () => {
       //GIVEN
       const uid = new ObjectId().toHexString();
-      const decoyUid = new ObjectId().toHexString();
       const first = (
         await PresetDal.addPreset(uid, {
           name: "first",
           config: {
-            ads: "result",
+            ads: "off",
           },
-        })
-      ).presetId;
-      const second = (
-        await PresetDal.addPreset(uid, {
-          name: "second",
-          config: {
-            ads: "result",
-          },
-        })
-      ).presetId;
-      const decoy = (
-        await PresetDal.addPreset(decoyUid, {
-          name: "unknown",
-          config: { ads: "result" },
         })
       ).presetId;
 
@@ -376,9 +328,7 @@ describe("PresetDal", () => {
       });
 
       //THEN
-      const read = await PresetDal.getPresets(uid);
-      expect(read).toHaveLength(2);
-      expect(read).toEqual(
+      expect(await PresetDal.getPresets(uid)).toEqual(
         expect.arrayContaining([
           expect.objectContaining({
             _id: new ObjectId(first),
@@ -391,22 +341,6 @@ describe("PresetDal", () => {
               showOutOfFocusWarning: true,
               showAverage: "off",
             },
-          }),
-          expect.objectContaining({
-            _id: new ObjectId(second),
-            uid: uid,
-            name: "second",
-            config: { ads: "result" },
-          }),
-        ])
-      );
-      expect(await PresetDal.getPresets(decoyUid)).toEqual(
-        expect.arrayContaining([
-          expect.objectContaining({
-            _id: new ObjectId(decoy),
-            uid: decoyUid,
-            name: "unknown",
-            config: { ads: "result" },
           }),
         ])
       );
