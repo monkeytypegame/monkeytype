@@ -343,3 +343,35 @@ export function replaceObjectIds<T extends { _id: ObjectId }>(
   if (data === undefined) return data;
   return data.map((it) => replaceObjectId(it));
 }
+
+type MapLimitIteratee<T, V> = (element: T, index: number) => V;
+
+export async function mapLimit<T, V>(
+  input: T[],
+  limit: number,
+  iteratee: MapLimitIteratee<T, V>
+): Promise<V[]> {
+  const size = input.length;
+
+  const allElements = new Array(size);
+  const results = new Array(size);
+
+  for (let i = 0; i < size; ++i) {
+    allElements[size - 1 - i] = [input[i], i];
+  }
+
+  const execute = async () => {
+    while (allElements.length > 0) {
+      const [element, index] = allElements.pop();
+      results[index] = await iteratee(element, index);
+    }
+  };
+
+  const allExecutors: Promise<void>[] = [];
+  for (let i = 0; i < limit; ++i) {
+    allExecutors.push(execute());
+  }
+  await Promise.all(allExecutors);
+
+  return results;
+}

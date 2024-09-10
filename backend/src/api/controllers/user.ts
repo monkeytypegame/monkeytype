@@ -38,7 +38,7 @@ import {
   TestActivity,
   UserProfileDetails,
 } from "@monkeytype/contracts/schemas/users";
-import { addImportantLog, addLog, deleteUserLogs } from "../../dal/logs";
+import { addImportantLog, addLog } from "../../dal/logs";
 import { sendForgotPasswordEmail as authSendForgotPasswordEmail } from "../../utils/auth";
 import {
   AddCustomThemeRequest,
@@ -231,39 +231,7 @@ export async function deleteUser(
 ): Promise<MonkeyResponse2> {
   const { uid } = req.ctx.decodedToken;
 
-  const userInfo = await UserDAL.getPartialUser(uid, "delete user", [
-    "banned",
-    "name",
-    "email",
-    "discordId",
-  ]);
-
-  if (userInfo.banned === true) {
-    await BlocklistDal.add(userInfo);
-  }
-
-  //cleanup database
-  await Promise.all([
-    UserDAL.deleteUser(uid),
-    deleteUserLogs(uid),
-    deleteAllApeKeys(uid),
-    deleteAllPresets(uid),
-    deleteConfig(uid),
-    deleteAllResults(uid),
-    purgeUserFromDailyLeaderboards(
-      uid,
-      req.ctx.configuration.dailyLeaderboards
-    ),
-  ]);
-
-  //delete user from
-  await AuthUtil.deleteUser(uid);
-
-  void addImportantLog(
-    "user_deleted",
-    `${userInfo.email} ${userInfo.name}`,
-    uid
-  );
+  await UserDAL.softDeleteUser(uid);
 
   return new MonkeyResponse2("User deleted", null);
 }

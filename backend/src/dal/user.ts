@@ -76,6 +76,23 @@ export async function deleteUser(uid: string): Promise<void> {
   await getUsersCollection().deleteOne({ uid });
 }
 
+export async function softDeleteUser(uid: string): Promise<void> {
+  await getUsersCollection().updateOne(
+    { uid },
+    {
+      $set: {
+        deleted: true,
+      },
+    }
+  );
+}
+
+export async function getSoftDeletedUsers(
+  limit: number
+): Promise<MonkeyTypes.DBUser[]> {
+  return getUsersCollection().find({ deleted: true }, { limit }).toArray();
+}
+
 export async function resetUser(uid: string): Promise<void> {
   await getUsersCollection().updateOne(
     { uid },
