@@ -115,7 +115,7 @@ function updateUI(): void {
   }
 }
 
-function backspaceToPrevious(): void {
+async function backspaceToPrevious(): Promise<void> {
   if (!TestState.isActive) return;
 
   if (
@@ -155,7 +155,7 @@ function backspaceToPrevious(): void {
   }
   TestState.decreaseActiveWordIndex();
   TestUI.setActiveWordElementIndex(TestUI.activeWordElementIndex - 1);
-  TestUI.updateActiveElement(true);
+  await TestUI.updateActiveElement(true);
   Funbox.toggleScript(TestWords.words.getCurrent());
   void TestUI.updateActiveWordLetters();
 
@@ -335,7 +335,7 @@ async function handleSpace(): Promise<void> {
     }
   }
   TestUI.setActiveWordElementIndex(TestUI.activeWordElementIndex + 1);
-  TestUI.updateActiveElement();
+  await TestUI.updateActiveElement();
   void Caret.updatePosition();
 
   const shouldLimitToThreeLines =
@@ -1070,7 +1070,7 @@ $(document).on("keydown", async (event) => {
   }
 
   if (event.key === "Backspace" && TestInput.input.current.length === 0) {
-    backspaceToPrevious();
+    await backspaceToPrevious();
     if (TestInput.input.current) {
       setWordsInput(" " + TestInput.input.current + " ");
     }
@@ -1269,7 +1269,7 @@ $("#wordsInput").on("beforeinput", (event) => {
   }
 });
 
-$("#wordsInput").on("input", (event) => {
+$("#wordsInput").on("input", async (event) => {
   if (!event.originalEvent?.isTrusted || TestUI.testRestarting) {
     (event.target as HTMLInputElement).value = " ";
     return;
@@ -1338,7 +1338,7 @@ $("#wordsInput").on("input", (event) => {
 
   if (realInputValue.length === 0 && currTestInput.length === 0) {
     // fallback for when no Backspace keydown event (mobile)
-    backspaceToPrevious();
+    await backspaceToPrevious();
   } else if (inputValue.length < currTestInput.length) {
     if (containsChinese) {
       if (

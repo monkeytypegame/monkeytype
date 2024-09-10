@@ -142,7 +142,7 @@ const debouncedZipfCheck = debounce(250, async () => {
   }
 });
 
-ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
+ConfigEvent.subscribe(async (eventKey, eventValue, nosave) => {
   if (
     (eventKey === "language" || eventKey === "funbox") &&
     Config.funbox.split("#").includes("zipf")
@@ -151,7 +151,7 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
   }
   if (eventKey === "fontSize" && !nosave) {
     OutOfFocus.hide();
-    updateWordWrapperClasses();
+    await updateWordWrapperClasses();
   }
   if (
     ["fontSize", "fontFamily", "blindMode", "hideExtraLetters"].includes(
@@ -167,7 +167,7 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
 
   if (eventValue === undefined) return;
   if (eventKey === "highlightMode") {
-    if (ActivePage.get() === "test") updateActiveElement();
+    if (ActivePage.get() === "test") await updateActiveElement();
   }
 
   if (
@@ -179,7 +179,7 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
       "hideExtraLetters",
     ].includes(eventKey)
   ) {
-    updateWordWrapperClasses();
+    await updateWordWrapperClasses();
   }
 
   if (["tapeMode", "tapeMargin"].includes(eventKey)) {
@@ -251,10 +251,10 @@ export function blurWords(): void {
   $("#wordsInput").trigger("blur");
 }
 
-export function updateActiveElement(
+export async function updateActiveElement(
   backspace?: boolean,
   initial = false
-): void {
+): Promise<void> {
   const active = document.querySelector("#words .active");
   if (!backspace) {
     active?.classList.add("typed");
@@ -282,7 +282,7 @@ export function updateActiveElement(
     void updateWordsInputPosition();
   }
   if (!initial && Config.tapeMode !== "off") {
-    scrollTape();
+    await scrollTape();
   }
 }
 
@@ -358,7 +358,7 @@ function getWordHTML(word: string): string {
   return retval;
 }
 
-function updateWordWrapperClasses(): void {
+async function updateWordWrapperClasses(): Promise<void> {
   if (Config.tapeMode !== "off") {
     $("#words").addClass("tape");
     $("#wordsWrapper").addClass("tape");
@@ -404,13 +404,13 @@ function updateWordWrapperClasses(): void {
 
   updateWordsWidth();
   updateWordsWrapperHeight(true);
-  updateWordsMargin();
+  await updateWordsMargin();
   setTimeout(() => {
     void updateWordsInputPosition(true);
   }, 250);
 }
 
-export function showWords(): void {
+export async function showWords(): Promise<void> {
   $("#words").empty();
 
   let wordsHTML = "";
@@ -424,12 +424,12 @@ export function showWords(): void {
 
   $("#words").html(wordsHTML);
 
-  updateActiveElement(undefined, true);
+  await updateActiveElement(undefined, true);
   setTimeout(() => {
     void Caret.updatePosition();
   }, 125);
 
-  updateWordWrapperClasses();
+  await updateWordWrapperClasses();
 }
 
 const posUpdateLangList = ["japanese", "chinese", "korean"];
@@ -573,9 +573,9 @@ export function updateWordsWrapperHeight(force = false): void {
   }
 }
 
-function updateWordsMargin(): void {
+async function updateWordsMargin(): Promise<void> {
   if (Config.tapeMode !== "off") {
-    scrollTape(true);
+    await scrollTape(true);
   } else {
     setTimeout(() => $("#words").css("margin-left", "unset"), 0);
   }
@@ -926,16 +926,19 @@ export async function updateActiveWordLetters(
       "<div class='beforeNewline'></div><div class='newline'></div><div class='afterNewline'></div>"
     );
   if (Config.tapeMode !== "off") {
-    scrollTape();
+    await scrollTape();
   }
 }
 
 let allowWordRemoval = true;
-export function scrollTape(noRemove = false): void {
+export async function scrollTape(noRemove = false): Promise<void> {
   if (ActivePage.get() !== "test" || resultVisible) return;
 
   const waitForLineJumpAnimation = lineTransition && !allowWordRemoval;
   if (waitForLineJumpAnimation) noRemove = true;
+
+  const currentLang = await JSONData.getCurrentLanguage(Config.language);
+  const isLanguageRTL = currentLang.rightToLeft;
 
   const wordsWrapperWidth = (
     document.querySelector("#wordsWrapper") as HTMLElement
@@ -1006,7 +1009,11 @@ export function scrollTape(noRemove = false): void {
       const wordOuterWidth = $(child).outerWidth(true) ?? 0;
       const forWordLeft = Math.floor(child.offsetLeft);
       const forWordWidth = Math.floor(child.offsetWidth);
-      if (!noRemove && forWordLeft < 0 - forWordWidth) {
+      if (
+        !noRemove &&
+        ((!isLanguageRTL && forWordLeft < 0 - forWordWidth) ||
+          (isLanguageRTL && forWordLeft > wordsWrapperWidth))
+      ) {
         toRemove.push(child);
         widthToRemove += wordOuterWidth;
         wordsToRemoveCount++;
@@ -1034,31 +1041,44 @@ export function scrollTape(noRemove = false): void {
       const currentChildMargin = parseInt(element.style.marginLeft) || 0;
       element.style.marginLeft = `${currentChildMargin - widthToRemove}px`;
     }
+    if (isLanguageRTL) widthToRemove *= -1;
     const currentWordsMargin = parseInt(wordsEl.style.marginLeft) || 0;
     wordsEl.style.marginLeft = `${currentWordsMargin + widthToRemove}px`;
   }
 
+  const inputLength = TestInput.input.current.length;
   let currentWordWidth = 0;
-  if (Config.tapeMode === "letter") {
-    if (TestInput.input.current.length > 0) {
-      const letters = activeWordEl.querySelectorAll("letter");
-      for (let i = 0; i < TestInput.input.current.length; i++) {
-        const letter = letters[i] as HTMLElement;
-        if (
-          (Config.blindMode || Config.hideExtraLetters) &&
-          letter.classList.contains("extra")
-        ) {
-          continue;
-        }
-        currentWordWidth += $(letter).outerWidth(true) ?? 0;
+  if (Config.tapeMode === "letter" && inputLength > 0) {
+    const letters = activeWordEl.querySelectorAll("letter");
+    let lastPositiveLetterWidth = 0;
+    for (let i = 0; i < inputLength; i++) {
+      const letter = letters[i] as HTMLElement;
+      if (
+        (Config.blindMode || Config.hideExtraLetters) &&
+        letter.classList.contains("extra")
+      ) {
+        continue;
       }
+      const letterOuterWidth = $(letter).outerWidth(true) ?? 0;
+      currentWordWidth += letterOuterWidth;
+      if (letterOuterWidth > 0) lastPositiveLetterWidth = letterOuterWidth;
     }
+    // if current letter has zero width move the tape to previous positive width letter
+    if ($(letters[inputLength] as Element).outerWidth(true) === 0)
+      currentWordWidth -= lastPositiveLetterWidth;
   }
 
-  const tapeMargin = wordsWrapperWidth * (Config.tapeMargin / 100);
-  let newMargin = tapeMargin - (wordsWidthBeforeActive + currentWordWidth);
+  let newMargin = wordsWrapperWidth * (Config.tapeMargin / 100);
+  if (isLanguageRTL)
+    newMargin +=
+      wordsWidthBeforeActive +
+      currentWordWidth -
+      wordsEl.offsetWidth +
+      wordRightMargin;
+  else newMargin -= wordsWidthBeforeActive + currentWordWidth;
   if (waitForLineJumpAnimation)
     newMargin = parseInt(wordsEl.style.marginLeft) || 0;
+
   const jqWords = $(wordsEl);
   if (Config.smoothLineScroll) {
     jqWords.stop("leftMargin", true, false).animate(
@@ -1068,10 +1088,10 @@ export function scrollTape(noRemove = false): void {
       {
         duration: SlowTimer.get() ? 0 : 125,
         queue: "leftMargin",
-        complete: () => {
+        complete: async () => {
           if (noRemove) {
-            if (waitForLineJumpAnimation) scrollTape(true);
-            else scrollTape();
+            if (waitForLineJumpAnimation) await scrollTape(true);
+            else await scrollTape();
           }
         },
       }
@@ -1092,7 +1112,7 @@ export function scrollTape(noRemove = false): void {
     linesWidths.forEach((width, index) => {
       (afterNewLineEls[index] as HTMLElement).style.marginLeft = `${width}px`;
     });
-    if (noRemove) scrollTape();
+    if (noRemove) await scrollTape();
   }
 }
 
