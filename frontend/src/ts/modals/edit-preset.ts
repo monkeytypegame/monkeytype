@@ -310,7 +310,7 @@ async function apply(): Promise<void> {
         if (state.presetType === "partial") {
           preset.settingGroups = getActiveSettingGroupsFromState();
         } else {
-          preset.settingGroups = undefined;
+          preset.settingGroups = null;
         }
       }
     }
