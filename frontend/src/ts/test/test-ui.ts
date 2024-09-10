@@ -283,7 +283,7 @@ export function updateActiveElement(
     void updateWordsInputPosition();
   }
   if (!initial && Config.tapeMode !== "off") {
-    scrollTape();
+    void scrollTape();
   }
 }
 
@@ -425,11 +425,10 @@ export function showWords(): void {
   }
 
   updateActiveElement(undefined, true);
+  updateWordWrapperClasses();
   setTimeout(() => {
     void Caret.updatePosition();
   }, 125);
-
-  updateWordWrapperClasses();
 }
 
 export function appendEmptyWordElement(): void {
@@ -577,7 +576,7 @@ export function updateWordsWrapperHeight(force = false): void {
 
 function updateWordsMargin(): void {
   if (Config.tapeMode !== "off") {
-    scrollTape(true);
+    void scrollTape(true);
   } else {
     setTimeout(() => {
       $("#words").css("margin-left", "unset");
@@ -934,7 +933,7 @@ export async function updateActiveWordLetters(
       "<div class='beforeNewline'></div><div class='newline'></div><div class='afterNewline'></div>"
     );
   if (Config.tapeMode !== "off") {
-    scrollTape();
+    await scrollTape();
   }
 }
 
@@ -965,14 +964,17 @@ function getNlCharWidthFromPreviousWord(
 }
 
 let allowWordRemoval = true;
-export function scrollTape(noRemove = false): void {
+export async function scrollTape(noRemove = false): Promise<void> {
   if (ActivePage.get() !== "test" || resultVisible) return;
 
   const waitForLineJumpAnimation = lineTransition && !allowWordRemoval;
   if (waitForLineJumpAnimation) {
-    setTimeout(() => scrollTape(true), 50);
+    setTimeout(() => void scrollTape(true), 50);
     return;
   }
+
+  const currentLang = await JSONData.getCurrentLanguage(Config.language);
+  const isLanguageRTL = currentLang.rightToLeft;
 
   // index of the active word in the collection of .word elements
   const wordElementIndex = TestState.activeWordIndex - activeWordElementOffset;
@@ -1051,7 +1053,11 @@ export function scrollTape(noRemove = false): void {
       const wordOuterWidth = $(child).outerWidth(true) ?? 0;
       const forWordLeft = Math.floor(child.offsetLeft);
       const forWordWidth = Math.floor(child.offsetWidth);
-      if (!noRemove && forWordLeft < 0 - forWordWidth) {
+      if (
+        !noRemove &&
+        ((!isLanguageRTL && forWordLeft < 0 - forWordWidth) ||
+          (isLanguageRTL && forWordLeft > wordsWrapperWidth))
+      ) {
         toRemove.push(child);
         widthRemoved += wordOuterWidth;
         wordsToRemoveCount++;
@@ -1091,30 +1097,43 @@ export function scrollTape(noRemove = false): void {
         parseFloat(afterNewlineEl.style.marginLeft) || 0;
       afterNewlineEl.style.marginLeft = `${currentLineIndent - width}px`;
     });
+    if (isLanguageRTL) widthRemoved *= -1;
     const currentWordsMargin = parseFloat(wordsEl.style.marginLeft) || 0;
     wordsEl.style.marginLeft = `${currentWordsMargin + widthRemoved}px`;
   }
 
   /* calculate current word width to add to #words margin */
   let currentWordWidth = 0;
-  if (Config.tapeMode === "letter") {
-    if (TestInput.input.current.length > 0) {
-      const letters = activeWordEl.querySelectorAll("letter");
-      for (let i = 0; i < TestInput.input.current.length; i++) {
-        const letter = letters[i] as HTMLElement;
-        if (
-          (Config.blindMode || Config.hideExtraLetters) &&
-          letter.classList.contains("extra")
-        ) {
-          continue;
-        }
-        currentWordWidth += $(letter).outerWidth(true) ?? 0;
+  const inputLength = TestInput.input.current.length;
+  if (Config.tapeMode === "letter" && inputLength > 0) {
+    const letters = activeWordEl.querySelectorAll("letter");
+    let lastPositiveLetterWidth = 0;
+    for (let i = 0; i < inputLength; i++) {
+      const letter = letters[i] as HTMLElement;
+      if (
+        (Config.blindMode || Config.hideExtraLetters) &&
+        letter.classList.contains("extra")
+      ) {
+        continue;
       }
+      const letterOuterWidth = $(letter).outerWidth(true) ?? 0;
+      currentWordWidth += letterOuterWidth;
+      if (letterOuterWidth > 0) lastPositiveLetterWidth = letterOuterWidth;
     }
+    // if current letter has zero width move the tape to previous positive width letter
+    if ($(letters[inputLength] as Element).outerWidth(true) === 0)
+      currentWordWidth -= lastPositiveLetterWidth;
   }
+
   /* change to new #words & .afterNewline margins */
-  const tapeMargin = wordsWrapperWidth * (Config.tapeMargin / 100);
-  const newMargin = tapeMargin - (wordsWidthBeforeActive + currentWordWidth);
+  let newMargin = wordsWrapperWidth * (Config.tapeMargin / 100);
+  if (isLanguageRTL)
+    newMargin +=
+      wordsWidthBeforeActive +
+      currentWordWidth -
+      wordsEl.offsetWidth +
+      wordRightMargin;
+  else newMargin -= wordsWidthBeforeActive + currentWordWidth;
 
   const jqWords = $(wordsEl);
   if (Config.smoothLineScroll) {
@@ -1126,7 +1145,7 @@ export function scrollTape(noRemove = false): void {
         duration: SlowTimer.get() ? 0 : 125,
         queue: "leftMargin",
         complete: () => {
-          if (noRemove) scrollTape();
+          if (noRemove) void scrollTape();
         },
       }
     );
@@ -1146,7 +1165,7 @@ export function scrollTape(noRemove = false): void {
     afterNewlinesNewMargins.forEach((margin, index) => {
       (afterNewLineEls[index] as HTMLElement).style.marginLeft = `${margin}px`;
     });
-    if (noRemove) scrollTape();
+    if (noRemove) void scrollTape();
   }
 }
 
