@@ -1,7 +1,6 @@
 import { usersContract } from "@monkeytype/contracts/users";
 import { initServer } from "@ts-rest/express";
 import { validate } from "../../middlewares/configuration";
-import { checkUserPermissions } from "../../middlewares/permission";
 import * as UserController from "../controllers/user";
 import { callController } from "../ts-rest-adapter";
 
@@ -166,11 +165,6 @@ export default s.router(usersContract, {
           return configuration.quotes.reporting.enabled;
         },
         invalidMessage: "User reporting is unavailable.",
-      }),
-      checkUserPermissions(["canReport"], {
-        criteria: (user) => {
-          return user.canReport !== false;
-        },
       }),
     ],
     handler: async (r) => callController(UserController.reportUser)(r),

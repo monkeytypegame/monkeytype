@@ -2,7 +2,7 @@ import { apeKeysContract } from "@monkeytype/contracts/ape-keys";
 import { initServer } from "@ts-rest/express";
 import * as ApeKeyController from "../controllers/ape-key";
 import { callController } from "../ts-rest-adapter";
-import { checkUserPermissions } from "../../middlewares/permission";
+
 import { validate } from "../../middlewares/configuration";
 
 const commonMiddleware = [
@@ -11,12 +11,6 @@ const commonMiddleware = [
       return configuration.apeKeys.endpointsEnabled;
     },
     invalidMessage: "ApeKeys are currently disabled.",
-  }),
-  checkUserPermissions(["canManageApeKeys"], {
-    criteria: (user) => {
-      return user.canManageApeKeys ?? true;
-    },
-    invalidMessage: "You have lost access to ape keys, please contact support",
   }),
 ];
 
