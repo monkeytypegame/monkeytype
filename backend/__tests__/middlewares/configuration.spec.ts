@@ -60,7 +60,7 @@ describe("configuration middleware", () => {
 
     //THEN
     expect(next).toHaveBeenCalledWith(
-      new MonkeyError(503, "This service is currently unavailable.")
+      new MonkeyError(503, "This endpoint is currently unavailable.")
     );
   });
   it("should fail for disabled configuration and custom message", async () => {
@@ -76,6 +76,73 @@ describe("configuration middleware", () => {
     //THEN
     expect(next).toHaveBeenCalledWith(
       new MonkeyError(503, "Feature not enabled.")
+    );
+  });
+
+  it("should fail for invalid path", async () => {
+    //GIVEN
+    const req = givenRequest({ path: "invalid.path" as any }, {});
+
+    //WHEN
+    await handler(req, res, next);
+
+    //THEN
+    expect(next).toHaveBeenCalledWith(
+      new MonkeyError(503, 'Invalid configuration path: "invalid.path"')
+    );
+  });
+  it("should fail for undefined value", async () => {
+    //GIVEN
+    const req = givenRequest(
+      { path: "admin.endpointsEnabled" },
+      { admin: {} as any }
+    );
+
+    //WHEN
+    await handler(req, res, next);
+
+    //THEN
+    expect(next).toHaveBeenCalledWith(
+      new MonkeyError(
+        500,
+        'Required configuration doesnt exist: "admin.endpointsEnabled"'
+      )
+    );
+  });
+  it("should fail for null value", async () => {
+    //GIVEN
+    const req = givenRequest(
+      { path: "admin.endpointsEnabled" },
+      { admin: { endpointsEnabled: null as any } }
+    );
+
+    //WHEN
+    await handler(req, res, next);
+
+    //THEN
+    expect(next).toHaveBeenCalledWith(
+      new MonkeyError(
+        500,
+        'Required configuration doesnt exist: "admin.endpointsEnabled"'
+      )
+    );
+  });
+  it("should fail for non booean value", async () => {
+    //GIVEN
+    const req = givenRequest(
+      { path: "admin.endpointsEnabled" },
+      { admin: { endpointsEnabled: "disabled" as any } }
+    );
+
+    //WHEN
+    await handler(req, res, next);
+
+    //THEN
+    expect(next).toHaveBeenCalledWith(
+      new MonkeyError(
+        500,
+        'Required configuration is not a boolean: "admin.endpointsEnabled"'
+      )
     );
   });
 });
