@@ -1,9 +1,13 @@
 import * as ActivePage from "../states/active-page";
+import { getScrollBehavior } from "../utils/misc";
 
 let visible = false;
 
 $(document).on("click", ".scrollToTopButton", () => {
-  window.scrollTo({ top: 0, behavior: "smooth" });
+  window.scrollTo({
+    top: 0,
+    behavior: getScrollBehavior(),
+  });
 });
 
 $(window).on("scroll", () => {

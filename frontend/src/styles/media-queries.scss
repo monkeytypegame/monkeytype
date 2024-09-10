@@ -1045,6 +1045,9 @@ body {
   *::after,
   *::before {
     animation: none !important;
-    transition-duration: none !important;
+    transition: none !important;
+  }
+  html {
+    scroll-behavior: auto !important;
   }
 }

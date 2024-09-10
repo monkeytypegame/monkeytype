@@ -685,3 +685,9 @@ export function isObject(obj: unknown): obj is Record<string, unknown> {
 }
 
 // DO NOT ALTER GLOBAL OBJECTSONSTRUCTOR, IT WILL BREAK RESULT HASHES
+
+export function getScrollBehavior(): ScrollBehavior {
+  return matchMedia?.("(prefers-reduced-motion)")?.matches
+    ? "instant"
+    : "smooth";
+}
