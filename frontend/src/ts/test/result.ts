@@ -12,7 +12,7 @@ import { isAuthenticated } from "../firebase";
 import * as quoteRateModal from "../modals/quote-rate";
 import * as GlarsesMode from "../states/glarses-mode";
 import * as SlowTimer from "../states/slow-timer";
-import * as DateTime from "../utils/date-and-time";
+import * as DateTime from "@monkeytype/util/date-and-time";
 import * as Misc from "../utils/misc";
 import * as Strings from "../utils/strings";
 import * as JSONData from "../utils/json-data";

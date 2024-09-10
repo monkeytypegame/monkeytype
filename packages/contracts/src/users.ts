@@ -30,6 +30,8 @@ import { IdSchema, LanguageSchema, StringNumberSchema } from "./schemas/util";
 import { CustomThemeColorsSchema } from "./schemas/configs";
 import { doesNotContainProfanity } from "./validation/validation";
 
+const c = initContract();
+
 export const GetUserResponseSchema = responseWithData(
   UserSchema.extend({
     inboxUnreadSize: z.number().int().nonnegative(),
@@ -321,8 +323,6 @@ export type GetCurrentTestActivityResponse = z.infer<
 export const GetStreakResponseSchema =
   responseWithNullableData(UserStreakSchema);
 export type GetStreakResponseSchema = z.infer<typeof GetStreakResponseSchema>;
-
-const c = initContract();
 
 export const usersContract = c.router(
   {
@@ -795,6 +795,24 @@ export const usersContract = c.router(
           path: "users.profiles.enabled",
           invalidMessage: "Profiles are not available at this time",
         },
+      }),
+    },
+    getProfileImage: {
+      summary: "get profile as image",
+      description: "Download png for the profile for opengraph",
+      method: "GET",
+      path: "/:uidOrName/profile.png",
+      pathParams: GetProfilePathParamsSchema.strict(),
+      query: GetProfileQuerySchema.strict(),
+      responses: {
+        200: c.otherResponse({
+          contentType: "image/png",
+          body: z.string(),
+        }),
+      },
+      metadata: meta({
+        authenticationOptions: { isPublic: true },
+        rateLimit: "userProfileGet",
       }),
     },
     getInbox: {

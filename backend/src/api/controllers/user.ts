@@ -861,9 +861,18 @@ export async function removeFavoriteQuote(
 export async function getProfile(
   req: MonkeyRequest<GetProfileQuery, undefined, GetProfilePathParams>
 ): Promise<GetProfileResponse> {
-  const { uidOrName } = req.params;
+  const profile = await getProfileFromQuery(
+    req.params.uidOrName,
+    req.query.isUid
+  );
+  return new MonkeyResponse("Profile retrieved", profile);
+}
 
-  const user = req.query.isUid
+export async function getProfileFromQuery(
+  uidOrName: string,
+  isUid: boolean
+): Promise<UserProfile> {
+  const user = isUid
     ? await UserDAL.getUser(uidOrName, "get user profile")
     : await UserDAL.getUserByName(uidOrName, "get user profile");
 
@@ -914,7 +923,7 @@ export async function getProfile(
   };
 
   if (banned) {
-    return new MonkeyResponse("Profile retrived: banned user", baseProfile);
+    return baseProfile;
   }
 
   const allTimeLbs = await getAllTimeLbs(user.uid);
@@ -927,7 +936,7 @@ export async function getProfile(
     uid: user.uid,
   } as UserProfile;
 
-  return new MonkeyResponse("Profile retrieved", profileData);
+  return profileData;
 }
 
 export async function updateProfile(

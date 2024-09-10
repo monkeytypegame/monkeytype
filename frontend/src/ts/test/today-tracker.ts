@@ -1,4 +1,4 @@
-import * as DateTime from "../utils/date-and-time";
+import * as DateTime from "@monkeytype/util/date-and-time";
 import * as DB from "../db";
 
 let seconds = 0;

@@ -10,10 +10,10 @@ import { throttle } from "throttle-debounce";
 import * as ActivePage from "../states/active-page";
 import { formatDistanceToNowStrict } from "date-fns/formatDistanceToNowStrict";
 import { getHtmlByUserFlags } from "../controllers/user-flag-controller";
-import Format from "../utils/format";
 import { UserProfile, RankAndCount } from "@monkeytype/contracts/schemas/users";
 import { abbreviateNumber, convertRemToPixels } from "../utils/numbers";
-import { secondsToString } from "../utils/date-and-time";
+import { secondsToString } from "@monkeytype/util/date-and-time";
+import { rank } from "@monkeytype/util/format";
 
 type ProfileViewPaths = "profile" | "account";
 type UserProfileOrSnapshot = UserProfile | DB.Snapshot;
@@ -313,7 +313,7 @@ export async function update(
       if (t15 !== null) {
         profileElement
           .find(".leaderboardsPositions .group.t15 .pos")
-          .text(Format.rank(t15?.rank));
+          .text(rank(t15?.rank));
         profileElement
           .find(".leaderboardsPositions .group.t15 .topPercentage")
           .text(formatTopPercentage(t15));
@@ -322,7 +322,7 @@ export async function update(
       if (t60 !== null) {
         profileElement
           .find(".leaderboardsPositions .group.t60 .pos")
-          .text(Format.rank(t60?.rank));
+          .text(rank(t60?.rank));
 
         profileElement
           .find(".leaderboardsPositions .group.t60 .topPercentage")
