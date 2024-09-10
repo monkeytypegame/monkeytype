@@ -35,7 +35,8 @@ export function handleMonkeyResponse(
   //@ts-expect-error ignored so that we can see message in swagger stats
   res.monkeyMessage = message;
   if ([301, 302].includes(status)) {
-    res.redirect(data);
+    // todo add stronger types here, maybe a MonkeyRedirectResponse
+    res.redirect(data as string);
     return;
   }
 

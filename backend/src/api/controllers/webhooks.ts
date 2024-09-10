@@ -8,7 +8,7 @@ export async function githubRelease(
 
   if (action === "published") {
     const releaseId = req.body.release.id;
-    await GeorgeQueue.sendReleaseAnnouncement(releaseId);
+    await GeorgeQueue.sendReleaseAnnouncement(releaseId as string);
     return new MonkeyResponse("Added release announcement task to queue");
   }
   return new MonkeyResponse("No action taken");
