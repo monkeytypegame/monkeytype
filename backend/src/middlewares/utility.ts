@@ -2,8 +2,9 @@ import _ from "lodash";
 import type { Request, Response, NextFunction, RequestHandler } from "express";
 import { handleMonkeyResponse, MonkeyResponse } from "../utils/monkey-response";
 import { recordClientVersion as prometheusRecordClientVersion } from "../utils/prometheus";
-import { validate } from "./configuration";
 import { isDevEnvironment } from "../utils/misc";
+import MonkeyError from "../utils/error";
+import { TsRestRequestWithCtx } from "./auth";
 
 export const emptyMiddleware = (
   _req: MonkeyTypes.Request,
@@ -53,10 +54,16 @@ export function recordClientVersion(): RequestHandler {
 }
 
 export function onlyAvailableOnDev(): MonkeyTypes.RequestHandler {
-  return validate({
-    criteria: () => {
-      return isDevEnvironment();
-    },
-    invalidMessage: "Development endpoints are only available in DEV mode.",
-  });
+  return (_req: TsRestRequestWithCtx, _res: Response, next: NextFunction) => {
+    if (!isDevEnvironment()) {
+      next(
+        new MonkeyError(
+          503,
+          "Development endpoints are only available in DEV mode."
+        )
+      );
+    } else {
+      next();
+    }
+  };
 }

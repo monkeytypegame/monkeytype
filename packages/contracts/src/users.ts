@@ -349,6 +349,10 @@ export const usersContract = c.router(
       },
       metadata: meta({
         rateLimit: "userSignup",
+        requireConfiguration: {
+          path: "users.signUp",
+          invalidMessage: "Sign up is temporarily disabled",
+        },
       }),
     },
     getNameAvailability: {
@@ -502,6 +506,11 @@ export const usersContract = c.router(
       },
       metadata: meta({
         rateLimit: "userCustomFilterAdd",
+        requireConfiguration: {
+          path: "results.filterPresets.enabled",
+          invalidMessage:
+            "Result filter presets are not available at this time.",
+        },
       }),
     },
     removeResultFilterPreset: {
@@ -516,6 +525,11 @@ export const usersContract = c.router(
       },
       metadata: meta({
         rateLimit: "userCustomFilterRemove",
+        requireConfiguration: {
+          path: "results.filterPresets.enabled",
+          invalidMessage:
+            "Result filter presets are not available at this time.",
+        },
       }),
     },
     getTags: {
@@ -646,6 +660,10 @@ export const usersContract = c.router(
       },
       metadata: meta({
         rateLimit: "userDiscordLink",
+        requireConfiguration: {
+          path: "users.discordIntegration.enabled",
+          invalidMessage: "Discord integration is not available at this time",
+        },
       }),
     },
     linkDiscord: {
@@ -659,6 +677,10 @@ export const usersContract = c.router(
       },
       metadata: meta({
         rateLimit: "userDiscordLink",
+        requireConfiguration: {
+          path: "users.discordIntegration.enabled",
+          invalidMessage: "Discord integration is not available at this time",
+        },
       }),
     },
     unlinkDiscord: {
@@ -752,6 +774,10 @@ export const usersContract = c.router(
       metadata: meta({
         authenticationOptions: { isPublic: true },
         rateLimit: "userProfileGet",
+        requireConfiguration: {
+          path: "users.profiles.enabled",
+          invalidMessage: "Profiles are not available at this time",
+        },
       }),
     },
     updateProfile: {
@@ -765,6 +791,10 @@ export const usersContract = c.router(
       },
       metadata: meta({
         rateLimit: "userProfileUpdate",
+        requireConfiguration: {
+          path: "users.profiles.enabled",
+          invalidMessage: "Profiles are not available at this time",
+        },
       }),
     },
     getInbox: {
@@ -777,6 +807,10 @@ export const usersContract = c.router(
       },
       metadata: meta({
         rateLimit: "userMailGet",
+        requireConfiguration: {
+          path: "users.inbox.enabled",
+          invalidMessage: "Your inbox is not available at this time.",
+        },
       }),
     },
     updateInbox: {
@@ -790,6 +824,10 @@ export const usersContract = c.router(
       },
       metadata: meta({
         rateLimit: "userMailUpdate",
+        requireConfiguration: {
+          path: "users.inbox.enabled",
+          invalidMessage: "Your inbox is not available at this time.",
+        },
       }),
     },
     report: {
@@ -804,6 +842,10 @@ export const usersContract = c.router(
       metadata: meta({
         rateLimit: "quoteReportSubmit",
         requirePermission: "canReport",
+        requireConfiguration: {
+          path: "quotes.reporting.enabled",
+          invalidMessage: "User reporting is unavailable.",
+        },
       }),
     },
     verificationEmail: {

@@ -1,33 +1,42 @@
 import type { Response, NextFunction } from "express";
-import MonkeyError from "../utils/error";
-import { Configuration } from "@monkeytype/contracts/schemas/configuration";
 import { TsRestRequestWithCtx } from "./auth";
+import { TsRestRequestHandler } from "@ts-rest/express";
+import { EndpointMetadata } from "@monkeytype/contracts/schemas/api";
+import MonkeyError from "../utils/error";
 
-export type ValidationOptions<T> = {
-  criteria: (data: T) => boolean;
-  invalidMessage?: string;
-};
+export function verifyRequiredConfiguration<
+  T extends AppRouter | AppRoute
+>(): TsRestRequestHandler<T> {
+  return async (
+    req: TsRestRequestWithCtx,
+    _res: Response,
+    next: NextFunction
+  ): Promise<void> => {
+    const requiredConfig = (req.tsRestRoute["metadata"] as EndpointMetadata)
+      ?.requireConfiguration;
+    if (requiredConfig === undefined) {
+      next();
+      return;
+    }
+    const keys = (requiredConfig.path as string).split(".");
+    let value = req.ctx.configuration;
+    for (const key of keys) {
+      value = value[key];
+    }
 
-/**
- * This utility checks that the server's configuration matches
- * the criteria.
- */
-export function validate(
-  options: ValidationOptions<Configuration>
-): MonkeyTypes.RequestHandler {
-  const {
-    criteria,
-    invalidMessage = "This service is currently unavailable.",
-  } = options;
-
-  return (req: TsRestRequestWithCtx, _res: Response, next: NextFunction) => {
-    const configuration = req.ctx.configuration;
-
-    const validated = criteria(configuration);
-    if (!validated) {
-      throw new MonkeyError(503, invalidMessage);
+    //@ts-expect-error
+    if (value !== true) {
+      next(
+        new MonkeyError(
+          503,
+          requiredConfig.invalidMessage ??
+            "This service is currently unavailable."
+        )
+      );
+      return;
     }
 
     next();
+    return;
   };
 }
