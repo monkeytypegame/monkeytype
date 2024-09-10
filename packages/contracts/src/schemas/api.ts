@@ -37,7 +37,7 @@ export type EndpointMetadata = {
   requirePermission?: PermissionId | PermissionId[];
 
   /** Endpoint is only available if configuration allows it */
-  requireConfiguration?: RequireConfiguration;
+  requireConfiguration?: RequireConfiguration | RequireConfiguration[];
 };
 
 /**

@@ -50,7 +50,6 @@ describe("configuration middleware", () => {
     //THEN
     expect(next).toHaveBeenCalledWith();
   });
-
   it("should fail for disabled configuration", async () => {
     //GIVEN
     const req = givenRequest({ path: "maintenance" }, { maintenance: false });
@@ -78,7 +77,6 @@ describe("configuration middleware", () => {
       new MonkeyError(503, "Feature not enabled.")
     );
   });
-
   it("should fail for invalid path", async () => {
     //GIVEN
     const req = givenRequest({ path: "invalid.path" as any }, {});
@@ -145,10 +143,39 @@ describe("configuration middleware", () => {
       )
     );
   });
+  it("should pass for multiple configurations", async () => {
+    //GIVEN
+    const req = givenRequest(
+      [{ path: "maintenance" }, { path: "admin.endpointsEnabled" }],
+      { maintenance: true, admin: { endpointsEnabled: true } }
+    );
+
+    //WHEN
+    await handler(req, res, next);
+
+    //THEN
+    expect(next).toHaveBeenCalledWith();
+  });
+  it("should fail for multiple configurations", async () => {
+    //GIVEN
+    const req = givenRequest(
+      [
+        { path: "maintenance", invalidMessage: "maintenance mode" },
+        { path: "admin.endpointsEnabled", invalidMessage: "admin disabled" },
+      ],
+      { maintenance: true, admin: { endpointsEnabled: false } }
+    );
+
+    //WHEN
+    await handler(req, res, next);
+
+    //THEN
+    expect(next).toHaveBeenCalledWith(new MonkeyError(503, "admin disabled"));
+  });
 });
 
 function givenRequest(
-  requireConfiguration: RequireConfiguration,
+  requireConfiguration: RequireConfiguration | RequireConfiguration[],
   configuration: Partial<Configuration>
 ): TsRestRequest {
   return {

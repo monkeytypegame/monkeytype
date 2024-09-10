@@ -4,7 +4,10 @@ import { TsRestRequestHandler } from "@ts-rest/express";
 import { EndpointMetadata } from "@monkeytype/contracts/schemas/api";
 import MonkeyError from "../utils/error";
 import { Configuration } from "@monkeytype/contracts/schemas/configuration";
-import { ConfigurationPath } from "@monkeytype/contracts/require-configuration/index";
+import {
+  ConfigurationPath,
+  RequireConfiguration,
+} from "@monkeytype/contracts/require-configuration/index";
 
 export function verifyRequiredConfiguration<
   T extends AppRouter | AppRoute
@@ -14,20 +17,27 @@ export function verifyRequiredConfiguration<
     _res: Response,
     next: NextFunction
   ): Promise<void> => {
-    const requiredConfig = (req.tsRestRoute["metadata"] as EndpointMetadata)
-      ?.requireConfiguration;
-    if (requiredConfig === undefined) {
+    const requiredConfigurations = getRequireConfigurations(
+      req.tsRestRoute["metadata"]
+    );
+
+    if (requiredConfigurations === undefined) {
       next();
       return;
     }
     try {
-      const value = getValue(req.ctx.configuration, requiredConfig.path);
-      if (!value) {
-        throw new MonkeyError(
-          503,
-          requiredConfig.invalidMessage ??
-            "This endpoint is currently unavailable."
+      for (const requireConfiguration of requiredConfigurations) {
+        const value = getValue(
+          req.ctx.configuration,
+          requireConfiguration.path
         );
+        if (!value) {
+          throw new MonkeyError(
+            503,
+            requireConfiguration.invalidMessage ??
+              "This endpoint is currently unavailable."
+          );
+        }
       }
       next();
       return;
@@ -62,4 +72,15 @@ function getValue(
       `Required configuration is not a boolean: "${path}"`
     );
   return result;
+}
+
+function getRequireConfigurations(
+  metadata: EndpointMetadata | undefined
+): RequireConfiguration[] | undefined {
+  if (metadata === undefined || metadata.requireConfiguration === undefined)
+    return undefined;
+
+  if (Array.isArray(metadata.requireConfiguration))
+    return metadata.requireConfiguration;
+  return [metadata.requireConfiguration];
 }
