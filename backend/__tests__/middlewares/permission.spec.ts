@@ -141,7 +141,10 @@ describe("permission middleware", () => {
 
       //THEN
       expect(next).toHaveBeenCalledWith(
-        new MonkeyError(403, "Authentication missing.")
+        new MonkeyError(
+          403,
+          "Failed to check permissions, authentication required."
+        )
       );
     });
   });

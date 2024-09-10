@@ -112,12 +112,18 @@ export function verifyPermissions<
 
     //handle user checks
     const userChecks = checks.filter((it) => it.type === "user");
-    const invalidMessage = await checkUserPermissions(
+    const checkResult = await checkUserPermissions(
       req.ctx.decodedToken,
       userChecks
     );
-    if (invalidMessage !== undefined) {
-      next(new MonkeyError(403, invalidMessage));
+
+    if (!checkResult.passed) {
+      next(
+        new MonkeyError(
+          403,
+          checkResult.invalidMessage ?? "You don't have permission to do this."
+        )
+      );
       return;
     }
 
@@ -148,12 +154,30 @@ async function checkIfUserIsAdmin(
   return await isAdmin(decodedToken.uid);
 }
 
+type CheckResult =
+  | {
+      passed: true;
+    }
+  | {
+      passed: false;
+      invalidMessage?: string;
+    };
+
 async function checkUserPermissions(
   decodedToken: MonkeyTypes.DecodedToken | undefined,
   checks: UserPermissionCheck[]
-): Promise<string | undefined> {
-  if (checks === undefined || checks.length === 0) return undefined;
-  if (decodedToken === undefined) return "Authentication missing.";
+): Promise<CheckResult> {
+  if (checks === undefined || checks.length === 0) {
+    return {
+      passed: true,
+    };
+  }
+  if (decodedToken === undefined) {
+    return {
+      passed: false,
+      invalidMessage: "Failed to check permissions, authentication required.",
+    };
+  }
 
   const user = (await getPartialUser(
     decodedToken.uid,
@@ -163,7 +187,13 @@ async function checkUserPermissions(
 
   for (const check of checks) {
     if (!check.criteria(user))
-      return check.invalidMessage ?? "You don't have permission to do this.";
+      return {
+        passed: false,
+        invalidMessage: check.invalidMessage,
+      };
   }
-  return undefined;
+
+  return {
+    passed: true,
+  };
 }
