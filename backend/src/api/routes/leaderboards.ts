@@ -1,7 +1,5 @@
 import { initServer } from "@ts-rest/express";
-import { withApeRateLimiter } from "../../middlewares/ape-rate-limit";
 import { validate } from "../../middlewares/configuration";
-import * as RateLimit from "../../middlewares/rate-limit";
 import * as LeaderboardController from "../controllers/leaderboard";
 
 import { leaderboardsContract } from "@monkeytype/contracts/leaderboards";
@@ -24,32 +22,30 @@ const requireWeeklyXpLeaderboardEnabled = validate({
 const s = initServer();
 export default s.router(leaderboardsContract, {
   get: {
-    middleware: [RateLimit.leaderboardsGet],
     handler: async (r) =>
       callController(LeaderboardController.getLeaderboard)(r),
   },
   getRank: {
-    middleware: [withApeRateLimiter(RateLimit.leaderboardsGet)],
     handler: async (r) =>
       callController(LeaderboardController.getRankFromLeaderboard)(r),
   },
   getDaily: {
-    middleware: [requireDailyLeaderboardsEnabled, RateLimit.leaderboardsGet],
+    middleware: [requireDailyLeaderboardsEnabled],
     handler: async (r) =>
       callController(LeaderboardController.getDailyLeaderboard)(r),
   },
   getDailyRank: {
-    middleware: [requireDailyLeaderboardsEnabled, RateLimit.leaderboardsGet],
+    middleware: [requireDailyLeaderboardsEnabled],
     handler: async (r) =>
       callController(LeaderboardController.getDailyLeaderboardRank)(r),
   },
   getWeeklyXp: {
-    middleware: [requireWeeklyXpLeaderboardEnabled, RateLimit.leaderboardsGet],
+    middleware: [requireWeeklyXpLeaderboardEnabled],
     handler: async (r) =>
       callController(LeaderboardController.getWeeklyXpLeaderboardResults)(r),
   },
   getWeeklyXpRank: {
-    middleware: [requireWeeklyXpLeaderboardEnabled, RateLimit.leaderboardsGet],
+    middleware: [requireWeeklyXpLeaderboardEnabled],
     handler: async (r) =>
       callController(LeaderboardController.getWeeklyXpLeaderboardRank)(r),
   },

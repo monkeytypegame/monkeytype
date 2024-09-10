@@ -440,7 +440,7 @@ const notes = {
 } as const;
 
 type ValidNotes = keyof typeof notes;
-type ValidFrequencies = typeof notes[ValidNotes];
+type ValidFrequencies = (typeof notes)[ValidNotes];
 
 type GetNoteFrequencyCallback = (octave: number) => number;
 

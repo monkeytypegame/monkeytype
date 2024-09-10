@@ -1763,7 +1763,7 @@ export function setFontSize(
 
   config.fontSize = fontSize;
 
-  $("#caret, #paceCaret, #liveStatsMini, #typingTest").css(
+  $("#caret, #paceCaret, #liveStatsMini, #typingTest, #wordsInput").css(
     "fontSize",
     fontSize + "rem"
   );

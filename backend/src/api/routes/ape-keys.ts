@@ -1,6 +1,5 @@
 import { apeKeysContract } from "@monkeytype/contracts/ape-keys";
 import { initServer } from "@ts-rest/express";
-import * as RateLimit from "../../middlewares/rate-limit";
 import * as ApeKeyController from "../controllers/ape-key";
 import { callController } from "../ts-rest-adapter";
 import { checkUserPermissions } from "../../middlewares/permission";
@@ -24,19 +23,19 @@ const commonMiddleware = [
 const s = initServer();
 export default s.router(apeKeysContract, {
   get: {
-    middleware: [...commonMiddleware, RateLimit.apeKeysGet],
+    middleware: commonMiddleware,
     handler: async (r) => callController(ApeKeyController.getApeKeys)(r),
   },
   add: {
-    middleware: [...commonMiddleware, RateLimit.apeKeysGenerate],
+    middleware: commonMiddleware,
     handler: async (r) => callController(ApeKeyController.generateApeKey)(r),
   },
   save: {
-    middleware: [...commonMiddleware, RateLimit.apeKeysUpdate],
+    middleware: commonMiddleware,
     handler: async (r) => callController(ApeKeyController.editApeKey)(r),
   },
   delete: {
-    middleware: [...commonMiddleware, RateLimit.apeKeysDelete],
+    middleware: commonMiddleware,
     handler: async (r) => callController(ApeKeyController.deleteApeKey)(r),
   },
 });
