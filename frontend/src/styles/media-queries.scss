@@ -1039,3 +1039,12 @@ body {
     display: block !important;
   }
 }
+
+@media (prefers-reduced-motion) {
+  *,
+  *::after,
+  *::before {
+    animation: none !important;
+    transition-duration: none !important;
+  }
+}
