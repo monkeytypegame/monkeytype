@@ -95,13 +95,10 @@ describe("WebhooksController", () => {
       const { body } = await mockApp
         .post("/webhooks/githubRelease")
         .send({ action: "published", release: { id: 1 } })
-        .expect(422);
+        .expect(401);
 
       //THEN
-      expect(body).toEqual({
-        message: "Invalid header schema",
-        validationErrors: ['"x-hub-signature-256" Required'],
-      });
+      expect(body.message).toEqual("Missing Github signature header");
     });
     it("should fail with mismatched signature", async () => {
       //GIVEN
