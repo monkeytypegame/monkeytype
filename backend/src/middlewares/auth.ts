@@ -337,31 +337,33 @@ export function authenticateGithubWebhook(
 
     if (webhookSecret === undefined || webhookSecret === "") {
       throw new MonkeyError(500, "Missing Github Webhook Secret");
-    } else if (
+    }
+
+    if (
       Array.isArray(authHeader) ||
       authHeader === undefined ||
       authHeader === ""
     ) {
       throw new MonkeyError(401, "Missing Github signature header");
-    } else {
-      const signature = crypto
-        .createHmac("sha256", webhookSecret)
-        .update(JSON.stringify(req.body))
-        .digest("hex");
-      const trusted = Buffer.from(`sha256=${signature}`, "ascii");
-      const untrusted = Buffer.from(authHeader, "ascii");
-      const isSignatureValid = crypto.timingSafeEqual(trusted, untrusted);
-
-      if (!isSignatureValid) {
-        throw new MonkeyError(401, "Github webhook signature invalid");
-      }
-
-      return {
-        type: "GithubWebhook",
-        uid: "",
-        email: "",
-      };
     }
+
+    const signature = crypto
+      .createHmac("sha256", webhookSecret)
+      .update(JSON.stringify(req.body))
+      .digest("hex");
+    const trusted = Buffer.from(`sha256=${signature}`, "ascii");
+    const untrusted = Buffer.from(authHeader, "ascii");
+    const isSignatureValid = crypto.timingSafeEqual(trusted, untrusted);
+
+    if (!isSignatureValid) {
+      throw new MonkeyError(401, "Github webhook signature invalid");
+    }
+
+    return {
+      type: "GithubWebhook",
+      uid: "",
+      email: "",
+    };
   } catch (error) {
     if (!(error instanceof MonkeyError)) {
       throw new MonkeyError(
