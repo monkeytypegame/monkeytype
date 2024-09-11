@@ -134,6 +134,12 @@ export function getOpenApi(): OpenAPIObject {
           "x-displayName": "Development",
           "x-public": "no",
         },
+        {
+          name: "webhooks",
+          description: "Endpoints for incoming webhooks.",
+          "x-displayName": "Webhooks",
+          "x-public": "yes",
+        },
       ],
     },
 

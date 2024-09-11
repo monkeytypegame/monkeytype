@@ -1,17 +1,14 @@
 // import joi from "joi";
-import { Router } from "express";
+import { webhooksContract } from "@monkeytype/contracts/webhooks";
+import { initServer } from "@ts-rest/express";
 import { authenticateGithubWebhook } from "../../middlewares/auth";
-import { asyncHandler } from "../../middlewares/utility";
-import { webhookLimit } from "../../middlewares/rate-limit";
-import { githubRelease } from "../controllers/webhooks";
+import * as WebhooksController from "../controllers/webhooks";
+import { callController } from "../ts-rest-adapter";
 
-const router = Router();
-
-router.post(
-  "/githubRelease",
-  webhookLimit,
-  authenticateGithubWebhook(),
-  asyncHandler(githubRelease)
-);
-
-export default router;
+const s = initServer();
+export default s.router(webhooksContract, {
+  postGithubRelease: {
+    middleware: [authenticateGithubWebhook()],
+    handler: async (r) => callController(WebhooksController.githubRelease)(r),
+  },
+});
