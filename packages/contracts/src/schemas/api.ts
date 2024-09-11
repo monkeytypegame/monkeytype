@@ -57,7 +57,7 @@ export type RequestAuthenticationOptions = {
   noCache?: boolean;
   /** Allow unauthenticated requests on dev  */
   isPublicOnDev?: boolean;
-
+  /** Endpoint is a webhook only to be called by Github */
   isGithubWebhook?: boolean;
 };
 
