@@ -165,6 +165,7 @@ function buildPersonalBest(result: Result): PersonalBest {
   };
 }
 
+//TODO add tests, i changed implementation
 function updateLeaderboardPersonalBests(
   userPersonalBests: PersonalBests,
   lbPersonalBests: MonkeyTypes.LbPersonalBests,
@@ -177,11 +178,9 @@ function updateLeaderboardPersonalBests(
   const mode = result.mode;
   const mode2 = result.mode2;
 
-  lbPersonalBests[mode] = lbPersonalBests[mode] ?? {};
-  const lbMode2 = lbPersonalBests[mode][mode2] as MonkeyTypes.LbPersonalBests;
-  if (lbMode2 === undefined || Array.isArray(lbMode2)) {
-    lbPersonalBests[mode][mode2] = {};
-  }
+  const lbPb = lbPersonalBests ?? {};
+  lbPb[mode] ??= {};
+  lbPb[mode][mode2] ??= {};
 
   const bestForEveryLanguage = {};
 
@@ -196,14 +195,10 @@ function updateLeaderboardPersonalBests(
   });
 
   _.each(bestForEveryLanguage, (pb: PersonalBest, language: string) => {
-    const languageDoesNotExist =
-      lbPersonalBests[mode][mode2][language] === undefined;
+    const languageDoesNotExist = lbPb[mode][mode2][language] === undefined;
 
-    if (
-      languageDoesNotExist ||
-      lbPersonalBests[mode][mode2][language].wpm < pb.wpm
-    ) {
-      lbPersonalBests[mode][mode2][language] = pb;
+    if (languageDoesNotExist || lbPb[mode][mode2][language].wpm < pb.wpm) {
+      lbPb[mode][mode2][language] = pb;
     }
   });
 }

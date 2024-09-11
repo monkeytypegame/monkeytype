@@ -10,11 +10,11 @@ export type MonkeyDataAware<T> = {
 export class MonkeyResponse {
   message: string;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  data: any;
+  data: unknown;
   status: number;
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  constructor(message?: string, data?: any, status = 200) {
+  constructor(message?: string, data?: unknown, status = 200) {
     this.message = message ?? "ok";
     this.data = data ?? null;
     this.status = status;
@@ -35,7 +35,7 @@ export function handleMonkeyResponse(
   //@ts-expect-error ignored so that we can see message in swagger stats
   res.monkeyMessage = message;
   if ([301, 302].includes(status)) {
-    res.redirect(data);
+    res.redirect(data as string);
     return;
   }
 
