@@ -18,10 +18,6 @@ declare namespace MonkeyTypes {
     decodedToken: DecodedToken;
   };
 
-  type Request = {
-    ctx: Readonly<Context>;
-  } & ExpressRequest;
-
   type ExpressRequestWithContext = {
     ctx: Readonly<Context>;
   } & ExpressRequest;

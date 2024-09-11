@@ -1,6 +1,6 @@
 import _ from "lodash";
 import MonkeyError from "../utils/error";
-import type { Response, NextFunction } from "express";
+import type { Response, NextFunction, Request } from "express";
 import { RateLimiterMemory } from "rate-limiter-flexible";
 import {
   rateLimit,
@@ -36,7 +36,7 @@ export const customHandler = (
   throw new MonkeyError(429, "Request limit reached, please try again later.");
 };
 
-const getKey = (req: MonkeyTypes.Request, _res: Response): string => {
+const getKey = (req: Request, _res: Response): string => {
   return (
     (req.headers["cf-connecting-ip"] as string) ||
     (req.headers["x-forwarded-for"] as string) ||
@@ -45,7 +45,10 @@ const getKey = (req: MonkeyTypes.Request, _res: Response): string => {
   );
 };
 
-const getKeyWithUid = (req: MonkeyTypes.Request, _res: Response): string => {
+const getKeyWithUid = (
+  req: MonkeyTypes.ExpressRequestWithContext,
+  _res: Response
+): string => {
   const uid = req?.ctx?.decodedToken?.uid;
   const useUid = uid !== undefined && uid !== "";
 
@@ -148,7 +151,7 @@ const badAuthRateLimiter = new RateLimiterMemory({
 });
 
 export async function badAuthRateLimiterHandler(
-  req: MonkeyTypes.Request,
+  req: MonkeyTypes.ExpressRequestWithContext,
   res: Response,
   next: NextFunction
 ): Promise<void> {
@@ -178,7 +181,7 @@ export async function badAuthRateLimiterHandler(
 }
 
 export async function incrementBadAuth(
-  req: MonkeyTypes.Request,
+  req: MonkeyTypes.ExpressRequestWithContext,
   res: Response,
   status: number
 ): Promise<void> {
