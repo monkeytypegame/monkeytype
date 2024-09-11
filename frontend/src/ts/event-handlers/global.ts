@@ -46,7 +46,7 @@ window.onerror = function (message, url, line, column, error): void {
 
 window.onunhandledrejection = function (e): void {
   if (Misc.isDevEnvironment()) {
-    const message = e.reason.message ?? e.reason;
+    const message = (e.reason.message ?? e.reason) as string;
     Notifications.add(`${message}`, -1, {
       customTitle: "DEV: Unhandled rejection",
       duration: 5,
@@ -54,6 +54,6 @@ window.onunhandledrejection = function (e): void {
     console.error(e);
   }
   void log("error", {
-    error: e.reason.stack ?? "",
+    error: (e.reason.stack ?? "") as string,
   });
 };

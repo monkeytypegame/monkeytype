@@ -8,6 +8,7 @@ import {
   Mode2,
   PersonalBests,
 } from "@monkeytype/contracts/schemas/shared";
+import { ZodError, ZodSchema } from "zod";
 
 export function kogasa(cov: number): number {
   return (
@@ -682,6 +683,26 @@ export function updateTitle(title?: string): void {
 
 export function isObject(obj: unknown): obj is Record<string, unknown> {
   return typeof obj === "object" && !Array.isArray(obj) && obj !== null;
+}
+
+/**
+ * Parse a JSON string into an object and validate it against a schema
+ * @param input  JSON string
+ * @param schema  Zod schema to validate the JSON against
+ * @returns  The parsed JSON object
+ */
+export function parseJsonWithSchema<T>(input: string, schema: ZodSchema<T>): T {
+  try {
+    const jsonParsed = JSON.parse(input) as unknown;
+    const zodParsed = schema.parse(jsonParsed);
+    return zodParsed;
+  } catch (error) {
+    if (error instanceof ZodError) {
+      throw new Error(error.errors.map((err) => err.message).join("\n"));
+    } else {
+      throw error;
+    }
+  }
 }
 
 // DO NOT ALTER GLOBAL OBJECTSONSTRUCTOR, IT WILL BREAK RESULT HASHES

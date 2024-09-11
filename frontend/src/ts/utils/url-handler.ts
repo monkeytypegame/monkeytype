@@ -65,36 +65,31 @@ export async function linkDiscord(hashOverride: string): Promise<void> {
   }
 }
 
+const customThemeUrlDataSchema = z.object({
+  c: CustomThemeColorsSchema,
+  i: z.string().optional(),
+  s: CustomBackgroundSizeSchema.optional(),
+  f: CustomBackgroundFilterSchema.optional(),
+});
+
 export function loadCustomThemeFromUrl(getOverride?: string): void {
   const getValue = Misc.findGetParameter("customTheme", getOverride);
   if (getValue === null) return;
 
-  let decoded = null;
+  let decoded: z.infer<typeof customThemeUrlDataSchema>;
   try {
-    decoded = JSON.parse(atob(getValue));
+    decoded = Misc.parseJsonWithSchema(
+      atob(getValue),
+      customThemeUrlDataSchema
+    );
   } catch (e) {
     console.log("Custom theme URL decoding failed", e);
     Notifications.add(
-      "Failed to load theme from URL: could not decode theme",
+      "Failed to load theme from URL: " + (e as Error).message,
       0
     );
     return;
   }
-
-  const decodedSchema = z.object({
-    c: CustomThemeColorsSchema,
-    i: z.string().optional(),
-    s: CustomBackgroundSizeSchema.optional(),
-    f: CustomBackgroundFilterSchema.optional(),
-  });
-
-  const parsed = decodedSchema.safeParse(decoded);
-  if (!parsed.success) {
-    Notifications.add("Failed to load theme from URL: invalid data schema", 0);
-    return;
-  }
-
-  decoded = parsed.data;
 
   let colorArray: CustomThemeColors | undefined;
   let image: string | undefined;
@@ -151,7 +146,9 @@ export function loadTestSettingsFromUrl(getOverride?: string): void {
   const getValue = Misc.findGetParameter("testSettings", getOverride);
   if (getValue === null) return;
 
-  const de: SharedTestSettings = JSON.parse(decompressFromURI(getValue) ?? "");
+  const de = JSON.parse(
+    decompressFromURI(getValue) ?? ""
+  ) as SharedTestSettings;
 
   const applied: Record<string, string> = {};
 

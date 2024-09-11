@@ -67,9 +67,9 @@ async function apply(): Promise<void> {
     "data-preset-id"
   ) as string;
 
-  const updateConfig: boolean = $("#editPresetModal .modal label input").prop(
+  const updateConfig = $("#editPresetModal .modal label input").prop(
     "checked"
-  );
+  ) as boolean;
 
   let configChanges: MonkeyTypes.ConfigChanges = {};
 

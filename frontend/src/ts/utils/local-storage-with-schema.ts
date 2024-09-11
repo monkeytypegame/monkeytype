@@ -25,7 +25,7 @@ export class LocalStorageWithSchema<T> {
       return this.fallback;
     }
 
-    let jsonParsed;
+    let jsonParsed: unknown;
     try {
       jsonParsed = JSON.parse(value);
     } catch (e) {

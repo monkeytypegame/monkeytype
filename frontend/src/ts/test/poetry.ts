@@ -50,7 +50,7 @@ export async function getPoem(): Promise<Section | false> {
 
   try {
     const response = await axios.get(apiURL);
-    const poemObj: PoemObject = response.data[0];
+    const poemObj = response.data[0] as PoemObject;
 
     const words: string[] = [];
 

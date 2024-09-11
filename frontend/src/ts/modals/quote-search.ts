@@ -273,6 +273,7 @@ export async function show(showOptions?: ShowOptions): Promise<void> {
         $("#quoteSearchModal .goToQuoteApprove").addClass("hidden");
       }
 
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- TODO: update slim-select
       lengthSelect = new SlimSelect({
         select: "#quoteSearchModal .quoteLengthFilter",
 
