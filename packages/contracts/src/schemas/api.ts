@@ -57,6 +57,8 @@ export type RequestAuthenticationOptions = {
   noCache?: boolean;
   /** Allow unauthenticated requests on dev  */
   isPublicOnDev?: boolean;
+
+  isGithubWebhook?: boolean;
 };
 
 export const MonkeyResponseSchema = z.object({

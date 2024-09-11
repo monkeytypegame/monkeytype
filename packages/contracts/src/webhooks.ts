@@ -43,12 +43,6 @@ export const webhooksContract = c.router(
       responses: {
         200: MonkeyResponseSchema,
       },
-      metadata: meta({
-        authenticationOptions: {
-          isPublic: true,
-        },
-        rateLimit: "webhookLimit",
-      }),
     },
   },
   {
@@ -56,6 +50,11 @@ export const webhooksContract = c.router(
     strictStatusCodes: true,
     metadata: meta({
       openApiTags: "webhooks",
+      authenticationOptions: {
+        isPublic: true,
+        isGithubWebhook: true,
+      },
+      rateLimit: "webhookLimit",
     }),
     commonResponses: CommonResponses,
   }
