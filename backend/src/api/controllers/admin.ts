@@ -116,7 +116,11 @@ export async function handleReports(
       });
       await UserDAL.addToInbox(report.uid, [mail], inboxConfig);
     } catch (e) {
-      throw new MonkeyError(e.status, e.message);
+      if (e instanceof MonkeyError) {
+        throw new MonkeyError(e.status, e.message);
+      } else {
+        throw new MonkeyError(500, "Error handling reports: " + e.message);
+      }
     }
   }
 }
