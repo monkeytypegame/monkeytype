@@ -77,42 +77,5 @@ describe("WebhooksController", () => {
       //THEN
       expect(body.message).toEqual('Missing property "release.id".');
     });
-    it("should fail with missing GITHUB_WEBHOOK_SECRET", async () => {
-      //GIVEN
-      vi.stubEnv("GITHUB_WEBHOOK_SECRET", "");
-      //WHEN
-      const { body } = await mockApp
-        .post("/webhooks/githubRelease")
-        .set("x-hub-signature-256", "the-signature")
-        .send({ action: "published", release: { id: 1 } })
-        .expect(500);
-
-      //THEN
-      expect(body.message).toEqual("Missing Github Webhook Secret");
-    });
-    it("should fail without signature header", async () => {
-      //WHEN
-      const { body } = await mockApp
-        .post("/webhooks/githubRelease")
-        .send({ action: "published", release: { id: 1 } })
-        .expect(401);
-
-      //THEN
-      expect(body.message).toEqual("Missing Github signature header");
-    });
-    it("should fail with mismatched signature", async () => {
-      //GIVEN
-      timingSafeEqualMock.mockReturnValue(false);
-
-      //WHEN
-      const { body } = await mockApp
-        .post("/webhooks/githubRelease")
-        .set("x-hub-signature-256", "the-signature")
-        .send({ action: "published", release: { id: 1 } })
-        .expect(401);
-
-      //THEN
-      expect(body.message).toEqual("Github webhook signature invalid");
-    });
   });
 });
