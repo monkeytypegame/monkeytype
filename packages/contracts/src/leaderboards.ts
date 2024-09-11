@@ -127,6 +127,10 @@ export const leaderboardsContract = c.router(
       },
       metadata: meta({
         authenticationOptions: { isPublic: true },
+        requireConfiguration: {
+          path: "dailyLeaderboards.enabled",
+          invalidMessage: "Daily leaderboards are not available at this time.",
+        },
       }),
     },
     getDailyRank: {
@@ -138,6 +142,12 @@ export const leaderboardsContract = c.router(
       responses: {
         200: GetLeaderboardDailyRankResponseSchema,
       },
+      metadata: meta({
+        requireConfiguration: {
+          path: "dailyLeaderboards.enabled",
+          invalidMessage: "Daily leaderboards are not available at this time.",
+        },
+      }),
     },
     getWeeklyXp: {
       summary: "get weekly xp leaderboard",
@@ -150,6 +160,11 @@ export const leaderboardsContract = c.router(
       },
       metadata: meta({
         authenticationOptions: { isPublic: true },
+        requireConfiguration: {
+          path: "leaderboards.weeklyXp.enabled",
+          invalidMessage:
+            "Weekly XP leaderboards are not available at this time.",
+        },
       }),
     },
     getWeeklyXpRank: {
@@ -161,6 +176,13 @@ export const leaderboardsContract = c.router(
       responses: {
         200: GetWeeklyXpLeaderboardRankResponseSchema,
       },
+      metadata: meta({
+        requireConfiguration: {
+          path: "leaderboards.weeklyXp.enabled",
+          invalidMessage:
+            "Weekly XP leaderboards are not available at this time.",
+        },
+      }),
     },
   },
   {
