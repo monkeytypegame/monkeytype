@@ -98,7 +98,10 @@ describe("WebhooksController", () => {
         .expect(422);
 
       //THEN
-      expect(body.message).toEqual("Invalid header schema");
+      expect(body).toEqual({
+        message: "Invalid header schema",
+        validationErrors: ['"x-hub-signature-256" Required'],
+      });
     });
     it("should fail with mismatched signature", async () => {
       //GIVEN
