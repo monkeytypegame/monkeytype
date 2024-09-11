@@ -261,13 +261,13 @@ describe("middlewares/auth", () => {
     const prometheusRecordAuthTimeMock = vi.spyOn(Prometheus, "recordAuthTime");
     const prometheusIncrementAuthMock = vi.spyOn(Prometheus, "incrementAuth");
     const timingSafeEqualMock = vi.spyOn(crypto, "timingSafeEqual");
-    timingSafeEqualMock.mockReset().mockReturnValue(true);
 
-    beforeEach(() =>
+    beforeEach(() => {
+      timingSafeEqualMock.mockReset().mockReturnValue(true);
       [prometheusIncrementAuthMock, prometheusRecordAuthTimeMock].forEach(
         (it) => it.mockReset()
-      )
-    );
+      );
+    });
 
     it("should fail if token is not fresh", async () => {
       //GIVEN
