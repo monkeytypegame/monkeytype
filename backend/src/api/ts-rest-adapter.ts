@@ -22,7 +22,7 @@ export function callController<
       query: all.query as TQuery,
       params: all.params as TParams,
       raw: all.req,
-      ctx: all.req["ctx"],
+      ctx: all.req["ctx"] as MonkeyTypes.Context,
     };
 
     const result = await handler(req);

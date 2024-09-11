@@ -198,7 +198,7 @@ export async function sendVerificationEmail(
         JSON.stringify({
           decodedTokenEmail: email,
           userInfoEmail: userInfo.email,
-          stack: e.stack,
+          stack: e.stack as unknown,
         }),
         userInfo.uid
       );

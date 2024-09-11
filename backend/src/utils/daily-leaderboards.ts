@@ -121,14 +121,14 @@ export class DailyLeaderboard {
       this.getTodaysLeaderboardKeys();
 
     // @ts-expect-error
-    const [results]: string[][] = await connection.getResults(
+    const [results] = (await connection.getResults(
       2,
       leaderboardScoresKey,
       leaderboardResultsKey,
       minRank,
       maxRank,
       "false"
-    );
+    )) as string[][];
 
     if (results === undefined) {
       throw new Error(
@@ -198,7 +198,7 @@ export class DailyLeaderboard {
       count: count ?? 0,
       rank: rank + 1,
       entry: {
-        ...JSON.parse(result ?? "null"),
+        ...(JSON.parse(result ?? "null") as LeaderboardEntry),
       },
     };
   }

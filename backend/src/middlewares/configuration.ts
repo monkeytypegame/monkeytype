@@ -53,11 +53,12 @@ function getValue(
   path: ConfigurationPath
 ): boolean {
   const keys = (path as string).split(".");
-  let result = configuration;
+  let result: unknown = configuration;
 
   for (const key of keys) {
-    if (result === undefined || result === null)
+    if (result === undefined || result === null) {
       throw new MonkeyError(500, `Invalid configuration path: "${path}"`);
+    }
     result = result[key];
   }
 
