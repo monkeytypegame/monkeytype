@@ -365,13 +365,12 @@ export function authenticateGithubWebhook(
       email: "",
     };
   } catch (error) {
-    if (!(error instanceof MonkeyError)) {
-      throw new MonkeyError(
-        500,
-        "Failed to authenticate Github webhook: " + (error as Error).message
-      );
+    if (error instanceof MonkeyError) {
+      throw error;
     }
-
-    throw error;
+    throw new MonkeyError(
+      500,
+      "Failed to authenticate Github webhook: " + (error as Error).message
+    );
   }
 }
