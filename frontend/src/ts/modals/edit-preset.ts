@@ -127,7 +127,10 @@ function addCheckboxListeners(): void {
         `#editPresetModal .modal .checkboxList .checkboxTitlePair[data-id="${settingGroup}"] input`
       );
       checkboxInput.on("change", (e) => {
-        state.checkboxes.set(settingGroup, checkboxInput.prop("checked"));
+        state.checkboxes.set(
+          settingGroup,
+          checkboxInput.prop("checked") as boolean
+        );
       });
     }
   );
