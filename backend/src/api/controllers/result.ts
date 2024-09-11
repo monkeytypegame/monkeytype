@@ -200,6 +200,10 @@ export async function addResult(
     throw new MonkeyError(status.code, status.message);
   }
 
+  if (user.lbOptOut !== true && completedEvent.acc < 75) {
+    throw new MonkeyError(400, "Accuracy too low");
+  }
+
   const resulthash = completedEvent.hash;
   if (req.ctx.configuration.results.objectHashCheckEnabled) {
     const objectToHash = omit(completedEvent, "hash");

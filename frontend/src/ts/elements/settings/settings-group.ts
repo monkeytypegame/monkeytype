@@ -80,7 +80,7 @@ export default class SettingsGroup<T extends ConfigValue> {
         return;
       }
 
-      const debounced = debounce(250, (val) => {
+      const debounced = debounce<(val: T) => void>(250, (val) => {
         this.setValue(val);
       });
 

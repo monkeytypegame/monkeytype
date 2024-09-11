@@ -81,11 +81,11 @@ module.exports = {
 
         // TODO: enable at some point
         "@typescript-eslint/no-unsafe-assignment": "off", //~63
-        "@typescript-eslint/no-unsafe-argument": "off", //~37
         "@typescript-eslint/no-unsafe-call": "off", //~76
         "@typescript-eslint/no-unsafe-member-access": "off", //~105
         //
 
+        "@typescript-eslint/no-unsafe-argument": "error",
         "@typescript-eslint/no-unnecessary-type-assertion": "error",
         "@typescript-eslint/no-confusing-void-expression": [
           "error",

@@ -58,7 +58,7 @@ export async function replace(word: string): Promise<string> {
     (_, $1, $2, $3) =>
       $1 +
       ($2.charAt(0) === $2.charAt(0).toUpperCase()
-        ? shouldWholeReplacementWordBeCapitalised($2)
+        ? shouldWholeReplacementWordBeCapitalised($2 as string)
           ? randomReplacement.toUpperCase()
           : capitalizeFirstLetterOfEachWord(randomReplacement)
         : randomReplacement) +
