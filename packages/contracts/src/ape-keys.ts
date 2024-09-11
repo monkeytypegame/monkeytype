@@ -102,6 +102,10 @@ export const apeKeysContract = c.router(
     metadata: meta({
       openApiTags: "ape-keys",
       requirePermission: "canManageApeKeys",
+      requireConfiguration: {
+        path: "apeKeys.endpointsEnabled",
+        invalidMessage: "ApeKeys are currently disabled.",
+      },
     }),
 
     commonResponses: CommonResponses,

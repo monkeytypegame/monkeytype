@@ -196,7 +196,7 @@ export class WeeklyXpLeaderboard {
     }
 
     //TODO parse with zod?
-    const parsed = JSON.parse(result ?? "null") as Omit<
+    const parsed = JSON.parse((result as string) ?? "null") as Omit<
       XpLeaderboardEntry,
       "rank" | "count" | "totalXp"
     >;
@@ -204,7 +204,7 @@ export class WeeklyXpLeaderboard {
     return {
       rank: rank + 1,
       count: count ?? 0,
-      totalXp: parseInt(totalXp, 10),
+      totalXp: parseInt(totalXp as string, 10),
       ...parsed,
     };
   }

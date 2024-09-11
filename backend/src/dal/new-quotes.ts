@@ -73,9 +73,9 @@ export async function add(
     const quoteFile = await readFile(fileDir);
     const quoteFileJSON = JSON.parse(quoteFile.toString());
     quoteFileJSON.quotes.every((old) => {
-      if (compareTwoStrings(old.text, quote.text) > 0.9) {
+      if (compareTwoStrings(old.text as string, quote.text) > 0.9) {
         duplicateId = old.id;
-        similarityScore = compareTwoStrings(old.text, quote.text);
+        similarityScore = compareTwoStrings(old.text as string, quote.text);
         return false;
       }
       return true;
@@ -157,7 +157,7 @@ export async function approve(
     const quoteFile = await readFile(fileDir);
     const quoteObject = JSON.parse(quoteFile.toString());
     quoteObject.quotes.every((old) => {
-      if (compareTwoStrings(old.text, quote.text) > 0.8) {
+      if (compareTwoStrings(old.text as string, quote.text) > 0.8) {
         throw new MonkeyError(409, "Duplicate quote");
       }
     });

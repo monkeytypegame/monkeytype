@@ -756,7 +756,7 @@ export async function getStats(
 }
 
 export async function getFavoriteQuotes(
-  uid
+  uid: string
 ): Promise<NonNullable<MonkeyTypes.DBUser["favoriteQuotes"]>> {
   const user = await getPartialUser(uid, "get favorite quotes", [
     "favoriteQuotes",
@@ -1072,7 +1072,7 @@ export async function updateStreak(
   } else if (!isToday(streak.lastResultTimestamp, streak.hourOffset ?? 0)) {
     void addImportantLog(
       "streak_lost",
-      JSON.parse(JSON.stringify(streak)),
+      JSON.parse(JSON.stringify(streak)) as Record<string, unknown>,
       uid
     );
     streak.length = 1;

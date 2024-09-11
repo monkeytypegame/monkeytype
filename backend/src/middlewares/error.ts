@@ -68,7 +68,10 @@ async function errorHandlingMiddleware(
     ) {
       recordServerErrorByVersion(version);
 
-      const { uid, errorId } = monkeyResponse.data;
+      const { uid, errorId } = monkeyResponse.data as {
+        uid: string;
+        errorId: string;
+      };
 
       try {
         await addLog(
@@ -77,7 +80,7 @@ async function errorHandlingMiddleware(
           uid
         );
         await db.collection<DBError>("errors").insertOne({
-          _id: errorId,
+          _id: new ObjectId(errorId),
           timestamp: Date.now(),
           status: monkeyResponse.status,
           uid,
@@ -89,7 +92,8 @@ async function errorHandlingMiddleware(
         });
       } catch (e) {
         Logger.error("Logging to db failed.");
-        Logger.error(e);
+        Logger.error(e.message as string);
+        console.error(e);
       }
     } else {
       Logger.error(`Error: ${error.message} Stack: ${error.stack}`);
@@ -103,7 +107,8 @@ async function errorHandlingMiddleware(
     return;
   } catch (e) {
     Logger.error("Error handling middleware failed.");
-    Logger.error(e);
+    Logger.error(e.message as string);
+    console.error(e);
   }
 
   handleMonkeyResponse(

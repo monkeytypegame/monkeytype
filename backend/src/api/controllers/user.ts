@@ -1109,9 +1109,9 @@ export function generateCurrentTestActivity(
   //make sure lastYearData covers the full year
   if (lastYearData.length < Dates.getDaysInYear(lastYear)) {
     lastYearData.push(
-      ...new Array(Dates.getDaysInYear(lastYear) - lastYearData.length).fill(
+      ...(new Array(Dates.getDaysInYear(lastYear) - lastYearData.length).fill(
         undefined
-      )
+      ) as (number | null)[])
     );
   }
   //use enough days of the last year to have 372 days in total to always fill the first week of the graph
