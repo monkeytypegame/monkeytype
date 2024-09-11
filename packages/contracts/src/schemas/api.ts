@@ -14,7 +14,8 @@ export type OpenApiTag =
   | "configuration"
   | "development"
   | "users"
-  | "quotes";
+  | "quotes"
+  | "webhooks";
 
 export type PermissionId =
   | "quoteMod"
@@ -60,6 +61,8 @@ export type RequestAuthenticationOptions = {
   noCache?: boolean;
   /** Allow unauthenticated requests on dev  */
   isPublicOnDev?: boolean;
+  /** Endpoint is a webhook only to be called by Github */
+  isGithubWebhook?: boolean;
 };
 
 export const MonkeyResponseSchema = z.object({

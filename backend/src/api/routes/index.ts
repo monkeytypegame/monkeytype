@@ -43,7 +43,6 @@ const BASE_ROUTE = pathOverride !== undefined ? `/${pathOverride}` : "";
 const APP_START_TIME = Date.now();
 
 const API_ROUTE_MAP = {
-  "/webhooks": webhooks,
   "/docs": docs,
 };
 
@@ -61,6 +60,7 @@ const router = s.router(contract, {
   dev,
   users,
   quotes,
+  webhooks,
 });
 
 export function addApiRoutes(app: Application): void {
@@ -154,7 +154,6 @@ function applyDevApiRoutes(app: Application): void {
 function applyApiRoutes(app: Application): void {
   addSwaggerMiddlewares(app);
 
-  //TODO move to globalMiddleware when all endpoints use tsrest
   app.use(
     (req: MonkeyTypes.Request, res: Response, next: NextFunction): void => {
       if (req.path.startsWith("/configuration")) {
