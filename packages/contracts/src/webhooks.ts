@@ -51,7 +51,6 @@ export const webhooksContract = c.router(
     metadata: meta({
       openApiTags: "webhooks",
       authenticationOptions: {
-        isPublic: true,
         isGithubWebhook: true,
       },
       rateLimit: "webhookLimit",
