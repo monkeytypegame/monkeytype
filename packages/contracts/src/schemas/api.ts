@@ -1,5 +1,6 @@
 import { z, ZodSchema } from "zod";
 import { RateLimitIds, RateLimiterId } from "../rate-limit";
+import { RequireConfiguration } from "../require-configuration";
 
 export type OpenApiTag =
   | "configs"
@@ -34,6 +35,9 @@ export type EndpointMetadata = {
 
   /** Role/Rples needed to  access the endpoint*/
   requirePermission?: PermissionId | PermissionId[];
+
+  /** Endpoint is only available if configuration allows it */
+  requireConfiguration?: RequireConfiguration | RequireConfiguration[];
 };
 
 /**
