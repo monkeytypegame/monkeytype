@@ -1934,8 +1934,6 @@ export function setBurstHeatmap(value: boolean, nosave?: boolean): boolean {
 export async function apply(
   configToApply: Config | MonkeyTypes.ConfigChanges
 ): Promise<void> {
-  console.log("applying", configToApply);
-
   if (configToApply === undefined) return;
 
   ConfigEvent.dispatch("fullConfigChange");
