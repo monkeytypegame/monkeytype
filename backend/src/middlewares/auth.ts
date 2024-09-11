@@ -85,11 +85,7 @@ async function _authenticateRequestInternal(
   } = req.headers;
 
   try {
-    if (
-      githubWebhookHeader !== undefined &&
-      typeof githubWebhookHeader === "string" &&
-      options.isGithubWebhook
-    ) {
+    if (options.isGithubWebhook) {
       token = authenticateGithubWebhook(req, githubWebhookHeader);
     } else if (authHeader !== undefined && authHeader !== "") {
       token = await authenticateWithAuthHeader(
@@ -334,7 +330,7 @@ async function authenticateWithUid(
 
 export function authenticateGithubWebhook(
   req: MonkeyTypes.Request,
-  authHeader: string
+  authHeader: string | string[] | undefined
 ): MonkeyTypes.DecodedToken {
   try {
     const webhookSecret = process.env["GITHUB_WEBHOOK_SECRET"];
@@ -342,9 +338,9 @@ export function authenticateGithubWebhook(
     if (webhookSecret === undefined || webhookSecret === "") {
       throw new MonkeyError(500, "Missing Github Webhook Secret");
     } else if (
+      Array.isArray(authHeader) ||
       authHeader === undefined ||
-      authHeader === "" ||
-      authHeader.length === 0
+      authHeader === ""
     ) {
       throw new MonkeyError(401, "Missing Github signature header");
     } else {
