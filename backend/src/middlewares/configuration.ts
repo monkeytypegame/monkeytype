@@ -18,7 +18,7 @@ export function verifyRequiredConfiguration<
     next: NextFunction
   ): Promise<void> => {
     const requiredConfigurations = getRequireConfigurations(
-      req.tsRestRoute["metadata"]
+      req.tsRestRoute["metadata"] as EndpointMetadata | undefined
     );
 
     if (requiredConfigurations === undefined) {
