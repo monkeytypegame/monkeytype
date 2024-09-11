@@ -18,7 +18,8 @@ const commands: MonkeyTypes.Command[] = [
 
 function update(fonts: MonkeyTypes.FontObject[]): void {
   fonts.forEach((font) => {
-    const configVal = font.name.replace(/ /g, "_");
+    const configFontName = font.name.replace(/_/g, "__").replace(/ /g, "_");
+    const configVal = configFontName;
 
     const customData: Record<string, string | boolean> = {
       name: font.name,
@@ -31,7 +32,7 @@ function update(fonts: MonkeyTypes.FontObject[]): void {
     customData["isSystem"] = font.systemFont ?? false;
 
     subgroup.list.push({
-      id: "changeFont" + font.name.replace(/ /g, "_"),
+      id: "changeFont" + configFontName,
       display: font.display !== undefined ? font.display : font.name,
       configValue: configVal,
       customData,
@@ -39,7 +40,7 @@ function update(fonts: MonkeyTypes.FontObject[]): void {
         UI.previewFontFamily(font.name);
       },
       exec: (): void => {
-        UpdateConfig.setFontFamily(font.name.replace(/ /g, "_"));
+        UpdateConfig.setFontFamily(configFontName);
       },
     });
   });
@@ -52,7 +53,7 @@ function update(fonts: MonkeyTypes.FontObject[]): void {
     },
     exec: ({ input }) => {
       if (input === undefined || input === "") return;
-      UpdateConfig.setFontFamily(input.replace(/\s/g, "_"));
+      UpdateConfig.setFontFamily(input.replace(/_/g, "__").replace(/\s/g, "_"));
       // Settings.groups.fontFamily.updateInput();
     },
   });

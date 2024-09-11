@@ -892,7 +892,9 @@ list.applyCustomFont = new SimpleModal({
   text: "Make sure you have the font installed on your computer before applying",
   buttonText: "apply",
   execFn: async (_thisPopup, fontName): Promise<ExecReturn> => {
-    Settings.groups["fontFamily"]?.setValue(fontName.replace(/\s/g, "_"));
+    Settings.groups["fontFamily"]?.setValue(
+      fontName.replace(/_/g, "__").replace(/\s/g, "_")
+    );
 
     return {
       status: 1,
