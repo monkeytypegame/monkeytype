@@ -7,7 +7,7 @@ import {
   MonkeyResponseSchema,
   responseWithData,
 } from "./schemas/api";
-import { PresetSchema } from "./schemas/presets";
+import { EditPresetRequestSchema, PresetSchema } from "./schemas/presets";
 import { IdSchema } from "./schemas/util";
 
 export const GetPresetResponseSchema = responseWithData(z.array(PresetSchema));
@@ -60,7 +60,7 @@ export const presetsContract = c.router(
       description: "Update an existing preset for the current user.",
       method: "PATCH",
       path: "",
-      body: PresetSchema.strict(),
+      body: EditPresetRequestSchema.strict(),
       responses: {
         200: MonkeyResponseSchema,
       },

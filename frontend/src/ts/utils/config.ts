@@ -26,7 +26,7 @@ function mergeWithDefaultConfig(config: PartialConfig): Config {
   return mergedConfig;
 }
 
-function replaceLegacyValues(
+export function replaceLegacyValues(
   configObj: ConfigSchemas.PartialConfig
 ): ConfigSchemas.PartialConfig {
   //@ts-expect-error
