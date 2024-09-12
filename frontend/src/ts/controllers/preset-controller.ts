@@ -15,7 +15,6 @@ export async function apply(_id: string): Promise<void> {
     return;
   }
   if (isPartialPreset(presetToApply)) {
-    //checks if preset is full or partial
     const combinedConfig = {
       ...UpdateConfig.getConfigChanges(),
       ...replaceLegacyValues(presetToApply.config),
