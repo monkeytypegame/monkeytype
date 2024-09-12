@@ -179,11 +179,6 @@ declare namespace MonkeyTypes {
     hasCSS?: boolean;
   };
 
-  type PresetConfig = {
-    tags: string[];
-    settingGroups: import("@monkeytype/contracts/schemas/presets").ActiveSettingGroups;
-  } & import("@monkeytype/contracts/schemas/configs").Config;
-
   type SnapshotPreset =
     import("@monkeytype/contracts/schemas/presets").Preset & {
       display: string;
@@ -198,10 +193,9 @@ declare namespace MonkeyTypes {
     _id: string;
   } & RawCustomTheme;
 
-  type ConfigChanges = {
-    tags?: string[];
-    settingGroups?: import("@monkeytype/contracts/schemas/presets").ActiveSettingGroups;
-  } & Partial<import("@monkeytype/contracts/schemas/configs").Config>;
+  type ConfigChanges = Partial<
+    import("@monkeytype/contracts/schemas/configs").Config
+  >;
 
   type LeaderboardMemory = {
     time: {

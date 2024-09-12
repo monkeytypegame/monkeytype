@@ -465,9 +465,9 @@ function getSettingGroup(configFieldName: string): PresetSettingGroup {
 }
 
 function getPartialConfigChanges(
-  presetConfig: MonkeyTypes.PresetConfig | MonkeyTypes.ConfigChanges
+  configChanges: MonkeyTypes.ConfigChanges
 ): MonkeyTypes.ConfigChanges {
-  const activeConfigChanges = {} as MonkeyTypes.PresetConfig;
+  const activeConfigChanges: MonkeyTypes.ConfigChanges = {};
   Object.keys(defaultConfig)
     .filter(
       (settingName) =>
@@ -477,9 +477,9 @@ function getPartialConfigChanges(
       //@ts-expect-error this is fine
       activeConfigChanges[settingName] =
         //@ts-expect-error this is fine
-        presetConfig[settingName] !== undefined
+        configChanges[settingName] !== undefined
           ? //@ts-expect-error this is fine
-            presetConfig[settingName]
+            configChanges[settingName]
           : //@ts-expect-error this is fine
             defaultConfig[settingName];
     });
