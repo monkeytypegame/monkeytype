@@ -477,12 +477,12 @@ function getPartialConfigChanges(
     )
     .forEach((settingName) => {
       const safeSettingName = settingName as keyof MonkeyTypes.ConfigChanges;
-
-      // @ts-expect-error cant figure this one out, but it works
-      activeConfigChanges[safeSettingName] =
+      const newValue =
         configChanges[safeSettingName] !== undefined
           ? configChanges[safeSettingName]
           : defaultConfig[safeSettingName];
+      // @ts-expect-error cant figure this one out, but it works
+      activeConfigChanges[safeSettingName] = newValue;
     });
   return activeConfigChanges;
 }
