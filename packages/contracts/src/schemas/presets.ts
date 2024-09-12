@@ -58,6 +58,7 @@ export type Preset = z.infer<typeof PresetSchema>;
 
 export const EditPresetRequestSchema = PresetSchema.partial({
   config: true,
+  settingGroups: true,
 });
 
 export type EditPresetRequest = z.infer<typeof EditPresetRequestSchema>;
