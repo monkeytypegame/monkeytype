@@ -187,17 +187,6 @@ function applyApiRoutes(app: Application): void {
     );
   });
 
-  //legacy route
-  app.get("/psa", (_req, res) => {
-    res.json([
-      {
-        message:
-          "It seems like your client version is very out of date as you're requesting an API endpoint that no longer exists. This will likely cause most of the website to not function correctly. Please clear your cache, or contact support if this message persists.",
-        sticky: true,
-      },
-    ]);
-  });
-
   _.each(API_ROUTE_MAP, (router: Router, route) => {
     const apiRoute = `${BASE_ROUTE}${route}`;
     app.use(apiRoute, router);
