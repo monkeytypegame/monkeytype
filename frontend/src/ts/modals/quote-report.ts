@@ -5,7 +5,6 @@ import * as Notifications from "../elements/notifications";
 import QuotesController from "../controllers/quotes-controller";
 import * as CaptchaController from "../controllers/captcha-controller";
 import { removeLanguageSize } from "../utils/strings";
-// @ts-expect-error TODO: update slim-select
 import SlimSelect from "slim-select";
 import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
 import { CharacterCounter } from "../elements/character-counter";
@@ -46,7 +45,6 @@ export async function show(
       $("#quoteReportModal .reason").val("Grammatical error");
       $("#quoteReportModal .comment").val("");
 
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call -- TODO: update slim-select
       state.reasonSelect = new SlimSelect({
         select: "#quoteReportModal .reason",
         settings: {

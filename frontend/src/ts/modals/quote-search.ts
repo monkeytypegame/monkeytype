@@ -16,7 +16,6 @@ import { isAuthenticated } from "../firebase";
 import { debounce } from "throttle-debounce";
 import Ape from "../ape";
 import * as Loader from "../elements/loader";
-// @ts-expect-error TODO: update slim-select
 import SlimSelect from "slim-select";
 import * as TestState from "../test/test-state";
 import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
@@ -273,7 +272,6 @@ export async function show(showOptions?: ShowOptions): Promise<void> {
         $("#quoteSearchModal .goToQuoteApprove").addClass("hidden");
       }
 
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call -- TODO: update slim-select
       lengthSelect = new SlimSelect({
         select: "#quoteSearchModal .quoteLengthFilter",
 

@@ -2,7 +2,6 @@ import Ape from "../ape";
 import * as Loader from "../elements/loader";
 import * as Notifications from "../elements/notifications";
 import * as CaptchaController from "../controllers/captcha-controller";
-// @ts-expect-error TODO: update slim-select
 import SlimSelect from "slim-select";
 import AnimatedModal from "../utils/animated-modal";
 import { isAuthenticated } from "../firebase";
@@ -51,7 +50,6 @@ export async function show(options: ShowOptions): Promise<void> {
         "Inappropriate name";
       (modalEl.querySelector(".comment") as HTMLTextAreaElement).value = "";
 
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call -- TODO: update slim-select
       select = new SlimSelect({
         select: modalEl.querySelector(".reason") as HTMLElement,
         settings: {
