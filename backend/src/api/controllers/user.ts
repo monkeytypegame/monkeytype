@@ -1,6 +1,9 @@
 import _ from "lodash";
 import * as UserDAL from "../../dal/user";
-import MonkeyError, { isFirebaseError } from "../../utils/error";
+import MonkeyError, {
+  getErrorMessage,
+  isFirebaseError,
+} from "../../utils/error";
 import { MonkeyResponse } from "../../utils/monkey-response";
 import * as DiscordUtils from "../../utils/discord";
 import {
@@ -183,9 +186,7 @@ export async function sendVerificationEmail(
       });
   } catch (e) {
     if (isFirebaseError(e)) {
-      if (e.errorInfo.code === "auth/internal-error") {
-        throw new MonkeyError(429, "Too many requests. Please try again later");
-      } else if (e.errorInfo.code === "auth/user-not-found") {
+      if (e.errorInfo.code === "auth/user-not-found") {
         throw new MonkeyError(
           500,
           "Auth user not found when the user was found in the database. Contact support with this error message and your email",
@@ -202,22 +203,28 @@ export async function sendVerificationEmail(
             e.errorInfo.message
         );
       }
-    } else if (e instanceof Error) {
-      if (e.message.toLowerCase().includes("too_many_attempts")) {
-        throw new MonkeyError(429, "Too many requests. Please try again later");
-      } else {
+    } else {
+      const message = getErrorMessage(e);
+      if (message === undefined) {
         throw new MonkeyError(
           500,
-          "Firebase failed to generate an email verification link: " +
-            e.message,
-          e.stack
+          "Firebase failed to generate an email verification link. Unknown error occured"
         );
+      } else {
+        if (message.toLowerCase().includes("too_many_attempts")) {
+          throw new MonkeyError(
+            429,
+            "Too many requests. Please try again later"
+          );
+        } else {
+          throw new MonkeyError(
+            500,
+            "Firebase failed to generate an email verification link: " +
+              message,
+            (e as Error).stack
+          );
+        }
       }
-    } else {
-      throw new MonkeyError(
-        500,
-        "Firebase failed to generate an email verification link. Unknown error occured"
-      );
     }
   }
   await emailQueue.sendVerificationEmail(email, userInfo.name, link);
