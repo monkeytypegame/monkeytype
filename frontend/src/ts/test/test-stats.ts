@@ -43,7 +43,9 @@ export let lastSecondNotRound = false;
 
 export let lastResult: Omit<CompletedEvent, "hash" | "uid">;
 
-export function setLastResult(result: CompletedEvent): void {
+export function setLastResult(
+  result: Omit<CompletedEvent, "hash" | "uid">
+): void {
   lastResult = result;
 }
 

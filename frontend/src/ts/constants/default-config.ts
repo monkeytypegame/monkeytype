@@ -2,6 +2,7 @@ import {
   Config,
   CustomThemeColors,
 } from "@monkeytype/contracts/schemas/configs";
+import { deepClone } from "../utils/misc";
 
 const obj = {
   theme: "serika_dark",
@@ -102,4 +103,4 @@ const obj = {
   maxLineWidth: 0,
 } as Config;
 
-export default JSON.parse(JSON.stringify(obj)) as Config;
+export default deepClone(obj);
