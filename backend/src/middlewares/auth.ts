@@ -188,33 +188,27 @@ async function authenticateWithBearerToken(
       email: decodedToken.email ?? "",
     };
   } catch (error) {
-    const errorCode = error?.errorInfo?.code;
+    const errorCode = error?.errorInfo?.code as string | undefined;
 
-    if (errorCode?.includes("auth/id-token-expired") as boolean | undefined) {
+    if (errorCode?.includes("auth/id-token-expired")) {
       throw new MonkeyError(
         401,
         "Token expired - please login again",
         "authenticateWithBearerToken"
       );
-    } else if (
-      errorCode?.includes("auth/id-token-revoked") as boolean | undefined
-    ) {
+    } else if (errorCode?.includes("auth/id-token-revoked")) {
       throw new MonkeyError(
         401,
         "Token revoked - please login again",
         "authenticateWithBearerToken"
       );
-    } else if (
-      errorCode?.includes("auth/user-not-found") as boolean | undefined
-    ) {
+    } else if (errorCode?.includes("auth/user-not-found")) {
       throw new MonkeyError(
         404,
         "User not found",
         "authenticateWithBearerToken"
       );
-    } else if (
-      errorCode?.includes("auth/argument-error") as boolean | undefined
-    ) {
+    } else if (errorCode?.includes("auth/argument-error")) {
       throw new MonkeyError(
         400,
         "Incorrect Bearer token format",

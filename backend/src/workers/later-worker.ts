@@ -180,8 +180,8 @@ async function handleWeeklyXpLeaderboardResults(
   await addToInboxBulk(mailEntries, inboxConfig);
 }
 
-async function jobHandler(job: Job): Promise<void> {
-  const { taskName, ctx }: LaterTask<LaterTaskType> = job.data;
+async function jobHandler(job: Job<LaterTask<LaterTaskType>>): Promise<void> {
+  const { taskName, ctx } = job.data;
 
   Logger.info(`Starting job: ${taskName}`);
 

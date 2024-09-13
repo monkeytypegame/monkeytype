@@ -87,7 +87,7 @@ export async function getLastResult(
 
 export async function getResultByTimestamp(
   uid: string,
-  timestamp
+  timestamp: number
 ): Promise<MonkeyTypes.DBResult | null> {
   return await getResultCollection().findOne({ uid, timestamp });
 }

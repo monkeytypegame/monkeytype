@@ -65,6 +65,7 @@ export async function show(showOptions: ShowOptions): Promise<void> {
       );
       await initDropdown();
 
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- TODO: update slim-select
       select = new SlimSelect({
         select: "#quoteSubmitModal .newQuoteLanguage",
       });

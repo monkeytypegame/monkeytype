@@ -59,7 +59,14 @@ export function checkAndUpdatePb(
   }
 
   if (!_.isNil(lbPersonalBests)) {
-    updateLeaderboardPersonalBests(userPb, lbPersonalBests, result);
+    const newLbPb = updateLeaderboardPersonalBests(
+      userPb,
+      lbPersonalBests,
+      result
+    );
+    if (newLbPb !== null) {
+      lbPersonalBests = newLbPb;
+    }
   }
 
   return {
@@ -165,26 +172,20 @@ function buildPersonalBest(result: Result): PersonalBest {
   };
 }
 
-function updateLeaderboardPersonalBests(
+export function updateLeaderboardPersonalBests(
   userPersonalBests: PersonalBests,
   lbPersonalBests: MonkeyTypes.LbPersonalBests,
   result: Result
-): void {
+): MonkeyTypes.LbPersonalBests | null {
   if (!shouldUpdateLeaderboardPersonalBests(result)) {
-    return;
+    return null;
   }
-
   const mode = result.mode;
   const mode2 = result.mode2;
-
-  lbPersonalBests[mode] = lbPersonalBests[mode] ?? {};
-  const lbMode2 = lbPersonalBests[mode][mode2] as MonkeyTypes.LbPersonalBests;
-  if (lbMode2 === undefined || Array.isArray(lbMode2)) {
-    lbPersonalBests[mode][mode2] = {};
-  }
-
+  const lbPb = lbPersonalBests ?? {};
+  lbPb[mode] ??= {};
+  lbPb[mode][mode2] ??= {};
   const bestForEveryLanguage = {};
-
   userPersonalBests[mode][mode2].forEach((pb: PersonalBest) => {
     const language = pb.language;
     if (
@@ -194,18 +195,18 @@ function updateLeaderboardPersonalBests(
       bestForEveryLanguage[language] = pb;
     }
   });
-
   _.each(bestForEveryLanguage, (pb: PersonalBest, language: string) => {
-    const languageDoesNotExist =
-      lbPersonalBests[mode][mode2][language] === undefined;
-
+    const languageDoesNotExist = lbPb[mode][mode2][language] === undefined;
+    const languageIsEmpty = _.isEmpty(lbPb[mode][mode2][language]);
     if (
       languageDoesNotExist ||
-      lbPersonalBests[mode][mode2][language].wpm < pb.wpm
+      languageIsEmpty ||
+      lbPb[mode][mode2][language].wpm < pb.wpm
     ) {
-      lbPersonalBests[mode][mode2][language] = pb;
+      lbPb[mode][mode2][language] = pb;
     }
   });
+  return lbPb;
 }
 
 function shouldUpdateLeaderboardPersonalBests(result: Result): boolean {

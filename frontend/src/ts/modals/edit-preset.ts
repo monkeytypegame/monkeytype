@@ -139,7 +139,9 @@ function addCheckboxListeners(): void {
     `#editPresetModal .modal .changePresetToCurrentCheckbox input`
   );
   presetToCurrentCheckbox.on("change", async () => {
-    state.setPresetToCurrent = presetToCurrentCheckbox.prop("checked");
+    state.setPresetToCurrent = presetToCurrentCheckbox.prop(
+      "checked"
+    ) as boolean;
     await updateEditPresetUI();
   });
 }
@@ -212,9 +214,9 @@ async function apply(): Promise<void> {
     "data-preset-id"
   ) as string;
 
-  const updateConfig: boolean = $("#editPresetModal .modal label input").prop(
+  const updateConfig = $("#editPresetModal .modal label input").prop(
     "checked"
-  );
+  ) as boolean;
 
   const snapshotPresets = DB.getSnapshot()?.presets ?? [];
 
@@ -474,14 +476,13 @@ function getPartialConfigChanges(
         state.checkboxes.get(getSettingGroup(settingName)) === true
     )
     .forEach((settingName) => {
-      //@ts-expect-error this is fine
-      activeConfigChanges[settingName] =
-        //@ts-expect-error this is fine
-        configChanges[settingName] !== undefined
-          ? //@ts-expect-error this is fine
-            configChanges[settingName]
-          : //@ts-expect-error this is fine
-            defaultConfig[settingName];
+      const safeSettingName = settingName as keyof MonkeyTypes.ConfigChanges;
+      const newValue =
+        configChanges[safeSettingName] !== undefined
+          ? configChanges[safeSettingName]
+          : defaultConfig[safeSettingName];
+      // @ts-expect-error cant figure this one out, but it works
+      activeConfigChanges[safeSettingName] = newValue;
     });
   return activeConfigChanges;
 }

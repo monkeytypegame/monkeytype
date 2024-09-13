@@ -41,7 +41,7 @@ function buildApi(timeout: number): (args: ApiFetcherArgs) => Promise<{
           : AbortSignal.timeout(timeout),
       });
 
-      const body = await response.json();
+      const body = (await response.json()) as object;
       if (response.status >= 400) {
         console.error(`${request.method} ${request.path} failed`, {
           status: response.status,
