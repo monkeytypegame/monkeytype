@@ -1,4 +1,5 @@
 import { ResultFilters } from "@monkeytype/contracts/schemas/users";
+import { deepClone } from "../utils/misc";
 
 const object: ResultFilters = {
   _id: "default",
@@ -63,4 +64,4 @@ const object: ResultFilters = {
   },
 };
 
-export default JSON.parse(JSON.stringify(object)) as ResultFilters;
+export default deepClone(object);

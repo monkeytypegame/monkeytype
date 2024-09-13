@@ -74,7 +74,7 @@ export function clearNotSignedInResult(): void {
   notSignedInLastResult = null;
 }
 
-export function setNotSignedInUid(uid: string): void {
+export function setNotSignedInUidAndHash(uid: string): void {
   if (notSignedInLastResult === null) return;
   notSignedInLastResult.uid = uid;
   //@ts-expect-error
@@ -897,7 +897,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
     dontSave = true;
   }
 
-  const completedEvent = JSON.parse(JSON.stringify(ce)) as CompletedEvent;
+  const completedEvent = Misc.deepClone(ce) as CompletedEvent;
 
   ///////// completed event ready
 
@@ -1054,9 +1054,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
 
   $("#result .stats .dailyLeaderboard").addClass("hidden");
 
-  TestStats.setLastResult(
-    JSON.parse(JSON.stringify(completedEvent)) as CompletedEvent
-  );
+  TestStats.setLastResult(Misc.deepClone(completedEvent));
 
   if (!ConnectionState.get()) {
     ConnectionState.showOfflineBanner();
