@@ -967,19 +967,24 @@ export function scrollTape(): void {
   let widthToHide = 0;
   let wordsToHideCount = 0;
   let leadingNewLine = 0;
+  let lastAfterNewLineElement = undefined;
   const linesWidths: number[] = [];
   const toHide: HTMLElement[] = [];
 
   // remove leading `.newline` and `.afterNewline` elements
   for (const child of wordsChildrenArr) {
     if (child.classList.contains("word")) {
+      // only last leading `.afterNewline` element pushes `.word`s to right
+      if (lastAfterNewLineElement) {
+        widthToHide += parseInt(lastAfterNewLineElement.style.marginLeft);
+      }
       break;
     } else if (child.classList.contains("newline")) {
       toHide.push(child);
     } else if (child.classList.contains("afterNewline")) {
       toHide.push(child);
-      widthToHide += parseInt(child.style.marginLeft);
       leadingNewLine = 1;
+      lastAfterNewLineElement = child;
     }
   }
   // get last element to loop over
@@ -987,7 +992,7 @@ export function scrollTape(): void {
   const newLinesBeforeActiveWord = wordsChildrenArr
     .slice(0, activeWordIndex)
     .filter((child) => child.classList.contains("afterNewline")).length;
-  // the second .afterNewline after active word is visible during line jump
+  // the second `.afterNewline` after active word is visible during line jump
   let lastVisibleAfterNewline = afterNewLineEls[
     newLinesBeforeActiveWord + 1
   ] as HTMLElement | undefined;
