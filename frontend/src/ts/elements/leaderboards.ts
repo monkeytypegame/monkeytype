@@ -712,6 +712,7 @@ export function show(): void {
       Config.typingSpeedUnit + '<br><div class="sub">accuracy</div>'
     );
 
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- TODO: update slim-select
     languageSelector = new SlimSelect({
       select:
         "#leaderboardsWrapper #leaderboards .leaderboardsTop .buttonGroup.timeRange .languageSelect",

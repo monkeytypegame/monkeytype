@@ -205,7 +205,7 @@ export function preview(
   debouncedPreview(themeIdentifier, customColorsOverride);
 }
 
-const debouncedPreview = debounce(
+const debouncedPreview = debounce<(t: string, c?: string[]) => void>(
   250,
   (themeIdenfitier, customColorsOverride) => {
     isPreviewingTheme = true;

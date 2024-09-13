@@ -19,7 +19,7 @@
     "monkeytype-deploy-be": "./bin/deployBackend.sh"
   },
   "dependencies": {
-    "@octokit/rest": "20.1.1",
+    "@octokit/rest": "21.0.2",
     "dotenv": "16.4.5",
     "readline-sync": "1.4.10"
   }

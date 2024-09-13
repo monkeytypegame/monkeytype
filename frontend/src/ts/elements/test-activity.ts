@@ -18,6 +18,7 @@ export function init(
   }
   $("#testActivity").removeClass("hidden");
 
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- TODO: update slim-select
   yearSelector = getYearSelector();
   initYearSelector("current", userSignUpDate?.getFullYear() || 2022);
   update(calendar);
@@ -84,6 +85,7 @@ export function initYearSelector(
     }
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- TODO: update slim-select
   const yearSelect = getYearSelector();
   yearSelect.setData(years);
   years.length > 1 ? yearSelect.enable() : yearSelect.disable();
@@ -102,6 +104,7 @@ function updateMonths(months: MonkeyTypes.TestActivityMonth[]): void {
 
 function getYearSelector(): SlimSelect {
   if (yearSelector !== undefined) return yearSelector;
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- TODO: update slim-select
   yearSelector = new SlimSelect({
     select: "#testActivity .yearSelect",
     settings: {

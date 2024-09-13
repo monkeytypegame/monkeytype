@@ -53,7 +53,7 @@ export async function connect(): Promise<void> {
 
     connected = true;
   } catch (error) {
-    Logger.error(error.message);
+    Logger.error(error.message as string);
     if (isDevEnvironment()) {
       await connection.quit();
       Logger.warning(

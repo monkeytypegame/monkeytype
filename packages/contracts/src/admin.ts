@@ -112,6 +112,10 @@ export const adminContract = c.router(
       authenticationOptions: { noCache: true },
       rateLimit: "adminLimit",
       requirePermission: "admin",
+      requireConfiguration: {
+        path: "admin.endpointsEnabled",
+        invalidMessage: "Admin endpoints are currently disabled.",
+      },
     }),
 
     commonResponses: CommonResponses,

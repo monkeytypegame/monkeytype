@@ -1,6 +1,6 @@
 import { AppRoute, AppRouter } from "@ts-rest/core";
 import { TsRestRequest } from "@ts-rest/express";
-import { MonkeyResponse2 } from "../utils/monkey-response";
+import { MonkeyResponse } from "../utils/monkey-response";
 export function callController<
   TRoute extends AppRoute | AppRouter,
   TQuery,
@@ -17,12 +17,12 @@ export function callController<
   body: { message: string; data: TResponse };
 }> {
   return async (all) => {
-    const req: MonkeyTypes.Request2<TQuery, TBody, TParams> = {
+    const req: MonkeyTypes.Request<TQuery, TBody, TParams> = {
       body: all.body as TBody,
       query: all.query as TQuery,
       params: all.params as TParams,
       raw: all.req,
-      ctx: all.req["ctx"],
+      ctx: all.req["ctx"] as MonkeyTypes.Context,
     };
 
     const result = await handler(req);
@@ -60,8 +60,8 @@ type WithoutParams = {
 };
 
 type Handler<TQuery, TBody, TParams, TResponse> = (
-  req: MonkeyTypes.Request2<TQuery, TBody, TParams>
-) => Promise<MonkeyResponse2<TResponse>>;
+  req: MonkeyTypes.Request<TQuery, TBody, TParams>
+) => Promise<MonkeyResponse<TResponse>>;
 
 type RequestType2<
   TRoute extends AppRoute | AppRouter,

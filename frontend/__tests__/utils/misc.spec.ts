@@ -1,4 +1,4 @@
-import { isObject } from "../../src/ts/utils/misc";
+import { deepClone, isObject } from "../../src/ts/utils/misc";
 import {
   getLanguageDisplayString,
   removeLanguageSize,
@@ -115,6 +115,57 @@ describe("misc.ts", () => {
       tests.forEach((test) => {
         const result = isObject(test.input);
         expect(result).toBe(test.expected);
+      });
+    });
+  });
+  describe("deepClone", () => {
+    it("should correctly clone objects", () => {
+      const tests = [
+        {
+          input: {},
+          expected: {},
+        },
+        {
+          input: { a: 1 },
+          expected: { a: 1 },
+        },
+        {
+          input: { a: { b: 2 } },
+          expected: { a: { b: 2 } },
+        },
+        {
+          input: { a: { b: 2 }, c: [1, 2, 3] },
+          expected: { a: { b: 2 }, c: [1, 2, 3] },
+        },
+        {
+          input: [],
+          expected: [],
+        },
+        {
+          input: [1, 2, 3],
+          expected: [1, 2, 3],
+        },
+        {
+          input: "string",
+          expected: "string",
+        },
+        {
+          input: 1,
+          expected: 1,
+        },
+        {
+          input: null,
+          expected: null,
+        },
+        {
+          input: undefined,
+          expected: undefined,
+        },
+      ];
+
+      tests.forEach((test) => {
+        const result = deepClone(test.input);
+        expect(result).toStrictEqual(test.expected);
       });
     });
   });

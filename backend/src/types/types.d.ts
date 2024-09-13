@@ -8,7 +8,7 @@ type AppRoute = import("@ts-rest/core").AppRoute;
 type AppRouter = import("@ts-rest/core").AppRouter;
 declare namespace MonkeyTypes {
   export type DecodedToken = {
-    type: "Bearer" | "ApeKey" | "None";
+    type: "Bearer" | "ApeKey" | "None" | "GithubWebhook";
     uid: string;
     email: string;
   };
@@ -18,15 +18,11 @@ declare namespace MonkeyTypes {
     decodedToken: DecodedToken;
   };
 
-  type Request = {
-    ctx: Readonly<Context>;
-  } & ExpressRequest;
-
   type ExpressRequestWithContext = {
     ctx: Readonly<Context>;
   } & ExpressRequest;
 
-  type Request2<TQuery = undefined, TBody = undefined, TParams = undefined> = {
+  type Request<TQuery = undefined, TBody = undefined, TParams = undefined> = {
     query: Readonly<TQuery>;
     body: Readonly<TBody>;
     params: Readonly<TParams>;

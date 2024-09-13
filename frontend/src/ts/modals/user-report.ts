@@ -51,6 +51,7 @@ export async function show(options: ShowOptions): Promise<void> {
         "Inappropriate name";
       (modalEl.querySelector(".comment") as HTMLTextAreaElement).value = "";
 
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- TODO: update slim-select
       select = new SlimSelect({
         select: modalEl.querySelector(".reason") as HTMLElement,
         settings: {

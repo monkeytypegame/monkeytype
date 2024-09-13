@@ -1062,7 +1062,7 @@ $(".pageSettings .section.tags").on(
   "click",
   ".tagsList .tag .tagButton",
   (e) => {
-    const target = e.currentTarget;
+    const target = e.currentTarget as HTMLElement;
     const tagid = $(target).parent(".tag").attr("data-id") as string;
     TagController.toggle(tagid);
     $(target).toggleClass("active");
@@ -1073,7 +1073,7 @@ $(".pageSettings .section.presets").on(
   "click",
   ".presetsList .preset .presetButton",
   async (e) => {
-    const target = e.currentTarget;
+    const target = e.currentTarget as HTMLElement;
     const presetid = $(target).parent(".preset").attr("data-id") as string;
     await PresetController.apply(presetid);
     void update();

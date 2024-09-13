@@ -12,7 +12,16 @@ import * as AccountButton from "../elements/account-button";
 import { restart as restartTest } from "../test/test-logic";
 import * as ChallengeController from "../controllers/challenge-controller";
 import { Mode, Mode2 } from "@monkeytype/contracts/schemas/shared";
-import { Difficulty } from "@monkeytype/contracts/schemas/configs";
+import {
+  CustomBackgroundFilter,
+  CustomBackgroundFilterSchema,
+  CustomBackgroundSize,
+  CustomBackgroundSizeSchema,
+  CustomThemeColors,
+  CustomThemeColorsSchema,
+  Difficulty,
+} from "@monkeytype/contracts/schemas/configs";
+import { z } from "zod";
 
 export async function linkDiscord(hashOverride: string): Promise<void> {
   if (!hashOverride) return;
@@ -56,20 +65,36 @@ export async function linkDiscord(hashOverride: string): Promise<void> {
   }
 }
 
+const customThemeUrlDataSchema = z.object({
+  c: CustomThemeColorsSchema,
+  i: z.string().optional(),
+  s: CustomBackgroundSizeSchema.optional(),
+  f: CustomBackgroundFilterSchema.optional(),
+});
+
 export function loadCustomThemeFromUrl(getOverride?: string): void {
   const getValue = Misc.findGetParameter("customTheme", getOverride);
   if (getValue === null) return;
 
-  let decoded = null;
+  let decoded: z.infer<typeof customThemeUrlDataSchema>;
   try {
-    decoded = JSON.parse(atob(getValue));
+    decoded = Misc.parseJsonWithSchema(
+      atob(getValue),
+      customThemeUrlDataSchema
+    );
   } catch (e) {
-    Notifications.add("Invalid custom theme ", 0);
+    console.log("Custom theme URL decoding failed", e);
+    Notifications.add(
+      "Failed to load theme from URL: " + (e as Error).message,
+      0
+    );
     return;
   }
 
-  let colorArray = [];
-  let image, size, filter;
+  let colorArray: CustomThemeColors | undefined;
+  let image: string | undefined;
+  let size: CustomBackgroundSize | undefined;
+  let filter: CustomBackgroundFilter | undefined;
   if (Array.isArray(decoded.c) && decoded.c.length === 10) {
     colorArray = decoded.c;
     image = decoded.i;
@@ -77,11 +102,11 @@ export function loadCustomThemeFromUrl(getOverride?: string): void {
     filter = decoded.f;
   } else if (Array.isArray(decoded) && decoded.length === 10) {
     // This is for backward compatibility with old format
-    colorArray = decoded;
+    colorArray = decoded as unknown as CustomThemeColors;
   }
 
-  if (colorArray.length === 0) {
-    Notifications.add("Invalid custom theme ", 0);
+  if (colorArray === undefined || colorArray.length !== 10) {
+    Notifications.add("Failed to load theme from URL: no colors found", 0);
     return;
   }
 
@@ -91,7 +116,7 @@ export function loadCustomThemeFromUrl(getOverride?: string): void {
     UpdateConfig.setCustomThemeColors(colorArray);
     Notifications.add("Custom theme applied", 1);
 
-    if (image !== undefined) {
+    if (image !== undefined && size !== undefined && filter !== undefined) {
       UpdateConfig.setCustomBackground(image);
       UpdateConfig.setCustomBackgroundSize(size);
       UpdateConfig.setCustomBackgroundFilter(filter);
@@ -121,7 +146,9 @@ export function loadTestSettingsFromUrl(getOverride?: string): void {
   const getValue = Misc.findGetParameter("testSettings", getOverride);
   if (getValue === null) return;
 
-  const de: SharedTestSettings = JSON.parse(decompressFromURI(getValue) ?? "");
+  const de = JSON.parse(
+    decompressFromURI(getValue) ?? ""
+  ) as SharedTestSettings;
 
   const applied: Record<string, string> = {};
 
