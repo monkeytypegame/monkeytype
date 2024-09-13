@@ -326,6 +326,7 @@ export async function swapElements(
     return Promise.resolve();
   }
 ): Promise<boolean | undefined> {
+  totalDuration = getAnimationTime(totalDuration);
   if (
     (el1.hasClass("hidden") && !el2.hasClass("hidden")) ||
     (!el1.hasClass("hidden") && el2.hasClass("hidden"))
@@ -534,7 +535,7 @@ export async function promiseAnimation(
   easing: string
 ): Promise<void> {
   return new Promise((resolve) => {
-    el.animate(animation, duration, easing, resolve);
+    el.animate(animation, getAnimationTime(duration), easing, resolve);
   });
 }
 
@@ -690,4 +691,7 @@ export function getScrollBehavior(): ScrollBehavior {
   return matchMedia?.("(prefers-reduced-motion)")?.matches
     ? "instant"
     : "smooth";
+}
+export function getAnimationTime(animationTime: number): number {
+  return matchMedia?.("(prefers-reduced-motion)")?.matches ? 0 : animationTime;
 }

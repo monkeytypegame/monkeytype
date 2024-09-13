@@ -1,3 +1,5 @@
+import { getAnimationTime } from "../utils/misc";
+
 export function hide(): void {
   visible = false;
   $("#result .stats .wpm .crown").css("opacity", 0).addClass("hidden");
@@ -25,7 +27,7 @@ export function show(): void {
     {
       opacity: 1,
     },
-    250,
+    getAnimationTime(250),
     "easeOutCubic"
   );
 }

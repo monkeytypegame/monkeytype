@@ -30,7 +30,7 @@ $((): void => {
     .css("opacity", "0")
     .removeClass("hidden")
     .stop(true, true)
-    .animate({ opacity: 1 }, 250);
+    .animate({ opacity: 1 }, Misc.getAnimationTime(250));
   if (ConnectionState.get()) {
     void ServerConfiguration.sync().then(() => {
       if (!ServerConfiguration.get()?.users.signUp) {

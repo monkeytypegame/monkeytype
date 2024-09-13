@@ -1,4 +1,4 @@
-import { isPopupVisible } from "./misc";
+import { getAnimationTime, isPopupVisible } from "./misc";
 import * as Skeleton from "./skeleton";
 
 type CustomAnimation = {
@@ -211,14 +211,15 @@ export default class AnimatedModal<
         return;
       }
 
-      const modalAnimationDuration =
+      const modalAnimationDuration = getAnimationTime(
         (options?.customAnimation?.modal?.durationMs ??
           options?.animationDurationMs ??
           this.customShowAnimations?.modal?.durationMs ??
           DEFAULT_ANIMATION_DURATION) *
-        (options?.modalChain !== undefined
-          ? MODAL_ONLY_ANIMATION_MULTIPLIER
-          : 1);
+          (options?.modalChain !== undefined
+            ? MODAL_ONLY_ANIMATION_MULTIPLIER
+            : 1)
+      );
 
       if (options?.modalChain !== undefined) {
         this.previousModalInChain = options.modalChain;

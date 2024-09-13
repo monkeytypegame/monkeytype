@@ -955,7 +955,7 @@ export async function update(
         {
           opacity: 1,
         },
-        125
+        Misc.getAnimationTime(125)
       );
 
       const canQuickRestart = Misc.canQuickRestart(

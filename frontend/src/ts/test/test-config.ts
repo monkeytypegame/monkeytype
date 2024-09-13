@@ -6,6 +6,7 @@ import { Mode } from "@monkeytype/contracts/schemas/shared";
 import Config from "../config";
 import * as ConfigEvent from "../observables/config-event";
 import * as ActivePage from "../states/active-page";
+import { getAnimationTime } from "../utils/misc";
 
 export function show(): void {
   $("#testConfig").removeClass("invisible");
@@ -74,7 +75,7 @@ export async function update(previous: Mode, current: Mode): Promise<void> {
     zen: "zen",
   };
 
-  const animTime = 250;
+  const animTime = getAnimationTime(250);
   const easing = {
     both: "easeInOutSine",
     in: "easeInSine",

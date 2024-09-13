@@ -385,7 +385,7 @@ export function hide(): void {
       {
         opacity: 0,
       },
-      100,
+      Misc.getAnimationTime(100),
       () => {
         languageSelector?.destroy();
         languageSelector = undefined;
@@ -752,7 +752,7 @@ export function show(): void {
         {
           opacity: 1,
         },
-        125,
+        Misc.getAnimationTime(125),
         () => {
           void update();
           startTimer();

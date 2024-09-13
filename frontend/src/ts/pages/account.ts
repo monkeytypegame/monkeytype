@@ -1138,7 +1138,7 @@ $(".pageAccount #accountHistoryChart").on("click", () => {
     {
       scrollTop: scrollTo,
     },
-    500
+    Misc.getScrollBehavior() === "smooth" ? 500 : 0
   );
   $(".resultRow").removeClass("active");
   $(`#result-${index}`).addClass("active");

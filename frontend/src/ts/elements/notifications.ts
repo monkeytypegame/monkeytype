@@ -116,7 +116,7 @@ class Notification {
           {
             marginTop: newHeight - oldHeight,
           },
-          125,
+          Misc.getAnimationTime(125),
           () => {
             $("#notificationCenter .history").css("margin-top", 0);
             $("#notificationCenter .history").prepend(`
@@ -132,7 +132,7 @@ class Notification {
                 {
                   opacity: 1,
                 },
-                125,
+                Misc.getAnimationTime(125),
                 () => {
                   $(`#notificationCenter .notif[id='${this.id}']`).css(
                     "opacity",
@@ -221,13 +221,13 @@ class Notification {
           {
             opacity: 0,
           },
-          125,
+          Misc.getAnimationTime(125),
           () => {
             $(`#notificationCenter .notif[id='${this.id}']`).animate(
               {
                 height: 0,
               },
-              125,
+              Misc.getAnimationTime(125),
               () => {
                 $(`#notificationCenter .notif[id='${this.id}']`).remove();
               }
@@ -243,7 +243,7 @@ class Notification {
           {
             opacity: 0,
           },
-          125,
+          Misc.getAnimationTime(125),
           () => {
             $(
               `#bannerCenter .banner[id='${this.id}'], #bannerCenter .psa[id='${this.id}']`
