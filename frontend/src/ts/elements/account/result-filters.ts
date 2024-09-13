@@ -363,9 +363,7 @@ export function updateActive(): void {
           else data.selected = false;
         }
       }
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call -- TODO: update slim-select
       ss.store.setData(newData);
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call -- TODO: update slim-select
       ss.render.renderValues();
     } else {
       allOption.prop("selected", false);
@@ -384,13 +382,10 @@ export function updateActive(): void {
     }
 
     setTimeout(() => {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call -- TODO: update slim-select
       ss.store.setData(newData);
       if (!everythingSelected) {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-call -- TODO: update slim-select
         ss.render.renderValues();
       }
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call -- TODO: update slim-select
       ss.render.renderOptions(newData);
     }, 0);
   }
@@ -685,7 +680,6 @@ function adjustScrollposition(
   const slimSelect = groupSelects[group];
   if (slimSelect === undefined) return;
   const listElement = slimSelect.render.content.list;
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-call -- TODO: update slim-select
   const topListItem = listElement.children.item(topItem) as HTMLElement;
 
   listElement.scrollTop = topListItem.offsetTop - listElement.offsetTop;

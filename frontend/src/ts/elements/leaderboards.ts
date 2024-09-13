@@ -386,7 +386,6 @@ export function hide(): void {
       },
       100,
       () => {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-call -- TODO: update slim-select
         languageSelector?.destroy();
         languageSelector = undefined;
         clearBody("15");
@@ -942,9 +941,7 @@ $(
 ).on("click", () => {
   currentTimeRange = "allTime";
   currentLanguage = "english";
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-call -- TODO: update slim-select
   languageSelector?.disable();
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-call -- TODO: update slim-select
   languageSelector?.setSelected("english");
   void update();
 });
@@ -954,7 +951,6 @@ $(
 ).on("click", () => {
   currentTimeRange = "daily";
   updateYesterdayButton();
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-call -- TODO: update slim-select
   languageSelector?.enable();
   void update();
 });

@@ -120,11 +120,8 @@ export default class SettingsGroup<T extends ConfigValue> {
 
       //@ts-expect-error this is fine, slimselect adds slim to the element
       const ss = select.slim as SlimSelect | undefined;
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call -- TODO: update slim-select
       ss?.store.setSelectedBy("value", [this.configValue as string]);
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call -- TODO: update slim-select
       ss?.render.renderValues();
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call -- TODO: update slim-select
       ss?.render.renderOptions(ss.store.getData());
     } else if (this.mode === "button") {
       $(

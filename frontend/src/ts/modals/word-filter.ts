@@ -186,11 +186,8 @@ function hide(hideOptions?: HideOptions<OutgoingData>): void {
   void modal.hide({
     ...hideOptions,
     afterAnimation: async () => {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call  -- TODO: update slim-select
       languageSelect?.destroy();
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call
       layoutSelect?.destroy();
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call
       presetSelect?.destroy();
       languageSelect = undefined;
       layoutSelect = undefined;

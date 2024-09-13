@@ -315,7 +315,6 @@ function hide(clearChain = false): void {
   void modal.hide({
     clearModalChain: clearChain,
     afterAnimation: async () => {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call -- TODO: update slim-select
       lengthSelect?.destroy();
       lengthSelect = undefined;
     },

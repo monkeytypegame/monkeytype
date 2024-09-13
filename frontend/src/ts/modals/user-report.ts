@@ -66,7 +66,6 @@ export async function show(options: ShowOptions): Promise<void> {
 async function hide(): Promise<void> {
   void modal.hide({
     afterAnimation: async () => {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call -- TODO: update slim-select
       select?.destroy();
       select = undefined;
       CaptchaController.reset("userReportModal");
