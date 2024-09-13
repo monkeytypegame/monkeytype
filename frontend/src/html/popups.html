@@ -953,14 +953,30 @@
 </dialog>
 <dialog id="editPresetModal" class="modalWrapper hidden">
   <form class="modal">
-    <div class="title"></div>
-    <input type="text" title="presets" />
-    <label class="checkbox">
+    <div class="title popupTitle"></div>
+    <div class="group">
+      <div class="presetNameTitle">name</div>
+      <input type="text" title="presets" />
+    </div>
+    <label class="changePresetToCurrentCheckbox checkbox">
       <input type="checkbox" />
       Change preset to current settings
     </label>
-    <div class="text"></div>
-    <button type="submit">add</button>
+    <div class="inputs">
+      <div class="presetType group" data-id="presetType">
+        <div class="title">Preset Type</div>
+        <div class="presetTypeButtonGroup">
+          <button value="full" type="button">full</button>
+          <button value="partial" type="button">partial</button>
+        </div>
+      </div>
+      <div class="partialPresetGroups group">
+        <div class="title">partial groups</div>
+        <div class="checkboxList"></div>
+      </div>
+    </div>
+    <div class="text deletePrompt"></div>
+    <button class="submit" type="submit">add</button>
   </form>
 </dialog>
 <dialog id="shareCustomThemeModal" class="modalWrapper hidden">

@@ -34,7 +34,9 @@ function hide(): void {
 
 function save(): boolean {
   const name = $("#saveCustomTextModal .textName").val() as string;
-  const checkbox = $("#saveCustomTextModal .isLongText").prop("checked");
+  const checkbox = $("#saveCustomTextModal .isLongText").prop(
+    "checked"
+  ) as boolean;
 
   if (!name) {
     Notifications.add("Custom text needs a name", 0);
@@ -54,7 +56,9 @@ function save(): boolean {
 
 function updateIndicatorAndButton(): void {
   const val = $("#saveCustomTextModal .textName").val() as string;
-  const checkbox = $("#saveCustomTextModal .isLongText").prop("checked");
+  const checkbox = $("#saveCustomTextModal .isLongText").prop(
+    "checked"
+  ) as boolean;
 
   if (!val) {
     indicator?.hide();

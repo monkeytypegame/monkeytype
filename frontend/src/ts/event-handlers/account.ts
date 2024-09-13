@@ -41,7 +41,7 @@ $(accountPage).on("click", ".group.history .resultEditTagsButton", (e) => {
   const tags = $(e.target).attr("data-tags");
   EditResultTagsModal.show(
     resultid ?? "",
-    JSON.parse(tags ?? "[]"),
+    JSON.parse(tags ?? "[]") as string[],
     "accountPage"
   );
 });

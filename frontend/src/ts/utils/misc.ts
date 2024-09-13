@@ -8,6 +8,7 @@ import {
   Mode2,
   PersonalBests,
 } from "@monkeytype/contracts/schemas/shared";
+import { ZodError, ZodSchema } from "zod";
 
 export function kogasa(cov: number): number {
   return (
@@ -682,6 +683,52 @@ export function updateTitle(title?: string): void {
 
 export function isObject(obj: unknown): obj is Record<string, unknown> {
   return typeof obj === "object" && !Array.isArray(obj) && obj !== null;
+}
+
+/**
+ * Parse a JSON string into an object and validate it against a schema
+ * @param input  JSON string
+ * @param schema  Zod schema to validate the JSON against
+ * @returns  The parsed JSON object
+ */
+export function parseJsonWithSchema<T>(input: string, schema: ZodSchema<T>): T {
+  try {
+    const jsonParsed = JSON.parse(input) as unknown;
+    const zodParsed = schema.parse(jsonParsed);
+    return zodParsed;
+  } catch (error) {
+    if (error instanceof ZodError) {
+      throw new Error(error.errors.map((err) => err.message).join("\n"));
+    } else {
+      throw error;
+    }
+  }
+}
+
+export function deepClone<T>(obj: T[]): T[];
+export function deepClone<T extends object>(obj: T): T;
+export function deepClone<T>(obj: T): T;
+export function deepClone<T>(obj: T | T[]): T | T[] {
+  // Check if the value is a primitive (not an object or array)
+  if (obj === null || typeof obj !== "object") {
+    return obj;
+  }
+
+  // Handle arrays
+  if (Array.isArray(obj)) {
+    return obj.map((item) => deepClone(item));
+  }
+
+  // Handle objects
+  const clonedObj = {} as { [K in keyof T]: T[K] };
+
+  for (const key in obj) {
+    if (Object.prototype.hasOwnProperty.call(obj, key)) {
+      clonedObj[key] = deepClone((obj as { [K in keyof T]: T[K] })[key]);
+    }
+  }
+
+  return clonedObj;
 }
 
 // DO NOT ALTER GLOBAL OBJECTSONSTRUCTOR, IT WILL BREAK RESULT HASHES

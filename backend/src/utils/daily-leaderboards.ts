@@ -74,7 +74,8 @@ export class DailyLeaderboard {
 
     const resultScore = kogascore(entry.wpm, entry.acc, entry.timestamp);
 
-    // @ts-expect-error
+    // @ts-expect-error we are doing some weird file to function mapping, thats why its any
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
     const rank = (await connection.addResult(
       2,
       leaderboardScoresKey,
@@ -120,15 +121,16 @@ export class DailyLeaderboard {
     const { leaderboardScoresKey, leaderboardResultsKey } =
       this.getTodaysLeaderboardKeys();
 
-    // @ts-expect-error
-    const [results]: string[][] = await connection.getResults(
+    // @ts-expect-error we are doing some weird file to function mapping, thats why its any
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+    const [results] = (await connection.getResults(
       2,
       leaderboardScoresKey,
       leaderboardResultsKey,
       minRank,
       maxRank,
       "false"
-    );
+    )) as string[][];
 
     if (results === undefined) {
       throw new Error(
@@ -167,17 +169,25 @@ export class DailyLeaderboard {
     const { leaderboardScoresKey, leaderboardResultsKey } =
       this.getTodaysLeaderboardKeys();
 
-    // @ts-expect-error
-    const [[, rank], [, count], [, result], [, minScore]] = await connection
+    const redisExecResult = (await connection
       .multi()
       .zrevrank(leaderboardScoresKey, uid)
       .zcard(leaderboardScoresKey)
       .hget(leaderboardResultsKey, uid)
       .zrange(leaderboardScoresKey, 0, 0, "WITHSCORES")
-      .exec();
+      .exec()) as [
+      [null, number | null],
+      [null, number | null],
+      [null, string | null],
+      [null, [string, string] | null]
+    ];
+
+    const [[, rank], [, count], [, result], [, minScore]] = redisExecResult;
 
     const minWpm =
-      minScore.length > 0 ? parseInt(minScore[1]?.slice(1, 6)) / 100 : 0;
+      minScore !== null && minScore.length > 0
+        ? parseInt(minScore[1]?.slice(1, 6)) / 100
+        : 0;
     if (rank === null) {
       return {
         minWpm,
@@ -190,7 +200,7 @@ export class DailyLeaderboard {
       count: count ?? 0,
       rank: rank + 1,
       entry: {
-        ...JSON.parse(result ?? "null"),
+        ...(JSON.parse(result ?? "null") as LeaderboardEntry),
       },
     };
   }
@@ -205,7 +215,8 @@ export async function purgeUserFromDailyLeaderboards(
     return;
   }
 
-  // @ts-expect-error
+  // @ts-expect-error we are doing some weird file to function mapping, thats why its any
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
   await connection.purgeResults(0, uid, dailyLeaderboardNamespace);
 }
 

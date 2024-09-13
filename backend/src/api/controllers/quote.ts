@@ -6,7 +6,7 @@ import * as NewQuotesDAL from "../../dal/new-quotes";
 import * as QuoteRatingsDAL from "../../dal/quote-ratings";
 import MonkeyError from "../../utils/error";
 import { verify } from "../../utils/captcha";
-import { MonkeyResponse2 } from "../../utils/monkey-response";
+import { MonkeyResponse } from "../../utils/monkey-response";
 import { ObjectId } from "mongodb";
 import { addLog } from "../../dal/logs";
 import {
@@ -30,7 +30,7 @@ async function verifyCaptcha(captcha: string): Promise<void> {
 }
 
 export async function getQuotes(
-  req: MonkeyTypes.Request2
+  req: MonkeyTypes.Request
 ): Promise<GetQuotesResponse> {
   const { uid } = req.ctx.decodedToken;
   const quoteMod = (await getPartialUser(uid, "get quotes", ["quoteMod"]))
@@ -38,36 +38,36 @@ export async function getQuotes(
   const quoteModString = quoteMod === true ? "all" : (quoteMod as string);
 
   const data = await NewQuotesDAL.get(quoteModString);
-  return new MonkeyResponse2(
+  return new MonkeyResponse(
     "Quote submissions retrieved",
     replaceObjectIds(data)
   );
 }
 
 export async function isSubmissionEnabled(
-  req: MonkeyTypes.Request2
+  req: MonkeyTypes.Request
 ): Promise<IsSubmissionEnabledResponse> {
   const { submissionsEnabled } = req.ctx.configuration.quotes;
-  return new MonkeyResponse2(
+  return new MonkeyResponse(
     "Quote submission " + (submissionsEnabled ? "enabled" : "disabled"),
     { isEnabled: submissionsEnabled }
   );
 }
 
 export async function addQuote(
-  req: MonkeyTypes.Request2<undefined, AddQuoteRequest>
-): Promise<MonkeyResponse2> {
+  req: MonkeyTypes.Request<undefined, AddQuoteRequest>
+): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
   const { text, source, language, captcha } = req.body;
 
   await verifyCaptcha(captcha);
 
   await NewQuotesDAL.add(text, source, language, uid);
-  return new MonkeyResponse2("Quote submission added", null);
+  return new MonkeyResponse("Quote submission added", null);
 }
 
 export async function approveQuote(
-  req: MonkeyTypes.Request2<undefined, ApproveQuoteRequest>
+  req: MonkeyTypes.Request<undefined, ApproveQuoteRequest>
 ): Promise<ApproveQuoteResponse> {
   const { uid } = req.ctx.decodedToken;
   const { quoteId, editText, editSource } = req.body;
@@ -81,31 +81,31 @@ export async function approveQuote(
   const data = await NewQuotesDAL.approve(quoteId, editText, editSource, name);
   void addLog("system_quote_approved", data, uid);
 
-  return new MonkeyResponse2(data.message, data.quote);
+  return new MonkeyResponse(data.message, data.quote);
 }
 
 export async function refuseQuote(
-  req: MonkeyTypes.Request2<undefined, RejectQuoteRequest>
-): Promise<MonkeyResponse2> {
+  req: MonkeyTypes.Request<undefined, RejectQuoteRequest>
+): Promise<MonkeyResponse> {
   const { quoteId } = req.body;
 
   await NewQuotesDAL.refuse(quoteId);
-  return new MonkeyResponse2("Quote refused", null);
+  return new MonkeyResponse("Quote refused", null);
 }
 
 export async function getRating(
-  req: MonkeyTypes.Request2<GetQuoteRatingQuery>
+  req: MonkeyTypes.Request<GetQuoteRatingQuery>
 ): Promise<GetQuoteRatingResponse> {
   const { quoteId, language } = req.query;
 
   const data = await QuoteRatingsDAL.get(quoteId, language);
 
-  return new MonkeyResponse2("Rating retrieved", replaceObjectId(data));
+  return new MonkeyResponse("Rating retrieved", replaceObjectId(data));
 }
 
 export async function submitRating(
-  req: MonkeyTypes.Request2<undefined, AddQuoteRatingRequest>
-): Promise<MonkeyResponse2> {
+  req: MonkeyTypes.Request<undefined, AddQuoteRatingRequest>
+): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
   const { quoteId, rating, language } = req.body;
 
@@ -131,12 +131,12 @@ export async function submitRating(
   const responseMessage = `Rating ${
     shouldUpdateRating ? "updated" : "submitted"
   }`;
-  return new MonkeyResponse2(responseMessage, null);
+  return new MonkeyResponse(responseMessage, null);
 }
 
 export async function reportQuote(
-  req: MonkeyTypes.Request2<undefined, ReportQuoteRequest>
-): Promise<MonkeyResponse2> {
+  req: MonkeyTypes.Request<undefined, ReportQuoteRequest>
+): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
   const {
     reporting: { maxReports, contentReportLimit },
@@ -159,5 +159,5 @@ export async function reportQuote(
 
   await ReportDAL.createReport(newReport, maxReports, contentReportLimit);
 
-  return new MonkeyResponse2("Quote reported", null);
+  return new MonkeyResponse("Quote reported", null);
 }

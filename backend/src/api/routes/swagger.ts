@@ -8,7 +8,7 @@ function addSwaggerMiddlewares(app: Application): void {
   const openApiSpec = __dirname + "/../../static/api/openapi.json";
   let spec = {};
   try {
-    spec = JSON.parse(readFileSync(openApiSpec, "utf8"));
+    spec = JSON.parse(readFileSync(openApiSpec, "utf8")) as string;
   } catch (err) {
     Logger.warning(
       `Cannot read openApi specification from ${openApiSpec}. Swagger stats will not fully work.`

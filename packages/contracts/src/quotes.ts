@@ -125,6 +125,11 @@ export const quotesContract = c.router(
       },
       metadata: meta({
         rateLimit: "newQuotesAdd",
+        requireConfiguration: {
+          path: "quotes.submissionsEnabled",
+          invalidMessage:
+            "Quote submission is disabled temporarily. The queue is quite long and we need some time to catch up.",
+        },
       }),
     },
     approveSubmission: {
@@ -193,6 +198,10 @@ export const quotesContract = c.router(
       metadata: meta({
         rateLimit: "quoteReportSubmit",
         requirePermission: "canReport",
+        requireConfiguration: {
+          path: "quotes.reporting.enabled",
+          invalidMessage: "Quote reporting is unavailable.",
+        },
       }),
     },
   },

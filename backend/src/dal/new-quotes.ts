@@ -1,4 +1,4 @@
-import { simpleGit } from "simple-git";
+import { SimpleGit, simpleGit } from "simple-git";
 import { Collection, ObjectId } from "mongodb";
 import path from "path";
 import { existsSync, writeFileSync } from "fs";
@@ -8,9 +8,23 @@ import MonkeyError from "../utils/error";
 import { compareTwoStrings } from "string-similarity";
 import { ApproveQuote, Quote } from "@monkeytype/contracts/schemas/quotes";
 
+type JsonQuote = {
+  text: string;
+  britishText?: string;
+  source: string;
+  length: number;
+  id: number;
+};
+
+type QuoteData = {
+  language: string;
+  quotes: JsonQuote[];
+  groups: [number, number][];
+};
+
 const PATH_TO_REPO = "../../../../monkeytype-new-quotes";
 
-let git;
+let git: SimpleGit | undefined;
 try {
   git = simpleGit(path.join(__dirname, PATH_TO_REPO));
 } catch (e) {
@@ -71,7 +85,7 @@ export async function add(
   let similarityScore = -1;
   if (existsSync(fileDir)) {
     const quoteFile = await readFile(fileDir);
-    const quoteFileJSON = JSON.parse(quoteFile.toString());
+    const quoteFileJSON = JSON.parse(quoteFile.toString()) as QuoteData;
     quoteFileJSON.quotes.every((old) => {
       if (compareTwoStrings(old.text, quote.text) > 0.9) {
         duplicateId = old.id;
@@ -155,7 +169,7 @@ export async function approve(
   await git.pull("upstream", "master");
   if (existsSync(fileDir)) {
     const quoteFile = await readFile(fileDir);
-    const quoteObject = JSON.parse(quoteFile.toString());
+    const quoteObject = JSON.parse(quoteFile.toString()) as QuoteData;
     quoteObject.quotes.every((old) => {
       if (compareTwoStrings(old.text, quote.text) > 0.8) {
         throw new MonkeyError(409, "Duplicate quote");
@@ -168,7 +182,7 @@ export async function approve(
       }
     });
     quote.id = maxid + 1;
-    quoteObject.quotes.push(quote);
+    quoteObject.quotes.push(quote as JsonQuote);
     writeFileSync(fileDir, JSON.stringify(quoteObject, null, 2));
     message = `Added quote to ${language}.json.`;
   } else {

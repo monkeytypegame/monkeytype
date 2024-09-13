@@ -6,7 +6,7 @@ import * as TestLogic from "../test/test-logic";
 export async function syncNotSignedInLastResult(uid: string): Promise<void> {
   const notSignedInLastResult = TestLogic.notSignedInLastResult;
   if (notSignedInLastResult === null) return;
-  TestLogic.setNotSignedInUid(uid);
+  TestLogic.setNotSignedInUidAndHash(uid);
 
   const response = await Ape.results.add({
     body: { result: notSignedInLastResult },
@@ -19,9 +19,9 @@ export async function syncNotSignedInLastResult(uid: string): Promise<void> {
     return;
   }
 
-  const result: MonkeyTypes.FullResult<Mode> = JSON.parse(
+  const result = JSON.parse(
     JSON.stringify(notSignedInLastResult)
-  );
+  ) as MonkeyTypes.FullResult<Mode>;
   result._id = response.body.data.insertedId;
   if (response.body.data.isPb) {
     result.isPb = true;

@@ -285,7 +285,7 @@ export function formatSeconds(
 }
 
 export function intersect<T>(a: T[], b: T[], removeDuplicates = false): T[] {
-  let t;
+  let t: T[];
   // eslint-disable-next-line @typescript-eslint/no-unused-expressions
   if (b.length > a.length) (t = b), (b = a), (a = t); // indexOf to loop over shorter
   const filtered = a.filter(function (e) {

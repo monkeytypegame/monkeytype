@@ -103,6 +103,10 @@ export const resultsContract = c.router(
       },
       metadata: meta({
         rateLimit: "resultsAdd",
+        requireConfiguration: {
+          path: "results.savingEnabled",
+          invalidMessage: "Results are not being saved at this time.",
+        },
       }),
     },
     updateTags: {

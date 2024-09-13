@@ -1,4 +1,4 @@
-import { MonkeyResponse2 } from "../../utils/monkey-response";
+import { MonkeyResponse } from "../../utils/monkey-response";
 import * as UserDal from "../../dal/user";
 import FirebaseAdmin from "../../init/firebase-admin";
 import Logger from "../../utils/logger";
@@ -28,7 +28,7 @@ const CREATE_RESULT_DEFAULT_OPTIONS = {
 };
 
 export async function createTestData(
-  req: MonkeyTypes.Request2<undefined, GenerateDataRequest>
+  req: MonkeyTypes.Request<undefined, GenerateDataRequest>
 ): Promise<GenerateDataResponse> {
   const { username, createUser } = req.body;
   const user = await getOrCreateUser(username, "password", createUser);
@@ -39,7 +39,7 @@ export async function createTestData(
   await updateUser(uid);
   await updateLeaderboard();
 
-  return new MonkeyResponse2("test data created", { uid, email });
+  return new MonkeyResponse("test data created", { uid, email });
 }
 
 async function getOrCreateUser(
@@ -241,7 +241,7 @@ async function updateUser(uid: string): Promise<void> {
       timestamp: best.timestamp,
     } as PersonalBest;
 
-    personalBests[mode.mode][mode.mode2].push(entry);
+    (personalBests[mode.mode][mode.mode2] as PersonalBest[]).push(entry);
 
     if (mode.mode === "time") {
       if (lbPersonalBests[mode.mode][mode.mode2] === undefined)
