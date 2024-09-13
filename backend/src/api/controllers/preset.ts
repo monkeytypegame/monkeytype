@@ -7,7 +7,7 @@ import {
 import * as PresetDAL from "../../dal/preset";
 import { MonkeyResponse } from "../../utils/monkey-response";
 import { replaceObjectId } from "../../utils/misc";
-import { Preset } from "@monkeytype/contracts/schemas/presets";
+import { EditPresetRequest } from "@monkeytype/contracts/schemas/presets";
 
 export async function getPresets(
   req: MonkeyTypes.Request
@@ -35,7 +35,7 @@ export async function addPreset(
 }
 
 export async function editPreset(
-  req: MonkeyTypes.Request<undefined, Preset>
+  req: MonkeyTypes.Request<undefined, EditPresetRequest>
 ): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
 
