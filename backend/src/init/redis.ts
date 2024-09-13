@@ -54,7 +54,7 @@ export async function connect(): Promise<void> {
 
     connected = true;
   } catch (error) {
-    Logger.error(getErrorMessage(e) ?? "Unknown error");
+    Logger.error(getErrorMessage(error) ?? "Unknown error");
     if (isDevEnvironment()) {
       await connection.quit();
       Logger.warning(
