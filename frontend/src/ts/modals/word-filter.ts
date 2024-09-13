@@ -2,7 +2,6 @@ import * as Misc from "../utils/misc";
 import * as JSONData from "../utils/json-data";
 import * as CustomText from "../test/custom-text";
 import * as Notifications from "../elements/notifications";
-// @ts-expect-error TODO: update slim-select
 import SlimSelect from "slim-select";
 import AnimatedModal, {
   HideOptions,
@@ -159,21 +158,18 @@ export async function show(showOptions?: ShowOptions): Promise<void> {
   void modal.show({
     ...showOptions,
     beforeAnimation: async (modalEl) => {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- TODO: update slim-select
       languageSelect = new SlimSelect({
         select: "#wordFilterModal .languageInput",
         settings: {
           contentLocation: modalEl,
         },
       });
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- TODO: update slim-select
       layoutSelect = new SlimSelect({
         select: "#wordFilterModal .layoutInput",
         settings: {
           contentLocation: modal.getModal(),
         },
       });
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- TODO: update slim-select
       presetSelect = new SlimSelect({
         select: "#wordFilterModal .presetInput",
         settings: {

@@ -322,8 +322,8 @@ importers:
         specifier: 3.0.0
         version: 3.0.0
       slim-select:
-        specifier: 2.8.1
-        version: 2.8.1
+        specifier: 2.9.0
+        version: 2.9.0
       stemmer:
         specifier: 2.0.1
         version: 2.0.1
@@ -8084,8 +8084,8 @@ packages:
   slick@1.12.2:
     resolution: {integrity: sha512-4qdtOGcBjral6YIBCWJ0ljFSKNLz9KkhbWtuGvUyRowl1kxfuE1x/Z/aJcaiilpb3do9bl5K7/1h9XC5wWpY/A==}
 
-  slim-select@2.8.1:
-    resolution: {integrity: sha512-/wi+4dau48edrPZ/ggD+R8qD6FbCLGv5zvrYh4rqp1RNEIbkb1pRYJbljLjvr7/QqBvX3Hjbnvdnw9FPzJ8o5Q==}
+  slim-select@2.9.0:
+    resolution: {integrity: sha512-AwAm4kliM1utztdXfKyiidgnQanAKQVJ1+61rJYHwDfzu3LAn/spFKb+xBiSqr3E/dlZu0MrBxflBL2sN5q2xA==}
 
   slugify@1.4.7:
     resolution: {integrity: sha512-tf+h5W1IrjNm/9rKKj0JU2MDMruiopx0jjVA5zCdBtcGjfp0+c5rHw/zADLC3IeKlGHtVbHtpfzvYA0OYT+HKg==}
@@ -18522,10 +18522,7 @@ snapshots:
 
   slick@1.12.2: {}
 
-  slim-select@2.8.1:
-    dependencies:
-      react: 18.3.1
-      react-dom: 18.3.1(react@18.3.1)
+  slim-select@2.9.0: {}
 
   slugify@1.4.7: {}
 
