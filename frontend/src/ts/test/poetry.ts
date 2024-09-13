@@ -49,8 +49,12 @@ export async function getPoem(): Promise<Section | false> {
 
   try {
     const response = await fetch(apiURL);
-    const data = await response.json();
-    const poemObj: PoemObject = data[0];
+    const data = (await response.json()) as PoemObject[];
+    const poemObj = data[0];
+
+    if (!poemObj) {
+      return false;
+    }
 
     const words: string[] = [];
 

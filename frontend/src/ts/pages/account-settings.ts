@@ -183,7 +183,7 @@ export function updateUI(): void {
 }
 
 $(".page.pageAccountSettings").on("click", ".tabs button", (event) => {
-  state.activeTab = $(event.target).data("tab");
+  state.activeTab = $(event.target).data("tab") as State["activeTab"];
   updateTabs();
 });
 

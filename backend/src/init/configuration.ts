@@ -25,14 +25,14 @@ function mergeConfigurations(
     const commonKeys = _.intersection(_.keys(base), _.keys(source));
 
     commonKeys.forEach((key) => {
-      const baseValue = base[key];
-      const sourceValue = source[key];
+      const baseValue = base[key] as object;
+      const sourceValue = source[key] as object;
 
       const isBaseValueObject = _.isPlainObject(baseValue);
       const isSourceValueObject = _.isPlainObject(sourceValue);
 
       if (isBaseValueObject && isSourceValueObject) {
-        merge(baseValue as object, sourceValue as object);
+        merge(baseValue, sourceValue);
       } else if (identity(baseValue) === identity(sourceValue)) {
         base[key] = sourceValue;
       }

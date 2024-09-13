@@ -120,7 +120,7 @@ export default class SettingsGroup<T extends ConfigValue> {
       select.value = this.configValue as string;
 
       //@ts-expect-error
-      // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unnecessary-type-assertion -- TODO: update slim-select
       const ss = select.slim as SlimSelect | undefined;
       ss?.store.setSelectedBy("value", [this.configValue as string]);
       ss?.render.renderValues();
