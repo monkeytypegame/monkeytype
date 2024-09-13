@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-call */
 //@ts-nocheck
 
 import Config from "../config";

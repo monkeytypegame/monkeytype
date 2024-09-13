@@ -87,7 +87,9 @@ export function initYearSelector(
 
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- TODO: update slim-select
   const yearSelect = getYearSelector();
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
   yearSelect.setData(years);
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
   years.length > 1 ? yearSelect.enable() : yearSelect.disable();
 }
 
@@ -104,7 +106,7 @@ function updateMonths(months: MonkeyTypes.TestActivityMonth[]): void {
 
 function getYearSelector(): SlimSelect {
   if (yearSelector !== undefined) return yearSelector;
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- TODO: update slim-select
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call -- TODO: update slim-select
   yearSelector = new SlimSelect({
     select: "#testActivity .yearSelect",
     settings: {
@@ -113,11 +115,14 @@ function getYearSelector(): SlimSelect {
     events: {
       // @ts-expect-error TODO: update slim-select
       afterChange: async (newVal): Promise<void> => {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-call
         yearSelector?.disable();
         const selected = newVal[0]?.value as string;
         const activity = await getTestActivityCalendar(selected);
         update(activity);
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-call
         if ((yearSelector?.getData() ?? []).length > 1) {
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-call
           yearSelector?.enable();
         }
       },

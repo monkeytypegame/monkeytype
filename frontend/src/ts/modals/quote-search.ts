@@ -273,7 +273,7 @@ export async function show(showOptions?: ShowOptions): Promise<void> {
         $("#quoteSearchModal .goToQuoteApprove").addClass("hidden");
       }
 
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- TODO: update slim-select
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call -- TODO: update slim-select
       lengthSelect = new SlimSelect({
         select: "#quoteSearchModal .quoteLengthFilter",
 
@@ -317,6 +317,7 @@ function hide(clearChain = false): void {
   void modal.hide({
     clearModalChain: clearChain,
     afterAnimation: async () => {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call -- TODO: update slim-select
       lengthSelect?.destroy();
       lengthSelect = undefined;
     },

@@ -46,7 +46,7 @@ export async function show(
       $("#quoteReportModal .reason").val("Grammatical error");
       $("#quoteReportModal .comment").val("");
 
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- TODO: update slim-select
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call -- TODO: update slim-select
       state.reasonSelect = new SlimSelect({
         select: "#quoteReportModal .reason",
         settings: {
@@ -64,6 +64,7 @@ async function hide(clearChain = false): Promise<void> {
     clearModalChain: clearChain,
     afterAnimation: async () => {
       CaptchaController.reset("quoteReportModal");
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call -- TODO: update slim-select
       state.reasonSelect?.destroy();
       state.reasonSelect = undefined;
     },

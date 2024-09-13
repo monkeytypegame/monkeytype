@@ -387,6 +387,7 @@ export function hide(): void {
       },
       100,
       () => {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-call -- TODO: update slim-select
         languageSelector?.destroy();
         languageSelector = undefined;
         clearBody("15");
@@ -712,7 +713,7 @@ export function show(): void {
       Config.typingSpeedUnit + '<br><div class="sub">accuracy</div>'
     );
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- TODO: update slim-select
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call -- TODO: update slim-select
     languageSelector = new SlimSelect({
       select:
         "#leaderboardsWrapper #leaderboards .leaderboardsTop .buttonGroup.timeRange .languageSelect",
@@ -944,7 +945,9 @@ $(
 ).on("click", () => {
   currentTimeRange = "allTime";
   currentLanguage = "english";
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call -- TODO: update slim-select
   languageSelector?.disable();
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call -- TODO: update slim-select
   languageSelector?.setSelected("english");
   void update();
 });
@@ -954,6 +957,7 @@ $(
 ).on("click", () => {
   currentTimeRange = "daily";
   updateYesterdayButton();
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call -- TODO: update slim-select
   languageSelector?.enable();
   void update();
 });

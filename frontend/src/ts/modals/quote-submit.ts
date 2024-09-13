@@ -65,7 +65,7 @@ export async function show(showOptions: ShowOptions): Promise<void> {
       );
       await initDropdown();
 
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- TODO: update slim-select
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call -- TODO: update slim-select
       select = new SlimSelect({
         select: "#quoteSubmitModal .newQuoteLanguage",
       });
@@ -86,6 +86,7 @@ function hide(clearModalChain: boolean): void {
     clearModalChain,
     afterAnimation: async () => {
       CaptchaController.reset("submitQuote");
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call -- TODO: update slim-select
       select?.destroy();
       select = undefined;
     },

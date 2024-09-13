@@ -427,6 +427,7 @@ function reset(): void {
   $(".pageSettings .section[data-config-name='fontFamily'] .buttons").empty();
   for (const select of document.querySelectorAll(".pageSettings select")) {
     //@ts-expect-error
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
     select?.slim?.destroy?.();
   }
 }
@@ -470,6 +471,7 @@ async function fillSettingsPage(): Promise<void> {
     }
   }
   element.innerHTML = html;
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call -- TODO: update slim-select
   new SlimSelect({
     select: element,
     settings: {
@@ -512,10 +514,12 @@ async function fillSettingsPage(): Promise<void> {
   layoutSelectElement.innerHTML = layoutHtml;
   keymapLayoutSelectElement.innerHTML = keymapLayoutHtml;
 
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call -- TODO: update slim-select
   new SlimSelect({
     select: layoutSelectElement,
   });
 
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call -- TODO: update slim-select
   new SlimSelect({
     select: keymapLayoutSelectElement,
   });
@@ -556,6 +560,7 @@ async function fillSettingsPage(): Promise<void> {
   themeSelectLightElement.innerHTML = themeSelectLightHtml;
   themeSelectDarkElement.innerHTML = themeSelectDarkHtml;
 
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call -- TODO: update slim-select
   new SlimSelect({
     select: themeSelectLightElement,
     events: {
@@ -566,6 +571,7 @@ async function fillSettingsPage(): Promise<void> {
     },
   });
 
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call -- TODO: update slim-select
   new SlimSelect({
     select: themeSelectDarkElement,
     events: {

@@ -55,7 +55,7 @@ export function checkAndUpdatePb(
     const didUpdate = updatePersonalBest(personalBestMatch, result);
     isPb = didUpdate;
   } else {
-    userPb[mode][mode2].push(buildPersonalBest(result));
+    (userPb[mode][mode2] as PersonalBest[]).push(buildPersonalBest(result));
   }
 
   if (!_.isNil(lbPersonalBests)) {
@@ -186,15 +186,17 @@ export function updateLeaderboardPersonalBests(
   lbPb[mode] ??= {};
   lbPb[mode][mode2] ??= {};
   const bestForEveryLanguage = {};
-  userPersonalBests[mode][mode2].forEach((pb: PersonalBest) => {
-    const language = pb.language;
-    if (
-      bestForEveryLanguage[language] === undefined ||
-      bestForEveryLanguage[language].wpm < pb.wpm
-    ) {
-      bestForEveryLanguage[language] = pb;
+  (userPersonalBests[mode][mode2] as PersonalBest[]).forEach(
+    (pb: PersonalBest) => {
+      const language = pb.language;
+      if (
+        bestForEveryLanguage[language] === undefined ||
+        bestForEveryLanguage[language].wpm < pb.wpm
+      ) {
+        bestForEveryLanguage[language] = pb;
+      }
     }
-  });
+  );
   _.each(bestForEveryLanguage, (pb: PersonalBest, language: string) => {
     const languageDoesNotExist = lbPb[mode][mode2][language] === undefined;
     const languageIsEmpty = _.isEmpty(lbPb[mode][mode2][language]);

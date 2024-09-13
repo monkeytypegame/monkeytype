@@ -38,6 +38,7 @@ export async function show(): Promise<void> {
       .removeClass("hidden")
       .animate({ opacity: 1 }, 125, () => {
         //@ts-expect-error
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-call
         window.dataLayer.push({ event: "EG_Video" });
       });
   }

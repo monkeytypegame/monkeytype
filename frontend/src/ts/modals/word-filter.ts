@@ -159,21 +159,21 @@ export async function show(showOptions?: ShowOptions): Promise<void> {
   void modal.show({
     ...showOptions,
     beforeAnimation: async (modalEl) => {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- TODO: update slim-select
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call -- TODO: update slim-select
       languageSelect = new SlimSelect({
         select: "#wordFilterModal .languageInput",
         settings: {
           contentLocation: modalEl,
         },
       });
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- TODO: update slim-select
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call -- TODO: update slim-select
       layoutSelect = new SlimSelect({
         select: "#wordFilterModal .layoutInput",
         settings: {
           contentLocation: modal.getModal(),
         },
       });
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- TODO: update slim-select
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call -- TODO: update slim-select
       presetSelect = new SlimSelect({
         select: "#wordFilterModal .presetInput",
         settings: {
@@ -190,8 +190,11 @@ function hide(hideOptions?: HideOptions<OutgoingData>): void {
   void modal.hide({
     ...hideOptions,
     afterAnimation: async () => {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call  -- TODO: update slim-select
       languageSelect?.destroy();
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call
       layoutSelect?.destroy();
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call
       presetSelect?.destroy();
       languageSelect = undefined;
       layoutSelect = undefined;

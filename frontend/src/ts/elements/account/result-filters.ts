@@ -351,7 +351,7 @@ export function updateActive(): void {
     const group = getGroup(id as ResultFiltersGroup);
     const everythingSelected = Object.values(group).every((v) => v === true);
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- TODO: update slim-select
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call -- TODO: update slim-select
     const newData = ss.store.getData();
 
     const allOption = $(
@@ -366,7 +366,9 @@ export function updateActive(): void {
           else data.selected = false;
         }
       }
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call -- TODO: update slim-select
       ss.store.setData(newData);
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call -- TODO: update slim-select
       ss.render.renderValues();
     } else {
       allOption.prop("selected", false);
@@ -385,10 +387,13 @@ export function updateActive(): void {
     }
 
     setTimeout(() => {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call -- TODO: update slim-select
       ss.store.setData(newData);
       if (!everythingSelected) {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-call -- TODO: update slim-select
         ss.render.renderValues();
       }
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call -- TODO: update slim-select
       ss.render.renderOptions(newData);
     }, 0);
   }
@@ -685,6 +690,7 @@ function adjustScrollposition(
   if (slimSelect === undefined) return;
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- TODO: update slim-select
   const listElement = slimSelect.render.content.list;
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call -- TODO: update slim-select
   const topListItem = listElement.children.item(topItem) as HTMLElement;
 
   listElement.scrollTop = topListItem.offsetTop - listElement.offsetTop;
@@ -779,7 +785,7 @@ export async function appendButtons(
     );
     if (el) {
       el.innerHTML = html;
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- TODO: update slim-select
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call -- TODO: update slim-select
       groupSelects["language"] = new SlimSelect({
         select: el.querySelector(".languageSelect") as HTMLSelectElement,
         settings: {
@@ -841,7 +847,7 @@ export async function appendButtons(
     );
     if (el) {
       el.innerHTML = html;
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- TODO: update slim-select
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call -- TODO: update slim-select
       groupSelects["funbox"] = new SlimSelect({
         select: el.querySelector(".funboxSelect") as HTMLSelectElement,
         settings: {
@@ -899,7 +905,7 @@ export async function appendButtons(
     );
     if (el) {
       el.innerHTML = html;
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- TODO: update slim-select
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call -- TODO: update slim-select
       groupSelects["tags"] = new SlimSelect({
         select: el.querySelector(".tagsSelect") as HTMLSelectElement,
         settings: {

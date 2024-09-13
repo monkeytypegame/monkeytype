@@ -241,7 +241,7 @@ async function updateUser(uid: string): Promise<void> {
       timestamp: best.timestamp,
     } as PersonalBest;
 
-    personalBests[mode.mode][mode.mode2].push(entry);
+    (personalBests[mode.mode][mode.mode2] as PersonalBest[]).push(entry);
 
     if (mode.mode === "time") {
       if (lbPersonalBests[mode.mode][mode.mode2] === undefined)
