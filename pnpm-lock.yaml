@@ -98,9 +98,6 @@ importers:
       ioredis:
         specifier: 4.28.5
         version: 4.28.5
-      joi:
-        specifier: 17.6.0
-        version: 17.6.0
       lodash:
         specifier: 4.17.21
         version: 4.17.21
@@ -270,9 +267,6 @@ importers:
       '@ts-rest/core':
         specifier: 3.51.0
         version: 3.51.0(@types/node@20.14.11)(zod@3.23.8)
-      axios:
-        specifier: 1.7.4
-        version: 1.7.4(debug@4.3.6)
       canvas-confetti:
         specifier: 1.5.1
         version: 1.5.1
@@ -5813,9 +5807,6 @@ packages:
 
   joi@17.13.3:
     resolution: {integrity: sha512-otDA4ldcIx+ZXsKHWmp0YizCweVRZG96J10b0FevjfuncLO1oX59THoAmHkNubYJ+9gWsYsp5k8v4ib6oDv1fA==}
-
-  joi@17.6.0:
-    resolution: {integrity: sha512-OX5dG6DTbcr/kbMFj0KGYxuew69HPcAE3K/sZpEV2nP6e/j/C0HV+HNiBPCASxdx5T7DMoa0s8UeHWMnb6n2zw==}
 
   join-path@1.1.1:
     resolution: {integrity: sha512-jnt9OC34sLXMLJ6YfPQ2ZEKrR9mB5ZbSnQb4LPaOx1c5rTzxpR33L18jjp0r75mGGTJmsil3qwN1B5IBeTnSSA==}
@@ -15850,14 +15841,6 @@ snapshots:
   jju@1.4.0: {}
 
   joi@17.13.3:
-    dependencies:
-      '@hapi/hoek': 9.3.0
-      '@hapi/topo': 5.1.0
-      '@sideway/address': 4.1.5
-      '@sideway/formula': 3.0.1
-      '@sideway/pinpoint': 2.0.0
-
-  joi@17.6.0:
     dependencies:
       '@hapi/hoek': 9.3.0
       '@hapi/topo': 5.1.0

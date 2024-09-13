@@ -1,11 +1,11 @@
 import { PostGithubReleaseRequest } from "@monkeytype/contracts/webhooks";
 import GeorgeQueue from "../../queues/george-queue";
-import { MonkeyResponse2 } from "../../utils/monkey-response";
+import { MonkeyResponse } from "../../utils/monkey-response";
 import MonkeyError from "../../utils/error";
 
 export async function githubRelease(
-  req: MonkeyTypes.Request2<undefined, PostGithubReleaseRequest>
-): Promise<MonkeyResponse2> {
+  req: MonkeyTypes.Request<undefined, PostGithubReleaseRequest>
+): Promise<MonkeyResponse> {
   const action = req.body.action;
 
   if (action === "published") {
@@ -14,10 +14,7 @@ export async function githubRelease(
       throw new MonkeyError(422, 'Missing property "release.id".');
 
     await GeorgeQueue.sendReleaseAnnouncement(releaseId);
-    return new MonkeyResponse2(
-      "Added release announcement task to queue",
-      null
-    );
+    return new MonkeyResponse("Added release announcement task to queue", null);
   }
-  return new MonkeyResponse2("No action taken", null);
+  return new MonkeyResponse("No action taken", null);
 }
