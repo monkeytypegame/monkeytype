@@ -1,4 +1,3 @@
-import axios from "axios";
 import { Section } from "../utils/misc";
 
 const bannedChars = ["—", "_", " "];
@@ -49,8 +48,13 @@ export async function getPoem(): Promise<Section | false> {
   console.log("Getting poem");
 
   try {
-    const response = await axios.get(apiURL);
-    const poemObj = response.data[0] as PoemObject;
+    const response = await fetch(apiURL);
+    const data = (await response.json()) as PoemObject[];
+    const poemObj = data[0];
+
+    if (!poemObj) {
+      return false;
+    }
 
     const words: string[] = [];
 
