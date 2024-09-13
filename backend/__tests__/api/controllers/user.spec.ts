@@ -357,11 +357,11 @@ describe("user controller test", () => {
     it("should fail with too many firebase requests", async () => {
       //GIVEN
       const mockFirebaseError = {
-        code: "auth/internal-error",
+        code: "auth/too-many-requests",
         codePrefix: "auth",
         errorInfo: {
-          code: "auth/internal-error",
-          message: "Internal error",
+          code: "auth/too-many-requests",
+          message: "Too many requests",
         },
       };
       adminGenerateVerificationLinkMock.mockRejectedValue(mockFirebaseError);
@@ -417,7 +417,7 @@ describe("user controller test", () => {
 
       //THEN
       expect(body.message).toEqual(
-        "Firebase failed to generate an email verification link. Unknown error occured"
+        "Firebase failed to generate an email verification link: Internal server error"
       );
     });
   });

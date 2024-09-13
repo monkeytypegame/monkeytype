@@ -196,6 +196,8 @@ export async function sendVerificationEmail(
           }),
           userInfo.uid
         );
+      } else if (e.errorInfo.code === "auth/too-many-requests") {
+        throw new MonkeyError(429, "Too many requests. Please try again later");
       } else {
         throw new MonkeyError(
           500,
