@@ -325,7 +325,9 @@ $("#replayWords").on("click", "letter", (event) => {
   const replayWords = document.querySelector("#replayWords");
 
   const words = [...(replayWords?.children ?? [])];
-  targetWordPos = words.indexOf(event.target.parentNode as HTMLElement);
+  targetWordPos = words.indexOf(
+    (event.target as HTMLElement).parentNode as HTMLElement
+  );
   const letters = [...(words[targetWordPos] as HTMLElement).children];
   targetCurPos = letters.indexOf(event.target as HTMLElement);
 

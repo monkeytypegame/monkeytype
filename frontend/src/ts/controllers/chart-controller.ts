@@ -95,7 +95,7 @@ class ChartWithUpdateColors<
     id: DatasetIds extends never ? never : "x" | DatasetIds
   ): DatasetIds extends never ? never : CartesianScaleOptions {
     //@ts-expect-error
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access
     return this.options.scales[id];
   }
 }
@@ -1119,6 +1119,7 @@ async function updateColors<
 
   //@ts-expect-error
   chart.data.datasets[0].borderColor = (ctx): string => {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const isPb = ctx.raw?.isPb as boolean;
     const color = isPb ? textcolor : maincolor;
     return color;
