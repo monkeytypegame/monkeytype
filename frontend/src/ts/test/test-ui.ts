@@ -484,7 +484,6 @@ export async function updateWordsInputPosition(initial = false): Promise<void> {
 }
 
 function updateTapeModeLine(): void {
-  if (currentTestLine === 0) return;
   const wordElements = document.querySelectorAll<HTMLElement>("#words .word");
   const currentTop = wordElements[activeWordElementIndex]?.offsetTop ?? 0;
 
@@ -968,23 +967,19 @@ export function scrollTape(): void {
   let widthToHide = 0;
   let wordsToHideCount = 0;
   let leadingNewLine = 0;
-  let lastAfterNewLineElement = undefined;
   const linesWidths: number[] = [];
   const toHide: HTMLElement[] = [];
 
   // remove leading `.newline` and `.afterNewline` elements
   for (const child of wordsChildrenArr) {
     if (child.classList.contains("word")) {
-      if (lastAfterNewLineElement) {
-        widthToHide += parseInt(lastAfterNewLineElement.style.marginLeft);
-      }
       break;
     } else if (child.classList.contains("newline")) {
       toHide.push(child);
     } else if (child.classList.contains("afterNewline")) {
       toHide.push(child);
+      widthToHide += parseInt(child.style.marginLeft);
       leadingNewLine = 1;
-      lastAfterNewLineElement = child;
     }
   }
   // get last element to loop over
@@ -992,14 +987,22 @@ export function scrollTape(): void {
   const newLinesBeforeActiveWord = wordsChildrenArr
     .slice(0, activeWordIndex)
     .filter((child) => child.classList.contains("afterNewline")).length;
-  const lastVisibleAfterNewline = afterNewLineEls[newLinesBeforeActiveWord] as
-    | HTMLElement
-    | undefined;
+  // the second .afterNewline after active word is visible during line jump
+  let lastVisibleAfterNewline = afterNewLineEls[
+    newLinesBeforeActiveWord + 1
+  ] as HTMLElement | undefined;
   let lastElementIndex;
   if (lastVisibleAfterNewline) {
     lastElementIndex = wordsChildrenArr.indexOf(lastVisibleAfterNewline);
   } else {
-    lastElementIndex = activeWordIndex - 1;
+    lastVisibleAfterNewline = afterNewLineEls[newLinesBeforeActiveWord] as
+      | HTMLElement
+      | undefined;
+    if (lastVisibleAfterNewline) {
+      lastElementIndex = wordsChildrenArr.indexOf(lastVisibleAfterNewline);
+    } else {
+      lastElementIndex = activeWordIndex - 1;
+    }
   }
 
   const wordRightMargin = parseInt(
@@ -1037,11 +1040,11 @@ export function scrollTape(): void {
     toHide.forEach((el) => el.remove());
     const currentMargin = parseInt(wordsEl.style.marginLeft);
     wordsEl.style.marginLeft = `${currentMargin + widthToHide}px`;
-  }
-  for (let i = 0; i < linesWidths.length; i++) {
-    (
-      afterNewLineEls[i] as HTMLElement
-    ).style.marginLeft = `${linesWidths[i]}px`;
+    for (let i = 0; i < linesWidths.length; i++) {
+      const element = afterNewLineEls[i] as HTMLElement;
+      const currentMargin = parseInt(element.style.marginLeft);
+      element.style.marginLeft = `${currentMargin - widthToHide}px`;
+    }
   }
 
   let currentWordWidth = 0;
@@ -1074,8 +1077,21 @@ export function scrollTape(): void {
       }
     );
     jqWords.dequeue("leftMargin");
+    linesWidths.forEach((width, index) => {
+      $(afterNewLineEls[index] as Element)
+        .stop(true, false)
+        .animate(
+          {
+            marginLeft: width,
+          },
+          SlowTimer.get() ? 0 : 125
+        );
+    });
   } else {
     wordsEl.style.marginLeft = `${newMargin}px`;
+    linesWidths.forEach((width, index) => {
+      (afterNewLineEls[index] as HTMLElement).style.marginLeft = `${width}px`;
+    });
   }
 }
 
