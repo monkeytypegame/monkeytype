@@ -15,6 +15,7 @@ export function init(): void {
 export function renderResult(widerThanBreakpoint: boolean): void {
   if (widerThanBreakpoint) {
     //@ts-expect-error
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
     window.egAps.render([
       "ad-result",
       "ad-vertical-left",
@@ -23,6 +24,7 @@ export function renderResult(widerThanBreakpoint: boolean): void {
     ]);
   } else {
     //@ts-expect-error
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
     window.egAps.render([
       "ad-result-small",
       "ad-vertical-left",
@@ -35,6 +37,7 @@ export function renderResult(widerThanBreakpoint: boolean): void {
 export function reinstate(): boolean {
   try {
     //@ts-expect-error
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
     window.egAps.reinstate();
     return true;
   } catch (e) {

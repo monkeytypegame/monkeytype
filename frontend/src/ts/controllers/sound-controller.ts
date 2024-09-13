@@ -412,10 +412,8 @@ export async function previewError(val: string): Promise<void> {
   const errorSoundIds = Object.keys(safeErrorSounds);
   if (!errorSoundIds.includes(val)) return;
 
-  //@ts-expect-error
-  errorClickSounds[val][0].sounds[0].seek(0);
-  //@ts-expect-error
-  errorClickSounds[val][0].sounds[0].play();
+  errorSounds?.[val]?.[0]?.sounds[0]?.seek(0);
+  errorSounds?.[val]?.[0]?.sounds[0]?.play();
 }
 
 let currentCode = "KeyA";

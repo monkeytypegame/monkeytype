@@ -96,7 +96,8 @@ export class WeeklyXpLeaderboard {
       timeTypedSeconds + (currentEntryTimeTypedSeconds ?? 0);
 
     const [rank] = await Promise.all([
-      // @ts-expect-error
+      // @ts-expect-error we are doing some weird file to function mapping, thats why its any
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call
       connection.addResultIncrement(
         2,
         weeklyXpLeaderboardScoresKey,
@@ -128,7 +129,8 @@ export class WeeklyXpLeaderboard {
     const { weeklyXpLeaderboardScoresKey, weeklyXpLeaderboardResultsKey } =
       this.getThisWeeksXpLeaderboardKeys();
 
-    // @ts-expect-error
+    // @ts-expect-error we are doing some weird file to function mapping, thats why its any
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
     const [results, scores] = (await connection.getResults(
       2, // How many of the arguments are redis keys (https://redis.io/docs/manual/programmability/lua-api/)
       weeklyXpLeaderboardScoresKey,

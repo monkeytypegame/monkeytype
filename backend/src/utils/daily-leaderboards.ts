@@ -74,7 +74,8 @@ export class DailyLeaderboard {
 
     const resultScore = kogascore(entry.wpm, entry.acc, entry.timestamp);
 
-    // @ts-expect-error
+    // @ts-expect-error we are doing some weird file to function mapping, thats why its any
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
     const rank = (await connection.addResult(
       2,
       leaderboardScoresKey,
@@ -120,7 +121,8 @@ export class DailyLeaderboard {
     const { leaderboardScoresKey, leaderboardResultsKey } =
       this.getTodaysLeaderboardKeys();
 
-    // @ts-expect-error
+    // @ts-expect-error we are doing some weird file to function mapping, thats why its any
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
     const [results] = (await connection.getResults(
       2,
       leaderboardScoresKey,
@@ -213,7 +215,8 @@ export async function purgeUserFromDailyLeaderboards(
     return;
   }
 
-  // @ts-expect-error
+  // @ts-expect-error we are doing some weird file to function mapping, thats why its any
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
   await connection.purgeResults(0, uid, dailyLeaderboardNamespace);
 }
 
