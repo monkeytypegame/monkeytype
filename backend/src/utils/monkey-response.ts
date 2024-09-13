@@ -4,7 +4,7 @@ export type MonkeyDataAware<T> = {
   data: T | null;
 };
 
-export class MonkeyResponse2<T = null>
+export class MonkeyResponse<T = null>
   implements MonkeyResponseType, MonkeyDataAware<T>
 {
   public message: string;

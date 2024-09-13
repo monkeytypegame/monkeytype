@@ -17,7 +17,7 @@ import configuration from "./configuration";
 import { version } from "../../version";
 import leaderboards from "./leaderboards";
 import addSwaggerMiddlewares from "./swagger";
-import { MonkeyResponse2 } from "../../utils/monkey-response";
+import { MonkeyResponse } from "../../utils/monkey-response";
 import {
   Application,
   IRouter,
@@ -71,7 +71,7 @@ export function addApiRoutes(app: Application): void {
     res
       .status(404)
       .json(
-        new MonkeyResponse2(
+        new MonkeyResponse(
           `Unknown request URL (${req.method}: ${req.path})`,
           null
         )
@@ -180,7 +180,7 @@ function applyApiRoutes(app: Application): void {
 
   app.get("/", (_req, res) => {
     res.status(200).json(
-      new MonkeyResponse2("ok", {
+      new MonkeyResponse("ok", {
         uptime: Date.now() - APP_START_TIME,
         version,
       })

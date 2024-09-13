@@ -5,12 +5,12 @@ import {
   GetPresetResponse,
 } from "@monkeytype/contracts/presets";
 import * as PresetDAL from "../../dal/preset";
-import { MonkeyResponse2 } from "../../utils/monkey-response";
+import { MonkeyResponse } from "../../utils/monkey-response";
 import { replaceObjectId } from "../../utils/misc";
 import { Preset } from "@monkeytype/contracts/schemas/presets";
 
 export async function getPresets(
-  req: MonkeyTypes.Request2
+  req: MonkeyTypes.Request
 ): Promise<GetPresetResponse> {
   const { uid } = req.ctx.decodedToken;
 
@@ -21,36 +21,36 @@ export async function getPresets(
     }))
     .map((it) => replaceObjectId(it));
 
-  return new MonkeyResponse2("Presets retrieved", data);
+  return new MonkeyResponse("Presets retrieved", data);
 }
 
 export async function addPreset(
-  req: MonkeyTypes.Request2<undefined, AddPresetRequest>
+  req: MonkeyTypes.Request<undefined, AddPresetRequest>
 ): Promise<AddPresetResponse> {
   const { uid } = req.ctx.decodedToken;
 
   const data = await PresetDAL.addPreset(uid, req.body);
 
-  return new MonkeyResponse2("Preset created", data);
+  return new MonkeyResponse("Preset created", data);
 }
 
 export async function editPreset(
-  req: MonkeyTypes.Request2<undefined, Preset>
-): Promise<MonkeyResponse2> {
+  req: MonkeyTypes.Request<undefined, Preset>
+): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
 
   await PresetDAL.editPreset(uid, req.body);
 
-  return new MonkeyResponse2("Preset updated", null);
+  return new MonkeyResponse("Preset updated", null);
 }
 
 export async function removePreset(
-  req: MonkeyTypes.Request2<undefined, undefined, DeletePresetsParams>
-): Promise<MonkeyResponse2> {
+  req: MonkeyTypes.Request<undefined, undefined, DeletePresetsParams>
+): Promise<MonkeyResponse> {
   const { presetId } = req.params;
   const { uid } = req.ctx.decodedToken;
 
   await PresetDAL.removePreset(uid, presetId);
 
-  return new MonkeyResponse2("Preset deleted", null);
+  return new MonkeyResponse("Preset deleted", null);
 }
