@@ -172,7 +172,6 @@ function buildPersonalBest(result: Result): PersonalBest {
   };
 }
 
-//TODO add tests, i changed implementation
 export function updateLeaderboardPersonalBests(
   userPersonalBests: PersonalBests,
   lbPersonalBests: MonkeyTypes.LbPersonalBests,
