@@ -166,13 +166,13 @@ describe("Pb Utils", () => {
       } as unknown as Result<Mode>;
 
       for (const lbPb of lbpbstartingvalues) {
-        const run = pb.updateLeaderboardPersonalBests(
+        const lbPbPb = pb.updateLeaderboardPersonalBests(
           userPbs,
           _.cloneDeep(lbPb) as MonkeyTypes.LbPersonalBests,
           result15
         );
 
-        expect(run).toEqual({
+        expect(lbPbPb).toEqual({
           time: {
             "15": {
               english: {
