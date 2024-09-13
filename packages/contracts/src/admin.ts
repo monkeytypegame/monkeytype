@@ -2,7 +2,7 @@ import { initContract } from "@ts-rest/core";
 import { z } from "zod";
 import {
   CommonResponses,
-  EndpointMetadata,
+  meta,
   MonkeyResponseSchema,
   responseWithData,
 } from "./schemas/api";
@@ -107,10 +107,16 @@ export const adminContract = c.router(
   {
     pathPrefix: "/admin",
     strictStatusCodes: true,
-    metadata: {
+    metadata: meta({
       openApiTags: "admin",
       authenticationOptions: { noCache: true },
-    } as EndpointMetadata,
+      rateLimit: "adminLimit",
+      requirePermission: "admin",
+      requireConfiguration: {
+        path: "admin.endpointsEnabled",
+        invalidMessage: "Admin endpoints are currently disabled.",
+      },
+    }),
 
     commonResponses: CommonResponses,
   }

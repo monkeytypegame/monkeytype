@@ -129,14 +129,14 @@ export class WeeklyXpLeaderboard {
       this.getThisWeeksXpLeaderboardKeys();
 
     // @ts-expect-error
-    const [results, scores]: string[][] = await connection.getResults(
+    const [results, scores] = (await connection.getResults(
       2, // How many of the arguments are redis keys (https://redis.io/docs/manual/programmability/lua-api/)
       weeklyXpLeaderboardScoresKey,
       weeklyXpLeaderboardResultsKey,
       minRank,
       maxRank,
       "true"
-    );
+    )) as string[][];
 
     if (results === undefined) {
       throw new Error(
@@ -183,20 +183,24 @@ export class WeeklyXpLeaderboard {
 
     // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
     // @ts-ignore
-    const [[, rank], [, totalXp], [, count], [, result]] = await connection
+    const [[, rank], [, totalXp], [, count], [, result]] = (await connection
       .multi()
       .zrevrank(weeklyXpLeaderboardScoresKey, uid)
       .zscore(weeklyXpLeaderboardScoresKey, uid)
       .zcard(weeklyXpLeaderboardScoresKey)
       .hget(weeklyXpLeaderboardResultsKey, uid)
-      .exec();
+      .exec()) as [
+      [null, number | null],
+      [null, string | null],
+      [null, number | null]
+    ];
 
     if (rank === null) {
       return null;
     }
 
     //TODO parse with zod?
-    const parsed = JSON.parse(result ?? "null") as Omit<
+    const parsed = JSON.parse((result as string) ?? "null") as Omit<
       XpLeaderboardEntry,
       "rank" | "count" | "totalXp"
     >;
@@ -204,7 +208,7 @@ export class WeeklyXpLeaderboard {
     return {
       rank: rank + 1,
       count: count ?? 0,
-      totalXp: parseInt(totalXp, 10),
+      totalXp: parseInt(totalXp as string, 10),
       ...parsed,
     };
   }

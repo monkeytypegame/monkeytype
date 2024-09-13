@@ -40,7 +40,7 @@ function getSearchService<T>(
 
   const newSearchService = buildSearchService<T>(data, textExtractor);
   searchServiceCache[language] =
-    newSearchService as unknown as typeof searchServiceCache[typeof language];
+    newSearchService as unknown as (typeof searchServiceCache)[typeof language];
 
   return newSearchService;
 }
@@ -273,6 +273,7 @@ export async function show(showOptions?: ShowOptions): Promise<void> {
         $("#quoteSearchModal .goToQuoteApprove").addClass("hidden");
       }
 
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- TODO: update slim-select
       lengthSelect = new SlimSelect({
         select: "#quoteSearchModal .quoteLengthFilter",
 

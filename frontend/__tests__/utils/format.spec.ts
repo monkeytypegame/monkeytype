@@ -1,5 +1,6 @@
 import { Formatting } from "../../src/ts/utils/format";
 import DefaultConfig from "../../src/ts/constants/default-config";
+import { Config } from "@monkeytype/contracts/schemas/configs";
 
 describe("format.ts", () => {
   describe("typingsSpeed", () => {
@@ -272,7 +273,7 @@ describe("format.ts", () => {
   });
 });
 
-function getInstance(config?: Partial<SharedTypes.Config>): Formatting {
-  const target: SharedTypes.Config = { ...DefaultConfig, ...config };
+function getInstance(config?: Partial<Config>): Formatting {
+  const target: Config = { ...DefaultConfig, ...config };
   return new Formatting(target);
 }

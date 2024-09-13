@@ -3,7 +3,7 @@ import { z } from "zod";
 
 import {
   CommonResponses,
-  EndpointMetadata,
+  meta,
   MonkeyResponseSchema,
   responseWithData,
 } from "./schemas/api";
@@ -45,11 +45,11 @@ export const configurationContract = c.router(
       responses: {
         200: GetConfigurationResponseSchema,
       },
-      metadata: {
+      metadata: meta({
         authenticationOptions: {
           isPublic: true,
         },
-      } as EndpointMetadata,
+      }),
     },
     update: {
       summary: "update configuration",
@@ -61,12 +61,14 @@ export const configurationContract = c.router(
       responses: {
         200: MonkeyResponseSchema,
       },
-      metadata: {
+      metadata: meta({
         authenticationOptions: {
           noCache: true,
           isPublicOnDev: true,
         },
-      } as EndpointMetadata,
+        rateLimit: "adminLimit",
+        requirePermission: "admin",
+      }),
     },
     getSchema: {
       summary: "get configuration schema",
@@ -76,20 +78,22 @@ export const configurationContract = c.router(
       responses: {
         200: ConfigurationSchemaResponseSchema,
       },
-      metadata: {
+      metadata: meta({
         authenticationOptions: {
           isPublicOnDev: true,
           noCache: true,
         },
-      } as EndpointMetadata,
+        rateLimit: "adminLimit",
+        requirePermission: "admin",
+      }),
     },
   },
   {
     pathPrefix: "/configuration",
     strictStatusCodes: true,
-    metadata: {
+    metadata: meta({
       openApiTags: "configuration",
-    } as EndpointMetadata,
+    }),
 
     commonResponses: CommonResponses,
   }

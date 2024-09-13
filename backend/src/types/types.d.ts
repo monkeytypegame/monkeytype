@@ -8,7 +8,7 @@ type AppRoute = import("@ts-rest/core").AppRoute;
 type AppRouter = import("@ts-rest/core").AppRouter;
 declare namespace MonkeyTypes {
   export type DecodedToken = {
-    type: "Bearer" | "ApeKey" | "None";
+    type: "Bearer" | "ApeKey" | "None" | "GithubWebhook";
     uid: string;
     email: string;
   };
@@ -18,11 +18,11 @@ declare namespace MonkeyTypes {
     decodedToken: DecodedToken;
   };
 
-  type Request = {
+  type ExpressRequestWithContext = {
     ctx: Readonly<Context>;
   } & ExpressRequest;
 
-  type Request2<TQuery = undefined, TBody = undefined, TParams = undefined> = {
+  type Request<TQuery = undefined, TBody = undefined, TParams = undefined> = {
     query: Readonly<TQuery>;
     body: Readonly<TBody>;
     params: Readonly<TParams>;
@@ -30,8 +30,11 @@ declare namespace MonkeyTypes {
     raw: Readonly<TsRestRequest>;
   };
 
+  /* eslint-disable-next-line  @typescript-eslint/no-explicit-any */
+  type RequestHandler = import("@ts-rest/core").TsRestRequestHandler<any>;
+
   type DBUser = Omit<
-    import("@monkeytype/shared-types").User,
+    import("@monkeytype/contracts/schemas/users").User,
     | "resultFilterPresets"
     | "tags"
     | "customThemes"
@@ -41,26 +44,28 @@ declare namespace MonkeyTypes {
   > & {
     _id: ObjectId;
     resultFilterPresets?: WithObjectId<
-      import("@monkeytype/shared-types").ResultFilters
+      import("@monkeytype/contracts/schemas/users").ResultFilters
     >[];
     tags?: DBUserTag[];
     lbPersonalBests?: LbPersonalBests;
     customThemes?: DBCustomTheme[];
     autoBanTimestamps?: number[];
-    inbox?: import("@monkeytype/shared-types").MonkeyMail[];
+    inbox?: import("@monkeytype/contracts/schemas/users").MonkeyMail[];
     ips?: string[];
     canReport?: boolean;
     lastNameChange?: number;
     canManageApeKeys?: boolean;
     bananas?: number;
-    testActivity?: import("@monkeytype/shared-types").CountByYearAndDay;
+    testActivity?: import("@monkeytype/contracts/schemas/users").CountByYearAndDay;
   };
 
   type DBCustomTheme = WithObjectId<
-    import("@monkeytype/shared-types").CustomTheme
+    import("@monkeytype/contracts/schemas/users").CustomTheme
   >;
 
-  type DBUserTag = WithObjectId<import("@monkeytype/shared-types").UserTag>;
+  type DBUserTag = WithObjectId<
+    import("@monkeytype/contracts/schemas/users").UserTag
+  >;
 
   type LbPersonalBests = {
     time: Record<

@@ -17,7 +17,6 @@ import configuration from "./configuration";
 import { version } from "../../version";
 import leaderboards from "./leaderboards";
 import addSwaggerMiddlewares from "./swagger";
-import { asyncHandler } from "../../middlewares/utility";
 import { MonkeyResponse } from "../../utils/monkey-response";
 import {
   Application,
@@ -34,14 +33,15 @@ import { createExpressEndpoints, initServer } from "@ts-rest/express";
 import { ZodIssue } from "zod";
 import { MonkeyValidationError } from "@monkeytype/contracts/schemas/api";
 import { authenticateTsRestRequest } from "../../middlewares/auth";
+import { rateLimitRequest } from "../../middlewares/rate-limit";
+import { verifyPermissions } from "../../middlewares/permission";
+import { verifyRequiredConfiguration } from "../../middlewares/configuration";
 
 const pathOverride = process.env["API_PATH_OVERRIDE"];
 const BASE_ROUTE = pathOverride !== undefined ? `/${pathOverride}` : "";
 const APP_START_TIME = Date.now();
 
 const API_ROUTE_MAP = {
-  "/users": users,
-  "/webhooks": webhooks,
   "/docs": docs,
 };
 
@@ -57,7 +57,9 @@ const router = s.router(contract, {
   results,
   configuration,
   dev,
+  users,
   quotes,
+  webhooks,
 });
 
 export function addApiRoutes(app: Application): void {
@@ -65,15 +67,16 @@ export function addApiRoutes(app: Application): void {
   applyApiRoutes(app);
   applyTsRestApiRoutes(app);
 
-  app.use(
-    asyncHandler(async (req, _res) => {
-      return new MonkeyResponse(
-        `Unknown request URL (${req.method}: ${req.path})`,
-        null,
-        404
+  app.use((req, res) => {
+    res
+      .status(404)
+      .json(
+        new MonkeyResponse(
+          `Unknown request URL (${req.method}: ${req.path})`,
+          null
+        )
       );
-    })
-  );
+  });
 }
 
 function applyTsRestApiRoutes(app: IRouter): void {
@@ -111,7 +114,12 @@ function applyTsRestApiRoutes(app: IRouter): void {
         .status(422)
         .json({ message, validationErrors } as MonkeyValidationError);
     },
-    globalMiddleware: [authenticateTsRestRequest()],
+    globalMiddleware: [
+      authenticateTsRestRequest(),
+      rateLimitRequest(),
+      verifyRequiredConfiguration(),
+      verifyPermissions(),
+    ],
   });
 }
 
@@ -146,9 +154,12 @@ function applyDevApiRoutes(app: Application): void {
 function applyApiRoutes(app: Application): void {
   addSwaggerMiddlewares(app);
 
-  //TODO move to globalMiddleware when all endpoints use tsrest
   app.use(
-    (req: MonkeyTypes.Request, res: Response, next: NextFunction): void => {
+    (
+      req: MonkeyTypes.ExpressRequestWithContext,
+      res: Response,
+      next: NextFunction
+    ): void => {
       if (req.path.startsWith("/configuration")) {
         next();
         return;
@@ -167,25 +178,13 @@ function applyApiRoutes(app: Application): void {
     }
   );
 
-  app.get(
-    "/",
-    asyncHandler(async (_req, _res) => {
-      return new MonkeyResponse("ok", {
+  app.get("/", (_req, res) => {
+    res.status(200).json(
+      new MonkeyResponse("ok", {
         uptime: Date.now() - APP_START_TIME,
         version,
-      });
-    })
-  );
-
-  //legacy route
-  app.get("/psa", (_req, res) => {
-    res.json([
-      {
-        message:
-          "It seems like your client version is very out of date as you're requesting an API endpoint that no longer exists. This will likely cause most of the website to not function correctly. Please clear your cache, or contact support if this message persists.",
-        sticky: true,
-      },
-    ]);
+      })
+    );
   });
 
   _.each(API_ROUTE_MAP, (router: Router, route) => {

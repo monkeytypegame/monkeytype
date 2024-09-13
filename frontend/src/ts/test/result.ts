@@ -839,7 +839,7 @@ export async function update(
   dontSave: boolean
 ): Promise<void> {
   resultAnnotation = [];
-  result = Object.assign({}, res);
+  result = Misc.deepClone(res);
   hideCrown();
   $("#resultWordsHistory .words").empty();
   $("#result #resultWordsHistory").addClass("hidden");
@@ -1046,13 +1046,15 @@ $(".pageTest #favoriteQuoteButton").on("click", async () => {
   if ($button.hasClass("fas")) {
     // Remove from favorites
     Loader.show();
-    const response = await Ape.users.removeQuoteFromFavorites(
-      quoteLang,
-      quoteId
-    );
+    const response = await Ape.users.removeQuoteFromFavorites({
+      body: {
+        language: quoteLang,
+        quoteId,
+      },
+    });
     Loader.hide();
 
-    Notifications.add(response.message, response.status === 200 ? 1 : -1);
+    Notifications.add(response.body.message, response.status === 200 ? 1 : -1);
 
     if (response.status === 200) {
       $button.removeClass("fas").addClass("far");
@@ -1064,10 +1066,12 @@ $(".pageTest #favoriteQuoteButton").on("click", async () => {
   } else {
     // Add to favorites
     Loader.show();
-    const response = await Ape.users.addQuoteToFavorites(quoteLang, quoteId);
+    const response = await Ape.users.addQuoteToFavorites({
+      body: { language: quoteLang, quoteId },
+    });
     Loader.hide();
 
-    Notifications.add(response.message, response.status === 200 ? 1 : -1);
+    Notifications.add(response.body.message, response.status === 200 ? 1 : -1);
 
     if (response.status === 200) {
       $button.removeClass("far").addClass("fas");

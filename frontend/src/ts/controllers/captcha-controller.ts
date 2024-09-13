@@ -13,12 +13,13 @@ export function render(
   }
 
   //@ts-expect-error
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   const widgetId = grecaptcha.render(element, {
     sitekey: siteKey,
     callback,
   });
 
-  captchas[id] = widgetId;
+  captchas[id] = widgetId as number;
 }
 
 export function reset(id: string): void {

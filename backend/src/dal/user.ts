@@ -1,5 +1,4 @@
 import _ from "lodash";
-import { containsProfanity, isUsernameValid } from "../utils/validation";
 import { canFunboxGetPb, checkAndUpdatePb } from "../utils/pb";
 import * as db from "../init/db";
 import MonkeyError from "../utils/error";
@@ -23,14 +22,14 @@ import {
   UserProfileDetails,
   UserQuoteRatings,
   UserStreak,
-} from "@monkeytype/shared-types";
+  ResultFilters,
+} from "@monkeytype/contracts/schemas/users";
 import {
   Mode,
   Mode2,
   PersonalBest,
 } from "@monkeytype/contracts/schemas/shared";
 import { addImportantLog } from "./logs";
-import { ResultFilters } from "@monkeytype/contracts/schemas/users";
 import { Result as ResultType } from "@monkeytype/contracts/schemas/results";
 import { Configuration } from "@monkeytype/contracts/schemas/configuration";
 
@@ -130,12 +129,6 @@ export async function updateName(
 ): Promise<void> {
   if (name === previousName) {
     throw new MonkeyError(400, "New name is the same as the old name");
-  }
-  if (!isUsernameValid(name)) {
-    throw new MonkeyError(400, "Invalid username");
-  }
-  if (containsProfanity(name, "substring")) {
-    throw new MonkeyError(400, "Username contains profanity");
   }
 
   if (
@@ -549,7 +542,7 @@ export async function updateLastHashes(
     { uid },
     {
       $set: {
-        lastReultHashes: lastHashes,
+        lastReultHashes: lastHashes, //TODO fix typo
       },
     }
   );
@@ -763,8 +756,8 @@ export async function getStats(
 }
 
 export async function getFavoriteQuotes(
-  uid
-): Promise<MonkeyTypes.DBUser["favoriteQuotes"]> {
+  uid: string
+): Promise<NonNullable<MonkeyTypes.DBUser["favoriteQuotes"]>> {
   const user = await getPartialUser(uid, "get favorite quotes", [
     "favoriteQuotes",
   ]);
@@ -896,7 +889,7 @@ export async function updateProfile(
 
 export async function getInbox(
   uid: string
-): Promise<MonkeyTypes.DBUser["inbox"]> {
+): Promise<NonNullable<MonkeyTypes.DBUser["inbox"]>> {
   const user = await getPartialUser(uid, "get inbox", ["inbox"]);
   return user.inbox ?? [];
 }
@@ -1079,7 +1072,7 @@ export async function updateStreak(
   } else if (!isToday(streak.lastResultTimestamp, streak.hourOffset ?? 0)) {
     void addImportantLog(
       "streak_lost",
-      JSON.parse(JSON.stringify(streak)),
+      JSON.parse(JSON.stringify(streak)) as Record<string, unknown>,
       uid
     );
     streak.length = 1;

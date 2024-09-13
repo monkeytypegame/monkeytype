@@ -1,10 +1,6 @@
 import { initContract } from "@ts-rest/core";
 import { z } from "zod";
-import {
-  CommonResponses,
-  EndpointMetadata,
-  responseWithData,
-} from "./schemas/api";
+import { CommonResponses, meta, responseWithData } from "./schemas/api";
 import { IdSchema } from "./schemas/util";
 
 export const GenerateDataRequestSchema = z.object({
@@ -47,12 +43,12 @@ export const devContract = c.router(
   {
     pathPrefix: "/dev",
     strictStatusCodes: true,
-    metadata: {
-      openApiTags: "dev",
+    metadata: meta({
+      openApiTags: "development",
       authenticationOptions: {
-        isPublic: true,
+        isPublicOnDev: true,
       },
-    } as EndpointMetadata,
+    }),
     commonResponses: CommonResponses,
   }
 );

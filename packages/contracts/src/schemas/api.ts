@@ -1,4 +1,6 @@
 import { z, ZodSchema } from "zod";
+import { RateLimitIds, RateLimiterId } from "../rate-limit";
+import { RequireConfiguration } from "../require-configuration";
 
 export type OpenApiTag =
   | "configs"
@@ -10,14 +12,44 @@ export type OpenApiTag =
   | "leaderboards"
   | "results"
   | "configuration"
-  | "dev"
-  | "quotes";
+  | "development"
+  | "users"
+  | "quotes"
+  | "webhooks";
+
+export type PermissionId =
+  | "quoteMod"
+  | "canReport"
+  | "canManageApeKeys"
+  | "admin";
 
 export type EndpointMetadata = {
   /** Authentication options, by default a bearer token is required. */
   authenticationOptions?: RequestAuthenticationOptions;
+
   openApiTags?: OpenApiTag | OpenApiTag[];
+
+  /** RateLimitId or RateLimitIds.
+   * Only specifying RateLimiterId will use  a default limiter with 30 requests/minute for ApeKey requests.
+   */
+  rateLimit?: RateLimiterId | RateLimitIds;
+
+  /** Role/Rples needed to  access the endpoint*/
+  requirePermission?: PermissionId | PermissionId[];
+
+  /** Endpoint is only available if configuration allows it */
+  requireConfiguration?: RequireConfiguration | RequireConfiguration[];
 };
+
+/**
+ *
+ * @param meta Ensure the type of metadata is `EndpointMetadata`.
+ * Ts-rest does not allow to specify the type of `metadata`.
+ * @returns
+ */
+export function meta(meta: EndpointMetadata): EndpointMetadata {
+  return meta;
+}
 
 export type RequestAuthenticationOptions = {
   /** Endpoint is accessible without any authentication. If `false` bearer authentication is required. */
@@ -29,6 +61,8 @@ export type RequestAuthenticationOptions = {
   noCache?: boolean;
   /** Allow unauthenticated requests on dev  */
   isPublicOnDev?: boolean;
+  /** Endpoint is a webhook only to be called by Github */
+  isGithubWebhook?: boolean;
 };
 
 export const MonkeyResponseSchema = z.object({
@@ -37,7 +71,7 @@ export const MonkeyResponseSchema = z.object({
 export type MonkeyResponseType = z.infer<typeof MonkeyResponseSchema>;
 
 export const MonkeyValidationErrorSchema = MonkeyResponseSchema.extend({
-  validationErrors: z.array(z.string()).nonempty(),
+  validationErrors: z.array(z.string()),
 });
 export type MonkeyValidationError = z.infer<typeof MonkeyValidationErrorSchema>;
 

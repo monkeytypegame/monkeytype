@@ -37,6 +37,7 @@
     "release-dry": "monkeytype-release --dry",
     "hotfix-fe": "npm run build-fe && cd frontend && npm run deploy-live && monkeytype-purge",
     "hotfix-be": "monkeytype-deploy-be",
+    "hotfix": "npm run hotfix-be && npm run hotfix-fe",
     "pretty-check": "prettier --check .",
     "pretty-check-be": "prettier --check ./backend",
     "pretty-check-fe": "prettier --check ./frontend/src",
@@ -65,7 +66,7 @@
     "knip": "2.19.2",
     "lint-staged": "13.2.3",
     "only-allow": "1.2.1",
-    "prettier": "2.5.1",
+    "prettier": "2.8.8",
     "turbo": "2.0.12",
     "vitest": "2.0.5"
   },
@@ -78,6 +79,6 @@
       "eslint"
     ]
   },
-  "version": "24.34.0",
+  "version": "24.37.0",
   "packageManager": "pnpm@9.6.0"
 }

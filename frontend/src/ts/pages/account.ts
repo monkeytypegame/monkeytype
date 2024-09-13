@@ -1036,7 +1036,7 @@ function sortAndRefreshHistory(
 
   if (filteredResults.length < 2) return;
 
-  const key = keyString as keyof typeof filteredResults[0];
+  const key = keyString as keyof (typeof filteredResults)[0];
 
   // This allows to reverse the sorting order when clicking multiple times on the table header
   let descending = true;
@@ -1217,7 +1217,7 @@ $(".pageAccount .group.presetFilterButtons").on(
   "click",
   ".filterBtns .filterPresets .select-filter-preset",
   async (e) => {
-    await ResultFilters.setFilterPreset($(e.target).data("id"));
+    await ResultFilters.setFilterPreset($(e.target).data("id") as string);
     void update();
   }
 );

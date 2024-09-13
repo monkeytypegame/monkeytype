@@ -179,10 +179,6 @@ declare namespace MonkeyTypes {
     hasCSS?: boolean;
   };
 
-  type PresetConfig = {
-    tags: string[];
-  } & import("@monkeytype/contracts/schemas/configs").Config;
-
   type SnapshotPreset =
     import("@monkeytype/contracts/schemas/presets").Preset & {
       display: string;
@@ -197,9 +193,9 @@ declare namespace MonkeyTypes {
     _id: string;
   } & RawCustomTheme;
 
-  type ConfigChanges = {
-    tags?: string[];
-  } & Partial<import("@monkeytype/contracts/schemas/configs").Config>;
+  type ConfigChanges = Partial<
+    import("@monkeytype/contracts/schemas/configs").Config
+  >;
 
   type LeaderboardMemory = {
     time: {
@@ -209,13 +205,13 @@ declare namespace MonkeyTypes {
 
   type QuoteRatings = Record<string, Record<number, number>>;
 
-  type UserTag = import("@monkeytype/shared-types").UserTag & {
+  type UserTag = import("@monkeytype/contracts/schemas/users").UserTag & {
     active?: boolean;
     display: string;
   };
 
   type Snapshot = Omit<
-    import("@monkeytype/shared-types").User,
+    import("@monkeytype/contracts/schemas/users").User,
     | "timeTyping"
     | "startedTests"
     | "completedTests"
@@ -231,7 +227,7 @@ declare namespace MonkeyTypes {
       startedTests: number;
       completedTests: number;
     };
-    details?: import("@monkeytype/shared-types").UserProfileDetails;
+    details?: import("@monkeytype/contracts/schemas/users").UserProfileDetails;
     inboxUnreadSize: number;
     streak: number;
     maxStreak: number;
@@ -301,7 +297,7 @@ declare namespace MonkeyTypes {
 
   type CommandExecOptions = {
     input?: string;
-    commandlineModal: AnimatedModal;
+    commandlineModal: import("../utils/animated-modal").default;
   };
 
   type Command = {
@@ -435,8 +431,8 @@ declare namespace MonkeyTypes {
 
   type BadgeReward = {
     type: "badge";
-    item: import("@monkeytype/shared-types").Badge;
-  } & Reward<import("@monkeytype/shared-types").Badge>;
+    item: import("@monkeytype/contracts/schemas/users").Badge;
+  } & Reward<import("@monkeytype/contracts/schemas/users").Badge>;
 
   type AllRewards = XpReward | BadgeReward;
 
@@ -499,5 +495,16 @@ declare namespace MonkeyTypes {
     difficulty: import("@monkeytype/contracts/schemas/shared").Difficulty;
     numbers: boolean;
     punctuation: boolean;
+  };
+  type CustomTextLimit = {
+    value: number;
+    mode: import("@monkeytype/contracts/schemas/util").CustomTextLimitMode;
+  };
+
+  type CustomTextData = Omit<
+    import("@monkeytype/contracts/schemas/results").CustomTextDataWithTextLen,
+    "textLen"
+  > & {
+    text: string[];
   };
 }

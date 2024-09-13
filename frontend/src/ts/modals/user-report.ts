@@ -7,6 +7,7 @@ import SlimSelect from "slim-select";
 import AnimatedModal from "../utils/animated-modal";
 import { isAuthenticated } from "../firebase";
 import { CharacterCounter } from "../elements/character-counter";
+import { ReportUserReason } from "@monkeytype/contracts/schemas/users";
 
 type State = {
   userUid?: string;
@@ -50,6 +51,7 @@ export async function show(options: ShowOptions): Promise<void> {
         "Inappropriate name";
       (modalEl.querySelector(".comment") as HTMLTextAreaElement).value = "";
 
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- TODO: update slim-select
       select = new SlimSelect({
         select: modalEl.querySelector(".reason") as HTMLElement,
         settings: {
@@ -80,7 +82,7 @@ async function submitReport(): Promise<void> {
     return;
   }
 
-  const reason = $("#userReportModal .reason").val() as string;
+  const reason = $("#userReportModal .reason").val() as ReportUserReason;
   const comment = $("#userReportModal .comment").val() as string;
   const captcha = captchaResponse;
 
@@ -114,16 +116,18 @@ async function submitReport(): Promise<void> {
   }
 
   Loader.show();
-  const response = await Ape.users.report(
-    state.userUid as string,
-    reason,
-    comment,
-    captcha
-  );
+  const response = await Ape.users.report({
+    body: {
+      uid: state.userUid as string,
+      reason,
+      comment,
+      captcha,
+    },
+  });
   Loader.hide();
 
   if (response.status !== 200) {
-    Notifications.add("Failed to report user: " + response.message, -1);
+    Notifications.add("Failed to report user: " + response.body.message, -1);
     return;
   }
 

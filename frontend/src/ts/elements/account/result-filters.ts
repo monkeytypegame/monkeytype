@@ -166,16 +166,12 @@ export async function setFilterPreset(id: string): Promise<void> {
   ).addClass("active");
 }
 
-function deepCopyFilter(filter: ResultFilters): ResultFilters {
-  return JSON.parse(JSON.stringify(filter)) as ResultFilters;
-}
-
 function addFilterPresetToSnapshot(filter: ResultFilters): void {
   const snapshot = DB.getSnapshot();
   if (!snapshot) return;
   DB.setSnapshot({
     ...snapshot,
-    filterPresets: [...snapshot.filterPresets, deepCopyFilter(filter)],
+    filterPresets: [...snapshot.filterPresets, Misc.deepClone(filter)],
   });
 }
 
@@ -183,15 +179,20 @@ function addFilterPresetToSnapshot(filter: ResultFilters): void {
 export async function createFilterPreset(name: string): Promise<void> {
   name = name.replace(/ /g, "_");
   Loader.show();
-  const result = await Ape.users.addResultFilterPreset({ ...filters, name });
+  const result = await Ape.users.addResultFilterPreset({
+    body: { ...filters, name },
+  });
   Loader.hide();
   if (result.status === 200) {
-    addFilterPresetToSnapshot({ ...filters, name, _id: result.data as string });
+    addFilterPresetToSnapshot({ ...filters, name, _id: result.body.data });
     void updateFilterPresets();
     Notifications.add("Filter preset created", 1);
   } else {
-    Notifications.add("Error creating filter preset: " + result.message, -1);
-    console.log("error creating filter preset: " + result.message);
+    Notifications.add(
+      "Error creating filter preset: " + result.body.message,
+      -1
+    );
+    console.log("error creating filter preset: " + result.body.message);
   }
 }
 
@@ -210,7 +211,9 @@ function removeFilterPresetFromSnapshot(id: string): void {
 // deletes the currently selected filter preset
 async function deleteFilterPreset(id: string): Promise<void> {
   Loader.show();
-  const result = await Ape.users.removeResultFilterPreset(id);
+  const result = await Ape.users.removeResultFilterPreset({
+    params: { presetId: id },
+  });
   Loader.hide();
   if (result.status === 200) {
     removeFilterPresetFromSnapshot(id);
@@ -218,8 +221,11 @@ async function deleteFilterPreset(id: string): Promise<void> {
     reset();
     Notifications.add("Filter preset deleted", 1);
   } else {
-    Notifications.add("Error deleting filter preset: " + result.message, -1);
-    console.log("error deleting filter preset", result.message);
+    Notifications.add(
+      "Error deleting filter preset: " + result.body.message,
+      -1
+    );
+    console.log("error deleting filter preset", result.body.message);
   }
 }
 
@@ -254,12 +260,12 @@ function setFilter<G extends ResultFiltersGroup>(
   filter: ResultFiltersGroupItem<G>,
   value: boolean
 ): void {
-  filters[group][filter] = value as typeof filters[G][typeof filter];
+  filters[group][filter] = value as (typeof filters)[G][typeof filter];
 }
 
 function setAllFilters(group: ResultFiltersGroup, value: boolean): void {
   Object.keys(getGroup(group)).forEach((filter) => {
-    filters[group][filter as keyof typeof filters[typeof group]] =
+    filters[group][filter as keyof (typeof filters)[typeof group]] =
       value as never;
   });
 }
@@ -340,10 +346,12 @@ export function updateActive(): void {
   }
 
   for (const [id, select] of Object.entries(groupSelects)) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- TODO: update slim-select
     const ss = select;
     const group = getGroup(id as ResultFiltersGroup);
     const everythingSelected = Object.values(group).every((v) => v === true);
 
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- TODO: update slim-select
     const newData = ss.store.getData();
 
     const allOption = $(
@@ -672,8 +680,10 @@ function adjustScrollposition(
   group: ResultFiltersGroup,
   topItem: number = 0
 ): void {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- TODO: update slim-select
   const slimSelect = groupSelects[group];
   if (slimSelect === undefined) return;
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- TODO: update slim-select
   const listElement = slimSelect.render.content.list;
   const topListItem = listElement.children.item(topItem) as HTMLElement;
 
@@ -769,6 +779,7 @@ export async function appendButtons(
     );
     if (el) {
       el.innerHTML = html;
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- TODO: update slim-select
       groupSelects["language"] = new SlimSelect({
         select: el.querySelector(".languageSelect") as HTMLSelectElement,
         settings: {
@@ -786,7 +797,9 @@ export async function appendButtons(
           ): void | boolean => {
             return selectBeforeChangeFn(
               "language",
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
               selectedOptions,
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
               oldSelectedOptions
             );
           },
@@ -828,6 +841,7 @@ export async function appendButtons(
     );
     if (el) {
       el.innerHTML = html;
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- TODO: update slim-select
       groupSelects["funbox"] = new SlimSelect({
         select: el.querySelector(".funboxSelect") as HTMLSelectElement,
         settings: {
@@ -845,7 +859,9 @@ export async function appendButtons(
           ): void | boolean => {
             return selectBeforeChangeFn(
               "funbox",
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
               selectedOptions,
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
               oldSelectedOptions
             );
           },
@@ -883,6 +899,7 @@ export async function appendButtons(
     );
     if (el) {
       el.innerHTML = html;
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- TODO: update slim-select
       groupSelects["tags"] = new SlimSelect({
         select: el.querySelector(".tagsSelect") as HTMLSelectElement,
         settings: {
@@ -900,7 +917,9 @@ export async function appendButtons(
           ): void | boolean => {
             return selectBeforeChangeFn(
               "tags",
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
               selectedOptions,
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
               oldSelectedOptions
             );
           },
@@ -935,12 +954,12 @@ $(".group.presetFilterButtons .filterBtns").on(
   "click",
   ".filterPresets .delete-filter-preset",
   (e) => {
-    void deleteFilterPreset($(e.currentTarget).data("id"));
+    void deleteFilterPreset($(e.currentTarget).data("id") as string);
   }
 );
 
 function verifyResultFiltersStructure(filterIn: ResultFilters): ResultFilters {
-  const filter = deepCopyFilter(filterIn);
+  const filter = Misc.deepClone(filterIn);
   Object.entries(defaultResultFilters).forEach((entry) => {
     const key = entry[0] as ResultFiltersGroup;
     const value = entry[1];

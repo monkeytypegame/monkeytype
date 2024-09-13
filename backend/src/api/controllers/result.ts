@@ -12,7 +12,7 @@ import {
 import objectHash from "object-hash";
 import Logger from "../../utils/logger";
 import "dotenv/config";
-import { MonkeyResponse2 } from "../../utils/monkey-response";
+import { MonkeyResponse } from "../../utils/monkey-response";
 import MonkeyError from "../../utils/error";
 import { areFunboxesCompatible, isTestTooShort } from "../../utils/validation";
 import {
@@ -73,7 +73,7 @@ try {
 }
 
 export async function getResults(
-  req: MonkeyTypes.Request2<GetResultsQuery>
+  req: MonkeyTypes.Request<GetResultsQuery>
 ): Promise<GetResultsResponse> {
   const { uid } = req.ctx.decodedToken;
   const premiumFeaturesEnabled = req.ctx.configuration.users.premium.enabled;
@@ -122,29 +122,29 @@ export async function getResults(
     },
     uid
   );
-  return new MonkeyResponse2("Results retrieved", results.map(convertResult));
+  return new MonkeyResponse("Results retrieved", results.map(convertResult));
 }
 
 export async function getLastResult(
-  req: MonkeyTypes.Request2
+  req: MonkeyTypes.Request
 ): Promise<GetLastResultResponse> {
   const { uid } = req.ctx.decodedToken;
   const results = await ResultDAL.getLastResult(uid);
-  return new MonkeyResponse2("Result retrieved", convertResult(results));
+  return new MonkeyResponse("Result retrieved", convertResult(results));
 }
 
 export async function deleteAll(
-  req: MonkeyTypes.Request2
-): Promise<MonkeyResponse2> {
+  req: MonkeyTypes.Request
+): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
 
   await ResultDAL.deleteAll(uid);
   void addLog("user_results_deleted", "", uid);
-  return new MonkeyResponse2("All results deleted", null);
+  return new MonkeyResponse("All results deleted", null);
 }
 
 export async function updateTags(
-  req: MonkeyTypes.Request2<undefined, UpdateResultTagsRequest>
+  req: MonkeyTypes.Request<undefined, UpdateResultTagsRequest>
 ): Promise<UpdateResultTagsResponse> {
   const { uid } = req.ctx.decodedToken;
   const { tagIds, resultId } = req.body;
@@ -173,13 +173,13 @@ export async function updateTags(
 
   const user = await UserDAL.getPartialUser(uid, "update tags", ["tags"]);
   const tagPbs = await UserDAL.checkIfTagPb(uid, user, result);
-  return new MonkeyResponse2("Result tags updated", {
+  return new MonkeyResponse("Result tags updated", {
     tagPbs,
   });
 }
 
 export async function addResult(
-  req: MonkeyTypes.Request2<undefined, AddResultRequest>
+  req: MonkeyTypes.Request<undefined, AddResultRequest>
 ): Promise<AddResultResponse> {
   const { uid } = req.ctx.decodedToken;
 
@@ -198,6 +198,10 @@ export async function addResult(
   if (isTestTooShort(completedEvent)) {
     const status = MonkeyStatusCodes.TEST_TOO_SHORT;
     throw new MonkeyError(status.code, status.message);
+  }
+
+  if (user.lbOptOut !== true && completedEvent.acc < 75) {
+    throw new MonkeyError(400, "Accuracy too low");
   }
 
   const resulthash = completedEvent.hash;
@@ -626,7 +630,7 @@ export async function addResult(
 
   incrementResult(completedEvent, dbresult.isPb);
 
-  return new MonkeyResponse2("Result saved", data);
+  return new MonkeyResponse("Result saved", data);
 }
 
 type XpResult = {
