@@ -1,4 +1,4 @@
-import { deepClone, isObject } from "../../src/ts/utils/misc";
+import { deepClone, getErrorMessage, isObject } from "../../src/ts/utils/misc";
 import {
   getLanguageDisplayString,
   removeLanguageSize,
@@ -166,6 +166,61 @@ describe("misc.ts", () => {
       tests.forEach((test) => {
         const result = deepClone(test.input);
         expect(result).toStrictEqual(test.expected);
+      });
+    });
+  });
+  describe("getErrorMesssage", () => {
+    it("should correctly get the error message", () => {
+      const tests = [
+        {
+          input: null,
+          expected: undefined,
+        },
+        {
+          input: undefined,
+          expected: undefined,
+        },
+        {
+          input: "",
+          expected: undefined,
+        },
+        {
+          input: {},
+          expected: undefined,
+        },
+        {
+          input: "error message",
+          expected: "error message",
+        },
+        {
+          input: 1,
+          expected: "1",
+        },
+        {
+          input: { message: "error message" },
+          expected: "error message",
+        },
+        {
+          input: { message: 1 },
+          expected: "1",
+        },
+        {
+          input: { message: "" },
+          expected: undefined,
+        },
+        {
+          input: { message: {} },
+          expected: undefined,
+        },
+        {
+          input: new Error("error message"),
+          expected: "error message",
+        },
+      ];
+
+      tests.forEach((test) => {
+        const result = getErrorMessage(test.input);
+        expect(result).toBe(test.expected);
       });
     });
   });
