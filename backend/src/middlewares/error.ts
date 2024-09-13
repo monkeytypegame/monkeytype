@@ -52,7 +52,9 @@ async function errorHandlingMiddleware(
       monkeyResponse.message = error.message;
       monkeyResponse.status = error.status;
     } else {
-      monkeyResponse.message = `Oops! Our monkeys dropped their bananas. Please try again later. - ${monkeyResponse.data.errorId}`;
+      monkeyResponse.message = `Oops! Our monkeys dropped their bananas. Please try again later. - ${
+        (monkeyResponse.data as { errorId: string })?.errorId
+      }`;
     }
 
     await incrementBadAuth(req, res, monkeyResponse.status);
@@ -100,7 +102,7 @@ async function errorHandlingMiddleware(
     }
 
     if (monkeyResponse.status < 500) {
-      delete monkeyResponse.data.errorId;
+      delete (monkeyResponse.data as { errorId?: string }).errorId;
     }
 
     handleMonkeyResponse(monkeyResponse, res);
