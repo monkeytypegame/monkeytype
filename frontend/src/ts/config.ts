@@ -2064,8 +2064,8 @@ export async function loadFromLocalStorage(): Promise<void> {
   loadDone();
 }
 
-export function getConfigChanges(): MonkeyTypes.PresetConfig {
-  const configChanges = {} as MonkeyTypes.PresetConfig;
+export function getConfigChanges(): MonkeyTypes.ConfigChanges {
+  const configChanges: MonkeyTypes.ConfigChanges = {};
   typedKeys(config)
     .filter((key) => {
       return config[key] !== DefaultConfig[key];

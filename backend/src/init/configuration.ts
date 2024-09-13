@@ -32,7 +32,7 @@ function mergeConfigurations(
       const isSourceValueObject = _.isPlainObject(sourceValue);
 
       if (isBaseValueObject && isSourceValueObject) {
-        merge(baseValue, sourceValue);
+        merge(baseValue as object, sourceValue as object);
       } else if (identity(baseValue) === identity(sourceValue)) {
         base[key] = sourceValue;
       }

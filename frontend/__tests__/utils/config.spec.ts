@@ -1,6 +1,9 @@
 import { migrateConfig } from "../../src/ts/utils/config";
 import DefaultConfig from "../../src/ts/constants/default-config";
-import { PartialConfig } from "@monkeytype/contracts/schemas/configs";
+import {
+  PartialConfig,
+  ShowAverageSchema,
+} from "@monkeytype/contracts/schemas/configs";
 
 describe("config.ts", () => {
   describe("migrateConfig", () => {

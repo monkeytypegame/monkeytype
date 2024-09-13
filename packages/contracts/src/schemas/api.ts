@@ -1,5 +1,6 @@
 import { z, ZodSchema } from "zod";
 import { RateLimitIds, RateLimiterId } from "../rate-limit";
+import { RequireConfiguration } from "../require-configuration";
 
 export type OpenApiTag =
   | "configs"
@@ -13,7 +14,8 @@ export type OpenApiTag =
   | "configuration"
   | "development"
   | "users"
-  | "quotes";
+  | "quotes"
+  | "webhooks";
 
 export type PermissionId =
   | "quoteMod"
@@ -34,6 +36,9 @@ export type EndpointMetadata = {
 
   /** Role/Rples needed to  access the endpoint*/
   requirePermission?: PermissionId | PermissionId[];
+
+  /** Endpoint is only available if configuration allows it */
+  requireConfiguration?: RequireConfiguration | RequireConfiguration[];
 };
 
 /**
@@ -56,6 +61,8 @@ export type RequestAuthenticationOptions = {
   noCache?: boolean;
   /** Allow unauthenticated requests on dev  */
   isPublicOnDev?: boolean;
+  /** Endpoint is a webhook only to be called by Github */
+  isGithubWebhook?: boolean;
 };
 
 export const MonkeyResponseSchema = z.object({

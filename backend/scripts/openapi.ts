@@ -3,7 +3,7 @@ import { contract } from "@monkeytype/contracts/index";
 import { writeFileSync, mkdirSync } from "fs";
 import {
   EndpointMetadata,
-  Permission,
+  PermissionId,
 } from "@monkeytype/contracts/schemas/api";
 import type { OpenAPIObject, OperationObject } from "openapi3-ts";
 import {
@@ -134,6 +134,12 @@ export function getOpenApi(): OpenAPIObject {
           "x-displayName": "Development",
           "x-public": "no",
         },
+        {
+          name: "webhooks",
+          description: "Endpoints for incoming webhooks.",
+          "x-displayName": "Webhooks",
+          "x-public": "yes",
+        },
       ],
     },
 
@@ -142,15 +148,15 @@ export function getOpenApi(): OpenAPIObject {
       setOperationId: "concatenated-path",
       operationMapper: (operation, route) => {
         const metadata = route.metadata as EndpointMetadata;
-
-        if (!operation.description?.trim()?.endsWith("."))
+        if (!operation.description?.trim()?.endsWith(".")) {
           operation.description += ".";
+        }
         operation.description += "\n\n";
 
         addAuth(operation, metadata);
         addRateLimit(operation, metadata);
+        addRequiredConfiguration(operation, metadata);
         addTags(operation, metadata);
-
         return operation;
       },
     }
@@ -260,6 +266,16 @@ function formatWindow(window: Window): string {
     return `every ${duration}`;
   }
   return "per " + window;
+}
+
+function addRequiredConfiguration(
+  operation: OperationObject,
+  metadata: EndpointMetadata | undefined
+): void {
+  if (metadata === undefined || metadata.requireConfiguration === undefined)
+    return;
+
+  operation.description += `**Required configuration:** This operation can only be called if the [configuration](#tag/configuration/operation/configuration.get) for  \`${metadata.requireConfiguration.path}\` is \`true\`.\n\n`;
 }
 
 //detect if we run this as a main

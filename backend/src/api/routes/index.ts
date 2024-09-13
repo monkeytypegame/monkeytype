@@ -36,13 +36,13 @@ import { MonkeyValidationError } from "@monkeytype/contracts/schemas/api";
 import { authenticateTsRestRequest } from "../../middlewares/auth";
 import { rateLimitRequest } from "../../middlewares/rate-limit";
 import { verifyPermissions } from "../../middlewares/permission";
+import { verifyRequiredConfiguration } from "../../middlewares/configuration";
 
 const pathOverride = process.env["API_PATH_OVERRIDE"];
 const BASE_ROUTE = pathOverride !== undefined ? `/${pathOverride}` : "";
 const APP_START_TIME = Date.now();
 
 const API_ROUTE_MAP = {
-  "/webhooks": webhooks,
   "/docs": docs,
 };
 
@@ -60,6 +60,7 @@ const router = s.router(contract, {
   dev,
   users,
   quotes,
+  webhooks,
 });
 
 export function addApiRoutes(app: Application): void {
@@ -116,6 +117,7 @@ function applyTsRestApiRoutes(app: IRouter): void {
     globalMiddleware: [
       authenticateTsRestRequest(),
       rateLimitRequest(),
+      verifyRequiredConfiguration(),
       verifyPermissions(),
     ],
   });
@@ -152,7 +154,6 @@ function applyDevApiRoutes(app: Application): void {
 function applyApiRoutes(app: Application): void {
   addSwaggerMiddlewares(app);
 
-  //TODO move to globalMiddleware when all endpoints use tsrest
   app.use(
     (req: MonkeyTypes.Request, res: Response, next: NextFunction): void => {
       if (req.path.startsWith("/configuration")) {

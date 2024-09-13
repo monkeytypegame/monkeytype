@@ -24,9 +24,15 @@ describe("PresetController", () => {
         _id: new ObjectId(),
         uid: "123456789",
         name: "test2",
-        config: { language: "polish" },
+        settingGroups: ["hideElements"],
+        config: {
+          showKeyTips: true,
+          capsLockWarning: true,
+          showOutOfFocusWarning: true,
+          showAverage: "off",
+        },
       };
-
+      //@ts-expect-error
       getPresetsMock.mockResolvedValue([presetOne, presetTwo]);
 
       //WHEN
@@ -47,7 +53,13 @@ describe("PresetController", () => {
           {
             _id: presetTwo._id.toHexString(),
             name: "test2",
-            config: { language: "polish" },
+            settingGroups: ["hideElements"],
+            config: {
+              showKeyTips: true,
+              capsLockWarning: true,
+              showOutOfFocusWarning: true,
+              showAverage: "off",
+            },
           },
         ],
       });
@@ -81,7 +93,7 @@ describe("PresetController", () => {
       addPresetMock.mockReset();
     });
 
-    it("should add the users preset", async () => {
+    it("should add the users full preset", async () => {
       //GIVEN
       addPresetMock.mockResolvedValue({ presetId: "1" });
 
@@ -109,6 +121,65 @@ describe("PresetController", () => {
         name: "new",
         config: { language: "english", tags: ["one", "two"] },
       });
+    });
+    it("should add the users partial preset", async () => {
+      //GIVEN
+      addPresetMock.mockResolvedValue({ presetId: "1" });
+
+      //WHEN
+      const { body } = await mockApp
+        .post("/presets")
+        .set("authorization", "Uid 123456789")
+        .accept("application/json")
+        .send({
+          name: "new",
+          settingGroups: ["hideElements"],
+          config: {
+            showKeyTips: true,
+            capsLockWarning: true,
+            showOutOfFocusWarning: true,
+            showAverage: "off",
+          },
+        })
+        .expect(200);
+
+      //THEN
+      expect(body).toStrictEqual({
+        message: "Preset created",
+        data: { presetId: "1" },
+      });
+
+      expect(addPresetMock).toHaveBeenCalledWith("123456789", {
+        name: "new",
+        settingGroups: ["hideElements"],
+        config: {
+          showKeyTips: true,
+          capsLockWarning: true,
+          showOutOfFocusWarning: true,
+          showAverage: "off",
+        },
+      });
+    });
+    it("should fail for no setting groups in partial presets", async () => {
+      //WHEN
+      const { body } = await mockApp
+        .post("/presets")
+        .set("authorization", "Uid 123456789")
+        .accept("application/json")
+        .send({
+          name: "update",
+          settingGroups: [],
+          config: {},
+        })
+        .expect(422);
+
+      expect(body).toStrictEqual({
+        message: "Invalid request data schema",
+        validationErrors: [
+          `"settingGroups" Array must contain at least 1 element(s)`,
+        ],
+      });
+      expect(addPresetMock).not.toHaveBeenCalled();
     });
     it("should not fail with emtpy config", async () => {
       //GIVEN
@@ -149,7 +220,7 @@ describe("PresetController", () => {
       });
       expect(addPresetMock).not.toHaveBeenCalled();
     });
-    it("should not fail with invalid preset", async () => {
+    it("should fail with invalid preset", async () => {
       //WHEN
       const { body } = await mockApp
         .post("/presets")
@@ -176,6 +247,32 @@ describe("PresetController", () => {
           `"config" Unrecognized key(s) in object: 'extra'`,
           `Unrecognized key(s) in object: '_id', 'extra'`,
         ],
+      });
+
+      expect(addPresetMock).not.toHaveBeenCalled();
+    });
+    it("should fail with duplicate group settings in partial preset", async () => {
+      //WHEN
+      const { body } = await mockApp
+        .post("/presets")
+        .set("authorization", "Uid 123456789")
+        .accept("application/json")
+        .send({
+          name: "new",
+          settingGroups: ["hideElements", "hideElements"],
+          config: {
+            showKeyTips: true,
+            capsLockWarning: true,
+            showOutOfFocusWarning: true,
+            showAverage: "off",
+          },
+        })
+        .expect(422);
+
+      //THEN
+      expect(body).toStrictEqual({
+        message: "Invalid request data schema",
+        validationErrors: [`"settingGroups" No duplicates allowed.`],
       });
 
       expect(addPresetMock).not.toHaveBeenCalled();
@@ -220,6 +317,46 @@ describe("PresetController", () => {
         config: { language: "english", tags: ["one", "two"] },
       });
     });
+    it("should update the users partial preset", async () => {
+      //GIVEN
+      editPresetMock.mockResolvedValue({} as any);
+
+      //WHEN
+      const { body } = await mockApp
+        .patch("/presets")
+        .set("authorization", "Uid 123456789")
+        .accept("application/json")
+        .send({
+          _id: "1",
+          name: "new",
+          settingGroups: ["hideElements"],
+          config: {
+            showKeyTips: true,
+            capsLockWarning: true,
+            showOutOfFocusWarning: true,
+            showAverage: "off",
+          },
+        })
+        .expect(200);
+
+      //THEN
+      expect(body).toStrictEqual({
+        message: "Preset updated",
+        data: null,
+      });
+
+      expect(editPresetMock).toHaveBeenCalledWith("123456789", {
+        _id: "1",
+        name: "new",
+        settingGroups: ["hideElements"],
+        config: {
+          showKeyTips: true,
+          capsLockWarning: true,
+          showOutOfFocusWarning: true,
+          showAverage: "off",
+        },
+      });
+    });
     it("should not fail with emtpy config", async () => {
       //GIVEN
 
@@ -256,15 +393,11 @@ describe("PresetController", () => {
 
       expect(body).toStrictEqual({
         message: "Invalid request data schema",
-        validationErrors: [
-          `"_id" Required`,
-          `"name" Required`,
-          `"config" Required`,
-        ],
+        validationErrors: [`"_id" Required`, `"name" Required`],
       });
       expect(editPresetMock).not.toHaveBeenCalled();
     });
-    it("should not fail with invalid preset", async () => {
+    it("should fail with invalid preset", async () => {
       //WHEN
       const { body } = await mockApp
         .patch("/presets")
@@ -274,6 +407,7 @@ describe("PresetController", () => {
           _id: "1",
           name: "update",
           extra: "extra",
+          settingGroups: ["mappers"],
           config: {
             extra: "extra",
             autoSwitchTheme: "yes",
@@ -286,11 +420,39 @@ describe("PresetController", () => {
       expect(body).toStrictEqual({
         message: "Invalid request data schema",
         validationErrors: [
+          `"settingGroups.0" Invalid enum value. Expected 'test' | 'behavior' | 'input' | 'sound' | 'caret' | 'appearance' | 'theme' | 'hideElements' | 'ads' | 'hidden', received 'mappers'`,
           `"config.autoSwitchTheme" Expected boolean, received string`,
           `"config.confidenceMode" Invalid enum value. Expected 'off' | 'on' | 'max', received 'pretty'`,
           `"config" Unrecognized key(s) in object: 'extra'`,
           `Unrecognized key(s) in object: 'extra'`,
         ],
+      });
+
+      expect(editPresetMock).not.toHaveBeenCalled();
+    });
+    it("should fail with duplicate group settings in partial preset", async () => {
+      //WHEN
+      const { body } = await mockApp
+        .patch("/presets")
+        .set("authorization", "Uid 123456789")
+        .accept("application/json")
+        .send({
+          _id: "1",
+          name: "new",
+          settingGroups: ["hideElements", "hideElements"],
+          config: {
+            showKeyTips: true,
+            capsLockWarning: true,
+            showOutOfFocusWarning: true,
+            showAverage: "off",
+          },
+        })
+        .expect(422);
+
+      //THEN
+      expect(body).toStrictEqual({
+        message: "Invalid request data schema",
+        validationErrors: [`"settingGroups" No duplicates allowed.`],
       });
 
       expect(editPresetMock).not.toHaveBeenCalled();

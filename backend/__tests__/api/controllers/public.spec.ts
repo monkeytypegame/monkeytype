@@ -18,9 +18,8 @@ describe("PublicController", () => {
       //WHEN
       const { body } = await mockApp
         .get("/public/speedHistogram")
-        .query({ language: "english", mode: "time", mode2: "60" });
-      //.expect(200);
-      console.log(body);
+        .query({ language: "english", mode: "time", mode2: "60" })
+        .expect(200);
 
       //THEN
       expect(body).toEqual({
