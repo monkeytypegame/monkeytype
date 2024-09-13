@@ -99,8 +99,8 @@ async function errorHandlingMiddleware(
       Logger.error(`Error: ${error.message} Stack: ${error.stack}`);
     }
 
-    if (monkeyResponse.status < 500) {
-      delete monkeyResponse.data.errorId;
+    if (status < 500) {
+      delete data.errorId;
     }
 
     handleErrorResponse(res, status, message, data);
