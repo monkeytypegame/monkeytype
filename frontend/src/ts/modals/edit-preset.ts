@@ -139,7 +139,9 @@ function addCheckboxListeners(): void {
     `#editPresetModal .modal .changePresetToCurrentCheckbox input`
   );
   presetToCurrentCheckbox.on("change", async () => {
-    state.setPresetToCurrent = presetToCurrentCheckbox.prop("checked");
+    state.setPresetToCurrent = presetToCurrentCheckbox.prop(
+      "checked"
+    ) as boolean;
     await updateEditPresetUI();
   });
 }
@@ -212,33 +214,11 @@ async function apply(): Promise<void> {
     "data-preset-id"
   ) as string;
 
-  const updateConfig = $("#editPresetModal .modal label input").prop("checked");
+  const updateConfig = $("#editPresetModal .modal label input").prop(
+    "checked"
+  ) as boolean;
 
   const snapshotPresets = DB.getSnapshot()?.presets ?? [];
-
-  if (action === undefined) {
-    return;
-  }
-
-  const noPartialGroupSelected: boolean =
-    ["add", "edit"].includes(action) &&
-    state.presetType === "partial" &&
-    Array.from(state.checkboxes.values()).every((val: boolean) => !val);
-  if (noPartialGroupSelected) {
-    Notifications.add(
-      "At least one setting group must be active while saving partial presets",
-      0
-    );
-    return;
-  }
-
-  const noPresetName: boolean =
-    ["add", "edit"].includes(action) &&
-    presetName.replace(/^_+|_+$/g, "").length === 0; //all whitespace names are rejected
-  if (noPresetName) {
-    Notifications.add("Preset name cannot be empty", 0);
-    return;
-  }
 
   if (action === undefined) {
     return;
@@ -496,14 +476,13 @@ function getPartialConfigChanges(
         state.checkboxes.get(getSettingGroup(settingName)) === true
     )
     .forEach((settingName) => {
-      //@ts-expect-error this is fine
-      activeConfigChanges[settingName] =
-        //@ts-expect-error this is fine
-        configChanges[settingName] !== undefined
-          ? //@ts-expect-error this is fine
-            configChanges[settingName]
-          : //@ts-expect-error this is fine
-            defaultConfig[settingName];
+      const safeSettingName = settingName as keyof MonkeyTypes.ConfigChanges;
+      const newValue =
+        configChanges[safeSettingName] !== undefined
+          ? configChanges[safeSettingName]
+          : defaultConfig[safeSettingName];
+      // @ts-expect-error cant figure this one out, but it works
+      activeConfigChanges[safeSettingName] = newValue;
     });
   return activeConfigChanges;
 }
