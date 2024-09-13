@@ -405,23 +405,23 @@ export async function updateEmail(
     await UserDAL.updateEmail(uid, newEmail);
   } catch (e) {
     if (isFirebaseError(e)) {
-      if (e.errorInfo.code === "auth/email-already-exists") {
+      if (e.code === "auth/email-already-exists") {
         throw new MonkeyError(
           409,
           "The email address is already in use by another account"
         );
-      } else if (e.errorInfo.code === "auth/invalid-email") {
+      } else if (e.code === "auth/invalid-email") {
         throw new MonkeyError(400, "Invalid email address");
-      } else if (e.errorInfo.code === "auth/too-many-requests") {
+      } else if (e.code === "auth/too-many-requests") {
         throw new MonkeyError(429, "Too many requests. Please try again later");
-      } else if (e.errorInfo.code === "auth/user-not-found") {
+      } else if (e.code === "auth/user-not-found") {
         throw new MonkeyError(
           404,
           "User not found in the auth system",
           "update email",
           uid
         );
-      } else if (e.errorInfo.code === "auth/invalid-user-token") {
+      } else if (e.code === "auth/invalid-user-token") {
         throw new MonkeyError(401, "Invalid user token", "update email", uid);
       }
     } else {

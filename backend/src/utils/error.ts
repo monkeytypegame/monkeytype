@@ -4,6 +4,7 @@ import { MonkeyServerErrorType } from "@monkeytype/contracts/schemas/api";
 import { FirebaseError } from "firebase-admin";
 
 type FirebaseErrorParent = {
+  code: string;
   errorInfo: FirebaseError;
 };
 
@@ -11,6 +12,7 @@ type FirebaseErrorParent = {
 export function isFirebaseError(err: any): err is FirebaseErrorParent {
   return (
     typeof err === "object" &&
+    "code" in err &&
     "errorInfo" in err &&
     "codePrefix" in err &&
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
