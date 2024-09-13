@@ -41,7 +41,7 @@ import type {
 import Ape from "../ape";
 import { CompletedEvent } from "@monkeytype/contracts/schemas/results";
 
-let result: Omit<CompletedEvent, "hash" | "uid">;
+let result: CompletedEvent;
 let maxChartVal: number;
 
 let useUnsmoothedRaw = false;
@@ -829,7 +829,7 @@ function updateQuoteSource(randomQuote: MonkeyTypes.Quote | null): void {
 }
 
 export async function update(
-  res: Omit<CompletedEvent, "hash" | "uid">,
+  res: CompletedEvent,
   difficultyFailed: boolean,
   failReason: string,
   afkDetected: boolean,
