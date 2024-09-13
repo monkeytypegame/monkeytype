@@ -59,7 +59,14 @@ export function checkAndUpdatePb(
   }
 
   if (!_.isNil(lbPersonalBests)) {
-    updateLeaderboardPersonalBests(userPb, lbPersonalBests, result);
+    const newLbPb = updateLeaderboardPersonalBests(
+      userPb,
+      lbPersonalBests,
+      result
+    );
+    if (newLbPb !== null) {
+      lbPersonalBests = newLbPb;
+    }
   }
 
   return {
@@ -166,24 +173,20 @@ function buildPersonalBest(result: Result): PersonalBest {
 }
 
 //TODO add tests, i changed implementation
-function updateLeaderboardPersonalBests(
+export function updateLeaderboardPersonalBests(
   userPersonalBests: PersonalBests,
   lbPersonalBests: MonkeyTypes.LbPersonalBests,
   result: Result
-): void {
+): MonkeyTypes.LbPersonalBests | null {
   if (!shouldUpdateLeaderboardPersonalBests(result)) {
-    return;
+    return null;
   }
-
   const mode = result.mode;
   const mode2 = result.mode2;
-
   const lbPb = lbPersonalBests ?? {};
   lbPb[mode] ??= {};
   lbPb[mode][mode2] ??= {};
-
   const bestForEveryLanguage = {};
-
   userPersonalBests[mode][mode2].forEach((pb: PersonalBest) => {
     const language = pb.language;
     if (
@@ -193,14 +196,18 @@ function updateLeaderboardPersonalBests(
       bestForEveryLanguage[language] = pb;
     }
   });
-
   _.each(bestForEveryLanguage, (pb: PersonalBest, language: string) => {
     const languageDoesNotExist = lbPb[mode][mode2][language] === undefined;
-
-    if (languageDoesNotExist || lbPb[mode][mode2][language].wpm < pb.wpm) {
+    const languageIsEmpty = _.isEmpty(lbPb[mode][mode2][language]);
+    if (
+      languageDoesNotExist ||
+      languageIsEmpty ||
+      lbPb[mode][mode2][language].wpm < pb.wpm
+    ) {
       lbPb[mode][mode2][language] = pb;
     }
   });
+  return lbPb;
 }
 
 function shouldUpdateLeaderboardPersonalBests(result: Result): boolean {

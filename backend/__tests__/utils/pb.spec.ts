@@ -57,10 +57,15 @@ describe("Pb Utils", () => {
         mode2: "15",
       } as unknown as Result<Mode>;
 
-      const run = pb.checkAndUpdatePb(userPbs, undefined, result);
+      const run = pb.checkAndUpdatePb(
+        userPbs,
+        {} as MonkeyTypes.LbPersonalBests,
+        result
+      );
 
       expect(run.isPb).toBe(true);
       expect(run.personalBests?.["time"]?.["15"]?.[0]).not.toBe(undefined);
+      expect(run.lbPersonalBests).not.toBe({});
     });
     it("should not override default pb when saving numbers test", () => {
       const userPbs: PersonalBests = {
@@ -109,6 +114,95 @@ describe("Pb Utils", () => {
           expect.objectContaining({ numbers: true, wpm: 110 }),
         ])
       );
+    });
+  });
+  describe("updateLeaderboardPersonalBests", () => {
+    const userPbs: PersonalBests = {
+      time: {
+        "15": [
+          {
+            acc: 100,
+            consistency: 100,
+            difficulty: "normal",
+            lazyMode: false,
+            language: "english",
+            numbers: false,
+            punctuation: false,
+            raw: 100,
+            timestamp: 0,
+            wpm: 100,
+          },
+          {
+            acc: 100,
+            consistency: 100,
+            difficulty: "normal",
+            lazyMode: false,
+            language: "spanish",
+            numbers: false,
+            punctuation: false,
+            raw: 100,
+            timestamp: 0,
+            wpm: 100,
+          },
+        ],
+      },
+      words: {},
+      custom: {},
+      quote: {},
+      zen: {},
+    };
+    it("should update leaderboard personal bests if they dont exist or the structure is incomplete", () => {
+      const lbpbstartingvalues = [
+        undefined,
+        {},
+        { time: {} },
+        { time: { "15": {} } },
+        { time: { "15": { english: {} } } },
+      ];
+
+      const result15 = {
+        mode: "time",
+        mode2: "15",
+      } as unknown as Result<Mode>;
+
+      for (const lbPb of lbpbstartingvalues) {
+        const run = pb.updateLeaderboardPersonalBests(
+          userPbs,
+          _.cloneDeep(lbPb) as MonkeyTypes.LbPersonalBests,
+          result15
+        );
+
+        expect(run).toEqual({
+          time: {
+            "15": {
+              english: {
+                acc: 100,
+                consistency: 100,
+                difficulty: "normal",
+                lazyMode: false,
+                language: "english",
+                numbers: false,
+                punctuation: false,
+                raw: 100,
+                timestamp: 0,
+                wpm: 100,
+              },
+              spanish: {
+                acc: 100,
+                consistency: 100,
+                difficulty: "normal",
+                lazyMode: false,
+                language: "spanish",
+                numbers: false,
+                punctuation: false,
+                raw: 100,
+                timestamp: 0,
+                wpm: 100,
+              },
+            },
+          },
+        });
+      }
     });
   });
 });
