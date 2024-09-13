@@ -1019,16 +1019,12 @@ export function scrollTape(): void {
         wordsToHideCount++;
       } else {
         fullLinesWidth += wordOuterWidth;
-        if (i < activeWordIndex) wordsWidthBeforeActive += wordOuterWidth;
+        if (i < activeWordIndex) wordsWidthBeforeActive = fullLinesWidth;
       }
     } else if (child.classList.contains("afterNewline")) {
       if (leadingNewLine === 1) leadingNewLine = 0;
       else {
-        const lastWordBeforeNewline = wordsChildrenArr[i - 2] as HTMLElement;
-        const letters = lastWordBeforeNewline.querySelectorAll("letter");
-        const nlCharWidth =
-          $(letters[letters.length - 1] as Element).outerWidth(true) ?? 0;
-        fullLinesWidth -= nlCharWidth + wordRightMargin;
+        fullLinesWidth -= wordRightMargin;
         if (i < activeWordIndex) wordsWidthBeforeActive = fullLinesWidth;
         if (fullLinesWidth > wordsEl.offsetWidth) {
           linesWidths.push(wordsEl.offsetWidth);
