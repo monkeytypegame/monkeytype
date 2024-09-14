@@ -53,6 +53,9 @@ importers:
       '@monkeytype/contracts':
         specifier: workspace:*
         version: link:../packages/contracts
+      '@monkeytype/testing':
+        specifier: workspace:*
+        version: link:../packages/util
       '@ts-rest/core':
         specifier: 3.51.0
         version: 3.51.0(@types/node@20.14.11)(zod@3.23.8)
@@ -264,6 +267,9 @@ importers:
       '@monkeytype/contracts':
         specifier: workspace:*
         version: link:../packages/contracts
+      '@monkeytype/testing':
+        specifier: workspace:*
+        version: link:../packages/util
       '@ts-rest/core':
         specifier: 3.51.0
         version: 3.51.0(@types/node@20.14.11)(zod@3.23.8)
@@ -530,6 +536,36 @@ importers:
         version: 3.1.4
 
   packages/typescript-config: {}
+
+  packages/util:
+    devDependencies:
+      '@monkeytype/eslint-config':
+        specifier: workspace:*
+        version: link:../eslint-config
+      '@monkeytype/typescript-config':
+        specifier: workspace:*
+        version: link:../typescript-config
+      chokidar:
+        specifier: 3.6.0
+        version: 3.6.0
+      esbuild:
+        specifier: 0.23.0
+        version: 0.23.0
+      eslint:
+        specifier: 8.57.0
+        version: 8.57.0
+      madge:
+        specifier: 8.0.0
+        version: 8.0.0(typescript@5.5.4)
+      rimraf:
+        specifier: 6.0.1
+        version: 6.0.1
+      typescript:
+        specifier: 5.5.4
+        version: 5.5.4
+      vitest:
+        specifier: 2.0.5
+        version: 2.0.5(@types/node@20.14.11)(happy-dom@13.4.1)(sass@1.70.0)(terser@5.31.3)
 
 packages:
 
