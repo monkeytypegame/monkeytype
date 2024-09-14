@@ -53,7 +53,7 @@ importers:
       '@monkeytype/contracts':
         specifier: workspace:*
         version: link:../packages/contracts
-      '@monkeytype/testing':
+      '@monkeytype/util':
         specifier: workspace:*
         version: link:../packages/util
       '@ts-rest/core':
@@ -267,7 +267,7 @@ importers:
       '@monkeytype/contracts':
         specifier: workspace:*
         version: link:../packages/contracts
-      '@monkeytype/testing':
+      '@monkeytype/util':
         specifier: workspace:*
         version: link:../packages/util
       '@ts-rest/core':
