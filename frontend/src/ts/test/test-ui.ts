@@ -1021,16 +1021,14 @@ export function scrollTape(): void {
       const wordOuterWidth = $(child).outerWidth(true) ?? 0;
       const forWordLeft = Math.floor(child.offsetLeft);
       const forWordWidth = Math.floor(child.offsetWidth);
-      if (i < activeWordIndex) {
-        if (forWordLeft < 0 - forWordWidth) {
-          toHide.push(child);
-          widthToHide += wordOuterWidth;
-          wordsToHideCount++;
-        } else {
-          fullLinesWidth += wordOuterWidth;
-          wordsWidthBeforeActive = fullLinesWidth;
-        }
-      } else fullLinesWidth += wordOuterWidth;
+      if (forWordLeft < 0 - forWordWidth) {
+        toHide.push(child);
+        widthToHide += wordOuterWidth;
+        wordsToHideCount++;
+      } else {
+        fullLinesWidth += wordOuterWidth;
+        if (i < activeWordIndex) wordsWidthBeforeActive = fullLinesWidth;
+      }
     } else if (child.classList.contains("afterNewline")) {
       if (!leadingNewLine) {
         fullLinesWidth -= wordRightMargin;
