@@ -490,9 +490,9 @@ function updateTapeModeLine(): void {
   let firstLine = currentTop;
   for (let i = activeWordElementIndex - 1; i >= 0; i--) {
     firstLine = wordElements[i]?.offsetTop ?? currentTop;
-    if (firstLine < currentTop) break;
+    if (firstLine < currentTop - 10) break;
   }
-  if (firstLine < currentTop) lineJump(firstLine);
+  if (firstLine < currentTop - 10) lineJump(firstLine);
 }
 
 function updateWordsHeight(force = false): void {
@@ -966,7 +966,7 @@ export function scrollTape(): void {
   let fullLinesWidth = 0;
   let widthToHide = 0;
   let wordsToHideCount = 0;
-  let leadingNewLine = 0;
+  let leadingNewLine = false;
   let lastAfterNewLineElement = undefined;
   const linesWidths: number[] = [];
   const toHide: HTMLElement[] = [];
@@ -983,7 +983,7 @@ export function scrollTape(): void {
       toHide.push(child);
     } else if (child.classList.contains("afterNewline")) {
       toHide.push(child);
-      leadingNewLine = 1;
+      leadingNewLine = true;
       lastAfterNewLineElement = child;
     }
   }
@@ -1017,24 +1017,27 @@ export function scrollTape(): void {
   for (let i = 0; i <= lastElementIndex; i++) {
     const child = wordsChildrenArr[i] as HTMLElement;
     if (child.classList.contains("word")) {
+      leadingNewLine = false;
       const wordOuterWidth = $(child).outerWidth(true) ?? 0;
       const forWordLeft = Math.floor(child.offsetLeft);
       const forWordWidth = Math.floor(child.offsetWidth);
-      if (forWordLeft < 0 - forWordWidth) {
-        toHide.push(child);
-        widthToHide += wordOuterWidth;
-        wordsToHideCount++;
-      } else {
-        fullLinesWidth += wordOuterWidth;
-        if (i < activeWordIndex) wordsWidthBeforeActive = fullLinesWidth;
-      }
+      if (i < activeWordIndex) {
+        if (forWordLeft < 0 - forWordWidth) {
+          toHide.push(child);
+          widthToHide += wordOuterWidth;
+          wordsToHideCount++;
+        } else {
+          fullLinesWidth += wordOuterWidth;
+          wordsWidthBeforeActive = fullLinesWidth;
+        }
+      } else fullLinesWidth += wordOuterWidth;
     } else if (child.classList.contains("afterNewline")) {
-      if (leadingNewLine === 1) leadingNewLine = 0;
-      else {
+      if (!leadingNewLine) {
         fullLinesWidth -= wordRightMargin;
         if (i < activeWordIndex) wordsWidthBeforeActive = fullLinesWidth;
         if (fullLinesWidth > wordsEl.offsetWidth) {
           linesWidths.push(wordsEl.offsetWidth);
+          if (i < lastElementIndex) linesWidths.push(wordsEl.offsetWidth);
           break;
         } else linesWidths.push(fullLinesWidth);
       }
@@ -1043,13 +1046,13 @@ export function scrollTape(): void {
   if (toHide.length > 0) {
     activeWordElementIndex -= wordsToHideCount;
     toHide.forEach((el) => el.remove());
-    const currentMargin = parseInt(wordsEl.style.marginLeft);
-    wordsEl.style.marginLeft = `${currentMargin + widthToHide}px`;
     for (let i = 0; i < linesWidths.length; i++) {
       const element = afterNewLineEls[i] as HTMLElement;
       const currentMargin = parseInt(element.style.marginLeft);
       element.style.marginLeft = `${currentMargin - widthToHide}px`;
     }
+    const currentMargin = parseInt(wordsEl.style.marginLeft);
+    wordsEl.style.marginLeft = `${currentMargin + widthToHide}px`;
   }
 
   let currentWordWidth = 0;
