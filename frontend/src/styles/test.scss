@@ -637,32 +637,9 @@
       color: var(--sub-color);
       // grid-column: 1/3;
       margin-bottom: 1rem;
-
-      --unreached-color: var(--sub-color);
-      --speed-0-color: var(--colorful-error-color);
-      --speed-1-color: color-mix(
-        in srgb,
-        var(--colorful-error-color),
-        var(--text-color)
-      );
-      --speed-2-color: var(--text-color);
-      --speed-3-color: color-mix(in srgb, var(--main-color), var(--text-color));
-      --speed-4-color: var(--main-color);
-
-      &.withSubColor {
-        --unreached-color: var(--sub-alt-color);
-        --speed-2-color: var(--sub-color);
-        --speed-3-color: color-mix(
-          in srgb,
-          var(--sub-color),
-          var(--text-color)
-        );
-      }
-
       .textButton {
         padding: 0 0.25em;
       }
-
       #copyWordsListButton,
       #playpauseReplayButton {
         margin-left: 0.5em;
@@ -675,7 +652,6 @@
         font-size: 0.75rem;
         color: var(--sub-color);
         width: min-content;
-
         .boxes {
           // display: flex;
           display: grid;
@@ -690,22 +666,11 @@
             display: grid;
             place-content: center center;
           }
-          .box0 {
+          .box:nth-child(1) {
             border-radius: var(--roundness) 0 0 var(--roundness);
-            background-color: var(--speed-0-color);
           }
-          .box1 {
-            background-color: var(--speed-1-color);
-          }
-          .box2 {
-            background-color: var(--speed-2-color);
-          }
-          .box3 {
-            background-color: var(--speed-3-color);
-          }
-          .box4 {
+          .box:nth-child(5) {
             border-radius: 0 var(--roundness) var(--roundness) 0;
-            background-color: var(--speed-4-color);
           }
         }
       }
@@ -720,27 +685,9 @@
         flex-wrap: wrap;
         width: 100%;
         align-content: flex-start;
-        .unreached {
-          color: var(--unreached-color);
-        }
         .word {
           position: relative;
           margin: 0.18rem 0.6rem 0.15rem 0;
-          &[speed="0"] {
-            color: var(--speed-0-color);
-          }
-          &[speed="1"] {
-            color: var(--speed-1-color);
-          }
-          &[speed="2"] {
-            color: var(--speed-2-color);
-          }
-          &[speed="3"] {
-            color: var(--speed-3-color);
-          }
-          &[speed="4"] {
-            color: var(--speed-4-color);
-          }
           & letter.corrected {
             color: var(--text-color);
             border-bottom: 2px dotted var(--main-color);
