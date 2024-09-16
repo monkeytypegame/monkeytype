@@ -101,11 +101,10 @@ body::before {
   --c-dot--error: var(--colorful-error-color);
 }
 
-#wordsWrapper .word:has(~ .active) letter {
-  animation: toDust 200ms ease-out 0ms 1 forwards;
+#words .word:has(~ .active) letter {
+  animation: toDust 200ms ease-out 0ms 1 forwards !important;
 }
-
-#wordsWrapper .word:has(~ .active) letter::after {
+#words .word:has(~ .active) letter::after {
   animation: fadeIn 100ms ease-in 100ms 1 forwards;
 }
 
