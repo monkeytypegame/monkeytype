@@ -4,10 +4,10 @@ import Config from "../config";
 import * as DB from "../db";
 import * as SlowTimer from "../states/slow-timer";
 import * as Misc from "../utils/misc";
-import * as Numbers from "../utils/numbers";
 import * as JSONData from "../utils/json-data";
 import * as TestState from "./test-state";
 import * as ConfigEvent from "../observables/config-event";
+import { convertRemToPixels } from "../utils/numbers";
 
 type Settings = {
   wpm: number;
@@ -235,7 +235,7 @@ export async function update(expectedStepEnd: number): Promise<void> {
       newTop =
         word.offsetTop +
         currentLetter.offsetTop -
-        Config.fontSize * Numbers.convertRemToPixels(1) * 0.1;
+        Config.fontSize * convertRemToPixels(1) * 0.1;
       if (settings.currentLetterIndex === -1) {
         newLeft =
           word.offsetLeft +

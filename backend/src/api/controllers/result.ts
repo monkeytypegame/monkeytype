@@ -4,10 +4,7 @@ import {
   getCurrentDayTimestamp,
   getStartOfDayTimestamp,
   isDevEnvironment,
-  mapRange,
   replaceObjectId,
-  roundTo2,
-  stdDev,
 } from "../../utils/misc";
 import objectHash from "object-hash";
 import Logger from "../../utils/logger";
@@ -55,6 +52,7 @@ import {
   XpBreakdown,
 } from "@monkeytype/contracts/schemas/results";
 import { Mode } from "@monkeytype/contracts/schemas/shared";
+import { mapRange, roundTo2, stdDev } from "@monkeytype/util/numbers";
 
 try {
   if (!anticheatImplemented()) throw new Error("undefined");

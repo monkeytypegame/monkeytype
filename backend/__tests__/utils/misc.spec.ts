@@ -492,68 +492,6 @@ describe("Misc Utils", () => {
     });
   });
 
-  it("mapRange", () => {
-    const testCases = [
-      {
-        input: {
-          value: 123,
-          inMin: 0,
-          inMax: 200,
-          outMin: 0,
-          outMax: 1000,
-          clamp: false,
-        },
-        expected: 615,
-      },
-      {
-        input: {
-          value: 123,
-          inMin: 0,
-          inMax: 200,
-          outMin: 1000,
-          outMax: 0,
-          clamp: false,
-        },
-        expected: 385,
-      },
-      {
-        input: {
-          value: 10001,
-          inMin: 0,
-          inMax: 10000,
-          outMin: 0,
-          outMax: 1000,
-          clamp: false,
-        },
-        expected: 1000.1,
-      },
-      {
-        input: {
-          value: 10001,
-          inMin: 0,
-          inMax: 10000,
-          outMin: 0,
-          outMax: 1000,
-          clamp: true,
-        },
-        expected: 1000,
-      },
-    ];
-
-    testCases.forEach(({ input, expected }) => {
-      expect(
-        misc.mapRange(
-          input.value,
-          input.inMin,
-          input.inMax,
-          input.outMin,
-          input.outMax,
-          input.clamp
-        )
-      ).toEqual(expected);
-    });
-  });
-
   it("formatSeconds", () => {
     const testCases = [
       {

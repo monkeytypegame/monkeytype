@@ -1,4 +1,4 @@
-import { mapRange } from "../utils/misc";
+import { mapRange } from "@monkeytype/util/numbers";
 import Config from "../config";
 import * as ConfigEvent from "../observables/config-event";
 import * as TestState from "../test/test-state";

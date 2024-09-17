@@ -1,34 +1,8 @@
+import { roundTo2 } from "@monkeytype/util/numbers";
 import _, { omit } from "lodash";
 import uaparser from "ua-parser-js";
 
 //todo split this file into smaller util files (grouped by functionality)
-
-export function roundTo2(num: number): number {
-  return _.round(num, 2);
-}
-
-export function stdDev(population: number[]): number {
-  const n = population.length;
-  if (n === 0) {
-    return 0;
-  }
-
-  const populationMean = mean(population);
-  const variance = _.sumBy(population, (x) => (x - populationMean) ** 2) / n;
-
-  return Math.sqrt(variance);
-}
-
-export function mean(population: number[]): number {
-  const n = population.length;
-  return n > 0 ? _.sum(population) / n : 0;
-}
-
-export function kogasa(cov: number): number {
-  return (
-    100 * (1 - Math.tanh(cov + Math.pow(cov, 3) / 3 + Math.pow(cov, 5) / 5))
-  );
-}
 
 export function identity(value: unknown): string {
   return Object.prototype.toString
@@ -190,32 +164,6 @@ export function isToday(timestamp: number, hourOffset = 0): boolean {
   const date = getStartOfDayTimestamp(timestamp, offsetMilis);
 
   return today === date;
-}
-
-export function mapRange(
-  value: number,
-  inMin: number,
-  inMax: number,
-  outMin: number,
-  outMax: number,
-  clamp = false
-): number {
-  if (inMin === inMax) {
-    return outMin;
-  }
-
-  const result =
-    ((value - inMin) * (outMax - outMin)) / (inMax - inMin) + outMin;
-
-  if (clamp) {
-    if (outMin < outMax) {
-      return Math.min(Math.max(result, outMin), outMax);
-    } else {
-      return Math.max(Math.min(result, outMin), outMax);
-    }
-  }
-
-  return result;
 }
 
 export function getStartOfWeekTimestamp(timestamp: number): number {

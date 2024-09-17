@@ -5,7 +5,6 @@ import Logger from "../../utils/logger";
 import * as DateUtils from "date-fns";
 import { UTCDate } from "@date-fns/utc";
 import * as ResultDal from "../../dal/result";
-import { roundTo2 } from "../../utils/misc";
 import { ObjectId } from "mongodb";
 import * as LeaderboardDal from "../../dal/leaderboards";
 import MonkeyError from "../../utils/error";
@@ -19,6 +18,7 @@ import {
   GenerateDataRequest,
   GenerateDataResponse,
 } from "@monkeytype/contracts/dev";
+import { roundTo2 } from "@monkeytype/util/numbers";
 
 const CREATE_RESULT_DEFAULT_OPTIONS = {
   firstTestTimestamp: DateUtils.startOfDay(new UTCDate(Date.now())).valueOf(),

@@ -1,5 +1,5 @@
 import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
-import * as Numbers from "../utils/numbers";
+import * as Numbers from "@monkeytype/util/numbers";
 import { Config as ConfigType } from "@monkeytype/contracts/schemas/configs";
 import Config from "../config";
 

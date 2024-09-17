@@ -13,7 +13,7 @@ import Page from "./page";
 import * as DateTime from "../utils/date-and-time";
 import * as Misc from "../utils/misc";
 import * as Arrays from "../utils/arrays";
-import * as Numbers from "../utils/numbers";
+import * as Numbers from "@monkeytype/util/numbers";
 import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
 import * as Profile from "../elements/profile";
 import { format } from "date-fns/format";
@@ -30,6 +30,7 @@ import * as TestActivity from "../elements/test-activity";
 import { ChartData } from "@monkeytype/contracts/schemas/results";
 import { Mode, Mode2, Mode2Custom } from "@monkeytype/contracts/schemas/shared";
 import { ResultFiltersGroupItem } from "@monkeytype/contracts/schemas/users";
+import { findLineByLeastSquares } from "../utils/numbers";
 
 let filterDebug = false;
 //toggle filterdebug
@@ -918,7 +919,7 @@ async function fillContent(): Promise<void> {
 
   const wpmPoints = filteredResults.map((r) => r.wpm).reverse();
 
-  const trend = Numbers.findLineByLeastSquares(wpmPoints);
+  const trend = findLineByLeastSquares(wpmPoints);
   if (trend) {
     const wpmChange = trend[1][1] - trend[0][1];
     const wpmChangePerHour = wpmChange * (3600 / totalSecondsFiltered);
