@@ -83,6 +83,8 @@ nav {
         left: 0;
         background: var(--sub-alt-color);
         border-radius: var(--roundness);
+        display: grid;
+        grid-template-columns: auto 2.5em;
         .bar {
           left: 0;
           width: 0%;
@@ -100,16 +102,27 @@ nav {
           color: var(--main-color);
         }
         .xpBreakdown {
+          width: 100%;
+          font-size: 0.8em;
           position: absolute;
           color: var(--text-color);
           display: grid;
-          justify-items: center;
+          grid-template-columns: auto 2.5em;
+          gap: 0.5em;
+          //justify-items: center;
           width: 100%;
           margin-top: 0.75em;
-          .text {
-            width: max-content;
+          span {
+            text-align: right;
+            width: 100%;
             font-size: 0.75em;
-            position: absolute;
+            //position: absolute;
+            &.positive {
+              color: var(--main-color);
+            }
+            &.negative {
+              color: var(--error-color);
+            }
           }
         }
       }
