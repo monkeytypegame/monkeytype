@@ -201,6 +201,8 @@ export async function updateXpBar(
   const endingLevel =
     endingXp.level + endingXp.levelCurrentXp / endingXp.levelMaxXp;
 
+  $("nav .xpBar").css("margin-bottom", "-0.5em");
+
   if (!skipBreakdown) {
     const xpBarPromise = animateXpBar(startingLevel, endingLevel);
     const xpBreakdownPromise = animateXpBreakdown(addedXp, breakdown);
@@ -212,10 +214,9 @@ export async function updateXpBar(
   $("nav .level").text(Levels.getLevelFromTotalXp(currentXp + addedXp));
   $("nav .xpBar")
     .stop(true, true)
-    .css("margin-bottom", "0px")
     .css("opacity", 1)
     .animate(
-      { opacity: 0, "margin-bottom": "5em" },
+      { opacity: 0, "margin-bottom": skipBreakdown ? "-0.5em" : "5em" },
       SlowTimer.get() ? 0 : 250,
       () => {
         $("nav .xpBar .xpGain").text(``);
@@ -231,7 +232,7 @@ async function animateXpBreakdown(
     $("nav .xpBar .xpGain").text(`+${addedXp}`);
     return;
   }
-  const delay = 200;
+  const delay = 100;
   let total = 0;
   const xpBreakdown = $("nav .xpBar .xpBreakdown");
   xpBreakdown.empty();
@@ -271,7 +272,7 @@ async function animateXpBreakdown(
   }
 
   await append("time typing", breakdown.base);
-  total += breakdown["base"] ?? 0;
+  total += breakdown.base ?? 0;
   if (breakdown.fullAccuracy) {
     await Misc.sleep(delay);
     await append("perfect", breakdown.fullAccuracy);
