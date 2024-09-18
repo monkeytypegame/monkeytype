@@ -61,18 +61,6 @@ export function padNumbers(
 export const MILISECONDS_IN_HOUR = 3600000;
 export const MILLISECONDS_IN_DAY = 86400000;
 
-export function getStartOfDayTimestamp(
-  timestamp: number,
-  offsetMilis = 0
-): number {
-  return timestamp - ((timestamp - offsetMilis) % MILLISECONDS_IN_DAY);
-}
-
-export function getCurrentDayTimestamp(): number {
-  const currentTime = Date.now();
-  return getStartOfDayTimestamp(currentTime);
-}
-
 export function matchesAPattern(text: string, pattern: string): boolean {
   const regex = new RegExp(`^${pattern}$`);
   return regex.test(text);
@@ -145,39 +133,6 @@ export function getOrdinalNumberString(number: number): string {
   const suffix =
     suffixes[(lastTwo - 20) % 10] ?? suffixes[lastTwo] ?? suffixes[0];
   return `${number}${suffix}`;
-}
-
-export function isYesterday(timestamp: number, hourOffset = 0): boolean {
-  const offsetMilis = hourOffset * MILISECONDS_IN_HOUR;
-  const yesterday = getStartOfDayTimestamp(
-    Date.now() - MILLISECONDS_IN_DAY,
-    offsetMilis
-  );
-  const date = getStartOfDayTimestamp(timestamp, offsetMilis);
-
-  return yesterday === date;
-}
-
-export function isToday(timestamp: number, hourOffset = 0): boolean {
-  const offsetMilis = hourOffset * MILISECONDS_IN_HOUR;
-  const today = getStartOfDayTimestamp(Date.now(), offsetMilis);
-  const date = getStartOfDayTimestamp(timestamp, offsetMilis);
-
-  return today === date;
-}
-
-export function getStartOfWeekTimestamp(timestamp: number): number {
-  const date = new Date(getStartOfDayTimestamp(timestamp));
-
-  const monday = date.getDate() - (date.getDay() || 7) + 1;
-  date.setDate(monday);
-
-  return getStartOfDayTimestamp(date.getTime());
-}
-
-export function getCurrentWeekTimestamp(): number {
-  const currentTime = Date.now();
-  return getStartOfWeekTimestamp(currentTime);
 }
 
 type TimeUnit =
