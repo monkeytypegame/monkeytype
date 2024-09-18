@@ -8,8 +8,6 @@ import {
   type Options,
 } from "express-rate-limit";
 import { isDevEnvironment } from "../utils/misc";
-import { EndpointMetadata } from "@monkeytype/contracts/schemas/api";
-import { TsRestRequestWithCtx } from "./auth";
 import { TsRestRequestHandler } from "@ts-rest/express";
 import {
   limits,
@@ -18,6 +16,7 @@ import {
   Window,
 } from "@monkeytype/contracts/rate-limit/index";
 import statuses from "../constants/monkey-status-codes";
+import { getMetadata, TsRestRequestWithCtx } from "./utility";
 
 export const REQUEST_MULTIPLIER = isDevEnvironment() ? 100 : 1;
 
@@ -99,8 +98,7 @@ export function rateLimitRequest<
     res: Response,
     next: NextFunction
   ): Promise<void> => {
-    const rateLimit = (req.tsRestRoute["metadata"] as EndpointMetadata)
-      ?.rateLimit;
+    const rateLimit = getMetadata(req).rateLimit;
     if (rateLimit === undefined) {
       next();
       return;

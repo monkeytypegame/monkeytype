@@ -11,7 +11,7 @@ import {
   ToggleBanRequest,
   ToggleBanResponse,
 } from "@monkeytype/contracts/admin";
-import MonkeyError from "../../utils/error";
+import MonkeyError, { getErrorMessage } from "../../utils/error";
 import { Configuration } from "@monkeytype/contracts/schemas/configuration";
 import { addImportantLog } from "../../dal/logs";
 
@@ -117,7 +117,10 @@ export async function handleReports(
       if (e instanceof MonkeyError) {
         throw new MonkeyError(e.status, e.message);
       } else {
-        throw new MonkeyError(500, "Error handling reports: " + e.message);
+        throw new MonkeyError(
+          500,
+          "Error handling reports: " + getErrorMessage(e)
+        );
       }
     }
   }

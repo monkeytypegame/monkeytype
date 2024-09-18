@@ -46,6 +46,7 @@ window.onerror = function (message, url, line, column, error): void {
 
 window.onunhandledrejection = function (e): void {
   if (Misc.isDevEnvironment()) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const message = (e.reason.message ?? e.reason) as string;
     Notifications.add(`${message}`, -1, {
       customTitle: "DEV: Unhandled rejection",
@@ -54,6 +55,7 @@ window.onunhandledrejection = function (e): void {
     console.error(e);
   }
   void log("error", {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     error: (e.reason.stack ?? "") as string,
   });
 };

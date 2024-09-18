@@ -28,6 +28,7 @@ import { LeaderboardRank } from "@monkeytype/contracts/schemas/leaderboards";
 import { randomUUID } from "node:crypto";
 import _ from "lodash";
 import { MonkeyMail, UserStreak } from "@monkeytype/contracts/schemas/users";
+import { isFirebaseError } from "../../../src/utils/error";
 
 const mockApp = request(app);
 const configuration = Configuration.getCachedConfiguration();
@@ -355,10 +356,16 @@ describe("user controller test", () => {
 
     it("should fail with too many firebase requests", async () => {
       //GIVEN
-      adminGenerateVerificationLinkMock.mockRejectedValue({
-        code: "auth/internal-error",
-        message: "TOO_MANY_ATTEMPTS_TRY_LATER",
-      } as FirebaseError);
+      const mockFirebaseError = {
+        code: "auth/too-many-requests",
+        codePrefix: "auth",
+        errorInfo: {
+          code: "auth/too-many-requests",
+          message: "Too many requests",
+        },
+      };
+      adminGenerateVerificationLinkMock.mockRejectedValue(mockFirebaseError);
+      expect(isFirebaseError(mockFirebaseError)).toBe(true);
 
       //WHEN
       const { body } = await mockApp
@@ -371,9 +378,16 @@ describe("user controller test", () => {
     });
     it("should fail with firebase user not found", async () => {
       //GIVEN
-      adminGenerateVerificationLinkMock.mockRejectedValue({
+      const mockFirebaseError = {
         code: "auth/user-not-found",
-      } as FirebaseError);
+        codePrefix: "auth",
+        errorInfo: {
+          code: "auth/user-not-found",
+          message: "User not found",
+        },
+      };
+      adminGenerateVerificationLinkMock.mockRejectedValue(mockFirebaseError);
+      expect(isFirebaseError(mockFirebaseError)).toBe(true);
 
       //WHEN
       const { body } = await mockApp
@@ -387,11 +401,13 @@ describe("user controller test", () => {
           'Stack: {"decodedTokenEmail":"newuser@mail.com","userInfoEmail":"newuser@mail.com"}'
       );
     });
-    it("should fail with firebase errir", async () => {
+    it("should fail with unknown error", async () => {
       //GIVEN
-      adminGenerateVerificationLinkMock.mockRejectedValue({
-        message: "Internal error encountered.",
-      } as FirebaseError);
+      const mockFirebaseError = {
+        message: "Internal server error",
+      };
+      adminGenerateVerificationLinkMock.mockRejectedValue(mockFirebaseError);
+      expect(isFirebaseError(mockFirebaseError)).toBe(false);
 
       //WHEN
       const { body } = await mockApp
@@ -401,7 +417,7 @@ describe("user controller test", () => {
 
       //THEN
       expect(body.message).toEqual(
-        "Firebase failed to generate an email verification link. Please try again later."
+        "Firebase failed to generate an email verification link: Internal server error"
       );
     });
   });
@@ -1039,9 +1055,16 @@ describe("user controller test", () => {
     });
     it("should fail for duplicate email", async () => {
       //GIVEN
-      authUpdateEmailMock.mockRejectedValue({
+      const mockFirebaseError = {
         code: "auth/email-already-exists",
-      } as FirebaseError);
+        codePrefix: "auth",
+        errorInfo: {
+          code: "auth/email-already-exists",
+          message: "Email already exists",
+        },
+      };
+      authUpdateEmailMock.mockRejectedValue(mockFirebaseError);
+      expect(isFirebaseError(mockFirebaseError)).toBe(true);
 
       //WHEN
       const { body } = await mockApp
@@ -1062,9 +1085,16 @@ describe("user controller test", () => {
 
     it("should fail for invalid email", async () => {
       //GIVEN
-      authUpdateEmailMock.mockRejectedValue({
+      const mockFirebaseError = {
         code: "auth/invalid-email",
-      } as FirebaseError);
+        codePrefix: "auth",
+        errorInfo: {
+          code: "auth/invalid-email",
+          message: "Invalid email",
+        },
+      };
+      authUpdateEmailMock.mockRejectedValue(mockFirebaseError);
+      expect(isFirebaseError(mockFirebaseError)).toBe(true);
 
       //WHEN
       const { body } = await mockApp
@@ -1082,9 +1112,16 @@ describe("user controller test", () => {
     });
     it("should fail for too many requests", async () => {
       //GIVEN
-      authUpdateEmailMock.mockRejectedValue({
+      const mockFirebaseError = {
         code: "auth/too-many-requests",
-      } as FirebaseError);
+        codePrefix: "auth",
+        errorInfo: {
+          code: "auth/too-many-requests",
+          message: "Too many requests",
+        },
+      };
+      authUpdateEmailMock.mockRejectedValue(mockFirebaseError);
+      expect(isFirebaseError(mockFirebaseError)).toBe(true);
 
       //WHEN
       const { body } = await mockApp
@@ -1102,9 +1139,16 @@ describe("user controller test", () => {
     });
     it("should fail for unknown user", async () => {
       //GIVEN
-      authUpdateEmailMock.mockRejectedValue({
+      const mockFirebaseError = {
         code: "auth/user-not-found",
-      } as FirebaseError);
+        codePrefix: "auth",
+        errorInfo: {
+          code: "auth/user-not-found",
+          message: "User not found",
+        },
+      };
+      authUpdateEmailMock.mockRejectedValue(mockFirebaseError);
+      expect(isFirebaseError(mockFirebaseError)).toBe(true);
 
       //WHEN
       const { body } = await mockApp
@@ -1126,7 +1170,12 @@ describe("user controller test", () => {
       //GIVEN
       authUpdateEmailMock.mockRejectedValue({
         code: "auth/invalid-user-token",
-      } as FirebaseError);
+        codePrefix: "auth",
+        errorInfo: {
+          code: "auth/invalid-user-token",
+          message: "Invalid user token",
+        },
+      });
 
       //WHEN
       const { body } = await mockApp

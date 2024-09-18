@@ -198,7 +198,7 @@
   },
   {
     "name": "slovenian",
-    "languages": ["slovenian"]
+    "languages": ["slovenian", "slovenian_1k", "slovenian_5k"]
   },
   {
     "name": "croatian",

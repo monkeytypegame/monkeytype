@@ -12,6 +12,7 @@ import * as Misc from "../utils/misc";
 import * as Strings from "../utils/strings";
 import * as JSONData from "../utils/json-data";
 import * as Numbers from "../utils/numbers";
+import { blendTwoHexColors } from "../utils/colors";
 import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
 import * as SlowTimer from "../states/slow-timer";
 import * as CompositionState from "../states/composition";
@@ -1444,14 +1445,6 @@ export async function applyBurstHeatmap(): Promise<void> {
   if (Config.burstHeatmap) {
     $("#resultWordsHistory .heatmapLegend").removeClass("hidden");
 
-    const themeColors = await ThemeColors.getAll();
-
-    if (themeColors.main === themeColors.text) {
-      $("#resultWordsHistory").addClass("withSubColor");
-    } else {
-      $("#resultWordsHistory").removeClass("withSubColor");
-    }
-
     let burstlist = [...TestInput.burstHistory];
 
     burstlist = burstlist.filter((x) => x !== Infinity);
@@ -1461,6 +1454,28 @@ export async function applyBurstHeatmap(): Promise<void> {
     burstlist.forEach((burst, index) => {
       burstlist[index] = Math.round(typingSpeedUnit.fromWpm(burst));
     });
+
+    const themeColors = await ThemeColors.getAll();
+
+    let colors = [
+      themeColors.colorfulError,
+      blendTwoHexColors(themeColors.colorfulError, themeColors.text, 0.5),
+      themeColors.text,
+      blendTwoHexColors(themeColors.main, themeColors.text, 0.5),
+      themeColors.main,
+    ];
+    let unreachedColor = themeColors.sub;
+
+    if (themeColors.main === themeColors.text) {
+      colors = [
+        themeColors.colorfulError,
+        blendTwoHexColors(themeColors.colorfulError, themeColors.text, 0.5),
+        themeColors.sub,
+        blendTwoHexColors(themeColors.sub, themeColors.text, 0.5),
+        themeColors.main,
+      ];
+      unreachedColor = themeColors.subAlt;
+    }
 
     const burstlistSorted = burstlist.sort((a, b) => a - b);
     const burstlistLength = burstlist.length;
@@ -1511,7 +1526,7 @@ export async function applyBurstHeatmap(): Promise<void> {
     $("#resultWordsHistory .words .word").each((_, word) => {
       const wordBurstAttr = $(word).attr("burst");
       if (wordBurstAttr === undefined) {
-        $(word).addClass("unreached");
+        $(word).css("color", unreachedColor);
       } else {
         let wordBurstVal = parseInt(wordBurstAttr);
         wordBurstVal = Math.round(
@@ -1519,10 +1534,15 @@ export async function applyBurstHeatmap(): Promise<void> {
         );
         steps.forEach((step) => {
           if (wordBurstVal >= step.val) {
-            $(word).addClass("heatmapInherit").attr("speed", step.colorId);
+            $(word).addClass("heatmapInherit");
+            $(word).css("color", colors[step.colorId] as string);
           }
         });
       }
+    });
+
+    $("#resultWordsHistory .heatmapLegend .boxes .box").each((index, box) => {
+      $(box).css("background", colors[index] as string);
     });
   } else {
     $("#resultWordsHistory .heatmapLegend").addClass("hidden");
