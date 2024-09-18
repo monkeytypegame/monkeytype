@@ -7,6 +7,7 @@ import mustache from "mustache";
 import { recordEmail } from "../utils/prometheus";
 import type { EmailTaskContexts, EmailType } from "../queues/email-queue";
 import { isDevEnvironment } from "../utils/misc";
+import { getErrorMessage } from "../utils/error";
 
 type EmailMetadata = {
   subject: string;
@@ -72,7 +73,7 @@ export async function init(): Promise<void> {
     Logger.success("Email client configuration verified");
   } catch (error) {
     transportInitialized = false;
-    Logger.error(error.message as string);
+    Logger.error(getErrorMessage(error) ?? "Unknown error");
     Logger.error("Failed to verify email client configuration.");
   }
 }
@@ -112,7 +113,7 @@ export async function sendEmail(
     recordEmail(templateName, "fail");
     return {
       success: false,
-      message: e.message as string,
+      message: getErrorMessage(e) ?? "Unknown error",
     };
   }
 

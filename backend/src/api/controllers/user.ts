@@ -1,6 +1,9 @@
 import _ from "lodash";
 import * as UserDAL from "../../dal/user";
-import MonkeyError from "../../utils/error";
+import MonkeyError, {
+  getErrorMessage,
+  isFirebaseError,
+} from "../../utils/error";
 import { MonkeyResponse } from "../../utils/monkey-response";
 import * as DiscordUtils from "../../utils/discord";
 import {
@@ -12,7 +15,6 @@ import {
   sanitizeString,
 } from "../../utils/misc";
 import GeorgeQueue from "../../queues/george-queue";
-import { type FirebaseError } from "firebase-admin";
 import { deleteAllApeKeys } from "../../dal/ape-keys";
 import { deleteAllPresets } from "../../dal/preset";
 import { deleteAll as deleteAllResults } from "../../dal/result";
@@ -183,31 +185,48 @@ export async function sendVerificationEmail(
           : "https://monkeytype.com",
       });
   } catch (e) {
-    const firebaseError = e as FirebaseError;
-    if (
-      firebaseError.code === "auth/internal-error" &&
-      firebaseError.message.includes("TOO_MANY_ATTEMPTS_TRY_LATER")
-    ) {
-      // for some reason this error is not handled with a custom auth/ code, so we have to do it manually
-      throw new MonkeyError(429, "Too many requests. Please try again later");
-    }
-    if (firebaseError.code === "auth/user-not-found") {
-      throw new MonkeyError(
-        500,
-        "Auth user not found when the user was found in the database. Contact support with this error message and your email",
-        JSON.stringify({
-          decodedTokenEmail: email,
-          userInfoEmail: userInfo.email,
-          stack: e.stack as unknown,
-        }),
-        userInfo.uid
-      );
-    }
-    if (firebaseError.message.includes("Internal error encountered.")) {
-      throw new MonkeyError(
-        500,
-        "Firebase failed to generate an email verification link. Please try again later."
-      );
+    if (isFirebaseError(e)) {
+      if (e.errorInfo.code === "auth/user-not-found") {
+        throw new MonkeyError(
+          500,
+          "Auth user not found when the user was found in the database. Contact support with this error message and your email",
+          JSON.stringify({
+            decodedTokenEmail: email,
+            userInfoEmail: userInfo.email,
+          }),
+          userInfo.uid
+        );
+      } else if (e.errorInfo.code === "auth/too-many-requests") {
+        throw new MonkeyError(429, "Too many requests. Please try again later");
+      } else {
+        throw new MonkeyError(
+          500,
+          "Firebase failed to generate an email verification link: " +
+            e.errorInfo.message
+        );
+      }
+    } else {
+      const message = getErrorMessage(e);
+      if (message === undefined) {
+        throw new MonkeyError(
+          500,
+          "Firebase failed to generate an email verification link. Unknown error occured"
+        );
+      } else {
+        if (message.toLowerCase().includes("too_many_attempts")) {
+          throw new MonkeyError(
+            429,
+            "Too many requests. Please try again later"
+          );
+        } else {
+          throw new MonkeyError(
+            500,
+            "Firebase failed to generate an email verification link: " +
+              message,
+            (e as Error).stack
+          );
+        }
+      }
     }
   }
   await emailQueue.sendVerificationEmail(email, userInfo.name, link);
@@ -394,24 +413,26 @@ export async function updateEmail(
     await AuthUtil.updateUserEmail(uid, newEmail);
     await UserDAL.updateEmail(uid, newEmail);
   } catch (e) {
-    if (e.code === "auth/email-already-exists") {
-      throw new MonkeyError(
-        409,
-        "The email address is already in use by another account"
-      );
-    } else if (e.code === "auth/invalid-email") {
-      throw new MonkeyError(400, "Invalid email address");
-    } else if (e.code === "auth/too-many-requests") {
-      throw new MonkeyError(429, "Too many requests. Please try again later");
-    } else if (e.code === "auth/user-not-found") {
-      throw new MonkeyError(
-        404,
-        "User not found in the auth system",
-        "update email",
-        uid
-      );
-    } else if (e.code === "auth/invalid-user-token") {
-      throw new MonkeyError(401, "Invalid user token", "update email", uid);
+    if (isFirebaseError(e)) {
+      if (e.code === "auth/email-already-exists") {
+        throw new MonkeyError(
+          409,
+          "The email address is already in use by another account"
+        );
+      } else if (e.code === "auth/invalid-email") {
+        throw new MonkeyError(400, "Invalid email address");
+      } else if (e.code === "auth/too-many-requests") {
+        throw new MonkeyError(429, "Too many requests. Please try again later");
+      } else if (e.code === "auth/user-not-found") {
+        throw new MonkeyError(
+          404,
+          "User not found in the auth system",
+          "update email",
+          uid
+        );
+      } else if (e.code === "auth/invalid-user-token") {
+        throw new MonkeyError(401, "Invalid user token", "update email", uid);
+      }
     } else {
       throw e;
     }
@@ -475,6 +496,7 @@ export async function getUser(
   try {
     userInfo = await UserDAL.getUser(uid, "get user");
   } catch (e) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     if (e.status === 404) {
       //if the user is in the auth system but not in the db, its possible that the user was created by bypassing captcha
       //since there is no data in the database anyway, we can just delete the user from the auth system
@@ -488,6 +510,7 @@ export async function getUser(
           uid
         );
       } catch (e) {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         if (e.code === "auth/user-not-found") {
           throw new MonkeyError(
             404,

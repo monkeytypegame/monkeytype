@@ -286,6 +286,7 @@ export async function getSection(language: string): Promise<Section> {
     sectionReq.onload = (): void => {
       if (sectionReq.readyState === 4) {
         if (sectionReq.status === 200) {
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
           let sectionText = JSON.parse(sectionReq.responseText).query.pages[
             pageid.toString()
           ].extract as string;
