@@ -58,7 +58,7 @@
     "sass": "1.70.0",
     "subset-font": "2.3.0",
     "typescript": "5.5.4",
-    "vite": "5.1.7",
+    "vite": "5.2.14",
     "vite-bundle-visualizer": "1.0.1",
     "vite-plugin-checker": "0.7.2",
     "vite-plugin-filter-replace": "0.1.13",
