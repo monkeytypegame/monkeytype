@@ -9,6 +9,7 @@ import { type DecodedIdToken, UserRecord } from "firebase-admin/auth";
 import { isDevEnvironment } from "./misc";
 import emailQueue from "../queues/email-queue";
 import * as UserDAL from "../dal/user";
+import { isFirebaseError } from "./error";
 
 const tokenCache = new LRUCache<string, DecodedIdToken>({
   max: 20000,
@@ -105,7 +106,8 @@ export async function sendForgotPasswordEmail(email: string): Promise<void> {
 
     await emailQueue.sendForgotPasswordEmail(email, name, link);
   } catch (err) {
-    if (err.errorInfo?.code !== "auth/user-not-found") {
+    if (isFirebaseError(err) && err.errorInfo.code !== "auth/user-not-found") {
+      // eslint-disable-next-line @typescript-eslint/only-throw-error
       throw err;
     }
   }

@@ -735,6 +735,7 @@ export async function getPersonalBests(
   ]);
 
   if (mode2 !== undefined) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     return user.personalBests?.[mode]?.[mode2] as PersonalBest;
   }
 

@@ -14,6 +14,7 @@ import * as EmailClient from "./init/email-client";
 import { init as initFirebaseAdmin } from "./init/firebase-admin";
 import { createIndicies as leaderboardDbSetup } from "./dal/leaderboards";
 import { createIndicies as blocklistDbSetup } from "./dal/blocklist";
+import { getErrorMessage } from "./utils/error";
 
 async function bootServer(port: number): Promise<Server> {
   try {
@@ -74,7 +75,8 @@ async function bootServer(port: number): Promise<Server> {
     recordServerVersion(version);
   } catch (error) {
     Logger.error("Failed to boot server");
-    Logger.error(error.message as string);
+    const message = getErrorMessage(error);
+    Logger.error(message ?? "Unknown error");
     console.error(error);
     return process.exit(1);
   }
