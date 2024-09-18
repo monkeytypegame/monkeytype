@@ -89,11 +89,7 @@ export async function revokeTokensByUid(uid: string): Promise<void> {
 
 export async function sendForgotPasswordEmail(email: string): Promise<void> {
   try {
-    const uid = (
-      await FirebaseAdmin()
-        .auth()
-        .getUserByEmail(email + 1)
-    ).uid;
+    const uid = (await FirebaseAdmin().auth().getUserByEmail(email)).uid;
     const { name } = await UserDAL.getPartialUser(
       uid,
       "request forgot password email",
