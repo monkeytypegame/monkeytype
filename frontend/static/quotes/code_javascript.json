@@ -170,7 +170,7 @@
       "id": 27
     },
     {
-      "text": "function fisherYates(originalArray) {\n\tconst array = originalArray.slice(0)\n\n\tfor (let i = array.length - 1; i > 0; i -= 1) {\n\t\tconst randomIndex = Math.floor(Math.random() * (i + 1))\n\t\t;[array[i], array[randomIndex]] = [array[randomIndex], array[i]]\n\t}\n\n\treturn array\n}",
+      "text": "function fisherYates(originalArray) {\n\tconst array = originalArray.slice(0)\n\n\tfor (let i = array.length - 1; i > 0; i -= 1) {\n\t\tconst randomIndex = Math.floor(Math.random() * (i + 1));\n\t\t[array[i], array[randomIndex]] = [array[randomIndex], array[i]]\n\t}\n\n\treturn array\n}",
       "source": "trekhleb/javascript-algorithms - Fisher-Yates sourcecode",
       "length": 270,
       "id": 28
