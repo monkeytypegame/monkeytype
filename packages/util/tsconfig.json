@@ -7,7 +7,8 @@
     "declarationMap": true,
     "moduleResolution": "Node",
     "module": "ES6",
-    "target": "ES2015"
+    "target": "ES2015",
+    "lib": ["es2016"]
   },
   "include": ["src"],
   "exclude": ["node_modules", "dist"]

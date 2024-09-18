@@ -187,16 +187,6 @@ export function formatSeconds(
   return `${normalized} ${unit}${normalized > 1 ? "s" : ""}`;
 }
 
-export function intersect<T>(a: T[], b: T[], removeDuplicates = false): T[] {
-  let t: T[];
-  // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-  if (b.length > a.length) (t = b), (b = a), (a = t); // indexOf to loop over shorter
-  const filtered = a.filter(function (e) {
-    return b.includes(e);
-  });
-  return removeDuplicates ? [...new Set(filtered)] : filtered;
-}
-
 export function isDevEnvironment(): boolean {
   return process.env["MODE"] === "dev";
 }
