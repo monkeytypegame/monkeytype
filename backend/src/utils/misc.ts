@@ -197,16 +197,6 @@ export function intersect<T>(a: T[], b: T[], removeDuplicates = false): T[] {
   return removeDuplicates ? [...new Set(filtered)] : filtered;
 }
 
-export function stringToNumberOrDefault(
-  string: string,
-  defaultValue: number
-): number {
-  if (string === undefined) return defaultValue;
-  const value = parseInt(string, 10);
-  if (!Number.isFinite(value)) return defaultValue;
-  return value;
-}
-
 export function isDevEnvironment(): boolean {
   return process.env["MODE"] === "dev";
 }
