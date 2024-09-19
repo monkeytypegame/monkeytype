@@ -337,24 +337,26 @@ export default class AnimatedModal<
 
       const modalAnimation =
         options?.customAnimation?.modal ?? this.customHideAnimations?.modal;
-      const modalAnimationDuration =
+      const modalAnimationDuration = getAnimationTime(
         (options?.customAnimation?.modal?.durationMs ??
           options?.animationDurationMs ??
           this.customHideAnimations?.modal?.durationMs ??
           DEFAULT_ANIMATION_DURATION) *
-        (this.previousModalInChain !== undefined
-          ? MODAL_ONLY_ANIMATION_MULTIPLIER
-          : 1);
+          (this.previousModalInChain !== undefined
+            ? MODAL_ONLY_ANIMATION_MULTIPLIER
+            : 1)
+      );
       const wrapperAnimation = options?.customAnimation?.wrapper ??
         this.customHideAnimations?.wrapper ?? {
           from: { opacity: "1" },
           to: { opacity: "0" },
           easing: "swing",
         };
-      const wrapperAnimationDuration =
+      const wrapperAnimationDuration = getAnimationTime(
         options?.customAnimation?.wrapper?.durationMs ??
-        this.customHideAnimations?.wrapper?.durationMs ??
-        DEFAULT_ANIMATION_DURATION;
+          this.customHideAnimations?.wrapper?.durationMs ??
+          DEFAULT_ANIMATION_DURATION
+      );
       const animationMode =
         this.previousModalInChain !== undefined
           ? "modalOnly"
