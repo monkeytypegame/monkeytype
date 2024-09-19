@@ -14,7 +14,6 @@ import * as ConnectionState from "../states/connection";
 import * as Skeleton from "../utils/skeleton";
 import { debounce } from "throttle-debounce";
 import Format from "../utils/format";
-// @ts-expect-error TODO: update slim-select
 import SlimSelect from "slim-select";
 import { getHtmlByUserFlags } from "../controllers/user-flag-controller";
 import {
@@ -712,7 +711,6 @@ export function show(): void {
       Config.typingSpeedUnit + '<br><div class="sub">accuracy</div>'
     );
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- TODO: update slim-select
     languageSelector = new SlimSelect({
       select:
         "#leaderboardsWrapper #leaderboards .leaderboardsTop .buttonGroup.timeRange .languageSelect",
@@ -737,7 +735,6 @@ export function show(): void {
         selected: lang === currentLanguage,
       })),
       events: {
-        // @ts-expect-error TODO: update slim-select
         afterChange: (newVal): void => {
           currentLanguage = newVal[0]?.value as string;
           updateTitle();

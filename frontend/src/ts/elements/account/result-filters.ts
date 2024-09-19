@@ -6,7 +6,6 @@ import Config from "../../config";
 import * as Notifications from "../notifications";
 import Ape from "../../ape/index";
 import * as Loader from "../loader";
-// @ts-expect-error TODO: update slim-select
 import SlimSelect from "slim-select";
 import { QuoteLength } from "@monkeytype/contracts/schemas/configs";
 import {
@@ -346,12 +345,10 @@ export function updateActive(): void {
   }
 
   for (const [id, select] of Object.entries(groupSelects)) {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- TODO: update slim-select
     const ss = select;
     const group = getGroup(id as ResultFiltersGroup);
     const everythingSelected = Object.values(group).every((v) => v === true);
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- TODO: update slim-select
     const newData = ss.store.getData();
 
     const allOption = $(
@@ -680,10 +677,8 @@ function adjustScrollposition(
   group: ResultFiltersGroup,
   topItem: number = 0
 ): void {
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- TODO: update slim-select
   const slimSelect = groupSelects[group];
   if (slimSelect === undefined) return;
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- TODO: update slim-select
   const listElement = slimSelect.render.content.list;
   const topListItem = listElement.children.item(topItem) as HTMLElement;
 
@@ -779,7 +774,6 @@ export async function appendButtons(
     );
     if (el) {
       el.innerHTML = html;
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- TODO: update slim-select
       groupSelects["language"] = new SlimSelect({
         select: el.querySelector(".languageSelect") as HTMLSelectElement,
         settings: {
@@ -790,16 +784,12 @@ export async function appendButtons(
         },
         events: {
           beforeChange: (
-            // @ts-expect-error TODO: update slim-select
             selectedOptions,
-            // @ts-expect-error TODO: update slim-select
             oldSelectedOptions
           ): void | boolean => {
             return selectBeforeChangeFn(
               "language",
-              // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
               selectedOptions,
-              // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
               oldSelectedOptions
             );
           },
@@ -841,7 +831,6 @@ export async function appendButtons(
     );
     if (el) {
       el.innerHTML = html;
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- TODO: update slim-select
       groupSelects["funbox"] = new SlimSelect({
         select: el.querySelector(".funboxSelect") as HTMLSelectElement,
         settings: {
@@ -852,16 +841,12 @@ export async function appendButtons(
         },
         events: {
           beforeChange: (
-            // @ts-expect-error TODO: update slim-select
             selectedOptions,
-            // @ts-expect-error TODO: update slim-select
             oldSelectedOptions
           ): void | boolean => {
             return selectBeforeChangeFn(
               "funbox",
-              // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
               selectedOptions,
-              // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
               oldSelectedOptions
             );
           },
@@ -899,7 +884,6 @@ export async function appendButtons(
     );
     if (el) {
       el.innerHTML = html;
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- TODO: update slim-select
       groupSelects["tags"] = new SlimSelect({
         select: el.querySelector(".tagsSelect") as HTMLSelectElement,
         settings: {
@@ -910,16 +894,12 @@ export async function appendButtons(
         },
         events: {
           beforeChange: (
-            // @ts-expect-error TODO: update slim-select
             selectedOptions,
-            // @ts-expect-error TODO: update slim-select
             oldSelectedOptions
           ): void | boolean => {
             return selectBeforeChangeFn(
               "tags",
-              // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
               selectedOptions,
-              // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
               oldSelectedOptions
             );
           },

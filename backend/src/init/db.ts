@@ -6,7 +6,7 @@ import {
   type MongoClientOptions,
   type WithId,
 } from "mongodb";
-import MonkeyError from "../utils/error";
+import MonkeyError, { getErrorMessage } from "../utils/error";
 import Logger from "../utils/logger";
 
 let db: Db;
@@ -58,7 +58,7 @@ export async function connect(): Promise<void> {
     await mongoClient.connect();
     db = mongoClient.db(DB_NAME);
   } catch (error) {
-    Logger.error(error.message as string);
+    Logger.error(getErrorMessage(error) ?? "Unknown error");
     Logger.error(
       "Failed to connect to database. Exiting with exit status code 1."
     );

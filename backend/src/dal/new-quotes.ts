@@ -1,4 +1,4 @@
-import { simpleGit } from "simple-git";
+import { SimpleGit, simpleGit } from "simple-git";
 import { Collection, ObjectId } from "mongodb";
 import path from "path";
 import { existsSync, writeFileSync } from "fs";
@@ -24,7 +24,7 @@ type QuoteData = {
 
 const PATH_TO_REPO = "../../../../monkeytype-new-quotes";
 
-let git;
+let git: SimpleGit | undefined;
 try {
   git = simpleGit(path.join(__dirname, PATH_TO_REPO));
 } catch (e) {

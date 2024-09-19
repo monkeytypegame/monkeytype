@@ -485,21 +485,40 @@ export async function downloadResultsCSV(
   Loader.hide();
 }
 
-export function createErrorMessage(error: unknown, message: string): string {
+export function getErrorMessage(error: unknown): string | undefined {
+  let message = "";
+
   if (error instanceof Error) {
-    return `${message}: ${error.message}`;
+    message = error.message;
+  } else if (
+    error !== null &&
+    typeof error === "object" &&
+    "message" in error &&
+    (typeof error.message === "string" || typeof error.message === "number")
+  ) {
+    message = `${error.message}`;
+  } else if (typeof error === "string") {
+    message = error;
+  } else if (typeof error === "number") {
+    message = `${error}`;
   }
 
-  if (error instanceof Object && "message" in error) {
-    const objectWithMessage = error as { message?: string };
-
-    if (objectWithMessage?.message !== undefined) {
-      return `${message}: ${objectWithMessage.message}`;
-    }
+  if (message === "") {
+    return undefined;
   }
 
-  console.error("Unknown error", error);
-  return `${message}: Unknown error`;
+  return message;
+}
+
+export function createErrorMessage(error: unknown, message: string): string {
+  const errorMessage = getErrorMessage(error);
+
+  if (errorMessage === undefined) {
+    console.error("Could not get error message from error", error);
+    return `${message}: Unknown error`;
+  }
+
+  return `${message}: ${errorMessage}`;
 }
 
 export function isElementVisible(query: string): boolean {

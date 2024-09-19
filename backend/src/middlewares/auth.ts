@@ -19,6 +19,7 @@ import {
   RequestAuthenticationOptions,
 } from "@monkeytype/contracts/schemas/api";
 import { Configuration } from "@monkeytype/contracts/schemas/configuration";
+import { getMetadata, TsRestRequestWithCtx } from "./utility";
 
 const DEFAULT_OPTIONS: RequestAuthenticationOptions = {
   isGithubWebhook: false,
@@ -27,11 +28,6 @@ const DEFAULT_OPTIONS: RequestAuthenticationOptions = {
   requireFreshToken: false,
   isPublicOnDev: false,
 };
-
-export type TsRestRequestWithCtx = {
-  ctx: Readonly<MonkeyTypes.Context>;
-} & TsRestRequest &
-  ExpressRequest;
 
 /**
  * Authenticate request based on the auth settings of the route.
@@ -48,7 +44,7 @@ export function authenticateTsRestRequest<
   ): Promise<void> => {
     const options = {
       ...DEFAULT_OPTIONS,
-      ...((req.tsRestRoute["metadata"]?.["authenticationOptions"] ??
+      ...((getMetadata(req)["authenticationOptions"] ??
         {}) as EndpointMetadata),
     };
 
@@ -188,6 +184,7 @@ async function authenticateWithBearerToken(
       email: decodedToken.email ?? "",
     };
   } catch (error) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const errorCode = error?.errorInfo?.code as string | undefined;
 
     if (errorCode?.includes("auth/id-token-expired")) {

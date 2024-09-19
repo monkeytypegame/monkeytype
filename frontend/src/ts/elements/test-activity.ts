@@ -1,7 +1,5 @@
-// @ts-expect-error TODO: update slim-select
 import SlimSelect from "slim-select";
-// @ts-expect-error TODO: update slim-select
-import type { DataObjectPartial } from "slim-select/dist/store";
+import { DataObjectPartial } from "slim-select/store";
 import { getTestActivityCalendar } from "../db";
 import * as ServerConfiguration from "../ape/server-configuration";
 import * as DB from "../db";
@@ -18,7 +16,6 @@ export function init(
   }
   $("#testActivity").removeClass("hidden");
 
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- TODO: update slim-select
   yearSelector = getYearSelector();
   initYearSelector("current", userSignUpDate?.getFullYear() || 2022);
   update(calendar);
@@ -85,9 +82,10 @@ export function initYearSelector(
     }
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- TODO: update slim-select
   const yearSelect = getYearSelector();
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
   yearSelect.setData(years);
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
   years.length > 1 ? yearSelect.enable() : yearSelect.disable();
 }
 
@@ -104,20 +102,21 @@ function updateMonths(months: MonkeyTypes.TestActivityMonth[]): void {
 
 function getYearSelector(): SlimSelect {
   if (yearSelector !== undefined) return yearSelector;
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- TODO: update slim-select
   yearSelector = new SlimSelect({
     select: "#testActivity .yearSelect",
     settings: {
       showSearch: false,
     },
     events: {
-      // @ts-expect-error TODO: update slim-select
       afterChange: async (newVal): Promise<void> => {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-call
         yearSelector?.disable();
         const selected = newVal[0]?.value as string;
         const activity = await getTestActivityCalendar(selected);
         update(activity);
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-call
         if ((yearSelector?.getData() ?? []).length > 1) {
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-call
           yearSelector?.enable();
         }
       },

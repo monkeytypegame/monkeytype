@@ -79,11 +79,8 @@ module.exports = {
         "@typescript-eslint/no-redundant-type-constituents": "off",
         "@typescript-eslint/restrict-plus-operands": "off",
 
-        // TODO: enable at some point
-        "@typescript-eslint/no-unsafe-call": "off", //~76
-        "@typescript-eslint/no-unsafe-member-access": "off", //~105
-        //
-
+        "@typescript-eslint/no-unsafe-member-access": "error",
+        "@typescript-eslint/no-unsafe-call": "error",
         "@typescript-eslint/no-unsafe-argument": "error",
         "@typescript-eslint/no-unsafe-assignment": "error",
         "@typescript-eslint/no-unnecessary-type-assertion": "error",
