@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import * as Notifications from "../elements/notifications";
 import * as AdController from "../controllers/ad-controller";
 import * as Skeleton from "../utils/skeleton";
@@ -38,7 +40,6 @@ export async function show(): Promise<void> {
       .removeClass("hidden")
       .animate({ opacity: 1 }, 125, () => {
         //@ts-expect-error
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-call
         window.dataLayer.push({ event: "EG_Video" });
       });
   }

@@ -54,6 +54,7 @@ export async function get(
 
     return preset;
   } catch (e) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     if (e.error === 175) {
       //QueryPlanKilled, collection was removed during the query
       return false;
@@ -84,6 +85,7 @@ export async function getRank(
       entry: entry !== null ? entry : undefined,
     };
   } catch (e) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     if (e.error === 175) {
       //QueryPlanKilled, collection was removed during the query
       return false;

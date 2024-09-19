@@ -215,6 +215,8 @@ export function recordAuthTime(
   time: number,
   req: Request
 ): void {
+  // for some reason route is not in the types
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
   const reqPath = req.baseUrl + req.route.path;
 
   let normalizedPath = "/";
@@ -234,6 +236,8 @@ const requestCountry = new Counter({
 });
 
 export function recordRequestCountry(country: string, req: Request): void {
+  // for some reason route is not in the types
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
   const reqPath = req.baseUrl + req.route.path;
 
   let normalizedPath = "/";

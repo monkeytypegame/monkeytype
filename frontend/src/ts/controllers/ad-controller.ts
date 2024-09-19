@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import { debounce } from "throttle-debounce";
 // import * as Numbers from "../utils/numbers";
 import * as ConfigEvent from "../observables/config-event";

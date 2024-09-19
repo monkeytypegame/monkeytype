@@ -4,6 +4,7 @@ import { join } from "path";
 import IORedis from "ioredis";
 import Logger from "../utils/logger";
 import { isDevEnvironment } from "../utils/misc";
+import { getErrorMessage } from "../utils/error";
 
 let connection: IORedis.Redis;
 let connected = false;
@@ -53,7 +54,7 @@ export async function connect(): Promise<void> {
 
     connected = true;
   } catch (error) {
-    Logger.error(error.message as string);
+    Logger.error(getErrorMessage(error) ?? "Unknown error");
     if (isDevEnvironment()) {
       await connection.quit();
       Logger.warning(
