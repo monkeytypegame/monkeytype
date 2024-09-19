@@ -1041,12 +1041,17 @@ body {
 }
 
 @media (prefers-reduced-motion) {
-  *,
-  *::after,
-  *::before {
+  *:not(.fa-spin, #backgroundLoader, .preloader) {
     animation: none !important;
     transition: none !important;
+
+    &::after,
+    &::before {
+      animation: none !important;
+      transition: none !important;
+    }
   }
+
   html {
     scroll-behavior: auto !important;
   }
