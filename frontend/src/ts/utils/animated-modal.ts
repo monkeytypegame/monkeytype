@@ -1,4 +1,4 @@
-import { getAnimationTime, isPopupVisible } from "./misc";
+import { applyReducedMotion, isPopupVisible } from "./misc";
 import * as Skeleton from "./skeleton";
 
 type CustomAnimation = {
@@ -211,7 +211,7 @@ export default class AnimatedModal<
         return;
       }
 
-      const modalAnimationDuration = getAnimationTime(
+      const modalAnimationDuration = applyReducedMotion(
         (options?.customAnimation?.modal?.durationMs ??
           options?.animationDurationMs ??
           this.customShowAnimations?.modal?.durationMs ??
@@ -253,7 +253,7 @@ export default class AnimatedModal<
           to: { opacity: "1" },
           easing: "swing",
         };
-      const wrapperAnimationDuration = getAnimationTime(
+      const wrapperAnimationDuration = applyReducedMotion(
         options?.customAnimation?.wrapper?.durationMs ??
           this.customShowAnimations?.wrapper?.durationMs ??
           DEFAULT_ANIMATION_DURATION
@@ -337,7 +337,7 @@ export default class AnimatedModal<
 
       const modalAnimation =
         options?.customAnimation?.modal ?? this.customHideAnimations?.modal;
-      const modalAnimationDuration = getAnimationTime(
+      const modalAnimationDuration = applyReducedMotion(
         (options?.customAnimation?.modal?.durationMs ??
           options?.animationDurationMs ??
           this.customHideAnimations?.modal?.durationMs ??
@@ -352,7 +352,7 @@ export default class AnimatedModal<
           to: { opacity: "0" },
           easing: "swing",
         };
-      const wrapperAnimationDuration = getAnimationTime(
+      const wrapperAnimationDuration = applyReducedMotion(
         options?.customAnimation?.wrapper?.durationMs ??
           this.customHideAnimations?.wrapper?.durationMs ??
           DEFAULT_ANIMATION_DURATION

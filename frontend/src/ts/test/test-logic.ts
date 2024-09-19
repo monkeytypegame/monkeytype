@@ -146,7 +146,7 @@ export function restart(options = {} as RestartOptions): void {
   };
 
   options = { ...defaultOptions, ...options };
-  const animationTime = options.noAnim ? 0 : Misc.getAnimationTime(125);
+  const animationTime = options.noAnim ? 0 : Misc.applyReducedMotion(125);
 
   if (TestUI.testRestarting || TestUI.resultCalculating) {
     event?.preventDefault();
@@ -1259,7 +1259,7 @@ async function saveResult(
           // maxWidth: "10rem",
           opacity: 1,
         },
-        Misc.getAnimationTime(500)
+        Misc.applyReducedMotion(500)
       );
     $("#result .stats .dailyLeaderboard .bottom").html(
       Format.rank(data.dailyLeaderboardRank, { fallback: "" })

@@ -1,4 +1,4 @@
-import { getAnimationTime } from "../utils/misc";
+import { applyReducedMotion } from "../utils/misc";
 
 export function hide(): void {
   visible = false;
@@ -27,7 +27,7 @@ export function show(): void {
     {
       opacity: 1,
     },
-    getAnimationTime(250),
+    applyReducedMotion(250),
     "easeOutCubic"
   );
 }
