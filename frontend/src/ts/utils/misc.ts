@@ -751,14 +751,8 @@ export function deepClone<T>(obj: T | T[]): T | T[] {
   return clonedObj;
 }
 
-/**
- * Get the scroll behavior based on the browser preference `prefers-reduced-motion`.
- * @returns `instant` if user prefers reduced-motion, else `smooth`
- */
-export function getScrollBehavior(): ScrollBehavior {
-  return matchMedia?.("(prefers-reduced-motion)")?.matches
-    ? "instant"
-    : "smooth";
+export function prefersReducedMotion(): boolean {
+  return matchMedia?.("(prefers-reduced-motion)")?.matches;
 }
 
 /**
@@ -767,7 +761,7 @@ export function getScrollBehavior(): ScrollBehavior {
  * @returns `0` if user prefers reduced-motion, else the given animationTime
  */
 export function applyReducedMotion(animationTime: number): number {
-  return matchMedia?.("(prefers-reduced-motion)")?.matches ? 0 : animationTime;
+  return prefersReducedMotion() ? 0 : animationTime;
 }
 
 // DO NOT ALTER GLOBAL OBJECTSONSTRUCTOR, IT WILL BREAK RESULT HASHES
