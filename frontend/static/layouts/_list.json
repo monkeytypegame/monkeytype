@@ -2058,7 +2058,18 @@
       "row5": [" "]  
     }
   },
-  "night": {
+  "rain": {
+  "keymapShowTopRow": false,
+  "type": "ansi",
+  "keys": {
+    "row1": ["`~", "1!", "2@", "3#", "4$", "5%", "6^", "7&", "8*", "9(", "0)", "-_", "=+"],
+    "row2": ["fF", "dD", "lL", "gG", "vV", "qQ", "rR", "uU", "oO", ",<", "[{", "]}", "\\|"],
+    "row3": ["sS", "tT", "hH", "cC", "yY", "jJ", "nN", "eE", "aA", "iI", "/?"],
+    "row4": ["zZ", "kK", "mM", "pP", "wW", "xX", "bB", ";:", "'\"", ".>"],
+    "row5": [" "]
+    }
+  },
+    "night": {
     "keymapShowTopRow": false,
     "type": "ansi",
     "keys": {
@@ -2068,5 +2079,4 @@
       "row4": ["vV", "jJ", "dD", "rR", "zZ", "pP", "wW", "xX", "-_", ",<"],
       "row5": [" "]  
     }
-  }
 }
