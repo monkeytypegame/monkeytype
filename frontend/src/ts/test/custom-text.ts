@@ -1,11 +1,12 @@
 import {
   CustomTextLimitMode,
+  CustomTextLimitModeSchema,
   CustomTextMode,
+  CustomTextModeSchema,
 } from "@monkeytype/contracts/schemas/util";
 import { LocalStorageWithSchema } from "../utils/local-storage-with-schema";
 import { z } from "zod";
 
-//zod schema for an object with string keys and string values
 const CustomTextObjectSchema = z.record(z.string(), z.string());
 type CustomTextObject = z.infer<typeof CustomTextObjectSchema>;
 
@@ -27,83 +28,117 @@ const customTextLongLS = new LocalStorageWithSchema({
   fallback: {},
 });
 
-// function setLocalStorage(data: CustomTextObject): void {
-//   window.localStorage.setItem("customText", JSON.stringify(data));
-// }
+const CustomTextSettingsSchema = z.object({
+  text: z.array(z.string()),
+  mode: CustomTextModeSchema,
+  limit: z.object({ value: z.number(), mode: CustomTextLimitModeSchema }),
+  pipeDelimiter: z.boolean(),
+});
 
-// function setLocalStorageLong(data: CustomTextLongObject): void {
+type CustomTextSettings = z.infer<typeof CustomTextSettingsSchema>;
 
-let text: string[] = [
-  "The",
-  "quick",
-  "brown",
-  "fox",
-  "jumps",
-  "over",
-  "the",
-  "lazy",
-  "dog",
-];
-
-let mode: CustomTextMode = "repeat";
-const limit: MonkeyTypes.CustomTextLimit = {
-  value: 9,
-  mode: "word",
+const defaultCustomTextSettings: CustomTextSettings = {
+  text: ["The", "quick", "brown", "fox", "jumps", "over", "the", "lazy", "dog"],
+  mode: "repeat",
+  limit: { value: 9, mode: "word" },
+  pipeDelimiter: false,
 };
-let pipeDelimiter = false;
+
+const customTextSettings = new LocalStorageWithSchema({
+  key: "customTextSettings",
+  schema: CustomTextSettingsSchema,
+  fallback: defaultCustomTextSettings,
+  migrate: (oldData, _zodIssues, fallback) => {
+    if (typeof oldData !== "object" || oldData === null) {
+      return fallback;
+    }
+    const migratedData = fallback;
+    if (
+      "text" in oldData &&
+      z.array(z.string()).safeParse(migratedData.text).success
+    ) {
+      migratedData.text = oldData.text as string[];
+    }
+    return migratedData;
+  },
+});
 
 export function getText(): string[] {
-  return text;
+  return customTextSettings.get().text;
 }
 
 export function setText(txt: string[]): void {
-  text = txt;
-  limit.value = text.length;
+  const currentSettings = customTextSettings.get();
+  customTextSettings.set({
+    ...currentSettings,
+    text: txt,
+    limit: { value: txt.length, mode: currentSettings.limit.mode },
+  });
 }
 
 export function getMode(): CustomTextMode {
-  return mode;
+  const currentSettings = customTextSettings.get();
+  return currentSettings.mode;
 }
 
 export function setMode(val: CustomTextMode): void {
-  mode = val;
-  limit.value = text.length;
+  const currentSettings = customTextSettings.get();
+  customTextSettings.set({
+    ...currentSettings,
+    mode: val,
+    limit: {
+      value: currentSettings.text.length,
+      mode: currentSettings.limit.mode,
+    },
+  });
 }
 
 export function getLimit(): MonkeyTypes.CustomTextLimit {
-  return limit;
+  return customTextSettings.get().limit as MonkeyTypes.CustomTextLimit;
 }
 
 export function getLimitValue(): number {
-  return limit.value;
+  return customTextSettings.get().limit.value;
 }
 
 export function getLimitMode(): CustomTextLimitMode {
-  return limit.mode;
+  return customTextSettings.get().limit.mode;
 }
 
 export function setLimitValue(val: number): void {
-  limit.value = val;
+  const currentSettings = customTextSettings.get();
+  customTextSettings.set({
+    ...currentSettings,
+    limit: { value: val, mode: currentSettings.limit.mode },
+  });
 }
 
 export function setLimitMode(val: CustomTextLimitMode): void {
-  limit.mode = val;
+  const currentSettings = customTextSettings.get();
+  customTextSettings.set({
+    ...currentSettings,
+    limit: { value: currentSettings.limit.value, mode: val },
+  });
 }
 
 export function getPipeDelimiter(): boolean {
-  return pipeDelimiter;
+  return customTextSettings.get().pipeDelimiter;
 }
 
 export function setPipeDelimiter(val: boolean): void {
-  pipeDelimiter = val;
+  const currentSettings = customTextSettings.get();
+  customTextSettings.set({
+    ...currentSettings,
+    pipeDelimiter: val,
+  });
 }
 
 export function getData(): MonkeyTypes.CustomTextData {
   return {
-    text,
-    mode,
-    limit,
-    pipeDelimiter,
+    text: getText(),
+    mode: getMode(),
+    limit: getLimit(),
+    pipeDelimiter: getPipeDelimiter(),
   };
 }
 
