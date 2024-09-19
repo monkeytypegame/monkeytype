@@ -253,10 +253,11 @@ export default class AnimatedModal<
           to: { opacity: "1" },
           easing: "swing",
         };
-      const wrapperAnimationDuration =
+      const wrapperAnimationDuration = getAnimationTime(
         options?.customAnimation?.wrapper?.durationMs ??
-        this.customShowAnimations?.wrapper?.durationMs ??
-        DEFAULT_ANIMATION_DURATION;
+          this.customShowAnimations?.wrapper?.durationMs ??
+          DEFAULT_ANIMATION_DURATION
+      );
 
       const animationMode =
         this.previousModalInChain !== undefined
