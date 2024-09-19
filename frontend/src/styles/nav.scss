@@ -74,13 +74,15 @@ nav {
       }
 
       .xpBar {
+        z-index: 5;
         opacity: 0;
         pointer-events: none;
         position: absolute;
         height: 0.25em;
         bottom: -0.5em;
         width: 100%;
-        left: 0;
+        min-width: 16ch;
+        right: 0;
         background: var(--sub-alt-color);
         border-radius: var(--roundness);
         display: grid;
@@ -102,6 +104,12 @@ nav {
           color: var(--main-color);
         }
         .xpBreakdown {
+          backdrop-filter: blur(5px);
+          /*background: linear-gradient(
+            90deg,
+            transparent 0%,
+            var(--bg-color) 10%
+          );*/
           width: 100%;
           font-size: 0.8em;
           position: absolute;
@@ -122,6 +130,9 @@ nav {
             }
             &.negative {
               color: var(--error-color);
+            }
+            &.total {
+              font-weight: bold;
             }
           }
         }

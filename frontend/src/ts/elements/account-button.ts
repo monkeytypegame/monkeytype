@@ -232,14 +232,15 @@ async function animateXpBreakdown(
     $("nav .xpBar .xpGain").text(`+${addedXp}`);
     return;
   }
-  const delay = 100;
+  const delay = 75;
   let total = 0;
   const xpBreakdown = $("nav .xpBar .xpBreakdown");
   xpBreakdown.empty();
 
   async function append(
     string: string,
-    amount: number | string | undefined
+    amount: number | string | undefined,
+    options?: { extraClass?: string }
   ): Promise<void> {
     if (skipBreakdown) {
       total = addedXp;
@@ -249,15 +250,18 @@ async function animateXpBreakdown(
     if (amount === undefined) {
       xpBreakdown.append(`<span>${string}</span><span></span>`);
     } else if (typeof amount === "string") {
-      xpBreakdown.append(`<span>${string}</span><span>${amount}</span>`);
+      xpBreakdown.append(
+        `<span class="${options?.extraClass}">${string}</span>
+        <span class="${options?.extraClass}">${amount}</span>`
+      );
     } else {
       const positive = amount == undefined ? undefined : amount >= 0;
 
       xpBreakdown.append(`
-          <span>${string}</span>
-          <span class="${positive ? "positive" : "negative"}">${
-        positive ? "+" : "-"
-      } ${Math.abs(amount)}</span>
+          <span class="${options?.extraClass}">${string}</span>
+          <span class="${positive ? "positive" : "negative"} ${
+        options?.extraClass
+      }">${positive ? "+" : "-"} ${Math.abs(amount)}</span>
       `);
     }
 
@@ -353,7 +357,7 @@ async function animateXpBreakdown(
   if (skipBreakdown) return;
 
   await Misc.sleep(delay);
-  await append("total xp", total);
+  await append("total xp", total, { extraClass: "total" });
 
   //await Misc.sleep(delay);
   //await append("");
