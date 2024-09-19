@@ -98,10 +98,11 @@ export function appendButton(): void {
     console.log("click");
     await updateXpBar(1000, 5000, {
       base: 100,
-      "100%": 200,
+      fullAccuracy: 200,
       accPenalty: 300,
       quote: 400,
       punctuation: 500,
+      streak: 10_000,
       configMultiplier: 2,
     });
   });

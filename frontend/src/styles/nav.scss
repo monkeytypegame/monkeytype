@@ -115,7 +115,7 @@ nav {
           position: absolute;
           color: var(--text-color);
           display: grid;
-          grid-template-columns: auto 2.5em;
+          grid-template-columns: auto minmax(5ch, max-content);
           gap: 0.5em;
           //justify-items: center;
           width: 100%;

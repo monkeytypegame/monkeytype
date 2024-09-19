@@ -191,7 +191,7 @@ export function update(snapshot: MonkeyTypes.Snapshot | undefined): void {
 export async function updateXpBar(
   currentXp: number,
   addedXp: number,
-  breakdown?: Record<string, number>
+  breakdown?: XpBreakdown
 ): Promise<void> {
   skipBreakdown = false;
   const startingXp = Levels.getXpDetails(currentXp);
