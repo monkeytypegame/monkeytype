@@ -955,7 +955,7 @@ export async function update(
         {
           opacity: 1,
         },
-        125
+        Misc.applyReducedMotion(125)
       );
 
       const canQuickRestart = Misc.canQuickRestart(

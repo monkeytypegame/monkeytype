@@ -4,6 +4,7 @@ import * as TestInput from "./test-input";
 import * as SlowTimer from "../states/slow-timer";
 import * as TestState from "../test/test-state";
 import * as TestWords from "./test-words";
+import { prefersReducedMotion } from "../utils/misc";
 import { convertRemToPixels } from "../utils/numbers";
 
 export let caretAnimating = true;
@@ -246,7 +247,7 @@ export async function updatePosition(noAnim = false): Promise<void> {
       window.scrollTo({
         left: 0,
         top: newscrolltop,
-        behavior: "smooth",
+        behavior: prefersReducedMotion() ? "instant" : "smooth",
       });
     }
   }

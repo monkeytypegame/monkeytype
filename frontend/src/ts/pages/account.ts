@@ -1139,7 +1139,7 @@ $(".pageAccount #accountHistoryChart").on("click", () => {
     {
       scrollTop: scrollTo,
     },
-    500
+    Misc.applyReducedMotion(500)
   );
   $(".resultRow").removeClass("active");
   $(`#result-${index}`).addClass("active");

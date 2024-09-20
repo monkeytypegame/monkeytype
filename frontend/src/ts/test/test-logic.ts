@@ -146,6 +146,7 @@ export function restart(options = {} as RestartOptions): void {
   };
 
   options = { ...defaultOptions, ...options };
+  const animationTime = options.noAnim ? 0 : Misc.applyReducedMotion(125);
 
   if (TestUI.testRestarting || TestUI.resultCalculating) {
     event?.preventDefault();
@@ -289,7 +290,7 @@ export function restart(options = {} as RestartOptions): void {
     {
       opacity: 0,
     },
-    options.noAnim ? 0 : 125,
+    animationTime,
     async () => {
       $("#result").addClass("hidden");
       $("#typingTest").css("opacity", 0).removeClass("hidden");
@@ -350,7 +351,7 @@ export function restart(options = {} as RestartOptions): void {
           {
             opacity: 1,
           },
-          options.noAnim ? 0 : 125,
+          animationTime,
           () => {
             TimerProgress.reset();
             LiveSpeed.reset();
@@ -1258,7 +1259,7 @@ async function saveResult(
           // maxWidth: "10rem",
           opacity: 1,
         },
-        500
+        Misc.applyReducedMotion(500)
       );
     $("#result .stats .dailyLeaderboard .bottom").html(
       Format.rank(data.dailyLeaderboardRank, { fallback: "" })

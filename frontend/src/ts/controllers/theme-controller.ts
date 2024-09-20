@@ -4,7 +4,7 @@ import * as Misc from "../utils/misc";
 import * as Arrays from "../utils/arrays";
 import * as JSONData from "../utils/json-data";
 import { isColorDark, isColorLight } from "../utils/colors";
-import Config, { setAutoSwitchTheme } from "../config";
+import Config, { setAutoSwitchTheme, setCustomTheme } from "../config";
 import * as BackgroundFilter from "../elements/custom-background-filter";
 import * as ConfigEvent from "../observables/config-event";
 import * as DB from "../db";
@@ -302,6 +302,7 @@ export async function randomizeTheme(): Promise<void> {
     randomTheme = "custom";
   }
 
+  setCustomTheme(false, true);
   await apply(randomTheme, colorsOverride);
 
   if (randomThemeIndex >= themesList.length) {
