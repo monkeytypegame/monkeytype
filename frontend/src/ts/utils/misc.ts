@@ -327,6 +327,7 @@ export async function swapElements(
     return Promise.resolve();
   }
 ): Promise<boolean | undefined> {
+  totalDuration = applyReducedMotion(totalDuration);
   if (
     (el1.hasClass("hidden") && !el2.hasClass("hidden")) ||
     (!el1.hasClass("hidden") && el2.hasClass("hidden"))
@@ -554,7 +555,7 @@ export async function promiseAnimation(
   easing: string
 ): Promise<void> {
   return new Promise((resolve) => {
-    el.animate(animation, duration, easing, resolve);
+    el.animate(animation, applyReducedMotion(duration), easing, resolve);
   });
 }
 
@@ -748,6 +749,19 @@ export function deepClone<T>(obj: T | T[]): T | T[] {
   }
 
   return clonedObj;
+}
+
+export function prefersReducedMotion(): boolean {
+  return matchMedia?.("(prefers-reduced-motion)")?.matches;
+}
+
+/**
+ * Reduce the animation time based on the browser preference `prefers-reduced-motion`.
+ * @param animationTime
+ * @returns `0` if user prefers reduced-motion, else the given animationTime
+ */
+export function applyReducedMotion(animationTime: number): number {
+  return prefersReducedMotion() ? 0 : animationTime;
 }
 
 // DO NOT ALTER GLOBAL OBJECTSONSTRUCTOR, IT WILL BREAK RESULT HASHES

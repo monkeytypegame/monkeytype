@@ -384,7 +384,7 @@ export function hide(): void {
       {
         opacity: 0,
       },
-      100,
+      Misc.applyReducedMotion(100),
       () => {
         languageSelector?.destroy();
         languageSelector = undefined;
@@ -750,7 +750,7 @@ export function show(): void {
         {
           opacity: 1,
         },
-        125,
+        Misc.applyReducedMotion(125),
         () => {
           void update();
           startTimer();
