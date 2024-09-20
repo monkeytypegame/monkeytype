@@ -1,13 +1,13 @@
 import { debounce } from "throttle-debounce";
 import * as Misc from "../utils/misc";
-import * as Numbers from "../utils/numbers";
 import * as BannerEvent from "../observables/banner-event";
 // import * as Alerts from "./alerts";
 import * as NotificationEvent from "../observables/notification-event";
+import { convertRemToPixels } from "../utils/numbers";
 
 function updateMargin(): void {
   const height = $("#bannerCenter").height() as number;
-  $("#app").css("padding-top", height + Numbers.convertRemToPixels(2) + "px");
+  $("#app").css("padding-top", height + convertRemToPixels(2) + "px");
   $("#notificationCenter").css("margin-top", height + "px");
 }
 

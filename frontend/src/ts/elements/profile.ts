@@ -2,9 +2,9 @@ import * as DB from "../db";
 import { format } from "date-fns/format";
 import { differenceInDays } from "date-fns/differenceInDays";
 import * as Misc from "../utils/misc";
-import * as Numbers from "../utils/numbers";
+import * as Numbers from "@monkeytype/util/numbers";
 import * as Levels from "../utils/levels";
-import * as DateTime from "../utils/date-and-time";
+import * as DateTime from "@monkeytype/util/date-and-time";
 import { getHTMLById } from "../controllers/badge-controller";
 import { throttle } from "throttle-debounce";
 import * as ActivePage from "../states/active-page";
@@ -12,6 +12,8 @@ import { formatDistanceToNowStrict } from "date-fns/formatDistanceToNowStrict";
 import { getHtmlByUserFlags } from "../controllers/user-flag-controller";
 import Format from "../utils/format";
 import { UserProfile, RankAndCount } from "@monkeytype/contracts/schemas/users";
+import { abbreviateNumber, convertRemToPixels } from "../utils/numbers";
+import { secondsToString } from "../utils/date-and-time";
 
 type ProfileViewPaths = "profile" | "account";
 type UserProfileOrSnapshot = UserProfile | MonkeyTypes.Snapshot;
@@ -227,7 +229,7 @@ export async function update(
   typingStatsEl
     .find(".timeTyping .value")
     .text(
-      DateTime.secondsToString(
+      secondsToString(
         Math.round(profile.typingStats?.timeTyping ?? 0),
         true,
         true
@@ -416,7 +418,7 @@ export function updateNameFontSize(where: ProfileViewPaths): void {
   const nameFieldjQ = details.find(".user");
   const nameFieldParent = nameFieldjQ.parent()[0];
   const nameField = nameFieldjQ[0];
-  const upperLimit = Numbers.convertRemToPixels(2);
+  const upperLimit = convertRemToPixels(2);
 
   if (!nameField || !nameFieldParent) return;
 
@@ -450,6 +452,6 @@ function formatXp(xp: number): string {
   if (xp < 1000) {
     return Math.round(xp).toString();
   } else {
-    return Numbers.abbreviateNumber(xp);
+    return abbreviateNumber(xp);
   }
 }

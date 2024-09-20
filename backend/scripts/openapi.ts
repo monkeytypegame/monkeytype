@@ -192,7 +192,7 @@ function addAuth(
 
 function getRequiredPermissions(
   metadata: EndpointMetadata | undefined
-): Permission[] | undefined {
+): PermissionId[] | undefined {
   if (metadata === undefined || metadata.requirePermission === undefined)
     return undefined;
 
@@ -216,11 +216,13 @@ function addRateLimit(
   metadata: EndpointMetadata | undefined
 ): void {
   if (metadata === undefined || metadata.rateLimit === undefined) return;
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   const okResponse = operation.responses["200"];
   if (okResponse === undefined) return;
 
   operation.description += getRateLimitDescription(metadata.rateLimit);
 
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   okResponse["headers"] = {
     ...okResponse["headers"],
     "x-ratelimit-limit": {
@@ -275,6 +277,7 @@ function addRequiredConfiguration(
   if (metadata === undefined || metadata.requireConfiguration === undefined)
     return;
 
+  //@ts-expect-error
   operation.description += `**Required configuration:** This operation can only be called if the [configuration](#tag/configuration/operation/configuration.get) for  \`${metadata.requireConfiguration.path}\` is \`true\`.\n\n`;
 }
 

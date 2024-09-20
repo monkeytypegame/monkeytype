@@ -68,6 +68,7 @@
     "vitest": "2.0.5"
   },
   "dependencies": {
+    "@monkeytype/util": "workspace:*",
     "@date-fns/utc": "1.2.0",
     "@monkeytype/contracts": "workspace:*",
     "@ts-rest/core": "3.51.0",

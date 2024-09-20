@@ -10,12 +10,6 @@ import {
 } from "@monkeytype/contracts/schemas/shared";
 import { ZodError, ZodSchema } from "zod";
 
-export function kogasa(cov: number): number {
-  return (
-    100 * (1 - Math.tanh(cov + Math.pow(cov, 3) / 3 + Math.pow(cov, 5) / 5))
-  );
-}
-
 export function whorf(speed: number, wordlen: number): number {
   return Math.min(
     speed,
@@ -196,31 +190,6 @@ export function isUsernameValid(name: string): boolean {
   if (name.length > 14) return false;
   if (/^\..*/.test(name.toLowerCase())) return false;
   return /^[0-9a-zA-Z_.-]+$/.test(name);
-}
-
-export function mapRange(
-  x: number,
-  in_min: number,
-  in_max: number,
-  out_min: number,
-  out_max: number
-): number {
-  let num = ((x - in_min) * (out_max - out_min)) / (in_max - in_min) + out_min;
-
-  if (out_min > out_max) {
-    if (num > out_min) {
-      num = out_min;
-    } else if (num < out_max) {
-      num = out_max;
-    }
-  } else {
-    if (num < out_min) {
-      num = out_min;
-    } else if (num > out_max) {
-      num = out_max;
-    }
-  }
-  return num;
 }
 
 export function canQuickRestart(
