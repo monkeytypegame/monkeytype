@@ -67,8 +67,9 @@ export function median(arr: number[]): number {
 }
 
 /**
- * Calculates the consistency of variance (CoV) of an array of numbers.
- * @param cov The CoV of the input array (standard deviation / mean).
+ * Calculates consistency by mapping COV from [0, +infinity) to [100, 0).
+ * The mapping function is a version of the sigmoid function tanh(x) that is closer to the identity function tanh(arctanh(x)) in [0, 1).
+ * @param cov The coefficient of variation of an array of numbers (standard deviation / mean).
  * @returns Consistency
  */
 export function kogasa(cov: number): number {
