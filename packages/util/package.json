@@ -2,18 +2,18 @@
   "name": "@monkeytype/util",
   "private": true,
   "scripts": {
-    "dev": "rimraf ./dist && node esbuild.config.js --watch",
-    "build": "rimraf ./dist && npm run madge && node esbuild.config.js",
+    "dev": "rimraf ./dist && monkeytype-esbuild --watch",
+    "build": "rimraf ./dist && npm run madge && monkeytype-esbuild",
     "test": "vitest run",
     "madge": " madge --circular --extensions ts ./src",
     "ts-check": "tsc --noEmit",
     "lint": "eslint \"./**/*.ts\""
   },
   "devDependencies": {
+    "@monkeytype/esbuild-config": "workspace:*",
     "@monkeytype/eslint-config": "workspace:*",
     "@monkeytype/typescript-config": "workspace:*",
     "chokidar": "3.6.0",
-    "esbuild": "0.23.0",
     "eslint": "8.57.0",
     "madge": "8.0.0",
     "rimraf": "6.0.1",

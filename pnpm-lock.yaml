@@ -461,6 +461,9 @@ importers:
         specifier: 3.23.8
         version: 3.23.8
     devDependencies:
+      '@monkeytype/esbuild-config':
+        specifier: workspace:*
+        version: link:../esbuild-config
       '@monkeytype/eslint-config':
         specifier: workspace:*
         version: link:../eslint-config
@@ -488,6 +491,15 @@ importers:
       vitest:
         specifier: 2.0.5
         version: 2.0.5(@types/node@20.14.11)(happy-dom@13.4.1)(sass@1.70.0)(terser@5.31.3)
+
+  packages/esbuild-config:
+    devDependencies:
+      esbuild:
+        specifier: 0.23.0
+        version: 0.23.0
+      eslint:
+        specifier: 8.57.0
+        version: 8.57.0
 
   packages/eslint-config:
     devDependencies:
@@ -539,6 +551,9 @@ importers:
 
   packages/util:
     devDependencies:
+      '@monkeytype/esbuild-config':
+        specifier: workspace:*
+        version: link:../esbuild-config
       '@monkeytype/eslint-config':
         specifier: workspace:*
         version: link:../eslint-config
@@ -548,9 +563,6 @@ importers:
       chokidar:
         specifier: 3.6.0
         version: 3.6.0
-      esbuild:
-        specifier: 0.23.0
-        version: 0.23.0
       eslint:
         specifier: 8.57.0
         version: 8.57.0
