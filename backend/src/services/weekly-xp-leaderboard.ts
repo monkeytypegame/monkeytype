@@ -89,7 +89,8 @@ export class WeeklyXpLeaderboard {
 
     const currentEntryTimeTypedSeconds =
       currentEntry !== null
-        ? (JSON.parse(currentEntry)?.timeTypedSeconds as number | undefined)
+        ? (JSON.parse(currentEntry) as { timeTypedSeconds: number | undefined })
+            ?.timeTypedSeconds
         : undefined;
 
     const totalTimeTypedSeconds =

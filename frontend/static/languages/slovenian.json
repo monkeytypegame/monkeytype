@@ -1,5 +1,6 @@
 {
   "name": "slovenian",
+  "bcp47": "sl-SI",
   "words": [
     "hitro",
     "potem",

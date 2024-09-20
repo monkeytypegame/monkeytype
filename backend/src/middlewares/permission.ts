@@ -4,13 +4,13 @@ import type { Response, NextFunction } from "express";
 import { getPartialUser } from "../dal/user";
 import { isAdmin } from "../dal/admin-uids";
 import { TsRestRequestHandler } from "@ts-rest/express";
-import { TsRestRequestWithCtx } from "./auth";
 import {
   EndpointMetadata,
   RequestAuthenticationOptions,
   PermissionId,
 } from "@monkeytype/contracts/schemas/api";
 import { isDevEnvironment } from "../utils/misc";
+import { getMetadata, TsRestRequestWithCtx } from "./utility";
 
 type RequestPermissionCheck = {
   type: "request";
@@ -77,9 +77,7 @@ export function verifyPermissions<
     _res: Response,
     next: NextFunction
   ): Promise<void> => {
-    const metadata = req.tsRestRoute["metadata"] as
-      | EndpointMetadata
-      | undefined;
+    const metadata = getMetadata(req);
     const requiredPermissionIds = getRequiredPermissionIds(metadata);
     if (
       requiredPermissionIds === undefined ||

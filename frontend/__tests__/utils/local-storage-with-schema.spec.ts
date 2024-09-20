@@ -132,7 +132,8 @@ describe("local-storage-with-schema.ts", () => {
       expect(localStorage.getItem).toHaveBeenCalledWith("config");
       expect(migrateFnMock).toHaveBeenCalledWith(
         existingValue,
-        expect.any(Array)
+        expect.any(Array),
+        defaultObject
       );
       expect(localStorage.setItem).toHaveBeenCalledWith(
         "config",
@@ -166,7 +167,8 @@ describe("local-storage-with-schema.ts", () => {
       expect(localStorage.getItem).toHaveBeenCalledWith("config");
       expect(migrateFnMock).toHaveBeenCalledWith(
         existingValue,
-        expect.any(Array)
+        expect.any(Array),
+        defaultObject
       );
       expect(localStorage.setItem).toHaveBeenCalledWith(
         "config",

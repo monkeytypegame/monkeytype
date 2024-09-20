@@ -3,7 +3,12 @@ import type { Request, Response, NextFunction, RequestHandler } from "express";
 import { recordClientVersion as prometheusRecordClientVersion } from "../utils/prometheus";
 import { isDevEnvironment } from "../utils/misc";
 import MonkeyError from "../utils/error";
-import { TsRestRequestWithCtx } from "./auth";
+import { EndpointMetadata } from "@monkeytype/contracts/schemas/api";
+
+export type TsRestRequestWithCtx = {
+  ctx: Readonly<MonkeyTypes.Context>;
+} & TsRestRequest &
+  ExpressRequest;
 
 /**
  * record the client version from the `x-client-version`  or ` client-version` header to prometheus
@@ -34,4 +39,9 @@ export function onlyAvailableOnDev(): MonkeyTypes.RequestHandler {
       next();
     }
   };
+}
+
+export function getMetadata(req: TsRestRequestWithCtx): EndpointMetadata {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+  return (req.tsRestRoute["metadata"] ?? {}) as EndpointMetadata;
 }

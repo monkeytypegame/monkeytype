@@ -146,7 +146,7 @@
       "length": 201
     },
     {
-      "text": "static public void Main() {\n\t\tstring[] @for = {\"C#\", \"PHP\", \"Java\", \"Python\"};\n\t\tforeach (string @as in @for) {\n\t\t\tConsole.WriteLine(\"Element of Array: {0}\", @as); \n\t\t\t} \n\t\t}",
+      "text": "public static void Main() {\n\t\tstring[] @for = {\"C#\", \"PHP\", \"Java\", \"Python\"};\n\t\tforeach (string @as in @for) {\n\t\t\tConsole.WriteLine(\"Element of Array: {0}\", @as); \n\t\t\t} \n\t\t}",
       "id": 24,
       "source": "Geeks For Geeks - C# | Verbatim String Literal",
       "length": 174
