@@ -14,7 +14,7 @@
     "zod": "3.23.8"
   },
   "devDependencies": {
-    "@monkeytype/esbuild-config": "workspace:*",
+    "@monkeytype/esbuild": "workspace:*",
     "@monkeytype/eslint-config": "workspace:*",
     "@monkeytype/typescript-config": "workspace:*",
     "chokidar": "3.6.0",

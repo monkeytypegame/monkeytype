@@ -1,5 +1,5 @@
 {
-  "name": "@monkeytype/esbuild-config",
+  "name": "@monkeytype/esbuild",
   "private": true,
   "scripts": {
     "lint": "eslint \"./**/*.js\""

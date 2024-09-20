@@ -461,7 +461,7 @@ importers:
         specifier: 3.23.8
         version: 3.23.8
     devDependencies:
-      '@monkeytype/esbuild-config':
+      '@monkeytype/esbuild':
         specifier: workspace:*
         version: link:../esbuild-config
       '@monkeytype/eslint-config':
@@ -473,9 +473,6 @@ importers:
       chokidar:
         specifier: 3.6.0
         version: 3.6.0
-      esbuild:
-        specifier: 0.23.0
-        version: 0.23.0
       eslint:
         specifier: 8.57.0
         version: 8.57.0
@@ -551,7 +548,7 @@ importers:
 
   packages/util:
     devDependencies:
-      '@monkeytype/esbuild-config':
+      '@monkeytype/esbuild':
         specifier: workspace:*
         version: link:../esbuild-config
       '@monkeytype/eslint-config':
