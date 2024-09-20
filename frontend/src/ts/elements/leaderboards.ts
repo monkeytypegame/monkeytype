@@ -4,7 +4,7 @@ import Config from "../config";
 import * as DateTime from "../utils/date-and-time";
 import * as Misc from "../utils/misc";
 import * as Arrays from "../utils/arrays";
-import * as Numbers from "../utils/numbers";
+import * as Numbers from "@monkeytype/util/numbers";
 import * as Notifications from "./notifications";
 import { format } from "date-fns/format";
 import { isAuthenticated } from "../firebase";

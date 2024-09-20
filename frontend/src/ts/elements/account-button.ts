@@ -8,6 +8,7 @@ import {
   SupportsFlags,
 } from "../controllers/user-flag-controller";
 import { isAuthenticated } from "../firebase";
+import { mapRange } from "@monkeytype/util/numbers";
 
 let usingAvatar = false;
 
@@ -429,7 +430,7 @@ async function animateXpBar(
 
     do {
       if (toAnimate - 1 < 1) {
-        animationDuration = Misc.mapRange(toAnimate - 1, 0, 0.5, 1000, 200);
+        animationDuration = mapRange(toAnimate - 1, 0, 0.5, 1000, 200);
         animationEasing = "easeOutQuad";
       }
       if (firstOneDone) {

@@ -2,7 +2,7 @@ import Config from "../config";
 import * as ConfigEvent from "../observables/config-event";
 import { createErrorMessage } from "../utils/misc";
 import { randomElementFromArray } from "../utils/arrays";
-import { randomIntFromRange } from "../utils/numbers";
+import { randomIntFromRange } from "@monkeytype/util/numbers";
 import { leftState, rightState } from "../test/shift-tracker";
 import { capsState } from "../test/caps-warning";
 import * as Notifications from "../elements/notifications";

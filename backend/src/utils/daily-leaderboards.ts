@@ -1,7 +1,7 @@
 import _, { omit } from "lodash";
 import * as RedisClient from "../init/redis";
 import LaterQueue from "../queues/later-queue";
-import { getCurrentDayTimestamp, matchesAPattern, kogascore } from "./misc";
+import { matchesAPattern, kogascore } from "./misc";
 import {
   Configuration,
   ValidModeRule,
@@ -12,6 +12,7 @@ import {
 } from "@monkeytype/contracts/schemas/leaderboards";
 import MonkeyError from "./error";
 import { Mode, Mode2 } from "@monkeytype/contracts/schemas/shared";
+import { getCurrentDayTimestamp } from "@monkeytype/util/date-and-time";
 
 const dailyLeaderboardNamespace = "monkeytype:dailyleaderboard";
 const scoresNamespace = `${dailyLeaderboardNamespace}:scores`;

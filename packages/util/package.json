@@ -1,5 +1,5 @@
 {
-  "name": "@monkeytype/contracts",
+  "name": "@monkeytype/util",
   "private": true,
   "scripts": {
     "dev": "rimraf ./dist && monkeytype-esbuild --watch",
@@ -8,10 +8,6 @@
     "madge": " madge --circular --extensions ts ./src",
     "ts-check": "tsc --noEmit",
     "lint": "eslint \"./**/*.ts\""
-  },
-  "dependencies": {
-    "@ts-rest/core": "3.51.0",
-    "zod": "3.23.8"
   },
   "devDependencies": {
     "@monkeytype/esbuild": "workspace:*",

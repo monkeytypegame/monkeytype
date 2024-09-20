@@ -5,7 +5,7 @@ import * as Monkey from "../test/monkey";
 import Config from "../config";
 import * as Misc from "../utils/misc";
 import * as JSONData from "../utils/json-data";
-import * as Numbers from "../utils/numbers";
+import * as Numbers from "@monkeytype/util/numbers";
 import * as LiveAcc from "../test/live-acc";
 import * as LiveBurst from "../test/live-burst";
 import * as Funbox from "../test/funbox/funbox";

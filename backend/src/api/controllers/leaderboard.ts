@@ -1,9 +1,4 @@
 import _ from "lodash";
-import {
-  getCurrentDayTimestamp,
-  MILLISECONDS_IN_DAY,
-  getCurrentWeekTimestamp,
-} from "../../utils/misc";
 import { MonkeyResponse } from "../../utils/monkey-response";
 import * as LeaderboardsDAL from "../../dal/leaderboards";
 import MonkeyError from "../../utils/error";
@@ -22,6 +17,11 @@ import {
   LanguageAndModeQuery,
 } from "@monkeytype/contracts/leaderboards";
 import { Configuration } from "@monkeytype/contracts/schemas/configuration";
+import {
+  getCurrentDayTimestamp,
+  getCurrentWeekTimestamp,
+  MILLISECONDS_IN_DAY,
+} from "@monkeytype/util/date-and-time";
 
 export async function getLeaderboard(
   req: MonkeyTypes.Request<GetLeaderboardQuery>
