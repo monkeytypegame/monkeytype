@@ -1,3 +1,4 @@
+import { MILLISECONDS_IN_DAY } from "@monkeytype/util/date-and-time";
 import { roundTo2 } from "@monkeytype/util/numbers";
 import _, { omit } from "lodash";
 import uaparser from "ua-parser-js";
@@ -57,9 +58,6 @@ export function padNumbers(
     number.toString().padStart(maxLength, fillString)
   );
 }
-
-export const MILISECONDS_IN_HOUR = 3600000;
-export const MILLISECONDS_IN_DAY = 86400000;
 
 export function matchesAPattern(text: string, pattern: string): boolean {
   const regex = new RegExp(`^${pattern}$`);
