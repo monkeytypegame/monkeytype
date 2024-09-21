@@ -1,5 +1,5 @@
 import Config from "../../config";
-import QuotesController from "../../controllers/quotes-controller";
+import QuotesController, { Quote } from "../../controllers/quotes-controller";
 import * as Notifications from "../../elements/notifications";
 import { isAuthenticated } from "../../firebase";
 import { createErrorMessage } from "../../utils/misc";
@@ -25,7 +25,7 @@ const commands: Command[] = [
       try {
         Loader.show();
         await QuotesController.setQuoteFavorite(
-          TestWords.currentQuote as MonkeyTypes.QuoteWithTextSplit,
+          TestWords.currentQuote as Quote,
           true
         );
         Loader.hide();
@@ -57,7 +57,7 @@ const commands: Command[] = [
       try {
         Loader.show();
         await QuotesController.setQuoteFavorite(
-          TestWords.currentQuote as MonkeyTypes.QuoteWithTextSplit,
+          TestWords.currentQuote as Quote,
           false
         );
         Loader.hide();

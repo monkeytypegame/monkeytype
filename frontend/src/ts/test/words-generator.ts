@@ -2,7 +2,10 @@ import Config, * as UpdateConfig from "../config";
 import * as FunboxList from "./funbox/funbox-list";
 import * as CustomText from "./custom-text";
 import * as Wordset from "./wordset";
-import QuotesController from "../controllers/quotes-controller";
+import QuotesController, {
+  Quote,
+  QuoteWithTextSplit,
+} from "../controllers/quotes-controller";
 import * as TestWords from "./test-words";
 import * as BritishEnglish from "./british-english";
 import * as LazyMode from "./lazy-mode";
@@ -418,7 +421,7 @@ export function getWordsLimit(): number {
       limit = Config.words;
     }
     if (Config.mode === "quote") {
-      limit = (currentQuote as MonkeyTypes.QuoteWithTextSplit).textSplit.length;
+      limit = (currentQuote as QuoteWithTextSplit).textSplit.length;
     }
   }
 
@@ -452,9 +455,9 @@ export function getWordsLimit(): number {
 
   if (
     Config.mode === "quote" &&
-    (currentQuote as MonkeyTypes.QuoteWithTextSplit).textSplit.length < limit
+    (currentQuote as QuoteWithTextSplit).textSplit.length < limit
   ) {
-    limit = (currentQuote as MonkeyTypes.QuoteWithTextSplit).textSplit.length;
+    limit = (currentQuote as QuoteWithTextSplit).textSplit.length;
   }
 
   if (
@@ -513,7 +516,7 @@ async function getQuoteWordList(
     );
   }
 
-  let rq: MonkeyTypes.Quote;
+  let rq: Quote;
   if (Config.quoteLength.includes(-2) && Config.quoteLength.length === 1) {
     const targetQuote = QuotesController.getQuoteById(
       TestState.selectedQuoteId
@@ -559,7 +562,7 @@ async function getQuoteWordList(
     rq.textSplit = rq.text.split(" ");
   }
 
-  TestWords.setCurrentQuote(rq as MonkeyTypes.QuoteWithTextSplit);
+  TestWords.setCurrentQuote(rq as QuoteWithTextSplit);
 
   if (TestWords.currentQuote === null) {
     throw new WordGenError("Random quote is null");
@@ -583,7 +586,7 @@ type GenerateWordsReturn = {
   hasNewline: boolean;
 };
 
-let previousRandomQuote: MonkeyTypes.QuoteWithTextSplit | null = null;
+let previousRandomQuote: QuoteWithTextSplit | null = null;
 
 export async function generateWords(
   language: LanguageObject
@@ -679,16 +682,12 @@ export async function generateWords(
     ret.words.some((w) => w.includes("\t")) ||
     currentWordset.words.some((w) => w.includes("\t")) ||
     (Config.mode === "quote" &&
-      (quote as MonkeyTypes.QuoteWithTextSplit).textSplit.some((w) =>
-        w.includes("\t")
-      ));
+      (quote as QuoteWithTextSplit).textSplit.some((w) => w.includes("\t")));
   ret.hasNewline =
     ret.words.some((w) => w.includes("\n")) ||
     currentWordset.words.some((w) => w.includes("\n")) ||
     (Config.mode === "quote" &&
-      (quote as MonkeyTypes.QuoteWithTextSplit).textSplit.some((w) =>
-        w.includes("\n")
-      ));
+      (quote as QuoteWithTextSplit).textSplit.some((w) => w.includes("\n")));
 
   sectionHistory = []; //free up a bit of memory? is that even a thing?
   return ret;

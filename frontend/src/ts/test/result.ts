@@ -3,7 +3,7 @@ import { Chart, type PluginChartOptions } from "chart.js";
 import Config from "../config";
 import * as AdController from "../controllers/ad-controller";
 import * as ChartController from "../controllers/chart-controller";
-import QuotesController from "../controllers/quotes-controller";
+import QuotesController, { Quote } from "../controllers/quotes-controller";
 import * as DB from "../db";
 import * as Loader from "../elements/loader";
 import * as Notifications from "../elements/notifications";
@@ -654,7 +654,7 @@ async function updateTags(dontSave: boolean): Promise<void> {
   });
 }
 
-function updateTestType(randomQuote: MonkeyTypes.Quote | null): void {
+function updateTestType(randomQuote: Quote | null): void {
   let testType = "";
 
   testType += Config.mode;
@@ -761,7 +761,7 @@ function updateOther(
   }
 }
 
-export function updateRateQuote(randomQuote: MonkeyTypes.Quote | null): void {
+export function updateRateQuote(randomQuote: Quote | null): void {
   if (Config.mode === "quote") {
     if (randomQuote === null) {
       console.error(
@@ -794,7 +794,7 @@ export function updateRateQuote(randomQuote: MonkeyTypes.Quote | null): void {
   }
 }
 
-function updateQuoteFavorite(randomQuote: MonkeyTypes.Quote | null): void {
+function updateQuoteFavorite(randomQuote: Quote | null): void {
   const icon = $(".pageTest #result #favoriteQuoteButton .icon");
 
   if (Config.mode !== "quote" || !isAuthenticated()) {
@@ -817,7 +817,7 @@ function updateQuoteFavorite(randomQuote: MonkeyTypes.Quote | null): void {
   icon.parent().removeClass("hidden");
 }
 
-function updateQuoteSource(randomQuote: MonkeyTypes.Quote | null): void {
+function updateQuoteSource(randomQuote: Quote | null): void {
   if (Config.mode === "quote") {
     $("#result .stats .source").removeClass("hidden");
     $("#result .stats .source .bottom").html(
@@ -835,7 +835,7 @@ export async function update(
   afkDetected: boolean,
   isRepeated: boolean,
   tooShort: boolean,
-  randomQuote: MonkeyTypes.Quote | null,
+  randomQuote: Quote | null,
   dontSave: boolean
 ): Promise<void> {
   resultAnnotation = [];

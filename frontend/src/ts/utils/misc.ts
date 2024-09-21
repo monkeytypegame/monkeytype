@@ -356,7 +356,7 @@ export async function swapElements(
 
 export function getMode2<M extends keyof PersonalBests>(
   config: Config,
-  randomQuote: MonkeyTypes.Quote | null
+  randomQuote: { id: number } | null
 ): Mode2<M> {
   const mode = config.mode;
   let retVal: string;

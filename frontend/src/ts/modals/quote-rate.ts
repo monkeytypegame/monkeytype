@@ -1,4 +1,5 @@
 import Ape from "../ape";
+import { Quote } from "../controllers/quotes-controller";
 import * as DB from "../db";
 import * as Loader from "../elements/loader";
 import * as Notifications from "../elements/notifications";
@@ -15,7 +16,7 @@ type QuoteStats = {
 };
 
 let quoteStats: QuoteStats | null | Record<string, never> = null;
-let currentQuote: MonkeyTypes.Quote | null = null;
+let currentQuote: Quote | null = null;
 
 export function clearQuoteStats(): void {
   quoteStats = null;
@@ -39,7 +40,7 @@ function getRatingAverage(quoteStats: QuoteStats): number {
 }
 
 export async function getQuoteStats(
-  quote?: MonkeyTypes.Quote
+  quote?: Quote
 ): Promise<QuoteStats | undefined> {
   if (!quote) {
     return;
@@ -106,10 +107,7 @@ function updateData(): void {
   void updateRatingStats();
 }
 
-export function show(
-  quote: MonkeyTypes.Quote,
-  showOptions?: ShowOptions
-): void {
+export function show(quote: Quote, showOptions?: ShowOptions): void {
   void modal.show({
     ...showOptions,
     beforeAnimation: async () => {
