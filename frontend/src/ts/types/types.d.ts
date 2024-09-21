@@ -5,16 +5,6 @@ type IncompleteTest =
   import("@monkeytype/contracts/schemas/results").IncompleteTest;
 
 declare namespace MonkeyTypes {
-  type UserBadge = {
-    id: number;
-    name: string;
-    description: string;
-    icon?: string;
-    background?: string;
-    color?: string;
-    customStyle?: string;
-  };
-
   type MonkeyMail = {
     id: string;
     subject: string;
