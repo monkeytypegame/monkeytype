@@ -3,6 +3,7 @@ import * as Notifications from "../elements/notifications";
 import * as DB from "../db";
 import * as TestLogic from "../test/test-logic";
 import { deepClone } from "./misc";
+import { Mode } from "@monkeytype/contracts/schemas/shared";
 
 export async function syncNotSignedInLastResult(uid: string): Promise<void> {
   const notSignedInLastResult = TestLogic.notSignedInLastResult;
