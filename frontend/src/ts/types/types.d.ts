@@ -5,32 +5,6 @@ type IncompleteTest =
   import("@monkeytype/contracts/schemas/results").IncompleteTest;
 
 declare namespace MonkeyTypes {
-  type MonkeyMail = {
-    id: string;
-    subject: string;
-    body: string;
-    timestamp: number;
-    read: boolean;
-    rewards: AllRewards[];
-  };
-
-  type Reward<T> = {
-    type: string;
-    item: T;
-  };
-
-  type XpReward = {
-    type: "xp";
-    item: number;
-  } & Reward<number>;
-
-  type BadgeReward = {
-    type: "badge";
-    item: import("@monkeytype/contracts/schemas/users").Badge;
-  } & Reward<import("@monkeytype/contracts/schemas/users").Badge>;
-
-  type AllRewards = XpReward | BadgeReward;
-
   type TypingSpeedUnitSettings = {
     fromWpm: (number: number) => number;
     toWpm: (number: number) => number;
