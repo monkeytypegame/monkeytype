@@ -5,22 +5,6 @@ type IncompleteTest =
   import("@monkeytype/contracts/schemas/results").IncompleteTest;
 
 declare namespace MonkeyTypes {
-  type Layout = {
-    keymapShowTopRow: boolean;
-    matrixShowRightColumn?: boolean;
-    type: "iso" | "ansi" | "ortho" | "matrix";
-    keys: Keys;
-  };
-
-  type Layouts = Record<string, Layout>;
-  type Keys = {
-    row1: string[];
-    row2: string[];
-    row3: string[];
-    row4: string[];
-    row5: string[];
-  };
-
   type WpmAndRaw = {
     wpm: number;
     raw: number;

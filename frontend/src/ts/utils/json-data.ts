@@ -65,13 +65,30 @@ export const cachedFetchJson = memoizeAsync<string, typeof fetchJson>(
   fetchJson
 );
 
+export type Keys = {
+  row1: string[];
+  row2: string[];
+  row3: string[];
+  row4: string[];
+  row5: string[];
+};
+
+export type Layout = {
+  keymapShowTopRow: boolean;
+  matrixShowRightColumn?: boolean;
+  type: "iso" | "ansi" | "ortho" | "matrix";
+  keys: Keys;
+};
+
+export type LayoutsList = Record<string, Layout>;
+
 /**
  * Fetches the layouts list from the server.
  * @returns A promise that resolves to the layouts list.
  */
-export async function getLayoutsList(): Promise<MonkeyTypes.Layouts> {
+export async function getLayoutsList(): Promise<LayoutsList> {
   try {
-    const layoutsList = await cachedFetchJson<MonkeyTypes.Layouts>(
+    const layoutsList = await cachedFetchJson<LayoutsList>(
       "/layouts/_list.json"
     );
     return layoutsList;
@@ -86,9 +103,7 @@ export async function getLayoutsList(): Promise<MonkeyTypes.Layouts> {
  * @returns A promise that resolves to the layout object.
  * @throws {Error} If the layout list or layout doesn't exist.
  */
-export async function getLayout(
-  layoutName: string
-): Promise<MonkeyTypes.Layout> {
+export async function getLayout(layoutName: string): Promise<Layout> {
   const layouts = await getLayoutsList();
   const layout = layouts[layoutName];
   if (layout === undefined) {

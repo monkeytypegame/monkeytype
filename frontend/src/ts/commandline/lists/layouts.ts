@@ -1,5 +1,6 @@
 import * as UpdateConfig from "../../config";
 import * as TestLogic from "../../test/test-logic";
+import { LayoutsList } from "../../utils/json-data";
 import { capitalizeFirstLetterOfEachWord } from "../../utils/strings";
 import { Command, CommandsSubgroup } from "../types";
 
@@ -23,7 +24,7 @@ const commands: Command[] = [
   },
 ];
 
-function update(layouts: MonkeyTypes.Layouts): void {
+function update(layouts: LayoutsList): void {
   subgroup.list = [];
   subgroup.list.push({
     id: "changeLayoutDefault",

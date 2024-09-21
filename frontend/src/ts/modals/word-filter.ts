@@ -10,8 +10,8 @@ import AnimatedModal, {
 
 type FilterPreset = {
   display: string;
-  getIncludeString: (layout: MonkeyTypes.Layout) => string[];
-  getExcludeString: (layout: MonkeyTypes.Layout) => string[];
+  getIncludeString: (layout: JSONData.Layout) => string[];
+  getExcludeString: (layout: JSONData.Layout) => string[];
 };
 
 const presets: Record<string, FilterPreset> = {
