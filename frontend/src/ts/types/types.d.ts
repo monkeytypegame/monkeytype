@@ -5,14 +5,6 @@ type IncompleteTest =
   import("@monkeytype/contracts/schemas/results").IncompleteTest;
 
 declare namespace MonkeyTypes {
-  type LeaderboardMemory = {
-    time: {
-      [_key in "15" | "60"]: Record<string, number>;
-    };
-  };
-
-  type QuoteRatings = Record<string, Record<number, number>>;
-
   type TimerStats = {
     dateNow: number;
     now: number;
