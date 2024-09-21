@@ -16,6 +16,7 @@ import {
 } from "@monkeytype/contracts/schemas/presets";
 import { getPreset } from "../controllers/preset-controller";
 import defaultConfig from "../constants/default-config";
+import { Config as ConfigType } from "@monkeytype/contracts/schemas/configs";
 
 const state = {
   presetType: "full" as PresetType,
@@ -465,16 +466,16 @@ function getSettingGroup(configFieldName: string): PresetSettingGroup {
 }
 
 function getPartialConfigChanges(
-  configChanges: MonkeyTypes.ConfigChanges
-): MonkeyTypes.ConfigChanges {
-  const activeConfigChanges: MonkeyTypes.ConfigChanges = {};
+  configChanges: Partial<ConfigType>
+): Partial<ConfigType> {
+  const activeConfigChanges: Partial<ConfigType> = {};
   Object.keys(defaultConfig)
     .filter(
       (settingName) =>
         state.checkboxes.get(getSettingGroup(settingName)) === true
     )
     .forEach((settingName) => {
-      const safeSettingName = settingName as keyof MonkeyTypes.ConfigChanges;
+      const safeSettingName = settingName as keyof Partial<ConfigType>;
       const newValue =
         configChanges[safeSettingName] !== undefined
           ? configChanges[safeSettingName]
@@ -491,7 +492,7 @@ function getActiveSettingGroupsFromState(): ActiveSettingGroups {
       .map(([key]) => key)
   );
 }
-function getConfigChanges(): MonkeyTypes.ConfigChanges {
+function getConfigChanges(): Partial<ConfigType> {
   const activeConfigChanges =
     state.presetType === "partial"
       ? getPartialConfigChanges(Config.getConfigChanges())

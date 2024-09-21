@@ -5,19 +5,6 @@ type IncompleteTest =
   import("@monkeytype/contracts/schemas/results").IncompleteTest;
 
 declare namespace MonkeyTypes {
-  type RawCustomTheme = {
-    name: string;
-    colors: import("@monkeytype/contracts/schemas/configs").CustomThemeColors;
-  };
-
-  type CustomTheme = {
-    _id: string;
-  } & RawCustomTheme;
-
-  type ConfigChanges = Partial<
-    import("@monkeytype/contracts/schemas/configs").Config
-  >;
-
   type LeaderboardMemory = {
     time: {
       [_key in "15" | "60"]: Record<string, number>;

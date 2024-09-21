@@ -16,6 +16,7 @@ import * as Loader from "./elements/loader";
 
 import {
   Badge,
+  CustomTheme,
   ResultFilters,
   User,
   UserProfileDetails,
@@ -376,14 +377,12 @@ export async function getUserResults(offset?: number): Promise<boolean> {
   return true;
 }
 
-function _getCustomThemeById(
-  themeID: string
-): MonkeyTypes.CustomTheme | undefined {
+function _getCustomThemeById(themeID: string): CustomTheme | undefined {
   return dbSnapshot?.customThemes?.find((t) => t._id === themeID);
 }
 
 export async function addCustomTheme(
-  theme: MonkeyTypes.RawCustomTheme
+  theme: Omit<CustomTheme, "_id">
 ): Promise<boolean> {
   if (!dbSnapshot) return false;
 
@@ -410,7 +409,7 @@ export async function addCustomTheme(
     return false;
   }
 
-  const newCustomTheme: MonkeyTypes.CustomTheme = {
+  const newCustomTheme: CustomTheme = {
     ...theme,
     _id: response.body.data._id,
   };
@@ -421,7 +420,7 @@ export async function addCustomTheme(
 
 export async function editCustomTheme(
   themeId: string,
-  newTheme: MonkeyTypes.RawCustomTheme
+  newTheme: Omit<CustomTheme, "_id">
 ): Promise<boolean> {
   if (!isAuthenticated()) return false;
   if (!dbSnapshot) return false;
@@ -450,7 +449,7 @@ export async function editCustomTheme(
     return false;
   }
 
-  const newCustomTheme: MonkeyTypes.CustomTheme = {
+  const newCustomTheme: CustomTheme = {
     ...newTheme,
     _id: themeId,
   };
