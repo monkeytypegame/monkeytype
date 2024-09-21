@@ -529,52 +529,50 @@ function updateWordsWrapperHeight(force = false): void {
     parseInt(wordComputedStyle.marginBottom);
   const wordHeight = activeWordEl.offsetHeight + wordMargin;
 
+  let wrapperHeight = 0;
+  let finalWrapperHeight: string,
+    outOfFocusMargin: string,
+    beforeNewlineMargin: string;
   if (
     Config.showAllLines &&
     Config.mode !== "time" &&
     CustomText.getLimitMode() !== "time" &&
     CustomText.getLimitValue() !== 0
   ) {
-    $("#wordsWrapper").css("height", "auto");
-    $(".outOfFocusWarning").css(
-      "margin-top",
-      wordHeight + convertRemToPixels(1) / 2 + "px"
-    );
+    finalWrapperHeight = "auto";
+    outOfFocusMargin = wordHeight + convertRemToPixels(1) / 2 + "px";
+    beforeNewlineMargin = "unset";
+  } else if (Config.tapeMode !== "off") {
+    wrapperHeight = wordHeight * 3;
+    finalWrapperHeight = wrapperHeight + "px";
+    outOfFocusMargin = wrapperHeight / 2 - convertRemToPixels(1) / 2 + "px";
+    beforeNewlineMargin = wordHeight + "px";
   } else {
-    let finalWrapperHeight: number;
+    let lines = 0;
+    let lastHeight = 0;
+    let wordIndex = 0;
 
-    if (Config.tapeMode !== "off") {
-      finalWrapperHeight = wordHeight * 3;
-      $(".beforeNewline").css("margin-bottom", wordHeight + "px");
-    } else {
-      $(".beforeNewline").css("margin-bottom", "unset");
-      let lines = 0;
-      let lastHeight = 0;
-      let wordIndex = 0;
-      let wrapperHeight = 0;
-
-      while (lines < 3) {
-        const word = wordElements[wordIndex] as HTMLElement | null;
-        if (!word) break;
-        const height = word.offsetTop;
-        if (height > lastHeight) {
-          lines++;
-          wrapperHeight += word.offsetHeight + wordMargin;
-          lastHeight = height;
-        }
-        wordIndex++;
+    while (lines < 3) {
+      const word = wordElements[wordIndex] as HTMLElement | null;
+      if (!word) break;
+      const height = word.offsetTop;
+      if (height > lastHeight) {
+        lines++;
+        wrapperHeight += word.offsetHeight + wordMargin;
+        lastHeight = height;
       }
-      if (lines < 3) wrapperHeight = wrapperHeight * (3 / lines);
-
-      finalWrapperHeight = wrapperHeight;
+      wordIndex++;
     }
+    if (lines < 3) wrapperHeight = wrapperHeight * (3 / lines);
 
-    $("#wordsWrapper").css("height", finalWrapperHeight + "px");
-    $(".outOfFocusWarning").css(
-      "margin-top",
-      finalWrapperHeight / 2 - convertRemToPixels(1) / 2 + "px"
-    );
+    finalWrapperHeight = wrapperHeight + "px";
+    outOfFocusMargin = wrapperHeight / 2 - convertRemToPixels(1) / 2 + "px";
+    beforeNewlineMargin = "unset";
   }
+
+  $("#wordsWrapper").css("height", finalWrapperHeight);
+  $(".beforeNewline").css("margin-bottom", beforeNewlineMargin);
+  $(".outOfFocusWarning").css("margin-top", outOfFocusMargin);
 
   if (activeWordEmpty) {
     activeWordEl?.replaceChildren();
