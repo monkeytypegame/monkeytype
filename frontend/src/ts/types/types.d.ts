@@ -5,35 +5,6 @@ type IncompleteTest =
   import("@monkeytype/contracts/schemas/results").IncompleteTest;
 
 declare namespace MonkeyTypes {
-  type TypingSpeedUnitSettings = {
-    fromWpm: (number: number) => number;
-    toWpm: (number: number) => number;
-    fullUnitString: string;
-    histogramDataBucketSize: number;
-    historyStepSize: number;
-  };
-
-  type TestActivityCalendar = {
-    getMonths: () => TestActivityMonth[];
-    getDays: () => TestActivityDay[];
-    getTotalTests: () => number;
-  };
-
-  type ModifiableTestActivityCalendar = TestActivityCalendar & {
-    increment: (date: Date) => void;
-    getFullYearCalendar: () => TestActivityCalendar;
-  };
-
-  type TestActivityDay = {
-    level: string;
-    label?: string;
-  };
-
-  type TestActivityMonth = {
-    text: string;
-    weeks: number;
-  };
-
   /**
    * Result from the rest api but all omittable default values are set (and non optional)
    */

@@ -1064,7 +1064,7 @@ export function setStreak(streak: number): void {
 
 export async function getTestActivityCalendar(
   yearString: string
-): Promise<MonkeyTypes.TestActivityCalendar | undefined> {
+): Promise<TestActivityCalendar | undefined> {
   if (!isAuthenticated() || dbSnapshot === undefined) return undefined;
 
   if (yearString === "current") return dbSnapshot.testActivity;
