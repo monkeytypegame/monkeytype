@@ -8,6 +8,7 @@ import {
   PersonalBests,
 } from "@monkeytype/contracts/schemas/shared";
 import { ZodError, ZodSchema } from "zod";
+import { Result } from "@monkeytype/contracts/schemas/results";
 
 export function whorf(speed: number, wordlen: number): number {
   return Math.min(
@@ -378,9 +379,7 @@ export function getMode2<M extends keyof PersonalBests>(
   return retVal as Mode2<M>;
 }
 
-export async function downloadResultsCSV(
-  array: MonkeyTypes.FullResult<Mode>[]
-): Promise<void> {
+export async function downloadResultsCSV(array: Result<Mode>[]): Promise<void> {
   Loader.show();
   const csvString = [
     [
@@ -409,7 +408,7 @@ export async function downloadResultsCSV(
       "tags",
       "timestamp",
     ],
-    ...array.map((item: MonkeyTypes.FullResult<Mode>) => [
+    ...array.map((item) => [
       item._id,
       item.isPb,
       item.wpm,
@@ -432,7 +431,7 @@ export async function downloadResultsCSV(
       item.lazyMode,
       item.blindMode,
       item.bailedOut,
-      item.tags.join(";"),
+      item.tags?.join(";"),
       item.timestamp,
     ]),
   ]

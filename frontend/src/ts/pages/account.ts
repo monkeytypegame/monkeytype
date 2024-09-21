@@ -28,7 +28,12 @@ import * as ResultBatches from "../elements/result-batches";
 import Format from "../utils/format";
 import * as TestActivity from "../elements/test-activity";
 import { ChartData } from "@monkeytype/contracts/schemas/results";
-import { Mode, Mode2, Mode2Custom } from "@monkeytype/contracts/schemas/shared";
+import {
+  Difficulty,
+  Mode,
+  Mode2,
+  Mode2Custom,
+} from "@monkeytype/contracts/schemas/shared";
 import { ResultFiltersGroupItem } from "@monkeytype/contracts/schemas/users";
 import { findLineByLeastSquares } from "../utils/numbers";
 import defaultResultFilters from "../constants/default-result-filters";
@@ -42,7 +47,7 @@ export function toggleFilterDebug(): void {
   }
 }
 
-let filteredResults: MonkeyTypes.FullResult<Mode>[] = [];
+let filteredResults: DB.SnapshotResult<Mode>[] = [];
 let visibleTableLines = 0;
 
 function loadMoreLines(lineIndex?: number): void {
@@ -289,7 +294,7 @@ async function fillContent(): Promise<void> {
       if (resdiff === undefined) {
         resdiff = "normal";
       }
-      if (!ResultFilters.getFilter("difficulty", resdiff)) {
+      if (!ResultFilters.getFilter("difficulty", resdiff as Difficulty)) {
         if (filterDebug) {
           console.log(`skipping result due to difficulty filter`, result);
         }
@@ -521,7 +526,7 @@ async function fillContent(): Promise<void> {
       dataForTimestamp.amount++;
       dataForTimestamp.time +=
         result.testDuration +
-        result.incompleteTestSeconds -
+        (result.incompleteTestSeconds ?? 0) -
         (result.afkDuration ?? 0);
       dataForTimestamp.totalWpm += result.wpm;
     } else {
@@ -529,7 +534,7 @@ async function fillContent(): Promise<void> {
         amount: 1,
         time:
           result.testDuration +
-          result.incompleteTestSeconds -
+          (result.incompleteTestSeconds ?? 0) -
           (result.afkDuration ?? 0),
         totalWpm: result.wpm,
       };
@@ -1067,7 +1072,7 @@ function sortAndRefreshHistory(
     $(headerClass).append('<i class="fas fa-sort-up", aria-hidden="true"></i>');
   }
 
-  const temp: MonkeyTypes.FullResult<Mode>[] = [];
+  const temp: DB.SnapshotResult<Mode>[] = [];
   const parsedIndexes: number[] = [];
 
   while (temp.length < filteredResults.length) {
@@ -1226,6 +1231,7 @@ $(".pageAccount .group.presetFilterButtons").on(
 );
 
 $(".pageAccount .content .group.aboveHistory .exportCSV").on("click", () => {
+  //@ts-expect-error
   void Misc.downloadResultsCSV(filteredResults);
 });
 

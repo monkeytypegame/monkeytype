@@ -31,10 +31,44 @@ import {
 } from "@monkeytype/contracts/schemas/shared";
 import { Preset } from "@monkeytype/contracts/schemas/presets";
 import defaultSnapshot from "./constants/default-snapshot";
+import { Result } from "@monkeytype/contracts/schemas/results";
 
 export type SnapshotUserTag = UserTag & {
   active?: boolean;
   display: string;
+};
+
+export type SnapshotResult<M extends Mode> = Omit<
+  Result<M>,
+  | "_id"
+  | "bailedOut"
+  | "blindMode"
+  | "lazyMode"
+  | "difficulty"
+  | "funbox"
+  | "language"
+  | "numbers"
+  | "punctuation"
+  | "quoteLength"
+  | "restartCount"
+  | "incompleteTestSeconds"
+  | "afkDuration"
+  | "tags"
+> & {
+  _id: string;
+  bailedOut: boolean;
+  blindMode: boolean;
+  lazyMode: boolean;
+  difficulty: string;
+  funbox: string;
+  language: string;
+  numbers: boolean;
+  punctuation: boolean;
+  quoteLength: number;
+  restartCount: number;
+  incompleteTestSeconds: number;
+  afkDuration: number;
+  tags: string[];
 };
 
 export type Snapshot = Omit<
@@ -64,7 +98,7 @@ export type Snapshot = Omit<
   config: Config;
   tags: SnapshotUserTag[];
   presets: SnapshotPreset[];
-  results?: MonkeyTypes.FullResult<Mode>[];
+  results?: SnapshotResult<Mode>[];
   xp: number;
   testActivity?: ModifiableTestActivityCalendar;
   testActivityByYear?: { [key: string]: TestActivityCalendar };
@@ -338,29 +372,27 @@ export async function getUserResults(offset?: number): Promise<boolean> {
     return false;
   }
 
-  const results: MonkeyTypes.FullResult<Mode>[] = response.body.data.map(
-    (result) => {
-      if (result.bailedOut === undefined) result.bailedOut = false;
-      if (result.blindMode === undefined) result.blindMode = false;
-      if (result.lazyMode === undefined) result.lazyMode = false;
-      if (result.difficulty === undefined) result.difficulty = "normal";
-      if (result.funbox === undefined) result.funbox = "none";
-      if (result.language === undefined || result.language === null) {
-        result.language = "english";
-      }
-      if (result.numbers === undefined) result.numbers = false;
-      if (result.punctuation === undefined) result.punctuation = false;
-      if (result.numbers === undefined) result.numbers = false;
-      if (result.quoteLength === undefined) result.quoteLength = -1;
-      if (result.restartCount === undefined) result.restartCount = 0;
-      if (result.incompleteTestSeconds === undefined) {
-        result.incompleteTestSeconds = 0;
-      }
-      if (result.afkDuration === undefined) result.afkDuration = 0;
-      if (result.tags === undefined) result.tags = [];
-      return result as MonkeyTypes.FullResult<Mode>;
+  const results: SnapshotResult<Mode>[] = response.body.data.map((result) => {
+    if (result.bailedOut === undefined) result.bailedOut = false;
+    if (result.blindMode === undefined) result.blindMode = false;
+    if (result.lazyMode === undefined) result.lazyMode = false;
+    if (result.difficulty === undefined) result.difficulty = "normal";
+    if (result.funbox === undefined) result.funbox = "none";
+    if (result.language === undefined || result.language === null) {
+      result.language = "english";
     }
-  );
+    if (result.numbers === undefined) result.numbers = false;
+    if (result.punctuation === undefined) result.punctuation = false;
+    if (result.numbers === undefined) result.numbers = false;
+    if (result.quoteLength === undefined) result.quoteLength = -1;
+    if (result.restartCount === undefined) result.restartCount = 0;
+    if (result.incompleteTestSeconds === undefined) {
+      result.incompleteTestSeconds = 0;
+    }
+    if (result.afkDuration === undefined) result.afkDuration = 0;
+    if (result.tags === undefined) result.tags = [];
+    return result as SnapshotResult<Mode>;
+  });
   results?.sort((a, b) => b.timestamp - a.timestamp);
 
   if (dbSnapshot.results !== undefined && dbSnapshot.results.length > 0) {
@@ -522,7 +554,7 @@ export async function getUserAverage10<M extends Mode>(
           (result.lazyMode === lazyMode ||
             (result.lazyMode === undefined && !lazyMode)) &&
           (activeTagIds.length === 0 ||
-            activeTagIds.some((tagId) => result.tags.includes(tagId)))
+            activeTagIds.some((tagId) => result.tags?.includes(tagId)))
         ) {
           // Continue if the mode2 doesn't match and it's not a quote
           if (
@@ -602,7 +634,7 @@ export async function getUserDailyBest<M extends Mode>(
           (result.lazyMode === lazyMode ||
             (result.lazyMode === undefined && !lazyMode)) &&
           (activeTagIds.length === 0 ||
-            activeTagIds.some((tagId) => result.tags.includes(tagId)))
+            activeTagIds.some((tagId) => result.tags?.includes(tagId)))
         ) {
           if (result.timestamp < Date.now() - 86400000) {
             continue;
@@ -991,7 +1023,7 @@ export async function resetConfig(): Promise<void> {
   }
 }
 
-export function saveLocalResult(result: MonkeyTypes.FullResult<Mode>): void {
+export function saveLocalResult(result: SnapshotResult<Mode>): void {
   const snapshot = getSnapshot();
   if (!snapshot) return;
 

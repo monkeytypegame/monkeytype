@@ -2,6 +2,7 @@ import Ape from "../ape";
 import * as Notifications from "../elements/notifications";
 import * as DB from "../db";
 import * as TestLogic from "../test/test-logic";
+import { deepClone } from "./misc";
 
 export async function syncNotSignedInLastResult(uid: string): Promise<void> {
   const notSignedInLastResult = TestLogic.notSignedInLastResult;
@@ -19,9 +20,12 @@ export async function syncNotSignedInLastResult(uid: string): Promise<void> {
     return;
   }
 
-  const result = JSON.parse(
-    JSON.stringify(notSignedInLastResult)
-  ) as MonkeyTypes.FullResult<Mode>;
+  //TODO - this type cast was not needed before because we were using JSON cloning
+  // but now with the stronger types it shows that we are forcing completed event
+  // into a snapshot result - might not cuase issues but worth investigating
+  const result = deepClone(
+    notSignedInLastResult
+  ) as unknown as DB.SnapshotResult<Mode>;
   result._id = response.body.data.insertedId;
   if (response.body.data.isPb) {
     result.isPb = true;
