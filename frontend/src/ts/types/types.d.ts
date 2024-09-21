@@ -4,16 +4,4 @@ type Mode = import("@monkeytype/contracts/schemas/shared").Mode;
 type IncompleteTest =
   import("@monkeytype/contracts/schemas/results").IncompleteTest;
 
-declare namespace MonkeyTypes {
-  type CustomTextLimit = {
-    value: number;
-    mode: import("@monkeytype/contracts/schemas/util").CustomTextLimitMode;
-  };
-
-  type CustomTextData = Omit<
-    import("@monkeytype/contracts/schemas/results").CustomTextDataWithTextLen,
-    "textLen"
-  > & {
-    text: string[];
-  };
-}
+declare namespace MonkeyTypes {}

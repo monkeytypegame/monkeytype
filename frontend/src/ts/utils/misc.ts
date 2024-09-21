@@ -8,7 +8,10 @@ import {
   PersonalBests,
 } from "@monkeytype/contracts/schemas/shared";
 import { ZodError, ZodSchema } from "zod";
-import { Result } from "@monkeytype/contracts/schemas/results";
+import {
+  CustomTextDataWithTextLen,
+  Result,
+} from "@monkeytype/contracts/schemas/results";
 
 export function whorf(speed: number, wordlen: number): number {
   return Math.min(
@@ -196,7 +199,7 @@ export function canQuickRestart(
   mode: string,
   words: number,
   time: number,
-  CustomText: MonkeyTypes.CustomTextData,
+  CustomText: Omit<CustomTextDataWithTextLen, "textLen">,
   customTextIsLong: boolean
 ): boolean {
   const wordsLong = mode === "words" && (words >= 1000 || words === 0);

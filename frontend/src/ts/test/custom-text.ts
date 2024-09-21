@@ -6,6 +6,7 @@ import {
 } from "@monkeytype/contracts/schemas/util";
 import { LocalStorageWithSchema } from "../utils/local-storage-with-schema";
 import { z } from "zod";
+import { CustomTextDataWithTextLen } from "@monkeytype/contracts/schemas/results";
 
 const CustomTextObjectSchema = z.record(z.string(), z.string());
 type CustomTextObject = z.infer<typeof CustomTextObjectSchema>;
@@ -36,6 +37,8 @@ const CustomTextSettingsSchema = z.object({
 });
 
 type CustomTextSettings = z.infer<typeof CustomTextSettingsSchema>;
+
+type CustomTextLimit = z.infer<typeof CustomTextSettingsSchema>["limit"];
 
 const defaultCustomTextSettings: CustomTextSettings = {
   text: ["The", "quick", "brown", "fox", "jumps", "over", "the", "lazy", "dog"],
@@ -93,8 +96,8 @@ export function setMode(val: CustomTextMode): void {
   });
 }
 
-export function getLimit(): MonkeyTypes.CustomTextLimit {
-  return customTextSettings.get().limit as MonkeyTypes.CustomTextLimit;
+export function getLimit(): CustomTextLimit {
+  return customTextSettings.get().limit as CustomTextLimit;
 }
 
 export function getLimitValue(): number {
@@ -133,7 +136,11 @@ export function setPipeDelimiter(val: boolean): void {
   });
 }
 
-export function getData(): MonkeyTypes.CustomTextData {
+export type CustomTextData = Omit<CustomTextDataWithTextLen, "textLen"> & {
+  text: string[];
+};
+
+export function getData(): CustomTextData {
   return {
     text: getText(),
     mode: getMode(),
