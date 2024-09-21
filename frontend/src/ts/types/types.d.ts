@@ -5,13 +5,13 @@ type IncompleteTest =
   import("@monkeytype/contracts/schemas/results").IncompleteTest;
 
 declare namespace MonkeyTypes {
-  type Theme = {
-    name: string;
-    bgColor: string;
-    mainColor: string;
-    subColor: string;
-    textColor: string;
-  };
+  // type Theme = {
+  //   name: string;
+  //   bgColor: string;
+  //   mainColor: string;
+  //   subColor: string;
+  //   textColor: string;
+  // };
 
   type Quote = {
     text: string;

@@ -97,20 +97,26 @@ export async function getLayout(
   return layout;
 }
 
-let themesList: MonkeyTypes.Theme[] | undefined;
+export type Theme = {
+  name: string;
+  bgColor: string;
+  mainColor: string;
+  subColor: string;
+  textColor: string;
+};
+
+let themesList: Theme[] | undefined;
 
 /**
  * Fetches the list of themes from the server, sorting them alphabetically by name.
  * If the list has already been fetched, returns the cached list.
  * @returns A promise that resolves to the sorted list of themes.
  */
-export async function getThemesList(): Promise<MonkeyTypes.Theme[]> {
+export async function getThemesList(): Promise<Theme[]> {
   if (!themesList) {
-    let themes = await cachedFetchJson<MonkeyTypes.Theme[]>(
-      "/themes/_list.json"
-    );
+    let themes = await cachedFetchJson<Theme[]>("/themes/_list.json");
 
-    themes = themes.sort(function (a: MonkeyTypes.Theme, b: MonkeyTypes.Theme) {
+    themes = themes.sort((a, b) => {
       const nameA = a.name.toLowerCase();
       const nameB = b.name.toLowerCase();
       if (nameA < nameB) return -1;
@@ -124,13 +130,13 @@ export async function getThemesList(): Promise<MonkeyTypes.Theme[]> {
   }
 }
 
-let sortedThemesList: MonkeyTypes.Theme[] | undefined;
+let sortedThemesList: Theme[] | undefined;
 
 /**
  * Fetches the sorted list of themes from the server.
  * @returns A promise that resolves to the sorted list of themes.
  */
-export async function getSortedThemesList(): Promise<MonkeyTypes.Theme[]> {
+export async function getSortedThemesList(): Promise<Theme[]> {
   if (!sortedThemesList) {
     if (!themesList) {
       await getThemesList();

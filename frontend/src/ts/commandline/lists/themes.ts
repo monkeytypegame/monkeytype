@@ -2,6 +2,7 @@ import Config, * as UpdateConfig from "../../config";
 import { capitalizeFirstLetterOfEachWord } from "../../utils/strings";
 import * as ThemeController from "../../controllers/theme-controller";
 import { Command, CommandsSubgroup } from "../types";
+import { Theme } from "../../utils/json-data";
 
 const subgroup: CommandsSubgroup = {
   title: "Theme...",
@@ -18,7 +19,7 @@ const commands: Command[] = [
   },
 ];
 
-function update(themes: MonkeyTypes.Theme[]): void {
+function update(themes: Theme[]): void {
   subgroup.list = [];
   const favs: Command[] = [];
   themes.forEach((theme) => {
