@@ -5,11 +5,6 @@ type IncompleteTest =
   import("@monkeytype/contracts/schemas/results").IncompleteTest;
 
 declare namespace MonkeyTypes {
-  type WpmAndRaw = {
-    wpm: number;
-    raw: number;
-  };
-
   type Challenge = {
     name: string;
     display: string;
