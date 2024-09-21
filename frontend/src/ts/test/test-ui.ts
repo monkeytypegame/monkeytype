@@ -923,8 +923,6 @@ export async function updateActiveWordLetters(
 
 let allowWordRemoval = true;
 export function scrollTape(noRemove = false): void {
-  console.trace();
-  console.log("activeWordElementIndex", activeWordElementIndex);
   if (ActivePage.get() !== "test" || resultVisible) return;
 
   const waitForLineJumpAnimation = lineTransition && !allowWordRemoval;
@@ -1019,13 +1017,9 @@ export function scrollTape(noRemove = false): void {
       }
     }
   }
-  console.log("toRemove.length", toRemove.length);
   if (toRemove.length > 0) {
     activeWordElementIndex -= wordsToRemoveCount;
-    toRemove.forEach((el) => {
-      console.log("element to remove:", el);
-      el.remove();
-    });
+    toRemove.forEach((el) => el.remove());
     for (let i = 0; i < linesWidths.length; i++) {
       const element = afterNewLineEls[i] as HTMLElement;
       const currentChildMargin = parseInt(element.style.marginLeft) || 0;
@@ -1090,8 +1084,6 @@ export function scrollTape(noRemove = false): void {
     });
     if (noRemove) scrollTape();
   }
-  console.trace();
-  console.log("activeWordElementIndex", activeWordElementIndex);
 }
 
 export function updatePremid(): void {
@@ -1133,7 +1125,6 @@ function removeElementsBeforeWord(lastElementToRemove: Element): number {
 let currentLinesAnimating = 0;
 
 export function lineJump(currentTop: number, force = false): void {
-  console.trace();
   //last word of the line
   if (currentTestLine > 0 || force) {
     const hideBound = currentTop - 10;
