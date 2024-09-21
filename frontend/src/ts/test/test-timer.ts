@@ -18,6 +18,13 @@ import * as Time from "../states/time";
 import * as TimerEvent from "../observables/timer-event";
 import * as LayoutfluidFunboxTimer from "../test/funbox/layoutfluid-funbox-timer";
 
+type TimerStats = {
+  dateNow: number;
+  now: number;
+  expected: number;
+  nextDelay: number;
+};
+
 let slowTimerCount = 0;
 let timer: NodeJS.Timeout | null = null;
 const interval = 1000;
@@ -175,9 +182,9 @@ function checkIfTimeIsUp(): void {
 
 // ---------------------------------------
 
-let timerStats: MonkeyTypes.TimerStats[] = [];
+let timerStats: TimerStats[] = [];
 
-export function getTimerStats(): MonkeyTypes.TimerStats[] {
+export function getTimerStats(): TimerStats[] {
   return timerStats;
 }
 
