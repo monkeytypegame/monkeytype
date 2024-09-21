@@ -946,25 +946,25 @@ export function scrollTape(initial = false): void {
 
   let wordsWidthBeforeActive = 0;
   let fullLinesWidth = 0;
-  let widthToHide = 0;
-  let wordsToHideCount = 0;
+  let widthToRemove = 0;
+  let wordsToRemoveCount = 0;
   let leadingNewLine = false;
   let lastAfterNewLineElement = undefined;
   const linesWidths: number[] = [];
-  const toHide: HTMLElement[] = [];
+  const toRemove: HTMLElement[] = [];
 
   // remove leading `.newline` and `.afterNewline` elements
   for (const child of wordsChildrenArr) {
     if (child.classList.contains("word")) {
       // only last leading `.afterNewline` element pushes `.word`s to right
       if (lastAfterNewLineElement) {
-        widthToHide += parseInt(lastAfterNewLineElement.style.marginLeft);
+        widthToRemove += parseInt(lastAfterNewLineElement.style.marginLeft);
       }
       break;
     } else if (child.classList.contains("newline")) {
-      toHide.push(child);
+      toRemove.push(child);
     } else if (child.classList.contains("afterNewline")) {
-      toHide.push(child);
+      toRemove.push(child);
       leadingNewLine = true;
       lastAfterNewLineElement = child;
     }
@@ -1004,9 +1004,9 @@ export function scrollTape(initial = false): void {
       const forWordLeft = Math.floor(child.offsetLeft);
       const forWordWidth = Math.floor(child.offsetWidth);
       if (!initial && forWordLeft < 0 - forWordWidth) {
-        toHide.push(child);
-        widthToHide += wordOuterWidth;
-        wordsToHideCount++;
+        toRemove.push(child);
+        widthToRemove += wordOuterWidth;
+        wordsToRemoveCount++;
       } else {
         fullLinesWidth += wordOuterWidth;
         if (i < activeWordIndex) wordsWidthBeforeActive = fullLinesWidth;
@@ -1023,16 +1023,16 @@ export function scrollTape(initial = false): void {
       }
     }
   }
-  if (toHide.length > 0) {
-    activeWordElementIndex -= wordsToHideCount;
-    toHide.forEach((el) => el.remove());
+  if (toRemove.length > 0) {
+    activeWordElementIndex -= wordsToRemoveCount;
+    toRemove.forEach((el) => el.remove());
     for (let i = 0; i < linesWidths.length; i++) {
       const element = afterNewLineEls[i] as HTMLElement;
       const currentMargin = parseInt(element.style.marginLeft);
-      element.style.marginLeft = `${currentMargin - widthToHide}px`;
+      element.style.marginLeft = `${currentMargin - widthToRemove}px`;
     }
     const currentMargin = parseInt(wordsEl.style.marginLeft);
-    wordsEl.style.marginLeft = `${currentMargin + widthToHide}px`;
+    wordsEl.style.marginLeft = `${currentMargin + widthToRemove}px`;
   }
 
   let currentWordWidth = 0;
@@ -1101,21 +1101,21 @@ export function updatePremid(): void {
   $(".pageTest #premidSecondsLeft").text(Config.time);
 }
 
-function removeElementsBeforeWord(lastWordToHide: HTMLElement): number {
-  // remove `.word` and `.afterNewline` elements before lastWordToHide (included)
+function removeElementsBeforeWord(lastElementToRemove: HTMLElement): number {
+  // remove `.word` and `.afterNewline` elements before lastElementToRemove (included)
   // and return removed `.word`s count
-  let elementToHide = lastWordToHide as Element;
-  let sibling = elementToHide.previousElementSibling;
-  let removedWords = Number(elementToHide.isConnected);
-  elementToHide.remove();
+  let elementToRemove = lastElementToRemove as Element;
+  let sibling = elementToRemove.previousElementSibling;
+  let removedWords = Number(elementToRemove.isConnected);
+  elementToRemove.remove();
   while (sibling) {
-    elementToHide = sibling;
-    sibling = elementToHide.previousElementSibling;
-    if (elementToHide.classList.contains("word")) {
-      removedWords += Number(elementToHide.isConnected);
-      elementToHide.remove();
-    } else if (elementToHide.classList.contains("afterNewline")) {
-      elementToHide.remove();
+    elementToRemove = sibling;
+    sibling = elementToRemove.previousElementSibling;
+    if (elementToRemove.classList.contains("word")) {
+      removedWords += Number(elementToRemove.isConnected);
+      elementToRemove.remove();
+    } else if (elementToRemove.classList.contains("afterNewline")) {
+      elementToRemove.remove();
     }
   }
   return removedWords;
@@ -1134,11 +1134,11 @@ export function lineJump(currentTop: number): void {
 
     const wordsEl = document.getElementById("words") as HTMLElement;
     const wordElements = wordsEl.querySelectorAll(".word");
-    let lastWordToHide = undefined;
+    let lastElementToRemove = undefined;
     for (let i = 0; i < activeWordElementIndex; i++) {
       const el = wordElements[i] as HTMLElement;
       if (el.classList.contains("hidden")) continue;
-      if (Math.floor(el.offsetTop) < hideBound) lastWordToHide = el;
+      if (Math.floor(el.offsetTop) < hideBound) lastElementToRemove = el;
     }
 
     const wordHeight = $(wordElements[0] as Element).outerHeight(
@@ -1148,7 +1148,7 @@ export function lineJump(currentTop: number): void {
       "#paceCaret"
     ) as HTMLElement;
 
-    if (Config.smoothLineScroll && lastWordToHide) {
+    if (Config.smoothLineScroll && lastElementToRemove) {
       lineTransition = true;
       const smoothScroller = $("#words .smoothScroller");
       if (smoothScroller.length === 0) {
@@ -1198,14 +1198,15 @@ export function lineJump(currentTop: number): void {
               activeWordElementIndex
             ] as HTMLElement
           )?.offsetTop;
-          activeWordElementIndex -= removeElementsBeforeWord(lastWordToHide);
+          activeWordElementIndex -=
+            removeElementsBeforeWord(lastElementToRemove);
           lineTransition = false;
           wordsEl.style.marginTop = "0";
         },
       });
       jqWords.dequeue("topMargin");
-    } else if (lastWordToHide) {
-      activeWordElementIndex -= removeElementsBeforeWord(lastWordToHide);
+    } else if (lastElementToRemove) {
+      activeWordElementIndex -= removeElementsBeforeWord(lastElementToRemove);
       paceCaretElement.style.top = `${
         paceCaretElement.offsetTop - wordHeight
       }px`;
