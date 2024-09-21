@@ -1138,6 +1138,8 @@ export function lineJump(currentTop: number): void {
         if (child.classList.contains("word")) {
           lastElementToRemove = child;
         } else if (child.classList.contains("beforeNewline")) {
+          // set it to .newline but check .beforeNewline.offsetTop
+          // because it's more reliable
           lastElementToRemove = child.nextElementSibling;
         }
       }
