@@ -272,7 +272,7 @@ export function updateActiveElement(
   if (!initial && shouldUpdateWordsInputPosition()) {
     void updateWordsInputPosition();
   }
-  if (Config.tapeMode !== "off") {
+  if (!initial && Config.tapeMode !== "off") {
     scrollTape();
   }
 }
@@ -350,7 +350,7 @@ function getWordHTML(word: string): string {
 
 function updateWordsMargin(): void {
   if (Config.tapeMode !== "off") {
-    scrollTape();
+    scrollTape(true);
   } else {
     $("#words").css("margin-left", "unset");
     $(".afterNewline").css("margin-left", "unset");
@@ -929,7 +929,7 @@ export async function updateActiveWordLetters(
   }
 }
 
-export function scrollTape(): void {
+export function scrollTape(initial = false): void {
   if (ActivePage.get() !== "test" || resultVisible) return;
 
   const wordsWrapperWidth = (
@@ -1003,7 +1003,7 @@ export function scrollTape(): void {
       const wordOuterWidth = $(child).outerWidth(true) ?? 0;
       const forWordLeft = Math.floor(child.offsetLeft);
       const forWordWidth = Math.floor(child.offsetWidth);
-      if (forWordLeft < 0 - forWordWidth) {
+      if (!initial && forWordLeft < 0 - forWordWidth) {
         toHide.push(child);
         widthToHide += wordOuterWidth;
         wordsToHideCount++;
@@ -1062,6 +1062,9 @@ export function scrollTape(): void {
       {
         duration: SlowTimer.get() ? 0 : 125,
         queue: "leftMargin",
+        complete: () => {
+          if (initial) scrollTape();
+        },
       }
     );
     jqWords.dequeue("leftMargin");
@@ -1080,6 +1083,7 @@ export function scrollTape(): void {
     linesWidths.forEach((width, index) => {
       (afterNewLineEls[index] as HTMLElement).style.marginLeft = `${width}px`;
     });
+    if (initial) scrollTape();
   }
 }
 
