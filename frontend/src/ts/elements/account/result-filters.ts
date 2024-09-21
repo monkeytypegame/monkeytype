@@ -269,7 +269,7 @@ function setAllFilters(group: ResultFiltersGroup, value: boolean): void {
   });
 }
 
-export function loadTags(tags: MonkeyTypes.UserTag[]): void {
+export function loadTags(tags: DB.SnapshotUserTag[]): void {
   tags.forEach((tag) => {
     defaultResultFilters.tags[tag._id] = true;
   });

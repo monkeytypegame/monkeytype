@@ -3,7 +3,6 @@ import * as Notifications from "./elements/notifications";
 import * as LoadingPage from "./pages/loading";
 import DefaultConfig from "./constants/default-config";
 import { isAuthenticated } from "./firebase";
-import { defaultSnap } from "./constants/default-snapshot";
 import * as ConnectionState from "./states/connection";
 import { lastElementFromArray } from "./utils/arrays";
 import { getFunboxList } from "./utils/json-data";
@@ -15,7 +14,13 @@ import {
 } from "./elements/test-activity-calendar";
 import * as Loader from "./elements/loader";
 
-import { Badge } from "@monkeytype/contracts/schemas/users";
+import {
+  Badge,
+  ResultFilters,
+  User,
+  UserProfileDetails,
+  UserTag,
+} from "@monkeytype/contracts/schemas/users";
 import { Config, Difficulty } from "@monkeytype/contracts/schemas/configs";
 import {
   Mode,
@@ -23,8 +28,52 @@ import {
   PersonalBest,
   PersonalBests,
 } from "@monkeytype/contracts/schemas/shared";
+import { Preset } from "@monkeytype/contracts/schemas/presets";
+import defaultSnapshot from "./constants/default-snapshot";
 
-let dbSnapshot: MonkeyTypes.Snapshot | undefined;
+export type SnapshotUserTag = UserTag & {
+  active?: boolean;
+  display: string;
+};
+
+export type Snapshot = Omit<
+  User,
+  | "timeTyping"
+  | "startedTests"
+  | "completedTests"
+  | "profileDetails"
+  | "streak"
+  | "resultFilterPresets"
+  | "tags"
+  | "xp"
+  | "testActivity"
+> & {
+  typingStats: {
+    timeTyping: number;
+    startedTests: number;
+    completedTests: number;
+  };
+  details?: UserProfileDetails;
+  inboxUnreadSize: number;
+  streak: number;
+  maxStreak: number;
+  filterPresets: ResultFilters[];
+  isPremium: boolean;
+  streakHourOffset?: number;
+  config: Config;
+  tags: SnapshotUserTag[];
+  presets: SnapshotPreset[];
+  results?: MonkeyTypes.FullResult<Mode>[];
+  xp: number;
+  testActivity?: ModifiableTestActivityCalendar;
+  testActivityByYear?: { [key: string]: TestActivityCalendar };
+};
+
+export type SnapshotPreset = Preset & {
+  display: string;
+};
+
+let dbSnapshot: Snapshot | undefined;
 
 export class SnapshotInitError extends Error {
   constructor(message: string, public responseCode: number) {
@@ -34,13 +83,11 @@ export class SnapshotInitError extends Error {
   }
 }
 
-export function getSnapshot(): MonkeyTypes.Snapshot | undefined {
+export function getSnapshot(): Snapshot | undefined {
   return dbSnapshot;
 }
 
-export function setSnapshot(
-  newSnapshot: MonkeyTypes.Snapshot | undefined
-): void {
+export function setSnapshot(newSnapshot: Snapshot | undefined): void {
   const originalBanned = dbSnapshot?.banned;
   const originalVerified = dbSnapshot?.verified;
   const lbOptOut = dbSnapshot?.lbOptOut;
@@ -63,11 +110,9 @@ export function setSnapshot(
   }
 }
 
-export async function initSnapshot(): Promise<
-  MonkeyTypes.Snapshot | number | boolean
-> {
+export async function initSnapshot(): Promise<Snapshot | number | boolean> {
   //send api request with token that returns tags, presets, and data needed for snap
-  const snap = { ...defaultSnap };
+  const snap = defaultSnapshot as Snapshot;
   try {
     if (!isAuthenticated()) return false;
     // if (ActivePage.get() === "loading") {
@@ -241,24 +286,26 @@ export async function initSnapshot(): Promise<
           ...preset,
           display: preset.name.replace(/_/gi, " "),
         };
-      }) as MonkeyTypes.SnapshotPreset[];
+      }) as SnapshotPreset[];
       snap.presets = presetsWithDisplay;
 
-      snap.presets = snap.presets?.sort((a, b) => {
-        if (a.name > b.name) {
-          return 1;
-        } else if (a.name < b.name) {
-          return -1;
-        } else {
-          return 0;
+      snap.presets = snap.presets?.sort(
+        (a: SnapshotPreset, b: SnapshotPreset) => {
+          if (a.name > b.name) {
+            return 1;
+          } else if (a.name < b.name) {
+            return -1;
+          } else {
+            return 0;
+          }
         }
-      });
+      );
     }
 
     dbSnapshot = snap;
     return dbSnapshot;
   } catch (e) {
-    dbSnapshot = defaultSnap;
+    dbSnapshot = defaultSnapshot;
     throw e;
   }
 }
@@ -797,7 +844,7 @@ export async function saveLocalTagPB<M extends Mode>(
   function cont(): void {
     const filteredtag = dbSnapshot?.tags?.filter(
       (t) => t._id === tagId
-    )[0] as MonkeyTypes.UserTag;
+    )[0] as SnapshotUserTag;
 
     filteredtag.personalBests ??= {
       time: {},

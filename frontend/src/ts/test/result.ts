@@ -538,7 +538,7 @@ export function showConfetti(): void {
 }
 
 async function updateTags(dontSave: boolean): Promise<void> {
-  const activeTags: MonkeyTypes.UserTag[] = [];
+  const activeTags: DB.SnapshotUserTag[] = [];
   const userTagsCount = DB.getSnapshot()?.tags?.length ?? 0;
   try {
     DB.getSnapshot()?.tags?.forEach((tag) => {

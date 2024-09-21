@@ -279,12 +279,12 @@ async function apply(): Promise<void> {
         }),
         display: propPresetName,
         _id: response.body.data.presetId,
-      } as MonkeyTypes.SnapshotPreset);
+      } as DB.SnapshotPreset);
     }
   } else if (action === "edit") {
     const preset = snapshotPresets.filter(
-      (preset: MonkeyTypes.SnapshotPreset) => preset._id === presetId
-    )[0] as MonkeyTypes.SnapshotPreset;
+      (preset: DB.SnapshotPreset) => preset._id === presetId
+    )[0] as DB.SnapshotPreset;
     if (preset === undefined) {
       Notifications.add("Preset not found", -1);
       return;
@@ -329,13 +329,11 @@ async function apply(): Promise<void> {
       );
     } else {
       Notifications.add("Preset removed", 1);
-      snapshotPresets.forEach(
-        (preset: MonkeyTypes.SnapshotPreset, index: number) => {
-          if (preset._id === presetId) {
-            snapshotPresets.splice(index, 1);
-          }
+      snapshotPresets.forEach((preset: DB.SnapshotPreset, index: number) => {
+        if (preset._id === presetId) {
+          snapshotPresets.splice(index, 1);
         }
-      );
+      });
     }
   }
 
@@ -501,9 +499,8 @@ function getConfigChanges(): MonkeyTypes.ConfigChanges {
   const tags = DB.getSnapshot()?.tags ?? [];
 
   const activeTagIds: string[] = tags
-    .filter((tag: MonkeyTypes.UserTag) => tag.active)
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-    .map((tag: MonkeyTypes.UserTag) => tag._id);
+    .filter((tag) => tag.active)
+    .map((tag) => tag._id);
 
   const setTags: boolean =
     state.presetType === "full" || state.checkboxes.get("behavior") === true;

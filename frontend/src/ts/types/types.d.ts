@@ -5,18 +5,6 @@ type IncompleteTest =
   import("@monkeytype/contracts/schemas/results").IncompleteTest;
 
 declare namespace MonkeyTypes {
-  class Section {
-    public title: string;
-    public author: string;
-    public words: string[];
-    constructor(title: string, author: string, words: string[]);
-  }
-
-  type SnapshotPreset =
-    import("@monkeytype/contracts/schemas/presets").Preset & {
-      display: string;
-    };
-
   type RawCustomTheme = {
     name: string;
     colors: import("@monkeytype/contracts/schemas/configs").CustomThemeColors;
@@ -37,44 +25,6 @@ declare namespace MonkeyTypes {
   };
 
   type QuoteRatings = Record<string, Record<number, number>>;
-
-  type UserTag = import("@monkeytype/contracts/schemas/users").UserTag & {
-    active?: boolean;
-    display: string;
-  };
-
-  type Snapshot = Omit<
-    import("@monkeytype/contracts/schemas/users").User,
-    | "timeTyping"
-    | "startedTests"
-    | "completedTests"
-    | "profileDetails"
-    | "streak"
-    | "resultFilterPresets"
-    | "tags"
-    | "xp"
-    | "testActivity"
-  > & {
-    typingStats: {
-      timeTyping: number;
-      startedTests: number;
-      completedTests: number;
-    };
-    details?: import("@monkeytype/contracts/schemas/users").UserProfileDetails;
-    inboxUnreadSize: number;
-    streak: number;
-    maxStreak: number;
-    filterPresets: import("@monkeytype/contracts/schemas/users").ResultFilters[];
-    isPremium: boolean;
-    streakHourOffset?: number;
-    config: import("@monkeytype/contracts/schemas/configs").Config;
-    tags: UserTag[];
-    presets: SnapshotPreset[];
-    results?: MonkeyTypes.FullResult<Mode>[];
-    xp: number;
-    testActivity?: ModifiableTestActivityCalendar;
-    testActivityByYear?: { [key: string]: TestActivityCalendar };
-  };
 
   type TimerStats = {
     dateNow: number;

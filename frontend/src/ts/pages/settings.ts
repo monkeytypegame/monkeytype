@@ -790,7 +790,7 @@ function refreshTagsSettingsSection(): void {
 function refreshPresetsSettingsSection(): void {
   if (isAuthenticated() && DB.getSnapshot()) {
     const presetsEl = $(".pageSettings .section.presets .presetsList").empty();
-    DB.getSnapshot()?.presets?.forEach((preset: MonkeyTypes.SnapshotPreset) => {
+    DB.getSnapshot()?.presets?.forEach((preset: DB.SnapshotPreset) => {
       presetsEl.append(`
       <div class="buttons preset" data-id="${preset._id}" data-name="${preset.name}" data-display="${preset.display}">
         <button class="presetButton">${preset.display}</button>
