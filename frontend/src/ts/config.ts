@@ -1831,7 +1831,7 @@ export function setCustomBackground(
 }
 
 export async function setCustomLayoutfluid(
-  value: MonkeyTypes.CustomLayoutFluidSpaces,
+  value: ConfigSchemas.CustomLayoutFluid,
   nosave?: boolean
 ): Promise<boolean> {
   const trimmed = value.trim();

@@ -31,6 +31,7 @@ import { ChartData } from "@monkeytype/contracts/schemas/results";
 import { Mode, Mode2, Mode2Custom } from "@monkeytype/contracts/schemas/shared";
 import { ResultFiltersGroupItem } from "@monkeytype/contracts/schemas/users";
 import { findLineByLeastSquares } from "../utils/numbers";
+import defaultResultFilters from "../constants/default-result-filters";
 
 let filterDebug = false;
 //toggle filterdebug
@@ -202,8 +203,8 @@ function reset(): void {
 }
 
 let totalSecondsFiltered = 0;
-let chartData: MonkeyTypes.HistoryChartData[] = [];
-let accChartData: MonkeyTypes.AccChartData[] = [];
+let chartData: ChartController.HistoryChartData[] = [];
+let accChartData: ChartController.AccChartData[] = [];
 
 async function fillContent(): Promise<void> {
   LoadingPage.updateText("Displaying stats...");
@@ -344,7 +345,8 @@ async function fillContent(): Promise<void> {
       }
 
       if (result.quoteLength !== null) {
-        let filter: MonkeyTypes.QuoteModes | undefined = undefined;
+        let filter: keyof typeof defaultResultFilters.quoteLength | undefined =
+          undefined;
         if (result.quoteLength === 0) {
           filter = "short";
         } else if (result.quoteLength === 1) {
@@ -660,9 +662,9 @@ async function fillContent(): Promise<void> {
   loadMoreLines();
   ////////
 
-  const activityChartData_timeAndAmount: MonkeyTypes.ActivityChartDataPoint[] =
+  const activityChartData_timeAndAmount: ChartController.ActivityChartDataPoint[] =
     [];
-  const activityChartData_avgWpm: MonkeyTypes.ActivityChartDataPoint[] = [];
+  const activityChartData_avgWpm: ChartController.ActivityChartDataPoint[] = [];
   const wpmStepSize = typingSpeedUnit.historyStepSize;
 
   // let lastTimestamp = 0;
@@ -736,7 +738,7 @@ async function fillContent(): Promise<void> {
     const pb: { x: number; y: number }[] = [];
 
     for (let i = chartData.length - 1; i >= 0; i--) {
-      const a = chartData[i] as MonkeyTypes.HistoryChartData;
+      const a = chartData[i] as ChartController.HistoryChartData;
       if (a.y > currentPb) {
         currentPb = a.y;
         pb.push(a);

@@ -3,6 +3,7 @@ import * as TestLogic from "../../test/test-logic";
 import * as ManualRestart from "../../test/manual-restart-tracker";
 import Config from "../../config";
 import { areFunboxesCompatible } from "../../test/funbox/funbox-validation";
+import { FunboxMetadata } from "../../utils/json-data";
 
 const subgroup: MonkeyTypes.CommandsSubgroup = {
   title: "Funbox...",
@@ -32,7 +33,7 @@ const commands: MonkeyTypes.Command[] = [
   },
 ];
 
-function update(funboxes: MonkeyTypes.FunboxMetadata[]): void {
+function update(funboxes: FunboxMetadata[]): void {
   subgroup.list = [];
   subgroup.list.push({
     id: "changeFunboxNone",

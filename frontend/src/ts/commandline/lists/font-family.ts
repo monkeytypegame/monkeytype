@@ -1,5 +1,6 @@
 import * as UpdateConfig from "../../config";
 import * as UI from "../../ui";
+import { FontObject } from "../../utils/json-data";
 
 const subgroup: MonkeyTypes.CommandsSubgroup = {
   title: "Font family...",
@@ -16,7 +17,7 @@ const commands: MonkeyTypes.Command[] = [
   },
 ];
 
-function update(fonts: MonkeyTypes.FontObject[]): void {
+function update(fonts: FontObject[]): void {
   fonts.forEach((font) => {
     const configVal = font.name.replace(/ /g, "_");
 

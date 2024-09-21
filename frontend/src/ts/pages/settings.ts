@@ -21,7 +21,10 @@ import SlimSelect from "slim-select";
 
 import * as Skeleton from "../utils/skeleton";
 import * as CustomBackgroundFilter from "../elements/custom-background-filter";
-import { ConfigValue } from "@monkeytype/contracts/schemas/configs";
+import {
+  ConfigValue,
+  CustomLayoutFluid,
+} from "@monkeytype/contracts/schemas/configs";
 
 type SettingsGroups<T extends ConfigValue> = Record<string, SettingsGroup<T>>;
 
@@ -1274,7 +1277,7 @@ $(
   void UpdateConfig.setCustomLayoutfluid(
     $(
       ".pageSettings .section[data-config-name='customLayoutfluid'] .inputAndButton input"
-    ).val() as MonkeyTypes.CustomLayoutFluidSpaces
+    ).val() as CustomLayoutFluid
   ).then((bool) => {
     if (bool) {
       Notifications.add("Custom layoutfluid saved", 1);
@@ -1289,7 +1292,7 @@ $(
     void UpdateConfig.setCustomLayoutfluid(
       $(
         ".pageSettings .section[data-config-name='customLayoutfluid'] .inputAndButton input"
-      ).val() as MonkeyTypes.CustomLayoutFluidSpaces
+      ).val() as CustomLayoutFluid
     ).then((bool) => {
       if (bool) {
         Notifications.add("Custom layoutfluid saved", 1);

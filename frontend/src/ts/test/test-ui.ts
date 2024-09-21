@@ -114,7 +114,7 @@ async function joinOverlappingHints(
 }
 
 const debouncedZipfCheck = debounce(250, async () => {
-  const supports = await Misc.checkIfLanguageSupportsZipf(Config.language);
+  const supports = await JSONData.checkIfLanguageSupportsZipf(Config.language);
   if (supports === "no") {
     Notifications.add(
       `${Strings.capitalizeFirstLetter(

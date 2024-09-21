@@ -13,7 +13,7 @@ import * as Strings from "../utils/strings";
 import * as Arrays from "../utils/arrays";
 import * as TestState from "../test/test-state";
 import * as GetText from "../utils/generate";
-import { LanguageObject } from "../utils/json-data";
+import { FunboxWordOrder, LanguageObject } from "../utils/json-data";
 
 function shouldCapitalize(lastChar: string): boolean {
   return /[?!.؟]/.test(lastChar);
@@ -298,9 +298,7 @@ async function applyEnglishPunctuationToWord(word: string): Promise<string> {
   return EnglishPunctuation.replace(word);
 }
 
-function getFunboxWordsFrequency():
-  | MonkeyTypes.FunboxWordsFrequency
-  | undefined {
+function getFunboxWordsFrequency(): Wordset.FunboxWordsFrequency | undefined {
   const wordFunbox = FunboxList.get(Config.funbox).find(
     (f) => f.functions?.getWordsFrequencyMode
   );
@@ -381,7 +379,7 @@ function applyLazyModeToWord(word: string, language: LanguageObject): string {
   return word;
 }
 
-export function getWordOrder(): MonkeyTypes.FunboxWordOrder {
+export function getWordOrder(): FunboxWordOrder {
   const wordOrder =
     FunboxList.get(Config.funbox)
       .find((f) => f.properties?.find((fp) => fp.startsWith("wordOrder")))
@@ -390,7 +388,7 @@ export function getWordOrder(): MonkeyTypes.FunboxWordOrder {
   if (!wordOrder) {
     return "normal";
   } else {
-    return wordOrder.split(":")[1] as MonkeyTypes.FunboxWordOrder;
+    return wordOrder.split(":")[1] as FunboxWordOrder;
   }
 }
 
@@ -480,7 +478,7 @@ export class WordGenError extends Error {
 
 async function getQuoteWordList(
   language: LanguageObject,
-  wordOrder?: MonkeyTypes.FunboxWordOrder
+  wordOrder?: FunboxWordOrder
 ): Promise<string[]> {
   if (TestState.isRepeated) {
     if (currentWordset === null) {
@@ -631,7 +629,15 @@ export async function generateWords(
     wordList = wordList.reverse();
   }
 
-  currentWordset = await Wordset.withWords(wordList);
+  const wordFunbox = FunboxList.get(Config.funbox).find(
+    (f) => f.functions?.withWords
+  );
+  if (wordFunbox?.functions?.withWords) {
+    currentWordset = await wordFunbox.functions.withWords(wordList);
+  } else {
+    currentWordset = await Wordset.withWords(wordList);
+  }
+
   console.debug("Wordset", currentWordset);
 
   if (limit === 0) {

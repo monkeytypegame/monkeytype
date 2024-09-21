@@ -1,7 +1,6 @@
 import * as Loader from "../elements/loader";
 import { envConfig } from "../constants/env-config";
 import { lastElementFromArray } from "./arrays";
-import * as JSONData from "./json-data";
 import { Config } from "@monkeytype/contracts/schemas/configs";
 import {
   Mode,
@@ -532,17 +531,6 @@ export async function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-export class Section {
-  public title: string;
-  public author: string;
-  public words: string[];
-  constructor(title: string, author: string, words: string[]) {
-    this.title = title;
-    this.author = author;
-    this.words = words;
-  }
-}
-
 export function isPasswordStrong(password: string): boolean {
   const hasCapital = !!password.match(/[A-Z]/);
   const hasNumber = !!password.match(/[\d]/);
@@ -595,15 +583,6 @@ export function zipfyRandomArrayIndex(dictLength: number): number {
   /* inverse of CDF where CDF is H_n/H_N */
   const inverseCDF = Math.exp(r * H_N - gamma) - 0.5;
   return Math.floor(inverseCDF);
-}
-
-export async function checkIfLanguageSupportsZipf(
-  language: string
-): Promise<"yes" | "no" | "unknown"> {
-  const lang = await JSONData.getLanguage(language);
-  if (lang.orderedByFrequency === true) return "yes";
-  if (lang.orderedByFrequency === false) return "no";
-  return "unknown";
 }
 
 // Function to get the bounding rectangle of a collection of elements

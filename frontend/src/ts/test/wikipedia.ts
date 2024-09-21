@@ -2,7 +2,6 @@ import * as Loader from "../elements/loader";
 import * as Misc from "../utils/misc";
 import * as Strings from "../utils/strings";
 import * as JSONData from "../utils/json-data";
-import { Section } from "../utils/misc";
 
 export async function getTLD(
   languageGroup: JSONData.LanguageGroup
@@ -242,7 +241,7 @@ type SectionObject = {
   author: string;
 };
 
-export async function getSection(language: string): Promise<Section> {
+export async function getSection(language: string): Promise<JSONData.Section> {
   // console.log("Getting section");
   Loader.show();
 
@@ -319,7 +318,7 @@ export async function getSection(language: string): Promise<Section> {
 
           const words = sectionText.split(" ");
 
-          const section = new Section(
+          const section = new JSONData.Section(
             sectionObj.title,
             sectionObj.author,
             words
