@@ -5,7 +5,7 @@ import * as JSONData from "../utils/json-data";
 import { Section } from "../utils/misc";
 
 export async function getTLD(
-  languageGroup: MonkeyTypes.LanguageGroup
+  languageGroup: JSONData.LanguageGroup
 ): Promise<
   | "en"
   | "es"
@@ -249,7 +249,7 @@ export async function getSection(language: string): Promise<Section> {
   // get TLD for wikipedia according to language group
   let urlTLD = "en";
 
-  let currentLanguageGroup: MonkeyTypes.LanguageGroup | undefined;
+  let currentLanguageGroup: JSONData.LanguageGroup | undefined;
   try {
     currentLanguageGroup = await JSONData.getCurrentGroup(language);
   } catch (e) {

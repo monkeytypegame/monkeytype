@@ -13,6 +13,7 @@ import * as Strings from "../utils/strings";
 import * as Arrays from "../utils/arrays";
 import * as TestState from "../test/test-state";
 import * as GetText from "../utils/generate";
+import { LanguageObject } from "../utils/json-data";
 
 function shouldCapitalize(lastChar: string): boolean {
   return /[?!.؟]/.test(lastChar);
@@ -372,10 +373,7 @@ async function applyBritishEnglishToWord(
   return await BritishEnglish.replace(word, previousWord);
 }
 
-function applyLazyModeToWord(
-  word: string,
-  language: MonkeyTypes.LanguageObject
-): string {
+function applyLazyModeToWord(word: string, language: LanguageObject): string {
   const allowLazyMode = !language.noLazyMode || Config.mode === "custom";
   if (Config.lazyMode && allowLazyMode) {
     word = LazyMode.replaceAccents(word, language.additionalAccents);
@@ -481,7 +479,7 @@ export class WordGenError extends Error {
 }
 
 async function getQuoteWordList(
-  language: MonkeyTypes.LanguageObject,
+  language: LanguageObject,
   wordOrder?: MonkeyTypes.FunboxWordOrder
 ): Promise<string[]> {
   if (TestState.isRepeated) {
@@ -577,7 +575,7 @@ async function getQuoteWordList(
 }
 
 let currentWordset: Wordset.Wordset | null = null;
-let currentLanguage: MonkeyTypes.LanguageObject | null = null;
+let currentLanguage: LanguageObject | null = null;
 let isCurrentlyUsingFunboxSection = false;
 
 type GenerateWordsReturn = {
@@ -590,7 +588,7 @@ type GenerateWordsReturn = {
 let previousRandomQuote: MonkeyTypes.QuoteWithTextSplit | null = null;
 
 export async function generateWords(
-  language: MonkeyTypes.LanguageObject
+  language: LanguageObject
 ): Promise<GenerateWordsReturn> {
   if (!TestState.isRepeated) {
     previousGetNextWordReturns = [];

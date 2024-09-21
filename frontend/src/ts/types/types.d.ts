@@ -5,46 +5,6 @@ type IncompleteTest =
   import("@monkeytype/contracts/schemas/results").IncompleteTest;
 
 declare namespace MonkeyTypes {
-  type PageName =
-    | "loading"
-    | "test"
-    | "settings"
-    | "about"
-    | "account"
-    | "login"
-    | "profile"
-    | "profileSearch"
-    | "404"
-    | "accountSettings";
-
-  type LanguageGroup = {
-    name: string;
-    languages: string[];
-  };
-
-  type AddNotificationOptions = {
-    important?: boolean;
-    duration?: number;
-    customTitle?: string;
-    customIcon?: string;
-    closeCallback?: () => void;
-    allowHTML?: boolean;
-  };
-
-  type Accents = [string, string][];
-
-  type LanguageObject = {
-    name: string;
-    rightToLeft: boolean;
-    noLazyMode?: boolean;
-    ligatures?: boolean;
-    orderedByFrequency?: boolean;
-    words: string[];
-    additionalAccents: Accents;
-    bcp47?: string;
-    originalPunctuation?: boolean;
-  };
-
   type DefaultWordsModes = 10 | 25 | 50 | 100;
 
   type DefaultTimeModes = 15 | 30 | 60 | 120;

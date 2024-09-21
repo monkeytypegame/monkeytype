@@ -1,3 +1,4 @@
+import { Accents } from "../test/lazy-mode";
 import { hexToHSL } from "./colors";
 
 /**
@@ -163,36 +164,49 @@ export async function getLanguageList(): Promise<string[]> {
   }
 }
 
+export type LanguageGroup = {
+  name: string;
+  languages: string[];
+};
+
 /**
  * Fetches the list of language groups from the server.
  * @returns A promise that resolves to the list of language groups.
  */
-export async function getLanguageGroups(): Promise<
-  MonkeyTypes.LanguageGroup[]
-> {
+export async function getLanguageGroups(): Promise<LanguageGroup[]> {
   try {
-    const languageGroupList = await cachedFetchJson<
-      MonkeyTypes.LanguageGroup[]
-    >("/languages/_groups.json");
+    const languageGroupList = await cachedFetchJson<LanguageGroup[]>(
+      "/languages/_groups.json"
+    );
     return languageGroupList;
   } catch (e) {
     throw new Error("Language groups JSON fetch failed");
   }
 }
 
-let currentLanguage: MonkeyTypes.LanguageObject;
+export type LanguageObject = {
+  name: string;
+  rightToLeft: boolean;
+  noLazyMode?: boolean;
+  ligatures?: boolean;
+  orderedByFrequency?: boolean;
+  words: string[];
+  additionalAccents: Accents;
+  bcp47?: string;
+  originalPunctuation?: boolean;
+};
+
+let currentLanguage: LanguageObject;
 
 /**
  * Fetches the language object for a given language from the server.
  * @param lang The language code.
  * @returns A promise that resolves to the language object.
  */
-export async function getLanguage(
-  lang: string
-): Promise<MonkeyTypes.LanguageObject> {
+export async function getLanguage(lang: string): Promise<LanguageObject> {
   // try {
   if (currentLanguage === undefined || currentLanguage.name !== lang) {
-    currentLanguage = await cachedFetchJson<MonkeyTypes.LanguageObject>(
+    currentLanguage = await cachedFetchJson<LanguageObject>(
       `/languages/${lang}.json`
     );
   }
@@ -206,7 +220,7 @@ export async function getLanguage(
  */
 export async function getCurrentLanguage(
   languageName: string
-): Promise<MonkeyTypes.LanguageObject> {
+): Promise<LanguageObject> {
   return await getLanguage(languageName);
 }
 
@@ -217,8 +231,8 @@ export async function getCurrentLanguage(
  */
 export async function getCurrentGroup(
   language: string
-): Promise<MonkeyTypes.LanguageGroup | undefined> {
-  let retgroup: MonkeyTypes.LanguageGroup | undefined;
+): Promise<LanguageGroup | undefined> {
+  let retgroup: LanguageGroup | undefined;
   const groups = await getLanguageGroups();
   groups.forEach((group) => {
     if (retgroup === undefined) {
