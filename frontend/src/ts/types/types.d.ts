@@ -5,19 +5,6 @@ type IncompleteTest =
   import("@monkeytype/contracts/schemas/results").IncompleteTest;
 
 declare namespace MonkeyTypes {
-  type ThemeColors = {
-    bg: string;
-    main: string;
-    caret: string;
-    sub: string;
-    subAlt: string;
-    text: string;
-    error: string;
-    errorExtra: string;
-    colorfulError: string;
-    colorfulErrorExtra: string;
-  };
-
   type Layout = {
     keymapShowTopRow: boolean;
     matrixShowRightColumn?: boolean;
