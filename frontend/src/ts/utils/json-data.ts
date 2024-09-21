@@ -414,15 +414,23 @@ export async function getFontsList(): Promise<FontObject[]> {
   }
 }
 
+export type Challenge = {
+  name: string;
+  display: string;
+  autoRole: boolean;
+  type: string;
+  parameters: (string | number | boolean)[];
+  message: string;
+  requirements: Record<string, Record<string, string | number | boolean>>;
+};
+
 /**
  * Fetches the list of challenges from the server.
  * @returns A promise that resolves to the list of challenges.
  */
-export async function getChallengeList(): Promise<MonkeyTypes.Challenge[]> {
+export async function getChallengeList(): Promise<Challenge[]> {
   try {
-    const data = await cachedFetchJson<MonkeyTypes.Challenge[]>(
-      "/challenges/_list.json"
-    );
+    const data = await cachedFetchJson<Challenge[]>("/challenges/_list.json");
     return data;
   } catch (e) {
     throw new Error("Challenge list JSON fetch failed");

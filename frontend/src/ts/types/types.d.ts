@@ -5,16 +5,6 @@ type IncompleteTest =
   import("@monkeytype/contracts/schemas/results").IncompleteTest;
 
 declare namespace MonkeyTypes {
-  type Challenge = {
-    name: string;
-    display: string;
-    autoRole: boolean;
-    type: string;
-    parameters: (string | number | boolean)[];
-    message: string;
-    requirements: Record<string, Record<string, string | number | boolean>>;
-  };
-
   type UserBadge = {
     id: number;
     name: string;
