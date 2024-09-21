@@ -266,8 +266,13 @@
     text-wrap: nowrap;
     width: 200vw;
     .word {
-      margin: 0.25em 0.6em 0.75em 0;
+      margin: 0.25em 0.6em 0.25em 0;
       display: inline-block;
+      vertical-align: top;
+    }
+    .beforeNewline {
+      display: inline-block;
+      vertical-align: top;
     }
     .afterNewline {
       display: inline-block;
@@ -470,13 +475,13 @@
     display: inline-block;
   }
 
-  &.lastbeforenewline::after {
-    font-family: "Font Awesome";
-    font-weight: 600;
-    content: "\f107";
-    margin-left: 0.5rem;
-    opacity: 0.25;
-  }
+  //&.lastbeforenewline::after {
+  //  font-family: "Font Awesome";
+  //  font-weight: 600;
+  //  content: "\f107";
+  //  margin-left: 0.5rem;
+  //  opacity: 0.25;
+  //}
 
   .wordInputHighlight {
     opacity: 1;

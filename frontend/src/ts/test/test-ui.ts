@@ -148,7 +148,7 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
   }
   if (eventKey === "fontSize" && !nosave) {
     OutOfFocus.hide();
-    updateWordsHeight(true);
+    updateWordsWrapperHeight(true);
     updateWordsMargin();
     void updateWordsInputPosition(true);
   }
@@ -344,7 +344,8 @@ function getWordHTML(word: string): string {
   }
   retval += "</div>";
   if (newlineafter)
-    retval += "<div class='newline'></div><div class='afterNewline'></div>";
+    retval +=
+      "<div class='beforeNewline'></div><div class='newline'></div><div class='afterNewline'></div>";
   return retval;
 }
 
@@ -402,7 +403,7 @@ function updateWordWrapperClasses(): void {
   $("#words").attr("class", existing.join(" "));
 
   updateWordsWidth();
-  updateWordsHeight(true);
+  updateWordsWrapperHeight(true);
   updateWordsMargin();
   setTimeout(() => {
     void updateWordsInputPosition(true);
@@ -491,7 +492,9 @@ export async function updateWordsInputPosition(initial = false): Promise<void> {
 
 function updateTapeModeLine(): void {
   const wordElements = document.querySelectorAll<HTMLElement>("#words .word");
-  const currentTop = wordElements[activeWordElementIndex]?.offsetTop ?? 0;
+  const activeWordEl = wordElements[activeWordElementIndex];
+  if (!activeWordEl) return;
+  const currentTop = activeWordEl.offsetTop;
 
   let firstLine = currentTop;
   for (let i = activeWordElementIndex - 1; i >= 0; i--) {
@@ -501,7 +504,7 @@ function updateTapeModeLine(): void {
   if (firstLine < currentTop - 10) lineJump(firstLine);
 }
 
-function updateWordsHeight(force = false): void {
+function updateWordsWrapperHeight(force = false): void {
   if (ActivePage.get() !== "test" || resultVisible) return;
   if (!force && Config.mode !== "custom") return;
   const wordElements = document.querySelectorAll("#words .word");
@@ -532,19 +535,19 @@ function updateWordsHeight(force = false): void {
     CustomText.getLimitMode() !== "time" &&
     CustomText.getLimitValue() !== 0
   ) {
-    $("#words").css("height", "auto");
     $("#wordsWrapper").css("height", "auto");
     $(".outOfFocusWarning").css(
       "margin-top",
       wordHeight + convertRemToPixels(1) / 2 + "px"
     );
   } else {
-    let finalWordsHeight: number, finalWrapperHeight: number;
+    let finalWrapperHeight: number;
 
     if (Config.tapeMode !== "off") {
-      finalWordsHeight = wordHeight * 3;
-      finalWrapperHeight = wordHeight * 2;
+      finalWrapperHeight = wordHeight * 3;
+      $(".beforeNewline").css("margin-bottom", wordHeight + "px");
     } else {
+      $(".beforeNewline").css("margin-bottom", "unset");
       let lines = 0;
       let lastHeight = 0;
       let wordIndex = 0;
@@ -561,16 +564,11 @@ function updateWordsHeight(force = false): void {
         }
         wordIndex++;
       }
-
       if (lines < 3) wrapperHeight = wrapperHeight * (3 / lines);
 
-      const wordsHeight = (wrapperHeight / 3) * 4;
-
-      finalWordsHeight = wordsHeight;
       finalWrapperHeight = wrapperHeight;
     }
 
-    $("#words").css("height", finalWordsHeight + "px");
     $("#wordsWrapper").css("height", finalWrapperHeight + "px");
     $(".outOfFocusWarning").css(
       "margin-top",
@@ -922,7 +920,7 @@ export async function updateActiveWordLetters(
 
   if (newlineafter)
     $("#words").append(
-      "<div class='newline'></div><div class='afterNewline'></div>"
+      "<div class='beforeNewline'></div><div class='newline'></div><div class='afterNewline'></div>"
     );
   if (Config.tapeMode !== "off") {
     scrollTape();
@@ -953,7 +951,7 @@ export function scrollTape(initial = false): void {
   const linesWidths: number[] = [];
   const toRemove: HTMLElement[] = [];
 
-  // remove leading `.newline` and `.afterNewline` elements
+  // remove leading `.afterNewline` elements
   for (const child of wordsChildrenArr) {
     if (child.classList.contains("word")) {
       // only last leading `.afterNewline` element pushes `.word`s to right
@@ -961,8 +959,6 @@ export function scrollTape(initial = false): void {
         widthToRemove += parseInt(lastAfterNewLineElement.style.marginLeft);
       }
       break;
-    } else if (child.classList.contains("newline")) {
-      toRemove.push(child);
     } else if (child.classList.contains("afterNewline")) {
       toRemove.push(child);
       leadingNewLine = true;
@@ -1101,20 +1097,22 @@ export function updatePremid(): void {
   $(".pageTest #premidSecondsLeft").text(Config.time);
 }
 
-function removeElementsBeforeWord(lastElementToRemove: HTMLElement): number {
-  // remove `.word` and `.afterNewline` elements before lastElementToRemove (included)
+function removeElementsBeforeWord(lastElementToRemove: Element): number {
+  // remove all elements before lastElementToRemove (included)
   // and return removed `.word`s count
-  let elementToRemove = lastElementToRemove as Element;
+  let elementToRemove = lastElementToRemove;
   let sibling = elementToRemove.previousElementSibling;
-  let removedWords = Number(elementToRemove.isConnected);
+  let removedWords = elementToRemove.classList.contains("word")
+    ? Number(elementToRemove.isConnected)
+    : 0;
   elementToRemove.remove();
   while (sibling) {
     elementToRemove = sibling;
     sibling = elementToRemove.previousElementSibling;
     if (elementToRemove.classList.contains("word")) {
       removedWords += Number(elementToRemove.isConnected);
-      elementToRemove.remove();
-    } else if (elementToRemove.classList.contains("afterNewline")) {
+    }
+    if (!elementToRemove.classList.contains("smoothScroller")) {
       elementToRemove.remove();
     }
   }
@@ -1125,25 +1123,29 @@ let currentLinesAnimating = 0;
 
 export function lineJump(currentTop: number): void {
   //last word of the line
-  if (
-    (Config.tapeMode === "off" && currentTestLine > 0) ||
-    (Config.tapeMode !== "off" && currentTestLine >= 0)
-  ) {
-    const hideBound =
-      Config.tapeMode !== "off" ? currentTop + 10 : currentTop - 10;
+  if (currentTestLine > 0) {
+    const hideBound = currentTop - 10;
 
     const wordsEl = document.getElementById("words") as HTMLElement;
+    const wordsChildrenArr = [...wordsEl.children];
     const wordElements = wordsEl.querySelectorAll(".word");
+    const activeWordEl = wordElements[activeWordElementIndex];
+    if (!activeWordEl) return;
+    const activeWordIndex = wordsChildrenArr.indexOf(activeWordEl);
     let lastElementToRemove = undefined;
-    for (let i = 0; i < activeWordElementIndex; i++) {
-      const el = wordElements[i] as HTMLElement;
-      if (el.classList.contains("hidden")) continue;
-      if (Math.floor(el.offsetTop) < hideBound) lastElementToRemove = el;
+    for (let i = 0; i < activeWordIndex; i++) {
+      const child = wordsChildrenArr[i] as HTMLElement;
+      if (child.classList.contains("hidden")) continue;
+      if (Math.floor(child.offsetTop) < hideBound) {
+        if (child.classList.contains("word")) {
+          lastElementToRemove = child;
+        } else if (child.classList.contains("beforeNewline")) {
+          lastElementToRemove = child.nextElementSibling;
+        }
+      }
     }
 
-    const wordHeight = $(wordElements[0] as Element).outerHeight(
-      true
-    ) as number;
+    const wordHeight = $(activeWordEl).outerHeight(true) as number;
     const paceCaretElement = document.querySelector(
       "#paceCaret"
     ) as HTMLElement;
@@ -1213,7 +1215,7 @@ export function lineJump(currentTop: number): void {
     }
   }
   currentTestLine++;
-  updateWordsHeight();
+  updateWordsWrapperHeight();
 }
 
 export function setRightToLeft(isEnabled: boolean): void {
