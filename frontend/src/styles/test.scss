@@ -264,6 +264,7 @@
   &.tape {
     display: block;
     text-wrap: nowrap;
+    width: 200vw;
     .word {
       margin: 0.25em 0.6em 0.75em 0;
       display: inline-block;
@@ -1189,7 +1190,9 @@
 .pageTest {
   #wordsWrapper {
     position: relative;
+    overflow: visible clip;
     &.tape {
+      overflow: hidden;
       -webkit-mask-image: linear-gradient(
         90deg,
         rgba(0, 0, 0, 0) 1%,

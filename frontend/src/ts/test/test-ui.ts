@@ -149,6 +149,7 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
   if (eventKey === "fontSize" && !nosave) {
     OutOfFocus.hide();
     updateWordsHeight(true);
+    updateWordsMargin();
     void updateWordsInputPosition(true);
   }
   if (
@@ -180,14 +181,8 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
     updateWordWrapperClasses();
   }
 
-  if (eventKey === "tapeMode" && !nosave) {
-    if (eventValue === "off") {
-      $("#words").css("margin-left", "unset");
-      $(".afterNewline").css("margin-left", "unset");
-    } else {
-      updateTapeModeLine();
-      scrollTape();
-    }
+  if (eventKey === "tapeMode" && eventValue !== "off") {
+    updateTapeModeLine();
   }
 
   if (typeof eventValue !== "boolean") return;
@@ -353,6 +348,15 @@ function getWordHTML(word: string): string {
   return retval;
 }
 
+function updateWordsMargin(): void {
+  if (Config.tapeMode !== "off") {
+    scrollTape();
+  } else {
+    $("#words").css("margin-left", "unset");
+    $(".afterNewline").css("margin-left", "unset");
+  }
+}
+
 function updateWordWrapperClasses(): void {
   if (Config.tapeMode !== "off") {
     $("#words").addClass("tape");
@@ -399,6 +403,7 @@ function updateWordWrapperClasses(): void {
 
   updateWordsWidth();
   updateWordsHeight(true);
+  updateWordsMargin();
   setTimeout(() => {
     void updateWordsInputPosition(true);
   }, 250);
@@ -527,14 +532,8 @@ function updateWordsHeight(force = false): void {
     CustomText.getLimitMode() !== "time" &&
     CustomText.getLimitValue() !== 0
   ) {
-    // overflow-x should not be visible in tape mode, but since showAllLines can't
-    // be enabled simultaneously with tape mode we don't need to check it's off
-    $("#words")
-      .css("height", "auto")
-      .css("overflow", "visible clip")
-      .css("width", "100%")
-      .css("margin-left", "unset");
-    $("#wordsWrapper").css("height", "auto").css("overflow", "visible clip");
+    $("#words").css("height", "auto");
+    $("#wordsWrapper").css("height", "auto");
     $(".outOfFocusWarning").css(
       "margin-top",
       wordHeight + convertRemToPixels(1) / 2 + "px"
@@ -571,30 +570,12 @@ function updateWordsHeight(force = false): void {
       finalWrapperHeight = wrapperHeight;
     }
 
-    // $("#words").css("height", "0px");
-    // not sure why this was here, wonder if removing it will break anything
-
-    if (Config.tapeMode !== "off") {
-      $("#words").css({ overflow: "hidden", width: "200vw" });
-      $("#wordsWrapper").css({ overflow: "hidden" });
-      scrollTape();
-    } else {
-      $("#words").css({
-        overflow: "visible clip",
-        marginLeft: "unset",
-        width: "",
-      });
-      $("#wordsWrapper").css({ overflow: "visible clip" });
-    }
-
-    setTimeout(() => {
-      $("#words").css("height", finalWordsHeight + "px");
-      $("#wordsWrapper").css("height", finalWrapperHeight + "px");
-      $(".outOfFocusWarning").css(
-        "margin-top",
-        finalWrapperHeight / 2 - convertRemToPixels(1) / 2 + "px"
-      );
-    }, 0);
+    $("#words").css("height", finalWordsHeight + "px");
+    $("#wordsWrapper").css("height", finalWrapperHeight + "px");
+    $(".outOfFocusWarning").css(
+      "margin-top",
+      finalWrapperHeight / 2 - convertRemToPixels(1) / 2 + "px"
+    );
   }
 
   if (activeWordEmpty) {
