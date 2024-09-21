@@ -5,44 +5,6 @@ type IncompleteTest =
   import("@monkeytype/contracts/schemas/results").IncompleteTest;
 
 declare namespace MonkeyTypes {
-  type CommandExecOptions = {
-    input?: string;
-    commandlineModal: import("../utils/animated-modal").default;
-  };
-
-  type Command = {
-    id: string;
-    display: string;
-    singleListDisplay?: string;
-    singleListDisplayNoIcon?: string;
-    subgroup?: CommandsSubgroup;
-    found?: boolean;
-    icon?: string;
-    sticky?: boolean;
-    alias?: string;
-    input?: boolean;
-    visible?: boolean;
-    customStyle?: string;
-    opensModal?: boolean;
-    defaultValue?: () => string;
-    configKey?: keyof import("@monkeytype/contracts/schemas/configs").Config;
-    configValue?: string | number | boolean | number[];
-    configValueMode?: "include";
-    exec?: (options: CommandExecOptions) => void;
-    hover?: () => void;
-    available?: () => boolean;
-    active?: () => boolean;
-    shouldFocusTestUI?: boolean;
-    customData?: Record<string, string | boolean>;
-  };
-
-  type CommandsSubgroup = {
-    title: string;
-    configKey?: keyof import("@monkeytype/contracts/schemas/configs").Config;
-    list: Command[];
-    beforeList?: () => void;
-  };
-
   type Theme = {
     name: string;
     bgColor: string;

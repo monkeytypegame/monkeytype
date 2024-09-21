@@ -4,8 +4,9 @@ import * as ManualRestart from "../../test/manual-restart-tracker";
 import Config from "../../config";
 import { areFunboxesCompatible } from "../../test/funbox/funbox-validation";
 import { FunboxMetadata } from "../../utils/json-data";
+import { Command, CommandsSubgroup } from "../types";
 
-const subgroup: MonkeyTypes.CommandsSubgroup = {
+const subgroup: CommandsSubgroup = {
   title: "Funbox...",
   configKey: "funbox",
   list: [
@@ -23,7 +24,7 @@ const subgroup: MonkeyTypes.CommandsSubgroup = {
   ],
 };
 
-const commands: MonkeyTypes.Command[] = [
+const commands: Command[] = [
   {
     id: "changeFunbox",
     display: "Funbox...",

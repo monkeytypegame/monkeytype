@@ -5,8 +5,9 @@ import { isAuthenticated } from "../../firebase";
 import { createErrorMessage } from "../../utils/misc";
 import * as Loader from "../../elements/loader";
 import * as TestWords from "../../test/test-words";
+import { Command } from "../types";
 
-const commands: MonkeyTypes.Command[] = [
+const commands: Command[] = [
   {
     id: "addQuoteToFavorite",
     display: "Add current quote to favorite",
