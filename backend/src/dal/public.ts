@@ -1,5 +1,5 @@
+import { roundTo2 } from "@monkeytype/util/numbers";
 import * as db from "../init/db";
-import { roundTo2 } from "../utils/misc";
 import MonkeyError from "../utils/error";
 import {
   TypingStats,

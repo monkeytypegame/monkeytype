@@ -6,7 +6,7 @@ import * as Strings from "../utils/strings";
 import * as Misc from "../utils/misc";
 import * as Arrays from "../utils/arrays";
 import * as JSONData from "../utils/json-data";
-import * as Numbers from "../utils/numbers";
+import * as Numbers from "@monkeytype/util/numbers";
 import * as Notifications from "../elements/notifications";
 import * as CustomText from "./custom-text";
 import * as CustomTextState from "../states/custom-text-name";
@@ -146,6 +146,7 @@ export function restart(options = {} as RestartOptions): void {
   };
 
   options = { ...defaultOptions, ...options };
+  const animationTime = options.noAnim ? 0 : Misc.applyReducedMotion(125);
 
   if (TestUI.testRestarting || TestUI.resultCalculating) {
     event?.preventDefault();
@@ -289,7 +290,7 @@ export function restart(options = {} as RestartOptions): void {
     {
       opacity: 0,
     },
-    options.noAnim ? 0 : 125,
+    animationTime,
     async () => {
       $("#result").addClass("hidden");
       $("#typingTest").css("opacity", 0).removeClass("hidden");
@@ -350,7 +351,7 @@ export function restart(options = {} as RestartOptions): void {
           {
             opacity: 1,
           },
-          options.noAnim ? 0 : 125,
+          animationTime,
           () => {
             TimerProgress.reset();
             LiveSpeed.reset();
@@ -703,7 +704,7 @@ function buildCompletedEvent(
 
   const stddev = Numbers.stdDev(rawPerSecond);
   const avg = Numbers.mean(rawPerSecond);
-  let consistency = Numbers.roundTo2(Misc.kogasa(stddev / avg));
+  let consistency = Numbers.roundTo2(Numbers.kogasa(stddev / avg));
   let keyConsistencyArray = TestInput.keypressTimings.spacing.array.slice();
   if (keyConsistencyArray.length > 0) {
     keyConsistencyArray = keyConsistencyArray.slice(
@@ -712,7 +713,7 @@ function buildCompletedEvent(
     );
   }
   let keyConsistency = Numbers.roundTo2(
-    Misc.kogasa(
+    Numbers.kogasa(
       Numbers.stdDev(keyConsistencyArray) / Numbers.mean(keyConsistencyArray)
     )
   );
@@ -737,7 +738,7 @@ function buildCompletedEvent(
   //wpm consistency
   const stddev3 = Numbers.stdDev(chartData.wpm ?? []);
   const avg3 = Numbers.mean(chartData.wpm ?? []);
-  const wpmCons = Numbers.roundTo2(Misc.kogasa(stddev3 / avg3));
+  const wpmCons = Numbers.roundTo2(Numbers.kogasa(stddev3 / avg3));
   const wpmConsistency = isNaN(wpmCons) ? 0 : wpmCons;
 
   let customText: CustomTextDataWithTextLen | undefined = undefined;
@@ -1258,7 +1259,7 @@ async function saveResult(
           // maxWidth: "10rem",
           opacity: 1,
         },
-        500
+        Misc.applyReducedMotion(500)
       );
     $("#result .stats .dailyLeaderboard .bottom").html(
       Format.rank(data.dailyLeaderboardRank, { fallback: "" })

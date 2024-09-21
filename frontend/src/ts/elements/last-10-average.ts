@@ -1,6 +1,6 @@
 import * as DB from "../db";
 import * as Misc from "../utils/misc";
-import * as Numbers from "../utils/numbers";
+import * as Numbers from "@monkeytype/util/numbers";
 import Config from "../config";
 import * as TestWords from "../test/test-words";
 

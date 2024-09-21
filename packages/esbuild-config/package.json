@@ -1,0 +1,14 @@
+{
+  "name": "@monkeytype/esbuild",
+  "private": true,
+  "scripts": {
+    "lint": "eslint \"./**/*.js\""
+  },
+  "bin": {
+    "monkeytype-esbuild": "./index.js"
+  },
+  "devDependencies": {
+    "esbuild": "0.23.0",
+    "eslint": "8.57.0"
+  }
+}

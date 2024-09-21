@@ -5,7 +5,7 @@ import * as TestInput from "./test-input";
 import * as TestWords from "./test-words";
 import * as FunboxList from "./funbox/funbox-list";
 import * as TestState from "./test-state";
-import * as Numbers from "../utils/numbers";
+import * as Numbers from "@monkeytype/util/numbers";
 import {
   CompletedEvent,
   IncompleteTest,

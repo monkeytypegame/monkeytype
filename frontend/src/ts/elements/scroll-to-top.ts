@@ -1,9 +1,13 @@
 import * as ActivePage from "../states/active-page";
+import { prefersReducedMotion } from "../utils/misc";
 
 let visible = false;
 
 $(document).on("click", ".scrollToTopButton", () => {
-  window.scrollTo({ top: 0, behavior: "smooth" });
+  window.scrollTo({
+    top: 0,
+    behavior: prefersReducedMotion() ? "instant" : "smooth",
+  });
 });
 
 $(window).on("scroll", () => {

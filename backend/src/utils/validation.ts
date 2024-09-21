@@ -1,7 +1,7 @@
 import _ from "lodash";
-import { intersect } from "./misc";
 import { default as FunboxList } from "../constants/funbox-list";
 import { CompletedEvent } from "@monkeytype/contracts/schemas/results";
+import { intersect } from "@monkeytype/util/arrays";
 
 export function isTestTooShort(result: CompletedEvent): boolean {
   const { mode, mode2, customText, testDuration, bailedOut } = result;

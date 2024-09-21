@@ -10,12 +10,6 @@ import {
 } from "@monkeytype/contracts/schemas/shared";
 import { ZodError, ZodSchema } from "zod";
 
-export function kogasa(cov: number): number {
-  return (
-    100 * (1 - Math.tanh(cov + Math.pow(cov, 3) / 3 + Math.pow(cov, 5) / 5))
-  );
-}
-
 export function whorf(speed: number, wordlen: number): number {
   return Math.min(
     speed,
@@ -198,31 +192,6 @@ export function isUsernameValid(name: string): boolean {
   return /^[0-9a-zA-Z_.-]+$/.test(name);
 }
 
-export function mapRange(
-  x: number,
-  in_min: number,
-  in_max: number,
-  out_min: number,
-  out_max: number
-): number {
-  let num = ((x - in_min) * (out_max - out_min)) / (in_max - in_min) + out_min;
-
-  if (out_min > out_max) {
-    if (num > out_min) {
-      num = out_min;
-    } else if (num < out_max) {
-      num = out_max;
-    }
-  } else {
-    if (num < out_min) {
-      num = out_min;
-    } else if (num > out_max) {
-      num = out_max;
-    }
-  }
-  return num;
-}
-
 export function canQuickRestart(
   mode: string,
   words: number,
@@ -327,6 +296,7 @@ export async function swapElements(
     return Promise.resolve();
   }
 ): Promise<boolean | undefined> {
+  totalDuration = applyReducedMotion(totalDuration);
   if (
     (el1.hasClass("hidden") && !el2.hasClass("hidden")) ||
     (!el1.hasClass("hidden") && el2.hasClass("hidden"))
@@ -554,7 +524,7 @@ export async function promiseAnimation(
   easing: string
 ): Promise<void> {
   return new Promise((resolve) => {
-    el.animate(animation, duration, easing, resolve);
+    el.animate(animation, applyReducedMotion(duration), easing, resolve);
   });
 }
 
@@ -748,6 +718,19 @@ export function deepClone<T>(obj: T | T[]): T | T[] {
   }
 
   return clonedObj;
+}
+
+export function prefersReducedMotion(): boolean {
+  return matchMedia?.("(prefers-reduced-motion)")?.matches;
+}
+
+/**
+ * Reduce the animation time based on the browser preference `prefers-reduced-motion`.
+ * @param animationTime
+ * @returns `0` if user prefers reduced-motion, else the given animationTime
+ */
+export function applyReducedMotion(animationTime: number): number {
+  return prefersReducedMotion() ? 0 : animationTime;
 }
 
 // DO NOT ALTER GLOBAL OBJECTSONSTRUCTOR, IT WILL BREAK RESULT HASHES

@@ -1,0 +1,35 @@
+{
+  "name": "@monkeytype/util",
+  "private": true,
+  "scripts": {
+    "dev": "rimraf ./dist && monkeytype-esbuild --watch",
+    "build": "rimraf ./dist && npm run madge && monkeytype-esbuild",
+    "test": "vitest run",
+    "madge": " madge --circular --extensions ts ./src",
+    "ts-check": "tsc --noEmit",
+    "lint": "eslint \"./**/*.ts\""
+  },
+  "devDependencies": {
+    "@monkeytype/esbuild": "workspace:*",
+    "@monkeytype/eslint-config": "workspace:*",
+    "@monkeytype/typescript-config": "workspace:*",
+    "chokidar": "3.6.0",
+    "eslint": "8.57.0",
+    "madge": "8.0.0",
+    "rimraf": "6.0.1",
+    "typescript": "5.5.4",
+    "vitest": "2.0.5"
+  },
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
+    },
+    "./*": {
+      "types": "./src/*.ts",
+      "import": "./dist/*.mjs",
+      "require": "./dist/*.cjs"
+    }
+  }
+}

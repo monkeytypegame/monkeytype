@@ -7,7 +7,6 @@ import MonkeyError, {
 import { MonkeyResponse } from "../../utils/monkey-response";
 import * as DiscordUtils from "../../utils/discord";
 import {
-  MILLISECONDS_IN_DAY,
   buildAgentLog,
   isDevEnvironment,
   replaceObjectId,
@@ -86,6 +85,7 @@ import {
   UpdateUserProfileRequest,
   UpdateUserProfileResponse,
 } from "@monkeytype/contracts/users";
+import { MILLISECONDS_IN_DAY } from "@monkeytype/util/date-and-time";
 
 async function verifyCaptcha(captcha: string): Promise<void> {
   let verified = false;

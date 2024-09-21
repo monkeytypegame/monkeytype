@@ -1039,3 +1039,20 @@ body {
     display: block !important;
   }
 }
+
+@media (prefers-reduced-motion) {
+  *:not(.fa-spin, #backgroundLoader, .preloader) {
+    animation: none !important;
+    transition: none !important;
+
+    &::after,
+    &::before {
+      animation: none !important;
+      transition: none !important;
+    }
+  }
+
+  html {
+    scroll-behavior: auto !important;
+  }
+}

@@ -16,7 +16,7 @@ import * as DateTime from "../utils/date-and-time";
 import * as Misc from "../utils/misc";
 import * as Strings from "../utils/strings";
 import * as JSONData from "../utils/json-data";
-import * as Numbers from "../utils/numbers";
+import * as Numbers from "@monkeytype/util/numbers";
 import * as Arrays from "../utils/arrays";
 import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
 import * as FunboxList from "./funbox/funbox-list";
@@ -955,7 +955,7 @@ export async function update(
         {
           opacity: 1,
         },
-        125
+        Misc.applyReducedMotion(125)
       );
 
       const canQuickRestart = Misc.canQuickRestart(

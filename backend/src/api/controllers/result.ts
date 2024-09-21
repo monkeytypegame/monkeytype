@@ -1,14 +1,6 @@
 import * as ResultDAL from "../../dal/result";
 import * as PublicDAL from "../../dal/public";
-import {
-  getCurrentDayTimestamp,
-  getStartOfDayTimestamp,
-  isDevEnvironment,
-  mapRange,
-  replaceObjectId,
-  roundTo2,
-  stdDev,
-} from "../../utils/misc";
+import { isDevEnvironment, replaceObjectId } from "../../utils/misc";
 import objectHash from "object-hash";
 import Logger from "../../utils/logger";
 import "dotenv/config";
@@ -55,6 +47,11 @@ import {
   XpBreakdown,
 } from "@monkeytype/contracts/schemas/results";
 import { Mode } from "@monkeytype/contracts/schemas/shared";
+import { mapRange, roundTo2, stdDev } from "@monkeytype/util/numbers";
+import {
+  getCurrentDayTimestamp,
+  getStartOfDayTimestamp,
+} from "@monkeytype/util/date-and-time";
 
 try {
   if (!anticheatImplemented()) throw new Error("undefined");
