@@ -77,24 +77,4 @@ declare namespace MonkeyTypes {
     frontendForcedConfig?: Record<string, string[] | boolean[]>;
     frontendFunctions?: string[];
   };
-
-  type DBResult = MonkeyTypes.WithObjectId<
-    import("@monkeytype/contracts/schemas/results").Result<
-      import("@monkeytype/contracts/schemas/shared").Mode
-    >
-  > & {
-    //legacy values
-    correctChars?: number;
-    incorrectChars?: number;
-  };
-
-  type BlocklistEntry = {
-    _id: string;
-    usernameHash?: string;
-    emailHash?: string;
-    discordIdHash?: string;
-    timestamp: number;
-  };
-
-  type DBBlocklistEntry = WithObjectId<MonkeyTypes.BlocklistEntry>;
 }

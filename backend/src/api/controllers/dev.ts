@@ -20,6 +20,7 @@ import {
 } from "@monkeytype/contracts/dev";
 import { roundTo2 } from "@monkeytype/util/numbers";
 import { MonkeyRequest } from "../../types2/types";
+import { DBResult } from "../../utils/result";
 
 const CREATE_RESULT_DEFAULT_OPTIONS = {
   firstTestTimestamp: DateUtils.startOfDay(new UTCDate(Date.now())).valueOf(),
@@ -113,7 +114,7 @@ function random(min: number, max: number): number {
 function createResult(
   user: MonkeyTypes.DBUser,
   timestamp: Date //evil, we modify this value
-): MonkeyTypes.DBResult {
+): DBResult {
   const mode: Mode = randomValue(["time", "words"]);
   const mode2: number =
     mode === "time"
@@ -223,7 +224,7 @@ async function updateUser(uid: string): Promise<void> {
         .sort({ wpm: -1, timestamp: 1 })
         .limit(1)
         .toArray()
-    )[0] as MonkeyTypes.DBResult;
+    )[0] as DBResult;
 
     if (personalBests[mode.mode] === undefined) personalBests[mode.mode] = {};
     if (personalBests[mode.mode][mode.mode2] === undefined)

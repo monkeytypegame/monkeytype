@@ -27,7 +27,11 @@ import _, { omit } from "lodash";
 import * as WeeklyXpLeaderboard from "../../services/weekly-xp-leaderboard";
 import { UAParser } from "ua-parser-js";
 import { canFunboxGetPb } from "../../utils/pb";
-import { buildDbResult, replaceLegacyValues } from "../../utils/result";
+import {
+  buildDbResult,
+  DBResult,
+  replaceLegacyValues,
+} from "../../utils/result";
 import { Configuration } from "@monkeytype/contracts/schemas/configuration";
 import { addLog } from "../../dal/logs";
 import {
@@ -798,6 +802,6 @@ async function calculateXp(
   };
 }
 
-function convertResult(db: MonkeyTypes.DBResult): Result<Mode> {
+function convertResult(db: DBResult): Result<Mode> {
   return replaceObjectId(replaceLegacyValues(db));
 }
