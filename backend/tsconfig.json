@@ -6,7 +6,8 @@
     "noImplicitAny": false,
     "strictFunctionTypes": false,
     "useUnknownInCatchVariables": false,
-    "strictPropertyInitialization": false
+    "strictPropertyInitialization": false,
+    "skipLibCheck": false
   },
   "ts-node": {
     "files": true

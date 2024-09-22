@@ -1,5 +1,9 @@
 import { getCachedConfiguration } from "../init/configuration";
-import type { Response, NextFunction } from "express";
+import type {
+  Response,
+  NextFunction,
+  Request as ExpressRequest,
+} from "express";
 import { DecodedToken } from "./auth";
 import { Configuration } from "@monkeytype/contracts/schemas/configuration";
 import { ExpressRequestWithContext } from "../types2/types";

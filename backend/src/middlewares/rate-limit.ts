@@ -21,6 +21,7 @@ import {
   ExpressRequestWithContext,
   TsRestRequestWithContext,
 } from "../types2/types";
+import { AppRoute, AppRouter } from "@ts-rest/core";
 
 export const REQUEST_MULTIPLIER = isDevEnvironment() ? 100 : 1;
 

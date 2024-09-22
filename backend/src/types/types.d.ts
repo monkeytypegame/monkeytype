@@ -1,10 +1,5 @@
 type ObjectId = import("mongodb").ObjectId;
 
-type ExpressRequest = import("express").Request;
-type AppRoute = import("@ts-rest/core").AppRoute;
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type TsRestRequest = import("@ts-rest/express").TsRestRequest<any>;
-type AppRouter = import("@ts-rest/core").AppRouter;
 declare namespace MonkeyTypes {
   type DBUser = Omit<
     import("@monkeytype/contracts/schemas/users").User,

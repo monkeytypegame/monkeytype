@@ -13,6 +13,7 @@ import { isDevEnvironment } from "../utils/misc";
 import { getMetadata } from "./utility";
 import { TsRestRequestWithContext } from "../types2/types";
 import { DecodedToken } from "./auth";
+import { AppRoute, AppRouter } from "@ts-rest/core";
 
 type RequestPermissionCheck = {
   type: "request";
