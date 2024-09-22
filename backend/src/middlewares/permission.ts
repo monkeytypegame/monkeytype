@@ -1,7 +1,7 @@
 import _ from "lodash";
 import MonkeyError from "../utils/error";
 import type { Response, NextFunction } from "express";
-import { getPartialUser } from "../dal/user";
+import { DBUser, getPartialUser } from "../dal/user";
 import { isAdmin } from "../dal/admin-uids";
 import { TsRestRequestHandler } from "@ts-rest/express";
 import {
@@ -26,16 +26,16 @@ type RequestPermissionCheck = {
 
 type UserPermissionCheck = {
   type: "user";
-  fields: (keyof MonkeyTypes.DBUser)[];
-  criteria: (user: MonkeyTypes.DBUser) => boolean;
+  fields: (keyof DBUser)[];
+  criteria: (user: DBUser) => boolean;
   invalidMessage?: string;
 };
 
 type PermissionCheck = UserPermissionCheck | RequestPermissionCheck;
 
-function buildUserPermission<K extends keyof MonkeyTypes.DBUser>(
+function buildUserPermission<K extends keyof DBUser>(
   fields: K[],
-  criteria: (user: Pick<MonkeyTypes.DBUser, K>) => boolean,
+  criteria: (user: Pick<DBUser, K>) => boolean,
   invalidMessage?: string
 ): UserPermissionCheck {
   return {
@@ -184,7 +184,7 @@ async function checkUserPermissions(
     decodedToken.uid,
     "check user permissions",
     checks.flatMap((it) => it.fields)
-  )) as MonkeyTypes.DBUser;
+  )) as DBUser;
 
   for (const check of checks) {
     if (!check.criteria(user))

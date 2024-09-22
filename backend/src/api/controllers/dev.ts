@@ -21,6 +21,7 @@ import {
 import { roundTo2 } from "@monkeytype/util/numbers";
 import { MonkeyRequest } from "../../types2/types";
 import { DBResult } from "../../utils/result";
+import { LbPersonalBests } from "../../utils/pb";
 
 const CREATE_RESULT_DEFAULT_OPTIONS = {
   firstTestTimestamp: DateUtils.startOfDay(new UTCDate(Date.now())).valueOf(),
@@ -48,7 +49,7 @@ async function getOrCreateUser(
   username: string,
   password: string,
   createUser = false
-): Promise<MonkeyTypes.DBUser> {
+): Promise<UserDal.DBUser> {
   const existingUser = await UserDal.findByName(username);
 
   if (existingUser !== undefined && existingUser !== null) {
@@ -71,7 +72,7 @@ async function getOrCreateUser(
 }
 
 async function createTestResults(
-  user: MonkeyTypes.DBUser,
+  user: UserDal.DBUser,
   configOptions: GenerateDataRequest
 ): Promise<void> {
   const config = {
@@ -112,7 +113,7 @@ function random(min: number, max: number): number {
 }
 
 function createResult(
-  user: MonkeyTypes.DBUser,
+  user: UserDal.DBUser,
   timestamp: Date //evil, we modify this value
 ): DBResult {
   const mode: Mode = randomValue(["time", "words"]);
@@ -189,7 +190,7 @@ async function updateUser(uid: string): Promise<void> {
   );
 
   //update PBs
-  const lbPersonalBests: MonkeyTypes.LbPersonalBests = {
+  const lbPersonalBests: LbPersonalBests = {
     time: {
       15: {},
       60: {},

@@ -8,7 +8,7 @@ import {
 import MonkeyError from "../utils/error";
 import * as db from "../init/db";
 
-import { getUser, getTags } from "./user";
+import { getUser, getTags, DBUser } from "./user";
 import { DBResult } from "../utils/result";
 
 export const getResultCollection = (): Collection<DBResult> =>
@@ -18,7 +18,7 @@ export async function addResult(
   uid: string,
   result: DBResult
 ): Promise<{ insertedId: ObjectId }> {
-  let user: MonkeyTypes.DBUser | null = null;
+  let user: DBUser | null = null;
   try {
     user = await getUser(uid, "add result");
   } catch (e) {

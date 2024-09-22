@@ -1,5 +1,5 @@
 import _ from "lodash";
-import { canFunboxGetPb, checkAndUpdatePb } from "../utils/pb";
+import { canFunboxGetPb, checkAndUpdatePb, LbPersonalBests } from "../utils/pb";
 import * as db from "../init/db";
 import MonkeyError from "../utils/error";
 import {
@@ -23,6 +23,9 @@ import {
   UserQuoteRatings,
   UserStreak,
   ResultFilters,
+  UserTag,
+  User,
+  CountByYearAndDay,
 } from "@monkeytype/contracts/schemas/users";
 import {
   Mode,
@@ -34,20 +37,46 @@ import { Result as ResultType } from "@monkeytype/contracts/schemas/results";
 import { Configuration } from "@monkeytype/contracts/schemas/configuration";
 import { isToday, isYesterday } from "@monkeytype/util/date-and-time";
 
+type DBUserTag = MonkeyTypes.WithObjectId<UserTag>;
+
+export type DBUser = Omit<
+  User,
+  | "resultFilterPresets"
+  | "tags"
+  | "customThemes"
+  | "isPremium"
+  | "allTimeLbs"
+  | "testActivity"
+> & {
+  _id: ObjectId;
+  resultFilterPresets?: MonkeyTypes.WithObjectId<ResultFilters>[];
+  tags?: DBUserTag[];
+  lbPersonalBests?: LbPersonalBests;
+  customThemes?: MonkeyTypes.WithObjectId<CustomTheme>[];
+  autoBanTimestamps?: number[];
+  inbox?: MonkeyMail[];
+  ips?: string[];
+  canReport?: boolean;
+  lastNameChange?: number;
+  canManageApeKeys?: boolean;
+  bananas?: number;
+  testActivity?: CountByYearAndDay;
+};
+
 const SECONDS_PER_HOUR = 3600;
 
 type Result = Omit<ResultType<Mode>, "_id" | "name">;
 
 // Export for use in tests
-export const getUsersCollection = (): Collection<MonkeyTypes.DBUser> =>
-  db.collection<MonkeyTypes.DBUser>("users");
+export const getUsersCollection = (): Collection<DBUser> =>
+  db.collection<DBUser>("users");
 
 export async function addUser(
   name: string,
   email: string,
   uid: string
 ): Promise<void> {
-  const newUserDocument: Partial<MonkeyTypes.DBUser> = {
+  const newUserDocument: Partial<DBUser> = {
     name,
     email,
     uid,
@@ -211,10 +240,7 @@ export async function updateEmail(
   return true;
 }
 
-export async function getUser(
-  uid: string,
-  stack: string
-): Promise<MonkeyTypes.DBUser> {
+export async function getUser(uid: string, stack: string): Promise<DBUser> {
   const user = await getUsersCollection().findOne({ uid });
   if (!user) throw new MonkeyError(404, "User not found", stack);
   return user;
@@ -228,11 +254,11 @@ export async function getUser(
  * @returns partial DBUser only containing requested fields
  * @throws MonkeyError if user does not exist
  */
-export async function getPartialUser<K extends keyof MonkeyTypes.DBUser>(
+export async function getPartialUser<K extends keyof DBUser>(
   uid: string,
   stack: string,
   fields: K[]
-): Promise<Pick<MonkeyTypes.DBUser, K>> {
+): Promise<Pick<DBUser, K>> {
   const projection = new Map(fields.map((it) => [it, 1]));
   const results = await getUsersCollection().findOne({ uid }, { projection });
   if (results === null) throw new MonkeyError(404, "User not found", stack);
@@ -240,9 +266,7 @@ export async function getPartialUser<K extends keyof MonkeyTypes.DBUser>(
   return results;
 }
 
-export async function findByName(
-  name: string
-): Promise<MonkeyTypes.DBUser | undefined> {
+export async function findByName(name: string): Promise<DBUser | undefined> {
   return (
     await getUsersCollection()
       .find({ name })
@@ -265,7 +289,7 @@ export async function isNameAvailable(
 export async function getUserByName(
   name: string,
   stack: string
-): Promise<MonkeyTypes.DBUser> {
+): Promise<DBUser> {
   const user = await findByName(name);
   if (!user) throw new MonkeyError(404, "User not found", stack);
   return user;
@@ -328,10 +352,7 @@ export async function removeResultFilterPreset(
   );
 }
 
-export async function addTag(
-  uid: string,
-  name: string
-): Promise<MonkeyTypes.DBUserTag> {
+export async function addTag(uid: string, name: string): Promise<DBUserTag> {
   const toPush = {
     _id: new ObjectId(),
     name,
@@ -357,7 +378,7 @@ export async function addTag(
   return toPush;
 }
 
-export async function getTags(uid: string): Promise<MonkeyTypes.DBUserTag[]> {
+export async function getTags(uid: string): Promise<DBUserTag[]> {
   const user = await getPartialUser(uid, "get tags", ["tags"]);
 
   return user.tags ?? [];
@@ -426,7 +447,7 @@ export async function updateLbMemory(
 
 export async function checkIfPb(
   uid: string,
-  user: Pick<MonkeyTypes.DBUser, "personalBests" | "lbPersonalBests">,
+  user: Pick<DBUser, "personalBests" | "lbPersonalBests">,
   result: Result
 ): Promise<boolean> {
   const { mode } = result;
@@ -469,7 +490,7 @@ export async function checkIfPb(
 
 export async function checkIfTagPb(
   uid: string,
-  user: Pick<MonkeyTypes.DBUser, "tags">,
+  user: Pick<DBUser, "tags">,
   result: Result
 ): Promise<string[]> {
   if (user.tags === undefined || user.tags.length === 0) {
@@ -484,7 +505,7 @@ export async function checkIfTagPb(
     return [];
   }
 
-  const tagsToCheck: MonkeyTypes.DBUserTag[] = [];
+  const tagsToCheck: DBUserTag[] = [];
   user.tags.forEach((userTag) => {
     for (const resultTag of resultTags ?? []) {
       if (resultTag === userTag._id.toHexString()) {
@@ -571,7 +592,7 @@ export async function linkDiscord(
   discordId: string,
   discordAvatar?: string
 ): Promise<void> {
-  const updates: Partial<MonkeyTypes.DBUser> = _.pickBy(
+  const updates: Partial<DBUser> = _.pickBy(
     { discordId, discordAvatar },
     _.identity
   );
@@ -632,7 +653,7 @@ export async function incrementXp(uid: string, xp: number): Promise<void> {
 }
 
 export async function incrementTestActivity(
-  user: MonkeyTypes.DBUser,
+  user: DBUser,
   timestamp: number
 ): Promise<void> {
   if (user.testActivity === undefined) {
@@ -719,9 +740,9 @@ export async function editTheme(
   );
 }
 
-export async function getThemes(
-  uid: string
-): Promise<MonkeyTypes.DBCustomTheme[]> {
+type DBCustomTheme = MonkeyTypes.WithObjectId<CustomTheme>;
+
+export async function getThemes(uid: string): Promise<DBCustomTheme[]> {
   const user = await getPartialUser(uid, "get themes", ["customThemes"]);
   return user.customThemes ?? [];
 }
@@ -745,9 +766,7 @@ export async function getPersonalBests(
 
 export async function getStats(
   uid: string
-): Promise<
-  Pick<MonkeyTypes.DBUser, "startedTests" | "completedTests" | "timeTyping">
-> {
+): Promise<Pick<DBUser, "startedTests" | "completedTests" | "timeTyping">> {
   const user = await getPartialUser(uid, "get stats", [
     "startedTests",
     "completedTests",
@@ -759,7 +778,7 @@ export async function getStats(
 
 export async function getFavoriteQuotes(
   uid: string
-): Promise<NonNullable<MonkeyTypes.DBUser["favoriteQuotes"]>> {
+): Promise<NonNullable<DBUser["favoriteQuotes"]>> {
   const user = await getPartialUser(uid, "get favorite quotes", [
     "favoriteQuotes",
   ]);
@@ -843,7 +862,7 @@ export async function recordAutoBanEvent(
   recentAutoBanTimestamps.push(now);
 
   //update user, ban if needed
-  const updateObj: Partial<MonkeyTypes.DBUser> = {
+  const updateObj: Partial<DBUser> = {
     autoBanTimestamps: recentAutoBanTimestamps,
   };
   let banningUser = false;
@@ -891,7 +910,7 @@ export async function updateProfile(
 
 export async function getInbox(
   uid: string
-): Promise<NonNullable<MonkeyTypes.DBUser["inbox"]>> {
+): Promise<NonNullable<DBUser["inbox"]>> {
   const user = await getPartialUser(uid, "get inbox", ["inbox"]);
   return user.inbox ?? [];
 }
@@ -981,7 +1000,7 @@ export async function updateInbox(
               inventory: UserInventory,
               deletedIds: string[],
               readIds: string[]
-            ): Pick<MonkeyTypes.DBUser, "xp" | "inventory" | "inbox"> {
+            ): Pick<DBUser, "xp" | "inventory" | "inbox"> {
               const toBeDeleted = inbox.filter((it) =>
                 deletedIds.includes(it.id)
               );
@@ -1121,7 +1140,7 @@ export async function setBanned(uid: string, banned: boolean): Promise<void> {
 
 export async function checkIfUserIsPremium(
   uid: string,
-  userInfoOverride?: Pick<MonkeyTypes.DBUser, "premium">
+  userInfoOverride?: Pick<DBUser, "premium">
 ): Promise<boolean> {
   const premiumFeaturesEnabled = (await getCachedConfiguration(true)).users
     .premium.enabled;
@@ -1141,7 +1160,7 @@ export async function checkIfUserIsPremium(
 export async function logIpAddress(
   uid: string,
   ip: string,
-  userInfoOverride?: Pick<MonkeyTypes.DBUser, "ips">
+  userInfoOverride?: Pick<DBUser, "ips">
 ): Promise<void> {
   const user =
     userInfoOverride ?? (await getPartialUser(uid, "logIpAddress", ["ips"]));
@@ -1165,8 +1184,8 @@ export async function logIpAddress(
  * @throws MonkeyError if user does not exist
  */
 async function updateUser(
-  filter: Filter<MonkeyTypes.DBUser>,
-  update: UpdateFilter<MonkeyTypes.DBUser>,
+  filter: Filter<DBUser>,
+  update: UpdateFilter<DBUser>,
   error: { stack: string; statusCode?: number; message?: string }
 ): Promise<void> {
   const result = await getUsersCollection().updateOne(filter, update);

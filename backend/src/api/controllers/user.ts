@@ -454,7 +454,7 @@ export async function updatePassword(
 }
 
 type RelevantUserInfo = Omit<
-  MonkeyTypes.DBUser,
+  UserDAL.DBUser,
   | "bananas"
   | "lbPersonalBests"
   | "inbox"
@@ -467,7 +467,7 @@ type RelevantUserInfo = Omit<
   | "testActivity"
 >;
 
-function getRelevantUserInfo(user: MonkeyTypes.DBUser): RelevantUserInfo {
+function getRelevantUserInfo(user: UserDAL.DBUser): RelevantUserInfo {
   return _.omit(user, [
     "bananas",
     "lbPersonalBests",
@@ -485,7 +485,7 @@ function getRelevantUserInfo(user: MonkeyTypes.DBUser): RelevantUserInfo {
 export async function getUser(req: MonkeyRequest): Promise<GetUserResponse> {
   const { uid } = req.ctx.decodedToken;
 
-  let userInfo: MonkeyTypes.DBUser;
+  let userInfo: UserDAL.DBUser;
   try {
     userInfo = await UserDAL.getUser(uid, "get user");
   } catch (e) {
