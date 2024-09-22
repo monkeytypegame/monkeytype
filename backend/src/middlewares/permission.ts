@@ -11,7 +11,7 @@ import {
 } from "@monkeytype/contracts/schemas/api";
 import { isDevEnvironment } from "../utils/misc";
 import { getMetadata } from "./utility";
-import { TsRestRequestWithContext } from "../types2/types";
+import { TsRestRequestWithContext } from "../types/types";
 import { DecodedToken } from "./auth";
 import { AppRoute, AppRouter } from "@ts-rest/core";
 

@@ -1,7 +1,7 @@
 import { CompletedEvent, Result } from "@monkeytype/contracts/schemas/results";
 import { Mode } from "@monkeytype/contracts/schemas/shared";
 import { ObjectId } from "mongodb";
-import { WithObjectId } from "../types2/types";
+import { WithObjectId } from "../types/types";
 
 export type DBResult = WithObjectId<Result<Mode>> & {
   //legacy values

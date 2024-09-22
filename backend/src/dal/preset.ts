@@ -6,7 +6,7 @@ import {
   Preset,
 } from "@monkeytype/contracts/schemas/presets";
 import { omit } from "lodash";
-import { WithObjectId } from "../types2/types";
+import { WithObjectId } from "../types/types";
 
 const MAX_PRESETS = 10;
 

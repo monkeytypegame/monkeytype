@@ -36,7 +36,7 @@ import { addImportantLog } from "./logs";
 import { Result as ResultType } from "@monkeytype/contracts/schemas/results";
 import { Configuration } from "@monkeytype/contracts/schemas/configuration";
 import { isToday, isYesterday } from "@monkeytype/util/date-and-time";
-import { WithObjectId } from "../types2/types";
+import { WithObjectId } from "../types/types";
 
 type DBUserTag = WithObjectId<UserTag>;
 

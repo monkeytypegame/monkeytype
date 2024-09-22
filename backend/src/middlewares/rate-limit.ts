@@ -20,7 +20,7 @@ import { getMetadata } from "./utility";
 import {
   ExpressRequestWithContext,
   TsRestRequestWithContext,
-} from "../types2/types";
+} from "../types/types";
 import { AppRoute, AppRouter } from "@ts-rest/core";
 
 export const REQUEST_MULTIPLIER = isDevEnvironment() ? 100 : 1;

@@ -2,7 +2,7 @@ import { PostGithubReleaseRequest } from "@monkeytype/contracts/webhooks";
 import GeorgeQueue from "../../queues/george-queue";
 import { MonkeyResponse } from "../../utils/monkey-response";
 import MonkeyError from "../../utils/error";
-import { MonkeyRequest } from "../../types2/types";
+import { MonkeyRequest } from "../../types/types";
 
 export async function githubRelease(
   req: MonkeyRequest<undefined, PostGithubReleaseRequest>

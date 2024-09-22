@@ -8,7 +8,7 @@ import * as PresetDAL from "../../dal/preset";
 import { MonkeyResponse } from "../../utils/monkey-response";
 import { replaceObjectId } from "../../utils/misc";
 import { EditPresetRequest } from "@monkeytype/contracts/schemas/presets";
-import { MonkeyRequest } from "../../types2/types";
+import { MonkeyRequest } from "../../types/types";
 
 export async function getPresets(
   req: MonkeyRequest

@@ -5,7 +5,7 @@ import {
 } from "@monkeytype/contracts/public";
 import * as PublicDAL from "../../dal/public";
 import { MonkeyResponse } from "../../utils/monkey-response";
-import { MonkeyRequest } from "../../types2/types";
+import { MonkeyRequest } from "../../types/types";
 
 export async function getSpeedHistogram(
   req: MonkeyRequest<GetSpeedHistogramQuery>

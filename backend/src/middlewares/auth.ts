@@ -20,7 +20,7 @@ import {
 } from "@monkeytype/contracts/schemas/api";
 import { Configuration } from "@monkeytype/contracts/schemas/configuration";
 import { getMetadata } from "./utility";
-import { TsRestRequest, TsRestRequestWithContext } from "../types2/types";
+import { TsRestRequestWithContext } from "../types/types";
 
 export type DecodedToken = {
   type: "Bearer" | "ApeKey" | "None" | "GithubWebhook";
@@ -306,7 +306,7 @@ async function authenticateWithUid(token: string): Promise<DecodedToken> {
 }
 
 export function authenticateGithubWebhook(
-  req: TsRestRequest,
+  req: TsRestRequestWithContext,
   authHeader: string | string[] | undefined
 ): DecodedToken {
   try {

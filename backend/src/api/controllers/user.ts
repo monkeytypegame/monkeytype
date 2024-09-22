@@ -86,7 +86,7 @@ import {
   UpdateUserProfileResponse,
 } from "@monkeytype/contracts/users";
 import { MILLISECONDS_IN_DAY } from "@monkeytype/util/date-and-time";
-import { MonkeyRequest } from "../../types2/types";
+import { MonkeyRequest } from "../../types/types";
 
 async function verifyCaptcha(captcha: string): Promise<void> {
   let verified = false;
@@ -528,7 +528,7 @@ export async function getUser(req: MonkeyRequest): Promise<GetUserResponse> {
     custom: {},
   };
 
-  const agentLog = buildAgentLog(req.raw);
+  const agentLog = buildAgentLog(req);
   void addLog("user_data_requested", agentLog, uid);
   void UserDAL.logIpAddress(uid, agentLog.ip, userInfo);
 

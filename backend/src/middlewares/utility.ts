@@ -4,7 +4,7 @@ import { recordClientVersion as prometheusRecordClientVersion } from "../utils/p
 import { isDevEnvironment } from "../utils/misc";
 import MonkeyError from "../utils/error";
 import { EndpointMetadata } from "@monkeytype/contracts/schemas/api";
-import { TsRestRequestWithContext } from "../types2/types";
+import { TsRestRequestWithContext } from "../types/types";
 
 /**
  * record the client version from the `x-client-version`  or ` client-version` header to prometheus

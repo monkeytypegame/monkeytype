@@ -2,7 +2,7 @@ import { AppRoute, AppRouter } from "@ts-rest/core";
 import { TsRestRequest } from "@ts-rest/express";
 import { MonkeyResponse } from "../utils/monkey-response";
 import { Context } from "../middlewares/context";
-import { MonkeyRequest } from "../types2/types";
+import { MonkeyRequest } from "../types/types";
 
 export function callController<
   TRoute extends AppRoute | AppRouter,

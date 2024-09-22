@@ -8,7 +8,7 @@ export type WithObjectId<T extends { _id: string }> = Omit<T, "_id"> & {
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type TsRestRequest = TsRestRequestGeneric<any>;
+type TsRestRequest = TsRestRequestGeneric<any>;
 
 export type ExpressRequestWithContext = {
   ctx: Readonly<Context>;

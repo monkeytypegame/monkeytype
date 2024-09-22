@@ -1,6 +1,6 @@
 import { PSA } from "@monkeytype/contracts/schemas/psas";
 import * as db from "../init/db";
-import { WithObjectId } from "../types2/types";
+import { WithObjectId } from "../types/types";
 
 export type DBPSA = WithObjectId<PSA>;
 

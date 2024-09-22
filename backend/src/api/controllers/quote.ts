@@ -22,7 +22,7 @@ import {
   ReportQuoteRequest,
 } from "@monkeytype/contracts/quotes";
 import { replaceObjectId, replaceObjectIds } from "../../utils/misc";
-import { MonkeyRequest } from "../../types2/types";
+import { MonkeyRequest } from "../../types/types";
 
 async function verifyCaptcha(captcha: string): Promise<void> {
   if (!(await verify(captcha))) {

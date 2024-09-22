@@ -1,7 +1,7 @@
 import { QuoteRating } from "@monkeytype/contracts/schemas/quotes";
 import * as db from "../init/db";
 import { Collection } from "mongodb";
-import { WithObjectId } from "../types2/types";
+import { WithObjectId } from "../types/types";
 
 type DBQuoteRating = WithObjectId<QuoteRating>;
 
