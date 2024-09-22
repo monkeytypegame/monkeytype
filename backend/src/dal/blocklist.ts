@@ -2,6 +2,7 @@ import { Collection } from "mongodb";
 import * as db from "../init/db";
 import { createHash } from "crypto";
 import { User } from "@monkeytype/contracts/schemas/users";
+import { WithObjectId } from "../types2/types";
 
 type BlocklistEntryProperties = Pick<User, "name" | "email" | "discordId">;
 
@@ -13,7 +14,7 @@ type BlocklistEntry = {
   timestamp: number;
 };
 
-type DBBlocklistEntry = MonkeyTypes.WithObjectId<BlocklistEntry>;
+type DBBlocklistEntry = WithObjectId<BlocklistEntry>;
 
 // Export for use in tests
 export const getCollection = (): Collection<DBBlocklistEntry> =>

@@ -6,7 +6,7 @@ import { isDevEnvironment } from "../utils/misc";
 import { getCachedConfiguration } from "../init/configuration";
 
 import { addLog } from "./logs";
-import { Collection } from "mongodb";
+import { Collection, ObjectId } from "mongodb";
 import {
   LeaderboardEntry,
   LeaderboardRank,

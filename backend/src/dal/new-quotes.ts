@@ -7,6 +7,7 @@ import * as db from "../init/db";
 import MonkeyError from "../utils/error";
 import { compareTwoStrings } from "string-similarity";
 import { ApproveQuote, Quote } from "@monkeytype/contracts/schemas/quotes";
+import { WithObjectId } from "../types2/types";
 
 type JsonQuote = {
   text: string;
@@ -38,7 +39,7 @@ type AddQuoteReturn = {
   similarityScore?: number;
 };
 
-export type DBNewQuote = MonkeyTypes.WithObjectId<Quote>;
+export type DBNewQuote = WithObjectId<Quote>;
 
 // Export for use in tests
 export const getNewQuoteCollection = (): Collection<DBNewQuote> =>

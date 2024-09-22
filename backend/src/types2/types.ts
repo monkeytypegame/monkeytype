@@ -1,6 +1,11 @@
 import { TsRestRequest as TsRestRequestGeneric } from "@ts-rest/express";
 import { Context } from "../middlewares/context";
 import { Request as ExpressRequest } from "express";
+import { ObjectId } from "mongodb";
+
+export type WithObjectId<T extends { _id: string }> = Omit<T, "_id"> & {
+  _id: ObjectId;
+};
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type TsRestRequest = TsRestRequestGeneric<any>;

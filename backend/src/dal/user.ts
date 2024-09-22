@@ -36,8 +36,9 @@ import { addImportantLog } from "./logs";
 import { Result as ResultType } from "@monkeytype/contracts/schemas/results";
 import { Configuration } from "@monkeytype/contracts/schemas/configuration";
 import { isToday, isYesterday } from "@monkeytype/util/date-and-time";
+import { WithObjectId } from "../types2/types";
 
-type DBUserTag = MonkeyTypes.WithObjectId<UserTag>;
+type DBUserTag = WithObjectId<UserTag>;
 
 export type DBUser = Omit<
   User,
@@ -49,10 +50,10 @@ export type DBUser = Omit<
   | "testActivity"
 > & {
   _id: ObjectId;
-  resultFilterPresets?: MonkeyTypes.WithObjectId<ResultFilters>[];
+  resultFilterPresets?: WithObjectId<ResultFilters>[];
   tags?: DBUserTag[];
   lbPersonalBests?: LbPersonalBests;
-  customThemes?: MonkeyTypes.WithObjectId<CustomTheme>[];
+  customThemes?: WithObjectId<CustomTheme>[];
   autoBanTimestamps?: number[];
   inbox?: MonkeyMail[];
   ips?: string[];
@@ -740,7 +741,7 @@ export async function editTheme(
   );
 }
 
-type DBCustomTheme = MonkeyTypes.WithObjectId<CustomTheme>;
+type DBCustomTheme = WithObjectId<CustomTheme>;
 
 export async function getThemes(uid: string): Promise<DBCustomTheme[]> {
   const user = await getPartialUser(uid, "get themes", ["customThemes"]);
