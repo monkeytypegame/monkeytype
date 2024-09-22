@@ -23,7 +23,7 @@ export function recordClientVersion(): RequestHandler {
 /** Endpoint is only available in dev environment, else return 503. */
 export function onlyAvailableOnDev(): RequestHandler {
   return (
-    _req: MonkeyTypes.TsRestRequestWithCtx,
+    _req: MonkeyTypes.TsRestRequestWithContext,
     _res: Response,
     next: NextFunction
   ) => {
@@ -41,7 +41,7 @@ export function onlyAvailableOnDev(): RequestHandler {
 }
 
 export function getMetadata(
-  req: MonkeyTypes.TsRestRequestWithCtx
+  req: MonkeyTypes.TsRestRequestWithContext
 ): EndpointMetadata {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
   return (req.tsRestRoute["metadata"] ?? {}) as EndpointMetadata;

@@ -15,7 +15,7 @@ import { getMetadata } from "./utility";
 type RequestPermissionCheck = {
   type: "request";
   criteria: (
-    req: MonkeyTypes.TsRestRequestWithCtx,
+    req: MonkeyTypes.TsRestRequestWithContext,
     metadata: EndpointMetadata | undefined
   ) => Promise<boolean>;
   invalidMessage?: string;
@@ -73,7 +73,7 @@ export function verifyPermissions<
   T extends AppRouter | AppRoute
 >(): TsRestRequestHandler<T> {
   return async (
-    req: MonkeyTypes.TsRestRequestWithCtx,
+    req: MonkeyTypes.TsRestRequestWithContext,
     _res: Response,
     next: NextFunction
   ): Promise<void> => {

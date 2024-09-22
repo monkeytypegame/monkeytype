@@ -38,7 +38,7 @@ export function authenticateTsRestRequest<
   T extends AppRouter | AppRoute
 >(): TsRestRequestHandler<T> {
   return async (
-    req: MonkeyTypes.TsRestRequestWithCtx,
+    req: MonkeyTypes.TsRestRequestWithContext,
     _res: Response,
     next: NextFunction
   ): Promise<void> => {

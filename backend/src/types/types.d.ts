@@ -21,7 +21,7 @@ declare namespace MonkeyTypes {
     ctx: Readonly<Context>;
   } & ExpressRequest;
 
-  type TsRestRequestWithCtx = {
+  type TsRestRequestWithContext = {
     ctx: Readonly<MonkeyTypes.Context>;
   } & TsRestRequest &
     ExpressRequest;
