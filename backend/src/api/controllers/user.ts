@@ -1007,7 +1007,7 @@ export async function reportUser(
 
   await verifyCaptcha(captcha);
 
-  const newReport: MonkeyTypes.Report = {
+  const newReport: ReportDAL.Report = {
     _id: new ObjectId(),
     id: uuidv4(),
     type: "user",

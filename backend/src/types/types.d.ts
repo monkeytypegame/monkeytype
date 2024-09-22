@@ -55,17 +55,4 @@ declare namespace MonkeyTypes {
     hash: string;
     useCount: number;
   };
-
-  type ReportTypes = "quote" | "user";
-
-  type Report = {
-    _id: ObjectId;
-    id: string;
-    type: ReportTypes;
-    timestamp: number;
-    uid: string;
-    contentId: string;
-    reason: string;
-    comment: string;
-  };
 }

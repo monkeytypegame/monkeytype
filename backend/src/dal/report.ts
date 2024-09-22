@@ -1,16 +1,24 @@
 import MonkeyError from "../utils/error";
 import * as db from "../init/db";
 
+type ReportTypes = "quote" | "user";
+
+export type Report = {
+  _id: ObjectId;
+  id: string;
+  type: ReportTypes;
+  timestamp: number;
+  uid: string;
+  contentId: string;
+  reason: string;
+  comment: string;
+};
+
 const COLLECTION_NAME = "reports";
 
-export async function getReports(
-  reportIds: string[]
-): Promise<MonkeyTypes.Report[]> {
+export async function getReports(reportIds: string[]): Promise<Report[]> {
   const query = { id: { $in: reportIds } };
-  return await db
-    .collection<MonkeyTypes.Report>(COLLECTION_NAME)
-    .find(query)
-    .toArray();
+  return await db.collection<Report>(COLLECTION_NAME).find(query).toArray();
 }
 
 export async function deleteReports(reportIds: string[]): Promise<void> {
@@ -19,7 +27,7 @@ export async function deleteReports(reportIds: string[]): Promise<void> {
 }
 
 export async function createReport(
-  report: MonkeyTypes.Report,
+  report: Report,
   maxReports: number,
   contentReportLimit: number
 ): Promise<void> {
@@ -28,7 +36,7 @@ export async function createReport(
   }
 
   const reportsCount = await db
-    .collection<MonkeyTypes.Report>(COLLECTION_NAME)
+    .collection<Report>(COLLECTION_NAME)
     .estimatedDocumentCount();
 
   if (reportsCount >= maxReports) {
@@ -39,7 +47,7 @@ export async function createReport(
   }
 
   const sameReports = await db
-    .collection<MonkeyTypes.Report>(COLLECTION_NAME)
+    .collection<Report>(COLLECTION_NAME)
     .find({ contentId: report.contentId })
     .toArray();
 
@@ -58,5 +66,5 @@ export async function createReport(
     throw new MonkeyError(409, "You have already reported this content.");
   }
 
-  await db.collection<MonkeyTypes.Report>(COLLECTION_NAME).insertOne(report);
+  await db.collection<Report>(COLLECTION_NAME).insertOne(report);
 }
