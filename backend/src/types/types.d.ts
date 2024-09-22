@@ -48,11 +48,4 @@ declare namespace MonkeyTypes {
   type WithObjectId<T extends { _id: string }> = Omit<T, "_id"> & {
     _id: ObjectId;
   };
-
-  type ApeKeyDB = import("@monkeytype/contracts/schemas/ape-keys").ApeKey & {
-    _id: ObjectId;
-    uid: string;
-    hash: string;
-    useCount: number;
-  };
 }

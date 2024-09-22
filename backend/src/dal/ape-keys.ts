@@ -8,28 +8,30 @@ import {
   Collection,
 } from "mongodb";
 import MonkeyError from "../utils/error";
+import { ApeKey } from "@monkeytype/contracts/schemas/ape-keys";
 
-export const getApeKeysCollection = (): Collection<
-  WithId<MonkeyTypes.ApeKeyDB>
-> => db.collection<MonkeyTypes.ApeKeyDB>("ape-keys");
+export type ApeKeyDB = ApeKey & {
+  _id: ObjectId;
+  uid: string;
+  hash: string;
+  useCount: number;
+};
 
-function getApeKeyFilter(
-  uid: string,
-  keyId: string
-): Filter<MonkeyTypes.ApeKeyDB> {
+export const getApeKeysCollection = (): Collection<WithId<ApeKeyDB>> =>
+  db.collection<ApeKeyDB>("ape-keys");
+
+function getApeKeyFilter(uid: string, keyId: string): Filter<ApeKeyDB> {
   return {
     _id: new ObjectId(keyId),
     uid,
   };
 }
 
-export async function getApeKeys(uid: string): Promise<MonkeyTypes.ApeKeyDB[]> {
+export async function getApeKeys(uid: string): Promise<ApeKeyDB[]> {
   return await getApeKeysCollection().find({ uid }).toArray();
 }
 
-export async function getApeKey(
-  keyId: string
-): Promise<MonkeyTypes.ApeKeyDB | null> {
+export async function getApeKey(keyId: string): Promise<ApeKeyDB | null> {
   return await getApeKeysCollection().findOne({ _id: new ObjectId(keyId) });
 }
 
@@ -37,7 +39,7 @@ export async function countApeKeysForUser(uid: string): Promise<number> {
   return getApeKeysCollection().countDocuments({ uid });
 }
 
-export async function addApeKey(apeKey: MonkeyTypes.ApeKeyDB): Promise<string> {
+export async function addApeKey(apeKey: ApeKeyDB): Promise<string> {
   const insertionResult = await getApeKeysCollection().insertOne(apeKey);
   return insertionResult.insertedId.toHexString();
 }
@@ -45,7 +47,7 @@ export async function addApeKey(apeKey: MonkeyTypes.ApeKeyDB): Promise<string> {
 async function updateApeKey(
   uid: string,
   keyId: string,
-  updates: MatchKeysAndValues<MonkeyTypes.ApeKeyDB>
+  updates: MatchKeysAndValues<ApeKeyDB>
 ): Promise<void> {
   const updateResult = await getApeKeysCollection().updateOne(
     getApeKeyFilter(uid, keyId),

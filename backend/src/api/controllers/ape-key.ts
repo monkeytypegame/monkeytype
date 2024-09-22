@@ -17,7 +17,7 @@ import {
 import { ApeKey } from "@monkeytype/contracts/schemas/ape-keys";
 import { MonkeyRequest } from "../../types2/types";
 
-function cleanApeKey(apeKey: MonkeyTypes.ApeKeyDB): ApeKey {
+function cleanApeKey(apeKey: ApeKeysDAL.ApeKeyDB): ApeKey {
   return _.omit(apeKey, "hash", "_id", "uid", "useCount");
 }
 
@@ -49,7 +49,7 @@ export async function generateApeKey(
   const apiKey = randomBytes(apeKeyBytes).toString("base64url");
   const saltyHash = await hash(apiKey, apeKeySaltRounds);
 
-  const apeKey: MonkeyTypes.ApeKeyDB = {
+  const apeKey: ApeKeysDAL.ApeKeyDB = {
     _id: new ObjectId(),
     name,
     enabled,
