@@ -22,9 +22,10 @@ import {
   getCurrentWeekTimestamp,
   MILLISECONDS_IN_DAY,
 } from "@monkeytype/util/date-and-time";
+import { MonkeyRequest } from "../../types2/types";
 
 export async function getLeaderboard(
-  req: MonkeyTypes.Request<GetLeaderboardQuery>
+  req: MonkeyRequest<GetLeaderboardQuery>
 ): Promise<GetLeaderboardResponse> {
   const { language, mode, mode2, skip = 0, limit = 50 } = req.query;
 
@@ -49,7 +50,7 @@ export async function getLeaderboard(
 }
 
 export async function getRankFromLeaderboard(
-  req: MonkeyTypes.Request<LanguageAndModeQuery>
+  req: MonkeyRequest<LanguageAndModeQuery>
 ): Promise<GetLeaderboardRankResponse> {
   const { language, mode, mode2 } = req.query;
   const { uid } = req.ctx.decodedToken;
@@ -89,7 +90,7 @@ function getDailyLeaderboardWithError(
 }
 
 export async function getDailyLeaderboard(
-  req: MonkeyTypes.Request<GetDailyLeaderboardQuery>
+  req: MonkeyRequest<GetDailyLeaderboardQuery>
 ): Promise<GetLeaderboardResponse> {
   const { skip = 0, limit = 50 } = req.query;
 
@@ -112,7 +113,7 @@ export async function getDailyLeaderboard(
 }
 
 export async function getDailyLeaderboardRank(
-  req: MonkeyTypes.Request<GetDailyLeaderboardRankQuery>
+  req: MonkeyRequest<GetDailyLeaderboardRankQuery>
 ): Promise<GetLeaderboardDailyRankResponse> {
   const { uid } = req.ctx.decodedToken;
 
@@ -147,7 +148,7 @@ function getWeeklyXpLeaderboardWithError(
 }
 
 export async function getWeeklyXpLeaderboardResults(
-  req: MonkeyTypes.Request<GetWeeklyXpLeaderboardQuery>
+  req: MonkeyRequest<GetWeeklyXpLeaderboardQuery>
 ): Promise<GetWeeklyXpLeaderboardResponse> {
   const { skip = 0, limit = 50 } = req.query;
 
@@ -168,7 +169,7 @@ export async function getWeeklyXpLeaderboardResults(
 }
 
 export async function getWeeklyXpLeaderboardRank(
-  req: MonkeyTypes.Request
+  req: MonkeyRequest
 ): Promise<GetWeeklyXpLeaderboardRankResponse> {
   const { uid } = req.ctx.decodedToken;
 

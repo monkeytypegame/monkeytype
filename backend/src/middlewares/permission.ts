@@ -11,11 +11,13 @@ import {
 } from "@monkeytype/contracts/schemas/api";
 import { isDevEnvironment } from "../utils/misc";
 import { getMetadata } from "./utility";
+import { TsRestRequestWithContext } from "../types2/types";
+import { DecodedToken } from "./auth";
 
 type RequestPermissionCheck = {
   type: "request";
   criteria: (
-    req: MonkeyTypes.TsRestRequestWithContext,
+    req: TsRestRequestWithContext,
     metadata: EndpointMetadata | undefined
   ) => Promise<boolean>;
   invalidMessage?: string;
@@ -73,7 +75,7 @@ export function verifyPermissions<
   T extends AppRouter | AppRoute
 >(): TsRestRequestHandler<T> {
   return async (
-    req: MonkeyTypes.TsRestRequestWithContext,
+    req: TsRestRequestWithContext,
     _res: Response,
     next: NextFunction
   ): Promise<void> => {
@@ -143,7 +145,7 @@ function getRequiredPermissionIds(
 }
 
 async function checkIfUserIsAdmin(
-  decodedToken: MonkeyTypes.DecodedToken | undefined,
+  decodedToken: DecodedToken | undefined,
   options: RequestAuthenticationOptions | undefined
 ): Promise<boolean> {
   if (decodedToken === undefined) return false;
@@ -162,7 +164,7 @@ type CheckResult =
     };
 
 async function checkUserPermissions(
-  decodedToken: MonkeyTypes.DecodedToken | undefined,
+  decodedToken: DecodedToken | undefined,
   checks: UserPermissionCheck[]
 ): Promise<CheckResult> {
   if (checks === undefined || checks.length === 0) {

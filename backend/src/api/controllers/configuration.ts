@@ -7,16 +7,17 @@ import {
   PatchConfigurationRequest,
 } from "@monkeytype/contracts/configuration";
 import MonkeyError from "../../utils/error";
+import { MonkeyRequest } from "../../types2/types";
 
 export async function getConfiguration(
-  _req: MonkeyTypes.Request
+  _req: MonkeyRequest
 ): Promise<GetConfigurationResponse> {
   const currentConfiguration = await Configuration.getLiveConfiguration();
   return new MonkeyResponse("Configuration retrieved", currentConfiguration);
 }
 
 export async function getSchema(
-  _req: MonkeyTypes.Request
+  _req: MonkeyRequest
 ): Promise<ConfigurationSchemaResponse> {
   return new MonkeyResponse(
     "Configuration schema retrieved",
@@ -25,7 +26,7 @@ export async function getSchema(
 }
 
 export async function updateConfiguration(
-  req: MonkeyTypes.Request<undefined, PatchConfigurationRequest>
+  req: MonkeyRequest<undefined, PatchConfigurationRequest>
 ): Promise<MonkeyResponse> {
   const { configuration } = req.body;
   const success = await Configuration.patchConfiguration(configuration);

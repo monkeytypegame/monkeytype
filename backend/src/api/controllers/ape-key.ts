@@ -15,13 +15,14 @@ import {
   GetApeKeyResponse,
 } from "@monkeytype/contracts/ape-keys";
 import { ApeKey } from "@monkeytype/contracts/schemas/ape-keys";
+import { MonkeyRequest } from "../../types2/types";
 
 function cleanApeKey(apeKey: MonkeyTypes.ApeKeyDB): ApeKey {
   return _.omit(apeKey, "hash", "_id", "uid", "useCount");
 }
 
 export async function getApeKeys(
-  req: MonkeyTypes.Request
+  req: MonkeyRequest
 ): Promise<GetApeKeyResponse> {
   const { uid } = req.ctx.decodedToken;
 
@@ -32,7 +33,7 @@ export async function getApeKeys(
 }
 
 export async function generateApeKey(
-  req: MonkeyTypes.Request<undefined, AddApeKeyRequest>
+  req: MonkeyRequest<undefined, AddApeKeyRequest>
 ): Promise<AddApeKeyResponse> {
   const { name, enabled } = req.body;
   const { uid } = req.ctx.decodedToken;
@@ -70,7 +71,7 @@ export async function generateApeKey(
 }
 
 export async function editApeKey(
-  req: MonkeyTypes.Request<undefined, EditApeKeyRequest, ApeKeyParams>
+  req: MonkeyRequest<undefined, EditApeKeyRequest, ApeKeyParams>
 ): Promise<MonkeyResponse> {
   const { apeKeyId } = req.params;
   const { name, enabled } = req.body;
@@ -82,7 +83,7 @@ export async function editApeKey(
 }
 
 export async function deleteApeKey(
-  req: MonkeyTypes.Request<undefined, undefined, ApeKeyParams>
+  req: MonkeyRequest<undefined, undefined, ApeKeyParams>
 ): Promise<MonkeyResponse> {
   const { apeKeyId } = req.params;
   const { uid } = req.ctx.decodedToken;

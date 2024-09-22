@@ -8,9 +8,10 @@ import * as PresetDAL from "../../dal/preset";
 import { MonkeyResponse } from "../../utils/monkey-response";
 import { replaceObjectId } from "../../utils/misc";
 import { EditPresetRequest } from "@monkeytype/contracts/schemas/presets";
+import { MonkeyRequest } from "../../types2/types";
 
 export async function getPresets(
-  req: MonkeyTypes.Request
+  req: MonkeyRequest
 ): Promise<GetPresetResponse> {
   const { uid } = req.ctx.decodedToken;
 
@@ -25,7 +26,7 @@ export async function getPresets(
 }
 
 export async function addPreset(
-  req: MonkeyTypes.Request<undefined, AddPresetRequest>
+  req: MonkeyRequest<undefined, AddPresetRequest>
 ): Promise<AddPresetResponse> {
   const { uid } = req.ctx.decodedToken;
 
@@ -35,7 +36,7 @@ export async function addPreset(
 }
 
 export async function editPreset(
-  req: MonkeyTypes.Request<undefined, EditPresetRequest>
+  req: MonkeyRequest<undefined, EditPresetRequest>
 ): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
 
@@ -45,7 +46,7 @@ export async function editPreset(
 }
 
 export async function removePreset(
-  req: MonkeyTypes.Request<undefined, undefined, DeletePresetsParams>
+  req: MonkeyRequest<undefined, undefined, DeletePresetsParams>
 ): Promise<MonkeyResponse> {
   const { presetId } = req.params;
   const { uid } = req.ctx.decodedToken;

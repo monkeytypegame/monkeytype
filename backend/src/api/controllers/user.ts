@@ -86,6 +86,7 @@ import {
   UpdateUserProfileResponse,
 } from "@monkeytype/contracts/users";
 import { MILLISECONDS_IN_DAY } from "@monkeytype/util/date-and-time";
+import { MonkeyRequest } from "../../types2/types";
 
 async function verifyCaptcha(captcha: string): Promise<void> {
   let verified = false;
@@ -104,7 +105,7 @@ async function verifyCaptcha(captcha: string): Promise<void> {
 }
 
 export async function createNewUser(
-  req: MonkeyTypes.Request<undefined, CreateUserRequest>
+  req: MonkeyRequest<undefined, CreateUserRequest>
 ): Promise<MonkeyResponse> {
   const { name, captcha } = req.body;
   const { email, uid } = req.ctx.decodedToken;
@@ -138,7 +139,7 @@ export async function createNewUser(
 }
 
 export async function sendVerificationEmail(
-  req: MonkeyTypes.Request
+  req: MonkeyRequest
 ): Promise<MonkeyResponse> {
   const { email, uid } = req.ctx.decodedToken;
   const isVerified = (
@@ -235,7 +236,7 @@ export async function sendVerificationEmail(
 }
 
 export async function sendForgotPasswordEmail(
-  req: MonkeyTypes.Request<undefined, ForgotPasswordEmailRequest>
+  req: MonkeyRequest<undefined, ForgotPasswordEmailRequest>
 ): Promise<MonkeyResponse> {
   const { email } = req.body;
   await authSendForgotPasswordEmail(email);
@@ -245,9 +246,7 @@ export async function sendForgotPasswordEmail(
   );
 }
 
-export async function deleteUser(
-  req: MonkeyTypes.Request
-): Promise<MonkeyResponse> {
+export async function deleteUser(req: MonkeyRequest): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
 
   const userInfo = await UserDAL.getPartialUser(uid, "delete user", [
@@ -287,9 +286,7 @@ export async function deleteUser(
   return new MonkeyResponse("User deleted", null);
 }
 
-export async function resetUser(
-  req: MonkeyTypes.Request
-): Promise<MonkeyResponse> {
+export async function resetUser(req: MonkeyRequest): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
 
   const userInfo = await UserDAL.getPartialUser(uid, "reset user", [
@@ -324,7 +321,7 @@ export async function resetUser(
 }
 
 export async function updateName(
-  req: MonkeyTypes.Request<undefined, UpdateUserNameRequest>
+  req: MonkeyRequest<undefined, UpdateUserNameRequest>
 ): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
   const { name } = req.body;
@@ -357,9 +354,7 @@ export async function updateName(
   return new MonkeyResponse("User's name updated", null);
 }
 
-export async function clearPb(
-  req: MonkeyTypes.Request
-): Promise<MonkeyResponse> {
+export async function clearPb(req: MonkeyRequest): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
 
   await UserDAL.clearPb(uid);
@@ -373,7 +368,7 @@ export async function clearPb(
 }
 
 export async function optOutOfLeaderboards(
-  req: MonkeyTypes.Request
+  req: MonkeyRequest
 ): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
 
@@ -388,7 +383,7 @@ export async function optOutOfLeaderboards(
 }
 
 export async function checkName(
-  req: MonkeyTypes.Request<undefined, undefined, CheckNamePathParameters>
+  req: MonkeyRequest<undefined, undefined, CheckNamePathParameters>
 ): Promise<MonkeyResponse> {
   const { name } = req.params;
   const { uid } = req.ctx.decodedToken;
@@ -402,7 +397,7 @@ export async function checkName(
 }
 
 export async function updateEmail(
-  req: MonkeyTypes.Request<undefined, UpdateEmailRequestSchema>
+  req: MonkeyRequest<undefined, UpdateEmailRequestSchema>
 ): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
   let { newEmail } = req.body;
@@ -448,7 +443,7 @@ export async function updateEmail(
 }
 
 export async function updatePassword(
-  req: MonkeyTypes.Request<undefined, UpdatePasswordRequest>
+  req: MonkeyRequest<undefined, UpdatePasswordRequest>
 ): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
   const { newPassword } = req.body;
@@ -487,9 +482,7 @@ function getRelevantUserInfo(user: MonkeyTypes.DBUser): RelevantUserInfo {
   ]) as RelevantUserInfo;
 }
 
-export async function getUser(
-  req: MonkeyTypes.Request
-): Promise<GetUserResponse> {
+export async function getUser(req: MonkeyRequest): Promise<GetUserResponse> {
   const { uid } = req.ctx.decodedToken;
 
   let userInfo: MonkeyTypes.DBUser;
@@ -585,7 +578,7 @@ export async function getUser(
 }
 
 export async function getOauthLink(
-  req: MonkeyTypes.Request
+  req: MonkeyRequest
 ): Promise<GetDiscordOauthLinkResponse> {
   const { uid } = req.ctx.decodedToken;
 
@@ -599,7 +592,7 @@ export async function getOauthLink(
 }
 
 export async function linkDiscord(
-  req: MonkeyTypes.Request<undefined, LinkDiscordRequest>
+  req: MonkeyRequest<undefined, LinkDiscordRequest>
 ): Promise<LinkDiscordResponse> {
   const { uid } = req.ctx.decodedToken;
   const { tokenType, accessToken, state } = req.body;
@@ -659,7 +652,7 @@ export async function linkDiscord(
 }
 
 export async function unlinkDiscord(
-  req: MonkeyTypes.Request
+  req: MonkeyRequest
 ): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
 
@@ -685,7 +678,7 @@ export async function unlinkDiscord(
 }
 
 export async function addResultFilterPreset(
-  req: MonkeyTypes.Request<undefined, AddResultFilterPresetRequest>
+  req: MonkeyRequest<undefined, AddResultFilterPresetRequest>
 ): Promise<AddResultFilterPresetResponse> {
   const { uid } = req.ctx.decodedToken;
   const filter = req.body;
@@ -703,11 +696,7 @@ export async function addResultFilterPreset(
 }
 
 export async function removeResultFilterPreset(
-  req: MonkeyTypes.Request<
-    undefined,
-    undefined,
-    RemoveResultFilterPresetPathParams
-  >
+  req: MonkeyRequest<undefined, undefined, RemoveResultFilterPresetPathParams>
 ): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
   const { presetId } = req.params;
@@ -717,7 +706,7 @@ export async function removeResultFilterPreset(
 }
 
 export async function addTag(
-  req: MonkeyTypes.Request<undefined, AddTagRequest>
+  req: MonkeyRequest<undefined, AddTagRequest>
 ): Promise<AddTagResponse> {
   const { uid } = req.ctx.decodedToken;
   const { tagName } = req.body;
@@ -727,7 +716,7 @@ export async function addTag(
 }
 
 export async function clearTagPb(
-  req: MonkeyTypes.Request<undefined, undefined, TagIdPathParams>
+  req: MonkeyRequest<undefined, undefined, TagIdPathParams>
 ): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
   const { tagId } = req.params;
@@ -737,7 +726,7 @@ export async function clearTagPb(
 }
 
 export async function editTag(
-  req: MonkeyTypes.Request<undefined, EditTagRequest>
+  req: MonkeyRequest<undefined, EditTagRequest>
 ): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
   const { tagId, newName } = req.body;
@@ -747,7 +736,7 @@ export async function editTag(
 }
 
 export async function removeTag(
-  req: MonkeyTypes.Request<undefined, undefined, TagIdPathParams>
+  req: MonkeyRequest<undefined, undefined, TagIdPathParams>
 ): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
   const { tagId } = req.params;
@@ -756,9 +745,7 @@ export async function removeTag(
   return new MonkeyResponse("Tag deleted", null);
 }
 
-export async function getTags(
-  req: MonkeyTypes.Request
-): Promise<GetTagsResponse> {
+export async function getTags(req: MonkeyRequest): Promise<GetTagsResponse> {
   const { uid } = req.ctx.decodedToken;
 
   const tags = await UserDAL.getTags(uid);
@@ -766,7 +753,7 @@ export async function getTags(
 }
 
 export async function updateLbMemory(
-  req: MonkeyTypes.Request<undefined, UpdateLeaderboardMemoryRequest>
+  req: MonkeyRequest<undefined, UpdateLeaderboardMemoryRequest>
 ): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
   const { mode, language, rank } = req.body;
@@ -777,7 +764,7 @@ export async function updateLbMemory(
 }
 
 export async function getCustomThemes(
-  req: MonkeyTypes.Request
+  req: MonkeyRequest
 ): Promise<GetCustomThemesResponse> {
   const { uid } = req.ctx.decodedToken;
   const customThemes = await UserDAL.getThemes(uid);
@@ -788,7 +775,7 @@ export async function getCustomThemes(
 }
 
 export async function addCustomTheme(
-  req: MonkeyTypes.Request<undefined, AddCustomThemeRequest>
+  req: MonkeyRequest<undefined, AddCustomThemeRequest>
 ): Promise<AddCustomThemeResponse> {
   const { uid } = req.ctx.decodedToken;
   const { name, colors } = req.body;
@@ -798,7 +785,7 @@ export async function addCustomTheme(
 }
 
 export async function removeCustomTheme(
-  req: MonkeyTypes.Request<undefined, DeleteCustomThemeRequest>
+  req: MonkeyRequest<undefined, DeleteCustomThemeRequest>
 ): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
   const { themeId } = req.body;
@@ -807,7 +794,7 @@ export async function removeCustomTheme(
 }
 
 export async function editCustomTheme(
-  req: MonkeyTypes.Request<undefined, EditCustomThemeRequst>
+  req: MonkeyRequest<undefined, EditCustomThemeRequst>
 ): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
   const { themeId, theme } = req.body;
@@ -817,7 +804,7 @@ export async function editCustomTheme(
 }
 
 export async function getPersonalBests(
-  req: MonkeyTypes.Request<GetPersonalBestsQuery>
+  req: MonkeyRequest<GetPersonalBestsQuery>
 ): Promise<GetPersonalBestsResponse> {
   const { uid } = req.ctx.decodedToken;
   const { mode, mode2 } = req.query;
@@ -826,9 +813,7 @@ export async function getPersonalBests(
   return new MonkeyResponse("Personal bests retrieved", data);
 }
 
-export async function getStats(
-  req: MonkeyTypes.Request
-): Promise<GetStatsResponse> {
+export async function getStats(req: MonkeyRequest): Promise<GetStatsResponse> {
   const { uid } = req.ctx.decodedToken;
 
   const data = (await UserDAL.getStats(uid)) ?? null;
@@ -836,7 +821,7 @@ export async function getStats(
 }
 
 export async function getFavoriteQuotes(
-  req: MonkeyTypes.Request
+  req: MonkeyRequest
 ): Promise<GetFavoriteQuotesResponse> {
   const { uid } = req.ctx.decodedToken;
 
@@ -846,7 +831,7 @@ export async function getFavoriteQuotes(
 }
 
 export async function addFavoriteQuote(
-  req: MonkeyTypes.Request<undefined, AddFavoriteQuoteRequest>
+  req: MonkeyRequest<undefined, AddFavoriteQuoteRequest>
 ): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
 
@@ -863,7 +848,7 @@ export async function addFavoriteQuote(
 }
 
 export async function removeFavoriteQuote(
-  req: MonkeyTypes.Request<undefined, RemoveFavoriteQuoteRequest>
+  req: MonkeyRequest<undefined, RemoveFavoriteQuoteRequest>
 ): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
 
@@ -874,7 +859,7 @@ export async function removeFavoriteQuote(
 }
 
 export async function getProfile(
-  req: MonkeyTypes.Request<GetProfileQuery, undefined, GetProfilePathParams>
+  req: MonkeyRequest<GetProfileQuery, undefined, GetProfilePathParams>
 ): Promise<GetProfileResponse> {
   const { uidOrName } = req.params;
 
@@ -946,7 +931,7 @@ export async function getProfile(
 }
 
 export async function updateProfile(
-  req: MonkeyTypes.Request<undefined, UpdateUserProfileRequest>
+  req: MonkeyRequest<undefined, UpdateUserProfileRequest>
 ): Promise<UpdateUserProfileResponse> {
   const { uid } = req.ctx.decodedToken;
   const { bio, keyboard, socialProfiles, selectedBadgeId } = req.body;
@@ -983,7 +968,7 @@ export async function updateProfile(
 }
 
 export async function getInbox(
-  req: MonkeyTypes.Request
+  req: MonkeyRequest
 ): Promise<GetUserInboxResponse> {
   const { uid } = req.ctx.decodedToken;
 
@@ -996,7 +981,7 @@ export async function getInbox(
 }
 
 export async function updateInbox(
-  req: MonkeyTypes.Request<undefined, UpdateUserInboxRequest>
+  req: MonkeyRequest<undefined, UpdateUserInboxRequest>
 ): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
   const { mailIdsToMarkRead, mailIdsToDelete } = req.body;
@@ -1011,7 +996,7 @@ export async function updateInbox(
 }
 
 export async function reportUser(
-  req: MonkeyTypes.Request<undefined, ReportUserRequest>
+  req: MonkeyRequest<undefined, ReportUserRequest>
 ): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
   const {
@@ -1039,7 +1024,7 @@ export async function reportUser(
 }
 
 export async function setStreakHourOffset(
-  req: MonkeyTypes.Request<undefined, SetStreakHourOffsetRequest>
+  req: MonkeyRequest<undefined, SetStreakHourOffsetRequest>
 ): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
   const { hourOffset } = req.body;
@@ -1063,7 +1048,7 @@ export async function setStreakHourOffset(
 }
 
 export async function revokeAllTokens(
-  req: MonkeyTypes.Request
+  req: MonkeyRequest
 ): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
   await AuthUtil.revokeTokensByUid(uid);
@@ -1151,7 +1136,7 @@ export function generateCurrentTestActivity(
 }
 
 export async function getTestActivity(
-  req: MonkeyTypes.Request
+  req: MonkeyRequest
 ): Promise<GetTestActivityResponse> {
   const { uid } = req.ctx.decodedToken;
   const premiumFeaturesEnabled = req.ctx.configuration.users.premium.enabled;
@@ -1184,7 +1169,7 @@ async function firebaseDeleteUserIgnoreError(uid: string): Promise<void> {
 }
 
 export async function getCurrentTestActivity(
-  req: MonkeyTypes.Request
+  req: MonkeyRequest
 ): Promise<GetCurrentTestActivityResponse> {
   const { uid } = req.ctx.decodedToken;
 
@@ -1199,7 +1184,7 @@ export async function getCurrentTestActivity(
 }
 
 export async function getStreak(
-  req: MonkeyTypes.Request
+  req: MonkeyRequest
 ): Promise<GetStreakResponseSchema> {
   const { uid } = req.ctx.decodedToken;
 

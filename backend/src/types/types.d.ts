@@ -6,34 +6,6 @@ type AppRoute = import("@ts-rest/core").AppRoute;
 type TsRestRequest = import("@ts-rest/express").TsRestRequest<any>;
 type AppRouter = import("@ts-rest/core").AppRouter;
 declare namespace MonkeyTypes {
-  export type DecodedToken = {
-    type: "Bearer" | "ApeKey" | "None" | "GithubWebhook";
-    uid: string;
-    email: string;
-  };
-
-  export type Context = {
-    configuration: import("@monkeytype/contracts/schemas/configuration").Configuration;
-    decodedToken: DecodedToken;
-  };
-
-  type ExpressRequestWithContext = {
-    ctx: Readonly<Context>;
-  } & ExpressRequest;
-
-  type TsRestRequestWithContext = {
-    ctx: Readonly<MonkeyTypes.Context>;
-  } & TsRestRequest &
-    ExpressRequest;
-
-  type Request<TQuery = undefined, TBody = undefined, TParams = undefined> = {
-    query: Readonly<TQuery>;
-    body: Readonly<TBody>;
-    params: Readonly<TParams>;
-    ctx: Readonly<Context>;
-    raw: Readonly<TsRestRequest>;
-  };
-
   type DBUser = Omit<
     import("@monkeytype/contracts/schemas/users").User,
     | "resultFilterPresets"

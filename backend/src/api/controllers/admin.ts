@@ -14,13 +14,14 @@ import {
 import MonkeyError, { getErrorMessage } from "../../utils/error";
 import { Configuration } from "@monkeytype/contracts/schemas/configuration";
 import { addImportantLog } from "../../dal/logs";
+import { MonkeyRequest } from "../../types2/types";
 
-export async function test(_req: MonkeyTypes.Request): Promise<MonkeyResponse> {
+export async function test(_req: MonkeyRequest): Promise<MonkeyResponse> {
   return new MonkeyResponse("OK", null);
 }
 
 export async function toggleBan(
-  req: MonkeyTypes.Request<undefined, ToggleBanRequest>
+  req: MonkeyRequest<undefined, ToggleBanRequest>
 ): Promise<ToggleBanResponse> {
   const { uid } = req.body;
 
@@ -42,7 +43,7 @@ export async function toggleBan(
 }
 
 export async function acceptReports(
-  req: MonkeyTypes.Request<undefined, AcceptReportsRequest>
+  req: MonkeyRequest<undefined, AcceptReportsRequest>
 ): Promise<MonkeyResponse> {
   await handleReports(
     req.body.reports.map((it) => ({ ...it })),
@@ -53,7 +54,7 @@ export async function acceptReports(
 }
 
 export async function rejectReports(
-  req: MonkeyTypes.Request<undefined, RejectReportsRequest>
+  req: MonkeyRequest<undefined, RejectReportsRequest>
 ): Promise<MonkeyResponse> {
   await handleReports(
     req.body.reports.map((it) => ({ ...it })),
@@ -127,7 +128,7 @@ export async function handleReports(
 }
 
 export async function sendForgotPasswordEmail(
-  req: MonkeyTypes.Request<undefined, SendForgotPasswordEmailRequest>
+  req: MonkeyRequest<undefined, SendForgotPasswordEmailRequest>
 ): Promise<MonkeyResponse> {
   const { email } = req.body;
   await authSendForgotPasswordEmail(email);

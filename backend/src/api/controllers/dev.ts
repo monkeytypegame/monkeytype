@@ -19,6 +19,7 @@ import {
   GenerateDataResponse,
 } from "@monkeytype/contracts/dev";
 import { roundTo2 } from "@monkeytype/util/numbers";
+import { MonkeyRequest } from "../../types2/types";
 
 const CREATE_RESULT_DEFAULT_OPTIONS = {
   firstTestTimestamp: DateUtils.startOfDay(new UTCDate(Date.now())).valueOf(),
@@ -28,7 +29,7 @@ const CREATE_RESULT_DEFAULT_OPTIONS = {
 };
 
 export async function createTestData(
-  req: MonkeyTypes.Request<undefined, GenerateDataRequest>
+  req: MonkeyRequest<undefined, GenerateDataRequest>
 ): Promise<GenerateDataResponse> {
   const { username, createUser } = req.body;
   const user = await getOrCreateUser(username, "password", createUser);

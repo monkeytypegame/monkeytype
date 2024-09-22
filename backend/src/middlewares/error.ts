@@ -14,6 +14,7 @@ import { isDevEnvironment } from "../utils/misc";
 import { ObjectId } from "mongodb";
 import { version } from "../version";
 import { addLog } from "../dal/logs";
+import { ExpressRequestWithContext } from "../types2/types";
 
 type DBError = {
   _id: ObjectId;
@@ -34,7 +35,7 @@ type ErrorData = {
 
 async function errorHandlingMiddleware(
   error: Error,
-  req: MonkeyTypes.ExpressRequestWithContext,
+  req: ExpressRequestWithContext,
   res: Response,
   _next: NextFunction
 ): Promise<void> {

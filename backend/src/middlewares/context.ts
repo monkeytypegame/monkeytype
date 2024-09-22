@@ -1,5 +1,13 @@
 import { getCachedConfiguration } from "../init/configuration";
 import type { Response, NextFunction } from "express";
+import { DecodedToken } from "./auth";
+import { Configuration } from "@monkeytype/contracts/schemas/configuration";
+import { ExpressRequestWithContext } from "../types2/types";
+
+export type Context = {
+  configuration: Configuration;
+  decodedToken: DecodedToken;
+};
 
 /**
  * Add the context to the request
@@ -8,13 +16,13 @@ import type { Response, NextFunction } from "express";
  * @param next
  */
 async function contextMiddleware(
-  req: MonkeyTypes.ExpressRequestWithContext,
+  req: ExpressRequest,
   _res: Response,
   next: NextFunction
 ): Promise<void> {
   const configuration = await getCachedConfiguration(true);
 
-  req.ctx = {
+  (req as ExpressRequestWithContext).ctx = {
     configuration,
     decodedToken: {
       type: "None",

@@ -8,12 +8,13 @@ import {
   RequireConfiguration,
 } from "@monkeytype/contracts/require-configuration/index";
 import { getMetadata } from "./utility";
+import { TsRestRequestWithContext } from "../types2/types";
 
 export function verifyRequiredConfiguration<
   T extends AppRouter | AppRoute
 >(): TsRestRequestHandler<T> {
   return async (
-    req: MonkeyTypes.TsRestRequestWithContext,
+    req: TsRestRequestWithContext,
     _res: Response,
     next: NextFunction
   ): Promise<void> => {

@@ -2,9 +2,10 @@ import { PostGithubReleaseRequest } from "@monkeytype/contracts/webhooks";
 import GeorgeQueue from "../../queues/george-queue";
 import { MonkeyResponse } from "../../utils/monkey-response";
 import MonkeyError from "../../utils/error";
+import { MonkeyRequest } from "../../types2/types";
 
 export async function githubRelease(
-  req: MonkeyTypes.Request<undefined, PostGithubReleaseRequest>
+  req: MonkeyRequest<undefined, PostGithubReleaseRequest>
 ): Promise<MonkeyResponse> {
   const action = req.body.action;
 
