@@ -19,7 +19,7 @@ import {
   RequestAuthenticationOptions,
 } from "@monkeytype/contracts/schemas/api";
 import { Configuration } from "@monkeytype/contracts/schemas/configuration";
-import { getMetadata, TsRestRequestWithCtx } from "./utility";
+import { getMetadata } from "./utility";
 
 const DEFAULT_OPTIONS: RequestAuthenticationOptions = {
   isGithubWebhook: false,
@@ -38,7 +38,7 @@ export function authenticateTsRestRequest<
   T extends AppRouter | AppRoute
 >(): TsRestRequestHandler<T> {
   return async (
-    req: TsRestRequestWithCtx,
+    req: MonkeyTypes.TsRestRequestWithCtx,
     _res: Response,
     next: NextFunction
   ): Promise<void> => {

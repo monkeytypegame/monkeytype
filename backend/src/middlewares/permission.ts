@@ -10,12 +10,12 @@ import {
   PermissionId,
 } from "@monkeytype/contracts/schemas/api";
 import { isDevEnvironment } from "../utils/misc";
-import { getMetadata, TsRestRequestWithCtx } from "./utility";
+import { getMetadata } from "./utility";
 
 type RequestPermissionCheck = {
   type: "request";
   criteria: (
-    req: TsRestRequestWithCtx,
+    req: MonkeyTypes.TsRestRequestWithCtx,
     metadata: EndpointMetadata | undefined
   ) => Promise<boolean>;
   invalidMessage?: string;
@@ -73,7 +73,7 @@ export function verifyPermissions<
   T extends AppRouter | AppRoute
 >(): TsRestRequestHandler<T> {
   return async (
-    req: TsRestRequestWithCtx,
+    req: MonkeyTypes.TsRestRequestWithCtx,
     _res: Response,
     next: NextFunction
   ): Promise<void> => {

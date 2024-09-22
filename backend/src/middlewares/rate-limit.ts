@@ -16,7 +16,7 @@ import {
   Window,
 } from "@monkeytype/contracts/rate-limit/index";
 import statuses from "../constants/monkey-status-codes";
-import { getMetadata, TsRestRequestWithCtx } from "./utility";
+import { getMetadata } from "./utility";
 
 export const REQUEST_MULTIPLIER = isDevEnvironment() ? 100 : 1;
 
@@ -94,7 +94,7 @@ export function rateLimitRequest<
   T extends AppRouter | AppRoute
 >(): TsRestRequestHandler<T> {
   return async (
-    req: TsRestRequestWithCtx,
+    req: MonkeyTypes.TsRestRequestWithCtx,
     res: Response,
     next: NextFunction
   ): Promise<void> => {

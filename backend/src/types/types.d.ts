@@ -21,6 +21,11 @@ declare namespace MonkeyTypes {
     ctx: Readonly<Context>;
   } & ExpressRequest;
 
+  type TsRestRequestWithCtx = {
+    ctx: Readonly<MonkeyTypes.Context>;
+  } & TsRestRequest &
+    ExpressRequest;
+
   type Request<TQuery = undefined, TBody = undefined, TParams = undefined> = {
     query: Readonly<TQuery>;
     body: Readonly<TBody>;
@@ -28,9 +33,6 @@ declare namespace MonkeyTypes {
     ctx: Readonly<Context>;
     raw: Readonly<TsRestRequest>;
   };
-
-  /* eslint-disable-next-line  @typescript-eslint/no-explicit-any */
-  type RequestHandler = import("@ts-rest/core").TsRestRequestHandler<any>;
 
   type DBUser = Omit<
     import("@monkeytype/contracts/schemas/users").User,
