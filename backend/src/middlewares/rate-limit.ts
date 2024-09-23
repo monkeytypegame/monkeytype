@@ -16,12 +16,17 @@ import {
   Window,
 } from "@monkeytype/contracts/rate-limit/index";
 import statuses from "../constants/monkey-status-codes";
-import { getMetadata, TsRestRequestWithCtx } from "./utility";
+import { getMetadata } from "./utility";
+import {
+  ExpressRequestWithContext,
+  TsRestRequestWithContext,
+} from "../api/types";
+import { AppRoute, AppRouter } from "@ts-rest/core";
 
 export const REQUEST_MULTIPLIER = isDevEnvironment() ? 100 : 1;
 
 export const customHandler = (
-  req: MonkeyTypes.ExpressRequestWithContext,
+  req: ExpressRequestWithContext,
   _res: Response,
   _next: NextFunction,
   _options: Options
@@ -45,7 +50,7 @@ const getKey = (req: Request, _res: Response): string => {
 };
 
 const getKeyWithUid = (
-  req: MonkeyTypes.ExpressRequestWithContext,
+  req: ExpressRequestWithContext,
   _res: Response
 ): string => {
   const uid = req?.ctx?.decodedToken?.uid;
@@ -94,7 +99,7 @@ export function rateLimitRequest<
   T extends AppRouter | AppRoute
 >(): TsRestRequestHandler<T> {
   return async (
-    req: TsRestRequestWithCtx,
+    req: TsRestRequestWithContext,
     res: Response,
     next: NextFunction
   ): Promise<void> => {
@@ -149,7 +154,7 @@ const badAuthRateLimiter = new RateLimiterMemory({
 });
 
 export async function badAuthRateLimiterHandler(
-  req: MonkeyTypes.ExpressRequestWithContext,
+  req: ExpressRequestWithContext,
   res: Response,
   next: NextFunction
 ): Promise<void> {
@@ -179,7 +184,7 @@ export async function badAuthRateLimiterHandler(
 }
 
 export async function incrementBadAuth(
-  req: MonkeyTypes.ExpressRequestWithContext,
+  req: ExpressRequestWithContext,
   res: Response,
   status: number
 ): Promise<void> {

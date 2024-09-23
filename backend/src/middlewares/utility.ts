@@ -4,11 +4,7 @@ import { recordClientVersion as prometheusRecordClientVersion } from "../utils/p
 import { isDevEnvironment } from "../utils/misc";
 import MonkeyError from "../utils/error";
 import { EndpointMetadata } from "@monkeytype/contracts/schemas/api";
-
-export type TsRestRequestWithCtx = {
-  ctx: Readonly<MonkeyTypes.Context>;
-} & TsRestRequest &
-  ExpressRequest;
+import { TsRestRequestWithContext } from "../api/types";
 
 /**
  * record the client version from the `x-client-version`  or ` client-version` header to prometheus
@@ -26,8 +22,12 @@ export function recordClientVersion(): RequestHandler {
 }
 
 /** Endpoint is only available in dev environment, else return 503. */
-export function onlyAvailableOnDev(): MonkeyTypes.RequestHandler {
-  return (_req: TsRestRequestWithCtx, _res: Response, next: NextFunction) => {
+export function onlyAvailableOnDev(): RequestHandler {
+  return (
+    _req: TsRestRequestWithContext,
+    _res: Response,
+    next: NextFunction
+  ) => {
     if (!isDevEnvironment()) {
       next(
         new MonkeyError(
@@ -41,7 +41,7 @@ export function onlyAvailableOnDev(): MonkeyTypes.RequestHandler {
   };
 }
 
-export function getMetadata(req: TsRestRequestWithCtx): EndpointMetadata {
+export function getMetadata(req: TsRestRequestWithContext): EndpointMetadata {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
   return (req.tsRestRoute["metadata"] ?? {}) as EndpointMetadata;
 }

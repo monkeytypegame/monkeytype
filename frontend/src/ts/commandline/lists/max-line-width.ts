@@ -1,6 +1,7 @@
 import Config, * as UpdateConfig from "../../config";
+import { Command } from "../types";
 
-const commands: MonkeyTypes.Command[] = [
+const commands: Command[] = [
   {
     id: "changeMaxLineWidth",
     display: "Max line width...",

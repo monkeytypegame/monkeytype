@@ -6,8 +6,9 @@ import * as TestInput from "../../test/test-input";
 import * as TestWords from "../../test/test-words";
 import Config from "../../config";
 import * as PractiseWords from "../../test/practise-words";
+import { Command, CommandsSubgroup } from "../types";
 
-const practiceSubgroup: MonkeyTypes.CommandsSubgroup = {
+const practiceSubgroup: CommandsSubgroup = {
   title: "Practice words...",
   list: [
     {
@@ -43,7 +44,7 @@ const practiceSubgroup: MonkeyTypes.CommandsSubgroup = {
   ],
 };
 
-const commands: MonkeyTypes.Command[] = [
+const commands: Command[] = [
   {
     id: "nextTest",
     display: "Next test",

@@ -1,4 +1,4 @@
-const accents: [string, string][] = [
+const accents: Accents = [
   ["áàâäåãąą́āą̄ă", "a"],
   ["éèêëẽęę́ēę̄ėě", "e"],
   ["íìîïĩįį́īį̄ı", "i"],
@@ -46,9 +46,11 @@ const accentsMap = new Map<string, string>(
   accents.flatMap((rule) => [...rule[0]].map((accent) => [accent, rule[1]]))
 );
 
+export type Accents = [string, string][];
+
 function findAccent(
   char: string,
-  additionalAccents?: MonkeyTypes.Accents
+  additionalAccents?: Accents
 ): string | undefined {
   const lookup = char.toLowerCase();
 
@@ -59,7 +61,7 @@ function findAccent(
 
 export function replaceAccents(
   word: string,
-  additionalAccents?: MonkeyTypes.Accents
+  additionalAccents?: Accents
 ): string {
   if (!word) return word;
   const uppercased = word.toUpperCase();

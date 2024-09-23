@@ -10,10 +10,11 @@ import * as OutOfFocus from "../test/out-of-focus";
 import * as ActivePage from "../states/active-page";
 import { focusWords } from "../test/test-ui";
 import * as Loader from "../elements/loader";
+import { Command, CommandsSubgroup } from "./types";
 
 type CommandlineMode = "search" | "input";
 type InputModeParams = {
-  command: MonkeyTypes.Command | null;
+  command: Command | null;
   placeholder: string | null;
   value: string | null;
   icon: string | null;
@@ -22,7 +23,7 @@ type InputModeParams = {
 let activeIndex = 0;
 let usingSingleList = false;
 let inputValue = "";
-let activeCommand: MonkeyTypes.Command | null = null;
+let activeCommand: Command | null = null;
 let mouseMode = false;
 let mode: CommandlineMode = "search";
 let inputModeParams: InputModeParams = {
@@ -31,7 +32,7 @@ let inputModeParams: InputModeParams = {
   value: "",
   icon: "",
 };
-let subgroupOverride: MonkeyTypes.CommandsSubgroup | null = null;
+let subgroupOverride: CommandsSubgroup | null = null;
 
 function removeCommandlineBackground(): void {
   $("#commandLine").addClass("noBackground");
@@ -49,7 +50,7 @@ function addCommandlineBackground(): void {
 }
 
 type ShowSettings = {
-  subgroupOverride?: MonkeyTypes.CommandsSubgroup | string;
+  subgroupOverride?: CommandsSubgroup | string;
   singleListOverride?: boolean;
 };
 
@@ -284,9 +285,9 @@ function hideCommands(): void {
   element.innerHTML = "";
 }
 
-let cachedSingleSubgroup: MonkeyTypes.CommandsSubgroup | null = null;
+let cachedSingleSubgroup: CommandsSubgroup | null = null;
 
-async function getSubgroup(): Promise<MonkeyTypes.CommandsSubgroup> {
+async function getSubgroup(): Promise<CommandsSubgroup> {
   if (subgroupOverride !== null) {
     return subgroupOverride;
   }
@@ -302,7 +303,7 @@ async function getSubgroup(): Promise<MonkeyTypes.CommandsSubgroup> {
   return CommandlineLists.getTopOfStack();
 }
 
-async function getList(): Promise<MonkeyTypes.Command[]> {
+async function getList(): Promise<Command[]> {
   return (await getSubgroup()).list;
 }
 

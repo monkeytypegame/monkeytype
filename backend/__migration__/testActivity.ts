@@ -3,13 +3,15 @@ import * as DB from "../src/init/db";
 import { Collection, Db } from "mongodb";
 
 import readlineSync from "readline-sync";
+import { DBUser } from "../src/dal/user";
+import { DBResult } from "../src/utils/result";
 
 const batchSize = 50;
 
 let appRunning = true;
 let db: Db | undefined;
-let userCollection: Collection<MonkeyTypes.DBUser>;
-let resultCollection: Collection<MonkeyTypes.DBResult>;
+let userCollection: Collection<DBUser>;
+let resultCollection: Collection<DBResult>;
 
 const filter = { testActivity: { $exists: false } };
 

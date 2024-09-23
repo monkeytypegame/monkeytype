@@ -10,8 +10,9 @@ import * as ConnectionState from "../states/connection";
 import { escapeHTML } from "../utils/misc";
 import AnimatedModal from "../utils/animated-modal";
 import { updateXp as accountPageUpdateProfile } from "./profile";
+import { MonkeyMail } from "@monkeytype/contracts/schemas/users";
 
-let accountAlerts: MonkeyTypes.MonkeyMail[] = [];
+let accountAlerts: MonkeyMail[] = [];
 let maxMail = 0;
 let mailToMarkRead: string[] = [];
 let mailToDelete: string[] = [];

@@ -2,10 +2,22 @@ import { Collection } from "mongodb";
 import * as db from "../init/db";
 import { createHash } from "crypto";
 import { User } from "@monkeytype/contracts/schemas/users";
+import { WithObjectId } from "../utils/misc";
 
 type BlocklistEntryProperties = Pick<User, "name" | "email" | "discordId">;
+
+type BlocklistEntry = {
+  _id: string;
+  usernameHash?: string;
+  emailHash?: string;
+  discordIdHash?: string;
+  timestamp: number;
+};
+
+type DBBlocklistEntry = WithObjectId<BlocklistEntry>;
+
 // Export for use in tests
-export const getCollection = (): Collection<MonkeyTypes.DBBlocklistEntry> =>
+export const getCollection = (): Collection<DBBlocklistEntry> =>
   db.collection("blocklist");
 
 export async function add(user: BlocklistEntryProperties): Promise<void> {
@@ -75,8 +87,8 @@ export function hash(value: string): string {
 
 function getFilter(
   user: Partial<BlocklistEntryProperties>
-): Partial<MonkeyTypes.DBBlocklistEntry>[] {
-  const filter: Partial<MonkeyTypes.DBBlocklistEntry>[] = [];
+): Partial<DBBlocklistEntry>[] {
+  const filter: Partial<DBBlocklistEntry>[] = [];
   if (user.email !== undefined) {
     filter.push({ emailHash: hash(user.email) });
   }

@@ -1,7 +1,8 @@
 import * as TestState from "../../test/test-state";
 import * as ModesNotice from "../../elements/modes-notice";
+import { Command, CommandsSubgroup } from "../types";
 
-const subgroup: MonkeyTypes.CommandsSubgroup = {
+const subgroup: CommandsSubgroup = {
   title: "Result saving...",
   list: [
     {
@@ -25,7 +26,7 @@ const subgroup: MonkeyTypes.CommandsSubgroup = {
   ],
 };
 
-const commands: MonkeyTypes.Command[] = [
+const commands: Command[] = [
   {
     id: "setResultSaving",
     display: "Result saving...",

@@ -207,11 +207,11 @@ describe("AdminController", () => {
       const reportOne = {
         id: "1",
         reason: "one",
-      } as any as MonkeyTypes.Report;
+      } as any as ReportDal.DBReport;
       const reportTwo = {
         id: "2",
         reason: "two",
-      } as any as MonkeyTypes.Report;
+      } as any as ReportDal.DBReport;
       getReportsMock.mockResolvedValue([reportOne, reportTwo]);
 
       //WHEN
@@ -321,11 +321,11 @@ describe("AdminController", () => {
       const reportOne = {
         id: "1",
         reason: "one",
-      } as any as MonkeyTypes.Report;
+      } as any as ReportDal.DBReport;
       const reportTwo = {
         id: "2",
         reason: "two",
-      } as any as MonkeyTypes.Report;
+      } as any as ReportDal.DBReport;
       getReportsMock.mockResolvedValue([reportOne, reportTwo]);
 
       //WHEN

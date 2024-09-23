@@ -1,4 +1,13 @@
-const FunboxList: MonkeyTypes.FunboxMetadata[] = [
+export type FunboxMetadata = {
+  name: string;
+  canGetPb: boolean;
+  difficultyLevel: number;
+  properties?: string[];
+  frontendForcedConfig?: Record<string, string[] | boolean[]>;
+  frontendFunctions?: string[];
+};
+
+const FunboxList: FunboxMetadata[] = [
   {
     canGetPb: false,
     difficultyLevel: 1,
