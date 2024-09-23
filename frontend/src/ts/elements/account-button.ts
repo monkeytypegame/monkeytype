@@ -225,7 +225,6 @@ export async function updateXpBar(
       await Misc.sleep(5000);
     }
   }
-  // await Misc.sleep(50000);
 
   $("nav .level").text(Levels.getLevelFromTotalXp(currentXp + addedXp));
   $("nav .xpBar")
@@ -234,7 +233,6 @@ export async function updateXpBar(
     .animate(
       {
         opacity: 0,
-        // "margin-bottom": skipBreakdown ? "-0.5em" : "5em"
       },
       SlowTimer.get() ? 0 : 250
     );
@@ -307,10 +305,6 @@ async function animateXpBreakdown(
     options?: { extraClass?: string }
   ): Promise<void> {
     if (skipBreakdown) return;
-    // if (skipBreakdown) {
-    //   total = addedXp;
-    //   string = "";
-    // }
 
     if (amount === undefined) {
       xpBreakdownList.append(
@@ -448,12 +442,6 @@ async function animateXpBreakdown(
   if (skipBreakdown) return;
 
   await Misc.sleep(delay);
-  // await append("total xp", total, { extraClass: "total" });
-
-  //await Misc.sleep(delay);
-  //await append("");
-  return;
-  //base (100% corrected) (quote punctuation numbers) accPenalty incomplete configMultiplier daily
 }
 
 async function animateXpBar(
