@@ -19,7 +19,7 @@ import {
   GenerateDataResponse,
 } from "@monkeytype/contracts/dev";
 import { roundTo2 } from "@monkeytype/util/numbers";
-import { MonkeyRequest } from "../../types/types";
+import { MonkeyRequest } from "../types";
 import { DBResult } from "../../utils/result";
 import { LbPersonalBests } from "../../utils/pb";
 

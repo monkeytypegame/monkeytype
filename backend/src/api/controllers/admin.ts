@@ -14,7 +14,7 @@ import {
 import MonkeyError, { getErrorMessage } from "../../utils/error";
 import { Configuration } from "@monkeytype/contracts/schemas/configuration";
 import { addImportantLog } from "../../dal/logs";
-import { MonkeyRequest } from "../../types/types";
+import { MonkeyRequest } from "../types";
 
 export async function test(_req: MonkeyRequest): Promise<MonkeyResponse> {
   return new MonkeyResponse("OK", null);

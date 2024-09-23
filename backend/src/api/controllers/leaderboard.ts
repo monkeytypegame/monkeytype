@@ -22,7 +22,7 @@ import {
   getCurrentWeekTimestamp,
   MILLISECONDS_IN_DAY,
 } from "@monkeytype/util/date-and-time";
-import { MonkeyRequest } from "../../types/types";
+import { MonkeyRequest } from "../types";
 
 export async function getLeaderboard(
   req: MonkeyRequest<GetLeaderboardQuery>

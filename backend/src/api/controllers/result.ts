@@ -56,7 +56,7 @@ import {
   getCurrentDayTimestamp,
   getStartOfDayTimestamp,
 } from "@monkeytype/util/date-and-time";
-import { MonkeyRequest } from "../../types/types";
+import { MonkeyRequest } from "../types";
 
 try {
   if (!anticheatImplemented()) throw new Error("undefined");

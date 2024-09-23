@@ -14,7 +14,7 @@ import { isDevEnvironment } from "../utils/misc";
 import { ObjectId } from "mongodb";
 import { version } from "../version";
 import { addLog } from "../dal/logs";
-import { ExpressRequestWithContext } from "../types/types";
+import { ExpressRequestWithContext } from "../api/types";
 
 type DBError = {
   _id: ObjectId;

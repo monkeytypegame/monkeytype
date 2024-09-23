@@ -2,7 +2,7 @@ import { PartialConfig } from "@monkeytype/contracts/schemas/configs";
 import * as ConfigDAL from "../../dal/config";
 import { MonkeyResponse } from "../../utils/monkey-response";
 import { GetConfigResponse } from "@monkeytype/contracts/configs";
-import { MonkeyRequest } from "../../types/types";
+import { MonkeyRequest } from "../types";
 
 export async function getConfig(
   req: MonkeyRequest

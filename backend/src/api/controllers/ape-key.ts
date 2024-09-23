@@ -15,7 +15,7 @@ import {
   GetApeKeyResponse,
 } from "@monkeytype/contracts/ape-keys";
 import { ApeKey } from "@monkeytype/contracts/schemas/ape-keys";
-import { MonkeyRequest } from "../../types/types";
+import { MonkeyRequest } from "../types";
 
 function cleanApeKey(apeKey: ApeKeysDAL.DBApeKey): ApeKey {
   return _.omit(apeKey, "hash", "_id", "uid", "useCount");

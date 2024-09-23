@@ -8,7 +8,7 @@ import {
   RequireConfiguration,
 } from "@monkeytype/contracts/require-configuration/index";
 import { getMetadata } from "./utility";
-import { TsRestRequestWithContext } from "../types/types";
+import { TsRestRequestWithContext } from "../api/types";
 import { AppRoute, AppRouter } from "@ts-rest/core";
 
 export function verifyRequiredConfiguration<

@@ -86,7 +86,7 @@ import {
   UpdateUserProfileResponse,
 } from "@monkeytype/contracts/users";
 import { MILLISECONDS_IN_DAY } from "@monkeytype/util/date-and-time";
-import { MonkeyRequest } from "../../types/types";
+import { MonkeyRequest } from "../types";
 
 async function verifyCaptcha(captcha: string): Promise<void> {
   let verified = false;

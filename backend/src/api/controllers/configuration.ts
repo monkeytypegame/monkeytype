@@ -7,7 +7,7 @@ import {
   PatchConfigurationRequest,
 } from "@monkeytype/contracts/configuration";
 import MonkeyError from "../../utils/error";
-import { MonkeyRequest } from "../../types/types";
+import { MonkeyRequest } from "../types";
 
 export async function getConfiguration(
   _req: MonkeyRequest
