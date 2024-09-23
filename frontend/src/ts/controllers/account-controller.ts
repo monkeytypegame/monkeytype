@@ -19,7 +19,7 @@ import * as LastSignedOutResultModal from "../modals/last-signed-out-result";
 import * as URLHandler from "../utils/url-handler";
 import * as Account from "../pages/account";
 import * as Alerts from "../elements/alerts";
-import * as SignInOutButton from "../elements/sign-in-out-button";
+import * as AccountSettings from "../pages/account-settings";
 import {
   GoogleAuthProvider,
   GithubAuthProvider,
@@ -44,7 +44,6 @@ import {
 } from "../test/test-config";
 import * as ConnectionState from "../states/connection";
 import { navigate } from "./route-controller";
-import { getHtmlByUserFlags } from "./user-flag-controller";
 import { FirebaseError } from "firebase/app";
 import * as PSA from "../elements/psa";
 import defaultResultFilters from "../constants/default-result-filters";
@@ -67,7 +66,7 @@ async function sendVerificationEmail(): Promise<void> {
   if (result.status !== 200) {
     Loader.hide();
     Notifications.add(
-      "Failed to request verification email: " + result.message,
+      "Failed to request verification email: " + result.body.message,
       -1
     );
   } else {
@@ -91,7 +90,7 @@ async function getDataAndInit(): Promise<boolean> {
     console.error(error);
     AccountButton.loading(false);
     LoginPage.enableInputs();
-    $("header nav .account").css("opacity", 1);
+    $("header nav .view-account").css("opacity", 1);
     if (error instanceof DB.SnapshotInitError) {
       if (error.responseCode === 429) {
         Notifications.add(
@@ -124,10 +123,8 @@ async function getDataAndInit(): Promise<boolean> {
   }
   LoadingPage.updateText("Applying settings...");
   const snapshot = DB.getSnapshot() as MonkeyTypes.Snapshot;
-  $("nav .textButton.account > .text").text(snapshot.name);
-  $("nav .textButton.account > .text").append(
-    getHtmlByUserFlags(snapshot, { iconsOnly: true })
-  );
+  AccountButton.update(snapshot);
+  Alerts.setNotificationBubbleVisible(snapshot.inboxUnreadSize > 0);
   showFavoriteQuoteLength();
 
   ResultFilters.loadTags(snapshot.tags);
@@ -188,17 +185,14 @@ async function getDataAndInit(): Promise<boolean> {
   return true;
 }
 
-export async function loadUser(user: UserType): Promise<void> {
+export async function loadUser(_user: UserType): Promise<void> {
   // User is signed in.
   PageTransition.set(false);
   AccountButton.loading(true);
   if (!(await getDataAndInit())) {
     signOut();
   }
-  const { discordId, discordAvatar, xp, inboxUnreadSize } =
-    DB.getSnapshot() as MonkeyTypes.Snapshot;
-  void AccountButton.update(xp, discordId, discordAvatar);
-  Alerts.setNotificationBubbleVisible(inboxUnreadSize > 0);
+
   // var displayName = user.displayName;
   // var email = user.email;
   // var emailVerified = user.emailVerified;
@@ -208,14 +202,9 @@ export async function loadUser(user: UserType): Promise<void> {
   // var providerData = user.providerData;
   LoginPage.hidePreloader();
 
-  $("header .signInOut .icon").html(
-    `<i class="fas fa-fw fa-sign-out-alt"></i>`
-  );
-
   // showFavouriteThemesAtTheTop();
 
   if (TestLogic.notSignedInLastResult !== null) {
-    TestLogic.setNotSignedInUid(user.uid);
     LastSignedOutResultModal.show();
   }
 }
@@ -249,14 +238,12 @@ async function readyFunction(
     navigate();
   }
 
-  SignInOutButton.update();
-
   URLHandler.loadCustomThemeFromUrl(search);
   URLHandler.loadTestSettingsFromUrl(search);
   URLHandler.loadChallengeFromUrl(search);
   void URLHandler.linkDiscord(hash);
 
-  Settings.updateAuthSections();
+  AccountSettings.updateUI();
 }
 
 let disableAuthListener: Unsubscribe;
@@ -445,7 +432,7 @@ async function addAuthProvider(
     .then(function () {
       Loader.hide();
       Notifications.add(`${providerName} authentication added`, 1);
-      Settings.updateAuthSections();
+      AccountSettings.updateUI();
     })
     .catch(function (error: unknown) {
       Loader.hide();
@@ -471,10 +458,9 @@ export function signOut(): void {
         duration: 2,
       });
       Settings.hideAccountSection();
-      void AccountButton.update();
+      AccountButton.update(undefined);
       navigate("/login");
       DB.setSnapshot(undefined);
-      $("header .signInOut .icon").html(`<i class="far fa-fw fa-user"></i>`);
       setTimeout(() => {
         hideFavoriteQuoteLength();
       }, 125);
@@ -577,37 +563,23 @@ async function signUp(): Promise<void> {
       password
     );
 
-    const signInResponse = await Ape.users.create(
-      nname,
-      captchaToken,
-      email,
-      createdAuthUser.user.uid
-    );
+    const signInResponse = await Ape.users.create({
+      body: {
+        name: nname,
+        captcha: captchaToken,
+        email,
+        uid: createdAuthUser.user.uid,
+      },
+    });
     if (signInResponse.status !== 200) {
-      throw new Error(`Failed to sign in: ${signInResponse.message}`);
+      throw new Error(`Failed to sign in: ${signInResponse.body.message}`);
     }
 
     await updateProfile(createdAuthUser.user, { displayName: nname });
     await sendVerificationEmail();
-    $("nav .textButton.account .text").text(nname);
     LoginPage.hidePreloader();
     await loadUser(createdAuthUser.user);
-    if (TestLogic.notSignedInLastResult !== null) {
-      TestLogic.setNotSignedInUid(createdAuthUser.user.uid);
 
-      const response = await Ape.results.save(TestLogic.notSignedInLastResult);
-
-      if (response.status === 200) {
-        const result = TestLogic.notSignedInLastResult;
-        DB.saveLocalResult(result);
-        DB.updateLocalStats(
-          1,
-          result.testDuration +
-            result.incompleteTestSeconds -
-            result.afkDuration
-        );
-      }
-    }
     Notifications.add("Account created", 1);
   } catch (e) {
     let message = Misc.createErrorMessage(e, "Failed to create account");
@@ -647,18 +619,14 @@ $(".pageLogin .login button.signInWithGitHub").on("click", () => {
   void signInWithGitHub();
 });
 
-$("header .signInOut").on("click", () => {
+$("nav .accountButtonAndMenu .menu button.signOut").on("click", () => {
   if (Auth === undefined) {
     Notifications.add("Authentication uninitialized", -1, {
       duration: 3,
     });
     return;
   }
-  if (isAuthenticated()) {
-    signOut();
-  } else {
-    navigate("/login");
-  }
+  signOut();
 });
 
 $(".pageLogin .register form").on("submit", (e) => {
@@ -666,11 +634,10 @@ $(".pageLogin .register form").on("submit", (e) => {
   void signUp();
 });
 
-$(".pageSettings #addGoogleAuth").on("click", async () => {
+$(".pageAccountSettings").on("click", "#addGoogleAuth", () => {
   void addGoogleAuth();
 });
-
-$(".pageSettings #addGithubAuth").on("click", async () => {
+$(".pageAccountSettings").on("click", "#addGithubAuth", () => {
   void addGithubAuth();
 });
 

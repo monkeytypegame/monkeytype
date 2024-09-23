@@ -4,7 +4,7 @@ import Config from "../config";
 import * as DateTime from "../utils/date-and-time";
 import * as Misc from "../utils/misc";
 import * as Arrays from "../utils/arrays";
-import * as Numbers from "../utils/numbers";
+import * as Numbers from "@monkeytype/util/numbers";
 import * as Notifications from "./notifications";
 import { format } from "date-fns/format";
 import { isAuthenticated } from "../firebase";
@@ -14,7 +14,6 @@ import * as ConnectionState from "../states/connection";
 import * as Skeleton from "../utils/skeleton";
 import { debounce } from "throttle-debounce";
 import Format from "../utils/format";
-// @ts-expect-error TODO: update slim-select
 import SlimSelect from "slim-select";
 import { getHtmlByUserFlags } from "../controllers/user-flag-controller";
 import {
@@ -385,7 +384,7 @@ export function hide(): void {
       {
         opacity: 0,
       },
-      100,
+      Misc.applyReducedMotion(100),
       () => {
         languageSelector?.destroy();
         languageSelector = undefined;
@@ -736,7 +735,6 @@ export function show(): void {
         selected: lang === currentLanguage,
       })),
       events: {
-        // @ts-expect-error TODO: update slim-select
         afterChange: (newVal): void => {
           currentLanguage = newVal[0]?.value as string;
           updateTitle();
@@ -752,7 +750,7 @@ export function show(): void {
         {
           opacity: 1,
         },
-        125,
+        Misc.applyReducedMotion(125),
         () => {
           void update();
           startTimer();

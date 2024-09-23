@@ -1,8 +1,8 @@
 import * as FunboxList from "./funbox-list";
 import * as Notifications from "../../elements/notifications";
-import * as Arrays from "../../utils/arrays";
 import * as Strings from "../../utils/strings";
 import { Config, ConfigValue } from "@monkeytype/contracts/schemas/configs";
+import { intersect } from "@monkeytype/util/arrays";
 
 export function checkFunboxForcedConfigs(
   key: string,
@@ -43,7 +43,7 @@ export function checkFunboxForcedConfigs(
           if (forcedConfigs[key] === undefined) {
             forcedConfigs[key] = fb.forcedConfig[key] as ConfigValue[];
           } else {
-            forcedConfigs[key] = Arrays.intersect(
+            forcedConfigs[key] = intersect(
               forcedConfigs[key],
               fb.forcedConfig[key] as ConfigValue[],
               true
@@ -302,7 +302,7 @@ export function areFunboxesCompatible(
     for (const key in f.forcedConfig) {
       if (allowedConfig[key]) {
         if (
-          Arrays.intersect(
+          intersect(
             allowedConfig[key],
             f.forcedConfig[key] as ConfigValue[],
             true

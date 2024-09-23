@@ -81,6 +81,16 @@ body.darkMode {
   }
 }
 
+#miniResultChartModal {
+  .modal {
+    overflow: hidden;
+    max-width: 70rem;
+    canvas {
+      max-height: 200px;
+    }
+  }
+}
+
 #customTextModal {
   .modal {
     max-width: 1200px;
@@ -1814,6 +1824,62 @@ body.darkMode {
 #editPresetModal {
   .modal {
     max-width: 450px;
+    gap: 1rem;
+    .presetNameTitle {
+      font-size: 0.75rem;
+      color: var(--sub-color);
+      text-transform: lowercase;
+    }
+  }
+
+  .group {
+    display: grid;
+    gap: 0.5rem;
+    align-items: center;
+    width: 100%;
+  }
+
+  input[type="text"] {
+    width: 100%;
+  }
+
+  .inputs {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    font-size: 0.75rem;
+    .title {
+      color: var(--sub-color);
+      text-transform: lowercase;
+    }
+    .partialPresetGroups {
+      .checkboxList {
+        display: grid;
+        gap: 1rem;
+        grid-template-columns: 1fr 1fr;
+        .title {
+          color: var(--text-color);
+          text-transform: lowercase;
+        }
+        .checkboxTitlePair {
+          display: flex;
+          gap: 0.5rem;
+          button {
+            flex-grow: 1;
+          }
+        }
+      }
+    }
+    .presetType {
+      .presetTypeButtonGroup {
+        display: flex;
+        width: 100%;
+        gap: 0.5rem;
+        button {
+          flex-grow: 1;
+        }
+      }
+    }
   }
 }
 

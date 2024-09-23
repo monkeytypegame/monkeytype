@@ -268,7 +268,7 @@ export async function getSection(language: string): Promise<Section> {
   let pageid = 0;
 
   if (randomPostReq.status === 200) {
-    const postObj: Post = await randomPostReq.json();
+    const postObj = (await randomPostReq.json()) as Post;
     sectionObj.title = postObj.title;
     sectionObj.author = postObj.author;
     pageid = postObj.pageid;
@@ -286,8 +286,10 @@ export async function getSection(language: string): Promise<Section> {
     sectionReq.onload = (): void => {
       if (sectionReq.readyState === 4) {
         if (sectionReq.status === 200) {
-          let sectionText: string = JSON.parse(sectionReq.responseText).query
-            .pages[pageid.toString()].extract;
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+          let sectionText = JSON.parse(sectionReq.responseText).query.pages[
+            pageid.toString()
+          ].extract as string;
 
           // Converting to one paragraph
           sectionText = sectionText.replace(/<\/p><p>+/g, " ");

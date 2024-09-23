@@ -15,22 +15,22 @@ header #logo .bottom {
   color: #f4bc46;
 }
 
-nav .textButton:nth-child(1) {
+nav > .textButton:nth-child(1) {
   color: #d44729;
 }
 
-nav .textButton:nth-child(2) {
+nav > .textButton:nth-child(2) {
   color: #d44729;
 }
 
-nav .textButton:nth-child(3) {
+nav > .textButton:nth-child(3) {
   color: #d44729;
 }
 
-nav .textButton:nth-child(4) {
+nav > .textButton:nth-child(4) {
   color: #d44729;
 }
 
-nav .textButton:nth-child(5) {
+nav > .textButton:nth-child(5) {
   color: #d44729;
 }

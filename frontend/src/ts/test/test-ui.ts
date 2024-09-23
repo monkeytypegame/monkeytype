@@ -11,7 +11,6 @@ import * as Replay from "./replay";
 import * as Misc from "../utils/misc";
 import * as Strings from "../utils/strings";
 import * as JSONData from "../utils/json-data";
-import * as Numbers from "../utils/numbers";
 import { blendTwoHexColors } from "../utils/colors";
 import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
 import * as SlowTimer from "../states/slow-timer";
@@ -35,6 +34,7 @@ import {
   TimerColor,
   TimerOpacity,
 } from "@monkeytype/contracts/schemas/configs";
+import { convertRemToPixels } from "../utils/numbers";
 
 async function gethtml2canvas(): Promise<typeof import("html2canvas").default> {
   return (await import("html2canvas")).default;
@@ -154,10 +154,15 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
     updateWordsHeight(true);
     void updateWordsInputPosition(true);
   }
-  if (eventKey === "fontSize" || eventKey === "fontFamily")
+  if (
+    ["fontSize", "fontFamily", "blindMode", "hideExtraLetters"].includes(
+      eventKey
+    )
+  ) {
     updateHintsPosition().catch((e: unknown) => {
       console.error(e);
     });
+  }
 
   if (eventKey === "theme") void applyBurstHeatmap();
 
@@ -192,7 +197,7 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
   if (eventKey === "burstHeatmap") void applyBurstHeatmap();
 });
 
-export let currentWordElementIndex = 0;
+export let activeWordElementIndex = 0;
 export let resultVisible = false;
 export let activeWordTop = 0;
 export let testRestarting = false;
@@ -205,8 +210,8 @@ export function setResultVisible(val: boolean): void {
   resultVisible = val;
 }
 
-export function setCurrentWordElementIndex(val: number): void {
-  currentWordElementIndex = val;
+export function setActiveWordElementIndex(val: number): void {
+  activeWordElementIndex = val;
 }
 
 export function setActiveWordTop(val: number): void {
@@ -232,7 +237,7 @@ export function setResultCalculating(val: boolean): void {
 
 export function reset(): void {
   currentTestLine = 0;
-  currentWordElementIndex = 0;
+  activeWordElementIndex = 0;
 }
 
 export function focusWords(): void {
@@ -256,19 +261,19 @@ export function updateActiveElement(
   } else if (active !== null && !initial) {
     active.classList.remove("active");
   }
-  const activeWord =
-    document.querySelectorAll("#words .word")[currentWordElementIndex];
+  const newActiveWord = document.querySelectorAll("#words .word")[
+    activeWordElementIndex
+  ] as HTMLElement | undefined;
 
-  if (activeWord == undefined) {
+  if (newActiveWord == undefined) {
     throw new Error("activeWord is undefined - can't update active element");
   }
 
-  activeWord.classList.add("active");
-  activeWord.classList.remove("error");
-  activeWord.classList.remove("typed");
+  newActiveWord.classList.add("active");
+  newActiveWord.classList.remove("error");
+  newActiveWord.classList.remove("typed");
 
-  activeWordTop = (document.querySelector("#words .active") as HTMLElement)
-    .offsetTop;
+  activeWordTop = newActiveWord.offsetTop;
 
   if (!initial && shouldUpdateWordsInputPosition()) {
     void updateWordsInputPosition();
@@ -278,7 +283,7 @@ export function updateActiveElement(
   }
 }
 
-async function updateHintsPosition(): Promise<void> {
+export async function updateHintsPosition(): Promise<void> {
   if (
     ActivePage.get() !== "test" ||
     resultVisible ||
@@ -420,6 +425,10 @@ export function showWords(): void {
   }, 125);
 
   updateWordWrapperClasses();
+
+  if (Config.mode === "zen") {
+    $(document.querySelector(".word") as Element).remove();
+  }
 }
 
 const posUpdateLangList = ["japanese", "chinese", "korean"];
@@ -436,7 +445,10 @@ export async function updateWordsInputPosition(initial = false): Promise<void> {
   const isLanguageRTL = currentLanguage.rightToLeft;
 
   const el = document.querySelector("#wordsInput") as HTMLElement;
-  const activeWord = document.querySelector<HTMLElement>("#words .active");
+  const activeWord =
+    document.querySelectorAll<HTMLElement>("#words .word")[
+      activeWordElementIndex
+    ];
 
   if (!activeWord) {
     el.style.top = "0px";
@@ -448,46 +460,37 @@ export async function updateWordsInputPosition(initial = false): Promise<void> {
   const activeWordMargin =
     parseInt(computed.marginTop) + parseInt(computed.marginBottom);
 
-  // const wordsWrapperTop =
-  //   (document.querySelector("#wordsWrapper") as HTMLElement | null)
-  //     ?.offsetTop ?? 0;
+  const letterHeight = convertRemToPixels(Config.fontSize);
+  const targetTop =
+    activeWord.offsetTop + letterHeight / 2 - el.offsetHeight / 2 + 1; //+1 for half of border
+
+  if (activeWord.offsetWidth < letterHeight) {
+    el.style.width = letterHeight + "px";
+  } else {
+    el.style.width = activeWord.offsetWidth + "px";
+  }
 
   if (Config.tapeMode !== "off") {
-    el.style.top =
-      // wordsWrapperTop +
-      activeWord.offsetHeight +
-      activeWordMargin * 0.25 +
-      -el.offsetHeight +
-      "px";
+    el.style.top = targetTop + "px";
     el.style.left = activeWord.offsetLeft + "px";
     return;
   }
 
-  if (isLanguageRTL) {
-    el.style.left =
-      activeWord.offsetLeft - el.offsetWidth + activeWord.offsetWidth + "px";
+  if (initial) {
+    el.style.top = targetTop + letterHeight + activeWordMargin + 4 + "px";
   } else {
-    el.style.left = activeWord.offsetLeft + "px";
+    el.style.top = targetTop + "px";
   }
 
-  if (
-    initial &&
-    !posUpdateLangList.some((l) => Config.language.startsWith(l))
-  ) {
-    el.style.top =
-      activeWord.offsetTop +
-      activeWord.offsetHeight +
-      -el.offsetHeight +
-      (activeWord.offsetHeight + activeWordMargin) +
-      "px";
+  if (activeWord.offsetWidth < letterHeight && isLanguageRTL) {
+    el.style.left = activeWord.offsetLeft - letterHeight + "px";
   } else {
-    el.style.top =
-      activeWord.offsetTop + activeWord.offsetHeight + -el.offsetHeight + "px";
+    el.style.left = activeWord.offsetLeft + "px";
   }
 }
 
 function updateWordsHeight(force = false): void {
-  if (ActivePage.get() !== "test") return;
+  if (ActivePage.get() !== "test" || resultVisible) return;
   if (!force && Config.mode !== "custom") return;
   $("#wordsWrapper").removeClass("hidden");
   const wordHeight = $(document.querySelector(".word") as Element).outerHeight(
@@ -502,12 +505,14 @@ function updateWordsHeight(force = false): void {
     CustomText.getLimitMode() !== "time" &&
     CustomText.getLimitValue() !== 0
   ) {
+    // overflow-x should not be visible in tape mode, but since showAllLines can't
+    // be enabled simultaneously with tape mode we don't need to check it's off
     $("#words")
       .css("height", "auto")
-      .css("overflow", "hidden")
+      .css("overflow", "visible clip")
       .css("width", "100%")
       .css("margin-left", "unset");
-    $("#wordsWrapper").css("height", "auto").css("overflow", "hidden");
+    $("#wordsWrapper").css("height", "auto").css("overflow", "visible clip");
 
     let nh = wordHeight * 3;
 
@@ -516,7 +521,7 @@ function updateWordsHeight(force = false): void {
     }
     $(".outOfFocusWarning").css(
       "margin-top",
-      wordHeight + Numbers.convertRemToPixels(1) / 2 + "px"
+      wordHeight + convertRemToPixels(1) / 2 + "px"
     );
     $("#typingTest .tribeCountdown").css("line-height", nh + "px");
   } else {
@@ -556,15 +561,20 @@ function updateWordsHeight(force = false): void {
       finalWrapperHeight = wrapperHeight;
     }
 
-    $("#words")
-      .css("height", finalWordsHeight + "px")
-      .css("overflow", "hidden");
+    // $("#words").css("height", "0px");
+    // not sure why this was here, wonder if removing it will break anything
 
     if (Config.tapeMode !== "off") {
-      $("#words").width("200vw");
+      $("#words").css({ overflow: "hidden", width: "200vw" });
+      $("#wordsWrapper").css({ overflow: "hidden" });
       scrollTape();
     } else {
-      $("#words").css({ marginLeft: "unset", width: "" });
+      $("#words").css({
+        overflow: "visible clip",
+        marginLeft: "unset",
+        width: "",
+      });
+      $("#wordsWrapper").css({ overflow: "visible clip" });
     }
 
     $("#wordsWrapper")
@@ -574,15 +584,20 @@ function updateWordsHeight(force = false): void {
       "margin-top",
       finalWrapperHeight / 2 - Numbers.convertRemToPixels(1) / 2 + "px"
     );
+  }
+
+  setTimeout(() => {
+    $("#words").css("height", finalWordsHeight + "px");
+    $("#wordsWrapper").css("height", finalWrapperHeight + "px");
+    $(".outOfFocusWarning").css(
+      "margin-top",
+      finalWrapperHeight / 2 - convertRemToPixels(1) / 2 + "px"
+    );
     $("#typingTest .tribeCountdown").css(
       "line-height",
       finalWrapperHeight + "px"
     );
-  }
-
-  if (Config.mode === "zen") {
-    $(document.querySelector(".word") as Element).remove();
-  }
+  }, 0);
 }
 
 export function addWord(word: string): void {
@@ -705,8 +720,8 @@ export async function screenshot(): Promise<void> {
     true
   ) as number; /*clientHeight/offsetHeight from div#target*/
   try {
-    const paddingX = Numbers.convertRemToPixels(2);
-    const paddingY = Numbers.convertRemToPixels(2);
+    const paddingX = convertRemToPixels(2);
+    const paddingY = convertRemToPixels(2);
 
     const canvas = await (
       await gethtml2canvas()
@@ -776,11 +791,10 @@ export async function screenshot(): Promise<void> {
   }, 3000);
 }
 
-export async function updateWordElement(inputOverride?: string): Promise<void> {
+export async function updateActiveWordLetters(
+  inputOverride?: string
+): Promise<void> {
   const input = inputOverride ?? TestInput.input.current;
-  const wordAtIndex = document.querySelector(
-    "#words .word.active"
-  ) as HTMLElement;
   const currentWord = TestWords.words.getCurrent();
   if (!currentWord && Config.mode !== "zen") return;
   let ret = "";
@@ -914,13 +928,17 @@ export async function updateWordElement(inputOverride?: string): Promise<void> {
     }
   }
 
-  wordAtIndex.innerHTML = ret;
+  const activeWord = document.querySelectorAll("#words .word")?.[
+    activeWordElementIndex
+  ] as HTMLElement;
+
+  activeWord.innerHTML = ret;
 
   if (hintIndices?.length) {
-    const activeWordLetters = wordAtIndex.querySelectorAll("letter");
+    const activeWordLetters = activeWord.querySelectorAll("letter");
     const hintsHtml = createHintsHtml(hintIndices, activeWordLetters, input);
-    wordAtIndex.insertAdjacentHTML("beforeend", hintsHtml);
-    const hintElements = wordAtIndex.getElementsByTagName("hint");
+    activeWord.insertAdjacentHTML("beforeend", hintsHtml);
+    const hintElements = activeWord.getElementsByTagName("hint");
     await joinOverlappingHints(hintIndices, activeWordLetters, hintElements);
   }
 
@@ -931,14 +949,15 @@ export async function updateWordElement(inputOverride?: string): Promise<void> {
 }
 
 export function scrollTape(): void {
+  if (ActivePage.get() !== "test" || resultVisible) return;
   const wordsWrapperWidth = (
     document.querySelector("#wordsWrapper") as HTMLElement
   ).offsetWidth;
   let fullWordsWidth = 0;
   const toHide: JQuery[] = [];
   let widthToHide = 0;
-  if (currentWordElementIndex > 0) {
-    for (let i = 0; i < currentWordElementIndex; i++) {
+  if (activeWordElementIndex > 0) {
+    for (let i = 0; i < activeWordElementIndex; i++) {
       const word = document.querySelectorAll("#words .word")[i] as HTMLElement;
       fullWordsWidth += $(word).outerWidth(true) ?? 0;
       const forWordLeft = Math.floor(word.offsetLeft);
@@ -950,7 +969,7 @@ export function scrollTape(): void {
       }
     }
     if (toHide.length > 0) {
-      currentWordElementIndex -= toHide.length;
+      activeWordElementIndex -= toHide.length;
       toHide.forEach((e) => e.remove());
       fullWordsWidth -= widthToHide;
       const currentMargin = parseInt($("#words").css("margin-left"), 10);
@@ -961,8 +980,7 @@ export function scrollTape(): void {
   if (Config.tapeMode === "letter") {
     if (TestInput.input.current.length > 0) {
       const words = document.querySelectorAll("#words .word");
-      const letters =
-        words[currentWordElementIndex]?.querySelectorAll("letter");
+      const letters = words[activeWordElementIndex]?.querySelectorAll("letter");
       if (!letters) return;
       for (let i = 0; i < TestInput.input.current.length; i++) {
         const letter = letters[i] as HTMLElement;
@@ -1017,7 +1035,7 @@ export function lineJump(currentTop: number): void {
 
     const toHide: JQuery[] = [];
     const wordElements = $("#words .word");
-    for (let i = 0; i < currentWordElementIndex; i++) {
+    for (let i = 0; i < activeWordElementIndex; i++) {
       const el = $(wordElements[i] as HTMLElement);
       if (el.hasClass("hidden")) continue;
       const forWordTop = Math.floor((el[0] as HTMLElement).offsetTop);
@@ -1083,17 +1101,19 @@ export function lineJump(currentTop: number): void {
         .animate(newCss, SlowTimer.get() ? 0 : 125, () => {
           currentLinesAnimating = 0;
           activeWordTop = (
-            document.querySelector("#words .active") as HTMLElement
-          ).offsetTop;
+            document.querySelectorAll("#words .word")?.[
+              activeWordElementIndex
+            ] as HTMLElement
+          )?.offsetTop;
 
-          currentWordElementIndex -= toHide.length;
+          activeWordElementIndex -= toHide.length;
           lineTransition = false;
           toHide.forEach((el) => el.remove());
           $("#words").css("marginTop", "0");
         });
     } else {
       toHide.forEach((el) => el.remove());
-      currentWordElementIndex -= toHide.length;
+      activeWordElementIndex -= toHide.length;
       $("#paceCaret").css({
         top:
           (document.querySelector("#paceCaret") as HTMLElement).offsetTop -

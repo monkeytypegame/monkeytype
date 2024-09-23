@@ -4,6 +4,7 @@ import * as MonkeyPower from "./elements/monkey-power";
 import * as MerchBanner from "./elements/merch-banner";
 import * as CookiesModal from "./modals/cookies";
 import * as ConnectionState from "./states/connection";
+import * as AccountButton from "./elements/account-button";
 import * as FunboxList from "./test/funbox/funbox-list";
 //@ts-expect-error
 import Konami from "konami";
@@ -29,11 +30,11 @@ $((): void => {
     .css("opacity", "0")
     .removeClass("hidden")
     .stop(true, true)
-    .animate({ opacity: 1 }, 250);
+    .animate({ opacity: 1 }, Misc.applyReducedMotion(250));
   if (ConnectionState.get()) {
     void ServerConfiguration.sync().then(() => {
       if (!ServerConfiguration.get()?.users.signUp) {
-        $(".signInOut").addClass("hidden");
+        AccountButton.hide();
         $(".register").addClass("hidden");
         $(".login").addClass("hidden");
         $(".disabledNotification").removeClass("hidden");
@@ -42,6 +43,8 @@ $((): void => {
   }
   MonkeyPower.init();
 
+  // untyped, need to ignore
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
   new Konami("https://keymash.io/");
 
   if (Misc.isDevEnvironment()) {

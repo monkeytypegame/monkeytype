@@ -2,11 +2,11 @@ import Ape from "../ape";
 import * as Loader from "../elements/loader";
 import * as Notifications from "../elements/notifications";
 import * as CaptchaController from "../controllers/captcha-controller";
-// @ts-expect-error TODO: update slim-select
 import SlimSelect from "slim-select";
 import AnimatedModal from "../utils/animated-modal";
 import { isAuthenticated } from "../firebase";
 import { CharacterCounter } from "../elements/character-counter";
+import { ReportUserReason } from "@monkeytype/contracts/schemas/users";
 
 type State = {
   userUid?: string;
@@ -80,7 +80,7 @@ async function submitReport(): Promise<void> {
     return;
   }
 
-  const reason = $("#userReportModal .reason").val() as string;
+  const reason = $("#userReportModal .reason").val() as ReportUserReason;
   const comment = $("#userReportModal .comment").val() as string;
   const captcha = captchaResponse;
 
@@ -114,16 +114,18 @@ async function submitReport(): Promise<void> {
   }
 
   Loader.show();
-  const response = await Ape.users.report(
-    state.userUid as string,
-    reason,
-    comment,
-    captcha
-  );
+  const response = await Ape.users.report({
+    body: {
+      uid: state.userUid as string,
+      reason,
+      comment,
+      captcha,
+    },
+  });
   Loader.hide();
 
   if (response.status !== 200) {
-    Notifications.add("Failed to report user: " + response.message, -1);
+    Notifications.add("Failed to report user: " + response.body.message, -1);
     return;
   }
 

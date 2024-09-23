@@ -3,19 +3,13 @@ import * as Random from "../utils/random";
 import { envConfig } from "../constants/env-config";
 import { lastElementFromArray } from "./arrays";
 import * as JSONData from "./json-data";
-import { CustomTextData, Result } from "@monkeytype/shared-types";
 import { Config } from "@monkeytype/contracts/schemas/configs";
 import {
   Mode,
   Mode2,
   PersonalBests,
 } from "@monkeytype/contracts/schemas/shared";
-
-export function kogasa(cov: number): number {
-  return (
-    100 * (1 - Math.tanh(cov + Math.pow(cov, 3) / 3 + Math.pow(cov, 5) / 5))
-  );
-}
+import { ZodError, ZodSchema } from "zod";
 
 export function whorf(speed: number, wordlen: number): number {
   return Math.min(
@@ -178,6 +172,9 @@ export function escapeRegExp(str: string): string {
 
 //https://portswigger.net/web-security/cross-site-scripting/preventing
 export function escapeHTML(str: string): string {
+  if (str === null || str === undefined) {
+    return str;
+  }
   return String(str).replace(/[^\w. ]/gi, function (c) {
     return "&#" + c.charCodeAt(0) + ";";
   });
@@ -192,36 +189,11 @@ export function isUsernameValid(name: string): boolean {
   return /^[0-9a-zA-Z_.-]+$/.test(name);
 }
 
-export function mapRange(
-  x: number,
-  in_min: number,
-  in_max: number,
-  out_min: number,
-  out_max: number
-): number {
-  let num = ((x - in_min) * (out_max - out_min)) / (in_max - in_min) + out_min;
-
-  if (out_min > out_max) {
-    if (num > out_min) {
-      num = out_min;
-    } else if (num < out_max) {
-      num = out_max;
-    }
-  } else {
-    if (num < out_min) {
-      num = out_min;
-    } else if (num > out_max) {
-      num = out_max;
-    }
-  }
-  return num;
-}
-
 export function canQuickRestart(
   mode: string,
   words: number,
   time: number,
-  CustomText: CustomTextData,
+  CustomText: MonkeyTypes.CustomTextData,
   customTextIsLong: boolean
 ): boolean {
   const wordsLong = mode === "words" && (words >= 1000 || words === 0);
@@ -321,6 +293,7 @@ export async function swapElements(
     return Promise.resolve();
   }
 ): Promise<boolean | undefined> {
+  totalDuration = applyReducedMotion(totalDuration);
   if (
     (el1.hasClass("hidden") && !el2.hasClass("hidden")) ||
     (!el1.hasClass("hidden") && el2.hasClass("hidden"))
@@ -403,7 +376,9 @@ export function getMode2<M extends keyof PersonalBests>(
   return retVal as Mode2<M>;
 }
 
-export async function downloadResultsCSV(array: Result<Mode>[]): Promise<void> {
+export async function downloadResultsCSV(
+  array: MonkeyTypes.FullResult<Mode>[]
+): Promise<void> {
   Loader.show();
   const csvString = [
     [
@@ -432,7 +407,7 @@ export async function downloadResultsCSV(array: Result<Mode>[]): Promise<void> {
       "tags",
       "timestamp",
     ],
-    ...array.map((item: Result<Mode>) => [
+    ...array.map((item: MonkeyTypes.FullResult<Mode>) => [
       item._id,
       item.isPb,
       item.wpm,
@@ -476,21 +451,40 @@ export async function downloadResultsCSV(array: Result<Mode>[]): Promise<void> {
   Loader.hide();
 }
 
-export function createErrorMessage(error: unknown, message: string): string {
+export function getErrorMessage(error: unknown): string | undefined {
+  let message = "";
+
   if (error instanceof Error) {
-    return `${message}: ${error.message}`;
+    message = error.message;
+  } else if (
+    error !== null &&
+    typeof error === "object" &&
+    "message" in error &&
+    (typeof error.message === "string" || typeof error.message === "number")
+  ) {
+    message = `${error.message}`;
+  } else if (typeof error === "string") {
+    message = error;
+  } else if (typeof error === "number") {
+    message = `${error}`;
   }
 
-  if (error instanceof Object && "message" in error) {
-    const objectWithMessage = error as { message?: string };
-
-    if (objectWithMessage?.message !== undefined) {
-      return `${message}: ${objectWithMessage.message}`;
-    }
+  if (message === "") {
+    return undefined;
   }
 
-  console.error("Unknown error", error);
-  return `${message}: Unknown error`;
+  return message;
+}
+
+export function createErrorMessage(error: unknown, message: string): string {
+  const errorMessage = getErrorMessage(error);
+
+  if (errorMessage === undefined) {
+    console.error("Could not get error message from error", error);
+    return `${message}: Unknown error`;
+  }
+
+  return `${message}: ${errorMessage}`;
 }
 
 export function isElementVisible(query: string): boolean {
@@ -527,7 +521,7 @@ export async function promiseAnimation(
   easing: string
 ): Promise<void> {
   return new Promise((resolve) => {
-    el.animate(animation, duration, easing, resolve);
+    el.animate(animation, applyReducedMotion(duration), easing, resolve);
   });
 }
 
@@ -675,6 +669,65 @@ export function updateTitle(title?: string): void {
 
 export function isObject(obj: unknown): obj is Record<string, unknown> {
   return typeof obj === "object" && !Array.isArray(obj) && obj !== null;
+}
+
+/**
+ * Parse a JSON string into an object and validate it against a schema
+ * @param input  JSON string
+ * @param schema  Zod schema to validate the JSON against
+ * @returns  The parsed JSON object
+ */
+export function parseJsonWithSchema<T>(input: string, schema: ZodSchema<T>): T {
+  try {
+    const jsonParsed = JSON.parse(input) as unknown;
+    const zodParsed = schema.parse(jsonParsed);
+    return zodParsed;
+  } catch (error) {
+    if (error instanceof ZodError) {
+      throw new Error(error.errors.map((err) => err.message).join("\n"));
+    } else {
+      throw error;
+    }
+  }
+}
+
+export function deepClone<T>(obj: T[]): T[];
+export function deepClone<T extends object>(obj: T): T;
+export function deepClone<T>(obj: T): T;
+export function deepClone<T>(obj: T | T[]): T | T[] {
+  // Check if the value is a primitive (not an object or array)
+  if (obj === null || typeof obj !== "object") {
+    return obj;
+  }
+
+  // Handle arrays
+  if (Array.isArray(obj)) {
+    return obj.map((item) => deepClone(item));
+  }
+
+  // Handle objects
+  const clonedObj = {} as { [K in keyof T]: T[K] };
+
+  for (const key in obj) {
+    if (Object.prototype.hasOwnProperty.call(obj, key)) {
+      clonedObj[key] = deepClone((obj as { [K in keyof T]: T[K] })[key]);
+    }
+  }
+
+  return clonedObj;
+}
+
+export function prefersReducedMotion(): boolean {
+  return matchMedia?.("(prefers-reduced-motion)")?.matches;
+}
+
+/**
+ * Reduce the animation time based on the browser preference `prefers-reduced-motion`.
+ * @param animationTime
+ * @returns `0` if user prefers reduced-motion, else the given animationTime
+ */
+export function applyReducedMotion(animationTime: number): number {
+  return prefersReducedMotion() ? 0 : animationTime;
 }
 
 // DO NOT ALTER GLOBAL OBJECTSONSTRUCTOR, IT WILL BREAK RESULT HASHES

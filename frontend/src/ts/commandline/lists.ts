@@ -105,6 +105,8 @@ import * as ShareTestSettingsPopup from "../modals/share-test-settings";
 import * as TestStats from "../test/test-stats";
 import * as QuoteSearchModal from "../modals/quote-search";
 import * as FPSCounter from "../elements/fps-counter";
+import { migrateConfig } from "../utils/config";
+import { PartialConfigSchema } from "@monkeytype/contracts/schemas/configs";
 
 const layoutsPromise = JSONData.getLayoutsList();
 layoutsPromise
@@ -377,7 +379,10 @@ export const commands: MonkeyTypes.CommandsSubgroup = {
       exec: async ({ input }): Promise<void> => {
         if (input === undefined || input === "") return;
         try {
-          await UpdateConfig.apply(JSON.parse(input));
+          const parsedConfig = PartialConfigSchema.strip().parse(
+            JSON.parse(input)
+          );
+          await UpdateConfig.apply(migrateConfig(parsedConfig));
           UpdateConfig.saveFullConfigToLocalStorage();
           void Settings.update();
           Notifications.add("Done", 1);

@@ -1,7 +1,6 @@
 import { ConfigValue } from "@monkeytype/contracts/schemas/configs";
 import Config from "../../config";
 import * as Notifications from "../notifications";
-// @ts-expect-error TODO: update slim-select
 import SlimSelect from "slim-select";
 import { debounce } from "throttle-debounce";
 
@@ -80,7 +79,7 @@ export default class SettingsGroup<T extends ConfigValue> {
         return;
       }
 
-      const debounced = debounce(250, (val) => {
+      const debounced = debounce<(val: T) => void>(250, (val) => {
         this.setValue(val);
       });
 
@@ -119,8 +118,7 @@ export default class SettingsGroup<T extends ConfigValue> {
 
       select.value = this.configValue as string;
 
-      //@ts-expect-error
-      // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+      //@ts-expect-error this is fine, slimselect adds slim to the element
       const ss = select.slim as SlimSelect | undefined;
       ss?.store.setSelectedBy("value", [this.configValue as string]);
       ss?.render.renderValues();

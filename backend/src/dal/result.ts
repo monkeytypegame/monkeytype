@@ -7,14 +7,11 @@ import {
 } from "mongodb";
 import MonkeyError from "../utils/error";
 import * as db from "../init/db";
-import { DBResult as SharedDBResult } from "@monkeytype/shared-types";
+
 import { getUser, getTags } from "./user";
-import { Mode } from "@monkeytype/contracts/schemas/shared";
 
-type DBResult = MonkeyTypes.WithObjectId<SharedDBResult<Mode>>;
-
-export const getResultCollection = (): Collection<DBResult> =>
-  db.collection<DBResult>("results");
+export const getResultCollection = (): Collection<MonkeyTypes.DBResult> =>
+  db.collection<MonkeyTypes.DBResult>("results");
 
 export async function addResult(
   uid: string,
@@ -78,19 +75,19 @@ export async function getResult(
 
 export async function getLastResult(
   uid: string
-): Promise<Omit<MonkeyTypes.DBResult, "uid">> {
+): Promise<MonkeyTypes.DBResult> {
   const [lastResult] = await getResultCollection()
     .find({ uid })
     .sort({ timestamp: -1 })
     .limit(1)
     .toArray();
   if (!lastResult) throw new MonkeyError(404, "No results found");
-  return _.omit(lastResult, "uid");
+  return lastResult;
 }
 
 export async function getResultByTimestamp(
   uid: string,
-  timestamp
+  timestamp: number
 ): Promise<MonkeyTypes.DBResult | null> {
   return await getResultCollection().findOne({ uid, timestamp });
 }

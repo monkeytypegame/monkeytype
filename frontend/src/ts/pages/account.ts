@@ -3,7 +3,7 @@ import * as ResultFilters from "../elements/account/result-filters";
 import * as ThemeColors from "../elements/theme-colors";
 import * as ChartController from "../controllers/chart-controller";
 import Config, * as UpdateConfig from "../config";
-import * as MiniResultChart from "../elements/account/mini-result-chart";
+import * as MiniResultChartModal from "../modals/mini-result-chart";
 import * as PbTables from "../elements/account/pb-tables";
 import * as LoadingPage from "./loading";
 import * as Focus from "../test/focus";
@@ -13,7 +13,7 @@ import Page from "./page";
 import * as DateTime from "../utils/date-and-time";
 import * as Misc from "../utils/misc";
 import * as Arrays from "../utils/arrays";
-import * as Numbers from "../utils/numbers";
+import * as Numbers from "@monkeytype/util/numbers";
 import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
 import * as Profile from "../elements/profile";
 import { format } from "date-fns/format";
@@ -27,14 +27,10 @@ import * as Loader from "../elements/loader";
 import * as ResultBatches from "../elements/result-batches";
 import Format from "../utils/format";
 import * as TestActivity from "../elements/test-activity";
-import { ChartData, Result } from "@monkeytype/shared-types";
-import {
-  Mode,
-  Mode2,
-  Mode2Custom,
-  PersonalBests,
-} from "@monkeytype/contracts/schemas/shared";
+import { ChartData } from "@monkeytype/contracts/schemas/results";
+import { Mode, Mode2, Mode2Custom } from "@monkeytype/contracts/schemas/shared";
 import { ResultFiltersGroupItem } from "@monkeytype/contracts/schemas/users";
+import { findLineByLeastSquares } from "../utils/numbers";
 
 let filterDebug = false;
 //toggle filterdebug
@@ -45,7 +41,7 @@ export function toggleFilterDebug(): void {
   }
 }
 
-let filteredResults: Result<Mode>[] = [];
+let filteredResults: MonkeyTypes.FullResult<Mode>[] = [];
 let visibleTableLines = 0;
 
 function loadMoreLines(lineIndex?: number): void {
@@ -276,7 +272,7 @@ async function fillContent(): Promise<void> {
   filteredResults = [];
   $(".pageAccount .history table tbody").empty();
 
-  DB.getSnapshot()?.results?.forEach((result: Result<Mode>) => {
+  DB.getSnapshot()?.results?.forEach((result) => {
     // totalSeconds += tt;
 
     //apply filters
@@ -923,7 +919,7 @@ async function fillContent(): Promise<void> {
 
   const wpmPoints = filteredResults.map((r) => r.wpm).reverse();
 
-  const trend = Numbers.findLineByLeastSquares(wpmPoints);
+  const trend = findLineByLeastSquares(wpmPoints);
   if (trend) {
     const wpmChange = trend[1][1] - trend[0][1];
     const wpmChangePerHour = wpmChange * (3600 / totalSecondsFiltered);
@@ -1041,7 +1037,7 @@ function sortAndRefreshHistory(
 
   if (filteredResults.length < 2) return;
 
-  const key = keyString as keyof typeof filteredResults[0];
+  const key = keyString as keyof (typeof filteredResults)[0];
 
   // This allows to reverse the sorting order when clicking multiple times on the table header
   let descending = true;
@@ -1069,7 +1065,7 @@ function sortAndRefreshHistory(
     $(headerClass).append('<i class="fas fa-sort-up", aria-hidden="true"></i>');
   }
 
-  const temp = [];
+  const temp: MonkeyTypes.FullResult<Mode>[] = [];
   const parsedIndexes: number[] = [];
 
   while (temp.length < filteredResults.length) {
@@ -1093,10 +1089,11 @@ function sortAndRefreshHistory(
       }
     }
 
+    //@ts-expect-error
     temp.push(filteredResults[idx]);
     parsedIndexes.push(idx);
   }
-  filteredResults = temp as Result<keyof PersonalBests>[];
+  filteredResults = temp;
 
   $(".pageAccount .history table tbody").empty();
   visibleTableLines = 0;
@@ -1104,19 +1101,27 @@ function sortAndRefreshHistory(
 }
 
 $(".pageAccount button.toggleResultsOnChart").on("click", () => {
-  UpdateConfig.setAccountChartResults(!(Config.accountChart[0] === "on"));
+  const newValue = Config.accountChart;
+  newValue[0] = newValue[0] === "on" ? "off" : "on";
+  UpdateConfig.setAccountChart(newValue);
 });
 
 $(".pageAccount button.toggleAccuracyOnChart").on("click", () => {
-  UpdateConfig.setAccountChartAccuracy(!(Config.accountChart[1] === "on"));
+  const newValue = Config.accountChart;
+  newValue[1] = newValue[1] === "on" ? "off" : "on";
+  UpdateConfig.setAccountChart(newValue);
 });
 
 $(".pageAccount button.toggleAverage10OnChart").on("click", () => {
-  UpdateConfig.setAccountChartAvg10(!(Config.accountChart[2] === "on"));
+  const newValue = Config.accountChart;
+  newValue[2] = newValue[2] === "on" ? "off" : "on";
+  UpdateConfig.setAccountChart(newValue);
 });
 
 $(".pageAccount button.toggleAverage100OnChart").on("click", () => {
-  UpdateConfig.setAccountChartAvg100(!(Config.accountChart[3] === "on"));
+  const newValue = Config.accountChart;
+  newValue[3] = newValue[3] === "on" ? "off" : "on";
+  UpdateConfig.setAccountChart(newValue);
 });
 
 $(".pageAccount .loadMoreButton").on("click", () => {
@@ -1134,7 +1139,7 @@ $(".pageAccount #accountHistoryChart").on("click", () => {
     {
       scrollTop: scrollTo,
     },
-    500
+    Misc.applyReducedMotion(500)
   );
   $(".resultRow").removeClass("active");
   $(`#result-${index}`).addClass("active");
@@ -1144,13 +1149,8 @@ $(".pageAccount").on("click", ".miniResultChartButton", (event) => {
   console.log("updating");
   const filteredId = $(event.currentTarget).attr("filteredResultsId");
   if (filteredId === undefined) return;
-  MiniResultChart.updateData(
+  MiniResultChartModal.show(
     filteredResults[parseInt(filteredId)]?.chartData as ChartData
-  );
-  MiniResultChart.show();
-  MiniResultChart.updatePosition(
-    event.pageX - ($(".pageAccount .miniResultChartWrapper").outerWidth() ?? 0),
-    event.pageY + 30
   );
 });
 
@@ -1218,7 +1218,7 @@ $(".pageAccount .group.presetFilterButtons").on(
   "click",
   ".filterBtns .filterPresets .select-filter-preset",
   async (e) => {
-    await ResultFilters.setFilterPreset($(e.target).data("id"));
+    await ResultFilters.setFilterPreset($(e.target).data("id") as string);
     void update();
   }
 );
@@ -1289,10 +1289,10 @@ export const page = new Page({
 
     void update().then(() => {
       void updateChartColors();
-      $(".pageAccount .content p.accountVerificatinNotice").remove();
+      $(".pageAccount .content .accountVerificatinNotice").remove();
       if (Auth?.currentUser?.emailVerified === false) {
         $(".pageAccount .content").prepend(
-          `<p class="accountVerificatinNotice" style="text-align:center">Your account is not verified - <button class="sendVerificationEmail">send the verification email again</button>`
+          `<div class="accountVerificatinNotice"><i class="fas icon fa-exclamation-triangle"></i><p>Your email address is still not verified</p><button class="sendVerificationEmail">resend verification email</button></div>`
         );
       }
       ResultBatches.showOrHideIfNeeded();

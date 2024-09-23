@@ -6,7 +6,7 @@ import * as Notifications from "../elements/notifications";
 import { checkIfGetParameterExists } from "../utils/misc";
 import * as UserReportModal from "../modals/user-report";
 import * as Skeleton from "../utils/skeleton";
-import { UserProfile } from "@monkeytype/shared-types";
+import { UserProfile } from "@monkeytype/contracts/schemas/users";
 import { PersonalBests } from "@monkeytype/contracts/schemas/shared";
 
 function reset(): void {
@@ -179,30 +179,36 @@ async function update(options: UpdateOptions): Promise<void> {
       true
     );
   } else if (options.uidOrName !== undefined && options.uidOrName !== "") {
-    const response = getParamExists
-      ? await Ape.users.getProfileByUid(options.uidOrName)
-      : await Ape.users.getProfileByName(options.uidOrName);
+    const response = await Ape.users.getProfile({
+      params: { uidOrName: options.uidOrName },
+      query: { isUid: getParamExists },
+    });
+
     $(".page.pageProfile .preloader").addClass("hidden");
 
-    if (response.status === 404 || response.data === null) {
+    if (response.status === 404) {
       const message = getParamExists
         ? "User not found"
         : `User ${options.uidOrName} not found`;
       $(".page.pageProfile .preloader").addClass("hidden");
       $(".page.pageProfile .error").removeClass("hidden");
       $(".page.pageProfile .error .message").text(message);
-    } else if (response.status !== 200) {
-      // $(".page.pageProfile .failedToLoad").removeClass("hidden");
-      Notifications.add("Failed to load profile: " + response.message, -1);
-      return;
-    } else {
-      window.history.replaceState(null, "", `/profile/${response.data.name}`);
-      await Profile.update("profile", response.data);
+    } else if (response.status === 200) {
+      window.history.replaceState(
+        null,
+        "",
+        `/profile/${response.body.data.name}`
+      );
+      await Profile.update("profile", response.body.data);
       // this cast is fine because pb tables can handle the partial data inside user profiles
       PbTables.update(
-        response.data.personalBests as unknown as PersonalBests,
+        response.body.data.personalBests as unknown as PersonalBests,
         true
       );
+    } else {
+      // $(".page.pageProfile .failedToLoad").removeClass("hidden");
+      Notifications.add("Failed to load profile: " + response.body.message, -1);
+      return;
     }
   } else {
     Notifications.add("Missing update parameter!", -1);

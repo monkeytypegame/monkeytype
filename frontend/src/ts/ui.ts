@@ -16,6 +16,7 @@ export function previewFontFamily(font: string): void {
     "--font",
     '"' + font.replace(/_/g, " ") + '", "Roboto Mono", "Vazirmatn"'
   );
+  void TestUI.updateHintsPosition();
   isPreviewingFont = true;
 }
 
@@ -97,7 +98,7 @@ const debouncedEvent = debounce(250, () => {
     } else {
       const word =
         document.querySelectorAll<HTMLElement>("#words .word")[
-          TestUI.currentWordElementIndex - 1
+          TestUI.activeWordElementIndex - 1
         ];
       if (word) {
         const currentTop: number = Math.floor(word.offsetTop);

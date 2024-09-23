@@ -3,7 +3,7 @@ import { z } from "zod";
 
 import {
   CommonResponses,
-  EndpointMetadata,
+  meta,
   MonkeyResponseSchema,
   responseWithNullableData,
 } from "./schemas/api";
@@ -26,35 +26,44 @@ export const configsContract = c.router(
       responses: {
         200: GetConfigResponseSchema,
       },
+      metadata: meta({
+        rateLimit: "configGet",
+      }),
     },
     save: {
+      summary: "update config",
+      description:
+        "Update the config of the current user. Only provided values will be updated while the missing values will be unchanged.",
       method: "PATCH",
       path: "",
       body: PartialConfigSchema.strict(),
       responses: {
         200: MonkeyResponseSchema,
       },
-      summary: "update config",
-      description:
-        "Update the config of the current user. Only provided values will be updated while the missing values will be unchanged.",
+      metadata: meta({
+        rateLimit: "configUpdate",
+      }),
     },
     delete: {
+      summary: "delete config",
+      description: "Delete/reset the config for the current user.",
       method: "DELETE",
       path: "",
       body: c.noBody(),
       responses: {
         200: MonkeyResponseSchema,
       },
-      summary: "delete config",
-      description: "Delete/reset the config for the current user.",
+      metadata: meta({
+        rateLimit: "configDelete",
+      }),
     },
   },
   {
     pathPrefix: "/configs",
     strictStatusCodes: true,
-    metadata: {
+    metadata: meta({
       openApiTags: "configs",
-    } as EndpointMetadata,
+    }),
 
     commonResponses: CommonResponses,
   }

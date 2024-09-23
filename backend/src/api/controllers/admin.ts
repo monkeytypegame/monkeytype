@@ -1,4 +1,4 @@
-import { MonkeyResponse2 } from "../../utils/monkey-response";
+import { MonkeyResponse } from "../../utils/monkey-response";
 import { buildMonkeyMail } from "../../utils/monkey-mail";
 import * as UserDAL from "../../dal/user";
 import * as ReportDAL from "../../dal/report";
@@ -11,18 +11,16 @@ import {
   ToggleBanRequest,
   ToggleBanResponse,
 } from "@monkeytype/contracts/admin";
-import MonkeyError from "../../utils/error";
-import { Configuration } from "@monkeytype/shared-types";
+import MonkeyError, { getErrorMessage } from "../../utils/error";
+import { Configuration } from "@monkeytype/contracts/schemas/configuration";
 import { addImportantLog } from "../../dal/logs";
 
-export async function test(
-  _req: MonkeyTypes.Request2
-): Promise<MonkeyResponse2> {
-  return new MonkeyResponse2("OK", null);
+export async function test(_req: MonkeyTypes.Request): Promise<MonkeyResponse> {
+  return new MonkeyResponse("OK", null);
 }
 
 export async function toggleBan(
-  req: MonkeyTypes.Request2<undefined, ToggleBanRequest>
+  req: MonkeyTypes.Request<undefined, ToggleBanRequest>
 ): Promise<ToggleBanResponse> {
   const { uid } = req.body;
 
@@ -38,31 +36,31 @@ export async function toggleBan(
 
   void addImportantLog("user_ban_toggled", { banned: !user.banned }, uid);
 
-  return new MonkeyResponse2(`Ban toggled`, {
+  return new MonkeyResponse(`Ban toggled`, {
     banned: !user.banned,
   });
 }
 
 export async function acceptReports(
-  req: MonkeyTypes.Request2<undefined, AcceptReportsRequest>
-): Promise<MonkeyResponse2> {
+  req: MonkeyTypes.Request<undefined, AcceptReportsRequest>
+): Promise<MonkeyResponse> {
   await handleReports(
     req.body.reports.map((it) => ({ ...it })),
     true,
     req.ctx.configuration.users.inbox
   );
-  return new MonkeyResponse2("Reports removed and users notified.", null);
+  return new MonkeyResponse("Reports removed and users notified.", null);
 }
 
 export async function rejectReports(
-  req: MonkeyTypes.Request2<undefined, RejectReportsRequest>
-): Promise<MonkeyResponse2> {
+  req: MonkeyTypes.Request<undefined, RejectReportsRequest>
+): Promise<MonkeyResponse> {
   await handleReports(
     req.body.reports.map((it) => ({ ...it })),
     false,
     req.ctx.configuration.users.inbox
   );
-  return new MonkeyResponse2("Reports removed and users notified.", null);
+  return new MonkeyResponse("Reports removed and users notified.", null);
 }
 
 export async function handleReports(
@@ -116,15 +114,22 @@ export async function handleReports(
       });
       await UserDAL.addToInbox(report.uid, [mail], inboxConfig);
     } catch (e) {
-      throw new MonkeyError(e.status, e.message);
+      if (e instanceof MonkeyError) {
+        throw new MonkeyError(e.status, e.message);
+      } else {
+        throw new MonkeyError(
+          500,
+          "Error handling reports: " + getErrorMessage(e)
+        );
+      }
     }
   }
 }
 
 export async function sendForgotPasswordEmail(
-  req: MonkeyTypes.Request2<undefined, SendForgotPasswordEmailRequest>
-): Promise<MonkeyResponse2> {
+  req: MonkeyTypes.Request<undefined, SendForgotPasswordEmailRequest>
+): Promise<MonkeyResponse> {
   const { email } = req.body;
   await authSendForgotPasswordEmail(email);
-  return new MonkeyResponse2("Password reset request email sent.", null);
+  return new MonkeyResponse("Password reset request email sent.", null);
 }

@@ -9,6 +9,19 @@ import { verify } from "../../utils/captcha";
 import { MonkeyResponse } from "../../utils/monkey-response";
 import { ObjectId } from "mongodb";
 import { addLog } from "../../dal/logs";
+import {
+  AddQuoteRatingRequest,
+  AddQuoteRequest,
+  ApproveQuoteRequest,
+  ApproveQuoteResponse,
+  GetQuoteRatingQuery,
+  GetQuoteRatingResponse,
+  GetQuotesResponse,
+  IsSubmissionEnabledResponse,
+  RejectQuoteRequest,
+  ReportQuoteRequest,
+} from "@monkeytype/contracts/quotes";
+import { replaceObjectId, replaceObjectIds } from "../../utils/misc";
 
 async function verifyCaptcha(captcha: string): Promise<void> {
   if (!(await verify(captcha))) {
@@ -18,26 +31,22 @@ async function verifyCaptcha(captcha: string): Promise<void> {
 
 export async function getQuotes(
   req: MonkeyTypes.Request
-): Promise<MonkeyResponse> {
+): Promise<GetQuotesResponse> {
   const { uid } = req.ctx.decodedToken;
-  const quoteMod: boolean | undefined | string = (
-    await getPartialUser(uid, "get quotes", ["quoteMod"])
-  ).quoteMod;
-  let quoteModString: string;
-  if (quoteMod === true) {
-    quoteModString = "all";
-  } else if (quoteMod !== false && quoteMod !== undefined) {
-    quoteModString = quoteMod;
-  } else {
-    throw new MonkeyError(403, "You are not allowed to view submitted quotes");
-  }
+  const quoteMod = (await getPartialUser(uid, "get quotes", ["quoteMod"]))
+    .quoteMod;
+  const quoteModString = quoteMod === true ? "all" : (quoteMod as string);
+
   const data = await NewQuotesDAL.get(quoteModString);
-  return new MonkeyResponse("Quote submissions retrieved", data);
+  return new MonkeyResponse(
+    "Quote submissions retrieved",
+    replaceObjectIds(data)
+  );
 }
 
 export async function isSubmissionEnabled(
   req: MonkeyTypes.Request
-): Promise<MonkeyResponse> {
+): Promise<IsSubmissionEnabledResponse> {
   const { submissionsEnabled } = req.ctx.configuration.quotes;
   return new MonkeyResponse(
     "Quote submission " + (submissionsEnabled ? "enabled" : "disabled"),
@@ -46,7 +55,7 @@ export async function isSubmissionEnabled(
 }
 
 export async function addQuote(
-  req: MonkeyTypes.Request
+  req: MonkeyTypes.Request<undefined, AddQuoteRequest>
 ): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
   const { text, source, language, captcha } = req.body;
@@ -54,12 +63,12 @@ export async function addQuote(
   await verifyCaptcha(captcha);
 
   await NewQuotesDAL.add(text, source, language, uid);
-  return new MonkeyResponse("Quote submission added");
+  return new MonkeyResponse("Quote submission added", null);
 }
 
 export async function approveQuote(
-  req: MonkeyTypes.Request
-): Promise<MonkeyResponse> {
+  req: MonkeyTypes.Request<undefined, ApproveQuoteRequest>
+): Promise<ApproveQuoteResponse> {
   const { uid } = req.ctx.decodedToken;
   const { quoteId, editText, editSource } = req.body;
 
@@ -76,42 +85,36 @@ export async function approveQuote(
 }
 
 export async function refuseQuote(
-  req: MonkeyTypes.Request
+  req: MonkeyTypes.Request<undefined, RejectQuoteRequest>
 ): Promise<MonkeyResponse> {
   const { quoteId } = req.body;
 
   await NewQuotesDAL.refuse(quoteId);
-  return new MonkeyResponse("Quote refused");
+  return new MonkeyResponse("Quote refused", null);
 }
 
 export async function getRating(
-  req: MonkeyTypes.Request
-): Promise<MonkeyResponse> {
+  req: MonkeyTypes.Request<GetQuoteRatingQuery>
+): Promise<GetQuoteRatingResponse> {
   const { quoteId, language } = req.query;
 
-  const data = await QuoteRatingsDAL.get(
-    parseInt(quoteId as string, 10),
-    language as string
-  );
+  const data = await QuoteRatingsDAL.get(quoteId, language);
 
-  return new MonkeyResponse("Rating retrieved", data);
+  return new MonkeyResponse("Rating retrieved", replaceObjectId(data));
 }
 
 export async function submitRating(
-  req: MonkeyTypes.Request
+  req: MonkeyTypes.Request<undefined, AddQuoteRatingRequest>
 ): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
   const { quoteId, rating, language } = req.body;
 
   const user = await getPartialUser(uid, "submit rating", ["quoteRatings"]);
 
-  const normalizedQuoteId = parseInt(quoteId as string, 10);
-  const normalizedRating = Math.round(parseInt(rating as string, 10));
-
   const userQuoteRatings = user.quoteRatings ?? {};
-  const currentRating = userQuoteRatings[language]?.[normalizedQuoteId] ?? 0;
+  const currentRating = userQuoteRatings[language]?.[quoteId] ?? 0;
 
-  const newRating = normalizedRating - currentRating;
+  const newRating = rating - currentRating;
   const shouldUpdateRating = currentRating !== 0;
 
   await QuoteRatingsDAL.submit(
@@ -121,23 +124,18 @@ export async function submitRating(
     shouldUpdateRating
   );
 
-  _.setWith(
-    userQuoteRatings,
-    `[${language}][${normalizedQuoteId}]`,
-    normalizedRating,
-    Object
-  );
+  _.setWith(userQuoteRatings, `[${language}][${quoteId}]`, rating, Object);
 
   await updateQuoteRatings(uid, userQuoteRatings);
 
   const responseMessage = `Rating ${
     shouldUpdateRating ? "updated" : "submitted"
   }`;
-  return new MonkeyResponse(responseMessage);
+  return new MonkeyResponse(responseMessage, null);
 }
 
 export async function reportQuote(
-  req: MonkeyTypes.Request
+  req: MonkeyTypes.Request<undefined, ReportQuoteRequest>
 ): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
   const {
@@ -156,10 +154,10 @@ export async function reportQuote(
     uid,
     contentId: `${quoteLanguage}-${quoteId}`,
     reason,
-    comment,
+    comment: comment ?? "",
   };
 
   await ReportDAL.createReport(newReport, maxReports, contentReportLimit);
 
-  return new MonkeyResponse("Quote reported");
+  return new MonkeyResponse("Quote reported", null);
 }

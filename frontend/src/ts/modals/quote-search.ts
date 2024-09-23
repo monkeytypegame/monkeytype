@@ -16,7 +16,6 @@ import { isAuthenticated } from "../firebase";
 import { debounce } from "throttle-debounce";
 import Ape from "../ape";
 import * as Loader from "../elements/loader";
-// @ts-expect-error TODO: update slim-select
 import SlimSelect from "slim-select";
 import * as TestState from "../test/test-state";
 import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
@@ -40,7 +39,7 @@ function getSearchService<T>(
 
   const newSearchService = buildSearchService<T>(data, textExtractor);
   searchServiceCache[language] =
-    newSearchService as unknown as typeof searchServiceCache[typeof language];
+    newSearchService as unknown as (typeof searchServiceCache)[typeof language];
 
   return newSearchService;
 }
@@ -420,8 +419,11 @@ async function setup(modalEl: HTMLElement): Promise<void> {
     .querySelector(".goToQuoteSubmit")
     ?.addEventListener("click", async (e) => {
       Loader.show();
+      const getSubmissionEnabled = await Ape.quotes.isSubmissionEnabled();
       const isSubmissionEnabled =
-        (await Ape.quotes.isSubmissionEnabled()).data?.isEnabled ?? false;
+        (getSubmissionEnabled.status === 200 &&
+          getSubmissionEnabled.body.data?.isEnabled) ??
+        false;
       Loader.hide();
       if (!isSubmissionEnabled) {
         Notifications.add(

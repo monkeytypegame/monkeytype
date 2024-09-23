@@ -24,10 +24,7 @@ document.addEventListener("keydown", async (e) => {
   ) {
     e.preventDefault();
     const popupVisible = Misc.isAnyPopupVisible();
-    const miniResultPopupVisible = Misc.isElementVisible(
-      ".pageAccount .miniResultChartWrapper"
-    );
-    if (!popupVisible && !miniResultPopupVisible) {
+    if (!popupVisible) {
       (await getCommandline()).show();
     }
   }
@@ -49,13 +46,16 @@ window.onerror = function (message, url, line, column, error): void {
 
 window.onunhandledrejection = function (e): void {
   if (Misc.isDevEnvironment()) {
-    Notifications.add(e.reason.message, -1, {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    const message = (e.reason.message ?? e.reason) as string;
+    Notifications.add(`${message}`, -1, {
       customTitle: "DEV: Unhandled rejection",
       duration: 5,
     });
     console.error(e);
   }
   void log("error", {
-    error: e.reason.stack ?? "",
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    error: (e.reason.stack ?? "") as string,
   });
 };

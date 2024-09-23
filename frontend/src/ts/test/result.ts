@@ -16,7 +16,7 @@ import * as DateTime from "../utils/date-and-time";
 import * as Misc from "../utils/misc";
 import * as Strings from "../utils/strings";
 import * as JSONData from "../utils/json-data";
-import * as Numbers from "../utils/numbers";
+import * as Numbers from "@monkeytype/util/numbers";
 import * as Arrays from "../utils/arrays";
 import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
 import * as FunboxList from "./funbox/funbox-list";
@@ -41,11 +41,13 @@ import * as Funbox from "./funbox/funbox";
 import Format from "../utils/format";
 
 import confetti from "canvas-confetti";
-import type { AnnotationOptions } from "chartjs-plugin-annotation";
-import { Result } from "@monkeytype/shared-types";
-import { Mode } from "@monkeytype/contracts/schemas/shared";
+import type {
+  AnnotationOptions,
+  LabelPosition,
+} from "chartjs-plugin-annotation";
+import { CompletedEvent } from "@monkeytype/contracts/schemas/results";
 
-let result: Result<Mode>;
+let result: CompletedEvent;
 let maxChartVal: number;
 
 let useUnsmoothedRaw = false;
@@ -161,7 +163,7 @@ async function updateGraph(): Promise<void> {
         padding: 3,
         borderRadius: 3,
         position: "start",
-        enabled: true,
+        display: true,
         content: `${content}`,
       },
     });
@@ -214,8 +216,8 @@ export async function updateGraphPBLine(): Promise<void> {
       padding: 3,
       borderRadius: 3,
       position: "center",
-      enabled: true,
       content: `PB: ${chartlpb}`,
+      display: true,
     },
   });
   const lpbRange = typingSpeedUnit.fromWpm(20);
@@ -569,7 +571,7 @@ async function updateTags(dontSave: boolean): Promise<void> {
   );
   $("#result .stats .tags .editTagsButton").addClass("invisible");
 
-  let annotationSide = "start";
+  let annotationSide: LabelPosition = "start";
   let labelAdjust = 15;
   activeTags.forEach(async (tag) => {
     const tpb = await DB.getLocalTagPB(
@@ -640,7 +642,7 @@ async function updateTags(dontSave: boolean): Promise<void> {
             borderRadius: 3,
             position: annotationSide,
             xAdjust: labelAdjust,
-            enabled: true,
+            display: true,
             content: `${tag.display} PB: ${Numbers.roundTo2(
               typingSpeedUnit.fromWpm(tpb)
             ).toFixed(2)}`,
@@ -833,7 +835,7 @@ function updateQuoteSource(randomQuote: MonkeyTypes.Quote | null): void {
 }
 
 export async function update(
-  res: Result<Mode>,
+  res: CompletedEvent,
   difficultyFailed: boolean,
   failReason: string,
   afkDetected: boolean,
@@ -843,7 +845,7 @@ export async function update(
   dontSave: boolean
 ): Promise<void> {
   resultAnnotation = [];
-  result = Object.assign({}, res);
+  result = Misc.deepClone(res);
   hideCrown();
   $("#resultWordsHistory .words").empty();
   $("#result #resultWordsHistory").addClass("hidden");
@@ -969,7 +971,7 @@ export async function update(
         {
           opacity: 1,
         },
-        125
+        Misc.applyReducedMotion(125)
       );
 
       const canQuickRestart = Misc.canQuickRestart(
@@ -1084,13 +1086,15 @@ $(".pageTest #favoriteQuoteButton").on("click", async () => {
   if ($button.hasClass("fas")) {
     // Remove from favorites
     Loader.show();
-    const response = await Ape.users.removeQuoteFromFavorites(
-      quoteLang,
-      quoteId
-    );
+    const response = await Ape.users.removeQuoteFromFavorites({
+      body: {
+        language: quoteLang,
+        quoteId,
+      },
+    });
     Loader.hide();
 
-    Notifications.add(response.message, response.status === 200 ? 1 : -1);
+    Notifications.add(response.body.message, response.status === 200 ? 1 : -1);
 
     if (response.status === 200) {
       $button.removeClass("fas").addClass("far");
@@ -1102,10 +1106,12 @@ $(".pageTest #favoriteQuoteButton").on("click", async () => {
   } else {
     // Add to favorites
     Loader.show();
-    const response = await Ape.users.addQuoteToFavorites(quoteLang, quoteId);
+    const response = await Ape.users.addQuoteToFavorites({
+      body: { language: quoteLang, quoteId },
+    });
     Loader.hide();
 
-    Notifications.add(response.message, response.status === 200 ? 1 : -1);
+    Notifications.add(response.body.message, response.status === 200 ? 1 : -1);
 
     if (response.status === 200) {
       $button.removeClass("far").addClass("fas");

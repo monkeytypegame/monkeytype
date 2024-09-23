@@ -7,7 +7,7 @@ import GeorgeQueue from "../queues/george-queue";
 import { buildMonkeyMail } from "../utils/monkey-mail";
 import { DailyLeaderboard } from "../utils/daily-leaderboards";
 import { getCachedConfiguration } from "../init/configuration";
-import { formatSeconds, getOrdinalNumberString, mapRange } from "../utils/misc";
+import { formatSeconds, getOrdinalNumberString } from "../utils/misc";
 import LaterQueue, {
   type LaterTask,
   type LaterTaskContexts,
@@ -15,7 +15,8 @@ import LaterQueue, {
 } from "../queues/later-queue";
 import { recordTimeToCompleteJob } from "../utils/prometheus";
 import { WeeklyXpLeaderboard } from "../services/weekly-xp-leaderboard";
-import { MonkeyMail } from "@monkeytype/shared-types";
+import { MonkeyMail } from "@monkeytype/contracts/schemas/users";
+import { mapRange } from "@monkeytype/util/numbers";
 
 async function handleDailyLeaderboardResults(
   ctx: LaterTaskContexts["daily-leaderboard-results"]
@@ -180,8 +181,8 @@ async function handleWeeklyXpLeaderboardResults(
   await addToInboxBulk(mailEntries, inboxConfig);
 }
 
-async function jobHandler(job: Job): Promise<void> {
-  const { taskName, ctx }: LaterTask<LaterTaskType> = job.data;
+async function jobHandler(job: Job<LaterTask<LaterTaskType>>): Promise<void> {
+  const { taskName, ctx } = job.data;
 
   Logger.info(`Starting job: ${taskName}`);
 

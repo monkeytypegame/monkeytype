@@ -22,3 +22,22 @@ export const LanguageSchema = z
   .max(50)
   .regex(/^[a-zA-Z0-9_+]+$/, "Can only contain letters [a-zA-Z0-9_+]");
 export type Language = z.infer<typeof LanguageSchema>;
+
+export const NullableStringSchema = z
+  .string()
+  .nullable()
+  .optional()
+  .transform((value) => value ?? undefined);
+export type NullableString = z.infer<typeof NullableStringSchema>;
+
+export const PercentageSchema = z.number().nonnegative().max(100);
+export type Percentage = z.infer<typeof PercentageSchema>;
+
+export const WpmSchema = z.number().nonnegative().max(420);
+export type Wpm = z.infer<typeof WpmSchema>;
+
+export const CustomTextModeSchema = z.enum(["repeat", "random", "shuffle"]);
+export type CustomTextMode = z.infer<typeof CustomTextModeSchema>;
+
+export const CustomTextLimitModeSchema = z.enum(["word", "time", "section"]);
+export type CustomTextLimitMode = z.infer<typeof CustomTextLimitModeSchema>;

@@ -7,7 +7,7 @@ import { defaultSnap } from "./constants/default-snapshot";
 import * as ConnectionState from "./states/connection";
 import { lastElementFromArray } from "./utils/arrays";
 import { getFunboxList } from "./utils/json-data";
-import { mergeWithDefaultConfig } from "./utils/config";
+import { migrateConfig } from "./utils/config";
 import * as Dates from "date-fns";
 import {
   TestActivityCalendar,
@@ -15,7 +15,7 @@ import {
 } from "./elements/test-activity-calendar";
 import * as Loader from "./elements/loader";
 
-import { Badge, DBResult, Result } from "@monkeytype/shared-types";
+import { Badge } from "@monkeytype/contracts/schemas/users";
 import { Config, Difficulty } from "@monkeytype/contracts/schemas/configs";
 import {
   Mode,
@@ -78,14 +78,14 @@ export async function initSnapshot(): Promise<
     // LoadingPage.updateText("Downloading user...");
 
     const [userResponse, configResponse, presetsResponse] = await Promise.all([
-      Ape.users.getData(),
+      Ape.users.get(),
       Ape.configs.get(),
       Ape.presets.get(),
     ]);
 
     if (userResponse.status !== 200) {
       throw new SnapshotInitError(
-        `${userResponse.message} (user)`,
+        `${userResponse.body.message} (user)`,
         userResponse.status
       );
     }
@@ -102,7 +102,7 @@ export async function initSnapshot(): Promise<
       );
     }
 
-    const userData = userResponse.data;
+    const userData = userResponse.body.data;
     const configData = configResponse.body.data;
     const presetsData = presetsResponse.body.data;
 
@@ -155,7 +155,7 @@ export async function initSnapshot(): Promise<
     snap.streak = userData?.streak?.length ?? 0;
     snap.maxStreak = userData?.streak?.maxLength ?? 0;
     snap.filterPresets = userData.resultFilterPresets ?? [];
-    snap.isPremium = userData?.isPremium;
+    snap.isPremium = userData?.isPremium ?? false;
     snap.allTimeLbs = userData.allTimeLbs;
 
     if (userData.testActivity !== undefined) {
@@ -183,7 +183,7 @@ export async function initSnapshot(): Promise<
         ...DefaultConfig,
       };
     } else {
-      snap.config = mergeWithDefaultConfig(configData);
+      snap.config = migrateConfig(configData);
     }
     // if (ActivePage.get() === "loading") {
     //   LoadingPage.updateBar(67.5);
@@ -283,42 +283,37 @@ export async function getUserResults(offset?: number): Promise<boolean> {
     LoadingPage.updateBar(90);
   }
 
-  const response = await Ape.results.get(offset);
+  const response = await Ape.results.get({ query: { offset } });
 
   if (response.status !== 200) {
-    Notifications.add("Error getting results: " + response.message, -1);
+    Notifications.add("Error getting results: " + response.body.message, -1);
     return false;
   }
 
-  const results = response.data as DBResult<Mode>[];
+  const results: MonkeyTypes.FullResult<Mode>[] = response.body.data.map(
+    (result) => {
+      if (result.bailedOut === undefined) result.bailedOut = false;
+      if (result.blindMode === undefined) result.blindMode = false;
+      if (result.lazyMode === undefined) result.lazyMode = false;
+      if (result.difficulty === undefined) result.difficulty = "normal";
+      if (result.funbox === undefined) result.funbox = "none";
+      if (result.language === undefined || result.language === null) {
+        result.language = "english";
+      }
+      if (result.numbers === undefined) result.numbers = false;
+      if (result.punctuation === undefined) result.punctuation = false;
+      if (result.numbers === undefined) result.numbers = false;
+      if (result.quoteLength === undefined) result.quoteLength = -1;
+      if (result.restartCount === undefined) result.restartCount = 0;
+      if (result.incompleteTestSeconds === undefined) {
+        result.incompleteTestSeconds = 0;
+      }
+      if (result.afkDuration === undefined) result.afkDuration = 0;
+      if (result.tags === undefined) result.tags = [];
+      return result as MonkeyTypes.FullResult<Mode>;
+    }
+  );
   results?.sort((a, b) => b.timestamp - a.timestamp);
-  results.forEach((result) => {
-    if (result.bailedOut === undefined) result.bailedOut = false;
-    if (result.blindMode === undefined) result.blindMode = false;
-    if (result.lazyMode === undefined) result.lazyMode = false;
-    if (result.difficulty === undefined) result.difficulty = "normal";
-    if (result.funbox === undefined) result.funbox = "none";
-    if (result.language === undefined || result.language === null) {
-      result.language = "english";
-    }
-    if (result.numbers === undefined) result.numbers = false;
-    if (result.punctuation === undefined) result.punctuation = false;
-    if (result.numbers === undefined) result.numbers = false;
-    if (result.quoteLength === undefined) result.quoteLength = -1;
-    if (result.restartCount === undefined) result.restartCount = 0;
-    if (result.incompleteTestSeconds === undefined) {
-      result.incompleteTestSeconds = 0;
-    }
-    if (result.afkDuration === undefined) result.afkDuration = 0;
-    if (result.tags === undefined) result.tags = [];
-
-    if (
-      result.correctChars !== undefined &&
-      result.incorrectChars !== undefined
-    ) {
-      result.charStats = [result.correctChars, result.incorrectChars, 0, 0];
-    }
-  });
 
   if (dbSnapshot.results !== undefined && dbSnapshot.results.length > 0) {
     //merge
@@ -327,11 +322,9 @@ export async function getUserResults(offset?: number): Promise<boolean> {
     const resultsWithoutDuplicates = results.filter(
       (it) => it.timestamp < oldestTimestamp
     );
-    dbSnapshot.results.push(
-      ...(resultsWithoutDuplicates as unknown as Result<Mode>[])
-    );
+    dbSnapshot.results.push(...resultsWithoutDuplicates);
   } else {
-    dbSnapshot.results = results as unknown as Result<Mode>[];
+    dbSnapshot.results = results;
   }
   return true;
 }
@@ -356,20 +349,23 @@ export async function addCustomTheme(
     return false;
   }
 
-  const response = await Ape.users.addCustomTheme(theme);
+  const response = await Ape.users.addCustomTheme({ body: { ...theme } });
   if (response.status !== 200) {
-    Notifications.add("Error adding custom theme: " + response.message, -1);
+    Notifications.add(
+      "Error adding custom theme: " + response.body.message,
+      -1
+    );
     return false;
   }
 
-  if (response.data === null) {
+  if (response.body.data === null) {
     Notifications.add("Error adding custom theme: No data returned", -1);
     return false;
   }
 
   const newCustomTheme: MonkeyTypes.CustomTheme = {
     ...theme,
-    _id: response.data._id,
+    _id: response.body.data._id,
   };
 
   dbSnapshot.customThemes.push(newCustomTheme);
@@ -396,9 +392,14 @@ export async function editCustomTheme(
     return false;
   }
 
-  const response = await Ape.users.editCustomTheme(themeId, newTheme);
+  const response = await Ape.users.editCustomTheme({
+    body: { themeId, theme: newTheme },
+  });
   if (response.status !== 200) {
-    Notifications.add("Error editing custom theme: " + response.message, -1);
+    Notifications.add(
+      "Error editing custom theme: " + response.body.message,
+      -1
+    );
     return false;
   }
 
@@ -420,9 +421,12 @@ export async function deleteCustomTheme(themeId: string): Promise<boolean> {
   const customTheme = dbSnapshot.customThemes?.find((t) => t._id === themeId);
   if (!customTheme) return false;
 
-  const response = await Ape.users.deleteCustomTheme(themeId);
+  const response = await Ape.users.deleteCustomTheme({ body: { themeId } });
   if (response.status !== 200) {
-    Notifications.add("Error deleting custom theme: " + response.message, -1);
+    Notifications.add(
+      "Error deleting custom theme: " + response.body.message,
+      -1
+    );
     return false;
   }
 
@@ -915,7 +919,9 @@ export async function updateLbMemory<M extends Mode>(
     const mem = snapshot.lbMemory[timeMode][timeMode2];
     mem[language] = rank;
     if (api && current !== rank) {
-      await Ape.users.updateLeaderboardMemory(mode, mode2, language, rank);
+      await Ape.users.updateLeaderboardMemory({
+        body: { mode, mode2, language, rank },
+      });
     }
     setSnapshot(snapshot);
   }
@@ -939,7 +945,7 @@ export async function resetConfig(): Promise<void> {
   }
 }
 
-export function saveLocalResult(result: Result<Mode>): void {
+export function saveLocalResult(result: MonkeyTypes.FullResult<Mode>): void {
   const snapshot = getSnapshot();
   if (!snapshot) return;
 
@@ -1031,7 +1037,7 @@ export async function getTestActivityCalendar(
     const response = await Ape.users.getTestActivity();
     if (response.status !== 200) {
       Notifications.add(
-        "Error getting test activities: " + response.message,
+        "Error getting test activities: " + response.body.message,
         -1
       );
       Loader.hide();
@@ -1039,9 +1045,9 @@ export async function getTestActivityCalendar(
     }
 
     dbSnapshot.testActivityByYear = {};
-    for (const year in response.data) {
+    for (const year in response.body.data) {
       if (year === currentYear) continue;
-      const testsByDays = response.data[year] ?? [];
+      const testsByDays = response.body.data[year] ?? [];
       const lastDay = Dates.addDays(
         new Date(parseInt(year), 0, 1),
         testsByDays.length

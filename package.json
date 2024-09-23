@@ -24,7 +24,7 @@
     "dev": "turbo run dev --force",
     "dev-be": "turbo run dev --force --filter @monkeytype/backend",
     "dev-fe": "turbo run dev --force --filter @monkeytype/frontend",
-    "dev-pkg": "turbo run dev ---force -filter=\"./packages/*\"",
+    "dev-pkg": "turbo run dev --force --filter=\"./packages/*\"",
     "start": "turbo run start",
     "start-be": "turbo run start --filter @monkeytype/backend",
     "start-fe": "turbo run start --filter @monkeytype/frontend",
@@ -37,6 +37,7 @@
     "release-dry": "monkeytype-release --dry",
     "hotfix-fe": "npm run build-fe && cd frontend && npm run deploy-live && monkeytype-purge",
     "hotfix-be": "monkeytype-deploy-be",
+    "hotfix": "npm run hotfix-be && npm run hotfix-fe",
     "deploy-dev": "cd frontend && npm run deploy-dev && cd .. && sh ./bin/purgeCfCache.sh",
     "pretty-check": "prettier --check .",
     "pretty-check-be": "prettier --check ./backend",
@@ -58,16 +59,16 @@
   },
   "devDependencies": {
     "@commitlint/cli": "17.7.1",
-    "@commitlint/config-conventional": "17.7.0",
-    "@vitest/coverage-v8": "2.0.5",
+    "@commitlint/config-conventional": "19.2.2",
     "@monkeytype/release": "workspace:*",
-    "conventional-changelog": "4.0.0",
+    "@vitest/coverage-v8": "2.0.5",
+    "conventional-changelog": "6.0.0",
     "husky": "8.0.1",
     "knip": "2.19.2",
     "lint-staged": "13.2.3",
     "only-allow": "1.2.1",
-    "prettier": "2.5.1",
-    "turbo": "2.0.9",
+    "prettier": "2.8.8",
+    "turbo": "2.1.2",
     "vitest": "2.0.5"
   },
   "lint-staged": {
@@ -79,6 +80,6 @@
       "eslint"
     ]
   },
-  "version": "24.32.0",
+  "version": "24.38.0",
   "packageManager": "pnpm@9.6.0"
 }

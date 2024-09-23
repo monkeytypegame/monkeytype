@@ -5,7 +5,6 @@ import * as CaptchaController from "../controllers/captcha-controller";
 import * as Strings from "../utils/strings";
 import * as JSONData from "../utils/json-data";
 import Config from "../config";
-// @ts-expect-error TODO: update slim-select
 import SlimSelect from "slim-select";
 import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
 import { CharacterCounter } from "../elements/character-counter";
@@ -37,11 +36,13 @@ async function submitQuote(): Promise<void> {
   }
 
   Loader.show();
-  const response = await Ape.quotes.submit(text, source, language, captcha);
+  const response = await Ape.quotes.add({
+    body: { text, source, language, captcha },
+  });
   Loader.hide();
 
   if (response.status !== 200) {
-    Notifications.add("Failed to submit quote: " + response.message, -1);
+    Notifications.add("Failed to submit quote: " + response.body.message, -1);
     return;
   }
 

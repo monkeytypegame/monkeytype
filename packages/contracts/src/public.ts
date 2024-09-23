@@ -1,10 +1,6 @@
 import { initContract } from "@ts-rest/core";
 import { z } from "zod";
-import {
-  CommonResponses,
-  EndpointMetadata,
-  responseWithData,
-} from "./schemas/api";
+import { CommonResponses, meta, responseWithData } from "./schemas/api";
 import { SpeedHistogramSchema, TypingStatsSchema } from "./schemas/public";
 import { Mode2Schema, ModeSchema } from "./schemas/shared";
 import { LanguageSchema } from "./schemas/util";
@@ -59,12 +55,13 @@ export const publicContract = c.router(
   {
     pathPrefix: "/public",
     strictStatusCodes: true,
-    metadata: {
+    metadata: meta({
       openApiTags: "public",
       authenticationOptions: {
         isPublic: true,
       },
-    } as EndpointMetadata,
+      rateLimit: "publicStatsGet",
+    }),
     commonResponses: CommonResponses,
   }
 );

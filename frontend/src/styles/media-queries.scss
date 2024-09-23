@@ -536,7 +536,7 @@ body {
 // @media only screen and (max-width: 40.625rem) {
 //   header {
 //     nav {
-//       .textButton.account {
+//       .textButton.view-account {
 //         .text {
 //           display: none;
 //         }
@@ -748,7 +748,7 @@ body {
 //       }
 //     }
 //     // nav {
-//     //   .textButton.account {
+//     //   .textButton.view-account {
 //     //     .text {
 //     //       display: none;
 //     //     }
@@ -1037,5 +1037,22 @@ body {
 @media (hover: none) and (pointer: coarse) {
   #commandLineMobileButton {
     display: block !important;
+  }
+}
+
+@media (prefers-reduced-motion) {
+  *:not(.fa-spin, #backgroundLoader, .preloader) {
+    animation: none !important;
+    transition: none !important;
+
+    &::after,
+    &::before {
+      animation: none !important;
+      transition: none !important;
+    }
+  }
+
+  html {
+    scroll-behavior: auto !important;
   }
 }

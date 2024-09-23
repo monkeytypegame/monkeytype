@@ -12,13 +12,13 @@ import * as Loader from "../elements/loader";
 import {
   CustomTextLimitMode,
   CustomTextMode,
-  Result,
-} from "@monkeytype/shared-types";
+} from "@monkeytype/contracts/schemas/util";
 import {
   Config as ConfigType,
   Difficulty,
 } from "@monkeytype/contracts/schemas/configs";
 import { Mode } from "@monkeytype/contracts/schemas/shared";
+import { CompletedEvent } from "@monkeytype/contracts/schemas/results";
 
 let challengeLoading = false;
 
@@ -33,7 +33,7 @@ export function clearActive(): void {
   }
 }
 
-export function verify(result: Result<Mode>): string | null {
+export function verify(result: CompletedEvent): string | null {
   try {
     if (TestState.activeChallenge) {
       const afk = (result.afkDuration / result.testDuration) * 100;
@@ -123,7 +123,8 @@ export function verify(result: Result<Mode>): string | null {
               requirementsMet = false;
               for (const f of funboxMode.split("#")) {
                 if (
-                  result.funbox?.split("#").find((rf) => rf === f) === undefined
+                  result.funbox?.split("#").find((rf: string) => rf === f) ===
+                  undefined
                 ) {
                   failReasons.push(`${f} funbox not active`);
                 }
