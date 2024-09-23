@@ -1,4 +1,4 @@
-import { Collection, UpdateResult } from "mongodb";
+import { Collection, ObjectId, UpdateResult } from "mongodb";
 import * as db from "../init/db";
 import _ from "lodash";
 import { Config, PartialConfig } from "@monkeytype/contracts/schemas/configs";

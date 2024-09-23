@@ -28,9 +28,15 @@ import * as ResultBatches from "../elements/result-batches";
 import Format from "../utils/format";
 import * as TestActivity from "../elements/test-activity";
 import { ChartData } from "@monkeytype/contracts/schemas/results";
-import { Mode, Mode2, Mode2Custom } from "@monkeytype/contracts/schemas/shared";
+import {
+  Difficulty,
+  Mode,
+  Mode2,
+  Mode2Custom,
+} from "@monkeytype/contracts/schemas/shared";
 import { ResultFiltersGroupItem } from "@monkeytype/contracts/schemas/users";
 import { findLineByLeastSquares } from "../utils/numbers";
+import defaultResultFilters from "../constants/default-result-filters";
 
 let filterDebug = false;
 //toggle filterdebug
@@ -41,7 +47,7 @@ export function toggleFilterDebug(): void {
   }
 }
 
-let filteredResults: MonkeyTypes.FullResult<Mode>[] = [];
+let filteredResults: DB.SnapshotResult<Mode>[] = [];
 let visibleTableLines = 0;
 
 function loadMoreLines(lineIndex?: number): void {
@@ -202,8 +208,8 @@ function reset(): void {
 }
 
 let totalSecondsFiltered = 0;
-let chartData: MonkeyTypes.HistoryChartData[] = [];
-let accChartData: MonkeyTypes.AccChartData[] = [];
+let chartData: ChartController.HistoryChartData[] = [];
+let accChartData: ChartController.AccChartData[] = [];
 
 async function fillContent(): Promise<void> {
   LoadingPage.updateText("Displaying stats...");
@@ -288,7 +294,7 @@ async function fillContent(): Promise<void> {
       if (resdiff === undefined) {
         resdiff = "normal";
       }
-      if (!ResultFilters.getFilter("difficulty", resdiff)) {
+      if (!ResultFilters.getFilter("difficulty", resdiff as Difficulty)) {
         if (filterDebug) {
           console.log(`skipping result due to difficulty filter`, result);
         }
@@ -344,7 +350,8 @@ async function fillContent(): Promise<void> {
       }
 
       if (result.quoteLength !== null) {
-        let filter: MonkeyTypes.QuoteModes | undefined = undefined;
+        let filter: keyof typeof defaultResultFilters.quoteLength | undefined =
+          undefined;
         if (result.quoteLength === 0) {
           filter = "short";
         } else if (result.quoteLength === 1) {
@@ -519,7 +526,7 @@ async function fillContent(): Promise<void> {
       dataForTimestamp.amount++;
       dataForTimestamp.time +=
         result.testDuration +
-        result.incompleteTestSeconds -
+        (result.incompleteTestSeconds ?? 0) -
         (result.afkDuration ?? 0);
       dataForTimestamp.totalWpm += result.wpm;
     } else {
@@ -527,7 +534,7 @@ async function fillContent(): Promise<void> {
         amount: 1,
         time:
           result.testDuration +
-          result.incompleteTestSeconds -
+          (result.incompleteTestSeconds ?? 0) -
           (result.afkDuration ?? 0),
         totalWpm: result.wpm,
       };
@@ -660,9 +667,9 @@ async function fillContent(): Promise<void> {
   loadMoreLines();
   ////////
 
-  const activityChartData_timeAndAmount: MonkeyTypes.ActivityChartDataPoint[] =
+  const activityChartData_timeAndAmount: ChartController.ActivityChartDataPoint[] =
     [];
-  const activityChartData_avgWpm: MonkeyTypes.ActivityChartDataPoint[] = [];
+  const activityChartData_avgWpm: ChartController.ActivityChartDataPoint[] = [];
   const wpmStepSize = typingSpeedUnit.historyStepSize;
 
   // let lastTimestamp = 0;
@@ -736,7 +743,7 @@ async function fillContent(): Promise<void> {
     const pb: { x: number; y: number }[] = [];
 
     for (let i = chartData.length - 1; i >= 0; i--) {
-      const a = chartData[i] as MonkeyTypes.HistoryChartData;
+      const a = chartData[i] as ChartController.HistoryChartData;
       if (a.y > currentPb) {
         currentPb = a.y;
         pb.push(a);
@@ -1065,7 +1072,7 @@ function sortAndRefreshHistory(
     $(headerClass).append('<i class="fas fa-sort-up", aria-hidden="true"></i>');
   }
 
-  const temp: MonkeyTypes.FullResult<Mode>[] = [];
+  const temp: DB.SnapshotResult<Mode>[] = [];
   const parsedIndexes: number[] = [];
 
   while (temp.length < filteredResults.length) {
@@ -1224,6 +1231,7 @@ $(".pageAccount .group.presetFilterButtons").on(
 );
 
 $(".pageAccount .content .group.aboveHistory .exportCSV").on("click", () => {
+  //@ts-expect-error
   void Misc.downloadResultsCSV(filteredResults);
 });
 

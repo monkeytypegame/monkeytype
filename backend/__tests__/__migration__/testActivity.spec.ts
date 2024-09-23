@@ -2,6 +2,7 @@ import * as Migration from "../../__migration__/testActivity";
 import * as UserTestData from "../__testData__/users";
 import * as UserDal from "../../src/dal/user";
 import * as ResultDal from "../../src/dal/result";
+import { DBResult } from "../../src/utils/result";
 
 describe("testActivity migration", () => {
   it("migrates users without results", async () => {
@@ -69,5 +70,5 @@ async function createResult(uid: string, timestamp: number): Promise<void> {
     keyConsistency: 0,
     chartData: "toolong",
     name: "",
-  } as unknown as ResultDal.DBResult);
+  } as unknown as DBResult);
 }

@@ -3,8 +3,10 @@ import * as TestLogic from "../../test/test-logic";
 import * as ManualRestart from "../../test/manual-restart-tracker";
 import Config from "../../config";
 import { areFunboxesCompatible } from "../../test/funbox/funbox-validation";
+import { FunboxMetadata } from "../../utils/json-data";
+import { Command, CommandsSubgroup } from "../types";
 
-const subgroup: MonkeyTypes.CommandsSubgroup = {
+const subgroup: CommandsSubgroup = {
   title: "Funbox...",
   configKey: "funbox",
   list: [
@@ -22,7 +24,7 @@ const subgroup: MonkeyTypes.CommandsSubgroup = {
   ],
 };
 
-const commands: MonkeyTypes.Command[] = [
+const commands: Command[] = [
   {
     id: "changeFunbox",
     display: "Funbox...",
@@ -32,7 +34,7 @@ const commands: MonkeyTypes.Command[] = [
   },
 ];
 
-function update(funboxes: MonkeyTypes.FunboxMetadata[]): void {
+function update(funboxes: FunboxMetadata[]): void {
   subgroup.list = [];
   subgroup.list.push({
     id: "changeFunboxNone",

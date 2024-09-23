@@ -16,7 +16,7 @@ import { abbreviateNumber, convertRemToPixels } from "../utils/numbers";
 import { secondsToString } from "../utils/date-and-time";
 
 type ProfileViewPaths = "profile" | "account";
-type UserProfileOrSnapshot = UserProfile | MonkeyTypes.Snapshot;
+type UserProfileOrSnapshot = UserProfile | DB.Snapshot;
 
 //this is probably the dirtiest code ive ever written
 
@@ -129,7 +129,7 @@ export async function update(
     const results = DB.getSnapshot()?.results;
     const lastResult = results?.[0];
 
-    const streakOffset = (profile as MonkeyTypes.Snapshot).streakHourOffset;
+    const streakOffset = (profile as DB.Snapshot).streakHourOffset;
 
     const dayInMilis = 1000 * 60 * 60 * 24;
 

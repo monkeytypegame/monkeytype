@@ -1,8 +1,9 @@
 import { QuoteRating } from "@monkeytype/contracts/schemas/quotes";
 import * as db from "../init/db";
 import { Collection } from "mongodb";
+import { WithObjectId } from "../utils/misc";
 
-type DBQuoteRating = MonkeyTypes.WithObjectId<QuoteRating>;
+type DBQuoteRating = WithObjectId<QuoteRating>;
 
 // Export for use in tests
 export const getQuoteRatingCollection = (): Collection<DBQuoteRating> =>

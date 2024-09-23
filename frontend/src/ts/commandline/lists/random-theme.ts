@@ -1,8 +1,9 @@
 import * as UpdateConfig from "../../config";
 import { isAuthenticated } from "../../firebase";
 import * as Notifications from "../../elements/notifications";
+import { Command, CommandsSubgroup } from "../types";
 
-const subgroup: MonkeyTypes.CommandsSubgroup = {
+const subgroup: CommandsSubgroup = {
   title: "Random theme...",
   configKey: "randomTheme",
   list: [
@@ -64,7 +65,7 @@ const subgroup: MonkeyTypes.CommandsSubgroup = {
   ],
 };
 
-const commands: MonkeyTypes.Command[] = [
+const commands: Command[] = [
   {
     id: "changeRandomTheme",
     display: "Random theme...",

@@ -1,3 +1,5 @@
+import { QuoteWithTextSplit } from "../controllers/quotes-controller";
+
 class Words {
   public list: string[];
   public sectionIndexList: number[];
@@ -69,11 +71,9 @@ export const words = new Words();
 export let hasTab = false;
 export let hasNewline = false;
 export let hasNumbers = false;
-export let currentQuote = null as MonkeyTypes.QuoteWithTextSplit | null;
+export let currentQuote = null as QuoteWithTextSplit | null;
 
-export function setCurrentQuote(
-  rq: MonkeyTypes.QuoteWithTextSplit | null
-): void {
+export function setCurrentQuote(rq: QuoteWithTextSplit | null): void {
   currentQuote = rq;
 }
 

@@ -62,7 +62,7 @@ export type ExecReturn = {
   status: 1 | 0 | -1;
   message: string;
   showNotification?: false;
-  notificationOptions?: MonkeyTypes.AddNotificationOptions;
+  notificationOptions?: Notifications.AddNotificationOptions;
   hideOptions?: HideOptions;
   afterHide?: () => void;
 };

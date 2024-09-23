@@ -1181,9 +1181,12 @@ async function saveResult(
   }
 
   if (data.insertedId !== undefined) {
-    const result = JSON.parse(
-      JSON.stringify(completedEvent)
-    ) as MonkeyTypes.FullResult<Mode>;
+    //TODO - this type cast was not needed before because we were using JSON cloning
+    // but now with the stronger types it shows that we are forcing completed event
+    // into a snapshot result - might not cuase issues but worth investigating
+    const result = Misc.deepClone(
+      completedEvent
+    ) as unknown as DB.SnapshotResult<Mode>;
     result._id = data.insertedId;
     if (data.isPb !== undefined && data.isPb) {
       result.isPb = true;

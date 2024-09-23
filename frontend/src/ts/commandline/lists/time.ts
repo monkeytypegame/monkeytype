@@ -1,7 +1,8 @@
 import * as UpdateConfig from "../../config";
 import * as TestLogic from "../../test/test-logic";
+import { Command } from "../types";
 
-const commands: MonkeyTypes.Command[] = [
+const commands: Command[] = [
   {
     id: "changeTimeConfig",
     display: "Time...",

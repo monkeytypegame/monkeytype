@@ -1,6 +1,7 @@
+import { deepClone } from "../utils/misc";
 import defaultConfig from "./default-config";
 
-export const defaultSnap: MonkeyTypes.Snapshot = {
+const defaultSnap = {
   results: undefined,
   personalBests: {
     time: {},
@@ -42,3 +43,5 @@ export const defaultSnap: MonkeyTypes.Snapshot = {
     },
   },
 };
+
+export default deepClone(defaultSnap);

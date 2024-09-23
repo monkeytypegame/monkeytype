@@ -122,7 +122,7 @@ async function getDataAndInit(): Promise<boolean> {
     LoadingPage.updateBar(45);
   }
   LoadingPage.updateText("Applying settings...");
-  const snapshot = DB.getSnapshot() as MonkeyTypes.Snapshot;
+  const snapshot = DB.getSnapshot() as DB.Snapshot;
   AccountButton.update(snapshot);
   Alerts.setNotificationBubbleVisible(snapshot.inboxUnreadSize > 0);
   showFavoriteQuoteLength();

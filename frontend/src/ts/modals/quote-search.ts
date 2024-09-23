@@ -11,7 +11,7 @@ import {
   TextExtractor,
 } from "../utils/search-service";
 import { splitByAndKeep } from "../utils/strings";
-import QuotesController from "../controllers/quotes-controller";
+import QuotesController, { Quote } from "../controllers/quotes-controller";
 import { isAuthenticated } from "../firebase";
 import { debounce } from "throttle-debounce";
 import Ape from "../ape";
@@ -23,7 +23,7 @@ import * as TestLogic from "../test/test-logic";
 import { createErrorMessage } from "../utils/misc";
 import { QuoteLength } from "@monkeytype/contracts/schemas/configs";
 
-const searchServiceCache: Record<string, SearchService<MonkeyTypes.Quote>> = {};
+const searchServiceCache: Record<string, SearchService<Quote>> = {};
 
 const pageSize = 100;
 let currentPageNumber = 1;
@@ -61,9 +61,7 @@ function highlightMatches(text: string, matchedText: string[]): string {
   return normalizedWords.join("");
 }
 
-function applyQuoteLengthFilter(
-  quotes: MonkeyTypes.Quote[]
-): MonkeyTypes.Quote[] {
+function applyQuoteLengthFilter(quotes: Quote[]): Quote[] {
   const quoteLengthFilterValue = $(
     "#quoteSearchModal .quoteLengthFilter"
   ).val() as string[];
@@ -81,7 +79,7 @@ function applyQuoteLengthFilter(
   return filteredQuotes;
 }
 
-function applyQuoteFavFilter(quotes: MonkeyTypes.Quote[]): MonkeyTypes.Quote[] {
+function applyQuoteFavFilter(quotes: Quote[]): Quote[] {
   const showFavOnly = (
     document.querySelector(".toggleFavorites") as HTMLDivElement
   ).classList.contains("active");
@@ -98,7 +96,7 @@ function applyQuoteFavFilter(quotes: MonkeyTypes.Quote[]): MonkeyTypes.Quote[] {
 }
 
 function buildQuoteSearchResult(
-  quote: MonkeyTypes.Quote,
+  quote: Quote,
   matchedSearchTerms: string[]
 ): string {
   let lengthDesc;
@@ -158,10 +156,10 @@ function buildQuoteSearchResult(
 async function updateResults(searchText: string): Promise<void> {
   const { quotes } = await QuotesController.getQuotes(Config.language);
 
-  const quoteSearchService = getSearchService<MonkeyTypes.Quote>(
+  const quoteSearchService = getSearchService<Quote>(
     Config.language,
     quotes,
-    (quote: MonkeyTypes.Quote) => {
+    (quote: Quote) => {
       return `${quote.text} ${quote.id} ${quote.source}`;
     }
   );
@@ -357,7 +355,7 @@ async function toggleFavoriteForQuote(quoteId: string): Promise<void> {
   const quote = {
     language: quoteLang,
     id: parseInt(quoteId, 10),
-  } as MonkeyTypes.Quote;
+  } as Quote;
 
   const alreadyFavorited = QuotesController.isQuoteFavorite(quote);
 

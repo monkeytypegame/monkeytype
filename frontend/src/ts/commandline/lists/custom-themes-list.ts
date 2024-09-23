@@ -2,15 +2,16 @@ import * as UpdateConfig from "../../config";
 import { isAuthenticated } from "../../firebase";
 import * as DB from "../../db";
 import * as ThemeController from "../../controllers/theme-controller";
+import { Command, CommandsSubgroup } from "../types";
 
-const subgroup: MonkeyTypes.CommandsSubgroup = {
+const subgroup: CommandsSubgroup = {
   title: "Custom themes list...",
   // configKey: "customThemeId",
   beforeList: (): void => update(),
   list: [],
 };
 
-const commands: MonkeyTypes.Command[] = [
+const commands: Command[] = [
   {
     id: "setCustomThemeId",
     display: "Custom themes...",
