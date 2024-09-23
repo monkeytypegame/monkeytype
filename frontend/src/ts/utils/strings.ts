@@ -149,3 +149,18 @@ export function cleanTypographySymbols(textToClean: string): string {
     (char) => specials[char as keyof typeof specials] || ""
   );
 }
+
+/**
+ * Split a string into characters. This supports multi-byte characters outside of the [Basic Multilinugal Plane](https://en.wikipedia.org/wiki/Plane_(Unicode).
+ * Using  `string.length` and `string[index]` does not work.
+ * @param s string to be tokenized into characters
+ * @returns array of characters
+ */
+export function splitIntoCharacters(s: string): string[] {
+  const result: string[] = [];
+  for (const t of s) {
+    result.push(t);
+  }
+
+  return result;
+}
