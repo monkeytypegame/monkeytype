@@ -2,7 +2,7 @@ import { Collection } from "mongodb";
 import * as db from "../init/db";
 import { createHash } from "crypto";
 import { User } from "@monkeytype/contracts/schemas/users";
-import { WithObjectId } from "../types/types";
+import { WithObjectId } from "../utils/misc";
 
 type BlocklistEntryProperties = Pick<User, "name" | "email" | "discordId">;
 

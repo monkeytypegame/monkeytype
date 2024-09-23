@@ -9,7 +9,7 @@ import {
   type UpdateFilter,
   type Filter,
 } from "mongodb";
-import { flattenObjectDeep } from "../utils/misc";
+import { flattenObjectDeep, WithObjectId } from "../utils/misc";
 import { getCachedConfiguration } from "../init/configuration";
 import { getDayOfYear } from "date-fns";
 import { UTCDate } from "@date-fns/utc";
@@ -36,7 +36,6 @@ import { addImportantLog } from "./logs";
 import { Result as ResultType } from "@monkeytype/contracts/schemas/results";
 import { Configuration } from "@monkeytype/contracts/schemas/configuration";
 import { isToday, isYesterday } from "@monkeytype/util/date-and-time";
-import { WithObjectId } from "../types/types";
 
 type DBUserTag = WithObjectId<UserTag>;
 

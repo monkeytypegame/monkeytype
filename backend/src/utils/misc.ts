@@ -226,3 +226,6 @@ export function replaceObjectIds<T extends { _id: ObjectId }>(
   if (data === undefined) return data;
   return data.map((it) => replaceObjectId(it));
 }
+export type WithObjectId<T extends { _id: string }> = Omit<T, "_id"> & {
+  _id: ObjectId;
+};

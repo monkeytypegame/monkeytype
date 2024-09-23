@@ -7,7 +7,7 @@ import * as db from "../init/db";
 import MonkeyError from "../utils/error";
 import { compareTwoStrings } from "string-similarity";
 import { ApproveQuote, Quote } from "@monkeytype/contracts/schemas/quotes";
-import { WithObjectId } from "../types/types";
+import { WithObjectId } from "../utils/misc";
 
 type JsonQuote = {
   text: string;
