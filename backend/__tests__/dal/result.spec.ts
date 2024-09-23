@@ -1,6 +1,7 @@
 import * as ResultDal from "../../src/dal/result";
 import { ObjectId } from "mongodb";
 import * as UserDal from "../../src/dal/user";
+import { DBResult } from "../../src/utils/result";
 
 let uid: string = "";
 const timestamp = Date.now() - 60000;
@@ -11,7 +12,7 @@ async function createDummyData(
   timestamp: number,
   tag?: string
 ): Promise<void> {
-  const dummyUser: MonkeyTypes.DBUser = {
+  const dummyUser: UserDal.DBUser = {
     _id: new ObjectId(),
     uid,
     addedAt: 0,
@@ -56,7 +57,7 @@ async function createDummyData(
       language: "english",
       isPb: false,
       name: "Test",
-    } as MonkeyTypes.DBResult);
+    } as DBResult);
   }
 }
 describe("ResultDal", () => {

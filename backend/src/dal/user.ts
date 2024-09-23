@@ -37,7 +37,7 @@ import { Result as ResultType } from "@monkeytype/contracts/schemas/results";
 import { Configuration } from "@monkeytype/contracts/schemas/configuration";
 import { isToday, isYesterday } from "@monkeytype/util/date-and-time";
 
-type DBUserTag = WithObjectId<UserTag>;
+export type DBUserTag = WithObjectId<UserTag>;
 
 export type DBUser = Omit<
   User,
@@ -740,7 +740,7 @@ export async function editTheme(
   );
 }
 
-type DBCustomTheme = WithObjectId<CustomTheme>;
+export type DBCustomTheme = WithObjectId<CustomTheme>;
 
 export async function getThemes(uid: string): Promise<DBCustomTheme[]> {
   const user = await getPartialUser(uid, "get themes", ["customThemes"]);

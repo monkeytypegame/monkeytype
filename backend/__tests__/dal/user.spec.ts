@@ -493,7 +493,7 @@ describe("UserDal", () => {
 
     it("should fail if tag not found", async () => {
       // given
-      const tagOne: MonkeyTypes.DBUserTag = {
+      const tagOne: UserDAL.DBUserTag = {
         _id: new ObjectId(),
         name: "one",
         personalBests: {} as any,
@@ -510,7 +510,7 @@ describe("UserDal", () => {
 
     it("editTag success", async () => {
       // given
-      const tagOne: MonkeyTypes.DBUserTag = {
+      const tagOne: UserDAL.DBUserTag = {
         _id: new ObjectId(),
         name: "one",
         personalBests: {} as any,
@@ -540,7 +540,7 @@ describe("UserDal", () => {
 
     it("should return error if tag is unknown", async () => {
       // given
-      const tagOne: MonkeyTypes.DBUserTag = {
+      const tagOne: UserDAL.DBUserTag = {
         _id: new ObjectId(),
         name: "one",
         personalBests: {} as any,
@@ -594,7 +594,7 @@ describe("UserDal", () => {
 
     it("should return error if tag is unknown", async () => {
       // given
-      const tagOne: MonkeyTypes.DBUserTag = {
+      const tagOne: UserDAL.DBUserTag = {
         _id: new ObjectId(),
         name: "one",
         personalBests: {} as any,

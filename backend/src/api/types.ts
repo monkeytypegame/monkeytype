@@ -3,7 +3,7 @@ import { Request as ExpressRequest } from "express";
 import { Context } from "../middlewares/context";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-type TsRestRequest = TsRestRequestGeneric<any>;
+export type TsRestRequest = TsRestRequestGeneric<any>;
 
 export type ExpressRequestWithContext = {
   ctx: Readonly<Context>;
