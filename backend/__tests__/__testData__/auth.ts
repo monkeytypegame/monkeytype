@@ -16,7 +16,7 @@ export async function mockAuthenticateWithApeKey(
   const apiKey = randomBytes(apeKeyBytes).toString("base64url");
   const saltyHash = await hash(apiKey, apeKeySaltRounds);
 
-  const apeKey: MonkeyTypes.ApeKeyDB = {
+  const apeKey: ApeKeyDal.DBApeKey = {
     _id: new ObjectId(),
     name: "bob",
     enabled: true,

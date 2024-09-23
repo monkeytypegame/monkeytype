@@ -9,6 +9,7 @@ import {
 } from "../controllers/user-flag-controller";
 import { isAuthenticated } from "../firebase";
 import { mapRange } from "@monkeytype/util/numbers";
+import { Snapshot } from "../db";
 
 let usingAvatar = false;
 
@@ -154,11 +155,10 @@ export function updateAvatar(
   }
 }
 
-export function update(snapshot: MonkeyTypes.Snapshot | undefined): void {
+export function update(snapshot: Snapshot | undefined): void {
   if (isAuthenticated()) {
     // this function is called after the snapshot is loaded (awaited), so it should be fine
-    const { xp, discordId, discordAvatar, name } =
-      snapshot as MonkeyTypes.Snapshot;
+    const { xp, discordId, discordAvatar, name } = snapshot as Snapshot;
 
     updateName(name);
     updateFlags(snapshot ?? {});

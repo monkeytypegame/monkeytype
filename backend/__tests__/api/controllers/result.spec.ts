@@ -10,6 +10,7 @@ import { DecodedIdToken } from "firebase-admin/lib/auth/token-verifier";
 import { ObjectId } from "mongodb";
 import { mockAuthenticateWithApeKey } from "../../__testData__/auth";
 import { enableRateLimitExpects } from "../../__testData__/rate-limit";
+import { DBResult } from "../../../src/utils/result";
 const uid = "123456";
 
 const mockDecodedToken: DecodedIdToken = {
@@ -830,10 +831,7 @@ async function enablePremiumFeatures(premium: boolean): Promise<void> {
     mockConfig
   );
 }
-function givenDbResult(
-  uid: string,
-  customize?: Partial<MonkeyTypes.DBResult>
-): MonkeyTypes.DBResult {
+function givenDbResult(uid: string, customize?: Partial<DBResult>): DBResult {
   return {
     _id: new ObjectId(),
     wpm: Math.random() * 100,

@@ -16,6 +16,7 @@ import {
 } from "@monkeytype/contracts/schemas/presets";
 import { getPreset } from "../controllers/preset-controller";
 import defaultConfig from "../constants/default-config";
+import { Config as ConfigType } from "@monkeytype/contracts/schemas/configs";
 
 const state = {
   presetType: "full" as PresetType,
@@ -279,12 +280,12 @@ async function apply(): Promise<void> {
         }),
         display: propPresetName,
         _id: response.body.data.presetId,
-      } as MonkeyTypes.SnapshotPreset);
+      } as DB.SnapshotPreset);
     }
   } else if (action === "edit") {
     const preset = snapshotPresets.filter(
-      (preset: MonkeyTypes.SnapshotPreset) => preset._id === presetId
-    )[0] as MonkeyTypes.SnapshotPreset;
+      (preset: DB.SnapshotPreset) => preset._id === presetId
+    )[0] as DB.SnapshotPreset;
     if (preset === undefined) {
       Notifications.add("Preset not found", -1);
       return;
@@ -329,13 +330,11 @@ async function apply(): Promise<void> {
       );
     } else {
       Notifications.add("Preset removed", 1);
-      snapshotPresets.forEach(
-        (preset: MonkeyTypes.SnapshotPreset, index: number) => {
-          if (preset._id === presetId) {
-            snapshotPresets.splice(index, 1);
-          }
+      snapshotPresets.forEach((preset: DB.SnapshotPreset, index: number) => {
+        if (preset._id === presetId) {
+          snapshotPresets.splice(index, 1);
         }
-      );
+      });
     }
   }
 
@@ -467,16 +466,16 @@ function getSettingGroup(configFieldName: string): PresetSettingGroup {
 }
 
 function getPartialConfigChanges(
-  configChanges: MonkeyTypes.ConfigChanges
-): MonkeyTypes.ConfigChanges {
-  const activeConfigChanges: MonkeyTypes.ConfigChanges = {};
+  configChanges: Partial<ConfigType>
+): Partial<ConfigType> {
+  const activeConfigChanges: Partial<ConfigType> = {};
   Object.keys(defaultConfig)
     .filter(
       (settingName) =>
         state.checkboxes.get(getSettingGroup(settingName)) === true
     )
     .forEach((settingName) => {
-      const safeSettingName = settingName as keyof MonkeyTypes.ConfigChanges;
+      const safeSettingName = settingName as keyof Partial<ConfigType>;
       const newValue =
         configChanges[safeSettingName] !== undefined
           ? configChanges[safeSettingName]
@@ -493,7 +492,7 @@ function getActiveSettingGroupsFromState(): ActiveSettingGroups {
       .map(([key]) => key)
   );
 }
-function getConfigChanges(): MonkeyTypes.ConfigChanges {
+function getConfigChanges(): Partial<ConfigType> {
   const activeConfigChanges =
     state.presetType === "partial"
       ? getPartialConfigChanges(Config.getConfigChanges())
@@ -501,9 +500,8 @@ function getConfigChanges(): MonkeyTypes.ConfigChanges {
   const tags = DB.getSnapshot()?.tags ?? [];
 
   const activeTagIds: string[] = tags
-    .filter((tag: MonkeyTypes.UserTag) => tag.active)
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-    .map((tag: MonkeyTypes.UserTag) => tag._id);
+    .filter((tag) => tag.active)
+    .map((tag) => tag._id);
 
   const setTags: boolean =
     state.presetType === "full" || state.checkboxes.get("behavior") === true;

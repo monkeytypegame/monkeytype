@@ -11,7 +11,7 @@ type Before = {
   mode: Mode | null;
   punctuation: boolean | null;
   numbers: boolean | null;
-  customText: MonkeyTypes.CustomTextData | null;
+  customText: CustomText.CustomTextData | null;
 };
 
 export const before: Before = {

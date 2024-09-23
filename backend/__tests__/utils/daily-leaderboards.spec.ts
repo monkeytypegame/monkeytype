@@ -1,3 +1,4 @@
+import { Mode } from "@monkeytype/contracts/schemas/shared";
 import { getDailyLeaderboard } from "../../src/utils/daily-leaderboards";
 
 const dailyLeaderboardsConfig = {
@@ -77,7 +78,7 @@ describe("Daily Leaderboards", () => {
     modeCases.forEach(({ case: { language, mode, mode2 }, expected }) => {
       const result = getDailyLeaderboard(
         language,
-        mode,
+        mode as Mode,
         mode2,
         dailyLeaderboardsConfig
       );

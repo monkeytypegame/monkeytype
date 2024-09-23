@@ -7,8 +7,6 @@ import * as ConnectionState from "../states/connection";
 import { areUnsortedArraysEqual } from "../utils/arrays";
 import * as TestResult from "../test/result";
 import AnimatedModal from "../utils/animated-modal";
-import { Mode } from "@monkeytype/contracts/schemas/shared";
-import { Result } from "@monkeytype/contracts/schemas/results";
 
 type State = {
   resultId: string;
@@ -137,7 +135,7 @@ async function save(): Promise<void> {
     duration: 2,
   });
 
-  DB.getSnapshot()?.results?.forEach((result: Result<Mode>) => {
+  DB.getSnapshot()?.results?.forEach((result) => {
     if (result._id === state.resultId) {
       result.tags = state.tags;
     }

@@ -7,6 +7,6 @@
   "ts-node": {
     "files": true
   },
-  "files": ["../src/types/types.d.ts", "vitest.d.ts"],
+  "files": ["vitest.d.ts"],
   "include": ["./**/*.ts", "./**/*.spec.ts", "./setup-tests.ts"]
 }

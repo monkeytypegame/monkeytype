@@ -39,7 +39,34 @@ export const PersonalBestsSchema = z.object({
 });
 export type PersonalBests = z.infer<typeof PersonalBestsSchema>;
 
-//used by user, config, public
+export const DefaultWordsModeSchema = z.union([
+  z.literal("10"),
+  z.literal("25"),
+  z.literal("50"),
+  z.literal("100"),
+]);
+
+export const DefaultTimeModeSchema = z.union([
+  z.literal("15"),
+  z.literal("30"),
+  z.literal("60"),
+  z.literal("120"),
+]);
+
+export const QuoteLengthSchema = z.union([
+  z.literal("short"),
+  z.literal("medium"),
+  z.literal("long"),
+  z.literal("thicc"),
+]);
+
+// // Step 1: Define the schema for specific string values "10" and "25"
+// const SpecificKeySchema = z.union([z.literal("10"), z.literal("25")]);
+
+// // Step 2: Use this schema as the key schema for another object
+// export const ExampleSchema = z.record(SpecificKeySchema, z.string());
+
+// //used by user, config, public
 export const ModeSchema = PersonalBestsSchema.keyof();
 export type Mode = z.infer<typeof ModeSchema>;
 

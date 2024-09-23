@@ -6,10 +6,11 @@ import {
   Preset,
 } from "@monkeytype/contracts/schemas/presets";
 import { omit } from "lodash";
+import { WithObjectId } from "../utils/misc";
 
 const MAX_PRESETS = 10;
 
-type DBConfigPreset = MonkeyTypes.WithObjectId<
+type DBConfigPreset = WithObjectId<
   Preset & {
     uid: string;
   }

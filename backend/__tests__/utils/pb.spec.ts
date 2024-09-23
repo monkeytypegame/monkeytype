@@ -59,7 +59,7 @@ describe("Pb Utils", () => {
 
       const run = pb.checkAndUpdatePb(
         userPbs,
-        {} as MonkeyTypes.LbPersonalBests,
+        {} as pb.LbPersonalBests,
         result
       );
 
@@ -168,7 +168,7 @@ describe("Pb Utils", () => {
       for (const lbPb of lbpbstartingvalues) {
         const lbPbPb = pb.updateLeaderboardPersonalBests(
           userPbs,
-          _.cloneDeep(lbPb) as MonkeyTypes.LbPersonalBests,
+          _.cloneDeep(lbPb) as pb.LbPersonalBests,
           result15
         );
 

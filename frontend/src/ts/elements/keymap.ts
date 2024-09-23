@@ -10,7 +10,7 @@ import * as Notifications from "../elements/notifications";
 import * as ActivePage from "../states/active-page";
 import * as TestWords from "../test/test-words";
 
-const stenoKeys: MonkeyTypes.Layout = {
+const stenoKeys: JSONData.Layout = {
   keymapShowTopRow: true,
   type: "matrix",
   keys: {
@@ -171,7 +171,7 @@ export async function refresh(
     const rowIds = Object.keys(lts.keys);
 
     for (let index = 0; index < rowIds.length; index++) {
-      const row = rowIds[index] as keyof MonkeyTypes.Keys;
+      const row = rowIds[index] as keyof JSONData.Keys;
       let rowKeys = lts.keys[row];
       if (row === "row1" && (isMatrix || Config.keymapStyle === "staggered")) {
         rowKeys = rowKeys.slice(1);

@@ -1,7 +1,7 @@
 import _ from "lodash";
 import MonkeyError from "../utils/error";
 import type { Response, NextFunction } from "express";
-import { getPartialUser } from "../dal/user";
+import { DBUser, getPartialUser } from "../dal/user";
 import { isAdmin } from "../dal/admin-uids";
 import { TsRestRequestHandler } from "@ts-rest/express";
 import {
@@ -10,12 +10,15 @@ import {
   PermissionId,
 } from "@monkeytype/contracts/schemas/api";
 import { isDevEnvironment } from "../utils/misc";
-import { getMetadata, TsRestRequestWithCtx } from "./utility";
+import { getMetadata } from "./utility";
+import { TsRestRequestWithContext } from "../api/types";
+import { DecodedToken } from "./auth";
+import { AppRoute, AppRouter } from "@ts-rest/core";
 
 type RequestPermissionCheck = {
   type: "request";
   criteria: (
-    req: TsRestRequestWithCtx,
+    req: TsRestRequestWithContext,
     metadata: EndpointMetadata | undefined
   ) => Promise<boolean>;
   invalidMessage?: string;
@@ -23,16 +26,16 @@ type RequestPermissionCheck = {
 
 type UserPermissionCheck = {
   type: "user";
-  fields: (keyof MonkeyTypes.DBUser)[];
-  criteria: (user: MonkeyTypes.DBUser) => boolean;
+  fields: (keyof DBUser)[];
+  criteria: (user: DBUser) => boolean;
   invalidMessage?: string;
 };
 
 type PermissionCheck = UserPermissionCheck | RequestPermissionCheck;
 
-function buildUserPermission<K extends keyof MonkeyTypes.DBUser>(
+function buildUserPermission<K extends keyof DBUser>(
   fields: K[],
-  criteria: (user: Pick<MonkeyTypes.DBUser, K>) => boolean,
+  criteria: (user: Pick<DBUser, K>) => boolean,
   invalidMessage?: string
 ): UserPermissionCheck {
   return {
@@ -73,7 +76,7 @@ export function verifyPermissions<
   T extends AppRouter | AppRoute
 >(): TsRestRequestHandler<T> {
   return async (
-    req: TsRestRequestWithCtx,
+    req: TsRestRequestWithContext,
     _res: Response,
     next: NextFunction
   ): Promise<void> => {
@@ -143,7 +146,7 @@ function getRequiredPermissionIds(
 }
 
 async function checkIfUserIsAdmin(
-  decodedToken: MonkeyTypes.DecodedToken | undefined,
+  decodedToken: DecodedToken | undefined,
   options: RequestAuthenticationOptions | undefined
 ): Promise<boolean> {
   if (decodedToken === undefined) return false;
@@ -162,7 +165,7 @@ type CheckResult =
     };
 
 async function checkUserPermissions(
-  decodedToken: MonkeyTypes.DecodedToken | undefined,
+  decodedToken: DecodedToken | undefined,
   checks: UserPermissionCheck[]
 ): Promise<CheckResult> {
   if (checks === undefined || checks.length === 0) {
@@ -181,7 +184,7 @@ async function checkUserPermissions(
     decodedToken.uid,
     "check user permissions",
     checks.flatMap((it) => it.fields)
-  )) as MonkeyTypes.DBUser;
+  )) as DBUser;
 
   for (const check of checks) {
     if (!check.criteria(user))
