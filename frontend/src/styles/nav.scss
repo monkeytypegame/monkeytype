@@ -102,22 +102,21 @@ nav {
             var(--bg-color) 10%
           );*/
           width: 100%;
-          font-size: 0.8em;
           position: absolute;
           color: var(--text-color);
           display: grid;
-          gap: 1em;
+          gap: 0.5em;
           //justify-items: center;
           width: 32ch;
           justify-self: end;
           margin-top: 0.3em;
-          padding: 1em;
-          margin-right: -0.4em;
+          padding: 0.5em 1em;
+          margin-right: -0.5em;
           border-radius: var(--roundness);
 
           .total {
             text-align: right;
-            font-size: 1rem;
+            font-size: 1em;
             color: var(--main-color);
             width: max-content;
             justify-self: end;
@@ -131,6 +130,7 @@ nav {
           }
           .list {
             .line {
+              font-size: 0.8em;
               display: grid;
               grid-template-columns: auto 10ch;
               gap: 0.5em;

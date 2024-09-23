@@ -201,8 +201,6 @@ export async function updateXpBar(
   const endingLevel =
     endingXp.level + endingXp.levelCurrentXp / endingXp.levelMaxXp;
 
-  $("nav .xpBar").css("margin-bottom", "-0.5em");
-
   if (!skipBreakdown) {
     const xpBarPromise = animateXpBar(startingLevel, endingLevel);
     const xpBreakdownPromise = animateXpBreakdown(addedXp, breakdown);
