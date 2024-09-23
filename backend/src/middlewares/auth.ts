@@ -20,7 +20,7 @@ import {
 } from "@monkeytype/contracts/schemas/api";
 import { Configuration } from "@monkeytype/contracts/schemas/configuration";
 import { getMetadata } from "./utility";
-import { TsRestRequestWithContext } from "../types/types";
+import { TsRestRequestWithContext } from "../api/types";
 
 export type DecodedToken = {
   type: "Bearer" | "ApeKey" | "None" | "GithubWebhook";

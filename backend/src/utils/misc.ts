@@ -2,7 +2,7 @@ import { MILLISECONDS_IN_DAY } from "@monkeytype/util/date-and-time";
 import { roundTo2 } from "@monkeytype/util/numbers";
 import _, { omit } from "lodash";
 import uaparser from "ua-parser-js";
-import { MonkeyRequest } from "../types/types";
+import { MonkeyRequest } from "../api/types";
 import { ObjectId } from "mongodb";
 
 //todo split this file into smaller util files (grouped by functionality)
