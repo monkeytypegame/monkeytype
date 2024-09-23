@@ -297,7 +297,7 @@ async function animateXpBreakdown(
     xpBreakdownTotal.text(`+${addedXp}`);
     return;
   }
-  const delay = 500;
+  const delay = 250;
   let total = 0;
   xpBreakdownList.empty();
 
