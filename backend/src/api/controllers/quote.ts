@@ -147,7 +147,7 @@ export async function reportQuote(
 
   await verifyCaptcha(captcha);
 
-  const newReport: ReportDAL.Report = {
+  const newReport: ReportDAL.DBReport = {
     _id: new ObjectId(),
     id: uuidv4(),
     type: "quote",
