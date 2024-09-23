@@ -152,3 +152,8 @@ body.crtmode #keymap .keymapKey.activeKey {
   box-shadow: 3px 0 1px var(--crt-main-color-glow),
     -3px 0 var(--crt-main-color-glow), 0 0 3px;
 }
+
+/* disable blur on xp breakdown. Firefox will not render otherwise. */
+nav .accountButtonAndMenu .view-account .xpBar .xpBreakdown {
+  backdrop-filter: none;
+}
