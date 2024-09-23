@@ -7,8 +7,7 @@ type TsRestRequest = TsRestRequestGeneric<any>;
 
 export type ExpressRequestWithContext = {
   ctx: Readonly<Context>;
-} & TsRestRequest &
-  ExpressRequest;
+} & ExpressRequest;
 
 export type TsRestRequestWithContext = {
   ctx: Readonly<Context>;
