@@ -96,7 +96,7 @@ export function appendButton(): void {
   //TODO: remove
   $(".addXPTest").on("click", async () => {
     console.log("click");
-    await updateXpBar(1000, 5000, {
+    await updateXpBar(2000, 1000, {
       base: 100,
       fullAccuracy: 200,
       accPenalty: 300,

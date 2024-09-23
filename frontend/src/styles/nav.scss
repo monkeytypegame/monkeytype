@@ -94,17 +94,8 @@ nav {
           background: var(--main-color);
           border-radius: var(--roundness);
         }
-        .xpGain {
-          position: absolute;
-          left: 100%;
-          margin-left: 0.5em;
-          top: 0.2em;
-          transform: translateY(-50%);
-          font-size: 0.75em;
-          color: var(--main-color);
-        }
         .xpBreakdown {
-          backdrop-filter: blur(5px);
+          backdrop-filter: blur(1em);
           /*background: linear-gradient(
             90deg,
             transparent 0%,
@@ -115,24 +106,48 @@ nav {
           position: absolute;
           color: var(--text-color);
           display: grid;
-          grid-template-columns: auto minmax(5ch, max-content);
-          gap: 0.5em;
+          gap: 1em;
           //justify-items: center;
-          width: 100%;
-          margin-top: 0.75em;
-          span {
+          width: 32ch;
+          justify-self: end;
+          margin-top: 0.3em;
+          padding: 1em;
+          margin-right: -1em;
+          border-radius: var(--roundness);
+
+          .total {
             text-align: right;
+            font-size: 1rem;
+            color: var(--main-color);
+            width: max-content;
+            justify-self: end;
+          }
+          .divider {
             width: 100%;
-            font-size: 0.75em;
-            //position: absolute;
-            &.positive {
-              color: var(--main-color);
-            }
-            &.negative {
-              color: var(--error-color);
-            }
-            &.total {
-              font-weight: bold;
+            height: 0.1rem;
+            background: var(--sub-alt-color);
+            border-radius: var(--roundness);
+            opacity: 0.5;
+          }
+          .list {
+            .line {
+              display: grid;
+              grid-template-columns: auto 10ch;
+              gap: 0.5em;
+
+              & div {
+                text-align: right;
+              }
+
+              .positive {
+                color: var(--main-color);
+              }
+              .negative {
+                color: var(--error-color);
+              }
+              .total {
+                font-weight: bold;
+              }
             }
           }
         }
