@@ -352,10 +352,11 @@ async function animateXpBreakdown(
     );
   }
 
-  await Misc.sleep(delay / 2);
+  // await Misc.sleep(delay / 2);
 
   total += breakdown.base ?? 0;
-  void flashTotalXp(total);
+  // void flashTotalXp(total);
+  $("nav .xpBar .xpBreakdown .total").text(`+${total}`);
   await append("time typing", breakdown.base);
 
   if (breakdown.fullAccuracy) {
@@ -473,7 +474,6 @@ async function animateXpBar(
     SlowTimer.get() ? 0 : 250,
     "linear"
   );
-  await Misc.sleep(250);
 
   const barEl = $("nav .xpBar .bar");
 
