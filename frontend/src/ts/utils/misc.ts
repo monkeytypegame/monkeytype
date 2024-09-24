@@ -707,11 +707,14 @@ export function prefersReducedMotion(): boolean {
 
 /**
  * Reduce the animation time based on the browser preference `prefers-reduced-motion`.
+ * Never returns zero as it breaks some animations
  * @param animationTime
- * @returns `0` if user prefers reduced-motion, else the given animationTime
+ * @returns 5% of the animationTime but at least 5 if user prefers reduced-motion, else the given animationTime
  */
 export function applyReducedMotion(animationTime: number): number {
-  return prefersReducedMotion() ? 0 : animationTime;
+  return prefersReducedMotion()
+    ? Math.max(5, animationTime * 0.05)
+    : animationTime;
 }
 
 // DO NOT ALTER GLOBAL OBJECTSONSTRUCTOR, IT WILL BREAK RESULT HASHES
