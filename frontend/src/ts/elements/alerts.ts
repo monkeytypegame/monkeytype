@@ -1,7 +1,6 @@
 import { formatDistanceToNowStrict } from "date-fns/formatDistanceToNowStrict";
 import Ape from "../ape";
 import { isAuthenticated } from "../firebase";
-import * as AccountButton from "../elements/account-button";
 import * as DB from "../db";
 import * as NotificationEvent from "../observables/notification-event";
 import * as BadgeController from "../controllers/badge-controller";
@@ -11,6 +10,7 @@ import { escapeHTML } from "../utils/misc";
 import AnimatedModal from "../utils/animated-modal";
 import { updateXp as accountPageUpdateProfile } from "./profile";
 import { MonkeyMail } from "@monkeytype/contracts/schemas/users";
+import * as XPBar from "../elements/xp-bar";
 
 let accountAlerts: MonkeyMail[] = [];
 let maxMail = 0;
@@ -91,7 +91,7 @@ function hide(): void {
 
       if (totalXpClaimed > 0) {
         const snapxp = DB.getSnapshot()?.xp ?? 0;
-        void AccountButton.updateXpBar(snapxp, totalXpClaimed);
+        void XPBar.update(snapxp, totalXpClaimed);
         accountPageUpdateProfile(snapxp + totalXpClaimed);
         DB.addXp(totalXpClaimed);
       }

@@ -125,6 +125,11 @@ body.crtmode header.focus #logo .icon {
     drop-shadow(-3px 0px 0px var(--crt-sub-color-glow));
 }
 
+body.crtmode nav .accountButtonAndMenu .view-account .xpBar .xpBreakdown {
+  backdrop-filter: none;
+  background: var(--bg-color);
+}
+
 body.crtmode .button,
 body.crtmode .scrollToTopButton {
   box-shadow: 3px 0 1px var(--crt-sub-alt-color-glow),
