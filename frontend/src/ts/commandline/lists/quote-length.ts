@@ -1,8 +1,9 @@
 import * as UpdateConfig from "../../config";
 import * as TestLogic from "../../test/test-logic";
 import { isAuthenticated } from "../../firebase";
+import { Command } from "../types";
 
-const commands: MonkeyTypes.Command[] = [
+const commands: Command[] = [
   {
     id: "changeQuoteLength",
     display: "Quote length...",

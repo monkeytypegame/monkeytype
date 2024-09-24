@@ -24,7 +24,7 @@ import {
   checkFunboxForcedConfigs,
 } from "./funbox-validation";
 import * as TribeConfigSyncEvent from "../../observables/tribe-config-sync-event";
-import { Wordset } from "../wordset";
+import { FunboxWordsFrequency, Wordset } from "../wordset";
 import * as LayoutfluidFunboxTimer from "./layoutfluid-funbox-timer";
 import * as DDR from "../../utils/ddr";
 import * as Random from "../../utils/random";
@@ -437,13 +437,13 @@ FunboxList.setFunboxFunctions("nospace", {
 });
 
 FunboxList.setFunboxFunctions("poetry", {
-  async pullSection(): Promise<Misc.Section | false> {
+  async pullSection(): Promise<JSONData.Section | false> {
     return getPoem();
   },
 });
 
 FunboxList.setFunboxFunctions("wikipedia", {
-  async pullSection(lang?: string): Promise<Misc.Section | false> {
+  async pullSection(lang?: string): Promise<JSONData.Section | false> {
     return getSection((lang ?? "") || "english");
   },
 });
@@ -517,7 +517,7 @@ FunboxList.setFunboxFunctions("hexadecimal", {
 });
 
 FunboxList.setFunboxFunctions("zipf", {
-  getWordsFrequencyMode(): MonkeyTypes.FunboxWordsFrequency {
+  getWordsFrequencyMode(): FunboxWordsFrequency {
     return "zipf";
   },
 });

@@ -4,7 +4,7 @@ import * as Notifications from "../elements/notifications";
 import * as Loader from "../elements/loader";
 // import * as Settings from "../pages/settings";
 import * as ConnectionState from "../states/connection";
-import { getSnapshot, setSnapshot } from "../db";
+import { getSnapshot, setSnapshot, Snapshot } from "../db";
 import AnimatedModal from "../utils/animated-modal";
 
 export function show(): void {
@@ -93,7 +93,7 @@ async function apply(): Promise<void> {
     );
   } else {
     Notifications.add("Streak hour offset set", 1);
-    const snap = getSnapshot() as MonkeyTypes.Snapshot;
+    const snap = getSnapshot() as Snapshot;
     snap.streakHourOffset = value;
     setSnapshot(snap);
     hide();

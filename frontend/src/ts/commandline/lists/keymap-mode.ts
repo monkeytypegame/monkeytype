@@ -1,6 +1,7 @@
 import * as UpdateConfig from "../../config";
+import { Command, CommandsSubgroup } from "../types";
 
-const subgroup: MonkeyTypes.CommandsSubgroup = {
+const subgroup: CommandsSubgroup = {
   title: "Keymap mode...",
   configKey: "keymapMode",
   list: [
@@ -40,7 +41,7 @@ const subgroup: MonkeyTypes.CommandsSubgroup = {
   ],
 };
 
-const commands: MonkeyTypes.Command[] = [
+const commands: Command[] = [
   {
     id: "toggleKeymap",
     display: "Keymap mode...",

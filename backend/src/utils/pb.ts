@@ -8,10 +8,14 @@ import {
 } from "@monkeytype/contracts/schemas/shared";
 import { Result as ResultType } from "@monkeytype/contracts/schemas/results";
 
+export type LbPersonalBests = {
+  time: Record<number, Record<string, PersonalBest>>;
+};
+
 type CheckAndUpdatePbResult = {
   isPb: boolean;
   personalBests: PersonalBests;
-  lbPersonalBests?: MonkeyTypes.LbPersonalBests;
+  lbPersonalBests?: LbPersonalBests;
 };
 
 type Result = Omit<ResultType<Mode>, "_id" | "name">;
@@ -35,7 +39,7 @@ export function canFunboxGetPb(result: Result): boolean {
 
 export function checkAndUpdatePb(
   userPersonalBests: PersonalBests,
-  lbPersonalBests: MonkeyTypes.LbPersonalBests | undefined,
+  lbPersonalBests: LbPersonalBests | undefined,
   result: Result
 ): CheckAndUpdatePbResult {
   const mode = result.mode;
@@ -174,9 +178,9 @@ function buildPersonalBest(result: Result): PersonalBest {
 
 export function updateLeaderboardPersonalBests(
   userPersonalBests: PersonalBests,
-  lbPersonalBests: MonkeyTypes.LbPersonalBests,
+  lbPersonalBests: LbPersonalBests,
   result: Result
-): MonkeyTypes.LbPersonalBests | null {
+): LbPersonalBests | null {
   if (!shouldUpdateLeaderboardPersonalBests(result)) {
     return null;
   }

@@ -18,6 +18,13 @@ import * as Time from "../states/time";
 import * as TimerEvent from "../observables/timer-event";
 import * as LayoutfluidFunboxTimer from "../test/funbox/layoutfluid-funbox-timer";
 
+type TimerStats = {
+  dateNow: number;
+  now: number;
+  expected: number;
+  nextDelay: number;
+};
+
 let slowTimerCount = 0;
 let timer: NodeJS.Timeout | null = null;
 const interval = 1000;
@@ -54,7 +61,7 @@ function updateTimer(): void {
   if (timerDebug) console.timeEnd("timer progress update");
 }
 
-function calculateWpmRaw(): MonkeyTypes.WpmAndRaw {
+function calculateWpmRaw(): { wpm: number; raw: number } {
   if (timerDebug) console.time("calculate wpm and raw");
   const wpmAndRaw = TestStats.calculateWpmAndRaw();
   if (timerDebug) console.timeEnd("calculate wpm and raw");
@@ -68,7 +75,7 @@ function calculateWpmRaw(): MonkeyTypes.WpmAndRaw {
   return wpmAndRaw;
 }
 
-function monkey(wpmAndRaw: MonkeyTypes.WpmAndRaw): void {
+function monkey(wpmAndRaw: { wpm: number; raw: number }): void {
   if (timerDebug) console.time("update monkey");
   const num = Config.blindMode ? wpmAndRaw.raw : wpmAndRaw.wpm;
   Monkey.updateFastOpacity(num);
@@ -119,7 +126,10 @@ function layoutfluid(): void {
   if (timerDebug) console.timeEnd("layoutfluid");
 }
 
-function checkIfFailed(wpmAndRaw: MonkeyTypes.WpmAndRaw, acc: number): void {
+function checkIfFailed(
+  wpmAndRaw: { wpm: number; raw: number },
+  acc: number
+): void {
   if (timerDebug) console.time("fail conditions");
   TestInput.pushKeypressesToHistory();
   TestInput.pushErrorToHistory();
@@ -200,9 +210,9 @@ function checkIfTimeIsUp(): void {
 
 // ---------------------------------------
 
-let timerStats: MonkeyTypes.TimerStats[] = [];
+let timerStats: TimerStats[] = [];
 
-export function getTimerStats(): MonkeyTypes.TimerStats[] {
+export function getTimerStats(): TimerStats[] {
   return timerStats;
 }
 

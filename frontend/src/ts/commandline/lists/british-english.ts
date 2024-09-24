@@ -1,7 +1,8 @@
 import * as UpdateConfig from "../../config";
 import * as TestLogic from "../../test/test-logic";
+import { Command, CommandsSubgroup } from "../types";
 
-const subgroup: MonkeyTypes.CommandsSubgroup = {
+const subgroup: CommandsSubgroup = {
   title: "British english...",
   configKey: "britishEnglish",
   list: [
@@ -26,7 +27,7 @@ const subgroup: MonkeyTypes.CommandsSubgroup = {
   ],
 };
 
-const commands: MonkeyTypes.Command[] = [
+const commands: Command[] = [
   {
     id: "changeBritishEnglish",
     display: "British english...",

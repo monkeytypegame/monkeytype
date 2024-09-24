@@ -2,7 +2,10 @@ import Config, * as UpdateConfig from "../config";
 import * as FunboxList from "./funbox/funbox-list";
 import * as CustomText from "./custom-text";
 import * as Wordset from "./wordset";
-import QuotesController from "../controllers/quotes-controller";
+import QuotesController, {
+  Quote,
+  QuoteWithTextSplit,
+} from "../controllers/quotes-controller";
 import * as TestWords from "./test-words";
 import * as BritishEnglish from "./british-english";
 import * as LazyMode from "./lazy-mode";
@@ -16,6 +19,10 @@ import * as GetText from "../utils/generate";
 import * as Random from "../utils/random";
 import * as TribeState from "../tribe/tribe-state";
 import * as GetText from "../utils/generate";
+import * as Random from "../utils/random";
+import * as TribeState from "../tribe/tribe-state";
+import * as GetText from "../utils/generate";
+import { FunboxWordOrder, LanguageObject } from "../utils/json-data";
 
 function shouldCapitalize(lastChar: string): boolean {
   return /[?!.؟]/.test(lastChar);
@@ -300,9 +307,7 @@ async function applyEnglishPunctuationToWord(word: string): Promise<string> {
   return EnglishPunctuation.replace(word);
 }
 
-function getFunboxWordsFrequency():
-  | MonkeyTypes.FunboxWordsFrequency
-  | undefined {
+function getFunboxWordsFrequency(): Wordset.FunboxWordsFrequency | undefined {
   const wordFunbox = FunboxList.get(Config.funbox).find(
     (f) => f.functions?.getWordsFrequencyMode
   );
@@ -375,10 +380,7 @@ async function applyBritishEnglishToWord(
   return await BritishEnglish.replace(word, previousWord);
 }
 
-function applyLazyModeToWord(
-  word: string,
-  language: MonkeyTypes.LanguageObject
-): string {
+function applyLazyModeToWord(word: string, language: LanguageObject): string {
   const allowLazyMode = !language.noLazyMode || Config.mode === "custom";
   if (Config.lazyMode && allowLazyMode) {
     word = LazyMode.replaceAccents(word, language.additionalAccents);
@@ -386,7 +388,7 @@ function applyLazyModeToWord(
   return word;
 }
 
-export function getWordOrder(): MonkeyTypes.FunboxWordOrder {
+export function getWordOrder(): FunboxWordOrder {
   const wordOrder =
     FunboxList.get(Config.funbox)
       .find((f) => f.properties?.find((fp) => fp.startsWith("wordOrder")))
@@ -395,7 +397,7 @@ export function getWordOrder(): MonkeyTypes.FunboxWordOrder {
   if (!wordOrder) {
     return "normal";
   } else {
-    return wordOrder.split(":")[1] as MonkeyTypes.FunboxWordOrder;
+    return wordOrder.split(":")[1] as FunboxWordOrder;
   }
 }
 
@@ -425,7 +427,7 @@ export function getWordsLimit(): number {
       limit = Config.words;
     }
     if (Config.mode === "quote") {
-      limit = (currentQuote as MonkeyTypes.QuoteWithTextSplit).textSplit.length;
+      limit = (currentQuote as QuoteWithTextSplit).textSplit.length;
     }
   }
 
@@ -459,9 +461,9 @@ export function getWordsLimit(): number {
 
   if (
     Config.mode === "quote" &&
-    (currentQuote as MonkeyTypes.QuoteWithTextSplit).textSplit.length < limit
+    (currentQuote as QuoteWithTextSplit).textSplit.length < limit
   ) {
-    limit = (currentQuote as MonkeyTypes.QuoteWithTextSplit).textSplit.length;
+    limit = (currentQuote as QuoteWithTextSplit).textSplit.length;
   }
 
   if (
@@ -484,8 +486,8 @@ export class WordGenError extends Error {
 }
 
 async function getQuoteWordList(
-  language: MonkeyTypes.LanguageObject,
-  wordOrder?: MonkeyTypes.FunboxWordOrder
+  language: LanguageObject,
+  wordOrder?: FunboxWordOrder
 ): Promise<string[]> {
   if (TestState.isRepeated) {
     if (currentWordset === null) {
@@ -521,7 +523,7 @@ async function getQuoteWordList(
     );
   }
 
-  let rq: MonkeyTypes.Quote;
+  let rq: Quote;
   if (Config.quoteLength.includes(-2) && Config.quoteLength.length === 1) {
     const targetQuote = QuotesController.getQuoteById(
       TestState.selectedQuoteId
@@ -569,7 +571,7 @@ async function getQuoteWordList(
     rq.textSplit = rq.text.split(" ");
   }
 
-  TestWords.setCurrentQuote(rq as MonkeyTypes.QuoteWithTextSplit);
+  TestWords.setCurrentQuote(rq as QuoteWithTextSplit);
 
   if (TestWords.currentQuote === null) {
     throw new WordGenError("Random quote is null");
@@ -583,7 +585,7 @@ async function getQuoteWordList(
 }
 
 let currentWordset: Wordset.Wordset | null = null;
-let currentLanguage: MonkeyTypes.LanguageObject | null = null;
+let currentLanguage: LanguageObject | null = null;
 let isCurrentlyUsingFunboxSection = false;
 
 type GenerateWordsReturn = {
@@ -593,10 +595,10 @@ type GenerateWordsReturn = {
   hasNewline: boolean;
 };
 
-let previousRandomQuote: MonkeyTypes.QuoteWithTextSplit | null = null;
+let previousRandomQuote: QuoteWithTextSplit | null = null;
 
 export async function generateWords(
-  language: MonkeyTypes.LanguageObject
+  language: LanguageObject
 ): Promise<GenerateWordsReturn> {
   if (!TestState.isRepeated) {
     previousGetNextWordReturns = [];
@@ -639,7 +641,15 @@ export async function generateWords(
     wordList = wordList.reverse();
   }
 
-  currentWordset = await Wordset.withWords(wordList);
+  const wordFunbox = FunboxList.get(Config.funbox).find(
+    (f) => f.functions?.withWords
+  );
+  if (wordFunbox?.functions?.withWords) {
+    currentWordset = await wordFunbox.functions.withWords(wordList);
+  } else {
+    currentWordset = await Wordset.withWords(wordList);
+  }
+
   console.debug("Wordset", currentWordset);
 
   if (limit === 0) {
@@ -681,16 +691,12 @@ export async function generateWords(
     ret.words.some((w) => w.includes("\t")) ||
     currentWordset.words.some((w) => w.includes("\t")) ||
     (Config.mode === "quote" &&
-      (quote as MonkeyTypes.QuoteWithTextSplit).textSplit.some((w) =>
-        w.includes("\t")
-      ));
+      (quote as QuoteWithTextSplit).textSplit.some((w) => w.includes("\t")));
   ret.hasNewline =
     ret.words.some((w) => w.includes("\n")) ||
     currentWordset.words.some((w) => w.includes("\n")) ||
     (Config.mode === "quote" &&
-      (quote as MonkeyTypes.QuoteWithTextSplit).textSplit.some((w) =>
-        w.includes("\n")
-      ));
+      (quote as QuoteWithTextSplit).textSplit.some((w) => w.includes("\n")));
 
   sectionHistory = []; //free up a bit of memory? is that even a thing?
   return ret;

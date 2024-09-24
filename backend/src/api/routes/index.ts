@@ -36,6 +36,7 @@ import { authenticateTsRestRequest } from "../../middlewares/auth";
 import { rateLimitRequest } from "../../middlewares/rate-limit";
 import { verifyPermissions } from "../../middlewares/permission";
 import { verifyRequiredConfiguration } from "../../middlewares/configuration";
+import { ExpressRequestWithContext } from "../types";
 
 // const pathOverride = process.env["API_PATH_OVERRIDE"];
 const pathOverride = "";
@@ -158,7 +159,7 @@ function applyApiRoutes(app: Application): void {
 
   app.use(
     (
-      req: MonkeyTypes.ExpressRequestWithContext,
+      req: ExpressRequestWithContext,
       res: Response,
       next: NextFunction
     ): void => {

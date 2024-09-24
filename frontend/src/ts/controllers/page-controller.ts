@@ -15,6 +15,7 @@ import * as PageAccountSettings from "../pages/account-settings";
 import * as PageTransition from "../states/page-transition";
 import * as AdController from "../controllers/ad-controller";
 import * as Focus from "../test/focus";
+import { PageName } from "../pages/page";
 
 type ChangeOptions = {
   force?: boolean;
@@ -24,7 +25,7 @@ type ChangeOptions = {
 };
 
 export async function change(
-  pageName: MonkeyTypes.PageName,
+  pageName: PageName,
   options = {} as ChangeOptions
 ): Promise<boolean> {
   const defaultOptions = {

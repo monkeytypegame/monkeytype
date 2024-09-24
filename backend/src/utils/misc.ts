@@ -2,6 +2,8 @@ import { MILLISECONDS_IN_DAY } from "@monkeytype/util/date-and-time";
 import { roundTo2 } from "@monkeytype/util/numbers";
 import _, { omit } from "lodash";
 import uaparser from "ua-parser-js";
+import { MonkeyRequest } from "../api/types";
+import { ObjectId } from "mongodb";
 
 //todo split this file into smaller util files (grouped by functionality)
 
@@ -26,14 +28,14 @@ type AgentLog = {
   device?: string;
 };
 
-export function buildAgentLog(req: TsRestRequest): AgentLog {
-  const agent = uaparser(req.headers["user-agent"]);
+export function buildAgentLog(req: MonkeyRequest): AgentLog {
+  const agent = uaparser(req.raw.headers["user-agent"]);
 
   const agentLog: AgentLog = {
     ip:
-      (req.headers["cf-connecting-ip"] as string) ||
-      (req.headers["x-forwarded-for"] as string) ||
-      (req.ip as string) ||
+      (req.raw.headers["cf-connecting-ip"] as string) ||
+      (req.raw.headers["x-forwarded-for"] as string) ||
+      (req.raw.ip as string) ||
       "255.255.255.255",
     agent: `${agent.os.name} ${agent.os.version} ${agent.browser.name} ${agent.browser.version}`,
   };
@@ -251,3 +253,6 @@ export function replaceObjectIds<T extends { _id: ObjectId }>(
   if (data === undefined) return data;
   return data.map((it) => replaceObjectId(it));
 }
+export type WithObjectId<T extends { _id: string }> = Omit<T, "_id"> & {
+  _id: ObjectId;
+};

@@ -2,7 +2,6 @@ import * as Loader from "../elements/loader";
 import * as Random from "../utils/random";
 import { envConfig } from "../constants/env-config";
 import { lastElementFromArray } from "./arrays";
-import * as JSONData from "./json-data";
 import { Config } from "@monkeytype/contracts/schemas/configs";
 import {
   Mode,
@@ -10,6 +9,10 @@ import {
   PersonalBests,
 } from "@monkeytype/contracts/schemas/shared";
 import { ZodError, ZodSchema } from "zod";
+import {
+  CustomTextDataWithTextLen,
+  Result,
+} from "@monkeytype/contracts/schemas/results";
 
 export function whorf(speed: number, wordlen: number): number {
   return Math.min(
@@ -193,7 +196,7 @@ export function canQuickRestart(
   mode: string,
   words: number,
   time: number,
-  CustomText: MonkeyTypes.CustomTextData,
+  CustomText: Omit<CustomTextDataWithTextLen, "textLen">,
   customTextIsLong: boolean
 ): boolean {
   const wordsLong = mode === "words" && (words >= 1000 || words === 0);
@@ -354,7 +357,7 @@ export async function swapElements(
 
 export function getMode2<M extends keyof PersonalBests>(
   config: Config,
-  randomQuote: MonkeyTypes.Quote | null
+  randomQuote: { id: number } | null
 ): Mode2<M> {
   const mode = config.mode;
   let retVal: string;
@@ -376,9 +379,7 @@ export function getMode2<M extends keyof PersonalBests>(
   return retVal as Mode2<M>;
 }
 
-export async function downloadResultsCSV(
-  array: MonkeyTypes.FullResult<Mode>[]
-): Promise<void> {
+export async function downloadResultsCSV(array: Result<Mode>[]): Promise<void> {
   Loader.show();
   const csvString = [
     [
@@ -407,7 +408,7 @@ export async function downloadResultsCSV(
       "tags",
       "timestamp",
     ],
-    ...array.map((item: MonkeyTypes.FullResult<Mode>) => [
+    ...array.map((item) => [
       item._id,
       item.isPb,
       item.wpm,
@@ -430,7 +431,7 @@ export async function downloadResultsCSV(
       item.lazyMode,
       item.blindMode,
       item.bailedOut,
-      item.tags.join(";"),
+      item.tags?.join(";"),
       item.timestamp,
     ]),
   ]
@@ -529,17 +530,6 @@ export async function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-export class Section {
-  public title: string;
-  public author: string;
-  public words: string[];
-  constructor(title: string, author: string, words: string[]) {
-    this.title = title;
-    this.author = author;
-    this.words = words;
-  }
-}
-
 export function isPasswordStrong(password: string): boolean {
   const hasCapital = !!password.match(/[A-Z]/);
   const hasNumber = !!password.match(/[\d]/);
@@ -592,15 +582,6 @@ export function zipfyRandomArrayIndex(dictLength: number): number {
   /* inverse of CDF where CDF is H_n/H_N */
   const inverseCDF = Math.exp(r * H_N - gamma) - 0.5;
   return Math.floor(inverseCDF);
-}
-
-export async function checkIfLanguageSupportsZipf(
-  language: string
-): Promise<"yes" | "no" | "unknown"> {
-  const lang = await JSONData.getLanguage(language);
-  if (lang.orderedByFrequency === true) return "yes";
-  if (lang.orderedByFrequency === false) return "no";
-  return "unknown";
 }
 
 // Function to get the bounding rectangle of a collection of elements

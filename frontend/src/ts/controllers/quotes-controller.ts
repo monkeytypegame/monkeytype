@@ -6,25 +6,38 @@ import * as DB from "../db";
 import Ape from "../ape";
 import Config from "../config";
 
-type JsonQuote = {
+export type Quote = {
   text: string;
   britishText?: string;
   source: string;
   length: number;
   id: number;
+  group: number;
+  language: string;
+  textSplit?: string[];
+};
+
+export type QuoteWithTextSplit = Quote & {
+  textSplit: string[];
 };
 
 type QuoteData = {
   language: string;
-  quotes: JsonQuote[];
+  quotes: {
+    text: string;
+    britishText?: string;
+    source: string;
+    length: number;
+    id: number;
+  }[];
   groups: [number, number][];
 };
 
 type QuoteCollection = {
-  quotes: MonkeyTypes.Quote[];
+  quotes: Quote[];
   length: number;
   language: string | null;
-  groups: MonkeyTypes.Quote[][];
+  groups: Quote[][];
 };
 
 const defaultQuoteCollection: QuoteCollection = {
@@ -37,7 +50,7 @@ const defaultQuoteCollection: QuoteCollection = {
 class QuotesController {
   private quoteCollection: QuoteCollection = defaultQuoteCollection;
 
-  private quoteQueue: MonkeyTypes.Quote[] = [];
+  private quoteQueue: Quote[] = [];
   private queueIndex = 0;
 
   async getQuotes(
@@ -73,8 +86,8 @@ class QuotesController {
       };
 
       // Transform JSON Quote schema to MonkeyTypes Quote schema
-      data.quotes.forEach((quote: JsonQuote) => {
-        const monkeyTypeQuote: MonkeyTypes.Quote = {
+      data.quotes.forEach((quote) => {
+        const monkeyTypeQuote: Quote = {
           text: quote.text,
           britishText: quote.britishText,
           source: quote.source,
@@ -109,12 +122,10 @@ class QuotesController {
     return this.quoteCollection;
   }
 
-  getQuoteById(id: number): MonkeyTypes.Quote | undefined {
-    const targetQuote = this.quoteCollection.quotes.find(
-      (quote: MonkeyTypes.Quote) => {
-        return quote.id === id;
-      }
-    );
+  getQuoteById(id: number): Quote | undefined {
+    const targetQuote = this.quoteCollection.quotes.find((quote: Quote) => {
+      return quote.id === id;
+    });
 
     return targetQuote;
   }
@@ -135,7 +146,7 @@ class QuotesController {
     this.queueIndex = 0;
   }
 
-  getRandomQuote(trulyRandom = false): MonkeyTypes.Quote | null {
+  getRandomQuote(trulyRandom = false): Quote | null {
     if (this.quoteQueue.length === 0) {
       return null;
     }
@@ -155,14 +166,14 @@ class QuotesController {
       shuffle(this.quoteQueue);
     }
 
-    const randomQuote = this.quoteQueue[this.queueIndex] as MonkeyTypes.Quote;
+    const randomQuote = this.quoteQueue[this.queueIndex] as Quote;
 
     this.queueIndex += 1;
 
     return randomQuote;
   }
 
-  getRandomFavoriteQuote(language: string): MonkeyTypes.Quote | null {
+  getRandomFavoriteQuote(language: string): Quote | null {
     const snapshot = DB.getSnapshot();
     if (!snapshot) {
       return null;
@@ -194,7 +205,7 @@ class QuotesController {
     return randomQuote ?? null;
   }
 
-  isQuoteFavorite({ language: quoteLanguage, id }: MonkeyTypes.Quote): boolean {
+  isQuoteFavorite({ language: quoteLanguage, id }: Quote): boolean {
     const snapshot = DB.getSnapshot();
     if (!snapshot) {
       return false;
@@ -218,10 +229,7 @@ class QuotesController {
     return matchedLanguage !== undefined;
   }
 
-  async setQuoteFavorite(
-    quote: MonkeyTypes.Quote,
-    isFavorite: boolean
-  ): Promise<void> {
+  async setQuoteFavorite(quote: Quote, isFavorite: boolean): Promise<void> {
     const snapshot = DB.getSnapshot();
     if (!snapshot) {
       throw new Error("Snapshot is not available");

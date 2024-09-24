@@ -1,4 +1,4 @@
-import { Section } from "../utils/misc";
+import { Section } from "../utils/json-data";
 
 const bannedChars = ["—", "_", " "];
 const maxWords = 100;

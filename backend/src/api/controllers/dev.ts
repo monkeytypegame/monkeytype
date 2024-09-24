@@ -19,6 +19,9 @@ import {
   GenerateDataResponse,
 } from "@monkeytype/contracts/dev";
 import { roundTo2 } from "@monkeytype/util/numbers";
+import { MonkeyRequest } from "../types";
+import { DBResult } from "../../utils/result";
+import { LbPersonalBests } from "../../utils/pb";
 
 const CREATE_RESULT_DEFAULT_OPTIONS = {
   firstTestTimestamp: DateUtils.startOfDay(new UTCDate(Date.now())).valueOf(),
@@ -28,7 +31,7 @@ const CREATE_RESULT_DEFAULT_OPTIONS = {
 };
 
 export async function createTestData(
-  req: MonkeyTypes.Request<undefined, GenerateDataRequest>
+  req: MonkeyRequest<undefined, GenerateDataRequest>
 ): Promise<GenerateDataResponse> {
   const { username, createUser } = req.body;
   const user = await getOrCreateUser(username, "password", createUser);
@@ -46,7 +49,7 @@ async function getOrCreateUser(
   username: string,
   password: string,
   createUser = false
-): Promise<MonkeyTypes.DBUser> {
+): Promise<UserDal.DBUser> {
   const existingUser = await UserDal.findByName(username);
 
   if (existingUser !== undefined && existingUser !== null) {
@@ -69,7 +72,7 @@ async function getOrCreateUser(
 }
 
 async function createTestResults(
-  user: MonkeyTypes.DBUser,
+  user: UserDal.DBUser,
   configOptions: GenerateDataRequest
 ): Promise<void> {
   const config = {
@@ -110,9 +113,9 @@ function random(min: number, max: number): number {
 }
 
 function createResult(
-  user: MonkeyTypes.DBUser,
+  user: UserDal.DBUser,
   timestamp: Date //evil, we modify this value
-): MonkeyTypes.DBResult {
+): DBResult {
   const mode: Mode = randomValue(["time", "words"]);
   const mode2: number =
     mode === "time"
@@ -187,7 +190,7 @@ async function updateUser(uid: string): Promise<void> {
   );
 
   //update PBs
-  const lbPersonalBests: MonkeyTypes.LbPersonalBests = {
+  const lbPersonalBests: LbPersonalBests = {
     time: {
       15: {},
       60: {},
@@ -222,7 +225,7 @@ async function updateUser(uid: string): Promise<void> {
         .sort({ wpm: -1, timestamp: 1 })
         .limit(1)
         .toArray()
-    )[0] as MonkeyTypes.DBResult;
+    )[0] as DBResult;
 
     if (personalBests[mode.mode] === undefined) personalBests[mode.mode] = {};
     if (personalBests[mode.mode][mode.mode2] === undefined)

@@ -41,7 +41,7 @@ export async function apply(_id: string): Promise<void> {
   });
   UpdateConfig.saveFullConfigToLocalStorage();
 }
-function isPartialPreset(preset: MonkeyTypes.SnapshotPreset): boolean {
+function isPartialPreset(preset: DB.SnapshotPreset): boolean {
   return preset.settingGroups !== undefined && preset.settingGroups !== null;
 }
 

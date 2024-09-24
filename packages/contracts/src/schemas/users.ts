@@ -1,6 +1,14 @@
 import { z, ZodEffects, ZodOptional, ZodString } from "zod";
 import { IdSchema, LanguageSchema, StringNumberSchema } from "./util";
-import { ModeSchema, Mode2Schema, PersonalBestsSchema } from "./shared";
+import {
+  ModeSchema,
+  Mode2Schema,
+  PersonalBestsSchema,
+  DefaultWordsModeSchema,
+  DefaultTimeModeSchema,
+  QuoteLengthSchema,
+  DifficultySchema,
+} from "./shared";
 import { CustomThemeColorsSchema } from "./configs";
 import { doesNotContainProfanity } from "../validation/validation";
 
@@ -16,40 +24,11 @@ export const ResultFiltersSchema = z.object({
       yes: z.boolean(),
     })
     .strict(),
-  difficulty: z
-    .object({
-      normal: z.boolean(),
-      expert: z.boolean(),
-      master: z.boolean(),
-    })
-    .strict(),
+  difficulty: z.record(DifficultySchema, z.boolean()),
   mode: z.record(ModeSchema, z.boolean()),
-  words: z
-    .object({
-      "10": z.boolean(),
-      "25": z.boolean(),
-      "50": z.boolean(),
-      "100": z.boolean(),
-      custom: z.boolean(),
-    })
-    .strict(),
-  time: z
-    .object({
-      "15": z.boolean(),
-      "30": z.boolean(),
-      "60": z.boolean(),
-      "120": z.boolean(),
-      custom: z.boolean(),
-    })
-    .strict(),
-  quoteLength: z
-    .object({
-      short: z.boolean(),
-      medium: z.boolean(),
-      long: z.boolean(),
-      thicc: z.boolean(),
-    })
-    .strict(),
+  words: z.record(DefaultWordsModeSchema.or(z.literal("custom")), z.boolean()),
+  time: z.record(DefaultTimeModeSchema.or(z.literal("custom")), z.boolean()),
+  quoteLength: z.record(QuoteLengthSchema, z.boolean()),
   punctuation: z
     .object({
       on: z.boolean(),

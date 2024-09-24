@@ -3,6 +3,7 @@ import * as CustomText from "../../test/custom-text";
 import * as TestLogic from "../../test/test-logic";
 import * as TestState from "../../test/test-state";
 import * as CustomTextState from "../../states/custom-text-name";
+import { Command, CommandsSubgroup } from "../types";
 
 function canBailOut(): boolean {
   return (
@@ -23,7 +24,7 @@ function canBailOut(): boolean {
   );
 }
 
-const subgroup: MonkeyTypes.CommandsSubgroup = {
+const subgroup: CommandsSubgroup = {
   title: "Are you sure...",
   list: [
     {
@@ -47,7 +48,7 @@ const subgroup: MonkeyTypes.CommandsSubgroup = {
   ],
 };
 
-const commands: MonkeyTypes.Command[] = [
+const commands: Command[] = [
   {
     id: "bailOut",
     display: "Bail out...",
