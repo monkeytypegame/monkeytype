@@ -101,17 +101,17 @@ nav {
             transparent 0%,
             var(--bg-color) 10%
           );*/
-          width: 100%;
+          min-width: 100%;
+          width: max-content;
           position: absolute;
           color: var(--text-color);
           display: grid;
-          gap: 0.5em;
+          // gap: 0.5em;
           //justify-items: center;
-          width: 32ch;
+          // width: 32ch;
           justify-self: end;
           margin-top: 0.3em;
-          padding: 0.5em 1em;
-          margin-right: -0.5em;
+          padding: 0.5em;
           border-radius: var(--roundness);
 
           .total {
@@ -129,6 +129,7 @@ nav {
             opacity: 0.5;
           }
           .list {
+            margin-top: 0.5em;
             .line {
               font-size: 0.8em;
               display: grid;

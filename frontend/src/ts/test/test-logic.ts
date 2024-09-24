@@ -268,7 +268,7 @@ export function restart(options = {} as RestartOptions): void {
     if (Config.randomTheme !== "off") {
       void ThemeController.randomizeTheme();
     }
-    AccountButton.skipXpBreakdown();
+    void AccountButton.skipXpBreakdown();
   }
 
   if (!ConnectionState.get()) {
@@ -1172,7 +1172,12 @@ async function saveResult(
 
   if (data.xp !== undefined) {
     const snapxp = DB.getSnapshot()?.xp ?? 0;
-    void AccountButton.updateXpBar(snapxp, data.xp, data.xpBreakdown);
+
+    void AccountButton.updateXpBar(
+      snapxp,
+      data.xp,
+      TestUI.resultVisible ? data.xpBreakdown : undefined
+    );
     DB.addXp(data.xp);
   }
 
