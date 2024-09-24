@@ -64,6 +64,7 @@ import {
   CompletedEvent,
   CustomTextDataWithTextLen,
 } from "@monkeytype/contracts/schemas/results";
+import * as XPBar from "../elements/xp-bar";
 
 let failReason = "";
 const koInputVisual = document.getElementById("koInputVisual") as HTMLElement;
@@ -268,7 +269,7 @@ export function restart(options = {} as RestartOptions): void {
     if (Config.randomTheme !== "off") {
       void ThemeController.randomizeTheme();
     }
-    void AccountButton.skipXpBreakdown();
+    void XPBar.skipBreakdown();
   }
 
   if (!ConnectionState.get()) {
@@ -1173,7 +1174,7 @@ async function saveResult(
   if (data.xp !== undefined) {
     const snapxp = DB.getSnapshot()?.xp ?? 0;
 
-    void AccountButton.updateXpBar(
+    void XPBar.update(
       snapxp,
       data.xp,
       TestUI.resultVisible ? data.xpBreakdown : undefined
