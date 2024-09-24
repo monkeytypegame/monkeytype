@@ -14,7 +14,7 @@ export function show(): void {
       getReleasesFromGitHub()
         .then((releases) => {
           $("#versionHistoryModal .modal").html(`<div class="releases"></div`);
-          releases.forEach((release: MonkeyTypes.GithubRelease) => {
+          releases.forEach((release) => {
             if (!release.draft && !release.prerelease) {
               let body = release.body;
 

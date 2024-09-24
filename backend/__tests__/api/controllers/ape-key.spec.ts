@@ -337,8 +337,8 @@ describe("ApeKeyController", () => {
 
 function apeKeyDb(
   uid: string,
-  data?: Partial<MonkeyTypes.ApeKeyDB>
-): MonkeyTypes.ApeKeyDB {
+  data?: Partial<ApeKeyDal.DBApeKey>
+): ApeKeyDal.DBApeKey {
   return {
     _id: new ObjectId(),
     uid,
@@ -363,12 +363,9 @@ async function enableApeKeysEndpoints(enabled: boolean): Promise<void> {
   );
 }
 
-function user(
-  uid: string,
-  data: Partial<MonkeyTypes.DBUser>
-): MonkeyTypes.DBUser {
+function user(uid: string, data: Partial<UserDal.DBUser>): UserDal.DBUser {
   return {
     uid,
     ...data,
-  } as MonkeyTypes.DBUser;
+  } as UserDal.DBUser;
 }

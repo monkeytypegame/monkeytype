@@ -266,10 +266,19 @@ function updateClearAllButton(): void {
   }
 }
 
+export type AddNotificationOptions = {
+  important?: boolean;
+  duration?: number;
+  customTitle?: string;
+  customIcon?: string;
+  closeCallback?: () => void;
+  allowHTML?: boolean;
+};
+
 export function add(
   message: string,
   level = 0,
-  options: MonkeyTypes.AddNotificationOptions = {}
+  options: AddNotificationOptions = {}
 ): void {
   NotificationEvent.dispatch(message, level, options.customTitle);
 

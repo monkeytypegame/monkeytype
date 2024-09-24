@@ -484,7 +484,7 @@ describe("user controller test", () => {
       //given
       getUserMock.mockResolvedValue({
         testActivity: { "2023": [1, 2, 3], "2024": [4, 5, 6] },
-      } as Partial<MonkeyTypes.DBUser> as MonkeyTypes.DBUser);
+      } as Partial<UserDal.DBUser> as UserDal.DBUser);
 
       //when
       await mockApp
@@ -497,7 +497,7 @@ describe("user controller test", () => {
       //given
       getUserMock.mockResolvedValue({
         testActivity: { "2023": [1, 2, 3], "2024": [4, 5, 6] },
-      } as Partial<MonkeyTypes.DBUser> as MonkeyTypes.DBUser);
+      } as Partial<UserDal.DBUser> as UserDal.DBUser);
       vi.spyOn(UserDal, "checkIfUserIsPremium").mockResolvedValue(true);
       await enablePremiumFeatures(true);
 
@@ -633,7 +633,7 @@ describe("user controller test", () => {
         email: "email",
         discordId: "discordId",
         banned: true,
-      } as Partial<MonkeyTypes.DBUser> as MonkeyTypes.DBUser;
+      } as Partial<UserDal.DBUser> as UserDal.DBUser;
       await getUserMock.mockResolvedValue(user);
 
       //WHEN
@@ -664,7 +664,7 @@ describe("user controller test", () => {
         name: "name",
         email: "email",
         discordId: "discordId",
-      } as Partial<MonkeyTypes.DBUser> as MonkeyTypes.DBUser;
+      } as Partial<UserDal.DBUser> as UserDal.DBUser;
       getUserMock.mockResolvedValue(user);
 
       //WHEN
@@ -1555,7 +1555,7 @@ describe("user controller test", () => {
         uid,
         name: "name",
         email: "email",
-      } as Partial<MonkeyTypes.DBUser> as MonkeyTypes.DBUser;
+      } as Partial<UserDal.DBUser> as UserDal.DBUser;
       getUserMock.mockResolvedValue(user);
       blocklistContainsMock.mockResolvedValue(true);
 
@@ -2061,12 +2061,12 @@ describe("user controller test", () => {
 
     it("should get tags", async () => {
       //GIVEN
-      const tagOne: MonkeyTypes.DBUserTag = {
+      const tagOne: UserDal.DBUserTag = {
         _id: new ObjectId(),
         name: "tagOne",
         personalBests: {} as any,
       };
-      const tagTwo: MonkeyTypes.DBUserTag = {
+      const tagTwo: UserDal.DBUserTag = {
         _id: new ObjectId(),
         name: "tagOne",
         personalBests: {} as any,
@@ -2171,12 +2171,12 @@ describe("user controller test", () => {
     });
     it("should get custom themes", async () => {
       //GIVEN
-      const themeOne: MonkeyTypes.DBCustomTheme = {
+      const themeOne: UserDal.DBCustomTheme = {
         _id: new ObjectId(),
         name: "themeOne",
         colors: new Array(10).fill("#000000") as any,
       };
-      const themeTwo: MonkeyTypes.DBCustomTheme = {
+      const themeTwo: UserDal.DBCustomTheme = {
         _id: new ObjectId(),
         name: "themeTwo",
         colors: new Array(10).fill("#FFFFFF") as any,
@@ -2207,7 +2207,7 @@ describe("user controller test", () => {
 
     it("should add ", async () => {
       //GIVEN
-      const addedTheme: MonkeyTypes.DBCustomTheme = {
+      const addedTheme: UserDal.DBCustomTheme = {
         _id: new ObjectId(),
         name: "custom",
         colors: new Array(10).fill("#000000") as any,
@@ -2501,7 +2501,7 @@ describe("user controller test", () => {
     it("should get stats", async () => {
       //GIVEN
       const stats: Pick<
-        MonkeyTypes.DBUser,
+        UserDal.DBUser,
         "startedTests" | "completedTests" | "timeTyping"
       > = {
         startedTests: 5,
@@ -2672,7 +2672,7 @@ describe("user controller test", () => {
     const checkIfUserIsPremiumMock = vi.spyOn(UserDal, "checkIfUserIsPremium");
     const leaderboardGetRankMock = vi.spyOn(LeaderboardDal, "getRank");
 
-    const foundUser: Partial<MonkeyTypes.DBUser> = {
+    const foundUser: Partial<UserDal.DBUser> = {
       _id: new ObjectId(),
       uid: new ObjectId().toHexString(),
       name: "bob",
@@ -3548,7 +3548,7 @@ describe("user controller test", () => {
         testActivity: {
           "2024": fillYearWithDay(94),
         },
-      } as Partial<MonkeyTypes.DBUser> as MonkeyTypes.DBUser;
+      } as Partial<UserDal.DBUser> as UserDal.DBUser;
       getUserMock.mockResolvedValue(user);
 
       //WHEN
@@ -3584,7 +3584,7 @@ describe("user controller test", () => {
           maxLength: 1024,
           hourOffset: 2,
         },
-      } as Partial<MonkeyTypes.DBUser> as MonkeyTypes.DBUser;
+      } as Partial<UserDal.DBUser> as UserDal.DBUser;
       getUserMock.mockResolvedValue(user);
 
       //WHEN

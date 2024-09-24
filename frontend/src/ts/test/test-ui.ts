@@ -19,7 +19,6 @@ import * as ConfigEvent from "../observables/config-event";
 import * as Hangul from "hangul-js";
 import { format } from "date-fns/format";
 import { isAuthenticated } from "../firebase";
-import { skipXpBreakdown } from "../elements/account-button";
 import * as FunboxList from "./funbox/funbox-list";
 import { debounce } from "throttle-debounce";
 import * as ResultWordHighlight from "../elements/result-word-highlight";
@@ -114,7 +113,7 @@ async function joinOverlappingHints(
 }
 
 const debouncedZipfCheck = debounce(250, async () => {
-  const supports = await Misc.checkIfLanguageSupportsZipf(Config.language);
+  const supports = await JSONData.checkIfLanguageSupportsZipf(Config.language);
   if (supports === "no") {
     Notifications.add(
       `${Strings.capitalizeFirstLetter(
@@ -1617,12 +1616,6 @@ $(".pageTest").on("click", "#showWordHistoryButton", () => {
 
 $("#wordsWrapper").on("click", () => {
   focusWords();
-});
-
-$(document).on("keypress", () => {
-  if (resultVisible) {
-    skipXpBreakdown();
-  }
 });
 
 ConfigEvent.subscribe((key, value) => {

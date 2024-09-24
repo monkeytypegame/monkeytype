@@ -1,7 +1,8 @@
 import Config, * as UpdateConfig from "../../config";
 import { get as getTypingSpeedUnit } from "../../utils/typing-speed-units";
+import { Command, CommandsSubgroup } from "../types";
 
-const subgroup: MonkeyTypes.CommandsSubgroup = {
+const subgroup: CommandsSubgroup = {
   title: "Change min burst mode...",
   configKey: "minBurst",
   list: [
@@ -44,7 +45,7 @@ const subgroup: MonkeyTypes.CommandsSubgroup = {
   ],
 };
 
-const commands: MonkeyTypes.Command[] = [
+const commands: Command[] = [
   {
     id: "changeMinBurst",
     display: "Minimum burst...",

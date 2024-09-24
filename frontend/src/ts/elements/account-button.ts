@@ -9,6 +9,7 @@ import {
 } from "../controllers/user-flag-controller";
 import { isAuthenticated } from "../firebase";
 import { mapRange } from "@monkeytype/util/numbers";
+import { Snapshot } from "../db";
 
 let usingAvatar = false;
 
@@ -154,11 +155,10 @@ export function updateAvatar(
   }
 }
 
-export function update(snapshot: MonkeyTypes.Snapshot | undefined): void {
+export function update(snapshot: Snapshot | undefined): void {
   if (isAuthenticated()) {
     // this function is called after the snapshot is loaded (awaited), so it should be fine
-    const { xp, discordId, discordAvatar, name } =
-      snapshot as MonkeyTypes.Snapshot;
+    const { xp, discordId, discordAvatar, name } = snapshot as Snapshot;
 
     updateName(name);
     updateFlags(snapshot ?? {});
@@ -192,7 +192,7 @@ export function update(snapshot: MonkeyTypes.Snapshot | undefined): void {
 export async function updateXpBar(
   currentXp: number,
   addedXp: number,
-  breakdown?: Record<string, number>
+  breakdown?: XpBreakdown
 ): Promise<void> {
   skipBreakdown = false;
   const startingXp = Levels.getXpDetails(currentXp);
@@ -207,119 +207,182 @@ export async function updateXpBar(
     const xpBreakdownPromise = animateXpBreakdown(addedXp, breakdown);
 
     await Promise.all([xpBarPromise, xpBreakdownPromise]);
-    await Misc.sleep(2000);
+
+    if (skipBreakdown) {
+      void flashTotalXp(addedXp);
+      $("nav .xpBar .xpBreakdown .list")
+        .stop(true, true)
+        .animate(
+          {
+            opacity: 0,
+          },
+          250,
+          () => {
+            $("nav .xpBar .xpBreakdown .list").empty();
+          }
+        );
+      await Misc.sleep(2000);
+    } else {
+      await Misc.sleep(5000);
+    }
   }
 
   $("nav .level").text(Levels.getLevelFromTotalXp(currentXp + addedXp));
   $("nav .xpBar")
     .stop(true, true)
     .css("opacity", 1)
-    .animate({ opacity: 0 }, SlowTimer.get() ? 0 : 250, () => {
-      $("nav .xpBar .xpGain").text(``);
-    });
+    .animate(
+      {
+        opacity: 0,
+      },
+      SlowTimer.get() ? 0 : 250
+    );
+}
+
+async function flashTotalXp(totalXp: number): Promise<void> {
+  const xpTotalEl = $("nav .xpBar .xpBreakdown .total");
+
+  xpTotalEl.text(`+${totalXp}`);
+
+  const rand = (Math.random() * 2 - 1) / 4;
+  const rand2 = (Math.random() + 1) / 2;
+
+  /**
+   * `borderSpacing` has no visible effect on this element,
+   * and is used in the animation only to provide numerical
+   * values for the `step(step)` function.
+   */
+  xpTotalEl
+    .stop(true, true)
+    .css({
+      transition: "initial",
+      borderSpacing: 100,
+    })
+    .animate(
+      {
+        borderSpacing: 0,
+      },
+      {
+        step(step) {
+          xpTotalEl.css(
+            "transform",
+            `scale(${1 + (step / 200) * rand2}) rotate(${
+              (step / 10) * rand
+            }deg)`
+          );
+        },
+        duration: 2000,
+        easing: "easeOutCubic",
+        complete: () => {
+          xpTotalEl.css({
+            backgroundColor: "",
+            transition: "",
+          });
+        },
+      }
+    );
 }
 
 async function animateXpBreakdown(
   addedXp: number,
   breakdown?: XpBreakdown
 ): Promise<void> {
+  const xpBreakdownTotal = $("nav .xpBar .xpBreakdown .total");
+  const xpBreakdownList = $("nav .xpBar .xpBreakdown .list");
+  xpBreakdownList.css("opacity", 1);
   if (!breakdown) {
-    $("nav .xpBar .xpGain").text(`+${addedXp}`);
+    xpBreakdownTotal.text(`+${addedXp}`);
     return;
   }
-  const delay = 1000;
+  const delay = 250;
   let total = 0;
-  const xpGain = $("nav .xpBar .xpGain");
-  const xpBreakdown = $("nav .xpBar .xpBreakdown");
-  xpBreakdown.empty();
+  xpBreakdownList.empty();
 
-  async function append(string: string): Promise<void> {
-    if (skipBreakdown) {
-      total = addedXp;
-      string = "";
+  xpBreakdownTotal.text("+0");
+
+  async function append(
+    string: string,
+    amount: number | string | undefined,
+    options?: { extraClass?: string }
+  ): Promise<void> {
+    if (skipBreakdown) return;
+
+    if (amount === undefined) {
+      xpBreakdownList.append(
+        `<div class="line" data-string='${string}'><div>${string}</div><div></div></div>`
+      );
+    } else if (typeof amount === "string") {
+      xpBreakdownList.append(
+        `
+        <div class="line" data-string='${string}'>
+        <div class="${options?.extraClass}">${string}</div>
+        <div class="${options?.extraClass}">${amount}</div>
+        </div>`
+      );
+    } else {
+      const positive = amount == undefined ? undefined : amount >= 0;
+
+      xpBreakdownList.append(`
+        <div class="line" data-string='${string}'>
+
+          <div class="${options?.extraClass}">${string}</div>
+          <div class="${positive ? "positive" : "negative"} ${
+        options?.extraClass
+      }">${positive ? "+" : "-"}${Math.abs(amount)}</div>
+        </div>`);
     }
 
-    xpBreakdown.find(".next").removeClass("next").addClass("previous");
-    xpBreakdown.append(
-      `<div class='text next' style="opacity: 0; margin-top: 1rem;">${string}</div>`
-    );
-    const previous = xpBreakdown.find(".previous");
-    previous.animate(
-      {
-        marginTop: "-1rem",
-        opacity: 0,
-      },
-      SlowTimer.get() ? 0 : 250,
-      () => {
-        previous.remove();
-      }
-    );
-    setTimeout(() => {
-      xpGain
-        .stop(true, true)
-        .text(`+${total}`)
-        .css({
-          borderSpacing: 100,
-        })
-        .animate(
-          {
-            borderSpacing: 0,
-          },
-          {
-            step(step) {
-              xpGain.css(
-                "transform",
-                `scale(${1 + step / 300}) translateY(-50%)`
-              );
-            },
-            duration: SlowTimer.get() ? 0 : 250,
-            easing: "swing",
-          }
-        );
-    }, 125);
+    const el = xpBreakdownList.find(`.line[data-string='${string}']`);
 
+    el.css("opacity", 0);
     await Misc.promiseAnimation(
-      xpBreakdown.find(".next"),
+      el,
       {
         opacity: "1",
-        marginTop: "0",
       },
-      SlowTimer.get() ? 0 : 250,
+      250,
       "swing"
     );
   }
 
-  xpGain.text(`+0`);
-  xpBreakdown.append(
-    `<div class='text next'>time typing +${breakdown.base}</div>`
-  );
-  total += breakdown["base"] ?? 0;
+  // await Misc.sleep(delay / 2);
+
+  total += breakdown.base ?? 0;
+  // void flashTotalXp(total);
+  $("nav .xpBar .xpBreakdown .total").text(`+${total}`);
+  await append("time typing", breakdown.base);
+
   if (breakdown.fullAccuracy) {
     await Misc.sleep(delay);
-    await append(`perfect +${breakdown.fullAccuracy}`);
     total += breakdown.fullAccuracy;
+    void flashTotalXp(total);
+    await append("perfect", breakdown.fullAccuracy);
   } else if (breakdown.corrected) {
     await Misc.sleep(delay);
-    await append(`clean +${breakdown.corrected}`);
     total += breakdown.corrected;
+    void flashTotalXp(total);
+    await append("clean", breakdown.corrected);
   }
 
   if (skipBreakdown) return;
 
   if (breakdown.quote) {
     await Misc.sleep(delay);
-    await append(`quote +${breakdown.quote}`);
     total += breakdown.quote;
+    void flashTotalXp(total);
+    await append("quote", breakdown.quote);
   } else {
     if (breakdown.punctuation) {
       await Misc.sleep(delay);
-      await append(`punctuation +${breakdown.punctuation}`);
       total += breakdown.punctuation;
+      void flashTotalXp(total);
+      await append("punctuation", breakdown.punctuation);
     }
     if (breakdown.numbers) {
       await Misc.sleep(delay);
-      await append(`numbers +${breakdown.numbers}`);
       total += breakdown.numbers;
+      void flashTotalXp(total);
+      await append("numbers", breakdown.numbers);
     }
   }
 
@@ -327,56 +390,59 @@ async function animateXpBreakdown(
 
   if (breakdown.funbox) {
     await Misc.sleep(delay);
-    await append(`funbox +${breakdown.funbox}`);
     total += breakdown.funbox;
+    void flashTotalXp(total);
+    await append("funbox", breakdown.funbox);
   }
 
   if (skipBreakdown) return;
 
   if (breakdown.streak) {
     await Misc.sleep(delay);
-    await append(`streak +${breakdown.streak}`);
     total += breakdown.streak;
+    void flashTotalXp(total);
+    await append("streak", breakdown.streak);
   }
 
   if (skipBreakdown) return;
 
   if (breakdown.accPenalty) {
     await Misc.sleep(delay);
-    await append(`accuracy penalty -${breakdown.accPenalty}`);
     total -= breakdown.accPenalty;
+    void flashTotalXp(total);
+    await append("accuracy penalty", breakdown.accPenalty * -1);
   }
 
   if (skipBreakdown) return;
 
   if (breakdown.incomplete) {
     await Misc.sleep(delay);
-    await append(`incomplete tests +${breakdown.incomplete}`);
     total += breakdown.incomplete;
+    void flashTotalXp(total);
+    await append("incomplete tests", breakdown.incomplete);
   }
 
   if (skipBreakdown) return;
 
   if (breakdown.configMultiplier) {
     await Misc.sleep(delay);
-    await append(`global multiplier x${breakdown.configMultiplier}`);
     total *= breakdown.configMultiplier;
+    void flashTotalXp(total);
+    await append("global multiplier", `x${breakdown.configMultiplier}`);
   }
 
   if (skipBreakdown) return;
 
   if (breakdown.daily) {
     await Misc.sleep(delay);
-    await append(`daily bonus +${breakdown.daily}`);
     total += breakdown.daily;
+    void flashTotalXp(total);
+    await append("daily bonus", breakdown.daily);
   }
 
   if (skipBreakdown) return;
 
   await Misc.sleep(delay);
-  await append("");
-  return;
-  //base (100% corrected) (quote punctuation numbers) accPenalty incomplete configMultiplier daily
 }
 
 async function animateXpBar(
@@ -387,7 +453,7 @@ async function animateXpBar(
 
   $("nav .xpBar").stop(true, true).css("opacity", 0);
 
-  await Misc.promiseAnimation(
+  void Misc.promiseAnimation(
     $("nav .xpBar"),
     {
       opacity: "1",

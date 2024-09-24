@@ -1,7 +1,8 @@
 import * as UpdateConfig from "../../config";
 import * as SoundController from "../../controllers/sound-controller";
+import { Command, CommandsSubgroup } from "../types";
 
-const subgroup: MonkeyTypes.CommandsSubgroup = {
+const subgroup: CommandsSubgroup = {
   title: "Sound on error...",
   configKey: "playSoundOnError",
   list: [
@@ -64,7 +65,7 @@ const subgroup: MonkeyTypes.CommandsSubgroup = {
   ],
 };
 
-const commands: MonkeyTypes.Command[] = [
+const commands: Command[] = [
   {
     id: "changeSoundOnError",
     display: "Sound on error...",

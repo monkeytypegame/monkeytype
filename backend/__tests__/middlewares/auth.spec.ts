@@ -14,6 +14,7 @@ import {
   RequestAuthenticationOptions,
 } from "@monkeytype/contracts/schemas/api";
 import * as Prometheus from "../../src/utils/prometheus";
+import { TsRestRequestWithContext } from "../../src/api/types";
 
 const mockDecodedToken: DecodedIdToken = {
   uid: "123456789",
@@ -37,7 +38,7 @@ const mockApeKey = {
 vi.spyOn(ApeKeys, "getApeKey").mockResolvedValue(mockApeKey);
 vi.spyOn(ApeKeys, "updateLastUsedOn").mockResolvedValue();
 const isDevModeMock = vi.spyOn(Misc, "isDevEnvironment");
-let mockRequest: Partial<Auth.TsRestRequestWithCtx>;
+let mockRequest: Partial<TsRestRequestWithContext>;
 let mockResponse: Partial<Response>;
 let nextFunction: NextFunction;
 
@@ -553,7 +554,7 @@ describe("middlewares/auth", () => {
 async function authenticate(
   request: Partial<Request>,
   authenticationOptions?: RequestAuthenticationOptions
-): Promise<{ decodedToken: MonkeyTypes.DecodedToken }> {
+): Promise<{ decodedToken: Auth.DecodedToken }> {
   const mergedRequest = {
     ...mockRequest,
     ...request,

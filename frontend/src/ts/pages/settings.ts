@@ -21,7 +21,10 @@ import SlimSelect from "slim-select";
 
 import * as Skeleton from "../utils/skeleton";
 import * as CustomBackgroundFilter from "../elements/custom-background-filter";
-import { ConfigValue } from "@monkeytype/contracts/schemas/configs";
+import {
+  ConfigValue,
+  CustomLayoutFluid,
+} from "@monkeytype/contracts/schemas/configs";
 
 type SettingsGroups<T extends ConfigValue> = Record<string, SettingsGroup<T>>;
 
@@ -787,7 +790,7 @@ function refreshTagsSettingsSection(): void {
 function refreshPresetsSettingsSection(): void {
   if (isAuthenticated() && DB.getSnapshot()) {
     const presetsEl = $(".pageSettings .section.presets .presetsList").empty();
-    DB.getSnapshot()?.presets?.forEach((preset: MonkeyTypes.SnapshotPreset) => {
+    DB.getSnapshot()?.presets?.forEach((preset: DB.SnapshotPreset) => {
       presetsEl.append(`
       <div class="buttons preset" data-id="${preset._id}" data-name="${preset.name}" data-display="${preset.display}">
         <button class="presetButton">${preset.display}</button>
@@ -1274,7 +1277,7 @@ $(
   void UpdateConfig.setCustomLayoutfluid(
     $(
       ".pageSettings .section[data-config-name='customLayoutfluid'] .inputAndButton input"
-    ).val() as MonkeyTypes.CustomLayoutFluidSpaces
+    ).val() as CustomLayoutFluid
   ).then((bool) => {
     if (bool) {
       Notifications.add("Custom layoutfluid saved", 1);
@@ -1289,7 +1292,7 @@ $(
     void UpdateConfig.setCustomLayoutfluid(
       $(
         ".pageSettings .section[data-config-name='customLayoutfluid'] .inputAndButton input"
-      ).val() as MonkeyTypes.CustomLayoutFluidSpaces
+      ).val() as CustomLayoutFluid
     ).then((bool) => {
       if (bool) {
         Notifications.add("Custom layoutfluid saved", 1);

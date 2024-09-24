@@ -16,7 +16,7 @@ function getCheckboxValue(checkbox: string): boolean {
 type SharedTestSettings = [
   Mode | null,
   Mode2<Mode> | null,
-  MonkeyTypes.CustomTextData | null,
+  CustomText.CustomTextData | null,
   boolean | null,
   boolean | null,
   string | null,

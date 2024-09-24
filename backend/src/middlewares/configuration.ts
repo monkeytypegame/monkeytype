@@ -7,13 +7,15 @@ import {
   ConfigurationPath,
   RequireConfiguration,
 } from "@monkeytype/contracts/require-configuration/index";
-import { getMetadata, TsRestRequestWithCtx } from "./utility";
+import { getMetadata } from "./utility";
+import { TsRestRequestWithContext } from "../api/types";
+import { AppRoute, AppRouter } from "@ts-rest/core";
 
 export function verifyRequiredConfiguration<
   T extends AppRouter | AppRoute
 >(): TsRestRequestHandler<T> {
   return async (
-    req: TsRestRequestWithCtx,
+    req: TsRestRequestWithContext,
     _res: Response,
     next: NextFunction
   ): Promise<void> => {
