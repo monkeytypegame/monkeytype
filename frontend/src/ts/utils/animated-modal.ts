@@ -134,6 +134,8 @@ export default class AnimatedModal<
   async runSetup(): Promise<void> {
     this.wrapperEl.addEventListener("keydown", (e) => {
       if (e.key === "Escape" && isPopupVisible(this.dialogId)) {
+        e.preventDefault();
+        e.stopPropagation();
         if (this.customEscapeHandler !== undefined) {
           this.customEscapeHandler(e);
         } else {

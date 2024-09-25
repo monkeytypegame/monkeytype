@@ -646,6 +646,8 @@ const modal = new AnimatedModal({
         }
       }
       if (e.key === "Escape") {
+        e.preventDefault();
+        e.stopPropagation();
         await goBackOrHide();
       }
     });
