@@ -85,7 +85,6 @@ nav {
         right: 0;
         background: var(--sub-alt-color);
         border-radius: var(--roundness);
-        display: grid;
         grid-template-columns: auto 2.5em;
         .bar {
           left: 0;
@@ -110,7 +109,6 @@ nav {
           //justify-items: center;
           // width: 32ch;
           justify-self: end;
-          margin-top: 0.3em;
           padding: 0.5em;
           border-radius: var(--roundness);
 
