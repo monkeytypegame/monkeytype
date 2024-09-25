@@ -83,6 +83,9 @@ export async function update(
     addedXp,
     breakdown,
   };
+
+  levelEl.text(Levels.getLevelFromTotalXp(currentXp));
+
   const startingXp = Levels.getXpDetails(currentXp);
   const endingXp = Levels.getXpDetails(currentXp + addedXp);
   const startingLevel =
@@ -493,3 +496,5 @@ async function flashLevel(): Promise<void> {
       }
     );
 }
+//@ts-expect-error
+window.updateXp = update;
