@@ -58,7 +58,7 @@ export async function skipBreakdown(): Promise<void> {
       {
         opacity: 0,
       },
-      SlowTimer.get() ? 0 : 250
+      SlowTimer.get() ? 0 : Misc.applyReducedMotion(250)
     );
 }
 
@@ -104,7 +104,7 @@ export async function update(
     {
       opacity: "1",
     },
-    SlowTimer.get() ? 0 : 125,
+    SlowTimer.get() ? 0 : Misc.applyReducedMotion(125),
     "linear"
   );
 
@@ -113,7 +113,7 @@ export async function update(
     {
       opacity: "1",
     },
-    SlowTimer.get() ? 0 : 125,
+    SlowTimer.get() ? 0 : Misc.applyReducedMotion(125),
     "linear"
   );
 
@@ -147,7 +147,7 @@ export async function update(
       {
         opacity: 0,
       },
-      SlowTimer.get() ? 0 : 250
+      SlowTimer.get() ? 0 : Misc.applyReducedMotion(250)
     );
 }
 
@@ -183,7 +183,7 @@ async function flashTotalXp(totalXp: number, force = false): Promise<void> {
             }deg)`
           );
         },
-        duration: 2000,
+        duration: Misc.applyReducedMotion(2000),
         easing: "easeOutCubic",
         complete: () => {
           xpBreakdownTotalEl.css({
@@ -237,7 +237,7 @@ async function addBreakdownListItem(
     {
       opacity: "1",
     },
-    250,
+    Misc.applyReducedMotion(250),
     "swing"
   );
 }
@@ -253,7 +253,7 @@ async function animateXpBreakdown(
     xpBreakdownTotalEl.text(`+${addedXp}`);
     return;
   }
-  const delay = 250;
+  const delay = Misc.applyReducedMotion(250);
   let total = 0;
   xpBreakdownListEl.empty();
   xpBreakdownListEl.removeClass("hidden");
@@ -382,7 +382,7 @@ async function animateXpBar(
       {
         width: "100%",
       },
-      SlowTimer.get() ? 0 : 1000,
+      SlowTimer.get() ? 0 : Misc.applyReducedMotion(1000),
       "easeOutExpo"
     );
 
@@ -394,7 +394,7 @@ async function animateXpBar(
     await Misc.promiseAnimation(
       barEl,
       { width: `${(endingLevel % 1) * 100}%` },
-      SlowTimer.get() ? 0 : 1000,
+      SlowTimer.get() ? 0 : Misc.applyReducedMotion(1000),
       "easeOutExpo"
     );
   } else {
@@ -424,7 +424,7 @@ async function animateXpBar(
         {
           width: "100%",
         },
-        SlowTimer.get() ? 0 : animationDuration,
+        SlowTimer.get() ? 0 : Misc.applyReducedMotion(animationDuration),
         animationEasing
       );
       toAnimate -= decrement;
@@ -443,7 +443,7 @@ async function animateXpBar(
       {
         width: `${(toAnimate % 1) * 100}%`,
       },
-      SlowTimer.get() ? 0 : 1000,
+      SlowTimer.get() ? 0 : Misc.applyReducedMotion(1000),
       "easeOutExpo"
     );
   }
@@ -485,7 +485,7 @@ async function flashLevel(): Promise<void> {
             }deg)`
           );
         },
-        duration: 2000,
+        duration: Misc.applyReducedMotion(2000),
         easing: "easeOutCubic",
         complete: () => {
           levelEl.css({
