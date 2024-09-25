@@ -496,5 +496,3 @@ async function flashLevel(): Promise<void> {
       }
     );
 }
-//@ts-expect-error
-window.updateXp = update;
