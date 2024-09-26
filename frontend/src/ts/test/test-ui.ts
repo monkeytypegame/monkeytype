@@ -148,7 +148,8 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
   }
   if (eventKey === "fontSize" && !nosave) {
     OutOfFocus.hide();
-    updateWordsHeight(true);
+    updateWordsWrapperHeight(true);
+    updateWordsMargin();
     void updateWordsInputPosition(true);
   }
   if (
@@ -178,14 +179,6 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
     ].includes(eventKey)
   ) {
     updateWordWrapperClasses();
-  }
-
-  if (eventKey === "tapeMode" && !nosave) {
-    if (eventValue === "off") {
-      $("#words").css("margin-left", "unset");
-    } else {
-      scrollTape();
-    }
   }
 
   if (typeof eventValue !== "boolean") return;
@@ -396,7 +389,8 @@ function updateWordWrapperClasses(): void {
   $("#words").attr("class", existing.join(" "));
 
   updateWordsWidth();
-  updateWordsHeight(true);
+  updateWordsWrapperHeight(true);
+  updateWordsMargin();
   setTimeout(() => {
     void updateWordsInputPosition(true);
   }, 250);
@@ -411,8 +405,7 @@ export function showWords(): void {
       wordsHTML += getWordHTML(TestWords.words.get(i));
     }
   } else {
-    wordsHTML =
-      '<div class="word">word height</div><div class="word active"></div>';
+    wordsHTML = '<div class="word active"></div>';
   }
 
   $("#words").html(wordsHTML);
@@ -423,10 +416,6 @@ export function showWords(): void {
   }, 125);
 
   updateWordWrapperClasses();
-
-  if (Config.mode === "zen") {
-    $(document.querySelector(".word") as Element).remove();
-  }
 }
 
 const posUpdateLangList = ["japanese", "chinese", "korean"];
@@ -487,101 +476,89 @@ export async function updateWordsInputPosition(initial = false): Promise<void> {
   }
 }
 
-function updateWordsHeight(force = false): void {
+function updateWordsWrapperHeight(force = false): void {
   if (ActivePage.get() !== "test" || resultVisible) return;
   if (!force && Config.mode !== "custom") return;
-  $("#wordsWrapper").removeClass("hidden");
-  const wordHeight = $(document.querySelector(".word") as Element).outerHeight(
-    true
-  ) as number;
-  const wordsHeight = $(
-    document.querySelector("#words") as Element
-  ).outerHeight(true) as number;
+  const wrapperEl = document.getElementById("wordsWrapper") as HTMLElement;
+  const wordElements = wrapperEl.querySelectorAll<HTMLElement>("#words .word");
+  const activeWordEl = wordElements[activeWordElementIndex];
+  if (!activeWordEl) return;
+
+  wrapperEl.classList.remove("hidden");
+
+  //insert temporary character for zen mode
+  const activeWordEmpty = activeWordEl?.children.length === 0;
+  if (activeWordEmpty) {
+    activeWordEl.insertAdjacentHTML(
+      "beforeend",
+      '<letter style="opacity: 0;">_</letter>'
+    );
+  }
+  const wordComputedStyle = window.getComputedStyle(activeWordEl);
+  const wordMargin =
+    parseInt(wordComputedStyle.marginTop) +
+    parseInt(wordComputedStyle.marginBottom);
+  const wordHeight = activeWordEl.offsetHeight + wordMargin;
+
+  let wrapperHeight = 0;
+  let maxWrapperHeight: string;
+  let outOfFocusMargin: string | undefined = undefined;
   if (
     Config.showAllLines &&
     Config.mode !== "time" &&
     CustomText.getLimitMode() !== "time" &&
     CustomText.getLimitValue() !== 0
   ) {
-    // overflow-x should not be visible in tape mode, but since showAllLines can't
-    // be enabled simultaneously with tape mode we don't need to check it's off
-    $("#words")
-      .css("height", "auto")
-      .css("overflow", "visible clip")
-      .css("width", "100%")
-      .css("margin-left", "unset");
-    $("#wordsWrapper").css("height", "auto").css("overflow", "visible clip");
-
-    let nh = wordHeight * 3;
-
-    if (nh > wordsHeight) {
-      nh = wordsHeight;
-    }
-    $(".outOfFocusWarning").css(
-      "margin-top",
-      wordHeight + convertRemToPixels(1) / 2 + "px"
-    );
+    maxWrapperHeight = "unset";
+    outOfFocusMargin = wordHeight + convertRemToPixels(1) / 2 + "px";
+  } else if (Config.tapeMode !== "off") {
+    wrapperHeight = wordHeight * 1;
+    maxWrapperHeight = wrapperHeight + "px";
   } else {
-    let finalWordsHeight: number, finalWrapperHeight: number;
+    let lines = 0;
+    let lastHeight = 0;
+    let wordIndex = 0;
 
-    if (Config.tapeMode !== "off") {
-      finalWordsHeight = wordHeight * 2;
-      finalWrapperHeight = wordHeight;
-    } else {
-      let lines = 0;
-      let lastHeight = 0;
-      let wordIndex = 0;
-      const words = document.querySelectorAll("#words .word");
-      let wrapperHeight = 0;
-
-      const wordComputedStyle = window.getComputedStyle(words[0] as Element);
-      const wordTopMargin = parseInt(wordComputedStyle.marginTop);
-      const wordBottomMargin = parseInt(wordComputedStyle.marginBottom);
-
-      while (lines < 3) {
-        const word = words[wordIndex] as HTMLElement | null;
-        if (!word) break;
-        const height = word.offsetTop;
-        if (height > lastHeight) {
-          lines++;
-          wrapperHeight += word.offsetHeight + wordTopMargin + wordBottomMargin;
-          lastHeight = height;
-        }
-        wordIndex++;
+    while (lines < 3) {
+      const word = wordElements[wordIndex] as HTMLElement | null;
+      if (!word) break;
+      const height = word.offsetTop;
+      if (height > lastHeight) {
+        lines++;
+        wrapperHeight += word.offsetHeight + wordMargin;
+        lastHeight = height;
       }
-
-      if (lines < 3) wrapperHeight = wrapperHeight * (3 / lines);
-
-      const wordsHeight = (wrapperHeight / 3) * 4;
-
-      finalWordsHeight = wordsHeight;
-      finalWrapperHeight = wrapperHeight;
+      wordIndex++;
     }
+    if (lines < 3) wrapperHeight = wrapperHeight * (3 / lines);
 
-    // $("#words").css("height", "0px");
-    // not sure why this was here, wonder if removing it will break anything
+    maxWrapperHeight = wrapperHeight + "px";
+  }
 
-    if (Config.tapeMode !== "off") {
-      $("#words").css({ overflow: "hidden", width: "200vw" });
-      $("#wordsWrapper").css({ overflow: "hidden" });
-      scrollTape();
-    } else {
-      $("#words").css({
-        overflow: "visible clip",
-        marginLeft: "unset",
-        width: "",
-      });
-      $("#wordsWrapper").css({ overflow: "visible clip" });
-    }
+  wrapperEl.style.maxHeight = maxWrapperHeight;
+  wrapperEl.style.height = "auto";
+  //setTimeout(() => {
+  const wrapperComputedStyle = window.getComputedStyle(wrapperEl);
+  wrapperHeight = parseInt(wrapperComputedStyle.height);
+  wrapperEl.style.height = wrapperHeight + "px";
+  if (outOfFocusMargin === undefined) {
+    outOfFocusMargin = wrapperHeight / 2 - convertRemToPixels(1) / 2 + "px";
+  }
+  $(".outOfFocusWarning").css("margin-top", outOfFocusMargin);
+  //}, 0);
 
+  if (activeWordEmpty) {
+    activeWordEl?.replaceChildren();
+  }
+}
+
+function updateWordsMargin(): void {
+  if (Config.tapeMode !== "off") {
+    scrollTape();
+  } else {
     setTimeout(() => {
-      $("#words").css("height", finalWordsHeight + "px");
-      $("#wordsWrapper").css("height", finalWrapperHeight + "px");
-      $(".outOfFocusWarning").css(
-        "margin-top",
-        finalWrapperHeight / 2 - convertRemToPixels(1) / 2 + "px"
-      );
-    }, 0);
+      $("#words").css("margin-left", "unset");
+    }, 125);
   }
 }
 
@@ -1105,7 +1082,7 @@ export function lineJump(currentTop: number): void {
     }
   }
   currentTestLine++;
-  updateWordsHeight();
+  updateWordsWrapperHeight();
 }
 
 export function setRightToLeft(isEnabled: boolean): void {
