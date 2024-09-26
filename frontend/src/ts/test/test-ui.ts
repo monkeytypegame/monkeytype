@@ -579,6 +579,7 @@ function updateWordsMargin(): void {
   } else {
     setTimeout(() => {
       $("#words").css("margin-left", "unset");
+      $(".afterNewline").css("margin-left", "unset");
     }, 125);
   }
 }
