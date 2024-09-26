@@ -354,15 +354,6 @@ function getWordHTML(word: string): string {
   return retval;
 }
 
-function updateWordsMargin(): void {
-  if (Config.tapeMode !== "off") {
-    scrollTape(true);
-  } else {
-    $("#words").css("margin-left", "unset");
-    $(".afterNewline").css("margin-left", "unset");
-  }
-}
-
 function updateWordWrapperClasses(): void {
   if (Config.tapeMode !== "off") {
     $("#words").addClass("tape");
@@ -506,11 +497,12 @@ export function updateTestLine(): void {
 function updateWordsWrapperHeight(force = false): void {
   if (ActivePage.get() !== "test" || resultVisible) return;
   if (!force && Config.mode !== "custom") return;
-  const wordElements = document.querySelectorAll<HTMLElement>("#words .word");
+  const wrapperEl = document.getElementById("wordsWrapper") as HTMLElement;
+  const wordElements = wrapperEl.querySelectorAll<HTMLElement>("#words .word");
   const activeWordEl = wordElements[activeWordElementIndex];
   if (!activeWordEl) return;
 
-  $("#wordsWrapper").removeClass("hidden");
+  wrapperEl.classList.remove("hidden");
 
   //insert temporary character for zen mode
   const activeWordEmpty = activeWordEl?.children.length === 0;
@@ -527,23 +519,21 @@ function updateWordsWrapperHeight(force = false): void {
   const wordHeight = activeWordEl.offsetHeight + wordMargin;
 
   let wrapperHeight = 0;
-  let finalWrapperHeight: string,
-    outOfFocusMargin: string,
-    beforeNewlineMargin: string;
+  let maxWrapperHeight: string;
+  let outOfFocusMargin: string | undefined = undefined;
+  let beforeNewlineHeight = "unset";
   if (
     Config.showAllLines &&
     Config.mode !== "time" &&
     CustomText.getLimitMode() !== "time" &&
     CustomText.getLimitValue() !== 0
   ) {
-    finalWrapperHeight = "auto";
+    maxWrapperHeight = "unset";
     outOfFocusMargin = wordHeight + convertRemToPixels(1) / 2 + "px";
-    beforeNewlineMargin = "unset";
   } else if (Config.tapeMode !== "off") {
     wrapperHeight = wordHeight * 3;
-    finalWrapperHeight = wrapperHeight + "px";
-    outOfFocusMargin = wrapperHeight / 2 - convertRemToPixels(1) / 2 + "px";
-    beforeNewlineMargin = activeWordEl.offsetHeight + "px";
+    maxWrapperHeight = wrapperHeight + "px";
+    beforeNewlineHeight = activeWordEl.offsetHeight + "px";
   } else {
     let lines = 0;
     let lastHeight = 0;
@@ -562,17 +552,34 @@ function updateWordsWrapperHeight(force = false): void {
     }
     if (lines < 3) wrapperHeight = wrapperHeight * (3 / lines);
 
-    finalWrapperHeight = wrapperHeight + "px";
-    outOfFocusMargin = wrapperHeight / 2 - convertRemToPixels(1) / 2 + "px";
-    beforeNewlineMargin = "unset";
+    maxWrapperHeight = wrapperHeight + "px";
   }
 
-  $("#wordsWrapper").css("height", finalWrapperHeight);
+  wrapperEl.style.maxHeight = maxWrapperHeight;
+  wrapperEl.style.height = "auto";
+  //setTimeout(() => {
+  const wrapperComputedStyle = window.getComputedStyle(wrapperEl);
+  wrapperHeight = parseInt(wrapperComputedStyle.height);
+  wrapperEl.style.height = wrapperHeight + "px";
+  if (outOfFocusMargin === undefined) {
+    outOfFocusMargin = wrapperHeight / 2 - convertRemToPixels(1) / 2 + "px";
+  }
   $(".outOfFocusWarning").css("margin-top", outOfFocusMargin);
-  $(".beforeNewline").css("height", beforeNewlineMargin);
+  $(".beforeNewline").css("height", beforeNewlineHeight);
+  //}, 0);
 
   if (activeWordEmpty) {
     activeWordEl?.replaceChildren();
+  }
+}
+
+function updateWordsMargin(): void {
+  if (Config.tapeMode !== "off") {
+    scrollTape();
+  } else {
+    setTimeout(() => {
+      $("#words").css("margin-left", "unset");
+    }, 125);
   }
 }
 
