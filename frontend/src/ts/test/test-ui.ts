@@ -536,14 +536,14 @@ function updateWordsWrapperHeight(force = false): void {
     CustomText.getLimitMode() !== "time" &&
     CustomText.getLimitValue() !== 0
   ) {
-    finalWrapperHeight = "unset";
+    finalWrapperHeight = "auto";
     outOfFocusMargin = wordHeight + convertRemToPixels(1) / 2 + "px";
     beforeNewlineMargin = "unset";
   } else if (Config.tapeMode !== "off") {
     wrapperHeight = wordHeight * 3;
     finalWrapperHeight = wrapperHeight + "px";
     outOfFocusMargin = wrapperHeight / 2 - convertRemToPixels(1) / 2 + "px";
-    beforeNewlineMargin = wordHeight + "px";
+    beforeNewlineMargin = activeWordEl.offsetHeight + "px";
   } else {
     let lines = 0;
     let lastHeight = 0;
@@ -567,9 +567,9 @@ function updateWordsWrapperHeight(force = false): void {
     beforeNewlineMargin = "unset";
   }
 
-  $("#wordsWrapper").css("max-height", finalWrapperHeight);
+  $("#wordsWrapper").css("height", finalWrapperHeight);
   $(".outOfFocusWarning").css("margin-top", outOfFocusMargin);
-  $(".beforeNewline").css("margin-bottom", beforeNewlineMargin);
+  $(".beforeNewline").css("height", beforeNewlineMargin);
 
   if (activeWordEmpty) {
     activeWordEl?.replaceChildren();
