@@ -535,17 +535,14 @@ function updateWordsWrapperHeight(force = false): void {
     maxWrapperHeight = wrapperHeight + "px";
   }
 
+  wrapperEl.style.minHeight = "unset";
   wrapperEl.style.maxHeight = maxWrapperHeight;
-  wrapperEl.style.height = "auto";
-  //setTimeout(() => {
-  const wrapperComputedStyle = window.getComputedStyle(wrapperEl);
-  wrapperHeight = parseInt(wrapperComputedStyle.height);
-  wrapperEl.style.height = wrapperHeight + "px";
+  wrapperHeight = parseInt(window.getComputedStyle(wrapperEl).height);
+  wrapperEl.style.minHeight = wrapperHeight + "px";
   if (outOfFocusMargin === undefined) {
     outOfFocusMargin = wrapperHeight / 2 - convertRemToPixels(1) / 2 + "px";
   }
   $(".outOfFocusWarning").css("margin-top", outOfFocusMargin);
-  //}, 0);
 
   if (activeWordEmpty) {
     activeWordEl?.replaceChildren();
