@@ -535,7 +535,7 @@ function updateWordsWrapperHeight(force = false): void {
     CustomText.getLimitMode() !== "time" &&
     CustomText.getLimitValue() !== 0
   ) {
-    finalWrapperHeight = "auto";
+    finalWrapperHeight = "unset";
     outOfFocusMargin = wordHeight + convertRemToPixels(1) / 2 + "px";
     beforeNewlineMargin = "unset";
   } else if (Config.tapeMode !== "off") {
@@ -566,7 +566,7 @@ function updateWordsWrapperHeight(force = false): void {
     beforeNewlineMargin = "unset";
   }
 
-  $("#wordsWrapper").css("height", finalWrapperHeight);
+  $("#wordsWrapper").css("max-height", finalWrapperHeight);
   $(".outOfFocusWarning").css("margin-top", outOfFocusMargin);
   $(".beforeNewline").css("margin-bottom", beforeNewlineMargin);
 
