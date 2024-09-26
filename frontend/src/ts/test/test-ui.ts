@@ -571,7 +571,7 @@ function updateWordsWrapperHeight(force = false): void {
 
 function updateWordsMargin(): void {
   if (Config.tapeMode !== "off") {
-    scrollTape();
+    scrollTape(true);
   } else {
     setTimeout(() => {
       $("#words").css("margin-left", "unset");
