@@ -2,8 +2,6 @@
   "name": "code_odin",
   "noLazyMode": true,
   "words": [
-    "::",
-    ":=",
     "any",
     "auto_cast",
     "b16",
