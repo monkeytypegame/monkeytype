@@ -1226,7 +1226,8 @@
   }
   .outOfFocusWarning {
     text-align: center;
-    height: 0;
+    height: 100%;
+    align-content: center;
     font-size: 1rem;
     z-index: 999;
     position: absolute;

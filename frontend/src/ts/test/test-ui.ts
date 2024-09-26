@@ -539,10 +539,9 @@ function updateWordsWrapperHeight(force = false): void {
   wrapperEl.style.maxHeight = maxWrapperHeight;
   wrapperHeight = parseInt(window.getComputedStyle(wrapperEl).height);
   wrapperEl.style.minHeight = wrapperHeight + "px";
-  if (outOfFocusMargin === undefined) {
-    outOfFocusMargin = wrapperHeight / 2 - convertRemToPixels(1) / 2 + "px";
+  if (outOfFocusMargin !== undefined) {
+    $(".outOfFocusWarning").css({ height: 0, "margin-top": outOfFocusMargin });
   }
-  $(".outOfFocusWarning").css("margin-top", outOfFocusMargin);
 
   if (activeWordEmpty) {
     activeWordEl?.replaceChildren();
