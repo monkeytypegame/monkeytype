@@ -27,7 +27,11 @@ import _, { omit } from "lodash";
 import * as WeeklyXpLeaderboard from "../../services/weekly-xp-leaderboard";
 import { UAParser } from "ua-parser-js";
 import { canFunboxGetPb } from "../../utils/pb";
-import { buildDbResult, replaceLegacyValues } from "../../utils/result";
+import {
+  buildDbResult,
+  DBResult,
+  replaceLegacyValues,
+} from "../../utils/result";
 import { Configuration } from "@monkeytype/contracts/schemas/configuration";
 import { addLog } from "../../dal/logs";
 import {
@@ -52,6 +56,7 @@ import {
   getCurrentDayTimestamp,
   getStartOfDayTimestamp,
 } from "@monkeytype/util/date-and-time";
+import { MonkeyRequest } from "../types";
 
 try {
   if (!anticheatImplemented()) throw new Error("undefined");
@@ -70,7 +75,7 @@ try {
 }
 
 export async function getResults(
-  req: MonkeyTypes.Request<GetResultsQuery>
+  req: MonkeyRequest<GetResultsQuery>
 ): Promise<GetResultsResponse> {
   const { uid } = req.ctx.decodedToken;
   const premiumFeaturesEnabled = req.ctx.configuration.users.premium.enabled;
@@ -123,16 +128,14 @@ export async function getResults(
 }
 
 export async function getLastResult(
-  req: MonkeyTypes.Request
+  req: MonkeyRequest
 ): Promise<GetLastResultResponse> {
   const { uid } = req.ctx.decodedToken;
   const results = await ResultDAL.getLastResult(uid);
   return new MonkeyResponse("Result retrieved", convertResult(results));
 }
 
-export async function deleteAll(
-  req: MonkeyTypes.Request
-): Promise<MonkeyResponse> {
+export async function deleteAll(req: MonkeyRequest): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
 
   await ResultDAL.deleteAll(uid);
@@ -141,7 +144,7 @@ export async function deleteAll(
 }
 
 export async function updateTags(
-  req: MonkeyTypes.Request<undefined, UpdateResultTagsRequest>
+  req: MonkeyRequest<undefined, UpdateResultTagsRequest>
 ): Promise<UpdateResultTagsResponse> {
   const { uid } = req.ctx.decodedToken;
   const { tagIds, resultId } = req.body;
@@ -176,7 +179,7 @@ export async function updateTags(
 }
 
 export async function addResult(
-  req: MonkeyTypes.Request<undefined, AddResultRequest>
+  req: MonkeyRequest<undefined, AddResultRequest>
 ): Promise<AddResultResponse> {
   const { uid } = req.ctx.decodedToken;
 
@@ -799,6 +802,6 @@ async function calculateXp(
   };
 }
 
-function convertResult(db: MonkeyTypes.DBResult): Result<Mode> {
+function convertResult(db: DBResult): Result<Mode> {
   return replaceObjectId(replaceLegacyValues(db));
 }

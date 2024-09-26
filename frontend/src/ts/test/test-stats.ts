@@ -142,9 +142,10 @@ export function calculateTestSeconds(now?: number): number {
   }
 }
 
-export function calculateWpmAndRaw(
-  withDecimalPoints?: true
-): MonkeyTypes.WpmAndRaw {
+export function calculateWpmAndRaw(withDecimalPoints?: true): {
+  wpm: number;
+  raw: number;
+} {
   const testSeconds = calculateTestSeconds(
     TestState.isActive ? performance.now() : end
   );

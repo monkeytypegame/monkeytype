@@ -19,7 +19,6 @@ import * as ConfigEvent from "../observables/config-event";
 import * as Hangul from "hangul-js";
 import { format } from "date-fns/format";
 import { isAuthenticated } from "../firebase";
-import { skipXpBreakdown } from "../elements/account-button";
 import * as FunboxList from "./funbox/funbox-list";
 import { debounce } from "throttle-debounce";
 import * as ResultWordHighlight from "../elements/result-word-highlight";
@@ -42,13 +41,14 @@ function createHintsHtml(
   activeWordLetters: NodeListOf<Element>,
   inputWord: string
 ): string {
+  const inputChars = Strings.splitIntoCharacters(inputWord);
   let hintsHtml = "";
   for (const adjacentLetters of incorrectLtrIndices) {
     for (const indx of adjacentLetters) {
       const blockLeft = (activeWordLetters[indx] as HTMLElement).offsetLeft;
       const blockWidth = (activeWordLetters[indx] as HTMLElement).offsetWidth;
       const blockIndices = `[${indx}]`;
-      const blockChars = inputWord[indx];
+      const blockChars = inputChars[indx];
 
       hintsHtml +=
         `<hint data-length=1 data-chars-index=${blockIndices}` +
@@ -114,7 +114,7 @@ async function joinOverlappingHints(
 }
 
 const debouncedZipfCheck = debounce(250, async () => {
-  const supports = await Misc.checkIfLanguageSupportsZipf(Config.language);
+  const supports = await JSONData.checkIfLanguageSupportsZipf(Config.language);
   if (supports === "no") {
     Notifications.add(
       `${Strings.capitalizeFirstLetter(
@@ -334,16 +334,17 @@ function getWordHTML(word: string): string {
   const funbox = FunboxList.get(Config.funbox).find(
     (f) => f.functions?.getWordHtml
   );
-  for (let c = 0; c < word.length; c++) {
+  const chars = Strings.splitIntoCharacters(word);
+  for (const char of chars) {
     if (funbox?.functions?.getWordHtml) {
-      retval += funbox.functions.getWordHtml(word.charAt(c), true);
-    } else if (word.charAt(c) === "\t") {
+      retval += funbox.functions.getWordHtml(char, true);
+    } else if (char === "\t") {
       retval += `<letter class='tabChar'><i class="fas fa-long-arrow-alt-right fa-fw"></i></letter>`;
-    } else if (word.charAt(c) === "\n") {
+    } else if (char === "\n") {
       newlineafter = true;
       retval += `<letter class='nlChar'><i class="fas fa-level-down-alt fa-rotate-90 fa-fw"></i></letter>`;
     } else {
-      retval += "<letter>" + word.charAt(c) + "</letter>";
+      retval += "<letter>" + char + "</letter>";
     }
   }
   retval += "</div>";
@@ -829,10 +830,12 @@ export async function updateActiveWordLetters(
       (f) => f.functions?.getWordHtml
     );
 
-    for (let i = 0; i < input.length; i++) {
-      const charCorrect = currentWord[i] === input[i];
+    const inputChars = Strings.splitIntoCharacters(input);
+    const currentWordChars = Strings.splitIntoCharacters(currentWord);
+    for (let i = 0; i < inputChars.length; i++) {
+      const charCorrect = currentWordChars[i] === inputChars[i];
 
-      let currentLetter = currentWord[i] as string;
+      let currentLetter = currentWordChars[i] as string;
       let tabChar = "";
       let nlChar = "";
       if (funbox?.functions?.getWordHtml) {
@@ -858,13 +861,13 @@ export async function updateActiveWordLetters(
       ) {
         ret += `<letter class="dead">${
           Config.indicateTypos === "replace"
-            ? input[i] === " "
+            ? inputChars[i] === " "
               ? "_"
-              : input[i]
+              : inputChars[i]
             : currentLetter
         }</letter>`;
       } else if (currentLetter === undefined) {
-        let letter = input[i];
+        let letter = inputChars[i];
         if (letter === " " || letter === "\t" || letter === "\n") {
           letter = "_";
         }
@@ -873,9 +876,9 @@ export async function updateActiveWordLetters(
         ret +=
           `<letter class="incorrect ${tabChar}${nlChar}">` +
           (Config.indicateTypos === "replace"
-            ? input[i] === " "
+            ? inputChars[i] === " "
               ? "_"
-              : input[i]
+              : inputChars[i]
             : currentLetter) +
           "</letter>";
         if (Config.indicateTypos === "below") {
@@ -889,15 +892,16 @@ export async function updateActiveWordLetters(
       }
     }
 
-    for (let i = input.length; i < currentWord.length; i++) {
+    for (let i = inputChars.length; i < currentWordChars.length; i++) {
+      const currentLetter = currentWordChars[i];
       if (funbox?.functions?.getWordHtml) {
-        ret += funbox.functions.getWordHtml(currentWord[i] as string, true);
-      } else if (currentWord[i] === "\t") {
+        ret += funbox.functions.getWordHtml(currentLetter as string, true);
+      } else if (currentLetter === "\t") {
         ret += `<letter class='tabChar'><i class="fas fa-long-arrow-alt-right fa-fw"></i></letter>`;
-      } else if (currentWord[i] === "\n") {
+      } else if (currentLetter === "\n") {
         ret += `<letter class='nlChar'><i class="fas fa-level-down-alt fa-rotate-90 fa-fw"></i></letter>`;
       } else {
-        ret += `<letter>` + currentWord[i] + "</letter>";
+        ret += `<letter>` + currentLetter + "</letter>";
       }
     }
   }
@@ -1737,12 +1741,6 @@ $(".pageTest").on("click", "#showWordHistoryButton", () => {
 
 $("#wordsWrapper").on("click", () => {
   focusWords();
-});
-
-$(document).on("keypress", () => {
-  if (resultVisible) {
-    skipXpBreakdown();
-  }
 });
 
 ConfigEvent.subscribe((key, value) => {

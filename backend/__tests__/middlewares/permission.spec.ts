@@ -5,6 +5,8 @@ import * as Misc from "../../src/utils/misc";
 import * as AdminUids from "../../src/dal/admin-uids";
 import * as UserDal from "../../src/dal/user";
 import MonkeyError from "../../src/utils/error";
+import { DecodedToken } from "../../src/middlewares/auth";
+import { TsRestRequest } from "../../src/api/types";
 
 const uid = "123456789";
 
@@ -311,7 +313,7 @@ describe("permission middleware", () => {
 
 function givenRequest(
   metadata: EndpointMetadata,
-  decodedToken?: Partial<MonkeyTypes.DecodedToken>
+  decodedToken?: Partial<DecodedToken>
 ): TsRestRequest {
   return { tsRestRoute: { metadata }, ctx: { decodedToken } } as any;
 }

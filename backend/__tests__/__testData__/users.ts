@@ -3,8 +3,8 @@ import * as UserDAL from "../../src/dal/user";
 import { ObjectId } from "mongodb";
 
 export async function createUser(
-  user?: Partial<MonkeyTypes.DBUser>
-): Promise<MonkeyTypes.DBUser> {
+  user?: Partial<UserDAL.DBUser>
+): Promise<UserDAL.DBUser> {
   const uid = new ObjectId().toHexString();
   await UserDAL.addUser("user" + uid, uid + "@example.com", uid);
   await DB.collection("users").updateOne({ uid }, { $set: { ...user } });
@@ -12,8 +12,8 @@ export async function createUser(
 }
 
 export async function createUserWithoutMigration(
-  user?: Partial<MonkeyTypes.DBUser>
-): Promise<MonkeyTypes.DBUser> {
+  user?: Partial<UserDAL.DBUser>
+): Promise<UserDAL.DBUser> {
   const uid = new ObjectId().toHexString();
   await UserDAL.addUser("user" + uid, uid + "@example.com", uid);
   await DB.collection("users").updateOne({ uid }, { $set: { ...user } });

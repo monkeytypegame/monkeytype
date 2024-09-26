@@ -283,7 +283,7 @@ export function isUsingOppositeShift(keycode: string): boolean {
 
 export function layoutKeyToKeycode(
   key: string,
-  layout: MonkeyTypes.Layout
+  layout: JSONData.Layout
 ): string | undefined {
   const rows: string[][] = Object.values(layout.keys);
 
