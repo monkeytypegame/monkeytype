@@ -619,11 +619,19 @@ const modal = new AnimatedModal({
 
     input.addEventListener("keydown", async (e) => {
       mouseMode = false;
-      if (e.key === "ArrowUp" || (e.key.toLowerCase() === "k" && e.ctrlKey)) {
+      if (
+        e.key === "ArrowUp" ||
+        ((e.key.toLowerCase() === "k" || e.key.toLowerCase() === "p") &&
+          e.ctrlKey)
+      ) {
         e.preventDefault();
         await decrementActiveIndex();
       }
-      if (e.key === "ArrowDown" || (e.key.toLowerCase() === "j" && e.ctrlKey)) {
+      if (
+        e.key === "ArrowDown" ||
+        ((e.key.toLowerCase() === "j" || e.key.toLowerCase() === "n") &&
+          e.ctrlKey)
+      ) {
         e.preventDefault();
         await incrementActiveIndex();
       }
