@@ -552,6 +552,10 @@
     ]
   },
   {
+    "name": "dhivehi",
+    "languages": ["dhivehi"]
+  },
+  {
     "name": "code",
     "languages": [
       "code_python",
