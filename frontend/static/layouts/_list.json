@@ -2059,17 +2059,17 @@
     }
   },
   "rain": {
-  "keymapShowTopRow": false,
-  "type": "ansi",
-  "keys": {
-    "row1": ["`~", "1!", "2@", "3#", "4$", "5%", "6^", "7&", "8*", "9(", "0)", "-_", "=+"],
-    "row2": ["fF", "dD", "lL", "gG", "vV", "qQ", "rR", "uU", "oO", ",<", "[{", "]}", "\\|"],
-    "row3": ["sS", "tT", "hH", "cC", "yY", "jJ", "nN", "eE", "aA", "iI", "/?"],
-    "row4": ["zZ", "kK", "mM", "pP", "wW", "xX", "bB", ";:", "'\"", ".>"],
-    "row5": [" "]
+    "keymapShowTopRow": false,
+    "type": "ansi",
+    "keys": {
+      "row1": ["`~", "1!", "2@", "3#", "4$", "5%", "6^", "7&", "8*", "9(", "0)", "-_", "=+"],
+      "row2": ["fF", "dD", "lL", "gG", "vV", "qQ", "rR", "uU", "oO", ",<", "[{", "]}", "\\|"],
+      "row3": ["sS", "tT", "hH", "cC", "yY", "jJ", "nN", "eE", "aA", "iI", "/?"],
+      "row4": ["zZ", "kK", "mM", "pP", "wW", "xX", "bB", ";:", "'\"", ".>"],
+      "row5": [" "]
     }
   },
-    "night": {
+  "night": {
     "keymapShowTopRow": false,
     "type": "ansi",
     "keys": {
@@ -2078,6 +2078,17 @@
       "row3": ["nN", "sS", "hH", "tT", "mM", "yY", "cC", "aA", "eE", "iI", "/?"],
       "row4": ["vV", "jJ", "dD", "rR", "zZ", "pP", "wW", "xX", "-_", ",<"],
       "row5": [" "]  
+    }
+  },
+  "whix2": {
+    "keymapShowTopRow": false,
+    "type": "ansi",
+    "keys": {
+      "row1": ["1!", "2@", "3#", "4$", "5%", "6^", "7&", "8*", "9(", "0)"],
+      "row2": ["bB", "lL", "nN", "dD", "kK", "'\"", "fF", "oO", "uU", "jJ"],
+      "row3": ["sS", "hH", "rR", "tT", "wW", "yY", "cC", "aA", "eE", "iI"],
+      "row4": ["qQ", "xX", "mM", "vV", "zZ", "pP", "gG", ",<", ".>", "/?"],
+      "row5": [" "]
     }
   }
 }
