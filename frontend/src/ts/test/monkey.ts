@@ -2,6 +2,55 @@ import { mapRange } from "@monkeytype/util/numbers";
 import Config from "../config";
 import * as ConfigEvent from "../observables/config-event";
 import * as TestState from "../test/test-state";
+import * as JSONData from "../utils/json-data";
+
+class HandMap {
+  leftHandSet: Set<string>;
+  rightHandSet: Set<string>;
+
+  constructor() {
+    this.leftHandSet = new Set();
+    this.rightHandSet = new Set();
+    void this.update(Config.layout);
+  }
+
+  async update(layoutName: string): Promise<void> {
+    if (layoutName === "default") {
+      layoutName = "qwerty";
+    }
+    const layout = await JSONData.getLayout(layoutName).catch(() => undefined);
+    if (layout === undefined) {
+      throw new Error(`Failed to load layout: ${layoutName}`);
+    }
+
+    this.leftHandSet.clear();
+    this.rightHandSet.clear();
+
+    Object.values(layout.keys).forEach((rowArray) => {
+      const midpoint = Math.floor(rowArray.length / 2);
+      rowArray.forEach((keyString, index) => {
+        const targetSet =
+          index < midpoint ? this.leftHandSet : this.rightHandSet;
+        if (keyString.length === 1) {
+          targetSet.add(keyString);
+        } else if (keyString.length === 2) {
+          targetSet.add(keyString.charAt(0));
+          targetSet.add(keyString.charAt(1));
+        } else {
+          console.error(`Unexpected key format: ${keyString}`);
+        }
+      });
+    });
+  }
+
+  getHand(keyString: string): "left" | "right" | "unknown" {
+    if (this.leftHandSet.has(keyString.charAt(0))) return "left";
+    if (this.rightHandSet.has(keyString.charAt(0))) return "right";
+    return "unknown";
+  }
+}
+
+const handMap = new HandMap();
 
 ConfigEvent.subscribe((eventKey) => {
   if (eventKey === "monkey" && TestState.isActive) {
@@ -10,6 +59,9 @@ ConfigEvent.subscribe((eventKey) => {
     } else {
       $("#monkey").addClass("hidden");
     }
+  }
+  if (Config.monkey && eventKey === "layout") {
+    void handMap.update(Config.layout);
   }
 });
 
