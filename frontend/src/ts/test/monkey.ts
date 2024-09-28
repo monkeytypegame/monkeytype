@@ -3,10 +3,11 @@ import Config from "../config";
 import * as ConfigEvent from "../observables/config-event";
 import * as TestState from "../test/test-state";
 import * as JSONData from "../utils/json-data";
+import * as LayoutEmulator from "../test/layout-emulator";
 
 class HandMap {
-  leftHandSet: Set<string>;
-  rightHandSet: Set<string>;
+  private leftHandSet: Set<string>;
+  private rightHandSet: Set<string>;
 
   constructor() {
     this.leftHandSet = new Set();
@@ -43,9 +44,9 @@ class HandMap {
     });
   }
 
-  getHand(keyString: string): "left" | "right" | "unknown" {
-    if (this.leftHandSet.has(keyString.charAt(0))) return "left";
-    if (this.rightHandSet.has(keyString.charAt(0))) return "right";
+  getHand(key: string): "left" | "right" | "unknown" {
+    if (this.leftHandSet.has(key)) return "left";
+    if (this.rightHandSet.has(key)) return "right";
     return "unknown";
   }
 }
@@ -90,8 +91,6 @@ const elementsFast = {
   "11": document.querySelector("#monkey .fast .both"),
 };
 
-let last = "right";
-
 function toBit(b: boolean): "1" | "0" {
   return b ? "1" : "0";
 }
@@ -122,23 +121,41 @@ export function updateFastOpacity(num: number): void {
   $("#monkey").css({ animationDuration: animDuration + "s" });
 }
 
-export function type(): void {
+export async function type(event: JQuery.KeyDownEvent): Promise<void> {
   if (!Config.monkey) return;
-  if (!left && last === "right") {
+  let char;
+  if (Config.layout === "default") {
+    char = event.key;
+  } else {
+    char = await LayoutEmulator.getCharFromEvent(event);
+  }
+  if (char === null) return;
+
+  const MonkeyHand = handMap.getHand(char);
+  if (MonkeyHand === "left" || char === " ") {
     left = true;
-    last = "left";
-  } else if (!right) {
+  }
+  if (MonkeyHand === "right" || char === " ") {
     right = true;
-    last = "right";
   }
   update();
 }
 
-export function stop(): void {
+export async function stop(event: JQuery.KeyUpEvent): Promise<void> {
   if (!Config.monkey) return;
-  if (left) {
+  let char;
+  if (Config.layout === "default") {
+    char = event.key;
+  } else {
+    char = await LayoutEmulator.getCharFromEvent(event);
+  }
+  if (char === null) return;
+
+  const MonkeyHand = handMap.getHand(char);
+  if (MonkeyHand === "left" || char === " ") {
     left = false;
-  } else if (right) {
+  }
+  if (MonkeyHand === "right" || char === " ") {
     right = false;
   }
   update();
