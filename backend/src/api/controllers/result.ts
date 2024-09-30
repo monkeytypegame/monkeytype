@@ -276,6 +276,8 @@ export async function addResult(
     ) {
       const status = MonkeyStatusCodes.RESULT_DATA_INVALID;
       throw new MonkeyError(status.code, "Result data doesn't make sense");
+    } else if (isDevEnvironment()) {
+      Logger.success("Result data validated");
     }
   } else {
     if (!isDevEnvironment()) {
