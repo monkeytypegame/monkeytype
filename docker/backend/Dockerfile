@@ -29,7 +29,7 @@ RUN apk add wget
 # COPY to target
 COPY --from=builder /prod/backend/node_modules /app/backend/node_modules
 COPY --from=builder /prod/backend/dist /app/backend/dist
-COPY --from=builder /prod/backend/email-templates /app/backend/email-templates
+COPY --from=builder /prod/backend/static /app/backend/static
 COPY --from=builder /prod/backend/redis-scripts /app/backend/redis-scripts
 
 ## to build directory

@@ -14,7 +14,7 @@ import { rank } from "@monkeytype/util/format";
 let TEMPLATE: string | undefined = undefined;
 
 const FALLBACK_IMAGE = readFileSync(
-  join(__dirname, "../../static/profile/user.png")
+  join(__dirname, "../../static/templates/profile/user.png")
 );
 
 export async function getProfileImage(profile: UserProfile): Promise<Buffer> {
@@ -69,8 +69,8 @@ export async function getProfileImage(profile: UserProfile): Promise<Buffer> {
           profile.discordId,
           profile.discordAvatar
         ),
-        left: 60,
-        top: 60,
+        left: 58,
+        top: 58,
         blend: "over",
       },
       { input: svgProfile, left: 32, top: 32, blend: "over" },
@@ -97,7 +97,7 @@ async function getProfilePicture(
   const data = (await response.arrayBuffer()) as Buffer;
 
   //discord api sometimes does not scale images for us
-  return sharp(data).resize(128, 128).toBuffer();
+  return sharp(data).resize(118, 118).toBuffer();
 }
 
 function getPb(
@@ -124,7 +124,7 @@ function getTemplate(): string {
     return TEMPLATE;
   }
   TEMPLATE = readFileSync(
-    join(__dirname, "../../static/profile/profile.svg")
+    join(__dirname, "../../static/templates/profile/profile.svg")
   ).toString();
   return TEMPLATE;
 }
