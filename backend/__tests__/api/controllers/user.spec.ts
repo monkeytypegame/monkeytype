@@ -2798,7 +2798,7 @@ describe("user controller test", () => {
 
       //THEN
       expect(body).toEqual({
-        message: "Profile retrived: banned user",
+        message: "Profile retrieved",
         data: {
           name: "bob",
           banned: true,

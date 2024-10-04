@@ -69,8 +69,8 @@ export async function getProfileImage(profile: UserProfile): Promise<Buffer> {
           profile.discordId,
           profile.discordAvatar
         ),
-        left: 58,
-        top: 58,
+        left: 62,
+        top: 62,
         blend: "over",
       },
       { input: svgProfile, left: 32, top: 32, blend: "over" },
@@ -97,7 +97,7 @@ async function getProfilePicture(
   const data = (await response.arrayBuffer()) as Buffer;
 
   //discord api sometimes does not scale images for us
-  return sharp(data).resize(118, 118).toBuffer();
+  return sharp(data).resize(120, 120).toBuffer();
 }
 
 function getPb(
