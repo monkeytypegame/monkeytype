@@ -110,7 +110,8 @@ export function getLanguageDisplayString(
   } else {
     out = language;
   }
-  return out.replace(/_/g, " ");
+  out = out.replace(/_/g, " ").replace(/^./, (char) => char.toUpperCase());
+  return out;
 }
 
 /**
