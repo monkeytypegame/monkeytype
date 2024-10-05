@@ -13,32 +13,32 @@ describe("misc.ts", () => {
         {
           input: "language",
           noSizeString: false,
-          expected: "language",
+          expected: "Language",
         },
         {
           input: "language_1k",
           noSizeString: false,
-          expected: "language 1k",
+          expected: "Language 1k",
         },
         {
           input: "language_1k",
           noSizeString: true,
-          expected: "language",
+          expected: "Language",
         },
         {
           input: "language_lang",
           noSizeString: false,
-          expected: "language lang",
+          expected: "Language lang",
         },
         {
           input: "language_lang_1k",
           noSizeString: false,
-          expected: "language lang 1k",
+          expected: "Language lang 1k",
         },
         {
           input: "language_lang_1k",
           noSizeString: true,
-          expected: "language lang",
+          expected: "Language lang",
         },
       ];
 
