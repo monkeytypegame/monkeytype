@@ -621,16 +621,16 @@ const modal = new AnimatedModal({
       mouseMode = false;
       if (
         e.key === "ArrowUp" ||
-        ((e.key.toLowerCase() === "k" || e.key.toLowerCase() === "p") &&
-          e.ctrlKey)
+        (e.ctrlKey &&
+          (e.key.toLowerCase() === "k" || e.key.toLowerCase() === "p"))
       ) {
         e.preventDefault();
         await decrementActiveIndex();
       }
       if (
         e.key === "ArrowDown" ||
-        ((e.key.toLowerCase() === "j" || e.key.toLowerCase() === "n") &&
-          e.ctrlKey)
+        (e.ctrlKey &&
+          (e.key.toLowerCase() === "j" || e.key.toLowerCase() === "n"))
       ) {
         e.preventDefault();
         await incrementActiveIndex();
