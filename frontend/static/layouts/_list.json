@@ -836,7 +836,7 @@
       "row5": [" "]
     }
   },
-  "middlemak_nh": {
+  "middlemak-nh": {
     "keymapShowTopRow": false,
     "type": "ansi",
     "keys": {
@@ -1893,7 +1893,7 @@
       "row5": [" "]
     }
   },
-  "seht_drai": {
+  "seht-drai": {
     "keymapShowTopRow": false,
     "type": "ansi",
     "keys": {
@@ -1948,7 +1948,7 @@
       "row5": [" "]
     }
   },
-  "saiga_e": {
+  "saiga-e": {
     "keymapShowTopRow": false,
     "type": "ansi",
     "keys": {
