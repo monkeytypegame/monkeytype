@@ -491,11 +491,12 @@ list.updateName = new SimpleModal({
     const snapshot = DB.getSnapshot();
     if (snapshot) {
       snapshot.name = newName;
+      DB.setSnapshot(snapshot);
       if (snapshot.needsToChangeName) {
         reloadAfter(2);
       }
+      AccountButton.update(snapshot);
     }
-    AccountButton.updateName(newName);
 
     return {
       status: 1,
