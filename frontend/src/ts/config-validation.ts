@@ -5,11 +5,11 @@ import { ZodSchema, z } from "zod";
 
 type PossibleTypeAsync = "layoutfluid";
 
-// function isConfigKeyValid(name: string): boolean {
-//   if (name === null || name === undefined || name === "") return false;
-//   if (name.length > 30) return false;
-//   return /^[0-9a-zA-Z_.\-#+]+$/.test(name);
-// }
+// Helper function to validate layout names
+function isValidLayoutName(layoutName: string): boolean {
+  const validLayoutPattern = /^[0-9a-zA-Z_.\-#+]+$/; // Allow alphanumeric, underscore, dash, period, #, and +
+  return validLayoutPattern.test(layoutName);
+}
 
 function invalid(key: string, val: unknown, customMessage?: string): void {
   if (customMessage === undefined) {
@@ -23,7 +23,6 @@ function invalid(key: string, val: unknown, customMessage?: string): void {
       -1
     );
   }
-
   console.error(`Invalid value key ${key} value ${val} type ${typeof val}`);
 }
 
@@ -47,7 +46,6 @@ export async function isConfigValueValidAsync(
   possibleTypes: PossibleTypeAsync[]
 ): Promise<boolean> {
   let isValid = false;
-
   let customMessage: string | undefined = undefined;
 
   for (const possibleType of possibleTypes) {
@@ -55,9 +53,20 @@ export async function isConfigValueValidAsync(
       case "layoutfluid": {
         if (typeof val !== "string") break;
 
-        const layoutNames = val.split(/[# ]+/);
+        // Split by spaces or #
+        const layoutNames = val.split(/[# ]+/).map(name => name.trim());
 
-        if (layoutNames.length < 2 || layoutNames.length > 5) break;
+        // Validate each layout name using the regex that allows hyphens
+        if (!layoutNames.every(isValidLayoutName)) {
+          customMessage =
+            "Layout names can only contain alphanumeric characters, underscores, hyphens, periods, #, or +.";
+          break;
+        }
+
+        if (layoutNames.length < 2 || layoutNames.length > 5) {
+          customMessage = "Number of layout names must be between 2 and 5.";
+          break;
+        }
 
         try {
           await JSONData.getLayoutsList();
@@ -69,12 +78,11 @@ export async function isConfigValueValidAsync(
           break;
         }
 
-        // convert the layout names to layouts
+        // Convert layout names to layouts and check if all exist
         const layouts = await Promise.all(
           layoutNames.map(async (layoutName) => JSONData.getLayout(layoutName))
         );
 
-        // check if all layouts exist
         if (!layouts.every((layout) => layout !== undefined)) {
           const invalidLayoutNames = layoutNames.map((layoutName, index) => [
             layoutName,
@@ -93,7 +101,6 @@ export async function isConfigValueValidAsync(
         }
 
         isValid = true;
-
         break;
       }
     }
