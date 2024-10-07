@@ -28,7 +28,6 @@
     "double",
     "dynamic",
     "else",
-    "else",
     "enum",
     "f16",
     "f16be",
@@ -56,7 +55,6 @@
     "i64be",
     "i64le",
     "i8",
-    "if",
     "if",
     "import",
     "in",
@@ -98,7 +96,6 @@
     "uintptr",
     "union",
     "using",
-    "when",
     "when",
     "where"
   ]
