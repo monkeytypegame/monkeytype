@@ -1090,6 +1090,7 @@ $(document).on("keydown", async (event) => {
     } else {
       handleChar("\n", TestInput.input.current.length);
       setWordsInput(" " + TestInput.input.current);
+      updateUI();
     }
   }
 
