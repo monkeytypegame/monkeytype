@@ -2,10 +2,12 @@ FROM node:20.16.0-alpine3.19 AS builder
 WORKDIR /app
 
 #ENV
-ENV ["BACKEND_URL=###MONKEYTYPE_BACKENDURL###", "RECAPTCHA_SITE_KEY=###RECAPTCHA_SITE_KEY###"]
+ENV BACKEND_URL=###MONKEYTYPE_BACKENDURL### RECAPTCHA_SITE_KEY=###RECAPTCHA_SITE_KEY###
 
 #COPY
-COPY ["package.json", "pnpm-lock.yaml", "pnpm-workspace.yaml", "turbo.json", "packages", "frontend", "./"]
+COPY ["package.json", "pnpm-lock.yaml", "pnpm-workspace.yaml", "turbo.json", "./"]
+COPY packages packages
+COPY frontend frontend
 
 COPY docker/frontend/firebase-config-live.ts frontend/src/ts/constants/firebase-config.ts
 COPY docker/frontend/firebase-config-live.ts frontend/src/ts/constants/firebase-config-live.ts

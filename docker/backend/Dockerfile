@@ -3,7 +3,9 @@ FROM node:20.16.0-alpine3.19 AS builder
 WORKDIR /app
 
 #copy
-COPY ["package.json", "pnpm-lock.yaml", "pnpm-workspace.yaml", "turbo.json", "packages", "backend", "./"]
+COPY ["package.json", "pnpm-lock.yaml", "pnpm-workspace.yaml", "turbo.json", "./"]
+COPY packages packages
+COPY backend backend
 
 #gimme pnpm + build
 RUN npm i -g pnpm && \
@@ -23,7 +25,10 @@ RUN apk update --no-cache && \
     apk add --no-cache wget
 
 # COPY to target
-COPY --from=builder ["/prod/backend/node_modules", "/prod/backend/dist", "/prod/backend/email-templates", "/prod/backend/redis-scripts", "/app/backend/"]
+COPY --from=builder /prod/backend/node_modules /app/backend/node_modules
+COPY --from=builder /prod/backend/dist /app/backend/dist
+COPY --from=builder /prod/backend/email-templates /app/backend/email-templates
+COPY --from=builder /prod/backend/redis-scripts /app/backend/redis-scripts
 
 ## to build directory
 WORKDIR /app/backend/dist
