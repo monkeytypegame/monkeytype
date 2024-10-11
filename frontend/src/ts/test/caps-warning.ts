@@ -22,8 +22,10 @@ function hide(): void {
 }
 
 function update(event: JQuery.KeyDownEvent | JQuery.KeyUpEvent): void {
-  capsState =
-    event?.originalEvent?.getModifierState?.("CapsLock") ?? !capsState;
+  const modState = event?.originalEvent?.getModifierState?.("CapsLock");
+  if (modState !== undefined) {
+    capsState = modState;
+  }
 
   try {
     if (Config.capsLockWarning && capsState) {
