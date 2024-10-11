@@ -1,6 +1,9 @@
 {
   "name": "serbian",
   "noLazyMode": true,
+  "rightToLeft": false,
+  "ligatures": false,
+  "bcp47": "sr-Cyrl",
   "words": [
     "као",
     "ја",

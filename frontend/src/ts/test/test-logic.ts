@@ -1142,7 +1142,7 @@ async function saveResult(
 
   if (response.status !== 200) {
     //only allow retry if status is not in this list
-    if (![460, 461, 463, 464, 465].includes(response.status)) {
+    if (![460, 461, 463, 464, 465, 466].includes(response.status)) {
       retrySaving.canRetry = true;
       $("#retrySavingResultButton").removeClass("hidden");
       if (!isRetrying) {
