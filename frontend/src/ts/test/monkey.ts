@@ -2,56 +2,7 @@ import { mapRange } from "@monkeytype/util/numbers";
 import Config from "../config";
 import * as ConfigEvent from "../observables/config-event";
 import * as TestState from "../test/test-state";
-import * as JSONData from "../utils/json-data";
-import * as LayoutEmulator from "../test/layout-emulator";
-
-class HandMap {
-  private leftHandSet: Set<string>;
-  private rightHandSet: Set<string>;
-
-  constructor() {
-    this.leftHandSet = new Set();
-    this.rightHandSet = new Set();
-    void this.update(Config.layout);
-  }
-
-  async update(layoutName: string): Promise<void> {
-    if (layoutName === "default") {
-      layoutName = "qwerty";
-    }
-    const layout = await JSONData.getLayout(layoutName).catch(() => undefined);
-    if (layout === undefined) {
-      throw new Error(`Failed to load layout: ${layoutName}`);
-    }
-
-    this.leftHandSet.clear();
-    this.rightHandSet.clear();
-
-    Object.values(layout.keys).forEach((rowArray) => {
-      const midpoint = Math.floor(rowArray.length / 2);
-      rowArray.forEach((keyString, index) => {
-        const targetSet =
-          index < midpoint ? this.leftHandSet : this.rightHandSet;
-        if (keyString.length === 1) {
-          targetSet.add(keyString);
-        } else if (keyString.length === 2) {
-          targetSet.add(keyString.charAt(0));
-          targetSet.add(keyString.charAt(1));
-        } else {
-          console.error(`Unexpected key format: ${keyString}`);
-        }
-      });
-    });
-  }
-
-  getHand(key: string): "left" | "right" | "unknown" {
-    if (this.leftHandSet.has(key)) return "left";
-    if (this.rightHandSet.has(key)) return "right";
-    return "unknown";
-  }
-}
-
-const handMap = new HandMap();
+import * as KeyConverter from "../utils/key-converter";
 
 ConfigEvent.subscribe((eventKey) => {
   if (eventKey === "monkey" && TestState.isActive) {
@@ -61,13 +12,11 @@ ConfigEvent.subscribe((eventKey) => {
       $("#monkey").addClass("hidden");
     }
   }
-  if (Config.monkey && eventKey === "layout") {
-    void handMap.update(Config.layout);
-  }
 });
 
 let left = false;
 let right = false;
+const middleKeysState = { left: false, right: false, last: "right" };
 
 // 0 hand up
 // 1 hand down
@@ -121,43 +70,64 @@ export function updateFastOpacity(num: number): void {
   $("#monkey").css({ animationDuration: animDuration + "s" });
 }
 
-export async function type(event: JQuery.KeyDownEvent): Promise<void> {
+export function type(event: JQuery.KeyDownEvent): void {
   if (!Config.monkey) return;
-  let char;
-  if (Config.layout === "default") {
-    char = event.key;
-  } else {
-    char = await LayoutEmulator.getCharFromEvent(event);
-  }
-  if (char === null) return;
 
-  const MonkeyHand = handMap.getHand(char);
-  if (MonkeyHand === "left" || char === " ") {
-    left = true;
+  const { leftSide, rightSide } = KeyConverter.keyToKeyboardSide(event.code);
+  if (leftSide && rightSide) {
+    // if its a middle key handle special case
+    if (middleKeysState.last === "left") {
+      if (!right) {
+        right = true;
+        middleKeysState.last = "right";
+        middleKeysState.right = true;
+      } else if (!left) {
+        left = true;
+        middleKeysState.last = "left";
+        middleKeysState.left = true;
+      }
+    } else {
+      if (!left) {
+        left = true;
+        middleKeysState.last = "left";
+        middleKeysState.left = true;
+      } else if (!right) {
+        right = true;
+        middleKeysState.last = "right";
+        middleKeysState.right = true;
+      }
+    }
+  } else {
+    // normal key set hand
+    left = left || leftSide;
+    right = right || rightSide;
   }
-  if (MonkeyHand === "right" || char === " ") {
-    right = true;
-  }
+
   update();
 }
 
-export async function stop(event: JQuery.KeyUpEvent): Promise<void> {
+export function stop(event: JQuery.KeyUpEvent): void {
   if (!Config.monkey) return;
-  let char;
-  if (Config.layout === "default") {
-    char = event.key;
-  } else {
-    char = await LayoutEmulator.getCharFromEvent(event);
-  }
-  if (char === null) return;
 
-  const MonkeyHand = handMap.getHand(char);
-  if (MonkeyHand === "left" || char === " ") {
-    left = false;
+  const { leftSide, rightSide } = KeyConverter.keyToKeyboardSide(event.code);
+  if (leftSide && rightSide) {
+    // if middle key handle special case
+    if (middleKeysState.left && middleKeysState.last === "left") {
+      left = false;
+      middleKeysState.left = false;
+    } else if (middleKeysState.right && middleKeysState.last === "right") {
+      right = false;
+      middleKeysState.right = false;
+    } else {
+      left = left && !middleKeysState.left;
+      right = right && !middleKeysState.right;
+    }
+  } else {
+    // normal key unset hand
+    left = left && !leftSide;
+    right = right && !rightSide;
   }
-  if (MonkeyHand === "right" || char === " ") {
-    right = false;
-  }
+
   update();
 }
 
