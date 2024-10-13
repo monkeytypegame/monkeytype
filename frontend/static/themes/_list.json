@@ -1251,5 +1251,12 @@
     "mainColor": "#bef0ff",
     "subColor": "#fe9841",
     "textColor": "#dbdeeb"
-  }
+  },
+  {
+    "name": "ananya",
+    "bgColor": "#1e1e30",     
+    "mainColor": "linear-gradient(135deg, #f78fb3, #f2a7d1)", 
+    "subColor": "#b7b5d2", 
+    "textColor": "#f8f9fa"
+}
 ]

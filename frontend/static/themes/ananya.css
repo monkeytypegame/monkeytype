@@ -1,0 +1,16 @@
+:root {
+  --bg-color: #1e1e30; /* Dark purple-toned charcoal for a girly dark background */
+  --main-color: linear-gradient(
+    135deg,
+    #f78fb3,
+    #f2a7d1
+  ); /* Soft pink-to-lavender gradient for main elements */
+  --caret-color: #ff6b81; /* Warm, muted pink for the caret */
+  --sub-color: #b7b5d2; /* Subtle pastel lavender for secondary elements */
+  --sub-alt-color: #3b3a56; /* Deep, muted purple for alternate sub-elements */
+  --text-color: #f8f9fa; /* Light creamy white for easy-to-read text */
+  --error-color: #ff6f61; /* Soft coral pink for errors */
+  --error-extra-color: #ffb3c1; /* Light blush for additional error details */
+  --colorful-error-color: #f78fb3; /* Soft rose-pink for colorful errors */
+  --colorful-error-extra-color: #f5c6d3; /* Light pastel pink for extra colorful error information */
+}
