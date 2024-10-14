@@ -229,6 +229,12 @@ const rightSideKeys: Keycode[] = [
   "Space",
 ];
 
+/**
+ * Converts a key to a keycode based on a layout
+ * @param key Key to convert (e.g., "a")
+ * @param layout Layout object from our JSON data (e.g., `layouts["qwerty"]`)
+ * @returns Keycode location of the key (e.g., "KeyA")
+ */
 export function layoutKeyToKeycode(
   key: string,
   layout: JSONData.Layout
@@ -260,6 +266,11 @@ export function layoutKeyToKeycode(
   return keycode;
 }
 
+/**
+ * Converts a keycode to a keyboard side. Can return true for both sides if the key is in the location KeyY, KeyB or Space.
+ * @param keycode Keycode to convert (e.g., "KeyA")
+ * @returns Object with leftSide and rightSide booleans
+ */
 export function keycodeToKeyboardSide(keycode: Keycode): {
   leftSide: boolean;
   rightSide: boolean;
