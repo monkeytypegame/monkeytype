@@ -20,6 +20,7 @@ type CommonInput<TType, TValue> = {
 type InputValidation<T> = {
   validation?: {
     schema?: Zod.Schema<T>;
+    isValid?: (val: T) => Promise<true> | Promise<string>;
   };
 };
 
@@ -74,6 +75,9 @@ export type ExecReturn = {
   afterHide?: () => void;
 };
 
+type CommonInputTypeWithIndicator = CommonInputType & {
+  indicator?: InputIndicator;
+};
 type SimpleModalOptions = {
   id: string;
   title: string;
@@ -97,7 +101,7 @@ export class SimpleModal {
   modal: AnimatedModal;
   id: string;
   title: string;
-  inputs: CommonInputType[];
+  inputs: CommonInputTypeWithIndicator[];
   text?: string;
   textAllowHtml: boolean;
   buttonText: string;
@@ -295,7 +299,7 @@ export class SimpleModal {
       }
       const element = document.querySelector(
         "#" + attributes["id"]
-      ) as HTMLElement;
+      ) as HTMLInputElement;
       if (input.oninput !== undefined) {
         element.oninput = input.oninput;
       }
@@ -310,26 +314,40 @@ export class SimpleModal {
             level: -1,
           },
         });
-        indicator.show("invalid");
+        input.indicator = indicator;
 
-        element.oninput = (event) => {
-          const value = (event.target as HTMLInputElement).value;
-          const validationResult = input.validation?.schema?.safeParse(value);
+        const validation = async (value: string): Promise<void> => {
+          const messages: string[] = [];
 
-          if (validationResult?.success) {
+          const schemaResult = input.validation?.schema?.safeParse(value);
+          if (schemaResult?.success === false) {
+            schemaResult?.error.errors.forEach((err) =>
+              messages.push(err.message)
+            );
+          } else {
+            const validationResult =
+              (await input.validation?.isValid?.(value as never)) ?? true;
+            if (validationResult !== true) {
+              messages.push(validationResult);
+            }
+          }
+
+          if (messages.length === 0) {
             indicator.show("valid");
           } else {
-            indicator.show(
-              "invalid",
-              validationResult?.error.errors
-                .map((err) => err.message)
-                .join(", ")
-            );
+            indicator.show("invalid", messages.join(", "));
           }
+        };
+
+        element.oninput = async (event) => {
+          const value = (event.target as HTMLInputElement).value;
+          await validation(value);
 
           //call original handler if defined
           input.oninput?.(event);
         };
+
+        void validation(element.value);
       }
     });
 
@@ -347,14 +365,14 @@ export class SimpleModal {
       }
     }
 
-    type CommonInputWithCurrentValue = CommonInputType & {
+    type CommonInputWithCurrentValue = CommonInputTypeWithIndicator & {
       currentValue: string | undefined;
     };
 
     const inputsWithCurrentValue: CommonInputWithCurrentValue[] = [];
     for (let i = 0; i < this.inputs.length; i++) {
       inputsWithCurrentValue.push({
-        ...(this.inputs[i] as CommonInputType),
+        ...(this.inputs[i] as CommonInputTypeWithIndicator),
         currentValue: vals[i],
       });
     }
@@ -365,6 +383,11 @@ export class SimpleModal {
         .some((v) => v.currentValue === undefined || v.currentValue === "")
     ) {
       Notifications.add("Please fill in all fields", 0);
+      return;
+    }
+
+    if (inputsWithCurrentValue.some((i) => i.indicator?.get() === "invalid")) {
+      Notifications.add("Please solve all validation errors", 0);
       return;
     }
 

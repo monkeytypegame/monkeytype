@@ -452,6 +452,15 @@ list.updateName = new SimpleModal({
       initVal: "",
       validation: {
         schema: UserNameSchema,
+        isValid: async (newName: string) => {
+          const checkNameResponse = (
+            await Ape.users.getNameAvailability({
+              params: { name: newName },
+            })
+          ).status;
+
+          return checkNameResponse === 200 ? true : "Name not available";
+        },
       },
     },
   ],
