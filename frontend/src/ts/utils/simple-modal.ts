@@ -4,6 +4,7 @@ import { format as dateFormat } from "date-fns/format";
 import * as Loader from "../elements/loader";
 import * as Notifications from "../elements/notifications";
 import * as ConnectionState from "../states/connection";
+import { InputIndicator } from "../elements/input-indicator";
 
 type CommonInput<TType, TValue> = {
   type: TType;
@@ -14,6 +15,12 @@ type CommonInput<TType, TValue> = {
   optional?: boolean;
   label?: string;
   oninput?: (event: Event) => void;
+} & InputValidation<TValue>;
+
+type InputValidation<T> = {
+  validation?: {
+    schema?: Zod.Schema<T>;
+  };
 };
 
 export type TextInput = CommonInput<"text", string>;
@@ -286,10 +293,43 @@ export class SimpleModal {
         }
         inputs.append(buildTag({ tagname, classes, attributes }));
       }
+      const element = document.querySelector(
+        "#" + attributes["id"]
+      ) as HTMLElement;
       if (input.oninput !== undefined) {
-        (
-          document.querySelector("#" + attributes["id"]) as HTMLElement
-        ).oninput = input.oninput;
+        element.oninput = input.oninput;
+      }
+      if (input.validation !== undefined) {
+        const indicator = new InputIndicator($(`#${id}`), {
+          valid: {
+            icon: "fa-check",
+            level: 1,
+          },
+          invalid: {
+            icon: "fa-times",
+            level: -1,
+          },
+        });
+        indicator.show("invalid");
+
+        element.oninput = (event) => {
+          const value = (event.target as HTMLInputElement).value;
+          const validationResult = input.validation?.schema?.safeParse(value);
+
+          if (validationResult?.success) {
+            indicator.show("valid");
+          } else {
+            indicator.show(
+              "invalid",
+              validationResult?.error.errors
+                .map((err) => err.message)
+                .join(", ")
+            );
+          }
+
+          //call original handler if defined
+          input.oninput?.(event);
+        };
       }
     });
 
