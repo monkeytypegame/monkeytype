@@ -158,7 +158,7 @@ async function updateGraph(): Promise<void> {
         borderRadius: 3,
         position: "start",
         display: true,
-        content: `${content}`,
+        content: content,
       },
     });
   }
@@ -689,6 +689,9 @@ function updateTestType(randomQuote: Quote | null): void {
   }
   if (Config.funbox !== "none") {
     testType += "<br>" + Config.funbox.replace(/_/g, " ").replace(/#/g, ", ");
+  }
+  if (Config.tapeMode !== "off") {
+    testType += "<br> tape mode " + Config.tapeMode;
   }
   if (Config.difficulty === "expert") {
     testType += "<br>expert";
