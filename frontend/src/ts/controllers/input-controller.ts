@@ -1129,7 +1129,9 @@ $(document).on("keydown", async (event) => {
           ? true
           : ShiftTracker.isUsingOppositeShift(keycode);
     } else {
-      correctShiftUsed = ShiftTracker.isUsingOppositeShift(event.code);
+      correctShiftUsed = ShiftTracker.isUsingOppositeShift(
+        event.code as KeyConverter.Keycode
+      );
     }
   }
 

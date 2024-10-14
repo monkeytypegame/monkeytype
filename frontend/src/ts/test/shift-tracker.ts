@@ -136,7 +136,7 @@ export function reset(): void {
   rightState = false;
 }
 
-export function isUsingOppositeShift(keycode: string): boolean {
+export function isUsingOppositeShift(keycode: KeyConverter.Keycode): boolean {
   if (!leftState && !rightState) {
     return true;
   }

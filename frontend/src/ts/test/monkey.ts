@@ -74,7 +74,7 @@ export function type(event: JQuery.KeyDownEvent): void {
   if (!Config.monkey) return;
 
   const { leftSide, rightSide } = KeyConverter.keycodeToKeyboardSide(
-    event.code
+    event.code as KeyConverter.Keycode
   );
   if (leftSide && rightSide) {
     // if its a middle key handle special case
@@ -112,7 +112,7 @@ export function stop(event: JQuery.KeyUpEvent): void {
   if (!Config.monkey) return;
 
   const { leftSide, rightSide } = KeyConverter.keycodeToKeyboardSide(
-    event.code
+    event.code as KeyConverter.Keycode
   );
   if (leftSide && rightSide) {
     // if middle key handle special case

@@ -1,6 +1,82 @@
 import * as JSONData from "../utils/json-data";
 
-const qwertyKeycodeKeymap = [
+export type Keycode =
+  | "Backquote"
+  | "Digit1"
+  | "Digit2"
+  | "Digit3"
+  | "Digit4"
+  | "Digit5"
+  | "Digit6"
+  | "Digit7"
+  | "Digit8"
+  | "Digit9"
+  | "Digit0"
+  | "Minus"
+  | "Equal"
+  | "KeyQ"
+  | "KeyW"
+  | "KeyE"
+  | "KeyR"
+  | "KeyT"
+  | "KeyY"
+  | "KeyU"
+  | "KeyI"
+  | "KeyO"
+  | "KeyP"
+  | "BracketLeft"
+  | "BracketRight"
+  | "Backslash"
+  | "KeyA"
+  | "KeyS"
+  | "KeyD"
+  | "KeyF"
+  | "KeyG"
+  | "KeyH"
+  | "KeyJ"
+  | "KeyK"
+  | "KeyL"
+  | "Semicolon"
+  | "Quote"
+  | "KeyZ"
+  | "KeyX"
+  | "KeyC"
+  | "KeyV"
+  | "KeyB"
+  | "KeyN"
+  | "KeyM"
+  | "Comma"
+  | "Period"
+  | "Slash"
+  | "Space"
+  | "ShiftLeft"
+  | "IntlBackslash"
+  | "ShiftRight"
+  | "ArrowUp"
+  | "ArrowLeft"
+  | "ArrowDown"
+  | "ArrowRight"
+  | "NumpadMultiply"
+  | "NumpadSubtract"
+  | "NumpadAdd"
+  | "NumpadDecimal"
+  | "NumpadEqual"
+  | "NumpadDivide"
+  | "Numpad0"
+  | "Numpad1"
+  | "Numpad2"
+  | "Numpad3"
+  | "Numpad4"
+  | "Numpad5"
+  | "Numpad6"
+  | "Numpad7"
+  | "Numpad8"
+  | "Numpad9"
+  | "NumpadEnter"
+  | "Enter"
+  | "Backspace";
+
+const qwertyKeycodeKeymap: Keycode[][] = [
   [
     "Backquote",
     "Digit1",
@@ -59,7 +135,7 @@ const qwertyKeycodeKeymap = [
   ["Space"],
 ];
 
-const leftSideKeys = [
+const leftSideKeys: Keycode[] = [
   "Backquote",
   "Digit1",
   "Digit2",
@@ -92,7 +168,7 @@ const leftSideKeys = [
   "Space",
 ];
 
-const rightSideKeys = [
+const rightSideKeys: Keycode[] = [
   "Digit6",
   "Digit7",
   "Digit8",
@@ -156,7 +232,7 @@ const rightSideKeys = [
 export function layoutKeyToKeycode(
   key: string,
   layout: JSONData.Layout
-): string | undefined {
+): Keycode | undefined {
   const rows: string[][] = Object.values(layout.keys);
 
   const rowIndex = rows.findIndex((row) => row.find((k) => k.includes(key)));
@@ -184,7 +260,7 @@ export function layoutKeyToKeycode(
   return keycode;
 }
 
-export function keycodeToKeyboardSide(keycode: string): {
+export function keycodeToKeyboardSide(keycode: Keycode): {
   leftSide: boolean;
   rightSide: boolean;
 } {
