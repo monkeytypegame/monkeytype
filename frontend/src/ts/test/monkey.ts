@@ -73,7 +73,9 @@ export function updateFastOpacity(num: number): void {
 export function type(event: JQuery.KeyDownEvent): void {
   if (!Config.monkey) return;
 
-  const { leftSide, rightSide } = KeyConverter.keyToKeyboardSide(event.code);
+  const { leftSide, rightSide } = KeyConverter.keycodeToKeyboardSide(
+    event.code
+  );
   if (leftSide && rightSide) {
     // if its a middle key handle special case
     if (middleKeysState.last === "left") {
@@ -109,7 +111,9 @@ export function type(event: JQuery.KeyDownEvent): void {
 export function stop(event: JQuery.KeyUpEvent): void {
   if (!Config.monkey) return;
 
-  const { leftSide, rightSide } = KeyConverter.keyToKeyboardSide(event.code);
+  const { leftSide, rightSide } = KeyConverter.keycodeToKeyboardSide(
+    event.code
+  );
   if (leftSide && rightSide) {
     // if middle key handle special case
     if (middleKeysState.left && middleKeysState.last === "left") {

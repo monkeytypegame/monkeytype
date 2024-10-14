@@ -184,7 +184,7 @@ export function layoutKeyToKeycode(
   return keycode;
 }
 
-export function keyToKeyboardSide(keycode: string): {
+export function keycodeToKeyboardSide(keycode: string): {
   leftSide: boolean;
   rightSide: boolean;
 } {
