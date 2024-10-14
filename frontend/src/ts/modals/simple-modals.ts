@@ -475,22 +475,6 @@ list.updateName = new SimpleModal({
       };
     }
 
-    const checkNameResponse = await Ape.users.getNameAvailability({
-      params: { name: newName },
-    });
-
-    if (checkNameResponse.status === 409) {
-      return {
-        status: 0,
-        message: "Name not available",
-      };
-    } else if (checkNameResponse.status !== 200) {
-      return {
-        status: -1,
-        message: "Failed to check name: " + checkNameResponse.body.message,
-      };
-    }
-
     const updateNameResponse = await Ape.users.updateName({
       body: { name: newName },
     });

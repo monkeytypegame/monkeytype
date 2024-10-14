@@ -15,12 +15,9 @@ type CommonInput<TType, TValue> = {
   optional?: boolean;
   label?: string;
   oninput?: (event: Event) => void;
-} & InputValidation<TValue>;
-
-type InputValidation<T> = {
   validation?: {
-    schema?: Zod.Schema<T>;
-    isValid?: (val: T) => Promise<true> | Promise<string>;
+    schema?: Zod.Schema<TValue>;
+    isValid?: (val: TValue) => Promise<true | string>;
   };
 };
 
