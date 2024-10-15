@@ -17,7 +17,7 @@ type CommonInput<TType, TValue> = {
   oninput?: (event: Event) => void;
   validation?: {
     schema?: Zod.Schema<TValue>;
-    isValid?: (val: TValue) => Promise<true | string>;
+    isValid?: (val: string) => Promise<true | string>;
   };
 };
 
@@ -323,7 +323,7 @@ export class SimpleModal {
             );
           } else {
             const validationResult =
-              (await input.validation?.isValid?.(value as never)) ?? true;
+              (await input.validation?.isValid?.(value)) ?? true;
             if (validationResult !== true) {
               messages.push(validationResult);
             }
