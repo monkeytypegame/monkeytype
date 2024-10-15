@@ -318,6 +318,7 @@ export class SimpleModal {
           },
         });
         input.indicator = indicator;
+
         const debouceIsValid = debounce(1000, async (value: string) => {
           const result = await input.validation?.isValid?.(value);
 
@@ -334,12 +335,16 @@ export class SimpleModal {
         });
 
         const validateInput = async (value: string): Promise<void> => {
+          if (value === undefined || value === "") {
+            indicator.hide();
+            return;
+          }
           if (input.validation?.schema !== undefined) {
-            const schemaResult = input.validation?.schema?.safeParse(value);
+            const schemaResult = input.validation.schema.safeParse(value);
             if (!schemaResult.success) {
               indicator.show(
                 "invalid",
-                schemaResult?.error.errors.map((err) => err.message).join(", ")
+                schemaResult.error.errors.map((err) => err.message).join(", ")
               );
               return;
             }
