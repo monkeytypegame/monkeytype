@@ -16,9 +16,24 @@ type CommonInput<TType, TValue> = {
   optional?: boolean;
   label?: string;
   oninput?: (event: Event) => void;
+  /**
+   * Validate the input value and indicate the validation result next to the input.
+   * If the schema is defined it is always checked first.
+   * Only if the schema validaton is passed or missing the `isValid` method is called.
+   */
   validation?: {
+    /**
+     * Zod schema to validate the input value against.
+     * The indicator will show the error messages from the schema.
+     */
     schema?: Zod.Schema<TValue>;
-    isValid?: (val: string) => Promise<true | string>;
+    /**
+     * Custom async validation method.
+     * This is intended to be used for validations that cannot be handled with a Zod schema like server-side validations.
+     * @param value current input value
+     * @returns true if the `value` is valid, an errorMessage as string if it is invalid.
+     */
+    isValid?: (value: string) => Promise<true | string>;
   };
 };
 
