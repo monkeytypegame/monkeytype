@@ -34,7 +34,7 @@ export class InputIndicator {
             ? `data-balloon-length="large"`
             : ""
         }
-        data-balloon-pos="up"
+        data-balloon-pos="left"
         ${option.message ?? "" ? `aria-label="${option.message}"` : ""}
       >
         <i class="fas fa-fw ${option.icon} ${
