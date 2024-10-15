@@ -37,13 +37,16 @@ export const GetUserResponseSchema = responseWithData(
 );
 export type GetUserResponse = z.infer<typeof GetUserResponseSchema>;
 
-const UserNameSchema = doesNotContainProfanity(
+export const UserNameSchema = doesNotContainProfanity(
   "substring",
   z
     .string()
     .min(1)
     .max(16)
-    .regex(/^[\da-zA-Z_-]+$/)
+    .regex(
+      /^[\da-zA-Z_-]+$/,
+      "Can only contain lower/uppercase letters, underscare and minus."
+    )
 );
 
 export const CreateUserRequestSchema = z.object({
