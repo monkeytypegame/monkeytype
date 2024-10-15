@@ -296,6 +296,10 @@ export function areFunboxesCompatible(
     funboxesToCheck.filter((f) => f.functions?.isCharCorrect).length <= 1;
   const oneCharReplacerMax =
     funboxesToCheck.filter((f) => f.functions?.getWordHtml).length <= 1;
+  const oneChangesCapitalisationMax =
+    funboxesToCheck.filter((f) =>
+      f.properties?.find((fp) => fp === "changesCapitalisation")
+    ).length <= 1;
   const allowedConfig = {} as FunboxForcedConfig;
   let noConfigConflicts = true;
   for (const f of funboxesToCheck) {
@@ -335,6 +339,7 @@ export function areFunboxesCompatible(
     onePunctuateWordMax &&
     oneCharCheckerMax &&
     oneCharReplacerMax &&
+    oneChangesCapitalisationMax &&
     noConfigConflicts
   );
 }
