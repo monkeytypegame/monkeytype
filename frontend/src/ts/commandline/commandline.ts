@@ -33,6 +33,7 @@ let inputModeParams: InputModeParams = {
   icon: "",
 };
 let subgroupOverride: CommandsSubgroup | null = null;
+let isAnimating = false;
 
 function removeCommandlineBackground(): void {
   $("#commandLine").addClass("noBackground");
@@ -123,6 +124,7 @@ function hide(clearModalChain = false): void {
   if (ActivePage.get() === "test") {
     focusWords();
   }
+  isAnimating = true;
   void modal.hide({
     clearModalChain,
     afterAnimation: async () => {
@@ -131,6 +133,7 @@ function hide(clearModalChain = false): void {
       if (ActivePage.get() === "test" && !isWordsFocused) {
         focusWords();
       }
+      isAnimating = false;
     },
   });
 }
@@ -433,6 +436,9 @@ async function showCommands(): Promise<void> {
 }
 
 async function updateActiveCommand(): Promise<void> {
+  console.log("updating active command");
+  if (isAnimating) return;
+
   const elements = [
     ...document.querySelectorAll("#commandLine .suggestions .command"),
   ];
@@ -465,6 +471,7 @@ async function updateActiveCommand(): Promise<void> {
 }
 
 function handleInputSubmit(): void {
+  if (isAnimating) return;
   if (inputModeParams.command === null) {
     throw new Error("Can't handle input submit - command is null");
   }
@@ -479,6 +486,8 @@ function handleInputSubmit(): void {
 }
 
 async function runActiveCommand(): Promise<void> {
+  console.log("running active command");
+  if (isAnimating) return;
   if (activeCommand === null) return;
   const command = activeCommand;
   if (command.input) {
