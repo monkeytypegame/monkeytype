@@ -5,6 +5,7 @@ import * as Loader from "../elements/loader";
 import * as Notifications from "../elements/notifications";
 import * as ConnectionState from "../states/connection";
 import { InputIndicator } from "../elements/input-indicator";
+import { debounce } from "throttle-debounce";
 
 type CommonInput<TType, TValue> = {
   type: TType;
@@ -301,7 +302,7 @@ export class SimpleModal {
         element.oninput = input.oninput;
       }
       if (input.validation !== undefined) {
-        const indicator = new InputIndicator($(`#${id}`), {
+        const indicator = new InputIndicator(element, {
           valid: {
             icon: "fa-check",
             level: 1,
@@ -310,41 +311,56 @@ export class SimpleModal {
             icon: "fa-times",
             level: -1,
           },
+          checking: {
+            icon: "fa-circle-notch",
+            spinIcon: true,
+            level: 0,
+          },
         });
         input.indicator = indicator;
+        const debouceIsValid = debounce(1000, async (value: string) => {
+          const result = await input.validation?.isValid?.(value);
 
-        const validation = async (value: string): Promise<void> => {
-          const messages: string[] = [];
+          if (element.value !== value) {
+            //value of the input has changed in the meantime. discard
+            return;
+          }
 
-          const schemaResult = input.validation?.schema?.safeParse(value);
-          if (schemaResult?.success === false) {
-            schemaResult?.error.errors.forEach((err) =>
-              messages.push(err.message)
-            );
+          if (result === true) {
+            indicator.show("valid");
           } else {
-            const validationResult =
-              (await input.validation?.isValid?.(value)) ?? true;
-            if (validationResult !== true) {
-              messages.push(validationResult);
+            indicator.show("invalid", result);
+          }
+        });
+
+        const validateInput = async (value: string): Promise<void> => {
+          if (input.validation?.schema !== undefined) {
+            const schemaResult = input.validation?.schema?.safeParse(value);
+            if (!schemaResult.success) {
+              indicator.show(
+                "invalid",
+                schemaResult?.error.errors.map((err) => err.message).join(", ")
+              );
+              return;
             }
           }
 
-          if (messages.length === 0) {
-            indicator.show("valid");
-          } else {
-            indicator.show("invalid", messages.join(", "));
+          if (input.validation?.isValid !== undefined) {
+            indicator.show("checking");
+            void debouceIsValid(value);
+            return;
           }
+
+          indicator.show("valid");
         };
 
         element.oninput = async (event) => {
           const value = (event.target as HTMLInputElement).value;
-          await validation(value);
+          await validateInput(value);
 
           //call original handler if defined
           input.oninput?.(event);
         };
-
-        void validation(element.value);
       }
     });
 
