@@ -35,6 +35,7 @@ import { IgnoredKeys } from "../constants/ignored-keys";
 import { ModifierKeys } from "../constants/modifier-keys";
 import { navigate } from "./route-controller";
 import * as Loader from "../elements/loader";
+import * as KeyConverter from "../utils/key-converter";
 
 let dontInsertSpace = false;
 let correctShiftUsed = true;
@@ -1047,8 +1048,6 @@ $(document).on("keydown", async (event) => {
     }
   }
 
-  Monkey.type();
-
   if (event.key === "Backspace" && TestInput.input.current.length === 0) {
     backspaceToPrevious();
     if (TestInput.input.current) {
@@ -1090,6 +1089,7 @@ $(document).on("keydown", async (event) => {
     } else {
       handleChar("\n", TestInput.input.current.length);
       setWordsInput(" " + TestInput.input.current);
+      updateUI();
     }
   }
 
@@ -1122,14 +1122,16 @@ $(document).on("keydown", async (event) => {
 
         return;
       }
-      const keycode = ShiftTracker.layoutKeyToKeycode(event.key, keymapLayout);
+      const keycode = KeyConverter.layoutKeyToKeycode(event.key, keymapLayout);
 
       correctShiftUsed =
         keycode === undefined
           ? true
           : ShiftTracker.isUsingOppositeShift(keycode);
     } else {
-      correctShiftUsed = ShiftTracker.isUsingOppositeShift(event.code);
+      correctShiftUsed = ShiftTracker.isUsingOppositeShift(
+        event.code as KeyConverter.Keycode
+      );
     }
   }
 
@@ -1181,6 +1183,7 @@ $("#wordsInput").on("keydown", (event) => {
     return;
   }
 
+  Monkey.type(event);
   // console.debug("Event: keydown", event);
 
   if (event.code === "NumpadEnter" && Config.funbox.includes("58008")) {
@@ -1234,10 +1237,11 @@ $("#wordsInput").on("keyup", (event) => {
     return;
   }
 
+  Monkey.stop(event);
+
   if (IgnoredKeys.includes(event.key)) return;
 
   if (TestUI.resultVisible) return;
-  Monkey.stop();
 });
 
 $("#wordsInput").on("beforeinput", (event) => {

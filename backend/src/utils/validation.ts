@@ -136,6 +136,10 @@ export function areFunboxesCompatible(funboxesString: string): boolean {
   const oneCharReplacerMax =
     funboxesToCheck.filter((f) => f.frontendFunctions?.includes("getWordHtml"))
       .length <= 1;
+  const oneChangesCapitalisationMax =
+    funboxesToCheck.filter((f) =>
+      f.properties?.find((fp) => fp === "changesCapitalisation")
+    ).length <= 1;
   const allowedConfig = {} as Record<string, string[] | boolean[]>;
   let noConfigConflicts = true;
   for (const f of funboxesToCheck) {
@@ -174,6 +178,7 @@ export function areFunboxesCompatible(funboxesString: string): boolean {
     onePunctuateWordMax &&
     oneCharCheckerMax &&
     oneCharReplacerMax &&
+    oneChangesCapitalisationMax &&
     noConfigConflicts &&
     oneWordOrderMax
   );
