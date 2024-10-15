@@ -211,6 +211,7 @@
   ,"bangla"
   ,"bangla_letters"
   ,"bangla_10k"
+  ,"bengali"
   ,"toki_pona"
   ,"toki_pona_ku_suli"
   ,"toki_pona_ku_lili"
@@ -353,5 +354,4 @@
   ,"xhosa"
   ,"code_cobol"
   ,"code_common_lisp"
-  ,"bengali"
 ]
