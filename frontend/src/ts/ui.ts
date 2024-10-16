@@ -96,14 +96,7 @@ const debouncedEvent = debounce(250, () => {
     if (Config.tapeMode !== "off") {
       TestUI.scrollTape();
     } else {
-      const word =
-        document.querySelectorAll<HTMLElement>("#words .word")[
-          TestUI.activeWordElementIndex - 1
-        ];
-      if (word) {
-        const currentTop: number = Math.floor(word.offsetTop);
-        TestUI.lineJump(currentTop);
-      }
+      TestUI.updateTestLine();
     }
   }
   setTimeout(() => {
