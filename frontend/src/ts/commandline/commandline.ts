@@ -436,7 +436,6 @@ async function showCommands(): Promise<void> {
 }
 
 async function updateActiveCommand(): Promise<void> {
-  console.log("updating active command");
   if (isAnimating) return;
 
   const elements = [
@@ -486,7 +485,6 @@ function handleInputSubmit(): void {
 }
 
 async function runActiveCommand(): Promise<void> {
-  console.log("running active command");
   if (isAnimating) return;
   if (activeCommand === null) return;
   const command = activeCommand;
