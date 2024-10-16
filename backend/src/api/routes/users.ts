@@ -2,6 +2,7 @@ import { usersContract } from "@monkeytype/contracts/users";
 import { initServer } from "@ts-rest/express";
 import * as UserController from "../controllers/user";
 import { callController } from "../ts-rest-adapter";
+import { getProfileImage } from "../../services/profile-image";
 
 const s = initServer();
 export default s.router(usersContract, {
@@ -106,6 +107,18 @@ export default s.router(usersContract, {
   },
   updateProfile: {
     handler: async (r) => callController(UserController.updateProfile)(r),
+  },
+  getProfileImage: {
+    // @ts-expect-error  Contract has the body as string for the frontend but Buffer on the backend.
+    handler: async (r) => {
+      const profile = await UserController.getProfileFromQuery(
+        r.req.params.uidOrName,
+        r.req.query.isUid
+      );
+      const body = await getProfileImage(profile);
+      r.res.setHeader("Cache-Control", "max-age=21600"); //six hours
+      return { status: 200, body };
+    },
   },
   getInbox: {
     handler: async (r) => callController(UserController.getInbox)(r),

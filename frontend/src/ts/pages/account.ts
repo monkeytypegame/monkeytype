@@ -10,7 +10,7 @@ import * as Focus from "../test/focus";
 import * as TodayTracker from "../test/today-tracker";
 import * as Notifications from "../elements/notifications";
 import Page from "./page";
-import * as DateTime from "../utils/date-and-time";
+import * as DateTime from "@monkeytype/util/date-and-time";
 import * as Misc from "../utils/misc";
 import * as Arrays from "../utils/arrays";
 import * as Numbers from "@monkeytype/util/numbers";
