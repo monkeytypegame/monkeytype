@@ -504,7 +504,7 @@
   },
   {
     "name": "amharic",
-    "languages": ["amharic"]
+    "languages": ["amharic", "amharic_1k", "amharic_5k"]
   },
   {
     "name": "oromo",
