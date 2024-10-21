@@ -539,6 +539,10 @@
     "languages": ["klingon", "klingon_1k"]
   },
   {
+    "name": "quenya",
+    "languages": ["quenya"]
+  },
+  {
     "name": "lorem_ipsum",
     "languages": ["lorem_ipsum"]
   },
