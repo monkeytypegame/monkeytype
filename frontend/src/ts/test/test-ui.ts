@@ -1164,41 +1164,6 @@ async function loadWordsHistory(): Promise<boolean> {
           TestInput.burstHistory[i]
         }" input="${input.replace(/"/g, "&quot;").replace(/ /g, "_")}">`;
       }
-      if (i === TestInput.input.history.length - 1) {
-        //last word
-        const wordstats = {
-          correct: 0,
-          incorrect: 0,
-          missed: 0,
-        };
-        const length = Config.mode === "zen" ? input.length : word.length;
-        for (let c = 0; c < length; c++) {
-          if (c < input.length) {
-            //on char that still has a word list pair
-            if (Config.mode === "zen" || input[c] === word[c]) {
-              wordstats.correct++;
-            } else {
-              wordstats.incorrect++;
-            }
-          } else {
-            //on char that is extra
-            wordstats.missed++;
-          }
-        }
-        if (wordstats.incorrect !== 0 || Config.mode !== "time") {
-          if (Config.mode !== "zen" && input !== word) {
-            wordEl = `<div class='word nocursor error' burst="${
-              TestInput.burstHistory[i]
-            }" input="${input.replace(/"/g, "&quot;").replace(/ /g, "_")}">`;
-          }
-        }
-      } else {
-        if (Config.mode !== "zen" && input !== word) {
-          wordEl = `<div class='word nocursor error' burst="${
-            TestInput.burstHistory[i]
-          }" input="${input.replace(/"/g, "&quot;").replace(/ /g, "_")}">`;
-        }
-      }
 
       let loop;
       if (Config.mode === "zen" || input.length > word.length) {
