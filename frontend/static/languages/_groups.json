@@ -379,6 +379,10 @@
     "languages": ["bangla", "bangla_letters", "bangla_10k"]
   },
   {
+    "name": "bengali",
+    "languages": ["bengali"]
+  },
+  {
     "name": "urdu",
     "languages": ["urdu", "urdu_1k", "urdu_5k"]
   },
