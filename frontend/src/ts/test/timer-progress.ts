@@ -1,6 +1,6 @@
 import Config from "../config";
 import * as CustomText from "./custom-text";
-import * as DateTime from "../utils/date-and-time";
+import * as DateTime from "@monkeytype/util/date-and-time";
 import * as TestWords from "./test-words";
 import * as TestInput from "./test-input";
 import * as Time from "../states/time";

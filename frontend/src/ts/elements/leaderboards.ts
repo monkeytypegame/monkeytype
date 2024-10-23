@@ -1,7 +1,7 @@
 import Ape from "../ape";
 import * as DB from "../db";
 import Config from "../config";
-import * as DateTime from "../utils/date-and-time";
+import * as DateTime from "@monkeytype/util/date-and-time";
 import * as Misc from "../utils/misc";
 import * as Arrays from "../utils/arrays";
 import * as Numbers from "@monkeytype/util/numbers";
