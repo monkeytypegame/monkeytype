@@ -1148,19 +1148,23 @@ async function loadWordsHistory(): Promise<boolean> {
       ) !== null;
     let wordEl = "";
     try {
-      if (input === undefined || input === "")
+      if (input === undefined || input === "") {
         throw new Error("empty input word");
+      }
+
+      const errorClass = input !== word ? "error" : "";
+
       if (corrected !== undefined && corrected !== "") {
         const correctedChar = !containsKorean
           ? corrected
           : Hangul.assemble(corrected.split(""));
-        wordEl = `<div class='word nocursor' burst="${
+        wordEl = `<div class='word nocursor ${errorClass}' burst="${
           TestInput.burstHistory[i]
         }" input="${correctedChar
           .replace(/"/g, "&quot;")
           .replace(/ /g, "_")}">`;
       } else {
-        wordEl = `<div class='word nocursor' burst="${
+        wordEl = `<div class='word nocursor ${errorClass}' burst="${
           TestInput.burstHistory[i]
         }" input="${input.replace(/"/g, "&quot;").replace(/ /g, "_")}">`;
       }
