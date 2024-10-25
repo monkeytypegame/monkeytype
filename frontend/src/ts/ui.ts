@@ -90,20 +90,13 @@ window.addEventListener("beforeunload", (event) => {
   }
 });
 
-const debouncedEvent = debounce(250, () => {
+const debouncedEvent = debounce(250, async () => {
   void Caret.updatePosition();
   if (getActivePage() === "test" && !TestUI.resultVisible) {
     if (Config.tapeMode !== "off") {
-      TestUI.scrollTape();
+      await TestUI.scrollTape();
     } else {
-      const word =
-        document.querySelectorAll<HTMLElement>("#words .word")[
-          TestUI.activeWordElementIndex - 1
-        ];
-      if (word) {
-        const currentTop: number = Math.floor(word.offsetTop);
-        TestUI.lineJump(currentTop);
-      }
+      TestUI.updateTestLine();
     }
   }
   setTimeout(() => {
@@ -119,7 +112,7 @@ const throttledEvent = throttle(250, () => {
 
 $(window).on("resize", () => {
   throttledEvent();
-  debouncedEvent();
+  void debouncedEvent();
 });
 
 ConfigEvent.subscribe((eventKey) => {
