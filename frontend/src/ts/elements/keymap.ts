@@ -113,6 +113,7 @@ export async function refresh(
   if (Config.keymapMode === "off") return;
   if (ActivePage.get() !== "test") return;
   if (!layoutName) return;
+  let r5_grid = "";
   try {
     let layouts;
     try {
@@ -208,14 +209,66 @@ export async function refresh(
         if (Config.keymapLegendStyle === "blank") {
           letterStyle = `style="display: none;"`;
         }
-        rowElement += "<div></div>";
-        rowElement += `<div class="keymapKey keySpace layoutIndicator left">
-          <div class="letter" ${letterStyle}>${layoutDisplay}</div>
-        </div>`;
-        rowElement += `<div class="keymapSplitSpacer"></div>`;
-        rowElement += `<div class="keymapKey keySpace right">
-          <div class="letter"></div>
-        </div>`;
+        if (isMatrix) {
+          /* ROW 5 in Matrix keyboards allow for alphas in thumb keys.
+           * Any combination of 1 or two keys.
+           * Space key with layout name is automatically added.
+           * If only one alpha key defined, will be assigned to right hand.
+           * If the alpha key must to the left, explicitly set ["eE", " "]
+           * You can also define two alph keys (space is added automatically on the left).
+           * */
+          const Row5KeysCount = rowKeys.length;
+          const hasOnlyOneKey = Row5KeysCount === 1;
+          const SplitSpacerPosition = Math.floor(Row5KeysCount / 2);
+          if (hasOnlyOneKey) {
+            rowElement += "<div></div>";
+            r5_grid += "1";
+          }
+          rowElement += `<div class="keymapKey keySpace">
+              <div class="letter" ${letterStyle}>${layoutDisplay}</div>
+            </div>`;
+          r5_grid += "3";
+
+          for (let i = 0; i < Row5KeysCount; i++) {
+            const key = rowKeys[i] as string;
+            let keyDisplay = key[0] as string;
+            if (Config.keymapLegendStyle === "uppercase") {
+              keyDisplay = keyDisplay.toUpperCase();
+            }
+            const keyVisualValue = key.replace('"', "&quot;");
+            if (
+              (i === SplitSpacerPosition && !hasOnlyOneKey) ||
+              (i === 0 && hasOnlyOneKey)
+            ) {
+              rowElement += `<div class="keymapSplitSpacer"></div>`;
+              r5_grid += "-";
+            }
+            if (keyVisualValue === " ") {
+              rowElement += `<div class="keymapKey keySpace">
+                <span class="letter"></span>
+              </div>`;
+              if (rowKeys[0] === " " && !hasOnlyOneKey) {
+                r5_grid += "1";
+              } else {
+                r5_grid += "3";
+              }
+            } else {
+              rowElement += `<div class="keymapKey" data-key="${keyVisualValue}">
+                  <span class="letter">${keyDisplay}</span>
+                </div>`;
+              r5_grid += "1";
+            }
+          }
+        } else {
+          rowElement += "<div></div>";
+          rowElement += `<div class="keymapKey keySpace">
+              <div class="letter" ${letterStyle}>${layoutDisplay}</div>
+            </div>`;
+          rowElement += `<div class="keymapSplitSpacer"></div>`;
+          rowElement += `<div class="keymapKey keySplitSpace">
+              <div class="letter"></div>
+            </div>`;
+        }
       } else {
         for (let i = 0; i < rowKeys.length; i++) {
           if (row === "row2" && i === 12) continue;
@@ -309,7 +362,9 @@ export async function refresh(
         }
       }
 
-      keymapElement += `<div class="row r${index + 1}">${rowElement}</div>`;
+      keymapElement += `<div class="row r${
+        index + 1
+      }" data-row5-grid="${r5_grid}">${rowElement}</div>`;
     }
     // );
 
