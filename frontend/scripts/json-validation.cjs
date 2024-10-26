@@ -236,9 +236,9 @@ function validateOthers() {
               },
               row5: {
                 type: "array",
-                items: { type: "string", minLength: 1, maxLength: 1 },
+                items: { type: "string", minLength: 1, maxLength: 2 },
                 minItems: 1,
-                maxItems: 1,
+                maxItems: 2,
               },
             },
             required: ["row1", "row2", "row3", "row4", "row5"],
@@ -280,9 +280,9 @@ function validateOthers() {
               },
               row5: {
                 type: "array",
-                items: { type: "string", minLength: 1, maxLength: 1 },
+                items: { type: "string", minLength: 1, maxLength: 2 },
                 minItems: 1,
-                maxItems: 1,
+                maxItems: 2,
               },
             },
             required: ["row1", "row2", "row3", "row4", "row5"],
