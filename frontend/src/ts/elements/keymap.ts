@@ -213,21 +213,37 @@ export async function refresh(
           /* ROW 5 in Matrix keyboards allow for alphas in thumb keys.
            * Any combination of 1 or two keys.
            * Space key with layout name is automatically added.
-           * If only one alpha key defined, will be assigned to right hand.
-           * If the alpha key must to the left, explicitly set ["eE", " "]
-           * You can also define two alph keys (space is added automatically on the left).
+           * If only one alpha key defined, it will be assigned to right hand.
+           * If the alpha key must be on the left, explicitly set ["eE", " "]
+           * You can also define two alpha keys (space is added automatically on the left).
            * */
           const Row5KeysCount = rowKeys.length;
           const hasOnlyOneKey = Row5KeysCount === 1;
+          const hasSpace = rowKeys.includes(" ");
           const SplitSpacerPosition = Math.floor(Row5KeysCount / 2);
           if (hasOnlyOneKey) {
             rowElement += "<div></div>";
-            r5_grid += "1";
+            r5_grid += "3";
+            if (hasSpace) {
+              rowElement += `<div class="keymapKey keySpace">
+                  <span class="letter"></span>
+                </div>`;
+            } else {
+              rowElement += `<div class="keymapKey keySpace">
+                <span class="letter">${layoutDisplay}</span>
+              </div>`;
+            }
+          } else {
+            if (hasSpace) {
+              rowElement += "<div></div>";
+              r5_grid += "1";
+            } else {
+              rowElement += `<div class="keymapKey keySpace">
+                <span class="letter">${layoutDisplay}</span>
+              </div>`;
+              r5_grid += "3";
+            }
           }
-          rowElement += `<div class="keymapKey keySpace">
-              <div class="letter" ${letterStyle}>${layoutDisplay}</div>
-            </div>`;
-          r5_grid += "3";
 
           for (let i = 0; i < Row5KeysCount; i++) {
             const key = rowKeys[i] as string;
@@ -245,13 +261,9 @@ export async function refresh(
             }
             if (keyVisualValue === " ") {
               rowElement += `<div class="keymapKey keySpace">
-                <span class="letter"></span>
+                <span class="letter">${layoutDisplay}</span>
               </div>`;
-              if (rowKeys[0] === " " && !hasOnlyOneKey) {
-                r5_grid += "1";
-              } else {
-                r5_grid += "3";
-              }
+              r5_grid += "3";
             } else {
               rowElement += `<div class="keymapKey" data-key="${keyVisualValue}">
                   <span class="letter">${keyDisplay}</span>

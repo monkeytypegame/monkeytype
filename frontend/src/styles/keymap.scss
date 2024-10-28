@@ -126,15 +126,19 @@
       grid-template-columns: 1fr 3fr 4fr 3fr 1fr;
 
       &[data-row5-grid="13-1"] {
-        grid-template-columns: 1fr 1fr 4fr 1fr 5fr;
+        grid-template-columns: 1fr 2fr 3fr 1fr 5fr;
+      }
+
+      &[data-row5-grid="3-1"] {
+        grid-template-columns: 1fr 2fr 3fr 1fr 5fr;
       }
 
       &[data-row5-grid="31-1"] {
-        grid-template-columns: 1fr 4fr 1fr 1fr 5fr;
+        grid-template-columns: 2fr 3fr 1fr 4fr 2fr;
       }
 
-      &[data-row5-grid="31-3"] {
-        grid-template-columns: 1fr 4fr 1fr 4fr 2fr;
+      &[data-row5-grid="11-3"] {
+        grid-template-columns: 2fr 3fr 1fr 3fr 3fr;
       }
     }
   }
@@ -200,11 +204,15 @@
         grid-template-columns: 1fr 1.5fr 2.5fr 1fr 1fr 1fr 3fr;
       }
 
+      &[data-row5-grid="3-1"] {
+        grid-template-columns: 1fr 1.5fr 2.5fr 1fr 1fr 1fr 3fr;
+      }
+
       &[data-row5-grid="31-1"] {
         grid-template-columns: 2fr 2.5fr 1fr 1fr 1fr 2fr 2.5fr;
       }
 
-      &[data-row5-grid="31-3"] {
+      &[data-row5-grid="11-3"] {
         grid-template-columns: 2.5fr 3fr 1fr 1fr 3fr 1fr 2.5fr;
       }
     }
