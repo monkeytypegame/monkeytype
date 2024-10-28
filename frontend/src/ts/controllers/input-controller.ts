@@ -1046,6 +1046,21 @@ $(document).on("keydown", async (event) => {
       event.preventDefault();
       return;
     }
+
+    // if the user backspaces the indentation in a code language we need to empty
+    // the current word so the user is set back to the end of the last line
+    if (
+      TestInput.input.current.length > 0 &&
+      /^\t*$/.test(TestInput.input.current) &&
+      Config.language.startsWith("code") &&
+      isCharCorrect(
+        TestInput.input.current.slice(-1),
+        TestInput.input.current.length - 1
+      )
+    ) {
+      TestInput.input.current = "";
+      void TestUI.updateWordElement();
+    }
   }
 
   if (event.key === "Backspace" && TestInput.input.current.length === 0) {
