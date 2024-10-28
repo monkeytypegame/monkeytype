@@ -217,8 +217,13 @@ export async function refresh(
            * If the alpha key must be on the left, explicitly set ["eE", " "]
            * You can also define two alpha keys (space is added automatically on the left).
            * */
-          const Row5KeysCount = rowKeys.length;
-          const hasOnlyOneKey = Row5KeysCount === 1;
+          let Row5KeysCount = rowKeys.length;
+          let hasOnlyOneKey = Row5KeysCount === 1;
+          if (!hasOnlyOneKey && rowKeys[0] === rowKeys[1]) {
+            rowKeys.pop();
+            Row5KeysCount = rowKeys.length;
+            hasOnlyOneKey = Row5KeysCount === 1;
+          }
           const hasSpace = rowKeys.includes(" ");
           const SplitSpacerPosition = Math.floor(Row5KeysCount / 2);
           if (hasOnlyOneKey) {
