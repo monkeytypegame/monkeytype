@@ -286,6 +286,8 @@ async function handleSpace(): Promise<void> {
     }
   }
 
+  TestInput.corrected.pushHistory();
+
   const isLastWord = TestWords.words.currentIndex === TestWords.words.length;
   if (TestLogic.areAllTestWordsGenerated() && isLastWord) {
     void TestLogic.finish();
@@ -307,8 +309,6 @@ async function handleSpace(): Promise<void> {
     TestLogic.fail("min burst");
     return;
   }
-
-  TestInput.corrected.pushHistory();
 
   if (Config.keymapMode === "react") {
     void KeymapEvent.flash(" ", true);
