@@ -413,6 +413,10 @@
     ]
   },
   {
+    "name": "kabyle",
+    "languages": ["kabyle", "kabyle_1k"]
+  },
+  {
     "name": "hindi",
     "languages": ["hindi", "hindi_1k", "hinglish"]
   },
