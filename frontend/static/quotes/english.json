@@ -2102,12 +2102,6 @@
       "length": 166
     },
     {
-      "text": "Tell me how we're not alike, but we work so well and we don't even know why. Funny how the stars crossed right, 'cause we work so well, and we don't even know why. You can call it fire and ice, but we work so well, and we don't even know why.",
-      "source": "Why",
-      "id": 363,
-      "length": 242
-    },
-    {
       "text": "I hated that having done the right thing was somehow considered wrong. And I hated that there didn't seem to be any other way to survive school.",
       "source": "Sammy Keyes and the Night of the Skull",
       "id": 364,
@@ -8258,10 +8252,10 @@
       "length": 154
     },
     {
-      "text": "I'm not the one who's lost with no direction, but you'll never see. You're so busy making masks with my name on them in all caps. You got the talking down, just not the listening.",
+      "text": "I'm not the one who's lost with no direction, but you'll never see. You're so busy making maps with my name on them in all caps. You got the talking down, just not the listening.",
       "source": "King of Anything",
       "id": 1448,
-      "length": 179
+      "length": 178
     },
     {
       "text": "There's a simplicity to war: Attacking is the only secret. Dare, and the world yields. How quickly they forget that all it takes to change the course of history is the will of a single man.",
@@ -16887,12 +16881,6 @@
       "length": 348
     },
     {
-      "text": "I'm a good man, food on the table, working two jobs, ready, willing and able, check. Good man, up having fun, got no kids and I love the Lord, check. Good man, I'm monogamous, never did time well, maybe just once, check. Good man and I puts it down, wanna say it twice but I puts it down, check. How could you ever walk away after all I've done for you? I feel like there's a knife in my back, babe. You might as well put it all the way through, good man.",
-      "source": "Good Man",
-      "id": 3002,
-      "length": 455
-    },
-    {
       "text": "To feel it so like myself, indeed, so brotherly, made me realize that I'd been happy, and that I was happy still. For all to be accomplished, for me to feel less lonely, all that remained to hope was that on the day of my execution there should be a huge crowd of spectators and that they should greet me with howls of execration.",
       "source": "The Stranger",
       "id": 3003,
@@ -20288,12 +20276,6 @@
       "source": "The Library of Babel",
       "id": 3621,
       "length": 286
-    },
-    {
-      "text": "Isn't it kind of weird? It's like, there's a guy in a gorilla suit, and there's - he's got a robot head, and inside he's got kind of a bunch of clay... I mean, I've seen Dali paintings that make more sense than this movie does.",
-      "source": "Mystery Science Theater 3000: Robot Monster",
-      "id": 3622,
-      "length": 227
     },
     {
       "text": "A place where there isn't any trouble. Do you suppose there is such a place, Toto? There must be. It's not a place you can get to by a boat or a train. It's far, far away. Behind the moon, beyond the rain...",
@@ -30179,7 +30161,7 @@
       "id": 5453
     },
     {
-      "text": "I just... feel like I need to save everyone. To redeem myself.",
+      "text": "I just... Feel like I need to save everyone. To redeem myself.",
       "source": "Thomas, The Maze Runner",
       "length": 62,
       "id": 5456
@@ -32176,12 +32158,6 @@
       "source": "Assassination Classroom",
       "length": 123,
       "id": 5864
-    },
-    {
-      "text": "What kind of tea do you want? We have blueberry, raspberry, ginseng, sleepy time, green tea, green tea with lemon, green tea with lemon and honey, liver disaster, ginger with honey, ginger without honey, vanilla almond, white truffle, blueberry chamomile, vanilla walnut, constant comment, and... earl grey.",
-      "source": "Scott Pilgrim vs. The World",
-      "length": 307,
-      "id": 5865
     },
     {
       "text": "People have an annoying habit of remembering things they shouldn't.",
@@ -35034,7 +35010,7 @@
       "id": 6477
     },
     {
-      "text": "It's okay to lose your way... just don't lose sight of what you have decided.",
+      "text": "It's okay to lose your way... Just don't lose sight of what you have decided.",
       "source": "One Piece",
       "length": 77,
       "approvedBy": "Smithster",
@@ -35081,13 +35057,6 @@
       "length": 114,
       "approvedBy": "Smithster",
       "id": 6485
-    },
-    {
-      "text": "You never had a rope around your neck. Well, I'm going to tell you something. When that rope starts to pull tight, you can feel the devil bite your ass.",
-      "source": "The Good, The Bad, and The Ugly",
-      "length": 152,
-      "approvedBy": "Smithster",
-      "id": 6486
     },
     {
       "text": "I'll tell you one thing, Blondie. If I knew that my last hour had come, I swear, in my place... in your place I would do the same thing. I would tell about the gold. Yes, yes, I would. I would tell the name on the grave. What good is the money if you're dead? I know the name of the cemetery. But you know how many graves there are there? Please. Blondie, please. Have a little... coffee? Please, tell me the name. On... on the grave. If I get my hands on the 200,000 dollars, I'll always honor your memory. I swear I'll always honor your memory.",
@@ -35179,13 +35148,6 @@
       "length": 80,
       "approvedBy": "Smithster",
       "id": 6503
-    },
-    {
-      "text": "When you're ten, they call you a prodigy. When you're fifteen, they call you a genius. Once you hit twenty, you're just an ordinary person.",
-      "source": "Free!",
-      "length": 139,
-      "approvedBy": "Smithster",
-      "id": 6504
     },
     {
       "text": "Because I feel nothing like my father, he's been sleeping underground. Don't wait around, 'cause there's nothing there at all, there's nothing but the end!",
@@ -38507,6 +38469,18 @@
       "source": "Captain Kathryn Janeway, Star Trek: Voyager",
       "length": 541,
       "id": 7612
+    },
+    {
+      "text": "Transdermal celebration, caused a slight mutation in the rift. It toppled down a nation, and left the people running for the hills.",
+      "source": "Ween - Transdermal Celebration",
+      "length": 131,
+      "id": 7613
+    },
+    {
+      "text": "May I say, before you go: I think perhaps you are one of the most powerful mages that I've ever had the pleasure to be in the presence of. And for this, I would offer a gift. I think it has been a long time since anyone has pointed out to you that you are a fool. Pain doesn't make people, it's love that makes people. The pain is inconsequential, it's love that saves them. And you would know that but you have none around you, you said so yourself. You surround yourself with lies and deceptions and... I wish for you, in the future, to find someone who will mourn you when you are gone. Respectfully.",
+      "source": "Caduceus Clay - Critical Role (Campaign 2, Episode 110)",
+      "length": 603,
+      "id": 7614
     }
   ]
 }

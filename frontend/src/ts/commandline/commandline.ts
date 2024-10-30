@@ -34,6 +34,7 @@ let inputModeParams: InputModeParams = {
 };
 let subgroupOverride: CommandsSubgroup | null = null;
 let isAnimating = false;
+let lastSingleListModeInputValue = "";
 
 function removeCommandlineBackground(): void {
   $("#commandLine").addClass("noBackground");
@@ -436,7 +437,6 @@ async function showCommands(): Promise<void> {
 }
 
 async function updateActiveCommand(): Promise<void> {
-  console.log("updating active command");
   if (isAnimating) return;
 
   const elements = [
@@ -486,7 +486,6 @@ function handleInputSubmit(): void {
 }
 
 async function runActiveCommand(): Promise<void> {
-  console.log("running active command");
   if (isAnimating) return;
   if (activeCommand === null) return;
   const command = activeCommand;
@@ -511,6 +510,9 @@ async function runActiveCommand(): Promise<void> {
     command.exec?.({
       commandlineModal: modal,
     });
+    if (Config.singleListCommandLine === "on") {
+      lastSingleListModeInputValue = inputValue;
+    }
     const isSticky = command.sticky ?? false;
     if (!isSticky) {
       void AnalyticsController.log("usedCommandLine", { command: command.id });
@@ -576,6 +578,14 @@ function updateInput(setInput?: string): void {
   } else {
     iconElement.innerHTML = '<i class="fas fa-search"></i>';
     element.placeholder = "Search...";
+
+    let length = inputValue.length;
+    if (setInput !== undefined) {
+      length = setInput.length;
+    }
+    setTimeout(() => {
+      element.setSelectionRange(length, length);
+    }, 0);
   }
 }
 
@@ -633,6 +643,18 @@ const modal = new AnimatedModal({
         (e.ctrlKey &&
           (e.key.toLowerCase() === "k" || e.key.toLowerCase() === "p"))
       ) {
+        if (
+          Config.singleListCommandLine === "on" &&
+          inputValue === "" &&
+          lastSingleListModeInputValue !== ""
+        ) {
+          inputValue = lastSingleListModeInputValue;
+          updateInput();
+          await filterSubgroup();
+          await showCommands();
+          await updateActiveCommand();
+          return;
+        }
         e.preventDefault();
         await decrementActiveIndex();
       }

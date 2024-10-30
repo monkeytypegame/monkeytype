@@ -331,8 +331,8 @@ importers:
         specifier: 3.0.0
         version: 3.0.0
       slim-select:
-        specifier: 2.9.0
-        version: 2.9.0
+        specifier: 2.9.2
+        version: 2.9.2
       stemmer:
         specifier: 2.0.1
         version: 2.0.1
@@ -8411,8 +8411,8 @@ packages:
   slick@1.12.2:
     resolution: {integrity: sha512-4qdtOGcBjral6YIBCWJ0ljFSKNLz9KkhbWtuGvUyRowl1kxfuE1x/Z/aJcaiilpb3do9bl5K7/1h9XC5wWpY/A==}
 
-  slim-select@2.9.0:
-    resolution: {integrity: sha512-AwAm4kliM1utztdXfKyiidgnQanAKQVJ1+61rJYHwDfzu3LAn/spFKb+xBiSqr3E/dlZu0MrBxflBL2sN5q2xA==}
+  slim-select@2.9.2:
+    resolution: {integrity: sha512-3Kxgj7Nk7sHHEu8Xzq70pkNNNdKmOr3OwKOjqSzcGeJ9j2hCOxIvIdYcAqKUM1eRnl+3ycKKK/YrzsjxrxAoZg==}
 
   slugify@1.4.7:
     resolution: {integrity: sha512-tf+h5W1IrjNm/9rKKj0JU2MDMruiopx0jjVA5zCdBtcGjfp0+c5rHw/zADLC3IeKlGHtVbHtpfzvYA0OYT+HKg==}
@@ -19146,7 +19146,7 @@ snapshots:
 
   slick@1.12.2: {}
 
-  slim-select@2.9.0: {}
+  slim-select@2.9.2: {}
 
   slugify@1.4.7: {}
 

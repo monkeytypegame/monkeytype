@@ -446,7 +446,7 @@
       "id": 78
     },
     {
-      "text": "El trabajo del pensamiento se parece a la perforación de un pozo: el agua es turbia al principio, mas luego se clarifica.",
+      "text": "El trabajo del pensamiento se parece a la perforación de un pozo: el agua es turbia al principio, más luego se clarifica.",
       "source": "Proverbio chino",
       "length": 121,
       "id": 79
@@ -794,12 +794,6 @@
       "id": 139
     },
     {
-      "text": "Me hablas te hablo, me ignoras te ignoro, me tratas mal, yo te trato peor, tú me tratas bien, yo te trato mejor. Así de simple.",
-      "source": "Pablo Escobar",
-      "length": 127,
-      "id": 140
-    },
-    {
       "text": "Ser pobre no te hace humilde, ser humilde no significa que seas pobre.",
       "source": "Pablo Escobar",
       "length": 70,
@@ -1008,6 +1002,12 @@
       "source": "Federico García Lorca - Bodas de Sangre",
       "length": 386,
       "id": 175
+    },
+    {
+      "text": "No debo tener miedo. El miedo mata la mente. El miedo es la pequeña muerte que conduce a la destrucción total. Afrontaré mi miedo. Permitiré que pase sobre mí y a través de mí. Y cuando haya pasado, giraré mi ojo interior para escrutar su camino. Allá donde haya pasado el miedo ya no habrá nada. Solo estaré yo.",
+      "source": "Frank Herbert - Dune",
+      "length": 312,
+      "id": 176
     }
   ]
 }
