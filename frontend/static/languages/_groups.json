@@ -615,5 +615,11 @@
       "code_common_lisp",
       "code_odin"
     ]
+  },
+  {
+    "name":"brainrot",
+    "languages":[
+      "brainrot"
+    ]
   }
 ]
