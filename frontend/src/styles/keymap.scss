@@ -49,17 +49,15 @@
       }
     }
 
-    &.layoutIndicator {
+    &.keySpace {
       width: 100%;
+    }
+
+    &.layoutIndicator {
       &:hover {
         cursor: pointer;
         color: var(--main-color);
       }
-    }
-
-    &.keySpace.right {
-      width: 100%;
-      opacity: 0;
     }
 
     &.flash {

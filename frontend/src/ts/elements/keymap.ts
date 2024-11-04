@@ -151,6 +151,11 @@ export async function refresh(
     const isMatrix =
       Config.keymapStyle === "matrix" || Config.keymapStyle === "split_matrix";
 
+    const isSplit =
+      Config.keymapStyle === "split" ||
+      Config.keymapStyle === "alice" ||
+      Config.keymapStyle === "split_matrix";
+
     const isSplitMatrix = Config.keymapStyle === "split_matrix";
 
     const isSteno =
@@ -229,12 +234,18 @@ export async function refresh(
           if (hasOnlyOneKey) {
             rowElement += "<div></div>";
             r5_grid += "3";
-            if (hasSpace && isSplitMatrix) {
-              rowElement += `<div class="keymapKey keySpace">
-                  <span class="letter"></span>
+            if (hasSpace) {
+              if (isSplitMatrix) {
+                rowElement += `<div class="keymapKey keySpace left">
+                <span class="letter"></span>
                 </div>`;
+              } else {
+                rowElement += `<div class="keymapKey keySpace left">
+                <span class="letter">${layoutDisplay}</span>
+                </div>`;
+              }
             } else if (!hasSpace) {
-              rowElement += `<div class="keymapKey keySpace">
+              rowElement += `<div class="keymapKey keySpace left layoutIndicator">
                 <span class="letter">${layoutDisplay}</span>
               </div>`;
             }
@@ -243,7 +254,7 @@ export async function refresh(
               rowElement += "<div></div>";
               r5_grid += "1";
             } else {
-              rowElement += `<div class="keymapKey keySpace">
+              rowElement += `<div class="keymapKey keySpace left layoutIndicator">
                 <span class="letter">${layoutDisplay}</span>
               </div>`;
               r5_grid += "3";
@@ -265,7 +276,7 @@ export async function refresh(
               r5_grid += "-";
             }
             if (keyVisualValue === " ") {
-              rowElement += `<div class="keymapKey keySpace">
+              rowElement += `<div class="keymapKey keySpace right layoutIndicator">
                 <span class="letter">${layoutDisplay}</span>
               </div>`;
               r5_grid += "3";
@@ -277,14 +288,21 @@ export async function refresh(
             }
           }
         } else {
-          rowElement += "<div></div>";
-          rowElement += `<div class="keymapKey keySplitSpace">
-              <div class="letter"></div>
-            </div>`;
-          rowElement += `<div class="keymapSplitSpacer"></div>`;
-          rowElement += `<div class="keymapKey keySpace">
-              <div class="letter" ${letterStyle}>${layoutDisplay}</div>
-            </div>`;
+          if (isSplit) {
+            rowElement += "<div></div>";
+            rowElement += `<div class="keymapKey keySpace layoutIndicator left">
+                <div class="letter"></div>
+              </div>`;
+            rowElement += `<div class="keymapSplitSpacer"></div>`;
+            rowElement += `<div class="keymapKey keySpace right">
+                <div class="letter"${letterStyle}>${layoutDisplay}</div>
+              </div>`;
+          } else {
+            rowElement += "<div></div>";
+            rowElement += `<div class="keymapKey keySpace layoutIndicator left">
+                <div class="letter"${letterStyle}>${layoutDisplay}</div>
+              </div>`;
+          }
         }
       } else {
         for (let i = 0; i < rowKeys.length; i++) {
