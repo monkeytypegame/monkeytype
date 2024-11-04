@@ -33,7 +33,7 @@ function highlightKey(currentKey: string): void {
       currentKey = Hangul.disassemble(currentKey)[0] ?? currentKey;
     }
     if (currentKey === " ") {
-      highlightKey = "#keymap .keySpace, #keymap .keySplitSpace";
+      highlightKey = "#keymap .keySpace";
     } else if (currentKey === '"') {
       highlightKey = `#keymap .keymapKey[data-key*='${currentKey}']`;
     } else {
@@ -54,7 +54,7 @@ async function flashKey(key: string, correct?: boolean): Promise<void> {
   if (key === undefined) return;
   //console.log("key", key);
   if (key === " ") {
-    key = "#keymap .keySpace, #keymap .keySplitSpace";
+    key = "#keymap .keySpace";
   } else if (key === '"') {
     key = `#keymap .keymapKey[data-key*='${key}']`;
   } else {
@@ -209,11 +209,11 @@ export async function refresh(
           letterStyle = `style="display: none;"`;
         }
         rowElement += "<div></div>";
-        rowElement += `<div class="keymapKey keySpace">
+        rowElement += `<div class="keymapKey keySpace layoutIndicator left">
           <div class="letter" ${letterStyle}>${layoutDisplay}</div>
         </div>`;
         rowElement += `<div class="keymapSplitSpacer"></div>`;
-        rowElement += `<div class="keymapKey keySplitSpace">
+        rowElement += `<div class="keymapKey keySpace right">
           <div class="letter"></div>
         </div>`;
       } else {
