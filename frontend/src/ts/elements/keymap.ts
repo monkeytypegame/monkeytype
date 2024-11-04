@@ -151,6 +151,8 @@ export async function refresh(
     const isMatrix =
       Config.keymapStyle === "matrix" || Config.keymapStyle === "split_matrix";
 
+    const isSplitMatrix = Config.keymapStyle === "split_matrix";
+
     const isSteno =
       Config.keymapStyle === "steno" || Config.keymapStyle === "steno_matrix";
 
@@ -227,11 +229,11 @@ export async function refresh(
           if (hasOnlyOneKey) {
             rowElement += "<div></div>";
             r5_grid += "3";
-            if (hasSpace) {
+            if (hasSpace && isSplitMatrix) {
               rowElement += `<div class="keymapKey keySpace">
                   <span class="letter"></span>
                 </div>`;
-            } else {
+            } else if (!hasSpace) {
               rowElement += `<div class="keymapKey keySpace">
                 <span class="letter">${layoutDisplay}</span>
               </div>`;
