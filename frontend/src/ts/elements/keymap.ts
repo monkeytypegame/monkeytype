@@ -278,12 +278,12 @@ export async function refresh(
           }
         } else {
           rowElement += "<div></div>";
-          rowElement += `<div class="keymapKey keySpace">
-              <div class="letter" ${letterStyle}>${layoutDisplay}</div>
-            </div>`;
-          rowElement += `<div class="keymapSplitSpacer"></div>`;
           rowElement += `<div class="keymapKey keySplitSpace">
               <div class="letter"></div>
+            </div>`;
+          rowElement += `<div class="keymapSplitSpacer"></div>`;
+          rowElement += `<div class="keymapKey keySpace">
+              <div class="letter" ${letterStyle}>${layoutDisplay}</div>
             </div>`;
         }
       } else {
