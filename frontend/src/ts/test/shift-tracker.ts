@@ -44,9 +44,7 @@ async function updateKeymapLegendCasing(): Promise<void> {
   const keymapKeys = [...document.getElementsByClassName("keymapKey")].filter(
     (el) => {
       const isKeymapKey = el.classList.contains("keymapKey");
-      const isNotSpace =
-        !el.classList.contains("keySpace") &&
-        !el.classList.contains("keySplitSpace");
+      const isNotSpace = !el.classList.contains("keySpace");
 
       return isKeymapKey && isNotSpace;
     }
