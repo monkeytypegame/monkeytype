@@ -14,6 +14,7 @@ import Format from "../utils/format";
 import { UserProfile, RankAndCount } from "@monkeytype/contracts/schemas/users";
 import { abbreviateNumber, convertRemToPixels } from "../utils/numbers";
 import { secondsToString } from "../utils/date-and-time";
+import { Auth } from "../firebase";
 
 type ProfileViewPaths = "profile" | "account";
 type UserProfileOrSnapshot = UserProfile | DB.Snapshot;
@@ -329,6 +330,12 @@ export async function update(
           .text(formatTopPercentage(t60));
       }
     }
+  }
+
+  if (profile.uid === Auth?.currentUser?.uid) {
+    profileElement.find(".userReportButton").addClass("hidden");
+  } else {
+    profileElement.find(".userReportButton").removeClass("hidden");
   }
 
   //structure
