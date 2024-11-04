@@ -221,9 +221,9 @@ async function afterAnimation(): Promise<void> {
 }
 
 export function show(showOptions?: ShowOptions): void {
-  state.textarea = CustomText.getText().join(
-    CustomText.getPipeDelimiter() ? "|" : " "
-  );
+  state.textarea = CustomText.getText()
+    .join(CustomText.getPipeDelimiter() ? "|" : " ")
+    .replace(/^ +/gm, "");
   void modal.show({
     ...(showOptions as ShowOptions<IncomingData>),
     beforeAnimation,
