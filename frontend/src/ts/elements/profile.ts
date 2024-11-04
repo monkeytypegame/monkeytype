@@ -249,9 +249,12 @@ export async function update(
     details.find(".keyboard .value").text(profile.details?.keyboard ?? "");
 
     if (
-      profile.details?.socialProfiles?.github !== undefined ||
-      profile.details?.socialProfiles?.twitter !== undefined ||
-      profile.details?.socialProfiles?.website !== undefined
+      (profile.details?.socialProfiles?.github !== undefined &&
+        profile.details?.socialProfiles?.github !== "") ||
+      (profile.details?.socialProfiles?.twitter !== undefined &&
+        profile.details?.socialProfiles?.twitter !== "") ||
+      (profile.details?.socialProfiles?.website !== undefined &&
+        profile.details?.socialProfiles?.website !== "")
     ) {
       socials = true;
       const socialsEl = details.find(".socials .value");
