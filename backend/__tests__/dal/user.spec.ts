@@ -1729,7 +1729,7 @@ describe("UserDal", () => {
     it("should return error if user has reached maximum", async () => {
       // given
       const { uid } = await UserTestData.createUser({
-        customThemes: new Array(10).fill(0).map(() => ({
+        customThemes: new Array(20).fill(0).map(() => ({
           _id: new ObjectId(),
           name: "any",
           colors: [] as any,
