@@ -122,9 +122,9 @@ export function areFunboxesCompatible(funboxesString: string): boolean {
         f.properties?.some((fp) => fp.startsWith("toPush:")) ??
         f.frontendFunctions?.includes("pullSection")
     ).length <= 1;
-  const oneApplyCSSMax =
-    funboxesToCheck.filter((f) => f.frontendFunctions?.includes("applyCSS"))
-      .length <= 1;
+  // const oneApplyCSSMax =
+  //   funboxesToCheck.filter((f) => f.frontendFunctions?.includes("applyCSS"))
+  //     .length <= 1; //todo: move all funbox stuff to the shared package, this is ok to remove for now
   const onePunctuateWordMax =
     funboxesToCheck.filter((f) =>
       f.frontendFunctions?.includes("punctuateWord")
@@ -174,7 +174,7 @@ export function areFunboxesCompatible(funboxesString: string): boolean {
     canSpeak &&
     hasLanguageToSpeak &&
     oneToPushOrPullSectionMax &&
-    oneApplyCSSMax &&
+    // oneApplyCSSMax &&
     onePunctuateWordMax &&
     oneCharCheckerMax &&
     oneCharReplacerMax &&
