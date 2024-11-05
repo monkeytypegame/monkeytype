@@ -499,7 +499,8 @@
       "git",
       "typing_of_the_dead",
       "league_of_legends",
-      "docker_file"
+      "docker_file",
+      "brainrot"
     ]
   },
   {
@@ -614,12 +615,6 @@
       "code_cobol",
       "code_common_lisp",
       "code_odin"
-    ]
-  },
-  {
-    "name":"brainrot",
-    "languages":[
-      "brainrot"
     ]
   }
 ]
