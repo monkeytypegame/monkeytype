@@ -1050,6 +1050,7 @@ $(document).on("keydown", async (event) => {
     // if the user backspaces the indentation in a code language we need to empty
     // the current word so the user is set back to the end of the last line
     if (
+      Config.codeIndentationDeletion === "line" &&
       TestInput.input.current.length > 0 &&
       /^\t*$/.test(TestInput.input.current) &&
       Config.language.startsWith("code") &&
@@ -1059,7 +1060,7 @@ $(document).on("keydown", async (event) => {
       )
     ) {
       TestInput.input.current = "";
-      void TestUI.updateWordElement();
+      await TestUI.updateActiveWordLetters();
     }
   }
 

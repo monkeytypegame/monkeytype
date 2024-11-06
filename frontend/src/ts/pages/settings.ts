@@ -37,6 +37,11 @@ async function initGroups(): Promise<void> {
     UpdateConfig.setSmoothCaret,
     "button"
   ) as SettingsGroup<ConfigValue>;
+  groups["codeIndentationDeletion"] = new SettingsGroup(
+    "codeIndentationDeletion",
+    UpdateConfig.setCodeIndentationDeletion,
+    "button"
+  ) as SettingsGroup<ConfigValue>;
   groups["difficulty"] = new SettingsGroup(
     "difficulty",
     UpdateConfig.setDifficulty,

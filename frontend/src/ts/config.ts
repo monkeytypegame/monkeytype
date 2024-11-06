@@ -1180,6 +1180,29 @@ export function setSmoothCaret(
   return true;
 }
 
+export function setCodeIndentationDeletion(
+  mode: ConfigSchemas.CodeIndentationDeletion,
+  nosave?: boolean
+): boolean {
+  if (
+    !isConfigValueValid(
+      "code indentation deletion",
+      mode,
+      ConfigSchemas.CodeIndentationDeletionSchema
+    )
+  ) {
+    return false;
+  }
+  config.codeIndentationDeletion = mode;
+
+  saveToLocalStorage("codeIndentationDeletion", nosave);
+  ConfigEvent.dispatch(
+    "codeIndentationDeletion",
+    config.codeIndentationDeletion
+  );
+  return true;
+}
+
 export function setStartGraphsAtZero(mode: boolean, nosave?: boolean): boolean {
   if (!isConfigValueValidBoolean("start graphs at zero", mode)) {
     return false;
@@ -1993,6 +2016,7 @@ export async function apply(
     setKeymapSize(configObj.keymapSize, true);
     setFontFamily(configObj.fontFamily, true);
     setSmoothCaret(configObj.smoothCaret, true);
+    setCodeIndentationDeletion(configObj.codeIndentationDeletion, true);
     setSmoothLineScroll(configObj.smoothLineScroll, true);
     setAlwaysShowDecimalPlaces(configObj.alwaysShowDecimalPlaces, true);
     setAlwaysShowWordsHistory(configObj.alwaysShowWordsHistory, true);

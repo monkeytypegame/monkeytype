@@ -4,6 +4,10 @@ import * as Shared from "./shared";
 
 export const SmoothCaretSchema = z.enum(["off", "slow", "medium", "fast"]);
 export type SmoothCaret = z.infer<typeof SmoothCaretSchema>;
+export const CodeIndentationDeletionSchema = z.enum(["backspace", "line"]);
+export type CodeIndentationDeletion = z.infer<
+  typeof CodeIndentationDeletionSchema
+>;
 
 export const QuickRestartSchema = z.enum(["off", "esc", "tab", "enter"]);
 export type QuickRestart = z.infer<typeof QuickRestartSchema>;
@@ -298,6 +302,7 @@ export const ConfigSchema = z
     favThemes: FavThemesSchema,
     showKeyTips: z.boolean(),
     smoothCaret: SmoothCaretSchema,
+    codeIndentationDeletion: CodeIndentationDeletionSchema,
     quickRestart: QuickRestartSchema,
     punctuation: z.boolean(),
     numbers: z.boolean(),

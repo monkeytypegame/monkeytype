@@ -106,6 +106,7 @@ import * as FPSCounter from "../elements/fps-counter";
 import { migrateConfig } from "../utils/config";
 import { PartialConfigSchema } from "@monkeytype/contracts/schemas/configs";
 import { Command, CommandsSubgroup } from "./types";
+import CodeIntentationDeletion from "./lists/code-intentation-deletion";
 
 const layoutsPromise = JSONData.getLayoutsList();
 layoutsPromise
@@ -264,6 +265,7 @@ export const commands: CommandsSubgroup = {
     ...HideExtraLettersCommands,
     ...LazyModeCommands,
     ...LayoutsCommands,
+    ...CodeIntentationDeletion,
 
     //sound
     ...SoundVolumeCommands,
