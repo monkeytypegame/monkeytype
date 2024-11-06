@@ -1,5 +1,6 @@
 {
     "name": "croatian_1k",
+    "bcp47": "hr-HR",
     "words": [
       "u",
       "od",
