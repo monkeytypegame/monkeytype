@@ -379,9 +379,22 @@ FunboxList.setFunboxFunctions("specials", {
   },
 });
 
+async function readAheadHandleKeydown(
+  event: JQuery.KeyDownEvent<Document, undefined, Document, Document>
+): Promise<void> {
+  if (event.key == "Backspace") {
+    $("#words").addClass("read_ahead_disabled");
+  } else if (event.key == " ") {
+    $("#words").removeClass("read_ahead_disabled");
+  }
+}
+
 FunboxList.setFunboxFunctions("read_ahead_easy", {
   rememberSettings(): void {
     save("highlightMode", Config.highlightMode, UpdateConfig.setHighlightMode);
+  },
+  async handleKeydown(event): Promise<void> {
+    await readAheadHandleKeydown(event);
   },
 });
 
@@ -389,11 +402,17 @@ FunboxList.setFunboxFunctions("read_ahead", {
   rememberSettings(): void {
     save("highlightMode", Config.highlightMode, UpdateConfig.setHighlightMode);
   },
+  async handleKeydown(event): Promise<void> {
+    await readAheadHandleKeydown(event);
+  },
 });
 
 FunboxList.setFunboxFunctions("read_ahead_hard", {
   rememberSettings(): void {
     save("highlightMode", Config.highlightMode, UpdateConfig.setHighlightMode);
+  },
+  async handleKeydown(event): Promise<void> {
+    await readAheadHandleKeydown(event);
   },
 });
 

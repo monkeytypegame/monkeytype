@@ -907,6 +907,12 @@ $(document).on("keydown", async (event) => {
     return;
   }
 
+  FunboxList.get(Config.funbox).forEach((value) => {
+    if (value.functions?.handleKeydown) {
+      void value.functions?.handleKeydown(event);
+    }
+  });
+
   //autofocus
   const wordsFocused: boolean = $("#wordsInput").is(":focus");
   const pageTestActive: boolean = ActivePage.get() === "test";
