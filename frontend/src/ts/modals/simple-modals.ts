@@ -983,7 +983,7 @@ list.revokeAllTokens = new SimpleModal({
       initVal: "",
     },
   ],
-  text: "Are you sure you want to this? This will log you out of all devices.",
+  text: "Are you sure you want to do this? This will log you out of all devices.",
   buttonText: "revoke all",
   onlineOnly: true,
   execFn: async (_thisPopup, password): Promise<ExecReturn> => {
