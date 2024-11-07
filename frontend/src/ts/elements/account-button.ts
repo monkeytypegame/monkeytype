@@ -134,6 +134,8 @@ export function updateAvatar(
   } else {
     $("header nav .view-account .avatar").addClass("hidden");
     $("header nav .view-account .user").removeClass("hidden");
+    $("header nav .view-account .avatar").css("background-image", "");
+    usingAvatar = false;
   }
 }
 

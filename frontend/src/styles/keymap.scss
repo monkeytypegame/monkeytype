@@ -49,7 +49,7 @@
       }
     }
 
-    &.keySpace {
+    &.layoutIndicator {
       width: 100%;
       &:hover {
         cursor: pointer;
@@ -57,7 +57,7 @@
       }
     }
 
-    &.keySplitSpace {
+    &.keySpace.right {
       width: 100%;
       opacity: 0;
     }
@@ -153,7 +153,7 @@
     .r5 {
       grid-template-columns: 5fr 3fr 1fr 3fr 4.5fr;
     }
-    .keySplitSpace {
+    .keySpace.right {
       opacity: 1;
     }
   }
@@ -181,7 +181,7 @@
     .r5 {
       grid-template-columns: 1fr 2fr 3fr 1fr 3fr 2fr 1fr;
     }
-    .keySplitSpace {
+    .keySpace.right {
       opacity: 1;
     }
   }
@@ -434,7 +434,7 @@
     .r5 {
       grid-template-columns: 5fr 3fr 1fr 3fr 4.5fr;
     }
-    .keySplitSpace {
+    .keySpace.right {
       opacity: 1;
     }
 
@@ -443,7 +443,7 @@
       margin-left: -5%;
       margin-top: 21%;
     }
-    div.keySplitSpace {
+    div.keySpace.right {
       transform: rotate(-10deg);
       margin-left: -33%;
       margin-top: 20%;
