@@ -19,7 +19,7 @@ importers:
         version: link:packages/release
       '@vitest/coverage-v8':
         specifier: 2.0.5
-        version: 2.0.5(vitest@2.0.5(@types/node@20.5.1)(happy-dom@13.4.1)(sass@1.70.0)(terser@5.31.3))
+        version: 2.0.5(vitest@2.0.5(@types/node@20.5.1)(happy-dom@15.10.2)(sass@1.70.0)(terser@5.31.3))
       conventional-changelog:
         specifier: 6.0.0
         version: 6.0.0(conventional-commits-filter@5.0.0)
@@ -43,7 +43,7 @@ importers:
         version: 2.1.2
       vitest:
         specifier: 2.0.5
-        version: 2.0.5(@types/node@20.5.1)(happy-dom@13.4.1)(sass@1.70.0)(terser@5.31.3)
+        version: 2.0.5(@types/node@20.5.1)(happy-dom@15.10.2)(sass@1.70.0)(terser@5.31.3)
 
   backend:
     dependencies:
@@ -224,7 +224,7 @@ importers:
         version: 10.0.0
       '@vitest/coverage-v8':
         specifier: 2.0.5
-        version: 2.0.5(vitest@2.0.5(@types/node@20.14.11)(happy-dom@13.4.1)(sass@1.70.0)(terser@5.31.3))
+        version: 2.0.5(vitest@2.0.5(@types/node@20.14.11)(happy-dom@15.10.2)(sass@1.70.0)(terser@5.31.3))
       concurrently:
         specifier: 8.2.2
         version: 8.2.2
@@ -254,7 +254,7 @@ importers:
         version: 5.5.4
       vitest:
         specifier: 2.0.5
-        version: 2.0.5(@types/node@20.14.11)(happy-dom@13.4.1)(sass@1.70.0)(terser@5.31.3)
+        version: 2.0.5(@types/node@20.14.11)(happy-dom@15.10.2)(sass@1.70.0)(terser@5.31.3)
       vitest-mongodb:
         specifier: 1.0.0
         version: 1.0.0
@@ -378,7 +378,7 @@ importers:
         version: 2.1.0
       '@vitest/coverage-v8':
         specifier: 2.0.5
-        version: 2.0.5(vitest@2.0.5(@types/node@20.14.11)(happy-dom@13.4.1)(sass@1.70.0)(terser@5.31.3))
+        version: 2.0.5(vitest@2.0.5(@types/node@20.14.11)(happy-dom@15.10.2)(sass@1.70.0)(terser@5.31.3))
       ajv:
         specifier: 8.12.0
         version: 8.12.0
@@ -407,8 +407,8 @@ importers:
         specifier: 1.9.1
         version: 1.9.1
       happy-dom:
-        specifier: 13.4.1
-        version: 13.4.1
+        specifier: 15.10.2
+        version: 15.10.2
       madge:
         specifier: 8.0.0
         version: 8.0.0(typescript@5.5.4)
@@ -450,7 +450,7 @@ importers:
         version: 0.20.0(vite@5.2.14(@types/node@20.14.11)(sass@1.70.0)(terser@5.31.3))(workbox-build@7.1.1)(workbox-window@7.1.0)
       vitest:
         specifier: 2.0.5
-        version: 2.0.5(@types/node@20.14.11)(happy-dom@13.4.1)(sass@1.70.0)(terser@5.31.3)
+        version: 2.0.5(@types/node@20.14.11)(happy-dom@15.10.2)(sass@1.70.0)(terser@5.31.3)
 
   packages/contracts:
     dependencies:
@@ -487,7 +487,7 @@ importers:
         version: 5.5.4
       vitest:
         specifier: 2.0.5
-        version: 2.0.5(@types/node@20.14.11)(happy-dom@13.4.1)(sass@1.70.0)(terser@5.31.3)
+        version: 2.0.5(@types/node@20.14.11)(happy-dom@15.10.2)(sass@1.70.0)(terser@5.31.3)
 
   packages/esbuild-config:
     devDependencies:
@@ -574,7 +574,7 @@ importers:
         version: 5.5.4
       vitest:
         specifier: 2.0.5
-        version: 2.0.5(@types/node@20.14.11)(happy-dom@13.4.1)(sass@1.70.0)(terser@5.31.3)
+        version: 2.0.5(@types/node@20.14.11)(happy-dom@15.10.2)(sass@1.70.0)(terser@5.31.3)
 
 packages:
 
@@ -5350,9 +5350,9 @@ packages:
   hangul-js@0.2.6:
     resolution: {integrity: sha512-48axU8LgjCD30FEs66Xc04/8knxMwCMQw0f67l67rlttW7VXT3qRJgQeHmhiuGwWXGvSbk6YM0fhQlcjE1JFQA==}
 
-  happy-dom@13.4.1:
-    resolution: {integrity: sha512-jSDMlBd+pCytrEOtC2N0IUyIYz1hkjpGGp+C8o80QPXhiAC0RY/koVCwdz3Y4dJNNENDOnzyk/k2i5El6q+vAg==}
-    engines: {node: '>=16.0.0'}
+  happy-dom@15.10.2:
+    resolution: {integrity: sha512-NbA5XrSovenJIIcfixCREX3ZnV7yHP4phhbfuxxf4CPn+LZpz/jIM9EqJ2DrPwgVDSMoAKH3pZwQvkbsSiCrUw==}
+    engines: {node: '>=18.0.0'}
 
   hard-rejection@2.1.0:
     resolution: {integrity: sha512-VIZB+ibDhx7ObhAe7OVtoEbuP4h/MuOTHJ+J8h/eBXotJYl0fBgR72xDFCKgIh22OJZIOVNxBMWuhAr10r8HdA==}
@@ -12372,7 +12372,7 @@ snapshots:
 
   '@ungap/structured-clone@1.2.0': {}
 
-  '@vitest/coverage-v8@2.0.5(vitest@2.0.5(@types/node@20.14.11)(happy-dom@13.4.1)(sass@1.70.0)(terser@5.31.3))':
+  '@vitest/coverage-v8@2.0.5(vitest@2.0.5(@types/node@20.14.11)(happy-dom@15.10.2)(sass@1.70.0)(terser@5.31.3))':
     dependencies:
       '@ampproject/remapping': 2.3.0
       '@bcoe/v8-coverage': 0.2.3
@@ -12386,11 +12386,11 @@ snapshots:
       std-env: 3.7.0
       test-exclude: 7.0.1
       tinyrainbow: 1.2.0
-      vitest: 2.0.5(@types/node@20.14.11)(happy-dom@13.4.1)(sass@1.70.0)(terser@5.31.3)
+      vitest: 2.0.5(@types/node@20.14.11)(happy-dom@15.10.2)(sass@1.70.0)(terser@5.31.3)
     transitivePeerDependencies:
       - supports-color
 
-  '@vitest/coverage-v8@2.0.5(vitest@2.0.5(@types/node@20.5.1)(happy-dom@13.4.1)(sass@1.70.0)(terser@5.31.3))':
+  '@vitest/coverage-v8@2.0.5(vitest@2.0.5(@types/node@20.5.1)(happy-dom@15.10.2)(sass@1.70.0)(terser@5.31.3))':
     dependencies:
       '@ampproject/remapping': 2.3.0
       '@bcoe/v8-coverage': 0.2.3
@@ -12404,7 +12404,7 @@ snapshots:
       std-env: 3.7.0
       test-exclude: 7.0.1
       tinyrainbow: 1.2.0
-      vitest: 2.0.5(@types/node@20.5.1)(happy-dom@13.4.1)(sass@1.70.0)(terser@5.31.3)
+      vitest: 2.0.5(@types/node@20.5.1)(happy-dom@15.10.2)(sass@1.70.0)(terser@5.31.3)
     transitivePeerDependencies:
       - supports-color
 
@@ -15593,7 +15593,7 @@ snapshots:
 
   hangul-js@0.2.6: {}
 
-  happy-dom@13.4.1:
+  happy-dom@15.10.2:
     dependencies:
       entities: 4.5.0
       webidl-conversions: 7.0.0
@@ -20123,7 +20123,7 @@ snapshots:
       - snappy
       - supports-color
 
-  vitest@2.0.5(@types/node@20.14.11)(happy-dom@13.4.1)(sass@1.70.0)(terser@5.31.3):
+  vitest@2.0.5(@types/node@20.14.11)(happy-dom@15.10.2)(sass@1.70.0)(terser@5.31.3):
     dependencies:
       '@ampproject/remapping': 2.3.0
       '@vitest/expect': 2.0.5
@@ -20146,7 +20146,7 @@ snapshots:
       why-is-node-running: 2.3.0
     optionalDependencies:
       '@types/node': 20.14.11
-      happy-dom: 13.4.1
+      happy-dom: 15.10.2
     transitivePeerDependencies:
       - less
       - lightningcss
@@ -20156,7 +20156,7 @@ snapshots:
       - supports-color
       - terser
 
-  vitest@2.0.5(@types/node@20.5.1)(happy-dom@13.4.1)(sass@1.70.0)(terser@5.31.3):
+  vitest@2.0.5(@types/node@20.5.1)(happy-dom@15.10.2)(sass@1.70.0)(terser@5.31.3):
     dependencies:
       '@ampproject/remapping': 2.3.0
       '@vitest/expect': 2.0.5
@@ -20179,7 +20179,7 @@ snapshots:
       why-is-node-running: 2.3.0
     optionalDependencies:
       '@types/node': 20.5.1
-      happy-dom: 13.4.1
+      happy-dom: 15.10.2
     transitivePeerDependencies:
       - less
       - lightningcss
