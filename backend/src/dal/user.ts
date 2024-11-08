@@ -685,7 +685,7 @@ export async function addTheme(
   const _id = new ObjectId();
 
   await updateUser(
-    { uid, "customThemes.9": { $exists: false } },
+    { uid, "customThemes.19": { $exists: false } },
     {
       $push: {
         customThemes: {
