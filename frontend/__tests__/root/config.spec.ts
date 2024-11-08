@@ -145,10 +145,8 @@ describe("Config", () => {
     expect(Config.setSmoothCaret("medium")).toBe(true);
     expect(Config.setSmoothCaret("invalid" as any)).toBe(false);
   });
-  it("setCodeIndentationDeletion", () => {
-    expect(Config.setCodeIndentationDeletion("backspace")).toBe(true);
-    expect(Config.setCodeIndentationDeletion("line")).toBe(true);
-    expect(Config.setSmoothCaret("invalid" as any)).toBe(false);
+  it("setCodeUnindentOnBackspace", () => {
+    testBoolean(Config.setCodeUnindentOnBackspace);
   });
   it("setQuickRestartMode", () => {
     expect(Config.setQuickRestartMode("off")).toBe(true);

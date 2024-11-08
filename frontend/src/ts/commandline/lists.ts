@@ -69,6 +69,7 @@ import ResultScreenCommands from "./lists/result-screen";
 import CustomBackgroundSizeCommands from "./lists/background-size";
 import CustomBackgroundFilterCommands from "./lists/background-filter";
 import AddOrRemoveThemeToFavorite from "./lists/add-or-remove-theme-to-favorites";
+import CodeUnindentOnBackspace from "./lists/code-unindent-on-backspace";
 
 import TagsCommands from "./lists/tags";
 import CustomThemesListCommands from "./lists/custom-themes-list";
@@ -106,7 +107,6 @@ import * as FPSCounter from "../elements/fps-counter";
 import { migrateConfig } from "../utils/config";
 import { PartialConfigSchema } from "@monkeytype/contracts/schemas/configs";
 import { Command, CommandsSubgroup } from "./types";
-import CodeIntentationDeletion from "./lists/code-intentation-deletion";
 
 const layoutsPromise = JSONData.getLayoutsList();
 layoutsPromise
@@ -265,7 +265,7 @@ export const commands: CommandsSubgroup = {
     ...HideExtraLettersCommands,
     ...LazyModeCommands,
     ...LayoutsCommands,
-    ...CodeIntentationDeletion,
+    ...CodeUnindentOnBackspace,
 
     //sound
     ...SoundVolumeCommands,

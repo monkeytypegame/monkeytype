@@ -25,7 +25,7 @@ const obj = {
   favThemes: [],
   showKeyTips: true,
   smoothCaret: "medium",
-  codeIndentationDeletion: "backspace",
+  codeUnindentOnBackspace: false,
   quickRestart: "off",
   punctuation: false,
   numbers: false,

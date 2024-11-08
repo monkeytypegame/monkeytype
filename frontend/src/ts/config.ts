@@ -1180,25 +1180,20 @@ export function setSmoothCaret(
   return true;
 }
 
-export function setCodeIndentationDeletion(
-  mode: ConfigSchemas.CodeIndentationDeletion,
+export function setCodeUnindentOnBackspace(
+  mode: boolean,
   nosave?: boolean
 ): boolean {
-  if (
-    !isConfigValueValid(
-      "code indentation deletion",
-      mode,
-      ConfigSchemas.CodeIndentationDeletionSchema
-    )
-  ) {
+  if (!isConfigValueValidBoolean("code unindent on backspace", mode)) {
     return false;
   }
-  config.codeIndentationDeletion = mode;
+  config.codeUnindentOnBackspace = mode;
 
-  saveToLocalStorage("codeIndentationDeletion", nosave);
+  saveToLocalStorage("codeUnindentOnBackspace", nosave);
   ConfigEvent.dispatch(
-    "codeIndentationDeletion",
-    config.codeIndentationDeletion
+    "codeUnindentOnBackspace",
+    config.codeUnindentOnBackspace,
+    nosave
   );
   return true;
 }
@@ -2016,7 +2011,7 @@ export async function apply(
     setKeymapSize(configObj.keymapSize, true);
     setFontFamily(configObj.fontFamily, true);
     setSmoothCaret(configObj.smoothCaret, true);
-    setCodeIndentationDeletion(configObj.codeIndentationDeletion, true);
+    setCodeUnindentOnBackspace(configObj.codeUnindentOnBackspace, true);
     setSmoothLineScroll(configObj.smoothLineScroll, true);
     setAlwaysShowDecimalPlaces(configObj.alwaysShowDecimalPlaces, true);
     setAlwaysShowWordsHistory(configObj.alwaysShowWordsHistory, true);
