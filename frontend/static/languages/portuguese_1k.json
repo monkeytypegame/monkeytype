@@ -2,7 +2,7 @@
   "name": "portuguese_1k",
   "_comment": "Sourced from: https://www.corpusdoportugues.org",
 
-  "bcp47": "pt-BR",
+  "bcp47": "pt-PT",
   "words": [
 		"o",
 		"de",
