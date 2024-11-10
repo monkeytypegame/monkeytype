@@ -422,7 +422,7 @@ export async function addCustomTheme(
     dbSnapshot.customThemes = [];
   }
 
-  if (dbSnapshot.customThemes.length >= 10) {
+  if (dbSnapshot.customThemes.length >= 20) {
     Notifications.add("Too many custom themes!", 0);
     return false;
   }
