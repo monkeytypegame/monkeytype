@@ -35,7 +35,7 @@ Git is optional but we recommend you utilize it. Monkeytype uses the Git source 
 
 Currently, the project is using version `20.16.0 LTS`.
 
-If you use `nvm` (if you use Windows, use [nvm-windows](https://github.com/coreybutler/nvm-windows)) then you can run `nvm install` and `nvm use` (you might need to specify the exact version eg: `nvm install 20.16.0` then `nvm use 20.16.0`) to use the version of Node.js in the `.nvmrc` file.
+If you use `fnm` ([install instructions](https://github.com/Schniz/fnm)) then you can run `fnm install` and `fnm use` (you might need to specify the exact version eg: `fnm install 20.16.0` then `fnm use 20.16.0`) to use the version of Node.js in the `.nvmrc` file.
 
 Alternatively, you can navigate to the NodeJS [website](https://nodejs.org/en/) to download it from there.
 
