@@ -1251,5 +1251,12 @@
     "mainColor": "#bef0ff",
     "subColor": "#fe9841",
     "textColor": "#dbdeeb"
+  },
+  {
+    "name": "washed",
+    "bgColor": "#0c4a6e",
+    "mainColor": "#fcd34d",
+    "subColor": "#0ea5e9",
+    "textColor": "#fef3c7"
   }
 ]

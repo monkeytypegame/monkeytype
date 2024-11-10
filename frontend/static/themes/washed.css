@@ -1,0 +1,20 @@
+:root {
+  --bg-color: #0c4a6e;
+  --main-color: #fcd34d;
+  --caret-color: #fcd34d;
+  --sub-color: #0ea5e9;
+  --sub-alt-color: #0369a1;
+  --text-color: #fef3c7;
+  --error-color: #f87171;
+  --error-extra-color: #ef4444;
+  --colorful-error-color: #f87171;
+  --colorful-error-extra-color: #ef4444;
+}
+
+nav > .textButton {
+  color: #fcd34d;
+}
+
+nav > .textButton:hover {
+  color: #fbbf24;
+}
