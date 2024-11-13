@@ -1,4 +1,4 @@
-export type FunboxMetadata = {
+type FunboxMetadata = {
   name: string;
   canGetPb: boolean;
   difficultyLevel: number;
@@ -7,22 +7,7 @@ export type FunboxMetadata = {
   frontendFunctions?: string[];
 };
 
-const FunboxList: FunboxMetadata[] = [
-  {
-    canGetPb: false,
-    difficultyLevel: 1,
-    properties: ["ignoresLanguage", "ignoresLayout", "noLetters"],
-    frontendForcedConfig: {
-      numbers: [false],
-    },
-    frontendFunctions: [
-      "getWord",
-      "punctuateWord",
-      "rememberSettings",
-      "handleChar",
-    ],
-    name: "58008",
-  },
+const _FunboxList: FunboxMetadata[] = [
   {
     canGetPb: true,
     difficultyLevel: 2,
@@ -371,5 +356,3 @@ const FunboxList: FunboxMetadata[] = [
     name: "instant_messaging",
   },
 ];
-
-export default FunboxList;
