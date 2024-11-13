@@ -717,7 +717,7 @@ async function calculateXp(
     }
   }
 
-  if (funboxBonusConfiguration > 0) {
+  if (funboxBonusConfiguration > 0 && funbox !== "none") {
     const funboxModifier = _.sumBy(funbox.split("#"), (funboxName) => {
       const funbox = getFunbox(funboxName as FunboxName);
       const difficultyLevel = funbox?.difficultyLevel ?? 0;
