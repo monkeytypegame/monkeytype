@@ -44,7 +44,7 @@ export function get(
 
     //@ts-expect-error
     if (out.includes(undefined)) {
-      throw new Error("Invalid funbox name");
+      throw new Error("One of the funboxes is invalid: " + nameOrNames);
     }
 
     return out;
@@ -52,7 +52,7 @@ export function get(
     const out = list[nameOrNames];
 
     if (out === undefined) {
-      throw new Error("Invalid funbox name");
+      throw new Error("Invalid funbox name: " + nameOrNames);
     }
 
     return out;
