@@ -1057,7 +1057,10 @@ $(document).on("keydown", async (event) => {
       isCharCorrect(
         TestInput.input.current.slice(-1),
         TestInput.input.current.length - 1
-      )
+      ) &&
+      (TestInput.input.history[TestWords.words.currentIndex - 1] !=
+        TestWords.words.get(TestWords.words.currentIndex - 1) ||
+        Config.freedomMode)
     ) {
       TestInput.input.current = "";
       await TestUI.updateActiveWordLetters();
