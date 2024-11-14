@@ -265,14 +265,14 @@ export async function refresh(
           }
           if (keyVisualValue === " ") {
             rowElement += `<div class="keymapKey keySpace layoutIndicator ${side}">
-              <span class="letter" ${letterStyle}>${layoutDisplay}</span>
+              <div class="letter" ${letterStyle}>${layoutDisplay}</div>
             </div>`;
             r5_grid += "3";
             // potential second space in next loop iterations will be empty:
             layoutDisplay = "";
           } else {
             rowElement += `<div class="keymapKey ${side}">
-              <span class="letter">${keyDisplay}</span>
+              <div class="letter">${keyDisplay}</div>
             </div>`;
             r5_grid += "1";
           }
