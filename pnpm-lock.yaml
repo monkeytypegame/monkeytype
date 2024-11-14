@@ -270,6 +270,9 @@ importers:
       '@monkeytype/contracts':
         specifier: workspace:*
         version: link:../packages/contracts
+      '@monkeytype/funbox':
+        specifier: workspace:*
+        version: link:../packages/funbox
       '@monkeytype/util':
         specifier: workspace:*
         version: link:../packages/util

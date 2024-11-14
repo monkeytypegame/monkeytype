@@ -29,7 +29,8 @@ import * as TestInput from "../test/test-input";
 import * as TestWords from "../test/test-words";
 import * as Hangul from "hangul-js";
 import * as CustomTextState from "../states/custom-text-name";
-import * as FunboxList from "../test/funbox/funbox-list";
+import * as FunboxList from "@monkeytype/funbox/list";
+import * as FunboxFunctions from "../test/funbox/funbox-functions";
 import * as KeymapEvent from "../observables/keymap-event";
 import { IgnoredKeys } from "../constants/ignored-keys";
 import { ModifierKeys } from "../constants/modifier-keys";
@@ -146,7 +147,9 @@ function backspaceToPrevious(): void {
   TestInput.input.current = TestInput.input.popHistory();
   TestInput.corrected.popHistory();
   if (
-    FunboxList.get(Config.funbox).find((f) => f.properties?.includes("nospace"))
+    FunboxList.getByHashSeparatedString(Config.funbox).find((f) =>
+      f.properties?.includes("nospace")
+    )
   ) {
     TestInput.input.current = TestInput.input.current.slice(0, -1);
     setWordsInput(" " + TestInput.input.current + " ");
@@ -196,10 +199,9 @@ async function handleSpace(): Promise<void> {
 
   const currentWord: string = TestWords.words.getCurrent();
 
-  for (const f of FunboxList.get(Config.funbox)) {
-    if (f.functions?.handleSpace) {
-      f.functions.handleSpace();
-    }
+  for (const f of FunboxList.getByHashSeparatedString(Config.funbox)) {
+    const fn = FunboxFunctions.get(f.name);
+    fn.handleSpace?.();
   }
 
   dontInsertSpace = true;
@@ -209,7 +211,7 @@ async function handleSpace(): Promise<void> {
   TestInput.pushBurstToHistory(burst);
 
   const nospace =
-    FunboxList.get(Config.funbox).find((f) =>
+    FunboxList.getByHashSeparatedString(Config.funbox).find((f) =>
       f.properties?.includes("nospace")
     ) !== undefined;
 
@@ -411,11 +413,18 @@ function isCharCorrect(char: string, charIndex: number): boolean {
     return true;
   }
 
-  const funbox = FunboxList.get(Config.funbox).find(
-    (f) => f.functions?.isCharCorrect
-  );
-  if (funbox?.functions?.isCharCorrect) {
-    return funbox.functions.isCharCorrect(char, originalChar);
+  // const funbox = FunboxList.getByHashSeparatedString(Config.funbox).find(
+  //   (f) => f.functions?.["isCharCorrect"]
+  // );
+  // if (funbox?.functions?.["isCharCorrect"]) {
+  //   return funbox.functions["isCharCorrect"](char, originalChar) as boolean;
+  // }
+
+  for (const f of FunboxList.getByHashSeparatedString(Config.funbox)) {
+    const fn = FunboxFunctions.get(f.name);
+    if (fn.isCharCorrect) {
+      return fn.isCharCorrect(char, originalChar);
+    }
   }
 
   if (Config.language.startsWith("russian")) {
@@ -497,12 +506,15 @@ function handleChar(
 
   const isCharKorean: boolean = TestInput.input.getKoreanStatus();
 
-  for (const f of FunboxList.get(Config.funbox)) {
-    if (f.functions?.handleChar) char = f.functions.handleChar(char);
+  for (const f of FunboxList.getByHashSeparatedString(Config.funbox)) {
+    const fn = FunboxFunctions.get(f.name);
+    if (fn.handleChar) {
+      char = fn.handleChar(char);
+    }
   }
 
   const nospace =
-    FunboxList.get(Config.funbox).find((f) =>
+    FunboxList.getByHashSeparatedString(Config.funbox).find((f) =>
       f.properties?.includes("nospace")
     ) !== undefined;
 
@@ -1135,21 +1147,21 @@ $(document).on("keydown", async (event) => {
     }
   }
 
-  const funbox = FunboxList.get(Config.funbox).find(
-    (f) => f.functions?.preventDefaultEvent
-  );
-  if (funbox?.functions?.preventDefaultEvent) {
-    if (
-      await funbox.functions.preventDefaultEvent(
-        //i cant figure this type out, but it works fine
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-        event as JQuery.KeyDownEvent
-      )
-    ) {
-      event.preventDefault();
-      handleChar(event.key, TestInput.input.current.length);
-      updateUI();
-      setWordsInput(" " + TestInput.input.current);
+  for (const f of FunboxList.getByHashSeparatedString(Config.funbox)) {
+    const fn = FunboxFunctions.get(f.name);
+    if (fn.preventDefaultEvent) {
+      if (
+        await fn.preventDefaultEvent(
+          //i cant figure this type out, but it works fine
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+          event as JQuery.KeyDownEvent
+        )
+      ) {
+        event.preventDefault();
+        handleChar(event.key, TestInput.input.current.length);
+        updateUI();
+        setWordsInput(" " + TestInput.input.current);
+      }
     }
   }
 

@@ -1,5 +1,6 @@
 import Config, * as UpdateConfig from "../config";
-import * as FunboxList from "./funbox/funbox-list";
+import * as FunboxList from "@monkeytype/funbox/list";
+import * as FunboxFunctions from "./funbox/funbox-functions";
 import * as CustomText from "./custom-text";
 import * as Wordset from "./wordset";
 import QuotesController, {
@@ -35,11 +36,12 @@ export async function punctuateWord(
 
   const lastChar = Strings.getLastChar(previousWord);
 
-  const funbox = FunboxList.get(Config.funbox).find(
-    (f) => f.functions?.punctuateWord
-  );
-  if (funbox?.functions?.punctuateWord) {
-    return funbox.functions.punctuateWord(word);
+  const funbox = FunboxFunctions.get(
+    FunboxList.getFunboxNames(Config.funbox)
+  ).find((fns) => fns.punctuateWord);
+
+  if (funbox?.punctuateWord) {
+    return funbox.punctuateWord(word);
   }
   if (
     currentLanguage !== "code" &&
@@ -302,25 +304,34 @@ async function applyEnglishPunctuationToWord(word: string): Promise<string> {
 }
 
 function getFunboxWordsFrequency(): Wordset.FunboxWordsFrequency | undefined {
-  const wordFunbox = FunboxList.get(Config.funbox).find(
-    (f) => f.functions?.getWordsFrequencyMode
-  );
-  if (wordFunbox?.functions?.getWordsFrequencyMode) {
-    return wordFunbox.functions.getWordsFrequencyMode();
+  const funboxFunctions = FunboxFunctions.get(
+    FunboxList.getFunboxNames(Config.funbox)
+  ).find((fns) => fns.getWordsFrequencyMode);
+  if (funboxFunctions?.getWordsFrequencyMode) {
+    return funboxFunctions.getWordsFrequencyMode();
   }
   return undefined;
 }
 
 async function getFunboxSection(): Promise<string[]> {
   const ret = [];
-  const sectionFunbox = FunboxList.get(Config.funbox).find(
-    (f) => f.functions?.pullSection
-  );
-  if (sectionFunbox?.functions?.pullSection) {
-    const section = await sectionFunbox.functions.pullSection(Config.language);
+
+  const funboxAndFunctions = FunboxList.getByHashSeparatedString(Config.funbox)
+    .map((f) => {
+      return {
+        funbox: f,
+        functions: FunboxFunctions.get(f.name),
+      };
+    })
+    .find((f) => f.functions.pullSection);
+
+  if (funboxAndFunctions?.functions?.pullSection) {
+    const section = await funboxAndFunctions.functions.pullSection(
+      Config.language
+    );
 
     if (section === false || section === undefined) {
-      UpdateConfig.toggleFunbox(sectionFunbox.name);
+      UpdateConfig.toggleFunbox(funboxAndFunctions.funbox.name);
       throw new Error("Failed to pull section");
     }
 
@@ -339,19 +350,22 @@ function getFunboxWord(
   wordIndex: number,
   wordset?: Wordset.Wordset
 ): string {
-  const wordFunbox = FunboxList.get(Config.funbox).find(
-    (f) => f.functions?.getWord
-  );
-  if (wordFunbox?.functions?.getWord) {
-    word = wordFunbox.functions.getWord(wordset, wordIndex);
+  const funbox = FunboxFunctions.get(
+    FunboxList.getFunboxNames(Config.funbox)
+  ).find((fns) => fns.getWord);
+
+  if (funbox?.getWord) {
+    word = funbox.getWord(wordset, wordIndex);
   }
   return word;
 }
 
 function applyFunboxesToWord(word: string): string {
-  for (const f of FunboxList.get(Config.funbox)) {
-    if (f.functions?.alterText) {
-      word = f.functions.alterText(word);
+  for (const f of FunboxFunctions.get(
+    FunboxList.getFunboxNames(Config.funbox)
+  )) {
+    if (f.alterText) {
+      word = f.alterText(word);
     }
   }
   return word;
@@ -384,7 +398,7 @@ function applyLazyModeToWord(word: string, language: LanguageObject): string {
 
 export function getWordOrder(): FunboxWordOrder {
   const wordOrder =
-    FunboxList.get(Config.funbox)
+    FunboxList.getByHashSeparatedString(Config.funbox)
       .find((f) => f.properties?.find((fp) => fp.startsWith("wordOrder")))
       ?.properties?.find((fp) => fp.startsWith("wordOrder")) ?? "";
 
@@ -409,7 +423,7 @@ export function getWordsLimit(): number {
   }
 
   const funboxToPush =
-    FunboxList.get(Config.funbox)
+    FunboxList.getByHashSeparatedString(Config.funbox)
       .find((f) => f.properties?.find((fp) => fp.startsWith("toPush")))
       ?.properties?.find((fp) => fp.startsWith("toPush:")) ?? "";
 
@@ -607,11 +621,10 @@ export async function generateWords(
     hasNewline: false,
   };
 
-  const sectionFunbox = FunboxList.get(Config.funbox).find(
-    (f) => f.functions?.pullSection
-  );
-  isCurrentlyUsingFunboxSection =
-    sectionFunbox?.functions?.pullSection !== undefined;
+  const sectionFunbox = FunboxFunctions.get(
+    FunboxList.getFunboxNames(Config.funbox)
+  ).find((f) => f.pullSection);
+  isCurrentlyUsingFunboxSection = sectionFunbox?.pullSection !== undefined;
 
   const wordOrder = getWordOrder();
   console.debug("Word order", wordOrder);
@@ -632,11 +645,11 @@ export async function generateWords(
     wordList = wordList.reverse();
   }
 
-  const wordFunbox = FunboxList.get(Config.funbox).find(
-    (f) => f.functions?.withWords
-  );
-  if (wordFunbox?.functions?.withWords) {
-    currentWordset = await wordFunbox.functions.withWords(wordList);
+  const wordFunbox = FunboxFunctions.get(
+    FunboxList.getFunboxNames(Config.funbox)
+  ).find((f) => f?.withWords);
+  if (wordFunbox?.withWords) {
+    currentWordset = await wordFunbox.withWords(wordList);
   } else {
     currentWordset = await Wordset.withWords(wordList);
   }

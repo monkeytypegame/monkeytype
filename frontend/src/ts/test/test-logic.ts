@@ -52,7 +52,8 @@ import { Auth, isAuthenticated } from "../firebase";
 import * as AdController from "../controllers/ad-controller";
 import * as TestConfig from "./test-config";
 import * as ConnectionState from "../states/connection";
-import * as FunboxList from "./funbox/funbox-list";
+import * as FunboxList from "@monkeytype/funbox/list";
+import * as FunboxFunctions from "./funbox/funbox-functions";
 import * as MemoryFunboxTimer from "./funbox/memory-funbox-timer";
 import * as KeymapEvent from "../observables/keymap-event";
 import * as LayoutfluidFunboxTimer from "../test/funbox/layoutfluid-funbox-timer";
@@ -106,8 +107,9 @@ export function startTest(now: number): boolean {
   TestTimer.clear();
   Monkey.show();
 
-  for (const f of FunboxList.get(Config.funbox)) {
-    if (f.functions?.start) f.functions.start();
+  for (const f of FunboxList.getByHashSeparatedString(Config.funbox)) {
+    const fn = FunboxFunctions.get(f.name);
+    if (fn.start) fn.start();
   }
 
   try {
@@ -328,8 +330,9 @@ export function restart(options = {} as RestartOptions): void {
       await init();
       await PaceCaret.init();
 
-      for (const f of FunboxList.get(Config.funbox)) {
-        if (f.functions?.restart) f.functions.restart();
+      for (const f of FunboxList.getByHashSeparatedString(Config.funbox)) {
+        const fn = FunboxFunctions.get(f.name);
+        if (fn.restart) fn.restart();
       }
 
       if (Config.showAverage !== "off") {
@@ -540,7 +543,7 @@ export function areAllTestWordsGenerated(): boolean {
 //add word during the test
 export async function addWord(): Promise<void> {
   let bound = 100; // how many extra words to aim for AFTER the current word
-  const funboxToPush = FunboxList.get(Config.funbox)
+  const funboxToPush = FunboxList.getByHashSeparatedString(Config.funbox)
     .find((f) => f.properties?.find((fp) => fp.startsWith("toPush")))
     ?.properties?.find((fp) => fp.startsWith("toPush:"));
   const toPushCount = funboxToPush?.split(":")[1];
@@ -552,36 +555,35 @@ export async function addWord(): Promise<void> {
     return;
   }
 
-  const sectionFunbox = FunboxList.get(Config.funbox).find(
-    (f) => f.functions?.pullSection
-  );
-  if (sectionFunbox?.functions?.pullSection) {
-    if (TestWords.words.length - TestWords.words.currentIndex < 20) {
-      const section = await sectionFunbox.functions.pullSection(
-        Config.language
-      );
+  for (const funbox of FunboxList.getByHashSeparatedString(Config.funbox)) {
+    const fn = FunboxFunctions.get(funbox.name);
 
-      if (section === false) {
-        Notifications.add(
-          "Error while getting section. Please try again later",
-          -1
-        );
-        UpdateConfig.toggleFunbox(sectionFunbox.name);
-        restart();
-        return;
-      }
+    if (fn.pullSection) {
+      if (TestWords.words.length - TestWords.words.currentIndex < 20) {
+        const section = await fn.pullSection(Config.language);
 
-      if (section === undefined) return;
-
-      let wordCount = 0;
-      for (let i = 0; i < section.words.length; i++) {
-        const word = section.words[i] as string;
-        if (wordCount >= Config.words && Config.mode === "words") {
-          break;
+        if (section === false) {
+          Notifications.add(
+            "Error while getting section. Please try again later",
+            -1
+          );
+          UpdateConfig.toggleFunbox(funbox.name);
+          restart();
+          return;
         }
-        wordCount++;
-        TestWords.words.push(word, i);
-        TestUI.addWord(word);
+
+        if (section === undefined) return;
+
+        let wordCount = 0;
+        for (let i = 0; i < section.words.length; i++) {
+          const word = section.words[i] as string;
+          if (wordCount >= Config.words && Config.mode === "words") {
+            break;
+          }
+          wordCount++;
+          TestWords.words.push(word, i);
+          TestUI.addWord(word);
+        }
       }
     }
   }

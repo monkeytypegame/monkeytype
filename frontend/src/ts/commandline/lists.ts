@@ -106,6 +106,7 @@ import * as FPSCounter from "../elements/fps-counter";
 import { migrateConfig } from "../utils/config";
 import { PartialConfigSchema } from "@monkeytype/contracts/schemas/configs";
 import { Command, CommandsSubgroup } from "./types";
+import FunboxList from "@monkeytype/funbox/list";
 
 const layoutsPromise = JSONData.getLayoutsList();
 layoutsPromise
@@ -130,21 +131,13 @@ languagesPromise
     );
   });
 
-const funboxPromise = JSONData.getFunboxList();
-funboxPromise
-  .then((funboxes) => {
-    updateFunboxCommands(funboxes);
-    if (FunboxCommands[0]?.subgroup) {
-      FunboxCommands[0].subgroup.beforeList = (): void => {
-        updateFunboxCommands(funboxes);
-      };
-    }
-  })
-  .catch((e: unknown) => {
-    console.error(
-      Misc.createErrorMessage(e, "Failed to update funbox commands")
-    );
-  });
+//todo this probably doesnt need to be done through an update function, should be ok to do straight in the funbox commands file
+updateFunboxCommands(Object.values(FunboxList));
+if (FunboxCommands[0]?.subgroup) {
+  FunboxCommands[0].subgroup.beforeList = (): void => {
+    updateFunboxCommands(Object.values(FunboxList));
+  };
+}
 
 const fontsPromise = JSONData.getFontsList();
 fontsPromise
@@ -515,7 +508,6 @@ export async function getList(
   await Promise.allSettled([
     layoutsPromise,
     languagesPromise,
-    funboxPromise,
     fontsPromise,
     themesPromise,
     challengesPromise,
@@ -563,7 +555,6 @@ export async function getSingleSubgroup(): Promise<CommandsSubgroup> {
   await Promise.allSettled([
     layoutsPromise,
     languagesPromise,
-    funboxPromise,
     fontsPromise,
     themesPromise,
     challengesPromise,

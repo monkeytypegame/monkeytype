@@ -5,7 +5,7 @@ import DefaultConfig from "./constants/default-config";
 import { isAuthenticated } from "./firebase";
 import * as ConnectionState from "./states/connection";
 import { lastElementFromArray } from "./utils/arrays";
-import { getFunboxList } from "./utils/json-data";
+import * as FunboxList from "@monkeytype/funbox/list";
 import { migrateConfig } from "./utils/config";
 import * as Dates from "date-fns";
 import {
@@ -706,9 +706,7 @@ export async function getLocalPB<M extends Mode>(
   lazyMode: boolean,
   funbox: string
 ): Promise<PersonalBest | undefined> {
-  const funboxes = (await getFunboxList()).filter((fb) => {
-    return funbox?.split("#").includes(fb.name);
-  });
+  const funboxes = FunboxList.getByHashSeparatedString(funbox);
 
   if (!funboxes.every((f) => f.canGetPb)) {
     return undefined;

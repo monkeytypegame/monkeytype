@@ -19,7 +19,8 @@ import * as ConfigEvent from "../observables/config-event";
 import * as Hangul from "hangul-js";
 import { format } from "date-fns/format";
 import { isAuthenticated } from "../firebase";
-import * as FunboxList from "./funbox/funbox-list";
+import * as FunboxList from "@monkeytype/funbox/list";
+import * as FunboxFunctions from "./funbox/funbox-functions";
 import { debounce } from "throttle-debounce";
 import * as ResultWordHighlight from "../elements/result-word-highlight";
 import * as ActivePage from "../states/active-page";
@@ -330,13 +331,19 @@ export async function updateHintsPosition(): Promise<void> {
 function getWordHTML(word: string): string {
   let newlineafter = false;
   let retval = `<div class='word'>`;
-  const funbox = FunboxList.get(Config.funbox).find(
-    (f) => f.functions?.getWordHtml
-  );
+
+  let funboxFn = undefined;
+  for (const funbox of FunboxList.getByHashSeparatedString(Config.funbox)) {
+    const fn = FunboxFunctions.get(funbox.name);
+    if (fn.getWordHtml) {
+      funboxFn = fn.getWordHtml;
+    }
+  }
+
   const chars = Strings.splitIntoCharacters(word);
   for (const char of chars) {
-    if (funbox?.functions?.getWordHtml) {
-      retval += funbox.functions.getWordHtml(char, true);
+    if (funboxFn) {
+      retval += funboxFn(char, true);
     } else if (char === "\t") {
       retval += `<letter class='tabChar'><i class="fas fa-long-arrow-alt-right fa-fw"></i></letter>`;
     } else if (char === "\n") {
@@ -642,9 +649,10 @@ export async function screenshot(): Promise<void> {
     }
     (document.querySelector("html") as HTMLElement).style.scrollBehavior =
       "smooth";
-    FunboxList.get(Config.funbox).forEach((f) =>
-      f.functions?.applyGlobalCSS?.()
-    );
+    FunboxList.getByHashSeparatedString(Config.funbox).forEach((f) => {
+      const fn = FunboxFunctions.get(f.name);
+      fn?.applyGlobalCSS?.();
+    });
   }
 
   if (!$("#resultReplay").hasClass("hidden")) {
@@ -684,7 +692,10 @@ export async function screenshot(): Promise<void> {
   $(".highlightContainer").addClass("hidden");
   if (revertCookie) $("#cookiesModal").addClass("hidden");
 
-  FunboxList.get(Config.funbox).forEach((f) => f.functions?.clearGlobal?.());
+  FunboxList.getByHashSeparatedString(Config.funbox).forEach((f) => {
+    const fn = FunboxFunctions.get(f.name);
+    fn?.clearGlobal?.();
+  });
 
   (document.querySelector("html") as HTMLElement).style.scrollBehavior = "auto";
   window.scrollTo({
@@ -831,9 +842,9 @@ export async function updateActiveWordLetters(
       }
     }
 
-    const funbox = FunboxList.get(Config.funbox).find(
-      (f) => f.functions?.getWordHtml
-    );
+    const funboxFunctions = FunboxFunctions.get(
+      FunboxList.getFunboxNames(Config.funbox)
+    ).find((fns) => fns.getWordHtml);
 
     const inputChars = Strings.splitIntoCharacters(input);
     const currentWordChars = Strings.splitIntoCharacters(currentWord);
@@ -843,8 +854,8 @@ export async function updateActiveWordLetters(
       let currentLetter = currentWordChars[i] as string;
       let tabChar = "";
       let nlChar = "";
-      if (funbox?.functions?.getWordHtml) {
-        const cl = funbox.functions.getWordHtml(currentLetter);
+      if (funboxFunctions?.getWordHtml) {
+        const cl = funboxFunctions?.getWordHtml(currentLetter);
         if (cl !== "") {
           currentLetter = cl;
         }
@@ -899,8 +910,8 @@ export async function updateActiveWordLetters(
 
     for (let i = inputChars.length; i < currentWordChars.length; i++) {
       const currentLetter = currentWordChars[i];
-      if (funbox?.functions?.getWordHtml) {
-        ret += funbox.functions.getWordHtml(currentLetter as string, true);
+      if (funboxFunctions?.getWordHtml) {
+        ret += funboxFunctions.getWordHtml(currentLetter as string, true);
       } else if (currentLetter === "\t") {
         ret += `<letter class='tabChar'><i class="fas fa-long-arrow-alt-right fa-fw"></i></letter>`;
       } else if (currentLetter === "\n") {

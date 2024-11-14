@@ -2,9 +2,9 @@ import * as Funbox from "../../test/funbox/funbox";
 import * as TestLogic from "../../test/test-logic";
 import * as ManualRestart from "../../test/manual-restart-tracker";
 import Config from "../../config";
-import { areFunboxesCompatible } from "../../test/funbox/funbox-validation";
-import { FunboxMetadata } from "../../utils/json-data";
+import * as FunboxList from "@monkeytype/funbox/list";
 import { Command, CommandsSubgroup } from "../types";
+import { checkCompatibility } from "@monkeytype/funbox/validation";
 
 const subgroup: CommandsSubgroup = {
   title: "Funbox...",
@@ -34,7 +34,7 @@ const commands: Command[] = [
   },
 ];
 
-function update(funboxes: FunboxMetadata[]): void {
+function update(funboxes: FunboxList.FunboxMetadata[]): void {
   subgroup.list = [];
   subgroup.list.push({
     id: "changeFunboxNone",
@@ -55,7 +55,10 @@ function update(funboxes: FunboxMetadata[]): void {
       display: funbox.name.replace(/_/g, " "),
       available: () => {
         if (Config.funbox.split("#").includes(funbox.name)) return true;
-        return areFunboxesCompatible(Config.funbox, funbox.name);
+        return checkCompatibility(
+          FunboxList.getFunboxNames(Config.funbox),
+          funbox.name
+        );
       },
       sticky: true,
       alias: funbox.alias,

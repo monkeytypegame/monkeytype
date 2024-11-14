@@ -1,4 +1,4 @@
-export type FunboxName = "58008";
+export type FunboxName = "58008" | "mirror" | "upside_down";
 
 export type FunboxForcedConfig = Record<string, string[] | boolean[]>;
 
@@ -6,7 +6,7 @@ export type FunboxMetadata = {
   name: FunboxName;
   alias?: string;
   description: string;
-  properties: string[];
+  properties?: string[];
   frontendForcedConfig?: FunboxForcedConfig;
   frontendFunctions: string[];
   hasCSS?: boolean; //possibly move it to properties in the future
@@ -14,12 +14,12 @@ export type FunboxMetadata = {
   canGetPb: boolean;
 };
 
-const list = {
+const list: Record<FunboxName, FunboxMetadata> = {
   "58008": {
     canGetPb: false,
     difficultyLevel: 1,
     properties: ["ignoresLanguage", "ignoresLayout", "noLetters"],
-    forcedFrontendConfig: {
+    frontendForcedConfig: {
       numbers: [false],
     },
     frontendFunctions: [
@@ -32,7 +32,39 @@ const list = {
     alias: "numbers",
     description: "A special mode for accountants.",
   },
-} as Record<FunboxName, FunboxMetadata>;
+  mirror: {
+    name: "mirror",
+    description: "Everything is mirrored!",
+    canGetPb: true,
+    difficultyLevel: 3,
+    frontendFunctions: ["applyCSS"],
+  },
+  upside_down: {
+    name: "upside_down",
+    description: "Everything is upside down!",
+    canGetPb: true,
+    difficultyLevel: 3,
+    frontendFunctions: ["applyCSS"],
+  },
+};
+
+export function getFunboxNames(names: string): FunboxName[] {
+  if (names === "none") return [];
+  const unsafeNames = names.split("#").map((name) => name.trim());
+  const out: FunboxName[] = [];
+  for (const unsafeName of unsafeNames) {
+    if (unsafeName in list) {
+      out.push(unsafeName as FunboxName);
+    } else {
+      throw new Error("Invalid funbox name: " + unsafeName);
+    }
+  }
+  return out;
+}
+
+export function getByHashSeparatedString(names: string): FunboxMetadata[] {
+  return get(getFunboxNames(names));
+}
 
 export function get(name: FunboxName): FunboxMetadata;
 export function get(names: FunboxName[]): FunboxMetadata[];

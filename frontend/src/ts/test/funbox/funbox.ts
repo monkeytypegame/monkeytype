@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import * as Notifications from "../../elements/notifications";
 import * as Misc from "../../utils/misc";
 import * as JSONData from "../../utils/json-data";
@@ -8,7 +9,6 @@ import * as ManualRestart from "../manual-restart-tracker";
 import Config, * as UpdateConfig from "../../config";
 import * as MemoryTimer from "./memory-funbox-timer";
 import * as FunboxMemory from "./funbox-memory";
-import * as FunboxList from "./funbox-list";
 import { save } from "./funbox-memory";
 import * as TTSEvent from "../../observables/tts-event";
 import * as KeymapEvent from "../../observables/keymap-event";
@@ -18,16 +18,16 @@ import * as WeakSpot from "../weak-spot";
 import { getPoem } from "../poetry";
 import { getSection } from "../wikipedia";
 import * as IPAddresses from "../../utils/ip-addresses";
-import {
-  areFunboxesCompatible,
-  checkFunboxForcedConfigs,
-} from "./funbox-validation";
+import { checkFunboxForcedConfigs } from "./funbox-validation";
 import { FunboxWordsFrequency, Wordset } from "../wordset";
 import * as LayoutfluidFunboxTimer from "./layoutfluid-funbox-timer";
 import * as DDR from "../../utils/ddr";
 import { HighlightMode } from "@monkeytype/contracts/schemas/configs";
 import { Mode } from "@monkeytype/contracts/schemas/shared";
 import { randomIntFromRange } from "@monkeytype/util/numbers";
+import * as FunboxList from "@monkeytype/funbox/list";
+import * as FunboxFunctions from "./funbox-functions";
+import { checkCompatibility } from "@monkeytype/funbox/validation";
 
 const prefixSize = 2;
 
@@ -107,451 +107,457 @@ class PseudolangWordGenerator extends Wordset {
   }
 }
 
-FunboxList.setFunboxFunctions("simon_says", {
-  applyConfig(): void {
-    UpdateConfig.setKeymapMode("next", true);
-  },
-  rememberSettings(): void {
-    save("keymapMode", Config.keymapMode, UpdateConfig.setKeymapMode);
-  },
-});
+// FunboxList.setFunboxFunctions("simon_says", {
+//   applyConfig(): void {
+//     UpdateConfig.setKeymapMode("next", true);
+//   },
+//   rememberSettings(): void {
+//     save("keymapMode", Config.keymapMode, UpdateConfig.setKeymapMode);
+//   },
+// });
 
-FunboxList.setFunboxFunctions("tts", {
-  applyConfig(): void {
-    UpdateConfig.setKeymapMode("off", true);
-  },
-  rememberSettings(): void {
-    save("keymapMode", Config.keymapMode, UpdateConfig.setKeymapMode);
-  },
-  toggleScript(params: string[]): void {
-    if (window.speechSynthesis === undefined) {
-      Notifications.add("Failed to load text-to-speech script", -1);
-      return;
-    }
-    if (params[0] !== undefined) void TTSEvent.dispatch(params[0]);
-  },
-});
+// FunboxList.setFunboxFunctions("tts", {
+//   applyConfig(): void {
+//     UpdateConfig.setKeymapMode("off", true);
+//   },
+//   rememberSettings(): void {
+//     save("keymapMode", Config.keymapMode, UpdateConfig.setKeymapMode);
+//   },
+//   toggleScript(params: string[]): void {
+//     if (window.speechSynthesis === undefined) {
+//       Notifications.add("Failed to load text-to-speech script", -1);
+//       return;
+//     }
+//     if (params[0] !== undefined) void TTSEvent.dispatch(params[0]);
+//   },
+// });
 
-FunboxList.setFunboxFunctions("arrows", {
-  getWord(_wordset, wordIndex): string {
-    return DDR.chart2Word(wordIndex === 0);
-  },
-  rememberSettings(): void {
-    save("highlightMode", Config.highlightMode, UpdateConfig.setHighlightMode);
-  },
-  handleChar(char: string): string {
-    if (char === "a" || char === "ArrowLeft" || char === "j") {
-      return "←";
-    }
-    if (char === "s" || char === "ArrowDown" || char === "k") {
-      return "↓";
-    }
-    if (char === "w" || char === "ArrowUp" || char === "i") {
-      return "↑";
-    }
-    if (char === "d" || char === "ArrowRight" || char === "l") {
-      return "→";
-    }
-    return char;
-  },
-  isCharCorrect(char: string, originalChar: string): boolean {
-    if (
-      (char === "a" || char === "ArrowLeft" || char === "j") &&
-      originalChar === "←"
-    ) {
-      return true;
-    }
-    if (
-      (char === "s" || char === "ArrowDown" || char === "k") &&
-      originalChar === "↓"
-    ) {
-      return true;
-    }
-    if (
-      (char === "w" || char === "ArrowUp" || char === "i") &&
-      originalChar === "↑"
-    ) {
-      return true;
-    }
-    if (
-      (char === "d" || char === "ArrowRight" || char === "l") &&
-      originalChar === "→"
-    ) {
-      return true;
-    }
-    return false;
-  },
-  async preventDefaultEvent(event: JQuery.KeyDownEvent): Promise<boolean> {
-    return ["ArrowLeft", "ArrowUp", "ArrowRight", "ArrowDown"].includes(
-      event.key
-    );
-  },
-  getWordHtml(char: string, letterTag?: boolean): string {
-    let retval = "";
-    if (char === "↑") {
-      if (letterTag) retval += `<letter>`;
-      retval += `<i class="fas fa-arrow-up"></i>`;
-      if (letterTag) retval += `</letter>`;
-    }
-    if (char === "↓") {
-      if (letterTag) retval += `<letter>`;
-      retval += `<i class="fas fa-arrow-down"></i>`;
-      if (letterTag) retval += `</letter>`;
-    }
-    if (char === "←") {
-      if (letterTag) retval += `<letter>`;
-      retval += `<i class="fas fa-arrow-left"></i>`;
-      if (letterTag) retval += `</letter>`;
-    }
-    if (char === "→") {
-      if (letterTag) retval += `<letter>`;
-      retval += `<i class="fas fa-arrow-right"></i>`;
-      if (letterTag) retval += `</letter>`;
-    }
-    return retval;
-  },
-});
+// FunboxList.setFunboxFunctions("arrows", {
+//   getWord(_wordset, wordIndex): string {
+//     return DDR.chart2Word(wordIndex === 0);
+//   },
+//   rememberSettings(): void {
+//     save("highlightMode", Config.highlightMode, UpdateConfig.setHighlightMode);
+//   },
+//   handleChar(char: string): string {
+//     if (char === "a" || char === "ArrowLeft" || char === "j") {
+//       return "←";
+//     }
+//     if (char === "s" || char === "ArrowDown" || char === "k") {
+//       return "↓";
+//     }
+//     if (char === "w" || char === "ArrowUp" || char === "i") {
+//       return "↑";
+//     }
+//     if (char === "d" || char === "ArrowRight" || char === "l") {
+//       return "→";
+//     }
+//     return char;
+//   },
+//   isCharCorrect(char: string, originalChar: string): boolean {
+//     if (
+//       (char === "a" || char === "ArrowLeft" || char === "j") &&
+//       originalChar === "←"
+//     ) {
+//       return true;
+//     }
+//     if (
+//       (char === "s" || char === "ArrowDown" || char === "k") &&
+//       originalChar === "↓"
+//     ) {
+//       return true;
+//     }
+//     if (
+//       (char === "w" || char === "ArrowUp" || char === "i") &&
+//       originalChar === "↑"
+//     ) {
+//       return true;
+//     }
+//     if (
+//       (char === "d" || char === "ArrowRight" || char === "l") &&
+//       originalChar === "→"
+//     ) {
+//       return true;
+//     }
+//     return false;
+//   },
+//   async preventDefaultEvent(event: JQuery.KeyDownEvent): Promise<boolean> {
+//     return ["ArrowLeft", "ArrowUp", "ArrowRight", "ArrowDown"].includes(
+//       event.key
+//     );
+//   },
+//   getWordHtml(char: string, letterTag?: boolean): string {
+//     let retval = "";
+//     if (char === "↑") {
+//       if (letterTag) retval += `<letter>`;
+//       retval += `<i class="fas fa-arrow-up"></i>`;
+//       if (letterTag) retval += `</letter>`;
+//     }
+//     if (char === "↓") {
+//       if (letterTag) retval += `<letter>`;
+//       retval += `<i class="fas fa-arrow-down"></i>`;
+//       if (letterTag) retval += `</letter>`;
+//     }
+//     if (char === "←") {
+//       if (letterTag) retval += `<letter>`;
+//       retval += `<i class="fas fa-arrow-left"></i>`;
+//       if (letterTag) retval += `</letter>`;
+//     }
+//     if (char === "→") {
+//       if (letterTag) retval += `<letter>`;
+//       retval += `<i class="fas fa-arrow-right"></i>`;
+//       if (letterTag) retval += `</letter>`;
+//     }
+//     return retval;
+//   },
+// });
 
-FunboxList.setFunboxFunctions("rAnDoMcAsE", {
-  alterText(word: string): string {
-    let randomcaseword = word[0] as string;
-    for (let i = 1; i < word.length; i++) {
-      if (
-        randomcaseword[i - 1] ===
-        (randomcaseword[i - 1] as string).toUpperCase()
-      ) {
-        randomcaseword += (word[i] as string).toLowerCase();
-      } else {
-        randomcaseword += (word[i] as string).toUpperCase();
-      }
-    }
-    return randomcaseword;
-  },
-});
+// FunboxList.setFunboxFunctions("rAnDoMcAsE", {
+//   alterText(word: string): string {
+//     let randomcaseword = word[0] as string;
+//     for (let i = 1; i < word.length; i++) {
+//       if (
+//         randomcaseword[i - 1] ===
+//         (randomcaseword[i - 1] as string).toUpperCase()
+//       ) {
+//         randomcaseword += (word[i] as string).toLowerCase();
+//       } else {
+//         randomcaseword += (word[i] as string).toUpperCase();
+//       }
+//     }
+//     return randomcaseword;
+//   },
+// });
 
-FunboxList.setFunboxFunctions("backwards", {
-  alterText(word: string): string {
-    return word.split("").reverse().join("");
-  },
-});
+// FunboxList.setFunboxFunctions("backwards", {
+//   alterText(word: string): string {
+//     return word.split("").reverse().join("");
+//   },
+// });
 
-FunboxList.setFunboxFunctions("capitals", {
-  alterText(word: string): string {
-    return Strings.capitalizeFirstLetterOfEachWord(word);
-  },
-});
+// FunboxList.setFunboxFunctions("capitals", {
+//   alterText(word: string): string {
+//     return Strings.capitalizeFirstLetterOfEachWord(word);
+//   },
+// });
 
-FunboxList.setFunboxFunctions("layoutfluid", {
-  applyConfig(): void {
-    const layout = Config.customLayoutfluid.split("#")[0] ?? "qwerty";
+// FunboxList.setFunboxFunctions("layoutfluid", {
+//   applyConfig(): void {
+//     const layout = Config.customLayoutfluid.split("#")[0] ?? "qwerty";
 
-    UpdateConfig.setLayout(layout, true);
-    UpdateConfig.setKeymapLayout(layout, true);
-  },
-  rememberSettings(): void {
-    save("keymapMode", Config.keymapMode, UpdateConfig.setKeymapMode);
-    save("layout", Config.layout, UpdateConfig.setLayout);
-    save("keymapLayout", Config.keymapLayout, UpdateConfig.setKeymapLayout);
-  },
-  handleSpace(): void {
-    if (Config.mode !== "time") {
-      // here I need to check if Config.customLayoutFluid exists because of my
-      // scuffed solution of returning whenever value is undefined in the setCustomLayoutfluid function
-      const layouts: string[] = Config.customLayoutfluid
-        ? Config.customLayoutfluid.split("#")
-        : ["qwerty", "dvorak", "colemak"];
-      const outOf: number = TestWords.words.length;
-      const wordsPerLayout = Math.floor(outOf / layouts.length);
-      const index = Math.floor(
-        (TestInput.input.history.length + 1) / wordsPerLayout
-      );
-      const mod =
-        wordsPerLayout - ((TestWords.words.currentIndex + 1) % wordsPerLayout);
+//     UpdateConfig.setLayout(layout, true);
+//     UpdateConfig.setKeymapLayout(layout, true);
+//   },
+//   rememberSettings(): void {
+//     save("keymapMode", Config.keymapMode, UpdateConfig.setKeymapMode);
+//     save("layout", Config.layout, UpdateConfig.setLayout);
+//     save("keymapLayout", Config.keymapLayout, UpdateConfig.setKeymapLayout);
+//   },
+//   handleSpace(): void {
+//     if (Config.mode !== "time") {
+//       // here I need to check if Config.customLayoutFluid exists because of my
+//       // scuffed solution of returning whenever value is undefined in the setCustomLayoutfluid function
+//       const layouts: string[] = Config.customLayoutfluid
+//         ? Config.customLayoutfluid.split("#")
+//         : ["qwerty", "dvorak", "colemak"];
+//       const outOf: number = TestWords.words.length;
+//       const wordsPerLayout = Math.floor(outOf / layouts.length);
+//       const index = Math.floor(
+//         (TestInput.input.history.length + 1) / wordsPerLayout
+//       );
+//       const mod =
+//         wordsPerLayout - ((TestWords.words.currentIndex + 1) % wordsPerLayout);
 
-      if (layouts[index] as string) {
-        if (mod <= 3 && (layouts[index + 1] as string)) {
-          LayoutfluidFunboxTimer.show();
-          LayoutfluidFunboxTimer.updateWords(mod, layouts[index + 1] as string);
-        } else {
-          LayoutfluidFunboxTimer.hide();
-        }
-        if (mod === wordsPerLayout) {
-          UpdateConfig.setLayout(layouts[index] as string);
-          UpdateConfig.setKeymapLayout(layouts[index] as string);
-          if (mod > 3) {
-            LayoutfluidFunboxTimer.hide();
-          }
-        }
-      } else {
-        LayoutfluidFunboxTimer.hide();
-      }
-      setTimeout(() => {
-        void KeymapEvent.highlight(
-          TestWords.words
-            .getCurrent()
-            .charAt(TestInput.input.current.length)
-            .toString()
-        );
-      }, 1);
-    }
-  },
-  getResultContent(): string {
-    return Config.customLayoutfluid.replace(/#/g, " ");
-  },
-  restart(): void {
-    if (this.applyConfig) this.applyConfig();
-    setTimeout(() => {
-      void KeymapEvent.highlight(
-        TestWords.words
-          .getCurrent()
-          .substring(
-            TestInput.input.current.length,
-            TestInput.input.current.length + 1
-          )
-          .toString()
-      );
-    }, 1);
-  },
-});
+//       if (layouts[index] as string) {
+//         if (mod <= 3 && (layouts[index + 1] as string)) {
+//           LayoutfluidFunboxTimer.show();
+//           LayoutfluidFunboxTimer.updateWords(mod, layouts[index + 1] as string);
+//         } else {
+//           LayoutfluidFunboxTimer.hide();
+//         }
+//         if (mod === wordsPerLayout) {
+//           UpdateConfig.setLayout(layouts[index] as string);
+//           UpdateConfig.setKeymapLayout(layouts[index] as string);
+//           if (mod > 3) {
+//             LayoutfluidFunboxTimer.hide();
+//           }
+//         }
+//       } else {
+//         LayoutfluidFunboxTimer.hide();
+//       }
+//       setTimeout(() => {
+//         void KeymapEvent.highlight(
+//           TestWords.words
+//             .getCurrent()
+//             .charAt(TestInput.input.current.length)
+//             .toString()
+//         );
+//       }, 1);
+//     }
+//   },
+//   getResultContent(): string {
+//     return Config.customLayoutfluid.replace(/#/g, " ");
+//   },
+//   restart(): void {
+//     if (this.applyConfig) this.applyConfig();
+//     setTimeout(() => {
+//       void KeymapEvent.highlight(
+//         TestWords.words
+//           .getCurrent()
+//           .substring(
+//             TestInput.input.current.length,
+//             TestInput.input.current.length + 1
+//           )
+//           .toString()
+//       );
+//     }, 1);
+//   },
+// });
 
-FunboxList.setFunboxFunctions("gibberish", {
-  getWord(): string {
-    return GetText.getGibberish();
-  },
-});
+// FunboxList.setFunboxFunctions("gibberish", {
+//   getWord(): string {
+//     return GetText.getGibberish();
+//   },
+// });
 
-FunboxList.setFunboxFunctions("58008", {
-  getWord(): string {
-    let num = GetText.getNumbers(7);
-    if (Config.language.startsWith("kurdish")) {
-      num = Misc.convertNumberToArabic(num);
-    } else if (Config.language.startsWith("nepali")) {
-      num = Misc.convertNumberToNepali(num);
-    }
-    return num;
-  },
-  punctuateWord(word: string): string {
-    if (word.length > 3) {
-      if (Math.random() < 0.5) {
-        word = Strings.replaceCharAt(
-          word,
-          randomIntFromRange(1, word.length - 2),
-          "."
-        );
-      }
-      if (Math.random() < 0.75) {
-        const index = randomIntFromRange(1, word.length - 2);
-        if (
-          word[index - 1] !== "." &&
-          word[index + 1] !== "." &&
-          word[index + 1] !== "0"
-        ) {
-          const special = Arrays.randomElementFromArray(["/", "*", "-", "+"]);
-          word = Strings.replaceCharAt(word, index, special);
-        }
-      }
-    }
-    return word;
-  },
-  rememberSettings(): void {
-    save("numbers", Config.numbers, UpdateConfig.setNumbers);
-  },
-  handleChar(char: string): string {
-    if (char === "\n") {
-      return " ";
-    }
-    return char;
-  },
-});
+// FunboxList.setFunboxFunctions("ascii", {
+//   getWord(): string {
+//     return GetText.getASCII();
+//   },
+//   punctuateWord(word: string): string {
+//     return word;
+//   },
+// });
 
-FunboxList.setFunboxFunctions("ascii", {
-  getWord(): string {
-    return GetText.getASCII();
-  },
-  punctuateWord(word: string): string {
-    return word;
-  },
-});
+// FunboxList.setFunboxFunctions("specials", {
+//   getWord(): string {
+//     return GetText.getSpecials();
+//   },
+// });
 
-FunboxList.setFunboxFunctions("specials", {
-  getWord(): string {
-    return GetText.getSpecials();
-  },
-});
+// FunboxList.setFunboxFunctions("read_ahead_easy", {
+//   rememberSettings(): void {
+//     save("highlightMode", Config.highlightMode, UpdateConfig.setHighlightMode);
+//   },
+// });
 
-FunboxList.setFunboxFunctions("read_ahead_easy", {
-  rememberSettings(): void {
-    save("highlightMode", Config.highlightMode, UpdateConfig.setHighlightMode);
-  },
-});
+// FunboxList.setFunboxFunctions("read_ahead", {
+//   rememberSettings(): void {
+//     save("highlightMode", Config.highlightMode, UpdateConfig.setHighlightMode);
+//   },
+// });
 
-FunboxList.setFunboxFunctions("read_ahead", {
-  rememberSettings(): void {
-    save("highlightMode", Config.highlightMode, UpdateConfig.setHighlightMode);
-  },
-});
+// FunboxList.setFunboxFunctions("read_ahead_hard", {
+//   rememberSettings(): void {
+//     save("highlightMode", Config.highlightMode, UpdateConfig.setHighlightMode);
+//   },
+// });
 
-FunboxList.setFunboxFunctions("read_ahead_hard", {
-  rememberSettings(): void {
-    save("highlightMode", Config.highlightMode, UpdateConfig.setHighlightMode);
-  },
-});
+// FunboxList.setFunboxFunctions("memory", {
+//   applyConfig(): void {
+//     $("#wordsWrapper").addClass("hidden");
+//     UpdateConfig.setShowAllLines(true, true);
+//     if (Config.keymapMode === "next") {
+//       UpdateConfig.setKeymapMode("react", true);
+//     }
+//   },
+//   rememberSettings(): void {
+//     save("mode", Config.mode, UpdateConfig.setMode);
+//     save("showAllLines", Config.showAllLines, UpdateConfig.setShowAllLines);
+//     if (Config.keymapMode === "next") {
+//       save("keymapMode", Config.keymapMode, UpdateConfig.setKeymapMode);
+//     }
+//   },
+//   start(): void {
+//     MemoryTimer.reset();
+//     $("#words").addClass("hidden");
+//   },
+//   restart(): void {
+//     MemoryTimer.start();
+//     $("#words").removeClass("hidden");
+//     if (Config.keymapMode === "next") {
+//       UpdateConfig.setKeymapMode("react");
+//     }
+//   },
+// });
 
-FunboxList.setFunboxFunctions("memory", {
-  applyConfig(): void {
-    $("#wordsWrapper").addClass("hidden");
-    UpdateConfig.setShowAllLines(true, true);
-    if (Config.keymapMode === "next") {
-      UpdateConfig.setKeymapMode("react", true);
-    }
-  },
-  rememberSettings(): void {
-    save("mode", Config.mode, UpdateConfig.setMode);
-    save("showAllLines", Config.showAllLines, UpdateConfig.setShowAllLines);
-    if (Config.keymapMode === "next") {
-      save("keymapMode", Config.keymapMode, UpdateConfig.setKeymapMode);
-    }
-  },
-  start(): void {
-    MemoryTimer.reset();
-    $("#words").addClass("hidden");
-  },
-  restart(): void {
-    MemoryTimer.start();
-    $("#words").removeClass("hidden");
-    if (Config.keymapMode === "next") {
-      UpdateConfig.setKeymapMode("react");
-    }
-  },
-});
+// FunboxList.setFunboxFunctions("nospace", {
+//   rememberSettings(): void {
+//     save("highlightMode", Config.highlightMode, UpdateConfig.setHighlightMode);
+//   },
+// });
 
-FunboxList.setFunboxFunctions("nospace", {
-  rememberSettings(): void {
-    save("highlightMode", Config.highlightMode, UpdateConfig.setHighlightMode);
-  },
-});
+// FunboxList.setFunboxFunctions("poetry", {
+//   async pullSection(): Promise<JSONData.Section | false> {
+//     return getPoem();
+//   },
+// });
 
-FunboxList.setFunboxFunctions("poetry", {
-  async pullSection(): Promise<JSONData.Section | false> {
-    return getPoem();
-  },
-});
+// FunboxList.setFunboxFunctions("wikipedia", {
+//   async pullSection(lang?: string): Promise<JSONData.Section | false> {
+//     return getSection((lang ?? "") || "english");
+//   },
+// });
 
-FunboxList.setFunboxFunctions("wikipedia", {
-  async pullSection(lang?: string): Promise<JSONData.Section | false> {
-    return getSection((lang ?? "") || "english");
-  },
-});
+// FunboxList.setFunboxFunctions("weakspot", {
+//   getWord(wordset?: Wordset): string {
+//     if (wordset !== undefined) return WeakSpot.getWord(wordset);
+//     else return "";
+//   },
+// });
 
-FunboxList.setFunboxFunctions("weakspot", {
-  getWord(wordset?: Wordset): string {
-    if (wordset !== undefined) return WeakSpot.getWord(wordset);
-    else return "";
-  },
-});
+// FunboxList.setFunboxFunctions("pseudolang", {
+//   async withWords(words?: string[]): Promise<Wordset> {
+//     if (words !== undefined) return new PseudolangWordGenerator(words);
+//     return new Wordset([]);
+//   },
+// });
 
-FunboxList.setFunboxFunctions("pseudolang", {
-  async withWords(words?: string[]): Promise<Wordset> {
-    if (words !== undefined) return new PseudolangWordGenerator(words);
-    return new Wordset([]);
-  },
-});
+// FunboxList.setFunboxFunctions("IPv4", {
+//   getWord(): string {
+//     return IPAddresses.getRandomIPv4address();
+//   },
+//   punctuateWord(word: string): string {
+//     let w = word;
+//     if (Math.random() < 0.25) {
+//       w = IPAddresses.addressToCIDR(word);
+//     }
+//     return w;
+//   },
+//   rememberSettings(): void {
+//     save("numbers", Config.numbers, UpdateConfig.setNumbers);
+//   },
+// });
 
-FunboxList.setFunboxFunctions("IPv4", {
-  getWord(): string {
-    return IPAddresses.getRandomIPv4address();
-  },
-  punctuateWord(word: string): string {
-    let w = word;
-    if (Math.random() < 0.25) {
-      w = IPAddresses.addressToCIDR(word);
-    }
-    return w;
-  },
-  rememberSettings(): void {
-    save("numbers", Config.numbers, UpdateConfig.setNumbers);
-  },
-});
+// FunboxList.setFunboxFunctions("IPv6", {
+//   getWord(): string {
+//     return IPAddresses.getRandomIPv6address();
+//   },
+//   punctuateWord(word: string): string {
+//     let w = word;
+//     if (Math.random() < 0.25) {
+//       w = IPAddresses.addressToCIDR(word);
+//     }
+//     // Compress
+//     if (w.includes(":")) {
+//       w = IPAddresses.compressIpv6(w);
+//     }
+//     return w;
+//   },
+//   rememberSettings(): void {
+//     save("numbers", Config.numbers, UpdateConfig.setNumbers);
+//   },
+// });
 
-FunboxList.setFunboxFunctions("IPv6", {
-  getWord(): string {
-    return IPAddresses.getRandomIPv6address();
-  },
-  punctuateWord(word: string): string {
-    let w = word;
-    if (Math.random() < 0.25) {
-      w = IPAddresses.addressToCIDR(word);
-    }
-    // Compress
-    if (w.includes(":")) {
-      w = IPAddresses.compressIpv6(w);
-    }
-    return w;
-  },
-  rememberSettings(): void {
-    save("numbers", Config.numbers, UpdateConfig.setNumbers);
-  },
-});
+// FunboxList.setFunboxFunctions("binary", {
+//   getWord(): string {
+//     return GetText.getBinary();
+//   },
+// });
 
-FunboxList.setFunboxFunctions("binary", {
-  getWord(): string {
-    return GetText.getBinary();
-  },
-});
+// FunboxList.setFunboxFunctions("hexadecimal", {
+//   getWord(): string {
+//     return GetText.getHexadecimal();
+//   },
+//   punctuateWord(word: string): string {
+//     return `0x${word}`;
+//   },
+//   rememberSettings(): void {
+//     save("punctuation", Config.punctuation, UpdateConfig.setPunctuation);
+//   },
+// });
 
-FunboxList.setFunboxFunctions("hexadecimal", {
-  getWord(): string {
-    return GetText.getHexadecimal();
-  },
-  punctuateWord(word: string): string {
-    return `0x${word}`;
-  },
-  rememberSettings(): void {
-    save("punctuation", Config.punctuation, UpdateConfig.setPunctuation);
-  },
-});
+// FunboxList.setFunboxFunctions("zipf", {
+//   getWordsFrequencyMode(): FunboxWordsFrequency {
+//     return "zipf";
+//   },
+// });
 
-FunboxList.setFunboxFunctions("zipf", {
-  getWordsFrequencyMode(): FunboxWordsFrequency {
-    return "zipf";
-  },
-});
+// FunboxList.setFunboxFunctions("ddoouubblleedd", {
+//   alterText(word: string): string {
+//     return word.replace(/./gu, "$&$&");
+//   },
+// });
 
-FunboxList.setFunboxFunctions("ddoouubblleedd", {
-  alterText(word: string): string {
-    return word.replace(/./gu, "$&$&");
-  },
-});
+// FunboxList.setFunboxFunctions("instant_messaging", {
+//   alterText(word: string): string {
+//     return word
+//       .toLowerCase()
+//       .replace(/[.!?]$/g, "\n") //replace .?! with enter
+//       .replace(/[().'"]/g, "") //remove special characters
+//       .replace(/\n+/g, "\n"); //make sure there is only one enter
+//   },
+// });
 
-FunboxList.setFunboxFunctions("instant_messaging", {
-  alterText(word: string): string {
-    return word
-      .toLowerCase()
-      .replace(/[.!?]$/g, "\n") //replace .?! with enter
-      .replace(/[().'"]/g, "") //remove special characters
-      .replace(/\n+/g, "\n"); //make sure there is only one enter
-  },
-});
+// FunboxList.setFunboxFunctions("morse", {
+//   alterText(word: string): string {
+//     return GetText.getMorse(word);
+//   },
+// });
+
+// FunboxList.setFunboxFunctions("crt", {
+//   applyGlobalCSS(): void {
+//     const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+//     if (isSafari) {
+//       //Workaround for bug https://bugs.webkit.org/show_bug.cgi?id=256171 in Safari 16.5 or earlier
+//       const versionMatch = navigator.userAgent.match(
+//         /.*Version\/([0-9]*)\.([0-9]*).*/
+//       );
+//       const mainVersion =
+//         versionMatch !== null ? parseInt(versionMatch[1] ?? "0") : 0;
+//       const minorVersion =
+//         versionMatch !== null ? parseInt(versionMatch[2] ?? "0") : 0;
+//       if (mainVersion <= 16 && minorVersion <= 5) {
+//         Notifications.add(
+//           "CRT is not available on Safari 16.5 or earlier.",
+//           0,
+//           {
+//             duration: 5,
+//           }
+//         );
+//         toggleFunbox("crt");
+//         return;
+//       }
+//     }
+//     $("body").append('<div id="scanline" />');
+//     $("body").addClass("crtmode");
+//     $("#globalFunBoxTheme").attr("href", `funbox/crt.css`);
+//   },
+//   clearGlobal(): void {
+//     $("#scanline").remove();
+//     $("body").removeClass("crtmode");
+//     $("#globalFunBoxTheme").attr("href", ``);
+//   },
+// });
 
 export function toggleScript(...params: string[]): void {
-  FunboxList.get(Config.funbox).forEach((funbox) => {
-    if (funbox.functions?.toggleScript) funbox.functions.toggleScript(params);
-  });
+  if (Config.funbox === "none") return;
+
+  for (const funbox of FunboxList.getByHashSeparatedString(Config.funbox)) {
+    const fn = FunboxFunctions.get(funbox.name);
+    if (fn.toggleScript) fn.toggleScript(params);
+  }
 }
 
 export function setFunbox(funbox: string): boolean {
   if (funbox === "none") {
-    FunboxList.get(Config.funbox).forEach((f) => f.functions?.clearGlobal?.());
+    for (const funbox of FunboxList.getByHashSeparatedString(Config.funbox)) {
+      const fn = FunboxFunctions.get(funbox.name);
+      if (fn.clearGlobal) fn.clearGlobal();
+    }
   }
   FunboxMemory.load();
   UpdateConfig.setFunbox(funbox, false);
   return true;
 }
 
-export function toggleFunbox(funbox: string): boolean {
+export function toggleFunbox(funbox: "none" | FunboxList.FunboxName): boolean {
   if (funbox === "none") setFunbox("none");
   if (
-    !areFunboxesCompatible(Config.funbox, funbox) &&
+    !checkCompatibility(
+      FunboxList.getFunboxNames(Config.funbox),
+      funbox === "none" ? undefined : funbox
+    ) &&
     !Config.funbox.split("#").includes(funbox)
   ) {
     Notifications.add(
@@ -566,9 +572,15 @@ export function toggleFunbox(funbox: string): boolean {
   const e = UpdateConfig.toggleFunbox(funbox, false);
 
   if (!Config.funbox.includes(funbox)) {
-    FunboxList.get(funbox).forEach((f) => f.functions?.clearGlobal?.());
+    FunboxList.getByHashSeparatedString(funbox).forEach((f) => {
+      const fn = FunboxFunctions.get(f.name);
+      fn?.clearGlobal?.();
+    });
   } else {
-    FunboxList.get(funbox).forEach((f) => f.functions?.applyGlobalCSS?.());
+    FunboxList.getByHashSeparatedString(funbox).forEach((f) => {
+      const fn = FunboxFunctions.get(f.name);
+      fn?.applyGlobalCSS?.();
+    });
   }
 
   //todo find out what the hell this means
@@ -603,7 +615,7 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
 
   // The configuration might be edited with dev tools,
   // so we need to double check its validity
-  if (!areFunboxesCompatible(Config.funbox)) {
+  if (!checkCompatibility(FunboxList.getFunboxNames(Config.funbox))) {
     Notifications.add(
       Misc.createErrorMessage(
         undefined,
@@ -640,7 +652,7 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
 
   if (language.ligatures) {
     if (
-      FunboxList.get(Config.funbox).find((f) =>
+      FunboxList.getByHashSeparatedString(Config.funbox).find((f) =>
         f.properties?.includes("noLigatures")
       )
     ) {
@@ -710,66 +722,27 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
   }
 
   ManualRestart.set();
-  FunboxList.get(Config.funbox).forEach(async (funbox) => {
-    funbox.functions?.applyConfig?.();
+  FunboxList.getByHashSeparatedString(Config.funbox).forEach(async (funbox) => {
+    const fn = FunboxFunctions.get(funbox.name);
+    fn?.applyConfig?.();
   });
   // ModesNotice.update();
   return true;
 }
 
 export async function rememberSettings(): Promise<void> {
-  FunboxList.get(Config.funbox).forEach(async (funbox) => {
-    if (funbox.functions?.rememberSettings) funbox.functions.rememberSettings();
+  FunboxList.getByHashSeparatedString(Config.funbox).forEach(async (funbox) => {
+    const fn = FunboxFunctions.get(funbox.name);
+    fn?.rememberSettings?.();
   });
 }
-
-FunboxList.setFunboxFunctions("morse", {
-  alterText(word: string): string {
-    return GetText.getMorse(word);
-  },
-});
-
-FunboxList.setFunboxFunctions("crt", {
-  applyGlobalCSS(): void {
-    const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
-    if (isSafari) {
-      //Workaround for bug https://bugs.webkit.org/show_bug.cgi?id=256171 in Safari 16.5 or earlier
-      const versionMatch = navigator.userAgent.match(
-        /.*Version\/([0-9]*)\.([0-9]*).*/
-      );
-      const mainVersion =
-        versionMatch !== null ? parseInt(versionMatch[1] ?? "0") : 0;
-      const minorVersion =
-        versionMatch !== null ? parseInt(versionMatch[2] ?? "0") : 0;
-      if (mainVersion <= 16 && minorVersion <= 5) {
-        Notifications.add(
-          "CRT is not available on Safari 16.5 or earlier.",
-          0,
-          {
-            duration: 5,
-          }
-        );
-        toggleFunbox("crt");
-        return;
-      }
-    }
-    $("body").append('<div id="scanline" />');
-    $("body").addClass("crtmode");
-    $("#globalFunBoxTheme").attr("href", `funbox/crt.css`);
-  },
-  clearGlobal(): void {
-    $("#scanline").remove();
-    $("body").removeClass("crtmode");
-    $("#globalFunBoxTheme").attr("href", ``);
-  },
-});
 
 async function setFunboxBodyClasses(): Promise<boolean> {
   const $body = $("body");
 
-  const activeFbClasses = FunboxList.get(Config.funbox).map(
-    (it) => "fb-" + it.name.replaceAll("_", "-")
-  );
+  const activeFbClasses = FunboxList.getByHashSeparatedString(
+    Config.funbox
+  ).map((it) => "fb-" + it.name.replaceAll("_", "-"));
 
   const currentClasses =
     $body
@@ -786,9 +759,9 @@ async function applyFunboxCSS(): Promise<boolean> {
   const $theme = $("#funBoxTheme");
 
   //currently we only support one active funbox with hasCSS
-  const activeFunboxWithTheme = FunboxList.get(Config.funbox).find(
-    (it) => it.hasCSS == true
-  );
+  const activeFunboxWithTheme = FunboxList.getByHashSeparatedString(
+    Config.funbox
+  ).find((it) => it.hasCSS == true);
 
   const activeTheme =
     activeFunboxWithTheme != null

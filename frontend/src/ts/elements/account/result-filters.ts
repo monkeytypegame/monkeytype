@@ -16,6 +16,7 @@ import {
 } from "@monkeytype/contracts/schemas/users";
 import { LocalStorageWithSchema } from "../../utils/local-storage-with-schema";
 import defaultResultFilters from "../../constants/default-result-filters";
+import FunboxList from "@monkeytype/funbox/list";
 
 export function mergeWithDefaultFilters(
   filters: Partial<ResultFilters>
@@ -801,61 +802,48 @@ export async function appendButtons(
     }
   }
 
-  let funboxList;
-  try {
-    funboxList = await JSONData.getFunboxList();
-  } catch (e) {
-    console.error(
-      Misc.createErrorMessage(e, "Failed to append funbox buttons")
-    );
+  let html = "";
+
+  html +=
+    "<select class='funboxSelect' group='funbox' placeholder='select a funbox' multiple>";
+
+  html += "<option value='all'>all</option>";
+  html += "<option value='none'>no funbox</option>";
+
+  for (const funbox of Object.values(FunboxList)) {
+    html += `<option value="${funbox.name}" filter="${
+      funbox.name
+    }">${funbox.name.replace(/_/g, " ")}</option>`;
   }
-  if (funboxList) {
-    let html = "";
 
-    html +=
-      "<select class='funboxSelect' group='funbox' placeholder='select a funbox' multiple>";
+  html += "</select>";
 
-    html += "<option value='all'>all</option>";
-    html += "<option value='none'>no funbox</option>";
-
-    for (const funbox of funboxList) {
-      html += `<option value="${funbox.name}" filter="${
-        funbox.name
-      }">${funbox.name.replace(/_/g, " ")}</option>`;
-    }
-
-    html += "</select>";
-
-    const el = document.querySelector(
-      ".pageAccount .content .filterButtons .buttonsAndTitle.funbox .select"
-    );
-    if (el) {
-      el.innerHTML = html;
-      groupSelects["funbox"] = new SlimSelect({
-        select: el.querySelector(".funboxSelect") as HTMLSelectElement,
-        settings: {
-          showSearch: true,
-          placeholderText: "select a funbox",
-          allowDeselect: true,
-          closeOnSelect: false,
-        },
-        events: {
-          beforeChange: (
+  const el = document.querySelector(
+    ".pageAccount .content .filterButtons .buttonsAndTitle.funbox .select"
+  );
+  if (el) {
+    el.innerHTML = html;
+    groupSelects["funbox"] = new SlimSelect({
+      select: el.querySelector(".funboxSelect") as HTMLSelectElement,
+      settings: {
+        showSearch: true,
+        placeholderText: "select a funbox",
+        allowDeselect: true,
+        closeOnSelect: false,
+      },
+      events: {
+        beforeChange: (selectedOptions, oldSelectedOptions): void | boolean => {
+          return selectBeforeChangeFn(
+            "funbox",
             selectedOptions,
             oldSelectedOptions
-          ): void | boolean => {
-            return selectBeforeChangeFn(
-              "funbox",
-              selectedOptions,
-              oldSelectedOptions
-            );
-          },
-          beforeOpen: (): void => {
-            adjustScrollposition("funbox");
-          },
+          );
         },
-      });
-    }
+        beforeOpen: (): void => {
+          adjustScrollposition("funbox");
+        },
+      },
+    });
   }
 
   const snapshot = DB.getSnapshot();

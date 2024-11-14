@@ -15,11 +15,10 @@ import * as SlowTimer from "../states/slow-timer";
 import * as DateTime from "../utils/date-and-time";
 import * as Misc from "../utils/misc";
 import * as Strings from "../utils/strings";
-import * as JSONData from "../utils/json-data";
 import * as Numbers from "@monkeytype/util/numbers";
 import * as Arrays from "../utils/arrays";
 import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
-import * as FunboxList from "./funbox/funbox-list";
+import * as FunboxList from "@monkeytype/funbox/list";
 import * as PbCrown from "./pb-crown";
 import * as TestConfig from "./test-config";
 import * as TestInput from "./test-input";
@@ -32,6 +31,7 @@ import * as CustomText from "./custom-text";
 import * as CustomTextState from "./../states/custom-text-name";
 import * as Funbox from "./funbox/funbox";
 import Format from "../utils/format";
+import * as FunboxFunctions from "./funbox/funbox-functions";
 
 import confetti from "canvas-confetti";
 import type {
@@ -127,10 +127,11 @@ async function updateGraph(): Promise<void> {
   const fc = await ThemeColors.get("sub");
   if (Config.funbox !== "none") {
     let content = "";
-    for (const f of FunboxList.get(Config.funbox)) {
+    for (const f of FunboxList.getByHashSeparatedString(Config.funbox)) {
       content += f.name;
-      if (f.functions?.getResultContent) {
-        content += "(" + f.functions.getResultContent() + ")";
+      const fn = FunboxFunctions.get(f.name);
+      if (fn.getResultContent) {
+        content += "(" + fn.getResultContent() + ")";
       }
       content += " ";
     }
@@ -474,9 +475,7 @@ type CanGetPbObject =
 
 async function resultCanGetPb(): Promise<CanGetPbObject> {
   const funboxes = result.funbox?.split("#") ?? [];
-  const funboxObjects = await Promise.all(
-    funboxes.map(async (f) => JSONData.getFunbox(f))
-  );
+  const funboxObjects = FunboxList.getByHashSeparatedString(result.funbox);
   const allFunboxesCanGetPb = funboxObjects.every((f) => f?.canGetPb);
 
   const funboxesOk =
@@ -671,7 +670,7 @@ function updateTestType(randomQuote: Quote | null): void {
     }
   }
   const ignoresLanguage =
-    FunboxList.get(Config.funbox).find((f) =>
+    FunboxList.getByHashSeparatedString(Config.funbox).find((f) =>
       f.properties?.includes("ignoresLanguage")
     ) !== undefined;
   if (Config.mode !== "custom" && !ignoresLanguage) {

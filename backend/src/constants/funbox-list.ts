@@ -30,18 +30,7 @@ const _FunboxList: FunboxMetadata[] = [
     frontendFunctions: ["applyCSS", "applyConfig", "rememberSettings"],
     name: "simon_says",
   },
-  {
-    canGetPb: true,
-    difficultyLevel: 3,
-    frontendFunctions: ["applyCSS"],
-    name: "mirror",
-  },
-  {
-    canGetPb: true,
-    difficultyLevel: 3,
-    frontendFunctions: ["applyCSS"],
-    name: "upside_down",
-  },
+
   {
     canGetPb: true,
     difficultyLevel: 1,
