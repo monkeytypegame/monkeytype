@@ -47,7 +47,7 @@ function updateKeytips(): void {
 
   const commandKey = Config.quickRestart === "esc" ? "tab" : "esc";
   $("footer .keyTips").html(`
-    <key>${Config.quickRestart=="off"?"(No key binded)":Config.quickRestart}</key> - restart test<br>
+    <key>${Config.quickRestart=="off"?"tab + enter":Config.quickRestart}</key> - restart test<br>
     <key>${commandKey}</key> or <key>${modifierKey}</key>+<key>shift</key>+<key>p</key> - command line`);
 }
 
