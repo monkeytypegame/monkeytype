@@ -558,7 +558,7 @@ export async function addWord(): Promise<void> {
   for (const funbox of FunboxList.getByHashSeparatedString(Config.funbox)) {
     const fn = FunboxFunctions.get(funbox.name);
 
-    if (fn.pullSection) {
+    if (fn?.pullSection) {
       if (TestWords.words.length - TestWords.words.currentIndex < 20) {
         const section = await fn.pullSection(Config.language);
 

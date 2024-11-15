@@ -844,7 +844,7 @@ export async function updateActiveWordLetters(
 
     const funboxFunctions = FunboxFunctions.get(
       FunboxList.getFunboxNames(Config.funbox)
-    ).find((fns) => fns.getWordHtml);
+    )?.find((fns) => fns.getWordHtml);
 
     const inputChars = Strings.splitIntoCharacters(input);
     const currentWordChars = Strings.splitIntoCharacters(currentWord);
