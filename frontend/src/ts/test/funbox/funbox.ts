@@ -535,7 +535,7 @@ export function toggleScript(...params: string[]): void {
 
   for (const funbox of FunboxList.getByHashSeparatedString(Config.funbox)) {
     const fn = FunboxFunctions.get(funbox.name);
-    if (fn.toggleScript) fn.toggleScript(params);
+    if (fn?.toggleScript) fn.toggleScript(params);
   }
 }
 
@@ -543,7 +543,7 @@ export function setFunbox(funbox: string): boolean {
   if (funbox === "none") {
     for (const funbox of FunboxList.getByHashSeparatedString(Config.funbox)) {
       const fn = FunboxFunctions.get(funbox.name);
-      if (fn.clearGlobal) fn.clearGlobal();
+      if (fn?.clearGlobal) fn.clearGlobal();
     }
   }
   FunboxMemory.load();
@@ -761,7 +761,7 @@ async function applyFunboxCSS(): Promise<boolean> {
   //currently we only support one active funbox with hasCSS
   const activeFunboxWithTheme = FunboxList.getByHashSeparatedString(
     Config.funbox
-  ).find((it) => it.hasCSS == true);
+  ).find((it) => it?.properties?.includes("appliesGlobalCSS"));
 
   const activeTheme =
     activeFunboxWithTheme != null
