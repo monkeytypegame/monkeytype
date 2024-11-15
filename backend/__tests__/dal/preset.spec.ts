@@ -16,6 +16,7 @@ describe("PresetDal", () => {
         settingGroups: ["hideElements"],
         config: {
           showKeyTips: true,
+          showLogoText: true,
           capsLockWarning: true,
           showOutOfFocusWarning: true,
           showAverage: "off",
@@ -43,6 +44,7 @@ describe("PresetDal", () => {
             settingGroups: ["hideElements"],
             config: {
               showKeyTips: true,
+              showLogoText: true,
               capsLockWarning: true,
               showOutOfFocusWarning: true,
               showAverage: "off",
@@ -205,6 +207,7 @@ describe("PresetDal", () => {
           settingGroups: ["hideElements"],
           config: {
             showKeyTips: true,
+            showLogoText: true,
             capsLockWarning: true,
             showOutOfFocusWarning: true,
             showAverage: "off",
@@ -226,6 +229,7 @@ describe("PresetDal", () => {
             settingGroups: ["hideElements"],
             config: {
               showKeyTips: true,
+              showLogoText: true,
               capsLockWarning: true,
               showOutOfFocusWarning: true,
               showAverage: "off",
@@ -275,6 +279,7 @@ describe("PresetDal", () => {
           settingGroups: ["hideElements"],
           config: {
             showKeyTips: true,
+            showLogoText: true,
             capsLockWarning: true,
             showOutOfFocusWarning: true,
             showAverage: "off",
@@ -321,6 +326,7 @@ describe("PresetDal", () => {
         settingGroups: ["hideElements"],
         config: {
           showKeyTips: true,
+          showLogoText: true,
           capsLockWarning: true,
           showOutOfFocusWarning: true,
           showAverage: "off",
@@ -337,6 +343,7 @@ describe("PresetDal", () => {
             settingGroups: ["hideElements"],
             config: {
               showKeyTips: true,
+              showLogoText: true,
               capsLockWarning: true,
               showOutOfFocusWarning: true,
               showAverage: "off",

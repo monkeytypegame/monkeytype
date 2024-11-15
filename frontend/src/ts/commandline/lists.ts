@@ -14,6 +14,7 @@ import LiveAccStyleCommands from "./lists/live-acc-style";
 import LiveBurstStyleCommands from "./lists/live-burst-style";
 import ShowAverageCommands from "./lists/show-average";
 import KeyTipsCommands from "./lists/key-tips";
+import ShowLogoTextCommands from "./lists/logo-text";
 import FreedomModeCommands from "./lists/freedom-mode";
 import StrictSpaceCommands from "./lists/strict-space";
 import BlindModeCommands from "./lists/blind-mode";
@@ -338,6 +339,7 @@ export const commands: CommandsSubgroup = {
 
     //showhide elements
     ...KeyTipsCommands,
+    ...ShowLogoTextCommands,
     ...OutOfFocusWarningCommands,
     ...CapsLockWarningCommands,
     ...ShowAverageCommands,

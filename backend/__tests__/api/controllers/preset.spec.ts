@@ -27,6 +27,7 @@ describe("PresetController", () => {
         settingGroups: ["hideElements"],
         config: {
           showKeyTips: true,
+          showLogoText: true,
           capsLockWarning: true,
           showOutOfFocusWarning: true,
           showAverage: "off",
@@ -56,6 +57,7 @@ describe("PresetController", () => {
             settingGroups: ["hideElements"],
             config: {
               showKeyTips: true,
+              showLogoText: true,
               capsLockWarning: true,
               showOutOfFocusWarning: true,
               showAverage: "off",
@@ -136,6 +138,7 @@ describe("PresetController", () => {
           settingGroups: ["hideElements"],
           config: {
             showKeyTips: true,
+            showLogoText: true,
             capsLockWarning: true,
             showOutOfFocusWarning: true,
             showAverage: "off",
@@ -154,6 +157,7 @@ describe("PresetController", () => {
         settingGroups: ["hideElements"],
         config: {
           showKeyTips: true,
+          showLogoText: true,
           capsLockWarning: true,
           showOutOfFocusWarning: true,
           showAverage: "off",
@@ -262,6 +266,7 @@ describe("PresetController", () => {
           settingGroups: ["hideElements", "hideElements"],
           config: {
             showKeyTips: true,
+            showLogoText: true,
             capsLockWarning: true,
             showOutOfFocusWarning: true,
             showAverage: "off",
@@ -332,6 +337,7 @@ describe("PresetController", () => {
           settingGroups: ["hideElements"],
           config: {
             showKeyTips: true,
+            showLogoText: true,
             capsLockWarning: true,
             showOutOfFocusWarning: true,
             showAverage: "off",
@@ -351,6 +357,7 @@ describe("PresetController", () => {
         settingGroups: ["hideElements"],
         config: {
           showKeyTips: true,
+          showLogoText: true,
           capsLockWarning: true,
           showOutOfFocusWarning: true,
           showAverage: "off",
@@ -442,6 +449,7 @@ describe("PresetController", () => {
           settingGroups: ["hideElements", "hideElements"],
           config: {
             showKeyTips: true,
+            showLogoText: true,
             capsLockWarning: true,
             showOutOfFocusWarning: true,
             showAverage: "off",

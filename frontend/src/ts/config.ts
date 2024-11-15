@@ -1062,6 +1062,27 @@ export function setKeyTips(keyTips: boolean, nosave?: boolean): boolean {
   return true;
 }
 
+//show logo text
+export function setShowLogoText(
+  showLogoText: boolean,
+  nosave?: boolean
+): boolean {
+  if (!isConfigValueValidBoolean("show logo text", showLogoText)) return false;
+
+  config.showLogoText = showLogoText;
+
+  if (config.showLogoText) {
+    $("header h1.text").removeClass("hidden");
+  } else {
+    $("header h1.text").addClass("hidden");
+  }
+
+  saveToLocalStorage("showLogoText", nosave);
+  ConfigEvent.dispatch("showLogoText", config.showLogoText);
+
+  return true;
+}
+
 //mode
 export function setTimeConfig(
   time: ConfigSchemas.TimeConfig,
@@ -1980,6 +2001,7 @@ export async function apply(
     setCustomBackgroundFilter(configObj.customBackgroundFilter, true);
     setQuickRestartMode(configObj.quickRestart, true);
     setKeyTips(configObj.showKeyTips, true);
+    setShowLogoText(configObj.showLogoText, true);
     setTimeConfig(configObj.time, true);
     setQuoteLength(configObj.quoteLength, true);
     setWordCount(configObj.words, true);

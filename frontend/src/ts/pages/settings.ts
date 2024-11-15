@@ -138,6 +138,19 @@ async function initGroups(): Promise<void> {
       }
     }
   ) as SettingsGroup<ConfigValue>;
+  groups["showLogoText"] = new SettingsGroup(
+    "showLogoText",
+    UpdateConfig.setShowLogoText,
+    "button",
+    undefined,
+    () => {
+      if (Config.showLogoText) {
+        $("header h1.text").removeClass("hidden");
+      } else {
+        $("header h1.text").addClass("hidden");
+      }
+    }
+  ) as SettingsGroup<ConfigValue>;
   groups["freedomMode"] = new SettingsGroup(
     "freedomMode",
     UpdateConfig.setFreedomMode,

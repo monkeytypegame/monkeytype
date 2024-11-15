@@ -360,6 +360,7 @@ function getSettingGroup(configFieldName: string): PresetSettingGroup {
   ];
   const hideElementsSettings = [
     "showKeyTips",
+    "showLogoText",
     "capsLockWarning",
     "showOutOfFocusWarning",
     "showAverage",

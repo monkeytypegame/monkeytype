@@ -24,6 +24,7 @@ const obj = {
   ] as CustomThemeColors,
   favThemes: [],
   showKeyTips: true,
+  showLogoText: true,
   smoothCaret: "medium",
   codeUnindentOnBackspace: false,
   quickRestart: "off",

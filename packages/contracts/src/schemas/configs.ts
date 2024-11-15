@@ -297,6 +297,7 @@ export const ConfigSchema = z
     customThemeColors: CustomThemeColorsSchema,
     favThemes: FavThemesSchema,
     showKeyTips: z.boolean(),
+    showLogoText: z.boolean(),
     smoothCaret: SmoothCaretSchema,
     codeUnindentOnBackspace: z.boolean(),
     quickRestart: QuickRestartSchema,
