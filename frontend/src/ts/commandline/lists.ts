@@ -76,7 +76,7 @@ import PresetsCommands from "./lists/presets";
 import LayoutsCommands, {
   update as updateLayoutsCommands,
 } from "./lists/layouts";
-import FunboxCommands, { update as updateFunboxCommands } from "./lists/funbox";
+import FunboxCommands from "./lists/funbox";
 import ThemesCommands, { update as updateThemesCommands } from "./lists/themes";
 import LoadChallengeCommands, {
   update as updateLoadChallengeCommands,
@@ -106,7 +106,6 @@ import * as FPSCounter from "../elements/fps-counter";
 import { migrateConfig } from "../utils/config";
 import { PartialConfigSchema } from "@monkeytype/contracts/schemas/configs";
 import { Command, CommandsSubgroup } from "./types";
-import FunboxList from "@monkeytype/funbox/list";
 
 const layoutsPromise = JSONData.getLayoutsList();
 layoutsPromise
@@ -130,14 +129,6 @@ languagesPromise
       Misc.createErrorMessage(e, "Failed to update language commands")
     );
   });
-
-//todo this probably doesnt need to be done through an update function, should be ok to do straight in the funbox commands file
-updateFunboxCommands(Object.values(FunboxList));
-if (FunboxCommands[0]?.subgroup) {
-  FunboxCommands[0].subgroup.beforeList = (): void => {
-    updateFunboxCommands(Object.values(FunboxList));
-  };
-}
 
 const fontsPromise = JSONData.getFontsList();
 fontsPromise
