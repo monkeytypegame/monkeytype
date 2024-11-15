@@ -16,9 +16,9 @@ export function checkCompatibility(
   const oneWordModifierMax =
     funboxesToCheck.filter(
       (f) =>
-        f.frontendFunctions.includes("getWord") ??
-        f.frontendFunctions.includes("pullSection") ??
-        f.frontendFunctions.includes("withWords")
+        f.frontendFunctions?.includes("getWord") ??
+        f.frontendFunctions?.includes("pullSection") ??
+        f.frontendFunctions?.includes("withWords")
     ).length <= 1;
   const oneWordOrderMax =
     funboxesToCheck.filter((f) =>
@@ -82,18 +82,22 @@ export function checkCompatibility(
     funboxesToCheck.filter(
       (f) =>
         (f.properties?.find((fp) => fp.startsWith("toPush:")) ?? "") ||
-        f.frontendFunctions.includes("pullSection")
+        f.frontendFunctions?.includes("pullSection")
     ).length <= 1;
-  const oneApplyCSSMax =
-    funboxesToCheck.filter((f) => f.hasCSS == true).length <= 1;
+  const oneGlobalCssMax =
+    funboxesToCheck.filter((f) =>
+      f.properties?.find((fp) => fp === "appliesGlobalCSS")
+    ).length <= 1;
   const onePunctuateWordMax =
-    funboxesToCheck.filter((f) => f.frontendFunctions.includes("punctuateWord"))
-      .length <= 1;
+    funboxesToCheck.filter((f) =>
+      f.frontendFunctions?.includes("punctuateWord")
+    ).length <= 1;
   const oneCharCheckerMax =
-    funboxesToCheck.filter((f) => f.frontendFunctions.includes("isCharCorrect"))
-      .length <= 1;
+    funboxesToCheck.filter((f) =>
+      f.frontendFunctions?.includes("isCharCorrect")
+    ).length <= 1;
   const oneCharReplacerMax =
-    funboxesToCheck.filter((f) => f.frontendFunctions.includes("getWordHtml"))
+    funboxesToCheck.filter((f) => f.frontendFunctions?.includes("getWordHtml"))
       .length <= 1;
   const oneChangesCapitalisationMax =
     funboxesToCheck.filter((f) =>
@@ -136,7 +140,7 @@ export function checkCompatibility(
     oneCanSpeakMax &&
     hasLanguageToSpeakAndNoUnspeakable &&
     oneToPushOrPullSectionMax &&
-    oneApplyCSSMax &&
+    oneGlobalCssMax &&
     onePunctuateWordMax &&
     oneCharCheckerMax &&
     oneCharReplacerMax &&
