@@ -2,11 +2,29 @@ export type FunboxName = "58008" | "mirror" | "upside_down";
 
 export type FunboxForcedConfig = Record<string, string[] | boolean[]>;
 
+type Property =
+  | "appliesGlobalCSS"
+  | "ignoresLanguage"
+  | "ignoresLayout"
+  | "noLetters"
+  | "changesLayout"
+  | "usesLayout"
+  | "nospace"
+  | "changesWordsVisibility"
+  | "changesWordsFrequency"
+  | "changesCapitalisation"
+  | "conflictsWithSymmetricChars"
+  | "symmetricChars"
+  | "speaks"
+  | "unspeakable"
+  | "noInfiniteDuration"
+  | "noLigatures";
+
 export type FunboxMetadata = {
   name: FunboxName;
   alias?: string;
   description: string;
-  properties?: string[];
+  properties?: Property[];
   frontendForcedConfig?: FunboxForcedConfig;
   frontendFunctions?: string[];
   difficultyLevel: number;
