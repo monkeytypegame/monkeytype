@@ -130,7 +130,7 @@ async function updateGraph(): Promise<void> {
     for (const f of FunboxList.getByHashSeparatedString(Config.funbox)) {
       content += f.name;
       const fn = FunboxFunctions.get(f.name);
-      if (fn.getResultContent) {
+      if (fn?.getResultContent) {
         content += "(" + fn.getResultContent() + ")";
       }
       content += " ";

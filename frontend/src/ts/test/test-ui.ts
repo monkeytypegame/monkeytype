@@ -335,7 +335,7 @@ function getWordHTML(word: string): string {
   let funboxFn = undefined;
   for (const funbox of FunboxList.getByHashSeparatedString(Config.funbox)) {
     const fn = FunboxFunctions.get(funbox.name);
-    if (fn.getWordHtml) {
+    if (fn?.getWordHtml) {
       funboxFn = fn.getWordHtml;
     }
   }

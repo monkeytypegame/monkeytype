@@ -24,7 +24,7 @@ $((): void => {
   setTimeout(() => {
     FunboxList.getByHashSeparatedString(Config.funbox).forEach((f) => {
       const fn = FunboxFunctions.get(f.name);
-      fn.applyGlobalCSS?.();
+      fn?.applyGlobalCSS?.();
     });
   }, 500); //this approach will probably bite me in the ass at some point
 
