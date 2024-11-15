@@ -34,14 +34,14 @@ const list: Record<FunboxName, FunboxMetadata> = {
   mirror: {
     name: "mirror",
     description: "Everything is mirrored!",
-    properties: ["appliesGobalCSS"],
+    properties: ["appliesGlobalCSS"],
     canGetPb: true,
     difficultyLevel: 3,
   },
   upside_down: {
     name: "upside_down",
     description: "Everything is upside down!",
-    properties: ["appliesGobalCSS"],
+    properties: ["appliesGlobalCSS"],
     canGetPb: true,
     difficultyLevel: 3,
   },
