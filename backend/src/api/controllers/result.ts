@@ -57,7 +57,7 @@ import {
 } from "@monkeytype/util/date-and-time";
 import { MonkeyRequest } from "../types";
 import { checkCompatibility } from "@monkeytype/funbox/validation";
-import { FunboxName, get as getFunbox } from "@monkeytype/funbox/list";
+import { get as getFunbox, getFunboxNames } from "@monkeytype/funbox/list";
 
 try {
   if (!anticheatImplemented()) throw new Error("undefined");
@@ -234,7 +234,7 @@ export async function addResult(
   }
 
   //todo strict types for funbox names in the contracts?
-  const funboxNames = (completedEvent.funbox ?? "").split("#") as FunboxName[];
+  const funboxNames = getFunboxNames(completedEvent.funbox ?? "");
 
   if (!checkCompatibility(funboxNames)) {
     throw new MonkeyError(400, "Impossible funbox combination");
@@ -664,7 +664,7 @@ async function calculateXp(
     charStats,
     punctuation,
     numbers,
-    funbox,
+    funbox: resultFunboxes,
   } = result;
 
   const {
@@ -717,12 +717,15 @@ async function calculateXp(
     }
   }
 
-  if (funboxBonusConfiguration > 0 && funbox !== "none") {
-    const funboxModifier = _.sumBy(funbox.split("#"), (funboxName) => {
-      const funbox = getFunbox(funboxName as FunboxName);
-      const difficultyLevel = funbox?.difficultyLevel ?? 0;
-      return Math.max(difficultyLevel * funboxBonusConfiguration, 0);
-    });
+  if (funboxBonusConfiguration > 0 && resultFunboxes !== "none") {
+    const funboxModifier = _.sumBy(
+      getFunboxNames(resultFunboxes),
+      (funboxName) => {
+        const funbox = getFunbox(funboxName);
+        const difficultyLevel = funbox?.difficultyLevel ?? 0;
+        return Math.max(difficultyLevel * funboxBonusConfiguration, 0);
+      }
+    );
     if (funboxModifier > 0) {
       modifier += funboxModifier;
       breakdown.funbox = Math.round(baseXp * funboxModifier);
