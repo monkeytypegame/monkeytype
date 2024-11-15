@@ -38,7 +38,7 @@ export async function punctuateWord(
 
   const funbox = FunboxFunctions.get(
     FunboxList.getFunboxNames(Config.funbox)
-  ).find((fns) => fns.punctuateWord);
+  )?.find((fns) => fns.punctuateWord);
 
   if (funbox?.punctuateWord) {
     return funbox.punctuateWord(word);
@@ -306,7 +306,7 @@ async function applyEnglishPunctuationToWord(word: string): Promise<string> {
 function getFunboxWordsFrequency(): Wordset.FunboxWordsFrequency | undefined {
   const funboxFunctions = FunboxFunctions.get(
     FunboxList.getFunboxNames(Config.funbox)
-  ).find((fns) => fns.getWordsFrequencyMode);
+  )?.find((fns) => fns.getWordsFrequencyMode);
   if (funboxFunctions?.getWordsFrequencyMode) {
     return funboxFunctions.getWordsFrequencyMode();
   }
@@ -323,7 +323,7 @@ async function getFunboxSection(): Promise<string[]> {
         functions: FunboxFunctions.get(f.name),
       };
     })
-    .find((f) => f.functions.pullSection);
+    .find((f) => f.functions?.pullSection);
 
   if (funboxAndFunctions?.functions?.pullSection) {
     const section = await funboxAndFunctions.functions.pullSection(
@@ -352,7 +352,7 @@ function getFunboxWord(
 ): string {
   const funbox = FunboxFunctions.get(
     FunboxList.getFunboxNames(Config.funbox)
-  ).find((fns) => fns.getWord);
+  )?.find((fns) => fns.getWord);
 
   if (funbox?.getWord) {
     word = funbox.getWord(wordset, wordIndex);
@@ -363,7 +363,7 @@ function getFunboxWord(
 function applyFunboxesToWord(word: string): string {
   for (const f of FunboxFunctions.get(
     FunboxList.getFunboxNames(Config.funbox)
-  )) {
+  ) ?? []) {
     if (f.alterText) {
       word = f.alterText(word);
     }
@@ -623,7 +623,7 @@ export async function generateWords(
 
   const sectionFunbox = FunboxFunctions.get(
     FunboxList.getFunboxNames(Config.funbox)
-  ).find((f) => f.pullSection);
+  )?.find((f) => f.pullSection);
   isCurrentlyUsingFunboxSection = sectionFunbox?.pullSection !== undefined;
 
   const wordOrder = getWordOrder();
@@ -647,7 +647,7 @@ export async function generateWords(
 
   const wordFunbox = FunboxFunctions.get(
     FunboxList.getFunboxNames(Config.funbox)
-  ).find((f) => f?.withWords);
+  )?.find((f) => f?.withWords);
   if (wordFunbox?.withWords) {
     currentWordset = await wordFunbox.withWords(wordList);
   } else {
