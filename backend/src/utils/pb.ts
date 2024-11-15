@@ -5,7 +5,7 @@ import {
   PersonalBests,
 } from "@monkeytype/contracts/schemas/shared";
 import { Result as ResultType } from "@monkeytype/contracts/schemas/results";
-import { FunboxName, get as getFunbox } from "@monkeytype/funbox/list";
+import { getByHashSeparatedString } from "@monkeytype/funbox/list";
 
 export type LbPersonalBests = {
   time: Record<number, Record<string, PersonalBest>>;
@@ -20,20 +20,16 @@ type CheckAndUpdatePbResult = {
 type Result = Omit<ResultType<Mode>, "_id" | "name">;
 
 export function canFunboxGetPb(result: Result): boolean {
-  const funbox = result.funbox;
-  if (funbox === undefined || funbox === "" || funbox === "none") return true;
-
-  let ret = true;
-  const resultFunboxes = funbox.split("#");
-
-  for (const funboxName of resultFunboxes) {
-    const funbox = getFunbox(funboxName as FunboxName);
-    if (!funbox.canGetPb) {
-      ret = false;
-    }
+  const funboxString = result.funbox;
+  if (
+    funboxString === undefined ||
+    funboxString === "" ||
+    funboxString === "none"
+  ) {
+    return true;
   }
 
-  return ret;
+  return getByHashSeparatedString(funboxString).every((f) => f.canGetPb);
 }
 
 export function checkAndUpdatePb(
