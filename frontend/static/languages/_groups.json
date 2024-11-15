@@ -21,10 +21,6 @@
     "languages": ["spanish", "spanish_1k", "spanish_10k", "spanish_650k"]
   },
   {
-    "name": "tibetan",
-    "languages": ["tibetan", "tibetan_1k"]
-  },
-  {
     "name": "french",
     "languages": [
       "french",
@@ -492,6 +488,10 @@
   {
     "name": "xhosa",
     "languages": ["xhosa"]
+  },
+   {
+    "name": "tibetan",
+    "languages": ["tibetan", "tibetan_1k"]
   },
   {
     "name": "other",
