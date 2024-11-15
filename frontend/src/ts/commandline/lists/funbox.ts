@@ -54,11 +54,9 @@ function update(funboxes: FunboxList.FunboxMetadata[]): void {
       id: "changeFunbox" + funbox.name,
       display: funbox.name.replace(/_/g, " "),
       available: () => {
-        if (Config.funbox.split("#").includes(funbox.name)) return true;
-        return checkCompatibility(
-          FunboxList.getFunboxNames(Config.funbox),
-          funbox.name
-        );
+        const configFunboxes = FunboxList.getFunboxNames(Config.funbox);
+        if (configFunboxes.includes(funbox.name)) return true;
+        return checkCompatibility(configFunboxes, funbox.name);
       },
       sticky: true,
       alias: funbox.alias,
