@@ -8,8 +8,7 @@ export type FunboxMetadata = {
   description: string;
   properties?: string[];
   frontendForcedConfig?: FunboxForcedConfig;
-  frontendFunctions: string[];
-  hasCSS?: boolean; //possibly move it to properties in the future
+  frontendFunctions?: string[];
   difficultyLevel: number;
   canGetPb: boolean;
 };
@@ -35,16 +34,16 @@ const list: Record<FunboxName, FunboxMetadata> = {
   mirror: {
     name: "mirror",
     description: "Everything is mirrored!",
+    properties: ["appliesGobalCSS"],
     canGetPb: true,
     difficultyLevel: 3,
-    frontendFunctions: ["applyCSS"],
   },
   upside_down: {
     name: "upside_down",
     description: "Everything is upside down!",
+    properties: ["appliesGobalCSS"],
     canGetPb: true,
     difficultyLevel: 3,
-    frontendFunctions: ["applyCSS"],
   },
 };
 
