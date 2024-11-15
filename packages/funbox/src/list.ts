@@ -49,7 +49,7 @@ const list: Record<FunboxName, FunboxMetadata> = {
 };
 
 export function getFunboxNames(names: string): FunboxName[] {
-  if (names === "none") return [];
+  if (names === "none" || names === "") return [];
   const unsafeNames = names.split("#").map((name) => name.trim());
   const out: FunboxName[] = [];
   for (const unsafeName of unsafeNames) {
