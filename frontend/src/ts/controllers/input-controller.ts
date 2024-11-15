@@ -201,7 +201,7 @@ async function handleSpace(): Promise<void> {
 
   for (const f of FunboxList.getByHashSeparatedString(Config.funbox)) {
     const fn = FunboxFunctions.get(f.name);
-    fn.handleSpace?.();
+    fn?.handleSpace?.();
   }
 
   dontInsertSpace = true;
@@ -422,7 +422,7 @@ function isCharCorrect(char: string, charIndex: number): boolean {
 
   for (const f of FunboxList.getByHashSeparatedString(Config.funbox)) {
     const fn = FunboxFunctions.get(f.name);
-    if (fn.isCharCorrect) {
+    if (fn?.isCharCorrect) {
       return fn.isCharCorrect(char, originalChar);
     }
   }
@@ -508,7 +508,7 @@ function handleChar(
 
   for (const f of FunboxList.getByHashSeparatedString(Config.funbox)) {
     const fn = FunboxFunctions.get(f.name);
-    if (fn.handleChar) {
+    if (fn?.handleChar) {
       char = fn.handleChar(char);
     }
   }
@@ -1149,7 +1149,7 @@ $(document).on("keydown", async (event) => {
 
   for (const f of FunboxList.getByHashSeparatedString(Config.funbox)) {
     const fn = FunboxFunctions.get(f.name);
-    if (fn.preventDefaultEvent) {
+    if (fn?.preventDefaultEvent) {
       if (
         await fn.preventDefaultEvent(
           //i cant figure this type out, but it works fine
