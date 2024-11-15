@@ -89,10 +89,10 @@ export function canSetConfigWithCurrentFunboxes(
       fb = fb.concat(
         FunboxList.getByHashSeparatedString(funbox).filter((f) => {
           return (
-            f.frontendFunctions.includes("getWord") ??
-            f.frontendFunctions.includes("pullSection") ??
-            f.frontendFunctions.includes("alterText") ??
-            f.frontendFunctions.includes("withWords") ??
+            f.frontendFunctions?.includes("getWord") ??
+            f.frontendFunctions?.includes("pullSection") ??
+            f.frontendFunctions?.includes("alterText") ??
+            f.frontendFunctions?.includes("withWords") ??
             f.properties?.includes("changesCapitalisation") ??
             f.properties?.includes("nospace") ??
             f.properties?.find((fp) => fp.startsWith("toPush:")) ??
@@ -108,9 +108,9 @@ export function canSetConfigWithCurrentFunboxes(
       fb = fb.concat(
         FunboxList.getByHashSeparatedString(funbox).filter((f) => {
           return (
-            f.frontendFunctions.includes("getWord") ??
-            f.frontendFunctions.includes("pullSection") ??
-            f.frontendFunctions.includes("withWords") ??
+            f.frontendFunctions?.includes("getWord") ??
+            f.frontendFunctions?.includes("pullSection") ??
+            f.frontendFunctions?.includes("withWords") ??
             f.properties?.includes("changesWordsFrequency")
           );
         })
