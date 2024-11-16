@@ -268,7 +268,7 @@ function updateWpmAndAcc(): void {
 
     $("#result .stats .acc .bottom").attr(
       "aria-label",
-      `${TestInput.accuracy.correct} correct / ${TestInput.accuracy.incorrect} incorrect`
+      `${TestInput.accuracy.correct} correct\n${TestInput.accuracy.incorrect} incorrect`
     );
   } else {
     //not showing decimal places
@@ -287,16 +287,18 @@ function updateWpmAndAcc(): void {
     $("#result .stats .wpm .bottom").attr("aria-label", wpmHover);
     $("#result .stats .raw .bottom").attr("aria-label", rawWpmHover);
 
-    $("#result .stats .acc .bottom").attr(
-      "aria-label",
-      `${
-        result.acc === 100
-          ? "100"
-          : Format.percentage(result.acc, { showDecimalPlaces: true })
-      } (${TestInput.accuracy.correct} correct / ${
-        TestInput.accuracy.incorrect
-      } incorrect)`
-    );
+    $("#result .stats .acc .bottom")
+      .attr(
+        "aria-label",
+        `${
+          result.acc === 100
+            ? "100%"
+            : Format.percentage(result.acc, { showDecimalPlaces: true })
+        }\n${TestInput.accuracy.correct} correct\n${
+          TestInput.accuracy.incorrect
+        } incorrect`
+      )
+      .attr("data-balloon-break", "");
   }
 }
 
@@ -480,8 +482,9 @@ async function resultCanGetPb(): Promise<CanGetPbObject> {
   const funboxesOk =
     result.funbox === "none" || funboxes.length === 0 || allFunboxesCanGetPb;
   const notUsingStopOnLetter = Config.stopOnError !== "letter";
+  const notBailedOut = !result.bailedOut;
 
-  if (funboxesOk && notUsingStopOnLetter) {
+  if (funboxesOk && notUsingStopOnLetter && notBailedOut) {
     return {
       value: true,
     };
@@ -496,6 +499,12 @@ async function resultCanGetPb(): Promise<CanGetPbObject> {
       return {
         value: false,
         reason: "stop on letter",
+      };
+    }
+    if (!notBailedOut) {
+      return {
+        value: false,
+        reason: "bailed out",
       };
     }
     return {
