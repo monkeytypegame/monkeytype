@@ -84,9 +84,9 @@ export function checkCompatibility(
         (f.properties?.find((fp) => fp.startsWith("toPush:")) ?? "") ||
         f.frontendFunctions?.includes("pullSection")
     ).length <= 1;
-  const oneGlobalCssMax =
+  const oneCssFileMax =
     funboxesToCheck.filter((f) =>
-      f.properties?.find((fp) => fp === "appliesGlobalCSS")
+      f.properties?.find((fp) => fp === "hasCssFile")
     ).length <= 1;
   const onePunctuateWordMax =
     funboxesToCheck.filter((f) =>
@@ -140,7 +140,7 @@ export function checkCompatibility(
     oneCanSpeakMax &&
     hasLanguageToSpeakAndNoUnspeakable &&
     oneToPushOrPullSectionMax &&
-    oneGlobalCssMax &&
+    oneCssFileMax &&
     onePunctuateWordMax &&
     oneCharCheckerMax &&
     oneCharReplacerMax &&

@@ -761,7 +761,7 @@ async function applyFunboxCSS(): Promise<boolean> {
   //currently we only support one active funbox with hasCSS
   const activeFunboxWithTheme = FunboxList.getByHashSeparatedString(
     Config.funbox
-  ).find((it) => it?.properties?.includes("appliesGlobalCSS"));
+  ).find((it) => it?.properties?.includes("hasCssFile"));
 
   const activeTheme =
     activeFunboxWithTheme != null

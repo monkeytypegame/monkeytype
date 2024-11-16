@@ -3,7 +3,7 @@ export type FunboxName = "58008" | "mirror" | "upside_down";
 export type FunboxForcedConfig = Record<string, string[] | boolean[]>;
 
 type Property =
-  | "appliesGlobalCSS"
+  | "hasCssFile"
   | "ignoresLanguage"
   | "ignoresLayout"
   | "noLetters"
@@ -52,14 +52,14 @@ const list: Record<FunboxName, FunboxMetadata> = {
   mirror: {
     name: "mirror",
     description: "Everything is mirrored!",
-    properties: ["appliesGlobalCSS"],
+    properties: ["hasCssFile"],
     canGetPb: true,
     difficultyLevel: 3,
   },
   upside_down: {
     name: "upside_down",
     description: "Everything is upside down!",
-    properties: ["appliesGlobalCSS"],
+    properties: ["hasCssFile"],
     canGetPb: true,
     difficultyLevel: 3,
   },
