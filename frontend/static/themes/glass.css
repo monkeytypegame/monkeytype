@@ -1,0 +1,29 @@
+:root {
+  --bg-color: #ffffff;
+  --main-color: #ffffff;
+  --caret-color: #ffffff;
+  --sub-color: #171717;
+  --sub-alt-color: #ffffff40;
+  --text-color: #ffffff;
+  --error-color: #ef4444;
+  --error-extra-color: #dc2626;
+  --colorful-error-color: #ef4444;
+  --colorful-error-extra-color: #dc2626;
+}
+
+#testConfig .row,
+.modal,
+.keymapKey {
+  background-color: #ffffff40 !important;
+  box-sizing: border-box !important;
+  backdrop-filter: blur(8px);
+}
+
+.modal div input {
+  background-color: #00000000 !important;
+}
+
+#commandLine .modal .suggestions .command.active {
+  background-color: #ffffff40 !important;
+  box-sizing: border-box !important;
+}
