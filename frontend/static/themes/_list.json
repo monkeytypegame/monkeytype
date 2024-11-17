@@ -1254,9 +1254,9 @@
   },
   {
     "name": "glass",
-    "bgColor": "#241963",
-    "mainColor": "#f2ce83",
-    "subColor": "#446ad5",
+    "bgColor": "#ffffff00",
+    "mainColor": "#ffffff",
+    "subColor": "#171717",
     "textColor": "#ffffff"
   }
 ]

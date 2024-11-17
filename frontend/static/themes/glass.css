@@ -1,5 +1,5 @@
 :root {
-  --bg-color: #ffffff;
+  --bg-color: #ffffff00;
   --main-color: #ffffff;
   --caret-color: #ffffff;
   --sub-color: #171717;
@@ -21,6 +21,17 @@
 
 .modal div input {
   background-color: #00000000 !important;
+}
+
+.section button,
+.section .buttons button,
+div.funbox.button,
+input {
+  color: #171717 !important;
+}
+
+key {
+  color: #ffffff !important;
 }
 
 #commandLine .modal .suggestions .command.active {
