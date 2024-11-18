@@ -382,8 +382,15 @@ FunboxList.setFunboxFunctions("specials", {
 async function readAheadHandleKeydown(
   event: JQuery.KeyDownEvent<Document, undefined, Document, Document>
 ): Promise<void> {
+  const inputCurrentChar = (TestInput.input.current ?? "").slice(-1);
+  const wordCurrentChar = TestWords.words
+    .getCurrent()
+    .slice(TestInput.input.current.length - 1, TestInput.input.current.length);
+  const isCorrect = inputCurrentChar === wordCurrentChar;
+
   if (
     event.key == "Backspace" &&
+    !isCorrect &&
     (TestInput.input.current != "" ||
       TestInput.input.history[TestWords.words.currentIndex - 1] !=
         TestWords.words.get(TestWords.words.currentIndex - 1) ||
