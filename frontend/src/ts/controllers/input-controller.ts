@@ -904,6 +904,7 @@ $(document).on("keydown", async (event) => {
     console.debug(
       `Key ${event.key} is on the list of ignored keys. Stopping keydown event.`
     );
+    event.preventDefault();
     return;
   }
 
