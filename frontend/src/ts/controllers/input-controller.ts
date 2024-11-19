@@ -915,8 +915,9 @@ $(document).on("keydown", async (event) => {
     return;
   }
 
-  for (const f of FunboxList.getByHashSeparatedString(Config.funbox)) {
-    const fn = FunboxFunctions.get(f.name);
+  for (const fn of FunboxFunctions.get(
+    FunboxList.getFunboxNames(Config.funbox)
+  )) {
     if (fn?.handleKeydown) {
       await fn.handleKeydown(event);
     }
