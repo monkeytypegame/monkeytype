@@ -107,9 +107,10 @@ export function startTest(now: number): boolean {
   TestTimer.clear();
   Monkey.show();
 
-  for (const f of FunboxList.getByHashSeparatedString(Config.funbox)) {
-    const fn = FunboxFunctions.get(f.name);
-    if (fn?.start) fn.start();
+  for (const fn of FunboxFunctions.get(
+    FunboxList.getFunboxNames(Config.funbox)
+  )) {
+    fn?.start?.();
   }
 
   try {
@@ -330,9 +331,10 @@ export function restart(options = {} as RestartOptions): void {
       await init();
       await PaceCaret.init();
 
-      for (const f of FunboxList.getByHashSeparatedString(Config.funbox)) {
-        const fn = FunboxFunctions.get(f.name);
-        if (fn?.restart) fn.restart();
+      for (const fn of FunboxFunctions.get(
+        FunboxList.getFunboxNames(Config.funbox)
+      )) {
+        fn?.restart?.();
       }
 
       if (Config.showAverage !== "off") {

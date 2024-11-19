@@ -766,10 +766,11 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
 }
 
 export async function rememberSettings(): Promise<void> {
-  FunboxList.getByHashSeparatedString(Config.funbox).forEach(async (funbox) => {
-    const fn = FunboxFunctions.get(funbox.name);
-    fn?.rememberSettings?.();
-  });
+  for (const fns of FunboxFunctions.get(
+    FunboxList.getFunboxNames(Config.funbox)
+  )) {
+    fns?.rememberSettings?.();
+  }
 }
 
 async function setFunboxBodyClasses(): Promise<boolean> {

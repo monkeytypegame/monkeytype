@@ -38,7 +38,7 @@ export async function punctuateWord(
 
   const funbox = FunboxFunctions.get(
     FunboxList.getFunboxNames(Config.funbox)
-  )?.find((fns) => fns.punctuateWord);
+  )?.find((fns) => fns?.punctuateWord);
 
   if (funbox?.punctuateWord) {
     return funbox.punctuateWord(word);
@@ -306,7 +306,7 @@ async function applyEnglishPunctuationToWord(word: string): Promise<string> {
 function getFunboxWordsFrequency(): Wordset.FunboxWordsFrequency | undefined {
   const funboxFunctions = FunboxFunctions.get(
     FunboxList.getFunboxNames(Config.funbox)
-  )?.find((fns) => fns.getWordsFrequencyMode);
+  )?.find((fns) => fns?.getWordsFrequencyMode);
   if (funboxFunctions?.getWordsFrequencyMode) {
     return funboxFunctions.getWordsFrequencyMode();
   }
@@ -316,22 +316,20 @@ function getFunboxWordsFrequency(): Wordset.FunboxWordsFrequency | undefined {
 async function getFunboxSection(): Promise<string[]> {
   const ret = [];
 
-  const funboxAndFunctions = FunboxList.getByHashSeparatedString(Config.funbox)
+  const funbox = FunboxList.getByHashSeparatedString(Config.funbox)
     .map((f) => {
       return {
-        funbox: f,
+        metadata: f,
         functions: FunboxFunctions.get(f.name),
       };
     })
     .find((f) => f.functions?.pullSection);
 
-  if (funboxAndFunctions?.functions?.pullSection) {
-    const section = await funboxAndFunctions.functions.pullSection(
-      Config.language
-    );
+  if (funbox?.functions?.pullSection) {
+    const section = await funbox.functions.pullSection(Config.language);
 
     if (section === false || section === undefined) {
-      UpdateConfig.toggleFunbox(funboxAndFunctions.funbox.name);
+      UpdateConfig.toggleFunbox(funbox.metadata.name);
       throw new Error("Failed to pull section");
     }
 
@@ -352,7 +350,7 @@ function getFunboxWord(
 ): string {
   const funbox = FunboxFunctions.get(
     FunboxList.getFunboxNames(Config.funbox)
-  )?.find((fns) => fns.getWord);
+  )?.find((fns) => fns?.getWord);
 
   if (funbox?.getWord) {
     word = funbox.getWord(wordset, wordIndex);
@@ -364,7 +362,7 @@ function applyFunboxesToWord(word: string): string {
   for (const f of FunboxFunctions.get(
     FunboxList.getFunboxNames(Config.funbox)
   ) ?? []) {
-    if (f.alterText) {
+    if (f?.alterText) {
       word = f.alterText(word);
     }
   }
@@ -623,7 +621,7 @@ export async function generateWords(
 
   const sectionFunbox = FunboxFunctions.get(
     FunboxList.getFunboxNames(Config.funbox)
-  )?.find((f) => f.pullSection);
+  )?.find((f) => f?.pullSection);
   isCurrentlyUsingFunboxSection = sectionFunbox?.pullSection !== undefined;
 
   const wordOrder = getWordOrder();
