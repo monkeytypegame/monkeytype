@@ -199,8 +199,9 @@ async function handleSpace(): Promise<void> {
 
   const currentWord: string = TestWords.words.getCurrent();
 
-  for (const f of FunboxList.getByHashSeparatedString(Config.funbox)) {
-    const fn = FunboxFunctions.get(f.name);
+  for (const fn of FunboxFunctions.get(
+    FunboxList.getFunboxNames(Config.funbox)
+  )) {
     fn?.handleSpace?.();
   }
 
