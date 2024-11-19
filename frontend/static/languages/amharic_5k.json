@@ -1,5 +1,5 @@
 {
-  "name": "amharic",
+  "name": "amharic_5k",
   "ligatures": false,
   "bcp47": "am-ET",
   "words": [
@@ -236,7 +236,6 @@
     "ፍርድ",
     "ሶሰፍት",
     "ስለሆነ",
-    "",
     "በቁሳዊ",
     "ጥፋቱን",
     "የሚጨምርልህ",
