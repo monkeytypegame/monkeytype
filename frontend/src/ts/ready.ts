@@ -22,10 +22,11 @@ $((): void => {
   $("body").css("transition", "background .25s, transform .05s");
   MerchBanner.showIfNotClosedBefore();
   setTimeout(() => {
-    FunboxList.getByHashSeparatedString(Config.funbox).forEach((f) => {
-      const fn = FunboxFunctions.get(f.name);
-      fn?.applyGlobalCSS?.();
-    });
+    for (const fn of FunboxFunctions.get(
+      FunboxList.getFunboxNames(Config.funbox)
+    )) {
+      fn?.applyConfig?.();
+    }
   }, 500); //this approach will probably bite me in the ass at some point
 
   $("#app")
