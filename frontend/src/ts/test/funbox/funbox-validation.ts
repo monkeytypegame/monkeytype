@@ -12,8 +12,9 @@ export function checkFunboxForcedConfigs(
   result: boolean;
   forcedConfigs?: ConfigValue[];
 } {
-  if (FunboxList.getByHashSeparatedString(funbox).length === 0)
+  if (FunboxList.getByHashSeparatedString(funbox).length === 0) {
     return { result: true };
+  }
 
   if (key === "words" || key === "time") {
     if (value === 0) {
