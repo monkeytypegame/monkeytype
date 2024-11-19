@@ -86,10 +86,10 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
 };
 
 export function get(funboxName: FunboxName): FunboxFunctions | undefined;
-export function get(funboxNames: FunboxName[]): FunboxFunctions[] | undefined;
+export function get(funboxNames: FunboxName[]): (FunboxFunctions | undefined)[];
 export function get(
   funboxNameOrNames: FunboxName | FunboxName[]
-): FunboxFunctions | FunboxFunctions[] | undefined {
+): FunboxFunctions | (FunboxFunctions | undefined)[] | undefined {
   if (Array.isArray(funboxNameOrNames)) {
     const fns = funboxNameOrNames.map((name) => list[name]);
     return fns.filter((fn) => fn !== undefined);

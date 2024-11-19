@@ -415,7 +415,7 @@ function isCharCorrect(char: string, charIndex: number): boolean {
 
   const funboxFunctions = FunboxFunctions.get(
     FunboxList.getFunboxNames(Config.funbox)
-  )?.find((fns) => fns.isCharCorrect);
+  )?.find((fns) => fns?.isCharCorrect);
   if (funboxFunctions?.isCharCorrect) {
     return funboxFunctions.isCharCorrect(char, originalChar);
   }
@@ -499,8 +499,9 @@ function handleChar(
 
   const isCharKorean: boolean = TestInput.input.getKoreanStatus();
 
-  for (const f of FunboxList.getByHashSeparatedString(Config.funbox)) {
-    const fn = FunboxFunctions.get(f.name);
+  for (const fn of FunboxFunctions.get(
+    FunboxList.getFunboxNames(Config.funbox)
+  )) {
     if (fn?.handleChar) {
       char = fn.handleChar(char);
     }
