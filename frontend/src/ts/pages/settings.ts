@@ -723,8 +723,6 @@ function setActiveFunboxButton(): void {
   $(`.pageSettings .section[data-config-name='funbox'] .button`).removeClass(
     "disabled"
   );
-  // JSONData.getFunboxList()
-  //   .then((funboxModes) => {
   Object.values(FunboxList).forEach((funbox) => {
     if (
       !checkCompatibility(getFunboxNames(Config.funbox), funbox.name) &&
@@ -735,14 +733,6 @@ function setActiveFunboxButton(): void {
       ).addClass("disabled");
     }
   });
-  // })
-  // .catch((e: unknown) => {
-  //   const message = Misc.createErrorMessage(
-  //     e,
-  //     "Failed to update funbox buttons"
-  //   );
-  //   Notifications.add(message, -1);
-  // });
   Config.funbox.split("#").forEach((funbox) => {
     $(
       `.pageSettings .section[data-config-name='funbox'] .button[data-config-value='${funbox}']`
