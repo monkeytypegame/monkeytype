@@ -413,18 +413,11 @@ function isCharCorrect(char: string, charIndex: number): boolean {
     return true;
   }
 
-  // const funbox = FunboxList.getByHashSeparatedString(Config.funbox).find(
-  //   (f) => f.functions?.["isCharCorrect"]
-  // );
-  // if (funbox?.functions?.["isCharCorrect"]) {
-  //   return funbox.functions["isCharCorrect"](char, originalChar) as boolean;
-  // }
-
-  for (const f of FunboxList.getByHashSeparatedString(Config.funbox)) {
-    const fn = FunboxFunctions.get(f.name);
-    if (fn?.isCharCorrect) {
-      return fn.isCharCorrect(char, originalChar);
-    }
+  const funboxFunctions = FunboxFunctions.get(
+    FunboxList.getFunboxNames(Config.funbox)
+  )?.find((fns) => fns.isCharCorrect);
+  if (funboxFunctions?.isCharCorrect) {
+    return funboxFunctions.isCharCorrect(char, originalChar);
   }
 
   if (Config.language.startsWith("russian")) {
