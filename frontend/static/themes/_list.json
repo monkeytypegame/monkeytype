@@ -1251,5 +1251,12 @@
     "mainColor": "#bef0ff",
     "subColor": "#fe9841",
     "textColor": "#dbdeeb"
+  },
+  {
+    "name": "emerald",
+    "bgColor": "#e0f7fa",
+    "mainColor": "#00796b",
+    "subColor": "#004d40",
+    "textColor": "#004d40"
   }
 ]
