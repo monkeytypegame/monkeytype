@@ -756,10 +756,11 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
   }
 
   ManualRestart.set();
-  FunboxList.getByHashSeparatedString(Config.funbox).forEach(async (funbox) => {
-    const fn = FunboxFunctions.get(funbox.name);
-    fn?.applyConfig?.();
-  });
+  for (const fns of FunboxFunctions.get(
+    FunboxList.getFunboxNames(Config.funbox)
+  )) {
+    fns?.applyConfig?.();
+  }
   // ModesNotice.update();
   return true;
 }
