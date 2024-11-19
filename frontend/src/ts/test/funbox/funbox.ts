@@ -1,3 +1,5 @@
+//todo move functions to funbox-functions
+
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import * as Notifications from "../../elements/notifications";
 import * as Misc from "../../utils/misc";
@@ -565,17 +567,19 @@ async function readAheadHandleKeydown(
 export function toggleScript(...params: string[]): void {
   if (Config.funbox === "none") return;
 
-  for (const funbox of FunboxList.getByHashSeparatedString(Config.funbox)) {
-    const fn = FunboxFunctions.get(funbox.name);
-    if (fn?.toggleScript) fn.toggleScript(params);
+  for (const fns of FunboxFunctions.get(
+    FunboxList.getFunboxNames(Config.funbox)
+  )) {
+    fns?.toggleScript?.(params);
   }
 }
 
 export function setFunbox(funbox: string): boolean {
   if (funbox === "none") {
-    for (const funbox of FunboxList.getByHashSeparatedString(Config.funbox)) {
-      const fn = FunboxFunctions.get(funbox.name);
-      if (fn?.clearGlobal) fn.clearGlobal();
+    for (const fns of FunboxFunctions.get(
+      FunboxList.getFunboxNames(Config.funbox)
+    )) {
+      fns?.clearGlobal?.();
     }
   }
   FunboxMemory.load();
@@ -603,16 +607,14 @@ export function toggleFunbox(funbox: "none" | FunboxList.FunboxName): boolean {
   FunboxMemory.load();
   const e = UpdateConfig.toggleFunbox(funbox, false);
 
-  if (!Config.funbox.includes(funbox)) {
-    FunboxList.getByHashSeparatedString(funbox).forEach((f) => {
-      const fn = FunboxFunctions.get(f.name);
-      fn?.clearGlobal?.();
-    });
-  } else {
-    FunboxList.getByHashSeparatedString(funbox).forEach((f) => {
-      const fn = FunboxFunctions.get(f.name);
-      fn?.applyGlobalCSS?.();
-    });
+  for (const fns of FunboxFunctions.get(
+    FunboxList.getFunboxNames(Config.funbox)
+  )) {
+    if (!Config.funbox.includes(funbox)) {
+      fns?.clearGlobal?.();
+    } else {
+      fns?.applyGlobalCSS?.();
+    }
   }
 
   //todo find out what the hell this means
