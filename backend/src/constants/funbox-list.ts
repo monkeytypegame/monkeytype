@@ -179,7 +179,7 @@ const _FunboxList: FunboxMetadata[] = [
     frontendForcedConfig: {
       highlightMode: ["letter", "off"],
     },
-    frontendFunctions: ["applyCSS", "rememberSettings"],
+    frontendFunctions: ["applyCSS", "rememberSettings", "handleKeydown"],
     name: "read_ahead_easy",
   },
   {
@@ -189,7 +189,7 @@ const _FunboxList: FunboxMetadata[] = [
     frontendForcedConfig: {
       highlightMode: ["letter", "off"],
     },
-    frontendFunctions: ["applyCSS", "rememberSettings"],
+    frontendFunctions: ["applyCSS", "rememberSettings", "handleKeydown"],
     name: "read_ahead",
   },
   {
@@ -199,7 +199,7 @@ const _FunboxList: FunboxMetadata[] = [
     frontendForcedConfig: {
       highlightMode: ["letter", "off"],
     },
-    frontendFunctions: ["applyCSS", "rememberSettings"],
+    frontendFunctions: ["applyCSS", "rememberSettings", "handleKeydown"],
     name: "read_ahead_hard",
   },
   {

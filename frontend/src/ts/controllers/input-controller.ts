@@ -916,7 +916,15 @@ $(document).on("keydown", async (event) => {
     console.debug(
       `Key ${event.key} is on the list of ignored keys. Stopping keydown event.`
     );
+    event.preventDefault();
     return;
+  }
+
+  for (const f of FunboxList.getByHashSeparatedString(Config.funbox)) {
+    const fn = FunboxFunctions.get(f.name);
+    if (fn?.handleKeydown) {
+      await fn.handleKeydown(event);
+    }
   }
 
   //autofocus
@@ -1057,6 +1065,25 @@ $(document).on("keydown", async (event) => {
     if (Config.confidenceMode === "max") {
       event.preventDefault();
       return;
+    }
+
+    // if the user backspaces the indentation in a code language we need to empty
+    // the current word so the user is set back to the end of the last line
+    if (
+      Config.codeUnindentOnBackspace &&
+      TestInput.input.current.length > 0 &&
+      /^\t*$/.test(TestInput.input.current) &&
+      Config.language.startsWith("code") &&
+      isCharCorrect(
+        TestInput.input.current.slice(-1),
+        TestInput.input.current.length - 1
+      ) &&
+      (TestInput.input.history[TestWords.words.currentIndex - 1] !=
+        TestWords.words.get(TestWords.words.currentIndex - 1) ||
+        Config.freedomMode)
+    ) {
+      TestInput.input.current = "";
+      await TestUI.updateActiveWordLetters();
     }
   }
 

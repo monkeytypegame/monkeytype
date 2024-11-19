@@ -202,7 +202,7 @@
   },
   {
     "name": "croatian",
-    "languages": ["croatian"]
+    "languages": ["croatian", "croatian_1k"]
   },
   {
     "name": "dutch",
@@ -504,7 +504,7 @@
   },
   {
     "name": "amharic",
-    "languages": ["amharic"]
+    "languages": ["amharic", "amharic_1k", "amharic_5k"]
   },
   {
     "name": "oromo",
@@ -613,7 +613,8 @@
       "code_typescript",
       "code_cobol",
       "code_common_lisp",
-      "code_odin"
+      "code_odin",
+      "code_fortran"
     ]
   }
 ]

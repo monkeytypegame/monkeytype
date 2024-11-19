@@ -30,7 +30,7 @@ type FunboxFunctions = {
     event: JQuery.KeyDownEvent<Document, null, Document, Document>
   ) => Promise<boolean>;
   handleKeydown?: (
-    event: JQuery.KeyDownEvent<Document, null, Document, Document>
+    event: JQuery.KeyDownEvent<Document, undefined, Document, Document>
   ) => Promise<void>;
   getResultContent?: () => string;
   start?: () => void;

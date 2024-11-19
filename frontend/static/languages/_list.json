@@ -128,6 +128,7 @@
   ,"slovenian_1k"
   ,"slovenian_5k"
   ,"croatian"
+  ,"croatian_1k"
   ,"dutch"
   ,"dutch_1k"
   ,"dutch_10k"
@@ -278,6 +279,8 @@
   ,"uzbek_70k"
   ,"malayalam"
   ,"amharic"
+  ,"amharic_1k"
+  ,"amharic_5k"
   ,"oromo"
   ,"oromo_1k"
   ,"oromo_5k"
@@ -356,4 +359,5 @@
   ,"code_cobol"
   ,"code_common_lisp"
   ,"docker_file"
+  ,"code_fortran"
 ]
