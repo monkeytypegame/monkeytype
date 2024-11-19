@@ -2122,7 +2122,8 @@
       "row3": ["tT", "sS", "rR", "hH", "fF", "gG", "cC", "aA", "eE", "iI", ";:"],
       "row4": ["zZ", "xX", "pP", "bB", "'\"", "mM", "yY", "qQ", "/?", ".>"],
       "row5": [" "]
-    },
+    }
+  },
     "kuntem": {
     "keymapShowTopRow": false,
     "type": "ansi",
