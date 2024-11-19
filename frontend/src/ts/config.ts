@@ -1180,6 +1180,24 @@ export function setSmoothCaret(
   return true;
 }
 
+export function setCodeUnindentOnBackspace(
+  mode: boolean,
+  nosave?: boolean
+): boolean {
+  if (!isConfigValueValidBoolean("code unindent on backspace", mode)) {
+    return false;
+  }
+  config.codeUnindentOnBackspace = mode;
+
+  saveToLocalStorage("codeUnindentOnBackspace", nosave);
+  ConfigEvent.dispatch(
+    "codeUnindentOnBackspace",
+    config.codeUnindentOnBackspace,
+    nosave
+  );
+  return true;
+}
+
 export function setStartGraphsAtZero(mode: boolean, nosave?: boolean): boolean {
   if (!isConfigValueValidBoolean("start graphs at zero", mode)) {
     return false;
@@ -1993,6 +2011,7 @@ export async function apply(
     setKeymapSize(configObj.keymapSize, true);
     setFontFamily(configObj.fontFamily, true);
     setSmoothCaret(configObj.smoothCaret, true);
+    setCodeUnindentOnBackspace(configObj.codeUnindentOnBackspace, true);
     setSmoothLineScroll(configObj.smoothLineScroll, true);
     setAlwaysShowDecimalPlaces(configObj.alwaysShowDecimalPlaces, true);
     setAlwaysShowWordsHistory(configObj.alwaysShowWordsHistory, true);

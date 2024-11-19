@@ -430,7 +430,11 @@ async function showCommands(): Promise<void> {
       await updateActiveCommand();
     });
     command.addEventListener("click", async () => {
+      const previous = activeIndex;
       activeIndex = parseInt(command.getAttribute("data-index") ?? "0");
+      if (previous !== activeIndex) {
+        await updateActiveCommand();
+      }
       await runActiveCommand();
     });
   }
