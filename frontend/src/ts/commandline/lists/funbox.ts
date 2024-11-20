@@ -2,7 +2,7 @@ import * as Funbox from "../../test/funbox/funbox";
 import * as TestLogic from "../../test/test-logic";
 import * as ManualRestart from "../../test/manual-restart-tracker";
 import Config from "../../config";
-import FunboxList, { getFunboxNames } from "@monkeytype/funbox/list";
+import { getFunboxNames, getAllFunboxes } from "@monkeytype/funbox/list";
 import { Command, CommandsSubgroup } from "../types";
 import { checkCompatibility } from "@monkeytype/funbox/validation";
 
@@ -22,7 +22,7 @@ const list: Command[] = [
   },
 ];
 
-for (const funbox of Object.values(FunboxList)) {
+for (const funbox of getAllFunboxes()) {
   list.push({
     id: "changeFunbox" + funbox.name,
     display: funbox.name.replace(/_/g, " "),

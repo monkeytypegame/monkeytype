@@ -16,7 +16,7 @@ import {
 } from "@monkeytype/contracts/schemas/users";
 import { LocalStorageWithSchema } from "../../utils/local-storage-with-schema";
 import defaultResultFilters from "../../constants/default-result-filters";
-import FunboxList from "@monkeytype/funbox/list";
+import { getAllFunboxes } from "@monkeytype/funbox/list";
 
 export function mergeWithDefaultFilters(
   filters: Partial<ResultFilters>
@@ -810,7 +810,7 @@ export async function appendButtons(
   html += "<option value='all'>all</option>";
   html += "<option value='none'>no funbox</option>";
 
-  for (const funbox of Object.values(FunboxList)) {
+  for (const funbox of getAllFunboxes()) {
     html += `<option value="${funbox.name}" filter="${
       funbox.name
     }">${funbox.name.replace(/_/g, " ")}</option>`;

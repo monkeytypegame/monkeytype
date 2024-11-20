@@ -108,4 +108,10 @@ export function get(
   }
 }
 
-export default list;
+export function getAllFunboxes(): FunboxMetadata[] {
+  const out = [];
+  for (const name in list) {
+    out.push(list[name as FunboxName]);
+  }
+  return out;
+}

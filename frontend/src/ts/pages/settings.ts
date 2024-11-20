@@ -24,8 +24,9 @@ import {
   ConfigValue,
   CustomLayoutFluid,
 } from "@monkeytype/contracts/schemas/configs";
-import FunboxList, {
+import {
   FunboxName,
+  getAllFunboxes,
   getFunboxNames,
 } from "@monkeytype/funbox/list";
 import { checkCompatibility } from "@monkeytype/funbox/validation";
@@ -592,7 +593,7 @@ async function fillSettingsPage(): Promise<void> {
   funboxEl.innerHTML = `<div class="funbox button" data-config-value='none'>none</div>`;
   let funboxElHTML = "";
 
-  for (const funbox of Object.values(FunboxList)) {
+  for (const funbox of getAllFunboxes()) {
     if (funbox.name === "mirror") {
       funboxElHTML += `<div class="funbox button" data-config-value='${
         funbox.name
@@ -723,7 +724,7 @@ function setActiveFunboxButton(): void {
   $(`.pageSettings .section[data-config-name='funbox'] .button`).removeClass(
     "disabled"
   );
-  Object.values(FunboxList).forEach((funbox) => {
+  getAllFunboxes().forEach((funbox) => {
     if (
       !checkCompatibility(getFunboxNames(Config.funbox), funbox.name) &&
       !Config.funbox.split("#").includes(funbox.name)
