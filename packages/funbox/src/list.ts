@@ -1,38 +1,4 @@
-import { FunboxName } from "./types";
-import { stringToFunboxNames } from "./util";
-
-export type FunboxForcedConfig = Record<string, string[] | boolean[]>;
-
-type Property =
-  | "hasCssFile"
-  | "ignoresLanguage"
-  | "ignoresLayout"
-  | "noLetters"
-  | "changesLayout"
-  | "usesLayout"
-  | "nospace"
-  | "changesWordsVisibility"
-  | "changesWordsFrequency"
-  | "changesCapitalisation"
-  | "conflictsWithSymmetricChars"
-  | "symmetricChars"
-  | "speaks"
-  | "unspeakable"
-  | "noInfiniteDuration"
-  | "noLigatures"
-  | `toPush:${number}`
-  | "wordOrder:reverse";
-
-export type FunboxMetadata = {
-  name: FunboxName;
-  alias?: string;
-  description: string;
-  properties?: Property[];
-  frontendForcedConfig?: FunboxForcedConfig;
-  frontendFunctions?: string[];
-  difficultyLevel: number;
-  canGetPb: boolean;
-};
+import { FunboxMetadata, FunboxName } from "./types";
 
 const list: Record<FunboxName, FunboxMetadata> = {
   "58008": {
@@ -448,43 +414,18 @@ const list: Record<FunboxName, FunboxMetadata> = {
   },
 };
 
-export function getByHashSeparatedString(names: string): FunboxMetadata[] {
-  return get(stringToFunboxNames(names));
+export function getObject(): Record<FunboxName, FunboxMetadata> {
+  return list;
 }
 
-export function get(name: FunboxName): FunboxMetadata;
-export function get(names: FunboxName[]): FunboxMetadata[];
-export function get(
-  nameOrNames: FunboxName | FunboxName[]
-): FunboxMetadata | FunboxMetadata[] {
-  if (Array.isArray(nameOrNames)) {
-    const out = nameOrNames.map((name) => list[name]);
-
-    //@ts-expect-error
-    if (out.includes(undefined)) {
-      throw new Error("One of the funboxes is invalid: " + nameOrNames);
-    }
-
-    return out;
-  } else {
-    const out = list[nameOrNames];
-
-    if (out === undefined) {
-      throw new Error("Invalid funbox name: " + nameOrNames);
-    }
-
-    return out;
-  }
-}
-
-export function getAllFunboxes(): FunboxMetadata[] {
+export function getList(): FunboxMetadata[] {
   const out: FunboxMetadata[] = [];
-  for (const name of getAllFunboxNames()) {
+  for (const name of getFunboxNames()) {
     out.push(list[name]);
   }
   return out;
 }
 
-export function getAllFunboxNames(): FunboxName[] {
+export function getFunboxNames(): FunboxName[] {
   return Object.keys(list) as FunboxName[];
 }

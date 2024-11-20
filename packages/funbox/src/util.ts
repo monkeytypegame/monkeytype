@@ -1,4 +1,4 @@
-import { getAllFunboxNames } from "./list";
+import { getList } from "./list";
 import { FunboxName } from "./types";
 
 export function stringToFunboxNames(names: string): FunboxName[] {
@@ -6,7 +6,7 @@ export function stringToFunboxNames(names: string): FunboxName[] {
   const unsafeNames = names.split("#").map((name) => name.trim());
   const out: FunboxName[] = [];
   for (const unsafeName of unsafeNames) {
-    if (unsafeName in getAllFunboxNames()) {
+    if (unsafeName in getList()) {
       out.push(unsafeName as FunboxName);
     } else {
       throw new Error("Invalid funbox name: " + unsafeName);
