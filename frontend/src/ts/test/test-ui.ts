@@ -31,7 +31,7 @@ import {
   TimerOpacity,
 } from "@monkeytype/contracts/schemas/configs";
 import { convertRemToPixels } from "../utils/numbers";
-import { stringToFunboxNames } from "@monkeytype/funbox/util";
+import { stringToFunboxNames } from "@monkeytype/funbox";
 
 async function gethtml2canvas(): Promise<typeof import("html2canvas").default> {
   return (await import("html2canvas")).default;

@@ -21,9 +21,11 @@ import { Mode } from "@monkeytype/contracts/schemas/shared";
 import { randomIntFromRange } from "@monkeytype/util/numbers";
 import * as FunboxList from "@monkeytype/funbox";
 import * as FunboxFunctions from "./funbox-functions";
-import { checkCompatibility } from "@monkeytype/funbox/validation";
-import { stringToFunboxNames } from "@monkeytype/funbox/util";
-import { FunboxName } from "@monkeytype/funbox/types";
+import {
+  FunboxName,
+  stringToFunboxNames,
+  checkCompatibility,
+} from "@monkeytype/funbox";
 
 export function toggleScript(...params: string[]): void {
   if (Config.funbox === "none") return;

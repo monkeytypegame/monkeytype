@@ -37,7 +37,7 @@ import { ModifierKeys } from "../constants/modifier-keys";
 import { navigate } from "./route-controller";
 import * as Loader from "../elements/loader";
 import * as KeyConverter from "../utils/key-converter";
-import { stringToFunboxNames } from "@monkeytype/funbox/util";
+import { stringToFunboxNames } from "@monkeytype/funbox";
 
 let dontInsertSpace = false;
 let correctShiftUsed = true;

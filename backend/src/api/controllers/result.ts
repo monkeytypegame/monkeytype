@@ -56,9 +56,11 @@ import {
   getStartOfDayTimestamp,
 } from "@monkeytype/util/date-and-time";
 import { MonkeyRequest } from "../types";
-import { checkCompatibility } from "@monkeytype/funbox/validation";
-import { getFunbox as getFunbox } from "@monkeytype/funbox";
-import { stringToFunboxNames } from "@monkeytype/funbox/util";
+import {
+  getFunbox,
+  checkCompatibility,
+  stringToFunboxNames,
+} from "@monkeytype/funbox";
 
 try {
   if (!anticheatImplemented()) throw new Error("undefined");

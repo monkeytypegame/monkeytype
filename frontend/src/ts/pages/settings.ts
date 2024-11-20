@@ -24,10 +24,12 @@ import {
   ConfigValue,
   CustomLayoutFluid,
 } from "@monkeytype/contracts/schemas/configs";
-import { checkCompatibility } from "@monkeytype/funbox/validation";
-import { stringToFunboxNames } from "@monkeytype/funbox/util";
-import { getAllFunboxes } from "@monkeytype/funbox";
-import { FunboxName } from "@monkeytype/funbox/types";
+import {
+  getAllFunboxes,
+  FunboxName,
+  stringToFunboxNames,
+  checkCompatibility,
+} from "@monkeytype/funbox";
 
 type SettingsGroups<T extends ConfigValue> = Record<string, SettingsGroup<T>>;
 

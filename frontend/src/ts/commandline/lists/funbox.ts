@@ -2,10 +2,12 @@ import * as Funbox from "../../test/funbox/funbox";
 import * as TestLogic from "../../test/test-logic";
 import * as ManualRestart from "../../test/manual-restart-tracker";
 import Config from "../../config";
-import { getAllFunboxes } from "@monkeytype/funbox";
+import {
+  getAllFunboxes,
+  stringToFunboxNames,
+  checkCompatibility,
+} from "@monkeytype/funbox";
 import { Command, CommandsSubgroup } from "../types";
-import { checkCompatibility } from "@monkeytype/funbox/validation";
-import { stringToFunboxNames } from "@monkeytype/funbox/util";
 
 const list: Command[] = [
   {

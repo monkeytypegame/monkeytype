@@ -1,4 +1,3 @@
-import { FunboxName } from "@monkeytype/funbox/types";
 import { Section } from "../../utils/json-data";
 import { FunboxWordsFrequency, Wordset } from "../wordset";
 import * as GetText from "../../utils/generate";
@@ -8,7 +7,7 @@ import * as Strings from "../../utils/strings";
 import { randomIntFromRange } from "@monkeytype/util/numbers";
 import * as Arrays from "../../utils/arrays";
 import { save } from "./funbox-memory";
-import { stringToFunboxNames } from "@monkeytype/funbox/util";
+import { stringToFunboxNames, type FunboxName } from "@monkeytype/funbox";
 import * as TTSEvent from "../../observables/tts-event";
 import * as Notifications from "../../elements/notifications";
 import * as DDR from "../../utils/ddr";
