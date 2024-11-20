@@ -29,7 +29,7 @@ import * as TestInput from "../test/test-input";
 import * as TestWords from "../test/test-words";
 import * as Hangul from "hangul-js";
 import * as CustomTextState from "../states/custom-text-name";
-import * as FunboxList from "@monkeytype/funbox/list";
+import * as FunboxList from "@monkeytype/funbox";
 import * as FunboxFunctions from "../test/funbox/funbox-functions";
 import * as KeymapEvent from "../observables/keymap-event";
 import { IgnoredKeys } from "../constants/ignored-keys";

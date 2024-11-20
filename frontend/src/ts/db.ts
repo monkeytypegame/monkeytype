@@ -5,7 +5,7 @@ import DefaultConfig from "./constants/default-config";
 import { isAuthenticated } from "./firebase";
 import * as ConnectionState from "./states/connection";
 import { lastElementFromArray } from "./utils/arrays";
-import * as FunboxList from "@monkeytype/funbox/list";
+import * as FunboxList from "@monkeytype/funbox";
 import { migrateConfig } from "./utils/config";
 import * as Dates from "date-fns";
 import {

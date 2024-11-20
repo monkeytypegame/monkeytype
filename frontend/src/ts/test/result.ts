@@ -18,7 +18,7 @@ import * as Strings from "../utils/strings";
 import * as Numbers from "@monkeytype/util/numbers";
 import * as Arrays from "../utils/arrays";
 import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
-import * as FunboxList from "@monkeytype/funbox/list";
+import * as FunboxList from "@monkeytype/funbox";
 import * as PbCrown from "./pb-crown";
 import * as TestConfig from "./test-config";
 import * as TestInput from "./test-input";

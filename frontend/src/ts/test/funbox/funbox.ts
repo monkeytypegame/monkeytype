@@ -19,10 +19,11 @@ import { FunboxWordsFrequency, Wordset } from "../wordset";
 import { HighlightMode } from "@monkeytype/contracts/schemas/configs";
 import { Mode } from "@monkeytype/contracts/schemas/shared";
 import { randomIntFromRange } from "@monkeytype/util/numbers";
-import * as FunboxList from "@monkeytype/funbox/list";
+import * as FunboxList from "@monkeytype/funbox";
 import * as FunboxFunctions from "./funbox-functions";
 import { checkCompatibility } from "@monkeytype/funbox/validation";
 import { stringToFunboxNames } from "@monkeytype/funbox/util";
+import { FunboxName } from "@monkeytype/funbox/types";
 
 export function toggleScript(...params: string[]): void {
   if (Config.funbox === "none") return;
@@ -43,7 +44,7 @@ export function setFunbox(funbox: string): boolean {
   return true;
 }
 
-export function toggleFunbox(funbox: "none" | FunboxList.FunboxName): boolean {
+export function toggleFunbox(funbox: "none" | FunboxName): boolean {
   if (funbox === "none") setFunbox("none");
   if (
     !checkCompatibility(

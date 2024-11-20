@@ -52,7 +52,7 @@ import { Auth, isAuthenticated } from "../firebase";
 import * as AdController from "../controllers/ad-controller";
 import * as TestConfig from "./test-config";
 import * as ConnectionState from "../states/connection";
-import * as FunboxList from "@monkeytype/funbox/list";
+import * as FunboxList from "@monkeytype/funbox";
 import * as FunboxFunctions from "./funbox/funbox-functions";
 import * as MemoryFunboxTimer from "./funbox/memory-funbox-timer";
 import * as KeymapEvent from "../observables/keymap-event";

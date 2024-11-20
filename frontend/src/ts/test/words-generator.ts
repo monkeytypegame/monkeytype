@@ -1,5 +1,5 @@
 import Config, * as UpdateConfig from "../config";
-import * as FunboxList from "@monkeytype/funbox/list";
+import * as FunboxList from "@monkeytype/funbox";
 import * as FunboxFunctions from "./funbox/funbox-functions";
 import * as CustomText from "./custom-text";
 import * as Wordset from "./wordset";

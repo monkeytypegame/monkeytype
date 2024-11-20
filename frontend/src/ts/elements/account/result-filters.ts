@@ -16,7 +16,7 @@ import {
 } from "@monkeytype/contracts/schemas/users";
 import { LocalStorageWithSchema } from "../../utils/local-storage-with-schema";
 import defaultResultFilters from "../../constants/default-result-filters";
-import { getAllFunboxes } from "@monkeytype/funbox/list";
+import { getList as getAllFunboxes } from "@monkeytype/funbox/list";
 
 export function mergeWithDefaultFilters(
   filters: Partial<ResultFilters>

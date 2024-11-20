@@ -3,7 +3,7 @@ import Config from "../config";
 import * as Strings from "../utils/strings";
 import * as TestInput from "./test-input";
 import * as TestWords from "./test-words";
-import * as FunboxList from "@monkeytype/funbox/list";
+import * as FunboxList from "@monkeytype/funbox";
 import * as TestState from "./test-state";
 import * as Numbers from "@monkeytype/util/numbers";
 import {

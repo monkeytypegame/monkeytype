@@ -5,7 +5,7 @@ import {
   PersonalBests,
 } from "@monkeytype/contracts/schemas/shared";
 import { Result as ResultType } from "@monkeytype/contracts/schemas/results";
-import { getByHashSeparatedString } from "@monkeytype/funbox/list";
+import { getByHashSeparatedString } from "@monkeytype/funbox";
 
 export type LbPersonalBests = {
   time: Record<number, Record<string, PersonalBest>>;

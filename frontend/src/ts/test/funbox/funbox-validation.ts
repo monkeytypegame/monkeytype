@@ -1,4 +1,4 @@
-import * as FunboxList from "@monkeytype/funbox/list";
+import * as FunboxList from "@monkeytype/funbox";
 import * as Notifications from "../../elements/notifications";
 import * as Strings from "../../utils/strings";
 import { Config, ConfigValue } from "@monkeytype/contracts/schemas/configs";
