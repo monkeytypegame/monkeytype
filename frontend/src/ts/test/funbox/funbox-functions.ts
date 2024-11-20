@@ -1,4 +1,4 @@
-import { FunboxName } from "@monkeytype/funbox/list";
+import { FunboxName } from "@monkeytype/funbox/types";
 import { Section } from "../../utils/json-data";
 import { FunboxWordsFrequency, Wordset } from "../wordset";
 import * as GetText from "../../utils/generate";
