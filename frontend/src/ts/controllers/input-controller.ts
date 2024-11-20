@@ -904,8 +904,15 @@ $(document).on("keydown", async (event) => {
     console.debug(
       `Key ${event.key} is on the list of ignored keys. Stopping keydown event.`
     );
+    event.preventDefault();
     return;
   }
+
+  FunboxList.get(Config.funbox).forEach((value) => {
+    if (value.functions?.handleKeydown) {
+      void value.functions?.handleKeydown(event);
+    }
+  });
 
   //autofocus
   const wordsFocused: boolean = $("#wordsInput").is(":focus");
