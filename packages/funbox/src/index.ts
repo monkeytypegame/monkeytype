@@ -1,4 +1,4 @@
-import { getObject } from "./list";
+import { getList, getObject } from "./list";
 import { FunboxMetadata, FunboxName } from "./types";
 import { stringToFunboxNames } from "./util";
 
@@ -29,4 +29,8 @@ export function get(
 
     return out;
   }
+}
+
+export function getAllFunboxes(): FunboxMetadata[] {
+  return getList();
 }

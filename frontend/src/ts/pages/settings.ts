@@ -26,7 +26,7 @@ import {
 } from "@monkeytype/contracts/schemas/configs";
 import { checkCompatibility } from "@monkeytype/funbox/validation";
 import { stringToFunboxNames } from "@monkeytype/funbox/util";
-import { getList as getAllFunboxes } from "@monkeytype/funbox/list";
+import { getAllFunboxes } from "@monkeytype/funbox";
 import { FunboxName } from "@monkeytype/funbox/types";
 
 type SettingsGroups<T extends ConfigValue> = Record<string, SettingsGroup<T>>;

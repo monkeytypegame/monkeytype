@@ -2,7 +2,7 @@ import * as Funbox from "../../test/funbox/funbox";
 import * as TestLogic from "../../test/test-logic";
 import * as ManualRestart from "../../test/manual-restart-tracker";
 import Config from "../../config";
-import { getList as getAllFunboxes } from "@monkeytype/funbox/list";
+import { getAllFunboxes } from "@monkeytype/funbox";
 import { Command, CommandsSubgroup } from "../types";
 import { checkCompatibility } from "@monkeytype/funbox/validation";
 import { stringToFunboxNames } from "@monkeytype/funbox/util";

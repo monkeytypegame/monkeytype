@@ -426,6 +426,6 @@ export function getList(): FunboxMetadata[] {
   return out;
 }
 
-export function getFunboxNames(): FunboxName[] {
+function getFunboxNames(): FunboxName[] {
   return Object.keys(list) as FunboxName[];
 }
