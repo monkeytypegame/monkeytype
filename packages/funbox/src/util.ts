@@ -1,4 +1,5 @@
-import { FunboxName, getAllFunboxNames } from "./list";
+import { getAllFunboxNames } from "./list";
+import { FunboxName } from "./types";
 
 export function stringToFunboxNames(names: string): FunboxName[] {
   if (names === "none" || names === "") return [];
