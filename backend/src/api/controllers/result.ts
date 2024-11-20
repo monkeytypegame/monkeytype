@@ -57,7 +57,7 @@ import {
 } from "@monkeytype/util/date-and-time";
 import { MonkeyRequest } from "../types";
 import { checkCompatibility } from "@monkeytype/funbox/validation";
-import { get as getFunbox } from "@monkeytype/funbox";
+import { getFunbox as getFunbox } from "@monkeytype/funbox";
 import { stringToFunboxNames } from "@monkeytype/funbox/util";
 
 try {

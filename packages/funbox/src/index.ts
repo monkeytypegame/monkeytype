@@ -3,12 +3,12 @@ import { FunboxMetadata, FunboxName } from "./types";
 import { stringToFunboxNames } from "./util";
 
 export function getByHashSeparatedString(names: string): FunboxMetadata[] {
-  return get(stringToFunboxNames(names));
+  return getFunbox(stringToFunboxNames(names));
 }
 
-export function get(name: FunboxName): FunboxMetadata;
-export function get(names: FunboxName[]): FunboxMetadata[];
-export function get(
+export function getFunbox(name: FunboxName): FunboxMetadata;
+export function getFunbox(names: FunboxName[]): FunboxMetadata[];
+export function getFunbox(
   nameOrNames: FunboxName | FunboxName[]
 ): FunboxMetadata | FunboxMetadata[] {
   if (Array.isArray(nameOrNames)) {

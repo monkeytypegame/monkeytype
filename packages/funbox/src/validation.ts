@@ -1,18 +1,20 @@
 import { intersect } from "@monkeytype/util/arrays";
 import { FunboxForcedConfig, FunboxName } from "./types";
-import { get } from ".";
+import { getFunbox } from ".";
 
 export function checkCompatibility(
   funboxNames: FunboxName[],
   withFunbox?: FunboxName
 ): boolean {
   if (withFunbox === undefined || funboxNames.length === 0) return true;
-  let funboxesToCheck = get(funboxNames);
+  let funboxesToCheck = getFunbox(funboxNames);
   if (withFunbox !== undefined) {
-    funboxesToCheck = funboxesToCheck.concat(get(withFunbox));
+    funboxesToCheck = funboxesToCheck.concat(getFunbox(withFunbox));
   }
 
-  const allFunboxesAreValid = get(funboxNames).every((f) => f !== undefined);
+  const allFunboxesAreValid = getFunbox(funboxNames).every(
+    (f) => f !== undefined
+  );
 
   const oneWordModifierMax =
     funboxesToCheck.filter(
