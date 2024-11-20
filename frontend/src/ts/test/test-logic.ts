@@ -108,7 +108,7 @@ export function startTest(now: number): boolean {
   TestTimer.clear();
   Monkey.show();
 
-  for (const fn of FunboxFunctions.get(stringToFunboxNames(Config.funbox))) {
+  for (const fn of FunboxFunctions.getActive()) {
     fn?.start?.();
   }
 

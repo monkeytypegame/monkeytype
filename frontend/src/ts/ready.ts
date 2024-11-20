@@ -1,4 +1,3 @@
-import Config from "./config";
 import * as Misc from "./utils/misc";
 import * as MonkeyPower from "./elements/monkey-power";
 import * as MerchBanner from "./elements/merch-banner";
@@ -9,7 +8,6 @@ import * as FunboxFunctions from "./test/funbox/funbox-functions";
 //@ts-expect-error
 import Konami from "konami";
 import * as ServerConfiguration from "./ape/server-configuration";
-import { stringToFunboxNames } from "@monkeytype/funbox/util";
 
 $((): void => {
   Misc.loadCSS("/css/slimselect.min.css", true);
@@ -22,7 +20,7 @@ $((): void => {
   $("body").css("transition", "background .25s, transform .05s");
   MerchBanner.showIfNotClosedBefore();
   setTimeout(() => {
-    for (const fn of FunboxFunctions.get(stringToFunboxNames(Config.funbox))) {
+    for (const fn of FunboxFunctions.getActive()) {
       fn?.applyConfig?.();
     }
   }, 500); //this approach will probably bite me in the ass at some point

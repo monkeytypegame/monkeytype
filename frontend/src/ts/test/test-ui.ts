@@ -333,7 +333,7 @@ function getWordHTML(word: string): string {
   let retval = `<div class='word'>`;
 
   let funboxGetWordFn = undefined;
-  for (const fn of FunboxFunctions.get(stringToFunboxNames(Config.funbox))) {
+  for (const fn of FunboxFunctions.getActive()) {
     if (fn?.getWordHtml) {
       funboxGetWordFn = fn.getWordHtml;
     }
@@ -648,7 +648,7 @@ export async function screenshot(): Promise<void> {
     }
     (document.querySelector("html") as HTMLElement).style.scrollBehavior =
       "smooth";
-    for (const fn of FunboxFunctions.get(stringToFunboxNames(Config.funbox))) {
+    for (const fn of FunboxFunctions.getActive()) {
       fn?.applyGlobalCSS?.();
     }
   }
@@ -690,7 +690,7 @@ export async function screenshot(): Promise<void> {
   $(".highlightContainer").addClass("hidden");
   if (revertCookie) $("#cookiesModal").addClass("hidden");
 
-  for (const fn of FunboxFunctions.get(stringToFunboxNames(Config.funbox))) {
+  for (const fn of FunboxFunctions.getActive()) {
     fn?.clearGlobal?.();
   }
 

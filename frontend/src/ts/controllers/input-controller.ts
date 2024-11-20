@@ -200,7 +200,7 @@ async function handleSpace(): Promise<void> {
 
   const currentWord: string = TestWords.words.getCurrent();
 
-  for (const fn of FunboxFunctions.get(stringToFunboxNames(Config.funbox))) {
+  for (const fn of FunboxFunctions.getActive()) {
     fn?.handleSpace?.();
   }
 
@@ -499,7 +499,7 @@ function handleChar(
 
   const isCharKorean: boolean = TestInput.input.getKoreanStatus();
 
-  for (const fn of FunboxFunctions.get(stringToFunboxNames(Config.funbox))) {
+  for (const fn of FunboxFunctions.getActive()) {
     if (fn?.handleChar) {
       char = fn.handleChar(char);
     }
@@ -912,7 +912,7 @@ $(document).on("keydown", async (event) => {
     return;
   }
 
-  for (const fn of FunboxFunctions.get(stringToFunboxNames(Config.funbox))) {
+  for (const fn of FunboxFunctions.getActive()) {
     if (fn?.handleKeydown) {
       await fn.handleKeydown(event);
     }

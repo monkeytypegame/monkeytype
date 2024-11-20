@@ -568,14 +568,14 @@ async function readAheadHandleKeydown(
 export function toggleScript(...params: string[]): void {
   if (Config.funbox === "none") return;
 
-  for (const fns of FunboxFunctions.get(stringToFunboxNames(Config.funbox))) {
+  for (const fns of FunboxFunctions.getActive()) {
     fns?.toggleScript?.(params);
   }
 }
 
 export function setFunbox(funbox: string): boolean {
   if (funbox === "none") {
-    for (const fns of FunboxFunctions.get(stringToFunboxNames(Config.funbox))) {
+    for (const fns of FunboxFunctions.getActive()) {
       fns?.clearGlobal?.();
     }
   }
@@ -604,7 +604,7 @@ export function toggleFunbox(funbox: "none" | FunboxList.FunboxName): boolean {
   FunboxMemory.load();
   const e = UpdateConfig.toggleFunbox(funbox, false);
 
-  for (const fns of FunboxFunctions.get(stringToFunboxNames(Config.funbox))) {
+  for (const fns of FunboxFunctions.getActive()) {
     if (!Config.funbox.includes(funbox)) {
       fns?.clearGlobal?.();
     } else {
@@ -751,7 +751,7 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
   }
 
   ManualRestart.set();
-  for (const fns of FunboxFunctions.get(stringToFunboxNames(Config.funbox))) {
+  for (const fns of FunboxFunctions.getActive()) {
     fns?.applyConfig?.();
   }
   // ModesNotice.update();
@@ -759,7 +759,7 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
 }
 
 export async function rememberSettings(): Promise<void> {
-  for (const fns of FunboxFunctions.get(stringToFunboxNames(Config.funbox))) {
+  for (const fns of FunboxFunctions.getActive()) {
     fns?.rememberSettings?.();
   }
 }

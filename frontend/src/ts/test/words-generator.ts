@@ -37,9 +37,7 @@ export async function punctuateWord(
 
   const lastChar = Strings.getLastChar(previousWord);
 
-  const funbox = FunboxFunctions.get(stringToFunboxNames(Config.funbox))?.find(
-    (fns) => fns?.punctuateWord
-  );
+  const funbox = FunboxFunctions.getActive()?.find((fns) => fns?.punctuateWord);
 
   if (funbox?.punctuateWord) {
     return funbox.punctuateWord(word);
@@ -349,9 +347,7 @@ function getFunboxWord(
   wordIndex: number,
   wordset?: Wordset.Wordset
 ): string {
-  const funbox = FunboxFunctions.get(stringToFunboxNames(Config.funbox))?.find(
-    (fns) => fns?.getWord
-  );
+  const funbox = FunboxFunctions.getActive()?.find((fns) => fns?.getWord);
 
   if (funbox?.getWord) {
     word = funbox.getWord(wordset, wordIndex);
@@ -360,8 +356,7 @@ function getFunboxWord(
 }
 
 function applyFunboxesToWord(word: string): string {
-  for (const f of FunboxFunctions.get(stringToFunboxNames(Config.funbox)) ??
-    []) {
+  for (const f of FunboxFunctions.getActive() ?? []) {
     if (f?.alterText) {
       word = f.alterText(word);
     }

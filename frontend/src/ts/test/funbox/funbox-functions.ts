@@ -8,6 +8,7 @@ import * as Strings from "../../utils/strings";
 import { randomIntFromRange } from "@monkeytype/util/numbers";
 import * as Arrays from "../../utils/arrays";
 import { save } from "./funbox-memory";
+import { stringToFunboxNames } from "@monkeytype/funbox/util";
 
 //todo figure out how to connect these frontend function names with the ones defined in the shared package
 //currently there is nothing ensuring these names match up
@@ -96,4 +97,8 @@ export function get(
   } else {
     return list[funboxNameOrNames];
   }
+}
+
+export function getActive(): (FunboxFunctions | undefined)[] {
+  return get(stringToFunboxNames(Config.funbox));
 }
