@@ -315,7 +315,7 @@ function getFunboxWordsFrequency(): Wordset.FunboxWordsFrequency | undefined {
 async function getFunboxSection(): Promise<string[]> {
   const ret = [];
 
-  const funbox = FunboxList.getByHashSeparatedString(Config.funbox)
+  const funbox = FunboxList.getFunboxesFromString(Config.funbox)
     .map((f) => {
       return {
         metadata: f,
@@ -391,7 +391,7 @@ function applyLazyModeToWord(word: string, language: LanguageObject): string {
 
 export function getWordOrder(): FunboxWordOrder {
   const wordOrder =
-    FunboxList.getByHashSeparatedString(Config.funbox)
+    FunboxList.getFunboxesFromString(Config.funbox)
       .find((f) => f.properties?.find((fp) => fp.startsWith("wordOrder")))
       ?.properties?.find((fp) => fp.startsWith("wordOrder")) ?? "";
 
@@ -416,7 +416,7 @@ export function getWordsLimit(): number {
   }
 
   const funboxToPush =
-    FunboxList.getByHashSeparatedString(Config.funbox)
+    FunboxList.getFunboxesFromString(Config.funbox)
       .find((f) => f.properties?.find((fp) => fp.startsWith("toPush")))
       ?.properties?.find((fp) => fp.startsWith("toPush:")) ?? "";
 

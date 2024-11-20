@@ -65,10 +65,7 @@ import {
   CustomTextDataWithTextLen,
 } from "@monkeytype/contracts/schemas/results";
 import * as XPBar from "../elements/xp-bar";
-import {
-  getByHashSeparatedString,
-  stringToFunboxNames,
-} from "@monkeytype/funbox";
+import { getFunboxesFromString, stringToFunboxNames } from "@monkeytype/funbox";
 
 let failReason = "";
 const koInputVisual = document.getElementById("koInputVisual") as HTMLElement;
@@ -546,7 +543,7 @@ export function areAllTestWordsGenerated(): boolean {
 //add word during the test
 export async function addWord(): Promise<void> {
   let bound = 100; // how many extra words to aim for AFTER the current word
-  const funboxToPush = getByHashSeparatedString(Config.funbox)
+  const funboxToPush = getFunboxesFromString(Config.funbox)
     .find((f) => f.properties?.find((fp) => fp.startsWith("toPush")))
     ?.properties?.find((fp) => fp.startsWith("toPush:"));
   const toPushCount = funboxToPush?.split(":")[1];
@@ -558,7 +555,7 @@ export async function addWord(): Promise<void> {
     return;
   }
 
-  for (const funbox of getByHashSeparatedString(Config.funbox)) {
+  for (const funbox of getFunboxesFromString(Config.funbox)) {
     const fn = FunboxFunctions.get(funbox.name);
 
     if (fn?.pullSection) {

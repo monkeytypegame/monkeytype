@@ -148,7 +148,7 @@ function backspaceToPrevious(): void {
   TestInput.input.current = TestInput.input.popHistory();
   TestInput.corrected.popHistory();
   if (
-    FunboxList.getByHashSeparatedString(Config.funbox).find((f) =>
+    FunboxList.getFunboxesFromString(Config.funbox).find((f) =>
       f.properties?.includes("nospace")
     )
   ) {
@@ -211,7 +211,7 @@ async function handleSpace(): Promise<void> {
   TestInput.pushBurstToHistory(burst);
 
   const nospace =
-    FunboxList.getByHashSeparatedString(Config.funbox).find((f) =>
+    FunboxList.getFunboxesFromString(Config.funbox).find((f) =>
       f.properties?.includes("nospace")
     ) !== undefined;
 
@@ -506,7 +506,7 @@ function handleChar(
   }
 
   const nospace =
-    FunboxList.getByHashSeparatedString(Config.funbox).find((f) =>
+    FunboxList.getFunboxesFromString(Config.funbox).find((f) =>
       f.properties?.includes("nospace")
     ) !== undefined;
 
@@ -1165,7 +1165,7 @@ $(document).on("keydown", async (event) => {
     }
   }
 
-  for (const f of FunboxList.getByHashSeparatedString(Config.funbox)) {
+  for (const f of FunboxList.getFunboxesFromString(Config.funbox)) {
     const fn = FunboxFunctions.get(f.name);
     if (fn?.preventDefaultEvent) {
       if (

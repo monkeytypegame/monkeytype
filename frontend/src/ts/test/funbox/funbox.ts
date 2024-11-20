@@ -143,7 +143,7 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
 
   if (language.ligatures) {
     if (
-      FunboxList.getByHashSeparatedString(Config.funbox).find((f) =>
+      FunboxList.getFunboxesFromString(Config.funbox).find((f) =>
         f.properties?.includes("noLigatures")
       )
     ) {
@@ -229,9 +229,9 @@ export async function rememberSettings(): Promise<void> {
 async function setFunboxBodyClasses(): Promise<boolean> {
   const $body = $("body");
 
-  const activeFbClasses = FunboxList.getByHashSeparatedString(
-    Config.funbox
-  ).map((it) => "fb-" + it.name.replaceAll("_", "-"));
+  const activeFbClasses = FunboxList.getFunboxesFromString(Config.funbox).map(
+    (it) => "fb-" + it.name.replaceAll("_", "-")
+  );
 
   const currentClasses =
     $body
@@ -248,7 +248,7 @@ async function applyFunboxCSS(): Promise<boolean> {
   const $theme = $("#funBoxTheme");
 
   //currently we only support one active funbox with hasCSS
-  const activeFunboxWithTheme = FunboxList.getByHashSeparatedString(
+  const activeFunboxWithTheme = FunboxList.getFunboxesFromString(
     Config.funbox
   ).find((it) => it?.properties?.includes("hasCssFile"));
 

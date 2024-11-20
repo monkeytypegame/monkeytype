@@ -706,7 +706,7 @@ export async function getLocalPB<M extends Mode>(
   lazyMode: boolean,
   funbox: string
 ): Promise<PersonalBest | undefined> {
-  const funboxes = FunboxList.getByHashSeparatedString(funbox);
+  const funboxes = FunboxList.getFunboxesFromString(funbox);
 
   if (!funboxes.every((f) => f.canGetPb)) {
     return undefined;

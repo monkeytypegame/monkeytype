@@ -127,7 +127,7 @@ async function updateGraph(): Promise<void> {
   const fc = await ThemeColors.get("sub");
   if (Config.funbox !== "none") {
     let content = "";
-    for (const f of FunboxList.getByHashSeparatedString(Config.funbox)) {
+    for (const f of FunboxList.getFunboxesFromString(Config.funbox)) {
       content += f.name;
       const fn = FunboxFunctions.get(f.name);
       if (fn?.getResultContent) {
@@ -475,7 +475,7 @@ type CanGetPbObject =
 
 async function resultCanGetPb(): Promise<CanGetPbObject> {
   const funboxes = result.funbox?.split("#") ?? [];
-  const funboxObjects = FunboxList.getByHashSeparatedString(result.funbox);
+  const funboxObjects = FunboxList.getFunboxesFromString(result.funbox);
   const allFunboxesCanGetPb = funboxObjects.every((f) => f?.canGetPb);
 
   const funboxesOk =
@@ -677,7 +677,7 @@ function updateTestType(randomQuote: Quote | null): void {
     }
   }
   const ignoresLanguage =
-    FunboxList.getByHashSeparatedString(Config.funbox).find((f) =>
+    FunboxList.getFunboxesFromString(Config.funbox).find((f) =>
       f.properties?.includes("ignoresLanguage")
     ) !== undefined;
   if (Config.mode !== "custom" && !ignoresLanguage) {

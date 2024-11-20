@@ -6,7 +6,7 @@ import { checkCompatibility } from "./validation";
 export type { FunboxName };
 export { checkCompatibility, stringToFunboxNames, getFunbox };
 
-export function getByHashSeparatedString(names: string): FunboxMetadata[] {
+export function getFunboxesFromString(names: string): FunboxMetadata[] {
   return getFunbox(stringToFunboxNames(names));
 }
 

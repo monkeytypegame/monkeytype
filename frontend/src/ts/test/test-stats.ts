@@ -351,7 +351,7 @@ function countChars(): CharCount {
     }
   }
   if (
-    FunboxList.getByHashSeparatedString(Config.funbox).find((f) =>
+    FunboxList.getFunboxesFromString(Config.funbox).find((f) =>
       f.properties?.includes("nospace")
     )
   ) {
