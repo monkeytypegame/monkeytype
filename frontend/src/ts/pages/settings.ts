@@ -24,12 +24,9 @@ import {
   ConfigValue,
   CustomLayoutFluid,
 } from "@monkeytype/contracts/schemas/configs";
-import {
-  FunboxName,
-  getAllFunboxes,
-  getFunboxNames,
-} from "@monkeytype/funbox/list";
+import { FunboxName, getAllFunboxes } from "@monkeytype/funbox/list";
 import { checkCompatibility } from "@monkeytype/funbox/validation";
+import { stringToFunboxNames } from "@monkeytype/funbox/util";
 
 type SettingsGroups<T extends ConfigValue> = Record<string, SettingsGroup<T>>;
 
@@ -726,7 +723,7 @@ function setActiveFunboxButton(): void {
   );
   getAllFunboxes().forEach((funbox) => {
     if (
-      !checkCompatibility(getFunboxNames(Config.funbox), funbox.name) &&
+      !checkCompatibility(stringToFunboxNames(Config.funbox), funbox.name) &&
       !Config.funbox.split("#").includes(funbox.name)
     ) {
       $(

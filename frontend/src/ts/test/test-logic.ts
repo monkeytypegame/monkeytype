@@ -66,6 +66,7 @@ import {
   CustomTextDataWithTextLen,
 } from "@monkeytype/contracts/schemas/results";
 import * as XPBar from "../elements/xp-bar";
+import { stringToFunboxNames } from "@monkeytype/funbox/util";
 
 let failReason = "";
 const koInputVisual = document.getElementById("koInputVisual") as HTMLElement;
@@ -107,9 +108,7 @@ export function startTest(now: number): boolean {
   TestTimer.clear();
   Monkey.show();
 
-  for (const fn of FunboxFunctions.get(
-    FunboxList.getFunboxNames(Config.funbox)
-  )) {
+  for (const fn of FunboxFunctions.get(stringToFunboxNames(Config.funbox))) {
     fn?.start?.();
   }
 
@@ -332,7 +331,7 @@ export function restart(options = {} as RestartOptions): void {
       await PaceCaret.init();
 
       for (const fn of FunboxFunctions.get(
-        FunboxList.getFunboxNames(Config.funbox)
+        stringToFunboxNames(Config.funbox)
       )) {
         fn?.restart?.();
       }

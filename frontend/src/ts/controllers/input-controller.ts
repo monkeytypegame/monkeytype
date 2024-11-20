@@ -37,6 +37,7 @@ import { ModifierKeys } from "../constants/modifier-keys";
 import { navigate } from "./route-controller";
 import * as Loader from "../elements/loader";
 import * as KeyConverter from "../utils/key-converter";
+import { stringToFunboxNames } from "@monkeytype/funbox/util";
 
 let dontInsertSpace = false;
 let correctShiftUsed = true;
@@ -199,9 +200,7 @@ async function handleSpace(): Promise<void> {
 
   const currentWord: string = TestWords.words.getCurrent();
 
-  for (const fn of FunboxFunctions.get(
-    FunboxList.getFunboxNames(Config.funbox)
-  )) {
+  for (const fn of FunboxFunctions.get(stringToFunboxNames(Config.funbox))) {
     fn?.handleSpace?.();
   }
 
@@ -415,7 +414,7 @@ function isCharCorrect(char: string, charIndex: number): boolean {
   }
 
   const funboxFunctions = FunboxFunctions.get(
-    FunboxList.getFunboxNames(Config.funbox)
+    stringToFunboxNames(Config.funbox)
   )?.find((fns) => fns?.isCharCorrect);
   if (funboxFunctions?.isCharCorrect) {
     return funboxFunctions.isCharCorrect(char, originalChar);
@@ -500,9 +499,7 @@ function handleChar(
 
   const isCharKorean: boolean = TestInput.input.getKoreanStatus();
 
-  for (const fn of FunboxFunctions.get(
-    FunboxList.getFunboxNames(Config.funbox)
-  )) {
+  for (const fn of FunboxFunctions.get(stringToFunboxNames(Config.funbox))) {
     if (fn?.handleChar) {
       char = fn.handleChar(char);
     }
@@ -915,9 +912,7 @@ $(document).on("keydown", async (event) => {
     return;
   }
 
-  for (const fn of FunboxFunctions.get(
-    FunboxList.getFunboxNames(Config.funbox)
-  )) {
+  for (const fn of FunboxFunctions.get(stringToFunboxNames(Config.funbox))) {
     if (fn?.handleKeydown) {
       await fn.handleKeydown(event);
     }

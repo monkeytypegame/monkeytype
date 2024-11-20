@@ -1,3 +1,5 @@
+import { stringToFunboxNames } from "./util";
+
 export type FunboxName = "58008" | "mirror" | "upside_down";
 
 export type FunboxForcedConfig = Record<string, string[] | boolean[]>;
@@ -65,22 +67,8 @@ const list: Record<FunboxName, FunboxMetadata> = {
   },
 };
 
-export function getFunboxNames(names: string): FunboxName[] {
-  if (names === "none" || names === "") return [];
-  const unsafeNames = names.split("#").map((name) => name.trim());
-  const out: FunboxName[] = [];
-  for (const unsafeName of unsafeNames) {
-    if (unsafeName in list) {
-      out.push(unsafeName as FunboxName);
-    } else {
-      throw new Error("Invalid funbox name: " + unsafeName);
-    }
-  }
-  return out;
-}
-
 export function getByHashSeparatedString(names: string): FunboxMetadata[] {
-  return get(getFunboxNames(names));
+  return get(stringToFunboxNames(names));
 }
 
 export function get(name: FunboxName): FunboxMetadata;
@@ -109,9 +97,13 @@ export function get(
 }
 
 export function getAllFunboxes(): FunboxMetadata[] {
-  const out = [];
-  for (const name in list) {
-    out.push(list[name as FunboxName]);
+  const out: FunboxMetadata[] = [];
+  for (const name of getAllFunboxNames()) {
+    out.push(list[name]);
   }
   return out;
+}
+
+export function getAllFunboxNames(): FunboxName[] {
+  return Object.keys(list) as FunboxName[];
 }

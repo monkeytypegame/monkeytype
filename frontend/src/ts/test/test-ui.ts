@@ -19,7 +19,6 @@ import * as ConfigEvent from "../observables/config-event";
 import * as Hangul from "hangul-js";
 import { format } from "date-fns/format";
 import { isAuthenticated } from "../firebase";
-import * as FunboxList from "@monkeytype/funbox/list";
 import * as FunboxFunctions from "./funbox/funbox-functions";
 import { debounce } from "throttle-debounce";
 import * as ResultWordHighlight from "../elements/result-word-highlight";
@@ -32,6 +31,7 @@ import {
   TimerOpacity,
 } from "@monkeytype/contracts/schemas/configs";
 import { convertRemToPixels } from "../utils/numbers";
+import { stringToFunboxNames } from "@monkeytype/funbox/util";
 
 async function gethtml2canvas(): Promise<typeof import("html2canvas").default> {
   return (await import("html2canvas")).default;
@@ -333,9 +333,7 @@ function getWordHTML(word: string): string {
   let retval = `<div class='word'>`;
 
   let funboxGetWordFn = undefined;
-  for (const fn of FunboxFunctions.get(
-    FunboxList.getFunboxNames(Config.funbox)
-  )) {
+  for (const fn of FunboxFunctions.get(stringToFunboxNames(Config.funbox))) {
     if (fn?.getWordHtml) {
       funboxGetWordFn = fn.getWordHtml;
     }
@@ -650,9 +648,7 @@ export async function screenshot(): Promise<void> {
     }
     (document.querySelector("html") as HTMLElement).style.scrollBehavior =
       "smooth";
-    for (const fn of FunboxFunctions.get(
-      FunboxList.getFunboxNames(Config.funbox)
-    )) {
+    for (const fn of FunboxFunctions.get(stringToFunboxNames(Config.funbox))) {
       fn?.applyGlobalCSS?.();
     }
   }
@@ -694,9 +690,7 @@ export async function screenshot(): Promise<void> {
   $(".highlightContainer").addClass("hidden");
   if (revertCookie) $("#cookiesModal").addClass("hidden");
 
-  for (const fn of FunboxFunctions.get(
-    FunboxList.getFunboxNames(Config.funbox)
-  )) {
+  for (const fn of FunboxFunctions.get(stringToFunboxNames(Config.funbox))) {
     fn?.clearGlobal?.();
   }
 
@@ -846,7 +840,7 @@ export async function updateActiveWordLetters(
     }
 
     const funboxFunctions = FunboxFunctions.get(
-      FunboxList.getFunboxNames(Config.funbox)
+      stringToFunboxNames(Config.funbox)
     )?.find((fns) => fns?.getWordHtml);
 
     const inputChars = Strings.splitIntoCharacters(input);

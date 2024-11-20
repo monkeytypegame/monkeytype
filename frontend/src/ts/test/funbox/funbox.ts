@@ -30,6 +30,7 @@ import { randomIntFromRange } from "@monkeytype/util/numbers";
 import * as FunboxList from "@monkeytype/funbox/list";
 import * as FunboxFunctions from "./funbox-functions";
 import { checkCompatibility } from "@monkeytype/funbox/validation";
+import { stringToFunboxNames } from "@monkeytype/funbox/util";
 
 const prefixSize = 2;
 
@@ -567,18 +568,14 @@ async function readAheadHandleKeydown(
 export function toggleScript(...params: string[]): void {
   if (Config.funbox === "none") return;
 
-  for (const fns of FunboxFunctions.get(
-    FunboxList.getFunboxNames(Config.funbox)
-  )) {
+  for (const fns of FunboxFunctions.get(stringToFunboxNames(Config.funbox))) {
     fns?.toggleScript?.(params);
   }
 }
 
 export function setFunbox(funbox: string): boolean {
   if (funbox === "none") {
-    for (const fns of FunboxFunctions.get(
-      FunboxList.getFunboxNames(Config.funbox)
-    )) {
+    for (const fns of FunboxFunctions.get(stringToFunboxNames(Config.funbox))) {
       fns?.clearGlobal?.();
     }
   }
@@ -591,7 +588,7 @@ export function toggleFunbox(funbox: "none" | FunboxList.FunboxName): boolean {
   if (funbox === "none") setFunbox("none");
   if (
     !checkCompatibility(
-      FunboxList.getFunboxNames(Config.funbox),
+      stringToFunboxNames(Config.funbox),
       funbox === "none" ? undefined : funbox
     ) &&
     !Config.funbox.split("#").includes(funbox)
@@ -607,9 +604,7 @@ export function toggleFunbox(funbox: "none" | FunboxList.FunboxName): boolean {
   FunboxMemory.load();
   const e = UpdateConfig.toggleFunbox(funbox, false);
 
-  for (const fns of FunboxFunctions.get(
-    FunboxList.getFunboxNames(Config.funbox)
-  )) {
+  for (const fns of FunboxFunctions.get(stringToFunboxNames(Config.funbox))) {
     if (!Config.funbox.includes(funbox)) {
       fns?.clearGlobal?.();
     } else {
@@ -649,7 +644,7 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
 
   // The configuration might be edited with dev tools,
   // so we need to double check its validity
-  if (!checkCompatibility(FunboxList.getFunboxNames(Config.funbox))) {
+  if (!checkCompatibility(stringToFunboxNames(Config.funbox))) {
     Notifications.add(
       Misc.createErrorMessage(
         undefined,
@@ -756,9 +751,7 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
   }
 
   ManualRestart.set();
-  for (const fns of FunboxFunctions.get(
-    FunboxList.getFunboxNames(Config.funbox)
-  )) {
+  for (const fns of FunboxFunctions.get(stringToFunboxNames(Config.funbox))) {
     fns?.applyConfig?.();
   }
   // ModesNotice.update();
@@ -766,9 +759,7 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
 }
 
 export async function rememberSettings(): Promise<void> {
-  for (const fns of FunboxFunctions.get(
-    FunboxList.getFunboxNames(Config.funbox)
-  )) {
+  for (const fns of FunboxFunctions.get(stringToFunboxNames(Config.funbox))) {
     fns?.rememberSettings?.();
   }
 }
