@@ -1,6 +1,46 @@
 import { stringToFunboxNames } from "./util";
 
-export type FunboxName = "58008" | "mirror" | "upside_down";
+export type FunboxName =
+  | "58008"
+  | "mirror"
+  | "upside_down"
+  | "nausea"
+  | "round_round_baby"
+  | "simon_says"
+  | "tts"
+  | "choo_choo"
+  | "arrows"
+  | "rAnDoMcAsE"
+  | "capitals"
+  | "layoutfluid"
+  | "earthquake"
+  | "space_balls"
+  | "gibberish"
+  | "ascii"
+  | "specials"
+  | "plus_one"
+  | "plus_zero"
+  | "plus_two"
+  | "plus_three"
+  | "read_ahead_easy"
+  | "read_ahead"
+  | "read_ahead_hard"
+  | "memory"
+  | "nospace"
+  | "poetry"
+  | "wikipedia"
+  | "weakspot"
+  | "pseudolang"
+  | "IPv4"
+  | "IPv6"
+  | "binary"
+  | "hexadecimal"
+  | "zipf"
+  | "morse"
+  | "crt"
+  | "backwards"
+  | "ddoouubblleedd"
+  | "instant_messaging";
 
 export type FunboxForcedConfig = Record<string, string[] | boolean[]>;
 
@@ -20,7 +60,9 @@ type Property =
   | "speaks"
   | "unspeakable"
   | "noInfiniteDuration"
-  | "noLigatures";
+  | "noLigatures"
+  | `toPush:${number}`
+  | "wordOrder:reverse";
 
 export type FunboxMetadata = {
   name: FunboxName;
@@ -35,6 +77,7 @@ export type FunboxMetadata = {
 
 const list: Record<FunboxName, FunboxMetadata> = {
   "58008": {
+    description: "A special mode for accountants.",
     canGetPb: false,
     difficultyLevel: 1,
     properties: ["ignoresLanguage", "ignoresLayout", "noLetters"],
@@ -49,7 +92,6 @@ const list: Record<FunboxName, FunboxMetadata> = {
     ],
     name: "58008",
     alias: "numbers",
-    description: "A special mode for accountants.",
   },
   mirror: {
     name: "mirror",
@@ -64,6 +106,386 @@ const list: Record<FunboxName, FunboxMetadata> = {
     properties: ["hasCssFile"],
     canGetPb: true,
     difficultyLevel: 3,
+  },
+  nausea: {
+    name: "nausea",
+    description: "I think I'm gonna be sick.",
+    canGetPb: true,
+    difficultyLevel: 2,
+    frontendFunctions: ["applyCSS"],
+  },
+  round_round_baby: {
+    name: "round_round_baby",
+    description:
+      "...right round, like a record baby. Right, round round round.",
+    canGetPb: true,
+    difficultyLevel: 3,
+    frontendFunctions: ["applyCSS"],
+  },
+  simon_says: {
+    name: "simon_says",
+    description: "Type what simon says.",
+    canGetPb: true,
+    difficultyLevel: 1,
+    properties: ["changesWordsVisibility", "usesLayout"],
+    frontendForcedConfig: {
+      highlightMode: ["letter", "off"],
+    },
+    frontendFunctions: ["applyCSS", "applyConfig", "rememberSettings"],
+  },
+
+  tts: {
+    canGetPb: true,
+    difficultyLevel: 1,
+    properties: ["changesWordsVisibility", "speaks"],
+    frontendForcedConfig: {
+      highlightMode: ["letter", "off"],
+    },
+    frontendFunctions: [
+      "applyCSS",
+      "applyConfig",
+      "rememberSettings",
+      "toggleScript",
+    ],
+    name: "tts",
+    description: "Listen closely.",
+  },
+  choo_choo: {
+    canGetPb: true,
+    difficultyLevel: 2,
+    properties: ["noLigatures", "conflictsWithSymmetricChars"],
+    frontendFunctions: ["applyCSS"],
+    name: "choo_choo",
+    description: "All the letters are spinning!",
+  },
+  arrows: {
+    description: "Play it on a pad!",
+    canGetPb: false,
+    difficultyLevel: 1,
+    properties: [
+      "ignoresLanguage",
+      "ignoresLayout",
+      "nospace",
+      "noLetters",
+      "symmetricChars",
+    ],
+    frontendForcedConfig: {
+      punctuation: [false],
+      numbers: [false],
+      highlightMode: ["letter", "off"],
+    },
+    frontendFunctions: [
+      "getWord",
+      "applyConfig",
+      "rememberSettings",
+      "handleChar",
+      "isCharCorrect",
+      "preventDefaultEvent",
+      "getWordHtml",
+    ],
+    name: "arrows",
+  },
+  rAnDoMcAsE: {
+    description: "I kInDa LiKe HoW iNeFfIcIeNt QwErTy Is.",
+    canGetPb: false,
+    difficultyLevel: 2,
+    properties: ["changesCapitalisation"],
+    frontendFunctions: ["alterText"],
+    name: "rAnDoMcAsE",
+  },
+  capitals: {
+    description: "Capitalize Every Word.",
+    canGetPb: false,
+    difficultyLevel: 1,
+    properties: ["changesCapitalisation"],
+    frontendFunctions: ["alterText"],
+    name: "capitals",
+  },
+  layoutfluid: {
+    description:
+      "Switch between layouts specified below proportionately to the length of the test.",
+    canGetPb: true,
+    difficultyLevel: 1,
+    properties: ["changesLayout", "noInfiniteDuration"],
+    frontendFunctions: [
+      "applyConfig",
+      "rememberSettings",
+      "handleSpace",
+      "getResultContent",
+      "restart",
+    ],
+    name: "layoutfluid",
+  },
+  earthquake: {
+    description: "Everybody get down! The words are shaking!",
+    canGetPb: true,
+    difficultyLevel: 1,
+    properties: ["noLigatures"],
+    frontendFunctions: ["applyCSS"],
+    name: "earthquake",
+  },
+  space_balls: {
+    description: "In a galaxy far far away.",
+    canGetPb: true,
+    difficultyLevel: 0,
+    frontendFunctions: ["applyCSS"],
+    name: "space_balls",
+  },
+  gibberish: {
+    description: "Anvbuefl dizzs eoos alsb?",
+    canGetPb: false,
+    difficultyLevel: 1,
+    properties: ["ignoresLanguage", "unspeakable"],
+    frontendFunctions: ["getWord"],
+    name: "gibberish",
+  },
+  ascii: {
+    description: "Where was the ampersand again?. Only ASCII characters.",
+    canGetPb: false,
+    difficultyLevel: 1,
+    properties: ["ignoresLanguage", "noLetters", "unspeakable"],
+    frontendForcedConfig: {
+      punctuation: [false],
+      numbers: [false],
+    },
+    frontendFunctions: ["getWord"],
+    name: "ascii",
+  },
+  specials: {
+    description: "!@#$%^&*. Only special characters.",
+    canGetPb: false,
+    difficultyLevel: 1,
+    properties: ["ignoresLanguage", "noLetters", "unspeakable"],
+    frontendForcedConfig: {
+      punctuation: [false],
+      numbers: [false],
+    },
+    frontendFunctions: ["getWord"],
+    name: "specials",
+  },
+  plus_one: {
+    description: "Only one future word is visible.",
+    canGetPb: true,
+    difficultyLevel: 0,
+    properties: ["changesWordsVisibility", "toPush:2", "noInfiniteDuration"],
+    name: "plus_one",
+  },
+  plus_zero: {
+    description: "React quickly! Only the current word is visible.",
+    canGetPb: true,
+    difficultyLevel: 1,
+    properties: ["changesWordsVisibility", "toPush:1", "noInfiniteDuration"],
+    name: "plus_zero",
+  },
+  plus_two: {
+    description: "Only two future words are visible.",
+    canGetPb: true,
+    difficultyLevel: 0,
+    properties: ["changesWordsVisibility", "toPush:3", "noInfiniteDuration"],
+    name: "plus_two",
+  },
+  plus_three: {
+    description: "Only three future words are visible.",
+    canGetPb: true,
+    difficultyLevel: 0,
+    properties: ["changesWordsVisibility", "toPush:4", "noInfiniteDuration"],
+    name: "plus_three",
+  },
+  read_ahead_easy: {
+    description: "Only the current word is invisible.",
+    canGetPb: true,
+    difficultyLevel: 1,
+    properties: ["changesWordsVisibility"],
+    frontendForcedConfig: {
+      highlightMode: ["letter", "off"],
+    },
+    frontendFunctions: ["applyCSS", "rememberSettings", "handleKeydown"],
+    name: "read_ahead_easy",
+  },
+  read_ahead: {
+    description: "Current and the next word are invisible!",
+    canGetPb: true,
+    difficultyLevel: 2,
+    properties: ["changesWordsVisibility"],
+    frontendForcedConfig: {
+      highlightMode: ["letter", "off"],
+    },
+    frontendFunctions: ["applyCSS", "rememberSettings", "handleKeydown"],
+    name: "read_ahead",
+  },
+  read_ahead_hard: {
+    description: "Current and the next two words are invisible!",
+    canGetPb: true,
+    difficultyLevel: 3,
+    properties: ["changesWordsVisibility"],
+    frontendForcedConfig: {
+      highlightMode: ["letter", "off"],
+    },
+    frontendFunctions: ["applyCSS", "rememberSettings", "handleKeydown"],
+    name: "read_ahead_hard",
+  },
+  memory: {
+    description: "Test your memory. Remember the words and type them blind.",
+    canGetPb: true,
+    difficultyLevel: 3,
+    properties: ["changesWordsVisibility", "noInfiniteDuration"],
+    frontendForcedConfig: {
+      mode: ["words", "quote", "custom"],
+    },
+    frontendFunctions: ["applyConfig", "rememberSettings", "start", "restart"],
+    name: "memory",
+  },
+  nospace: {
+    description: "Whoneedsspacesanyway?",
+    canGetPb: false,
+    difficultyLevel: 0,
+    properties: ["nospace"],
+    frontendForcedConfig: {
+      highlightMode: ["letter", "off"],
+    },
+    frontendFunctions: ["applyConfig", "rememberSettings"],
+    name: "nospace",
+  },
+  poetry: {
+    description: "Practice typing some beautiful prose.",
+    canGetPb: false,
+    difficultyLevel: 0,
+    properties: ["noInfiniteDuration", "ignoresLanguage"],
+    frontendForcedConfig: {
+      punctuation: [false],
+      numbers: [false],
+    },
+    frontendFunctions: ["pullSection"],
+    name: "poetry",
+  },
+  wikipedia: {
+    description: "Practice typing wikipedia sections.",
+    canGetPb: false,
+    difficultyLevel: 0,
+    properties: ["noInfiniteDuration", "ignoresLanguage"],
+    frontendForcedConfig: {
+      punctuation: [false],
+      numbers: [false],
+    },
+    frontendFunctions: ["pullSection"],
+    name: "wikipedia",
+  },
+  weakspot: {
+    description: "Focus on slow and mistyped letters.",
+    canGetPb: false,
+    difficultyLevel: 0,
+    properties: ["changesWordsFrequency"],
+    frontendFunctions: ["getWord"],
+    name: "weakspot",
+  },
+  pseudolang: {
+    description: "Nonsense words that look like the current language.",
+    canGetPb: false,
+    difficultyLevel: 0,
+    properties: ["unspeakable", "ignoresLanguage"],
+    frontendFunctions: ["withWords"],
+    name: "pseudolang",
+  },
+  IPv4: {
+    alias: "network",
+    description: "For sysadmins.",
+    canGetPb: false,
+    difficultyLevel: 1,
+    properties: ["ignoresLanguage", "ignoresLayout", "noLetters"],
+    frontendForcedConfig: {
+      numbers: [false],
+    },
+    frontendFunctions: ["getWord", "punctuateWord", "rememberSettings"],
+    name: "IPv4",
+  },
+  IPv6: {
+    alias: "network",
+    description: "For sysadmins with a long beard.",
+    canGetPb: false,
+    difficultyLevel: 1,
+    properties: ["ignoresLanguage", "ignoresLayout", "noLetters"],
+    frontendForcedConfig: {
+      numbers: [false],
+    },
+    frontendFunctions: ["getWord", "punctuateWord", "rememberSettings"],
+    name: "IPv6",
+  },
+  binary: {
+    description:
+      "01000010 01100101 01100101 01110000 00100000 01100010 01101111 01101111 01110000 00101110",
+    canGetPb: false,
+    difficultyLevel: 1,
+    properties: ["ignoresLanguage", "ignoresLayout", "noLetters"],
+    frontendForcedConfig: {
+      numbers: [false],
+      punctuation: [false],
+    },
+    frontendFunctions: ["getWord"],
+    name: "binary",
+  },
+  hexadecimal: {
+    description:
+      "0x38 0x20 0x74 0x69 0x6D 0x65 0x73 0x20 0x6D 0x6F 0x72 0x65 0x20 0x62 0x6F 0x6F 0x70 0x21",
+    canGetPb: false,
+    difficultyLevel: 1,
+    properties: ["ignoresLanguage", "ignoresLayout", "noLetters"],
+    frontendForcedConfig: {
+      numbers: [false],
+    },
+    frontendFunctions: ["getWord", "punctuateWord", "rememberSettings"],
+    name: "hexadecimal",
+  },
+  zipf: {
+    description:
+      "Words are generated according to Zipf's law. (not all languages will produce Zipfy results, use with caution)",
+    canGetPb: false,
+    difficultyLevel: 0,
+    properties: ["changesWordsFrequency"],
+    frontendFunctions: ["getWordsFrequencyMode"],
+    name: "zipf",
+  },
+  morse: {
+    description: "-.../././.--./ -.../---/---/.--./-.-.--/ ",
+    canGetPb: false,
+    difficultyLevel: 1,
+    properties: ["ignoresLanguage", "ignoresLayout", "noLetters", "nospace"],
+    frontendFunctions: ["alterText"],
+    name: "morse",
+  },
+  crt: {
+    description: "Go back to the 1980s",
+    canGetPb: true,
+    difficultyLevel: 0,
+    properties: ["noLigatures"],
+    name: "crt",
+  },
+  backwards: {
+    description: "...sdrawkcab epyt ot yrt woN",
+    name: "backwards",
+    properties: [
+      "noLigatures",
+      "conflictsWithSymmetricChars",
+      "wordOrder:reverse",
+    ],
+    frontendFunctions: ["applyCSS"],
+    canGetPb: true,
+    difficultyLevel: 3,
+  },
+  ddoouubblleedd: {
+    description: "TTyyppee eevveerryytthhiinngg ttwwiiccee..",
+    canGetPb: true,
+    difficultyLevel: 1,
+    properties: ["noLigatures"],
+    frontendFunctions: ["alterText"],
+    name: "ddoouubblleedd",
+  },
+  instant_messaging: {
+    description: "Who needs shift anyway?",
+    canGetPb: false,
+    difficultyLevel: 1,
+    properties: ["changesCapitalisation"],
+    frontendFunctions: ["alterText"],
+    name: "instant_messaging",
   },
 };
 
