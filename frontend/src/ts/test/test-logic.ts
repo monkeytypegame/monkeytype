@@ -551,33 +551,37 @@ export async function addWord(): Promise<void> {
     return;
   }
 
-  for (const fb of Funbox.getActive()) {
-    if (fb.functions?.pullSection) {
-      if (TestWords.words.length - TestWords.words.currentIndex < 20) {
-        const section = await fb.functions.pullSection(Config.language);
+  const sectionFunbox = Funbox.getActive().find(
+    (f) => f.functions?.pullSection
+  );
 
-        if (section === false) {
-          Notifications.add(
-            "Error while getting section. Please try again later",
-            -1
-          );
-          UpdateConfig.toggleFunbox(fb.name);
-          restart();
-          return;
+  if (sectionFunbox?.functions?.pullSection) {
+    if (TestWords.words.length - TestWords.words.currentIndex < 20) {
+      const section = await sectionFunbox.functions.pullSection(
+        Config.language
+      );
+
+      if (section === false) {
+        Notifications.add(
+          "Error while getting section. Please try again later",
+          -1
+        );
+        UpdateConfig.toggleFunbox(sectionFunbox.name);
+        restart();
+        return;
+      }
+
+      if (section === undefined) return;
+
+      let wordCount = 0;
+      for (let i = 0; i < section.words.length; i++) {
+        const word = section.words[i] as string;
+        if (wordCount >= Config.words && Config.mode === "words") {
+          break;
         }
-
-        if (section === undefined) return;
-
-        let wordCount = 0;
-        for (let i = 0; i < section.words.length; i++) {
-          const word = section.words[i] as string;
-          if (wordCount >= Config.words && Config.mode === "words") {
-            break;
-          }
-          wordCount++;
-          TestWords.words.push(word, i);
-          TestUI.addWord(word);
-        }
+        wordCount++;
+        TestWords.words.push(word, i);
+        TestUI.addWord(word);
       }
     }
   }
