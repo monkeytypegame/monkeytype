@@ -42,7 +42,7 @@ export type FunboxName =
 
 export type FunboxForcedConfig = Record<string, string[] | boolean[]>;
 
-export type Property =
+export type FunboxProperty =
   | "hasCssFile"
   | "ignoresLanguage"
   | "ignoresLayout"
@@ -66,7 +66,7 @@ export type FunboxMetadata = {
   name: FunboxName;
   alias?: string;
   description: string;
-  properties?: Property[];
+  properties?: FunboxProperty[];
   frontendForcedConfig?: FunboxForcedConfig;
   frontendFunctions?: string[];
   difficultyLevel: number;
