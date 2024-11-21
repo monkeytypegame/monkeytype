@@ -1,4 +1,4 @@
-import * as FunboxList from "@monkeytype/funbox";
+import * as Funbox from "./funbox";
 import * as Notifications from "../../elements/notifications";
 import * as Strings from "../../utils/strings";
 import { Config, ConfigValue } from "@monkeytype/contracts/schemas/configs";
@@ -12,7 +12,7 @@ export function checkFunboxForcedConfigs(
   result: boolean;
   forcedConfigs?: ConfigValue[];
 } {
-  if (FunboxList.getFunboxesFromString(funbox).length === 0) {
+  if (Funbox.getFromString(funbox).length === 0) {
     return { result: true };
   }
 
@@ -21,7 +21,7 @@ export function checkFunboxForcedConfigs(
       if (funbox === "nospace") {
         console.log("break");
       }
-      const fb = FunboxList.getFunboxesFromString(funbox).filter((f) =>
+      const fb = Funbox.getFromString(funbox).filter((f) =>
         f.properties?.includes("noInfiniteDuration")
       );
       if (fb.length > 0) {
@@ -38,7 +38,7 @@ export function checkFunboxForcedConfigs(
   } else {
     const forcedConfigs: Record<string, ConfigValue[]> = {};
     // collect all forced configs
-    for (const fb of FunboxList.getFunboxesFromString(funbox)) {
+    for (const fb of Funbox.getFromString(funbox)) {
       if (fb.frontendForcedConfig) {
         //push keys to forcedConfigs, if they don't exist. if they do, intersect the values
         for (const key in fb.frontendForcedConfig) {
@@ -81,14 +81,14 @@ export function canSetConfigWithCurrentFunboxes(
 ): boolean {
   let errorCount = 0;
   if (key === "mode") {
-    let fb = FunboxList.getFunboxesFromString(funbox).filter(
+    let fb = Funbox.getFromString(funbox).filter(
       (f) =>
         f.frontendForcedConfig?.["mode"] !== undefined &&
         !(f.frontendForcedConfig["mode"] as ConfigValue[]).includes(value)
     );
     if (value === "zen") {
       fb = fb.concat(
-        FunboxList.getFunboxesFromString(funbox).filter((f) => {
+        Funbox.getFromString(funbox).filter((f) => {
           return (
             f.frontendFunctions?.includes("getWord") ??
             f.frontendFunctions?.includes("pullSection") ??
@@ -107,7 +107,7 @@ export function canSetConfigWithCurrentFunboxes(
     }
     if (value === "quote" || value === "custom") {
       fb = fb.concat(
-        FunboxList.getFunboxesFromString(funbox).filter((f) => {
+        Funbox.getFromString(funbox).filter((f) => {
           return (
             f.frontendFunctions?.includes("getWord") ??
             f.frontendFunctions?.includes("pullSection") ??

@@ -52,6 +52,12 @@ export function get(
   }
 }
 
+export function getFromString(
+  hashSeparatedFunboxes: string
+): FunboxMetadataWithFunctions[] {
+  return get(stringToFunboxNames(hashSeparatedFunboxes));
+}
+
 export function getActive(): FunboxMetadataWithFunctions[] {
   return get(stringToFunboxNames(Config.funbox));
 }
