@@ -55,6 +55,10 @@ export function getActive(): FunboxMetadataWithFunctions[] {
   return get(stringToFunboxNames(Config.funbox));
 }
 
+export function getActiveNames(): FunboxName[] {
+  return stringToFunboxNames(Config.funbox);
+}
+
 export function toggleScript(...params: string[]): void {
   if (Config.funbox === "none") return;
 
@@ -78,7 +82,7 @@ export function toggleFunbox(funbox: "none" | FunboxName): boolean {
   if (funbox === "none") setFunbox("none");
   if (
     !checkCompatibility(
-      getActive().map((f) => f.name),
+      getActiveNames(),
       funbox === "none" ? undefined : funbox
     ) &&
     !Config.funbox.split("#").includes(funbox)
@@ -134,7 +138,7 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
 
   // The configuration might be edited with dev tools,
   // so we need to double check its validity
-  if (!checkCompatibility(getActive().map((f) => f.name))) {
+  if (!checkCompatibility(getActiveNames())) {
     Notifications.add(
       Misc.createErrorMessage(
         undefined,
@@ -253,8 +257,8 @@ export async function rememberSettings(): Promise<void> {
 async function setFunboxBodyClasses(): Promise<boolean> {
   const $body = $("body");
 
-  const activeFbClasses = getActive().map(
-    (fb) => "fb-" + fb.name.replaceAll("_", "-")
+  const activeFbClasses = getActiveNames().map(
+    (name) => "fb-" + name.replaceAll("_", "-")
   );
 
   const currentClasses =

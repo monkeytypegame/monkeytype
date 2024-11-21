@@ -725,10 +725,7 @@ function setActiveFunboxButton(): void {
   );
   getAllFunboxes().forEach((funbox) => {
     if (
-      !checkCompatibility(
-        Funbox.getActive().map((f) => f.name),
-        funbox.name
-      ) &&
+      !checkCompatibility(Funbox.getActiveNames(), funbox.name) &&
       !Config.funbox.split("#").includes(funbox.name)
     ) {
       $(

@@ -25,7 +25,7 @@ for (const funbox of getAllFunboxes()) {
     id: "changeFunbox" + funbox.name,
     display: funbox.name.replace(/_/g, " "),
     available: () => {
-      const activeNames = Funbox.getActive().map((f) => f.name);
+      const activeNames = Funbox.getActiveNames();
       if (activeNames.includes(funbox.name)) return true;
       return checkCompatibility(activeNames, funbox.name);
     },
