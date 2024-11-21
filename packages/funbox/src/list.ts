@@ -37,7 +37,6 @@ const list: Record<FunboxName, FunboxMetadata> = {
     description: "I think I'm gonna be sick.",
     canGetPb: true,
     difficultyLevel: 2,
-    frontendFunctions: ["applyCSS"],
     properties: ["hasCssFile"],
   },
   round_round_baby: {
@@ -47,7 +46,6 @@ const list: Record<FunboxName, FunboxMetadata> = {
     canGetPb: true,
     difficultyLevel: 3,
     properties: ["hasCssFile"],
-    frontendFunctions: ["applyCSS"],
   },
   simon_says: {
     name: "simon_says",
@@ -58,7 +56,7 @@ const list: Record<FunboxName, FunboxMetadata> = {
     frontendForcedConfig: {
       highlightMode: ["letter", "off"],
     },
-    frontendFunctions: ["applyCSS", "applyConfig", "rememberSettings"],
+    frontendFunctions: ["applyConfig", "rememberSettings"],
   },
 
   tts: {
@@ -68,12 +66,7 @@ const list: Record<FunboxName, FunboxMetadata> = {
     frontendForcedConfig: {
       highlightMode: ["letter", "off"],
     },
-    frontendFunctions: [
-      "applyCSS",
-      "applyConfig",
-      "rememberSettings",
-      "toggleScript",
-    ],
+    frontendFunctions: ["applyConfig", "rememberSettings", "toggleScript"],
     name: "tts",
     description: "Listen closely.",
   },
@@ -81,7 +74,6 @@ const list: Record<FunboxName, FunboxMetadata> = {
     canGetPb: true,
     difficultyLevel: 2,
     properties: ["hasCssFile", "noLigatures", "conflictsWithSymmetricChars"],
-    frontendFunctions: ["applyCSS"],
     name: "choo_choo",
     description: "All the letters are spinning!",
   },
@@ -148,7 +140,6 @@ const list: Record<FunboxName, FunboxMetadata> = {
     canGetPb: true,
     difficultyLevel: 1,
     properties: ["hasCssFile", "noLigatures"],
-    frontendFunctions: ["applyCSS"],
     name: "earthquake",
   },
   space_balls: {
@@ -156,7 +147,6 @@ const list: Record<FunboxName, FunboxMetadata> = {
     canGetPb: true,
     difficultyLevel: 0,
     properties: ["hasCssFile"],
-    frontendFunctions: ["applyCSS"],
     name: "space_balls",
   },
   gibberish: {
@@ -227,7 +217,7 @@ const list: Record<FunboxName, FunboxMetadata> = {
     frontendForcedConfig: {
       highlightMode: ["letter", "off"],
     },
-    frontendFunctions: ["applyCSS", "rememberSettings", "handleKeydown"],
+    frontendFunctions: ["rememberSettings", "handleKeydown"],
     name: "read_ahead_easy",
   },
   read_ahead: {
@@ -238,7 +228,7 @@ const list: Record<FunboxName, FunboxMetadata> = {
     frontendForcedConfig: {
       highlightMode: ["letter", "off"],
     },
-    frontendFunctions: ["applyCSS", "rememberSettings", "handleKeydown"],
+    frontendFunctions: ["rememberSettings", "handleKeydown"],
     name: "read_ahead",
   },
   read_ahead_hard: {
@@ -249,7 +239,7 @@ const list: Record<FunboxName, FunboxMetadata> = {
     frontendForcedConfig: {
       highlightMode: ["letter", "off"],
     },
-    frontendFunctions: ["applyCSS", "rememberSettings", "handleKeydown"],
+    frontendFunctions: ["rememberSettings", "handleKeydown"],
     name: "read_ahead_hard",
   },
   memory: {
@@ -396,7 +386,6 @@ const list: Record<FunboxName, FunboxMetadata> = {
       "conflictsWithSymmetricChars",
       "wordOrder:reverse",
     ],
-    frontendFunctions: ["applyCSS"],
     canGetPb: true,
     difficultyLevel: 3,
   },
