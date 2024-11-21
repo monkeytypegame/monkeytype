@@ -1,5 +1,4 @@
 import Config, * as UpdateConfig from "../config";
-import * as FunboxList from "@monkeytype/funbox";
 import * as CustomText from "./custom-text";
 import * as Wordset from "./wordset";
 import QuotesController, {
@@ -383,7 +382,7 @@ function applyLazyModeToWord(word: string, language: LanguageObject): string {
 
 export function getWordOrder(): FunboxWordOrder {
   const wordOrder =
-    FunboxList.getFunboxesFromString(Config.funbox)
+    Funbox.getActive()
       .find((f) => f.properties?.find((fp) => fp.startsWith("wordOrder")))
       ?.properties?.find((fp) => fp.startsWith("wordOrder")) ?? "";
 
@@ -408,7 +407,7 @@ export function getWordsLimit(): number {
   }
 
   const funboxToPush =
-    FunboxList.getFunboxesFromString(Config.funbox)
+    Funbox.getActive()
       .find((f) => f.properties?.find((fp) => fp.startsWith("toPush")))
       ?.properties?.find((fp) => fp.startsWith("toPush:")) ?? "";
 
