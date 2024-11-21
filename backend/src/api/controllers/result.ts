@@ -236,7 +236,6 @@ export async function addResult(
     }
   }
 
-  //todo strict types for funbox names in the contracts?
   const funboxNames = stringToFunboxNames(completedEvent.funbox ?? "");
 
   if (!checkCompatibility(funboxNames)) {
