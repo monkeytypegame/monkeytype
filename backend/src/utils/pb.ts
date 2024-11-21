@@ -5,7 +5,7 @@ import {
   PersonalBests,
 } from "@monkeytype/contracts/schemas/shared";
 import { Result as ResultType } from "@monkeytype/contracts/schemas/results";
-import { getByHashSeparatedString } from "@monkeytype/funbox";
+import { getFunboxesFromString } from "@monkeytype/funbox";
 
 export type LbPersonalBests = {
   time: Record<number, Record<string, PersonalBest>>;
@@ -29,7 +29,7 @@ export function canFunboxGetPb(result: Result): boolean {
     return true;
   }
 
-  return getByHashSeparatedString(funboxString).every((f) => f.canGetPb);
+  return getFunboxesFromString(funboxString).every((f) => f.canGetPb);
 }
 
 export function checkAndUpdatePb(
