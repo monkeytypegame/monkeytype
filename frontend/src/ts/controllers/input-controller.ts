@@ -903,7 +903,7 @@ $(document).on("keydown", async (event) => {
 
   for (const fb of Funbox.getActive()) {
     if (fb.functions?.handleKeydown) {
-      await fb.functions.handleKeydown(event);
+      void fb.functions.handleKeydown(event);
     }
   }
 
