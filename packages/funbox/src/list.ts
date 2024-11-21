@@ -220,7 +220,7 @@ const list: Record<FunboxName, FunboxMetadata> = {
     description: "Only the current word is invisible.",
     canGetPb: true,
     difficultyLevel: 1,
-    properties: ["changesWordsVisibility"],
+    properties: ["changesWordsVisibility", "hasCssFile"],
     frontendForcedConfig: {
       highlightMode: ["letter", "off"],
     },
@@ -231,7 +231,7 @@ const list: Record<FunboxName, FunboxMetadata> = {
     description: "Current and the next word are invisible!",
     canGetPb: true,
     difficultyLevel: 2,
-    properties: ["changesWordsVisibility"],
+    properties: ["changesWordsVisibility", "hasCssFile"],
     frontendForcedConfig: {
       highlightMode: ["letter", "off"],
     },
@@ -242,7 +242,7 @@ const list: Record<FunboxName, FunboxMetadata> = {
     description: "Current and the next two words are invisible!",
     canGetPb: true,
     difficultyLevel: 3,
-    properties: ["changesWordsVisibility"],
+    properties: ["changesWordsVisibility", "hasCssFile"],
     frontendForcedConfig: {
       highlightMode: ["letter", "off"],
     },
