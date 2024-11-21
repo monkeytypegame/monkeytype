@@ -29,7 +29,6 @@ import * as TestInput from "../test/test-input";
 import * as TestWords from "../test/test-words";
 import * as Hangul from "hangul-js";
 import * as CustomTextState from "../states/custom-text-name";
-import * as FunboxList from "@monkeytype/funbox";
 import * as KeymapEvent from "../observables/keymap-event";
 import { IgnoredKeys } from "../constants/ignored-keys";
 import { ModifierKeys } from "../constants/modifier-keys";
@@ -145,11 +144,7 @@ function backspaceToPrevious(): void {
 
   TestInput.input.current = TestInput.input.popHistory();
   TestInput.corrected.popHistory();
-  if (
-    FunboxList.getFunboxesFromString(Config.funbox).find((f) =>
-      f.properties?.includes("nospace")
-    )
-  ) {
+  if (Funbox.getActive().find((f) => f.properties?.includes("nospace"))) {
     TestInput.input.current = TestInput.input.current.slice(0, -1);
     setWordsInput(" " + TestInput.input.current + " ");
   }
@@ -209,9 +204,8 @@ async function handleSpace(): Promise<void> {
   TestInput.pushBurstToHistory(burst);
 
   const nospace =
-    FunboxList.getFunboxesFromString(Config.funbox).find((f) =>
-      f.properties?.includes("nospace")
-    ) !== undefined;
+    Funbox.getActive().find((f) => f.properties?.includes("nospace")) !==
+    undefined;
 
   //correct word or in zen mode
   const isWordCorrect: boolean =
@@ -502,9 +496,8 @@ function handleChar(
   }
 
   const nospace =
-    FunboxList.getFunboxesFromString(Config.funbox).find((f) =>
-      f.properties?.includes("nospace")
-    ) !== undefined;
+    Funbox.getActive().find((f) => f.properties?.includes("nospace")) !==
+    undefined;
 
   if (char !== "\n" && char !== "\t" && /\s/.test(char)) {
     if (nospace) return;
