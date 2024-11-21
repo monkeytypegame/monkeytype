@@ -15,6 +15,7 @@ import {
   checkCompatibility,
   FunboxMetadata,
   getFunboxObject,
+  FunboxProperty,
 } from "@monkeytype/funbox";
 
 import { FunboxFunctions, getFunboxFunctions } from "./funbox-functions";
@@ -57,6 +58,18 @@ export function getActive(): FunboxMetadataWithFunctions[] {
 
 export function getActiveNames(): FunboxName[] {
   return stringToFunboxNames(Config.funbox);
+}
+
+export function getActiveWithProperty(
+  property: FunboxProperty
+): FunboxMetadataWithFunctions[] {
+  return getActive().filter((fb) => fb.properties?.includes(property));
+}
+
+export function getActiveWithFunction(
+  functionName: keyof FunboxFunctions
+): FunboxMetadataWithFunctions[] {
+  return getActive().filter((fb) => fb.functions?.[functionName]);
 }
 
 export function toggleScript(...params: string[]): void {
