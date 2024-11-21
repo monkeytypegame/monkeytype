@@ -674,7 +674,7 @@ function updateTestType(randomQuote: Quote | null): void {
     }
   }
   const ignoresLanguage =
-    FunboxList.getFunboxesFromString(Config.funbox).find((f) =>
+    Funbox.getActive().find((f) =>
       f.properties?.includes("ignoresLanguage")
     ) !== undefined;
   if (Config.mode !== "custom" && !ignoresLanguage) {
