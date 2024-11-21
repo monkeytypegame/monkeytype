@@ -1,9 +1,9 @@
 import { getList, getFunbox, getObject } from "./list";
-import { FunboxMetadata, FunboxName } from "./types";
+import { FunboxMetadata, FunboxName, FunboxProperty } from "./types";
 import { stringToFunboxNames } from "./util";
 import { checkCompatibility } from "./validation";
 
-export type { FunboxName, FunboxMetadata };
+export type { FunboxName, FunboxMetadata, FunboxProperty };
 export { checkCompatibility, stringToFunboxNames, getFunbox };
 
 export function getFunboxesFromString(names: string): FunboxMetadata[] {
