@@ -38,6 +38,7 @@ const list: Record<FunboxName, FunboxMetadata> = {
     canGetPb: true,
     difficultyLevel: 2,
     frontendFunctions: ["applyCSS"],
+    properties: ["hasCssFile"],
   },
   round_round_baby: {
     name: "round_round_baby",
@@ -45,6 +46,7 @@ const list: Record<FunboxName, FunboxMetadata> = {
       "...right round, like a record baby. Right, round round round.",
     canGetPb: true,
     difficultyLevel: 3,
+    properties: ["hasCssFile"],
     frontendFunctions: ["applyCSS"],
   },
   simon_says: {
@@ -52,7 +54,7 @@ const list: Record<FunboxName, FunboxMetadata> = {
     description: "Type what simon says.",
     canGetPb: true,
     difficultyLevel: 1,
-    properties: ["changesWordsVisibility", "usesLayout"],
+    properties: ["hasCssFile", "changesWordsVisibility", "usesLayout"],
     frontendForcedConfig: {
       highlightMode: ["letter", "off"],
     },
@@ -62,7 +64,7 @@ const list: Record<FunboxName, FunboxMetadata> = {
   tts: {
     canGetPb: true,
     difficultyLevel: 1,
-    properties: ["changesWordsVisibility", "speaks"],
+    properties: ["hasCssFile", "changesWordsVisibility", "speaks"],
     frontendForcedConfig: {
       highlightMode: ["letter", "off"],
     },
@@ -78,7 +80,7 @@ const list: Record<FunboxName, FunboxMetadata> = {
   choo_choo: {
     canGetPb: true,
     difficultyLevel: 2,
-    properties: ["noLigatures", "conflictsWithSymmetricChars"],
+    properties: ["hasCssFile", "noLigatures", "conflictsWithSymmetricChars"],
     frontendFunctions: ["applyCSS"],
     name: "choo_choo",
     description: "All the letters are spinning!",
@@ -145,7 +147,7 @@ const list: Record<FunboxName, FunboxMetadata> = {
     description: "Everybody get down! The words are shaking!",
     canGetPb: true,
     difficultyLevel: 1,
-    properties: ["noLigatures"],
+    properties: ["hasCssFile", "noLigatures"],
     frontendFunctions: ["applyCSS"],
     name: "earthquake",
   },
@@ -153,6 +155,7 @@ const list: Record<FunboxName, FunboxMetadata> = {
     description: "In a galaxy far far away.",
     canGetPb: true,
     difficultyLevel: 0,
+    properties: ["hasCssFile"],
     frontendFunctions: ["applyCSS"],
     name: "space_balls",
   },
@@ -381,13 +384,14 @@ const list: Record<FunboxName, FunboxMetadata> = {
     description: "Go back to the 1980s",
     canGetPb: true,
     difficultyLevel: 0,
-    properties: ["noLigatures"],
+    properties: ["hasCssFile", "noLigatures"],
     name: "crt",
   },
   backwards: {
     description: "...sdrawkcab epyt ot yrt woN",
     name: "backwards",
     properties: [
+      "hasCssFile",
       "noLigatures",
       "conflictsWithSymmetricChars",
       "wordOrder:reverse",
