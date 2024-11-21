@@ -3,7 +3,7 @@ import Config from "../config";
 import * as Strings from "../utils/strings";
 import * as TestInput from "./test-input";
 import * as TestWords from "./test-words";
-import * as FunboxList from "@monkeytype/funbox";
+import * as Funbox from "../test/funbox/funbox";
 import * as TestState from "./test-state";
 import * as Numbers from "@monkeytype/util/numbers";
 import {
@@ -350,11 +350,7 @@ function countChars(): CharCount {
       spaces++;
     }
   }
-  if (
-    FunboxList.getFunboxesFromString(Config.funbox).find((f) =>
-      f.properties?.includes("nospace")
-    )
-  ) {
+  if (Funbox.getActive().find((f) => f.properties?.includes("nospace"))) {
     spaces = 0;
     correctspaces = 0;
   }
