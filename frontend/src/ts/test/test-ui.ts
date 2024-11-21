@@ -331,17 +331,11 @@ function getWordHTML(word: string): string {
   let newlineafter = false;
   let retval = `<div class='word'>`;
 
-  let funboxGetWordFn = undefined;
-  for (const fb of Funbox.getActive()) {
-    if (fb.functions?.getWordHtml) {
-      funboxGetWordFn = fb.functions.getWordHtml;
-    }
-  }
-
+  const funbox = Funbox.getActive().find((f) => f.functions?.getWordHtml);
   const chars = Strings.splitIntoCharacters(word);
   for (const char of chars) {
-    if (funboxGetWordFn) {
-      retval += funboxGetWordFn(char, true);
+    if (funbox?.functions?.getWordHtml) {
+      retval += funbox.functions.getWordHtml(char, true);
     } else if (char === "\t") {
       retval += `<letter class='tabChar'><i class="fas fa-long-arrow-alt-right fa-fw"></i></letter>`;
     } else if (char === "\n") {
