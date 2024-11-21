@@ -78,7 +78,7 @@ export function toggleFunbox(funbox: "none" | FunboxName): boolean {
   if (funbox === "none") setFunbox("none");
   if (
     !checkCompatibility(
-      stringToFunboxNames(Config.funbox),
+      getActive().map((f) => f.name),
       funbox === "none" ? undefined : funbox
     ) &&
     !Config.funbox.split("#").includes(funbox)
@@ -134,7 +134,7 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
 
   // The configuration might be edited with dev tools,
   // so we need to double check its validity
-  if (!checkCompatibility(stringToFunboxNames(Config.funbox))) {
+  if (!checkCompatibility(getActive().map((f) => f.name))) {
     Notifications.add(
       Misc.createErrorMessage(
         undefined,

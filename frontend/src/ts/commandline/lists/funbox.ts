@@ -1,12 +1,7 @@
 import * as Funbox from "../../test/funbox/funbox";
 import * as TestLogic from "../../test/test-logic";
 import * as ManualRestart from "../../test/manual-restart-tracker";
-import Config from "../../config";
-import {
-  getAllFunboxes,
-  stringToFunboxNames,
-  checkCompatibility,
-} from "@monkeytype/funbox";
+import { getAllFunboxes, checkCompatibility } from "@monkeytype/funbox";
 import { Command, CommandsSubgroup } from "../types";
 
 const list: Command[] = [
@@ -30,9 +25,9 @@ for (const funbox of getAllFunboxes()) {
     id: "changeFunbox" + funbox.name,
     display: funbox.name.replace(/_/g, " "),
     available: () => {
-      const configFunboxes = stringToFunboxNames(Config.funbox);
-      if (configFunboxes.includes(funbox.name)) return true;
-      return checkCompatibility(configFunboxes, funbox.name);
+      const activeNames = Funbox.getActive().map((f) => f.name);
+      if (activeNames.includes(funbox.name)) return true;
+      return checkCompatibility(activeNames, funbox.name);
     },
     sticky: true,
     alias: funbox.alias,

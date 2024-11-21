@@ -5,7 +5,7 @@ import * as Misc from "../utils/misc";
 import * as Strings from "../utils/strings";
 import * as JSONData from "../utils/json-data";
 import * as DB from "../db";
-import { toggleFunbox } from "../test/funbox/funbox";
+import * as Funbox from "../test/funbox/funbox";
 import * as TagController from "../controllers/tag-controller";
 import * as PresetController from "../controllers/preset-controller";
 import * as ThemePicker from "../elements/settings/theme-picker";
@@ -27,7 +27,6 @@ import {
 import {
   getAllFunboxes,
   FunboxName,
-  stringToFunboxNames,
   checkCompatibility,
 } from "@monkeytype/funbox";
 
@@ -726,7 +725,10 @@ function setActiveFunboxButton(): void {
   );
   getAllFunboxes().forEach((funbox) => {
     if (
-      !checkCompatibility(stringToFunboxNames(Config.funbox), funbox.name) &&
+      !checkCompatibility(
+        Funbox.getActive().map((f) => f.name),
+        funbox.name
+      ) &&
       !Config.funbox.split("#").includes(funbox.name)
     ) {
       $(
@@ -1044,7 +1046,7 @@ $(".pageSettings .section[data-config-name='funbox']").on(
   ".button",
   (e) => {
     const funbox = $(e.currentTarget).attr("data-config-value") as FunboxName;
-    toggleFunbox(funbox);
+    Funbox.toggleFunbox(funbox);
     setActiveFunboxButton();
   }
 );
