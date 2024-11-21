@@ -30,14 +30,12 @@ import * as TestWords from "../test/test-words";
 import * as Hangul from "hangul-js";
 import * as CustomTextState from "../states/custom-text-name";
 import * as FunboxList from "@monkeytype/funbox";
-import * as FunboxFunctions from "../test/funbox/funbox-functions";
 import * as KeymapEvent from "../observables/keymap-event";
 import { IgnoredKeys } from "../constants/ignored-keys";
 import { ModifierKeys } from "../constants/modifier-keys";
 import { navigate } from "./route-controller";
 import * as Loader from "../elements/loader";
 import * as KeyConverter from "../utils/key-converter";
-import { stringToFunboxNames } from "@monkeytype/funbox";
 
 let dontInsertSpace = false;
 let correctShiftUsed = true;
@@ -200,8 +198,8 @@ async function handleSpace(): Promise<void> {
 
   const currentWord: string = TestWords.words.getCurrent();
 
-  for (const fn of FunboxFunctions.getActive()) {
-    fn?.handleSpace?.();
+  for (const fb of Funbox.getActive()) {
+    fb.functions?.handleSpace?.();
   }
 
   dontInsertSpace = true;
@@ -413,11 +411,9 @@ function isCharCorrect(char: string, charIndex: number): boolean {
     return true;
   }
 
-  const funboxFunctions = FunboxFunctions.get(
-    stringToFunboxNames(Config.funbox)
-  )?.find((fns) => fns?.isCharCorrect);
-  if (funboxFunctions?.isCharCorrect) {
-    return funboxFunctions.isCharCorrect(char, originalChar);
+  const funbox = Funbox.getActive().find((fb) => fb.functions?.isCharCorrect);
+  if (funbox?.functions?.isCharCorrect) {
+    return funbox.functions.isCharCorrect(char, originalChar);
   }
 
   if (Config.language.startsWith("russian")) {
@@ -499,9 +495,9 @@ function handleChar(
 
   const isCharKorean: boolean = TestInput.input.getKoreanStatus();
 
-  for (const fn of FunboxFunctions.getActive()) {
-    if (fn?.handleChar) {
-      char = fn.handleChar(char);
+  for (const fb of Funbox.getActive()) {
+    if (fb.functions?.handleChar) {
+      char = fb.functions.handleChar(char);
     }
   }
 
@@ -912,9 +908,9 @@ $(document).on("keydown", async (event) => {
     return;
   }
 
-  for (const fn of FunboxFunctions.getActive()) {
-    if (fn?.handleKeydown) {
-      await fn.handleKeydown(event);
+  for (const fb of Funbox.getActive()) {
+    if (fb.functions?.handleKeydown) {
+      await fb.functions.handleKeydown(event);
     }
   }
 
@@ -1165,11 +1161,10 @@ $(document).on("keydown", async (event) => {
     }
   }
 
-  for (const f of FunboxList.getFunboxesFromString(Config.funbox)) {
-    const fn = FunboxFunctions.get(f.name);
-    if (fn?.preventDefaultEvent) {
+  for (const fb of Funbox.getActive()) {
+    if (fb.functions?.preventDefaultEvent) {
       if (
-        await fn.preventDefaultEvent(
+        await fb.functions.preventDefaultEvent(
           //i cant figure this type out, but it works fine
           // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
           event as JQuery.KeyDownEvent

@@ -1,44 +1,72 @@
-//todo move functions to funbox-functions
-
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import * as Notifications from "../../elements/notifications";
 import * as Misc from "../../utils/misc";
 import * as JSONData from "../../utils/json-data";
-import * as GetText from "../../utils/generate";
-import * as Arrays from "../../utils/arrays";
 import * as Strings from "../../utils/strings";
 import * as ManualRestart from "../manual-restart-tracker";
 import Config, * as UpdateConfig from "../../config";
 import * as MemoryTimer from "./memory-funbox-timer";
 import * as FunboxMemory from "./funbox-memory";
-import { save } from "./funbox-memory";
-import * as TestWords from "../test-words";
-import * as TestInput from "../test-input";
 import { checkFunboxForcedConfigs } from "./funbox-validation";
-import { FunboxWordsFrequency, Wordset } from "../wordset";
 import { HighlightMode } from "@monkeytype/contracts/schemas/configs";
 import { Mode } from "@monkeytype/contracts/schemas/shared";
-import { randomIntFromRange } from "@monkeytype/util/numbers";
-import * as FunboxList from "@monkeytype/funbox";
-import * as FunboxFunctions from "./funbox-functions";
 import {
   FunboxName,
   stringToFunboxNames,
   checkCompatibility,
+  FunboxMetadata,
+  getFunboxObject,
 } from "@monkeytype/funbox";
+
+import { FunboxFunctions, getFunboxFunctions } from "./funbox-functions";
+
+type FunboxMetadataWithFunctions = FunboxMetadata & {
+  functions?: FunboxFunctions;
+};
+
+const metadata = getFunboxObject();
+const functions = getFunboxFunctions();
+
+const metadataWithFunctions = {} as Record<
+  FunboxName,
+  FunboxMetadataWithFunctions
+>;
+
+for (const [name, data] of Object.entries(metadata)) {
+  metadataWithFunctions[name as FunboxName] = {
+    ...data,
+    functions: functions[name as FunboxName],
+  };
+}
+
+export function get(funboxName: FunboxName): FunboxMetadataWithFunctions;
+export function get(funboxNames: FunboxName[]): FunboxMetadataWithFunctions[];
+export function get(
+  funboxNameOrNames: FunboxName | FunboxName[]
+): FunboxMetadataWithFunctions | FunboxMetadataWithFunctions[] {
+  if (Array.isArray(funboxNameOrNames)) {
+    const fns = funboxNameOrNames.map((name) => metadataWithFunctions[name]);
+    return fns;
+  } else {
+    return metadataWithFunctions[funboxNameOrNames];
+  }
+}
+
+export function getActive(): FunboxMetadataWithFunctions[] {
+  return get(stringToFunboxNames(Config.funbox));
+}
 
 export function toggleScript(...params: string[]): void {
   if (Config.funbox === "none") return;
 
-  for (const fns of FunboxFunctions.getActive()) {
-    fns?.toggleScript?.(params);
+  for (const fb of getActive()) {
+    fb.functions?.toggleScript?.(params);
   }
 }
 
 export function setFunbox(funbox: string): boolean {
   if (funbox === "none") {
-    for (const fns of FunboxFunctions.getActive()) {
-      fns?.clearGlobal?.();
+    for (const fb of getActive()) {
+      fb.functions?.clearGlobal?.();
     }
   }
   FunboxMemory.load();
@@ -66,11 +94,11 @@ export function toggleFunbox(funbox: "none" | FunboxName): boolean {
   FunboxMemory.load();
   const e = UpdateConfig.toggleFunbox(funbox, false);
 
-  for (const fns of FunboxFunctions.getActive()) {
+  for (const fb of getActive()) {
     if (!Config.funbox.includes(funbox)) {
-      fns?.clearGlobal?.();
+      fb.functions?.clearGlobal?.();
     } else {
-      fns?.applyGlobalCSS?.();
+      fb.functions?.applyGlobalCSS?.();
     }
   }
 
@@ -142,11 +170,7 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
   }
 
   if (language.ligatures) {
-    if (
-      FunboxList.getFunboxesFromString(Config.funbox).find((f) =>
-        f.properties?.includes("noLigatures")
-      )
-    ) {
+    if (getActive().find((f) => f.properties?.includes("noLigatures"))) {
       Notifications.add(
         "Current language does not support this funbox mode",
         0
@@ -213,24 +237,24 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
   }
 
   ManualRestart.set();
-  for (const fns of FunboxFunctions.getActive()) {
-    fns?.applyConfig?.();
+  for (const fb of getActive()) {
+    fb.functions?.applyConfig?.();
   }
   // ModesNotice.update();
   return true;
 }
 
 export async function rememberSettings(): Promise<void> {
-  for (const fns of FunboxFunctions.getActive()) {
-    fns?.rememberSettings?.();
+  for (const fb of getActive()) {
+    fb.functions?.rememberSettings?.();
   }
 }
 
 async function setFunboxBodyClasses(): Promise<boolean> {
   const $body = $("body");
 
-  const activeFbClasses = FunboxList.getFunboxesFromString(Config.funbox).map(
-    (it) => "fb-" + it.name.replaceAll("_", "-")
+  const activeFbClasses = getActive().map(
+    (fb) => "fb-" + fb.name.replaceAll("_", "-")
   );
 
   const currentClasses =
@@ -248,9 +272,9 @@ async function applyFunboxCSS(): Promise<boolean> {
   const $theme = $("#funBoxTheme");
 
   //currently we only support one active funbox with hasCSS
-  const activeFunboxWithTheme = FunboxList.getFunboxesFromString(
-    Config.funbox
-  ).find((it) => it?.properties?.includes("hasCssFile"));
+  const activeFunboxWithTheme = getActive().find((fb) =>
+    fb?.properties?.includes("hasCssFile")
+  );
 
   const activeTheme =
     activeFunboxWithTheme != null

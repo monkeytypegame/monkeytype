@@ -7,7 +7,7 @@ import * as Strings from "../../utils/strings";
 import { randomIntFromRange } from "@monkeytype/util/numbers";
 import * as Arrays from "../../utils/arrays";
 import { save } from "./funbox-memory";
-import { stringToFunboxNames, type FunboxName } from "@monkeytype/funbox";
+import { type FunboxName } from "@monkeytype/funbox";
 import * as TTSEvent from "../../observables/tts-event";
 import * as Notifications from "../../elements/notifications";
 import * as DDR from "../../utils/ddr";
@@ -25,7 +25,7 @@ import * as IPAddresses from "../../utils/ip-addresses";
 //todo figure out how to connect these frontend function names with the ones defined in the shared package
 //currently there is nothing ensuring these names match up
 
-type FunboxFunctions = {
+export type FunboxFunctions = {
   getWord?: (wordset?: Wordset, wordIndex?: number) => string;
   punctuateWord?: (word: string) => string;
   withWords?: (words?: string[]) => Promise<Wordset>;
@@ -628,19 +628,6 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
   },
 };
 
-export function get(funboxName: FunboxName): FunboxFunctions | undefined;
-export function get(funboxNames: FunboxName[]): (FunboxFunctions | undefined)[];
-export function get(
-  funboxNameOrNames: FunboxName | FunboxName[]
-): FunboxFunctions | (FunboxFunctions | undefined)[] | undefined {
-  if (Array.isArray(funboxNameOrNames)) {
-    const fns = funboxNameOrNames.map((name) => list[name]);
-    return fns.filter((fn) => fn !== undefined);
-  } else {
-    return list[funboxNameOrNames];
-  }
-}
-
-export function getActive(): (FunboxFunctions | undefined)[] {
-  return get(stringToFunboxNames(Config.funbox));
+export function getFunboxFunctions(): Record<FunboxName, FunboxFunctions> {
+  return list as Record<FunboxName, FunboxFunctions>;
 }

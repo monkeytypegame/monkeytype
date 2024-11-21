@@ -1,7 +1,5 @@
-import { ConfigValue } from "@monkeytype/contracts/schemas/configs";
 import { Accents } from "../test/lazy-mode";
 import { hexToHSL } from "./colors";
-import { FunboxWordsFrequency, Wordset } from "../test/wordset";
 
 /**
  * Fetches JSON data from the specified URL using the fetch API.
@@ -287,66 +285,7 @@ export class Section {
   }
 }
 
-export type FunboxMetadata = {
-  name: string;
-  info: string;
-  canGetPb?: boolean;
-  alias?: string;
-  forcedConfig?: FunboxForcedConfig;
-  properties?: FunboxProperty[];
-  functions?: FunboxFunctions;
-  hasCSS?: boolean;
-};
-
 export type FunboxWordOrder = "normal" | "reverse";
-
-type FunboxProperty =
-  | "symmetricChars"
-  | "conflictsWithSymmetricChars"
-  | "changesWordsVisibility"
-  | "speaks"
-  | "unspeakable"
-  | "changesLayout"
-  | "ignoresLayout"
-  | "usesLayout"
-  | "ignoresLanguage"
-  | "noLigatures"
-  | "noLetters"
-  | "changesCapitalisation"
-  | "nospace"
-  | `toPush:${number}`
-  | "noInfiniteDuration"
-  | "changesWordsFrequency"
-  | `wordOrder:${FunboxWordOrder}`;
-
-export type FunboxForcedConfig = Record<string, ConfigValue[]>;
-
-export type FunboxFunctions = {
-  getWord?: (wordset?: Wordset, wordIndex?: number) => string;
-  punctuateWord?: (word: string) => string;
-  withWords?: (words?: string[]) => Promise<Wordset>;
-  alterText?: (word: string) => string;
-  applyConfig?: () => void;
-  applyGlobalCSS?: () => void;
-  clearGlobal?: () => void;
-  rememberSettings?: () => void;
-  toggleScript?: (params: string[]) => void;
-  pullSection?: (language?: string) => Promise<Section | false>;
-  handleSpace?: () => void;
-  handleChar?: (char: string) => string;
-  isCharCorrect?: (char: string, originalChar: string) => boolean;
-  preventDefaultEvent?: (
-    event: JQuery.KeyDownEvent<Document, null, Document, Document>
-  ) => Promise<boolean>;
-  handleKeydown?: (
-    event: JQuery.KeyDownEvent<Document, undefined, Document, Document>
-  ) => Promise<void>;
-  getResultContent?: () => string;
-  start?: () => void;
-  restart?: () => void;
-  getWordHtml?: (char: string, letterTag?: boolean) => string;
-  getWordsFrequencyMode?: () => FunboxWordsFrequency;
-};
 
 export type FontObject = {
   name: string;

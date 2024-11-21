@@ -4,7 +4,7 @@ import * as MerchBanner from "./elements/merch-banner";
 import * as CookiesModal from "./modals/cookies";
 import * as ConnectionState from "./states/connection";
 import * as AccountButton from "./elements/account-button";
-import * as FunboxFunctions from "./test/funbox/funbox-functions";
+import * as Funbox from "./test/funbox/funbox";
 //@ts-expect-error
 import Konami from "konami";
 import * as ServerConfiguration from "./ape/server-configuration";
@@ -20,8 +20,8 @@ $((): void => {
   $("body").css("transition", "background .25s, transform .05s");
   MerchBanner.showIfNotClosedBefore();
   setTimeout(() => {
-    for (const fn of FunboxFunctions.getActive()) {
-      fn?.applyConfig?.();
+    for (const fb of Funbox.getActive()) {
+      fb.functions?.applyConfig?.();
     }
   }, 500); //this approach will probably bite me in the ass at some point
 

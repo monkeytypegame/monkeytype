@@ -31,8 +31,6 @@ import * as CustomText from "./custom-text";
 import * as CustomTextState from "./../states/custom-text-name";
 import * as Funbox from "./funbox/funbox";
 import Format from "../utils/format";
-import * as FunboxFunctions from "./funbox/funbox-functions";
-
 import confetti from "canvas-confetti";
 import type {
   AnnotationOptions,
@@ -127,11 +125,10 @@ async function updateGraph(): Promise<void> {
   const fc = await ThemeColors.get("sub");
   if (Config.funbox !== "none") {
     let content = "";
-    for (const f of FunboxList.getFunboxesFromString(Config.funbox)) {
-      content += f.name;
-      const fn = FunboxFunctions.get(f.name);
-      if (fn?.getResultContent) {
-        content += "(" + fn.getResultContent() + ")";
+    for (const fb of Funbox.getActive()) {
+      content += fb.name;
+      if (fb.functions?.getResultContent) {
+        content += "(" + fb.functions.getResultContent() + ")";
       }
       content += " ";
     }

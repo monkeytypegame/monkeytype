@@ -52,7 +52,6 @@ import { Auth, isAuthenticated } from "../firebase";
 import * as AdController from "../controllers/ad-controller";
 import * as TestConfig from "./test-config";
 import * as ConnectionState from "../states/connection";
-import * as FunboxFunctions from "./funbox/funbox-functions";
 import * as MemoryFunboxTimer from "./funbox/memory-funbox-timer";
 import * as KeymapEvent from "../observables/keymap-event";
 import * as LayoutfluidFunboxTimer from "../test/funbox/layoutfluid-funbox-timer";
@@ -65,7 +64,7 @@ import {
   CustomTextDataWithTextLen,
 } from "@monkeytype/contracts/schemas/results";
 import * as XPBar from "../elements/xp-bar";
-import { getFunboxesFromString, stringToFunboxNames } from "@monkeytype/funbox";
+import { getFunboxesFromString } from "@monkeytype/funbox";
 
 let failReason = "";
 const koInputVisual = document.getElementById("koInputVisual") as HTMLElement;
@@ -107,8 +106,8 @@ export function startTest(now: number): boolean {
   TestTimer.clear();
   Monkey.show();
 
-  for (const fn of FunboxFunctions.getActive()) {
-    fn?.start?.();
+  for (const fb of Funbox.getActive()) {
+    fb.functions?.start?.();
   }
 
   try {
@@ -329,10 +328,8 @@ export function restart(options = {} as RestartOptions): void {
       await init();
       await PaceCaret.init();
 
-      for (const fn of FunboxFunctions.get(
-        stringToFunboxNames(Config.funbox)
-      )) {
-        fn?.restart?.();
+      for (const fb of Funbox.getActive()) {
+        fb.functions?.restart?.();
       }
 
       if (Config.showAverage !== "off") {
@@ -555,19 +552,17 @@ export async function addWord(): Promise<void> {
     return;
   }
 
-  for (const funbox of getFunboxesFromString(Config.funbox)) {
-    const fn = FunboxFunctions.get(funbox.name);
-
-    if (fn?.pullSection) {
+  for (const fb of Funbox.getActive()) {
+    if (fb.functions?.pullSection) {
       if (TestWords.words.length - TestWords.words.currentIndex < 20) {
-        const section = await fn.pullSection(Config.language);
+        const section = await fb.functions.pullSection(Config.language);
 
         if (section === false) {
           Notifications.add(
             "Error while getting section. Please try again later",
             -1
           );
-          UpdateConfig.toggleFunbox(funbox.name);
+          UpdateConfig.toggleFunbox(fb.name);
           restart();
           return;
         }
