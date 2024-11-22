@@ -491,6 +491,10 @@
     "languages": ["xhosa"]
   },
   {
+    "name": "tibetan",
+    "languages": ["tibetan", "tibetan_1k"]
+  },
+  {
     "name": "other",
     "languages": [
       "lojban_gismu",
