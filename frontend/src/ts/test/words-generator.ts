@@ -57,10 +57,10 @@ export async function punctuateWord(
     if (currentLanguage === "spanish") {
       const rand = Math.random();
       if (rand > 0.9) {
-          word = "¿" + word;
+        word = "¿" + word;
         spanishSentenceTracker = "?";
       } else if (rand > 0.8) {
-          word = "¡" + word;
+        word = "¡" + word;
         spanishSentenceTracker = "!";
       }
     }
