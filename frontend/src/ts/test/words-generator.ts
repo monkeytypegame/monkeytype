@@ -54,17 +54,13 @@ export async function punctuateWord(
       word = word.replace(/I/g, "İ");
     }
 
-    if (currentLanguage === "spanish" || currentLanguage === "catalan") {
+    if (currentLanguage === "spanish") {
       const rand = Math.random();
       if (rand > 0.9) {
-        if (currentLanguage === "spanish") {
           word = "¿" + word;
-        }
         spanishSentenceTracker = "?";
       } else if (rand > 0.8) {
-        if (currentLanguage === "spanish") {
           word = "¡" + word;
-        }
         spanishSentenceTracker = "!";
       }
     }
@@ -75,7 +71,7 @@ export async function punctuateWord(
       index !== maxindex - 2) ||
     index === maxindex - 1
   ) {
-    if (currentLanguage === "spanish" || currentLanguage === "catalan") {
+    if (currentLanguage === "spanish") {
       if (spanishSentenceTracker === "?" || spanishSentenceTracker === "!") {
         word += spanishSentenceTracker;
         spanishSentenceTracker = "";
