@@ -21,7 +21,7 @@ $((): void => {
   MerchBanner.showIfNotClosedBefore();
   setTimeout(() => {
     for (const fb of Funbox.getActive()) {
-      fb.functions?.applyConfig?.();
+      fb.functions?.applyGlobalCSS?.();
     }
   }, 500); //this approach will probably bite me in the ass at some point
 
