@@ -18,9 +18,6 @@ export function checkFunboxForcedConfigs(
 
   if (key === "words" || key === "time") {
     if (value === 0) {
-      if (funbox === "nospace") {
-        console.log("break");
-      }
       const fb = Funbox.getFromString(funbox).filter((f) =>
         f.properties?.includes("noInfiniteDuration")
       );
