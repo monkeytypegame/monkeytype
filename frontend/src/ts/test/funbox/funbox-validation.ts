@@ -3,22 +3,23 @@ import * as Notifications from "../../elements/notifications";
 import * as Strings from "../../utils/strings";
 import { Config, ConfigValue } from "@monkeytype/contracts/schemas/configs";
 import { intersect } from "@monkeytype/util/arrays";
+import { FunboxMetadata } from "@monkeytype/funbox";
 
 export function checkFunboxForcedConfigs(
   key: string,
   value: ConfigValue,
-  funbox: string
+  funboxes: FunboxMetadata[]
 ): {
   result: boolean;
   forcedConfigs?: ConfigValue[];
 } {
-  if (Funbox.getFromString(funbox).length === 0) {
+  if (funboxes.length === 0) {
     return { result: true };
   }
 
   if (key === "words" || key === "time") {
     if (value === 0) {
-      const fb = Funbox.getFromString(funbox).filter((f) =>
+      const fb = funboxes.filter((f) =>
         f.properties?.includes("noInfiniteDuration")
       );
       if (fb.length > 0) {
@@ -35,7 +36,7 @@ export function checkFunboxForcedConfigs(
   } else {
     const forcedConfigs: Record<string, ConfigValue[]> = {};
     // collect all forced configs
-    for (const fb of Funbox.getFromString(funbox)) {
+    for (const fb of funboxes) {
       if (fb.frontendForcedConfig) {
         //push keys to forcedConfigs, if they don't exist. if they do, intersect the values
         for (const key in fb.frontendForcedConfig) {
@@ -120,7 +121,9 @@ export function canSetConfigWithCurrentFunboxes(
     }
   }
   if (key === "words" || key === "time") {
-    if (!checkFunboxForcedConfigs(key, value, funbox).result) {
+    if (
+      !checkFunboxForcedConfigs(key, value, Funbox.getFromString(funbox)).result
+    ) {
       if (!noNotification) {
         Notifications.add("Active funboxes do not support infinite tests", 0);
         return false;
@@ -128,7 +131,9 @@ export function canSetConfigWithCurrentFunboxes(
         errorCount += 1;
       }
     }
-  } else if (!checkFunboxForcedConfigs(key, value, funbox).result) {
+  } else if (
+    !checkFunboxForcedConfigs(key, value, Funbox.getFromString(funbox)).result
+  ) {
     errorCount += 1;
   }
 
