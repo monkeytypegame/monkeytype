@@ -4,10 +4,10 @@ import * as MerchBanner from "./elements/merch-banner";
 import * as CookiesModal from "./modals/cookies";
 import * as ConnectionState from "./states/connection";
 import * as AccountButton from "./elements/account-button";
-import * as Funbox from "./test/funbox/funbox";
 //@ts-expect-error
 import Konami from "konami";
 import * as ServerConfiguration from "./ape/server-configuration";
+import { getActiveFunboxes } from "./test/funbox/list";
 
 $((): void => {
   Misc.loadCSS("/css/slimselect.min.css", true);
@@ -20,7 +20,7 @@ $((): void => {
   $("body").css("transition", "background .25s, transform .05s");
   MerchBanner.showIfNotClosedBefore();
   setTimeout(() => {
-    for (const fb of Funbox.getActiveFunboxes()) {
+    for (const fb of getActiveFunboxes()) {
       fb.functions?.applyGlobalCSS?.();
     }
   }, 500); //this approach will probably bite me in the ass at some point

@@ -37,6 +37,7 @@ import type {
 } from "chartjs-plugin-annotation";
 import Ape from "../ape";
 import { CompletedEvent } from "@monkeytype/contracts/schemas/results";
+import { getActiveFunboxes, getFromString } from "./funbox/list";
 
 let result: CompletedEvent;
 let maxChartVal: number;
@@ -124,7 +125,7 @@ async function updateGraph(): Promise<void> {
   const fc = await ThemeColors.get("sub");
   if (Config.funbox !== "none") {
     let content = "";
-    for (const fb of Funbox.getActiveFunboxes()) {
+    for (const fb of getActiveFunboxes()) {
       content += fb.name;
       if (fb.functions?.getResultContent) {
         content += "(" + fb.functions.getResultContent() + ")";
@@ -471,7 +472,7 @@ type CanGetPbObject =
 
 async function resultCanGetPb(): Promise<CanGetPbObject> {
   const funboxes = result.funbox?.split("#") ?? [];
-  const funboxObjects = Funbox.getFromString(result.funbox);
+  const funboxObjects = getFromString(result.funbox);
   const allFunboxesCanGetPb = funboxObjects.every((f) => f?.canGetPb);
 
   const funboxesOk =
@@ -673,7 +674,7 @@ function updateTestType(randomQuote: Quote | null): void {
     }
   }
   const ignoresLanguage =
-    Funbox.getActiveFunboxes().find((f) =>
+    getActiveFunboxes().find((f) =>
       f.properties?.includes("ignoresLanguage")
     ) !== undefined;
   if (Config.mode !== "custom" && !ignoresLanguage) {

@@ -6,143 +6,10 @@ import * as ManualRestart from "../manual-restart-tracker";
 import Config, * as UpdateConfig from "../../config";
 import * as MemoryTimer from "./memory-funbox-timer";
 import * as FunboxMemory from "./funbox-memory";
-import {
-  ConfigValue,
-  HighlightMode,
-} from "@monkeytype/contracts/schemas/configs";
+import { HighlightMode } from "@monkeytype/contracts/schemas/configs";
 import { Mode } from "@monkeytype/contracts/schemas/shared";
-import {
-  FunboxName,
-  stringToFunboxNames,
-  checkCompatibility,
-  FunboxMetadata,
-  getFunboxObject,
-  FunboxProperty,
-} from "@monkeytype/funbox";
-
-import { FunboxFunctions, getFunboxFunctions } from "./funbox-functions";
-import { intersect } from "@monkeytype/util/arrays";
-
-type FunboxMetadataWithFunctions = FunboxMetadata & {
-  functions?: FunboxFunctions;
-};
-
-const metadata = getFunboxObject();
-const functions = getFunboxFunctions();
-
-const metadataWithFunctions = {} as Record<
-  FunboxName,
-  FunboxMetadataWithFunctions
->;
-
-for (const [name, data] of Object.entries(metadata)) {
-  metadataWithFunctions[name as FunboxName] = {
-    ...data,
-    functions: functions[name as FunboxName],
-  };
-}
-
-export function get(funboxName: FunboxName): FunboxMetadataWithFunctions;
-export function get(funboxNames: FunboxName[]): FunboxMetadataWithFunctions[];
-export function get(
-  funboxNameOrNames: FunboxName | FunboxName[]
-): FunboxMetadataWithFunctions | FunboxMetadataWithFunctions[] {
-  if (Array.isArray(funboxNameOrNames)) {
-    const fns = funboxNameOrNames.map((name) => metadataWithFunctions[name]);
-    return fns;
-  } else {
-    return metadataWithFunctions[funboxNameOrNames];
-  }
-}
-
-export function getFromString(
-  hashSeparatedFunboxes: string
-): FunboxMetadataWithFunctions[] {
-  return get(stringToFunboxNames(hashSeparatedFunboxes));
-}
-
-export function getActiveFunboxes(): FunboxMetadataWithFunctions[] {
-  return get(stringToFunboxNames(Config.funbox));
-}
-
-export function getActiveFunboxNames(): FunboxName[] {
-  return stringToFunboxNames(Config.funbox);
-}
-
-export function getActiveFunboxesWithProperty(
-  property: FunboxProperty
-): FunboxMetadataWithFunctions[] {
-  return getActiveFunboxes().filter((fb) => fb.properties?.includes(property));
-}
-
-export function getActiveFunboxesWithFunction(
-  functionName: keyof FunboxFunctions
-): FunboxMetadataWithFunctions[] {
-  return getActiveFunboxes().filter((fb) => fb.functions?.[functionName]);
-}
-
-export function checkFunboxForcedConfigs(
-  key: string,
-  value: ConfigValue,
-  funboxes: FunboxMetadata[]
-): {
-  result: boolean;
-  forcedConfigs?: ConfigValue[];
-} {
-  if (funboxes.length === 0) {
-    return { result: true };
-  }
-
-  if (key === "words" || key === "time") {
-    if (value === 0) {
-      const fb = funboxes.filter((f) =>
-        f.properties?.includes("noInfiniteDuration")
-      );
-      if (fb.length > 0) {
-        return {
-          result: false,
-          forcedConfigs: [key === "words" ? 10 : 15],
-        };
-      } else {
-        return { result: true };
-      }
-    } else {
-      return { result: true };
-    }
-  } else {
-    const forcedConfigs: Record<string, ConfigValue[]> = {};
-    // collect all forced configs
-    for (const fb of funboxes) {
-      if (fb.frontendForcedConfig) {
-        //push keys to forcedConfigs, if they don't exist. if they do, intersect the values
-        for (const key in fb.frontendForcedConfig) {
-          if (forcedConfigs[key] === undefined) {
-            forcedConfigs[key] = fb.frontendForcedConfig[key] as ConfigValue[];
-          } else {
-            forcedConfigs[key] = intersect(
-              forcedConfigs[key],
-              fb.frontendForcedConfig[key] as ConfigValue[],
-              true
-            );
-          }
-        }
-      }
-    }
-
-    //check if the key is in forcedConfigs, if it is check the value, if its not, return true
-    if (forcedConfigs[key] === undefined) {
-      return { result: true };
-    } else {
-      if (forcedConfigs[key]?.length === 0) {
-        throw new Error("No intersection of forced configs");
-      }
-      return {
-        result: (forcedConfigs[key] ?? []).includes(value),
-        forcedConfigs: forcedConfigs[key],
-      };
-    }
-  }
-}
+import { FunboxName, checkCompatibility } from "@monkeytype/funbox";
+import { getActiveFunboxes, getActiveFunboxNames } from "./list";
 
 export function toggleScript(...params: string[]): void {
   if (Config.funbox === "none") return;
@@ -275,7 +142,7 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
   let canSetSoFar = true;
 
   for (const [configKey, configValue] of Object.entries(Config)) {
-    const check = checkFunboxForcedConfigs(
+    const check = checkForcedConfig(
       configKey,
       configValue,
       getActiveFunboxes()

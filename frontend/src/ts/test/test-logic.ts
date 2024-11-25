@@ -64,6 +64,7 @@ import {
   CustomTextDataWithTextLen,
 } from "@monkeytype/contracts/schemas/results";
 import * as XPBar from "../elements/xp-bar";
+import { getActiveFunboxes } from "./funbox/list";
 
 let failReason = "";
 const koInputVisual = document.getElementById("koInputVisual") as HTMLElement;
@@ -105,7 +106,7 @@ export function startTest(now: number): boolean {
   TestTimer.clear();
   Monkey.show();
 
-  for (const fb of Funbox.getActiveFunboxes()) {
+  for (const fb of getActiveFunboxes()) {
     fb.functions?.start?.();
   }
 
@@ -327,7 +328,7 @@ export function restart(options = {} as RestartOptions): void {
       await init();
       await PaceCaret.init();
 
-      for (const fb of Funbox.getActiveFunboxes()) {
+      for (const fb of getActiveFunboxes()) {
         fb.functions?.restart?.();
       }
 
@@ -539,7 +540,7 @@ export function areAllTestWordsGenerated(): boolean {
 //add word during the test
 export async function addWord(): Promise<void> {
   let bound = 100; // how many extra words to aim for AFTER the current word
-  const funboxToPush = Funbox.getActiveFunboxes()
+  const funboxToPush = getActiveFunboxes()
     .find((f) => f.properties?.find((fp) => fp.startsWith("toPush")))
     ?.properties?.find((fp) => fp.startsWith("toPush:"));
   const toPushCount = funboxToPush?.split(":")[1];
@@ -551,7 +552,7 @@ export async function addWord(): Promise<void> {
     return;
   }
 
-  const sectionFunbox = Funbox.getActiveFunboxes().find(
+  const sectionFunbox = getActiveFunboxes().find(
     (f) => f.functions?.pullSection
   );
 

@@ -35,6 +35,7 @@ import { ModifierKeys } from "../constants/modifier-keys";
 import { navigate } from "./route-controller";
 import * as Loader from "../elements/loader";
 import * as KeyConverter from "../utils/key-converter";
+import { getActiveFunboxes } from "../test/funbox/list";
 
 let dontInsertSpace = false;
 let correctShiftUsed = true;
@@ -144,9 +145,7 @@ function backspaceToPrevious(): void {
 
   TestInput.input.current = TestInput.input.popHistory();
   TestInput.corrected.popHistory();
-  if (
-    Funbox.getActiveFunboxes().find((f) => f.properties?.includes("nospace"))
-  ) {
+  if (getActiveFunboxes().find((f) => f.properties?.includes("nospace"))) {
     TestInput.input.current = TestInput.input.current.slice(0, -1);
     setWordsInput(" " + TestInput.input.current + " ");
   }
@@ -195,7 +194,7 @@ async function handleSpace(): Promise<void> {
 
   const currentWord: string = TestWords.words.getCurrent();
 
-  for (const fb of Funbox.getActiveFunboxes()) {
+  for (const fb of getActiveFunboxes()) {
     fb.functions?.handleSpace?.();
   }
 
@@ -206,9 +205,8 @@ async function handleSpace(): Promise<void> {
   TestInput.pushBurstToHistory(burst);
 
   const nospace =
-    Funbox.getActiveFunboxes().find((f) =>
-      f.properties?.includes("nospace")
-    ) !== undefined;
+    getActiveFunboxes().find((f) => f.properties?.includes("nospace")) !==
+    undefined;
 
   //correct word or in zen mode
   const isWordCorrect: boolean =
@@ -408,9 +406,7 @@ function isCharCorrect(char: string, charIndex: number): boolean {
     return true;
   }
 
-  const funbox = Funbox.getActiveFunboxes().find(
-    (fb) => fb.functions?.isCharCorrect
-  );
+  const funbox = getActiveFunboxes().find((fb) => fb.functions?.isCharCorrect);
   if (funbox?.functions?.isCharCorrect) {
     return funbox.functions.isCharCorrect(char, originalChar);
   }
@@ -494,16 +490,15 @@ function handleChar(
 
   const isCharKorean: boolean = TestInput.input.getKoreanStatus();
 
-  for (const fb of Funbox.getActiveFunboxes()) {
+  for (const fb of getActiveFunboxes()) {
     if (fb.functions?.handleChar) {
       char = fb.functions.handleChar(char);
     }
   }
 
   const nospace =
-    Funbox.getActiveFunboxes().find((f) =>
-      f.properties?.includes("nospace")
-    ) !== undefined;
+    getActiveFunboxes().find((f) => f.properties?.includes("nospace")) !==
+    undefined;
 
   if (char !== "\n" && char !== "\t" && /\s/.test(char)) {
     if (nospace) return;
@@ -907,7 +902,7 @@ $(document).on("keydown", async (event) => {
     return;
   }
 
-  for (const fb of Funbox.getActiveFunboxes()) {
+  for (const fb of getActiveFunboxes()) {
     if (fb.functions?.handleKeydown) {
       void fb.functions.handleKeydown(event);
     }
@@ -1160,7 +1155,7 @@ $(document).on("keydown", async (event) => {
     }
   }
 
-  for (const fb of Funbox.getActiveFunboxes()) {
+  for (const fb of getActiveFunboxes()) {
     if (fb.functions?.preventDefaultEvent) {
       if (
         await fb.functions.preventDefaultEvent(

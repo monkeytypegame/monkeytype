@@ -2,6 +2,71 @@ import * as Funbox from "./funbox";
 import * as Notifications from "../../elements/notifications";
 import * as Strings from "../../utils/strings";
 import { Config, ConfigValue } from "@monkeytype/contracts/schemas/configs";
+import { FunboxMetadata, getFunboxesFromString } from "@monkeytype/funbox";
+import { intersect } from "@monkeytype/util/arrays";
+
+export function checkForcedConfig(
+  key: string,
+  value: ConfigValue,
+  funboxes: FunboxMetadata[]
+): {
+  result: boolean;
+  forcedConfigs?: ConfigValue[];
+} {
+  if (funboxes.length === 0) {
+    return { result: true };
+  }
+
+  if (key === "words" || key === "time") {
+    if (value === 0) {
+      const fb = funboxes.filter((f) =>
+        f.properties?.includes("noInfiniteDuration")
+      );
+      if (fb.length > 0) {
+        return {
+          result: false,
+          forcedConfigs: [key === "words" ? 10 : 15],
+        };
+      } else {
+        return { result: true };
+      }
+    } else {
+      return { result: true };
+    }
+  } else {
+    const forcedConfigs: Record<string, ConfigValue[]> = {};
+    // collect all forced configs
+    for (const fb of funboxes) {
+      if (fb.frontendForcedConfig) {
+        //push keys to forcedConfigs, if they don't exist. if they do, intersect the values
+        for (const key in fb.frontendForcedConfig) {
+          if (forcedConfigs[key] === undefined) {
+            forcedConfigs[key] = fb.frontendForcedConfig[key] as ConfigValue[];
+          } else {
+            forcedConfigs[key] = intersect(
+              forcedConfigs[key],
+              fb.frontendForcedConfig[key] as ConfigValue[],
+              true
+            );
+          }
+        }
+      }
+    }
+
+    //check if the key is in forcedConfigs, if it is check the value, if its not, return true
+    if (forcedConfigs[key] === undefined) {
+      return { result: true };
+    } else {
+      if (forcedConfigs[key]?.length === 0) {
+        throw new Error("No intersection of forced configs");
+      }
+      return {
+        result: (forcedConfigs[key] ?? []).includes(value),
+        forcedConfigs: forcedConfigs[key],
+      };
+    }
+  }
+}
 
 // function: canSetConfigWithCurrentFunboxes
 // checks using checkFunboxForcedConfigs. if it returns true, return true
@@ -14,14 +79,14 @@ export function canSetConfigWithCurrentFunboxes(
 ): boolean {
   let errorCount = 0;
   if (key === "mode") {
-    let fb = Funbox.getFromString(funbox).filter(
+    let fb = getFromString(funbox).filter(
       (f) =>
         f.frontendForcedConfig?.["mode"] !== undefined &&
         !(f.frontendForcedConfig["mode"] as ConfigValue[]).includes(value)
     );
     if (value === "zen") {
       fb = fb.concat(
-        Funbox.getFromString(funbox).filter((f) => {
+        getFromString(funbox).filter((f) => {
           return (
             f.frontendFunctions?.includes("getWord") ??
             f.frontendFunctions?.includes("pullSection") ??
@@ -40,7 +105,7 @@ export function canSetConfigWithCurrentFunboxes(
     }
     if (value === "quote" || value === "custom") {
       fb = fb.concat(
-        Funbox.getFromString(funbox).filter((f) => {
+        getFromString(funbox).filter((f) => {
           return (
             f.frontendFunctions?.includes("getWord") ??
             f.frontendFunctions?.includes("pullSection") ??
@@ -56,10 +121,7 @@ export function canSetConfigWithCurrentFunboxes(
     }
   }
   if (key === "words" || key === "time") {
-    if (
-      !Funbox.checkFunboxForcedConfigs(key, value, Funbox.getFromString(funbox))
-        .result
-    ) {
+    if (!Funbox.checkForcedConfig(key, value, getFromString(funbox)).result) {
       if (!noNotification) {
         Notifications.add("Active funboxes do not support infinite tests", 0);
         return false;
@@ -68,8 +130,7 @@ export function canSetConfigWithCurrentFunboxes(
       }
     }
   } else if (
-    !Funbox.checkFunboxForcedConfigs(key, value, Funbox.getFromString(funbox))
-      .result
+    !Funbox.checkForcedConfig(key, value, getFromString(funbox)).result
   ) {
     errorCount += 1;
   }

@@ -3,6 +3,7 @@ import * as TestLogic from "../../test/test-logic";
 import * as ManualRestart from "../../test/manual-restart-tracker";
 import { getAllFunboxes, checkCompatibility } from "@monkeytype/funbox";
 import { Command, CommandsSubgroup } from "../types";
+import { getActiveFunboxNames } from "../../test/funbox/list";
 
 const list: Command[] = [
   {
@@ -25,7 +26,7 @@ for (const funbox of getAllFunboxes()) {
     id: "changeFunbox" + funbox.name,
     display: funbox.name.replace(/_/g, " "),
     available: () => {
-      const activeNames = Funbox.getActiveFunboxNames();
+      const activeNames = getActiveFunboxNames();
       if (activeNames.includes(funbox.name)) return true;
       return checkCompatibility(activeNames, funbox.name);
     },

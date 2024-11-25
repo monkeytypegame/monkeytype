@@ -29,6 +29,7 @@ import {
   FunboxName,
   checkCompatibility,
 } from "@monkeytype/funbox";
+import { getActiveFunboxNames } from "../test/funbox/list";
 
 type SettingsGroups<T extends ConfigValue> = Record<string, SettingsGroup<T>>;
 
@@ -725,7 +726,7 @@ function setActiveFunboxButton(): void {
   );
   getAllFunboxes().forEach((funbox) => {
     if (
-      !checkCompatibility(Funbox.getActiveNames(), funbox.name) &&
+      !checkCompatibility(getActiveFunboxNames(), funbox.name) &&
       !Config.funbox.split("#").includes(funbox.name)
     ) {
       $(

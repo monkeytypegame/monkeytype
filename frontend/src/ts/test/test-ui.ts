@@ -30,7 +30,7 @@ import {
   TimerOpacity,
 } from "@monkeytype/contracts/schemas/configs";
 import { convertRemToPixels } from "../utils/numbers";
-import * as Funbox from "../test/funbox/funbox";
+import { getActiveFunboxes } from "./funbox/list";
 
 async function gethtml2canvas(): Promise<typeof import("html2canvas").default> {
   return (await import("html2canvas")).default;
@@ -331,9 +331,7 @@ function getWordHTML(word: string): string {
   let newlineafter = false;
   let retval = `<div class='word'>`;
 
-  const funbox = Funbox.getActiveFunboxes().find(
-    (f) => f.functions?.getWordHtml
-  );
+  const funbox = getActiveFunboxes().find((f) => f.functions?.getWordHtml);
   const chars = Strings.splitIntoCharacters(word);
   for (const char of chars) {
     if (funbox?.functions?.getWordHtml) {
@@ -643,7 +641,7 @@ export async function screenshot(): Promise<void> {
     }
     (document.querySelector("html") as HTMLElement).style.scrollBehavior =
       "smooth";
-    for (const fb of Funbox.getActiveFunboxes()) {
+    for (const fb of getActiveFunboxes()) {
       fb.functions?.applyGlobalCSS?.();
     }
   }
@@ -685,7 +683,7 @@ export async function screenshot(): Promise<void> {
   $(".highlightContainer").addClass("hidden");
   if (revertCookie) $("#cookiesModal").addClass("hidden");
 
-  for (const fb of Funbox.getActiveFunboxes()) {
+  for (const fb of getActiveFunboxes()) {
     fb.functions?.clearGlobal?.();
   }
 
@@ -834,9 +832,7 @@ export async function updateActiveWordLetters(
       }
     }
 
-    const funbox = Funbox.getActiveFunboxes().find(
-      (fb) => fb.functions?.getWordHtml
-    );
+    const funbox = getActiveFunboxes().find((fb) => fb.functions?.getWordHtml);
 
     const inputChars = Strings.splitIntoCharacters(input);
     const currentWordChars = Strings.splitIntoCharacters(currentWord);

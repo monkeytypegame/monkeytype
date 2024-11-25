@@ -5,7 +5,6 @@ import DefaultConfig from "./constants/default-config";
 import { isAuthenticated } from "./firebase";
 import * as ConnectionState from "./states/connection";
 import { lastElementFromArray } from "./utils/arrays";
-import * as Funbox from "./test/funbox/funbox";
 import { migrateConfig } from "./utils/config";
 import * as Dates from "date-fns";
 import {
@@ -32,6 +31,7 @@ import {
 import { Preset } from "@monkeytype/contracts/schemas/presets";
 import defaultSnapshot from "./constants/default-snapshot";
 import { Result } from "@monkeytype/contracts/schemas/results";
+import { getFromString } from "./test/funbox/list";
 
 export type SnapshotUserTag = UserTag & {
   active?: boolean;
@@ -706,7 +706,7 @@ export async function getLocalPB<M extends Mode>(
   lazyMode: boolean,
   funbox: string
 ): Promise<PersonalBest | undefined> {
-  const funboxes = Funbox.getFromString(funbox);
+  const funboxes = getFromString(funbox);
 
   if (!funboxes.every((f) => f.canGetPb)) {
     return undefined;
