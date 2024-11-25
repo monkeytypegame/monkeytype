@@ -478,7 +478,7 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
       $("#words").addClass("hidden");
     },
     restart(): void {
-      MemoryTimer.start();
+      MemoryTimer.start(Math.round(Math.pow(TestWords.words.length, 1.2)));
       $("#words").removeClass("hidden");
       if (Config.keymapMode === "next") {
         UpdateConfig.setKeymapMode("react");
