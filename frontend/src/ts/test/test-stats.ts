@@ -350,7 +350,9 @@ function countChars(): CharCount {
       spaces++;
     }
   }
-  if (Funbox.getActive().find((f) => f.properties?.includes("nospace"))) {
+  if (
+    Funbox.getActiveFunboxes().find((f) => f.properties?.includes("nospace"))
+  ) {
     spaces = 0;
     correctspaces = 0;
   }

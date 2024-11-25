@@ -124,7 +124,7 @@ async function updateGraph(): Promise<void> {
   const fc = await ThemeColors.get("sub");
   if (Config.funbox !== "none") {
     let content = "";
-    for (const fb of Funbox.getActive()) {
+    for (const fb of Funbox.getActiveFunboxes()) {
       content += fb.name;
       if (fb.functions?.getResultContent) {
         content += "(" + fb.functions.getResultContent() + ")";
@@ -673,7 +673,7 @@ function updateTestType(randomQuote: Quote | null): void {
     }
   }
   const ignoresLanguage =
-    Funbox.getActive().find((f) =>
+    Funbox.getActiveFunboxes().find((f) =>
       f.properties?.includes("ignoresLanguage")
     ) !== undefined;
   if (Config.mode !== "custom" && !ignoresLanguage) {

@@ -331,7 +331,9 @@ function getWordHTML(word: string): string {
   let newlineafter = false;
   let retval = `<div class='word'>`;
 
-  const funbox = Funbox.getActive().find((f) => f.functions?.getWordHtml);
+  const funbox = Funbox.getActiveFunboxes().find(
+    (f) => f.functions?.getWordHtml
+  );
   const chars = Strings.splitIntoCharacters(word);
   for (const char of chars) {
     if (funbox?.functions?.getWordHtml) {
@@ -641,7 +643,7 @@ export async function screenshot(): Promise<void> {
     }
     (document.querySelector("html") as HTMLElement).style.scrollBehavior =
       "smooth";
-    for (const fb of Funbox.getActive()) {
+    for (const fb of Funbox.getActiveFunboxes()) {
       fb.functions?.applyGlobalCSS?.();
     }
   }
@@ -683,7 +685,7 @@ export async function screenshot(): Promise<void> {
   $(".highlightContainer").addClass("hidden");
   if (revertCookie) $("#cookiesModal").addClass("hidden");
 
-  for (const fb of Funbox.getActive()) {
+  for (const fb of Funbox.getActiveFunboxes()) {
     fb.functions?.clearGlobal?.();
   }
 
@@ -832,7 +834,9 @@ export async function updateActiveWordLetters(
       }
     }
 
-    const funbox = Funbox.getActive().find((fb) => fb.functions?.getWordHtml);
+    const funbox = Funbox.getActiveFunboxes().find(
+      (fb) => fb.functions?.getWordHtml
+    );
 
     const inputChars = Strings.splitIntoCharacters(input);
     const currentWordChars = Strings.splitIntoCharacters(currentWord);

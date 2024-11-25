@@ -20,7 +20,7 @@ $((): void => {
   $("body").css("transition", "background .25s, transform .05s");
   MerchBanner.showIfNotClosedBefore();
   setTimeout(() => {
-    for (const fb of Funbox.getActive()) {
+    for (const fb of Funbox.getActiveFunboxes()) {
       fb.functions?.applyGlobalCSS?.();
     }
   }, 500); //this approach will probably bite me in the ass at some point

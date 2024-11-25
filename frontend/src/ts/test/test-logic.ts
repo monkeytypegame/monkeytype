@@ -105,7 +105,7 @@ export function startTest(now: number): boolean {
   TestTimer.clear();
   Monkey.show();
 
-  for (const fb of Funbox.getActive()) {
+  for (const fb of Funbox.getActiveFunboxes()) {
     fb.functions?.start?.();
   }
 
@@ -327,7 +327,7 @@ export function restart(options = {} as RestartOptions): void {
       await init();
       await PaceCaret.init();
 
-      for (const fb of Funbox.getActive()) {
+      for (const fb of Funbox.getActiveFunboxes()) {
         fb.functions?.restart?.();
       }
 
@@ -539,7 +539,7 @@ export function areAllTestWordsGenerated(): boolean {
 //add word during the test
 export async function addWord(): Promise<void> {
   let bound = 100; // how many extra words to aim for AFTER the current word
-  const funboxToPush = Funbox.getActive()
+  const funboxToPush = Funbox.getActiveFunboxes()
     .find((f) => f.properties?.find((fp) => fp.startsWith("toPush")))
     ?.properties?.find((fp) => fp.startsWith("toPush:"));
   const toPushCount = funboxToPush?.split(":")[1];
@@ -551,7 +551,7 @@ export async function addWord(): Promise<void> {
     return;
   }
 
-  const sectionFunbox = Funbox.getActive().find(
+  const sectionFunbox = Funbox.getActiveFunboxes().find(
     (f) => f.functions?.pullSection
   );
 

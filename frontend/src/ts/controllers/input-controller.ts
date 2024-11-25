@@ -144,7 +144,9 @@ function backspaceToPrevious(): void {
 
   TestInput.input.current = TestInput.input.popHistory();
   TestInput.corrected.popHistory();
-  if (Funbox.getActive().find((f) => f.properties?.includes("nospace"))) {
+  if (
+    Funbox.getActiveFunboxes().find((f) => f.properties?.includes("nospace"))
+  ) {
     TestInput.input.current = TestInput.input.current.slice(0, -1);
     setWordsInput(" " + TestInput.input.current + " ");
   }
@@ -193,7 +195,7 @@ async function handleSpace(): Promise<void> {
 
   const currentWord: string = TestWords.words.getCurrent();
 
-  for (const fb of Funbox.getActive()) {
+  for (const fb of Funbox.getActiveFunboxes()) {
     fb.functions?.handleSpace?.();
   }
 
@@ -204,8 +206,9 @@ async function handleSpace(): Promise<void> {
   TestInput.pushBurstToHistory(burst);
 
   const nospace =
-    Funbox.getActive().find((f) => f.properties?.includes("nospace")) !==
-    undefined;
+    Funbox.getActiveFunboxes().find((f) =>
+      f.properties?.includes("nospace")
+    ) !== undefined;
 
   //correct word or in zen mode
   const isWordCorrect: boolean =
@@ -405,7 +408,9 @@ function isCharCorrect(char: string, charIndex: number): boolean {
     return true;
   }
 
-  const funbox = Funbox.getActive().find((fb) => fb.functions?.isCharCorrect);
+  const funbox = Funbox.getActiveFunboxes().find(
+    (fb) => fb.functions?.isCharCorrect
+  );
   if (funbox?.functions?.isCharCorrect) {
     return funbox.functions.isCharCorrect(char, originalChar);
   }
@@ -489,15 +494,16 @@ function handleChar(
 
   const isCharKorean: boolean = TestInput.input.getKoreanStatus();
 
-  for (const fb of Funbox.getActive()) {
+  for (const fb of Funbox.getActiveFunboxes()) {
     if (fb.functions?.handleChar) {
       char = fb.functions.handleChar(char);
     }
   }
 
   const nospace =
-    Funbox.getActive().find((f) => f.properties?.includes("nospace")) !==
-    undefined;
+    Funbox.getActiveFunboxes().find((f) =>
+      f.properties?.includes("nospace")
+    ) !== undefined;
 
   if (char !== "\n" && char !== "\t" && /\s/.test(char)) {
     if (nospace) return;
@@ -901,7 +907,7 @@ $(document).on("keydown", async (event) => {
     return;
   }
 
-  for (const fb of Funbox.getActive()) {
+  for (const fb of Funbox.getActiveFunboxes()) {
     if (fb.functions?.handleKeydown) {
       void fb.functions.handleKeydown(event);
     }
@@ -1154,7 +1160,7 @@ $(document).on("keydown", async (event) => {
     }
   }
 
-  for (const fb of Funbox.getActive()) {
+  for (const fb of Funbox.getActiveFunboxes()) {
     if (fb.functions?.preventDefaultEvent) {
       if (
         await fb.functions.preventDefaultEvent(

@@ -58,37 +58,37 @@ export function getFromString(
   return get(stringToFunboxNames(hashSeparatedFunboxes));
 }
 
-export function getActive(): FunboxMetadataWithFunctions[] {
+export function getActiveFunboxes(): FunboxMetadataWithFunctions[] {
   return get(stringToFunboxNames(Config.funbox));
 }
 
-export function getActiveNames(): FunboxName[] {
+export function getActiveFunboxNames(): FunboxName[] {
   return stringToFunboxNames(Config.funbox);
 }
 
-export function getActiveWithProperty(
+export function getActiveFunboxesWithProperty(
   property: FunboxProperty
 ): FunboxMetadataWithFunctions[] {
-  return getActive().filter((fb) => fb.properties?.includes(property));
+  return getActiveFunboxes().filter((fb) => fb.properties?.includes(property));
 }
 
-export function getActiveWithFunction(
+export function getActiveFunboxesWithFunction(
   functionName: keyof FunboxFunctions
 ): FunboxMetadataWithFunctions[] {
-  return getActive().filter((fb) => fb.functions?.[functionName]);
+  return getActiveFunboxes().filter((fb) => fb.functions?.[functionName]);
 }
 
 export function toggleScript(...params: string[]): void {
   if (Config.funbox === "none") return;
 
-  for (const fb of getActive()) {
+  for (const fb of getActiveFunboxes()) {
     fb.functions?.toggleScript?.(params);
   }
 }
 
 export function setFunbox(funbox: string): boolean {
   if (funbox === "none") {
-    for (const fb of getActive()) {
+    for (const fb of getActiveFunboxes()) {
       fb.functions?.clearGlobal?.();
     }
   }
@@ -101,7 +101,7 @@ export function toggleFunbox(funbox: "none" | FunboxName): boolean {
   if (funbox === "none") setFunbox("none");
   if (
     !checkCompatibility(
-      getActiveNames(),
+      getActiveFunboxNames(),
       funbox === "none" ? undefined : funbox
     ) &&
     !Config.funbox.split("#").includes(funbox)
@@ -117,7 +117,7 @@ export function toggleFunbox(funbox: "none" | FunboxName): boolean {
   FunboxMemory.load();
   const e = UpdateConfig.toggleFunbox(funbox, false);
 
-  for (const fb of getActive()) {
+  for (const fb of getActiveFunboxes()) {
     if (!Config.funbox.includes(funbox)) {
       fb.functions?.clearGlobal?.();
     } else {
@@ -157,7 +157,7 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
 
   // The configuration might be edited with dev tools,
   // so we need to double check its validity
-  if (!checkCompatibility(getActiveNames())) {
+  if (!checkCompatibility(getActiveFunboxNames())) {
     Notifications.add(
       Misc.createErrorMessage(
         undefined,
@@ -193,7 +193,9 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
   }
 
   if (language.ligatures) {
-    if (getActive().find((f) => f.properties?.includes("noLigatures"))) {
+    if (
+      getActiveFunboxes().find((f) => f.properties?.includes("noLigatures"))
+    ) {
       Notifications.add(
         "Current language does not support this funbox mode",
         0
@@ -260,7 +262,7 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
   }
 
   ManualRestart.set();
-  for (const fb of getActive()) {
+  for (const fb of getActiveFunboxes()) {
     fb.functions?.applyConfig?.();
   }
   // ModesNotice.update();
@@ -268,7 +270,7 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
 }
 
 export async function rememberSettings(): Promise<void> {
-  for (const fb of getActive()) {
+  for (const fb of getActiveFunboxes()) {
     fb.functions?.rememberSettings?.();
   }
 }
@@ -276,7 +278,7 @@ export async function rememberSettings(): Promise<void> {
 async function setFunboxBodyClasses(): Promise<boolean> {
   const $body = $("body");
 
-  const activeFbClasses = getActiveNames().map(
+  const activeFbClasses = getActiveFunboxNames().map(
     (name) => "fb-" + name.replaceAll("_", "-")
   );
 
@@ -295,7 +297,7 @@ async function applyFunboxCSS(): Promise<boolean> {
   const $theme = $("#funBoxTheme");
 
   //currently we only support one active funbox with hasCSS
-  const activeFunboxWithTheme = getActive().find((fb) =>
+  const activeFunboxWithTheme = getActiveFunboxes().find((fb) =>
     fb?.properties?.includes("hasCssFile")
   );
 
