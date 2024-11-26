@@ -16,7 +16,6 @@ import * as Arrays from "../utils/arrays";
 import * as TestState from "../test/test-state";
 import * as GetText from "../utils/generate";
 import { FunboxWordOrder, LanguageObject } from "../utils/json-data";
-import * as Funbox from "../test/funbox/funbox";
 import { getActiveFunboxes } from "./funbox/list";
 
 function shouldCapitalize(lastChar: string): boolean {
