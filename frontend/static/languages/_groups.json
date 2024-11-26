@@ -494,6 +494,10 @@
     "languages": ["tibetan", "tibetan_1k"]
   },
   {
+    "name": "eastern_mari",
+    "languages": ["eastern_mari"]
+  },
+  {
     "name": "other",
     "languages": [
       "lojban_gismu",
