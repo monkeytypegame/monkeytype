@@ -38,6 +38,7 @@ import type {
 import Ape from "../ape";
 import { CompletedEvent } from "@monkeytype/contracts/schemas/results";
 import { getActiveFunboxes, getFromString } from "./funbox/list";
+import { getFunboxesFromString } from "@monkeytype/funbox";
 
 let result: CompletedEvent;
 let maxChartVal: number;
@@ -178,7 +179,7 @@ export async function updateGraphPBLine(): Promise<void> {
     result.language,
     result.difficulty,
     result.lazyMode ?? false,
-    result.funbox ?? "none"
+    getFunboxesFromString(result.funbox ?? "none")
   );
   const localPbWpm = localPb?.wpm ?? 0;
   if (localPbWpm === 0) return;
@@ -401,7 +402,7 @@ export async function updateCrown(dontSave: boolean): Promise<void> {
       Config.language,
       Config.difficulty,
       Config.lazyMode,
-      Config.funbox
+      getActiveFunboxes()
     );
     const localPbWpm = localPb?.wpm ?? 0;
     pbDiff = result.wpm - localPbWpm;
@@ -423,7 +424,7 @@ export async function updateCrown(dontSave: boolean): Promise<void> {
       Config.language,
       Config.difficulty,
       Config.lazyMode,
-      "none"
+      []
     );
     const localPbWpm = localPb?.wpm ?? 0;
     pbDiff = result.wpm - localPbWpm;

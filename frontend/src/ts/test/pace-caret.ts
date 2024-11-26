@@ -8,6 +8,7 @@ import * as JSONData from "../utils/json-data";
 import * as TestState from "./test-state";
 import * as ConfigEvent from "../observables/config-event";
 import { convertRemToPixels } from "../utils/numbers";
+import { getActiveFunboxes } from "./funbox/list";
 
 type Settings = {
   wpm: number;
@@ -79,7 +80,7 @@ export async function init(): Promise<void> {
           Config.language,
           Config.difficulty,
           Config.lazyMode,
-          Config.funbox
+          getActiveFunboxes()
         )
       )?.wpm ?? 0;
   } else if (Config.paceCaret === "tagPb") {

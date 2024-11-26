@@ -31,7 +31,7 @@ import {
 import { Preset } from "@monkeytype/contracts/schemas/presets";
 import defaultSnapshot from "./constants/default-snapshot";
 import { Result } from "@monkeytype/contracts/schemas/results";
-import { getFromString } from "./test/funbox/list";
+import { FunboxMetadata } from "../../../packages/funbox/src/types";
 
 export type SnapshotUserTag = UserTag & {
   active?: boolean;
@@ -704,10 +704,8 @@ export async function getLocalPB<M extends Mode>(
   language: string,
   difficulty: Difficulty,
   lazyMode: boolean,
-  funbox: string
+  funboxes: FunboxMetadata[]
 ): Promise<PersonalBest | undefined> {
-  const funboxes = getFromString(funbox);
-
   if (!funboxes.every((f) => f.canGetPb)) {
     return undefined;
   }

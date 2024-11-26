@@ -10,6 +10,7 @@ import { HighlightMode } from "@monkeytype/contracts/schemas/configs";
 import { Mode } from "@monkeytype/contracts/schemas/shared";
 import { FunboxName, checkCompatibility } from "@monkeytype/funbox";
 import { getActiveFunboxes, getActiveFunboxNames } from "./list";
+import { checkForcedConfig } from "./funbox-validation";
 
 export function toggleScript(...params: string[]): void {
   if (Config.funbox === "none") return;

@@ -65,6 +65,7 @@ import {
 } from "@monkeytype/contracts/schemas/results";
 import * as XPBar from "../elements/xp-bar";
 import { getActiveFunboxes } from "./funbox/list";
+import { getFunboxesFromString } from "@monkeytype/funbox";
 
 let failReason = "";
 const koInputVisual = document.getElementById("koInputVisual") as HTMLElement;
@@ -1219,7 +1220,7 @@ async function saveResult(
       completedEvent.language,
       completedEvent.difficulty,
       completedEvent.lazyMode,
-      completedEvent.funbox
+      getFunboxesFromString(completedEvent.funbox)
     );
 
     if (localPb !== undefined) {
