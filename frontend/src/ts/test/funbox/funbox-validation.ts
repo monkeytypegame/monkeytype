@@ -1,4 +1,3 @@
-import * as Funbox from "./funbox";
 import * as Notifications from "../../elements/notifications";
 import * as Strings from "../../utils/strings";
 import { Config, ConfigValue } from "@monkeytype/contracts/schemas/configs";
@@ -79,14 +78,14 @@ export function canSetConfigWithCurrentFunboxes(
 ): boolean {
   let errorCount = 0;
   if (key === "mode") {
-    let fb = getFromString(funbox).filter(
+    let fb = getFunboxesFromString(funbox).filter(
       (f) =>
         f.frontendForcedConfig?.["mode"] !== undefined &&
         !(f.frontendForcedConfig["mode"] as ConfigValue[]).includes(value)
     );
     if (value === "zen") {
       fb = fb.concat(
-        getFromString(funbox).filter((f) => {
+        getFunboxesFromString(funbox).filter((f) => {
           return (
             f.frontendFunctions?.includes("getWord") ??
             f.frontendFunctions?.includes("pullSection") ??
@@ -105,7 +104,7 @@ export function canSetConfigWithCurrentFunboxes(
     }
     if (value === "quote" || value === "custom") {
       fb = fb.concat(
-        getFromString(funbox).filter((f) => {
+        getFunboxesFromString(funbox).filter((f) => {
           return (
             f.frontendFunctions?.includes("getWord") ??
             f.frontendFunctions?.includes("pullSection") ??
@@ -121,7 +120,7 @@ export function canSetConfigWithCurrentFunboxes(
     }
   }
   if (key === "words" || key === "time") {
-    if (!Funbox.checkForcedConfig(key, value, getFromString(funbox)).result) {
+    if (!checkForcedConfig(key, value, getFunboxesFromString(funbox)).result) {
       if (!noNotification) {
         Notifications.add("Active funboxes do not support infinite tests", 0);
         return false;
@@ -130,7 +129,7 @@ export function canSetConfigWithCurrentFunboxes(
       }
     }
   } else if (
-    !Funbox.checkForcedConfig(key, value, getFromString(funbox)).result
+    !checkForcedConfig(key, value, getFunboxesFromString(funbox)).result
   ) {
     errorCount += 1;
   }
