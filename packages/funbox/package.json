@@ -4,7 +4,6 @@
   "scripts": {
     "dev": "rimraf ./dist && monkeytype-esbuild --watch",
     "build": "rimraf ./dist && npm run madge && monkeytype-esbuild",
-    "test": "vitest run",
     "madge": " madge --circular --extensions ts ./src",
     "ts-check": "tsc --noEmit",
     "lint": "eslint \"./**/*.ts\""
