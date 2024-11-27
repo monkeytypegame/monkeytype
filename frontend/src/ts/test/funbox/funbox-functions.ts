@@ -410,9 +410,6 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
     getWord(): string {
       return GetText.getASCII();
     },
-    punctuateWord(word: string): string {
-      return word;
-    },
   },
   specials: {
     getWord(): string {
