@@ -260,7 +260,7 @@ const list: Record<FunboxName, FunboxMetadata> = {
     frontendForcedConfig: {
       highlightMode: ["letter", "off"],
     },
-    frontendFunctions: ["applyConfig", "rememberSettings"],
+    frontendFunctions: ["rememberSettings"],
     name: "nospace",
   },
   poetry: {
