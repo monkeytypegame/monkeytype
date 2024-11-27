@@ -22,9 +22,6 @@ import { getSection } from "../wikipedia";
 import * as WeakSpot from "../weak-spot";
 import * as IPAddresses from "../../utils/ip-addresses";
 
-//todo figure out how to connect these frontend function names with the ones defined in the shared package
-//currently there is nothing ensuring these names match up
-
 export type FunboxFunctions = {
   getWord?: (wordset?: Wordset, wordIndex?: number) => string;
   punctuateWord?: (word: string) => string;
