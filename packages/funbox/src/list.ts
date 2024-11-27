@@ -374,6 +374,7 @@ const list: Record<FunboxName, FunboxMetadata> = {
     canGetPb: true,
     difficultyLevel: 0,
     properties: ["hasCssFile", "noLigatures"],
+    frontendFunctions: ["applyGlobalCSS", "clearGlobal"],
     name: "crt",
   },
   backwards: {
@@ -386,6 +387,7 @@ const list: Record<FunboxName, FunboxMetadata> = {
       "wordOrder:reverse",
     ],
     canGetPb: true,
+    frontendFunctions: ["alterText"],
     difficultyLevel: 3,
   },
   ddoouubblleedd: {
