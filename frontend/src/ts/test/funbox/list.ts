@@ -41,6 +41,10 @@ export function get(
   }
 }
 
+export function getAllFunboxes(): FunboxMetadataWithFunctions[] {
+  return Object.values(metadataWithFunctions);
+}
+
 export function getFromString(
   hashSeparatedFunboxes: string
 ): FunboxMetadataWithFunctions[] {

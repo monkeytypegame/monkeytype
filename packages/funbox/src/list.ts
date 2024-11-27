@@ -95,7 +95,6 @@ const list: Record<FunboxName, FunboxMetadata> = {
     },
     frontendFunctions: [
       "getWord",
-      "applyConfig",
       "rememberSettings",
       "handleChar",
       "isCharCorrect",
