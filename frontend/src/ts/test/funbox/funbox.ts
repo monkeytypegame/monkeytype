@@ -379,9 +379,35 @@ FunboxList.setFunboxFunctions("specials", {
   },
 });
 
+async function readAheadHandleKeydown(
+  event: JQuery.KeyDownEvent<Document, undefined, Document, Document>
+): Promise<void> {
+  const inputCurrentChar = (TestInput.input.current ?? "").slice(-1);
+  const wordCurrentChar = TestWords.words
+    .getCurrent()
+    .slice(TestInput.input.current.length - 1, TestInput.input.current.length);
+  const isCorrect = inputCurrentChar === wordCurrentChar;
+
+  if (
+    event.key == "Backspace" &&
+    !isCorrect &&
+    (TestInput.input.current != "" ||
+      TestInput.input.history[TestWords.words.currentIndex - 1] !=
+        TestWords.words.get(TestWords.words.currentIndex - 1) ||
+      Config.freedomMode)
+  ) {
+    $("#words").addClass("read_ahead_disabled");
+  } else if (event.key == " ") {
+    $("#words").removeClass("read_ahead_disabled");
+  }
+}
+
 FunboxList.setFunboxFunctions("read_ahead_easy", {
   rememberSettings(): void {
     save("highlightMode", Config.highlightMode, UpdateConfig.setHighlightMode);
+  },
+  async handleKeydown(event): Promise<void> {
+    await readAheadHandleKeydown(event);
   },
 });
 
@@ -389,11 +415,17 @@ FunboxList.setFunboxFunctions("read_ahead", {
   rememberSettings(): void {
     save("highlightMode", Config.highlightMode, UpdateConfig.setHighlightMode);
   },
+  async handleKeydown(event): Promise<void> {
+    await readAheadHandleKeydown(event);
+  },
 });
 
 FunboxList.setFunboxFunctions("read_ahead_hard", {
   rememberSettings(): void {
     save("highlightMode", Config.highlightMode, UpdateConfig.setHighlightMode);
+  },
+  async handleKeydown(event): Promise<void> {
+    await readAheadHandleKeydown(event);
   },
 });
 

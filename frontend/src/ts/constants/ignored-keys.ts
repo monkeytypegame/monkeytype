@@ -5,4 +5,6 @@ export const IgnoredKeys = [
   "AudioVolumeUp",
   "AudioVolumeDown",
   "AudioVolumeMute",
+  "Home",
+  "End",
 ];

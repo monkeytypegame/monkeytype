@@ -202,7 +202,7 @@
   },
   {
     "name": "croatian",
-    "languages": ["croatian"]
+    "languages": ["croatian", "croatian_1k"]
   },
   {
     "name": "dutch",
@@ -490,6 +490,10 @@
     "languages": ["xhosa"]
   },
   {
+    "name": "tibetan",
+    "languages": ["tibetan", "tibetan_1k"]
+  },
+  {
     "name": "other",
     "languages": [
       "lojban_gismu",
@@ -504,7 +508,7 @@
   },
   {
     "name": "amharic",
-    "languages": ["amharic"]
+    "languages": ["amharic", "amharic_1k", "amharic_5k"]
   },
   {
     "name": "oromo",

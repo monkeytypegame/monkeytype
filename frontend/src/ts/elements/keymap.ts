@@ -113,6 +113,8 @@ export async function refresh(
   if (Config.keymapMode === "off") return;
   if (ActivePage.get() !== "test") return;
   if (!layoutName) return;
+  let r5_grid = "";
+  let hasAlphas = false;
   try {
     let layouts;
     try {
@@ -152,6 +154,8 @@ export async function refresh(
 
     const isSteno =
       Config.keymapStyle === "steno" || Config.keymapStyle === "steno_matrix";
+
+    const isAlice = Config.keymapStyle === "alice";
 
     if (isSteno) {
       lts = stenoKeys;
@@ -203,19 +207,76 @@ export async function refresh(
 
       if (row === "row5") {
         if (isSteno) continue;
-        const layoutDisplay = layoutString.replace(/_/g, " ");
+        let layoutDisplay = layoutString.replace(/_/g, " ");
         let letterStyle = "";
         if (Config.keymapLegendStyle === "blank") {
           letterStyle = `style="display: none;"`;
         }
+        /* ROW 5 in alternate keymaps allow for alphas in thumb keys.
+         * These keymaps MUST include two keys in row 5,
+         * an alpha and a space, or a space and an alpha.
+         * Alpha key is rendered with the regular alpha size.
+         * Layout name is automatically added in the space key.
+         * Visual keymap will be:
+         * 1-3 for 1 alpha and 1 space
+         * 3-1 for 1 space and 1 alpha
+         * Together with the data-row5-has-alpha="true",
+         * these two will be used to edit the CSS grid layout.
+         * 3-3 for two spaces of size 3. This will not be used to edit CSS,
+         * since it means a traditional layout, can keep current CSS grid.
+         * It is just created for simplicity in the for loop below.
+         * */
+        // If only one space, add another
+        if (rowKeys.length === 1 && rowKeys[0] === " ") {
+          rowKeys[1] = rowKeys[0];
+        }
+        // If only one alpha, add one space and place it on the left
+        if (rowKeys.length === 1 && rowKeys[0] !== " ") {
+          rowKeys[1] = " ";
+          rowKeys.reverse();
+        }
+        // If two alphas equal, replace one with a space on the left
+        if (
+          rowKeys.length > 1 &&
+          rowKeys[0] !== " " &&
+          rowKeys[0] === rowKeys[1]
+        ) {
+          rowKeys[0] = " ";
+        }
+        const alphas = (v: string): boolean => v !== " ";
+        hasAlphas = rowKeys.some(alphas);
+
         rowElement += "<div></div>";
-        rowElement += `<div class="keymapKey keySpace layoutIndicator left">
-          <div class="letter" ${letterStyle}>${layoutDisplay}</div>
-        </div>`;
-        rowElement += `<div class="keymapSplitSpacer"></div>`;
-        rowElement += `<div class="keymapKey keySpace right">
-          <div class="letter"></div>
-        </div>`;
+
+        for (let i = 0; i < rowKeys.length; i++) {
+          const key = rowKeys[i] as string;
+          let keyDisplay = key[0] as string;
+          if (Config.keymapLegendStyle === "uppercase") {
+            keyDisplay = keyDisplay.toUpperCase();
+          }
+          const keyVisualValue = key.replace('"', "&quot;");
+          // these are used to keep grid layout but magically hide keys using opacity:
+          let side = i < 1 ? "left" : "right";
+          // we won't use this trick for alternate layouts, unless Alice (for rotation):
+          if (hasAlphas && !isAlice) side = "";
+          if (i === 1) {
+            rowElement += `<div class="keymapSplitSpacer"></div>`;
+            r5_grid += "-";
+          }
+          if (keyVisualValue === " ") {
+            rowElement += `<div class="keymapKey keySpace layoutIndicator ${side}">
+              <div class="letter" ${letterStyle}>${layoutDisplay}</div>
+            </div>`;
+            r5_grid += "3";
+            // potential second space in next loop iterations will be empty:
+            layoutDisplay = "";
+          } else {
+            rowElement += `<div class="keymapKey ${side}">
+              <div class="letter">${keyDisplay}</div>
+            </div>`;
+            r5_grid += "1";
+          }
+        }
       } else {
         for (let i = 0; i < rowKeys.length; i++) {
           if (row === "row2" && i === 12) continue;
@@ -309,7 +370,15 @@ export async function refresh(
         }
       }
 
-      keymapElement += `<div class="row r${index + 1}">${rowElement}</div>`;
+      if (row === "row5") {
+        keymapElement += `<div
+          class="row r${index + 1}"
+          data-row5-grid="${r5_grid}"
+          data-row5-has-alpha="${hasAlphas}"
+        >${rowElement}</div>`;
+      } else {
+        keymapElement += `<div class="row r${index + 1}">${rowElement}</div>`;
+      }
     }
     // );
 

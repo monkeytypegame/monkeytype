@@ -101,7 +101,7 @@
   .r5 {
     display: grid;
     grid-template-columns: 3.5fr 6fr 3.5fr;
-    font-size: 0.5rem;
+    font-size: 1rem;
     // &.matrixSpace {
     //   // grid-template-columns: 6.75fr 1.9fr 6.75fr;
     //   grid-template-columns: 6.9fr 4.6fr 6.9fr; // wider spacebar
@@ -110,6 +110,24 @@
     //   // grid-template-columns: 6.75fr 1.9fr 6.75fr;
     //   grid-template-columns: 4fr 7.5fr 4fr;
     // }
+    .keySpace {
+      // since we can potentially have alphas in r5,
+      // we keep font-size: 1rem; for alphas to look the same as other rows,
+      // but reduce it again to 0.5rem for space, so layout name fits.
+      font-size: 0.5rem;
+    }
+
+    &[data-row5-has-alpha="true"] {
+      // space-alpha
+      &[data-row5-grid="3-1"] {
+        grid-template-columns: 4fr 4fr 1fr 4fr;
+      }
+
+      // alpha-space
+      &[data-row5-grid="1-3"] {
+        grid-template-columns: 4fr 1fr 4fr 4fr;
+      }
+    }
   }
   &.matrix {
     .r1,
@@ -121,6 +139,18 @@
 
     .r5 {
       grid-template-columns: 1fr 3fr 4fr 3fr 1fr;
+
+      &[data-row5-has-alpha="true"] {
+        // space-alpha
+        &[data-row5-grid="3-1"] {
+          grid-template-columns: 1fr 2fr 3fr 1fr 5fr;
+        }
+
+        // alpha-space
+        &[data-row5-grid="1-3"] {
+          grid-template-columns: 2fr 3fr 1fr 3fr 3fr;
+        }
+      }
     }
   }
   &.split {
@@ -152,6 +182,18 @@
     }
     .r5 {
       grid-template-columns: 5fr 3fr 1fr 3fr 4.5fr;
+
+      &[data-row5-has-alpha="true"] {
+        // space-alpha
+        &[data-row5-grid="3-1"] {
+          grid-template-columns: 5fr 3fr 1fr 1fr 6.5fr;
+        }
+
+        // alpha-space
+        &[data-row5-grid="1-3"] {
+          grid-template-columns: 7fr 1fr 1fr 3fr 4.5fr;
+        }
+      }
     }
     .keySpace.right {
       opacity: 1;
@@ -180,6 +222,18 @@
 
     .r5 {
       grid-template-columns: 1fr 2fr 3fr 1fr 3fr 2fr 1fr;
+
+      &[data-row5-has-alpha="true"] {
+        // space-alpha
+        &[data-row5-grid="3-1"] {
+          grid-template-columns: 2fr 1fr 3fr 1fr 1fr 2fr 3fr;
+        }
+
+        // alpha-space
+        &[data-row5-grid="1-3"] {
+          grid-template-columns: 4fr 1fr 1fr 1fr 3fr 1fr 2fr;
+        }
+      }
     }
     .keySpace.right {
       opacity: 1;
@@ -433,20 +487,42 @@
     }
     .r5 {
       grid-template-columns: 5fr 3fr 1fr 3fr 4.5fr;
-    }
-    .keySpace.right {
-      opacity: 1;
-    }
 
-    div.keySpace {
-      transform: rotate(10deg);
-      margin-left: -5%;
-      margin-top: 21%;
-    }
-    div.keySpace.right {
-      transform: rotate(-10deg);
-      margin-left: -33%;
-      margin-top: 20%;
+      // rotation/position of r5 keys moved under .r5 styles
+      // and made generic to left/right to account for alphas
+      div.keymapKey.left {
+        transform: rotate(10deg);
+        margin-left: -5%;
+        margin-top: 21%;
+      }
+      div.keymapKey.right {
+        opacity: 1;
+        transform: rotate(-10deg);
+        margin-left: -33%;
+        margin-top: 20%;
+      }
+
+      &[data-row5-has-alpha="true"] {
+        // space-alpha
+        &[data-row5-grid="3-1"] {
+          grid-template-columns: 5fr 3fr 1fr 3fr 4.5fr;
+
+          div.keymapKey.right {
+            margin-left: -30%;
+            margin-top: 25%;
+          }
+        }
+
+        // alpha-space
+        &[data-row5-grid="1-3"] {
+          grid-template-columns: 5fr 3fr 1fr 3fr 4.5fr;
+
+          div.keymapKey.left {
+            margin-left: 50%;
+            margin-top: 25%;
+          }
+        }
+      }
     }
     div#KeyBackslash.keymapKey {
       visibility: hidden;

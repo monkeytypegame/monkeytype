@@ -1,5 +1,6 @@
 {
   "name": "sinhala",
+  "ligatures": true,
   "bcp47": "si",
   "words": [
     "අක්ෂර",

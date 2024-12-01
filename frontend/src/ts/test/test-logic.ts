@@ -545,10 +545,13 @@ export async function addWord(): Promise<void> {
     ?.properties?.find((fp) => fp.startsWith("toPush:"));
   const toPushCount = funboxToPush?.split(":")[1];
   if (toPushCount !== undefined) bound = +toPushCount - 1;
-  if (
-    TestWords.words.length - TestInput.input.history.length > bound ||
-    areAllTestWordsGenerated()
-  ) {
+
+  if (TestWords.words.length - TestInput.input.history.length > bound) {
+    console.debug("Not adding word, enough words already");
+    return;
+  }
+  if (areAllTestWordsGenerated()) {
+    console.debug("Not adding word, all words generated");
     return;
   }
 

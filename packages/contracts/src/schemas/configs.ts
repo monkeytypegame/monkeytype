@@ -298,6 +298,7 @@ export const ConfigSchema = z
     favThemes: FavThemesSchema,
     showKeyTips: z.boolean(),
     smoothCaret: SmoothCaretSchema,
+    codeUnindentOnBackspace: z.boolean(),
     quickRestart: QuickRestartSchema,
     punctuation: z.boolean(),
     numbers: z.boolean(),
