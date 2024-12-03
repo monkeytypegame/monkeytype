@@ -2223,4 +2223,13 @@
       "row5": ["rR", " "]
     }
   }
+  "steno": {
+    "keymapShowTopRow": false,
+    "type": "ansi",
+    "keys": {
+      "row1": ["s", "t", "p", "h", "*", "f", "p", "l", "t", "d"],
+      "row2": ["s", "k", "w", "r", "*", "r", "b", "g", "s", "z"],
+      "row3": ["a", "o", "e", "u"]
+    }
+  }
 }
