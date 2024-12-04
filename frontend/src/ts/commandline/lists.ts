@@ -77,7 +77,7 @@ import PresetsCommands from "./lists/presets";
 import LayoutsCommands, {
   update as updateLayoutsCommands,
 } from "./lists/layouts";
-import FunboxCommands, { update as updateFunboxCommands } from "./lists/funbox";
+import FunboxCommands from "./lists/funbox";
 import ThemesCommands, { update as updateThemesCommands } from "./lists/themes";
 import LoadChallengeCommands, {
   update as updateLoadChallengeCommands,
@@ -128,22 +128,6 @@ languagesPromise
   .catch((e: unknown) => {
     console.error(
       Misc.createErrorMessage(e, "Failed to update language commands")
-    );
-  });
-
-const funboxPromise = JSONData.getFunboxList();
-funboxPromise
-  .then((funboxes) => {
-    updateFunboxCommands(funboxes);
-    if (FunboxCommands[0]?.subgroup) {
-      FunboxCommands[0].subgroup.beforeList = (): void => {
-        updateFunboxCommands(funboxes);
-      };
-    }
-  })
-  .catch((e: unknown) => {
-    console.error(
-      Misc.createErrorMessage(e, "Failed to update funbox commands")
     );
   });
 
@@ -517,7 +501,6 @@ export async function getList(
   await Promise.allSettled([
     layoutsPromise,
     languagesPromise,
-    funboxPromise,
     fontsPromise,
     themesPromise,
     challengesPromise,
@@ -565,7 +548,6 @@ export async function getSingleSubgroup(): Promise<CommandsSubgroup> {
   await Promise.allSettled([
     layoutsPromise,
     languagesPromise,
-    funboxPromise,
     fontsPromise,
     themesPromise,
     challengesPromise,
