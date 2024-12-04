@@ -494,6 +494,10 @@
     "languages": ["tibetan", "tibetan_1k"]
   },
   {
+    "name": "bashkir",
+    "languages": ["bashkir"]
+  },
+  {
     "name": "other",
     "languages": [
       "lojban_gismu",
