@@ -496,12 +496,18 @@ function updateWordsHeight(force = false): void {
   const wordsHeight = $(
     document.querySelector("#words") as Element
   ).outerHeight(true) as number;
-  if (
-    Config.showAllLines &&
-    Config.mode !== "time" &&
-    CustomText.getLimitMode() !== "time" &&
-    CustomText.getLimitValue() !== 0
-  ) {
+
+  const shouldLimitToThreeLines =
+    Config.mode === "time" ||
+    (Config.mode === "custom" && CustomText.getLimitMode() === "time") ||
+    (Config.mode === "custom" &&
+      CustomText.getLimitMode() === "word" &&
+      CustomText.getLimitValue() === 0) ||
+    (Config.mode === "custom" &&
+      CustomText.getLimitMode() === "section" &&
+      CustomText.getLimitValue() === 0);
+
+  if (Config.showAllLines && !shouldLimitToThreeLines) {
     // overflow-x should not be visible in tape mode, but since showAllLines can't
     // be enabled simultaneously with tape mode we don't need to check it's off
     $("#words")
