@@ -9,7 +9,7 @@ import * as FunboxMemory from "./funbox-memory";
 import { HighlightMode } from "@monkeytype/contracts/schemas/configs";
 import { Mode } from "@monkeytype/contracts/schemas/shared";
 import { FunboxName, checkCompatibility } from "@monkeytype/funbox";
-import { getActiveFunboxes, getActiveFunboxNames } from "./list";
+import { getActiveFunboxes, getActiveFunboxNames, get } from "./list";
 import { checkForcedConfig } from "./funbox-validation";
 
 export function toggleScript(...params: string[]): void {
@@ -51,12 +51,10 @@ export function toggleFunbox(funbox: "none" | FunboxName): boolean {
   FunboxMemory.load();
   const e = UpdateConfig.toggleFunbox(funbox, false);
 
-  for (const fb of getActiveFunboxes()) {
-    if (!Config.funbox.includes(funbox)) {
-      fb.functions?.clearGlobal?.();
-    } else {
-      fb.functions?.applyGlobalCSS?.();
-    }
+  if (!getActiveFunboxNames().includes(funbox as FunboxName)) {
+    get(funbox as FunboxName).functions?.clearGlobal?.();
+  } else {
+    get(funbox as FunboxName).functions?.applyGlobalCSS?.();
   }
 
   //todo find out what the hell this means
