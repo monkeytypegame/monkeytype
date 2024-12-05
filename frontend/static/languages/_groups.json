@@ -181,6 +181,10 @@
     "languages": ["irish"]
   },
   {
+    "name": "galician",
+    "languages": ["galician"]
+  },
+  {
     "name": "thai",
     "languages": ["thai"]
   },
