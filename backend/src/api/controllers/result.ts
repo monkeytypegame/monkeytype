@@ -6,7 +6,7 @@ import Logger from "../../utils/logger";
 import "dotenv/config";
 import { MonkeyResponse } from "../../utils/monkey-response";
 import MonkeyError from "../../utils/error";
-import { areFunboxesCompatible, isTestTooShort } from "../../utils/validation";
+import { isTestTooShort } from "../../utils/validation";
 import {
   implemented as anticheatImplemented,
   validateResult,
@@ -22,7 +22,6 @@ import { getDailyLeaderboard } from "../../utils/daily-leaderboards";
 import AutoRoleList from "../../constants/auto-roles";
 import * as UserDAL from "../../dal/user";
 import { buildMonkeyMail } from "../../utils/monkey-mail";
-import FunboxList from "../../constants/funbox-list";
 import _, { omit } from "lodash";
 import * as WeeklyXpLeaderboard from "../../services/weekly-xp-leaderboard";
 import { UAParser } from "ua-parser-js";
@@ -57,6 +56,11 @@ import {
   getStartOfDayTimestamp,
 } from "@monkeytype/util/date-and-time";
 import { MonkeyRequest } from "../types";
+import {
+  getFunbox,
+  checkCompatibility,
+  stringToFunboxNames,
+} from "@monkeytype/funbox";
 
 try {
   if (!anticheatImplemented()) throw new Error("undefined");
@@ -232,7 +236,9 @@ export async function addResult(
     }
   }
 
-  if (!areFunboxesCompatible(completedEvent.funbox ?? "")) {
+  const funboxNames = stringToFunboxNames(completedEvent.funbox ?? "");
+
+  if (!checkCompatibility(funboxNames)) {
     throw new MonkeyError(400, "Impossible funbox combination");
   }
 
@@ -660,7 +666,7 @@ async function calculateXp(
     charStats,
     punctuation,
     numbers,
-    funbox,
+    funbox: resultFunboxes,
   } = result;
 
   const {
@@ -713,12 +719,15 @@ async function calculateXp(
     }
   }
 
-  if (funboxBonusConfiguration > 0) {
-    const funboxModifier = _.sumBy(funbox.split("#"), (funboxName) => {
-      const funbox = FunboxList.find((f) => f.name === funboxName);
-      const difficultyLevel = funbox?.difficultyLevel ?? 0;
-      return Math.max(difficultyLevel * funboxBonusConfiguration, 0);
-    });
+  if (funboxBonusConfiguration > 0 && resultFunboxes !== "none") {
+    const funboxModifier = _.sumBy(
+      stringToFunboxNames(resultFunboxes),
+      (funboxName) => {
+        const funbox = getFunbox(funboxName);
+        const difficultyLevel = funbox?.difficultyLevel ?? 0;
+        return Math.max(difficultyLevel * funboxBonusConfiguration, 0);
+      }
+    );
     if (funboxModifier > 0) {
       modifier += funboxModifier;
       breakdown.funbox = Math.round(baseXp * funboxModifier);

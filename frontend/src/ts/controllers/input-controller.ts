@@ -29,13 +29,13 @@ import * as TestInput from "../test/test-input";
 import * as TestWords from "../test/test-words";
 import * as Hangul from "hangul-js";
 import * as CustomTextState from "../states/custom-text-name";
-import * as FunboxList from "../test/funbox/funbox-list";
 import * as KeymapEvent from "../observables/keymap-event";
 import { IgnoredKeys } from "../constants/ignored-keys";
 import { ModifierKeys } from "../constants/modifier-keys";
 import { navigate } from "./route-controller";
 import * as Loader from "../elements/loader";
 import * as KeyConverter from "../utils/key-converter";
+import { getActiveFunboxes } from "../test/funbox/list";
 
 let dontInsertSpace = false;
 let correctShiftUsed = true;
@@ -145,9 +145,7 @@ function backspaceToPrevious(): void {
 
   TestInput.input.current = TestInput.input.popHistory();
   TestInput.corrected.popHistory();
-  if (
-    FunboxList.get(Config.funbox).find((f) => f.properties?.includes("nospace"))
-  ) {
+  if (getActiveFunboxes().find((f) => f.properties?.includes("nospace"))) {
     TestInput.input.current = TestInput.input.current.slice(0, -1);
     setWordsInput(" " + TestInput.input.current + " ");
   }
@@ -196,10 +194,8 @@ async function handleSpace(): Promise<void> {
 
   const currentWord: string = TestWords.words.getCurrent();
 
-  for (const f of FunboxList.get(Config.funbox)) {
-    if (f.functions?.handleSpace) {
-      f.functions.handleSpace();
-    }
+  for (const fb of getActiveFunboxes()) {
+    fb.functions?.handleSpace?.();
   }
 
   dontInsertSpace = true;
@@ -209,9 +205,8 @@ async function handleSpace(): Promise<void> {
   TestInput.pushBurstToHistory(burst);
 
   const nospace =
-    FunboxList.get(Config.funbox).find((f) =>
-      f.properties?.includes("nospace")
-    ) !== undefined;
+    getActiveFunboxes().find((f) => f.properties?.includes("nospace")) !==
+    undefined;
 
   //correct word or in zen mode
   const isWordCorrect: boolean =
@@ -411,9 +406,7 @@ function isCharCorrect(char: string, charIndex: number): boolean {
     return true;
   }
 
-  const funbox = FunboxList.get(Config.funbox).find(
-    (f) => f.functions?.isCharCorrect
-  );
+  const funbox = getActiveFunboxes().find((fb) => fb.functions?.isCharCorrect);
   if (funbox?.functions?.isCharCorrect) {
     return funbox.functions.isCharCorrect(char, originalChar);
   }
@@ -497,14 +490,15 @@ function handleChar(
 
   const isCharKorean: boolean = TestInput.input.getKoreanStatus();
 
-  for (const f of FunboxList.get(Config.funbox)) {
-    if (f.functions?.handleChar) char = f.functions.handleChar(char);
+  for (const fb of getActiveFunboxes()) {
+    if (fb.functions?.handleChar) {
+      char = fb.functions.handleChar(char);
+    }
   }
 
   const nospace =
-    FunboxList.get(Config.funbox).find((f) =>
-      f.properties?.includes("nospace")
-    ) !== undefined;
+    getActiveFunboxes().find((f) => f.properties?.includes("nospace")) !==
+    undefined;
 
   if (char !== "\n" && char !== "\t" && /\s/.test(char)) {
     if (nospace) return;
@@ -908,11 +902,11 @@ $(document).on("keydown", async (event) => {
     return;
   }
 
-  FunboxList.get(Config.funbox).forEach((value) => {
-    if (value.functions?.handleKeydown) {
-      void value.functions?.handleKeydown(event);
+  for (const fb of getActiveFunboxes()) {
+    if (fb.functions?.handleKeydown) {
+      void fb.functions.handleKeydown(event);
     }
-  });
+  }
 
   //autofocus
   const wordsFocused: boolean = $("#wordsInput").is(":focus");
@@ -1161,21 +1155,20 @@ $(document).on("keydown", async (event) => {
     }
   }
 
-  const funbox = FunboxList.get(Config.funbox).find(
-    (f) => f.functions?.preventDefaultEvent
-  );
-  if (funbox?.functions?.preventDefaultEvent) {
-    if (
-      await funbox.functions.preventDefaultEvent(
-        //i cant figure this type out, but it works fine
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-        event as JQuery.KeyDownEvent
-      )
-    ) {
-      event.preventDefault();
-      handleChar(event.key, TestInput.input.current.length);
-      updateUI();
-      setWordsInput(" " + TestInput.input.current);
+  for (const fb of getActiveFunboxes()) {
+    if (fb.functions?.preventDefaultEvent) {
+      if (
+        await fb.functions.preventDefaultEvent(
+          //i cant figure this type out, but it works fine
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+          event as JQuery.KeyDownEvent
+        )
+      ) {
+        event.preventDefault();
+        handleChar(event.key, TestInput.input.current.length);
+        updateUI();
+        setWordsInput(" " + TestInput.input.current);
+      }
     }
   }
 
