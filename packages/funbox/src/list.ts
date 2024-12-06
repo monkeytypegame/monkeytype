@@ -411,7 +411,7 @@ const list: Record<FunboxName, FunboxMetadata> = {
     canGetPb: false,
     difficultyLevel: 0,
     properties: ["ignoresLanguage", "ignoresLayout", "nospace"],
-    frontendFunctions: ["alterText", "applyConfig", "rememberSettings"],
+    frontendFunctions: ["alterText", "start"],
     name: "underscore_spaces",
   },
 };

@@ -585,15 +585,14 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
     },
   },
   underscore_spaces: {
-    rememberSettings(): void {
-      save(
-        "highlightMode",
-        Config.highlightMode,
-        UpdateConfig.setHighlightMode
-      );
-    },
     alterText(word: string): string {
-      return word + "_"; //add underscore at the end instead of space
+      return word + "_"; // add underscore at the end instead of space
+    },
+    start(): void {
+      // Remove the underscore from the last word
+      TestWords.words.list[TestWords.words.list.length - 1] = TestWords.words
+        .get(TestWords.words.length - 1)
+        .replace("_", "");
     },
   },
   crt: {
