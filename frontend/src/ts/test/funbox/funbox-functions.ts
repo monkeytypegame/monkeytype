@@ -584,6 +584,18 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
       return GetText.getMorse(word);
     },
   },
+  underscore_spaces: {
+    rememberSettings(): void {
+      save(
+        "highlightMode",
+        Config.highlightMode,
+        UpdateConfig.setHighlightMode
+      );
+    },
+    alterText(word: string): string {
+      return word + "_"; //add underscore at the end instead of space
+    },
+  },
   crt: {
     applyGlobalCSS(): void {
       const isSafari = /^((?!chrome|android).)*safari/i.test(

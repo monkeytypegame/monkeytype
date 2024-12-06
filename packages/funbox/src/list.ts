@@ -406,6 +406,14 @@ const list: Record<FunboxName, FunboxMetadata> = {
     frontendFunctions: ["alterText"],
     name: "instant_messaging",
   },
+  underscore_spaces: {
+    description: "Underscores_are_better.",
+    canGetPb: false,
+    difficultyLevel: 0,
+    properties: ["ignoresLanguage", "ignoresLayout", "nospace"],
+    frontendFunctions: ["alterText", "applyConfig", "rememberSettings"],
+    name: "underscore_spaces",
+  },
 };
 
 export function getFunbox(name: FunboxName): FunboxMetadata;
