@@ -346,10 +346,14 @@ function getFunboxWord(
   return word;
 }
 
-function applyFunboxesToWord(word: string): string {
+function applyFunboxesToWord(
+  word: string,
+  wordIndex: number,
+  wordsBound: number
+): string {
   for (const fb of getActiveFunboxes()) {
     if (fb.functions?.alterText) {
-      word = fb.functions.alterText(word);
+      word = fb.functions.alterText(word, wordIndex, wordsBound);
     }
   }
   return word;
@@ -911,7 +915,7 @@ export async function getNextWord(
     }
   }
 
-  randomWord = applyFunboxesToWord(randomWord);
+  randomWord = applyFunboxesToWord(randomWord, wordIndex, wordsBound);
 
   console.debug("Word:", randomWord);
 
