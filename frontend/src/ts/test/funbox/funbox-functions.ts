@@ -26,7 +26,7 @@ export type FunboxFunctions = {
   getWord?: (wordset?: Wordset, wordIndex?: number) => string;
   punctuateWord?: (word: string) => string;
   withWords?: (words?: string[]) => Promise<Wordset>;
-  alterText?: (word: string) => string;
+  alterText?: (word: string, wordIndex: number, wordsBound: number) => string;
   applyConfig?: () => void;
   applyGlobalCSS?: () => void;
   clearGlobal?: () => void;
@@ -585,14 +585,9 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
     },
   },
   underscore_spaces: {
-    alterText(word: string): string {
-      return word + "_"; // add underscore at the end instead of space
-    },
-    start(): void {
-      // Remove the underscore from the last word
-      TestWords.words.list[TestWords.words.list.length - 1] = TestWords.words
-        .get(TestWords.words.length - 1)
-        .replace("_", "");
+    alterText(word: string, wordIndex: number, limit: number): string {
+      if (wordIndex === limit - 1) return word; // don't add underscore to the last word
+      return word + "_";
     },
   },
   crt: {
