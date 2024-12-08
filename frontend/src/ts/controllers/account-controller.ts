@@ -20,6 +20,7 @@ import * as URLHandler from "../utils/url-handler";
 import * as Account from "../pages/account";
 import * as Alerts from "../elements/alerts";
 import * as AccountSettings from "../pages/account-settings";
+import { getAllFunboxes } from "@monkeytype/funbox";
 import {
   GoogleAuthProvider,
   GithubAuthProvider,
@@ -129,7 +130,7 @@ async function getDataAndInit(): Promise<boolean> {
 
   ResultFilters.loadTags(snapshot.tags);
 
-  Promise.all([JSONData.getLanguageList(), JSONData.getFunboxList()])
+  Promise.all([JSONData.getLanguageList(), getAllFunboxes()])
     .then((values) => {
       const [languages, funboxes] = values;
       languages.forEach((language) => {

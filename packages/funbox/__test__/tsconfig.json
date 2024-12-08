@@ -1,14 +1,12 @@
 {
   "extends": "@monkeytype/typescript-config/base.json",
   "compilerOptions": {
-    "moduleResolution": "Bundler",
-    "module": "ESNext",
     "noEmit": true,
     "types": ["vitest/globals"]
   },
   "ts-node": {
     "files": true
   },
-  "files": ["vitest.d.ts"],
-  "include": ["./**/*.spec.ts", "./setup-tests.ts"]
+  // "files": ["../src/types/types.d.ts"],
+  "include": ["./**/*.ts", "./**/*.spec.ts", "./setup-tests.ts"]
 }
