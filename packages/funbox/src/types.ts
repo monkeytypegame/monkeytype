@@ -39,6 +39,7 @@ export type FunboxName =
   | "backwards"
   | "ddoouubblleedd"
   | "instant_messaging"
+  | "underscore_spaces"
   | "ALL_CAPS";
 
 export type FunboxForcedConfig = Record<string, string[] | boolean[]>;
