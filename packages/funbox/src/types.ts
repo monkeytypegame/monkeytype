@@ -38,7 +38,8 @@ export type FunboxName =
   | "crt"
   | "backwards"
   | "ddoouubblleedd"
-  | "instant_messaging";
+  | "instant_messaging"
+  | "ALL_CAPS";
 
 export type FunboxForcedConfig = Record<string, string[] | boolean[]>;
 
