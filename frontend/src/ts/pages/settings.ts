@@ -612,6 +612,9 @@ async function fillSettingsPage(): Promise<void> {
         /_/g,
         " "
       )}</div>`;
+    } else if (funbox.name === "underscore_spaces") {
+      // Display as "underscore_spaces". Does not replace underscores with spaces.
+      funboxElHTML += `<div class="funbox button" data-config-value='${funbox.name}' aria-label="${funbox.description}" data-balloon-pos="up" data-balloon-length="fit">${funbox.name}</div>`;
     } else {
       funboxElHTML += `<div class="funbox button" data-config-value='${
         funbox.name
