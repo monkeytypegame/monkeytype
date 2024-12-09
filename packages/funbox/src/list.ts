@@ -24,6 +24,7 @@ const list: Record<FunboxName, FunboxMetadata> = {
     properties: ["hasCssFile"],
     canGetPb: true,
     difficultyLevel: 3,
+    cssModification: ["main"],
   },
   upside_down: {
     name: "upside_down",
@@ -31,6 +32,7 @@ const list: Record<FunboxName, FunboxMetadata> = {
     properties: ["hasCssFile"],
     canGetPb: true,
     difficultyLevel: 3,
+    cssModification: ["main"],
   },
   nausea: {
     name: "nausea",
@@ -38,6 +40,7 @@ const list: Record<FunboxName, FunboxMetadata> = {
     canGetPb: true,
     difficultyLevel: 2,
     properties: ["hasCssFile"],
+    cssModification: ["typingTest"],
   },
   round_round_baby: {
     name: "round_round_baby",
@@ -46,6 +49,7 @@ const list: Record<FunboxName, FunboxMetadata> = {
     canGetPb: true,
     difficultyLevel: 3,
     properties: ["hasCssFile"],
+    cssModification: ["typingTest"],
   },
   simon_says: {
     name: "simon_says",
@@ -69,6 +73,7 @@ const list: Record<FunboxName, FunboxMetadata> = {
     frontendFunctions: ["applyConfig", "rememberSettings", "toggleScript"],
     name: "tts",
     description: "Listen closely.",
+    cssModification: ["words"],
   },
   choo_choo: {
     canGetPb: true,
@@ -140,6 +145,7 @@ const list: Record<FunboxName, FunboxMetadata> = {
     difficultyLevel: 1,
     properties: ["hasCssFile", "noLigatures"],
     name: "earthquake",
+    cssModification: ["words"],
   },
   space_balls: {
     description: "In a galaxy far far away.",
@@ -147,6 +153,7 @@ const list: Record<FunboxName, FunboxMetadata> = {
     difficultyLevel: 0,
     properties: ["hasCssFile"],
     name: "space_balls",
+    cssModification: ["body"],
   },
   gibberish: {
     description: "Anvbuefl dizzs eoos alsb?",
@@ -376,6 +383,7 @@ const list: Record<FunboxName, FunboxMetadata> = {
     properties: ["hasCssFile", "noLigatures"],
     frontendFunctions: ["applyGlobalCSS", "clearGlobal"],
     name: "crt",
+    cssModification: ["body"],
   },
   backwards: {
     description: "...sdrawkcab epyt ot yrt woN",

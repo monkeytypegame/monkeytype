@@ -87,10 +87,6 @@ export function checkCompatibility(
         (f.properties?.find((fp) => fp.startsWith("toPush:")) ?? "") ||
         f.frontendFunctions?.includes("pullSection")
     ).length <= 1;
-  const oneCssFileMax =
-    funboxesToCheck.filter((f) =>
-      f.properties?.find((fp) => fp === "hasCssFile")
-    ).length <= 1;
   const onePunctuateWordMax =
     funboxesToCheck.filter((f) =>
       f.frontendFunctions?.includes("punctuateWord")
@@ -105,6 +101,22 @@ export function checkCompatibility(
   const oneChangesCapitalisationMax =
     funboxesToCheck.filter((f) =>
       f.properties?.find((fp) => fp === "changesCapitalisation")
+    ).length <= 1;
+  const oneChangesTypingTestCSS =
+    funboxesToCheck.filter((f) =>
+      f.cssModification?.find((fc) => fc === "typingTest")
+    ).length <= 1;
+  const oneChangesWordsCSS =
+    funboxesToCheck.filter((f) =>
+      f.cssModification?.find((fc) => fc === "words")
+    ).length <= 1;
+  const oneChangesBodyCSS =
+    funboxesToCheck.filter((f) =>
+      f.cssModification?.find((fc) => fc === "body")
+    ).length <= 1;
+  const oneChangesMainCSS =
+    funboxesToCheck.filter((f) =>
+      f.cssModification?.find((fc) => fc === "main")
     ).length <= 1;
   const allowedConfig = {} as FunboxForcedConfig;
   let noConfigConflicts = true;
@@ -143,11 +155,14 @@ export function checkCompatibility(
     oneCanSpeakMax &&
     hasLanguageToSpeakAndNoUnspeakable &&
     oneToPushOrPullSectionMax &&
-    oneCssFileMax &&
     onePunctuateWordMax &&
     oneCharCheckerMax &&
     oneCharReplacerMax &&
     oneChangesCapitalisationMax &&
+    oneChangesTypingTestCSS &&
+    oneChangesWordsCSS &&
+    oneChangesBodyCSS &&
+    oneChangesMainCSS &&
     noConfigConflicts &&
     oneWordOrderMax
   );
