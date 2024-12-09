@@ -1,4 +1,11 @@
 [
+    {
+    "name": "witchthorne",
+    "bgColor": "#36093e",
+    "mainColor": "#7be000",
+    "subColor": "#95b295",
+    "textColor": "#61ff7e"
+  },
   {
     "name": "dark_note",
     "bgColor": "#1f1f1f",
