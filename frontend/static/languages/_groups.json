@@ -42,6 +42,7 @@
     "name": "portuguese",
     "languages": [
       "portuguese",
+      "portuguese_1k",
       "portuguese_3k",
       "portuguese_5k",
       "portuguese_320k",

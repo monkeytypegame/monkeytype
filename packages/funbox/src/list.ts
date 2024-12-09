@@ -414,6 +414,14 @@ const list: Record<FunboxName, FunboxMetadata> = {
     frontendFunctions: ["alterText"],
     name: "underscore_spaces",
   },
+  ALL_CAPS: {
+    description: "WHY ARE WE SHOUTING?",
+    canGetPb: false,
+    difficultyLevel: 1,
+    properties: ["changesCapitalisation"],
+    frontendFunctions: ["alterText"],
+    name: "ALL_CAPS",
+  },
 };
 
 export function getFunbox(name: FunboxName): FunboxMetadata;

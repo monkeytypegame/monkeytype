@@ -626,6 +626,11 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
       $("#globalFunBoxTheme").attr("href", ``);
     },
   },
+  ALL_CAPS: {
+    alterText(word: string): string {
+      return word.toUpperCase();
+    },
+  },
 };
 
 export function getFunboxFunctions(): Record<FunboxName, FunboxFunctions> {
