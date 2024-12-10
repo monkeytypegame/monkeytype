@@ -1140,6 +1140,41 @@
       "source": "Enrique de Mesa - La alegre carreta",
       "length": 81,
       "id": 198
-    }
+    },
+    {
+    "text": "Personas de distintos oficios o clases, que no tienen nada en común, viviendo cerca de sí por casualidad, son combinadas en un grupo artificial qe tiene que ser representado por un delegado",
+    "source": "Anton Pannekoek - Los consejos obreros",
+    "id": 198,
+    "length": 218
+      {
+    "text": "Cuanto más amor das mejor estas",
+    "source": "Javier Ibarra - Outro",
+    "id": 199,
+    "length": 27
+    },
+    {
+    "text": "-Los pobres tenían que estar de pie y los ricos tenían palcos. Pero había algo que unía al banquero y al pobre: el odio a la belleza.",
+    "source": "Milan Kundera - La insoportable levedad del ser",
+    "id": 200,
+    "length": 148
+    },
+    {
+    "text": "Nadie entendió aquella frase y a mí mismo me causa cierta dificultad explicar lo que quería decir Teresa al comparar una playa nudista con la invasión rusa",
+    "source": "Milan Kundera - La insoportable levedad del ser",
+    "id": 201,
+    "length": 169
+    },
+    {
+    "text": "Una mirada desde la alcantarilla puede ser una visión del mundo, la rebelión consiste en mirar una rosa hasta pulverizarse los ojos",
+    "source": "Alejandra Pizarnik  - Poema 23. Árbol de Diana",
+    "id": 202,
+    "length": 142
+    },
+    {
+    "text": "[quote]",
+    "source": "[source]",
+    "id": [number of the quote],
+    "length": [number of characters in quote]
+}
   ]
 }
