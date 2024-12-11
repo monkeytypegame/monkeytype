@@ -52,6 +52,8 @@ export function getStats(): unknown {
     lastResult,
     start,
     end,
+    start3,
+    end3,
     afkHistory: TestInput.afkHistory,
     errorHistory: TestInput.errorHistory,
     wpmHistory: TestInput.wpmHistory,
