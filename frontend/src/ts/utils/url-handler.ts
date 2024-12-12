@@ -22,6 +22,7 @@ import {
   Difficulty,
 } from "@monkeytype/contracts/schemas/configs";
 import { z } from "zod";
+import { parseWithSchema as parseJsonWithSchema } from "@monkeytype/util/json";
 
 export async function linkDiscord(hashOverride: string): Promise<void> {
   if (!hashOverride) return;
@@ -78,10 +79,7 @@ export function loadCustomThemeFromUrl(getOverride?: string): void {
 
   let decoded: z.infer<typeof customThemeUrlDataSchema>;
   try {
-    decoded = Misc.parseJsonWithSchema(
-      atob(getValue),
-      customThemeUrlDataSchema
-    );
+    decoded = parseJsonWithSchema(atob(getValue), customThemeUrlDataSchema);
   } catch (e) {
     console.log("Custom theme URL decoding failed", e);
     Notifications.add(
