@@ -119,6 +119,14 @@ const list: Record<FunboxName, FunboxMetadata> = {
     frontendFunctions: ["alterText"],
     name: "capitals",
   },
+  lowercase: {
+    description: "everything is in lowercase.",
+    canGetPb: false,
+    difficultyLevel: 1,
+    properties: ["changesCapitalisation"],
+    frontendFunctions: ["alterText"],
+    name: "lowercase",
+  },
   layoutfluid: {
     description:
       "Switch between layouts specified below proportionately to the length of the test.",

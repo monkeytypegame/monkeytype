@@ -325,6 +325,11 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
       return Strings.capitalizeFirstLetterOfEachWord(word);
     },
   },
+  lowercase: {
+    alterText(word: string): string {
+      return word.toLowerCase();
+    },
+  },
   layoutfluid: {
     applyConfig(): void {
       const layout = Config.customLayoutfluid.split("#")[0] ?? "qwerty";
