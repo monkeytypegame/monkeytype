@@ -325,11 +325,6 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
       return Strings.capitalizeFirstLetterOfEachWord(word);
     },
   },
-  lowercase: {
-    alterText(word: string): string {
-      return word.toLowerCase();
-    },
-  },
   layoutfluid: {
     applyConfig(): void {
       const layout = Config.customLayoutfluid.split("#")[0] ?? "qwerty";
@@ -634,6 +629,11 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
   ALL_CAPS: {
     alterText(word: string): string {
       return word.toUpperCase();
+    },
+  },
+  plaintext: {
+    alterText(word: string): string {
+      return word.toLowerCase().replaceAll(/[.,!?:;()"'-_]/g, "");
     },
   },
 };
