@@ -45,7 +45,7 @@ export const UserNameSchema = doesNotContainProfanity(
     .max(16)
     .regex(
       /^[\da-zA-Z_-]+$/,
-      "Can only contain lower/uppercase letters, underscare and minus."
+      "Can only contain lower/uppercase letters, underscore and minus."
     )
 );
 

@@ -129,7 +129,7 @@ function layoutfluid(): void {
 function checkIfFailed(
   wpmAndRaw: { wpm: number; raw: number },
   acc: number
-): void {
+): boolean {
   if (timerDebug) console.time("fail conditions");
   TestInput.pushKeypressesToHistory();
   TestInput.pushErrorToHistory();
@@ -143,16 +143,17 @@ function checkIfFailed(
     SlowTimer.clear();
     slowTimerCount = 0;
     TimerEvent.dispatch("fail", "min speed");
-    return;
+    return true;
   }
   if (Config.minAcc === "custom" && acc < Config.minAccCustom) {
     if (timer !== null) clearTimeout(timer);
     SlowTimer.clear();
     slowTimerCount = 0;
     TimerEvent.dispatch("fail", "min accuracy");
-    return;
+    return true;
   }
   if (timerDebug) console.timeEnd("fail conditions");
+  return false;
 }
 
 function checkIfTimeIsUp(): void {
@@ -200,8 +201,8 @@ async function timerStep(): Promise<void> {
   const acc = calculateAcc();
   monkey(wpmAndRaw);
   layoutfluid();
-  checkIfFailed(wpmAndRaw, acc);
-  checkIfTimeIsUp();
+  const failed = checkIfFailed(wpmAndRaw, acc);
+  if (!failed) checkIfTimeIsUp();
   if (timerDebug) console.timeEnd("timer step -----------------------------");
 }
 
