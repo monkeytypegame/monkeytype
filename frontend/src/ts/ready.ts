@@ -8,8 +8,10 @@ import * as AccountButton from "./elements/account-button";
 import Konami from "konami";
 import * as ServerConfiguration from "./ape/server-configuration";
 import { getActiveFunboxes } from "./test/funbox/list";
+import { loadPromise } from "./config";
 
-$((): void => {
+$(async (): Promise<void> => {
+  await loadPromise;
   Misc.loadCSS("/css/slimselect.min.css", true);
   Misc.loadCSS("/css/balloon.min.css", true);
 
@@ -19,11 +21,10 @@ $((): void => {
   //to make sure the initial theme application doesnt animate the background color
   $("body").css("transition", "background .25s, transform .05s");
   MerchBanner.showIfNotClosedBefore();
-  setTimeout(() => {
-    for (const fb of getActiveFunboxes()) {
-      fb.functions?.applyGlobalCSS?.();
-    }
-  }, 500); //this approach will probably bite me in the ass at some point
+
+  for (const fb of getActiveFunboxes()) {
+    fb.functions?.applyGlobalCSS?.();
+  }
 
   $("#app")
     .css("opacity", "0")
