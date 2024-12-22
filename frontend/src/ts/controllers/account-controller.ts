@@ -48,6 +48,7 @@ import { navigate } from "./route-controller";
 import { FirebaseError } from "firebase/app";
 import * as PSA from "../elements/psa";
 import defaultResultFilters from "../constants/default-result-filters";
+import { getActiveFunboxes } from "../test/funbox/list";
 
 export const gmailProvider = new GoogleAuthProvider();
 export const githubProvider = new GithubAuthProvider();
@@ -171,6 +172,11 @@ async function getDataAndInit(): Promise<boolean> {
     );
     await UpdateConfig.apply(snapshot.config);
     UpdateConfig.saveFullConfigToLocalStorage(true);
+
+    //funboxes might be different and they wont activate on the account page
+    for (const fb of getActiveFunboxes()) {
+      fb.functions?.applyGlobalCSS?.();
+    }
   }
   AccountButton.loading(false);
   TagController.loadActiveFromLocalStorage();
