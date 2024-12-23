@@ -1,6 +1,8 @@
 {
   "name": "uzbek_1k",
-  "ligatures": true,
+  "ligatures": false,
+  "rightToLeft": false,
+  "bcp47": "uz-UZ",
   "words": [
     "adabiyot",
     "sifatida",
