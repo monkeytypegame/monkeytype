@@ -919,13 +919,11 @@ export async function finish(difficultyFailed = false): Promise<void> {
   //fail checks
   const dateDur = (TestStats.end3 - TestStats.start3) / 1000;
   if (
-    Config.mode !== "zen" &&
+    Config.mode === "time" &&
     !TestState.bailedOut &&
-    (ce.testDuration < dateDur - 0.25 || ce.testDuration > dateDur + 0.25)
+    (ce.testDuration < dateDur - 0.1 || ce.testDuration > dateDur + 0.1) &&
+    ce.testDuration <= 120
   ) {
-    //dont bother checking this for zen mode or bailed out tests because
-    //the duration might be modified to remove trailing afk time
-    //its also not a big deal if the duration is off in those tests
     Notifications.add("Test invalid - inconsistent test duration", 0);
     console.error("Test duration inconsistent", ce.testDuration, dateDur);
     TestStats.setInvalid();
