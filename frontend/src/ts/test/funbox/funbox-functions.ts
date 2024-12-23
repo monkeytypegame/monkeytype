@@ -26,7 +26,7 @@ export type FunboxFunctions = {
   getWord?: (wordset?: Wordset, wordIndex?: number) => string;
   punctuateWord?: (word: string) => string;
   withWords?: (words?: string[]) => Promise<Wordset>;
-  alterText?: (word: string) => string;
+  alterText?: (word: string, wordIndex: number, wordsBound: number) => string;
   applyConfig?: () => void;
   applyGlobalCSS?: () => void;
   clearGlobal?: () => void;
@@ -584,6 +584,12 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
       return GetText.getMorse(word);
     },
   },
+  underscore_spaces: {
+    alterText(word: string, wordIndex: number, limit: number): string {
+      if (wordIndex === limit - 1) return word; // don't add underscore to the last word
+      return word + "_";
+    },
+  },
   crt: {
     applyGlobalCSS(): void {
       const isSafari = /^((?!chrome|android).)*safari/i.test(
@@ -618,6 +624,11 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
       $("#scanline").remove();
       $("body").removeClass("crtmode");
       $("#globalFunBoxTheme").attr("href", ``);
+    },
+  },
+  ALL_CAPS: {
+    alterText(word: string): string {
+      return word.toUpperCase();
     },
   },
 };
