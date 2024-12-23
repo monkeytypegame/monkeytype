@@ -199,6 +199,12 @@ async function reauthenticate(
         status: 0,
         message: "Incorrect password",
       };
+    } else if (typedError.code === "auth/invalid-credential") {
+      return {
+        status: 0,
+        message:
+          "Password is incorrect or your account does not have password authentication enabled.",
+      };
     } else {
       return {
         status: -1,
