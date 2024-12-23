@@ -1251,5 +1251,12 @@
     "mainColor": "#bef0ff",
     "subColor": "#fe9841",
     "textColor": "#dbdeeb"
+  },
+  {
+    "name": "my_custom_theme",
+    "bgColor": "#1E1E1E",          // Dark background
+    "mainColor": "#FFFFFF",        // White text for visibility
+    "subColor": "#252526",         // Sidebar and input background
+    "textColor": "#D4D4D4"         // Light gray for general text
   }
 ]
