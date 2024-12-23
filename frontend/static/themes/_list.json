@@ -1253,7 +1253,7 @@
     "textColor": "#dbdeeb"
   },
   {
-    "name": "my_custom_theme",
+    "name": "xcode_dark_theme",
     "bgColor": "#1E1E1E",
     "mainColor": "#FFFFFF",
     "subColor": "#252526",
