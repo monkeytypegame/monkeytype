@@ -1251,5 +1251,12 @@
     "mainColor": "#bef0ff",
     "subColor": "#fe9841",
     "textColor": "#dbdeeb"
+  },
+  {
+    "name": "xcode_dark_theme",
+    "bgColor": "#1E1E1E",
+    "mainColor": "#FFFFFF",
+    "subColor": "#252526",
+    "textColor": "#D4D4D4"
   }
 ]
