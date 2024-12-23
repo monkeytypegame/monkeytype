@@ -1,6 +1,7 @@
 {
   "name": "khmer",
   "leftToRight": true,
+  "noLazyMode": true,
   "bcp47": "km-KH",
   "words": [
     "ខ្ញុំ",
@@ -49,22 +50,5 @@
     "បងស្រី",
     "ប្អូនប្រុស",
     "ប្អូនស្រី"
-  ],
-  "quotes": [
-    {
-      "text": "ដើរយឺតទៅមុខ ប្រសើរជាងរត់ថយក្រោយ",
-      "source": "សុភាសិតខ្មែរ",
-      "length": 39,
-      "id": 1
-    },
-    {
-      "text": "ការអត់ធ្មត់នាំឱ្យមានជោគជ័យ",
-      "source": "សុភាសិតខ្មែរ",
-      "length": 31,
-      "id": 2
-    }
-  ],
-  "orderedQuotes": [1, 2],
-  "noLazyMode": false,
-  "funbox": false
+  ]
 }
