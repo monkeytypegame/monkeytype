@@ -907,11 +907,8 @@ export function setTapeMode(
     return false;
   }
 
-  if (mode !== "off") {
+  if (mode !== "off" && config.showAllLines) {
     setShowAllLines(false, true);
-    $("#liveStatsMini").css("display", "flex").css("justify-content", "center");
-  } else {
-    $("#liveStatsMini").css("display", "").css("justify-content", "");
   }
 
   config.tapeMode = mode;
