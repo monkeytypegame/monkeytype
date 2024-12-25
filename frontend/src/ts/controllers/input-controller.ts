@@ -1386,9 +1386,18 @@ $("#wordsInput").on("input", (event) => {
       }
     }
   }
-  if (inputValue !== currTestInput) {
+
+  /* this boolean implies that two input are swipe-typed
+   consecutively without user inserting space in between */
+  const doesInputHaveSpaceBetween = inputValue.trim().includes(" ");
+  if (inputValue !== currTestInput && !doesInputHaveSpaceBetween) {
     let diffStart = 0;
-    while (inputValue[diffStart] === currTestInput[diffStart]) {
+    // here added undefined check too as the first flag will
+    // be true even if diffStart overflows the length
+    while (
+      inputValue[diffStart] === currTestInput[diffStart] &&
+      inputValue[diffStart] !== undefined
+    ) {
       diffStart++;
     }
 
@@ -1399,6 +1408,11 @@ $("#wordsInput").on("input", (event) => {
     for (let i = diffStart; i < inputValue.length; i++) {
       // passing realInput to allow for correct Korean character compilation
       handleChar(inputValue[i] as string, i - iOffset, realInputValue);
+    }
+  } else {
+    // simulate space if there is space between input i.e the input is swipe-typed
+    if (inputValue.trim() !== currTestInput) {
+      void handleSpace();
     }
   }
 
