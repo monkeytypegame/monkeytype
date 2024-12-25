@@ -995,6 +995,8 @@ export function scrollTape(): void {
   } else {
     $("#words").css("margin-left", `${newMargin}px`);
   }
+
+  setTimeout(() => $("#wordsWrapper").scrollLeft(0));
 }
 
 export function updatePremid(): void {
