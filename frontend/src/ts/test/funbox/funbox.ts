@@ -217,9 +217,11 @@ async function setFunboxBodyClasses(): Promise<boolean> {
   const currentClasses = $body?.attr("class")?.split(/\s+/) ?? [];
 
   if (
-    getActiveFunboxes().some((it) => it.properties?.includes("forceAnimation"))
+    getActiveFunboxes().some((it) =>
+      it.properties?.includes("ignoreReducedMotion")
+    )
   ) {
-    currentClasses.push("force-animation");
+    currentClasses.push("ignore-reduced-motion");
   }
 
   $body.attr(

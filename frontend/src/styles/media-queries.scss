@@ -1041,7 +1041,8 @@ body {
 }
 
 @media (prefers-reduced-motion) {
-  body:not(.force-animation) *:not(.fa-spin, #backgroundLoader, .preloader) {
+  body:not(.ignore-reduced-motion)
+    *:not(.fa-spin, #backgroundLoader, .preloader) {
     animation: none !important;
     transition: none !important;
 

@@ -63,7 +63,7 @@ export type FunboxProperty =
   | "noLigatures"
   | `toPush:${number}`
   | "wordOrder:reverse"
-  | "forceAnimation";
+  | "ignoreReducedMotion";
 
 export type FunboxMetadata = {
   name: FunboxName;
