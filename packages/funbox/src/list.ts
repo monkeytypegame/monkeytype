@@ -37,7 +37,7 @@ const list: Record<FunboxName, FunboxMetadata> = {
     description: "I think I'm gonna be sick.",
     canGetPb: true,
     difficultyLevel: 2,
-    properties: ["hasCssFile"],
+    properties: ["hasCssFile", "ignoreReducedMotion"],
   },
   round_round_baby: {
     name: "round_round_baby",
@@ -45,7 +45,7 @@ const list: Record<FunboxName, FunboxMetadata> = {
       "...right round, like a record baby. Right, round round round.",
     canGetPb: true,
     difficultyLevel: 3,
-    properties: ["hasCssFile"],
+    properties: ["hasCssFile", "ignoreReducedMotion"],
   },
   simon_says: {
     name: "simon_says",
@@ -73,7 +73,12 @@ const list: Record<FunboxName, FunboxMetadata> = {
   choo_choo: {
     canGetPb: true,
     difficultyLevel: 2,
-    properties: ["hasCssFile", "noLigatures", "conflictsWithSymmetricChars"],
+    properties: [
+      "hasCssFile",
+      "noLigatures",
+      "conflictsWithSymmetricChars",
+      "ignoreReducedMotion",
+    ],
     name: "choo_choo",
     description: "All the letters are spinning!",
   },
@@ -138,14 +143,14 @@ const list: Record<FunboxName, FunboxMetadata> = {
     description: "Everybody get down! The words are shaking!",
     canGetPb: true,
     difficultyLevel: 1,
-    properties: ["hasCssFile", "noLigatures"],
+    properties: ["hasCssFile", "noLigatures", "ignoreReducedMotion"],
     name: "earthquake",
   },
   space_balls: {
     description: "In a galaxy far far away.",
     canGetPb: true,
     difficultyLevel: 0,
-    properties: ["hasCssFile"],
+    properties: ["hasCssFile", "ignoreReducedMotion"],
     name: "space_balls",
   },
   gibberish: {
