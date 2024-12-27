@@ -1251,5 +1251,12 @@
     "mainColor": "#bef0ff",
     "subColor": "#fe9841",
     "textColor": "#dbdeeb"
+  },
+  {
+    "name": "vscode",
+    "bgColor": "#1e1e1e",
+    "mainColor": "#007acc",
+    "subColor": "#d4d4d4",
+    "textColor": "#a6a6a6"
   }
 ]
