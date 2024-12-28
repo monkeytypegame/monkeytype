@@ -1244,19 +1244,5 @@
     "mainColor": "#e0794e",
     "subColor": "#688e8f",
     "textColor": "#023e3b"
-  },
-  {
-    "name": "suisei",
-    "bgColor": "#3b4a62",
-    "mainColor": "#bef0ff",
-    "subColor": "#fe9841",
-    "textColor": "#dbdeeb"
-  },
-  {
-    "name": "minecraft",
-    "bgColor": "#704025",
-    "mainColor": "#60a960",
-    "subColor": "#d0d0d0",
-    "textColor": "#a0a0a0"
-  }
+  }  
 ]
