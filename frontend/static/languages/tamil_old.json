@@ -1,8 +1,9 @@
 {   
   "name": "tamil_old",
+  "noLazyMode": true,
+  "bcp47": "ta",
   "rightToLeft": false,
   "ligatures": false,
-  "bcp47": "ta",
   "words": [
     "அஞ்சல்",
     "அஞ்சுவை",
@@ -466,4 +467,3 @@
     "வளர்ச்சி" 
   ]
 }
-  
