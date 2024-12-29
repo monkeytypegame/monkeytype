@@ -85,6 +85,10 @@
     "languages": ["korean", "korean_1k", "korean_5k"]
   },
   {
+    "name": "khmer",
+    "languages": ["khmer"]
+  },
+  {
     "name": "chinese",
     "languages": [
       "chinese_traditional",
@@ -606,6 +610,7 @@
       "code_lua",
       "code_luau",
       "code_latex",
+      "code_typst",
       "code_matlab",
       "code_sql",
       "code_perl",
