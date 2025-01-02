@@ -787,6 +787,9 @@ describe("test-activity-calendar.ts", () => {
   describe("getFullYearCalendar", () => {
     it("gets calendar", () => {
       //GIVEN
+      //set today
+      vi.setSystemTime(getDate("2024-12-01"));
+
       const lastDate = getDate("2024-01-02");
       const calendar = new ModifiableTestActivityCalendar(
         [1, 2, 3, 4],
@@ -817,6 +820,9 @@ describe("test-activity-calendar.ts", () => {
   describe("getTotalTests", () => {
     it("gets amount of tests", () => {
       //GIVEN
+      //set today
+      vi.setSystemTime(getDate("2024-12-01"));
+
       const lastDate = getDate("2024-01-02");
       const calendar = new ModifiableTestActivityCalendar(
         [1, 2, 3, 4],
