@@ -864,6 +864,10 @@ export async function getNextWord(
     throw new WordGenError("Random word contains spaces");
   }
 
+  const usingFunboxWithGetWord = getActiveFunboxes().some(
+    (fb) => fb.functions?.getWord
+  );
+
   if (
     Config.mode !== "custom" &&
     Config.mode !== "quote" &&
@@ -873,7 +877,8 @@ export async function getNextWord(
     !Config.language.startsWith("swiss_german") &&
     !Config.language.startsWith("code") &&
     !Config.language.startsWith("klingon") &&
-    !isCurrentlyUsingFunboxSection
+    !isCurrentlyUsingFunboxSection &&
+    !usingFunboxWithGetWord
   ) {
     randomWord = randomWord.toLowerCase();
   }
