@@ -21,6 +21,7 @@ import {
   LeaderboardRank,
 } from "@monkeytype/contracts/schemas/leaderboards";
 import { Mode } from "@monkeytype/contracts/schemas/shared";
+import * as TestStats from "../test/test-stats";
 
 const wrapperId = "leaderboardsWrapper";
 
@@ -971,6 +972,17 @@ $("header nav").on("click", ".textButton", (e) => {
   if ($(e.currentTarget).hasClass("leaderboards")) {
     show();
   }
+});
+
+$(".pageTest").on("click", "#dailyLeaderboardRank", () => {
+  currentTimeRange = "daily";
+  updateYesterdayButton();
+  languageSelector?.enable();
+
+  currentLanguage = TestStats.lastResult.language;
+  languageSelector?.setSelected(currentLanguage);
+  void update();
+  show();
 });
 
 Skeleton.save(wrapperId);
