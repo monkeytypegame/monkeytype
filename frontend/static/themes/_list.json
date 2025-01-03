@@ -1,4 +1,11 @@
 [
+    {
+    "name": "cup_cake",
+    "bgColor": "#14004d",
+    "mainColor": "#474fb8",
+    "subColor": "#c49645",
+    "textColor": "#735ddf"
+  },
   {
     "name": "dark_note",
     "bgColor": "#1f1f1f",
