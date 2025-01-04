@@ -1,12 +1,12 @@
 :root {
   --bg-color: #1e1e1e;
   --main-color: #007acc;
-  --caret-color: #569cd6;
-  --sub-color: #4d4d4d;
-  --sub-alt-color: #191919;
-  --text-color: #d4d4d4;
-  --error-color: #f44747;
-  --error-extra-color: #f44747;
-  --colorful-error-color: #f44747;
-  --colorful-error-extra-color: #f44747;
+  --caret-color: #e2c08d;
+  --sub-color: #d4d4d4;
+  --sub-alt-color: #383a49;
+  --text-color: #a6a6a6;
+  --error-color: #f14c4c;
+  --error-extra-color: #f14c4c;
+  --colorful-error-color: #f14c4c;
+  --colorful-error-extra-color: #f14c4c;
 }
