@@ -42,6 +42,7 @@
     "name": "portuguese",
     "languages": [
       "portuguese",
+      "portuguese_1k",
       "portuguese_3k",
       "portuguese_5k",
       "portuguese_320k",
@@ -82,6 +83,10 @@
   {
     "name": "korean",
     "languages": ["korean", "korean_1k", "korean_5k"]
+  },
+  {
+    "name": "khmer",
+    "languages": ["khmer"]
   },
   {
     "name": "chinese",
@@ -181,6 +186,10 @@
     "languages": ["irish"]
   },
   {
+    "name": "galician",
+    "languages": ["galician"]
+  },
+  {
     "name": "thai",
     "languages": ["thai"]
   },
@@ -202,7 +211,7 @@
   },
   {
     "name": "croatian",
-    "languages": ["croatian"]
+    "languages": ["croatian", "croatian_1k"]
   },
   {
     "name": "dutch",
@@ -490,6 +499,14 @@
     "languages": ["xhosa"]
   },
   {
+    "name": "tibetan",
+    "languages": ["tibetan", "tibetan_1k"]
+  },
+  {
+    "name": "bashkir",
+    "languages": ["bashkir"]
+  },
+  {
     "name": "other",
     "languages": [
       "lojban_gismu",
@@ -504,7 +521,7 @@
   },
   {
     "name": "amharic",
-    "languages": ["amharic"]
+    "languages": ["amharic", "amharic_1k", "amharic_5k"]
   },
   {
     "name": "oromo",
@@ -537,6 +554,10 @@
   {
     "name": "klingon",
     "languages": ["klingon", "klingon_1k"]
+  },
+  {
+    "name": "quenya",
+    "languages": ["quenya"]
   },
   {
     "name": "lorem_ipsum",
@@ -589,6 +610,7 @@
       "code_lua",
       "code_luau",
       "code_latex",
+      "code_typst",
       "code_matlab",
       "code_sql",
       "code_perl",
@@ -609,7 +631,8 @@
       "code_typescript",
       "code_cobol",
       "code_common_lisp",
-      "code_odin"
+      "code_odin",
+      "code_fortran"
     ]
   }
 ]

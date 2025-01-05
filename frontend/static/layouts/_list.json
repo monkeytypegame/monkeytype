@@ -197,6 +197,17 @@
       "row5": [" "]
     }
   },
+  "turkish_e": {
+    "keymapShowTopRow": false,
+    "type": "iso",
+    "keys": {
+      "row1": ["*+", "1!", "2\"", "3^", "4$", "5%", "6&", "7'", "8(", "9)", "0=", "/?", "-_"],
+      "row2": ["qQ", "jJ", "üÜ", "oO", "fF", "cC", "tT", "mM", "kK", "bB", "sS", "pP"],
+      "row3": ["eE", "aA", "iİ", "ıI", "gG", "ğĞ", "lL", "nN", "rR", "dD", "vV", ",;"],
+      "row4": ["<>", "xX", "wW", "öÖ", "uU", "hH", "zZ", "çÇ", "yY", "şŞ", ".:"],
+      "row5": [" "]
+    }
+  },
   "MTGAP_ASRT": {
     "keymapShowTopRow": false,
     "type": "ansi",
@@ -1419,7 +1430,7 @@
       "row5": [" "]
     }
   },
-  "3l ": {
+  "3l": {
     "keymapShowTopRow": false,
     "type": "ansi",
     "keys": {
@@ -1581,6 +1592,17 @@
       "row2": ["bB", "lL", "dD", "cC", "vV", "jJ", "fF", "oO", "uU", ",<", "[{", "]}", "\\|"],
       "row3": ["nN", "rR", "tT", "sS", "gG", "yY", "hH", "aA", "eE", "iI", "/?"],
       "row4": ["xX", "qQ", "mM", "wW", "zZ", "kK", "pP", "'\"", ";:", ".>"],
+      "row5": [" "]
+    }
+  },
+  "gallium_v2_matrix": {
+    "keymapShowTopRow": false,
+    "type": "ansi",
+    "keys": {
+      "row1": ["`~", "1!", "2@", "3#", "4$", "5%", "6^", "7&", "8*", "9(", "0)", "-_", "=+"],
+      "row2": ["bB", "lL", "dD", "cC", "vV", "jJ", "yY", "oO", "uU", ",<", "[{", "]}", "\\|"],
+      "row3": ["nN", "rR", "tT", "sS", "gG", "pP", "hH", "aA", "eE", "iI", "/?"],
+      "row4": ["xX", "qQ", "mM", "wW", "zZ", "kK", "fF", "'\"", ";:", ".>"],
       "row5": [" "]
     }
   },
@@ -2088,6 +2110,127 @@
       "row2": ["bB", "lL", "nN", "dD", "kK", "'\"", "fF", "oO", "uU", "jJ", " ", " ", " "],
       "row3": ["sS", "hH", "rR", "tT", "wW", "yY", "cC", "aA", "eE", "iI", " "],
       "row4": ["qQ", "xX", "mM", "vV", "zZ", "pP", "gG", ",<", ".>", "/?"],
+      "row5": [" "]
+    }
+  },
+  "haruka": {
+    "keymapShowTopRow": false,
+    "type": "ansi",
+    "keys": {
+      "row1": ["`~", "1!", "2@", "3#", "4$", "5%", "6^", "7&", "8*", "9(", "0)", "-_", "=+"],
+      "row2": ["qQ", "uU", "oO", "pP", "zZ", "vV", "fF", "dD", "lL", "mM", "[{", "]}", "\\|"],
+      "row3": ["iI", "eE", "aA", "nN", "bB", "gG", "sS", "tT", "rR", "cC", "'\""],
+      "row4": [",<", "/?", ".>", "hH", ";:", "jJ", "yY", "kK", "xX", "wW"],
+      "row5": [" "]
+    }
+  },
+  "kuntum": {
+    "keymapShowTopRow": false,
+    "type": "ansi",
+    "keys": {
+      "row1": ["`~", "1!", "2@", "3#", "4$", "5%", "6^", "7&", "8*", "9(", "0)", "-_", "=+"],
+      "row2": ["vV", "lL", "nN", "dD", "kK", "jJ", "wW", "oO", "uU", ",<", "[{", "]}", "\\|"],
+      "row3": ["tT", "sS", "rR", "hH", "fF", "gG", "cC", "aA", "eE", "iI", ";:"],
+      "row4": ["zZ", "xX", "pP", "bB", "'\"", "mM", "yY", "qQ", "/?", ".>"],
+      "row5": [" "]
+    }
+  },
+  "anishtro": {
+    "keymapShowTopRow": false,
+    "type": "ansi",
+    "keys": {
+      "row1": ["`~", "1!", "2@", "3#", "4$", "5%", "6^", "7&", "8*", "9(", "0)", "-_", "=+"],
+      "row2": ["qQ", "lL", "uU", "cC", "jJ", "kK", "pP", "mM", "wW", ";:", "[{", "]}", "\\|"],
+      "row3": ["aA", "nN", "iI", "sS", "vV", "bB", "hH", "tT", "rR", "oO", "'\""],
+      "row4": [",<", ".>", "yY", "gG", "xX", "zZ", "fF", "dD", "'\"", "-_"],
+      "row5": ["eE", " "]
+    }
+  },
+  "Kuntem": {
+    "keymapShowTopRow": false,
+    "type": "ansi",
+    "keys": {
+      "row1": ["`~", "1!", "2@", "3#", "4$", "5%", "6^", "7&", "8*", "9(", "0)", "-_", "=+"],
+      "row2": ["vV", "lL", "nN", "dD", "kK", "jJ", "wW", "oO", "uU", "qQ", "[{", "]}", "\\|"],
+      "row3": ["tT", "sS", "rR", "hH", "fF", "gG", "cC", "aA", "iI", "eE", ";:"],
+      "row4": ["zZ", "xX", "pP", "bB", "'\"", "mM", "yY", ".>", ",<", "/?"],
+      "row5": [" "]
+    }
+  },
+  "BEAKL_Zi": {
+    "keymapShowTopRow": false,
+    "type": "ansi",
+    "keys": {
+      "row1": ["`~", "1!", "2@", "3#", "4$", "5%", "6^", "7&", "8*", "9(", "0)", "-_", "=+"],
+      "row2": ["zZ", "yY", "oO", "uU", ";:", "gG", "dD", "nN", "mM", "xX", "[{", "]}", "\\|"],
+      "row3": ["qQ", "hH", "eE", "aA", ".>", "cC", "tT", "rR", "sS", "wW", "'\""],
+      "row4": ["jJ", "-_", "'\"", "kK", ",<", "bB", "pP", "lL", "fF", "vV"],
+      "row5": ["iI", " "]
+    }
+  },
+  "snorkle": {
+    "keymapShowTopRow": false,
+    "type": "ansi",
+    "keys": {
+      "row1": ["`~", "1!", "2@", "3#", "4$", "5%", "6^", "7&", "8*", "9(", "0)", "-_", "=+"],
+      "row2": [",<", "aA", "yY", "cC", "vV", "qQ", "dD", "lL", "uU", "xX", "[{", "]}", "\\|"],
+      "row3": ["iI", "oO", "nN", "sS", "bB", "pP", "tT", "hH", "eE", "rR", ";:"],
+      "row4": [".>", "'\"", "fF", "gG", "jJ", "kK", "wW", "mM", ";:", "zZ"],
+      "row5": [" "]
+    }
+  },
+  "MALTRON": {
+    "keymapShowTopRow": false,
+    "type": "ansi",
+    "keys": {
+      "row1": ["`~", "1!", "2@", "3#", "4$", "5%", "6^", "7&", "8*", "9(", "0)", "-_", "=+"],
+      "row2": ["qQ", "pP", "yY", "cC", "bB", "vV", "mM", "uU", "zZ", "lL", "[{", "]}", "\\|"],
+      "row3": ["aA", "nN", "iI", "sS", "fF", "dD", "tT", "hH", "oO", "rR", "'\""],
+      "row4": [",<", ".>", "jJ", "gG", "'\"", "/?", "wW", "kK", "-_", "xX"],
+      "row5": ["eE", " "]
+    }
+  },
+  "PRSTEN": {
+    "keymapShowTopRow": false,
+    "type": "ansi",
+    "keys": {
+      "row1": ["`~", "1!", "2@", "3#", "4$", "5%", "6^", "7&", "8*", "9(", "0)", "-_", "=+"],
+      "row2": ["`~", "wW", "cC", "dD", "fF", "qQ", "lL", "uU", "yY", ";:", "[{", "]}", "\\|"],
+      "row3": ["pP", "rR", "sS", "tT", "gG", "mM", "nN", "aA", "iI", "oO", "'\""],
+      "row4": ["xX", "hH", "vV", "bB", "[{", ",<", "jJ", "kK", "zZ", ".>"],
+      "row5": [" ", "eE"]
+    }
+  },
+  "RSTHD": {
+    "keymapShowTopRow": false,
+    "type": "ansi",
+    "keys": {
+      "row1": ["`~", "1!", "2@", "3#", "4$", "5%", "6^", "7&", "8*", "9(", "0)", "-_", "=+"],
+      "row2": ["jJ", "cC", "yY", "fF", "kK", "zZ", "lL", ",<", "uU", "qQ", "[{", "]}", "\\|"],
+      "row3": ["rR", "sS", "tT", "hH", "dD", "mM", "nN", "aA", "iI", "oO", "'\""],
+      "row4": ["/?", "vV", "gG", "pP", "bB", "xX", "wW", ".>", ";:", "-_"],
+      "row5": ["eE", " "]
+    }
+  },
+  "dusk": {
+    "keymapShowTopRow": false,
+    "type": "ansi",
+    "keys": {
+      "row1": ["`~", "1!", "2@", "3#", "4$", "5%", "6^", "7&", "8*", "9(", "0)", "-_", "=+"],
+      "row2": ["xX", "fF", "dD", "pP", "qQ", "jJ", "'\"", "oO", "uU", ".>", "[{", "]}", "\\|"],
+      "row3": ["nN", "sS", "tT", "cC", "yY", "mM", "hH", "aA", "eE", "iI", ";:"],
+      "row4": ["bB", "vV", "kK", "gG", "wW", "zZ", "lL", "-_", "/?", ",<"],
+      "row5": ["rR", " "]
+    }
+  },
+  "zenith": {
+    "keymapShowTopRow": false,
+    "type": "ansi",
+    "keys": {
+      "row1": ["`~", "1!", "2@", "3#", "4$", "5%", "6^", "7&", "8*", "9(", "0)", "-_", "=+"],
+      "row2": ["fF", "oO", "uU", "rR", "zZ", "wW", "vV", "jJ", "lL", "dD", "[{", "]}", "\\|"],
+      "row3": ["yY", "aA", "iI", "nN", "cC", "gG", "sS", "eE", "hH", "tT", "/?"],
+      "row4": ["'\"", ".>", ",<", "bB", "xX", "mM", "pP", "qQ", "kK", ";:"],
       "row5": [" "]
     }
   }

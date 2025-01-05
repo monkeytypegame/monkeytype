@@ -15,11 +15,9 @@ import * as SlowTimer from "../states/slow-timer";
 import * as DateTime from "../utils/date-and-time";
 import * as Misc from "../utils/misc";
 import * as Strings from "../utils/strings";
-import * as JSONData from "../utils/json-data";
 import * as Numbers from "@monkeytype/util/numbers";
 import * as Arrays from "../utils/arrays";
 import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
-import * as FunboxList from "./funbox/funbox-list";
 import * as PbCrown from "./pb-crown";
 import * as TestConfig from "./test-config";
 import * as TestInput from "./test-input";
@@ -32,7 +30,6 @@ import * as CustomText from "./custom-text";
 import * as CustomTextState from "./../states/custom-text-name";
 import * as Funbox from "./funbox/funbox";
 import Format from "../utils/format";
-
 import confetti from "canvas-confetti";
 import type {
   AnnotationOptions,
@@ -40,6 +37,8 @@ import type {
 } from "chartjs-plugin-annotation";
 import Ape from "../ape";
 import { CompletedEvent } from "@monkeytype/contracts/schemas/results";
+import { getActiveFunboxes, getFromString } from "./funbox/list";
+import { getFunboxesFromString } from "@monkeytype/funbox";
 
 let result: CompletedEvent;
 let maxChartVal: number;
@@ -127,10 +126,10 @@ async function updateGraph(): Promise<void> {
   const fc = await ThemeColors.get("sub");
   if (Config.funbox !== "none") {
     let content = "";
-    for (const f of FunboxList.get(Config.funbox)) {
-      content += f.name;
-      if (f.functions?.getResultContent) {
-        content += "(" + f.functions.getResultContent() + ")";
+    for (const fb of getActiveFunboxes()) {
+      content += fb.name;
+      if (fb.functions?.getResultContent) {
+        content += "(" + fb.functions.getResultContent() + ")";
       }
       content += " ";
     }
@@ -180,7 +179,7 @@ export async function updateGraphPBLine(): Promise<void> {
     result.language,
     result.difficulty,
     result.lazyMode ?? false,
-    result.funbox ?? "none"
+    getFunboxesFromString(result.funbox ?? "none")
   );
   const localPbWpm = localPb?.wpm ?? 0;
   if (localPbWpm === 0) return;
@@ -268,7 +267,7 @@ function updateWpmAndAcc(): void {
 
     $("#result .stats .acc .bottom").attr(
       "aria-label",
-      `${TestInput.accuracy.correct} correct / ${TestInput.accuracy.incorrect} incorrect`
+      `${TestInput.accuracy.correct} correct\n${TestInput.accuracy.incorrect} incorrect`
     );
   } else {
     //not showing decimal places
@@ -287,16 +286,18 @@ function updateWpmAndAcc(): void {
     $("#result .stats .wpm .bottom").attr("aria-label", wpmHover);
     $("#result .stats .raw .bottom").attr("aria-label", rawWpmHover);
 
-    $("#result .stats .acc .bottom").attr(
-      "aria-label",
-      `${
-        result.acc === 100
-          ? "100"
-          : Format.percentage(result.acc, { showDecimalPlaces: true })
-      } (${TestInput.accuracy.correct} correct / ${
-        TestInput.accuracy.incorrect
-      } incorrect)`
-    );
+    $("#result .stats .acc .bottom")
+      .attr(
+        "aria-label",
+        `${
+          result.acc === 100
+            ? "100%"
+            : Format.percentage(result.acc, { showDecimalPlaces: true })
+        }\n${TestInput.accuracy.correct} correct\n${
+          TestInput.accuracy.incorrect
+        } incorrect`
+      )
+      .attr("data-balloon-break", "");
   }
 }
 
@@ -401,7 +402,7 @@ export async function updateCrown(dontSave: boolean): Promise<void> {
       Config.language,
       Config.difficulty,
       Config.lazyMode,
-      Config.funbox
+      getActiveFunboxes()
     );
     const localPbWpm = localPb?.wpm ?? 0;
     pbDiff = result.wpm - localPbWpm;
@@ -423,7 +424,7 @@ export async function updateCrown(dontSave: boolean): Promise<void> {
       Config.language,
       Config.difficulty,
       Config.lazyMode,
-      "none"
+      []
     );
     const localPbWpm = localPb?.wpm ?? 0;
     pbDiff = result.wpm - localPbWpm;
@@ -472,16 +473,15 @@ type CanGetPbObject =
 
 async function resultCanGetPb(): Promise<CanGetPbObject> {
   const funboxes = result.funbox?.split("#") ?? [];
-  const funboxObjects = await Promise.all(
-    funboxes.map(async (f) => JSONData.getFunbox(f))
-  );
+  const funboxObjects = getFromString(result.funbox);
   const allFunboxesCanGetPb = funboxObjects.every((f) => f?.canGetPb);
 
   const funboxesOk =
     result.funbox === "none" || funboxes.length === 0 || allFunboxesCanGetPb;
   const notUsingStopOnLetter = Config.stopOnError !== "letter";
+  const notBailedOut = !result.bailedOut;
 
-  if (funboxesOk && notUsingStopOnLetter) {
+  if (funboxesOk && notUsingStopOnLetter && notBailedOut) {
     return {
       value: true,
     };
@@ -496,6 +496,12 @@ async function resultCanGetPb(): Promise<CanGetPbObject> {
       return {
         value: false,
         reason: "stop on letter",
+      };
+    }
+    if (!notBailedOut) {
+      return {
+        value: false,
+        reason: "bailed out",
       };
     }
     return {
@@ -669,7 +675,7 @@ function updateTestType(randomQuote: Quote | null): void {
     }
   }
   const ignoresLanguage =
-    FunboxList.get(Config.funbox).find((f) =>
+    getActiveFunboxes().find((f) =>
       f.properties?.includes("ignoresLanguage")
     ) !== undefined;
   if (Config.mode !== "custom" && !ignoresLanguage) {

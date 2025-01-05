@@ -35,6 +35,7 @@ import {
 } from "../utils/simple-modal";
 import { ShowOptions } from "../utils/animated-modal";
 import { GenerateDataRequest } from "@monkeytype/contracts/dev";
+import { UserNameSchema } from "@monkeytype/contracts/users";
 
 type PopupKey =
   | "updateEmail"
@@ -197,6 +198,12 @@ async function reauthenticate(
       return {
         status: 0,
         message: "Incorrect password",
+      };
+    } else if (typedError.code === "auth/invalid-credential") {
+      return {
+        status: 0,
+        message:
+          "Password is incorrect or your account does not have password authentication enabled.",
       };
     } else {
       return {
@@ -449,6 +456,18 @@ list.updateName = new SimpleModal({
       placeholder: "new name",
       type: "text",
       initVal: "",
+      validation: {
+        schema: UserNameSchema,
+        isValid: async (newName: string) => {
+          const checkNameResponse = (
+            await Ape.users.getNameAvailability({
+              params: { name: newName },
+            })
+          ).status;
+
+          return checkNameResponse === 200 ? true : "Name not available";
+        },
+      },
     },
   ],
   buttonText: "update",
@@ -459,22 +478,6 @@ list.updateName = new SimpleModal({
       return {
         status: reauth.status,
         message: reauth.message,
-      };
-    }
-
-    const checkNameResponse = await Ape.users.getNameAvailability({
-      params: { name: newName },
-    });
-
-    if (checkNameResponse.status === 409) {
-      return {
-        status: 0,
-        message: "Name not available",
-      };
-    } else if (checkNameResponse.status !== 200) {
-      return {
-        status: -1,
-        message: "Failed to check name: " + checkNameResponse.body.message,
       };
     }
 
@@ -986,7 +989,7 @@ list.revokeAllTokens = new SimpleModal({
       initVal: "",
     },
   ],
-  text: "Are you sure you want to this? This will log you out of all devices.",
+  text: "Are you sure you want to do this? This will log you out of all devices.",
   buttonText: "revoke all",
   onlineOnly: true,
   execFn: async (_thisPopup, password): Promise<ExecReturn> => {
@@ -1274,6 +1277,9 @@ list.devGenerateData = new SimpleModal({
         ) as HTMLInputElement;
         span.innerHTML = `if checked, user will be created with ${target.value}@example.com and password: password`;
         return;
+      },
+      validation: {
+        schema: UserNameSchema,
       },
     },
     {

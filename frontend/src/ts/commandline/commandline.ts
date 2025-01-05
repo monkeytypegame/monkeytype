@@ -33,6 +33,8 @@ let inputModeParams: InputModeParams = {
   icon: "",
 };
 let subgroupOverride: CommandsSubgroup | null = null;
+let isAnimating = false;
+let lastSingleListModeInputValue = "";
 
 function removeCommandlineBackground(): void {
   $("#commandLine").addClass("noBackground");
@@ -123,6 +125,7 @@ function hide(clearModalChain = false): void {
   if (ActivePage.get() === "test") {
     focusWords();
   }
+  isAnimating = true;
   void modal.hide({
     clearModalChain,
     afterAnimation: async () => {
@@ -131,6 +134,7 @@ function hide(clearModalChain = false): void {
       if (ActivePage.get() === "test" && !isWordsFocused) {
         focusWords();
       }
+      isAnimating = false;
     },
   });
 }
@@ -426,13 +430,19 @@ async function showCommands(): Promise<void> {
       await updateActiveCommand();
     });
     command.addEventListener("click", async () => {
+      const previous = activeIndex;
       activeIndex = parseInt(command.getAttribute("data-index") ?? "0");
+      if (previous !== activeIndex) {
+        await updateActiveCommand();
+      }
       await runActiveCommand();
     });
   }
 }
 
 async function updateActiveCommand(): Promise<void> {
+  if (isAnimating) return;
+
   const elements = [
     ...document.querySelectorAll("#commandLine .suggestions .command"),
   ];
@@ -465,6 +475,7 @@ async function updateActiveCommand(): Promise<void> {
 }
 
 function handleInputSubmit(): void {
+  if (isAnimating) return;
   if (inputModeParams.command === null) {
     throw new Error("Can't handle input submit - command is null");
   }
@@ -479,6 +490,7 @@ function handleInputSubmit(): void {
 }
 
 async function runActiveCommand(): Promise<void> {
+  if (isAnimating) return;
   if (activeCommand === null) return;
   const command = activeCommand;
   if (command.input) {
@@ -502,6 +514,9 @@ async function runActiveCommand(): Promise<void> {
     command.exec?.({
       commandlineModal: modal,
     });
+    if (Config.singleListCommandLine === "on") {
+      lastSingleListModeInputValue = inputValue;
+    }
     const isSticky = command.sticky ?? false;
     if (!isSticky) {
       void AnalyticsController.log("usedCommandLine", { command: command.id });
@@ -567,6 +582,14 @@ function updateInput(setInput?: string): void {
   } else {
     iconElement.innerHTML = '<i class="fas fa-search"></i>';
     element.placeholder = "Search...";
+
+    let length = inputValue.length;
+    if (setInput !== undefined) {
+      length = setInput.length;
+    }
+    setTimeout(() => {
+      element.setSelectionRange(length, length);
+    }, 0);
   }
 }
 
@@ -624,6 +647,18 @@ const modal = new AnimatedModal({
         (e.ctrlKey &&
           (e.key.toLowerCase() === "k" || e.key.toLowerCase() === "p"))
       ) {
+        if (
+          Config.singleListCommandLine === "on" &&
+          inputValue === "" &&
+          lastSingleListModeInputValue !== ""
+        ) {
+          inputValue = lastSingleListModeInputValue;
+          updateInput();
+          await filterSubgroup();
+          await showCommands();
+          await updateActiveCommand();
+          return;
+        }
         e.preventDefault();
         await decrementActiveIndex();
       }

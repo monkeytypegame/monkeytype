@@ -265,10 +265,13 @@ export type ThemeName = z.infer<typeof ThemeNameSchema>;
 export const KeymapLayoutSchema = z
   .string()
   .max(50)
-  .regex(/[\w\-_]+/);
+  .regex(/^[a-zA-Z0-9\-_]+$/gi);
 export type KeymapLayout = z.infer<typeof KeymapLayoutSchema>;
 
-export const LayoutSchema = token().max(50);
+export const LayoutSchema = z
+  .string()
+  .max(50)
+  .regex(/^[a-zA-Z0-9\-_]+$/gi);
 export type Layout = z.infer<typeof LayoutSchema>;
 
 export const FontSizeSchema = z.number().positive();
@@ -295,6 +298,7 @@ export const ConfigSchema = z
     favThemes: FavThemesSchema,
     showKeyTips: z.boolean(),
     smoothCaret: SmoothCaretSchema,
+    codeUnindentOnBackspace: z.boolean(),
     quickRestart: QuickRestartSchema,
     punctuation: z.boolean(),
     numbers: z.boolean(),

@@ -34,6 +34,7 @@ const practiceSubgroup: CommandsSubgroup = {
     {
       id: "practiseWordsCustom",
       display: "custom...",
+      opensModal: true,
       exec: (options): void => {
         PractiseWordsModal.show({
           animationMode: "modalOnly",

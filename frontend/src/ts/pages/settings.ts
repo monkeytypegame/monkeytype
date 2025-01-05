@@ -5,7 +5,7 @@ import * as Misc from "../utils/misc";
 import * as Strings from "../utils/strings";
 import * as JSONData from "../utils/json-data";
 import * as DB from "../db";
-import { toggleFunbox } from "../test/funbox/funbox";
+import * as Funbox from "../test/funbox/funbox";
 import * as TagController from "../controllers/tag-controller";
 import * as PresetController from "../controllers/preset-controller";
 import * as ThemePicker from "../elements/settings/theme-picker";
@@ -15,7 +15,6 @@ import * as ConfigEvent from "../observables/config-event";
 import * as ActivePage from "../states/active-page";
 import Page from "./page";
 import { isAuthenticated } from "../firebase";
-import { areFunboxesCompatible } from "../test/funbox/funbox-validation";
 import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
 import SlimSelect from "slim-select";
 
@@ -25,6 +24,12 @@ import {
   ConfigValue,
   CustomLayoutFluid,
 } from "@monkeytype/contracts/schemas/configs";
+import {
+  getAllFunboxes,
+  FunboxName,
+  checkCompatibility,
+} from "@monkeytype/funbox";
+import { getActiveFunboxNames } from "../test/funbox/list";
 
 type SettingsGroups<T extends ConfigValue> = Record<string, SettingsGroup<T>>;
 
@@ -35,6 +40,11 @@ async function initGroups(): Promise<void> {
   groups["smoothCaret"] = new SettingsGroup(
     "smoothCaret",
     UpdateConfig.setSmoothCaret,
+    "button"
+  ) as SettingsGroup<ConfigValue>;
+  groups["codeUnindentOnBackspace"] = new SettingsGroup(
+    "codeUnindentOnBackspace",
+    UpdateConfig.setCodeUnindentOnBackspace,
     "button"
   ) as SettingsGroup<ConfigValue>;
   groups["difficulty"] = new SettingsGroup(
@@ -583,46 +593,40 @@ async function fillSettingsPage(): Promise<void> {
   funboxEl.innerHTML = `<div class="funbox button" data-config-value='none'>none</div>`;
   let funboxElHTML = "";
 
-  let funboxList;
-  try {
-    funboxList = await JSONData.getFunboxList();
-  } catch (e) {
-    console.error(Misc.createErrorMessage(e, "Failed to get funbox list"));
-  }
-
-  if (funboxList) {
-    for (const funbox of funboxList) {
-      if (funbox.name === "mirror") {
-        funboxElHTML += `<div class="funbox button" data-config-value='${
-          funbox.name
-        }' aria-label="${
-          funbox.info
-        }" data-balloon-pos="up" data-balloon-length="fit" style="transform:scaleX(-1);">${funbox.name.replace(
-          /_/g,
-          " "
-        )}</div>`;
-      } else if (funbox.name === "upside_down") {
-        funboxElHTML += `<div class="funbox button" data-config-value='${
-          funbox.name
-        }' aria-label="${
-          funbox.info
-        }" data-balloon-pos="up" data-balloon-length="fit" style="transform:scaleX(-1) scaleY(-1); z-index:1;">${funbox.name.replace(
-          /_/g,
-          " "
-        )}</div>`;
-      } else {
-        funboxElHTML += `<div class="funbox button" data-config-value='${
-          funbox.name
-        }' aria-label="${
-          funbox.info
-        }" data-balloon-pos="up" data-balloon-length="fit">${funbox.name.replace(
-          /_/g,
-          " "
-        )}</div>`;
-      }
+  for (const funbox of getAllFunboxes()) {
+    if (funbox.name === "mirror") {
+      funboxElHTML += `<div class="funbox button" data-config-value='${
+        funbox.name
+      }' aria-label="${
+        funbox.description
+      }" data-balloon-pos="up" data-balloon-length="fit" style="transform:scaleX(-1);">${funbox.name.replace(
+        /_/g,
+        " "
+      )}</div>`;
+    } else if (funbox.name === "upside_down") {
+      funboxElHTML += `<div class="funbox button" data-config-value='${
+        funbox.name
+      }' aria-label="${
+        funbox.description
+      }" data-balloon-pos="up" data-balloon-length="fit" style="transform:scaleX(-1) scaleY(-1); z-index:1;">${funbox.name.replace(
+        /_/g,
+        " "
+      )}</div>`;
+    } else if (funbox.name === "underscore_spaces") {
+      // Display as "underscore_spaces". Does not replace underscores with spaces.
+      funboxElHTML += `<div class="funbox button" data-config-value='${funbox.name}' aria-label="${funbox.description}" data-balloon-pos="up" data-balloon-length="fit">${funbox.name}</div>`;
+    } else {
+      funboxElHTML += `<div class="funbox button" data-config-value='${
+        funbox.name
+      }' aria-label="${
+        funbox.description
+      }" data-balloon-pos="up" data-balloon-length="fit">${funbox.name.replace(
+        /_/g,
+        " "
+      )}</div>`;
     }
-    funboxEl.innerHTML = funboxElHTML;
   }
+  funboxEl.innerHTML = funboxElHTML;
 
   let isCustomFont = true;
   const fontsEl = document.querySelector(
@@ -723,26 +727,16 @@ function setActiveFunboxButton(): void {
   $(`.pageSettings .section[data-config-name='funbox'] .button`).removeClass(
     "disabled"
   );
-  JSONData.getFunboxList()
-    .then((funboxModes) => {
-      funboxModes.forEach((funbox) => {
-        if (
-          !areFunboxesCompatible(Config.funbox, funbox.name) &&
-          !Config.funbox.split("#").includes(funbox.name)
-        ) {
-          $(
-            `.pageSettings .section[data-config-name='funbox'] .button[data-config-value='${funbox.name}']`
-          ).addClass("disabled");
-        }
-      });
-    })
-    .catch((e: unknown) => {
-      const message = Misc.createErrorMessage(
-        e,
-        "Failed to update funbox buttons"
-      );
-      Notifications.add(message, -1);
-    });
+  getAllFunboxes().forEach((funbox) => {
+    if (
+      !checkCompatibility(getActiveFunboxNames(), funbox.name) &&
+      !Config.funbox.split("#").includes(funbox.name)
+    ) {
+      $(
+        `.pageSettings .section[data-config-name='funbox'] .button[data-config-value='${funbox.name}']`
+      ).addClass("disabled");
+    }
+  });
   Config.funbox.split("#").forEach((funbox) => {
     $(
       `.pageSettings .section[data-config-name='funbox'] .button[data-config-value='${funbox}']`
@@ -1052,8 +1046,8 @@ $(".pageSettings .section[data-config-name='funbox']").on(
   "click",
   ".button",
   (e) => {
-    const funbox = $(e.currentTarget).attr("data-config-value") as string;
-    toggleFunbox(funbox);
+    const funbox = $(e.currentTarget).attr("data-config-value") as FunboxName;
+    Funbox.toggleFunbox(funbox);
     setActiveFunboxButton();
   }
 );
