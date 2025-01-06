@@ -663,7 +663,7 @@ export async function generateWords(
       const sectionFinishedAndOverLimit =
         currentSection.length === 0 &&
         sectionIndex >= CustomText.getLimitValue();
-      if (sectionFinishedAndOverLimit || ret.words.length >= 100) {
+      if (sectionFinishedAndOverLimit || ret.words.length >= limit) {
         stop = true;
       }
     } else if (ret.words.length >= limit) {
