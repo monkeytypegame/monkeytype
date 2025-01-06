@@ -31,6 +31,7 @@ import {
 } from "@monkeytype/contracts/schemas/configs";
 import { convertRemToPixels } from "../utils/numbers";
 import { getActiveFunboxes } from "./funbox/list";
+import * as TestState from "./test-state";
 
 async function gethtml2canvas(): Promise<typeof import("html2canvas").default> {
   return (await import("html2canvas")).default;
@@ -183,8 +184,12 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
   if (eventKey === "tapeMode" && !nosave) {
     if (eventValue === "off") {
       $("#words").css("margin-left", "unset");
+      $("#liveStatsMini").css("display", "").css("justify-content", "");
     } else {
       scrollTape();
+      $("#liveStatsMini")
+        .css("display", "flex")
+        .css("justify-content", "center");
     }
   }
 
@@ -469,7 +474,7 @@ export async function updateWordsInputPosition(initial = false): Promise<void> {
 
   if (Config.tapeMode !== "off") {
     el.style.top = targetTop + "px";
-    el.style.left = activeWord.offsetLeft + "px";
+    el.style.left = "50%";
     return;
   }
 
@@ -938,6 +943,19 @@ export async function updateActiveWordLetters(
 
 export function scrollTape(): void {
   if (ActivePage.get() !== "test" || resultVisible) return;
+
+  if (!TestState.isActive) {
+    $("#words")
+      .stop(true, false)
+      .animate(
+        {
+          marginLeft: "50%",
+        },
+        SlowTimer.get() ? 0 : 125
+      );
+    return;
+  }
+
   const wordsWrapperWidth = (
     document.querySelector("#wordsWrapper") as HTMLElement
   ).offsetWidth;

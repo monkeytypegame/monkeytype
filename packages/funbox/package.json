@@ -9,7 +9,6 @@
     "lint": "eslint \"./**/*.ts\""
   },
   "devDependencies": {
-    "@monkeytype/util": "workspace:*",
     "@monkeytype/esbuild": "workspace:*",
     "@monkeytype/eslint-config": "workspace:*",
     "@monkeytype/typescript-config": "workspace:*",
@@ -19,6 +18,9 @@
     "rimraf": "6.0.1",
     "typescript": "5.5.4",
     "vitest": "2.0.5"
+  },
+  "dependencies": {
+    "@monkeytype/util": "workspace:*"
   },
   "exports": {
     ".": {

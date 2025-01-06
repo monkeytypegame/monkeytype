@@ -529,6 +529,10 @@ importers:
         version: 1.1.9
 
   packages/funbox:
+    dependencies:
+      '@monkeytype/util':
+        specifier: workspace:*
+        version: link:../util
     devDependencies:
       '@monkeytype/esbuild':
         specifier: workspace:*
@@ -539,9 +543,6 @@ importers:
       '@monkeytype/typescript-config':
         specifier: workspace:*
         version: link:../typescript-config
-      '@monkeytype/util':
-        specifier: workspace:*
-        version: link:../util
       chokidar:
         specifier: 3.6.0
         version: 3.6.0
