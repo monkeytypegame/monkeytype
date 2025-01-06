@@ -62,7 +62,8 @@ export type FunboxProperty =
   | "noInfiniteDuration"
   | "noLigatures"
   | `toPush:${number}`
-  | "wordOrder:reverse";
+  | "wordOrder:reverse"
+  | "ignoreReducedMotion";
 
 export type FunboxMetadata = {
   name: FunboxName;

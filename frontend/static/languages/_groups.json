@@ -195,7 +195,7 @@
   },
   {
     "name": "tamil",
-    "languages": ["tamil", "tamil_1k", "tanglish"]
+    "languages": ["tamil", "tamil_1k", "tanglish", "tamil_old"]
   },
   {
     "name": "kannada",
