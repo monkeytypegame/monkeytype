@@ -184,13 +184,14 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
   if (eventKey === "tapeMode" && !nosave) {
     if (eventValue === "off") {
       $("#words").css("margin-left", "unset");
-      $("#liveStatsMini").css("display", "").css("justify-content", "");
     } else {
       scrollTape();
-      $("#liveStatsMini")
-        .css("display", "flex")
-        .css("justify-content", "center");
     }
+    updateLiveStatsMargin();
+  }
+
+  if (eventKey === "tapeMargin" && !nosave) {
+    updateLiveStatsMargin();
   }
 
   if (typeof eventValue !== "boolean") return;
@@ -474,7 +475,7 @@ export async function updateWordsInputPosition(initial = false): Promise<void> {
 
   if (Config.tapeMode !== "off") {
     el.style.top = targetTop + "px";
-    el.style.left = "50%";
+    el.style.left = Config.tapeMargin + "%";
     return;
   }
 
@@ -949,7 +950,7 @@ export function scrollTape(): void {
       .stop(true, false)
       .animate(
         {
-          marginLeft: "50%",
+          marginLeft: Config.tapeMargin + "%",
         },
         SlowTimer.get() ? 0 : 125
       );
@@ -1000,7 +1001,9 @@ export function scrollTape(): void {
       }
     }
   }
-  const newMargin = wordsWrapperWidth / 2 - (fullWordsWidth + currentWordWidth);
+
+  const tapeMargin = wordsWrapperWidth * (Config.tapeMargin / 100);
+  const newMargin = tapeMargin - (fullWordsWidth + currentWordWidth);
   if (Config.smoothLineScroll) {
     $("#words")
       .stop(true, false)
@@ -1475,6 +1478,20 @@ function updateWordsWidth(): void {
     el.removeClass("full-width-padding").addClass("content");
   } else {
     el.removeClass("content").addClass("full-width-padding");
+  }
+}
+
+function updateLiveStatsMargin(): void {
+  if (Config.tapeMode === "off") {
+    $("#liveStatsMini").css({
+      "justify-content": "start",
+      "margin-left": "unset",
+    });
+  } else {
+    $("#liveStatsMini").css({
+      "justify-content": "center",
+      "margin-left": Config.tapeMargin + "%",
+    });
   }
 }
 

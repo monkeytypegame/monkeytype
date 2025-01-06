@@ -158,6 +158,9 @@ export type HighlightMode = z.infer<typeof HighlightModeSchema>;
 export const TapeModeSchema = z.enum(["off", "letter", "word"]);
 export type TapeMode = z.infer<typeof TapeModeSchema>;
 
+export const TapeMarginSchema = z.number().min(10).max(90);
+export type TapeMargin = z.infer<typeof TapeMarginSchema>;
+
 export const TypingSpeedUnitSchema = z.enum([
   "wpm",
   "cpm",
@@ -354,6 +357,7 @@ export const ConfigSchema = z
     minWpmCustomSpeed: MinWpmCustomSpeedSchema,
     highlightMode: HighlightModeSchema,
     tapeMode: TapeModeSchema,
+    tapeMargin: TapeMarginSchema,
     typingSpeedUnit: TypingSpeedUnitSchema,
     ads: AdsSchema,
     hideExtraLetters: z.boolean(),

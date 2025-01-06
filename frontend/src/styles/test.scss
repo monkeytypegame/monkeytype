@@ -1254,6 +1254,8 @@
     }
   }
   #liveStatsMini {
+    width: 0;
+    justify-content: start;
     height: 0;
     margin-left: 0.25em;
     display: flex;
