@@ -1338,6 +1338,13 @@ body.fb-nospace {
   }
 }
 
+/* funbox underscore_spaces */
+body.fb-underscore-spaces {
+  #words .word {
+    margin: 0.5em 0;
+  }
+}
+
 /* funbox arrows */
 body.fb-arrows {
   #words .word {

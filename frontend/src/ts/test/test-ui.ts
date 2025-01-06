@@ -19,7 +19,6 @@ import * as ConfigEvent from "../observables/config-event";
 import * as Hangul from "hangul-js";
 import { format } from "date-fns/format";
 import { isAuthenticated } from "../firebase";
-import * as FunboxList from "./funbox/funbox-list";
 import { debounce } from "throttle-debounce";
 import * as ResultWordHighlight from "../elements/result-word-highlight";
 import * as ActivePage from "../states/active-page";
@@ -31,6 +30,8 @@ import {
   TimerOpacity,
 } from "@monkeytype/contracts/schemas/configs";
 import { convertRemToPixels } from "../utils/numbers";
+import { getActiveFunboxes } from "./funbox/list";
+import * as TestState from "./test-state";
 
 async function gethtml2canvas(): Promise<typeof import("html2canvas").default> {
   return (await import("html2canvas")).default;
@@ -330,9 +331,8 @@ export async function updateHintsPosition(): Promise<void> {
 function getWordHTML(word: string): string {
   let newlineafter = false;
   let retval = `<div class='word'>`;
-  const funbox = FunboxList.get(Config.funbox).find(
-    (f) => f.functions?.getWordHtml
-  );
+
+  const funbox = getActiveFunboxes().find((f) => f.functions?.getWordHtml);
   const chars = Strings.splitIntoCharacters(word);
   for (const char of chars) {
     if (funbox?.functions?.getWordHtml) {
@@ -470,7 +470,7 @@ export async function updateWordsInputPosition(initial = false): Promise<void> {
 
   if (Config.tapeMode !== "off") {
     el.style.top = targetTop + "px";
-    el.style.left = activeWord.offsetLeft + "px";
+    el.style.left = "50%";
     return;
   }
 
@@ -648,9 +648,9 @@ export async function screenshot(): Promise<void> {
     }
     (document.querySelector("html") as HTMLElement).style.scrollBehavior =
       "smooth";
-    FunboxList.get(Config.funbox).forEach((f) =>
-      f.functions?.applyGlobalCSS?.()
-    );
+    for (const fb of getActiveFunboxes()) {
+      fb.functions?.applyGlobalCSS?.();
+    }
   }
 
   if (!$("#resultReplay").hasClass("hidden")) {
@@ -690,7 +690,9 @@ export async function screenshot(): Promise<void> {
   $(".highlightContainer").addClass("hidden");
   if (revertCookie) $("#cookiesModal").addClass("hidden");
 
-  FunboxList.get(Config.funbox).forEach((f) => f.functions?.clearGlobal?.());
+  for (const fb of getActiveFunboxes()) {
+    fb.functions?.clearGlobal?.();
+  }
 
   (document.querySelector("html") as HTMLElement).style.scrollBehavior = "auto";
   window.scrollTo({
@@ -837,9 +839,7 @@ export async function updateActiveWordLetters(
       }
     }
 
-    const funbox = FunboxList.get(Config.funbox).find(
-      (f) => f.functions?.getWordHtml
-    );
+    const funbox = getActiveFunboxes().find((fb) => fb.functions?.getWordHtml);
 
     const inputChars = Strings.splitIntoCharacters(input);
     const currentWordChars = Strings.splitIntoCharacters(currentWord);
@@ -850,7 +850,7 @@ export async function updateActiveWordLetters(
       let tabChar = "";
       let nlChar = "";
       if (funbox?.functions?.getWordHtml) {
-        const cl = funbox.functions.getWordHtml(currentLetter);
+        const cl = funbox.functions?.getWordHtml(currentLetter);
         if (cl !== "") {
           currentLetter = cl;
         }
@@ -939,6 +939,19 @@ export async function updateActiveWordLetters(
 
 export function scrollTape(): void {
   if (ActivePage.get() !== "test" || resultVisible) return;
+
+  if (!TestState.isActive) {
+    $("#words")
+      .stop(true, false)
+      .animate(
+        {
+          marginLeft: "50%",
+        },
+        SlowTimer.get() ? 0 : 125
+      );
+    return;
+  }
+
   const wordsWrapperWidth = (
     document.querySelector("#wordsWrapper") as HTMLElement
   ).offsetWidth;
