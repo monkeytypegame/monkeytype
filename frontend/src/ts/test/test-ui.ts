@@ -1485,7 +1485,7 @@ function updateLiveStatsMargin(): void {
   if (Config.tapeMode === "off") {
     $("#liveStatsMini").css({
       "justify-content": "start",
-      "margin-left": "unset",
+      "margin-left": "0.25em",
     });
   } else {
     $("#liveStatsMini").css({
