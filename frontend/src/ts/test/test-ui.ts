@@ -184,8 +184,12 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
   if (eventKey === "tapeMode" && !nosave) {
     if (eventValue === "off") {
       $("#words").css("margin-left", "unset");
+      $("#liveStatsMini").css("display", "").css("justify-content", "");
     } else {
       scrollTape();
+      $("#liveStatsMini")
+        .css("display", "flex")
+        .css("justify-content", "center");
     }
   }
 
