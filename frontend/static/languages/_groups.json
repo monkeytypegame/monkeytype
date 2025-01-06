@@ -42,6 +42,7 @@
     "name": "portuguese",
     "languages": [
       "portuguese",
+      "portuguese_1k",
       "portuguese_3k",
       "portuguese_5k",
       "portuguese_320k",
@@ -82,6 +83,10 @@
   {
     "name": "korean",
     "languages": ["korean", "korean_1k", "korean_5k"]
+  },
+  {
+    "name": "khmer",
+    "languages": ["khmer"]
   },
   {
     "name": "chinese",
@@ -183,6 +188,10 @@
   {
     "name": "irish",
     "languages": ["irish"]
+  },
+  {
+    "name": "galician",
+    "languages": ["galician"]
   },
   {
     "name": "thai",
@@ -498,6 +507,10 @@
     "languages": ["tibetan", "tibetan_1k"]
   },
   {
+    "name": "bashkir",
+    "languages": ["bashkir"]
+  },
+  {
     "name": "other",
     "languages": [
       "lojban_gismu",
@@ -601,6 +614,7 @@
       "code_lua",
       "code_luau",
       "code_latex",
+      "code_typst",
       "code_matlab",
       "code_sql",
       "code_perl",
