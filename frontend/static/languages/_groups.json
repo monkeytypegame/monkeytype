@@ -389,7 +389,7 @@
   },
   {
     "name": "urdu",
-    "languages": ["urdu", "urdu_1k", "urdu_5k"]
+    "languages": ["urdu", "urdu_1k", "urdu_5k", "urdish"]
   },
   {
     "name": "albanian",
