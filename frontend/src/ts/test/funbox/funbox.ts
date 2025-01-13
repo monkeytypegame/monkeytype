@@ -214,7 +214,11 @@ async function setFunboxBodyClasses(): Promise<boolean> {
     (name) => "fb-" + name.replaceAll("_", "-")
   );
 
-  const currentClasses = $body?.attr("class")?.split(/\s+/) ?? [];
+  const currentClasses =
+    $body
+      ?.attr("class")
+      ?.split(/\s+/)
+      .filter((it) => !it.startsWith("fb-")) ?? [];
 
   if (
     getActiveFunboxes().some((it) =>
