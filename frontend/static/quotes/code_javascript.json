@@ -278,7 +278,7 @@
       "id": 45
     },
     {
-      "text": "function getRoutePath(e){return e.route&&null!=e.route.path?e.route.path.toString().replace(/\//g,\"_\").replace(/:/g,\"\").slice(1):e.swagger&&null!=e.swagger.apiPath?e.swagger.apiPath:null}",
+      "text": "function getRoutePath(e){return e.route&&null!=e.route.path?e.route.path.toString().replace(///g,\"_\").replace(/:/g,\"\").slice(1):e.swagger&&null!=e.swagger.apiPath?e.swagger.apiPath:null}",
       "source": "Overleaf sourcecode",
       "length": 187,
       "id": 46
