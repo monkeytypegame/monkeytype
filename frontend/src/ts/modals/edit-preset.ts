@@ -342,7 +342,7 @@ async function apply(): Promise<void> {
   Loader.hide();
 }
 
-function getSettingGroup(configFieldName: string): PresetSettingGroup {
+function getSettingGroup(configFieldName: string): PresetSettingGroup | null {
   const themeSettings = [
     "theme",
     "themeLight",
@@ -421,6 +421,7 @@ function getSettingGroup(configFieldName: string): PresetSettingGroup {
     "startGraphsAtZero",
     "highlightMode",
     "tapeMode",
+    "tapeMargin",
     "typingSpeedUnit",
     "maxLineWidth",
   ];
@@ -435,6 +436,7 @@ function getSettingGroup(configFieldName: string): PresetSettingGroup {
     "strictSpace",
     "oppositeShiftMode",
     "lazyMode",
+    "codeUnindentOnBackspace",
   ];
   const soundSettings = ["playSoundOnError", "playSoundOnClick", "soundVolume"];
   const hiddenSettings = ["accountChart", "monkey", "monkeyPowerLevel"];
@@ -462,7 +464,11 @@ function getSettingGroup(configFieldName: string): PresetSettingGroup {
     return "ads";
   }
 
-  throw new Error(`${configFieldName} setting not part of any setting group`);
+  Notifications.add(
+    `Setting group not found for setting ${configFieldName} - it will not be saved. Please report this.`,
+    -1
+  );
+  return null;
 }
 
 function getPartialConfigChanges(
@@ -470,10 +476,11 @@ function getPartialConfigChanges(
 ): Partial<ConfigType> {
   const activeConfigChanges: Partial<ConfigType> = {};
   Object.keys(defaultConfig)
-    .filter(
-      (settingName) =>
-        state.checkboxes.get(getSettingGroup(settingName)) === true
-    )
+    .filter((settingName) => {
+      const group = getSettingGroup(settingName);
+      if (group === null) return false;
+      return state.checkboxes.get(group) === true;
+    })
     .forEach((settingName) => {
       const safeSettingName = settingName as keyof Partial<ConfigType>;
       const newValue =
