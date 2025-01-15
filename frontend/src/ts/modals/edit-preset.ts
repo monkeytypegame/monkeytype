@@ -7,24 +7,23 @@ import * as Notifications from "../elements/notifications";
 import * as ConnectionState from "../states/connection";
 import AnimatedModal from "../utils/animated-modal";
 import {
-  ActiveSettingGroups,
-  ActiveSettingGroupsSchema,
-  PresetSettingGroup,
-  PresetSettingGroupSchema,
   PresetType,
   PresetTypeSchema,
 } from "@monkeytype/contracts/schemas/presets";
 import { getPreset } from "../controllers/preset-controller";
 import defaultConfig from "../constants/default-config";
-import { Config as ConfigType } from "@monkeytype/contracts/schemas/configs";
+import {
+  ConfigGroupName,
+  ConfigGroupNameSchema,
+  ConfigGroupsLiteral,
+  ConfigKey,
+  Config as ConfigType,
+} from "@monkeytype/contracts/schemas/configs";
 
 const state = {
   presetType: "full" as PresetType,
   checkboxes: new Map(
-    PresetSettingGroupSchema.options.map((key: PresetSettingGroup) => [
-      key,
-      true,
-    ])
+    ConfigGroupNameSchema.options.map((key: ConfigGroupName) => [key, true])
   ),
   setPresetToCurrent: false,
 };
@@ -122,19 +121,17 @@ async function initializeEditState(id: string): Promise<void> {
 }
 
 function addCheckboxListeners(): void {
-  PresetSettingGroupSchema.options.forEach(
-    (settingGroup: PresetSettingGroup) => {
-      const checkboxInput = $(
-        `#editPresetModal .modal .checkboxList .checkboxTitlePair[data-id="${settingGroup}"] input`
+  ConfigGroupNameSchema.options.forEach((settingGroup: ConfigGroupName) => {
+    const checkboxInput = $(
+      `#editPresetModal .modal .checkboxList .checkboxTitlePair[data-id="${settingGroup}"] input`
+    );
+    checkboxInput.on("change", (e) => {
+      state.checkboxes.set(
+        settingGroup,
+        checkboxInput.prop("checked") as boolean
       );
-      checkboxInput.on("change", (e) => {
-        state.checkboxes.set(
-          settingGroup,
-          checkboxInput.prop("checked") as boolean
-        );
-      });
-    }
-  );
+    });
+  });
 
   const presetToCurrentCheckbox = $(
     `#editPresetModal .modal .changePresetToCurrentCheckbox input`
@@ -154,7 +151,7 @@ function addCheckBoxes(): void {
   const settingGroupListEl = $(
     "#editPresetModal .modal .inputs .checkboxList"
   ).empty();
-  PresetSettingGroupSchema.options.forEach((currSettingGroup) => {
+  ConfigGroupNameSchema.options.forEach((currSettingGroup) => {
     const currSettingGroupTitle = camelCaseToSpaced(currSettingGroup);
     const settingGroupCheckbox: string = `<label class="checkboxTitlePair" data-id="${currSettingGroup}">
               <input type="checkbox" />
@@ -169,13 +166,11 @@ function addCheckBoxes(): void {
 }
 
 function updateUI(): void {
-  PresetSettingGroupSchema.options.forEach(
-    (settingGroup: PresetSettingGroup) => {
-      $(
-        `#editPresetModal .modal .checkboxList .checkboxTitlePair[data-id="${settingGroup}"] input`
-      ).prop("checked", state.checkboxes.get(settingGroup));
-    }
-  );
+  ConfigGroupNameSchema.options.forEach((settingGroup: ConfigGroupName) => {
+    $(
+      `#editPresetModal .modal .checkboxList .checkboxTitlePair[data-id="${settingGroup}"] input`
+    ).prop("checked", state.checkboxes.get(settingGroup));
+  });
   $(`#editPresetModal .modal .presetType button`).removeClass("active");
   $(
     `#editPresetModal .modal .presetType button[value="${state.presetType}"]`
@@ -291,7 +286,7 @@ async function apply(): Promise<void> {
       return;
     }
     const configChanges = getConfigChanges();
-    const activeSettingGroups: ActiveSettingGroups | null =
+    const activeSettingGroups: ConfigGroupName[] | null =
       state.presetType === "partial" ? getActiveSettingGroupsFromState() : null;
     const response = await Ape.presets.save({
       body: {
@@ -342,147 +337,23 @@ async function apply(): Promise<void> {
   Loader.hide();
 }
 
-function getSettingGroup(configFieldName: string): PresetSettingGroup | null {
-  const themeSettings = [
-    "theme",
-    "themeLight",
-    "themeDark",
-    "autoSwitchTheme",
-    "customTheme",
-    "customThemeColors",
-    "favThemes",
-    "flipTestColors",
-    "colorfulMode",
-    "randomTheme",
-    "customBackground",
-    "customBackgroundSize",
-    "customBackgroundFilter",
-  ];
-  const hideElementsSettings = [
-    "showKeyTips",
-    "capsLockWarning",
-    "showOutOfFocusWarning",
-    "showAverage",
-  ];
-  const caretSettings = [
-    "smoothCaret",
-    "caretStyle",
-    "paceCaretStyle",
-    "paceCaret",
-    "paceCaretCustomSpeed",
-    "repeatedPace",
-  ];
-  const behaviorSettings = [
-    "quickRestart",
-    "difficulty",
-    "blindMode",
-    "funbox",
-    "alwaysShowWordsHistory",
-    "singleListCommandLine",
-    "minWpm",
-    "minWpmCustomSpeed",
-    "minAcc",
-    "minAccCustom",
-    "repeatQuotes",
-    "customLayoutfluid",
-    "minBurst",
-    "minBurstCustomSpeed",
-    "britishEnglish",
-    "tags",
-  ];
-  const testSettings = [
-    "punctuation",
-    "words",
-    "time",
-    "numbers",
-    "mode",
-    "quoteLength",
-    "language",
-    "burstHeatmap",
-  ];
-  const appearanceSettings = [
-    "fontSize",
-    "timerStyle",
-    "liveSpeedStyle",
-    "liveAccStyle",
-    "liveBurstStyle",
-    "timerColor",
-    "timerOpacity",
-    "showAllLines",
-    "keymapMode",
-    "keymapStyle",
-    "keymapLegendStyle",
-    "keymapLayout",
-    "keymapShowTopRow",
-    "keymapSize",
-    "fontFamily",
-    "smoothLineScroll",
-    "alwaysShowDecimalPlaces",
-    "startGraphsAtZero",
-    "highlightMode",
-    "tapeMode",
-    "tapeMargin",
-    "typingSpeedUnit",
-    "maxLineWidth",
-  ];
-  const inputSettings = [
-    "freedomMode",
-    "quickEnd",
-    "layout",
-    "confidenceMode",
-    "indicateTypos",
-    "stopOnError",
-    "hideExtraLetters",
-    "strictSpace",
-    "oppositeShiftMode",
-    "lazyMode",
-    "codeUnindentOnBackspace",
-  ];
-  const soundSettings = ["playSoundOnError", "playSoundOnClick", "soundVolume"];
-  const hiddenSettings = ["accountChart", "monkey", "monkeyPowerLevel"];
-  const adsSettings = ["ads"];
-
-  if (themeSettings.includes(configFieldName)) {
-    return "theme";
-  } else if (hideElementsSettings.includes(configFieldName)) {
-    return "hideElements";
-  } else if (caretSettings.includes(configFieldName)) {
-    return "caret";
-  } else if (behaviorSettings.includes(configFieldName)) {
-    return "behavior";
-  } else if (testSettings.includes(configFieldName)) {
-    return "test";
-  } else if (appearanceSettings.includes(configFieldName)) {
-    return "appearance";
-  } else if (inputSettings.includes(configFieldName)) {
-    return "input";
-  } else if (soundSettings.includes(configFieldName)) {
-    return "sound";
-  } else if (hiddenSettings.includes(configFieldName)) {
-    return "hidden";
-  } else if (adsSettings.includes(configFieldName)) {
-    return "ads";
-  }
-
-  Notifications.add(
-    `Setting group not found for setting ${configFieldName} - it will not be saved. Please report this.`,
-    -1
-  );
-  return null;
+function getSettingGroup(configFieldName: ConfigKey): ConfigGroupName {
+  return ConfigGroupsLiteral[configFieldName];
 }
 
 function getPartialConfigChanges(
   configChanges: Partial<ConfigType>
 ): Partial<ConfigType> {
   const activeConfigChanges: Partial<ConfigType> = {};
-  Object.keys(defaultConfig)
+
+  (Object.keys(defaultConfig) as ConfigKey[])
     .filter((settingName) => {
       const group = getSettingGroup(settingName);
       if (group === null) return false;
       return state.checkboxes.get(group) === true;
     })
     .forEach((settingName) => {
-      const safeSettingName = settingName as keyof Partial<ConfigType>;
+      const safeSettingName = settingName;
       const newValue =
         configChanges[safeSettingName] !== undefined
           ? configChanges[safeSettingName]
@@ -492,13 +363,13 @@ function getPartialConfigChanges(
     });
   return activeConfigChanges;
 }
-function getActiveSettingGroupsFromState(): ActiveSettingGroups {
-  return ActiveSettingGroupsSchema.parse(
-    Array.from(state.checkboxes.entries())
-      .filter(([, value]) => value)
-      .map(([key]) => key)
-  );
+
+function getActiveSettingGroupsFromState(): ConfigGroupName[] {
+  return Array.from(state.checkboxes.entries())
+    .filter(([, value]) => value)
+    .map(([key]) => key);
 }
+
 function getConfigChanges(): Partial<ConfigType> {
   const activeConfigChanges =
     state.presetType === "partial"

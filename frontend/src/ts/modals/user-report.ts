@@ -64,13 +64,7 @@ export async function show(options: ShowOptions): Promise<void> {
 }
 
 async function hide(): Promise<void> {
-  void modal.hide({
-    afterAnimation: async () => {
-      select?.destroy();
-      select = undefined;
-      CaptchaController.reset("userReportModal");
-    },
-  });
+  void modal.hide();
 }
 
 async function submitReport(): Promise<void> {
@@ -139,5 +133,10 @@ const modal = new AnimatedModal({
     modalEl.querySelector("button")?.addEventListener("click", () => {
       void submitReport();
     });
+  },
+  cleanup: async (): Promise<void> => {
+    select?.destroy();
+    select = undefined;
+    CaptchaController.reset("userReportModal");
   },
 });

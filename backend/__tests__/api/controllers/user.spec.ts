@@ -1068,7 +1068,7 @@ describe("user controller test", () => {
       );
       expect(addImportantLogMock).toHaveBeenCalledWith(
         "user_email_updated",
-        "changed email to newemail@example.com",
+        "changed email from previousemail@example.com to newemail@example.com",
         uid
       );
     });
