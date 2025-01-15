@@ -190,7 +190,7 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
     updateLiveStatsMargin();
   }
 
-  if (eventKey === "tapeMargin" && !nosave) {
+  if (eventKey === "tapeMargin") {
     updateLiveStatsMargin();
   }
 
