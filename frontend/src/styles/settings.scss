@@ -351,7 +351,6 @@
           justify-self: end;
         }
         &:hover {
-          transform: scale(1.1);
           .editButton {
             width: 1.25rem;
             opacity: 1;
@@ -386,7 +385,6 @@
         }
         &.active {
           box-shadow: 0 0 0 0.2em var(--main-color);
-          transform: scale(1.1);
           .themeBubbles {
             opacity: 1;
           }
@@ -479,6 +477,7 @@
   }
 }
 
-.buttons div.theme:hover {
-  transform: scale(1.1);
+.buttons div.theme:hover,
+.buttons div.customTheme:hover {
+  box-shadow: 0 0 0 0.2em var(--main-color);
 }
