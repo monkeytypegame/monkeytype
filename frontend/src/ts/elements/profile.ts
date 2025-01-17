@@ -189,7 +189,7 @@ export async function update(
       console.debug(hoverText);
 
       if (streakOffset === undefined) {
-        hoverText += `\n\nIf the streak reset time doesn't line up with your timezone, you can change it in Settings > Danger zone > Update streak hour offset.`;
+        hoverText += `\n\nIf the streak reset time doesn't line up with your timezone, you can change it in Account Settings > Account > Set streak hour offset.`;
       }
     }
   }
