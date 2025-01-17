@@ -351,6 +351,7 @@
           justify-self: end;
         }
         &:hover {
+          transform: scale(1.1);
           .editButton {
             width: 1.25rem;
             opacity: 1;
@@ -385,6 +386,7 @@
         }
         &.active {
           box-shadow: 0 0 0 0.2em var(--main-color);
+          transform: scale(1.1);
           .themeBubbles {
             opacity: 1;
           }
@@ -416,7 +418,7 @@
         margin-left: 0;
         grid-auto-flow: dense;
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr)) !important;
+        grid-template-columns: repeat(auto-fill, minmax(17rem, 1fr)) !important;
         gap: 0.5rem;
         .button {
           transition: transform 0.125s;
@@ -477,7 +479,6 @@
   }
 }
 
-.buttons div.theme:hover,
-.buttons div.customTheme:hover {
-  box-shadow: 0 0 0 0.2em var(--main-color);
+.buttons div.theme:hover {
+  transform: scale(1.1);
 }
