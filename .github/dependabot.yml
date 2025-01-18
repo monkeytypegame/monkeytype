@@ -1,16 +1,16 @@
 version: 2
 updates:
-  - package-ecosystem: npm
+  - package-ecosystem: pnpm
     directory: /
     versioning-strategy: increase
     schedule:
       interval: weekly
-  - package-ecosystem: npm
+  - package-ecosystem: pnpm
     directory: /frontend
     versioning-strategy: increase
     schedule:
       interval: weekly
-  - package-ecosystem: npm
+  - package-ecosystem: pnpm
     directory: /backend
     versioning-strategy: increase
     schedule:
