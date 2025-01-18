@@ -84,7 +84,7 @@
     "@types/ua-parser-js": "0.7.36",
     "@types/uuid": "10.0.0",
     "@vitest/coverage-v8": "2.0.5",
-    "concurrently": "8.2.2",
+    "concurrently": "9.1.2",
     "eslint": "8.57.0",
     "eslint-watch": "8.0.0",
     "ioredis-mock": "7.4.0",
