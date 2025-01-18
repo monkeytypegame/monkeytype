@@ -4,6 +4,9 @@ import { readFileSync, existsSync } from "fs";
 import MonkeyError from "../utils/error";
 import path from "path";
 import { isDevEnvironment } from "../utils/misc";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const SERVICE_ACCOUNT_PATH = path.join(
   __dirname,
@@ -19,7 +22,7 @@ export function init(): void {
     } else {
       throw new MonkeyError(
         500,
-        "Firebase service account key not found! Make sure generate a service account key and place it in credentials/serviceAccountKey.json.",
+        "Firebase service account key not found! Make sure to set the environment variables correctly.",
         "init() firebase-admin.ts"
       );
     }
@@ -43,7 +46,7 @@ function get(): typeof admin {
   if (admin.apps.length === 0) {
     throw new MonkeyError(
       500,
-      "Firebase app not initialized! Make sure generate a service account key and place it in credentials/serviceAccountKey.json.",
+      "Firebase app not initialized! Make sure to set the environment variables correctly.",
       "get() firebase-admin.ts"
     );
   }
