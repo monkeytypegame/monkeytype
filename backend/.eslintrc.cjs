@@ -9,7 +9,11 @@ module.exports = {
     "__tests__/",
     "jest.config.ts",
     "__migration__/",
+    "firebase-admin.ts",
   ],
+  parserOptions: {
+
+  },
   rules: {
     eqeqeq: "error",
   },

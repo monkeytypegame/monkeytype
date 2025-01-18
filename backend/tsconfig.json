@@ -3,6 +3,13 @@
   "compilerOptions": {
     "outDir": "dist",
     "target": "ES6",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
     "noImplicitAny": false,
     "strictFunctionTypes": false,
     "useUnknownInCatchVariables": false,
@@ -11,11 +18,12 @@
   "ts-node": {
     "files": true
   },
-  "files": ["./src/types/types.d.ts"],
-  "include": ["./src/**/*"],
+  "include": ["./src/**/**.ts"],
+
   "exclude": [
     "node_modules",
     "build",
+    "dist",
     "worker.js",
     "setup-tests.ts",
     "**/*.spec.ts"

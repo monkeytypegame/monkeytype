@@ -7,7 +7,11 @@
     "module": "ESNext",
     "allowUmdGlobalAccess": true,
     "target": "ES6",
-    "noEmit": true
+    "noEmit": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true
   },
   "include": [
     "./src/**/*.ts",

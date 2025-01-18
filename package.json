@@ -58,15 +58,20 @@
   "devDependencies": {
     "@commitlint/cli": "17.7.1",
     "@commitlint/config-conventional": "17.7.0",
-    "@vitest/coverage-v8": "2.0.5",
     "@monkeytype/release": "workspace:*",
+    "@types/node": "20.14.11",
+    "@vitest/coverage-v8": "2.0.5",
     "conventional-changelog": "4.0.0",
+    "dotenv": "16.4.7",
+    "firebase-admin": "12.0.0",
     "husky": "8.0.1",
     "knip": "2.19.2",
     "lint-staged": "13.2.3",
     "only-allow": "1.2.1",
     "prettier": "2.5.1",
+    "ts-node": "10.9.2",
     "turbo": "2.0.12",
+    "typescript": "5.5.4",
     "vitest": "2.0.5"
   },
   "lint-staged": {
