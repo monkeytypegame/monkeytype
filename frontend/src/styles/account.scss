@@ -1,27 +1,27 @@
-.signOut {
-  font-size: 1rem;
-  line-height: 1rem;
-  justify-self: end;
-  color: var(--sub-color);
-  width: fit-content;
-  width: -moz-fit-content;
-  padding: 0.5rem 0 0.5rem 0.5rem;
-  border-radius: var(--roundness);
-  cursor: pointer;
-  transition: 0.25s;
-  float: right;
-
-  &:hover {
-    color: var(--text-color);
-  }
-
-  .fas {
-    margin-right: 0.5rem;
-  }
-}
-
 .pageAccount {
   height: 100%;
+
+  .accountVerificatinNotice {
+    background: var(--bg-color);
+    border-radius: var(--roundness);
+    box-shadow: 0 0 0 0.2rem var(--sub-alt-color);
+    // background: color-mix(in srgb, var(--sub-alt-color) 50%, transparent);
+    // background: var(--sub-alt-color);
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    .icon {
+      font-size: 2rem;
+      margin-left: 1rem;
+      margin-right: 1rem;
+      color: var(--sub-color);
+    }
+    button {
+      padding: 1rem;
+    }
+  }
 
   .preloader {
     align-self: center;
@@ -58,28 +58,6 @@
   .showAllTimePbs,
   .showAllWordsPbs {
     margin-top: 1rem;
-  }
-
-  .miniResultChartWrapper {
-    z-index: 999;
-    display: none;
-    height: 15rem;
-    background: var(--bg-color);
-    width: 45rem;
-    position: absolute;
-    border-radius: var(--roundness);
-    padding: 1rem;
-  }
-
-  .miniResultChartBg {
-    display: none;
-    z-index: 998;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.75);
-    position: fixed;
-    left: 0;
-    top: 0;
   }
 
   .doublegroup {

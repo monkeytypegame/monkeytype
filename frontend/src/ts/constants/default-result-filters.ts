@@ -1,8 +1,9 @@
 import { ResultFilters } from "@monkeytype/contracts/schemas/users";
+import { deepClone } from "../utils/misc";
 
 const object: ResultFilters = {
   _id: "default",
-  name: "default result filters",
+  name: "defaults",
   pb: {
     no: true,
     yes: true,
@@ -63,4 +64,4 @@ const object: ResultFilters = {
   },
 };
 
-export default JSON.parse(JSON.stringify(object)) as ResultFilters;
+export default deepClone(object);

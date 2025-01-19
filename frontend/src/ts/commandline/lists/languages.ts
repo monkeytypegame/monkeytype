@@ -3,8 +3,9 @@ import {
   capitalizeFirstLetterOfEachWord,
   getLanguageDisplayString,
 } from "../../utils/strings";
+import { Command, CommandsSubgroup } from "../types";
 
-const subgroup: MonkeyTypes.CommandsSubgroup = {
+const subgroup: CommandsSubgroup = {
   title: "Language...",
   configKey: "language",
   list: [
@@ -15,7 +16,7 @@ const subgroup: MonkeyTypes.CommandsSubgroup = {
   ],
 };
 
-const commands: MonkeyTypes.Command[] = [
+const commands: Command[] = [
   {
     id: "changeLanguage",
     display: "Language...",

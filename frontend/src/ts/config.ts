@@ -24,11 +24,11 @@ import {
 } from "./utils/misc";
 import * as ConfigSchemas from "@monkeytype/contracts/schemas/configs";
 import { Config } from "@monkeytype/contracts/schemas/configs";
-import { roundTo1 } from "./utils/numbers";
 import { Mode, ModeSchema } from "@monkeytype/contracts/schemas/shared";
 import { Language, LanguageSchema } from "@monkeytype/contracts/schemas/util";
 import { LocalStorageWithSchema } from "./utils/local-storage-with-schema";
-import { mergeWithDefaultConfig } from "./utils/config";
+import { migrateConfig } from "./utils/config";
+import { roundTo1 } from "@monkeytype/util/numbers";
 
 const configLS = new LocalStorageWithSchema({
   key: "config",
@@ -38,11 +38,9 @@ const configLS = new LocalStorageWithSchema({
     if (!isObject(value)) {
       return DefaultConfig;
     }
+    //todo maybe send a full config to db so that it removes legacy values
 
-    const configWithoutLegacyValues = replaceLegacyValues(value);
-    const merged = mergeWithDefaultConfig(configWithoutLegacyValues);
-
-    return merged;
+    return migrateConfig(value);
   },
 });
 
@@ -339,67 +337,13 @@ export function setAccountChart(
     return false;
   }
 
+  // if both speed and accuracy are off, set speed to on
+  // i dedicate this fix to AshesOfAFallen and our 2 collective brain cells
+  if (array[0] === "off" && array[1] === "off") {
+    array[0] = "on";
+  }
+
   config.accountChart = array;
-  saveToLocalStorage("accountChart", nosave);
-  ConfigEvent.dispatch("accountChart", config.accountChart);
-
-  return true;
-}
-
-export function setAccountChartResults(
-  value: boolean,
-  nosave?: boolean
-): boolean {
-  if (!isConfigValueValidBoolean("account chart results", value)) {
-    return false;
-  }
-
-  config.accountChart[0] = value ? "on" : "off";
-  saveToLocalStorage("accountChart", nosave);
-  ConfigEvent.dispatch("accountChart", config.accountChart);
-
-  return true;
-}
-
-export function setAccountChartAccuracy(
-  value: boolean,
-  nosave?: boolean
-): boolean {
-  if (!isConfigValueValidBoolean("account chart accuracy", value)) {
-    return false;
-  }
-
-  config.accountChart[1] = value ? "on" : "off";
-  saveToLocalStorage("accountChart", nosave);
-  ConfigEvent.dispatch("accountChart", config.accountChart);
-
-  return true;
-}
-
-export function setAccountChartAvg10(
-  value: boolean,
-  nosave?: boolean
-): boolean {
-  if (!isConfigValueValidBoolean("account chart avg 10", value)) {
-    return false;
-  }
-
-  config.accountChart[2] = value ? "on" : "off";
-  saveToLocalStorage("accountChart", nosave);
-  ConfigEvent.dispatch("accountChart", config.accountChart);
-
-  return true;
-}
-
-export function setAccountChartAvg100(
-  value: boolean,
-  nosave?: boolean
-): boolean {
-  if (!isConfigValueValidBoolean("account chart avg 100", value)) {
-    return false;
-  }
-
-  config.accountChart[3] = value ? "on" : "off";
   saveToLocalStorage("accountChart", nosave);
   ConfigEvent.dispatch("accountChart", config.accountChart);
 
@@ -974,6 +918,34 @@ export function setTapeMode(
   return true;
 }
 
+export function setTapeMargin(
+  value: ConfigSchemas.TapeMargin,
+  nosave?: boolean
+): boolean {
+  if (value < 10) {
+    value = 10;
+  }
+  if (value > 90) {
+    value = 90;
+  }
+
+  if (
+    !isConfigValueValid("max line width", value, ConfigSchemas.TapeMarginSchema)
+  ) {
+    return false;
+  }
+
+  config.tapeMargin = value;
+
+  saveToLocalStorage("tapeMargin", nosave);
+  ConfigEvent.dispatch("tapeMargin", config.tapeMargin, nosave);
+
+  // trigger a resize event to update the layout - handled in ui.ts:108
+  $(window).trigger("resize");
+
+  return true;
+}
+
 export function setHideExtraLetters(val: boolean, nosave?: boolean): boolean {
   if (!isConfigValueValidBoolean("hide extra letters", val)) return false;
 
@@ -1233,6 +1205,24 @@ export function setSmoothCaret(
   saveToLocalStorage("smoothCaret", nosave);
   ConfigEvent.dispatch("smoothCaret", config.smoothCaret);
 
+  return true;
+}
+
+export function setCodeUnindentOnBackspace(
+  mode: boolean,
+  nosave?: boolean
+): boolean {
+  if (!isConfigValueValidBoolean("code unindent on backspace", mode)) {
+    return false;
+  }
+  config.codeUnindentOnBackspace = mode;
+
+  saveToLocalStorage("codeUnindentOnBackspace", nosave);
+  ConfigEvent.dispatch(
+    "codeUnindentOnBackspace",
+    config.codeUnindentOnBackspace,
+    nosave
+  );
   return true;
 }
 
@@ -1819,7 +1809,7 @@ export function setFontSize(
 
   config.fontSize = fontSize;
 
-  $("#caret, #paceCaret, #liveStatsMini, #typingTest").css(
+  $("#caret, #paceCaret, #liveStatsMini, #typingTest, #wordsInput").css(
     "fontSize",
     fontSize + "rem"
   );
@@ -1887,7 +1877,7 @@ export function setCustomBackground(
 }
 
 export async function setCustomLayoutfluid(
-  value: MonkeyTypes.CustomLayoutFluidSpaces,
+  value: ConfigSchemas.CustomLayoutFluid,
   nosave?: boolean
 ): Promise<boolean> {
   const trimmed = value.trim();
@@ -1988,7 +1978,7 @@ export function setBurstHeatmap(value: boolean, nosave?: boolean): boolean {
 }
 
 export async function apply(
-  configToApply: Config | MonkeyTypes.ConfigChanges
+  configToApply: Config | Partial<Config>
 ): Promise<void> {
   if (configToApply === undefined) return;
 
@@ -2049,6 +2039,7 @@ export async function apply(
     setKeymapSize(configObj.keymapSize, true);
     setFontFamily(configObj.fontFamily, true);
     setSmoothCaret(configObj.smoothCaret, true);
+    setCodeUnindentOnBackspace(configObj.codeUnindentOnBackspace, true);
     setSmoothLineScroll(configObj.smoothLineScroll, true);
     setAlwaysShowDecimalPlaces(configObj.alwaysShowDecimalPlaces, true);
     setAlwaysShowWordsHistory(configObj.alwaysShowWordsHistory, true);
@@ -2090,6 +2081,7 @@ export async function apply(
     setLazyMode(configObj.lazyMode, true);
     setShowAverage(configObj.showAverage, true);
     setTapeMode(configObj.tapeMode, true);
+    setTapeMargin(configObj.tapeMargin, true);
 
     ConfigEvent.dispatch(
       "configApplied",
@@ -2120,78 +2112,8 @@ export async function loadFromLocalStorage(): Promise<void> {
   loadDone();
 }
 
-export function replaceLegacyValues(
-  configObj: ConfigSchemas.PartialConfig
-): ConfigSchemas.PartialConfig {
-  //@ts-expect-error
-  if (configObj.quickTab === true) {
-    configObj.quickRestart = "tab";
-  }
-
-  if (typeof configObj.smoothCaret === "boolean") {
-    configObj.smoothCaret = configObj.smoothCaret ? "medium" : "off";
-  }
-
-  //@ts-expect-error
-  if (configObj.swapEscAndTab === true) {
-    configObj.quickRestart = "esc";
-  }
-
-  //@ts-expect-error
-  if (configObj.alwaysShowCPM === true) {
-    configObj.typingSpeedUnit = "cpm";
-  }
-
-  //@ts-expect-error
-  if (configObj.showAverage === "wpm") {
-    configObj.showAverage = "speed";
-  }
-
-  if (typeof configObj.playSoundOnError === "boolean") {
-    configObj.playSoundOnError = configObj.playSoundOnError ? "1" : "off";
-  }
-
-  //@ts-expect-error
-  if (configObj.showTimerProgress === false) {
-    configObj.timerStyle = "off";
-  }
-
-  //@ts-expect-error
-  if (configObj.showLiveWpm === true) {
-    let val: ConfigSchemas.LiveSpeedAccBurstStyle = "mini";
-    if (configObj.timerStyle !== "bar" && configObj.timerStyle !== "off") {
-      val = configObj.timerStyle as ConfigSchemas.LiveSpeedAccBurstStyle;
-    }
-    configObj.liveSpeedStyle = val;
-  }
-
-  //@ts-expect-error
-  if (configObj.showLiveBurst === true) {
-    let val: ConfigSchemas.LiveSpeedAccBurstStyle = "mini";
-    if (configObj.timerStyle !== "bar" && configObj.timerStyle !== "off") {
-      val = configObj.timerStyle as ConfigSchemas.LiveSpeedAccBurstStyle;
-    }
-    configObj.liveBurstStyle = val;
-  }
-
-  //@ts-expect-error
-  if (configObj.showLiveAcc === true) {
-    let val: ConfigSchemas.LiveSpeedAccBurstStyle = "mini";
-    if (configObj.timerStyle !== "bar" && configObj.timerStyle !== "off") {
-      val = configObj.timerStyle as ConfigSchemas.LiveSpeedAccBurstStyle;
-    }
-    configObj.liveAccStyle = val;
-  }
-
-  if (typeof configObj.soundVolume === "string") {
-    configObj.soundVolume = parseFloat(configObj.soundVolume);
-  }
-
-  return configObj;
-}
-
-export function getConfigChanges(): MonkeyTypes.PresetConfig {
-  const configChanges = {} as MonkeyTypes.PresetConfig;
+export function getConfigChanges(): Partial<Config> {
+  const configChanges: Partial<Config> = {};
   typedKeys(config)
     .filter((key) => {
       return config[key] !== DefaultConfig[key];

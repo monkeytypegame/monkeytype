@@ -18,8 +18,8 @@
   "ts-node": {
     "files": true
   },
-  "include": ["./src/**/**.ts"],
 
+  "include": ["src"],
   "exclude": [
     "node_modules",
     "build",

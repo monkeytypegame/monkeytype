@@ -2,7 +2,6 @@ import * as Misc from "../utils/misc";
 import * as JSONData from "../utils/json-data";
 import * as CustomText from "../test/custom-text";
 import * as Notifications from "../elements/notifications";
-// @ts-expect-error TODO: update slim-select
 import SlimSelect from "slim-select";
 import AnimatedModal, {
   HideOptions,
@@ -11,8 +10,8 @@ import AnimatedModal, {
 
 type FilterPreset = {
   display: string;
-  getIncludeString: (layout: MonkeyTypes.Layout) => string[];
-  getExcludeString: (layout: MonkeyTypes.Layout) => string[];
+  getIncludeString: (layout: JSONData.Layout) => string[];
+  getExcludeString: (layout: JSONData.Layout) => string[];
 };
 
 const presets: Record<string, FilterPreset> = {
@@ -186,14 +185,6 @@ export async function show(showOptions?: ShowOptions): Promise<void> {
 function hide(hideOptions?: HideOptions<OutgoingData>): void {
   void modal.hide({
     ...hideOptions,
-    afterAnimation: async () => {
-      languageSelect?.destroy();
-      layoutSelect?.destroy();
-      presetSelect?.destroy();
-      languageSelect = undefined;
-      layoutSelect = undefined;
-      presetSelect = undefined;
-    },
   });
 }
 
@@ -327,6 +318,15 @@ async function setup(): Promise<void> {
   });
 }
 
+async function cleanup(): Promise<void> {
+  languageSelect?.destroy();
+  layoutSelect?.destroy();
+  presetSelect?.destroy();
+  languageSelect = undefined;
+  layoutSelect = undefined;
+  presetSelect = undefined;
+}
+
 type OutgoingData = {
   text: string;
   set: boolean;
@@ -335,4 +335,5 @@ type OutgoingData = {
 const modal = new AnimatedModal<unknown, OutgoingData>({
   dialogId: "wordFilterModal",
   setup,
+  cleanup,
 });

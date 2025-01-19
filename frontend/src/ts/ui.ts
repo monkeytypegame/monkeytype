@@ -16,6 +16,7 @@ export function previewFontFamily(font: string): void {
     "--font",
     '"' + font.replace(/_/g, " ") + '", "Roboto Mono", "Vazirmatn"'
   );
+  void TestUI.updateHintsPosition();
   isPreviewingFont = true;
 }
 
@@ -46,7 +47,11 @@ function updateKeytips(): void {
 
   const commandKey = Config.quickRestart === "esc" ? "tab" : "esc";
   $("footer .keyTips").html(`
-    <key>${Config.quickRestart}</key> - restart test<br>
+    ${
+      Config.quickRestart == "off"
+        ? "<key>tab</key> + <key>enter</key>"
+        : `<key>${Config.quickRestart}</key>`
+    } - restart test<br>
     <key>${commandKey}</key> or <key>${modifierKey}</key>+<key>shift</key>+<key>p</key> - command line`);
 }
 
@@ -97,7 +102,7 @@ const debouncedEvent = debounce(250, () => {
     } else {
       const word =
         document.querySelectorAll<HTMLElement>("#words .word")[
-          TestUI.currentWordElementIndex - 1
+          TestUI.activeWordElementIndex - 1
         ];
       if (word) {
         const currentTop: number = Math.floor(word.offsetTop);

@@ -1,7 +1,7 @@
 import { z } from "zod";
 import {
   CommonResponses,
-  EndpointMetadata,
+  meta,
   responseWithData,
   responseWithNullableData,
 } from "./schemas/api";
@@ -98,9 +98,9 @@ export const leaderboardsContract = c.router(
       responses: {
         200: GetLeaderboardResponseSchema,
       },
-      metadata: {
+      metadata: meta({
         authenticationOptions: { isPublic: true },
-      } as EndpointMetadata,
+      }),
     },
     getRank: {
       summary: "get leaderboard rank",
@@ -112,9 +112,9 @@ export const leaderboardsContract = c.router(
       responses: {
         200: GetLeaderboardRankResponseSchema,
       },
-      metadata: {
+      metadata: meta({
         authenticationOptions: { acceptApeKeys: true },
-      } as EndpointMetadata,
+      }),
     },
     getDaily: {
       summary: "get daily leaderboard",
@@ -125,9 +125,13 @@ export const leaderboardsContract = c.router(
       responses: {
         200: GetLeaderboardResponseSchema,
       },
-      metadata: {
+      metadata: meta({
         authenticationOptions: { isPublic: true },
-      } as EndpointMetadata,
+        requireConfiguration: {
+          path: "dailyLeaderboards.enabled",
+          invalidMessage: "Daily leaderboards are not available at this time.",
+        },
+      }),
     },
     getDailyRank: {
       summary: "get daily leaderboard rank",
@@ -138,6 +142,12 @@ export const leaderboardsContract = c.router(
       responses: {
         200: GetLeaderboardDailyRankResponseSchema,
       },
+      metadata: meta({
+        requireConfiguration: {
+          path: "dailyLeaderboards.enabled",
+          invalidMessage: "Daily leaderboards are not available at this time.",
+        },
+      }),
     },
     getWeeklyXp: {
       summary: "get weekly xp leaderboard",
@@ -148,9 +158,14 @@ export const leaderboardsContract = c.router(
       responses: {
         200: GetWeeklyXpLeaderboardResponseSchema,
       },
-      metadata: {
+      metadata: meta({
         authenticationOptions: { isPublic: true },
-      } as EndpointMetadata,
+        requireConfiguration: {
+          path: "leaderboards.weeklyXp.enabled",
+          invalidMessage:
+            "Weekly XP leaderboards are not available at this time.",
+        },
+      }),
     },
     getWeeklyXpRank: {
       summary: "get weekly xp leaderboard rank",
@@ -161,14 +176,22 @@ export const leaderboardsContract = c.router(
       responses: {
         200: GetWeeklyXpLeaderboardRankResponseSchema,
       },
+      metadata: meta({
+        requireConfiguration: {
+          path: "leaderboards.weeklyXp.enabled",
+          invalidMessage:
+            "Weekly XP leaderboards are not available at this time.",
+        },
+      }),
     },
   },
   {
     pathPrefix: "/leaderboards",
     strictStatusCodes: true,
-    metadata: {
+    metadata: meta({
       openApiTags: "leaderboards",
-    } as EndpointMetadata,
+      rateLimit: "leaderboardsGet",
+    }),
     commonResponses: CommonResponses,
   }
 );

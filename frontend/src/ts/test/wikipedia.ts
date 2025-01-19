@@ -2,10 +2,9 @@ import * as Loader from "../elements/loader";
 import * as Misc from "../utils/misc";
 import * as Strings from "../utils/strings";
 import * as JSONData from "../utils/json-data";
-import { Section } from "../utils/misc";
 
 export async function getTLD(
-  languageGroup: MonkeyTypes.LanguageGroup
+  languageGroup: JSONData.LanguageGroup
 ): Promise<
   | "en"
   | "es"
@@ -242,14 +241,14 @@ type SectionObject = {
   author: string;
 };
 
-export async function getSection(language: string): Promise<Section> {
+export async function getSection(language: string): Promise<JSONData.Section> {
   // console.log("Getting section");
   Loader.show();
 
   // get TLD for wikipedia according to language group
   let urlTLD = "en";
 
-  let currentLanguageGroup: MonkeyTypes.LanguageGroup | undefined;
+  let currentLanguageGroup: JSONData.LanguageGroup | undefined;
   try {
     currentLanguageGroup = await JSONData.getCurrentGroup(language);
   } catch (e) {
@@ -268,7 +267,7 @@ export async function getSection(language: string): Promise<Section> {
   let pageid = 0;
 
   if (randomPostReq.status === 200) {
-    const postObj: Post = await randomPostReq.json();
+    const postObj = (await randomPostReq.json()) as Post;
     sectionObj.title = postObj.title;
     sectionObj.author = postObj.author;
     pageid = postObj.pageid;
@@ -286,8 +285,10 @@ export async function getSection(language: string): Promise<Section> {
     sectionReq.onload = (): void => {
       if (sectionReq.readyState === 4) {
         if (sectionReq.status === 200) {
-          let sectionText: string = JSON.parse(sectionReq.responseText).query
-            .pages[pageid.toString()].extract;
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+          let sectionText = JSON.parse(sectionReq.responseText).query.pages[
+            pageid.toString()
+          ].extract as string;
 
           // Converting to one paragraph
           sectionText = sectionText.replace(/<\/p><p>+/g, " ");
@@ -317,7 +318,7 @@ export async function getSection(language: string): Promise<Section> {
 
           const words = sectionText.split(" ");
 
-          const section = new Section(
+          const section = new JSONData.Section(
             sectionObj.title,
             sectionObj.author,
             words

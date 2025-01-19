@@ -5,8 +5,47 @@ import * as Notifications from "../../elements/notifications";
 import * as TestInput from "../../test/test-input";
 import * as TestWords from "../../test/test-words";
 import Config from "../../config";
+import * as PractiseWords from "../../test/practise-words";
+import { Command, CommandsSubgroup } from "../types";
 
-const commands: MonkeyTypes.Command[] = [
+const practiceSubgroup: CommandsSubgroup = {
+  title: "Practice words...",
+  list: [
+    {
+      id: "practiseWordsMissed",
+      display: "missed",
+      exec: (): void => {
+        PractiseWords.init("words", false);
+        TestLogic.restart({
+          practiseMissed: true,
+        });
+      },
+    },
+    {
+      id: "practiseWordsSlow",
+      display: "slow",
+      exec: (): void => {
+        PractiseWords.init("off", true);
+        TestLogic.restart({
+          practiseMissed: true,
+        });
+      },
+    },
+    {
+      id: "practiseWordsCustom",
+      display: "custom...",
+      opensModal: true,
+      exec: (options): void => {
+        PractiseWordsModal.show({
+          animationMode: "modalOnly",
+          modalChain: options.commandlineModal,
+        });
+      },
+    },
+  ],
+};
+
+const commands: Command[] = [
   {
     id: "nextTest",
     display: "Next test",
@@ -34,15 +73,9 @@ const commands: MonkeyTypes.Command[] = [
   },
   {
     id: "practiseWords",
-    display: "Practice words",
+    display: "Practice words...",
     icon: "fa-exclamation-triangle",
-    opensModal: true,
-    exec: (options): void => {
-      PractiseWordsModal.show({
-        animationMode: "modalOnly",
-        modalChain: options.commandlineModal,
-      });
-    },
+    subgroup: practiceSubgroup,
     available: (): boolean => {
       return TestUI.resultVisible;
     },

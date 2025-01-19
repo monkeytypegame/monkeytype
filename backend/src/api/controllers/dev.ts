@@ -5,34 +5,34 @@ import Logger from "../../utils/logger";
 import * as DateUtils from "date-fns";
 import { UTCDate } from "@date-fns/utc";
 import * as ResultDal from "../../dal/result";
-import { roundTo2 } from "../../utils/misc";
 import { ObjectId } from "mongodb";
 import * as LeaderboardDal from "../../dal/leaderboards";
 import MonkeyError from "../../utils/error";
-import isNumber from "lodash/isNumber";
+
 import {
   Mode,
   PersonalBest,
   PersonalBests,
 } from "@monkeytype/contracts/schemas/shared";
+import {
+  GenerateDataRequest,
+  GenerateDataResponse,
+} from "@monkeytype/contracts/dev";
+import { roundTo2 } from "@monkeytype/util/numbers";
+import { MonkeyRequest } from "../types";
+import { DBResult } from "../../utils/result";
+import { LbPersonalBests } from "../../utils/pb";
 
-type GenerateDataOptions = {
-  firstTestTimestamp: Date;
-  lastTestTimestamp: Date;
-  minTestsPerDay: number;
-  maxTestsPerDay: number;
-};
-
-const CREATE_RESULT_DEFAULT_OPTIONS: GenerateDataOptions = {
-  firstTestTimestamp: DateUtils.startOfDay(new UTCDate(Date.now())),
-  lastTestTimestamp: DateUtils.endOfDay(new UTCDate(Date.now())),
+const CREATE_RESULT_DEFAULT_OPTIONS = {
+  firstTestTimestamp: DateUtils.startOfDay(new UTCDate(Date.now())).valueOf(),
+  lastTestTimestamp: DateUtils.endOfDay(new UTCDate(Date.now())).valueOf(),
   minTestsPerDay: 0,
   maxTestsPerDay: 50,
 };
 
 export async function createTestData(
-  req: MonkeyTypes.Request
-): Promise<MonkeyResponse> {
+  req: MonkeyRequest<undefined, GenerateDataRequest>
+): Promise<GenerateDataResponse> {
   const { username, createUser } = req.body;
   const user = await getOrCreateUser(username, "password", createUser);
 
@@ -42,14 +42,14 @@ export async function createTestData(
   await updateUser(uid);
   await updateLeaderboard();
 
-  return new MonkeyResponse("test data created", { uid, email }, 200);
+  return new MonkeyResponse("test data created", { uid, email });
 }
 
 async function getOrCreateUser(
   username: string,
   password: string,
   createUser = false
-): Promise<MonkeyTypes.DBUser> {
+): Promise<UserDal.DBUser> {
   const existingUser = await UserDal.findByName(username);
 
   if (existingUser !== undefined && existingUser !== null) {
@@ -72,21 +72,19 @@ async function getOrCreateUser(
 }
 
 async function createTestResults(
-  user: MonkeyTypes.DBUser,
-  configOptions: Partial<GenerateDataOptions>
+  user: UserDal.DBUser,
+  configOptions: GenerateDataRequest
 ): Promise<void> {
   const config = {
     ...CREATE_RESULT_DEFAULT_OPTIONS,
     ...configOptions,
   };
-  if (isNumber(config.firstTestTimestamp))
-    config.firstTestTimestamp = toDate(config.firstTestTimestamp);
-  if (isNumber(config.lastTestTimestamp))
-    config.lastTestTimestamp = toDate(config.lastTestTimestamp);
+  const start = toDate(config.firstTestTimestamp);
+  const end = toDate(config.lastTestTimestamp);
 
   const days = DateUtils.eachDayOfInterval({
-    start: config.firstTestTimestamp,
-    end: config.lastTestTimestamp,
+    start,
+    end,
   }).map((day) => ({
     timestamp: DateUtils.startOfDay(day),
     amount: Math.round(random(config.minTestsPerDay, config.maxTestsPerDay)),
@@ -115,9 +113,9 @@ function random(min: number, max: number): number {
 }
 
 function createResult(
-  user: MonkeyTypes.DBUser,
+  user: UserDal.DBUser,
   timestamp: Date //evil, we modify this value
-): MonkeyTypes.DBResult {
+): DBResult {
   const mode: Mode = randomValue(["time", "words"]);
   const mode2: number =
     mode === "time"
@@ -192,7 +190,7 @@ async function updateUser(uid: string): Promise<void> {
   );
 
   //update PBs
-  const lbPersonalBests: MonkeyTypes.LbPersonalBests = {
+  const lbPersonalBests: LbPersonalBests = {
     time: {
       15: {},
       60: {},
@@ -227,7 +225,7 @@ async function updateUser(uid: string): Promise<void> {
         .sort({ wpm: -1, timestamp: 1 })
         .limit(1)
         .toArray()
-    )[0] as MonkeyTypes.DBResult;
+    )[0] as DBResult;
 
     if (personalBests[mode.mode] === undefined) personalBests[mode.mode] = {};
     if (personalBests[mode.mode][mode.mode2] === undefined)
@@ -246,12 +244,13 @@ async function updateUser(uid: string): Promise<void> {
       timestamp: best.timestamp,
     } as PersonalBest;
 
-    personalBests[mode.mode][mode.mode2].push(entry);
+    (personalBests[mode.mode][mode.mode2] as PersonalBest[]).push(entry);
 
     if (mode.mode === "time") {
       if (lbPersonalBests[mode.mode][mode.mode2] === undefined)
         lbPersonalBests[mode.mode][mode.mode2] = {};
 
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       lbPersonalBests[mode.mode][mode.mode2][mode.language] = entry;
     }
 

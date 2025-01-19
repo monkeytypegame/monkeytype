@@ -1,0 +1,12 @@
+{
+  "extends": "@monkeytype/typescript-config/base.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "types": ["vitest/globals"]
+  },
+  "ts-node": {
+    "files": true
+  },
+  // "files": ["../src/types/types.d.ts"],
+  "include": ["./**/*.ts", "./**/*.spec.ts", "./setup-tests.ts"]
+}

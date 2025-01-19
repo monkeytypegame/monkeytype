@@ -1,5 +1,4 @@
 import { AppRouter, initClient, type ApiFetcherArgs } from "@ts-rest/core";
-import { Method } from "axios";
 import { getIdToken } from "firebase/auth";
 import { envConfig } from "../../constants/env-config";
 import { getAuthenticatedUser, isAuthenticated } from "../../firebase";
@@ -28,7 +27,7 @@ function buildApi(timeout: number): (args: ApiFetcherArgs) => Promise<{
       }
 
       const fetchOptions: RequestInit = {
-        method: request.method as Method,
+        method: request.method,
         headers,
         body: request.body,
       };
@@ -42,7 +41,7 @@ function buildApi(timeout: number): (args: ApiFetcherArgs) => Promise<{
           : AbortSignal.timeout(timeout),
       });
 
-      const body = await response.json();
+      const body = (await response.json()) as object;
       if (response.status >= 400) {
         console.error(`${request.method} ${request.path} failed`, {
           status: response.status,

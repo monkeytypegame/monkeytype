@@ -1,6 +1,9 @@
 import { AppRoute, AppRouter } from "@ts-rest/core";
 import { TsRestRequest } from "@ts-rest/express";
-import { MonkeyResponse2 } from "../utils/monkey-response";
+import { MonkeyResponse } from "../utils/monkey-response";
+import { Context } from "../middlewares/context";
+import { MonkeyRequest } from "./types";
+
 export function callController<
   TRoute extends AppRoute | AppRouter,
   TQuery,
@@ -11,18 +14,18 @@ export function callController<
   // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-parameters
   TStatus = 200
 >(
-  handler: Handler<TQuery, TBody, TParams, TResponse>
-): (all: RequestType2<TRoute, TQuery, TBody, TParams>) => Promise<{
+  handler: MonkeyHandler<TQuery, TBody, TParams, TResponse>
+): (all: TypeSafeTsRestRequest<TRoute, TQuery, TBody, TParams>) => Promise<{
   status: TStatus;
-  body: { message: string; data: TResponse };
+  body: MonkeyResponse<TResponse>;
 }> {
   return async (all) => {
-    const req: MonkeyTypes.Request2<TQuery, TBody, TParams> = {
+    const req: MonkeyRequest<TQuery, TBody, TParams> = {
       body: all.body as TBody,
       query: all.query as TQuery,
       params: all.params as TParams,
       raw: all.req,
-      ctx: all.req["ctx"],
+      ctx: all.req["ctx"] as Context,
     };
 
     const result = await handler(req);
@@ -59,11 +62,11 @@ type WithoutParams = {
   params?: never;
 };
 
-type Handler<TQuery, TBody, TParams, TResponse> = (
-  req: MonkeyTypes.Request2<TQuery, TBody, TParams>
-) => Promise<MonkeyResponse2<TResponse>>;
+type MonkeyHandler<TQuery, TBody, TParams, TResponse> = (
+  req: MonkeyRequest<TQuery, TBody, TParams>
+) => Promise<MonkeyResponse<TResponse>>;
 
-type RequestType2<
+type TypeSafeTsRestRequest<
   TRoute extends AppRoute | AppRouter,
   TQuery,
   TBody,

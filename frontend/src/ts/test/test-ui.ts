@@ -11,7 +11,6 @@ import * as Replay from "./replay";
 import * as Misc from "../utils/misc";
 import * as Strings from "../utils/strings";
 import * as JSONData from "../utils/json-data";
-import * as Numbers from "../utils/numbers";
 import { blendTwoHexColors } from "../utils/colors";
 import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
 import * as SlowTimer from "../states/slow-timer";
@@ -20,8 +19,6 @@ import * as ConfigEvent from "../observables/config-event";
 import * as Hangul from "hangul-js";
 import { format } from "date-fns/format";
 import { isAuthenticated } from "../firebase";
-import { skipXpBreakdown } from "../elements/account-button";
-import * as FunboxList from "./funbox/funbox-list";
 import { debounce } from "throttle-debounce";
 import * as ResultWordHighlight from "../elements/result-word-highlight";
 import * as ActivePage from "../states/active-page";
@@ -32,6 +29,9 @@ import {
   TimerColor,
   TimerOpacity,
 } from "@monkeytype/contracts/schemas/configs";
+import { convertRemToPixels } from "../utils/numbers";
+import { getActiveFunboxes } from "./funbox/list";
+import * as TestState from "./test-state";
 
 async function gethtml2canvas(): Promise<typeof import("html2canvas").default> {
   return (await import("html2canvas")).default;
@@ -42,13 +42,14 @@ function createHintsHtml(
   activeWordLetters: NodeListOf<Element>,
   inputWord: string
 ): string {
+  const inputChars = Strings.splitIntoCharacters(inputWord);
   let hintsHtml = "";
   for (const adjacentLetters of incorrectLtrIndices) {
     for (const indx of adjacentLetters) {
       const blockLeft = (activeWordLetters[indx] as HTMLElement).offsetLeft;
       const blockWidth = (activeWordLetters[indx] as HTMLElement).offsetWidth;
       const blockIndices = `[${indx}]`;
-      const blockChars = inputWord[indx];
+      const blockChars = inputChars[indx];
 
       hintsHtml +=
         `<hint data-length=1 data-chars-index=${blockIndices}` +
@@ -114,7 +115,7 @@ async function joinOverlappingHints(
 }
 
 const debouncedZipfCheck = debounce(250, async () => {
-  const supports = await Misc.checkIfLanguageSupportsZipf(Config.language);
+  const supports = await JSONData.checkIfLanguageSupportsZipf(Config.language);
   if (supports === "no") {
     Notifications.add(
       `${Strings.capitalizeFirstLetter(
@@ -151,10 +152,15 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
     updateWordsHeight(true);
     void updateWordsInputPosition(true);
   }
-  if (eventKey === "fontSize" || eventKey === "fontFamily")
+  if (
+    ["fontSize", "fontFamily", "blindMode", "hideExtraLetters"].includes(
+      eventKey
+    )
+  ) {
     updateHintsPosition().catch((e: unknown) => {
       console.error(e);
     });
+  }
 
   if (eventKey === "theme") void applyBurstHeatmap();
 
@@ -181,6 +187,11 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
     } else {
       scrollTape();
     }
+    updateLiveStatsMargin();
+  }
+
+  if (eventKey === "tapeMargin") {
+    updateLiveStatsMargin();
   }
 
   if (typeof eventValue !== "boolean") return;
@@ -189,7 +200,7 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
   if (eventKey === "burstHeatmap") void applyBurstHeatmap();
 });
 
-export let currentWordElementIndex = 0;
+export let activeWordElementIndex = 0;
 export let resultVisible = false;
 export let activeWordTop = 0;
 export let testRestarting = false;
@@ -202,8 +213,8 @@ export function setResultVisible(val: boolean): void {
   resultVisible = val;
 }
 
-export function setCurrentWordElementIndex(val: number): void {
-  currentWordElementIndex = val;
+export function setActiveWordElementIndex(val: number): void {
+  activeWordElementIndex = val;
 }
 
 export function setActiveWordTop(val: number): void {
@@ -229,7 +240,7 @@ export function setResultCalculating(val: boolean): void {
 
 export function reset(): void {
   currentTestLine = 0;
-  currentWordElementIndex = 0;
+  activeWordElementIndex = 0;
 }
 
 export function focusWords(): void {
@@ -253,19 +264,19 @@ export function updateActiveElement(
   } else if (active !== null && !initial) {
     active.classList.remove("active");
   }
-  const activeWord =
-    document.querySelectorAll("#words .word")[currentWordElementIndex];
+  const newActiveWord = document.querySelectorAll("#words .word")[
+    activeWordElementIndex
+  ] as HTMLElement | undefined;
 
-  if (activeWord == undefined) {
+  if (newActiveWord == undefined) {
     throw new Error("activeWord is undefined - can't update active element");
   }
 
-  activeWord.classList.add("active");
-  activeWord.classList.remove("error");
-  activeWord.classList.remove("typed");
+  newActiveWord.classList.add("active");
+  newActiveWord.classList.remove("error");
+  newActiveWord.classList.remove("typed");
 
-  activeWordTop = (document.querySelector("#words .active") as HTMLElement)
-    .offsetTop;
+  activeWordTop = newActiveWord.offsetTop;
 
   if (!initial && shouldUpdateWordsInputPosition()) {
     void updateWordsInputPosition();
@@ -275,7 +286,7 @@ export function updateActiveElement(
   }
 }
 
-async function updateHintsPosition(): Promise<void> {
+export async function updateHintsPosition(): Promise<void> {
   if (
     ActivePage.get() !== "test" ||
     resultVisible ||
@@ -325,19 +336,19 @@ async function updateHintsPosition(): Promise<void> {
 function getWordHTML(word: string): string {
   let newlineafter = false;
   let retval = `<div class='word'>`;
-  const funbox = FunboxList.get(Config.funbox).find(
-    (f) => f.functions?.getWordHtml
-  );
-  for (let c = 0; c < word.length; c++) {
+
+  const funbox = getActiveFunboxes().find((f) => f.functions?.getWordHtml);
+  const chars = Strings.splitIntoCharacters(word);
+  for (const char of chars) {
     if (funbox?.functions?.getWordHtml) {
-      retval += funbox.functions.getWordHtml(word.charAt(c), true);
-    } else if (word.charAt(c) === "\t") {
+      retval += funbox.functions.getWordHtml(char, true);
+    } else if (char === "\t") {
       retval += `<letter class='tabChar'><i class="fas fa-long-arrow-alt-right fa-fw"></i></letter>`;
-    } else if (word.charAt(c) === "\n") {
+    } else if (char === "\n") {
       newlineafter = true;
       retval += `<letter class='nlChar'><i class="fas fa-level-down-alt fa-rotate-90 fa-fw"></i></letter>`;
     } else {
-      retval += "<letter>" + word.charAt(c) + "</letter>";
+      retval += "<letter>" + char + "</letter>";
     }
   }
   retval += "</div>";
@@ -417,6 +428,10 @@ export function showWords(): void {
   }, 125);
 
   updateWordWrapperClasses();
+
+  if (Config.mode === "zen") {
+    $(document.querySelector(".word") as Element).remove();
+  }
 }
 
 const posUpdateLangList = ["japanese", "chinese", "korean"];
@@ -433,7 +448,10 @@ export async function updateWordsInputPosition(initial = false): Promise<void> {
   const isLanguageRTL = currentLanguage.rightToLeft;
 
   const el = document.querySelector("#wordsInput") as HTMLElement;
-  const activeWord = document.querySelector<HTMLElement>("#words .active");
+  const activeWord =
+    document.querySelectorAll<HTMLElement>("#words .word")[
+      activeWordElementIndex
+    ];
 
   if (!activeWord) {
     el.style.top = "0px";
@@ -445,46 +463,37 @@ export async function updateWordsInputPosition(initial = false): Promise<void> {
   const activeWordMargin =
     parseInt(computed.marginTop) + parseInt(computed.marginBottom);
 
-  // const wordsWrapperTop =
-  //   (document.querySelector("#wordsWrapper") as HTMLElement | null)
-  //     ?.offsetTop ?? 0;
+  const letterHeight = convertRemToPixels(Config.fontSize);
+  const targetTop =
+    activeWord.offsetTop + letterHeight / 2 - el.offsetHeight / 2 + 1; //+1 for half of border
+
+  if (activeWord.offsetWidth < letterHeight) {
+    el.style.width = letterHeight + "px";
+  } else {
+    el.style.width = activeWord.offsetWidth + "px";
+  }
 
   if (Config.tapeMode !== "off") {
-    el.style.top =
-      // wordsWrapperTop +
-      activeWord.offsetHeight +
-      activeWordMargin * 0.25 +
-      -el.offsetHeight +
-      "px";
-    el.style.left = activeWord.offsetLeft + "px";
+    el.style.top = targetTop + "px";
+    el.style.left = Config.tapeMargin + "%";
     return;
   }
 
-  if (isLanguageRTL) {
-    el.style.left =
-      activeWord.offsetLeft - el.offsetWidth + activeWord.offsetWidth + "px";
+  if (initial) {
+    el.style.top = targetTop + letterHeight + activeWordMargin + 4 + "px";
   } else {
-    el.style.left = activeWord.offsetLeft + "px";
+    el.style.top = targetTop + "px";
   }
 
-  if (
-    initial &&
-    !posUpdateLangList.some((l) => Config.language.startsWith(l))
-  ) {
-    el.style.top =
-      activeWord.offsetTop +
-      activeWord.offsetHeight +
-      -el.offsetHeight +
-      (activeWord.offsetHeight + activeWordMargin) +
-      "px";
+  if (activeWord.offsetWidth < letterHeight && isLanguageRTL) {
+    el.style.left = activeWord.offsetLeft - letterHeight + "px";
   } else {
-    el.style.top =
-      activeWord.offsetTop + activeWord.offsetHeight + -el.offsetHeight + "px";
+    el.style.left = activeWord.offsetLeft + "px";
   }
 }
 
 function updateWordsHeight(force = false): void {
-  if (ActivePage.get() !== "test") return;
+  if (ActivePage.get() !== "test" || resultVisible) return;
   if (!force && Config.mode !== "custom") return;
   $("#wordsWrapper").removeClass("hidden");
   const wordHeight = $(document.querySelector(".word") as Element).outerHeight(
@@ -493,18 +502,26 @@ function updateWordsHeight(force = false): void {
   const wordsHeight = $(
     document.querySelector("#words") as Element
   ).outerHeight(true) as number;
-  if (
-    Config.showAllLines &&
-    Config.mode !== "time" &&
-    CustomText.getLimitMode() !== "time" &&
-    CustomText.getLimitValue() !== 0
-  ) {
+
+  const shouldLimitToThreeLines =
+    Config.mode === "time" ||
+    (Config.mode === "custom" && CustomText.getLimitMode() === "time") ||
+    (Config.mode === "custom" &&
+      CustomText.getLimitMode() === "word" &&
+      CustomText.getLimitValue() === 0) ||
+    (Config.mode === "custom" &&
+      CustomText.getLimitMode() === "section" &&
+      CustomText.getLimitValue() === 0);
+
+  if (Config.showAllLines && !shouldLimitToThreeLines) {
+    // overflow-x should not be visible in tape mode, but since showAllLines can't
+    // be enabled simultaneously with tape mode we don't need to check it's off
     $("#words")
       .css("height", "auto")
-      .css("overflow", "hidden")
+      .css("overflow", "visible clip")
       .css("width", "100%")
       .css("margin-left", "unset");
-    $("#wordsWrapper").css("height", "auto").css("overflow", "hidden");
+    $("#wordsWrapper").css("height", "auto").css("overflow", "visible clip");
 
     let nh = wordHeight * 3;
 
@@ -513,7 +530,7 @@ function updateWordsHeight(force = false): void {
     }
     $(".outOfFocusWarning").css(
       "margin-top",
-      wordHeight + Numbers.convertRemToPixels(1) / 2 + "px"
+      wordHeight + convertRemToPixels(1) / 2 + "px"
     );
   } else {
     let finalWordsHeight: number, finalWrapperHeight: number;
@@ -552,28 +569,30 @@ function updateWordsHeight(force = false): void {
       finalWrapperHeight = wrapperHeight;
     }
 
-    $("#words")
-      .css("height", finalWordsHeight + "px")
-      .css("overflow", "hidden");
+    // $("#words").css("height", "0px");
+    // not sure why this was here, wonder if removing it will break anything
 
     if (Config.tapeMode !== "off") {
-      $("#words").width("200vw");
+      $("#words").css({ overflow: "hidden", width: "200vw" });
+      $("#wordsWrapper").css({ overflow: "hidden" });
       scrollTape();
     } else {
-      $("#words").css({ marginLeft: "unset", width: "" });
+      $("#words").css({
+        overflow: "visible clip",
+        marginLeft: "unset",
+        width: "",
+      });
+      $("#wordsWrapper").css({ overflow: "visible clip" });
     }
 
-    $("#wordsWrapper")
-      .css("height", finalWrapperHeight + "px")
-      .css("overflow", "hidden");
-    $(".outOfFocusWarning").css(
-      "margin-top",
-      finalWrapperHeight / 2 - Numbers.convertRemToPixels(1) / 2 + "px"
-    );
-  }
-
-  if (Config.mode === "zen") {
-    $(document.querySelector(".word") as Element).remove();
+    setTimeout(() => {
+      $("#words").css("height", finalWordsHeight + "px");
+      $("#wordsWrapper").css("height", finalWrapperHeight + "px");
+      $(".outOfFocusWarning").css(
+        "margin-top",
+        finalWrapperHeight / 2 - convertRemToPixels(1) / 2 + "px"
+      );
+    }, 0);
   }
 }
 
@@ -634,9 +653,9 @@ export async function screenshot(): Promise<void> {
     }
     (document.querySelector("html") as HTMLElement).style.scrollBehavior =
       "smooth";
-    FunboxList.get(Config.funbox).forEach((f) =>
-      f.functions?.applyGlobalCSS?.()
-    );
+    for (const fb of getActiveFunboxes()) {
+      fb.functions?.applyGlobalCSS?.();
+    }
   }
 
   if (!$("#resultReplay").hasClass("hidden")) {
@@ -676,7 +695,9 @@ export async function screenshot(): Promise<void> {
   $(".highlightContainer").addClass("hidden");
   if (revertCookie) $("#cookiesModal").addClass("hidden");
 
-  FunboxList.get(Config.funbox).forEach((f) => f.functions?.clearGlobal?.());
+  for (const fb of getActiveFunboxes()) {
+    fb.functions?.clearGlobal?.();
+  }
 
   (document.querySelector("html") as HTMLElement).style.scrollBehavior = "auto";
   window.scrollTo({
@@ -692,8 +713,8 @@ export async function screenshot(): Promise<void> {
     true
   ) as number; /*clientHeight/offsetHeight from div#target*/
   try {
-    const paddingX = Numbers.convertRemToPixels(2);
-    const paddingY = Numbers.convertRemToPixels(2);
+    const paddingX = convertRemToPixels(2);
+    const paddingY = convertRemToPixels(2);
 
     const canvas = await (
       await gethtml2canvas()
@@ -763,11 +784,10 @@ export async function screenshot(): Promise<void> {
   }, 3000);
 }
 
-export async function updateWordElement(inputOverride?: string): Promise<void> {
+export async function updateActiveWordLetters(
+  inputOverride?: string
+): Promise<void> {
   const input = inputOverride ?? TestInput.input.current;
-  const wordAtIndex = document.querySelector(
-    "#words .word.active"
-  ) as HTMLElement;
   const currentWord = TestWords.words.getCurrent();
   if (!currentWord && Config.mode !== "zen") return;
   let ret = "";
@@ -824,18 +844,18 @@ export async function updateWordElement(inputOverride?: string): Promise<void> {
       }
     }
 
-    const funbox = FunboxList.get(Config.funbox).find(
-      (f) => f.functions?.getWordHtml
-    );
+    const funbox = getActiveFunboxes().find((fb) => fb.functions?.getWordHtml);
 
-    for (let i = 0; i < input.length; i++) {
-      const charCorrect = currentWord[i] === input[i];
+    const inputChars = Strings.splitIntoCharacters(input);
+    const currentWordChars = Strings.splitIntoCharacters(currentWord);
+    for (let i = 0; i < inputChars.length; i++) {
+      const charCorrect = currentWordChars[i] === inputChars[i];
 
-      let currentLetter = currentWord[i] as string;
+      let currentLetter = currentWordChars[i] as string;
       let tabChar = "";
       let nlChar = "";
       if (funbox?.functions?.getWordHtml) {
-        const cl = funbox.functions.getWordHtml(currentLetter);
+        const cl = funbox.functions?.getWordHtml(currentLetter);
         if (cl !== "") {
           currentLetter = cl;
         }
@@ -857,13 +877,13 @@ export async function updateWordElement(inputOverride?: string): Promise<void> {
       ) {
         ret += `<letter class="dead">${
           Config.indicateTypos === "replace"
-            ? input[i] === " "
+            ? inputChars[i] === " "
               ? "_"
-              : input[i]
+              : inputChars[i]
             : currentLetter
         }</letter>`;
       } else if (currentLetter === undefined) {
-        let letter = input[i];
+        let letter = inputChars[i];
         if (letter === " " || letter === "\t" || letter === "\n") {
           letter = "_";
         }
@@ -872,9 +892,9 @@ export async function updateWordElement(inputOverride?: string): Promise<void> {
         ret +=
           `<letter class="incorrect ${tabChar}${nlChar}">` +
           (Config.indicateTypos === "replace"
-            ? input[i] === " "
+            ? inputChars[i] === " "
               ? "_"
-              : input[i]
+              : inputChars[i]
             : currentLetter) +
           "</letter>";
         if (Config.indicateTypos === "below") {
@@ -888,26 +908,31 @@ export async function updateWordElement(inputOverride?: string): Promise<void> {
       }
     }
 
-    for (let i = input.length; i < currentWord.length; i++) {
+    for (let i = inputChars.length; i < currentWordChars.length; i++) {
+      const currentLetter = currentWordChars[i];
       if (funbox?.functions?.getWordHtml) {
-        ret += funbox.functions.getWordHtml(currentWord[i] as string, true);
-      } else if (currentWord[i] === "\t") {
+        ret += funbox.functions.getWordHtml(currentLetter as string, true);
+      } else if (currentLetter === "\t") {
         ret += `<letter class='tabChar'><i class="fas fa-long-arrow-alt-right fa-fw"></i></letter>`;
-      } else if (currentWord[i] === "\n") {
+      } else if (currentLetter === "\n") {
         ret += `<letter class='nlChar'><i class="fas fa-level-down-alt fa-rotate-90 fa-fw"></i></letter>`;
       } else {
-        ret += `<letter>` + currentWord[i] + "</letter>";
+        ret += `<letter>` + currentLetter + "</letter>";
       }
     }
   }
 
-  wordAtIndex.innerHTML = ret;
+  const activeWord = document.querySelectorAll("#words .word")?.[
+    activeWordElementIndex
+  ] as HTMLElement;
+
+  activeWord.innerHTML = ret;
 
   if (hintIndices?.length) {
-    const activeWordLetters = wordAtIndex.querySelectorAll("letter");
+    const activeWordLetters = activeWord.querySelectorAll("letter");
     const hintsHtml = createHintsHtml(hintIndices, activeWordLetters, input);
-    wordAtIndex.insertAdjacentHTML("beforeend", hintsHtml);
-    const hintElements = wordAtIndex.getElementsByTagName("hint");
+    activeWord.insertAdjacentHTML("beforeend", hintsHtml);
+    const hintElements = activeWord.getElementsByTagName("hint");
     await joinOverlappingHints(hintIndices, activeWordLetters, hintElements);
   }
 
@@ -918,14 +943,28 @@ export async function updateWordElement(inputOverride?: string): Promise<void> {
 }
 
 export function scrollTape(): void {
+  if (ActivePage.get() !== "test" || resultVisible) return;
+
+  if (!TestState.isActive) {
+    $("#words")
+      .stop(true, false)
+      .animate(
+        {
+          marginLeft: Config.tapeMargin + "%",
+        },
+        SlowTimer.get() ? 0 : 125
+      );
+    return;
+  }
+
   const wordsWrapperWidth = (
     document.querySelector("#wordsWrapper") as HTMLElement
   ).offsetWidth;
   let fullWordsWidth = 0;
   const toHide: JQuery[] = [];
   let widthToHide = 0;
-  if (currentWordElementIndex > 0) {
-    for (let i = 0; i < currentWordElementIndex; i++) {
+  if (activeWordElementIndex > 0) {
+    for (let i = 0; i < activeWordElementIndex; i++) {
       const word = document.querySelectorAll("#words .word")[i] as HTMLElement;
       fullWordsWidth += $(word).outerWidth(true) ?? 0;
       const forWordLeft = Math.floor(word.offsetLeft);
@@ -937,7 +976,7 @@ export function scrollTape(): void {
       }
     }
     if (toHide.length > 0) {
-      currentWordElementIndex -= toHide.length;
+      activeWordElementIndex -= toHide.length;
       toHide.forEach((e) => e.remove());
       fullWordsWidth -= widthToHide;
       const currentMargin = parseInt($("#words").css("margin-left"), 10);
@@ -948,8 +987,7 @@ export function scrollTape(): void {
   if (Config.tapeMode === "letter") {
     if (TestInput.input.current.length > 0) {
       const words = document.querySelectorAll("#words .word");
-      const letters =
-        words[currentWordElementIndex]?.querySelectorAll("letter");
+      const letters = words[activeWordElementIndex]?.querySelectorAll("letter");
       if (!letters) return;
       for (let i = 0; i < TestInput.input.current.length; i++) {
         const letter = letters[i] as HTMLElement;
@@ -963,7 +1001,9 @@ export function scrollTape(): void {
       }
     }
   }
-  const newMargin = wordsWrapperWidth / 2 - (fullWordsWidth + currentWordWidth);
+
+  const tapeMargin = wordsWrapperWidth * (Config.tapeMargin / 100);
+  const newMargin = tapeMargin - (fullWordsWidth + currentWordWidth);
   if (Config.smoothLineScroll) {
     $("#words")
       .stop(true, false)
@@ -1004,7 +1044,7 @@ export function lineJump(currentTop: number): void {
 
     const toHide: JQuery[] = [];
     const wordElements = $("#words .word");
-    for (let i = 0; i < currentWordElementIndex; i++) {
+    for (let i = 0; i < activeWordElementIndex; i++) {
       const el = $(wordElements[i] as HTMLElement);
       if (el.hasClass("hidden")) continue;
       const forWordTop = Math.floor((el[0] as HTMLElement).offsetTop);
@@ -1070,17 +1110,19 @@ export function lineJump(currentTop: number): void {
         .animate(newCss, SlowTimer.get() ? 0 : 125, () => {
           currentLinesAnimating = 0;
           activeWordTop = (
-            document.querySelector("#words .active") as HTMLElement
-          ).offsetTop;
+            document.querySelectorAll("#words .word")?.[
+              activeWordElementIndex
+            ] as HTMLElement
+          )?.offsetTop;
 
-          currentWordElementIndex -= toHide.length;
+          activeWordElementIndex -= toHide.length;
           lineTransition = false;
           toHide.forEach((el) => el.remove());
           $("#words").css("marginTop", "0");
         });
     } else {
       toHide.forEach((el) => el.remove());
-      currentWordElementIndex -= toHide.length;
+      activeWordElementIndex -= toHide.length;
       $("#paceCaret").css({
         top:
           (document.querySelector("#paceCaret") as HTMLElement).offsetTop -
@@ -1132,65 +1174,38 @@ async function loadWordsHistory(): Promise<boolean> {
       ) !== null;
     let wordEl = "";
     try {
-      if (input === undefined || input === "")
+      if (input === undefined || input === "") {
         throw new Error("empty input word");
+      }
+
+      const errorClass = input !== word ? "error" : "";
+
       if (corrected !== undefined && corrected !== "") {
         const correctedChar = !containsKorean
           ? corrected
           : Hangul.assemble(corrected.split(""));
-        wordEl = `<div class='word nocursor' burst="${
+        wordEl = `<div class='word nocursor ${errorClass}' burst="${
           TestInput.burstHistory[i]
         }" input="${correctedChar
           .replace(/"/g, "&quot;")
           .replace(/ /g, "_")}">`;
       } else {
-        wordEl = `<div class='word nocursor' burst="${
+        wordEl = `<div class='word nocursor ${errorClass}' burst="${
           TestInput.burstHistory[i]
         }" input="${input.replace(/"/g, "&quot;").replace(/ /g, "_")}">`;
       }
-      if (i === TestInput.input.history.length - 1) {
-        //last word
-        const wordstats = {
-          correct: 0,
-          incorrect: 0,
-          missed: 0,
-        };
-        const length = Config.mode === "zen" ? input.length : word.length;
-        for (let c = 0; c < length; c++) {
-          if (c < input.length) {
-            //on char that still has a word list pair
-            if (Config.mode === "zen" || input[c] === word[c]) {
-              wordstats.correct++;
-            } else {
-              wordstats.incorrect++;
-            }
-          } else {
-            //on char that is extra
-            wordstats.missed++;
-          }
-        }
-        if (wordstats.incorrect !== 0 || Config.mode !== "time") {
-          if (Config.mode !== "zen" && input !== word) {
-            wordEl = `<div class='word nocursor error' burst="${
-              TestInput.burstHistory[i]
-            }" input="${input.replace(/"/g, "&quot;").replace(/ /g, "_")}">`;
-          }
-        }
-      } else {
-        if (Config.mode !== "zen" && input !== word) {
-          wordEl = `<div class='word nocursor error' burst="${
-            TestInput.burstHistory[i]
-          }" input="${input.replace(/"/g, "&quot;").replace(/ /g, "_")}">`;
-        }
-      }
+
+      const inputCharacters = Strings.splitIntoCharacters(input);
+      const wordCharacters = Strings.splitIntoCharacters(word);
+      const correctedCharacters = Strings.splitIntoCharacters(corrected ?? "");
 
       let loop;
       if (Config.mode === "zen" || input.length > word.length) {
         //input is longer - extra characters possible (loop over input)
-        loop = input.length;
+        loop = inputCharacters.length;
       } else {
         //input is shorter or equal (loop over word list)
-        loop = word.length;
+        loop = wordCharacters.length;
       }
 
       if (corrected === undefined) throw new Error("empty corrected word");
@@ -1199,7 +1214,7 @@ async function loadWordsHistory(): Promise<boolean> {
         let correctedChar;
         try {
           correctedChar = !containsKorean
-            ? corrected[c]
+            ? correctedCharacters[c]
             : Hangul.assemble(corrected.split(""))[c];
         } catch (e) {
           correctedChar = undefined;
@@ -1215,33 +1230,42 @@ async function loadWordsHistory(): Promise<boolean> {
         ) {
           extraCorrected = "extraCorrected";
         }
-        if (Config.mode === "zen" || word[c] !== undefined) {
-          if (Config.mode === "zen" || input[c] === word[c]) {
-            if (correctedChar === input[c] || correctedChar === undefined) {
-              wordEl += `<letter class="correct ${extraCorrected}">${input[c]}</letter>`;
+        if (Config.mode === "zen" || wordCharacters[c] !== undefined) {
+          if (
+            Config.mode === "zen" ||
+            inputCharacters[c] === wordCharacters[c]
+          ) {
+            if (
+              correctedChar === inputCharacters[c] ||
+              correctedChar === undefined
+            ) {
+              wordEl += `<letter class="correct ${extraCorrected}">${inputCharacters[c]}</letter>`;
             } else {
               wordEl +=
                 `<letter class="corrected ${extraCorrected}">` +
-                input[c] +
+                inputCharacters[c] +
                 "</letter>";
             }
           } else {
-            if (input[c] === TestInput.input.current) {
+            if (inputCharacters[c] === TestInput.input.current) {
               wordEl +=
                 `<letter class='correct ${extraCorrected}'>` +
-                word[c] +
+                wordCharacters[c] +
                 "</letter>";
-            } else if (input[c] === undefined) {
-              wordEl += "<letter>" + word[c] + "</letter>";
+            } else if (inputCharacters[c] === undefined) {
+              wordEl += "<letter>" + wordCharacters[c] + "</letter>";
             } else {
               wordEl +=
                 `<letter class="incorrect ${extraCorrected}">` +
-                word[c] +
+                wordCharacters[c] +
                 "</letter>";
             }
           }
         } else {
-          wordEl += '<letter class="incorrect extra">' + input[c] + "</letter>";
+          wordEl +=
+            '<letter class="incorrect extra">' +
+            inputCharacters[c] +
+            "</letter>";
         }
       }
       wordEl += "</div>";
@@ -1457,6 +1481,20 @@ function updateWordsWidth(): void {
   }
 }
 
+function updateLiveStatsMargin(): void {
+  if (Config.tapeMode === "off") {
+    $("#liveStatsMini").css({
+      "justify-content": "start",
+      "margin-left": "0.25em",
+    });
+  } else {
+    $("#liveStatsMini").css({
+      "justify-content": "center",
+      "margin-left": Config.tapeMargin + "%",
+    });
+  }
+}
+
 function updateLiveStatsOpacity(value: TimerOpacity): void {
   $("#barTimerProgress").css("opacity", parseFloat(value as string));
   $("#liveStatsTextTop").css("opacity", parseFloat(value as string));
@@ -1605,12 +1643,6 @@ $(".pageTest").on("click", "#showWordHistoryButton", () => {
 
 $("#wordsWrapper").on("click", () => {
   focusWords();
-});
-
-$(document).on("keypress", () => {
-  if (resultVisible) {
-    skipXpBreakdown();
-  }
 });
 
 ConfigEvent.subscribe((key, value) => {

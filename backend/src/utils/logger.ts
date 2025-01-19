@@ -70,6 +70,7 @@ const logger = createLogger({
     new transports.Console({
       level: "success",
       format: consoleFormat,
+      handleExceptions: true,
     }),
   ],
   exceptionHandlers: [

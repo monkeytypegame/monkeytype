@@ -21,7 +21,7 @@ const flags: UserFlag[] = [
   },
 ];
 
-type SupportsFlags = {
+export type SupportsFlags = {
   isPremium?: boolean;
   banned?: boolean;
   lbOptOut?: boolean;

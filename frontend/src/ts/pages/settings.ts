@@ -5,7 +5,7 @@ import * as Misc from "../utils/misc";
 import * as Strings from "../utils/strings";
 import * as JSONData from "../utils/json-data";
 import * as DB from "../db";
-import { toggleFunbox } from "../test/funbox/funbox";
+import * as Funbox from "../test/funbox/funbox";
 import * as TagController from "../controllers/tag-controller";
 import * as PresetController from "../controllers/preset-controller";
 import * as ThemePicker from "../elements/settings/theme-picker";
@@ -14,16 +14,22 @@ import * as ImportExportSettingsModal from "../modals/import-export-settings";
 import * as ConfigEvent from "../observables/config-event";
 import * as ActivePage from "../states/active-page";
 import Page from "./page";
-import { getAuthenticatedUser, isAuthenticated } from "../firebase";
-import Ape from "../ape";
-import { areFunboxesCompatible } from "../test/funbox/funbox-validation";
+import { isAuthenticated } from "../firebase";
 import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
-// @ts-expect-error TODO: update slim-select
 import SlimSelect from "slim-select";
 
 import * as Skeleton from "../utils/skeleton";
 import * as CustomBackgroundFilter from "../elements/custom-background-filter";
-import { ConfigValue } from "@monkeytype/contracts/schemas/configs";
+import {
+  ConfigValue,
+  CustomLayoutFluid,
+} from "@monkeytype/contracts/schemas/configs";
+import {
+  getAllFunboxes,
+  FunboxName,
+  checkCompatibility,
+} from "@monkeytype/funbox";
+import { getActiveFunboxNames } from "../test/funbox/list";
 
 type SettingsGroups<T extends ConfigValue> = Record<string, SettingsGroup<T>>;
 
@@ -34,6 +40,11 @@ async function initGroups(): Promise<void> {
   groups["smoothCaret"] = new SettingsGroup(
     "smoothCaret",
     UpdateConfig.setSmoothCaret,
+    "button"
+  ) as SettingsGroup<ConfigValue>;
+  groups["codeUnindentOnBackspace"] = new SettingsGroup(
+    "codeUnindentOnBackspace",
+    UpdateConfig.setCodeUnindentOnBackspace,
     "button"
   ) as SettingsGroup<ConfigValue>;
   groups["difficulty"] = new SettingsGroup(
@@ -368,6 +379,11 @@ async function initGroups(): Promise<void> {
     UpdateConfig.setTapeMode,
     "button"
   ) as SettingsGroup<ConfigValue>;
+  groups["tapeMargin"] = new SettingsGroup(
+    "tapeMargin",
+    UpdateConfig.setTapeMargin,
+    "button"
+  ) as SettingsGroup<ConfigValue>;
   groups["timerOpacity"] = new SettingsGroup(
     "timerOpacity",
     UpdateConfig.setTimerOpacity,
@@ -428,6 +444,7 @@ function reset(): void {
   $(".pageSettings .section[data-config-name='fontFamily'] .buttons").empty();
   for (const select of document.querySelectorAll(".pageSettings select")) {
     //@ts-expect-error
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
     select?.slim?.destroy?.();
   }
 }
@@ -560,7 +577,6 @@ async function fillSettingsPage(): Promise<void> {
   new SlimSelect({
     select: themeSelectLightElement,
     events: {
-      // @ts-expect-error TODO: update slim-select
       afterChange: (newVal): void => {
         UpdateConfig.setThemeLight(newVal[0]?.value as string);
       },
@@ -570,7 +586,6 @@ async function fillSettingsPage(): Promise<void> {
   new SlimSelect({
     select: themeSelectDarkElement,
     events: {
-      // @ts-expect-error TODO: update slim-select
       afterChange: (newVal): void => {
         UpdateConfig.setThemeDark(newVal[0]?.value as string);
       },
@@ -583,46 +598,40 @@ async function fillSettingsPage(): Promise<void> {
   funboxEl.innerHTML = `<div class="funbox button" data-config-value='none'>none</div>`;
   let funboxElHTML = "";
 
-  let funboxList;
-  try {
-    funboxList = await JSONData.getFunboxList();
-  } catch (e) {
-    console.error(Misc.createErrorMessage(e, "Failed to get funbox list"));
-  }
-
-  if (funboxList) {
-    for (const funbox of funboxList) {
-      if (funbox.name === "mirror") {
-        funboxElHTML += `<div class="funbox button" data-config-value='${
-          funbox.name
-        }' aria-label="${
-          funbox.info
-        }" data-balloon-pos="up" data-balloon-length="fit" style="transform:scaleX(-1);">${funbox.name.replace(
-          /_/g,
-          " "
-        )}</div>`;
-      } else if (funbox.name === "upside_down") {
-        funboxElHTML += `<div class="funbox button" data-config-value='${
-          funbox.name
-        }' aria-label="${
-          funbox.info
-        }" data-balloon-pos="up" data-balloon-length="fit" style="transform:scaleX(-1) scaleY(-1); z-index:1;">${funbox.name.replace(
-          /_/g,
-          " "
-        )}</div>`;
-      } else {
-        funboxElHTML += `<div class="funbox button" data-config-value='${
-          funbox.name
-        }' aria-label="${
-          funbox.info
-        }" data-balloon-pos="up" data-balloon-length="fit">${funbox.name.replace(
-          /_/g,
-          " "
-        )}</div>`;
-      }
+  for (const funbox of getAllFunboxes()) {
+    if (funbox.name === "mirror") {
+      funboxElHTML += `<div class="funbox button" data-config-value='${
+        funbox.name
+      }' aria-label="${
+        funbox.description
+      }" data-balloon-pos="up" data-balloon-length="fit" style="transform:scaleX(-1);">${funbox.name.replace(
+        /_/g,
+        " "
+      )}</div>`;
+    } else if (funbox.name === "upside_down") {
+      funboxElHTML += `<div class="funbox button" data-config-value='${
+        funbox.name
+      }' aria-label="${
+        funbox.description
+      }" data-balloon-pos="up" data-balloon-length="fit" style="transform:scaleX(-1) scaleY(-1); z-index:1;">${funbox.name.replace(
+        /_/g,
+        " "
+      )}</div>`;
+    } else if (funbox.name === "underscore_spaces") {
+      // Display as "underscore_spaces". Does not replace underscores with spaces.
+      funboxElHTML += `<div class="funbox button" data-config-value='${funbox.name}' aria-label="${funbox.description}" data-balloon-pos="up" data-balloon-length="fit">${funbox.name}</div>`;
+    } else {
+      funboxElHTML += `<div class="funbox button" data-config-value='${
+        funbox.name
+      }' aria-label="${
+        funbox.description
+      }" data-balloon-pos="up" data-balloon-length="fit">${funbox.name.replace(
+        /_/g,
+        " "
+      )}</div>`;
     }
-    funboxEl.innerHTML = funboxElHTML;
   }
+  funboxEl.innerHTML = funboxElHTML;
 
   let isCustomFont = true;
   const fontsEl = document.querySelector(
@@ -690,6 +699,10 @@ async function fillSettingsPage(): Promise<void> {
     Config.customLayoutfluid.replace(/#/g, " ")
   );
 
+  $(".pageSettings .section[data-config-name='tapeMargin'] input").val(
+    Config.tapeMargin
+  );
+
   setEventDisabled(true);
   if (!groupsInitialized) {
     await initGroups();
@@ -707,123 +720,13 @@ async function fillSettingsPage(): Promise<void> {
 // export let settingsFillPromise = fillSettingsPage();
 
 export function hideAccountSection(): void {
-  $(`.sectionGroupTitle[group='account']`).addClass("hidden");
-  $(`.settingsGroup.account`).addClass("hidden");
   $(`.pageSettings .section.needsAccount`).addClass("hidden");
-  $(".pageSettings .quickNav .accountTitleLink").addClass("hidden");
 }
 
 function showAccountSection(): void {
-  $(`.sectionGroupTitle[group='account']`).removeClass("hidden");
-  $(`.settingsGroup.account`).removeClass("hidden");
   $(`.pageSettings .section.needsAccount`).removeClass("hidden");
-  $(".pageSettings .quickNav .accountTitleLink").removeClass("hidden");
   refreshTagsSettingsSection();
   refreshPresetsSettingsSection();
-  updateDiscordSection();
-
-  if (DB.getSnapshot()?.lbOptOut === true) {
-    $(".pageSettings .section.optOutOfLeaderboards").remove();
-  }
-}
-
-export function updateDiscordSection(): void {
-  //no code and no discord
-  if (!isAuthenticated()) {
-    $(".pageSettings .section.discordIntegration").addClass("hidden");
-  } else {
-    if (!DB.getSnapshot()) return;
-    $(".pageSettings .section.discordIntegration").removeClass("hidden");
-
-    if (DB.getSnapshot()?.discordId === undefined) {
-      //show button
-      $(".pageSettings .section.discordIntegration .buttons").removeClass(
-        "hidden"
-      );
-      $(".pageSettings .section.discordIntegration .info").addClass("hidden");
-    } else {
-      $(".pageSettings .section.discordIntegration .buttons").addClass(
-        "hidden"
-      );
-      $(".pageSettings .section.discordIntegration .info").removeClass(
-        "hidden"
-      );
-    }
-  }
-}
-
-export function updateAuthSections(): void {
-  $(".pageSettings .section.passwordAuthSettings button").addClass("hidden");
-  $(".pageSettings .section.googleAuthSettings button").addClass("hidden");
-  $(".pageSettings .section.githubAuthSettings button").addClass("hidden");
-
-  if (!isAuthenticated()) return;
-  const user = getAuthenticatedUser();
-
-  const passwordProvider = user.providerData.some(
-    (provider) => provider.providerId === "password"
-  );
-  const googleProvider = user.providerData.some(
-    (provider) => provider.providerId === "google.com"
-  );
-  const githubProvider = user.providerData.some(
-    (provider) => provider.providerId === "github.com"
-  );
-
-  if (passwordProvider) {
-    $(
-      ".pageSettings .section.passwordAuthSettings #emailPasswordAuth"
-    ).removeClass("hidden");
-    $(
-      ".pageSettings .section.passwordAuthSettings #passPasswordAuth"
-    ).removeClass("hidden");
-    if (googleProvider || githubProvider) {
-      $(
-        ".pageSettings .section.passwordAuthSettings #removePasswordAuth"
-      ).removeClass("hidden");
-    }
-  } else {
-    $(
-      ".pageSettings .section.passwordAuthSettings #addPasswordAuth"
-    ).removeClass("hidden");
-  }
-
-  if (googleProvider) {
-    $(
-      ".pageSettings .section.googleAuthSettings #removeGoogleAuth"
-    ).removeClass("hidden");
-    if (passwordProvider || githubProvider) {
-      $(
-        ".pageSettings .section.googleAuthSettings #removeGoogleAuth"
-      ).removeClass("disabled");
-    } else {
-      $(".pageSettings .section.googleAuthSettings #removeGoogleAuth").addClass(
-        "disabled"
-      );
-    }
-  } else {
-    $(".pageSettings .section.googleAuthSettings #addGoogleAuth").removeClass(
-      "hidden"
-    );
-  }
-  if (githubProvider) {
-    $(
-      ".pageSettings .section.githubAuthSettings #removeGithubAuth"
-    ).removeClass("hidden");
-    if (passwordProvider || googleProvider) {
-      $(
-        ".pageSettings .section.githubAuthSettings #removeGithubAuth"
-      ).removeClass("disabled");
-    } else {
-      $(".pageSettings .section.githubAuthSettings #removeGithubAuth").addClass(
-        "disabled"
-      );
-    }
-  } else {
-    $(".pageSettings .section.githubAuthSettings #addGithubAuth").removeClass(
-      "hidden"
-    );
-  }
 }
 
 function setActiveFunboxButton(): void {
@@ -833,26 +736,16 @@ function setActiveFunboxButton(): void {
   $(`.pageSettings .section[data-config-name='funbox'] .button`).removeClass(
     "disabled"
   );
-  JSONData.getFunboxList()
-    .then((funboxModes) => {
-      funboxModes.forEach((funbox) => {
-        if (
-          !areFunboxesCompatible(Config.funbox, funbox.name) &&
-          !Config.funbox.split("#").includes(funbox.name)
-        ) {
-          $(
-            `.pageSettings .section[data-config-name='funbox'] .button[data-config-value='${funbox.name}']`
-          ).addClass("disabled");
-        }
-      });
-    })
-    .catch((e: unknown) => {
-      const message = Misc.createErrorMessage(
-        e,
-        "Failed to update funbox buttons"
-      );
-      Notifications.add(message, -1);
-    });
+  getAllFunboxes().forEach((funbox) => {
+    if (
+      !checkCompatibility(getActiveFunboxNames(), funbox.name) &&
+      !Config.funbox.split("#").includes(funbox.name)
+    ) {
+      $(
+        `.pageSettings .section[data-config-name='funbox'] .button[data-config-value='${funbox.name}']`
+      ).addClass("disabled");
+    }
+  });
   Config.funbox.split("#").forEach((funbox) => {
     $(
       `.pageSettings .section[data-config-name='funbox'] .button[data-config-value='${funbox}']`
@@ -878,13 +771,13 @@ function refreshTagsSettingsSection(): void {
       }">
           ${tag.display}
         </button>
-        <button class="clearPbButton">
+        <button class="clearPbButton" aria-label="clear tags personal bests" data-balloon-pos="left" >
           <i class="fas fa-crown fa-fw"></i>
         </button>
-        <button class="editButton">
+        <button class="editButton" aria-label="rename tag" data-balloon-pos="left" >
           <i class="fas fa-pen fa-fw"></i>
         </button>
-        <button class="removeButton">
+        <button class="removeButton" aria-label="remove tag"  data-balloon-pos="left" >
           <i class="fas fa-trash fa-fw"></i>
         </button>
       </div>
@@ -900,7 +793,7 @@ function refreshTagsSettingsSection(): void {
 function refreshPresetsSettingsSection(): void {
   if (isAuthenticated() && DB.getSnapshot()) {
     const presetsEl = $(".pageSettings .section.presets .presetsList").empty();
-    DB.getSnapshot()?.presets?.forEach((preset: MonkeyTypes.SnapshotPreset) => {
+    DB.getSnapshot()?.presets?.forEach((preset: DB.SnapshotPreset) => {
       presetsEl.append(`
       <div class="buttons preset" data-id="${preset._id}" data-name="${preset.name}" data-display="${preset.display}">
         <button class="presetButton">${preset.display}</button>
@@ -932,8 +825,6 @@ export async function update(groupUpdate = true): Promise<void> {
   refreshPresetsSettingsSection();
   // LanguagePicker.setActiveGroup(); Shifted from grouped btns to combo-box
   setActiveFunboxButton();
-  updateDiscordSection();
-  updateAuthSections();
   await Misc.sleep(0);
   ThemePicker.updateActiveTab(true);
   ThemePicker.setCustomInputs(true);
@@ -1164,8 +1055,8 @@ $(".pageSettings .section[data-config-name='funbox']").on(
   "click",
   ".button",
   (e) => {
-    const funbox = $(e.currentTarget).attr("data-config-value") as string;
-    toggleFunbox(funbox);
+    const funbox = $(e.currentTarget).attr("data-config-value") as FunboxName;
+    Funbox.toggleFunbox(funbox);
     setActiveFunboxButton();
   }
 );
@@ -1175,7 +1066,7 @@ $(".pageSettings .section.tags").on(
   "click",
   ".tagsList .tag .tagButton",
   (e) => {
-    const target = e.currentTarget;
+    const target = e.currentTarget as HTMLElement;
     const tagid = $(target).parent(".tag").attr("data-id") as string;
     TagController.toggle(tagid);
     $(target).toggleClass("active");
@@ -1186,7 +1077,7 @@ $(".pageSettings .section.presets").on(
   "click",
   ".presetsList .preset .presetButton",
   async (e) => {
-    const target = e.currentTarget;
+    const target = e.currentTarget as HTMLElement;
     const presetid = $(target).parent(".preset").attr("data-id") as string;
     await PresetController.apply(presetid);
     void update();
@@ -1266,6 +1157,42 @@ $(
       parseFloat(
         $(
           ".pageSettings .section[data-config-name='fontSize'] .inputAndButton input"
+        ).val() as string
+      )
+    );
+    if (didConfigSave) {
+      Notifications.add("Saved", 1, {
+        duration: 1,
+      });
+    }
+  }
+});
+
+$(
+  ".pageSettings .section[data-config-name='tapeMargin'] .inputAndButton button.save"
+).on("click", () => {
+  const didConfigSave = UpdateConfig.setTapeMargin(
+    parseFloat(
+      $(
+        ".pageSettings .section[data-config-name='tapeMargin'] .inputAndButton input"
+      ).val() as string
+    )
+  );
+  if (didConfigSave) {
+    Notifications.add("Saved", 1, {
+      duration: 1,
+    });
+  }
+});
+
+$(
+  ".pageSettings .section[data-config-name='tapeMargin'] .inputAndButton input"
+).on("keypress", (e) => {
+  if (e.key === "Enter") {
+    const didConfigSave = UpdateConfig.setTapeMargin(
+      parseFloat(
+        $(
+          ".pageSettings .section[data-config-name='tapeMargin'] .inputAndButton input"
         ).val() as string
       )
     );
@@ -1389,7 +1316,7 @@ $(
   void UpdateConfig.setCustomLayoutfluid(
     $(
       ".pageSettings .section[data-config-name='customLayoutfluid'] .inputAndButton input"
-    ).val() as MonkeyTypes.CustomLayoutFluidSpaces
+    ).val() as CustomLayoutFluid
   ).then((bool) => {
     if (bool) {
       Notifications.add("Custom layoutfluid saved", 1);
@@ -1404,7 +1331,7 @@ $(
     void UpdateConfig.setCustomLayoutfluid(
       $(
         ".pageSettings .section[data-config-name='customLayoutfluid'] .inputAndButton input"
-      ).val() as MonkeyTypes.CustomLayoutFluidSpaces
+      ).val() as CustomLayoutFluid
     ).then((bool) => {
       if (bool) {
         Notifications.add("Custom layoutfluid saved", 1);
@@ -1423,24 +1350,23 @@ $(".pageSettings .quickNav .links a").on("click", (e) => {
   }
 });
 
-$(".pageSettings .section.discordIntegration .getLinkAndGoToOauth").on(
-  "click",
-  () => {
-    void Ape.users.getOauthLink().then((res) => {
-      window.open(res.data?.url as string, "_self");
-    });
-  }
-);
-
 let configEventDisabled = false;
 export function setEventDisabled(value: boolean): void {
   configEventDisabled = value;
 }
 
-ConfigEvent.subscribe((eventKey) => {
+ConfigEvent.subscribe((eventKey, eventValue) => {
   if (eventKey === "fullConfigChange") setEventDisabled(true);
   if (eventKey === "fullConfigChangeFinished") setEventDisabled(false);
-
+  if (eventKey === "themeLight") {
+    $(
+      `.pageSettings .section[data-config-name='autoSwitchThemeInputs'] select.light option[value="${eventValue}"]`
+    ).attr("selected", "true");
+  } else if (eventKey === "themeDark") {
+    $(
+      `.pageSettings .section[data-config-name='autoSwitchThemeInputs'] select.dark option[value="${eventValue}"]`
+    ).attr("selected", "true");
+  }
   //make sure the page doesnt update a billion times when applying a preset/config at once
   if (configEventDisabled || eventKey === "saveToLocalStorage") return;
   if (ActivePage.get() === "settings" && eventKey !== "theme") {

@@ -4,14 +4,16 @@ import { ObjectId } from "mongodb";
 import Logger from "../utils/logger";
 import { identity } from "../utils/misc";
 import { BASE_CONFIGURATION } from "../constants/base-configuration";
-import { Configuration } from "@monkeytype/shared-types";
+import { Configuration } from "@monkeytype/contracts/schemas/configuration";
 import { addLog } from "../dal/logs";
+import { PartialConfiguration } from "@monkeytype/contracts/configuration";
+import { getErrorMessage } from "../utils/error";
 
 const CONFIG_UPDATE_INTERVAL = 10 * 60 * 1000; // 10 Minutes
 
 function mergeConfigurations(
   baseConfiguration: Configuration,
-  liveConfiguration: Partial<Configuration>
+  liveConfiguration: PartialConfiguration
 ): void {
   if (
     !_.isPlainObject(baseConfiguration) ||
@@ -24,8 +26,8 @@ function mergeConfigurations(
     const commonKeys = _.intersection(_.keys(base), _.keys(source));
 
     commonKeys.forEach((key) => {
-      const baseValue = base[key];
-      const sourceValue = source[key];
+      const baseValue = base[key] as object;
+      const sourceValue = source[key] as object;
 
       const isBaseValueObject = _.isPlainObject(baseValue);
       const isSourceValueObject = _.isPlainObject(sourceValue);
@@ -85,9 +87,10 @@ export async function getLiveConfiguration(): Promise<Configuration> {
       }); // Seed the base configuration.
     }
   } catch (error) {
+    const errorMessage = getErrorMessage(error) ?? "Unknown error";
     void addLog(
       "fetch_configuration_failure",
-      `Could not fetch configuration: ${error.message}`
+      `Could not fetch configuration: ${errorMessage}`
     );
   }
 
@@ -103,15 +106,16 @@ async function pushConfiguration(configuration: Configuration): Promise<void> {
     await db.collection("configuration").replaceOne({}, configuration);
     serverConfigurationUpdated = true;
   } catch (error) {
+    const errorMessage = getErrorMessage(error) ?? "Unknown error";
     void addLog(
       "push_configuration_failure",
-      `Could not push configuration: ${error.message}`
+      `Could not push configuration: ${errorMessage}`
     );
   }
 }
 
 export async function patchConfiguration(
-  configurationUpdates: Partial<Configuration>
+  configurationUpdates: PartialConfiguration
 ): Promise<boolean> {
   try {
     const currentConfiguration = _.cloneDeep(configuration);
@@ -123,9 +127,10 @@ export async function patchConfiguration(
 
     await getLiveConfiguration();
   } catch (error) {
+    const errorMessage = getErrorMessage(error) ?? "Unknown error";
     void addLog(
       "patch_configuration_failure",
-      `Could not patch configuration: ${error.message}`
+      `Could not patch configuration: ${errorMessage}`
     );
 
     return false;

@@ -1,7 +1,8 @@
 import Config, * as UpdateConfig from "../../config";
 import { randomTheme } from "../../controllers/theme-controller";
+import { Command } from "../types";
 
-const commands: MonkeyTypes.Command[] = [
+const commands: Command[] = [
   {
     id: "addThemeToFavorite",
     display: "Add current theme to favorite",

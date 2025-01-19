@@ -1,4 +1,4 @@
-import { Configuration } from "@monkeytype/shared-types";
+import { Configuration } from "@monkeytype/contracts/schemas/configuration";
 import { randomBytes } from "crypto";
 import { hash } from "bcrypt";
 import { ObjectId } from "mongodb";
@@ -16,7 +16,7 @@ export async function mockAuthenticateWithApeKey(
   const apiKey = randomBytes(apeKeyBytes).toString("base64url");
   const saltyHash = await hash(apiKey, apeKeySaltRounds);
 
-  const apeKey: MonkeyTypes.ApeKeyDB = {
+  const apeKey: ApeKeyDal.DBApeKey = {
     _id: new ObjectId(),
     name: "bob",
     enabled: true,

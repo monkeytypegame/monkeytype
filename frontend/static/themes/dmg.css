@@ -15,12 +15,12 @@ nav {
   gap: 0.5rem;
 }
 
-header.focus nav .textButton {
+header.focus nav > .textButton {
   background: var(--bg-color);
   size: 1rem;
 }
 
-header.focus nav .textButton:nth-child(1) {
+header.focus nav > .textButton:nth-child(1) {
   background: #e34c6c;
 }
 
@@ -29,23 +29,23 @@ header.focus nav:after {
   background: var(--sub-color);
 }
 
-nav .textButton {
+nav > .textButton {
   border-radius: 10rem !important;
   color: var(--bg-color);
   background: var(--main-color);
 }
 
-body.crtmode nav .textButton {
+body.crtmode nav > .textButton {
   box-shadow: 3px 0 1px var(--crt-main-color-glow),
     -3px 0 var(--crt-main-color-glow), 0 0 3px;
 }
 
-body.crtmode header.focus nav .textButton,
-body.crtmode nav .textButton:hover {
+body.crtmode header.focus nav > .textButton,
+body.crtmode nav > .textButton:hover {
   box-shadow: none;
 }
 
-body.crtmode header.focus nav .textButton:nth-child(1) {
+body.crtmode header.focus nav > .textButton:nth-child(1) {
   box-shadow: 3px 0 1px color-mix(in srgb, #e34c6c 20%, transparent),
     -3px 0 color-mix(in srgb, #e34c6c 30%, transparent), 0 0 3px;
 }

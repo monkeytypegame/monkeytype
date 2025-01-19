@@ -9,6 +9,11 @@ import { createErrorMessage } from "../utils/misc";
 
 let analytics: AnalyticsType;
 
+type AcceptedCookies = {
+  security: boolean;
+  analytics: boolean;
+};
+
 export async function log(
   eventName: string,
   params?: Record<string, string>
@@ -21,12 +26,9 @@ export async function log(
 }
 
 const lsString = localStorage.getItem("acceptedCookies");
-let acceptedCookies: {
-  security: boolean;
-  analytics: boolean;
-} | null;
+let acceptedCookies;
 if (lsString !== undefined && lsString !== null && lsString !== "") {
-  acceptedCookies = JSON.parse(lsString);
+  acceptedCookies = JSON.parse(lsString) as AcceptedCookies;
 } else {
   acceptedCookies = null;
 }
