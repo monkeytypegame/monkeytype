@@ -189,8 +189,6 @@ jobs:
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "chore: prettier fixes"
-          commit_options: '--no-verify --force'
-          branch: "ci-pretty-fix-test"
 
   ci-be:
     name: ci-be
