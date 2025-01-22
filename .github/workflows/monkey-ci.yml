@@ -189,6 +189,13 @@ jobs:
         if: github.event_name == 'push' && steps.check-pretty-all.outcome == 'failure'
         run: pnpm prettier --write .
 
+      - name: Log2
+        run: /
+          echo steps.fix-pretty.conclusion ${{ steps.fix-pretty.conclusion }}
+          echo steps.fix-pretty-all.conclusion ${{ steps.fix-pretty-all.conclusion }}
+          echo steps.fix-pretty.outcome ${{ steps.fix-pretty.outcome }}
+          echo steps.fix-pretty-all.outcome ${{ steps.fix-pretty-all.outcome }}
+
       - name: Commmit fixes
         if: steps.fix-pretty.outputs.result == 'success' || steps.fix-pretty-all.outputs.result == 'success'
         uses: stefanzweifel/git-auto-commit-action@v5
