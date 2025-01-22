@@ -115,7 +115,7 @@ jobs:
         name: Install dependencies
         run: pnpm install
 
-    prettify-check:
+  prettify-check:
     name: Prettify Check
     runs-on: ubuntu-latest
     steps:
