@@ -176,6 +176,7 @@ jobs:
           echo steps.check-pretty-all.outcome ${{ steps.check-pretty-all.outcome }}
 
       - name: Fix pretty (changed files)
+        id: fix-pretty
         if: github.event_name == 'pull_request' && steps.check-pretty.outcome == 'failure'
         run: |
           CHANGED_FILES=$(echo ${{ steps.get-changed-files.outputs.result }})
@@ -184,8 +185,15 @@ jobs:
           fi
 
       - name: Fix pretty (all files)
+        id: fix-pretty-all
         if: github.event_name == 'push' && steps.check-pretty-all.outcome == 'failure'
         run: pnpm prettier --write .
+
+      - name: Commmit fixes
+        if: steps.fix-pretty.outputs.result == 'success' || steps.fix-pretty-all.outputs.result == 'success'
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "Fix prettier"
 
   ci-be:
     name: ci-be
