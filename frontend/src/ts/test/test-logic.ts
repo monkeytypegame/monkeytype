@@ -74,7 +74,7 @@ const koInputVisual = document.getElementById("koInputVisual") as HTMLElement;
 export let notSignedInLastResult: CompletedEvent | null = null;
 
 export function clearNotSignedInResult(): void {
-  notSignedInLastResult = null;
+notSignedInLastResult = null;
 }
 
 export function setNotSignedInUidAndHash(uid: string): void {
