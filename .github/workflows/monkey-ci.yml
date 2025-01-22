@@ -167,6 +167,11 @@ jobs:
         id: check-pretty-all
         continue-on-error: true
         run: pnpm prettier --check .
+      
+      - name: Log
+        run: |
+          echo steps.check-pretty.conclusion ${{ steps.check-pretty.conclusion }}
+          echo steps.check-pretty-all.conclusion ${{ steps.check-pretty-all.conclusion }}
 
       - name: Fix pretty (changed files)
         if: github.event_name == 'pull_request' && steps.check-pretty.conclusion == 'failure'
