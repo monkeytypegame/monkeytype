@@ -119,6 +119,8 @@ jobs:
     name: check-pretty
     needs: [pre-ci, prime-cache]
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     if: needs.pre-ci.outputs.should-build-be == 'true' || needs.pre-ci.outputs.should-build-fe == 'true' || needs.pre-ci.outputs.should-build-pkg == 'true' || needs.pre-ci.outputs.assets-json == 'true' || contains(github.event.pull_request.labels.*.name, 'force-full-ci')
     steps:
       - uses: actions/checkout@v4
@@ -191,8 +193,6 @@ jobs:
 
       - name: Commmit fixes
         if: steps.fix-pretty.outcome == 'success' || steps.fix-pretty-all.outcome == 'success'
-        permissions:
-          contents: write
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "Fix prettier"
