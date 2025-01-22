@@ -176,7 +176,7 @@ jobs:
           echo steps.check-pretty-all.outcome ${{ steps.check-pretty-all.outcome }}
 
       - name: Fix pretty (changed files)
-        if: github.event_name == 'pull_request' && steps.check-pretty.conclusion == 'failure'
+        if: github.event_name == 'pull_request' && steps.check-pretty.outcome == 'failure'
         run: |
           CHANGED_FILES=$(echo ${{ steps.get-changed-files.outputs.result }})
           if [ -n "$CHANGED_FILES" ]; then
@@ -184,7 +184,7 @@ jobs:
           fi
 
       - name: Fix pretty (all files)
-        if: github.event_name == 'push' && steps.check-pretty-all.conclusion == 'failure'
+        if: github.event_name == 'push' && steps.check-pretty-all.outcome == 'failure'
         run: pnpm prettier --write .
 
   ci-be:
