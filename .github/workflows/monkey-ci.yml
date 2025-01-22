@@ -169,13 +169,6 @@ jobs:
         id: check-pretty-all
         continue-on-error: true
         run: pnpm prettier --check .
-      
-      - name: Log
-        run: |
-          echo steps.check-pretty.conclusion ${{ steps.check-pretty.conclusion }}
-          echo steps.check-pretty-all.conclusion ${{ steps.check-pretty-all.conclusion }}
-          echo steps.check-pretty.outcome ${{ steps.check-pretty.outcome }}
-          echo steps.check-pretty-all.outcome ${{ steps.check-pretty-all.outcome }}
 
       - name: Fix pretty (changed files)
         id: fix-pretty
