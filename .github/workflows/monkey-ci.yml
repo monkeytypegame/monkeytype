@@ -191,6 +191,8 @@ jobs:
 
       - name: Commmit fixes
         if: steps.fix-pretty.outcome == 'success' || steps.fix-pretty-all.outcome == 'success'
+        permissions:
+          contents: write
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "Fix prettier"
