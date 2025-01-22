@@ -172,6 +172,10 @@ jobs:
         run: |
           echo steps.check-pretty.conclusion ${{ steps.check-pretty.conclusion }}
           echo steps.check-pretty-all.conclusion ${{ steps.check-pretty-all.conclusion }}
+          echo steps.check-pretty.outcome ${{ steps.check-pretty.outcome }}
+          echo steps.check-pretty-all.outcome ${{ steps.check-pretty-all.outcome }}
+          echo fail ${{ failure() }}
+          echo always ${{ always() }}
 
       - name: Fix pretty (changed files)
         if: github.event_name == 'pull_request' && steps.check-pretty.conclusion == 'failure'
