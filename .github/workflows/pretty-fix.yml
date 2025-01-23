@@ -5,7 +5,8 @@ env:
   NODE_VERSION: "20.16.0"
 
 permissions:
-  contents: write
+  contents: read
+  pull-requests: write
 
 on:
   pull_request_target:
