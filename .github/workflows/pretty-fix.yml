@@ -64,7 +64,6 @@ jobs:
           branch: ${{ github.event.pull_request.head.ref }}
 
       - name: Remove label
-        uses: PauMAVA/add-remove-label-action@v1.0.3
+        uses: actions-ecosystem/action-remove-labels@v1
         with:
-          issue_number: ${{ github.event.pull_request.number }}
-          remove: "prettify"
+          labels: prettify
