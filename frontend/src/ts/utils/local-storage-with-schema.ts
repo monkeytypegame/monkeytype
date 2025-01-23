@@ -1,6 +1,5 @@
 import { ZodError, ZodIssue } from "zod";
 import { deepClone } from "./misc";
-import { parseWithSchema as parseJsonWithSchema } from "@monkeytype/util/json";
 
 export class LocalStorageWithSchema<T> {
   private key: string;
@@ -29,7 +28,7 @@ export class LocalStorageWithSchema<T> {
 
     let jsonParsed: unknown;
     try {
-      jsonParsed = parseJsonWithSchema(value, this.schema);
+      jsonParsed = JSON.parse(value);
     } catch (e) {
       console.log(
         `Value from localStorage ${this.key} was not a valid JSON, using fallback`,

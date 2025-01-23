@@ -11,15 +11,12 @@ import { z } from "zod";
 
 let analytics: AnalyticsType;
 
-type AcceptedCookies = {
-  security: boolean;
-  analytics: boolean;
-};
-
 const acceptedCookiesSchema = z.object({
   security: z.boolean(),
   analytics: z.boolean(),
 });
+
+type AcceptedCookies = z.infer<typeof acceptedCookiesSchema>; // Updated type inference
 
 export async function log(
   eventName: string,
@@ -33,13 +30,10 @@ export async function log(
 }
 
 const lsString = localStorage.getItem("acceptedCookies");
-let acceptedCookies;
+let acceptedCookies: AcceptedCookies | null;
 if (lsString !== undefined && lsString !== null && lsString !== "") {
   try {
-    acceptedCookies = parseJsonWithSchema(
-      lsString,
-      acceptedCookiesSchema
-    ) as AcceptedCookies;
+    acceptedCookies = parseJsonWithSchema(lsString, acceptedCookiesSchema);
   } catch (e) {
     console.error("Failed to parse accepted cookies:", e);
     acceptedCookies = null;

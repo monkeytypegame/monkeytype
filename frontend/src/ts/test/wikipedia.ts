@@ -243,6 +243,18 @@ type SectionObject = {
   author: string;
 };
 
+// Section Schema
+const sectionSchema = z.object({
+  query: z.object({
+    pages: z.record(
+      z.string(),
+      z.object({
+        extract: z.string(),
+      })
+    ),
+  }),
+});
+
 export async function getSection(language: string): Promise<JSONData.Section> {
   // console.log("Getting section");
   Loader.show();
@@ -287,19 +299,6 @@ export async function getSection(language: string): Promise<JSONData.Section> {
     sectionReq.onload = (): void => {
       if (sectionReq.readyState === 4) {
         if (sectionReq.status === 200) {
-          // Section Schema
-          const sectionSchema = z.object({
-            query: z.object({
-              pages: z.record(
-                z.string(),
-                z.object({
-                  extract: z.string(),
-                })
-              ),
-            }),
-          });
-
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
           const parsedResponse = parseJsonWithSchema(
             sectionReq.responseText,
             sectionSchema

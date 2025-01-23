@@ -38,10 +38,11 @@ $(accountPage).on("click", ".editProfileButton", () => {
   EditProfileModal.show();
 });
 
+const tagsArraySchema = z.array(z.string());
+
 $(accountPage).on("click", ".group.history .resultEditTagsButton", (e) => {
   const resultid = $(e.target).attr("data-result-id");
   const tags = $(e.target).attr("data-tags");
-  const tagsArraySchema = z.array(z.string());
 
   EditResultTagsModal.show(
     resultid ?? "",

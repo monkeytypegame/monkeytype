@@ -13,8 +13,6 @@ import { restart as restartTest } from "../test/test-logic";
 import * as ChallengeController from "../controllers/challenge-controller";
 import {
   DifficultySchema,
-  Mode,
-  Mode2,
   Mode2Schema,
   ModeSchema,
 } from "@monkeytype/contracts/schemas/shared";
@@ -25,7 +23,6 @@ import {
   CustomBackgroundSizeSchema,
   CustomThemeColors,
   CustomThemeColorsSchema,
-  Difficulty,
 } from "@monkeytype/contracts/schemas/configs";
 import { z } from "zod";
 import { parseWithSchema as parseJsonWithSchema } from "@monkeytype/util/json";
@@ -135,38 +132,34 @@ export function loadCustomThemeFromUrl(getOverride?: string): void {
   }
 }
 
-type SharedTestSettings = [
-  Mode | null,
-  Mode2<Mode> | null,
-  CustomText.CustomTextData | null,
-  boolean | null,
-  boolean | null,
-  string | null,
-  Difficulty | null,
-  string | null
-];
+const testSettingsSchema = z.tuple([
+  ModeSchema.nullable(), // Replaces z.union([ModeSchema, z.null()])
+  Mode2Schema.nullable(),
+  CustomText.CustomTextDataSchema.nullable(),
+  z.boolean().nullable(),
+  z.boolean().nullable(),
+  z.string().nullable(),
+  DifficultySchema.nullable(),
+  z.string().nullable(),
+]);
+
+type SharedTestSettings = z.infer<typeof testSettingsSchema>;
 
 export function loadTestSettingsFromUrl(getOverride?: string): void {
   const getValue = Misc.findGetParameter("testSettings", getOverride);
   if (getValue === null) return;
 
-  const testSettingsSchema = z.tuple([
-    z.union([ModeSchema, z.null()]), // Mode | null
-    z.union([Mode2Schema, z.null()]), // Mode2<Mode> | null
-    z.union([CustomText.customTextDataSchema, z.null()]), // CustomTextData | null
-    z.union([z.boolean(), z.null()]), // boolean | null
-    z.union([z.boolean(), z.null()]), // boolean | null
-    z.union([z.string(), z.null()]), // string | null
-    z.union([DifficultySchema, z.null()]), // Difficulty | null
-    z.union([z.string(), z.null()]), // string | null
-  ]);
-
   let de: SharedTestSettings;
   try {
     const decompressed = decompressFromURI(getValue) ?? "";
-    de = testSettingsSchema.parse(
-      JSON.parse(decompressed)
-    ) as SharedTestSettings;
+    const parsed = parseJsonWithSchema(decompressed, testSettingsSchema);
+
+    // Ensure the second element (index 1) is a string or null
+    if (parsed[1] !== null && typeof parsed[1] === "number") {
+      parsed[1] = parsed[1].toString(); // Convert number to string
+    }
+
+    de = parsed as SharedTestSettings; // Assign after refinement
   } catch (e) {
     console.error("Failed to parse test settings:", e);
     Notifications.add(
