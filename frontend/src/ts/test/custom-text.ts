@@ -66,6 +66,13 @@ const customTextSettings = new LocalStorageWithSchema({
   },
 });
 
+export const customTextDataSchema = z.object({
+  text: z.array(z.string()),
+  mode: CustomTextModeSchema,
+  limit: z.object({ value: z.number(), mode: CustomTextLimitModeSchema }),
+  pipeDelimiter: z.boolean(),
+});
+
 export function getText(): string[] {
   return customTextSettings.get().text;
 }
