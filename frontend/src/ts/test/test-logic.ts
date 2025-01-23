@@ -79,7 +79,7 @@ export function clearNotSignedInResult(): void {
 
 export function setNotSignedInUidAndHash(uid: string): void {
   if (notSignedInLastResult === null) return;
-  notSignedInLastResult.uid = uid;
+notSignedInLastResult.uid = uid;
   //@ts-expect-error
   delete notSignedInLastResult.hash;
   notSignedInLastResult.hash = objectHash(notSignedInLastResult);
