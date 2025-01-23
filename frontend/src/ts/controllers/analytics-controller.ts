@@ -6,6 +6,8 @@ import {
 } from "firebase/analytics";
 import { app as firebaseApp } from "../firebase";
 import { createErrorMessage } from "../utils/misc";
+import { parseWithSchema as parseJsonWithSchema } from "@monkeytype/util/json";
+import { z } from "zod";
 
 let analytics: AnalyticsType;
 
@@ -13,6 +15,11 @@ type AcceptedCookies = {
   security: boolean;
   analytics: boolean;
 };
+
+const acceptedCookiesSchema = z.object({
+  security: z.boolean(),
+  analytics: z.boolean(),
+});
 
 export async function log(
   eventName: string,
@@ -28,7 +35,15 @@ export async function log(
 const lsString = localStorage.getItem("acceptedCookies");
 let acceptedCookies;
 if (lsString !== undefined && lsString !== null && lsString !== "") {
-  acceptedCookies = JSON.parse(lsString) as AcceptedCookies;
+  try {
+    acceptedCookies = parseJsonWithSchema(
+      lsString,
+      acceptedCookiesSchema
+    ) as AcceptedCookies;
+  } catch (e) {
+    console.error("Failed to parse accepted cookies:", e);
+    acceptedCookies = null;
+  }
 } else {
   acceptedCookies = null;
 }

@@ -5,6 +5,8 @@ import { isAuthenticated } from "../firebase";
 import * as Notifications from "../elements/notifications";
 import * as EditResultTagsModal from "../modals/edit-result-tags";
 import * as AddFilterPresetModal from "../modals/new-filter-preset";
+import { parseWithSchema as parseJsonWithSchema } from "@monkeytype/util/json";
+import { z } from "zod";
 
 const accountPage = document.querySelector("#pageAccount") as HTMLElement;
 
@@ -39,9 +41,11 @@ $(accountPage).on("click", ".editProfileButton", () => {
 $(accountPage).on("click", ".group.history .resultEditTagsButton", (e) => {
   const resultid = $(e.target).attr("data-result-id");
   const tags = $(e.target).attr("data-tags");
+  const tagsArraySchema = z.array(z.string());
+
   EditResultTagsModal.show(
     resultid ?? "",
-    JSON.parse(tags ?? "[]") as string[],
+    parseJsonWithSchema(tags ?? "[]", tagsArraySchema),
     "accountPage"
   );
 });
