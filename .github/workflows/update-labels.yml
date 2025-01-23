@@ -1,5 +1,9 @@
 name: Check labels to update
 
+permissions:
+  actions: read
+  pull-requests: read
+
 on:
   pull_request_target:
     types:
