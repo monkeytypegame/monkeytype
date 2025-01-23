@@ -1,6 +1,7 @@
 name: Prettier Check
 
 env:
+  PNPM_VERSION: "9.6.0"
   NODE_VERSION: "20.16.0"
 
 on:
@@ -29,7 +30,6 @@ jobs:
 
       - name: Install prettier
         run: pnpm add -g prettier@2.8.8
-
 
       - name: Get changed files
         id: get-changed-files
