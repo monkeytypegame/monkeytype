@@ -9,9 +9,8 @@ on:
     types: [opened, reopened, synchronize, ready_for_review]
 
 jobs:
-  check-prettier:
+  check:
     if: github.event.pull_request.draft == false || contains(github.event.pull_request.labels.*.name, 'force-ci') || contains(github.event.pull_request.labels.*.name, 'force-full-ci')
-    name: Check Prettier
     runs-on: ubuntu-latest
 
     steps:
