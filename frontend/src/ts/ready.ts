@@ -12,7 +12,6 @@ import { loadPromise } from "./config";
 
 $(async (): Promise<void> => {
   await loadPromise;
-  Misc.loadCSS("/css/slimselect.min.css", true);
   Misc.loadCSS("/css/balloon.min.css", true);
 
   CookiesModal.check();
