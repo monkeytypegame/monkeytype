@@ -32,8 +32,28 @@ jobs:
       - name: Install prettier
         run: pnpm add -g prettier@2.8.8
 
+      - name: Get changed files
+        id: get-changed-files
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const changedFiles = await github.paginate(
+              github.rest.pulls.listFiles,
+              {
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: context.payload.pull_request.number,
+              }
+            );
+            return changedFiles.filter(file=> file.status !== "removed").map(file => file.filename).join(' ');
+
+
       - name: Run Prettier fix
-        run: pnpm prettier --write .
+        run: |
+          CHANGED_FILES=$(echo ${{ steps.get-changed-files.outputs.result }})
+          if [ -n "$CHANGED_FILES" ]; then
+            pnpm prettier --write $CHANGED_FILES
+          fi
 
       - name: Commit changes
         uses: stefanzweifel/git-auto-commit-action@v5
@@ -41,13 +61,7 @@ jobs:
           commit_message: "prettier fix"
 
       - name: Remove label
-        uses: actions/github-script@v7
+        uses: PauMAVA/add-remove-label-action@v1.0.3
         with:
-          script: |
-            const { context, github } = require('@actions/github');
-            await github.rest.issues.removeLabel({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: context.issue.number,
-              name: 'prettify'
-            });
+          issue_number: ${{ github.event.pull_request.number }}
+          remove: "prettify"
