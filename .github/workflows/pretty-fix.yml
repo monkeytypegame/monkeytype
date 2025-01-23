@@ -38,9 +38,9 @@ jobs:
       - name: Commit changes
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          commit_message: "chore: prettier fix"
+          commit_message: "prettier fix"
 
-      - name: Remove prettify label
+      - name: Remove label
         uses: actions/github-script@v7
         with:
           script: |
