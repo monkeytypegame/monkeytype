@@ -135,7 +135,7 @@ export function loadCustomThemeFromUrl(getOverride?: string): void {
 const testSettingsSchema = z.tuple([
   ModeSchema.nullable(), // Replaces z.union([ModeSchema, z.null()])
   Mode2Schema.nullable(),
-  CustomText.CustomTextDataSchema.nullable(),
+  CustomText.CustomTextSettingsSchema.nullable(),
   z.boolean().nullable(),
   z.boolean().nullable(),
   z.string().nullable(),
@@ -153,12 +153,6 @@ export function loadTestSettingsFromUrl(getOverride?: string): void {
   try {
     const decompressed = decompressFromURI(getValue) ?? "";
     const parsed = parseJsonWithSchema(decompressed, testSettingsSchema);
-
-    // Ensure the second element (index 1) is a string or null
-    if (parsed[1] !== null && typeof parsed[1] === "number") {
-      parsed[1] = parsed[1].toString(); // Convert number to string
-    }
-
     de = parsed as SharedTestSettings; // Assign after refinement
   } catch (e) {
     console.error("Failed to parse test settings:", e);

@@ -38,7 +38,7 @@ $(accountPage).on("click", ".editProfileButton", () => {
   EditProfileModal.show();
 });
 
-const tagsArraySchema = z.array(z.string());
+const TagsArraySchema = z.array(z.string());
 
 $(accountPage).on("click", ".group.history .resultEditTagsButton", (e) => {
   const resultid = $(e.target).attr("data-result-id");
@@ -46,7 +46,7 @@ $(accountPage).on("click", ".group.history .resultEditTagsButton", (e) => {
 
   EditResultTagsModal.show(
     resultid ?? "",
-    parseJsonWithSchema(tags ?? "[]", tagsArraySchema),
+    parseJsonWithSchema(tags ?? "[]", TagsArraySchema),
     "accountPage"
   );
 });

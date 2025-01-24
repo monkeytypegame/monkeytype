@@ -244,7 +244,7 @@ type SectionObject = {
 };
 
 // Section Schema
-const sectionSchema = z.object({
+const SectionSchema = z.object({
   query: z.object({
     pages: z.record(
       z.string(),
@@ -301,7 +301,7 @@ export async function getSection(language: string): Promise<JSONData.Section> {
         if (sectionReq.status === 200) {
           const parsedResponse = parseJsonWithSchema(
             sectionReq.responseText,
-            sectionSchema
+            SectionSchema
           );
           const page = parsedResponse.query.pages[pageid.toString()];
           if (!page) {

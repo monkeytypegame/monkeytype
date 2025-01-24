@@ -29,7 +29,7 @@ const customTextLongLS = new LocalStorageWithSchema({
   fallback: {},
 });
 
-const CustomTextSettingsSchema = z.object({
+export const CustomTextSettingsSchema = z.object({
   text: z.array(z.string()),
   mode: CustomTextModeSchema,
   limit: z.object({ value: z.number(), mode: CustomTextLimitModeSchema }),
@@ -65,9 +65,6 @@ const customTextSettings = new LocalStorageWithSchema({
     return migratedData;
   },
 });
-
-// reassigned to CustomTextSettingsSchema
-export const CustomTextDataSchema = CustomTextSettingsSchema;
 
 export function getText(): string[] {
   return customTextSettings.get().text;
