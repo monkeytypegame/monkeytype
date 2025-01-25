@@ -1,42 +1,41 @@
 {
-    "language": "azerbaijani",
-    "groups": [
-      [0, 100],
-      [101, 300],
-      [301, 600],
-      [601, 9999]
-    ],
-    "quotes": [
-      {
-        "text": "Yalnız Azərbaycanda deyil, bütün İslam dünyasında ilk opera 1907-ci ildə Üzeyir Hacıbəyov tərəfindən yazılmışdır. Müəllif xatırlayırdı ki, uşaqlıqda Şuşada gördüyü \"Məcnun Leylinin məzarında\" tamaşası ona çox təsir etmişdir. O vaxt on üç yaşında olan Üzeyir də Əbbdurrəhim bəy Haqverdiyevin tamaşasında oynayır, xorda mahnılar oxuyurdu.",
-        "source": "https://az.urban.az/hero/uzeyir-hacibeyovun-6-boyuk-eseri-6593",
-        "length": 336,
-        "id": 1
-      },
-      {
-        "text": "Bir kərə yüksələn bayraq bir daha enməz!",
-        "source": "Məhəmməd Əmin Rəsulzadə",
-        "length": 39,
-        "id": 2
-      },
-      {
-        "text": "Kəşfindən keçən qısa müddət ərzində Neptun Leveryenin planeti ya da Uranın orbitinin xaricində yerləşən planet olaraq tanınırdı. Adla bağlı ilk təklif İohann Qotfrid Qal tərəfindən edilmişdir. O, Yanus adını təklif edirdi. İngiltərədə isə Ceyms Şali tərəfindən Okean adı təklif edilmişdir.",
-        "source": "Vikipediya: Neptun (planeti)",
-        "length": 289,
-        "id": 3
-      },
-      {
-        "text": "\"Su\" sözünün ilkin forması Göytürk dilində \"Sub\" şəklində tələffüz olunurdu. Zamanla son hərfinin düşməsi ilə, Azərbaycan dilində də istifadə edilməyə davam edir.",
-        "source": "Vikipediya: Su",
-        "length": 161,
-        "id": 4
-      },
-      {
-        "text": "Kotlin sənədinin ən üst səviyyəsində yalnız idxal və bəyannamələr mövcud ola bilər. Buna görə fərdi bir faylın \"işlədilməsi\" yalnız bir giriş nöqtəsi olduqda məna kəsb edir, hansı ki, \"array strings\" tipli args adlı bir dəlil ilə əsas deyilən bir funksiya olmalıdır.",
-        "source": "Vikipediya: Kotlin proqramlaşdırma dili",
-        "length": 266,
-        "id": 5
-      }
-    ]
-  }
-  
+  "language": "azerbaijani",
+  "groups": [
+    [0, 100],
+    [101, 300],
+    [301, 600],
+    [601, 9999]
+  ],
+  "quotes": [
+    {
+      "text": "Yalnız Azərbaycanda deyil, bütün İslam dünyasında ilk opera 1907-ci ildə Üzeyir Hacıbəyov tərəfindən yazılmışdır. Müəllif xatırlayırdı ki, uşaqlıqda Şuşada gördüyü \"Məcnun Leylinin məzarında\" tamaşası ona çox təsir etmişdir. O vaxt on üç yaşında olan Üzeyir də Əbbdurrəhim bəy Haqverdiyevin tamaşasında oynayır, xorda mahnılar oxuyurdu.",
+      "source": "https://az.urban.az/hero/uzeyir-hacibeyovun-6-boyuk-eseri-6593",
+      "length": 336,
+      "id": 1
+    },
+    {
+      "text": "Bir kərə yüksələn bayraq bir daha enməz!",
+      "source": "Məhəmməd Əmin Rəsulzadə",
+      "length": 39,
+      "id": 2
+    },
+    {
+      "text": "Kəşfindən keçən qısa müddət ərzində Neptun Leveryenin planeti ya da Uranın orbitinin xaricində yerləşən planet olaraq tanınırdı. Adla bağlı ilk təklif İohann Qotfrid Qal tərəfindən edilmişdir. O, Yanus adını təklif edirdi. İngiltərədə isə Ceyms Şali tərəfindən Okean adı təklif edilmişdir.",
+      "source": "Vikipediya: Neptun (planeti)",
+      "length": 289,
+      "id": 3
+    },
+    {
+      "text": "\"Su\" sözünün ilkin forması Göytürk dilində \"Sub\" şəklində tələffüz olunurdu. Zamanla son hərfinin düşməsi ilə, Azərbaycan dilində də istifadə edilməyə davam edir.",
+      "source": "Vikipediya: Su",
+      "length": 161,
+      "id": 4
+    },
+    {
+      "text": "Kotlin sənədinin ən üst səviyyəsində yalnız idxal və bəyannamələr mövcud ola bilər. Buna görə fərdi bir faylın \"işlədilməsi\" yalnız bir giriş nöqtəsi olduqda məna kəsb edir, hansı ki, \"array strings\" tipli args adlı bir dəlil ilə əsas deyilən bir funksiya olmalıdır.",
+      "source": "Vikipediya: Kotlin proqramlaşdırma dili",
+      "length": 266,
+      "id": 5
+    }
+  ]
+}
