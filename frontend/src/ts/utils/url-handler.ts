@@ -132,18 +132,18 @@ export function loadCustomThemeFromUrl(getOverride?: string): void {
   }
 }
 
-const testSettingsSchema = z.tuple([
-  ModeSchema.nullable(), // Replaces z.union([ModeSchema, z.null()])
+const TestSettingsSchema = z.tuple([
+  ModeSchema.nullable(),
   Mode2Schema.nullable(),
   CustomText.CustomTextSettingsSchema.nullable(),
-  z.boolean().nullable(),
-  z.boolean().nullable(),
-  z.string().nullable(),
+  z.boolean().nullable(), //punctuation
+  z.boolean().nullable(), //numbers
+  z.string().nullable(), //language
   DifficultySchema.nullable(),
-  z.string().nullable(),
+  z.string().nullable(), //funbox
 ]);
 
-type SharedTestSettings = z.infer<typeof testSettingsSchema>;
+type SharedTestSettings = z.infer<typeof TestSettingsSchema>;
 
 export function loadTestSettingsFromUrl(getOverride?: string): void {
   const getValue = Misc.findGetParameter("testSettings", getOverride);
@@ -152,7 +152,7 @@ export function loadTestSettingsFromUrl(getOverride?: string): void {
   let de: SharedTestSettings;
   try {
     const decompressed = decompressFromURI(getValue) ?? "";
-    const parsed = parseJsonWithSchema(decompressed, testSettingsSchema);
+    const parsed = parseJsonWithSchema(decompressed, TestSettingsSchema);
     de = parsed as SharedTestSettings; // Assign after refinement
   } catch (e) {
     console.error("Failed to parse test settings:", e);
