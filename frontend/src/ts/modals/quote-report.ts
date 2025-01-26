@@ -60,11 +60,6 @@ export async function show(
 async function hide(clearChain = false): Promise<void> {
   void modal.hide({
     clearModalChain: clearChain,
-    afterAnimation: async () => {
-      CaptchaController.reset("quoteReportModal");
-      state.reasonSelect?.destroy();
-      state.reasonSelect = undefined;
-    },
   });
 }
 
@@ -131,7 +126,14 @@ async function setup(modalEl: HTMLElement): Promise<void> {
   });
 }
 
+async function cleanup(): Promise<void> {
+  CaptchaController.reset("quoteReportModal");
+  state.reasonSelect?.destroy();
+  state.reasonSelect = undefined;
+}
+
 const modal = new AnimatedModal({
   dialogId: "quoteReportModal",
   setup,
+  cleanup,
 });

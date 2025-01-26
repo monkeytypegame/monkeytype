@@ -10,7 +10,7 @@
   },
   "devDependencies": {
     "@monkeytype/eslint-config": "workspace:*",
-    "eslint": "8.57.0",
+    "eslint": "8.57.1",
     "nodemon": "3.1.4"
   },
   "bin": {
