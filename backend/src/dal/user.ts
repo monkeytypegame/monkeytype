@@ -36,6 +36,7 @@ import { addImportantLog } from "./logs";
 import { Result as ResultType } from "@monkeytype/contracts/schemas/results";
 import { Configuration } from "@monkeytype/contracts/schemas/configuration";
 import { isToday, isYesterday } from "@monkeytype/util/date-and-time";
+import GeorgeQueue from "../queues/george-queue";
 
 export type DBUserTag = WithObjectId<UserTag>;
 
@@ -843,6 +844,7 @@ export async function recordAutoBanEvent(
   const user = await getPartialUser(uid, "record auto ban event", [
     "banned",
     "autoBanTimestamps",
+    "discordId",
   ]);
 
   let ret = false;
@@ -878,6 +880,13 @@ export async function recordAutoBanEvent(
     { autoBanTimestamps, banningUser },
     uid
   );
+
+  const discordIdIsValid =
+    user.discordId !== undefined && user.discordId !== "";
+  if (discordIdIsValid) {
+    await GeorgeQueue.userBanned(user.discordId as string, true);
+  }
+
   return ret;
 }
 
