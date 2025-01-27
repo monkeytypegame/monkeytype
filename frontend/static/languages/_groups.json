@@ -439,7 +439,7 @@
   },
   {
     "name": "nepali",
-    "languages": ["nepali", "nepali_1k"]
+    "languages": ["nepali", "nepali_1k", "nepali_romanized"]
   },
   {
     "name": "santali",
