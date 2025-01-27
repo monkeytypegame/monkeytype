@@ -57,6 +57,13 @@ export function toggleFunbox(funbox: "none" | FunboxName): boolean {
     get(funbox as FunboxName).functions?.applyGlobalCSS?.();
   }
 
+  if (getActiveFunboxNames().includes("simon_says")) {
+    $("#testConfig .punctuationMode").addClass("disabled");
+    UpdateConfig.setPunctuation(false);
+  } else {
+    $("#testConfig .punctuationMode").removeClass("disabled");
+  }
+
   //todo find out what the hell this means
   if (e === false || e === true) return false;
   return true;
