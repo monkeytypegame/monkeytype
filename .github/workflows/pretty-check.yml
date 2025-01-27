@@ -1,0 +1,62 @@
+name: Prettier Check
+
+env:
+  PNPM_VERSION: "9.6.0"
+  NODE_VERSION: "20.16.0"
+
+on:
+  pull_request:
+    branches: [master]
+    types: [opened, reopened, synchronize, ready_for_review]
+  
+permissions:
+  contents: read
+
+concurrency:
+  group: group-pretty-check-${{ github.ref }}-${{ github.workflow }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    if: github.event.pull_request.draft == false || contains(github.event.pull_request.labels.*.name, 'force-ci') || contains(github.event.pull_request.labels.*.name, 'force-full-ci')
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Full checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Install prettier
+        run: pnpm add -g prettier@2.8.8
+
+      - name: Get changed files
+        id: get-changed-files
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const changedFiles = await github.paginate(
+              github.rest.pulls.listFiles,
+              {
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: context.payload.pull_request.number,
+              }
+            );
+            return changedFiles.filter(file=> file.status !== "removed").map(file => file.filename).join(' ');
+
+      - name: Check pretty (changed files)
+        run: |
+          CHANGED_FILES=$(echo ${{ steps.get-changed-files.outputs.result }})
+          if [ -n "$CHANGED_FILES" ]; then
+            pnpm prettier --check $CHANGED_FILES
+          fi
+      
