@@ -75,6 +75,11 @@
       .morestats {
         justify-self: unset;
         width: unset;
+
+        .group .bottom::after {
+          transform: none;
+          left: 0;
+        }
       }
       .buttons {
         grid-template-columns: 1fr 1fr;
