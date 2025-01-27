@@ -73,6 +73,7 @@
     "@monkeytype/funbox": "workspace:*",
     "@monkeytype/util": "workspace:*",
     "@ts-rest/core": "3.51.0",
+    "balloon-css": "1.2.0",
     "canvas-confetti": "1.5.1",
     "chart.js": "3.7.1",
     "chartjs-adapter-date-fns": "3.0.0",
