@@ -582,6 +582,10 @@
     ]
   },
   {
+    "name": "zulu",
+    "languages": ["zulu"]
+  },
+  {
     "name": "code",
     "languages": [
       "code_python",
