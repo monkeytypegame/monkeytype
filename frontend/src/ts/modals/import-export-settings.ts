@@ -3,6 +3,7 @@ import * as UpdateConfig from "../config";
 import * as Notifications from "../elements/notifications";
 import AnimatedModal from "../utils/animated-modal";
 import { migrateConfig } from "../utils/config";
+import { parseWithSchema as parseJsonWithSchema } from "@monkeytype/util/json";
 
 type State = {
   mode: "import" | "export";
@@ -47,8 +48,9 @@ const modal = new AnimatedModal({
         return;
       }
       try {
-        const parsedConfig = PartialConfigSchema.strip().parse(
-          JSON.parse(state.value)
+        const parsedConfig = parseJsonWithSchema(
+          state.value,
+          PartialConfigSchema.strip()
         );
         await UpdateConfig.apply(migrateConfig(parsedConfig));
       } catch (e) {

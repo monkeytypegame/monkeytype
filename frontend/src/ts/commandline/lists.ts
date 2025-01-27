@@ -108,6 +108,7 @@ import * as FPSCounter from "../elements/fps-counter";
 import { migrateConfig } from "../utils/config";
 import { PartialConfigSchema } from "@monkeytype/contracts/schemas/configs";
 import { Command, CommandsSubgroup } from "./types";
+import { parseWithSchema as parseJsonWithSchema } from "@monkeytype/util/json";
 
 const layoutsPromise = JSONData.getLayoutsList();
 layoutsPromise
@@ -362,8 +363,9 @@ export const commands: CommandsSubgroup = {
       exec: async ({ input }): Promise<void> => {
         if (input === undefined || input === "") return;
         try {
-          const parsedConfig = PartialConfigSchema.strip().parse(
-            JSON.parse(input)
+          const parsedConfig = parseJsonWithSchema(
+            input,
+            PartialConfigSchema.strip()
           );
           await UpdateConfig.apply(migrateConfig(parsedConfig));
           UpdateConfig.saveFullConfigToLocalStorage();
