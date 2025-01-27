@@ -55,9 +55,15 @@ jobs:
               - 'packages/**/*'
             anti-cheat:
               - 'backend/**/anticheat/**'
+            workflows:
+              - '.github/workflows/**/*'
 
       - name: Check Anti-cheat
         if: steps.filter.outputs.anti-cheat == 'true'
+        run: exit 1
+
+      - name: Check Workflow Changes
+        if: steps.filter.outputs.workflows == 'true' && !contains(github.event.pull_request.labels.*.name, 'force-ci') && !contains(github.event.pull_request.labels.*.name, 'force-full-ci')
         run: exit 1
 
       - name: Export changes
