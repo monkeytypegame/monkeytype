@@ -9,6 +9,10 @@ on:
     branches: [master]
     types: [opened, reopened, synchronize, ready_for_review]
 
+concurrency:
+  group: group-pretty-check-${{ github.ref }}-${{ github.workflow }}
+  cancel-in-progress: true
+
 jobs:
   check:
     if: github.event.pull_request.draft == false || contains(github.event.pull_request.labels.*.name, 'force-ci') || contains(github.event.pull_request.labels.*.name, 'force-full-ci')
