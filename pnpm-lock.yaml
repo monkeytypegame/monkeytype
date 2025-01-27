@@ -279,6 +279,9 @@ importers:
       '@ts-rest/core':
         specifier: 3.51.0
         version: 3.51.0(@types/node@20.14.11)(zod@3.23.8)
+      balloon-css:
+        specifier: 1.2.0
+        version: 1.2.0
       canvas-confetti:
         specifier: 1.5.1
         version: 1.5.1
@@ -3551,6 +3554,9 @@ packages:
 
   balanced-match@1.0.2:
     resolution: {integrity: sha512-3oSeUO0TMV67hN1AmbXsK4yaqU7tjiHlbxRDZOpH0KW9+CeX4bRAaX0Anxt0tx2MrpRpWwQaPwIlISEJhYU5Pw==}
+
+  balloon-css@1.2.0:
+    resolution: {integrity: sha512-urXwkHgwp6GsXVF+it01485Z2Cj4pnW02ICnM0TemOlkKmCNnDLmyy+ZZiRXBpwldUXO+aRNr7Hdia4CBvXJ5A==}
 
   bare-events@2.4.2:
     resolution: {integrity: sha512-qMKFd2qG/36aA4GwvKq8MxnPgCQAmBWmSyLWsJcbn8v03wvIPQ/hG1Ms8bPzndZxMDoHpxez5VOS+gC9Yi24/Q==}
@@ -13118,6 +13124,8 @@ snapshots:
       now-and-later: 2.0.1
 
   balanced-match@1.0.2: {}
+
+  balloon-css@1.2.0: {}
 
   bare-events@2.4.2:
     optional: true

@@ -12,8 +12,6 @@ import { loadPromise } from "./config";
 
 $(async (): Promise<void> => {
   await loadPromise;
-  Misc.loadCSS("/css/balloon.min.css", true);
-
   CookiesModal.check();
 
   //this line goes back to pretty much the beginning of the project and im pretty sure its here
