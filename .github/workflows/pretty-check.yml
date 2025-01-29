@@ -1,26 +1,29 @@
-name: Prettier Fix
+name: Prettier Check
 
 env:
   PNPM_VERSION: "9.6.0"
   NODE_VERSION: "20.16.0"
 
-permissions:
-  contents: write
-  pull-requests: write
-
 on:
-  pull_request_target:
-    types: [labeled]
+  pull_request:
+    branches: [master]
+    types: [opened, reopened, synchronize, ready_for_review]
+  
+permissions:
+  contents: read
+
+concurrency:
+  group: group-pretty-check-${{ github.ref }}-${{ github.workflow }}
+  cancel-in-progress: true
 
 jobs:
-  prettify:
+  check:
+    if: github.event.pull_request.draft == false || contains(github.event.pull_request.labels.*.name, 'force-ci') || contains(github.event.pull_request.labels.*.name, 'force-full-ci')
     runs-on: ubuntu-latest
-    if: github.event.label.name == 'prettify'
+
     steps:
-      - name: Checkout code
+      - name: Full checkout
         uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event.pull_request.head.ref }}
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -50,21 +53,10 @@ jobs:
             );
             return changedFiles.filter(file=> file.status !== "removed").map(file => file.filename).join(' ');
 
-
-      - name: Run Prettier fix
+      - name: Check pretty (changed files)
         run: |
           CHANGED_FILES=$(echo ${{ steps.get-changed-files.outputs.result }})
           if [ -n "$CHANGED_FILES" ]; then
-            pnpm prettier --write $CHANGED_FILES
+            pnpm prettier --check $CHANGED_FILES
           fi
-
-      - name: Commit changes
-        uses: stefanzweifel/git-auto-commit-action@v5
-        with:
-          commit_message: "prettier fix"
-          branch: ${{ github.event.pull_request.head.ref }}
-
-      - name: Remove label
-        uses: actions-ecosystem/action-remove-labels@v1
-        with:
-          labels: prettify
+      

@@ -101,6 +101,7 @@ const obj = {
   lazyMode: false,
   showAverage: "off",
   tapeMode: "off",
+  tapeMargin: 50,
   maxLineWidth: 0,
 } as Config;
 

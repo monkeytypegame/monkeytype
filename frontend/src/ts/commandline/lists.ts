@@ -51,6 +51,7 @@ import TimerColorCommands from "./lists/timer-color";
 import TimerOpacityCommands from "./lists/timer-opacity";
 import HighlightModeCommands from "./lists/highlight-mode";
 import TapeModeCommands from "./lists/tape-mode";
+import TapeMarginCommands from "./lists/tape-margin";
 import BritishEnglishCommands from "./lists/british-english";
 import KeymapModeCommands from "./lists/keymap-mode";
 import KeymapStyleCommands from "./lists/keymap-style";
@@ -273,6 +274,7 @@ export const commands: CommandsSubgroup = {
     ...TimerOpacityCommands,
     ...HighlightModeCommands,
     ...TapeModeCommands,
+    ...TapeMarginCommands,
     ...SmoothLineScrollCommands,
     ...ShowAllLinesCommands,
     ...TypingSpeedUnitCommands,

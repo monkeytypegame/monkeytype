@@ -1,6 +1,10 @@
 import { z } from "zod";
 import { IdSchema, TagSchema } from "./util";
-import { PartialConfigSchema } from "./configs";
+import {
+  ConfigGroupName,
+  ConfigGroupNameSchema,
+  PartialConfigSchema,
+} from "./configs";
 
 export const PresetNameSchema = z
   .string()
@@ -11,28 +15,15 @@ export type PresentName = z.infer<typeof PresetNameSchema>;
 export const PresetTypeSchema = z.enum(["full", "partial"]);
 export type PresetType = z.infer<typeof PresetTypeSchema>;
 
-export const PresetSettingGroupSchema = z.enum([
-  "test",
-  "behavior",
-  "input",
-  "sound",
-  "caret",
-  "appearance",
-  "theme",
-  "hideElements",
-  "ads",
-  "hidden",
-]);
-export type PresetSettingGroup = z.infer<typeof PresetSettingGroupSchema>;
-export const ActiveSettingGroupsSchema = z
-  .array(PresetSettingGroupSchema)
+const PresetSettingsGroupsSchema = z
+  .array(ConfigGroupNameSchema)
   .min(1)
   .superRefine((settingList, ctx) => {
-    PresetSettingGroupSchema.options.forEach(
-      (presetSettingGroup: PresetSettingGroup) => {
+    ConfigGroupNameSchema.options.forEach(
+      (presetSettingGroup: ConfigGroupName) => {
         const duplicateElemExits: boolean =
           settingList.filter(
-            (settingGroup: PresetSettingGroup) =>
+            (settingGroup: ConfigGroupName) =>
               settingGroup === presetSettingGroup
           ).length > 1;
         if (duplicateElemExits) {
@@ -44,12 +35,11 @@ export const ActiveSettingGroupsSchema = z
       }
     );
   });
-export type ActiveSettingGroups = z.infer<typeof ActiveSettingGroupsSchema>;
 
 export const PresetSchema = z.object({
   _id: IdSchema,
   name: PresetNameSchema,
-  settingGroups: ActiveSettingGroupsSchema.nullable().optional(),
+  settingGroups: PresetSettingsGroupsSchema.nullable().optional(),
   config: PartialConfigSchema.extend({
     tags: z.array(TagSchema).optional(),
   }),
