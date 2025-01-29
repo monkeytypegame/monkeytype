@@ -881,10 +881,12 @@ export async function recordAutoBanEvent(
     uid
   );
 
-  const discordIdIsValid =
-    user.discordId !== undefined && user.discordId !== "";
-  if (discordIdIsValid) {
-    await GeorgeQueue.userBanned(user.discordId as string, true);
+  if (banningUser) {
+    const discordIdIsValid =
+      user.discordId !== undefined && user.discordId !== "";
+    if (discordIdIsValid) {
+      await GeorgeQueue.userBanned(user.discordId as string, true);
+    }
   }
 
   return ret;
