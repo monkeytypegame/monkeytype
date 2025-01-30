@@ -1251,5 +1251,12 @@
     "mainColor": "#bef0ff",
     "subColor": "#fe9841",
     "textColor": "#dbdeeb"
+  },
+  {
+    "name": "007",
+    "bgColor": "#000304",
+    "mainColor": "#BD9F61",
+    "subColor": "#29344D",
+    "textColor": "#ECF0EF"
   }
 ]
