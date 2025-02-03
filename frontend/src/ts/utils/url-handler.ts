@@ -152,8 +152,7 @@ export function loadTestSettingsFromUrl(getOverride?: string): void {
   let de: SharedTestSettings;
   try {
     const decompressed = decompressFromURI(getValue) ?? "";
-    const parsed = parseJsonWithSchema(decompressed, TestSettingsSchema);
-    de = parsed as SharedTestSettings; // Assign after refinement
+    de = parseJsonWithSchema(decompressed, TestSettingsSchema);
   } catch (e) {
     console.error("Failed to parse test settings:", e);
     Notifications.add(
