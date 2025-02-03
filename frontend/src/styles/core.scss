@@ -28,6 +28,9 @@
     var(--caret-color) 20%,
     transparent
   );
+
+  --balloon-font-size: 1rem;
+  --balloon-border-radius: calc(var(--roundness) / 2);
 }
 
 ::placeholder {
@@ -417,4 +420,11 @@ key {
   &.error {
     color: var(--error-color);
   }
+}
+
+// mouseover texts
+[aria-label][data-balloon-pos]:after {
+  font-family: var(--font);
+  font-size: var(--balloon-font-size);
+  line-height: var(--balloon-font-size);
 }
