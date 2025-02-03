@@ -36,7 +36,7 @@ const CustomTextSettingsSchema = z.object({
   pipeDelimiter: z.boolean(),
 });
 
-type CustomTextSettings = z.infer<typeof CustomTextSettingsSchema>;
+export type CustomTextSettings = z.infer<typeof CustomTextSettingsSchema>;
 
 type CustomTextLimit = z.infer<typeof CustomTextSettingsSchema>["limit"];
 
