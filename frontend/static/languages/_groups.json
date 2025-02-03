@@ -439,7 +439,7 @@
   },
   {
     "name": "nepali",
-    "languages": ["nepali", "nepali_1k"]
+    "languages": ["nepali", "nepali_1k", "nepali_romanized"]
   },
   {
     "name": "santali",
@@ -580,6 +580,10 @@
       "occitan_5k",
       "occitan_10k"
     ]
+  },
+  {
+    "name": "zulu",
+    "languages": ["zulu"]
   },
   {
     "name": "code",

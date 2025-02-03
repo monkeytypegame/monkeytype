@@ -393,6 +393,8 @@ export async function updateCrown(dontSave: boolean): Promise<void> {
   let pbDiff = 0;
   const canGetPb = await resultCanGetPb();
 
+  console.debug("Result can get PB:", canGetPb.value, canGetPb.reason ?? "");
+
   if (canGetPb.value) {
     const localPb = await DB.getLocalPB(
       Config.mode,
@@ -406,10 +408,13 @@ export async function updateCrown(dontSave: boolean): Promise<void> {
     );
     const localPbWpm = localPb?.wpm ?? 0;
     pbDiff = result.wpm - localPbWpm;
+    console.debug("Local PB", localPb, "diff", pbDiff);
     if (pbDiff <= 0) {
       hideCrown();
+      console.debug("Hiding crown");
     } else {
       //show half crown as the pb is not confirmed by the server
+      console.debug("Showing pending crown");
       showCrown("pending");
       updateCrownText(
         "+" + Format.typingSpeed(pbDiff, { showDecimalPlaces: true })
@@ -428,14 +433,17 @@ export async function updateCrown(dontSave: boolean): Promise<void> {
     );
     const localPbWpm = localPb?.wpm ?? 0;
     pbDiff = result.wpm - localPbWpm;
+    console.debug("Local PB", localPb, "diff", pbDiff);
     if (pbDiff <= 0) {
       // hideCrown();
+      console.debug("Showing warning crown");
       showCrown("warning");
       updateCrownText(
         `This result is not eligible for a new PB (${canGetPb.reason})`,
         true
       );
     } else {
+      console.debug("Showing ineligible crown");
       showCrown("ineligible");
       updateCrownText(
         `You could've gotten a new PB (+${Format.typingSpeed(pbDiff, {
@@ -462,14 +470,10 @@ export function showErrorCrownIfNeeded(): void {
   );
 }
 
-type CanGetPbObject =
-  | {
-      value: true;
-    }
-  | {
-      value: false;
-      reason: string;
-    };
+type CanGetPbObject = {
+  value: boolean;
+  reason?: string;
+};
 
 async function resultCanGetPb(): Promise<CanGetPbObject> {
   const funboxes = result.funbox?.split("#") ?? [];
