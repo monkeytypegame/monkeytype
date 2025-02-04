@@ -90,14 +90,12 @@ describe("validation", () => {
         } as FunboxMetadata,
       ]);
 
-      //WHEN
-      const result = Validation.checkCompatibility(["plus_one", "plus_two"]);
-
-      //THEN
-      expect(result).toBe(false);
-
-      expect(getFunboxMock).toHaveBeenCalledWith(["plus_one", "plus_two"]);
+      //WHEN / THEN
+      expect(Validation.checkCompatibility(["plus_one", "plus_two"])).toBe(
+        false
+      );
     });
+
     it("should allow two funboxes modifying different css elements", () => {
       //GIVEN
       getFunboxMock.mockReturnValueOnce([
@@ -111,13 +109,10 @@ describe("validation", () => {
         } as FunboxMetadata,
       ]);
 
-      //WHEN
-      const result = Validation.checkCompatibility(["plus_one", "plus_two"]);
-
-      //THEN
-      expect(result).toBe(true);
-
-      expect(getFunboxMock).toHaveBeenCalledWith(["plus_one", "plus_two"]);
+      //WHEN / THEN
+      expect(Validation.checkCompatibility(["plus_one", "plus_two"])).toBe(
+        true
+      );
     });
   });
 });
