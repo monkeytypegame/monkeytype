@@ -9,12 +9,12 @@ export function checkCompatibility(
   if (funboxNames.length === 0) return true;
   let funboxesToCheck = getFunbox(funboxNames);
 
-  const allFunboxesAreValid = funboxesToCheck.every((f) => f !== undefined);
-  if (!allFunboxesAreValid) return false;
-
   if (withFunbox !== undefined) {
     funboxesToCheck = funboxesToCheck.concat(getFunbox(withFunbox));
   }
+
+  const allFunboxesAreValid = funboxesToCheck.every((f) => f !== undefined);
+  if (!allFunboxesAreValid) return false;
 
   const oneWordModifierMax =
     funboxesToCheck.filter(

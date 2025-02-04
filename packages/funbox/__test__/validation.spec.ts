@@ -10,7 +10,12 @@ describe("validation", () => {
       getFunboxMock.mockReset();
     });
 
-    it("should fail for undefined funboxes", () => {
+    it("should pass without funboxNames", () => {
+      //WHEN / THEN
+      expect(Validation.checkCompatibility([])).toBe(true);
+    });
+
+    it("should fail for undefined funboxNames", () => {
       //GIVEN
       getFunboxMock.mockReturnValueOnce([
         {
@@ -23,10 +28,21 @@ describe("validation", () => {
       expect(Validation.checkCompatibility(["plus_one", "plus_two"])).toBe(
         false
       );
-      //THEN
     });
 
-    it("should check for optional `withFunbox` ", () => {
+    it("should fail for undefined withFunbox param", () => {
+      //GIVEN
+      getFunboxMock
+        .mockReturnValueOnce([])
+        .mockReturnValue([undefined as unknown as FunboxMetadata]);
+
+      //WHEN / THEN
+      expect(
+        Validation.checkCompatibility(["plus_one", "plus_two"], "plus_three")
+      ).toBe(false);
+    });
+
+    it("should check for optional withFunbox param ", () => {
       //GIVEN
       getFunboxMock
         .mockReturnValueOnce([
