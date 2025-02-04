@@ -1,4 +1,4 @@
-import { ZodError, ZodIssue, ZodSchema } from "zod";
+import { z, ZodError, ZodIssue } from "zod";
 
 /**
  * Parse a JSON string into an object and validate it against a schema
@@ -6,11 +6,15 @@ import { ZodError, ZodIssue, ZodSchema } from "zod";
  * @param schema  Zod schema to validate the JSON against
  * @returns  The parsed JSON object
  */
-export function parseWithSchema<T>(json: string, schema: ZodSchema<T>): T {
+export function parseWithSchema<T extends z.ZodTypeAny>(
+  json: string,
+  schema: T
+): z.infer<T> {
   try {
     const jsonParsed = JSON.parse(json) as unknown;
-    const zodParsed = schema.parse(jsonParsed);
-    return zodParsed;
+    // hits is fine to ignore
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+    return schema.parse(jsonParsed) as z.infer<T>;
   } catch (error) {
     // instanceof ZodError is not working from our module
     if ((error as ZodError)["issues"] !== undefined) {
