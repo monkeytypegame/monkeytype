@@ -1251,5 +1251,12 @@
     "mainColor": "#bef0ff",
     "subColor": "#fe9841",
     "textColor": "#dbdeeb"
+  },
+  {
+    "name": "github",
+    "bgColor": "#212830",
+    "mainColor": "#41ce5c",
+    "subColor": "#788386",
+    "textColor": "#ccdae6"
   }
 ]
