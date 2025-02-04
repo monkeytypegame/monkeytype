@@ -72,6 +72,8 @@ export async function clear(): Promise<boolean> {
       ?.join(" ") ?? ""
   );
 
+  $(".funBoxTheme").remove();
+
   $("#wordsWrapper").removeClass("hidden");
   MemoryTimer.reset();
   ManualRestart.set();
