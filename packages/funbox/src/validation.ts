@@ -6,15 +6,15 @@ export function checkCompatibility(
   funboxNames: FunboxName[],
   withFunbox?: FunboxName
 ): boolean {
-  if (withFunbox === undefined || funboxNames.length === 0) return true;
+  if (funboxNames.length === 0) return true;
   let funboxesToCheck = getFunbox(funboxNames);
+
+  const allFunboxesAreValid = funboxesToCheck.every((f) => f !== undefined);
+  if (!allFunboxesAreValid) return false;
+
   if (withFunbox !== undefined) {
     funboxesToCheck = funboxesToCheck.concat(getFunbox(withFunbox));
   }
-
-  const allFunboxesAreValid = getFunbox(funboxNames).every(
-    (f) => f !== undefined
-  );
 
   const oneWordModifierMax =
     funboxesToCheck.filter(
@@ -139,7 +139,6 @@ export function checkCompatibility(
   }
 
   return (
-    allFunboxesAreValid &&
     oneWordModifierMax &&
     layoutUsability &&
     oneNospaceOrToPushMax &&
