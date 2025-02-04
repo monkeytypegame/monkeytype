@@ -86,6 +86,7 @@ const list: Record<FunboxName, FunboxMetadata> = {
     ],
     name: "choo_choo",
     description: "All the letters are spinning!",
+    cssModification: ["words"],
   },
   arrows: {
     description: "Play it on a pad!",
@@ -402,6 +403,7 @@ const list: Record<FunboxName, FunboxMetadata> = {
     canGetPb: true,
     frontendFunctions: ["alterText"],
     difficultyLevel: 3,
+    cssModification: ["words"],
   },
   ddoouubblleedd: {
     description: "TTyyppee eevveerryytthhiinngg ttwwiiccee..",
