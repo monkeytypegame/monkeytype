@@ -235,8 +235,8 @@ async function setFunboxBodyClasses(): Promise<boolean> {
 }
 
 async function applyFunboxCSS(): Promise<boolean> {
-  $(".funBoxTheme").map((_index, domElement) => domElement.remove());
-  getActiveFunboxes().forEach((funbox) => {
+  $(".funBoxTheme").remove();
+  for (const funbox of getActiveFunboxes()) {
     if (funbox.properties?.includes("hasCssFile")) {
       const css = document.createElement("link");
       css.classList.add("funBoxTheme");
@@ -244,7 +244,6 @@ async function applyFunboxCSS(): Promise<boolean> {
       css.href = "funbox/" + funbox.name + ".css";
       document.head.appendChild(css);
     }
-  });
-
+  }
   return true;
 }
