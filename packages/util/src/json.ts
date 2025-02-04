@@ -16,8 +16,11 @@ export function parseWithSchema<T extends z.ZodTypeAny>(
     // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     return schema.parse(jsonParsed) as z.infer<T>;
   } catch (error) {
-    if (error instanceof ZodError) {
-      throw new Error(error.issues.map(prettyErrorMessage).join("\n"));
+    // instanceof ZodError is not working from our module
+    if ((error as ZodError)["issues"] !== undefined) {
+      throw new Error(
+        (error as ZodError).issues.map(prettyErrorMessage).join("\n")
+      );
     } else {
       throw error;
     }
