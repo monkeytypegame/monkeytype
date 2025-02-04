@@ -67,7 +67,7 @@
     "lint-staged": "13.2.3",
     "only-allow": "1.2.1",
     "prettier": "2.8.8",
-    "turbo": "2.1.2",
+    "turbo": "2.3.3",
     "vitest": "2.0.5"
   },
   "lint-staged": {
@@ -79,6 +79,6 @@
       "eslint"
     ]
   },
-  "version": "24.49.0",
+  "version": "25.6.0",
   "packageManager": "pnpm@9.6.0"
 }

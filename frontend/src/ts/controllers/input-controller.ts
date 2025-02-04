@@ -425,12 +425,14 @@ function isCharCorrect(char: string, charIndex: number): boolean {
       char === "‘" ||
       char === "'" ||
       char === "ʼ" ||
-      char === "׳") &&
+      char === "׳" ||
+      char === "ʻ") &&
     (originalChar === "’" ||
       originalChar === "‘" ||
       originalChar === "'" ||
       originalChar === "ʼ" ||
-      originalChar === "׳")
+      originalChar === "׳" ||
+      originalChar === "ʻ")
   ) {
     return true;
   }

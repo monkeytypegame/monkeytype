@@ -38,7 +38,9 @@ export type FunboxName =
   | "crt"
   | "backwards"
   | "ddoouubblleedd"
-  | "instant_messaging";
+  | "instant_messaging"
+  | "underscore_spaces"
+  | "ALL_CAPS";
 
 export type FunboxForcedConfig = Record<string, string[] | boolean[]>;
 
@@ -60,7 +62,8 @@ export type FunboxProperty =
   | "noInfiniteDuration"
   | "noLigatures"
   | `toPush:${number}`
-  | "wordOrder:reverse";
+  | "wordOrder:reverse"
+  | "ignoreReducedMotion";
 
 type FunboxCSSModifications = "typingTest" | "words" | "body" | "main";
 

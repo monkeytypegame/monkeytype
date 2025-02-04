@@ -82,11 +82,6 @@ export async function show(showOptions: ShowOptions): Promise<void> {
 function hide(clearModalChain: boolean): void {
   void modal.hide({
     clearModalChain,
-    afterAnimation: async () => {
-      CaptchaController.reset("submitQuote");
-      select?.destroy();
-      select = undefined;
-    },
   });
 }
 
@@ -97,7 +92,14 @@ async function setup(modalEl: HTMLElement): Promise<void> {
   });
 }
 
+async function cleanup(): Promise<void> {
+  CaptchaController.reset("submitQuote");
+  select?.destroy();
+  select = undefined;
+}
+
 const modal = new AnimatedModal({
   dialogId: "quoteSubmitModal",
   setup,
+  cleanup,
 });

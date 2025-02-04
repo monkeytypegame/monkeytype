@@ -11,7 +11,11 @@ import * as Loader from "../elements/loader";
 import * as AccountButton from "../elements/account-button";
 import { restart as restartTest } from "../test/test-logic";
 import * as ChallengeController from "../controllers/challenge-controller";
-import { Mode, Mode2 } from "@monkeytype/contracts/schemas/shared";
+import {
+  DifficultySchema,
+  Mode2Schema,
+  ModeSchema,
+} from "@monkeytype/contracts/schemas/shared";
 import {
   CustomBackgroundFilter,
   CustomBackgroundFilterSchema,
@@ -19,9 +23,9 @@ import {
   CustomBackgroundSizeSchema,
   CustomThemeColors,
   CustomThemeColorsSchema,
-  Difficulty,
 } from "@monkeytype/contracts/schemas/configs";
 import { z } from "zod";
+import { parseWithSchema as parseJsonWithSchema } from "@monkeytype/util/json";
 
 export async function linkDiscord(hashOverride: string): Promise<void> {
   if (!hashOverride) return;
@@ -78,10 +82,7 @@ export function loadCustomThemeFromUrl(getOverride?: string): void {
 
   let decoded: z.infer<typeof customThemeUrlDataSchema>;
   try {
-    decoded = Misc.parseJsonWithSchema(
-      atob(getValue),
-      customThemeUrlDataSchema
-    );
+    decoded = parseJsonWithSchema(atob(getValue), customThemeUrlDataSchema);
   } catch (e) {
     console.log("Custom theme URL decoding failed", e);
     Notifications.add(
@@ -131,24 +132,35 @@ export function loadCustomThemeFromUrl(getOverride?: string): void {
   }
 }
 
-type SharedTestSettings = [
-  Mode | null,
-  Mode2<Mode> | null,
-  CustomText.CustomTextData | null,
-  boolean | null,
-  boolean | null,
-  string | null,
-  Difficulty | null,
-  string | null
-];
+const TestSettingsSchema = z.tuple([
+  ModeSchema.nullable(),
+  Mode2Schema.nullable(),
+  CustomText.CustomTextSettingsSchema.nullable(),
+  z.boolean().nullable(), //punctuation
+  z.boolean().nullable(), //numbers
+  z.string().nullable(), //language
+  DifficultySchema.nullable(),
+  z.string().nullable(), //funbox
+]);
+
+type SharedTestSettings = z.infer<typeof TestSettingsSchema>;
 
 export function loadTestSettingsFromUrl(getOverride?: string): void {
   const getValue = Misc.findGetParameter("testSettings", getOverride);
   if (getValue === null) return;
 
-  const de = JSON.parse(
-    decompressFromURI(getValue) ?? ""
-  ) as SharedTestSettings;
+  let de: SharedTestSettings;
+  try {
+    const decompressed = decompressFromURI(getValue) ?? "";
+    de = parseJsonWithSchema(decompressed, TestSettingsSchema);
+  } catch (e) {
+    console.error("Failed to parse test settings:", e);
+    Notifications.add(
+      "Failed to load test settings from URL: " + (e as Error).message,
+      0
+    );
+    return;
+  }
 
   const applied: Record<string, string> = {};
 
@@ -157,12 +169,13 @@ export function loadTestSettingsFromUrl(getOverride?: string): void {
     applied["mode"] = de[0];
   }
 
+  const mode = de[0] ?? Config.mode;
   if (de[1] !== null) {
-    if (Config.mode === "time") {
+    if (mode === "time") {
       UpdateConfig.setTimeConfig(parseInt(de[1], 10), true);
-    } else if (Config.mode === "words") {
+    } else if (mode === "words") {
       UpdateConfig.setWordCount(parseInt(de[1], 10), true);
-    } else if (Config.mode === "quote") {
+    } else if (mode === "quote") {
       UpdateConfig.setQuoteLength(-2, false);
       TestState.setSelectedQuoteId(parseInt(de[1], 10));
       ManualRestart.set();

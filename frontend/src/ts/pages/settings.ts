@@ -379,6 +379,11 @@ async function initGroups(): Promise<void> {
     UpdateConfig.setTapeMode,
     "button"
   ) as SettingsGroup<ConfigValue>;
+  groups["tapeMargin"] = new SettingsGroup(
+    "tapeMargin",
+    UpdateConfig.setTapeMargin,
+    "button"
+  ) as SettingsGroup<ConfigValue>;
   groups["timerOpacity"] = new SettingsGroup(
     "timerOpacity",
     UpdateConfig.setTimerOpacity,
@@ -612,6 +617,9 @@ async function fillSettingsPage(): Promise<void> {
         /_/g,
         " "
       )}</div>`;
+    } else if (funbox.name === "underscore_spaces") {
+      // Display as "underscore_spaces". Does not replace underscores with spaces.
+      funboxElHTML += `<div class="funbox button" data-config-value='${funbox.name}' aria-label="${funbox.description}" data-balloon-pos="up" data-balloon-length="fit">${funbox.name}</div>`;
     } else {
       funboxElHTML += `<div class="funbox button" data-config-value='${
         funbox.name
@@ -689,6 +697,10 @@ async function fillSettingsPage(): Promise<void> {
 
   $(".pageSettings .section[data-config-name='customLayoutfluid'] input").val(
     Config.customLayoutfluid.replace(/#/g, " ")
+  );
+
+  $(".pageSettings .section[data-config-name='tapeMargin'] input").val(
+    Config.tapeMargin
   );
 
   setEventDisabled(true);
@@ -1145,6 +1157,42 @@ $(
       parseFloat(
         $(
           ".pageSettings .section[data-config-name='fontSize'] .inputAndButton input"
+        ).val() as string
+      )
+    );
+    if (didConfigSave) {
+      Notifications.add("Saved", 1, {
+        duration: 1,
+      });
+    }
+  }
+});
+
+$(
+  ".pageSettings .section[data-config-name='tapeMargin'] .inputAndButton button.save"
+).on("click", () => {
+  const didConfigSave = UpdateConfig.setTapeMargin(
+    parseFloat(
+      $(
+        ".pageSettings .section[data-config-name='tapeMargin'] .inputAndButton input"
+      ).val() as string
+    )
+  );
+  if (didConfigSave) {
+    Notifications.add("Saved", 1, {
+      duration: 1,
+    });
+  }
+});
+
+$(
+  ".pageSettings .section[data-config-name='tapeMargin'] .inputAndButton input"
+).on("keypress", (e) => {
+  if (e.key === "Enter") {
+    const didConfigSave = UpdateConfig.setTapeMargin(
+      parseFloat(
+        $(
+          ".pageSettings .section[data-config-name='tapeMargin'] .inputAndButton input"
         ).val() as string
       )
     );

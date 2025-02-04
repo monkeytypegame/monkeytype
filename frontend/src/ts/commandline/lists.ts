@@ -51,6 +51,7 @@ import TimerColorCommands from "./lists/timer-color";
 import TimerOpacityCommands from "./lists/timer-opacity";
 import HighlightModeCommands from "./lists/highlight-mode";
 import TapeModeCommands from "./lists/tape-mode";
+import TapeMarginCommands from "./lists/tape-margin";
 import BritishEnglishCommands from "./lists/british-english";
 import KeymapModeCommands from "./lists/keymap-mode";
 import KeymapStyleCommands from "./lists/keymap-style";
@@ -107,6 +108,7 @@ import * as FPSCounter from "../elements/fps-counter";
 import { migrateConfig } from "../utils/config";
 import { PartialConfigSchema } from "@monkeytype/contracts/schemas/configs";
 import { Command, CommandsSubgroup } from "./types";
+import { parseWithSchema as parseJsonWithSchema } from "@monkeytype/util/json";
 
 const layoutsPromise = JSONData.getLayoutsList();
 layoutsPromise
@@ -273,6 +275,7 @@ export const commands: CommandsSubgroup = {
     ...TimerOpacityCommands,
     ...HighlightModeCommands,
     ...TapeModeCommands,
+    ...TapeMarginCommands,
     ...SmoothLineScrollCommands,
     ...ShowAllLinesCommands,
     ...TypingSpeedUnitCommands,
@@ -360,8 +363,9 @@ export const commands: CommandsSubgroup = {
       exec: async ({ input }): Promise<void> => {
         if (input === undefined || input === "") return;
         try {
-          const parsedConfig = PartialConfigSchema.strip().parse(
-            JSON.parse(input)
+          const parsedConfig = parseJsonWithSchema(
+            input,
+            PartialConfigSchema.strip()
           );
           await UpdateConfig.apply(migrateConfig(parsedConfig));
           UpdateConfig.saveFullConfigToLocalStorage();

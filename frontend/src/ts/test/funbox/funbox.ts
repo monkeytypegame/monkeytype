@@ -216,9 +216,20 @@ async function setFunboxBodyClasses(): Promise<boolean> {
     $body
       ?.attr("class")
       ?.split(/\s+/)
-      ?.filter((it) => !it.startsWith("fb-")) ?? [];
+      .filter((it) => !it.startsWith("fb-")) ?? [];
 
-  $body.attr("class", [...currentClasses, ...activeFbClasses].join(" "));
+  if (
+    getActiveFunboxes().some((it) =>
+      it.properties?.includes("ignoreReducedMotion")
+    )
+  ) {
+    currentClasses.push("ignore-reduced-motion");
+  }
+
+  $body.attr(
+    "class",
+    [...new Set([...currentClasses, ...activeFbClasses]).keys()].join(" ")
+  );
 
   return true;
 }

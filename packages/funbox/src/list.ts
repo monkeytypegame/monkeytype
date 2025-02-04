@@ -39,7 +39,7 @@ const list: Record<FunboxName, FunboxMetadata> = {
     description: "I think I'm gonna be sick.",
     canGetPb: true,
     difficultyLevel: 2,
-    properties: ["hasCssFile"],
+    properties: ["hasCssFile", "ignoreReducedMotion"],
     cssModification: ["typingTest"],
   },
   round_round_baby: {
@@ -48,7 +48,7 @@ const list: Record<FunboxName, FunboxMetadata> = {
       "...right round, like a record baby. Right, round round round.",
     canGetPb: true,
     difficultyLevel: 3,
-    properties: ["hasCssFile"],
+    properties: ["hasCssFile", "ignoreReducedMotion"],
     cssModification: ["typingTest"],
   },
   simon_says: {
@@ -78,7 +78,12 @@ const list: Record<FunboxName, FunboxMetadata> = {
   choo_choo: {
     canGetPb: true,
     difficultyLevel: 2,
-    properties: ["hasCssFile", "noLigatures", "conflictsWithSymmetricChars"],
+    properties: [
+      "hasCssFile",
+      "noLigatures",
+      "conflictsWithSymmetricChars",
+      "ignoreReducedMotion",
+    ],
     name: "choo_choo",
     description: "All the letters are spinning!",
   },
@@ -143,7 +148,7 @@ const list: Record<FunboxName, FunboxMetadata> = {
     description: "Everybody get down! The words are shaking!",
     canGetPb: true,
     difficultyLevel: 1,
-    properties: ["hasCssFile", "noLigatures"],
+    properties: ["hasCssFile", "noLigatures", "ignoreReducedMotion"],
     name: "earthquake",
     cssModification: ["words"],
   },
@@ -151,7 +156,7 @@ const list: Record<FunboxName, FunboxMetadata> = {
     description: "In a galaxy far far away.",
     canGetPb: true,
     difficultyLevel: 0,
-    properties: ["hasCssFile"],
+    properties: ["hasCssFile", "ignoreReducedMotion"],
     name: "space_balls",
     cssModification: ["body"],
   },
@@ -413,6 +418,22 @@ const list: Record<FunboxName, FunboxMetadata> = {
     properties: ["changesCapitalisation"],
     frontendFunctions: ["alterText"],
     name: "instant_messaging",
+  },
+  underscore_spaces: {
+    description: "Underscores_are_better.",
+    canGetPb: false,
+    difficultyLevel: 0,
+    properties: ["ignoresLanguage", "ignoresLayout", "nospace"],
+    frontendFunctions: ["alterText"],
+    name: "underscore_spaces",
+  },
+  ALL_CAPS: {
+    description: "WHY ARE WE SHOUTING?",
+    canGetPb: false,
+    difficultyLevel: 1,
+    properties: ["changesCapitalisation"],
+    frontendFunctions: ["alterText"],
+    name: "ALL_CAPS",
   },
 };
 

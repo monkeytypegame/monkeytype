@@ -783,6 +783,7 @@ describe("user controller test", () => {
     });
   });
   describe("update name", () => {
+    const blocklistContainsMock = vi.spyOn(BlocklistDal, "contains");
     const getPartialUserMock = vi.spyOn(UserDal, "getPartialUser");
     const updateNameMock = vi.spyOn(UserDal, "updateName");
     const addImportantLogMock = vi.spyOn(LogDal, "addImportantLog");
@@ -791,6 +792,7 @@ describe("user controller test", () => {
       getPartialUserMock.mockReset();
       updateNameMock.mockReset();
       addImportantLogMock.mockReset();
+      blocklistContainsMock.mockReset();
     });
 
     it("should update the username", async () => {
@@ -819,6 +821,23 @@ describe("user controller test", () => {
         uid
       );
     });
+
+    it("should fail if username is blocked", async () => {
+      //GIVEN
+      blocklistContainsMock.mockResolvedValue(true);
+
+      //WHEN
+      const { body } = await mockApp
+        .patch("/users/name")
+        .set("authorization", `Uid ${uid}`)
+        .send({ name: "newName" })
+        .expect(409);
+
+      //THEN
+      expect(body.message).toEqual("Username blocked");
+      expect(updateNameMock).not.toHaveBeenCalled();
+    });
+
     it("should fail for banned users", async () => {
       //GIVEN
       getPartialUserMock.mockResolvedValue({ banned: true } as any);
@@ -1049,7 +1068,7 @@ describe("user controller test", () => {
       );
       expect(addImportantLogMock).toHaveBeenCalledWith(
         "user_email_updated",
-        "changed email to newemail@example.com",
+        "changed email from previousemail@example.com to newemail@example.com",
         uid
       );
     });

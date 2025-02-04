@@ -326,6 +326,11 @@ export async function updateName(
   const { uid } = req.ctx.decodedToken;
   const { name } = req.body;
 
+  const blocklisted = await BlocklistDal.contains({ name });
+  if (blocklisted) {
+    throw new MonkeyError(409, "Username blocked");
+  }
+
   const user = await UserDAL.getPartialUser(uid, "update name", [
     "name",
     "banned",
@@ -400,9 +405,10 @@ export async function updateEmail(
   req: MonkeyRequest<undefined, UpdateEmailRequestSchema>
 ): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
-  let { newEmail } = req.body;
+  let { newEmail, previousEmail } = req.body;
 
   newEmail = newEmail.toLowerCase();
+  previousEmail = previousEmail.toLowerCase();
 
   try {
     await AuthUtil.updateUserEmail(uid, newEmail);
@@ -435,7 +441,7 @@ export async function updateEmail(
 
   void addImportantLog(
     "user_email_updated",
-    `changed email to ${newEmail}`,
+    `changed email from ${previousEmail} to ${newEmail}`,
     uid
   );
 

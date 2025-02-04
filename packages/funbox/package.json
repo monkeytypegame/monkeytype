@@ -9,16 +9,18 @@
     "lint": "eslint \"./**/*.ts\""
   },
   "devDependencies": {
-    "@monkeytype/util": "workspace:*",
     "@monkeytype/esbuild": "workspace:*",
     "@monkeytype/eslint-config": "workspace:*",
     "@monkeytype/typescript-config": "workspace:*",
     "chokidar": "3.6.0",
-    "eslint": "8.57.0",
+    "eslint": "8.57.1",
     "madge": "8.0.0",
     "rimraf": "6.0.1",
     "typescript": "5.5.4",
     "vitest": "2.0.5"
+  },
+  "dependencies": {
+    "@monkeytype/util": "workspace:*"
   },
   "exports": {
     ".": {

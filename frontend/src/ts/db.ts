@@ -372,6 +372,9 @@ export async function getUserResults(offset?: number): Promise<boolean> {
     return false;
   }
 
+  //another check in case user logs out while waiting for response
+  if (!isAuthenticated()) return false;
+
   const results: SnapshotResult<Mode>[] = response.body.data.map((result) => {
     if (result.bailedOut === undefined) result.bailedOut = false;
     if (result.blindMode === undefined) result.blindMode = false;

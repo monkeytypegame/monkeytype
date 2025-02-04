@@ -918,6 +918,34 @@ export function setTapeMode(
   return true;
 }
 
+export function setTapeMargin(
+  value: ConfigSchemas.TapeMargin,
+  nosave?: boolean
+): boolean {
+  if (value < 10) {
+    value = 10;
+  }
+  if (value > 90) {
+    value = 90;
+  }
+
+  if (
+    !isConfigValueValid("max line width", value, ConfigSchemas.TapeMarginSchema)
+  ) {
+    return false;
+  }
+
+  config.tapeMargin = value;
+
+  saveToLocalStorage("tapeMargin", nosave);
+  ConfigEvent.dispatch("tapeMargin", config.tapeMargin, nosave);
+
+  // trigger a resize event to update the layout - handled in ui.ts:108
+  $(window).trigger("resize");
+
+  return true;
+}
+
 export function setHideExtraLetters(val: boolean, nosave?: boolean): boolean {
   if (!isConfigValueValidBoolean("hide extra letters", val)) return false;
 
@@ -2053,6 +2081,7 @@ export async function apply(
     setLazyMode(configObj.lazyMode, true);
     setShowAverage(configObj.showAverage, true);
     setTapeMode(configObj.tapeMode, true);
+    setTapeMargin(configObj.tapeMargin, true);
 
     ConfigEvent.dispatch(
       "configApplied",

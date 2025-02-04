@@ -42,6 +42,7 @@
     "name": "portuguese",
     "languages": [
       "portuguese",
+      "portuguese_1k",
       "portuguese_3k",
       "portuguese_5k",
       "portuguese_320k",
@@ -84,6 +85,10 @@
     "languages": ["korean", "korean_1k", "korean_5k"]
   },
   {
+    "name": "khmer",
+    "languages": ["khmer"]
+  },
+  {
     "name": "chinese",
     "languages": [
       "chinese_traditional",
@@ -99,10 +104,14 @@
     "languages": [
       "russian",
       "russian_1k",
+      "russian_5k",
       "russian_10k",
       "russian_25k",
       "russian_50k",
-      "russian_375k"
+      "russian_375k",
+      "russian_contractions",
+      "russian_contractions_1k",
+      "russian_abbreviations"
     ]
   },
   {
@@ -181,12 +190,16 @@
     "languages": ["irish"]
   },
   {
+    "name": "galician",
+    "languages": ["galician"]
+  },
+  {
     "name": "thai",
     "languages": ["thai"]
   },
   {
     "name": "tamil",
-    "languages": ["tamil", "tamil_1k", "tanglish"]
+    "languages": ["tamil", "tamil_1k", "tanglish", "tamil_old"]
   },
   {
     "name": "kannada",
@@ -380,7 +393,7 @@
   },
   {
     "name": "urdu",
-    "languages": ["urdu", "urdu_1k", "urdu_5k"]
+    "languages": ["urdu", "urdu_1k", "urdu_5k", "urdish"]
   },
   {
     "name": "albanian",
@@ -426,7 +439,7 @@
   },
   {
     "name": "nepali",
-    "languages": ["nepali", "nepali_1k"]
+    "languages": ["nepali", "nepali_1k", "nepali_romanized"]
   },
   {
     "name": "santali",
@@ -460,6 +473,10 @@
   {
     "name": "belarusian_lacinka",
     "languages": ["belarusian_lacinka", "belarusian_lacinka_1k"]
+  },
+  {
+    "name": "tatar",
+    "languages": ["tatar", "tatar_1k", "tatar_5k", "tatar_9k"]
   },
   {
     "name": "azerbaijani",
@@ -565,6 +582,10 @@
     ]
   },
   {
+    "name": "zulu",
+    "languages": ["zulu"]
+  },
+  {
     "name": "code",
     "languages": [
       "code_python",
@@ -601,6 +622,7 @@
       "code_lua",
       "code_luau",
       "code_latex",
+      "code_typst",
       "code_matlab",
       "code_sql",
       "code_perl",
