@@ -65,7 +65,7 @@ export type FunboxProperty =
   | "wordOrder:reverse"
   | "ignoreReducedMotion";
 
-type FunboxCSSModifications = "typingTest" | "words" | "body" | "main";
+type FunboxCSSModification = "typingTest" | "words" | "body" | "main";
 
 export type FunboxMetadata = {
   name: FunboxName;
@@ -76,5 +76,5 @@ export type FunboxMetadata = {
   frontendFunctions?: string[];
   difficultyLevel: number;
   canGetPb: boolean;
-  cssModification?: FunboxCSSModifications[];
+  cssModifications?: FunboxCSSModification[];
 };

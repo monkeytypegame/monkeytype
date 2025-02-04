@@ -105,7 +105,7 @@ export function checkCompatibility(
 
   const oneCssModificationPerElement = Object.values(
     funboxesToCheck
-      .map((f) => f.cssModification)
+      .map((f) => f.cssModifications)
       .filter((f) => f !== undefined)
       .flat()
       .reduce<Record<string, number>>((counts, cssModification) => {
