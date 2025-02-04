@@ -102,22 +102,18 @@ export function checkCompatibility(
     funboxesToCheck.filter((f) =>
       f.properties?.find((fp) => fp === "changesCapitalisation")
     ).length <= 1;
-  const oneChangesTypingTestCSS =
-    funboxesToCheck.filter((f) =>
-      f.cssModification?.find((fc) => fc === "typingTest")
-    ).length <= 1;
-  const oneChangesWordsCSS =
-    funboxesToCheck.filter((f) =>
-      f.cssModification?.find((fc) => fc === "words")
-    ).length <= 1;
-  const oneChangesBodyCSS =
-    funboxesToCheck.filter((f) =>
-      f.cssModification?.find((fc) => fc === "body")
-    ).length <= 1;
-  const oneChangesMainCSS =
-    funboxesToCheck.filter((f) =>
-      f.cssModification?.find((fc) => fc === "main")
-    ).length <= 1;
+
+  const oneCssModificationPerElement = Object.values(
+    funboxesToCheck
+      .map((f) => f.cssModification)
+      .filter((f) => f !== undefined)
+      .flat()
+      .reduce<Record<string, number>>((counts, cssModification) => {
+        counts[cssModification] = (counts[cssModification] || 0) + 1;
+        return counts;
+      }, {})
+  ).every((c) => c <= 1);
+
   const allowedConfig = {} as FunboxForcedConfig;
   let noConfigConflicts = true;
   for (const f of funboxesToCheck) {
@@ -159,10 +155,7 @@ export function checkCompatibility(
     oneCharCheckerMax &&
     oneCharReplacerMax &&
     oneChangesCapitalisationMax &&
-    oneChangesTypingTestCSS &&
-    oneChangesWordsCSS &&
-    oneChangesBodyCSS &&
-    oneChangesMainCSS &&
+    oneCssModificationPerElement &&
     noConfigConflicts &&
     oneWordOrderMax
   );
