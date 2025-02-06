@@ -8,12 +8,11 @@
 
     .bigtitle {
       font-size: 2rem;
-      margin-bottom: 1rem;
+      margin-bottom: 2rem;
     }
 
     .tableAndUser {
       grid-area: table;
-      gap: 1rem;
       font-size: 1rem;
 
       .titleAndButtons {
@@ -41,8 +40,7 @@
       .bigUser {
         // color: var(--main-color);
         font-size: 1em;
-        margin-bottom: 2em;
-        margin-top: 1em;
+        margin-bottom: 2rem;
         background: var(--sub-alt-color);
         padding: 1em 2em;
         border-radius: var(--roundness);
