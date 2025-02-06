@@ -329,6 +329,18 @@ body.darkMode {
       }
     }
 
+    .divider {
+      height: 0.25rem;
+      background: var(--sub-alt-color);
+      border-radius: var(--roundness);
+      margin: 1rem 0;
+    }
+
+    .message {
+      font-size: 0.75em;
+      color: var(--sub-color);
+    }
+
     .listLong {
       display: grid;
       gap: 1rem;
