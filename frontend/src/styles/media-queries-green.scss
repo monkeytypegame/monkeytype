@@ -77,9 +77,13 @@
         }
       }
     }
-    .settingsGroup.quickNav .links {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+    .settingsGroup.quickNav {
+      justify-content: unset;
+      .links {
+        max-width: unset;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+      }
     }
   }
   .pageAccount {
