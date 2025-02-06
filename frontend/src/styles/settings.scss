@@ -50,13 +50,27 @@
   .settingsGroup {
     display: grid;
     gap: 2rem;
-    &.quickNav .links {
-      width: 100%;
-      display: flex;
-      flex-wrap: wrap;
-      text-align: center;
-      a {
-        flex-grow: 1;
+    &.quickNav {
+      justify-content: center;
+      .links {
+        font-size: 0.75rem;
+        background: var(--sub-alt-color);
+        border-radius: var(--roundness);
+        max-width: fit-content;
+        width: 100%;
+        display: flex;
+        flex-wrap: wrap;
+        text-align: center;
+        a:first-child {
+          padding-left: 2em;
+        }
+        a:last-child {
+          padding-right: 2em;
+        }
+        a {
+          padding: 1em;
+          flex-grow: 1;
+        }
       }
     }
   }
