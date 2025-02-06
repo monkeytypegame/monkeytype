@@ -8,6 +8,7 @@ import Ape from "../ape";
 import * as StreakHourOffsetModal from "../modals/streak-hour-offset";
 import * as Loader from "../elements/loader";
 import * as ApeKeyTable from "../elements/account-settings/ape-key-table";
+import * as Notifications from "../elements/notifications";
 
 const pageElement = $(".page.pageAccountSettings");
 
@@ -182,7 +183,7 @@ export function updateUI(): void {
 }
 
 $(".page.pageAccountSettings").on("click", ".tabs button", (event) => {
-  state.activeTab = $(event.target).data("tab");
+  state.activeTab = $(event.target).data("tab") as State["activeTab"];
   updateTabs();
 });
 
@@ -190,8 +191,15 @@ $(
   ".page.pageAccountSettings .section.discordIntegration .getLinkAndGoToOauth"
 ).on("click", () => {
   Loader.show();
-  void Ape.users.getOauthLink().then((res) => {
-    window.open(res.data?.url as string, "_self");
+  void Ape.users.getDiscordOAuth().then((response) => {
+    if (response.status === 200) {
+      window.open(response.body.data.url, "_self");
+    } else {
+      Notifications.add(
+        "Failed to get OAuth from discord: " + response.body.message,
+        -1
+      );
+    }
   });
 });
 

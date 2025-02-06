@@ -6,7 +6,7 @@ import * as Strings from "../utils/strings";
 import * as Misc from "../utils/misc";
 import * as Arrays from "../utils/arrays";
 import * as JSONData from "../utils/json-data";
-import * as Numbers from "../utils/numbers";
+import * as Numbers from "@monkeytype/util/numbers";
 import * as Notifications from "../elements/notifications";
 import * as CustomText from "./custom-text";
 import * as CustomTextState from "../states/custom-text-name";
@@ -52,7 +52,6 @@ import { Auth, isAuthenticated } from "../firebase";
 import * as AdController from "../controllers/ad-controller";
 import * as TestConfig from "./test-config";
 import * as ConnectionState from "../states/connection";
-import * as FunboxList from "./funbox/funbox-list";
 import * as MemoryFunboxTimer from "./funbox/memory-funbox-timer";
 import * as KeymapEvent from "../observables/keymap-event";
 import * as LayoutfluidFunboxTimer from "../test/funbox/layoutfluid-funbox-timer";
@@ -64,6 +63,10 @@ import {
   CompletedEvent,
   CustomTextDataWithTextLen,
 } from "@monkeytype/contracts/schemas/results";
+import * as XPBar from "../elements/xp-bar";
+import { getActiveFunboxes } from "./funbox/list";
+import { getFunboxesFromString } from "@monkeytype/funbox";
+import * as CompositionState from "../states/composition";
 
 let failReason = "";
 const koInputVisual = document.getElementById("koInputVisual") as HTMLElement;
@@ -74,7 +77,7 @@ export function clearNotSignedInResult(): void {
   notSignedInLastResult = null;
 }
 
-export function setNotSignedInUid(uid: string): void {
+export function setNotSignedInUidAndHash(uid: string): void {
   if (notSignedInLastResult === null) return;
   notSignedInLastResult.uid = uid;
   //@ts-expect-error
@@ -105,8 +108,8 @@ export function startTest(now: number): boolean {
   TestTimer.clear();
   Monkey.show();
 
-  for (const f of FunboxList.get(Config.funbox)) {
-    if (f.functions?.start) f.functions.start();
+  for (const fb of getActiveFunboxes()) {
+    fb.functions?.start?.();
   }
 
   try {
@@ -146,6 +149,7 @@ export function restart(options = {} as RestartOptions): void {
   };
 
   options = { ...defaultOptions, ...options };
+  const animationTime = options.noAnim ? 0 : Misc.applyReducedMotion(125);
 
   if (TestUI.testRestarting || TestUI.resultCalculating) {
     event?.preventDefault();
@@ -262,12 +266,13 @@ export function restart(options = {} as RestartOptions): void {
   MemoryFunboxTimer.reset();
   QuoteRateModal.clearQuoteStats();
   TestUI.reset();
+  CompositionState.setComposing(false);
 
   if (TestUI.resultVisible) {
     if (Config.randomTheme !== "off") {
       void ThemeController.randomizeTheme();
     }
-    AccountButton.skipXpBreakdown();
+    void XPBar.skipBreakdown();
   }
 
   if (!ConnectionState.get()) {
@@ -289,7 +294,7 @@ export function restart(options = {} as RestartOptions): void {
     {
       opacity: 0,
     },
-    options.noAnim ? 0 : 125,
+    animationTime,
     async () => {
       $("#result").addClass("hidden");
       $("#typingTest").css("opacity", 0).removeClass("hidden");
@@ -326,8 +331,8 @@ export function restart(options = {} as RestartOptions): void {
       await init();
       await PaceCaret.init();
 
-      for (const f of FunboxList.get(Config.funbox)) {
-        if (f.functions?.restart) f.functions.restart();
+      for (const fb of getActiveFunboxes()) {
+        fb.functions?.restart?.();
       }
 
       if (Config.showAverage !== "off") {
@@ -350,7 +355,7 @@ export function restart(options = {} as RestartOptions): void {
           {
             opacity: 1,
           },
-          options.noAnim ? 0 : 125,
+          animationTime,
           () => {
             TimerProgress.reset();
             LiveSpeed.reset();
@@ -538,21 +543,25 @@ export function areAllTestWordsGenerated(): boolean {
 //add word during the test
 export async function addWord(): Promise<void> {
   let bound = 100; // how many extra words to aim for AFTER the current word
-  const funboxToPush = FunboxList.get(Config.funbox)
+  const funboxToPush = getActiveFunboxes()
     .find((f) => f.properties?.find((fp) => fp.startsWith("toPush")))
     ?.properties?.find((fp) => fp.startsWith("toPush:"));
   const toPushCount = funboxToPush?.split(":")[1];
   if (toPushCount !== undefined) bound = +toPushCount - 1;
-  if (
-    TestWords.words.length - TestInput.input.history.length > bound ||
-    areAllTestWordsGenerated()
-  ) {
+
+  if (TestWords.words.length - TestInput.input.history.length > bound) {
+    console.debug("Not adding word, enough words already");
+    return;
+  }
+  if (areAllTestWordsGenerated()) {
+    console.debug("Not adding word, all words generated");
     return;
   }
 
-  const sectionFunbox = FunboxList.get(Config.funbox).find(
+  const sectionFunbox = getActiveFunboxes().find(
     (f) => f.functions?.pullSection
   );
+
   if (sectionFunbox?.functions?.pullSection) {
     if (TestWords.words.length - TestWords.words.currentIndex < 20) {
       const section = await sectionFunbox.functions.pullSection(
@@ -703,7 +712,7 @@ function buildCompletedEvent(
 
   const stddev = Numbers.stdDev(rawPerSecond);
   const avg = Numbers.mean(rawPerSecond);
-  let consistency = Numbers.roundTo2(Misc.kogasa(stddev / avg));
+  let consistency = Numbers.roundTo2(Numbers.kogasa(stddev / avg));
   let keyConsistencyArray = TestInput.keypressTimings.spacing.array.slice();
   if (keyConsistencyArray.length > 0) {
     keyConsistencyArray = keyConsistencyArray.slice(
@@ -712,7 +721,7 @@ function buildCompletedEvent(
     );
   }
   let keyConsistency = Numbers.roundTo2(
-    Misc.kogasa(
+    Numbers.kogasa(
       Numbers.stdDev(keyConsistencyArray) / Numbers.mean(keyConsistencyArray)
     )
   );
@@ -737,7 +746,7 @@ function buildCompletedEvent(
   //wpm consistency
   const stddev3 = Numbers.stdDev(chartData.wpm ?? []);
   const avg3 = Numbers.mean(chartData.wpm ?? []);
-  const wpmCons = Numbers.roundTo2(Misc.kogasa(stddev3 / avg3));
+  const wpmCons = Numbers.roundTo2(Numbers.kogasa(stddev3 / avg3));
   const wpmConsistency = isNaN(wpmCons) ? 0 : wpmCons;
 
   let customText: CustomTextDataWithTextLen | undefined = undefined;
@@ -897,7 +906,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
     dontSave = true;
   }
 
-  const completedEvent = JSON.parse(JSON.stringify(ce)) as CompletedEvent;
+  const completedEvent = Misc.deepClone(ce) as CompletedEvent;
 
   ///////// completed event ready
 
@@ -912,13 +921,11 @@ export async function finish(difficultyFailed = false): Promise<void> {
   //fail checks
   const dateDur = (TestStats.end3 - TestStats.start3) / 1000;
   if (
-    Config.mode !== "zen" &&
+    Config.mode === "time" &&
     !TestState.bailedOut &&
-    (ce.testDuration < dateDur - 0.25 || ce.testDuration > dateDur + 0.25)
+    (ce.testDuration < dateDur - 0.1 || ce.testDuration > dateDur + 0.1) &&
+    ce.testDuration <= 120
   ) {
-    //dont bother checking this for zen mode or bailed out tests because
-    //the duration might be modified to remove trailing afk time
-    //its also not a big deal if the duration is off in those tests
     Notifications.add("Test invalid - inconsistent test duration", 0);
     console.error("Test duration inconsistent", ce.testDuration, dateDur);
     TestStats.setInvalid();
@@ -935,6 +942,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
     Notifications.add("Test invalid - repeated", 0);
     dontSave = true;
   } else if (
+    completedEvent.testDuration < 1 ||
     (Config.mode === "time" && mode2Number < 15 && mode2Number > 0) ||
     (Config.mode === "time" &&
       mode2Number === 0 &&
@@ -1053,7 +1061,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
 
   $("#result .stats .dailyLeaderboard").addClass("hidden");
 
-  TestStats.setLastResult(JSON.parse(JSON.stringify(completedEvent)));
+  TestStats.setLastResult(Misc.deepClone(completedEvent));
 
   if (!ConnectionState.get()) {
     ConnectionState.showOfflineBanner();
@@ -1139,7 +1147,7 @@ async function saveResult(
 
   if (response.status !== 200) {
     //only allow retry if status is not in this list
-    if (![460, 461, 463, 464, 465].includes(response.status)) {
+    if (![460, 461, 463, 464, 465, 466].includes(response.status)) {
       retrySaving.canRetry = true;
       $("#retrySavingResultButton").removeClass("hidden");
       if (!isRetrying) {
@@ -1170,7 +1178,12 @@ async function saveResult(
 
   if (data.xp !== undefined) {
     const snapxp = DB.getSnapshot()?.xp ?? 0;
-    void AccountButton.updateXpBar(snapxp, data.xp, data.xpBreakdown);
+
+    void XPBar.update(
+      snapxp,
+      data.xp,
+      TestUI.resultVisible ? data.xpBreakdown : undefined
+    );
     DB.addXp(data.xp);
   }
 
@@ -1179,9 +1192,12 @@ async function saveResult(
   }
 
   if (data.insertedId !== undefined) {
-    const result: MonkeyTypes.FullResult<Mode> = JSON.parse(
-      JSON.stringify(completedEvent)
-    );
+    //TODO - this type cast was not needed before because we were using JSON cloning
+    // but now with the stronger types it shows that we are forcing completed event
+    // into a snapshot result - might not cuase issues but worth investigating
+    const result = Misc.deepClone(
+      completedEvent
+    ) as unknown as DB.SnapshotResult<Mode>;
     result._id = data.insertedId;
     if (data.isPb !== undefined && data.isPb) {
       result.isPb = true;
@@ -1207,7 +1223,7 @@ async function saveResult(
       completedEvent.language,
       completedEvent.difficulty,
       completedEvent.lazyMode,
-      completedEvent.funbox
+      getFunboxesFromString(completedEvent.funbox)
     );
 
     if (localPb !== undefined) {
@@ -1257,7 +1273,7 @@ async function saveResult(
           // maxWidth: "10rem",
           opacity: 1,
         },
-        500
+        Misc.applyReducedMotion(500)
       );
     $("#result .stats .dailyLeaderboard .bottom").html(
       Format.rank(data.dailyLeaderboardRank, { fallback: "" })

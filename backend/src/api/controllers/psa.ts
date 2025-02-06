@@ -1,11 +1,10 @@
 import { GetPsaResponse } from "@monkeytype/contracts/psas";
 import * as PsaDAL from "../../dal/psa";
-import { MonkeyResponse2 } from "../../utils/monkey-response";
+import { MonkeyResponse } from "../../utils/monkey-response";
 import { replaceObjectIds } from "../../utils/misc";
+import { MonkeyRequest } from "../types";
 
-export async function getPsas(
-  _req: MonkeyTypes.Request2
-): Promise<GetPsaResponse> {
+export async function getPsas(_req: MonkeyRequest): Promise<GetPsaResponse> {
   const data = await PsaDAL.get();
-  return new MonkeyResponse2("PSAs retrieved", replaceObjectIds(data));
+  return new MonkeyResponse("PSAs retrieved", replaceObjectIds(data));
 }

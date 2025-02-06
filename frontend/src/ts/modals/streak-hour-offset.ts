@@ -4,7 +4,7 @@ import * as Notifications from "../elements/notifications";
 import * as Loader from "../elements/loader";
 // import * as Settings from "../pages/settings";
 import * as ConnectionState from "../states/connection";
-import { getSnapshot, setSnapshot } from "../db";
+import { getSnapshot, setSnapshot, Snapshot } from "../db";
 import AnimatedModal from "../utils/animated-modal";
 
 export function show(): void {
@@ -82,16 +82,18 @@ async function apply(): Promise<void> {
 
   Loader.show();
 
-  const response = await Ape.users.setStreakHourOffset(value);
+  const response = await Ape.users.setStreakHourOffset({
+    body: { hourOffset: value },
+  });
   Loader.hide();
   if (response.status !== 200) {
     Notifications.add(
-      "Failed to set streak hour offset: " + response.message,
+      "Failed to set streak hour offset: " + response.body.message,
       -1
     );
   } else {
     Notifications.add("Streak hour offset set", 1);
-    const snap = getSnapshot() as MonkeyTypes.Snapshot;
+    const snap = getSnapshot() as Snapshot;
     snap.streakHourOffset = value;
     setSnapshot(snap);
     hide();

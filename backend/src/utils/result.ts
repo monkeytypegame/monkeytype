@@ -1,13 +1,21 @@
-import { CompletedEvent } from "@monkeytype/contracts/schemas/results";
+import { CompletedEvent, Result } from "@monkeytype/contracts/schemas/results";
+import { Mode } from "@monkeytype/contracts/schemas/shared";
 import { ObjectId } from "mongodb";
+import { WithObjectId } from "./misc";
+
+export type DBResult = WithObjectId<Result<Mode>> & {
+  //legacy values
+  correctChars?: number;
+  incorrectChars?: number;
+};
 
 export function buildDbResult(
   completedEvent: CompletedEvent,
   userName: string,
   isPb: boolean
-): MonkeyTypes.DBResult {
+): DBResult {
   const ce = completedEvent;
-  const res: MonkeyTypes.DBResult = {
+  const res: DBResult = {
     _id: new ObjectId(),
     uid: ce.uid,
     wpm: ce.wpm,
@@ -63,9 +71,7 @@ export function buildDbResult(
  * @param result
  * @returns
  */
-export function replaceLegacyValues(
-  result: MonkeyTypes.DBResult
-): MonkeyTypes.DBResult {
+export function replaceLegacyValues(result: DBResult): DBResult {
   //convert legacy values
   if (
     result.correctChars !== undefined &&

@@ -46,8 +46,8 @@ export async function replace(
       RegExp(`^(?:([\\W]*)(${replacement[0]})([\\W]*))$`, "gi"),
       (_, $1, $2, $3) =>
         $1 +
-        ($2.charAt(0) === $2.charAt(0).toUpperCase()
-          ? $2 === $2.toUpperCase()
+        (($2 as string).charAt(0) === ($2 as string).charAt(0).toUpperCase()
+          ? $2 === ($2 as string).toUpperCase()
             ? replacement[1].toUpperCase()
             : capitalizeFirstLetterOfEachWord(replacement[1])
           : replacement[1]) +

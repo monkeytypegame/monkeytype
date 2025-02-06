@@ -1,7 +1,7 @@
 import "dotenv/config";
 import { Counter, Histogram, Gauge } from "prom-client";
-import { TsRestRequestWithCtx } from "../middlewares/auth";
 import { CompletedEvent } from "@monkeytype/contracts/schemas/results";
+import { Request } from "express";
 
 const auth = new Counter({
   name: "api_request_auth_total",
@@ -74,7 +74,9 @@ const leaderboardUpdate = new Gauge({
   labelNames: ["language", "mode", "mode2", "step"],
 });
 
-export function incrementAuth(type: "Bearer" | "ApeKey" | "None"): void {
+export function incrementAuth(
+  type: "Bearer" | "ApeKey" | "None" | "GithubWebhook"
+): void {
   auth.inc({ type });
 }
 
@@ -211,8 +213,10 @@ export function recordAuthTime(
   type: string,
   status: "success" | "failure",
   time: number,
-  req: MonkeyTypes.Request | TsRestRequestWithCtx
+  req: Request
 ): void {
+  // for some reason route is not in the types
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
   const reqPath = req.baseUrl + req.route.path;
 
   let normalizedPath = "/";
@@ -231,10 +235,9 @@ const requestCountry = new Counter({
   labelNames: ["path", "country"],
 });
 
-export function recordRequestCountry(
-  country: string,
-  req: MonkeyTypes.Request | TsRestRequestWithCtx
-): void {
+export function recordRequestCountry(country: string, req: Request): void {
+  // for some reason route is not in the types
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
   const reqPath = req.baseUrl + req.route.path;
 
   let normalizedPath = "/";

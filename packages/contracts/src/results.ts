@@ -2,7 +2,7 @@ import { initContract } from "@ts-rest/core";
 import { z } from "zod";
 import {
   CommonResponses,
-  EndpointMetadata,
+  meta,
   MonkeyResponseSchema,
   responseWithData,
 } from "./schemas/api";
@@ -75,19 +75,22 @@ export const resultsContract = c.router(
   {
     get: {
       summary: "get results",
-      description:
-        "Gets up to 1000 results (endpoint limited to 30 requests per day for ape keys)",
+      description: "Gets up to 1000 results",
       method: "GET",
       path: "",
       query: GetResultsQuerySchema.strict(),
       responses: {
         200: GetResultsResponseSchema,
       },
-      metadata: {
+      metadata: meta({
         authenticationOptions: {
           acceptApeKeys: true,
         },
-      } as EndpointMetadata,
+        rateLimit: {
+          normal: "resultsGet",
+          apeKey: "resultsGetApe",
+        },
+      }),
     },
     add: {
       summary: "add result",
@@ -98,6 +101,13 @@ export const resultsContract = c.router(
       responses: {
         200: AddResultResponseSchema,
       },
+      metadata: meta({
+        rateLimit: "resultsAdd",
+        requireConfiguration: {
+          path: "results.savingEnabled",
+          invalidMessage: "Results are not being saved at this time.",
+        },
+      }),
     },
     updateTags: {
       summary: "update result tags",
@@ -108,6 +118,9 @@ export const resultsContract = c.router(
       responses: {
         200: UpdateResultTagsResponseSchema,
       },
+      metadata: meta({
+        rateLimit: "resultsTagsUpdate",
+      }),
     },
     deleteAll: {
       summary: "delete all results",
@@ -118,11 +131,12 @@ export const resultsContract = c.router(
       responses: {
         200: MonkeyResponseSchema,
       },
-      metadata: {
+      metadata: meta({
         authenticationOptions: {
           requireFreshToken: true,
         },
-      } as EndpointMetadata,
+        rateLimit: "resultsDeleteAll",
+      }),
     },
     getLast: {
       summary: "get last result",
@@ -132,19 +146,20 @@ export const resultsContract = c.router(
       responses: {
         200: GetLastResultResponseSchema,
       },
-      metadata: {
+      metadata: meta({
         authenticationOptions: {
           acceptApeKeys: true,
         },
-      } as EndpointMetadata,
+        rateLimit: "resultsGet",
+      }),
     },
   },
   {
     pathPrefix: "/results",
     strictStatusCodes: true,
-    metadata: {
+    metadata: meta({
       openApiTags: "results",
-    } as EndpointMetadata,
+    }),
     commonResponses: CommonResponses,
   }
 );

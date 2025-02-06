@@ -11,12 +11,11 @@ import {
   TextExtractor,
 } from "../utils/search-service";
 import { splitByAndKeep } from "../utils/strings";
-import QuotesController from "../controllers/quotes-controller";
+import QuotesController, { Quote } from "../controllers/quotes-controller";
 import { isAuthenticated } from "../firebase";
 import { debounce } from "throttle-debounce";
 import Ape from "../ape";
 import * as Loader from "../elements/loader";
-// @ts-expect-error TODO: update slim-select
 import SlimSelect from "slim-select";
 import * as TestState from "../test/test-state";
 import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
@@ -24,7 +23,7 @@ import * as TestLogic from "../test/test-logic";
 import { createErrorMessage } from "../utils/misc";
 import { QuoteLength } from "@monkeytype/contracts/schemas/configs";
 
-const searchServiceCache: Record<string, SearchService<MonkeyTypes.Quote>> = {};
+const searchServiceCache: Record<string, SearchService<Quote>> = {};
 
 const pageSize = 100;
 let currentPageNumber = 1;
@@ -40,7 +39,7 @@ function getSearchService<T>(
 
   const newSearchService = buildSearchService<T>(data, textExtractor);
   searchServiceCache[language] =
-    newSearchService as unknown as typeof searchServiceCache[typeof language];
+    newSearchService as unknown as (typeof searchServiceCache)[typeof language];
 
   return newSearchService;
 }
@@ -62,9 +61,7 @@ function highlightMatches(text: string, matchedText: string[]): string {
   return normalizedWords.join("");
 }
 
-function applyQuoteLengthFilter(
-  quotes: MonkeyTypes.Quote[]
-): MonkeyTypes.Quote[] {
+function applyQuoteLengthFilter(quotes: Quote[]): Quote[] {
   const quoteLengthFilterValue = $(
     "#quoteSearchModal .quoteLengthFilter"
   ).val() as string[];
@@ -82,7 +79,7 @@ function applyQuoteLengthFilter(
   return filteredQuotes;
 }
 
-function applyQuoteFavFilter(quotes: MonkeyTypes.Quote[]): MonkeyTypes.Quote[] {
+function applyQuoteFavFilter(quotes: Quote[]): Quote[] {
   const showFavOnly = (
     document.querySelector(".toggleFavorites") as HTMLDivElement
   ).classList.contains("active");
@@ -99,7 +96,7 @@ function applyQuoteFavFilter(quotes: MonkeyTypes.Quote[]): MonkeyTypes.Quote[] {
 }
 
 function buildQuoteSearchResult(
-  quote: MonkeyTypes.Quote,
+  quote: Quote,
   matchedSearchTerms: string[]
 ): string {
   let lengthDesc;
@@ -159,10 +156,10 @@ function buildQuoteSearchResult(
 async function updateResults(searchText: string): Promise<void> {
   const { quotes } = await QuotesController.getQuotes(Config.language);
 
-  const quoteSearchService = getSearchService<MonkeyTypes.Quote>(
+  const quoteSearchService = getSearchService<Quote>(
     Config.language,
     quotes,
-    (quote: MonkeyTypes.Quote) => {
+    (quote: Quote) => {
       return `${quote.text} ${quote.id} ${quote.source}`;
     }
   );
@@ -315,10 +312,6 @@ export async function show(showOptions?: ShowOptions): Promise<void> {
 function hide(clearChain = false): void {
   void modal.hide({
     clearModalChain: clearChain,
-    afterAnimation: async () => {
-      lengthSelect?.destroy();
-      lengthSelect = undefined;
-    },
   });
 }
 
@@ -358,7 +351,7 @@ async function toggleFavoriteForQuote(quoteId: string): Promise<void> {
   const quote = {
     language: quoteLang,
     id: parseInt(quoteId, 10),
-  } as MonkeyTypes.Quote;
+  } as Quote;
 
   const alreadyFavorited = QuotesController.isQuoteFavorite(quote);
 
@@ -420,8 +413,11 @@ async function setup(modalEl: HTMLElement): Promise<void> {
     .querySelector(".goToQuoteSubmit")
     ?.addEventListener("click", async (e) => {
       Loader.show();
+      const getSubmissionEnabled = await Ape.quotes.isSubmissionEnabled();
       const isSubmissionEnabled =
-        (await Ape.quotes.isSubmissionEnabled()).data?.isEnabled ?? false;
+        (getSubmissionEnabled.status === 200 &&
+          getSubmissionEnabled.body.data?.isEnabled) ??
+        false;
       Loader.hide();
       if (!isSubmissionEnabled) {
         Notifications.add(
@@ -456,7 +452,13 @@ async function setup(modalEl: HTMLElement): Promise<void> {
   });
 }
 
+async function cleanup(): Promise<void> {
+  lengthSelect?.destroy();
+  lengthSelect = undefined;
+}
+
 const modal = new AnimatedModal({
   dialogId: "quoteSearchModal",
   setup,
+  cleanup,
 });

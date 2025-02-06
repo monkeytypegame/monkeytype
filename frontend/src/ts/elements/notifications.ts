@@ -1,13 +1,13 @@
 import { debounce } from "throttle-debounce";
 import * as Misc from "../utils/misc";
-import * as Numbers from "../utils/numbers";
 import * as BannerEvent from "../observables/banner-event";
 // import * as Alerts from "./alerts";
 import * as NotificationEvent from "../observables/notification-event";
+import { convertRemToPixels } from "../utils/numbers";
 
 function updateMargin(): void {
   const height = $("#bannerCenter").height() as number;
-  $("#app").css("padding-top", height + Numbers.convertRemToPixels(2) + "px");
+  $("#app").css("padding-top", height + convertRemToPixels(2) + "px");
   $("#notificationCenter").css("margin-top", height + "px");
 }
 
@@ -116,7 +116,7 @@ class Notification {
           {
             marginTop: newHeight - oldHeight,
           },
-          125,
+          Misc.applyReducedMotion(125),
           () => {
             $("#notificationCenter .history").css("margin-top", 0);
             $("#notificationCenter .history").prepend(`
@@ -132,7 +132,7 @@ class Notification {
                 {
                   opacity: 1,
                 },
-                125,
+                Misc.applyReducedMotion(125),
                 () => {
                   $(`#notificationCenter .notif[id='${this.id}']`).css(
                     "opacity",
@@ -221,13 +221,13 @@ class Notification {
           {
             opacity: 0,
           },
-          125,
+          Misc.applyReducedMotion(125),
           () => {
             $(`#notificationCenter .notif[id='${this.id}']`).animate(
               {
                 height: 0,
               },
-              125,
+              Misc.applyReducedMotion(125),
               () => {
                 $(`#notificationCenter .notif[id='${this.id}']`).remove();
               }
@@ -243,7 +243,7 @@ class Notification {
           {
             opacity: 0,
           },
-          125,
+          Misc.applyReducedMotion(125),
           () => {
             $(
               `#bannerCenter .banner[id='${this.id}'], #bannerCenter .psa[id='${this.id}']`
@@ -266,10 +266,19 @@ function updateClearAllButton(): void {
   }
 }
 
+export type AddNotificationOptions = {
+  important?: boolean;
+  duration?: number;
+  customTitle?: string;
+  customIcon?: string;
+  closeCallback?: () => void;
+  allowHTML?: boolean;
+};
+
 export function add(
   message: string,
   level = 0,
-  options: MonkeyTypes.AddNotificationOptions = {}
+  options: AddNotificationOptions = {}
 ): void {
   NotificationEvent.dispatch(message, level, options.customTitle);
 

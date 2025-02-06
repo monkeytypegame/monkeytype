@@ -3,10 +3,8 @@ import * as Notifications from "./elements/notifications";
 import * as LoadingPage from "./pages/loading";
 import DefaultConfig from "./constants/default-config";
 import { isAuthenticated } from "./firebase";
-import { defaultSnap } from "./constants/default-snapshot";
 import * as ConnectionState from "./states/connection";
 import { lastElementFromArray } from "./utils/arrays";
-import { getFunboxList } from "./utils/json-data";
 import { migrateConfig } from "./utils/config";
 import * as Dates from "date-fns";
 import {
@@ -15,7 +13,14 @@ import {
 } from "./elements/test-activity-calendar";
 import * as Loader from "./elements/loader";
 
-import { Badge } from "@monkeytype/shared-types";
+import {
+  Badge,
+  CustomTheme,
+  ResultFilters,
+  User,
+  UserProfileDetails,
+  UserTag,
+} from "@monkeytype/contracts/schemas/users";
 import { Config, Difficulty } from "@monkeytype/contracts/schemas/configs";
 import {
   Mode,
@@ -23,8 +28,87 @@ import {
   PersonalBest,
   PersonalBests,
 } from "@monkeytype/contracts/schemas/shared";
+import { Preset } from "@monkeytype/contracts/schemas/presets";
+import defaultSnapshot from "./constants/default-snapshot";
+import { Result } from "@monkeytype/contracts/schemas/results";
+import { FunboxMetadata } from "../../../packages/funbox/src/types";
 
-let dbSnapshot: MonkeyTypes.Snapshot | undefined;
+export type SnapshotUserTag = UserTag & {
+  active?: boolean;
+  display: string;
+};
+
+export type SnapshotResult<M extends Mode> = Omit<
+  Result<M>,
+  | "_id"
+  | "bailedOut"
+  | "blindMode"
+  | "lazyMode"
+  | "difficulty"
+  | "funbox"
+  | "language"
+  | "numbers"
+  | "punctuation"
+  | "quoteLength"
+  | "restartCount"
+  | "incompleteTestSeconds"
+  | "afkDuration"
+  | "tags"
+> & {
+  _id: string;
+  bailedOut: boolean;
+  blindMode: boolean;
+  lazyMode: boolean;
+  difficulty: string;
+  funbox: string;
+  language: string;
+  numbers: boolean;
+  punctuation: boolean;
+  quoteLength: number;
+  restartCount: number;
+  incompleteTestSeconds: number;
+  afkDuration: number;
+  tags: string[];
+};
+
+export type Snapshot = Omit<
+  User,
+  | "timeTyping"
+  | "startedTests"
+  | "completedTests"
+  | "profileDetails"
+  | "streak"
+  | "resultFilterPresets"
+  | "tags"
+  | "xp"
+  | "testActivity"
+> & {
+  typingStats: {
+    timeTyping: number;
+    startedTests: number;
+    completedTests: number;
+  };
+  details?: UserProfileDetails;
+  inboxUnreadSize: number;
+  streak: number;
+  maxStreak: number;
+  filterPresets: ResultFilters[];
+  isPremium: boolean;
+  streakHourOffset?: number;
+  config: Config;
+  tags: SnapshotUserTag[];
+  presets: SnapshotPreset[];
+  results?: SnapshotResult<Mode>[];
+  xp: number;
+  testActivity?: ModifiableTestActivityCalendar;
+  testActivityByYear?: { [key: string]: TestActivityCalendar };
+};
+
+export type SnapshotPreset = Preset & {
+  display: string;
+};
+
+let dbSnapshot: Snapshot | undefined;
 
 export class SnapshotInitError extends Error {
   constructor(message: string, public responseCode: number) {
@@ -34,13 +118,11 @@ export class SnapshotInitError extends Error {
   }
 }
 
-export function getSnapshot(): MonkeyTypes.Snapshot | undefined {
+export function getSnapshot(): Snapshot | undefined {
   return dbSnapshot;
 }
 
-export function setSnapshot(
-  newSnapshot: MonkeyTypes.Snapshot | undefined
-): void {
+export function setSnapshot(newSnapshot: Snapshot | undefined): void {
   const originalBanned = dbSnapshot?.banned;
   const originalVerified = dbSnapshot?.verified;
   const lbOptOut = dbSnapshot?.lbOptOut;
@@ -63,11 +145,9 @@ export function setSnapshot(
   }
 }
 
-export async function initSnapshot(): Promise<
-  MonkeyTypes.Snapshot | number | boolean
-> {
+export async function initSnapshot(): Promise<Snapshot | number | boolean> {
   //send api request with token that returns tags, presets, and data needed for snap
-  const snap = { ...defaultSnap };
+  const snap = defaultSnapshot as Snapshot;
   try {
     if (!isAuthenticated()) return false;
     // if (ActivePage.get() === "loading") {
@@ -78,14 +158,14 @@ export async function initSnapshot(): Promise<
     // LoadingPage.updateText("Downloading user...");
 
     const [userResponse, configResponse, presetsResponse] = await Promise.all([
-      Ape.users.getData(),
+      Ape.users.get(),
       Ape.configs.get(),
       Ape.presets.get(),
     ]);
 
     if (userResponse.status !== 200) {
       throw new SnapshotInitError(
-        `${userResponse.message} (user)`,
+        `${userResponse.body.message} (user)`,
         userResponse.status
       );
     }
@@ -102,7 +182,7 @@ export async function initSnapshot(): Promise<
       );
     }
 
-    const userData = userResponse.data;
+    const userData = userResponse.body.data;
     const configData = configResponse.body.data;
     const presetsData = presetsResponse.body.data;
 
@@ -155,7 +235,7 @@ export async function initSnapshot(): Promise<
     snap.streak = userData?.streak?.length ?? 0;
     snap.maxStreak = userData?.streak?.maxLength ?? 0;
     snap.filterPresets = userData.resultFilterPresets ?? [];
-    snap.isPremium = userData?.isPremium;
+    snap.isPremium = userData?.isPremium ?? false;
     snap.allTimeLbs = userData.allTimeLbs;
 
     if (userData.testActivity !== undefined) {
@@ -241,24 +321,26 @@ export async function initSnapshot(): Promise<
           ...preset,
           display: preset.name.replace(/_/gi, " "),
         };
-      }) as MonkeyTypes.SnapshotPreset[];
+      }) as SnapshotPreset[];
       snap.presets = presetsWithDisplay;
 
-      snap.presets = snap.presets?.sort((a, b) => {
-        if (a.name > b.name) {
-          return 1;
-        } else if (a.name < b.name) {
-          return -1;
-        } else {
-          return 0;
+      snap.presets = snap.presets?.sort(
+        (a: SnapshotPreset, b: SnapshotPreset) => {
+          if (a.name > b.name) {
+            return 1;
+          } else if (a.name < b.name) {
+            return -1;
+          } else {
+            return 0;
+          }
         }
-      });
+      );
     }
 
     dbSnapshot = snap;
     return dbSnapshot;
   } catch (e) {
-    dbSnapshot = defaultSnap;
+    dbSnapshot = defaultSnapshot;
     throw e;
   }
 }
@@ -290,29 +372,30 @@ export async function getUserResults(offset?: number): Promise<boolean> {
     return false;
   }
 
-  const results: MonkeyTypes.FullResult<Mode>[] = response.body.data.map(
-    (result) => {
-      if (result.bailedOut === undefined) result.bailedOut = false;
-      if (result.blindMode === undefined) result.blindMode = false;
-      if (result.lazyMode === undefined) result.lazyMode = false;
-      if (result.difficulty === undefined) result.difficulty = "normal";
-      if (result.funbox === undefined) result.funbox = "none";
-      if (result.language === undefined || result.language === null) {
-        result.language = "english";
-      }
-      if (result.numbers === undefined) result.numbers = false;
-      if (result.punctuation === undefined) result.punctuation = false;
-      if (result.numbers === undefined) result.numbers = false;
-      if (result.quoteLength === undefined) result.quoteLength = -1;
-      if (result.restartCount === undefined) result.restartCount = 0;
-      if (result.incompleteTestSeconds === undefined) {
-        result.incompleteTestSeconds = 0;
-      }
-      if (result.afkDuration === undefined) result.afkDuration = 0;
-      if (result.tags === undefined) result.tags = [];
-      return result as MonkeyTypes.FullResult<Mode>;
+  //another check in case user logs out while waiting for response
+  if (!isAuthenticated()) return false;
+
+  const results: SnapshotResult<Mode>[] = response.body.data.map((result) => {
+    if (result.bailedOut === undefined) result.bailedOut = false;
+    if (result.blindMode === undefined) result.blindMode = false;
+    if (result.lazyMode === undefined) result.lazyMode = false;
+    if (result.difficulty === undefined) result.difficulty = "normal";
+    if (result.funbox === undefined) result.funbox = "none";
+    if (result.language === undefined || result.language === null) {
+      result.language = "english";
     }
-  );
+    if (result.numbers === undefined) result.numbers = false;
+    if (result.punctuation === undefined) result.punctuation = false;
+    if (result.numbers === undefined) result.numbers = false;
+    if (result.quoteLength === undefined) result.quoteLength = -1;
+    if (result.restartCount === undefined) result.restartCount = 0;
+    if (result.incompleteTestSeconds === undefined) {
+      result.incompleteTestSeconds = 0;
+    }
+    if (result.afkDuration === undefined) result.afkDuration = 0;
+    if (result.tags === undefined) result.tags = [];
+    return result as SnapshotResult<Mode>;
+  });
   results?.sort((a, b) => b.timestamp - a.timestamp);
 
   if (dbSnapshot.results !== undefined && dbSnapshot.results.length > 0) {
@@ -329,14 +412,12 @@ export async function getUserResults(offset?: number): Promise<boolean> {
   return true;
 }
 
-function _getCustomThemeById(
-  themeID: string
-): MonkeyTypes.CustomTheme | undefined {
+function _getCustomThemeById(themeID: string): CustomTheme | undefined {
   return dbSnapshot?.customThemes?.find((t) => t._id === themeID);
 }
 
 export async function addCustomTheme(
-  theme: MonkeyTypes.RawCustomTheme
+  theme: Omit<CustomTheme, "_id">
 ): Promise<boolean> {
   if (!dbSnapshot) return false;
 
@@ -344,25 +425,28 @@ export async function addCustomTheme(
     dbSnapshot.customThemes = [];
   }
 
-  if (dbSnapshot.customThemes.length >= 10) {
+  if (dbSnapshot.customThemes.length >= 20) {
     Notifications.add("Too many custom themes!", 0);
     return false;
   }
 
-  const response = await Ape.users.addCustomTheme(theme);
+  const response = await Ape.users.addCustomTheme({ body: { ...theme } });
   if (response.status !== 200) {
-    Notifications.add("Error adding custom theme: " + response.message, -1);
+    Notifications.add(
+      "Error adding custom theme: " + response.body.message,
+      -1
+    );
     return false;
   }
 
-  if (response.data === null) {
+  if (response.body.data === null) {
     Notifications.add("Error adding custom theme: No data returned", -1);
     return false;
   }
 
-  const newCustomTheme: MonkeyTypes.CustomTheme = {
+  const newCustomTheme: CustomTheme = {
     ...theme,
-    _id: response.data._id,
+    _id: response.body.data._id,
   };
 
   dbSnapshot.customThemes.push(newCustomTheme);
@@ -371,7 +455,7 @@ export async function addCustomTheme(
 
 export async function editCustomTheme(
   themeId: string,
-  newTheme: MonkeyTypes.RawCustomTheme
+  newTheme: Omit<CustomTheme, "_id">
 ): Promise<boolean> {
   if (!isAuthenticated()) return false;
   if (!dbSnapshot) return false;
@@ -389,13 +473,18 @@ export async function editCustomTheme(
     return false;
   }
 
-  const response = await Ape.users.editCustomTheme(themeId, newTheme);
+  const response = await Ape.users.editCustomTheme({
+    body: { themeId, theme: newTheme },
+  });
   if (response.status !== 200) {
-    Notifications.add("Error editing custom theme: " + response.message, -1);
+    Notifications.add(
+      "Error editing custom theme: " + response.body.message,
+      -1
+    );
     return false;
   }
 
-  const newCustomTheme: MonkeyTypes.CustomTheme = {
+  const newCustomTheme: CustomTheme = {
     ...newTheme,
     _id: themeId,
   };
@@ -413,9 +502,12 @@ export async function deleteCustomTheme(themeId: string): Promise<boolean> {
   const customTheme = dbSnapshot.customThemes?.find((t) => t._id === themeId);
   if (!customTheme) return false;
 
-  const response = await Ape.users.deleteCustomTheme(themeId);
+  const response = await Ape.users.deleteCustomTheme({ body: { themeId } });
   if (response.status !== 200) {
-    Notifications.add("Error deleting custom theme: " + response.message, -1);
+    Notifications.add(
+      "Error deleting custom theme: " + response.body.message,
+      -1
+    );
     return false;
   }
 
@@ -465,7 +557,7 @@ export async function getUserAverage10<M extends Mode>(
           (result.lazyMode === lazyMode ||
             (result.lazyMode === undefined && !lazyMode)) &&
           (activeTagIds.length === 0 ||
-            activeTagIds.some((tagId) => result.tags.includes(tagId)))
+            activeTagIds.some((tagId) => result.tags?.includes(tagId)))
         ) {
           // Continue if the mode2 doesn't match and it's not a quote
           if (
@@ -545,7 +637,7 @@ export async function getUserDailyBest<M extends Mode>(
           (result.lazyMode === lazyMode ||
             (result.lazyMode === undefined && !lazyMode)) &&
           (activeTagIds.length === 0 ||
-            activeTagIds.some((tagId) => result.tags.includes(tagId)))
+            activeTagIds.some((tagId) => result.tags?.includes(tagId)))
         ) {
           if (result.timestamp < Date.now() - 86400000) {
             continue;
@@ -615,12 +707,8 @@ export async function getLocalPB<M extends Mode>(
   language: string,
   difficulty: Difficulty,
   lazyMode: boolean,
-  funbox: string
+  funboxes: FunboxMetadata[]
 ): Promise<PersonalBest | undefined> {
-  const funboxes = (await getFunboxList()).filter((fb) => {
-    return funbox?.split("#").includes(fb.name);
-  });
-
   if (!funboxes.every((f) => f.canGetPb)) {
     return undefined;
   }
@@ -786,7 +874,7 @@ export async function saveLocalTagPB<M extends Mode>(
   function cont(): void {
     const filteredtag = dbSnapshot?.tags?.filter(
       (t) => t._id === tagId
-    )[0] as MonkeyTypes.UserTag;
+    )[0] as SnapshotUserTag;
 
     filteredtag.personalBests ??= {
       time: {},
@@ -908,7 +996,9 @@ export async function updateLbMemory<M extends Mode>(
     const mem = snapshot.lbMemory[timeMode][timeMode2];
     mem[language] = rank;
     if (api && current !== rank) {
-      await Ape.users.updateLeaderboardMemory(mode, mode2, language, rank);
+      await Ape.users.updateLeaderboardMemory({
+        body: { mode, mode2, language, rank },
+      });
     }
     setSnapshot(snapshot);
   }
@@ -932,7 +1022,7 @@ export async function resetConfig(): Promise<void> {
   }
 }
 
-export function saveLocalResult(result: MonkeyTypes.FullResult<Mode>): void {
+export function saveLocalResult(result: SnapshotResult<Mode>): void {
   const snapshot = getSnapshot();
   if (!snapshot) return;
 
@@ -1005,7 +1095,7 @@ export function setStreak(streak: number): void {
 
 export async function getTestActivityCalendar(
   yearString: string
-): Promise<MonkeyTypes.TestActivityCalendar | undefined> {
+): Promise<TestActivityCalendar | undefined> {
   if (!isAuthenticated() || dbSnapshot === undefined) return undefined;
 
   if (yearString === "current") return dbSnapshot.testActivity;
@@ -1024,7 +1114,7 @@ export async function getTestActivityCalendar(
     const response = await Ape.users.getTestActivity();
     if (response.status !== 200) {
       Notifications.add(
-        "Error getting test activities: " + response.message,
+        "Error getting test activities: " + response.body.message,
         -1
       );
       Loader.hide();
@@ -1032,9 +1122,9 @@ export async function getTestActivityCalendar(
     }
 
     dbSnapshot.testActivityByYear = {};
-    for (const year in response.data) {
+    for (const year in response.body.data) {
       if (year === currentYear) continue;
-      const testsByDays = response.data[year] ?? [];
+      const testsByDays = response.body.data[year] ?? [];
       const lastDay = Dates.addDays(
         new Date(parseInt(year), 0, 1),
         testsByDays.length

@@ -8,12 +8,14 @@ import * as ReportDal from "../../../src/dal/report";
 import GeorgeQueue from "../../../src/queues/george-queue";
 import * as AuthUtil from "../../../src/utils/auth";
 import _ from "lodash";
+import { enableRateLimitExpects } from "../../__testData__/rate-limit";
 
 const mockApp = request(app);
 const configuration = Configuration.getCachedConfiguration();
 const uid = new ObjectId().toHexString();
+enableRateLimitExpects();
 
-describe("ApeKeyController", () => {
+describe("AdminController", () => {
   const isAdminMock = vi.spyOn(AdminUuidDal, "isAdmin");
 
   beforeEach(async () => {
@@ -49,6 +51,11 @@ describe("ApeKeyController", () => {
       await expectFailForDisabledEndpoint(
         mockApp.get("/admin").set("authorization", `Uid ${uid}`)
       );
+    });
+    it("should be rate limited", async () => {
+      await expect(
+        mockApp.get("/admin").set("authorization", `Uid ${uid}`)
+      ).toBeRateLimited({ max: 1, windowMs: 5000 });
     });
   });
 
@@ -167,6 +174,22 @@ describe("ApeKeyController", () => {
           .set("authorization", `Uid ${uid}`)
       );
     });
+    it("should be rate limited", async () => {
+      //GIVEN
+      const victimUid = new ObjectId().toHexString();
+      getUserMock.mockResolvedValue({
+        banned: false,
+        discordId: "discordId",
+      } as any);
+
+      //WHEN
+      await expect(
+        mockApp
+          .post("/admin/toggleBan")
+          .send({ uid: victimUid })
+          .set("authorization", `Uid ${uid}`)
+      ).toBeRateLimited({ max: 1, windowMs: 5000 });
+    });
   });
   describe("accept reports", () => {
     const getReportsMock = vi.spyOn(ReportDal, "getReports");
@@ -184,11 +207,11 @@ describe("ApeKeyController", () => {
       const reportOne = {
         id: "1",
         reason: "one",
-      } as any as MonkeyTypes.Report;
+      } as any as ReportDal.DBReport;
       const reportTwo = {
         id: "2",
         reason: "two",
-      } as any as MonkeyTypes.Report;
+      } as any as ReportDal.DBReport;
       getReportsMock.mockResolvedValue([reportOne, reportTwo]);
 
       //WHEN
@@ -269,6 +292,18 @@ describe("ApeKeyController", () => {
           .set("authorization", `Uid ${uid}`)
       );
     });
+    it("should be rate limited", async () => {
+      //GIVEN
+      getReportsMock.mockResolvedValue([{ id: "1", reason: "one" } as any]);
+
+      //WHEN
+      await expect(
+        mockApp
+          .post("/admin/report/accept")
+          .send({ reports: [{ reportId: "1" }] })
+          .set("authorization", `Uid ${uid}`)
+      ).toBeRateLimited({ max: 1, windowMs: 5000 });
+    });
   });
   describe("reject reports", () => {
     const getReportsMock = vi.spyOn(ReportDal, "getReports");
@@ -286,11 +321,11 @@ describe("ApeKeyController", () => {
       const reportOne = {
         id: "1",
         reason: "one",
-      } as any as MonkeyTypes.Report;
+      } as any as ReportDal.DBReport;
       const reportTwo = {
         id: "2",
         reason: "two",
-      } as any as MonkeyTypes.Report;
+      } as any as ReportDal.DBReport;
       getReportsMock.mockResolvedValue([reportOne, reportTwo]);
 
       //WHEN
@@ -374,6 +409,18 @@ describe("ApeKeyController", () => {
           .set("authorization", `Uid ${uid}`)
       );
     });
+    it("should be rate limited", async () => {
+      //GIVEN
+      getReportsMock.mockResolvedValue([{ id: "1", reason: "one" } as any]);
+
+      //WHEN
+      await expect(
+        mockApp
+          .post("/admin/report/reject")
+          .send({ reports: [{ reportId: "1" }] })
+          .set("authorization", `Uid ${uid}`)
+      ).toBeRateLimited({ max: 1, windowMs: 5000 });
+    });
   });
   describe("send forgot password email", () => {
     const sendForgotPasswordEmailMock = vi.spyOn(
@@ -404,6 +451,15 @@ describe("ApeKeyController", () => {
       expect(sendForgotPasswordEmailMock).toHaveBeenCalledWith(
         "meowdec@example.com"
       );
+    });
+    it("should be rate limited", async () => {
+      //WHEN
+      await expect(
+        mockApp
+          .post("/admin/sendForgotPasswordEmail")
+          .send({ email: "meowdec@example.com" })
+          .set("authorization", `Uid ${uid}`)
+      ).toBeRateLimited({ max: 1, windowMs: 5000 });
     });
   });
 

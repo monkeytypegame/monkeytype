@@ -51,8 +51,8 @@ body.crtmode footer,
 body.crtmode #result,
 body.crtmode #popups,
 body.crtmode #notificationCenter,
-body.crtmode .word.error,
-body.crtmode .word .hints hint,
+body.crtmode #words .word.error,
+body.crtmode #words .word .hints hint,
 body.crtmode input,
 body.crtmode button,
 body.crtmode textarea,
@@ -123,6 +123,11 @@ body.crtmode nav .view-account .levelAndBar .xpBar,
 body.crtmode header.focus #logo .icon {
   filter: drop-shadow(3px 0px 1px var(--crt-sub-color-glow))
     drop-shadow(-3px 0px 0px var(--crt-sub-color-glow));
+}
+
+body.crtmode nav .accountButtonAndMenu .view-account .xpBar .xpBreakdown {
+  backdrop-filter: none;
+  background: var(--bg-color);
 }
 
 body.crtmode .button,

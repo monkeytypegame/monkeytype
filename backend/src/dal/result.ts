@@ -8,16 +8,17 @@ import {
 import MonkeyError from "../utils/error";
 import * as db from "../init/db";
 
-import { getUser, getTags } from "./user";
+import { getUser, getTags, DBUser } from "./user";
+import { DBResult } from "../utils/result";
 
-export const getResultCollection = (): Collection<MonkeyTypes.DBResult> =>
-  db.collection<MonkeyTypes.DBResult>("results");
+export const getResultCollection = (): Collection<DBResult> =>
+  db.collection<DBResult>("results");
 
 export async function addResult(
   uid: string,
-  result: MonkeyTypes.DBResult
+  result: DBResult
 ): Promise<{ insertedId: ObjectId }> {
-  let user: MonkeyTypes.DBUser | null = null;
+  let user: DBUser | null = null;
   try {
     user = await getUser(uid, "add result");
   } catch (e) {
@@ -61,10 +62,7 @@ export async function updateTags(
   );
 }
 
-export async function getResult(
-  uid: string,
-  id: string
-): Promise<MonkeyTypes.DBResult> {
+export async function getResult(uid: string, id: string): Promise<DBResult> {
   const result = await getResultCollection().findOne({
     _id: new ObjectId(id),
     uid,
@@ -73,9 +71,7 @@ export async function getResult(
   return result;
 }
 
-export async function getLastResult(
-  uid: string
-): Promise<MonkeyTypes.DBResult> {
+export async function getLastResult(uid: string): Promise<DBResult> {
   const [lastResult] = await getResultCollection()
     .find({ uid })
     .sort({ timestamp: -1 })
@@ -87,8 +83,8 @@ export async function getLastResult(
 
 export async function getResultByTimestamp(
   uid: string,
-  timestamp
-): Promise<MonkeyTypes.DBResult | null> {
+  timestamp: number
+): Promise<DBResult | null> {
   return await getResultCollection().findOne({ uid, timestamp });
 }
 
@@ -101,7 +97,7 @@ type GetResultsOpts = {
 export async function getResults(
   uid: string,
   opts?: GetResultsOpts
-): Promise<MonkeyTypes.DBResult[]> {
+): Promise<DBResult[]> {
   const { onOrAfterTimestamp, offset, limit } = opts ?? {};
   let query = getResultCollection()
     .find({

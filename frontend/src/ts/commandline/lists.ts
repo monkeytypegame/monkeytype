@@ -51,6 +51,7 @@ import TimerColorCommands from "./lists/timer-color";
 import TimerOpacityCommands from "./lists/timer-opacity";
 import HighlightModeCommands from "./lists/highlight-mode";
 import TapeModeCommands from "./lists/tape-mode";
+import TapeMarginCommands from "./lists/tape-margin";
 import BritishEnglishCommands from "./lists/british-english";
 import KeymapModeCommands from "./lists/keymap-mode";
 import KeymapStyleCommands from "./lists/keymap-style";
@@ -69,6 +70,7 @@ import ResultScreenCommands from "./lists/result-screen";
 import CustomBackgroundSizeCommands from "./lists/background-size";
 import CustomBackgroundFilterCommands from "./lists/background-filter";
 import AddOrRemoveThemeToFavorite from "./lists/add-or-remove-theme-to-favorites";
+import CodeUnindentOnBackspace from "./lists/code-unindent-on-backspace";
 
 import TagsCommands from "./lists/tags";
 import CustomThemesListCommands from "./lists/custom-themes-list";
@@ -76,7 +78,7 @@ import PresetsCommands from "./lists/presets";
 import LayoutsCommands, {
   update as updateLayoutsCommands,
 } from "./lists/layouts";
-import FunboxCommands, { update as updateFunboxCommands } from "./lists/funbox";
+import FunboxCommands from "./lists/funbox";
 import ThemesCommands, { update as updateThemesCommands } from "./lists/themes";
 import LoadChallengeCommands, {
   update as updateLoadChallengeCommands,
@@ -104,6 +106,9 @@ import * as TestStats from "../test/test-stats";
 import * as QuoteSearchModal from "../modals/quote-search";
 import * as FPSCounter from "../elements/fps-counter";
 import { migrateConfig } from "../utils/config";
+import { PartialConfigSchema } from "@monkeytype/contracts/schemas/configs";
+import { Command, CommandsSubgroup } from "./types";
+import { parseWithSchema as parseJsonWithSchema } from "@monkeytype/util/json";
 
 const layoutsPromise = JSONData.getLayoutsList();
 layoutsPromise
@@ -125,22 +130,6 @@ languagesPromise
   .catch((e: unknown) => {
     console.error(
       Misc.createErrorMessage(e, "Failed to update language commands")
-    );
-  });
-
-const funboxPromise = JSONData.getFunboxList();
-funboxPromise
-  .then((funboxes) => {
-    updateFunboxCommands(funboxes);
-    if (FunboxCommands[0]?.subgroup) {
-      FunboxCommands[0].subgroup.beforeList = (): void => {
-        updateFunboxCommands(funboxes);
-      };
-    }
-  })
-  .catch((e: unknown) => {
-    console.error(
-      Misc.createErrorMessage(e, "Failed to update funbox commands")
     );
   });
 
@@ -177,7 +166,7 @@ challengesPromise
     );
   });
 
-export const commands: MonkeyTypes.CommandsSubgroup = {
+export const commands: CommandsSubgroup = {
   title: "",
   list: [
     //result
@@ -262,6 +251,7 @@ export const commands: MonkeyTypes.CommandsSubgroup = {
     ...HideExtraLettersCommands,
     ...LazyModeCommands,
     ...LayoutsCommands,
+    ...CodeUnindentOnBackspace,
 
     //sound
     ...SoundVolumeCommands,
@@ -285,6 +275,7 @@ export const commands: MonkeyTypes.CommandsSubgroup = {
     ...TimerOpacityCommands,
     ...HighlightModeCommands,
     ...TapeModeCommands,
+    ...TapeMarginCommands,
     ...SmoothLineScrollCommands,
     ...ShowAllLinesCommands,
     ...TypingSpeedUnitCommands,
@@ -372,7 +363,11 @@ export const commands: MonkeyTypes.CommandsSubgroup = {
       exec: async ({ input }): Promise<void> => {
         if (input === undefined || input === "") return;
         try {
-          await UpdateConfig.apply(migrateConfig(JSON.parse(input)));
+          const parsedConfig = parseJsonWithSchema(
+            input,
+            PartialConfigSchema.strip()
+          );
+          await UpdateConfig.apply(migrateConfig(parsedConfig));
           UpdateConfig.saveFullConfigToLocalStorage();
           void Settings.update();
           Notifications.add("Done", 1);
@@ -506,11 +501,10 @@ export function doesListExist(listName: string): boolean {
 
 export async function getList(
   listName: ListsObjectKeys
-): Promise<MonkeyTypes.CommandsSubgroup> {
+): Promise<CommandsSubgroup> {
   await Promise.allSettled([
     layoutsPromise,
     languagesPromise,
-    funboxPromise,
     fontsPromise,
     themesPromise,
     challengesPromise,
@@ -523,7 +517,7 @@ export async function getList(
   return list;
 }
 
-let stack: MonkeyTypes.CommandsSubgroup[] = [];
+let stack: CommandsSubgroup[] = [];
 
 stack = [commands];
 
@@ -537,11 +531,11 @@ export function setStackToDefault(): void {
   setStack([commands]);
 }
 
-export function setStack(val: MonkeyTypes.CommandsSubgroup[]): void {
+export function setStack(val: CommandsSubgroup[]): void {
   stack = val;
 }
 
-export function pushToStack(val: MonkeyTypes.CommandsSubgroup): void {
+export function pushToStack(val: CommandsSubgroup): void {
   stack.push(val);
 }
 
@@ -549,22 +543,21 @@ export function popFromStack(): void {
   stack.pop();
 }
 
-export function getTopOfStack(): MonkeyTypes.CommandsSubgroup {
-  return stack[stack.length - 1] as MonkeyTypes.CommandsSubgroup;
+export function getTopOfStack(): CommandsSubgroup {
+  return stack[stack.length - 1] as CommandsSubgroup;
 }
 
-let singleList: MonkeyTypes.CommandsSubgroup | undefined;
-export async function getSingleSubgroup(): Promise<MonkeyTypes.CommandsSubgroup> {
+let singleList: CommandsSubgroup | undefined;
+export async function getSingleSubgroup(): Promise<CommandsSubgroup> {
   await Promise.allSettled([
     layoutsPromise,
     languagesPromise,
-    funboxPromise,
     fontsPromise,
     themesPromise,
     challengesPromise,
   ]);
 
-  const singleCommands: MonkeyTypes.Command[] = [];
+  const singleCommands: Command[] = [];
   for (const command of commands.list) {
     const ret = buildSingleListCommands(command);
     singleCommands.push(...ret);
@@ -578,10 +571,10 @@ export async function getSingleSubgroup(): Promise<MonkeyTypes.CommandsSubgroup>
 }
 
 function buildSingleListCommands(
-  command: MonkeyTypes.Command,
-  parentCommand?: MonkeyTypes.Command
-): MonkeyTypes.Command[] {
-  const commands: MonkeyTypes.Command[] = [];
+  command: Command,
+  parentCommand?: Command
+): Command[] {
+  const commands: Command[] = [];
   if (command.subgroup) {
     if (command.subgroup.beforeList) {
       command.subgroup.beforeList();

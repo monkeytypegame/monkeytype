@@ -1,16 +1,17 @@
 import { ZodError, ZodIssue } from "zod";
+import { deepClone } from "./misc";
 
 export class LocalStorageWithSchema<T> {
   private key: string;
   private schema: Zod.Schema<T>;
   private fallback: T;
-  private migrate?: (value: unknown, zodIssues: ZodIssue[]) => T;
+  private migrate?: (value: unknown, zodIssues: ZodIssue[], fallback: T) => T;
 
   constructor(options: {
     key: string;
     schema: Zod.Schema<T>;
     fallback: T;
-    migrate?: (value: unknown, zodIssues: ZodIssue[]) => T;
+    migrate?: (value: unknown, zodIssues: ZodIssue[], fallback: T) => T;
   }) {
     this.key = options.key;
     this.schema = options.schema;
@@ -25,7 +26,7 @@ export class LocalStorageWithSchema<T> {
       return this.fallback;
     }
 
-    let jsonParsed;
+    let jsonParsed: unknown;
     try {
       jsonParsed = JSON.parse(value);
     } catch (e) {
@@ -50,7 +51,11 @@ export class LocalStorageWithSchema<T> {
 
     let newValue = this.fallback;
     if (this.migrate) {
-      const migrated = this.migrate(jsonParsed, schemaParsed.error.issues);
+      const migrated = this.migrate(
+        jsonParsed,
+        schemaParsed.error.issues,
+        deepClone(this.fallback)
+      );
       const parse = this.schema.safeParse(migrated);
       if (parse.success) {
         newValue = migrated;

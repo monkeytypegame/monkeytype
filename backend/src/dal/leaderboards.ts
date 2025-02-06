@@ -6,12 +6,13 @@ import { isDevEnvironment } from "../utils/misc";
 import { getCachedConfiguration } from "../init/configuration";
 
 import { addLog } from "./logs";
-import { Collection } from "mongodb";
+import { Collection, ObjectId } from "mongodb";
 import {
   LeaderboardEntry,
   LeaderboardRank,
 } from "@monkeytype/contracts/schemas/leaderboards";
 import { omit } from "lodash";
+import { DBUser } from "./user";
 
 export type DBLeaderboardEntry = LeaderboardEntry & {
   _id: ObjectId;
@@ -54,6 +55,7 @@ export async function get(
 
     return preset;
   } catch (e) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     if (e.error === 175) {
       //QueryPlanKilled, collection was removed during the query
       return false;
@@ -84,6 +86,7 @@ export async function getRank(
       entry: entry !== null ? entry : undefined,
     };
   } catch (e) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     if (e.error === 175) {
       //QueryPlanKilled, collection was removed during the query
       return false;
@@ -102,77 +105,75 @@ export async function update(
 }> {
   const key = `lbPersonalBests.${mode}.${mode2}.${language}`;
   const lbCollectionName = `leaderboards.${language}.${mode}.${mode2}`;
-  const lb = db
-    .collection<MonkeyTypes.DBUser>("users")
-    .aggregate<LeaderboardEntry>(
-      [
-        {
-          $match: {
-            [`${key}.wpm`]: {
-              $gt: 0,
-            },
-            [`${key}.acc`]: {
-              $gt: 0,
-            },
-            [`${key}.timestamp`]: {
-              $gt: 0,
-            },
-            banned: {
-              $ne: true,
-            },
-            lbOptOut: {
-              $ne: true,
-            },
-            needsToChangeName: {
-              $ne: true,
-            },
-            timeTyping: {
-              $gt: isDevEnvironment() ? 0 : 7200,
-            },
+  const lb = db.collection<DBUser>("users").aggregate<LeaderboardEntry>(
+    [
+      {
+        $match: {
+          [`${key}.wpm`]: {
+            $gt: 0,
+          },
+          [`${key}.acc`]: {
+            $gt: 0,
+          },
+          [`${key}.timestamp`]: {
+            $gt: 0,
+          },
+          banned: {
+            $ne: true,
+          },
+          lbOptOut: {
+            $ne: true,
+          },
+          needsToChangeName: {
+            $ne: true,
+          },
+          timeTyping: {
+            $gt: isDevEnvironment() ? 0 : 7200,
           },
         },
-        {
-          $sort: {
-            [`${key}.wpm`]: -1,
-            [`${key}.acc`]: -1,
-            [`${key}.timestamp`]: -1,
-          },
+      },
+      {
+        $sort: {
+          [`${key}.wpm`]: -1,
+          [`${key}.acc`]: -1,
+          [`${key}.timestamp`]: -1,
         },
-        {
-          $project: {
-            _id: 0,
-            [`${key}.wpm`]: 1,
-            [`${key}.acc`]: 1,
-            [`${key}.raw`]: 1,
-            [`${key}.consistency`]: 1,
-            [`${key}.timestamp`]: 1,
-            uid: 1,
-            name: 1,
-            discordId: 1,
-            discordAvatar: 1,
-            inventory: 1,
-            premium: 1,
-          },
+      },
+      {
+        $project: {
+          _id: 0,
+          [`${key}.wpm`]: 1,
+          [`${key}.acc`]: 1,
+          [`${key}.raw`]: 1,
+          [`${key}.consistency`]: 1,
+          [`${key}.timestamp`]: 1,
+          uid: 1,
+          name: 1,
+          discordId: 1,
+          discordAvatar: 1,
+          inventory: 1,
+          premium: 1,
         },
+      },
 
-        {
-          $addFields: {
-            "user.uid": "$uid",
-            "user.name": "$name",
-            "user.discordId": { $ifNull: ["$discordId", "$$REMOVE"] },
-            "user.discordAvatar": { $ifNull: ["$discordAvatar", "$$REMOVE"] },
-            [`${key}.consistency`]: {
-              $ifNull: [`$${key}.consistency`, "$$REMOVE"],
-            },
-            calculated: {
-              $function: {
-                lang: "js",
-                args: [
-                  "$premium.expirationTimestamp",
-                  "$$NOW",
-                  "$inventory.badges",
-                ],
-                body: `function(expiration, currentTime, badges) { 
+      {
+        $addFields: {
+          "user.uid": "$uid",
+          "user.name": "$name",
+          "user.discordId": { $ifNull: ["$discordId", "$$REMOVE"] },
+          "user.discordAvatar": { $ifNull: ["$discordAvatar", "$$REMOVE"] },
+          [`${key}.consistency`]: {
+            $ifNull: [`$${key}.consistency`, "$$REMOVE"],
+          },
+          calculated: {
+            $function: {
+              lang: "js",
+              args: [
+                "$premium.expirationTimestamp",
+                "$$NOW",
+                "$inventory.badges",
+              ],
+              body: `function(expiration, currentTime, badges) { 
                         try {row_number+= 1;} catch (e) {row_number= 1;} 
                         var badgeId = undefined;
                         if(badges)for(let i=0; i<badges.length; i++){
@@ -181,19 +182,19 @@ export async function update(
                         var isPremium = expiration !== undefined && (expiration === -1 || new Date(expiration)>currentTime) || undefined;
                         return {rank:row_number,badgeId, isPremium};
                       }`,
-              },
             },
           },
         },
-        {
-          $replaceWith: {
-            $mergeObjects: [`$${key}`, "$user", "$calculated"],
-          },
+      },
+      {
+        $replaceWith: {
+          $mergeObjects: [`$${key}`, "$user", "$calculated"],
         },
-        { $out: lbCollectionName },
-      ],
-      { allowDiskUse: true }
-    );
+      },
+      { $out: lbCollectionName },
+    ],
+    { allowDiskUse: true }
+  );
 
   const start1 = performance.now();
   await lb.toArray();

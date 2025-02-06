@@ -1,5 +1,5 @@
 import * as Configuration from "../../init/configuration";
-import { MonkeyResponse2 } from "../../utils/monkey-response";
+import { MonkeyResponse } from "../../utils/monkey-response";
 import { CONFIGURATION_FORM_SCHEMA } from "../../constants/base-configuration";
 import {
   ConfigurationSchemaResponse,
@@ -7,26 +7,27 @@ import {
   PatchConfigurationRequest,
 } from "@monkeytype/contracts/configuration";
 import MonkeyError from "../../utils/error";
+import { MonkeyRequest } from "../types";
 
 export async function getConfiguration(
-  _req: MonkeyTypes.Request2
+  _req: MonkeyRequest
 ): Promise<GetConfigurationResponse> {
   const currentConfiguration = await Configuration.getLiveConfiguration();
-  return new MonkeyResponse2("Configuration retrieved", currentConfiguration);
+  return new MonkeyResponse("Configuration retrieved", currentConfiguration);
 }
 
 export async function getSchema(
-  _req: MonkeyTypes.Request2
+  _req: MonkeyRequest
 ): Promise<ConfigurationSchemaResponse> {
-  return new MonkeyResponse2(
+  return new MonkeyResponse(
     "Configuration schema retrieved",
     CONFIGURATION_FORM_SCHEMA
   );
 }
 
 export async function updateConfiguration(
-  req: MonkeyTypes.Request2<undefined, PatchConfigurationRequest>
-): Promise<MonkeyResponse2> {
+  req: MonkeyRequest<undefined, PatchConfigurationRequest>
+): Promise<MonkeyResponse> {
   const { configuration } = req.body;
   const success = await Configuration.patchConfiguration(configuration);
 
@@ -34,5 +35,5 @@ export async function updateConfiguration(
     throw new MonkeyError(500, "Configuration update failed");
   }
 
-  return new MonkeyResponse2("Configuration updated", null);
+  return new MonkeyResponse("Configuration updated", null);
 }

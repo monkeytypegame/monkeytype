@@ -20,7 +20,17 @@ import {
   Interval,
 } from "date-fns";
 
-export class TestActivityCalendar implements MonkeyTypes.TestActivityCalendar {
+type TestActivityDay = {
+  level: string;
+  label?: string;
+};
+
+export type TestActivityMonth = {
+  text: string;
+  weeks: number;
+};
+
+export class TestActivityCalendar implements TestActivityCalendar {
   protected data: (number | null | undefined)[];
   protected startDay: Date;
   protected endDay: Date;
@@ -57,9 +67,9 @@ export class TestActivityCalendar implements MonkeyTypes.TestActivityCalendar {
     lastDay: Date
   ): (number | null | undefined)[] {
     //fill calendar with enough values
-    const values: (number | null | undefined)[] = new Array(
-      Math.max(0, 386 - data.length)
-    ).fill(undefined);
+    const values = new Array(Math.max(0, 386 - data.length)).fill(
+      undefined
+    ) as (number | null | undefined)[];
     values.push(...data);
 
     //discard values outside the calendar range
@@ -69,12 +79,12 @@ export class TestActivityCalendar implements MonkeyTypes.TestActivityCalendar {
     return values.slice(offset);
   }
 
-  getMonths(): MonkeyTypes.TestActivityMonth[] {
+  getMonths(): TestActivityMonth[] {
     const months: Date[] = eachMonthOfInterval({
       start: this.startDay,
       end: this.endDay,
     });
-    const results: MonkeyTypes.TestActivityMonth[] = [];
+    const results: TestActivityMonth[] = [];
 
     for (let i = 0; i < months.length; i++) {
       const month: Date = months[i] as Date;
@@ -101,8 +111,8 @@ export class TestActivityCalendar implements MonkeyTypes.TestActivityCalendar {
     return results;
   }
 
-  getDays(): MonkeyTypes.TestActivityDay[] {
-    const result: MonkeyTypes.TestActivityDay[] = [];
+  getDays(): TestActivityDay[] {
+    const result: TestActivityDay[] = [];
     const buckets = this.getBuckets();
     const getValue = (v: number | null | undefined): string => {
       if (v === undefined) return "0";
@@ -172,7 +182,7 @@ export class TestActivityCalendar implements MonkeyTypes.TestActivityCalendar {
 
 export class ModifiableTestActivityCalendar
   extends TestActivityCalendar
-  implements MonkeyTypes.ModifiableTestActivityCalendar
+  implements ModifiableTestActivityCalendar
 {
   private lastDay: Date;
 
@@ -205,7 +215,7 @@ export class ModifiableTestActivityCalendar
     this.data = this.buildData(this.data, this.lastDay);
   }
 
-  getFullYearCalendar(): MonkeyTypes.TestActivityCalendar {
+  getFullYearCalendar(): TestActivityCalendar {
     const today = new Date();
     if (this.lastDay.getFullYear() !== new UTCDateMini(today).getFullYear()) {
       return new TestActivityCalendar([], today, true);

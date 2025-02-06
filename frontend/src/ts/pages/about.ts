@@ -1,6 +1,5 @@
 import * as Misc from "../utils/misc";
 import * as JSONData from "../utils/json-data";
-import * as Numbers from "../utils/numbers";
 import Page from "./page";
 import Ape from "../ape";
 import * as Notifications from "../elements/notifications";
@@ -12,6 +11,7 @@ import {
   TypingStats,
   SpeedHistogram,
 } from "@monkeytype/contracts/schemas/public";
+import { getNumberWithMagnitude, numberWithSpaces } from "../utils/numbers";
 
 function reset(): void {
   $(".pageAbout .contributors").empty();
@@ -50,10 +50,10 @@ function updateStatsAndHistogram(): void {
     $(".pageAbout #totalTimeTypingStat .valSmall").text("years");
     $(".pageAbout #totalTimeTypingStat").attr(
       "aria-label",
-      Numbers.numberWithSpaces(Math.round(secondsRounded / 3600)) + " hours"
+      numberWithSpaces(Math.round(secondsRounded / 3600)) + " hours"
     );
 
-    const startedWithMagnitude = Numbers.getNumberWithMagnitude(
+    const startedWithMagnitude = getNumberWithMagnitude(
       typingStatsResponseData.testsStarted
     );
 
@@ -67,10 +67,10 @@ function updateStatsAndHistogram(): void {
     );
     $(".pageAbout #totalStartedTestsStat").attr(
       "aria-label",
-      Numbers.numberWithSpaces(typingStatsResponseData.testsStarted) + " tests"
+      numberWithSpaces(typingStatsResponseData.testsStarted) + " tests"
     );
 
-    const completedWIthMagnitude = Numbers.getNumberWithMagnitude(
+    const completedWIthMagnitude = getNumberWithMagnitude(
       typingStatsResponseData.testsCompleted
     );
 
@@ -84,8 +84,7 @@ function updateStatsAndHistogram(): void {
     );
     $(".pageAbout #totalCompletedTestsStat").attr(
       "aria-label",
-      Numbers.numberWithSpaces(typingStatsResponseData.testsCompleted) +
-        " tests"
+      numberWithSpaces(typingStatsResponseData.testsCompleted) + " tests"
     );
   }
 }

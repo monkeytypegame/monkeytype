@@ -1,3 +1,4 @@
+import { Accents } from "../test/lazy-mode";
 import { hexToHSL } from "./colors";
 
 /**
@@ -62,13 +63,30 @@ export const cachedFetchJson = memoizeAsync<string, typeof fetchJson>(
   fetchJson
 );
 
+export type Keys = {
+  row1: string[];
+  row2: string[];
+  row3: string[];
+  row4: string[];
+  row5: string[];
+};
+
+export type Layout = {
+  keymapShowTopRow: boolean;
+  matrixShowRightColumn?: boolean;
+  type: "iso" | "ansi" | "ortho" | "matrix";
+  keys: Keys;
+};
+
+export type LayoutsList = Record<string, Layout>;
+
 /**
  * Fetches the layouts list from the server.
  * @returns A promise that resolves to the layouts list.
  */
-export async function getLayoutsList(): Promise<MonkeyTypes.Layouts> {
+export async function getLayoutsList(): Promise<LayoutsList> {
   try {
-    const layoutsList = await cachedFetchJson<MonkeyTypes.Layouts>(
+    const layoutsList = await cachedFetchJson<LayoutsList>(
       "/layouts/_list.json"
     );
     return layoutsList;
@@ -83,9 +101,7 @@ export async function getLayoutsList(): Promise<MonkeyTypes.Layouts> {
  * @returns A promise that resolves to the layout object.
  * @throws {Error} If the layout list or layout doesn't exist.
  */
-export async function getLayout(
-  layoutName: string
-): Promise<MonkeyTypes.Layout> {
+export async function getLayout(layoutName: string): Promise<Layout> {
   const layouts = await getLayoutsList();
   const layout = layouts[layoutName];
   if (layout === undefined) {
@@ -94,20 +110,26 @@ export async function getLayout(
   return layout;
 }
 
-let themesList: MonkeyTypes.Theme[] | undefined;
+export type Theme = {
+  name: string;
+  bgColor: string;
+  mainColor: string;
+  subColor: string;
+  textColor: string;
+};
+
+let themesList: Theme[] | undefined;
 
 /**
  * Fetches the list of themes from the server, sorting them alphabetically by name.
  * If the list has already been fetched, returns the cached list.
  * @returns A promise that resolves to the sorted list of themes.
  */
-export async function getThemesList(): Promise<MonkeyTypes.Theme[]> {
+export async function getThemesList(): Promise<Theme[]> {
   if (!themesList) {
-    let themes = await cachedFetchJson<MonkeyTypes.Theme[]>(
-      "/themes/_list.json"
-    );
+    let themes = await cachedFetchJson<Theme[]>("/themes/_list.json");
 
-    themes = themes.sort(function (a: MonkeyTypes.Theme, b: MonkeyTypes.Theme) {
+    themes = themes.sort((a, b) => {
       const nameA = a.name.toLowerCase();
       const nameB = b.name.toLowerCase();
       if (nameA < nameB) return -1;
@@ -121,13 +143,13 @@ export async function getThemesList(): Promise<MonkeyTypes.Theme[]> {
   }
 }
 
-let sortedThemesList: MonkeyTypes.Theme[] | undefined;
+let sortedThemesList: Theme[] | undefined;
 
 /**
  * Fetches the sorted list of themes from the server.
  * @returns A promise that resolves to the sorted list of themes.
  */
-export async function getSortedThemesList(): Promise<MonkeyTypes.Theme[]> {
+export async function getSortedThemesList(): Promise<Theme[]> {
   if (!sortedThemesList) {
     if (!themesList) {
       await getThemesList();
@@ -163,40 +185,62 @@ export async function getLanguageList(): Promise<string[]> {
   }
 }
 
+export type LanguageGroup = {
+  name: string;
+  languages: string[];
+};
+
 /**
  * Fetches the list of language groups from the server.
  * @returns A promise that resolves to the list of language groups.
  */
-export async function getLanguageGroups(): Promise<
-  MonkeyTypes.LanguageGroup[]
-> {
+export async function getLanguageGroups(): Promise<LanguageGroup[]> {
   try {
-    const languageGroupList = await cachedFetchJson<
-      MonkeyTypes.LanguageGroup[]
-    >("/languages/_groups.json");
+    const languageGroupList = await cachedFetchJson<LanguageGroup[]>(
+      "/languages/_groups.json"
+    );
     return languageGroupList;
   } catch (e) {
     throw new Error("Language groups JSON fetch failed");
   }
 }
 
-let currentLanguage: MonkeyTypes.LanguageObject;
+export type LanguageObject = {
+  name: string;
+  rightToLeft: boolean;
+  noLazyMode?: boolean;
+  ligatures?: boolean;
+  orderedByFrequency?: boolean;
+  words: string[];
+  additionalAccents: Accents;
+  bcp47?: string;
+  originalPunctuation?: boolean;
+};
+
+let currentLanguage: LanguageObject;
 
 /**
  * Fetches the language object for a given language from the server.
  * @param lang The language code.
  * @returns A promise that resolves to the language object.
  */
-export async function getLanguage(
-  lang: string
-): Promise<MonkeyTypes.LanguageObject> {
+export async function getLanguage(lang: string): Promise<LanguageObject> {
   // try {
   if (currentLanguage === undefined || currentLanguage.name !== lang) {
-    currentLanguage = await cachedFetchJson<MonkeyTypes.LanguageObject>(
+    currentLanguage = await cachedFetchJson<LanguageObject>(
       `/languages/${lang}.json`
     );
   }
   return currentLanguage;
+}
+
+export async function checkIfLanguageSupportsZipf(
+  language: string
+): Promise<"yes" | "no" | "unknown"> {
+  const lang = await getLanguage(language);
+  if (lang.orderedByFrequency === true) return "yes";
+  if (lang.orderedByFrequency === false) return "no";
+  return "unknown";
 }
 
 /**
@@ -206,7 +250,7 @@ export async function getLanguage(
  */
 export async function getCurrentLanguage(
   languageName: string
-): Promise<MonkeyTypes.LanguageObject> {
+): Promise<LanguageObject> {
   return await getLanguage(languageName);
 }
 
@@ -217,8 +261,8 @@ export async function getCurrentLanguage(
  */
 export async function getCurrentGroup(
   language: string
-): Promise<MonkeyTypes.LanguageGroup | undefined> {
-  let retgroup: MonkeyTypes.LanguageGroup | undefined;
+): Promise<LanguageGroup | undefined> {
+  let retgroup: LanguageGroup | undefined;
   const groups = await getLanguageGroups();
   groups.forEach((group) => {
     if (retgroup === undefined) {
@@ -230,63 +274,35 @@ export async function getCurrentGroup(
   return retgroup;
 }
 
-let funboxList: MonkeyTypes.FunboxMetadata[] | undefined;
-
-/**
- * Fetches the list of funbox metadata from the server.
- * @returns A promise that resolves to the list of funbox metadata.
- */
-export async function getFunboxList(): Promise<MonkeyTypes.FunboxMetadata[]> {
-  if (!funboxList) {
-    let list = await cachedFetchJson<MonkeyTypes.FunboxMetadata[]>(
-      "/funbox/_list.json"
-    );
-    list = list.sort(function (
-      a: MonkeyTypes.FunboxMetadata,
-      b: MonkeyTypes.FunboxMetadata
-    ) {
-      const nameA = a.name.toLowerCase();
-      const nameB = b.name.toLowerCase();
-      if (nameA < nameB) return -1;
-      if (nameA > nameB) return 1;
-      return 0;
-    });
-    funboxList = list;
-    return funboxList;
-  } else {
-    return funboxList;
+export class Section {
+  public title: string;
+  public author: string;
+  public words: string[];
+  constructor(title: string, author: string, words: string[]) {
+    this.title = title;
+    this.author = author;
+    this.words = words;
   }
 }
 
-/**
- * Fetches the funbox metadata for a given funbox from the server.
- * @param funbox The name of the funbox.
- * @returns A promise that resolves to the funbox metadata.
- */
-export async function getFunbox(
-  funbox: string
-): Promise<MonkeyTypes.FunboxMetadata | undefined> {
-  const list: MonkeyTypes.FunboxMetadata[] = await getFunboxList();
-  return list.find(function (element) {
-    return element.name === funbox;
-  });
-}
+export type FunboxWordOrder = "normal" | "reverse";
 
-let fontsList: MonkeyTypes.FontObject[] | undefined;
+export type FontObject = {
+  name: string;
+  display?: string;
+  systemFont?: string;
+};
+
+let fontsList: FontObject[] | undefined;
 
 /**
  * Fetches the list of font objects from the server.
  * @returns A promise that resolves to the list of font objects.
  */
-export async function getFontsList(): Promise<MonkeyTypes.FontObject[]> {
+export async function getFontsList(): Promise<FontObject[]> {
   if (!fontsList) {
-    let list = await cachedFetchJson<MonkeyTypes.FontObject[]>(
-      "/fonts/_list.json"
-    );
-    list = list.sort(function (
-      a: MonkeyTypes.FontObject,
-      b: MonkeyTypes.FontObject
-    ) {
+    let list = await cachedFetchJson<FontObject[]>("/fonts/_list.json");
+    list = list.sort((a, b) => {
       const nameA = a.name.toLowerCase();
       const nameB = b.name.toLowerCase();
       if (nameA < nameB) return -1;
@@ -300,15 +316,23 @@ export async function getFontsList(): Promise<MonkeyTypes.FontObject[]> {
   }
 }
 
+export type Challenge = {
+  name: string;
+  display: string;
+  autoRole: boolean;
+  type: string;
+  parameters: (string | number | boolean)[];
+  message: string;
+  requirements: Record<string, Record<string, string | number | boolean>>;
+};
+
 /**
  * Fetches the list of challenges from the server.
  * @returns A promise that resolves to the list of challenges.
  */
-export async function getChallengeList(): Promise<MonkeyTypes.Challenge[]> {
+export async function getChallengeList(): Promise<Challenge[]> {
   try {
-    const data = await cachedFetchJson<MonkeyTypes.Challenge[]>(
-      "/challenges/_list.json"
-    );
+    const data = await cachedFetchJson<Challenge[]>("/challenges/_list.json");
     return data;
   } catch (e) {
     throw new Error("Challenge list JSON fetch failed");
@@ -341,6 +365,51 @@ export async function getContributorsList(): Promise<string[]> {
   }
 }
 
+type GithubRelease = {
+  url: string;
+  assets_url: string;
+  upload_url: string;
+  html_url: string;
+  id: number;
+  author: {
+    login: string;
+    id: number;
+    node_id: string;
+    avatar_url: string;
+    gravatar_id: string;
+    url: string;
+    html_url: string;
+    followers_url: string;
+    following_url: string;
+    gists_url: string;
+    starred_url: string;
+    subscriptions_url: string;
+    organizations_url: string;
+    repos_url: string;
+    events_url: string;
+    received_events_url: string;
+    type: string;
+    site_admin: boolean;
+  };
+  node_id: string;
+  tag_name: string;
+  target_commitish: string;
+  name: string;
+  draft: boolean;
+  prerelease: boolean;
+  created_at: string;
+  published_at: string;
+  assets: unknown[];
+  tarball_url: string;
+  zipball_url: string;
+  body: string;
+  reactions: {
+    url: string;
+    total_count: number;
+    [reaction: string]: number | string;
+  };
+};
+
 /**
  * Fetches the latest release name from GitHub.
  * @returns A promise that resolves to the latest release name.
@@ -360,9 +429,7 @@ export async function getLatestReleaseFromGitHub(): Promise<string> {
  * Fetches the list of releases from GitHub.
  * @returns A promise that resolves to the list of releases.
  */
-export async function getReleasesFromGitHub(): Promise<
-  MonkeyTypes.GithubRelease[]
-> {
+export async function getReleasesFromGitHub(): Promise<GithubRelease[]> {
   return cachedFetchJson(
     "https://api.github.com/repos/monkeytypegame/monkeytype/releases?per_page=5"
   );

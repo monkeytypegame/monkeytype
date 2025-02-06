@@ -1,70 +1,5 @@
-/**
- * Calculates the standard deviation of an array of numbers.
- * @param array An array of numbers.
- * @returns The standard deviation of the input array.
- */
-export function stdDev(array: number[]): number {
-  try {
-    const n = array.length;
-    const mean = array.reduce((a, b) => a + b) / n;
-    return Math.sqrt(
-      array.map((x) => Math.pow(x - mean, 2)).reduce((a, b) => a + b) / n
-    );
-  } catch (e) {
-    return 0;
-  }
-}
+import { roundTo2 } from "@monkeytype/util/numbers";
 
-/**
- * Calculates the mean (average) of an array of numbers.
- * @param array An array of numbers.
- * @returns The mean of the input array.
- */
-export function mean(array: number[]): number {
-  try {
-    return (
-      array.reduce((previous, current) => (current += previous)) / array.length
-    );
-  } catch (e) {
-    return 0;
-  }
-}
-
-/**
- * Calculates the median of an array of numbers.
- * https://www.w3resource.com/javascript-exercises/fundamental/javascript-fundamental-exercise-88.php
- * @param arr An array of numbers.
- * @returns The median of the input array.
- */
-export function median(arr: number[]): number {
-  try {
-    const mid = Math.floor(arr.length / 2),
-      nums = [...arr].sort((a, b) => a - b);
-    return arr.length % 2 !== 0
-      ? (nums[mid] as number)
-      : ((nums[mid - 1] as number) + (nums[mid] as number)) / 2;
-  } catch (e) {
-    return 0;
-  }
-}
-
-/**
- * Rounds a number to one decimal places.
- * @param num The number to round.
- * @returns The input number rounded to one decimal places.
- */
-export function roundTo1(num: number): number {
-  return Math.round((num + Number.EPSILON) * 10) / 10;
-}
-
-/**
- * Rounds a number to two decimal places.
- * @param num The number to round.
- * @returns The input number rounded to two decimal places.
- */
-export function roundTo2(num: number): number {
-  return Math.round((num + Number.EPSILON) * 100) / 100;
-}
 /**
  * Converts a value in rem units to pixels based on the root element's font size.
  * https://stackoverflow.com/questions/36532307/rem-px-in-javascript
@@ -82,18 +17,6 @@ export function convertRemToPixels(rem: number): number {
  */
 export function numberWithSpaces(x: number): string {
   return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
-}
-
-/**
- * Gets an integer between min and max, both are inclusive.
- * @param min
- * @param max
- * @returns Random integer betwen min and max.
- */
-export function randomIntFromRange(min: number, max: number): number {
-  const minNorm = Math.ceil(min);
-  const maxNorm = Math.floor(max);
-  return Math.floor(Math.random() * (maxNorm - minNorm + 1) + minNorm);
 }
 
 /**

@@ -1244,5 +1244,19 @@
     "mainColor": "#e0794e",
     "subColor": "#688e8f",
     "textColor": "#023e3b"
+  },
+  {
+    "name": "suisei",
+    "bgColor": "#3b4a62",
+    "mainColor": "#bef0ff",
+    "subColor": "#fe9841",
+    "textColor": "#dbdeeb"
+  },
+  {
+    "name": "github",
+    "bgColor": "#212830",
+    "mainColor": "#41ce5c",
+    "subColor": "#788386",
+    "textColor": "#ccdae6"
   }
 ]

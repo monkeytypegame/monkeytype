@@ -32,12 +32,6 @@
       "length": 254
     },
     {
-      "text": "def bruteforce(charset, maxlength):\n\treturn (''.join(candidate)\n\t\tfor candidate in itertools.chain.from_iterable(itertools.product(charset, repeat=i)\n\t\tfor i in range(1, maxlength + 1)))\ndef extractFile(arFile, attempt):\n\ttry:\n\t\tarFile.extractall(pwd=attempt)\n\t\tprint \"Password found! password is %s\"%attempt\n\t\texit(0)\n\texcept Exception,e:\n\t\tpass\n\tif datetime.datetime.now().second%20==0:\n\t\tprint 'At %s'%attempt",
-      "source": "GitHub -  GauthamGoli/rar-Password-Cracker",
-      "id": 5,
-      "length": 412
-    },
-    {
       "text": "soup = BeautifulSoup(html, features='lxml')\nprint(soup.h1)\nprint(line_break, soup.p)\n\nall_href = soup.find_all('a')\nall_href = [l['href'] for l in all_href]\nprint(line_break, all_href)",
       "source": "GitHub - MorvanZhou/easy-scraping-tutorial",
       "id": 6,
@@ -452,10 +446,10 @@
       "length": 372
     },
     {
-      "text": "class Graph():\n\ndef __init__(self, vertices):\nself.V = vertices\nself.graph = [[0 for column in range(vertices)]\nfor row in range(vertices)]\n\ndef printSolution(self, dist):\nprint('Vertex \t Distance from Source')\nfor node in range(self.V):\nprint(node, '\t\t', dist[node])\n\ndef minDistance(self, dist, sptSet):\nmin = 1e7\n\nfor v in range(self.V):\nif dist[v] < min and sptSet[v] == False:\nmin = dist[v]\nmin_index = v\n\nreturn min_index\n\ndef dijkstra(self, src):\n\ndist = [1e7] * self.V\ndist[src] = 0\nsptSet = [False] * self.V\n\nfor cout in range(self.V):\n\nu = self.minDistance(dist, sptSet)\n\nsptSet[u] = True\n\nfor v in range(self.V):\nif (self.graph[u][v] > 0 and\nsptSet[v] == False and\ndist[v] > dist[u] + self.graph[u][v]):\ndist[v] = dist[u] + self.graph[u][v]\n\nself.printSolution(dist)",
+      "text": "class Graph():\n\n\tdef __init__(self, vertices):\n\t\tself.V = vertices\n\t\tself.graph = [[0 for column in range(vertices)]\n\t\t\t\tfor row in range(vertices)]\n\n\tdef printSolution(self, dist):\n\t\tprint('Vertex \t Distance from Source')\n\t\tfor node in range(self.V):\n\t\t\tprint(node, '\t\t', dist[node])\n\n\tdef minDistance(self, dist, sptSet):\n\t\tmin = 1e7\n\n\t\tfor v in range(self.V):\n\t\t\tif dist[v] < min and sptSet[v] == False:\n\t\t\t\tmin = dist[v]\n\t\t\t\tmin_index = v\n\n\t\treturn min_index\n\n\tdef dijkstra(self, src):\n\n\t\tdist = [1e7] * self.V\n\t\tdist[src] = 0\n\t\tsptSet = [False] * self.V\n\n\t\tfor cout in range(self.V):\n\n\t\t\tu = self.minDistance(dist, sptSet)\n\n\t\t\tsptSet[u] = True\n\n\t\t\tfor v in range(self.V):\n\t\t\t\tif (self.graph[u][v] > 0 and\n\t\t\t\t\tsptSet[v] == False and\n\t\t\t\t\tdist[v] > dist[u] + self.graph[u][v]):\n\t\t\t\t\tdist[v] = dist[u] + self.graph[u][v]\n\n\t\tself.printSolution(dist)",
       "source": "https://www.geeksforgeeks.org/python-program-for-dijkstras-shortest-path-algorithm-greedy-algo-7/",
       "id": 75,
-      "length": 777
+      "length": 851
     }
   ]
 }

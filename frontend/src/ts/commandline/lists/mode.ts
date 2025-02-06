@@ -1,8 +1,9 @@
 import * as UpdateConfig from "../../config";
 import * as TestLogic from "../../test/test-logic";
 import * as ManualRestart from "../../test/manual-restart-tracker";
+import { Command } from "../types";
 
-const commands: MonkeyTypes.Command[] = [
+const commands: Command[] = [
   {
     id: "changeMode",
     display: "Mode...",

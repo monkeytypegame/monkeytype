@@ -6,6 +6,7 @@ import { InputIndicator } from "../elements/input-indicator";
 import * as Skeleton from "../utils/skeleton";
 import * as Misc from "../utils/misc";
 import TypoList from "../utils/typo-list";
+import { z } from "zod";
 
 export function enableSignUpButton(): void {
   $(".page.pageLogin .register.side button").prop("disabled", false);
@@ -58,18 +59,20 @@ const checkNameDebounced = debounce(1000, async () => {
     updateSignupButton();
     return;
   }
-  const response = await Ape.users.getNameAvailability(val);
+  const response = await Ape.users.getNameAvailability({
+    params: { name: val },
+  });
 
   if (response.status === 200) {
-    nameIndicator.show("available", response.message);
+    nameIndicator.show("available", response.body.message);
   } else if (response.status === 422) {
-    nameIndicator.show("unavailable", response.message);
+    nameIndicator.show("unavailable", response.body.message);
   } else if (response.status === 409) {
-    nameIndicator.show("taken", response.message);
+    nameIndicator.show("taken", response.body.message);
   } else {
-    nameIndicator.show("unavailable", response.message);
+    nameIndicator.show("unavailable", response.body.message);
     Notifications.add(
-      "Failed to check name availability: " + response.message,
+      "Failed to check name availability: " + response.body.message,
       -1
     );
   }
@@ -79,8 +82,6 @@ const checkNameDebounced = debounce(1000, async () => {
 
 const checkEmail = (): void => {
   const email = $(".page.pageLogin .register.side .emailInput").val() as string;
-  const emailRegex =
-    /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
   const educationRegex =
     /@.*(student|education|school|\.edu$|\.edu\.|\.ac\.|\.sch\.)/i;
 
@@ -88,7 +89,7 @@ const checkEmail = (): void => {
     return email.endsWith(typo);
   });
 
-  if (emailRegex.test(email)) {
+  if (z.string().email().safeParse(email).success) {
     if (emailHasTypo) {
       emailIndicator.show(
         "typo",
@@ -103,7 +104,7 @@ const checkEmail = (): void => {
       emailIndicator.show("valid");
     }
   } else {
-    emailIndicator.show("invalid");
+    emailIndicator.show("invalid", "Please enter a valid email address.");
   }
 
   updateSignupButton();

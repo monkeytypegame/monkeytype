@@ -20,6 +20,7 @@ import * as URLHandler from "../utils/url-handler";
 import * as Account from "../pages/account";
 import * as Alerts from "../elements/alerts";
 import * as AccountSettings from "../pages/account-settings";
+import { getAllFunboxes } from "@monkeytype/funbox";
 import {
   GoogleAuthProvider,
   GithubAuthProvider,
@@ -47,6 +48,7 @@ import { navigate } from "./route-controller";
 import { FirebaseError } from "firebase/app";
 import * as PSA from "../elements/psa";
 import defaultResultFilters from "../constants/default-result-filters";
+import { getActiveFunboxes } from "../test/funbox/list";
 
 export const gmailProvider = new GoogleAuthProvider();
 export const githubProvider = new GithubAuthProvider();
@@ -66,7 +68,7 @@ async function sendVerificationEmail(): Promise<void> {
   if (result.status !== 200) {
     Loader.hide();
     Notifications.add(
-      "Failed to request verification email: " + result.message,
+      "Failed to request verification email: " + result.body.message,
       -1
     );
   } else {
@@ -122,14 +124,14 @@ async function getDataAndInit(): Promise<boolean> {
     LoadingPage.updateBar(45);
   }
   LoadingPage.updateText("Applying settings...");
-  const snapshot = DB.getSnapshot() as MonkeyTypes.Snapshot;
+  const snapshot = DB.getSnapshot() as DB.Snapshot;
   AccountButton.update(snapshot);
   Alerts.setNotificationBubbleVisible(snapshot.inboxUnreadSize > 0);
   showFavoriteQuoteLength();
 
   ResultFilters.loadTags(snapshot.tags);
 
-  Promise.all([JSONData.getLanguageList(), JSONData.getFunboxList()])
+  Promise.all([JSONData.getLanguageList(), getAllFunboxes()])
     .then((values) => {
       const [languages, funboxes] = values;
       languages.forEach((language) => {
@@ -170,6 +172,11 @@ async function getDataAndInit(): Promise<boolean> {
     );
     await UpdateConfig.apply(snapshot.config);
     UpdateConfig.saveFullConfigToLocalStorage(true);
+
+    //funboxes might be different and they wont activate on the account page
+    for (const fb of getActiveFunboxes()) {
+      fb.functions?.applyGlobalCSS?.();
+    }
   }
   AccountButton.loading(false);
   TagController.loadActiveFromLocalStorage();
@@ -563,14 +570,16 @@ async function signUp(): Promise<void> {
       password
     );
 
-    const signInResponse = await Ape.users.create(
-      nname,
-      captchaToken,
-      email,
-      createdAuthUser.user.uid
-    );
+    const signInResponse = await Ape.users.create({
+      body: {
+        name: nname,
+        captcha: captchaToken,
+        email,
+        uid: createdAuthUser.user.uid,
+      },
+    });
     if (signInResponse.status !== 200) {
-      throw new Error(`Failed to sign in: ${signInResponse.message}`);
+      throw new Error(`Failed to sign in: ${signInResponse.body.message}`);
     }
 
     await updateProfile(createdAuthUser.user, { displayName: nname });

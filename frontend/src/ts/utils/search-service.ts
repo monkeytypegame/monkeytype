@@ -84,12 +84,12 @@ export const buildSearchService = <T>(
     rawTokens.forEach((token) => {
       const stemmedToken = stemmer(token);
 
-      if (!(stemmedToken in normalizedTokenToOriginal)) {
+      if (!Object.hasOwn(normalizedTokenToOriginal, stemmedToken)) {
         normalizedTokenToOriginal[stemmedToken] = new Set<string>();
       }
       normalizedTokenToOriginal[stemmedToken]?.add(token);
 
-      if (!(stemmedToken in reverseIndex)) {
+      if (!Object.hasOwn(reverseIndex, stemmedToken)) {
         reverseIndex[stemmedToken] = new Set<InternalDocument>();
       }
       reverseIndex[stemmedToken]?.add(internalDocument);

@@ -35,6 +35,7 @@ import {
 } from "../utils/simple-modal";
 import { ShowOptions } from "../utils/animated-modal";
 import { GenerateDataRequest } from "@monkeytype/contracts/dev";
+import { UserNameSchema } from "@monkeytype/contracts/users";
 
 type PopupKey =
   | "updateEmail"
@@ -198,6 +199,12 @@ async function reauthenticate(
         status: 0,
         message: "Incorrect password",
       };
+    } else if (typedError.code === "auth/invalid-credential") {
+      return {
+        status: 0,
+        message:
+          "Password is incorrect or your account does not have password authentication enabled.",
+      };
     } else {
       return {
         status: -1,
@@ -252,15 +259,14 @@ list.updateEmail = new SimpleModal({
       };
     }
 
-    const response = await Ape.users.updateEmail(
-      email,
-      reauth.user.email as string
-    );
+    const response = await Ape.users.updateEmail({
+      body: { newEmail: email, previousEmail: reauth.user.email as string },
+    });
 
     if (response.status !== 200) {
       return {
         status: -1,
-        message: "Failed to update email: " + response.message,
+        message: "Failed to update email: " + response.body.message,
       };
     }
 
@@ -450,6 +456,18 @@ list.updateName = new SimpleModal({
       placeholder: "new name",
       type: "text",
       initVal: "",
+      validation: {
+        schema: UserNameSchema,
+        isValid: async (newName: string) => {
+          const checkNameResponse = (
+            await Ape.users.getNameAvailability({
+              params: { name: newName },
+            })
+          ).status;
+
+          return checkNameResponse === 200 ? true : "Name not available";
+        },
+      },
     },
   ],
   buttonText: "update",
@@ -463,36 +481,25 @@ list.updateName = new SimpleModal({
       };
     }
 
-    const checkNameResponse = await Ape.users.getNameAvailability(newName);
-
-    if (checkNameResponse.status === 409) {
-      return {
-        status: 0,
-        message: "Name not available",
-      };
-    } else if (checkNameResponse.status !== 200) {
-      return {
-        status: -1,
-        message: "Failed to check name: " + checkNameResponse.message,
-      };
-    }
-
-    const updateNameResponse = await Ape.users.updateName(newName);
+    const updateNameResponse = await Ape.users.updateName({
+      body: { name: newName },
+    });
     if (updateNameResponse.status !== 200) {
       return {
         status: -1,
-        message: "Failed to update name: " + updateNameResponse.message,
+        message: "Failed to update name: " + updateNameResponse.body.message,
       };
     }
 
     const snapshot = DB.getSnapshot();
     if (snapshot) {
       snapshot.name = newName;
+      DB.setSnapshot(snapshot);
       if (snapshot.needsToChangeName) {
         reloadAfter(2);
       }
+      AccountButton.update(snapshot);
     }
-    AccountButton.updateName(newName);
 
     return {
       status: 1,
@@ -539,24 +546,24 @@ list.updatePassword = new SimpleModal({
   execFn: async (
     _thisPopup,
     previousPass,
-    newPass,
+    newPassword,
     newPassConfirm
   ): Promise<ExecReturn> => {
-    if (newPass !== newPassConfirm) {
+    if (newPassword !== newPassConfirm) {
       return {
         status: 0,
         message: "New passwords don't match",
       };
     }
 
-    if (newPass === previousPass) {
+    if (newPassword === previousPass) {
       return {
         status: 0,
         message: "New password must be different from previous password",
       };
     }
 
-    if (!isDevEnvironment() && !isPasswordStrong(newPass)) {
+    if (!isDevEnvironment() && !isPasswordStrong(newPassword)) {
       return {
         status: 0,
         message:
@@ -572,12 +579,14 @@ list.updatePassword = new SimpleModal({
       };
     }
 
-    const response = await Ape.users.updatePassword(newPass);
+    const response = await Ape.users.updatePassword({
+      body: { newPassword },
+    });
 
     if (response.status !== 200) {
       return {
         status: -1,
-        message: "Failed to update password: " + response.message,
+        message: "Failed to update password: " + response.body.message,
       };
     }
 
@@ -668,16 +677,18 @@ list.addPasswordAuth = new SimpleModal({
       };
     }
 
-    const response = await Ape.users.updateEmail(
-      email,
-      reauth.user.email as string
-    );
+    const response = await Ape.users.updateEmail({
+      body: {
+        newEmail: email,
+        previousEmail: reauth.user.email as string,
+      },
+    });
     if (response.status !== 200) {
       return {
         status: -1,
         message:
           "Password authentication added but updating the database email failed. This shouldn't happen, please contact support. Error: " +
-          response.message,
+          response.body.message,
       };
     }
 
@@ -717,7 +728,7 @@ list.deleteAccount = new SimpleModal({
     if (usersResponse.status !== 200) {
       return {
         status: -1,
-        message: "Failed to delete user data: " + usersResponse.message,
+        message: "Failed to delete user data: " + usersResponse.body.message,
       };
     }
 
@@ -767,7 +778,7 @@ list.resetAccount = new SimpleModal({
     if (response.status !== 200) {
       return {
         status: -1,
-        message: "Failed to reset account: " + response.message,
+        message: "Failed to reset account: " + response.body.message,
       };
     }
 
@@ -813,7 +824,7 @@ list.optOutOfLeaderboards = new SimpleModal({
     if (response.status !== 200) {
       return {
         status: -1,
-        message: "Failed to opt out: " + response.message,
+        message: "Failed to opt out: " + response.body.message,
       };
     }
 
@@ -840,11 +851,13 @@ list.clearTagPb = new SimpleModal({
   buttonText: "clear",
   execFn: async (thisPopup): Promise<ExecReturn> => {
     const tagId = thisPopup.parameters[0] as string;
-    const response = await Ape.users.deleteTagPersonalBest(tagId);
+    const response = await Ape.users.deleteTagPersonalBest({
+      params: { tagId },
+    });
     if (response.status !== 200) {
       return {
         status: -1,
-        message: "Failed to clear tag PB: " + response.message,
+        message: "Failed to clear tag PB: " + response.body.message,
       };
     }
 
@@ -917,7 +930,7 @@ list.resetPersonalBests = new SimpleModal({
     if (response.status !== 200) {
       return {
         status: -1,
-        message: "Failed to reset personal bests: " + response.message,
+        message: "Failed to reset personal bests: " + response.body.message,
       };
     }
 
@@ -976,7 +989,7 @@ list.revokeAllTokens = new SimpleModal({
       initVal: "",
     },
   ],
-  text: "Are you sure you want to this? This will log you out of all devices.",
+  text: "Are you sure you want to do this? This will log you out of all devices.",
   buttonText: "revoke all",
   onlineOnly: true,
   execFn: async (_thisPopup, password): Promise<ExecReturn> => {
@@ -992,7 +1005,7 @@ list.revokeAllTokens = new SimpleModal({
     if (response.status !== 200) {
       return {
         status: -1,
-        message: "Failed to revoke tokens: " + response.message,
+        message: "Failed to revoke tokens: " + response.body.message,
       };
     }
 
@@ -1033,7 +1046,7 @@ list.unlinkDiscord = new SimpleModal({
     if (response.status !== 200) {
       return {
         status: -1,
-        message: "Failed to unlink Discord: " + response.message,
+        message: "Failed to unlink Discord: " + response.body.message,
       };
     }
 
@@ -1220,17 +1233,19 @@ list.forgotPassword = new SimpleModal({
   ],
   buttonText: "send",
   execFn: async (_thisPopup, email): Promise<ExecReturn> => {
-    const result = await Ape.users.forgotPasswordEmail(email.trim());
+    const result = await Ape.users.forgotPasswordEmail({
+      body: { email: email.trim() },
+    });
     if (result.status !== 200) {
       return {
         status: -1,
-        message: "Failed to send password reset email: " + result.message,
+        message: "Failed to send password reset email: " + result.body.message,
       };
     }
 
     return {
       status: 1,
-      message: result.message,
+      message: result.body.message,
       notificationOptions: {
         duration: 8,
       },
@@ -1262,6 +1277,9 @@ list.devGenerateData = new SimpleModal({
         ) as HTMLInputElement;
         span.innerHTML = `if checked, user will be created with ${target.value}@example.com and password: password`;
         return;
+      },
+      validation: {
+        schema: UserNameSchema,
       },
     },
     {

@@ -1,10 +1,5 @@
 import _ from "lodash";
-import {
-  getCurrentDayTimestamp,
-  MILLISECONDS_IN_DAY,
-  getCurrentWeekTimestamp,
-} from "../../utils/misc";
-import { MonkeyResponse2 } from "../../utils/monkey-response";
+import { MonkeyResponse } from "../../utils/monkey-response";
 import * as LeaderboardsDAL from "../../dal/leaderboards";
 import MonkeyError from "../../utils/error";
 import * as DailyLeaderboards from "../../utils/daily-leaderboards";
@@ -22,9 +17,15 @@ import {
   LanguageAndModeQuery,
 } from "@monkeytype/contracts/leaderboards";
 import { Configuration } from "@monkeytype/contracts/schemas/configuration";
+import {
+  getCurrentDayTimestamp,
+  getCurrentWeekTimestamp,
+  MILLISECONDS_IN_DAY,
+} from "@monkeytype/util/date-and-time";
+import { MonkeyRequest } from "../types";
 
 export async function getLeaderboard(
-  req: MonkeyTypes.Request2<GetLeaderboardQuery>
+  req: MonkeyRequest<GetLeaderboardQuery>
 ): Promise<GetLeaderboardResponse> {
   const { language, mode, mode2, skip = 0, limit = 50 } = req.query;
 
@@ -45,11 +46,11 @@ export async function getLeaderboard(
 
   const normalizedLeaderboard = leaderboard.map((it) => _.omit(it, ["_id"]));
 
-  return new MonkeyResponse2("Leaderboard retrieved", normalizedLeaderboard);
+  return new MonkeyResponse("Leaderboard retrieved", normalizedLeaderboard);
 }
 
 export async function getRankFromLeaderboard(
-  req: MonkeyTypes.Request2<LanguageAndModeQuery>
+  req: MonkeyRequest<LanguageAndModeQuery>
 ): Promise<GetLeaderboardRankResponse> {
   const { language, mode, mode2 } = req.query;
   const { uid } = req.ctx.decodedToken;
@@ -62,7 +63,7 @@ export async function getRankFromLeaderboard(
     );
   }
 
-  return new MonkeyResponse2("Rank retrieved", data);
+  return new MonkeyResponse("Rank retrieved", data);
 }
 
 function getDailyLeaderboardWithError(
@@ -89,7 +90,7 @@ function getDailyLeaderboardWithError(
 }
 
 export async function getDailyLeaderboard(
-  req: MonkeyTypes.Request2<GetDailyLeaderboardQuery>
+  req: MonkeyRequest<GetDailyLeaderboardQuery>
 ): Promise<GetLeaderboardResponse> {
   const { skip = 0, limit = 50 } = req.query;
 
@@ -108,11 +109,11 @@ export async function getDailyLeaderboard(
     req.ctx.configuration.users.premium.enabled
   );
 
-  return new MonkeyResponse2("Daily leaderboard retrieved", topResults);
+  return new MonkeyResponse("Daily leaderboard retrieved", topResults);
 }
 
 export async function getDailyLeaderboardRank(
-  req: MonkeyTypes.Request2<GetDailyLeaderboardRankQuery>
+  req: MonkeyRequest<GetDailyLeaderboardRankQuery>
 ): Promise<GetLeaderboardDailyRankResponse> {
   const { uid } = req.ctx.decodedToken;
 
@@ -126,7 +127,7 @@ export async function getDailyLeaderboardRank(
     req.ctx.configuration.dailyLeaderboards
   );
 
-  return new MonkeyResponse2("Daily leaderboard rank retrieved", rank);
+  return new MonkeyResponse("Daily leaderboard rank retrieved", rank);
 }
 
 function getWeeklyXpLeaderboardWithError(
@@ -147,7 +148,7 @@ function getWeeklyXpLeaderboardWithError(
 }
 
 export async function getWeeklyXpLeaderboardResults(
-  req: MonkeyTypes.Request2<GetWeeklyXpLeaderboardQuery>
+  req: MonkeyRequest<GetWeeklyXpLeaderboardQuery>
 ): Promise<GetWeeklyXpLeaderboardResponse> {
   const { skip = 0, limit = 50 } = req.query;
 
@@ -164,11 +165,11 @@ export async function getWeeklyXpLeaderboardResults(
     req.ctx.configuration.leaderboards.weeklyXp
   );
 
-  return new MonkeyResponse2("Weekly xp leaderboard retrieved", results);
+  return new MonkeyResponse("Weekly xp leaderboard retrieved", results);
 }
 
 export async function getWeeklyXpLeaderboardRank(
-  req: MonkeyTypes.Request2
+  req: MonkeyRequest
 ): Promise<GetWeeklyXpLeaderboardRankResponse> {
   const { uid } = req.ctx.decodedToken;
 
@@ -181,5 +182,5 @@ export async function getWeeklyXpLeaderboardRank(
     req.ctx.configuration.leaderboards.weeklyXp
   );
 
-  return new MonkeyResponse2("Weekly xp leaderboard rank retrieved", rankEntry);
+  return new MonkeyResponse("Weekly xp leaderboard rank retrieved", rankEntry);
 }

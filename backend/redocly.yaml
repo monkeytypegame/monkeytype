@@ -35,7 +35,7 @@ features.openapi:
       http:
         delete: "#da3333"
         post: "#004D94"
-        patch: "#e2b714"
+        patch: "#af8d0f"
         get: "#009400"
     sidebar:
       backgroundColor: "#323437"
