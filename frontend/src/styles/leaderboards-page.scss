@@ -2,8 +2,11 @@
   .content {
     display: grid;
     gap: 2rem;
-    grid-template-columns: 1fr 15rem;
-    grid-template-areas: "table buttons";
+    grid-template-areas: "buttons table";
+    grid-template-columns: 15rem 1fr;
+
+    // grid-template-areas: "table buttons";
+    // grid-template-columns: 1fr 15rem;
     height: 100%;
 
     .bigtitle {
@@ -146,14 +149,18 @@
     .buttons {
       grid-area: buttons;
       display: grid;
-      gap: 2em;
+      gap: 1em;
       align-content: start;
+      background: var(--sub-alt-color);
+      height: max-content;
+      border-radius: var(--roundness);
+      padding: 1rem;
       button {
         justify-content: start;
         padding-left: 0.75em;
       }
       .divider {
-        background: var(--sub-alt-color);
+        background: var(--bg-color);
         width: 100%;
         height: 0.25em;
         border-radius: var(--roundness);
