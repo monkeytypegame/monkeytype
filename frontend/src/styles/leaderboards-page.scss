@@ -11,7 +11,7 @@
 
     .bigtitle {
       font-size: 2rem;
-      margin-bottom: 2rem;
+      margin-bottom: 1rem;
     }
 
     .tableAndUser {
@@ -145,6 +145,23 @@
           }
         }
       }
+    }
+    .loading {
+      display: grid;
+      place-items: center;
+      font-size: 3em;
+      color: var(--sub-color);
+      padding: 1em;
+    }
+    .error {
+      display: grid;
+      grid-auto-flow: column;
+      gap: 2rem;
+      place-content: center;
+      align-items: center;
+      font-size: 2em;
+      color: var(--sub-color);
+      padding: 1em;
     }
     .buttons {
       align-content: start;

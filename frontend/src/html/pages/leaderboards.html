@@ -1,7 +1,7 @@
 <div class="page pageLeaderboards hidden" id="pageLeaderboards">
   <div class="content">
     <div class="tableAndUser">
-      <div class="bigtitle">All-time English Time 15 Leaderboard</div>
+      <div class="bigtitle">title</div>
       <!-- <div class="title needAuth">You</div> -->
       <div class="bigUser you needAuth">
         <div class="rank">1234</div>
@@ -40,6 +40,13 @@
           <button><i class="fas fa-hashtag"></i></button>
           <button><i class="fas fa-chevron-right"></i></button>
         </div>
+      </div>
+      <div class="loading hidden">
+        <i class="fas fa-circle-notch fa-spin"></i>
+      </div>
+      <div class="error hidden">
+        <i class="fas fa-times"></i>
+        <p>Something went wrong</p>
       </div>
       <table>
         <thead>
@@ -112,29 +119,39 @@
       </table>
     </div>
     <div class="buttons">
-      <div class="buttonGroup">
-        <button class="allTime active">
+      <div class="buttonGroup modeButtons">
+        <button data-mode="allTime">
           <i class="fas fa-globe-americas"></i>
           all-time english
         </button>
-        <button class="weekly">
+        <button data-mode="weekly">
           <i class="fas fa-calendar-day"></i>
           weekly xp
         </button>
-        <button class="daily">
+        <button data-mode="daily">
           <i class="fas fa-sun"></i>
           daily
         </button>
       </div>
-      <div class="divider"></div>
-      <div class="buttonGroup">
-        <button class="allTime active">
+      <div class="divider hidden"></div>
+      <div class="buttonGroup hidden secondary allTimeModeButtons">
+        <button data-allTimeMode="15">
           <i class="fas fa-clock"></i>
           time 15
         </button>
-        <button class="weekly">
+        <button data-allTimeMode="60">
           <i class="fas fa-clock"></i>
           time 60
+        </button>
+      </div>
+      <div class="buttonGroup hidden secondary dailyLanguageButtons">
+        <button data-dailyLanguage="english">
+          <i class="fas fa-globe"></i>
+          english
+        </button>
+        <button data-dailyLanguage="spanish">
+          <i class="fas fa-globe"></i>
+          spanish
         </button>
       </div>
     </div>
