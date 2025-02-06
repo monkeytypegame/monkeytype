@@ -1,44 +1,12 @@
 <div class="page pageLeaderboards hidden" id="pageLeaderboards">
   <div class="content">
-    <div class="table">
+    <div class="tableAndUser">
       <div class="bigtitle">All-time English Time 15 Leaderboard</div>
-      <!-- <div class="bigUser">
-        <div class="rank"><i class="fas fa-crown"></i></div>
-        <div class="avatarNameBadge">
-          <div class="lbav">
-            <div class="avatarPlaceholder">
-              <i class="fas fa-user-circle"></i>
-            </div>
-          </div>
-          <div class="name">Username</div>
-        </div>
-
-        <div class="stat">
-          <div class="title">wpm</div>
-          <div class="value">100</div>
-        </div>
-        <div class="stat">
-          <div class="title">accuracy</div>
-          <div class="value">100%</div>
-        </div>
-        <div class="stat">
-          <div class="title">raw</div>
-          <div class="value">100</div>
-        </div>
-        <div class="stat">
-          <div class="title">consistency</div>
-          <div class="value">100%</div>
-        </div>
-        <div class="stat">
-          <div class="title">3 days ago</div>
-          <div class="value">23 Aug 2024 12:10</div>
-        </div>
-      </div> -->
-      <div class="title">You</div>
-      <div class="bigUser you">
+      <!-- <div class="title needAuth">You</div> -->
+      <div class="bigUser you needAuth">
         <div class="rank">1234</div>
         <div class="userInfo">
-          <div class="top">Top 2%</div>
+          <div class="top">You (Top 2%)</div>
           <div class="bottom">No change since last checked</div>
         </div>
         <div class="stat">
@@ -58,23 +26,19 @@
           <div class="value">100%</div>
         </div>
         <div class="stat">
-          <div class="title">3 days ago</div>
+          <div class="title">date</div>
           <div class="value">23 Aug 2024 12:10</div>
         </div>
       </div>
       <div class="titleAndButtons">
-        <div class="title">Everyone</div>
-
-        <div class="pageButtons">
-          <button class="prev"><i class="fas fa-chevron-left"></i></button>
-          <div class="text">1 - 50 of 300000</div>
-          <button class="next"><i class="fas fa-chevron-right"></i></button>
-        </div>
+        <div class="title">Updates in: 00:15:00</div>
 
         <div class="jumpButtons">
-          <button><i class="fas fa-chevron-up"></i></button>
-          <button><i class="fas fa-user"></i></button>
-          <button><i class="fas fa-chevron-down"></i></button>
+          <button><i class="fas fa-chevron-left"></i></button>
+          <button><i class="fas fa-crown"></i></button>
+          <button class="needAuth"><i class="fas fa-user"></i></button>
+          <button><i class="fas fa-hashtag"></i></button>
+          <button><i class="fas fa-chevron-right"></i></button>
         </div>
       </div>
       <table>
@@ -86,12 +50,12 @@
             <td class="wide">accuracy</td>
             <td class="wide">raw</td>
             <td class="wide">consistency</td>
-            <td width="240px">date</td>
+            <td class="date">date</td>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td>123123</td>
+            <td>1</td>
             <td>
               <div class="avatarNameBadge">
                 <div class="lbav">
@@ -106,10 +70,10 @@
             <td>100.00%</td>
             <td>100.00</td>
             <td>100.00%</td>
-            <td>23 Aug 2024 12:10</td>
+            <td class="small">23 Aug 2024 12:10</td>
           </tr>
           <tr>
-            <td>123123</td>
+            <td>2</td>
             <td>
               <div class="avatarNameBadge">
                 <div class="lbav">
@@ -124,7 +88,7 @@
             <td>100.00%</td>
             <td>100.00</td>
             <td>100.00%</td>
-            <td>23 Aug 2024 12:10</td>
+            <td class="small">23 Aug 2024 12:10</td>
           </tr>
         </tbody>
       </table>

@@ -8,17 +8,19 @@
 
     .bigtitle {
       font-size: 2rem;
-      margin-bottom: 2rem;
+      margin-bottom: 1rem;
     }
 
-    .table {
+    .tableAndUser {
       grid-area: table;
       gap: 1rem;
+      font-size: 0.8rem;
 
       .titleAndButtons {
+        align-items: center;
         font-size: 1rem;
         display: grid;
-        grid-template-columns: 1fr 1fr 1fr;
+        grid-template-columns: 1fr 1fr;
         justify-content: space-between;
         button {
           width: 3rem;
@@ -26,15 +28,6 @@
         .title {
           font-size: 1.25rem;
           color: var(--sub-color);
-        }
-        .pageButtons {
-          display: grid;
-          grid-template-columns: 3rem 15rem 3rem;
-          place-items: center center;
-          justify-self: center;
-          .text {
-            color: var(--sub-color);
-          }
         }
         .jumpButtons {
           justify-self: end;
@@ -46,24 +39,24 @@
         color: var(--sub-color);
       }
       .bigUser {
-        height: 5rem;
-        margin-bottom: 2rem;
-        margin-top: 1rem;
+        // color: var(--main-color);
+        font-size: 1em;
+        margin-bottom: 2em;
+        margin-top: 1em;
         background: var(--sub-alt-color);
-        padding: 1rem 2rem;
+        padding: 1em 2em;
         border-radius: var(--roundness);
-        font-size: 1.25rem;
         display: grid;
         align-items: center;
-        gap: 2rem;
+        gap: 2em;
         grid-template-columns: auto 1fr auto auto auto auto auto;
-        .rank {
-          width: 6ch;
-          text-align: center;
-        }
+        // .rank {
+        // width: 7ch;
+        // text-align: left;
+        // }
         .stat {
           .title {
-            font-size: 0.5em;
+            font-size: 0.75em;
             color: var(--sub-color);
           }
         }
@@ -78,7 +71,7 @@
         &.you {
           .userInfo {
             .bottom {
-              font-size: 0.5em;
+              font-size: 0.75em;
               color: var(--sub-color);
             }
           }
@@ -103,18 +96,18 @@
         border-collapse: collapse;
 
         td {
-          padding: 1rem 1.5rem;
+          padding: 1em 1.5em;
         }
 
         td:first-child {
-          padding: 0;
-          width: 8ch;
+          // padding: 0;
+          width: 0;
           text-align: center;
         }
 
         thead {
           color: var(--sub-color);
-          font-size: 0.75rem;
+          font-size: 0.75em;
 
           td {
             background: var(--bg-color);
@@ -123,13 +116,20 @@
             top: 0;
             z-index: 99;
             &.wide {
-              width: 7ch;
+              width: 10ch;
+            }
+            &.date {
+              width: 20ch;
             }
           }
         }
 
         tbody {
           color: var(--text-color);
+
+          .small {
+            font-size: 0.75em;
+          }
 
           tr:nth-child(odd) td {
             background: var(--sub-alt-color);
@@ -148,7 +148,7 @@
     .buttons {
       grid-area: buttons;
       display: grid;
-      gap: 2rem;
+      gap: 2em;
       align-content: start;
       button {
         justify-content: start;
@@ -162,7 +162,7 @@
       }
       .buttonGroup {
         display: grid;
-        gap: 1rem;
+        gap: 1em;
       }
     }
   }
