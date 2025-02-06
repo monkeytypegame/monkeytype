@@ -70,4 +70,15 @@
       display: none;
     }
   }
+  .pageLeaderboards {
+    .content .tableAndUser {
+      font-size: 0.9rem;
+      table td {
+        padding: 1em;
+      }
+      .bigUser {
+        padding: 1em;
+      }
+    }
+  }
 }

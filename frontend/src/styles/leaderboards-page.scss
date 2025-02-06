@@ -3,7 +3,7 @@
     display: grid;
     gap: 2rem;
     grid-template-areas: "buttons table";
-    grid-template-columns: 15rem 1fr;
+    grid-template-columns: 20rem 1fr;
 
     // grid-template-areas: "table buttons";
     // grid-template-columns: 1fr 15rem;
@@ -147,6 +147,8 @@
       }
     }
     .buttons {
+      align-content: start;
+      align-items: start;
       grid-area: buttons;
       display: grid;
       gap: 1em;
