@@ -38577,6 +38577,7 @@
       "source": "Doctor Fate, Young Justice",
       "length": 77,
       "id": 7633
+<<<<<<< HEAD
     },
     {
       "text": "There are two ways to stay safe. Either be so quiet and harmless that people ignore you, or be so dangerous that they're terrified of you.",
@@ -40322,6 +40323,8 @@
       "source": "The Hero of Ages, Brandon Sanderson",
       "length": 198,
       "id": 7924
+=======
+>>>>>>> 311517975 (impr(quotes): add English quotes from Brandon Sanderson's Books)
     }
   ]
 }
