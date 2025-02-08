@@ -64,6 +64,14 @@ export async function get(
   }
 }
 
+export async function getCount(
+  mode: string,
+  mode2: string,
+  language: string
+): Promise<number> {
+  return getCollection({ language, mode, mode2 }).estimatedDocumentCount();
+}
+
 export async function getRank(
   mode: string,
   mode2: string,

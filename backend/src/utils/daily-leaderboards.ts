@@ -205,6 +205,17 @@ export class DailyLeaderboard {
       },
     };
   }
+
+  public async getCount(): Promise<number> {
+    const connection = RedisClient.getConnection();
+    if (!connection) {
+      throw new MonkeyError(500, "Redis connnection is unavailable");
+    }
+
+    const { leaderboardScoresKey } = this.getTodaysLeaderboardKeys();
+
+    return connection.zcard(leaderboardScoresKey);
+  }
 }
 
 export async function purgeUserFromDailyLeaderboards(

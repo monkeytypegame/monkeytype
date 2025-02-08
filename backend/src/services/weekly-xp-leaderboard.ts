@@ -215,6 +215,18 @@ export class WeeklyXpLeaderboard {
       ...parsed,
     };
   }
+
+  public async getCount(): Promise<number> {
+    const connection = RedisClient.getConnection();
+    if (!connection) {
+      throw new Error("Redis connection is unavailable");
+    }
+
+    const { weeklyXpLeaderboardScoresKey } =
+      this.getThisWeeksXpLeaderboardKeys();
+
+    return connection.zcard(weeklyXpLeaderboardScoresKey);
+  }
 }
 
 export function get(

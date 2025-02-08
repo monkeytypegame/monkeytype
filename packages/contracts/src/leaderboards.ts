@@ -30,10 +30,17 @@ const PaginationQuerySchema = z.object({
 export const GetLeaderboardQuerySchema = LanguageAndModeQuerySchema.merge(
   PaginationQuerySchema
 );
+
+//TODO NOTIFY USERS ON OLD CLINT THAT SCHEMA CHNAGED
+
 export type GetLeaderboardQuery = z.infer<typeof GetLeaderboardQuerySchema>;
 export const GetLeaderboardResponseSchema = responseWithData(
-  z.array(LeaderboardEntrySchema)
+  z.object({
+    count: z.number().int().nonnegative(),
+    entries: z.array(LeaderboardEntrySchema),
+  })
 );
+
 export type GetLeaderboardResponse = z.infer<
   typeof GetLeaderboardResponseSchema
 >;
@@ -41,6 +48,7 @@ export type GetLeaderboardResponse = z.infer<
 export const GetLeaderboardRankResponseSchema = responseWithData(
   LeaderboardRankSchema
 );
+
 export type GetLeaderboardRankResponse = z.infer<
   typeof GetLeaderboardRankResponseSchema
 >;
@@ -74,7 +82,10 @@ export type GetWeeklyXpLeaderboardQuery = z.infer<
 >;
 
 export const GetWeeklyXpLeaderboardResponseSchema = responseWithData(
-  z.array(XpLeaderboardEntrySchema)
+  z.object({
+    count: z.number().int().nonnegative(),
+    entries: z.array(XpLeaderboardEntrySchema),
+  })
 );
 export type GetWeeklyXpLeaderboardResponse = z.infer<
   typeof GetWeeklyXpLeaderboardResponseSchema

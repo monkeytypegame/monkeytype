@@ -44,9 +44,13 @@ export async function getLeaderboard(
     );
   }
 
+  const count = await LeaderboardsDAL.getCount(mode, mode2, language);
   const normalizedLeaderboard = leaderboard.map((it) => _.omit(it, ["_id"]));
 
-  return new MonkeyResponse("Leaderboard retrieved", normalizedLeaderboard);
+  return new MonkeyResponse("Leaderboard retrieved", {
+    count,
+    entries: normalizedLeaderboard,
+  });
 }
 
 export async function getRankFromLeaderboard(
@@ -109,7 +113,12 @@ export async function getDailyLeaderboard(
     req.ctx.configuration.users.premium.enabled
   );
 
-  return new MonkeyResponse("Daily leaderboard retrieved", topResults);
+  const count = await dailyLeaderboard.getCount();
+
+  return new MonkeyResponse("Daily leaderboard retrieved", {
+    entries: topResults,
+    count,
+  });
 }
 
 export async function getDailyLeaderboardRank(
@@ -165,7 +174,12 @@ export async function getWeeklyXpLeaderboardResults(
     req.ctx.configuration.leaderboards.weeklyXp
   );
 
-  return new MonkeyResponse("Weekly xp leaderboard retrieved", results);
+  const count = await weeklyXpLeaderboard.getCount();
+
+  return new MonkeyResponse("Weekly xp leaderboard retrieved", {
+    entries: results,
+    count,
+  });
 }
 
 export async function getWeeklyXpLeaderboardRank(
