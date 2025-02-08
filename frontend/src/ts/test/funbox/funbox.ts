@@ -72,7 +72,7 @@ export async function clear(): Promise<boolean> {
       ?.join(" ") ?? ""
   );
 
-  $("#funBoxTheme").removeAttr("href");
+  $(".funBoxTheme").remove();
 
   $("#wordsWrapper").removeClass("hidden");
   MemoryTimer.reset();
@@ -237,23 +237,15 @@ async function setFunboxBodyClasses(): Promise<boolean> {
 }
 
 async function applyFunboxCSS(): Promise<boolean> {
-  const $theme = $("#funBoxTheme");
-
-  //currently we only support one active funbox with hasCSS
-  const activeFunboxWithTheme = getActiveFunboxes().find((fb) =>
-    fb?.properties?.includes("hasCssFile")
-  );
-
-  const activeTheme =
-    activeFunboxWithTheme != null
-      ? "funbox/" + activeFunboxWithTheme.name + ".css"
-      : "";
-
-  const currentTheme = ($theme.attr("href") ?? "") || null;
-
-  if (activeTheme != currentTheme) {
-    $theme.attr("href", activeTheme);
+  $(".funBoxTheme").remove();
+  for (const funbox of getActiveFunboxes()) {
+    if (funbox.properties?.includes("hasCssFile")) {
+      const css = document.createElement("link");
+      css.classList.add("funBoxTheme");
+      css.rel = "stylesheet";
+      css.href = "funbox/" + funbox.name + ".css";
+      document.head.appendChild(css);
+    }
   }
-
   return true;
 }

@@ -40,7 +40,7 @@
     "editor.defaultFormatter": "esbenp.prettier-vscode",
     "editor.formatOnSaveMode": "file",
     "editor.formatOnSave": true,
-    "testing.openTesting": "neverOpen",
+    "testing.automaticallyOpenTestResults": "neverOpen",
     "[json]": {
       "editor.defaultFormatter": "esbenp.prettier-vscode"
     }
