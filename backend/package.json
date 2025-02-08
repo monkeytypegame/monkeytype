@@ -83,7 +83,7 @@
     "@types/swagger-stats": "0.95.11",
     "@types/ua-parser-js": "0.7.36",
     "@types/uuid": "10.0.0",
-    "@vitest/coverage-v8": "2.0.5",
+    "@vitest/coverage-v8": "2.1.9",
     "concurrently": "8.2.2",
     "eslint": "8.57.1",
     "eslint-watch": "8.0.0",
@@ -93,7 +93,7 @@
     "supertest": "6.2.3",
     "tsx": "4.16.2",
     "typescript": "5.5.4",
-    "vitest": "2.0.5",
+    "vitest": "2.1.9",
     "vitest-mongodb": "1.0.0"
   }
 }
