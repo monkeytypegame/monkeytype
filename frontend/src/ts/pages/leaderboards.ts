@@ -16,6 +16,7 @@ import { differenceInSeconds } from "date-fns/differenceInSeconds";
 import * as DateTime from "../utils/date-and-time";
 import { getHtmlByUserFlags } from "../controllers/user-flag-controller";
 import { getHTMLById as getBadgeHTMLbyId } from "../controllers/badge-controller";
+import { getDiscordAvatarUrl, isDevEnvironment } from "../utils/misc";
 
 type AllTimeState = {
   mode: "allTime";
@@ -34,6 +35,8 @@ type WeeklyState = {
 
 type DailyState = {
   mode: "daily";
+  dailyMode: "15" | "60";
+  dailyMinWpm: number;
   dailyLanguage: string;
   data: LeaderboardEntry[] | null;
   count: number;
@@ -99,30 +102,68 @@ async function requestData(update = false): Promise<void> {
   }
   updateContent();
 
-  if (state.mode === "allTime") {
+  if (state.mode === "allTime" || state.mode === "daily") {
     const baseQuery = {
-      language: "english",
+      language: state.mode === "allTime" ? "english" : state.dailyLanguage,
       mode: "time" as Mode,
+      mode2: state.mode === "allTime" ? state.allTimeMode : state.dailyMode,
     };
 
-    const data = await Ape.leaderboards.get({
-      query: { ...baseQuery, mode2: state.allTimeMode, page: state.page },
-    });
+    let data;
+
+    if (state.mode === "allTime") {
+      data = await Ape.leaderboards.get({
+        query: { ...baseQuery, page: state.page },
+      });
+    } else {
+      data = await Ape.leaderboards.getDaily({
+        query: {
+          ...baseQuery,
+          page: state.page,
+        },
+      });
+    }
 
     if (data.status === 200) {
       state.data = data.body.data.entries;
       state.count = data.body.data.count;
       state.pageSize = data.body.data.pageSize;
+    } else {
+      state.data = null;
+      state.error = "Something went wrong";
+      Notifications.add("Failed to get leaderboard: " + data.body.message, -1);
     }
 
     if (isAuthenticated() && state.userData === null) {
-      Notifications.add("Getting user data");
-      const userData = await Ape.leaderboards.getRank({
-        query: { ...baseQuery, mode2: state.allTimeMode },
-      });
+      let userData;
+
+      if (state.mode === "allTime") {
+        userData = await Ape.leaderboards.getRank({
+          query: { ...baseQuery },
+        });
+      } else {
+        userData = await Ape.leaderboards.getDailyRank({
+          query: {
+            ...baseQuery,
+          },
+        });
+      }
 
       if (userData.status === 200 && userData.body.data.entry !== undefined) {
         state.userData = userData.body.data.entry;
+
+        if (state.mode === "daily") {
+          // idk why ts complains but it works
+          //@ts-ignore
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          state.dailyMinWpm = userData.body.data.minWpm;
+        }
+      } else {
+        state.userData = null;
+        state.error = "Something went wrong";
+        Notifications.add("Failed to get rank: " + userData.body.message, -1);
+      }
+    }
 
     if (state.data !== null) {
       void getAvatarUrls(state.data).then((urlMap) => {
@@ -628,6 +669,7 @@ $(".page.pageLeaderboards .buttonGroup.modeButtons").on(
     state.mode = mode;
     if (state.mode === "daily") {
       state.dailyLanguage = "english";
+      state.dailyMode = "15";
     }
     state.data = null;
     void requestData();
