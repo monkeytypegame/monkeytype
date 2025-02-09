@@ -46,7 +46,6 @@ export const XpLeaderboardRankSchema = z.object({
   count: z.number().int().nonnegative(),
   rank: z.number().int().nonnegative().optional(),
   entry: XpLeaderboardEntrySchema.optional(),
-  totalXp: z.number().int().nonnegative().optional(),
 });
 
 export type XpLeaderboardRank = z.infer<typeof XpLeaderboardRankSchema>;
