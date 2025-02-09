@@ -544,8 +544,8 @@ function updateContent(): void {
   }
 }
 
-function updateModeButtons(): void {
-  const el = $(".page.pageLeaderboards .buttonGroup.modeButtons");
+function updateTypeButtons(): void {
+  const el = $(".page.pageLeaderboards .buttonGroup.typeButtons");
   el.find("button").removeClass("active");
   el.find(`button[data-mode=${state.type}]`).addClass("active");
 }
@@ -555,12 +555,10 @@ function updateSecondaryButtons(): void {
   $(".page.pageLeaderboards .buttons .divider").addClass("hidden");
 
   if (state.type === "allTime") {
-    $(".page.pageLeaderboards .buttonGroup.allTimeModeButtons").removeClass(
-      "hidden"
-    );
+    $(".page.pageLeaderboards .buttonGroup.modeButtons").removeClass("hidden");
     $(".page.pageLeaderboards .buttons .divider").removeClass("hidden");
 
-    updateAllTimeModeButtons();
+    updateModeButtons();
   }
   if (state.type === "daily") {
     $(".page.pageLeaderboards .buttonGroup.languageButtons").removeClass(
@@ -629,9 +627,9 @@ function stopTimer(): void {
 //   }
 // }
 
-function updateAllTimeModeButtons(): void {
+function updateModeButtons(): void {
   if (state.type !== "allTime") return;
-  const el = $(".page.pageLeaderboards .buttonGroup.allTimeModeButtons");
+  const el = $(".page.pageLeaderboards .buttonGroup.modeButtons");
   el.find("button").removeClass("active");
   el.find(`button[data-allTimeMode=${state.mode2}]`).addClass("active");
 }
@@ -693,7 +691,7 @@ function handleJumpButton(action: string, page?: number): void {
 function updateGetParameters(): void {
   const params = new URLSearchParams(window.location.search);
 
-  params.set("mode", state.type);
+  params.set("type", state.type);
   if (state.type === "allTime") {
     params.set("mode2", state.mode2);
   } else if (state.type === "daily") {
@@ -710,9 +708,9 @@ function updateGetParameters(): void {
 function readGetParameters(): void {
   const params = new URLSearchParams(window.location.search);
 
-  const mode = params.get("mode") as "allTime" | "weekly" | "daily";
-  if (mode) {
-    state.type = mode;
+  const type = params.get("type") as "allTime" | "weekly" | "daily";
+  if (type) {
+    state.type = type;
   }
 
   if (state.type === "allTime") {
@@ -744,7 +742,7 @@ $(".page.pageLeaderboards .jumpButtons button").on("click", function () {
   }
 });
 
-$(".page.pageLeaderboards .buttonGroup.modeButtons").on(
+$(".page.pageLeaderboards .buttonGroup.typeButtons").on(
   "click",
   "button",
   function () {
@@ -757,7 +755,7 @@ $(".page.pageLeaderboards .buttonGroup.modeButtons").on(
     }
     state.data = null;
     void requestData();
-    updateModeButtons();
+    updateTypeButtons();
     updateTitle();
     updateSecondaryButtons();
     updateContent();
@@ -802,7 +800,7 @@ export const page = new Page({
     // await appendDailyLanguageButtons(); //todo figure out this race condition
     readGetParameters();
     startTimer();
-    updateModeButtons();
+    updateTypeButtons();
     updateTitle();
     updateSecondaryButtons();
     updateContent();
