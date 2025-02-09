@@ -150,8 +150,10 @@ async function requestData(update = false): Promise<void> {
         });
       }
 
-      if (userData.status === 200 && userData.body.data.entry !== undefined) {
-        state.userData = userData.body.data.entry;
+      if (userData.status === 200) {
+        if (userData.body.data.entry !== undefined) {
+          state.userData = userData.body.data.entry;
+        }
 
         if (state.mode === "daily") {
           // idk why ts complains but it works
