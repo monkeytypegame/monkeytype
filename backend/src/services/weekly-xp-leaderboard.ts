@@ -221,8 +221,11 @@ export class WeeklyXpLeaderboard {
     return {
       rank: rank + 1,
       count: count ?? 0,
-      totalXp: parseInt(totalXp as string, 10),
-      ...parsed,
+      entry: {
+        ...parsed,
+        rank: rank + 1,
+        totalXp: parseInt(totalXp as string, 10),
+      },
     };
   }
 
