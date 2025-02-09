@@ -27,14 +27,14 @@ import { MonkeyRequest } from "../types";
 export async function getLeaderboard(
   req: MonkeyRequest<GetLeaderboardQuery>
 ): Promise<GetLeaderboardResponse> {
-  const { language, mode, mode2, skip = 0, limit = 50 } = req.query;
+  const { language, mode, mode2, page = 0, pageSize = 50 } = req.query;
 
   const leaderboard = await LeaderboardsDAL.get(
     mode,
     mode2,
     language,
-    skip,
-    limit
+    pageSize * page,
+    pageSize
   );
 
   if (leaderboard === false) {
@@ -50,6 +50,7 @@ export async function getLeaderboard(
   return new MonkeyResponse("Leaderboard retrieved", {
     count,
     entries: normalizedLeaderboard,
+    pageSize,
   });
 }
 
