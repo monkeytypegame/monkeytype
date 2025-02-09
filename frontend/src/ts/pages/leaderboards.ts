@@ -108,7 +108,6 @@ async function requestData(update = false): Promise<void> {
     state.loading = true;
     state.error = undefined;
     state.data = null;
-    state.discordAvatarUrls = new Map<string, string>(); //todo only clear this when leaving the page
     state.userData = null;
   }
   updateContent();
@@ -179,8 +178,14 @@ async function requestData(update = false): Promise<void> {
     }
 
     if (state.data !== null) {
-      void getAvatarUrls(state.data).then((urlMap) => {
-        state.discordAvatarUrls = urlMap;
+      const entriesMissingAvatars = state.data.filter(
+        (entry) => !state.discordAvatarUrls.has(entry.uid)
+      );
+      void getAvatarUrls(entriesMissingAvatars).then((urlMap) => {
+        state.discordAvatarUrls = new Map([
+          ...state.discordAvatarUrls,
+          ...urlMap,
+        ]);
         fillAvatars();
       });
     }
@@ -219,8 +224,14 @@ async function requestData(update = false): Promise<void> {
     }
 
     if (state.data !== null) {
-      void getAvatarUrls(state.data).then((urlMap) => {
-        state.discordAvatarUrls = urlMap;
+      const entriesMissingAvatars = state.data.filter(
+        (entry) => !state.discordAvatarUrls.has(entry.uid)
+      );
+      void getAvatarUrls(entriesMissingAvatars).then((urlMap) => {
+        state.discordAvatarUrls = new Map([
+          ...state.discordAvatarUrls,
+          ...urlMap,
+        ]);
         fillAvatars();
       });
     }
@@ -1017,6 +1028,7 @@ export const page = new Page({
   },
   afterShow: async (): Promise<void> => {
     updateSecondaryButtons();
+    state.discordAvatarUrls = new Map<string, string>();
   },
 });
 
