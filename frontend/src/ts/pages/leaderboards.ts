@@ -110,7 +110,7 @@ async function requestData(update = false): Promise<void> {
     const baseQuery = {
       language: state.type === "allTime" ? "english" : state.dailyLanguage,
       mode: "time" as Mode,
-      mode2: state.type === "allTime" ? state.mode2 : state.mode2,
+      mode2: state.mode2,
     };
 
     let data;
