@@ -1007,6 +1007,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
     if (tt < 0) tt = 0;
     const acc = completedEvent.acc;
     TestStats.incrementIncompleteSeconds(tt);
+    TestStats.incrementRestartCount();
     TestStats.pushIncompleteTest(acc, tt);
   }
 
