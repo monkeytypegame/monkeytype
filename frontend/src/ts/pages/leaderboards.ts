@@ -687,6 +687,53 @@ function handleJumpButton(action: string, page?: number): void {
   updateContent();
 }
 
+function updateGetParameters(): void {
+  const params = new URLSearchParams(window.location.search);
+
+  params.set("mode", state.mode);
+  if (state.mode === "allTime") {
+    params.set("mode2", state.allTimeMode);
+  } else if (state.mode === "daily") {
+    params.set("language", state.dailyLanguage);
+    params.set("mode2", state.dailyMode);
+  }
+
+  params.set("page", state.page.toString());
+
+  const newUrl = `${window.location.pathname}?${params.toString()}`;
+  window.history.replaceState({}, "", newUrl);
+}
+
+function readGetParameters(): void {
+  const params = new URLSearchParams(window.location.search);
+
+  const mode = params.get("mode") as "allTime" | "weekly" | "daily";
+  if (mode) {
+    state.mode = mode;
+  }
+
+  if (state.mode === "allTime") {
+    const allTimeMode = params.get("mode2") as "15" | "60";
+    if (allTimeMode) {
+      state.allTimeMode = allTimeMode;
+    }
+  } else if (state.mode === "daily") {
+    const dailyLanguage = params.get("language");
+    const dailyMode = params.get("mode2") as "15" | "60";
+    if (dailyLanguage !== null) {
+      state.dailyLanguage = dailyLanguage;
+    }
+    if (dailyMode) {
+      state.dailyMode = dailyMode;
+    }
+  }
+
+  const page = params.get("page");
+  if (page !== null) {
+    state.page = parseInt(page, 10);
+  }
+}
+
 $(".page.pageLeaderboards .jumpButtons button").on("click", function () {
   const action = $(this).data("action") as string;
   if (action !== "goToPage") {
@@ -711,6 +758,7 @@ $(".page.pageLeaderboards .buttonGroup.modeButtons").on(
     updateTitle();
     updateSecondaryButtons();
     updateContent();
+    updateGetParameters();
   }
 );
 
@@ -734,6 +782,7 @@ $(".page.pageLeaderboards .buttonGroup.secondary").on(
     updateSecondaryButtons();
     updateTitle();
     updateContent();
+    updateGetParameters();
   }
 );
 
@@ -747,12 +796,14 @@ export const page = new Page({
   },
   beforeShow: async (): Promise<void> => {
     Skeleton.append("pageLeaderboards", "main");
+    readGetParameters();
     await appendDailyLanguageButtons();
     startTimer();
     updateModeButtons();
     updateTitle();
     updateSecondaryButtons();
     updateContent();
+    updateGetParameters();
     void requestData();
   },
 });
