@@ -563,12 +563,12 @@ function updateSecondaryButtons(): void {
     updateAllTimeModeButtons();
   }
   if (state.type === "daily") {
-    $(".page.pageLeaderboards .buttonGroup.dailyLanguageButtons").removeClass(
+    $(".page.pageLeaderboards .buttonGroup.languageButtons").removeClass(
       "hidden"
     );
     $(".page.pageLeaderboards .buttons .divider").removeClass("hidden");
 
-    updateDailyLanguageButtons();
+    updateLanguageButtons();
   }
 }
 
@@ -616,7 +616,7 @@ function stopTimer(): void {
 //       (r) => r.language
 //     )) ?? [];
 
-//   const el = $(".page.pageLeaderboards .buttonGroup.dailyLanguageButtons");
+//   const el = $(".page.pageLeaderboards .buttonGroup.languageButtons");
 //   el.empty();
 
 //   for (const language of languages) {
@@ -636,9 +636,9 @@ function updateAllTimeModeButtons(): void {
   el.find(`button[data-allTimeMode=${state.mode2}]`).addClass("active");
 }
 
-function updateDailyLanguageButtons(): void {
+function updateLanguageButtons(): void {
   if (state.type !== "daily") return;
-  const el = $(".page.pageLeaderboards .buttonGroup.dailyLanguageButtons");
+  const el = $(".page.pageLeaderboards .buttonGroup.languageButtons");
   el.find("button").removeClass("active");
   el.find(`button[data-dailyLanguage=${state.dailyLanguage}]`).addClass(
     "active"
