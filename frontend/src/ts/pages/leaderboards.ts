@@ -631,7 +631,7 @@ function updateModeButtons(): void {
   if (state.type !== "allTime") return;
   const el = $(".page.pageLeaderboards .buttonGroup.modeButtons");
   el.find("button").removeClass("active");
-  el.find(`button[data-allTimeMode=${state.mode2}]`).addClass("active");
+  el.find(`button[data-mode=${state.mode2}]`).addClass("active");
 }
 
 function updateLanguageButtons(): void {
@@ -767,11 +767,11 @@ $(".page.pageLeaderboards .buttonGroup.secondary").on(
   "click",
   "button",
   function () {
-    const allTimeMode = $(this).data("alltimemode") as "15" | "60";
+    const mode = $(this).data("mode") as "15" | "60";
     const language = $(this).data("dailylanguage") as string;
-    if (allTimeMode !== undefined && state.type === "allTime") {
-      if (state?.mode2 === allTimeMode) return;
-      state.mode2 = allTimeMode;
+    if (mode !== undefined && state.type === "allTime") {
+      if (state?.mode2 === mode) return;
+      state.mode2 = mode;
     } else if (language !== undefined && state.type === "daily") {
       if (state.dailyLanguage === language) return;
       state.dailyLanguage = language;
