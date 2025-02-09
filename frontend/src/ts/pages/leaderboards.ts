@@ -17,7 +17,7 @@ import * as DateTime from "../utils/date-and-time";
 import { getHtmlByUserFlags } from "../controllers/user-flag-controller";
 import { getHTMLById as getBadgeHTMLbyId } from "../controllers/badge-controller";
 import { getDiscordAvatarUrl, isDevEnvironment } from "../utils/misc";
-import * as ServerConfiguration from "../ape/server-configuration";
+// import * as ServerConfiguration from "../ape/server-configuration";
 
 type AllTimeState = {
   mode: "allTime";
@@ -607,24 +607,24 @@ function stopTimer(): void {
   $(".page.pageLeaderboards .titleAndButtons .timer").text("-");
 }
 
-async function appendDailyLanguageButtons(): Promise<void> {
-  const languages =
-    (await ServerConfiguration.get()?.dailyLeaderboards.validModeRules.map(
-      (r) => r.language
-    )) ?? [];
+// async function appendDailyLanguageButtons(): Promise<void> {
+//   const languages =
+//     (await ServerConfiguration.get()?.dailyLeaderboards.validModeRules.map(
+//       (r) => r.language
+//     )) ?? [];
 
-  const el = $(".page.pageLeaderboards .buttonGroup.dailyLanguageButtons");
-  el.empty();
+//   const el = $(".page.pageLeaderboards .buttonGroup.dailyLanguageButtons");
+//   el.empty();
 
-  for (const language of languages) {
-    el.append(`
-      <button data-dailyLanguage="${language}">
-        <i class="fas fa-globe"></i>
-        ${language}
-      </button>
-    `);
-  }
-}
+//   for (const language of languages) {
+//     el.append(`
+//       <button data-dailyLanguage="${language}">
+//         <i class="fas fa-globe"></i>
+//         ${language}
+//       </button>
+//     `);
+//   }
+// }
 
 function updateAllTimeModeButtons(): void {
   if (state.mode !== "allTime") return;
@@ -796,8 +796,8 @@ export const page = new Page({
   },
   beforeShow: async (): Promise<void> => {
     Skeleton.append("pageLeaderboards", "main");
+    // await appendDailyLanguageButtons(); //todo figure out this race condition
     readGetParameters();
-    await appendDailyLanguageButtons();
     startTimer();
     updateModeButtons();
     updateTitle();
@@ -805,6 +805,9 @@ export const page = new Page({
     updateContent();
     updateGetParameters();
     void requestData();
+  },
+  afterShow: async (): Promise<void> => {
+    updateSecondaryButtons();
   },
 });
 
