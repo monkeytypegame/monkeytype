@@ -563,6 +563,7 @@ function updateSecondaryButtons(): void {
   if (state.type === "allTime") {
     $(".page.pageLeaderboards .buttonGroup.modeButtons").removeClass("hidden");
     $(".page.pageLeaderboards .buttons .divider").removeClass("hidden");
+    $(".page.pageLeaderboards .buttons .divider2").addClass("hidden");
 
     updateModeButtons();
   }
