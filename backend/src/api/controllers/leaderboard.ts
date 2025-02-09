@@ -181,6 +181,7 @@ export async function getWeeklyXpLeaderboardResults(
   return new MonkeyResponse("Weekly xp leaderboard retrieved", {
     entries: results,
     count,
+    pageSize,
   });
 }
 
