@@ -97,15 +97,15 @@ function getDailyLeaderboardWithError(
 export async function getDailyLeaderboard(
   req: MonkeyRequest<GetDailyLeaderboardQuery>
 ): Promise<GetLeaderboardResponse> {
-  const { skip = 0, limit = 50 } = req.query;
+  const { page = 0, pageSize = 50 } = req.query;
 
   const dailyLeaderboard = getDailyLeaderboardWithError(
     req.query,
     req.ctx.configuration.dailyLeaderboards
   );
 
-  const minRank = skip;
-  const maxRank = minRank + limit - 1;
+  const minRank = page * pageSize;
+  const maxRank = minRank + pageSize - 1;
 
   const topResults = await dailyLeaderboard.getResults(
     minRank,
@@ -119,6 +119,7 @@ export async function getDailyLeaderboard(
   return new MonkeyResponse("Daily leaderboard retrieved", {
     entries: topResults,
     count,
+    pageSize,
   });
 }
 
@@ -160,10 +161,10 @@ function getWeeklyXpLeaderboardWithError(
 export async function getWeeklyXpLeaderboardResults(
   req: MonkeyRequest<GetWeeklyXpLeaderboardQuery>
 ): Promise<GetWeeklyXpLeaderboardResponse> {
-  const { skip = 0, limit = 50 } = req.query;
+  const { page = 0, pageSize = 50 } = req.query;
 
-  const minRank = skip;
-  const maxRank = minRank + limit - 1;
+  const minRank = page * pageSize;
+  const maxRank = minRank + pageSize - 1;
 
   const weeklyXpLeaderboard = getWeeklyXpLeaderboardWithError(
     req.query,
