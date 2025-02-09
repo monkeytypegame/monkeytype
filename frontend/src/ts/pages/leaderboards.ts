@@ -314,6 +314,38 @@ function getLbMemoryDifference(): number | null {
 }
 
 function fillUser(): void {
+  if (isAuthenticated() && DB.getSnapshot()?.lbOptOut === true) {
+    $(".page.pageLeaderboards .bigUser").html(
+      '<div class="warning">You have opted out of the leaderboards.</div>'
+    );
+    return;
+  }
+
+  if (isAuthenticated() && DB.getSnapshot()?.banned === true) {
+    $(".page.pageLeaderboards .bigUser").html(
+      '<div class="warning">Your account is banned</div>'
+    );
+    return;
+  }
+
+  if (
+    isAuthenticated() &&
+    !isDevEnvironment() &&
+    (DB.getSnapshot()?.typingStats?.timeTyping ?? 0) < 72000
+  ) {
+    $(".page.pageLeaderboards .bigUser").html(
+      '<div class="warning">Your account must have 2 hours typed to be placed on the leaderboard.</div>'
+    );
+    return;
+  }
+
+  if (isAuthenticated() && state.mode === "daily" && state.userData === null) {
+    $(".page.pageLeaderboards .bigUser").html(
+      `<div class="warning">Not qualified (min speed required: ${state.dailyMinWpm} wpm)</div>`
+    );
+    return;
+  }
+
   if (
     state.data === null ||
     (state.mode !== "allTime" && state.mode !== "daily")
