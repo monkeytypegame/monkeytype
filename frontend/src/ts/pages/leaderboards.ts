@@ -10,7 +10,6 @@ import { Mode } from "@monkeytype/contracts/schemas/shared";
 import * as Notifications from "../elements/notifications";
 import Format from "../utils/format";
 import { isAuthenticated } from "../firebase";
-import { showPopup } from "../modals/simple-modals";
 
 type AllTimeState = {
   mode: "allTime";
@@ -87,6 +86,7 @@ async function requestData(update = false): Promise<void> {
     state.loading = true;
     state.error = undefined;
     state.data = null;
+    state.userData = null;
   }
   updateContent();
 
@@ -99,8 +99,6 @@ async function requestData(update = false): Promise<void> {
     const data = await Ape.leaderboards.get({
       query: { ...baseQuery, mode2: state.allTimeMode, page: state.page },
     });
-    state.loading = false;
-    state.updating = false;
 
     if (data.status === 200) {
       state.data = data.body.data.entries;
@@ -108,6 +106,19 @@ async function requestData(update = false): Promise<void> {
       state.pageSize = data.body.data.pageSize;
     }
 
+    if (isAuthenticated() && state.userData === null) {
+      Notifications.add("Getting user data");
+      const userData = await Ape.leaderboards.getRank({
+        query: { ...baseQuery, mode2: state.allTimeMode },
+      });
+
+      if (userData.status === 200 && userData.body.data.entry !== undefined) {
+        state.userData = userData.body.data.entry;
+      }
+    }
+
+    state.loading = false;
+    state.updating = false;
     updateContent();
     return;
   }
@@ -200,6 +211,53 @@ function fillTable(): void {
   $(".page.pageLeaderboards .titleAndButtons").removeClass("hidden");
 }
 
+function fillUser(): void {
+  if (
+    state.data === null ||
+    (state.mode !== "allTime" && state.mode !== "daily")
+  ) {
+    return;
+  }
+
+  if (!state.userData || !state.count) {
+    $(".page.pageLeaderboards .bigUser").addClass("hidden");
+    return;
+  }
+
+  const userData = state.userData;
+  const percentile = ((state.count - userData.rank) / state.count) * 100;
+
+  $(".page.pageLeaderboards .bigUser .rank").text(userData.rank);
+  $(".page.pageLeaderboards .bigUser .userInfo .top").text(
+    `${userData.name} (Top ${percentile.toFixed(2)}%)`
+  );
+  // $(".page.pageLeaderboards .bigUser .userInfo .bottom").text(
+  //   userData.change === 0
+  //     ? "No change since last checked"
+  //     : userData.change > 0
+  //     ? `+${userData.change} since last checked`
+  //     : `${userData.change} since last checked`
+  // );
+
+  $(".page.pageLeaderboards .bigUser .stat.wpm .value").text(
+    Format.typingSpeed(userData.wpm, { showDecimalPlaces: true })
+  );
+  $(".page.pageLeaderboards .bigUser .stat.acc .value").text(
+    Format.percentage(userData.acc, { showDecimalPlaces: true })
+  );
+  $(".page.pageLeaderboards .bigUser .stat.raw .value").text(
+    Format.typingSpeed(userData.raw, { showDecimalPlaces: true })
+  );
+  $(".page.pageLeaderboards .bigUser .stat.con .value").text(
+    Format.percentage(userData.consistency, { showDecimalPlaces: true })
+  );
+  $(".page.pageLeaderboards .bigUser .stat.timestamp .value.timestamp").text(
+    userData.timestamp
+  );
+
+  $(".page.pageLeaderboards .bigUser").removeClass("hidden");
+}
+
 function updateContent(): void {
   $(".page.pageLeaderboards .loading").addClass("hidden");
   $(".page.pageLeaderboards .updating").addClass("hidden");
@@ -240,6 +298,9 @@ function updateContent(): void {
 
   updateJumpButtons();
   fillTable();
+  if (isAuthenticated()) {
+    fillUser();
+  }
 }
 
 function updateModeButtons(): void {
