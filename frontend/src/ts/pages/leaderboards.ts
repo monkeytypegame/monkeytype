@@ -34,7 +34,6 @@ type AllTimeState = {
 
 type WeeklyState = {
   type: "weekly";
-  totalXp: number;
   data: XpLeaderboardEntry[] | null;
   count: number;
   userData: XpLeaderboardEntry | null;
@@ -211,13 +210,6 @@ async function requestData(update = false): Promise<void> {
       if (userData.status === 200) {
         if (userData.body.data.entry !== undefined) {
           state.userData = userData.body.data.entry;
-        }
-
-        if (state.type === "weekly") {
-          // idk why ts complains but it works
-          //@ts-ignore
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-          state.totalXp = userData.body.data.totalXp;
         }
       } else {
         state.userData = null;
