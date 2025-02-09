@@ -593,6 +593,7 @@ export async function addResult(
           discordId: user.discordId,
           badgeId: selectedBadgeId,
           lastActivityTimestamp: Date.now(),
+          isPremium,
         },
         xpGained: xpGained.xp,
         timeTypedSeconds: totalDurationTypedSeconds,

@@ -7,6 +7,7 @@ import {
 } from "@monkeytype/contracts/schemas/leaderboards";
 import { getCurrentWeekTimestamp } from "@monkeytype/util/date-and-time";
 import MonkeyError from "../utils/error";
+import { omit } from "lodash";
 
 type AddResultOpts = {
   entry: Pick<
@@ -17,6 +18,7 @@ type AddResultOpts = {
     | "discordAvatar"
     | "badgeId"
     | "lastActivityTimestamp"
+    | "isPremium"
   >;
   xpGained: number;
   timeTypedSeconds: number;
@@ -121,7 +123,8 @@ export class WeeklyXpLeaderboard {
   public async getResults(
     minRank: number,
     maxRank: number,
-    weeklyXpLeaderboardConfig: Configuration["leaderboards"]["weeklyXp"]
+    weeklyXpLeaderboardConfig: Configuration["leaderboards"]["weeklyXp"],
+    premiumFeaturesEnabled: boolean
   ): Promise<XpLeaderboardEntry[]> {
     const connection = RedisClient.getConnection();
     if (!connection || !weeklyXpLeaderboardConfig.enabled) {
@@ -166,6 +169,10 @@ export class WeeklyXpLeaderboard {
         };
       }
     );
+
+    if (!premiumFeaturesEnabled) {
+      return resultsWithRanks.map((it) => omit(it, "isPremium"));
+    }
 
     return resultsWithRanks;
   }

@@ -395,6 +395,7 @@ function buildWeeklyTableRow(entry: XpLeaderboardEntry, me = false): string {
     entry.uid
   }?isUid" class="entryName" uid=${entry.uid} router-link>${entry.name}</a>
           <div class="flagsAndBadge">
+            ${getHtmlByUserFlags(entry)}
             ${entry.badgeId ? getBadgeHTMLbyId(entry.badgeId) : ""}
           </div>
         </div>

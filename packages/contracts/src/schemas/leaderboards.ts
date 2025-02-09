@@ -38,6 +38,7 @@ export const XpLeaderboardEntrySchema = z.object({
   timeTypedSeconds: z.number().nonnegative(),
   rank: z.number().nonnegative().int(),
   totalXp: z.number().nonnegative().int(),
+  isPremium: z.boolean().optional(),
 });
 export type XpLeaderboardEntry = z.infer<typeof XpLeaderboardEntrySchema>;
 
