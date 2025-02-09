@@ -6,6 +6,7 @@ import {
   XpLeaderboardRank,
 } from "@monkeytype/contracts/schemas/leaderboards";
 import { getCurrentWeekTimestamp } from "@monkeytype/util/date-and-time";
+import MonkeyError from "../utils/error";
 
 type AddResultOpts = {
   entry: Pick<
@@ -172,10 +173,10 @@ export class WeeklyXpLeaderboard {
   public async getRank(
     uid: string,
     weeklyXpLeaderboardConfig: Configuration["leaderboards"]["weeklyXp"]
-  ): Promise<XpLeaderboardRank | null> {
+  ): Promise<XpLeaderboardRank> {
     const connection = RedisClient.getConnection();
     if (!connection || !weeklyXpLeaderboardConfig.enabled) {
-      return null;
+      throw new MonkeyError(500, "Redis connnection is unavailable");
     }
 
     const { weeklyXpLeaderboardScoresKey, weeklyXpLeaderboardResultsKey } =
@@ -199,7 +200,9 @@ export class WeeklyXpLeaderboard {
     ];
 
     if (rank === null) {
-      return null;
+      return {
+        count: count ?? 0,
+      };
     }
 
     //TODO parse with zod?
