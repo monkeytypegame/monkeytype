@@ -193,6 +193,9 @@ async function requestData(update = false): Promise<void> {
     state.loading = false;
     state.updating = false;
     updateContent();
+    if (!update && isAuthenticated()) {
+      fillUser();
+    }
     return;
   } else if (state.type === "weekly") {
     const data = await Ape.leaderboards.getWeeklyXp({
@@ -239,6 +242,9 @@ async function requestData(update = false): Promise<void> {
     state.loading = false;
     state.updating = false;
     updateContent();
+    if (!update && isAuthenticated()) {
+      fillUser();
+    }
     return;
   } else {
     // state.updating = false;
@@ -742,10 +748,6 @@ function updateContent(): void {
 
   updateJumpButtons();
   fillTable();
-  if (isAuthenticated()) {
-    //todo dont run this every time, only when new user data is fetched
-    fillUser();
-  }
 }
 
 function updateTypeButtons(): void {
