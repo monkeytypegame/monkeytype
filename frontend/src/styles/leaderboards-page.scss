@@ -69,6 +69,14 @@
         // width: 7ch;
         // text-align: left;
         // }
+
+        .warning {
+          padding: 0.5em 0;
+          text-align: center;
+          grid-column: 1 / -1;
+          color: var(--sub-color);
+        }
+
         .stat {
           text-align: right;
           .title {
