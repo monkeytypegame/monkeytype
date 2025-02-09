@@ -33,6 +33,15 @@
         }
         .jumpButtons {
           justify-self: end;
+          display: grid;
+          grid-auto-flow: column;
+          gap: 0.5em;
+          align-items: center;
+          .updating {
+            font-size: 1.5em;
+            color: var(--sub-color);
+            margin-right: 0.5em;
+          }
         }
       }
 
@@ -111,7 +120,6 @@
           font-size: 0.75em;
 
           td {
-            background: var(--bg-color);
             position: -webkit-sticky;
             position: sticky;
             top: 0;

@@ -34,11 +34,20 @@
         <div class="title">Updates in: 00:15:00</div>
 
         <div class="jumpButtons">
-          <button class="disabled"><i class="fas fa-chevron-left"></i></button>
-          <button><i class="fas fa-crown"></i></button>
-          <button class="needAuth"><i class="fas fa-user"></i></button>
-          <button><i class="fas fa-hashtag"></i></button>
-          <button><i class="fas fa-chevron-right"></i></button>
+          <div class="updating hidden">
+            <i class="fas fa-circle-notch fa-spin"></i>
+          </div>
+          <button data-action="firstPage"><i class="fas fa-crown"></i></button>
+          <button data-action="userPage" class="needAuth">
+            <i class="fas fa-user"></i>
+          </button>
+          <button data-action="previousPage">
+            <i class="fas fa-chevron-left"></i>
+          </button>
+          <button data-action="goToPage"><i class="fas fa-hashtag"></i></button>
+          <button data-action="nextPage">
+            <i class="fas fa-chevron-right"></i>
+          </button>
         </div>
       </div>
       <div class="loading hidden">

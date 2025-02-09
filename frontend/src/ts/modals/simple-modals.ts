@@ -36,6 +36,7 @@ import {
 import { ShowOptions } from "../utils/animated-modal";
 import { GenerateDataRequest } from "@monkeytype/contracts/dev";
 import { UserNameSchema } from "@monkeytype/contracts/users";
+import { goToPage } from "../pages/leaderboards";
 
 type PopupKey =
   | "updateEmail"
@@ -61,7 +62,8 @@ type PopupKey =
   | "updateCustomTheme"
   | "deleteCustomTheme"
   | "forgotPassword"
-  | "devGenerateData";
+  | "devGenerateData"
+  | "lbGoToPage";
 
 const list: Record<PopupKey, SimpleModal | undefined> = {
   updateEmail: undefined,
@@ -88,6 +90,7 @@ const list: Record<PopupKey, SimpleModal | undefined> = {
   deleteCustomTheme: undefined,
   forgotPassword: undefined,
   devGenerateData: undefined,
+  lbGoToPage: undefined,
 };
 
 type AuthMethod = "password" | "github.com" | "google.com";
@@ -1351,6 +1354,36 @@ list.devGenerateData = new SimpleModal({
     };
   },
 });
+
+list.lbGoToPage = new SimpleModal({
+  id: "lbGoToPage",
+  title: "Go to page",
+  inputs: [
+    {
+      type: "number",
+      placeholder: "Page number",
+    },
+  ],
+  buttonText: "Go",
+  execFn: async (_thisPopup, pageNumber): Promise<ExecReturn> => {
+    const page = parseInt(pageNumber, 10);
+    if (isNaN(page) || page < 1) {
+      return {
+        status: 0,
+        message: "Invalid page number",
+      };
+    }
+
+    goToPage(page - 1);
+
+    return {
+      status: 1,
+      message: "Navigating to page " + page,
+      showNotification: false,
+    };
+  },
+});
+
 export function showPopup(
   key: PopupKey,
   showParams = [] as string[],

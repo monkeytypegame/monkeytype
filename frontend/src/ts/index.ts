@@ -9,6 +9,7 @@ import "./event-handlers/test";
 import "./event-handlers/about";
 import "./event-handlers/settings";
 import "./event-handlers/account";
+import "./event-handlers/leaderboards";
 
 import "./modals/google-sign-up";
 
