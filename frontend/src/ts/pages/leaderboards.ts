@@ -390,6 +390,13 @@ function fillUser(): void {
     return;
   }
 
+  if (isAuthenticated() && state.userData === null) {
+    $(".page.pageLeaderboards .bigUser").html(
+      `<div class="warning">Not qualified</div>`
+    );
+    return;
+  }
+
   if (
     state.data === null ||
     (state.mode !== "allTime" && state.mode !== "daily")
