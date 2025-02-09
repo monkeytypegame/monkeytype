@@ -638,9 +638,7 @@ function updateLanguageButtons(): void {
   if (state.type !== "daily") return;
   const el = $(".page.pageLeaderboards .buttonGroup.languageButtons");
   el.find("button").removeClass("active");
-  el.find(`button[data-dailyLanguage=${state.dailyLanguage}]`).addClass(
-    "active"
-  );
+  el.find(`button[data-language=${state.dailyLanguage}]`).addClass("active");
 }
 
 function disableButtons(): void {
@@ -719,10 +717,10 @@ function readGetParameters(): void {
       state.mode2 = allTimeMode;
     }
   } else if (state.type === "daily") {
-    const dailyLanguage = params.get("language");
+    const language = params.get("language");
     const dailyMode = params.get("mode2") as "15" | "60";
-    if (dailyLanguage !== null) {
-      state.dailyLanguage = dailyLanguage;
+    if (language !== null) {
+      state.dailyLanguage = language;
     }
     if (dailyMode) {
       state.mode2 = dailyMode;
@@ -768,7 +766,7 @@ $(".page.pageLeaderboards .buttonGroup.secondary").on(
   "button",
   function () {
     const mode = $(this).data("mode") as "15" | "60";
-    const language = $(this).data("dailylanguage") as string;
+    const language = $(this).data("language") as string;
     if (mode !== undefined && state.type === "allTime") {
       if (state?.mode2 === mode) return;
       state.mode2 = mode;
