@@ -181,6 +181,13 @@ function buildTableRow(entry: LeaderboardEntry, me = false): string {
 
   const meClass = me ? "me" : "";
 
+  const formatted = {
+    wpm: Format.typingSpeed(entry.wpm, { showDecimalPlaces: true }),
+    acc: Format.percentage(entry.acc, { showDecimalPlaces: true }),
+    raw: Format.typingSpeed(entry.raw, { showDecimalPlaces: true }),
+    con: Format.percentage(entry.consistency, { showDecimalPlaces: true }),
+  };
+
   return `
     <tr class="${meClass}">
       <td>${
@@ -198,19 +205,23 @@ function buildTableRow(entry: LeaderboardEntry, me = false): string {
           </div>
         </div>
       </td>
-      <td>${Format.typingSpeed(entry.wpm, {
-        showDecimalPlaces: true,
-      })}</td>
-      <td>${Format.percentage(entry.acc, {
-        showDecimalPlaces: true,
-      })}</td>
-      <td>${Format.typingSpeed(entry.raw, {
-        showDecimalPlaces: true,
-      })}</td>
-      <td>${Format.percentage(entry.consistency, {
-        showDecimalPlaces: true,
-      })}</td>
-      <td class="small">${format(entry.timestamp, "dd MMM yyyy HH:mm")}</td>
+      <td class="stat narrow">
+      ${formatted.wpm}
+        <div class="sub">${formatted.acc}</div>
+      </td>
+      </td>
+      <td class="stat narrow">
+      ${formatted.raw}
+        <div class="sub">${formatted.con}</div>
+      </td>
+      <td class="stat wide">${formatted.wpm}</td>
+      <td class="stat wide">${formatted.acc}</td>
+      <td class="stat wide">${formatted.raw}</td>
+      <td class="stat wide">${formatted.con}</td>
+      <td class="date">${format(
+        entry.timestamp,
+        "dd MMM yyyy"
+      )}<div class="sub">${format(entry.timestamp, "HH:mm")}</div></td>
     </tr>
   `;
 }
@@ -271,51 +282,82 @@ function fillUser(): void {
 
   const userData = state.userData;
   const percentile = ((state.count - userData.rank) / state.count) * 100;
-
-  $(".page.pageLeaderboards .bigUser .rank").text(userData.rank);
-  $(".page.pageLeaderboards .bigUser .userInfo .top").text(
-    `You (Top ${percentile.toFixed(2)}%)`
-  );
-
   const diff = getLbMemoryDifference();
+  let diffText;
 
   if (diff === null) {
-    $(".page.pageLeaderboards .bigUser .userInfo .bottom").text("");
+    diffText = "";
   } else if (diff === 0) {
-    $(".page.pageLeaderboards .bigUser .userInfo .bottom").text(
-      ` ( = since you last checked)`
-    );
+    diffText = ` ( = since you last checked)`;
   } else if (diff > 0) {
-    $(".page.pageLeaderboards .bigUser .userInfo .bottom").html(
-      ` (<i class="fas fa-fw fa-angle-up"></i>${Math.abs(
-        diff
-      )} since you last checked)`
-    );
+    diffText = ` (<i class="fas fa-fw fa-angle-up"></i>${Math.abs(
+      diff
+    )} since you last checked
+      )`;
   } else {
-    $(".page.pageLeaderboards .bigUser .userInfo .bottom").html(
-      ` (<i class="fas fa-fw fa-angle-down"></i>${Math.abs(
-        diff
-      )} since you last checked
-        )`
-    );
+    diffText = ` (<i class="fas fa-fw fa-angle-down"></i>${Math.abs(
+      diff
+    )} since you last checked
+        )`;
   }
 
-  $(".page.pageLeaderboards .bigUser .stat.wpm .value").text(
-    Format.typingSpeed(userData.wpm, { showDecimalPlaces: true })
-  );
-  $(".page.pageLeaderboards .bigUser .stat.acc .value").text(
-    Format.percentage(userData.acc, { showDecimalPlaces: true })
-  );
-  $(".page.pageLeaderboards .bigUser .stat.raw .value").text(
-    Format.typingSpeed(userData.raw, { showDecimalPlaces: true })
-  );
-  $(".page.pageLeaderboards .bigUser .stat.con .value").text(
-    Format.percentage(userData.consistency, { showDecimalPlaces: true })
-  );
-  $(".page.pageLeaderboards .bigUser .stat.timestamp .value").text(
-    format(userData.timestamp, "dd MMM yyyy HH:mm")
-  );
+  const formatted = {
+    wpm: Format.typingSpeed(userData.wpm, { showDecimalPlaces: true }),
+    acc: Format.percentage(userData.acc, { showDecimalPlaces: true }),
+    raw: Format.typingSpeed(userData.raw, { showDecimalPlaces: true }),
+    con: Format.percentage(userData.consistency, { showDecimalPlaces: true }),
+  };
 
+  const html = `
+          <div class="rank">${
+            userData.rank === 1
+              ? '<i class="fas fa-fw fa-crown"></i>'
+              : userData.rank
+          }</div>
+        <div class="userInfo">
+          <div class="top">You (Top ${percentile.toFixed(2)}%)</div>
+          <div class="bottom">${diffText}</div>
+        </div>
+        <div class="stat wide">
+          <div class="title">wpm</div>
+          <div class="value">${formatted.wpm}</div>
+        </div>
+        <div class="stat wide">
+          <div class="title">accuracy</div>
+          <div class="value">${formatted.acc}</div>
+        </div>
+        <div class="stat wide">
+          <div class="title">raw</div>
+          <div class="value">${formatted.raw}</div>
+        </div>
+        <div class="stat wide">
+          <div class="title">consistency</div>
+          <div class="value">${formatted.con}</div>
+        </div>
+        <div class="stat wide">
+          <div class="title">date</div>
+          <div class="value">${format(
+            userData.timestamp,
+            "dd MMM yyyy HH:mm"
+          )}</div>
+        </div>
+
+
+        <div class="stat narrow">
+          <div>${formatted.wpm}</div>
+          <div class="sub">${formatted.acc}</div>
+        </div>
+              <div class="stat narrow">
+          <div>${formatted.raw}</div>
+          <div class="sub">${formatted.con}</div>
+        </div>
+        <div class="stat narrow">
+          <div>${format(userData.timestamp, "dd MMM yyyy")}</div>
+          <div class="sub">${format(userData.timestamp, "HH:mm")}</div>
+        </div>
+        `;
+
+  $(".page.pageLeaderboards .bigUser").html(html);
   $(".page.pageLeaderboards .bigUser").removeClass("hidden");
 }
 

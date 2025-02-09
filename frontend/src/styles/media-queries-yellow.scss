@@ -73,6 +73,20 @@
   .pageLeaderboards {
     .content .tableAndUser {
       font-size: 0.9rem;
+      .bigUser {
+        grid-template-columns: auto 1fr auto auto auto;
+      }
+      .narrow {
+        display: table-cell;
+      }
+      .wide {
+        display: none;
+      }
+      tbody {
+        td.date {
+          font-size: 1em;
+        }
+      }
       table td {
         padding: 1em;
       }

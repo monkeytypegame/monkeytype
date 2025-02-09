@@ -3,33 +3,7 @@
     <div class="tableAndUser">
       <div class="bigtitle">title</div>
       <!-- <div class="title needAuth">You</div> -->
-      <div class="bigUser you needAuth">
-        <div class="rank">1234</div>
-        <div class="userInfo">
-          <div class="top">-</div>
-          <div class="bottom">-</div>
-        </div>
-        <div class="stat wpm">
-          <div class="title">wpm</div>
-          <div class="value">-</div>
-        </div>
-        <div class="stat acc">
-          <div class="title">accuracy</div>
-          <div class="value">-</div>
-        </div>
-        <div class="stat raw">
-          <div class="title">raw</div>
-          <div class="value">-</div>
-        </div>
-        <div class="stat con">
-          <div class="title">consistency</div>
-          <div class="value">-</div>
-        </div>
-        <div class="stat timestamp">
-          <div class="title">date</div>
-          <div class="value">-</div>
-        </div>
-      </div>
+      <div class="bigUser you needAuth"></div>
       <div class="titleAndButtons">
         <div class="title timer">Updates in: -</div>
 
@@ -62,10 +36,18 @@
           <tr>
             <td>#</td>
             <td>name</td>
-            <td class="wide">wpm</td>
-            <td class="wide">accuracy</td>
-            <td class="wide">raw</td>
-            <td class="wide">consistency</td>
+            <td class="stat narrow">
+              wpm
+              <div class="sub">accuracy</div>
+            </td>
+            <td class="stat narrow">
+              raw
+              <div class="sub">consistency</div>
+            </td>
+            <td class="stat wide">wpm</td>
+            <td class="stat wide">accuracy</td>
+            <td class="stat wide">raw</td>
+            <td class="stat wide">consistency</td>
             <td class="date">date</td>
           </tr>
         </thead>
