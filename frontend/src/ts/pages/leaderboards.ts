@@ -48,6 +48,7 @@ type State = {
   pageSize: number;
   title: string;
   error?: string;
+  discordAvatarUrls: Map<string, string>;
 } & (AllTimeState | WeeklyState | DailyState);
 
 const state = {
@@ -60,6 +61,7 @@ const state = {
   page: 0,
   pageSize: 50,
   title: "All-time English Time 15 Leaderboard",
+  discordAvatarUrls: new Map<string, string>(),
 } as State;
 
 function updateTitle(): void {
@@ -92,6 +94,7 @@ async function requestData(update = false): Promise<void> {
     state.loading = true;
     state.error = undefined;
     state.data = null;
+    state.discordAvatarUrls = new Map<string, string>();
     state.userData = null;
   }
   updateContent();
@@ -120,7 +123,12 @@ async function requestData(update = false): Promise<void> {
 
       if (userData.status === 200 && userData.body.data.entry !== undefined) {
         state.userData = userData.body.data.entry;
-      }
+
+    if (state.data !== null) {
+      void getAvatarUrls(state.data).then((urlMap) => {
+        state.discordAvatarUrls = urlMap;
+        fillAvatars();
+      });
     }
 
     state.loading = false;
@@ -172,6 +180,44 @@ function updateJumpButtons(): void {
   }
 }
 
+async function getAvatarUrls(
+  data: LeaderboardEntry[] | XpLeaderboardEntry[]
+): Promise<Map<string, string>> {
+  const results = await Promise.allSettled(
+    data.map(async (entry) => ({
+      uid: entry.uid,
+      url: await getDiscordAvatarUrl(entry.discordId, entry.discordAvatar),
+    }))
+  );
+
+  const avatarMap = new Map<string, string>();
+  results.forEach((result) => {
+    if (result.status === "fulfilled" && result.value.url !== null) {
+      avatarMap.set(result.value.uid, result.value.url);
+    }
+  });
+
+  return avatarMap;
+}
+function fillAvatars(): void {
+  const elements = $(".page.pageLeaderboards table .lbav");
+
+  for (const element of elements) {
+    const uid = $(element).siblings(".entryName").attr("uid") as string;
+    const url = state.discordAvatarUrls.get(uid);
+
+    if (url !== undefined) {
+      $(element).html(
+        `<div class="avatar" style="background-image:url(${url})"></div>`
+      );
+    } else {
+      $(element).html(
+        `<div class="avatarPlaceholder"><i class="fas fa-user-circle"></i></div>`
+      );
+    }
+  }
+}
+
 function buildTableRow(entry: LeaderboardEntry, me = false): string {
   let avatar = `<div class="avatarPlaceholder"><i class="fas fa-user-circle"></i></div>`;
 
@@ -189,7 +235,7 @@ function buildTableRow(entry: LeaderboardEntry, me = false): string {
   };
 
   return `
-    <tr class="${meClass}">
+    <tr class="${meClass}" data-uid="${entry.uid}">
       <td>${
         entry.rank === 1 ? '<i class="fas fa-fw fa-crown"></i>' : entry.rank
       }</td>
