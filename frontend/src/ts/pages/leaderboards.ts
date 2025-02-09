@@ -188,8 +188,12 @@ function fillTable(): void {
   const table = $(".page.pageLeaderboards table tbody");
   table.empty();
 
-  for (const entry of state.data) {
-    table.append(buildTableRow(entry));
+  if (state.data.length === 0) {
+    table.append(`<tr><td colspan="7" class="empty">No data</td></tr>`);
+  } else {
+    for (const entry of state.data) {
+      table.append(buildTableRow(entry));
+    }
   }
 
   $(".page.pageLeaderboards table").removeClass("hidden");
