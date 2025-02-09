@@ -61,10 +61,9 @@
         background: var(--sub-alt-color);
         padding: 1em 2em;
         border-radius: var(--roundness);
-        display: grid;
+        display: flex;
         align-items: center;
         gap: 2em;
-        grid-template-columns: auto 1fr auto auto auto auto auto;
         // .rank {
         // width: 7ch;
         // text-align: left;
@@ -75,6 +74,10 @@
           text-align: center;
           grid-column: 1 / -1;
           color: var(--sub-color);
+        }
+
+        .userInfo {
+          flex-grow: 1;
         }
 
         .stat {
