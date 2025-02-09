@@ -712,9 +712,9 @@ function readGetParameters(): void {
   }
 
   if (state.type === "allTime") {
-    const allTimeMode = params.get("mode2") as "15" | "60";
-    if (allTimeMode) {
-      state.mode2 = allTimeMode;
+    const mode = params.get("mode2") as "15" | "60";
+    if (mode) {
+      state.mode2 = mode;
     }
   } else if (state.type === "daily") {
     const language = params.get("language");
