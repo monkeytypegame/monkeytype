@@ -156,6 +156,15 @@ function updateJumpButtons(): void {
     el.find("button[data-action='firstPage']").removeClass("disabled");
   }
 
+  if (isAuthenticated() && state.userData) {
+    const userPage = Math.floor(state.userData.rank / state.pageSize);
+    if (state.page === userPage) {
+      el.find("button[data-action='userPage']").addClass("disabled");
+    } else {
+      el.find("button[data-action='userPage']").removeClass("disabled");
+    }
+  }
+
   if (state.page === totalPages - 1) {
     el.find("button[data-action='nextPage']").addClass("disabled");
   } else {
