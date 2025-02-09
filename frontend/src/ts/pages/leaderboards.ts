@@ -403,7 +403,12 @@ function fillUser(): void {
   }
 
   const userData = state.userData;
-  const percentile = ((state.count - userData.rank) / state.count) * 100;
+  const percentile = (userData.rank / state.count) * 100;
+  let percentileString = `Top ${percentile.toFixed(2)}%`;
+  if (userData.rank === 1) {
+    percentileString = "GOAT";
+  }
+
   const diff = getLbMemoryDifference();
   let diffText;
 
@@ -437,7 +442,7 @@ function fillUser(): void {
               : userData.rank
           }</div>
         <div class="userInfo">
-          <div class="top">You (Top ${percentile.toFixed(2)}%)</div>
+          <div class="top">You (${percentileString})</div>
           <div class="bottom">${diffText}</div>
         </div>
         <div class="stat wide">
