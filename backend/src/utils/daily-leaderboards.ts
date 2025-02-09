@@ -202,6 +202,7 @@ export class DailyLeaderboard {
       rank: rank + 1,
       entry: {
         ...(JSON.parse(result ?? "null") as LeaderboardEntry),
+        rank: rank + 1,
       },
     };
   }
