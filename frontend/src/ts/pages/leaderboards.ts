@@ -469,6 +469,22 @@ function handleJumpButton(action: string, page?: number): void {
     state.page += 1;
   } else if (action === "goToPage" && page !== undefined) {
     state.page = page;
+  } else if (action === "userPage") {
+    if (isAuthenticated()) {
+      const user = Auth?.currentUser;
+      if (user) {
+        const rank = state.userData?.rank;
+        if (rank) {
+          const page = Math.floor(rank / state.pageSize);
+
+          if (state.page === page) {
+            return;
+          }
+
+          state.page = page;
+        }
+      }
+    }
   } else {
     return;
   }
@@ -478,7 +494,7 @@ function handleJumpButton(action: string, page?: number): void {
 
 $(".page.pageLeaderboards .jumpButtons button").on("click", function () {
   const action = $(this).data("action") as string;
-  if (action !== "goToPage" && action !== "userPage") {
+  if (action !== "goToPage") {
     handleJumpButton(action);
   }
 });
