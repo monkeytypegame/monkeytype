@@ -9,9 +9,13 @@ import Ape from "../ape";
 import { Mode } from "@monkeytype/contracts/schemas/shared";
 import * as Notifications from "../elements/notifications";
 import Format from "../utils/format";
-import { isAuthenticated } from "../firebase";
+import { Auth, isAuthenticated } from "../firebase";
 import * as DB from "../db";
 import { format } from "date-fns";
+import { differenceInSeconds } from "date-fns/differenceInSeconds";
+import * as DateTime from "../utils/date-and-time";
+import { getHtmlByUserFlags } from "../controllers/user-flag-controller";
+import { getHTMLById as getBadgeHTMLbyId } from "../controllers/badge-controller";
 
 type AllTimeState = {
   mode: "allTime";
@@ -159,18 +163,30 @@ function updateJumpButtons(): void {
   }
 }
 
-function buildTableRow(entry: LeaderboardEntry): string {
+function buildTableRow(entry: LeaderboardEntry, me = false): string {
+  let avatar = `<div class="avatarPlaceholder"><i class="fas fa-user-circle"></i></div>`;
+
+  if (entry.discordAvatar !== undefined) {
+    avatar = `<div class="avatarPlaceholder"><i class="fas fa-circle-notch fa-spin"></i></div>`;
+  }
+
+  const meClass = me ? "me" : "";
+
   return `
-    <tr>
-      <td>${entry.rank}</td>
+    <tr class="${meClass}">
+      <td>${
+        entry.rank === 1 ? '<i class="fas fa-fw fa-crown"></i>' : entry.rank
+      }</td>
       <td>
         <div class="avatarNameBadge">
-          <div class="lbav">
-            <div class="avatarPlaceholder">
-              <i class="fas fa-user-circle"></i>
-            </div>
+          <div class="lbav">${avatar}</div>
+          <a href="${location.origin}/profile/${
+    entry.uid
+  }?isUid" class="entryName" uid=${entry.uid} router-link>${entry.name}</a>
+          <div class="flagsAndBadge">
+            ${getHtmlByUserFlags(entry)}
+            ${entry.badgeId ? getBadgeHTMLbyId(entry.badgeId) : ""}
           </div>
-          <div class="name">${entry.name}</div>
         </div>
       </td>
       <td>${Format.typingSpeed(entry.wpm, {
@@ -205,7 +221,8 @@ function fillTable(): void {
     table.append(`<tr><td colspan="7" class="empty">No data</td></tr>`);
   } else {
     for (const entry of state.data) {
-      table.append(buildTableRow(entry));
+      const me = Auth?.currentUser?.uid === entry.uid;
+      table.append(buildTableRow(entry, me));
     }
   }
 
@@ -248,7 +265,7 @@ function fillUser(): void {
 
   $(".page.pageLeaderboards .bigUser .rank").text(userData.rank);
   $(".page.pageLeaderboards .bigUser .userInfo .top").text(
-    `${userData.name} (Top ${percentile.toFixed(2)}%)`
+    `You (Top ${percentile.toFixed(2)}%)`
   );
 
   const diff = getLbMemoryDifference();
@@ -367,6 +384,44 @@ function updateSecondaryButtons(): void {
   }
 }
 
+let updateTimer: number | undefined;
+
+function updateTimerElement(): void {
+  if (state.mode === "daily") {
+    const date = new Date();
+    date.setUTCHours(0, 0, 0, 0);
+    date.setDate(date.getDate() + 1);
+    const dateNow = new Date();
+    dateNow.setUTCMilliseconds(0);
+    const diff = differenceInSeconds(date, dateNow);
+
+    $(".page.pageLeaderboards .titleAndButtons .timer").text(
+      "Next reset in: " + DateTime.secondsToString(diff, true)
+    );
+  } else {
+    const date = new Date();
+    const minutesToNextUpdate = 14 - (date.getMinutes() % 15);
+    const secondsToNextUpdate = 60 - date.getSeconds();
+    const totalSeconds = minutesToNextUpdate * 60 + secondsToNextUpdate;
+    $(".page.pageLeaderboards .titleAndButtons .timer").text(
+      "Next update in: " + DateTime.secondsToString(totalSeconds, true)
+    );
+  }
+}
+
+function startTimer(): void {
+  updateTimerElement();
+  updateTimer = setInterval(() => {
+    updateTimerElement();
+  }, 1000) as unknown as number;
+}
+
+function stopTimer(): void {
+  clearInterval(updateTimer);
+  updateTimer = undefined;
+  $(".page.pageLeaderboards .titleAndButtons .timer").text("-");
+}
+
 function updateAllTimeModeButtons(): void {
   if (state.mode !== "allTime") return;
   const el = $(".page.pageLeaderboards .buttonGroup.allTimeModeButtons");
@@ -467,9 +522,11 @@ export const page = new Page({
   path: "/leaderboards",
   afterHide: async (): Promise<void> => {
     Skeleton.remove("pageLeaderboards");
+    stopTimer();
   },
   beforeShow: async (): Promise<void> => {
     Skeleton.append("pageLeaderboards", "main");
+    startTimer();
     updateModeButtons();
     updateTitle();
     updateSecondaryButtons();

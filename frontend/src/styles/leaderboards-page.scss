@@ -133,11 +133,55 @@
           }
         }
 
+        .avatarNameBadge {
+          display: grid;
+          grid-template-columns: 1.25rem max-content auto;
+          gap: 0.5rem;
+          place-items: center left;
+          .avatarPlaceholder {
+            width: 1.25rem;
+            height: 1.25rem;
+            font-size: 1.25rem;
+            // background: var(--sub-color);
+            color: var(--sub-color);
+            // display: grid;
+            // place-content: center center;
+            border-radius: 100%;
+            margin-top: -0.25rem;
+          }
+          .entryName {
+            text-decoration: none;
+            color: var(--text-color);
+            cursor: pointer;
+          }
+          .avatarPlaceholder,
+          .avatar {
+            grid-row: 1/2;
+            grid-column: 1/2;
+          }
+          .badge {
+            font-size: 0.6rem;
+          }
+          .flagsAndBadge {
+            display: flex;
+            gap: 0.5rem;
+            color: var(--sub-color);
+            place-items: center;
+          }
+        }
+
         tbody {
           color: var(--text-color);
 
           .small {
             font-size: 0.75em;
+          }
+
+          tr.me {
+            color: var(--main-color);
+            a {
+              color: var(--main-color) !important;
+            }
           }
 
           tr:nth-child(odd) td {
