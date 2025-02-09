@@ -402,7 +402,7 @@ function buildWeeklyTableRow(entry: XpLeaderboardEntry, me = false): string {
         ":"
       )}</td>
       <td class="stat narrow">
-      ${abbreviateNumber(entry.totalXp)}
+      ${entry.totalXp < 1000 ? entry.totalXp : abbreviateNumber(entry.totalXp)}
       <div class="sub">${DateTime.secondsToString(
         Math.round(entry.timeTypedSeconds),
         true,
@@ -510,52 +510,50 @@ function fillUser(): void {
     return;
   }
 
-  if (
-    state.data === null ||
-    (state.type !== "allTime" && state.type !== "daily")
-  ) {
+  if (state.data === null) {
     return;
   }
 
-  if (!state.userData || !state.count) {
-    $(".page.pageLeaderboards .bigUser").addClass("hidden");
-    return;
-  }
+  if (state.type === "allTime" || state.type === "daily") {
+    if (!state.userData || !state.count) {
+      $(".page.pageLeaderboards .bigUser").addClass("hidden");
+      return;
+    }
 
-  const userData = state.userData;
-  const percentile = (userData.rank / state.count) * 100;
-  let percentileString = `Top ${percentile.toFixed(2)}%`;
-  if (userData.rank === 1) {
-    percentileString = "GOAT";
-  }
+    const userData = state.userData;
+    const percentile = (userData.rank / state.count) * 100;
+    let percentileString = `Top ${percentile.toFixed(2)}%`;
+    if (userData.rank === 1) {
+      percentileString = "GOAT";
+    }
 
-  const diff = getLbMemoryDifference();
-  let diffText;
+    const diff = getLbMemoryDifference();
+    let diffText;
 
-  if (diff === null) {
-    diffText = "";
-  } else if (diff === 0) {
-    diffText = ` ( = since you last checked)`;
-  } else if (diff > 0) {
-    diffText = ` (<i class="fas fa-fw fa-angle-up"></i>${Math.abs(
-      diff
-    )} since you last checked
+    if (diff === null) {
+      diffText = "";
+    } else if (diff === 0) {
+      diffText = ` ( = since you last checked)`;
+    } else if (diff > 0) {
+      diffText = ` (<i class="fas fa-fw fa-angle-up"></i>${Math.abs(
+        diff
+      )} since you last checked
       )`;
-  } else {
-    diffText = ` (<i class="fas fa-fw fa-angle-down"></i>${Math.abs(
-      diff
-    )} since you last checked
+    } else {
+      diffText = ` (<i class="fas fa-fw fa-angle-down"></i>${Math.abs(
+        diff
+      )} since you last checked
         )`;
-  }
+    }
 
-  const formatted = {
-    wpm: Format.typingSpeed(userData.wpm, { showDecimalPlaces: true }),
-    acc: Format.percentage(userData.acc, { showDecimalPlaces: true }),
-    raw: Format.typingSpeed(userData.raw, { showDecimalPlaces: true }),
-    con: Format.percentage(userData.consistency, { showDecimalPlaces: true }),
-  };
+    const formatted = {
+      wpm: Format.typingSpeed(userData.wpm, { showDecimalPlaces: true }),
+      acc: Format.percentage(userData.acc, { showDecimalPlaces: true }),
+      raw: Format.typingSpeed(userData.raw, { showDecimalPlaces: true }),
+      con: Format.percentage(userData.consistency, { showDecimalPlaces: true }),
+    };
 
-  const html = `
+    const html = `
           <div class="rank">${
             userData.rank === 1
               ? '<i class="fas fa-fw fa-crown"></i>'
@@ -594,7 +592,7 @@ function fillUser(): void {
           <div>${formatted.wpm}</div>
           <div class="sub">${formatted.acc}</div>
         </div>
-              <div class="stat narrow">
+        <div class="stat narrow">
           <div>${formatted.raw}</div>
           <div class="sub">${formatted.con}</div>
         </div>
@@ -604,7 +602,92 @@ function fillUser(): void {
         </div>
         `;
 
-  $(".page.pageLeaderboards .bigUser").html(html);
+    $(".page.pageLeaderboards .bigUser").html(html);
+  } else if (state.type === "weekly") {
+    if (!state.userData || !state.count) {
+      $(".page.pageLeaderboards .bigUser").addClass("hidden");
+      return;
+    }
+
+    const userData = state.userData;
+    const percentile = (userData.rank / state.count) * 100;
+    let percentileString = `Top ${percentile.toFixed(2)}%`;
+    if (userData.rank === 1) {
+      percentileString = "GOAT";
+    }
+
+    const diff = getLbMemoryDifference();
+    let diffText;
+
+    if (diff === null) {
+      diffText = "";
+    } else if (diff === 0) {
+      diffText = ` ( = since you last checked)`;
+    } else if (diff > 0) {
+      diffText = ` (<i class="fas fa-fw fa-angle-up"></i>${Math.abs(
+        diff
+      )} since you last checked
+      )`;
+    } else {
+      diffText = ` (<i class="fas fa-fw fa-angle-down"></i>${Math.abs(
+        diff
+      )} since you last checked
+        )`;
+    }
+
+    const formatted = {
+      xp:
+        userData.totalXp < 1000
+          ? userData.totalXp
+          : abbreviateNumber(userData.totalXp),
+      time: DateTime.secondsToString(
+        Math.round(userData.timeTypedSeconds),
+        true,
+        true,
+        ":"
+      ),
+    };
+
+    const html = `
+          <div class="rank">${
+            userData.rank === 1
+              ? '<i class="fas fa-fw fa-crown"></i>'
+              : userData.rank
+          }</div>
+        <div class="userInfo">
+          <div class="top">You (${percentileString})</div>
+          <div class="bottom">${diffText}</div>
+        </div>
+        <div class="stat wide">
+          <div class="title">xp gained</div>
+          <div class="value">${formatted.xp}</div>
+        </div>
+        <div class="stat wide">
+          <div class="title">time typed</div>
+          <div class="value">${formatted.time}</div>
+        </div>
+        <div class="stat narrow">
+          <div>${formatted.xp}</div>
+          <div class="sub">${formatted.time}</div>
+        </div>
+        <div class="stat wide">
+          <div class="title">date</div>
+          <div class="value">${format(
+            userData.lastActivityTimestamp,
+            "dd MMM yyyy HH:mm"
+          )}</div>
+        </div>
+        <div class="stat narrow">
+          <div>${format(userData.lastActivityTimestamp, "dd MMM yyyy")}</div>
+          <div class="sub">${format(
+            userData.lastActivityTimestamp,
+            "HH:mm"
+          )}</div>
+        </div>
+        `;
+
+    $(".page.pageLeaderboards .bigUser").html(html);
+  }
   $(".page.pageLeaderboards .bigUser").removeClass("hidden");
 }
 
