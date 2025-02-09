@@ -173,7 +173,8 @@ export async function getWeeklyXpLeaderboardResults(
   const results = await weeklyXpLeaderboard.getResults(
     minRank,
     maxRank,
-    req.ctx.configuration.leaderboards.weeklyXp
+    req.ctx.configuration.leaderboards.weeklyXp,
+    req.ctx.configuration.users.premium.enabled
   );
 
   const count = await weeklyXpLeaderboard.getCount();
