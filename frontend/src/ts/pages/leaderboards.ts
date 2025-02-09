@@ -10,6 +10,8 @@ import { Mode } from "@monkeytype/contracts/schemas/shared";
 import * as Notifications from "../elements/notifications";
 import Format from "../utils/format";
 import { isAuthenticated } from "../firebase";
+import * as DB from "../db";
+import { format } from "date-fns";
 
 type AllTimeState = {
   mode: "allTime";
@@ -183,7 +185,7 @@ function buildTableRow(entry: LeaderboardEntry): string {
       <td>${Format.percentage(entry.consistency, {
         showDecimalPlaces: true,
       })}</td>
-      <td class="small">${entry.timestamp}</td>
+      <td class="small">${format(entry.timestamp, "dd MMM yyyy HH:mm")}</td>
     </tr>
   `;
 }
@@ -211,6 +213,23 @@ function fillTable(): void {
   $(".page.pageLeaderboards .titleAndButtons").removeClass("hidden");
 }
 
+function getLbMemoryDifference(): number | null {
+  if (state.mode !== "allTime") return null;
+  if (state.userData === null) return null;
+
+  const memory =
+    DB.getSnapshot()?.lbMemory?.["time"]?.[state.allTimeMode]?.["english"] ?? 0;
+
+  const rank = state.userData.rank;
+  const diff = memory - rank;
+
+  if (diff !== 0) {
+    void DB.updateLbMemory("time", state.allTimeMode, "english", rank, true);
+  }
+
+  return diff;
+}
+
 function fillUser(): void {
   if (
     state.data === null ||
@@ -231,13 +250,29 @@ function fillUser(): void {
   $(".page.pageLeaderboards .bigUser .userInfo .top").text(
     `${userData.name} (Top ${percentile.toFixed(2)}%)`
   );
-  // $(".page.pageLeaderboards .bigUser .userInfo .bottom").text(
-  //   userData.change === 0
-  //     ? "No change since last checked"
-  //     : userData.change > 0
-  //     ? `+${userData.change} since last checked`
-  //     : `${userData.change} since last checked`
-  // );
+
+  const diff = getLbMemoryDifference();
+
+  if (diff === null) {
+    $(".page.pageLeaderboards .bigUser .userInfo .bottom").text("");
+  } else if (diff === 0) {
+    $(".page.pageLeaderboards .bigUser .userInfo .bottom").text(
+      ` ( = since you last checked)`
+    );
+  } else if (diff > 0) {
+    $(".page.pageLeaderboards .bigUser .userInfo .bottom").html(
+      ` (<i class="fas fa-fw fa-angle-up"></i>${Math.abs(
+        diff
+      )} since you last checked)`
+    );
+  } else {
+    $(".page.pageLeaderboards .bigUser .userInfo .bottom").html(
+      ` (<i class="fas fa-fw fa-angle-down"></i>${Math.abs(
+        diff
+      )} since you last checked
+        )`
+    );
+  }
 
   $(".page.pageLeaderboards .bigUser .stat.wpm .value").text(
     Format.typingSpeed(userData.wpm, { showDecimalPlaces: true })
@@ -251,8 +286,8 @@ function fillUser(): void {
   $(".page.pageLeaderboards .bigUser .stat.con .value").text(
     Format.percentage(userData.consistency, { showDecimalPlaces: true })
   );
-  $(".page.pageLeaderboards .bigUser .stat.timestamp .value.timestamp").text(
-    userData.timestamp
+  $(".page.pageLeaderboards .bigUser .stat.timestamp .value").text(
+    format(userData.timestamp, "dd MMM yyyy HH:mm")
   );
 
   $(".page.pageLeaderboards .bigUser").removeClass("hidden");
@@ -299,6 +334,7 @@ function updateContent(): void {
   updateJumpButtons();
   fillTable();
   if (isAuthenticated()) {
+    //todo dont run this every time, only when new user data is fetched
     fillUser();
   }
 }
@@ -390,6 +426,9 @@ $(".page.pageLeaderboards .buttonGroup.modeButtons").on(
     const mode = $(this).data("mode") as "allTime" | "weekly" | "daily";
     if (state.mode === mode) return;
     state.mode = mode;
+    if (state.mode === "daily") {
+      state.dailyLanguage = "english";
+    }
     state.data = null;
     void requestData();
     updateModeButtons();
