@@ -19,24 +19,28 @@ import { getHTMLById as getBadgeHTMLbyId } from "../controllers/badge-controller
 import { getDiscordAvatarUrl, isDevEnvironment } from "../utils/misc";
 // import * as ServerConfiguration from "../ape/server-configuration";
 
+type LeaderboardType = "allTime" | "weekly" | "daily";
+
 type AllTimeState = {
-  mode: "allTime";
-  allTimeMode: "15" | "60";
+  type: "allTime";
+  mode: "time";
+  mode2: "15" | "60";
   data: LeaderboardEntry[] | null;
   count: number;
   userData: LeaderboardEntry | null;
 };
 
 type WeeklyState = {
-  mode: "weekly";
+  type: "weekly";
   data: XpLeaderboardEntry[] | null;
   count: number;
   userData: XpLeaderboardEntry | null;
 };
 
 type DailyState = {
-  mode: "daily";
-  dailyMode: "15" | "60";
+  type: "daily";
+  mode: "time";
+  mode2: "15" | "60";
   dailyMinWpm: number;
   dailyLanguage: string;
   data: LeaderboardEntry[] | null;
@@ -45,7 +49,7 @@ type DailyState = {
 };
 
 type State = {
-  mode: "allTime" | "weekly" | "daily";
+  type: LeaderboardType;
   loading: boolean;
   updating: boolean;
   page: number;
@@ -58,8 +62,8 @@ type State = {
 const state = {
   loading: true,
   updating: false,
-  mode: "allTime",
-  allTimeMode: "15",
+  type: "allTime",
+  mode2: "15",
   data: null,
   userData: null,
   page: 0,
@@ -70,21 +74,20 @@ const state = {
 
 function updateTitle(): void {
   const mode =
-    state.mode === "allTime"
+    state.type === "allTime"
       ? "All-time"
-      : state.mode === "weekly"
+      : state.type === "weekly"
       ? "Weekly XP"
       : "Daily";
 
   const language =
-    state.mode === "daily"
+    state.type === "daily"
       ? capitalizeFirstLetter(state.dailyLanguage)
-      : state.mode === "allTime"
+      : state.type === "allTime"
       ? "English"
       : "";
 
-  const secondary =
-    state.mode === "allTime" ? ` Time ${state.allTimeMode}` : "";
+  const secondary = state.type === "allTime" ? ` Time ${state.mode2}` : "";
 
   state.title = `${mode} ${language} ${secondary} Leaderboard`;
   $(".page.pageLeaderboards .bigtitle").text(state.title);
@@ -103,16 +106,16 @@ async function requestData(update = false): Promise<void> {
   }
   updateContent();
 
-  if (state.mode === "allTime" || state.mode === "daily") {
+  if (state.type === "allTime" || state.type === "daily") {
     const baseQuery = {
-      language: state.mode === "allTime" ? "english" : state.dailyLanguage,
+      language: state.type === "allTime" ? "english" : state.dailyLanguage,
       mode: "time" as Mode,
-      mode2: state.mode === "allTime" ? state.allTimeMode : state.dailyMode,
+      mode2: state.type === "allTime" ? state.mode2 : state.mode2,
     };
 
     let data;
 
-    if (state.mode === "allTime") {
+    if (state.type === "allTime") {
       data = await Ape.leaderboards.get({
         query: { ...baseQuery, page: state.page },
       });
@@ -138,7 +141,7 @@ async function requestData(update = false): Promise<void> {
     if (isAuthenticated() && state.userData === null) {
       let userData;
 
-      if (state.mode === "allTime") {
+      if (state.type === "allTime") {
         userData = await Ape.leaderboards.getRank({
           query: { ...baseQuery },
         });
@@ -155,7 +158,7 @@ async function requestData(update = false): Promise<void> {
           state.userData = userData.body.data.entry;
         }
 
-        if (state.mode === "daily") {
+        if (state.type === "daily") {
           // idk why ts complains but it works
           //@ts-ignore
           // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
@@ -319,7 +322,7 @@ function buildTableRow(entry: LeaderboardEntry, me = false): string {
 function fillTable(): void {
   if (
     state.data === null ||
-    (state.mode !== "allTime" && state.mode !== "daily")
+    (state.type !== "allTime" && state.type !== "daily")
   ) {
     return;
   }
@@ -341,17 +344,17 @@ function fillTable(): void {
 }
 
 function getLbMemoryDifference(): number | null {
-  if (state.mode !== "allTime") return null;
+  if (state.type !== "allTime") return null;
   if (state.userData === null) return null;
 
   const memory =
-    DB.getSnapshot()?.lbMemory?.["time"]?.[state.allTimeMode]?.["english"] ?? 0;
+    DB.getSnapshot()?.lbMemory?.["time"]?.[state.mode2]?.["english"] ?? 0;
 
   const rank = state.userData.rank;
   const diff = memory - rank;
 
   if (diff !== 0) {
-    void DB.updateLbMemory("time", state.allTimeMode, "english", rank, true);
+    void DB.updateLbMemory("time", state.mode2, "english", rank, true);
   }
 
   return diff;
@@ -383,7 +386,7 @@ function fillUser(): void {
     return;
   }
 
-  if (isAuthenticated() && state.mode === "daily" && state.userData === null) {
+  if (isAuthenticated() && state.type === "daily" && state.userData === null) {
     $(".page.pageLeaderboards .bigUser").html(
       `<div class="warning">Not qualified (min speed required: ${state.dailyMinWpm} wpm)</div>`
     );
@@ -399,7 +402,7 @@ function fillUser(): void {
 
   if (
     state.data === null ||
-    (state.mode !== "allTime" && state.mode !== "daily")
+    (state.type !== "allTime" && state.type !== "daily")
   ) {
     return;
   }
@@ -544,14 +547,14 @@ function updateContent(): void {
 function updateModeButtons(): void {
   const el = $(".page.pageLeaderboards .buttonGroup.modeButtons");
   el.find("button").removeClass("active");
-  el.find(`button[data-mode=${state.mode}]`).addClass("active");
+  el.find(`button[data-mode=${state.type}]`).addClass("active");
 }
 
 function updateSecondaryButtons(): void {
   $(".page.pageLeaderboards .buttonGroup.secondary").addClass("hidden");
   $(".page.pageLeaderboards .buttons .divider").addClass("hidden");
 
-  if (state.mode === "allTime") {
+  if (state.type === "allTime") {
     $(".page.pageLeaderboards .buttonGroup.allTimeModeButtons").removeClass(
       "hidden"
     );
@@ -559,7 +562,7 @@ function updateSecondaryButtons(): void {
 
     updateAllTimeModeButtons();
   }
-  if (state.mode === "daily") {
+  if (state.type === "daily") {
     $(".page.pageLeaderboards .buttonGroup.dailyLanguageButtons").removeClass(
       "hidden"
     );
@@ -572,7 +575,7 @@ function updateSecondaryButtons(): void {
 let updateTimer: number | undefined;
 
 function updateTimerElement(): void {
-  if (state.mode === "daily") {
+  if (state.type === "daily") {
     const date = new Date();
     date.setUTCHours(0, 0, 0, 0);
     date.setDate(date.getDate() + 1);
@@ -627,14 +630,14 @@ function stopTimer(): void {
 // }
 
 function updateAllTimeModeButtons(): void {
-  if (state.mode !== "allTime") return;
+  if (state.type !== "allTime") return;
   const el = $(".page.pageLeaderboards .buttonGroup.allTimeModeButtons");
   el.find("button").removeClass("active");
-  el.find(`button[data-allTimeMode=${state.allTimeMode}]`).addClass("active");
+  el.find(`button[data-allTimeMode=${state.mode2}]`).addClass("active");
 }
 
 function updateDailyLanguageButtons(): void {
-  if (state.mode !== "daily") return;
+  if (state.type !== "daily") return;
   const el = $(".page.pageLeaderboards .buttonGroup.dailyLanguageButtons");
   el.find("button").removeClass("active");
   el.find(`button[data-dailyLanguage=${state.dailyLanguage}]`).addClass(
@@ -690,12 +693,12 @@ function handleJumpButton(action: string, page?: number): void {
 function updateGetParameters(): void {
   const params = new URLSearchParams(window.location.search);
 
-  params.set("mode", state.mode);
-  if (state.mode === "allTime") {
-    params.set("mode2", state.allTimeMode);
-  } else if (state.mode === "daily") {
+  params.set("mode", state.type);
+  if (state.type === "allTime") {
+    params.set("mode2", state.mode2);
+  } else if (state.type === "daily") {
     params.set("language", state.dailyLanguage);
-    params.set("mode2", state.dailyMode);
+    params.set("mode2", state.mode2);
   }
 
   params.set("page", state.page.toString());
@@ -709,22 +712,22 @@ function readGetParameters(): void {
 
   const mode = params.get("mode") as "allTime" | "weekly" | "daily";
   if (mode) {
-    state.mode = mode;
+    state.type = mode;
   }
 
-  if (state.mode === "allTime") {
+  if (state.type === "allTime") {
     const allTimeMode = params.get("mode2") as "15" | "60";
     if (allTimeMode) {
-      state.allTimeMode = allTimeMode;
+      state.mode2 = allTimeMode;
     }
-  } else if (state.mode === "daily") {
+  } else if (state.type === "daily") {
     const dailyLanguage = params.get("language");
     const dailyMode = params.get("mode2") as "15" | "60";
     if (dailyLanguage !== null) {
       state.dailyLanguage = dailyLanguage;
     }
     if (dailyMode) {
-      state.dailyMode = dailyMode;
+      state.mode2 = dailyMode;
     }
   }
 
@@ -746,11 +749,11 @@ $(".page.pageLeaderboards .buttonGroup.modeButtons").on(
   "button",
   function () {
     const mode = $(this).data("mode") as "allTime" | "weekly" | "daily";
-    if (state.mode === mode) return;
-    state.mode = mode;
-    if (state.mode === "daily") {
+    if (state.type === mode) return;
+    state.type = mode;
+    if (state.type === "daily") {
       state.dailyLanguage = "english";
-      state.dailyMode = "15";
+      state.mode2 = "15";
     }
     state.data = null;
     void requestData();
@@ -768,10 +771,10 @@ $(".page.pageLeaderboards .buttonGroup.secondary").on(
   function () {
     const allTimeMode = $(this).data("alltimemode") as "15" | "60";
     const language = $(this).data("dailylanguage") as string;
-    if (allTimeMode !== undefined && state.mode === "allTime") {
-      if (state?.allTimeMode === allTimeMode) return;
-      state.allTimeMode = allTimeMode;
-    } else if (language !== undefined && state.mode === "daily") {
+    if (allTimeMode !== undefined && state.type === "allTime") {
+      if (state?.mode2 === allTimeMode) return;
+      state.mode2 = allTimeMode;
+    } else if (language !== undefined && state.type === "daily") {
       if (state.dailyLanguage === language) return;
       state.dailyLanguage = language;
     } else {
