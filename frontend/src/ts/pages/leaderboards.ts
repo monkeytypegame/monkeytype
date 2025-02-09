@@ -17,6 +17,8 @@ import * as DateTime from "../utils/date-and-time";
 import { getHtmlByUserFlags } from "../controllers/user-flag-controller";
 import { getHTMLById as getBadgeHTMLbyId } from "../controllers/badge-controller";
 import { getDiscordAvatarUrl, isDevEnvironment } from "../utils/misc";
+import { abbreviateNumber } from "../utils/numbers";
+import { getCurrentWeekTimestamp } from "@monkeytype/util/date-and-time";
 // import * as ServerConfiguration from "../ape/server-configuration";
 
 type LeaderboardType = "allTime" | "weekly" | "daily";
@@ -32,6 +34,7 @@ type AllTimeState = {
 
 type WeeklyState = {
   type: "weekly";
+  totalXp: number;
   data: XpLeaderboardEntry[] | null;
   count: number;
   userData: XpLeaderboardEntry | null;
@@ -106,7 +109,7 @@ async function requestData(update = false): Promise<void> {
     state.loading = true;
     state.error = undefined;
     state.data = null;
-    state.discordAvatarUrls = new Map<string, string>();
+    state.discordAvatarUrls = new Map<string, string>(); //todo only clear this when leaving the page
     state.userData = null;
   }
   updateContent();
@@ -187,12 +190,59 @@ async function requestData(update = false): Promise<void> {
     state.updating = false;
     updateContent();
     return;
-  }
+  } else if (state.type === "weekly") {
+    const data = await Ape.leaderboards.getWeeklyXp({
+      query: { page: state.page },
+    });
 
-  state.updating = false;
-  state.loading = false;
-  state.error = "Unsupported mode";
-  updateContent();
+    if (data.status === 200) {
+      state.data = data.body.data.entries;
+      state.count = data.body.data.count;
+      state.pageSize = data.body.data.pageSize;
+    } else {
+      state.data = null;
+      state.error = "Something went wrong";
+      Notifications.add("Failed to get leaderboard: " + data.body.message, -1);
+    }
+
+    if (isAuthenticated() && state.userData === null) {
+      const userData = await Ape.leaderboards.getWeeklyXpRank();
+
+      if (userData.status === 200) {
+        if (userData.body.data.entry !== undefined) {
+          state.userData = userData.body.data.entry;
+        }
+
+        if (state.type === "weekly") {
+          // idk why ts complains but it works
+          //@ts-ignore
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          state.totalXp = userData.body.data.totalXp;
+        }
+      } else {
+        state.userData = null;
+        state.error = "Something went wrong";
+        Notifications.add("Failed to get rank: " + userData.body.message, -1);
+      }
+    }
+
+    if (state.data !== null) {
+      void getAvatarUrls(state.data).then((urlMap) => {
+        state.discordAvatarUrls = urlMap;
+        fillAvatars();
+      });
+    }
+
+    state.loading = false;
+    state.updating = false;
+    updateContent();
+    return;
+  } else {
+    // state.updating = false;
+    // state.loading = false;
+    // state.error = "Unsupported mode";
+    // updateContent();
+  }
 }
 
 function updateJumpButtons(): void {
@@ -324,23 +374,85 @@ function buildTableRow(entry: LeaderboardEntry, me = false): string {
   `;
 }
 
-function fillTable(): void {
-  if (
-    state.data === null ||
-    (state.type !== "allTime" && state.type !== "daily")
-  ) {
-    return;
+function buildWeeklyTableRow(entry: XpLeaderboardEntry, me = false): string {
+  let avatar = `<div class="avatarPlaceholder"><i class="fas fa-user-circle"></i></div>`;
+
+  if (entry.discordAvatar !== undefined) {
+    avatar = `<div class="avatarPlaceholder"><i class="fas fa-circle-notch fa-spin"></i></div>`;
   }
 
+  const meClass = me ? "me" : "";
+
+  return `
+    <tr class="${meClass}" data-uid="${entry.uid}">
+      <td>${
+        entry.rank === 1 ? '<i class="fas fa-fw fa-crown"></i>' : entry.rank
+      }</td>
+      <td>
+        <div class="avatarNameBadge">
+          <div class="lbav">${avatar}</div>
+          <a href="${location.origin}/profile/${
+    entry.uid
+  }?isUid" class="entryName" uid=${entry.uid} router-link>${entry.name}</a>
+          <div class="flagsAndBadge">
+            ${entry.badgeId ? getBadgeHTMLbyId(entry.badgeId) : ""}
+          </div>
+        </div>
+      </td>
+      <td class="stat wide">${
+        entry.totalXp < 1000 ? entry.totalXp : abbreviateNumber(entry.totalXp)
+      }</td>
+      <td class="stat wide">${DateTime.secondsToString(
+        Math.round(entry.timeTypedSeconds),
+        true,
+        true,
+        ":"
+      )}</td>
+      <td class="stat narrow">
+      ${abbreviateNumber(entry.totalXp)}
+      <div class="sub">${DateTime.secondsToString(
+        Math.round(entry.timeTypedSeconds),
+        true,
+        true,
+        ":"
+      )}</td>
+      </td>
+      <td class="date">${format(
+        entry.lastActivityTimestamp,
+        "dd MMM yyyy"
+      )}<div class="sub">${format(entry.lastActivityTimestamp, "HH:mm")}</div>
+      </td>
+    </tr>
+  `;
+}
+
+function fillTable(): void {
   const table = $(".page.pageLeaderboards table tbody");
   table.empty();
 
-  if (state.data.length === 0) {
+  $(".page.pageLeaderboards table thead").addClass("hidden");
+  if (state.type === "allTime" || state.type === "daily") {
+    $(".page.pageLeaderboards table thead.allTimeAndDaily").removeClass(
+      "hidden"
+    );
+  } else if (state.type === "weekly") {
+    $(".page.pageLeaderboards table thead.weekly").removeClass("hidden");
+  }
+
+  if (state.data === null || state.data.length === 0) {
     table.append(`<tr><td colspan="7" class="empty">No data</td></tr>`);
-  } else {
+    return;
+  }
+
+  if (state.type === "allTime" || state.type === "daily") {
     for (const entry of state.data) {
       const me = Auth?.currentUser?.uid === entry.uid;
       table.append(buildTableRow(entry, me));
+    }
+  } else if (state.type === "weekly") {
+    for (const entry of state.data) {
+      const me = Auth?.currentUser?.uid === entry.uid;
+      table.append(buildWeeklyTableRow(entry, me));
     }
   }
 
@@ -594,13 +706,22 @@ function updateTimerElement(): void {
     $(".page.pageLeaderboards .titleAndButtons .timer").text(
       "Next reset in: " + DateTime.secondsToString(diff, true)
     );
-  } else {
+  } else if (state.type === "allTime") {
     const date = new Date();
     const minutesToNextUpdate = 14 - (date.getMinutes() % 15);
     const secondsToNextUpdate = 60 - date.getSeconds();
     const totalSeconds = minutesToNextUpdate * 60 + secondsToNextUpdate;
     $(".page.pageLeaderboards .titleAndButtons .timer").text(
       "Next update in: " + DateTime.secondsToString(totalSeconds, true)
+    );
+  } else if (state.type === "weekly") {
+    const nextWeekTimestamp =
+      getCurrentWeekTimestamp() + 7 * 24 * 60 * 60 * 1000;
+    const currentTime = new Date().getTime();
+    const totalSeconds = Math.floor((nextWeekTimestamp - currentTime) / 1000);
+    $(".page.pageLeaderboards .titleAndButtons .timer").text(
+      "Next reset in: " +
+        DateTime.secondsToString(totalSeconds, true, true, ":", true, true)
     );
   }
 }

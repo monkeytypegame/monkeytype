@@ -1,10 +1,5 @@
 import { z } from "zod";
-import {
-  CommonResponses,
-  meta,
-  responseWithData,
-  responseWithNullableData,
-} from "./schemas/api";
+import { CommonResponses, meta, responseWithData } from "./schemas/api";
 import {
   DailyLeaderboardRankSchema,
   LeaderboardEntrySchema,
@@ -88,14 +83,16 @@ export const GetWeeklyXpLeaderboardResponseSchema = responseWithData(
   z.object({
     count: z.number().int().nonnegative(),
     entries: z.array(XpLeaderboardEntrySchema),
+    pageSize: z.number().int().nonnegative(),
   })
 );
 export type GetWeeklyXpLeaderboardResponse = z.infer<
   typeof GetWeeklyXpLeaderboardResponseSchema
 >;
 
-export const GetWeeklyXpLeaderboardRankResponseSchema =
-  responseWithNullableData(XpLeaderboardRankSchema.partial());
+export const GetWeeklyXpLeaderboardRankResponseSchema = responseWithData(
+  XpLeaderboardRankSchema
+);
 export type GetWeeklyXpLeaderboardRankResponse = z.infer<
   typeof GetWeeklyXpLeaderboardRankResponseSchema
 >;
