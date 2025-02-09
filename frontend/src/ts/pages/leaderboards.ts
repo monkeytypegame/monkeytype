@@ -41,8 +41,8 @@ type DailyState = {
   type: "daily";
   mode: "time";
   mode2: "15" | "60";
-  dailyMinWpm: number;
-  dailyLanguage: string;
+  minWpm: number;
+  language: string;
   data: LeaderboardEntry[] | null;
   count: number;
   userData: LeaderboardEntry | null;
@@ -73,7 +73,7 @@ const state = {
 } as State;
 
 function updateTitle(): void {
-  const mode =
+  const type =
     state.type === "allTime"
       ? "All-time"
       : state.type === "weekly"
@@ -82,14 +82,19 @@ function updateTitle(): void {
 
   const language =
     state.type === "daily"
-      ? capitalizeFirstLetter(state.dailyLanguage)
+      ? capitalizeFirstLetter(state.language)
       : state.type === "allTime"
       ? "English"
       : "";
 
-  const secondary = state.type === "allTime" ? ` Time ${state.mode2}` : "";
+  const mode =
+    state.type === "allTime"
+      ? ` Time ${state.mode2}`
+      : state.type === "daily"
+      ? ` Time ${state.mode2}`
+      : "";
 
-  state.title = `${mode} ${language} ${secondary} Leaderboard`;
+  state.title = `${type} ${language} ${mode} Leaderboard`;
   $(".page.pageLeaderboards .bigtitle").text(state.title);
 }
 
@@ -108,7 +113,7 @@ async function requestData(update = false): Promise<void> {
 
   if (state.type === "allTime" || state.type === "daily") {
     const baseQuery = {
-      language: state.type === "allTime" ? "english" : state.dailyLanguage,
+      language: state.type === "allTime" ? "english" : state.language,
       mode: "time" as Mode,
       mode2: state.mode2,
     };
@@ -162,7 +167,7 @@ async function requestData(update = false): Promise<void> {
           // idk why ts complains but it works
           //@ts-ignore
           // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-          state.dailyMinWpm = userData.body.data.minWpm;
+          state.minWpm = userData.body.data.minWpm;
         }
       } else {
         state.userData = null;
@@ -388,7 +393,7 @@ function fillUser(): void {
 
   if (isAuthenticated() && state.type === "daily" && state.userData === null) {
     $(".page.pageLeaderboards .bigUser").html(
-      `<div class="warning">Not qualified (min speed required: ${state.dailyMinWpm} wpm)</div>`
+      `<div class="warning">Not qualified (min speed required: ${state.minWpm} wpm)</div>`
     );
     return;
   }
@@ -553,6 +558,7 @@ function updateTypeButtons(): void {
 function updateSecondaryButtons(): void {
   $(".page.pageLeaderboards .buttonGroup.secondary").addClass("hidden");
   $(".page.pageLeaderboards .buttons .divider").addClass("hidden");
+  $(".page.pageLeaderboards .buttons .divider2").addClass("hidden");
 
   if (state.type === "allTime") {
     $(".page.pageLeaderboards .buttonGroup.modeButtons").removeClass("hidden");
@@ -561,11 +567,14 @@ function updateSecondaryButtons(): void {
     updateModeButtons();
   }
   if (state.type === "daily") {
+    $(".page.pageLeaderboards .buttonGroup.modeButtons").removeClass("hidden");
     $(".page.pageLeaderboards .buttonGroup.languageButtons").removeClass(
       "hidden"
     );
     $(".page.pageLeaderboards .buttons .divider").removeClass("hidden");
+    $(".page.pageLeaderboards .buttons .divider2").removeClass("hidden");
 
+    updateModeButtons();
     updateLanguageButtons();
   }
 }
@@ -608,7 +617,7 @@ function stopTimer(): void {
   $(".page.pageLeaderboards .titleAndButtons .timer").text("-");
 }
 
-// async function appendDailyLanguageButtons(): Promise<void> {
+// async function appendLanguageButtons(): Promise<void> {
 //   const languages =
 //     (await ServerConfiguration.get()?.dailyLeaderboards.validModeRules.map(
 //       (r) => r.language
@@ -619,7 +628,7 @@ function stopTimer(): void {
 
 //   for (const language of languages) {
 //     el.append(`
-//       <button data-dailyLanguage="${language}">
+//       <button data-language="${language}">
 //         <i class="fas fa-globe"></i>
 //         ${language}
 //       </button>
@@ -628,7 +637,7 @@ function stopTimer(): void {
 // }
 
 function updateModeButtons(): void {
-  if (state.type !== "allTime") return;
+  if (state.type !== "allTime" && state.type !== "daily") return;
   const el = $(".page.pageLeaderboards .buttonGroup.modeButtons");
   el.find("button").removeClass("active");
   el.find(`button[data-mode=${state.mode2}]`).addClass("active");
@@ -638,7 +647,7 @@ function updateLanguageButtons(): void {
   if (state.type !== "daily") return;
   const el = $(".page.pageLeaderboards .buttonGroup.languageButtons");
   el.find("button").removeClass("active");
-  el.find(`button[data-language=${state.dailyLanguage}]`).addClass("active");
+  el.find(`button[data-language=${state.language}]`).addClass("active");
 }
 
 function disableButtons(): void {
@@ -693,7 +702,7 @@ function updateGetParameters(): void {
   if (state.type === "allTime") {
     params.set("mode2", state.mode2);
   } else if (state.type === "daily") {
-    params.set("language", state.dailyLanguage);
+    params.set("language", state.language);
     params.set("mode2", state.mode2);
   }
 
@@ -720,7 +729,7 @@ function readGetParameters(): void {
     const language = params.get("language");
     const dailyMode = params.get("mode2") as "15" | "60";
     if (language !== null) {
-      state.dailyLanguage = language;
+      state.language = language;
     }
     if (dailyMode) {
       state.mode2 = dailyMode;
@@ -748,7 +757,7 @@ $(".page.pageLeaderboards .buttonGroup.typeButtons").on(
     if (state.type === mode) return;
     state.type = mode;
     if (state.type === "daily") {
-      state.dailyLanguage = "english";
+      state.language = "english";
       state.mode2 = "15";
     }
     state.data = null;
@@ -767,12 +776,15 @@ $(".page.pageLeaderboards .buttonGroup.secondary").on(
   function () {
     const mode = $(this).data("mode") as "15" | "60";
     const language = $(this).data("language") as string;
-    if (mode !== undefined && state.type === "allTime") {
+    if (
+      mode !== undefined &&
+      (state.type === "allTime" || state.type === "daily")
+    ) {
       if (state?.mode2 === mode) return;
       state.mode2 = mode;
     } else if (language !== undefined && state.type === "daily") {
-      if (state.dailyLanguage === language) return;
-      state.dailyLanguage = language;
+      if (state.language === language) return;
+      state.language = language;
     } else {
       return;
     }
@@ -795,7 +807,7 @@ export const page = new Page({
   },
   beforeShow: async (): Promise<void> => {
     Skeleton.append("pageLeaderboards", "main");
-    // await appendDailyLanguageButtons(); //todo figure out this race condition
+    // await appendLanguageButtons(); //todo figure out this race condition
     readGetParameters();
     startTimer();
     updateTypeButtons();
