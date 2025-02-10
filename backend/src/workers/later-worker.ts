@@ -126,7 +126,8 @@ async function handleWeeklyXpLeaderboardResults(
   const allResults = await weeklyXpLeaderboard.getResults(
     0,
     maxRankToGet,
-    weeklyXpConfig
+    weeklyXpConfig,
+    false
   );
 
   if (allResults.length === 0) {
