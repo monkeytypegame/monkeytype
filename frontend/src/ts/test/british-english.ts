@@ -8,14 +8,17 @@ type BritishEnglishReplacement = {
   2?: string[];
 };
 
-let list: BritishEnglishReplacement[] = [];
+let list: BritishEnglishReplacement[] = [
+  ["abettor", "abetter"],
+  ["abolitionize", "abolitionise"]
+];
 
-export async function getList(): Promise<BritishEnglishReplacement[]> {
-  if (list.length === 0) {
-    list = await cachedFetchJson("languages/britishenglish.json");
-  }
-  return list;
-}
+// export async function getList(): Promise<BritishEnglishReplacement[]> {
+//   if (list.length === 0) {
+//     list = await cachedFetchJson("languages/britishenglish.json");
+//   }
+//   return list;
+// }
 
 export async function replace(
   word: string,
