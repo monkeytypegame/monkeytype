@@ -36,9 +36,20 @@ export const GetLeaderboardResponseSchema = responseWithData(
     pageSize: z.number().int().nonnegative(),
   })
 );
-
 export type GetLeaderboardResponse = z.infer<
   typeof GetLeaderboardResponseSchema
+>;
+
+export const GetDailyLeaderboardResponseSchema = responseWithData(
+  z.object({
+    count: z.number().int().nonnegative(),
+    entries: z.array(LeaderboardEntrySchema),
+    pageSize: z.number().int().nonnegative(),
+    minWpm: z.number().nonnegative(),
+  })
+);
+export type GetDailyLeaderboardResponse = z.infer<
+  typeof GetDailyLeaderboardResponseSchema
 >;
 
 export const GetLeaderboardRankResponseSchema = responseWithData(
@@ -132,7 +143,7 @@ export const leaderboardsContract = c.router(
       path: "/daily",
       query: GetDailyLeaderboardQuerySchema.strict(),
       responses: {
-        200: GetLeaderboardResponseSchema,
+        200: GetDailyLeaderboardResponseSchema,
       },
       metadata: meta({
         authenticationOptions: { isPublic: true },

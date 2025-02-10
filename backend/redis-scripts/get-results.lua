@@ -21,4 +21,11 @@ for _, user_id in ipairs(scores_in_range) do
     end
 end
 
-return {results, scores}
+-- Calculate minWpm
+local min_score = redis_call('ZRANGE', leaderboard_scores_key, 0, 0, 'WITHSCORES')
+local min_wpm = 0
+if min_score[2] ~= nil then
+    min_wpm = tonumber(string.sub(min_score[2], 2, 6)) / 100
+end
+
+return {results, scores, min_wpm}

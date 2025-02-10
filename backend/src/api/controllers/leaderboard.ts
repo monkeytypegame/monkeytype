@@ -7,6 +7,7 @@ import * as WeeklyXpLeaderboard from "../../services/weekly-xp-leaderboard";
 import {
   GetDailyLeaderboardQuery,
   GetDailyLeaderboardRankQuery,
+  GetDailyLeaderboardResponse,
   GetLeaderboardDailyRankResponse,
   GetLeaderboardQuery,
   GetLeaderboardRankResponse,
@@ -96,7 +97,7 @@ function getDailyLeaderboardWithError(
 
 export async function getDailyLeaderboard(
   req: MonkeyRequest<GetDailyLeaderboardQuery>
-): Promise<GetLeaderboardResponse> {
+): Promise<GetDailyLeaderboardResponse> {
   const { page = 0, pageSize = 50 } = req.query;
 
   const dailyLeaderboard = getDailyLeaderboardWithError(
@@ -104,7 +105,7 @@ export async function getDailyLeaderboard(
     req.ctx.configuration.dailyLeaderboards
   );
 
-  const topResults = await dailyLeaderboard.getResults(
+  const results = await dailyLeaderboard.getResults(
     page,
     pageSize,
     req.ctx.configuration.dailyLeaderboards,
@@ -114,7 +115,8 @@ export async function getDailyLeaderboard(
   const count = await dailyLeaderboard.getCount();
 
   return new MonkeyResponse("Daily leaderboard retrieved", {
-    entries: topResults,
+    entries: results.entries,
+    minWpm: results.minWpm,
     count,
     pageSize,
   });

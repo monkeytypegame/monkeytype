@@ -30,14 +30,14 @@ async function handleDailyLeaderboardResults(
 
   const dailyLeaderboard = new DailyLeaderboard(modeRule, yesterdayTimestamp);
 
-  const allResults = await dailyLeaderboard.getResults(
+  const results = await dailyLeaderboard.getResults(
     0,
     -1,
     dailyLeaderboardsConfig,
     false
   );
 
-  if (allResults.length === 0) {
+  if (results.entries.length === 0) {
     return;
   }
 
@@ -49,7 +49,7 @@ async function handleDailyLeaderboardResults(
       mail: MonkeyMail[];
     }[] = [];
 
-    allResults.forEach((entry) => {
+    results.entries.forEach((entry) => {
       const rank = entry.rank ?? maxResults;
       const wpm = Math.round(entry.wpm);
 
@@ -90,7 +90,7 @@ async function handleDailyLeaderboardResults(
     await addToInboxBulk(mailEntries, inboxConfig);
   }
 
-  const topResults = allResults.slice(
+  const topResults = results.entries.slice(
     0,
     dailyLeaderboardsConfig.topResultsToAnnounce
   );

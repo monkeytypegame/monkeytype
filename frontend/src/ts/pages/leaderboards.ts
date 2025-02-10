@@ -138,6 +138,12 @@ async function requestData(update = false): Promise<void> {
       state.data = response.body.data.entries;
       state.count = response.body.data.count;
       state.pageSize = response.body.data.pageSize;
+
+      if (state.type === "daily") {
+        //@ts-ignore not sure why this is causing errors when it's clearly defined in the schema
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        state.minWpm = response.body.data.minWpm;
+      }
     } else {
       state.data = null;
       state.error = "Something went wrong";
@@ -165,13 +171,6 @@ async function requestData(update = false): Promise<void> {
       if (rankResponse.status === 200) {
         if (rankResponse.body.data.entry !== undefined) {
           state.userData = rankResponse.body.data.entry;
-        }
-
-        if (state.type === "daily") {
-          // idk why ts complains but it works
-          //@ts-ignore
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-          state.minWpm = rankResponse.body.data.minWpm;
         }
       } else {
         state.userData = null;

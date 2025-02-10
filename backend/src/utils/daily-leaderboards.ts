@@ -113,10 +113,13 @@ export class DailyLeaderboard {
     pageSize: number,
     dailyLeaderboardsConfig: Configuration["dailyLeaderboards"],
     premiumFeaturesEnabled: boolean
-  ): Promise<LeaderboardEntry[]> {
+  ): Promise<{ entries: LeaderboardEntry[]; minWpm: number }> {
     const connection = RedisClient.getConnection();
     if (!connection || !dailyLeaderboardsConfig.enabled) {
-      return [];
+      return {
+        entries: [],
+        minWpm: 0,
+      };
     }
 
     if (page < 0) page = 0;
@@ -130,14 +133,14 @@ export class DailyLeaderboard {
 
     // @ts-expect-error we are doing some weird file to function mapping, thats why its any
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-    const [results] = (await connection.getResults(
+    const [results, _, minWpm] = (await connection.getResults(
       2,
       leaderboardScoresKey,
       leaderboardResultsKey,
       minRank,
       maxRank,
       "false"
-    )) as string[][];
+    )) as [string[], string[], number];
 
     if (results === undefined) {
       throw new Error(
@@ -158,10 +161,13 @@ export class DailyLeaderboard {
     );
 
     if (!premiumFeaturesEnabled) {
-      return resultsWithRanks.map((it) => omit(it, "isPremium"));
+      resultsWithRanks.map((it) => omit(it, "isPremium"));
     }
 
-    return resultsWithRanks;
+    return {
+      entries: resultsWithRanks,
+      minWpm,
+    };
   }
 
   public async getRank(
@@ -181,29 +187,21 @@ export class DailyLeaderboard {
       .zrevrank(leaderboardScoresKey, uid)
       .zcard(leaderboardScoresKey)
       .hget(leaderboardResultsKey, uid)
-      .zrange(leaderboardScoresKey, 0, 0, "WITHSCORES")
       .exec()) as [
       [null, number | null],
       [null, number | null],
-      [null, string | null],
-      [null, [string, string] | null]
+      [null, string | null]
     ];
 
-    const [[, rank], [, count], [, result], [, minScore]] = redisExecResult;
+    const [[, rank], [, count], [, result]] = redisExecResult;
 
-    const minWpm =
-      minScore !== null && minScore.length > 0
-        ? parseInt(minScore[1]?.slice(1, 6)) / 100
-        : 0;
     if (rank === null) {
       return {
-        minWpm,
         count: count ?? 0,
       };
     }
 
     return {
-      minWpm,
       count: count ?? 0,
       rank: rank + 1,
       entry: {

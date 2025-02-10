@@ -23,9 +23,7 @@ export const LeaderboardRankSchema = z.object({
 });
 export type LeaderboardRank = z.infer<typeof LeaderboardRankSchema>;
 
-export const DailyLeaderboardRankSchema = LeaderboardRankSchema.extend({
-  minWpm: z.number().nonnegative(),
-});
+export const DailyLeaderboardRankSchema = LeaderboardRankSchema;
 export type DailyLeaderboardRank = z.infer<typeof DailyLeaderboardRankSchema>;
 
 export const XpLeaderboardEntrySchema = z.object({
