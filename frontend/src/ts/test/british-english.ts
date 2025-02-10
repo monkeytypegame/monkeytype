@@ -25,7 +25,6 @@ export async function replace(
   previousWord: string
 ): Promise<string> {
   // const list = await getList();
-  // const list = BritishEnglishReplacement[];
 
   if (word.includes("-")) {
     //this handles hyphenated words (for example "cream-colored") to make sure
