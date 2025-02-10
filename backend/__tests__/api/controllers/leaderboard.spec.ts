@@ -7,11 +7,7 @@ import * as DailyLeaderboards from "../../../src/utils/daily-leaderboards";
 import * as WeeklyXpLeaderboard from "../../../src/services/weekly-xp-leaderboard";
 import * as Configuration from "../../../src/init/configuration";
 import { mockAuthenticateWithApeKey } from "../../__testData__/auth";
-import {
-  LeaderboardEntry,
-  XpLeaderboardEntry,
-  XpLeaderboardRank,
-} from "@monkeytype/contracts/schemas/leaderboards";
+import { XpLeaderboardEntry } from "@monkeytype/contracts/schemas/leaderboards";
 
 const mockApp = request(app);
 const configuration = Configuration.getCachedConfiguration();
@@ -257,11 +253,7 @@ describe("Loaderboard Controller", () => {
         name: "user2",
         rank: 2,
       };
-      getLeaderboardRankMock.mockResolvedValue({
-        count: 1000,
-        rank: 50,
-        entry: resultEntry,
-      });
+      getLeaderboardRankMock.mockResolvedValue(resultEntry);
 
       //WHEN
 
@@ -406,7 +398,11 @@ describe("Loaderboard Controller", () => {
       await dailyLeaderboardEnabled(true);
 
       getDailyLeaderboardMock.mockReturnValue({
-        getResults: () => Promise.resolve([]),
+        getResults: () =>
+          Promise.resolve({
+            entries: [],
+            minWpm: 0,
+          }),
         getCount: () => Promise.resolve(0),
       } as any);
     });
@@ -420,30 +416,33 @@ describe("Loaderboard Controller", () => {
       const lbConf = (await configuration).dailyLeaderboards;
       const premiumEnabled = (await configuration).users.premium.enabled;
 
-      const resultData = [
-        {
-          name: "user1",
-          rank: 1,
-          wpm: 20,
-          acc: 90,
-          timestamp: 1000,
-          raw: 92,
-          consistency: 80,
-          uid: "user1",
-          discordId: "discordId",
-          discordAvatar: "discordAvatar",
-        },
-        {
-          wpm: 10,
-          rank: 2,
-          acc: 80,
-          timestamp: 1200,
-          raw: 82,
-          consistency: 72,
-          uid: "user2",
-          name: "user2",
-        },
-      ];
+      const resultData = {
+        minWpm: 10,
+        entries: [
+          {
+            name: "user1",
+            rank: 1,
+            wpm: 20,
+            acc: 90,
+            timestamp: 1000,
+            raw: 92,
+            consistency: 80,
+            uid: "user1",
+            discordId: "discordId",
+            discordAvatar: "discordAvatar",
+          },
+          {
+            wpm: 10,
+            rank: 2,
+            acc: 80,
+            timestamp: 1200,
+            raw: 82,
+            consistency: 72,
+            uid: "user2",
+            name: "user2",
+          },
+        ],
+      };
 
       const getResultMock = vi.fn();
       getResultMock.mockResolvedValue(resultData);
@@ -468,7 +467,7 @@ describe("Loaderboard Controller", () => {
         data: {
           count: 2,
           pageSize: 50,
-          entries: resultData,
+          ...resultData,
         },
       });
 
@@ -505,6 +504,7 @@ describe("Loaderboard Controller", () => {
           entries: [],
           count: 0,
           pageSize: 50,
+          minWpm: 0,
         },
       });
 
@@ -524,7 +524,10 @@ describe("Loaderboard Controller", () => {
       const pageSize = 25;
 
       const getResultMock = vi.fn();
-      getResultMock.mockResolvedValue([]);
+      getResultMock.mockResolvedValue({
+        entries: [],
+        minWpm: 0,
+      });
 
       const getCountMock = vi.fn();
       getCountMock.mockResolvedValue(0);
@@ -553,6 +556,7 @@ describe("Loaderboard Controller", () => {
           entries: [],
           count: 0,
           pageSize,
+          minWpm: 0,
         },
       });
 
@@ -1074,10 +1078,9 @@ describe("Loaderboard Controller", () => {
       //GIVEN
       const lbConf = (await configuration).leaderboards.weeklyXp;
 
-      const resultData: XpLeaderboardRank = {
+      const resultData: XpLeaderboardEntry = {
         totalXp: 100,
         rank: 1,
-        count: 100,
         timeTypedSeconds: 100,
         uid: "user1",
         name: "user1",
