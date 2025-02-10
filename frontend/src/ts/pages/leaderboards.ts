@@ -997,7 +997,7 @@ $(".page.pageLeaderboards .buttonGroup.secondary").on(
       mode !== undefined &&
       (state.type === "allTime" || state.type === "daily")
     ) {
-      if (state?.mode2 === mode) return;
+      if (state.mode2 === mode) return;
       state.mode2 = mode;
     } else if (language !== undefined && state.type === "daily") {
       if (state.language === language) return;
