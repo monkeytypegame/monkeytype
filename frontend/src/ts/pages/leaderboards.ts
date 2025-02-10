@@ -169,8 +169,8 @@ async function requestData(update = false): Promise<void> {
       }
 
       if (rankResponse.status === 200) {
-        if (rankResponse.body.data.entry !== undefined) {
-          state.userData = rankResponse.body.data.entry;
+        if (rankResponse.body.data !== null) {
+          state.userData = rankResponse.body.data;
         }
       } else {
         state.userData = null;
@@ -221,8 +221,8 @@ async function requestData(update = false): Promise<void> {
       const userData = await Ape.leaderboards.getWeeklyXpRank();
 
       if (userData.status === 200) {
-        if (userData.body.data.entry !== undefined) {
-          state.userData = userData.body.data.entry;
+        if (userData.body.data !== null) {
+          state.userData = userData.body.data;
         }
       } else {
         state.userData = null;

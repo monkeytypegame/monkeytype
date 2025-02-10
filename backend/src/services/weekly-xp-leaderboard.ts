@@ -1,10 +1,7 @@
 import { Configuration } from "@monkeytype/contracts/schemas/configuration";
 import * as RedisClient from "../init/redis";
 import LaterQueue from "../queues/later-queue";
-import {
-  XpLeaderboardEntry,
-  XpLeaderboardRank,
-} from "@monkeytype/contracts/schemas/leaderboards";
+import { XpLeaderboardEntry } from "@monkeytype/contracts/schemas/leaderboards";
 import { getCurrentWeekTimestamp } from "@monkeytype/util/date-and-time";
 import MonkeyError from "../utils/error";
 import { omit } from "lodash";
@@ -186,7 +183,7 @@ export class WeeklyXpLeaderboard {
   public async getRank(
     uid: string,
     weeklyXpLeaderboardConfig: Configuration["leaderboards"]["weeklyXp"]
-  ): Promise<XpLeaderboardRank> {
+  ): Promise<XpLeaderboardEntry | null> {
     const connection = RedisClient.getConnection();
     if (!connection || !weeklyXpLeaderboardConfig.enabled) {
       throw new MonkeyError(500, "Redis connnection is unavailable");
@@ -200,7 +197,7 @@ export class WeeklyXpLeaderboard {
 
     // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
     // @ts-ignore
-    const [[, rank], [, totalXp], [, count], [, result]] = (await connection
+    const [[, rank], [, totalXp], [, _count], [, result]] = (await connection
       .multi()
       .zrevrank(weeklyXpLeaderboardScoresKey, uid)
       .zscore(weeklyXpLeaderboardScoresKey, uid)
@@ -213,9 +210,7 @@ export class WeeklyXpLeaderboard {
     ];
 
     if (rank === null) {
-      return {
-        count: count ?? 0,
-      };
+      return null;
     }
 
     //TODO parse with zod?
@@ -225,13 +220,9 @@ export class WeeklyXpLeaderboard {
     >;
 
     return {
+      ...parsed,
       rank: rank + 1,
-      count: count ?? 0,
-      entry: {
-        ...parsed,
-        rank: rank + 1,
-        totalXp: parseInt(totalXp as string, 10),
-      },
+      totalXp: parseInt(totalXp as string, 10),
     };
   }
 

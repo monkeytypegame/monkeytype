@@ -1,11 +1,13 @@
 import { z } from "zod";
-import { CommonResponses, meta, responseWithData } from "./schemas/api";
 import {
-  DailyLeaderboardRankSchema,
+  CommonResponses,
+  meta,
+  responseWithData,
+  responseWithNullableData,
+} from "./schemas/api";
+import {
   LeaderboardEntrySchema,
-  LeaderboardRankSchema,
   XpLeaderboardEntrySchema,
-  XpLeaderboardRankSchema,
 } from "./schemas/leaderboards";
 import { LanguageSchema } from "./schemas/util";
 import { Mode2Schema, ModeSchema } from "./schemas/shared";
@@ -52,8 +54,8 @@ export type GetDailyLeaderboardResponse = z.infer<
   typeof GetDailyLeaderboardResponseSchema
 >;
 
-export const GetLeaderboardRankResponseSchema = responseWithData(
-  LeaderboardRankSchema
+export const GetLeaderboardRankResponseSchema = responseWithNullableData(
+  LeaderboardEntrySchema
 );
 
 export type GetLeaderboardRankResponse = z.infer<
@@ -74,8 +76,8 @@ export type GetDailyLeaderboardQuery = z.infer<
   typeof GetDailyLeaderboardQuerySchema
 >;
 
-export const GetLeaderboardDailyRankResponseSchema = responseWithData(
-  DailyLeaderboardRankSchema
+export const GetLeaderboardDailyRankResponseSchema = responseWithNullableData(
+  LeaderboardEntrySchema
 );
 export type GetLeaderboardDailyRankResponse = z.infer<
   typeof GetLeaderboardDailyRankResponseSchema
@@ -99,9 +101,8 @@ export type GetWeeklyXpLeaderboardResponse = z.infer<
   typeof GetWeeklyXpLeaderboardResponseSchema
 >;
 
-export const GetWeeklyXpLeaderboardRankResponseSchema = responseWithData(
-  XpLeaderboardRankSchema
-);
+export const GetWeeklyXpLeaderboardRankResponseSchema =
+  responseWithNullableData(XpLeaderboardEntrySchema);
 export type GetWeeklyXpLeaderboardRankResponse = z.infer<
   typeof GetWeeklyXpLeaderboardRankResponseSchema
 >;

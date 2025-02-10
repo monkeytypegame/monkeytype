@@ -6,10 +6,7 @@ import {
   Configuration,
   ValidModeRule,
 } from "@monkeytype/contracts/schemas/configuration";
-import {
-  DailyLeaderboardRank,
-  LeaderboardEntry,
-} from "@monkeytype/contracts/schemas/leaderboards";
+import { LeaderboardEntry } from "@monkeytype/contracts/schemas/leaderboards";
 import MonkeyError from "./error";
 import { Mode, Mode2 } from "@monkeytype/contracts/schemas/shared";
 import { getCurrentDayTimestamp } from "@monkeytype/util/date-and-time";
@@ -173,7 +170,7 @@ export class DailyLeaderboard {
   public async getRank(
     uid: string,
     dailyLeaderboardsConfig: Configuration["dailyLeaderboards"]
-  ): Promise<DailyLeaderboardRank> {
+  ): Promise<LeaderboardEntry | null> {
     const connection = RedisClient.getConnection();
     if (!connection || !dailyLeaderboardsConfig.enabled) {
       throw new MonkeyError(500, "Redis connnection is unavailable");
@@ -193,21 +190,15 @@ export class DailyLeaderboard {
       [null, string | null]
     ];
 
-    const [[, rank], [, count], [, result]] = redisExecResult;
+    const [[, rank], [, _count], [, result]] = redisExecResult;
 
     if (rank === null) {
-      return {
-        count: count ?? 0,
-      };
+      return null;
     }
 
     return {
-      count: count ?? 0,
+      ...(JSON.parse(result ?? "null") as LeaderboardEntry),
       rank: rank + 1,
-      entry: {
-        ...(JSON.parse(result ?? "null") as LeaderboardEntry),
-        rank: rank + 1,
-      },
     };
   }
 

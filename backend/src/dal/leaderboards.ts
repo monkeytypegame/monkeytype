@@ -7,10 +7,7 @@ import { getCachedConfiguration } from "../init/configuration";
 
 import { addLog } from "./logs";
 import { Collection, ObjectId } from "mongodb";
-import {
-  LeaderboardEntry,
-  LeaderboardRank,
-} from "@monkeytype/contracts/schemas/leaderboards";
+import { LeaderboardEntry } from "@monkeytype/contracts/schemas/leaderboards";
 import { omit } from "lodash";
 import { DBUser } from "./user";
 
@@ -79,22 +76,13 @@ export async function getRank(
   mode2: string,
   language: string,
   uid: string
-): Promise<LeaderboardRank | false> {
+): Promise<LeaderboardEntry | null | false> {
   try {
     const entry = await getCollection({ language, mode, mode2 }).findOne({
       uid,
     });
-    const count = await getCollection({
-      language,
-      mode,
-      mode2,
-    }).estimatedDocumentCount();
 
-    return {
-      count,
-      rank: entry?.rank,
-      entry: entry !== null ? entry : undefined,
-    };
+    return entry;
   } catch (e) {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     if (e.error === 175) {
