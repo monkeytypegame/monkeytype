@@ -64,7 +64,9 @@ export type GetLeaderboardRankResponse = z.infer<
 
 export const GetDailyLeaderboardQuerySchema = LanguageAndModeQuerySchema.merge(
   PaginationQuerySchema
-);
+).extend({
+  daysBefore: z.literal(1).optional(),
+});
 export type GetDailyLeaderboardQuery = z.infer<
   typeof GetDailyLeaderboardQuerySchema
 >;
