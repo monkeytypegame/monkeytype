@@ -18,8 +18,6 @@ export const LanguageAndModeQuerySchema = z.object({
 });
 export type LanguageAndModeQuery = z.infer<typeof LanguageAndModeQuerySchema>;
 const PaginationQuerySchema = z.object({
-  // skip: z.number().int().nonnegative().optional(),
-  // limit: z.number().int().nonnegative().max(50).optional(),
   page: z.number().int().nonnegative().optional(),
   pageSize: z.number().int().nonnegative().max(50).optional(),
 });
