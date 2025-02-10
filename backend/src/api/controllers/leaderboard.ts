@@ -10,12 +10,12 @@ import {
   GetDailyLeaderboardResponse,
   GetLeaderboardDailyRankResponse,
   GetLeaderboardQuery,
+  GetLeaderboardRankQuery,
   GetLeaderboardRankResponse,
   GetLeaderboardResponse as GetLeaderboardResponse,
   GetWeeklyXpLeaderboardQuery,
   GetWeeklyXpLeaderboardRankResponse,
   GetWeeklyXpLeaderboardResponse,
-  LanguageAndModeQuery,
 } from "@monkeytype/contracts/leaderboards";
 import { Configuration } from "@monkeytype/contracts/schemas/configuration";
 import {
@@ -56,7 +56,7 @@ export async function getLeaderboard(
 }
 
 export async function getRankFromLeaderboard(
-  req: MonkeyRequest<LanguageAndModeQuery>
+  req: MonkeyRequest<GetLeaderboardRankQuery>
 ): Promise<GetLeaderboardRankResponse> {
   const { language, mode, mode2 } = req.query;
   const { uid } = req.ctx.decodedToken;
