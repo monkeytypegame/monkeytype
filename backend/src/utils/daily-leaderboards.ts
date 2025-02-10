@@ -110,13 +110,10 @@ export class DailyLeaderboard {
     pageSize: number,
     dailyLeaderboardsConfig: Configuration["dailyLeaderboards"],
     premiumFeaturesEnabled: boolean
-  ): Promise<{ entries: LeaderboardEntry[]; minWpm: number }> {
+  ): Promise<LeaderboardEntry[]> {
     const connection = RedisClient.getConnection();
     if (!connection || !dailyLeaderboardsConfig.enabled) {
-      return {
-        entries: [],
-        minWpm: 0,
-      };
+      return [];
     }
 
     if (page < 0) page = 0;
@@ -130,14 +127,14 @@ export class DailyLeaderboard {
 
     // @ts-expect-error we are doing some weird file to function mapping, thats why its any
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-    const [results, _, minWpm] = (await connection.getResults(
+    const [results, _] = (await connection.getResults(
       2,
       leaderboardScoresKey,
       leaderboardResultsKey,
       minRank,
       maxRank,
       "false"
-    )) as [string[], string[], number];
+    )) as [string[], string[]];
 
     if (results === undefined) {
       throw new Error(
@@ -158,13 +155,33 @@ export class DailyLeaderboard {
     );
 
     if (!premiumFeaturesEnabled) {
-      resultsWithRanks.map((it) => omit(it, "isPremium"));
+      return resultsWithRanks.map((it) => omit(it, "isPremium"));
     }
 
-    return {
-      entries: resultsWithRanks,
-      minWpm,
-    };
+    return resultsWithRanks;
+  }
+
+  public async getMinWpm(
+    dailyLeaderboardsConfig: Configuration["dailyLeaderboards"]
+  ): Promise<number> {
+    const connection = RedisClient.getConnection();
+    if (!connection || !dailyLeaderboardsConfig.enabled) {
+      return 0;
+    }
+
+    const { leaderboardScoresKey } = this.getTodaysLeaderboardKeys();
+
+    const [_uid, minScore] = (await connection.zrange(
+      leaderboardScoresKey,
+      0,
+      0,
+      "WITHSCORES"
+    )) as [string, string];
+
+    const minWpm =
+      minScore !== undefined ? parseInt(minScore?.slice(1, 6)) / 100 : 0;
+
+    return minWpm;
   }
 
   public async getRank(

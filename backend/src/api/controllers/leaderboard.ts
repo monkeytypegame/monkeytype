@@ -112,11 +112,15 @@ export async function getDailyLeaderboard(
     req.ctx.configuration.users.premium.enabled
   );
 
+  const minWpm = await dailyLeaderboard.getMinWpm(
+    req.ctx.configuration.dailyLeaderboards
+  );
+
   const count = await dailyLeaderboard.getCount();
 
   return new MonkeyResponse("Daily leaderboard retrieved", {
-    entries: results.entries,
-    minWpm: results.minWpm,
+    entries: results,
+    minWpm,
     count,
     pageSize,
   });

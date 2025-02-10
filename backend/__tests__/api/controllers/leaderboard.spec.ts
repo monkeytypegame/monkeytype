@@ -394,12 +394,9 @@ describe("Loaderboard Controller", () => {
       await dailyLeaderboardEnabled(true);
 
       getDailyLeaderboardMock.mockReturnValue({
-        getResults: () =>
-          Promise.resolve({
-            entries: [],
-            minWpm: 0,
-          }),
+        getResults: () => Promise.resolve([]),
         getCount: () => Promise.resolve(0),
+        getMinWpm: () => Promise.resolve(0),
       } as any);
     });
 
@@ -446,9 +443,13 @@ describe("Loaderboard Controller", () => {
       const getCountMock = vi.fn();
       getCountMock.mockResolvedValue(2);
 
+      const getMinWpmMock = vi.fn();
+      getMinWpmMock.mockResolvedValue(10);
+
       getDailyLeaderboardMock.mockReturnValue({
         getResults: getResultMock,
         getCount: getCountMock,
+        getMinWpm: getMinWpmMock,
       } as any);
 
       //WHEN
@@ -463,7 +464,8 @@ describe("Loaderboard Controller", () => {
         data: {
           count: 2,
           pageSize: 50,
-          ...resultData,
+          minWpm: 10,
+          entries: resultData,
         },
       });
 
@@ -520,17 +522,18 @@ describe("Loaderboard Controller", () => {
       const pageSize = 25;
 
       const getResultMock = vi.fn();
-      getResultMock.mockResolvedValue({
-        entries: [],
-        minWpm: 0,
-      });
+      getResultMock.mockResolvedValue([]);
 
       const getCountMock = vi.fn();
       getCountMock.mockResolvedValue(0);
 
+      const getMinWpmMock = vi.fn();
+      getMinWpmMock.mockResolvedValue(0);
+
       getDailyLeaderboardMock.mockReturnValue({
         getResults: getResultMock,
         getCount: getCountMock,
+        getMinWpm: getMinWpmMock,
       } as any);
 
       //WHEN
