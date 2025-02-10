@@ -109,8 +109,8 @@ export class DailyLeaderboard {
   }
 
   public async getResults(
-    minRank: number,
-    maxRank: number,
+    page: number,
+    pageSize: number,
     dailyLeaderboardsConfig: Configuration["dailyLeaderboards"],
     premiumFeaturesEnabled: boolean
   ): Promise<LeaderboardEntry[]> {
@@ -118,6 +118,12 @@ export class DailyLeaderboard {
     if (!connection || !dailyLeaderboardsConfig.enabled) {
       return [];
     }
+
+    if (page < 0) page = 0;
+    if (pageSize > 50 || pageSize <= 0) pageSize = 50;
+
+    const minRank = page * pageSize;
+    const maxRank = minRank + pageSize - 1;
 
     const { leaderboardScoresKey, leaderboardResultsKey } =
       this.getTodaysLeaderboardKeys();

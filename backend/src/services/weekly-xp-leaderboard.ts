@@ -121,8 +121,8 @@ export class WeeklyXpLeaderboard {
   }
 
   public async getResults(
-    minRank: number,
-    maxRank: number,
+    page: number,
+    pageSize: number,
     weeklyXpLeaderboardConfig: Configuration["leaderboards"]["weeklyXp"],
     premiumFeaturesEnabled: boolean
   ): Promise<XpLeaderboardEntry[]> {
@@ -130,6 +130,12 @@ export class WeeklyXpLeaderboard {
     if (!connection || !weeklyXpLeaderboardConfig.enabled) {
       return [];
     }
+
+    if (page < 0) page = 0;
+    if (pageSize > 50 || pageSize <= 0) pageSize = 50;
+
+    const minRank = page * pageSize;
+    const maxRank = minRank + pageSize - 1;
 
     const { weeklyXpLeaderboardScoresKey, weeklyXpLeaderboardResultsKey } =
       this.getThisWeeksXpLeaderboardKeys();

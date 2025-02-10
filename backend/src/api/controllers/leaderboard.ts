@@ -33,7 +33,7 @@ export async function getLeaderboard(
     mode,
     mode2,
     language,
-    pageSize * page,
+    page,
     pageSize
   );
 
@@ -104,12 +104,9 @@ export async function getDailyLeaderboard(
     req.ctx.configuration.dailyLeaderboards
   );
 
-  const minRank = page * pageSize;
-  const maxRank = minRank + pageSize - 1;
-
   const topResults = await dailyLeaderboard.getResults(
-    minRank,
-    maxRank,
+    page,
+    pageSize,
     req.ctx.configuration.dailyLeaderboards,
     req.ctx.configuration.users.premium.enabled
   );
@@ -163,16 +160,13 @@ export async function getWeeklyXpLeaderboardResults(
 ): Promise<GetWeeklyXpLeaderboardResponse> {
   const { page = 0, pageSize = 50 } = req.query;
 
-  const minRank = page * pageSize;
-  const maxRank = minRank + pageSize - 1;
-
   const weeklyXpLeaderboard = getWeeklyXpLeaderboardWithError(
     req.query,
     req.ctx.configuration.leaderboards.weeklyXp
   );
   const results = await weeklyXpLeaderboard.getResults(
-    minRank,
-    maxRank,
+    page,
+    pageSize,
     req.ctx.configuration.leaderboards.weeklyXp,
     req.ctx.configuration.users.premium.enabled
   );

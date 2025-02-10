@@ -31,13 +31,15 @@ export async function get(
   mode: string,
   mode2: string,
   language: string,
-  skip: number,
-  limit = 50
+  page: number,
+  pageSize = 50
 ): Promise<DBLeaderboardEntry[] | false> {
-  //if (leaderboardUpdating[`${language}_${mode}_${mode2}`]) return false;
+  if (page < 0) page = 0;
+  if (pageSize > 50 || pageSize <= 0) pageSize = 50;
 
-  if (limit > 50 || limit <= 0) limit = 50;
-  if (skip < 0) skip = 0;
+  const skip = page * pageSize;
+  const limit = pageSize;
+
   try {
     const preset = await getCollection({ language, mode, mode2 })
       .find()
