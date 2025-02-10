@@ -2690,6 +2690,7 @@ describe("user controller test", () => {
     const getUserByNameMock = vi.spyOn(UserDal, "getUserByName");
     const checkIfUserIsPremiumMock = vi.spyOn(UserDal, "checkIfUserIsPremium");
     const leaderboardGetRankMock = vi.spyOn(LeaderboardDal, "getRank");
+    const leaderboardGetCountMock = vi.spyOn(LeaderboardDal, "getCount");
 
     const foundUser: Partial<UserDal.DBUser> = {
       _id: new ObjectId(),
@@ -2741,6 +2742,7 @@ describe("user controller test", () => {
       getUserByNameMock.mockReset();
       checkIfUserIsPremiumMock.mockReset().mockResolvedValue(true);
       leaderboardGetRankMock.mockReset();
+      leaderboardGetCountMock.mockReset();
       await enableProfiles(true);
     });
 
@@ -2748,8 +2750,9 @@ describe("user controller test", () => {
       //GIVEN
       getUserByNameMock.mockResolvedValue(foundUser as any);
 
-      const rank: LeaderboardRank = { count: 100, rank: 24 };
+      const rank: LeaderboardRank = { rank: 24 };
       leaderboardGetRankMock.mockResolvedValue(rank);
+      leaderboardGetCountMock.mockResolvedValue(100);
 
       //WHEN
       const { body } = await mockApp.get("/users/bob/profile").expect(200);
@@ -2809,8 +2812,9 @@ describe("user controller test", () => {
         banned: true,
       } as any);
 
-      const rank: LeaderboardRank = { count: 100, rank: 24 };
+      const rank: LeaderboardRank = { rank: 24 };
       leaderboardGetRankMock.mockResolvedValue(rank);
+      leaderboardGetCountMock.mockResolvedValue(100);
 
       //WHEN
       const { body } = await mockApp.get("/users/bob/profile").expect(200);
@@ -2859,8 +2863,9 @@ describe("user controller test", () => {
       const uid = foundUser.uid;
       getUserMock.mockResolvedValue(foundUser as any);
 
-      const rank: LeaderboardRank = { count: 100, rank: 24 };
+      const rank: LeaderboardRank = { rank: 24 };
       leaderboardGetRankMock.mockResolvedValue(rank);
+      leaderboardGetCountMock.mockResolvedValue(100);
 
       //WHEN
       const { body } = await mockApp

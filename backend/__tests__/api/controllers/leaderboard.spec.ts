@@ -266,11 +266,7 @@ describe("Loaderboard Controller", () => {
       //THEN
       expect(body).toEqual({
         message: "Rank retrieved",
-        data: {
-          count: 1000,
-          rank: 50,
-          entry: resultEntry,
-        },
+        data: resultEntry,
       });
 
       expect(getLeaderboardRankMock).toHaveBeenCalledWith(
