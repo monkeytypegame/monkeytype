@@ -451,6 +451,7 @@ function fillTable(): void {
 
   if (state.data === null || state.data.length === 0) {
     table.append(`<tr><td colspan="7" class="empty">No data</td></tr>`);
+    $(".page.pageLeaderboards table").removeClass("hidden");
     return;
   }
 
