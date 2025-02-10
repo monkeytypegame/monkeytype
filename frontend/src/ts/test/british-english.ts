@@ -8,7 +8,7 @@ type BritishEnglishReplacement = {
   2?: string[];
 };
 
-let list: BritishEnglishReplacement[] = [
+let const list: BritishEnglishReplacement[] = [
   ["abettor", "abetter"],
   ["abolitionize", "abolitionise"]
 ];
