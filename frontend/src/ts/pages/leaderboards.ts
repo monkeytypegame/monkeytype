@@ -1055,18 +1055,14 @@ function handleYesterdayLastWeekButton(action: string): void {
 }
 
 function updateGetParameters(): void {
-  const params = new URLSearchParams(window.location.search);
+  const params = new URLSearchParams();
 
   params.set("type", state.type);
   if (state.type === "allTime") {
     params.set("mode2", state.mode2);
-    params.delete("language");
-    params.delete("yesterday");
-    params.delete("lastWeek");
   } else if (state.type === "daily") {
     params.set("language", state.language);
     params.set("mode2", state.mode2);
-
     if (state.yesterday) {
       params.set("yesterday", "true");
     } else {
