@@ -7,7 +7,7 @@ import {
 import { getIdToken } from "firebase/auth";
 import { envConfig } from "../../constants/env-config";
 import { getAuthenticatedUser, isAuthenticated } from "../../firebase";
-import { ZodError } from "zod";
+import { ZodError, ZodIssue } from "zod";
 
 function timeoutSignal(ms: number): AbortSignal {
   const ctrl = new AbortController();
@@ -42,10 +42,12 @@ function buildApi(timeout: number): (args: ApiFetcherArgs) => Promise<{
           : AbortSignal.timeout(timeout),
       };
 
+      console.log("###  req:", { request });
       const response = await tsRestFetchApi({
         ...request,
         headers,
         fetchOptions: fetchOptions,
+        validateResponse: true,
       });
 
       console.log("## res", { response });
@@ -64,9 +66,8 @@ function buildApi(timeout: number): (args: ApiFetcherArgs) => Promise<{
         headers: response.headers ?? new Headers(),
       };
     } catch (e: Error | ZodError | unknown) {
-      console.log("### err", e);
-      if (e instanceof ZodError) {
-        console.log("### zod error", e);
+      if (isZodError(e)) {
+        throw new Error(e.issues.map(prettyErrorMessage).join("\n"));
       }
       let message = "Unknown error";
 
@@ -104,3 +105,19 @@ export function buildClient<T extends AppRouter>(
   });
 }
 /* eslint-enable @typescript-eslint/explicit-function-return-type */
+
+function isZodError(error: unknown): error is ZodError {
+  if (!(error instanceof Error)) return false;
+
+  if (error instanceof ZodError) return true;
+  if (error.constructor.name === "ZodError") return true;
+  if ("issues" in error && error.issues instanceof Array) return true;
+
+  return false;
+}
+
+function prettyErrorMessage(issue: ZodIssue | undefined): string {
+  if (issue === undefined) return "";
+  const path = issue.path.length > 0 ? `"${issue.path.join(".")}" ` : "";
+  return `${path}${issue.message}`;
+}
