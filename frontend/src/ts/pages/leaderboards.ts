@@ -858,7 +858,7 @@ function updateContent(): void {
 function updateTypeButtons(): void {
   const el = $(".page.pageLeaderboards .buttonGroup.typeButtons");
   el.find("button").removeClass("active");
-  el.find(`button[data-mode=${state.type}]`).addClass("active");
+  el.find(`button[data-type=${state.type}]`).addClass("active");
 }
 
 function updateSecondaryButtons(): void {
@@ -1138,9 +1138,9 @@ $(".page.pageLeaderboards .buttonGroup.typeButtons").on(
   "click",
   "button",
   function () {
-    const mode = $(this).data("mode") as "allTime" | "weekly" | "daily";
-    if (state.type === mode) return;
-    state.type = mode;
+    const type = $(this).data("type") as "allTime" | "weekly" | "daily";
+    if (state.type === type) return;
+    state.type = type;
     if (state.type === "daily") {
       state.language = "english";
       state.yesterday = false;
