@@ -145,8 +145,8 @@ export async function getDailyLeaderboardRank(
 }
 
 function getWeeklyXpLeaderboardWithError(
-  { weeksBefore }: GetWeeklyXpLeaderboardQuery,
-  config: Configuration["leaderboards"]["weeklyXp"]
+  config: Configuration["leaderboards"]["weeklyXp"],
+  weeksBefore?: number
 ): WeeklyXpLeaderboard.WeeklyXpLeaderboard {
   const customTimestamp =
     weeksBefore === undefined
@@ -164,11 +164,11 @@ function getWeeklyXpLeaderboardWithError(
 export async function getWeeklyXpLeaderboardResults(
   req: MonkeyRequest<GetWeeklyXpLeaderboardQuery>
 ): Promise<GetWeeklyXpLeaderboardResponse> {
-  const { page, pageSize } = req.query;
+  const { page, pageSize, weeksBefore } = req.query;
 
   const weeklyXpLeaderboard = getWeeklyXpLeaderboardWithError(
-    req.query,
-    req.ctx.configuration.leaderboards.weeklyXp
+    req.ctx.configuration.leaderboards.weeklyXp,
+    weeksBefore
   );
   const results = await weeklyXpLeaderboard.getResults(
     page,
@@ -192,7 +192,6 @@ export async function getWeeklyXpLeaderboardRank(
   const { uid } = req.ctx.decodedToken;
 
   const weeklyXpLeaderboard = getWeeklyXpLeaderboardWithError(
-    {},
     req.ctx.configuration.leaderboards.weeklyXp
   );
   const rankEntry = await weeklyXpLeaderboard.getRank(
