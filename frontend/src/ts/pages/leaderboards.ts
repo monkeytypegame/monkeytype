@@ -631,12 +631,16 @@ function fillUser(): void {
     (state.type === "daily" && state.yesterday)
   ) {
     $(".page.pageLeaderboards .bigUser").addClass("hidden");
+    $(".page.pageLeaderboards .tableAndUser > .divider").removeClass("hidden");
     return;
   }
 
   if (state.type === "allTime" || state.type === "daily") {
     if (!state.userData || !state.count) {
       $(".page.pageLeaderboards .bigUser").addClass("hidden");
+      $(".page.pageLeaderboards .tableAndUser > .divider").removeClass(
+        "hidden"
+      );
       return;
     }
 
@@ -809,6 +813,7 @@ function fillUser(): void {
     $(".page.pageLeaderboards .bigUser").html(html);
   }
   $(".page.pageLeaderboards .bigUser").removeClass("hidden");
+  $(".page.pageLeaderboards .tableAndUser > .divider").addClass("hidden");
 }
 
 function updateContent(): void {

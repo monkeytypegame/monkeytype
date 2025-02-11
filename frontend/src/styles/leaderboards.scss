@@ -40,6 +40,14 @@
       grid-area: table;
       font-size: 1rem;
 
+      & > .divider {
+        height: 0.25rem;
+        width: 100%;
+        background: var(--sub-alt-color);
+        border-radius: calc(var(--roundness) / 2);
+        margin-bottom: 1em;
+      }
+
       .titleAndButtons {
         align-items: center;
         font-size: 1rem;
@@ -50,7 +58,7 @@
           width: 3rem;
         }
         .title {
-          font-size: 1.25rem;
+          font-size: 1rem;
           color: var(--sub-color);
         }
         .jumpButtons {
