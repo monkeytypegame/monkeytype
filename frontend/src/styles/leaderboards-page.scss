@@ -11,10 +11,28 @@
 
     .bigtitle {
       font-size: 2rem;
-      margin-bottom: 2rem;
+      margin-bottom: 1rem;
+      .text {
+        grid-area: text;
+      }
       .subtext {
+        grid-area: subtext;
         color: var(--sub-color);
         font-size: 1rem;
+        display: flex;
+        gap: 1em;
+        align-items: center;
+        .divider {
+          height: 1.75em;
+          width: 0.25em;
+          background: var(--sub-alt-color);
+          border-radius: calc(var(--roundness) / 2);
+        }
+        button {
+          // font-size: 0.75em;
+          margin-left: -0.5em;
+          padding: 0.25em 0.5em;
+        }
       }
     }
 
@@ -62,6 +80,7 @@
         // color: var(--main-color);
         font-size: 1em;
         margin-bottom: 2rem;
+        margin-top: 2rem;
         background: var(--sub-alt-color);
         padding: 1em 2em;
         border-radius: var(--roundness);

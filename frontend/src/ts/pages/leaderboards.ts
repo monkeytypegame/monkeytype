@@ -18,7 +18,11 @@ import { getHtmlByUserFlags } from "../controllers/user-flag-controller";
 import { getHTMLById as getBadgeHTMLbyId } from "../controllers/badge-controller";
 import { getDiscordAvatarUrl, isDevEnvironment } from "../utils/misc";
 import { abbreviateNumber } from "../utils/numbers";
-import { getCurrentWeekTimestamp } from "@monkeytype/util/date-and-time";
+import {
+  getCurrentWeekTimestamp,
+  getLastWeekTimestamp,
+  getStartOfDayTimestamp,
+} from "@monkeytype/util/date-and-time";
 import { formatDistanceToNow } from "date-fns/formatDistanceToNow";
 // import * as ServerConfiguration from "../ape/server-configuration";
 
@@ -35,6 +39,7 @@ type AllTimeState = {
 
 type WeeklyState = {
   type: "weekly";
+  lastWeek: boolean;
   data: XpLeaderboardEntry[] | null;
   count: number;
   userData: XpLeaderboardEntry | null;
@@ -44,6 +49,7 @@ type DailyState = {
   type: "daily";
   mode: "time";
   mode2: "15" | "60";
+  yesterday: boolean;
   minWpm: number;
   language: string;
   data: LeaderboardEntry[] | null;
@@ -98,25 +104,83 @@ function updateTitle(): void {
       : "";
 
   state.title = `${type} ${language} ${mode} Leaderboard`;
-  $(".page.pageLeaderboards .bigtitle .text").text(state.title);
+  $(".page.pageLeaderboards .bigtitle >.text").text(state.title);
 
   $(".page.pageLeaderboards .bigtitle .subtext").addClass("hidden");
+  $(".page.pageLeaderboards .bigtitle button").addClass("hidden");
+  $(".page.pageLeaderboards .bigtitle .subtext .divider").addClass("hidden");
+
   if (state.type === "daily") {
     $(".page.pageLeaderboards .bigtitle .subtext").removeClass("hidden");
+    $(
+      ".page.pageLeaderboards .bigtitle button[data-action='toggleYesterday']"
+    ).removeClass("hidden");
+    $(".page.pageLeaderboards .bigtitle .subtext .divider").removeClass(
+      "hidden"
+    );
 
-    const dateString = format(getCurrentWeekTimestamp(), "EEEE, do MMMM yyyy");
-    $(".page.pageLeaderboards .bigtitle .subtext").text(`${dateString}`);
+    if (state.yesterday) {
+      $(
+        ".page.pageLeaderboards .bigtitle button[data-action='toggleYesterday']"
+      ).html(`
+        <i class="fas fa-forward"></i>
+            show today
+        `);
+    } else {
+      $(
+        ".page.pageLeaderboards .bigtitle button[data-action='toggleYesterday']"
+      ).html(`
+        <i class="fas fa-backward"></i>
+            show yesterday
+        `);
+    }
+
+    let timestamp = getStartOfDayTimestamp(new Date().getTime());
+
+    if (state.yesterday) {
+      timestamp -= 24 * 60 * 60 * 100;
+    }
+
+    const dateString = format(timestamp, "EEEE, do MMMM yyyy");
+    $(".page.pageLeaderboards .bigtitle .subtext > .text").text(
+      `${dateString}`
+    );
   } else if (state.type === "weekly") {
     $(".page.pageLeaderboards .bigtitle .subtext").removeClass("hidden");
+    $(
+      ".page.pageLeaderboards .bigtitle button[data-action='toggleLastWeek']"
+    ).removeClass("hidden");
+    $(".page.pageLeaderboards .bigtitle .subtext .divider").removeClass(
+      "hidden"
+    );
 
-    const dateString = `${format(
-      getCurrentWeekTimestamp(),
-      "EEEE, do MMMM yyyy"
-    )} - ${format(
-      getCurrentWeekTimestamp() + 6 * 24 * 60 * 60 * 1000,
+    if (state.lastWeek) {
+      $(".page.pageLeaderboards .bigtitle button[data-action='toggleLastWeek']")
+        .html(`
+        <i class="fas fa-forward"></i>
+            show this week
+        `);
+    } else {
+      $(".page.pageLeaderboards .bigtitle button[data-action='toggleLastWeek']")
+        .html(`
+        <i class="fas fa-backward"></i>
+            show last week
+        `);
+    }
+
+    let fn = getCurrentWeekTimestamp();
+
+    if (state.lastWeek) {
+      fn = getLastWeekTimestamp();
+    }
+
+    const dateString = `${format(fn, "EEEE, do MMMM yyyy")} - ${format(
+      fn + 6 * 24 * 60 * 60 * 1000,
       "EEEE, do MMMM yyyy"
     )}`;
-    $(".page.pageLeaderboards .bigtitle .subtext").text(`${dateString}`);
+    $(".page.pageLeaderboards .bigtitle .subtext > .text").text(
+      `${dateString}`
+    );
   }
 }
 
@@ -150,6 +214,7 @@ async function requestData(update = false): Promise<void> {
         query: {
           ...baseQuery,
           page: state.page,
+          daysBefore: state.yesterday ? 1 : undefined,
         },
       });
     }
@@ -224,7 +289,7 @@ async function requestData(update = false): Promise<void> {
     return;
   } else if (state.type === "weekly") {
     const data = await Ape.leaderboards.getWeeklyXp({
-      query: { page: state.page },
+      query: { page: state.page, weeksBefore: state.lastWeek ? 1 : undefined },
     });
 
     if (data.status === 200) {
@@ -561,6 +626,14 @@ function fillUser(): void {
     return;
   }
 
+  if (
+    (state.type === "weekly" && state.lastWeek) ||
+    (state.type === "daily" && state.yesterday)
+  ) {
+    $(".page.pageLeaderboards .bigUser").addClass("hidden");
+    return;
+  }
+
   if (state.type === "allTime" || state.type === "daily") {
     if (!state.userData || !state.count) {
       $(".page.pageLeaderboards .bigUser").addClass("hidden");
@@ -778,6 +851,7 @@ function updateContent(): void {
 
   $(".page.pageLeaderboards .titleAndButtons").removeClass("hidden");
   updateJumpButtons();
+  updateTimerVisibility();
   fillTable();
 }
 
@@ -843,6 +917,25 @@ function updateTimerElement(): void {
       "Next reset in: " +
         DateTime.secondsToString(totalSeconds, true, true, ":", true, true)
     );
+  }
+}
+
+function updateTimerVisibility(): void {
+  let visible = true;
+
+  if (
+    (state.type === "daily" && state.yesterday) ||
+    (state.type === "weekly" && state.lastWeek)
+  ) {
+    visible = false;
+  }
+
+  if (visible) {
+    $(".page.pageLeaderboards .titleAndButtons .timer").removeClass(
+      "invisible"
+    );
+  } else {
+    $(".page.pageLeaderboards .titleAndButtons .timer").addClass("invisible");
   }
 }
 
@@ -943,6 +1036,19 @@ function handleJumpButton(action: string, page?: number): void {
   updateContent();
 }
 
+function handleYesterdayLastWeekButton(action: string): void {
+  if (state.type === "daily" && action === "toggleYesterday") {
+    state.yesterday = !state.yesterday;
+  } else if (state.type === "weekly" && action === "toggleLastWeek") {
+    state.lastWeek = !state.lastWeek;
+  }
+
+  updateGetParameters();
+  void requestData();
+  updateContent();
+  updateTitle();
+}
+
 function updateGetParameters(): void {
   const params = new URLSearchParams(window.location.search);
 
@@ -952,6 +1058,18 @@ function updateGetParameters(): void {
   } else if (state.type === "daily") {
     params.set("language", state.language);
     params.set("mode2", state.mode2);
+
+    if (state.yesterday) {
+      params.set("yesterday", "true");
+    } else {
+      params.delete("yesterday");
+    }
+  } else if (state.type === "weekly") {
+    if (state.lastWeek) {
+      params.set("lastWeek", "true");
+    } else {
+      params.delete("lastWeek");
+    }
   }
 
   params.set("page", (state.page + 1).toString());
@@ -976,11 +1094,20 @@ function readGetParameters(): void {
   } else if (state.type === "daily") {
     const language = params.get("language");
     const dailyMode = params.get("mode2") as "15" | "60";
+    const yesterday = params.get("yesterday") as string;
     if (language !== null) {
       state.language = language;
     }
     if (dailyMode) {
       state.mode2 = dailyMode;
+    }
+    if (yesterday !== null && yesterday === "true") {
+      state.yesterday = true;
+    }
+  } else if (state.type === "weekly") {
+    const lastWeek = params.get("lastWeek") as string;
+    if (lastWeek !== null && lastWeek === "true") {
+      state.lastWeek = true;
     }
   }
 
@@ -1001,6 +1128,11 @@ $(".page.pageLeaderboards .jumpButtons button").on("click", function () {
   }
 });
 
+$(".page.pageLeaderboards .bigtitle button").on("click", function () {
+  const action = $(this).data("action") as string;
+  handleYesterdayLastWeekButton(action);
+});
+
 $(".page.pageLeaderboards .buttonGroup.typeButtons").on(
   "click",
   "button",
@@ -1010,6 +1142,10 @@ $(".page.pageLeaderboards .buttonGroup.typeButtons").on(
     state.type = mode;
     if (state.type === "daily") {
       state.language = "english";
+      state.yesterday = false;
+    }
+    if (state.type === "weekly") {
+      state.lastWeek = false;
     }
     state.data = null;
     state.page = 0;
