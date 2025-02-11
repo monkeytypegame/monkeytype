@@ -984,6 +984,7 @@ $(".page.pageLeaderboards .buttonGroup.typeButtons").on(
       state.mode2 = "15";
     }
     state.data = null;
+    state.page = 1;
     void requestData();
     updateTypeButtons();
     updateTitle();
