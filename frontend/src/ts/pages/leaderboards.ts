@@ -890,7 +890,12 @@ function handleJumpButton(action: string, page?: number): void {
   if (action === "firstPage") {
     state.page = 0;
   } else if (action === "previousPage" && state.page > 0) {
-    state.page -= 1;
+    const totalPages = Math.ceil(state.count / state.pageSize);
+    if (state.page > totalPages) {
+      state.page = totalPages - 1;
+    } else {
+      state.page -= 1;
+    }
   } else if (action === "nextPage") {
     state.page += 1;
   } else if (action === "goToPage" && page !== undefined) {
