@@ -914,6 +914,7 @@ function handleJumpButton(action: string, page?: number): void {
   } else {
     return;
   }
+  updateGetParameters();
   void requestData(true);
   updateContent();
 }
@@ -929,7 +930,7 @@ function updateGetParameters(): void {
     params.set("mode2", state.mode2);
   }
 
-  params.set("page", state.page.toString());
+  params.set("page", (state.page + 1).toString());
 
   const newUrl = `${window.location.pathname}?${params.toString()}`;
   window.history.replaceState({}, "", newUrl);
@@ -961,7 +962,7 @@ function readGetParameters(): void {
 
   const page = params.get("page");
   if (page !== null) {
-    state.page = parseInt(page, 10);
+    state.page = parseInt(page - 1, 10);
   }
 }
 
@@ -984,7 +985,7 @@ $(".page.pageLeaderboards .buttonGroup.typeButtons").on(
       state.mode2 = "15";
     }
     state.data = null;
-    state.page = 1;
+    state.page = 0;
     void requestData();
     updateTypeButtons();
     updateTitle();
