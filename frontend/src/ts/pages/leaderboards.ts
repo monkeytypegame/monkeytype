@@ -479,7 +479,6 @@ function fillTable(): void {
   }
 
   $(".page.pageLeaderboards table").removeClass("hidden");
-  $(".page.pageLeaderboards .titleAndButtons").removeClass("hidden");
 }
 
 function getLbMemoryDifference(): number | null {
@@ -758,6 +757,7 @@ function updateContent(): void {
     return;
   }
 
+  $(".page.pageLeaderboards .titleAndButtons").removeClass("hidden");
   updateJumpButtons();
   fillTable();
 }
