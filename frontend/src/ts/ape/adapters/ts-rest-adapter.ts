@@ -33,24 +33,16 @@ function buildApi(timeout: number): (args: ApiFetcherArgs) => Promise<{
       }
 
       const usePolyfill = AbortSignal?.timeout === undefined;
-      const fetchOptions: RequestInit = {
-        method: request.method,
-        headers,
-        body: request.body,
-        signal: usePolyfill
-          ? timeoutSignal(timeout)
-          : AbortSignal.timeout(timeout),
-      };
-
-      console.log("###  req:", { request });
       const response = await tsRestFetchApi({
         ...request,
         headers,
-        fetchOptions: fetchOptions,
+        fetchOptions: {
+          signal: usePolyfill
+            ? timeoutSignal(timeout)
+            : AbortSignal.timeout(timeout),
+        },
         validateResponse: true,
       });
-
-      console.log("## res", { response });
 
       const body = response.body as object;
       if (response.status >= 400) {
@@ -67,7 +59,11 @@ function buildApi(timeout: number): (args: ApiFetcherArgs) => Promise<{
       };
     } catch (e: Error | ZodError | unknown) {
       if (isZodError(e)) {
-        throw new Error(e.issues.map(prettyErrorMessage).join("\n"));
+        const pretty = e.issues.map(prettyErrorMessage).join("\n");
+        console.log(
+          `Path: ${request.path} Method: ${request.method}\n ${pretty}`
+        );
+        throw new Error(pretty);
       }
       let message = "Unknown error";
 
