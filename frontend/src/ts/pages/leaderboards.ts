@@ -1061,6 +1061,8 @@ function updateGetParameters(): void {
   if (state.type === "allTime") {
     params.set("mode2", state.mode2);
     params.delete("language");
+    params.delete("yesterday");
+    params.delete("lastWeek");
   } else if (state.type === "daily") {
     params.set("language", state.language);
     params.set("mode2", state.mode2);
