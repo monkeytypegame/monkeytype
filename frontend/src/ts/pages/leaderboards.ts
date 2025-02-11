@@ -290,7 +290,7 @@ function updateJumpButtons(): void {
     }
   }
 
-  if (state.page === totalPages - 1) {
+  if (state.page >= totalPages - 1) {
     el.find("button[data-action='nextPage']").addClass("disabled");
   } else {
     el.find("button[data-action='nextPage']").removeClass("disabled");
