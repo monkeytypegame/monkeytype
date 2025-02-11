@@ -1,7 +1,13 @@
-import { AppRouter, initClient, type ApiFetcherArgs } from "@ts-rest/core";
+import {
+  AppRouter,
+  initClient,
+  tsRestFetchApi,
+  type ApiFetcherArgs,
+} from "@ts-rest/core";
 import { getIdToken } from "firebase/auth";
 import { envConfig } from "../../constants/env-config";
 import { getAuthenticatedUser, isAuthenticated } from "../../firebase";
+import { ZodError } from "zod";
 
 function timeoutSignal(ms: number): AbortSignal {
   const ctrl = new AbortController();
@@ -26,22 +32,25 @@ function buildApi(timeout: number): (args: ApiFetcherArgs) => Promise<{
         headers["Authorization"] = `Bearer ${token}`;
       }
 
+      const usePolyfill = AbortSignal?.timeout === undefined;
       const fetchOptions: RequestInit = {
         method: request.method,
         headers,
         body: request.body,
-      };
-
-      const usePolyfill = AbortSignal?.timeout === undefined;
-
-      const response = await fetch(request.path, {
-        ...fetchOptions,
         signal: usePolyfill
           ? timeoutSignal(timeout)
           : AbortSignal.timeout(timeout),
+      };
+
+      const response = await tsRestFetchApi({
+        ...request,
+        headers,
+        fetchOptions: fetchOptions,
       });
 
-      const body = (await response.json()) as object;
+      console.log("## res", { response });
+
+      const body = response.body as object;
       if (response.status >= 400) {
         console.error(`${request.method} ${request.path} failed`, {
           status: response.status,
@@ -54,7 +63,11 @@ function buildApi(timeout: number): (args: ApiFetcherArgs) => Promise<{
         body,
         headers: response.headers ?? new Headers(),
       };
-    } catch (e: Error | unknown) {
+    } catch (e: Error | ZodError | unknown) {
+      console.log("### err", e);
+      if (e instanceof ZodError) {
+        console.log("### zod error", e);
+      }
       let message = "Unknown error";
 
       if (e instanceof Error) {
@@ -87,6 +100,7 @@ export function buildClient<T extends AppRouter>(
     baseHeaders: {
       Accept: "application/json",
     },
+    validateResponse: true,
   });
 }
 /* eslint-enable @typescript-eslint/explicit-function-return-type */

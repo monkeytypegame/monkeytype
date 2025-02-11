@@ -46,13 +46,13 @@ export async function getLeaderboard(
   }
 
   const count = await LeaderboardsDAL.getCount(mode, mode2, language);
-  const normalizedLeaderboard = leaderboard.map((it) => _.omit(it, ["_id"]));
+  //const normalizedLeaderboard = leaderboard.map((it) => _.omit(it, ["_id"]));
 
   return new MonkeyResponse("Leaderboard retrieved", {
     count,
-    entries: normalizedLeaderboard,
+    //entries: normalizedLeaderboard,
     pageSize,
-  });
+  }) as unknown as GetLeaderboardResponse;
 }
 
 export async function getRankFromLeaderboard(
