@@ -968,6 +968,10 @@ function readGetParameters(): void {
   const page = params.get("page");
   if (page !== null) {
     state.page = parseInt(page, 10) - 1;
+
+    if (state.page < 0) {
+      state.page = 0;
+    }
   }
 }
 
