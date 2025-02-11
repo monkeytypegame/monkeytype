@@ -98,7 +98,26 @@ function updateTitle(): void {
       : "";
 
   state.title = `${type} ${language} ${mode} Leaderboard`;
-  $(".page.pageLeaderboards .bigtitle").text(state.title);
+  $(".page.pageLeaderboards .bigtitle .text").text(state.title);
+
+  $(".page.pageLeaderboards .bigtitle .subtext").addClass("hidden");
+  if (state.type === "daily") {
+    $(".page.pageLeaderboards .bigtitle .subtext").removeClass("hidden");
+
+    const dateString = format(getCurrentWeekTimestamp(), "EEEE, do MMMM yyyy");
+    $(".page.pageLeaderboards .bigtitle .subtext").text(`${dateString}`);
+  } else if (state.type === "weekly") {
+    $(".page.pageLeaderboards .bigtitle .subtext").removeClass("hidden");
+
+    const dateString = `${format(
+      getCurrentWeekTimestamp(),
+      "EEEE, do MMMM yyyy"
+    )} - ${format(
+      getCurrentWeekTimestamp() + 6 * 24 * 60 * 60 * 1000,
+      "EEEE, do MMMM yyyy"
+    )}`;
+    $(".page.pageLeaderboards .bigtitle .subtext").text(`${dateString}`);
+  }
 }
 
 async function requestData(update = false): Promise<void> {

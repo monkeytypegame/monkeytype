@@ -11,7 +11,11 @@
 
     .bigtitle {
       font-size: 2rem;
-      margin-bottom: 1rem;
+      margin-bottom: 2rem;
+      .subtext {
+        color: var(--sub-color);
+        font-size: 1rem;
+      }
     }
 
     .tableAndUser {
