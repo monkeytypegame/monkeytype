@@ -962,7 +962,7 @@ function readGetParameters(): void {
 
   const page = params.get("page");
   if (page !== null) {
-    state.page = parseInt(page - 1, 10);
+    state.page = parseInt(page, 10) - 1;
   }
 }
 
