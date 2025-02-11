@@ -10,6 +10,7 @@ import { Collection, ObjectId } from "mongodb";
 import { LeaderboardEntry } from "@monkeytype/contracts/schemas/leaderboards";
 import { omit } from "lodash";
 import { DBUser } from "./user";
+import MonkeyError from "../utils/error";
 
 export type DBLeaderboardEntry = LeaderboardEntry & {
   _id: ObjectId;
@@ -29,10 +30,11 @@ export async function get(
   mode2: string,
   language: string,
   page: number,
-  pageSize = 50
+  pageSize: number
 ): Promise<DBLeaderboardEntry[] | false> {
-  if (page < 0) page = 0;
-  if (pageSize > 50 || pageSize <= 0) pageSize = 50;
+  if (page < 0 || pageSize < 0) {
+    throw new MonkeyError(500, "Invalid page or pageSize");
+  }
 
   const skip = page * pageSize;
   const limit = pageSize;

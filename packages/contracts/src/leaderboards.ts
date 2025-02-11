@@ -22,8 +22,8 @@ const LanguageAndModeQuerySchema = z.object({
 });
 
 const PaginationQuerySchema = z.object({
-  page: z.number().int().nonnegative().optional(),
-  pageSize: z.number().int().nonnegative().max(50).optional(),
+  page: z.number().int().nonnegative().default(0),
+  pageSize: z.number().int().nonnegative().max(200).default(50),
 });
 
 const LeaderboardResponseSchema = z.object({

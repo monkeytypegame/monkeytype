@@ -28,7 +28,7 @@ import { MonkeyRequest } from "../types";
 export async function getLeaderboard(
   req: MonkeyRequest<GetLeaderboardQuery>
 ): Promise<GetLeaderboardResponse> {
-  const { language, mode, mode2, page = 0, pageSize = 50 } = req.query;
+  const { language, mode, mode2, page, pageSize } = req.query;
 
   const leaderboard = await LeaderboardsDAL.get(
     mode,
@@ -98,7 +98,7 @@ function getDailyLeaderboardWithError(
 export async function getDailyLeaderboard(
   req: MonkeyRequest<GetDailyLeaderboardQuery>
 ): Promise<GetDailyLeaderboardResponse> {
-  const { page = 0, pageSize = 50 } = req.query;
+  const { page, pageSize } = req.query;
 
   const dailyLeaderboard = getDailyLeaderboardWithError(
     req.query,
@@ -164,7 +164,7 @@ function getWeeklyXpLeaderboardWithError(
 export async function getWeeklyXpLeaderboardResults(
   req: MonkeyRequest<GetWeeklyXpLeaderboardQuery>
 ): Promise<GetWeeklyXpLeaderboardResponse> {
-  const { page = 0, pageSize = 50 } = req.query;
+  const { page, pageSize } = req.query;
 
   const weeklyXpLeaderboard = getWeeklyXpLeaderboardWithError(
     req.query,

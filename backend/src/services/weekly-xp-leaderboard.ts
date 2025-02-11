@@ -128,8 +128,9 @@ export class WeeklyXpLeaderboard {
       return [];
     }
 
-    if (page < 0) page = 0;
-    if (pageSize > 50 || pageSize <= 0) pageSize = 50;
+    if (page < 0 || pageSize < 0) {
+      throw new MonkeyError(500, "Invalid page or pageSize");
+    }
 
     const minRank = page * pageSize;
     const maxRank = minRank + pageSize - 1;
