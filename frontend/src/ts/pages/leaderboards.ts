@@ -19,6 +19,7 @@ import { getHTMLById as getBadgeHTMLbyId } from "../controllers/badge-controller
 import { getDiscordAvatarUrl, isDevEnvironment } from "../utils/misc";
 import { abbreviateNumber } from "../utils/numbers";
 import { getCurrentWeekTimestamp } from "@monkeytype/util/date-and-time";
+import { formatDistanceToNow } from "date-fns/formatDistanceToNow";
 // import * as ServerConfiguration from "../ape/server-configuration";
 
 type LeaderboardType = "allTime" | "weekly" | "daily";
@@ -397,6 +398,10 @@ function buildWeeklyTableRow(entry: XpLeaderboardEntry, me = false): string {
 
   const meClass = me ? "me" : "";
 
+  const activeDiff = formatDistanceToNow(entry.lastActivityTimestamp, {
+    addSuffix: true,
+  });
+
   return `
     <tr class="${meClass}" data-uid="${entry.uid}">
       <td>${
@@ -432,10 +437,11 @@ function buildWeeklyTableRow(entry: XpLeaderboardEntry, me = false): string {
         ":"
       )}</td>
       </td>
-      <td class="date">${format(
-        entry.lastActivityTimestamp,
-        "dd MMM yyyy"
-      )}<div class="sub">${format(entry.lastActivityTimestamp, "HH:mm")}</div>
+      <td class="date" data-balloon-pos="left"  aria-label="${activeDiff}">
+        ${format(entry.lastActivityTimestamp, "dd MMM yyyy")}
+        <div class="sub">
+          ${format(entry.lastActivityTimestamp, "HH:mm")}
+        </div>
       </td>
     </tr>
   `;
