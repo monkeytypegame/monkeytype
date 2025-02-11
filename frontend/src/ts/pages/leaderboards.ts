@@ -991,7 +991,6 @@ $(".page.pageLeaderboards .buttonGroup.typeButtons").on(
     state.type = mode;
     if (state.type === "daily") {
       state.language = "english";
-      state.mode2 = "15";
     }
     state.data = null;
     state.page = 0;
