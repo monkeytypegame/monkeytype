@@ -7,7 +7,10 @@ import {
 import { getIdToken } from "firebase/auth";
 import { envConfig } from "../../constants/env-config";
 import { getAuthenticatedUser, isAuthenticated } from "../../firebase";
-import { API_VERSION, API_VERSION_HEADER } from "@monkeytype/contracts";
+import {
+  COMPATIBILITY_CHECK,
+  COMPATIBILITY_CHECK_HEADER,
+} from "@monkeytype/contracts";
 import * as Notifications from "../../elements/notifications";
 
 let bannerActive = false;
@@ -46,8 +49,13 @@ function buildApi(timeout: number): (args: ApiFetcherArgs) => Promise<{
         });
       }
 
-      const apiVersion = response.headers.get(API_VERSION_HEADER);
-      if (apiVersion !== null && apiVersion !== API_VERSION) {
+      const compatibilityCheck = response.headers.get(
+        COMPATIBILITY_CHECK_HEADER
+      );
+      if (
+        compatibilityCheck !== null &&
+        Number.parseInt(compatibilityCheck) > COMPATIBILITY_CHECK
+      ) {
         if (!bannerActive) {
           Notifications.addBanner(
             `You are using an outdated version, try <a onClick="location.reload(true)">reload</a> the page.`,

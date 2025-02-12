@@ -31,5 +31,9 @@ export const contract = c.router({
   webhooks: webhooksContract,
 });
 
-export const API_VERSION = "0";
-export const API_VERSION_HEADER = "X-Api-Version";
+/**
+ * Whenever there is a breaking change with old frontend clients increase this number.
+ * This will inform the frontend to refresh.
+ */
+export const COMPATIBILITY_CHECK = 0;
+export const COMPATIBILITY_CHECK_HEADER = "X-Compatibility-Check";
