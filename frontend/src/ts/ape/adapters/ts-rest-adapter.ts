@@ -10,6 +10,8 @@ import { getAuthenticatedUser, isAuthenticated } from "../../firebase";
 import { API_VERSION } from "@monkeytype/contracts";
 import * as Notifications from "../../elements/notifications";
 
+let bannerActive = false;
+
 function timeoutSignal(ms: number): AbortSignal {
   const ctrl = new AbortController();
   setTimeout(() => ctrl.abort(new Error("request timed out")), ms);
@@ -37,7 +39,6 @@ function buildApi(timeout: number): (args: ApiFetcherArgs) => Promise<{
           : AbortSignal.timeout(timeout),
       };
       const response = await tsRestFetchApi(request);
-
       if (response.status >= 400) {
         console.error(`${request.method} ${request.path} failed`, {
           status: response.status,
@@ -45,10 +46,28 @@ function buildApi(timeout: number): (args: ApiFetcherArgs) => Promise<{
         });
       }
 
-      const apiVersion = response.headers.get("X-Api-Version") + "test";
+      const apiVersion = response.headers.get("X-Api-Version");
+      console.log("### Api Version", {
+        expected: API_VERSION,
+        current: apiVersion,
+        allHeaders: Object.fromEntries(response.headers.entries()),
+      });
       if (apiVersion !== null && apiVersion !== API_VERSION) {
-        Notifications.add("Version mismatch, try reloading the page.");
+        if (!bannerActive) {
+          Notifications.addBanner(
+            `You are using an outdated version, try <a onClick="location.reload(true)">reload</a> the page.`,
+            1,
+            undefined,
+            false,
+            () => {
+              bannerActive = false;
+            },
+            true
+          );
+          bannerActive = true;
+        }
       }
+
       return response;
     } catch (e: Error | unknown) {
       let message = "Unknown error";

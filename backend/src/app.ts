@@ -15,7 +15,7 @@ function buildApp(): express.Application {
 
   app.use(urlencoded({ extended: true }));
   app.use(json());
-  app.use(cors());
+  app.use(cors({ exposedHeaders: ["X-Api-Version"] }));
   app.use(helmet());
 
   app.set("trust proxy", 1);
