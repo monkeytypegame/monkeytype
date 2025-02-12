@@ -8,14 +8,14 @@ import { capitalizeFirstLetterOfEachWord } from "../utils/strings";
 //   2?: string[];
 // };
 
-type BritishEnglishReplacements = Record<string, [string,string[]]>
+type BritishEnglishReplacements = Record<string, [string,string[]]>;
 
-const list: readonly BritishEnglishReplacements[] = [
+const list: BritishEnglishReplacements = {
   // ["abettor", "abetter"],
   // ["abolitionize", "abolitionise"],
-  "abettor": {"abetter"},
-  "abolitionize": {"abolitionise"},
-];
+  abettor: ["abetter", []],
+  abolitionize: ["abolitionise", []],
+};
 
 // export async function getList(): Promise<BritishEnglishReplacement[]> {
 //   if (list.length === 0) {
