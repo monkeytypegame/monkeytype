@@ -2,15 +2,19 @@ import Config from "../config";
 import { capitalizeFirstLetterOfEachWord } from "../utils/strings";
 // import { cachedFetchJson } from "../utils/json-data";
 
-type BritishEnglishReplacement = {
-  0: string;
-  1: string;
-  2?: string[];
-};
+// type BritishEnglishReplacement = {
+//   0: string;
+//   1: string;
+//   2?: string[];
+// };
 
-const list: readonly BritishEnglishReplacement[] = [
-  ["abettor", "abetter"],
-  ["abolitionize", "abolitionise"],
+type BritishEnglishReplacements = Record<string, [string,string[]]>
+
+const list: readonly BritishEnglishReplacements[] = [
+  // ["abettor", "abetter"],
+  // ["abolitionize", "abolitionise"],
+  "abettor": ["abetter"],
+  "abolitionize": ["abolitionise"],
 ];
 
 // export async function getList(): Promise<BritishEnglishReplacement[]> {
