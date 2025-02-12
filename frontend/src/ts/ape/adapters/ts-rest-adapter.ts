@@ -13,7 +13,7 @@ import {
 } from "@monkeytype/contracts";
 import * as Notifications from "../../elements/notifications";
 
-let bannerActive = false;
+let bannerShownThisSession = false;
 
 function timeoutSignal(ms: number): AbortSignal {
   const ctrl = new AbortController();
@@ -52,7 +52,7 @@ function buildApi(timeout: number): (args: ApiFetcherArgs) => Promise<{
       const compatibilityCheck = response.headers.get(
         COMPATIBILITY_CHECK_HEADER
       );
-      if (compatibilityCheck !== null && !bannerActive) {
+      if (compatibilityCheck !== null && !bannerShownThisSession) {
         const backendCheck = parseInt(compatibilityCheck);
         if (backendCheck !== COMPATIBILITY_CHECK) {
           const message =
@@ -64,10 +64,10 @@ function buildApi(timeout: number): (args: ApiFetcherArgs) => Promise<{
             1,
             undefined,
             false,
-            () => (bannerActive = false),
+            undefined,
             true
           );
-          bannerActive = true;
+          bannerShownThisSession = true;
         }
       }
 
