@@ -1,34 +1,19 @@
 import Config from "../config";
 import { capitalizeFirstLetterOfEachWord } from "../utils/strings";
-// import { cachedFetchJson } from "../utils/json-data";
 
-// type BritishEnglishReplacement = {
-//   0: string;
-//   1: string;
-//   2?: string[];
-// };
 
 type BritishEnglishReplacements = Record<string, [string,string[]]>;
 
 const list: BritishEnglishReplacements = {
-  // ["abettor", "abetter"],
-  // ["abolitionize", "abolitionise"],
   abettor: ["abetter", []],
   abolitionize: ["abolitionise", []],
 };
 
-// export async function getList(): Promise<BritishEnglishReplacement[]> {
-//   if (list.length === 0) {
-//     list = await cachedFetchJson("languages/britishenglish.json");
-//   }
-//   return list;
-// }
 
 export async function replace(
   word: string,
   previousWord: string
 ): Promise<string> {
-  // const list = await getList();
 
   if (word.includes("-")) {
     //this handles hyphenated words (for example "cream-colored") to make sure
