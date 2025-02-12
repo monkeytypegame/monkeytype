@@ -8,6 +8,7 @@ import {
   badAuthRateLimiterHandler,
   rootRateLimiter,
 } from "./middlewares/rate-limit";
+import { apiVersionMiddleware } from "./middlewares/apiVersion";
 
 function buildApp(): express.Application {
   const app = express();
@@ -19,6 +20,7 @@ function buildApp(): express.Application {
 
   app.set("trust proxy", 1);
 
+  app.use(apiVersionMiddleware);
   app.use(contextMiddleware);
 
   app.use(badAuthRateLimiterHandler);

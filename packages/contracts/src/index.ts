@@ -30,3 +30,5 @@ export const contract = c.router({
   quotes: quotesContract,
   webhooks: webhooksContract,
 });
+
+export const API_VERSION = "0";

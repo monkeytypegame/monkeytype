@@ -7,6 +7,8 @@ import {
 import { getIdToken } from "firebase/auth";
 import { envConfig } from "../../constants/env-config";
 import { getAuthenticatedUser, isAuthenticated } from "../../firebase";
+import { API_VERSION } from "@monkeytype/contracts";
+import * as Notifications from "../../elements/notifications";
 
 function timeoutSignal(ms: number): AbortSignal {
   const ctrl = new AbortController();
@@ -43,6 +45,10 @@ function buildApi(timeout: number): (args: ApiFetcherArgs) => Promise<{
         });
       }
 
+      const apiVersion = response.headers.get("X-Api-Version") + "test";
+      if (apiVersion !== null && apiVersion !== API_VERSION) {
+        Notifications.add("Version mismatch, try reloading the page.");
+      }
       return response;
     } catch (e: Error | unknown) {
       let message = "Unknown error";
