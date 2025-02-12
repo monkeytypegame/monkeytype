@@ -7,6 +7,13 @@ import {
 import { getIdToken } from "firebase/auth";
 import { envConfig } from "../../constants/env-config";
 import { getAuthenticatedUser, isAuthenticated } from "../../firebase";
+import {
+  COMPATIBILITY_CHECK,
+  COMPATIBILITY_CHECK_HEADER,
+} from "@monkeytype/contracts";
+import * as Notifications from "../../elements/notifications";
+
+let bannerActive = false;
 
 function timeoutSignal(ms: number): AbortSignal {
   const ctrl = new AbortController();
@@ -35,12 +42,33 @@ function buildApi(timeout: number): (args: ApiFetcherArgs) => Promise<{
           : AbortSignal.timeout(timeout),
       };
       const response = await tsRestFetchApi(request);
-
       if (response.status >= 400) {
         console.error(`${request.method} ${request.path} failed`, {
           status: response.status,
           ...(response.body as object),
         });
+      }
+
+      const compatibilityCheck = response.headers.get(
+        COMPATIBILITY_CHECK_HEADER
+      );
+      if (compatibilityCheck !== null && !bannerActive) {
+        const backendCheck = parseInt(compatibilityCheck);
+        if (backendCheck !== COMPATIBILITY_CHECK) {
+          const message =
+            backendCheck > COMPATIBILITY_CHECK
+              ? `Looks like the client and server versions are mismatched (backend is newer). Please <a onClick="location.reload(true)">refresh</a> the page.`
+              : `Looks like our monkeys didn't deploy the new server version correctly. If this message persists contact support.`;
+          Notifications.addBanner(
+            message,
+            1,
+            undefined,
+            false,
+            () => (bannerActive = false),
+            true
+          );
+          bannerActive = true;
+        }
       }
 
       return response;
