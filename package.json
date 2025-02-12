@@ -60,7 +60,7 @@
     "@commitlint/cli": "17.7.1",
     "@commitlint/config-conventional": "19.2.2",
     "@monkeytype/release": "workspace:*",
-    "@vitest/coverage-v8": "2.0.5",
+    "@vitest/coverage-v8": "2.1.9",
     "conventional-changelog": "6.0.0",
     "husky": "8.0.1",
     "knip": "2.19.2",
@@ -68,7 +68,7 @@
     "only-allow": "1.2.1",
     "prettier": "2.8.8",
     "turbo": "2.3.3",
-    "vitest": "2.0.5"
+    "vitest": "2.1.9"
   },
   "lint-staged": {
     "*.{json,scss,css,html}": [
@@ -79,6 +79,6 @@
       "eslint"
     ]
   },
-  "version": "25.3.0",
+  "version": "25.7.0",
   "packageManager": "pnpm@9.6.0"
 }

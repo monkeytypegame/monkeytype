@@ -1,11 +1,10 @@
 import { Configuration } from "@monkeytype/contracts/schemas/configuration";
 import * as RedisClient from "../init/redis";
 import LaterQueue from "../queues/later-queue";
-import {
-  XpLeaderboardEntry,
-  XpLeaderboardRank,
-} from "@monkeytype/contracts/schemas/leaderboards";
+import { XpLeaderboardEntry } from "@monkeytype/contracts/schemas/leaderboards";
 import { getCurrentWeekTimestamp } from "@monkeytype/util/date-and-time";
+import MonkeyError from "../utils/error";
+import { omit } from "lodash";
 
 type AddResultOpts = {
   entry: Pick<
@@ -16,6 +15,7 @@ type AddResultOpts = {
     | "discordAvatar"
     | "badgeId"
     | "lastActivityTimestamp"
+    | "isPremium"
   >;
   xpGained: number;
   timeTypedSeconds: number;
@@ -118,14 +118,22 @@ export class WeeklyXpLeaderboard {
   }
 
   public async getResults(
-    minRank: number,
-    maxRank: number,
-    weeklyXpLeaderboardConfig: Configuration["leaderboards"]["weeklyXp"]
+    page: number,
+    pageSize: number,
+    weeklyXpLeaderboardConfig: Configuration["leaderboards"]["weeklyXp"],
+    premiumFeaturesEnabled: boolean
   ): Promise<XpLeaderboardEntry[]> {
     const connection = RedisClient.getConnection();
     if (!connection || !weeklyXpLeaderboardConfig.enabled) {
       return [];
     }
+
+    if (page < 0 || pageSize < 0) {
+      throw new MonkeyError(500, "Invalid page or pageSize");
+    }
+
+    const minRank = page * pageSize;
+    const maxRank = minRank + pageSize - 1;
 
     const { weeklyXpLeaderboardScoresKey, weeklyXpLeaderboardResultsKey } =
       this.getThisWeeksXpLeaderboardKeys();
@@ -166,16 +174,20 @@ export class WeeklyXpLeaderboard {
       }
     );
 
+    if (!premiumFeaturesEnabled) {
+      return resultsWithRanks.map((it) => omit(it, "isPremium"));
+    }
+
     return resultsWithRanks;
   }
 
   public async getRank(
     uid: string,
     weeklyXpLeaderboardConfig: Configuration["leaderboards"]["weeklyXp"]
-  ): Promise<XpLeaderboardRank | null> {
+  ): Promise<XpLeaderboardEntry | null> {
     const connection = RedisClient.getConnection();
     if (!connection || !weeklyXpLeaderboardConfig.enabled) {
-      return null;
+      throw new MonkeyError(500, "Redis connnection is unavailable");
     }
 
     const { weeklyXpLeaderboardScoresKey, weeklyXpLeaderboardResultsKey } =
@@ -186,7 +198,7 @@ export class WeeklyXpLeaderboard {
 
     // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
     // @ts-ignore
-    const [[, rank], [, totalXp], [, count], [, result]] = (await connection
+    const [[, rank], [, totalXp], [, _count], [, result]] = (await connection
       .multi()
       .zrevrank(weeklyXpLeaderboardScoresKey, uid)
       .zscore(weeklyXpLeaderboardScoresKey, uid)
@@ -209,11 +221,22 @@ export class WeeklyXpLeaderboard {
     >;
 
     return {
-      rank: rank + 1,
-      count: count ?? 0,
-      totalXp: parseInt(totalXp as string, 10),
       ...parsed,
+      rank: rank + 1,
+      totalXp: parseInt(totalXp as string, 10),
     };
+  }
+
+  public async getCount(): Promise<number> {
+    const connection = RedisClient.getConnection();
+    if (!connection) {
+      throw new Error("Redis connection is unavailable");
+    }
+
+    const { weeklyXpLeaderboardScoresKey } =
+      this.getThisWeeksXpLeaderboardKeys();
+
+    return connection.zcard(weeklyXpLeaderboardScoresKey);
   }
 }
 

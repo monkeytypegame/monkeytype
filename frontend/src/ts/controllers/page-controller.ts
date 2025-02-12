@@ -10,6 +10,7 @@ import * as PageLoading from "../pages/loading";
 import * as PageProfile from "../pages/profile";
 import * as PageProfileSearch from "../pages/profile-search";
 import * as Page404 from "../pages/404";
+import * as PageLeaderboards from "../pages/leaderboards";
 import * as PageAccountSettings from "../pages/account-settings";
 import * as PageTransition from "../states/page-transition";
 import * as AdController from "../controllers/ad-controller";
@@ -60,6 +61,7 @@ export async function change(
       profileSearch: PageProfileSearch.page,
       404: Page404.page,
       accountSettings: PageAccountSettings.page,
+      leaderboards: PageLeaderboards.page,
     };
 
     const previousPage = pages[ActivePage.get()];
