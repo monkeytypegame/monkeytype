@@ -54,21 +54,18 @@ function buildApi(timeout: number): (args: ApiFetcherArgs) => Promise<{
       );
       if (
         compatibilityCheck !== null &&
-        Number.parseInt(compatibilityCheck) > COMPATIBILITY_CHECK
+        Number.parseInt(compatibilityCheck) > COMPATIBILITY_CHECK &&
+        !bannerActive
       ) {
-        if (!bannerActive) {
-          Notifications.addBanner(
-            `You are using an outdated version, try <a onClick="location.reload(true)">reload</a> the page.`,
-            1,
-            undefined,
-            false,
-            () => {
-              bannerActive = false;
-            },
-            true
-          );
-          bannerActive = true;
-        }
+        Notifications.addBanner(
+          `You are using an outdated version, try <a onClick="location.reload(true)">reload</a> the page.`,
+          1,
+          undefined,
+          false,
+          () => (bannerActive = false),
+          true
+        );
+        bannerActive = true;
       }
 
       return response;
