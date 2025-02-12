@@ -62,8 +62,7 @@ type PopupKey =
   | "updateCustomTheme"
   | "deleteCustomTheme"
   | "devGenerateData"
-  | "lbGoToPage"
-  | "devGenerateData";
+  | "lbGoToPage";
 
 const list: Record<PopupKey, SimpleModal | undefined> = {
   updateEmail: undefined,
