@@ -174,7 +174,7 @@ describe("Loaderboard Controller", () => {
           mode: "unknownMode",
           mode2: "unknownMode2",
           page: -1,
-          pageSize: 100,
+          pageSize: 500,
         })
         .expect(422);
 
@@ -185,7 +185,7 @@ describe("Loaderboard Controller", () => {
           `"mode" Invalid enum value. Expected 'time' | 'words' | 'quote' | 'custom' | 'zen', received 'unknownMode'`,
           '"mode2" Needs to be a number or a number represented as a string e.g. "10".',
           '"page" Number must be greater than or equal to 0',
-          '"pageSize" Number must be less than or equal to 50',
+          '"pageSize" Number must be less than or equal to 200',
         ],
       });
     });

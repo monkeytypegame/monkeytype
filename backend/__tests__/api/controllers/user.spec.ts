@@ -24,11 +24,11 @@ import { ObjectId } from "mongodb";
 import { PersonalBest } from "@monkeytype/contracts/schemas/shared";
 import { pb } from "../../dal/leaderboards.spec";
 import { mockAuthenticateWithApeKey } from "../../__testData__/auth";
-import { LeaderboardRank } from "@monkeytype/contracts/schemas/leaderboards";
 import { randomUUID } from "node:crypto";
 import _ from "lodash";
 import { MonkeyMail, UserStreak } from "@monkeytype/contracts/schemas/users";
 import { isFirebaseError } from "../../../src/utils/error";
+import { LeaderboardEntry } from "@monkeytype/contracts/schemas/leaderboards";
 
 const mockApp = request(app);
 const configuration = Configuration.getCachedConfiguration();
@@ -2750,7 +2750,7 @@ describe("user controller test", () => {
       //GIVEN
       getUserByNameMock.mockResolvedValue(foundUser as any);
 
-      const rank: LeaderboardRank = { rank: 24 };
+      const rank = { rank: 24 } as LeaderboardEntry;
       leaderboardGetRankMock.mockResolvedValue(rank);
       leaderboardGetCountMock.mockResolvedValue(100);
 
@@ -2812,7 +2812,7 @@ describe("user controller test", () => {
         banned: true,
       } as any);
 
-      const rank: LeaderboardRank = { rank: 24 };
+      const rank = { rank: 24 } as LeaderboardEntry;
       leaderboardGetRankMock.mockResolvedValue(rank);
       leaderboardGetCountMock.mockResolvedValue(100);
 
@@ -2863,7 +2863,7 @@ describe("user controller test", () => {
       const uid = foundUser.uid;
       getUserMock.mockResolvedValue(foundUser as any);
 
-      const rank: LeaderboardRank = { rank: 24 };
+      const rank = { rank: 24 } as LeaderboardEntry;
       leaderboardGetRankMock.mockResolvedValue(rank);
       leaderboardGetCountMock.mockResolvedValue(100);
 
