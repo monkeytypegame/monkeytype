@@ -4,6 +4,15 @@
   </div>
 </dialog>
 
+<dialog id="forgotPasswordModal" class="modalWrapper hidden">
+  <div class="modal">
+    <div class="title">Forgot password</div>
+    <input type="text" placeholder="email" />
+    <div class="g-recaptcha"></div>
+    <!-- <button>send</button> -->
+  </div>
+</dialog>
+
 <dialog id="miniResultChartModal" class="modalWrapper hidden">
   <div class="modal">
     <canvas></canvas>
@@ -643,6 +652,11 @@
     <div class="list"></div>
     <div class="title">Saved long texts</div>
     <div class="listLong"></div>
+    <div class="divider"></div>
+    <div class="message">
+      Heads up! These texts are only stored locally. If you switch devices or
+      clear your local browser data they will be lost.
+    </div>
   </div>
 </dialog>
 <dialog id="saveCustomTextModal" class="modalWrapper hidden">

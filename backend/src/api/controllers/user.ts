@@ -238,7 +238,8 @@ export async function sendVerificationEmail(
 export async function sendForgotPasswordEmail(
   req: MonkeyRequest<undefined, ForgotPasswordEmailRequest>
 ): Promise<MonkeyResponse> {
-  const { email } = req.body;
+  const { email, captcha } = req.body;
+  await verifyCaptcha(captcha);
   await authSendForgotPasswordEmail(email);
   return new MonkeyResponse(
     "Password reset request received. If the email is valid, you will receive an email shortly.",
@@ -1070,6 +1071,12 @@ async function getAllTimeLbs(uid: string): Promise<AllTimeLbs> {
     uid
   );
 
+  const allTime15EnglishCount = await LeaderboardsDAL.getCount(
+    "time",
+    "15",
+    "english"
+  );
+
   const allTime60English = await LeaderboardsDAL.getRank(
     "time",
     "60",
@@ -1077,20 +1084,26 @@ async function getAllTimeLbs(uid: string): Promise<AllTimeLbs> {
     uid
   );
 
+  const allTime60EnglishCount = await LeaderboardsDAL.getCount(
+    "time",
+    "60",
+    "english"
+  );
+
   const english15 =
-    allTime15English === false
+    allTime15English === false || allTime15English === null
       ? undefined
       : {
           rank: allTime15English.rank,
-          count: allTime15English.count,
+          count: allTime15EnglishCount,
         };
 
   const english60 =
-    allTime60English === false
+    allTime60English === false || allTime60English === null
       ? undefined
       : {
           rank: allTime60English.rank,
-          count: allTime60English.count,
+          count: allTime60EnglishCount,
         };
 
   return {

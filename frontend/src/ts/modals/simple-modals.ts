@@ -36,6 +36,7 @@ import {
 import { ShowOptions } from "../utils/animated-modal";
 import { GenerateDataRequest } from "@monkeytype/contracts/dev";
 import { UserNameSchema } from "@monkeytype/contracts/users";
+import { goToPage } from "../pages/leaderboards";
 
 type PopupKey =
   | "updateEmail"
@@ -60,8 +61,8 @@ type PopupKey =
   | "resetProgressCustomTextLong"
   | "updateCustomTheme"
   | "deleteCustomTheme"
-  | "forgotPassword"
-  | "devGenerateData";
+  | "devGenerateData"
+  | "lbGoToPage";
 
 const list: Record<PopupKey, SimpleModal | undefined> = {
   updateEmail: undefined,
@@ -86,8 +87,8 @@ const list: Record<PopupKey, SimpleModal | undefined> = {
   resetProgressCustomTextLong: undefined,
   updateCustomTheme: undefined,
   deleteCustomTheme: undefined,
-  forgotPassword: undefined,
   devGenerateData: undefined,
+  lbGoToPage: undefined,
 };
 
 type AuthMethod = "password" | "github.com" | "google.com";
@@ -1221,46 +1222,6 @@ list.deleteCustomTheme = new SimpleModal({
   },
 });
 
-list.forgotPassword = new SimpleModal({
-  id: "forgotPassword",
-  title: "Forgot password",
-  inputs: [
-    {
-      type: "text",
-      placeholder: "email",
-      initVal: "",
-    },
-  ],
-  buttonText: "send",
-  execFn: async (_thisPopup, email): Promise<ExecReturn> => {
-    const result = await Ape.users.forgotPasswordEmail({
-      body: { email: email.trim() },
-    });
-    if (result.status !== 200) {
-      return {
-        status: -1,
-        message: "Failed to send password reset email: " + result.body.message,
-      };
-    }
-
-    return {
-      status: 1,
-      message: result.body.message,
-      notificationOptions: {
-        duration: 8,
-      },
-    };
-  },
-  beforeInitFn: (thisPopup): void => {
-    const inputValue = $(
-      `.pageLogin .login input[name="current-email"]`
-    ).val() as string;
-    if (inputValue) {
-      (thisPopup.inputs[0] as TextInput).initVal = inputValue;
-    }
-  },
-});
-
 list.devGenerateData = new SimpleModal({
   id: "devGenerateData",
   title: "Generate data",
@@ -1351,6 +1312,36 @@ list.devGenerateData = new SimpleModal({
     };
   },
 });
+
+list.lbGoToPage = new SimpleModal({
+  id: "lbGoToPage",
+  title: "Go to page",
+  inputs: [
+    {
+      type: "number",
+      placeholder: "Page number",
+    },
+  ],
+  buttonText: "Go",
+  execFn: async (_thisPopup, pageNumber): Promise<ExecReturn> => {
+    const page = parseInt(pageNumber, 10);
+    if (isNaN(page) || page < 1) {
+      return {
+        status: 0,
+        message: "Invalid page number",
+      };
+    }
+
+    goToPage(page - 1);
+
+    return {
+      status: 1,
+      message: "Navigating to page " + page,
+      showNotification: false,
+    };
+  },
+});
+
 export function showPopup(
   key: PopupKey,
   showParams = [] as string[],
@@ -1365,10 +1356,6 @@ export function showPopup(
 }
 
 //todo: move these event handlers to their respective files (either global event files or popup files)
-$(".pageLogin #forgotPasswordButton").on("click", () => {
-  showPopup("forgotPassword");
-});
-
 $(".pageAccountSettings").on("click", "#unlinkDiscordButton", () => {
   showPopup("unlinkDiscord");
 });
