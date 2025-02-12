@@ -57,6 +57,7 @@ function updateKeytips(): void {
 
 if (isDevEnvironment()) {
   window.onerror = function (error): void {
+    if (JSON.stringify(error).includes("x_magnitude")) return;
     Notifications.add(JSON.stringify(error), -1);
   };
   $("header #logo .top").text("localhost");

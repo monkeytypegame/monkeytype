@@ -1071,6 +1071,12 @@ async function getAllTimeLbs(uid: string): Promise<AllTimeLbs> {
     uid
   );
 
+  const allTime15EnglishCount = await LeaderboardsDAL.getCount(
+    "time",
+    "15",
+    "english"
+  );
+
   const allTime60English = await LeaderboardsDAL.getRank(
     "time",
     "60",
@@ -1078,20 +1084,26 @@ async function getAllTimeLbs(uid: string): Promise<AllTimeLbs> {
     uid
   );
 
+  const allTime60EnglishCount = await LeaderboardsDAL.getCount(
+    "time",
+    "60",
+    "english"
+  );
+
   const english15 =
-    allTime15English === false
+    allTime15English === false || allTime15English === null
       ? undefined
       : {
           rank: allTime15English.rank,
-          count: allTime15English.count,
+          count: allTime15EnglishCount,
         };
 
   const english60 =
-    allTime60English === false
+    allTime60English === false || allTime60English === null
       ? undefined
       : {
           rank: allTime60English.rank,
-          count: allTime60English.count,
+          count: allTime60EnglishCount,
         };
 
   return {

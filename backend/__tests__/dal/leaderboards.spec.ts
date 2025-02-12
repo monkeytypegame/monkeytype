@@ -28,7 +28,7 @@ describe("LeaderboardsDal", () => {
 
       //WHEN
       await LeaderboardsDal.update("time", "15", "english");
-      const result = await LeaderboardsDal.get("time", "15", "english", 0);
+      const result = await LeaderboardsDal.get("time", "15", "english", 0, 50);
 
       //THEN
       expect(result).toHaveLength(1);
@@ -50,7 +50,8 @@ describe("LeaderboardsDal", () => {
         "time",
         "15",
         "english",
-        0
+        0,
+        50
       )) as DBLeaderboardEntry[];
 
       //THEN
@@ -76,7 +77,8 @@ describe("LeaderboardsDal", () => {
         "time",
         "60",
         "english",
-        0
+        0,
+        50
       )) as LeaderboardsDal.DBLeaderboardEntry[];
 
       //THEN
@@ -102,7 +104,8 @@ describe("LeaderboardsDal", () => {
         "time",
         "60",
         "english",
-        0
+        0,
+        50
       )) as DBLeaderboardEntry[];
 
       //THEN
@@ -125,7 +128,8 @@ describe("LeaderboardsDal", () => {
         "time",
         "15",
         "english",
-        0
+        0,
+        50
       )) as DBLeaderboardEntry[];
 
       //THEN
@@ -187,7 +191,8 @@ describe("LeaderboardsDal", () => {
         "time",
         "15",
         "english",
-        0
+        0,
+        50
       )) as DBLeaderboardEntry[];
 
       //THEN
@@ -223,7 +228,8 @@ describe("LeaderboardsDal", () => {
         "time",
         "15",
         "english",
-        0
+        0,
+        50
       )) as DBLeaderboardEntry[];
 
       //THEN
@@ -255,7 +261,8 @@ describe("LeaderboardsDal", () => {
         "time",
         "15",
         "english",
-        0
+        0,
+        50
       )) as DBLeaderboardEntry[];
 
       //THEN
