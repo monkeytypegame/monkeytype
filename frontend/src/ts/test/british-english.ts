@@ -1,8 +1,7 @@
 import Config from "../config";
 import { capitalizeFirstLetterOfEachWord } from "../utils/strings";
 
-
-type BritishEnglishReplacements = Record<string, [string,string[]]>;
+type BritishEnglishReplacements = Record<string, [string, string[]]>;
 
 const list: BritishEnglishReplacements = {
   abettor: ["abetter", []],
@@ -426,7 +425,7 @@ const list: BritishEnglishReplacements = {
   molt: ["moult", []],
   mom: ["mum", []],
   mommy: ["mummy", []],
-  mom:l[", "mum'll", []],
+  "mom'll": ["mum'll", []],
   monopolize: ["monopolise", []],
   moralize: ["moralise", []],
   mousy: ["mousey", []],
@@ -650,15 +649,13 @@ const list: BritishEnglishReplacements = {
   worshiped: ["worshipped", []],
   worshiping: ["worshipping", []],
   yodeler: ["yodeller", []],
-  yogurt: ["yoghurt", []]
+  yogurt: ["yoghurt", []],
 };
-
 
 export async function replace(
   word: string,
   previousWord: string
 ): Promise<string> {
-
   if (word.includes("-")) {
     //this handles hyphenated words (for example "cream-colored") to make sure
     //we don't have to add every possible combination to the list
