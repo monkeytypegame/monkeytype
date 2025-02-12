@@ -60,7 +60,6 @@ type PopupKey =
   | "resetProgressCustomTextLong"
   | "updateCustomTheme"
   | "deleteCustomTheme"
-  | "forgotPassword"
   | "devGenerateData";
 
 const list: Record<PopupKey, SimpleModal | undefined> = {
@@ -86,7 +85,6 @@ const list: Record<PopupKey, SimpleModal | undefined> = {
   resetProgressCustomTextLong: undefined,
   updateCustomTheme: undefined,
   deleteCustomTheme: undefined,
-  forgotPassword: undefined,
   devGenerateData: undefined,
 };
 
@@ -1221,46 +1219,6 @@ list.deleteCustomTheme = new SimpleModal({
   },
 });
 
-list.forgotPassword = new SimpleModal({
-  id: "forgotPassword",
-  title: "Forgot password",
-  inputs: [
-    {
-      type: "text",
-      placeholder: "email",
-      initVal: "",
-    },
-  ],
-  buttonText: "send",
-  execFn: async (_thisPopup, email): Promise<ExecReturn> => {
-    const result = await Ape.users.forgotPasswordEmail({
-      body: { email: email.trim() },
-    });
-    if (result.status !== 200) {
-      return {
-        status: -1,
-        message: "Failed to send password reset email: " + result.body.message,
-      };
-    }
-
-    return {
-      status: 1,
-      message: result.body.message,
-      notificationOptions: {
-        duration: 8,
-      },
-    };
-  },
-  beforeInitFn: (thisPopup): void => {
-    const inputValue = $(
-      `.pageLogin .login input[name="current-email"]`
-    ).val() as string;
-    if (inputValue) {
-      (thisPopup.inputs[0] as TextInput).initVal = inputValue;
-    }
-  },
-});
-
 list.devGenerateData = new SimpleModal({
   id: "devGenerateData",
   title: "Generate data",
@@ -1365,10 +1323,6 @@ export function showPopup(
 }
 
 //todo: move these event handlers to their respective files (either global event files or popup files)
-$(".pageLogin #forgotPasswordButton").on("click", () => {
-  showPopup("forgotPassword");
-});
-
 $(".pageAccountSettings").on("click", "#unlinkDiscordButton", () => {
   showPopup("unlinkDiscord");
 });
