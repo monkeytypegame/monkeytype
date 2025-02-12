@@ -13,8 +13,8 @@ type BritishEnglishReplacements = Record<string, [string,string[]]>
 const list: readonly BritishEnglishReplacements[] = [
   // ["abettor", "abetter"],
   // ["abolitionize", "abolitionise"],
-  "abettor": ["abetter"],
-  "abolitionize": ["abolitionise"],
+  "abettor": {"abetter"},
+  "abolitionize": {"abolitionise"},
 ];
 
 // export async function getList(): Promise<BritishEnglishReplacement[]> {
