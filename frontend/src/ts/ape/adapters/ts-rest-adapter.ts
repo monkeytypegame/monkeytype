@@ -52,20 +52,23 @@ function buildApi(timeout: number): (args: ApiFetcherArgs) => Promise<{
       const compatibilityCheck = response.headers.get(
         COMPATIBILITY_CHECK_HEADER
       );
-      if (
-        compatibilityCheck !== null &&
-        Number.parseInt(compatibilityCheck) > COMPATIBILITY_CHECK &&
-        !bannerActive
-      ) {
-        Notifications.addBanner(
-          `You are using an outdated version, try <a onClick="location.reload(true)">reload</a> the page.`,
-          1,
-          undefined,
-          false,
-          () => (bannerActive = false),
-          true
-        );
-        bannerActive = true;
+      if (compatibilityCheck !== null && !bannerActive) {
+        const backendCheck = parseInt(compatibilityCheck);
+        if (backendCheck !== COMPATIBILITY_CHECK) {
+          const message =
+            backendCheck > COMPATIBILITY_CHECK
+              ? `Looks like the client and server versions are mismatched (backend is newer). Please <a onClick="location.reload(true)">refresh</a> the page.`
+              : `Looks like our monkeys didn't deploy the new server version correctly. If this message persists contact support.`;
+          Notifications.addBanner(
+            message,
+            1,
+            undefined,
+            false,
+            () => (bannerActive = false),
+            true
+          );
+          bannerActive = true;
+        }
       }
 
       return response;
