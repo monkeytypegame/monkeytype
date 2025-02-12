@@ -426,8 +426,11 @@ describe("user controller test", () => {
       AuthUtils,
       "sendForgotPasswordEmail"
     );
+    const verifyCaptchaMock = vi.spyOn(Captcha, "verify");
+
     beforeEach(() => {
       sendForgotPasswordEmailMock.mockReset().mockResolvedValue();
+      verifyCaptchaMock.mockReset().mockResolvedValue(true);
     });
 
     it("should send forgot password email without authentication", async () => {
@@ -436,7 +439,7 @@ describe("user controller test", () => {
       //WHEN
       const { body } = await mockApp
         .post("/users/forgotPasswordEmail")
-        .send({ email: "bob@example.com" });
+        .send({ email: "bob@example.com", captcha: "" });
 
       //THEN
       expect(body).toEqual({
@@ -458,7 +461,7 @@ describe("user controller test", () => {
       //THEN
       expect(body).toEqual({
         message: "Invalid request data schema",
-        validationErrors: ['"email" Required'],
+        validationErrors: ['"captcha" Required', '"email" Required'],
       });
     });
     it("should fail without unknown properties", async () => {
@@ -471,7 +474,10 @@ describe("user controller test", () => {
       //THEN
       expect(body).toEqual({
         message: "Invalid request data schema",
-        validationErrors: ["Unrecognized key(s) in object: 'extra'"],
+        validationErrors: [
+          '"captcha" Required',
+          "Unrecognized key(s) in object: 'extra'",
+        ],
       });
     });
   });

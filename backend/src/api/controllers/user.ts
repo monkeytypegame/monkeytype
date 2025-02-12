@@ -238,7 +238,8 @@ export async function sendVerificationEmail(
 export async function sendForgotPasswordEmail(
   req: MonkeyRequest<undefined, ForgotPasswordEmailRequest>
 ): Promise<MonkeyResponse> {
-  const { email } = req.body;
+  const { email, captcha } = req.body;
+  await verifyCaptcha(captcha);
   await authSendForgotPasswordEmail(email);
   return new MonkeyResponse(
     "Password reset request received. If the email is valid, you will receive an email shortly.",

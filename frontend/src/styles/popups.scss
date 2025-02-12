@@ -91,6 +91,12 @@ body.darkMode {
   }
 }
 
+#forgotPasswordModal {
+  .modal {
+    max-width: 400px;
+  }
+}
+
 #customTextModal {
   .modal {
     max-width: 1200px;
