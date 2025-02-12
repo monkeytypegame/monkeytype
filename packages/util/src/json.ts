@@ -1,4 +1,5 @@
-import { z, ZodError, ZodIssue } from "zod";
+import { z, ZodIssue } from "zod";
+import { isZodError } from "./zod";
 
 /**
  * Parse a JSON string into an object and validate it against a schema
@@ -16,11 +17,8 @@ export function parseWithSchema<T extends z.ZodTypeAny>(
     // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     return schema.parse(jsonParsed) as z.infer<T>;
   } catch (error) {
-    // instanceof ZodError is not working from our module
-    if ((error as ZodError)["issues"] !== undefined) {
-      throw new Error(
-        (error as ZodError).issues.map(prettyErrorMessage).join("\n")
-      );
+    if (isZodError(error)) {
+      throw new Error(error.issues.map(prettyErrorMessage).join("\n"));
     } else {
       throw error;
     }
