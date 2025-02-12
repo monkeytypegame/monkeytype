@@ -9,13 +9,14 @@ import {
   rootRateLimiter,
 } from "./middlewares/rate-limit";
 import { apiVersionMiddleware } from "./middlewares/apiVersion";
+import { API_VERSION_HEADER } from "@monkeytype/contracts";
 
 function buildApp(): express.Application {
   const app = express();
 
   app.use(urlencoded({ extended: true }));
   app.use(json());
-  app.use(cors({ exposedHeaders: ["X-Api-Version"] }));
+  app.use(cors({ exposedHeaders: [API_VERSION_HEADER] }));
   app.use(helmet());
 
   app.set("trust proxy", 1);

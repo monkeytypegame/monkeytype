@@ -1,9 +1,5 @@
-import { API_VERSION } from "@monkeytype/contracts";
-import type {
-  Response,
-  NextFunction,
-  Request as ExpressRequest,
-} from "express";
+import { API_VERSION, API_VERSION_HEADER } from "@monkeytype/contracts";
+import type { Response, NextFunction, Request } from "express";
 
 /**
  * Add the X-API-VERSION header to each response
@@ -12,10 +8,10 @@ import type {
  * @param next
  */
 export async function apiVersionMiddleware(
-  _req: ExpressRequest,
+  _req: Request,
   res: Response,
   next: NextFunction
 ): Promise<void> {
-  res.setHeader("X-Api-Version", API_VERSION);
+  res.setHeader(API_VERSION_HEADER, API_VERSION);
   next();
 }
