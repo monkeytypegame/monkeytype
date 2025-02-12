@@ -49,11 +49,11 @@ function buildApi(timeout: number): (args: ApiFetcherArgs) => Promise<{
         });
       }
 
-      const compatibilityCheck = response.headers.get(
+      const compatibilityCheckHeader = response.headers.get(
         COMPATIBILITY_CHECK_HEADER
       );
-      if (compatibilityCheck !== null && !bannerShownThisSession) {
-        const backendCheck = parseInt(compatibilityCheck);
+      if (compatibilityCheckHeader !== null && !bannerShownThisSession) {
+        const backendCheck = parseInt(compatibilityCheckHeader);
         if (backendCheck !== COMPATIBILITY_CHECK) {
           const message =
             backendCheck > COMPATIBILITY_CHECK
