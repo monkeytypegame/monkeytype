@@ -7,12 +7,10 @@ import { getCachedConfiguration } from "../init/configuration";
 
 import { addLog } from "./logs";
 import { Collection, ObjectId } from "mongodb";
-import {
-  LeaderboardEntry,
-  LeaderboardRank,
-} from "@monkeytype/contracts/schemas/leaderboards";
+import { LeaderboardEntry } from "@monkeytype/contracts/schemas/leaderboards";
 import { omit } from "lodash";
 import { DBUser } from "./user";
+import MonkeyError from "../utils/error";
 
 export type DBLeaderboardEntry = LeaderboardEntry & {
   _id: ObjectId;
@@ -31,13 +29,16 @@ export async function get(
   mode: string,
   mode2: string,
   language: string,
-  skip: number,
-  limit = 50
+  page: number,
+  pageSize: number
 ): Promise<DBLeaderboardEntry[] | false> {
-  //if (leaderboardUpdating[`${language}_${mode}_${mode2}`]) return false;
+  if (page < 0 || pageSize < 0) {
+    throw new MonkeyError(500, "Invalid page or pageSize");
+  }
 
-  if (limit > 50 || limit <= 0) limit = 50;
-  if (skip < 0) skip = 0;
+  const skip = page * pageSize;
+  const limit = pageSize;
+
   try {
     const preset = await getCollection({ language, mode, mode2 })
       .find()
@@ -64,27 +65,26 @@ export async function get(
   }
 }
 
+export async function getCount(
+  mode: string,
+  mode2: string,
+  language: string
+): Promise<number> {
+  return getCollection({ language, mode, mode2 }).estimatedDocumentCount();
+}
+
 export async function getRank(
   mode: string,
   mode2: string,
   language: string,
   uid: string
-): Promise<LeaderboardRank | false> {
+): Promise<LeaderboardEntry | null | false> {
   try {
     const entry = await getCollection({ language, mode, mode2 }).findOne({
       uid,
     });
-    const count = await getCollection({
-      language,
-      mode,
-      mode2,
-    }).estimatedDocumentCount();
 
-    return {
-      count,
-      rank: entry?.rank,
-      entry: entry !== null ? entry : undefined,
-    };
+    return entry;
   } catch (e) {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     if (e.error === 175) {

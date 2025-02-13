@@ -365,7 +365,7 @@
   },
   {
     "name": "bulgarian",
-    "languages": ["bulgarian"]
+    "languages": ["bulgarian", "bulgarian_latin"]
   },
   {
     "name": "esperanto",

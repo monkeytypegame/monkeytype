@@ -302,6 +302,7 @@ export const ReportUserRequestSchema = z.object({
 export type ReportUserRequest = z.infer<typeof ReportUserRequestSchema>;
 
 export const ForgotPasswordEmailRequestSchema = z.object({
+  captcha: z.string(),
   email: z.string().email(),
 });
 export type ForgotPasswordEmailRequest = z.infer<
