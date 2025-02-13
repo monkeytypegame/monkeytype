@@ -548,8 +548,8 @@
     "languages": ["yiddish"]
   },
   {
-    "name": "frysk",
-    "languages": ["frysk", "frysk_1k"]
+    "name": "frisian",
+    "languages": ["frisian", "frisian_1k"]
   },
   {
     "name": "pashto",
