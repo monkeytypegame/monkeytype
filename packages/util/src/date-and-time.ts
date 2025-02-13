@@ -78,3 +78,13 @@ export function getCurrentWeekTimestamp(): number {
   const currentTime = Date.now();
   return getStartOfWeekTimestamp(currentTime);
 }
+
+/**
+ * Gets the timestamp of the start of the last week.
+ * @returns The timestamp of the start of the last week.
+ */
+export function getLastWeekTimestamp(): number {
+  const currentTime = Date.now();
+  const lastWeekTime = currentTime - 7 * MILLISECONDS_IN_DAY;
+  return getStartOfWeekTimestamp(lastWeekTime);
+}

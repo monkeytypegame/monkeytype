@@ -16,16 +16,7 @@ export const LeaderboardEntrySchema = z.object({
 });
 export type LeaderboardEntry = z.infer<typeof LeaderboardEntrySchema>;
 
-export const LeaderboardRankSchema = z.object({
-  count: z.number().int().nonnegative(),
-  rank: z.number().int().nonnegative().optional(),
-  entry: LeaderboardEntrySchema.optional(),
-});
-export type LeaderboardRank = z.infer<typeof LeaderboardRankSchema>;
-
-export const DailyLeaderboardRankSchema = LeaderboardRankSchema.extend({
-  minWpm: z.number().nonnegative(),
-});
+export const DailyLeaderboardRankSchema = LeaderboardEntrySchema;
 export type DailyLeaderboardRank = z.infer<typeof DailyLeaderboardRankSchema>;
 
 export const XpLeaderboardEntrySchema = z.object({
@@ -38,10 +29,6 @@ export const XpLeaderboardEntrySchema = z.object({
   timeTypedSeconds: z.number().nonnegative(),
   rank: z.number().nonnegative().int(),
   totalXp: z.number().nonnegative().int(),
+  isPremium: z.boolean().optional(),
 });
 export type XpLeaderboardEntry = z.infer<typeof XpLeaderboardEntrySchema>;
-
-export const XpLeaderboardRankSchema = XpLeaderboardEntrySchema.extend({
-  count: z.number().int().nonnegative(),
-});
-export type XpLeaderboardRank = z.infer<typeof XpLeaderboardRankSchema>;
