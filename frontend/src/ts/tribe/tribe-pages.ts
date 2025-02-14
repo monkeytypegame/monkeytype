@@ -15,7 +15,7 @@ export async function change(
     if (transition) return;
     transition = true;
     const activePage = $(".page.pageTribe .tribePage.active");
-    swapElements(
+    void swapElements(
       activePage,
       $(`.page.pageTribe .tribePage.${page}`),
       250,
@@ -26,7 +26,7 @@ export async function change(
         transition = false;
         // await finishCallback();
         if (page === "menu") {
-          TribeStats.refresh();
+          await TribeStats.refresh();
         }
         resolve();
       },

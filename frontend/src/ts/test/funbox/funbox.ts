@@ -12,9 +12,6 @@ import { FunboxName, checkCompatibility } from "@monkeytype/funbox";
 import { getActiveFunboxes, getActiveFunboxNames, get } from "./list";
 import { checkForcedConfig } from "./funbox-validation";
 import * as TribeState from "../../tribe/tribe-state";
-import * as TribeConfigSyncEvent from "../../observables/tribe-config-sync-event";
-import * as Random from "../../utils/random";
-
 
 export function toggleScript(...params: string[]): void {
   if (Config.funbox === "none") return;

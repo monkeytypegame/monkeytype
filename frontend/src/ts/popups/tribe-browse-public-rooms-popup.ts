@@ -2,8 +2,9 @@ import * as Tribe from "../tribe/tribe";
 import * as TribeConfig from "../tribe/tribe-config";
 import * as Loader from "../elements/loader";
 import TribeSocket from "../tribe/tribe-socket";
+import * as TribeType from "../tribe/types";
 
-function updateList(list: any): void {
+function updateList(list: TribeType.Room[]): void {
   // TODO: Confirm type from miodec
   if (list.length === 0) {
     $("#tribeBrowsePublicRoomsPopup .error").removeClass("hidden");
@@ -13,8 +14,7 @@ function updateList(list: any): void {
   $("#tribeBrowsePublicRoomsPopup .error").addClass("hidden");
   $("#tribeBrowsePublicRoomsPopup .list").removeClass("hidden");
   $("#tribeBrowsePublicRoomsPopup .list").html("");
-  for (let i = 0; i < list.length; i++) {
-    const room = list[i];
+  for (const room of list) {
     const html = `
     <div class="room" id="${room.id}">
       <div class="name">
@@ -44,9 +44,9 @@ function updateList(list: any): void {
 
 export function show(): void {
   Loader.show();
-  TribeSocket.out.room.getPublicRooms(0, "").then((r) => {
+  void TribeSocket.out.room.getPublicRooms(0, "").then((r) => {
     Loader.hide();
-    if (r.status !== "Error") {
+    if (r.status !== "Error" && r.rooms) {
       updateList(r.rooms);
     }
   });

@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import { debounce } from "throttle-debounce";
-import * as Numbers from "@monkeytype/util/numbers";
 import * as ConfigEvent from "../observables/config-event";
 import * as BannerEvent from "../observables/banner-event";
 import Config from "../config";

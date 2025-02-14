@@ -28,7 +28,7 @@ function hideStartButton(page: string): void {
 }
 
 export function disableStartButton(page?: string): void {
-  if (!page) {
+  if (page === undefined) {
     disableStartButton("lobby");
     disableStartButton("result");
     return;
@@ -215,7 +215,7 @@ export function reset(): void {
 }
 
 export function update(page?: string): void {
-  if (!page) {
+  if (page === undefined) {
     update("lobby");
     update("result");
     return;
@@ -299,7 +299,7 @@ $(`.pageTribe .tribePage.lobby .lobbyButtons .autoReadyButton,
     $(e.currentTarget).removeClass("active");
   }
   if (
-    TribeState.getAutoReady() === true &&
+    TribeState.getAutoReady() &&
     [5, 21, 22].includes(TribeState.getState()) &&
     TribeState.getSelf()?.isReady !== true
   ) {

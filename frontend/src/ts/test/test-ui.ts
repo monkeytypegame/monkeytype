@@ -23,7 +23,6 @@ import { format } from "date-fns/format";
 import { isAuthenticated } from "../firebase";
 import { debounce } from "throttle-debounce";
 import * as ResultWordHighlight from "../elements/result-word-highlight";
-import * as PractiseWords from "./practise-words";
 import * as ActivePage from "../states/active-page";
 import Format from "../utils/format";
 import * as Loader from "../elements/loader";

@@ -6,14 +6,19 @@
 import Socket from "../socket";
 import * as TribeTypes from "../../types";
 
+type VersionCheckResponse = {
+  status: string;
+  version: string;
+};
+
 async function versionCheck(
   expectedVersion: string
-): Promise<TribeSocket.VersionCheckResponse> {
+): Promise<VersionCheckResponse> {
   return new Promise((resolve) => {
     Socket.emit(
       "system_version_check",
       { version: expectedVersion },
-      (response: TribeSocket.VersionCheckResponse) => {
+      (response: VersionCheckResponse) => {
         resolve(response);
       }
     );
