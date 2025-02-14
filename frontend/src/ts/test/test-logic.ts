@@ -393,6 +393,7 @@ export async function init(): Promise<void> {
   MonkeyPower.reset();
   Replay.stopReplayRecording();
   TestWords.words.reset();
+  TestState.setActiveWordIndex(0);
   TestUI.setActiveWordElementIndex(0);
   TestInput.input.resetHistory();
   TestInput.input.resetCurrent();
@@ -563,7 +564,7 @@ export async function addWord(): Promise<void> {
   );
 
   if (sectionFunbox?.functions?.pullSection) {
-    if (TestWords.words.length - TestWords.words.currentIndex < 20) {
+    if (TestWords.words.length - TestState.activeWordIndex < 20) {
       const section = await sectionFunbox.functions.pullSection(
         Config.language
       );
