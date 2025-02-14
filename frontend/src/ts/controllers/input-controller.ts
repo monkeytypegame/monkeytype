@@ -702,6 +702,35 @@ function handleChar(
     return;
   }
 
+  if (Config.deleteOnError === "word" && !thisCharCorrect) {
+    if (TestInput.input.current.length === 1) {
+      backspaceToPrevious();
+      setWordsInput(" ");
+      Replay.addReplayEvent("backWord");
+    }
+    TestInput.input.current = "";
+    void TestUI.updateActiveWordLetters();
+    void Caret.updatePosition();
+    Replay.addReplayEvent("setLetterIndex", 0);
+    return;
+  }
+
+  if (Config.deleteOnError === "letter" && !thisCharCorrect) {
+    if (TestInput.input.current.length === 1) {
+      backspaceToPrevious();
+      if (TestInput.input.current) {
+        setWordsInput(" " + TestInput.input.current + " ");
+      }
+    } else {
+      TestInput.input.current = TestInput.input.current.slice(0, -2);
+      void TestUI.updateActiveWordLetters();
+      void Caret.updatePosition();
+      Replay.addReplayEvent("setLetterIndex", TestInput.input.current.length);
+      return;
+    }
+    return;
+  }
+
   if (Config.mode !== "zen") {
     //not applicable to zen mode
     //auto stop the test if the last word is correct

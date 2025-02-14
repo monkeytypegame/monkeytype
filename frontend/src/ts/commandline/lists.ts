@@ -71,6 +71,7 @@ import CustomBackgroundSizeCommands from "./lists/background-size";
 import CustomBackgroundFilterCommands from "./lists/background-filter";
 import AddOrRemoveThemeToFavorite from "./lists/add-or-remove-theme-to-favorites";
 import CodeUnindentOnBackspace from "./lists/code-unindent-on-backspace";
+import DeleteOnErrorCommands from "./lists/delete-on-error";
 
 import TagsCommands from "./lists/tags";
 import CustomThemesListCommands from "./lists/custom-themes-list";
@@ -245,6 +246,7 @@ export const commands: CommandsSubgroup = {
     ...StrictSpaceCommands,
     ...OppositeShiftModeCommands,
     ...StopOnErrorCommands,
+    ...DeleteOnErrorCommands,
     ...ConfidenceModeCommands,
     ...QuickEndCommands,
     ...IndicateTyposCommands,
