@@ -2618,9 +2618,9 @@
       "id": 455
     },
     {
-      "text": "Mein Name ist Max. Meine Welt ist Feuer und Blut. Früher war ich ein Cop. Ein Vollstrecker auf der Suche nach Gerechtigkeit. Als die Welt zerfiel war jeder von uns auf seine Weise gebrochen. Es war schwer zu sagen wer verrückter war. Ich... oder alle anderen.",
+      "text": "Mein Name ist Max. Meine Welt ist Feuer und Blut. Früher war ich ein Cop. Ein Vollstrecker auf der Suche nach Gerechtigkeit. Als die Welt zerfiel war jeder von uns auf seine Weise gebrochen. Es war schwer zu sagen, wer verrückter war. Ich... oder alle anderen.",
       "source": "Mad Max – Fury Road",
-      "length": 259,
+      "length": 260,
       "id": 456
     },
     {
@@ -3318,6 +3318,66 @@
       "source": "Paulo Coelho",
       "length": 135,
       "id": 578
+    },
+    {
+      "text": "Auf der Welt gibt es nur deshalb Liebe, weil die Menschen an die Unsterblichkeit glauben. Mit dem Aufhören des Glaubens würde die Liebe vernichtet werden.",
+      "source": "Fjodor Michailowitsch Dostojewski",
+      "length": 154,
+      "id": 579
+    },
+    {
+      "text": "Der Spiegel der Natur ist der klarste Spiegel! Ihn muß man schauen, an ihm sich ergötzen.",
+      "source": "Fjodor Michailowitsch Dostojewski",
+      "length": 89,
+      "id": 580
+    },
+    {
+      "text": "Wenn du einen Menschen richtig kennenlernen und etwas über sein innerstes Wesen in Erfahrung bringen willst, so mach dir nicht erst die Mühe zu analysieren, wie er spricht, schweigt, weint oder von hehren Gedanken ergriffen wird. Du brauchst ihn bloß beim Lachen zu beobachten. Hat er ein gutes Lachen, ist er ein guter Mensch.",
+      "source": "Fjodor Michailowitsch Dostojewski",
+      "length": 327,
+      "id": 581
+    },
+    {
+      "text": "Ein einziges Wort, gesprochen mit Überzeugung in voller Aufrichtigkeit und ohne zu schwanken während man Auge in Auge einander gegenüber steht, sagt bei weitem mehr als einige Dutzend Bogen beschriebenes Papier.",
+      "source": "Fjodor Michailowitsch Dostojewski",
+      "length": 211,
+      "id": 582
+    },
+    {
+      "text": "Es gibt Gesichter, die jedes Mal, wenn sie auftauchen, wieder etwas Neues mitbringen, etwas, das man bis dahin noch nicht an ihnen bemerkt hat, auch wenn man ihnen hundertmal begegnet ist.",
+      "source": "Fjodor Michailowitsch Dostojewski",
+      "length": 188,
+      "id": 583
+    },
+    {
+      "text": "Es ist wahrlich nicht so schwer, jeden beunruhigenden und unziemlichen Gedanken, der sich aufdrängt, wieder loszuwerden und hinwegzutilgen, so dass die vollkommene Stille und Heiterkeit des Gemüts gleich wiederhergestellt wird.",
+      "source": "Marcus Aurelius - Selbstbetrachtung",
+      "length": 227,
+      "id": 584
+    },
+    {
+      "text": "Hippokrates hat viele Krankheiten geheilt, dann ist er selbst an einer Krankheit gestorben. Die Chaldäer weissagten vielen den Tod, dann hat sie selber das Geschick ereilt. Alexander, Pompejus, Cäsar - nachdem sie so manche Stadt von Grund aus zerstört und in der Schlacht so viele Tausende ums Leben gebracht hatten, schieden selbst aus dem Leben. Heraklit, der über den Weltbrand philosophierte, starb selbst an der Wassersucht, den Demokrit brachte das Ungeziefer um, den Sokrates - ein Ungeziefer anderer Art. Kurz, zu einem jeden heißt es einmal: \"Du bist eingestiegen, gefahren, im Hafen eingelaufen: so steige nun aus!\"",
+      "source": "Marcus Aurelius - Selbstbetrachtung",
+      "length": 626,
+      "id": 585
+    },
+    {
+      "text": "Richte dich nicht ein, als solltest du hundert Jahre alt werden. Denn nahe ist vielleicht dein Ende! Aber solang du lebst, solange es in deiner Macht steht - sei gut.",
+      "source": "Marcus Aurelius - Selbstbetrachtung",
+      "length": 166,
+      "id": 586
+    },
+    {
+      "text": "Wenn man nicht herausbringen kann, was in des anderen Seele vorgeht, so ist das schwerlich ein Unglück; aber notwendigerweise unglücklich ist man, wenn man über die Regungen der eigenen Seele im unklaren ist.",
+      "source": "Marcus Aurelius - Selbstbetrachtung",
+      "length": 208,
+      "id": 587
+    },
+    {
+      "text": "Ein Glas auf die Liebe und eines auf das volle Leben. Und eines auf das, was wir nicht halten können. Ein Tor geht auf und ein anderes geht zu. Du bleibst in meinem Herzen, sogar noch dann, wenn es anfängt weh zu tun.",
+      "source": "Patent Ochsner - für immer uf di",
+      "length": 217,
+      "id": 588
     }
   ]
 }

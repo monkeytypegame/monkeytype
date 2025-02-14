@@ -83,7 +83,7 @@ export default {
     }),
     splitVendorChunkPlugin(),
     VitePWA({
-      injectRegister: "networkfirst",
+      // injectRegister: "networkfirst",
       registerType: "autoUpdate",
       manifest: {
         short_name: "Monkeytype",

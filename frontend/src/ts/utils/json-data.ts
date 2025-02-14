@@ -1,7 +1,5 @@
-import { ConfigValue } from "@monkeytype/contracts/schemas/configs";
 import { Accents } from "../test/lazy-mode";
 import { hexToHSL } from "./colors";
-import { FunboxWordsFrequency, Wordset } from "../test/wordset";
 
 /**
  * Fetches JSON data from the specified URL using the fetch API.
@@ -276,29 +274,6 @@ export async function getCurrentGroup(
   return retgroup;
 }
 
-let funboxList: FunboxMetadata[] | undefined;
-
-/**
- * Fetches the list of funbox metadata from the server.
- * @returns A promise that resolves to the list of funbox metadata.
- */
-export async function getFunboxList(): Promise<FunboxMetadata[]> {
-  if (!funboxList) {
-    let list = await cachedFetchJson<FunboxMetadata[]>("/funbox/_list.json");
-    list = list.sort((a, b) => {
-      const nameA = a.name.toLowerCase();
-      const nameB = b.name.toLowerCase();
-      if (nameA < nameB) return -1;
-      if (nameA > nameB) return 1;
-      return 0;
-    });
-    funboxList = list;
-    return funboxList;
-  } else {
-    return funboxList;
-  }
-}
-
 export class Section {
   public title: string;
   public author: string;
@@ -310,80 +285,7 @@ export class Section {
   }
 }
 
-export type FunboxMetadata = {
-  name: string;
-  info: string;
-  canGetPb?: boolean;
-  alias?: string;
-  forcedConfig?: FunboxForcedConfig;
-  properties?: FunboxProperty[];
-  functions?: FunboxFunctions;
-  hasCSS?: boolean;
-};
-
 export type FunboxWordOrder = "normal" | "reverse";
-
-type FunboxProperty =
-  | "symmetricChars"
-  | "conflictsWithSymmetricChars"
-  | "changesWordsVisibility"
-  | "speaks"
-  | "unspeakable"
-  | "changesLayout"
-  | "ignoresLayout"
-  | "usesLayout"
-  | "ignoresLanguage"
-  | "noLigatures"
-  | "noLetters"
-  | "changesCapitalisation"
-  | "nospace"
-  | `toPush:${number}`
-  | "noInfiniteDuration"
-  | "changesWordsFrequency"
-  | `wordOrder:${FunboxWordOrder}`;
-
-export type FunboxForcedConfig = Record<string, ConfigValue[]>;
-
-export type FunboxFunctions = {
-  getWord?: (wordset?: Wordset, wordIndex?: number) => string;
-  punctuateWord?: (word: string) => string;
-  withWords?: (words?: string[]) => Promise<Wordset>;
-  alterText?: (word: string) => string;
-  applyConfig?: () => void;
-  applyGlobalCSS?: () => void;
-  clearGlobal?: () => void;
-  rememberSettings?: () => void;
-  toggleScript?: (params: string[]) => void;
-  pullSection?: (language?: string) => Promise<Section | false>;
-  handleSpace?: () => void;
-  handleChar?: (char: string) => string;
-  isCharCorrect?: (char: string, originalChar: string) => boolean;
-  preventDefaultEvent?: (
-    event: JQuery.KeyDownEvent<Document, null, Document, Document>
-  ) => Promise<boolean>;
-  handleKeydown?: (
-    event: JQuery.KeyDownEvent<Document, null, Document, Document>
-  ) => Promise<void>;
-  getResultContent?: () => string;
-  start?: () => void;
-  restart?: () => void;
-  getWordHtml?: (char: string, letterTag?: boolean) => string;
-  getWordsFrequencyMode?: () => FunboxWordsFrequency;
-};
-
-/**
- * Fetches the funbox metadata for a given funbox from the server.
- * @param funbox The name of the funbox.
- * @returns A promise that resolves to the funbox metadata.
- */
-export async function getFunbox(
-  funbox: string
-): Promise<FunboxMetadata | undefined> {
-  const list: FunboxMetadata[] = await getFunboxList();
-  return list.find(function (element) {
-    return element.name === funbox;
-  });
-}
 
 export type FontObject = {
   name: string;

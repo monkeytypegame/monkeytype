@@ -24,11 +24,11 @@ import { ObjectId } from "mongodb";
 import { PersonalBest } from "@monkeytype/contracts/schemas/shared";
 import { pb } from "../../dal/leaderboards.spec";
 import { mockAuthenticateWithApeKey } from "../../__testData__/auth";
-import { LeaderboardRank } from "@monkeytype/contracts/schemas/leaderboards";
 import { randomUUID } from "node:crypto";
 import _ from "lodash";
 import { MonkeyMail, UserStreak } from "@monkeytype/contracts/schemas/users";
 import { isFirebaseError } from "../../../src/utils/error";
+import { LeaderboardEntry } from "@monkeytype/contracts/schemas/leaderboards";
 
 const mockApp = request(app);
 const configuration = Configuration.getCachedConfiguration();
@@ -426,8 +426,11 @@ describe("user controller test", () => {
       AuthUtils,
       "sendForgotPasswordEmail"
     );
+    const verifyCaptchaMock = vi.spyOn(Captcha, "verify");
+
     beforeEach(() => {
       sendForgotPasswordEmailMock.mockReset().mockResolvedValue();
+      verifyCaptchaMock.mockReset().mockResolvedValue(true);
     });
 
     it("should send forgot password email without authentication", async () => {
@@ -436,7 +439,7 @@ describe("user controller test", () => {
       //WHEN
       const { body } = await mockApp
         .post("/users/forgotPasswordEmail")
-        .send({ email: "bob@example.com" });
+        .send({ email: "bob@example.com", captcha: "" });
 
       //THEN
       expect(body).toEqual({
@@ -458,7 +461,7 @@ describe("user controller test", () => {
       //THEN
       expect(body).toEqual({
         message: "Invalid request data schema",
-        validationErrors: ['"email" Required'],
+        validationErrors: ['"captcha" Required', '"email" Required'],
       });
     });
     it("should fail without unknown properties", async () => {
@@ -471,7 +474,10 @@ describe("user controller test", () => {
       //THEN
       expect(body).toEqual({
         message: "Invalid request data schema",
-        validationErrors: ["Unrecognized key(s) in object: 'extra'"],
+        validationErrors: [
+          '"captcha" Required',
+          "Unrecognized key(s) in object: 'extra'",
+        ],
       });
     });
   });
@@ -783,6 +789,7 @@ describe("user controller test", () => {
     });
   });
   describe("update name", () => {
+    const blocklistContainsMock = vi.spyOn(BlocklistDal, "contains");
     const getPartialUserMock = vi.spyOn(UserDal, "getPartialUser");
     const updateNameMock = vi.spyOn(UserDal, "updateName");
     const addImportantLogMock = vi.spyOn(LogDal, "addImportantLog");
@@ -791,6 +798,7 @@ describe("user controller test", () => {
       getPartialUserMock.mockReset();
       updateNameMock.mockReset();
       addImportantLogMock.mockReset();
+      blocklistContainsMock.mockReset();
     });
 
     it("should update the username", async () => {
@@ -819,6 +827,23 @@ describe("user controller test", () => {
         uid
       );
     });
+
+    it("should fail if username is blocked", async () => {
+      //GIVEN
+      blocklistContainsMock.mockResolvedValue(true);
+
+      //WHEN
+      const { body } = await mockApp
+        .patch("/users/name")
+        .set("authorization", `Uid ${uid}`)
+        .send({ name: "newName" })
+        .expect(409);
+
+      //THEN
+      expect(body.message).toEqual("Username blocked");
+      expect(updateNameMock).not.toHaveBeenCalled();
+    });
+
     it("should fail for banned users", async () => {
       //GIVEN
       getPartialUserMock.mockResolvedValue({ banned: true } as any);
@@ -1049,7 +1074,7 @@ describe("user controller test", () => {
       );
       expect(addImportantLogMock).toHaveBeenCalledWith(
         "user_email_updated",
-        "changed email to newemail@example.com",
+        "changed email from previousemail@example.com to newemail@example.com",
         uid
       );
     });
@@ -2671,6 +2696,7 @@ describe("user controller test", () => {
     const getUserByNameMock = vi.spyOn(UserDal, "getUserByName");
     const checkIfUserIsPremiumMock = vi.spyOn(UserDal, "checkIfUserIsPremium");
     const leaderboardGetRankMock = vi.spyOn(LeaderboardDal, "getRank");
+    const leaderboardGetCountMock = vi.spyOn(LeaderboardDal, "getCount");
 
     const foundUser: Partial<UserDal.DBUser> = {
       _id: new ObjectId(),
@@ -2722,6 +2748,7 @@ describe("user controller test", () => {
       getUserByNameMock.mockReset();
       checkIfUserIsPremiumMock.mockReset().mockResolvedValue(true);
       leaderboardGetRankMock.mockReset();
+      leaderboardGetCountMock.mockReset();
       await enableProfiles(true);
     });
 
@@ -2729,8 +2756,9 @@ describe("user controller test", () => {
       //GIVEN
       getUserByNameMock.mockResolvedValue(foundUser as any);
 
-      const rank: LeaderboardRank = { count: 100, rank: 24 };
+      const rank = { rank: 24 } as LeaderboardEntry;
       leaderboardGetRankMock.mockResolvedValue(rank);
+      leaderboardGetCountMock.mockResolvedValue(100);
 
       //WHEN
       const { body } = await mockApp.get("/users/bob/profile").expect(200);
@@ -2790,8 +2818,9 @@ describe("user controller test", () => {
         banned: true,
       } as any);
 
-      const rank: LeaderboardRank = { count: 100, rank: 24 };
+      const rank = { rank: 24 } as LeaderboardEntry;
       leaderboardGetRankMock.mockResolvedValue(rank);
+      leaderboardGetCountMock.mockResolvedValue(100);
 
       //WHEN
       const { body } = await mockApp.get("/users/bob/profile").expect(200);
@@ -2840,8 +2869,9 @@ describe("user controller test", () => {
       const uid = foundUser.uid;
       getUserMock.mockResolvedValue(foundUser as any);
 
-      const rank: LeaderboardRank = { count: 100, rank: 24 };
+      const rank = { rank: 24 } as LeaderboardEntry;
       leaderboardGetRankMock.mockResolvedValue(rank);
+      leaderboardGetCountMock.mockResolvedValue(100);
 
       //WHEN
       const { body } = await mockApp

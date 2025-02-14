@@ -1,6 +1,6 @@
-import * as TestWords from "./test-words";
 import { lastElementFromArray } from "../utils/arrays";
 import { mean, roundTo2 } from "@monkeytype/util/numbers";
+import * as TestState from "./test-state";
 
 const keysToTrack = [
   "NumpadMultiply",
@@ -97,31 +97,24 @@ type ErrorHistoryObject = {
 class Input {
   current: string;
   history: string[];
-  historyLength: number;
   koreanStatus: boolean;
-  length: number;
   constructor() {
     this.current = "";
     this.history = [];
-    this.historyLength = 0;
-    this.length = 0;
     this.koreanStatus = false;
   }
 
   reset(): void {
     this.current = "";
     this.history = [];
-    this.length = 0;
   }
 
   resetHistory(): void {
     this.history = [];
-    this.length = 0;
   }
 
   setCurrent(val: string): void {
     this.current = val;
-    this.length = this.current.length;
   }
 
   setKoreanStatus(val: boolean): void {
@@ -130,7 +123,6 @@ class Input {
 
   appendCurrent(val: string): void {
     this.current += val;
-    this.length = this.current.length;
   }
 
   resetCurrent(): void {
@@ -147,13 +139,11 @@ class Input {
 
   pushHistory(): void {
     this.history.push(this.current);
-    this.historyLength = this.history.length;
     this.resetCurrent();
   }
 
   popHistory(): string {
     const ret = this.history.pop() ?? "";
-    this.historyLength = this.history.length;
     return ret;
   }
 
@@ -427,11 +417,11 @@ export function pushToRawHistory(raw: number): void {
 }
 
 export function pushBurstToHistory(speed: number): void {
-  if (burstHistory[TestWords.words.currentIndex] === undefined) {
+  if (burstHistory[TestState.activeWordIndex] === undefined) {
     burstHistory.push(speed);
   } else {
     //repeated word - override
-    burstHistory[TestWords.words.currentIndex] = speed;
+    burstHistory[TestState.activeWordIndex] = speed;
   }
 }
 

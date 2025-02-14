@@ -47,12 +47,17 @@ function updateKeytips(): void {
 
   const commandKey = Config.quickRestart === "esc" ? "tab" : "esc";
   $("footer .keyTips").html(`
-    <key>${Config.quickRestart}</key> - restart test<br>
+    ${
+      Config.quickRestart == "off"
+        ? "<key>tab</key> + <key>enter</key>"
+        : `<key>${Config.quickRestart}</key>`
+    } - restart test<br>
     <key>${commandKey}</key> or <key>${modifierKey}</key>+<key>shift</key>+<key>p</key> - command line`);
 }
 
 if (isDevEnvironment()) {
   window.onerror = function (error): void {
+    if (JSON.stringify(error).includes("x_magnitude")) return;
     Notifications.add(JSON.stringify(error), -1);
   };
   $("header #logo .top").text("localhost");

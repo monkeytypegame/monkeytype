@@ -1,6 +1,5 @@
 import * as PageController from "./page-controller";
 import * as TribeState from "../tribe/tribe-state";
-import * as Leaderboards from "../elements/leaderboards";
 import * as TestUI from "../test/test-ui";
 import * as PageTransition from "../states/page-transition";
 import { Auth, isAuthenticated } from "../firebase";
@@ -82,15 +81,12 @@ const routes: Route[] = [
       void PageController.change("test");
     },
   },
-  // {
-  //   path: "/leaderboards",
-  //   load: (): void => {
-  //     if (ActivePage.get() === "loading") {
-  //       PageController.change(PageTest.page);
-  //     }
-  //     Leaderboards.show();
-  //   },
-  // },
+  {
+    path: "/leaderboards",
+    load: (): void => {
+      void PageController.change("leaderboards");
+    },
+  },
   {
     path: "/about",
     load: (): void => {
@@ -262,8 +258,4 @@ document.addEventListener("DOMContentLoaded", () => {
       navigate(target.href);
     }
   });
-});
-
-$("#popups").on("click", "#leaderboards a.entryName", () => {
-  Leaderboards.hide();
 });

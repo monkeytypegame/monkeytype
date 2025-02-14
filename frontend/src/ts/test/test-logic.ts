@@ -61,7 +61,6 @@ export const glarsesMode = false;
 
 let resolve: TribeTypes.ResultResolve = {};
 import * as ConnectionState from "../states/connection";
-import * as FunboxList from "./funbox/funbox-list";
 import * as MemoryFunboxTimer from "./funbox/memory-funbox-timer";
 import * as KeymapEvent from "../observables/keymap-event";
 import * as LayoutfluidFunboxTimer from "../test/funbox/layoutfluid-funbox-timer";
@@ -75,6 +74,9 @@ import {
   CustomTextDataWithTextLen,
 } from "@monkeytype/contracts/schemas/results";
 import * as XPBar from "../elements/xp-bar";
+import { getActiveFunboxes } from "./funbox/list";
+import { getFunboxesFromString } from "@monkeytype/funbox";
+import * as CompositionState from "../states/composition";
 
 let failReason = "";
 const koInputVisual = document.getElementById("koInputVisual") as HTMLElement;
@@ -117,8 +119,8 @@ export function startTest(now: number): boolean {
   TestTimer.clear();
   Monkey.show();
 
-  for (const f of FunboxList.get(Config.funbox)) {
-    if (f.functions?.start) f.functions.start();
+  for (const fb of getActiveFunboxes()) {
+    fb.functions?.start?.();
   }
 
   try {
@@ -282,6 +284,7 @@ export function restart(options = {} as RestartOptions): void {
   MemoryFunboxTimer.reset();
   QuoteRateModal.clearQuoteStats();
   TestUI.reset();
+  CompositionState.setComposing(false);
 
   if (TestUI.resultVisible) {
     if (Config.randomTheme !== "off") {
@@ -356,8 +359,8 @@ export function restart(options = {} as RestartOptions): void {
       await init();
       await PaceCaret.init();
 
-      for (const f of FunboxList.get(Config.funbox)) {
-        if (f.functions?.restart) f.functions.restart();
+      for (const fb of getActiveFunboxes()) {
+        fb.functions?.restart?.();
       }
 
       if (Config.showAverage !== "off") {
@@ -423,6 +426,7 @@ export async function init(): Promise<void> {
   MonkeyPower.reset();
   Replay.stopReplayRecording();
   TestWords.words.reset();
+  TestState.setActiveWordIndex(0);
   TestUI.setActiveWordElementIndex(0);
   TestInput.input.resetHistory();
   TestInput.input.resetCurrent();
@@ -573,23 +577,27 @@ export function areAllTestWordsGenerated(): boolean {
 //add word during the test
 export async function addWord(): Promise<void> {
   let bound = 100; // how many extra words to aim for AFTER the current word
-  const funboxToPush = FunboxList.get(Config.funbox)
+  const funboxToPush = getActiveFunboxes()
     .find((f) => f.properties?.find((fp) => fp.startsWith("toPush")))
     ?.properties?.find((fp) => fp.startsWith("toPush:"));
   const toPushCount = funboxToPush?.split(":")[1];
   if (toPushCount !== undefined) bound = +toPushCount - 1;
-  if (
-    TestWords.words.length - TestInput.input.history.length > bound ||
-    areAllTestWordsGenerated()
-  ) {
+
+  if (TestWords.words.length - TestInput.input.history.length > bound) {
+    console.debug("Not adding word, enough words already");
+    return;
+  }
+  if (areAllTestWordsGenerated()) {
+    console.debug("Not adding word, all words generated");
     return;
   }
 
-  const sectionFunbox = FunboxList.get(Config.funbox).find(
+  const sectionFunbox = getActiveFunboxes().find(
     (f) => f.functions?.pullSection
   );
+
   if (sectionFunbox?.functions?.pullSection) {
-    if (TestWords.words.length - TestWords.words.currentIndex < 20) {
+    if (TestWords.words.length - TestState.activeWordIndex < 20) {
       const section = await sectionFunbox.functions.pullSection(
         Config.language
       );
@@ -968,13 +976,11 @@ export async function finish(difficultyFailed = false): Promise<void> {
   //fail checks
   const dateDur = (TestStats.end3 - TestStats.start3) / 1000;
   if (
-    Config.mode !== "zen" &&
+    Config.mode === "time" &&
     !TestState.bailedOut &&
-    (ce.testDuration < dateDur - 0.25 || ce.testDuration > dateDur + 0.25)
+    (ce.testDuration < dateDur - 0.1 || ce.testDuration > dateDur + 0.1) &&
+    ce.testDuration <= 120
   ) {
-    //dont bother checking this for zen mode or bailed out tests because
-    //the duration might be modified to remove trailing afk time
-    //its also not a big deal if the duration is off in those tests
     Notifications.add("Test invalid - inconsistent test duration", 0);
     console.error("Test duration inconsistent", ce.testDuration, dateDur);
     TestStats.setInvalid();
@@ -1078,6 +1084,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
     if (tt < 0) tt = 0;
     const acc = completedEvent.acc;
     TestStats.incrementIncompleteSeconds(tt);
+    TestStats.incrementRestartCount();
     TestStats.pushIncompleteTest(acc, tt);
   }
 
@@ -1275,7 +1282,7 @@ async function saveResult(
   if (response.status !== 200) {
     //only allow retry if status is not in this list
     if (
-      ![460, 461, 463, 464, 465].includes(response.status) &&
+      ![460, 461, 463, 464, 465, 466].includes(response.status) &&
       TribeState.getState() < 5
     ) {
       retrySaving.canRetry = true;
@@ -1367,7 +1374,7 @@ async function saveResult(
       completedEvent.language,
       completedEvent.difficulty,
       completedEvent.lazyMode,
-      completedEvent.funbox
+      getFunboxesFromString(completedEvent.funbox)
     );
 
     if (localPb !== undefined) {

@@ -14,6 +14,7 @@ import Format from "../utils/format";
 import { UserProfile, RankAndCount } from "@monkeytype/contracts/schemas/users";
 import { abbreviateNumber, convertRemToPixels } from "../utils/numbers";
 import { secondsToString } from "../utils/date-and-time";
+import { Auth } from "../firebase";
 
 type ProfileViewPaths = "profile" | "account";
 type UserProfileOrSnapshot = UserProfile | DB.Snapshot;
@@ -188,7 +189,7 @@ export async function update(
       console.debug(hoverText);
 
       if (streakOffset === undefined) {
-        hoverText += `\n\nIf the streak reset time doesn't line up with your timezone, you can change it in Settings > Danger zone > Update streak hour offset.`;
+        hoverText += `\n\nIf the streak reset time doesn't line up with your timezone, you can change it in Account Settings > Account > Set streak hour offset.`;
       }
     }
   }
@@ -248,9 +249,12 @@ export async function update(
     details.find(".keyboard .value").text(profile.details?.keyboard ?? "");
 
     if (
-      profile.details?.socialProfiles?.github !== undefined ||
-      profile.details?.socialProfiles?.twitter !== undefined ||
-      profile.details?.socialProfiles?.website !== undefined
+      (profile.details?.socialProfiles?.github !== undefined &&
+        profile.details?.socialProfiles?.github !== "") ||
+      (profile.details?.socialProfiles?.twitter !== undefined &&
+        profile.details?.socialProfiles?.twitter !== "") ||
+      (profile.details?.socialProfiles?.website !== undefined &&
+        profile.details?.socialProfiles?.website !== "")
     ) {
       socials = true;
       const socialsEl = details.find(".socials .value");
@@ -329,6 +333,12 @@ export async function update(
           .text(formatTopPercentage(t60));
       }
     }
+  }
+
+  if (profile.uid === Auth?.currentUser?.uid) {
+    profileElement.find(".userReportButton").addClass("hidden");
+  } else {
+    profileElement.find(".userReportButton").removeClass("hidden");
   }
 
   //structure

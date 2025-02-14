@@ -1,5 +1,9 @@
 name: Publish Docker image
 
+
+permissions:
+  contents: read
+
 on:
   release:
     types: [published]

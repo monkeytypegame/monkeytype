@@ -968,6 +968,34 @@ export function setTapeMode(
   return true;
 }
 
+export function setTapeMargin(
+  value: ConfigSchemas.TapeMargin,
+  nosave?: boolean
+): boolean {
+  if (value < 10) {
+    value = 10;
+  }
+  if (value > 90) {
+    value = 90;
+  }
+
+  if (
+    !isConfigValueValid("max line width", value, ConfigSchemas.TapeMarginSchema)
+  ) {
+    return false;
+  }
+
+  config.tapeMargin = value;
+
+  saveToLocalStorage("tapeMargin", nosave);
+  ConfigEvent.dispatch("tapeMargin", config.tapeMargin, nosave);
+
+  // trigger a resize event to update the layout - handled in ui.ts:108
+  $(window).trigger("resize");
+
+  return true;
+}
+
 export function setHideExtraLetters(val: boolean, nosave?: boolean): boolean {
   if (!isConfigValueValidBoolean("hide extra letters", val)) return false;
 
@@ -1236,6 +1264,24 @@ export function setSmoothCaret(
   saveToLocalStorage("smoothCaret", nosave);
   ConfigEvent.dispatch("smoothCaret", config.smoothCaret);
 
+  return true;
+}
+
+export function setCodeUnindentOnBackspace(
+  mode: boolean,
+  nosave?: boolean
+): boolean {
+  if (!isConfigValueValidBoolean("code unindent on backspace", mode)) {
+    return false;
+  }
+  config.codeUnindentOnBackspace = mode;
+
+  saveToLocalStorage("codeUnindentOnBackspace", nosave);
+  ConfigEvent.dispatch(
+    "codeUnindentOnBackspace",
+    config.codeUnindentOnBackspace,
+    nosave
+  );
   return true;
 }
 
@@ -2101,6 +2147,7 @@ export async function apply(
     setKeymapSize(configObj.keymapSize, true);
     setFontFamily(configObj.fontFamily, true);
     setSmoothCaret(configObj.smoothCaret, true);
+    setCodeUnindentOnBackspace(configObj.codeUnindentOnBackspace, true);
     setSmoothLineScroll(configObj.smoothLineScroll, true);
     setAlwaysShowDecimalPlaces(configObj.alwaysShowDecimalPlaces, true);
     setAlwaysShowWordsHistory(configObj.alwaysShowWordsHistory, true);
@@ -2142,6 +2189,7 @@ export async function apply(
     setLazyMode(configObj.lazyMode, true);
     setShowAverage(configObj.showAverage, true);
     setTapeMode(configObj.tapeMode, true);
+    setTapeMargin(configObj.tapeMargin, true);
 
     setTribeDelta(configObj.tribeDelta, true);
     setTribeCarets(configObj.tribeCarets, true);

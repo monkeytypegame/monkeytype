@@ -8,6 +8,7 @@ import * as JSONData from "../utils/json-data";
 import * as TestState from "./test-state";
 import * as ConfigEvent from "../observables/config-event";
 import { convertRemToPixels } from "../utils/numbers";
+import { getActiveFunboxes } from "./funbox/list";
 
 type Settings = {
   wpm: number;
@@ -79,7 +80,7 @@ export async function init(): Promise<void> {
           Config.language,
           Config.difficulty,
           Config.lazyMode,
-          Config.funbox
+          getActiveFunboxes()
         )
       )?.wpm ?? 0;
   } else if (Config.paceCaret === "tagPb") {
@@ -201,7 +202,7 @@ export async function update(expectedStepEnd: number): Promise<void> {
     try {
       const newIndex =
         settings.currentWordIndex -
-        (TestWords.words.currentIndex - TestUI.activeWordElementIndex);
+        (TestState.activeWordIndex - TestUI.activeWordElementIndex);
       const word = document.querySelectorAll("#words .word")[
         newIndex
       ] as HTMLElement;
@@ -304,19 +305,19 @@ export function handleSpace(correct: boolean, currentWord: string): void {
   if (correct) {
     if (
       settings !== null &&
-      settings.wordsStatus[TestWords.words.currentIndex] === true &&
+      settings.wordsStatus[TestState.activeWordIndex] === true &&
       !Config.blindMode
     ) {
-      settings.wordsStatus[TestWords.words.currentIndex] = undefined;
+      settings.wordsStatus[TestState.activeWordIndex] = undefined;
       settings.correction -= currentWord.length + 1;
     }
   } else {
     if (
       settings !== null &&
-      settings.wordsStatus[TestWords.words.currentIndex] === undefined &&
+      settings.wordsStatus[TestState.activeWordIndex] === undefined &&
       !Config.blindMode
     ) {
-      settings.wordsStatus[TestWords.words.currentIndex] = true;
+      settings.wordsStatus[TestState.activeWordIndex] = true;
       settings.correction += currentWord.length + 1;
     }
   }

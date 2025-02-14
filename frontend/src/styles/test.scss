@@ -829,7 +829,6 @@
 
         &.dailyLeaderboard {
           max-width: 13rem;
-          overflow: hidden;
           white-space: nowrap;
         }
 
@@ -1258,6 +1257,8 @@
     }
   }
   #liveStatsMini {
+    width: 0;
+    justify-content: start;
     height: 0;
     margin-left: 0.25em;
     display: flex;
@@ -1375,6 +1376,13 @@ main.focus .pageTest {
 
 /* funbox nospace */
 body.fb-nospace {
+  #words .word {
+    margin: 0.5em 0;
+  }
+}
+
+/* funbox underscore_spaces */
+body.fb-underscore-spaces {
   #words .word {
     margin: 0.5em 0;
   }

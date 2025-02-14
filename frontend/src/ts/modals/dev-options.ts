@@ -5,6 +5,7 @@ import * as Notifications from "../elements/notifications";
 import { setMediaQueryDebugLevel } from "../ui";
 import { signIn } from "../controllers/account-controller";
 import * as Loader from "../elements/loader";
+import { update } from "../elements/xp-bar";
 
 let mediaQueryDebugLevel = 0;
 
@@ -66,6 +67,20 @@ async function setup(modalEl: HTMLElement): Promise<void> {
         Loader.hide();
       }
     );
+    void modal.hide();
+  });
+  modalEl.querySelector(".xpBarTest")?.addEventListener("click", () => {
+    setTimeout(() => {
+      void update(1000000, 20800, {
+        base: 100,
+        fullAccuracy: 200,
+        accPenalty: 300,
+        quote: 400,
+        punctuation: 500,
+        streak: 10_000,
+        configMultiplier: 2,
+      });
+    }, 500);
     void modal.hide();
   });
 }
