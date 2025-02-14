@@ -4,6 +4,8 @@ import * as Misc from "../utils/misc";
 import * as TestUI from "../test/test-ui";
 import tribeSocket from "./tribe-socket";
 import { InputSuggestions } from "../elements/input-suggestions";
+import { getEmojiList } from "../utils/json-data";
+import * as TribeTypes from "./types";
 
 let lastMessageTimestamp = 0;
 let shouldScrollChat = true;
@@ -63,7 +65,7 @@ export function isAnyChatSuggestionVisible(): boolean {
   );
 }
 
-Misc.getEmojiList().then((emojis) => {
+void getEmojiList().then((emojis) => {
   const dataToSet: Record<string, TribeTypes.InputSuggestionEntry> = {};
   for (const emoji of emojis) {
     if (emoji.type === "emoji") {
@@ -112,7 +114,12 @@ export function reset(where: "both" | "lobby" | "result" = "both"): void {
 
 export function fill(where: "both" | "lobby" | "result"): void {
   for (const message of chatHistory) {
-    displayMessage(message.isSystem, message.socketId, message.message, where);
+    void displayMessage(
+      message.isSystem,
+      message.socketId,
+      message.message,
+      where
+    );
   }
 }
 
@@ -140,8 +147,10 @@ function sendChattingUpdate(bool: boolean): void {
 // }
 
 export function scrollChat(): void {
-  const chatEl = $(".pageTribe .lobby .chat .messages")[0];
-  const chatEl2 = $(".pageTest #result #tribeResultBottom .chat .messages")[0];
+  const chatEl = $(".pageTribe .lobby .chat .messages")[0] as HTMLElement;
+  const chatEl2 = $(
+    ".pageTest #result #tribeResultBottom .chat .messages"
+  )[0] as HTMLElement;
 
   if (shouldScrollChat) {
     chatEl.scrollTop = chatEl.scrollHeight;
@@ -162,18 +171,23 @@ export function updateIsTyping(): void {
   const names: string[] = [];
 
   for (const userId of Object.keys(room.users)) {
-    if (room.users[userId].isChatting && userId !== tribeSocket.getId()) {
-      names.push(room.users[userId].name);
+    const user = room.users[userId] as TribeTypes.User;
+    if (user.isChatting && userId !== tribeSocket.getId()) {
+      names.push(user.name);
     }
   }
   if (names.length > 0) {
     for (let i = 0; i < names.length; i++) {
       if (i === 0) {
-        string += `<span class="who">${Misc.escapeHTML(names[i])}</span>`;
+        string += `<span class="who">${Misc.escapeHTML(names[i] ?? "")}</span>`;
       } else if (i === names.length - 1) {
-        string += ` and <span class="who">${Misc.escapeHTML(names[i])}</span>`;
+        string += ` and <span class="who">${Misc.escapeHTML(
+          names[i] ?? ""
+        )}</span>`;
       } else {
-        string += `, <span class="who">${Misc.escapeHTML(names[i])}</span>`;
+        string += `, <span class="who">${Misc.escapeHTML(
+          names[i] ?? ""
+        )}</span>`;
       }
     }
     if (names.length == 1) {
@@ -194,12 +208,12 @@ async function insertImageEmoji(text: string): Promise<string> {
   let big = "";
   if (textSplit.length === 1) big = "big";
   for (let i = 0; i < textSplit.length; i++) {
-    if (/&#58;.+&#58;/g.test(textSplit[i])) {
-      const emoji = await Misc.getEmojiList();
+    if (/&#58;.+&#58;/g.test(textSplit[i] as string)) {
+      const emoji = await getEmojiList();
       const result = emoji.filter(
         (e) =>
           Misc.escapeHTML(e.from).toLowerCase() ==
-          textSplit[i].replace(/&#58;/g, "").toLowerCase()
+          textSplit[i]?.replace(/&#58;/g, "").toLowerCase()
       );
       if (result[0] !== undefined) {
         if (result[0].type === "image") {
@@ -230,7 +244,7 @@ export function appendMessage(
     chatHistory.splice(0, chatHistory.length - 100);
   }
 
-  displayMessage(isSystem, socketId, message);
+  void displayMessage(isSystem, socketId, message);
 }
 
 export async function displayMessage(
@@ -241,9 +255,10 @@ export async function displayMessage(
 ): Promise<void> {
   let cls = "message";
   let author = "";
-  const fromName = socketId
-    ? TribeState.getRoom()?.users[socketId]?.name
-    : undefined;
+  const fromName =
+    socketId !== undefined
+      ? TribeState.getRoom()?.users[socketId]?.name
+      : undefined;
   if (isSystem) {
     cls = "systemMessage";
   } else {
@@ -367,9 +382,9 @@ $(".pageTest #result #tribeResultBottom .chat .input input").on(
 
 $(".pageTribe .lobby .chat .messages").on("scroll", (_e) => {
   const el = $(".pageTribe .lobby .chat .messages")[0];
-  const scrollHeight = el.scrollHeight as number;
-  const scrollTop = el.scrollTop as number;
-  const height = el.clientHeight as number;
+  const scrollHeight = el?.scrollHeight as number;
+  const scrollTop = el?.scrollTop as number;
+  const height = el?.clientHeight as number;
   if (height + scrollTop < scrollHeight - 20) {
     shouldScrollChat = false;
   } else {
@@ -379,9 +394,9 @@ $(".pageTribe .lobby .chat .messages").on("scroll", (_e) => {
 
 $(".pageTest #result #tribeResultBottom .chat .messages").on("scroll", (_e) => {
   const el = $(".pageTest #result #tribeResultBottom .chat .messages")[0];
-  const scrollHeight = el.scrollHeight as number;
-  const scrollTop = el.scrollTop as number;
-  const height = el.clientHeight as number;
+  const scrollHeight = el?.scrollHeight as number;
+  const scrollTop = el?.scrollTop as number;
+  const height = el?.clientHeight as number;
   if (height + scrollTop < scrollHeight - 20) {
     shouldScrollChat = false;
   } else {

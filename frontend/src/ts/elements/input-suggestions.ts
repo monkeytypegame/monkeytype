@@ -1,3 +1,5 @@
+import * as TribeTypes from "../tribe/types";
+
 export class InputSuggestions {
   private inputElement: JQuery<HTMLElement>;
   private suggestionsElement: JQuery<HTMLElement> | undefined;
@@ -36,7 +38,7 @@ export class InputSuggestions {
     this.inputElement.on("input", () => {
       const inputVal = this.inputElement.val() as string;
       const split = inputVal.split(" ");
-      const last = split[split.length - 1];
+      const last = split[split.length - 1] as string;
       const search = last.slice(this.prefix.length);
 
       if (
@@ -91,9 +93,9 @@ export class InputSuggestions {
     const suggestionsElement = document.createElement("div");
     suggestionsElement.classList.add("inputSuggestions");
     if (this.position === "top") {
-      this.inputElement[0].before(suggestionsElement);
+      this.inputElement[0]?.before(suggestionsElement);
     } else {
-      this.inputElement[0].after(suggestionsElement);
+      this.inputElement[0]?.after(suggestionsElement);
     }
     this.suggestionsElement = $(suggestionsElement);
     this.selectedIndex = 0;
@@ -139,17 +141,19 @@ export class InputSuggestions {
     }
 
     for (const searchString of this.foundKeys) {
-      const suggestion = this.data[searchString];
+      const suggestion = this.data[
+        searchString
+      ] as TribeTypes.InputSuggestionEntry;
       const el = `
       <div class="suggestion ${
         added === this.selectedIndex ? "selected" : ""
       }" data-search-string="${searchString}" data-id="${added}">
         ${
-          suggestion.imageIcon
+          suggestion.imageIcon !== undefined
             ? `<div class="icon"><img src="${suggestion.imageIcon}" /></div>`
-            : suggestion.faIcon
+            : suggestion.faIcon !== undefined
             ? `<div class="icon"><i class="fas fa-fw ${suggestion.faIcon}"></i></div>`
-            : suggestion.textIcon
+            : suggestion.textIcon !== undefined
             ? `<div class="icon"><span>${suggestion.textIcon}</span></div>`
             : ""
         }
@@ -172,20 +176,20 @@ export class InputSuggestions {
     if (!this.suggestionsElement) return;
     if (this.position === "top") {
       this.suggestionsElement.css({
-        left: this.inputElement[0].offsetLeft + "px",
-        width: this.inputElement[0].offsetWidth + "px",
+        left: this.inputElement[0]?.offsetLeft + "px",
+        width: this.inputElement[0]?.offsetWidth + "px",
         top:
-          this.inputElement[0].offsetTop -
-          this.suggestionsElement[0].offsetHeight +
+          (this.inputElement[0]?.offsetTop ?? 0) -
+          (this.suggestionsElement[0]?.offsetHeight ?? 0) +
           "px",
       });
     } else {
       this.suggestionsElement.css({
-        left: this.inputElement[0].offsetLeft + "px",
-        width: this.inputElement[0].offsetWidth + "px",
+        left: this.inputElement[0]?.offsetLeft + "px",
+        width: this.inputElement[0]?.offsetWidth + "px",
         top:
-          this.inputElement[0].offsetTop +
-          this.inputElement[0].offsetHeight +
+          (this.inputElement[0]?.offsetTop ?? 0) +
+          (this.inputElement[0]?.offsetHeight ?? 0) +
           "px",
       });
     }
@@ -215,9 +219,9 @@ export class InputSuggestions {
   applySelection(): void {
     if (!this.suggestionsElement) return;
     if (this.selectedIndex === undefined) return;
-    if (!this.suggestionsElement) return;
+    if (this.suggestionsElement === undefined) return;
     const toInsert = this.foundKeys[this.selectedIndex];
-    if (!toInsert) return;
+    if (toInsert === undefined) return;
 
     const currentVal = this.inputElement.val() as string;
     const split = currentVal.split(" ");

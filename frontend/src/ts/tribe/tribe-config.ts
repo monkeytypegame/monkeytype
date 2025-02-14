@@ -1,11 +1,17 @@
 import Config, * as UpdateConfig from "../config";
 import * as Funbox from "../test/funbox/funbox";
 // import * as Notifications from "./notifications";
-import * as CustomText from "../test/custom-text";
+// import * as CustomText from "../test/custom-text";
 import * as TribeConfigSyncEvent from "../observables/tribe-config-sync-event";
 import * as TribeButtons from "./tribe-buttons";
 import * as TribeState from "../tribe/tribe-state";
 import tribeSocket from "./tribe-socket";
+import * as TribeTypes from "./types";
+import { Difficulty, Mode } from "@monkeytype/contracts/schemas/shared";
+import {
+  QuoteLength,
+  StopOnError,
+} from "@monkeytype/contracts/schemas/configs";
 
 export function getArray(config: TribeTypes.RoomConfig): string[] {
   const ret: string[] = [];
@@ -42,10 +48,10 @@ export function getArray(config: TribeTypes.RoomConfig): string[] {
   if (config["difficulty"] !== "normal") ret.push(config["difficulty"]);
   // if(config['language'] !== "english")
   ret.push(config["language"]);
-  if (config["punctuation"] !== false) ret.push("punctuation");
-  if (config["numbers"] !== false) ret.push("numbers");
+  if (config["punctuation"]) ret.push("punctuation");
+  if (config["numbers"]) ret.push("numbers");
   if (config["funbox"] !== "none") ret.push(config["funbox"]);
-  if (config["lazyMode"] !== false) ret.push("lazy mode");
+  if (config["lazyMode"]) ret.push("lazy mode");
   if (config["stopOnError"] !== "off") {
     ret.push("stop on " + config["stopOnError"] == "word" ? "word" : "letter");
   }
@@ -59,42 +65,30 @@ export function getArray(config: TribeTypes.RoomConfig): string[] {
 }
 
 export function apply(config: TribeTypes.RoomConfig): void {
-  UpdateConfig.setMode(config.mode as MonkeyTypes.Mode, true, true);
+  UpdateConfig.setMode(config.mode as Mode, true, true);
   if (config.mode === "time") {
     UpdateConfig.setTimeConfig(config.mode2 as number, true, true);
   } else if (config.mode === "words") {
     UpdateConfig.setWordCount(config.mode2 as number, true, true);
   } else if (config.mode === "quote") {
-    UpdateConfig.setQuoteLength(
-      config.mode2 as MonkeyTypes.QuoteLength,
-      true,
-      true,
-      true
-    );
+    UpdateConfig.setQuoteLength(config.mode2 as QuoteLength, true, true, true);
   } else if (config.mode === "custom") {
-    CustomText.setText(config.customText.text, true);
-    CustomText.setIsWordRandom(config.customText.isWordRandom, true);
-    CustomText.setIsTimeRandom(config.customText.isTimeRandom, true);
-    CustomText.setTime(config.customText.time, true);
-    CustomText.setWord(config.customText.word, true);
+    //todo fix
+    // CustomText.setText(config.customText.text, true);
+    // CustomText.setIsWordRandom(config.customText.isWordRandom, true);
+    // CustomText.setIsTimeRandom(config.customText.isTimeRandom, true);
+    // CustomText.setTime(config.customText.time, true);
+    // CustomText.setWord(config.customText.word, true);
   }
-  UpdateConfig.setDifficulty(
-    config.difficulty as MonkeyTypes.Difficulty,
-    true,
-    true
-  );
+  UpdateConfig.setDifficulty(config.difficulty as Difficulty, true, true);
   UpdateConfig.setLanguage(config.language, true, true);
   UpdateConfig.setPunctuation(config.punctuation, true, true);
   UpdateConfig.setNumbers(config.numbers, true, true);
   Funbox.setFunbox(config.funbox, true);
   UpdateConfig.setLazyMode(config.lazyMode, true, true);
-  UpdateConfig.setStopOnError(
-    config.stopOnError as MonkeyTypes.StopOnError,
-    true,
-    true
-  );
+  UpdateConfig.setStopOnError(config.stopOnError as StopOnError, true, true);
   if (config.minWpm !== "off") {
-    UpdateConfig.setMinWpmCustomSpeed(config.minWpm as number, true, true);
+    UpdateConfig.setMinWpmCustomSpeed(config.minWpm, true, true);
     UpdateConfig.setMinWpm("custom", true, true);
   } else {
     UpdateConfig.setMinWpm("off", true, true);
@@ -163,13 +157,14 @@ function sync(): void {
       minAcc: Config.minAcc === "custom" ? Config.minAccCustom : "off",
       minBurst:
         Config.minBurst === "fixed" ? Config.minBurstCustomSpeed : "off",
-      customText: {
-        text: CustomText.text,
-        isWordRandom: CustomText.isWordRandom,
-        isTimeRandom: CustomText.isTimeRandom,
-        word: CustomText.word,
-        time: CustomText.time,
-      },
+      //todo fix
+      // customText: {
+      // text: CustomText.text,
+      // isWordRandom: CustomText.isWordRandom,
+      // isTimeRandom: CustomText.isTimeRandom,
+      // word: CustomText.word,
+      // time: CustomText.time,
+      // },
       isInfiniteTest:
         (Config.mode == "time" || Config.mode == "words") && mode2 == "0",
     });

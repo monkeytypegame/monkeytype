@@ -2,8 +2,9 @@ import { Chart, ChartConfiguration } from "chart.js";
 import * as TribeState from "./tribe-state";
 import * as ThemeColors from "../elements/theme-colors";
 import * as Notifications from "../elements/notifications";
-import { createErrorMessage, smooth } from "../utils/misc";
+import { createErrorMessage } from "../utils/misc";
 import tribeSocket from "./tribe-socket";
+import { smooth } from "../utils/arrays";
 
 const charts: Record<string, Chart> = {};
 
@@ -42,12 +43,12 @@ const settings: ChartConfiguration = {
         pointStyle: "crossRot",
         pointRadius: function (context): 0 | 2 {
           const index = context.dataIndex;
-          const value = context.dataset.data[index] ?? 0;
+          const value = (context.dataset.data[index] ?? 0) as number;
           return value <= 0 ? 0 : 2;
         },
         pointHoverRadius: function (context): 0 | 3 {
           const index = context.dataIndex;
-          const value = context.dataset.data[index] ?? 0;
+          const value = (context.dataset.data[index] ?? 0) as number;
           return value <= 0 ? 0 : 3;
         },
       },
@@ -257,8 +258,9 @@ async function fillData(chart: Chart, userId: string): Promise<void> {
   const labels: number[] = [];
   const room = TribeState.getRoom();
   if (!room) return;
-  const result = room.users[userId].result;
+  const result = room.users[userId]?.result;
   if (!result) return;
+
   for (let i = 1; i <= result.chartData.wpm.length; i++) {
     labels.push(i);
   }
@@ -271,20 +273,27 @@ async function fillData(chart: Chart, userId: string): Promise<void> {
   const smoothedRawData = smooth(result.chartData.raw, 1);
 
   chart.data.labels = labels;
+  //@ts-expect-error
   chart.data.datasets[0].data = result.chartData.wpm;
+  //@ts-expect-error
   chart.data.datasets[1].data = smoothedRawData;
+  //@ts-expect-error
   chart.data.datasets[2].data = result.chartData.err;
 
   // chart.options.scales["wpm"].ticks.max = Math.round(chartmaxval);
   // chart.options.scales["raw"].ticks.max = Math.round(chartmaxval);
 
   if (userId == tribeSocket.getId()) {
+    //@ts-expect-error
     chart.data.datasets[0].borderColor = await ThemeColors.get("main");
     // chart.data.datasets[0].backgroundColor = await ThemeColors.get("main");
   } else {
+    //@ts-expect-error
+
     chart.data.datasets[0].borderColor = await ThemeColors.get("text");
     // chart.data.datasets[0].backgroundColor = await ThemeColors.get("text");
   }
+  //@ts-expect-error
   chart.data.datasets[1].borderColor = await ThemeColors.get("sub");
   // chart.data.datasets[1].backgroundColor = await ThemeColors.get("sub");
 
@@ -303,10 +312,7 @@ export async function drawChart(userId: string): Promise<void> {
       return;
     }
 
-    const chart = new Chart(
-      element,
-      $.extend(true, {}, settings) as ChartConfiguration
-    );
+    const chart = new Chart(element, $.extend(true, {}, settings));
 
     await fillData(chart, userId);
 
@@ -329,7 +335,7 @@ export async function drawAllCharts(): Promise<void> {
   if (!room) return;
   const list = Object.keys(room.users);
   for (let i = 0; i < list.length; i++) {
-    const userId = list[i];
+    const userId = list[i] as string;
     if (!charts[userId]) {
       await drawChart(userId);
     }
@@ -343,7 +349,7 @@ export async function updateChartMaxValues(): Promise<void> {
   let maxRaw = 0;
 
   for (const userId of Object.keys(room.users)) {
-    const result = room.users[userId].result;
+    const result = room.users[userId]?.result;
     if (!result) continue;
     const maxUserWpm = Math.max(maxWpm, Math.max(...result.chartData.wpm));
     const maxUserRaw = Math.max(maxRaw, Math.max(...result.chartData.raw));
@@ -358,7 +364,7 @@ export async function updateChartMaxValues(): Promise<void> {
 
   const list = Object.keys(room.users);
   for (let i = 0; i < list.length; i++) {
-    const userId = list[i];
+    const userId = list[i] as string;
     if (charts[userId]) {
       const scales = charts[userId].options.scales;
       if (scales?.["wpm"]) {
@@ -370,7 +376,7 @@ export async function updateChartMaxValues(): Promise<void> {
         scales["raw"].min = 0;
       }
 
-      const result = room.users[userId].result;
+      const result = room.users[userId]?.result;
       if (result && scales?.["errors"]) {
         scales["errors"].max = Math.max(...result.chartData.err) + 1;
         scales["errors"].min = 0;
@@ -380,15 +386,16 @@ export async function updateChartMaxValues(): Promise<void> {
       //   Math.round(chartmaxval);
       // charts[userId].options.scales.yAxes[1].ticks.max =
       //   Math.round(chartmaxval);
-      await charts[userId].update();
+      charts[userId].update();
     }
   }
 }
 
 export function destroyAllCharts(): void {
   Object.keys(charts).forEach((userId) => {
-    charts[userId].clear();
-    charts[userId].destroy();
+    charts[userId]?.clear();
+    charts[userId]?.destroy();
+    // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
     delete charts[userId];
   });
 }

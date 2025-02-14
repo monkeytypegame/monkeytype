@@ -1,4 +1,10 @@
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/strict-boolean-expressions */
 import Socket from "../socket";
+import * as TribeTypes from "../../types";
 
 async function versionCheck(
   expectedVersion: string
@@ -104,7 +110,9 @@ function connect(callback: () => void): void {
   });
 }
 
-function disconnect(callback: (reason: string, details?: any) => void): void {
+function disconnect(
+  callback: (reason: string, details?: unknown) => void
+): void {
   Socket.on("disconnect", callback);
 }
 

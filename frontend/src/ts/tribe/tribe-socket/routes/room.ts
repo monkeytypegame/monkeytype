@@ -1,11 +1,17 @@
 import { Mode } from "@monkeytype/contracts/schemas/shared";
 import Socket from "../socket";
 import { QuoteLength } from "@monkeytype/contracts/schemas/configs";
+import * as TribeTypes from "../../types";
+
+type GetPublicRoomsResponse = {
+  status?: string;
+  rooms?: TribeTypes.Room[];
+};
 
 async function getPublicRooms(
   _page: number,
   search: string
-): Promise<TribeSocket.GetPublicRoomsResponse> {
+): Promise<GetPublicRoomsResponse> {
   return new Promise((resolve) => {
     Socket.emit(
       "room_get_public_rooms",
@@ -13,22 +19,27 @@ async function getPublicRooms(
         page: 0,
         search: search,
       },
-      (e: TribeSocket.GetPublicRoomsResponse) => {
+      (e: GetPublicRoomsResponse) => {
         resolve(e);
       }
     );
   });
 }
 
+type JoinRoomResponse = {
+  status?: string;
+  room?: TribeTypes.Room;
+};
+
 async function join(
   roomId: string,
   fromBrowser: boolean
-): Promise<TribeSocket.JoinRoomResponse> {
+): Promise<JoinRoomResponse> {
   return new Promise((resolve) => {
     Socket.emit(
       "room_join",
       { roomId, fromBrowser },
-      (res: TribeSocket.JoinRoomResponse) => {
+      (res: JoinRoomResponse) => {
         resolve(res);
       }
     );

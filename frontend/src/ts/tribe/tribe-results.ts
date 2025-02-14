@@ -4,6 +4,7 @@ import * as SlowTimer from "../states/slow-timer";
 import tribeSocket from "./tribe-socket";
 import { FinalPositions } from "./tribe-socket/routes/room";
 import { getOrdinalNumberString } from "@monkeytype/util/numbers";
+import * as TribeTypes from "./types";
 
 const initialised: Record<string, boolean | object> = {};
 

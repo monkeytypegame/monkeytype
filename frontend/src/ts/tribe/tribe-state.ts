@@ -1,4 +1,5 @@
 import TribeSocket from "./tribe-socket";
+import * as TribeTypes from "./types";
 
 let state = -1;
 

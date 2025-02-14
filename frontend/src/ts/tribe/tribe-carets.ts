@@ -1,13 +1,15 @@
 import * as TestWords from "../test/test-words";
 import * as TestUI from "../test/test-ui";
 import Config from "../config";
-import { convertRemToPixels } from "../utils/misc";
 import * as SlowTimer from "../states/slow-timer";
 import { getRoom } from "./tribe-state";
 import tribeSocket from "./tribe-socket";
 import * as LineJumpEvent from "../observables/line-jump-event";
 import * as ThemeColors from "../elements/theme-colors";
 import * as ConfigEvent from "../observables/config-event";
+import * as TestState from "../test/test-state";
+import { convertRemToPixels } from "../utils/numbers";
+import * as TribeTypes from "./types";
 
 const carets: { [key: string]: TribeCaret } = {};
 
@@ -28,7 +30,8 @@ export class TribeCaret {
 
   public spawn(): void {
     if (this.element) {
-      return this.destroy();
+      this.destroy();
+      return;
     }
     //create element and store
     const element = document.createElement("div");
@@ -80,7 +83,8 @@ export class TribeCaret {
   public animate(animationDuration: number): void {
     if (!this.element) {
       this.spawn();
-      return this.animate(125);
+      this.animate(125);
+      return;
     }
     // if ($("#paceCaret").hasClass("hidden")) {
     //   $("#paceCaret").removeClass("hidden");
@@ -106,7 +110,7 @@ export class TribeCaret {
       try {
         const newIndex =
           animationWordIndex -
-          (TestWords.words.currentIndex - TestUI.currentWordElementIndex);
+          (TestState.activeWordIndex - TestUI.activeWordElementIndex);
         currentWord = <HTMLElement>(
           document.querySelectorAll("#words .word")[newIndex]
         );
@@ -129,6 +133,7 @@ export class TribeCaret {
           currentLetterWidth === undefined ||
           caretWidth === undefined
         ) {
+          // eslint-disable-next-line @typescript-eslint/only-throw-error
           throw ``;
         }
 
@@ -149,7 +154,7 @@ export class TribeCaret {
         this.element.addClass("hidden");
       }
 
-      const currentTop = this.element[0].offsetTop;
+      const currentTop = this.element[0]?.offsetTop;
 
       if (newTop !== undefined) {
         const smoothlinescroll = $("#words .smoothScroller").height() ?? 0;
@@ -230,7 +235,7 @@ export class TribeCaret {
     }
   }
 
-  async changeColor(color: keyof MonkeyTypes.ThemeColors): Promise<void> {
+  async changeColor(color: ThemeColors.ColorName): Promise<void> {
     if (!this.element) return;
     const colorHex = await ThemeColors.get(color);
     this.element.css({
@@ -261,7 +266,7 @@ export function init(): void {
   if (!room) return;
   for (const socketId of Object.keys(room.users)) {
     if (socketId === tribeSocket.getId()) continue;
-    if (room.users[socketId].isTyping !== true) continue;
+    if (room.users[socketId]?.isTyping !== true) continue;
 
     const name = room.users[socketId].name;
 
@@ -273,11 +278,9 @@ export function updateAndAnimate(
   data: Record<string, TribeTypes.UserProgress>
 ): void {
   for (const socketId of Object.keys(data)) {
+    const d = data[socketId] as TribeTypes.UserProgress;
     if (!carets[socketId]) continue;
-    carets[socketId].updatePosition(
-      data[socketId].wordIndex,
-      data[socketId].letterIndex
-    );
+    carets[socketId].updatePosition(d.wordIndex, d.letterIndex);
     carets[socketId].animate(getRoom()?.updateRate ?? 500);
   }
 }
@@ -285,29 +288,31 @@ export function updateAndAnimate(
 export function destroy(socketId: string): void {
   if (carets[socketId]) {
     carets[socketId].destroy();
+    // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
     delete carets[socketId];
   }
 }
 
 export function changeColor(
   socketId: string,
-  color: keyof MonkeyTypes.ThemeColors
+  color: ThemeColors.ColorName
 ): void {
   if (carets[socketId]) {
-    carets[socketId].changeColor(color);
+    void carets[socketId].changeColor(color);
   }
 }
 
 export function destroyAll(): void {
   for (const socketId of Object.keys(carets)) {
-    carets[socketId].destroy();
+    carets[socketId]?.destroy();
+    // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
     delete carets[socketId];
   }
 }
 
 export function lineJump(offset: number, withAnimation: boolean): void {
   for (const socketId of Object.keys(carets)) {
-    carets[socketId].lineJump(offset, withAnimation);
+    carets[socketId]?.lineJump(offset, withAnimation);
   }
 }
 
@@ -328,7 +333,7 @@ ConfigEvent.subscribe((key, value, _nosave, previousValue) => {
     (value === "on" && previousValue === "noNames")
   ) {
     for (const socketId of Object.keys(carets)) {
-      carets[socketId].setNameVisibility(Config.tribeCarets === "on");
+      carets[socketId]?.setNameVisibility(Config.tribeCarets === "on");
     }
   }
 });

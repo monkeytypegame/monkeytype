@@ -28,7 +28,9 @@ import * as TestWords from "../test/test-words";
 import * as TestStats from "../test/test-stats";
 import * as TestInput from "../test/test-input";
 import * as TribeCarets from "./tribe-carets";
+import * as TribeTypes from "./types";
 import { navigate } from "../controllers/route-controller";
+import { ColorName } from "../elements/theme-colors";
 
 const defaultName = "Guest";
 let name = "Guest";
@@ -111,7 +113,7 @@ function updateState(newState: number): void {
   } else if (state === 21) {
     TribeResults.hideTimer();
     TribeResults.updateTimerText("Time left for everyone to get ready");
-    if (TribeState.getAutoReady() === true) {
+    if (TribeState.getAutoReady()) {
       TribeSocket.out.room.readyUpdate();
     }
   } else if (state === 22) {
@@ -137,7 +139,7 @@ export async function init(): Promise<void> {
 
   //todo remove, only for dev
   const lstribename = window.localStorage.getItem("tribeName");
-  if (lstribename) {
+  if (lstribename !== undefined && lstribename !== null) {
     name = lstribename;
     TribeSocket.updateName(lstribename);
   }
@@ -164,17 +166,17 @@ export function joinRoom(roomId: string, fromBrowser = false): void {
     return;
   }
 
-  TribeSocket.out.room.join(roomId, fromBrowser).then((response) => {
+  void TribeSocket.out.room.join(roomId, fromBrowser).then((response) => {
     if (response.room) {
       TribeState.setRoom(response.room);
       updateState(response.room.state);
       TribePageLobby.init();
-      TribePages.change("lobby");
+      void TribePages.change("lobby");
       TribeSound.play("join");
       TribeChat.updateSuggestionData();
       // history.replaceState(null, "", `/tribe/${roomId}`);
     } else {
-      TribePages.change("menu");
+      void TribePages.change("menu");
       history.replaceState("/tribe", "", "/tribe");
     }
   });
@@ -218,14 +220,14 @@ async function connect(): Promise<void> {
   UpdateConfig.setTimerStyle("mini", true);
   TribePageMenu.enableButtons();
   updateState(1);
-  if (autoJoin) {
+  if (autoJoin !== undefined) {
     TribePagePreloader.updateText(`Joining room ${autoJoin}`);
     TribePagePreloader.updateSubtext("Please wait...");
     setTimeout(() => {
       joinRoom(autoJoin as string);
     }, 500);
   } else {
-    TribePages.change("menu");
+    void TribePages.change("menu");
   }
 }
 
@@ -236,10 +238,13 @@ function checkIfEveryoneIsReady(): void {
     if (Object.keys(room.users).length <= 1) return;
     let everyoneReady = true;
     Object.keys(room.users).forEach((userId) => {
-      if (room && (room.users[userId].isLeader || room.users[userId].isAfk)) {
+      if (
+        room !== undefined &&
+        (room.users[userId]?.isLeader || room.users[userId]?.isAfk)
+      ) {
         return;
       }
-      if (room && !room.users[userId].isReady) {
+      if (room !== undefined && !room.users[userId]?.isReady) {
         everyoneReady = false;
       }
     });
@@ -253,12 +258,12 @@ function checkIfEveryoneIsReady(): void {
 }
 
 TribeSocket.in.system.connect(() => {
-  connect();
+  void connect();
 });
 
 $(".tribechangename").on("click", () => {
   const name = prompt("Name");
-  if (name) {
+  if (name !== "" && name !== null) {
     window.localStorage.setItem("tribeName", name); //todo remove, only for dev
     TribeSocket.out.user.setName(name, true);
   }
@@ -273,6 +278,7 @@ TribeSocket.in.system.disconnect((reason, details) => {
   const roomId = TribeState.getRoom()?.id;
   if (!$(".pageTribe").hasClass("active")) {
     Notifications.add(
+      //@ts-ignore
       `Disconnected: ${details?.["description"]} (${reason})`,
       -1,
       {
@@ -281,14 +287,15 @@ TribeSocket.in.system.disconnect((reason, details) => {
     );
   }
   TribeState.setRoom(undefined);
-  TribePages.change("preloader");
+  void TribePages.change("preloader");
   TribePagePreloader.updateIcon("times");
   TribePagePreloader.updateText(`Disconnected`);
+  //@ts-ignore
   TribePagePreloader.updateSubtext(`${details?.["description"]} (${reason})`);
   TribePagePreloader.showReconnectButton();
 
-  reset();
-  if (roomId) {
+  void reset();
+  if (roomId !== undefined) {
     autoJoin = roomId;
   }
 });
@@ -301,12 +308,12 @@ TribeSocket.in.system.connectFailed((err) => {
       customTitle: "Tribe",
     });
   }
-  TribePages.change("preloader");
+  void TribePages.change("preloader");
   TribePagePreloader.updateIcon("times");
   TribePagePreloader.updateText("Connection failed");
   TribePagePreloader.updateSubtext(err.message);
   TribePagePreloader.showReconnectButton();
-  reset();
+  void reset();
 });
 
 TribeSocket.in.system.connectError((err) => {
@@ -317,12 +324,12 @@ TribeSocket.in.system.connectError((err) => {
       customTitle: "Tribe",
     });
   }
-  TribePages.change("preloader");
+  void TribePages.change("preloader");
   TribePagePreloader.updateIcon("times");
   TribePagePreloader.updateText(`Connection error`);
   TribePagePreloader.updateSubtext(err.message);
   TribePagePreloader.showReconnectButton();
-  reset();
+  void reset();
 });
 
 TribeSocket.in.system.reconnect((attempt) => {
@@ -347,7 +354,7 @@ TribeSocket.in.room.joined((data) => {
   TribeState.setRoom(data.room);
   updateState(data.room.state);
   TribePageLobby.init();
-  TribePages.change("lobby");
+  void TribePages.change("lobby");
   TribeSound.play("join");
   TribeChat.updateSuggestionData();
   // history.replaceState(null, "", `/tribe/${e.room.id}`);
@@ -368,6 +375,7 @@ TribeSocket.in.room.playerJoined((data) => {
 TribeSocket.in.room.playerLeft((data) => {
   const room = TribeState.getRoom();
   if (room?.users) {
+    // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
     delete room.users[data.userId];
     room.size = Object.keys(room.users).length;
     TribeUserList.update();
@@ -392,8 +400,8 @@ TribeSocket.in.room.left(() => {
   }
   TribeCarets.destroyAll();
   TribeSound.play("leave");
-  TribePages.change("menu").then(() => {
-    reset();
+  void TribePages.change("menu").then(() => {
+    void reset();
   });
   TribeChat.updateIsTyping();
   name = defaultName;
@@ -416,7 +424,7 @@ TribeSocket.in.room.nameChanged((data) => {
 TribeSocket.in.room.userIsReady((data) => {
   const room = TribeState.getRoom();
   if (!room) return;
-  room.users[data.userId].isReady = true;
+  (room.users[data.userId] as TribeTypes.User).isReady = true;
   TribeUserList.update();
   TribeButtons.update();
   checkIfEveryoneIsReady();
@@ -425,7 +433,9 @@ TribeSocket.in.room.userIsReady((data) => {
 TribeSocket.in.room.userAfkUpdate((data) => {
   const room = TribeState.getRoom();
   if (!room) return;
-  room.users[data.userId].isAfk = data.isAfk;
+  const user = room.users[data.userId];
+  if (!user) return;
+  user.isAfk = data.isAfk;
   TribeUserList.update();
   TribeButtons.update();
 });
@@ -433,12 +443,15 @@ TribeSocket.in.room.userAfkUpdate((data) => {
 TribeSocket.in.room.leaderChanged((data) => {
   const room = TribeState.getRoom();
   if (!room) return;
+  const user = room.users[data.userId];
+  if (!user) return;
   for (const userId of Object.keys(room.users)) {
-    delete room.users[userId].isLeader;
+    delete room.users[userId]?.isLeader;
   }
-  room.users[data.userId].isLeader = true;
-  room.users[data.userId].isAfk = false;
-  room.users[data.userId].isReady = false;
+
+  user.isLeader = true;
+  user.isAfk = false;
+  user.isReady = false;
   TribeUserList.update();
   TribeButtons.update();
   TribePageLobby.updateVisibility();
@@ -448,7 +461,9 @@ TribeSocket.in.room.leaderChanged((data) => {
 TribeSocket.in.room.chattingChanged((data) => {
   const room = TribeState.getRoom();
   if (!room) return;
-  room.users[data.userId].isChatting = data.isChatting;
+  const user = room.users[data.userId];
+  if (!user) return;
+  user.isChatting = data.isChatting;
   TribeChat.updateIsTyping();
 });
 
@@ -546,14 +561,15 @@ TribeSocket.in.room.usersUpdate((data) => {
 
   let isChattingChanged = false;
   for (const [userId, user] of Object.entries(data)) {
+    const roomUser = room.users[userId] as TribeTypes.User;
     if (user.isTyping !== undefined) {
-      room.users[userId].isTyping = user.isTyping;
+      roomUser.isTyping = user.isTyping;
     }
-    if (user.isAfk !== undefined) room.users[userId].isAfk = user.isAfk;
-    if (user.isReady !== undefined) room.users[userId].isReady = user.isReady;
+    if (user.isAfk !== undefined) roomUser.isAfk = user.isAfk;
+    if (user.isReady !== undefined) roomUser.isReady = user.isReady;
     if (user.isChatting !== undefined) {
       isChattingChanged = true;
-      room.users[userId].isChatting = user.isChatting;
+      roomUser.isChatting = user.isChatting;
     }
   }
   TribeUserList.update("lobby");
@@ -588,7 +604,7 @@ TribeSocket.in.room.progressUpdate((data) => {
   if (
     TribeState.getState() >= 10 &&
     TribeState.getState() <= 21 &&
-    TestState.isActive === true
+    TestState.isActive
   ) {
     const wpmAndRaw = TestStats.calculateWpmAndRaw();
     const acc = Math.floor(TestStats.calculateAccuracy());
@@ -610,7 +626,7 @@ TribeSocket.in.room.progressUpdate((data) => {
       }
 
       const wordsProgress = Math.floor(
-        (TestWords.words.currentIndex / outof) * 100
+        (TestState.activeWordIndex / outof) * 100
       );
 
       progress = wordsProgress + globalWordProgress;
@@ -625,15 +641,16 @@ TribeSocket.in.room.progressUpdate((data) => {
       raw: wpmAndRaw.raw,
       acc,
       progress,
-      wordIndex: TestWords.words.currentIndex,
+      wordIndex: TestState.activeWordIndex,
       letterIndex: inputLen - 1,
-      afk: TestInput.afkHistory[TestInput.afkHistory.length - 1],
+      afk: TestInput.afkHistory[TestInput.afkHistory.length - 1] ?? false,
     });
   }
 
   TribeCarets.updateAndAnimate(data.users);
 
   for (const [userId, userProgress] of Object.entries(data.users)) {
+    if (room.users[userId] === undefined) continue;
     room.users[userId].progress = userProgress;
     if (userId == TribeSocket.getId()) {
       TribeDelta.update();
@@ -657,9 +674,11 @@ TribeSocket.in.room.progressUpdate((data) => {
 TribeSocket.in.room.userResult((data) => {
   const room = TribeState.getRoom();
   if (!room) return;
-  room.users[data.userId].result = data.result;
-  room.users[data.userId].isFinished = true;
-  room.users[data.userId].isTyping = false;
+  const user = room.users[data.userId];
+  if (!user) return;
+  user.result = data.result;
+  user.isFinished = true;
+  user.isTyping = false;
   const resolve = data.result?.resolve;
   if (
     resolve === undefined ||
@@ -673,13 +692,13 @@ TribeSocket.in.room.userResult((data) => {
 
     let color = undefined;
     if (resolve?.failed === true) {
-      color = "colorfulError" as keyof MonkeyTypes.ThemeColors;
+      color = "colorfulError" as ColorName;
     }
 
     if (color) TribeCarets.changeColor(data.userId, color);
     TribeBars.fadeUser("test", data.userId, color);
     TribeBars.fadeUser("tribe", data.userId, color);
-    if (room.config.isInfiniteTest === false) {
+    if (!room.config.isInfiniteTest) {
       TribeResults.fadeUser("result", data.userId);
     }
     if (resolve?.afk) {
@@ -704,7 +723,7 @@ TribeSocket.in.room.userResult((data) => {
         await TribeChartController.drawChart(data.userId);
       }
       if (TribeState.getState() >= 21) {
-        TribeChartController.updateChartMaxValues();
+        void TribeChartController.updateChartMaxValues();
       }
     }, 250);
   }
@@ -761,14 +780,19 @@ TribeSocket.in.room.finalPositions((data) => {
   TribeResults.updateMiniCrowns("result", data.miniCrowns);
   for (const userArray of Object.values(data.positions)) {
     for (const user of userArray) {
-      room.users[user.id].points = user.newPointsTotal;
+      const u = room.users[user.id] as TribeTypes.User;
+      u.points = user.newPointsTotal;
     }
   }
   TribeUserList.update();
 
   let localGlow = false;
 
-  for (const winner of data.positions["1"]) {
+  const positions = data.positions["1"];
+
+  if (!positions) return;
+
+  for (const winner of positions) {
     if (winner.id === TribeSocket.getId()) {
       localGlow = true;
     }
@@ -786,7 +810,7 @@ TribeSocket.in.room.finalPositions((data) => {
     TribeResults.showCrown("result", winner.id, isGlowing);
   }
 
-  if (data.positions[1].some((u) => u.id === TribeSocket.getId())) {
+  if (positions.some((u) => u.id === TribeSocket.getId())) {
     TribeSound.play("finish_win");
     if (localGlow) {
       TribeSound.play("glow");
@@ -803,7 +827,7 @@ $(`.pageTribe .tribePage.lobby .lobbyButtons .startTestButton,
 
 $(".pageTribe .tribePage.preloader .reconnectButton").on("click", () => {
   TribePagePreloader.hideReconnectButton();
-  init();
+  void init();
 });
 
 window.addEventListener("beforeunload", () => {

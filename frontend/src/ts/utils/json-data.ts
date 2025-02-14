@@ -434,3 +434,18 @@ export async function getReleasesFromGitHub(): Promise<GithubRelease[]> {
     "https://api.github.com/repos/monkeytypegame/monkeytype/releases?per_page=5"
   );
 }
+
+export type Emoji = {
+  type: "image" | "emoji";
+  from: string;
+  to: string;
+};
+
+export async function getEmojiList(): Promise<Emoji[]> {
+  try {
+    const data = await cachedFetchJson<Emoji[]>("/./emoji/_list.json");
+    return data;
+  } catch (e) {
+    throw new Error("Emoji list JSON fetch failed");
+  }
+}

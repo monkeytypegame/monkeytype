@@ -56,6 +56,7 @@ import * as TribeDelta from "../tribe/tribe-delta";
 import * as Random from "../utils/random";
 import * as TribeState from "../tribe/tribe-state";
 import * as Tribe from "../tribe/tribe";
+import * as TribeTypes from "../tribe/types";
 
 export const glarsesMode = false;
 

@@ -1,4 +1,5 @@
 import tribeSocket from "./tribe-socket";
+import * as TribeTypes from "./types";
 
 export let inQueueNumbers = [0, 0, 0, 0];
 

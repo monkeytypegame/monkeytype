@@ -1,6 +1,7 @@
 import * as TribeState from "./tribe-state";
 import * as TribeUserSettingsPopup from "../popups/tribe-user-settings-popup";
 import tribeSocket from "./tribe-socket";
+import { User } from "./types";
 
 export function reset(page?: string): void {
   if (page === undefined) {
@@ -16,7 +17,7 @@ export function reset(page?: string): void {
 export function update(page?: string): void {
   const room = TribeState.getRoom();
   if (!room) return;
-  if (!page) {
+  if (page === undefined) {
     update("lobby");
     update("result");
     return;
@@ -28,8 +29,8 @@ export function update(page?: string): void {
     usersArray.push(room.users[userId]);
   }
   const sortedUsers = usersArray.sort(
-    (a, b) => (b.points ?? 0) - (a.points ?? 0)
-  );
+    (a, b) => (b?.points ?? 0) - (a?.points ?? 0)
+  ) as User[];
   sortedUsers.forEach((user) => {
     let icons = "";
     if (user.isTyping && !user.isFinished) {
