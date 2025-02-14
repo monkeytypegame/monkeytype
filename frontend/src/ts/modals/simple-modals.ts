@@ -48,7 +48,6 @@ type PopupKey =
   | "addPasswordAuth"
   | "deleteAccount"
   | "resetAccount"
-  | "clearTagPb"
   | "optOutOfLeaderboards"
   | "applyCustomFont"
   | "resetPersonalBests"
@@ -74,7 +73,6 @@ const list: Record<PopupKey, SimpleModal | undefined> = {
   addPasswordAuth: undefined,
   deleteAccount: undefined,
   resetAccount: undefined,
-  clearTagPb: undefined,
   optOutOfLeaderboards: undefined,
   applyCustomFont: undefined,
   resetPersonalBests: undefined,
@@ -842,51 +840,6 @@ list.optOutOfLeaderboards = new SimpleModal({
       thisPopup.inputs = [];
       thisPopup.buttonText = "reauthenticate to opt out";
     }
-  },
-});
-
-list.clearTagPb = new SimpleModal({
-  id: "clearTagPb",
-  title: "Clear tag PB",
-  text: "Are you sure you want to clear this tags PB?",
-  buttonText: "clear",
-  execFn: async (thisPopup): Promise<ExecReturn> => {
-    const tagId = thisPopup.parameters[0] as string;
-    const response = await Ape.users.deleteTagPersonalBest({
-      params: { tagId },
-    });
-    if (response.status !== 200) {
-      return {
-        status: -1,
-        message: "Failed to clear tag PB: " + response.body.message,
-      };
-    }
-
-    const tag = DB.getSnapshot()?.tags?.filter((t) => t._id === tagId)[0];
-
-    if (tag === undefined) {
-      return {
-        status: -1,
-        message: "Tag not found",
-      };
-    }
-    tag.personalBests = {
-      time: {},
-      words: {},
-      quote: {},
-      zen: {},
-      custom: {},
-    };
-    $(
-      `.pageSettings .section.tags .tagsList .tag[id="${tagId}"] .clearPbButton`
-    ).attr("aria-label", "No PB found");
-    return {
-      status: 1,
-      message: "Tag PB cleared",
-    };
-  },
-  beforeInitFn: (thisPopup): void => {
-    thisPopup.text = `Are you sure you want to clear PB for tag ${thisPopup.parameters[1]}?`;
   },
 });
 
