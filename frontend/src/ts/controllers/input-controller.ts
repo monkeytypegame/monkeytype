@@ -123,10 +123,10 @@ function backspaceToPrevious(): void {
 
   const wordElements = document.querySelectorAll("#words > .word");
   if (
-    (TestInput.input.history[TestWords.words.currentIndex - 1] ==
-      TestWords.words.get(TestWords.words.currentIndex - 1) &&
+    (TestInput.input.history[TestState.activeWordIndex - 1] ==
+      TestWords.words.get(TestState.activeWordIndex - 1) &&
       !Config.freedomMode) ||
-    wordElements[TestWords.words.currentIndex - 1]?.classList.contains("hidden")
+    wordElements[TestState.activeWordIndex - 1]?.classList.contains("hidden")
   ) {
     return;
   }
@@ -136,7 +136,7 @@ function backspaceToPrevious(): void {
   }
 
   const incorrectLetterBackspaced =
-    wordElements[TestWords.words.currentIndex]?.children[0]?.classList.contains(
+    wordElements[TestState.activeWordIndex]?.children[0]?.classList.contains(
       "incorrect"
     );
   if (Config.stopOnError === "letter" && incorrectLetterBackspaced) {
@@ -149,7 +149,7 @@ function backspaceToPrevious(): void {
     TestInput.input.current = TestInput.input.current.slice(0, -1);
     setWordsInput(" " + TestInput.input.current + " ");
   }
-  TestWords.words.decreaseCurrentIndex();
+  TestState.decreaseActiveWordIndex();
   TestUI.setActiveWordElementIndex(TestUI.activeWordElementIndex - 1);
   TestUI.updateActiveElement(true);
   Funbox.toggleScript(TestWords.words.getCurrent());
@@ -219,10 +219,10 @@ async function handleSpace(): Promise<void> {
     }
     PaceCaret.handleSpace(true, currentWord);
     TestInput.input.pushHistory();
-    TestWords.words.increaseCurrentIndex();
+    TestState.increaseActiveWordIndex();
     Funbox.toggleScript(TestWords.words.getCurrent());
     TestInput.incrementKeypressCount();
-    TestInput.pushKeypressWord(TestWords.words.currentIndex);
+    TestInput.pushKeypressWord(TestState.activeWordIndex);
     if (!nospace) {
       void Sound.playClick();
     }
@@ -271,10 +271,10 @@ async function handleSpace(): Promise<void> {
       TestUI.highlightBadWord(TestUI.activeWordElementIndex);
     }
     TestInput.input.pushHistory();
-    TestWords.words.increaseCurrentIndex();
+    TestState.increaseActiveWordIndex();
     Funbox.toggleScript(TestWords.words.getCurrent());
     TestInput.incrementKeypressCount();
-    TestInput.pushKeypressWord(TestWords.words.currentIndex);
+    TestInput.pushKeypressWord(TestState.activeWordIndex);
     Replay.addReplayEvent("submitErrorWord");
     if (Config.difficulty === "expert" || Config.difficulty === "master") {
       TestLogic.fail("difficulty");
@@ -283,7 +283,7 @@ async function handleSpace(): Promise<void> {
 
   TestInput.corrected.pushHistory();
 
-  const isLastWord = TestWords.words.currentIndex === TestWords.words.length;
+  const isLastWord = TestState.activeWordIndex === TestWords.words.length;
   if (TestLogic.areAllTestWordsGenerated() && isLastWord) {
     void TestLogic.finish();
     return;
@@ -656,7 +656,7 @@ function handleChar(
   }
 
   TestInput.incrementKeypressCount();
-  TestInput.pushKeypressWord(TestWords.words.currentIndex);
+  TestInput.pushKeypressWord(TestState.activeWordIndex);
 
   if (
     Config.difficulty !== "master" &&
@@ -682,7 +682,7 @@ function handleChar(
     ? TestInput.input.current.length
     : Hangul.disassemble(TestInput.input.current).length;
   //update the active word top, but only once
-  if (testInputLength === 1 && TestWords.words.currentIndex === 0) {
+  if (testInputLength === 1 && TestState.activeWordIndex === 0) {
     TestUI.setActiveWordTop(activeWord?.offsetTop);
   }
 
@@ -736,7 +736,7 @@ function handleChar(
     //auto stop the test if the last word is correct
     //do not stop if not all characters have been parsed by handleChar yet
     const currentWord = TestWords.words.getCurrent();
-    const lastWordIndex = TestWords.words.currentIndex;
+    const lastWordIndex = TestState.activeWordIndex;
     const lastWord = lastWordIndex === TestWords.words.length - 1;
     const allWordGenerated = TestLogic.areAllTestWordsGenerated();
     const wordIsTheSame = currentWord === TestInput.input.current;
@@ -1090,8 +1090,8 @@ $(document).on("keydown", async (event) => {
         TestInput.input.current.slice(-1),
         TestInput.input.current.length - 1
       ) &&
-      (TestInput.input.history[TestWords.words.currentIndex - 1] !=
-        TestWords.words.get(TestWords.words.currentIndex - 1) ||
+      (TestInput.input.history[TestState.activeWordIndex - 1] !=
+        TestWords.words.get(TestState.activeWordIndex - 1) ||
         Config.freedomMode)
     ) {
       TestInput.input.current = "";

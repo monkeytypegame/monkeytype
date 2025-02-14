@@ -90,9 +90,8 @@ const miniTimerNumberElement = miniEl[0] as HTMLElement;
 function getCurrentCount(): number {
   if (Config.mode === "custom" && CustomText.getLimitMode() === "section") {
     return (
-      (TestWords.words.sectionIndexList[
-        TestWords.words.currentIndex
-      ] as number) - 1
+      (TestWords.words.sectionIndexList[TestState.activeWordIndex] as number) -
+      1
     );
   } else {
     return TestInput.input.history.length;
@@ -152,7 +151,7 @@ export function update(): void {
     }
     if (Config.timerStyle === "bar") {
       const percent = Math.floor(
-        ((TestWords.words.currentIndex + 1) / outof) * 100
+        ((TestState.activeWordIndex + 1) / outof) * 100
       );
       barEl.stop(true, true).animate(
         {

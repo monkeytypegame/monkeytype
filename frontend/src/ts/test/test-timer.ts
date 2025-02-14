@@ -7,7 +7,6 @@ import * as TimerProgress from "./timer-progress";
 import * as LiveWpm from "./live-speed";
 import * as TestStats from "./test-stats";
 import * as TestInput from "./test-input";
-import * as TestWords from "./test-words";
 import * as Monkey from "./monkey";
 import * as Numbers from "@monkeytype/util/numbers";
 import * as Notifications from "../elements/notifications";
@@ -137,7 +136,7 @@ function checkIfFailed(
   if (
     Config.minWpm === "custom" &&
     wpmAndRaw.wpm < Config.minWpmCustomSpeed &&
-    TestWords.words.currentIndex > 3
+    TestState.activeWordIndex > 3
   ) {
     if (timer !== null) clearTimeout(timer);
     SlowTimer.clear();

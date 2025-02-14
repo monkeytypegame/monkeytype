@@ -21,6 +21,7 @@ import * as JSONData from "../../utils/json-data";
 import { getSection } from "../wikipedia";
 import * as WeakSpot from "../weak-spot";
 import * as IPAddresses from "../../utils/ip-addresses";
+import * as TestState from "../test-state";
 
 export type FunboxFunctions = {
   getWord?: (wordset?: Wordset, wordIndex?: number) => string;
@@ -62,8 +63,8 @@ async function readAheadHandleKeydown(
     event.key == "Backspace" &&
     !isCorrect &&
     (TestInput.input.current != "" ||
-      TestInput.input.history[TestWords.words.currentIndex - 1] !=
-        TestWords.words.get(TestWords.words.currentIndex - 1) ||
+      TestInput.input.history[TestState.activeWordIndex - 1] !=
+        TestWords.words.get(TestState.activeWordIndex - 1) ||
       Config.freedomMode)
   ) {
     $("#words").addClass("read_ahead_disabled");
@@ -350,8 +351,7 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
           (TestInput.input.history.length + 1) / wordsPerLayout
         );
         const mod =
-          wordsPerLayout -
-          ((TestWords.words.currentIndex + 1) % wordsPerLayout);
+          wordsPerLayout - ((TestState.activeWordIndex + 1) % wordsPerLayout);
 
         if (layouts[index] as string) {
           if (mod <= 3 && (layouts[index + 1] as string)) {
