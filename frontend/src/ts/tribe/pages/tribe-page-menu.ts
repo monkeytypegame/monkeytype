@@ -49,7 +49,7 @@ function refreshQueueButtons(): void {
   queues.forEach((queue, id) => {
     if (queue) {
       atleastone = true;
-      $(buttons[id]).addClass("active");
+      $(buttons[id] as HTMLElement).addClass("active");
     }
   });
   if (!atleastone) {

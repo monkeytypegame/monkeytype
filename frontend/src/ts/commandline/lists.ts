@@ -259,7 +259,6 @@ export const commands: CommandsSubgroup = {
     ...TribeDeltaCommands,
     ...TribeCaretsCommands,
 
-
     //sound
     ...SoundVolumeCommands,
     ...SoundOnClickCommands,
@@ -500,12 +499,12 @@ const lists = {
   tags: TagsCommands[0]?.subgroup,
   resultSaving: ResultSavingCommands[0]?.subgroup,
   blindMode: BlindModeCommands[0]?.subgroup,
-  mode: ModeCommands[0].subgroup,
-  time: TimeCommands[0].subgroup,
-  words: WordsCommands[0].subgroup,
-  quoteLength: QuoteLengthCommands[0].subgroup,
-  punctuation: PunctuationCommands[0].subgroup,
-  numbers: NumbersCommands[0].subgroup,
+  mode: ModeCommands[0]?.subgroup,
+  time: TimeCommands[0]?.subgroup,
+  words: WordsCommands[0]?.subgroup,
+  quoteLength: QuoteLengthCommands[0]?.subgroup,
+  punctuation: PunctuationCommands[0]?.subgroup,
+  numbers: NumbersCommands[0]?.subgroup,
 };
 
 export function doesListExist(listName: string): boolean {

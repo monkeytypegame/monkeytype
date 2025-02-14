@@ -589,27 +589,19 @@ function updateWordsHeight(force = false): void {
       $("#wordsWrapper").css({ overflow: "visible clip" });
     }
 
-    $("#wordsWrapper")
-      .css("height", finalWrapperHeight + "px")
-      .css("overflow", "hidden");
-    $(".outOfFocusWarning").css(
-      "margin-top",
-      finalWrapperHeight / 2 - Numbers.convertRemToPixels(1) / 2 + "px"
-    );
+    setTimeout(() => {
+      $("#words").css("height", finalWordsHeight + "px");
+      $("#wordsWrapper").css("height", finalWrapperHeight + "px");
+      $(".outOfFocusWarning").css(
+        "margin-top",
+        finalWrapperHeight / 2 - convertRemToPixels(1) / 2 + "px"
+      );
+      $("#typingTest .tribeCountdown").css(
+        "line-height",
+        finalWrapperHeight + "px"
+      );
+    }, 0);
   }
-
-  setTimeout(() => {
-    $("#words").css("height", finalWordsHeight + "px");
-    $("#wordsWrapper").css("height", finalWrapperHeight + "px");
-    $(".outOfFocusWarning").css(
-      "margin-top",
-      finalWrapperHeight / 2 - convertRemToPixels(1) / 2 + "px"
-    );
-    $("#typingTest .tribeCountdown").css(
-      "line-height",
-      finalWrapperHeight + "px"
-    );
-  }, 0);
 }
 
 export function addWord(word: string): void {
@@ -673,7 +665,7 @@ export async function screenshot(): Promise<void> {
     for (const fb of getActiveFunboxes()) {
       fb.functions?.applyGlobalCSS?.();
     }
-    
+
     if (TribeState.getState() > 5) {
       $(".pageTest #result .inviteLink").removeClass("hidden");
     }
@@ -1658,17 +1650,6 @@ $("#wordsInput").on("focusout", () => {
     OutOfFocus.show();
   }
   Caret.hide();
-});
-
-$(document).on("keypress", "#practiseWordsButton", (event) => {
-  if (event.keyCode == 13) {
-    PractiseWords.showPopup(true);
-  }
-});
-
-$(document.body).on("click", "#practiseWordsButton", () => {
-  // PractiseWords.init();
-  PractiseWords.showPopup();
 });
 
 $(".pageTest").on("click", "#showWordHistoryButton", () => {

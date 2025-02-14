@@ -11,9 +11,9 @@ let colors = {
   colorfulErrorExtra: "#7e2a33",
 };
 
-export async function get(
-  color: keyof MonkeyTypes.ThemeColors
-): Promise<string> {
+export type ColorName = keyof typeof colors;
+
+export async function get(color: ColorName): Promise<string> {
   if (!colors[color]) update();
   return colors[color];
 }

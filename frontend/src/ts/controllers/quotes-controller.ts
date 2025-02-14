@@ -153,9 +153,9 @@ class QuotesController {
 
     if (trulyRandom) {
       if (Config.quoteLength.length === 1) {
-        return randomElementFromArray(
-          this.quoteCollection.groups[Config.quoteLength[0]]
-        );
+        const ql = Config.quoteLength[0] as number;
+        const group = this.quoteCollection.groups[ql] as Quote[];
+        return randomElementFromArray(group);
       } else {
         return randomElementFromArray(this.quoteCollection.quotes);
       }

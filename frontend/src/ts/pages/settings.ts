@@ -434,12 +434,12 @@ async function initGroups(): Promise<void> {
     "tribeDelta",
     UpdateConfig.setTribeDelta,
     "button"
-  ) as SettingsGroup<SharedTypes.ConfigValues>;
+  ) as SettingsGroup<ConfigValue>;
   groups["tribeCarets"] = new SettingsGroup(
     "tribeCarets",
     UpdateConfig.setTribeCarets,
     "button"
-  ) as SettingsGroup<SharedTypes.ConfigValues>;
+  ) as SettingsGroup<ConfigValue>;
   // groups.customLayoutfluid = new SettingsGroup(
   //   "customLayoutfluid",
   //   UpdateConfig.setCustomLayoutfluid

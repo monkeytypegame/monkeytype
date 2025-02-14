@@ -24,6 +24,6 @@ export function play(name: string): void {
   if (!TribeState.getSelf()?.isTyping && ["cd", "cd_go"].includes(name)) {
     return;
   }
-  sounds[name].seek(0);
-  sounds[name].play();
+  sounds[name]?.seek(0);
+  sounds[name]?.play();
 }

@@ -3,7 +3,7 @@ import Config from "../config";
 import * as TestState from "../test/test-state";
 import tribeSocket from "./tribe-socket";
 import * as ConfigEvent from "../observables/config-event";
-import { mapRange } from "../utils/misc";
+import { mapRange } from "@monkeytype/util/numbers";
 
 const el = $(".pageTest #miniTimerAndLiveWpm .tribeDelta");
 const elBar = $(".pageTest #tribeDeltaBar");

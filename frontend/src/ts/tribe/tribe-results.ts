@@ -1,9 +1,9 @@
 import * as TribeState from "./tribe-state";
-import * as Misc from "../utils/misc";
 import Config from "../config";
 import * as SlowTimer from "../states/slow-timer";
 import tribeSocket from "./tribe-socket";
 import { FinalPositions } from "./tribe-socket/routes/room";
+import { getOrdinalNumberString } from "@monkeytype/util/numbers";
 
 const initialised: Record<string, boolean | object> = {};
 
@@ -149,7 +149,7 @@ export function updatePositions(
         const userEl = $(
           `.pageTest #result #tribeResults table tbody tr.user[id="${user.id}"]`
         );
-        const string = Misc.getPositionString(parseInt(position));
+        const string = getOrdinalNumberString(parseInt(position));
         userEl.find(".pos").text(string);
         userEl
           .find(".points")
@@ -164,7 +164,7 @@ export function updatePositions(
       const el = $(".pageTest #result #tribeResults table tbody");
       el.find("tr.user").each((_, userEl) => {
         const id = $(userEl).attr("id");
-        if (id) {
+        if (id !== undefined) {
           elements[id] = $(userEl);
         }
       });
@@ -174,12 +174,13 @@ export function updatePositions(
 
       for (const [_pos, users] of Object.entries(positions)) {
         for (const user of users) {
-          el.append(elements[user.id]);
+          el.append(elements[user.id] as JQuery<HTMLElement>);
+          // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
           delete elements[user.id];
         }
       }
       for (const id of Object.keys(elements)) {
-        el.append(elements[id]);
+        el.append(elements[id] as JQuery<HTMLElement>);
       }
     }
   }
@@ -261,13 +262,13 @@ function updateUser(page: string, userId: string): void {
         otherText = "afk";
       } else if (resolve.repeated) {
         otherText = "repeated";
-      } else if (resolve.failed && room.config.isInfiniteTest === false) {
+      } else if (resolve.failed && !room.config.isInfiniteTest) {
         otherText = `failed(${resolve.failedReason})`;
       } else if (resolve.saved === false) {
         otherText = `save failed(${resolve.saveFailedMessage})`;
       } else if (resolve.valid === false) {
         otherText = `invalid`;
-      } else if (room.config.isInfiniteTest === true) {
+      } else if (room.config.isInfiniteTest) {
         otherText = `${Math.round(userResult.testDuration)}s`;
       } else if (resolve.saved && resolve.isPb) {
         otherText = "new pb";
@@ -280,8 +281,8 @@ function updateUser(page: string, userId: string): void {
 export function update(page: string, userId?: string): void {
   const room = TribeState.getRoom();
   if (!room) return;
-  if (!initialised[page]) init(page);
-  if (userId) {
+  if (initialised[page] === undefined) init(page);
+  if (userId !== undefined) {
     updateUser(page, userId);
   } else {
     for (const [userId, user] of Object.entries(room.users)) {

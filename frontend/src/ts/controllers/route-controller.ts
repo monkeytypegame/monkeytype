@@ -68,7 +68,7 @@ const routes: Route[] = [
           navigate("/tribe", navigateOptions);
         }
       } else {
-        PageController.change("test", {
+        void PageController.change("test", {
           tribeOverride: navigateOptions?.tribeOverride ?? false,
           force: navigateOptions?.force ?? false,
         });
@@ -163,7 +163,7 @@ const routes: Route[] = [
     path: "/tribe",
     load: (params, navigateOptions): void => {
       if (navigateOptions?.tribeOverride === true) {
-        PageController.change("tribe", {
+        void PageController.change("tribe", {
           tribeOverride: navigateOptions?.tribeOverride ?? false,
           force: navigateOptions?.force ?? false,
           params,
@@ -174,7 +174,7 @@ const routes: Route[] = [
       if (TribeState.getState() == 22 && TribeState.getSelf()?.isLeader) {
         tribeSocket.out.room.backToLobby();
       } else {
-        PageController.change("tribe", {
+        void PageController.change("tribe", {
           tribeOverride: navigateOptions?.tribeOverride ?? false,
           force: navigateOptions?.force ?? false,
           params,
@@ -185,8 +185,8 @@ const routes: Route[] = [
   {
     path: "/tribe/:roomId",
     load: (params): void => {
-      setAutoJoin(params["roomId"]);
-      PageController.change("tribe", {
+      setAutoJoin(params["roomId"] as string);
+      void PageController.change("tribe", {
         force: true,
         params,
       });

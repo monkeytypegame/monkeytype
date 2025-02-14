@@ -408,6 +408,7 @@ export const ConfigGroupNameSchema = z.enum([
   "hideElements",
   "ads",
   "hidden",
+  "tribe",
 ]);
 
 export type ConfigGroupName = z.infer<typeof ConfigGroupNameSchema>;
@@ -500,6 +501,8 @@ export const ConfigGroupsLiteral = {
   lazyMode: "input",
   showAverage: "hideElements",
   maxLineWidth: "appearance",
+  tribeDelta: "tribe",
+  tribeCarets: "tribe",
 } as const satisfies Record<ConfigKey, ConfigGroupName>;
 
 export type ConfigGroups = typeof ConfigGroupsLiteral;

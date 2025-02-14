@@ -4,14 +4,15 @@ import tribeSocket from "../tribe/tribe-socket";
 
 export function show(userId: string): void {
   if (!userId) {
-    return Notifications.add(
+    Notifications.add(
       "Cannot show user settings without passing in user id",
       -1
     );
+    return;
   }
   if ($("#tribeUserSettingsPopupWrapper").hasClass("hidden")) {
     $("#tribeUserSettingsPopup .title").text(
-      `User settings (${TribeState.getRoom()?.users[userId].name})`
+      `User settings (${TribeState.getRoom()?.users[userId]?.name})`
     );
     $("#tribeUserSettingsPopup").attr("userid", userId);
     $("#tribeUserSettingsPopupWrapper")
@@ -49,14 +50,14 @@ $("#tribeUserSettingsPopupWrapper").on("click", (e) => {
 
 $("#tribeUserSettingsPopup .button.banButton").on("click", () => {
   const userId = $("#tribeUserSettingsPopup").attr("userid");
-  if (!userId) return;
+  if (userId === undefined) return;
   tribeSocket.out.room.banUser(userId);
   hide();
 });
 
 $("#tribeUserSettingsPopup .button.giveLeaderButton").on("click", () => {
   const userId = $("#tribeUserSettingsPopup").attr("userid");
-  if (!userId) return;
+  if (userId === undefined) return;
   tribeSocket.out.room.giveLeader(userId);
   hide();
 });

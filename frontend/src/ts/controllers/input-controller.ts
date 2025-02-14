@@ -1522,22 +1522,23 @@ $("#wordsInput").on("input", (event) => {
   if (popupVisible) {
     event.preventDefault();
     return;
+  }
 
-    if (
-      [10, 11].includes(TribeState.getState()) &&
-      TribeState.getSelf()?.isTyping
-    ) {
-      event.preventDefault();
-      return;
-    }
+  //this could be wrong
+  if (
+    [10, 11].includes(TribeState.getState()) &&
+    TribeState.getSelf()?.isTyping
+  ) {
+    event.preventDefault();
+    return;
+  }
 
-    if (
-      [10, 11].includes(TribeState.getState()) &&
-      TribeState.getSelf()?.isTyping
-    ) {
-      event.preventDefault();
-      return;
-    }
+  if (
+    [10, 11].includes(TribeState.getState()) &&
+    TribeState.getSelf()?.isTyping
+  ) {
+    event.preventDefault();
+    return;
   }
 
   TestInput.setCurrentNotAfk();

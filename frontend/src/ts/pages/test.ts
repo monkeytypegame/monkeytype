@@ -8,7 +8,6 @@ import { updateFooterAndVerticalAds } from "../controllers/ad-controller";
 import * as ModesNotice from "../elements/modes-notice";
 import * as Keymap from "../elements/keymap";
 import * as TribeState from "../tribe/tribe-state";
-import * as TestConfig from "../test/test-config";
 
 export const page = new Page({
   name: "test",

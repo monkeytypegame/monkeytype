@@ -13,7 +13,9 @@ export function hideLoading(): void {
 export function updateQueueButtons(): void {
   const buttons = $(".pageTribe .menu .matchmaking .buttons .button");
   inQueueNumbers.forEach((num, index) => {
-    $(buttons[index]).find(".subtext .waiting").text(`Waiting: ${num}`);
+    $(buttons[index] as HTMLElement)
+      .find(".subtext .waiting")
+      .text(`Waiting: ${num}`);
   });
 }
 
@@ -41,12 +43,16 @@ export function updateMenuButtons(
 ): void {
   let buttons = $(".pageTribe .menu .matchmaking .buttons .button");
   races.mm.forEach((num: number, index: number) => {
-    $(buttons[index]).find(".subtext .races").text(`Races: ${num}`);
+    $(buttons[index] as HTMLElement)
+      .find(".subtext .races")
+      .text(`Races: ${num}`);
   });
 
   buttons = $(".pageTribe .menu .customRooms .buttons .button");
   races.custom.forEach((num: number, index: number) => {
-    $(buttons[index]).find(".subtext .rooms").text(`Rooms: ${num}`);
+    $(buttons[index] as HTMLElement)
+      .find(".subtext .rooms")
+      .text(`Rooms: ${num}`);
   });
 }
 
@@ -55,7 +61,7 @@ let to: NodeJS.Timeout | null = null;
 export async function refresh(): Promise<void> {
   showLoading();
 
-  tribeSocket.out.system.stats(performance.now()).then((data) => {
+  void tribeSocket.out.system.stats(performance.now()).then((data) => {
     const ping = Math.round(performance.now() - data.pingStart);
     hideLoading();
     setInQueue(data.stats[2]);
@@ -78,7 +84,7 @@ export async function refresh(): Promise<void> {
   ) {
     to = setTimeout(() => {
       to = null;
-      refresh();
+      void refresh();
     }, 15000);
   }
 }

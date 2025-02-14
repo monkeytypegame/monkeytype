@@ -1,4 +1,6 @@
+import { Mode } from "@monkeytype/contracts/schemas/shared";
 import Socket from "../socket";
+import { QuoteLength } from "@monkeytype/contracts/schemas/configs";
 
 async function getPublicRooms(
   _page: number,
@@ -86,8 +88,8 @@ function result(result: TribeTypes.Result): void {
 }
 
 function create(
-  mode: MonkeyTypes.Mode,
-  mode2: string | number | MonkeyTypes.QuoteLength[],
+  mode: Mode,
+  mode2: string | number | QuoteLength[],
   type?: string
 ): void {
   Socket.emit("room_create", { mode, mode2, type });

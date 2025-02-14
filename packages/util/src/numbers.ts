@@ -125,3 +125,19 @@ export function mapRange(
 
   return result;
 }
+
+const suffixes = ["th", "st", "nd", "rd"];
+/**
+ * Gets the ordinal number string for a number.
+ * @param number The number to get the ordinal number string for.
+ * @returns The ordinal number string.
+ * @example getOrdinalNumberString(1) // "1st"
+ * @example getOrdinalNumberString(2) // "2nd"
+ * @returns The ordinal number string.
+ **/
+export function getOrdinalNumberString(number: number): string {
+  const lastTwo = number % 100;
+  const suffix =
+    suffixes[(lastTwo - 20) % 10] ?? suffixes[lastTwo] ?? suffixes[0];
+  return `${number}${suffix}`;
+}

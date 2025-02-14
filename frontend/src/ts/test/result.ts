@@ -969,8 +969,8 @@ export async function update(
       if (room?.users) {
         for (const userId of Object.keys(room.users)) {
           if (userId === TribeState.getSelf()?.id) continue;
-          if (room.users[userId].isFinished) {
-            TribeChartController.drawChart(userId);
+          if (room.users[userId]?.isFinished) {
+            void TribeChartController.drawChart(userId);
           }
         }
       }

@@ -132,19 +132,20 @@ export function updateRoomConfig(): void {
   } else if (room.config.mode === "custom") {
     let t = "Custom settings:";
 
-    t += `\ntext length: ${CustomText.text.length}`;
-    if (CustomText.isTimeRandom || CustomText.isWordRandom) {
-      let r = "";
-      let n = "";
-      if (CustomText.isTimeRandom) {
-        r = "time";
-        n = CustomText.time.toString();
-      } else if (CustomText.isWordRandom) {
-        r = "words";
-        n = CustomText.word.toString();
-      }
-      t += `\nrandom: ${r} ${n}`;
-    }
+    t += `\ntext length: ${CustomText.getText().length}`;
+    //todo
+    // if (CustomText.isTimeRandom || CustomText.isWordRandom) {
+    //   let r = "";
+    //   let n = "";
+    //   if (CustomText.isTimeRandom) {
+    //     r = "time";
+    //     n = CustomText.time.toString();
+    //   } else if (CustomText.isWordRandom) {
+    //     r = "words";
+    //     n = CustomText.word.toString();
+    //   }
+    //   t += `\nrandom: ${r} ${n}`;
+    // }
 
     $(".pageTribe .tribePage.lobby .currentConfig .groups").append(`
     <div class='group' aria-label="${t}" data-balloon-pos="up" data-balloon-break command="changeCustomText">

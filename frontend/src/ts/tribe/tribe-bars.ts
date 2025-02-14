@@ -108,7 +108,7 @@ export function update(page: string, userId: string): void {
   }
   const user = room.users[userId];
 
-  if (!el) {
+  if (!el || !user) {
     return;
   }
 
@@ -162,7 +162,7 @@ export function completeBar(page: string, userId: string): void {
 export function fadeUser(
   page: string | undefined,
   userId: string,
-  changeColor?: keyof MonkeyTypes.ThemeColors
+  changeColor?: ThemeColors.ColorName
 ): void {
   if (page === undefined) {
     fadeUser("test", userId, changeColor);
@@ -181,9 +181,9 @@ export function fadeUser(
 
   el.find(`.player[id=${userId}]`).addClass("faded");
 
-  if (changeColor) {
-    ThemeColors.get(changeColor).then((color) => {
-      if (!el) return;
+  if (changeColor !== undefined) {
+    void ThemeColors.get(changeColor).then((color) => {
+      if (el === undefined) return;
       el.find(`.player[id=${userId}] .bar`).css("background-color", color);
     });
   }

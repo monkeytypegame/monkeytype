@@ -3,18 +3,18 @@ import * as Tribe from "../tribe/tribe";
 import * as TribeState from "../tribe/tribe-state";
 import * as TribeChat from "../tribe/tribe-chat";
 
-export const page = new Page(
-  "tribe",
-  $(".page.pageTribe"),
-  "/tribe",
-  async () => {
+export const page = new Page({
+  name: "tribe",
+  element: $(".page.pageTribe"),
+  path: "/tribe",
+  beforeHide: async () => {
     // TODO: Fill it up later
   },
-  async () => {
+  afterHide: async () => {
     // TODO: Fill it up later
     TribeChat.reset("lobby");
   },
-  async () => {
+  beforeShow: async () => {
     if (TribeState.getState() == 5) {
       TribeChat.fill("lobby");
       setTimeout(() => {
@@ -22,9 +22,9 @@ export const page = new Page(
       }, 50);
     }
   },
-  async () => {
+  afterShow: async () => {
     if (TribeState.getState() < 1) {
-      Tribe.init();
+      void Tribe.init();
     }
-  }
-);
+  },
+});

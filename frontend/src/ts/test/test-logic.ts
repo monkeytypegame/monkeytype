@@ -70,6 +70,7 @@ import Format from "../utils/format";
 import { QuoteLength } from "@monkeytype/contracts/schemas/configs";
 import { Mode } from "@monkeytype/contracts/schemas/shared";
 import {
+  ChartData,
   CompletedEvent,
   CustomTextDataWithTextLen,
 } from "@monkeytype/contracts/schemas/results";
@@ -687,9 +688,9 @@ export async function retrySavingResult(): Promise<void> {
   Notifications.add("Retrying to save...");
 
   const tribeChartData = {
-    wpm: [...(completedEvent.chartData as MonkeyTypes.ChartData).wpm],
-    raw: [...(completedEvent.chartData as MonkeyTypes.ChartData).raw],
-    err: [...(completedEvent.chartData as MonkeyTypes.ChartData).err],
+    wpm: [...(completedEvent.chartData as ChartData).wpm],
+    raw: [...(completedEvent.chartData as ChartData).raw],
+    err: [...(completedEvent.chartData as ChartData).err],
   };
 
   await saveResult(completedEvent, tribeChartData, true);
@@ -1127,11 +1128,11 @@ export async function finish(difficultyFailed = false): Promise<void> {
   );
   Result.updateTodayTracker();
 
-  if (completedEvent.bailedOut === true) {
+  if (completedEvent.bailedOut) {
     resolve.bailedOut = true;
   }
 
-  if (completedEvent.bailedOut === true) {
+  if (completedEvent.bailedOut) {
     resolve.bailedOut = true;
   }
 
@@ -1174,9 +1175,9 @@ export async function finish(difficultyFailed = false): Promise<void> {
   }
 
   const tribeChartData = {
-    wpm: [...(completedEvent.chartData as MonkeyTypes.ChartData).wpm],
-    raw: [...(completedEvent.chartData as MonkeyTypes.ChartData).raw],
-    err: [...(completedEvent.chartData as MonkeyTypes.ChartData).err],
+    wpm: [...(completedEvent.chartData as ChartData).wpm],
+    raw: [...(completedEvent.chartData as ChartData).raw],
+    err: [...(completedEvent.chartData as ChartData).err],
   };
 
   if (completedEvent.testDuration > 122) {
@@ -1188,7 +1189,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
   if (dontSave) {
     void AnalyticsController.log("testCompletedInvalid");
     resolveTestSavePromise(resolve);
-    TribeResults.send({
+    void TribeResults.send({
       wpm: completedEvent.wpm,
       raw: completedEvent.rawWpm,
       acc: completedEvent.acc,
@@ -1221,7 +1222,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
 
 async function saveResult(
   completedEvent: CompletedEvent,
-  tribeChartData: SharedTypes.ChartData,
+  tribeChartData: ChartData,
   isRetrying: boolean
 ): Promise<void> {
   if (!TestState.savingEnabled) {
@@ -1234,7 +1235,7 @@ async function saveResult(
     resolve.saved = false;
     resolve.saveFailedMessage = "Disabled by user";
     resolveTestSavePromise(resolve);
-    TribeResults.send({
+    void TribeResults.send({
       wpm: completedEvent.wpm,
       raw: completedEvent.rawWpm,
       acc: completedEvent.acc,
@@ -1257,7 +1258,7 @@ async function saveResult(
     resolve.saved = false;
     resolve.saveFailedMessage = "Offline";
     resolveTestSavePromise(resolve);
-    TribeResults.send({
+    void TribeResults.send({
       wpm: completedEvent.wpm,
       raw: completedEvent.rawWpm,
       acc: completedEvent.acc,
@@ -1293,9 +1294,9 @@ async function saveResult(
     }
     resolve.login = true;
     resolve.saved = false;
-    resolve.saveFailedMessage = response.message;
+    resolve.saveFailedMessage = response.body.message;
     resolveTestSavePromise(resolve);
-    TribeResults.send({
+    void TribeResults.send({
       wpm: completedEvent.wpm,
       raw: completedEvent.rawWpm,
       acc: completedEvent.acc,
@@ -1433,7 +1434,7 @@ async function saveResult(
 
   resolve.login = true;
   resolve.saved = true;
-  resolve.isPb = response?.data?.isPb ?? false;
+  resolve.isPb = response.body.data?.isPb ?? false;
 
   resolveTestSavePromise(resolve);
 
@@ -1442,7 +1443,7 @@ async function saveResult(
     Notifications.add("Result saved", 1, { important: true });
   }
 
-  TribeResults.send({
+  void TribeResults.send({
     wpm: completedEvent.wpm,
     raw: completedEvent.rawWpm,
     acc: completedEvent.acc,

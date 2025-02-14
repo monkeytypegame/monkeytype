@@ -27,7 +27,7 @@ type PageProperties<T> = {
   name: PageName;
   element: JQuery;
   path: string;
-  beforeHide?: () => Promise<void>;
+  beforeHide?: (options: PageFunctionOptions) => Promise<void>;
   afterHide?: () => Promise<void>;
   beforeShow?: (options: Options<T>) => Promise<void>;
   afterShow?: () => Promise<void>;

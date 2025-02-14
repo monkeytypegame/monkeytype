@@ -1,4 +1,5 @@
 import { roundTo2 } from "@monkeytype/util/numbers";
+import * as Random from "./random";
 
 /**
  * Converts a value in rem units to pixels based on the root element's font size.
