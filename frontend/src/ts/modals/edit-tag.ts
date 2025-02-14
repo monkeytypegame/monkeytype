@@ -2,7 +2,7 @@ import Ape from "../ape";
 import * as DB from "../db";
 import * as Settings from "../pages/settings";
 import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
-import { ExecReturn, SimpleModal, TextInput } from "../utils/simple-modal";
+import { SimpleModal, TextInput } from "../utils/simple-modal";
 import { TagNameSchema } from "@monkeytype/contracts/schemas/users";
 
 const cleanTagName = (tagName: string): string => tagName.replaceAll(" ", "_");
@@ -26,7 +26,7 @@ const actionModals: Record<Action, SimpleModal> = {
     ],
     onlineOnly: true,
     buttonText: "add",
-    execFn: async (_thisPopup, propTagName): Promise<ExecReturn> => {
+    execFn: async (_thisPopup, propTagName) => {
       const tagName = cleanTagName(propTagName);
       const response = await Ape.users.createTag({ body: { tagName } });
 
@@ -68,10 +68,10 @@ const actionModals: Record<Action, SimpleModal> = {
     ],
     onlineOnly: true,
     buttonText: "save",
-    beforeInitFn: (_thisPopup): void => {
+    beforeInitFn: (_thisPopup) => {
       (_thisPopup.inputs[0] as TextInput).initVal = _thisPopup.parameters[0];
     },
-    execFn: async (_thisPopup, propTagName): Promise<ExecReturn> => {
+    execFn: async (_thisPopup, propTagName) => {
       const tagName = cleanTagName(propTagName);
       const tagId = _thisPopup.parameters[1] as string;
 
@@ -105,7 +105,7 @@ const actionModals: Record<Action, SimpleModal> = {
     beforeInitFn: (_thisPopup) => {
       _thisPopup.text = `Are you sure you want to delete tag ${_thisPopup.parameters[0]} ?`;
     },
-    execFn: async (_thisPopup): Promise<ExecReturn> => {
+    execFn: async (_thisPopup) => {
       const tagId = _thisPopup.parameters[1] as string;
       const response = await Ape.users.deleteTag({ params: { tagId } });
 
@@ -133,7 +133,7 @@ const actionModals: Record<Action, SimpleModal> = {
     beforeInitFn: (_thisPopup) => {
       _thisPopup.text = `Are you sure you want to clear personal bests for tag ${_thisPopup.parameters[0]} ?`;
     },
-    execFn: async (_thisPopup): Promise<ExecReturn> => {
+    execFn: async (_thisPopup) => {
       const tagId = _thisPopup.parameters[1] as string;
       const response = await Ape.users.deleteTagPersonalBest({
         params: { tagId },
