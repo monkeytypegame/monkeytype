@@ -186,6 +186,9 @@ function onInsertText({
   event,
   now,
 }: OnInsertTextParams): OnInsertTextReturn {
+  if (data.length > 1) {
+    throw new Error("Multi char input not supported");
+  }
   const correct = isCharCorrect(
     TestInput.input.current,
     TestWords.words.get(TestState.activeWordIndex),
