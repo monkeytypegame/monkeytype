@@ -140,7 +140,16 @@ function onBeforeInsertText({
   }
 }
 
-function onInsertText({ data, event, now }: OnInsertTextParams): boolean {
+type OnInsertTextReturn = {
+  correct: boolean;
+  goToNextWord: boolean;
+};
+
+function onInsertText({
+  data,
+  event,
+  now,
+}: OnInsertTextParams): OnInsertTextReturn {
   const correct = isCharCorrect(
     TestInput.input.current,
     TestWords.words.get(TestState.activeWordIndex),
@@ -149,7 +158,7 @@ function onInsertText({ data, event, now }: OnInsertTextParams): boolean {
 
   const activeWordIndex = TestState.activeWordIndex;
 
-  let canSpaceToNextWord = true;
+  let goToNextWord = true;
 
   if (TestInput.input.current.length === 1) {
     TestInput.setBurstStart(now);
@@ -186,11 +195,11 @@ function onInsertText({ data, event, now }: OnInsertTextParams): boolean {
   if (Config.stopOnError === "letter" && !correct) {
     TestInput.input.current = TestInput.input.current.slice(0, -1);
     setInputValue(TestInput.input.current);
-    canSpaceToNextWord = false;
+    goToNextWord = false;
   }
 
   if (Config.stopOnError === "word" && !correct) {
-    canSpaceToNextWord = false;
+    goToNextWord = false;
   }
 
   TestInput.incrementKeypressCount();
@@ -213,28 +222,11 @@ function onInsertText({ data, event, now }: OnInsertTextParams): boolean {
     }
   }
 
-  let movingToNextWord = false;
-  if (
-    data === " " &&
-    TestInput.input.current.length > 1 &&
-    canSpaceToNextWord
-  ) {
-    movingToNextWord = true;
-    const inputTrimmed = TestInput.input.current.trimEnd();
-    TestInput.input.current = inputTrimmed;
-    TestInput.input.pushHistory();
-    TestInput.corrected.pushHistory();
-    if (activeWordIndex < TestWords.words.length - 1) {
-      TestState.increaseActiveWordIndex();
-    }
-    setInputValue("");
-  }
-
   if (
     (Config.difficulty === "expert" &&
       data === " " &&
       !correct &&
-      movingToNextWord) ||
+      goToNextWord) ||
     (Config.difficulty === "master" && !correct)
   ) {
     TestLogic.fail("difficulty");
@@ -259,7 +251,10 @@ function onInsertText({ data, event, now }: OnInsertTextParams): boolean {
       void TestLogic.finish();
     }
   }
-  return correct;
+  return {
+    correct,
+    goToNextWord,
+  };
 }
 
 function onContentDelete({ realInputValue }: InputEventHandler): void {
@@ -330,6 +325,7 @@ wordsInput.addEventListener("input", (event) => {
   const now = performance.now();
   let playCorrectSound = false;
   let correctInsert = false;
+  let goToNextWord = false;
 
   if (!(event instanceof InputEvent)) {
     event.preventDefault();
@@ -354,13 +350,15 @@ wordsInput.addEventListener("input", (event) => {
   }
 
   if (event.inputType === "insertText" && event.data !== null) {
-    correctInsert = onInsertText({
+    const onInsertReturn = onInsertText({
       inputValue,
       realInputValue,
       event,
       data: event.data,
       now,
     });
+    correctInsert = onInsertReturn.correct;
+    goToNextWord = onInsertReturn.goToNextWord;
     playCorrectSound = correctInsert;
   } else if (event.inputType === "deleteContentBackward") {
     playCorrectSound = true;
@@ -394,10 +392,30 @@ wordsInput.addEventListener("input", (event) => {
   Caret.stopAnimation();
   TestUI.updateActiveElement();
 
+  if (
+    // event.inputType === "insertText" &&
+    event.data === " " &&
+    TestInput.input.current.length > 1 &&
+    goToNextWord
+  ) {
+    if (!correctInsert) {
+      TestUI.highlightBadWord(TestState.activeWordIndex);
+    }
+
+    const inputTrimmed = TestInput.input.current.trimEnd();
+    TestInput.input.current = inputTrimmed;
+    TestInput.input.pushHistory();
+    TestInput.corrected.pushHistory();
+    if (TestState.activeWordIndex < TestWords.words.length - 1) {
+      TestState.increaseActiveWordIndex();
+    }
+    setInputValue("");
+  }
+
   let override: string | undefined = undefined;
   if (
+    // event.inputType === "insertText" &&
     Config.stopOnError === "letter" &&
-    event.inputType === "insertText" &&
     !correctInsert
   ) {
     override = TestInput.input.current + event.data;
