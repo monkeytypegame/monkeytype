@@ -66,8 +66,11 @@ export function getStats(): unknown {
     accuracy: TestInput.accuracy,
     keypressTimings: TestInput.keypressTimings,
     keyOverlap: TestInput.keyOverlap,
-    wordsHistory: TestWords.words.list.slice(0, TestInput.input.history.length),
-    inputHistory: TestInput.input.history,
+    wordsHistory: TestWords.words.list.slice(
+      0,
+      TestInput.input.getHistory().length
+    ),
+    inputHistory: TestInput.input.getHistory(),
   };
 
   try {
@@ -243,7 +246,7 @@ export function removeAfkData(): void {
 function getInputWords(): string[] {
   const containsKorean = TestInput.input.getKoreanStatus();
 
-  let inputWords = [...TestInput.input.history];
+  let inputWords = [...TestInput.input.getHistory()];
 
   if (TestState.isActive) {
     inputWords.push(TestInput.input.current);
@@ -260,7 +263,9 @@ function getTargetWords(): string[] {
   const containsKorean = TestInput.input.getKoreanStatus();
 
   let targetWords = [
-    ...(Config.mode === "zen" ? TestInput.input.history : TestWords.words.list),
+    ...(Config.mode === "zen"
+      ? TestInput.input.getHistory()
+      : TestWords.words.list),
   ];
 
   if (TestState.isActive) {
