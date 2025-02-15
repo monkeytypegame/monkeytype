@@ -442,19 +442,6 @@ wordsInput.addEventListener("input", (event) => {
   }
 
   if (
-    playCorrectSound ||
-    Config.playSoundOnError === "off" ||
-    Config.blindMode
-  ) {
-    void SoundController.playClick();
-  } else {
-    void SoundController.playError();
-  }
-
-  const acc: number = Numbers.roundTo2(TestStats.calculateAccuracy());
-  if (!isNaN(acc)) LiveAcc.update(acc);
-
-  if (
     (Config.difficulty === "expert" &&
       event.data === " " &&
       !correctInsert &&
@@ -532,6 +519,28 @@ wordsInput.addEventListener("input", (event) => {
     Funbox.toggleScript(TestWords.words.getCurrent());
 
     setInputValue("");
+  }
+
+  if (
+    playCorrectSound ||
+    Config.playSoundOnError === "off" ||
+    Config.blindMode
+  ) {
+    void SoundController.playClick();
+  } else {
+    void SoundController.playError();
+  }
+
+  const acc: number = Numbers.roundTo2(TestStats.calculateAccuracy());
+  if (!isNaN(acc)) LiveAcc.update(acc);
+
+  if (Config.keymapMode === "next") {
+    void KeymapEvent.highlight(
+      TestWords.words
+        .getCurrent()
+        .charAt(TestInput.input.current.length)
+        .toString()
+    );
   }
 
   let override: string | undefined = undefined;
