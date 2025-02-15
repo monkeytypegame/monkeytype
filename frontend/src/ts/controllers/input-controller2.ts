@@ -104,7 +104,18 @@ type OnInsertTextParams = InputEventHandler & {
 };
 
 function onBeforeContentDelete({ inputValue, event }: InputEventHandler): void {
-  if (inputValue === "") {
+  const previousWordCorrect =
+    (TestInput.input.get(TestState.activeWordIndex - 1) ?? "") ===
+    TestWords.words.get(TestState.activeWordIndex - 1);
+  const freedomMode = Config.freedomMode;
+  const inputIsEmpty = inputValue === "";
+
+  if (freedomMode) {
+    //allow anything in freedom mode
+    return;
+  }
+
+  if (inputIsEmpty && previousWordCorrect) {
     event.preventDefault();
   }
 }
