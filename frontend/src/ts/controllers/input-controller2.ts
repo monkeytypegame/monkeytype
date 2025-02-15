@@ -107,6 +107,11 @@ type OnInsertTextParams = InputEventHandler & {
 };
 
 function onBeforeContentDelete({ inputValue, event }: InputEventHandler): void {
+  if (!TestState.isActive) {
+    event.preventDefault();
+    return;
+  }
+
   const previousWordCorrect =
     (TestInput.input.get(TestState.activeWordIndex - 1) ?? "") ===
     TestWords.words.get(TestState.activeWordIndex - 1);
@@ -277,6 +282,11 @@ wordsInput.addEventListener("beforeinput", (event) => {
       event,
       now,
     });
+  } else if (event.inputType === "deleteWordBackward") {
+    if (!TestState.isActive) {
+      event.preventDefault();
+      return;
+    }
   }
 });
 
@@ -314,6 +324,11 @@ wordsInput.addEventListener("input", (event) => {
       event,
       now,
     });
+  } else if (event.inputType === "deleteWordBackward") {
+    playCorrectSound = true;
+    if (inputValue === "") {
+      setInputValue("");
+    }
   }
 
   if (
