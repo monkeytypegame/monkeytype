@@ -425,10 +425,6 @@ wordsInput.addEventListener("input", (event) => {
   const acc: number = Numbers.roundTo2(TestStats.calculateAccuracy());
   if (!isNaN(acc)) LiveAcc.update(acc);
 
-  Focus.set(true);
-  Caret.stopAnimation();
-  TestUI.updateActiveElement();
-
   if (
     inputType === "insertText" &&
     event.data === " " &&
@@ -458,6 +454,9 @@ wordsInput.addEventListener("input", (event) => {
     override = TestInput.input.current + event.data;
   }
 
+  Focus.set(true);
+  Caret.stopAnimation();
+  TestUI.updateActiveElement();
   void TestUI.updateActiveWordLetters(override);
   void Caret.updatePosition();
 });
