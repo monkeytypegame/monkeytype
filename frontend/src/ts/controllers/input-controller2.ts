@@ -173,6 +173,8 @@ function onInsertText({ data, event, now }: OnInsertTextParams): boolean {
       incorrectShiftsInARow = 0;
     }
   }
+  TestInput.incrementKeypressCount();
+  TestInput.pushKeypressWord(TestState.activeWordIndex);
 
   if (TestInput.corrected.current === "") {
     TestInput.corrected.current += TestInput.input.current;
