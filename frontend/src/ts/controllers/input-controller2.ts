@@ -20,6 +20,8 @@ import * as LiveAcc from "../test/live-acc";
 
 const wordsInput = document.querySelector("#wordsInput") as HTMLInputElement;
 
+const ignoredInputTypes = ["deleteSoftLineBackward", "deleteSoftLineForward"];
+
 let correctShiftUsed = true;
 let incorrectShiftsInARow = 0;
 
@@ -269,6 +271,11 @@ function setInputValue(value: string): void {
 }
 
 wordsInput.addEventListener("beforeinput", (event) => {
+  if (ignoredInputTypes.includes(event.inputType)) {
+    event.preventDefault();
+    return;
+  }
+
   const realInputValue = wordsInput.value;
   const inputValue = wordsInput.value.slice(1);
   const now = performance.now();
