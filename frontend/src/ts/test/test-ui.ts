@@ -445,6 +445,10 @@ export function showWords(): void {
   }
 }
 
+export function appendEmptyWordElement(): void {
+  $("#words").append("<div class='word'></div>");
+}
+
 const posUpdateLangList = ["japanese", "chinese", "korean"];
 function shouldUpdateWordsInputPosition(): boolean {
   const language = posUpdateLangList.some((l) => Config.language.startsWith(l));

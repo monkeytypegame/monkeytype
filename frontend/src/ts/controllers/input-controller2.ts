@@ -68,6 +68,8 @@ function isCharCorrect(
   targetWord: string,
   index: number
 ): boolean {
+  if (Config.mode === "zen") return true;
+
   const input = inputWord[index];
   const target = targetWord[index];
 
@@ -516,30 +518,24 @@ wordsInput.addEventListener("input", async (event) => {
     void LiveBurst.update(Math.round(burst));
     TestInput.pushBurstToHistory(burst);
 
-    if (
-      Config.mode === "time" ||
-      Config.mode === "words" ||
-      Config.mode === "custom" ||
-      Config.mode === "quote"
-    ) {
-      const lastWord = TestState.activeWordIndex >= TestWords.words.length - 1;
-
-      if (lastWord) {
-        awaitingNextWord = true;
-        Loader.show();
-        await TestLogic.addWord();
-        Loader.hide();
-        awaitingNextWord = false;
-      } else {
-        void TestLogic.addWord();
-      }
+    const lastWord = TestState.activeWordIndex >= TestWords.words.length - 1;
+    if (lastWord) {
+      awaitingNextWord = true;
+      Loader.show();
+      await TestLogic.addWord();
+      Loader.hide();
+      awaitingNextWord = false;
+    } else {
+      void TestLogic.addWord();
     }
-
     const inputTrimmed = TestInput.input.current.trimEnd();
     TestInput.input.current = inputTrimmed;
     TestInput.input.pushHistory();
     TestInput.corrected.pushHistory();
-    if (TestState.activeWordIndex < TestWords.words.length - 1) {
+    if (
+      TestState.activeWordIndex < TestWords.words.length - 1 ||
+      Config.mode === "zen"
+    ) {
       TestState.increaseActiveWordIndex();
     }
 
