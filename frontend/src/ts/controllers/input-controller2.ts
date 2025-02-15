@@ -194,8 +194,6 @@ function onInsertText({
     TestInput.input.current.length - 1
   );
 
-  const activeWordIndex = TestState.activeWordIndex;
-
   let goToNextWord = true;
 
   if (TestInput.input.current.length === 1) {
@@ -260,35 +258,6 @@ function onInsertText({
     }
   }
 
-  if (
-    (Config.difficulty === "expert" &&
-      data === " " &&
-      !correct &&
-      goToNextWord) ||
-    (Config.difficulty === "master" && !correct)
-  ) {
-    TestLogic.fail("difficulty");
-    console.log("failing difficulty");
-  } else {
-    const currentWord = TestWords.words.getCurrent();
-    const lastWord = activeWordIndex >= TestWords.words.length - 1;
-    const allWordGenerated = TestLogic.areAllTestWordsGenerated();
-    const wordIsCorrect =
-      TestInput.input.current === TestWords.words.get(activeWordIndex);
-    const shouldQuickEnd =
-      Config.quickEnd &&
-      currentWord.length === TestInput.input.current.length &&
-      Config.stopOnError === "off";
-    const shouldSpaceEnd = data === " " && Config.stopOnError === "off";
-
-    if (
-      lastWord &&
-      allWordGenerated &&
-      (wordIsCorrect || shouldQuickEnd || shouldSpaceEnd)
-    ) {
-      void TestLogic.finish();
-    }
-  }
   return {
     correct,
     goToNextWord,
@@ -429,6 +398,38 @@ wordsInput.addEventListener("input", (event) => {
 
   const acc: number = Numbers.roundTo2(TestStats.calculateAccuracy());
   if (!isNaN(acc)) LiveAcc.update(acc);
+
+  if (
+    (Config.difficulty === "expert" &&
+      event.data === " " &&
+      !correctInsert &&
+      goToNextWord &&
+      TestInput.input.current.length > 1) ||
+    (Config.difficulty === "master" && !correctInsert)
+  ) {
+    TestLogic.fail("difficulty");
+    console.log("failing difficulty");
+  } else {
+    const currentWord = TestWords.words.getCurrent();
+    const lastWord = TestState.activeWordIndex >= TestWords.words.length - 1;
+    const allWordGenerated = TestLogic.areAllTestWordsGenerated();
+    const wordIsCorrect =
+      TestInput.input.current ===
+      TestWords.words.get(TestState.activeWordIndex);
+    const shouldQuickEnd =
+      Config.quickEnd &&
+      currentWord.length === TestInput.input.current.length &&
+      Config.stopOnError === "off";
+    const shouldSpaceEnd = event.data === " " && Config.stopOnError === "off";
+
+    if (
+      lastWord &&
+      allWordGenerated &&
+      (wordIsCorrect || shouldQuickEnd || shouldSpaceEnd)
+    ) {
+      void TestLogic.finish();
+    }
+  }
 
   if (
     inputType === "insertText" &&
