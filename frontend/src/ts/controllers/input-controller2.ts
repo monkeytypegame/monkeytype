@@ -239,12 +239,22 @@ function onInsertText({ data, event, now }: OnInsertTextParams): boolean {
   ) {
     TestLogic.fail("difficulty");
     console.log("failing difficulty");
-  } else if (activeWordIndex >= TestWords.words.length - 1) {
+  } else {
+    const currentWord = TestWords.words.getCurrent();
+    const lastWord = activeWordIndex >= TestWords.words.length - 1;
+    const allWordGenerated = TestLogic.areAllTestWordsGenerated();
+    const wordIsCorrect =
+      TestInput.input.current === TestWords.words.get(activeWordIndex);
+    const shouldQuickEnd =
+      Config.quickEnd &&
+      currentWord.length === TestInput.input.current.length &&
+      Config.stopOnError === "off";
+    const shouldSpaceEnd = data === " " && Config.stopOnError === "off";
+
     if (
-      TestInput.input.current === TestWords.words.get(activeWordIndex) ||
-      data === " " ||
-      (Config.quickEnd &&
-        TestInput.input.current.length === TestWords.words.getCurrent().length)
+      lastWord &&
+      allWordGenerated &&
+      (wordIsCorrect || shouldQuickEnd || shouldSpaceEnd)
     ) {
       void TestLogic.finish();
     }
