@@ -225,15 +225,18 @@ wordsInput.addEventListener("input", (event) => {
   const realInputValue = wordsInput.value;
   const inputValue = wordsInput.value.trimStart();
   const now = performance.now();
+  let playCorrectSound = false;
 
   if (!(event instanceof InputEvent)) {
     event.preventDefault();
     return;
   }
 
-  TestInput.input.setCurrent(inputValue);
+  if (!TestState.isActive) {
+    TestLogic.startTest(now);
+  }
 
-  let playCorrectSound = false;
+  TestInput.input.setCurrent(inputValue);
 
   if (event.inputType === "insertText" && event.data !== null) {
     const correctInsert = onInsertText({
@@ -252,10 +255,6 @@ wordsInput.addEventListener("input", (event) => {
       event,
       now,
     });
-  }
-
-  if (!TestState.isActive) {
-    TestLogic.startTest(now);
   }
 
   if (
