@@ -96,7 +96,7 @@ type ErrorHistoryObject = {
 
 class Input {
   current: string;
-  history: string[];
+  private history: string[];
   koreanStatus: boolean;
   constructor() {
     this.current = "";
@@ -113,24 +113,8 @@ class Input {
     this.history = [];
   }
 
-  setCurrent(val: string): void {
-    this.current = val;
-  }
-
   setKoreanStatus(val: boolean): void {
     this.koreanStatus = val;
-  }
-
-  appendCurrent(val: string): void {
-    this.current += val;
-  }
-
-  resetCurrent(): void {
-    this.current = "";
-  }
-
-  getCurrent(): string {
-    return this.current;
   }
 
   getKoreanStatus(): boolean {
@@ -139,7 +123,7 @@ class Input {
 
   pushHistory(): void {
     this.history.push(this.current);
-    this.resetCurrent();
+    this.current = "";
   }
 
   popHistory(): string {
@@ -164,30 +148,15 @@ class Input {
 
 class Corrected {
   current: string;
-  history: string[];
+  private history: string[];
   constructor() {
     this.current = "";
     this.history = [];
   }
-  setCurrent(val: string): void {
-    this.current = val;
-  }
-
-  appendCurrent(val: string): void {
-    this.current += val;
-  }
-
-  resetCurrent(): void {
-    this.current = "";
-  }
-
-  resetHistory(): void {
-    this.history = [];
-  }
 
   reset(): void {
-    this.resetCurrent();
-    this.resetHistory();
+    this.history = [];
+    this.current = "";
   }
 
   getHistory(i: number): string | undefined {

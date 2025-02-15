@@ -261,7 +261,10 @@ list.updateEmail = new SimpleModal({
     }
 
     const response = await Ape.users.updateEmail({
-      body: { newEmail: email, previousEmail: reauth.user.email as string },
+      body: {
+        newEmail: email.trim(),
+        previousEmail: reauth.user.email as string,
+      },
     });
 
     if (response.status !== 200) {
