@@ -61,6 +61,7 @@ const ignoredInputTypes = [
 
 let correctShiftUsed = true;
 let incorrectShiftsInARow = 0;
+let awaitingNextWord = false;
 
 function isCharCorrect(
   inputWord: string,
@@ -352,6 +353,11 @@ wordsInput.addEventListener("beforeinput", (event) => {
     }
   }
 
+  if (awaitingNextWord) {
+    event.preventDefault();
+    return;
+  }
+
   const inputType = event.inputType as SupportedInputType;
 
   const realInputValue = wordsInput.value;
@@ -392,7 +398,7 @@ wordsInput.addEventListener("beforeinput", (event) => {
   }
 });
 
-wordsInput.addEventListener("input", (event) => {
+wordsInput.addEventListener("input", async (event) => {
   const realInputValue = wordsInput.value;
   const inputValue = wordsInput.value.slice(1);
   const now = performance.now();
@@ -507,6 +513,25 @@ wordsInput.addEventListener("input", (event) => {
     const burst: number = TestStats.calculateBurst();
     void LiveBurst.update(Math.round(burst));
     TestInput.pushBurstToHistory(burst);
+
+    if (
+      Config.mode === "time" ||
+      Config.mode === "words" ||
+      Config.mode === "custom" ||
+      Config.mode === "quote"
+    ) {
+      const lastWord = TestState.activeWordIndex >= TestWords.words.length - 1;
+
+      if (lastWord) {
+        awaitingNextWord = true;
+        Loader.show();
+        await TestLogic.addWord();
+        Loader.hide();
+        awaitingNextWord = false;
+      } else {
+        void TestLogic.addWord();
+      }
+    }
 
     const inputTrimmed = TestInput.input.current.trimEnd();
     TestInput.input.current = inputTrimmed;
