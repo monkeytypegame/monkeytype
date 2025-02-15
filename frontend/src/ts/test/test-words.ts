@@ -1,16 +1,15 @@
 import { QuoteWithTextSplit } from "../controllers/quotes-controller";
+import * as TestState from "./test-state";
 
 class Words {
   public list: string[];
   public sectionIndexList: number[];
   public length: number;
-  public currentIndex: number;
 
   constructor() {
     this.list = [];
     this.sectionIndexList = [];
     this.length = 0;
-    this.currentIndex = 0;
   }
 
   get(i?: undefined, raw?: boolean): string[];
@@ -27,7 +26,7 @@ class Words {
     }
   }
   getCurrent(): string {
-    return this.list[this.currentIndex] ?? "";
+    return this.list[TestState.activeWordIndex] ?? "";
   }
   getLast(): string {
     return this.list[this.list.length - 1] as string;
@@ -41,17 +40,7 @@ class Words {
   reset(): void {
     this.list = [];
     this.sectionIndexList = [];
-    this.currentIndex = 0;
     this.length = this.list.length;
-  }
-  resetCurrentIndex(): void {
-    this.currentIndex = 0;
-  }
-  decreaseCurrentIndex(): void {
-    this.currentIndex--;
-  }
-  increaseCurrentIndex(): void {
-    this.currentIndex++;
   }
   clean(): void {
     for (const s of this.list) {
