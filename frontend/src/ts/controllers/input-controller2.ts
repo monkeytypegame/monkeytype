@@ -20,7 +20,31 @@ import * as LiveAcc from "../test/live-acc";
 
 const wordsInput = document.querySelector("#wordsInput") as HTMLInputElement;
 
-const ignoredInputTypes = ["deleteSoftLineBackward", "deleteSoftLineForward"];
+const ignoredInputTypes = [
+  "insertReplacementText", //todo reconsider
+  "insertParagraph",
+  "insertOrderedList",
+  "insertUnorderedList",
+  "insertHorizontalRule",
+  "insertFromYank",
+  "insertFromDrop",
+  "insertFromPaste",
+  "insertFromPasteAsQuotation",
+  "insertTranspose",
+  "insertLink",
+  "deleteSoftLineBackward",
+  "deleteSoftLineForward",
+  "deleteEntireSoftLine",
+  "deleteHardLineBackward",
+  "deleteHardLineForward",
+  "deleteByDrag",
+  "deleteByCut",
+  "deleteContent",
+  "deteleContentBackward",
+  "deleteContentForward",
+  "history*",
+  "format*",
+];
 
 let correctShiftUsed = true;
 let incorrectShiftsInARow = 0;
@@ -276,6 +300,20 @@ function setInputValue(value: string): void {
 }
 
 wordsInput.addEventListener("beforeinput", (event) => {
+  for (const ignoredInputType of ignoredInputTypes) {
+    if (ignoredInputType.endsWith("*")) {
+      if (event.inputType.startsWith(ignoredInputType.slice(0, -1))) {
+        event.preventDefault();
+        return;
+      }
+    } else {
+      if (event.inputType === ignoredInputType) {
+        event.preventDefault();
+        return;
+      }
+    }
+  }
+
   if (ignoredInputTypes.includes(event.inputType)) {
     event.preventDefault();
     return;
