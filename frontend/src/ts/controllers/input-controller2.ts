@@ -168,7 +168,12 @@ function onBeforeInsertText({
   inputValue,
   event,
 }: OnInsertTextParams): void {
-  if (data === " " && inputValue === "" && Config.difficulty === "normal") {
+  if (
+    data === " " &&
+    inputValue === "" &&
+    Config.difficulty === "normal" &&
+    !Config.strictSpace
+  ) {
     event?.preventDefault();
   }
 }
