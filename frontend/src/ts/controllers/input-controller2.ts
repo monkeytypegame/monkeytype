@@ -224,7 +224,7 @@ function onInsertText({
 
   if (data !== " " && Config.oppositeShiftMode !== "off") {
     if (!correctShiftUsed) {
-      TestInput.input.current = TestInput.input.current.slice(0, -1);
+      TestInput.input.replaceCurrentLastChar("");
       setInputValue(TestInput.input.current);
       incorrectShiftsInARow++;
       if (incorrectShiftsInARow >= 5) {
@@ -239,7 +239,7 @@ function onInsertText({
   }
 
   if (Config.stopOnError === "letter" && !correct) {
-    TestInput.input.current = TestInput.input.current.slice(0, -1);
+    TestInput.input.replaceCurrentLastChar("");
     setInputValue(TestInput.input.current);
     goToNextWord = false;
   }
@@ -377,7 +377,7 @@ wordsInput.addEventListener("input", (event) => {
     TestLogic.startTest(now);
   }
 
-  TestInput.input.current = inputValue;
+  TestInput.input.current = wordsInput.value.slice(1);
 
   const inputLimit =
     Config.mode === "zen" ? 30 : TestWords.words.getCurrent().length + 20;
