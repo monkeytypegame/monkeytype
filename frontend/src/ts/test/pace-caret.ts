@@ -202,7 +202,7 @@ export async function update(expectedStepEnd: number): Promise<void> {
     try {
       const newIndex =
         settings.currentWordIndex -
-        (TestState.activeWordIndex - TestUI.activeWordElementIndex);
+        (TestState.activeWordIndex - TestState.activeWordIndex); //change the second to hiddenWordOffset when line jump is added
       const word = document.querySelectorAll("#words .word")[
         newIndex
       ] as HTMLElement;
