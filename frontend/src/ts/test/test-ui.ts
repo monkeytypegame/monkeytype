@@ -268,7 +268,7 @@ export function updateActiveElement(
     active.classList.remove("active");
   }
   const newActiveWord = document.querySelectorAll("#words .word")[
-    TestState.activeWordIndex
+    TestState.activeWordIndex - activeWordElementOffset
   ] as HTMLElement | undefined;
 
   if (newActiveWord == undefined) {
@@ -930,7 +930,7 @@ export async function updateActiveWordLetters(
   }
 
   const activeWord = document.querySelectorAll("#words .word")?.[
-    TestState.activeWordIndex
+    TestState.activeWordIndex - activeWordElementOffset
   ] as HTMLElement;
 
   activeWord.innerHTML = ret;
