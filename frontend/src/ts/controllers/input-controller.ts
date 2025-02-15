@@ -115,7 +115,7 @@ function backspaceToPrevious(): void {
   if (!TestState.isActive) return;
 
   if (
-    TestInput.input.history.length === 0 ||
+    TestInput.input.getHistory().length === 0 ||
     TestUI.activeWordElementIndex === 0
   ) {
     return;
@@ -123,7 +123,7 @@ function backspaceToPrevious(): void {
 
   const wordElements = document.querySelectorAll("#words > .word");
   if (
-    (TestInput.input.history[TestState.activeWordIndex - 1] ==
+    (TestInput.input.getHistory(TestState.activeWordIndex - 1) ==
       TestWords.words.get(TestState.activeWordIndex - 1) &&
       !Config.freedomMode) ||
     wordElements[TestState.activeWordIndex - 1]?.classList.contains("hidden")
@@ -1061,7 +1061,7 @@ $(document).on("keydown", async (event) => {
         TestInput.input.current.slice(-1),
         TestInput.input.current.length - 1
       ) &&
-      (TestInput.input.history[TestState.activeWordIndex - 1] !=
+      (TestInput.input.getHistory(TestState.activeWordIndex - 1) !=
         TestWords.words.get(TestState.activeWordIndex - 1) ||
         Config.freedomMode)
     ) {
