@@ -18,6 +18,7 @@ import * as ShiftTracker from "../test/shift-tracker";
 const wordsInput = document.querySelector("#wordsInput") as HTMLInputElement;
 
 let correctShiftUsed = true;
+let incorrectShiftsInARow = 0;
 
 function isCharCorrect(
   inputWord: string,
@@ -142,9 +143,20 @@ function onInsertText({ data, event, now }: OnInsertTextParams): boolean {
     void KeymapEvent.flash(data, correct);
   }
 
-  if (data !== " " && Config.oppositeShiftMode !== "off" && !correctShiftUsed) {
-    TestInput.input.setCurrent(TestInput.input.getCurrent().slice(0, -1));
-    setInputValue(TestInput.input.getCurrent());
+  if (data !== " " && Config.oppositeShiftMode !== "off") {
+    if (!correctShiftUsed) {
+      TestInput.input.setCurrent(TestInput.input.getCurrent().slice(0, -1));
+      setInputValue(TestInput.input.getCurrent());
+      incorrectShiftsInARow++;
+      if (incorrectShiftsInARow >= 5) {
+        Notifications.add("Opposite shift mode is on.", 0, {
+          important: true,
+          customTitle: "Reminder",
+        });
+      }
+    } else {
+      incorrectShiftsInARow = 0;
+    }
   }
 
   let movingToNextWord = false;
