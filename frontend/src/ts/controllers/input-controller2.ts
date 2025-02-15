@@ -132,7 +132,7 @@ function onBeforeInsertText({
 
 function onInsertText({ data, event, now }: OnInsertTextParams): boolean {
   const correct = isCharCorrect(
-    TestInput.input.getCurrent(),
+    TestInput.input.current,
     TestWords.words.get(TestState.activeWordIndex),
     TestInput.input.current.length - 1
   );
@@ -156,8 +156,8 @@ function onInsertText({ data, event, now }: OnInsertTextParams): boolean {
 
   if (data !== " " && Config.oppositeShiftMode !== "off") {
     if (!correctShiftUsed) {
-      TestInput.input.setCurrent(TestInput.input.getCurrent().slice(0, -1));
-      setInputValue(TestInput.input.getCurrent());
+      TestInput.input.current = TestInput.input.current.slice(0, -1);
+      setInputValue(TestInput.input.current);
       incorrectShiftsInARow++;
       if (incorrectShiftsInARow >= 5) {
         Notifications.add("Opposite shift mode is on.", 0, {
@@ -171,14 +171,14 @@ function onInsertText({ data, event, now }: OnInsertTextParams): boolean {
   }
 
   if (TestInput.corrected.current === "") {
-    TestInput.corrected.appendCurrent(TestInput.input.getCurrent());
+    TestInput.corrected.current += TestInput.input.current;
   } else {
     const currCorrectedTestInputLength = TestInput.corrected.current.length;
 
-    const charIndex = TestInput.input.getCurrent().trimEnd().length - 1;
+    const charIndex = TestInput.input.current.trimEnd().length - 1;
 
     if (charIndex >= currCorrectedTestInputLength) {
-      TestInput.corrected.appendCurrent(data);
+      TestInput.corrected.current += data;
     } else if (!correct) {
       TestInput.corrected.current =
         TestInput.corrected.current.substring(0, charIndex) +
@@ -188,10 +188,10 @@ function onInsertText({ data, event, now }: OnInsertTextParams): boolean {
   }
 
   let movingToNextWord = false;
-  if (data === " " && TestInput.input.getCurrent().length > 1) {
+  if (data === " " && TestInput.input.current.length > 1) {
     movingToNextWord = true;
-    const inputTrimmed = TestInput.input.getCurrent().trimEnd();
-    TestInput.input.setCurrent(inputTrimmed);
+    const inputTrimmed = TestInput.input.current.trimEnd();
+    TestInput.input.current = inputTrimmed;
     TestInput.input.pushHistory();
     TestInput.corrected.pushHistory();
     if (activeWordIndex < TestWords.words.length - 1) {
@@ -211,11 +211,10 @@ function onInsertText({ data, event, now }: OnInsertTextParams): boolean {
     console.log("failing difficulty");
   } else if (activeWordIndex >= TestWords.words.length - 1) {
     if (
-      TestInput.input.getCurrent() === TestWords.words.get(activeWordIndex) ||
+      TestInput.input.current === TestWords.words.get(activeWordIndex) ||
       data === " " ||
       (Config.quickEnd &&
-        TestInput.input.getCurrent().length ===
-          TestWords.words.getCurrent().length)
+        TestInput.input.current.length === TestWords.words.getCurrent().length)
     ) {
       void TestLogic.finish();
     }
@@ -229,7 +228,7 @@ function onContentDelete({ realInputValue }: InputEventHandler): void {
       const word = TestInput.input.popHistory();
       TestState.decreaseActiveWordIndex();
       TestInput.corrected.popHistory();
-      TestInput.input.setCurrent(word);
+      TestInput.input.current = word;
       setInputValue(word);
     } else {
       setInputValue("");
@@ -290,7 +289,7 @@ wordsInput.addEventListener("input", (event) => {
     TestLogic.startTest(now);
   }
 
-  TestInput.input.setCurrent(inputValue);
+  TestInput.input.current = inputValue;
 
   if (event.inputType === "insertText" && event.data !== null) {
     const correctInsert = onInsertText({
