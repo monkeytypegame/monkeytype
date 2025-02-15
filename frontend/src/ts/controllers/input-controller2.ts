@@ -467,12 +467,25 @@ wordsInput.addEventListener("input", (event) => {
     }
   }
 
+  const nospace =
+    getActiveFunboxes().find((f) => f.properties?.includes("nospace")) !==
+    undefined;
+
+  const forceNextWord =
+    nospace &&
+    TestInput.input.current.length === TestWords.words.getCurrent().length;
+
   if (
-    inputType === "insertText" &&
-    event.data === " " &&
-    TestInput.input.current.length > 1 &&
-    goToNextWord
+    (inputType === "insertText" &&
+      event.data === " " &&
+      TestInput.input.current.length > 1 &&
+      goToNextWord) ||
+    (inputType === "insertText" && forceNextWord)
   ) {
+    if (forceNextWord) {
+      void TestUI.updateActiveWordLetters();
+    }
+
     if (!correctInsert) {
       TestUI.highlightBadWord(TestState.activeWordIndex);
     }
