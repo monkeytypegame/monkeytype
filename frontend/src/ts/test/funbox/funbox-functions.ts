@@ -63,7 +63,7 @@ async function readAheadHandleKeydown(
     event.key == "Backspace" &&
     !isCorrect &&
     (TestInput.input.current != "" ||
-      TestInput.input.history[TestState.activeWordIndex - 1] !=
+      TestInput.input.getHistory(TestState.activeWordIndex - 1) !=
         TestWords.words.get(TestState.activeWordIndex - 1) ||
       Config.freedomMode)
   ) {
@@ -348,7 +348,7 @@ const list: Partial<Record<FunboxName, FunboxFunctions>> = {
         const outOf: number = TestWords.words.length;
         const wordsPerLayout = Math.floor(outOf / layouts.length);
         const index = Math.floor(
-          (TestInput.input.history.length + 1) / wordsPerLayout
+          (TestInput.input.getHistory().length + 1) / wordsPerLayout
         );
         const mod =
           wordsPerLayout - ((TestState.activeWordIndex + 1) % wordsPerLayout);
