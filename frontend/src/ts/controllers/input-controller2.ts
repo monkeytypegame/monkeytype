@@ -8,6 +8,8 @@ import * as TestWords from "../test/test-words";
 import * as Focus from "../test/focus";
 import * as MonkeyPower from "../elements/monkey-power";
 import { getActiveFunboxes } from "../test/funbox/list";
+import * as SoundController from "./sound-controller";
+import * as KeymapEvent from "../observables/keymap-event";
 
 const wordsInput = document.querySelector("#wordsInput") as HTMLInputElement;
 
@@ -110,7 +112,7 @@ function onBeforeInsertText({
   }
 }
 
-function onInsertText({ data, event, now }: OnInsertTextParams): void {
+function onInsertText({ data, event, now }: OnInsertTextParams): boolean {
   const correct = isCharCorrect(
     TestInput.input.getCurrent(),
     TestWords.words.get(TestState.activeWordIndex),
@@ -128,6 +130,10 @@ function onInsertText({ data, event, now }: OnInsertTextParams): void {
   if (!correct) {
     TestInput.incrementKeypressErrors();
     TestInput.pushMissedWord(TestWords.words.getCurrent());
+  }
+
+  if (Config.keymapMode === "react") {
+    void KeymapEvent.flash(data, correct);
   }
 
   if (data === " ") {
@@ -150,6 +156,7 @@ function onInsertText({ data, event, now }: OnInsertTextParams): void {
       void TestLogic.finish();
     }
   }
+  return correct;
 }
 
 function onContentDelete({ realInputValue }: InputEventHandler): void {
@@ -210,15 +217,19 @@ wordsInput.addEventListener("input", (event) => {
 
   TestInput.input.setCurrent(inputValue);
 
+  let playCorrectSound = false;
+
   if (event.inputType === "insertText" && event.data !== null) {
-    onInsertText({
+    const correctInsert = onInsertText({
       inputValue,
       realInputValue,
       event,
       data: event.data,
       now,
     });
+    playCorrectSound = correctInsert;
   } else if (event.inputType === "deleteContentBackward") {
+    playCorrectSound = true;
     onContentDelete({
       inputValue,
       realInputValue,
@@ -229,6 +240,16 @@ wordsInput.addEventListener("input", (event) => {
 
   if (!TestState.isActive) {
     TestLogic.startTest(now);
+  }
+
+  if (
+    playCorrectSound ||
+    Config.playSoundOnError === "off" ||
+    Config.blindMode
+  ) {
+    void SoundController.playClick();
+  } else {
+    void SoundController.playError();
   }
 
   Focus.set(true);
