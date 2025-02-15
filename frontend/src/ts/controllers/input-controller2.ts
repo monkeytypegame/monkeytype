@@ -189,7 +189,7 @@ function setInputValue(value: string): void {
 
 wordsInput.addEventListener("beforeinput", (event) => {
   const realInputValue = wordsInput.value;
-  const inputValue = realInputValue.trimStart();
+  const inputValue = wordsInput.value.slice(1);
   const now = performance.now();
 
   if (TestUI.resultCalculating) {
@@ -223,7 +223,7 @@ wordsInput.addEventListener("beforeinput", (event) => {
 
 wordsInput.addEventListener("input", (event) => {
   const realInputValue = wordsInput.value;
-  const inputValue = wordsInput.value.trimStart();
+  const inputValue = wordsInput.value.slice(1);
   const now = performance.now();
   let playCorrectSound = false;
 
