@@ -14,6 +14,9 @@ import * as JSONData from "../utils/json-data";
 import * as Notifications from "../elements/notifications";
 import * as KeyConverter from "../utils/key-converter";
 import * as ShiftTracker from "../test/shift-tracker";
+import * as TestStats from "../test/test-stats";
+import * as Numbers from "@monkeytype/util/numbers";
+import * as LiveAcc from "../test/live-acc";
 
 const wordsInput = document.querySelector("#wordsInput") as HTMLInputElement;
 
@@ -144,6 +147,7 @@ function onInsertText({ data, event, now }: OnInsertTextParams): boolean {
   }
 
   void MonkeyPower.addPower(correct);
+  TestInput.incrementAccuracy(correct);
 
   if (!correct) {
     TestInput.incrementKeypressErrors();
@@ -319,6 +323,9 @@ wordsInput.addEventListener("input", (event) => {
   } else {
     void SoundController.playError();
   }
+
+  const acc: number = Numbers.roundTo2(TestStats.calculateAccuracy());
+  if (!isNaN(acc)) LiveAcc.update(acc);
 
   Focus.set(true);
   Caret.stopAnimation();
