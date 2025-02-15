@@ -147,6 +147,8 @@ function onInsertText({ data, event, now }: OnInsertTextParams): boolean {
 
   const activeWordIndex = TestState.activeWordIndex;
 
+  let canSpaceToNextWord = true;
+
   if (TestInput.input.current.length === 1) {
     TestInput.setBurstStart(now);
   }
@@ -178,6 +180,17 @@ function onInsertText({ data, event, now }: OnInsertTextParams): boolean {
       incorrectShiftsInARow = 0;
     }
   }
+
+  if (Config.stopOnError === "letter" && !correct) {
+    TestInput.input.current = TestInput.input.current.slice(0, -1);
+    setInputValue(TestInput.input.current);
+    canSpaceToNextWord = false;
+  }
+
+  if (Config.stopOnError === "word" && !correct) {
+    canSpaceToNextWord = false;
+  }
+
   TestInput.incrementKeypressCount();
   TestInput.pushKeypressWord(TestState.activeWordIndex);
 
@@ -199,7 +212,11 @@ function onInsertText({ data, event, now }: OnInsertTextParams): boolean {
   }
 
   let movingToNextWord = false;
-  if (data === " " && TestInput.input.current.length > 1) {
+  if (
+    data === " " &&
+    TestInput.input.current.length > 1 &&
+    canSpaceToNextWord
+  ) {
     movingToNextWord = true;
     const inputTrimmed = TestInput.input.current.trimEnd();
     TestInput.input.current = inputTrimmed;
@@ -295,6 +312,7 @@ wordsInput.addEventListener("input", (event) => {
   const inputValue = wordsInput.value.slice(1);
   const now = performance.now();
   let playCorrectSound = false;
+  let correctInsert = false;
 
   if (!(event instanceof InputEvent)) {
     event.preventDefault();
@@ -308,7 +326,7 @@ wordsInput.addEventListener("input", (event) => {
   TestInput.input.current = inputValue;
 
   if (event.inputType === "insertText" && event.data !== null) {
-    const correctInsert = onInsertText({
+    correctInsert = onInsertText({
       inputValue,
       realInputValue,
       event,
@@ -347,7 +365,17 @@ wordsInput.addEventListener("input", (event) => {
   Focus.set(true);
   Caret.stopAnimation();
   TestUI.updateActiveElement();
-  void TestUI.updateActiveWordLetters();
+
+  let override: string | undefined = undefined;
+  if (
+    Config.stopOnError === "letter" &&
+    event.inputType === "insertText" &&
+    !correctInsert
+  ) {
+    override = TestInput.input.current + event.data;
+  }
+
+  void TestUI.updateActiveWordLetters(override);
   void Caret.updatePosition();
 });
 
