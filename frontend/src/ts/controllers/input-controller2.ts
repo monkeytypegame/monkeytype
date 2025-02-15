@@ -588,6 +588,8 @@ wordsInput.addEventListener("input", async (event) => {
     }
   }
 
+  TestInput.setCurrentNotAfk();
+
   const nospace =
     getActiveFunboxes().find((f) => f.properties?.includes("nospace")) !==
     undefined;
