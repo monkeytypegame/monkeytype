@@ -170,12 +170,30 @@ function onInsertText({ data, event, now }: OnInsertTextParams): boolean {
     }
   }
 
+  if (TestInput.corrected.current === "") {
+    TestInput.corrected.appendCurrent(TestInput.input.getCurrent());
+  } else {
+    const currCorrectedTestInputLength = TestInput.corrected.current.length;
+
+    const charIndex = TestInput.input.getCurrent().trimEnd().length - 1;
+
+    if (charIndex >= currCorrectedTestInputLength) {
+      TestInput.corrected.appendCurrent(data);
+    } else if (!correct) {
+      TestInput.corrected.current =
+        TestInput.corrected.current.substring(0, charIndex) +
+        data +
+        TestInput.corrected.current.substring(charIndex + 1);
+    }
+  }
+
   let movingToNextWord = false;
   if (data === " " && TestInput.input.getCurrent().length > 1) {
     movingToNextWord = true;
     const inputTrimmed = TestInput.input.getCurrent().trimEnd();
     TestInput.input.setCurrent(inputTrimmed);
     TestInput.input.pushHistory();
+    TestInput.corrected.pushHistory();
     if (activeWordIndex < TestWords.words.length - 1) {
       TestState.increaseActiveWordIndex();
     }
@@ -210,6 +228,7 @@ function onContentDelete({ realInputValue }: InputEventHandler): void {
     if (TestState.activeWordIndex > 0) {
       const word = TestInput.input.popHistory();
       TestState.decreaseActiveWordIndex();
+      TestInput.corrected.popHistory();
       TestInput.input.setCurrent(word);
       setInputValue(word);
     } else {

@@ -133,6 +133,10 @@ class Input {
     this.current = "";
   }
 
+  get(index: number): string | undefined {
+    return this.history[index];
+  }
+
   getCurrent(): string {
     return this.current;
   }
