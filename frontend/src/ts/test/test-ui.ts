@@ -217,6 +217,14 @@ export function setActiveWordElementIndex(val: number): void {
   activeWordElementIndex = val;
 }
 
+export function incrementActiveWordElementIndex(): void {
+  activeWordElementIndex++;
+}
+
+export function decrementActiveWordElementIndex(): void {
+  activeWordElementIndex--;
+}
+
 export function setActiveWordTop(val: number): void {
   activeWordTop = val;
 }
@@ -265,7 +273,7 @@ export function updateActiveElement(
     active.classList.remove("active");
   }
   const newActiveWord = document.querySelectorAll("#words .word")[
-    activeWordElementIndex
+    TestState.activeWordIndex
   ] as HTMLElement | undefined;
 
   if (newActiveWord == undefined) {
@@ -923,7 +931,7 @@ export async function updateActiveWordLetters(
   }
 
   const activeWord = document.querySelectorAll("#words .word")?.[
-    activeWordElementIndex
+    TestState.activeWordIndex
   ] as HTMLElement;
 
   activeWord.innerHTML = ret;

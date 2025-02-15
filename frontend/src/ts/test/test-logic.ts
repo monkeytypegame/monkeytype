@@ -96,6 +96,7 @@ export function startTest(now: number): boolean {
     void AnalyticsController.log("testStartedNoLogin");
   }
 
+  Focus.set(true);
   TestState.setActive(true);
   Replay.startReplayRecording();
   Replay.replayGetWordsList(TestWords.words.list);

@@ -125,6 +125,10 @@ class Input {
     this.current += val;
   }
 
+  deleteCurrent(): void {
+    this.current = this.current.slice(0, -1);
+  }
+
   resetCurrent(): void {
     this.current = "";
   }
