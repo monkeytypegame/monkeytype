@@ -192,6 +192,11 @@ wordsInput.addEventListener("beforeinput", (event) => {
   const inputValue = realInputValue.trimStart();
   const now = performance.now();
 
+  if (TestUI.resultCalculating) {
+    event.preventDefault();
+    return;
+  }
+
   // beforeinput is always typed as inputevent but input is not?
   // if (!(event instanceof InputEvent)) {
   // event.preventDefault();
