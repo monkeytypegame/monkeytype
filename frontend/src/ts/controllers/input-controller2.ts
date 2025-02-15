@@ -291,7 +291,9 @@ async function goToNextWord({
   }
 
   if (!correctInsert) {
-    TestUI.highlightBadWord(TestState.activeWordIndex);
+    TestUI.highlightBadWord(
+      TestState.activeWordIndex - TestUI.activeWordElementOffset
+    );
   }
 
   for (const fb of getActiveFunboxes()) {
