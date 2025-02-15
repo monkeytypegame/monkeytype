@@ -10,8 +10,14 @@ import * as MonkeyPower from "../elements/monkey-power";
 import { getActiveFunboxes } from "../test/funbox/list";
 import * as SoundController from "./sound-controller";
 import * as KeymapEvent from "../observables/keymap-event";
+import * as JSONData from "../utils/json-data";
+import * as Notifications from "../elements/notifications";
+import * as KeyConverter from "../utils/key-converter";
+import * as ShiftTracker from "../test/shift-tracker";
 
 const wordsInput = document.querySelector("#wordsInput") as HTMLInputElement;
+
+let correctShiftUsed = true;
 
 function isCharCorrect(
   inputWord: string,
@@ -134,6 +140,11 @@ function onInsertText({ data, event, now }: OnInsertTextParams): boolean {
 
   if (Config.keymapMode === "react") {
     void KeymapEvent.flash(data, correct);
+  }
+
+  if (data !== " " && Config.oppositeShiftMode !== "off" && !correctShiftUsed) {
+    TestInput.input.setCurrent(TestInput.input.getCurrent().slice(0, -1));
+    setInputValue(TestInput.input.getCurrent());
   }
 
   if (data === " ") {
@@ -271,12 +282,38 @@ wordsInput.addEventListener("select selectstart", (event) => {
   event.preventDefault();
 });
 
-wordsInput.addEventListener("keydown", (event) => {
+wordsInput.addEventListener("keydown", async (event) => {
   if (
     ((event.metaKey || event.ctrlKey) && event.key === "a") ||
     event.key.startsWith("Arrow")
   ) {
     event.preventDefault();
     return;
+  }
+
+  if (Config.oppositeShiftMode !== "off") {
+    if (
+      Config.oppositeShiftMode === "keymap" &&
+      Config.keymapLayout !== "overrideSync"
+    ) {
+      const keymapLayout = await JSONData.getLayout(Config.keymapLayout).catch(
+        () => undefined
+      );
+      if (keymapLayout === undefined) {
+        Notifications.add("Failed to load keymap layout", -1);
+
+        return;
+      }
+      const keycode = KeyConverter.layoutKeyToKeycode(event.key, keymapLayout);
+
+      correctShiftUsed =
+        keycode === undefined
+          ? true
+          : ShiftTracker.isUsingOppositeShift(keycode);
+    } else {
+      correctShiftUsed = ShiftTracker.isUsingOppositeShift(
+        event.code as KeyConverter.Keycode
+      );
+    }
   }
 });
