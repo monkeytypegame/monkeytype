@@ -311,8 +311,17 @@ function onContentDelete({
         TestInput.input.current = "";
         setInputValue("");
       } else if (inputType === "deleteContentBackward") {
-        TestInput.input.current = word;
-        setInputValue(word);
+        const nospace =
+          getActiveFunboxes().find((f) => f.properties?.includes("nospace")) !==
+          undefined;
+
+        if (nospace) {
+          TestInput.input.current = word.slice(0, -1);
+          setInputValue(word.slice(0, -1));
+        } else {
+          TestInput.input.current = word;
+          setInputValue(word);
+        }
       }
     } else {
       setInputValue("");
