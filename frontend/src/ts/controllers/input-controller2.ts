@@ -173,7 +173,8 @@ function onInsertText({ data, event, now }: OnInsertTextParams): boolean {
   let movingToNextWord = false;
   if (data === " " && TestInput.input.getCurrent().length > 1) {
     movingToNextWord = true;
-    TestInput.input.setCurrent(TestInput.input.getCurrent().trimEnd());
+    const inputTrimmed = TestInput.input.getCurrent().trimEnd();
+    TestInput.input.setCurrent(inputTrimmed);
     TestInput.input.pushHistory();
     if (activeWordIndex < TestWords.words.length - 1) {
       TestState.increaseActiveWordIndex();
