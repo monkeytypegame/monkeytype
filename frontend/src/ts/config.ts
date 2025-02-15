@@ -2102,6 +2102,7 @@ export async function apply(
     setShowAverage(configObj.showAverage, true);
     setTapeMode(configObj.tapeMode, true);
     setTapeMargin(configObj.tapeMargin, true);
+    setDeleteOnError(configObj.deleteOnError, true);
 
     ConfigEvent.dispatch(
       "configApplied",

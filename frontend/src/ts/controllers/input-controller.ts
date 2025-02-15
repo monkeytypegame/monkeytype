@@ -235,6 +235,11 @@ async function handleSpace(): Promise<void> {
         void Sound.playError();
       }
     }
+    if (Config.deleteOnError !== "off") {
+      if (handleDeleteOnError(true)) {
+        return;
+      }
+    }
     TestInput.pushMissedWord(TestWords.words.getCurrent());
     TestInput.incrementKeypressErrors();
     const cil: number = TestInput.input.current.length;
@@ -248,18 +253,11 @@ async function handleSpace(): Promise<void> {
           TestInput.corrected.current.substring(cil + 1);
       }
     }
-    if (Config.stopOnError !== "off") {
-      if (Config.difficulty === "expert" || Config.difficulty === "master") {
-        //failed due to diff when pressing space
-        TestLogic.fail("difficulty");
-        return;
-      }
-      if (Config.stopOnError === "word") {
-        dontInsertSpace = false;
-        Replay.addReplayEvent("incorrectLetter", "_");
-        void TestUI.updateActiveWordLetters();
-        void Caret.updatePosition();
-      }
+    if (Config.stopOnError === "word") {
+      dontInsertSpace = false;
+      Replay.addReplayEvent("incorrectLetter", "_");
+      void TestUI.updateActiveWordLetters();
+      void Caret.updatePosition();
       return;
     }
     PaceCaret.handleSpace(false, currentWord);
@@ -457,6 +455,45 @@ function isCharCorrect(char: string, charIndex: number): boolean {
   return false;
 }
 
+function handleDeleteOnError(backspace = false): boolean {
+  if (Config.deleteOnError === "letter") {
+    if (TestInput.input.current.length === 1 - (backspace ? 1 : 0)) {
+      if (TestState.activeWordIndex === 0) {
+        setWordsInput(" ");
+        void TestUI.updateActiveWordLetters();
+      } else {
+        backspaceToPrevious();
+        if (TestInput.input.current) {
+          setWordsInput(" " + TestInput.input.current + " ");
+        }
+      }
+    } else {
+      console.log(TestInput.input.current);
+      TestInput.input.current = TestInput.input.current.slice(
+        0,
+        -2 + (backspace ? 1 : 0)
+      );
+      void TestUI.updateActiveWordLetters();
+      void Caret.updatePosition();
+      Replay.addReplayEvent("setLetterIndex", TestInput.input.current.length);
+    }
+    return true;
+  } else if (Config.deleteOnError === "word") {
+    if (TestInput.input.current.length === 1) {
+      backspaceToPrevious();
+      setWordsInput(" ");
+      Replay.addReplayEvent("backWord");
+    }
+    TestInput.input.current = "";
+    void TestUI.updateActiveWordLetters();
+    void Caret.updatePosition();
+    Replay.addReplayEvent("setLetterIndex", 0);
+    return true;
+  } else {
+    return false;
+  }
+}
+
 function handleChar(
   char: string,
   charIndex: number,
@@ -505,6 +542,10 @@ function handleChar(
   if (char !== "\n" && char !== "\t" && /\s/.test(char)) {
     if (nospace) return;
     void handleSpace();
+
+    if (Config.deleteOnError !== "off") {
+      handleDeleteOnError();
+    }
 
     //insert space for expert and master or strict space,
     //or for stop on error set to word,
@@ -702,33 +743,10 @@ function handleChar(
     return;
   }
 
-  if (Config.deleteOnError === "word" && !thisCharCorrect) {
-    if (TestInput.input.current.length === 1) {
-      backspaceToPrevious();
-      setWordsInput(" ");
-      Replay.addReplayEvent("backWord");
-    }
-    TestInput.input.current = "";
-    void TestUI.updateActiveWordLetters();
-    void Caret.updatePosition();
-    Replay.addReplayEvent("setLetterIndex", 0);
-    return;
-  }
-
-  if (Config.deleteOnError === "letter" && !thisCharCorrect) {
-    if (TestInput.input.current.length === 1) {
-      backspaceToPrevious();
-      if (TestInput.input.current) {
-        setWordsInput(" " + TestInput.input.current + " ");
-      }
-    } else {
-      TestInput.input.current = TestInput.input.current.slice(0, -2);
-      void TestUI.updateActiveWordLetters();
-      void Caret.updatePosition();
-      Replay.addReplayEvent("setLetterIndex", TestInput.input.current.length);
+  if (Config.deleteOnError !== "off" && !thisCharCorrect) {
+    if (handleDeleteOnError()) {
       return;
     }
-    return;
   }
 
   if (Config.mode !== "zen") {
