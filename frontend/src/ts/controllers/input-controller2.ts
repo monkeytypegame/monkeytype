@@ -24,7 +24,8 @@ type SupportedInputType =
   | "insertText"
   | "insertCompositionText"
   | "deleteWordBackward"
-  | "insertLineBreak";
+  | "insertLineBreak"
+  | "deleteContentBackward";
 
 const ignoredInputTypes = [
   "insertReplacementText", //todo reconsider
@@ -45,8 +46,7 @@ const ignoredInputTypes = [
   "deleteHardLineForward",
   "deleteByDrag",
   "deleteByCut",
-  "deleteContent",
-  "deteleContentBackward",
+  "deleteContent", // might break things?
   "deleteContentForward",
   "history*",
   "format*",
@@ -132,16 +132,14 @@ type InputEventHandler = {
   realInputValue: string;
   event: InputEvent;
   now: number;
+  inputType: SupportedInputType;
 };
 
 type OnInsertTextParams = InputEventHandler & {
   data: string;
 };
 
-function onBeforeDeleteWordBackward({
-  inputValue,
-  event,
-}: InputEventHandler): void {
+function onBeforeContentDelete({ inputValue, event }: InputEventHandler): void {
   if (!TestState.isActive) {
     event.preventDefault();
     return;
@@ -264,14 +262,23 @@ function onInsertText({
   };
 }
 
-function onContentDelete({ realInputValue }: InputEventHandler): void {
+function onContentDelete({
+  inputType,
+  realInputValue,
+}: InputEventHandler): void {
   if (realInputValue === "") {
     if (TestState.activeWordIndex > 0) {
       const word = TestInput.input.popHistory();
       TestState.decreaseActiveWordIndex();
       TestInput.corrected.popHistory();
-      TestInput.input.current = word;
-      setInputValue(word);
+
+      if (inputType === "deleteWordBackward") {
+        TestInput.input.current = "";
+        setInputValue("");
+      } else if (inputType === "deleteContentBackward") {
+        TestInput.input.current = word;
+        setInputValue(word);
+      }
     } else {
       setInputValue("");
     }
@@ -316,14 +323,19 @@ wordsInput.addEventListener("beforeinput", (event) => {
 
   if (inputType === "insertText" && event.data !== null) {
     onBeforeInsertText({
+      inputType,
       data: event.data,
       inputValue,
       realInputValue,
       event,
       now,
     });
-  } else if (inputType === "deleteWordBackward") {
-    onBeforeDeleteWordBackward({
+  } else if (
+    inputType === "deleteWordBackward" ||
+    inputType === "deleteContentBackward"
+  ) {
+    onBeforeContentDelete({
+      inputType,
       inputValue,
       realInputValue,
       event,
@@ -367,6 +379,7 @@ wordsInput.addEventListener("input", (event) => {
 
   if (inputType === "insertText" && event.data !== null) {
     const onInsertReturn = onInsertText({
+      inputType,
       inputValue,
       realInputValue,
       event,
@@ -376,9 +389,13 @@ wordsInput.addEventListener("input", (event) => {
     correctInsert = onInsertReturn.correct;
     goToNextWord = onInsertReturn.goToNextWord;
     playCorrectSound = correctInsert;
-  } else if (inputType === "deleteWordBackward") {
+  } else if (
+    inputType === "deleteWordBackward" ||
+    inputType === "deleteContentBackward"
+  ) {
     playCorrectSound = true;
     onContentDelete({
+      inputType,
       inputValue,
       realInputValue,
       event,
