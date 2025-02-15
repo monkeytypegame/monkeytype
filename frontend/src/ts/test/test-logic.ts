@@ -395,7 +395,7 @@ export async function init(): Promise<void> {
   Replay.stopReplayRecording();
   TestWords.words.reset();
   TestState.setActiveWordIndex(0);
-  TestUI.setActiveWordElementIndex(0);
+  TestUI.setActiveWordElementOffset(0);
   TestInput.input.resetHistory();
   TestInput.input.current = "";
 

@@ -200,7 +200,7 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
   if (eventKey === "burstHeatmap") void applyBurstHeatmap();
 });
 
-export let activeWordElementIndex = 0;
+export let activeWordElementOffset = 0;
 export let resultVisible = false;
 export let activeWordTop = 0;
 export let testRestarting = false;
@@ -213,21 +213,13 @@ export function setResultVisible(val: boolean): void {
   resultVisible = val;
 }
 
-export function setActiveWordElementIndex(val: number): void {
-  activeWordElementIndex = val;
-}
-
-export function incrementActiveWordElementIndex(): void {
-  activeWordElementIndex++;
-}
-
-export function decrementActiveWordElementIndex(): void {
-  activeWordElementIndex--;
+export function setActiveWordElementOffset(val: number): void {
+  activeWordElementOffset = val;
 }
 
 export function setActiveWordTop(): void {
   const activeWord = document.querySelectorAll("#words .word")?.[
-    activeWordElementIndex
+    TestState.activeWordIndex
   ] as HTMLElement;
   activeWordTop = activeWord?.offsetTop ?? 0;
 }
@@ -251,7 +243,7 @@ export function setResultCalculating(val: boolean): void {
 
 export function reset(): void {
   currentTestLine = 0;
-  activeWordElementIndex = 0;
+  activeWordElementOffset = 0;
 }
 
 export function focusWords(): void {
@@ -465,7 +457,7 @@ export async function updateWordsInputPosition(initial = false): Promise<void> {
   const el = document.querySelector("#wordsInput") as HTMLElement;
   const activeWord =
     document.querySelectorAll<HTMLElement>("#words .word")[
-      activeWordElementIndex
+      TestState.activeWordIndex - activeWordElementOffset
     ];
 
   if (!activeWord) {
@@ -972,14 +964,15 @@ export function scrollTape(): void {
     return;
   }
 
+  const wordIndex = TestState.activeWordIndex - activeWordElementOffset;
   const wordsWrapperWidth = (
     document.querySelector("#wordsWrapper") as HTMLElement
   ).offsetWidth;
   let fullWordsWidth = 0;
   const toHide: JQuery[] = [];
   let widthToHide = 0;
-  if (activeWordElementIndex > 0) {
-    for (let i = 0; i < activeWordElementIndex; i++) {
+  if (wordIndex > 0) {
+    for (let i = 0; i < wordIndex; i++) {
       const word = document.querySelectorAll("#words .word")[i] as HTMLElement;
       fullWordsWidth += $(word).outerWidth(true) ?? 0;
       const forWordLeft = Math.floor(word.offsetLeft);
@@ -991,7 +984,7 @@ export function scrollTape(): void {
       }
     }
     if (toHide.length > 0) {
-      activeWordElementIndex -= toHide.length;
+      activeWordElementOffset += toHide.length;
       toHide.forEach((e) => e.remove());
       fullWordsWidth -= widthToHide;
       const currentMargin = parseInt($("#words").css("margin-left"), 10);
@@ -1002,7 +995,7 @@ export function scrollTape(): void {
   if (Config.tapeMode === "letter") {
     if (TestInput.input.current.length > 0) {
       const words = document.querySelectorAll("#words .word");
-      const letters = words[activeWordElementIndex]?.querySelectorAll("letter");
+      const letters = words[wordIndex]?.querySelectorAll("letter");
       if (!letters) return;
       for (let i = 0; i < TestInput.input.current.length; i++) {
         const letter = letters[i] as HTMLElement;
@@ -1057,9 +1050,10 @@ export function lineJump(currentTop: number): void {
   ) {
     const hideBound = currentTop;
 
+    const wordIndex = TestState.activeWordIndex - activeWordElementOffset;
     const toHide: JQuery[] = [];
     const wordElements = $("#words .word");
-    for (let i = 0; i < activeWordElementIndex; i++) {
+    for (let i = 0; i < wordIndex; i++) {
       const el = $(wordElements[i] as HTMLElement);
       if (el.hasClass("hidden")) continue;
       const forWordTop = Math.floor((el[0] as HTMLElement).offsetTop);
@@ -1126,18 +1120,18 @@ export function lineJump(currentTop: number): void {
           currentLinesAnimating = 0;
           activeWordTop = (
             document.querySelectorAll("#words .word")?.[
-              activeWordElementIndex
+              wordIndex
             ] as HTMLElement
           )?.offsetTop;
 
-          activeWordElementIndex -= toHide.length;
+          activeWordElementOffset += toHide.length;
           lineTransition = false;
           toHide.forEach((el) => el.remove());
           $("#words").css("marginTop", "0");
         });
     } else {
       toHide.forEach((el) => el.remove());
-      activeWordElementIndex -= toHide.length;
+      activeWordElementOffset += toHide.length;
       $("#paceCaret").css({
         top:
           (document.querySelector("#paceCaret") as HTMLElement).offsetTop -
