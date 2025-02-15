@@ -225,6 +225,59 @@ function handleChar(data: string, now: number): OnInsertTextReturn {
   };
 }
 
+type UpdateUIParams = {
+  playCorrectSound: boolean;
+  inputType: SupportedInputType;
+  correctInsert: boolean;
+  data: string;
+};
+function updateUI({
+  playCorrectSound,
+  inputType,
+  correctInsert,
+  data,
+}: UpdateUIParams): void {
+  if (
+    playCorrectSound ||
+    Config.playSoundOnError === "off" ||
+    Config.blindMode
+  ) {
+    void SoundController.playClick();
+  } else {
+    void SoundController.playError();
+  }
+
+  const acc: number = Numbers.roundTo2(TestStats.calculateAccuracy());
+  if (!isNaN(acc)) LiveAcc.update(acc);
+
+  if (Config.keymapMode === "next") {
+    void KeymapEvent.highlight(
+      TestWords.words
+        .getCurrent()
+        .charAt(TestInput.input.current.length)
+        .toString()
+    );
+  }
+
+  if (Config.mode !== "time") {
+    TimerProgress.update();
+  }
+  Focus.set(true);
+  Caret.stopAnimation();
+  TestUI.updateActiveElement();
+
+  let override: string | undefined = undefined;
+  if (
+    inputType === "insertText" &&
+    Config.stopOnError === "letter" &&
+    !correctInsert
+  ) {
+    override = TestInput.input.current + data;
+  }
+  void TestUI.updateActiveWordLetters(override);
+  void Caret.updatePosition();
+}
+
 type InputEventHandler = {
   inputValue: string;
   realInputValue: string;
@@ -542,45 +595,12 @@ wordsInput.addEventListener("input", async (event) => {
     setInputValue("");
   }
 
-  if (
-    playCorrectSound ||
-    Config.playSoundOnError === "off" ||
-    Config.blindMode
-  ) {
-    void SoundController.playClick();
-  } else {
-    void SoundController.playError();
-  }
-
-  const acc: number = Numbers.roundTo2(TestStats.calculateAccuracy());
-  if (!isNaN(acc)) LiveAcc.update(acc);
-
-  if (Config.keymapMode === "next") {
-    void KeymapEvent.highlight(
-      TestWords.words
-        .getCurrent()
-        .charAt(TestInput.input.current.length)
-        .toString()
-    );
-  }
-
-  if (Config.mode !== "time") {
-    TimerProgress.update();
-  }
-  Focus.set(true);
-  Caret.stopAnimation();
-  TestUI.updateActiveElement();
-
-  let override: string | undefined = undefined;
-  if (
-    inputType === "insertText" &&
-    Config.stopOnError === "letter" &&
-    !correctInsert
-  ) {
-    override = TestInput.input.current + event.data;
-  }
-  void TestUI.updateActiveWordLetters(override);
-  void Caret.updatePosition();
+  updateUI({
+    playCorrectSound,
+    inputType,
+    correctInsert,
+    data: event.data ?? "",
+  });
 });
 
 wordsInput.addEventListener("focus", (event) => {
