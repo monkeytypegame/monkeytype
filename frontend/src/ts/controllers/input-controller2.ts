@@ -159,6 +159,8 @@ function handleChar(data: string, now: number): OnInsertTextReturn {
     TestInput.incrementKeypressErrors();
     TestInput.pushMissedWord(TestWords.words.getCurrent());
   }
+  TestInput.incrementKeypressCount();
+  TestInput.pushKeypressWord(TestState.activeWordIndex);
 
   if (Config.keymapMode === "react") {
     void KeymapEvent.flash(data, correct);
@@ -191,9 +193,6 @@ function handleChar(data: string, now: number): OnInsertTextReturn {
   if (Config.stopOnError === "word" && !correct) {
     goToNextWord = false;
   }
-
-  TestInput.incrementKeypressCount();
-  TestInput.pushKeypressWord(TestState.activeWordIndex);
 
   if (TestInput.corrected.current === "") {
     TestInput.corrected.current += TestInput.input.current;
