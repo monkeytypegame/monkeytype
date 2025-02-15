@@ -543,8 +543,6 @@ wordsInput.addEventListener("input", async (event) => {
       TestState.increaseActiveWordIndex();
     }
 
-    Funbox.toggleScript(TestWords.words.getCurrent());
-
     setInputValue("");
   }
 
@@ -570,6 +568,13 @@ wordsInput.addEventListener("input", async (event) => {
     );
   }
 
+  if (Config.mode !== "time") {
+    TimerProgress.update();
+  }
+  Focus.set(true);
+  Caret.stopAnimation();
+  TestUI.updateActiveElement();
+
   let override: string | undefined = undefined;
   if (
     inputType === "insertText" &&
@@ -578,10 +583,6 @@ wordsInput.addEventListener("input", async (event) => {
   ) {
     override = TestInput.input.current + event.data;
   }
-
-  Focus.set(true);
-  Caret.stopAnimation();
-  TestUI.updateActiveElement();
   void TestUI.updateActiveWordLetters(override);
   void Caret.updatePosition();
 });
