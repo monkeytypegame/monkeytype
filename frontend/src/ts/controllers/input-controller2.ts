@@ -2,6 +2,7 @@ import Config from "../config";
 import * as TestInput from "../test/test-input";
 import * as TestUI from "../test/test-ui";
 import * as Caret from "../test/caret";
+import * as PaceCaret from "../test/pace-caret";
 import * as TestState from "../test/test-state";
 import * as TestLogic from "../test/test-logic";
 import * as TestWords from "../test/test-words";
@@ -19,6 +20,10 @@ import * as Numbers from "@monkeytype/util/numbers";
 import * as LiveAcc from "../test/live-acc";
 import * as WeakSpot from "../test/weak-spot";
 import * as Replay from "../test/replay";
+import * as LiveBurst from "../test/live-burst";
+import * as Funbox from "../test/funbox/funbox";
+import * as Loader from "../elements/loader";
+import * as TimerProgress from "../test/timer-progress";
 
 const wordsInput = document.querySelector("#wordsInput") as HTMLInputElement;
 
@@ -506,6 +511,16 @@ wordsInput.addEventListener("input", (event) => {
       TestUI.highlightBadWord(TestState.activeWordIndex);
     }
 
+    for (const fb of getActiveFunboxes()) {
+      fb.functions?.handleSpace?.();
+    }
+
+    PaceCaret.handleSpace(correctInsert, TestWords.words.getCurrent());
+
+    const burst: number = TestStats.calculateBurst();
+    void LiveBurst.update(Math.round(burst));
+    TestInput.pushBurstToHistory(burst);
+
     const inputTrimmed = TestInput.input.current.trimEnd();
     TestInput.input.current = inputTrimmed;
     TestInput.input.pushHistory();
@@ -513,6 +528,9 @@ wordsInput.addEventListener("input", (event) => {
     if (TestState.activeWordIndex < TestWords.words.length - 1) {
       TestState.increaseActiveWordIndex();
     }
+
+    Funbox.toggleScript(TestWords.words.getCurrent());
+
     setInputValue("");
   }
 
