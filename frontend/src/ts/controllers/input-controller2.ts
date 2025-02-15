@@ -278,6 +278,58 @@ function updateUI({
   void Caret.updatePosition();
 }
 
+type GoToNextWordParams = {
+  forceNextWord: boolean;
+  correctInsert: boolean;
+};
+async function goToNextWord({
+  forceNextWord,
+  correctInsert,
+}: GoToNextWordParams): Promise<void> {
+  if (forceNextWord) {
+    void TestUI.updateActiveWordLetters();
+  }
+
+  if (!correctInsert) {
+    TestUI.highlightBadWord(TestState.activeWordIndex);
+  }
+
+  for (const fb of getActiveFunboxes()) {
+    fb.functions?.handleSpace?.();
+  }
+
+  PaceCaret.handleSpace(correctInsert, TestWords.words.getCurrent());
+
+  Funbox.toggleScript(TestWords.words.get(TestState.activeWordIndex + 1));
+
+  const burst: number = TestStats.calculateBurst();
+  void LiveBurst.update(Math.round(burst));
+  TestInput.pushBurstToHistory(burst);
+
+  const lastWord = TestState.activeWordIndex >= TestWords.words.length - 1;
+  if (lastWord) {
+    awaitingNextWord = true;
+    Loader.show();
+    await TestLogic.addWord();
+    Loader.hide();
+    awaitingNextWord = false;
+  } else {
+    void TestLogic.addWord();
+  }
+  const inputTrimmed = TestInput.input.current.trimEnd();
+  TestInput.input.current = inputTrimmed;
+  TestInput.input.pushHistory();
+  TestInput.corrected.pushHistory();
+  if (
+    TestState.activeWordIndex < TestWords.words.length - 1 ||
+    Config.mode === "zen"
+  ) {
+    TestState.increaseActiveWordIndex();
+  }
+
+  setInputValue("");
+}
+
 type InputEventHandler = {
   inputValue: string;
   realInputValue: string;
@@ -459,7 +511,7 @@ wordsInput.addEventListener("input", async (event) => {
   const now = performance.now();
   let playCorrectSound = false;
   let correctInsert = false;
-  let goToNextWord = false;
+  let shouldGoToNextWord = false;
 
   if (!(event instanceof InputEvent)) {
     event.preventDefault();
@@ -486,7 +538,7 @@ wordsInput.addEventListener("input", async (event) => {
       now,
     });
     correctInsert = onInsertReturn.correct;
-    goToNextWord = onInsertReturn.goToNextWord;
+    shouldGoToNextWord = onInsertReturn.goToNextWord;
     playCorrectSound = correctInsert;
   } else if (
     inputType === "deleteWordBackward" ||
@@ -506,7 +558,7 @@ wordsInput.addEventListener("input", async (event) => {
     (Config.difficulty === "expert" &&
       event.data === " " &&
       !correctInsert &&
-      goToNextWord &&
+      shouldGoToNextWord &&
       TestInput.input.current.length > 1) ||
     (Config.difficulty === "master" && !correctInsert)
   ) {
@@ -537,62 +589,22 @@ wordsInput.addEventListener("input", async (event) => {
   const nospace =
     getActiveFunboxes().find((f) => f.properties?.includes("nospace")) !==
     undefined;
-
   const forceNextWord =
     nospace &&
     TestInput.input.current.length === TestWords.words.getCurrent().length;
-
   const stopOnWordBlock = Config.stopOnError === "word" && !correctInsert;
 
   if (
     (inputType === "insertText" &&
       event.data === " " &&
       TestInput.input.current.length > 1 &&
-      goToNextWord) ||
+      shouldGoToNextWord) ||
     (inputType === "insertText" && forceNextWord && !stopOnWordBlock)
   ) {
-    if (forceNextWord) {
-      void TestUI.updateActiveWordLetters();
-    }
-
-    if (!correctInsert) {
-      TestUI.highlightBadWord(TestState.activeWordIndex);
-    }
-
-    for (const fb of getActiveFunboxes()) {
-      fb.functions?.handleSpace?.();
-    }
-
-    PaceCaret.handleSpace(correctInsert, TestWords.words.getCurrent());
-
-    Funbox.toggleScript(TestWords.words.get(TestState.activeWordIndex + 1));
-
-    const burst: number = TestStats.calculateBurst();
-    void LiveBurst.update(Math.round(burst));
-    TestInput.pushBurstToHistory(burst);
-
-    const lastWord = TestState.activeWordIndex >= TestWords.words.length - 1;
-    if (lastWord) {
-      awaitingNextWord = true;
-      Loader.show();
-      await TestLogic.addWord();
-      Loader.hide();
-      awaitingNextWord = false;
-    } else {
-      void TestLogic.addWord();
-    }
-    const inputTrimmed = TestInput.input.current.trimEnd();
-    TestInput.input.current = inputTrimmed;
-    TestInput.input.pushHistory();
-    TestInput.corrected.pushHistory();
-    if (
-      TestState.activeWordIndex < TestWords.words.length - 1 ||
-      Config.mode === "zen"
-    ) {
-      TestState.increaseActiveWordIndex();
-    }
-
-    setInputValue("");
+    await goToNextWord({
+      forceNextWord,
+      correctInsert,
+    });
   }
 
   updateUI({
