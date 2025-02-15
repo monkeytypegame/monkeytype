@@ -20,6 +20,12 @@ import * as LiveAcc from "../test/live-acc";
 
 const wordsInput = document.querySelector("#wordsInput") as HTMLInputElement;
 
+type SupportedInputType =
+  | "insertText"
+  | "insertCompositionText"
+  | "deleteWordBackward"
+  | "insertLineBreak";
+
 const ignoredInputTypes = [
   "insertReplacementText", //todo reconsider
   "insertParagraph",
@@ -132,7 +138,10 @@ type OnInsertTextParams = InputEventHandler & {
   data: string;
 };
 
-function onBeforeContentDelete({ inputValue, event }: InputEventHandler): void {
+function onBeforeDeleteWordBackward({
+  inputValue,
+  event,
+}: InputEventHandler): void {
   if (!TestState.isActive) {
     event.preventDefault();
     return;
@@ -314,10 +323,7 @@ wordsInput.addEventListener("beforeinput", (event) => {
     }
   }
 
-  if (ignoredInputTypes.includes(event.inputType)) {
-    event.preventDefault();
-    return;
-  }
+  const inputType = event.inputType as SupportedInputType;
 
   const realInputValue = wordsInput.value;
   const inputValue = wordsInput.value.slice(1);
@@ -334,7 +340,7 @@ wordsInput.addEventListener("beforeinput", (event) => {
   // return;
   // }
 
-  if (event.inputType === "insertText" && event.data !== null) {
+  if (inputType === "insertText" && event.data !== null) {
     onBeforeInsertText({
       data: event.data,
       inputValue,
@@ -342,18 +348,13 @@ wordsInput.addEventListener("beforeinput", (event) => {
       event,
       now,
     });
-  } else if (event.inputType === "deleteContentBackward") {
-    onBeforeContentDelete({
+  } else if (inputType === "deleteWordBackward") {
+    onBeforeDeleteWordBackward({
       inputValue,
       realInputValue,
       event,
       now,
     });
-  } else if (event.inputType === "deleteWordBackward") {
-    if (!TestState.isActive) {
-      event.preventDefault();
-      return;
-    }
   }
 });
 
@@ -369,6 +370,9 @@ wordsInput.addEventListener("input", (event) => {
     event.preventDefault();
     return;
   }
+
+  //this is ok to cast because we are preventing default from anything else
+  const inputType = event.inputType as SupportedInputType;
 
   if (!TestState.isActive) {
     TestUI.setActiveWordTop();
@@ -387,7 +391,7 @@ wordsInput.addEventListener("input", (event) => {
     console.error("Hitting word limit");
   }
 
-  if (event.inputType === "insertText" && event.data !== null) {
+  if (inputType === "insertText" && event.data !== null) {
     const onInsertReturn = onInsertText({
       inputValue,
       realInputValue,
@@ -398,7 +402,7 @@ wordsInput.addEventListener("input", (event) => {
     correctInsert = onInsertReturn.correct;
     goToNextWord = onInsertReturn.goToNextWord;
     playCorrectSound = correctInsert;
-  } else if (event.inputType === "deleteContentBackward") {
+  } else if (inputType === "deleteWordBackward") {
     playCorrectSound = true;
     onContentDelete({
       inputValue,
@@ -406,11 +410,6 @@ wordsInput.addEventListener("input", (event) => {
       event,
       now,
     });
-  } else if (event.inputType === "deleteWordBackward") {
-    playCorrectSound = true;
-    if (inputValue === "") {
-      setInputValue("");
-    }
   }
 
   if (
@@ -431,7 +430,7 @@ wordsInput.addEventListener("input", (event) => {
   TestUI.updateActiveElement();
 
   if (
-    // event.inputType === "insertText" &&
+    inputType === "insertText" &&
     event.data === " " &&
     TestInput.input.current.length > 1 &&
     goToNextWord
@@ -452,7 +451,7 @@ wordsInput.addEventListener("input", (event) => {
 
   let override: string | undefined = undefined;
   if (
-    // event.inputType === "insertText" &&
+    inputType === "insertText" &&
     Config.stopOnError === "letter" &&
     !correctInsert
   ) {
