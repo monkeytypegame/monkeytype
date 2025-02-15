@@ -189,6 +189,15 @@ function onInsertText({
   if (data.length > 1) {
     throw new Error("Multi char input not supported");
   }
+
+  for (const fb of getActiveFunboxes()) {
+    if (fb.functions?.handleChar) {
+      data = fb.functions.handleChar(data);
+      TestInput.input.replaceCurrentLastChar(data);
+      setInputValue(TestInput.input.current);
+    }
+  }
+
   const correct = isCharCorrect(
     TestInput.input.current,
     TestWords.words.get(TestState.activeWordIndex),
