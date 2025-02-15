@@ -219,7 +219,7 @@ export function setActiveWordElementOffset(val: number): void {
 
 export function setActiveWordTop(): void {
   const activeWord = document.querySelectorAll("#words .word")?.[
-    TestState.activeWordIndex
+    TestState.activeWordIndex - activeWordElementOffset
   ] as HTMLElement;
   activeWordTop = activeWord?.offsetTop ?? 0;
 }
