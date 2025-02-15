@@ -174,6 +174,14 @@ function onBeforeInsertText({
   ) {
     event?.preventDefault();
   }
+
+  const inputLimit =
+    Config.mode === "zen" ? 30 : TestWords.words.getCurrent().length + 5;
+
+  if (TestInput.input.current.length >= inputLimit) {
+    console.error("Hitting word limit");
+    event.preventDefault();
+  }
 }
 
 type OnInsertTextReturn = {
@@ -378,16 +386,6 @@ wordsInput.addEventListener("input", (event) => {
   }
 
   TestInput.input.current = wordsInput.value.slice(1);
-
-  const inputLimit =
-    Config.mode === "zen" ? 30 : TestWords.words.getCurrent().length + 20;
-
-  if (TestInput.input.current.length > inputLimit) {
-    TestInput.input.current = TestInput.input.current.slice(0, inputLimit);
-    setInputValue(TestInput.input.current);
-  } else {
-    console.error("Hitting word limit");
-  }
 
   if (inputType === "insertText" && event.data !== null) {
     const onInsertReturn = onInsertText({
