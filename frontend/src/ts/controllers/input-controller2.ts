@@ -510,6 +510,8 @@ wordsInput.addEventListener("input", async (event) => {
 
     PaceCaret.handleSpace(correctInsert, TestWords.words.getCurrent());
 
+    Funbox.toggleScript(TestWords.words.get(TestState.activeWordIndex + 1));
+
     const burst: number = TestStats.calculateBurst();
     void LiveBurst.update(Math.round(burst));
     TestInput.pushBurstToHistory(burst);
