@@ -113,7 +113,7 @@ function onBeforeInsertText({
   inputValue,
   event,
 }: OnInsertTextParams): void {
-  if (data === " " && inputValue === "") {
+  if (data === " " && inputValue === "" && Config.difficulty === "normal") {
     event?.preventDefault();
   }
 }
@@ -147,7 +147,9 @@ function onInsertText({ data, event, now }: OnInsertTextParams): boolean {
     setInputValue(TestInput.input.getCurrent());
   }
 
-  if (data === " ") {
+  let movingToNextWord = false;
+  if (data === " " && TestInput.input.getCurrent().length > 1) {
+    movingToNextWord = true;
     TestInput.input.setCurrent(TestInput.input.getCurrent().trimEnd());
     TestInput.input.pushHistory();
     if (activeWordIndex < TestWords.words.length - 1) {
@@ -156,7 +158,16 @@ function onInsertText({ data, event, now }: OnInsertTextParams): boolean {
     setInputValue("");
   }
 
-  if (activeWordIndex >= TestWords.words.length - 1) {
+  if (
+    (Config.difficulty === "expert" &&
+      data === " " &&
+      !correct &&
+      movingToNextWord) ||
+    (Config.difficulty === "master" && !correct)
+  ) {
+    TestLogic.fail("difficulty");
+    console.log("failing difficulty");
+  } else if (activeWordIndex >= TestWords.words.length - 1) {
     if (
       TestInput.input.getCurrent() === TestWords.words.get(activeWordIndex) ||
       data === " " ||
