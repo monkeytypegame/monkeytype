@@ -327,10 +327,21 @@ wordsInput.addEventListener("input", (event) => {
   }
 
   if (!TestState.isActive) {
+    TestUI.setActiveWordTop();
     TestLogic.startTest(now);
   }
 
   TestInput.input.current = inputValue;
+
+  const inputLimit =
+    Config.mode === "zen" ? 30 : TestWords.words.getCurrent().length + 20;
+
+  if (TestInput.input.current.length > inputLimit) {
+    TestInput.input.current = TestInput.input.current.slice(0, inputLimit);
+    setInputValue(TestInput.input.current);
+  } else {
+    console.error("Hitting word limit");
+  }
 
   if (event.inputType === "insertText" && event.data !== null) {
     correctInsert = onInsertText({

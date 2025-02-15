@@ -225,8 +225,11 @@ export function decrementActiveWordElementIndex(): void {
   activeWordElementIndex--;
 }
 
-export function setActiveWordTop(val: number): void {
-  activeWordTop = val;
+export function setActiveWordTop(): void {
+  const activeWord = document.querySelectorAll("#words .word")?.[
+    activeWordElementIndex
+  ] as HTMLElement;
+  activeWordTop = activeWord?.offsetTop ?? 0;
 }
 
 let restartingResolve: null | ((value?: unknown) => void);
