@@ -127,77 +127,7 @@ function isCharCorrect(
   return false;
 }
 
-type InputEventHandler = {
-  inputValue: string;
-  realInputValue: string;
-  event: InputEvent;
-  now: number;
-  inputType: SupportedInputType;
-};
-
-type OnInsertTextParams = InputEventHandler & {
-  data: string;
-};
-
-function onBeforeContentDelete({ inputValue, event }: InputEventHandler): void {
-  if (!TestState.isActive) {
-    event.preventDefault();
-    return;
-  }
-
-  const previousWordCorrect =
-    (TestInput.input.get(TestState.activeWordIndex - 1) ?? "") ===
-    TestWords.words.get(TestState.activeWordIndex - 1);
-  const freedomMode = Config.freedomMode;
-  const inputIsEmpty = inputValue === "";
-
-  if (freedomMode) {
-    //allow anything in freedom mode
-    return;
-  }
-
-  if (inputIsEmpty && previousWordCorrect) {
-    event.preventDefault();
-  }
-}
-
-function onBeforeInsertText({
-  data,
-  inputValue,
-  event,
-}: OnInsertTextParams): void {
-  if (
-    data === " " &&
-    inputValue === "" &&
-    Config.difficulty === "normal" &&
-    !Config.strictSpace
-  ) {
-    event?.preventDefault();
-  }
-
-  const inputLimit =
-    Config.mode === "zen" ? 30 : TestWords.words.getCurrent().length + 5;
-
-  if (TestInput.input.current.length >= inputLimit) {
-    console.error("Hitting word limit");
-    event.preventDefault();
-  }
-}
-
-type OnInsertTextReturn = {
-  correct: boolean;
-  goToNextWord: boolean;
-};
-
-function onInsertText({
-  data,
-  event,
-  now,
-}: OnInsertTextParams): OnInsertTextReturn {
-  if (data.length > 1) {
-    throw new Error("Multi char input not supported");
-  }
-
+function handleChar(data: string, now: number): OnInsertTextReturn {
   for (const fb of getActiveFunboxes()) {
     if (fb.functions?.handleChar) {
       data = fb.functions.handleChar(data);
@@ -279,6 +209,85 @@ function onInsertText({
   return {
     correct,
     goToNextWord,
+  };
+}
+
+type InputEventHandler = {
+  inputValue: string;
+  realInputValue: string;
+  event: InputEvent;
+  now: number;
+  inputType: SupportedInputType;
+};
+
+type OnInsertTextParams = InputEventHandler & {
+  data: string;
+};
+
+function onBeforeContentDelete({ inputValue, event }: InputEventHandler): void {
+  if (!TestState.isActive) {
+    event.preventDefault();
+    return;
+  }
+
+  const previousWordCorrect =
+    (TestInput.input.get(TestState.activeWordIndex - 1) ?? "") ===
+    TestWords.words.get(TestState.activeWordIndex - 1);
+  const freedomMode = Config.freedomMode;
+  const inputIsEmpty = inputValue === "";
+
+  if (freedomMode) {
+    //allow anything in freedom mode
+    return;
+  }
+
+  if (inputIsEmpty && previousWordCorrect) {
+    event.preventDefault();
+  }
+}
+
+function onBeforeInsertText({
+  data,
+  inputValue,
+  event,
+}: OnInsertTextParams): void {
+  if (
+    data === " " &&
+    inputValue === "" &&
+    Config.difficulty === "normal" &&
+    !Config.strictSpace
+  ) {
+    event?.preventDefault();
+  }
+
+  const inputLimit =
+    Config.mode === "zen" ? 30 : TestWords.words.getCurrent().length + 5;
+
+  if (TestInput.input.current.length >= inputLimit) {
+    console.error("Hitting word limit");
+    event.preventDefault();
+  }
+}
+
+type OnInsertTextReturn = {
+  correct: boolean;
+  goToNextWord: boolean;
+};
+
+function onInsertText({
+  data,
+  event,
+  now,
+}: OnInsertTextParams): OnInsertTextReturn {
+  if (data.length > 1) {
+    throw new Error("Multi char input not supported");
+  }
+
+  const charReturn = handleChar(data, now);
+
+  return {
+    correct: charReturn.correct,
+    goToNextWord: charReturn.goToNextWord,
   };
 }
 
