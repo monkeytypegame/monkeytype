@@ -475,12 +475,14 @@ wordsInput.addEventListener("input", (event) => {
     nospace &&
     TestInput.input.current.length === TestWords.words.getCurrent().length;
 
+  const stopOnWordBlock = Config.stopOnError === "word" && !correctInsert;
+
   if (
     (inputType === "insertText" &&
       event.data === " " &&
       TestInput.input.current.length > 1 &&
       goToNextWord) ||
-    (inputType === "insertText" && forceNextWord)
+    (inputType === "insertText" && forceNextWord && !stopOnWordBlock)
   ) {
     if (forceNextWord) {
       void TestUI.updateActiveWordLetters();
