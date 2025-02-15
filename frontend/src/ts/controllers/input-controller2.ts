@@ -17,6 +17,8 @@ import * as ShiftTracker from "../test/shift-tracker";
 import * as TestStats from "../test/test-stats";
 import * as Numbers from "@monkeytype/util/numbers";
 import * as LiveAcc from "../test/live-acc";
+import * as WeakSpot from "../test/weak-spot";
+import * as Replay from "../test/replay";
 
 const wordsInput = document.querySelector("#wordsInput") as HTMLInputElement;
 
@@ -128,6 +130,8 @@ function isCharCorrect(
 }
 
 function handleChar(data: string, now: number): OnInsertTextReturn {
+  let goToNextWord = true;
+
   for (const fb of getActiveFunboxes()) {
     if (fb.functions?.handleChar) {
       data = fb.functions.handleChar(data);
@@ -142,7 +146,7 @@ function handleChar(data: string, now: number): OnInsertTextReturn {
     TestInput.input.current.length - 1
   );
 
-  let goToNextWord = true;
+  Replay.addReplayEvent(correct ? "correctLetter" : "incorrectLetter", data);
 
   if (TestInput.input.current.length === 1) {
     TestInput.setBurstStart(now);
@@ -159,6 +163,8 @@ function handleChar(data: string, now: number): OnInsertTextReturn {
   if (Config.keymapMode === "react") {
     void KeymapEvent.flash(data, correct);
   }
+
+  WeakSpot.updateScore(data, correct);
 
   if (data !== " " && Config.oppositeShiftMode !== "off") {
     if (!correctShiftUsed) {
