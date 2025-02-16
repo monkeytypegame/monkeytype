@@ -498,7 +498,7 @@ wordsInput.addEventListener("input", async (event) => {
   const now = performance.now();
   let playCorrectSound = false;
   let correctInsert = false;
-  let shouldGoToNextWord = false;
+  let shouldGoToNextWord = true;
 
   if (!(event instanceof InputEvent)) {
     event.preventDefault();
