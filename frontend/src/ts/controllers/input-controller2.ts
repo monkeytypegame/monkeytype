@@ -548,10 +548,6 @@ wordsInput.addEventListener("input", async (event) => {
     shouldGoToNextWord = false;
   }
 
-  if (Config.stopOnError === "word" && !correctInsert) {
-    shouldGoToNextWord = false;
-  }
-
   if (
     (Config.difficulty === "expert" &&
       event.data === " " &&
@@ -598,7 +594,8 @@ wordsInput.addEventListener("input", async (event) => {
     (inputType === "insertText" &&
       event.data === " " &&
       TestInput.input.current.length > 1 &&
-      shouldGoToNextWord) ||
+      shouldGoToNextWord &&
+      !stopOnWordBlock) ||
     (inputType === "insertText" && forceNextWord && !stopOnWordBlock)
   ) {
     await goToNextWord({
