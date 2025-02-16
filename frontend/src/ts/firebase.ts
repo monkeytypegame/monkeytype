@@ -1,6 +1,12 @@
 // Import the functions you need from the SDKs you need
 import { FirebaseApp, initializeApp } from "firebase/app";
-import { getAuth, Auth as AuthType, User } from "firebase/auth";
+import {
+  getAuth,
+  Auth as AuthType,
+  User,
+  connectAuthEmulator,
+} from "firebase/auth";
+
 // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
 //@ts-ignore
 // eslint-disable-next-line import/no-unresolved
@@ -28,6 +34,7 @@ export function getAuthenticatedUser(): User {
 try {
   app = initializeApp(firebaseConfig);
   Auth = getAuth(app);
+  connectAuthEmulator(Auth, "http://localhost:9099"); // this works for docker-compose
 } catch (e) {
   app = undefined;
   Auth = undefined;
