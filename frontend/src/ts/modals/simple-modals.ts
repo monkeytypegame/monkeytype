@@ -35,7 +35,7 @@ import {
 } from "../utils/simple-modal";
 import { ShowOptions } from "../utils/animated-modal";
 import { GenerateDataRequest } from "@monkeytype/contracts/dev";
-import { UserNameSchema } from "@monkeytype/contracts/users";
+import { UserEmailSchema, UserNameSchema } from "@monkeytype/contracts/users";
 import { goToPage } from "../pages/leaderboards";
 
 type PopupKey =
@@ -230,11 +230,21 @@ list.updateEmail = new SimpleModal({
       type: "text",
       placeholder: "New email",
       initVal: "",
+      validation: {
+        schema: UserEmailSchema,
+      },
     },
     {
       type: "text",
       placeholder: "Confirm new email",
       initVal: "",
+      validation: {
+        schema: UserEmailSchema,
+        isValid: async (confirm) =>
+          confirm ===
+            (document.getElementById("updateEmail_1") as HTMLInputElement)
+              .value || "not matching email",
+      },
     },
   ],
   buttonText: "update",
@@ -262,7 +272,7 @@ list.updateEmail = new SimpleModal({
 
     const response = await Ape.users.updateEmail({
       body: {
-        newEmail: email.trim(),
+        newEmail: email,
         previousEmail: reauth.user.email as string,
       },
     });
