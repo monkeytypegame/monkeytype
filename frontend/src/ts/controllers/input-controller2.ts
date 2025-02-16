@@ -138,8 +138,6 @@ function isCharCorrect(
 }
 
 function handleChar(data: string, now: number): OnInsertTextReturn {
-  let goToNextWord = true;
-
   for (const fb of getActiveFunboxes()) {
     if (fb.functions?.handleChar) {
       data = fb.functions.handleChar(data);
@@ -192,16 +190,6 @@ function handleChar(data: string, now: number): OnInsertTextReturn {
     }
   }
 
-  if (Config.stopOnError === "letter" && !correct) {
-    TestInput.input.replaceCurrentLastChar("");
-    setInputValue(TestInput.input.current);
-    goToNextWord = false;
-  }
-
-  if (Config.stopOnError === "word" && !correct) {
-    goToNextWord = false;
-  }
-
   if (TestInput.corrected.current === "") {
     TestInput.corrected.current += TestInput.input.current;
   } else {
@@ -221,7 +209,6 @@ function handleChar(data: string, now: number): OnInsertTextReturn {
 
   return {
     correct,
-    goToNextWord,
   };
 }
 
@@ -391,7 +378,6 @@ function onBeforeInsertText({
 
 type OnInsertTextReturn = {
   correct: boolean;
-  goToNextWord: boolean;
 };
 
 function onInsertText({
@@ -407,7 +393,6 @@ function onInsertText({
 
   return {
     correct: charReturn.correct,
-    goToNextWord: charReturn.goToNextWord,
   };
 }
 
@@ -540,7 +525,6 @@ wordsInput.addEventListener("input", async (event) => {
       now,
     });
     correctInsert = onInsertReturn.correct;
-    shouldGoToNextWord = onInsertReturn.goToNextWord;
     playCorrectSound = correctInsert;
   } else if (
     inputType === "deleteWordBackward" ||
@@ -557,6 +541,16 @@ wordsInput.addEventListener("input", async (event) => {
   }
 
   TestInput.setCurrentNotAfk();
+
+  if (Config.stopOnError === "letter" && !correctInsert) {
+    TestInput.input.replaceCurrentLastChar("");
+    setInputValue(TestInput.input.current);
+    shouldGoToNextWord = false;
+  }
+
+  if (Config.stopOnError === "word" && !correctInsert) {
+    shouldGoToNextWord = false;
+  }
 
   if (
     (Config.difficulty === "expert" &&
