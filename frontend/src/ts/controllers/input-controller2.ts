@@ -343,10 +343,19 @@ function onBeforeContentDelete({ inputValue, event }: InputEventHandler): void {
     return;
   }
 
+  const confidence = Config.confidenceMode;
   const previousWordCorrect =
     (TestInput.input.get(TestState.activeWordIndex - 1) ?? "") ===
     TestWords.words.get(TestState.activeWordIndex - 1);
   const inputIsEmpty = inputValue === "";
+
+  if (inputIsEmpty && !previousWordCorrect && confidence === "on") {
+    event.preventDefault();
+  }
+
+  if (confidence === "max") {
+    event.preventDefault();
+  }
 
   if (inputIsEmpty && previousWordCorrect) {
     event.preventDefault();
