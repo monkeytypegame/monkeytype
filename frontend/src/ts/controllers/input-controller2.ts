@@ -337,16 +337,16 @@ function onBeforeContentDelete({ inputValue, event }: InputEventHandler): void {
     return;
   }
 
-  const previousWordCorrect =
-    (TestInput.input.get(TestState.activeWordIndex - 1) ?? "") ===
-    TestWords.words.get(TestState.activeWordIndex - 1);
   const freedomMode = Config.freedomMode;
-  const inputIsEmpty = inputValue === "";
-
   if (freedomMode) {
     //allow anything in freedom mode
     return;
   }
+
+  const previousWordCorrect =
+    (TestInput.input.get(TestState.activeWordIndex - 1) ?? "") ===
+    TestWords.words.get(TestState.activeWordIndex - 1);
+  const inputIsEmpty = inputValue === "";
 
   if (inputIsEmpty && previousWordCorrect) {
     event.preventDefault();
