@@ -556,6 +556,8 @@ wordsInput.addEventListener("input", async (event) => {
     });
   }
 
+  TestInput.setCurrentNotAfk();
+
   if (
     (Config.difficulty === "expert" &&
       event.data === " " &&
@@ -587,8 +589,6 @@ wordsInput.addEventListener("input", async (event) => {
       void TestLogic.finish();
     }
   }
-
-  TestInput.setCurrentNotAfk();
 
   const nospace =
     getActiveFunboxes().find((f) => f.properties?.includes("nospace")) !==
