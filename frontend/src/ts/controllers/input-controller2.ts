@@ -558,7 +558,9 @@ wordsInput.addEventListener("input", async (event) => {
       !correctInsert &&
       shouldGoToNextWord &&
       TestInput.input.current.length > 1) ||
-    (Config.difficulty === "master" && !correctInsert)
+    (Config.difficulty === "master" &&
+      !correctInsert &&
+      inputType !== "deleteContentBackward")
   ) {
     TestLogic.fail("difficulty");
     console.log("failing difficulty");
