@@ -396,14 +396,14 @@ function onInsertText({
   event,
   now,
 }: OnInsertTextParams): OnInsertTextReturn {
-  if (data.length > 1) {
-    throw new Error("Multi char input not supported");
+  let correct = false;
+
+  for (const char of data) {
+    const charReturn = handleChar(char, now);
+    correct = charReturn.correct;
   }
-
-  const charReturn = handleChar(data, now);
-
   return {
-    correct: charReturn.correct,
+    correct,
   };
 }
 
