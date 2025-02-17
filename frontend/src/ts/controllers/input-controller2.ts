@@ -24,7 +24,6 @@ import * as LiveBurst from "../test/live-burst";
 import * as Funbox from "../test/funbox/funbox";
 import * as Loader from "../elements/loader";
 import * as TimerProgress from "../test/timer-progress";
-import { sleep } from "../utils/misc";
 import * as CompositionState from "../states/composition";
 
 const wordsInput = document.querySelector("#wordsInput") as HTMLInputElement;
@@ -321,6 +320,54 @@ async function goToNextWord({
   setInputValue("");
 }
 
+type FailOrFinishParams = {
+  data: string;
+  correctInsert: boolean;
+  shouldGoToNextWord: boolean;
+  inputType: SupportedInputType;
+};
+
+function failOrFinish({
+  data,
+  correctInsert,
+  shouldGoToNextWord,
+  inputType,
+}: FailOrFinishParams): void {
+  if (
+    (Config.difficulty === "expert" &&
+      data === " " &&
+      !correctInsert &&
+      shouldGoToNextWord &&
+      TestInput.input.current.length > 1) ||
+    (Config.difficulty === "master" &&
+      !correctInsert &&
+      inputType !== "deleteContentBackward")
+  ) {
+    TestLogic.fail("difficulty");
+    console.log("failing difficulty");
+  } else {
+    const currentWord = TestWords.words.getCurrent();
+    const lastWord = TestState.activeWordIndex >= TestWords.words.length - 1;
+    const allWordGenerated = TestLogic.areAllTestWordsGenerated();
+    const wordIsCorrect =
+      TestInput.input.current ===
+      TestWords.words.get(TestState.activeWordIndex);
+    const shouldQuickEnd =
+      Config.quickEnd &&
+      currentWord.length === TestInput.input.current.length &&
+      Config.stopOnError === "off";
+    const shouldSpaceEnd = data === " " && Config.stopOnError === "off";
+
+    if (
+      lastWord &&
+      allWordGenerated &&
+      (wordIsCorrect || shouldQuickEnd || shouldSpaceEnd)
+    ) {
+      void TestLogic.finish();
+    }
+  }
+}
+
 type InputEventHandler = {
   inputValue: string;
   realInputValue: string;
@@ -517,8 +564,6 @@ wordsInput.addEventListener("input", async (event) => {
     return;
   }
 
-  await sleep(0);
-
   console.debug("wordsInput event input", {
     inputType: event.inputType,
     data: event.data,
@@ -540,17 +585,7 @@ wordsInput.addEventListener("input", async (event) => {
     TestLogic.startTest(now);
   }
 
-  //@ts-expect-error safari still sends an event with a deprecated intputType. nice!
-  const isSafariLegacyInputType = inputType === "insertFromComposition";
-
-  const insertComposedText =
-    (inputType === "insertCompositionText" || isSafariLegacyInputType) &&
-    !CompositionState.getComposing();
-
-  if (
-    (inputType === "insertText" || insertComposedText) &&
-    event.data !== null
-  ) {
+  if (inputType === "insertText" && event.data !== null) {
     TestInput.input.current = wordsInput.value.slice(1);
     const onInsertReturn = onInsertText({
       inputType,
@@ -585,38 +620,13 @@ wordsInput.addEventListener("input", async (event) => {
     shouldGoToNextWord = false;
   }
 
-  if (
-    (Config.difficulty === "expert" &&
-      event.data === " " &&
-      !correctInsert &&
-      shouldGoToNextWord &&
-      TestInput.input.current.length > 1) ||
-    (Config.difficulty === "master" &&
-      !correctInsert &&
-      inputType !== "deleteContentBackward")
-  ) {
-    TestLogic.fail("difficulty");
-    console.log("failing difficulty");
-  } else {
-    const currentWord = TestWords.words.getCurrent();
-    const lastWord = TestState.activeWordIndex >= TestWords.words.length - 1;
-    const allWordGenerated = TestLogic.areAllTestWordsGenerated();
-    const wordIsCorrect =
-      TestInput.input.current ===
-      TestWords.words.get(TestState.activeWordIndex);
-    const shouldQuickEnd =
-      Config.quickEnd &&
-      currentWord.length === TestInput.input.current.length &&
-      Config.stopOnError === "off";
-    const shouldSpaceEnd = event.data === " " && Config.stopOnError === "off";
-
-    if (
-      lastWord &&
-      allWordGenerated &&
-      (wordIsCorrect || shouldQuickEnd || shouldSpaceEnd)
-    ) {
-      void TestLogic.finish();
-    }
+  if (!CompositionState.getComposing()) {
+    failOrFinish({
+      data: event.data ?? "",
+      correctInsert,
+      shouldGoToNextWord,
+      inputType,
+    });
   }
 
   const nospace =
@@ -716,4 +726,22 @@ wordsInput.addEventListener("compositionend", async (event) => {
   console.debug("wordsInput event compositionend", { data: event.data });
   CompositionState.setComposing(false);
   CompositionState.setData("");
+
+  TestInput.input.current = wordsInput.value.slice(1);
+
+  const out = handleChar(event.data, performance.now());
+
+  failOrFinish({
+    data: event.data ?? "",
+    correctInsert: out.correct,
+    shouldGoToNextWord: true,
+    inputType: "insertCompositionText",
+  });
+
+  updateUI({
+    playCorrectSound: out.correct,
+    inputType: "insertCompositionText",
+    correctInsert: out.correct,
+    data: event.data,
+  });
 });
