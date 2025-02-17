@@ -16,7 +16,11 @@ import * as Arrays from "../utils/arrays";
 import * as TestState from "../test/test-state";
 import * as GetText from "../utils/generate";
 import { FunboxWordOrder, LanguageObject } from "../utils/json-data";
-import { getActiveFunboxes } from "./funbox/list";
+import {
+  getActiveFunboxes,
+  getFunctionsFromActiveFunboxes,
+  hasActiveFunboxWithFunction,
+} from "./funbox/list";
 
 function shouldCapitalize(lastChar: string): boolean {
   return /[?!.؟]/.test(lastChar);
@@ -351,10 +355,8 @@ function applyFunboxesToWord(
   wordIndex: number,
   wordsBound: number
 ): string {
-  for (const fb of getActiveFunboxes()) {
-    if (fb.functions?.alterText) {
-      word = fb.functions.alterText(word, wordIndex, wordsBound);
-    }
+  for (const alterText of getFunctionsFromActiveFunboxes("alterText")) {
+    word = alterText(word, wordIndex, wordsBound);
   }
   return word;
 }
@@ -864,9 +866,7 @@ export async function getNextWord(
     throw new WordGenError("Random word contains spaces");
   }
 
-  const usingFunboxWithGetWord = getActiveFunboxes().some(
-    (fb) => fb.functions?.getWord
-  );
+  const usingFunboxWithGetWord = hasActiveFunboxWithFunction("getWord");
 
   if (
     Config.mode !== "custom" &&

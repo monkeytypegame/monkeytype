@@ -70,3 +70,39 @@ export function getActiveFunboxesWithFunction(
 ): FunboxMetadataWithFunctions[] {
   return getActiveFunboxes().filter((fb) => fb.functions?.[functionName]);
 }
+
+/**
+ * Get requested, implemented functions from all active funboxes
+ * @param functionName name of the function
+ * @returns array of each implemented requested function of all active funboxes
+ */
+export function getFunctionsFromActiveFunboxes<F extends keyof FunboxFunctions>(
+  functionName: F
+): Exclude<FunboxFunctions[F], undefined>[] {
+  return getActiveFunboxes()
+    .map((it) => it.functions?.[functionName])
+    .filter((it) => it !== undefined) as Exclude<
+    FunboxFunctions[F],
+    undefined
+  >[];
+}
+
+/**
+ * Check if there is an active funbox with the given property name
+ * @param property property name
+ * @returns
+ */
+export function hasActiveFunboxWithProperty(property: FunboxProperty): boolean {
+  return getActiveFunboxesWithProperty(property).length > 0;
+}
+
+/**
+ * Check if there is an active funbox implemenging the given function
+ * @param functionName function name
+ * @returns
+ */
+export function hasActiveFunboxWithFunction(
+  functionName: keyof FunboxFunctions
+): boolean {
+  return getActiveFunboxesWithFunction(functionName).length > 0;
+}

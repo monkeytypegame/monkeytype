@@ -9,21 +9,28 @@ import * as FunboxMemory from "./funbox-memory";
 import { HighlightMode } from "@monkeytype/contracts/schemas/configs";
 import { Mode } from "@monkeytype/contracts/schemas/shared";
 import { FunboxName, checkCompatibility } from "@monkeytype/funbox";
-import { getActiveFunboxes, getActiveFunboxNames, get } from "./list";
+import {
+  getActiveFunboxes,
+  getActiveFunboxNames,
+  get,
+  getFunctionsFromActiveFunboxes,
+  hasActiveFunboxWithProperty,
+  getActiveFunboxesWithProperty,
+} from "./list";
 import { checkForcedConfig } from "./funbox-validation";
 
 export function toggleScript(...params: string[]): void {
   if (Config.funbox === "none") return;
 
-  for (const fb of getActiveFunboxes()) {
-    fb.functions?.toggleScript?.(params);
+  for (const toggleScript of getFunctionsFromActiveFunboxes("toggleScript")) {
+    toggleScript(params);
   }
 }
 
 export function setFunbox(funbox: string): boolean {
   if (funbox === "none") {
-    for (const fb of getActiveFunboxes()) {
-      fb.functions?.clearGlobal?.();
+    for (const clearGlobal of getFunctionsFromActiveFunboxes("clearGlobal")) {
+      clearGlobal();
     }
   }
   FunboxMemory.load();
@@ -125,9 +132,7 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
   }
 
   if (language.ligatures) {
-    if (
-      getActiveFunboxes().find((f) => f.properties?.includes("noLigatures"))
-    ) {
+    if (hasActiveFunboxWithProperty("noLigatures")) {
       Notifications.add(
         "Current language does not support this funbox mode",
         0
@@ -194,16 +199,18 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
   }
 
   ManualRestart.set();
-  for (const fb of getActiveFunboxes()) {
-    fb.functions?.applyConfig?.();
+  for (const applyConfig of getFunctionsFromActiveFunboxes("applyConfig")) {
+    applyConfig();
   }
   // ModesNotice.update();
   return true;
 }
 
 export async function rememberSettings(): Promise<void> {
-  for (const fb of getActiveFunboxes()) {
-    fb.functions?.rememberSettings?.();
+  for (const rememberSettings of getFunctionsFromActiveFunboxes(
+    "rememberSettings"
+  )) {
+    rememberSettings();
   }
 }
 
@@ -220,11 +227,7 @@ async function setFunboxBodyClasses(): Promise<boolean> {
       ?.split(/\s+/)
       .filter((it) => !it.startsWith("fb-")) ?? [];
 
-  if (
-    getActiveFunboxes().some((it) =>
-      it.properties?.includes("ignoreReducedMotion")
-    )
-  ) {
+  if (hasActiveFunboxWithProperty("ignoreReducedMotion")) {
     currentClasses.push("ignore-reduced-motion");
   }
 
@@ -238,14 +241,12 @@ async function setFunboxBodyClasses(): Promise<boolean> {
 
 async function applyFunboxCSS(): Promise<boolean> {
   $(".funBoxTheme").remove();
-  for (const funbox of getActiveFunboxes()) {
-    if (funbox.properties?.includes("hasCssFile")) {
-      const css = document.createElement("link");
-      css.classList.add("funBoxTheme");
-      css.rel = "stylesheet";
-      css.href = "funbox/" + funbox.name + ".css";
-      document.head.appendChild(css);
-    }
+  for (const funbox of getActiveFunboxesWithProperty("hasCssFile")) {
+    const css = document.createElement("link");
+    css.classList.add("funBoxTheme");
+    css.rel = "stylesheet";
+    css.href = "funbox/" + funbox.name + ".css";
+    document.head.appendChild(css);
   }
   return true;
 }

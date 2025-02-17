@@ -30,7 +30,10 @@ import {
   TimerOpacity,
 } from "@monkeytype/contracts/schemas/configs";
 import { convertRemToPixels } from "../utils/numbers";
-import { getActiveFunboxes } from "./funbox/list";
+import {
+  getActiveFunboxes,
+  getFunctionsFromActiveFunboxes,
+} from "./funbox/list";
 import * as TestState from "./test-state";
 
 async function gethtml2canvas(): Promise<typeof import("html2canvas").default> {
@@ -653,8 +656,10 @@ export async function screenshot(): Promise<void> {
     }
     (document.querySelector("html") as HTMLElement).style.scrollBehavior =
       "smooth";
-    for (const fb of getActiveFunboxes()) {
-      fb.functions?.applyGlobalCSS?.();
+    for (const applyGlobalCSS of getFunctionsFromActiveFunboxes(
+      "applyGlobalCSS"
+    )) {
+      applyGlobalCSS();
     }
   }
 
@@ -695,8 +700,8 @@ export async function screenshot(): Promise<void> {
   $(".highlightContainer").addClass("hidden");
   if (revertCookie) $("#cookiesModal").addClass("hidden");
 
-  for (const fb of getActiveFunboxes()) {
-    fb.functions?.clearGlobal?.();
+  for (const clearGlobal of getFunctionsFromActiveFunboxes("clearGlobal")) {
+    clearGlobal();
   }
 
   (document.querySelector("html") as HTMLElement).style.scrollBehavior = "auto";

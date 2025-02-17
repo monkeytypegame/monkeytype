@@ -64,7 +64,10 @@ import {
   CustomTextDataWithTextLen,
 } from "@monkeytype/contracts/schemas/results";
 import * as XPBar from "../elements/xp-bar";
-import { getActiveFunboxes } from "./funbox/list";
+import {
+  getActiveFunboxes,
+  getFunctionsFromActiveFunboxes,
+} from "./funbox/list";
 import { getFunboxesFromString } from "@monkeytype/funbox";
 import * as CompositionState from "../states/composition";
 
@@ -108,8 +111,8 @@ export function startTest(now: number): boolean {
   TestTimer.clear();
   Monkey.show();
 
-  for (const fb of getActiveFunboxes()) {
-    fb.functions?.start?.();
+  for (const start of getFunctionsFromActiveFunboxes("start")) {
+    start();
   }
 
   try {
@@ -331,8 +334,8 @@ export function restart(options = {} as RestartOptions): void {
       await init();
       await PaceCaret.init();
 
-      for (const fb of getActiveFunboxes()) {
-        fb.functions?.restart?.();
+      for (const restart of getFunctionsFromActiveFunboxes("restart")) {
+        restart();
       }
 
       if (Config.showAverage !== "off") {
