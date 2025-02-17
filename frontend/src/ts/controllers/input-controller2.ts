@@ -25,6 +25,7 @@ import * as Funbox from "../test/funbox/funbox";
 import * as Loader from "../elements/loader";
 import * as TimerProgress from "../test/timer-progress";
 import * as CompositionState from "../states/composition";
+import { getLastChar } from "../utils/strings";
 
 const wordsInput = document.querySelector("#wordsInput") as HTMLInputElement;
 
@@ -737,6 +738,26 @@ wordsInput.addEventListener("compositionend", async (event) => {
     shouldGoToNextWord: true,
     inputType: "insertCompositionText",
   });
+
+  const nospace =
+    getActiveFunboxes().find((f) => f.properties?.includes("nospace")) !==
+    undefined;
+  const forceNextWord =
+    nospace &&
+    TestInput.input.current.length === TestWords.words.getCurrent().length;
+  const stopOnWordBlock = Config.stopOnError === "word" && !out.correct;
+
+  if (
+    getLastChar(event.data) === " " &&
+    TestInput.input.current.length > 1 &&
+    !stopOnWordBlock
+  ) {
+    void TestUI.updateActiveWordLetters();
+    await goToNextWord({
+      forceNextWord,
+      correctInsert: out.correct,
+    });
+  }
 
   updateUI({
     playCorrectSound: out.correct,
