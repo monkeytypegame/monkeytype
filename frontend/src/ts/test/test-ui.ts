@@ -872,6 +872,8 @@ export async function updateActiveWordLetters(
           ? char === " "
             ? "_"
             : char
+          : currentWordChars[input.length] === undefined
+          ? char
           : currentWordChars[input.length]
       }</letter>`;
     }
