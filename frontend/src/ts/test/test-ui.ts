@@ -813,6 +813,11 @@ export async function updateActiveWordLetters(
         ret += `<letter class="correct">${char}</letter>`;
       }
     }
+
+    const compositionData = CompositionState.getData();
+    for (const char of compositionData) {
+      ret += `<letter class="dead">${char}</letter>`;
+    }
   } else {
     const funbox = getActiveFunboxes().find((fb) => fb.functions?.getWordHtml);
 
