@@ -7,6 +7,7 @@ import * as TestWords from "./test-words";
 import { prefersReducedMotion } from "../utils/misc";
 import { convertRemToPixels } from "../utils/numbers";
 import { splitIntoCharacters } from "../utils/strings";
+import * as CompositionState from "../states/composition";
 
 export let caretAnimating = true;
 const caret = document.querySelector("#caret") as HTMLElement;
@@ -137,7 +138,9 @@ export async function updatePosition(noAnim = false): Promise<void> {
   );
 
   let wordLen = splitIntoCharacters(TestWords.words.getCurrent()).length;
-  const inputLen = splitIntoCharacters(TestInput.input.current).length;
+  const compositionLen = CompositionState.getData().length;
+  const inputLen =
+    splitIntoCharacters(TestInput.input.current).length + compositionLen;
   if (Config.mode === "zen") wordLen = inputLen;
   const activeWordEl = document?.querySelector("#words .active") as HTMLElement;
   //insert temporary character so the caret will work in zen mode
