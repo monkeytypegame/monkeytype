@@ -814,43 +814,6 @@ export async function updateActiveWordLetters(
       }
     }
   } else {
-    let correctSoFar = false;
-
-    const containsKorean = TestInput.input.getKoreanStatus();
-
-    if (!containsKorean) {
-      // slice earlier if input has trailing compose characters
-      const inputWithoutComposeLength = Misc.trailingComposeChars.test(input)
-        ? input.search(Misc.trailingComposeChars)
-        : input.length;
-      if (
-        input.search(Misc.trailingComposeChars) < currentWord.length &&
-        // eslint-disable-next-line @typescript-eslint/prefer-string-starts-ends-with
-        currentWord.slice(0, inputWithoutComposeLength) ===
-          input.slice(0, inputWithoutComposeLength)
-      ) {
-        correctSoFar = true;
-      }
-    } else {
-      // slice earlier if input has trailing compose characters
-      const koCurrentWord: string = Hangul.disassemble(currentWord).join("");
-      const koInput: string = Hangul.disassemble(input).join("");
-      const inputWithoutComposeLength: number = Misc.trailingComposeChars.test(
-        input
-      )
-        ? input.search(Misc.trailingComposeChars)
-        : koInput.length;
-      if (
-        input.search(Misc.trailingComposeChars) <
-          Hangul.d(koCurrentWord).length &&
-        // eslint-disable-next-line @typescript-eslint/prefer-string-starts-ends-with
-        koCurrentWord.slice(0, inputWithoutComposeLength) ===
-          koInput.slice(0, inputWithoutComposeLength)
-      ) {
-        correctSoFar = true;
-      }
-    }
-
     const funbox = getActiveFunboxes().find((fb) => fb.functions?.getWordHtml);
 
     const inputChars = Strings.splitIntoCharacters(input);
@@ -876,19 +839,6 @@ export async function updateActiveWordLetters(
 
       if (charCorrect) {
         ret += `<letter class="correct ${tabChar}${nlChar}">${currentLetter}</letter>`;
-      } else if (
-        currentLetter !== undefined &&
-        CompositionState.getComposing() &&
-        i >= CompositionState.getStartPos() &&
-        !(containsKorean && !correctSoFar)
-      ) {
-        ret += `<letter class="dead">${
-          Config.indicateTypos === "replace"
-            ? inputChars[i] === " "
-              ? "_"
-              : inputChars[i]
-            : currentLetter
-        }</letter>`;
       } else if (currentLetter === undefined) {
         let letter = inputChars[i];
         if (letter === " " || letter === "\t" || letter === "\n") {
@@ -915,7 +865,22 @@ export async function updateActiveWordLetters(
       }
     }
 
-    for (let i = inputChars.length; i < currentWordChars.length; i++) {
+    const compositionData = CompositionState.getData();
+    for (const char of compositionData) {
+      ret += `<letter class="dead">${
+        Config.indicateTypos === "replace"
+          ? char === " "
+            ? "_"
+            : char
+          : currentWordChars[input.length]
+      }</letter>`;
+    }
+
+    for (
+      let i = inputChars.length + compositionData.length;
+      i < currentWordChars.length;
+      i++
+    ) {
       const currentLetter = currentWordChars[i];
       if (funbox?.functions?.getWordHtml) {
         ret += funbox.functions.getWordHtml(currentLetter as string, true);
