@@ -24,6 +24,8 @@ import * as LiveBurst from "../test/live-burst";
 import * as Funbox from "../test/funbox/funbox";
 import * as Loader from "../elements/loader";
 import * as TimerProgress from "../test/timer-progress";
+import { sleep } from "../utils/misc";
+import * as CompositionState from "../states/composition";
 
 const wordsInput = document.querySelector("#wordsInput") as HTMLInputElement;
 
@@ -538,9 +540,18 @@ wordsInput.addEventListener("input", async (event) => {
     TestLogic.startTest(now);
   }
 
-  TestInput.input.current = wordsInput.value.slice(1);
+  //@ts-expect-error safari still sends an event with a deprecated intputType. nice!
+  const isSafariLegacyInputType = inputType === "insertFromComposition";
 
-  if (inputType === "insertText" && event.data !== null) {
+  const insertComposedText =
+    (inputType === "insertCompositionText" || isSafariLegacyInputType) &&
+    !CompositionState.getComposing();
+
+  if (
+    (inputType === "insertText" || insertComposedText) &&
+    event.data !== null
+  ) {
+    TestInput.input.current = wordsInput.value.slice(1);
     const onInsertReturn = onInsertText({
       inputType,
       inputValue,
@@ -555,6 +566,7 @@ wordsInput.addEventListener("input", async (event) => {
     inputType === "deleteWordBackward" ||
     inputType === "deleteContentBackward"
   ) {
+    TestInput.input.current = wordsInput.value.slice(1);
     playCorrectSound = true;
     onContentDelete({
       inputType,
