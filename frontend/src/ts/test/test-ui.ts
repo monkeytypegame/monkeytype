@@ -31,7 +31,7 @@ import {
 } from "@monkeytype/contracts/schemas/configs";
 import { convertRemToPixels } from "../utils/numbers";
 import {
-  getActiveFunboxes,
+  findSingleActiveFunboxWithFunction,
   getFunctionsFromActiveFunboxes,
 } from "./funbox/list";
 import * as TestState from "./test-state";
@@ -340,10 +340,10 @@ function getWordHTML(word: string): string {
   let newlineafter = false;
   let retval = `<div class='word'>`;
 
-  const funbox = getActiveFunboxes().find((f) => f.functions?.getWordHtml);
+  const funbox = findSingleActiveFunboxWithFunction("getWordHtml");
   const chars = Strings.splitIntoCharacters(word);
   for (const char of chars) {
-    if (funbox?.functions?.getWordHtml) {
+    if (funbox) {
       retval += funbox.functions.getWordHtml(char, true);
     } else if (char === "\t") {
       retval += `<letter class='tabChar'><i class="fas fa-long-arrow-alt-right fa-fw"></i></letter>`;
@@ -849,7 +849,7 @@ export async function updateActiveWordLetters(
       }
     }
 
-    const funbox = getActiveFunboxes().find((fb) => fb.functions?.getWordHtml);
+    const funbox = findSingleActiveFunboxWithFunction("getWordHtml");
 
     const inputChars = Strings.splitIntoCharacters(input);
     const currentWordChars = Strings.splitIntoCharacters(currentWord);
@@ -859,8 +859,8 @@ export async function updateActiveWordLetters(
       let currentLetter = currentWordChars[i] as string;
       let tabChar = "";
       let nlChar = "";
-      if (funbox?.functions?.getWordHtml) {
-        const cl = funbox.functions?.getWordHtml(currentLetter);
+      if (funbox) {
+        const cl = funbox.functions.getWordHtml(currentLetter);
         if (cl !== "") {
           currentLetter = cl;
         }

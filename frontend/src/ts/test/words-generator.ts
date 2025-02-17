@@ -17,6 +17,7 @@ import * as TestState from "../test/test-state";
 import * as GetText from "../utils/generate";
 import { FunboxWordOrder, LanguageObject } from "../utils/json-data";
 import {
+  findSingleActiveFunboxWithFunction,
   getActiveFunboxes,
   getFunctionsFromActiveFunboxes,
   hasActiveFunboxWithFunction,
@@ -39,9 +40,8 @@ export async function punctuateWord(
 
   const lastChar = Strings.getLastChar(previousWord);
 
-  const funbox = getActiveFunboxes()?.find((fb) => fb.functions?.punctuateWord);
-
-  if (funbox?.functions?.punctuateWord) {
+  const funbox = findSingleActiveFunboxWithFunction("punctuateWord");
+  if (funbox) {
     return funbox.functions.punctuateWord(word);
   }
   if (
@@ -305,10 +305,8 @@ async function applyEnglishPunctuationToWord(word: string): Promise<string> {
 }
 
 function getFunboxWordsFrequency(): Wordset.FunboxWordsFrequency | undefined {
-  const funbox = getActiveFunboxes().find(
-    (fb) => fb.functions?.getWordsFrequencyMode
-  );
-  if (funbox?.functions?.getWordsFrequencyMode) {
+  const funbox = findSingleActiveFunboxWithFunction("getWordsFrequencyMode");
+  if (funbox) {
     return funbox.functions.getWordsFrequencyMode();
   }
   return undefined;
@@ -317,9 +315,9 @@ function getFunboxWordsFrequency(): Wordset.FunboxWordsFrequency | undefined {
 async function getFunboxSection(): Promise<string[]> {
   const ret = [];
 
-  const funbox = getActiveFunboxes().find((fb) => fb.functions?.pullSection);
+  const funbox = findSingleActiveFunboxWithFunction("pullSection");
 
-  if (funbox?.functions?.pullSection) {
+  if (funbox) {
     const section = await funbox.functions.pullSection(Config.language);
 
     if (section === false || section === undefined) {
@@ -342,9 +340,9 @@ function getFunboxWord(
   wordIndex: number,
   wordset?: Wordset.Wordset
 ): string {
-  const funbox = getActiveFunboxes()?.find((fb) => fb.functions?.getWord);
+  const funbox = findSingleActiveFunboxWithFunction("getWord");
 
-  if (funbox?.functions?.getWord) {
+  if (funbox) {
     word = funbox.functions.getWord(wordset, wordIndex);
   }
   return word;
@@ -611,11 +609,7 @@ export async function generateWords(
     hasNewline: false,
   };
 
-  const sectionFunbox = getActiveFunboxes().find(
-    (fb) => fb.functions?.pullSection
-  );
-  isCurrentlyUsingFunboxSection =
-    sectionFunbox?.functions?.pullSection !== undefined;
+  isCurrentlyUsingFunboxSection = hasActiveFunboxWithFunction("pullSection");
 
   const wordOrder = getWordOrder();
   console.debug("Word order", wordOrder);
@@ -636,8 +630,8 @@ export async function generateWords(
     wordList = wordList.reverse();
   }
 
-  const funbox = getActiveFunboxes().find((fb) => fb.functions?.withWords);
-  if (funbox?.functions?.withWords) {
+  const funbox = findSingleActiveFunboxWithFunction("withWords");
+  if (funbox) {
     currentWordset = await funbox.functions.withWords(wordList);
   } else {
     currentWordset = await Wordset.withWords(wordList);

@@ -65,6 +65,7 @@ import {
 } from "@monkeytype/contracts/schemas/results";
 import * as XPBar from "../elements/xp-bar";
 import {
+  findSingleActiveFunboxWithFunction,
   getActiveFunboxes,
   getFunctionsFromActiveFunboxes,
 } from "./funbox/list";
@@ -561,12 +562,8 @@ export async function addWord(): Promise<void> {
     console.debug("Not adding word, all words generated");
     return;
   }
-
-  const sectionFunbox = getActiveFunboxes().find(
-    (f) => f.functions?.pullSection
-  );
-
-  if (sectionFunbox?.functions?.pullSection) {
+  const sectionFunbox = findSingleActiveFunboxWithFunction("pullSection");
+  if (sectionFunbox) {
     if (TestWords.words.length - TestState.activeWordIndex < 20) {
       const section = await sectionFunbox.functions.pullSection(
         Config.language

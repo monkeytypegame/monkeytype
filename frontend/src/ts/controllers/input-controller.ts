@@ -36,6 +36,7 @@ import { navigate } from "./route-controller";
 import * as Loader from "../elements/loader";
 import * as KeyConverter from "../utils/key-converter";
 import {
+  findSingleActiveFunboxWithFunction,
   getFunctionsFromActiveFunboxes,
   hasActiveFunboxWithProperty,
 } from "../test/funbox/list";
@@ -407,8 +408,9 @@ function isCharCorrect(char: string, charIndex: number): boolean {
     return true;
   }
 
-  for (const isCharCorrect of getFunctionsFromActiveFunboxes("isCharCorrect")) {
-    return isCharCorrect(char, originalChar);
+  const funbox = findSingleActiveFunboxWithFunction("isCharCorrect");
+  if (funbox) {
+    return funbox.functions.isCharCorrect(char, originalChar);
   }
 
   if (Config.language.startsWith("russian")) {

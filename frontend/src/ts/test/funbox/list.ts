@@ -65,26 +65,21 @@ export function getActiveFunboxesWithProperty(
   return getActiveFunboxes().filter((fb) => fb.properties?.includes(property));
 }
 
-export function getActiveFunboxesWithFunction(
-  functionName: keyof FunboxFunctions
-): FunboxMetadataWithFunctions[] {
-  return getActiveFunboxes().filter((fb) => fb.functions?.[functionName]);
-}
-
 /**
- * Get requested, implemented functions from all active funboxes
- * @param functionName name of the function
- * @returns array of each implemented requested function of all active funboxes
+ * Look for a single active funbox implementint the given function name
+ * @param property
+ * @returns the active funbox if any, `undefined`  otherwise.
+ * @throws Error if there are multiple funboxes implementing the function name
  */
-export function getFunctionsFromActiveFunboxes<F extends keyof FunboxFunctions>(
-  functionName: F
-): Exclude<FunboxFunctions[F], undefined>[] {
-  return getActiveFunboxes()
-    .map((it) => it.functions?.[functionName])
-    .filter((it) => it !== undefined) as Exclude<
-    FunboxFunctions[F],
-    undefined
-  >[];
+export function findSingleActiveFunboxWithProperty(
+  property: FunboxProperty
+): FunboxMetadataWithFunctions | undefined {
+  const matching = getActiveFunboxesWithProperty(property);
+  if (matching.length == 0) return undefined;
+  if (matching.length == 1) return matching[0];
+  throw new Error(
+    `Expecting exactly one funbox with property "${property} but found ${matching.length}`
+  );
 }
 
 /**
@@ -96,6 +91,36 @@ export function hasActiveFunboxWithProperty(property: FunboxProperty): boolean {
   return getActiveFunboxesWithProperty(property).length > 0;
 }
 
+type MandatoryFunboxFunction<F extends keyof FunboxFunctions> = Exclude<
+  FunboxFunctions[F],
+  undefined
+>;
+type FunboxWithFunction<F extends keyof FunboxFunctions> =
+  FunboxMetadataWithFunctions & {
+    functions: Record<F, MandatoryFunboxFunction<F>>;
+  };
+
+export function getActiveFunboxesWithFunction<F extends keyof FunboxFunctions>(
+  functionName: F
+): FunboxWithFunction<F>[] {
+  return getActiveFunboxes().filter(
+    (fb) => fb.functions?.[functionName]
+  ) as FunboxWithFunction<F>[];
+}
+
+/**
+ * Get requested, implemented functions from all active funboxes
+ * @param functionName name of the function
+ * @returns array of each implemented requested function of all active funboxes
+ */
+export function getFunctionsFromActiveFunboxes<F extends keyof FunboxFunctions>(
+  functionName: F
+): MandatoryFunboxFunction<F>[] {
+  return getActiveFunboxesWithFunction(functionName).map(
+    (it) => it.functions[functionName]
+  );
+}
+
 /**
  * Check if there is an active funbox implemenging the given function
  * @param functionName function name
@@ -105,4 +130,21 @@ export function hasActiveFunboxWithFunction(
   functionName: keyof FunboxFunctions
 ): boolean {
   return getActiveFunboxesWithFunction(functionName).length > 0;
+}
+
+/**
+ * Look for a single active funbox implementint the given function name
+ * @param functionName
+ * @returns the active funbox if any, `undefined`  otherwise.
+ * @throws Error if there are multiple funboxes implementing the function name
+ */
+export function findSingleActiveFunboxWithFunction<
+  F extends keyof FunboxFunctions
+>(functionName: F): FunboxWithFunction<F> | undefined {
+  const matching = getActiveFunboxesWithFunction(functionName);
+  if (matching.length == 0) return undefined;
+  if (matching.length == 1) return matching[0] as FunboxWithFunction<F>;
+  throw new Error(
+    `Expecting exactly one funbox implementing "${functionName} but found ${matching.length}`
+  );
 }
