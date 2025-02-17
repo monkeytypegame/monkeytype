@@ -442,6 +442,12 @@ function setInputValue(value: string): void {
 }
 
 wordsInput.addEventListener("beforeinput", (event) => {
+  console.debug("wordsInput event beforeinput", {
+    inputType: event.inputType,
+    data: event.data,
+    value: (event.target as HTMLInputElement).value,
+  });
+
   for (const ignoredInputType of ignoredInputTypes) {
     if (ignoredInputType.endsWith("*")) {
       if (event.inputType.startsWith(ignoredInputType.slice(0, -1))) {
@@ -502,17 +508,27 @@ wordsInput.addEventListener("beforeinput", (event) => {
 });
 
 wordsInput.addEventListener("input", async (event) => {
+  if (!(event instanceof InputEvent)) {
+    //since the listener is on an input element, this should never trigger
+    //but its here to narrow the type of "event"
+    event.preventDefault();
+    return;
+  }
+
+  await sleep(0);
+
+  console.debug("wordsInput event input", {
+    inputType: event.inputType,
+    data: event.data,
+    value: (event.target as HTMLInputElement).value,
+  });
+
   const realInputValue = wordsInput.value;
   const inputValue = wordsInput.value.slice(1);
   const now = performance.now();
   let playCorrectSound = false;
   let correctInsert = false;
   let shouldGoToNextWord = true;
-
-  if (!(event instanceof InputEvent)) {
-    event.preventDefault();
-    return;
-  }
 
   //this is ok to cast because we are preventing default from anything else
   const inputType = event.inputType as SupportedInputType;
@@ -634,6 +650,10 @@ wordsInput.addEventListener("select selectstart", (event) => {
 });
 
 wordsInput.addEventListener("keydown", async (event) => {
+  console.debug("wordsInput event keydown", {
+    key: event.key,
+    code: event.code,
+  });
   if (
     ((event.metaKey || event.ctrlKey) && event.key === "a") ||
     event.key.startsWith("Arrow")
@@ -667,4 +687,18 @@ wordsInput.addEventListener("keydown", async (event) => {
       );
     }
   }
+});
+
+wordsInput.addEventListener("compositionstart", (event) => {
+  console.debug("wordsInput event compositionstart", { data: event.data });
+  CompositionState.setComposing(true);
+});
+
+wordsInput.addEventListener("compositionupdate", (event) => {
+  console.debug("wordsInput event compositionupdate", { data: event.data });
+});
+
+wordsInput.addEventListener("compositionend", async (event) => {
+  console.debug("wordsInput event compositionend", { data: event.data });
+  CompositionState.setComposing(false);
 });
