@@ -708,9 +708,12 @@ wordsInput.addEventListener("compositionstart", (event) => {
 
 wordsInput.addEventListener("compositionupdate", (event) => {
   console.debug("wordsInput event compositionupdate", { data: event.data });
+  CompositionState.setData(event.data);
+  void TestUI.updateActiveWordLetters();
 });
 
 wordsInput.addEventListener("compositionend", async (event) => {
   console.debug("wordsInput event compositionend", { data: event.data });
   CompositionState.setComposing(false);
+  CompositionState.setData("");
 });
