@@ -349,6 +349,8 @@ async function onInsertText({
         now,
       });
     }
+
+    return;
   }
 
   for (const fb of getActiveFunboxes()) {
