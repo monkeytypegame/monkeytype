@@ -66,10 +66,10 @@ export function getActiveFunboxesWithProperty(
 }
 
 /**
- * Look for a single active funbox implementint the given function name
+ * Find a single active funbox defining the given property
  * @param property
  * @returns the active funbox if any, `undefined`  otherwise.
- * @throws Error if there are multiple funboxes implementing the function name
+ * @throws Error if there are multiple funboxes defining the given property
  */
 export function findSingleActiveFunboxWithProperty(
   property: FunboxProperty
@@ -133,7 +133,7 @@ export function hasActiveFunboxWithFunction(
 }
 
 /**
- * Look for a single active funbox implementint the given function name
+ * Find a single active funbox implementing the given function name
  * @param functionName
  * @returns the active funbox if any, `undefined`  otherwise.
  * @throws Error if there are multiple funboxes implementing the function name
