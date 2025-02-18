@@ -1,31 +1,24 @@
 import Config from "../config";
 import * as TestInput from "../test/test-input";
 import * as TestUI from "../test/test-ui";
-import * as Caret from "../test/caret";
 import * as PaceCaret from "../test/pace-caret";
 import * as TestState from "../test/test-state";
 import * as TestLogic from "../test/test-logic";
 import * as TestWords from "../test/test-words";
-import * as Focus from "../test/focus";
 import * as MonkeyPower from "../elements/monkey-power";
 import { getActiveFunboxes } from "../test/funbox/list";
-import * as SoundController from "./sound-controller";
 import * as KeymapEvent from "../observables/keymap-event";
 import * as JSONData from "../utils/json-data";
 import * as Notifications from "../elements/notifications";
 import * as KeyConverter from "../utils/key-converter";
 import * as ShiftTracker from "../test/shift-tracker";
 import * as TestStats from "../test/test-stats";
-import * as Numbers from "@monkeytype/util/numbers";
-import * as LiveAcc from "../test/live-acc";
 import * as WeakSpot from "../test/weak-spot";
 import * as Replay from "../test/replay";
 import * as LiveBurst from "../test/live-burst";
 import * as Funbox from "../test/funbox/funbox";
 import * as Loader from "../elements/loader";
-import * as TimerProgress from "../test/timer-progress";
 import * as CompositionState from "../states/composition";
-import { getLastChar } from "../utils/strings";
 
 const wordsInput = document.querySelector("#wordsInput") as HTMLInputElement;
 
@@ -139,20 +132,223 @@ function isCharCorrect(
   return false;
 }
 
-function handleInput(data: string, now: number): OnInsertTextReturn {
-  if (data.length > 1) {
-    let correct = true;
+type GoToNextWordParams = {
+  forceNextWord: boolean;
+  correctInsert: boolean;
+};
+async function goToNextWord({
+  forceNextWord,
+  correctInsert,
+}: GoToNextWordParams): Promise<void> {
+  if (forceNextWord) {
+    void TestUI.updateActiveWordLetters();
+  }
 
-    for (const char of data) {
-      const charReturn = handleInput(char, now);
-      if (!charReturn.correct) {
-        correct = false;
-      }
+  if (!correctInsert) {
+    TestUI.highlightBadWord(
+      TestState.activeWordIndex - TestUI.activeWordElementOffset
+    );
+  }
+
+  for (const fb of getActiveFunboxes()) {
+    fb.functions?.handleSpace?.();
+  }
+
+  PaceCaret.handleSpace(correctInsert, TestWords.words.getCurrent());
+
+  Funbox.toggleScript(TestWords.words.get(TestState.activeWordIndex + 1));
+
+  const burst: number = TestStats.calculateBurst();
+  void LiveBurst.update(Math.round(burst));
+  TestInput.pushBurstToHistory(burst);
+
+  const lastWord = TestState.activeWordIndex >= TestWords.words.length - 1;
+  if (lastWord) {
+    awaitingNextWord = true;
+    Loader.show();
+    await TestLogic.addWord();
+    Loader.hide();
+    awaitingNextWord = false;
+  } else {
+    void TestLogic.addWord();
+  }
+  const inputTrimmed = TestInput.input.current.trimEnd();
+  TestInput.input.current = inputTrimmed;
+  TestInput.input.pushHistory();
+  TestInput.corrected.pushHistory();
+  if (
+    TestState.activeWordIndex < TestWords.words.length - 1 ||
+    Config.mode === "zen"
+  ) {
+    TestState.increaseActiveWordIndex();
+  }
+
+  setInputValue("");
+  TestUI.afterTestWordChange();
+}
+
+function goToPreviousWord(inputType: SupportedInputType): void {
+  if (TestState.activeWordIndex === 0) {
+    setInputValue("");
+    return;
+  }
+
+  const word = TestInput.input.popHistory();
+  TestState.decreaseActiveWordIndex();
+  TestInput.corrected.popHistory();
+
+  if (inputType === "deleteWordBackward") {
+    TestInput.input.current = "";
+    setInputValue("");
+  } else if (inputType === "deleteContentBackward") {
+    const nospace =
+      getActiveFunboxes().find((f) => f.properties?.includes("nospace")) !==
+      undefined;
+
+    if (nospace) {
+      TestInput.input.current = word.slice(0, -1);
+      setInputValue(word.slice(0, -1));
+    } else {
+      TestInput.input.current = word;
+      setInputValue(word);
     }
+  }
+  TestUI.afterTestWordChange();
+}
 
-    return {
-      correct,
-    };
+type FailOrFinishParams = {
+  data: string;
+  correctInsert: boolean;
+  inputType: SupportedInputType;
+  dataStoppedByStopOnLetter: string | null;
+};
+
+function failOrFinish({
+  data,
+  correctInsert,
+  dataStoppedByStopOnLetter,
+}: FailOrFinishParams): void {
+  const input = TestInput.input.current + (dataStoppedByStopOnLetter ?? "");
+
+  const shouldFailDueToExpert =
+    !correctInsert &&
+    data === " " &&
+    Config.difficulty === "expert" &&
+    input.length > 1;
+  const shouldFailDueToMaster =
+    !correctInsert && Config.difficulty === "master";
+
+  if (shouldFailDueToExpert || shouldFailDueToMaster) {
+    TestLogic.fail("difficulty");
+    console.log("failing difficulty");
+  } else {
+    const currentWord = TestWords.words.getCurrent();
+    const lastWord = TestState.activeWordIndex >= TestWords.words.length - 1;
+    const allWordGenerated = TestLogic.areAllTestWordsGenerated();
+    const wordIsCorrect =
+      TestInput.input.current ===
+      TestWords.words.get(TestState.activeWordIndex);
+    const shouldQuickEnd =
+      Config.quickEnd &&
+      currentWord.length === TestInput.input.current.length &&
+      Config.stopOnError === "off";
+    const shouldSpaceEnd = data === " " && Config.stopOnError === "off";
+
+    if (
+      lastWord &&
+      allWordGenerated &&
+      (wordIsCorrect || shouldQuickEnd || shouldSpaceEnd)
+    ) {
+      void TestLogic.finish();
+    }
+  }
+}
+
+type InputEventHandler = {
+  inputValue: string;
+  realInputValue: string;
+  event: Event;
+  now: number;
+  inputType: SupportedInputType;
+};
+
+type OnInsertTextParams = InputEventHandler & {
+  data: string;
+};
+
+function onBeforeContentDelete({ inputValue, event }: InputEventHandler): void {
+  if (!TestState.isActive) {
+    event.preventDefault();
+    return;
+  }
+
+  const freedomMode = Config.freedomMode;
+  if (freedomMode) {
+    //allow anything in freedom mode
+    return;
+  }
+
+  const confidence = Config.confidenceMode;
+  const previousWordCorrect =
+    (TestInput.input.get(TestState.activeWordIndex - 1) ?? "") ===
+    TestWords.words.get(TestState.activeWordIndex - 1);
+  const inputIsEmpty = inputValue === "";
+
+  if (inputIsEmpty && !previousWordCorrect && confidence === "on") {
+    event.preventDefault();
+  }
+
+  if (confidence === "max") {
+    event.preventDefault();
+  }
+
+  if (inputIsEmpty && previousWordCorrect) {
+    event.preventDefault();
+  }
+}
+
+function onBeforeInsertText({
+  data,
+  inputValue,
+  event,
+}: OnInsertTextParams): void {
+  if (
+    data === " " &&
+    inputValue === "" &&
+    Config.difficulty === "normal" &&
+    !Config.strictSpace
+  ) {
+    event?.preventDefault();
+  }
+
+  const inputLimit =
+    Config.mode === "zen" ? 30 : TestWords.words.getCurrent().length + 20;
+
+  if (TestInput.input.current.length >= inputLimit) {
+    console.error("Hitting word limit");
+    event.preventDefault();
+  }
+}
+
+async function onInsertText({
+  inputType,
+  inputValue,
+  realInputValue,
+  data,
+  event,
+  now,
+}: OnInsertTextParams): Promise<void> {
+  if (data.length > 1) {
+    for (const char of data) {
+      await onInsertText({
+        inputType,
+        event,
+        inputValue,
+        realInputValue,
+        data: char,
+        now,
+      });
+    }
   }
 
   for (const fb of getActiveFunboxes()) {
@@ -224,244 +420,45 @@ function handleInput(data: string, now: number): OnInsertTextReturn {
     }
   }
 
-  return {
-    correct,
-  };
-}
+  let dataStoppedByStopOnLetter: string | null = null;
+  let inputOverride: string | undefined;
+  if (Config.stopOnError === "letter" && !correct) {
+    dataStoppedByStopOnLetter = data;
+    inputOverride = TestInput.input.current;
+    TestInput.input.replaceCurrentLastChar("");
+    setInputValue(TestInput.input.current);
+  }
 
-type UpdateUIParams = {
-  playCorrectSound: boolean;
-  inputType: SupportedInputType;
-  correctInsert: boolean;
-  data: string;
-};
-function updateUI({
-  playCorrectSound,
-  inputType,
-  correctInsert,
-  data,
-}: UpdateUIParams): void {
+  if (!CompositionState.getComposing()) {
+    failOrFinish({
+      data: data ?? "",
+      correctInsert: correct,
+      dataStoppedByStopOnLetter,
+      inputType: "insertText",
+    });
+  }
+
+  const nospace =
+    getActiveFunboxes().find((f) => f.properties?.includes("nospace")) !==
+    undefined;
+  const forceNextWord =
+    nospace &&
+    TestInput.input.current.length === TestWords.words.getCurrent().length;
+  const stopOnWordBlock = Config.stopOnError === "word" && !correct;
+
+  let movingToNextWord = false;
   if (
-    playCorrectSound ||
-    Config.playSoundOnError === "off" ||
-    Config.blindMode
+    (data === " " && TestInput.input.current.length > 1 && !stopOnWordBlock) ||
+    (forceNextWord && !stopOnWordBlock)
   ) {
-    void SoundController.playClick();
-  } else {
-    void SoundController.playError();
+    movingToNextWord = true;
+    await goToNextWord({
+      forceNextWord,
+      correctInsert: correct,
+    });
   }
 
-  const acc: number = Numbers.roundTo2(TestStats.calculateAccuracy());
-  if (!isNaN(acc)) LiveAcc.update(acc);
-
-  if (Config.keymapMode === "next") {
-    void KeymapEvent.highlight(
-      TestWords.words
-        .getCurrent()
-        .charAt(TestInput.input.current.length)
-        .toString()
-    );
-  }
-
-  if (Config.mode !== "time") {
-    TimerProgress.update();
-  }
-  Focus.set(true);
-  Caret.stopAnimation();
-  TestUI.updateActiveElement();
-
-  let override: string | undefined = undefined;
-  if (
-    inputType === "insertText" &&
-    Config.stopOnError === "letter" &&
-    !correctInsert
-  ) {
-    override = TestInput.input.current + data;
-  }
-  void TestUI.updateActiveWordLetters(override);
-  void Caret.updatePosition();
-}
-
-type GoToNextWordParams = {
-  forceNextWord: boolean;
-  correctInsert: boolean;
-};
-async function goToNextWord({
-  forceNextWord,
-  correctInsert,
-}: GoToNextWordParams): Promise<void> {
-  if (forceNextWord) {
-    void TestUI.updateActiveWordLetters();
-  }
-
-  if (!correctInsert) {
-    TestUI.highlightBadWord(
-      TestState.activeWordIndex - TestUI.activeWordElementOffset
-    );
-  }
-
-  for (const fb of getActiveFunboxes()) {
-    fb.functions?.handleSpace?.();
-  }
-
-  PaceCaret.handleSpace(correctInsert, TestWords.words.getCurrent());
-
-  Funbox.toggleScript(TestWords.words.get(TestState.activeWordIndex + 1));
-
-  const burst: number = TestStats.calculateBurst();
-  void LiveBurst.update(Math.round(burst));
-  TestInput.pushBurstToHistory(burst);
-
-  const lastWord = TestState.activeWordIndex >= TestWords.words.length - 1;
-  if (lastWord) {
-    awaitingNextWord = true;
-    Loader.show();
-    await TestLogic.addWord();
-    Loader.hide();
-    awaitingNextWord = false;
-  } else {
-    void TestLogic.addWord();
-  }
-  const inputTrimmed = TestInput.input.current.trimEnd();
-  TestInput.input.current = inputTrimmed;
-  TestInput.input.pushHistory();
-  TestInput.corrected.pushHistory();
-  if (
-    TestState.activeWordIndex < TestWords.words.length - 1 ||
-    Config.mode === "zen"
-  ) {
-    TestState.increaseActiveWordIndex();
-  }
-
-  setInputValue("");
-}
-
-type FailOrFinishParams = {
-  data: string;
-  correctInsert: boolean;
-  shouldGoToNextWord: boolean;
-  inputType: SupportedInputType;
-};
-
-function failOrFinish({
-  data,
-  correctInsert,
-  shouldGoToNextWord,
-  inputType,
-}: FailOrFinishParams): void {
-  if (
-    (Config.difficulty === "expert" &&
-      data === " " &&
-      !correctInsert &&
-      shouldGoToNextWord &&
-      TestInput.input.current.length > 1) ||
-    (Config.difficulty === "master" &&
-      !correctInsert &&
-      inputType !== "deleteContentBackward")
-  ) {
-    TestLogic.fail("difficulty");
-    console.log("failing difficulty");
-  } else {
-    const currentWord = TestWords.words.getCurrent();
-    const lastWord = TestState.activeWordIndex >= TestWords.words.length - 1;
-    const allWordGenerated = TestLogic.areAllTestWordsGenerated();
-    const wordIsCorrect =
-      TestInput.input.current ===
-      TestWords.words.get(TestState.activeWordIndex);
-    const shouldQuickEnd =
-      Config.quickEnd &&
-      currentWord.length === TestInput.input.current.length &&
-      Config.stopOnError === "off";
-    const shouldSpaceEnd = data === " " && Config.stopOnError === "off";
-
-    if (
-      lastWord &&
-      allWordGenerated &&
-      (wordIsCorrect || shouldQuickEnd || shouldSpaceEnd)
-    ) {
-      void TestLogic.finish();
-    }
-  }
-}
-
-type InputEventHandler = {
-  inputValue: string;
-  realInputValue: string;
-  event: InputEvent;
-  now: number;
-  inputType: SupportedInputType;
-};
-
-type OnInsertTextParams = InputEventHandler & {
-  data: string;
-};
-
-function onBeforeContentDelete({ inputValue, event }: InputEventHandler): void {
-  if (!TestState.isActive) {
-    event.preventDefault();
-    return;
-  }
-
-  const freedomMode = Config.freedomMode;
-  if (freedomMode) {
-    //allow anything in freedom mode
-    return;
-  }
-
-  const confidence = Config.confidenceMode;
-  const previousWordCorrect =
-    (TestInput.input.get(TestState.activeWordIndex - 1) ?? "") ===
-    TestWords.words.get(TestState.activeWordIndex - 1);
-  const inputIsEmpty = inputValue === "";
-
-  if (inputIsEmpty && !previousWordCorrect && confidence === "on") {
-    event.preventDefault();
-  }
-
-  if (confidence === "max") {
-    event.preventDefault();
-  }
-
-  if (inputIsEmpty && previousWordCorrect) {
-    event.preventDefault();
-  }
-}
-
-function onBeforeInsertText({
-  data,
-  inputValue,
-  event,
-}: OnInsertTextParams): void {
-  if (
-    data === " " &&
-    inputValue === "" &&
-    Config.difficulty === "normal" &&
-    !Config.strictSpace
-  ) {
-    event?.preventDefault();
-  }
-
-  const inputLimit =
-    Config.mode === "zen" ? 30 : TestWords.words.getCurrent().length + 20;
-
-  if (TestInput.input.current.length >= inputLimit) {
-    console.error("Hitting word limit");
-    event.preventDefault();
-  }
-}
-
-type OnInsertTextReturn = {
-  correct: boolean;
-};
-
-function onInsertText({
-  data,
-  event,
-  now,
-}: OnInsertTextParams): OnInsertTextReturn {
-  return {
-    correct: handleInput(data, now).correct,
-  };
+  TestUI.afterTestTextInput(correct, movingToNextWord, inputOverride);
 }
 
 function onContentDelete({
@@ -469,31 +466,9 @@ function onContentDelete({
   realInputValue,
 }: InputEventHandler): void {
   if (realInputValue === "") {
-    if (TestState.activeWordIndex > 0) {
-      const word = TestInput.input.popHistory();
-      TestState.decreaseActiveWordIndex();
-      TestInput.corrected.popHistory();
-
-      if (inputType === "deleteWordBackward") {
-        TestInput.input.current = "";
-        setInputValue("");
-      } else if (inputType === "deleteContentBackward") {
-        const nospace =
-          getActiveFunboxes().find((f) => f.properties?.includes("nospace")) !==
-          undefined;
-
-        if (nospace) {
-          TestInput.input.current = word.slice(0, -1);
-          setInputValue(word.slice(0, -1));
-        } else {
-          TestInput.input.current = word;
-          setInputValue(word);
-        }
-      }
-    } else {
-      setInputValue("");
-    }
+    goToPreviousWord(inputType);
   }
+  TestUI.afterTestDelete();
 }
 
 function setInputValue(value: string): void {
@@ -583,9 +558,6 @@ wordsInput.addEventListener("input", async (event) => {
   const realInputValue = wordsInput.value;
   const inputValue = wordsInput.value.slice(1);
   const now = performance.now();
-  let playCorrectSound = false;
-  let correctInsert = false;
-  let shouldGoToNextWord = true;
 
   //this is ok to cast because we are preventing default from anything else
   const inputType = event.inputType as SupportedInputType;
@@ -595,9 +567,11 @@ wordsInput.addEventListener("input", async (event) => {
     TestLogic.startTest(now);
   }
 
+  TestInput.setCurrentNotAfk();
+
   if (inputType === "insertText" && event.data !== null) {
     TestInput.input.current = wordsInput.value.slice(1);
-    const onInsertReturn = onInsertText({
+    await onInsertText({
       inputType,
       inputValue,
       realInputValue,
@@ -605,14 +579,11 @@ wordsInput.addEventListener("input", async (event) => {
       data: event.data,
       now,
     });
-    correctInsert = onInsertReturn.correct;
-    playCorrectSound = correctInsert;
   } else if (
     inputType === "deleteWordBackward" ||
     inputType === "deleteContentBackward"
   ) {
     TestInput.input.current = wordsInput.value.slice(1);
-    playCorrectSound = true;
     onContentDelete({
       inputType,
       inputValue,
@@ -620,53 +591,9 @@ wordsInput.addEventListener("input", async (event) => {
       event,
       now,
     });
+  } else if (inputType === "insertCompositionText") {
+    TestUI.afterTestTextInput(true, false);
   }
-
-  TestInput.setCurrentNotAfk();
-
-  if (Config.stopOnError === "letter" && !correctInsert) {
-    TestInput.input.replaceCurrentLastChar("");
-    setInputValue(TestInput.input.current);
-    shouldGoToNextWord = false;
-  }
-
-  if (!CompositionState.getComposing()) {
-    failOrFinish({
-      data: event.data ?? "",
-      correctInsert,
-      shouldGoToNextWord,
-      inputType,
-    });
-  }
-
-  const nospace =
-    getActiveFunboxes().find((f) => f.properties?.includes("nospace")) !==
-    undefined;
-  const forceNextWord =
-    nospace &&
-    TestInput.input.current.length === TestWords.words.getCurrent().length;
-  const stopOnWordBlock = Config.stopOnError === "word" && !correctInsert;
-
-  if (
-    (inputType === "insertText" &&
-      event.data === " " &&
-      TestInput.input.current.length > 1 &&
-      shouldGoToNextWord &&
-      !stopOnWordBlock) ||
-    (inputType === "insertText" && forceNextWord && !stopOnWordBlock)
-  ) {
-    await goToNextWord({
-      forceNextWord,
-      correctInsert,
-    });
-  }
-
-  updateUI({
-    playCorrectSound,
-    inputType,
-    correctInsert,
-    data: event.data ?? "",
-  });
 });
 
 wordsInput.addEventListener("focus", (event) => {
@@ -729,7 +656,6 @@ wordsInput.addEventListener("compositionstart", (event) => {
 wordsInput.addEventListener("compositionupdate", (event) => {
   console.debug("wordsInput event compositionupdate", { data: event.data });
   CompositionState.setData(event.data);
-  void TestUI.updateActiveWordLetters();
 });
 
 wordsInput.addEventListener("compositionend", async (event) => {
@@ -737,41 +663,17 @@ wordsInput.addEventListener("compositionend", async (event) => {
   CompositionState.setComposing(false);
   CompositionState.setData("");
 
+  const realInputValue = wordsInput.value;
+  const inputValue = wordsInput.value.slice(1);
+  const now = performance.now();
+
   TestInput.input.current = wordsInput.value.slice(1);
-
-  const out = handleInput(event.data, performance.now());
-
-  failOrFinish({
-    data: event.data ?? "",
-    correctInsert: out.correct,
-    shouldGoToNextWord: true,
-    inputType: "insertCompositionText",
-  });
-
-  const nospace =
-    getActiveFunboxes().find((f) => f.properties?.includes("nospace")) !==
-    undefined;
-  const forceNextWord =
-    nospace &&
-    TestInput.input.current.length === TestWords.words.getCurrent().length;
-  const stopOnWordBlock = Config.stopOnError === "word" && !out.correct;
-
-  if (
-    getLastChar(event.data) === " " &&
-    TestInput.input.current.length > 1 &&
-    !stopOnWordBlock
-  ) {
-    void TestUI.updateActiveWordLetters();
-    await goToNextWord({
-      forceNextWord,
-      correctInsert: out.correct,
-    });
-  }
-
-  updateUI({
-    playCorrectSound: out.correct,
-    inputType: "insertCompositionText",
-    correctInsert: out.correct,
+  await onInsertText({
+    event,
+    inputType: "insertText",
+    realInputValue,
+    inputValue,
     data: event.data,
+    now,
   });
 });

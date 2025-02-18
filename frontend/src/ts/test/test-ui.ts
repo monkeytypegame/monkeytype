@@ -32,6 +32,13 @@ import {
 import { convertRemToPixels } from "../utils/numbers";
 import { getActiveFunboxes } from "./funbox/list";
 import * as TestState from "./test-state";
+import * as SoundController from "../controllers/sound-controller";
+import * as Numbers from "@monkeytype/util/numbers";
+import * as TestStats from "./test-stats";
+import * as KeymapEvent from "../observables/keymap-event";
+import * as LiveAcc from "./live-acc";
+import * as Focus from "../test/focus";
+import * as TimerProgress from "../test/timer-progress";
 
 async function gethtml2canvas(): Promise<typeof import("html2canvas").default> {
   return (await import("html2canvas")).default;
@@ -1516,6 +1523,67 @@ function updateLiveStatsColor(value: TimerColor): void {
     $("#liveStatsTextBottom").addClass("timerText");
     $("#liveStatsMini").addClass("timerText");
   }
+}
+
+function afterAnyTestInput(correctInput: boolean | null): void {
+  if (
+    correctInput === true ||
+    Config.playSoundOnError === "off" ||
+    Config.blindMode
+  ) {
+    void SoundController.playClick();
+  } else {
+    void SoundController.playError();
+  }
+
+  const acc: number = Numbers.roundTo2(TestStats.calculateAccuracy());
+  if (!isNaN(acc)) LiveAcc.update(acc);
+
+  if (Config.mode !== "time") {
+    TimerProgress.update();
+  }
+
+  if (Config.keymapMode === "next") {
+    void KeymapEvent.highlight(
+      TestWords.words
+        .getCurrent()
+        .charAt(TestInput.input.current.length)
+        .toString()
+    );
+  }
+
+  Focus.set(true);
+  Caret.stopAnimation();
+  void Caret.updatePosition();
+}
+
+export function afterTestTextInput(
+  correct: boolean,
+  movingToNextWord: boolean,
+  inputOverride?: string
+): void {
+  let override: string | undefined;
+  if (inputOverride !== undefined) {
+    override = inputOverride;
+  }
+  if (
+    movingToNextWord &&
+    Strings.getLastChar(TestInput.input.current) === " "
+  ) {
+    override = TestInput.input.current.slice(0, -1);
+  }
+  void updateActiveWordLetters(override);
+  afterAnyTestInput(correct);
+}
+
+export function afterTestDelete(): void {
+  void updateActiveWordLetters();
+  afterAnyTestInput(null);
+}
+
+export function afterTestWordChange(): void {
+  updateActiveElement();
+  afterAnyTestInput(null);
 }
 
 $(".pageTest").on("click", "#saveScreenshotButton", () => {
