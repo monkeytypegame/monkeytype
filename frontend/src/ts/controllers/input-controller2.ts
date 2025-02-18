@@ -139,12 +139,12 @@ function isCharCorrect(
   return false;
 }
 
-function handleChar(data: string, now: number): OnInsertTextReturn {
+function handleInput(data: string, now: number): OnInsertTextReturn {
   if (data.length > 1) {
     let correct = true;
 
     for (const char of data) {
-      const charReturn = handleChar(char, now);
+      const charReturn = handleInput(char, now);
       if (!charReturn.correct) {
         correct = false;
       }
@@ -460,7 +460,7 @@ function onInsertText({
   now,
 }: OnInsertTextParams): OnInsertTextReturn {
   return {
-    correct: handleChar(data, now).correct,
+    correct: handleInput(data, now).correct,
   };
 }
 
@@ -739,7 +739,7 @@ wordsInput.addEventListener("compositionend", async (event) => {
 
   TestInput.input.current = wordsInput.value.slice(1);
 
-  const out = handleChar(event.data, performance.now());
+  const out = handleInput(event.data, performance.now());
 
   failOrFinish({
     data: event.data ?? "",
