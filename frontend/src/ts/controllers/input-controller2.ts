@@ -140,6 +140,21 @@ function isCharCorrect(
 }
 
 function handleChar(data: string, now: number): OnInsertTextReturn {
+  if (data.length > 1) {
+    let correct = true;
+
+    for (const char of data) {
+      const charReturn = handleChar(char, now);
+      if (!charReturn.correct) {
+        correct = false;
+      }
+    }
+
+    return {
+      correct,
+    };
+  }
+
   for (const fb of getActiveFunboxes()) {
     if (fb.functions?.handleChar) {
       data = fb.functions.handleChar(data);
@@ -444,14 +459,8 @@ function onInsertText({
   event,
   now,
 }: OnInsertTextParams): OnInsertTextReturn {
-  let correct = false;
-
-  for (const char of data) {
-    const charReturn = handleChar(char, now);
-    correct = charReturn.correct;
-  }
   return {
-    correct,
+    correct: handleChar(data, now).correct,
   };
 }
 
