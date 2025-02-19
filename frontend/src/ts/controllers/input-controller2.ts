@@ -170,7 +170,7 @@ async function goToNextWord({
     Loader.hide();
     awaitingNextWord = false;
   } else {
-    void TestLogic.addWord();
+    await TestLogic.addWord();
   }
   const inputTrimmed = TestInput.input.current.trimEnd();
   TestInput.input.current = inputTrimmed;
