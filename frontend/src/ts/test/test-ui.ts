@@ -445,7 +445,7 @@ export function showWords(): void {
 }
 
 export function appendEmptyWordElement(): void {
-  $("#words").append("<div class='word'></div>");
+  $("#words").append("<div class='word'><letter>ㅤ</letter></div>");
 }
 
 const posUpdateLangList = ["japanese", "chinese", "korean"];
@@ -819,6 +819,10 @@ export async function updateActiveWordLetters(
       } else {
         ret += `<letter class="correct">${char}</letter>`;
       }
+    }
+
+    if (input === "") {
+      ret = "<letter>ㅤ</letter>";
     }
 
     const compositionData = CompositionState.getData();
