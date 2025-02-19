@@ -61,6 +61,14 @@ const subgroup: CommandsSubgroup = {
         UpdateConfig.setKeymapStyle("steno_matrix");
       },
     },
+    {
+      id: "setKeymapStyleCustom",
+      display: "custom",
+      configValue: "custom",
+      exec: (): void => {
+        UpdateConfig.setKeymapStyle("custom");
+      },
+    },
   ],
 };
 
