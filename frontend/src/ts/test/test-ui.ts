@@ -1525,6 +1525,23 @@ function updateLiveStatsColor(value: TimerColor): void {
   }
 }
 
+export function getActiveWordTopAfterAppend(data: string): number {
+  const activeWord = document.querySelectorAll("#words .word")?.[
+    TestState.activeWordIndex - activeWordElementOffset
+  ] as HTMLElement;
+
+  activeWord.insertAdjacentHTML(
+    "beforeend",
+    `<letter class="temp">${data}</letter>`
+  );
+
+  const top = activeWord.offsetTop;
+
+  activeWord.removeChild(activeWord.lastChild as Node);
+
+  return top;
+}
+
 function afterAnyTestInput(correctInput: boolean | null): void {
   if (
     correctInput === true ||
@@ -1572,7 +1589,23 @@ export function afterTestTextInput(
   ) {
     override = TestInput.input.current.slice(0, -1);
   }
+  setActiveWordTop();
   void updateActiveWordLetters(override);
+
+  const newTop =
+    (
+      document.querySelectorAll("#words .word")?.[
+        TestState.activeWordIndex - activeWordElementOffset
+      ] as HTMLElement
+    ).offsetTop ?? 0;
+
+  if (newTop > activeWordTop) {
+    //word jumped, go back
+    // TestInput.input.replaceCurrentLastChar("");
+    void updateActiveWordLetters(TestInput.input.current.slice(0, -1));
+    // $("#wordsInput").val(" " + TestInput.input.current);
+  }
+
   afterAnyTestInput(correct);
 }
 

@@ -488,6 +488,16 @@ wordsInput.addEventListener("beforeinput", (event) => {
     return;
   }
 
+  if (
+    event.data !== null &&
+    event.data !== "" &&
+    TestInput.input.current.length >= TestWords.words.getCurrent().length &&
+    TestUI.getActiveWordTopAfterAppend(event.data) > TestUI.activeWordTop
+  ) {
+    event.preventDefault();
+    return;
+  }
+
   const inputType = event.inputType as SupportedInputType;
 
   const realInputValue = wordsInput.value;
