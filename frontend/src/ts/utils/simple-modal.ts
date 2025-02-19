@@ -31,9 +31,10 @@ type CommonInput<TType, TValue> = {
      * Custom async validation method.
      * This is intended to be used for validations that cannot be handled with a Zod schema like server-side validations.
      * @param value current input value
+     * @param thisPopup the current modal
      * @returns true if the `value` is valid, an errorMessage as string if it is invalid.
      */
-    isValid?: (value: string) => Promise<true | string>;
+    isValid?: (value: string, thisPopup: SimpleModal) => Promise<true | string>;
   };
 };
 
@@ -88,8 +89,9 @@ export type ExecReturn = {
   afterHide?: () => void;
 };
 
-type CommonInputTypeWithIndicator = CommonInputType & {
+type FormInput = CommonInputType & {
   indicator?: InputIndicator;
+  currentValue: () => string;
 };
 type SimpleModalOptions = {
   id: string;
@@ -114,7 +116,7 @@ export class SimpleModal {
   modal: AnimatedModal;
   id: string;
   title: string;
-  inputs: CommonInputTypeWithIndicator[];
+  inputs: FormInput[];
   text?: string;
   textAllowHtml: boolean;
   buttonText: string;
@@ -130,7 +132,7 @@ export class SimpleModal {
     this.id = options.id;
     this.execFn = options.execFn;
     this.title = options.title;
-    this.inputs = options.inputs ?? [];
+    this.inputs = (options.inputs as FormInput[]) ?? [];
     this.text = options.text;
     this.textAllowHtml = options.textAllowHtml ?? false;
     this.wrapper = modal.getWrapper();
@@ -313,9 +315,17 @@ export class SimpleModal {
       const element = document.querySelector(
         "#" + attributes["id"]
       ) as HTMLInputElement;
+
       if (input.oninput !== undefined) {
         element.oninput = input.oninput;
       }
+
+      input.currentValue = () => {
+        if (element.type === "checkbox")
+          return element.checked ? "true" : "false";
+        return element.value;
+      };
+
       if (input.validation !== undefined) {
         const indicator = new InputIndicator(element, {
           valid: {
@@ -335,7 +345,7 @@ export class SimpleModal {
         input.indicator = indicator;
 
         const debouceIsValid = debounce(1000, async (value: string) => {
-          const result = await input.validation?.isValid?.(value);
+          const result = await input.validation?.isValid?.(value, this);
 
           if (element.value !== value) {
             //value of the input has changed in the meantime. discard
@@ -389,43 +399,24 @@ export class SimpleModal {
 
   exec(): void {
     if (!this.canClose) return;
-    const vals: string[] = [];
-    for (const el of $("#simpleModal input, #simpleModal textarea")) {
-      if ($(el).is(":checkbox")) {
-        vals.push($(el).is(":checked") ? "true" : "false");
-      } else {
-        vals.push($(el).val() as string);
-      }
-    }
-
-    type CommonInputWithCurrentValue = CommonInputTypeWithIndicator & {
-      currentValue: string | undefined;
-    };
-
-    const inputsWithCurrentValue: CommonInputWithCurrentValue[] = [];
-    for (let i = 0; i < this.inputs.length; i++) {
-      inputsWithCurrentValue.push({
-        ...(this.inputs[i] as CommonInputTypeWithIndicator),
-        currentValue: vals[i],
-      });
-    }
 
     if (
-      inputsWithCurrentValue
+      this.inputs
         .filter((i) => i.hidden !== true && i.optional !== true)
-        .some((v) => v.currentValue === undefined || v.currentValue === "")
+        .some((v) => v.currentValue() === undefined || v.currentValue() === "")
     ) {
       Notifications.add("Please fill in all fields", 0);
       return;
     }
 
-    if (inputsWithCurrentValue.some((i) => i.indicator?.get() === "invalid")) {
+    if (this.inputs.some((i) => i.indicator?.get() === "invalid")) {
       Notifications.add("Please solve all validation errors", 0);
       return;
     }
 
     this.disableInputs();
     Loader.show();
+    const vals: string[] = this.inputs.map((it) => it.currentValue());
     void this.execFn(this, ...vals).then((res) => {
       Loader.hide();
       if (res.showNotification ?? true) {
