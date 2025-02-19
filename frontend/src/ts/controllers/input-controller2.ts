@@ -324,7 +324,7 @@ function onBeforeInsertText({
   const inputLimit =
     Config.mode === "zen" ? 30 : TestWords.words.getCurrent().length + 20;
 
-  if (TestInput.input.current.length >= inputLimit) {
+  if (TestInput.input.current.length >= inputLimit && data !== " ") {
     console.error("Hitting word limit");
     event.preventDefault();
   }
