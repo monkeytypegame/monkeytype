@@ -59,6 +59,11 @@ export function getActiveFunboxNames(): FunboxName[] {
   return stringToFunboxNames(Config.funbox);
 }
 
+/**
+ * Get all active funboxes defining the given property
+ * @param property
+ * @returns list of matching funboxes, empty list if none matching
+ */
 export function getActiveFunboxesWithProperty(
   property: FunboxProperty
 ): FunboxMetadataWithFunctions[] {
@@ -87,7 +92,7 @@ export function findSingleActiveFunboxWithProperty(
  * @param property property name
  * @returns
  */
-export function hasActiveFunboxWithProperty(property: FunboxProperty): boolean {
+export function isActiveFunboxWithProperty(property: FunboxProperty): boolean {
   return getActiveFunboxesWithProperty(property).length > 0;
 }
 
@@ -100,6 +105,11 @@ type FunboxWithFunction<F extends keyof FunboxFunctions> =
     functions: Record<F, MandatoryFunboxFunction<F>>;
   };
 
+/**
+ * Get all active funboxes implementing the given function
+ * @param functionName function name
+ * @returns list of matching funboxes, empty list if none matching
+ */
 export function getActiveFunboxesWithFunction<F extends keyof FunboxFunctions>(
   functionName: F
 ): FunboxWithFunction<F>[] {
@@ -126,7 +136,7 @@ export function getFunctionsFromActiveFunboxes<F extends keyof FunboxFunctions>(
  * @param functionName function name
  * @returns
  */
-export function hasActiveFunboxWithFunction(
+export function isActiveFunboxWithFunction(
   functionName: keyof FunboxFunctions
 ): boolean {
   return getActiveFunboxesWithFunction(functionName).length > 0;

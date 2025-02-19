@@ -20,7 +20,7 @@ import {
   findSingleActiveFunboxWithFunction,
   getActiveFunboxes,
   getFunctionsFromActiveFunboxes,
-  hasActiveFunboxWithFunction,
+  isActiveFunboxWithFunction,
 } from "./funbox/list";
 
 function shouldCapitalize(lastChar: string): boolean {
@@ -609,7 +609,7 @@ export async function generateWords(
     hasNewline: false,
   };
 
-  isCurrentlyUsingFunboxSection = hasActiveFunboxWithFunction("pullSection");
+  isCurrentlyUsingFunboxSection = isActiveFunboxWithFunction("pullSection");
 
   const wordOrder = getWordOrder();
   console.debug("Word order", wordOrder);
@@ -860,7 +860,7 @@ export async function getNextWord(
     throw new WordGenError("Random word contains spaces");
   }
 
-  const usingFunboxWithGetWord = hasActiveFunboxWithFunction("getWord");
+  const usingFunboxWithGetWord = isActiveFunboxWithFunction("getWord");
 
   if (
     Config.mode !== "custom" &&

@@ -9,7 +9,7 @@ import {
   CompletedEvent,
   IncompleteTest,
 } from "@monkeytype/contracts/schemas/results";
-import { hasActiveFunboxWithProperty } from "./funbox/list";
+import { isActiveFunboxWithProperty } from "./funbox/list";
 
 type CharCount = {
   spaces: number;
@@ -357,7 +357,7 @@ function countChars(): CharCount {
       spaces++;
     }
   }
-  if (hasActiveFunboxWithProperty("nospace")) {
+  if (isActiveFunboxWithProperty("nospace")) {
     spaces = 0;
     correctspaces = 0;
   }
