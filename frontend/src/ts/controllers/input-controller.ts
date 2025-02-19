@@ -35,7 +35,11 @@ import { ModifierKeys } from "../constants/modifier-keys";
 import { navigate } from "./route-controller";
 import * as Loader from "../elements/loader";
 import * as KeyConverter from "../utils/key-converter";
-import { getActiveFunboxes } from "../test/funbox/list";
+import {
+  findSingleActiveFunboxWithFunction,
+  getFunctionsFromActiveFunboxes,
+  isFunboxActiveWithProperty,
+} from "../test/funbox/list";
 
 let dontInsertSpace = false;
 let correctShiftUsed = true;
@@ -145,7 +149,7 @@ function backspaceToPrevious(): void {
 
   TestInput.input.current = TestInput.input.popHistory();
   TestInput.corrected.popHistory();
-  if (getActiveFunboxes().find((f) => f.properties?.includes("nospace"))) {
+  if (isFunboxActiveWithProperty("nospace")) {
     TestInput.input.current = TestInput.input.current.slice(0, -1);
     setWordsInput(" " + TestInput.input.current + " ");
   }
@@ -194,8 +198,8 @@ async function handleSpace(): Promise<void> {
 
   const currentWord: string = TestWords.words.getCurrent();
 
-  for (const fb of getActiveFunboxes()) {
-    fb.functions?.handleSpace?.();
+  for (const handleSpace of getFunctionsFromActiveFunboxes("handleSpace")) {
+    handleSpace();
   }
 
   dontInsertSpace = true;
@@ -204,9 +208,7 @@ async function handleSpace(): Promise<void> {
   void LiveBurst.update(Math.round(burst));
   TestInput.pushBurstToHistory(burst);
 
-  const nospace =
-    getActiveFunboxes().find((f) => f.properties?.includes("nospace")) !==
-    undefined;
+  const nospace = isFunboxActiveWithProperty("nospace");
 
   //correct word or in zen mode
   const isWordCorrect: boolean =
@@ -406,8 +408,8 @@ function isCharCorrect(char: string, charIndex: number): boolean {
     return true;
   }
 
-  const funbox = getActiveFunboxes().find((fb) => fb.functions?.isCharCorrect);
-  if (funbox?.functions?.isCharCorrect) {
+  const funbox = findSingleActiveFunboxWithFunction("isCharCorrect");
+  if (funbox) {
     return funbox.functions.isCharCorrect(char, originalChar);
   }
 
@@ -492,15 +494,11 @@ function handleChar(
 
   const isCharKorean: boolean = TestInput.input.getKoreanStatus();
 
-  for (const fb of getActiveFunboxes()) {
-    if (fb.functions?.handleChar) {
-      char = fb.functions.handleChar(char);
-    }
+  for (const handleChar of getFunctionsFromActiveFunboxes("handleChar")) {
+    char = handleChar(char);
   }
 
-  const nospace =
-    getActiveFunboxes().find((f) => f.properties?.includes("nospace")) !==
-    undefined;
+  const nospace = isFunboxActiveWithProperty("nospace") !== undefined;
 
   if (char !== "\n" && char !== "\t" && /\s/.test(char)) {
     if (nospace) return;
@@ -904,10 +902,8 @@ $(document).on("keydown", async (event) => {
     return;
   }
 
-  for (const fb of getActiveFunboxes()) {
-    if (fb.functions?.handleKeydown) {
-      void fb.functions.handleKeydown(event);
-    }
+  for (const handleKeydown of getFunctionsFromActiveFunboxes("handleKeydown")) {
+    void handleKeydown(event);
   }
 
   //autofocus
@@ -1157,20 +1153,20 @@ $(document).on("keydown", async (event) => {
     }
   }
 
-  for (const fb of getActiveFunboxes()) {
-    if (fb.functions?.preventDefaultEvent) {
-      if (
-        await fb.functions.preventDefaultEvent(
-          //i cant figure this type out, but it works fine
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-          event as JQuery.KeyDownEvent
-        )
-      ) {
-        event.preventDefault();
-        handleChar(event.key, TestInput.input.current.length);
-        updateUI();
-        setWordsInput(" " + TestInput.input.current);
-      }
+  for (const preventDefaultEvent of getFunctionsFromActiveFunboxes(
+    "preventDefaultEvent"
+  )) {
+    if (
+      await preventDefaultEvent(
+        //i cant figure this type out, but it works fine
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+        event as JQuery.KeyDownEvent
+      )
+    ) {
+      event.preventDefault();
+      handleChar(event.key, TestInput.input.current.length);
+      updateUI();
+      setWordsInput(" " + TestInput.input.current);
     }
   }
 
