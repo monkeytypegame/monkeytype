@@ -242,7 +242,7 @@ list.updateEmail = new SimpleModal({
         schema: UserEmailSchema,
         isValid: async (currentValue, thisPopup) =>
           currentValue === thisPopup.inputs?.[1]?.currentValue() ||
-          "not matching email",
+          "Emails don't match",
       },
     },
   ],
