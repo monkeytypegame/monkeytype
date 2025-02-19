@@ -14,7 +14,7 @@ import {
   getActiveFunboxNames,
   get,
   getFunctionsFromActiveFunboxes,
-  isActiveFunboxWithProperty,
+  isFunboxActiveWithProperty,
   getActiveFunboxesWithProperty,
 } from "./list";
 import { checkForcedConfig } from "./funbox-validation";
@@ -132,7 +132,7 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
   }
 
   if (language.ligatures) {
-    if (isActiveFunboxWithProperty("noLigatures")) {
+    if (isFunboxActiveWithProperty("noLigatures")) {
       Notifications.add(
         "Current language does not support this funbox mode",
         0
@@ -227,7 +227,7 @@ async function setFunboxBodyClasses(): Promise<boolean> {
       ?.split(/\s+/)
       .filter((it) => !it.startsWith("fb-")) ?? [];
 
-  if (isActiveFunboxWithProperty("ignoreReducedMotion")) {
+  if (isFunboxActiveWithProperty("ignoreReducedMotion")) {
     currentClasses.push("ignore-reduced-motion");
   }
 

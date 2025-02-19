@@ -38,7 +38,7 @@ import * as KeyConverter from "../utils/key-converter";
 import {
   findSingleActiveFunboxWithFunction,
   getFunctionsFromActiveFunboxes,
-  isActiveFunboxWithProperty,
+  isFunboxActiveWithProperty,
 } from "../test/funbox/list";
 
 let dontInsertSpace = false;
@@ -149,7 +149,7 @@ function backspaceToPrevious(): void {
 
   TestInput.input.current = TestInput.input.popHistory();
   TestInput.corrected.popHistory();
-  if (isActiveFunboxWithProperty("nospace")) {
+  if (isFunboxActiveWithProperty("nospace")) {
     TestInput.input.current = TestInput.input.current.slice(0, -1);
     setWordsInput(" " + TestInput.input.current + " ");
   }
@@ -208,7 +208,7 @@ async function handleSpace(): Promise<void> {
   void LiveBurst.update(Math.round(burst));
   TestInput.pushBurstToHistory(burst);
 
-  const nospace = isActiveFunboxWithProperty("nospace");
+  const nospace = isFunboxActiveWithProperty("nospace");
 
   //correct word or in zen mode
   const isWordCorrect: boolean =
@@ -498,7 +498,7 @@ function handleChar(
     char = handleChar(char);
   }
 
-  const nospace = isActiveFunboxWithProperty("nospace") !== undefined;
+  const nospace = isFunboxActiveWithProperty("nospace") !== undefined;
 
   if (char !== "\n" && char !== "\t" && /\s/.test(char)) {
     if (nospace) return;

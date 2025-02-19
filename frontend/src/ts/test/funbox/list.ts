@@ -92,7 +92,7 @@ export function findSingleActiveFunboxWithProperty(
  * @param property property name
  * @returns
  */
-export function isActiveFunboxWithProperty(property: FunboxProperty): boolean {
+export function isFunboxActiveWithProperty(property: FunboxProperty): boolean {
   return getActiveFunboxesWithProperty(property).length > 0;
 }
 
@@ -136,7 +136,7 @@ export function getFunctionsFromActiveFunboxes<F extends keyof FunboxFunctions>(
  * @param functionName function name
  * @returns
  */
-export function isActiveFunboxWithFunction(
+export function isFunboxActiveWithFunction(
   functionName: keyof FunboxFunctions
 ): boolean {
   return getActiveFunboxesWithFunction(functionName).length > 0;

@@ -40,7 +40,7 @@ import { CompletedEvent } from "@monkeytype/contracts/schemas/results";
 import {
   getActiveFunboxes,
   getFromString,
-  isActiveFunboxWithProperty,
+  isFunboxActiveWithProperty,
 } from "./funbox/list";
 import { getFunboxesFromString } from "@monkeytype/funbox";
 
@@ -682,7 +682,7 @@ function updateTestType(randomQuote: Quote | null): void {
       testType += " " + ["short", "medium", "long", "thicc"][randomQuote.group];
     }
   }
-  const ignoresLanguage = isActiveFunboxWithProperty("ignoresLanguage");
+  const ignoresLanguage = isFunboxActiveWithProperty("ignoresLanguage");
   if (Config.mode !== "custom" && !ignoresLanguage) {
     testType += "<br>" + Strings.getLanguageDisplayString(result.language);
   }
