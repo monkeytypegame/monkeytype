@@ -240,10 +240,9 @@ list.updateEmail = new SimpleModal({
       initVal: "",
       validation: {
         schema: UserEmailSchema,
-        isValid: async (confirm) =>
-          confirm ===
-            (document.getElementById("updateEmail_1") as HTMLInputElement)
-              .value || "not matching email",
+        isValid: async (currentValue, thisPopup) =>
+          currentValue === thisPopup.inputs?.[1]?.currentValue() ||
+          "not matching email",
       },
     },
   ],
