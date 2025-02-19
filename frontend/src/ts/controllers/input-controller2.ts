@@ -405,22 +405,7 @@ async function onInsertText({
     }
   }
 
-  if (TestInput.corrected.current === "") {
-    TestInput.corrected.current += TestInput.input.current;
-  } else {
-    const currCorrectedTestInputLength = TestInput.corrected.current.length;
-
-    const charIndex = TestInput.input.current.trimEnd().length - 1;
-
-    if (charIndex >= currCorrectedTestInputLength) {
-      TestInput.corrected.current += data;
-    } else if (!correct) {
-      TestInput.corrected.current =
-        TestInput.corrected.current.substring(0, charIndex) +
-        data +
-        TestInput.corrected.current.substring(charIndex + 1);
-    }
-  }
+  TestInput.corrected.update(data, correct);
 
   let dataStoppedByStopOnLetter: string | null = null;
   let inputOverride: string | undefined;

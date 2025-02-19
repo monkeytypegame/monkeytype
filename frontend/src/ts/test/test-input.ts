@@ -167,6 +167,25 @@ class Corrected {
     this.current = "";
   }
 
+  update(char: string, correct: boolean): void {
+    if (this.current === "") {
+      this.current += input.current;
+    } else {
+      const currCorrectedTestInputLength = this.current.length;
+
+      const charIndex = input.current.trimEnd().length - 1;
+
+      if (charIndex >= currCorrectedTestInputLength) {
+        this.current += char;
+      } else if (!correct) {
+        this.current =
+          this.current.substring(0, charIndex) +
+          char +
+          this.current.substring(charIndex + 1);
+      }
+    }
+  }
+
   getHistory(i: number): string | undefined {
     return this.history[i];
   }
