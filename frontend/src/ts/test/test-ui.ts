@@ -1614,9 +1614,32 @@ export function afterTestDelete(): void {
   afterAnyTestInput(null);
 }
 
-export function afterTestWordChange(): void {
+export function afterTestWordChange(direction: "next" | "previous"): void {
   updateActiveElement();
-  afterAnyTestInput(null);
+  if (
+    direction === "next" &&
+    (!Config.showAllLines ||
+      Config.mode === "time" ||
+      (Config.mode === "custom" && CustomText.getLimitValue() === 0) ||
+      (Config.mode === "custom" && CustomText.getLimitMode() === "time"))
+  ) {
+    const wordElements = document.querySelectorAll("#words .word");
+    const currentElementId =
+      TestState.activeWordIndex - activeWordElementOffset;
+
+    const previousTop: number = Math.floor(
+      (wordElements[currentElementId - 1] as HTMLElement | undefined)
+        ?.offsetTop ?? 0
+    );
+    const currentTop = Math.floor(
+      (wordElements[currentElementId] as HTMLElement | undefined)?.offsetTop ??
+        0
+    );
+
+    if (currentTop > previousTop) {
+      lineJump(previousTop);
+    }
+  }
 }
 
 $(".pageTest").on("click", "#saveScreenshotButton", () => {
