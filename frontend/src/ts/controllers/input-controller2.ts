@@ -321,6 +321,17 @@ function onBeforeInsertText({
     event?.preventDefault();
   }
 
+  if (
+    data !== null &&
+    data !== "" &&
+    TestInput.input.current.length >= TestWords.words.getCurrent().length &&
+    TestUI.getActiveWordTopAfterAppend(data) > TestUI.activeWordTop &&
+    Config.mode !== "zen"
+  ) {
+    event.preventDefault();
+    return;
+  }
+
   const inputLimit =
     Config.mode === "zen" ? 30 : TestWords.words.getCurrent().length + 20;
 
@@ -488,12 +499,7 @@ wordsInput.addEventListener("beforeinput", (event) => {
     return;
   }
 
-  if (
-    event.data !== null &&
-    event.data !== "" &&
-    TestInput.input.current.length >= TestWords.words.getCurrent().length &&
-    TestUI.getActiveWordTopAfterAppend(event.data) > TestUI.activeWordTop
-  ) {
+  if (TestUI.resultCalculating) {
     event.preventDefault();
     return;
   }
@@ -503,11 +509,6 @@ wordsInput.addEventListener("beforeinput", (event) => {
   const realInputValue = wordsInput.value;
   const inputValue = wordsInput.value.slice(1);
   const now = performance.now();
-
-  if (TestUI.resultCalculating) {
-    event.preventDefault();
-    return;
-  }
 
   // beforeinput is always typed as inputevent but input is not?
   // if (!(event instanceof InputEvent)) {
