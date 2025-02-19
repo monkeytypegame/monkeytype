@@ -420,17 +420,15 @@ function updateWordWrapperClasses(): void {
 export function showWords(): void {
   $("#words").empty();
 
-  let wordsHTML = "";
-  if (Config.mode !== "zen") {
+  if (Config.mode === "zen") {
+    appendEmptyWordElement();
+  } else {
+    let wordsHTML = "";
     for (let i = 0; i < TestWords.words.length; i++) {
       wordsHTML += getWordHTML(TestWords.words.get(i));
     }
-  } else {
-    wordsHTML =
-      '<div class="word">word height</div><div class="word active"></div>';
+    $("#words").html(wordsHTML);
   }
-
-  $("#words").html(wordsHTML);
 
   updateActiveElement(undefined, true);
   setTimeout(() => {
@@ -438,10 +436,6 @@ export function showWords(): void {
   }, 125);
 
   updateWordWrapperClasses();
-
-  if (Config.mode === "zen") {
-    $(document.querySelector(".word") as Element).remove();
-  }
 }
 
 export function appendEmptyWordElement(): void {
