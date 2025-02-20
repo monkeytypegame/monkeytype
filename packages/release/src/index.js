@@ -30,7 +30,7 @@ const runCommand = (command, force) => {
       return output;
     } catch (error) {
       console.error(`Error executing command ${command}`);
-      console.error(error);
+      console.error(error.output.toString());
       process.exit(1);
     }
   }
