@@ -34,9 +34,9 @@ function buildClientVersion() {
       .execSync("git rev-parse --short HEAD")
       .toString();
 
-    return `${version}.${commitHash}`.replace(/\n/g, "");
+    return `${version}_${commitHash}`.replace(/\n/g, "");
   } catch (e) {
-    return `${version}.unknown-hash`;
+    return `${version}_unknown-hash`;
   }
 }
 
