@@ -498,7 +498,7 @@ function handleChar(
     char = handleChar(char);
   }
 
-  const nospace = isFunboxActiveWithProperty("nospace") !== undefined;
+  const nospace = isFunboxActiveWithProperty("nospace");
 
   if (char !== "\n" && char !== "\t" && /\s/.test(char)) {
     if (nospace) return;
