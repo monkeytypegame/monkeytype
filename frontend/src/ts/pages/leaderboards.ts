@@ -16,7 +16,11 @@ import { differenceInSeconds } from "date-fns/differenceInSeconds";
 import * as DateTime from "../utils/date-and-time";
 import { getHtmlByUserFlags } from "../controllers/user-flag-controller";
 import { getHTMLById as getBadgeHTMLbyId } from "../controllers/badge-controller";
-import { getDiscordAvatarUrl, isDevEnvironment } from "../utils/misc";
+import {
+  applyReducedMotion,
+  getDiscordAvatarUrl,
+  isDevEnvironment,
+} from "../utils/misc";
 import { abbreviateNumber } from "../utils/numbers";
 import {
   getCurrentWeekTimestamp,
@@ -66,6 +70,7 @@ type State = {
   title: string;
   error?: string;
   discordAvatarUrls: Map<string, string>;
+  scrollToUserAfterFill: boolean;
 } & (AllTimeState | WeeklyState | DailyState);
 
 const state = {
@@ -79,6 +84,7 @@ const state = {
   pageSize: 50,
   title: "All-time English Time 15 Leaderboard",
   discordAvatarUrls: new Map<string, string>(),
+  scrollToUserAfterFill: false,
 } as State;
 
 function updateTitle(): void {
@@ -896,6 +902,19 @@ function updateContent(): void {
   updateJumpButtons();
   updateTimerVisibility();
   fillTable();
+
+  if (state.scrollToUserAfterFill) {
+    const windowHeight = $(window).height() ?? 0;
+    const offset = $(`.tableAndUser .me`).offset()?.top ?? 0;
+    const scrollTo = offset - windowHeight / 2;
+    $([document.documentElement, document.body]).animate(
+      {
+        scrollTop: scrollTo,
+      },
+      applyReducedMotion(500)
+    );
+    state.scrollToUserAfterFill = false;
+  }
 }
 
 function updateTypeButtons(): void {
@@ -1068,6 +1087,7 @@ function handleJumpButton(action: string, page?: number): void {
           }
 
           state.page = page;
+          state.scrollToUserAfterFill = true;
         }
       }
     }
