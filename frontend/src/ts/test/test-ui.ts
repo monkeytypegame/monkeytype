@@ -32,7 +32,7 @@ import {
 import { convertRemToPixels } from "../utils/numbers";
 import {
   findSingleActiveFunboxWithFunction,
-  getFunctionsFromActiveFunboxes,
+  getActiveFunboxesWithFunction,
 } from "./funbox/list";
 import * as TestState from "./test-state";
 
@@ -656,10 +656,8 @@ export async function screenshot(): Promise<void> {
     }
     (document.querySelector("html") as HTMLElement).style.scrollBehavior =
       "smooth";
-    for (const applyGlobalCSS of getFunctionsFromActiveFunboxes(
-      "applyGlobalCSS"
-    )) {
-      applyGlobalCSS();
+    for (const fb of getActiveFunboxesWithFunction("applyGlobalCSS")) {
+      fb.functions.applyGlobalCSS();
     }
   }
 
@@ -700,8 +698,8 @@ export async function screenshot(): Promise<void> {
   $(".highlightContainer").addClass("hidden");
   if (revertCookie) $("#cookiesModal").addClass("hidden");
 
-  for (const clearGlobal of getFunctionsFromActiveFunboxes("clearGlobal")) {
-    clearGlobal();
+  for (const fb of getActiveFunboxesWithFunction("clearGlobal")) {
+    fb.functions.clearGlobal();
   }
 
   (document.querySelector("html") as HTMLElement).style.scrollBehavior = "auto";

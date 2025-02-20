@@ -119,19 +119,6 @@ export function getActiveFunboxesWithFunction<F extends keyof FunboxFunctions>(
 }
 
 /**
- * Get requested, implemented functions from all active funboxes
- * @param functionName name of the function
- * @returns array of each implemented requested function of all active funboxes
- */
-export function getFunctionsFromActiveFunboxes<F extends keyof FunboxFunctions>(
-  functionName: F
-): MandatoryFunboxFunction<F>[] {
-  return getActiveFunboxesWithFunction(functionName).map(
-    (it) => it.functions[functionName]
-  );
-}
-
-/**
  * Check if there is an active funbox implemenging the given function
  * @param functionName function name
  * @returns

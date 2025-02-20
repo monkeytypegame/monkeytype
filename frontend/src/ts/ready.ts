@@ -7,7 +7,7 @@ import * as AccountButton from "./elements/account-button";
 //@ts-expect-error
 import Konami from "konami";
 import * as ServerConfiguration from "./ape/server-configuration";
-import { getFunctionsFromActiveFunboxes } from "./test/funbox/list";
+import { getActiveFunboxesWithFunction } from "./test/funbox/list";
 import { loadPromise } from "./config";
 
 $(async (): Promise<void> => {
@@ -19,10 +19,8 @@ $(async (): Promise<void> => {
   $("body").css("transition", "background .25s, transform .05s");
   MerchBanner.showIfNotClosedBefore();
 
-  for (const applyGlobalCSS of getFunctionsFromActiveFunboxes(
-    "applyGlobalCSS"
-  )) {
-    applyGlobalCSS();
+  for (const fb of getActiveFunboxesWithFunction("applyGlobalCSS")) {
+    fb.functions.applyGlobalCSS();
   }
 
   $("#app")
