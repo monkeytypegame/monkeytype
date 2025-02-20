@@ -16,7 +16,11 @@ import { differenceInSeconds } from "date-fns/differenceInSeconds";
 import * as DateTime from "../utils/date-and-time";
 import { getHtmlByUserFlags } from "../controllers/user-flag-controller";
 import { getHTMLById as getBadgeHTMLbyId } from "../controllers/badge-controller";
-import { getDiscordAvatarUrl, isDevEnvironment } from "../utils/misc";
+import {
+  applyReducedMotion,
+  getDiscordAvatarUrl,
+  isDevEnvironment,
+} from "../utils/misc";
 import { abbreviateNumber } from "../utils/numbers";
 import {
   getCurrentWeekTimestamp,
@@ -184,7 +188,7 @@ function updateTitle(): void {
   }
 }
 
-async function requestData(update = false): Promise<void> {
+async function requestData(update = false, scroll = false): Promise<void> {
   if (update) {
     state.updating = true;
     state.error = undefined;
@@ -285,6 +289,17 @@ async function requestData(update = false): Promise<void> {
     updateContent();
     if (!update && isAuthenticated()) {
       fillUser();
+    }
+    if (scroll) {
+      const windowHeight = $(window).height() ?? 0;
+      const offset = $(`.tableAndUser .me`).offset()?.top ?? 0;
+      const scrollTo = offset - windowHeight / 2;
+      $([document.documentElement, document.body]).animate(
+        {
+          scrollTop: scrollTo,
+        },
+        applyReducedMotion(500)
+      );
     }
     return;
   } else if (state.type === "weekly") {
@@ -1037,7 +1052,7 @@ function handleJumpButton(action: string, page?: number): void {
     return;
   }
   updateGetParameters();
-  void requestData(true);
+  void requestData(true, action === "userPage");
   updateContent();
 }
 

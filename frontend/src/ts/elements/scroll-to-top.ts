@@ -13,7 +13,12 @@ $(document).on("click", ".scrollToTopButton", () => {
 $(window).on("scroll", () => {
   const page = ActivePage.get();
   if (page === "test") return;
-  if (page === "about" || page === "settings" || page === "account") {
+  if (
+    page === "about" ||
+    page === "settings" ||
+    page === "account" ||
+    page === "leaderboards"
+  ) {
     const scroll = window.scrollY;
     if (!visible && scroll > 100) {
       $(".scrollToTopButton").removeClass("invisible");
