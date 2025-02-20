@@ -48,7 +48,7 @@ import { navigate } from "./route-controller";
 import { FirebaseError } from "firebase/app";
 import * as PSA from "../elements/psa";
 import defaultResultFilters from "../constants/default-result-filters";
-import { getFunctionsFromActiveFunboxes } from "../test/funbox/list";
+import { getActiveFunboxesWithFunction } from "../test/funbox/list";
 
 export const gmailProvider = new GoogleAuthProvider();
 export const githubProvider = new GithubAuthProvider();
@@ -174,10 +174,8 @@ async function getDataAndInit(): Promise<boolean> {
     UpdateConfig.saveFullConfigToLocalStorage(true);
 
     //funboxes might be different and they wont activate on the account page
-    for (const applyGlobalCSS of getFunctionsFromActiveFunboxes(
-      "applyGlobalCSS"
-    )) {
-      applyGlobalCSS();
+    for (const fb of getActiveFunboxesWithFunction("applyGlobalCSS")) {
+      fb.functions.applyGlobalCSS();
     }
   }
   AccountButton.loading(false);

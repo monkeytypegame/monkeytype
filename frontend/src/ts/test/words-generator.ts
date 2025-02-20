@@ -19,7 +19,7 @@ import { FunboxWordOrder, LanguageObject } from "../utils/json-data";
 import {
   findSingleActiveFunboxWithFunction,
   getActiveFunboxes,
-  getFunctionsFromActiveFunboxes,
+  getActiveFunboxesWithFunction,
   isFunboxActiveWithFunction,
 } from "./funbox/list";
 
@@ -353,8 +353,8 @@ function applyFunboxesToWord(
   wordIndex: number,
   wordsBound: number
 ): string {
-  for (const alterText of getFunctionsFromActiveFunboxes("alterText")) {
-    word = alterText(word, wordIndex, wordsBound);
+  for (const fb of getActiveFunboxesWithFunction("alterText")) {
+    word = fb.functions.alterText(word, wordIndex, wordsBound);
   }
   return word;
 }

@@ -67,7 +67,7 @@ import * as XPBar from "../elements/xp-bar";
 import {
   findSingleActiveFunboxWithFunction,
   getActiveFunboxes,
-  getFunctionsFromActiveFunboxes,
+  getActiveFunboxesWithFunction,
 } from "./funbox/list";
 import { getFunboxesFromString } from "@monkeytype/funbox";
 import * as CompositionState from "../states/composition";
@@ -112,8 +112,8 @@ export function startTest(now: number): boolean {
   TestTimer.clear();
   Monkey.show();
 
-  for (const start of getFunctionsFromActiveFunboxes("start")) {
-    start();
+  for (const fb of getActiveFunboxesWithFunction("start")) {
+    fb.functions.start();
   }
 
   try {
@@ -335,8 +335,8 @@ export function restart(options = {} as RestartOptions): void {
       await init();
       await PaceCaret.init();
 
-      for (const restart of getFunctionsFromActiveFunboxes("restart")) {
-        restart();
+      for (const fb of getActiveFunboxesWithFunction("restart")) {
+        fb.functions.restart();
       }
 
       if (Config.showAverage !== "off") {

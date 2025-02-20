@@ -37,7 +37,7 @@ import * as Loader from "../elements/loader";
 import * as KeyConverter from "../utils/key-converter";
 import {
   findSingleActiveFunboxWithFunction,
-  getFunctionsFromActiveFunboxes,
+  getActiveFunboxesWithFunction,
   isFunboxActiveWithProperty,
 } from "../test/funbox/list";
 
@@ -198,8 +198,8 @@ async function handleSpace(): Promise<void> {
 
   const currentWord: string = TestWords.words.getCurrent();
 
-  for (const handleSpace of getFunctionsFromActiveFunboxes("handleSpace")) {
-    handleSpace();
+  for (const fb of getActiveFunboxesWithFunction("handleSpace")) {
+    fb.functions.handleSpace();
   }
 
   dontInsertSpace = true;
@@ -494,8 +494,8 @@ function handleChar(
 
   const isCharKorean: boolean = TestInput.input.getKoreanStatus();
 
-  for (const handleChar of getFunctionsFromActiveFunboxes("handleChar")) {
-    char = handleChar(char);
+  for (const fb of getActiveFunboxesWithFunction("handleChar")) {
+    char = fb.functions.handleChar(char);
   }
 
   const nospace = isFunboxActiveWithProperty("nospace");
@@ -902,8 +902,8 @@ $(document).on("keydown", async (event) => {
     return;
   }
 
-  for (const handleKeydown of getFunctionsFromActiveFunboxes("handleKeydown")) {
-    void handleKeydown(event);
+  for (const fb of getActiveFunboxesWithFunction("handleKeydown")) {
+    void fb.functions.handleKeydown(event);
   }
 
   //autofocus
@@ -1153,11 +1153,9 @@ $(document).on("keydown", async (event) => {
     }
   }
 
-  for (const preventDefaultEvent of getFunctionsFromActiveFunboxes(
-    "preventDefaultEvent"
-  )) {
+  for (const fb of getActiveFunboxesWithFunction("preventDefaultEvent")) {
     if (
-      await preventDefaultEvent(
+      await fb.functions.preventDefaultEvent(
         //i cant figure this type out, but it works fine
         // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
         event as JQuery.KeyDownEvent
