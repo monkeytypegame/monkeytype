@@ -7,7 +7,7 @@ sed -i "s/###FIREBASE_PROJECTID###/${FIREBASE_PROJECTID}/g" js/firebase.*.js
 sed -i "s/###FIREBASE_STORAGEBUCKET###/${FIREBASE_STORAGEBUCKET}/g" js/firebase.*.js
 sed -i "s/###FIREBASE_MESSAGINGSENDERID###/${FIREBASE_MESSAGINGSENDERID}/g" js/firebase.*.js
 sed -i "s/###FIREBASE_APPID###/${FIREBASE_APPID}/g" js/firebase.*.js
-
+sed -i "s/###FIREBASE_AUTH_EMULATOR_HOST_FRONTEND###/${FIREBASE_AUTH_EMULATOR_HOST_FRONTEND}/g" js/firebase.*.js
 
 echo "use backend url ${MONKEYTYPE_BACKENDURL}"
 sed -i "s/###MONKEYTYPE_BACKENDURL###/${MONKEYTYPE_BACKENDURL//\//\\/}/g" js/*.js

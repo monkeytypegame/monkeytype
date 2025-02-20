@@ -10,4 +10,5 @@ export const firebaseConfig = {
   storageBucket: "###FIREBASE_STORAGEBUCKET###",
   messagingSenderId: "###FIREBASE_MESSAGINGSENDERID###",
   appId: "###FIREBASE_APPID###",
+  firebaseAuthEmulatorHost: "###FIREBASE_AUTH_EMULATOR_HOST_FRONTEND###",
 };

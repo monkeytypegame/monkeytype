@@ -11,7 +11,7 @@ services:
       monkeytype-backend:
         condition: service_healthy
     env_file:
-      - path: ./example.env
+      - path: ./.env
         required: true
     environment:
       - FIREBASE_APIKEY=${FIREBASE_APIKEY:-}
@@ -22,6 +22,7 @@ services:
       - FIREBASE_APPID=${FIREBASE_APPID:-}
       - MONKEYTYPE_BACKENDURL=${MONKEYTYPE_BACKENDURL}
       - RECAPTCHA_SITE_KEY=${RECAPTCHA_SITE_KEY:-}
+      - FIREBASE_AUTH_EMULATOR_HOST_FRONTEND=${FIREBASE_AUTH_EMULATOR_HOST_FRONTEND:-}
 
   monkeytype-backend:
     container_name: monkeytype-backend
@@ -35,13 +36,14 @@ services:
       - REDIS_URI=redis://monkeytype-redis:6379
       - FRONTEND_URL=${MONKEYTYPE_FRONTENDURL}
       - RECAPTCHA_SECRET=${RECAPTCHA_SECRET:-}
-      - FIREBASE_AUTH_EMULATOR_HOST=firebase:9099
+      - FIREBASE_AUTH_EMULATOR_HOST=${FIREBASE_AUTH_EMULATOR_HOST:-}
     volumes:
       #uncomment to enable the account system, check the SELF_HOSTING.md file
       #- type: bind
       #  source: ./serviceAccountKey.json
       #  target: /app/backend/src/credentials/serviceAccountKey.json
       #  read_only: true
+      #comment below binding out if using the above binding
       - type: bind
         source: ./serviceAccountKey-example.json
         target: /app/backend/src/credentials/serviceAccountKey.json
@@ -96,9 +98,9 @@ services:
 
   firebase:
     build:
-      dockerfile: firebase-emulator/Dockerfile
-    container_name: firebase-emulator
-    image: firebase-emulator:latest
+      dockerfile: firebase-emulator-Dockerfile
+    container_name: monkeytype-firebase-emulator
+    image: monkeytype/firebase-emulator:latest
     ports:
       - "9099:9099"
       - "4000:4000"

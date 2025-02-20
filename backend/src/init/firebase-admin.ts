@@ -1,6 +1,6 @@
-import admin /*,{ type ServiceAccount }*/ from "firebase-admin";
+import admin, { type ServiceAccount } from "firebase-admin";
 import Logger from "../utils/logger";
-import { /*readFileSync,*/ existsSync } from "fs";
+import { readFileSync, existsSync } from "fs";
 import MonkeyError from "../utils/error";
 import path from "path";
 import { isDevEnvironment } from "../utils/misc";
@@ -11,6 +11,17 @@ const SERVICE_ACCOUNT_PATH = path.join(
 );
 
 export function init(): void {
+  const firebaseAuthEmulatorHost = process.env["FIREBASE_AUTH_EMULATOR_HOST"];
+  if (
+    firebaseAuthEmulatorHost !== undefined &&
+    firebaseAuthEmulatorHost !== null &&
+    firebaseAuthEmulatorHost !== ""
+  ) {
+    // Only run if FIREBASE_AUTH_EMULATOR_HOST is defined, not null, and not an empty string
+    admin.initializeApp({ projectId: "local-project" });
+    return;
+  }
+
   if (!existsSync(SERVICE_ACCOUNT_PATH)) {
     if (isDevEnvironment()) {
       Logger.warning(
@@ -24,17 +35,16 @@ export function init(): void {
       );
     }
   } else {
-    // const serviceAccount = JSON.parse(
-    //   readFileSync(SERVICE_ACCOUNT_PATH, {
-    //     encoding: "utf8",
-    //     flag: "r",
-    //   })
-    // ) as ServiceAccount;
-    admin.initializeApp({ projectId: "local-project" });
+    const serviceAccount = JSON.parse(
+      readFileSync(SERVICE_ACCOUNT_PATH, {
+        encoding: "utf8",
+        flag: "r",
+      })
+    ) as ServiceAccount;
 
-    // admin.initializeApp({
-    //   credential: admin.credential.cert(serviceAccount),
-    // });
+    admin.initializeApp({
+      credential: admin.credential.cert(serviceAccount),
+    });
     Logger.success("Firebase app initialized");
   }
 }

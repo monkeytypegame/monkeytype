@@ -34,7 +34,9 @@ export function getAuthenticatedUser(): User {
 try {
   app = initializeApp(firebaseConfig);
   Auth = getAuth(app);
-  connectAuthEmulator(Auth, "http://localhost:9099"); // this works for docker-compose
+  if (firebaseConfig.firebaseAuthEmulatorHost) {
+    connectAuthEmulator(Auth, firebaseConfig.firebaseAuthEmulatorHost);
+  }
 } catch (e) {
   app = undefined;
   Auth = undefined;

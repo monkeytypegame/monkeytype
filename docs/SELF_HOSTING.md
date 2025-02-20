@@ -31,14 +31,16 @@
 - create a new directory, e.g.  `monkeytype` and open it.
 - download the [docker-compose.yml](https://github.com/monkeytypegame/monkeytype/tree/master/docker/docker-compose.yml)
 - create an `.env` file, you can copy the content from the [example.env](https://github.com/monkeytypegame/monkeytype/tree/master/docker/example.env).
+- create a `serviceAccountKey.json` file, you can copy the content from the [serviceAccountKey-example.json](https://github.com/monkeytypegame/monkeytype/tree/master/docker/serviceAccountKey-example.json).
+- set firebaseAuthEmulatorHost to the 
 - download the [backend-configuration.json](https://github.com/monkeytypegame/monkeytype/tree/master/docker/backend-configuration.json)
+- download the [firebase-emulator-Dockerfile](https://github.com/monkeytypegame/monkeytype/tree/master/docker/firebase-emulator-Dockerfile)
 - run `docker compose up -d`
 - after the command exits successfully you can access [http://localhost:8080](http://localhost:8080)
 
-
 ## Account System
 
-User signup/login is disabled by default. To allow users to signup you'll need to setup a Firebase project. 
+User signup/login uses the Firebase emulator by default. For real email verification set up Firebase by following these instructions.
 Stop the running docker containers using `docker compose down` before making any changes.
 
 ### Setup Firebase

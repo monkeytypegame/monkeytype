@@ -10,8 +10,22 @@ WORKDIR /usr/src/app
 # Install the Firebase CLI globally.
 RUN npm install -g firebase-tools
 
-# Copy the project files to the container.
-COPY firebase-emulator/firebase.json .
+# Set the contents of firebase.json.
+RUN cat <<EOF > firebase.json
+{
+  "emulators": {
+    "auth": {
+      "port": 9099,
+      "host": "0.0.0.0"
+    },
+    "ui": {
+      "enabled": true,
+      "port": 4000,
+      "host": "0.0.0.0"
+    }
+  }
+}
+EOF
 
 # Pre-download Firebase emulators to avoid downloading at runtime
 RUN firebase setup:emulators:ui
