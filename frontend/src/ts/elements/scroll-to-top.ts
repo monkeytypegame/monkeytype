@@ -4,6 +4,7 @@ import { prefersReducedMotion } from "../utils/misc";
 let visible = false;
 
 $(document).on("click", ".scrollToTopButton", () => {
+  $(".scrollToTopButton").addClass("invisible");
   window.scrollTo({
     top: 0,
     behavior: prefersReducedMotion() ? "instant" : "smooth",
