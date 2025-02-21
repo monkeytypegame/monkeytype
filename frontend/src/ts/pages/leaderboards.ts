@@ -246,6 +246,7 @@ async function requestData(update = false): Promise<void> {
         requests.rank = Ape.leaderboards.getDailyRank({
           query: {
             ...baseQuery,
+            daysBefore: state.yesterday ? 1 : undefined,
           },
         });
       }
@@ -324,7 +325,11 @@ async function requestData(update = false): Promise<void> {
     });
 
     if (isAuthenticated() && state.userData === null) {
-      requests.rank = Ape.leaderboards.getWeeklyXpRank();
+      requests.rank = Ape.leaderboards.getWeeklyXpRank({
+        query: {
+          weeksBefore: state.lastWeek ? 1 : undefined,
+        },
+      });
     }
 
     const [dataResponse, rankResponse] = await Promise.all([
@@ -667,15 +672,6 @@ function fillUser(): void {
   }
 
   if (state.data === null) {
-    return;
-  }
-
-  if (
-    (state.type === "weekly" && state.lastWeek) ||
-    (state.type === "daily" && state.yesterday)
-  ) {
-    $(".page.pageLeaderboards .bigUser").addClass("hidden");
-    $(".page.pageLeaderboards .tableAndUser > .divider").removeClass("hidden");
     return;
   }
 
