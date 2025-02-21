@@ -15,9 +15,9 @@ import {
   GetLeaderboardRankResponse,
   GetLeaderboardResponse as GetLeaderboardResponse,
   GetWeeklyXpLeaderboardQuery,
+  GetWeeklyXpLeaderboardRankQuery,
   GetWeeklyXpLeaderboardRankResponse,
   GetWeeklyXpLeaderboardResponse,
-  WeeklyXpLeaderboardQuery,
 } from "@monkeytype/contracts/leaderboards";
 import { Configuration } from "@monkeytype/contracts/schemas/configuration";
 import {
@@ -189,7 +189,7 @@ export async function getWeeklyXpLeaderboardResults(
 }
 
 export async function getWeeklyXpLeaderboardRank(
-  req: MonkeyRequest<WeeklyXpLeaderboardQuery>
+  req: MonkeyRequest<GetWeeklyXpLeaderboardRankQuery>
 ): Promise<GetWeeklyXpLeaderboardRankResponse> {
   const { uid } = req.ctx.decodedToken;
 

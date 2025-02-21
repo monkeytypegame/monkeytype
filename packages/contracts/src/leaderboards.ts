@@ -99,12 +99,9 @@ export type GetLeaderboardDailyRankResponse = z.infer<
 
 //--------------------------------------------------------------------------
 
-export const WeeklyXpLeaderboardQuerySchema = z.object({
+const WeeklyXpLeaderboardQuerySchema = z.object({
   weeksBefore: z.literal(1).optional(),
 });
-export type WeeklyXpLeaderboardQuery = z.infer<
-  typeof WeeklyXpLeaderboardQuerySchema
->;
 
 export const GetWeeklyXpLeaderboardQuerySchema =
   WeeklyXpLeaderboardQuerySchema.merge(PaginationQuerySchema);
