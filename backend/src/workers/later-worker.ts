@@ -18,7 +18,7 @@ import { WeeklyXpLeaderboard } from "../services/weekly-xp-leaderboard";
 import { MonkeyMail } from "@monkeytype/contracts/schemas/users";
 import { mapRange } from "@monkeytype/util/numbers";
 
-export async function handleDailyLeaderboardResults(
+async function handleDailyLeaderboardResults(
   ctx: LaterTaskContexts["daily-leaderboard-results"]
 ): Promise<void> {
   const { yesterdayTimestamp, modeRule } = ctx;
