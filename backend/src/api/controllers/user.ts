@@ -21,6 +21,7 @@ import { deleteConfig } from "../../dal/config";
 import { verify } from "../../utils/captcha";
 import * as LeaderboardsDAL from "../../dal/leaderboards";
 import { purgeUserFromDailyLeaderboards } from "../../utils/daily-leaderboards";
+import { purgeUserFromXpLeaderboards } from "../../services/weekly-xp-leaderboard";
 import { v4 as uuidv4 } from "uuid";
 import { ObjectId } from "mongodb";
 import * as ReportDAL from "../../dal/report";
@@ -273,6 +274,10 @@ export async function deleteUser(req: MonkeyRequest): Promise<MonkeyResponse> {
       uid,
       req.ctx.configuration.dailyLeaderboards
     ),
+    purgeUserFromXpLeaderboards(
+      uid,
+      req.ctx.configuration.leaderboards.weeklyXp
+    ),
   ]);
 
   //delete user from
@@ -309,6 +314,10 @@ export async function resetUser(req: MonkeyRequest): Promise<MonkeyResponse> {
     purgeUserFromDailyLeaderboards(
       uid,
       req.ctx.configuration.dailyLeaderboards
+    ),
+    purgeUserFromXpLeaderboards(
+      uid,
+      req.ctx.configuration.leaderboards.weeklyXp
     ),
   ];
 
@@ -382,6 +391,10 @@ export async function optOutOfLeaderboards(
   await purgeUserFromDailyLeaderboards(
     uid,
     req.ctx.configuration.dailyLeaderboards
+  );
+  await purgeUserFromXpLeaderboards(
+    uid,
+    req.ctx.configuration.leaderboards.weeklyXp
   );
   void addImportantLog("user_opted_out_of_leaderboards", "", uid);
 

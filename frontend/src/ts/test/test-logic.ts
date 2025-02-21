@@ -64,7 +64,11 @@ import {
   CustomTextDataWithTextLen,
 } from "@monkeytype/contracts/schemas/results";
 import * as XPBar from "../elements/xp-bar";
-import { getActiveFunboxes } from "./funbox/list";
+import {
+  findSingleActiveFunboxWithFunction,
+  getActiveFunboxes,
+  getActiveFunboxesWithFunction,
+} from "./funbox/list";
 import { getFunboxesFromString } from "@monkeytype/funbox";
 import * as CompositionState from "../states/composition";
 
@@ -108,8 +112,8 @@ export function startTest(now: number): boolean {
   TestTimer.clear();
   Monkey.show();
 
-  for (const fb of getActiveFunboxes()) {
-    fb.functions?.start?.();
+  for (const fb of getActiveFunboxesWithFunction("start")) {
+    fb.functions.start();
   }
 
   try {
@@ -331,8 +335,8 @@ export function restart(options = {} as RestartOptions): void {
       await init();
       await PaceCaret.init();
 
-      for (const fb of getActiveFunboxes()) {
-        fb.functions?.restart?.();
+      for (const fb of getActiveFunboxesWithFunction("restart")) {
+        fb.functions.restart();
       }
 
       if (Config.showAverage !== "off") {
@@ -396,7 +400,7 @@ export async function init(): Promise<void> {
   TestState.setActiveWordIndex(0);
   TestUI.setActiveWordElementIndex(0);
   TestInput.input.resetHistory();
-  TestInput.input.resetCurrent();
+  TestInput.input.current = "";
 
   let language;
   try {
@@ -550,7 +554,7 @@ export async function addWord(): Promise<void> {
   const toPushCount = funboxToPush?.split(":")[1];
   if (toPushCount !== undefined) bound = +toPushCount - 1;
 
-  if (TestWords.words.length - TestInput.input.history.length > bound) {
+  if (TestWords.words.length - TestInput.input.getHistory().length > bound) {
     console.debug("Not adding word, enough words already");
     return;
   }
@@ -558,12 +562,8 @@ export async function addWord(): Promise<void> {
     console.debug("Not adding word, all words generated");
     return;
   }
-
-  const sectionFunbox = getActiveFunboxes().find(
-    (f) => f.functions?.pullSection
-  );
-
-  if (sectionFunbox?.functions?.pullSection) {
+  const sectionFunbox = findSingleActiveFunboxWithFunction("pullSection");
+  if (sectionFunbox) {
     if (TestWords.words.length - TestState.activeWordIndex < 20) {
       const section = await sectionFunbox.functions.pullSection(
         Config.language
@@ -843,7 +843,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
   if (TestInput.input.current.length !== 0) {
     TestInput.input.pushHistory();
     TestInput.corrected.pushHistory();
-    Replay.replayGetWordsList(TestInput.input.history);
+    Replay.replayGetWordsList(TestInput.input.getHistory());
   }
 
   TestInput.forceKeyup(now); //this ensures that the last keypress(es) are registered
@@ -1018,7 +1018,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
     // Let's update the custom text progress
     if (
       TestState.bailedOut ||
-      TestInput.input.history.length < TestWords.words.length
+      TestInput.input.getHistory().length < TestWords.words.length
     ) {
       // They bailed out
 
