@@ -1237,6 +1237,7 @@ $(".page.pageLeaderboards .buttonGroup.secondary").on(
     } else if (language !== undefined && state.type === "daily") {
       if (state.language === language) return;
       state.language = language;
+      state.page = 0;
     } else {
       return;
     }
