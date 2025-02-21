@@ -16,7 +16,11 @@ import { differenceInSeconds } from "date-fns/differenceInSeconds";
 import * as DateTime from "../utils/date-and-time";
 import { getHtmlByUserFlags } from "../controllers/user-flag-controller";
 import { getHTMLById as getBadgeHTMLbyId } from "../controllers/badge-controller";
-import { getDiscordAvatarUrl, isDevEnvironment } from "../utils/misc";
+import {
+  applyReducedMotion,
+  getDiscordAvatarUrl,
+  isDevEnvironment,
+} from "../utils/misc";
 import { abbreviateNumber } from "../utils/numbers";
 import {
   getCurrentWeekTimestamp,
@@ -66,6 +70,7 @@ type State = {
   title: string;
   error?: string;
   discordAvatarUrls: Map<string, string>;
+  scrollToUserAfterFill: boolean;
 } & (AllTimeState | WeeklyState | DailyState);
 
 const state = {
@@ -79,6 +84,7 @@ const state = {
   pageSize: 50,
   title: "All-time English Time 15 Leaderboard",
   discordAvatarUrls: new Map<string, string>(),
+  scrollToUserAfterFill: false,
 } as State;
 
 function updateTitle(): void {
@@ -203,14 +209,26 @@ async function requestData(update = false): Promise<void> {
       mode2: state.mode2,
     };
 
-    let response;
+    const requests: {
+      data:
+        | ReturnType<typeof Ape.leaderboards.get>
+        | ReturnType<typeof Ape.leaderboards.getDaily>
+        | undefined;
+      rank:
+        | ReturnType<typeof Ape.leaderboards.getRank>
+        | ReturnType<typeof Ape.leaderboards.getDailyRank>
+        | undefined;
+    } = {
+      data: undefined,
+      rank: undefined,
+    };
 
     if (state.type === "allTime") {
-      response = await Ape.leaderboards.get({
+      requests.data = Ape.leaderboards.get({
         query: { ...baseQuery, page: state.page },
       });
     } else {
-      response = await Ape.leaderboards.getDaily({
+      requests.data = Ape.leaderboards.getDaily({
         query: {
           ...baseQuery,
           page: state.page,
@@ -219,40 +237,45 @@ async function requestData(update = false): Promise<void> {
       });
     }
 
-    if (response.status === 200) {
-      state.data = response.body.data.entries;
-      state.count = response.body.data.count;
-      state.pageSize = response.body.data.pageSize;
-
-      if (state.type === "daily") {
-        //@ts-ignore not sure why this is causing errors when it's clearly defined in the schema
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        state.minWpm = response.body.data.minWpm;
-      }
-    } else {
-      state.data = null;
-      state.error = "Something went wrong";
-      Notifications.add(
-        "Failed to get leaderboard: " + response.body.message,
-        -1
-      );
-    }
-
     if (isAuthenticated() && state.userData === null) {
-      let rankResponse;
-
       if (state.type === "allTime") {
-        rankResponse = await Ape.leaderboards.getRank({
+        requests.rank = Ape.leaderboards.getRank({
           query: { ...baseQuery },
         });
       } else {
-        rankResponse = await Ape.leaderboards.getDailyRank({
+        requests.rank = Ape.leaderboards.getDailyRank({
           query: {
             ...baseQuery,
           },
         });
       }
+    }
 
+    const [dataResponse, rankResponse] = await Promise.all([
+      requests.data,
+      requests.rank,
+    ]);
+
+    if (dataResponse.status === 200) {
+      state.data = dataResponse.body.data.entries;
+      state.count = dataResponse.body.data.count;
+      state.pageSize = dataResponse.body.data.pageSize;
+
+      if (state.type === "daily") {
+        //@ts-ignore not sure why this is causing errors when it's clearly defined in the schema
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        state.minWpm = dataResponse.body.data.minWpm;
+      }
+    } else {
+      state.data = null;
+      state.error = "Something went wrong";
+      Notifications.add(
+        "Failed to get leaderboard: " + dataResponse.body.message,
+        -1
+      );
+    }
+
+    if (state.userData === null && rankResponse !== undefined) {
       if (rankResponse.status === 200) {
         if (rankResponse.body.data !== null) {
           state.userData = rankResponse.body.data;
@@ -288,31 +311,52 @@ async function requestData(update = false): Promise<void> {
     }
     return;
   } else if (state.type === "weekly") {
-    const data = await Ape.leaderboards.getWeeklyXp({
+    const requests: {
+      data: ReturnType<typeof Ape.leaderboards.getWeeklyXp> | undefined;
+      rank: ReturnType<typeof Ape.leaderboards.getWeeklyXpRank> | undefined;
+    } = {
+      data: undefined,
+      rank: undefined,
+    };
+
+    requests.data = Ape.leaderboards.getWeeklyXp({
       query: { page: state.page, weeksBefore: state.lastWeek ? 1 : undefined },
     });
 
-    if (data.status === 200) {
-      state.data = data.body.data.entries;
-      state.count = data.body.data.count;
-      state.pageSize = data.body.data.pageSize;
+    if (isAuthenticated() && state.userData === null) {
+      requests.rank = Ape.leaderboards.getWeeklyXpRank();
+    }
+
+    const [dataResponse, rankResponse] = await Promise.all([
+      requests.data,
+      requests.rank,
+    ]);
+
+    if (dataResponse.status === 200) {
+      state.data = dataResponse.body.data.entries;
+      state.count = dataResponse.body.data.count;
+      state.pageSize = dataResponse.body.data.pageSize;
     } else {
       state.data = null;
       state.error = "Something went wrong";
-      Notifications.add("Failed to get leaderboard: " + data.body.message, -1);
+      Notifications.add(
+        "Failed to get leaderboard: " + dataResponse.body.message,
+        -1
+      );
     }
 
-    if (isAuthenticated() && state.userData === null) {
-      const userData = await Ape.leaderboards.getWeeklyXpRank();
-
-      if (userData.status === 200) {
-        if (userData.body.data !== null) {
-          state.userData = userData.body.data;
+    if (state.userData === null && rankResponse !== undefined) {
+      if (rankResponse.status === 200) {
+        if (rankResponse.body.data !== null) {
+          state.userData = rankResponse.body.data;
         }
       } else {
         state.userData = null;
         state.error = "Something went wrong";
-        Notifications.add("Failed to get rank: " + userData.body.message, -1);
+        Notifications.add(
+          "Failed to get rank: " + rankResponse.body.message,
+          -1
+        );
       }
     }
 
@@ -858,6 +902,19 @@ function updateContent(): void {
   updateJumpButtons();
   updateTimerVisibility();
   fillTable();
+
+  if (state.scrollToUserAfterFill) {
+    const windowHeight = $(window).height() ?? 0;
+    const offset = $(`.tableAndUser .me`).offset()?.top ?? 0;
+    const scrollTo = offset - windowHeight / 2;
+    $([document.documentElement, document.body]).animate(
+      {
+        scrollTop: scrollTo,
+      },
+      applyReducedMotion(500)
+    );
+    state.scrollToUserAfterFill = false;
+  }
 }
 
 function updateTypeButtons(): void {
@@ -1030,6 +1087,7 @@ function handleJumpButton(action: string, page?: number): void {
           }
 
           state.page = page;
+          state.scrollToUserAfterFill = true;
         }
       }
     }
