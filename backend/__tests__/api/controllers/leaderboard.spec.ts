@@ -1067,6 +1067,8 @@ describe("Loaderboard Controller", () => {
     beforeEach(async () => {
       getXpWeeklyLeaderboardMock.mockReset();
       await weeklyLeaderboardEnabled(true);
+      vi.useFakeTimers();
+      vi.setSystemTime(1722606812000);
     });
 
     it("fails withouth authentication", async () => {
@@ -1109,6 +1111,47 @@ describe("Loaderboard Controller", () => {
 
       expect(getRankMock).toHaveBeenCalledWith(uid, lbConf);
     });
+
+    it("should get for last week", async () => {
+      //GIVEN
+      const lbConf = (await configuration).leaderboards.weeklyXp;
+
+      const resultData: XpLeaderboardEntry = {
+        totalXp: 100,
+        rank: 1,
+        timeTypedSeconds: 100,
+        uid: "user1",
+        name: "user1",
+        discordId: "discordId",
+        discordAvatar: "discordAvatar",
+        lastActivityTimestamp: 1000,
+      };
+      const getRankMock = vi.fn();
+      getRankMock.mockResolvedValue(resultData);
+      getXpWeeklyLeaderboardMock.mockReturnValue({
+        getRank: getRankMock,
+      } as any);
+
+      //WHEN
+      const { body } = await mockApp
+        .get("/leaderboards/xp/weekly/rank")
+        .query({ weeksBefore: 1 })
+        .set("authorization", `Uid ${uid}`)
+        .expect(200);
+
+      //THEN
+      expect(body).toEqual({
+        message: "Weekly xp leaderboard rank retrieved",
+        data: resultData,
+      });
+
+      expect(getXpWeeklyLeaderboardMock).toHaveBeenCalledWith(
+        lbConf,
+        1721606400000
+      );
+
+      expect(getRankMock).toHaveBeenCalledWith(uid, lbConf);
+    });
     it("fails if daily leaderboards are disabled", async () => {
       await weeklyLeaderboardEnabled(false);
 
@@ -1122,6 +1165,36 @@ describe("Loaderboard Controller", () => {
       );
     });
 
+    it("fails for weeksBefore not one", async () => {
+      const { body } = await mockApp
+        .get("/leaderboards/xp/weekly/rank")
+        .set("authorization", `Uid ${uid}`)
+        .query({
+          weeksBefore: 2,
+        })
+        .expect(422);
+
+      expect(body).toEqual({
+        message: "Invalid query schema",
+        validationErrors: ['"weeksBefore" Invalid literal value, expected 1'],
+      });
+    });
+
+    it("fails for unknown query", async () => {
+      const { body } = await mockApp
+        .get("/leaderboards/xp/weekly/rank")
+        .set("authorization", `Uid ${uid}`)
+        .query({
+          extra: "value",
+        })
+        .expect(422);
+
+      expect(body).toEqual({
+        message: "Invalid query schema",
+        validationErrors: ["Unrecognized key(s) in object: 'extra'"],
+      });
+    });
+
     it("fails while leaderboard is missing", async () => {
       //GIVEN
       getXpWeeklyLeaderboardMock.mockReturnValue(null);
@@ -1130,11 +1203,6 @@ describe("Loaderboard Controller", () => {
       const { body } = await mockApp
         .get("/leaderboards/xp/weekly/rank")
         .set("authorization", `Uid ${uid}`)
-        .query({
-          language: "english",
-          mode: "time",
-          mode2: "60",
-        })
         .expect(404);
 
       expect(body.message).toEqual("XP leaderboard for this week not found.");

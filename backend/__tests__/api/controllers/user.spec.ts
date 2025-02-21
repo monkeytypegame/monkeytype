@@ -29,6 +29,7 @@ import _ from "lodash";
 import { MonkeyMail, UserStreak } from "@monkeytype/contracts/schemas/users";
 import { isFirebaseError } from "../../../src/utils/error";
 import { LeaderboardEntry } from "@monkeytype/contracts/schemas/leaderboards";
+import * as WeeklyXpLeaderboard from "../../../src/services/weekly-xp-leaderboard";
 
 const mockApp = request(app);
 const configuration = Configuration.getCachedConfiguration();
@@ -600,6 +601,10 @@ describe("user controller test", () => {
       DailyLeaderboards,
       "purgeUserFromDailyLeaderboards"
     );
+    const purgeUserFromXpLeaderboardsMock = vi.spyOn(
+      WeeklyXpLeaderboard,
+      "purgeUserFromXpLeaderboards"
+    );
     const blocklistAddMock = vi.spyOn(BlocklistDal, "add");
 
     beforeEach(() => {
@@ -611,6 +616,7 @@ describe("user controller test", () => {
         deleteAllPresetsMock,
         deleteConfigMock,
         purgeUserFromDailyLeaderboardsMock,
+        purgeUserFromXpLeaderboardsMock,
       ].forEach((it) => it.mockResolvedValue(undefined));
 
       deleteAllResultMock.mockResolvedValue({} as any);
@@ -627,6 +633,7 @@ describe("user controller test", () => {
         deleteAllApeKeysMock,
         deleteAllPresetsMock,
         purgeUserFromDailyLeaderboardsMock,
+        purgeUserFromXpLeaderboardsMock,
       ].forEach((it) => it.mockReset());
     });
 
@@ -661,6 +668,10 @@ describe("user controller test", () => {
         uid,
         (await configuration).dailyLeaderboards
       );
+      expect(purgeUserFromXpLeaderboardsMock).toHaveBeenCalledWith(
+        uid,
+        (await configuration).leaderboards.weeklyXp
+      );
     });
     it("should delete user without adding to blocklist if not banned", async () => {
       //GIVEN
@@ -692,6 +703,10 @@ describe("user controller test", () => {
         uid,
         (await configuration).dailyLeaderboards
       );
+      expect(purgeUserFromXpLeaderboardsMock).toHaveBeenCalledWith(
+        uid,
+        (await configuration).leaderboards.weeklyXp
+      );
     });
   });
   describe("resetUser", () => {
@@ -704,6 +719,10 @@ describe("user controller test", () => {
     const purgeUserFromDailyLeaderboardsMock = vi.spyOn(
       DailyLeaderboards,
       "purgeUserFromDailyLeaderboards"
+    );
+    const purgeUserFromXpLeaderboardsMock = vi.spyOn(
+      WeeklyXpLeaderboard,
+      "purgeUserFromXpLeaderboards"
     );
 
     const unlinkDiscordMock = vi.spyOn(GeorgeQueue, "unlinkDiscord");
@@ -723,6 +742,7 @@ describe("user controller test", () => {
         deleteAllResultsMock,
         deleteConfigMock,
         purgeUserFromDailyLeaderboardsMock,
+        purgeUserFromXpLeaderboardsMock,
         unlinkDiscordMock,
         addImportantLogMock,
       ].forEach((it) => it.mockReset());
@@ -753,6 +773,10 @@ describe("user controller test", () => {
       expect(purgeUserFromDailyLeaderboardsMock).toHaveBeenCalledWith(
         uid,
         (await Configuration.getLiveConfiguration()).dailyLeaderboards
+      );
+      expect(purgeUserFromXpLeaderboardsMock).toHaveBeenCalledWith(
+        uid,
+        (await configuration).leaderboards.weeklyXp
       );
       expect(unlinkDiscordMock).not.toHaveBeenCalled();
       expect(addImportantLogMock).toHaveBeenCalledWith(
