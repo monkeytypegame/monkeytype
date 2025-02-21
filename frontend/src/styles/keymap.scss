@@ -544,4 +544,28 @@
       position: relative;
     }
   }
+  &.custom {
+    .r1,
+    .r2,
+    .r3,
+    .r4,
+    .r5 {
+      justify-content: center;
+      display: flex;
+      grid-template-columns: none;
+    }
+
+    .keymapSplitSpacer {
+      display: block;
+      width: 2rem;
+      height: 2rem;
+    }
+
+    .key125 {
+      width: 2rem * 1.25;
+    }
+    .key225 {
+      width: 2rem * 2.25;
+    }
+  }
 }

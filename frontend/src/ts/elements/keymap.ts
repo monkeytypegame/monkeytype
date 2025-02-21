@@ -9,6 +9,7 @@ import * as Hangul from "hangul-js";
 import * as Notifications from "../elements/notifications";
 import * as ActivePage from "../states/active-page";
 import * as TestWords from "../test/test-words";
+import { getCustomKeymapSyle } from "../utils/custom-keymap";
 
 const stenoKeys: JSONData.Layout = {
   keymapShowTopRow: true,
@@ -19,6 +20,58 @@ const stenoKeys: JSONData.Layout = {
     row3: ["sS", "kK", "wW", "rR", "**", "rR", "bB", "gG", "sS", "zZ"],
     row4: ["aA", "oO", "eE", "uU"],
     row5: [],
+  },
+};
+
+const qwertyKey: JSONData.Layout = {
+  keymapShowTopRow: true,
+  type: "matrix",
+  keys: {
+    row1: [
+      "`~",
+      "1!",
+      "2@",
+      "3#",
+      "4$",
+      "5%",
+      "6^",
+      "7&",
+      "8*",
+      "9(",
+      "0)",
+      "-_",
+      "=+",
+    ],
+    row2: [
+      "qQ",
+      "wW",
+      "eE",
+      "rR",
+      "tT",
+      "yY",
+      "uU",
+      "iI",
+      "oO",
+      "pP",
+      "[{",
+      "]}",
+    ],
+    row3: [
+      "",
+      "aA",
+      "sS",
+      "dD",
+      "fF",
+      "gG",
+      "hH",
+      "jJ",
+      "kK",
+      "lL",
+      ";:",
+      "'\"",
+    ],
+    row4: ["", "zZ", "xX", "cC", "vV", "bB", "nN", "mM", ",<", ".>", "/?", ""],
+    row5: ["", "", "", "", "", "", "", ""],
   },
 };
 
@@ -382,6 +435,34 @@ export async function refresh(
     }
     // );
 
+    if (Config.keymapStyle === "custom") {
+      //take this from somewhere
+      const customKeymap = [
+        ["", "", "", "", "", "", { x: 1 }, "", "", "", "", "", ""],
+        ["", "", "", "", "", "", { x: 1 }, "", "", "", "", "", ""],
+        ["", "", "", "", "", "", { x: 1 }, "", "", "", "", "", ""],
+        ["", "", "", "", "", "", { x: 1 }, "", "", "", "", "", ""],
+        [
+          { w: 1.25 },
+          "",
+          { w: 1.25 },
+          "",
+          { w: 1.25 },
+          "",
+          { w: 2.25 },
+          "",
+          { x: 1, w: 2.25 },
+          "",
+          { w: 1.25 },
+          "",
+          { w: 1.25 },
+          "",
+          { w: 1.25 },
+          "",
+        ],
+      ];
+      keymapElement = getCustomKeymapSyle(qwertyKey, customKeymap, Config);
+    }
     $("#keymap").html(keymapElement);
 
     $("#keymap").removeClass("staggered");
@@ -391,6 +472,7 @@ export async function refresh(
     $("#keymap").removeClass("alice");
     $("#keymap").removeClass("steno");
     $("#keymap").removeClass("steno_matrix");
+    $("#keymap").removeClass("custom");
     $("#keymap").addClass(Config.keymapStyle);
   } catch (e) {
     if (e instanceof Error) {
