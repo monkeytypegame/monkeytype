@@ -28,11 +28,19 @@ async function handleDailyLeaderboardResults(
     users: { inbox: inboxConfig },
   } = await getCachedConfiguration(false);
 
+  const { maxResults, xpRewardBrackets, topResultsToAnnounce } =
+    dailyLeaderboardsConfig;
+
+  const maxRankToGet = Math.max(
+    topResultsToAnnounce,
+    ...xpRewardBrackets.map((bracket) => bracket.maxRank)
+  );
+
   const dailyLeaderboard = new DailyLeaderboard(modeRule, yesterdayTimestamp);
 
   const results = await dailyLeaderboard.getResults(
     0,
-    -1,
+    maxRankToGet,
     dailyLeaderboardsConfig,
     false
   );
@@ -40,8 +48,6 @@ async function handleDailyLeaderboardResults(
   if (results.length === 0) {
     return;
   }
-
-  const { maxResults, xpRewardBrackets } = dailyLeaderboardsConfig;
 
   if (inboxConfig.enabled && xpRewardBrackets.length > 0) {
     const mailEntries: {
