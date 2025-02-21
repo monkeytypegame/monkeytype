@@ -658,8 +658,14 @@ function fillUser(): void {
   }
 
   if (isAuthenticated() && state.type === "daily" && state.userData === null) {
+    let str = `Not qualified`;
+
+    if (!state.yesterday) {
+      str += ` (min speed required: ${state.minWpm} wpm)`;
+    }
+
     $(".page.pageLeaderboards .bigUser").html(
-      `<div class="warning">Not qualified (min speed required: ${state.minWpm} wpm)</div>`
+      `<div class="warning">${str}</div>`
     );
     return;
   }
@@ -835,7 +841,7 @@ function fillUser(): void {
           <div class="sub">${formatted.time}</div>
         </div>
         <div class="stat wide">
-          <div class="title">date</div>
+          <div class="title">last activity</div>
           <div class="value">${format(
             userData.lastActivityTimestamp,
             "dd MMM yyyy HH:mm"
