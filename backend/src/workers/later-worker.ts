@@ -18,7 +18,7 @@ import { WeeklyXpLeaderboard } from "../services/weekly-xp-leaderboard";
 import { MonkeyMail } from "@monkeytype/contracts/schemas/users";
 import { mapRange } from "@monkeytype/util/numbers";
 
-async function handleDailyLeaderboardResults(
+export async function handleDailyLeaderboardResults(
   ctx: LaterTaskContexts["daily-leaderboard-results"]
 ): Promise<void> {
   const { yesterdayTimestamp, modeRule } = ctx;
@@ -28,11 +28,19 @@ async function handleDailyLeaderboardResults(
     users: { inbox: inboxConfig },
   } = await getCachedConfiguration(false);
 
+  const { maxResults, xpRewardBrackets, topResultsToAnnounce } =
+    dailyLeaderboardsConfig;
+
+  const maxRankToGet = Math.max(
+    topResultsToAnnounce,
+    ...xpRewardBrackets.map((bracket) => bracket.maxRank)
+  );
+
   const dailyLeaderboard = new DailyLeaderboard(modeRule, yesterdayTimestamp);
 
   const results = await dailyLeaderboard.getResults(
     0,
-    -1,
+    maxRankToGet,
     dailyLeaderboardsConfig,
     false
   );
@@ -40,8 +48,6 @@ async function handleDailyLeaderboardResults(
   if (results.length === 0) {
     return;
   }
-
-  const { maxResults, xpRewardBrackets } = dailyLeaderboardsConfig;
 
   if (inboxConfig.enabled && xpRewardBrackets.length > 0) {
     const mailEntries: {
