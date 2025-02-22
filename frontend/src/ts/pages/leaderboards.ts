@@ -649,7 +649,7 @@ function fillUser(): void {
   if (
     isAuthenticated() &&
     !isDevEnvironment() &&
-    (DB.getSnapshot()?.typingStats?.timeTyping ?? 0) < 72000
+    (DB.getSnapshot()?.typingStats?.timeTyping ?? 0) < 7200
   ) {
     $(".page.pageLeaderboards .bigUser").html(
       '<div class="warning">Your account must have 2 hours typed to be placed on the leaderboard.</div>'
