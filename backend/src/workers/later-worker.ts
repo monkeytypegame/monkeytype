@@ -208,8 +208,15 @@ async function jobHandler(job: Job<LaterTask<LaterTaskType>>): Promise<void> {
   Logger.success(`Job: ${taskName} - completed in ${elapsed}ms`);
 }
 
-export default (redisConnection?: IORedis.Redis): Worker =>
-  new Worker(LaterQueue.queueName, jobHandler, {
+export default (redisConnection?: IORedis.Redis): Worker => {
+  const worker = new Worker(LaterQueue.queueName, jobHandler, {
     autorun: false,
     connection: redisConnection as ConnectionOptions,
   });
+  worker.on("failed", (job, error) => {
+    Logger.error(
+      `Job: ${job.data.taskName} - failed with error "${error.message}"`
+    );
+  });
+  return worker;
+};
