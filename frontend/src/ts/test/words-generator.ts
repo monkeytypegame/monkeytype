@@ -204,6 +204,11 @@ export async function punctuateWord(
   ) {
     if (currentLanguage === "french") {
       word = ";";
+    } else if (currentLanguage === "greek") {
+      // Normally U+00B7 ('middle dot' or 'ano teleia') would be used here.
+      // However, a) it has fallen into disuse in contemporary times and
+      // b) there isn't a dedicated key on a keyboard to input it
+      word = ".";
     } else if (currentLanguage === "arabic" || currentLanguage === "kurdish") {
       word += "؛";
     } else if (currentLanguage === "chinese") {
