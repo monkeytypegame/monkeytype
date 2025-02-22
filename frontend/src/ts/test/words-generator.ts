@@ -181,8 +181,6 @@ export async function punctuateWord(
   ) {
     if (currentLanguage === "french") {
       word = ":";
-    } else if (currentLanguage === "greek") {
-      word = "·";
     } else if (currentLanguage === "chinese") {
       word += "：";
     } else {
@@ -206,8 +204,6 @@ export async function punctuateWord(
   ) {
     if (currentLanguage === "french") {
       word = ";";
-    } else if (currentLanguage === "greek") {
-      word = "·";
     } else if (currentLanguage === "arabic" || currentLanguage === "kurdish") {
       word += "؛";
     } else if (currentLanguage === "chinese") {
