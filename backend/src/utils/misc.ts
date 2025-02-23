@@ -67,8 +67,8 @@ export function matchesAPattern(text: string, pattern: string): boolean {
 }
 
 export function kogascore(wpm: number, acc: number, timestamp: number): number {
-  const normalizedWpm = Math.floor(wpm * 100);
-  const normalizedAcc = Math.floor(acc * 100);
+  const normalizedWpm = Math.round(wpm * 100);
+  const normalizedAcc = Math.round(acc * 100);
 
   const padAmount = 100000;
   const firstPart = (padAmount + normalizedWpm) * padAmount;
