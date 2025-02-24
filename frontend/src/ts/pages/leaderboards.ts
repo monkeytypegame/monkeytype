@@ -31,7 +31,10 @@ import { formatDistanceToNow } from "date-fns/formatDistanceToNow";
 import { z } from "zod";
 import { LocalStorageWithSchema } from "../utils/local-storage-with-schema";
 import { LanguageSchema } from "@monkeytype/contracts/schemas/util";
-import { safeParse as parseUrlSearchParams } from "zod-urlsearchparams";
+import {
+  safeParse as parseUrlSearchParams,
+  serialize as serializeUrlSearchParams,
+} from "zod-urlsearchparams";
 // import * as ServerConfiguration from "../ape/server-configuration";
 
 const LeaderboardTypeSchema = z.enum(["allTime", "weekly", "daily"]);
@@ -100,6 +103,10 @@ const SelectorSchema = z.object({
   yesterday: z.boolean().optional(),
   lastWeek: z.boolean().optional(),
 });
+const UrlParameterSchema = SelectorSchema.extend({
+  page: z.number(),
+}).partial();
+type UrlParameter = z.infer<typeof UrlParameterSchema>;
 
 const selectorLS = new LocalStorageWithSchema({
   key: "leaderboardSelector",
@@ -1135,30 +1142,31 @@ function handleYesterdayLastWeekButton(action: string): void {
 }
 
 function updateGetParameters(): void {
-  const params = new URLSearchParams();
+  const params: UrlParameter = {};
 
-  params.set("type", state.type);
+  params.type = state.type;
   if (state.type === "allTime") {
-    params.set("mode2", state.mode2);
+    params.mode2 = state.mode2;
   } else if (state.type === "daily") {
-    params.set("language", state.language);
-    params.set("mode2", state.mode2);
+    params.language = state.language;
+    params.mode2 = state.mode2;
     if (state.yesterday) {
-      params.set("yesterday", "true");
-    } else {
-      params.delete("yesterday");
+      params.yesterday = true;
     }
   } else if (state.type === "weekly") {
     if (state.lastWeek) {
-      params.set("lastWeek", "true");
-    } else {
-      params.delete("lastWeek");
+      params.lastWeek = true;
     }
   }
 
-  params.set("page", (state.page + 1).toString());
+  params.page = state.page + 1;
 
-  const newUrl = `${window.location.pathname}?${params.toString()}`;
+  const urlParams = serializeUrlSearchParams({
+    schema: UrlParameterSchema,
+    data: params,
+  });
+
+  const newUrl = `${window.location.pathname}?${urlParams.toString()}`;
   window.history.replaceState({}, "", newUrl);
 
   selectorLS.set(state);
@@ -1173,7 +1181,7 @@ function readGetParameters(): void {
   }
 
   const parsed = parseUrlSearchParams({
-    schema: SelectorSchema.extend({ page: z.number() }).partial(),
+    schema: UrlParameterSchema,
     input: urlParams,
   });
   if (!parsed.success) {
