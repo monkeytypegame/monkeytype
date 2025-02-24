@@ -6,7 +6,7 @@ import {
 } from "@monkeytype/contracts/schemas/leaderboards";
 import { capitalizeFirstLetter } from "../utils/strings";
 import Ape from "../ape";
-import { Mode, ModeSchema } from "@monkeytype/contracts/schemas/shared";
+import { Mode } from "@monkeytype/contracts/schemas/shared";
 import * as Notifications from "../elements/notifications";
 import Format from "../utils/format";
 import { Auth, isAuthenticated } from "../firebase";
@@ -30,7 +30,6 @@ import {
 import { formatDistanceToNow } from "date-fns/formatDistanceToNow";
 import { z } from "zod";
 import { LocalStorageWithSchema } from "../utils/local-storage-with-schema";
-import { LanguageSchema } from "@monkeytype/contracts/schemas/util";
 import {
   safeParse as parseUrlSearchParams,
   serialize as serializeUrlSearchParams,
@@ -97,9 +96,8 @@ const state = {
 
 const SelectorSchema = z.object({
   type: LeaderboardTypeSchema,
-  mode: ModeSchema.optional(),
   mode2: z.enum(["15", "60"]).optional(),
-  language: LanguageSchema.optional(),
+  language: z.string().optional(),
   yesterday: z.boolean().optional(),
   lastWeek: z.boolean().optional(),
 });
@@ -111,7 +109,7 @@ type UrlParameter = z.infer<typeof UrlParameterSchema>;
 const selectorLS = new LocalStorageWithSchema({
   key: "leaderboardSelector",
   schema: SelectorSchema,
-  fallback: { type: "allTime", mode: "time", mode2: "15" },
+  fallback: { type: "allTime", mode2: "15" },
 });
 
 function updateTitle(): void {
@@ -1274,6 +1272,7 @@ $(".page.pageLeaderboards .buttonGroup.secondary").on(
     ) {
       if (state.mode2 === mode) return;
       state.mode2 = mode;
+      state.page = 0;
     } else if (language !== undefined && state.type === "daily") {
       if (state.language === language) return;
       state.language = language;

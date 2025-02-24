@@ -349,8 +349,8 @@ importers:
         specifier: 3.23.8
         version: 3.23.8
       zod-urlsearchparams:
-        specifier: 0.0.15
-        version: 0.0.15(zod@3.23.8)
+        specifier: 0.0.16
+        version: 0.0.16(zod@3.23.8)
     devDependencies:
       '@fortawesome/fontawesome-free':
         specifier: 5.15.4
@@ -9777,8 +9777,8 @@ packages:
     resolution: {integrity: sha512-zK7YHHz4ZXpW89AHXUPbQVGKI7uvkd3hzusTdotCg1UxyaVtg0zFJSTfW/Dq5f7OBBVnq6cZIaC8Ti4hb6dtCA==}
     engines: {node: '>= 14'}
 
-  zod-urlsearchparams@0.0.15:
-    resolution: {integrity: sha512-CCstN4uf8wTJJYi+wonAKlyBJFBe4SMUd0zLu4pgEB9p+dTZn62CBRqt9JWSSBlpiSs4hVsBIMdXVVz5JdG8pA==}
+  zod-urlsearchparams@0.0.16:
+    resolution: {integrity: sha512-BF9RfjiMXpGgtPHkKORXqNDXkLGbV5um7Mgn4/ghAxg8RNuiLdKCKPBIzGHk7OfE52Ew103x6Lahs187hadLVg==}
     peerDependencies:
       zod: ^3.0.0
 
@@ -20659,7 +20659,7 @@ snapshots:
       compress-commons: 6.0.2
       readable-stream: 4.5.2
 
-  zod-urlsearchparams@0.0.15(zod@3.23.8):
+  zod-urlsearchparams@0.0.16(zod@3.23.8):
     dependencies:
       zod: 3.23.8
 
