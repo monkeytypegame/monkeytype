@@ -6,11 +6,7 @@ import {
 } from "@monkeytype/contracts/schemas/leaderboards";
 import { capitalizeFirstLetter } from "../utils/strings";
 import Ape from "../ape";
-import {
-  Mode,
-  Mode2Schema,
-  ModeSchema,
-} from "@monkeytype/contracts/schemas/shared";
+import { Mode, ModeSchema } from "@monkeytype/contracts/schemas/shared";
 import * as Notifications from "../elements/notifications";
 import Format from "../utils/format";
 import { Auth, isAuthenticated } from "../firebase";
@@ -35,6 +31,7 @@ import { formatDistanceToNow } from "date-fns/formatDistanceToNow";
 import { z } from "zod";
 import { LocalStorageWithSchema } from "../utils/local-storage-with-schema";
 import { LanguageSchema } from "@monkeytype/contracts/schemas/util";
+import { safeParse as parseUrlSearchParams } from "zod-urlsearchparams";
 // import * as ServerConfiguration from "../ape/server-configuration";
 
 const LeaderboardTypeSchema = z.enum(["allTime", "weekly", "daily"]);
@@ -98,7 +95,7 @@ const state = {
 const SelectorSchema = z.object({
   type: LeaderboardTypeSchema,
   mode: ModeSchema.optional(),
-  mode2: Mode2Schema.optional(),
+  mode2: z.enum(["15", "60"]).optional(),
   language: LanguageSchema.optional(),
   yesterday: z.boolean().optional(),
   lastWeek: z.boolean().optional(),
@@ -1168,46 +1165,51 @@ function updateGetParameters(): void {
 }
 
 function readGetParameters(): void {
-  const params = new URLSearchParams(window.location.search);
+  const urlParams = new URLSearchParams(window.location.search);
 
-  if (params.size == 0) {
+  if (urlParams.size == 0) {
     Object.assign(state, selectorLS.get());
     return;
   }
 
-  const type = params.get("type") as "allTime" | "weekly" | "daily";
-  if (type) {
-    state.type = type;
+  const parsed = parseUrlSearchParams({
+    schema: SelectorSchema.extend({ page: z.number() }).partial(),
+    input: urlParams,
+  });
+  if (!parsed.success) {
+    return;
+  }
+  const params = parsed.data;
+
+  if (params.type !== undefined) {
+    state.type = params.type;
   }
 
   if (state.type === "allTime") {
-    const mode = params.get("mode2") as "15" | "60";
-    if (mode) {
-      state.mode2 = mode;
+    if (params.mode2) {
+      state.mode2 = params.mode2;
     }
   } else if (state.type === "daily") {
-    const language = params.get("language");
-    const dailyMode = params.get("mode2") as "15" | "60";
-    const yesterday = params.get("yesterday") as string;
-    if (language !== null) {
+    const language = params.language;
+    const dailyMode = params.mode2;
+    const yesterday = params.yesterday;
+    if (language !== undefined) {
       state.language = language;
     }
-    if (dailyMode) {
+    if (dailyMode !== undefined) {
       state.mode2 = dailyMode;
     }
-    if (yesterday !== null && yesterday === "true") {
-      state.yesterday = true;
+    if (yesterday !== undefined) {
+      state.yesterday = yesterday;
     }
   } else if (state.type === "weekly") {
-    const lastWeek = params.get("lastWeek") as string;
-    if (lastWeek !== null && lastWeek === "true") {
-      state.lastWeek = true;
+    if (params.lastWeek !== undefined) {
+      state.lastWeek = params.lastWeek;
     }
   }
 
-  const page = params.get("page");
-  if (page !== null) {
-    state.page = parseInt(page, 10) - 1;
+  if (params.page !== undefined) {
+    state.page = params.page - 1;
 
     if (state.page < 0) {
       state.page = 0;
