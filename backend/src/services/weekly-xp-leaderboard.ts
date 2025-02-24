@@ -252,3 +252,21 @@ export function get(
 
   return new WeeklyXpLeaderboard(customTimestamp);
 }
+
+export async function purgeUserFromXpLeaderboards(
+  uid: string,
+  weeklyXpLeaderboardConfig: Configuration["leaderboards"]["weeklyXp"]
+): Promise<void> {
+  const connection = RedisClient.getConnection();
+  if (!connection || !weeklyXpLeaderboardConfig.enabled) {
+    return;
+  }
+
+  // @ts-expect-error we are doing some weird file to function mapping, thats why its any
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+  await connection.purgeResults(
+    0,
+    uid,
+    weeklyXpLeaderboardLeaderboardNamespace
+  );
+}

@@ -19,7 +19,7 @@ import { FunboxWordOrder, LanguageObject } from "../utils/json-data";
 import {
   findSingleActiveFunboxWithFunction,
   getActiveFunboxes,
-  getFunctionsFromActiveFunboxes,
+  getActiveFunboxesWithFunction,
   isFunboxActiveWithFunction,
 } from "./funbox/list";
 
@@ -181,8 +181,6 @@ export async function punctuateWord(
   ) {
     if (currentLanguage === "french") {
       word = ":";
-    } else if (currentLanguage === "greek") {
-      word = "·";
     } else if (currentLanguage === "chinese") {
       word += "：";
     } else {
@@ -207,7 +205,10 @@ export async function punctuateWord(
     if (currentLanguage === "french") {
       word = ";";
     } else if (currentLanguage === "greek") {
-      word = "·";
+      // Normally U+00B7 ('middle dot' or 'ano teleia') would be used here.
+      // However, a) it has fallen into disuse in contemporary times and
+      // b) there isn't a dedicated key on a keyboard to input it
+      word = ".";
     } else if (currentLanguage === "arabic" || currentLanguage === "kurdish") {
       word += "؛";
     } else if (currentLanguage === "chinese") {
@@ -353,8 +354,8 @@ function applyFunboxesToWord(
   wordIndex: number,
   wordsBound: number
 ): string {
-  for (const alterText of getFunctionsFromActiveFunboxes("alterText")) {
-    word = alterText(word, wordIndex, wordsBound);
+  for (const fb of getActiveFunboxesWithFunction("alterText")) {
+    word = fb.functions.alterText(word, wordIndex, wordsBound);
   }
   return word;
 }

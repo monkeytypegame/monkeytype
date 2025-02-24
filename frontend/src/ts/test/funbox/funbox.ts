@@ -13,7 +13,7 @@ import {
   getActiveFunboxes,
   getActiveFunboxNames,
   get,
-  getFunctionsFromActiveFunboxes,
+  getActiveFunboxesWithFunction,
   isFunboxActiveWithProperty,
   getActiveFunboxesWithProperty,
 } from "./list";
@@ -22,15 +22,15 @@ import { checkForcedConfig } from "./funbox-validation";
 export function toggleScript(...params: string[]): void {
   if (Config.funbox === "none") return;
 
-  for (const toggleScript of getFunctionsFromActiveFunboxes("toggleScript")) {
-    toggleScript(params);
+  for (const fb of getActiveFunboxesWithFunction("toggleScript")) {
+    fb.functions.toggleScript(params);
   }
 }
 
 export function setFunbox(funbox: string): boolean {
   if (funbox === "none") {
-    for (const clearGlobal of getFunctionsFromActiveFunboxes("clearGlobal")) {
-      clearGlobal();
+    for (const fb of getActiveFunboxesWithFunction("clearGlobal")) {
+      fb.functions.clearGlobal();
     }
   }
   FunboxMemory.load();
@@ -199,18 +199,16 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
   }
 
   ManualRestart.set();
-  for (const applyConfig of getFunctionsFromActiveFunboxes("applyConfig")) {
-    applyConfig();
+  for (const fb of getActiveFunboxesWithFunction("applyConfig")) {
+    fb.functions.applyConfig();
   }
   // ModesNotice.update();
   return true;
 }
 
 export async function rememberSettings(): Promise<void> {
-  for (const rememberSettings of getFunctionsFromActiveFunboxes(
-    "rememberSettings"
-  )) {
-    rememberSettings();
+  for (const fb of getActiveFunboxesWithFunction("rememberSettings")) {
+    fb.functions.rememberSettings();
   }
 }
 
