@@ -62,6 +62,12 @@ describe("Misc Utils", () => {
         timestamp: 1653591901000,
         expectedScore: 1196200960717699,
       },
+      {
+        wpm: 196.205,
+        acc: 96.075,
+        timestamp: 1653591901000,
+        expectedScore: 1196210960817699,
+      },
     ];
 
     _.each(testCases, ({ wpm, acc, timestamp, expectedScore }) => {
