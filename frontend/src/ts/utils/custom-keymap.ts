@@ -1,5 +1,12 @@
 import { Config } from "@monkeytype/contracts/schemas/configs";
-import { Layout } from "./json-data";
+
+type KeyProperties = {
+  a?: number; // legend alignment: ignore
+  w?: number; // width
+  h?: number; // height
+  x?: number; // x position
+  y?: number; // y position
+};
 
 //TODO move this to other side
 const keyToDataObject: { [key: string]: string } = {
@@ -51,32 +58,19 @@ const keyToDataObject: { [key: string]: string } = {
   "/": "/?",
 };
 
-type KeyProperties = {
-  a?: number; // legend alignment: ignore
-  w?: number; // width
-  h?: number; // height
-  x?: number; // x position
-  y?: number; // y position
-};
-
 export function keyToData(key: string): string {
   return (key && keyToDataObject[key]?.replace(`'"`, "&apos;&quot;")) ?? "";
 }
 
 export function getCustomKeymapSyle(
-  keymapLayout: Layout,
   keymapStyle: (KeyProperties | string)[][],
   config: Config
 ): string {
   let keymapText = "";
-  const rowsKeys: string[] = Object.keys(keymapLayout.keys);
   keymapStyle.map((row: (KeyProperties | string)[], index: number) => {
     let rowText = "";
-    const currentRow: string = rowsKeys[index] ?? "row1";
     const hide =
-      currentRow === "row1" && config.keymapShowTopRow === "never"
-        ? ` invisible`
-        : "";
+      index == 0 && config.keymapShowTopRow === "never" ? ` invisible` : "";
     row.map((key: KeyProperties | string, index: number) => {
       const element: KeyProperties | string = key;
       let size = "";
@@ -88,7 +82,7 @@ export function getCustomKeymapSyle(
         if (element.w && "w" in element) {
           size = ` key${(element.w * 100).toString()}`;
         }
-        // we take the next one since it the content of the current key
+        // we take the next one since is the content of the current key
         keyString = row[index + 1]?.toString() ?? "";
         row.splice(index, 1);
       }
@@ -96,7 +90,9 @@ export function getCustomKeymapSyle(
                 <div class="keymapKey${size}${hide}" data-key="${keyToData(
         keyString.toLowerCase()
       )}">
-                    <span class="letter">${keyString?.toString()}</span>
+                    <span class="letter">${keyString
+                      ?.toLowerCase()
+                      .toString()}</span>
                 </div>
             `;
       if (keyString === "spc") {

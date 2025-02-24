@@ -23,58 +23,6 @@ const stenoKeys: JSONData.Layout = {
   },
 };
 
-const qwertyKey: JSONData.Layout = {
-  keymapShowTopRow: true,
-  type: "matrix",
-  keys: {
-    row1: [
-      "`~",
-      "1!",
-      "2@",
-      "3#",
-      "4$",
-      "5%",
-      "6^",
-      "7&",
-      "8*",
-      "9(",
-      "0)",
-      "-_",
-      "=+",
-    ],
-    row2: [
-      "",
-      "qQ",
-      "wW",
-      "eE",
-      "rR",
-      "tT",
-      "yY",
-      "uU",
-      "iI",
-      "oO",
-      "pP",
-      "[{",
-    ],
-    row3: [
-      "",
-      "aA",
-      "sS",
-      "dD",
-      "fF",
-      "gG",
-      "hH",
-      "jJ",
-      "kK",
-      "lL",
-      ";:",
-      "'\"",
-    ],
-    row4: ["", "zZ", "xX", "cC", "vV", "bB", "nN", "mM", ",<", ".>", "/?", ""],
-    row5: ["", "", "", "", "", "", "", ""],
-  },
-};
-
 function highlightKey(currentKey: string): void {
   if (Config.mode === "zen") return;
   if (currentKey === "") currentKey = " ";
@@ -436,7 +384,7 @@ export async function refresh(
     // );
 
     if (Config.keymapStyle === "custom") {
-      //take this from somewhere
+      //TODO: take this from somewhere
       const customKeymap = [
         [
           "",
@@ -509,7 +457,7 @@ export async function refresh(
         ],
         ["", { w: 1.5 }, "", { w: 6.25 }, "spc", { w: 1.5 }, "", ""],
       ];
-      keymapElement = getCustomKeymapSyle(qwertyKey, customKeymap, Config);
+      keymapElement = getCustomKeymapSyle(customKeymap, Config);
     }
     $("#keymap").html(keymapElement);
 
