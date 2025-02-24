@@ -67,6 +67,8 @@ export function matchesAPattern(text: string, pattern: string): boolean {
 }
 
 export function kogascore(wpm: number, acc: number, timestamp: number): number {
+  // its safe to round after multiplying by 100 (99.99 * 100 rounded will be 9999 not 100)
+  // rounding is necessary to protect against floating point errors
   const normalizedWpm = Math.round(wpm * 100);
   const normalizedAcc = Math.round(acc * 100);
 
