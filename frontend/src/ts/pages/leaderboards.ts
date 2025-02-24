@@ -6,7 +6,11 @@ import {
 } from "@monkeytype/contracts/schemas/leaderboards";
 import { capitalizeFirstLetter } from "../utils/strings";
 import Ape from "../ape";
-import { Mode } from "@monkeytype/contracts/schemas/shared";
+import {
+  Mode,
+  Mode2Schema,
+  ModeSchema,
+} from "@monkeytype/contracts/schemas/shared";
 import * as Notifications from "../elements/notifications";
 import Format from "../utils/format";
 import { Auth, isAuthenticated } from "../firebase";
@@ -28,9 +32,13 @@ import {
   getStartOfDayTimestamp,
 } from "@monkeytype/util/date-and-time";
 import { formatDistanceToNow } from "date-fns/formatDistanceToNow";
+import { z } from "zod";
+import { LocalStorageWithSchema } from "../utils/local-storage-with-schema";
+import { LanguageSchema } from "@monkeytype/contracts/schemas/util";
 // import * as ServerConfiguration from "../ape/server-configuration";
 
-type LeaderboardType = "allTime" | "weekly" | "daily";
+const LeaderboardTypeSchema = z.enum(["allTime", "weekly", "daily"]);
+type LeaderboardType = z.infer<typeof LeaderboardTypeSchema>;
 
 type AllTimeState = {
   type: "allTime";
@@ -86,6 +94,21 @@ const state = {
   discordAvatarUrls: new Map<string, string>(),
   scrollToUserAfterFill: false,
 } as State;
+
+const SelectorSchema = z.object({
+  type: LeaderboardTypeSchema,
+  mode: ModeSchema.optional(),
+  mode2: Mode2Schema.optional(),
+  language: LanguageSchema.optional(),
+  yesterday: z.boolean().optional(),
+  lastWeek: z.boolean().optional(),
+});
+
+const selectorLS = new LocalStorageWithSchema({
+  key: "leaderboardSelector",
+  schema: SelectorSchema,
+  fallback: { type: "allTime", mode: "time", mode2: "15" },
+});
 
 function updateTitle(): void {
   const type =
@@ -649,7 +672,7 @@ function fillUser(): void {
   if (
     isAuthenticated() &&
     !isDevEnvironment() &&
-    (DB.getSnapshot()?.typingStats?.timeTyping ?? 0) < 72000
+    (DB.getSnapshot()?.typingStats?.timeTyping ?? 0) < 7200
   ) {
     $(".page.pageLeaderboards .bigUser").html(
       '<div class="warning">Your account must have 2 hours typed to be placed on the leaderboard.</div>'
@@ -1140,10 +1163,17 @@ function updateGetParameters(): void {
 
   const newUrl = `${window.location.pathname}?${params.toString()}`;
   window.history.replaceState({}, "", newUrl);
+
+  selectorLS.set(state);
 }
 
 function readGetParameters(): void {
   const params = new URLSearchParams(window.location.search);
+
+  if (params.size == 0) {
+    Object.assign(state, selectorLS.get());
+    return;
+  }
 
   const type = params.get("type") as "allTime" | "weekly" | "daily";
   if (type) {
