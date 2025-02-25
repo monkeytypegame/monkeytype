@@ -1196,17 +1196,17 @@ function readGetParameters(): void {
       state.mode2 = params.mode2;
     }
   } else if (state.type === "daily") {
-    const language = params.language;
-    const dailyMode = params.mode2;
-    const yesterday = params.yesterday;
-    if (language !== undefined) {
-      state.language = language;
+    if (params.language !== undefined) {
+      state.language = params.language;
     }
-    if (dailyMode !== undefined) {
-      state.mode2 = dailyMode;
+    if (state.language === undefined) {
+      state.language = "english";
     }
-    if (yesterday !== undefined) {
-      state.yesterday = yesterday;
+    if (params.mode2 !== undefined) {
+      state.mode2 = params.mode2;
+    }
+    if (params.yesterday !== undefined) {
+      state.yesterday = params.yesterday;
     }
   } else if (state.type === "weekly") {
     if (params.lastWeek !== undefined) {
