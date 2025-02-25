@@ -27,6 +27,17 @@ const commands: Command[] = [
   },
 ];
 
+const createTagCommand: Command = {
+  id: "createTag",
+  display: "Create tag",
+  icon: "fa-plus",
+  shouldFocusTestUI: false,
+  opensModal: true,
+  exec: ({ commandlineModal }): void => {
+    EditTagsPopup.show("add", undefined, undefined, commandlineModal);
+  },
+};
+
 function update(): void {
   const snapshot = DB.getSnapshot();
   subgroup.list = [];
@@ -35,15 +46,7 @@ function update(): void {
     snapshot.tags === undefined ||
     snapshot.tags.length === 0
   ) {
-    subgroup.list.push({
-      id: "createTag",
-      display: "Create tag",
-      icon: "fa-plus",
-      shouldFocusTestUI: false,
-      exec: ({ commandlineModal }): void => {
-        EditTagsPopup.show("add", undefined, undefined, commandlineModal);
-      },
-    });
+    subgroup.list.push(createTagCommand);
     return;
   }
   subgroup.list.push({
@@ -99,16 +102,7 @@ function update(): void {
       },
     });
   }
-  subgroup.list.push({
-    id: "createTag",
-    display: "Create tag",
-    icon: "fa-plus",
-    shouldFocusTestUI: false,
-    opensModal: true,
-    exec: ({ commandlineModal }): void => {
-      EditTagsPopup.show("add", undefined, undefined, commandlineModal);
-    },
-  });
+  subgroup.list.push(createTagCommand);
 }
 
 export default commands;
