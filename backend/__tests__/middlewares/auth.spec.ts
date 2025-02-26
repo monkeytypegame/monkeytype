@@ -15,6 +15,7 @@ import {
 } from "@monkeytype/contracts/schemas/api";
 import * as Prometheus from "../../src/utils/prometheus";
 import { TsRestRequestWithContext } from "../../src/api/types";
+import { error } from "console";
 
 const mockDecodedToken: DecodedIdToken = {
   uid: "123456789",
@@ -95,19 +96,20 @@ describe("middlewares/auth", () => {
     it("should fail if token is not fresh", async () => {
       //GIVEN
       Date.now = vi.fn(() => 60001);
-
-      //WHEN
-      expect(() =>
-        authenticate({}, { requireFreshToken: true })
-      ).rejects.toThrowError(
+      const expectedError = new Error(
         "Unauthorized\nStack: This endpoint requires a fresh token"
       );
 
+      //WHEN
+      await expect(() =>
+        authenticate({}, { requireFreshToken: true })
+      ).rejects.toThrowError(expectedError);
+
       //THEN
 
-      expect(nextFunction).not.toHaveBeenCalled();
+      expect(nextFunction).toHaveBeenLastCalledWith(expectedError);
       expect(prometheusIncrementAuthMock).not.toHaveBeenCalled();
-      expect(prometheusRecordAuthTimeMock).not.toHaveBeenCalled();
+      expect(prometheusRecordAuthTimeMock).toHaveBeenCalledOnce();
     });
     it("should allow the request if token is fresh", async () => {
       //GIVEN
