@@ -498,15 +498,6 @@ importers:
         specifier: 2.1.9
         version: 2.1.9(@types/node@20.14.11)(happy-dom@15.10.2)(sass@1.70.0)(terser@5.31.3)
 
-  packages/esbuild-config:
-    devDependencies:
-      esbuild:
-        specifier: 0.25.0
-        version: 0.25.0
-      eslint:
-        specifier: 8.57.1
-        version: 8.57.1
-
   packages/eslint-config:
     devDependencies:
       '@typescript-eslint/eslint-plugin':
