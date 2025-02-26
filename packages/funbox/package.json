@@ -2,8 +2,8 @@
   "name": "@monkeytype/funbox",
   "private": true,
   "scripts": {
-    "dev": "tsup --watch",
-    "build": "npm run madge && tsup",
+    "dev": "tsup-node --watch",
+    "build": "npm run madge && tsup-node",
     "madge": " madge --circular --extensions ts ./src",
     "ts-check": "tsc --noEmit",
     "lint": "eslint \"./**/*.ts\""
