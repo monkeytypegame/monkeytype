@@ -4,7 +4,7 @@ export default defineConfig((_options) => ({
   entry: ["src/**/*.ts"],
   splitting: false,
   sourcemap: false,
-  clean: true,
+  clear: !_options.watch,
   format: ["cjs", "esm"],
   dts: true,
 }));

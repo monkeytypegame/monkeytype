@@ -14,7 +14,6 @@
     "zod": "3.23.8"
   },
   "devDependencies": {
-    "@monkeytype/esbuild": "workspace:*",
     "@monkeytype/eslint-config": "workspace:*",
     "@monkeytype/typescript-config": "workspace:*",
     "chokidar": "3.6.0",
@@ -26,12 +25,10 @@
   },
   "exports": {
     ".": {
-      "types": "./src/index.d.ts",
       "import": "./dist/index.mjs",
       "require": "./dist/index.js"
     },
     "./*": {
-      "types": "./src/*.d.ts",
       "import": "./dist/*.mjs",
       "require": "./dist/*.js"
     }
