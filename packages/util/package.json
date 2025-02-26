@@ -21,6 +21,7 @@
   },
   "exports": {
     "./*": {
+      "types": "./src/*.ts",
       "import": "./dist/*.mjs",
       "require": "./dist/*.js"
     }
