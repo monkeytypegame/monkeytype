@@ -12,7 +12,7 @@
 }
 
 #words {
-  --correct-letter-color: var(--main-color);
+  --correct-letter-color: #eee8d5;
   --untyped-letter-color: #586e75;
 }
 
