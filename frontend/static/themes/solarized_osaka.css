@@ -4,7 +4,7 @@
   --caret-color: #b58900;
   --sub-color: #2aa198;
   --sub-alt-color: #00222b;
-  --text-color: #b58900;
+  --text-color: #eee8d5;
   --error-color: #dc322f;
   --error-extra-color: #9b225c;
   --colorful-error-color: #d33682;
@@ -12,7 +12,7 @@
 }
 
 #words {
-  --correct-letter-color: #eee8d5;
+  --correct-letter-color: var(--text-color);
   --untyped-letter-color: #586e75;
 }
 
@@ -27,4 +27,22 @@ header #logo .icon {
 key {
   color: var(--text-color);
   background-color: var(--sub-alt-color);
+}
+
+button.text:hover, .button.text:hover, .textButton:hover {
+    color: var(--caret-color);
+}
+
+button.text.active, .button.text.active, .textButton.active {
+    color: var(--main-color);
+}
+
+button:hover, .button:hover, input[type=button]:hover, input[type=reset]:hover, input[type=submit]:hover {
+    color: var(--bg-color);
+    background: var(--caret-color);
+}
+
+.scrollToTopButton:hover {
+    background: var(--caret-color);
+    color: var(--bg-color);
 }
