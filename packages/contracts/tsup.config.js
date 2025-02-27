@@ -1,10 +1,5 @@
-import { defineConfig } from "tsup";
+import { extendConfig } from "@monkeytype/tsup-config";
 
-export default defineConfig((_options) => ({
-  entry: ["src/**/*.ts"],
-  splitting: false,
-  sourcemap: false,
-  clear: !_options.watch,
-  format: ["cjs", "esm"],
-  dts: false,
-}));
+export default function (_options) {
+  return extendConfig(_options);
+}
