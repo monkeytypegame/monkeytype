@@ -91,6 +91,12 @@ body.darkMode {
   }
 }
 
+#forgotPasswordModal {
+  .modal {
+    max-width: 400px;
+  }
+}
+
 #customTextModal {
   .modal {
     max-width: 1200px;
@@ -327,6 +333,18 @@ body.darkMode {
           pointer-events: none;
         }
       }
+    }
+
+    .divider {
+      height: 0.25rem;
+      background: var(--sub-alt-color);
+      border-radius: var(--roundness);
+      margin: 1rem 0;
+    }
+
+    .message {
+      font-size: 0.75em;
+      color: var(--sub-color);
     }
 
     .listLong {
@@ -1534,12 +1552,6 @@ body.darkMode {
         }
       }
     }
-  }
-}
-
-#editTagModal {
-  .modal {
-    max-width: 450px;
   }
 }
 

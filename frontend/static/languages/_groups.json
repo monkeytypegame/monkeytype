@@ -365,7 +365,7 @@
   },
   {
     "name": "bulgarian",
-    "languages": ["bulgarian"]
+    "languages": ["bulgarian", "bulgarian_latin"]
   },
   {
     "name": "esperanto",
@@ -548,8 +548,8 @@
     "languages": ["yiddish"]
   },
   {
-    "name": "frysk",
-    "languages": ["frysk", "frysk_1k"]
+    "name": "frisian",
+    "languages": ["frisian", "frisian_1k"]
   },
   {
     "name": "pashto",
@@ -601,6 +601,7 @@
       "code_javascript",
       "code_javascript_1k",
       "code_javascript_react",
+      "code_jule",
       "code_julia",
       "code_haskell",
       "code_html",

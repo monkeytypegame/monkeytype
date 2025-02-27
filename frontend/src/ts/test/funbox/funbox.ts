@@ -9,21 +9,28 @@ import * as FunboxMemory from "./funbox-memory";
 import { HighlightMode } from "@monkeytype/contracts/schemas/configs";
 import { Mode } from "@monkeytype/contracts/schemas/shared";
 import { FunboxName, checkCompatibility } from "@monkeytype/funbox";
-import { getActiveFunboxes, getActiveFunboxNames, get } from "./list";
+import {
+  getActiveFunboxes,
+  getActiveFunboxNames,
+  get,
+  getActiveFunboxesWithFunction,
+  isFunboxActiveWithProperty,
+  getActiveFunboxesWithProperty,
+} from "./list";
 import { checkForcedConfig } from "./funbox-validation";
 
 export function toggleScript(...params: string[]): void {
   if (Config.funbox === "none") return;
 
-  for (const fb of getActiveFunboxes()) {
-    fb.functions?.toggleScript?.(params);
+  for (const fb of getActiveFunboxesWithFunction("toggleScript")) {
+    fb.functions.toggleScript(params);
   }
 }
 
 export function setFunbox(funbox: string): boolean {
   if (funbox === "none") {
-    for (const fb of getActiveFunboxes()) {
-      fb.functions?.clearGlobal?.();
+    for (const fb of getActiveFunboxesWithFunction("clearGlobal")) {
+      fb.functions.clearGlobal();
     }
   }
   FunboxMemory.load();
@@ -72,7 +79,7 @@ export async function clear(): Promise<boolean> {
       ?.join(" ") ?? ""
   );
 
-  $("#funBoxTheme").removeAttr("href");
+  $(".funBoxTheme").remove();
 
   $("#wordsWrapper").removeClass("hidden");
   MemoryTimer.reset();
@@ -125,9 +132,7 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
   }
 
   if (language.ligatures) {
-    if (
-      getActiveFunboxes().find((f) => f.properties?.includes("noLigatures"))
-    ) {
+    if (isFunboxActiveWithProperty("noLigatures")) {
       Notifications.add(
         "Current language does not support this funbox mode",
         0
@@ -194,16 +199,16 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
   }
 
   ManualRestart.set();
-  for (const fb of getActiveFunboxes()) {
-    fb.functions?.applyConfig?.();
+  for (const fb of getActiveFunboxesWithFunction("applyConfig")) {
+    fb.functions.applyConfig();
   }
   // ModesNotice.update();
   return true;
 }
 
 export async function rememberSettings(): Promise<void> {
-  for (const fb of getActiveFunboxes()) {
-    fb.functions?.rememberSettings?.();
+  for (const fb of getActiveFunboxesWithFunction("rememberSettings")) {
+    fb.functions.rememberSettings();
   }
 }
 
@@ -220,11 +225,7 @@ async function setFunboxBodyClasses(): Promise<boolean> {
       ?.split(/\s+/)
       .filter((it) => !it.startsWith("fb-")) ?? [];
 
-  if (
-    getActiveFunboxes().some((it) =>
-      it.properties?.includes("ignoreReducedMotion")
-    )
-  ) {
+  if (isFunboxActiveWithProperty("ignoreReducedMotion")) {
     currentClasses.push("ignore-reduced-motion");
   }
 
@@ -237,23 +238,13 @@ async function setFunboxBodyClasses(): Promise<boolean> {
 }
 
 async function applyFunboxCSS(): Promise<boolean> {
-  const $theme = $("#funBoxTheme");
-
-  //currently we only support one active funbox with hasCSS
-  const activeFunboxWithTheme = getActiveFunboxes().find((fb) =>
-    fb?.properties?.includes("hasCssFile")
-  );
-
-  const activeTheme =
-    activeFunboxWithTheme != null
-      ? "funbox/" + activeFunboxWithTheme.name + ".css"
-      : "";
-
-  const currentTheme = ($theme.attr("href") ?? "") || null;
-
-  if (activeTheme != currentTheme) {
-    $theme.attr("href", activeTheme);
+  $(".funBoxTheme").remove();
+  for (const funbox of getActiveFunboxesWithProperty("hasCssFile")) {
+    const css = document.createElement("link");
+    css.classList.add("funBoxTheme");
+    css.rel = "stylesheet";
+    css.href = "funbox/" + funbox.name + ".css";
+    document.head.appendChild(css);
   }
-
   return true;
 }
