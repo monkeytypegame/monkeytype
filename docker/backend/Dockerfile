@@ -39,7 +39,7 @@ RUN mkdir -p /app/backend/dist/logs
 
 COPY ["docker/backend/entry-point.sh", "docker/backend/applyConfig.sh", "./"]
 
-#run in env mode (no anticheat)
+#run in dev mode (no anticheat)
 ENV MODE=dev
 
 EXPOSE 5005
