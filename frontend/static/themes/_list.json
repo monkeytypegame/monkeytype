@@ -399,6 +399,13 @@
     "textColor": "#181819"
   },
   {
+    "name": "solarized_osaka",
+    "bgColor": "#00141a",
+    "mainColor": "#859900",
+    "subColor": "#2aa198",
+    "textColor": "#b58900"
+  },
+  {
     "name": "terra",
     "bgColor": "#0c100e",
     "mainColor": "#89c559",
