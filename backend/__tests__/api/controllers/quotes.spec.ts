@@ -10,11 +10,13 @@ import * as Captcha from "../../../src/utils/captcha";
 import { ObjectId } from "mongodb";
 import _ from "lodash";
 import { ApproveQuote } from "@monkeytype/contracts/schemas/quotes";
+import { mockBearerAuthentication } from "../../__testData__/auth";
 
 const mockApp = request(app);
 const configuration = Configuration.getCachedConfiguration();
 
 const uid = new ObjectId().toHexString();
+const mockAuth = mockBearerAuthentication(uid);
 
 describe("QuotesController", () => {
   const getPartialUserMock = vi.spyOn(UserDal, "getPartialUser");
@@ -24,6 +26,7 @@ describe("QuotesController", () => {
 
     const user = { quoteMod: true, name: "Bob" } as any;
     getPartialUserMock.mockReset().mockResolvedValue(user);
+    mockAuth.beforeEach();
   });
 
   describe("getQuotes", () => {
@@ -58,7 +61,7 @@ describe("QuotesController", () => {
       //WHEN
       const { body } = await mockApp
         .get("/quotes")
-        .set("authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .expect(200);
 
       //THEN
@@ -82,7 +85,7 @@ describe("QuotesController", () => {
       //WHEN
       await mockApp
         .get("/quotes")
-        .set("authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .expect(200);
 
       //THEN
@@ -98,7 +101,7 @@ describe("QuotesController", () => {
       //WHEN
       const { body } = await mockApp
         .get("/quotes")
-        .set("authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .expect(403);
 
       //THEN
@@ -113,7 +116,7 @@ describe("QuotesController", () => {
       //WHEN
       const { body } = await mockApp
         .get("/quotes")
-        .set("authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .expect(403);
 
       //THEN
@@ -178,7 +181,7 @@ describe("QuotesController", () => {
       //WHEN
       const { body } = await mockApp
         .post("/quotes")
-        .set("authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .send(newQuote)
         .expect(200);
 
@@ -207,7 +210,7 @@ describe("QuotesController", () => {
       //WHEN
       const { body } = await mockApp
         .post("/quotes")
-        .set("authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .expect(503);
 
       //THEN
@@ -219,7 +222,7 @@ describe("QuotesController", () => {
       //WHEN
       const { body } = await mockApp
         .post("/quotes")
-        .set("authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .expect(422);
 
       expect(body).toEqual({
@@ -243,7 +246,7 @@ describe("QuotesController", () => {
           captcha: "captcha",
           extra: "value",
         })
-        .set("authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .expect(422);
 
       //THEN
@@ -265,7 +268,7 @@ describe("QuotesController", () => {
           language: "english",
           captcha: "captcha",
         })
-        .set("authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .expect(422);
 
       //THEN
@@ -297,7 +300,7 @@ describe("QuotesController", () => {
       //WHEN
       const { body } = await mockApp
         .post("/quotes/approve")
-        .set("authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .send({
           quoteId,
           editText: "editedText",
@@ -329,7 +332,7 @@ describe("QuotesController", () => {
       //WHEN
       const { body } = await mockApp
         .post("/quotes/approve")
-        .set("authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .send({ quoteId, editText: null, editSource: null })
         .expect(200);
 
@@ -357,7 +360,7 @@ describe("QuotesController", () => {
       //WHEN
       const { body } = await mockApp
         .post("/quotes/approve")
-        .set("authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .send({ quoteId })
         .expect(200);
 
@@ -378,7 +381,7 @@ describe("QuotesController", () => {
       //WHEN
       const { body } = await mockApp
         .post("/quotes/approve")
-        .set("authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .expect(422);
 
       //THEN
@@ -391,7 +394,7 @@ describe("QuotesController", () => {
       //WHEN
       const { body } = await mockApp
         .post("/quotes/approve")
-        .set("authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .send({ quoteId: new ObjectId().toHexString(), extra: "value" })
         .expect(422);
 
@@ -408,7 +411,7 @@ describe("QuotesController", () => {
       //WHEN
       const { body } = await mockApp
         .post("/quotes/approve")
-        .set("authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .send({ quoteId: new ObjectId().toHexString() })
         .expect(403);
 
@@ -436,7 +439,7 @@ describe("QuotesController", () => {
       //WHEN
       const { body } = await mockApp
         .post("/quotes/reject")
-        .set("authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .send({ quoteId })
         .expect(200);
 
@@ -451,7 +454,7 @@ describe("QuotesController", () => {
       //WHEN
       const { body } = await mockApp
         .post("/quotes/reject")
-        .set("authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
 
         .expect(422);
 
@@ -468,7 +471,7 @@ describe("QuotesController", () => {
       //WHEN
       const { body } = await mockApp
         .post("/quotes/reject")
-        .set("authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .send({ quoteId, extra: "value" })
         .expect(422);
 
@@ -486,7 +489,7 @@ describe("QuotesController", () => {
       //WHEN
       const { body } = await mockApp
         .post("/quotes/reject")
-        .set("authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .send({ quoteId })
         .expect(403);
 
@@ -523,7 +526,7 @@ describe("QuotesController", () => {
       const { body } = await mockApp
         .get("/quotes/rating")
         .query({ quoteId: 42, language: "english" })
-        .set("authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .expect(200);
 
       //THEN
@@ -538,7 +541,7 @@ describe("QuotesController", () => {
       //WHEN
       const { body } = await mockApp
         .get("/quotes/rating")
-        .set("authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .expect(422);
 
       //THEN
@@ -551,7 +554,7 @@ describe("QuotesController", () => {
       //WHEN
       const { body } = await mockApp
         .get("/quotes/rating")
-        .set("authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .query({ quoteId: 42, language: "english", extra: "value" })
         .expect(422);
 
@@ -586,7 +589,7 @@ describe("QuotesController", () => {
       //WHEN
       const { body } = await mockApp
         .post("/quotes/rating")
-        .set("authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .send({
           quoteId: 23,
           rating: 4,
@@ -616,7 +619,7 @@ describe("QuotesController", () => {
       //WHEN
       const { body } = await mockApp
         .post("/quotes/rating")
-        .set("authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .send({
           quoteId: 23,
           rating: 2,
@@ -648,7 +651,7 @@ describe("QuotesController", () => {
       //WHEN
       const { body } = await mockApp
         .post("/quotes/rating")
-        .set("authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .send({
           quoteId: 23,
           rating: 4,
@@ -674,7 +677,7 @@ describe("QuotesController", () => {
       //WHEN
       const { body } = await mockApp
         .post("/quotes/rating")
-        .set("authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .expect(422);
 
       //THEN
@@ -691,7 +694,7 @@ describe("QuotesController", () => {
       //WHEN
       const { body } = await mockApp
         .post("/quotes/rating")
-        .set("authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .send({ quoteId: 23, language: "english", rating: 5, extra: "value" })
         .expect(422);
 
@@ -705,7 +708,7 @@ describe("QuotesController", () => {
       //WHEN
       const { body } = await mockApp
         .post("/quotes/rating")
-        .set("authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .send({ quoteId: 23, language: "english", rating: 0 })
         .expect(422);
 
@@ -721,7 +724,7 @@ describe("QuotesController", () => {
       //WHEN
       const { body } = await mockApp
         .post("/quotes/rating")
-        .set("authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .send({ quoteId: 23, language: "english", rating: 6 })
         .expect(422);
 
@@ -736,7 +739,7 @@ describe("QuotesController", () => {
       //WHEN
       const { body } = await mockApp
         .post("/quotes/rating")
-        .set("authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .send({ quoteId: 23, language: "english", rating: 2.5 })
         .expect(422);
       //THEN
@@ -768,7 +771,7 @@ describe("QuotesController", () => {
       //WHEN
       const { body } = await mockApp
         .post("/quotes/report")
-        .set("authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .send({
           quoteId: "23", //quoteId is string on this endpoint
           quoteLanguage: "english",
@@ -802,7 +805,7 @@ describe("QuotesController", () => {
     it("should report quote without comment", async () => {
       await mockApp
         .post("/quotes/report")
-        .set("authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .send({
           quoteId: "23", //quoteId is string on this endpoint
           quoteLanguage: "english",
@@ -814,7 +817,7 @@ describe("QuotesController", () => {
     it("should report quote with empty comment", async () => {
       await mockApp
         .post("/quotes/report")
-        .set("authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .send({
           quoteId: "23", //quoteId is string on this endpoint
           quoteLanguage: "english",
@@ -828,7 +831,7 @@ describe("QuotesController", () => {
       //WHEN
       const { body } = await mockApp
         .post("/quotes/report")
-        .set("authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .expect(422);
 
       //THEN
@@ -849,7 +852,7 @@ describe("QuotesController", () => {
       //WHEN
       const { body } = await mockApp
         .post("/quotes/report")
-        .set("authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .expect(503);
 
       //THEN
@@ -864,7 +867,7 @@ describe("QuotesController", () => {
       //WHEN
       const { body } = await mockApp
         .post("/quotes/report")
-        .set("authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .expect(403);
 
       //THEN

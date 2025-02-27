@@ -9,10 +9,12 @@ import GeorgeQueue from "../../../src/queues/george-queue";
 import * as AuthUtil from "../../../src/utils/auth";
 import _ from "lodash";
 import { enableRateLimitExpects } from "../../__testData__/rate-limit";
+import { mockBearerAuthentication } from "../../__testData__/auth";
 
 const mockApp = request(app);
 const configuration = Configuration.getCachedConfiguration();
 const uid = new ObjectId().toHexString();
+const mockAuth = mockBearerAuthentication(uid);
 enableRateLimitExpects();
 
 describe("AdminController", () => {
@@ -22,6 +24,7 @@ describe("AdminController", () => {
     isAdminMock.mockReset();
     await enableAdminEndpoints(true);
     isAdminMock.mockResolvedValue(true);
+    mockAuth.beforeEach();
   });
 
   describe("check for admin", () => {
@@ -31,7 +34,7 @@ describe("AdminController", () => {
       //WHEN
       const { body } = await mockApp
         .get("/admin")
-        .set("authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .expect(200);
 
       //THEN
@@ -44,17 +47,17 @@ describe("AdminController", () => {
     });
     it("should fail if user is no admin", async () => {
       await expectFailForNonAdmin(
-        mockApp.get("/admin").set("authorization", `Uid ${uid}`)
+        mockApp.get("/admin").set("Authorization", `Bearer ${uid}`)
       );
     });
     it("should fail if admin endpoints are disabled", async () => {
       await expectFailForDisabledEndpoint(
-        mockApp.get("/admin").set("authorization", `Uid ${uid}`)
+        mockApp.get("/admin").set("Authorization", `Bearer ${uid}`)
       );
     });
     it("should be rate limited", async () => {
       await expect(
-        mockApp.get("/admin").set("authorization", `Uid ${uid}`)
+        mockApp.get("/admin").set("Authorization", `Bearer ${uid}`)
       ).toBeRateLimited({ max: 1, windowMs: 5000 });
     });
   });
@@ -82,7 +85,7 @@ describe("AdminController", () => {
       const { body } = await mockApp
         .post("/admin/toggleBan")
         .send({ uid: victimUid })
-        .set("authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .expect(200);
 
       //THEN
@@ -109,7 +112,7 @@ describe("AdminController", () => {
       const { body } = await mockApp
         .post("/admin/toggleBan")
         .send({ uid: victimUid })
-        .set("authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .expect(200);
 
       //THEN
@@ -132,7 +135,7 @@ describe("AdminController", () => {
       const { body } = await mockApp
         .post("/admin/toggleBan")
         .send({})
-        .set("authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .expect(422);
 
       //THEN
@@ -148,7 +151,7 @@ describe("AdminController", () => {
       const { body } = await mockApp
         .post("/admin/toggleBan")
         .send({ uid: new ObjectId().toHexString(), extra: "value" })
-        .set("authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .expect(422);
 
       //THEN
@@ -162,7 +165,7 @@ describe("AdminController", () => {
         mockApp
           .post("/admin/toggleBan")
           .send({ uid: new ObjectId().toHexString() })
-          .set("authorization", `Uid ${uid}`)
+          .set("Authorization", `Bearer ${uid}`)
       );
     });
     it("should fail if admin endpoints are disabled", async () => {
@@ -171,7 +174,7 @@ describe("AdminController", () => {
         mockApp
           .post("/admin/toggleBan")
           .send({ uid: new ObjectId().toHexString() })
-          .set("authorization", `Uid ${uid}`)
+          .set("Authorization", `Bearer ${uid}`)
       );
     });
     it("should be rate limited", async () => {
@@ -187,7 +190,7 @@ describe("AdminController", () => {
         mockApp
           .post("/admin/toggleBan")
           .send({ uid: victimUid })
-          .set("authorization", `Uid ${uid}`)
+          .set("Authorization", `Bearer ${uid}`)
       ).toBeRateLimited({ max: 1, windowMs: 5000 });
     });
   });
@@ -220,7 +223,7 @@ describe("AdminController", () => {
         .send({
           reports: [{ reportId: reportOne.id }, { reportId: reportTwo.id }],
         })
-        .set("authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .expect(200);
 
       expect(body).toEqual({
@@ -236,7 +239,7 @@ describe("AdminController", () => {
       const { body } = await mockApp
         .post("/admin/report/accept")
         .send({})
-        .set("authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .expect(422);
 
       expect(body).toEqual({
@@ -249,7 +252,7 @@ describe("AdminController", () => {
       const { body } = await mockApp
         .post("/admin/report/accept")
         .send({ reports: [] })
-        .set("authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .expect(422);
 
       expect(body).toEqual({
@@ -264,7 +267,7 @@ describe("AdminController", () => {
       const { body } = await mockApp
         .post("/admin/report/accept")
         .send({ reports: [{ reportId: "1", extra2: "value" }], extra: "value" })
-        .set("authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .expect(422);
 
       expect(body).toEqual({
@@ -280,7 +283,7 @@ describe("AdminController", () => {
         mockApp
           .post("/admin/report/accept")
           .send({ reports: [] })
-          .set("authorization", `Uid ${uid}`)
+          .set("Authorization", `Bearer ${uid}`)
       );
     });
     it("should fail if admin endpoints are disabled", async () => {
@@ -289,7 +292,7 @@ describe("AdminController", () => {
         mockApp
           .post("/admin/report/accept")
           .send({ reports: [] })
-          .set("authorization", `Uid ${uid}`)
+          .set("Authorization", `Bearer ${uid}`)
       );
     });
     it("should be rate limited", async () => {
@@ -301,7 +304,7 @@ describe("AdminController", () => {
         mockApp
           .post("/admin/report/accept")
           .send({ reports: [{ reportId: "1" }] })
-          .set("authorization", `Uid ${uid}`)
+          .set("Authorization", `Bearer ${uid}`)
       ).toBeRateLimited({ max: 1, windowMs: 5000 });
     });
   });
@@ -337,7 +340,7 @@ describe("AdminController", () => {
             { reportId: reportTwo.id },
           ],
         })
-        .set("authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .expect(200);
 
       expect(body).toEqual({
@@ -353,7 +356,7 @@ describe("AdminController", () => {
       const { body } = await mockApp
         .post("/admin/report/reject")
         .send({})
-        .set("authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .expect(422);
 
       expect(body).toEqual({
@@ -366,7 +369,7 @@ describe("AdminController", () => {
       const { body } = await mockApp
         .post("/admin/report/reject")
         .send({ reports: [] })
-        .set("authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .expect(422);
 
       expect(body).toEqual({
@@ -381,7 +384,7 @@ describe("AdminController", () => {
       const { body } = await mockApp
         .post("/admin/report/reject")
         .send({ reports: [{ reportId: "1", extra2: "value" }], extra: "value" })
-        .set("authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .expect(422);
 
       expect(body).toEqual({
@@ -397,7 +400,7 @@ describe("AdminController", () => {
         mockApp
           .post("/admin/report/reject")
           .send({ reports: [] })
-          .set("authorization", `Uid ${uid}`)
+          .set("Authorization", `Bearer ${uid}`)
       );
     });
     it("should fail if admin endpoints are disabled", async () => {
@@ -406,7 +409,7 @@ describe("AdminController", () => {
         mockApp
           .post("/admin/report/reject")
           .send({ reports: [] })
-          .set("authorization", `Uid ${uid}`)
+          .set("Authorization", `Bearer ${uid}`)
       );
     });
     it("should be rate limited", async () => {
@@ -418,7 +421,7 @@ describe("AdminController", () => {
         mockApp
           .post("/admin/report/reject")
           .send({ reports: [{ reportId: "1" }] })
-          .set("authorization", `Uid ${uid}`)
+          .set("Authorization", `Bearer ${uid}`)
       ).toBeRateLimited({ max: 1, windowMs: 5000 });
     });
   });
@@ -439,7 +442,7 @@ describe("AdminController", () => {
       const { body } = await mockApp
         .post("/admin/sendForgotPasswordEmail")
         .send({ email: "meowdec@example.com" })
-        .set("authorization", `Uid ${uid}`)
+        .set("Authorization", `Bearer ${uid}`)
         .expect(200);
 
       //THEN
@@ -458,7 +461,7 @@ describe("AdminController", () => {
         mockApp
           .post("/admin/sendForgotPasswordEmail")
           .send({ email: "meowdec@example.com" })
-          .set("authorization", `Uid ${uid}`)
+          .set("Authorization", `Bearer ${uid}`)
       ).toBeRateLimited({ max: 1, windowMs: 5000 });
     });
   });

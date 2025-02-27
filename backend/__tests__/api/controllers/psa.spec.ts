@@ -3,7 +3,10 @@ import app from "../../../src/app";
 import * as PsaDal from "../../../src/dal/psa";
 import * as Prometheus from "../../../src/utils/prometheus";
 import { ObjectId } from "mongodb";
+import { mockBearerAuthentication } from "../../__testData__/auth";
 const mockApp = request(app);
+const uid = new ObjectId().toHexString();
+const mockAuth = mockBearerAuthentication(uid);
 
 describe("Psa Controller", () => {
   describe("get psa", () => {
@@ -13,6 +16,7 @@ describe("Psa Controller", () => {
     afterEach(() => {
       getPsaMock.mockReset();
       recordClientVersionMock.mockReset();
+      mockAuth.beforeEach();
     });
 
     it("get psas without authorization", async () => {
@@ -62,7 +66,7 @@ describe("Psa Controller", () => {
     it("get psas with authorization", async () => {
       await mockApp
         .get("/psas")
-        .set("authorization", `Uid 123456789`)
+        .set("Authorization", `Bearer ${uid}`)
         .expect(200);
     });
 

@@ -2,9 +2,15 @@ import request from "supertest";
 import app from "../../../src/app";
 import * as ConfigDal from "../../../src/dal/config";
 import { ObjectId } from "mongodb";
+import { mockBearerAuthentication } from "../../__testData__/auth";
 const mockApp = request(app);
+const uid = new ObjectId().toHexString();
+const mockAuth = mockBearerAuthentication(uid);
 
 describe("ConfigController", () => {
+  beforeEach(() => {
+    mockAuth.beforeEach();
+  });
   describe("get config", () => {
     const getConfigMock = vi.spyOn(ConfigDal, "getConfig");
 
@@ -16,14 +22,14 @@ describe("ConfigController", () => {
       //GIVEN
       getConfigMock.mockResolvedValue({
         _id: new ObjectId(),
-        uid: "123456789",
+        uid: uid,
         config: { language: "english" },
       });
 
       //WHEN
       const { body } = await mockApp
         .get("/configs")
-        .set("authorization", "Uid 123456789")
+        .set("Authorization", `Bearer ${uid}`)
         .expect(200);
 
       //THEN
@@ -32,7 +38,7 @@ describe("ConfigController", () => {
         data: { language: "english" },
       });
 
-      expect(getConfigMock).toHaveBeenCalledWith("123456789");
+      expect(getConfigMock).toHaveBeenCalledWith(uid);
     });
   });
   describe("update config", () => {
@@ -49,7 +55,7 @@ describe("ConfigController", () => {
       //WHEN
       const { body } = await mockApp
         .patch("/configs")
-        .set("authorization", "Uid 123456789")
+        .set("Authorization", `Bearer ${uid}`)
         .accept("application/json")
         .send({ language: "english" })
         .expect(200);
@@ -60,7 +66,7 @@ describe("ConfigController", () => {
         data: null,
       });
 
-      expect(saveConfigMock).toHaveBeenCalledWith("123456789", {
+      expect(saveConfigMock).toHaveBeenCalledWith(uid, {
         language: "english",
       });
     });
@@ -68,7 +74,7 @@ describe("ConfigController", () => {
       //WHEN
       const { body } = await mockApp
         .patch("/configs")
-        .set("authorization", "Uid 123456789")
+        .set("Authorization", `Bearer ${uid}`)
         .accept("application/json")
         .send({ unknownValue: "unknown" })
         .expect(422);
@@ -85,7 +91,7 @@ describe("ConfigController", () => {
       //WHEN
       const { body } = await mockApp
         .patch("/configs")
-        .set("authorization", "Uid 123456789")
+        .set("Authorization", `Bearer ${uid}`)
         .accept("application/json")
         .send({ autoSwitchTheme: "yes", confidenceMode: "pretty" })
         .expect(422);
@@ -117,7 +123,7 @@ describe("ConfigController", () => {
 
       const { body } = await mockApp
         .delete("/configs")
-        .set("authorization", "Uid 123456789")
+        .set("Authorization", `Bearer ${uid}`)
         .expect(200);
 
       //THEN
@@ -126,7 +132,7 @@ describe("ConfigController", () => {
         data: null,
       });
 
-      expect(deleteConfigMock).toHaveBeenCalledWith("123456789");
+      expect(deleteConfigMock).toHaveBeenCalledWith(uid);
     });
   });
 });
