@@ -692,7 +692,7 @@ async function fillSettingsPage(): Promise<void> {
     Config.fontSize
   );
 
-  $(".pageSettings .section[data-config-name='customKeymap'] input").val(
+  $(".pageSettings .section[data-config-name='keymapCustom'] input").val(
     Config.keymapCustom
   );
 
