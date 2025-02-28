@@ -60,7 +60,9 @@ export function authenticateTsRestRequest<
     let authType = "None";
 
     const isPublic =
-      options.isPublic || (options.isPublicOnDev && isDevEnvironment());
+      options.isPublic ||
+      (options.isPublicOnDev &&
+        (isDevEnvironment() || process.env["EXPOSE_DEV_ENDPOINTS"] === "true"));
 
     const {
       authorization: authHeader,

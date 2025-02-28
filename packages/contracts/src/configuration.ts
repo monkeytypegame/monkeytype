@@ -80,11 +80,11 @@ export const configurationContract = c.router(
       },
       metadata: meta({
         authenticationOptions: {
-          isPublicOnDev: true,
-          noCache: true,
+          isPublic: true,
+          //noCache: true,
         },
         rateLimit: "adminLimit",
-        requirePermission: "admin",
+        //requirePermission: "admin",
       }),
     },
   },

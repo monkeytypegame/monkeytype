@@ -14,7 +14,7 @@ export const limits = {
 
   adminLimit: {
     window: 5000, //5 seconds
-    max: 1,
+    max: 5,
   },
 
   // Config Routing
