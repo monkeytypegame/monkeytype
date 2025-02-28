@@ -1762,15 +1762,26 @@ export function setLayout(
   return true;
 }
 
-// export function setSavedLayout(layout: string, nosave?: boolean): boolean {
-//   if (layout === null || layout === undefined) {
-//     layout = "qwerty";
-//   }
-//   config.savedLayout = layout;
-//   setLayout(layout, nosave);
+export function setKeymapCustom(
+  keymapCustom: string,
+  nosave?: boolean
+): boolean {
+  if (
+    !isConfigValueValid(
+      "keymapCustom",
+      keymapCustom,
+      ConfigSchemas.KeymapCustomSchema
+    )
+  )
+    return false;
 
-//   return true;
-// }
+  //better validation for the custom keymap
+  config.keymapCustom = keymapCustom;
+  saveToLocalStorage("keymapCustom", nosave);
+  ConfigEvent.dispatch("keymapCustom", config.keymapCustom, nosave);
+
+  return true;
+}
 
 export function setFontSize(
   fontSize: ConfigSchemas.FontSize,
