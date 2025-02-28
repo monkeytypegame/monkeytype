@@ -1,107 +1,44 @@
 import Ape from "../ape";
 import * as DB from "../db";
-import * as Notifications from "../elements/notifications";
-import * as Loader from "../elements/loader";
 import * as Settings from "../pages/settings";
-import * as ConnectionState from "../states/connection";
-import AnimatedModal from "../utils/animated-modal";
+import AnimatedModal, { ShowOptions } from "../utils/animated-modal";
+import { SimpleModal, TextInput } from "../utils/simple-modal";
+import { TagNameSchema } from "@monkeytype/contracts/schemas/users";
 
-export function show(
-  action: string,
-  id?: string,
-  name?: string,
-  modalChain?: AnimatedModal
-): void {
-  if (!ConnectionState.get()) {
-    Notifications.add("You are offline", 0, {
-      duration: 2,
-    });
-    return;
-  }
+const cleanTagName = (tagName: string): string => tagName.replaceAll(" ", "_");
+const tagNameValidation = async (tagName: string): Promise<true | string> => {
+  const validationResult = TagNameSchema.safeParse(cleanTagName(tagName));
+  if (validationResult.success) return true;
+  return validationResult.error.errors.map((err) => err.message).join(", ");
+};
 
-  void modal.show({
-    focusFirstInput: true,
-    modalChain,
-    beforeAnimation: async () => {
-      $("#editTagModal .modal .text").addClass("hidden");
-      if (action === "add") {
-        $("#editTagModal .modal").attr("data-action", "add");
-        $("#editTagModal .modal .title").html("Add new tag");
-        $("#editTagModal .modal button").html(`add`);
-        $("#editTagModal .modal input").val("");
-        $("#editTagModal .modal input").removeClass("hidden");
-      } else if (action === "edit" && id !== undefined && name !== undefined) {
-        $("#editTagModal .modal").attr("data-action", "edit");
-        $("#editTagModal .modal").attr("data-tag-id", id);
-        $("#editTagModal .modal .title").html("Edit tag");
-        $("#editTagModal .modal button").html(`save`);
-        $("#editTagModal .modal input").val(name);
-        $("#editTagModal .modal input").removeClass("hidden");
-      } else if (
-        action === "remove" &&
-        id !== undefined &&
-        name !== undefined
-      ) {
-        $("#editTagModal .modal").attr("data-action", "remove");
-        $("#editTagModal .modal").attr("data-tag-id", id);
-        $("#editTagModal .modal .title").html("Delete tag");
-        $("#editTagModal .modal .text").removeClass("hidden");
-        $("#editTagModal .modal .text").html(
-          `Are you sure you want to delete tag ${name}?`
-        );
-        $("#editTagModal .modal button").html(`delete`);
-        $("#editTagModal .modal input").addClass("hidden");
-      } else if (
-        action === "clearPb" &&
-        id !== undefined &&
-        name !== undefined
-      ) {
-        $("#editTagModal .modal").attr("data-action", "clearPb");
-        $("#editTagModal .modal").attr("data-tag-id", id);
-        $("#editTagModal .modal .title").html("Clear personal bests");
-        $("#editTagModal .modal .text").removeClass("hidden");
-        $("#editTagModal .modal .text").html(
-          `Are you sure you want to clear personal bests for tag ${name}?`
-        );
-        $("#editTagModal .modal button").html(`clear`);
-        $("#editTagModal .modal input").addClass("hidden");
-      }
-    },
-  });
-}
+type Action = "add" | "edit" | "remove" | "clearPb";
+const actionModals: Record<Action, SimpleModal> = {
+  add: new SimpleModal({
+    id: "addTag",
+    title: "Add new tag",
+    inputs: [
+      {
+        placeholder: "tag name",
+        type: "text",
+        validation: { isValid: tagNameValidation },
+      },
+    ],
+    onlineOnly: true,
+    buttonText: "add",
+    execFn: async (_thisPopup, propTagName) => {
+      const tagName = cleanTagName(propTagName);
+      const response = await Ape.users.createTag({ body: { tagName } });
 
-function hide(clearModalChain = false): void {
-  void modal.hide({
-    clearModalChain,
-  });
-}
-
-async function apply(): Promise<void> {
-  const action = $("#editTagModal .modal").attr("data-action");
-  const propTagName = $("#editTagModal .modal input").val() as string;
-  const tagName = propTagName.replaceAll(" ", "_");
-  const tagId = $("#editTagModal .modal").attr("data-tag-id") as string;
-
-  hide(true);
-  Loader.show();
-
-  if (action === "add") {
-    const response = await Ape.users.createTag({ body: { tagName } });
-
-    if (response.status !== 200) {
-      Notifications.add(
-        "Failed to add tag: " +
-          response.body.message.replace(tagName, propTagName),
-        -1
-      );
-    } else {
-      if (response.body.data === null) {
-        Notifications.add("Tag was added but data returned was null", -1);
-        Loader.hide();
-        return;
+      if (response.status !== 200) {
+        return {
+          status: -1,
+          message:
+            "Failed to add tag: " +
+            response.body.message.replace(tagName, propTagName),
+        };
       }
 
-      Notifications.add("Tag added", 1);
       DB.getSnapshot()?.tags?.push({
         display: propTagName,
         name: response.body.data.name,
@@ -115,16 +52,40 @@ async function apply(): Promise<void> {
         },
       });
       void Settings.update();
-    }
-  } else if (action === "edit") {
-    const response = await Ape.users.editTag({
-      body: { tagId, newName: tagName },
-    });
 
-    if (response.status !== 200) {
-      Notifications.add("Failed to edit tag: " + response.body.message, -1);
-    } else {
-      Notifications.add("Tag updated", 1);
+      return { status: 1, message: `Tag added` };
+    },
+  }),
+  edit: new SimpleModal({
+    id: "editTag",
+    title: "Edit tag",
+    inputs: [
+      {
+        placeholder: "tag name",
+        type: "text",
+        validation: { isValid: tagNameValidation },
+      },
+    ],
+    onlineOnly: true,
+    buttonText: "save",
+    beforeInitFn: (_thisPopup) => {
+      (_thisPopup.inputs[0] as TextInput).initVal = _thisPopup.parameters[0];
+    },
+    execFn: async (_thisPopup, propTagName) => {
+      const tagName = cleanTagName(propTagName);
+      const tagId = _thisPopup.parameters[1] as string;
+
+      const response = await Ape.users.editTag({
+        body: { tagId, newName: tagName },
+      });
+
+      if (response.status !== 200) {
+        return {
+          status: -1,
+          message: "Failed to edit tag: " + response.body.message,
+        };
+      }
+
       DB.getSnapshot()?.tags?.forEach((tag) => {
         if (tag._id === tagId) {
           tag.name = tagName;
@@ -132,53 +93,76 @@ async function apply(): Promise<void> {
         }
       });
       void Settings.update();
-    }
-  } else if (action === "remove") {
-    const response = await Ape.users.deleteTag({ params: { tagId } });
 
-    if (response.status !== 200) {
-      Notifications.add("Failed to remove tag: " + response.body.message, -1);
-    } else {
-      Notifications.add("Tag removed", 1);
+      return { status: 1, message: `Tag updated` };
+    },
+  }),
+  remove: new SimpleModal({
+    id: "removeTag",
+    title: "Delete tag",
+    onlineOnly: true,
+    buttonText: "delete",
+    beforeInitFn: (_thisPopup) => {
+      _thisPopup.text = `Are you sure you want to delete tag ${_thisPopup.parameters[0]} ?`;
+    },
+    execFn: async (_thisPopup) => {
+      const tagId = _thisPopup.parameters[1] as string;
+      const response = await Ape.users.deleteTag({ params: { tagId } });
+
+      if (response.status !== 200) {
+        return {
+          status: -1,
+          message: "Failed to remove tag: " + response.body.message,
+        };
+      }
+
       DB.getSnapshot()?.tags?.forEach((tag, index: number) => {
         if (tag._id === tagId) {
           DB.getSnapshot()?.tags?.splice(index, 1);
         }
       });
       void Settings.update();
-    }
-  } else if (action === "clearPb") {
-    const response = await Ape.users.deleteTagPersonalBest({
-      params: { tagId },
-    });
-
-    if (response.status !== 200) {
-      Notifications.add("Failed to clear tag pb: " + response.body.message, -1);
-    } else {
-      Notifications.add("Tag PB cleared", 1);
-      DB.getSnapshot()?.tags?.forEach((tag) => {
-        if (tag._id === tagId) {
-          tag.personalBests = {
-            time: {},
-            words: {},
-            quote: {},
-            zen: {},
-            custom: {},
-          };
-        }
+      return { status: 1, message: `Tag removed` };
+    },
+  }),
+  clearPb: new SimpleModal({
+    id: "clearTagPb",
+    title: "Clear personal bests",
+    onlineOnly: true,
+    buttonText: "clear",
+    beforeInitFn: (_thisPopup) => {
+      _thisPopup.text = `Are you sure you want to clear personal bests for tag ${_thisPopup.parameters[0]} ?`;
+    },
+    execFn: async (_thisPopup) => {
+      const tagId = _thisPopup.parameters[1] as string;
+      const response = await Ape.users.deleteTagPersonalBest({
+        params: { tagId },
       });
-      void Settings.update();
-    }
-  }
-  Loader.hide();
-}
 
-const modal = new AnimatedModal({
-  dialogId: "editTagModal",
-  setup: async (modalEl): Promise<void> => {
-    modalEl.addEventListener("submit", (e) => {
-      e.preventDefault();
-      void apply();
-    });
-  },
-});
+      if (response.status !== 200) {
+        return {
+          status: -1,
+          message: "Failed to clear tag pb: " + response.body.message,
+        };
+      }
+
+      void Settings.update();
+      return { status: 1, message: `Tag PB cleared` };
+    },
+  }),
+};
+
+export function show(
+  action: Action,
+  id?: string,
+  name?: string,
+  modalChain?: AnimatedModal
+): void {
+  const options: ShowOptions = {
+    modalChain,
+    focusFirstInput: "focusAndSelect",
+  };
+  if (action !== "add" && (name === undefined || id === undefined)) return;
+
+  actionModals[action].show([name ?? "", id ?? ""], options);
+}
