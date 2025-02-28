@@ -1,7 +1,10 @@
 import "dotenv/config";
 import * as db from "./init/db";
 import jobs from "./jobs";
-import { getLiveConfiguration } from "./init/configuration";
+import {
+  getLiveConfiguration,
+  updateFromConfigurationFile,
+} from "./init/configuration";
 import app from "./app";
 import { Server } from "http";
 import { version } from "./version";
@@ -73,6 +76,7 @@ async function bootServer(port: number): Promise<Server> {
     await blocklistDbSetup();
 
     recordServerVersion(version);
+    await updateFromConfigurationFile();
   } catch (error) {
     Logger.error("Failed to boot server");
     const message = getErrorMessage(error);

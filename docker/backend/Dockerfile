@@ -20,10 +20,6 @@ RUN pnpm deploy --filter backend --prod /prod/backend
 ## target image
 FROM node:20.16.0-alpine3.19
 
-##install wget, used by the applyConfig script
-RUN apk update --no-cache && \
-    apk add --no-cache wget
-
 # COPY to target
 COPY --from=builder /prod/backend/node_modules /app/backend/node_modules
 COPY --from=builder /prod/backend/dist /app/backend/dist
@@ -37,7 +33,7 @@ WORKDIR /app/backend/dist
 ## logs 
 RUN mkdir -p /app/backend/dist/logs
 
-COPY ["docker/backend/entry-point.sh", "docker/backend/applyConfig.sh", "./"]
+COPY ["docker/backend/entry-point.sh", "./"]
 
 RUN echo "CUSTOM" > /app/backend/dist/server.version
 
