@@ -168,8 +168,8 @@ If you don't want to update this file manually you can
 
 - open the backend url in your browser, e.g. `http://localhost:5005/configure/`
 - adjust the settings and click `Save Changes`
-- open the configuration in your browser, e.g. `http://localhost:5005/configuration`
-- copy everything from `data` into the `backend-configuration.json` file.
+- click `Export Configuration` 
+- save the file as `backend-configuration.json`, overwriting the existing one.
 
 Example output from `http://localhost:5005/configuration`:
 ```json
