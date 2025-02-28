@@ -1,10 +1,13 @@
+const hasAnticheatImplemented = process.env["BYPASS_ANTICHEAT"] === "true";
+
 import {
   CompletedEvent,
   KeyStats,
 } from "@monkeytype/contracts/schemas/results";
+import Logger from "../utils/logger";
 
 export function implemented(): boolean {
-  return false;
+  return hasAnticheatImplemented;
 }
 
 export function validateResult(
@@ -13,6 +16,7 @@ export function validateResult(
   _uaStringifiedObject: string,
   _lbOptOut: boolean
 ): boolean {
+  Logger.warning("No anticheat module found, results will not be validated.");
   return true;
 }
 
@@ -22,5 +26,6 @@ export function validateKeys(
   _keyDurationStats: KeyStats,
   _uid: string
 ): boolean {
+  Logger.warning("No anticheat module found, keys will not be validated.");
   return true;
 }

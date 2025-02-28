@@ -39,8 +39,13 @@ RUN mkdir -p /app/backend/dist/logs
 
 COPY ["docker/backend/entry-point.sh", "docker/backend/applyConfig.sh", "./"]
 
+RUN echo "CUSTOM" > /app/backend/dist/server.version
+
 #run in dev mode (no anticheat)
-ENV MODE=dev
+ENV MODE=prod
+ENV BYPASS_ANTICHEAT=true
+ENV BYPASS_EMAILCLIENT=true
+ENV LEADERBOARD_MIN_TIME_TYPING=0
 
 EXPOSE 5005
 USER node

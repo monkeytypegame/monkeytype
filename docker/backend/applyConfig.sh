@@ -16,6 +16,11 @@ if [ -f backend-configuration.json ]; then
     --header='Content-Type:application/json' \
     http://localhost:5005/configuration
 
+  if [ $? -ne 0 ]; then
+    echo "failed to apply config"
+    exit 1
+  fi
+
   echo "server config applied"
 else
   echo "skip backend configuration"

@@ -293,7 +293,9 @@ async function createIndex(key: string): Promise<void> {
         $gt: 0,
       },
       timeTyping: {
-        $gt: isDevEnvironment() ? 0 : 7200,
+        $gt: isDevEnvironment()
+          ? 0
+          : parseInt(process.env["LEADERBOARD_MIN_TIME_TYPING"] ?? "7200"),
       },
     },
   };
