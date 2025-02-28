@@ -19,7 +19,6 @@ import * as ConfigEvent from "../observables/config-event";
 import * as Hangul from "hangul-js";
 import { format } from "date-fns/format";
 import { isAuthenticated } from "../firebase";
-import * as FunboxList from "./funbox/funbox-list";
 import { debounce } from "throttle-debounce";
 import * as ResultWordHighlight from "../elements/result-word-highlight";
 import * as ActivePage from "../states/active-page";
@@ -31,6 +30,11 @@ import {
   TimerOpacity,
 } from "@monkeytype/contracts/schemas/configs";
 import { convertRemToPixels } from "../utils/numbers";
+import {
+  findSingleActiveFunboxWithFunction,
+  getActiveFunboxesWithFunction,
+} from "./funbox/list";
+import * as TestState from "./test-state";
 
 async function gethtml2canvas(): Promise<typeof import("html2canvas").default> {
   return (await import("html2canvas")).default;
@@ -186,6 +190,11 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
     } else {
       scrollTape();
     }
+    updateLiveStatsMargin();
+  }
+
+  if (eventKey === "tapeMargin") {
+    updateLiveStatsMargin();
   }
 
   if (typeof eventValue !== "boolean") return;
@@ -330,12 +339,11 @@ export async function updateHintsPosition(): Promise<void> {
 function getWordHTML(word: string): string {
   let newlineafter = false;
   let retval = `<div class='word'>`;
-  const funbox = FunboxList.get(Config.funbox).find(
-    (f) => f.functions?.getWordHtml
-  );
+
+  const funbox = findSingleActiveFunboxWithFunction("getWordHtml");
   const chars = Strings.splitIntoCharacters(word);
   for (const char of chars) {
-    if (funbox?.functions?.getWordHtml) {
+    if (funbox) {
       retval += funbox.functions.getWordHtml(char, true);
     } else if (char === "\t") {
       retval += `<letter class='tabChar'><i class="fas fa-long-arrow-alt-right fa-fw"></i></letter>`;
@@ -470,7 +478,7 @@ export async function updateWordsInputPosition(initial = false): Promise<void> {
 
   if (Config.tapeMode !== "off") {
     el.style.top = targetTop + "px";
-    el.style.left = activeWord.offsetLeft + "px";
+    el.style.left = Config.tapeMargin + "%";
     return;
   }
 
@@ -497,12 +505,18 @@ function updateWordsHeight(force = false): void {
   const wordsHeight = $(
     document.querySelector("#words") as Element
   ).outerHeight(true) as number;
-  if (
-    Config.showAllLines &&
-    Config.mode !== "time" &&
-    CustomText.getLimitMode() !== "time" &&
-    CustomText.getLimitValue() !== 0
-  ) {
+
+  const shouldLimitToThreeLines =
+    Config.mode === "time" ||
+    (Config.mode === "custom" && CustomText.getLimitMode() === "time") ||
+    (Config.mode === "custom" &&
+      CustomText.getLimitMode() === "word" &&
+      CustomText.getLimitValue() === 0) ||
+    (Config.mode === "custom" &&
+      CustomText.getLimitMode() === "section" &&
+      CustomText.getLimitValue() === 0);
+
+  if (Config.showAllLines && !shouldLimitToThreeLines) {
     // overflow-x should not be visible in tape mode, but since showAllLines can't
     // be enabled simultaneously with tape mode we don't need to check it's off
     $("#words")
@@ -642,9 +656,9 @@ export async function screenshot(): Promise<void> {
     }
     (document.querySelector("html") as HTMLElement).style.scrollBehavior =
       "smooth";
-    FunboxList.get(Config.funbox).forEach((f) =>
-      f.functions?.applyGlobalCSS?.()
-    );
+    for (const fb of getActiveFunboxesWithFunction("applyGlobalCSS")) {
+      fb.functions.applyGlobalCSS();
+    }
   }
 
   if (!$("#resultReplay").hasClass("hidden")) {
@@ -684,7 +698,9 @@ export async function screenshot(): Promise<void> {
   $(".highlightContainer").addClass("hidden");
   if (revertCookie) $("#cookiesModal").addClass("hidden");
 
-  FunboxList.get(Config.funbox).forEach((f) => f.functions?.clearGlobal?.());
+  for (const fb of getActiveFunboxesWithFunction("clearGlobal")) {
+    fb.functions.clearGlobal();
+  }
 
   (document.querySelector("html") as HTMLElement).style.scrollBehavior = "auto";
   window.scrollTo({
@@ -831,9 +847,7 @@ export async function updateActiveWordLetters(
       }
     }
 
-    const funbox = FunboxList.get(Config.funbox).find(
-      (f) => f.functions?.getWordHtml
-    );
+    const funbox = findSingleActiveFunboxWithFunction("getWordHtml");
 
     const inputChars = Strings.splitIntoCharacters(input);
     const currentWordChars = Strings.splitIntoCharacters(currentWord);
@@ -843,7 +857,7 @@ export async function updateActiveWordLetters(
       let currentLetter = currentWordChars[i] as string;
       let tabChar = "";
       let nlChar = "";
-      if (funbox?.functions?.getWordHtml) {
+      if (funbox) {
         const cl = funbox.functions.getWordHtml(currentLetter);
         if (cl !== "") {
           currentLetter = cl;
@@ -933,6 +947,19 @@ export async function updateActiveWordLetters(
 
 export function scrollTape(): void {
   if (ActivePage.get() !== "test" || resultVisible) return;
+
+  if (!TestState.isActive) {
+    $("#words")
+      .stop(true, false)
+      .animate(
+        {
+          marginLeft: Config.tapeMargin + "%",
+        },
+        SlowTimer.get() ? 0 : 125
+      );
+    return;
+  }
+
   const wordsWrapperWidth = (
     document.querySelector("#wordsWrapper") as HTMLElement
   ).offsetWidth;
@@ -977,7 +1004,9 @@ export function scrollTape(): void {
       }
     }
   }
-  const newMargin = wordsWrapperWidth / 2 - (fullWordsWidth + currentWordWidth);
+
+  const tapeMargin = wordsWrapperWidth * (Config.tapeMargin / 100);
+  const newMargin = tapeMargin - (fullWordsWidth + currentWordWidth);
   if (Config.smoothLineScroll) {
     $("#words")
       .stop(true, false)
@@ -1135,7 +1164,7 @@ export function setLigatures(isEnabled: boolean): void {
 async function loadWordsHistory(): Promise<boolean> {
   $("#resultWordsHistory .words").empty();
   let wordsHTML = "";
-  for (let i = 0; i < TestInput.input.history.length + 2; i++) {
+  for (let i = 0; i < TestInput.input.getHistory().length + 2; i++) {
     const input = TestInput.input.getHistory(i);
     const corrected = TestInput.corrected.getHistory(i);
     const word = TestWords.words.get(i);
@@ -1455,6 +1484,20 @@ function updateWordsWidth(): void {
   }
 }
 
+function updateLiveStatsMargin(): void {
+  if (Config.tapeMode === "off") {
+    $("#liveStatsMini").css({
+      "justify-content": "start",
+      "margin-left": "0.25em",
+    });
+  } else {
+    $("#liveStatsMini").css({
+      "justify-content": "center",
+      "margin-left": Config.tapeMargin + "%",
+    });
+  }
+}
+
 function updateLiveStatsOpacity(value: TimerOpacity): void {
   $("#barTimerProgress").css("opacity", parseFloat(value as string));
   $("#liveStatsTextTop").css("opacity", parseFloat(value as string));
@@ -1504,11 +1547,11 @@ $(".pageTest").on("click", "#saveScreenshotButton", () => {
 $(".pageTest #copyWordsListButton").on("click", async () => {
   let words;
   if (Config.mode === "zen") {
-    words = TestInput.input.history.join(" ");
+    words = TestInput.input.getHistory().join(" ");
   } else {
     words = TestWords.words
       .get()
-      .slice(0, TestInput.input.history.length)
+      .slice(0, TestInput.input.getHistory().length)
       .join(" ");
   }
   await copyToClipboard(words);
@@ -1517,7 +1560,7 @@ $(".pageTest #copyWordsListButton").on("click", async () => {
 $(".pageTest #copyMissedWordsListButton").on("click", async () => {
   let words;
   if (Config.mode === "zen") {
-    words = TestInput.input.history.join(" ");
+    words = TestInput.input.getHistory().join(" ");
   } else {
     words = Object.keys(TestInput.missedWords ?? {}).join(" ");
   }

@@ -1,4 +1,19 @@
 <head>
+  <link
+    rel="preload"
+    href="/webfonts/RobotoMono-Regular.woff2"
+    type="font/woff2"
+    as="font"
+    crossorigin
+  />
+  <link
+    rel="preload"
+    href="/webfonts/LexendDeca-Regular.woff2"
+    type="font/woff2"
+    as="font"
+    crossorigin
+  />
+
   <script>
     document.addEventListener("keydown", function (e) {
       if (e.key == "Escape") e.preventDefault();
@@ -50,7 +65,6 @@
     content="/images/favicon/browserconfig.xml"
   />
   <meta id="metaThemeColor" name="theme-color" content="#e2b714" />
-  <link rel="manifest" href="/manifest.json" />
   <meta
     name="name"
     content="Monkeytype | A minimalistic, customizable typing test"
@@ -60,9 +74,14 @@
     name="description"
     content="The most customizable typing test website with a minimal design and a ton of features. Test yourself in various modes, track your progress and improve your speed."
   />
-  <meta
+  <!-- <meta
     name="keywords"
     content="typing speed test, typing speedtest, typing test, speedtest, speed test, typing, test, typing-test, typing test, monkey-type, monkeytype, monkey type, monkey-types, monkeytypes, monkey types, types, monkey, type, miodec, wpm, words per minute, typing website, minimalistic, custom typing test, customizable, customisable, themes, random words, smooth caret, smooth, new, new typing site, new typing website, minimalist typing website, minimalistic typing website, minimalist typing test"
+
+  /> -->
+  <meta
+    name="keywords"
+    content="typing test, monkeytype, speed test, typing, test, speed"
   />
   <meta name="author" content="Miodec" />
   <meta
@@ -90,5 +109,6 @@
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="darkreader-lock" />
   <meta http-equiv="Cache-Control" content="no-store" />
+  <link rel="stylesheet" href="styles/vendor.scss" />
   <link rel="stylesheet" href="styles/index.scss" />
 </head>

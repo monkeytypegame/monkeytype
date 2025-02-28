@@ -62,6 +62,20 @@ describe("Misc Utils", () => {
         timestamp: 1653591901000,
         expectedScore: 1196200960717699,
       },
+      {
+        wpm: 196.205,
+        acc: 96.075,
+        timestamp: 1653591901000,
+        expectedScore: 1196210960817699,
+      },
+      {
+        // this one is particularly important - in JS 154.39 * 100 is equal to 15438.999999999998
+        // thanks floating point errors!
+        wpm: 154.39,
+        acc: 96.14,
+        timestamp: 1740333827000,
+        expectedScore: 1154390961421373,
+      },
     ];
 
     _.each(testCases, ({ wpm, acc, timestamp, expectedScore }) => {

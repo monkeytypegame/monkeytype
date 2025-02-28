@@ -1129,7 +1129,7 @@ describe("UserDal", () => {
   });
   describe("getPartialUser", () => {
     it("should throw for unknown user", async () => {
-      expect(async () =>
+      await expect(async () =>
         UserDAL.getPartialUser("1234", "stack", [])
       ).rejects.toThrowError("User not found\nStack: stack");
     });
@@ -1164,7 +1164,7 @@ describe("UserDal", () => {
   });
   describe("updateEmail", () => {
     it("throws for nonexisting user", async () => {
-      expect(async () =>
+      await expect(async () =>
         UserDAL.updateEmail("unknown", "test@example.com")
       ).rejects.toThrowError("User not found\nStack: update email");
     });
@@ -1182,7 +1182,7 @@ describe("UserDal", () => {
   });
   describe("resetPb", () => {
     it("throws for nonexisting user", async () => {
-      expect(async () => UserDAL.resetPb("unknown")).rejects.toThrowError(
+      await expect(async () => UserDAL.resetPb("unknown")).rejects.toThrowError(
         "User not found\nStack: reset pb"
       );
     });
@@ -1208,7 +1208,7 @@ describe("UserDal", () => {
   });
   describe("linkDiscord", () => {
     it("throws for nonexisting user", async () => {
-      expect(async () =>
+      await expect(async () =>
         UserDAL.linkDiscord("unknown", "", "")
       ).rejects.toThrowError("User not found\nStack: link discord");
     });
@@ -1230,9 +1230,9 @@ describe("UserDal", () => {
   });
   describe("unlinkDiscord", () => {
     it("throws for nonexisting user", async () => {
-      expect(async () => UserDAL.unlinkDiscord("unknown")).rejects.toThrowError(
-        "User not found\nStack: unlink discord"
-      );
+      await expect(async () =>
+        UserDAL.unlinkDiscord("unknown")
+      ).rejects.toThrowError("User not found\nStack: unlink discord");
     });
     it("should update", async () => {
       //given
@@ -1729,7 +1729,7 @@ describe("UserDal", () => {
     it("should return error if user has reached maximum", async () => {
       // given
       const { uid } = await UserTestData.createUser({
-        customThemes: new Array(10).fill(0).map(() => ({
+        customThemes: new Array(20).fill(0).map(() => ({
           _id: new ObjectId(),
           name: "any",
           colors: [] as any,

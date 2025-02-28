@@ -5,7 +5,6 @@ import DefaultConfig from "./constants/default-config";
 import { isAuthenticated } from "./firebase";
 import * as ConnectionState from "./states/connection";
 import { lastElementFromArray } from "./utils/arrays";
-import { getFunboxList } from "./utils/json-data";
 import { migrateConfig } from "./utils/config";
 import * as Dates from "date-fns";
 import {
@@ -32,6 +31,7 @@ import {
 import { Preset } from "@monkeytype/contracts/schemas/presets";
 import defaultSnapshot from "./constants/default-snapshot";
 import { Result } from "@monkeytype/contracts/schemas/results";
+import { FunboxMetadata } from "../../../packages/funbox/src/types";
 
 export type SnapshotUserTag = UserTag & {
   active?: boolean;
@@ -372,6 +372,9 @@ export async function getUserResults(offset?: number): Promise<boolean> {
     return false;
   }
 
+  //another check in case user logs out while waiting for response
+  if (!isAuthenticated()) return false;
+
   const results: SnapshotResult<Mode>[] = response.body.data.map((result) => {
     if (result.bailedOut === undefined) result.bailedOut = false;
     if (result.blindMode === undefined) result.blindMode = false;
@@ -422,7 +425,7 @@ export async function addCustomTheme(
     dbSnapshot.customThemes = [];
   }
 
-  if (dbSnapshot.customThemes.length >= 10) {
+  if (dbSnapshot.customThemes.length >= 20) {
     Notifications.add("Too many custom themes!", 0);
     return false;
   }
@@ -704,12 +707,8 @@ export async function getLocalPB<M extends Mode>(
   language: string,
   difficulty: Difficulty,
   lazyMode: boolean,
-  funbox: string
+  funboxes: FunboxMetadata[]
 ): Promise<PersonalBest | undefined> {
-  const funboxes = (await getFunboxList()).filter((fb) => {
-    return funbox?.split("#").includes(fb.name);
-  });
-
   if (!funboxes.every((f) => f.canGetPb)) {
     return undefined;
   }

@@ -221,9 +221,9 @@ async function afterAnimation(): Promise<void> {
 }
 
 export function show(showOptions?: ShowOptions): void {
-  state.textarea = CustomText.getText().join(
-    CustomText.getPipeDelimiter() ? "|" : " "
-  );
+  state.textarea = CustomText.getText()
+    .join(CustomText.getPipeDelimiter() ? "|" : " ")
+    .replace(/^ +/gm, "");
   void modal.show({
     ...(showOptions as ShowOptions<IncomingData>),
     beforeAnimation,
@@ -369,7 +369,10 @@ function apply(): void {
   CustomText.setPipeDelimiter(state.customTextPipeDelimiter);
   CustomText.setText(text);
 
-  if (state.customTextLimits.word !== "") {
+  if (state.customTextMode === "simple" && state.customTextPipeDelimiter) {
+    CustomText.setLimitMode("section");
+    CustomText.setLimitValue(text.length);
+  } else if (state.customTextLimits.word !== "") {
     CustomText.setLimitMode("word");
     CustomText.setLimitValue(parseInt(state.customTextLimits.word));
   } else if (state.customTextLimits.time !== "") {

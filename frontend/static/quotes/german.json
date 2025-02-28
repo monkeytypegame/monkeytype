@@ -2618,9 +2618,9 @@
       "id": 455
     },
     {
-      "text": "Mein Name ist Max. Meine Welt ist Feuer und Blut. Früher war ich ein Cop. Ein Vollstrecker auf der Suche nach Gerechtigkeit. Als die Welt zerfiel war jeder von uns auf seine Weise gebrochen. Es war schwer zu sagen wer verrückter war. Ich... oder alle anderen.",
+      "text": "Mein Name ist Max. Meine Welt ist Feuer und Blut. Früher war ich ein Cop. Ein Vollstrecker auf der Suche nach Gerechtigkeit. Als die Welt zerfiel war jeder von uns auf seine Weise gebrochen. Es war schwer zu sagen, wer verrückter war. Ich... oder alle anderen.",
       "source": "Mad Max – Fury Road",
-      "length": 259,
+      "length": 260,
       "id": 456
     },
     {
@@ -3356,9 +3356,9 @@
       "id": 584
     },
     {
-      "text": "Hippokrates hat viele Krankheiten geheilt, dann ist er selbst an einer Krankheit gestorben. Die Chaldäer weissagten vielen den Tod, dann hat sie selber das Geschick ereilt. Alexander, Pompejus, Cäsar - nachdem sie so mache Stadt von Grund aus zerstört und in der Schlacht so viele Tausende ums Leben gebracht hatten, schieden selbst aus dem Leben. Heraklit, der über den Weltbrand philosophierte, starb selbst an der Wassersucht, den Demokrit brachte das Ungeziefer um, den Sokrates - ein Ungeziefer anderer Art. Kurz, zu einem jeden heißt es einmal: \"Du bist eingestiegen, gefahren, im Hafen eingelaufen: so steige nun aus!\"",
+      "text": "Hippokrates hat viele Krankheiten geheilt, dann ist er selbst an einer Krankheit gestorben. Die Chaldäer weissagten vielen den Tod, dann hat sie selber das Geschick ereilt. Alexander, Pompejus, Cäsar - nachdem sie so manche Stadt von Grund aus zerstört und in der Schlacht so viele Tausende ums Leben gebracht hatten, schieden selbst aus dem Leben. Heraklit, der über den Weltbrand philosophierte, starb selbst an der Wassersucht, den Demokrit brachte das Ungeziefer um, den Sokrates - ein Ungeziefer anderer Art. Kurz, zu einem jeden heißt es einmal: \"Du bist eingestiegen, gefahren, im Hafen eingelaufen: so steige nun aus!\"",
       "source": "Marcus Aurelius - Selbstbetrachtung",
-      "length": 625,
+      "length": 626,
       "id": 585
     },
     {
@@ -3372,6 +3372,12 @@
       "source": "Marcus Aurelius - Selbstbetrachtung",
       "length": 208,
       "id": 587
+    },
+    {
+      "text": "Ein Glas auf die Liebe und eines auf das volle Leben. Und eines auf das, was wir nicht halten können. Ein Tor geht auf und ein anderes geht zu. Du bleibst in meinem Herzen, sogar noch dann, wenn es anfängt weh zu tun.",
+      "source": "Patent Ochsner - für immer uf di",
+      "length": 217,
+      "id": 588
     }
   ]
 }

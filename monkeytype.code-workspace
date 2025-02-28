@@ -40,7 +40,7 @@
     "editor.defaultFormatter": "esbenp.prettier-vscode",
     "editor.formatOnSaveMode": "file",
     "editor.formatOnSave": true,
-    "testing.openTesting": "neverOpen",
+    "testing.automaticallyOpenTestResults": "neverOpen",
     "[json]": {
       "editor.defaultFormatter": "esbenp.prettier-vscode"
     }
@@ -66,5 +66,13 @@
       }
     ],
     "compounds": []
+  },
+  "extensions": {
+    "recommendations": [
+      "esbenp.prettier-vscode",
+      "vitest.explorer",
+      "huntertran.auto-markdown-toc",
+      "dbaeumer.vscode-eslint"
+    ]
   }
 }

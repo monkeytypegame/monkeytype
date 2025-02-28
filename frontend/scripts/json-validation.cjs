@@ -46,34 +46,6 @@ function validateOthers() {
       return reject(new Error(fontsValidator.errors[0].message));
     }
 
-    //funbox
-    const funboxData = JSON.parse(
-      fs.readFileSync("./static/funbox/_list.json", {
-        encoding: "utf8",
-        flag: "r",
-      })
-    );
-    const funboxSchema = {
-      type: "array",
-      items: {
-        type: "object",
-        properties: {
-          name: { type: "string" },
-          info: { type: "string" },
-          canGetPb: { type: "boolean" },
-          alias: { type: "string" },
-        },
-        required: ["name", "info", "canGetPb"],
-      },
-    };
-    const funboxValidator = ajv.compile(funboxSchema);
-    if (funboxValidator(funboxData)) {
-      console.log("Funbox list JSON schema is \u001b[32mvalid\u001b[0m");
-    } else {
-      console.log("Funbox list JSON schema is \u001b[31minvalid\u001b[0m");
-      return reject(new Error(funboxValidator.errors[0].message));
-    }
-
     //themes
     const themesData = JSON.parse(
       fs.readFileSync("./static/themes/_list.json", {
@@ -236,9 +208,9 @@ function validateOthers() {
               },
               row5: {
                 type: "array",
-                items: { type: "string", minLength: 1, maxLength: 1 },
+                items: { type: "string", minLength: 1, maxLength: 2 },
                 minItems: 1,
-                maxItems: 1,
+                maxItems: 2,
               },
             },
             required: ["row1", "row2", "row3", "row4", "row5"],
@@ -280,9 +252,9 @@ function validateOthers() {
               },
               row5: {
                 type: "array",
-                items: { type: "string", minLength: 1, maxLength: 1 },
+                items: { type: "string", minLength: 1, maxLength: 2 },
                 minItems: 1,
-                maxItems: 1,
+                maxItems: 2,
               },
             },
             required: ["row1", "row2", "row3", "row4", "row5"],

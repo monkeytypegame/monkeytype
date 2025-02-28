@@ -1,0 +1,32 @@
+{
+  "name": "@monkeytype/funbox",
+  "private": true,
+  "scripts": {
+    "dev": "rimraf ./dist && monkeytype-esbuild --watch",
+    "build": "rimraf ./dist && npm run madge && monkeytype-esbuild",
+    "madge": " madge --circular --extensions ts ./src",
+    "ts-check": "tsc --noEmit",
+    "lint": "eslint \"./**/*.ts\""
+  },
+  "devDependencies": {
+    "@monkeytype/esbuild": "workspace:*",
+    "@monkeytype/eslint-config": "workspace:*",
+    "@monkeytype/typescript-config": "workspace:*",
+    "chokidar": "3.6.0",
+    "eslint": "8.57.1",
+    "madge": "8.0.0",
+    "rimraf": "6.0.1",
+    "typescript": "5.5.4",
+    "vitest": "2.1.9"
+  },
+  "dependencies": {
+    "@monkeytype/util": "workspace:*"
+  },
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
+    }
+  }
+}
