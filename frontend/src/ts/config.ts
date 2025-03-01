@@ -1768,7 +1768,7 @@ export function setKeymapCustom(
 ): boolean {
   if (
     !isConfigValueValid(
-      "keymapCustom",
+      "keymap custom",
       keymapCustom,
       ConfigSchemas.KeymapCustomSchema
     )
@@ -2048,6 +2048,7 @@ export async function apply(
     setKeymapLayout(configObj.keymapLayout, true);
     setKeymapShowTopRow(configObj.keymapShowTopRow, true);
     setKeymapSize(configObj.keymapSize, true);
+    setKeymapCustom(configObj.keymapCustom, true);
     setFontFamily(configObj.fontFamily, true);
     setSmoothCaret(configObj.smoothCaret, true);
     setCodeUnindentOnBackspace(configObj.codeUnindentOnBackspace, true);
