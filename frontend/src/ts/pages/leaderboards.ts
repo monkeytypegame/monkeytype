@@ -1,5 +1,6 @@
 import Page from "./page";
 import * as Skeleton from "../utils/skeleton";
+import Config from "../config";
 import {
   LeaderboardEntry,
   XpLeaderboardEntry,
@@ -684,7 +685,10 @@ function fillUser(): void {
     let str = `Not qualified`;
 
     if (!state.yesterday) {
-      str += ` (min speed required: ${state.minWpm} wpm)`;
+      str += ` (min speed required: ${Format.typingSpeed(state.minWpm, {
+        showDecimalPlaces: true,
+        suffix: ` ${Config.typingSpeedUnit}`,
+      })})`;
     }
 
     $(".page.pageLeaderboards .bigUser").html(
@@ -757,7 +761,7 @@ function fillUser(): void {
           <div class="bottom">${diffText}</div>
         </div>
         <div class="stat wide">
-          <div class="title">wpm</div>
+          <div class="title">${Config.typingSpeedUnit}</div>
           <div class="value">${formatted.wpm}</div>
         </div>
         <div class="stat wide">
@@ -796,6 +800,11 @@ function fillUser(): void {
         `;
 
     $(".page.pageLeaderboards .bigUser").html(html);
+    for (const element of document.querySelectorAll(
+      ".page.pageLeaderboards .speedUnit"
+    )) {
+      element.innerHTML = Config.typingSpeedUnit;
+    }
   } else if (state.type === "weekly") {
     if (!state.userData || !state.count) {
       $(".page.pageLeaderboards .bigUser").addClass("hidden");
