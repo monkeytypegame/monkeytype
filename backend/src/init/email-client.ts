@@ -45,7 +45,7 @@ export async function init(): Promise<void> {
         "No email client configuration provided. Running without email."
       );
     } else if (process.env["BYPASS_EMAILCLIENT"] === "true") {
-      Logger.warning("Bypass email client enabled! Running without email.");
+      Logger.warning("BYPASS_EMAILCLIENT is enabled! Running without email.");
     } else {
       throw new Error("No email client configuration provided");
     }

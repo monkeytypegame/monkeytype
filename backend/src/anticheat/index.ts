@@ -7,6 +7,9 @@ import {
 import Logger from "../utils/logger";
 
 export function implemented(): boolean {
+  if (hasAnticheatImplemented) {
+    Logger.warning("BYPASS_ANTICHEAT is enabled!");
+  }
   return hasAnticheatImplemented;
 }
 
