@@ -144,7 +144,7 @@ const TestSettingsSchema = z.tuple([
     .extend({
       isTimeRandom: z.boolean().optional(),
       isWordRandom: z.boolean().optional(),
-      words: z.number().int().optional(),
+      word: z.number().int().optional(),
       time: z.number().int().optional(),
       delimiter: z.string().optional(),
     })
@@ -200,7 +200,7 @@ export function loadTestSettingsFromUrl(getOverride?: string): void {
     const customTextSettings = de[2];
     CustomText.setText(customTextSettings.text);
 
-    if (customTextSettings.limit) {
+    if (customTextSettings.limit !== undefined) {
       CustomText.setLimitMode(customTextSettings.limit.mode);
       CustomText.setLimitValue(customTextSettings.limit.value);
     }
@@ -211,9 +211,9 @@ export function loadTestSettingsFromUrl(getOverride?: string): void {
       } else if (customTextSettings.isTimeRandom) {
         CustomText.setLimitMode("time");
       }
-      if (customTextSettings.words) {
-        CustomText.setLimitValue(customTextSettings.words);
-      } else if (customTextSettings.time) {
+      if (customTextSettings.word !== undefined) {
+        CustomText.setLimitValue(customTextSettings.word);
+      } else if (customTextSettings.time !== undefined) {
         CustomText.setLimitValue(customTextSettings.time);
       }
     }
