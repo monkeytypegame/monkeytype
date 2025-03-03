@@ -13,8 +13,8 @@ export const limits = {
   },
 
   adminLimit: {
-    window: 25_000,
-    max: 5,
+    window: 5000,
+    max: 1,
   },
 
   // Config Routing

@@ -131,7 +131,7 @@ function prettyErrorMessage(issue: ZodIssue | undefined): string {
 }
 
 function applyDevApiRoutes(app: Application): void {
-  if (isDevEnvironment() || process.env["EXPOSE_DEV_ENDPOINTS"] === "true") {
+  if (isDevEnvironment()) {
     //disable csp to allow assets to load from unsecured http
     app.use((req, res, next) => {
       res.setHeader("Content-Security-Policy", "");

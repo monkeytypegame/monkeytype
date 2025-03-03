@@ -84,7 +84,7 @@ export const configurationContract = c.router(
           noCache: true,
         },
         rateLimit: "adminLimit",
-        //requirePermission: "admin",
+        requirePermission: "admin",
       }),
     },
   },
