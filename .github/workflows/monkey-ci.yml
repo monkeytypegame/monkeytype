@@ -59,7 +59,7 @@ jobs:
               - '.github/workflows/**/*'
 
       - name: Check Anti-cheat
-        if: steps.filter.outputs.anti-cheat == 'true'
+        if: steps.filter.outputs.anti-cheat == 'true' && !contains(github.event.pull_request.labels.*.name, 'force-ci') && !contains(github.event.pull_request.labels.*.name, 'force-full-ci')
         run: exit 1
 
       - name: Check Workflow Changes

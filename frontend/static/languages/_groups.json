@@ -195,7 +195,7 @@
   },
   {
     "name": "thai",
-    "languages": ["thai"]
+    "languages": ["thai", "thai_20k"]
   },
   {
     "name": "tamil",
@@ -580,6 +580,10 @@
       "occitan_5k",
       "occitan_10k"
     ]
+  },
+  {
+    "name": "kabyle",
+    "languages": ["kabyle", "kabyle_1k", "kabyle_2k", "kabyle_5k", "kabyle_10k"]
   },
   {
     "name": "zulu",

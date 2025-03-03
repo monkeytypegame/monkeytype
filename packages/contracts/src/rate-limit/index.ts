@@ -13,7 +13,7 @@ export const limits = {
   },
 
   adminLimit: {
-    window: 5000, //5 seconds
+    window: 5000,
     max: 1,
   },
 
