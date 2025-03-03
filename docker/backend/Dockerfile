@@ -20,6 +20,9 @@ RUN pnpm deploy --filter backend --prod /prod/backend
 ## target image
 FROM node:20.16.0-alpine3.19
 
+## get server_version from build-arg, default to UNKNOWN
+ARG server_version=UNKNOWN
+
 # COPY to target
 COPY --from=builder /prod/backend/node_modules /app/backend/node_modules
 COPY --from=builder /prod/backend/dist /app/backend/dist
@@ -35,7 +38,7 @@ RUN mkdir -p /app/backend/dist/logs
 
 COPY ["docker/backend/entry-point.sh", "./"]
 
-RUN echo "CUSTOM" > /app/backend/dist/server.version
+RUN echo "${server_version}" > /app/backend/dist/server.version
 
 #run in prod mode, but don't require anti-cheat or email client
 ENV MODE=prod
