@@ -34349,7 +34349,7 @@
     },
     {
       "text": "It seems after all I couldn't be anything more than a simple puppet. But you three... You're strong. With a power like that... Maybe you three can break your own strings. Let me become your strength.",
-      "source": "Deltarune",
+      "source": " ",
       "length": 199,
       "approvedBy": "Smithster",
       "id": 6382
@@ -38589,6 +38589,18 @@
       "source": "Martin Luther King Jr.",
       "length": 199,
       "id": 7635
+    },
+    {
+      "text": "Long ago, two races ruled over Earth: Humans and Monsters. One day, war broke out between the two races. After a long battle, the humans were victorious. They sealed the monsters underground with a magic spell. Many years later... Mt. Ebott, 201X. Legends say that those who climb the mountain never return.",
+      "source": "Undertale",
+      "length": 307,
+      "id": 7636
+    },
+    {
+      "text": "For millennia, light and dark have lived in balance, bringing peace to the world. But if this harmony were to shatter... a terrible calamity would occur. The sky will run black with terror and the land will crack with fear. Then, her heart pounding... the Earth will draw her final breath. Only then, shining with hope... three heroes appear at worlds' edge. A human, a monster, and a prince from the dark. Only they can seal the fountains and banish the Angel's Heaven. Only then will balance be restored, and the world saved from destruction. Today, the Fountain of Darkness - the geyser that gives this land form - stands tall at the centre of the kingdom. But recently, another fountain has appeared on the horizon... and with it, the balance of light and dark begins to shift...",
+      "source": "Deltarune",
+      "length": 783,
+      "id": 7637
     }
   ]
 }
