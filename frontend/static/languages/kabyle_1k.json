@@ -1,6 +1,7 @@
 {
   "name": "kabyle_1k",
   "bcp47": "kab",
+  "orderedByFrequency": false,
   "words": [
     "-as",
     "-paris",
