@@ -14,6 +14,7 @@ export function extendConfig(
       clean: !(options.watch === true || options.watch === "true"),
       format: ["cjs", "esm"],
       dts: false,
+      minify: true,
       ...(overrideOptions || {}),
     };
 
