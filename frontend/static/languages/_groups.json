@@ -195,7 +195,7 @@
   },
   {
     "name": "thai",
-    "languages": ["thai"]
+    "languages": ["thai", "thai_20k"]
   },
   {
     "name": "tamil",
