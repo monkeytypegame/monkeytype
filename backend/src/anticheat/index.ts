@@ -8,7 +8,7 @@ import Logger from "../utils/logger";
 
 export function implemented(): boolean {
   if (hasAnticheatImplemented) {
-    Logger.warning("BYPASS_ANTICHEAT is enabled!");
+    Logger.warning("BYPASS_ANTICHEAT is enabled! Running without anti-cheat.");
   }
   return hasAnticheatImplemented;
 }

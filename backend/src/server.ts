@@ -33,6 +33,7 @@ async function bootServer(port: number): Promise<Server> {
     Logger.info("Fetching live configuration...");
     await getLiveConfiguration();
     Logger.success("Live configuration fetched");
+    await updateFromConfigurationFile();
 
     Logger.info("Initializing email client...");
     await EmailClient.init();
@@ -76,7 +77,6 @@ async function bootServer(port: number): Promise<Server> {
     await blocklistDbSetup();
 
     recordServerVersion(version);
-    await updateFromConfigurationFile();
   } catch (error) {
     Logger.error("Failed to boot server");
     const message = getErrorMessage(error);

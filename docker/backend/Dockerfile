@@ -44,7 +44,6 @@ RUN echo "${server_version}" > /app/backend/dist/server.version
 ENV MODE=prod
 ENV BYPASS_ANTICHEAT=true
 ENV BYPASS_EMAILCLIENT=true
-ENV LEADERBOARD_MIN_TIME_TYPING=0
 
 EXPOSE 5005
 USER node
