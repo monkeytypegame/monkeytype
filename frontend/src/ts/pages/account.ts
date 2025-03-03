@@ -645,13 +645,12 @@ async function fillContent(): Promise<void> {
     });
 
     if (result.wpm > topWpm) {
-      const puncsctring = result.punctuation ? ",<br>with punctuation" : "";
-      const numbsctring = result.numbers
-        ? ",<br> " + (result.punctuation ? "&" : "") + "with numbers"
-        : "";
       topWpm = result.wpm;
-      if (result.mode === "custom") topMode = result.mode;
-      else {
+      if (result.mode === "custom") {
+        topMode = result.mode;
+      } else {
+        const puncsctring = result.punctuation ? ",<br>with punctuation" : "";
+        const numbsctring = result.numbers ? ",<br>with numbers" : "";
         topMode = result.mode + " " + result.mode2 + puncsctring + numbsctring;
       }
     }
