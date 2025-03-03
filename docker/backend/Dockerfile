@@ -37,7 +37,7 @@ COPY ["docker/backend/entry-point.sh", "./"]
 
 RUN echo "CUSTOM" > /app/backend/dist/server.version
 
-#run in dev mode (no anticheat)
+#run in prod mode, but don't require anti-cheat or email client
 ENV MODE=prod
 ENV BYPASS_ANTICHEAT=true
 ENV BYPASS_EMAILCLIENT=true
