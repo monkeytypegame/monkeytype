@@ -40,13 +40,16 @@ export async function init(): Promise<void> {
   const { EMAIL_HOST, EMAIL_USER, EMAIL_PASS, EMAIL_PORT } = process.env;
 
   if (!(EMAIL_HOST ?? "") || !(EMAIL_USER ?? "") || !(EMAIL_PASS ?? "")) {
-    if (isDevEnvironment() || process.env["BYPASS_EMAILCLIENT"] === "true") {
+    if (isDevEnvironment()) {
       Logger.warning(
         "No email client configuration provided. Running without email."
       );
-      return;
+    } else if (process.env["BYPASS_EMAILCLIENT"] === "true") {
+      Logger.warning("Bypass email client enabled! Running without email.");
+    } else {
+      throw new Error("No email client configuration provided");
     }
-    throw new Error("No email client configuration provided");
+    return;
   }
 
   try {
