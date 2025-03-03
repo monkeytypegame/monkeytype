@@ -2,9 +2,16 @@ import request from "supertest";
 import app from "../../../src/app";
 import * as PresetDal from "../../../src/dal/preset";
 import { ObjectId } from "mongodb";
+import { mockBearerAuthentication } from "../../__testData__/auth";
 const mockApp = request(app);
+const uid = new ObjectId().toHexString();
+const mockAuth = mockBearerAuthentication(uid);
 
 describe("PresetController", () => {
+  beforeEach(() => {
+    mockAuth.beforeEach();
+  });
+
   describe("get presets", () => {
     const getPresetsMock = vi.spyOn(PresetDal, "getPresets");
 
@@ -16,13 +23,13 @@ describe("PresetController", () => {
       //GIVEN
       const presetOne = {
         _id: new ObjectId(),
-        uid: "123456789",
+        uid: uid,
         name: "test1",
         config: { language: "english" },
       };
       const presetTwo = {
         _id: new ObjectId(),
-        uid: "123456789",
+        uid: uid,
         name: "test2",
         settingGroups: ["hideElements"],
         config: {
@@ -38,7 +45,7 @@ describe("PresetController", () => {
       //WHEN
       const { body } = await mockApp
         .get("/presets")
-        .set("authorization", "Uid 123456789")
+        .set("Authorization", `Bearer ${uid}`)
         .expect(200);
 
       //THEN
@@ -64,7 +71,7 @@ describe("PresetController", () => {
         ],
       });
 
-      expect(getPresetsMock).toHaveBeenCalledWith("123456789");
+      expect(getPresetsMock).toHaveBeenCalledWith(uid);
     });
     it("should return empty array if user has no presets", async () => {
       //GIVEN
@@ -73,7 +80,7 @@ describe("PresetController", () => {
       //WHEN
       const { body } = await mockApp
         .get("/presets")
-        .set("authorization", "Uid 123456789")
+        .set("Authorization", `Bearer ${uid}`)
         .expect(200);
 
       //THEN
@@ -82,7 +89,7 @@ describe("PresetController", () => {
         data: [],
       });
 
-      expect(getPresetsMock).toHaveBeenCalledWith("123456789");
+      expect(getPresetsMock).toHaveBeenCalledWith(uid);
     });
   });
 
@@ -100,7 +107,7 @@ describe("PresetController", () => {
       //WHEN
       const { body } = await mockApp
         .post("/presets")
-        .set("authorization", "Uid 123456789")
+        .set("Authorization", `Bearer ${uid}`)
         .accept("application/json")
         .send({
           name: "new",
@@ -117,7 +124,7 @@ describe("PresetController", () => {
         data: { presetId: "1" },
       });
 
-      expect(addPresetMock).toHaveBeenCalledWith("123456789", {
+      expect(addPresetMock).toHaveBeenCalledWith(uid, {
         name: "new",
         config: { language: "english", tags: ["one", "two"] },
       });
@@ -129,7 +136,7 @@ describe("PresetController", () => {
       //WHEN
       const { body } = await mockApp
         .post("/presets")
-        .set("authorization", "Uid 123456789")
+        .set("Authorization", `Bearer ${uid}`)
         .accept("application/json")
         .send({
           name: "new",
@@ -149,7 +156,7 @@ describe("PresetController", () => {
         data: { presetId: "1" },
       });
 
-      expect(addPresetMock).toHaveBeenCalledWith("123456789", {
+      expect(addPresetMock).toHaveBeenCalledWith(uid, {
         name: "new",
         settingGroups: ["hideElements"],
         config: {
@@ -164,7 +171,7 @@ describe("PresetController", () => {
       //WHEN
       const { body } = await mockApp
         .post("/presets")
-        .set("authorization", "Uid 123456789")
+        .set("Authorization", `Bearer ${uid}`)
         .accept("application/json")
         .send({
           name: "update",
@@ -189,7 +196,7 @@ describe("PresetController", () => {
       //WHEN
       const { body } = await mockApp
         .post("/presets")
-        .set("authorization", "Uid 123456789")
+        .set("Authorization", `Bearer ${uid}`)
         .accept("application/json")
         .send({ name: "new", config: {} })
         .expect(200);
@@ -200,7 +207,7 @@ describe("PresetController", () => {
         data: { presetId: "1" },
       });
 
-      expect(addPresetMock).toHaveBeenCalledWith("123456789", {
+      expect(addPresetMock).toHaveBeenCalledWith(uid, {
         name: "new",
         config: {},
       });
@@ -209,7 +216,7 @@ describe("PresetController", () => {
       //WHEN
       const { body } = await mockApp
         .post("/presets")
-        .set("authorization", "Uid 123456789")
+        .set("Authorization", `Bearer ${uid}`)
         .accept("application/json")
         .send({})
         .expect(422);
@@ -224,7 +231,7 @@ describe("PresetController", () => {
       //WHEN
       const { body } = await mockApp
         .post("/presets")
-        .set("authorization", "Uid 123456789")
+        .set("Authorization", `Bearer ${uid}`)
         .accept("application/json")
         .send({
           _id: "1",
@@ -255,7 +262,7 @@ describe("PresetController", () => {
       //WHEN
       const { body } = await mockApp
         .post("/presets")
-        .set("authorization", "Uid 123456789")
+        .set("Authorization", `Bearer ${uid}`)
         .accept("application/json")
         .send({
           name: "new",
@@ -293,7 +300,7 @@ describe("PresetController", () => {
       //WHEN
       const { body } = await mockApp
         .patch("/presets")
-        .set("authorization", "Uid 123456789")
+        .set("Authorization", `Bearer ${uid}`)
         .accept("application/json")
         .send({
           _id: "1",
@@ -311,7 +318,7 @@ describe("PresetController", () => {
         data: null,
       });
 
-      expect(editPresetMock).toHaveBeenCalledWith("123456789", {
+      expect(editPresetMock).toHaveBeenCalledWith(uid, {
         _id: "1",
         name: "new",
         config: { language: "english", tags: ["one", "two"] },
@@ -324,7 +331,7 @@ describe("PresetController", () => {
       //WHEN
       const { body } = await mockApp
         .patch("/presets")
-        .set("authorization", "Uid 123456789")
+        .set("Authorization", `Bearer ${uid}`)
         .accept("application/json")
         .send({
           _id: "1",
@@ -345,7 +352,7 @@ describe("PresetController", () => {
         data: null,
       });
 
-      expect(editPresetMock).toHaveBeenCalledWith("123456789", {
+      expect(editPresetMock).toHaveBeenCalledWith(uid, {
         _id: "1",
         name: "new",
         settingGroups: ["hideElements"],
@@ -365,7 +372,7 @@ describe("PresetController", () => {
       //WHEN
       const { body } = await mockApp
         .patch("/presets")
-        .set("authorization", "Uid 123456789")
+        .set("Authorization", `Bearer ${uid}`)
         .accept("application/json")
         .send({ _id: "1", name: "new", config: {} })
         .expect(200);
@@ -376,7 +383,7 @@ describe("PresetController", () => {
         data: null,
       });
 
-      expect(editPresetMock).toHaveBeenCalledWith("123456789", {
+      expect(editPresetMock).toHaveBeenCalledWith(uid, {
         _id: "1",
         name: "new",
         config: {},
@@ -386,7 +393,7 @@ describe("PresetController", () => {
       //WHEN
       const { body } = await mockApp
         .patch("/presets")
-        .set("authorization", "Uid 123456789")
+        .set("Authorization", `Bearer ${uid}`)
         .accept("application/json")
         .send({})
         .expect(422);
@@ -401,7 +408,7 @@ describe("PresetController", () => {
       //WHEN
       const { body } = await mockApp
         .patch("/presets")
-        .set("authorization", "Uid 123456789")
+        .set("Authorization", `Bearer ${uid}`)
         .accept("application/json")
         .send({
           _id: "1",
@@ -434,7 +441,7 @@ describe("PresetController", () => {
       //WHEN
       const { body } = await mockApp
         .patch("/presets")
-        .set("authorization", "Uid 123456789")
+        .set("Authorization", `Bearer ${uid}`)
         .accept("application/json")
         .send({
           _id: "1",
@@ -473,7 +480,7 @@ describe("PresetController", () => {
 
       const { body } = await mockApp
         .delete("/presets/1")
-        .set("authorization", "Uid 123456789")
+        .set("Authorization", `Bearer ${uid}`)
         .expect(200);
 
       //THEN
@@ -482,7 +489,7 @@ describe("PresetController", () => {
         data: null,
       });
 
-      expect(deletePresetMock).toHaveBeenCalledWith("123456789", "1");
+      expect(deletePresetMock).toHaveBeenCalledWith(uid, "1");
     });
     it("should fail without preset _id", async () => {
       //GIVEN
@@ -491,7 +498,7 @@ describe("PresetController", () => {
       //WHEN
       await mockApp
         .delete("/presets/")
-        .set("authorization", "Uid 123456789")
+        .set("Authorization", `Bearer ${uid}`)
         .expect(404);
 
       expect(deletePresetMock).not.toHaveBeenCalled();
