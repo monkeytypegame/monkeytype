@@ -1,6 +1,7 @@
 {
   "name": "kabyle_10k",
   "bcp47": "kab",
+  "orderedByFrequency": false,
   "words": [
     "-ad",
     "-amezwaru-iw",
