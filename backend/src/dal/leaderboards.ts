@@ -331,9 +331,8 @@ async function createIndex(
 }
 
 export async function createIndicies(): Promise<void> {
-  const minTimeTyping = isDevEnvironment()
-    ? 0
-    : (await getLiveConfiguration()).leaderboards.minTimeTyping;
+  const minTimeTyping = (await getLiveConfiguration()).leaderboards
+    .minTimeTyping;
   await createIndex("lbPersonalBests.time.15.english", minTimeTyping);
   await createIndex("lbPersonalBests.time.60.english", minTimeTyping);
 
