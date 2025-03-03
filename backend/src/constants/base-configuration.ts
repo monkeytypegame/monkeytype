@@ -96,6 +96,7 @@ export const BASE_CONFIGURATION: Configuration = {
     xpRewardBrackets: [],
   },
   leaderboards: {
+    minTimeTyping: 2 * 60 * 60,
     weeklyXp: {
       enabled: false,
       expirationTimeInDays: 0, // This should atleast be 15
@@ -548,6 +549,12 @@ export const CONFIGURATION_FORM_SCHEMA: ObjectSchema<Configuration> = {
       type: "object",
       label: "Leaderboards",
       fields: {
+        minTimeTyping: {
+          type: "number",
+          label: "Minimum typing time the user needs to get on a leaderboard",
+          hint: "Typing time in seconds. Change is only applied after restarting the server.",
+          min: 0,
+        },
         weeklyXp: {
           type: "object",
           label: "Weekly XP",

@@ -111,6 +111,12 @@ export const ConfigurationSchema = z.object({
     xpRewardBrackets: z.array(RewardBracketSchema),
   }),
   leaderboards: z.object({
+    minTimeTyping: z
+      .number()
+      .min(0)
+      .describe(
+        "Minimum typing time (in seconds) the user needs to get on a leaderboard"
+      ),
     weeklyXp: z.object({
       enabled: z.boolean(),
       expirationTimeInDays: z.number().nonnegative(),
