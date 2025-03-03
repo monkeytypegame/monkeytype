@@ -582,6 +582,10 @@
     ]
   },
   {
+    "name": "kabyle",
+    "languages": ["kabyle", "kabyle_1k", "kabyle_2k", "kabyle_5k", "kabyle_10k"]
+  },
+  {
     "name": "zulu",
     "languages": ["zulu"]
   },
