@@ -43,6 +43,7 @@ import {
   isFunboxActiveWithProperty,
 } from "./funbox/list";
 import { getFunboxesFromString } from "@monkeytype/funbox";
+import { SnapshotUserTag } from "../constants/default-snapshot";
 
 let result: CompletedEvent;
 let maxChartVal: number;
@@ -552,7 +553,7 @@ export function showConfetti(): void {
 }
 
 async function updateTags(dontSave: boolean): Promise<void> {
-  const activeTags: DB.SnapshotUserTag[] = [];
+  const activeTags: SnapshotUserTag[] = [];
   const userTagsCount = DB.getSnapshot()?.tags?.length ?? 0;
   try {
     DB.getSnapshot()?.tags?.forEach((tag) => {

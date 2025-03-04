@@ -11,7 +11,6 @@ import {
   PresetTypeSchema,
 } from "@monkeytype/contracts/schemas/presets";
 import { getPreset } from "../controllers/preset-controller";
-import defaultConfig from "../constants/default-config";
 import {
   ConfigGroupName,
   ConfigGroupNameSchema,
@@ -19,6 +18,8 @@ import {
   ConfigKey,
   Config as ConfigType,
 } from "@monkeytype/contracts/schemas/configs";
+import { getDefaultConfig } from "../constants/default-config";
+import { SnapshotPreset } from "../constants/default-snapshot";
 
 const state = {
   presetType: "full" as PresetType,
@@ -275,12 +276,12 @@ async function apply(): Promise<void> {
         }),
         display: propPresetName,
         _id: response.body.data.presetId,
-      } as DB.SnapshotPreset);
+      } as SnapshotPreset);
     }
   } else if (action === "edit") {
     const preset = snapshotPresets.filter(
-      (preset: DB.SnapshotPreset) => preset._id === presetId
-    )[0] as DB.SnapshotPreset;
+      (preset: SnapshotPreset) => preset._id === presetId
+    )[0] as SnapshotPreset;
     if (preset === undefined) {
       Notifications.add("Preset not found", -1);
       return;
@@ -325,7 +326,7 @@ async function apply(): Promise<void> {
       );
     } else {
       Notifications.add("Preset removed", 1);
-      snapshotPresets.forEach((preset: DB.SnapshotPreset, index: number) => {
+      snapshotPresets.forEach((preset: SnapshotPreset, index: number) => {
         if (preset._id === presetId) {
           snapshotPresets.splice(index, 1);
         }
@@ -345,6 +346,7 @@ function getPartialConfigChanges(
   configChanges: Partial<ConfigType>
 ): Partial<ConfigType> {
   const activeConfigChanges: Partial<ConfigType> = {};
+  const defaultConfig = getDefaultConfig();
 
   (Object.keys(defaultConfig) as ConfigKey[])
     .filter((settingName) => {

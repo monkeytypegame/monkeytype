@@ -4,8 +4,8 @@ import {
   SupportsFlags,
 } from "../controllers/user-flag-controller";
 import { isAuthenticated } from "../firebase";
-import { Snapshot } from "../db";
 import * as XpBar from "./xp-bar";
+import { Snapshot } from "../constants/default-snapshot";
 
 let usingAvatar = false;
 
