@@ -1109,7 +1109,8 @@ function handleJumpButton(action: string, page?: number): void {
       if (user) {
         const rank = state.userData?.rank;
         if (rank) {
-          const page = Math.floor(rank / state.pageSize);
+          // - 1 to make sure position 50 with page size 50 is on the first page (page 0)
+          const page = Math.floor(rank - 1 / state.pageSize);
 
           if (state.page === page) {
             return;
