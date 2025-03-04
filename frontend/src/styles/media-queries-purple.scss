@@ -22,6 +22,12 @@
       }
     }
   }
+  .pageLeaderboards {
+    .content .bigtitle .text:after {
+      left: 0.1rem;
+      transform: none;
+    }
+  }
   header {
     nav {
       font-size: 0.9rem;
