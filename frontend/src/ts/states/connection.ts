@@ -1,4 +1,4 @@
-import { throttle } from "throttle-debounce";
+import { debounce } from "throttle-debounce";
 import * as Notifications from "../elements/notifications";
 import * as ConnectionEvent from "../observables/connection-event";
 import * as TestState from "../test/test-state";
@@ -29,12 +29,12 @@ export function showOfflineBanner(): void {
   }
 }
 
-const throttledHandleState = throttle(10000, () => {
+const throttledHandleState = debounce(5000, () => {
   if (state) {
-    Notifications.add("You're back online", 1, {
-      customTitle: "Connection",
-    });
     if (noInternetBannerId !== undefined) {
+      Notifications.add("You're back online", 1, {
+        customTitle: "Connection",
+      });
       $(
         `#bannerCenter .banner[id="${noInternetBannerId}"] .closeButton`
       ).trigger("click");

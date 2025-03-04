@@ -37,6 +37,7 @@ window.onerror = function (message, url, line, column, error): void {
     Notifications.add(error?.message ?? "Undefined message", -1, {
       customTitle: "DEV: Unhandled error",
       duration: 5,
+      important: true,
     });
   }
   void log("error", {
@@ -51,6 +52,7 @@ window.onunhandledrejection = function (e): void {
     Notifications.add(`${message}`, -1, {
       customTitle: "DEV: Unhandled rejection",
       duration: 5,
+      important: true,
     });
     console.error(e);
   }

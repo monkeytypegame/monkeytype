@@ -185,14 +185,6 @@ export async function show(showOptions?: ShowOptions): Promise<void> {
 function hide(hideOptions?: HideOptions<OutgoingData>): void {
   void modal.hide({
     ...hideOptions,
-    afterAnimation: async () => {
-      languageSelect?.destroy();
-      layoutSelect?.destroy();
-      presetSelect?.destroy();
-      languageSelect = undefined;
-      layoutSelect = undefined;
-      presetSelect = undefined;
-    },
   });
 }
 
@@ -326,6 +318,15 @@ async function setup(): Promise<void> {
   });
 }
 
+async function cleanup(): Promise<void> {
+  languageSelect?.destroy();
+  layoutSelect?.destroy();
+  presetSelect?.destroy();
+  languageSelect = undefined;
+  layoutSelect = undefined;
+  presetSelect = undefined;
+}
+
 type OutgoingData = {
   text: string;
   set: boolean;
@@ -334,4 +335,5 @@ type OutgoingData = {
 const modal = new AnimatedModal<unknown, OutgoingData>({
   dialogId: "wordFilterModal",
   setup,
+  cleanup,
 });

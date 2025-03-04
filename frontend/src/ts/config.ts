@@ -7,7 +7,6 @@ import {
   isConfigValueValid,
 } from "./config-validation";
 import * as ConfigEvent from "./observables/config-event";
-import DefaultConfig from "./constants/default-config";
 import { isAuthenticated } from "./firebase";
 import * as AnalyticsController from "./controllers/analytics-controller";
 import * as AccountButton from "./elements/account-button";
@@ -29,14 +28,15 @@ import { Language, LanguageSchema } from "@monkeytype/contracts/schemas/util";
 import { LocalStorageWithSchema } from "./utils/local-storage-with-schema";
 import { migrateConfig } from "./utils/config";
 import { roundTo1 } from "@monkeytype/util/numbers";
+import { getDefaultConfig } from "./constants/default-config";
 
 const configLS = new LocalStorageWithSchema({
   key: "config",
   schema: ConfigSchemas.ConfigSchema,
-  fallback: DefaultConfig,
+  fallback: getDefaultConfig(),
   migrate: (value, _issues) => {
     if (!isObject(value)) {
-      return DefaultConfig;
+      return getDefaultConfig();
     }
     //todo maybe send a full config to db so that it removes legacy values
 
@@ -47,7 +47,7 @@ const configLS = new LocalStorageWithSchema({
 let loadDone: (value?: unknown) => void;
 
 const config = {
-  ...DefaultConfig,
+  ...getDefaultConfig(),
 };
 
 let configToSend = {} as Config;
@@ -918,6 +918,34 @@ export function setTapeMode(
   return true;
 }
 
+export function setTapeMargin(
+  value: ConfigSchemas.TapeMargin,
+  nosave?: boolean
+): boolean {
+  if (value < 10) {
+    value = 10;
+  }
+  if (value > 90) {
+    value = 90;
+  }
+
+  if (
+    !isConfigValueValid("max line width", value, ConfigSchemas.TapeMarginSchema)
+  ) {
+    return false;
+  }
+
+  config.tapeMargin = value;
+
+  saveToLocalStorage("tapeMargin", nosave);
+  ConfigEvent.dispatch("tapeMargin", config.tapeMargin, nosave);
+
+  // trigger a resize event to update the layout - handled in ui.ts:108
+  $(window).trigger("resize");
+
+  return true;
+}
+
 export function setHideExtraLetters(val: boolean, nosave?: boolean): boolean {
   if (!isConfigValueValidBoolean("hide extra letters", val)) return false;
 
@@ -1067,7 +1095,7 @@ export function setTimeConfig(
   time: ConfigSchemas.TimeConfig,
   nosave?: boolean
 ): boolean {
-  time = isNaN(time) || time < 0 ? DefaultConfig.time : time;
+  time = isNaN(time) || time < 0 ? getDefaultConfig().time : time;
   if (!isConfigValueValid("time", time, ConfigSchemas.TimeConfigSchema))
     return false;
 
@@ -1140,7 +1168,7 @@ export function setWordCount(
   nosave?: boolean
 ): boolean {
   wordCount =
-    wordCount < 0 || wordCount > 100000 ? DefaultConfig.words : wordCount;
+    wordCount < 0 || wordCount > 100000 ? getDefaultConfig().words : wordCount;
 
   if (!isConfigValueValid("words", wordCount, ConfigSchemas.WordCountSchema))
     return false;
@@ -1177,6 +1205,24 @@ export function setSmoothCaret(
   saveToLocalStorage("smoothCaret", nosave);
   ConfigEvent.dispatch("smoothCaret", config.smoothCaret);
 
+  return true;
+}
+
+export function setCodeUnindentOnBackspace(
+  mode: boolean,
+  nosave?: boolean
+): boolean {
+  if (!isConfigValueValidBoolean("code unindent on backspace", mode)) {
+    return false;
+  }
+  config.codeUnindentOnBackspace = mode;
+
+  saveToLocalStorage("codeUnindentOnBackspace", nosave);
+  ConfigEvent.dispatch(
+    "codeUnindentOnBackspace",
+    config.codeUnindentOnBackspace,
+    nosave
+  );
   return true;
 }
 
@@ -1336,7 +1382,7 @@ export function setAutoSwitchTheme(
     return false;
   }
 
-  boolean = boolean ?? DefaultConfig.autoSwitchTheme;
+  boolean = boolean ?? getDefaultConfig().autoSwitchTheme;
   config.autoSwitchTheme = boolean;
   saveToLocalStorage("autoSwitchTheme", nosave);
   ConfigEvent.dispatch("autoSwitchTheme", config.autoSwitchTheme);
@@ -1939,9 +1985,9 @@ export async function apply(
   ConfigEvent.dispatch("fullConfigChange");
 
   const configObj = configToApply as Config;
-  (Object.keys(DefaultConfig) as (keyof Config)[]).forEach((configKey) => {
+  (Object.keys(getDefaultConfig()) as (keyof Config)[]).forEach((configKey) => {
     if (configObj[configKey] === undefined) {
-      const newValue = DefaultConfig[configKey];
+      const newValue = getDefaultConfig()[configKey];
       (configObj[configKey] as typeof newValue) = newValue;
     }
   });
@@ -1993,6 +2039,7 @@ export async function apply(
     setKeymapSize(configObj.keymapSize, true);
     setFontFamily(configObj.fontFamily, true);
     setSmoothCaret(configObj.smoothCaret, true);
+    setCodeUnindentOnBackspace(configObj.codeUnindentOnBackspace, true);
     setSmoothLineScroll(configObj.smoothLineScroll, true);
     setAlwaysShowDecimalPlaces(configObj.alwaysShowDecimalPlaces, true);
     setAlwaysShowWordsHistory(configObj.alwaysShowWordsHistory, true);
@@ -2034,6 +2081,7 @@ export async function apply(
     setLazyMode(configObj.lazyMode, true);
     setShowAverage(configObj.showAverage, true);
     setTapeMode(configObj.tapeMode, true);
+    setTapeMargin(configObj.tapeMargin, true);
 
     ConfigEvent.dispatch(
       "configApplied",
@@ -2047,7 +2095,7 @@ export async function apply(
 }
 
 export async function reset(): Promise<void> {
-  await apply(DefaultConfig);
+  await apply(getDefaultConfig());
   await DB.resetConfig();
   saveFullConfigToLocalStorage(true);
 }
@@ -2068,7 +2116,7 @@ export function getConfigChanges(): Partial<Config> {
   const configChanges: Partial<Config> = {};
   typedKeys(config)
     .filter((key) => {
-      return config[key] !== DefaultConfig[key];
+      return config[key] !== getDefaultConfig()[key];
     })
     .forEach((key) => {
       //@ts-expect-error this is fine

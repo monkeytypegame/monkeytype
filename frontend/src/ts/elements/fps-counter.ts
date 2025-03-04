@@ -25,7 +25,8 @@ export function start(): void {
   stopLoop = false;
   frameCount = 0;
   startTime = performance.now();
-  fpsInterval = window.requestAnimationFrame(loop);
+
+  if (!fpsInterval) fpsInterval = window.requestAnimationFrame(loop);
   el.classList.remove("hidden");
 }
 

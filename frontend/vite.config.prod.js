@@ -8,6 +8,8 @@ import { splitVendorChunkPlugin } from "vite";
 import childProcess from "child_process";
 import { checker } from "vite-plugin-checker";
 import { writeFileSync } from "fs";
+// eslint-disable-next-line import/no-unresolved
+import UnpluginInjectPreload from "unplugin-inject-preload/vite";
 
 function pad(numbers, maxLength, fillString) {
   return numbers.map((number) =>
@@ -32,9 +34,9 @@ function buildClientVersion() {
       .execSync("git rev-parse --short HEAD")
       .toString();
 
-    return `${version}.${commitHash}`.replace(/\n/g, "");
+    return `${version}_${commitHash}`.replace(/\n/g, "");
   } catch (e) {
-    return `${version}.unknown-hash`;
+    return `${version}_unknown-hash`;
   }
 }
 
@@ -83,7 +85,8 @@ export default {
     }),
     splitVendorChunkPlugin(),
     VitePWA({
-      injectRegister: "networkfirst",
+      // injectRegister: "networkfirst",
+      injectRegister: "script-defer",
       registerType: "autoUpdate",
       manifest: {
         short_name: "Monkeytype",
@@ -143,6 +146,29 @@ export default {
         },
       },
     ]),
+    UnpluginInjectPreload({
+      files: [
+        {
+          outputMatch: /css\/vendor.*\.css$/,
+          attributes: {
+            as: "style",
+            type: "text/css",
+            rel: "preload",
+            crossorigin: true,
+          },
+        },
+        {
+          outputMatch: /.*\.woff2$/,
+          attributes: {
+            as: "font",
+            type: "font/woff2",
+            rel: "preload",
+            crossorigin: true,
+          },
+        },
+      ],
+      injectTo: "head-prepend",
+    }),
   ],
   build: {
     emptyOutDir: true,

@@ -25,6 +25,7 @@ const obj = {
   favThemes: [],
   showKeyTips: true,
   smoothCaret: "medium",
+  codeUnindentOnBackspace: false,
   quickRestart: "off",
   punctuation: false,
   numbers: false,
@@ -100,7 +101,10 @@ const obj = {
   lazyMode: false,
   showAverage: "off",
   tapeMode: "off",
+  tapeMargin: 50,
   maxLineWidth: 0,
 } as Config;
 
-export default deepClone(obj);
+export function getDefaultConfig(): Config {
+  return deepClone(obj);
+}

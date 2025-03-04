@@ -71,7 +71,6 @@ node_modules_bak/
 #vs code
 .vscode/*
 .vscode/.*
-!.vscode/extensions.json
 *.code-workspace
 !monkeytype.code-workspace
 

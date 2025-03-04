@@ -21,6 +21,7 @@ import { deleteConfig } from "../../dal/config";
 import { verify } from "../../utils/captcha";
 import * as LeaderboardsDAL from "../../dal/leaderboards";
 import { purgeUserFromDailyLeaderboards } from "../../utils/daily-leaderboards";
+import { purgeUserFromXpLeaderboards } from "../../services/weekly-xp-leaderboard";
 import { v4 as uuidv4 } from "uuid";
 import { ObjectId } from "mongodb";
 import * as ReportDAL from "../../dal/report";
@@ -238,7 +239,8 @@ export async function sendVerificationEmail(
 export async function sendForgotPasswordEmail(
   req: MonkeyRequest<undefined, ForgotPasswordEmailRequest>
 ): Promise<MonkeyResponse> {
-  const { email } = req.body;
+  const { email, captcha } = req.body;
+  await verifyCaptcha(captcha);
   await authSendForgotPasswordEmail(email);
   return new MonkeyResponse(
     "Password reset request received. If the email is valid, you will receive an email shortly.",
@@ -271,6 +273,10 @@ export async function deleteUser(req: MonkeyRequest): Promise<MonkeyResponse> {
     purgeUserFromDailyLeaderboards(
       uid,
       req.ctx.configuration.dailyLeaderboards
+    ),
+    purgeUserFromXpLeaderboards(
+      uid,
+      req.ctx.configuration.leaderboards.weeklyXp
     ),
   ]);
 
@@ -309,6 +315,10 @@ export async function resetUser(req: MonkeyRequest): Promise<MonkeyResponse> {
       uid,
       req.ctx.configuration.dailyLeaderboards
     ),
+    purgeUserFromXpLeaderboards(
+      uid,
+      req.ctx.configuration.leaderboards.weeklyXp
+    ),
   ];
 
   if (userInfo.discordId !== undefined && userInfo.discordId !== "") {
@@ -325,6 +335,11 @@ export async function updateName(
 ): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
   const { name } = req.body;
+
+  const blocklisted = await BlocklistDal.contains({ name });
+  if (blocklisted) {
+    throw new MonkeyError(409, "Username blocked");
+  }
 
   const user = await UserDAL.getPartialUser(uid, "update name", [
     "name",
@@ -377,6 +392,10 @@ export async function optOutOfLeaderboards(
     uid,
     req.ctx.configuration.dailyLeaderboards
   );
+  await purgeUserFromXpLeaderboards(
+    uid,
+    req.ctx.configuration.leaderboards.weeklyXp
+  );
   void addImportantLog("user_opted_out_of_leaderboards", "", uid);
 
   return new MonkeyResponse("User opted out of leaderboards", null);
@@ -400,9 +419,10 @@ export async function updateEmail(
   req: MonkeyRequest<undefined, UpdateEmailRequestSchema>
 ): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
-  let { newEmail } = req.body;
+  let { newEmail, previousEmail } = req.body;
 
   newEmail = newEmail.toLowerCase();
+  previousEmail = previousEmail.toLowerCase();
 
   try {
     await AuthUtil.updateUserEmail(uid, newEmail);
@@ -435,7 +455,7 @@ export async function updateEmail(
 
   void addImportantLog(
     "user_email_updated",
-    `changed email to ${newEmail}`,
+    `changed email from ${previousEmail} to ${newEmail}`,
     uid
   );
 
@@ -1064,6 +1084,12 @@ async function getAllTimeLbs(uid: string): Promise<AllTimeLbs> {
     uid
   );
 
+  const allTime15EnglishCount = await LeaderboardsDAL.getCount(
+    "time",
+    "15",
+    "english"
+  );
+
   const allTime60English = await LeaderboardsDAL.getRank(
     "time",
     "60",
@@ -1071,20 +1097,26 @@ async function getAllTimeLbs(uid: string): Promise<AllTimeLbs> {
     uid
   );
 
+  const allTime60EnglishCount = await LeaderboardsDAL.getCount(
+    "time",
+    "60",
+    "english"
+  );
+
   const english15 =
-    allTime15English === false
+    allTime15English === false || allTime15English === null
       ? undefined
       : {
           rank: allTime15English.rank,
-          count: allTime15English.count,
+          count: allTime15EnglishCount,
         };
 
   const english60 =
-    allTime60English === false
+    allTime60English === false || allTime60English === null
       ? undefined
       : {
           rank: allTime60English.rank,
-          count: allTime60English.count,
+          count: allTime60EnglishCount,
         };
 
   return {
