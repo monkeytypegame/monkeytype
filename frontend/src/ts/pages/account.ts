@@ -37,6 +37,7 @@ import {
 import { ResultFiltersGroupItem } from "@monkeytype/contracts/schemas/users";
 import { findLineByLeastSquares } from "../utils/numbers";
 import defaultResultFilters from "../constants/default-result-filters";
+import { SnapshotResult } from "../constants/default-snapshot";
 
 let filterDebug = false;
 //toggle filterdebug
@@ -47,7 +48,7 @@ export function toggleFilterDebug(): void {
   }
 }
 
-let filteredResults: DB.SnapshotResult<Mode>[] = [];
+let filteredResults: SnapshotResult<Mode>[] = [];
 let visibleTableLines = 0;
 
 function loadMoreLines(lineIndex?: number): void {
@@ -1071,7 +1072,7 @@ function sortAndRefreshHistory(
     $(headerClass).append('<i class="fas fa-sort-up", aria-hidden="true"></i>');
   }
 
-  const temp: DB.SnapshotResult<Mode>[] = [];
+  const temp: SnapshotResult<Mode>[] = [];
   const parsedIndexes: number[] = [];
 
   while (temp.length < filteredResults.length) {

@@ -17,6 +17,7 @@ import {
 import { LocalStorageWithSchema } from "../../utils/local-storage-with-schema";
 import defaultResultFilters from "../../constants/default-result-filters";
 import { getAllFunboxes } from "@monkeytype/funbox";
+import { SnapshotUserTag } from "../../constants/default-snapshot";
 
 export function mergeWithDefaultFilters(
   filters: Partial<ResultFilters>
@@ -270,7 +271,7 @@ function setAllFilters(group: ResultFiltersGroup, value: boolean): void {
   });
 }
 
-export function loadTags(tags: DB.SnapshotUserTag[]): void {
+export function loadTags(tags: SnapshotUserTag[]): void {
   tags.forEach((tag) => {
     defaultResultFilters.tags[tag._id] = true;
   });

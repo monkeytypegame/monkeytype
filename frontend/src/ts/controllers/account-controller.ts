@@ -49,6 +49,7 @@ import { FirebaseError } from "firebase/app";
 import * as PSA from "../elements/psa";
 import defaultResultFilters from "../constants/default-result-filters";
 import { getActiveFunboxesWithFunction } from "../test/funbox/list";
+import { Snapshot } from "../constants/default-snapshot";
 
 export const gmailProvider = new GoogleAuthProvider();
 export const githubProvider = new GithubAuthProvider();
@@ -124,7 +125,7 @@ async function getDataAndInit(): Promise<boolean> {
     LoadingPage.updateBar(45);
   }
   LoadingPage.updateText("Applying settings...");
-  const snapshot = DB.getSnapshot() as DB.Snapshot;
+  const snapshot = DB.getSnapshot() as Snapshot;
   AccountButton.update(snapshot);
   Alerts.setNotificationBubbleVisible(snapshot.inboxUnreadSize > 0);
   showFavoriteQuoteLength();
