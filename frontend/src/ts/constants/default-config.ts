@@ -62,7 +62,7 @@ const obj = {
   keymapLayout: "overrideSync",
   keymapShowTopRow: "layout",
   keymapSize: 1,
-  keymapCustom: "",
+  keymapCustom: [[]],
   fontFamily: "Roboto_Mono",
   smoothLineScroll: false,
   alwaysShowDecimalPlaces: false,

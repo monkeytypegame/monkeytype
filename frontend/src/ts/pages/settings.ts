@@ -30,6 +30,7 @@ import {
   checkCompatibility,
 } from "@monkeytype/funbox";
 import { getActiveFunboxNames } from "../test/funbox/list";
+import { KeymapCustom, stringToKeymap } from "../utils/custom-keymap";
 
 type SettingsGroups<T extends ConfigValue> = Record<string, SettingsGroup<T>>;
 
@@ -691,9 +692,10 @@ async function fillSettingsPage(): Promise<void> {
   $(".pageSettings .section[data-config-name='fontSize'] input").val(
     Config.fontSize
   );
-
+  // TODO: check why the configs are not being save in database after hard reload
+  // [["a","","",""], ["","","",""], ["","","",""], ["","","",""]]
   $(".pageSettings .section[data-config-name='keymapCustom'] input").val(
-    Config.keymapCustom
+    Config.keymapCustom.toString()
   );
 
   $(".pageSettings .section[data-config-name='maxLineWidth'] input").val(
@@ -1180,11 +1182,12 @@ $(
 $(
   ".pageSettings .section[data-config-name='keymapCustom'] .inputAndButton button.save"
 ).on("click", () => {
-  const didConfigSave = UpdateConfig.setKeymapCustom(
-    $(
-      ".pageSettings .section[data-config-name='keymapCustom'] .inputAndButton input"
-    ).val() as string
-  );
+  const stringValue = $(
+    ".pageSettings .section[data-config-name='keymapCustom'] .inputAndButton input"
+  ).val() as string;
+  //TODO maybe do this better
+  const keymap: KeymapCustom = stringToKeymap(stringValue);
+  const didConfigSave = UpdateConfig.setKeymapCustom(keymap);
   if (didConfigSave) {
     Notifications.add("Saved", 1, {
       duration: 1,
@@ -1196,11 +1199,11 @@ $(
   ".pageSettings .section[data-config-name='keymapCustom'] .inputAndButton input"
 ).on("keypress", (e) => {
   if (e.key === "Enter") {
-    const didConfigSave = UpdateConfig.setKeymapCustom(
-      $(
-        ".pageSettings .section[data-config-name='keymapCustom'] .inputAndButton input"
-      ).val() as string
-    );
+    const stringValue = $(
+      ".pageSettings .section[data-config-name='keymapCustom'] .inputAndButton input"
+    ).val() as string;
+    const keymap: KeymapCustom = stringToKeymap(stringValue);
+    const didConfigSave = UpdateConfig.setKeymapCustom(keymap);
     if (didConfigSave) {
       Notifications.add("Saved", 1, {
         duration: 1,

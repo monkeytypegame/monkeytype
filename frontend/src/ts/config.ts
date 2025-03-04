@@ -29,6 +29,7 @@ import { Language, LanguageSchema } from "@monkeytype/contracts/schemas/util";
 import { LocalStorageWithSchema } from "./utils/local-storage-with-schema";
 import { migrateConfig } from "./utils/config";
 import { roundTo1 } from "@monkeytype/util/numbers";
+import { KeymapCustom } from "./utils/custom-keymap";
 
 const configLS = new LocalStorageWithSchema({
   key: "config",
@@ -1763,7 +1764,7 @@ export function setLayout(
 }
 
 export function setKeymapCustom(
-  keymapCustom: string,
+  keymapCustom: KeymapCustom,
   nosave?: boolean
 ): boolean {
   if (

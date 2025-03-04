@@ -1,12 +1,14 @@
 import { Config } from "@monkeytype/contracts/schemas/configs";
 
-type KeyProperties = {
+export type KeyProperties = {
   a?: number; // legend alignment: ignore
   w?: number; // width
   h?: number; // height
   x?: number; // x position
   y?: number; // y position
 };
+
+export type KeymapCustom = (KeyProperties | string)[][];
 
 //TODO move this to other side
 const keyToDataObject: { [key: string]: string } = {
@@ -62,8 +64,17 @@ export function keyToData(key: string): string {
   return (key && keyToDataObject[key]?.replace(`'"`, "&apos;&quot;")) ?? "";
 }
 
+export function stringToKeymap(keymap: string): KeymapCustom {
+  const processedKeymap = keymap.replace(/([{,])\s*(\w+)\s*:/g, '$1"$2":');
+  // TODO here something for replacing the quotes
+  const jsonKeymap: KeymapCustom = JSON.parse(
+    `[${processedKeymap}]`
+  ) as KeymapCustom;
+  return jsonKeymap;
+}
+
 export function getCustomKeymapSyle(
-  keymapStyle: (KeyProperties | string)[][],
+  keymapStyle: KeymapCustom,
   config: Config
 ): string {
   let keymapText = "";

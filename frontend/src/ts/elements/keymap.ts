@@ -9,7 +9,7 @@ import * as Hangul from "hangul-js";
 import * as Notifications from "../elements/notifications";
 import * as ActivePage from "../states/active-page";
 import * as TestWords from "../test/test-words";
-import { getCustomKeymapSyle } from "../utils/custom-keymap";
+import { getCustomKeymapSyle, KeymapCustom } from "../utils/custom-keymap";
 
 const stenoKeys: JSONData.Layout = {
   keymapShowTopRow: true,
@@ -384,79 +384,14 @@ export async function refresh(
     // );
 
     if (Config.keymapStyle === "custom") {
-      //TODO: take this from somewhere
-      const customKeymap = [
-        [
-          "",
-          "1",
-          "2",
-          "3",
-          "4",
-          "5",
-          "6",
-          "7",
-          "8",
-          "9",
-          "0",
-          "-",
-          "=",
-          "",
-          "",
-        ],
-        [
-          { w: 1.5 },
-          "",
-          "Q",
-          "W",
-          "E",
-          "R",
-          "T",
-          "Y",
-          "U",
-          "I",
-          "O",
-          "P",
-          "[",
-          "]",
-          { w: 1.5 },
-          "\\",
-        ],
-        [
-          { w: 1.75 },
-          "",
-          "A",
-          "S",
-          "D",
-          "F",
-          "G",
-          "H",
-          "J",
-          "K",
-          "L",
-          ";",
-          "'",
-          { w: 2.25 },
-          "",
-        ],
-        [
-          { w: 2.25 },
-          "",
-          "Z",
-          "X",
-          "C",
-          "V",
-          "B",
-          "N",
-          "M",
-          ",",
-          ".",
-          "/",
-          { w: 1.75 },
-          "",
-          "",
-        ],
-        ["", { w: 1.5 }, "", { w: 6.25 }, "spc", { w: 1.5 }, "", ""],
-      ];
+      // let customKeymap = [
+      //   ["","1","2","3","4","5","6","7","8","9","0","-","=","",""],
+      //   [{ w: 1.5 },"","Q","W","E","R","T","Y","U","I","O","P","[","]",{ w: 1.5 },"\\"],
+      //   [{ w: 1.75 },"","A","S","D","F","G","H","J","K","L",";","'",{ w: 2.25 },""],
+      //   [{ w: 2.25 },"","Z","X","C","V","B","N","M",",",".","/",{ w: 1.75 },"",""],
+      //   ["", { w: 1.5 }, "", { w: 6.25 }, "spc", { w: 1.5 }, "", ""]
+      // ]
+      const customKeymap: KeymapCustom = Config.keymapCustom;
       keymapElement = getCustomKeymapSyle(customKeymap, Config);
     }
     $("#keymap").html(keymapElement);
