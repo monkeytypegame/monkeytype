@@ -5,6 +5,7 @@ import * as Notifications from "../elements/notifications";
 import * as TestLogic from "../test/test-logic";
 import { migrateConfig, replaceLegacyValues } from "../utils/config";
 import * as TagController from "./tag-controller";
+import { SnapshotPreset } from "../constants/default-snapshot";
 
 export async function apply(_id: string): Promise<void> {
   const snapshot = DB.getSnapshot();
@@ -41,7 +42,7 @@ export async function apply(_id: string): Promise<void> {
   });
   UpdateConfig.saveFullConfigToLocalStorage();
 }
-function isPartialPreset(preset: DB.SnapshotPreset): boolean {
+function isPartialPreset(preset: SnapshotPreset): boolean {
   return preset.settingGroups !== undefined && preset.settingGroups !== null;
 }
 

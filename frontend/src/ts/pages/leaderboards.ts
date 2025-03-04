@@ -6,16 +6,21 @@ import {
 } from "@monkeytype/contracts/schemas/leaderboards";
 import { capitalizeFirstLetter } from "../utils/strings";
 import Ape from "../ape";
-import {
-  Mode,
-  Mode2Schema,
-  ModeSchema,
-} from "@monkeytype/contracts/schemas/shared";
+import { Mode } from "@monkeytype/contracts/schemas/shared";
 import * as Notifications from "../elements/notifications";
 import Format from "../utils/format";
 import { Auth, isAuthenticated } from "../firebase";
 import * as DB from "../db";
-import { format } from "date-fns";
+import {
+  endOfDay,
+  endOfWeek,
+  format,
+  startOfDay,
+  startOfWeek,
+  subDays,
+  subHours,
+  subMinutes,
+} from "date-fns";
 import { differenceInSeconds } from "date-fns/differenceInSeconds";
 import * as DateTime from "../utils/date-and-time";
 import { getHtmlByUserFlags } from "../controllers/user-flag-controller";
@@ -26,19 +31,20 @@ import {
   isDevEnvironment,
 } from "../utils/misc";
 import { abbreviateNumber } from "../utils/numbers";
-import {
-  getCurrentWeekTimestamp,
-  getLastWeekTimestamp,
-  getStartOfDayTimestamp,
-} from "@monkeytype/util/date-and-time";
 import { formatDistanceToNow } from "date-fns/formatDistanceToNow";
 import { z } from "zod";
 import { LocalStorageWithSchema } from "../utils/local-storage-with-schema";
-import { LanguageSchema } from "@monkeytype/contracts/schemas/util";
+import {
+  safeParse as parseUrlSearchParams,
+  serialize as serializeUrlSearchParams,
+} from "zod-urlsearchparams";
+import { UTCDateMini } from "@date-fns/utc";
 // import * as ServerConfiguration from "../ape/server-configuration";
 
 const LeaderboardTypeSchema = z.enum(["allTime", "weekly", "daily"]);
 type LeaderboardType = z.infer<typeof LeaderboardTypeSchema>;
+const utcDateFormat = "EEEE, do MMMM yyyy";
+const localDateFormat = "EEEE, do MMMM yyyy HH:mm";
 
 type AllTimeState = {
   type: "allTime";
@@ -97,17 +103,20 @@ const state = {
 
 const SelectorSchema = z.object({
   type: LeaderboardTypeSchema,
-  mode: ModeSchema.optional(),
-  mode2: Mode2Schema.optional(),
-  language: LanguageSchema.optional(),
+  mode2: z.enum(["15", "60"]).optional(),
+  language: z.string().optional(),
   yesterday: z.boolean().optional(),
   lastWeek: z.boolean().optional(),
 });
+const UrlParameterSchema = SelectorSchema.extend({
+  page: z.number(),
+}).partial();
+type UrlParameter = z.infer<typeof UrlParameterSchema>;
 
 const selectorLS = new LocalStorageWithSchema({
   key: "leaderboardSelector",
   schema: SelectorSchema,
-  fallback: { type: "allTime", mode: "time", mode2: "15" },
+  fallback: { type: "allTime", mode2: "15" },
 });
 
 function updateTitle(): void {
@@ -164,15 +173,15 @@ function updateTitle(): void {
         `);
     }
 
-    let timestamp = getStartOfDayTimestamp(new Date().getTime());
-
+    let timestamp = startOfDay(new UTCDateMini());
     if (state.yesterday) {
-      timestamp -= 24 * 60 * 60 * 100;
+      timestamp = subHours(timestamp, 24);
     }
 
-    const dateString = format(timestamp, "EEEE, do MMMM yyyy");
-    $(".page.pageLeaderboards .bigtitle .subtext > .text").text(
-      `${dateString}`
+    updateTimeText(
+      format(timestamp, utcDateFormat) + " UTC",
+      utcToLocalDate(timestamp),
+      utcToLocalDate(endOfDay(timestamp))
     );
   } else if (state.type === "weekly") {
     $(".page.pageLeaderboards .bigtitle .subtext").removeClass("hidden");
@@ -197,18 +206,20 @@ function updateTitle(): void {
         `);
     }
 
-    let fn = getCurrentWeekTimestamp();
-
+    let timestamp = startOfWeek(new UTCDateMini(), { weekStartsOn: 1 });
     if (state.lastWeek) {
-      fn = getLastWeekTimestamp();
+      timestamp = subDays(timestamp, 7);
     }
+    const endingTimestamp = endOfWeek(timestamp, { weekStartsOn: 1 });
 
-    const dateString = `${format(fn, "EEEE, do MMMM yyyy")} - ${format(
-      fn + 6 * 24 * 60 * 60 * 1000,
-      "EEEE, do MMMM yyyy"
-    )}`;
-    $(".page.pageLeaderboards .bigtitle .subtext > .text").text(
-      `${dateString}`
+    const dateString = `${format(timestamp, utcDateFormat)} - ${format(
+      endingTimestamp,
+      utcDateFormat
+    )} UTC`;
+    updateTimeText(
+      dateString,
+      utcToLocalDate(timestamp),
+      utcToLocalDate(endingTimestamp)
     );
   }
 }
@@ -977,12 +988,7 @@ let updateTimer: number | undefined;
 
 function updateTimerElement(): void {
   if (state.type === "daily") {
-    const date = new Date();
-    date.setUTCHours(0, 0, 0, 0);
-    date.setDate(date.getDate() + 1);
-    const dateNow = new Date();
-    dateNow.setUTCMilliseconds(0);
-    const diff = differenceInSeconds(date, dateNow);
+    const diff = differenceInSeconds(new Date(), endOfDay(new UTCDateMini()));
 
     $(".page.pageLeaderboards .titleAndButtons .timer").text(
       "Next reset in: " + DateTime.secondsToString(diff, true)
@@ -996,10 +1002,8 @@ function updateTimerElement(): void {
       "Next update in: " + DateTime.secondsToString(totalSeconds, true)
     );
   } else if (state.type === "weekly") {
-    const nextWeekTimestamp =
-      getCurrentWeekTimestamp() + 7 * 24 * 60 * 60 * 1000;
-    const currentTime = new Date().getTime();
-    const totalSeconds = Math.floor((nextWeekTimestamp - currentTime) / 1000);
+    const nextWeekTimestamp = endOfWeek(new UTCDateMini(), { weekStartsOn: 1 });
+    const totalSeconds = differenceInSeconds(new Date(), nextWeekTimestamp);
     $(".page.pageLeaderboards .titleAndButtons .timer").text(
       "Next reset in: " +
         DateTime.secondsToString(totalSeconds, true, true, ":", true, true)
@@ -1105,7 +1109,8 @@ function handleJumpButton(action: string, page?: number): void {
       if (user) {
         const rank = state.userData?.rank;
         if (rank) {
-          const page = Math.floor(rank / state.pageSize);
+          // - 1 to make sure position 50 with page size 50 is on the first page (page 0)
+          const page = Math.floor(rank - 1 / state.pageSize);
 
           if (state.page === page) {
             return;
@@ -1138,81 +1143,107 @@ function handleYesterdayLastWeekButton(action: string): void {
 }
 
 function updateGetParameters(): void {
-  const params = new URLSearchParams();
+  const params: UrlParameter = {};
 
-  params.set("type", state.type);
+  params.type = state.type;
   if (state.type === "allTime") {
-    params.set("mode2", state.mode2);
+    params.mode2 = state.mode2;
   } else if (state.type === "daily") {
-    params.set("language", state.language);
-    params.set("mode2", state.mode2);
+    params.language = state.language;
+    params.mode2 = state.mode2;
     if (state.yesterday) {
-      params.set("yesterday", "true");
-    } else {
-      params.delete("yesterday");
+      params.yesterday = true;
     }
   } else if (state.type === "weekly") {
     if (state.lastWeek) {
-      params.set("lastWeek", "true");
-    } else {
-      params.delete("lastWeek");
+      params.lastWeek = true;
     }
   }
 
-  params.set("page", (state.page + 1).toString());
+  params.page = state.page + 1;
 
-  const newUrl = `${window.location.pathname}?${params.toString()}`;
+  const urlParams = serializeUrlSearchParams({
+    schema: UrlParameterSchema,
+    data: params,
+  });
+
+  const newUrl = `${window.location.pathname}?${urlParams.toString()}`;
   window.history.replaceState({}, "", newUrl);
 
   selectorLS.set(state);
 }
 
 function readGetParameters(): void {
-  const params = new URLSearchParams(window.location.search);
+  const urlParams = new URLSearchParams(window.location.search);
 
-  if (params.size == 0) {
+  if (urlParams.size == 0) {
     Object.assign(state, selectorLS.get());
     return;
   }
 
-  const type = params.get("type") as "allTime" | "weekly" | "daily";
-  if (type) {
-    state.type = type;
+  const parsed = parseUrlSearchParams({
+    schema: UrlParameterSchema,
+    input: urlParams,
+  });
+  if (!parsed.success) {
+    return;
+  }
+  const params = parsed.data;
+
+  if (params.type !== undefined) {
+    state.type = params.type;
   }
 
   if (state.type === "allTime") {
-    const mode = params.get("mode2") as "15" | "60";
-    if (mode) {
-      state.mode2 = mode;
+    if (params.mode2) {
+      state.mode2 = params.mode2;
     }
   } else if (state.type === "daily") {
-    const language = params.get("language");
-    const dailyMode = params.get("mode2") as "15" | "60";
-    const yesterday = params.get("yesterday") as string;
-    if (language !== null) {
-      state.language = language;
+    if (params.language !== undefined) {
+      state.language = params.language;
     }
-    if (dailyMode) {
-      state.mode2 = dailyMode;
+    if (state.language === undefined) {
+      state.language = "english";
     }
-    if (yesterday !== null && yesterday === "true") {
-      state.yesterday = true;
+    if (params.mode2 !== undefined) {
+      state.mode2 = params.mode2;
+    }
+    if (params.yesterday !== undefined) {
+      state.yesterday = params.yesterday;
     }
   } else if (state.type === "weekly") {
-    const lastWeek = params.get("lastWeek") as string;
-    if (lastWeek !== null && lastWeek === "true") {
-      state.lastWeek = true;
+    if (params.lastWeek !== undefined) {
+      state.lastWeek = params.lastWeek;
     }
   }
 
-  const page = params.get("page");
-  if (page !== null) {
-    state.page = parseInt(page, 10) - 1;
+  if (params.page !== undefined) {
+    state.page = params.page - 1;
 
     if (state.page < 0) {
       state.page = 0;
     }
   }
+}
+
+function utcToLocalDate(timestamp: UTCDateMini): Date {
+  return subMinutes(timestamp, new Date().getTimezoneOffset());
+}
+
+function updateTimeText(
+  dateString: string,
+  localStart: Date,
+  localEnd: Date
+): void {
+  const localDateString =
+    "local time \n" +
+    format(localStart, localDateFormat) +
+    " - \n" +
+    format(localEnd, localDateFormat);
+
+  const text = $(".page.pageLeaderboards .bigtitle .subtext > .text");
+  text.text(`${dateString}`);
+  text.attr("aria-label", localDateString);
 }
 
 $(".page.pageLeaderboards .jumpButtons button").on("click", function () {
@@ -1264,6 +1295,7 @@ $(".page.pageLeaderboards .buttonGroup.secondary").on(
     ) {
       if (state.mode2 === mode) return;
       state.mode2 = mode;
+      state.page = 0;
     } else if (language !== undefined && state.type === "daily") {
       if (state.language === language) return;
       state.language = language;

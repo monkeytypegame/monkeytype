@@ -6,10 +6,21 @@ import { identity } from "../utils/misc";
 import { BASE_CONFIGURATION } from "../constants/base-configuration";
 import { Configuration } from "@monkeytype/contracts/schemas/configuration";
 import { addLog } from "../dal/logs";
-import { PartialConfiguration } from "@monkeytype/contracts/configuration";
+import {
+  PartialConfiguration,
+  PartialConfigurationSchema,
+} from "@monkeytype/contracts/configuration";
 import { getErrorMessage } from "../utils/error";
+import { join } from "path";
+import { existsSync, readFileSync } from "fs";
+import { parseWithSchema as parseJsonWithSchema } from "@monkeytype/util/json";
+import { z } from "zod";
 
 const CONFIG_UPDATE_INTERVAL = 10 * 60 * 1000; // 10 Minutes
+const SERVER_CONFIG_FILE_PATH = join(
+  __dirname,
+  "../backend-configuration.json"
+);
 
 function mergeConfigurations(
   baseConfiguration: Configuration,
@@ -137,4 +148,21 @@ export async function patchConfiguration(
   }
 
   return true;
+}
+
+export async function updateFromConfigurationFile(): Promise<void> {
+  if (existsSync(SERVER_CONFIG_FILE_PATH)) {
+    Logger.info(
+      `Reading server configuration from file ${SERVER_CONFIG_FILE_PATH}`
+    );
+    const json = readFileSync(SERVER_CONFIG_FILE_PATH, "utf-8");
+    const data = parseJsonWithSchema(
+      json,
+      z.object({
+        configuration: PartialConfigurationSchema,
+      })
+    );
+
+    await patchConfiguration(data.configuration);
+  }
 }

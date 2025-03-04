@@ -30,6 +30,7 @@ import {
   checkCompatibility,
 } from "@monkeytype/funbox";
 import { getActiveFunboxNames } from "../test/funbox/list";
+import { SnapshotPreset } from "../constants/default-snapshot";
 import { KeymapCustom, stringToKeymap } from "../utils/custom-keymap";
 
 type SettingsGroups<T extends ConfigValue> = Record<string, SettingsGroup<T>>;
@@ -804,7 +805,7 @@ function refreshTagsSettingsSection(): void {
 function refreshPresetsSettingsSection(): void {
   if (isAuthenticated() && DB.getSnapshot()) {
     const presetsEl = $(".pageSettings .section.presets .presetsList").empty();
-    DB.getSnapshot()?.presets?.forEach((preset: DB.SnapshotPreset) => {
+    DB.getSnapshot()?.presets?.forEach((preset: SnapshotPreset) => {
       presetsEl.append(`
       <div class="buttons preset" data-id="${preset._id}" data-name="${preset.name}" data-display="${preset.display}">
         <button class="presetButton">${preset.display}</button>
