@@ -15,7 +15,16 @@ import * as Notifications from "../elements/notifications";
 import Format from "../utils/format";
 import { Auth, isAuthenticated } from "../firebase";
 import * as DB from "../db";
-import { format } from "date-fns";
+import {
+  endOfDay,
+  endOfWeek,
+  format,
+  startOfDay,
+  startOfWeek,
+  subDays,
+  subHours,
+  subMinutes,
+} from "date-fns";
 import { differenceInSeconds } from "date-fns/differenceInSeconds";
 import * as DateTime from "../utils/date-and-time";
 import { getHtmlByUserFlags } from "../controllers/user-flag-controller";
@@ -26,19 +35,17 @@ import {
   isDevEnvironment,
 } from "../utils/misc";
 import { abbreviateNumber } from "../utils/numbers";
-import {
-  getCurrentWeekTimestamp,
-  getLastWeekTimestamp,
-  getStartOfDayTimestamp,
-} from "@monkeytype/util/date-and-time";
 import { formatDistanceToNow } from "date-fns/formatDistanceToNow";
 import { z } from "zod";
 import { LocalStorageWithSchema } from "../utils/local-storage-with-schema";
 import { LanguageSchema } from "@monkeytype/contracts/schemas/util";
+import { UTCDateMini } from "@date-fns/utc";
 // import * as ServerConfiguration from "../ape/server-configuration";
 
 const LeaderboardTypeSchema = z.enum(["allTime", "weekly", "daily"]);
 type LeaderboardType = z.infer<typeof LeaderboardTypeSchema>;
+const utcDateFormat = "EEEE, do MMMM yyyy";
+const localDateFormat = "EEEE, do MMMM yyyy HH:mm";
 
 type AllTimeState = {
   type: "allTime";
@@ -164,15 +171,15 @@ function updateTitle(): void {
         `);
     }
 
-    let timestamp = getStartOfDayTimestamp(new Date().getTime());
-
+    let timestamp = startOfDay(new UTCDateMini());
     if (state.yesterday) {
-      timestamp -= 24 * 60 * 60 * 100;
+      timestamp = subHours(timestamp, 24);
     }
 
-    const dateString = format(timestamp, "EEEE, do MMMM yyyy");
-    $(".page.pageLeaderboards .bigtitle .subtext > .text").text(
-      `${dateString}`
+    updateTimeText(
+      format(timestamp, utcDateFormat) + " UTC",
+      utcToLocalDate(timestamp),
+      utcToLocalDate(endOfDay(timestamp))
     );
   } else if (state.type === "weekly") {
     $(".page.pageLeaderboards .bigtitle .subtext").removeClass("hidden");
@@ -197,18 +204,20 @@ function updateTitle(): void {
         `);
     }
 
-    let fn = getCurrentWeekTimestamp();
-
+    let timestamp = startOfWeek(new UTCDateMini(), { weekStartsOn: 1 });
     if (state.lastWeek) {
-      fn = getLastWeekTimestamp();
+      timestamp = subDays(timestamp, 7);
     }
+    const endingTimestamp = endOfWeek(timestamp, { weekStartsOn: 1 });
 
-    const dateString = `${format(fn, "EEEE, do MMMM yyyy")} - ${format(
-      fn + 6 * 24 * 60 * 60 * 1000,
-      "EEEE, do MMMM yyyy"
-    )}`;
-    $(".page.pageLeaderboards .bigtitle .subtext > .text").text(
-      `${dateString}`
+    const dateString = `${format(timestamp, utcDateFormat)} - ${format(
+      endingTimestamp,
+      utcDateFormat
+    )} UTC`;
+    updateTimeText(
+      dateString,
+      utcToLocalDate(timestamp),
+      utcToLocalDate(endingTimestamp)
     );
   }
 }
@@ -977,12 +986,7 @@ let updateTimer: number | undefined;
 
 function updateTimerElement(): void {
   if (state.type === "daily") {
-    const date = new Date();
-    date.setUTCHours(0, 0, 0, 0);
-    date.setDate(date.getDate() + 1);
-    const dateNow = new Date();
-    dateNow.setUTCMilliseconds(0);
-    const diff = differenceInSeconds(date, dateNow);
+    const diff = differenceInSeconds(new Date(), endOfDay(new UTCDateMini()));
 
     $(".page.pageLeaderboards .titleAndButtons .timer").text(
       "Next reset in: " + DateTime.secondsToString(diff, true)
@@ -996,10 +1000,8 @@ function updateTimerElement(): void {
       "Next update in: " + DateTime.secondsToString(totalSeconds, true)
     );
   } else if (state.type === "weekly") {
-    const nextWeekTimestamp =
-      getCurrentWeekTimestamp() + 7 * 24 * 60 * 60 * 1000;
-    const currentTime = new Date().getTime();
-    const totalSeconds = Math.floor((nextWeekTimestamp - currentTime) / 1000);
+    const nextWeekTimestamp = endOfWeek(new UTCDateMini(), { weekStartsOn: 1 });
+    const totalSeconds = differenceInSeconds(new Date(), nextWeekTimestamp);
     $(".page.pageLeaderboards .titleAndButtons .timer").text(
       "Next reset in: " +
         DateTime.secondsToString(totalSeconds, true, true, ":", true, true)
@@ -1309,3 +1311,23 @@ export const page = new Page({
 $(async () => {
   Skeleton.save("pageLeaderboards");
 });
+
+function utcToLocalDate(timestamp: UTCDateMini): Date {
+  return subMinutes(timestamp, new Date().getTimezoneOffset());
+}
+
+function updateTimeText(
+  dateString: string,
+  localStart: Date,
+  localEnd: Date
+): void {
+  const localDateString =
+    format(localStart, localDateFormat) +
+    " - " +
+    format(localEnd, localDateFormat) +
+    " local time";
+
+  const text = $(".page.pageLeaderboards .bigtitle .subtext > .text");
+  text.text(`${dateString}`);
+  text.attr("aria-label", localDateString);
+}
