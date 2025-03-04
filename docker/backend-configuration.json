@@ -11,6 +11,9 @@
     },
     "dailyLeaderboards": {
       "enabled": false
+    },
+    "leaderboards":{
+      "minTimeTyping": 0
     }
   }
 }
