@@ -1322,10 +1322,10 @@ function updateTimeText(
   localEnd: Date
 ): void {
   const localDateString =
+    "local time \n" +
     format(localStart, localDateFormat) +
-    " - " +
-    format(localEnd, localDateFormat) +
-    " local time";
+    " - \n" +
+    format(localEnd, localDateFormat);
 
   const text = $(".page.pageLeaderboards .bigtitle .subtext > .text");
   text.text(`${dateString}`);
