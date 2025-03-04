@@ -71,6 +71,7 @@ import {
 } from "./funbox/list";
 import { getFunboxesFromString } from "@monkeytype/funbox";
 import * as CompositionState from "../states/composition";
+import { SnapshotResult } from "../constants/default-snapshot";
 
 let failReason = "";
 const koInputVisual = document.getElementById("koInputVisual") as HTMLElement;
@@ -1199,7 +1200,7 @@ async function saveResult(
     // into a snapshot result - might not cuase issues but worth investigating
     const result = Misc.deepClone(
       completedEvent
-    ) as unknown as DB.SnapshotResult<Mode>;
+    ) as unknown as SnapshotResult<Mode>;
     result._id = data.insertedId;
     if (data.isPb !== undefined && data.isPb) {
       result.isPb = true;

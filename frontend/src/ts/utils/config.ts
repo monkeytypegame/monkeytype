@@ -3,9 +3,9 @@ import {
   ConfigValue,
   PartialConfig,
 } from "@monkeytype/contracts/schemas/configs";
-import DefaultConfig from "../constants/default-config";
 import { typedKeys } from "./misc";
 import * as ConfigSchemas from "@monkeytype/contracts/schemas/configs";
+import { getDefaultConfig } from "../constants/default-config";
 
 /**
  * migrates possible outdated config and merges with the default config values
@@ -17,9 +17,10 @@ export function migrateConfig(config: PartialConfig | object): Config {
 }
 
 function mergeWithDefaultConfig(config: PartialConfig): Config {
+  const defaultConfig = getDefaultConfig();
   const mergedConfig = {} as Config;
-  for (const key of typedKeys(DefaultConfig)) {
-    const newValue = config[key] ?? (DefaultConfig[key] as ConfigValue);
+  for (const key of typedKeys(defaultConfig)) {
+    const newValue = config[key] ?? (defaultConfig[key] as ConfigValue);
     //@ts-expect-error cant be bothered to deal with this
     mergedConfig[key] = newValue;
   }
