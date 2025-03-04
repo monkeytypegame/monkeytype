@@ -1225,6 +1225,26 @@ function readGetParameters(): void {
   }
 }
 
+function utcToLocalDate(timestamp: UTCDateMini): Date {
+  return subMinutes(timestamp, new Date().getTimezoneOffset());
+}
+
+function updateTimeText(
+  dateString: string,
+  localStart: Date,
+  localEnd: Date
+): void {
+  const localDateString =
+    "local time \n" +
+    format(localStart, localDateFormat) +
+    " - \n" +
+    format(localEnd, localDateFormat);
+
+  const text = $(".page.pageLeaderboards .bigtitle .subtext > .text");
+  text.text(`${dateString}`);
+  text.attr("aria-label", localDateString);
+}
+
 $(".page.pageLeaderboards .jumpButtons button").on("click", function () {
   const action = $(this).data("action") as string;
   if (action !== "goToPage") {
@@ -1320,23 +1340,3 @@ export const page = new Page({
 $(async () => {
   Skeleton.save("pageLeaderboards");
 });
-
-function utcToLocalDate(timestamp: UTCDateMini): Date {
-  return subMinutes(timestamp, new Date().getTimezoneOffset());
-}
-
-function updateTimeText(
-  dateString: string,
-  localStart: Date,
-  localEnd: Date
-): void {
-  const localDateString =
-    "local time \n" +
-    format(localStart, localDateFormat) +
-    " - \n" +
-    format(localEnd, localDateFormat);
-
-  const text = $(".page.pageLeaderboards .bigtitle .subtext > .text");
-  text.text(`${dateString}`);
-  text.attr("aria-label", localDateString);
-}
