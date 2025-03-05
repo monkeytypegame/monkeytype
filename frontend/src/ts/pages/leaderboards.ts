@@ -449,7 +449,8 @@ function updateJumpButtons(): void {
   }
 
   if (isAuthenticated() && state.userData) {
-    const userPage = Math.floor(state.userData.rank / state.pageSize);
+    //TODO: should we hide the user button? if we are on the same page the user can still scroll down to his entry
+    const userPage = Math.floor((state.userData.rank - 1) / state.pageSize);
     if (state.page === userPage) {
       el.find("button[data-action='userPage']").addClass("disabled");
     } else {
@@ -940,17 +941,22 @@ function updateContent(): void {
   fillTable();
 
   if (state.scrollToUserAfterFill) {
-    const windowHeight = $(window).height() ?? 0;
-    const offset = $(`.tableAndUser .me`).offset()?.top ?? 0;
-    const scrollTo = offset - windowHeight / 2;
-    $([document.documentElement, document.body]).animate(
-      {
-        scrollTop: scrollTo,
-      },
-      applyReducedMotion(500)
-    );
+    //TODO: if we don't hide the user button scroll to entry if we are already on the correct page
+    scrollToUser();
     state.scrollToUserAfterFill = false;
   }
+}
+
+function scrollToUser(): void {
+  const windowHeight = $(window).height() ?? 0;
+  const offset = $(`.tableAndUser .me`).offset()?.top ?? 0;
+  const scrollTo = offset - windowHeight / 2;
+  $([document.documentElement, document.body]).animate(
+    {
+      scrollTop: scrollTo,
+    },
+    applyReducedMotion(500)
+  );
 }
 
 function updateTypeButtons(): void {
@@ -1110,9 +1116,10 @@ function handleJumpButton(action: string, page?: number): void {
         const rank = state.userData?.rank;
         if (rank) {
           // - 1 to make sure position 50 with page size 50 is on the first page (page 0)
-          const page = Math.floor(rank - 1 / state.pageSize);
+          const page = Math.floor((rank - 1) / state.pageSize);
 
           if (state.page === page) {
+            scrollToUser();
             return;
           }
 
