@@ -1350,7 +1350,6 @@ export const page = new Page({
   },
   afterShow: async (): Promise<void> => {
     updateSecondaryButtons();
-    state.discordAvatarUrls = new Map<string, string>();
   },
 });
 
@@ -1362,5 +1361,6 @@ ConfigEvent.subscribe((eventKey) => {
   if (ActivePage.get() === "leaderboards" && eventKey === "typingSpeedUnit") {
     updateContent();
     fillUser();
+    fillAvatars();
   }
 });
