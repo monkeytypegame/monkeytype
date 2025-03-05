@@ -1,5 +1,6 @@
 import Page from "./page";
 import * as Skeleton from "../utils/skeleton";
+import Config from "../config";
 import {
   LeaderboardEntry,
   XpLeaderboardEntry,
@@ -39,6 +40,8 @@ import {
   serialize as serializeUrlSearchParams,
 } from "zod-urlsearchparams";
 import { UTCDateMini } from "@date-fns/utc";
+import * as ConfigEvent from "../observables/config-event";
+import * as ActivePage from "../states/active-page";
 // import * as ServerConfiguration from "../ape/server-configuration";
 
 const LeaderboardTypeSchema = z.enum(["allTime", "weekly", "daily"]);
@@ -699,7 +702,10 @@ function fillUser(): void {
     let str = `Not qualified`;
 
     if (!state.yesterday) {
-      str += ` (min speed required: ${state.minWpm} wpm)`;
+      str += ` (min speed required: ${Format.typingSpeed(state.minWpm, {
+        showDecimalPlaces: true,
+        suffix: ` ${Config.typingSpeedUnit}`,
+      })})`;
     }
 
     $(".page.pageLeaderboards .bigUser").html(
@@ -772,7 +778,7 @@ function fillUser(): void {
           <div class="bottom">${diffText}</div>
         </div>
         <div class="stat wide">
-          <div class="title">wpm</div>
+          <div class="title">${Config.typingSpeedUnit}</div>
           <div class="value">${formatted.wpm}</div>
         </div>
         <div class="stat wide">
@@ -942,6 +948,12 @@ function updateContent(): void {
   updateJumpButtons();
   updateTimerVisibility();
   fillTable();
+
+  for (const element of document.querySelectorAll(
+    ".page.pageLeaderboards .speedUnit"
+  )) {
+    element.innerHTML = Config.typingSpeedUnit;
+  }
 
   if (state.scrollToUserAfterFill) {
     const windowHeight = $(window).height() ?? 0;
@@ -1338,10 +1350,17 @@ export const page = new Page({
   },
   afterShow: async (): Promise<void> => {
     updateSecondaryButtons();
-    state.discordAvatarUrls = new Map<string, string>();
   },
 });
 
 $(async () => {
   Skeleton.save("pageLeaderboards");
+});
+
+ConfigEvent.subscribe((eventKey) => {
+  if (ActivePage.get() === "leaderboards" && eventKey === "typingSpeedUnit") {
+    updateContent();
+    fillUser();
+    fillAvatars();
+  }
 });
