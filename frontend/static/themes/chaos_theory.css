@@ -13,7 +13,7 @@
 }
 
 header #logo .text {
-  transform: rotateY(180deg);
+  transform: rotateY(360deg);
   unicode-bidi: bidi-override;
   transition: 0.5s;
 }
@@ -23,7 +23,7 @@ header #logo .top {
 }
 
 header #logo .icon {
-  transform: rotateX(180deg);
+  transform: rotateX(360deg);
   transition: 0.5s;
 }
 
