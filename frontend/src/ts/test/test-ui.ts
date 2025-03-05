@@ -34,7 +34,6 @@ import {
   findSingleActiveFunboxWithFunction,
   getActiveFunboxesWithFunction,
 } from "./funbox/list";
-import * as TestState from "./test-state";
 
 async function gethtml2canvas(): Promise<typeof import("html2canvas").default> {
   return (await import("html2canvas")).default;
@@ -441,7 +440,6 @@ function shouldUpdateWordsInputPosition(): boolean {
 
 export async function updateWordsInputPosition(initial = false): Promise<void> {
   if (ActivePage.get() !== "test") return;
-  if (Config.tapeMode !== "off" && !initial) return;
 
   const currentLanguage = await JSONData.getCurrentLanguage(Config.language);
   const isLanguageRTL = currentLanguage.rightToLeft;
@@ -476,11 +474,6 @@ export async function updateWordsInputPosition(initial = false): Promise<void> {
     el.style.top = targetTop + letterHeight + activeWordMargin + 4 + "px";
   } else {
     el.style.top = targetTop + "px";
-  }
-
-  if (Config.tapeMode !== "off") {
-    el.style.left = Config.tapeMargin + "%";
-    return;
   }
 
   if (activeWord.offsetWidth < letterHeight && isLanguageRTL) {
@@ -945,18 +938,6 @@ export async function updateActiveWordLetters(
 let allowWordRemoval = true;
 export function scrollTape(noRemove = false): void {
   if (ActivePage.get() !== "test" || resultVisible) return;
-
-  if (!TestState.isActive) {
-    $("#words")
-      .stop(true, false)
-      .animate(
-        {
-          marginLeft: Config.tapeMargin + "%",
-        },
-        SlowTimer.get() ? 0 : 125
-      );
-    return;
-  }
 
   const waitForLineJumpAnimation = lineTransition && !allowWordRemoval;
   if (waitForLineJumpAnimation) noRemove = true;
