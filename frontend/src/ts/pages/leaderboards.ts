@@ -435,7 +435,6 @@ function updateJumpButtons(): void {
 
   if (totalPages <= 1) {
     el.find("button").addClass("disabled");
-    return;
   } else {
     el.find("button").removeClass("disabled");
   }
@@ -448,13 +447,17 @@ function updateJumpButtons(): void {
     el.find("button[data-action='firstPage']").removeClass("disabled");
   }
 
-  if (isAuthenticated() && state.userData) {
-    //TODO: should we hide the user button? if we are on the same page the user can still scroll down to his entry
-    const userPage = Math.floor((state.userData.rank - 1) / state.pageSize);
-    if (state.page === userPage) {
-      el.find("button[data-action='userPage']").addClass("disabled");
+  if (isAuthenticated()) {
+    const userButton = el.find("button[data-action='userPage']");
+    if (!state.userData) {
+      userButton.addClass("disabled");
     } else {
-      el.find("button[data-action='userPage']").removeClass("disabled");
+      const userPage = Math.floor((state.userData.rank - 1) / state.pageSize);
+      if (state.page === userPage) {
+        userButton.addClass("disabled");
+      } else {
+        userButton.removeClass("disabled");
+      }
     }
   }
 
@@ -941,22 +944,17 @@ function updateContent(): void {
   fillTable();
 
   if (state.scrollToUserAfterFill) {
-    //TODO: if we don't hide the user button scroll to entry if we are already on the correct page
-    scrollToUser();
+    const windowHeight = $(window).height() ?? 0;
+    const offset = $(`.tableAndUser .me`).offset()?.top ?? 0;
+    const scrollTo = offset - windowHeight / 2;
+    $([document.documentElement, document.body]).animate(
+      {
+        scrollTop: scrollTo,
+      },
+      applyReducedMotion(500)
+    );
     state.scrollToUserAfterFill = false;
   }
-}
-
-function scrollToUser(): void {
-  const windowHeight = $(window).height() ?? 0;
-  const offset = $(`.tableAndUser .me`).offset()?.top ?? 0;
-  const scrollTo = offset - windowHeight / 2;
-  $([document.documentElement, document.body]).animate(
-    {
-      scrollTop: scrollTo,
-    },
-    applyReducedMotion(500)
-  );
 }
 
 function updateTypeButtons(): void {
@@ -1119,7 +1117,6 @@ function handleJumpButton(action: string, page?: number): void {
           const page = Math.floor((rank - 1) / state.pageSize);
 
           if (state.page === page) {
-            scrollToUser();
             return;
           }
 
